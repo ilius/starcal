@@ -1,0 +1,7 @@
+Supported formats:
+.spg   StarCalendar Builtin Text Plugin
+.hol   StarCalendar Holiday Plugin
+.py    External Plugin
+.so    External Plugin (python binary module)
+.ics   iCalendar data file
+

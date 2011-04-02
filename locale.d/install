@@ -1,0 +1,14 @@
+#!/bin/bash
+myDir="`dirname "$0"`"
+if [ -n "$1" ] ; then
+    targetPrefix="$1" ## no slash at the end
+else
+    targetPrefix="/usr"
+fi
+
+for LANG in fa ; do
+    msgfmt "$myDir/$LANG.po" -o "$myDir/$LANG.mo"
+    mkdir -p "$targetPrefix/share/locale/$LANG/LC_MESSAGES"
+    sudo cp -f "$myDir/$LANG.mo" "$targetPrefix/share/locale/$LANG/LC_MESSAGES/starcal2.mo"
+done
+

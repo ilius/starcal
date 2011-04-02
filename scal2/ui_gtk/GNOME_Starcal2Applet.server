@@ -1,0 +1,24 @@
+<oaf_info>
+  <oaf_server iid="OAFIID:GNOME_Starcal2Applet_Factory" type="exe"
+            location="/usr/share/starcal2/scal/ui_gtk/starcal-gnome2-applet.py">
+    <oaf_attribute name="repo_ids" type="stringv">
+      <item value="IDL:Bonobo/GenericFactory:1.0"/>
+      <item value="IDL:Bonobo/Unknown:1.0"/>
+    </oaf_attribute>
+    <oaf_attribute name="name" type="string" value="StarCalendar 2"/>
+    <oaf_attribute name="description" type="string" value="StarCalendar 2"/>
+  </oaf_server>
+  <oaf_server iid="OAFIID:GNOME_Starcal2Applet"
+            type="factory" location="OAFIID:GNOME_Starcal2Applet_Factory">
+    <oaf_attribute name="repo_ids" type="stringv">
+      <item value="IDL:GNOME/Vertigo/PanelAppletShell:1.0"/>
+      <item value="IDL:Bonobo/Control:1.0"/>
+      <item value="IDL:Bonobo/Unknown:1.0"/>
+    </oaf_attribute>
+    <oaf_attribute name="name" type="string" value="StarCalendar 2"/>
+    <oaf_attribute name="description" type="string" value="StarCalendar 2"/>
+    <oaf_attribute name="panel:category" type="string" value="Utilities"/>
+    <oaf_attribute name="panel:icon" type="string"
+            value="/usr/share/starcal2/pixmaps/starcal2.png"/>
+  </oaf_server>
+</oaf_info>

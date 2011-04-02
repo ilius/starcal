@@ -1,0 +1,55 @@
+#!/bin/bash
+
+if [ "$UID" != "0" ] ; then
+  echo "Run this script as root"
+  exit 1
+fi
+
+
+myPath="$0"
+if [ "${myPath:0:2}" == "./" ] ; then
+    myPath=$PWD${myPath:1}
+elif [ "${myPath:0:1}" != "/" ] ; then
+    myPath=$PWD/$myPath
+fi
+
+
+pkgName=starcal2
+sourceDir="`dirname \"$myPath\"`"
+"$sourceDir/assert_python2"
+version=`\$sourceDir/scal2/get_version.py`
+
+
+tmpDir=/tmp/starcal2-install-arch
+mkdir -p $tmpDir
+cd $tmpDir
+
+echo "# Contributor: Saeed Rasooli <saeed.gnu@gmail.com>
+# This is a local PKGBUILD
+sourceDir='$sourceDir'
+pkgname=$pkgName
+pkgver=$version
+pkgrel=1
+pkgdesc='A full-featured international calendar writen in Python'
+arch=('any')
+url=(http://starcal.sourceforge.net)
+license=('GPLv3')
+depends=('python2>=2.5' 'pygtk>=2.8' 'pygobject' 'python2-numpy')
+optdepends=('python-gnomeapplet' 'python2-gnomevfs')
+makedepends=()
+source=()
+md5sums=()
+build() {
+    \"\$sourceDir/install\" \"\$pkgdir\" --for-pkg
+}" > PKGBUILD
+#echo "$PWD/PKGBUILD created, building package..."
+makepkg -f --asroot && \
+pkgFileName="`ls $pkgName-$version*.pkg.tar.*`" && \
+echo "Package file $PWD/$pkgFileName created, installing..."  && \
+pacman -U "$pkgFileName"
+
+
+cd - > /dev/null
+
+
+

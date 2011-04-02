@@ -1,0 +1,205 @@
+#!/bin/bash
+
+function printUsage {
+    echo "Usage: $0 [TERGET_DIR] [--for-pkg|--portable] [--prefix=/usr/local]"
+}
+
+myPath="$0"
+if [ "${myPath:0:2}" == "./" ] ; then
+    myPath=$PWD${myPath:1}
+elif [ "${myPath:0:1}" != "/" ] ; then
+    myPath=$PWD/$myPath
+fi
+
+pkgName=starcal2
+sourceDir="`dirname \"$myPath\"`"
+"$sourceDir/assert_python2"
+version=`\$sourceDir/scal2/get_version.py`
+
+
+
+options=`getopt -o '' --long 'for-pkg,portable,prefix:' -n "$0" -- "$@"`
+if [ $? != 0 ] ; then
+    printUsage
+    exit 1
+fi
+eval set -- "$options" ## Note the quotes around $options are essential!
+options=""
+
+
+prefix=""
+installType=""
+
+while true ; do
+	case "$1" in
+		--for-pkg) installType="for-pkg" ; shift ;;
+		--portable) installType="portable" ; shift ;;
+		--prefix) prefix="$2" ; shift 2 ;;
+		--) shift ; break ;;
+		*) echo "Internal error!" ; exit 1 ;;
+	esac
+done
+
+targetDir="$1" ; shift
+if [ -n "$1" ] ; then ## extra arguments
+    printUsage
+    exit 1
+fi
+
+if [ -n "$targetDir" ] ; then ## non-Root directory
+    n=${#targetDir}
+    if [ ${targetDir:n-1:1} = / ] ; then
+        targetDir=${targetDir::-1}
+    fi
+    mkdir -p "${targetDir}"
+fi
+
+## do not f*** the system if a variable was empty amiss!
+if [ -z $pkgName ] ; then
+    echo "Internal Error! pkgName=''"
+    exit 1
+fi
+if [ -z "$prefix" ] ; then ## prefix is empty (not been set)
+    if [ "$installType" = "for-pkg" ] ; then
+        prefix=/usr
+    elif [ "$installType" = "portable" ] ; then
+        prefix=/usr/local ## FIXME
+    else
+        prefix=/usr/local
+    fi
+else
+    n=${#prefix}
+    if [ ${prefix:n-1:1} = / ] ; then
+        prefix=${prefix::-1}
+    fi
+fi
+
+#echo "prefix: $prefix"
+#echo "installType: $installType"
+#echo "targetDir: $targetDir"
+#exit 0
+
+targetPrefix="${targetDir}${prefix}"
+shareDir="${targetPrefix}/share"
+
+
+
+
+
+
+
+mkdir -p "${shareDir}/doc"
+mkdir -p "${shareDir}/applications"
+mkdir -p "${shareDir}/icons"
+mkdir -p "${shareDir}/pixmaps"
+mkdir -p "${shareDir}/doc/$pkgName"
+mkdir -p "${targetPrefix}/bin"
+mkdir -p "${targetDir}/var/log/starcal2"
+mkdir -p "${targetDir}/etc"
+
+
+
+if [ -L "${shareDir}/$pkgName" ] ; then ## a symbiloc link
+    rm -f "${shareDir}/$pkgName"
+elif [ -d "${shareDir}/$pkgName" ] ; then
+    rm -Rf "${shareDir}/$pkgName"
+fi
+
+cp -Rf "$sourceDir" "${shareDir}"
+
+for docFile in copyright authors ChangeLog ; do
+    mv -f "${shareDir}/$pkgName/$docFile" "${shareDir}/doc/$pkgName/"
+done
+
+cp -f "${shareDir}/$pkgName/donate" "${shareDir}/doc/$pkgName/"
+
+
+
+if [ -e "${targetDir}/etc/$pkgName" ] ; then
+    rm -Rf "${targetDir}/etc/$pkgName" ## descard old configuration? FIXME
+fi
+cp -Rf "$sourceDir/config" "${targetDir}/etc/$pkgName"
+
+daemonName=${pkgName}d
+if [ -d /etc/init.d ] ; then ## Debian FIXME
+    mkdir -p "${targetDir}/etc/init.d"
+    targetDaemonPath="${targetDir}/etc/init.d/$daemonName"
+elif [ -d /etc/rc.d ] ; then ## ArchLinux
+    mkdir -p "${targetDir}/etc/rc.d"
+    targetDaemonPath="$sourceDir/$daemonName" "${targetDir}/etc/rc.d/$daemonName"
+fi
+if [ -n "$targetDaemonPath" ] ; then
+    if [ -e "$targetDaemonPath" ] ; then
+        rm "$targetDaemonPath"
+    fi
+    cp -f "$sourceDir/$daemonName" "$targetDaemonPath"
+fi
+
+mkdir -p "${shareDir}/icons/hicolor"
+for SZ in 16 22 24 32 48 ; do
+    relDir="icons/hicolor/${SZ}x${SZ}/apps"
+    mkdir -p "${shareDir}/$relDir"
+    mv -f "${shareDir}/$pkgName/$relDir/$pkgName.png" "${shareDir}/$relDir/$pkgName.png"
+done
+rm -R "${shareDir}/$pkgName/icons"
+
+
+cp -f "$sourceDir/pixmaps/$pkgName.png" "${shareDir}/pixmaps/$pkgName.png"
+
+
+if [ "$installType" = "for-pkg" ] ; then
+    runStr="/usr/share/$pkgName/run"
+elif [ "$installType" = "portable" ] ; then
+    runStr="\"\`dirname \\\"\$0\\\"\`/../share/$pkgName/run"
+else
+    runStr="\"${shareDir}/$pkgName/run\""
+fi
+
+
+echo "#!/bin/bash
+if [ ! -d ~/.starcal2 ] ; then
+    $runStr scal2/ui_gtk/select_language.py
+fi
+$runStr scal2/ui_gtk/starcal_gtk.py \"\$@\"" > "${targetPrefix}/bin/$pkgName"
+
+
+echo "#!/bin/bash
+if [ ! -d ~/.starcal2 ] ; then
+    $runStr scal2/ui_gtk/select_language.py
+fi
+$runStr scal2/ui_qt/starcal_qt.py \"\$@\"" > "${targetPrefix}/bin/$pkgName-qt"
+
+
+chmod 755 "${targetPrefix}/bin/$pkgName"
+chmod 755 "${targetPrefix}/bin/$pkgName-qt"
+
+
+echo "[Desktop Entry]
+Encoding=UTF-8
+Name=StarCalendar $version
+Version=$version
+Comment=A Perfect Calendar Program
+Comment[fa]=یک برنامهٔ کامل تقویم
+Exec=$pkgName
+Icon=$pkgName
+Type=Application
+Terminal=false
+Categories=Application;Utility;
+StartupNotify=true" > "${shareDir}/applications/$pkgName.desktop"
+
+
+
+"$sourceDir/locale.d/install" "${targetPrefix}" ## FIXME
+
+
+
+## Cleaning useless files from targetDir
+#rm -Rf "${shareDir}/$pkgName/.git" 2>/dev/null
+for EXP in '.hidden' '*~' '*.pyc' '*.pyo' ; do
+    find "${shareDir}/$pkgName" -name "$EXP" -exec rm '{}' \;
+done
+
+## lib/        -->    starcal2-platform-spec
+## locale/     -->    starcal2-region-*
+
+

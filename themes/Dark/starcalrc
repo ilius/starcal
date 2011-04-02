@@ -1,0 +1,41 @@
+#!/usr/bin/python
+themeName = 'Dark'
+thisDir = themeDir + os.sep + themeName
+
+version='1.3.5'
+
+shownDates[0]['color'] = gtk.gdk.Color(65535, 65535, 65535)
+shownDates[1]['color'] = gtk.gdk.Color(24338, 58131, 0)
+shownDates[2]['color'] = gtk.gdk.Color(35939, 58441, 65535)
+
+#fontCustom="Terafik 13"
+fontUseDefault=True
+calGrid=True
+gridAlpha=35466
+gridColor=gtk.gdk.Color(65535, 65535, 65535)
+prevStock="gtk-go-forward"
+nextStock="gtk-go-back"
+bgUseDesk=True
+bgColor=gtk.gdk.Color(39110, 39110, 39110)
+bgColorAlpha=24415
+borderColor=gtk.gdk.Color(0, 0, 0)
+borderColorAlpha=30000
+borderTextColor=gtk.gdk.Color(65535, 65535, 65535)
+holidayColor=gtk.gdk.Color(60000, 10535, 10000)
+inactiveColor=gtk.gdk.Color(65535, 65535, 65535)
+cursorOutColor=gtk.gdk.Color(42565, 0, 42235)
+cursorBgColor=gtk.gdk.Color(0, 0, 0)
+cursorBgAlpha=65535
+calLeftMargin=30
+calTopMargin=25
+cursorD=2.0
+cursorFixed=False
+cursorW=57
+cursorH=24
+
+trayImage = thisDir + os.sep + 'tray.png'
+trayImageHoli = thisDir + os.sep + 'tray-holiday.png'
+trayTextColor	= gdk.Color(-1, -1, -1)
+traySize = 24
+trayFont = 'Sans 13'
+trayY0 = 4

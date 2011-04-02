@@ -1,0 +1,63 @@
+#!/bin/bash
+## This script builds DEB package on a debian-based distribution
+## (like debian, ubuntu, mint, ...) and installs the package
+
+if [ "$UID" != "0" ] ; then
+  echo "Run this script as root"
+  exit 1
+fi
+
+
+myPath="$0"
+if [ "${myPath:0:2}" == "./" ] ; then
+    myPath=$PWD${myPath:1}
+elif [ "${myPath:0:1}" != "/" ] ; then
+    myPath=$PWD/$myPath
+fi
+
+
+
+pkgName=starcal2
+sourceDir="`dirname \"$myPath\"`"
+"$sourceDir/assert_python2"
+version=`\$sourceDir/scal2/get_version.py`
+
+
+tmpDir=/tmp/starcal2-install-deb
+mkdir -p $tmpDir
+mkdir -p "$tmpDir/DEBIAN"
+
+
+
+echo "Package: $pkgName
+Version: $version
+Architecture: all
+Maintainer: Saeed Rasooli <saeed.gnu@gmail.com>
+Installed-Size: 
+Depends: python(>=2.5), python(<<3.0), python-gtk2(>=2.8), python-numpy
+Recommends: itools
+Section: Utilities
+Priority: optional
+Homepage: http://starcal.sourceforge.net/
+Description: A full-featured international calendar writen in Python
+ StarCalendar is a full-featured international calendar writen in Python,
+ with both PyGTK and PyQt interfaces, that supports Jalai(Iranian),
+ Hijri(Islamic), and Indian National calendars, as well as common 
+ english(Gregorian) calendar
+ Homepage: http://starcal.sourceforge.net/
+ Author: Saeed Rasooli <saeed.gnu@gmail.com>" > "$tmpDir/DEBIAN/control"
+
+
+"$sourceDir/install" "$tmpDir" "--for-pkg"
+chown -R root "$tmpDir"
+pkgFile=$tmpDir/${pkgName}_${version}-2_all.deb
+dpkg-deb -b "$tmpDir" "$pkgFile" && \
+echo "Package file $pkgFile created, installing..."  && \
+if [ -f /usr/bin/gdebi ] ; then
+    /usr/bin/gdebi "$pkgFile"
+else
+    dpkg -i "$pkgFile"
+fi
+
+
+

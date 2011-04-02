@@ -1,0 +1,57 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2011 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful, 
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
+# Also avalable in /usr/share/common-licenses/GPL on Debian systems
+# or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
+
+#from scal2.locale import tr as _
+
+from scal2 import core
+from scal2.core import myRaise, numLocale, getMonthName, getMonthLen, getNextMonth, getPrevMonth, pixDir
+
+from scal2 import ui
+
+pluginName = 'WeekCal'
+
+class WeekStatus(list):
+    ## list (of 7 cells)
+    def __init__(self, cellCache, absWeekNumber):
+        self.absWeekNumber = absWeekNumber
+        (startJd, endJd) = core.getJdRangeOfAbsWeekNumber(absWeekNumber)
+        #self.startJd = startJd
+        #self.startDate = core.jd_to(self.startJd, core.primaryMode)
+        #self.weekNumberOfYear = core.getWeekNumber(*self.startDate)
+        #########
+        #list.__init__(self, [cellCache.getCell(jd) for jd in range(startJd, endJd)])
+        list.__init__(self, [])
+        for jd in range(startJd, endJd):
+            #print 'WeekStatus', jd
+            self.append(cellCache.getCell(jd))
+
+
+def setParamsFunc(cell):
+    (cell.absWeekNumber, cell.weekDayIndex) = core.getWeekDateFromJd(cell.jd)
+
+
+getWeekStatus = lambda absWeekNumber: ui.cellCache.getCellGroup(pluginName, absWeekNumber)
+getCurrentWeekStatus = lambda: ui.cellCache.getCellGroup(pluginName, ui.cell.absWeekNumber)
+
+########################
+ui.cellCache.registerPlugin(pluginName, setParamsFunc, WeekStatus)
+
+
+
+

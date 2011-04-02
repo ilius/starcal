@@ -1,0 +1,63 @@
+#!/bin/bash
+## yum install @development-tools
+## yum install rpm-build rpmdevtools rpmlint mock
+
+
+if [ "$UID" != "0" ] ; then
+  echo "Run this script as root"
+  exit 1
+fi
+
+
+myPath="$0"
+if [ "${myPath:0:2}" == "./" ] ; then
+    myPath=$PWD${myPath:1}
+elif [ "${myPath:0:1}" != "/" ] ; then
+    myPath=$PWD/$myPath
+fi
+
+
+pkgName=starcal2
+sourceDir="`dirname \"$myPath\"`"
+version=`\$sourceDir/scal2/get_version.py`
+
+#echo "myPath=$myPath"
+#echo "sourceDir=$sourceDir"
+#echo version=$version
+
+tmpDir=/tmp/starcal2-install-deb
+mkdir -p $tmpDir
+cd $tmpDir
+
+
+
+
+"Name: hello
+Version: 2.5
+Release: 1
+Summary: A full-featured international calendar writen in Python
+License: GPLv3+
+URL: http://ftp.gnu.org/gnu/hello    
+Source0: http://ftp.gnu.org/gnu/hello/hello-2.5.tar.gz
+%description:
+StarCalendar is a full-featured international calendar writen in Python,
+with both PyGTK and PyQt interfaces, that supports Jalai(Iranian),
+Hijri(Islamic), and Indian National calendars, as well as common 
+english(Gregorian) calendar
+
+%changelog
+"
+
+
+
+
+
+"$sourceDir/install" "$tmpDir" "--for-pkg"
+chown -R root "$tmpDir"
+
+
+
+
+
+
+

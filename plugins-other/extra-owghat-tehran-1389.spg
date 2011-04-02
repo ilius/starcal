@@ -1,0 +1,15 @@
+#!/usr/bin/env python
+## StarCal Builtin Plugin
+db_name = 'extra-owghat-tehran-1389.titled'
+mode = 'jalali'
+desc = 'اوقات شرعی تهران ۱۳۸۹'
+about = 'اوقات شرعی تهران ۱۳۸۹'
+authors = [
+'شورای مرکز تقویم مؤسسهٔ ژئوفیزیک دانشگاه تهران',
+'سعید رسولی <saeed.gnu@gmail.com>',
+]
+has_config = False
+has_image = False
+
+default_enable = True
+default_show_date = False

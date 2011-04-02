@@ -1,0 +1,74 @@
+# Edit these colors and fonts however you like, after cp'ing the file to
+# another theme directory.
+# CleanIce-Dark by Bastien Nocera <hadess@hadess.net>
+# CleanIce GTK+ Theme 2001 Rodney Dawes <dobez@fnmail.com>
+# Based on ThinIce GTK+ Engine by Tomas Ogren
+# and Clean GTK+ Engine by dengen40@yahoo.com
+
+style "default"
+{
+  # Normal
+  #
+  # All these items have the same value,
+  # <owen> hadess: No. There are no variables in gtkrc currently.
+  # 
+  bg[SELECTED] = "#685977"
+  base[SELECTED] = "#685977"
+  base[INSENSITIVE] = "#685977"
+  base[ACTIVE] = "#685977"
+  # 
+  fg[SELECTED] = "#ffffff"
+  text[SELECTED] = "#ffffff"
+  text[INSENSITIVE] = "#ffffff"
+  text[ACTIVE] = "#ffffff"
+
+  # Blackcurrant
+  # bg[SELECTED] = "#0f142c"
+  # fg[SELECTED] = "#ffffff"
+
+  # Citrus
+  # fg[SELECTED] = "#000000"
+  # bg[SELECTED] = "#f7c700"
+
+  # Crowberry
+  # fg[SELECTED] = "#ffffff"
+  # bg[SELECTED] = "#34426d"
+
+  # Eggplant
+  # fg[SELECTED] = "#ffffff"
+  # bg[SELECTED] = "#62526f"
+
+  # Jade
+  # fg[SELECTED] = "#ffffff"
+  # bg[SELECTED] = "#345d56"
+
+  # Lime
+  # fg[SELECTED] = "#000000"
+  # bg[SELECTED] = "#bedc00"
+
+  # PopCorn
+  # fg[SELECTED] = "#000000"
+  # bg[SELECTED] = "#d6c787"
+
+  # Pumpkin
+  # fg[SELECTED] = "#ffffff"
+  # bg[SELECTED] = "#c8702f"
+
+  bg[ACTIVE] = "#909090"
+  fg[ACTIVE] = "#000000"
+
+  bg[NORMAL] = "#a3a2a0"
+  bg[PRELIGHT] = "#685977"
+  fg[PRELIGHT] = "#ffffff"
+  bg[INSENSITIVE] = "#a3a2a0"
+
+  fg[NORMAL] = "#000000"
+
+  base[NORMAL]          = "#dddddd"     # list item background
+
+  engine "cleanice"
+  {
+  }
+}
+widget_class "*" style "default"
+
