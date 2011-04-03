@@ -30,6 +30,7 @@ from scal2.paths import *
 from scal2.cal_modules.gregorian import J1970
 from scal2.locale import prepareLanguage, loadTranslator
 from scal2.plugin_man import *
+from scal2.utils import cmpVersion
 
 
 try:
@@ -404,16 +405,7 @@ def urlToPath(url):
     return path2
 
 
-def cmpVersion(v0, v1):
-    assert type(v0)==type(v1)==str
-    if v0=='':
-        if v1=='':
-            return 0
-        else:
-            return -1
-    elif v1=='':
-        return 1
-    return cmp([ int(p) for p in v0.split('.') ], [ int(p) for p in v1.split('.') ])
+
 
 def getSysDate(mode=None):
     if mode is None:
