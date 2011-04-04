@@ -32,13 +32,12 @@ cd $tmpDir
 
 
 
-"Name: hello
-Version: 2.5
-Release: 1
+echo "Name: $pkgName
+Version: $version
+Release: 3
 Summary: A full-featured international calendar writen in Python
 License: GPLv3+
-URL: http://ftp.gnu.org/gnu/hello    
-Source0: http://ftp.gnu.org/gnu/hello/hello-2.5.tar.gz
+URL: http://starcal.sourceforge.net/
 %description:
 StarCalendar is a full-featured international calendar writen in Python,
 with both PyGTK and PyQt interfaces, that supports Jalai(Iranian),
@@ -46,7 +45,9 @@ Hijri(Islamic), and Indian National calendars, as well as common
 english(Gregorian) calendar
 
 %changelog
-"
+" > "$tmpDir/$pkgName.spec"
+
+rpmbuild -ba "$tmpDir/$pkgName.spec"
 
 
 
