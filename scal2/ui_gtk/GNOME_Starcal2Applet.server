@@ -1,6 +1,6 @@
 <oaf_info>
   <oaf_server iid="OAFIID:GNOME_Starcal2Applet_Factory" type="exe"
-            location="/usr/share/starcal2/scal/ui_gtk/starcal-gnome2-applet.py">
+            location="/usr/share/starcal2/scal2/ui_gtk/starcal-gnome2-applet.py">
     <oaf_attribute name="repo_ids" type="stringv">
       <item value="IDL:Bonobo/GenericFactory:1.0"/>
       <item value="IDL:Bonobo/Unknown:1.0"/>

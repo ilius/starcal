@@ -191,6 +191,8 @@ StartupNotify=true" > "${shareDir}/applications/$pkgName.desktop"
 
 "$sourceDir/locale.d/install" "${targetPrefix}" ## FIXME
 
+mkdir -p "$targetPrefix/lib/bonobo/servers"
+mv "${shareDir}/$pkgName/scal2/ui_gtk/GNOME_Starcal2Applet.server" "$targetPrefix/lib/bonobo/servers/"
 
 
 ## Cleaning useless files from targetDir
