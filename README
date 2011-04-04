@@ -1,0 +1,29 @@
+Download:
+    $ git clone git://github.com/ilius/starcal2.git
+
+Installation/uninstallation on Ubuntu, Debian or other Debian-based distributions:
+    $ sudo bash ./starcal2/install-debian
+    $ sudo apt-get remove starcal2
+
+Installation/uninstallation on ArchLinux:
+    $ sudo bash ./starcal2/install-archlinux
+    $ sudo pacman -R starcal2
+
+Installation/uninstallation on other distributions:
+    $ sudo bash ./starcal2/install
+    $ sudo bash ./starcal2/uninstall
+
+
+Notes:
+    You can have starcal2 (version >= 1.9.0) and starcal (version <= 1.5.3) packages
+    installed on your system in one time. They are completely independent.
+    Command "starcal2" runs starcal2, and command "starcal" runs older starcal (1.5.3)
+    Also command "starcal2-qt" runs starcal2 with PyQt interface (default is PyGTK).
+    starcal2-qt is added newly, and exits in the same package starcal2
+
+
+Home Pages:
+    http://github.com/ilius/starcal2
+    http://starcal.sourceforge.net
+
+
