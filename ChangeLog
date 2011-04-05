@@ -10,10 +10,11 @@ All dates are in format YYYY/MM/DD
     * Implementing strftime with pure python codes for better locale-support and improvements
     * Adding Islamic Pray Times plugin that works for every location on the earth and supports many calculating methods
     * Fixing many bugs
-    * Adding Customize Dialog and changing all main window items for it
+    * Adding Customize dialog and changing all main window items for it
     * PyQt interface almost completed
-    * Better method for handling locales, default config per language, config importer from 1.5.3
-    * Sepating config file (preferences) into several files accourding to program layers, breaking compatibily
+    * Better method for handling locales, default config per language, config importer from 1.5.*
+    * Fully internationalized, and localizable for every locale/language (localizing in progress)
+    * Separating config file (preferences) into several files accourding to program layers, breaking compatibily
     * Too much cleaning codes, moving codes, seperating layers, new classes...
 
 
