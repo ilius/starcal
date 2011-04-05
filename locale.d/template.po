@@ -1,0 +1,1232 @@
+msgid "_About"
+msgstr ""
+
+msgid "_Add"
+msgstr ""
+
+msgid "_Apply"
+msgstr ""
+
+msgid "_Cancel"
+msgstr ""
+
+msgid "_Close"
+msgstr ""
+
+msgid "C_redits"
+msgstr ""
+
+msgid "_Delete"
+msgstr ""
+
+msgid "_Edit"
+msgstr ""
+
+msgid "_License"
+msgstr ""
+
+msgid "Written by"
+msgstr ""
+
+msgid "Documented by"
+msgstr ""
+
+msgid "Translated by"
+msgstr ""
+
+msgid "_OK"
+msgstr ""
+
+msgid "_Preferences"
+msgstr ""
+
+msgid "_Quit"
+msgstr ""
+
+msgid "_Save"
+msgstr ""
+
+msgid "Preferences"
+msgstr ""
+
+msgid "Configuration"
+msgstr ""
+
+msgid "Settings"
+msgstr ""
+
+msgid "About StarCalendar"
+msgstr ""
+
+msgid "About"
+msgstr ""
+
+msgid "About "
+msgstr ""
+
+msgid "Quit"
+msgstr ""
+
+msgid "Credits"
+msgstr ""
+
+msgid "Calendar"
+msgstr ""
+
+msgid "Apply and Close"
+msgstr ""
+
+msgid "Delete"
+msgstr ""
+
+msgid "Add"
+msgstr ""
+
+msgid "Name"
+msgstr ""
+
+msgid "And"
+msgstr ""
+
+msgid "and"
+msgstr ""
+
+msgid "or"
+msgstr ""
+
+msgid ","
+msgstr ""
+
+msgid "Gregorian"
+msgstr ""
+
+msgid "Jalali(Iranian)"
+msgstr ""
+
+msgid "Hijri(Islamic)"
+msgstr ""
+
+msgid "Julian"
+msgstr ""
+
+msgid "Indian National"
+msgstr ""
+
+msgid "Hebrew(Jewish)"
+msgstr ""
+
+msgid "Julian Day"
+msgstr ""
+
+msgid "Language"
+msgstr ""
+
+msgid "System Default"
+msgstr ""
+
+msgid "English (USA)"
+msgstr ""
+
+msgid "Persian"
+msgstr ""
+
+msgid "Arabic"
+msgstr ""
+
+msgid "AM"
+msgstr ""
+
+msgid "PM"
+msgstr ""
+
+msgid "Year"
+msgstr ""
+
+msgid "Month"
+msgstr ""
+
+msgid "Day"
+msgstr ""
+
+msgid "Day Type"
+msgstr ""
+
+msgid "Sunday"
+msgstr ""
+
+msgid "Monday"
+msgstr ""
+
+msgid "Tuesday"
+msgstr ""
+
+msgid "Wednesday"
+msgstr ""
+
+msgid "Thursday"
+msgstr ""
+
+msgid "Friday"
+msgstr ""
+
+msgid "Saturday"
+msgstr ""
+
+msgid "Sun"
+msgstr ""
+
+msgid "Mon"
+msgstr ""
+
+msgid "Tue"
+msgstr ""
+
+msgid "Wed"
+msgstr ""
+
+msgid "Thu"
+msgstr ""
+
+msgid "Fri"
+msgstr ""
+
+msgid "Sat"
+msgstr ""
+
+msgid "January"
+msgstr ""
+
+msgid "February"
+msgstr ""
+
+msgid "March"
+msgstr ""
+
+msgid "April"
+msgstr ""
+
+msgid "May"
+msgstr ""
+
+msgid "June"
+msgstr ""
+
+msgid "July"
+msgstr ""
+
+msgid "August"
+msgstr ""
+
+msgid "September"
+msgstr ""
+
+msgid "October"
+msgstr ""
+
+msgid "November"
+msgstr ""
+
+msgid "December"
+msgstr ""
+
+msgid "Farvardin"
+msgstr ""
+
+msgid "Ordibehesht"
+msgstr ""
+
+msgid "Khordad"
+msgstr ""
+
+msgid "Teer"
+msgstr ""
+
+msgid "Mordad"
+msgstr ""
+
+msgid "Shahrivar"
+msgstr ""
+
+msgid "Mehr"
+msgstr ""
+
+msgid "Aban"
+msgstr ""
+
+msgid "Azar"
+msgstr ""
+
+msgid "Dey"
+msgstr ""
+
+msgid "Bahman"
+msgstr ""
+
+msgid "Esfand"
+msgstr ""
+
+msgid "Muharram"
+msgstr ""
+
+msgid "Safar"
+msgstr ""
+
+msgid "Rabia' 1"
+msgstr ""
+
+msgid "Rabia' 2"
+msgstr ""
+
+msgid "Jumada 1"
+msgstr ""
+
+msgid "Jumada 2"
+msgstr ""
+
+msgid "Rajab"
+msgstr ""
+
+msgid "Sha'aban"
+msgstr ""
+
+msgid "Ramadan"
+msgstr ""
+
+msgid "Shawwal"
+msgstr ""
+
+msgid "Dhu'l Qidah"
+msgstr ""
+
+msgid "Dhu'l Hijjah"
+msgstr ""
+
+msgid "Tishri"
+msgstr ""
+
+msgid "Cheshvan"
+msgstr ""
+
+msgid "Kislev"
+msgstr ""
+
+msgid "Tevet"
+msgstr ""
+
+msgid "Shevat"
+msgstr ""
+
+msgid "Adar"
+msgstr ""
+
+msgid "Adar II"
+msgstr ""
+
+msgid "Nisan"
+msgstr ""
+
+msgid "Iyyar"
+msgstr ""
+
+msgid "Siwan"
+msgstr ""
+
+msgid "Tamuz"
+msgstr ""
+
+msgid "Av"
+msgstr ""
+
+msgid "Elul"
+msgstr ""
+
+msgid "Previous Year"
+msgstr ""
+
+msgid "Next Year"
+msgstr ""
+
+msgid "Previous Month"
+msgstr ""
+
+msgid "Next Month"
+msgstr ""
+
+msgid "Birthday"
+msgstr ""
+
+msgid "Marriage Jubilee"
+msgstr ""
+
+msgid "Obituary"
+msgstr ""
+
+msgid "Note"
+msgstr ""
+
+msgid "Today"
+msgstr ""
+
+msgid "Add Custom Day"
+msgstr ""
+
+msgid "Use (Iranian) database for Hijri months length"
+msgstr ""
+
+msgid "Shown Calendars"
+msgstr ""
+
+msgid "Jalali Calculation Algorithm"
+msgstr ""
+
+msgid "33 year algorithm"
+msgstr ""
+
+msgid "2820 year algorithm"
+msgstr ""
+
+msgid "Hijri Calculation Algorithm"
+msgstr ""
+
+msgid "Enable/Disable"
+msgstr ""
+
+msgid "position"
+msgstr ""
+
+msgid "Time"
+msgstr ""
+
+msgid "time"
+msgstr ""
+
+msgid "Remind Window"
+msgstr ""
+
+msgid "Alarm"
+msgstr ""
+
+msgid "Task"
+msgstr ""
+
+msgid "Start Date"
+msgstr ""
+
+msgid "End Date"
+msgstr ""
+
+msgid "Duration As"
+msgstr ""
+
+msgid "Year, Month and Day"
+msgstr ""
+
+msgid "WeekDay"
+msgstr ""
+
+msgid "Specific Length"
+msgstr ""
+
+msgid "Select Alarm Sound"
+msgstr ""
+
+msgid "Day of Month"
+msgstr ""
+
+msgid "Week Number"
+msgstr ""
+
+msgid "Every Week"
+msgstr ""
+
+msgid "Even Weeks"
+msgstr ""
+
+msgid "Odd Weeks"
+msgstr ""
+
+msgid "Day of Week"
+msgstr ""
+
+msgid "Time in Day"
+msgstr ""
+
+msgid "Start"
+msgstr ""
+
+msgid "start"
+msgstr ""
+
+msgid "End"
+msgstr ""
+
+msgid "end"
+msgstr ""
+
+msgid "Cycle Days Number"
+msgstr ""
+
+msgid "Cycle Length (Days & Time)"
+msgstr ""
+
+msgid "Notify"
+msgstr ""
+
+msgid "Reminder Alarm"
+msgstr ""
+
+msgid "Reminder Window"
+msgstr ""
+
+msgid "Repeat Remind"
+msgstr ""
+
+msgid "Needs"
+msgstr ""
+
+msgid "Conflicts with"
+msgstr ""
+
+msgid "Not found a Provider"
+msgstr ""
+
+msgid "Provided by"
+msgstr ""
+
+
+
+msgid "aboutText"
+msgstr ""
+"A Perfect Calendar Program Writen in Python\n"
+"Copyleft © 2008-2011 Saeed Rasooli\n"
+"StarCalendar is distributed under the GNU General Public License"
+
+
+msgid "licenseText"
+msgstr ""
+"StarCalendar - A Perfect Calendar Program Writen in Python\n"
+"Copyright © 2008-2011 Saeed Rasooli\n"
+"This program is free software; you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation; either version 3 of the License,  or (at your option) any later version.\n"
+"\n"
+"This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.\n"
+"\n"
+"You should have received a copy of the GNU General Public License along with this program. Or on Debian systems, from /usr/share/common-licenses/GPL. If not, see <http://www.gnu.org/licenses/gpl.txt>."
+
+
+
+msgid "Select Today"
+msgstr ""
+
+msgid "Resize"
+msgstr ""
+
+msgid "Menu"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "Comment"
+msgstr ""
+
+msgid "Show below calendar"
+msgstr ""
+
+msgid "Show in tray (for today)"
+msgstr ""
+
+msgid "Show in applet (for today)"
+msgstr ""
+
+msgid "Enable"
+msgstr ""
+
+msgid "Description"
+msgstr ""
+
+msgid "Show Date"
+msgstr ""
+
+msgid "_Manage Plugin"
+msgstr ""
+
+msgid "Move up"
+msgstr ""
+
+msgid "Move down"
+msgstr ""
+
+msgid "Move to top"
+msgstr ""
+
+msgid "Move to bottom"
+msgstr ""
+
+msgid "Add Plugin"
+msgstr ""
+
+msgid "_About Plugin"
+msgstr ""
+
+msgid "About Plugin"
+msgstr ""
+
+msgid "C_onfigure Plugin"
+msgstr ""
+
+msgid "Custom days text (below calendar)"
+msgstr ""
+
+msgid "Custom days icon (in the calendar)"
+msgstr ""
+
+msgid "Calendar height"
+msgstr ""
+
+msgid "Save window width and position"
+msgstr ""
+
+msgid "Window Border (from next running)"
+msgstr ""
+
+msgid "Window in Taskbar"
+msgstr ""
+
+msgid "Show Window Controllers"
+msgstr ""
+
+msgid "Show Digital Clock:"
+msgstr ""
+
+msgid "On Toolbar"
+msgstr ""
+
+msgid "On Tray"
+msgstr ""
+
+msgid "On Applet"
+msgstr ""
+
+msgid "Digital Clock Format"
+msgstr ""
+
+msgid "Previous year/month button"
+msgstr ""
+
+msgid "Next year/month button"
+msgstr ""
+
+msgid "Next"
+msgstr ""
+
+msgid "Up"
+msgstr ""
+
+msgid "Down"
+msgstr ""
+
+msgid "Back"
+msgstr ""
+
+msgid "Forward"
+msgstr ""
+
+msgid "Plus"
+msgstr ""
+
+msgid "Minus"
+msgstr ""
+
+msgid "Copy Date"
+msgstr ""
+
+msgid "Select Date..."
+msgstr ""
+
+msgid "Date..."
+msgstr ""
+
+msgid "Style:"
+msgstr ""
+
+msgid "Icon"
+msgstr ""
+
+msgid "Text"
+msgstr ""
+
+msgid "Text below Icon"
+msgstr ""
+
+msgid "Text beside Icon"
+msgstr ""
+
+msgid "In E_volution"
+msgstr ""
+
+msgid "In _Sunbird"
+msgstr ""
+
+msgid "Date Mode"
+msgstr ""
+
+msgid "Calendar Type"
+msgstr ""
+
+msgid "Type"
+msgstr ""
+
+msgid "Remove Custom Day"
+msgstr ""
+
+msgid "Edit Custom Day"
+msgstr ""
+
+msgid "_General"
+msgstr ""
+
+msgid "A_ppearance"
+msgstr ""
+
+msgid "_Manage Plugin"
+msgstr ""
+
+msgid "A_dvanced"
+msgstr ""
+
+msgid "Show main window on start"
+msgstr ""
+
+msgid "Run on GNOME startup"
+msgstr ""
+
+msgid "Run on session startup"
+msgstr ""
+
+msgid "Run on KDE startup"
+msgstr ""
+
+msgid "First day of week"
+msgstr ""
+
+msgid "Automatic"
+msgstr ""
+
+msgid "Holidays:"
+msgstr ""
+
+msgid "First week of year containts:"
+msgstr ""
+
+msgid "First %s of year"
+msgstr ""
+
+msgid "First day of year"
+msgstr ""
+
+msgid "Use Desktop Background"
+msgstr ""
+
+msgid "If you want to have a transparent calendar (and see your desktop), change the opacity of calendar background color!"
+msgstr ""
+
+msgid "Colors"
+msgstr ""
+
+msgid "Font Colors"
+msgstr ""
+
+msgid "Background"
+msgstr ""
+
+msgid "Border"
+msgstr ""
+
+msgid "Holiday"
+msgstr ""
+
+msgid "Inactive Day"
+msgstr ""
+
+msgid "Left Margin"
+msgstr ""
+
+msgid "Top"
+msgstr ""
+
+msgid "Cursor"
+msgstr ""
+
+msgid "Cursor BG"
+msgstr ""
+
+msgid "Diameter"
+msgstr ""
+
+msgid "Round"
+msgstr ""
+
+msgid "Width"
+msgstr ""
+
+msgid "Height"
+msgstr ""
+
+msgid "Height:"
+msgstr ""
+
+msgid "Fixed Size"
+msgstr ""
+
+msgid "Cursor Diameter"
+msgstr ""
+
+msgid "Cursor Width"
+msgstr ""
+
+msgid "Cursor Height"
+msgstr ""
+
+msgid "Days maximum cache size"
+msgstr ""
+
+msgid "Date Format"
+msgstr ""
+
+msgid "Grid"
+msgstr ""
+
+msgid "Use system font"
+msgstr ""
+
+msgid "Holidays"
+msgstr ""
+
+msgid "Change color of non-weekly holidays"
+msgstr ""
+
+msgid "Drag & Drop Icon:"
+msgstr ""
+
+msgid "Date String"
+msgstr ""
+
+msgid "Cell Image"
+msgstr ""
+
+msgid "Export"
+msgstr ""
+
+msgid "Export to HTML"
+msgstr ""
+
+msgid "Month Range"
+msgstr ""
+
+msgid "Current Month"
+msgstr ""
+
+msgid "Whole Current Year"
+msgstr ""
+
+msgid "Custom"
+msgstr ""
+
+msgid "from month"
+msgstr ""
+
+msgid "to month"
+msgstr ""
+
+msgid "Generated by"
+msgstr ""
+
+msgid "version"
+msgstr ""
+
+msgid "_General"
+msgstr ""
+
+msgid "_Appearance"
+msgstr ""
+
+msgid "_Manage DB"
+msgstr ""
+
+msgid "_Advanced"
+msgstr ""
+
+msgid "Select _Today"
+msgstr ""
+
+msgid "_Resize"
+msgstr ""
+
+msgid "_On Top"
+msgstr ""
+
+msgid "_Sticky"
+msgstr ""
+
+msgid "_Copy"
+msgstr ""
+
+msgid "Copy _All"
+msgstr ""
+
+msgid "_Copy Date"
+msgstr ""
+
+msgid "Copy _Date"
+msgstr ""
+
+msgid "Copy _Time"
+msgstr ""
+
+msgid "Ad_just System Time"
+msgstr ""
+
+msgid "Select _Date..."
+msgstr ""
+
+msgid "_Add Custom Day"
+msgstr ""
+
+msgid "_Remove Custom Day"
+msgstr ""
+
+msgid "_Edit Custom Day"
+msgstr ""
+
+msgid "_Export to HTML"
+msgstr ""
+
+msgid "Need Restart StarCalendar"
+msgstr ""
+
+msgid "Some preferences need for restart StarCalendar to apply."
+msgstr ""
+
+msgid "_Restart"
+msgstr ""
+
+msgid "_Details"
+msgstr ""
+
+msgid "Information"
+msgstr ""
+
+msgid "Error"
+msgstr ""
+
+msgid "_Bug Report"
+msgstr ""
+
+msgid "Forced _Quit"
+msgstr ""
+
+msgid "Stack trace (innermost last)"
+msgstr ""
+
+msgid "Local variables in selected frame:"
+msgstr ""
+
+msgid "Minimize Window"
+msgstr ""
+
+msgid "Maximize Window"
+msgstr ""
+
+msgid "Close Window"
+msgstr ""
+
+msgid "Customize"
+msgstr ""
+
+msgid "_Customize"
+msgstr ""
+
+msgid "Toolbar"
+msgstr ""
+
+msgid "Year & Month Labels"
+msgstr ""
+
+msgid "Month Calendar"
+msgstr ""
+
+msgid "Status Bar"
+msgstr ""
+
+msgid "Plugins Text"
+msgstr ""
+
+msgid "CustomDay Text"
+msgstr ""
+
+msgid "Icon Size:"
+msgstr ""
+
+msgid "Small Toolbar"
+msgstr ""
+
+msgid "Button"
+msgstr ""
+
+msgid "Large Toolbar"
+msgstr ""
+
+msgid "DND"
+msgstr ""
+
+msgid "Dialog"
+msgstr ""
+
+msgid "Inside Expander"
+msgstr ""
+
+msgid "Summary"
+msgstr ""
+
+msgid "Rules"
+msgstr ""
+
+msgid "Add Rule"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+msgid "_Remove"
+msgstr ""
+
+msgid "Notifiers"
+msgstr ""
+
+msgid "Floating Message"
+msgstr ""
+
+msgid "Fill Width"
+msgstr ""
+
+msgid "Speed"
+msgstr ""
+
+msgid "BG Color"
+msgstr ""
+
+msgid "Text Color"
+msgstr ""
+
+msgid "Message Window"
+msgstr ""
+
+msgid "needs"
+msgstr ""
+
+msgid "Conflict between"
+msgstr ""
+
+msgid "days and"
+msgstr ""
+
+msgid "Tags"
+msgstr ""
+
+msgid "Seperate tags using character |"
+msgstr ""
+
+msgid "Category"
+msgstr ""
+
+msgid "Business"
+msgstr ""
+
+msgid "Personal"
+msgstr ""
+
+msgid "Favorite"
+msgstr ""
+
+msgid "Important"
+msgstr ""
+
+msgid "Travel"
+msgstr ""
+
+msgid "Appointment"
+msgstr ""
+
+msgid "Meeting"
+msgstr ""
+
+msgid "Phone Call"
+msgstr ""
+
+msgid "Education"
+msgstr ""
+
+msgid "School"
+msgstr ""
+
+msgid "University"
+msgstr ""
+
+msgid "College"
+msgstr ""
+
+msgid "Islamic Pray Times"
+msgstr ""
+
+msgid "Pray Times"
+msgstr ""
+
+msgid "Islamic Pray Times Plugin"
+msgstr ""
+
+msgid "Location"
+msgstr ""
+
+msgid "Calculation Method"
+msgstr ""
+
+msgid "Muslim World League"
+msgstr ""
+
+msgid "Islamic Society of North America"
+msgstr ""
+
+msgid "Egyptian General Authority of Survey"
+msgstr ""
+
+msgid "Umm Al-Qura University, Makkah"
+msgstr ""
+
+msgid "University of Islamic Sciences, Karachi"
+msgstr ""
+
+msgid "Shia Ithna-Ashari, Leva Research Institute, Qum"
+msgstr ""
+
+msgid "Institute of Geophysics, University of Tehran"
+msgstr ""
+
+msgid "Shown Times"
+msgstr ""
+
+msgid ""
+msgstr ""
+
+msgid "Imsak"
+msgstr ""
+
+msgid "Fajr"
+msgstr ""
+
+msgid "Azan Subh"
+msgstr ""
+
+msgid "Sun Rise"
+msgstr ""
+
+msgid "Sunrise"
+msgstr ""
+
+msgid "Sun Rise (Shorook)"
+msgstr ""
+
+msgid "Azan Dhuhr"
+msgstr ""
+
+msgid "Dhuhr"
+msgstr ""
+
+msgid "Asr"
+msgstr ""
+
+msgid "Sun Set"
+msgstr ""
+
+msgid "Sunset"
+msgstr ""
+
+msgid "Maghrib"
+msgstr ""
+
+msgid "Maghreb"
+msgstr ""
+
+msgid "Azan Maghreb"
+msgstr ""
+
+msgid "Isha"
+msgstr ""
+
+msgid "Midnight"
+msgstr ""
+
+msgid "minutes before fajr"
+msgstr ""
+
+msgid "Search Cities:"
+msgstr ""
+
+msgid "City"
+msgstr ""
+
+msgid "Edit Manually"
+msgstr ""
+
+msgid "Name:"
+msgstr ""
+
+msgid "Latitude:"
+msgstr ""
+
+msgid "Longitude:"
+msgstr ""
+
+msgid "Calculate Nearest City"
+msgstr ""
+
+msgid "%s kilometers from %s"
+msgstr ""
+
+msgid "Show Translations"
+msgstr ""
+
+msgid "Time Zone"
+msgstr ""
+
+msgid "Daylight Saving"
+msgstr ""
+
+################################################################################
+
+msgid "Africa"
+msgstr ""
+
+msgid "Asia"
+msgstr ""
+
+msgid "Australasia and Oceania"
+msgstr ""
+
+msgid "Central and South America"
+msgstr ""
+
+msgid "Europe"
+msgstr ""
+
+msgid "Middle East"
+msgstr ""
+
+msgid "North America"
+msgstr ""
+
+################################################################################
+################################################################################
+
+msgid "translator-credits"
+msgstr ""
+
