@@ -27,9 +27,10 @@ from subprocess import Popen
 import scal2.locale
 from scal2.locale import langDict, langSh
 from scal2.locale import tr as _
+from scal2.paths import *
 
 from scal2 import core
-from scal2.core import rootDir, pixDir, confDir, sysConfDir, myRaise, convert, numLocale
+from scal2.core import myRaise, convert, numLocale
 
 from scal2.format_time import compileTmFormat
 
@@ -145,12 +146,15 @@ if os.path.isfile(customizeConfPath):
         myRaise(__file__)
 
 
-if adjustTimeCmd=='':
-    for cmd in ('gksudo', 'kdesudo', 'gksu', 'gnomesu', 'kdesu'):
-        if os.path.isfile('/usr/bin/%s'%cmd):
-            adjustTimeCmd = '%s \'%s\''%(cmd, join(rootDir, 'ui_gtk', 'adjust_dtime.py'))
-            break
-
+#if adjustTimeCmd=='':## FIXME
+for cmd in ('gksudo', 'kdesudo', 'gksu', 'gnomesu', 'kdesu'):
+    if os.path.isfile('/usr/bin/%s'%cmd):
+        adjustTimeCmd = [
+            cmd,
+            join(rootDir, 'run'),
+            'scal2/ui_gtk/adjust_dtime.py'
+        ]
+        break
 
 
 

@@ -34,7 +34,7 @@ _ = str #?????????
 #gtk.widget_set_default_direction(gtk.TEXT_DIR_LTR)
 
 
-from scal2.ui_gtk.mywidgets2 import DateButton, TimeButton
+from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, TimeButton
 
 
 def error_exit(text, parent=None):
