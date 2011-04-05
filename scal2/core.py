@@ -28,7 +28,7 @@ import logging.config
 
 from scal2.paths import *
 from scal2.cal_modules.gregorian import J1970
-from scal2.locale import prepareLanguage, loadTranslator
+from scal2.locale import * ## prepareLanguage, loadTranslator, numLocale, getMonthName
 from scal2.plugin_man import *
 from scal2.utils import cmpVersion
 
@@ -46,24 +46,6 @@ COMMAND = 'starcal2'
 
 
 homePage = 'http://starcal.sourceforge.net/'
-
-digits = {
-    'en':(u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9'),
-    'ar':(u'٠', u'١', u'٢', u'٣', u'٤', u'٥', u'٦', u'٧', u'٨', u'٩'),
-    'fa':(u'۰', u'۱', u'۲', u'۳', u'۴', u'۵', u'۶', u'۷', u'۸', u'۹'),
-    'ur':(u'۔', u'١', u'٢', u'٣', u'۴', u'۵', u'٦', u'٧', u'٨', u'٩'),
-    'hi':(u'०', u'१', u'२', u'३', u'४', u'५', u'६', u'७', u'८', u'९'),
-    'th':(u'๐', u'๑', u'๒', u'๓', u'๔', u'๕', u'๖', u'๗', u'๘', u'๙'),
-}
-## ar: Aarbic   ar_*    Arabic-indic                       Arabic Contries
-## fa: Persian  fa_IR   Eastern (Extended) Arabic-indic    Iran & Afghanintan
-## ur: Urdu     ur_PK   (Eastern) Arabic-indic             Pakistan (& Afghanintan??)
-## hi: Hindi    hi_IN   Devenagari                         India
-## th: Thai     th_TH   ----------                         Thailand
-
-## Urdu digits is a combination of Arabic and Persian digits, except for Zero that is
-## named ARABIC-INDIC DIGIT ZERO in unicode database
-
 
 primaryMode = 0 ## suitable place ???????????
 
@@ -220,7 +202,7 @@ def getJdRangeOfAbsWeekNumber(absWeekNumber):
     jd = getStartJdOfAbsWeekNumber(absWeekNumber)
     return (jd, jd+7)
 
-getMonthName = lambda mode, month, year=None: tr(modules[mode].getMonthName(month, year))
+
 getMonthLen = lambda year, month, mode: modules[mode].getMonthLen(year, month)
 
 def getNextMonth(year, month):
@@ -341,31 +323,6 @@ getAllPlugListRepr = lambda: '[\n' + '\n'.join(['  %r,'%plug for plug in allPlug
 
 #########################################################
 
-def numLocale(num, mode=None, fillZero=0):
-    if mode==None:
-        mode = langSh
-    elif isinstance(mode, int):
-        if langSh != 'en':
-            try:
-                mode = modules[mode].origLang
-            except AttributeError:
-                mode = langSh
-    if mode=='en' or not mode in digits.keys():
-        if fillZero:
-            return u'%.*d'%(fillZero, num)
-        else:
-            return u'%d'%num
-    neg = (num<0)
-    s = unicode(-num if neg else num)
-    dig = digits[mode]
-    res = u''
-    for c in s:
-        res += dig[int(c)]
-    if fillZero>0:
-        res = res.rjust(fillZero, dig[0])
-    if neg:
-        res = '-'+res
-    return res
 
 def ymdRange((y1, m1, d1), (y2, m2, d2), mode=None):
     if y1==y2 and m1==m2:

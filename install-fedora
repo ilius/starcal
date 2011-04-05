@@ -1,4 +1,5 @@
 #!/bin/bash
+## install-fedora
 ## yum install @development-tools
 ## yum install rpm-build rpmdevtools rpmlint mock
 
@@ -32,17 +33,33 @@ cd $tmpDir
 
 
 
-echo "Name: $pkgName
-Version: $version
-Release: 3
-Summary: A full-featured international calendar writen in Python
-License: GPLv3+
-URL: http://starcal.sourceforge.net/
+echo "Name:     $pkgName
+Version:        $version
+Release:        3
+Summary:        A full-featured international calendar writen in Python
+License:        GPLv3+
+URL:            http://starcal.sourceforge.net/
+Requires:       python(>=2.5), python(<<3.0), pygtk2(>=2.8), python-numpy
+BuildArch:      noarch
 %description:
 StarCalendar is a full-featured international calendar writen in Python,
 with both PyGTK and PyQt interfaces, that supports Jalai(Iranian),
 Hijri(Islamic), and Indian National calendars, as well as common 
 english(Gregorian) calendar
+
+%install
+\"$sourceDir/install\" \"$tmpDir\" --for-pkg
+
+%files
+/usr/bin/$pkgName
+/usr/bin/$pkgName-qt
+/usr/share/$pkgName/*
+/usr/share/doc/$pkgName/*
+/usr/share/applications/$pkgName.desktop
+/usr/share/applications/$pkgName-qt.desktop
+/usr/share/icons/hicolor/*/apps/$pkgName.png
+/usr/share/locale/*/LC_MESSAGES/$pkgName.mo
+/etc/init.d/${pkgName}d
 
 %changelog
 " > "$tmpDir/$pkgName.spec"
@@ -51,10 +68,7 @@ rpmbuild -ba "$tmpDir/$pkgName.spec"
 
 
 
-
-
-"$sourceDir/install" "$tmpDir" "--for-pkg"
-chown -R root "$tmpDir"
+## chown -R root "$tmpDir"
 
 
 

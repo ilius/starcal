@@ -1,13 +1,35 @@
+# -*- coding: utf-8 -*-
+
 import os
 from os.path import isfile, join
 import locale, gettext
 from paths import *
 from scal2.utils import StrOrderedDict, toStr
+from scal2.cal_modules import modules
 
 
 APP_NAME = 'starcal2'
 langDir = join(rootDir, 'lang')
 localeDir = '/usr/share/locale'
+
+digits = {
+    'en':(u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9'),
+    'ar':(u'٠', u'١', u'٢', u'٣', u'٤', u'٥', u'٦', u'٧', u'٨', u'٩'),
+    'fa':(u'۰', u'۱', u'۲', u'۳', u'۴', u'۵', u'۶', u'۷', u'۸', u'۹'),
+    'ur':(u'۔', u'١', u'٢', u'٣', u'۴', u'۵', u'٦', u'٧', u'٨', u'٩'),
+    'hi':(u'०', u'१', u'२', u'३', u'४', u'५', u'६', u'७', u'८', u'९'),
+    'th':(u'๐', u'๑', u'๒', u'๓', u'๔', u'๕', u'๖', u'๗', u'๘', u'๙'),
+}
+## ar: Aarbic   ar_*    Arabic-indic                       Arabic Contries
+## fa: Persian  fa_IR   Eastern (Extended) Arabic-indic    Iran & Afghanintan
+## ur: Urdu     ur_PK   (Eastern) Arabic-indic             Pakistan (& Afghanintan??)
+## hi: Hindi    hi_IN   Devenagari                         India
+## th: Thai     th_TH   ----------                         Thailand
+
+## Urdu digits is a combination of Arabic and Persian digits, except for Zero that is
+## named ARABIC-INDIC DIGIT ZERO in unicode database
+
+
 
 langDefault = ''
 lang = ''
@@ -106,4 +128,32 @@ def rtlSgn():
         return 1
     else:
         return -1
+
+getMonthName = lambda mode, month, year=None: tr(modules[mode].getMonthName(month, year))
+
+def numLocale(num, mode=None, fillZero=0):
+    if mode==None:
+        mode = langSh
+    elif isinstance(mode, int):
+        if langSh != 'en':
+            try:
+                mode = modules[mode].origLang
+            except AttributeError:
+                mode = langSh
+    if mode=='en' or not mode in digits.keys():
+        if fillZero:
+            return u'%.*d'%(fillZero, num)
+        else:
+            return u'%d'%num
+    neg = (num<0)
+    s = unicode(-num if neg else num)
+    dig = digits[mode]
+    res = u''
+    for c in s:
+        res += dig[int(c)]
+    if fillZero>0:
+        res = res.rjust(fillZero, dig[0])
+    if neg:
+        res = '-'+res
+    return res
 

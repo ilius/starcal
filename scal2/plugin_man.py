@@ -22,6 +22,7 @@ from os.path import isfile, dirname, join, split, splitext
 import logging
 
 from scal2.cal_modules import modules, moduleNames, modNum, jd_to, to_jd, convert
+from scal2.locale import numLocale, getMonthName
 from scal2.paths import *
 
 log = logging.getLogger('starcal2')
@@ -298,7 +299,7 @@ class BuiltinTextPlugin(BasePlugin):
             pass
         else:
             if self.show_date and text!='':
-                text = '%s %s: %s'%(numLocale(day), modules[mode].monthName[month-1], text)
+                text = '%s %s: %s'%(numLocale(day), getMonthName(mode, month), text)
         try:
             text2 = db[12][(year, month, day)]
         except:## KeyError or IndexError
@@ -307,8 +308,8 @@ class BuiltinTextPlugin(BasePlugin):
             if text!='':
                 text += '\n'
             if self.show_date:
-                text2 = '%s %s %s: %s'%(numLocale(day), \
-                    modules[mode].monthName[month-1], numLocale(year), text2)
+                text2 = '%s %s %s: %s'%(numLocale(day), getMonthName(mode, month, year), numLocale(year), text2)
+                    
             text += text2
         return text
     #def pref_str(self):
@@ -459,17 +460,14 @@ class IcsTextPlugin(BasePlugin):
         if self.ymd!=None:
             if (y, m, d) in self.ymd:
                 if self.show_date:
-                    return '%s %s %s: %s'%(numLocale(d), modules[self.mode].monthName[m-1],
+                    return '%s %s %s: %s'%(numLocale(d), getMonthName(self.mode, m),
                         numLocale(y), self.ymd[(y, m, d)])
                 else:
                     return self.ymd[(y, m, d)]
         if self.md!=None:
             if (m, d) in self.md:
                 if self.show_date:
-                    return '%s %s %s: %s'%(numLocale(d), modules[self.mode].monthName[m-1],
-                        numLocale(y), self.ymd[(y, m, d)])
-                    #return '%s %s: %s'%(numLocale(d),
-                    #    modules[self.mode].monthName,self.md[(m, d)])
+                    return '%s %s %s: %s'%(numLocale(d), getMonthName(self.mode, m), numLocale(y), self.ymd[(y, m, d)])
                 else:
                     return self.md[(m, d)]
         return ''
