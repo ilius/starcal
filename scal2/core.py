@@ -569,8 +569,15 @@ if isfile(confPath):
 
 
 licenseText = tr('licenseText')
-if licenseText=='licenseText':
+if licenseText in ('licenseText', ''):
     licenseText = open('%s/license'%rootDir).read()
+
+aboutText = tr('aboutText')
+if aboutText in ('aboutText', ''):
+    aboutText = open('%s/about'%rootDir).read()
+
+
+
 weekDayName = (tr('Sunday'), tr('Monday'), tr('Tuesday'), tr('Wednesday'), tr('Thursday'), tr('Friday'), tr('Saturday'))
 weekDayNameAb = (tr('Sun'), tr('Mon'), tr('Tue'), tr('Wed'), tr('Thu'), tr('Fri'), tr('Sat'))
 
