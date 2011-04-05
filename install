@@ -105,7 +105,7 @@ elif [ -d "${shareDir}/$pkgName" ] ; then
     rm -Rf "${shareDir}/$pkgName"
 fi
 
-cp -Rf "$sourceDir" "${shareDir}"
+cp -Rf "$sourceDir/" "${shareDir}/$pkgName" ### PUT SLASH after $sourceDir to copy whole folder, not just a link (if was a link)
 
 for docFile in copyright authors ChangeLog ; do
     mv -f "${shareDir}/$pkgName/$docFile" "${shareDir}/doc/$pkgName/"
