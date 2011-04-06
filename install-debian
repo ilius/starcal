@@ -60,4 +60,5 @@ else
 fi
 
 
+rm -R "$tmpDir"
 

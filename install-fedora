@@ -74,5 +74,5 @@ rpmbuild -ba "$tmpDir/$pkgName.spec"
 
 
 
-
+rm -R "$tmpDir"
 

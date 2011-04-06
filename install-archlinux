@@ -50,6 +50,5 @@ pacman -U "$pkgFileName"
 
 
 cd - > /dev/null
-
-
+rm -R "$tmpDir"
 
