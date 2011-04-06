@@ -115,10 +115,11 @@ cp -f "${shareDir}/$pkgName/donate" "${shareDir}/doc/$pkgName/"
 
 
 
-if [ -e "${targetDir}/etc/$pkgName" ] ; then
-    rm -Rf "${targetDir}/etc/$pkgName" ## descard old configuration? FIXME
-fi
-cp -Rf "$sourceDir/config" "${targetDir}/etc/$pkgName"
+## "$sourceDir/config" is not used yet, and will not created by git yet
+#if [ -e "${targetDir}/etc/$pkgName" ] ; then
+#    rm -Rf "${targetDir}/etc/$pkgName" ## descard old configuration? FIXME
+#fi
+#cp -Rf "$sourceDir/config" "${targetDir}/etc/$pkgName"
 
 daemonName=${pkgName}d
 if [ -d /etc/init.d ] ; then ## Debian FIXME
