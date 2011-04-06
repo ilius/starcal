@@ -150,6 +150,7 @@ def fix(a, b):
     return a+b if a<0 else a
 
 timeDiff = lambda time1, time2: fixHour(time2 - time1)
+timesMiddle = lambda time1, time2: time1 + fixHour(time2 - time1)/2.0
 
 # convert a calendar date to julian date
 def julian(year, month, day):
@@ -289,10 +290,11 @@ class PrayTimes:
         
         # add midnight time
         if self.method.midnight == MIDNIGHT_JAFARI:
-            #times['midnight'] = times['maghrib'] + timeDiff(times['maghrib'], times['fajr']) / 2.0 ## FIXME
-            times['midnight'] = times['sunset'] + timeDiff(times['sunset'], times['fajr']) / 2.0
+            ## middle(maghrib, fajr)  give incompatible times with http://calendar.ut.ac.ir/Fa/Prayers/IrCenters.asp
+            ## middle(sunset, fajr)   is compatible (with max 1 minute different)
+            times['midnight'] = timesMiddle(times['sunset'], times['fajr'])
         else:
-            times['midnight'] = times['sunset'] + timeDiff(times['sunset'], times['sunrise']) / 2.0
+            times['midnight'] = timesMiddle(times['sunset'], times['sunrise'])
 
         #times = self.tuneTimes(times) ## FIXME
         return self.modifyFormats(times)

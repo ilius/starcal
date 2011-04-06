@@ -1,0 +1,36 @@
+#!/bin/bash
+
+pkgName=starcal2
+
+#myPath="$0"
+#if [ "${myPath:0:2}" == "./" ] ; then
+#    myPath=$PWD${myPath:1}
+#elif [ "${myPath:0:1}" != "/" ] ; then
+#    myPath=$PWD/$myPath
+#fi
+#sourceDir="`dirname \"$myPath\"`"
+
+prefix=/usr ## FIXME
+sourceDir="$prefix/share/$pkgName"
+"$sourceDir/assert_python2"
+version=`\$sourceDir/scal2/get_version.py`
+
+
+tmpDir=/tmp/starcal2-install-plasma
+mkdir -p "$tmpDir"
+mkdir -p "$tmpDir/pkg"
+mkdir -p "$tmpDir/pkg/contents"
+mkdir -p "$tmpDir/pkg/contents/code"
+
+cp "$sourceDir/scal2/ui_qt/plasma/main.py" "$tmpDir/pkg/contents/code/"
+cp "$sourceDir/scal2/ui_qt/plasma/metadata.desktop" "$tmpDir/pkg"
+
+
+plasmaPkgFile="$tmpDir/$pkgName-$version.plasmoid"
+zip -r "$plasmaPkgFile" "$tmpDir/pkg"
+plasmapkg -i "$plasmaPkgFile"
+#plasmoidviewer $pkgName
+#plasmoidviewer -l "$plasmaPkgFile"
+
+rm -R "$tmpDir"
+
