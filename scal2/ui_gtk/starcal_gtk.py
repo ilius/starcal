@@ -1622,7 +1622,7 @@ class MainWin(gtk.Window):
             ######################################
             self.trayUpdatePixbuf()
             ##tt = core.getWeekDayN(core.getWeekDay(*ddate))
-            tt = core.getWeekDayN(core.jwday(ui.todayCell.jd))
+            tt = core.weekDayName[core.jwday(ui.todayCell.jd)]
             #if ui.extradayTray:##?????????
             #    sep = _(',')+' '
             #else:
