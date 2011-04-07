@@ -1,5 +1,10 @@
 #!/bin/bash
 
+if [ "$UID" != "0" ] ; then
+  echo "Run this script as root"
+  exit 1
+fi
+
 pkgName=starcal2
 
 #myPath="$0"
@@ -17,6 +22,7 @@ version=`\$sourceDir/scal2/get_version.py`
 
 
 tmpDir=/tmp/starcal2-install-plasma
+rm -R "$tmpDir" 2>/dev/null
 mkdir -p "$tmpDir"
 mkdir -p "$tmpDir/pkg"
 mkdir -p "$tmpDir/pkg/contents"
@@ -27,9 +33,12 @@ cp "$sourceDir/scal2/ui_qt/plasma/metadata.desktop" "$tmpDir/pkg"
 
 
 plasmaPkgFile="$tmpDir/$pkgName-$version.plasmoid"
-zip -r "$plasmaPkgFile" "$tmpDir/pkg"
-plasmapkg -i "$plasmaPkgFile"
-#plasmoidviewer $pkgName
+chown root "$tmpDir/pkg"
+cd "$tmpDir/pkg"
+zip -r "$plasmaPkgFile" .
+cd - >/dev/null
+plasmapkg -u -g "$plasmaPkgFile"
+plasmoidviewer $pkgName
 #plasmoidviewer -l "$plasmaPkgFile"
 
 rm -R "$tmpDir"
