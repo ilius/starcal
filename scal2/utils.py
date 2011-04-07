@@ -20,6 +20,8 @@
 toStr = lambda s: s.encode('utf8') if isinstance(s, unicode) else str(s)
 toUnicode = lambda s: s if isinstance(s, unicode) else str(s).decode('utf8')
 
+
+
 def cmpVersion(v0, v1):
     assert type(v0)==type(v1)==str
     if v0=='':
@@ -30,6 +32,17 @@ def cmpVersion(v0, v1):
     elif v1=='':
         return 1
     return cmp([ int(p) for p in v0.split('.') ], [ int(p) for p in v1.split('.') ])
+
+class FallbackLogger:
+    def __init__(self):
+        pass
+    def error(self, text):
+        sys.stderr.write('ERROR: %s\n'%text)
+    def warning(self, text):
+        print 'WARNING: %s'%text
+    def debug(self, text):
+        print text
+
 
 class StrOrderedDict(dict):
     ## A dict from strings to objects, with ordered keys

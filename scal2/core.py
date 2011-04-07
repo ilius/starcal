@@ -23,8 +23,6 @@ import sys, os, subprocess
 from StringIO import StringIO
 from os.path import isfile, isdir, exists, dirname, join, split, splitext
 
-import logging
-import logging.config
 
 from scal2.paths import *
 from scal2.cal_modules.gregorian import J1970
@@ -72,12 +70,19 @@ except:
 
 ################################################################################
 
-logConfText = open(join(rootDir, 'logging-user.conf')).read()
-for varName in ('confDir',):
-    logConfText = logConfText.replace(varName, eval(varName))
+try:
+    import logging
+    import logging.config
 
-logging.config.fileConfig(StringIO(logConfText))
-log = logging.getLogger('starcal2')
+    logConfText = open(join(rootDir, 'logging-user.conf')).read()
+    for varName in ('confDir',):
+        logConfText = logConfText.replace(varName, eval(varName))
+
+    logging.config.fileConfig(StringIO(logConfText))
+    log = logging.getLogger('starcal2')
+except:
+    from scal2.utils import FallbackLogger
+    log = FallbackLogger()
 
 def myRaise(File=None):
     i = sys.exc_info()

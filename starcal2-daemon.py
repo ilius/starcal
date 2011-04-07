@@ -23,8 +23,6 @@ from os.path import join, isfile, isdir, exists
 from time import time, localtime, sleep
 from subprocess import Popen, PIPE
 
-import logging
-import logging.config
 
 from gobject import timeout_add_seconds
 import glib
@@ -36,8 +34,15 @@ from scal2.cal_modules import to_jd, DATE_GREG
 from scal2 import event_man
 from scal2.event_man import eventsDir
 
-logging.config.fileConfig(join(rootDir, 'logging-system.conf'))
-log = logging.getLogger('daemon')## FIXME
+try:
+    import logging
+    import logging.config
+    logging.config.fileConfig(join(rootDir, 'logging-system.conf'))
+    log = logging.getLogger('daemon')## FIXME
+except:
+    from scal2.utils import FallbackLogger
+    log = FallbackLogger()
+
 
 ########################## Global Variables #########################
 

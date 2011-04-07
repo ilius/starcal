@@ -19,13 +19,17 @@
 
 import sys
 from os.path import isfile, dirname, join, split, splitext
-import logging
 
 from scal2.cal_modules import modules, moduleNames, modNum, jd_to, to_jd, convert
 from scal2.locale import numLocale, getMonthName
 from scal2.paths import *
 
-log = logging.getLogger('starcal2')
+try:
+    import logging
+    log = logging.getLogger('starcal2')
+except:
+    from scal2.utils import FallbackLogger
+    log = FallbackLogger()
 
 def myRaise(File=__file__):
     i = sys.exc_info()

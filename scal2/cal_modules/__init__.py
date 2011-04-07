@@ -1,6 +1,5 @@
 import sys
 from os.path import join
-import logging
 
 from scal2.cal_modules import gregorian
 from scal_mod_paths import *
