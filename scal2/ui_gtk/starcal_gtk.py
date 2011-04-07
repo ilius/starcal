@@ -1621,7 +1621,7 @@ class MainWin(gtk.Window):
             self.trayPix.get_from_drawable(pmap, self.get_screen().get_system_colormap(), 0, 0, 0, 0, s, s)
             ######################################
             self.trayUpdatePixbuf()
-            ##tt = core.getWeekDayN(core.getWeekDay(*ddate))
+            ##tt = core.weekDayName[core.getWeekDay(*ddate)]
             tt = core.weekDayName[core.jwday(ui.todayCell.jd)]
             #if ui.extradayTray:##?????????
             #    sep = _(',')+' '
