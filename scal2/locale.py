@@ -13,13 +13,14 @@ langDir = join(rootDir, 'lang')
 localeDir = '/usr/share/locale'
 
 digits = {
-    'en':(u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9'),
-    'ar':(u'٠', u'١', u'٢', u'٣', u'٤', u'٥', u'٦', u'٧', u'٨', u'٩'),
-    'fa':(u'۰', u'۱', u'۲', u'۳', u'۴', u'۵', u'۶', u'۷', u'۸', u'۹'),
-    'ur':(u'۔', u'١', u'٢', u'٣', u'۴', u'۵', u'٦', u'٧', u'٨', u'٩'),
-    'hi':(u'०', u'१', u'२', u'३', u'४', u'५', u'६', u'७', u'८', u'९'),
-    'th':(u'๐', u'๑', u'๒', u'๓', u'๔', u'๕', u'๖', u'๗', u'๘', u'๙'),
+    'en':(u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9', u'.'),
+    'ar':(u'٠', u'١', u'٢', u'٣', u'٤', u'٥', u'٦', u'٧', u'٨', u'٩', u'٫'),
+    'fa':(u'۰', u'۱', u'۲', u'۳', u'۴', u'۵', u'۶', u'۷', u'۸', u'۹', u'٫'),
+    'ur':(u'۔', u'١', u'٢', u'٣', u'۴', u'۵', u'٦', u'٧', u'٨', u'٩', u'٫'),
+    'hi':(u'०', u'१', u'२', u'३', u'४', u'५', u'६', u'७', u'८', u'९', u'.'),## point FIXME
+    'th':(u'๐', u'๑', u'๒', u'๓', u'๔', u'๕', u'๖', u'๗', u'๘', u'๙', u'.'),## point FIXME
 }
+
 ## ar: Aarbic   ar_*    Arabic-indic                       Arabic Contries
 ## fa: Persian  fa_IR   Eastern (Extended) Arabic-indic    Iran & Afghanintan
 ## ur: Urdu     ur_PK   (Eastern) Arabic-indic             Pakistan (& Afghanintan??)
@@ -146,14 +147,18 @@ def numLocale(num, mode=None, fillZero=0):
         else:
             return u'%d'%num
     neg = (num<0)
-    s = unicode(-num if neg else num)
     dig = digits[mode]
     res = u''
-    for c in s:
-        res += dig[int(c)]
+    for c in unicode(abs(num)):
+        if c==u'.':
+            res += dig[10]
+        else:
+            res += dig[int(c)]
     if fillZero>0:
         res = res.rjust(fillZero, dig[0])
     if neg:
         res = '-'+res
     return res
+
+
 

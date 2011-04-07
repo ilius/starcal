@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2009-2011 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
@@ -29,8 +29,7 @@ from gtk import gdk
 
 class MultiSpinButton(gtk.SpinButton):
     #from gtk import SpinButton, TEXT_DIR_LTR
-    def __init__(self, mins, maxs, fields, sep, nums=None,
-        lang='en', arrow_select=True):##force_select=False
+    def __init__(self, mins, maxs, fields, sep, nums=None, lang='en', arrow_select=True):##force_select=False
         gtk.SpinButton.__init__(self)
         #self.window_up = None
         #self.window_down = None
