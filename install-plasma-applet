@@ -28,8 +28,29 @@ mkdir -p "$tmpDir/pkg"
 mkdir -p "$tmpDir/pkg/contents"
 mkdir -p "$tmpDir/pkg/contents/code"
 
-cp "$sourceDir/scal2/ui_qt/plasma/main.py" "$tmpDir/pkg/contents/code/"
-cp "$sourceDir/scal2/ui_qt/plasma/metadata.desktop" "$tmpDir/pkg"
+
+cp $sourceDir/scal2/ui_qt/plasma/* "$tmpDir/pkg/contents/code/"
+
+
+echo "[Desktop Entry]
+Encoding=UTF-8
+Name=StarCalendar $version
+Name[fa]=استارکلندر $version
+Type=Service
+ServiceTypes=Plasma/Applet
+Icon=starcal2
+X-Plasma-API=python
+X-Plasma-MainScript=code/main.py
+X-KDE-PluginInfo-Author=Saeed Rasooli
+X-KDE-PluginInfo-Email=saeed.gnu@gmail.com
+X-KDE-PluginInfo-Name=starcal2
+X-KDE-PluginInfo-Descrition=A Perfect and International Desktop Calendar
+X-KDE-PluginInfo-Version=$version
+X-KDE-PluginInfo-Website=http://starcal.sourceforge.net/
+X-KDE-PluginInfo-Category=Utilities
+X-KDE-PluginInfo-Depends=
+X-KDE-PluginInfo-License=GPL
+X-KDE-PluginInfo-EnabledByDefault=true" > "$tmpDir/pkg/metadata.desktop"
 
 
 plasmaPkgFile="$tmpDir/$pkgName-$version.plasmoid"
