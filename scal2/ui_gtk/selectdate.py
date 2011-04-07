@@ -194,16 +194,16 @@ class SelectDateDialog(gtk.Dialog):
         self.mode = mode
     def comboMonthChanged(self, widget=None):
         self.spinD.set_range(1, getMonthLen(
-            int(self.spinY.get_value()),
+            self.spinY.get_value_as_int(),
             self.comboMonth.get_active() + 1,
             self.mode,
         ))
     def get(self):
         mode = self.comboMode.get_active()
         if self.radio1.get_active():
-            y0 = int(self.spinY.get_value())
+            y0 = self.spinY.get_value_as_int()
             m0 = self.comboMonth.get_active() + 1
-            d0 = int(self.spinD.get_value())
+            d0 = self.spinD.get_value_as_int()
         elif self.radio2.get_active():
             (y0, m0, d0) = self.dbox.get_date()
         return (y0, m0, d0)

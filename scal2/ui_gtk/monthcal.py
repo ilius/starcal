@@ -44,7 +44,7 @@ from scal2.ui_gtk.customize import MainWinItem
 class MonthCal(gtk.Widget, MainWinItem):
     cx = [0, 0, 0, 0, 0, 0, 0]
     def heightSpinChanged(self, spin):
-        h = int(spin.get_value())
+        h = spin.get_value_as_int()
         self.set_property('height-request', h)
         ui.calHeight = h
     confStr = lambda self: 'ui.calHeight=%r\n'%ui.calHeight

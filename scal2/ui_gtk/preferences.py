@@ -607,10 +607,10 @@ class CalPropPrefItem(PrefItem):
     def get(self):
         return {
             'enable':self.checkb.get_active(),
-            'mode'    :self.combo.get_active(),
-            'x'         :self.spinX.get_value(),
-            'y'         :self.spinY.get_value(),
-            'font'    :self.fontb.get_font_name(),
+            'mode'  :self.combo.get_active(),
+            'x'     :self.spinX.get_value(),
+            'y'     :self.spinY.get_value(),
+            'font'  :self.fontb.get_font_name(),
             'color' :self.colorb.get_color()
         }
     def set(self, data):

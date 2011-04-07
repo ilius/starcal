@@ -411,7 +411,7 @@ class CustomDayDialog(gtk.Window):
         newday = self.fxml.createElement('day')
         field_day = self.fxml.createElement('num')
         mon = str(self.comboMonth.get_active()+1)
-        day = str(int(self.spinDay.get_value()))
+        day = str(self.spinDay.get_value_as_int())
         field_day_text = self.fxml.createTextNode(mon+'/'+day)
                 
         field_kind = self.fxml.createElement('kind')
