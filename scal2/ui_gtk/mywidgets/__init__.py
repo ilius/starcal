@@ -27,7 +27,7 @@ from gtk import gdk
 
 from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
-
+from scal2.ui_gtk.drawing import newTextLayout
 
 def myRaise():
     i = sys.exc_info()
