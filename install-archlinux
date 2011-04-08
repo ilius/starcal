@@ -1,11 +1,5 @@
 #!/bin/bash
 
-if [ "$UID" != "0" ] ; then
-  echo "Run this script as root"
-  exit 1
-fi
-
-
 myPath="$0"
 if [ "${myPath:0:2}" == "./" ] ; then
     myPath=$PWD${myPath:1}
@@ -42,13 +36,9 @@ md5sums=()
 build() {
     \"\$sourceDir/install\" \"\$pkgdir\" --for-pkg
 }" > PKGBUILD
-#echo "$PWD/PKGBUILD created, building package..."
-makepkg -f --asroot && \
-pkgFileName="`ls $pkgName-$version*.pkg.tar.*`" && \
-echo "Package file $PWD/$pkgFileName created, installing..."  && \
-pacman -U "$pkgFileName"
 
+makepkg -sif
 
 cd - > /dev/null
-rm -R "$tmpDir"
+rm -Rf "$tmpDir"
 
