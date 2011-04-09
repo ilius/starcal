@@ -33,7 +33,7 @@ from scal2.locale import tr as _
 from scal2 import core
 from scal2.core import myRaise, getMonthLen, getNextMonth, getPrevMonth
 
-from scal2 import event_man
+#from scal2 import event_man
 
 null = NullObj()
 
@@ -276,6 +276,7 @@ def loadCustomDB():
 
 
 def loadEvents():
+    from scal2 import event_man
     global events
     events = event_man.loadEvents()
 
