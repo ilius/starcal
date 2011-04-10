@@ -30,6 +30,7 @@ digits = {
 ## Urdu digits is a combination of Arabic and Persian digits, except for Zero that is
 ## named ARABIC-INDIC DIGIT ZERO in unicode database
 
+#RLM = '\xe2\x80\x8f' ## u'\u200f' ## right to left mark
 
 
 langDefault = ''
@@ -88,7 +89,7 @@ def prepareLanguage(lang1):
     lang = lang1
     if lang=='':
         #langActive = locale.setlocale(locale.LC_ALL, '')
-        langActive = os.environ['LANG']
+        langActive = os.environ.get('LANG', '')
         if not langActive in langDict.keyList:
             langActive = langDefault
         #os.environ['LANG'] = langActive

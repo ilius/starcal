@@ -18,7 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 import os
-from os.path import dirname
+from os.path import dirname, join
 
 
 srcDir = dirname(__file__)
@@ -30,19 +30,19 @@ if os.sep=='/':## Unix-like OS
   homeDir      = os.getenv('HOME')
   confDir      = homeDir + '/.starcal2'
   sysConfDir   = '/etc/starcal2'
-  userPlugConf = confDir + '/plugin.conf'
-  #tmpDir  = '/tmp'
-  #user    = os.getenv('USER')
+  #tmpDir      = '/tmp'
+  #user        = os.getenv('USER')
 elif os.sep=='\\':## Dos/Windows OS
-  homeDrive = os.environ['HOMEDRIVE']
-  homeDir = homeDrive + os.getenv('HOMEPATH')
-  confDir = homeDrive + os.getenv('APPDATA') + '\\starcal2'
-  #tmpDir  = os.getenv('TEMP')
-  #user    = os.getenv('USERNAME')
+  #homeDrive   = os.environ['HOMEDRIVE']
+  homeDir      = os.getenv('HOMEPATH')
+  confDir      = os.getenv('APPDATA') + '\\starcal2'
+  sysConfDir   = join(rootDir, 'config')
+  #tmpDir      = os.getenv('TEMP')
+  #user        = os.getenv('USERNAME')
 else:
   raise RuntimeError('bad seperator (os.sep=="%s") !! What is your Operating System?!'%os.sep)
 
-
+userPlugConf = join(confDir, 'plugin.conf')
 modDir = '%s/cal_modules'%srcDir
 plugDirUser = os.path.join(confDir, 'plugins')
 plugConfDir = os.path.join(confDir, 'plugins.conf')

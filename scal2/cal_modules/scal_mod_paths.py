@@ -21,7 +21,7 @@ import time
 #print time.time(), __file__
 
 import os
-from os.path import dirname
+from os.path import dirname, join
 
 APP_NAME = 'starcal2'
 
@@ -36,10 +36,11 @@ if os.sep=='/':## Unix-like OS
     confDir = homeDir + '/.' + APP_NAME
     sysConfDir    = '/etc/' + APP_NAME
     #tmpDir    = '/tmp'
-#elif os.sep=='\\':## Dos/Windows OS
-#    homeDir = os.getenv('HOMEPATH') ## 'C:'+ ##??????????????????
-#    confDir = os.getenv('APPDATA') + '\\' + APP_NAME ##??????????
-#    #tmpDir    = os.getenv('TEMP')
+elif os.sep=='\\':## Dos/Windows OS
+    homeDir = os.getenv('HOMEPATH')
+    confDir = os.getenv('APPDATA') + '\\' + APP_NAME ##??????????
+    sysConfDir    = rootDir
+    #tmpDir    = os.getenv('TEMP')
 else:
     raise RuntimeError('bad seperator (os.sep=="%s") !! What is your Operating System?!'%os.sep)
 
