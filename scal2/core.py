@@ -547,8 +547,8 @@ weekDayNameAb = (tr('Sun'), tr('Mon'), tr('Tue'), tr('Wed'), tr('Thu'), tr('Fri'
 loadAllPlugins()## FIXME
 
 
-if firstWeekDayAuto and os.sep=='/':## only if unix
-    firstWeekDay = getLocaleFirstWeekDay()
+#if firstWeekDayAuto and os.sep=='/':## only if unix
+#    firstWeekDay = getLocaleFirstWeekDay()
 
 #if weekNumberModeAuto and os.sep=='/':## FIXME
 #    weekNumberMode = getLocaleWeekNumberMode()
