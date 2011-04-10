@@ -159,16 +159,16 @@ fi
 
 echo "#!/bin/bash
 if [ ! -d ~/.starcal2 ] ; then
-    $runStr scal2/ui_gtk/config_importer.py
+    $runStr scal2/ui_gtk/config_importer.pyw
 fi
-$runStr scal2/ui_gtk/starcal_gtk.py \"\$@\"" > "${targetPrefix}/bin/$pkgName"
+$runStr scal2/ui_gtk/starcal_gtk.pyw \"\$@\"" > "${targetPrefix}/bin/$pkgName"
 
 
 echo "#!/bin/bash
 if [ ! -d ~/.starcal2 ] ; then
-    $runStr scal2/ui_gtk/config_importer.py
+    $runStr scal2/ui_qt/config_importer.pyw
 fi
-$runStr scal2/ui_qt/starcal_qt.py \"\$@\"" > "${targetPrefix}/bin/$pkgName-qt" ## ui_gtk/config_importer FIXME
+$runStr scal2/ui_qt/starcal_qt.pyw \"\$@\"" > "${targetPrefix}/bin/$pkgName-qt"
 
 
 chmod 755 "${targetPrefix}/bin/$pkgName"

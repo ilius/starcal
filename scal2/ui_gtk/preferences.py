@@ -1346,7 +1346,10 @@ class PrefDialog(gtk.Dialog):
     def comboFirstWDChanged(self, combo):
         f = self.comboFirstWD.get_active() ## 0 means Sunday
         if f==7: ## auto
-            f = core.getLocaleFirstWeekDay()
+            try:
+                f = core.getLocaleFirstWeekDay()
+            except:
+                pass
         ## core.firstWeekDay will be later = f
         self.holiWDItem.setStart(f)
     def stockMenuItem(self, stock, func, *args):
@@ -1441,7 +1444,10 @@ class PrefDialog(gtk.Dialog):
         first = self.comboFirstWD.get_active()
         if first==7:
             core.firstWeekDayAuto = True
-            core.firstWeekDay = core.getLocaleFirstWeekDay()
+            try:
+                core.firstWeekDay = core.getLocaleFirstWeekDay()
+            except:
+                pass
         else:
             core.firstWeekDayAuto = False
             core.firstWeekDay = first
