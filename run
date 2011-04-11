@@ -7,6 +7,6 @@ elif [ "${myPath:0:1}" != "/" ] ; then
 fi
 rootDir=`dirname "$myPath"`
 cd "$rootDir"
-PYTHONPATH=$rootDir python2 "$@"
+PYTHONPATH=$PYTHONPATH:$rootDir python2 "$@"
 cd - > /dev/null
 
