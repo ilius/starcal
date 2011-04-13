@@ -212,7 +212,7 @@ mv "${shareDir}/$pkgName/scal2/ui_gtk/GNOME_Starcal2Applet.server" "$targetPrefi
 
 
 ## Cleaning useless files from targetDir
-#rm -Rf "${shareDir}/$pkgName/.git" 2>/dev/null
+rm -Rf "${shareDir}/$pkgName/.git" 2>/dev/null
 for EXP in '.hidden' '*~' '*.pyc' '*.pyo' ; do
     find "${shareDir}/$pkgName" -name "$EXP" -exec rm '{}' \;
 done

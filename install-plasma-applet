@@ -1,9 +1,9 @@
 #!/bin/bash
 
-if [ "$UID" != "0" ] ; then
-  echo "Run this script as root"
-  exit 1
-fi
+#if [ "$UID" != "0" ] ; then
+#  echo "Run this script as root"
+#  exit 1
+#fi
 
 pkgName=starcal2
 
@@ -54,13 +54,17 @@ X-KDE-PluginInfo-EnabledByDefault=true" > "$tmpDir/pkg/metadata.desktop"
 
 
 plasmaPkgFile="$tmpDir/$pkgName-$version.plasmoid"
-chown root "$tmpDir/pkg"
+#chown root "$tmpDir/pkg"
 cd "$tmpDir/pkg"
 zip -r "$plasmaPkgFile" .
 cd - >/dev/null
-plasmapkg -u -g "$plasmaPkgFile"
-plasmoidviewer $pkgName
+
+rm -Rf ~/.kde4/share/apps/plasma/plasmoids/$pkgName 2>/dev/null
+plasmapkg -u "$plasmaPkgFile"
+
+#plasmapkg -g -u "$plasmaPkgFile"
+#plasmoidviewer $pkgName
 #plasmoidviewer -l "$plasmaPkgFile"
 
-rm -R "$tmpDir"
+rm -Rf "$tmpDir"
 

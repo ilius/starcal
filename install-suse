@@ -26,10 +26,11 @@ version=`\$sourceDir/scal2/get_version.py`
 #echo "sourceDir=$sourceDir"
 #echo version=$version
 
-tmpDir=/tmp/starcal2-install-deb
+tmpDir=/tmp/starcal2-install-rpm
 mkdir -p $tmpDir
 cd $tmpDir
 
+#mkdir -p $tmpDir/pkg
 
 
 
@@ -37,10 +38,13 @@ echo "Name:     $pkgName
 Version:        $version
 Release:        3
 Summary:        A full-featured international calendar writen in Python
+
+Group:          User Interface/Desktops
 License:        GPLv3+
 URL:            http://starcal.sourceforge.net/
-Requires:       python(>=2.6), python(<<3.0), pygtk2(>=2.8), python-numpy
+Requires:       python = 2.7, pygtk2, python-numpy
 BuildArch:      noarch
+
 %description
 StarCalendar is a full-featured international calendar writen in Python,
 with both PyGTK and PyQt interfaces, that supports Jalai(Iranian),
@@ -48,9 +52,22 @@ Hijri(Islamic), and Indian National calendars, as well as common
 english(Gregorian) calendar
 
 %install
-\"$sourceDir/install\" \"$tmpDir\" --for-pkg
+\"$sourceDir/install\" \"%{buildroot}\" --for-pkg
+
 
 %files
+%defattr(-,root,root,-)
+/usr/share/starcal2/*
+/usr/bin/starcal2*
+/usr/share/applications/starcal2*
+/etc/init.d/starcal2d
+/usr/lib/bonobo/servers/GNOME_Starcal2Applet.server
+/usr/share/doc/starcal2/*
+/usr/share/pixmaps/starcal2.png
+/usr/share/icons/hicolor/*/apps/starcal2.png
+/usr/share/locale/*/LC_MESSAGES/starcal2.mo
+
+
 %changelog
 " > "$tmpDir/$pkgName.spec"
 ## chown -R root "$tmpDir"
@@ -58,12 +75,17 @@ english(Gregorian) calendar
 pkgPath=`rpmbuild -bb "$tmpDir/$pkgName.spec" | grep -o /usr/src/packages/RPMS.*rpm`
 echo "pkgPath=$pkgPath"
 
-if [ ! -f $pkgPath ] ; then
+if [ -z "$pkgPath" ] ; then
+    echo "Package build failed"
+    exit 1
+fi
+if [ ! -f "$pkgPath" ] ; then
+    echo "Package file $pkgPath does not exit"
     exit 1
 fi
 
 echo "Package created in \"$pkgPath\", installing"
-yum install "$pkgPath"
+zypper install -f "$pkgPath"
 
-rm -R "$tmpDir"
+#rm -R "$tmpDir"
 
