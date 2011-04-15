@@ -18,7 +18,7 @@ from scal2.paths import *
 from prayTimesBackend import PrayTimes, timeNames, methodsList
 
 ## DO NOT IMPORT core IN PLUGINS
-from scal2.locale import tr as _
+from scal2.locale_man import tr as _
 from scal2.plugin_man import BasePlugin
 
 
@@ -492,7 +492,7 @@ class TextPlug(BasePlugin):
 if __name__=='__main__':
     #sys.path.insert(0, '/usr/share')
     #from scal2 import core
-    #from scal2.locale import rtl
+    #from scal2.locale_man import rtl
     #if rtl:
     #    gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
     dialog = LocationDialog()

@@ -3,7 +3,7 @@
 import thread
 
 from scal2 import core
-from scal2.locale import tr as _
+from scal2.locale_man import tr as _
 
 from scal2 import event_man
 import gtk

@@ -26,7 +26,7 @@ from os.path import isfile, isdir, exists, dirname, join, split, splitext
 
 from scal2.paths import *
 from scal2.cal_modules.gregorian import J1970
-from scal2.locale import * ## prepareLanguage, loadTranslator, numLocale, getMonthName
+from scal2.locale_man import * ## prepareLanguage, loadTranslator, numLocale, getMonthName
 from scal2.plugin_man import *
 from scal2.utils import cmpVersion
 

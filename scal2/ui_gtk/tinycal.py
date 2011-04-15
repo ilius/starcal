@@ -28,8 +28,8 @@ import os.path, cairo
 
 from xml.dom.minidom import parse
 
-from scal2.locale import tr as _
-from scal2.locale import rtl, rtlSgn
+from scal2.locale_man import tr as _
+from scal2.locale_man import rtl, rtlSgn
 
 
 from scal2 import core

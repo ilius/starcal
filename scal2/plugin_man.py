@@ -21,7 +21,7 @@ import sys
 from os.path import isfile, dirname, join, split, splitext
 
 from scal2.cal_modules import modules, moduleNames, modNum, jd_to, to_jd, convert
-from scal2.locale import numLocale, getMonthName
+from scal2.locale_man import numLocale, getMonthName
 from scal2.paths import *
 
 try:

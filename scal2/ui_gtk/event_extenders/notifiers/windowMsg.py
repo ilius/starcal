@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from scal2 import core
-from scal2.locale import tr as _
+from scal2.locale_man import tr as _
 
 from scal2 import event_man
 from scal2 import ui

@@ -27,8 +27,8 @@ from xml.dom.minidom import parse
 from scal2.utils import NullObj
 from scal2.paths import *
 
-import scal2.locale
-from scal2.locale import tr as _
+import scal2.locale_man
+from scal2.locale_man import tr as _
 
 from scal2 import core
 from scal2.core import myRaise, getMonthLen, getNextMonth, getPrevMonth
@@ -497,7 +497,7 @@ if newPrimaryMode!= core.primaryMode:
 del newPrimaryMode
 
 needRestartPref = {} ### Right place ????????
-for key in ('scal2.locale.lang', 'winTaskbar', 'showYmArrows'): # What other???? 
+for key in ('scal2.locale_man.lang', 'winTaskbar', 'showYmArrows'): # What other???? 
     needRestartPref[key] = eval(key)
 
 if menuTextColor is None:

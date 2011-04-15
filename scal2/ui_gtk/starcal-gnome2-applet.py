@@ -23,7 +23,7 @@ from os.path import dirname
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
 from scal2 import core
-from scal2.locale import tr as _
+from scal2.locale_man import tr as _
 
 from scal2.ui_gtk.preferences import pfontEncode
 from scal2.ui_gtk.starcal_gtk import *

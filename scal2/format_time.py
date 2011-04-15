@@ -19,7 +19,7 @@
 
 
 import time
-from scal2.locale import tr as _
+from scal2.locale_man import tr as _
 from scal2.cal_modules import gregorian, to_jd
 
 from scal2 import core

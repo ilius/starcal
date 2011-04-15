@@ -24,9 +24,9 @@ from os.path import dirname
 from os.path import join
 from subprocess import Popen
 
-import scal2.locale
-from scal2.locale import langDict, langSh
-from scal2.locale import tr as _
+import scal2.locale_man
+from scal2.locale_man import langDict, langSh
+from scal2.locale_man import tr as _
 from scal2.paths import *
 
 from scal2 import core
@@ -324,7 +324,7 @@ class ComboImageTextPrefItem(PrefItem):
 
 class LangPrefItem(PrefItem):
     def __init__(self):
-        self.module = scal2.locale
+        self.module = scal2.locale_man
         self.varName = 'lang'
         ###
         ls = gtk.ListStore(gdk.Pixbuf, str)

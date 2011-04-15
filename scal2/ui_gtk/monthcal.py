@@ -23,8 +23,8 @@ import sys, os
 from math import pi
 from os.path import join, isfile
 
-from scal2.locale import rtl, rtlSgn
-from scal2.locale import tr as _
+from scal2.locale_man import rtl, rtlSgn
+from scal2.locale_man import tr as _
 
 from scal2 import core
 from scal2.core import log, myRaise, numLocale, getMonthName, getMonthLen, getNextMonth, getPrevMonth, pixDir
