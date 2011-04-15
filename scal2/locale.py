@@ -50,11 +50,15 @@ class LangData:
         ###
         #self.fileName = fileName## FIXME
         transPath = ''
-        for prefix in ('/usr', '/usr/local'):
-            path = join(prefix, 'share', 'locale', fileName, 'LC_MESSAGES', '%s.mo'%APP_NAME)
-            if isfile(path):
-                transPath = path
-                break
+        path = join(rootDir, 'locale.d', fileName+'.mo')
+        if isfile(path):
+            transPath = path
+        else:
+            for prefix in ('/usr', '/usr/local'):
+                path = join(prefix, 'share', 'locale', fileName, 'LC_MESSAGES', '%s.mo'%APP_NAME)
+                if isfile(path):
+                    transPath = path
+                    break
         self.transPath = transPath
         ###
         if not flag.startswith('/'):

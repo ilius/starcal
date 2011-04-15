@@ -20,11 +20,11 @@
 import os, sys, shlex
 from os.path import join
 
-from scal2.locale import tr as _
-from scal2.locale import rtl
-
 from scal2 import core
 from scal2.core import pixDir, convert, numLocale
+
+from scal2.locale import tr as _
+from scal2.locale import rtl
 
 from scal2 import event_man
 #from scal2.event import dateEncode, timeEncode, dateDecode, timeDecode

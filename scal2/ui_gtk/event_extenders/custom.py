@@ -10,7 +10,7 @@ from scal2.core import pixDir
 from scal2 import event_man
 from scal2 import ui
 
-from scal2.ui_gtk.event_extenders.common import buffer_get_text, IconSelectButton
+from scal2.ui_gtk.event_extenders.common import buffer_get_text, IconSelectButton, TagsListBox
 
 import gtk
 from gtk import gdk
@@ -87,12 +87,19 @@ class CustomEventWidget(gtk.VBox):
         hbox.pack_start(textview, 1, 1)
         self.pack_start(hbox, 0, 0)
         ###########
+        '''
         hbox = gtk.HBox()
         hbox.set_tooltip_text(_('Seperate tags using character |'))
         hbox.pack_start(gtk.Label(_('Tags')), 0, 0)
         self.tagsEntry = gtk.Entry()
         hbox.pack_start(self.tagsEntry, 1, 1)
         self.pack_start(hbox, 0, 0)
+        '''
+        exp = gtk.Expander(_('Tags'))
+        exp.set_expanded(True)
+        self.tagsBox = TagsListBox()
+        exp.add(self.tagsBox)
+        self.pack_start(exp, 1, 1)
         ###########
         self.rulesFrame = gtk.Expander(_('Rules'))
         self.rulesFrame.set_expanded(True)

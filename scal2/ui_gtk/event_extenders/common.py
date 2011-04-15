@@ -173,7 +173,7 @@ class EventTagsAndIconSelect(gtk.HBox):
         }
 
 
-class TagsListView(gtk.VBox):
+class TagsListBox(gtk.VBox):
     '''
         [x] Only related tags     tt: Show only tags related to this event type
         Sort by:
@@ -241,14 +241,22 @@ class TagsListView(gtk.VBox):
         #for (i, tagObj) in enumerate(ui.eventTags): tagObj.usage = i*10 ## for testing
         self.optionsChanged()
         self.show_all()
-    def optionsChanged(self, widget=None):
+    def optionsChanged(self, widget=None, tags=[]):
+        if not tags:
+            tags = self.getData()
         tagObjList = ui.eventTags
         if self.eventType:
             if self.relatedCheck.get_active():
                 tagObjList = [t for t in tagObjList if self.eventType in t.eventTypes]
         self.treestore.clear()
         for t in tagObjList:
-            self.treestore.append((t.name, False, t.desc, t.usage, numLocale(t.usage)))
+            self.treestore.append((
+                t.name,
+                t.name in tags, ## True or False
+                t.desc,
+                t.usage,
+                numLocale(t.usage)
+            ))
     def enableCellToggled(self, cell, path):
         i = int(path)
         active = not cell.get_active()
@@ -260,7 +268,60 @@ class TagsListView(gtk.VBox):
             if row[1]:
                 tags.append(row[0])
         return tags
-        
+    def setData(self, tags):
+        self.optionsChanged(tags=tags)
+
+
+
+class TagEditorDialog(gtk.Dialog):
+    def __init__(self, eventType=''):
+        gtk.Dialog.__init__(self)
+        self.tags = []
+        self.tagsBox = TagsListBox(eventType)
+        self.vbox.pack_start(self.tagsBox, 1, 1)
+        ####
+        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        #if ui.autoLocale:
+        cancelB.set_label(_('_Cancel'))
+        cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL, gtk.ICON_SIZE_BUTTON))
+        okB.set_label(_('_OK'))
+        okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK, gtk.ICON_SIZE_BUTTON))
+    def setData(self, tags):
+        self.tags = tags
+        self.tagsBox.setData(tags)
+    def run(self):
+        resp = gtk.Dialog.run(self)
+        if resp == gtk.RESPONSE_OK:
+            return self.tagsBox.getData()
+        else:
+            self.setData(self.tags)
+            return None
+
+
+class ViewEditTagsHbox(gtk.HBox):
+    def __init__(self, eventType=''):
+        gtk.HBox.__init__(self)
+        self.tags = []
+        self.pack_start(gtk.Label(_('Tags')), 0, 0)
+        self.tagsLabel = gtk.Label('')
+        self.pack_start(self.tagsLabel, 1, 1)
+        self.dialog = TagEditorDialog(eventType)
+        self.editButton = gtk.Button()
+        self.editButton.set_label(_('_Edit'))
+        self.editButton.set_image(gtk.image_new_from_stock(gtk.STOCK_EDIT, gtk.ICON_SIZE_BUTTON))
+        self.editButton.connect('clicked', self.editButtonClicked)
+    def editButtonClicked(self, widget):
+        tags = self.dialog.run()
+        if tags is not None:
+            self.setData(tags)
+    def setData(self, tags):
+        self.tags = tags
+        self.tagsBox.setData(tags)
+        sep = _(',') + ' '
+        self.tagsLabel.set_label(sep.join([_(tag) for tag in tags]))
+    def getData(self):
+        return self.tags
 
 
 if __name__ == '__main__':
@@ -268,11 +329,11 @@ if __name__ == '__main__':
     if core.rtl:
         gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
     dialog = gtk.Dialog()
-    #widget = EventTagsAndIconSelect()
-    widget = TagsListView('task')
+    widget = EventTagsAndIconSelect()
+    #widget = TagsListBox('task')
     dialog.vbox.pack_start(widget, 1, 1)
     dialog.vbox.show()
-    dialog.resize(300, 500)
+    #dialog.resize(300, 500)
     dialog.run()
     print pformat(widget.getData())
 
