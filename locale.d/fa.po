@@ -1510,6 +1510,10 @@ msgstr "شیعهٔ دوازده‌امامی، مؤسسهٔ تحقیقاتی ل�
 msgid "Institute of Geophysics, University of Tehran"
 msgstr "مؤسسهٔ ژئوفیزیک دانشگاه تهران"
 
+msgid "Calendar Center Council, Institute of Geophysics, University of Tehran"
+msgstr "شورای مرکز تقویم مؤسسهٔ ژئوفیزیک دانشگاه تهران"
+
+
 msgid "Shown Times"
 msgstr "اوقات نمایش‌داده شده"
 
@@ -1614,26 +1618,6 @@ msgstr "صرفه‌جویی نور روز"
 
 
 
-
-msgid "Saeed Rasooli <saeed.gnu@gmail.com>"
-msgstr ""
-"سعید رسولی <saeed.gnu@gmail.com>"
-
-msgid "Mola Pahnadayan <mola.mp@gmail.com>"
-msgstr ""
-"مولا پهنادایان <mola.mp@gmail.com>"
-
-msgid "Mehdi Bayazee <bayazee@gmail.com>"
-msgstr ""
-"مهدی بیاضی <bayazee@gmail.com>"
-
-msgid "Hamid Zarrabi-Zadeh <zarrabi@scs.carleton.ca>"
-msgstr ""
-"حمید ضرابی‌زاده <zarrabi@scs.carleton.ca>"
-
-
-msgid "translator-credits"
-msgstr "Saeed Rasooli <saeed.gnu@gmail.com>"
 
 
 
@@ -2815,3 +2799,28 @@ msgstr "زامبیا"
 msgid "Zimbabwe"
 msgstr "زیمبابوه"
 
+################################################################################
+################################################################################
+
+msgid "Saeed Rasooli <saeed.gnu@gmail.com>"
+msgstr ""
+"سعید رسولی <saeed.gnu@gmail.com>"
+
+msgid "Mola Pahnadayan <mola.mp@gmail.com>"
+msgstr ""
+"مولا پهنادایان <mola.mp@gmail.com>"
+
+msgid "Mehdi Bayazee <bayazee@gmail.com>"
+msgstr ""
+"مهدی بیاضی <bayazee@gmail.com>"
+
+msgid "Hamid Zarrabi-Zadeh <zarrabi@scs.carleton.ca>"
+msgstr ""
+"حمید ضرابی‌زاده <zarrabi@scs.carleton.ca>"
+
+msgid "Reza Moradi Ghiasabadi(http://www.ghiasabadi.com)"
+msgstr ""
+"رضا مرادی قیاس آبادی(http://www.ghiasabadi.com)"
+
+msgid "translator-credits"
+msgstr "Saeed Rasooli <saeed.gnu@gmail.com>"

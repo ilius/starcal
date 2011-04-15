@@ -1151,13 +1151,7 @@ class MainWin(gtk.Window):
         about.set_name('StarCalendar') ## or set_program_name
         about.set_version(core.VERSION)
         about.set_title(_('About ')+'StarCalendar') ## must call after set_name and set_version !
-        about.set_authors([
-            _('Saeed Rasooli <saeed.gnu@gmail.com>'),
-            _('Mola Pahnadayan <mola.mp@gmail.com>'),
-            _('Mehdi Bayazee <bayazee@gmail.com>'),
-            'Martin Grimme <martin@pycage.de>',
-            'شورای مرکز تقویم مؤسسهٔ ژئوفیزیک دانشگاه تهران',
-            'رضا مرادی قیاس آبادی(www.ghiasabadi.com)'])
+        about.set_authors([_(line) for line in open(join(rootDir, 'authors-dialog')).read().splitlines()])
         about.set_comments(core.aboutText)
         about.set_license(core.licenseText)
         about.set_wrap_license(True)
