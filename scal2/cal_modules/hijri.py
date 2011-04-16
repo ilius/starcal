@@ -60,7 +60,7 @@ hijriDbEndJD = hijriDbInitJD = 0 ## load from file
 hijriMonthLen = {} ## load and calc from file
 
 import os
-from scal_mod_paths import sysConfDir, confDir, modDir
+from scal2.paths import sysConfDir, confDir, modDir
 
 ## Here load user options (hijriUseDB) from file
 sysConfPath = '%s/%s.conf'%(sysConfDir, name)

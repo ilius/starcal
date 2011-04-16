@@ -19,7 +19,11 @@
 
 import os
 from os.path import dirname, join
+import platform
 
+APP_NAME = 'starcal2'
+
+psys = platform.system()
 
 srcDir = dirname(__file__)
 rootDir = dirname(srcDir)
@@ -27,20 +31,27 @@ pixDir = os.path.join(rootDir, 'pixmaps')
 plugDir = os.path.join(rootDir, 'plugins')
 
 if os.sep=='/':## Unix-like OS
-  homeDir      = os.getenv('HOME')
-  confDir      = homeDir + '/.starcal2'
-  sysConfDir   = '/etc/starcal2'
-  #tmpDir      = '/tmp'
-  #user        = os.getenv('USER')
+    homeDir = os.getenv('HOME')
+    #tmpDir = '/tmp'
+    #user = os.getenv('USER')
+    if psys=='Darwin':## MacOS X
+        confPath = homeDir + '/Library/Preferences/' + APP_NAME ## OR '/Library/' + APP_NAME
+        ## os.environ['OSTYPE'] == 'darwin10.0'
+        ## os.environ['MACHTYPE'] == 'x86_64-apple-darwin10.0'
+        ## platform.dist() == ('', '', '')
+        ## platform.release() == '10.3.0'
+    else:## GNU/Linux, ...
+        confDir = homeDir + '/.' + APP_NAME
+        sysConfDir = '/etc/' + APP_NAME
 elif os.sep=='\\':## Dos/Windows OS
-  #homeDrive   = os.environ['HOMEDRIVE']
-  homeDir      = os.getenv('HOMEPATH')
-  confDir      = os.getenv('APPDATA') + '\\starcal2'
-  sysConfDir   = join(rootDir, 'config')
-  #tmpDir      = os.getenv('TEMP')
-  #user        = os.getenv('USERNAME')
+    #homeDrive = os.environ['HOMEDRIVE']
+    homeDir = os.getenv('HOMEPATH')
+    confDir = os.getenv('APPDATA') + '\\' + APP_NAME
+    sysConfDir = join(rootDir, 'config')
+    #tmpDir = os.getenv('TEMP')
+    #user = os.getenv('USERNAME')
 else:
-  raise RuntimeError('bad seperator (os.sep=="%s") !! What is your Operating System?!'%os.sep)
+    raise RuntimeError('bad seperator (os.sep=="%s") !! What is your Operating System?!'%os.sep)
 
 userPlugConf = join(confDir, 'plugin.conf')
 modDir = '%s/cal_modules'%srcDir
