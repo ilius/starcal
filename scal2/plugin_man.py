@@ -18,7 +18,9 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 import sys
+from time import strftime
 from os.path import isfile, dirname, join, split, splitext
+
 
 from scal2.cal_modules import modules, moduleNames, modNum, jd_to, to_jd, convert
 from scal2.locale_man import numLocale, getMonthName
@@ -38,6 +40,13 @@ def myRaise(File=__file__):
 def pluginException(name):
     i = sys.exc_info()
     log.error('error in plugin %s, %s: %s\n'%(name, i[0].__name__, i[1]))
+
+
+icsTmFormat = '%Y%m%dT%H%M%SZ'
+icsHeader = '''BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.1//EN
+'''
 
 
 
@@ -89,6 +98,28 @@ class BasePlugin:
             if c.extraday!='':
                 c.extraday += '\n'
             c.extraday += text    
+    def exportToIcs(self, fileName, startJd, endJd):
+        currentTimeStamp = strftime(icsTmFormat)
+        self.load() ## FIXME
+        mode = self.mode
+        icsText = icsHeader
+        for jd in range(startJd, endJd):
+            (myear, mmonth, mday) = jd_to(jd, mode)
+            dayText = self.get_text(myear, mmonth, mday)
+            if dayText:
+                (gyear, gmonth, gday) = jd_to(jd, DATE_GREG)
+                (gyear_next, gmonth_next, gday_next) = jd_to(jd+1, DATE_GREG)
+                #######
+                icsText += 'BEGIN:VEVENT\n'
+                icsText += 'CREATED:%s\n'%currentTimeStamp
+                icsText += 'LAST-MODIFIED:%s\n'%currentTimeStamp
+                icsText += 'DTSTART;VALUE=DATE:%.4d%.2d%.2d\n'%(gyear, gmonth, gday)
+                icsText += 'DTEND;VALUE=DATE:%.4d%.2d%.2d\n'%(gyear_next, gmonth_next, gday_next)
+                icsText += 'SUMMARY:%s\n'%dayText
+                icsText += 'END:VEVENT\n'
+        icsText += 'END:VCALENDAR\n'
+        open(fileName, 'w').write(icsText)
+
 
 def loadExternalPlugin(path, enable=True, show_date=True):
     if not isfile(path):
@@ -179,6 +210,38 @@ class HolidayPlugin(BasePlugin):
                             if nm>m or ny>y:
                                 c.holiday = True
                                 break
+    def exportToIcs(self, fileName, startJd, endJd):
+        currentTimeStamp = strftime(icsTmFormat)
+        icsText = icsHeader
+        for jd in range(startJd, endJd):
+            isHoliday = False
+            for mode in self.holidays.keys():
+                (myear, mmonth, mday) = jd_to(jd, mode)
+                if (mmonth, mday) in self.holidays[mode]:
+                    isHoliday = True
+                    break
+            if isHoliday:
+                (gyear, gmonth, gday) = jd_to(jd, DATE_GREG)
+                (gyear_next, gmonth_next, gday_next) = jd_to(jd+1, DATE_GREG)
+                #######
+                icsText += 'BEGIN:VEVENT\n'
+                icsText += 'CREATED:%s\n'%currentTimeStamp
+                icsText += 'LAST-MODIFIED:%s\n'%currentTimeStamp
+                icsText += 'DTSTART;VALUE=DATE:%.4d%.2d%.2d\n'%(gyear, gmonth, gday)
+                icsText += 'DTEND;VALUE=DATE:%.4d%.2d%.2d\n'%(gyear_next, gmonth_next, gday_next)
+                icsText += 'CATEGORIES:Holidays\n'
+                icsText += 'TRANSP:TRANSPARENT\n'
+                ## TRANSPARENT because being in holiday time, does not make you busy!
+                ## see http://www.kanzaki.com/docs/ical/transp.html
+                icsText += 'SUMMARY:%s\n'%_('Holiday')
+                icsText += 'END:VEVENT\n'
+        icsText += 'END:VCALENDAR\n'
+        open(fileName, 'w').write(icsText)
+
+
+
+
+
 
 class BuiltinTextPlugin(BasePlugin):
     def __init__(self, path, enable=None, show_date=None):
@@ -321,6 +384,7 @@ class BuiltinTextPlugin(BasePlugin):
         #return '%s("%s", %s, "%s", enable=%s, show_date=%s)'\
         #    %(self.__class__.__name__, self.db_path.replace('"', '\\"'),
         #    self.mode, self.desc.replace('"', '\\"'), self.enable, self.show_date)
+
 
 #class EveryDayTextPlugin(BasePlugin):
 
