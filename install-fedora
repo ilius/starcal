@@ -51,33 +51,33 @@ Hijri(Islamic), and Indian National calendars, as well as common
 english(Gregorian) calendar
 
 %install
-\"$sourceDir/install\" \"$tmpDir\" --for-pkg
+\"$sourceDir/install\" \"%{buildroot}\" --for-pkg --prefix=%{_prefix}
 
 %files
 %defattr(-,root,root,-)
-/usr/share/starcal2/*
-/usr/bin/starcal2*
-/usr/share/applications/starcal2*
+%{_prefix}/share/starcal2/*
+%{_prefix}/bin/starcal2*
+%{_prefix}/share/applications/starcal2*
+%{_prefix}/lib/bonobo/servers/GNOME_Starcal2Applet.server
+%{_prefix}/share/doc/starcal2/*
+%{_prefix}/share/pixmaps/starcal2.png
+%{_prefix}/share/icons/hicolor/*/apps/starcal2.png
+%{_prefix}/share/locale/*/LC_MESSAGES/starcal2.mo
 /etc/init.d/starcal2d
-/usr/lib/bonobo/servers/GNOME_Starcal2Applet.server
-/usr/share/doc/starcal2/*
-/usr/share/pixmaps/starcal2.png
-/usr/share/icons/hicolor/*/apps/starcal2.png
-/usr/share/locale/*/LC_MESSAGES/starcal2.mo
-
-%changelog
 " > "$tmpDir/$pkgName.spec"
 ## chown -R root "$tmpDir"
 
-pkgPath=`rpmbuild -bb "$tmpDir/$pkgName.spec" | grep -o /usr/src/packages/RPMS.*rpm`
+pkgPath=`rpmbuild -bb "$tmpDir/$pkgName.spec" | grep -o /usr/src/packages/RPMS/.*rpm`
 echo "pkgPath=$pkgPath"
 
 if [ ! -f $pkgPath ] ; then
+    echo "Package file $pkgPath does not exit"
     exit 1
 fi
 
 echo "Package created in \"$pkgPath\", installing"
-yum install "$pkgPath"
+yum install "$pkgPath" ## disable gpgcheck in /etc/yum.conf
+#rpm -U --force "$pkgPath" ## its OK when requiered packages are installed!
 
 rm -R "$tmpDir"
 

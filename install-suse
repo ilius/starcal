@@ -42,7 +42,7 @@ Summary:        A full-featured international calendar writen in Python
 Group:          User Interface/Desktops
 License:        GPLv3+
 URL:            http://starcal.sourceforge.net/
-Requires:       python = 2.7, pygtk2, python-numpy
+Requires:       python = 2.7, python-gtk, python-numpy
 BuildArch:      noarch
 
 %description
@@ -51,28 +51,26 @@ with both PyGTK and PyQt interfaces, that supports Jalai(Iranian),
 Hijri(Islamic), and Indian National calendars, as well as common 
 english(Gregorian) calendar
 
+
 %install
-\"$sourceDir/install\" \"%{buildroot}\" --for-pkg
+\"$sourceDir/install\" \"%{buildroot}\" --for-pkg --prefix=%{_prefix}
 
 
 %files
 %defattr(-,root,root,-)
-/usr/share/starcal2/*
-/usr/bin/starcal2*
-/usr/share/applications/starcal2*
+%{_prefix}/share/starcal2/*
+%{_prefix}/bin/starcal2*
+%{_prefix}/share/applications/starcal2*
+%{_prefix}/lib/bonobo/servers/GNOME_Starcal2Applet.server
+%{_prefix}/share/doc/starcal2/*
+%{_prefix}/share/pixmaps/starcal2.png
+%{_prefix}/share/icons/hicolor/*/apps/starcal2.png
+%{_prefix}/share/locale/*/LC_MESSAGES/starcal2.mo
 /etc/init.d/starcal2d
-/usr/lib/bonobo/servers/GNOME_Starcal2Applet.server
-/usr/share/doc/starcal2/*
-/usr/share/pixmaps/starcal2.png
-/usr/share/icons/hicolor/*/apps/starcal2.png
-/usr/share/locale/*/LC_MESSAGES/starcal2.mo
-
-
-%changelog
 " > "$tmpDir/$pkgName.spec"
 ## chown -R root "$tmpDir"
 
-pkgPath=`rpmbuild -bb "$tmpDir/$pkgName.spec" | grep -o /usr/src/packages/RPMS.*rpm`
+pkgPath=`rpmbuild -bb "$tmpDir/$pkgName.spec" | grep -o /usr/src/packages/RPMS/.*rpm`
 echo "pkgPath=$pkgPath"
 
 if [ -z "$pkgPath" ] ; then
@@ -85,7 +83,15 @@ if [ ! -f "$pkgPath" ] ; then
 fi
 
 echo "Package created in \"$pkgPath\", installing"
-zypper install -f "$pkgPath"
 
-#rm -R "$tmpDir"
+#zypper install -f "$pkgPath"
+##Problem: nothing provides /usr needed by starcal2-1.9.0-3.noarch
+## Solution 1: do not install starcal2-1.9.0-3.noarch
+## Solution 2: break starcal2 by ignoring some of its dependencie
+
+#yum install "$pkgPath"
+
+#rpm -U --force "$pkgPath" ## its OK when requiered packages are installed!
+
+rm -R "$tmpDir"
 
