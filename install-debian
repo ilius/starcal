@@ -50,15 +50,16 @@ Description: A full-featured international calendar writen in Python
 
 "$sourceDir/install" "$tmpDir" "--for-pkg"
 chown -R root "$tmpDir"
-pkgFile=$tmpDir/${pkgName}_${version}-2_all.deb
-dpkg-deb -b "$tmpDir" "$pkgFile" && \
-echo "Package file $pkgFile created, installing..."  && \
-if [ -f /usr/bin/gdebi ] ; then
-    /usr/bin/gdebi "$pkgFile"
-else
-    dpkg -i "$pkgFile"
+pkgFile=${pkgName}_${version}-1_all.deb
+dpkg-deb -b "$tmpDir" "$pkgFile"
+if [ "$?" = "0" ] ; then
+    echo "Package file $pkgFile created, installing..."
+    if [ -f /usr/bin/gdebi ] ; then
+        /usr/bin/gdebi "$pkgFile"
+    else
+        dpkg -i "$pkgFile"
+    fi
 fi
-
 
 rm -R "$tmpDir"
 

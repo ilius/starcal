@@ -14,10 +14,6 @@ sourceDir="`dirname \"$myPath\"`"
 version=`\$sourceDir/scal2/get_version.py`
 
 
-tmpDir=/tmp/starcal2-install-arch
-mkdir -p $tmpDir
-cd $tmpDir
-
 echo "# Contributor: Saeed Rasooli <saeed.gnu@gmail.com>
 # This is a local PKGBUILD
 sourceDir='$sourceDir'
@@ -38,7 +34,4 @@ build() {
 }" > PKGBUILD
 
 makepkg -sif
-
-cd - > /dev/null
-rm -Rf "$tmpDir"
 

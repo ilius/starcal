@@ -26,16 +26,11 @@ version=`\$sourceDir/scal2/get_version.py`
 #echo "sourceDir=$sourceDir"
 #echo version=$version
 
-tmpDir=/tmp/starcal2-install-deb
-mkdir -p $tmpDir
-cd $tmpDir
-
-
 
 
 echo "Name:     $pkgName
 Version:        $version
-Release:        3
+Release:        1
 Summary:        A full-featured international calendar writen in Python
 
 Group:          User Interface/Desktops
@@ -64,10 +59,9 @@ english(Gregorian) calendar
 %{_prefix}/share/icons/hicolor/*/apps/starcal2.png
 %{_prefix}/share/locale/*/LC_MESSAGES/starcal2.mo
 /etc/init.d/starcal2d
-" > "$tmpDir/$pkgName.spec"
-## chown -R root "$tmpDir"
+" > $pkgName.spec
 
-pkgPath=`rpmbuild -bb "$tmpDir/$pkgName.spec" | grep -o /usr/src/packages/RPMS/.*rpm`
+pkgPath=`rpmbuild -bb $pkgName.spec | grep -o /usr/src/packages/RPMS/.*rpm`
 echo "pkgPath=$pkgPath"
 
 if [ ! -f $pkgPath ] ; then
@@ -76,8 +70,7 @@ if [ ! -f $pkgPath ] ; then
 fi
 
 echo "Package created in \"$pkgPath\", installing"
-yum install "$pkgPath" ## disable gpgcheck in /etc/yum.conf
+yum remove -y $pkgName >/dev/null 2>&1
+yum install --nogpgcheck "$pkgPath" ## disable gpgcheck in /etc/yum.conf
 #rpm -U --force "$pkgPath" ## its OK when requiered packages are installed!
-
-rm -R "$tmpDir"
 

@@ -26,17 +26,11 @@ version=`\$sourceDir/scal2/get_version.py`
 #echo "sourceDir=$sourceDir"
 #echo version=$version
 
-tmpDir=/tmp/starcal2-install-rpm
-mkdir -p $tmpDir
-cd $tmpDir
-
-#mkdir -p $tmpDir/pkg
-
 
 
 echo "Name:     $pkgName
 Version:        $version
-Release:        3
+Release:        1
 Summary:        A full-featured international calendar writen in Python
 
 Group:          User Interface/Desktops
@@ -67,10 +61,9 @@ english(Gregorian) calendar
 %{_prefix}/share/icons/hicolor/*/apps/starcal2.png
 %{_prefix}/share/locale/*/LC_MESSAGES/starcal2.mo
 /etc/init.d/starcal2d
-" > "$tmpDir/$pkgName.spec"
-## chown -R root "$tmpDir"
+" > $pkgName.spec
 
-pkgPath=`rpmbuild -bb "$tmpDir/$pkgName.spec" | grep -o /usr/src/packages/RPMS/.*rpm`
+pkgPath=`rpmbuild -bb $pkgName.spec | grep -o /usr/src/packages/RPMS/.*rpm`
 echo "pkgPath=$pkgPath"
 
 if [ -z "$pkgPath" ] ; then
@@ -89,9 +82,10 @@ echo "Package created in \"$pkgPath\", installing"
 ## Solution 1: do not install starcal2-1.9.0-3.noarch
 ## Solution 2: break starcal2 by ignoring some of its dependencie
 
-#yum install "$pkgPath"
+if [ -f /usr/bin/yum ] ; then
+    yum remove -y $pkgName >/dev/null 2>&1
+    yum install --nogpgcheck "$pkgPath"
+fi
 
 #rpm -U --force "$pkgPath" ## its OK when requiered packages are installed!
-
-rm -R "$tmpDir"
 
