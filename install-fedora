@@ -1,5 +1,6 @@
 #!/bin/bash
-## install-fedora
+## makes rpm package and installs it using yum
+
 ## yum install @development-tools
 ## yum install rpm-build rpmdevtools rpmlint mock
 

@@ -1,4 +1,5 @@
 #!/bin/bash
+## makes PKGUILD and builds it (without root access), then installs it (prompts for password if necessary)
 
 myPath="$0"
 if [ "${myPath:0:2}" == "./" ] ; then
