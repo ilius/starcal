@@ -37,6 +37,7 @@ Group:          User Interface/Desktops
 License:        GPLv3+
 URL:            http://starcal.sourceforge.net/
 Requires:       python = 2.7, python-gtk, python-numpy
+Provides:       /usr
 BuildArch:      noarch
 
 %description
@@ -77,15 +78,14 @@ fi
 
 echo "Package created in \"$pkgPath\", installing"
 
-#zypper install -f "$pkgPath"
-##Problem: nothing provides /usr needed by starcal2-1.9.0-3.noarch
-## Solution 1: do not install starcal2-1.9.0-3.noarch
-## Solution 2: break starcal2 by ignoring some of its dependencie
+zypper install -f "$pkgPath"
+## Problem: nothing provides /usr needed by starcal2-1.9.0-3.noarch
+## Fixed with defining /usr as Provides
 
-if [ -f /usr/bin/yum ] ; then
-    yum remove -y $pkgName >/dev/null 2>&1
-    yum install --nogpgcheck "$pkgPath"
-fi
+#if [ -f /usr/bin/yum ] ; then
+#    yum remove -y $pkgName >/dev/null 2>&1
+#    yum install --nogpgcheck "$pkgPath"
+#fi
 
 #rpm -U --force "$pkgPath" ## its OK when requiered packages are installed!
 
