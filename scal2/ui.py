@@ -343,6 +343,7 @@ eventTags = (
 )
 
 getEventTagsDict = lambda: dict([(tagObj.name, tagObj) for tagObj in eventTags])
+eventTagsDesc = dict([(t.name, t.desc) for t in eventTags])
 
 ###################
 customDB = []

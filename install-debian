@@ -61,5 +61,5 @@ if [ "$?" = "0" ] ; then
     fi
 fi
 
-rm -R "$tmpDir"
+rm -Rf "$tmpDir"
 

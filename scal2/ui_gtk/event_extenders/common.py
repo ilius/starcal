@@ -287,39 +287,40 @@ class TagEditorDialog(gtk.Dialog):
         cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL, gtk.ICON_SIZE_BUTTON))
         okB.set_label(_('_OK'))
         okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK, gtk.ICON_SIZE_BUTTON))
-    def setData(self, tags):
-        self.tags = tags
-        self.tagsBox.setData(tags)
-    def run(self):
-        resp = gtk.Dialog.run(self)
-        if resp == gtk.RESPONSE_OK:
-            return self.tagsBox.getData()
-        else:
-            self.setData(self.tags)
-            return None
+        self.vbox.show_all()
+        self.getData = self.tagsBox.getData
+        self.setData = self.tagsBox.setData
+
+
 
 
 class ViewEditTagsHbox(gtk.HBox):
     def __init__(self, eventType=''):
         gtk.HBox.__init__(self)
         self.tags = []
-        self.pack_start(gtk.Label(_('Tags')), 0, 0)
+        self.pack_start(gtk.Label(_('Tags:  ')), 0, 0)
         self.tagsLabel = gtk.Label('')
         self.pack_start(self.tagsLabel, 1, 1)
         self.dialog = TagEditorDialog(eventType)
+        self.dialog.connect('response', self.dialogResponse)
         self.editButton = gtk.Button()
         self.editButton.set_label(_('_Edit'))
         self.editButton.set_image(gtk.image_new_from_stock(gtk.STOCK_EDIT, gtk.ICON_SIZE_BUTTON))
         self.editButton.connect('clicked', self.editButtonClicked)
+        self.pack_start(self.editButton, 0, 0)
+        self.show_all()
     def editButtonClicked(self, widget):
-        tags = self.dialog.run()
-        if tags is not None:
-            self.setData(tags)
+        self.dialog.present()
+    def dialogResponse(self, dialog, resp):
+        print 'dialogResponse', dialog, resp
+        if resp==gtk.RESPONSE_OK:
+            self.setData(dialog.getData())
+        dialog.hide()
     def setData(self, tags):
         self.tags = tags
-        self.tagsBox.setData(tags)
+        self.dialog.setData(tags)
         sep = _(',') + ' '
-        self.tagsLabel.set_label(sep.join([_(tag) for tag in tags]))
+        self.tagsLabel.set_label(sep.join([ui.eventTagsDesc[tag] for tag in tags]))
     def getData(self):
         return self.tags
 
@@ -329,7 +330,8 @@ if __name__ == '__main__':
     if core.rtl:
         gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
     dialog = gtk.Dialog()
-    widget = EventTagsAndIconSelect()
+    widget = ViewEditTagsHbox()
+    #widget = EventTagsAndIconSelect()
     #widget = TagsListBox('task')
     dialog.vbox.pack_start(widget, 1, 1)
     dialog.vbox.show()
