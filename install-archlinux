@@ -1,11 +1,13 @@
 #!/bin/bash
 ## makes PKGUILD and builds it (without root access), then installs it (prompts for password if necessary)
 
+initPwd=$PWD
+
 myPath="$0"
 if [ "${myPath:0:2}" == "./" ] ; then
-    myPath=$PWD${myPath:1}
+    myPath=$initPwd${myPath:1}
 elif [ "${myPath:0:1}" != "/" ] ; then
-    myPath=$PWD/$myPath
+    myPath=$initPwd/$myPath
 fi
 
 
@@ -14,6 +16,9 @@ sourceDir="`dirname \"$myPath\"`"
 "$sourceDir/assert_python2"
 version=`\$sourceDir/scal2/get_version.py`
 
+tmpDir=/tmp/starcal2-install-arch
+mkdir -p $tmpDir
+cd $tmpDir
 
 echo "# Contributor: Saeed Rasooli <saeed.gnu@gmail.com>
 # This is a local PKGBUILD
@@ -35,4 +40,9 @@ build() {
 }" > PKGBUILD
 
 makepkg -sif
+
+cp $pkgName*.pkg.tar.?z "$initPwd"
+echo "Package installed and copied into $initPwd directory"
+cd "$initPwd"
+rm -Rf $tmpDir
 
