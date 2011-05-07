@@ -61,11 +61,11 @@ class CustomizeDialog(gtk.Dialog):
         self.set_title(_('Customize'))
         self.set_has_separator(False)
         self.connect('delete-event', self.close)
-        okB = self.add_button(gtk.STOCK_OK, 1)
+        closeB = self.add_button(gtk.STOCK_CLOSE, 0)
         if ui.autoLocale:
-            okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK, gtk.ICON_SIZE_BUTTON))
-        okB.connect('clicked', self.close)
+            closeB.set_label(_('_Close'))
+            closeB.set_image(gtk.image_new_from_stock(gtk.STOCK_CLOSE, gtk.ICON_SIZE_BUTTON))
+        closeB.connect('clicked', self.close)
         ###
         self.items = items
         self.mainWin = mainWin

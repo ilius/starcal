@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #        
-# Copyright (C) 2009    Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
+# Copyright (C) 2009-2011 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -86,8 +86,8 @@ class SelectDateDialog(gtk.Dialog):
         ########
         hb2 = gtk.HBox(spacing=4)
         hb2.pack_start(gtk.Label('yyyy/mm/dd'), 0, 0)
-        dbox = DateBox(lang=core.langSh, hist_size=16) ## lang='fa' | 'fa_IR.UTF-8' ????????
-        hb2.pack_start(dbox, 0, 0)
+        dateInput = DateBox(lang=core.langSh, hist_size=16) ## lang='fa' | 'fa_IR.UTF-8' ????????
+        hb2.pack_start(dateInput, 0, 0)
         rb2 = gtk.RadioButton()
         rb2.num = 2
         rb2.set_group(rb1)
@@ -108,7 +108,7 @@ class SelectDateDialog(gtk.Dialog):
         self.spinY = spinY
         self.comboMonth = combo2
         self.spinD = spinD
-        self.dbox = dbox
+        self.dateInput = dateInput
         self.radio1 = rb1
         self.radio2 = rb2
         self.hbox1 = hb1
@@ -119,7 +119,7 @@ class SelectDateDialog(gtk.Dialog):
         spinY.connect ('changed', self.comboMonthChanged)
         rb1.connect_after('clicked', self.radioChanged)
         rb2.connect_after('clicked', self.radioChanged)
-        dbox.connect('activate', self.ok)
+        dateInput.connect('activate', self.ok)
         okB.connect('clicked', self.ok)
         canB.connect('clicked', self.hideMe)
         self.radioChanged()
@@ -141,8 +141,8 @@ class SelectDateDialog(gtk.Dialog):
         self.spinY.set_value(y)
         self.comboMonth.set_active(m-1)
         self.spinD.set_value(d)
-        self.dbox.set_date((y, m, d))
-        self.dbox.add_history()
+        self.dateInput.set_date((y, m, d))
+        self.dateInput.add_history()
         return True
     def show(self):
         ## Show a window that ask the date and set on the calendar
@@ -158,8 +158,8 @@ class SelectDateDialog(gtk.Dialog):
         self.spinY.set_value(y)
         self.comboMonth.set_active(m-1)
         self.spinD.set_value(d)
-        self.dbox.set_date((y, m, d))
-        self.dbox.add_history()
+        self.dateInput.set_date((y, m, d))
+        self.dateInput.add_history()
     def setMode(self, mode):
         self.mode = mode
         module = core.modules[mode]
@@ -170,7 +170,7 @@ class SelectDateDialog(gtk.Dialog):
             combo.append_text(_(module.getMonthName(i+1)))
         self.comboMode.set_active(mode)
         self.spinD.set_range(1, core.modules[mode].maxMonthLen)
-        self.dbox.maxs = (9999, 12, module.maxMonthLen)
+        self.dateInput.maxs = (9999, 12, module.maxMonthLen)
     def comboModeChanged(self, widget=None):
         pMode = self.mode
         pDate = self.get()
@@ -189,7 +189,7 @@ class SelectDateDialog(gtk.Dialog):
             combo.append_text(_(module.getMonthName(i+1)))
         self.comboMonthConn = self.comboMonth.connect('changed', self.comboMonthChanged)
         self.spinD.set_range(1, module.maxMonthLen)
-        self.dbox.maxs = (9999, 12, module.maxMonthLen)
+        self.dateInput.maxs = (9999, 12, module.maxMonthLen)
         self.set(y, m, d)
         self.mode = mode
     def comboMonthChanged(self, widget=None):
@@ -205,7 +205,7 @@ class SelectDateDialog(gtk.Dialog):
             m0 = self.comboMonth.get_active() + 1
             d0 = self.spinD.get_value_as_int()
         elif self.radio2.get_active():
-            (y0, m0, d0) = self.dbox.get_date()
+            (y0, m0, d0) = self.dateInput.get_date()
         return (y0, m0, d0)
     def ok(self, widget):
         mode = self.comboMode.get_active()
@@ -224,8 +224,8 @@ class SelectDateDialog(gtk.Dialog):
             return
         self.emit('response-date', y, m, d)
         self.hide()
-        self.dbox.add_history((y0, m0, d0))
-        #self.dbox.add_history((y, m, d))
+        self.dateInput.add_history((y0, m0, d0))
+        #self.dateInput.add_history((y, m, d))
     def radioChanged(self, widget=None):
         if self.radio1.get_active():
             self.hbox1.set_sensitive(True)
@@ -238,8 +238,7 @@ class SelectDateDialog(gtk.Dialog):
 
 
 gobject.type_register(SelectDateDialog)
-gobject.signal_new('response-date', SelectDateDialog, gobject.SIGNAL_RUN_LAST, 
-    gobject.TYPE_NONE, [int, int, int])
+gobject.signal_new('response-date', SelectDateDialog, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [int, int, int])
 
 
 

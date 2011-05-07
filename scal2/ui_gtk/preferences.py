@@ -553,12 +553,12 @@ class CalPropPrefItem(PrefItem):
     def __init__(self, module, varName, parent, sgroupFont):
         self.module = module
         self.varName = varName
-        hb = gtk.HBox()
+        hbox = gtk.HBox()
         ######
         checkb = gtk.CheckButton()
         set_tooltip(checkb, _('Enable/Disable'))
         self.checkb = checkb
-        hb.pack_start(checkb, 0, 0)
+        hbox.pack_start(checkb, 0, 0)
         ####
         combo = gtk.combo_box_new_text()
         for m in core.modules:
@@ -566,13 +566,13 @@ class CalPropPrefItem(PrefItem):
         #if i>0:#????????????
         #    combo.append_text(_('Julian Day'))
         self.combo = combo
-        hb.pack_start(combo, 0, 0)
-        hb.pack_start(gtk.Label(''), 1, 1)
+        hbox.pack_start(combo, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
         ###
         label = gtk.Label(_('position'))
         self.label = label
         ###
-        hb.pack_start(label, 0, 0)
+        hbox.pack_start(label, 0, 0)
         ###
         spin = gtk.SpinButton()
         spin.set_increments(1, 10)
@@ -581,7 +581,7 @@ class CalPropPrefItem(PrefItem):
         #spin.set_width_chars(3)
         self.spinX = spin
         spin.set_direction(gtk.TEXT_DIR_LTR)
-        hb.pack_start(spin, 0, 0)
+        hbox.pack_start(spin, 0, 0)
         ###
         spin = gtk.SpinButton()
         spin.set_increments(1, 10)
@@ -590,20 +590,20 @@ class CalPropPrefItem(PrefItem):
         #spin.set_width_chars(3)
         self.spinY = spin
         spin.set_direction(gtk.TEXT_DIR_LTR)
-        hb.pack_start(spin, 0, 0)
+        hbox.pack_start(spin, 0, 0)
         ####
-        hb.pack_start(gtk.Label(''), 1, 1)
+        hbox.pack_start(gtk.Label(''), 1, 1)
         ###
         fontb = MyFontButton(parent)
         self.fontb = fontb
-        hb.pack_start(fontb, 0, 0)
+        hbox.pack_start(fontb, 0, 0)
         sgroupFont.add_widget(fontb)
         ####
         colorb = MyColorButton()
         self.colorb = colorb
-        hb.pack_start(colorb, 0, 0)
+        hbox.pack_start(colorb, 0, 0)
         #########
-        self.widget = hb
+        self.widget = hbox
     def get(self):
         return {
             'enable':self.checkb.get_active(),
@@ -711,15 +711,15 @@ class PrefDialog(gtk.Dialog):
         ################################ Tab 1 ############################################
         vbox = gtk.VBox()
         vbox1 = vbox
-        hb = gtk.HBox(spacing=3)
-        hb.pack_start(gtk.Label(_('Language')), 0, 0)
+        hbox = gtk.HBox(spacing=3)
+        hbox.pack_start(gtk.Label(_('Language')), 0, 0)
         itemLang = LangPrefItem()
         self.localePrefItems.append(itemLang)
         ###    
-        hb.pack_start(itemLang.widget, 0, 0)
+        hbox.pack_start(itemLang.widget, 0, 0)
         if langSh!='en':
-            hb.pack_start(gtk.Label('Language'), 0, 0)
-        vbox.pack_start(hb, 0, 0)
+            hbox.pack_start(gtk.Label('Language'), 0, 0)
+        vbox.pack_start(hbox, 0, 0)
         ##########################
         sgroupFont = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
         exp = gtk.Expander(_('Shown Calendars'))
@@ -733,11 +733,11 @@ class PrefDialog(gtk.Dialog):
         vbox.pack_start(exp, 0, 0)
         ##########################
         if trayMode!=1:
-            hb = gtk.HBox(spacing=3)
+            hbox = gtk.HBox(spacing=3)
             item = CheckStartupPrefItem()
             self.uiPrefItems.append(item)
-            hb.pack_start(item.widget, 1, 1)
-            vbox.pack_start(hb, 0, 0)
+            hbox.pack_start(item.widget, 1, 1)
+            vbox.pack_start(hbox, 0, 0)
             ########################
             item = CheckPrefItem(ui, 'showMain', _('Show main window on start'))
             self.uiPrefItems.append(item)
@@ -1060,15 +1060,15 @@ class PrefDialog(gtk.Dialog):
         vbox3 = vbox
         #####
         ##extradayTray:
-        hb = gtk.HBox()
+        hbox = gtk.HBox()
         if trayMode==1:
             item = CheckPrefItem(ui, 'extradayTray', _('Show in applet (for today)'))
         else:
             item = CheckPrefItem(ui, 'extradayTray', _('Show in tray (for today)'))
         self.uiPrefItems.append(item)
-        hb.pack_start(item.widget, 0, 0)
-        hb.pack_start(gtk.Label(''), 1, 1)
-        vbox.pack_start(hb, 0, 0)
+        hbox.pack_start(item.widget, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        vbox.pack_start(hbox, 0, 0)
         #####
         treev = gtk.TreeView()
         treev.set_headers_clickable(True)

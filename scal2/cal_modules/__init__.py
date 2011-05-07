@@ -38,7 +38,11 @@ modNum = len(modules)
 
 jd_to = lambda jd, target: modules[target].jd_to(jd)
 to_jd = lambda y, m, d, source: modules[source].to_jd(y, m, d)
+convert = lambda y, m, d, source, target:\
+    (y, m, d) if source==target else modules[target].jd_to(modules[source].to_jd(y, m, d))
 
-def convert(y, m, d, source, target):
-    return (y, m, d) if source==target else jd_to(to_jd(y, m, d, source), target)
+
+
+
+
 

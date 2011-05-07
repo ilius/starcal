@@ -444,7 +444,7 @@ fontCustom = None
 weekCalTextColor = (255, 255, 255)
 #####################
 showMain = True ## Show main window on start (or only goto tray)
-################################
+#####################
 mainWinItems = (
     ('toolbar', True),
     ('labelBox', True),
@@ -453,7 +453,10 @@ mainWinItems = (
     ('extraText', True),
     ('customDayText', True)
 )
-################################
+
+#####################
+dailyNoteChDateOnEdit = True ## change date of a dailyNoteEvent when editing it
+#####################
 focusTime = 0
 lastLiveConfChangeTime = 0
 

@@ -1238,7 +1238,6 @@ class MainWin(gtk.Window):
             timeout_add_seconds(self.timeout, self.trayUpdate)
         #########
         self.connect('delete-event', self.dialogClose)
-        self.showMain = ui.showMain
         ######### Building menu of right click on a day
         menu = gtk.Menu()
         menu.add(self.labelStockMenuItem('_Add Custom Day', gtk.STOCK_ADD, self.showCustomDay))
@@ -1577,7 +1576,7 @@ class MainWin(gtk.Window):
         else:
             y1 = geo[1][1]
             y = gtk.status_icon_position_menu(self.menuTray, self.sicon)[1]
-            if y<y1:## taskbar is on buttom(below)
+            if y<y1:## taskbar is on bottom
                 self.menuTray2.popup(None, None, gtk.status_icon_position_menu, button, etime, self.sicon)
             else:## taskbar is on top
                 self.menuTray1.popup(None, None, gtk.status_icon_position_menu, button, etime, self.sicon)
@@ -1780,23 +1779,23 @@ if __name__ == '__main__':
         else:
             main = MainWin(trayMode=2)
             if sys.argv[1]=='--hide':
-                show=False
+                show = False
             elif sys.argv[1]=='--show':
-                show=True
+                show = True
             elif sys.argv[1]=='--no-tray-check':
-                show = main.showMain
+                show = ui.showMain
             #elif sys.argv[1]=='--html':#????????????
             #    main.exportHtml('calendar.html') ## exportHtml(path, months, title)
             #    sys.exit(0)
             else:
                 while gtk.events_pending():## if do not this, main.sicon.is_embedded returns False
                     gtk.main_iteration_do(False)
-                show = main.showMain or not main.sicon.is_embedded() ##ui.showMain
+                show = ui.showMain or not main.sicon.is_embedded()
     else:
         main = MainWin(trayMode=2)
         while gtk.events_pending():## if do not this, main.sicon.is_embedded returns False
             gtk.main_iteration_do(False)
-        show = main.showMain or not main.sicon.is_embedded() ##ui.showMain
+        show = ui.showMain or not main.sicon.is_embedded()
     if show:
         main.present()
     #main.export.exportSvg('%s/Desktop/1389-01.svg'%homeDir, [(1389, 1)])
