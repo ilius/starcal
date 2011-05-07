@@ -122,11 +122,20 @@ def prepareLanguage(lang1):
 def loadTranslator(ui_is_qt=False):
     global tr
     ## FIXME: How to say to gettext that itself detects coding(charset) from locale name and return a unicode object instead of str?
-    transObj = gettext.translation(APP_NAME, localeDir, languages=[langActive, langDefault], fallback=True)
-    if ui_is_qt:
-        tr = lambda s: transObj.gettext(toStr(s)).replace('_', '&').decode('utf-8')## qt takes "&" instead of "_" as trigger
-    else:
-        tr = lambda s: transObj.gettext(toStr(s)).decode('utf-8')
+    if isdir(localeDir):
+        transObj = gettext.translation(APP_NAME, localeDir, languages=[langActive, langDefault], fallback=True)
+    else:## for example on windows (what about mac?)
+        try:
+            fd = open(langDict[langActive].transPath, 'rb')
+        except:
+            transObj = None
+        else:
+            transObj = gettext.GNUTranslations(fd)
+    if transObj:
+        if ui_is_qt:## qt takes "&" instead of "_" as trigger
+            tr = lambda s: transObj.gettext(toStr(s)).replace('_', '&').decode('utf-8')
+        else:
+            tr = lambda s: transObj.gettext(toStr(s)).decode('utf-8')
     return tr
 
 def rtlSgn():

@@ -127,6 +127,15 @@ def imageFromFile(path):
     return im
 
 
+def setupMenuHideOnLeave(menu):
+    def menuLeaveNotify(m, e):
+        t0 = time()
+        if t0-m.lastLeaveNotify < 0.001:
+            timeout_add(500, m.hide)
+        m.lastLeaveNotify = t0
+    menu.lastLeaveNotify = 0
+    menu.connect('leave-notify-event', menuLeaveNotify)
+
 
 # How to define icon of custom stock????????????
 #gtk.stock_add((
@@ -1182,6 +1191,8 @@ class MainWin(gtk.Window):
         menu.add(self.labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
         menu.add(gtk.SeparatorMenuItem())
         menu.add(self.labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit))
+        if os.sep == '\\':
+            setupMenuHideOnLeave(menu)
         menu.show_all()
         self.menuTray = self.menuTray1 = menu
         ##########################################################
@@ -1196,6 +1207,8 @@ class MainWin(gtk.Window):
         menu.add(self.labelStockMenuItem('Ad_just System Time',gtk.STOCK_PREFERENCES,self.adjustTime))
         menu.add(self.labelStockMenuItem('Copy _Date',gtk.STOCK_COPY,self.copyDateToday))
         menu.add(self.labelStockMenuItem('Copy _Time',gtk.STOCK_COPY,self.copyTime))
+        if os.sep == '\\':
+            setupMenuHideOnLeave(menu)
         menu.show_all()
         self.menuTray2 = menu
         ########################################### Building main menu
@@ -1572,7 +1585,7 @@ class MainWin(gtk.Window):
         geo = self.sicon.get_geometry() ## Returns None on windows
         core.focusTime = time()    ## needed?????
         if geo==None:## on windows, why??????? ## taskbar is on buttom(below)
-            self.menuTray2.popup(None, None, gtk.status_icon_position_menu, button, etime, self.sicon)
+            self.menuTray2.popup(None, None, None, button, etime, self.sicon)
         else:
             y1 = geo[1][1]
             y = gtk.status_icon_position_menu(self.menuTray, self.sicon)[1]
