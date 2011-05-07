@@ -1,2 +1,2 @@
-__all__ = ['rules', 'notifiers', 'custom', 'yearly', 'task', 'dailyNote', 'universityClass']
+__all__ = ['rules', 'notifiers', 'occurrenceViews', 'custom', 'yearly', 'task', 'dailyNote', 'universityClass']
 

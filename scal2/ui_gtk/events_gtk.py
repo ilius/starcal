@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 # 
-# Copyright (C) 2007    Mola Pahnadayan
-# Copyright (C) 2009    Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
+# Copyright (C) 2009-2011 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -249,6 +248,8 @@ if __name__=='__main__':
         widget.event.saveConfig()
         pprint(widget.event.getData())
     dialog.connect('response', on_response)
-    dialog.run()
+    #dialog.run()
+    dialog.present()
+    gtk.main()
 
 

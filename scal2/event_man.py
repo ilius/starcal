@@ -116,21 +116,24 @@ def intersectionOfTwoTimeRangeList(timeRangeList1, timeRangeList2):
     return resultTimeRangeList
 
 
-class Occurrence:
+class EventItemBase:
+    order = 0 ## an int or str or everything, just effect to visible order in GUI
+    getData = lambda self: None
+    setData = lambda self: None
+    getCompactJson = lambda self: json.dumps(self.getData(), sort_keys=True, separators=(',', ':'))
+    getPrettyJson = lambda self: json.dumps(self.getData(), sort_keys=True, indent=4)
+    setJson = lambda self, jsonStr: self.setData(json.loads(jsonStr))
+    
+class Occurrence(EventItemBase):
     def __init__(self):
         self.event = None
     def isNull(self):
         raise NotImplementedError
-    def getDaysJdList(self):
-        return []
     def intersection(self):
         raise NotImplementedError
-    def getTimeRangeList(self):
-        return []
-    def containsMoment(self, epoch):
-        return False
-    def getJsonStr(self):
-        return ''
+    getDaysJdList = lambda self: []
+    getTimeRangeList = lambda self: []
+    containsMoment = lambda self, epoch: False
 
 class JdListOccurrence(Occurrence):
     name = 'jdList'
@@ -255,7 +258,7 @@ class TimeListOccurrence(Occurrence):
         }
     
 
-class EventRule:
+class EventRule(EventItemBase):
     name = 'custom'## FIXME
     desc = _('Custom Event Rule')## FIXME
     provide = ()
@@ -529,7 +532,7 @@ class CycleLenEventRule(EventRule):
 
 
 
-class EventNotifier:
+class EventNotifier(EventItemBase):
     name = 'custom'## FIXME
     desc = _('Custom Event Notifier')## FIXME
     params = ()
@@ -546,7 +549,7 @@ class EventNotifier:
             for (key, value) in data.items():
                 if key in self.params:
                     setattr(self, key, value)
-    getCompactJson = lambda self: json.dumps(self.getData(), separators=(',', ':'))
+
 
 
 class AlarmNotifier(EventNotifier):
@@ -605,7 +608,7 @@ class ShowInMCalEventRule(EventRule):## FIXME
     desc = _('Show in Calendar')
 """
 
-class Event:
+class Event(EventItemBase):
     name = 'custom'
     desc = _('Custom Event')
     requiredRules = ()
@@ -699,7 +702,7 @@ class Event:
     def saveConfig(self):
         if not isdir(self.eventDir):
             os.makedirs(self.eventDir)
-        open(self.eventFile, 'w').write(json.dumps(self.getData(), sort_keys=True, indent=4))
+        open(self.eventFile, 'w').write(self.getPrettyJson())
     def loadConfig(self):## skipRules arg for use in ui_gtk/event_notify.py ## FIXME
         if not isdir(self.eventDir):
             raise IOError('event dir %r is not a directory'%self.eventDir)
@@ -707,7 +710,7 @@ class Event:
             raise IOError('event file %r is not a directory'%self.eventFile)
         jsonStr = open(self.eventFile).read()
         if jsonStr:
-            self.setData(json.loads(jsonStr))## FIXME
+            self.setJson(jsonStr)## FIXME
     def addRule(self, rule):
         (ok, msg) = self.checkRulesDependencies(newRule=rule)
         if ok:
@@ -781,28 +784,29 @@ class Event:
 class YearlyEvent(Event):
     name = 'yearly'
     desc = _('Yearly Event (Anniversary)')
-    requiredRules = ('year', 'month')
-    def setYear(self, year):
-        self.getRulesDict()['year'].year = year
-    def setMonth(self, month):
-        self.getRulesDict()['month'].month = month
-    def setIcon(self, icon):
-        self.icon = icon
-    def getYear(self):
-        return self.getRulesDict()['year'].year
+    requiredRules = ('month', 'day')
     def getMonth(self):
         return self.getRulesDict()['month'].month
+    def setMonth(self, month):
+        self.getRulesDict()['month'].month = month
+    def getDay(self):
+        return self.getRulesDict()['day'].day
+    def setDay(self, day):
+        self.getRulesDict()['day'].day = day
     def getIcon(self):
         return self.icon
+    def setIcon(self, icon):
+        self.icon = icon
+
 
 class DailyNoteEvent(YearlyEvent):
     name = 'dailyNote'
     desc = _('Daily Note')
     requiredRules = ('year', 'month', 'day')
-    def setDay(self, day):
-        self.getRulesDict()['day'].day = day
-    def getDay(self):
-        return self.getRulesDict()['day'].day
+    def getYear(self):
+        return self.getRulesDict()['year'].year
+    def setYear(self, year):
+        self.getRulesDict()['year'].year = year
 
 class TaskEvent(DailyNoteEvent):
     ## Y/m/d H:M for H:M           ==> start, end

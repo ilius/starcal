@@ -7,21 +7,51 @@ from scal2 import event_man
 import gtk
 from gtk import gdk
 
-class YearlyEventWidget(gtk.VBox):
+from scal2.ui_gtk.event_extenders.common import EventWidget, EventTagsAndIconSelect
+
+
+class YearlyEventWidget(EventWidget):
     def __init__(self, event):## FIXME
-        gtk.VBox.__init__(self)
+        EventWidget.__init__(self, event)
         ################
-        self.event = event
-        ################
-        #hbox = 
+        self.tagIconBox = EventTagsAndIconSelect()
+        self.pack_start(self.tagIconBox, 0, 0)
+        ###
+        self.pack_start(gtk.Label(_('Month')), 0, 0)
+        self.monthCombo = gtk.combo_box_new_text()
+        self.pack_start(self.monthCombo, 0, 0)
+        ###
+        self.pack_start(gtk.Label(''), 1, 1)
+        ###
+        self.pack_start(gtk.Label(_('Day')), 0, 0)
+        spin = gtk.SpinButton()
+        spin.set_increments(1, 10)
+        spin.set_range(1, 31)
+        spin.set_digits(0)
+        spin.set_direction(gtk.TEXT_DIR_LTR)
+        self.daySpin = spin
+        self.pack_start(spin, 0, 0)
+        ###
+        self.pack_start(gtk.Label(''), 1, 1)
+        ###
+        
         
         
         
         self.updateWidget()
     def updateWidget(self):## FIXME
-        pass
+        EventWidget.updateWidget(self)
     def updateVars(self):## FIXME
-        pass
+        EventWidget.updateVars(self)
+    def modeComboChanged(self, modeCombo):## FIXME
+        module = core.modules[modeCombo.get_active()]
+        monthCombo = self.monthCombo
+        active = monthCombo.get_active()
+        for i in range(len(monthCombo.get_model())):
+            monthCombo.remove_text(0)
+        for i in range(12):
+            monthCombo.append_text(_(module.getMonthName(i+1)))
+        monthCombo.set_active(active)
 
 
 event_man.YearlyEvent.WidgetClass = YearlyEventWidget

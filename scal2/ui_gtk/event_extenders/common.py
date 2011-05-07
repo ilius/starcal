@@ -28,6 +28,57 @@ def set_tooltip(widget, text):
             myRaise(__file__)
 
 
+class EventWidget(gtk.VBox):
+    def __init__(self, event):
+        gtk.VBox.__init__(self)
+        self.event = event
+        ###########
+        hbox = gtk.HBox()
+        ###
+        self.enableCheck = gtk.CheckButton(_('Enable'))
+        self.enableCheck.set_active(True)
+        hbox.pack_start(self.enableCheck, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        ###
+        hbox.pack_start(gtk.Label(_('Calendar Type')+':'), 0, 0)
+        combo = gtk.combo_box_new_text()
+        for module in core.modules:
+            combo.append_text(_(module.desc))
+        combo.set_active(core.primaryMode)
+        hbox.pack_start(combo, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.modeCombo = combo
+        ###
+        self.pack_start(hbox, 0, 0)
+        ###########
+        hbox = gtk.HBox()
+        hbox.pack_start(gtk.Label(_('Summary')), 0, 0)
+        self.summuryEntry = gtk.Entry()
+        hbox.pack_start(self.summuryEntry, 1, 1)
+        self.pack_start(hbox, 0, 0)
+        ###########
+        hbox = gtk.HBox()
+        hbox.pack_start(gtk.Label(_('Description')), 0, 0)
+        textview = gtk.TextView()
+        textview.set_wrap_mode(gtk.WRAP_WORD)
+        self.descriptionBuff = textview.get_buffer()
+        hbox.pack_start(textview, 1, 1)
+        self.pack_start(hbox, 0, 0)
+        ###########
+        self.modeCombo.connect('changed', self.modeComboChanged)## right place? before updateWidget? FIXME
+    def updateWidget(self):
+        self.enableCheck.set_active(self.event.enable)
+        self.modeCombo.set_active(self.event.mode)
+        self.summuryEntry.set_text(self.event.summary)
+        self.descriptionBuff.set_text(self.event.description)
+    def updateVars(self):
+        self.event.enable = self.enableCheck.get_active()
+        self.event.mode = self.modeCombo.get_active()
+        self.event.summary = self.summuryEntry.get_text()
+        self.event.description = buffer_get_text(self.descriptionBuff)
+    def modeComboChanged(self, combo):## FIXME
+        pass
+
 class IconSelectButton(gtk.Button):
     def __init__(self, filename=''):
         gtk.Button.__init__(self)
@@ -275,7 +326,7 @@ class TagsListBox(gtk.VBox):
 
 class TagEditorDialog(gtk.Dialog):
     def __init__(self, eventType=''):
-        gtk.Dialog.__init__(self)
+        gtk.Dialog.__init__(self, title=_('Tags'))
         self.tags = []
         self.tagsBox = TagsListBox(eventType)
         self.vbox.pack_start(self.tagsBox, 1, 1)
@@ -298,7 +349,7 @@ class ViewEditTagsHbox(gtk.HBox):
     def __init__(self, eventType=''):
         gtk.HBox.__init__(self)
         self.tags = []
-        self.pack_start(gtk.Label(_('Tags:  ')), 0, 0)
+        self.pack_start(gtk.Label(_('Tags')+':  '), 0, 0)
         self.tagsLabel = gtk.Label('')
         self.pack_start(self.tagsLabel, 1, 1)
         self.dialog = TagEditorDialog(eventType)
@@ -312,7 +363,7 @@ class ViewEditTagsHbox(gtk.HBox):
     def editButtonClicked(self, widget):
         self.dialog.present()
     def dialogResponse(self, dialog, resp):
-        print 'dialogResponse', dialog, resp
+        #print 'dialogResponse', dialog, resp
         if resp==gtk.RESPONSE_OK:
             self.setData(dialog.getData())
         dialog.hide()
@@ -329,14 +380,18 @@ if __name__ == '__main__':
     from pprint import pformat
     if core.rtl:
         gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
-    dialog = gtk.Dialog()
-    widget = ViewEditTagsHbox()
-    #widget = EventTagsAndIconSelect()
+    dialog = gtk.Window()
+    dialog.vbox = gtk.VBox()
+    dialog.add(dialog.vbox)
+    #widget = ViewEditTagsHbox()
+    widget = EventTagsAndIconSelect()
     #widget = TagsListBox('task')
     dialog.vbox.pack_start(widget, 1, 1)
-    dialog.vbox.show()
+    #dialog.vbox.show_all()
     #dialog.resize(300, 500)
-    dialog.run()
+    #dialog.run()
+    dialog.show_all()
+    gtk.main()
     print pformat(widget.getData())
 
 

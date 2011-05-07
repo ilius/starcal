@@ -10,19 +10,19 @@ from scal2.core import pixDir
 from scal2 import event_man
 from scal2 import ui
 
-from scal2.ui_gtk.event_extenders.common import buffer_get_text, IconSelectButton, TagsListBox
+from scal2.ui_gtk.event_extenders.common import EventWidget, IconSelectButton, TagsListBox, ViewEditTagsHbox
 
 import gtk
 from gtk import gdk
 
 
 
-class CustomEventWidget(gtk.VBox):
+
+class CustomEventWidget(EventWidget):
     groups = [gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL), gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)]
     def __init__(self, event, autoCheck=True):
-        gtk.VBox.__init__(self)
+        EventWidget.__init__(self, event)
         ################
-        self.event = event
         self.autoCheck = autoCheck
         ######
         self.ruleAddBox = gtk.HBox()
@@ -50,41 +50,12 @@ class CustomEventWidget(gtk.VBox):
             notifiersBox.pack_start(hbox, 0, 0)
         ###########
         hbox = gtk.HBox()
-        ###
-        self.enableCheck = gtk.CheckButton(_('Enable'))
-        self.enableCheck.set_active(True)
-        hbox.pack_start(self.enableCheck, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        ###
-        hbox.pack_start(gtk.Label(_('Calendar Type')+':'), 0, 0)
-        combo = gtk.combo_box_new_text()
-        for module in core.modules:
-            combo.append_text(_(module.desc))
-        combo.set_active(core.primaryMode)
-        hbox.pack_start(combo, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.modeCombo = combo
-        ###
         hbox.pack_start(gtk.Label(_('Icon')+':'), 0, 0)
         self.iconSelect = IconSelectButton()
         #print join(pixDir, self.defaultIcon)
         hbox.pack_start(self.iconSelect, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         ###
-        self.pack_start(hbox, 0, 0)
-        ###########
-        hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Summary')), 0, 0)
-        self.summuryEntry = gtk.Entry()
-        hbox.pack_start(self.summuryEntry, 1, 1)
-        self.pack_start(hbox, 0, 0)
-        ###########
-        hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Description')), 0, 0)
-        textview = gtk.TextView()
-        textview.set_wrap_mode(gtk.WRAP_WORD)
-        self.descriptionBuff = textview.get_buffer()
-        hbox.pack_start(textview, 1, 1)
         self.pack_start(hbox, 0, 0)
         ###########
         '''
@@ -94,12 +65,15 @@ class CustomEventWidget(gtk.VBox):
         self.tagsEntry = gtk.Entry()
         hbox.pack_start(self.tagsEntry, 1, 1)
         self.pack_start(hbox, 0, 0)
-        '''
+        ###
         exp = gtk.Expander(_('Tags'))
         exp.set_expanded(True)
         self.tagsBox = TagsListBox()
         exp.add(self.tagsBox)
         self.pack_start(exp, 1, 1)
+        '''
+        self.tagsBox = ViewEditTagsHbox()
+        self.pack_start(self.tagsBox, 0, 0)
         ###########
         self.rulesFrame = gtk.Expander(_('Rules'))
         self.rulesFrame.set_expanded(True)
@@ -131,7 +105,6 @@ class CustomEventWidget(gtk.VBox):
         #############
         self.updateWidget()
         #############
-        self.modeCombo.connect('changed', self.modeComboChanged)
         self.addRuleCombo.connect('changed', self.addRuleComboChanged)
         self.ruleAddButton.connect('clicked', self.addClicked)
     def makeRuleHbox(self, rule):
@@ -190,12 +163,9 @@ class CustomEventWidget(gtk.VBox):
                 hbox.inputWidget.updateVars()
                 self.event.notifiers.append(hbox.inputWidget.notifier)
     def updateWidget(self):
-        ## self.enableCheck  self.modeCombo  self.iconSelect  self.summuryEntry  self.descriptionBuff
-        self.enableCheck.set_active(self.event.enable)
-        self.modeCombo.set_active(self.event.mode)
+        EventWidget.updateWidget(self)
         self.iconSelect.set_filename(self.event.icon)
-        self.summuryEntry.set_text(self.event.summary)
-        self.descriptionBuff.set_text(self.event.description)
+        self.tagsBox.setData(self.event.tags)
         ####
         if hasattr(self, 'rulesBox'):
             self.rulesBox.destroy()
@@ -204,11 +174,9 @@ class CustomEventWidget(gtk.VBox):
         ####
         self.updateNotifiersWidget()
     def updateVars(self):
-        self.event.enable = self.enableCheck.get_active()
-        self.event.mode = self.modeCombo.get_active()
+        EventWidget.updateVars(self)
         self.event.icon = self.iconSelect.get_filename()
-        self.event.summary = self.summuryEntry.get_text()
-        self.event.description = buffer_get_text(self.descriptionBuff)
+        self.event.tags = self.tagsBox.getData()
         ####
         self.updateRules()
         self.updateNotifiers()
