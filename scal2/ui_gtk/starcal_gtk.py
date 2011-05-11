@@ -24,6 +24,7 @@ from os.path import join, isfile
 from subprocess import Popen
 from math import pi
 
+from scal2.utils import toStr, toUnicode
 from scal2 import core
 
 from scal2.locale_man import rtl, lang #, loadTranslator ## import scal2.locale_man after core
@@ -486,9 +487,8 @@ class DateLabel(gtk.Label):
     def copy(self, label):
         start = self.get_property('selection-bound')
         end = self.get_property('cursor-position')
-        self.clipboard.set_text(self.get_label()[start:end])
-    def copyAll(self, label):
-        self.clipboard.set_text(self.get_label())
+        self.clipboard.set_text(toStr(toUnicode(self.get_text())[start:end]))
+    copyAll = lambda self, label: self.clipboard.set_text(self.get_label())
 
 
 
@@ -741,15 +741,23 @@ class YearMonthLabelBox(gtk.HBox, MainWinItem):
             self.wgroup[i-1].append(sep)
             self.wgroup[i].append(sep) ##??????????
             #if i==1: self.vsep0 = sep
-            #############################
-            self.yearLabel[i] = IntLabel()
-            self.yearLabel[i].connect('changed', self.yearLabelChange, i)
-            self.pack_start(self.yearLabel[i], 0, 0)
-            self.wgroup[i].append(self.yearLabel[i])
-            self.monthLabel[i] = MonthLabel(ui.shownCals[i]['mode'])
-            self.monthLabel[i].connect('changed', self.monthLabelChange)
-            self.pack_start(self.monthLabel[i], 0, 0)
-            self.wgroup[i].append(self.monthLabel[i])
+            ###############
+            label = IntLabel()
+            self.yearLabel[i] = label
+            label.connect('changed', self.yearLabelChange, i)
+            self.pack_start(label, 0, 0)
+            self.wgroup[i].append(label)
+            ###############
+            label = gtk.Label('')
+            label.set_property('width-request', 5)
+            self.pack_start(label, 0, 0)
+            self.wgroup[i].append(label)
+            ###############
+            label = MonthLabel(ui.shownCals[i]['mode'])
+            self.monthLabel[i] = label
+            label.connect('changed', self.monthLabelChange)
+            self.pack_start(label, 0, 0)
+            self.wgroup[i].append(label)
         #############################
         if showYmArrows:
             self.arrowL.connect('pressed', self.yearButtonPress,-1)
@@ -1467,7 +1475,7 @@ class MainWin(gtk.Window):
             self.unstick()
             ui.winSticky = False
         ui.saveLiveConf()
-    def updateMenuSize(self):
+    def updateMenuSize(self):## DIRTY FIXME
         ## To calc/update menus size (width is used)
         getMenuPos = lambda widget: (screenW, 0, True)
         self.menuMain.popup(None, None, getMenuPos, 3, 0)
@@ -1574,7 +1582,9 @@ class MainWin(gtk.Window):
     def trayInit(self):
         if self.trayMode==2:
             self.sicon = gtk.StatusIcon()
-            ##self.sicon.set_blinking(True) ## for Alarms
+            ##self.sicon.set_blinking(True) ## for Alarms ## some problem with gnome-shell
+            #self.sicon.set_name('starcal2')## Warning: g_object_notify: object class `GtkStatusIcon' has no property named `name'
+            self.sicon.set_title('StarCalendar')
             self.sicon.set_visible(True)## is needed ????????
             self.sicon.connect('activate', self.trayClicked)
             self.sicon.connect('popup-menu', self.trayPopup)

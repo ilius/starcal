@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import os
-from os.path import isfile, join
+from os.path import join, isfile, isdir
 import locale, gettext
 from paths import *
 from scal2.utils import StrOrderedDict, toStr
