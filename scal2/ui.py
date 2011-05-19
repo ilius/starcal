@@ -19,9 +19,9 @@
 
 from time import time
 
-import sys, os, os.path
+import sys, os, os.path, shutil
 from os import listdir
-from os.path import dirname, join, isfile
+from os.path import dirname, join, isfile, isdir
 from xml.dom.minidom import parse
 
 from scal2.utils import NullObj
@@ -31,10 +31,11 @@ import scal2.locale_man
 from scal2.locale_man import tr as _
 
 from scal2 import core
-from scal2.core import myRaise, getMonthLen, getNextMonth, getPrevMonth
+from scal2.core import APP_NAME, myRaise, getMonthLen, getNextMonth, getPrevMonth
 
 #from scal2 import event_man
 
+uiName = ''
 null = NullObj()
 
 invertColor = lambda r, g, b: (255-r, 255-g, 255-b)
@@ -123,14 +124,72 @@ def saveLiveConfLoop():
         return False ## Finish loop
     return True ## Continue loop
 
-    
-
-
 def checkNeedRestart():
     for key in needRestartPref.keys():
         if needRestartPref[key] != eval(key):
             print '"%s", "%s", "%s"'%(key, needRestartPref[key], eval(key))
             return True
+    return False
+
+def addStartup():
+    #print 'psys =', psys
+    if psys=='Windows':
+        print 'its windows'
+        #fname = APP_NAME + ('-qt.pyw' if uiName=='qt' else '.pyw') ## FIXME
+        fname = APP_NAME + '.pyw'
+        if not isdir(winStartupDir):
+            os.makedirs(winStartupDir)
+        #shutil.copy(join(rootDir, fname), winStartupDir)
+        open(join(winStartupDir, fname), 'w').write('''import sys
+if sys.version_info[0] != 2: sys.exit(1)
+sys.path.append(%r)
+sys.exit(__import__('scal2.ui_%s.starcal_%s', fromlist=['main']).main())'''%(rootDir, uiName, uiName))
+        #print winStartupDir
+        return True
+    elif isdir('%s/.config'%homeDir):## sys=='Linux' ## maybe Gnome/KDE on Solaris, *BSD, ...
+        print '~/.config found'
+        text = '''[Desktop Entry]
+Type=Application
+Name=StarCalendar %s
+Icon=%s
+Exec="%s" --no-tray-check'''%(core.VERSION, APP_NAME, core.COMMAND)## double quotes needed when the exec path has space
+        try:
+            os.makedirs(comDeskDir)
+        except:
+            pass
+        try:
+            fp = open(comDesk, 'w')
+        except:
+            core.myRaise(__file__)
+            return False
+        else:
+            fp.write(text)
+            return True
+    elif psys=='Darwin':## FIXME
+        pass
+    return False
+
+
+def removeStartup():
+    if psys=='Windows':
+        if isdir(winStartupDir):
+            for fname in os.listdir(winStartupDir):
+                if fname.startswith(APP_NAME):
+                    os.remove(join(winStartupDir, fname))
+    elif isfile(comDesk):
+        os.remove(comDesk)
+        return
+
+
+
+def checkStartup():
+    if psys=='Windows':
+        if isdir(winStartupDir):
+            for fname in os.listdir(winStartupDir):
+                if fname.startswith(APP_NAME):
+                    return True
+    elif isfile(comDesk):
+        return True
     return False
 
 #######################################################################
@@ -370,8 +429,9 @@ todayCell = cell = cellCache.getTodayCell() ## FIXME
 ###########################
 autoLocale = True
 logo = '%s/starcal2.png'%pixDir
-comDesk='%s/.config/autostart/starcal2.desktop'%homeDir
-#kdeDesk='%s/.kde/Autostart/starcal2.desktop'%homeDir
+comDeskDir = '%s/.config/autostart'%homeDir
+comDesk = '%s/%s.desktop'%(comDeskDir, APP_NAME)
+#kdeDesk='%s/.kde/Autostart/%s.desktop'%(homeDir, APP_NAME)
 ###########################
 #themeDir = join(rootDir, 'themes')
 #theme = None

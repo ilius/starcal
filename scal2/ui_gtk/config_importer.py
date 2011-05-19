@@ -23,14 +23,14 @@ from os.path import join, isfile, isdir
 
 
 from scal2.config_importer import importConfigFrom15, getOldVersion
+from scal2.paths import *
 
 import gtk
 
 rootDir = dirname(dirname(dirname(__file__)))
 langDir = join(rootDir, 'lang')
 
-homeDir = os.getenv('HOME')
-confDir = join(homeDir, '.starcal2')
+
 pixDir = os.path.join(rootDir, 'pixmaps')
 
 gtk.window_set_default_icon_from_file('%s/starcal2.png'%pixDir)

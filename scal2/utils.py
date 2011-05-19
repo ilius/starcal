@@ -43,6 +43,12 @@ class FallbackLogger:
     def debug(self, text):
         print text
 
+def myRaise(File=None):
+    i = sys.exc_info()
+    if File==None:
+        sys.stderr.write('line %s: %s: %s\n'%(i[2].tb_lineno, i[0].__name__, i[1]))
+    else:
+        sys.stderr.write('File "%s", line %s: %s: %s\n'%(File, i[2].tb_lineno, i[0].__name__, i[1]))
 
 class StrOrderedDict(dict):
     ## A dict from strings to objects, with ordered keys

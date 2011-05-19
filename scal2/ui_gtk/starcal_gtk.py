@@ -71,7 +71,7 @@ iconSizeList = [
 iconSizeDict = dict(iconSizeList)
 
 
-
+ui.uiName = 'gtk'
 
 
 def show_event(widget, event):
@@ -1784,7 +1784,7 @@ rootWindow = gdk.get_default_root_window() ## Good Place?????
 
 
 
-if __name__ == '__main__':
+def main():
     '''
     try:
         import psyco
@@ -1797,10 +1797,10 @@ if __name__ == '__main__':
         psyco_found=True'''
     if len(sys.argv)>1:
         if sys.argv[1]=='--no-tray': ## to tray icon
-            main = MainWin(trayMode=0)
+            mainWin = MainWin(trayMode=0)
             show = True
         else:
-            main = MainWin(trayMode=2)
+            mainWin = MainWin(trayMode=2)
             if sys.argv[1]=='--hide':
                 show = False
             elif sys.argv[1]=='--show':
@@ -1808,21 +1808,24 @@ if __name__ == '__main__':
             elif sys.argv[1]=='--no-tray-check':
                 show = ui.showMain
             #elif sys.argv[1]=='--html':#????????????
-            #    main.exportHtml('calendar.html') ## exportHtml(path, months, title)
+            #    mainWin.exportHtml('calendar.html') ## exportHtml(path, months, title)
             #    sys.exit(0)
             else:
-                while gtk.events_pending():## if do not this, main.sicon.is_embedded returns False
+                while gtk.events_pending():## if do not this, mainWin.sicon.is_embedded returns False
                     gtk.main_iteration_do(False)
-                show = ui.showMain or not main.sicon.is_embedded()
+                show = ui.showMain or not mainWin.sicon.is_embedded()
     else:
-        main = MainWin(trayMode=2)
+        mainWin = MainWin(trayMode=2)
         while gtk.events_pending():## if do not this, main.sicon.is_embedded returns False
             gtk.main_iteration_do(False)
-        show = ui.showMain or not main.sicon.is_embedded()
+        show = ui.showMain or not mainWin.sicon.is_embedded()
     if show:
-        main.present()
-    #main.export.exportSvg('%s/Desktop/1389-01.svg'%homeDir, [(1389, 1)])
+        mainWin.present()
+    #mainWin.export.exportSvg('%s/Desktop/1389-01.svg'%homeDir, [(1389, 1)])
     ##rootWindow.set_cursor(gdk.Cursor(gdk.LEFT_PTR))#???????????
-    sys.exit(gtk.main())
+    return gtk.main()
 
+
+if __name__ == '__main__':
+    sys.exit(main())
 

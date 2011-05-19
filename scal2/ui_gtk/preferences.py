@@ -404,36 +404,17 @@ class CheckStartupPrefItem(PrefItem):### cbStartCommon
         self.widget = w
         self.get = w.get_active
         self.set = w.set_active
-    def addStartup(self, path):
-        text='''[Desktop Entry]
-Type=Application
-Name=StarCalendar %s
-Icon=starcal
-Exec="%s" --no-tray-check'''%(core.VERSION, core.COMMAND)
-        ## double quotes needed when the path has space
-        try:
-            os.makedirs(dirname(path))
-        except:
-            pass
-        try:
-            fp = open(path, 'w')
-        except:
-            core.myRaise(__file__)
-            return False
-        else:
-            fp.write(text)
-            return True
     def updateVar(self):
         if self.widget.get_active():
-            if not self.addStartup(ui.comDesk):
+            if not ui.addStartup():
                 self.widget.set_active(False)
         else:
             try:
-                os.remove(ui.comDesk)
+                ui.removeStartup()
             except:
                 pass
     def updateWidget(self):
-        self.widget.set_active(os.path.isfile(ui.comDesk))
+        self.widget.set_active(ui.checkStartup())
 
 
 class ColorPrefItem(PrefItem):
