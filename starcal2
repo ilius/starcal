@@ -1,14 +1,2 @@
 #!/bin/bash
-main=scal2/ui_gtk/starcal_gtk.py
-myDir=`dirname "$0"`
-if [ ! -d ~/.starcal2 ] ; then
-    "$myDir/run" scal2/ui_gtk/config_importer.py
-fi
-if [ "$1" = "-q" ] ; then
-    shift
-    "$myDir/run" $main "$@" 2>> error.log
-else
-    "$myDir/run" $main "$@"
-fi
-
-
+python2 `dirname "$0"`/starcal2.py "$@"
