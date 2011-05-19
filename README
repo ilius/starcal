@@ -9,9 +9,23 @@ Installation/uninstallation on ArchLinux:
     $ sudo bash ./starcal2/install-archlinux
     $ sudo pacman -R starcal2
 
+Installation/uninstallation on openSUSE:
+    $ sudo bash ./starcal2/install-suse
+    $ sudo zypper remove starcal2
+
+Installation/uninstallation on Fedora:
+    $ sudo bash ./starcal2/install-fedora
+    $ sudo yum remove starcal2
+
 Installation/uninstallation on other distributions:
     $ sudo bash ./starcal2/install
     $ sudo bash ./starcal2/uninstall
+
+Running on Windows:
+    1- Install Python 2.6 or 2.7
+    2- Install PyGTK or PyQt4
+    3- Copy starcal2 source folder somewhere you want to keep
+    4- Send a shortcut from file starcal2.pyw or starcal2-qt.pyw (inside source folder) to you desktop
 
 
 Notes:
