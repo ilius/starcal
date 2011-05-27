@@ -26,6 +26,19 @@ APP_NAME = 'starcal2'
 psys = platform.system()## 'Linux', 'Windows', 'Darwin'
 
 srcDir = dirname(__file__)
+cwd = os.getcwd()
+if srcDir in ('.', ''):
+    srcDir = cwd
+elif os.sep=='/':
+    if srcDir.startswith('./'):
+        srcDir = cwd + srcDir[1:]
+    elif srcDir[0] != '/':
+        srcDir = join(cwd, srcDir)
+elif os.sep=='\\':
+    if srcDir.startswith('.\\'):
+        srcDir = cwd + srcDir[1:]
+#print 'srcDir=%r'%srcDir
+
 rootDir = dirname(srcDir)
 pixDir = os.path.join(rootDir, 'pixmaps')
 plugDir = os.path.join(rootDir, 'plugins')
@@ -54,7 +67,7 @@ elif os.sep=='\\':## Dos/Windows OS
     winStartupRelPath = r'\Microsoft\Windows\Start Menu\Programs\Startup'
     winStartupDir = os.getenv('APPDATA') + winStartupRelPath
     #winStartupDirSys = os.getenv('ALLUSERSPROFILE') + winStartupRelPath
-    ## copy starcal2.bat or starcal2-qt.bat (or .pyw) into winStartupDir
+    winStartupFile = join(winStartupDir, APP_NAME+'.lnk')
 else:
     raise RuntimeError('bad seperator (os.sep=="%s") !! What is your Operating System?!'%os.sep)
 

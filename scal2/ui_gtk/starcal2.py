@@ -18,19 +18,31 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+import sys
+
+if sys.version_info[0] != 2:
+    print 'Run this script with Python 2.x'
+    sys.exit(1)
+
+import os
+from os.path import join, dirname, isfile, isdir
 from time import time, localtime
-import sys, os
-from os.path import join, isfile
 from subprocess import Popen
-from math import pi
+
+sys.path.insert(0, dirname(dirname(dirname(__file__))))
+from scal2.paths import *
+
+if not isdir(confDir):
+    try:
+        __import__('scal2.ui_gtk.config_importer')
+    except:
+        myRaise()
 
 from scal2.utils import toStr, toUnicode
 from scal2 import core
-
 from scal2.locale_man import rtl, lang #, loadTranslator ## import scal2.locale_man after core
 #_ = loadTranslator(False)## FIXME
 from scal2.locale_man import tr as _
-
 
 from scal2.core import rootDir, pixDir, homeDir, myRaise, numLocale, getMonthName
 
@@ -1811,7 +1823,7 @@ def main():
             #    mainWin.exportHtml('calendar.html') ## exportHtml(path, months, title)
             #    sys.exit(0)
             else:
-                while gtk.events_pending():## if do not this, mainWin.sicon.is_embedded returns False
+                while gtk.events_pending():## if do not do this, mainWin.sicon.is_embedded will always return False
                     gtk.main_iteration_do(False)
                 show = ui.showMain or not mainWin.sicon.is_embedded()
     else:
@@ -1826,6 +1838,6 @@ def main():
     return gtk.main()
 
 
-if __name__ == '__main__':
-    sys.exit(main())
+## if __name__ == '__main__':
+sys.exit(main())
 
