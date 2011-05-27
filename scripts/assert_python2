@@ -5,7 +5,7 @@ if [ ! -f python2 ] ; then
     for V in 2.7 2.6 ; do
         if [ -f "python$V" ] ; then
             ln -s "python$V" python2
-            echo "LINKING /usr/bin/$PY TO /usr/bin/python2"
+            echo "LINKING /usr/bin/python$V TO /usr/bin/python2"
             break
         fi
     done

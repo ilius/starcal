@@ -17,7 +17,7 @@ PID=$(cat $PIDFILE 2>/dev/null)
 case "$1" in
     start)
         stat_busy "Starting $daemon_desc"
-        [ -z "$PID" ] && /usr/share/starcal2/run starcal2-daemon.py &
+        [ -z "$PID" ] && /usr/share/starcal2/scal2/starcal2-daemon.py &
         if [ $? -gt 0 ]; then
             stat_fail
         else

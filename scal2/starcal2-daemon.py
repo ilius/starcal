@@ -28,8 +28,9 @@ from gobject import timeout_add_seconds
 import glib
 from glib import MainLoop
 
-from paths import *
+sys.path.append(dirname(dirname(__file__))) ## FIXME
 
+from scal2.paths import *
 from scal2.cal_modules import to_jd, DATE_GREG
 from scal2 import event_man
 from scal2.event_man import eventsDir

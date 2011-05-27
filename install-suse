@@ -20,7 +20,8 @@ fi
 
 pkgName=starcal2
 sourceDir="`dirname \"$myPath\"`"
-version=`\$sourceDir/scal2/get_version.py`
+"$sourceDir/scripts/assert_python2"
+version=`$sourceDir/scal2/get_version.py`
 
 #echo "myPath=$myPath"
 #echo "sourceDir=$sourceDir"

@@ -17,8 +17,8 @@ pkgName=starcal2
 
 prefix=/usr ## FIXME
 sourceDir="$prefix/share/$pkgName"
-"$sourceDir/assert_python2"
-version=`\$sourceDir/scal2/get_version.py`
+"$sourceDir/scripts/assert_python2"
+version=`$sourceDir/scal2/get_version.py`
 
 
 tmpDir=/tmp/starcal2-install-plasma

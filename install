@@ -1,7 +1,10 @@
 #!/bin/bash
 
 function printUsage {
-    echo "Usage: $0 [TERGET_DIR] [--for-pkg|--portable] [--prefix=/usr/local]"
+    ## echo "Usage: $0 [TERGET_DIR] [--for-pkg|--portable] [--prefix=/usr/local]"
+    U='\033[4m' ## start Underline
+    E='\033[0;0;0m' ## End formatting
+    echo -e "Usage: $0 [${U}TERGET_DIR${E}] [--for-pkg|--portable] [--prefix=${U}/usr/local${E}]"
 }
 
 myPath="$0"
@@ -13,12 +16,15 @@ fi
 
 pkgName=starcal2
 sourceDir="`dirname \"$myPath\"`"
-"$sourceDir/assert_python2"
-version=`\$sourceDir/scal2/get_version.py`
+version=`$sourceDir/scal2/get_version.py`
+
+PY=python2
+"$sourceDir/scripts/assert_python2"
 
 
 
-options=`getopt -o '' --long 'for-pkg,portable,prefix:' -n "$0" -- "$@"`
+
+options=`getopt -o 'h' --long 'help,for-pkg,portable,prefix:' -n "$0" -- "$@"`
 if [ $? != 0 ] ; then
     printUsage
     exit 1
@@ -32,6 +38,7 @@ installType=""
 
 while true ; do
 	case "$1" in
+	    --help | -h) printUsage ; exit 0 ;;
 		--for-pkg) installType="for-pkg" ; shift ;;
 		--portable) installType="portable" ; shift ;;
 		--prefix) prefix="$2" ; shift 2 ;;
@@ -127,13 +134,13 @@ if [ -d /etc/init.d ] ; then ## Debian FIXME
     targetDaemonPath="${targetDir}/etc/init.d/$daemonName"
 elif [ -d /etc/rc.d ] ; then ## ArchLinux
     mkdir -p "${targetDir}/etc/rc.d"
-    targetDaemonPath="$sourceDir/$daemonName" "${targetDir}/etc/rc.d/$daemonName"
+    targetDaemonPath="${targetDir}/etc/rc.d/$daemonName"
 fi
 if [ -n "$targetDaemonPath" ] ; then
     if [ -e "$targetDaemonPath" ] ; then
         rm "$targetDaemonPath"
     fi
-    cp -f "$sourceDir/$daemonName" "$targetDaemonPath"
+    cp -f "$sourceDir/scripts/$daemonName" "$targetDaemonPath"
 fi
 
 mkdir -p "${shareDir}/icons/hicolor"
@@ -149,26 +156,20 @@ cp -f "$sourceDir/pixmaps/$pkgName.png" "${shareDir}/pixmaps/$pkgName.png"
 
 
 if [ "$installType" = "for-pkg" ] ; then
-    runStr="/usr/share/$pkgName/run"
+    runDirStr="/usr/share/$pkgName"
 elif [ "$installType" = "portable" ] ; then
-    runStr="\"\`dirname \\\"\$0\\\"\`/../share/$pkgName/run"
+    runDirStr="\"\`dirname \\\"\$0\\\"\`/../share/$pkgName"
 else
-    runStr="\"${shareDir}/$pkgName/run\""
+    runDirStr="${shareDir}/$pkgName"
 fi
 
 
 echo "#!/bin/bash
-if [ ! -d ~/.starcal2 ] ; then
-    $runStr scal2/ui_gtk/config_importer.py
-fi
-$runStr scal2/ui_gtk/starcal_gtk.py \"\$@\"" > "${targetPrefix}/bin/$pkgName"
+$PY $runDirStr/scal2/ui_gtk/starcal2.py \"\$@\"" > "${targetPrefix}/bin/$pkgName"
 
 
 echo "#!/bin/bash
-if [ ! -d ~/.starcal2 ] ; then
-    $runStr scal2/ui_qt/config_importer.py
-fi
-$runStr scal2/ui_qt/starcal_qt.py \"\$@\"" > "${targetPrefix}/bin/$pkgName-qt"
+$PY $runDirStr/scal2/ui_qt/starcal2.py \"\$@\"" > "${targetPrefix}/bin/$pkgName-qt"
 
 
 chmod 755 "${targetPrefix}/bin/$pkgName"

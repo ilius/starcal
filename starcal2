@@ -1,2 +1,2 @@
 #!/bin/bash
-python2 `dirname "$0"`/starcal2.py "$@"
+python2 `dirname "$0"`/scal2/ui_gtk/starcal2.py "$@"

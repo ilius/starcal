@@ -5,8 +5,8 @@ if [ "${myPath:0:2}" == "./" ] ; then
 elif [ "${myPath:0:1}" != "/" ] ; then
     myPath=$PWD/$myPath
 fi
-rootDir=`dirname "$myPath"`
+myDir=`dirname "$myPath"`
+rootDir=`dirname "$myDir"`
 cd "$rootDir"
 PYTHONPATH=$PYTHONPATH:$rootDir python2 "$@"
 cd - > /dev/null
-
