@@ -128,12 +128,18 @@ weekNumberMode=%r'''%(holidayWeekDays, firstWeekDayAuto, firstWeekDay, weekNumbe
             open(ui_conf, 'w').write(text)
         ui_gtk_conf = join(confDir, 'ui-gtk.conf')
         if overwrite or not isfile(ui_gtk_conf):
+            from scal2.ui_gtk.utils import stock_arrow_repr
             open(ui_gtk_conf, 'w').write(\
 '''dateFormat=%r
 clockFormat=%r
-prevStock=%r
-nextStock=%r
-'''%(dateFormat, clockFormat, prevStock, nextStock))
+prevStock=%s
+nextStock=%s
+'''%(
+        dateFormat,
+        clockFormat,
+        stock_arrow_repr(prevStock),
+        stock_arrow_repr(nextStock),
+    ))
 
 
     live_conf_old = join(confDirOld, 'live-confg')

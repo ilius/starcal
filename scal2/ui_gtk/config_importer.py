@@ -100,4 +100,5 @@ if win.run()==gtk.RESPONSE_OK:
         else:
             open(join(confDir, 'locale.conf'), 'w').write('lang=%r'%langCode)
 
+win.destroy()
 
