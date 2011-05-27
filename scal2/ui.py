@@ -131,23 +131,30 @@ def checkNeedRestart():
             return True
     return False
 
+def winMakeShortcut(srcPath, dstPath, iconPath=None):
+    from win32com.client import Dispatch
+    shell = Dispatch('WScript.Shell')
+    shortcut = shell.CreateShortCut(dstPath)
+    shortcut.Targetpath = srcPath
+    #shortcut.WorkingDirectory = ...
+    shortcut.save()
+    
+    
+
 def addStartup():
-    #print 'psys =', psys
     if psys=='Windows':
-        print 'its windows'
-        #fname = APP_NAME + ('-qt.pyw' if uiName=='qt' else '.pyw') ## FIXME
-        fname = APP_NAME + '.pyw'
         if not isdir(winStartupDir):
             os.makedirs(winStartupDir)
-        #shutil.copy(join(rootDir, fname), winStartupDir)
-        open(join(winStartupDir, fname), 'w').write('''import sys
-if sys.version_info[0] != 2: sys.exit(1)
-sys.path.append(%r)
-sys.exit(__import__('scal2.ui_%s.starcal_%s', fromlist=['main']).main())'''%(rootDir, uiName, uiName))
-        #print winStartupDir
-        return True
+        fname = APP_NAME + ('-qt' if uiName=='qt' else '') + '.pyw'
+        fpath = join(rootDir, fname)
+        #open(winStartupFile, 'w').write('execfile(%r, {"__file__":%r})'%(fpath, fpath))
+        try:
+            winMakeShortcut(fpath, winStartupFile)
+        except:
+            return False
+        else:
+            return True
     elif isdir('%s/.config'%homeDir):## sys=='Linux' ## maybe Gnome/KDE on Solaris, *BSD, ...
-        print '~/.config found'
         text = '''[Desktop Entry]
 Type=Application
 Name=StarCalendar %s
@@ -169,25 +176,16 @@ Exec="%s" --no-tray-check'''%(core.VERSION, APP_NAME, core.COMMAND)## double quo
         pass
     return False
 
-
 def removeStartup():
-    if psys=='Windows':
-        if isdir(winStartupDir):
-            for fname in os.listdir(winStartupDir):
-                if fname.startswith(APP_NAME):
-                    os.remove(join(winStartupDir, fname))
+    if psys=='Windows':## FIXME
+        if isfile(winStartupFile):
+            os.remove(winStartupFile)
     elif isfile(comDesk):
         os.remove(comDesk)
-        return
-
-
 
 def checkStartup():
     if psys=='Windows':
-        if isdir(winStartupDir):
-            for fname in os.listdir(winStartupDir):
-                if fname.startswith(APP_NAME):
-                    return True
+        return isfile(winStartupFile)
     elif isfile(comDesk):
         return True
     return False

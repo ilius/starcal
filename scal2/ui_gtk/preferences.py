@@ -44,6 +44,7 @@ from scal2.ui_gtk.mywidgets import MyFontButton, MyColorButton
 from scal2.ui_gtk.drawing import newTextLayout
 from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
+from scal2.ui_gtk.utils import *
 
 def restart(main):
     main.quit()
@@ -155,27 +156,6 @@ for cmd in ('gksudo', 'kdesudo', 'gksu', 'gnomesu', 'kdesu'):
             'scal2/ui_gtk/adjust_dtime.py'
         ]
         break
-
-
-
-
-def set_tooltip(widget, text):
-    try:
-        widget.set_tooltip_text(text)## PyGTK 2.12 or above
-    except AttributeError:
-        try:
-            widget.set_tooltip(gtk.Tooltips(), text)
-        except:
-            myRaise(__file__)
-
-
-def image_from_file(path):
-    im = gtk.Image()
-    im.set_from_file(path)
-    return im
-
-
-
 
 
 ## (VAR_NAME, bool,	CHECKBUTTON_TEXT)					## CheckButton
@@ -1476,11 +1456,7 @@ class PrefDialog(gtk.Dialog):
         for item in self.herePrefItems:
             text += item.confStr()
         for key in ('prevStock', 'nextStock'):
-            value = eval(key)
-            if isinstance(key, gtk._gtk.ArrowType):
-                text += '%s=gtk.%s\n'%(key, value.value_name[4:])
-            else:
-                text += '%s=%r\n'%(key, value)
+            text += '%s=%s\n'%(key, stock_arrow_repr(eval(key)))
         text += 'adjustTimeCmd=%r\n'%adjustTimeCmd ##???????????
         open(confPath, 'w').write(text)
         ################################################### Updating Main GUI
