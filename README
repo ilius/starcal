@@ -1,5 +1,8 @@
-Download:
+Download latest codes via git:
     $ git clone git://github.com/ilius/starcal2.git
+
+Download latest snapshot (without git):
+    Goto http://github.com/ilius/starcal2 with your browser and click on Download button
 
 Installation/uninstallation on Ubuntu, Debian or other Debian-based distributions:
     $ sudo bash ./starcal2/install-debian
@@ -8,6 +11,9 @@ Installation/uninstallation on Ubuntu, Debian or other Debian-based distribution
 Installation/uninstallation on ArchLinux:
     $ sudo bash ./starcal2/install-archlinux
     $ sudo pacman -R starcal2
+    OR
+    $ yaourt starcal-git
+    $ sudo pacman -R starcal-git
 
 Installation/uninstallation on openSUSE:
     $ sudo bash ./starcal2/install-suse
@@ -19,7 +25,7 @@ Installation/uninstallation on Fedora:
 
 Installation/uninstallation on other distributions:
     $ sudo bash ./starcal2/install
-    $ sudo bash ./starcal2/uninstall
+    $ sudo /usr/share/starcal2/uninstall
 
 Running on Windows:
     1- Install Python 2.6 or 2.7
