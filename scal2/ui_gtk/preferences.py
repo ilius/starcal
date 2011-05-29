@@ -46,14 +46,6 @@ from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
 from scal2.ui_gtk.utils import *
 
-def restart(main):
-    main.quit()
-    ## sleep time ????????
-    Popen(['sh', '-c', 'sleep 0.1 ; export LANG="" ; '+sys.argv[0]])
-    sys.exit(0)
-
-
-
 ############################################################
 
 ## stock image of "Next" and "Previous" buttons(year/month)
@@ -152,7 +144,7 @@ for cmd in ('gksudo', 'kdesudo', 'gksu', 'gnomesu', 'kdesu'):
     if os.path.isfile('/usr/bin/%s'%cmd):
         adjustTimeCmd = [
             cmd,
-            join(rootDir, 'run'),
+            join(rootDir, 'scripts', 'run'),
             'scal2/ui_gtk/adjust_dtime.py'
         ]
         break
@@ -1483,7 +1475,7 @@ class PrefDialog(gtk.Dialog):
             resBut.grab_default()
             d.vbox.show_all()
             if d.run()==1:
-                restart(self.mainWin)
+                self.mainWin.restart()
             else:
                 d.destroy()
     def updatePrefGui(self):############### Updating Pref Gui (NOT MAIN GUI)

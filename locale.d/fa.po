@@ -1245,6 +1245,9 @@ msgid "_Restart"
 msgstr ""
 "شروع _دوباره"
 
+msgid "Seems that you are using a Unity desktop and StarCalendar is not allowed to use Tray icon. Press OK to add StarCalendar to Unity's white list and then restart Unity"
+msgstr ""
+"به نظر می‌رسد که شما از یک میزکار Unity استفاده می‌کنید و StarCalendar اجازهٔ استفاده از Tray Icon را ندارد. دکمهٔ تائید را فشار دهید تا StarCalendar به لیست سفید Unity اضافه شده و سپس Unity دوباره راه‌اندازی شود"
 
 
 msgid "_Details"

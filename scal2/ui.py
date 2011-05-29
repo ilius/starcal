@@ -23,6 +23,7 @@ import sys, os, os.path, shutil
 from os import listdir
 from os.path import dirname, join, isfile, isdir
 from xml.dom.minidom import parse
+from subprocess import Popen
 
 from scal2.utils import NullObj
 from scal2.paths import *
@@ -131,6 +132,10 @@ def checkNeedRestart():
             return True
     return False
 
+def restart():
+    Popen(['sh', '-c', 'sleep 0.1 ; export LANG="" ; '+sys.argv[0]])## sleep time FIXME
+    sys.exit(0)
+
 def winMakeShortcut(srcPath, dstPath, iconPath=None):
     from win32com.client import Dispatch
     shell = Dispatch('WScript.Shell')
@@ -189,6 +194,23 @@ def checkStartup():
     elif isfile(comDesk):
         return True
     return False
+
+def dayOpenEvolution(arg=None):
+    ##(y, m, d) = core.jd_to(ui.cell.jd-1, core.DATE_GREG) ## in gnome-cal opens prev day! why??
+    (y, m, d) = ui.cell.dates[core.DATE_GREG]
+    Popen(['evolution', 'calendar:///?startdate=%.4d%.2d%.2d'%(y, m, d)])
+    #Popen(['evolution', 'calendar:///?startdate=%.4d%.2d%.2dT120000Z'%(y, m, d)])
+    ## What "Time" pass to evolution? like gnome-clock: T193000Z (19:30:00) / Or ignore "Time"
+    ## evolution calendar:///?startdate=$(date +"%Y%m%dT%H%M%SZ")
+
+def dayOpenSunbird(arg=None):
+    ## does not work on latest version of Sunbird ## FIXME
+    ## and Sunbird seems to be a dead project
+    ## Opens previous day in older version
+    (y, m, d) = ui.cell.dates[core.DATE_GREG]
+    Popen(['sunbird', '-showdate', '%.4d/%.2d/%.2d'%(y, m, d)])## ????????????
+
+## How do this with KOrginizer? FIXME
 
 #######################################################################
 

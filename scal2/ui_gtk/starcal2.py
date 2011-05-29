@@ -70,7 +70,23 @@ from scal2.ui_gtk.customize import CustomizableWidgetWrapper, MainWinItem, Custo
 from scal2.ui_gtk.monthcal import MonthCal
 
 
-
+from scal2 import unity
+if unity.needToAdd():
+    dialog = gtk.Dialog('Tray Icon')
+    okB = dialog.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+    cancelB = dialog.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+    if ui.autoLocale:
+        okB.set_label(_('_OK'))
+        okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK, gtk.ICON_SIZE_BUTTON))
+        cancelB.set_label(_('_Cancel'))
+        cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL, gtk.ICON_SIZE_BUTTON))
+    label = gtk.Label(_(unity.addAndRestartText))
+    label.set_line_wrap(True)
+    dialog.vbox.pack_start(label, 1, 1)
+    dialog.vbox.show_all()
+    if dialog.run()==gtk.RESPONSE_OK:
+        unity.addAndRestart()
+    dialog.destroy()
 
 iconSizeList = [
     ('Menu', gtk.ICON_SIZE_MENU),
@@ -1101,7 +1117,7 @@ class MainWin(gtk.Window):
         self.mcal = MonthCal()
         self.mcal.connect('popup-menu-cell', self.popupMenuCell)
         self.mcal.connect('popup-menu-main', self.popupMenuMain)
-        self.mcal.connect('2button-press', self.dayOpenEvolution)
+        self.mcal.connect('2button-press', ui.dayOpenEvolution)
         self.mcal.connect('pref-update-bg-color', self.prefUpdateBgColor)
         #############################################################
         """
@@ -1279,9 +1295,9 @@ class MainWin(gtk.Window):
         menu.add(self.labelStockMenuItem('Select _Today', gtk.STOCK_HOME, self.goToday))
         menu.add(self.labelStockMenuItem('Select _Date...', gtk.STOCK_INDEX, selectDateShow))
         if isfile('/usr/bin/evolution'):##??????????????????
-            menu.add(self.labelImageMenuItem('In E_volution', 'evolution-18.png', self.dayOpenEvolution))
+            menu.add(self.labelImageMenuItem('In E_volution', 'evolution-18.png', ui.dayOpenEvolution))
         #if isfile('/usr/bin/sunbird'):##??????????????????
-        #    menu.add(self.labelImageMenuItem('In _Sunbird', 'sunbird-18.png', self.dayOpenSunbird))
+        #    menu.add(self.labelImageMenuItem('In _Sunbird', 'sunbird-18.png', ui.dayOpenSunbird))
         menu.num = 1
         self.menuCell1 = menu
         self.menuCell = menu ## may be changed later frequently, here just initialized
@@ -1296,9 +1312,9 @@ class MainWin(gtk.Window):
         menu.add(self.labelStockMenuItem('Select _Today',       gtk.STOCK_HOME,    self.goToday))
         menu.add(self.labelStockMenuItem('Select _Date...',     gtk.STOCK_INDEX, selectDateShow))
         if isfile('/usr/bin/evolution'):##??????????????????
-            menu.add(self.labelImageMenuItem('In E_volution', 'evolution-18.png', self.dayOpenEvolution))
+            menu.add(self.labelImageMenuItem('In E_volution', 'evolution-18.png', ui.dayOpenEvolution))
         #if isfile('/usr/bin/sunbird'):##??????????????????
-        #    menu.add(self.labelImageMenuItem('In _Sunbird', 'sunbird-18.png', self.dayOpenSunbird))
+        #    menu.add(self.labelImageMenuItem('In _Sunbird', 'sunbird-18.png', ui.dayOpenSunbird))
         menu.show_all()
         menu.num = 2
         self.menuCell2 = menu
@@ -1427,22 +1443,6 @@ class MainWin(gtk.Window):
                 core.allPlugList[core.plugIndex[j]].date_change_after(*date)
             except AttributeError:
                 pass
-    def dayOpenEvolution(self, arg=None):
-        ##(y, m, d) = core.jd_to(ui.cell.jd-1, core.DATE_GREG) ## in gnome-cal opens prev day! why??
-        (y, m, d) = ui.cell.dates[core.DATE_GREG]
-        Popen(['evolution', 'calendar:///?startdate=%.4d%.2d%.2d'%(y, m, d)])
-        #Popen(['evolution', 'calendar:///?startdate=%.4d%.2d%.2dT120000Z'%(y, m, d)])
-        ## What "Time" pass to evolution? like gnome-clock: T193000Z (19:30:00) / Or ignore "Time"
-        ## evolution calendar:///?startdate=$(date +"%Y%m%dT%H%M%SZ")
-        #print 'dayOpenEvolution', (y, m, d)
-    def dayOpenSunbird(self, arg=None):
-        ## does not work on latest version of Sunbird ## FIXME
-        ## and Sunbird seems to be a dead project
-        ## Opens previous day
-        (y, m, d) = ui.cell.dates[core.DATE_GREG]
-        Popen(['sunbird', '-showdate', '%.4d/%.2d/%.2d'%(y, m, d)])## ????????????
-        #print 'dayOpenSunbird', (y, m, d)
-        ## How do this with KOrginizer ????????????????????????????????
     def popupMenuCell(self, mcal, etime, x, y):
         ui.focusTime = time()
         menu = self.menuCell
@@ -1703,6 +1703,9 @@ class MainWin(gtk.Window):
         if self.trayMode>1 and self.sicon:
             self.sicon.set_visible(False) ## needed for windows ## before or after main_quit ?
         return gtk.main_quit()
+    def restart(self):
+        self.quit()
+        ui.restart()
     def adjustTime(self, widget=None, event=None):
         Popen(preferences.adjustTimeCmd)
     exportClicked = lambda self, widget=None: self.export.showDialog(ui.cell.year, ui.cell.month)
