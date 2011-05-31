@@ -2,6 +2,10 @@
 ## This script builds DEB package on a debian-based distribution
 ## (like debian, ubuntu, mint, ...) and installs the package
 
+function getDirTotalSize(){
+    du -bs "$1" | python2 -c "import sys;print raw_input().split('\t')[0]"
+}
+
 if [ "$UID" != "0" ] ; then
   echo "Run this script as root"
   exit 1
@@ -27,13 +31,18 @@ tmpDir=/tmp/starcal2-install-deb
 mkdir -p $tmpDir
 mkdir -p "$tmpDir/DEBIAN"
 
+"$sourceDir/install" "$tmpDir" "--for-pkg"
+chown -R root "$tmpDir"
+installedSize=`getDirTotalSize "$tmpDir"` ## only /usr ? FIXME
 
+#getDirTotalSize "$tmpDir"
+#getDirTotalSize "$tmpDir/usr"
 
 echo "Package: $pkgName
 Version: $version
 Architecture: all
 Maintainer: Saeed Rasooli <saeed.gnu@gmail.com>
-Installed-Size: 
+Installed-Size: $installedSize
 Depends: python(>=2.5), python(<<3.0), python-gtk2(>=2.8), python-numpy
 Recommends: itools
 Section: Utilities
@@ -47,9 +56,6 @@ Description: A full-featured international calendar writen in Python
  Homepage: http://starcal.sourceforge.net/
  Author: Saeed Rasooli <saeed.gnu@gmail.com>" > "$tmpDir/DEBIAN/control"
 
-
-"$sourceDir/install" "$tmpDir" "--for-pkg"
-chown -R root "$tmpDir"
 pkgFile=${pkgName}_${version}-1_all.deb
 dpkg-deb -b "$tmpDir" "$pkgFile"
 if [ "$?" = "0" ] ; then
