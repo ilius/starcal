@@ -19,6 +19,7 @@
 
 import gtk
 
+from scal2.locale_man import tr as _
 
 class LocationDialog(gtk.Dialog):
     EXIT_OK     = 0
