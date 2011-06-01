@@ -135,7 +135,7 @@ sin = lambda d: math.sin(dtr(d))
 cos = lambda d: math.cos(dtr(d))
 tan = lambda d: math.tan(dtr(d))
 
-arcsin = lambda d: rtd(math.asin(d))
+arcsin = lambda d: rtd(math.asin(d))## FIXME
 arccos = lambda d: rtd(math.acos(d))
 arctan = lambda d: rtd(math.atan(d))
 
@@ -223,7 +223,13 @@ class PrayTimes:
     def sunAngleTime(self, angle, time, direction='cw'):
         decl = self.sunPosition(self.jDate+time)['declination']
         noon = self.midDay(time)
-        t = 1.0/15 * arccos((-sin(angle)- sin(decl)*sin(self.lat)) / (cos(decl)*cos(self.lat)))
+        ratio = (-sin(angle) - sin(decl)*sin(self.lat)) / (cos(decl)*cos(self.lat))
+        ratio = min(max(ratio, -1.0), 1.0)
+        #try:
+        t = arccos(ratio) / 15.0
+        #except:
+        #    print 'sunAngleTime: angle=%s, time=%s, direction=%s ==> ratio=%s'%(angle, time, direction, ratio)
+        #    return 0
         return noon + dirSign(direction)*t
 
     # compute asr time 

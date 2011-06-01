@@ -24,6 +24,7 @@ from scal2.locale_man import tr as _
 from pray_times_backend import timeNames, methodsList
 
 dataDir = dirname(__file__)
+earthR = 6370
 
 class LocationDialog(gtk.Dialog):
     EXIT_OK     = 0
