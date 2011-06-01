@@ -32,7 +32,7 @@ import scal2.locale_man
 from scal2.locale_man import tr as _
 
 from scal2 import core
-from scal2.core import APP_NAME, myRaise, getMonthLen, getNextMonth, getPrevMonth
+from scal2.core import APP_NAME, myRaise, myRaiseTback, getMonthLen, getNextMonth, getPrevMonth
 
 #from scal2 import event_man
 
@@ -196,10 +196,10 @@ def checkStartup():
     return False
 
 def dayOpenEvolution(arg=None):
-    ##(y, m, d) = core.jd_to(ui.cell.jd-1, core.DATE_GREG) ## in gnome-cal opens prev day! why??
-    (y, m, d) = ui.cell.dates[core.DATE_GREG]
-    Popen(['evolution', 'calendar:///?startdate=%.4d%.2d%.2d'%(y, m, d)])
-    #Popen(['evolution', 'calendar:///?startdate=%.4d%.2d%.2dT120000Z'%(y, m, d)])
+    ##(y, m, d) = core.jd_to(cell.jd-1, core.DATE_GREG) ## in gnome-cal opens prev day! why??
+    (y, m, d) = cell.dates[core.DATE_GREG]
+    Popen('LANG=en_US.UTF-8 evolution calendar:///?startdate=%.4d%.2d%.2d'%(y, m, d), shell=True)## FIXME
+    ## 'calendar:///?startdate=%.4d%.2d%.2dT120000Z'%(y, m, d)
     ## What "Time" pass to evolution? like gnome-clock: T193000Z (19:30:00) / Or ignore "Time"
     ## evolution calendar:///?startdate=$(date +"%Y%m%dT%H%M%SZ")
 
@@ -207,8 +207,8 @@ def dayOpenSunbird(arg=None):
     ## does not work on latest version of Sunbird ## FIXME
     ## and Sunbird seems to be a dead project
     ## Opens previous day in older version
-    (y, m, d) = ui.cell.dates[core.DATE_GREG]
-    Popen(['sunbird', '-showdate', '%.4d/%.2d/%.2d'%(y, m, d)])## ????????????
+    (y, m, d) = cell.dates[core.DATE_GREG]
+    Popen('LANG=en_US.UTF-8 sunbird -showdate %.4d/%.2d/%.2d'%(y, m, d), shell=True)## FIXME
 
 ## How do this with KOrginizer? FIXME
 
@@ -237,7 +237,10 @@ class Cell:## status and information of a cell
         for k in core.plugIndex:
             plug = core.allPlugList[k]
             if plug.enable:
-                plug.update_cell(self)
+                try:
+                    plug.update_cell(self)
+                except:
+                    myRaiseTback()
     def format(self, binFmt, mode, tm=null):## FIXME
         (pyFmt, funcs) = binFmt
         return pyFmt%tuple(f(self, mode, tm) for f in funcs)
@@ -491,6 +494,8 @@ calTopMargin 	= 30
 boldYmLabel	= True	##Apply in Pref FIXME
 showYmArrows	= True	##Apply in Pref FIXME
 labelMenuDelay = 0.1 ## delay for shift up/down items of menu for right click on YearLabel
+####################
+'''
 trayImage	= join(pixDir, 'tray-green.png')
 trayImageHoli	= join(pixDir, 'tray-red.png')
 trayBgColor	= (-1, -1, -1, 0) ## how to get bg color of gnome panel ????????????
@@ -498,6 +503,17 @@ trayTextColor	= (0, 0, 0)
 traySize	= 22
 trayFont	= None
 trayY0		= None
+'''
+
+trayImage	= join(pixDir, 'tray-dark.png')
+trayImageHoli	= join(pixDir, 'tray-dark.png')
+trayBgColor	= (0, 0, 0, 0) ## how to get bg color of gnome panel ????????????
+trayTextColor = (255, 255, 255)
+traySize	= 21
+trayFont	= None
+trayY0		= 4
+
+####################
 menuActiveLabelColor = "#ff0000"
 extradayTray = False
 extraTextInsideExpander = True

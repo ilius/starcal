@@ -17,9 +17,10 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+import sys, traceback
+
 toStr = lambda s: s.encode('utf8') if isinstance(s, unicode) else str(s)
 toUnicode = lambda s: s if isinstance(s, unicode) else str(s).decode('utf8')
-
 
 
 def cmpVersion(v0, v1):
@@ -45,10 +46,15 @@ class FallbackLogger:
 
 def myRaise(File=None):
     i = sys.exc_info()
-    if File==None:
-        sys.stderr.write('line %s: %s: %s\n'%(i[2].tb_lineno, i[0].__name__, i[1]))
-    else:
-        sys.stderr.write('File "%s", line %s: %s: %s\n'%(File, i[2].tb_lineno, i[0].__name__, i[1]))
+    (typ, value, tback) = sys.exc_info()
+    text = 'line %s: %s: %s\n'%(tback.tb_lineno, typ.__name__, value)
+    if File:
+        text = 'File "%s", '%File + text
+    sys.stderr.write(text)
+
+def myRaiseTback():
+    (typ, value, tback) = sys.exc_info()
+    sys.stderr.write("".join(traceback.format_exception(typ, value, tback)))
 
 class StrOrderedDict(dict):
     ## A dict from strings to objects, with ordered keys

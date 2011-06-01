@@ -37,9 +37,10 @@ def myRaise(File=__file__):
     i = sys.exc_info()
     log.error('File "%s", line %s: %s: %s\n'%(File, i[2].tb_lineno, i[0].__name__, i[1]))
 
-def pluginException(name):
-    i = sys.exc_info()
-    log.error('error in plugin %s, %s: %s\n'%(name, i[0].__name__, i[1]))
+def myRaiseTback(f=None):
+    (typ, value, tback) = sys.exc_info()
+    log.error("".join(traceback.format_exception(typ, value, tback)))
+
 
 
 icsTmFormat = '%Y%m%dT%H%M%SZ'
@@ -137,7 +138,7 @@ def loadExternalPlugin(path, enable=True, show_date=True):
     try:
         mod = __import__(name)
     except:
-        pluginException(name)
+        myRaiseTback()
         return None
     finally:
         sys.path.pop(0)
@@ -145,7 +146,7 @@ def loadExternalPlugin(path, enable=True, show_date=True):
     try:
         return mod.TextPlug(enable=enable, show_date=show_date)
     except:
-        pluginException(name)
+        myRaiseTback()
         #print dir(mod)
         return None
 

@@ -29,8 +29,7 @@ def needToAdd():
 
 def addAndRestart():
     addToWhileList()
-    Popen(['unity'])
-    #ui.restart()
+    Popen('LANG=en_US.UTF-8 unity', shell=True)
 
 addAndRestartText = "Seems that you are using a Unity desktop and StarCalendar is not allowed to use Tray icon. Press OK to add StarCalendar to Unity's white list and then restart Unity"
 

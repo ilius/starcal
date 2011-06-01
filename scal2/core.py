@@ -19,7 +19,7 @@
 
 from time import time, localtime, mktime, gmtime
 #print time(), __file__ ## FIXME
-import sys, os, subprocess
+import sys, os, subprocess, traceback
 from StringIO import StringIO
 from os.path import isfile, isdir, exists, dirname, join, split, splitext
 
@@ -86,10 +86,15 @@ except:
 
 def myRaise(File=None):
     i = sys.exc_info()
-    if File==None:
-        log.error('line %s: %s: %s\n'%(i[2].tb_lineno, i[0].__name__, i[1]))
-    else:
-        log.error('File "%s", line %s: %s: %s\n'%(File, i[2].tb_lineno, i[0].__name__, i[1]))
+    (typ, value, tback) = sys.exc_info()
+    text = 'line %s: %s: %s\n'%(tback.tb_lineno, typ.__name__, value)
+    if File:
+        text = 'File "%s", '%File + text
+    log.error(text)
+
+def myRaiseTback(f=None):
+    (typ, value, tback) = sys.exc_info()
+    log.error("".join(traceback.format_exception(typ, value, tback)))
 
 from scal2.cal_modules import modules, moduleNames, modNum, jd_to, to_jd, convert, DATE_GREG
 
