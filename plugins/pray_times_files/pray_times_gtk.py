@@ -17,9 +17,13 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
+import os
+from os.path import dirname
 import gtk
-
 from scal2.locale_man import tr as _
+from pray_times_backend import timeNames, methodsList
+
+dataDir = dirname(__file__)
 
 class LocationDialog(gtk.Dialog):
     EXIT_OK     = 0
@@ -251,7 +255,7 @@ class TextPlugUI:
         group.add_widget(label)
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
-        self.locButton = LocationButton(locName, lat, lng)
+        self.locButton = LocationButton(self.locName, self.ptObj.lat, self.ptObj.lng)
         hbox.pack_start(self.locButton, 0, 0)
         self.confDialog.vbox.pack_start(hbox, 0, 0)
         ###

@@ -25,7 +25,7 @@ from math import pi, floor, ceil, sqrt, sin, cos, tan, asin, acos, atan, atan2
 _mypath = __file__
 if _mypath.endswith('.pyc'):
     _mypath = _mypath[:-1]
-dataDir = os.path.dirname(_mypath) + '/pray_times_files/'
+dataDir = dirname(_mypath) + '/pray_times_files/'
 rootDir = '/usr/share/starcal2'
 
 sys.path.insert(0, dataDir) ## FIXME
@@ -33,7 +33,7 @@ sys.path.insert(0, rootDir) ## FIXME
 
 
 from scal2.paths import *
-from pray_times_backend import PrayTimes, timeNames, methodsList
+from pray_times_backend import PrayTimes
 
 ## DO NOT IMPORT core IN PLUGINS
 from scal2.locale_man import tr as _
