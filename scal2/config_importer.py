@@ -14,16 +14,9 @@ import pango
 import gtk
 from gtk import gdk
 
-#from scal2.ui_gtk.preferences import gdkColorToRgb, gfontDecode
+from scal2.ui_gtk.font_utils import pfontDecode, gfontDecode
+from scal2.ui_gtk.color_utils import gdkColorToRgb
 
-
-gdkColorToRgb = lambda gc: (gc.red/257, gc.green/257, gc.blue/257)
-pfontDecode = lambda pfont: (pfont.get_family(),
-                             pfont.get_weight()==pango.WEIGHT_BOLD,
-                             pfont.get_style()==pango.STYLE_ITALIC,
-                             pfont.get_size()/1024
-                            )
-gfontDecode = lambda gfont: pfontDecode(pango.FontDescription(gfont))## gfont is a string like "Terafik 12"
 
 if os.sep=='/':## Unix-like OS
     confDirOld = homeDir + '/.starcal'
@@ -42,12 +35,12 @@ def getOldVersion():## return version of starcal 1.*
                     exec(line)
                     return version
     return ''
-    
+
 
 def importConfigFrom15(overwrite=True):
     if not isdir(confDirOld):
         print 'directory "%s" does not exist'%confDirOld
-        sys.exit(1)
+        return
 
     if not isdir(confDir):
         os.mkdir(confDir)
@@ -77,7 +70,6 @@ def importConfigFrom15(overwrite=True):
                 except:
                     pass
     '''
-
 
     pref = join(confDirOld, 'pref')
     if isfile(pref):
@@ -141,7 +133,6 @@ nextStock=%s
         stock_arrow_repr(nextStock),
     ))
 
-
     live_conf_old = join(confDirOld, 'live-confg')
     if isfile(live_conf_old):
         live_conf = join(confDir, 'ui-live.conf')
@@ -152,16 +143,7 @@ nextStock=%s
                 text += '%s = %r\n'%(name, eval(name))
             open(live_conf, 'w').write(text)
 
-
     if calHeightReq>0:
         calHeight = calHeightReq
-        open(join(confDir, 'ui-customize.conf'), 'w').write(
-'''
-ui.calHeight=%s
-'''%calHeight
-        )
-
-
-
-
+        open(join(confDir, 'ui-customize.conf'), 'w').write('ui.calHeight=%s'%calHeight)
 
