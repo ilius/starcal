@@ -1615,9 +1615,6 @@ class MainWin(gtk.Window):
                 self.menuTray2.popup(None, None, gtk.status_icon_position_menu, button, etime, self.sicon)
             else:## taskbar is on top
                 self.menuTray1.popup(None, None, gtk.status_icon_position_menu, button, etime, self.sicon)
-    def trayUpdatePixbuf(self):
-        if self.trayMode==2 and self.sicon:
-            self.sicon.set_from_pixbuf(self.trayPix)
     def trayUpdate(self, gdate=None, checkDate=True, checkTrayMode=True):
         if checkTrayMode and self.trayMode!=2:
             return
@@ -1631,10 +1628,25 @@ class MainWin(gtk.Window):
                 ddate = core.convert(gdate[0], gdate[1], gdate[2], core.DATE_GREG, core.primaryMode)
             self.lastGDate = gdate
             ui.todayCell = ui.cellCache.getTodayCell()
-            if ui.todayCell.holiday:
-                pixbuf = gdk.pixbuf_new_from_file(ui.trayImageHoli)
-            else:
-                pixbuf = gdk.pixbuf_new_from_file(ui.trayImage)
+            imagePath = ui.trayImageHoli if ui.todayCell.holiday else ui.trayImage
+            ######################################
+            '''
+            import Image, ImageDraw, ImageFont
+            im = Image.open(imagePath)
+            (w, h) = im.size
+            draw = ImageDraw.Draw(im)
+            text = numLocale(ddate[2]).decode('utf8')
+            font = ImageFont.truetype('/usr/share/fonts/TTF/DejaVuSans.ttf', 15)
+            (fw, fh) = font.getsize(text)
+            draw.text(
+                ((w-fw)/2, (h-fh)/2),
+                text,
+                font=font,
+                fill=ui.trayTextColor,
+            )
+            self.sicon.set_from_pixbuf(gdk.pixbuf_new_from_data(im.tostring(), gdk.COLORSPACE_RGB, True, 8, w, h, 4*w))
+            '''
+            pixbuf = gdk.pixbuf_new_from_file(imagePath)
             ##pixbuf.scale() #????????????
             ###################### PUTTING A TEXT ON A PIXBUF
             pmap = pixbuf.render_pixmap_and_mask(alpha_threshold=127)[0] ## pixmap is also a drawable
@@ -1648,7 +1660,8 @@ class MainWin(gtk.Window):
             pmap.draw_layout(pmap.new_gc(), (s-w)/2, y, textLay, gdk.Color(*ui.trayTextColor))## , foreground, background)
             self.trayPix.get_from_drawable(pmap, self.get_screen().get_system_colormap(), 0, 0, 0, 0, s, s)
             ######################################
-            self.trayUpdatePixbuf()
+            self.sicon.set_from_pixbuf(self.trayPix)
+            ######################################
             ##tt = core.weekDayName[core.getWeekDay(*ddate)]
             tt = core.weekDayName[core.jwday(ui.todayCell.jd)]
             #if ui.extradayTray:##?????????
