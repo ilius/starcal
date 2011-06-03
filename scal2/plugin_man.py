@@ -17,7 +17,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-import sys
+import sys, traceback
 from time import strftime
 from os.path import isfile, dirname, join, split, splitext
 
