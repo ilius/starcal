@@ -9,7 +9,7 @@ from scal2.cal_modules import modules
 
 
 APP_NAME = 'starcal2'
-langDir = join(rootDir, 'lang')
+langDir = join(rootDir, 'conf', 'lang')
 localeDir = '/usr/share/locale'
 
 digits = {

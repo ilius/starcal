@@ -38,7 +38,7 @@ from scal2.event_man import eventsDir
 try:
     import logging
     import logging.config
-    logging.config.fileConfig(join(rootDir, 'logging-system.conf'))
+    logging.config.fileConfig(join(rootDir, 'conf', 'logging-system.conf'))
     log = logging.getLogger('daemon')## FIXME
 except:
     from scal2.utils import FallbackLogger

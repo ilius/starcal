@@ -6,8 +6,10 @@ print dirname(dirname(__file__))
 sys.path.insert(0, dirname(dirname(__file__)))
 
 from scal2.paths import *
-from scal2.plugin_man import loadPlugin
 from scal2.utils import cmpVersion
+from scal2.locale_man import langDir
+from scal2.plugin_man import loadPlugin
+
 
 import pango
 
@@ -17,6 +19,7 @@ from gtk import gdk
 from scal2.ui_gtk.font_utils import pfontDecode, gfontDecode
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 
+langConfDir = join(rootDir, 'conf', 'defaults')
 
 if os.sep=='/':## Unix-like OS
     confDirOld = homeDir + '/.starcal'

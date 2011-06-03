@@ -21,17 +21,10 @@ import os, shutil
 from os.path import dirname
 from os.path import join, isfile, isdir
 
-
-from scal2.config_importer import importConfigFrom15, getOldVersion
 from scal2.paths import *
+from scal2.config_importer import importConfigFrom15, getOldVersion, langDir, langConfDir
 
 import gtk
-
-rootDir = dirname(dirname(dirname(__file__)))
-langDir = join(rootDir, 'lang')
-
-
-pixDir = os.path.join(rootDir, 'pixmaps')
 
 gtk.window_set_default_icon_from_file('%s/starcal2.png'%pixDir)
 
@@ -84,13 +77,13 @@ if win.run()==gtk.RESPONSE_OK:
     else:
         i = langCombo.get_active()
         langCode = langCodeList[i]
-        langConfDir = join(rootDir, 'lang_config', langCode)
+        thisLangConfDir = join(langConfDir, langCode)
         #print 'Setting language', langCode
         if not os.path.isdir(confDir):
             os.mkdir(confDir, 0755)
-        if os.path.isdir(langConfDir):
-            for fname in os.listdir(langConfDir):
-                src_path = join(langConfDir, fname)
+        if os.path.isdir(thisLangConfDir):
+            for fname in os.listdir(thisLangConfDir):
+                src_path = join(thisLangConfDir, fname)
                 dst_path = join(confDir, fname)
                 #print src_path
                 if isdir(src_path):

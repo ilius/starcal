@@ -74,7 +74,7 @@ try:
     import logging
     import logging.config
 
-    logConfText = open(join(rootDir, 'logging-user.conf')).read()
+    logConfText = open(join(rootDir, 'conf', 'logging-user.conf')).read()
     for varName in ('confDir',):
         logConfText = logConfText.replace(varName, eval(varName))
 
