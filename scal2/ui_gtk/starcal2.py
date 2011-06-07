@@ -1662,7 +1662,10 @@ class MainWin(gtk.Window):
             if self.sicon.is_embedded():
                 self.hide()
     def quit(self, widget=None, event=None):
-        ui.saveLiveConf()
+        try:
+            ui.saveLiveConf()
+        except:
+            myRaise()
         if self.trayMode>1 and self.sicon:
             self.sicon.set_visible(False) ## needed for windows ## before or after main_quit ?
         return gtk.main_quit()
@@ -1797,6 +1800,7 @@ def main():
         while gtk.events_pending():## if do not this, main.sicon.is_embedded returns False
             gtk.main_iteration_do(False)
         show = ui.showMain or not mainWin.sicon.is_embedded()
+    #open('/home/ilius/Desktop/is_embedded', 'w').write(str(mainWin.sicon.is_embedded()))
     if show:
         mainWin.present()
     #mainWin.export.exportSvg('%s/Desktop/1389-01.svg'%homeDir, [(1389, 1)])

@@ -38,14 +38,19 @@ from pray_times_backend import PrayTimes
 ## DO NOT IMPORT core IN PLUGINS
 from scal2.locale_man import tr as _
 from scal2.plugin_man import BasePlugin
+from scal2.cal_modules.gregorian import to_jd as gregorian_to_jd
 
+from pray_times_qt import *
+'''
 try:
     import gtk
 except ImportError:
     from pray_times_qt import *
 else:
     from pray_times_gtk import *
+'''
 
+####################################################
 
 confPath = join(plugConfDir, 'pray_times')
 earthR = 6370
@@ -142,10 +147,17 @@ class TextPlug(BasePlugin, TextPlugUI):
     #def menu_unmap(self, menu):
     #    menu.remove(self.menuitem)
     #    menu.disconnect(self.menu_unmap_id)
-    def get_text(self, year, month, day):
-        times = self.ptObj.getTimes(year, month, day)
+    def get_text_jd(self, jd):
+        times = self.ptObj.getTimesByJd(jd)
         return '\t'.join(['%s: %s'%(_(name.capitalize()), times[name]) for name in self.shownTimeNames])
-
+    def get_text(self, year, month, day):## just for compatibity (usage by external programs)
+        return self.get_text_jd(gregorian_to_jd(year, month, day))
+    def update_cell(self, c):
+        text = self.get_text_jd(c.jd)
+        if text!='':
+            if c.extraday!='':
+                c.extraday += '\n'
+            c.extraday += text    
 
 
 if __name__=='__main__':
