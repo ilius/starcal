@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from scal2 import core
 from scal2.locale_man import tr as _
@@ -9,7 +8,7 @@ from scal2 import ui
 import gtk
 from gtk import gdk
 
-class WindowMsgNotifierWidget(gtk.Entry):
+class NotifierWidget(gtk.Entry):
     def __init__(self, notifier):
         self.notifier = notifier
         gtk.Entry.__init__(self)
@@ -59,5 +58,3 @@ def notify(notifier, finishFunc):## FIXME
     dialog.connect('response', lambda w, e: finishFunc())
     dialog.present()
 
-event_man.WindowMsgNotifier.WidgetClass = WindowMsgNotifierWidget
-event_man.WindowMsgNotifier.notify = notify

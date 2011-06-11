@@ -1,4 +1,6 @@
 from scal2.utils import myRaise
+from scal2.paths import pixDir
+from os.path import join
 from subprocess import Popen
 from time import time
 import gtk
@@ -40,10 +42,26 @@ def set_tooltip(widget, text):
 
 #if hasattr(gtk, 'image_new_from_file'):
 #    imageFromFile = gtk.image_new_from_file
-def imageFromFile(path):
+def imageFromFile(path):## the file must exist
+    if os.sep=='/' and not path.startswith('/'):
+        path = join(pixDir, path)
     im = gtk.Image()
-    im.set_from_file(path)
+    try:
+        im.set_from_file(path)
+    except:
+        myRaise()
     return im
+
+def pixbufFromFile(path):## the file may not exist
+    if not path:
+        return None
+    if os.sep=='/' and not path.startswith('/'):
+        path = join(pixDir, path)
+    try:
+        return gtk.pixbuf_new_from_file(path)
+    except:
+        myRaise()
+        return None
 
 
 def setupMenuHideOnLeave(menu):

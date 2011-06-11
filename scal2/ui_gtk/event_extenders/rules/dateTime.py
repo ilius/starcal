@@ -8,7 +8,7 @@ from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, TimeButton
 import gtk
 from gtk import gdk
 
-class DateTimeEventRuleWidget(gtk.HBox):
+class RuleWidget(gtk.HBox):
     def __init__(self, rule):
         self.rule = rule
         ###
@@ -36,10 +36,5 @@ class DateTimeEventRuleWidget(gtk.HBox):
             (y, m, d) = self.dbox.get_date()
             self.dbox.set_date(core.convert(y, m, d, curMode, mode))
             self.updateVars()
-
-
-event_man.StartEventRule.WidgetClass = DateTimeEventRuleWidget
-event_man.EndEventRule.WidgetClass = DateTimeEventRuleWidget
-
 
 

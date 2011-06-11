@@ -4,19 +4,24 @@ from scal2 import core
 from scal2.locale_man import tr as _
 
 from scal2 import event_man
+
+from scal2 import ui
+from scal2.ui_gtk.event_extenders import common
+
 import gtk
 from gtk import gdk
 
-class UniversityClassEventWidget:
+class EventWidget(common.EventWidget):
     def __init__(self, event):## FIXME
-        self.event = event
+        common.EventWidget.__init__(self, event)
+        ###
+        
+        
         self.updateWidget()
     def updateWidget(self):## FIXME
-        pass
+        common.EventWidget.updateWidget(self)
+        
     def updateVars(self):## FIXME
-        pass
-
-
-event_man.UniversityClassEvent.WidgetClass = UniversityClassEventWidget
+        common.EventWidget.updateVars(self)
 
 

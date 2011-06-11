@@ -243,7 +243,7 @@ class NoFillFloatingMsgWindow(gtk.Window):
                 self.updateLine()
 
 
-class FloatingMsgNotifierWidget(gtk.HBox):
+class NotifierWidget(gtk.HBox):
     def __init__(self, notifier):
         self.notifier = notifier
         ##
@@ -304,9 +304,6 @@ def notify(notifier, finishFunc):## FIXME
 gobject.type_register(FloatingMsg)
 gobject.type_register(MyLabel)
 gobject.type_register(NoFillFloatingMsgWindow)
-
-event_man.FloatingMsgNotifier.WidgetClass = FloatingMsgNotifierWidget
-event_man.FloatingMsgNotifier.notify = notify
 
 
 if __name__=='__main__':

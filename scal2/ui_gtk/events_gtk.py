@@ -20,7 +20,7 @@ import os, sys, shlex
 from os.path import join
 
 from scal2 import core
-from scal2.core import pixDir, convert, numLocale
+from scal2.core import pixDir, convert, numLocale, myRaise
 
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl
@@ -65,8 +65,8 @@ def comboToggleActivate(combo, *args):
 class EventEditorDialog(gtk.Dialog):
     def __init__(self, event=None):
         gtk.Dialog.__init__(self)
-        cancelB = self.add_button(gtk.STOCK_CANCEL, 1)
-        okB = self.add_button(gtk.STOCK_OK, 0)
+        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
         if ui.autoLocale:
             cancelB.set_label(_('_Cancel'))
             cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
@@ -139,7 +139,7 @@ class EventEditorDialog(gtk.Dialog):
             self.event.updateVars(self.activeEventWidget)
 
 
-class EventsManagerDialog(gtk.Dialog):
+class EventsManagerDialog(gtk.Dialog):## FIXME
     def __init__(self):
         gtk.Dialog.__init__(self)
         vpan = gtk.VPaned()
@@ -151,7 +151,19 @@ class EventsManagerDialog(gtk.Dialog):
         headerBox.pack_start(self.infoTextvew, 1, 1)
         headerButtonBox = gtk.VButtonBox()
         headerButtonBox.set_layout(gtk.BUTTONBOX_END)
+        ####
         addButton = gtk.Button(stock=gtk.STOCK_ADD)
+        '''
+        addButton = gtk.OptionMenu(stock=gtk.STOCK_ADD)
+        menu = gtk.Menu()
+        menu.set_border_width(0)
+        #for eventType in ('custom', 'yearly', 'dailyNote', 'task'):## FIXME
+        for cls in eventsClassList:## order? FIXME
+            item = gtk.MenuItem(cls.desc)## ImageMenuItem
+            #item.set_image(imageFromFile(...))
+            item.connect('activate', self.addClicked, cls)
+        '''
+        ####
         editButton = gtk.Button(stock=gtk.STOCK_EDIT)
         delButton = gtk.Button(stock=gtk.STOCK_DELETE)
         if ui.autoLocale:
@@ -176,7 +188,7 @@ class EventsManagerDialog(gtk.Dialog):
         treeBox.pack_start(swin, 1, 1)
         self.vbox.pack_start(vpan)
         #####
-        self.treestore = gtk.ListStore(gdk.Pixbuf,str,str)
+        self.treestore = gtk.ListStore(gdk.Pixbuf, str, str)
         self.treeview.set_model(self.treestore)
         ###         
         col = gtk.TreeViewColumn('', gtk.CellRendererPixbuf(), pixbuf=0)
@@ -195,8 +207,19 @@ class EventsManagerDialog(gtk.Dialog):
         addButton.connect('clicked', self.addClicked)
         editButton.connect('clicked', self.editClicked)
         delButton.connect('clicked', self.delClicked)
-    def addClicked(self, button):
-        pass
+        #####
+        self.reloadEvents()
+    def reloadEvents(self):
+        for event in ui.events:
+            self.treestore.append(
+                pixbufFromFile(event.icon),
+                event.summary,
+                event.description,
+            )
+    #def addClicked(self, obj, eventClass):
+    def addClicked(self, obj):
+        if EventEditorDialog().run()==gtk.RESPONSE_OK:
+            self.reloadEvents()
     def editClicked(self, button):
         pass
     def delClicked(self, button):
@@ -219,17 +242,35 @@ def makeWidget(obj):## obj is an instance of Event or EventRule or EventNotifier
 if rtl:
     gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
 
-__import__('scal2.ui_gtk.event_extenders', fromlist=['*'])
-__import__('scal2.ui_gtk.event_extenders.rules', fromlist=['*'])
-print __import__('scal2.ui_gtk.event_extenders.notifiers', fromlist=['*'])
-#from scal2.ui_gtk.event_extenders import *
-#from scal2.ui_gtk.event_extenders.rules import *
-#from scal2.ui_gtk.event_extenders.notifiers import *
 
+modPrefix = 'scal2.ui_gtk.event_extenders.'
 
+for cls in event_man.eventsClassList:
+    try:
+        module = __import__(modPrefix + cls.name, fromlist=['EventWidget'])
+        cls.WidgetClass = module.EventWidget
+    except:
+        myRaise()
+
+for cls in event_man.eventRulesClassList:
+    try:
+        module = __import__(modPrefix + 'rules.' + cls.name, fromlist=['RuleWidget'])
+        cls.WidgetClass = module.RuleWidget
+    except:
+        myRaise()
+
+for cls in event_man.eventNotifiersClassList:
+    try:
+        module = __import__(modPrefix + 'notifiers.' + cls.name, fromlist=['NotifierWidget', 'notify'])
+        cls.WidgetClass = module.NotifierWidget
+        cls.notify = module.notify
+    except:
+        myRaise()
+
+event_man.Event.makeWidget = makeWidget
 event_man.EventRule.makeWidget = makeWidget
 event_man.EventNotifier.makeWidget = makeWidget
-event_man.Event.makeWidget = makeWidget
+
 
 ui.loadEvents()
 

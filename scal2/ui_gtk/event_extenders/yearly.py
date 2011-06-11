@@ -7,14 +7,14 @@ from scal2 import event_man
 import gtk
 from gtk import gdk
 
-from scal2.ui_gtk.event_extenders.common import EventWidget, EventTagsAndIconSelect
+from scal2.ui_gtk.event_extenders import common
 
 
-class YearlyEventWidget(EventWidget):
+class EventWidget(common.EventWidget):
     def __init__(self, event):## FIXME
-        EventWidget.__init__(self, event)
+        common.EventWidget.__init__(self, event)
         ################
-        self.tagIconBox = EventTagsAndIconSelect()
+        self.tagIconBox = common.EventTagsAndIconSelect()
         self.pack_start(self.tagIconBox, 0, 0)
         ###
         self.pack_start(gtk.Label(_('Month')), 0, 0)
@@ -34,15 +34,15 @@ class YearlyEventWidget(EventWidget):
         ###
         self.pack_start(gtk.Label(''), 1, 1)
         ###
-        
-        
-        
-        
         self.updateWidget()
     def updateWidget(self):## FIXME
-        EventWidget.updateWidget(self)
+        common.EventWidget.updateWidget(self)
+        self.monthCombo.set_active(self.event.getMonth()-1)
+        self.daySpin.set_value(self.event.getDay())
     def updateVars(self):## FIXME
-        EventWidget.updateVars(self)
+        common.EventWidget.updateVars(self)
+        self.event.setMonth(self.monthCombo.get_active()+1)
+        self.event.setDay(self.daySpin.get_value())
     def modeComboChanged(self, modeCombo):## FIXME
         module = core.modules[modeCombo.get_active()]
         monthCombo = self.monthCombo
@@ -52,8 +52,5 @@ class YearlyEventWidget(EventWidget):
         for i in range(12):
             monthCombo.append_text(_(module.getMonthName(i+1)))
         monthCombo.set_active(active)
-
-
-event_man.YearlyEvent.WidgetClass = YearlyEventWidget
 
 

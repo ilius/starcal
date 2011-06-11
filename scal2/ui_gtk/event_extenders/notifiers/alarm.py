@@ -12,7 +12,7 @@ from gtk import gdk
 from scal2.ui_gtk import player
 from subprocess import Popen, PIPE
 
-class AlarmNotifierWidget(player.PlayerBox):
+class NotifierWidget(player.PlayerBox):
     def __init__(self, notifier):
         self.notifier = notifier
         player.PlayerBox.__init__(self)
@@ -33,6 +33,6 @@ def notify(notifier, finishFunc):
     finishFunc()
     Popen([notifier.playerCmd, notifier.alarmSound], stdout=PIPE, stderr=PIPE)
 
-event_man.AlarmNotifier.WidgetClass = AlarmNotifierWidget
-event_man.AlarmNotifier.notify = notify
+## event_man.AlarmNotifier.WidgetClass = AlarmNotifierWidget
+## event_man.AlarmNotifier.notify = notify
 

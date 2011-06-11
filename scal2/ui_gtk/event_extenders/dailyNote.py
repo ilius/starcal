@@ -8,23 +8,25 @@ from scal2 import event_man
 
 from scal2 import ui
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
-from scal2.ui_gtk.event_extenders.common import EventWidget
+from scal2.ui_gtk.event_extenders import common
 
 import gtk
 from gtk import gdk
 
-class DailyNoteEventWidget(EventWidget):
-    def __init__(self, event):## FIXME
-        EventWidget.__init__(self, event)
+class EventWidget(common.EventWidget):
+    def __init__(self, event):
+        common.EventWidget.__init__(self, event)
         ###
-        #hbox = gtk.HBox()
-        #hbox.pack_start(gtk.Label(_('Date')))
-        #dateInput = DateButton(lang=core.langSh)
+        hbox = gtk.HBox()
+        hbox.pack_start(gtk.Label(_('Date')), 0, 0)
+        self.dateInput = DateButton(lang=core.langSh)
+        hbox.pack_start(self.dateInput, 0, 0)
+        self.pack_start(hbox, 0, 0)
         self.updateWidget()
-    def updateWidget(self):## FIXME
-        pass
-    def updateVars(self):## FIXME
-        pass
-
-event_man.DailyNoteEvent.WidgetClass = DailyNoteEventWidget
+    def updateWidget(self):
+        common.EventWidget.updateWidget(self)
+        self.dateInput.set_date(self.event.getDate())
+    def updateVars(self):
+        common.EventWidget.updateVars(self)
+        self.event.setDate(*self.dateInput.get_date())
 

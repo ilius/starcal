@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from os.path import join, dirname
@@ -10,18 +9,16 @@ from scal2.core import pixDir
 from scal2 import event_man
 from scal2 import ui
 
-from scal2.ui_gtk.event_extenders.common import EventWidget, IconSelectButton, TagsListBox, ViewEditTagsHbox
+from scal2.ui_gtk.event_extenders import common
 
 import gtk
 from gtk import gdk
 
 
-
-
-class CustomEventWidget(EventWidget):
+class EventWidget(common.EventWidget):
     groups = [gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL), gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)]
     def __init__(self, event, autoCheck=True):
-        EventWidget.__init__(self, event)
+        common.EventWidget.__init__(self, event)
         ################
         self.autoCheck = autoCheck
         ######
@@ -51,7 +48,7 @@ class CustomEventWidget(EventWidget):
         ###########
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Icon')+':'), 0, 0)
-        self.iconSelect = IconSelectButton()
+        self.iconSelect = common.IconSelectButton()
         #print join(pixDir, self.defaultIcon)
         hbox.pack_start(self.iconSelect, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
@@ -68,11 +65,11 @@ class CustomEventWidget(EventWidget):
         ###
         exp = gtk.Expander(_('Tags'))
         exp.set_expanded(True)
-        self.tagsBox = TagsListBox()
+        self.tagsBox = common.TagsListBox()
         exp.add(self.tagsBox)
         self.pack_start(exp, 1, 1)
         '''
-        self.tagsBox = ViewEditTagsHbox()
+        self.tagsBox = common.ViewEditTagsHbox()
         self.pack_start(self.tagsBox, 0, 0)
         ###########
         self.rulesFrame = gtk.Expander(_('Rules'))
@@ -163,7 +160,7 @@ class CustomEventWidget(EventWidget):
                 hbox.inputWidget.updateVars()
                 self.event.notifiers.append(hbox.inputWidget.notifier)
     def updateWidget(self):
-        EventWidget.updateWidget(self)
+        common.EventWidget.updateWidget(self)
         self.iconSelect.set_filename(self.event.icon)
         self.tagsBox.setData(self.event.tags)
         ####
@@ -174,7 +171,7 @@ class CustomEventWidget(EventWidget):
         ####
         self.updateNotifiersWidget()
     def updateVars(self):
-        EventWidget.updateVars(self)
+        common.EventWidget.updateVars(self)
         self.event.icon = self.iconSelect.get_filename()
         self.event.tags = self.tagsBox.getData()
         ####
@@ -226,8 +223,5 @@ class CustomEventWidget(EventWidget):
         else:
             self.addRuleCombo.set_active(ci)
         hbox.show_all()
-
-
-event_man.Event.WidgetClass = CustomEventWidget
 
 

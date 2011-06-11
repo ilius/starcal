@@ -8,7 +8,7 @@ from scal2.ui_gtk.mywidgets.multi_spin_button import TimeButton
 import gtk
 from gtk import gdk
 
-class CycleLenEventRuleWidget(gtk.HBox):
+class RuleWidget(gtk.HBox):
     def __init__(self, rule):
         self.rule = rule
         ###
@@ -32,6 +32,4 @@ class CycleLenEventRuleWidget(gtk.HBox):
     def updateVars(self):
         self.rule.cycleDays = self.spin.get_value()
         self.rule.cycleExtraTime = self.tbox.get_time()
-
-event_man.CycleLenEventRule.WidgetClass = CycleLenEventRuleWidget
 

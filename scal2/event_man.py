@@ -74,8 +74,7 @@ def timeDecode(st):
     return tm
 
 
-hmsRangeToStr = lambda h1, m1, s1, h2, m2, s2:\
-    timeEncode((h1, m1, s1), True) + ' - ' + timeEncode((h2, m2, s2), True)
+hmsRangeToStr = lambda h1, m1, s1, h2, m2, s2: timeEncode((h1, m1, s1), True) + ' - ' + timeEncode((h2, m2, s2), True)
 
 
 def makeCleanTimeRangeList(timeRangeList):
@@ -626,6 +625,7 @@ class Event(EventItemBase):
         self.rules = []
         self.notifiers = []
         self.checkRequirements()
+        self.setDefaults()
     def checkRequirements(self):
         ruleNames = (rule.name for rule in self.rules)
         for name in self.requiredRules:
@@ -635,6 +635,8 @@ class Event(EventItemBase):
         for name in self.requiredNotifiers:
             if not name in notifierNames:
                 self.notifiers.append(eventNotifiersClassDict[name](self))
+    def setDefaults(self):
+        pass
     def copyFrom(self, event):
         self.enable = event.enable
         self.mode = event.mode
@@ -797,6 +799,10 @@ class YearlyEvent(Event):
         return self.icon
     def setIcon(self, icon):
         self.icon = icon
+    def setDefaults(self):
+        (y, m, d) = core.getSysDate(self.mode)
+        self.setMonth(m)
+        self.setDay(d)
 
 
 class DailyNoteEvent(YearlyEvent):
@@ -807,6 +813,13 @@ class DailyNoteEvent(YearlyEvent):
         return self.getRulesDict()['year'].year
     def setYear(self, year):
         self.getRulesDict()['year'].year = year
+    getDate = lambda self: (self.getYear(), self.getMonth(), self.getDay())
+    def setDate(self, year, month, day):
+        self.setYear(year)
+        self.setMonth(month)
+        self.setDay(day)
+    def setDefaults(self):
+        self.setDate(*core.getSysDate(self.mode))
 
 class TaskEvent(DailyNoteEvent):
     ## Y/m/d H:M for H:M           ==> start, end
@@ -821,7 +834,9 @@ class TaskEvent(DailyNoteEvent):
         self.getRulesDict()['dayTime'].dayTime = dayTime
     def getTime(self, dayTime):
         return self.getRulesDict()['dayTime'].dayTime
-
+    def setDefaults(self):
+        self.setDate(*core.getSysDate(self.mode))
+        self.setTime(*tuple(time.localtime()[3:6]))
 
 
 class UniversityClassEvent(Event):## FIXME
@@ -848,6 +863,8 @@ class UniversityClassEvent(Event):## FIXME
 
 
 class OccurrenceView:
+    name = ''
+    desc = _('Occurrence View')
     def __init__(self):
         self.updateData()
     def getJdRange(self):
@@ -857,9 +874,156 @@ class OccurrenceView:
     def updateData(self):
         raise NotImplementedError
 
-## current AddCustomDay is something like DayOccurrenceView
+
+## current CustomDay widget (below month calendar) is something like DayOccurrenceView
+## we should not use this class directly
+## we use classes inside scal2.ui_gtk.event_extenders.occurrenceViews
+class DayOccurrenceView:
+    #name = 'day'## a GtkWidget will inherit this class FIXME
+    #desc = _('Day Occurrence View')
+    def __init__(self, jd):
+        self.jd = jd
+        OccurrenceView.__init__(self)
+    getJdRange = lambda self: (self.jd, self.jd+1)
+    def setJd(self, jd):
+        if jd != self.jd:
+            self.jd = jd
+            self.updateData()
+    def updateData(self):
+        startJd = self.jd
+        endJd = self.jd + 1
+        self.data = []
+        ## FIXME
+        for event in ui.events:
+            occur = event.calcOccurrenceForJdRange(startJd, endJd)
+            text = event.getText()
+            icon = event.icon
+            if isinstance(occur, JdListOccurrence):
+                for jd in occur.getDaysJdList():
+                    if jd==self.jd:
+                        self.data.append({'time':'', 'text':text, 'icon':icon})
+            elif isinstance(occur, TimeRangeListOccurrence):
+                for (startEpoch, endEpoch) in occur.getTimeRangeList():
+                    (jd1, h1, min1, s1) = core.getJhmsFromEpoch(startEpoch)
+                    (jd2, h2, min2, s2) = core.getJhmsFromEpoch(endEpoch)
+                    if jd1==self.jd==jd2:
+                        self.data.append({
+                            'time':hmsRangeToStr(h1, min1, s1, h2, min2, s2),
+                            'text':text,
+                            'icon':icon
+                        })
+                    elif jd1==self.jd and self.jd < jd2:
+                        self.data.append({
+                            'time':hmsRangeToStr(h1, min1, s1, 24, 0, 0),
+                            'text':text,
+                            'icon':icon
+                        })
+                    elif jd1 < self.jd < jd2:
+                        self.data.append({
+                            'time':'',
+                            'text':text,
+                            'icon':icon
+                        })
+                    elif jd1 < self.jd and self.jd==jd2:
+                        self.data.append({
+                            'time':hmsRangeToStr(0, 0, 0, h2, min2, s2),
+                            'text':text,
+                            'icon':icon
+                        })
+            elif isinstance(occur, TimeListOccurrence):
+                for epoch in occur.epochList:
+                    (jd, hour, minute, sec) = core.getJhmsFromEpoch(epoch)
+                    if jd == self.jd:
+                        self.data.append({
+                            'time':timeEncode((hour, minute, sec), True),
+                            'text':text,
+                            'icon':icon
+                        })
+            else:
+                raise TypeError
+
+
+class WeekOccurrenceView(OccurrenceView):
+    #name = 'week'## a GtkWidget will inherit this class FIXME
+    #desc = _('Week Occurrence View')
+    def __init__(self, jd):
+        self.absWeekNumber = core.getAbsWeekNumberFromJd(jd)
+        OccurrenceView.__init__(self)
+    getJdRange = lambda self: core.getJdRangeOfAbsWeekNumber(self.absWeekNumber)
+    def setJd(self, jd):
+        absWeekNumber = core.getAbsWeekNumberFromJd(jd)
+        if absWeekNumber != self.absWeekNumber:
+            self.absWeekNumber = absWeekNumber
+            self.updateData()
+    def updateData(self):
+        (startJd, endJd) = self.getJdRange()
+        self.data = []
+        for event in ui.events:
+            occur = event.calcOccurrenceForJdRange(startJd, endJd)
+            text = event.getText()
+            icon = event.icon
+            if isinstance(occur, JdListOccurrence):
+                for jd in occur.getDaysJdList():
+                    (absWeekNumber, weekDay) = core.getWeekDateFromJd(jd)
+                    if absWeekNumber==self.absWeekNumber:
+                        self.data.append({'weekDay':weekDay, 'time':'', 'text':text, 'icon':icon})
+            elif isinstance(occur, TimeRangeListOccurrence):
+                for (startEpoch, endEpoch) in occur.getTimeRangeList():
+                    (jd1, h1, min1, s1) = core.getJhmsFromEpoch(startEpoch)
+                    (jd2, h2, min2, s2) = core.getJhmsFromEpoch(endEpoch)
+                    (absWeekNumber, weekDay) = core.getWeekDateFromJd(jd1)
+                    if absWeekNumber==self.absWeekNumber:
+                        if jd1==jd2:
+                            self.data.append({
+                                'weekDay':weekDay,
+                                'time':hmsRangeToStr(h1, min1, s1, h2, min2, s2),
+                                'text':text,
+                                'icon':icon
+                            })
+                        else:## FIXME
+                            self.data.append({
+                                'weekDay':weekDay,
+                                'time':hmsRangeToStr(h1, min1, s1, 24, 0, 0),
+                                'text':text,
+                                'icon':icon
+                            })
+                            for jd in range(jd1+1, jd2):
+                                (absWeekNumber, weekDay) = core.getWeekDateFromJd(jd)
+                                if absWeekNumber==self.absWeekNumber:
+                                    self.data.append({
+                                        'weekDay':weekDay,
+                                        'time':'',
+                                        'text':text,
+                                        'icon':icon
+                                    })
+                                else:
+                                    break
+                            (absWeekNumber, weekDay) = core.getWeekDateFromJd(jd2)
+                            if absWeekNumber==self.absWeekNumber:
+                                self.data.append({
+                                    'weekDay':weekDay,
+                                    'time':hmsRangeToStr(0, 0, 0, h2, min2, s2),
+                                    'text':text,
+                                    'icon':icon
+                                })
+            elif isinstance(occur, TimeListOccurrence):
+                for epoch in occur.epochList:
+                    (jd, hour, minute, sec) = core.getJhmsFromEpoch(epoch)
+                    (absWeekNumber, weekDay) = core.getWeekDateFromJd(jd)
+                    if absWeekNumber==self.absWeekNumber:
+                        self.data.append({
+                            'weekDay':weekDay,
+                            'time':timeEncode((hour, minute, sec), True),
+                            'text':text,
+                            'icon':icon
+                        })
+            else:
+                raise TypeError
+
 
 class MonthOccurrenceView(OccurrenceView):
+    #name = 'month'## a GtkWidget will inherit this class FIXME
+    #desc = _('Month Occurrence View')
     def __init__(self, jd):
         (year, month, day) = core.jd_to(jd, core.primaryMode)
         self.year = year
@@ -936,147 +1100,7 @@ class MonthOccurrenceView(OccurrenceView):
                         })
             else:
                 raise TypeError
-            
 
-class WeekOccurrenceView(OccurrenceView):
-    def __init__(self, jd):
-        self.absWeekNumber = core.getAbsWeekNumberFromJd(jd)
-        OccurrenceView.__init__(self)
-    getJdRange = lambda self: core.getJdRangeOfAbsWeekNumber(self.absWeekNumber)
-    def setJd(self, jd):
-        absWeekNumber = core.getAbsWeekNumberFromJd(jd)
-        if absWeekNumber != self.absWeekNumber:
-            self.absWeekNumber = absWeekNumber
-            self.updateData()
-    def updateData(self):
-        (startJd, endJd) = self.getJdRange()
-        self.data = []
-        for event in ui.events:
-            occur = event.calcOccurrenceForJdRange(startJd, endJd)
-            text = event.getText()
-            icon = event.icon
-            if isinstance(occur, JdListOccurrence):
-                for jd in occur.getDaysJdList():
-                    (absWeekNumber, weekDay) = core.getWeekDateFromJd(jd)
-                    if absWeekNumber==self.absWeekNumber:
-                        self.data.append({'weekDay':weekDay, 'time':'', 'text':text, 'icon':icon})
-            elif isinstance(occur, TimeRangeListOccurrence):
-                for (startEpoch, endEpoch) in occur.getTimeRangeList():
-                    (jd1, h1, min1, s1) = core.getJhmsFromEpoch(startEpoch)
-                    (jd2, h2, min2, s2) = core.getJhmsFromEpoch(endEpoch)
-                    (absWeekNumber, weekDay) = core.getWeekDateFromJd(jd1)
-                    if absWeekNumber==self.absWeekNumber:
-                        if jd1==jd2:
-                            self.data.append({
-                                'weekDay':weekDay,
-                                'time':hmsRangeToStr(h1, min1, s1, h2, min2, s2),
-                                'text':text,
-                                'icon':icon
-                            })
-                        else:## FIXME
-                            self.data.append({
-                                'weekDay':weekDay,
-                                'time':hmsRangeToStr(h1, min1, s1, 24, 0, 0),
-                                'text':text,
-                                'icon':icon
-                            })
-                            for jd in range(jd1+1, jd2):
-                                (absWeekNumber, weekDay) = core.getWeekDateFromJd(jd)
-                                if absWeekNumber==self.absWeekNumber:
-                                    self.data.append({
-                                        'weekDay':weekDay,
-                                        'time':'',
-                                        'text':text,
-                                        'icon':icon
-                                    })
-                                else:
-                                    break
-                            (absWeekNumber, weekDay) = core.getWeekDateFromJd(jd2)
-                            if absWeekNumber==self.absWeekNumber:
-                                self.data.append({
-                                    'weekDay':weekDay,
-                                    'time':hmsRangeToStr(0, 0, 0, h2, min2, s2),
-                                    'text':text,
-                                    'icon':icon
-                                })
-            elif isinstance(occur, TimeListOccurrence):
-                for epoch in occur.epochList:
-                    (jd, hour, minute, sec) = core.getJhmsFromEpoch(epoch)
-                    (absWeekNumber, weekDay) = core.getWeekDateFromJd(jd)
-                    if absWeekNumber==self.absWeekNumber:
-                        self.data.append({
-                            'weekDay':weekDay,
-                            'time':timeEncode((hour, minute, sec), True),
-                            'text':text,
-                            'icon':icon
-                        })
-            else:
-                raise TypeError
-
-
-
-
-class DayOccurrenceView:
-    def __init__(self, jd):
-        self.jd = jd
-        OccurrenceView.__init__(self)
-    getJdRange = lambda self: core.getJdRangeForMonth(self.year, self.month, core.primaryMode)
-    def setJd(self, jd):
-        if jd != self.jd:
-            self.jd = jd
-            self.updateData()
-    def updateData(self):
-        startJd = self.jd
-        endJd = self.jd + 1
-        self.data = []
-        ## FIXME
-        for event in ui.events:
-            occur = event.calcOccurrenceForJdRange(startJd, endJd)
-            text = event.getText()
-            icon = event.icon
-            if isinstance(occur, JdListOccurrence):
-                for jd in occur.getDaysJdList():
-                    if jd==self.jd:
-                        self.data.append({'time':'', 'text':text, 'icon':icon})
-            elif isinstance(occur, TimeRangeListOccurrence):
-                for (startEpoch, endEpoch) in occur.getTimeRangeList():
-                    (jd1, h1, min1, s1) = core.getJhmsFromEpoch(startEpoch)
-                    (jd2, h2, min2, s2) = core.getJhmsFromEpoch(endEpoch)
-                    if jd1==self.jd==jd2:
-                        self.data.append({
-                            'time':hmsRangeToStr(h1, min1, s1, h2, min2, s2),
-                            'text':text,
-                            'icon':icon
-                        })
-                    elif jd1==self.jd and self.jd < jd2:
-                        self.data.append({
-                            'time':hmsRangeToStr(h1, min1, s1, 24, 0, 0),
-                            'text':text,
-                            'icon':icon
-                        })
-                    elif jd1 < self.jd < jd2:
-                        self.data.append({
-                            'time':'',
-                            'text':text,
-                            'icon':icon
-                        })
-                    elif jd1 < self.jd and self.jd==jd2:
-                        self.data.append({
-                            'time':hmsRangeToStr(0, 0, 0, h2, min2, s2),
-                            'text':text,
-                            'icon':icon
-                        })
-            elif isinstance(occur, TimeListOccurrence):
-                for epoch in occur.epochList:
-                    (jd, hour, minute, sec) = core.getJhmsFromEpoch(epoch)
-                    if jd == self.jd:
-                        self.data.append({
-                            'time':timeEncode((hour, minute, sec), True),
-                            'text':text,
-                            'icon':icon
-                        })
-            else:
-                raise TypeError
 
 def loadEvents():
     events = []
@@ -1096,6 +1120,10 @@ def loadEvents():
     return events
 
 ########################################################################
+
+eventsClassList = [Event, YearlyEvent, DailyNoteEvent, TaskEvent]## UniversityClassEvent
+eventsClassDict = dict([(cls.name, cls) for cls in eventsClassList])
+defaultEventTypeIndex = 3 ## DailyNoteEvent
 
 eventRulesClassList = [
     YearEventRule,
@@ -1118,10 +1146,14 @@ eventNotifiersClassList = [
 ]
 eventNotifiersClassDict = dict([(cls.name, cls) for cls in eventNotifiersClassList])
 
-eventsClassList = [Event, YearlyEvent, DailyNoteEvent, TaskEvent]## UniversityClassEvent
-eventsClassDict = dict([(cls.name, cls) for cls in eventsClassList])
-defaultEventTypeIndex = 3 ## DailyNoteEvent
-
+'''
+occurrenceViewClassList = [
+    MonthOccurrenceView,
+    WeekOccurrenceView,
+    DayOccurrenceView,
+]
+occurrenceViewClassDict = dict([(cls.name, cls) for cls in occurrenceViewClassList])
+'''
 
 
 def testIntersection():

@@ -8,8 +8,7 @@ import gtk
 from gtk import gdk
 
 
-
-class WeekDayEventRuleWidget(gtk.HBox):
+class RuleWidget(gtk.HBox):
     def __init__(self, rule):
         self.rule = rule
         ###
@@ -42,6 +41,4 @@ class WeekDayEventRuleWidget(gtk.HBox):
             cb.set_active(False)
         for j in self.rule.weekDayList:
             cbl[j].set_active(True)
-
-event_man.WeekDayEventRule.WidgetClass = WeekDayEventRuleWidget
 

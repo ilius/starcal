@@ -7,7 +7,7 @@ from scal2 import event_man
 import gtk
 from gtk import gdk
 
-class YearEventRuleWidget(gtk.SpinButton):
+class RuleWidget(gtk.SpinButton):
     def __init__(self, rule):
         self.rule = rule
         ###
@@ -27,7 +27,4 @@ class YearEventRuleWidget(gtk.SpinButton):
         if mode!=curMode:
             self.set_value(core.convert(self.getYear(), 7, 1, curMode, mode)[0])
             self.updateVars()
-
-event_man.YearEventRule.WidgetClass = YearEventRuleWidget
-
 
