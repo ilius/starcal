@@ -1,5 +1,6 @@
 from scal2.utils import myRaise
 from scal2.paths import pixDir
+import os
 from os.path import join
 from subprocess import Popen
 from time import time
@@ -9,6 +10,7 @@ import gtk
 def hideList(widgets):
     for w in widgets:
         w.hide()
+
 def showList(widgets):
     for w in widgets:
         w.show()
@@ -79,4 +81,20 @@ def stock_arrow_repr(item):
         return 'gtk.%s\n'%item.value_name[4:]
     else:
         return repr(item)
+
+
+def labelStockMenuItem(label, stock=None, func=None, *args):
+    item = gtk.ImageMenuItem(_(label))
+    if stock:
+        item.set_image(gtk.image_new_from_stock(stock, gtk.ICON_SIZE_MENU))
+    if func:
+        item.connect('activate', func, *args)
+    return item
+
+def labelImageMenuItem(label, image, func=None, *args):
+    item = gtk.ImageMenuItem(_(label))
+    item.set_image(imageFromFile('%s%s%s'%(pixDir, os.sep, image)))
+    if func:
+        item.connect('activate', func, *args)
+    return item
 

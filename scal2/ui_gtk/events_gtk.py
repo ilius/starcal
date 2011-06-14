@@ -17,7 +17,7 @@
 # Or on Debian systems, from /usr/share/common-licenses/GPL
 
 import os, sys, shlex
-from os.path import join
+from os.path import join, dirname
 
 from scal2 import core
 from scal2.core import pixDir, convert, numLocale, myRaise
@@ -29,17 +29,14 @@ from scal2 import event_man
 #from scal2.event import dateEncode, timeEncode, dateDecode, timeDecode
 
 from scal2 import ui
-
+from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile
 #from scal2.ui_gtk.mywidgets.multi_spin_box import DateBox, TimeBox
-
 
 from xml.dom.minidom import getDOMImplementation, parse
 from xml.parsers.expat import ExpatError
 
 import gtk
 from gtk import gdk
-
-
 
 
 def combo_model_delete_text(model, path, itr, text_to_del):
@@ -61,9 +58,117 @@ def comboToggleActivate(combo, *args):
     return False
 
 
+class DayOccurrenceView(event_man.DayOccurrenceView, gtk.VBox):
+    def __init__(self, populatePopupFunc=None)
+        event_man.DayOccurrenceView.__init__(self, ui.cell.jd)
+        gtk.VBox.__init__(self)
+        ## what to do with populatePopupFunc FIXME
+        ## self.textview.connect('populate-popup', populatePopupFunc)
+    def updateWidget(self):
+        self.updateData()
+        ## destroy all VBox contents and add again
+        for hbox in self.get_children():
+            hbox.destroy()
+        for item in self.data:
+            ## item['time'], item['text'], item['icon']
+            hbox = gtk.HBox()
+            if item['icon']:
+                hbox.pack_start(imageFromFile(item['icon']), 0, 0)
+            if item['time']:
+                hbox.pack_start(gtk.Label(item['time']), 0, 0)
+            label = gtk.Label(item['text'])
+            label.set_selectable(True)
+            hbox.pack_start(label, 1, 1)
+            self.pack_start(hbox, 0, 0)
+
+
+class WeekOccurrenceView(event_man.WeekOccurrenceView, gtk.TreeView):
+    def __init__(self, abrivateWeekDays=False):
+        self.abrivateWeekDays = abrivateWeekDays
+        event_man.WeekOccurrenceView.__init__(self, ui.cell.jd)
+        gtk.TreeView.__init__(self)
+        self.set_headers_visible(False)
+        self.ls = gtk.ListStore(gdk.Pixbuf, str, str, str)## icon, weekDay, time, text
+        self.set_model(self.ls)
+        ###
+        cell = gtk.CellRendererPixbuf()
+        col = gtk.TreeViewColumn(_('Icon'), cell)
+        col.add_attribute(cell, 'pixbuf', 0)
+        self.append_column(col)
+        ###
+        cell = gtk.CellRendererText()
+        col = gtk.TreeViewColumn(_('Week Day'), cell)
+        col.add_attribute(cell, 'text', 1)
+        col.set_resizable(True)
+        self.append_column(col)
+        ###
+        cell = gtk.CellRendererText()
+        col = gtk.TreeViewColumn(_('Time'), cell)
+        col.add_attribute(cell, 'text', 2)
+        col.set_resizable(True)## FIXME
+        self.append_column(col)
+        ###
+        cell = gtk.CellRendererText()
+        col = gtk.TreeViewColumn(_('Description'), cell)
+        col.add_attribute(cell, 'text', 3)
+        col.set_resizable(True)
+        self.append_column(col)
+    def updateWidget(self):
+        self.updateData()
+        self.ls.clear()
+        for item in self.data:
+            self.ls.append(
+                pixbufFromFile(item['icon']),
+                core.weekDayNameAb(item['weekDay']) if self.abrivateWeekDays else core.weekDayName(item['weekDay']),
+                item['time'],
+                item['text'],
+            )
+        
+
+class MonthOccurrenceView(event_man.MonthOccurrenceView, gtk.TreeView):
+    def __init__(self):
+        event_man.MonthOccurrenceView.__init__(self, ui.cell.jd)
+        gtk.TreeView.__init__(self)
+        self.set_headers_visible(False)
+        self.ls = gtk.ListStore(gdk.Pixbuf, str, str, str)## icon, day, time, text
+        self.set_model(self.ls)
+        ###
+        cell = gtk.CellRendererPixbuf()
+        col = gtk.TreeViewColumn('', cell)
+        col.add_attribute(cell, 'pixbuf', 0)
+        self.append_column(col)
+        ###
+        cell = gtk.CellRendererText()
+        col = gtk.TreeViewColumn(_('Day'), cell)
+        col.add_attribute(cell, 'text', 1)
+        col.set_resizable(True)
+        self.append_column(col)
+        ###
+        cell = gtk.CellRendererText()
+        col = gtk.TreeViewColumn(_('Time'), cell)
+        col.add_attribute(cell, 'text', 2)
+        col.set_resizable(True)## FIXME
+        self.append_column(col)
+        ###
+        cell = gtk.CellRendererText()
+        col = gtk.TreeViewColumn(_('Description'), cell)
+        col.add_attribute(cell, 'text', 3)
+        col.set_resizable(True)
+        self.append_column(col)
+    def updateWidget(self):
+        self.updateData()
+        self.ls.clear()## FIXME
+        for item in self.data:
+            self.ls.append(
+                pixbufFromFile(item['icon']),
+                numLocale(item['day']),
+                item['time'],
+                item['text'],
+            )
+
 
 class EventEditorDialog(gtk.Dialog):
-    def __init__(self, event=None):
+    def __init__(self, event=None, eventType=''):
         gtk.Dialog.__init__(self)
         cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
         okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
@@ -75,6 +180,7 @@ class EventEditorDialog(gtk.Dialog):
         okB.connect('clicked', self.okClicked)
         #######
         self.event = event
+        self.activeEventWidget = None
         #######
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Date Mode')), 0, 0)
@@ -88,59 +194,49 @@ class EventEditorDialog(gtk.Dialog):
         hbox.pack_start(gtk.Label(''), 1, 1)
         self.vbox.pack_start(hbox, 0, 0)
         self.comboDateMode = combo
-        ####
-        hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Event Type')), 0, 0)
-        combo = gtk.combo_box_new_text()
-        for cls in core.modules:
-            combo.append_text(mod.desc)
-        hbox.pack_start(combo, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
-        self.comboDateMode = combo
-        #####
-        hbox = gtk.HBox()
-        combo = gtk.combo_box_new_text()
-        for cls in geventsClassList:
-            combo.append_text(cls.desc)
-        self.vbox.pack_start(hbox, 0, 0)
-        self.comboEventType = combo
-        #####
-        self.activeEventWidget = None
-        #####
         self.comboDateMode.set_active(ui.shownCals[0]['mode'])## or core.primaryMode
         self.comboDateMode.connect('changed', self.dateModeChanged)
-        self.comboEventType.connect('changed', self.eventTypeChanged)
-        if self.event:
-            self.comboEventType.set_active(geventsClassList.find(self.event.__class__))
+        ####
+        if eventType:
+            cls = event_man.eventsClassDict[eventType]
+            if self.event:## is this case usable that give both event and eventType? ## FIXME
+                self.activeEventWidget = cls.makeWidget(self.event)## FIXME
+            else:
+                event = cls()
+                self.activeEventWidget = event.makeWidget()
+                self.event = event ## needed? FIXME
         else:
-            self.comboEventType.set_active(event.defaultEventTypeIndex)
+            hbox = gtk.HBox()
+            combo = gtk.combo_box_new_text()
+            for cls in event_man.eventsClassList:
+                combo.append_text(cls.desc)
+            self.vbox.pack_start(hbox, 0, 0)
+            if self.event:
+                combo.set_active(event_man.eventsClassList.find(self.event.__class__))
+            else:
+                combo.set_active(event.defaultEventTypeIndex)
+            combo.connect('changed', self.eventTypeChanged)
+            self.comboEventType = combo
     def dateModeChanged(self, combo):
         pass
     def eventTypeChanged(self, combo):
         if self.activeEventWidget:
             self.activeEventWidget.destroy()
-        cls = geventsClassList[combo.get_active()]
+        cls = event_man.eventsClassList[combo.get_active()]
         if self.event:
             self.activeEventWidget = cls.makeWidget(self.event)## FIXME
-            #cls.updateWidget(self.event, self.activeEventWidget)## needed? FIXME
         else:
             event = cls()
             self.activeEventWidget = event.makeWidget()
             self.event = event ## needed? FIXME
         self.vbox.pack_start(self.activeEventWidget, 0, 0)
     def okClicked(self, button):## FIXME
-        #if self.activeEventWidget:
-        #    self.event = self.activeEventWidget.event
-        #    self.event.updateVars(self.activeEventWidget)
-        #else:
-        #    self.event = None
-        if self.event and self.activeEventWidget:
-            self.event.updateVars(self.activeEventWidget)
+        if self.activeEventWidget:
+            self.activeEventWidget.updateVars()
 
 
-class EventsManagerDialog(gtk.Dialog):## FIXME
-    def __init__(self):
+class EventManagerDialog(gtk.Dialog):## FIXME
+    def __init__(self, mainWin=None):## mainWin is needed? FIXME
         gtk.Dialog.__init__(self)
         vpan = gtk.VPaned()
         headerBox = gtk.HBox()
@@ -161,7 +257,7 @@ class EventsManagerDialog(gtk.Dialog):## FIXME
         for cls in eventsClassList:## order? FIXME
             item = gtk.MenuItem(cls.desc)## ImageMenuItem
             #item.set_image(imageFromFile(...))
-            item.connect('activate', self.addClicked, cls)
+            item.connect('activate', self.addEvent, cls)
         '''
         ####
         editButton = gtk.Button(stock=gtk.STOCK_EDIT)
@@ -204,7 +300,7 @@ class EventsManagerDialog(gtk.Dialog):## FIXME
         self.treeview.append_column(col)
         #self.treeview.set_search_column(2)
         #####
-        addButton.connect('clicked', self.addClicked)
+        addButton.connect('clicked', self.addEvent)
         editButton.connect('clicked', self.editClicked)
         delButton.connect('clicked', self.delClicked)
         #####
@@ -216,10 +312,14 @@ class EventsManagerDialog(gtk.Dialog):## FIXME
                 event.summary,
                 event.description,
             )
-    #def addClicked(self, obj, eventClass):
-    def addClicked(self, obj):
-        if EventEditorDialog().run()==gtk.RESPONSE_OK:
-            self.reloadEvents()
+    def addEvent(self, obj=None):
+        pass
+    def addYearlyEvent(self, obj=None):
+        pass
+    def addDailyNote(self, obj=None):
+        pass
+    def showDialog(self, obj=None):
+        self.present()
     def editClicked(self, button):
         pass
     def delClicked(self, button):
@@ -274,7 +374,7 @@ event_man.EventNotifier.makeWidget = makeWidget
 
 ui.loadEvents()
 
-if __name__=='__main__':
+def testCustomEventEditor():
     from pprint import pprint, pformat
     dialog = gtk.Dialog()
     #dialog.vbox.pack_start(IconSelectButton('/usr/share/starcal2/pixmaps/starcal2.png'))
@@ -292,5 +392,8 @@ if __name__=='__main__':
     #dialog.run()
     dialog.present()
     gtk.main()
+
+if __name__=='__main__':
+    testCustomEventEditor()
 
 

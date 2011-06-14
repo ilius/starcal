@@ -208,7 +208,7 @@ def dayOpenSunbird(arg=None):
     ## and Sunbird seems to be a dead project
     ## Opens previous day in older version
     (y, m, d) = cell.dates[core.DATE_GREG]
-    Popen('LANG=en_US.UTF-8 sunbird -showdate %.4d/%.2d/%.2d'%(y, m, d), shell=True)## FIXME
+    Popen('LANG=en_US.UTF-8 sunbird -showdate %.4d/%.2d/%.2d'%(y, m, d), shell=True)
 
 ## How do this with KOrginizer? FIXME
 
@@ -217,7 +217,7 @@ def dayOpenSunbird(arg=None):
 
 class Cell:## status and information of a cell
     def __init__(self, jd):
-        self.customday = None
+        self.customday = None ## FIXME
         self.extraday = ''
         ###
         self.jd = jd

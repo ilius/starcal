@@ -49,6 +49,7 @@ from scal2.core import rootDir, pixDir, homeDir, myRaise, numLocale, getMonthNam
 
 core.showInfo()
 
+from scal2 import event_man
 from scal2 import ui
 from scal2.ui import showYmArrows
 
@@ -58,8 +59,8 @@ from gobject import timeout_add, timeout_add_seconds
 import gtk
 from gtk import gdk
 
-from scal2.ui_gtk.utils import hideList, showList, myUrlShow, set_tooltip, imageFromFile, setupMenuHideOnLeave
-import scal2.ui_gtk.customday
+from scal2.ui_gtk.utils import hideList, showList, myUrlShow, set_tooltip, imageFromFile, setupMenuHideOnLeave, \
+                               labelStockMenuItem, labelImageMenuItem
 import scal2.ui_gtk.export
 import scal2.ui_gtk.selectdate
 
@@ -71,6 +72,7 @@ from scal2.ui_gtk.preferences import PrefItem, gdkColorToRgb, gfontEncode, pfont
 from scal2.ui_gtk.customize import CustomizableWidgetWrapper, MainWinItem, CustomizeDialog
 from scal2.ui_gtk.monthcal import MonthCal
 
+from scal2.ui_gtk.events_gtk import DayOccurrenceView, EventManagerDialog
 
 from scal2 import unity
 if unity.needToAdd():
@@ -113,7 +115,6 @@ def liveConfChanged():
     if tm-ui.lastLiveConfChangeTime > ui.saveLiveConfDelay:
         timeout_add(int(ui.saveLiveConfDelay*1000), ui.saveLiveConfLoop)
     ui.lastLiveConfChangeTime = tm
-
 
 
 # How to define icon of custom stock????????????
@@ -986,38 +987,13 @@ class ExtraTextWidget(gtk.VBox, MainWinItem):
     def onDateChange(self):
         self.setText(ui.cell.extraday)
 
-class CustomDayWidget(gtk.HBox, MainWinItem):
+class EventViewMainWinItem(MainWinItem, gtk.Widget):## FIXME
     def __init__(self, populatePopupFunc=None):
-        gtk.HBox.__init__(self)
-        self.textview = gtk.TextView()
-        self.textview.set_wrap_mode(gtk.WRAP_WORD)
-        self.textview.set_editable(False)
-        self.textview.set_cursor_visible(False)
-        #self.textview.set_justification(gtk.JUSTIFY_LEFT)
-        self.textbuff = self.textview.get_buffer()
-        self.icon = gtk.Image()
-        self.pack_start(self.icon, 0, 0)
-        self.pack_start(self.textview, 1, 1)
-        self.textview.connect('populate-popup', populatePopupFunc)
-        ####
-        MainWinItem.__init__(self, 'customDayText', _('CustomDay Text'))
-        ####
-        #ui.loadCustomDB()
-    def setData(self, data):## {'type': type, 'desc':desc}
-        if data:
-            self.icon.set_from_file('%s%s%s'%(ui.pixDir, os.sep, ui.customdayModes[data['type']][1]))
-            self.textbuff.set_text(data['desc'])
-            self.textview.show()
-            self.icon.show()
-        else:
-            self.textbuff.set_text('')## forethought
-            self.textview.hide()
-            self.icon.hide()
+        DayOccurrenceView.__init__(self, populatePopupFunc)
+        MainWinItem.__init__(self, 'eventDayView', _('Events of Day'))
     def onDateChange(self):
-        if ui.customDB==None:## or not ui.customdayShowText ## FIXME
-            self.setData(None)
-        else:
-            self.setData(ui.cell.customday)
+        self.updateWidget()
+    ## should event occurances be saved in ui.cell object ?
 
 
 class MainWin(gtk.Window):
@@ -1038,7 +1014,7 @@ class MainWin(gtk.Window):
             ## 1: applet
             ## 2: standard tray icon
         self.trayMode = trayMode
-        self.customDayDialog = scal2.ui_gtk.customday.CustomDayDialog(self)
+        self.eventManDialog = EventManagerDialog(self)
         ###########
         self.lastGDate = None
         #########
@@ -1099,7 +1075,7 @@ class MainWin(gtk.Window):
             self.winCon = None
         ########
         self.extraText = ExtraTextWidget(self.populatePopup)
-        self.customDayWidget = CustomDayWidget(self.populatePopup)
+        self.eventDayView = EventViewMainWinItem(self.populatePopup)
         ############
         toolbar = CustomizableToolbar(self)
         if not ui.toolbarItems:
@@ -1118,7 +1094,7 @@ class MainWin(gtk.Window):
             self.mcal,
             StatusBox(self),
             self.extraText,
-            self.customDayWidget,
+            self.eventDayView
         ]
         defaultItemsDict = dict([(obj._name, obj) for obj in defaultItems])
         self.items = []
@@ -1168,15 +1144,15 @@ class MainWin(gtk.Window):
         ########################## Building menu of right click on the tray icon
         ### When menu will show above the pointer
         menu = gtk.Menu()
-        menu.add(self.labelStockMenuItem('Copy _Time', gtk.STOCK_COPY, self.copyTime))
-        menu.add(self.labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday))
-        menu.add(self.labelStockMenuItem('Ad_just System Time', gtk.STOCK_PREFERENCES, self.adjustTime))
-        menu.add(self.labelStockMenuItem('_Add Custom Day', gtk.STOCK_ADD, self.showCustomDayTray))
-        menu.add(self.labelStockMenuItem('_Export to HTML', gtk.STOCK_CONVERT, self.exportClickedTray))
-        menu.add(self.labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
-        menu.add(self.labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
+        menu.add(labelStockMenuItem('Copy _Time', gtk.STOCK_COPY, self.copyTime))
+        menu.add(labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday))
+        menu.add(labelStockMenuItem('Ad_just System Time', gtk.STOCK_PREFERENCES, self.adjustTime))
+        menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, self.eventManDialog.addEvent))
+        menu.add(labelStockMenuItem('_Export to HTML', gtk.STOCK_CONVERT, self.exportClickedTray))
+        menu.add(labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
+        menu.add(labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
         menu.add(gtk.SeparatorMenuItem())
-        menu.add(self.labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit))
+        menu.add(labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit))
         if os.sep == '\\':
             setupMenuHideOnLeave(menu)
         menu.show_all()
@@ -1184,15 +1160,15 @@ class MainWin(gtk.Window):
         ##########################################################
         ### When menu will show below the pointer
         menu = gtk.Menu()
-        menu.add(self.labelStockMenuItem('_Quit',gtk.STOCK_QUIT,self.quit))
+        menu.add(labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit))
         menu.add(gtk.SeparatorMenuItem())
-        menu.add(self.labelStockMenuItem('_About',gtk.STOCK_ABOUT,self.aboutShow))
-        menu.add(self.labelStockMenuItem('_Preferences',gtk.STOCK_PREFERENCES,self.prefShow))
-        menu.add(self.labelStockMenuItem('_Export to HTML',gtk.STOCK_CONVERT,self.exportClickedTray))
-        menu.add(self.labelStockMenuItem('_Add Custom Day',gtk.STOCK_ADD,self.showCustomDayTray))
-        menu.add(self.labelStockMenuItem('Ad_just System Time',gtk.STOCK_PREFERENCES,self.adjustTime))
-        menu.add(self.labelStockMenuItem('Copy _Date',gtk.STOCK_COPY,self.copyDateToday))
-        menu.add(self.labelStockMenuItem('Copy _Time',gtk.STOCK_COPY,self.copyTime))
+        menu.add(labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
+        menu.add(labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
+        menu.add(labelStockMenuItem('_Export to HTML', gtk.STOCK_CONVERT, self.exportClickedTray))
+        menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, self.eventManDialog.addEvent))
+        menu.add(labelStockMenuItem('Ad_just System Time', gtk.STOCK_PREFERENCES, self.adjustTime))
+        menu.add(labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday))
+        menu.add(labelStockMenuItem('Copy _Time', gtk.STOCK_COPY, self.copyTime))
         if os.sep == '\\':
             setupMenuHideOnLeave(menu)
         menu.show_all()
@@ -1220,15 +1196,16 @@ class MainWin(gtk.Window):
             self.stick()
         self.checkSticky = check
         #####
-        menu.add(self.labelStockMenuItem('Select _Today',  gtk.STOCK_HOME,        self.goToday))
-        menu.add(self.labelStockMenuItem('Select _Date...',gtk.STOCK_INDEX,       selectDateShow))
-        menu.add(self.labelStockMenuItem('_Customize',     gtk.STOCK_EDIT,        self.customizeShow))
-        menu.add(self.labelStockMenuItem('_Preferences',   gtk.STOCK_PREFERENCES, self.prefShow))
-        menu.add(self.labelStockMenuItem('_Add Custom Day',gtk.STOCK_ADD,         self.showCustomDay))
-        menu.add(self.labelStockMenuItem('_Export to HTML',gtk.STOCK_CONVERT,     self.exportClicked))
-        menu.add(self.labelStockMenuItem('_About',         gtk.STOCK_ABOUT,       self.aboutShow))
+        menu.add(labelStockMenuItem('Select _Today',  gtk.STOCK_HOME,        self.goToday))
+        menu.add(labelStockMenuItem('Select _Date...',gtk.STOCK_INDEX,       selectDateShow))
+        menu.add(labelStockMenuItem('_Customize',     gtk.STOCK_EDIT,        self.customizeShow))
+        menu.add(labelStockMenuItem('_Preferences',   gtk.STOCK_PREFERENCES, self.prefShow))
+        #menu.add(labelStockMenuItem('_Add Event',     gtk.STOCK_ADD,         self.eventManDialog.addEvent))
+        menu.add(labelStockMenuItem('_Event Manager', gtk.STOCK_ADD,         self.eventManDialog.showDialog))
+        menu.add(labelStockMenuItem('_Export to HTML',gtk.STOCK_CONVERT,     self.exportClicked))
+        menu.add(labelStockMenuItem('_About',         gtk.STOCK_ABOUT,       self.aboutShow))
         if self.trayMode!=1:
-            menu.add(self.labelStockMenuItem('_Quit',      gtk.STOCK_QUIT,        self.quit))
+            menu.add(labelStockMenuItem('_Quit',      gtk.STOCK_QUIT,        self.quit))
         menu.show_all()
         self.menuMain = menu
         ############################################################
@@ -1239,34 +1216,38 @@ class MainWin(gtk.Window):
         self.connect('delete-event', self.dialogClose)
         ######### Building menu of right click on a day
         menu = gtk.Menu()
-        menu.add(self.labelStockMenuItem('_Add Custom Day', gtk.STOCK_ADD, self.showCustomDay))
-        menu.add(self.labelStockMenuItem('_Copy Date', gtk.STOCK_COPY, self.copyDate))
+        #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD,   self.eventManDialog.addEvent))
+        menu.add(labelStockMenuItem('_Add Yearly Event', gtk.STOCK_ADD, self.eventManDialog.addYearlyEvent))
+        menu.add(labelStockMenuItem('_Add Note', gtk.STOCK_ADD, self.eventManDialog.addDailyNote))
+        menu.add(labelStockMenuItem('_Copy Date', gtk.STOCK_COPY, self.copyDate))
         menu.add(gtk.SeparatorMenuItem())
-        menu.add(self.labelStockMenuItem('Select _Today', gtk.STOCK_HOME, self.goToday))
-        menu.add(self.labelStockMenuItem('Select _Date...', gtk.STOCK_INDEX, selectDateShow))
+        menu.add(labelStockMenuItem('Select _Today', gtk.STOCK_HOME, self.goToday))
+        menu.add(labelStockMenuItem('Select _Date...', gtk.STOCK_INDEX, selectDateShow))
         if isfile('/usr/bin/evolution'):##??????????????????
-            menu.add(self.labelImageMenuItem('In E_volution', 'evolution-18.png', ui.dayOpenEvolution))
+            menu.add(labelImageMenuItem('In E_volution', 'evolution-18.png', ui.dayOpenEvolution))
         #if isfile('/usr/bin/sunbird'):##??????????????????
-        #    menu.add(self.labelImageMenuItem('In _Sunbird', 'sunbird-18.png', ui.dayOpenSunbird))
+        #    menu.add(labelImageMenuItem('In _Sunbird', 'sunbird-18.png', ui.dayOpenSunbird))
         menu.num = 1
         self.menuCell1 = menu
         self.menuCell = menu ## may be changed later frequently, here just initialized
         menu.show_all()
-        ########## Building menu of right click on a day (that has CustomDay)
+        '''
+        ########## Building menu of right click on a day (that has Event Icon) FIXME
         menu = gtk.Menu()
-        menu.add(self.labelStockMenuItem('_Edit Custom Day',    gtk.STOCK_EDIT,    self.editCustomDay))
-        menu.add(self.labelStockMenuItem('_Copy Date',          gtk.STOCK_COPY,    self.copyDate))
+        #menu.add(labelStockMenuItem('_Edit Event',    gtk.STOCK_EDIT,    self.editEvent))## FIXME
+        menu.add(labelStockMenuItem('_Copy Date',          gtk.STOCK_COPY,    self.copyDate))
         menu.add(gtk.SeparatorMenuItem())
-        menu.add(self.labelStockMenuItem('_Remove Custom Day',  gtk.STOCK_DELETE,self.removeCustomDay))
+        #menu.add(labelStockMenuItem('_Remove Event',  gtk.STOCK_DELETE, self.removeEvent))## FIXME
         menu.add(gtk.SeparatorMenuItem())
-        menu.add(self.labelStockMenuItem('Select _Today',       gtk.STOCK_HOME,    self.goToday))
-        menu.add(self.labelStockMenuItem('Select _Date...',     gtk.STOCK_INDEX, selectDateShow))
+        menu.add(labelStockMenuItem('Select _Today',       gtk.STOCK_HOME,    self.goToday))
+        menu.add(labelStockMenuItem('Select _Date...',     gtk.STOCK_INDEX, selectDateShow))
         if isfile('/usr/bin/evolution'):##??????????????????
-            menu.add(self.labelImageMenuItem('In E_volution', 'evolution-18.png', ui.dayOpenEvolution))
+            menu.add(labelImageMenuItem('In E_volution', 'evolution-18.png', ui.dayOpenEvolution))
         #if isfile('/usr/bin/sunbird'):##??????????????????
-        #    menu.add(self.labelImageMenuItem('In _Sunbird', 'sunbird-18.png', ui.dayOpenSunbird))
+        #    menu.add(labelImageMenuItem('In _Sunbird', 'sunbird-18.png', ui.dayOpenSunbird))
         menu.show_all()
         menu.num = 2
+        '''
         self.menuCell2 = menu
         ######################
         self.updateMenuSize()
@@ -1297,7 +1278,7 @@ class MainWin(gtk.Window):
         elif k==65470:              # F1:
             self.aboutShow()
         elif k in (65379, 43, 65451): # Insert or plus or KP_Add
-            self.showCustomDay(month=ui.cell.month, day=ui.cell.day)
+            self.eventManDialog.showDialog()
         elif k in (113, 81, 1494):    # q Q
             self.quit()
         #elif gdk.keyval_name(k).startswith('ALT'):## Alt+F7 ##???????????? Does not receive "F7"
@@ -1384,10 +1365,10 @@ class MainWin(gtk.Window):
         #    except AttributeError:
         #        pass
         self.setMinHeight()
-        if ui.cell.customday!=None:#if Cell has CustomDay
-            self.menuCell = self.menuCell2
-        else:
-            self.menuCell = self.menuCell1
+        #if ui.cell.customday!=None:#if Cell has CustomDay ## FIXME
+        #    self.menuCell = self.menuCell2
+        #else:
+        self.menuCell = self.menuCell1
         for j in range(len(core.plugIndex)):
             try:
                 core.allPlugList[core.plugIndex[j]].date_change_after(*date)
@@ -1449,19 +1430,6 @@ class MainWin(gtk.Window):
         self.menuTray1.popup(None, None, getMenuPos, 3, 0)
         self.menuTray1.hide()
         self.menuTray2.allocation = self.menuTray1.allocation
-    def labelStockMenuItem(self, label, stock=None, func=None, *args):
-        item = gtk.ImageMenuItem(_(label))
-        if stock!=None:
-            item.set_image(gtk.image_new_from_stock(stock, gtk.ICON_SIZE_MENU))
-        if func!=None:
-            item.connect('activate', func, *args)
-        return item
-    def labelImageMenuItem(self, label, image, func=None, *args):
-        item = gtk.ImageMenuItem(_(label))
-        item.set_image(imageFromFile('%s%s%s'%(pixDir, os.sep, image)))
-        if func!=None:
-            item.connect('activate', func, *args)
-        return item
     def copyDate(self, obj=None, event=None):
         self.clipboard.set_text(ui.cell.format(preferences.dateBinFmt, core.primaryMode))
         #self.clipboard.store() ## ?????? No need!
@@ -1510,6 +1478,7 @@ class MainWin(gtk.Window):
         return True
     prefShow = lambda self, obj=None, data=None: self.prefDialog.present()
     customizeShow = lambda self, obj=None, data=None: self.customizeDialog.present()
+    '''
     def showCustomDay(self, obj=None, data=None, month=None, day=None):
         if month==None:
             month = ui.cell.month
@@ -1541,6 +1510,7 @@ class MainWin(gtk.Window):
         self.customDayDialog.entryComment.grab_focus()
         self.customDayDialog.entryComment.select_region(0, 0)
         self.customDayDialog.present()
+    '''
     def trayInit(self):
         if self.trayMode==2:
             self.sicon = gtk.StatusIcon()
@@ -1703,7 +1673,7 @@ class MainWin(gtk.Window):
 
 gobject.type_register(MainWin)
 
-for cls in (CustomizableToolbar, YearMonthLabelBox, StatusBox, ExtraTextWidget, CustomDayWidget):
+for cls in (CustomizableToolbar, YearMonthLabelBox, StatusBox, ExtraTextWidget, EventViewMainWinItem):
     gobject.type_register(cls)
     gobject.signal_new('date-change', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
 
