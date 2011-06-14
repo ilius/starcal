@@ -1802,6 +1802,6 @@ def main():
     return gtk.main()
 
 
-## if __name__ == '__main__':
-sys.exit(main())
+if __name__ == '__main__':## this file may be called from starcal-gnome2-applet
+    sys.exit(main())
 
