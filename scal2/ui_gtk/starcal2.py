@@ -681,37 +681,31 @@ class YearMonthLabelBox(gtk.HBox, MainWinItem):
         self.yearLabel = [None for i in range(ui.shownCalsNum)]
         self.monthLabel = [None for i in range(ui.shownCalsNum)]
         #############################
+        def addNewArrow():
+            arrow = gtk.Button()
+            arrow.set_relief(2)
+            arrow.set_can_focus(False)
+            self.pack_start(arrow, 0, 0)
+            self.wgroup[0].append(arrow)
+            return arrow
         if showYmArrows:
-            self.arrowL = gtk.Button()
-            self.arrowL.set_relief(2)
-            self.pack_start(self.arrowL, 0, 0)
-            self.wgroup[0].append(self.arrowL)
+            self.arrowPY = addNewArrow()## PY = Previous Year
         self.yearLabel[0] = IntLabel()
         self.yearLabel[0].connect('changed', self.yearLabelChange, 0)
         self.pack_start(self.yearLabel[0], 0, 0)
         self.wgroup[0].append(self.yearLabel[0])
         if showYmArrows:
-            self.arrowR = gtk.Button()
-            self.arrowR.set_relief(2)
-            self.pack_start(self.arrowR, 0, 0)
-            self.wgroup[0].append(self.arrowR)
+            self.arrowNY = addNewArrow()## NY = Next Year
             sep = gtk.VSeparator()
             self.pack_start(sep, 1, 1)
             self.wgroup[0].append(sep)
-            self.arrowLM = gtk.Button()
-            self.arrowLM.set_relief(2)
-            self.pack_start(self.arrowLM, 0, 0)
-            self.wgroup[0].append(self.arrowLM)
+            self.arrowPM = addNewArrow()## PM = Previous Month
         self.monthLabel[0] = MonthLabel(core.primaryMode)
         self.monthLabel[0].connect('changed', self.monthLabelChange)
         self.pack_start(self.monthLabel[0], 0, 0)
         self.wgroup[0].append(self.monthLabel[0])
         if showYmArrows:
-            self.arrowRM = gtk.Button()
-            self.arrowRM.set_relief(2)
-            self.pack_start(self.arrowRM, 0, 0)
-            self.wgroup[0].append(self.arrowRM)
-            #######
+            self.arrowNM = addNewArrow()## NM = Next Month
             self.updateArrows()
         #############################
         for i in range(1, ui.shownCalsNum):
@@ -739,23 +733,23 @@ class YearMonthLabelBox(gtk.HBox, MainWinItem):
             self.wgroup[i].append(label)
         #############################
         if showYmArrows:
-            self.arrowL.connect('pressed', self.yearButtonPress,-1)
-            self.arrowR.connect('pressed', self.yearButtonPress, 1)
-            self.arrowL.connect('activate', self.yearButtonPress,-1, False)
-            self.arrowR.connect('activate', self.yearButtonPress, 1, False)
-            self.arrowL.connect('released', self.arrowRelease)
-            self.arrowR.connect('released', self.arrowRelease)
-            self.arrowLM.connect('pressed', self.monthButtonPress,-1)
-            self.arrowRM.connect('pressed', self.monthButtonPress, 1)
-            self.arrowLM.connect('activate', self.monthButtonPress,-1, False)
-            self.arrowRM.connect('activate', self.monthButtonPress, 1, False)
-            self.arrowLM.connect('released', self.arrowRelease)
-            self.arrowRM.connect('released', self.arrowRelease)
+            self.arrowPY.connect('pressed', self.yearButtonPress,-1)
+            self.arrowNY.connect('pressed', self.yearButtonPress, 1)
+            self.arrowPY.connect('activate', self.yearButtonPress,-1, False)
+            self.arrowNY.connect('activate', self.yearButtonPress, 1, False)
+            self.arrowPY.connect('released', self.arrowRelease)
+            self.arrowNY.connect('released', self.arrowRelease)
+            self.arrowPM.connect('pressed', self.monthButtonPress,-1)
+            self.arrowNM.connect('pressed', self.monthButtonPress, 1)
+            self.arrowPM.connect('activate', self.monthButtonPress,-1, False)
+            self.arrowNM.connect('activate', self.monthButtonPress, 1, False)
+            self.arrowPM.connect('released', self.arrowRelease)
+            self.arrowNM.connect('released', self.arrowRelease)
             #############################
-            set_tooltip(self.arrowL, _('Previous Year'))
-            set_tooltip(self.arrowR, _('Next Year'))
-            set_tooltip(self.arrowLM, _('Previous Month'))
-            set_tooltip(self.arrowRM, _('Next Month'))
+            set_tooltip(self.arrowPY, _('Previous Year'))
+            set_tooltip(self.arrowNY, _('Next Year'))
+            set_tooltip(self.arrowPM, _('Previous Month'))
+            set_tooltip(self.arrowNM, _('Next Month'))
         MainWinItem.__init__(self, 'labelBox', _('Year & Month Labels'))
     def monthPlus(self, plus=1):
         ui.monthPlus(plus)
@@ -799,35 +793,35 @@ class YearMonthLabelBox(gtk.HBox, MainWinItem):
     def updateArrows(self):
         if showYmArrows:
             if isinstance(preferences.prevStock, str):
-                self.arrowL.set_image(gtk.image_new_from_stock(preferences.prevStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
-                self.arrowLM.set_image(gtk.image_new_from_stock(preferences.prevStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
+                self.arrowPY.set_image(gtk.image_new_from_stock(preferences.prevStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
+                self.arrowPM.set_image(gtk.image_new_from_stock(preferences.prevStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
             elif isinstance(preferences.prevStock, gtk._gtk.ArrowType):
-                if self.arrowL.child!=None:
-                    self.arrowL.remove(self.arrowL.child)
+                if self.arrowPY.child!=None:
+                    self.arrowPY.remove(self.arrowPY.child)
                 arrow = gtk.Arrow(preferences.prevStock, gtk.SHADOW_IN)
-                self.arrowL.add(arrow)
+                self.arrowPY.add(arrow)
                 arrow.show()
                 ######
-                if self.arrowLM.child!=None:
-                    self.arrowLM.remove(self.arrowLM.child)
+                if self.arrowPM.child!=None:
+                    self.arrowPM.remove(self.arrowPM.child)
                 arrow = gtk.Arrow(preferences.prevStock, gtk.SHADOW_IN)
-                self.arrowLM.add(arrow)
+                self.arrowPM.add(arrow)
                 arrow.show()
             #################
             if isinstance(preferences.nextStock, str):
-                self.arrowR.set_image(gtk.image_new_from_stock(preferences.nextStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
-                self.arrowRM.set_image(gtk.image_new_from_stock(preferences.nextStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
+                self.arrowNY.set_image(gtk.image_new_from_stock(preferences.nextStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
+                self.arrowNM.set_image(gtk.image_new_from_stock(preferences.nextStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
             elif isinstance(preferences.nextStock, gtk._gtk.ArrowType):
-                if self.arrowR.child!=None:
-                    self.arrowR.remove(self.arrowR.child)
+                if self.arrowNY.child!=None:
+                    self.arrowNY.remove(self.arrowNY.child)
                 arrow = gtk.Arrow(preferences.nextStock, gtk.SHADOW_IN)
-                self.arrowR.add(arrow)
+                self.arrowNY.add(arrow)
                 arrow.show()
                 ######
-                if self.arrowRM.child!=None:
-                    self.arrowRM.remove(self.arrowRM.child)
+                if self.arrowNM.child!=None:
+                    self.arrowNM.remove(self.arrowNM.child)
                 arrow = gtk.Arrow(preferences.nextStock, gtk.SHADOW_IN)
-                self.arrowRM.add(arrow)
+                self.arrowNM.add(arrow)
                 arrow.show()
     def updateTextWidth(self):
         ############### update width of month labels
@@ -1778,6 +1772,6 @@ def main():
     return gtk.main()
 
 
-## if __name__ == '__main__':
-sys.exit(main())
+if __name__ == '__main__':## this file may be called from starcal-gnome2-applet
+    sys.exit(main())
 

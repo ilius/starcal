@@ -40,10 +40,10 @@ from scal2.locale_man import tr as _
 from scal2.plugin_man import BasePlugin
 from scal2.cal_modules.gregorian import to_jd as gregorian_to_jd
 
-if 'gtk' in sys.modules:
-    from pray_times_gtk import *
-else:
-    from pray_times_qt import *
+#if 'gtk' in sys.modules:
+from pray_times_gtk import *
+#else:
+#    from pray_times_qt import *
 
 ####################################################
 

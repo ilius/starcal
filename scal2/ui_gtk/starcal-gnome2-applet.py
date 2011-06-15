@@ -68,14 +68,13 @@ class StarCalApplet(MainWin):
         self.sicon.set_active(False)
         self.hide()
         return True
-    def trayUpdatePixbuf(self):
-        self.image.set_from_pixbuf(self.trayPix)
     def trayInit(self):
         self.image = gtk.Image()
         self.tooltips = gtk.Tooltips()
         ## self.sicon = gtk.EventBox()
         self.sicon = gtk.ToggleButton()
         #self.sicon.__getattribute__ = getattribute
+        self.sicon.set_from_pixbuf = self.image.set_from_pixbuf
         self.sicon.set_relief(gtk.RELIEF_NONE)
         self.sicon.connect('toggled', self.trayClicked)
         self.sicon.connect('button_press_event', self.appletButtonPress)
