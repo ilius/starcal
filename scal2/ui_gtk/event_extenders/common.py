@@ -10,6 +10,8 @@ from scal2 import ui
 import gtk
 from gtk import gdk
 
+#print 'Testing translator', __file__, _('About')## OK
+
 buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter())
 
 def hideList(widgets):

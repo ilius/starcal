@@ -981,11 +981,12 @@ class ExtraTextWidget(gtk.VBox, MainWinItem):
     def onDateChange(self):
         self.setText(ui.cell.extraday)
 
-class EventViewMainWinItem(MainWinItem, gtk.Widget):## FIXME
+class EventViewMainWinItem(DayOccurrenceView, MainWinItem):## FIXME
     def __init__(self, populatePopupFunc=None):
         DayOccurrenceView.__init__(self, populatePopupFunc)
         MainWinItem.__init__(self, 'eventDayView', _('Events of Day'))
     def onDateChange(self):
+        self.setJd(ui.cell.jd)
         self.updateWidget()
     ## should event occurances be saved in ui.cell object ?
 
@@ -1088,12 +1089,17 @@ class MainWin(gtk.Window):
             self.mcal,
             StatusBox(self),
             self.extraText,
-            self.eventDayView
+            self.eventDayView,
         ]
         defaultItemsDict = dict([(obj._name, obj) for obj in defaultItems])
         self.items = []
         for (name, enable) in ui.mainWinItems:
-            item = defaultItemsDict[name]
+            try:
+                item = defaultItemsDict[name]
+            except:
+                myRaise()
+                continue
+            #print name, enable
             item.enable = enable
             item.connect('size-request', self.childSizeRequest) ## or item.widget.connect
             item.connect('date-change', self.onDateChange)
@@ -1141,7 +1147,7 @@ class MainWin(gtk.Window):
         menu.add(labelStockMenuItem('Copy _Time', gtk.STOCK_COPY, self.copyTime))
         menu.add(labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday))
         menu.add(labelStockMenuItem('Ad_just System Time', gtk.STOCK_PREFERENCES, self.adjustTime))
-        menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, self.eventManDialog.addEvent))
+        menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, self.eventManDialog.addCustomEvent))
         menu.add(labelStockMenuItem('_Export to HTML', gtk.STOCK_CONVERT, self.exportClickedTray))
         menu.add(labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
         menu.add(labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
@@ -1159,7 +1165,7 @@ class MainWin(gtk.Window):
         menu.add(labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
         menu.add(labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
         menu.add(labelStockMenuItem('_Export to HTML', gtk.STOCK_CONVERT, self.exportClickedTray))
-        menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, self.eventManDialog.addEvent))
+        menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, self.eventManDialog.addCustomEvent))
         menu.add(labelStockMenuItem('Ad_just System Time', gtk.STOCK_PREFERENCES, self.adjustTime))
         menu.add(labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday))
         menu.add(labelStockMenuItem('Copy _Time', gtk.STOCK_COPY, self.copyTime))
@@ -1194,8 +1200,8 @@ class MainWin(gtk.Window):
         menu.add(labelStockMenuItem('Select _Date...',gtk.STOCK_INDEX,       selectDateShow))
         menu.add(labelStockMenuItem('_Customize',     gtk.STOCK_EDIT,        self.customizeShow))
         menu.add(labelStockMenuItem('_Preferences',   gtk.STOCK_PREFERENCES, self.prefShow))
-        #menu.add(labelStockMenuItem('_Add Event',     gtk.STOCK_ADD,         self.eventManDialog.addEvent))
-        menu.add(labelStockMenuItem('_Event Manager', gtk.STOCK_ADD,         self.eventManDialog.showDialog))
+        #menu.add(labelStockMenuItem('_Add Event',     gtk.STOCK_ADD,         self.eventManDialog.addCustomEvent))
+        menu.add(labelStockMenuItem('_Event Manager', gtk.STOCK_ADD,         self.eventManShow))
         menu.add(labelStockMenuItem('_Export to HTML',gtk.STOCK_CONVERT,     self.exportClicked))
         menu.add(labelStockMenuItem('_About',         gtk.STOCK_ABOUT,       self.aboutShow))
         if self.trayMode!=1:
@@ -1210,7 +1216,7 @@ class MainWin(gtk.Window):
         self.connect('delete-event', self.dialogClose)
         ######### Building menu of right click on a day
         menu = gtk.Menu()
-        #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD,   self.eventManDialog.addEvent))
+        #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD,   self.eventManDialog.addCustomEvent))
         menu.add(labelStockMenuItem('_Add Yearly Event', gtk.STOCK_ADD, self.eventManDialog.addYearlyEvent))
         menu.add(labelStockMenuItem('_Add Note', gtk.STOCK_ADD, self.eventManDialog.addDailyNote))
         menu.add(labelStockMenuItem('_Copy Date', gtk.STOCK_COPY, self.copyDate))
@@ -1272,7 +1278,7 @@ class MainWin(gtk.Window):
         elif k==65470:              # F1:
             self.aboutShow()
         elif k in (65379, 43, 65451): # Insert or plus or KP_Add
-            self.eventManDialog.showDialog()
+            self.eventManShow()
         elif k in (113, 81, 1494):    # q Q
             self.quit()
         #elif gdk.keyval_name(k).startswith('ALT'):## Alt+F7 ##???????????? Does not receive "F7"
@@ -1472,6 +1478,7 @@ class MainWin(gtk.Window):
         return True
     prefShow = lambda self, obj=None, data=None: self.prefDialog.present()
     customizeShow = lambda self, obj=None, data=None: self.customizeDialog.present()
+    eventManShow = lambda self, obj=None, data=None: self.eventManDialog.present()
     '''
     def showCustomDay(self, obj=None, data=None, month=None, day=None):
         if month==None:

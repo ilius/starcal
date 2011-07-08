@@ -16,7 +16,7 @@ class DayTimeEventRuleWidget(TimeBox):
     def updateWidget(self):
         self.set_time(self.rule.dayTime)
     def updateVars(self):
-        (self.rule.hour, self.rule.minute, self.rule.second) = tbox.get_time()
+        (self.rule.hour, self.rule.minute, self.rule.second) = self.get_time()
 
 
 event_man.DayTimeEventRule.WidgetClass = DayTimeEventRuleWidget

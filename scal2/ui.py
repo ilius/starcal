@@ -333,6 +333,24 @@ def yearPlus(plus=1):
 
 ######################################################################
 
+def checkMainWinItems():
+    global mainWinItems
+    #print ui.mainWinItems
+    ## cleaning and updating mainWinItems
+    indexes = {}
+    names = set()
+    for (i, (name, enable)) in enumerate(mainWinItems):
+        indexes[name] = i
+        names.add(name)
+    defaultNames = set([name for (name, i) in mainWinItemsDefault])
+    #print sorted(list(names)), sorted(list(defaultNames))
+    for name in names.difference(defaultNames):
+        #print '----- removed', name, mainWinItems[indexes[name]]
+        mainWinItems.pop(indexes[name])
+    for name in defaultNames.difference(names):
+        #print '------ new', name
+        mainWinItems.append((name, False))## FIXME
+
 def loadCustomDB():
     global customDB
     if not isfile(customFile):
@@ -359,9 +377,24 @@ def loadCustomDB():
 
 def loadEvents():
     from scal2 import event_man
-    global events
+    global events, eventsById
     events = event_man.loadEvents()
+    eventsById = dict([(e.eid, e) for e in events])
 
+def deleteEvent(e):
+    global events, eventsById
+    events.remove(e)
+    del eventsById[e.eid]
+    shutil.rmtree(e.eventDir)
+
+def addEvent(e):
+    global events, eventsById
+    events.append(e)
+    eventsById[e.eid] = e
+    e.saveConfig()
+
+#def updateEvent(e):## FIXME
+#    e.saveConfig()
 
 ######################################################################
 shownCals = [
@@ -431,6 +464,7 @@ eventTagsDesc = dict([(t.name, t.desc) for t in eventTags])
 customDB = []
 loadCustomDB()
 events = []
+eventsById = {}
 
 def updateEventTagsUsage():
     tagsDict = getEventTagsDict()
@@ -547,8 +581,10 @@ mainWinItems = (
     ('monthCal', True),
     ('statusBar', True),
     ('extraText', True),
-    ('customDayText', True)
+    ('eventDayView', True),
 )
+
+mainWinItemsDefault = mainWinItems[:]
 
 #####################
 dailyNoteChDateOnEdit = True ## change date of a dailyNoteEvent when editing it
@@ -595,6 +631,7 @@ if newPrimaryMode!= core.primaryMode:
     core.primaryMode = newPrimaryMode
     cellCache.clear()
 del newPrimaryMode
+
 
 needRestartPref = {} ### Right place ????????
 for key in ('scal2.locale_man.lang', 'winTaskbar', 'showYmArrows'): # What other???? 

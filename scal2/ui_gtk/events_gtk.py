@@ -39,6 +39,8 @@ import gtk
 from gtk import gdk
 
 
+#print 'Testing translator', __file__, _('About')
+
 def combo_model_delete_text(model, path, itr, text_to_del):
     ## Usage: combo.get_model().foreach(combo_model_delete_text, 'The Text')
     if model[path[0]][0]==text_to_del:
@@ -59,11 +61,12 @@ def comboToggleActivate(combo, *args):
 
 
 class DayOccurrenceView(event_man.DayOccurrenceView, gtk.VBox):
-    def __init__(self, populatePopupFunc=None)
+    def __init__(self, populatePopupFunc=None):
         event_man.DayOccurrenceView.__init__(self, ui.cell.jd)
         gtk.VBox.__init__(self)
         ## what to do with populatePopupFunc FIXME
         ## self.textview.connect('populate-popup', populatePopupFunc)
+        self.updateWidget()
     def updateWidget(self):
         self.updateData()
         ## destroy all VBox contents and add again
@@ -80,6 +83,8 @@ class DayOccurrenceView(event_man.DayOccurrenceView, gtk.VBox):
             label.set_selectable(True)
             hbox.pack_start(label, 1, 1)
             self.pack_start(hbox, 0, 0)
+        self.show_all()
+        self.set_visible(bool(self.data))
 
 
 class WeekOccurrenceView(event_man.WeekOccurrenceView, gtk.TreeView):
@@ -168,8 +173,11 @@ class MonthOccurrenceView(event_man.MonthOccurrenceView, gtk.TreeView):
 
 
 class EventEditorDialog(gtk.Dialog):
-    def __init__(self, event=None, eventType=''):
+    def __init__(self, event=None, eventType=''):## don't give both event a eventType
         gtk.Dialog.__init__(self)
+        #self.connect('delete-event', lambda obj, e: self.destroy())
+        #self.resize(800, 600)
+        ###
         cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
         okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
         if ui.autoLocale:
@@ -177,74 +185,71 @@ class EventEditorDialog(gtk.Dialog):
             cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
             okB.set_label(_('_OK'))
             okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
-        okB.connect('clicked', self.okClicked)
+        self.connect('response', lambda w, e: self.hide())
         #######
         self.event = event
         self.activeEventWidget = None
         #######
-        hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Date Mode')), 0, 0)
-        combo = gtk.combo_box_new_text()
-        for mod in core.modules:
-            combo.append_text(mod.desc)
-        #combo.set_active(core.primaryMode)
-        combo.set_active(ui.shownCals[0]['mode'])
-        combo.connect('changed', self.dateModeChanged)
-        hbox.pack_start(combo, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
-        self.comboDateMode = combo
-        self.comboDateMode.set_active(ui.shownCals[0]['mode'])## or core.primaryMode
-        self.comboDateMode.connect('changed', self.dateModeChanged)
-        ####
+        #print 'eventType = %r'%eventType
         if eventType:
             cls = event_man.eventsClassDict[eventType]
-            if self.event:## is this case usable that give both event and eventType? ## FIXME
-                self.activeEventWidget = cls.makeWidget(self.event)## FIXME
-            else:
-                event = cls()
-                self.activeEventWidget = event.makeWidget()
-                self.event = event ## needed? FIXME
+            self.event = cls()
+            self.activeEventWidget = self.event.makeWidget()
         else:
             hbox = gtk.HBox()
             combo = gtk.combo_box_new_text()
             for cls in event_man.eventsClassList:
                 combo.append_text(cls.desc)
+            hbox.pack_start(gtk.Label(_('Event Type')), 0, 0)
+            hbox.pack_start(combo, 0, 0)
+            hbox.pack_start(gtk.Label(''), 1, 1)
             self.vbox.pack_start(hbox, 0, 0)
+            ####
             if self.event:
-                combo.set_active(event_man.eventsClassList.find(self.event.__class__))
+                combo.set_active(event_man.eventsClassList.index(self.event.__class__))
             else:
-                combo.set_active(event.defaultEventTypeIndex)
+                combo.set_active(event_man.defaultEventTypeIndex)
+                self.event = event_man.eventsClassList[event_man.defaultEventTypeIndex]()
+            self.activeEventWidget = self.event.makeWidget()
             combo.connect('changed', self.eventTypeChanged)
             self.comboEventType = combo
+        self.vbox.pack_start(self.activeEventWidget, 0, 0)
+        self.vbox.show_all()
     def dateModeChanged(self, combo):
         pass
     def eventTypeChanged(self, combo):
         if self.activeEventWidget:
             self.activeEventWidget.destroy()
-        cls = event_man.eventsClassList[combo.get_active()]
+        event = event_man.eventsClassList[combo.get_active()]()
         if self.event:
-            self.activeEventWidget = cls.makeWidget(self.event)## FIXME
-        else:
-            event = cls()
-            self.activeEventWidget = event.makeWidget()
-            self.event = event ## needed? FIXME
+            event.copyFrom(self.event)
+        self.event = event
+        self.activeEventWidget = event.makeWidget()
         self.vbox.pack_start(self.activeEventWidget, 0, 0)
-    def okClicked(self, button):## FIXME
-        if self.activeEventWidget:
-            self.activeEventWidget.updateVars()
+        self.activeEventWidget.show_all()
+    def run(self):
+        if gtk.Dialog.run(self)!=gtk.RESPONSE_OK or not self.activeEventWidget or not self.event:
+            return None
+        self.activeEventWidget.updateVars()
+        self.destroy()
+        return self.event
 
 
 class EventManagerDialog(gtk.Dialog):## FIXME
     def __init__(self, mainWin=None):## mainWin is needed? FIXME
         gtk.Dialog.__init__(self)
+        self.resize(600, 300)
+        self.connect('delete-event', self.onDeleteEvent)
+        ###
         vpan = gtk.VPaned()
         headerBox = gtk.HBox()
         treeBox = gtk.HBox()
         vpan.add1(headerBox)
         vpan.add2(treeBox)
-        self.infoTextvew = gtk.TextView()
-        headerBox.pack_start(self.infoTextvew, 1, 1)
+        infoTextvew = gtk.TextView()
+        infoTextvew.set_editable(False)
+        self.infoTextbuff = infoTextvew.get_buffer()
+        headerBox.pack_start(infoTextvew, 1, 1)
         headerButtonBox = gtk.VButtonBox()
         headerButtonBox.set_layout(gtk.BUTTONBOX_END)
         ####
@@ -257,7 +262,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         for cls in eventsClassList:## order? FIXME
             item = gtk.MenuItem(cls.desc)## ImageMenuItem
             #item.set_image(imageFromFile(...))
-            item.connect('activate', self.addEvent, cls)
+            item.connect('activate', self.addCustomEvent, cls)
         '''
         ####
         editButton = gtk.Button(stock=gtk.STOCK_EDIT)
@@ -277,53 +282,87 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         headerButtonBox.add(addButton)
         headerButtonBox.add(editButton)
         headerButtonBox.add(delButton)
+        #####
+        addButton.connect('clicked', self.addCustomEvent)
+        editButton.connect('clicked', self.editClicked)
+        delButton.connect('clicked', self.delClicked)
+        #####
         headerBox.pack_start(headerButtonBox, 0, 0)
         self.treeview = gtk.TreeView()
+        swin = gtk.ScrolledWindow()
         swin.add(self.treeview)
         swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         treeBox.pack_start(swin, 1, 1)
         self.vbox.pack_start(vpan)
         #####
-        self.treestore = gtk.ListStore(gdk.Pixbuf, str, str)
+        self.treestore = gtk.ListStore(int, gdk.Pixbuf, str, str)## eid, icon, summary, description
         self.treeview.set_model(self.treestore)
-        ###         
-        col = gtk.TreeViewColumn('', gtk.CellRendererPixbuf(), pixbuf=0)
+        ###      
+        col = gtk.TreeViewColumn('', gtk.CellRendererPixbuf(), pixbuf=1)
         col.set_resizable(True)
         self.treeview.append_column(col)
         ###
-        col = gtk.TreeViewColumn(_('Summary'), gtk.CellRendererText(), text=1)
+        col = gtk.TreeViewColumn(_('Summary'), gtk.CellRendererText(), text=2)
         col.set_resizable(True)
         self.treeview.append_column(col)
         self.treeview.set_search_column(1)
         ###
-        col = gtk.TreeViewColumn(_('Description'), gtk.CellRendererText(), text=2)
+        col = gtk.TreeViewColumn(_('Description'), gtk.CellRendererText(), text=3)
         self.treeview.append_column(col)
         #self.treeview.set_search_column(2)
+        ###
+        self.treeview.connect('cursor-changed', self.treeviewCursorChanged)
         #####
-        addButton.connect('clicked', self.addEvent)
-        editButton.connect('clicked', self.editClicked)
-        delButton.connect('clicked', self.delClicked)
-        #####
+        self.vbox.show_all()
         self.reloadEvents()
+    def onDeleteEvent(self, obj, event):
+        self.hide()
+        return True
     def reloadEvents(self):
+        self.treestore.clear()
         for event in ui.events:
-            self.treestore.append(
+            self.treestore.append((
+                event.eid,
                 pixbufFromFile(event.icon),
                 event.summary,
                 event.description,
-            )
-    def addEvent(self, obj=None):
-        pass
+            ))
+        self.treeviewCursorChanged()
+    def getSelectedEvent(self):
+        cur = self.treeview.get_cursor()[0]
+        if not cur:
+            return None
+        return ui.eventsById[self.treestore[cur[0]][0]]
+    def treeviewCursorChanged(self, treev=None):
+        event = self.getSelectedEvent()
+        self.infoTextbuff.set_text(event.getInfo() if event else '')
+    def addEvent(self, eventType):
+        event = EventEditorDialog(eventType=eventType).run()
+        #print 'event =', event
+        if event:
+            ui.addEvent(event)
+            self.reloadEvents()## perfomance FIXME
+    def addCustomEvent(self, obj=None):
+        self.addEvent('')
     def addYearlyEvent(self, obj=None):
-        pass
+        self.addEvent('yearly')
     def addDailyNote(self, obj=None):
-        pass
-    def showDialog(self, obj=None):
-        self.present()
-    def editClicked(self, button):
-        pass
-    def delClicked(self, button):
-        pass
+        self.addEvent('dailyNote')
+    def editClicked(self, obj=None):
+        event = self.getSelectedEvent()
+        if not event:
+            return
+        event = EventEditorDialog(event=event).run()
+        #print 'event =', event
+        if event:
+            event.saveConfig()## FIXME
+            self.reloadEvents()## perfomance FIXME
+    def delClicked(self, obj=None):
+        event = self.getSelectedEvent()
+        if event:
+            ui.deleteEvent(event)
+            self.reloadEvents()## perfomance FIXME
+
 
 def makeWidget(obj):## obj is an instance of Event or EventRule or EventNotifier
     if hasattr(obj, 'WidgetClass'):

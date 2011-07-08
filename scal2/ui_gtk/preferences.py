@@ -108,7 +108,7 @@ toolbarItemsData = (
     ToolbarItem('customize',   'edit',        'customizeShow'),
     ToolbarItem('preferences', 'preferences', 'prefShow',),
 #    ToolbarItem('add',         'add',         'showCustomDay',  'Add Custom Day',     ),
-    ToolbarItem('add',         'add',         'showEventMan',   'Event Manager',     ),
+    ToolbarItem('add',         'add',         'eventManShow',   'Event Manager',     ),
     ToolbarItem('export',      'convert',     'exportClicked',  'Export to HTML',     ),
     ToolbarItem('about',       'about',       'aboutShow',      'About StarCalendar', ),
     ToolbarItem('quit',        'quit',        'quit',)
@@ -139,6 +139,7 @@ if os.path.isfile(customizeConfPath):
     except:
         myRaise(__file__)
 
+ui.checkMainWinItems()
 
 #if adjustTimeCmd=='':## FIXME
 for cmd in ('gksudo', 'kdesudo', 'gksu', 'gnomesu', 'kdesu'):

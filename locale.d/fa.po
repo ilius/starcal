@@ -660,7 +660,13 @@ msgid "Provided by"
 msgstr ""
 "تأمین شده توسط"
 
+msgid "Repeat: Every %s Days and %s"
+msgstr ""
+"تکرار: هر %s روز و %s"
 
+msgid "Event Type"
+msgstr ""
+"نوع رویداد"
 
 
 

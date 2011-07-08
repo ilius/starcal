@@ -1,10 +1,13 @@
+from scal2.locale_man import tr as _
 from scal2.utils import myRaise
 from scal2.paths import pixDir
+
 import os
 from os.path import join
 from subprocess import Popen
 from time import time
 import gtk
+from gtk import gdk
 
 
 def hideList(widgets):
@@ -60,7 +63,7 @@ def pixbufFromFile(path):## the file may not exist
     if os.sep=='/' and not path.startswith('/'):
         path = join(pixDir, path)
     try:
-        return gtk.pixbuf_new_from_file(path)
+        return gdk.pixbuf_new_from_file(path)
     except:
         myRaise()
         return None

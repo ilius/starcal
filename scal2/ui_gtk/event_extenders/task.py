@@ -36,5 +36,5 @@ class EventWidget(common.EventWidget):
     def updateVars(self):## FIXME
         common.EventWidget.updateVars(self)
         self.event.setDate(*self.dateInput.get_date())
-        self.event.setTime(*self.dateInput.get_time())
+        self.event.setTime(*self.timeInput.get_time())
 

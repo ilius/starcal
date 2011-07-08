@@ -133,9 +133,9 @@ def loadTranslator(ui_is_qt=False):
             transObj = gettext.GNUTranslations(fd)
     if transObj:
         if ui_is_qt:## qt takes "&" instead of "_" as trigger
-            tr = lambda s: transObj.gettext(toStr(s)).replace('_', '&').decode('utf-8')
+            tr = lambda s: numLocale(s) if isinstance(s, int) else transObj.gettext(toStr(s)).replace('_', '&').decode('utf-8')
         else:
-            tr = lambda s: transObj.gettext(toStr(s)).decode('utf-8')
+            tr = lambda s: numLocale(s) if isinstance(s, int) else transObj.gettext(toStr(s)).decode('utf-8')
     return tr
 
 def rtlSgn():
