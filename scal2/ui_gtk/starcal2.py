@@ -1117,7 +1117,11 @@ class MainWin(gtk.Window):
         defaultItemsDict = dict([(obj._name, obj) for obj in defaultItems])
         self.items = []
         for (name, enable) in ui.mainWinItems:
-            item = defaultItemsDict[name]
+            try:
+                item = defaultItemsDict[name]
+            except:
+                myRaise()
+                continue
             item.enable = enable
             item.connect('size-request', self.childSizeRequest) ## or item.widget.connect
             item.connect('date-change', self.onDateChange)
