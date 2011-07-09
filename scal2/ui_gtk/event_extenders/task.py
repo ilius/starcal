@@ -28,6 +28,10 @@ class EventWidget(common.EventWidget):
         hbox.pack_start(self.timeInput, 0, 0)
         ##
         self.pack_start(hbox, 0, 0)
+        #############
+        self.filesBox = common.FilesBox(self.event)
+        self.pack_start(self.filesBox, 0, 0)
+        #############
         self.updateWidget()
     def updateWidget(self):## FIXME
         common.EventWidget.updateWidget(self)

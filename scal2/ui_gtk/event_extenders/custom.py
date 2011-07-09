@@ -100,6 +100,9 @@ class EventWidget(common.EventWidget):
             self.ruleAddButton.set_image(gtk.image_new_from_stock(gtk.STOCK_ADD, gtk.ICON_SIZE_BUTTON))
         self.ruleAddBox.pack_start(self.ruleAddButton, 0, 0)
         #############
+        self.filesBox = common.FilesBox(self.event)
+        self.pack_start(self.filesBox, 0, 0)
+        #############
         self.updateWidget()
         #############
         self.addRuleCombo.connect('changed', self.addRuleComboChanged)

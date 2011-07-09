@@ -712,6 +712,13 @@ class Event(EventItemBase):
             self.rules = event.rules[:]
         self.notifiers = event.notifiers[:]## FIXME
         self.checkRequirements()
+    def loadFiles(self):
+        self.files = []
+        if isdir(self.filesDir):
+            for fname in os.listdir(self.filesDir):
+                if isfile(join(self.filesDir, fname)) and not fname.endswith('~'):## FIXME
+                    self.files.append(fname)
+    getText = lambda self: self.summary if self.summary else self.description
     def setEid(self, eid=None):
         if eid is None or eid<0:
             eid = core.lastEventId + 1 ## FIXME
@@ -723,7 +730,7 @@ class Event(EventItemBase):
         self.eventFile = join(self.eventDir, 'event.json')
         self.occurrenceFile = join(self.eventDir, 'occurrence')## file or directory? FIXME
         self.filesDir = join(self.eventDir, 'files')
-    getText = lambda self: self.summary if self.summary else self.description
+        self.loadFiles()
     def getData(self):
         return {
             'id': self.eid,
@@ -777,11 +784,6 @@ class Event(EventItemBase):
         jsonStr = open(self.eventFile).read()
         if jsonStr:
             self.setJson(jsonStr)## FIXME
-        self.files = []
-        if isdir(self.filesDir):
-            for fname in os.listdir(self.filesDir):
-                if not fname.endswith('~'):## FIXME
-                    self.files.append(fname)
     def addRule(self, rule):
         (ok, msg) = self.checkRulesDependencies(newRule=rule)
         if ok:
@@ -1177,6 +1179,16 @@ class MonthOccurrenceView(OccurrenceView):
                 raise TypeError
 
 
+def loadEvent(eid):
+    eventFile = join(eventsDir, str(eid), 'event.json')
+    if not isfile(eventFile):
+        raise IOError('error while loading event file %r: no such file'%eventFile)
+    data = json.loads(open(eventFile).read())
+    event = eventsClassDict[data['type']](eid)
+    event.setData(data)
+    return event
+
+
 def loadEvents():
     events = []
     for eid_s in listdir(eventsDir):
@@ -1184,20 +1196,14 @@ def loadEvents():
             eid = int(eid_s)
         except ValueError:
             continue
-        event = Event(eid)
-        try:
-            event.loadConfig()
-        except:
-            myRaise()
-            del event
-            continue
-        events.append(event)
+        events.append(loadEvent(eid))
     return events
 
 ########################################################################
 
 eventsClassList = [Event, YearlyEvent, DailyNoteEvent, TaskEvent]## UniversityClassEvent
 eventsClassDict = dict([(cls.name, cls) for cls in eventsClassList])
+eventsClassNameList = [cls.name for cls in eventsClassList]
 defaultEventTypeIndex = 3 ## DailyNoteEvent
 
 eventRulesClassList = [

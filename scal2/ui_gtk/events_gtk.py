@@ -206,7 +206,7 @@ class EventEditorDialog(gtk.Dialog):
             self.vbox.pack_start(hbox, 0, 0)
             ####
             if self.event:
-                combo.set_active(event_man.eventsClassList.index(self.event.__class__))
+                combo.set_active(event_man.eventsClassNameList.index(self.event.name))
             else:
                 combo.set_active(event_man.defaultEventTypeIndex)
                 self.event = event_man.eventsClassList[event_man.defaultEventTypeIndex]()
@@ -223,12 +223,22 @@ class EventEditorDialog(gtk.Dialog):
         event = event_man.eventsClassList[combo.get_active()]()
         if self.event:
             event.copyFrom(self.event)
+            event.setEid(self.event.eid)
+            del self.event
         self.event = event
         self.activeEventWidget = event.makeWidget()
         self.vbox.pack_start(self.activeEventWidget, 0, 0)
         self.activeEventWidget.show_all()
     def run(self):
-        if gtk.Dialog.run(self)!=gtk.RESPONSE_OK or not self.activeEventWidget or not self.event:
+        if not self.activeEventWidget or not self.event:
+            return None
+        if gtk.Dialog.run(self)!=gtk.RESPONSE_OK:
+            try:
+                filesBox = self.activeEventWidget.filesBox
+            except AttributeError:
+                pass
+            else:
+                filesBox.removeNewFiles()
             return None
         self.activeEventWidget.updateVars()
         self.destroy()

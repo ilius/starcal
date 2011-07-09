@@ -33,6 +33,9 @@ class EventWidget(common.EventWidget):
         self.pack_start(spin, 0, 0)
         ###
         self.pack_start(gtk.Label(''), 1, 1)
+        ####
+        self.filesBox = common.FilesBox(self.event)
+        self.pack_start(self.filesBox, 0, 0)
         ###
         self.updateWidget()
     def updateWidget(self):## FIXME

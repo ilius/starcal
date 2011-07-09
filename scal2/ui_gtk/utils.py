@@ -22,18 +22,23 @@ def myUrlShow(link):
     try:
         Popen(['xdg-open', link])
     except:
+        myRaise()
+        if not link.startswith('http'):
+            return
         try:
             import webbrowser
-            webbrowser.open(url)
-        except:
+        except ImportError:
             try:
                 import gnomevfs
-                gnomevfs.url_show(url)
-            except:
+            except ImportError:
                 for path in ('/usr/bin/gnome-www-browser', '/usr/bin/firefox', '/usr/bin/iceweasel', '/usr/bin/konqueror'):
                     if isfile(path):
                         Popen([path, link])
                         return
+            else:
+                gnomevfs.url_show(url)
+        else:
+            webbrowser.open(url)
 
 def set_tooltip(widget, text):
     try:

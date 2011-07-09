@@ -1,8 +1,10 @@
-from os.path import join
+import os, shutil
+from os.path import join, split
 
+from scal2.utils import toStr
 from scal2 import core
 from scal2.locale_man import tr as _
-from scal2.core import pixDir, numLocale
+from scal2.core import pixDir, myRaise
 
 from scal2 import event_man
 from scal2 import ui
@@ -10,7 +12,7 @@ from scal2 import ui
 import gtk
 from gtk import gdk
 
-#print 'Testing translator', __file__, _('About')## OK
+#print 'Testing translator', __file__, _('_About')## OK
 
 buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter())
 
@@ -73,6 +75,12 @@ class EventWidget(gtk.VBox):
         self.modeCombo.set_active(self.event.mode)
         self.summuryEntry.set_text(self.event.summary)
         self.descriptionBuff.set_text(self.event.description)
+        try:
+            filesBox = self.filesBox
+        except AttributeError:
+            pass
+        else:
+            filesBox.updateWidget()
     def updateVars(self):
         self.event.enable = self.enableCheck.get_active()
         self.event.mode = self.modeCombo.get_active()
@@ -254,7 +262,7 @@ class TagsListBox(gtk.VBox):
             self.pack_start(hbox, 0, 0)
         ########
         treev = gtk.TreeView()
-        trees = gtk.ListStore(str, bool, str, int, str)## name(hidden), enable, desc, usage(hidden), usage(numLocale)
+        trees = gtk.ListStore(str, bool, str, int, str)## name(hidden), enable, desc, usage(hidden), usage(locale)
         treev.set_model(trees)
         ###
         cell = gtk.CellRendererToggle()
@@ -308,7 +316,7 @@ class TagsListBox(gtk.VBox):
                 t.name in tags, ## True or False
                 t.desc,
                 t.usage,
-                numLocale(t.usage)
+                _(t.usage)
             ))
     def enableCellToggled(self, cell, path):
         i = int(path)
@@ -377,6 +385,74 @@ class ViewEditTagsHbox(gtk.HBox):
     def getData(self):
         return self.tags
 
+
+class FilesBox(gtk.VBox):
+    def __init__(self, event):
+        gtk.VBox.__init__(self)
+        self.event = event
+        self.vbox = gtk.VBox()
+        self.pack_start(self.vbox, 0, 0)
+        hbox = gtk.HBox()
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        addButton = gtk.Button()
+        addButton.set_label(_('_Add File'))
+        addButton.set_image(gtk.image_new_from_stock(gtk.STOCK_ADD, gtk.ICON_SIZE_BUTTON))
+        addButton.connect('clicked', self.addClicked)
+        hbox.pack_start(addButton, 0, 0)
+        self.pack_start(hbox, 0, 0)
+        self.show_all()
+        self.newFiles = []
+    def showFile(self, fname):
+        hbox = gtk.HBox()
+        hbox.pack_start(gtk.LinkButton(
+            'file:' + os.sep*2 + self.event.filesDir + os.sep + fname,
+            _('File') + ': ' + fname,
+        ), 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        delButton = gtk.Button()
+        delButton.set_label(_('_Delete'))
+        delButton.set_image(gtk.image_new_from_stock(gtk.STOCK_DELETE, gtk.ICON_SIZE_BUTTON))
+        delButton.fname = fname
+        delButton.hbox = hbox
+        delButton.connect('clicked', self.delClicked)
+        hbox.pack_start(delButton, 0, 0)
+        self.vbox.pack_start(hbox, 0, 0)
+        hbox.show_all()
+    def addClicked(self, button):
+        fcd = gtk.FileChooserDialog(buttons=(
+            toStr(_('_OK')), gtk.RESPONSE_OK,
+            toStr(_('_Cancel')), gtk.RESPONSE_CANCEL,
+        ))
+        fcd.connect('response', lambda w, e: fcd.hide())
+        if fcd.run()==gtk.RESPONSE_OK:
+            fpath = fcd.get_filename()
+            fname = split(fpath)[-1]
+            dstDir = self.event.filesDir
+            ## os.makedirs(dstDir, exist_ok=True)## only on new pythons FIXME
+            try:
+                os.makedirs(dstDir)
+            except:
+                myRaise()
+            shutil.copy(fpath, join(dstDir, fname))
+            self.event.files.append(fname)
+            self.newFiles.append(fname)
+            self.showFile(fname)
+    def delClicked(self, button):
+        os.remove(join(self.event.filesDir, button.fname))
+        try:
+            self.event.files.remove(button.fname)
+        except:
+            pass
+        button.hbox.destroy()
+    def removeNewFiles(self):
+        for fname in self.newFiles:
+            os.remove(join(self.event.filesDir, fname))
+        self.newFiles = []
+    def updateWidget(self):
+        for hbox in self.vbox.get_children():
+            hbox.destroy()
+        for fname in self.event.files:
+            self.showFile(fname)
 
 if __name__ == '__main__':
     from pprint import pformat
