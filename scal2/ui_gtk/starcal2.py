@@ -1716,7 +1716,7 @@ gobject.signal_new('changed', IntLabel, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NO
 
 
 
-core.COMMAND = sys.argv[0] ## OR __file__ ## ????????
+#core.COMMAND = sys.argv[0] ## OR __file__ ## ????????
 
 
 if rtl:
@@ -1775,7 +1775,7 @@ def main():
         print('Using module "psyco" to speed up execution.')
         psyco_found=True'''
     if len(sys.argv)>1:
-        if sys.argv[1]=='--no-tray': ## to tray icon
+        if sys.argv[1]=='--no-tray': ## no tray icon
             mainWin = MainWin(trayMode=0)
             show = True
         else:
@@ -1784,24 +1784,19 @@ def main():
                 show = False
             elif sys.argv[1]=='--show':
                 show = True
-            elif sys.argv[1]=='--no-tray-check':
-                show = ui.showMain
             #elif sys.argv[1]=='--html':#????????????
             #    mainWin.exportHtml('calendar.html') ## exportHtml(path, months, title)
             #    sys.exit(0)
+            #elif sys.argv[1]=='--svg':#????????????
+            #    mainWin.export.exportSvg('%s/Desktop/2010-01.svg'%homeDir, [(2010, 1)])
+            #    sys.exit(0)
             else:
-                while gtk.events_pending():## if do not do this, mainWin.sicon.is_embedded will always return False
-                    gtk.main_iteration_do(False)
-                show = ui.showMain or not mainWin.sicon.is_embedded()
+                show = ui.showMain or not mainWin.sicon
     else:
         mainWin = MainWin(trayMode=2)
-        while gtk.events_pending():## if do not this, main.sicon.is_embedded returns False
-            gtk.main_iteration_do(False)
-        show = ui.showMain or not mainWin.sicon.is_embedded()
-    #open('/home/ilius/Desktop/is_embedded', 'w').write(str(mainWin.sicon.is_embedded()))
+        show = ui.showMain or not mainWin.sicon
     if show:
         mainWin.present()
-    #mainWin.export.exportSvg('%s/Desktop/1389-01.svg'%homeDir, [(1389, 1)])
     ##rootWindow.set_cursor(gdk.Cursor(gdk.LEFT_PTR))#???????????
     return gtk.main()
 

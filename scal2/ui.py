@@ -150,7 +150,8 @@ def addStartup():
     if psys=='Windows':
         if not isdir(winStartupDir):
             os.makedirs(winStartupDir)
-        fname = APP_NAME + ('-qt' if uiName=='qt' else '') + '.pyw'
+        #fname = APP_NAME + ('-qt' if uiName=='qt' else '') + '.pyw'
+        fname = core.COMMAND + '.pyw'
         fpath = join(rootDir, fname)
         #open(winStartupFile, 'w').write('execfile(%r, {"__file__":%r})'%(fpath, fpath))
         try:
@@ -164,7 +165,7 @@ def addStartup():
 Type=Application
 Name=StarCalendar %s
 Icon=%s
-Exec="%s" --no-tray-check'''%(core.VERSION, APP_NAME, core.COMMAND)## double quotes needed when the exec path has space
+Exec=%s'''%(core.VERSION, APP_NAME, core.COMMAND)## double quotes needed when the exec path has space
         try:
             os.makedirs(comDeskDir)
         except:
