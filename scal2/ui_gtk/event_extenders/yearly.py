@@ -17,22 +17,24 @@ class EventWidget(common.EventWidget):
         self.tagIconBox = common.EventTagsAndIconSelect()
         self.pack_start(self.tagIconBox, 0, 0)
         ###
-        self.pack_start(gtk.Label(_('Month')), 0, 0)
+        hbox = gtk.HBox()
+        hbox.pack_start(gtk.Label(_('Month')), 0, 0)
         self.monthCombo = gtk.combo_box_new_text()
-        self.pack_start(self.monthCombo, 0, 0)
+        hbox.pack_start(self.monthCombo, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        #self.pack_start(hbox, 0, 0)
         ###
-        self.pack_start(gtk.Label(''), 1, 1)
-        ###
-        self.pack_start(gtk.Label(_('Day')), 0, 0)
+        #hbox = gtk.HBox()
+        hbox.pack_start(gtk.Label(_('Day')), 0, 0)
         spin = gtk.SpinButton()
         spin.set_increments(1, 10)
         spin.set_range(1, 31)
         spin.set_digits(0)
         spin.set_direction(gtk.TEXT_DIR_LTR)
         self.daySpin = spin
-        self.pack_start(spin, 0, 0)
-        ###
-        self.pack_start(gtk.Label(''), 1, 1)
+        hbox.pack_start(spin, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.pack_start(hbox, 0, 0)
         ####
         self.filesBox = common.FilesBox(self.event)
         self.pack_start(self.filesBox, 0, 0)
@@ -46,8 +48,8 @@ class EventWidget(common.EventWidget):
         common.EventWidget.updateVars(self)
         self.event.setMonth(self.monthCombo.get_active()+1)
         self.event.setDay(self.daySpin.get_value())
-    def modeComboChanged(self, modeCombo):## FIXME
-        module = core.modules[modeCombo.get_active()]
+    def modeComboChanged(self, combo):## FIXME
+        module = core.modules[combo.get_active()]
         monthCombo = self.monthCombo
         active = monthCombo.get_active()
         for i in range(len(monthCombo.get_model())):

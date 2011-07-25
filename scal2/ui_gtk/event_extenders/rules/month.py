@@ -8,7 +8,7 @@ from scal2 import event_man
 import gtk
 from gtk import gdk
 
-class MonthEventRuleWidget(gtk.ComboBox):
+class RuleWidget(gtk.ComboBox):
     def __init__(self, rule):
         self.rule = rule
         ###
@@ -27,8 +27,5 @@ class MonthEventRuleWidget(gtk.ComboBox):
         self.set_active(self.rule.month-1)
     def updateVars(self):
         self.rule.month = self.get_active() + 1
-
-
-event_man.MonthEventRule.WidgetClass = MonthEventRuleWidget
 
 

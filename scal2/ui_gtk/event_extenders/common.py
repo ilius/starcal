@@ -81,6 +81,7 @@ class EventWidget(gtk.VBox):
             pass
         else:
             filesBox.updateWidget()
+        self.modeComboChanged(self.modeCombo)
     def updateVars(self):
         self.event.enable = self.enableCheck.get_active()
         self.event.mode = self.modeCombo.get_active()
@@ -405,7 +406,7 @@ class FilesBox(gtk.VBox):
     def showFile(self, fname):
         hbox = gtk.HBox()
         hbox.pack_start(gtk.LinkButton(
-            'file:' + os.sep*2 + self.event.filesDir + os.sep + fname,
+            self.event.getUrlForFile(fname),
             _('File') + ': ' + fname,
         ), 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)

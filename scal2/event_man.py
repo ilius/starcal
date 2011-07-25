@@ -349,7 +349,7 @@ class DayOfMonthEventRule(EventRule):
             if jd not in jdList and core.jd_to(jd, self.getMode())[2]==self.day:
                 jdList.append(jd)
         return JdListOccurrence(jdList)
-    getInfo = lambda self: self.desc + ': ' + _(self.day)
+    getInfo = lambda self: self.desc + '(' + _(self.getMode()) + '): ' + _(self.day)
 
 
 
@@ -718,6 +718,16 @@ class Event(EventItemBase):
             for fname in os.listdir(self.filesDir):
                 if isfile(join(self.filesDir, fname)) and not fname.endswith('~'):## FIXME
                     self.files.append(fname)
+    getUrlForFile = lambda self, fname: 'file:' + os.sep*2 + self.filesDir + os.sep + fname
+    def getFilesUrls(self):
+        data = []
+        baseUrl = self.getUrlForFile('')
+        for fname in self.files:
+            data.append((
+                baseUrl + fname,
+                _('File') + ': ' + fname,
+            ))
+        return data
     getText = lambda self: self.summary if self.summary else self.description
     def setEid(self, eid=None):
         if eid is None or eid<0:
@@ -856,7 +866,7 @@ class Event(EventItemBase):
 
 class YearlyEvent(Event):
     name = 'yearly'
-    desc = _('Yearly Event (Anniversary)')
+    desc = _('Yearly Event')
     requiredRules = ('month', 'day')
     def getMonth(self):
         return self.getRulesDict()['month'].month
@@ -970,6 +980,8 @@ class DayOccurrenceView:
                 continue
             occur = event.calcOccurrenceForJdRange(startJd, endJd)
             text = event.getText()
+            for url, fname in event.getFilesUrls():
+                text += '\n<a href="%s">%s</a>'%(url, fname)
             icon = event.icon
             #print '\nupdateData: checking event', event.summary
             if isinstance(occur, JdListOccurrence):

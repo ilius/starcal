@@ -546,33 +546,22 @@ msgid "Task"
 msgstr ""
 "کار"
 
-#msgid "Start Date"
-#msgstr ""
-#"تاریخ شروع"
+msgid "Custom Event"
+msgstr ""
+"رویداد دلخواه"
 
-#msgid "End Date"
-#msgstr ""
-#"تاریخ پایان"
+msgid "Yearly Event"
+msgstr ""
+"رویداد سالیانه"
 
-#msgid "Duration As"
-#msgstr ""
-#"دوره بر حسب"
+msgid "Daily Note"
+msgstr ""
+"یادداشت روزانه"
 
-#msgid "Year, Month and Day"
-#msgstr ""
-#"سال، ماه و روز"
+msgid "Events of Day"
+msgstr ""
+"رویدادهای روز"
 
-#msgid "WeekDay"
-#msgstr ""
-#"روز هفته"
-
-#msgid "Specific Length"
-#msgstr ""
-#"طول مشخص"
-
-#msgid "Select Alarm Sound"
-#msgstr ""
-#"انتخاب صدای زنگ"
 
 msgid "Day of Month"
 msgstr ""
@@ -668,6 +657,21 @@ msgid "Event Type"
 msgstr ""
 "نوع رویداد"
 
+msgid "File"
+msgstr ""
+"فایل"
+
+msgid "_Add File"
+msgstr ""
+"افزودن فایل"
+
+msgid "_Add Yearly Event"
+msgstr ""
+"افزودن رویداد سالیانه"
+
+msgid "_Add Note"
+msgstr ""
+"افزودن یادداشت"
 
 
 

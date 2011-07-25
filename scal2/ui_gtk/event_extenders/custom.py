@@ -72,9 +72,11 @@ class EventWidget(common.EventWidget):
         self.tagsBox = common.ViewEditTagsHbox()
         self.pack_start(self.tagsBox, 0, 0)
         ###########
-        self.rulesFrame = gtk.Expander(_('Rules'))
-        self.rulesFrame.set_expanded(True)
-        self.pack_start(self.rulesFrame, 0, 0)
+        self.rulesExp = gtk.Expander(_('Rules'))
+        self.rulesExp.set_expanded(True)
+        self.rulesBox = gtk.VBox()
+        self.rulesExp.add(self.rulesBox)
+        self.pack_start(self.rulesExp, 0, 0)
         ###
         self.pack_start(self.ruleAddBox, 0, 0)
         self.pack_start(self.warnLabel, 0, 0)
@@ -84,8 +86,8 @@ class EventWidget(common.EventWidget):
         notifiersFrame.set_expanded(True)
         self.pack_start(notifiersFrame, 0, 0)
         ###########
-        self.rulesModel = gtk.ListStore(str, str)
-        self.addRuleCombo = gtk.ComboBox(self.rulesModel)
+        self.addRuleModel = gtk.ListStore(str, str)
+        self.addRuleCombo = gtk.ComboBox(self.addRuleModel)
         ###
         cell = gtk.CellRendererText()
         self.addRuleCombo.pack_start(cell, True)
@@ -132,15 +134,17 @@ class EventWidget(common.EventWidget):
         hbox.removeButton = removeButton
         return hbox
     def updateRulesWidget(self):
-        self.rulesBox = gtk.VBox()
+        for hbox in self.rulesBox.get_children():
+            hbox.destroy()
         comboItems = [ruleClass.name for ruleClass in event_man.eventRulesClassList]
         for rule in self.event.rules:
             hbox = self.makeRuleHbox(rule)
             self.rulesBox.pack_start(hbox, 0, 0)
+            #hbox.show_all()
             comboItems.remove(rule.name)
-        self.rulesFrame.add(self.rulesBox)
+        self.rulesBox.show_all()
         for ruleName in comboItems:
-            self.rulesModel.append((ruleName, event_man.eventRulesClassDict[ruleName].desc))
+            self.addRuleModel.append((ruleName, event_man.eventRulesClassDict[ruleName].desc))
     def updateRules(self):
         self.event.rules = []
         for hbox in self.rulesBox.get_children():
@@ -167,9 +171,7 @@ class EventWidget(common.EventWidget):
         self.iconSelect.set_filename(self.event.icon)
         self.tagsBox.setData(self.event.tags)
         ####
-        if hasattr(self, 'rulesBox'):
-            self.rulesBox.destroy()
-        self.rulesModel.clear()
+        self.addRuleModel.clear()
         self.updateRulesWidget()
         ####
         self.updateNotifiersWidget()
@@ -195,7 +197,7 @@ class EventWidget(common.EventWidget):
             return
         self.event.rules.remove(rule)
         ####
-        self.rulesModel.append((rule.name, rule.desc))
+        self.addRuleModel.append((rule.name, rule.desc))
         ####
         hbox.destroy()
         #self.rulesBox.remove(hbox)
@@ -204,7 +206,7 @@ class EventWidget(common.EventWidget):
         ci = self.addRuleCombo.get_active()
         if ci==None or ci<0:
             return
-        newRuleName = self.rulesModel[ci][0]
+        newRuleName = self.addRuleModel[ci][0]
         newRule = event_man.eventRulesClassDict[newRuleName](self.event)
         (ok, msg) = self.event.checkRulesDependencies(newRule=newRule)
         self.warnLabel.set_label(msg)
@@ -212,15 +214,15 @@ class EventWidget(common.EventWidget):
         ci = self.addRuleCombo.get_active()
         if ci==None or ci<0:
             return
-        ruleName = self.rulesModel[ci][0]
+        ruleName = self.addRuleModel[ci][0]
         rule = event_man.eventRulesClassDict[ruleName](self.event)
         (ok, msg) = self.event.addRule(rule)
         if not ok:
             return
         hbox = self.makeRuleHbox(rule)
         self.rulesBox.pack_start(hbox, 0, 0)
-        del self.rulesModel[ci]
-        n = len(self.rulesModel)
+        del self.addRuleModel[ci]
+        n = len(self.addRuleModel)
         if ci==n:
             self.addRuleCombo.set_active(ci-1)
         else:

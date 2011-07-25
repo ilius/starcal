@@ -8,7 +8,7 @@ from scal2.ui_gtk.mywidgets.multi_spin_box import DateBox, TimeBox
 import gtk
 from gtk import gdk
 
-class DayTimeEventRuleWidget(TimeBox):
+class RuleWidget(TimeBox):
     def __init__(self, rule):
         self.rule = rule
         TimeBox.__init__(self)
@@ -17,8 +17,5 @@ class DayTimeEventRuleWidget(TimeBox):
         self.set_time(self.rule.dayTime)
     def updateVars(self):
         (self.rule.hour, self.rule.minute, self.rule.second) = self.get_time()
-
-
-event_man.DayTimeEventRule.WidgetClass = DayTimeEventRuleWidget
 
 

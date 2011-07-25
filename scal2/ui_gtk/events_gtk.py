@@ -81,6 +81,8 @@ class DayOccurrenceView(event_man.DayOccurrenceView, gtk.VBox):
                 hbox.pack_start(gtk.Label(item['time']), 0, 0)
             label = gtk.Label(item['text'])
             label.set_selectable(True)
+            label.set_line_wrap(True)
+            label.set_use_markup(True)
             hbox.pack_start(label, 1, 1)
             self.pack_start(hbox, 0, 0)
         self.show_all()
@@ -256,10 +258,15 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         treeBox = gtk.HBox()
         vpan.add1(headerBox)
         vpan.add2(treeBox)
+        infoBox = gtk.VBox()
+        self.filesVbox = gtk.VBox()
         infoTextvew = gtk.TextView()
         infoTextvew.set_editable(False)
+        infoTextvew.set_cursor_visible(False)
         self.infoTextbuff = infoTextvew.get_buffer()
-        headerBox.pack_start(infoTextvew, 1, 1)
+        infoBox.pack_start(infoTextvew, 1, 1)
+        infoBox.pack_start(self.filesVbox, 0, 0)
+        headerBox.pack_start(infoBox, 1, 1)
         headerButtonBox = gtk.VButtonBox()
         headerButtonBox.set_layout(gtk.BUTTONBOX_END)
         ####
@@ -346,6 +353,15 @@ class EventManagerDialog(gtk.Dialog):## FIXME
     def treeviewCursorChanged(self, treev=None):
         event = self.getSelectedEvent()
         self.infoTextbuff.set_text(event.getInfo() if event else '')
+        for hbox in self.filesVbox.get_children():
+            hbox.destroy()
+        if event:
+            for url, fname in event.getFilesUrls():
+                hbox = gtk.HBox()
+                hbox.pack_start(gtk.LinkButton(url, fname), 0, 0)
+                hbox.pack_start(gtk.Label(''), 1, 1) 
+                self.filesVbox.pack_start(hbox, 0, 0)
+            self.filesVbox.show_all()
     def addEvent(self, eventType):
         event = EventEditorDialog(eventType=eventType).run()
         #print 'event =', event
@@ -404,9 +420,13 @@ for cls in event_man.eventsClassList:
 for cls in event_man.eventRulesClassList:
     try:
         module = __import__(modPrefix + 'rules.' + cls.name, fromlist=['RuleWidget'])
-        cls.WidgetClass = module.RuleWidget
     except:
         myRaise()
+        continue
+    try:
+        cls.WidgetClass = module.RuleWidget
+    except AttributeError:
+        print 'no class RuleWidget defined in module "%s"'%cls.name
 
 for cls in event_man.eventNotifiersClassList:
     try:

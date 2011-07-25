@@ -7,7 +7,7 @@ from scal2 import event_man
 import gtk
 from gtk import gdk
 
-class DayOfMonthEventRuleWidget(gtk.SpinButton):
+class RuleWidget(gtk.SpinButton):
     def __init__(self, rule):
         self.rule = rule
         gtk.SpinButton.__init__(self)
@@ -20,7 +20,4 @@ class DayOfMonthEventRuleWidget(gtk.SpinButton):
     def updateVars(self):
         self.rule.day = int(self.get_value())
 
-
-
-event_man.DayOfMonthEventRule.WidgetClass = DayOfMonthEventRuleWidget
 
