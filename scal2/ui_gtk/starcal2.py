@@ -577,7 +577,7 @@ class WinController(gtk.HBox):
 
 
 class CustomizableToolbar(gtk.Toolbar, MainWinItem):
-    toolbarStyleList = ('Icon', 'Text', 'Text below Icon', 'Text beside Icon')
+    styleList = ('Icon', 'Text', 'Text below Icon', 'Text beside Icon')
     def __init__(self, mainWin):
         gtk.Toolbar.__init__(self)
         self.mainWin = mainWin
@@ -589,10 +589,10 @@ class CustomizableToolbar(gtk.Toolbar, MainWinItem):
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Style:')), 0, 0)
         self.styleCombo = gtk.combo_box_new_text()
-        for item in self.toolbarStyleList:
+        for item in self.styleList:
             self.styleCombo.append_text(_(item))
         hbox.pack_start(self.styleCombo, 0, 0)
-        styleNum = self.toolbarStyleList.index(ui.toolbarStyle)
+        styleNum = self.styleList.index(ui.toolbarStyle)
         self.styleCombo.set_active(styleNum)
         self.set_style(styleNum)
         optionsWidget.pack_start(hbox, 0, 0)
@@ -612,6 +612,13 @@ class CustomizableToolbar(gtk.Toolbar, MainWinItem):
         self.iconSizeCombo.connect('changed', self.iconSizeComboChanged)
         self.styleCombo.connect('changed', self.styleComboChanged)
         self.styleComboChanged()
+        ##
+        #print 'toolbar state', self.get_state()## STATE_NORMAL
+        self.set_state(gtk.STATE_ACTIVE)
+        #self.set_property('border-width', 0)
+        #style = self.get_style()
+        #style.border_width = 10
+        #self.set_style(style)
     getIconSizeName = lambda self: iconSizeList[self.iconSizeCombo.get_active()][0]
     setIconSizeName = lambda self, size_name: self.set_icon_size(iconSizeDict[size_name])
     ## gtk.Toolbar.set_icon_size was previously Deprecated, but it's not Deprecated now!!
@@ -1099,7 +1106,6 @@ class MainWin(gtk.Window):
             except:
                 myRaise()
                 continue
-            #print name, enable
             item.enable = enable
             item.connect('size-request', self.childSizeRequest) ## or item.widget.connect
             item.connect('date-change', self.onDateChange)
@@ -1689,7 +1695,7 @@ gobject.signal_new('changed', IntLabel, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NO
 
 
 
-core.COMMAND = sys.argv[0] ## OR __file__ ## ????????
+#core.COMMAND = sys.argv[0] ## OR __file__ ## ????????
 
 
 if rtl:
@@ -1748,7 +1754,7 @@ def main():
         print('Using module "psyco" to speed up execution.')
         psyco_found=True'''
     if len(sys.argv)>1:
-        if sys.argv[1]=='--no-tray': ## to tray icon
+        if sys.argv[1]=='--no-tray': ## no tray icon
             mainWin = MainWin(trayMode=0)
             show = True
         else:
@@ -1757,24 +1763,19 @@ def main():
                 show = False
             elif sys.argv[1]=='--show':
                 show = True
-            elif sys.argv[1]=='--no-tray-check':
-                show = ui.showMain
             #elif sys.argv[1]=='--html':#????????????
             #    mainWin.exportHtml('calendar.html') ## exportHtml(path, months, title)
             #    sys.exit(0)
+            #elif sys.argv[1]=='--svg':#????????????
+            #    mainWin.export.exportSvg('%s/Desktop/2010-01.svg'%homeDir, [(2010, 1)])
+            #    sys.exit(0)
             else:
-                while gtk.events_pending():## if do not do this, mainWin.sicon.is_embedded will always return False
-                    gtk.main_iteration_do(False)
-                show = ui.showMain or not mainWin.sicon.is_embedded()
+                show = ui.showMain or not mainWin.sicon
     else:
         mainWin = MainWin(trayMode=2)
-        while gtk.events_pending():## if do not this, main.sicon.is_embedded returns False
-            gtk.main_iteration_do(False)
-        show = ui.showMain or not mainWin.sicon.is_embedded()
-    #open('/home/ilius/Desktop/is_embedded', 'w').write(str(mainWin.sicon.is_embedded()))
+        show = ui.showMain or not mainWin.sicon
     if show:
         mainWin.present()
-    #mainWin.export.exportSvg('%s/Desktop/1389-01.svg'%homeDir, [(1389, 1)])
     ##rootWindow.set_cursor(gdk.Cursor(gdk.LEFT_PTR))#???????????
     return gtk.main()
 

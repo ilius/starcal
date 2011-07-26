@@ -66,7 +66,7 @@ class TextObject():
         ###############
         self.color = color
         self.layout = widget.create_pango_layout('')
-        if font!None:
+        if font:
             self.setFont(font)
         self.center = center ## ???????????????????
         #self.xAlign = 0.5
@@ -133,7 +133,7 @@ class TinyCal(gtk.Window):## (gtk.DrawingArea OR gtk.Widget)
         self.objects = []
     def startEditing(self):
         pass
-    def endEditing(self)
+    def endEditing(self):
         pass
     
 

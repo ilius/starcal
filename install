@@ -180,7 +180,6 @@ chmod 755 "${targetPrefix}/bin/$pkgName-qt"
 echo "[Desktop Entry]
 Encoding=UTF-8
 Name=StarCalendar $version
-Version=$version
 Comment=A Perfect Calendar Program
 Comment[fa]=یک برنامهٔ کامل تقویم
 Exec=$pkgName
@@ -194,7 +193,6 @@ StartupNotify=true" > "${shareDir}/applications/$pkgName.desktop"
 echo "[Desktop Entry]
 Encoding=UTF-8
 Name=StarCalendar $version (Qt)
-Version=$version
 Comment=A Perfect Calendar Program (Qt Interface)
 Comment[fa]=یک برنامهٔ کامل تقویم
 Exec=$pkgName-qt
