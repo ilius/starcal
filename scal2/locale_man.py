@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-import os
+import os, string
 from os.path import join, isfile, isdir
 import locale, gettext
 from paths import *
@@ -31,7 +31,8 @@ digits = {
 ## named ARABIC-INDIC DIGIT ZERO in unicode database
 
 #RLM = '\xe2\x80\x8f' ## u'\u200f' ## right to left mark
-
+ZWNJ = '\xe2\x80\x8c'
+ZWJ = '\xe2\x80\x8d'
 
 langDefault = ''
 lang = ''
@@ -174,5 +175,10 @@ def numLocale(num, mode=None, fillZero=0):
         res = '-'+res
     return res
 
-
+def cutText(text, n):
+    text_cutted = text[:n]
+    if len(text)>n:
+        if text[n] not in list(string.printable)+[ZWNJ]:
+            text_cutted += ZWJ
+    return text_cutted
 

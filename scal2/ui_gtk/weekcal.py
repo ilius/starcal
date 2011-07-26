@@ -25,11 +25,11 @@ from math import pi
 from os.path import join, isfile
 from xml.dom.minidom import parse
 
-from scal2.locale_man import tr as _
-from scal2.locale_man import rtl, rtlSgn
-
-
 from scal2 import core
+
+from scal2.locale_man import tr as _
+from scal2.locale_man import rtl, rtlSgn, cutText
+
 from scal2.core import myRaise, numLocale, getMonthName, getMonthLen, getNextMonth, getPrevMonth, pixDir
 
 from scal2 import ui
@@ -225,7 +225,8 @@ class WeekCal(gtk.Widget):
                         char_w = layoutW/len(text)
                         char_num = int(itemW//char_w)
                         while layoutW > itemW:
-                            layout = newTextLayout(self, text[:char_num])
+                            text = cutText(text, char_num)
+                            layout = newTextLayout(self, text)
                             layoutW, layoutH = layout.get_pixel_size()
                             char_num -= max(int((layoutW-itemW)//char_w), 1)
                             if char_num<0:
