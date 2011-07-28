@@ -561,7 +561,9 @@ msgstr ""
 msgid "Events of Day"
 msgstr ""
 "رویدادهای روز"
-
+msgid "_Event Manager"
+msgstr ""
+"مدیریت _رویدادها"
 
 msgid "Day of Month"
 msgstr ""

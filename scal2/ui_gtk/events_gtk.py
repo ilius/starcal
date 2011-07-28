@@ -259,12 +259,25 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         vpan.add1(headerBox)
         vpan.add2(treeBox)
         infoBox = gtk.VBox()
+        infoBox.set_border_width(1)
         self.filesVbox = gtk.VBox()
         infoTextvew = gtk.TextView()
         infoTextvew.set_editable(False)
         infoTextvew.set_cursor_visible(False)
-        self.infoTextbuff = infoTextvew.get_buffer()
+        #infoTextvew.set_state(gtk.STATE_ACTIVE)## FIXME
+        self.infoText = infoTextvew.get_buffer()
         infoBox.pack_start(infoTextvew, 1, 1)
+        #self.infoText = gtk.Label()
+        #self.infoText.set_selectable(True)
+        #self.infoText.set_line_wrap(True)
+        #self.infoText.set_alignment(0, 0.5)
+        #infoBox.pack_start(self.infoText, 1, 1)
+        #swin = gtk.ScrolledWindow()
+        #swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        #swin.add_with_viewport(self.infoText)
+        #swin.add(self.infoText)
+        #infoBox.pack_start(swin, 1, 1)
+        #####
         infoBox.pack_start(self.filesVbox, 0, 0)
         headerBox.pack_start(infoBox, 1, 1)
         headerButtonBox = gtk.VButtonBox()
@@ -352,7 +365,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         return ui.eventsById[self.treestore[cur[0]][0]]
     def treeviewCursorChanged(self, treev=None):
         event = self.getSelectedEvent()
-        self.infoTextbuff.set_text(event.getInfo() if event else '')
+        self.infoText.set_text(event.getInfo() if event else '')
         for hbox in self.filesVbox.get_children():
             hbox.destroy()
         if event:
