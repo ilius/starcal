@@ -60,7 +60,9 @@ import gtk
 from gtk import gdk
 
 from scal2.ui_gtk.utils import hideList, showList, myUrlShow, set_tooltip, imageFromFile, setupMenuHideOnLeave, \
-                               labelStockMenuItem, labelImageMenuItem
+                               labelStockMenuItem, labelImageMenuItem, modify_bg_all
+                               
+from scal2.ui_gtk.color_utils import rgbToGdkColor
 import scal2.ui_gtk.export
 import scal2.ui_gtk.selectdate
 
@@ -614,7 +616,7 @@ class CustomizableToolbar(gtk.Toolbar, MainWinItem):
         self.styleComboChanged()
         ##
         #print 'toolbar state', self.get_state()## STATE_NORMAL
-        self.set_state(gtk.STATE_ACTIVE)
+        #self.set_state(gtk.STATE_ACTIVE)## FIXME
         #self.set_property('border-width', 0)
         #style = self.get_style()
         #style.border_width = 10
@@ -639,7 +641,7 @@ class CustomizableToolbar(gtk.Toolbar, MainWinItem):
     def updateVars(self):
         ui.toolbarItems = [(child._name, child.enable) for child in self.items]
         ui.toolbarIconSize = self.getIconSizeName()
-        ui.toolbarStyle = self.toolbarStyleList[self.styleCombo.get_active()]
+        ui.toolbarStyle = self.styleList[self.styleCombo.get_active()]
     def confStr(self):
         text = ''
         for mod_attr in ('ui.toolbarItems', 'ui.toolbarIconSize', 'ui.toolbarStyle'):
@@ -1109,6 +1111,7 @@ class MainWin(gtk.Window):
             item.enable = enable
             item.connect('size-request', self.childSizeRequest) ## or item.widget.connect
             item.connect('date-change', self.onDateChange)
+            #modify_bg_all(item.widget, gtk.STATE_NORMAL, rgbToGdkColor(*ui.bgColor))
             self.items.append(item)
         self.customizeDialog = CustomizeDialog(items=self.items, mainWin=self)
         self.vbox.pack_start(self.customizeDialog.widget, 0, 0)

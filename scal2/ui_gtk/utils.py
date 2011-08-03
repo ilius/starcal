@@ -90,7 +90,6 @@ def stock_arrow_repr(item):
     else:
         return repr(item)
 
-
 def labelStockMenuItem(label, stock=None, func=None, *args):
     item = gtk.ImageMenuItem(_(label))
     if stock:
@@ -105,4 +104,16 @@ def labelImageMenuItem(label, image, func=None, *args):
     if func:
         item.connect('activate', func, *args)
     return item
+
+def modify_bg_all(widget, state, gcolor):
+    print widget.__class__.__name__
+    widget.modify_bg(state, gcolor)
+    try:
+        children = widget.get_children()
+    except AttributeError:
+        pass
+    else:
+        for child in children:
+            modify_bg_all(child, state, gcolor)
+
 
