@@ -128,7 +128,7 @@ class PrayTimes:
     # return prayer times for a given julian day
     def getTimesByJd(self, jd):
         #if time.daylight and time.gmtime(core.getEpochFromJd(jd)):
-        if time.daylight and time.gmtime((jd-2440588)*(24*3600)):
+        if time.daylight and time.gmtime((jd-2440588)*(24*3600)).tm_isdst:
             self.timeZone = -time.altzone/3600.0
         else:
             self.timeZone = -time.timezone/3600.0
