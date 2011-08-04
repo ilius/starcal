@@ -28,7 +28,7 @@ from xml.dom.minidom import parse
 from scal2 import core
 
 from scal2.locale_man import tr as _
-from scal2.locale_man import rtl, rtlSgn, cutText
+from scal2.locale_man import rtl, rtlSgn
 
 from scal2.core import myRaise, numLocale, getMonthName, getMonthLen, getNextMonth, getPrevMonth, pixDir
 
@@ -219,19 +219,7 @@ class WeekCal(gtk.Widget):
                 itemW = widthList[j]
                 text = item.getText(row).decode('utf8')
                 if text:
-                    layout = newTextLayout(self, text)
-                    layoutW, layoutH = layout.get_pixel_size()
-                    if layoutW > itemW:
-                        char_w = layoutW/len(text)
-                        char_num = int(itemW//char_w)
-                        while layoutW > itemW:
-                            text = cutText(text, char_num)
-                            layout = newTextLayout(self, text)
-                            layoutW, layoutH = layout.get_pixel_size()
-                            char_num -= max(int((layoutW-itemW)//char_w), 1)
-                            if char_num<0:
-                                layout = None
-                                break
+                    layout = newLimitedWidthTextLayout(self, text, itemW)
                     if layout:
                         layoutX = x + item.textAlign * (itemW-layoutW)
                         if rtl:

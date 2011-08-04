@@ -17,6 +17,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal2.locale_man import cutText
 from scal2 import ui
 from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
@@ -50,9 +51,39 @@ def fillColor(cr, color):
 
 
 def newTextLayout(widget, text='', font=None):
-    lay = widget.create_pango_layout(text) ## a pango.Layout object
+    layout = widget.create_pango_layout(text) ## a pango.Layout object
     if not font:
         font = ui.fontDefault if ui.fontUseDefault else ui.fontCustom
-    lay.set_font_description(pfontEncode(font))
-    return lay
+    layout.set_font_description(pfontEncode(font))
+    return layout
+
+def newLimitedWidthTextLayout(widget, text, width, font=None, truncate=True):
+    if not font:
+        font = ui.fontDefault if ui.fontUseDefault else ui.fontCustom
+    layout = widget.create_pango_layout(text)
+    layout.set_font_description(pfontEncode(font))
+    if not layout:
+        return None
+    layoutW, layoutH = layout.get_pixel_size()
+    if layoutW > width:
+        if truncate:
+            char_w = layoutW/len(text)
+            char_num = int(width//char_w)
+            while layoutW > width:
+                text = cutText(text, char_num)
+                layout = widget.create_pango_layout(text)
+                layout.set_font_description(pfontEncode(font))
+                layoutW, layoutH = layout.get_pixel_size()
+                char_num -= max(int((layoutW-width)//char_w), 1)
+                if char_num<0:
+                    layout = None
+                    break
+        else:## use smaller font
+            font2 = list(font)
+            while layoutW > width:
+                font2[3] = float(font2[3])*width/layoutW
+                layout.set_font_description(pfontEncode(font2))
+                layoutW, layoutH = layout.get_pixel_size()
+                #print layoutW, width## FIXME
+    return layout
 

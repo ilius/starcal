@@ -17,8 +17,9 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from time import time, localtime, mktime, gmtime
-#print time(), __file__ ## FIXME
+import time
+#print time.time(), __file__ ## FIXME
+from time import localtime
 import sys, os, subprocess, traceback
 from StringIO import StringIO
 from os.path import isfile, isdir, exists, dirname, join, split, splitext
@@ -107,23 +108,32 @@ popen_output = lambda cmd: subprocess.Popen(cmd, stdout=subprocess.PIPE).communi
 
 
 
-## time() ~~ epoch
+## time.time() ~~ epoch
 ## jd == epoch/(24*3600.0) + J1970
 ## epoch == (jd-J1970)*24*3600
 getJdFromEpoch = lambda epoch: int(epoch//(24*3600) + J1970)
+getPrimaryDateFromEpoch = lambda epoch: jd_to(getJdFromEpoch(epoch), primaryMode)
 
-def getCurrentJd():## time() and mktime(localtime()) both return GMT, not local
+def getCurrentJd():## time.time() and time.mktime(localtime()) both return GMT, not local
     (y, m, d) = localtime()[:3]
     return to_jd(y, m, d, DATE_GREG)
 
 getEpochFromJd = lambda jd: (jd-J1970)*(24*3600)
 getEpochFromDate = lambda y, m, d, mode: getEpochFromJd(to_jd(y, m, d, mode))
 
-def getJhmsFromEpoch(epoch):## return a tuple (julain_day, hour, minute, second) from epoch
+def getCurrentTimeZone():
+    if time.daylight and localtime().tm_isdst:
+        return -time.altzone
+    else:
+        return -time.timezone
+
+def getJhmsFromEpoch(epoch, local=False):## return a tuple (julain_day, hour, minute, second) from epoch
+    #if local:
+    #    epoch -= getCurrentTimeZone()
     (days, second) = divmod(epoch, 24*3600)
     (minute, second) = divmod(second, 60)
     (hour, minute) = divmod(minute, 60)
-    return (days + J1970, hour, minute, second)
+    return (days + J1970, int(hour), int(minute), int(second))
 
 def getSecondsFromHms(hour, minute, second):
     return hour*3600 + minute*60 + second
@@ -393,16 +403,16 @@ def mylocaltime(sec=None, mode=None):
 '''
 def gmtime(sec=None, mode=None):
     if mode==None:##DATE_GREG
-        return gmtime(sec)
-    t = gmtime(sec)
+        return time.gmtime(sec)
+    t = time.gmtime(sec)
     t[:3] = convert(t[0], t[1], t[2], DATE_GREG, mode)
     return t
 
 def mktime(t, mode=None):
     if mode==None:##DATE_GREG
-        return mktime(t)
+        return time.mktime(t)
     t[:3] = convert(t[0], t[1], t[2], mode, DATE_GREG)
-    return mktime(t)
+    return time.mktime(t)
 '''
 
 def validDate(mode, y, m, d):## move to cal-modules

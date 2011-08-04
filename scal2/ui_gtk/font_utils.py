@@ -11,7 +11,7 @@ def pfontEncode(font):
     pfont.set_family(font[0])
     pfont.set_weight(pango.WEIGHT_BOLD if font[1] else pango.WEIGHT_NORMAL)
     pfont.set_style(pango.STYLE_ITALIC if font[2] else pango.STYLE_NORMAL)
-    pfont.set_size(font[3]*1024)
+    pfont.set_size(int(font[3]*1024))
     return pfont
 
 gfontDecode = lambda gfont: pfontDecode(pango.FontDescription(gfont))## gfont is a string like "Terafik 12"
