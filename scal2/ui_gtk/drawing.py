@@ -16,8 +16,11 @@
 # with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
+from os.path import join
 
-from scal2.locale_man import cutText
+from scal2.paths import *
+
+from scal2.locale_man import cutText, rtl
 from scal2 import ui
 from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
@@ -53,13 +56,13 @@ def fillColor(cr, color):
 def newTextLayout(widget, text='', font=None):
     layout = widget.create_pango_layout(text) ## a pango.Layout object
     if not font:
-        font = ui.fontDefault if ui.fontUseDefault else ui.fontCustom
+        font = ui.getFont()
     layout.set_font_description(pfontEncode(font))
     return layout
 
 def newLimitedWidthTextLayout(widget, text, width, font=None, truncate=True):
     if not font:
-        font = ui.fontDefault if ui.fontUseDefault else ui.fontCustom
+        font = ui.getFont()
     layout = widget.create_pango_layout(text)
     layout.set_font_description(pfontEncode(font))
     if not layout:
@@ -81,9 +84,43 @@ def newLimitedWidthTextLayout(widget, text, width, font=None, truncate=True):
         else:## use smaller font
             font2 = list(font)
             while layoutW > width:
-                font2[3] = float(font2[3])*width/layoutW
+                font2[3] = 0.9*font2[3]*width/layoutW
                 layout.set_font_description(pfontEncode(font2))
                 layoutW, layoutH = layout.get_pixel_size()
-                #print layoutW, width## FIXME
+                #print layoutW, width
+            #print
     return layout
+
+class Button:
+    def __init__(self, imageName, func, x, y, autoDir=True):
+        self.imageName = imageName
+        if imageName.startswith('gtk-'):
+            self.pixbuf = gdk.pixbuf_new_from_stock(imageName)
+        else:
+            self.pixbuf = gdk.pixbuf_new_from_file(join(pixDir, imageName))
+        self.func = func
+        self.width = self.pixbuf.get_width()
+        self.height = self.pixbuf.get_height()
+        self.x = x
+        self.y = y
+        self.autoDir = autoDir
+    __repr__ = lambda self: 'Button(%r, %r, %r, %r, %r)'%(self.imageName, self.func.__name__, self.x, self.y, self.autoDir)
+    def getAbsPos(self, w, h):
+        x = self.x
+        y = self.y
+        if self.autoDir and rtl:
+            x = -x
+        if x<0:
+            x = w - self.width + x
+        if y<0:
+            y = h - self.height + y
+        return (x, y)
+    def draw(self, cr, w, h):
+        (x, y) = self.getAbsPos(w, h)
+        cr.set_source_pixbuf(self.pixbuf, x, y)
+        cr.rectangle(x, y, self.width, self.height)
+        cr.fill()
+    def contains(self, px, py, w, h):
+        (x, y) = self.getAbsPos(w, h)
+        return (x <= px < x+self.width and y <= py < y+self.height)
 

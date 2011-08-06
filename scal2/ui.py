@@ -332,6 +332,9 @@ def yearPlus(plus=1):
     day = min(cell.day, getMonthLen(year, month, core.primaryMode))
     cell = cellCache.getCellByDate(year, month, day)
 
+getFont = lambda: fontDefault if fontUseDefault else fontCustom
+
+
 ######################################################################
 
 def checkMainWinItems():

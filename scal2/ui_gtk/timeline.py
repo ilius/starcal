@@ -19,22 +19,19 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 import time
-from math import ceil, sqrt
 
 from scal2 import core
 
-from scal2.locale_man import tr as _
-from scal2.locale_man import rtl, rtlSgn, cutText
+#from scal2.locale_man import tr as _
+#from scal2.locale_man import rtl, rtlSgn
 
-from scal2.core import myRaise, getMonthName, getMonthLen, getNextMonth, getPrevMonth, pixDir,\
-                       getJdFromEpoch, getEpochFromJd, jd_to, to_jd, getJhmsFromEpoch, getEpochFromDate,\
-                       getCurrentTimeZone
+from scal2.core import myRaise, getCurrentTimeZone
                        
-
 from scal2 import ui
+from scal2.timeline import *
 
-from scal2.ui_gtk.drawing import *
-from scal2.ui_gtk import preferences
+from scal2.ui_gtk.drawing import setColor, fillColor, newLimitedWidthTextLayout, Button
+#from scal2.ui_gtk import preferences
 
 import gobject
 import gtk
@@ -43,190 +40,30 @@ from gtk import gdk
 def show_event(widget, event):
     print type(widget), event.type.value_name, event.get_time()#, event.send_event
 
-
-
-#sunLightH = 10## FIXME
-majorStepMin = 50 ## with label
-minorStepMin = 5 ## with or without label
-maxLabelWidth = 50 ## or the same majorStepMin
-maxTickHeightRatio = 0.5
-baseTickH = 2
-baseTickW = 1
-fontFamily = 'Sans'
-baseFontSize = 8
-labelYRatio = 1.2
-bgColor = (50, 50, 50)
-fgColor = (255, 255, 255)
-
-scrollZoomStep = 1.2
-scrollMoveStep = 20
-
-unitSteps = (
-    (3600, 12),
-    (3600, 6),
-    (3600, 3),
-    (3600, 1),
-    (60, 30),
-    (60, 15),
-    (60, 5),
-    (60, 1),
-    (1, 30),
-    (1, 15),
-    (1, 5),
-    (1, 1),
-)
-
-minYearLenSec = 365*24*3600
-avgMonthLen = 30*24*3600
-
-class Tick:
-    def __init__(self, epoch, pos, unitSize, label='', truncateLabel=False):
-        self.epoch = epoch
-        self.pos = pos ## pixel position
-        self.height = unitSize ** 0.5 * baseTickH
-        self.width = unitSize ** 0.1 * baseTickW
-        self.fontSize = unitSize ** 0.2 * baseFontSize
-        self.maxLabelWidth = min(unitSize*0.5, maxLabelWidth) ## FIXME
-        self.label = label
-        self.truncateLabel = truncateLabel
-
-def formatEpochTime(epoch):
-    (jd, h, m, s) = getJhmsFromEpoch(epoch)
-    if s==0:
-        return '%s:%s'%(_(h), _(m))
-    else:
-        return '%s:%s:%s'%(_(h), _(m), _(s))
-
-def getYearRangeTickValues(y0, y1, minStepYear):
-    data = []
-    numList = []
-    for n in (1000, 500, 100, 50, 10, 1):
-        if n<minStepYear:
-            break
-        numList.append(n)
-    for y in range(y0, y1):
-        for n in numList:
-            if y%n == 0:
-                data.append((n, y))
-                break
-    return data
-
-def splitTime(timeStart, timeWidth, width):
-    timeEnd = timeStart + timeWidth
-    pixelPerSec = float(width)/timeWidth ## pixel/second
-    minStep = minorStepMin/pixelPerSec ## second
-    ticks = []
-    tickEpochList = []
-    #################
-    jd0 = getJdFromEpoch(timeStart)
-    jd1 = getJdFromEpoch(timeEnd)
-    (y0, m0, d0) = jd_to(jd0, core.primaryMode)
-    (y1, m1, d1) = jd_to(jd1, core.primaryMode)
-    ############ Year
-    minStepYear = int(minStep/minYearLenSec) ## year
-    yearPixel = minYearLenSec*pixelPerSec ## pixel
-    for (size, year) in getYearRangeTickValues(y0, y1, minStepYear):## boundaries FIXME
-        tmEpoch = getEpochFromDate(year, 1, 1, core.primaryMode)
-        if tmEpoch in tickEpochList:
-            continue
-        unitSize = size*yearPixel
-        ticks.append(Tick(
-            tmEpoch,
-            (tmEpoch-timeStart)*pixelPerSec,
-            unitSize,
-            _(year) if unitSize >= majorStepMin else '',
-        ))
-        tickEpochList.append(tmEpoch)
-    ############ Month
-    ym0 = y0*12 + m0-1
-    ym1 = y1*12 + m1-1
-    monthPixel = avgMonthLen*pixelPerSec ## pixel
-    minMonthUnit = float(minStep)/avgMonthLen ## month
-    #print 'minMonthUnit =', minMonthUnit
-    if minMonthUnit < 3:
-        for ym in range(ym0, ym1):
-            if ym%3==0:
-                monthUnit = 3
-            else:
-                monthUnit = 1
-            if monthUnit < minMonthUnit:
-                continue
-            (y, m) = divmod(ym, 12) ; m+=1
-            tmEpoch = getEpochFromDate(y, m, 1, core.primaryMode)
-            if tmEpoch in tickEpochList:
-                continue
-            unitSize = monthPixel*monthUnit
-            ticks.append(Tick(
-                tmEpoch,
-                (tmEpoch-timeStart)*pixelPerSec,
-                unitSize,
-                getMonthName(core.primaryMode, m) if unitSize >= majorStepMin else '',
-            ))
-            tickEpochList.append(tmEpoch)
-    ############ Day of Month
-    hasMonthName = timeWidth < 5*24*3600
-    dayPixel = 24*3600*pixelPerSec ## pixel
-    minDayUnit = float(minStep)/(24*3600) ## day
-    if minDayUnit < 15:
-        for jd in range(jd0, jd1):
-            tmEpoch = getEpochFromJd(jd)
-            if tmEpoch in tickEpochList:
-                continue
-            (year, month, day) = jd_to(jd, core.primaryMode)
-            unitSize = 24*3600
-            if day in (1, 16):
-                dayUnit = 15
-            #elif day in (5, 10, 20, 25):
-            #    dayUnit = 5
-            else:
-                dayUnit = 1
-            if dayUnit < minDayUnit:
-                continue
-            unitSize = dayPixel*dayUnit
-            if hasMonthName:
-                label = _(day) + ' ' + getMonthName(core.primaryMode, month)
-            else:
-                label = _(day)
-            ticks.append(Tick(
-                tmEpoch,
-                (tmEpoch-timeStart)*pixelPerSec,
-                unitSize,
-                label,
-            ))
-            tickEpochList.append(tmEpoch)
-    ############ Hour, Minute, Second
-    for stepUnit, stepValue in unitSteps:
-        stepSec = stepUnit*stepValue
-        if stepSec < minStep:
-            break
-        unitSize = stepSec*pixelPerSec
-        firstEpoch = int(ceil(timeStart/stepSec))*stepSec
-        for tmEpoch in range(firstEpoch, int(ceil(timeEnd)), stepSec):
-            if tmEpoch in tickEpochList:
-                continue
-            ticks.append(Tick(
-                tmEpoch,
-                (tmEpoch-timeStart)*pixelPerSec,
-                unitSize,
-                formatEpochTime(tmEpoch) if unitSize >= majorStepMin else '',
-            ))
-            tickEpochList.append(tmEpoch)
-    return ticks
-
+rootWindow = gdk.get_default_root_window() ## Good Place?????
 
 
 
 class TimeLine(gtk.Widget):
-    def __init__(self):
+    def centerToNow(self):
+        self.timeStart = time.time() + getCurrentTimeZone() - self.timeWidth/2.0
+    def centerToNowClicked(self, arg=None):
+        self.centerToNow()
+        self.queue_draw()
+    def __init__(self, closeFunc):
         gtk.Widget.__init__(self)
-        #self.connect('button-press-event', self.buttonPress)
         self.connect('expose-event', self.onExposeEvent)
         self.connect('scroll-event', self.onScroll)
-        #self.connect('destroy', self.quit)
+        self.connect('button-press-event', self.buttonPress)
         #self.connect('event', show_event)
         self.timeWidth = 24*3600
-        self.timeStart = time.time() + getCurrentTimeZone() - self.timeWidth/2
-        #print formatEpochTime(time.time() + getCurrentTimeZone())
+        self.centerToNow()
+        self.buttons = [
+            Button('week-home.png', self.centerToNowClicked, 1, -1, False),
+            Button('week-small.png', self.startResize, -1, -1, False),
+            Button('week-exit.png', closeFunc, 35, -1, False)
+        ]
+        ## zoom in and zoom out buttons FIXME
     def do_realize(self):
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(
@@ -244,16 +81,15 @@ class TimeLine(gtk.Widget):
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
         self.window.move_resize(*self.allocation)
-        #self.onExposeEvent()
     def onExposeEvent(self, widget=None, event=None):
-        w = self.allocation.width
-        h = self.allocation.height
-        maxTickHeight = maxTickHeightRatio*h
+        width = self.allocation.width
+        height = self.allocation.height
+        maxTickHeight = maxTickHeightRatio*height
         cr = self.window.cairo_create()
-        cr.rectangle(0, 0, w, h)
+        cr.rectangle(0, 0, width, height)
         fillColor(cr, bgColor)
         setColor(cr, fgColor)
-        for tick in splitTime(self.timeStart, self.timeWidth, w):
+        for tick in splitTime(self.timeStart, self.timeWidth, width):
             tickH = tick.height
             tickW = tick.width
             tickH = min(tickH, maxTickHeight)
@@ -264,7 +100,7 @@ class TimeLine(gtk.Widget):
             try:
                 cr.fill()
             except:
-                print 'fill, x=%.2f, y=%.2f, w=%.2f, h=%.2f'%(tickX, tickY, tickW, tickH)
+                print 'error in fill, x=%.2f, y=%.2f, w=%.2f, h=%.2f'%(tickX, tickY, tickW, tickH)
             ###
             font = (
                 fontFamily,
@@ -280,9 +116,11 @@ class TimeLine(gtk.Widget):
                 try:
                     cr.move_to(layoutX, layoutY)
                 except:
-                    print 'move_to, x=%.2f, y=%.2f'%(layoutX, layoutY)
+                    print 'error in move_to, x=%.2f, y=%.2f'%(layoutX, layoutY)
                 else:
                     cr.show_layout(layout)
+        for button in self.buttons:
+            button.draw(cr, width, height)
     def onScroll(self, widget, event):
         isUp = event.direction.value_nick=='up'
         if event.state & gdk.CONTROL_MASK:
@@ -295,18 +133,54 @@ class TimeLine(gtk.Widget):
             self.timeStart += (1 if isUp else -1)*scrollMoveStep*self.timeWidth/float(self.allocation.width)
         self.queue_draw()
         return True            
+    def buttonPress(self, obj, event):
+        x = event.x
+        y = event.y
+        w = self.allocation.width
+        h = self.allocation.height
+        if event.button==1:
+            for button in self.buttons:
+                if button.contains(x, y, w, h):
+                    button.func(event)
+                    return True
+        return False
+    def startResize(self, event):
+        self.parent.begin_resize_drag(
+            gdk.WINDOW_EDGE_SOUTH_EAST,
+            event.button,
+            int(event.x_root),
+            int(event.y_root), 
+            event.time,
+        )
 
 
+class TimeLineWindow(gtk.Window):
+    def __init__(self, mainWin=None):
+        gtk.Window.__init__(self)
+        self.set_decorated(False)
+        self.connect('delete-event', self.closeClicked)
+        self.connect('button-press-event', self.buttonPress)
+        self.tline = TimeLine(self.closeClicked)
+        self.add(self.tline)
+        self.tline.show()
+    def closeClicked(self, arg=None):
+        #self.hide()
+        gtk.main_quit()## FIXME
+        return True
+    def buttonPress(self, obj, event):
+        if event.button==1:
+            (px, py, mask) = rootWindow.get_pointer()
+            self.begin_move_drag(event.button, px, py, event.time)
+            return True
+        return False
 
 gobject.type_register(TimeLine)
 
 if __name__=='__main__':
-    tline = TimeLine()
-    win = gtk.Window()
-    win.add(tline)
-    win.resize(1366, 150)
-    win.connect('delete-event', gtk.main_quit)
-    win.show_all()
+    win = TimeLineWindow()
+    win.resize(rootWindow.get_geometry()[2], 150)
+    win.move(0, 0)
+    win.show()
     gtk.main()
 
 

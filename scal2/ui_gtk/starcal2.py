@@ -1662,7 +1662,7 @@ class MainWin(gtk.Window):
         #self.set_property('skip-taskbar-hint', not ui.winTaskbar) ## self.set_skip_taskbar_hint ## FIXME
         ## skip-taskbar-hint  need to restart ro be applied
         preferences.settings.set_property('gtk-font-name',
-            pfontEncode(ui.fontDefault if ui.fontUseDefault else ui.fontCustom))
+            pfontEncode(ui.getFont()))
         self.updateMenuSize()
         #self.updateToolbarClock()## FIXME
         self.updateTrayClock()

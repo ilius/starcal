@@ -32,13 +32,16 @@ from scal2.core import log, myRaise, numLocale, getMonthName, getMonthLen, getNe
 from scal2 import ui
 from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
 
-from scal2.ui_gtk.drawing import *
+from scal2.ui_gtk.drawing import setColor, fillColor, newTextLayout
 from scal2.ui_gtk import preferences
 from scal2.ui_gtk.customize import MainWinItem
 
 #from scal2.ui_gtk import desktop
 #from scal2.ui_gtk import wallpaper
 
+import gobject
+import gtk
+from gtk import gdk
 
 
 class MonthCal(gtk.Widget, MainWinItem):
