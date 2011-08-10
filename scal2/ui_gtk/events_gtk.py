@@ -175,8 +175,10 @@ class MonthOccurrenceView(event_man.MonthOccurrenceView, gtk.TreeView):
 
 
 class EventEditorDialog(gtk.Dialog):
-    def __init__(self, event=None, eventType=''):## don't give both event a eventType
+    def __init__(self, event=None, eventType='', title=None):## don't give both event a eventType
         gtk.Dialog.__init__(self)
+        if title:
+            self.set_title(title)
         #self.connect('delete-event', lambda obj, e: self.destroy())
         #self.resize(800, 600)
         ###
@@ -376,7 +378,11 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 self.filesVbox.pack_start(hbox, 0, 0)
             self.filesVbox.show_all()
     def addEvent(self, eventType):
-        event = EventEditorDialog(eventType=eventType).run()
+        if eventType:
+            title = _('Add') + ' ' + event_man.eventsClassDict[eventType].desc
+        else:
+            title = _('Add') + ' ' + _('Event')
+        event = EventEditorDialog(eventType=eventType, title=title).run()
         #print 'event =', event
         if event:
             ui.addEvent(event)
@@ -391,7 +397,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         event = self.getSelectedEvent()
         if not event:
             return
-        event = EventEditorDialog(event=event).run()
+        event = EventEditorDialog(event=event, title=_('Edit Event')).run()
         #print 'event =', event
         if event:
             event.saveConfig()## FIXME

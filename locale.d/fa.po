@@ -546,6 +546,10 @@ msgid "Task"
 msgstr ""
 "کار"
 
+msgid "Event"
+msgstr ""
+"رویداد"
+
 msgid "Custom Event"
 msgstr ""
 "رویداد دلخواه"
@@ -674,6 +678,10 @@ msgstr ""
 msgid "_Add Note"
 msgstr ""
 "افزودن یادداشت"
+
+msgid "Edit Event"
+msgstr ""
+"ویرایش رویداد"
 
 
 
