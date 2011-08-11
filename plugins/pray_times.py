@@ -39,6 +39,7 @@ from pray_times_backend import PrayTimes
 from scal2.locale_man import tr as _
 from scal2.plugin_man import BasePlugin
 from scal2.cal_modules.gregorian import to_jd as gregorian_to_jd
+from scal2.time_utils import getTimeZoneByJd
 
 #if 'gtk' in sys.modules:
 from pray_times_gtk import *
@@ -143,7 +144,10 @@ class TextPlug(BasePlugin, TextPlugUI):
     #    menu.remove(self.menuitem)
     #    menu.disconnect(self.menu_unmap_id)
     def get_text_jd(self, jd):
-        times = self.ptObj.getTimesByJd(jd)
+        times = self.ptObj.getTimesByJd(
+            jd,
+            getTimeZoneByJd(jd)/3600.0,
+        )
         return '\t'.join(['%s: %s'%(_(name.capitalize()), times[name]) for name in self.shownTimeNames])
     def get_text(self, year, month, day):## just for compatibity (usage by external programs)
         return self.get_text_jd(gregorian_to_jd(year, month, day))
