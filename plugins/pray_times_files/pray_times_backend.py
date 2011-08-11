@@ -36,7 +36,7 @@ from math import floor
 
 tr = str ## FIXME
 
-timeNames = ('imsak', 'fajr', 'sunrise', 'dhuhr', 'asr', 'sunset', 'maghrib', 'isha', 'midnight')
+timeNames = ('imsak', 'fajr', 'sunrise', 'dhuhr', 'asr', 'sunset', 'maghrib', 'isha', 'midnight', 'timezone')
 
 ASR_STANDARD, ASR_HANAFI = range(2)
 ## asr juristics:
@@ -126,12 +126,10 @@ class PrayTimes:
         self.timeFormat = timeFormat
 
     # return prayer times for a given julian day
-    def getTimesByJd(self, jd):
+    def getTimesByJd(self, jd, timeZone):
         #if time.daylight and time.gmtime(core.getEpochFromJd(jd)):
-        if time.daylight and time.gmtime((jd-2440588)*(24*3600)).tm_isdst:
-            self.timeZone = -time.altzone/3600.0
-        else:
-            self.timeZone = -time.timezone/3600.0
+        #print time.gmtime((jd-2440588)*(24*3600)).tm_isdst
+        self.timeZone = timeZone
         self.jDate = jd - 0.5 - self.lng/(15*24)
         return self.computeTimes()
 
@@ -279,6 +277,8 @@ class PrayTimes:
         #times = self.tuneTimes(times) ## FIXME
         for key in times:
             times[key] = self.getFormattedTime(times[key])
+
+        times['timezone'] = 'GMT%+.1f'%self.timeZone
 
         return times
 

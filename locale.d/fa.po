@@ -1627,6 +1627,9 @@ msgstr "نمایش ترجمه‌ها"
 msgid "Time Zone"
 msgstr "منطقهٔ زمانی"
 
+msgid "Timezone"
+msgstr "منطقهٔ زمانی"
+
 msgid "Daylight Saving"
 msgstr "صرفه‌جویی نور روز"
 
