@@ -34,6 +34,8 @@ from scal2.ui_gtk.drawing import setColor, fillColor, newLimitedWidthTextLayout,
 #from scal2.ui_gtk import preferences
 
 import gobject
+from gobject import timeout_add
+
 import gtk
 from gtk import gdk
 
@@ -46,6 +48,7 @@ rootWindow = gdk.get_default_root_window() ## Good Place?????
 
 class TimeLine(gtk.Widget):
     def centerToNow(self):
+        self.stopMovingAnim()
         self.timeStart = time.time() + getCurrentTimeZone() - self.timeWidth/2.0
     def centerToNowClicked(self, arg=None):
         self.centerToNow()
@@ -55,15 +58,20 @@ class TimeLine(gtk.Widget):
         self.connect('expose-event', self.onExposeEvent)
         self.connect('scroll-event', self.onScroll)
         self.connect('button-press-event', self.buttonPress)
+        self.connect('key-press-event', self.keyPress)
         #self.connect('event', show_event)
         self.timeWidth = 24*3600
-        self.centerToNow()
+        self.timeStart = time.time() + getCurrentTimeZone() - self.timeWidth/2.0
         self.buttons = [
             Button('week-home.png', self.centerToNowClicked, 1, -1, False),
             Button('week-small.png', self.startResize, -1, -1, False),
             Button('week-exit.png', closeFunc, 35, -1, False)
         ]
         ## zoom in and zoom out buttons FIXME
+        ########
+        self.movingLastPress = 0
+        self.movingV = 0
+        self.movingF = 0
     def do_realize(self):
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(
@@ -130,7 +138,7 @@ class TimeLine(gtk.Widget):
             self.timeStart = zoomTime - timeLeft*zoomValue
             self.timeWidth = self.timeWidth*zoomValue
         else:
-            self.timeStart += (1 if isUp else -1)*scrollMoveStep*self.timeWidth/float(self.allocation.width)
+            self.movingUserEvent(-1 if isUp else 1)## FIXME
         self.queue_draw()
         return True            
     def buttonPress(self, obj, event):
@@ -152,6 +160,86 @@ class TimeLine(gtk.Widget):
             int(event.y_root), 
             event.time,
         )
+    def keyPress(self, arg, event):
+        k = gdk.keyval_name(event.keyval).lower()
+        #print '%.3f'%time.time()
+        if k in ('space', 'home'):
+            self.centerToNow()
+        elif k=='right':
+            self.movingUserEvent(1)
+        elif k=='left':
+            self.movingUserEvent(-1)
+        elif k=='down':
+            self.stopMovingAnim()
+        #elif k=='end':
+        #    pass
+        #elif k=='page_up':
+        #    pass
+        #elif k=='page_down':
+        #    pass
+        #elif k=='menu':# Simulate right click (key beside Right-Ctrl)
+        #    #self.emit('popup-menu-cell', event.time, *self.getCellPos())
+        #elif k in ('f10','m'):	# F10 or m or M
+        #    if event.state & gdk.SHIFT_MASK:
+        #        # Simulate right click (key beside Right-Ctrl)
+        #        self.emit('popup-menu-cell', event.time, *self.getCellPos())
+        #    else:
+        #        self.emit('popup-menu-main', event.time, *self.getMainMenuPos())
+        else:
+            return False
+        self.queue_draw()
+        return True
+    def movingUserEvent(self, force=1):
+        if enableAnimation:
+            tm = time.time()
+            #dtEvent = tm - self.movingLastPress
+            self.movingLastPress = tm
+            '''
+                We should call a new updateMovingAnim if:
+                    last key press has bin timeout, OR
+                    force direction has been change, OR
+                    its currently still (no speed and no force)
+            '''
+            if self.movingF*force < 0 or self.movingF*self.movingV==0:## or dtEvent > movingKeyTimeout
+                self.movingF = force * movingHandForce
+                self.movingV += movingV0*force
+                self.updateMovingAnim(self.movingF, tm, tm, self.movingV, self.movingF)
+        else:
+            self.timeStart += force * staticMoveStep * self.timeWidth/float(self.allocation.width)
+    def updateMovingAnim(self, f1, t0, t1, v0, a1):
+        t2 = time.time()
+        f = self.movingF
+        if f!=f1:
+            return
+        v1 = self.movingV
+        if f==0 and v1==0:
+            return
+        timeout = movingKeyTimeoutFirst if t2-t0<movingKeyTimeoutFirst else movingKeyTimeout
+        if f!=0 and t2 - self.movingLastPress >= timeout:## Stopping
+            f = self.movingF = 0
+        if v1 > 0:
+            a2 = f - movingSurfaceForce
+        elif v1 < 0:
+            a2 = f + movingSurfaceForce
+        else:
+            a2 = f
+        if a2 != a1:
+            return self.updateMovingAnim(f, t2, t2, v1, a2)
+        v2 = v0 + a2*(t2-t0)
+        if v2 > movingMaxSpeed:
+            v2 = movingMaxSpeed
+        elif v2 < -movingMaxSpeed:
+            v2 = -movingMaxSpeed
+        if f==0 and v1*v2 <= 0:
+            self.movingV = 0
+            return
+        timeout_add(movingUpdateTime, self.updateMovingAnim, f, t0, t2, v0, a2)
+        self.movingV = v2
+        self.timeStart += v2 * (t2-t1) * self.timeWidth/float(self.allocation.width)
+        self.queue_draw()
+    def stopMovingAnim(self):## stop moving immudiatly
+        self.movingF = 0
+        self.movingV = 0
 
 
 class TimeLineWindow(gtk.Window):
@@ -161,9 +249,10 @@ class TimeLineWindow(gtk.Window):
         self.connect('delete-event', self.closeClicked)
         self.connect('button-press-event', self.buttonPress)
         self.tline = TimeLine(self.closeClicked)
+        self.connect('key-press-event', self.tline.keyPress)
         self.add(self.tline)
         self.tline.show()
-    def closeClicked(self, arg=None):
+    def closeClicked(self, arg=None, event=None):
         #self.hide()
         gtk.main_quit()## FIXME
         return True

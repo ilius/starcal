@@ -41,7 +41,7 @@ bgColor = (50, 50, 50)
 fgColor = (255, 255, 255)
 
 scrollZoomStep = 1.2
-scrollMoveStep = 20
+
 
 unitSteps = (
     (3600, 12),
@@ -60,6 +60,19 @@ unitSteps = (
 
 minYearLenSec = 365*24*3600
 avgMonthLen = 30*24*3600
+
+enableAnimation = True
+
+staticMoveStep = 20
+
+movingUpdateTime = 10 ## milisecons
+movingV0 = 30
+movingAccel = 300
+movingSurfaceForce = 600 ## px / (sec**2)
+movingHandForce = movingSurfaceForce + movingAccel ## px / (sec**2)
+movingMaxSpeed = (movingHandForce-movingSurfaceForce)*4 ## px / sec ## reach to maximum speed in 3 seconds
+movingKeyTimeoutFirst = 0.5
+movingKeyTimeout = 0.1 ## seconds ## continiouse keyPress delay is about 0.05 sec
 
 class Tick:
     def __init__(self, epoch, pos, unitSize, label='', truncateLabel=False):
