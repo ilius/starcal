@@ -129,7 +129,7 @@ class EventItemBase:
 class Occurrence(EventItemBase):
     def __init__(self):
         self.event = None
-    def isNull(self):
+    def __nonzero__(self):
         raise NotImplementedError
     def intersection(self):
         raise NotImplementedError
@@ -145,7 +145,7 @@ class JdListOccurrence(Occurrence):
         if not jdList:
             jdList = []
         self.jdSet = set(jdList)
-    isNull = lambda self: bool(self.jdSet)
+    __nonzero__ = lambda self: bool(self.jdSet)
     def intersection(self, occur):
         if isinstance(occur, JdListOccurrence):
             return JdListOccurrence(self.jdSet.intersection(occur.jdSet))
@@ -171,7 +171,7 @@ class TimeRangeListOccurrence(Occurrence):
         if not epochRangeList:
             epochRangeList = []
         self.epochRangeList = epochRangeList
-    isNull = lambda self: bool(self.epochRangeList)
+    __nonzero__ = lambda self: bool(self.epochRangeList)
     def intersection(self, occur):
         if isinstance(occur, (JdListOccurrence, TimeRangeListOccurrence)):
             return TimeRangeListOccurrence(intersectionOfTwoTimeRangeList(self.getTimeRangeList(), occur.getTimeRangeList()))
@@ -214,8 +214,8 @@ class TimeListOccurrence(Occurrence):
             self.setRange(*args)
         else:
             raise ValueError
-    #isNull = lambda self: self.startEpoch == self.endEpoch
-    isNull = lambda self: bool(self.epochList)
+    #__nonzero__ = lambda self: self.startEpoch == self.endEpoch
+    __nonzero__ = lambda self: bool(self.epochList)
     def setRange(self, startEpoch, endEpoch, stepSeconds):
         self.startEpoch = startEpoch
         self.endEpoch = endEpoch
@@ -511,7 +511,7 @@ class StartEventRule(DateAndTimeEventRule):
     def calcOccurrence(self, startEpoch, endEpoch, rulesDict=None):
         myEpoch = self.getEpoch()
         if endEpoch <= myEpoch:
-            return []
+            return TimeRangeListOccurrence([])
         if startEpoch < myEpoch:
             startEpoch = myEpoch
         return TimeRangeListOccurrence([(startEpoch, endEpoch)])
@@ -649,11 +649,13 @@ class Event(EventItemBase):
         self.tags = []
         self.showInTimeLine = False
         self.files = []
+        self.color = None ## FIXME
         ######
         self.rules = []
         self.notifiers = []
         self.checkRequirements()
         self.setDefaults()
+    __nonzero__ = lambda self: self.enable and bool(self.rules)
     def getInfo(self):
         lines = []
         rulesDict = self.getRulesDict()
@@ -743,7 +745,7 @@ class Event(EventItemBase):
         self.loadFiles()
     def getData(self):
         return {
-            'id': self.eid,
+            #'id': self.eid,
             'enable': self.enable,
             'type': self.name,
             'calType': core.modules[self.mode].name,
@@ -755,7 +757,8 @@ class Event(EventItemBase):
             'tags': self.tags,
         }
     def setData(self, data):
-        self.setEid(data['id'])
+        if 'id' in data:
+            self.setEid(data['id'])
         calType = data['calType']
         for (i, module) in enumerate(core.modules):
             if module.name == calType:
@@ -847,6 +850,9 @@ class Event(EventItemBase):
         endEpoch = getEpochFromJd(endJd)
         rulesDict = self.getRulesDict()
         occur = self.rules[0].calcOccurrence(startEpoch, endEpoch, rulesDict)
+        if not hasattr(occur, 'intersection'):
+            print self.rules[0].name, occur.__class__.__name__, occur #dir(occur)
+            raise
         for rule in self.rules[1:]:
             occur = occur.intersection(rule.calcOccurrence(startEpoch, endEpoch, rulesDict))
         occur.event = self
@@ -932,21 +938,11 @@ class UniversityClassEvent(Event):## FIXME
 
 
 
-'''
-        if isinstance(occur, JdListOccurrence):
-            return JdListOccurrence(self.jdSet.intersection(occur.jdSet))
-        elif isinstance(occur, TimeRangeListOccurrence):
-            return TimeRangeListOccurrence(intersectionOfTwoTimeRangeList(self.getTimeRangeList(), occur.getTimeRangeList()))
-        elif isinstance(occur, TimeListOccurrence):
-            return occur.intersection(self)
-        else:
-            raise TypeError
-'''
 
 
 class OccurrenceView:
-    name = ''
-    desc = _('Occurrence View')
+    #name = ''## a GtkWidget will inherit a child of this class FIXME
+    #desc = _('Occurrence View')
     #def __init__(self):
     #    self.updateData()
     def getJdRange(self):
@@ -960,7 +956,7 @@ class OccurrenceView:
 ## current CustomDay widget (below month calendar) is something like DayOccurrenceView
 ## we should not use this class directly
 ## we use classes inside scal2.ui_gtk.event_extenders.occurrenceViews
-class DayOccurrenceView:
+class DayOccurrenceView(OccurrenceView):
     #name = 'day'## a GtkWidget will inherit this class FIXME
     #desc = _('Day Occurrence View')
     def __init__(self, jd):
@@ -976,9 +972,11 @@ class DayOccurrenceView:
         endJd = self.jd + 1
         self.data = []
         for event in ui.events:
-            if not event.enable:
+            if not event:
                 continue
             occur = event.calcOccurrenceForJdRange(startJd, endJd)
+            if not occur:
+                continue
             text = event.getText()
             for url, fname in event.getFilesUrls():
                 text += '\n<a href="%s">%s</a>'%(url, fname)
@@ -1048,7 +1046,11 @@ class WeekOccurrenceView(OccurrenceView):
         (startJd, endJd) = self.getJdRange()
         self.data = []
         for event in ui.events:
+            if not event:
+                continue
             occur = event.calcOccurrenceForJdRange(startJd, endJd)
+            if not occur:
+                continue
             text = event.getText()
             icon = event.icon
             if isinstance(occur, JdListOccurrence):
@@ -1129,7 +1131,11 @@ class MonthOccurrenceView(OccurrenceView):
         (startJd, endJd) = self.getJdRange()
         self.data = []
         for event in ui.events:
+            if not event:
+                continue
             occur = event.calcOccurrenceForJdRange(startJd, endJd)
+            if not occur:
+                continue
             text = event.getText()
             icon = event.icon
             if isinstance(occur, JdListOccurrence):
@@ -1196,6 +1202,7 @@ def loadEvent(eid):
     if not isfile(eventFile):
         raise IOError('error while loading event file %r: no such file'%eventFile)
     data = json.loads(open(eventFile).read())
+    data['eid'] = eid ## FIXME
     event = eventsClassDict[data['type']](eid)
     event.setData(data)
     return event
@@ -1203,10 +1210,12 @@ def loadEvent(eid):
 
 def loadEvents():
     events = []
+    #print 'listdir', listdir(eventsDir)
     for eid_s in listdir(eventsDir):
         try:
             eid = int(eid_s)
         except ValueError:
+            myRaise()
             continue
         events.append(loadEvent(eid))
     return events
@@ -1239,14 +1248,13 @@ eventNotifiersClassList = [
 ]
 eventNotifiersClassDict = dict([(cls.name, cls) for cls in eventNotifiersClassList])
 
-'''
-occurrenceViewClassList = [
-    MonthOccurrenceView,
-    WeekOccurrenceView,
-    DayOccurrenceView,
-]
-occurrenceViewClassDict = dict([(cls.name, cls) for cls in occurrenceViewClassList])
-'''
+
+#occurrenceViewClassList = [
+#    MonthOccurrenceView,
+#    WeekOccurrenceView,
+#    DayOccurrenceView,
+#]
+#occurrenceViewClassDict = dict([(cls.name, cls) for cls in occurrenceViewClassList])
 
 
 def testIntersection():

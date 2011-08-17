@@ -370,7 +370,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         self.infoText.set_text(event.getInfo() if event else '')
         for hbox in self.filesVbox.get_children():
             hbox.destroy()
-        if event:
+        if event is not None:
             for url, fname in event.getFilesUrls():
                 hbox = gtk.HBox()
                 hbox.pack_start(gtk.LinkButton(url, fname), 0, 0)
@@ -384,7 +384,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             title = _('Add') + ' ' + _('Event')
         event = EventEditorDialog(eventType=eventType, title=title).run()
         #print 'event =', event
-        if event:
+        if event is not None:
             ui.addEvent(event)
             self.reloadEvents()## perfomance FIXME
     def addCustomEvent(self, obj=None):
@@ -399,12 +399,13 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             return
         event = EventEditorDialog(event=event, title=_('Edit Event')).run()
         #print 'event =', event
-        if event:
+        if event is not None:
             event.saveConfig()## FIXME
             self.reloadEvents()## perfomance FIXME
     def delClicked(self, obj=None):
         event = self.getSelectedEvent()
-        if event:
+        print 'delClicked', event, bool(event)
+        if event is not None:
             ui.deleteEvent(event)
             self.reloadEvents()## perfomance FIXME
 

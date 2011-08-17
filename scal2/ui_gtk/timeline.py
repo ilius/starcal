@@ -32,6 +32,7 @@ from scal2.timeline import *
 
 from scal2.ui_gtk.drawing import setColor, fillColor, newLimitedWidthTextLayout, Button
 #from scal2.ui_gtk import preferences
+import scal2.ui_gtk.events_gtk
 
 import gobject
 from gobject import timeout_add
@@ -44,12 +45,12 @@ def show_event(widget, event):
 
 rootWindow = gdk.get_default_root_window() ## Good Place?????
 
-
+getCurrentTime = lambda: time.time() + getCurrentTimeZone()
 
 class TimeLine(gtk.Widget):
     def centerToNow(self):
         self.stopMovingAnim()
-        self.timeStart = time.time() + getCurrentTimeZone() - self.timeWidth/2.0
+        self.timeStart = getCurrentTime() - self.timeWidth/2.0
     def centerToNowClicked(self, arg=None):
         self.centerToNow()
         self.queue_draw()
@@ -60,8 +61,9 @@ class TimeLine(gtk.Widget):
         self.connect('button-press-event', self.buttonPress)
         self.connect('key-press-event', self.keyPress)
         #self.connect('event', show_event)
+        self.currentTime = getCurrentTime()
         self.timeWidth = 24*3600
-        self.timeStart = time.time() + getCurrentTimeZone() - self.timeWidth/2.0
+        self.timeStart = self.currentTime - self.timeWidth/2.0
         self.buttons = [
             Button('week-home.png', self.centerToNowClicked, 1, -1, False),
             Button('week-small.png', self.startResize, -1, -1, False),
@@ -89,6 +91,13 @@ class TimeLine(gtk.Widget):
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
         self.window.move_resize(*self.allocation)
+        self.currentTimeUpdate()
+    def currentTimeUpdate(self):
+        tm = getCurrentTime()
+        timeout_add(int(1000*(1.01-tm%1)), self.currentTimeUpdate)
+        self.currentTime = int(tm)
+        if self.timeStart <= tm <= self.timeStart + self.timeWidth + 1:
+            self.queue_draw()
     def onExposeEvent(self, widget=None, event=None):
         width = self.allocation.width
         height = self.allocation.height
@@ -97,7 +106,8 @@ class TimeLine(gtk.Widget):
         cr.rectangle(0, 0, width, height)
         fillColor(cr, bgColor)
         setColor(cr, fgColor)
-        for tick in splitTime(self.timeStart, self.timeWidth, width):
+        ticks, boxes = calcTimeLineData(self.timeStart, self.timeWidth, width)
+        for tick in ticks:
             tickH = tick.height
             tickW = tick.width
             tickH = min(tickH, maxTickHeight)
@@ -127,6 +137,30 @@ class TimeLine(gtk.Widget):
                     print 'error in move_to, x=%.2f, y=%.2f'%(layoutX, layoutY)
                 else:
                     cr.show_layout(layout)
+        pixelPerSec = float(self.allocation.width)/self.timeWidth ## pixel/second
+        ######
+        baforBoxH = maxTickHeight ## FIXME
+        maxBoxH = height - baforBoxH
+        for box in boxes:
+            #print 'box', box
+            setColor(cr, box.color)
+            x = (box.t0-self.timeStart)*pixelPerSec
+            w = (box.t1 - box.t0)*pixelPerSec
+            y = baforBoxH + maxBoxH * box.y0
+            h = maxBoxH * (box.y1 - box.y0)
+            cr.rectangle(x, y, w, h)
+            cr.fill()
+        ######
+        if self.timeStart <= self.currentTime <= self.timeStart + self.timeWidth:
+            setColor(cr, currenTimeMarkerColor)
+            cr.rectangle(
+                (self.currentTime-self.timeStart)*pixelPerSec - currentTimeMarkerWidth/2.0,
+                0,
+                currentTimeMarkerWidth,
+                currentTimeMarkerHeightRatio * self.allocation.height
+            )
+            cr.fill()
+            
         for button in self.buttons:
             button.draw(cr, width, height)
     def onScroll(self, widget, event):
@@ -264,6 +298,7 @@ class TimeLineWindow(gtk.Window):
         return False
 
 gobject.type_register(TimeLine)
+setRandomColorsToEvents()
 
 if __name__=='__main__':
     win = TimeLineWindow()
