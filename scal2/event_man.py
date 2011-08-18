@@ -36,6 +36,9 @@ from scal2 import ui
 
 eventsDir = join(confDir, 'events')
 
+if not isdir(eventsDir):
+    os.makedirs(eventsDir)
+
 class BadEventFile(Exception):## FIXME
     pass
 
