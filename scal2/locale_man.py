@@ -175,6 +175,9 @@ def numLocale(num, mode=None, fillZero=0):
         res = '-'+res
     return res
 
+def dateLocale(year, month, day):
+    return numLocale(year, fillZero=4) + '/' + numLocale(month, fillZero=2) + '/' + numLocale(day, fillZero=2)
+
 def cutText(text, n):
     text_cutted = text[:n]
     if len(text)>n:

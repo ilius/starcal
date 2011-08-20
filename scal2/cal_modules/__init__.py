@@ -5,7 +5,6 @@ from scal2.cal_modules import gregorian
 from scal2.paths import *
 
 DATE_GREG = 0 ## Gregorian (common calendar)
-moduleNames = ['gregorian']
 modules = [gregorian]
 
 def myRaise():
@@ -19,20 +18,21 @@ for name in open(join(modDir, 'modules.list')).read().split('\n'):
         continue
     if name.startswith('#'):
         continue
-    try:
-        mod = __import__('scal2.cal_modules.%s'%name, fromlist=[name])
+    #try:
+    mod = __import__('scal2.cal_modules.%s'%name, fromlist=[name])
         #mod = __import__(name) ## Need to "sys.path.insert(0, modDir)" before
-    except:
-        myRaise()
-        sys.stdout.write('Could not load calendar modules "%s"\n%s\n'%(name,sys.exc_info()[1]))
-        continue
+    #except:
+    #    myRaise()
+    #    sys.stdout.write('Could not load calendar modules "%s"\n%s\n'%(name,sys.exc_info()[1]))
+    #    continue
     for attr in ('name','desc','origLang','monthName','getMonthName',
                  'minMonthLen','maxMonthLen','getMonthLen','to_jd','jd_to','options','save'):
         if not hasattr(mod, attr):
             sys.stdout.write('Invalid calendar module: module "%s" has no attribute "%s"\n'%(name, attr))
-    moduleNames.append(name)
     modules.append(mod)
 
+moduleNames = [mod.name for mod in modules]
+moduleDescNames = [mod.desc for mod in modules]
 modNum = len(modules)
 ## calOrigLang = [m.origLang for m in modules]
 

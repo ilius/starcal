@@ -18,6 +18,10 @@ msgid "_Close"
 msgstr ""
 "_بستن"
 
+msgid "_Reset to Defaults"
+msgstr ""
+"بازگشت به حالت پیش‌فرض"
+
 msgid "C_redits"
 msgstr ""
 "_دست‌اندرکاران"
@@ -140,7 +144,15 @@ msgid "Jalali(Iranian)"
 msgstr ""
 "جلالی(هجری شمسی)"
 
+msgid "Jalali"
+msgstr ""
+"جلالی"
+
 msgid "Hijri(Islamic)"
+msgstr ""
+"هجری قمری"
+
+msgid "Hijri"
 msgstr ""
 "هجری قمری"
 
@@ -496,6 +508,22 @@ msgstr ""
 msgid "Use (Iranian) database for Hijri months length"
 msgstr ""
 "از دیتابیس طول ماه‌های قمری استفاده‌کن (تقویم رسمی ایران)"
+
+msgid "Tune Hijri Monthes"
+msgstr ""
+"تنظیم ماه‌های قمری"
+
+msgid "Equals to"
+msgstr ""
+"معادل"
+
+msgid "Month Length"
+msgstr ""
+"طول ماه"
+
+msgid "End Date"
+msgstr ""
+"تاریخ پایان"
 
 msgid "Shown Calendars"
 msgstr ""

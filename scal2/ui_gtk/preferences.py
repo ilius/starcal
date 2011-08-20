@@ -150,10 +150,10 @@ for cmd in ('gksudo', 'kdesudo', 'gksu', 'gnomesu', 'kdesu'):
         break
 
 
-## (VAR_NAME, bool,	CHECKBUTTON_TEXT)					## CheckButton
-## (VAR_NAME, list,	LABEL_TEXT, (ITEM1, ITEM2, ...))	## ComboBox
-## (VAR_NAME, int,	LABEL_TEXT, MIN, MAX)				## SpinButton
-## (VAR_NAME, float,LABEL_TEXT, MIN, MAX, DIGITS)		## SpinButton
+## (VAR_NAME, bool,	    CHECKBUTTON_TEXT)					## CheckButton
+## (VAR_NAME, list,	    LABEL_TEXT, (ITEM1, ITEM2, ...))	## ComboBox
+## (VAR_NAME, int,	    LABEL_TEXT, MIN, MAX)				## SpinButton
+## (VAR_NAME, float,    LABEL_TEXT, MIN, MAX, DIGITS)		## SpinButton
 class ModuleOptionItem:
     def __init__(self, module, opt):
         t = opt[1]
@@ -198,6 +198,23 @@ class ModuleOptionItem:
         ####
         self.updateVar = lambda: setattr(self.module, self.var_name, self.get_value())
         self.updateWidget = lambda: self.set_value(getattr(self.module, self.var_name))
+        
+
+## ('button', LABEL, CLICKED_MODULE_NAME, CLICKED_FUNCTION_NAME)
+class ModuleOptionButton:
+    def __init__(self, opt):
+        funcName = opt[2]
+        clickedFunc = getattr(__import__('scal2.ui_gtk.%s'%opt[1], fromlist=[funcName]), funcName)
+        hbox = gtk.HBox()
+        button = gtk.Button(_(opt[0]))
+        button.connect('clicked', clickedFunc)
+        hbox.pack_start(button, 0, 0)
+        self.widget = hbox
+    def updateVar(self):
+        pass
+    def updateWidget(self):
+        pass
+        
 
 
 class PrefItem():
@@ -1003,7 +1020,14 @@ class PrefDialog(gtk.Dialog):
         options = []
         for mod in core.modules:
             for opt in mod.options:
-                optl = ModuleOptionItem(mod, opt)
+                if opt[0]=='button':
+                    try:
+                        optl = ModuleOptionButton(opt[1:])
+                    except:
+                        myRaise()
+                        continue
+                else:
+                    optl = ModuleOptionItem(mod, opt)
                 options.append(optl)
                 vbox.pack_start(optl.widget, 0, 0)
         self.moduleOptions = options
@@ -1364,6 +1388,8 @@ class PrefDialog(gtk.Dialog):
         self.hide()
         self.updatePrefGui()
         return True
+    getAllPrefItems = lambda self: self.moduleOptions + self.localePrefItems + self.corePrefItems +\
+                                   self.uiPrefItems + self.herePrefItems
     def apply(self, widget=None):
         global prevStock, nextStock
         ####### ?????????????????
@@ -1371,16 +1397,8 @@ class PrefDialog(gtk.Dialog):
         ui.fontDefault = gfontDecode(gtk.settings_get_default().get_property('gtk-font-name'))
         #print 'fontDefault =', ui.fontDefault
         ############################################## Updating pref variables
-        for opt in self.moduleOptions:
+        for opt in self.getAllPrefItems():
             opt.updateVar()
-        for item in self.localePrefItems:
-            item.updateVar()
-        for item in self.corePrefItems:
-            item.updateVar()
-        for item in self.uiPrefItems:
-            item.updateVar()
-        for item in self.herePrefItems:
-            item.updateVar()
         ###### DB Manager (Plugin Manager)
         index = []
         for row in self.plugTreestore:
@@ -1479,16 +1497,8 @@ class PrefDialog(gtk.Dialog):
             else:
                 d.destroy()
     def updatePrefGui(self):############### Updating Pref Gui (NOT MAIN GUI)
-        for opt in self.moduleOptions:
+        for opt in self.getAllPrefItems():
             opt.updateWidget()
-        for item in self.localePrefItems:
-            item.updateWidget()
-        for item in self.corePrefItems:
-            item.updateWidget()
-        for item in self.uiPrefItems:
-            item.updateWidget()
-        for item in self.herePrefItems:
-            item.updateWidget()
         ###############################
         if core.firstWeekDayAuto:
             self.comboFirstWD.set_active(7)
