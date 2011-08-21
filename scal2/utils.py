@@ -34,6 +34,15 @@ def cmpVersion(v0, v1):
         return 1
     return cmp([ int(p) for p in v0.split('.') ], [ int(p) for p in v1.split('.') ])
 
+def arange(start, stop, step, eps=0.000001):
+    l = []
+    x = start
+    stop -= eps
+    while x < stop:
+        l.append(x)
+        x += step
+    return l
+
 class FallbackLogger:
     def __init__(self):
         pass

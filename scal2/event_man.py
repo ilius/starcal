@@ -22,10 +22,10 @@ from os.path import join, split, isdir, isfile
 from os import listdir
 from paths import *
 
-
-#import numpy as np
-from numpy import arange
-
+try:
+    from numpy import arange
+except ImportError:
+    from scal2.utils import arange
 
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName
