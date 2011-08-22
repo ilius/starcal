@@ -245,7 +245,8 @@ class Cell:## status and information of a cell
     def format(self, binFmt, mode, tm=null):## FIXME
         (pyFmt, funcs) = binFmt
         return pyFmt%tuple(f(self, mode, tm) for f in funcs)
-
+    def inSameMonth(self, other):
+        return self.dates[core.primaryMode][:2] == other.dates[core.primaryMode][:2]
 
 class CellCache:
     def __init__(self):
@@ -480,6 +481,7 @@ borderTextColor	= (255, 255, 255, 255) ## text of weekDays and weekNumbers
 menuTextColor	= None##borderTextColor##???????????????
 holidayColor	= (255, 160, 0, 255)
 inactiveColor	= (255, 255, 255, 115)
+todayCellColor  = (0, 255, 0, 50)
 cursorFixed = False
 cursorOutColor	= (213, 207, 0, 255)
 cursorBgColor	= (41, 41, 41, 255)

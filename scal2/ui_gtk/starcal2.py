@@ -61,6 +61,7 @@ from gtk import gdk
 from scal2.ui_gtk.utils import hideList, showList, myUrlShow, set_tooltip, imageFromFile, setupMenuHideOnLeave, \
                                modify_bg_all
 from scal2.ui_gtk.color_utils import rgbToGdkColor
+from scal2.ui_gtk import listener
 import scal2.ui_gtk.customday
 import scal2.ui_gtk.export
 import scal2.ui_gtk.selectdate
@@ -1043,8 +1044,6 @@ class MainWin(gtk.Window):
         self.trayMode = trayMode
         self.customDayDialog = scal2.ui_gtk.customday.CustomDayDialog(self)
         ###########
-        self.lastGDate = None
-        #########
         ##self.connect('window-state-event', selfStateEvent)
         self.set_title('StarCalendar %s'%core.VERSION)
         #self.connect('main-show', lambda arg: self.present())
@@ -1241,8 +1240,9 @@ class MainWin(gtk.Window):
         self.menuMain = menu
         ############################################################
         self.trayInit()
-        if self.trayMode!=1:
-            timeout_add_seconds(self.timeout, self.trayUpdate)
+        listener.dateChange.add(self)
+        #if self.trayMode!=1:
+        #    timeout_add_seconds(self.timeout, self.trayUpdate)
         #########
         self.connect('delete-event', self.dialogClose)
         ######### Building menu of right click on a day
@@ -1573,70 +1573,68 @@ class MainWin(gtk.Window):
                 self.menuTray2.popup(None, None, gtk.status_icon_position_menu, button, etime, self.sicon)
             else:## taskbar is on top
                 self.menuTray1.popup(None, None, gtk.status_icon_position_menu, button, etime, self.sicon)
-    def trayUpdate(self, gdate=None, checkDate=True, checkTrayMode=True):
+    def onCurrentDateChange(self, gdate):
+        self.trayUpdate(gdate=gdate)
+    def trayUpdate(self, gdate=None, checkTrayMode=True):
         if checkTrayMode and self.trayMode!=2:
             return
-        #print 'trayUpdate', self.lastGDate, gdate
-        if gdate==None:
+        if gdate is None:
             gdate = localtime()[:3]
-        if self.lastGDate!=gdate or not checkDate:
-            if core.primaryMode==core.DATE_GREG:
-                ddate = gdate
-            else:
-                ddate = core.convert(gdate[0], gdate[1], gdate[2], core.DATE_GREG, core.primaryMode)
-            self.lastGDate = gdate
-            ui.todayCell = ui.cellCache.getTodayCell()
-            imagePath = ui.trayImageHoli if ui.todayCell.holiday else ui.trayImage
-            ######################################
-            '''
-            import Image, ImageDraw, ImageFont
-            im = Image.open(imagePath)
-            (w, h) = im.size
-            draw = ImageDraw.Draw(im)
-            text = numLocale(ddate[2]).decode('utf8')
-            font = ImageFont.truetype('/usr/share/fonts/TTF/DejaVuSans.ttf', 15)
-            (fw, fh) = font.getsize(text)
-            draw.text(
-                ((w-fw)/2, (h-fh)/2),
-                text,
-                font=font,
-                fill=ui.trayTextColor,
-            )
-            self.sicon.set_from_pixbuf(gdk.pixbuf_new_from_data(im.tostring(), gdk.COLORSPACE_RGB, True, 8, w, h, 4*w))
-            '''
-            pixbuf = gdk.pixbuf_new_from_file(imagePath)
-            ##pixbuf.scale() #????????????
-            ###################### PUTTING A TEXT ON A PIXBUF
-            pmap = pixbuf.render_pixmap_and_mask(alpha_threshold=127)[0] ## pixmap is also a drawable
-            textLay = newTextLayout(self, numLocale(ddate[2]), ui.trayFont)
-            (w, h) = textLay.get_pixel_size()
-            s = ui.traySize
-            if ui.trayY0 == None:
-                y = s/4+int((0.9*s-h)/2)
-            else:
-                y = ui.trayY0
-            pmap.draw_layout(pmap.new_gc(), (s-w)/2, y, textLay, gdk.Color(*ui.trayTextColor))## , foreground, background)
-            self.trayPix.get_from_drawable(pmap, self.get_screen().get_system_colormap(), 0, 0, 0, 0, s, s)
-            ######################################
-            self.sicon.set_from_pixbuf(self.trayPix)
-            ######################################
-            ##tt = core.weekDayName[core.getWeekDay(*ddate)]
-            tt = core.weekDayName[core.jwday(ui.todayCell.jd)]
-            #if ui.extradayTray:##?????????
-            #    sep = _(',')+' '
-            #else:
-            sep = '\n'
-            for item in ui.shownCals:
-                if item['enable']:
-                    mode = item['mode']
-                    module = core.modules[mode]
-                    (y, m, d) = ui.todayCell.dates[mode]
-                    tt += '%s%s %s %s'%(sep, numLocale(d), getMonthName(mode, m, y), numLocale(y))
-            if ui.extradayTray:
-                text = ui.todayCell.extraday
-                if text!='':
-                    tt += '\n\n%s'%text.replace('\t', '\n') #????????????
-            set_tooltip(self.sicon, tt)
+        if core.primaryMode==core.DATE_GREG:
+            ddate = gdate
+        else:
+            ddate = core.convert(gdate[0], gdate[1], gdate[2], core.DATE_GREG, core.primaryMode)
+        imagePath = ui.trayImageHoli if ui.todayCell.holiday else ui.trayImage
+        ######################################
+        '''
+        import Image, ImageDraw, ImageFont
+        im = Image.open(imagePath)
+        (w, h) = im.size
+        draw = ImageDraw.Draw(im)
+        text = numLocale(ddate[2]).decode('utf8')
+        font = ImageFont.truetype('/usr/share/fonts/TTF/DejaVuSans.ttf', 15)
+        (fw, fh) = font.getsize(text)
+        draw.text(
+            ((w-fw)/2, (h-fh)/2),
+            text,
+            font=font,
+            fill=ui.trayTextColor,
+        )
+        self.sicon.set_from_pixbuf(gdk.pixbuf_new_from_data(im.tostring(), gdk.COLORSPACE_RGB, True, 8, w, h, 4*w))
+        '''
+        pixbuf = gdk.pixbuf_new_from_file(imagePath)
+        ##pixbuf.scale() #????????????
+        ###################### PUTTING A TEXT ON A PIXBUF
+        pmap = pixbuf.render_pixmap_and_mask(alpha_threshold=127)[0] ## pixmap is also a drawable
+        textLay = newTextLayout(self, numLocale(ddate[2]), ui.trayFont)
+        (w, h) = textLay.get_pixel_size()
+        s = ui.traySize
+        if ui.trayY0 == None:
+            y = s/4+int((0.9*s-h)/2)
+        else:
+            y = ui.trayY0
+        pmap.draw_layout(pmap.new_gc(), (s-w)/2, y, textLay, gdk.Color(*ui.trayTextColor))## , foreground, background)
+        self.trayPix.get_from_drawable(pmap, self.get_screen().get_system_colormap(), 0, 0, 0, 0, s, s)
+        ######################################
+        self.sicon.set_from_pixbuf(self.trayPix)
+        ######################################
+        ##tt = core.weekDayName[core.getWeekDay(*ddate)]
+        tt = core.weekDayName[core.jwday(ui.todayCell.jd)]
+        #if ui.extradayTray:##?????????
+        #    sep = _(',')+' '
+        #else:
+        sep = '\n'
+        for item in ui.shownCals:
+            if item['enable']:
+                mode = item['mode']
+                module = core.modules[mode]
+                (y, m, d) = ui.todayCell.dates[mode]
+                tt += '%s%s %s %s'%(sep, numLocale(d), getMonthName(mode, m, y), numLocale(y))
+        if ui.extradayTray:
+            text = ui.todayCell.extraday
+            if text!='':
+                tt += '\n\n%s'%text.replace('\t', '\n') #????????????
+        set_tooltip(self.sicon, tt)
         return True
     def trayClicked(self, widget):
         if self.get_property('visible'):
@@ -1703,7 +1701,7 @@ class MainWin(gtk.Window):
         ui.cellCache.clear()
         for item in self.items:
             item.onConfigChange()
-        self.trayUpdate(checkDate=False)
+        self.trayUpdate()
         self.onDateChange()
 
 

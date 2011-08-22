@@ -11,7 +11,9 @@ getJdFromEpoch = lambda epoch: int(epoch//(24*3600) + J1970)
 
 getEpochFromJd = lambda jd: (jd-J1970)*(24*3600)
 
-def getJhmsFromEpoch(epoch):## return a tuple (julain_day, hour, minute, second) from epoch
+def getJhmsFromEpoch(epoch, local=False):## return a tuple (julain_day, hour, minute, second) from epoch
+    #if local:
+    #    epoch -= getCurrentTimeZone()
     (days, second) = divmod(epoch, 24*3600)
     (minute, second) = divmod(second, 60)
     (hour, minute) = divmod(minute, 60)
@@ -26,8 +28,10 @@ def getJdAndSecondsFromEpoch(epoch):## return a tuple (julain_day, extra_seconds
     (days, second) = divmod(epoch, 24*3600)
     return (days + J1970, hour, minute, second)
 
+getTimeZoneByEpoch = lambda epoch: (datetime.datetime.fromtimestamp(epoch) - datetime.datetime.utcfromtimestamp(epoch)).seconds
 
-def getTimeZoneByJd(jd):
-    epoch = getEpochFromJd(jd)
-    return (datetime.datetime.fromtimestamp(epoch) - datetime.datetime.utcfromtimestamp(epoch)).seconds
+getTimeZoneByJd = lambda jd: getTimeZoneByEpoch(getEpochFromJd(jd))
+
+getCurrentTimeZone = lambda: getTimeZoneByEpoch(time.time())
+#getCurrentTimeZone = lambda: -time.altzone if time.daylight and localtime().tm_isdst else -time.timezone
 
