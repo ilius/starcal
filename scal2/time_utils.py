@@ -26,7 +26,7 @@ getEpochFromJhms = lambda jd, hour, minute, second: getEpochFromJd(jd) + getSeco
 
 def getJdAndSecondsFromEpoch(epoch):## return a tuple (julain_day, extra_seconds) from epoch
     (days, second) = divmod(epoch, 24*3600)
-    return (days + J1970, hour, minute, second)
+    return (days + J1970, second)
 
 getTimeZoneByEpoch = lambda epoch: (datetime.datetime.fromtimestamp(epoch) - datetime.datetime.utcfromtimestamp(epoch)).seconds
 
