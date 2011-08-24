@@ -252,6 +252,7 @@ class EventEditorDialog(gtk.Dialog):
 class EventManagerDialog(gtk.Dialog):## FIXME
     def __init__(self, mainWin=None):## mainWin is needed? FIXME
         gtk.Dialog.__init__(self)
+        self.set_title(_('Event Manager'))
         self.resize(600, 300)
         self.connect('delete-event', self.onDeleteEvent)
         ###

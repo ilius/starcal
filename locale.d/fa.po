@@ -597,6 +597,10 @@ msgid "_Event Manager"
 msgstr ""
 "مدیریت _رویدادها"
 
+msgid "Event Manager"
+msgstr ""
+"مدیریت رویدادها"
+
 msgid "Day of Month"
 msgstr ""
 "روز در ماه"
