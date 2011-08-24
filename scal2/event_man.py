@@ -650,7 +650,7 @@ class Event(EventItemBase):
         self.summary = ''
         self.description = ''
         self.tags = []
-        self.showInTimeLine = False
+        self.showInTimeLine = False ## FIXME
         self.files = []
         self.color = None ## FIXME
         ######
@@ -877,40 +877,51 @@ class YearlyEvent(Event):
     name = 'yearly'
     desc = _('Yearly Event')
     requiredRules = ('month', 'day')
-    def getMonth(self):
-        return self.getRulesDict()['month'].month
+    getMonth = lambda self: self.getRulesDict()['month'].month
     def setMonth(self, month):
         self.getRulesDict()['month'].month = month
-    def getDay(self):
-        return self.getRulesDict()['day'].day
+    getDay = lambda self: self.getRulesDict()['day'].day
     def setDay(self, day):
         self.getRulesDict()['day'].day = day
-    def getIcon(self):
-        return self.icon
-    def setIcon(self, icon):
-        self.icon = icon
+    #getIcon = lambda self: self.icon ## FIXME
+    #def setIcon(self, icon): ## FIXME
+    #    self.icon = icon
     def setDefaults(self):
         (y, m, d) = core.getSysDate(self.mode)
         self.setMonth(m)
         self.setDay(d)
+    def calcOccurrenceForJdRange(self, startJd, endJd):
+        mode = self.mode
+        month = self.getMonth()
+        day = self.getDay()
+        startYear = jd_to(startJd, mode)[0]
+        endYear = jd_to(endJd, mode)[0]
+        jdList = []
+        for year in range(startYear, endYear+1):
+            jd = to_jd(year, month, day, mode)
+            if startJd <= jd < endJd:
+                jdList.append(jd)
+        return JdListOccurrence(jdList)
 
 
 class DailyNoteEvent(YearlyEvent):
     name = 'dailyNote'
     desc = _('Daily Note')
     requiredRules = ('year', 'month', 'day')
-    def getYear(self):
-        return self.getRulesDict()['year'].year
+    getYear = lambda self: self.getRulesDict()['year'].year
     def setYear(self, year):
         self.getRulesDict()['year'].year = year
     getDate = lambda self: (self.getYear(), self.getMonth(), self.getDay())
+    getJd = lambda self: to_jd(self.getYear(), self.getMonth(), self.getDay(), self.mode)
     def setDate(self, year, month, day):
         self.setYear(year)
         self.setMonth(month)
         self.setDay(day)
     def setDefaults(self):
         self.setDate(*core.getSysDate(self.mode))
-
+    def calcOccurrenceForJdRange(self, startJd, endJd):
+        jd = self.getJd()
+        return JdListOccurrence([jd] if startJd <= jd < endJd else [])
 
 class TaskEvent(DailyNoteEvent):
     ## Y/m/d H:M for H:M           ==> start, end
@@ -923,12 +934,21 @@ class TaskEvent(DailyNoteEvent):
     requiredRules = ('year', 'month', 'day', 'dayTime')
     def setTime(self, hour, minute, second):
         self.getRulesDict()['dayTime'].dayTime = (hour, minute, second)
-    def getTime(self):
-        return self.getRulesDict()['dayTime'].dayTime
+    getTime = lambda self: self.getRulesDict()['dayTime'].dayTime
+    #getEpoch = lambda self: getEpochFromJhms(self.getJd(), *self.getTime())
     def setDefaults(self):
         self.setDate(*core.getSysDate(self.mode))
         self.setTime(*tuple(time.localtime()[3:6]))
-
+    def calcOccurrenceForJdRange(self, startJd, endJd):
+        jd = self.getJd()
+        if startJd <= jd < endJd:
+            return TimeRangeListOccurrence(
+                [
+                    (getEpochFromJhms(jd, *self.getTime()), None)
+                ]
+            )
+        else:
+            return TimeRangeListOccurrence()
 
 class UniversityClassEvent(Event):## FIXME
     ## start, end, weekDay, weekNumberMode, dayTime --- notifierName='alarm' --- showInTimeLine

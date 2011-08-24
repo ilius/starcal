@@ -284,9 +284,10 @@ def calcTimeLineData(timeStart, timeWidth, width):
     ################################################
     boxes = []
     jd1 = int(ceil(jd1))
-    #print ui.events
     for event in ui.events:
         #print 'event %s'%event.summary
+        if not event.showInTimeLine:## FIXME
+            continue
         if not event:
             continue
         occur = event.calcOccurrenceForJdRange(jd0, jd1)
