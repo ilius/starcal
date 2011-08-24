@@ -32,7 +32,8 @@ from scal2.core import log, myRaise, numLocale, getMonthName, getMonthLen, getNe
 from scal2 import ui
 from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
 
-from scal2.ui_gtk.drawing import setColor, fillColor, newTextLayout
+from scal2.ui_gtk.drawing import *
+from scal2.ui_gtk import listener
 from scal2.ui_gtk import preferences
 from scal2.ui_gtk.customize import MainWinItem
 
@@ -99,6 +100,8 @@ class MonthCal(gtk.Widget, MainWinItem):
         self.connect('scroll-event', self.scroll)
         ######################
         self.updateTextWidth()
+        ######################
+        listener.dateChange.add(self)
     def do_realize(self):
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(
@@ -200,6 +203,12 @@ class MonthCal(gtk.Widget, MainWinItem):
                 cr.show_layout(lay)
         selectedCellPos = ui.cell.monthPos
         shown = self.shownCals
+        if ui.todayCell.inSameMonth(ui.cell):
+            (tx, ty) = ui.todayCell.monthPos ## today x and y
+            x0 = self.cx[tx] - self.dx/2.0
+            y0 = self.cy[ty] - self.dy/2.0
+            cr.rectangle(x0, y0, self.dx, self.dy)
+            fillColor(cr, ui.todayCellColor)
         for yPos in xrange(6):
             for xPos in xrange(7):
                 c = status[yPos][xPos]
@@ -665,6 +674,9 @@ class MonthCal(gtk.Widget, MainWinItem):
     def onConfigChange(self):
         self.shownCals = ui.shownCals
         self.updateTextWidth()
+    def onCurrentDateChange(self, gdate):
+        self.queue_draw()
+
 
 gobject.type_register(MonthCal)
 gobject.signal_new('date-change', MonthCal, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])

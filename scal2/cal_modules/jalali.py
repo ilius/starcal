@@ -22,7 +22,7 @@
 ##                    http://en.wikipedia.org/wiki/Iranian_calendar
 
 name = 'jalali'
-desc = 'Jalali(Iranian)'
+desc = 'Jalali'
 origLang = 'fa'
 
 monthNameMode = 0

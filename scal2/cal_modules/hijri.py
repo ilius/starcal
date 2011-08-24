@@ -46,70 +46,131 @@ hijriUseDB = True
 
 
 #('hijriAlg', list, 'Hijri Calculation Algorithm',
-#('Internal', 'ITL (idate command)', 'ITL (idate command) Umm_Alqura')),
+#   ('Internal', 'ITL (idate command)', 'ITL (idate command) Umm Alqura')),
 options = (
 ('hijriUseDB',bool,'Use (Iranian) database for Hijri months length'),
+('button', 'Tune Hijri Monthes', 'hijri', 'tuneHijriMonthes'),
 )
 
 
 minMonthLen = 29
 maxMonthLen = 30
 
-hijriDbInitH = (1426,2,1) ; hijriDbInitJD = 2453441 ## load from file
-hijriDbEndJD = hijriDbInitJD = 0 ## load from file
-hijriMonthLen = {} ## load and calc from file
-
 import os
+from os.path import join, isfile
 from scal2.paths import sysConfDir, confDir, modDir
 
 ## Here load user options (hijriUseDB) from file
 sysConfPath = '%s/%s.conf'%(sysConfDir, name)
-if os.path.isfile(sysConfPath):
+if isfile(sysConfPath):
     try:
-        exec(file(sysConfPath).read())
+        exec(open(sysConfPath).read())
     except:
         myRaise(__file__)
 
 confPath = '%s/%s.conf'%(confDir, name)
-if os.path.isfile(confPath):
+if isfile(confPath):
     try:
-        exec(file(confPath).read())
+        exec(open(confPath).read())
     except:
         myRaise(__file__)
 
 def save():## Here save user options (hijriUseDB) to file
-    file(confPath, 'w').write('hijriAlg=%s\nhijriUseDB=%s'%(hijriAlg, hijriUseDB))
+    open(confPath, 'w').write('hijriAlg=%s\nhijriUseDB=%s'%(hijriAlg, hijriUseDB))
 
 
-#if cal.hijriAlg>0:#???????????
-#    out = os.popen('idate').read()
-#    if out=='':
-#        print('''Command "idate" not found! (make sure to install package "itools")
-#Using default(internal) Hijri algorithm...''')
-#        cal.hijriAlg = 0
+class MonthDbHolder:
+    def __init__(self):
+        self.startDate = (1426, 2, 1) ## hijriDbInitH
+        self.startJd = 2453441 ## hijriDbInitJD
+        self.endJd = self.startJd ## hijriDbEndJD
+        self.monthLenByYm = {} ## hijriMonthLen
+        self.userDbPath = join(confDir, 'hijri.db')
+        self.sysDbPath = '%s/hijri.db'%modDir
+    def setMonthLenByYear(self, monthLenByYear):
+        self.endJd = self.startJd
+        self.monthLenByYm = {}
+        for y in monthLenByYear:
+            lst = monthLenByYear[y]
+            for m in xrange(len(lst)):
+                ml = lst[m]
+                if ml!=0:
+                    self.monthLenByYm[y*12+m] = ml
+                    self.endJd += ml
+    def load(self):
+        dbPath = self.userDbPath
+        if not isfile(dbPath):
+            dbPath = self.sysDbPath
+        if not isfile(dbPath):
+            return ## FIXME
+        monthLenByYear = {}
+        lines = open(dbPath).read().splitlines()
+        for line in lines[1:]:
+            if line!='' and not line.startswith('#'):
+                parts = [int(p) for p in line.split(' ')]
+                monthLenByYear[parts[0]] = parts[1:]
+        parts = [int(p) for p in lines[0].split(' ')]
+        self.startDate = parts[:3]
+        self.startJd = parts[3]
+        self.setMonthLenByYear(monthLenByYear)
+    #def setData(
+    def getMonthLenByYear(self):
+        monthLenByYear = {}
+        for ym, mLen in self.monthLenByYm.iteritems():
+            (year, month0) = divmod(ym, 12)
+            if not year in monthLenByYear:
+                monthLenByYear[year] = [None,] * month0
+            monthLenByYear[year].append(mLen)
+        return monthLenByYear
+    def save(self):
+        lines = []
+        lines.append('%d %d %d %d'%tuple(self.startDate + [self.startJd]))
+        for year, mLenList in self.getMonthLenByYear().iteritems():
+            lines.append(' '.join(['%.4d'%year]+['%.2d'%n if n else '00' for n in mLenList]))
+        open(self.userDbPath, 'w').write('\n'.join(lines))
+    def getMonthLenList(self):## returns a list of (index, ym, mLen)
+        ls = []
+        for index, ym in enumerate(sorted(self.monthLenByYm.keys())):
+            ls.append((index, ym, self.monthLenByYm[ym]))
+        return ls
+    def getDateFromJd(self, jd):
+        if not self.endJd >= jd >= self.startJd:
+            return
+        #(yi, mi, di) = self.startDate
+        #ymi = yi*12 + mi
+        (y, m, d) = self.startDate
+        ym = y*12 + m-1
+        while jd > self.startJd:
+            monthLen = self.monthLenByYm[ym]
+            if jd-monthLen > self.startJd:
+                ym += 1
+                jd -= monthLen
+            elif d+jd-self.startJd > monthLen:
+                ym += 1
+                d = d + jd - self.startJd - monthLen
+                jd = self.startJd
+            else:
+                d = d + jd - self.startJd
+                jd = self.startJd
+        (y, m) = divmod(ym, 12)
+        m += 1
+        return (y, m, d)
+    def getJdFromDate(self, year, month, day):
+        ym = year*12 + month-1
+        (y0, m0, d0) = monthDb.startDate
+        ym0 = y0*12 + m0-1
+        if not ym in monthDb.monthLenByYm:
+            return
+        jd = monthDb.startJd
+        for ymi in range(ym0, ym):
+            jd += monthDb.monthLenByYm[ymi]
+        return jd + day - 1
 
+monthDb = MonthDbHolder()
+monthDb.load()
+## monthDb.save()
 
-#global hijriDbInitH, hijriMonthLen, hijriDbEndJD, hijriDbInitJD
-dbPath = '%s/hijri.db'%modDir
-if os.path.isfile(dbPath):
-    hijriMonthLenY = {}
-    lines = file(dbPath).read().splitlines()
-    for line in lines[1:]:
-        if line!='' and not line.startswith('#'):
-            parts = [int(p) for p in line.split(' ')]
-            hijriMonthLenY[parts[0]] = parts[1:]
-    parts = [int(p) for p in lines[0].split(' ')]
-    hijriDbInitH = parts[:3]
-    hijriDbEndJD = hijriDbInitJD = parts[3]
-    for y in hijriMonthLenY.keys():
-        lst = hijriMonthLenY[y]
-        for m in xrange(len(lst)):
-            ml = lst[m]
-            if ml!=0:
-                hijriMonthLen[y*12+m] = ml
-                hijriDbEndJD += ml
-    ## hijriDbEndJD += 29 ## FIXME
-
+################################################################################
 
 is_leap = lambda year: (((year * 11) + 14) % 30) < 11
 
@@ -118,71 +179,23 @@ def to_jd_c(year, month, day):
         day + ceil(29.5 * (month - 1)) + \
         (year - 1) * 354               + \
         floor((3 + (11 * year)) / 30)  + \
-        epoch,
+        epoch
     )
 
 def to_jd(year, month, day):
-    #assert 1 <= month <= 12
-    #assert 1 <= day <= maxMonthLen
     if hijriUseDB:## and hijriAlg==0
-        ym = year*12 + month-1
-        (y0, m0, d0) = hijriDbInitH
-        ym0 = y0*12 + m0-1
-        if not ym in hijriMonthLen.keys():
-            return to_jd_c(year, month, day)
-        jd = hijriDbInitJD
-        for ymi in range(ym0, ym):
-            jd += hijriMonthLen[ymi]
-        return jd + day - 1
-    else:
-        return to_jd_c(year, month, day)
-
-
-"""def jd_to_hijri_idate(jd, umm_alqura=False):
-    import os, gregorian
-    (y, m, d) = gregorian.jd_to(jd)
-    fixed = str(y).zfill(4) + str(m).zfill(2) + str(d).zfill(2)
-    cmd = 'idate --gregorian %s'%fixed
-    if umm_alqura:
-        cmd += ' --umm_alqura'
-    output = os.popen(cmd).read()
-    (hd, hm, hy) = output.split('\n')[3].split(':')[1].split('/')
-    hy = hy.split(' ')[0]
-    return (ifloor(hy), ifloor(hm), ifloor(hd))"""
-
-## def hijri_to_jd_idate(jd, umm_alqura=False):
-
-
+        jd = monthDb.getJdFromDate(year, month, day)
+        if jd is not None:
+            return jd
+    return to_jd_c(year, month, day)
 
 def jd_to(jd):
-    assert type(jd)==int
-    #if hijriAlg==1:
-    #    return jd_to_hijri_idate(jd, umm_alqura=False)
-    #elif hijriAlg==2:
-    #    return jd_to_hijri_idate(jd, umm_alqura=True)
-    ## Now hijriAlg==0
+    ## hijriAlg==0
     if hijriUseDB:
         #jd = ifloor(jd)
-        if hijriDbEndJD >= jd >= hijriDbInitJD:
-            #(yi, mi, di) = hijriDbInitH
-            #ymi = yi*12 + mi
-            (y, m, d) = hijriDbInitH
-            ym = y*12 + m-1
-            while jd > hijriDbInitJD:
-                monthLen = hijriMonthLen[ym]
-                if jd-monthLen > hijriDbInitJD:
-                    ym += 1
-                    jd -= monthLen
-                elif d+jd-hijriDbInitJD > monthLen:
-                    ym += 1
-                    d = d + jd - hijriDbInitJD - monthLen
-                    jd = hijriDbInitJD
-                else:
-                    d = d + jd - hijriDbInitJD
-                    jd = hijriDbInitJD
-            (y, m) = divmod(ym, 12)
-            m += 1
-            return (y, m, d)
+        date = monthDb.getDateFromJd(jd)
+        if date:
+            return date
     ##jd = floor(jd) + 0.5
     year = ifloor(((30 * (jd - epoch)) + 10646) / 10631)
     month = int(min(12, ceil((jd - (29 + to_jd(year, 1, 1))) / 29.5) + 1))
@@ -194,7 +207,7 @@ def getMonthLen(y, m):
     """
     if hijriUseDB:## and hijriAlg==0
         try:
-            return hijriMonthLen[y*12+m]
+            return monthDb.monthLenByYm[y*12+m]
         except KeyError:
             pass
     """
@@ -205,7 +218,7 @@ def getMonthLen(y, m):
 
 
 if __name__=='__main__':
-    for ym in hijriMonthLen.keys():
+    for ym in monthDb.monthLenByYm:
         (y, m) = divmod(ym, 12)
         m += 1
         print to_jd(y, m, 1) - to_jd_c(y, m, 1)
