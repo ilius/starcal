@@ -956,8 +956,7 @@ class UniversityClassEvent(Event):## FIXME
     desc = _('University Class')
     requiredRules = ()
 
-## class UniversityTerm:## FIXME
-
+#class UniversityTerm:## FIXME
 
 
 

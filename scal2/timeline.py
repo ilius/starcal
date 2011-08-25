@@ -45,9 +45,9 @@ fgColor = (255, 255, 255)
 currenTimeMarkerColor = (255, 100, 100)
 
 boxRandomColorRange = (
-    (0, 50),
-    (0, 50),
-    (0, 50),
+    (50, 255),
+    (50, 255),
+    (50, 255),
     (255, 255),
 )
 
@@ -108,17 +108,18 @@ class Box:
         self.text = text
         ###
         self.color = color
-    def conflicts(self, other):
-        return self.t0 < other.t0 < self.t1 or self.t0 < other.t1 < self.t1
+    def conflicts(self, othr):
+        return self.t0 < othr.t0 < self.t1 or self.t0 < othr.t1 < self.t1 or \
+               othr.t0 < self.t0 < othr.t1 or othr.t0 < self.t1 < othr.t1
     getWidth = lambda self: self.t1 - self.t0
-    __cmp__ = lambda self, other: cmp(self.getWidth(), other.getWidth())
+    __cmp__ = lambda self, othr: cmp(self.getWidth(), othr.getWidth())
 
 class Range:
     def __init__(self, start, end):
         self.start = start
         self.end = end
-    __len__ = lambda self: self.end - self.start
-    __cmp__ = lambda self, other: cmp(len(self), len(other))
+    getWidth = lambda self: self.end - self.start
+    __cmp__ = lambda self, othr: cmp(self.getWidth(), othr.getWidth())
 
 
 def realRangeListsDiff(r1, r2):
@@ -283,20 +284,20 @@ def calcTimeLineData(timeStart, timeWidth, width):
             tickEpochList.append(tmEpoch)
     ################################################
     boxes = []
-    jd1 = int(ceil(jd1))
     for event in ui.events:
         #print 'event %s'%event.summary
-        if not event.showInTimeLine:## FIXME
-            continue
+        #if not event.showInTimeLine:## FIXME
+        #    continue
         if not event:
             continue
-        occur = event.calcOccurrenceForJdRange(jd0, jd1)
+        occur = event.calcOccurrenceForJdRange(jd0, jd1+1)
         if not occur:
             continue
         #if isinstance(occur, TimeListOccurrence):
         #    occur.epochList
         for (t0, t1) in occur.getTimeRangeList():
             if t0 <= timeStart and timeEnd <= t1:
+                #print 'full range', t0, t1, timeStart, timeEnd
                 continue
             tw = t1 - t0
             if tw < minEventBoxWidthSec:
@@ -305,20 +306,23 @@ def calcTimeLineData(timeStart, timeWidth, width):
                 t0 -= twd
             boxes.append(Box(t0, t1, 0, 1, event.summary, event.color))
     boxes.sort(reverse=True)
+    #print '%d boxes'%len(boxes)
     placedBoxes = []
     for box in boxes:
         conflictBoxes = []
         conflictRanges = []
         minConflictH = 1
         for box1 in placedBoxes:
-            if box1.conflict(box):
+            if box1.conflicts(box):
+                #print 'conflict'
                 conflictBoxes.append(box1)
                 conflictRanges.append((box1.y0, box1.y1))
                 minConflictH = min(minConflictH, box1.y1 - box1.y0)
+        placedBoxes.append(box)
         freeRanges = realRangeListsDiff([(0, 1)], conflictRanges)
         if freeRanges:
             bigestFree = max([Range(a, b) for (a, b) in freeRanges])
-            bigestFreeH = len(bigestFree)## biggest free range height
+            bigestFreeH = bigestFree.getWidth() ## biggest free range height
             if bigestFreeH==1 or bigestFreeH/(1.0-bigestFreeH) >= minConflictH:
                 box.y0 = bigestFree.start
                 box.y1 = bigestFree.end
