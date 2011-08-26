@@ -18,6 +18,22 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 import sys, traceback
+from math import floor, ceil
+
+ifloor = lambda x: int(floor(x))
+iceil = lambda x: int(ceil(x))
+
+try:
+    from numpy import arange
+except ImportError:
+    def arange(start, stop, step):
+        l = []
+        x = start
+        stop -= 0.000001
+        while x < stop:
+            l.append(x)
+            x += step
+        return l
 
 toStr = lambda s: s.encode('utf8') if isinstance(s, unicode) else str(s)
 toUnicode = lambda s: s if isinstance(s, unicode) else str(s).decode('utf8')
@@ -34,14 +50,6 @@ def cmpVersion(v0, v1):
         return 1
     return cmp([ int(p) for p in v0.split('.') ], [ int(p) for p in v1.split('.') ])
 
-def arange(start, stop, step, eps=0.000001):
-    l = []
-    x = start
-    stop -= eps
-    while x < stop:
-        l.append(x)
-        x += step
-    return l
 
 class FallbackLogger:
     def __init__(self):

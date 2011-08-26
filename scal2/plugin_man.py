@@ -238,7 +238,8 @@ class HolidayPlugin(BasePlugin):
                 icsText += 'END:VEVENT\n'
         icsText += 'END:VCALENDAR\n'
         open(fileName, 'w').write(icsText)
-
+    #def getJdList(self, startJd, endJd):
+        
 
 
 

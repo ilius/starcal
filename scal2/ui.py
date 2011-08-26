@@ -274,6 +274,11 @@ class CellCache:
             return self.jdCells[jd]
         else:
             return self.buildCell(jd)
+    def getTmpCell(self, jd):## don't keep, no customday, no plugin params
+        if self.jdCells.has_key(jd):
+            return self.jdCells[jd]
+        else:
+            return Cell(jd)
     getCellByDate = lambda self, year, month, day: self.getCell(core.to_jd(year, month, day, core.primaryMode))
     getTodayCell = lambda self: self.getCell(core.getCurrentJd())
     def getCellByDate(self, year, month, day):
@@ -334,6 +339,14 @@ def yearPlus(plus=1):
     cell = cellCache.getCellByDate(year, month, day)
 
 getFont = lambda: fontDefault if fontUseDefault else fontCustom
+
+def getHolidaysJdList(startJd, endJd):
+    jdList = []
+    for jd in range(startJd, endJd):
+        tmpCell = cellCache.getTmpCell(jd)
+        if tmpCell.holiday:
+            jdList.append(jd)
+    return jdList
 
 
 ######################################################################

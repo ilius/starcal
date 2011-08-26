@@ -715,6 +715,10 @@ msgid "Edit Event"
 msgstr ""
 "ویرایش رویداد"
 
+msgid "Time Line"
+msgstr ""
+"خط زمان"
+
 
 
 msgid "aboutText"

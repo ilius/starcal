@@ -22,8 +22,8 @@ import time
 
 from scal2 import core
 
-#from scal2.locale_man import tr as _
-#from scal2.locale_man import rtl, rtlSgn
+from scal2.locale_man import tr as _
+from scal2.locale_man import rtl
 
 from scal2.core import myRaise, getCurrentTimeZone
                        
@@ -101,13 +101,21 @@ class TimeLine(gtk.Widget):
     def onExposeEvent(self, widget=None, event=None):
         width = self.allocation.width
         height = self.allocation.height
+        pixelPerSec = float(self.allocation.width)/self.timeWidth ## pixel/second
+        dayPixel = 24*3600*pixelPerSec ## pixel
         maxTickHeight = maxTickHeightRatio*height
+        #####
         cr = self.window.cairo_create()
         cr.rectangle(0, 0, width, height)
         fillColor(cr, bgColor)
-        setColor(cr, fgColor)
-        ticks, boxes = calcTimeLineData(self.timeStart, self.timeWidth, width)
-        for tick in ticks:
+        data = calcTimeLineData(self.timeStart, self.timeWidth, width)
+        #####
+        setColor(cr, holidayBgBolor)
+        for x in data['holidays']:
+            cr.rectangle(x, 0, dayPixel, height)
+            cr.fill()
+        #####
+        for tick in data['ticks']:
             tickH = tick.height
             tickW = tick.width
             tickH = min(tickH, maxTickHeight)
@@ -116,7 +124,7 @@ class TimeLine(gtk.Widget):
             tickY = 1
             cr.rectangle(tickX, tickY, tickW, tickH)
             try:
-                cr.fill()
+                fillColor(cr, tick.color)
             except:
                 print 'error in fill, x=%.2f, y=%.2f, w=%.2f, h=%.2f'%(tickX, tickY, tickW, tickH)
             ###
@@ -136,20 +144,37 @@ class TimeLine(gtk.Widget):
                 except:
                     print 'error in move_to, x=%.2f, y=%.2f'%(layoutX, layoutY)
                 else:
-                    cr.show_layout(layout)
-        pixelPerSec = float(self.allocation.width)/self.timeWidth ## pixel/second
+                    cr.show_layout(layout)## with the same tick.color
         ######
         baforBoxH = maxTickHeight ## FIXME
         maxBoxH = height - baforBoxH
-        for box in boxes:
-            #print 'box', box
-            setColor(cr, box.color)
+        d = boxLineWidth
+        for box in data['boxes']:
             x = (box.t0-self.timeStart)*pixelPerSec
             w = (box.t1 - box.t0)*pixelPerSec
             y = baforBoxH + maxBoxH * box.y0
             h = maxBoxH * (box.y1 - box.y0)
+            ###
             cr.rectangle(x, y, w, h)
-            cr.fill()
+            fillColor(cr, (
+                box.color[0],
+                box.color[1],
+                box.color[2],
+                int(box.color[3]*boxInnerAlpha),
+            ))
+            ###
+            cr.move_to(x, y)
+            cr.line_to(x+w, y)
+            cr.line_to(x+w, y+h)
+            cr.line_to(x, y+h)
+            cr.line_to(x, y)
+            cr.line_to(x+d, y)
+            cr.line_to(x+d, y+h-d)
+            cr.line_to(x+w-d, y+h-d)
+            cr.line_to(x+w-d, y+d)
+            cr.line_to(x+d, y+d)
+            cr.close_path()
+            fillColor(cr, box.color)
         ######
         if self.timeStart <= self.currentTime <= self.timeStart + self.timeWidth:
             setColor(cr, currenTimeMarkerColor)
@@ -160,7 +185,7 @@ class TimeLine(gtk.Widget):
                 currentTimeMarkerHeightRatio * self.allocation.height
             )
             cr.fill()
-            
+        ######
         for button in self.buttons:
             button.draw(cr, width, height)
     def onScroll(self, widget, event):
@@ -205,6 +230,8 @@ class TimeLine(gtk.Widget):
             self.movingUserEvent(-1)
         elif k=='down':
             self.stopMovingAnim()
+        elif k=='q':
+            gtk.main_quit()## FIXME
         #elif k=='end':
         #    pass
         #elif k=='page_up':
@@ -279,6 +306,7 @@ class TimeLine(gtk.Widget):
 class TimeLineWindow(gtk.Window):
     def __init__(self, mainWin=None):
         gtk.Window.__init__(self)
+        self.set_title(_('Time Line'))
         self.set_decorated(False)
         self.connect('delete-event', self.closeClicked)
         self.connect('button-press-event', self.buttonPress)
@@ -301,6 +329,9 @@ gobject.type_register(TimeLine)
 setRandomColorsToEvents()
 
 if __name__=='__main__':
+    gtk.window_set_default_icon_from_file(ui.logo)
+    if rtl:
+        gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
     win = TimeLineWindow()
     win.resize(rootWindow.get_geometry()[2], 150)
     win.move(0, 0)

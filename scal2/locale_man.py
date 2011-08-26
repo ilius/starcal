@@ -147,7 +147,7 @@ def rtlSgn():
 
 getMonthName = lambda mode, month, year=None: tr(modules[mode].getMonthName(month, year))
 
-def numLocale(num, mode=None, fillZero=0):
+def numLocale(num, mode=None, fillZero=0, negEnd=False):
     if mode==None:
         mode = langSh
     elif isinstance(mode, int):
@@ -172,7 +172,10 @@ def numLocale(num, mode=None, fillZero=0):
     if fillZero>0:
         res = res.rjust(fillZero, dig[0])
     if neg:
-        res = '-'+res
+        if negEnd:
+            res = res + '-'
+        else:
+            res = '-' + res
     return res
 
 def dateLocale(year, month, day):

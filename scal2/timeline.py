@@ -22,10 +22,15 @@ import random
 
 from scal2 import core
 from scal2.locale_man import tr as _
-from scal2.core import myRaise, getMonthName, getJdFromEpoch, getEpochFromJd, jd_to, to_jd, getJhmsFromEpoch,\
-                       getEpochFromDate
+from scal2.locale_man import numLocale, rtl
 
+from scal2.core import myRaise, getMonthName, getJdFromEpoch, getFloatJdFromEpoch, getEpochFromJd, jd_to, to_jd, \
+                       getJhmsFromEpoch, getEpochFromDate, jwday
+
+from scal2.color_utils import hslToRgb
+from scal2.utils import iceil
 from scal2 import ui
+from scal2.ui import getHolidaysJdList
 
 #sunLightH = 10## FIXME
 majorStepMin = 50 ## with label
@@ -40,16 +45,26 @@ currentTimeMarkerWidth = 2
 fontFamily = ui.getFont()[0]
 baseFontSize = 8
 labelYRatio = 1.1
-bgColor = (50, 50, 50)
+bgColor = (40, 40, 40)
 fgColor = (255, 255, 255)
 currenTimeMarkerColor = (255, 100, 100)
 
-boxRandomColorRange = (
-    (50, 255),
-    (50, 255),
-    (50, 255),
-    (255, 255),
-)
+showWeekStart = True
+weekStartTickColor = (0, 200, 0)
+showWeekStartMinDays = 1
+showWeekStartMaxDays = 60
+
+changeHolidayBg = True
+holidayBgBolor = (60, 35, 35)
+changeHolidayBgMinDays = 1
+changeHolidayBgMaxDays = 60
+
+boxLineWidth = 2
+boxInnerAlpha = 0.1
+
+boxColorSaturation = 1.0
+boxColorLightness = 0.3 ## for random colors
+
 
 scrollZoomStep = 1.2
 
@@ -89,7 +104,7 @@ minEventBoxWidthSec = 1 ## seconds
 
 
 class Tick:
-    def __init__(self, epoch, pos, unitSize, label='', truncateLabel=False):
+    def __init__(self, epoch, pos, unitSize, label, color=None, truncateLabel=False):
         self.epoch = epoch
         self.pos = pos ## pixel position
         self.height = unitSize ** 0.5 * baseTickHeight
@@ -97,7 +112,12 @@ class Tick:
         self.fontSize = unitSize ** 0.1 * baseFontSize
         self.maxLabelWidth = min(unitSize*0.5, maxLabelWidth) ## FIXME
         self.label = label
+        if color is None:
+            color = fgColor
+        self.color = color
         self.truncateLabel = truncateLabel
+
+conflicts = lambda a0, a1, b0, b1: a0 < b0 < a1  or  a0 < b1 < a1  or  b0 < a0 < b1  or  b0 < a1 < b1
 
 class Box:
     def __init__(self, t0, t1, y0, y1, text, color):
@@ -106,20 +126,28 @@ class Box:
         self.y0 = y0
         self.y1 = y1
         self.text = text
-        ###
         self.color = color
-    def conflicts(self, othr):
-        return self.t0 < othr.t0 < self.t1 or self.t0 < othr.t1 < self.t1 or \
-               othr.t0 < self.t0 < othr.t1 or othr.t0 < self.t1 < othr.t1
+        self.tConflictBefore = []
+    tConflicts = lambda self, other: conflicts(self.t0, self.t1, other.t0, other.t1)
+    yConflicts = lambda self, other: conflicts(self.y0, self.y1, other.y0, other.y1)
     getWidth = lambda self: self.t1 - self.t0
-    __cmp__ = lambda self, othr: cmp(self.getWidth(), othr.getWidth())
+    getHeight = lambda self: self.y1 - self.y0
+    __cmp__ = lambda self, other: cmp(self.getWidth(), other.getWidth())
+
+
+def yResizeBox(box1, rat):
+    box1.y0 *= rat
+    box1.y1 *= rat
+    for box2 in box1.tConflictBefore:
+        if box1.yConflicts(box2):
+            yResizeBox(box2, rat)
 
 class Range:
     def __init__(self, start, end):
         self.start = start
         self.end = end
     getWidth = lambda self: self.end - self.start
-    __cmp__ = lambda self, othr: cmp(self.getWidth(), othr.getWidth())
+    __cmp__ = lambda self, other: cmp(self.getWidth(), other.getWidth())
 
 
 def realRangeListsDiff(r1, r2):
@@ -178,33 +206,49 @@ def getYearRangeTickValues(y0, y1, minStepYear):
     return data
 
 def setRandomColorsToEvents():
-    for event in ui.events:
-        event.color = tuple(random.uniform(ch[0], ch[1]) for ch in boxRandomColorRange)
+    events = ui.events[:]
+    random.shuffle(events)
+    dh = 360.0/len(events)
+    hue = 0
+    for event in events:
+        event.color = hslToRgb(hue, boxColorSaturation, boxColorLightness)
+        hue += dh
 
 def calcTimeLineData(timeStart, timeWidth, width):
     timeEnd = timeStart + timeWidth
-    pixelPerSec = float(width)/timeWidth ## pixel/second
-    minStep = minorStepMin/pixelPerSec ## second
-    ticks = []
-    tickEpochList = []
-    #################
     jd0 = getJdFromEpoch(timeStart)
     jd1 = getJdFromEpoch(timeEnd)
+    widthDays = timeWidth / (24.0*3600)
+    pixelPerSec = float(width)/timeWidth ## pixel/second
+    dayPixel = 24*3600*pixelPerSec ## pixel
+    getEPos = lambda epoch: (epoch-timeStart)*pixelPerSec
+    getJPos = lambda jd: (getEpochFromJd(jd)-timeStart)*pixelPerSec
+    ######################## Holidays
+    holidays = []
+    if changeHolidayBg and changeHolidayBgMinDays < widthDays < changeHolidayBgMaxDays:
+        for jd in getHolidaysJdList(jd0, jd1+1):
+            holidays.append(getJPos(jd))
+    ######################## Ticks
+    ticks = []
+    tickEpochList = []
+    minStep = minorStepMin/pixelPerSec ## second
+    #################
     (y0, m0, d0) = jd_to(jd0, core.primaryMode)
     (y1, m1, d1) = jd_to(jd1, core.primaryMode)
     ############ Year
-    minStepYear = int(minStep/minYearLenSec) ## year
-    yearPixel = minYearLenSec*pixelPerSec ## pixel
+    minStepYear = int(minStep/minYearLenSec) ## years
+    yearPixel = minYearLenSec*pixelPerSec ## pixels
     for (size, year) in getYearRangeTickValues(y0, y1+1, minStepYear):
         tmEpoch = getEpochFromDate(year, 1, 1, core.primaryMode)
         if tmEpoch in tickEpochList:
             continue
         unitSize = size*yearPixel
+        label = numLocale(year, negEnd=rtl) if unitSize >= majorStepMin else ''
         ticks.append(Tick(
             tmEpoch,
-            (tmEpoch-timeStart)*pixelPerSec,
+            getEPos(tmEpoch),
             unitSize,
-            _(year) if unitSize >= majorStepMin else '',
+            label,
         ))
         tickEpochList.append(tmEpoch)
     ############ Month
@@ -212,7 +256,6 @@ def calcTimeLineData(timeStart, timeWidth, width):
     ym1 = y1*12 + m1-1
     monthPixel = avgMonthLen*pixelPerSec ## pixel
     minMonthUnit = float(minStep)/avgMonthLen ## month
-    #print 'minMonthUnit =', minMonthUnit
     if minMonthUnit <= 3:
         for ym in range(ym0, ym1+1):
             if ym%3==0:
@@ -228,14 +271,32 @@ def calcTimeLineData(timeStart, timeWidth, width):
             unitSize = monthPixel*monthUnit
             ticks.append(Tick(
                 tmEpoch,
-                (tmEpoch-timeStart)*pixelPerSec,
+                getEPos(tmEpoch),
                 unitSize,
                 getMonthName(core.primaryMode, m) if unitSize >= majorStepMin else '',
             ))
             tickEpochList.append(tmEpoch)
+    ################
+    if showWeekStart and showWeekStartMinDays < widthDays < showWeekStartMaxDays:
+        wd0 = jwday(jd0)
+        jdw0 = jd0 + (core.firstWeekDay-wd0)%7
+        unitSize = dayPixel*7
+        if unitSize < majorStepMin:
+            label = ''
+        else:
+            label = core.weekDayNameAb[core.firstWeekDay]
+        for jd in range(jdw0, jd1+1, 7):
+            tmEpoch = getEpochFromJd(jd)
+            ticks.append(Tick(
+                tmEpoch,
+                getEPos(tmEpoch),
+                unitSize,
+                label,
+                color=weekStartTickColor,
+            ))
+            #tickEpochList.append(tmEpoch)
     ############ Day of Month
     hasMonthName = timeWidth < 5*24*3600
-    dayPixel = 24*3600*pixelPerSec ## pixel
     minDayUnit = float(minStep)/(24*3600) ## day
     if minDayUnit <= 15:
         for jd in range(jd0, jd1+1):
@@ -243,10 +304,10 @@ def calcTimeLineData(timeStart, timeWidth, width):
             if tmEpoch in tickEpochList:
                 continue
             (year, month, day) = jd_to(jd, core.primaryMode)
-            if day==15:
+            if day==16:
                 dayUnit = 15
-            #elif day in (5, 10, 20, 25):
-            #    dayUnit = 5
+            elif day in (6, 11, 21, 26):
+                dayUnit = 5
             else:
                 dayUnit = 1
             if dayUnit < minDayUnit:
@@ -260,7 +321,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
                 label = _(day)
             ticks.append(Tick(
                 tmEpoch,
-                (tmEpoch-timeStart)*pixelPerSec,
+                getEPos(tmEpoch),
                 unitSize,
                 label,
             ))
@@ -271,33 +332,37 @@ def calcTimeLineData(timeStart, timeWidth, width):
         if stepSec < minStep:
             break
         unitSize = stepSec*pixelPerSec
-        firstEpoch = int(ceil(timeStart/stepSec))*stepSec
-        for tmEpoch in range(firstEpoch, int(ceil(timeEnd)), stepSec):
+        firstEpoch = iceil(timeStart/stepSec)*stepSec
+        for tmEpoch in range(firstEpoch, iceil(timeEnd), stepSec):
             if tmEpoch in tickEpochList:
                 continue
             ticks.append(Tick(
                 tmEpoch,
-                (tmEpoch-timeStart)*pixelPerSec,
+                getEPos(tmEpoch),
                 unitSize,
                 formatEpochTime(tmEpoch) if unitSize >= majorStepMin else '',
             ))
             tickEpochList.append(tmEpoch)
-    ################################################
+    ######################## Event Boxes
     boxes = []
+    fjd0 = getFloatJdFromEpoch(timeStart) - 0.0001
+    fjd1 = getFloatJdFromEpoch(timeEnd) + 0.0001
     for event in ui.events:
         #print 'event %s'%event.summary
         #if not event.showInTimeLine:## FIXME
         #    continue
+        #event.timeLineIndex = -1 ## FIXME
         if not event:
             continue
-        occur = event.calcOccurrenceForJdRange(jd0, jd1+1)
+        occur = event.calcOccurrenceForJdRange(fjd0, fjd1)
         if not occur:
             continue
         #if isinstance(occur, TimeListOccurrence):
         #    occur.epochList
+        #if len(occur.getTimeRangeList())>1:
+        #    print event.eid, occur.getTimeRangeList()
         for (t0, t1) in occur.getTimeRangeList():
-            if t0 <= timeStart and timeEnd <= t1:
-                #print 'full range', t0, t1, timeStart, timeEnd
+            if t0 <= timeStart and timeEnd <= t1:## Fills Range ## FIXME
                 continue
             tw = t1 - t0
             if tw < minEventBoxWidthSec:
@@ -305,25 +370,23 @@ def calcTimeLineData(timeStart, timeWidth, width):
                 t1 += twd
                 t0 -= twd
             boxes.append(Box(t0, t1, 0, 1, event.summary, event.color))
-    boxes.sort(reverse=True)
-    #print '%d boxes'%len(boxes)
+    #boxes.sort(reverse=True) ## FIXME
     placedBoxes = []
     for box in boxes:
-        conflictBoxes = []
         conflictRanges = []
         minConflictH = 1
         for box1 in placedBoxes:
-            if box1.conflicts(box):
-                #print 'conflict'
-                conflictBoxes.append(box1)
+            if box1.tConflicts(box):
+                box.tConflictBefore.append(box1)
                 conflictRanges.append((box1.y0, box1.y1))
-                minConflictH = min(minConflictH, box1.y1 - box1.y0)
+                minConflictH = min(minConflictH, box1.getHeight())
         placedBoxes.append(box)
         freeRanges = realRangeListsDiff([(0, 1)], conflictRanges)
         if freeRanges:
             bigestFree = max([Range(a, b) for (a, b) in freeRanges])
             bigestFreeH = bigestFree.getWidth() ## biggest free range height
-            if bigestFreeH==1 or bigestFreeH/(1.0-bigestFreeH) >= minConflictH:
+            #if bigestFreeH==1 or bigestFreeH/(1.0-bigestFreeH) >= minConflictH:
+            if bigestFreeH >= minConflictH:
                 box.y0 = bigestFree.start
                 box.y1 = bigestFree.end
                 continue
@@ -331,24 +394,14 @@ def calcTimeLineData(timeStart, timeWidth, width):
         h = 1 - 1.0/(minConflictH+1)
         box.y0 = 1 - h
         box.y1 = 1
-        for box1 in conflictBoxes:
-            box1.y0 *= (1-h)
-            box1.y1 *= (1-h)
-    return ticks, boxes
-
-
-if __name__ == '__main__':
-    r1 = [
-        (0, 3),
-        (4, 6),
-        (8, 11)
-    ]
-    r2 = [
-        (1, 5),
-        (6, 7),
-        (10, 12),
-    ]
-    print realRangeListsDiff(r1, r2)
+        for box1 in box.tConflictBefore:## FIXME
+            if box.yConflicts(box1):
+                yResizeBox(box1, 1-h)                        
+    return {
+        'holidays': holidays,
+        'ticks': ticks,
+        'boxes': boxes,
+    }
 
 
 

@@ -280,6 +280,13 @@ def loadAllPlugins():
     ## Assert again that final plugins are OK
     validatePlugList()
 
+def getHolidayPlugins():
+    hPlugs = []
+    for i in plugIndex:
+        plug = allPlugList[i]
+        if hasattr(plug, 'holidays'):
+            hPlugs.append(plug)
+    return hPlugs
 
 def updatePlugins():
     for i in plugIndex:

@@ -8,6 +8,7 @@ from scal2.cal_modules.gregorian import J1970
 ## jd == epoch/(24*3600.0) + J1970
 ## epoch == (jd-J1970)*24*3600
 getJdFromEpoch = lambda epoch: int(epoch//(24*3600) + J1970)
+getFloatJdFromEpoch = lambda epoch: epoch/(24.0*3600) + J1970
 
 getEpochFromJd = lambda jd: (jd-J1970)*(24*3600)
 

@@ -22,10 +22,7 @@ from os.path import join, split, isdir, isfile
 from os import listdir
 from paths import *
 
-try:
-    from numpy import arange
-except ImportError:
-    from scal2.utils import arange
+from scal2.utils import arange, ifloor, iceil
 
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName
@@ -94,31 +91,31 @@ def makeCleanTimeRangeList(timeRangeList):
         else:
             i += 1
 
-def intersectionOfTwoTimeRangeList(timeRangeList1, timeRangeList2):
-    frontierList = []
-    for (start, end) in timeRangeList1:
-        frontierList += [start, end]
-    for (start, end) in timeRangeList2:
-        frontierList += [start, end]
-    frontierList.sort()
-    partsNum = len(frontierList)-1
+def intersectionOfTwoTimeRangeList(rList1, rList2):
+    #frontiers = []
+    frontiers = set()
+    for (start, end) in rList1 + rList2:
+        frontiers.add(start)
+        frontiers.add(end)
+    frontiers = sorted(frontiers)
+    partsNum = len(frontiers)-1
     partsContained = [[False, False] for i in range(partsNum)]
-    for (start, end) in timeRangeList1:
-        startIndex = frontierList.index(start)
-        endIndex = frontierList.index(end)
+    for (start, end) in rList1:
+        startIndex = frontiers.index(start)
+        endIndex = frontiers.index(end)
         for i in range(startIndex, endIndex):
             partsContained[i][0] = True
-    for (start, end) in timeRangeList2:
-        startIndex = frontierList.index(start)
-        endIndex = frontierList.index(end)
+    for (start, end) in rList2:
+        startIndex = frontiers.index(start)
+        endIndex = frontiers.index(end)
         for i in range(startIndex, endIndex):
             partsContained[i][1] = True
-    resultTimeRangeList = []
+    result = []
     for i in range(partsNum):
         if partsContained[i][0] and partsContained[i][1]:
-            resultTimeRangeList.append((frontierList[i], frontierList[i+1]))
-    #makeCleanTimeRangeList(resultTimeRangeList)## not need when both timeRangeList are clean!
-    return resultTimeRangeList
+            result.append((frontiers[i], frontiers[i+1]))
+    #makeCleanTimeRangeList(result)## not needed when both timeRangeList are clean!
+    return result
 
 
 class EventItemBase:
@@ -168,13 +165,13 @@ class JdListOccurrence(Occurrence):
 
 class TimeRangeListOccurrence(Occurrence):
     name = 'timeRange'
-    __repr__ = lambda self: 'TimeRangeListOccurrence(%r)'%self.epochRangeList
-    def __init__(self, epochRangeList=None):
+    __repr__ = lambda self: 'TimeRangeListOccurrence(%r)'%self.rangeList
+    def __init__(self, rangeList=None):
         Occurrence.__init__(self)
-        if not epochRangeList:
-            epochRangeList = []
-        self.epochRangeList = epochRangeList
-    __nonzero__ = lambda self: bool(self.epochRangeList)
+        if not rangeList:
+            rangeList = []
+        self.rangeList = rangeList
+    __nonzero__ = lambda self: bool(self.rangeList)
     def intersection(self, occur):
         if isinstance(occur, (JdListOccurrence, TimeRangeListOccurrence)):
             return TimeRangeListOccurrence(intersectionOfTwoTimeRangeList(self.getTimeRangeList(), occur.getTimeRangeList()))
@@ -184,21 +181,21 @@ class TimeRangeListOccurrence(Occurrence):
             raise TypeError('bad type %s (%r)'%(occur.__class__.__name__, occur))
     def getDaysJdList(self):
         jdList = []
-        for (startEpoch, endEpoch) in self.epochRangeList:
+        for (startEpoch, endEpoch) in self.rangeList:
             for jd in core.getJdListFromEpochRange(startEpoch, endEpoch):
                 if not jd in jdList:
                     jdList.append(jd)
         return jdList
-    getTimeRangeList = lambda self: self.epochRangeList
+    getTimeRangeList = lambda self: self.rangeList
     def containsMoment(self, epoch):
-        for (startEpoch, endEpoch) in self.epochRangeList:
+        for (startEpoch, endEpoch) in self.rangeList:
             if startEpoch <= epoch < endEpoch:
                 return True
         return False
     def getData(self):
-        return self.epochRangeList
-    def setData(self, epochRangeList):
-        self.epochRangeList = epochRangeList
+        return self.rangeList
+    def setData(self, rangeList):
+        self.rangeList = rangeList
 
 
 class TimeListOccurrence(Occurrence):
@@ -846,7 +843,7 @@ class Event(EventItemBase):
     getRulesDict = lambda self: dict([(rule.name, rule) for rule in self.rules])
     getNotifiersData = lambda self: [(notifier.name, notifier.getData()) for notifier in self.notifiers]
     getNotifiersDict = lambda self: dict(self.getNotifiersData())
-    def calcOccurrenceForJdRange(self, startJd, endJd):## cache Occurrences ## FIXME
+    def calcOccurrenceForJdRange(self, startJd, endJd):## float jd ## cache Occurrences ## FIXME
         if not self.rules:
             return []
         startEpoch = getEpochFromJd(startJd)
@@ -856,8 +853,15 @@ class Event(EventItemBase):
         if not hasattr(occur, 'intersection'):
             print self.rules[0].name, occur.__class__.__name__, occur #dir(occur)
             raise
+        #if self.eid==3:
+        #    print 'occur = %r\n\n'%occur
         for rule in self.rules[1:]:
+            #if self.eid==3:
+            #    print 'occur = %r'%occur
+            #    print 'occur intersection with %r'%rule.calcOccurrence(startEpoch, endEpoch, rulesDict)
             occur = occur.intersection(rule.calcOccurrence(startEpoch, endEpoch, rulesDict))
+        #if self.eid==3:
+        #    print 'final occur = %r\n\n'%occur
         occur.event = self
         return occur ## FIXME
     def notify(self, finishFunc):
@@ -890,12 +894,12 @@ class YearlyEvent(Event):
         (y, m, d) = core.getSysDate(self.mode)
         self.setMonth(m)
         self.setDay(d)
-    def calcOccurrenceForJdRange(self, startJd, endJd):
+    def calcOccurrenceForJdRange(self, startJd, endJd):## float jd
         mode = self.mode
         month = self.getMonth()
         day = self.getDay()
-        startYear = jd_to(startJd, mode)[0]
-        endYear = jd_to(endJd, mode)[0]
+        startYear = jd_to(ifloor(startJd), mode)[0]
+        endYear = jd_to(iceil(endJd), mode)[0]
         jdList = []
         for year in range(startYear, endYear+1):
             jd = to_jd(year, month, day, mode)
@@ -919,7 +923,7 @@ class DailyNoteEvent(YearlyEvent):
         self.setDay(day)
     def setDefaults(self):
         self.setDate(*core.getSysDate(self.mode))
-    def calcOccurrenceForJdRange(self, startJd, endJd):
+    def calcOccurrenceForJdRange(self, startJd, endJd):## float jd
         jd = self.getJd()
         return JdListOccurrence([jd] if startJd <= jd < endJd else [])
 
