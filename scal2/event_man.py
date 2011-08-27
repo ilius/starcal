@@ -745,7 +745,6 @@ class Event(EventItemBase):
         self.loadFiles()
     def getData(self):
         return {
-            #'id': self.eid,
             'enable': self.enable,
             'type': self.name,
             'calType': core.modules[self.mode].name,
@@ -759,6 +758,8 @@ class Event(EventItemBase):
     def setData(self, data):
         if 'id' in data:
             self.setEid(data['id'])
+        self.enable = data.get('enable', True)
+        ####
         calType = data['calType']
         for (i, module) in enumerate(core.modules):
             if module.name == calType:
@@ -766,25 +767,22 @@ class Event(EventItemBase):
                 break
         else:
             raise ValueError('Invalid calType: %r'%calType)
+        ####
         self.rules = []
         for (rule_name, rule_data) in data['rules']:
             rule = eventRulesClassDict[rule_name](self)
             rule.setData(rule_data)
             self.rules.append(rule)
+        ####
         self.notifiers = []
         for (notifier_name, notifier_data) in data['notifiers']:
             notifier = eventNotifiersClassDict[notifier_name](self)
             notifier.setData(notifier_data)
             self.notifiers.append(notifier)
-        try:
-            self.enable = data['enable']
-        except KeyError:
-            self.enable = True
-        for attr in ('icon', 'summary', 'description', 'tags'):
-            try:
-                setattr(self, attr, data[attr])
-            except KeyError:
-                setattr(self, attr, '')
+        ####
+        for attr in ('icon', 'summary', 'description'):
+            setattr(self, attr, data.get(attr, ''))
+        self.tags = data.get('tags', [])
     def saveConfig(self):
         if not isdir(self.eventDir):
             os.makedirs(self.eventDir)
@@ -960,9 +958,76 @@ class UniversityClassEvent(Event):## FIXME
     desc = _('University Class')
     requiredRules = ()
 
-#class UniversityTerm:## FIXME
+
+class EventGroup(EventItemBase):
+    name = 'group'
+    desc = _('Event Group')
+    #def __init__(self, defaultEventType):
+    #    self.defaultEventType = defaultEventType
+    def __init__(self, gid=None):
+        self.setGid(gid)
+        self.enable = True
+        self.title = 'Event Group'
+        self.icon = ''
+        self.defaultEventType = 'custom'
+        self.defaultMode = core.primaryMode
+
+    def setGid(self, gid=None):
+        if gid is None or gid<0:
+            gid = core.lastEventGroupId + 1 ## FIXME
+            core.lastEventGroupId = gid
+        elif gid > core.lastEventGroupId:
+            core.lastEventGroupId = gid
+        self.gid = gid
+        self.groupFile = join(eventGroupsDir, '%s.json'%self.gid)
+    def getData(self):
+        return {
+            'enable': self.enable,
+            'type': self.name,
+            'title': self.title,
+            'icon': self.icon,
+            'defaultEventType': self.defaultEventType,
+            'defaultCalType': core.modules[self.defaultMode].name,
+        }
+    def setData(self, data):
+        if 'id' in data:
+            self.setGid(data['id'])
+        ####
+        self.enable = data.get('enable', True)
+        self.title = data['title']
+        self.icon = data.get('icon', '')
+        ####
+        if 'defaultEventType' in data:
+            self.defaultEventType = data['defaultEventType']
+            if not self.defaultEventType in eventsClassDict:
+                raise ValueError('Invalid defaultEventType: %r'%self.defaultEventType)
+        else:
+            self.defaultEventType = 'custom' ## FIXME
+        ####
+        if 'defaultCalType' in data:
+            defaultCalType = data['defaultCalType']
+            for (i, module) in enumerate(core.modules):
+                if module.name == defaultCalType:
+                    self.defaultMode = i
+                    break
+            else:
+                raise ValueError('Invalid defaultCalType: %r'%defaultCalType)
+        else:
+            self.defaultMode = core.primaryMode
 
 
+
+class UniversityTerm(EventGroup):
+    name = 'universityTerm'
+    desc = _('University Term')
+
+class TaskList(EventGroup):
+    name = 'taskList'
+    desc = _('Task List')
+
+class NoteBook(EventGroup):
+    name = 'noteBook'
+    desx = _('Note Book')
 
 
 
