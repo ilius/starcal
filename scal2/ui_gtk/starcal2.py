@@ -442,6 +442,8 @@ class DateLabel(gtk.Label):
         gtk.Label.__init__(self, text)
         self.onPopupFunc = onPopupFunc
         self.set_selectable(True)
+        #self.set_cursor_visible(False)## FIXME
+        self.set_can_focus(False)
         self.set_use_markup(True)
         self.connect('populate-popup', self.popupPopulate)
         self.clipboard = gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD)
