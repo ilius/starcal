@@ -34,7 +34,7 @@ from scal2.locale_man import tr as _
 from scal2 import core
 from scal2.core import APP_NAME, myRaise, myRaiseTback, getMonthLen, getNextMonth, getPrevMonth
 
-#from scal2 import event_man
+from scal2 import event_man
 
 uiName = ''
 null = NullObj()
@@ -393,11 +393,25 @@ def loadCustomDB():
         customDB.append(item)
 
 
-def loadEvents():
-    from scal2 import event_man
-    global events, eventsById
-    events = event_man.loadEvents()
-    eventsById = dict([(e.eid, e) for e in events])
+def loadEventGroups():
+    global eventGroups
+    eventGroups = event_man.loadEventGroups()
+
+saveEventGroups = lambda: event_man.saveEventGroups(eventGroups)
+
+#def updateActiveEventIds():
+#    global activeEventIds
+#    activeEventIds = []
+#    for group in eventGroups:
+#        if group.enable:
+#            activeEventIds += group.eventIds
+
+def getActiveEventsGen():
+    for group in eventGroups:
+        if group.enable:
+            for eid in group.eventIds:
+                yield group.getEvent(eid)
+
 
 def deleteEvent(e):
     global events, eventsById
@@ -481,8 +495,9 @@ eventTagsDesc = dict([(t.name, t.desc) for t in eventTags])
 ###################
 customDB = []
 loadCustomDB()
-events = []
-eventsById = {}
+eventGroups = []
+#activeEventIds = []
+
 
 def updateEventTagsUsage():
     tagsDict = getEventTagsDict()

@@ -35,11 +35,10 @@ def makeDir(direc):
     if not isdir(direc):
         os.makedirs(direc)
 
-#eventsDir = join(confDir, 'events')
-eventGroupsDir = join(confDir, 'event_groups')
+eventsDir = join(confDir, 'events')
+eventGroupsFile = join(confDir, 'event_groups.json')
 
-#makeDir(eventsDir)
-makeDir(eventGroupsDir)
+makeDir(eventsDir)
 
 class BadEventFile(Exception):## FIXME
     pass
@@ -123,12 +122,15 @@ def intersectionOfTwoTimeRangeList(rList1, rList2):
     return result
 
 
+dataToJson = lambda data: json.dumps(data, sort_keys=True, indent=4)
+dataToCompactJson = lambda data: json.dumps(data, sort_keys=True, separators=(',', ':'))
+
 class EventItemBase:
     order = 0 ## an int or str or everything, just effect to visible order in GUI
     getData = lambda self: None
     setData = lambda self: None
-    getJson = lambda self: json.dumps(self.getData(), sort_keys=True, indent=4)
-    getCompactJson = lambda self: json.dumps(self.getData(), sort_keys=True, separators=(',', ':'))
+    getJson = lambda self: jsonToData(self.getData())
+    getCompactJson = lambda self: dataToCompactJson(self.getData())
     setJson = lambda self, jsonStr: self.setData(json.loads(jsonStr))
     
 class Occurrence(EventItemBase):
@@ -743,11 +745,11 @@ class Event(EventItemBase):
         elif eid > core.lastEventId:
             core.lastEventId = eid
         self.eid = eid
-        #self.eventDir = join(eventsDir, str(self.eid))## moved to group
-        #self.eventFile = join(self.eventDir, 'event.json')## moved to group
-        #self.occurrenceFile = join(self.eventDir, 'occurrence')## file or directory? ## FIXME
-        #self.filesDir = join(self.eventDir, 'files')
-        #self.loadFiles()
+        self.eventDir = join(eventsDir, str(self.eid))
+        self.eventFile = join(self.eventDir, 'event.json')
+        self.occurrenceFile = join(self.eventDir, 'occurrence')## file or directory? ## FIXME
+        self.filesDir = join(self.eventDir, 'files')
+        self.loadFiles()
     def getData(self):
         return {
             'enable': self.enable,
@@ -785,15 +787,21 @@ class Event(EventItemBase):
             notifier.setData(notifier_data)
             self.notifiers.append(notifier)
         ####
-        #if 'files' in data:
-        #    
-        ####
         for attr in ('icon', 'summary', 'description'):
             setattr(self, attr, data.get(attr, ''))
         self.tags = data.get('tags', [])
-    #def saveConfig(self):## moved to group
-    #def loadConfig(self):## moved to group
-    ## skipRules arg for use in ui_gtk/event_notify.py ## FIXME
+    def saveConfig(self):
+        if not isdir(self.eventDir):
+            os.makedirs(self.eventDir)
+        open(self.eventFile, 'w').write(self.getJson())
+    def loadConfig(self):## skipRules arg for use in ui_gtk/event_notify.py ## FIXME
+        if not isdir(self.eventDir):
+            raise IOError('error while loading event directory %r: no such directory'%self.eventDir)
+        if not isfile(self.eventFile):
+            raise IOError('error while loading event file %r: no such file'%self.eventFile)
+        jsonStr = open(self.eventFile).read()
+        if jsonStr:
+            self.setJson(jsonStr)## FIXME
     def addRule(self, rule):
         (ok, msg) = self.checkRulesDependencies(newRule=rule)
         if ok:
@@ -961,10 +969,8 @@ class UniversityClassEvent(Event):## FIXME
 class EventGroup(EventItemBase):
     name = 'group'
     desc = _('Event Group')
-    #def __init__(self, defaultEventType):
-    #    self.defaultEventType = defaultEventType
-    def __init__(self, gid=None):
-        self.setGid(gid)
+    acceptsEventTypes = None ## None means all event types
+    def __init__(self):
         self.enable = True
         self.title = 'Event Group'
         self.icon = ''
@@ -974,17 +980,6 @@ class EventGroup(EventItemBase):
         ##
         self.eventIds = []
         self.eventCache = {} ## from eid to event object
-    def setGid(self, gid=None):
-        if gid is None or gid<0:
-            gid = core.lastEventGroupId + 1 ## FIXME
-            core.lastEventGroupId = gid
-        elif gid > core.lastEventGroupId:
-            core.lastEventGroupId = gid
-        self.gid = gid
-        self.groupDir = join(eventGroupsDir, str(self.gid))
-        self.groupFile = join(self.groupDir, 'group.json')
-        self.eventsDir = join(self.groupDir, 'events')
-        ## self.groupFile = join(eventGroupsDir, '%s.json'%self.gid)## FIXME
     def getData(self):
         return {
             'enable': self.enable,
@@ -996,9 +991,6 @@ class EventGroup(EventItemBase):
             'eventCacheSize': self.eventCacheSize,
         }
     def setData(self, data):
-        if 'id' in data:
-            self.setGid(data['id'])
-        ####
         self.enable = data.get('enable', True)
         self.title = data['title']
         self.icon = data.get('icon', '')
@@ -1021,38 +1013,8 @@ class EventGroup(EventItemBase):
                 raise ValueError('Invalid defaultCalType: %r'%defaultCalType)
         else:
             self.defaultMode = core.primaryMode
-    def save(self):
-        makeDir(self.groupDir)
-        open(self.groupFile, 'w').write(self.getJson())
-    def load(self):
-        if not isdir(self.groupDir):
-            raise IOError('error while loading group directory %r: no such directory'%self.groupDir)
-        if not isfile(self.groupFile):
-            raise IOError('error while loading group file %r: no such file'%self.groupFile)
-        jsonStr = open(self.groupFile).read()
-        if jsonStr:
-            self.setJson(jsonStr)## FIXME
-        self.eventIds = []
-        if isdir(self.eventsDir):
-            for eid_s in listdir(self.eventsDir):
-                try:
-                    eid = int(eid_s)
-                except ValueError:
-                    myRaise()
-                    continue
-                self.eventIds.append(eid)
-        else:
-            os.makedirs(self.eventsDir)
-    getEventDir = lambda self, eid: join(self.eventsDir, str(eid))
-    getEventFile = lambda self, eid: join(self.eventsDir, str(eid), 'event.json')
-    def saveEvent(self, event):
-        eid = event.eid
-        assert eid in self.eventIds ## make sure this event is for me
-        makeDir(self.getEventDir(eid))
-        open(self.getEventFile(eid), 'w').write(event.getJson())
-        if eid in self.eventCache:
-            self.eventCache[eid] = event ## FIXME
-    def loadEvent(self, eid):
+    def getEvent(self, eid):
+        assert eid in self.eventIds
         if eid in self.eventCache:
             return self.eventCache[eid]
         eventFile = self.getEventFile(eid)
@@ -1065,22 +1027,34 @@ class EventGroup(EventItemBase):
         if len(self.eventCache) < self.eventCacheSize:
             self.eventCache[eid] = event
         return event
+    def deleteEvent(self, eid):
+        assert eid in self.eventIds
+        shutil.rmtree(join(eventsDir, str(eid)))
+        self.eventIds.remove(eid)
+        try:
+            del self.eventCache[eid]
+        except:
+            pass
+        
 
-class TrashEventGroup(EventGroup):
-    name = 'trash'
-    desc = _('Trash')
+#class TrashEventGroup(EventGroup):
+#    name = 'trash'
+#    desc = _('Trash')
 
 class UniversityTerm(EventGroup):
     name = 'universityTerm'
     desc = _('University Term')
+    acceptsEventTypes = ('universityClass',)
 
 class TaskList(EventGroup):
     name = 'taskList'
     desc = _('Task List')
+    acceptsEventTypes = ('task',)
 
 class NoteBook(EventGroup):
     name = 'noteBook'
-    desx = _('Note Book')
+    desc = _('Note Book')
+    acceptsEventTypes = ('dailyNote',)
 
 
 
@@ -1344,6 +1318,25 @@ class MonthOccurrenceView(OccurrenceView):
 ## def loadEvent(eid): ## moved to group
 ## def loadEvents(): ## moved to group
 
+def loadEventGroups():
+    groups = []
+    #eventIds = []
+    for groupDict in json.loads(open(eventGroupsFile).read()):
+        group = EventGroup()
+        group.setData(groupDict)
+        groups.append(group)
+        ## here check that non of group.eventIds are in eventIds ## FIXME
+        #eventIds += group.eventIds
+    ## here check for non-grouped event ids
+    return groups
+
+def saveEventGroups(groups):
+    data = []
+    for group in groups:
+        data.append(group.getData())
+    open(eventGroupsFile, 'w').write(dataToJson(data))
+
+
 ########################################################################
 
 eventsClassList = [Event, YearlyEvent, DailyNoteEvent, TaskEvent]## UniversityClassEvent
@@ -1372,6 +1365,14 @@ eventNotifiersClassList = [
 ]
 eventNotifiersClassDict = dict([(cls.name, cls) for cls in eventNotifiersClassList])
 
+eventGroupsClassList = [
+    EventGroup,
+    UniversityTerm,
+    TaskList,
+    NoteBook,
+]
+eventGroupsClassDict = dict([(cls.name, cls) for cls in eventGroupsClassList])
+
 
 #occurrenceViewClassList = [
 #    MonthOccurrenceView,
@@ -1387,9 +1388,6 @@ def testIntersection():
         [(0,1.5), (3,5), (7,9)],
         [(1,3.5), (4,7.5), (8,10)]
     ))
-
-def testEventDialog():
-    pass
 
 
 if __name__=='__main__':
