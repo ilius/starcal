@@ -31,10 +31,15 @@ from scal2.core import myRaise, getEpochFromJd
 
 from scal2 import ui
 
-eventsDir = join(confDir, 'events')
+def makeDir(direc):
+    if not isdir(direc):
+        os.makedirs(direc)
 
-if not isdir(eventsDir):
-    os.makedirs(eventsDir)
+#eventsDir = join(confDir, 'events')
+eventGroupsDir = join(confDir, 'event_groups')
+
+#makeDir(eventsDir)
+makeDir(eventGroupsDir)
 
 class BadEventFile(Exception):## FIXME
     pass
@@ -122,8 +127,8 @@ class EventItemBase:
     order = 0 ## an int or str or everything, just effect to visible order in GUI
     getData = lambda self: None
     setData = lambda self: None
+    getJson = lambda self: json.dumps(self.getData(), sort_keys=True, indent=4)
     getCompactJson = lambda self: json.dumps(self.getData(), sort_keys=True, separators=(',', ':'))
-    getPrettyJson = lambda self: json.dumps(self.getData(), sort_keys=True, indent=4)
     setJson = lambda self, jsonStr: self.setData(json.loads(jsonStr))
     
 class Occurrence(EventItemBase):
@@ -738,11 +743,11 @@ class Event(EventItemBase):
         elif eid > core.lastEventId:
             core.lastEventId = eid
         self.eid = eid
-        self.eventDir = join(eventsDir, str(self.eid))
-        self.eventFile = join(self.eventDir, 'event.json')
-        self.occurrenceFile = join(self.eventDir, 'occurrence')## file or directory? FIXME
-        self.filesDir = join(self.eventDir, 'files')
-        self.loadFiles()
+        #self.eventDir = join(eventsDir, str(self.eid))## moved to group
+        #self.eventFile = join(self.eventDir, 'event.json')## moved to group
+        #self.occurrenceFile = join(self.eventDir, 'occurrence')## file or directory? ## FIXME
+        #self.filesDir = join(self.eventDir, 'files')
+        #self.loadFiles()
     def getData(self):
         return {
             'enable': self.enable,
@@ -780,21 +785,15 @@ class Event(EventItemBase):
             notifier.setData(notifier_data)
             self.notifiers.append(notifier)
         ####
+        #if 'files' in data:
+        #    
+        ####
         for attr in ('icon', 'summary', 'description'):
             setattr(self, attr, data.get(attr, ''))
         self.tags = data.get('tags', [])
-    def saveConfig(self):
-        if not isdir(self.eventDir):
-            os.makedirs(self.eventDir)
-        open(self.eventFile, 'w').write(self.getPrettyJson())
-    def loadConfig(self):## skipRules arg for use in ui_gtk/event_notify.py ## FIXME
-        if not isdir(self.eventDir):
-            raise IOError('error while loading event directory %r: no such directory'%self.eventDir)
-        if not isfile(self.eventFile):
-            raise IOError('error while loading event file %r: no such file'%self.eventFile)
-        jsonStr = open(self.eventFile).read()
-        if jsonStr:
-            self.setJson(jsonStr)## FIXME
+    #def saveConfig(self):## moved to group
+    #def loadConfig(self):## moved to group
+    ## skipRules arg for use in ui_gtk/event_notify.py ## FIXME
     def addRule(self, rule):
         (ok, msg) = self.checkRulesDependencies(newRule=rule)
         if ok:
@@ -971,7 +970,10 @@ class EventGroup(EventItemBase):
         self.icon = ''
         self.defaultEventType = 'custom'
         self.defaultMode = core.primaryMode
-
+        self.eventCacheSize = 0
+        ##
+        self.eventIds = []
+        self.eventCache = {} ## from eid to event object
     def setGid(self, gid=None):
         if gid is None or gid<0:
             gid = core.lastEventGroupId + 1 ## FIXME
@@ -979,7 +981,10 @@ class EventGroup(EventItemBase):
         elif gid > core.lastEventGroupId:
             core.lastEventGroupId = gid
         self.gid = gid
-        self.groupFile = join(eventGroupsDir, '%s.json'%self.gid)
+        self.groupDir = join(eventGroupsDir, str(self.gid))
+        self.groupFile = join(self.groupDir, 'group.json')
+        self.eventsDir = join(self.groupDir, 'events')
+        ## self.groupFile = join(eventGroupsDir, '%s.json'%self.gid)## FIXME
     def getData(self):
         return {
             'enable': self.enable,
@@ -988,6 +993,7 @@ class EventGroup(EventItemBase):
             'icon': self.icon,
             'defaultEventType': self.defaultEventType,
             'defaultCalType': core.modules[self.defaultMode].name,
+            'eventCacheSize': self.eventCacheSize,
         }
     def setData(self, data):
         if 'id' in data:
@@ -996,6 +1002,7 @@ class EventGroup(EventItemBase):
         self.enable = data.get('enable', True)
         self.title = data['title']
         self.icon = data.get('icon', '')
+        self.eventCacheSize = data.get('eventCacheSize', 0)
         ####
         if 'defaultEventType' in data:
             self.defaultEventType = data['defaultEventType']
@@ -1014,8 +1021,54 @@ class EventGroup(EventItemBase):
                 raise ValueError('Invalid defaultCalType: %r'%defaultCalType)
         else:
             self.defaultMode = core.primaryMode
+    def save(self):
+        makeDir(self.groupDir)
+        open(self.groupFile, 'w').write(self.getJson())
+    def load(self):
+        if not isdir(self.groupDir):
+            raise IOError('error while loading group directory %r: no such directory'%self.groupDir)
+        if not isfile(self.groupFile):
+            raise IOError('error while loading group file %r: no such file'%self.groupFile)
+        jsonStr = open(self.groupFile).read()
+        if jsonStr:
+            self.setJson(jsonStr)## FIXME
+        self.eventIds = []
+        if isdir(self.eventsDir):
+            for eid_s in listdir(self.eventsDir):
+                try:
+                    eid = int(eid_s)
+                except ValueError:
+                    myRaise()
+                    continue
+                self.eventIds.append(eid)
+        else:
+            os.makedirs(self.eventsDir)
+    getEventDir = lambda self, eid: join(self.eventsDir, str(eid))
+    getEventFile = lambda self, eid: join(self.eventsDir, str(eid), 'event.json')
+    def saveEvent(self, event):
+        eid = event.eid
+        assert eid in self.eventIds ## make sure this event is for me
+        makeDir(self.getEventDir(eid))
+        open(self.getEventFile(eid), 'w').write(event.getJson())
+        if eid in self.eventCache:
+            self.eventCache[eid] = event ## FIXME
+    def loadEvent(self, eid):
+        if eid in self.eventCache:
+            return self.eventCache[eid]
+        eventFile = self.getEventFile(eid)
+        if not isfile(eventFile):
+            raise IOError('error while loading event file %r: no such file'%eventFile)
+        data = json.loads(open(eventFile).read())
+        data['eid'] = eid ## FIXME
+        event = eventsClassDict[data['type']](eid)
+        event.setData(data)
+        if len(self.eventCache) < self.eventCacheSize:
+            self.eventCache[eid] = event
+        return event
 
-
+class TrashEventGroup(EventGroup):
+    name = 'trash'
+    desc = _('Trash')
 
 class UniversityTerm(EventGroup):
     name = 'universityTerm'
@@ -1288,28 +1341,8 @@ class MonthOccurrenceView(OccurrenceView):
                 raise TypeError
 
 
-def loadEvent(eid):
-    eventFile = join(eventsDir, str(eid), 'event.json')
-    if not isfile(eventFile):
-        raise IOError('error while loading event file %r: no such file'%eventFile)
-    data = json.loads(open(eventFile).read())
-    data['eid'] = eid ## FIXME
-    event = eventsClassDict[data['type']](eid)
-    event.setData(data)
-    return event
-
-
-def loadEvents():
-    events = []
-    #print 'listdir', listdir(eventsDir)
-    for eid_s in listdir(eventsDir):
-        try:
-            eid = int(eid_s)
-        except ValueError:
-            myRaise()
-            continue
-        events.append(loadEvent(eid))
-    return events
+## def loadEvent(eid): ## moved to group
+## def loadEvents(): ## moved to group
 
 ########################################################################
 
