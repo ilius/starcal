@@ -208,10 +208,11 @@ class AdjusterDialog(gtk.Dialog):
                 else:
                     error_exit('No change!', self)#??????????
         elif self.radioNtp.get_active():
-            if os.path.isfile('/usr/sbin/ntpdate'):
-                cmd = ['/usr/sbin/ntpdate', self.ntpServerEntry.get_text()]
-            else:
-                error_exit('Could not find command /usr/sbin/ntpdate: no such file!', self)#??????????
+            cmd = ['ntpdate', self.ntpServerEntry.get_text()]
+            #if os.path.isfile('/usr/sbin/ntpdate'):
+            #    cmd = ['/usr/sbin/ntpdate', self.ntpServerEntry.get_text()]
+            #else:
+            #    error_exit('Could not find command /usr/sbin/ntpdate: no such file!', self)#??????????
         else:
             error_exit('Not valid option!', self)
         (inp, out, err) = os.popen3(cmd)
