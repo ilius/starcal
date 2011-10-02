@@ -38,7 +38,7 @@ except NameError:
     __file__ = join(dirname(inspect.getfile(scal2)), 'core.py')
 
 
-VERSION = '1.9.3'
+VERSION = '1.9.4'
 APP_NAME = 'starcal2'
 COMMAND = 'starcal2'
 
