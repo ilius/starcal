@@ -73,7 +73,6 @@ def pixbufFromFile(path):## the file may not exist
         myRaise()
         return None
 
-
 def setupMenuHideOnLeave(menu):
     def menuLeaveNotify(m, e):
         t0 = time()

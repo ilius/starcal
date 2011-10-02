@@ -17,6 +17,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 from os.path import join
+from math import pi
 
 from scal2.paths import *
 
@@ -90,6 +91,34 @@ def newLimitedWidthTextLayout(widget, text, width, font=None, truncate=True):
                 #print layoutW, width
             #print
     return layout
+
+def pixbufSqFromColor(color, size, roundR=0):## a rounded square with specified color
+    pmap = gdk.Pixmap(None, size, size, depth=24)
+    cr = pmap.cairo_create()
+    ###
+    #cr.rectangle(0, 0, size, size)
+    #fillColor(cr, (255, 255, 255, 0))
+    ###
+    cr.move_to(roundR, 0)
+    cr.line_to(size-roundR, 0)
+    cr.arc(size-roundR, roundR, roundR, 3*pi/2, 2*pi) ## up right corner
+    cr.line_to(size, size-roundR)
+    cr.arc(size-roundR, size-roundR, roundR, 0, pi/2) ## down right corner
+    cr.line_to(roundR, size)
+    cr.arc(roundR, size-roundR, roundR, pi/2, pi) ## down left corner
+    cr.line_to(0, roundR)
+    cr.arc(roundR, roundR, roundR, pi, 3*pi/2) ## up left corner
+    ###
+    cr.close_path()
+    fillColor(cr, color)
+    ####
+    pbuf = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, size, size)
+    colormap = gtk.gdk.colormap_get_system()
+    #colormap = self.get_screen().get_system_colormap()
+    #colormap = pmap.get_colormap()
+    pbuf.get_from_drawable(pmap, colormap, 0, 0, 0, 0, size, size)
+    return pbuf
+    #return gdk.Pixbuf.get_from_drawable(pmap, gdk.COLORSPACE_RGB, 0, 0, 0, 0, size, size)
 
 class Button:
     def __init__(self, imageName, func, x, y, autoDir=True):

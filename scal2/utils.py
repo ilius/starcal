@@ -19,6 +19,7 @@
 
 import sys, traceback
 from math import floor, ceil
+from collections import Iterator
 
 ifloor = lambda x: int(floor(x))
 iceil = lambda x: int(ceil(x))
@@ -173,4 +174,9 @@ class NullObj:## a fully transparent object
     __repr__ = lambda self: ''
     __int__ = lambda self: 0
 
+
+class IteratorFromGen(Iterator):
+    def __init__(self, gen):
+        self.gen = gen
+    next = lambda self: self.gen.next()
 

@@ -7,7 +7,7 @@ from scal2 import event_man
 import gtk
 from gtk import gdk
 
-from scal2.ui_gtk.event_extenders import common
+from scal2.ui_gtk.event import common
 
 
 class EventWidget(common.EventWidget):

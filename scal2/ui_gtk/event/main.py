@@ -30,6 +30,7 @@ from scal2 import event_man
 
 from scal2 import ui
 from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile
+from scal2.ui_gtk.drawing import pixbufSqFromColor
 #from scal2.ui_gtk.mywidgets.multi_spin_box import DateBox, TimeBox
 
 from xml.dom.minidom import getDOMImplementation, parse
@@ -61,6 +62,7 @@ def comboToggleActivate(combo, *args):
 
 
 class DayOccurrenceView(event_man.DayOccurrenceView, gtk.VBox):
+    updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
     def __init__(self, populatePopupFunc=None):
         event_man.DayOccurrenceView.__init__(self, ui.cell.jd)
         gtk.VBox.__init__(self)
@@ -90,6 +92,7 @@ class DayOccurrenceView(event_man.DayOccurrenceView, gtk.VBox):
 
 
 class WeekOccurrenceView(event_man.WeekOccurrenceView, gtk.TreeView):
+    updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
     def __init__(self, abrivateWeekDays=False):
         self.abrivateWeekDays = abrivateWeekDays
         event_man.WeekOccurrenceView.__init__(self, ui.cell.jd)
@@ -133,6 +136,7 @@ class WeekOccurrenceView(event_man.WeekOccurrenceView, gtk.TreeView):
         
 
 class MonthOccurrenceView(event_man.MonthOccurrenceView, gtk.TreeView):
+    updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
     def __init__(self):
         event_man.MonthOccurrenceView.__init__(self, ui.cell.jd)
         gtk.TreeView.__init__(self)
@@ -263,21 +267,30 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         swin.add(self.treeview)
         swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         treeBox.pack_start(swin, 1, 1)
-        self.vbox.pack_start(vpan)
+        self.vbox.pack_start(treeBox)
         #####
-        self.treestore = gtk.ListStore(int, gdk.Pixbuf, str, str)## eid, icon, summary, description
+        self.treestore = gtk.ListStore(int, int, gdk.Pixbuf, str, str)## event_id, group_enable, icon, summary, description
         self.treeview.set_model(self.treestore)
         ###      
-        col = gtk.TreeViewColumn('', gtk.CellRendererPixbuf(), pixbuf=1)
+        cell = gtk.CellRendererToggle()
+        #cell.set_property('activatable', True)
+        cell.connect('toggled', self.groupCellToggled)
+        col = gtk.TreeViewColumn(_('Enable'), cell)
+        col.add_attribute(cell, 'active', 1)
+        #cell.set_active(False)
         col.set_resizable(True)
         self.treeview.append_column(col)
         ###
-        col = gtk.TreeViewColumn(_('Summary'), gtk.CellRendererText(), text=2)
+        col = gtk.TreeViewColumn('', gtk.CellRendererPixbuf(), pixbuf=2)
+        col.set_resizable(True)
+        self.treeview.append_column(col)
+        ###
+        col = gtk.TreeViewColumn(_('Summary'), gtk.CellRendererText(), text=3)
         col.set_resizable(True)
         self.treeview.append_column(col)
         self.treeview.set_search_column(1)
         ###
-        col = gtk.TreeViewColumn(_('Description'), gtk.CellRendererText(), text=3)
+        col = gtk.TreeViewColumn(_('Description'), gtk.CellRendererText(), text=4)
         self.treeview.append_column(col)
         #self.treeview.set_search_column(2)
         ###
@@ -285,6 +298,65 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         #####
         self.vbox.show_all()
         self.reloadEvents()
+    def reloadEvents(self):
+        self.treestore.clear()
+        for group in ui.eventGroups:
+            groupNode = self.treestore.append((
+                -1,
+                group.enable,
+                pixbufSqFromColor(group.color, 20, 0),
+                group.title,
+                '',
+            ))
+            for event in group.iterEvents():
+                eventNode = self.treestore.append(groupNode)
+                self.treestore.set(eventNode,
+                    0, event.eid,
+                    2, pixbufFromFile(event.icon),
+                    3, event.summary,
+                    4, event.description,
+                )
+                #self.treestore.append((
+                #    event.eid,
+                #    None,## group_enable FIXME
+                #    pixbufFromFile(event.icon),
+                #    event.summary,
+                #    event.description,
+                #))
+        self.treeviewCursorChanged()
+    def onDeleteEvent(self, obj, event):
+        self.hide()
+        return True
+    def getSelectedObj(self):
+        cur = self.treeview.get_cursor()
+        return cur
+    def groupCellToggled(self, cell, path):
+        print 'groupCellToggled', path
+        #i = int(path)
+        ##cur = self.plugTreeview.get_cursor()[0]
+        ##if cur==None or i!=cur[0]:#?????????
+        ##    return
+        #active = not cell.get_active()
+        #self.treestore[i][1] = active
+        #cell.set_active(active)
+    def treeviewCursorChanged(self, treev=None):
+        print 'treeviewCursorChanged', self.getSelectedObj()
+    def addEvent(self, eventType):## FIXME
+        if eventType:
+            title = _('Add') + ' ' + event_man.eventsClassDict[eventType].desc
+        else:
+            title = _('Add') + ' ' + _('Event')
+        event = EventEditorDialog(eventType=eventType, title=title).run()
+        #print 'event =', event
+        if event is not None:
+            ui.addEvent(event)
+            self.reloadEvents()## perfomance FIXME
+    def addCustomEvent(self, obj=None):
+        self.addEvent('')
+    def addYearlyEvent(self, obj=None):
+        self.addEvent('yearly')
+    def addDailyNote(self, obj=None):
+        self.addEvent('dailyNote')
 
 
 
@@ -466,7 +538,7 @@ if rtl:
     gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
 
 
-modPrefix = 'scal2.ui_gtk.event_extenders.'
+modPrefix = 'scal2.ui_gtk.event.'
 
 for cls in event_man.eventsClassList:
     try:
@@ -499,7 +571,7 @@ event_man.EventRule.makeWidget = makeWidget
 event_man.EventNotifier.makeWidget = makeWidget
 
 
-ui.loadEvents()
+ui.loadEventGroups()
 
 def testCustomEventEditor():
     from pprint import pprint, pformat

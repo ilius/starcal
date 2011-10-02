@@ -52,6 +52,7 @@ class LangData:
         #self.fileName = fileName## FIXME
         transPath = ''
         path = join(rootDir, 'locale.d', fileName+'.mo')
+        #print 'path=%s'%path
         if isfile(path):
             transPath = path
         else:

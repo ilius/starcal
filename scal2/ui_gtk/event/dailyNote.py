@@ -8,7 +8,7 @@ from scal2 import event_man
 
 from scal2 import ui
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
-from scal2.ui_gtk.event_extenders import common
+from scal2.ui_gtk.event import common
 
 import gtk
 from gtk import gdk

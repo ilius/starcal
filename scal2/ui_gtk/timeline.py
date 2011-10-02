@@ -32,7 +32,7 @@ from scal2.timeline import *
 
 from scal2.ui_gtk.drawing import setColor, fillColor, newLimitedWidthTextLayout, Button
 #from scal2.ui_gtk import preferences
-import scal2.ui_gtk.events_gtk
+import scal2.ui_gtk.event.main
 
 import gobject
 from gobject import timeout_add
@@ -326,7 +326,6 @@ class TimeLineWindow(gtk.Window):
         return False
 
 gobject.type_register(TimeLine)
-setRandomColorsToEvents()
 
 if __name__=='__main__':
     gtk.window_set_default_icon_from_file(ui.logo)

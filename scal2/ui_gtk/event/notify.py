@@ -9,7 +9,7 @@ if len(sys.argv)>2:
 
 from scal2 import core, event_man
 import gtk
-import scal2.ui_gtk.events_gtk
+import scal2.ui_gtk.event.main
 
 event = event_man.Event(eid)
 event.loadConfig()

@@ -18,7 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 from math import ceil, sqrt
-import random
+#import random
 
 from scal2 import core
 from scal2.locale_man import tr as _
@@ -62,8 +62,8 @@ changeHolidayBgMaxDays = 60
 boxLineWidth = 2
 boxInnerAlpha = 0.1
 
-boxColorSaturation = 1.0
-boxColorLightness = 0.3 ## for random colors
+#boxColorSaturation = 1.0
+#boxColorLightness = 0.3 ## for random colors
 
 
 scrollZoomStep = 1.2
@@ -205,14 +205,14 @@ def getYearRangeTickValues(y0, y1, minStepYear):
                 break
     return data
 
-def setRandomColorsToEvents():
-    events = ui.events[:]
-    random.shuffle(events)
-    dh = 360.0/len(events)
-    hue = 0
-    for event in events:
-        event.color = hslToRgb(hue, boxColorSaturation, boxColorLightness)
-        hue += dh
+#def setRandomColorsToEvents():
+#    events = ui.events[:]
+#    random.shuffle(events)
+#    dh = 360.0/len(events)
+#    hue = 0
+#    for event in events:
+#        event.color = hslToRgb(hue, boxColorSaturation, boxColorLightness)
+#        hue += dh
 
 def calcTimeLineData(timeStart, timeWidth, width):
     timeEnd = timeStart + timeWidth
@@ -347,29 +347,32 @@ def calcTimeLineData(timeStart, timeWidth, width):
     boxes = []
     fjd0 = getFloatJdFromEpoch(timeStart) - 0.0001
     fjd1 = getFloatJdFromEpoch(timeEnd) + 0.0001
-    for event in ui.events:
-        #print 'event %s'%event.summary
-        #if not event.showInTimeLine:## FIXME
-        #    continue
-        #event.timeLineIndex = -1 ## FIXME
-        if not event:
+    for group in ui.eventGroups:
+        if not group.enable:
             continue
-        occur = event.calcOccurrenceForJdRange(fjd0, fjd1)
-        if not occur:
-            continue
-        #if isinstance(occur, TimeListOccurrence):
-        #    occur.epochList
-        #if len(occur.getTimeRangeList())>1:
-        #    print event.eid, occur.getTimeRangeList()
-        for (t0, t1) in occur.getTimeRangeList():
-            if t0 <= timeStart and timeEnd <= t1:## Fills Range ## FIXME
+        for event in group.iterEvents():
+            #print 'event %s'%event.summary
+            #if not event.showInTimeLine:## FIXME
+            #    continue
+            #event.timeLineIndex = -1 ## FIXME
+            if not event:
                 continue
-            tw = t1 - t0
-            if tw < minEventBoxWidthSec:
-                twd = (minEventBoxWidthSec - tw)/2.0
-                t1 += twd
-                t0 -= twd
-            boxes.append(Box(t0, t1, 0, 1, event.summary, event.color))
+            occur = event.calcOccurrenceForJdRange(fjd0, fjd1)
+            if not occur:
+                continue
+            #if isinstance(occur, TimeListOccurrence):
+            #    occur.epochList
+            #if len(occur.getTimeRangeList())>1:
+            #    print event.eid, occur.getTimeRangeList()
+            for (t0, t1) in occur.getTimeRangeList():
+                if t0 <= timeStart and timeEnd <= t1:## Fills Range ## FIXME
+                    continue
+                tw = t1 - t0
+                if tw < minEventBoxWidthSec:
+                    twd = (minEventBoxWidthSec - tw)/2.0
+                    t1 += twd
+                    t0 -= twd
+                boxes.append(Box(t0, t1, 0, 1, event.summary, group.color))## or event.color FIXME
     #boxes.sort(reverse=True) ## FIXME
     placedBoxes = []
     for box in boxes:

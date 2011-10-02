@@ -75,7 +75,7 @@ from scal2.ui_gtk.preferences import PrefItem, gdkColorToRgb, gfontEncode, pfont
 from scal2.ui_gtk.customize import CustomizableWidgetWrapper, MainWinItem, CustomizeDialog
 from scal2.ui_gtk.monthcal import MonthCal
 
-from scal2.ui_gtk.events_gtk import DayOccurrenceView, EventManagerDialog
+from scal2.ui_gtk.event.main import DayOccurrenceView, EventManagerDialog
 
 from scal2 import unity
 if unity.needToAdd():

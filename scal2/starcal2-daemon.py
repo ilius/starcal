@@ -49,7 +49,7 @@ except:
 
 uidList = [1000] ## FIXME
 uiName = 'gtk'
-notifyCmd = [join(rootDir, 'run'), join('ui_'+uiName, 'event_notify.py')]
+notifyCmd = [join(rootDir, 'run'), join('ui_'+uiName, 'event', 'notify.py')]
 pidFile = '/var/run/starcal2d.pid'
 pid = os.getpid()
 
