@@ -41,7 +41,7 @@ def setColor(cr, color):
                            color[2] / 255.0,
                            color[3] / 255.0)
     else:
-        raise ValueError('bad color %s'%str(color))
+        raise ValueError('bad color %s'%color)
 
 
 def fillColor(cr, color):
