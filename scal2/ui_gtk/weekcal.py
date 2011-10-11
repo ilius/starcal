@@ -102,7 +102,13 @@ class Button:
         self.x = x
         self.y = y
         self.autoDir = autoDir
-    __repr__ = lambda self: 'Button(%r, %r, %r, %r, %r)'%(self.imageName, self.func.__name__, self.x, self.y, self.autoDir)
+    __repr__ = lambda self: 'Button(%r, %r, %r, %r, %r)'%(
+        self.imageName,
+        self.func.__name__,
+        self.x,
+        self.y,
+        self.autoDir,
+    )
     def getAbsPos(self, w, h):
         x = self.x
         y = self.y
@@ -138,7 +144,7 @@ class WeekCal(gtk.Widget):
             Button('week-home.png', self.goToday, 35, 5, True),
             Button(nextImage, self.goNext, 65, 5, True),
             Button('week-small.png', self.startResize, -1, -1, False),
-            Button('week-exit.png', self.quit, -5, 5, True)
+            Button('week-exit.png', self.quit, -5, 5, True),
         ]
     def onDateChange(self):
         self.queue_draw()
@@ -177,10 +183,10 @@ class WeekCal(gtk.Widget):
             height=self.allocation.height, 
             window_type=gdk.WINDOW_CHILD, 
             wclass=gdk.INPUT_OUTPUT, 
-            event_mask=self.get_events() | gdk.EXPOSURE_MASK
-            | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK
-            | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK)
-            #colormap=self.get_screen().get_rgba_colormap())
+            event_mask=self.get_events() | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK
+                | gdk.BUTTON_PRESS_MASK | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK,
+            #colormap=self.get_screen().get_rgba_colormap(),
+        )
         #self.window.set_composited(True)
         self.window.set_user_data(self)
         self.style.attach(self.window)#?????? Needed??

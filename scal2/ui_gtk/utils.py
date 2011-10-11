@@ -45,6 +45,7 @@ def imageFromFile(path):
     im.set_from_file(path)
     return im
 
+toolButtonFromStock = lambda stock, size: gtk.ToolButton(gtk.image_new_from_stock(stock, size))
 
 def setupMenuHideOnLeave(menu):
     def menuLeaveNotify(m, e):

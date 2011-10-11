@@ -26,6 +26,7 @@ from scal2 import ui
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.utils import toolButtonFromStock
 from scal2.ui_gtk import preferences
 from scal2.ui_gtk.preferences import set_tooltip
 
@@ -114,12 +115,12 @@ class CustomizeDialog(gtk.Dialog):
         toolbar.set_icon_size(size)
         ## argument2 to image_new_from_stock does not affect
         ###
-        tb = gtk.ToolButton(gtk.image_new_from_stock(gtk.STOCK_GO_UP, size))
+        tb = toolButtonFromStock(gtk.STOCK_GO_UP, size)
         set_tooltip(tb, _('Move up'))
         tb.connect('clicked', self.upClicked)
         toolbar.insert(tb, -1)
         ###
-        tb = gtk.ToolButton(gtk.image_new_from_stock(gtk.STOCK_GO_DOWN, size))
+        tb = toolButtonFromStock(gtk.STOCK_GO_DOWN, size)
         set_tooltip(tb, _('Move down'))
         tb.connect('clicked', self.downClicked)
         toolbar.insert(tb, -1)

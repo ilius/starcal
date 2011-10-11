@@ -244,7 +244,7 @@ class PrefItem():
         else:
             self.set(getattr(self.module, self.varName))
     ## confStr(): gets the value from variable (not from GUI) and returns a string to save to file
-    ##                        the string will has a NEWLINE at the END
+    ## the string will has a NEWLINE at the END
     def confStr(self):
         if self.module==None:
             if self.varName=='':
@@ -370,8 +370,8 @@ class FontPrefItem(PrefItem):##????????????
         self.varName = varName
         w = MyFontButton(parent)
         self.widget = w
-        self.get = w.get_font_name#??????
-        self.set = w.set_font_name#??????
+        self.get = w.get_font_name## FIXME
+        self.set = w.set_font_name## FIXME
 
 class CheckPrefItem(PrefItem):
     def __init__(self, module, varName, label='', tooltip=None):
@@ -389,7 +389,7 @@ class CheckStartupPrefItem(PrefItem):### cbStartCommon
         self.module = None
         self.varName = ''
         w = gtk.CheckButton(_('Run on session startup'))
-        set_tooltip(w,'Run on startup of Gnome, KDE, Xfce, LXDE, ...\nFile: %s'%ui.comDesk)
+        set_tooltip(w, 'Run on startup of Gnome, KDE, Xfce, LXDE, ...\nFile: %s'%ui.comDesk)
         self.widget = w
         self.get = w.get_active
         self.set = w.set_active
@@ -469,7 +469,7 @@ class RadioListPrefItem(PrefItem):
             box.pack_start(gtk.Label(''), 1, 1)
             box.pack_start(r, 0, 0)
             r.set_group(first)
-        box.pack_start(gtk.Label(''), 1, 1) ## ????????
+        box.pack_start(gtk.Label(''), 1, 1) ## FIXME
     def get(self):
         for i in range(self.num):
             if self.radios[i].get_active():
@@ -533,7 +533,7 @@ class CalPropPrefItem(PrefItem):
         combo = gtk.combo_box_new_text()
         for m in core.modules:
             combo.append_text(_(m.desc))
-        #if i>0:#????????????
+        #if i>0:## FIXME
         #    combo.append_text(_('Julian Day'))
         self.combo = combo
         hbox.pack_start(combo, 0, 0)
@@ -592,7 +592,7 @@ class CalPropPrefItem(PrefItem):
         self.colorb.set_color(data['color'])
 
 
-class WeekDayCheckListPrefItem(PrefItem):### use synopsis (Sun, Mon, ...) ????????????
+class WeekDayCheckListPrefItem(PrefItem):### use synopsis (Sun, Mon, ...) FIXME
     def __init__(self, module, varName, vertical=False, homo=True, abbreviateNames=True):
         self.module = module
         self.varName = varName
@@ -667,8 +667,8 @@ class PrefDialog(gtk.Dialog):
             applyB.set_image(gtk.image_new_from_stock(gtk.STOCK_APPLY, gtk.ICON_SIZE_BUTTON))
             okB.set_label(_('_OK'))
             okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK, gtk.ICON_SIZE_BUTTON))
-        okB.grab_default()#?????????
-        #okB.grab_focus()#?????????
+        okB.grab_default()## FIXME
+        #okB.grab_focus()## FIXME
         cancelB.connect('clicked', self.cancel)
         applyB.connect('clicked', self.apply)
         okB.connect('clicked', self.ok)
@@ -677,7 +677,7 @@ class PrefDialog(gtk.Dialog):
         self.localePrefItems = []
         self.corePrefItems = []
         self.uiPrefItems = []
-        self.herePrefItems = [] ## ??????????
+        self.herePrefItems = [] ## FIXME
         ################################ Tab 1 ############################################
         vbox = gtk.VBox()
         vbox1 = vbox
@@ -694,9 +694,10 @@ class PrefDialog(gtk.Dialog):
         sgroupFont = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
         exp = gtk.Expander(_('Shown Calendars'))
         exp.set_expanded(True)
-        itemShownCals = VListPrefItem(ui, 'shownCals',
-            [CalPropPrefItem(None, '', self.mainWin, sgroupFont)
-                for i in xrange(max(ui.shownCalsNum,3))]
+        itemShownCals = VListPrefItem(
+            ui,
+            'shownCals',
+            [CalPropPrefItem(None, '', self.mainWin, sgroupFont) for i in xrange(max(ui.shownCalsNum,3))],
         )
         self.uiPrefItems.append(itemShownCals)
         exp.add(itemShownCals.widget)
@@ -755,7 +756,7 @@ class PrefDialog(gtk.Dialog):
         self.uiPrefItems.append(item)
         hbox.pack_start(item.widget, 0, 0)
         cbGrid.connect('clicked', lambda wid: item.widget.set_sensitive(wid.get_active()))
-        #item.widget.set_sensitive(ui.calGrid)##????????????
+        #item.widget.set_sensitive(ui.calGrid)## FIXME
         ########
         hbox.pack_start(gtk.Label(''), 1, 1)
         defaultItem = CheckPrefItem(ui, 'fontUseDefault', _('Use system font'), gfontEncode(ui.fontDefault))
@@ -767,7 +768,7 @@ class PrefDialog(gtk.Dialog):
         hbox.pack_start(customItem.widget, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         #customItem.widget.connect('clicked', self.checkbFontClicked)
-        defaultItem.widget.connect('clicked', lambda w: customItem.widget.set_sensitive(not w.get_active()))##???????????
+        defaultItem.widget.connect('clicked', lambda w: customItem.widget.set_sensitive(not w.get_active()))## FIXME
         vbox.pack_start(hbox, 0, 0)
         ###########################
         hbox = gtk.HBox(spacing=2)
@@ -793,7 +794,7 @@ class PrefDialog(gtk.Dialog):
         hbox.pack_start(gtk.Label(_('Background')), 0, 0)
         item = ColorPrefItem(ui, 'bgColor', True)
         self.uiPrefItems.append(item)
-        self.colorbBg = item.widget ##??????
+        self.colorbBg = item.widget ## FIXME
         hbox.pack_start(item.widget, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         ###
@@ -969,12 +970,22 @@ class PrefDialog(gtk.Dialog):
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
         sgroup.add_widget(label)
-        item = ComboEntryTextPrefItem(None, 'clockFormat',
-            ('%T', '%X', '%Y/%m/%d - %T', '%OY/%Om/%Od - %X', 
-            '<i>%Y/%m/%d</i> - %T','<b>%T</b>', '<b>%X</b>', '%H:%M',
-            '<b>%H:%M</b>','<span size="smaller">%OY/%Om/%Od</span>,%X' 
+        item = ComboEntryTextPrefItem(None, 'clockFormat', (
+            '%T',
+            '%X',
+            '%Y/%m/%d - %T',
+            '%OY/%Om/%Od - %X', 
+            '<i>%Y/%m/%d</i> - %T',
+            '<b>%T</b>',
+            '<b>%X</b>',
+            '%H:%M',
+            '<b>%H:%M</b>',
+            '<span size="smaller">%OY/%Om/%Od</span>,%X' 
             '%OY/%Om/%Od,<span color="#ff0000">%X</span>',
-            '<span font="bold">%X</span>','%OH:%OM','<b>%OH:%OM</b>'))
+            '<span font="bold">%X</span>',
+            '%OH:%OM',
+            '<b>%OH:%OM</b>',
+        ))
         self.herePrefItems.append(item)
         hbox.pack_start(item.widget, 1, 1)
         vbox.pack_start(hbox, 0, 0)
@@ -1150,27 +1161,27 @@ class PrefDialog(gtk.Dialog):
         size = gtk.ICON_SIZE_SMALL_TOOLBAR
         ##no different(argument2 to image_new_from_stock does not affect) ?????????
         ######## gtk.ICON_SIZE_SMALL_TOOLBAR or gtk.ICON_SIZE_MENU
-        tb = gtk.ToolButton(gtk.image_new_from_stock(gtk.STOCK_GOTO_TOP, size))
+        tb = toolButtonFromStock(gtk.STOCK_GOTO_TOP, size)
         set_tooltip(tb, _('Move to top'))
         tb.connect('clicked', self.plugTreeviewTop)
         toolbar.insert(tb, -1)
         ########
-        tb = gtk.ToolButton(gtk.image_new_from_stock(gtk.STOCK_GO_UP, size))
+        tb = toolButtonFromStock(gtk.STOCK_GO_UP, size)
         set_tooltip(tb, _('Move up'))
         tb.connect('clicked', self.plugTreeviewUp)
         toolbar.insert(tb, -1)
         #########
-        tb = gtk.ToolButton(gtk.image_new_from_stock(gtk.STOCK_GO_DOWN, size))
+        tb = toolButtonFromStock(gtk.STOCK_GO_DOWN, size)
         set_tooltip(tb, _('Move down'))
         tb.connect('clicked', self.plugTreeviewDown)
         toolbar.insert(tb, -1)
         ########
-        tb = gtk.ToolButton(gtk.image_new_from_stock(gtk.STOCK_GOTO_BOTTOM, size))
+        tb = toolButtonFromStock(gtk.STOCK_GOTO_BOTTOM, size)
         set_tooltip(tb, _('Move to bottom'))
         tb.connect('clicked', self.plugTreeviewBottom)
         toolbar.insert(tb, -1)
         ##########
-        tb = gtk.ToolButton(gtk.image_new_from_stock(gtk.STOCK_ADD, size))
+        tb = toolButtonFromStock(gtk.STOCK_ADD, size)
         set_tooltip(tb, _('Add'))
         #tb.connect('clicked', lambda obj: self.plugAddDialog.run())
         tb.connect('clicked', self.plugAddClicked)
@@ -1179,7 +1190,7 @@ class PrefDialog(gtk.Dialog):
         toolbar.insert(tb, -1)
         self.plugButtonAdd = tb
         ###########
-        tb = gtk.ToolButton(gtk.image_new_from_stock(gtk.STOCK_DELETE, size))
+        tb = toolButtonFromStock(gtk.STOCK_DELETE, size)
         set_tooltip(tb, _('Delete'))
         tb.connect('clicked', self.plugTreeviewDel)
         toolbar.insert(tb, -1)

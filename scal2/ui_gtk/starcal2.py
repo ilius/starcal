@@ -99,7 +99,7 @@ iconSizeList = [
     ('Button', gtk.ICON_SIZE_BUTTON),
     ('Large Toolbar', gtk.ICON_SIZE_LARGE_TOOLBAR),
     ('DND', gtk.ICON_SIZE_DND),
-    ('Dialog', gtk.ICON_SIZE_DIALOG)
+    ('Dialog', gtk.ICON_SIZE_DIALOG),
 ] ## in size order
 iconSizeDict = dict(iconSizeList)
 
@@ -488,7 +488,7 @@ class WinController(gtk.HBox):
     IMAGE_NAMES        = (
         ('button-min.png', 'button-min-focus.png'),
         ('button-max.png', 'button-max-focus.png'),
-        ('button-close.png', 'button-close-focus.png')
+        ('button-close.png', 'button-close-focus.png'),
     )
     IMAGE_INACTIVE = 'button-inactive.png'
     TOOLTIPS = (_('Minimize Window'), _('Maximize Window'), _('Close Window'))
@@ -1193,15 +1193,15 @@ class MainWin(gtk.Window):
         ##########################################################
         ### When menu will show below the pointer
         menu = gtk.Menu()
-        menu.add(self.labelStockMenuItem('_Quit',gtk.STOCK_QUIT,self.quit))
+        menu.add(self.labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit))
         menu.add(gtk.SeparatorMenuItem())
-        menu.add(self.labelStockMenuItem('_About',gtk.STOCK_ABOUT,self.aboutShow))
-        menu.add(self.labelStockMenuItem('_Preferences',gtk.STOCK_PREFERENCES,self.prefShow))
-        menu.add(self.labelStockMenuItem('_Export to HTML',gtk.STOCK_CONVERT,self.exportClickedTray))
-        menu.add(self.labelStockMenuItem('_Add Custom Day',gtk.STOCK_ADD,self.showCustomDayTray))
-        menu.add(self.labelStockMenuItem('Ad_just System Time',gtk.STOCK_PREFERENCES,self.adjustTime))
-        menu.add(self.labelStockMenuItem('Copy _Date',gtk.STOCK_COPY,self.copyDateToday))
-        menu.add(self.labelStockMenuItem('Copy _Time',gtk.STOCK_COPY,self.copyTime))
+        menu.add(self.labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
+        menu.add(self.labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
+        menu.add(self.labelStockMenuItem('_Export to HTML', gtk.STOCK_CONVERT, self.exportClickedTray))
+        menu.add(self.labelStockMenuItem('_Add Custom Day', gtk.STOCK_ADD, self.showCustomDayTray))
+        menu.add(self.labelStockMenuItem('Ad_just System Time', gtk.STOCK_PREFERENCES, self.adjustTime))
+        menu.add(self.labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday))
+        menu.add(self.labelStockMenuItem('Copy _Time', gtk.STOCK_COPY, self.copyTime))
         if os.sep == '\\':
             setupMenuHideOnLeave(menu)
         menu.show_all()
@@ -1229,15 +1229,15 @@ class MainWin(gtk.Window):
             self.stick()
         self.checkSticky = check
         #####
-        menu.add(self.labelStockMenuItem('Select _Today',  gtk.STOCK_HOME,        self.goToday))
-        menu.add(self.labelStockMenuItem('Select _Date...',gtk.STOCK_INDEX,       selectDateShow))
-        menu.add(self.labelStockMenuItem('_Customize',     gtk.STOCK_EDIT,        self.customizeShow))
-        menu.add(self.labelStockMenuItem('_Preferences',   gtk.STOCK_PREFERENCES, self.prefShow))
-        menu.add(self.labelStockMenuItem('_Add Custom Day',gtk.STOCK_ADD,         self.showCustomDay))
-        menu.add(self.labelStockMenuItem('_Export to HTML',gtk.STOCK_CONVERT,     self.exportClicked))
-        menu.add(self.labelStockMenuItem('_About',         gtk.STOCK_ABOUT,       self.aboutShow))
+        menu.add(self.labelStockMenuItem('Select _Today', gtk.STOCK_HOME, self.goToday))
+        menu.add(self.labelStockMenuItem('Select _Date...', gtk.STOCK_INDEX, selectDateShow))
+        menu.add(self.labelStockMenuItem('_Customize', gtk.STOCK_EDIT, self.customizeShow))
+        menu.add(self.labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
+        menu.add(self.labelStockMenuItem('_Add Custom Day', gtk.STOCK_ADD, self.showCustomDay))
+        menu.add(self.labelStockMenuItem('_Export to HTML', gtk.STOCK_CONVERT, self.exportClicked))
+        menu.add(self.labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
         if self.trayMode!=1:
-            menu.add(self.labelStockMenuItem('_Quit',      gtk.STOCK_QUIT,        self.quit))
+            menu.add(self.labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit))
         menu.show_all()
         self.menuMain = menu
         ############################################################
@@ -1264,13 +1264,13 @@ class MainWin(gtk.Window):
         menu.show_all()
         ########## Building menu of right click on a day (that has CustomDay)
         menu = gtk.Menu()
-        menu.add(self.labelStockMenuItem('_Edit Custom Day',    gtk.STOCK_EDIT,    self.editCustomDay))
-        menu.add(self.labelStockMenuItem('_Copy Date',          gtk.STOCK_COPY,    self.copyDate))
+        menu.add(self.labelStockMenuItem('_Edit Custom Day', gtk.STOCK_EDIT, self.editCustomDay))
+        menu.add(self.labelStockMenuItem('_Copy Date', gtk.STOCK_COPY, self.copyDate))
         menu.add(gtk.SeparatorMenuItem())
-        menu.add(self.labelStockMenuItem('_Remove Custom Day',  gtk.STOCK_DELETE,self.removeCustomDay))
+        menu.add(self.labelStockMenuItem('_Remove Custom Day', gtk.STOCK_DELETE, self.removeCustomDay))
         menu.add(gtk.SeparatorMenuItem())
-        menu.add(self.labelStockMenuItem('Select _Today',       gtk.STOCK_HOME,    self.goToday))
-        menu.add(self.labelStockMenuItem('Select _Date...',     gtk.STOCK_INDEX, selectDateShow))
+        menu.add(self.labelStockMenuItem('Select _Today', gtk.STOCK_HOME, self.goToday))
+        menu.add(self.labelStockMenuItem('Select _Date...', gtk.STOCK_INDEX, selectDateShow))
         if isfile('/usr/bin/evolution'):##??????????????????
             menu.add(self.labelImageMenuItem('In E_volution', 'evolution-18.png', ui.dayOpenEvolution))
         #if isfile('/usr/bin/sunbird'):##??????????????????

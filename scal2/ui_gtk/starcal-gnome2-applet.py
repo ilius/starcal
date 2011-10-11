@@ -95,7 +95,7 @@ class StarCalApplet(MainWin):
     _('_Export to HTML'),
     _('_Preferences'),
     _('_About')
-),[
+), [
     ('ctime', self.copyTime),
     ('cdate', self.copyDateToday),
     ('adjust', self.adjustTime),
@@ -190,7 +190,7 @@ if __name__ == '__main__':
          gnomeapplet.Applet.__gtype__,
          'StarCalendar',
          '0',
-         starcalAppletFactory
+         starcalAppletFactory,
      )
 
 
