@@ -101,7 +101,7 @@ iconSizeList = [
     ('Button', gtk.ICON_SIZE_BUTTON),
     ('Large Toolbar', gtk.ICON_SIZE_LARGE_TOOLBAR),
     ('DND', gtk.ICON_SIZE_DND),
-    ('Dialog', gtk.ICON_SIZE_DIALOG)
+    ('Dialog', gtk.ICON_SIZE_DIALOG),
 ] ## in size order
 iconSizeDict = dict(iconSizeList)
 
@@ -489,7 +489,7 @@ class WinController(gtk.HBox):
     IMAGE_NAMES        = (
         ('button-min.png', 'button-min-focus.png'),
         ('button-max.png', 'button-max-focus.png'),
-        ('button-close.png', 'button-close-focus.png')
+        ('button-close.png', 'button-close-focus.png'),
     )
     IMAGE_INACTIVE = 'button-inactive.png'
     TOOLTIPS = (_('Minimize Window'), _('Maximize Window'), _('Close Window'))
@@ -1206,16 +1206,16 @@ class MainWin(gtk.Window):
             self.stick()
         self.checkSticky = check
         #####
-        menu.add(labelStockMenuItem('Select _Today',  gtk.STOCK_HOME,        self.goToday))
-        menu.add(labelStockMenuItem('Select _Date...',gtk.STOCK_INDEX,       selectDateShow))
-        menu.add(labelStockMenuItem('_Customize',     gtk.STOCK_EDIT,        self.customizeShow))
-        menu.add(labelStockMenuItem('_Preferences',   gtk.STOCK_PREFERENCES, self.prefShow))
-        #menu.add(labelStockMenuItem('_Add Event',     gtk.STOCK_ADD,         self.eventManDialog.addCustomEvent))
-        menu.add(labelStockMenuItem('_Event Manager', gtk.STOCK_ADD,         self.eventManShow))
-        menu.add(labelStockMenuItem('_Export to HTML',gtk.STOCK_CONVERT,     self.exportClicked))
-        menu.add(labelStockMenuItem('_About',         gtk.STOCK_ABOUT,       self.aboutShow))
+        menu.add(labelStockMenuItem('Select _Today', gtk.STOCK_HOME, self.goToday))
+        menu.add(labelStockMenuItem('Select _Date...', gtk.STOCK_INDEX, selectDateShow))
+        menu.add(labelStockMenuItem('_Customize', gtk.STOCK_EDIT, self.customizeShow))
+        menu.add(labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
+        #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, self.eventManDialog.addCustomEvent))
+        menu.add(labelStockMenuItem('_Event Manager', gtk.STOCK_ADD, self.eventManShow))
+        menu.add(labelStockMenuItem('_Export to HTML', gtk.STOCK_CONVERT, self.exportClicked))
+        menu.add(labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
         if self.trayMode!=1:
-            menu.add(labelStockMenuItem('_Quit',      gtk.STOCK_QUIT,        self.quit))
+            menu.add(labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit))
         menu.show_all()
         self.menuMain = menu
         ############################################################
@@ -1242,23 +1242,21 @@ class MainWin(gtk.Window):
         self.menuCell1 = menu
         self.menuCell = menu ## may be changed later frequently, here just initialized
         menu.show_all()
-        '''
         ########## Building menu of right click on a day (that has Event Icon) FIXME
-        menu = gtk.Menu()
-        #menu.add(labelStockMenuItem('_Edit Event',    gtk.STOCK_EDIT,    self.editEvent))## FIXME
-        menu.add(labelStockMenuItem('_Copy Date',          gtk.STOCK_COPY,    self.copyDate))
-        menu.add(gtk.SeparatorMenuItem())
-        #menu.add(labelStockMenuItem('_Remove Event',  gtk.STOCK_DELETE, self.removeEvent))## FIXME
-        menu.add(gtk.SeparatorMenuItem())
-        menu.add(labelStockMenuItem('Select _Today',       gtk.STOCK_HOME,    self.goToday))
-        menu.add(labelStockMenuItem('Select _Date...',     gtk.STOCK_INDEX, selectDateShow))
-        if isfile('/usr/bin/evolution'):##??????????????????
-            menu.add(labelImageMenuItem('In E_volution', 'evolution-18.png', ui.dayOpenEvolution))
-        #if isfile('/usr/bin/sunbird'):##??????????????????
-        #    menu.add(labelImageMenuItem('In _Sunbird', 'sunbird-18.png', ui.dayOpenSunbird))
-        menu.show_all()
-        menu.num = 2
-        '''
+        #menu = gtk.Menu()
+        ##menu.add(labelStockMenuItem('_Edit Event', gtk.STOCK_EDIT, self.editEvent))## FIXME
+        #menu.add(labelStockMenuItem('_Copy Date', gtk.STOCK_COPY, self.copyDate))
+        #menu.add(gtk.SeparatorMenuItem())
+        ##menu.add(labelStockMenuItem('_Remove Event', gtk.STOCK_DELETE, self.removeEvent))## FIXME
+        #menu.add(gtk.SeparatorMenuItem())
+        #menu.add(labelStockMenuItem('Select _Today', gtk.STOCK_HOME, self.goToday))
+        #menu.add(labelStockMenuItem('Select _Date...', gtk.STOCK_INDEX, selectDateShow))
+        #if isfile('/usr/bin/evolution'):##??????????????????
+        #    menu.add(labelImageMenuItem('In E_volution', 'evolution-18.png', ui.dayOpenEvolution))
+        ##if isfile('/usr/bin/sunbird'):##??????????????????
+        ##    menu.add(labelImageMenuItem('In _Sunbird', 'sunbird-18.png', ui.dayOpenSunbird))
+        #menu.show_all()
+        #menu.num = 2
         self.menuCell2 = menu
         ######################
         self.updateMenuSize()

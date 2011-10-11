@@ -620,6 +620,15 @@ mainWinItems = (
 
 mainWinItemsDefault = mainWinItems[:]
 
+ntpServers = (
+    'pool.ntp.org',
+    'asia.pool.ntp.org',
+    'europe.pool.ntp.org',
+    'north-america.pool.ntp.org',
+    'oceania.pool.ntp.org',
+    'south-america.pool.ntp.org',
+    'ntp.ubuntu.com'
+)
 #####################
 dailyNoteChDateOnEdit = True ## change date of a dailyNoteEvent when editing it
 #####################

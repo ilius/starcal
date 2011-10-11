@@ -50,13 +50,13 @@ class MPlayer:
 
     # Play the specified file
     def play(self, path):
-        print "File path: ", path
+        print 'File path: ', path
         mplayerOptions = self.pbox.mplayerOptions
 
         if self.pbox.isvidontop:
-            mplayerOptions = "-ontop " + mplayerOptions
+            mplayerOptions = '-ontop ' + mplayerOptions
 
-        cmd = "mplayer " + mplayerOptions + " -quiet -slave \"" + path + "\""# 2>/dev/null"
+        cmd = 'mplayer ' + mplayerOptions + ' -quiet -slave \'' + path + '\''# 2>/dev/null'
         self.mplayerIn, self.mplayerOut = os.popen2(cmd) #open pipes
         
         try:
@@ -74,7 +74,7 @@ class MPlayer:
 
     # Get the length of file, format it and place it in playtime
     def getLength(self):
-        self.cmd("get_time_length")
+        self.cmd('get_time_length')
         sleep(0.1)
         
         status = None
@@ -83,24 +83,24 @@ class MPlayer:
                 if not status: break
         except StandardError:
             pass
-        if not status or not status.startswith("ANS_LENGTH="):
+        if not status or not status.startswith('ANS_LENGTH='):
             return True
 
-        length = int(float(status.replace("ANS_LENGTH=", "").strip()))
+        length = int(float(status.replace('ANS_LENGTH=', '').strip()))
         h = length/3600
         m = (length % 3600)/60
         s = (length % 60)
         if h:
-            self.playTime = "%d:%.2d:%.2d" % (h, m, s)
+            self.playTime = '%d:%.2d:%.2d' % (h, m, s)
         else:
-            self.playTime = "%d:%.2d" % (m, s)
+            self.playTime = '%d:%.2d' % (m, s)
         print self.playTime
 
     # Toggle between play and pause
     def pause(self):
         if not self.mplayerIn: 
             return 
-        if self.cmd("pause"):
+        if self.cmd('pause'):
             if self.paused:
                 self.startStatusQuery()
             else:
@@ -114,21 +114,20 @@ class MPlayer:
     def seek(self, amount, mode = 0):
         if not self.mplayerIn:
             return False
-        self.cmd("seek " + str(amount) + " " + str(mode))
+        self.cmd('seek %s %s'%(amount, mode))
         self.queryStatus()
 
     # Set volume    using aumix
     def setVolume(self, value):
-        command = ""
         if self.pbox.adjustvol:
-            command = "aumix -v " + str(value)
+            command = 'aumix -v %s'%value
         else:
-            command = "aumix -w " + str(value)
+            command = 'aumix -w %s'%value
 
         try:
             os.popen(command)
         except StandardError, message:
-            print "Cannot set volume: ", message
+            print 'Cannot set volume: %s'%message
 
     # Change volume by the amount specified
     # Changing the adjustment automatically updates 
@@ -152,7 +151,7 @@ class MPlayer:
             return
         self.stopStatusQuery()
         self.stopEofHandler()
-        self.cmd("quit") # It doesn't matter if false is returned
+        self.cmd('quit') # It doesn't matter if false is returned
         try:
             self.mplayerIn.close()
             self.mplayerOut.close()
@@ -167,7 +166,7 @@ class MPlayer:
         if not self.mplayerIn: 
             return False
         try:
-            self.mplayerIn.write(command + "\n")
+            self.mplayerIn.write(command + '\n')
             self.mplayerIn.flush()
         except StandardError:
             return False
@@ -177,7 +176,7 @@ class MPlayer:
     def queryStatus(self):
         if not self.playTime:
             self.getLength()
-        self.cmd("get_percent_pos")
+        self.cmd('get_percent_pos')
         sleep(0.05) # allow time for output
 
         status = None
@@ -187,11 +186,10 @@ class MPlayer:
         except StandardError:
             pass
 
-        if not status or not status.startswith("ANS_PERCENT_POSITION="):
+        if not status or not status.startswith('ANS_PERCENT_POSITION='):
             return True
 
-        percent = int(status.replace("ANS_PERCENT_POSITION=", ""))
-        self.pbox.seekAdj.value = percent
+        self.pbox.seekAdj.value = int(status.replace('ANS_PERCENT_POSITION=', ''))
         
         return True
 
@@ -211,7 +209,7 @@ class MPlayer:
 
     # Call a function periodically to fetch status
     def startStatusQuery(self):
-        print "start"
+        print 'start'
         self.statusQuery = gobject.timeout_add(STATUS_UPDATE_TIMEOUT, self.queryStatus)
 
     # Stop calling the function that fetches status periodically 
@@ -223,7 +221,7 @@ class PlayerBox(gtk.HBox):
     adjustvol = 0
     vollevel0 = 100
     vollevel1 = 50
-    mplayerOptions = "-geometry 50:50"
+    mplayerOptions = '-geometry 50:50'
     key_pause = 65
     key_stop = 39
     key_seekback = 100
@@ -243,10 +241,10 @@ class PlayerBox(gtk.HBox):
         self.fcb.set_property('width-request', 150)
         self.pack_start(self.fcb, 0, 0)
         self.mplayer = MPlayer(self)
-        self.connect("key-press-event", self.divert)
+        self.connect('key-press-event', self.divert)
         self.connect('destroy', lambda self, *args: self.mplayer.close()) ## FIXME
         #self.connect('destroy', lambda obj, event=None: self.mplayer.close())#??????????
-        ##self.toolbar.connect("key-press-event", self.toolbarKey)#??????????
+        ##self.toolbar.connect('key-press-event', self.toolbarKey)#??????????
         ##############
         self.playPauseBut = gtk.Button()
         self.playPauseBut.set_image(gtk.image_new_from_stock(gtk.STOCK_MEDIA_PLAY,gtk.ICON_SIZE_SMALL_TOOLBAR))
@@ -259,14 +257,14 @@ class PlayerBox(gtk.HBox):
         self.pack_start(stopBut, 0, 0)
         ##############
         self.seekAdj = gtk.Adjustment(0, 0, 100, 1, 10, 0)
-        #self.seekAdj.connect("value_changed", self.seekAdjChanged)#??????????????????
+        #self.seekAdj.connect('value_changed', self.seekAdjChanged)#??????????????????
         self.seekBar = gtk.HScale(self.seekAdj)
         self.seekBar.set_value_pos(gtk.POS_TOP)
         self.seekBar.set_sensitive(False)
-        self.seekBar.connect("key-press-event", self.divert)
+        self.seekBar.connect('key-press-event', self.divert)
         self.seekBar.set_draw_value(False)
-        #self.seekBar.connect("format-value", self.displaySongString)
-        self.seekBar.connect("button_release_event", self.seek)
+        #self.seekBar.connect('format-value', self.displaySongString)
+        self.seekBar.connect('button-release-event', self.seek)
         self.pack_start(self.seekBar, 1, 1, 5)
         ################
         self.hasVol = hasVol
@@ -277,12 +275,12 @@ class PlayerBox(gtk.HBox):
             else:
                 self.volAdj = gtk.Adjustment(self.vollevel0, 0, 100, 5, 10, 0)
                 self.mplayer.setVolume(self.vollevel0)
-            self.volAdj.connect("value_changed", self.setVolume)
+            self.volAdj.connect('value_changed', self.setVolume)
             scale = gtk.HScale(self.volAdj)
             scale.set_size_request(50, -1)
             scale.set_value_pos(gtk.POS_TOP)
-            scale.connect("format-value", self.displayVolString)
-            scale.connect("key-press-event", self.divert)
+            scale.connect('format-value', self.displayVolString)
+            scale.connect('key-press-event', self.divert)
             self.pack_start(scale, False, False, 5)
     def divert(self, widget, event):
         key = event.hardware_keycode
@@ -302,22 +300,22 @@ class PlayerBox(gtk.HBox):
             return False
     def displaySongString(self, seekBar, value):
         if self.mplayer.playTime:
-            return str(int(value)) + "% of " + self.mplayer.playTime
+            return str(int(value)) + '% of ' + self.mplayer.playTime
         elif self.mplayer.mplayerIn:
-            return str(int(value)) + "% of " #+ self.playlist.getCurrentSongTime()
+            return str(int(value)) + '% of ' #+ self.playlist.getCurrentSongTime()
         else:
-            return str(int(value)) + "%"
+            return str(int(value)) + '%'
     def seek(self, widget, event):# Seek on changing the seekBar 
         #print 'seek', self.seekAdj.value, self.mplayer.mplayerIn
         if not self.mplayer.mplayerIn:
-            print "abc"
+            print 'abc'
             sleep(0.05)
             self.seekAdj.value = 100
             #self.playPauseBut.set_image(gtk.image_new_from_stock(gtk.STOCK_MEDIA_PLAY,gtk.ICON_SIZE_SMALL_TOOLBAR))
         else:
             self.mplayer.seek(int(self.seekAdj.value), 1)
     def displayVolString(self, scale, value):# Return formatted volume string
-        return "Volume: " + str(int(value)) + "%"
+        return 'Volume: ' + str(int(value)) + '%'
     def setVolume(self, adj):# Set volume when the volume range widget is changed
         self.mplayer.setVolume(int(adj.value))
         if self.adjustvol:
@@ -378,7 +376,7 @@ if __name__=='__main__':
     mainVbox = gtk.VBox(False, 0)
     pbox = PlayerBox()
     mainVbox.pack_start(pbox, 0, 0)
-    window.connect("destroy", pbox.quit)
+    window.connect('destroy', pbox.quit)
     window.add(mainVbox)
     mainVbox.show_all()
     window.show()

@@ -30,10 +30,10 @@ from math import ceil
 iceil = lambda f: int(ceil(f))
 
 
-_ = str #?????????
+_ = str ## FIXME
 #gtk.widget_set_default_direction(gtk.TEXT_DIR_LTR)
 
-
+from scal2 import ui
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, TimeButton
 
 
@@ -45,15 +45,6 @@ def error_exit(text, parent=None):
     sys.exit(1)
 
 class AdjusterDialog(gtk.Dialog):
-    ntpServers = [
-        'pool.ntp.org',
-        'asia.pool.ntp.org',
-        'europe.pool.ntp.org',
-        'north-america.pool.ntp.org',
-        'oceania.pool.ntp.org',
-        'south-america.pool.ntp.org',
-        'ntp.ubuntu.com'
-    ]
     xpad = 15
     def __init__(self):
         gtk.Dialog.__init__(self)
@@ -129,7 +120,7 @@ class AdjusterDialog(gtk.Dialog):
         combo.child.connect('changed', self.updateSetButtonSensitive)
         hbox.pack_start(combo, 1, 1)
         self.ntpServerEntry = combo.child
-        for s in self.ntpServers:
+        for s in ui.ntpServers:
             combo.append_text(s)
         combo.set_active(0)
         self.hboxNtp = hbox
@@ -208,10 +199,11 @@ class AdjusterDialog(gtk.Dialog):
                 else:
                     error_exit('No change!', self)#??????????
         elif self.radioNtp.get_active():
-            if os.path.isfile('/usr/sbin/ntpdate'):
-                cmd = ['/usr/sbin/ntpdate', self.ntpServerEntry.get_text()]
-            else:
-                error_exit('Could not find command /usr/sbin/ntpdate: no such file!', self)#??????????
+            cmd = ['ntpdate', self.ntpServerEntry.get_text()]
+            #if os.path.isfile('/usr/sbin/ntpdate'):
+            #    cmd = ['/usr/sbin/ntpdate', self.ntpServerEntry.get_text()]
+            #else:
+            #    error_exit('Could not find command /usr/sbin/ntpdate: no such file!', self)#??????????
         else:
             error_exit('Not valid option!', self)
         (inp, out, err) = os.popen3(cmd)

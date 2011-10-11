@@ -89,6 +89,46 @@ class RowExtraTextItem:
         self.expand = expand
 
 
+class Button:
+    def __init__(self, imageName, func, x, y, autoDir=True):
+        self.imageName = imageName
+        if imageName.startswith('gtk-'):
+            self.pixbuf = gdk.pixbuf_new_from_stock(imageName)
+        else:
+            self.pixbuf = gdk.pixbuf_new_from_file(join(pixDir, imageName))
+        self.func = func
+        self.width = self.pixbuf.get_width()
+        self.height = self.pixbuf.get_height()
+        self.x = x
+        self.y = y
+        self.autoDir = autoDir
+    __repr__ = lambda self: 'Button(%r, %r, %r, %r, %r)'%(
+        self.imageName,
+        self.func.__name__,
+        self.x,
+        self.y,
+        self.autoDir,
+    )
+    def getAbsPos(self, w, h):
+        x = self.x
+        y = self.y
+        if self.autoDir and rtl:
+            x = -x
+        if x<0:
+            x = w - self.width + x
+        if y<0:
+            y = h - self.height + y
+        return (x, y)
+    def draw(self, cr, w, h):
+        (x, y) = self.getAbsPos(w, h)
+        cr.set_source_pixbuf(self.pixbuf, x, y)
+        cr.rectangle(x, y, self.width, self.height)
+        cr.fill()
+    def contains(self, px, py, w, h):
+        (x, y) = self.getAbsPos(w, h)
+        return (x <= px < x+self.width and y <= py < y+self.height)
+
+
 
 class WeekCal(gtk.Widget):
     topMargin = 30
@@ -104,7 +144,7 @@ class WeekCal(gtk.Widget):
             Button('week-home.png', self.goToday, 35, 5, True),
             Button(nextImage, self.goNext, 65, 5, True),
             Button('week-small.png', self.startResize, -1, -1, False),
-            Button('week-exit.png', self.quit, -5, 5, True)
+            Button('week-exit.png', self.quit, -5, 5, True),
         ]
     def onDateChange(self):
         self.queue_draw()
@@ -143,10 +183,10 @@ class WeekCal(gtk.Widget):
             height=self.allocation.height, 
             window_type=gdk.WINDOW_CHILD, 
             wclass=gdk.INPUT_OUTPUT, 
-            event_mask=self.get_events() | gdk.EXPOSURE_MASK
-            | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK
-            | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK)
-            #colormap=self.get_screen().get_rgba_colormap())
+            event_mask=self.get_events() | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK
+                | gdk.BUTTON_PRESS_MASK | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK,
+            #colormap=self.get_screen().get_rgba_colormap(),
+        )
         #self.window.set_composited(True)
         self.window.set_user_data(self)
         self.style.attach(self.window)#?????? Needed??

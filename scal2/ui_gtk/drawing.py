@@ -37,14 +37,18 @@ if not ui.fontCustom:
 def setColor(cr, color):
     ## arguments to set_source_rgb and set_source_rgba must be between 0 and 1
     if len(color)==3:
-        cr.set_source_rgb(color[0] / 255.0,
-                          color[1] / 255.0,
-                          color[2] / 255.0)
+        cr.set_source_rgb(
+            color[0] / 255.0,
+            color[1] / 255.0,
+            color[2] / 255.0,
+        )
     elif len(color)==4:
-        cr.set_source_rgba(color[0] / 255.0,
-                           color[1] / 255.0,
-                           color[2] / 255.0,
-                           color[3] / 255.0)
+        cr.set_source_rgba(
+            color[0] / 255.0,
+            color[1] / 255.0,
+            color[2] / 255.0,
+            color[3] / 255.0,
+        )
     else:
         raise ValueError('bad color %s'%color)
 

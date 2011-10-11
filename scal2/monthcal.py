@@ -116,25 +116,51 @@ def getMonthDesc(status=None):
                 text += '%s %s'%(_(module.getMonthName(m1)), numLocale(y1))
             elif dm==1:
                 if dy==0:
-                    text += '%s %s %s %s'%(_(module.getMonthName(m1)), _('and'),\
-                    _(module.getMonthName(m2)), numLocale(y1))
+                    text += '%s %s %s %s'%(
+                        _(module.getMonthName(m1)),
+                        _('and'),
+                        _(module.getMonthName(m2)),
+                        numLocale(y1),
+                    )
                 else:
-                    text += '%s %s %s %s %s'%(_(module.getMonthName(m1)), numLocale(y1),\
-                    _('and'), _(module.getMonthName(m2)), numLocale(y2))
+                    text += '%s %s %s %s %s'%(
+                        _(module.getMonthName(m1)),
+                        numLocale(y1),
+                        _('and'),
+                        _(module.getMonthName(m2)),
+                        numLocale(y2),
+                    )
             elif dm==2:
                 if dy==0:
-                    text += '%s%s %s %s %s %s'%(_(module.getMonthName(m1)), _(','),\
-                        _(module.getMonthName(m1+1)),_('and'),_(module.getMonthName(m2)),\
-                        numLocale(y1))
+                    text += '%s%s %s %s %s %s'%(
+                        _(module.getMonthName(m1)),
+                        _(','),
+                        _(module.getMonthName(m1+1)),
+                        _('and'),
+                        _(module.getMonthName(m2)),
+                        numLocale(y1),
+                    )
                 else:
                     if m1==11:
-                        text += '%s %s %s %s %s %s %s'%(_(module.getMonthName(m1)),\
-                            _('and'), _(module.getMonthName(m1+1)), numLocale(y1),\
-                            _('and'), _(module.getMonthName(1)), numLocale(y2))
+                        text += '%s %s %s %s %s %s %s'%(
+                            _(module.getMonthName(m1)),
+                            _('and'),
+                            _(module.getMonthName(m1+1)),
+                            numLocale(y1),
+                            _('and'),
+                            _(module.getMonthName(1)),
+                            numLocale(y2),
+                        )
                     elif m1==12:
-                        text += '%s %s %s %s %s %s %s'%(_(module.getMonthName(m1)),\
-                            numLocale(y1), _('and'), _(module.getMonthName(1)),\
-                            _('and'), _(module.getMonthName(2)), numLocale(y2))
+                        text += '%s %s %s %s %s %s %s'%(
+                            _(module.getMonthName(m1)),
+                            numLocale(y1),
+                            _('and'),
+                            _(module.getMonthName(1)),
+                            _('and'),
+                            _(module.getMonthName(2)),
+                            numLocale(y2),
+                        )
     return text
 
 

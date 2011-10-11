@@ -77,8 +77,14 @@ class MonthCal(gtk.Widget, MainWinItem):
         self.connect('drag-data-get', self.dragDataGet)
         self.connect('drag-begin', self.dragBegin)
         self.connect('drag-data-received', self.dragDataRec)
-        self.drag_dest_set(gdk.MODIFIER_MASK,\
-            (('', 0, 0),('application/x-color', 0, 0)), gdk.ACTION_COPY)
+        self.drag_dest_set(
+            gdk.MODIFIER_MASK,
+            (
+                ('', 0, 0),
+                ('application/x-color', 0, 0),
+            ),
+            gdk.ACTION_COPY,
+        )
         self.drag_dest_add_text_targets()
         self.drag_dest_add_uri_targets()
         """
@@ -179,10 +185,10 @@ class MonthCal(gtk.Widget, MainWinItem):
             (fontw, fonth) = text.get_pixel_size()
             if rtl:
                 cr.move_to(w-(ui.calLeftMargin+fontw)/2.0 - 3,
-                                     (ui.calTopMargin-fonth)/2.0 - 1)
+                           (ui.calTopMargin-fonth)/2.0 - 1)
             else:
                 cr.move_to((ui.calLeftMargin-fontw)/2.0,
-                                     (ui.calTopMargin-fonth)/2.0 - 1)
+                           (ui.calTopMargin-fonth)/2.0 - 1)
             cr.show_layout(text)
         if ui.calLeftMargin>0:
             ##### Drawing border left background
@@ -430,7 +436,7 @@ class MonthCal(gtk.Widget, MainWinItem):
                 ord(text[1]),
                 ord(text[3]),
                 ord(text[5]),
-                ord(text[7])
+                ord(text[7]),
             )
             self.emit('pref-update-bg-color')
             self.queue_draw()
@@ -445,8 +451,7 @@ class MonthCal(gtk.Widget, MainWinItem):
                     (y, m, d) = localtime(t)[:3]
                     self.changeDate(y, m, d, core.DATE_GREG)
         else:
-            print 'Unknown dropped data type "%s", text="%s", data="%s"'\
-                %(dtype, text, selection.data)
+            print 'Unknown dropped data type "%s", text="%s", data="%s"'%(dtype, text, selection.data)
             return True
         return False
     def dragBegin(self, obj, context):
@@ -529,13 +534,27 @@ class MonthCal(gtk.Widget, MainWinItem):
         pmap.draw_rectangle(gc, True, 0, 0, w, h)
         #gc.set_background(ui.bgColor)
         ##pmap.set_direction(gtk.DIR_LTR)#????????
-        pmap.draw_layout(gc, 0, 0, textLay,
+        pmap.draw_layout(
+            gc,
+            0,
+            0,
+            textLay,
             rgbToGdkColor(*self.shownCals[0]['color']),
-            rgbToGdkColor(*ui.bgColor))
+            rgbToGdkColor(*ui.bgColor),
+        )
         #c = self.shownCals[0]['color']
         #pmap.draw_layout(gc, 0, 0, textLay, c, ui.gdkColorInvert(c))##??????????
         pbuf = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, w , h)
-        pbuf.get_from_drawable(pmap, self.get_screen().get_system_colormap(), 0, 0, 0, 0, -1, -1)
+        pbuf.get_from_drawable(
+            pmap,
+            self.get_screen().get_system_colormap(),
+            0,
+            0,
+            0,
+            0,
+            -1,
+            -1,
+        )
         context.set_icon_pixbuf(pbuf, w/2-10, -20) ## x offset ???????????
         return True
     def updateTextWidth(self):
@@ -586,14 +605,16 @@ class MonthCal(gtk.Widget, MainWinItem):
     def calcCoord(self):## calculates coordidates (x and y of cells centers)
         x, y, w, h = self.allocation
         if rtl:
-            self.cx = [ (w-ui.calLeftMargin)*(13.0-2*i)/14.0 \
-                                 for i in xrange(7) ] ## centers x
+            self.cx = [(w-ui.calLeftMargin)*(13.0-2*i)/14.0 for i in xrange(7) ] ## centers x
         else:
-            self.cx = [ui.calLeftMargin \
-                                 + (w-ui.calLeftMargin)*(1.0+2*i)/14.0 \
-                                 for i in xrange(7) ] ## centers x
-        self.cy = [ui.calTopMargin + (h-ui.calTopMargin)*(1.0+2*i)/12.0 \
-                             for i in xrange(6) ] ## centers y
+            self.cx = [
+                ui.calLeftMargin + (w-ui.calLeftMargin)*(1.0+2*i)/14.0 
+                for i in xrange(7)
+            ] ## centers x
+        self.cy = [
+            ui.calTopMargin + (h-ui.calTopMargin)*(1.0+2*i)/12.0
+            for i in xrange(6)
+        ] ## centers y
         self.dx = (w-ui.calLeftMargin)/7.0 ## delta x
         self.dy = (h-ui.calTopMargin)/6.0 ## delta y
     def keyPress(self, arg, event):
@@ -689,11 +710,9 @@ gobject.signal_new('pref-update-bg-color', MonthCal, gobject.SIGNAL_RUN_LAST, go
 if __name__=='__main__':
     win = gtk.Dialog()
     cal = MonthCal()
-    win.add_events(gdk.POINTER_MOTION_MASK | gdk.FOCUS_CHANGE_MASK |
-                gdk.BUTTON_MOTION_MASK | gdk.BUTTON_PRESS_MASK |
-                gdk.BUTTON_RELEASE_MASK | gdk.SCROLL_MASK |
-                gdk.KEY_PRESS_MASK | gdk.VISIBILITY_NOTIFY_MASK |
-                gdk.EXPOSURE_MASK)
+    win.add_events(gdk.POINTER_MOTION_MASK | gdk.FOCUS_CHANGE_MASK | gdk.BUTTON_MOTION_MASK | gdk.BUTTON_PRESS_MASK |
+        gdk.BUTTON_RELEASE_MASK | gdk.SCROLL_MASK | gdk.KEY_PRESS_MASK | gdk.VISIBILITY_NOTIFY_MASK |
+        gdk.EXPOSURE_MASK)
     win.vbox.pack_start(cal, 1, 1)
     win.vbox.show_all()
     win.resize(600, 400)

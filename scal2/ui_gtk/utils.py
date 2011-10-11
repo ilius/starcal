@@ -72,6 +72,7 @@ def pixbufFromFile(path):## the file may not exist
     except:
         myRaise()
         return None
+toolButtonFromStock = lambda stock, size: gtk.ToolButton(gtk.image_new_from_stock(stock, size))
 
 def setupMenuHideOnLeave(menu):
     def menuLeaveNotify(m, e):
