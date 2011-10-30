@@ -96,12 +96,54 @@ def newLimitedWidthTextLayout(widget, text, width, font=None, truncate=True):
             #print
     return layout
 
-def pixbufSqFromColor(color, size, roundR=0):## a rounded square with specified color
+def newOutlineSquarePixbuf(color, size, innerSize, bgColor=None):
     pmap = gdk.Pixmap(None, size, size, depth=24)
     cr = pmap.cairo_create()
     ###
-    #cr.rectangle(0, 0, size, size)
-    #fillColor(cr, (255, 255, 255, 0))
+    if bgColor:
+        cr.rectangle(0, 0, size, size)
+        fillColor(cr, bgColor)
+    ###
+    cr.move_to(0, 0)
+    cr.line_to(size, 0)
+    cr.line_to(size, size)
+    cr.line_to(0, size)
+    cr.line_to(0, 0)
+    if innerSize:
+        d = (size-innerSize)/2.0
+        cr.line_to(d, 0)
+        cr.line_to(d, size-d)
+        cr.line_to(size-d, size-d)
+        cr.line_to(size-d, d)
+        cr.line_to(d, d)
+    ###
+    cr.close_path()
+    fillColor(cr, color)
+    ####
+    pbuf = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, size, size)
+    colormap = gtk.gdk.colormap_get_system()
+    #colormap = self.get_screen().get_system_colormap()
+    #colormap = pmap.get_colormap()
+    pbuf.get_from_drawable(pmap, colormap, 0, 0, 0, 0, size, size)
+    if bgColor:
+        pbuf = pbuf.add_alpha(True, *bgColor)
+    return pbuf
+
+
+
+def newRoundedSquarePixbuf(color, size, roundR=0, bgColor=None):## a rounded square with specified color
+    #color = (255, 0, 0) ## FIXME
+    #bgColor = (
+    #    min(255, color[0]+1),
+    #    min(255, color[1]+1),
+    #    min(255, color[2]+1),
+    #)
+    pmap = gdk.Pixmap(None, size, size, depth=24)
+    cr = pmap.cairo_create()
+    ###
+    if bgColor:
+        cr.rectangle(0, 0, size, size)
+        fillColor(cr, bgColor)
     ###
     cr.move_to(roundR, 0)
     cr.line_to(size-roundR, 0)
@@ -121,8 +163,9 @@ def pixbufSqFromColor(color, size, roundR=0):## a rounded square with specified 
     #colormap = self.get_screen().get_system_colormap()
     #colormap = pmap.get_colormap()
     pbuf.get_from_drawable(pmap, colormap, 0, 0, 0, 0, size, size)
+    if bgColor:
+        pbuf = pbuf.add_alpha(True, *bgColor)
     return pbuf
-    #return gdk.Pixbuf.get_from_drawable(pmap, gdk.COLORSPACE_RGB, 0, 0, 0, 0, size, size)
 
 class Button:
     def __init__(self, imageName, func, x, y, autoDir=True):

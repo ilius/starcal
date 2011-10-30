@@ -107,9 +107,9 @@ def shownCalsStr():
                 vs = str(v)
             st += '%s:%s, '%(ks,vs)
         if i==n-1:
-            st=st[:-2]+'})'
+            st = st[:-2] + '})'
         else:
-            st=st[:-2]+'},'
+            st = st[:-2] + '},'
     return st
 
 def saveLiveConf():

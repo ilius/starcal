@@ -30,7 +30,8 @@ from scal2 import event_man
 
 from scal2 import ui
 from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile
-from scal2.ui_gtk.drawing import pixbufSqFromColor
+from scal2.ui_gtk.color_utils import gdkColorToRgb
+from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 #from scal2.ui_gtk.mywidgets.multi_spin_box import DateBox, TimeBox
 
 from xml.dom.minidom import getDOMImplementation, parse
@@ -59,6 +60,14 @@ def comboToggleActivate(combo, *args):
         combo.popup()
         return True
     return False
+
+def getTreeviewPathStr(path):
+    if not path:
+        return None
+    return '/'.join([str(x) for x in path])
+
+def rectangleContainsPoint(r, x, y):
+    return r.x <= x < r.x + r.width and r.y <= y < r.y + r.height
 
 
 class DayOccurrenceView(event_man.DayOccurrenceView, gtk.VBox):
@@ -133,7 +142,6 @@ class WeekOccurrenceView(event_man.WeekOccurrenceView, gtk.TreeView):
                 item['time'],
                 item['text'],
             )
-        
 
 class MonthOccurrenceView(event_man.MonthOccurrenceView, gtk.TreeView):
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
@@ -263,84 +271,143 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         treeBox = gtk.HBox()
         #####
         self.treeview = gtk.TreeView()
+        #self.treeview.set_headers_visible(False)## FIXME
+        self.treeview.connect('realize', self.onTreeviewRealize)
+        self.treeview.connect('cursor-changed', self.treeviewCursorChanged)## FIXME
+        self.treeview.connect('button-press-event', self.treeviewButtonPress)
+        ###
         swin = gtk.ScrolledWindow()
         swin.add(self.treeview)
         swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         treeBox.pack_start(swin, 1, 1)
         self.vbox.pack_start(treeBox)
         #####
-        self.treestore = gtk.ListStore(int, int, gdk.Pixbuf, str, str)## event_id, group_enable, icon, summary, description
+        self.treestore = gtk.TreeStore(str, gdk.Pixbuf, str, str)
+        ## event: event_id_str,  event_icon,   event_summary, event_description
+        ## group: enable:color,  group_pixbuf, group_title,   ?description
         self.treeview.set_model(self.treestore)
         ###      
-        cell = gtk.CellRendererToggle()
-        #cell.set_property('activatable', True)
-        cell.connect('toggled', self.groupCellToggled)
-        col = gtk.TreeViewColumn(_('Enable'), cell)
-        col.add_attribute(cell, 'active', 1)
+        #col = gtk.TreeViewColumn('')## _('Enable')
+        #cell = gtk.CellRendererToggle()
+        ##cell.set_property('activatable', True)
+        #cell.connect('toggled', self.groupCellToggled)
+        #col.pack_start(cell)
+        #col.add_attribute(cell, 'active', 1)
         #cell.set_active(False)
-        col.set_resizable(True)
+        #col.set_resizable(True)
+        #self.treeview.append_column(col)
+        ###
+        col = gtk.TreeViewColumn('')
+        cell = gtk.CellRendererPixbuf()
+        col.pack_start(cell)
+        col.add_attribute(cell, 'pixbuf', 1)
+        col.set_resizable(False)
         self.treeview.append_column(col)
         ###
-        col = gtk.TreeViewColumn('', gtk.CellRendererPixbuf(), pixbuf=2)
-        col.set_resizable(True)
-        self.treeview.append_column(col)
-        ###
-        col = gtk.TreeViewColumn(_('Summary'), gtk.CellRendererText(), text=3)
+        col = gtk.TreeViewColumn(_('Summary'), gtk.CellRendererText(), text=2)
         col.set_resizable(True)
         self.treeview.append_column(col)
         self.treeview.set_search_column(1)
         ###
-        col = gtk.TreeViewColumn(_('Description'), gtk.CellRendererText(), text=4)
+        col = gtk.TreeViewColumn(_('Description'), gtk.CellRendererText(), text=3)
         self.treeview.append_column(col)
         #self.treeview.set_search_column(2)
-        ###
-        self.treeview.connect('cursor-changed', self.treeviewCursorChanged)
         #####
         self.vbox.show_all()
-        self.reloadEvents()
+        #self.reloadEvents()## FIXME
+    def onTreeviewRealize(self, event):
+        self.reloadEvents()## FIXME
+    getRowBgColor = lambda self: gdkColorToRgb(self.treeview.style.base[gtk.STATE_NORMAL])## bg color of non-selected rows
     def reloadEvents(self):
         self.treestore.clear()
+        rowBgColor = self.getRowBgColor()
         for group in ui.eventGroups:
-            groupNode = self.treestore.append((
-                -1,
-                group.enable,
-                pixbufSqFromColor(group.color, 20, 0),
+            groupNode = self.treestore.append(None, (
+                '%r:%r'%(group.enable, group.color),
+                newOutlineSquarePixbuf(
+                    group.color,
+                    20,
+                    0 if group.enable else 15,
+                    rowBgColor,
+                ),
                 group.title,
                 '',
             ))
             for event in group.iterEvents():
-                eventNode = self.treestore.append(groupNode)
-                self.treestore.set(eventNode,
-                    0, event.eid,
-                    2, pixbufFromFile(event.icon),
-                    3, event.summary,
-                    4, event.description,
-                )
-                #self.treestore.append((
-                #    event.eid,
-                #    None,## group_enable FIXME
-                #    pixbufFromFile(event.icon),
-                #    event.summary,
-                #    event.description,
-                #))
+                #eventNode = self.treestore.append(groupNode)
+                #self.treestore.set(eventNode,
+                #    0, event.eid,
+                #    2, pixbufFromFile(event.icon),
+                #    3, event.summary,
+                #    4, event.description,
+                #)
+                self.treestore.append(groupNode, (
+                    str(event.eid),
+                    pixbufFromFile(event.icon),
+                    event.summary,
+                    event.description,
+                ))
         self.treeviewCursorChanged()
     def onDeleteEvent(self, obj, event):
         self.hide()
         return True
-    def getSelectedObj(self):
-        cur = self.treeview.get_cursor()
-        return cur
-    def groupCellToggled(self, cell, path):
-        print 'groupCellToggled', path
-        #i = int(path)
-        ##cur = self.plugTreeview.get_cursor()[0]
-        ##if cur==None or i!=cur[0]:#?????????
-        ##    return
-        #active = not cell.get_active()
-        #self.treestore[i][1] = active
-        #cell.set_active(active)
+    def getEventByPath(self, path):
+        it = self.treestore.get_iter(path)
+        event_id = int(self.treestore.get_value(it, 0))
+        return ui.eventsById[event_id]## FIXME
     def treeviewCursorChanged(self, treev=None):
-        print 'treeviewCursorChanged', self.getSelectedObj()
+        cur = self.treeview.get_cursor()
+        if not cur:
+            return
+        (path, col) = cur
+        ## update eventInfoBox
+        return True
+    def treeviewButtonPress(self, treev, g_event):
+        pos_t = treev.get_path_at_pos(int(g_event.x), int(g_event.y))
+        if not pos_t:
+            return
+        (path, col, xRel, yRel) = pos_t
+        if not path:
+            return
+        if not col:
+            return
+        rect = treev.get_cell_area(path, col)
+        if not rectangleContainsPoint(rect, g_event.x, g_event.y):
+            return
+        if g_event.button == 1:
+            if len(path) == 1:## event, not a group
+                cell = col.get_cell_renderers()[0]
+                try:
+                    cell.get_property('pixbuf')
+                except:
+                    pass
+                else:
+                    it = self.treestore.get_iter(path)
+                    (enable, color) = self.treestore.get_value(it, 0).split(':')
+                    enable = not eval(enable)
+                    color = eval(color)
+                    self.treestore.set_value(
+                        it,
+                        0,
+                        '%r:%r'%(enable, color),
+                    )
+                    self.treestore.set_value(
+                        it,
+                        1,
+                        newOutlineSquarePixbuf(
+                            color,
+                            20,
+                            0 if enable else 15,
+                            self.getRowBgColor(),
+                        ),
+                    )
+        elif g_event.button == 3:
+            print 'right click on %s'%getTreeviewPathStr(path)
+            if len(path)==1:
+                pass
+            else:
+                event = self.getEventByPath(path)
+                print event.summary
     def addEvent(self, eventType):## FIXME
         if eventType:
             title = _('Add') + ' ' + event_man.eventsClassDict[eventType].desc

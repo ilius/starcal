@@ -992,12 +992,14 @@ class EventGroup(EventItemBase):
             'defaultEventType': self.defaultEventType,
             'defaultCalType': core.modules[self.defaultMode].name,
             'eventCacheSize': self.eventCacheSize,
+            'eventIds': self.eventIds,
         }
     def setData(self, data):
         self.enable = data.get('enable', True)
         self.title = data['title']
         #self.icon = data.get('icon', '')
         self.eventCacheSize = data.get('eventCacheSize', 0)
+        self.eventIds = data.get('eventIds', [])
         ####
         if 'defaultEventType' in data:
             self.defaultEventType = data['defaultEventType']
@@ -1020,7 +1022,7 @@ class EventGroup(EventItemBase):
         assert eid in self.eventIds
         if eid in self.eventCache:
             return self.eventCache[eid]
-        eventFile = self.getEventFile(eid)
+        eventFile = join(eventsDir, str(eid), 'event.json')
         if not isfile(eventFile):
             raise IOError('error while loading event file %r: no such file'%eventFile)
         data = json.loads(open(eventFile).read())
