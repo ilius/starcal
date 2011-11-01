@@ -34,10 +34,12 @@ def makeDir(direc):
     if not isdir(direc):
         os.makedirs(direc)
 
-eventsDir = join(confDir, 'events')
-eventGroupsFile = join(confDir, 'event_groups.json')
+eventsDir = join(confDir, 'event', 'events')
+groupsDir = join(confDir, 'event', 'groups')
+groupListFile = join(confDir, 'event', 'group_list.json')
 
 makeDir(eventsDir)
+makeDir(groupsDir)
 
 class BadEventFile(Exception):## FIXME
     pass
@@ -648,7 +650,7 @@ class Event(EventItemBase):
     requiredRules = ()
     requiredNotifiers = ()
     def __init__(self, eid=None):
-        self.setEid(eid)
+        self.setId(eid)
         self.enable = True
         self.mode = core.primaryMode
         self.icon = '' ## to show in calendar
@@ -739,7 +741,7 @@ class Event(EventItemBase):
             ))
         return data
     getText = lambda self: self.summary if self.summary else self.description
-    def setEid(self, eid=None):
+    def setId(self, eid=None):
         if eid is None or eid<0:
             eid = core.lastEventId + 1 ## FIXME
             core.lastEventId = eid
@@ -765,7 +767,7 @@ class Event(EventItemBase):
         }
     def setData(self, data):
         if 'id' in data:
-            self.setEid(data['id'])
+            self.setId(data['id'])
         self.enable = data.get('enable', True)
         ####
         calType = data['calType']
@@ -972,7 +974,8 @@ class EventGroup(EventItemBase):
     desc = _('Event Group')
     acceptsEventTypes = None ## None means all event types
     actions = []## [('Export to CSV', 'exportCsv')]
-    def __init__(self):
+    def __init__(self, gid=None):
+        self.setId(gid)
         self.enable = True
         self.title = 'Event Group'
         #self.icon = ''
@@ -983,6 +986,14 @@ class EventGroup(EventItemBase):
         ##
         self.eventIds = []
         self.eventCache = {} ## from eid to event object
+    def setId(self, gid=None):
+        if gid is None or gid<0:
+            gid = core.lastEventGroupId + 1 ## FIXME
+            core.lastEventGroupId = gid
+        elif gid > core.lastEventGroupId:
+            core.lastEventGroupId = gid
+        self.gid = gid
+        self.groupFile = join(self.groupsDir, '%d.json'%self.eid)
     def getData(self):
         return {
             'enable': self.enable,
@@ -995,6 +1006,8 @@ class EventGroup(EventItemBase):
             'eventIds': self.eventIds,
         }
     def setData(self, data):
+        if 'id' in data:
+            self.setId(data['id'])
         self.enable = data.get('enable', True)
         self.title = data['title']
         #self.icon = data.get('icon', '')
@@ -1018,6 +1031,14 @@ class EventGroup(EventItemBase):
                 raise ValueError('Invalid defaultCalType: %r'%defaultCalType)
         else:
             self.defaultMode = core.primaryMode
+    def saveConfig(self):
+        open(self.groupFile, 'w').write(self.getJson())
+    def loadConfig(self):
+        if not isfile(self.groupFile):
+            raise IOError('error while loading group file %r: no such file'%self.groupFile)
+        jsonStr = open(self.groupFile).read()
+        if jsonStr:
+            self.setJson(jsonStr)## FIXME
     def getEvent(self, eid):
         assert eid in self.eventIds
         if eid in self.eventCache:
@@ -1043,7 +1064,7 @@ class EventGroup(EventItemBase):
     def getEventsGen(self):
         for eid in self.eventIds:
             yield self.getEvent(eid)
-    iterEvents = lambda self: IteratorFromGen(self.getEventsGen()) ## or __iter__ instead of iterEvents
+    __iter__ = lambda self: IteratorFromGen(self.getEventsGen()) ## iterEvents or __iter__
     __len__ = lambda self: len(self.eventIds)
 
 #class TrashEventGroup(EventGroup):
@@ -1106,7 +1127,7 @@ class DayOccurrenceView(OccurrenceView):
         for group in groups:
             if not group.enable:
                 continue
-            for event in group.iterEvents():
+            for event in group:
                 if not event:
                     continue
                 occur = event.calcOccurrenceForJdRange(startJd, endJd)
@@ -1183,7 +1204,7 @@ class WeekOccurrenceView(OccurrenceView):
         for group in groups:
             if not group.enable:
                 continue
-            for event in group.iterEvents():
+            for event in group:
                 if not event:
                     continue
                 occur = event.calcOccurrenceForJdRange(startJd, endJd)
@@ -1271,7 +1292,7 @@ class MonthOccurrenceView(OccurrenceView):
         for group in groups:
             if not group.enable:
                 continue
-            for event in group.iterEvents():
+            for event in group:
                 if not event:
                     continue
                 occur = event.calcOccurrenceForJdRange(startJd, endJd)
@@ -1343,27 +1364,25 @@ class MonthOccurrenceView(OccurrenceView):
 
 def loadEventGroups():
     #eventIds = []
-    if isfile(eventGroupsFile):
+    groups = []
+    if isfile(eventGroupListFile):
         groups = []
-        for groupDict in json.loads(open(eventGroupsFile).read()):
-            group = EventGroup()
-            group.setData(groupDict)
+        for gid in json.loads(open(eventGroupListFile).read()):
+            group = EventGroup(gid)
+            group.loadConfig()
             groups.append(group)
             ## here check that non of group.eventIds are in eventIds ## FIXME
             #eventIds += group.eventIds
     else:
         group = EventGroup()
         group.setData({'title': _('Events')})## FIXME
+        group.saveConfig()
         groups = [group]
         saveEventGroups(groups)
-    ## here check for non-grouped event ids
+    ## here check for non-grouped event ids ## FIXME
     return groups
 
-def saveEventGroups(groups):
-    data = []
-    for group in groups:
-        data.append(group.getData())
-    open(eventGroupsFile, 'w').write(dataToJson(data))
+saveEventGroups = lambda groups: open(eventGroupListFile, 'w').write(dataToJson([group.gid for group in groups]))
 
 
 ########################################################################

@@ -350,7 +350,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
     for group in ui.eventGroups:
         if not group.enable:
             continue
-        for event in group.iterEvents():
+        for event in group:
             #print 'event %s'%event.summary
             #if not event.showInTimeLine:## FIXME
             #    continue

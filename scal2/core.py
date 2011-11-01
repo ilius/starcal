@@ -545,4 +545,5 @@ loadAllPlugins()## FIXME
 #    weekNumberMode = getLocaleWeekNumberMode()
 
 lastEventId = 0
+lastEventGroupId = 0
 
