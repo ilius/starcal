@@ -149,8 +149,8 @@ class StarCalApplet(MainWin):
         return False
     def updateTrayClock(self):
         MainWin.updateTrayClock(self, False)
-    def trayUpdate(self, gdate=None, checkDate=True):
-        return MainWin.trayUpdate(self, gdate=gdate, checkDate=checkDate, checkTrayMode=False)
+    def trayUpdate(self, gdate=None):
+        return MainWin.trayUpdate(self, gdate=gdate, checkTrayMode=False)
     def onChangeBg(self, applet, typ, color, pixmap):
         applet.set_style(None)
         rc_style = gtk.RcStyle()
