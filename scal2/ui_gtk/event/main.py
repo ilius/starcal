@@ -282,9 +282,10 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         treeBox.pack_start(swin, 1, 1)
         self.vbox.pack_start(treeBox)
         #####
-        self.treestore = gtk.TreeStore(str, gdk.Pixbuf, str, str)
-        ## event: event_id_str,  event_icon,   event_summary, event_description
-        ## group: enable:color,  group_pixbuf, group_title,   ?description
+        self.treestore = gtk.TreeStore(int, gdk.Pixbuf, str, str)
+        ## event: event_id,  event_icon,   event_summary, event_description
+        ## group: group_id,  group_pixbuf, group_title,   ?description     ## -group_id-2 ? FIXME
+        ## trash: -1,        trash_icon,   _('Trash'),    ''
         self.treeview.set_model(self.treestore)
         ###      
         #col = gtk.TreeViewColumn('')## _('Enable')
@@ -323,7 +324,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         rowBgColor = self.getRowBgColor()
         for group in ui.eventGroups:
             groupNode = self.treestore.append(None, (
-                '%r:%r'%(group.enable, group.color),
+                group.gid,
                 newOutlineSquarePixbuf(
                     group.color,
                     20,
@@ -342,19 +343,33 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 #    4, event.description,
                 #)
                 self.treestore.append(groupNode, (
-                    str(event.eid),
+                    event.eid,
                     pixbufFromFile(event.icon),
                     event.summary,
                     event.description,
                 ))
+        trashNode = self.treestore.append(None, (
+            -1,
+            pixbufFromFile(ui.eventTrash.icon),
+            ui.eventTrash.title,
+            '',
+        ))
         self.treeviewCursorChanged()
     def onDeleteEvent(self, obj, event):
         self.hide()
         return True
-    def getEventByPath(self, path):
+    def getObjByPath(self, path):
         it = self.treestore.get_iter(path)
-        event_id = int(self.treestore.get_value(it, 0))
-        return ui.eventsById[event_id]## FIXME
+        obj_id = self.treestore.get_value(it, 0)
+        if len(path)==1:
+            if obj_id==-1:
+                return ('trash', None)
+            else:
+                return ('group', ui.eventGroupsById[obj_id])
+        elif len(path)==2:
+            return ('event', ui.eventsById[obj_id])
+        else:
+            raise RuntimeError('invalid tree path length %d, path=%s'%(len(path), path))
     def treeviewCursorChanged(self, treev=None):
         cur = self.treeview.get_cursor()
         if not cur:
@@ -403,11 +418,13 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                     )
         elif g_event.button == 3:
             print 'right click on %s'%getTreeviewPathStr(path)
-            if len(path)==1:
-                pass
-            else:
-                event = self.getEventByPath(path)
-                print event.summary
+            (obj_type, obj) = self.getObjByPath(path)
+            if obj_type=='event':
+                print 'right click on event', obj.summary
+            elif obj_type=='group':
+                print 'right click on group', obj.title
+            elif obj_type=='trash':
+                print 'right click on trash'
     def addEvent(self, eventType):## FIXME
         if eventType:
             title = _('Add') + ' ' + event_man.eventsClassDict[eventType].desc

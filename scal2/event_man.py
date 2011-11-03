@@ -38,6 +38,8 @@ eventsDir = join(confDir, 'event', 'events')
 groupsDir = join(confDir, 'event', 'groups')
 groupListFile = join(confDir, 'event', 'group_list.json')
 
+trashFile = join(confDir, 'event', 'trash.json')## FIXME
+
 makeDir(eventsDir)
 makeDir(groupsDir)
 
@@ -133,6 +135,18 @@ class EventItemBase:
     getJson = lambda self: jsonToData(self.getData())
     getCompactJson = lambda self: dataToCompactJson(self.getData())
     setJson = lambda self, jsonStr: self.setData(json.loads(jsonStr))
+
+#class JsonEventItem(EventItemBase):## FIXME
+#    def __init__(self, jsonPath):
+#        self.jsonPath = jsonPath
+#    def saveConfig(self):
+#        open(self.jsonPath, 'w').write(self.getJson())
+#    def loadConfig(self):
+#        if not isfile(self.jsonPath):
+#            raise IOError('error while loading json file %r: no such file'%self.jsonPath)
+#        jsonStr = open(self.jsonPath).read()
+#        if jsonStr:
+#            self.setJson(jsonStr)## FIXME
     
 class Occurrence(EventItemBase):
     def __init__(self):
@@ -727,7 +741,7 @@ class Event(EventItemBase):
     def loadFiles(self):
         self.files = []
         if isdir(self.filesDir):
-            for fname in os.listdir(self.filesDir):
+            for fname in listdir(self.filesDir):
                 if isfile(join(self.filesDir, fname)) and not fname.endswith('~'):## FIXME
                     self.files.append(fname)
     getUrlForFile = lambda self, fname: 'file:' + os.sep*2 + self.filesDir + os.sep + fname
@@ -968,13 +982,34 @@ class UniversityClassEvent(Event):## FIXME
     desc = _('University Class')
     requiredRules = ()
 
+class EventContainer(EventItemBase):
+    def __init__(self):
+       self.eventIds = [] 
+    def getEvent(self, eid):
+        assert eid in self.eventIds
+        eventFile = join(eventsDir, str(eid), 'event.json')
+        if not isfile(eventFile):
+            raise IOError('error while loading event file %r: no such file'%eventFile)
+        data = json.loads(open(eventFile).read())
+        data['eid'] = eid ## FIXME
+        event = eventsClassDict[data['type']](eid)
+        event.setData(data)
+        return event
+    def getEventsGen(self):
+        for eid in self.eventIds:
+            yield self.getEvent(eid)
+    __iter__ = lambda self: IteratorFromGen(self.getEventsGen()) ## iterEvents or __iter__
+    __len__ = lambda self: len(self.eventIds)
 
-class EventGroup(EventItemBase):
+
+class EventGroup(EventContainer):
     name = 'group'
     desc = _('Event Group')
     acceptsEventTypes = None ## None means all event types
     actions = []## [('Export to CSV', 'exportCsv')]
+    eventActions = [] ## FIXME
     def __init__(self, gid=None):
+        EventContainer.__init__(self)
         self.setId(gid)
         self.enable = True
         self.title = 'Event Group'
@@ -983,8 +1018,6 @@ class EventGroup(EventItemBase):
         self.defaultEventType = 'custom'
         self.defaultMode = core.primaryMode
         self.eventCacheSize = 0
-        ##
-        self.eventIds = []
         self.eventCache = {} ## from eid to event object
     def setId(self, gid=None):
         if gid is None or gid<0:
@@ -1043,33 +1076,17 @@ class EventGroup(EventItemBase):
         assert eid in self.eventIds
         if eid in self.eventCache:
             return self.eventCache[eid]
-        eventFile = join(eventsDir, str(eid), 'event.json')
-        if not isfile(eventFile):
-            raise IOError('error while loading event file %r: no such file'%eventFile)
-        data = json.loads(open(eventFile).read())
-        data['eid'] = eid ## FIXME
-        event = eventsClassDict[data['type']](eid)
-        event.setData(data)
+        event = EventContainer.getEvent(self, eid)
         if len(self.eventCache) < self.eventCacheSize:
             self.eventCache[eid] = event
         return event
-    def deleteEvent(self, eid):
+    def excludeEvent(self, eid):## call when moving to trash
         assert eid in self.eventIds
-        shutil.rmtree(join(eventsDir, str(eid)))
         self.eventIds.remove(eid)
         try:
             del self.eventCache[eid]
         except:
             pass
-    def getEventsGen(self):
-        for eid in self.eventIds:
-            yield self.getEvent(eid)
-    __iter__ = lambda self: IteratorFromGen(self.getEventsGen()) ## iterEvents or __iter__
-    __len__ = lambda self: len(self.eventIds)
-
-#class TrashEventGroup(EventGroup):
-#    name = 'trash'
-#    desc = _('Trash')
 
 class UniversityTerm(EventGroup):
     name = 'universityTerm'
@@ -1089,6 +1106,49 @@ class NoteBook(EventGroup):
     acceptsEventTypes = ('dailyNote',)
     #actions = EventGroup.actions + []
 
+
+class EventTrash(EventContainer):
+    name = 'trash'
+    desc = _('Trash')
+    def __init__(self):
+        EventContainer.__init__(self)
+        self.title = _('Trash')
+        self.icon = 'trash.png'
+    def deleteEvent(self, eid):
+        assert eid in self.eventIds
+        try:
+            shutil.rmtree(join(eventsDir, str(eid)))
+        except:
+            myRaise()
+        else:
+            self.eventIds.remove(eid)
+    def empty(self):
+        eventIds2 = self.eventIds[:]
+        for eid in self.eventIds:
+            try:
+                shutil.rmtree(join(eventsDir, str(eid)))
+            except:
+                myRaise()
+            else:
+                eventIds2.remove(eid)
+        self.eventIds = eventIds2
+    def getData(self):
+        return {
+            'title': self.title,
+            'icon': self.icon,
+            'eventIds': self.eventIds,
+        }
+    def setData(self, data):
+        self.title = data.get('title', _('Trash'))
+        self.icon = data.get('icon', '')
+        self.eventIds = data.get('eventIds', [])
+    def saveConfig(self):
+        open(trashFile, 'w').write(self.getJson())
+    def loadConfig(self):
+        if isfile(trashFile):
+            jsonStr = open(trashFile).read()
+            if jsonStr:
+                self.setJson(jsonStr)## FIXME
 
 
 class OccurrenceView:
@@ -1377,12 +1437,38 @@ def loadEventGroups():
         group = EventGroup()
         group.setData({'title': _('Events')})## FIXME
         group.saveConfig()
-        groups = [group]
+        groups.append(group)
+        ###
+        #trash = EventTrash()## FIXME
+        #group.saveConfig()
+        #groups.append(trash)
+        ###
         saveEventGroups(groups)
     ## here check for non-grouped event ids ## FIXME
     return groups
 
 saveEventGroups = lambda groups: open(eventGroupListFile, 'w').write(dataToJson([group.gid for group in groups]))
+
+def loadEventTrash(groups=[]):
+    trash = EventTrash()
+    trash.loadConfig()
+    ###
+    groupedIds = trash.eventIds[:]
+    for group in groups:
+        groupedIds += group.eventIds
+    nonGroupedIds = []
+    for eid in listdir(eventsDir):
+        try:
+            eid = int(eid)
+        except:
+            continue
+        if not eid in groupedIds:
+            nonGroupedIds.append(eid)
+    if nonGroupedIds:
+        trash.eventIds += nonGroupedIds
+        trash.saveConfig()
+    ###
+    return trash
 
 
 ########################################################################
