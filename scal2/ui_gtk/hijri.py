@@ -47,6 +47,7 @@ class EditDbDialog(gtk.Dialog):
     def __init__(self):## parent FIXME
         gtk.Dialog.__init__(self)
         self.set_title(_('Tune Hijri Monthes'))
+        self.connect('delete-event', self.onDeleteEvent)
         ############
         self.altMode = 0
         self.altModeDesc = 'Gregorian'
@@ -203,6 +204,9 @@ class EditDbDialog(gtk.Dialog):
             self.destroy()
         elif response_id==gtk.RESPONSE_CANCEL:
             self.destroy()
+        return True
+    def onDeleteEvent(self, dialog, event):
+        self.destroy()
         return True
 
 def tuneHijriMonthes(widget=None):
