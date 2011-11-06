@@ -22,8 +22,9 @@ from time import time
 import sys, os, os.path, shutil
 from os import listdir
 from os.path import dirname, join, isfile, isdir
-from xml.dom.minidom import parse
+from xml.dom.minidom import parse## remove FIXME
 from subprocess import Popen
+from collections import OrderedDict
 
 from scal2.utils import NullObj
 from scal2.paths import *
@@ -43,7 +44,7 @@ invertColor = lambda r, g, b: (255-r, 255-g, 255-b)
 ## htmlColorToGdk=lambda hc: gdk.Color(int(hc[1:3], 16)*256, int(hc[3:5], 16)*256, int(hc[5:7], 16)*256)
 ## htmlColorToGdk = lambda hc: gdk.color_parse(hc)
 
-def getElementText(el):
+def getElementText(el):## remove FIXME
     rc = u''
     name = el.nodeName
     for node in el.childNodes:
@@ -369,7 +370,7 @@ def checkMainWinItems():
         #print '------ new', name
         mainWinItems.append((name, False))## FIXME
 
-def loadCustomDB():
+def loadCustomDB():## remove FIXME
     global customDB
     if not isfile(customFile):
         customDB = None
@@ -393,39 +394,21 @@ def loadCustomDB():
         customDB.append(item)
 
 
-def loadEventGroups():
-    global eventGroups
-    eventGroups = event_man.loadEventGroups()
-
-saveEventGroups = lambda: event_man.saveEventGroups(eventGroups)
-
-#def updateActiveEventIds():
-#    global activeEventIds
-#    activeEventIds = []
-#    for group in eventGroups:
-#        if group.enable:
-#            activeEventIds += group.eventIds
-
-def getActiveEventsGen():
-    for group in eventGroups:
-        if group.enable:
-            for eid in group.eventIds:
-                yield group.getEvent(eid)
 
 
-def deleteEvent(e):
-    global events, eventsById
-    events.remove(e)
-    del eventsById[e.eid]
-    shutil.rmtree(e.eventDir)
+#def deleteEvent(e):## remove? FIXME
+#    global events, eventsById
+#    events.remove(e)
+#    del eventsById[e.eid]
+#    shutil.rmtree(e.eventDir)
 
-def addEvent(e):
-    global events, eventsById
-    events.append(e)
-    eventsById[e.eid] = e
-    e.saveConfig()
+#def addEvent(e):## remove? FIXME
+#    global events, eventsById
+#    events.append(e)
+#    eventsById[e.eid] = e
+#    e.saveConfig()
 
-#def updateEvent(e):## FIXME
+#def updateEvent(e):## remove? FIXME
 #    e.saveConfig()
 
 ######################################################################
@@ -495,20 +478,22 @@ eventTagsDesc = dict([(t.name, t.desc) for t in eventTags])
 ###################
 customDB = []
 loadCustomDB()
-eventGroups = []
-#activeEventIds = []
+eventGroups = event_man.EventGroupsHolder()
+#eventGroups.loadConfig()## FIXME here or in ui_*/event/main.py
+eventTrash = event_man.EventTrash()
+#eventTrash.loadConfig()## FIXME here or in ui_*/event/main.py
 
 
-def updateEventTagsUsage():
-    tagsDict = getEventTagsDict()
-    for tagObj in eventTags:
-        tagObj.usage = 0
-    for event in events:
-        for tag in event.tags:
-            try:
-                tagsDict[tag].usage += 1
-            except KeyError:
-                pass
+#def updateEventTagsUsage():## FIXME where to use?
+#    tagsDict = getEventTagsDict()
+#    for tagObj in eventTags:
+#        tagObj.usage = 0
+#    for event in events:## FIXME
+#        for tag in event.tags:
+#            try:
+#                tagsDict[tag].usage += 1
+#            except KeyError:
+#                pass
 
 
 ###################

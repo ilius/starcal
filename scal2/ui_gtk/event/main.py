@@ -29,161 +29,18 @@ from scal2 import event_man
 #from scal2.event import dateEncode, timeEncode, dateDecode, timeDecode
 
 from scal2 import ui
-from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile
+from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile, rectangleContainsPoint, \
+                               labelStockMenuItem, labelImageMenuItem
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 #from scal2.ui_gtk.mywidgets.multi_spin_box import DateBox, TimeBox
 
-from xml.dom.minidom import getDOMImplementation, parse
-from xml.parsers.expat import ExpatError
+from scal2.ui_gtk.event.occurrence_view import *
 
 import gtk
 from gtk import gdk
 
-
 #print 'Testing translator', __file__, _('About')
-
-def combo_model_delete_text(model, path, itr, text_to_del):
-    ## Usage: combo.get_model().foreach(combo_model_delete_text, 'The Text')
-    if model[path[0]][0]==text_to_del:
-        del model[path[0]]
-        return
-
-def cellToggled(cell, path=None):
-    print 'cellToggled', path
-    cell.set_active(not cell.get_active())##????????????????????????
-    return True
-
-def comboToggleActivate(combo, *args):
-    print combo.get_property('popup-shown')
-    if not combo.get_property('popup-shown'):
-        combo.popup()
-        return True
-    return False
-
-def getTreeviewPathStr(path):
-    if not path:
-        return None
-    return '/'.join([str(x) for x in path])
-
-def rectangleContainsPoint(r, x, y):
-    return r.x <= x < r.x + r.width and r.y <= y < r.y + r.height
-
-
-class DayOccurrenceView(event_man.DayOccurrenceView, gtk.VBox):
-    updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
-    def __init__(self, populatePopupFunc=None):
-        event_man.DayOccurrenceView.__init__(self, ui.cell.jd)
-        gtk.VBox.__init__(self)
-        ## what to do with populatePopupFunc FIXME
-        ## self.textview.connect('populate-popup', populatePopupFunc)
-        self.updateWidget()
-    def updateWidget(self):
-        self.updateData()
-        ## destroy all VBox contents and add again
-        for hbox in self.get_children():
-            hbox.destroy()
-        for item in self.data:
-            ## item['time'], item['text'], item['icon']
-            hbox = gtk.HBox()
-            if item['icon']:
-                hbox.pack_start(imageFromFile(item['icon']), 0, 0)
-            if item['time']:
-                hbox.pack_start(gtk.Label(item['time']), 0, 0)
-            label = gtk.Label(item['text'])
-            label.set_selectable(True)
-            label.set_line_wrap(True)
-            label.set_use_markup(True)
-            hbox.pack_start(label, 1, 1)
-            self.pack_start(hbox, 0, 0)
-        self.show_all()
-        self.set_visible(bool(self.data))
-
-
-class WeekOccurrenceView(event_man.WeekOccurrenceView, gtk.TreeView):
-    updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
-    def __init__(self, abrivateWeekDays=False):
-        self.abrivateWeekDays = abrivateWeekDays
-        event_man.WeekOccurrenceView.__init__(self, ui.cell.jd)
-        gtk.TreeView.__init__(self)
-        self.set_headers_visible(False)
-        self.ls = gtk.ListStore(gdk.Pixbuf, str, str, str)## icon, weekDay, time, text
-        self.set_model(self.ls)
-        ###
-        cell = gtk.CellRendererPixbuf()
-        col = gtk.TreeViewColumn(_('Icon'), cell)
-        col.add_attribute(cell, 'pixbuf', 0)
-        self.append_column(col)
-        ###
-        cell = gtk.CellRendererText()
-        col = gtk.TreeViewColumn(_('Week Day'), cell)
-        col.add_attribute(cell, 'text', 1)
-        col.set_resizable(True)
-        self.append_column(col)
-        ###
-        cell = gtk.CellRendererText()
-        col = gtk.TreeViewColumn(_('Time'), cell)
-        col.add_attribute(cell, 'text', 2)
-        col.set_resizable(True)## FIXME
-        self.append_column(col)
-        ###
-        cell = gtk.CellRendererText()
-        col = gtk.TreeViewColumn(_('Description'), cell)
-        col.add_attribute(cell, 'text', 3)
-        col.set_resizable(True)
-        self.append_column(col)
-    def updateWidget(self):
-        self.updateData()
-        self.ls.clear()
-        for item in self.data:
-            self.ls.append(
-                pixbufFromFile(item['icon']),
-                core.weekDayNameAb(item['weekDay']) if self.abrivateWeekDays else core.weekDayName(item['weekDay']),
-                item['time'],
-                item['text'],
-            )
-
-class MonthOccurrenceView(event_man.MonthOccurrenceView, gtk.TreeView):
-    updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
-    def __init__(self):
-        event_man.MonthOccurrenceView.__init__(self, ui.cell.jd)
-        gtk.TreeView.__init__(self)
-        self.set_headers_visible(False)
-        self.ls = gtk.ListStore(gdk.Pixbuf, str, str, str)## icon, day, time, text
-        self.set_model(self.ls)
-        ###
-        cell = gtk.CellRendererPixbuf()
-        col = gtk.TreeViewColumn('', cell)
-        col.add_attribute(cell, 'pixbuf', 0)
-        self.append_column(col)
-        ###
-        cell = gtk.CellRendererText()
-        col = gtk.TreeViewColumn(_('Day'), cell)
-        col.add_attribute(cell, 'text', 1)
-        col.set_resizable(True)
-        self.append_column(col)
-        ###
-        cell = gtk.CellRendererText()
-        col = gtk.TreeViewColumn(_('Time'), cell)
-        col.add_attribute(cell, 'text', 2)
-        col.set_resizable(True)## FIXME
-        self.append_column(col)
-        ###
-        cell = gtk.CellRendererText()
-        col = gtk.TreeViewColumn(_('Description'), cell)
-        col.add_attribute(cell, 'text', 3)
-        col.set_resizable(True)
-        self.append_column(col)
-    def updateWidget(self):
-        self.updateData()
-        self.ls.clear()## FIXME
-        for item in self.data:
-            self.ls.append(
-                pixbufFromFile(item['icon']),
-                numLocale(item['day']),
-                item['time'],
-                item['text'],
-            )
 
 
 class EventEditorDialog(gtk.Dialog):
@@ -272,6 +129,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         #####
         self.treeview = gtk.TreeView()
         #self.treeview.set_headers_visible(False)## FIXME
+        #self.treeview.get_selection().set_mode(gtk.SELECTION_MULTIPLE)## FIXME
+        #self.treeview.set_rubber_banding(gtk.SELECTION_MULTIPLE)## FIXME
         self.treeview.connect('realize', self.onTreeviewRealize)
         self.treeview.connect('cursor-changed', self.treeviewCursorChanged)## FIXME
         self.treeview.connect('button-press-event', self.treeviewButtonPress)
@@ -287,43 +146,94 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         ## group: group_id,  group_pixbuf, group_title,   ?description     ## -group_id-2 ? FIXME
         ## trash: -1,        trash_icon,   _('Trash'),    ''
         self.treeview.set_model(self.treestore)
-        ###      
-        #col = gtk.TreeViewColumn('')## _('Enable')
-        #cell = gtk.CellRendererToggle()
-        ##cell.set_property('activatable', True)
-        #cell.connect('toggled', self.groupCellToggled)
-        #col.pack_start(cell)
-        #col.add_attribute(cell, 'active', 1)
-        #cell.set_active(False)
-        #col.set_resizable(True)
-        #self.treeview.append_column(col)
         ###
-        col = gtk.TreeViewColumn('')
+        col = gtk.TreeViewColumn()
         cell = gtk.CellRendererPixbuf()
         col.pack_start(cell)
         col.add_attribute(cell, 'pixbuf', 1)
-        col.set_resizable(False)
         self.treeview.append_column(col)
         ###
         col = gtk.TreeViewColumn(_('Summary'), gtk.CellRendererText(), text=2)
         col.set_resizable(True)
         self.treeview.append_column(col)
-        self.treeview.set_search_column(1)
         ###
         col = gtk.TreeViewColumn(_('Description'), gtk.CellRendererText(), text=3)
         self.treeview.append_column(col)
-        #self.treeview.set_search_column(2)
+        ###
+        #self.treeview.set_search_column(2)## or 3
+        ###
+        #self.clipboard = gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD)
+        #self.clipboard = gtk.clipboard_get()
+        self.toPasteEvent = None ## (path, bool move)
         #####
         self.vbox.show_all()
         #self.reloadEvents()## FIXME
+    def openRightClickMenu(self, path, etime=None):
+        ## how about multi-selection? FIXME
+        ## and Select _All menu item
+        #cur = self.treeview.get_cursor()
+        #if not cur:
+        #    return None
+        #(path, col) = cur
+        obj_list = self.getObjsByPath(path)
+        #print len(obj_list)
+        menu = gtk.Menu()
+        if len(obj_list)==1:
+            group = obj_list[0]
+            if group.name == 'trash':
+                print 'right click on trash', group.title
+                menu.add(labelStockMenuItem('_Edit', gtk.STOCK_EDIT, self.editTrash))
+                menu.add(labelStockMenuItem('_Clear', gtk.STOCK_EDIT, self.clearTrash))
+            else:
+                print 'right click on group', group.title
+                menu.add(labelStockMenuItem('_Edit', gtk.STOCK_EDIT, self.editGroup, group))
+                ##
+                pasteItem = labelStockMenuItem('_Paste', gtk.STOCK_PASTE, self.pasteEventIntoGroup, path)
+                pasteItem.set_sensitive(self.toPasteEvent is not None)
+                menu.add(pasteItem)
+                ##
+                menu.add(labelStockMenuItem('Move _Up', gtk.STOCK_EDIT, self.moveGroupUp, group))
+                menu.add(labelStockMenuItem('Move _Down', gtk.STOCK_EDIT, self.moveGroupDown, group))
+                for (actionName, actionFuncName) in group.actions:
+                    menu.add(labelStockMenuItem(_(actionName), None, self.groupActionClicked, group, actionFuncName))
+        elif len(obj_list)==2:
+            (group, event) = obj_list
+            print 'right click on event', event.summary
+            if group.name != 'trash':
+                menu.add(labelStockMenuItem('_Edit', gtk.STOCK_EDIT, self.editEventFromMenu))
+                menu.add(gtk.SeparatorMenuItem())
+            menu.add(labelStockMenuItem('Cu_t', gtk.STOCK_CUT, self.cutEvent, path))
+            menu.add(labelStockMenuItem('_Copy', gtk.STOCK_COPY, self.copyEvent, path))
+            ##
+            if group.name == 'trash':
+                menu.add(gtk.SeparatorMenuItem())
+                menu.add(labelStockMenuItem('_Delete', gtk.STOCK_DELETE, self.deleteEventFromTrash, path))
+            else:
+                pasteItem = labelStockMenuItem('_Paste', gtk.STOCK_PASTE, self.pasteEventAfterEvent, path)
+                pasteItem.set_sensitive(self.toPasteEvent is not None)
+                menu.add(pasteItem)
+                menu.add(gtk.SeparatorMenuItem())
+                menu.add(labelImageMenuItem('_Move to Trash', ui.eventTrash.icon, self.moveEventToTrash, path))
+        else:
+            return
+        menu.show_all()
+        if etime is None:
+            pass ## FIXME
+        menu.popup(None, None, None, 3, etime)
     def onTreeviewRealize(self, event):
         self.reloadEvents()## FIXME
     getRowBgColor = lambda self: gdkColorToRgb(self.treeview.style.base[gtk.STATE_NORMAL])## bg color of non-selected rows
+    getEventRow = lambda self, event: (
+        event.eid,
+        pixbufFromFile(event.icon),
+        event.summary,
+        event.description,
+    )
     def reloadEvents(self):
         self.treestore.clear()
         rowBgColor = self.getRowBgColor()
         for group in ui.eventGroups:
-            groupNode = self.treestore.append(None, (
+            groupIter = self.treestore.append(None, (
                 group.gid,
                 newOutlineSquarePixbuf(
                     group.color,
@@ -334,42 +244,33 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 group.title,
                 '',
             ))
-            for event in group.iterEvents():
-                #eventNode = self.treestore.append(groupNode)
-                #self.treestore.set(eventNode,
-                #    0, event.eid,
-                #    2, pixbufFromFile(event.icon),
-                #    3, event.summary,
-                #    4, event.description,
-                #)
-                self.treestore.append(groupNode, (
-                    event.eid,
-                    pixbufFromFile(event.icon),
-                    event.summary,
-                    event.description,
-                ))
-        trashNode = self.treestore.append(None, (
+            for event in group:
+                self.treestore.append(groupIter, self.getEventRow(event))
+        self.trashIter = self.treestore.append(None, (
             -1,
             pixbufFromFile(ui.eventTrash.icon),
             ui.eventTrash.title,
             '',
         ))
+        for event in ui.eventTrash:
+            self.treestore.append(self.trashIter, self.getEventRow(event))
         self.treeviewCursorChanged()
     def onDeleteEvent(self, obj, event):
         self.hide()
         return True
-    def getObjByPath(self, path):
-        it = self.treestore.get_iter(path)
-        obj_id = self.treestore.get_value(it, 0)
-        if len(path)==1:
-            if obj_id==-1:
-                return ('trash', None)
+    def getObjsByPath(self, path):
+        obj_list = []
+        for i in range(len(path)):
+            it = self.treestore.get_iter(path[:i+1])
+            obj_id = self.treestore.get_value(it, 0)
+            if i==0:
+                if obj_id==-1:
+                    obj_list.append(ui.eventTrash)
+                else:
+                    obj_list.append(ui.eventGroups[obj_id])
             else:
-                return ('group', ui.eventGroupsById[obj_id])
-        elif len(path)==2:
-            return ('event', ui.eventsById[obj_id])
-        else:
-            raise RuntimeError('invalid tree path length %d, path=%s'%(len(path), path))
+                obj_list.append(obj_list[i-1].getEvent(obj_id))
+        return obj_list
     def treeviewCursorChanged(self, treev=None):
         cur = self.treeview.get_cursor()
         if not cur:
@@ -390,41 +291,121 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         if not rectangleContainsPoint(rect, g_event.x, g_event.y):
             return
         if g_event.button == 1:
-            if len(path) == 1:## event, not a group
-                cell = col.get_cell_renderers()[0]
-                try:
-                    cell.get_property('pixbuf')
-                except:
-                    pass
-                else:
-                    it = self.treestore.get_iter(path)
-                    (enable, color) = self.treestore.get_value(it, 0).split(':')
-                    enable = not eval(enable)
-                    color = eval(color)
-                    self.treestore.set_value(
-                        it,
-                        0,
-                        '%r:%r'%(enable, color),
-                    )
-                    self.treestore.set_value(
-                        it,
-                        1,
-                        newOutlineSquarePixbuf(
-                            color,
-                            20,
-                            0 if enable else 15,
-                            self.getRowBgColor(),
-                        ),
-                    )
+            obj_list = self.getObjsByPath(path)
+            node_iter = self.treestore.get_iter(path)
+            if len(obj_list) == 1:## group, not event
+                group = obj_list[0]
+                if group.name != 'trash':
+                    cell = col.get_cell_renderers()[0]
+                    try:
+                        cell.get_property('pixbuf')
+                    except:
+                        pass
+                    else:
+                        group.enable = not group.enable
+                        group.saveConfig()
+                        self.treestore.set_value(
+                            node_iter,
+                            1,
+                            newOutlineSquarePixbuf(
+                                group.color,
+                                20,
+                                0 if group.enable else 15,
+                                self.getRowBgColor(),
+                            ),
+                        )
         elif g_event.button == 3:
-            print 'right click on %s'%getTreeviewPathStr(path)
-            (obj_type, obj) = self.getObjByPath(path)
-            if obj_type=='event':
-                print 'right click on event', obj.summary
-            elif obj_type=='group':
-                print 'right click on group', obj.title
-            elif obj_type=='trash':
-                print 'right click on trash'
+            self.openRightClickMenu(path, g_event.time)
+    def editTrash(self, menu):
+        pass
+    def clearTrash(self, menu):
+        pass
+    def editGroup(self, menu, group):
+        pass
+    def moveGroupUp(self, menu, group):
+        pass
+    def moveGroupDown(self, menu, group):
+        pass
+    def groupActionClicked(self, menu, group, actionFuncName):
+        getattr(group, actionFuncName)()
+    def editEventFromMenu(self, menu):
+        pass
+    def cutEvent(self, menu, path):
+        self.toPasteEvent = (path, True)
+    def copyEvent(self, menu, path):
+        self.toPasteEvent = (path, False)
+    def pasteEventAfterEvent(self, menu, tarPath):## tarPath is a 2-lengthed tuple
+        if not self.toPasteEvent:
+            return
+        (srcPath, move) = self.toPasteEvent
+        (srcGroup, srcEvent) = self.getObjsByPath(srcPath)
+        (tarGroup, tarEvent) = self.getObjsByPath(tarPath)
+        # tarEvent is not used
+        ###
+        if move:
+            srcGroup.excludeEvent(srcEvent.eid)
+            srcGroup.saveConfig()
+            tarGroup.insert(tarPath[1], srcEvent)
+            tarGroup.saveConfig()
+            self.treestore.move_after(
+                self.treestore.get_iter(srcPath),
+                self.treestore.get_iter(tarPath),
+            )
+        else:
+            newEvent = srcEvent.copy()
+            newEvent.saveConfig()
+            tarGroup.insert(tarPath[1], newEvent)
+            tarGroup.saveConfig()
+            self.treestore.insert_after(
+                self.treestore.get_iter(tarPath[:1]),## parent
+                self.treestore.get_iter(tarPath),## sibling
+                self.getEventRow(newEvent), ## row
+            )
+        self.toPasteEvent = None
+    def pasteEventIntoGroup(self, menu, tarPath):## tarPath is a 1-lengthed tuple
+        if not self.toPasteEvent:
+            return
+        (srcPath, move) = self.toPasteEvent
+        (srcGroup, srcEvent) = self.getObjsByPath(srcPath)
+        (tarGroup,) = self.getObjsByPath(tarPath)
+        tarGroupIter = self.treestore.get_iter(tarPath)
+        ###
+        if move:
+            srcGroup.excludeEvent(srcEvent.eid)
+            srcGroup.saveConfig()
+            tarGroup.append(srcEvent)
+            tarGroup.saveConfig()
+            tarGroupCount = self.treestore.iter_n_children(tarGroupIter)
+            self.treestore.move_after(
+                self.treestore.get_iter(srcPath),
+                self.treestore.get_iter((tarPath[0], tarGroupCount-1)),
+            )
+        else:
+            newEvent = srcEvent.copy()
+            newEvent.saveConfig()
+            tarGroup.append(newEvent)
+            tarGroup.saveConfig()
+            self.treestore.append(
+                tarGroupIter,## parent
+                self.getEventRow(newEvent), ## row
+            )
+        self.toPasteEvent = None
+    def moveEventToTrash(self, menu, path):
+        (group, event) = self.getObjsByPath(path)
+        group.excludeEvent(event.eid)
+        group.saveConfig()
+        ui.eventTrash.append(event)
+        ui.eventTrash.saveConfig()
+        self.treestore.move_before(
+            self.treestore.get_iter(path),
+            self.treestore.iter_nth_child(self.trashIter, 0),## GtkWarning: Given children are not in the same level
+        )
+    def deleteEventFromTrash(self, menu, path):
+        pass
+    #def selectAllEventInGroup(self, menu):## FIXME
+    #    pass
+    #def selectAllEventInTrash(self, menu):## FIXME
+    #    pass
     def addEvent(self, eventType):## FIXME
         if eventType:
             title = _('Add') + ' ' + event_man.eventsClassDict[eventType].desc
@@ -655,7 +636,8 @@ event_man.EventRule.makeWidget = makeWidget
 event_man.EventNotifier.makeWidget = makeWidget
 
 
-ui.loadEventGroups()
+ui.eventGroups.loadConfig()
+ui.eventTrash.loadConfig()
 
 def testCustomEventEditor():
     from pprint import pprint, pformat

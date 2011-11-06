@@ -100,7 +100,7 @@ def labelStockMenuItem(label, stock=None, func=None, *args):
 
 def labelImageMenuItem(label, image, func=None, *args):
     item = gtk.ImageMenuItem(_(label))
-    item.set_image(imageFromFile('%s%s%s'%(pixDir, os.sep, image)))
+    item.set_image(imageFromFile(image))
     if func:
         item.connect('activate', func, *args)
     return item
@@ -116,4 +116,28 @@ def modify_bg_all(widget, state, gcolor):
         for child in children:
             modify_bg_all(child, state, gcolor)
 
+def combo_model_delete_text(model, path, itr, text_to_del):
+    ## Usage: combo.get_model().foreach(combo_model_delete_text, 'The Text')
+    if model[path[0]][0]==text_to_del:
+        del model[path[0]]
+        return
+
+def cellToggled(cell, path=None):
+    print 'cellToggled', path
+    cell.set_active(not cell.get_active())##????????????????????????
+    return True
+
+def comboToggleActivate(combo, *args):
+    print combo.get_property('popup-shown')
+    if not combo.get_property('popup-shown'):
+        combo.popup()
+        return True
+    return False
+
+def getTreeviewPathStr(path):
+    if not path:
+        return None
+    return '/'.join([str(x) for x in path])
+
+rectangleContainsPoint = lambda r, x, y: r.x <= x < r.x + r.width and r.y <= y < r.y + r.height
 

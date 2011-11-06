@@ -132,7 +132,7 @@ class EventItemBase:
     order = 0 ## an int or str or everything, just effect to visible order in GUI
     getData = lambda self: None
     setData = lambda self: None
-    getJson = lambda self: jsonToData(self.getData())
+    getJson = lambda self: dataToJson(self.getData())
     getCompactJson = lambda self: dataToCompactJson(self.getData())
     setJson = lambda self, jsonStr: self.setData(json.loads(jsonStr))
 
@@ -738,6 +738,10 @@ class Event(EventItemBase):
             self.rules = event.rules[:]
         self.notifiers = event.notifiers[:]## FIXME
         self.checkRequirements()
+    def copy(self):
+        newEvent = self.__class__()
+        newEvent.copyFrom(self)
+        return newEvent
     def loadFiles(self):
         self.files = []
         if isdir(self.filesDir):
@@ -983,6 +987,8 @@ class UniversityClassEvent(Event):## FIXME
     requiredRules = ()
 
 class EventContainer(EventItemBase):
+    name = ''
+    desc = ''
     def __init__(self):
        self.eventIds = [] 
     def getEvent(self, eid):
@@ -998,9 +1004,10 @@ class EventContainer(EventItemBase):
     def getEventsGen(self):
         for eid in self.eventIds:
             yield self.getEvent(eid)
-    __iter__ = lambda self: IteratorFromGen(self.getEventsGen()) ## iterEvents or __iter__
+    __iter__ = lambda self: IteratorFromGen(self.getEventsGen())
     __len__ = lambda self: len(self.eventIds)
-
+    insert = lambda self, index, event: self.eventIds.insert(index, event.eid)
+    append = lambda self, event: self.eventIds.append(event.eid)
 
 class EventGroup(EventContainer):
     name = 'group'
@@ -1026,7 +1033,7 @@ class EventGroup(EventContainer):
         elif gid > core.lastEventGroupId:
             core.lastEventGroupId = gid
         self.gid = gid
-        self.groupFile = join(self.groupsDir, '%d.json'%self.eid)
+        self.groupFile = join(groupsDir, '%d.json'%self.gid)
     def getData(self):
         return {
             'enable': self.enable,
@@ -1081,12 +1088,32 @@ class EventGroup(EventContainer):
             self.eventCache[eid] = event
         return event
     def excludeEvent(self, eid):## call when moving to trash
-        assert eid in self.eventIds
+        '''
+            excludes event from this group (not remove event data completely)
+            and returns the index of (previously contained) event
+        '''
+        index = self.eventIds.index(eid)
         self.eventIds.remove(eid)
         try:
             del self.eventCache[eid]
         except:
             pass
+        return index
+    def insert(self, index, event):
+        self.eventIds.insert(index, event.eid)
+        if len(self.eventCache) < self.eventCacheSize:
+            self.eventCache[event.eid] = event
+    def append(self, event):
+        self.eventIds.append(event.eid)
+        if len(self.eventCache) < self.eventCacheSize:
+            self.eventCache[event.eid] = event
+
+
+
+
+
+
+        
 
 class UniversityTerm(EventGroup):
     name = 'universityTerm'
@@ -1105,6 +1132,79 @@ class NoteBook(EventGroup):
     desc = _('Note Book')
     acceptsEventTypes = ('dailyNote',)
     #actions = EventGroup.actions + []
+
+class EventGroupsHolder:
+    def __init__(self):
+        self.clear()
+    def clear(self):
+        self.groupsDict = {}
+        self.groupIds = []
+    def iterGen(self):
+        for gid in self.groupIds:
+            yield self.groupsDict[gid]
+    __iter__ = lambda self: IteratorFromGen(self.iterGen())
+    __len__ = lambda self: len(self.groupIds)
+    __getitem__ = lambda self, key: self.groupsDict.__getitem__(key)
+    def insert(self, index, group):
+        gid = group.gid
+        assert not gid in self.groupIds
+        self.groupsDict[gid] = group
+        self.groupIds.insert(index, gid)
+    def append(self, group):
+        gid = group.gid
+        assert not gid in self.groupIds
+        self.groupsDict[gid] = group
+        self.groupIds.append(gid)
+    def delete(self, group):
+        gid = group.gid
+        assert gid in self.groupIds
+        assert not group.eventIds ## FIXME
+        try:
+            os.remove(group.groupFile)
+        except:
+            myRaise()
+        else:
+            del self.groupsDict[gid]
+            self.groupIds.remove(gid)
+    def moveUp(self, gid):
+        i = self.groupIds.index(gid)
+        assert i > 0
+        self.groupIds.insert(i-1, self.groupIds.pop(i))
+    def moveDown(self, gid):
+        i = self.groupIds.index(gid)
+        assert i < len(self.groupIds) - 1
+        self.groupIds.insert(i+1, self.groupIds.pop(i))
+    #def swap(self, gid1, gid2):
+    #    #assert gid1 in self.groupIds and gid2 in self.groupIds
+    #    i1 = self.groupIds.index(gid1)
+    #    group1 = self.groupIds.pop(i1)
+    #    i2 = self.groupIds.index(gid2)
+    #    self.groupIds.insert(i2+1, group1)
+    def loadConfig(self):
+        self.clear()
+        #eventIds = []
+        if isfile(groupListFile):
+            for gid in json.loads(open(groupListFile).read()):
+                group = EventGroup(gid)
+                group.loadConfig()
+                self.append(group)
+                ## here check that non of group.eventIds are in eventIds ## FIXME
+                #eventIds += group.eventIds
+        else:
+            group = EventGroup()
+            group.setData({'title': _('Events')})## FIXME
+            group.saveConfig()
+            self.append(group)
+            ###
+            #trash = EventTrash()## FIXME
+            #group.saveConfig()
+            #self.append(trash)
+            ###
+            self.saveConfig()
+        ## here check for non-grouped event ids ## FIXME
+    def saveConfig(self):
+        open(groupListFile, 'w').write(dataToJson(self.groupIds))
+
 
 
 class EventTrash(EventContainer):
@@ -1149,6 +1249,8 @@ class EventTrash(EventContainer):
             jsonStr = open(trashFile).read()
             if jsonStr:
                 self.setJson(jsonStr)## FIXME
+        else:
+            self.saveConfig()
 
 
 class OccurrenceView:
@@ -1422,32 +1524,6 @@ class MonthOccurrenceView(OccurrenceView):
 ## def loadEvent(eid): ## moved to group
 ## def loadEvents(): ## moved to group
 
-def loadEventGroups():
-    #eventIds = []
-    groups = []
-    if isfile(eventGroupListFile):
-        groups = []
-        for gid in json.loads(open(eventGroupListFile).read()):
-            group = EventGroup(gid)
-            group.loadConfig()
-            groups.append(group)
-            ## here check that non of group.eventIds are in eventIds ## FIXME
-            #eventIds += group.eventIds
-    else:
-        group = EventGroup()
-        group.setData({'title': _('Events')})## FIXME
-        group.saveConfig()
-        groups.append(group)
-        ###
-        #trash = EventTrash()## FIXME
-        #group.saveConfig()
-        #groups.append(trash)
-        ###
-        saveEventGroups(groups)
-    ## here check for non-grouped event ids ## FIXME
-    return groups
-
-saveEventGroups = lambda groups: open(eventGroupListFile, 'w').write(dataToJson([group.gid for group in groups]))
 
 def loadEventTrash(groups=[]):
     trash = EventTrash()
