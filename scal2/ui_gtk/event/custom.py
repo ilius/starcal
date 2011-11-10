@@ -109,6 +109,7 @@ class EventWidget(common.EventWidget):
         #############
         self.addRuleCombo.connect('changed', self.addRuleComboChanged)
         self.ruleAddButton.connect('clicked', self.addClicked)
+        self.show_all() ## needed, why? FIXME
     def makeRuleHbox(self, rule):
         hbox = gtk.HBox(spacing=5)
         lab = gtk.Label(rule.desc)

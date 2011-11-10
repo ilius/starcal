@@ -44,8 +44,9 @@ from gtk import gdk
 
 
 class EventEditorDialog(gtk.Dialog):
-    def __init__(self, event=None, eventType='', title=None):## don't give both event a eventType
-        gtk.Dialog.__init__(self)
+    def __init__(self, event=None, eventType='', title=None, parent=None):## don't give both event a eventType
+        gtk.Dialog.__init__(self, parent=parent)
+        #self.set_transient_for(parent)
         if title:
             self.set_title(title)
         #self.connect('delete-event', lambda obj, e: self.destroy())
@@ -447,7 +448,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         self.treestore.remove(self.treestore.get_iter(path))
         self.reloadEvents()## FIXME
     def addEventToGroupFromMenu(self, menu, path, group, eventType, title):
-        event = EventEditorDialog(eventType=eventType, title=title).run()
+        event = EventEditorDialog(eventType=eventType, title=title, parent=self).run()
         if event is None:
             return
         event.saveConfig()
@@ -459,7 +460,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         )
     def editEventFromMenu(self, menu, path):
         (group, event) = self.getObjsByPath(path)
-        event = EventEditorDialog(event=event).run()
+        event = EventEditorDialog(event=event, parent=self).run()
         if event is None:
             return
         event.saveConfig()

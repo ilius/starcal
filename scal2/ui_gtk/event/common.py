@@ -302,7 +302,7 @@ class TagsListBox(gtk.VBox):
         self.treeview = treev
         self.treestore = trees
         ####
-        ui.updateEventTagsUsage()
+        #ui.updateEventTagsUsage()## FIXME
         #for (i, tagObj) in enumerate(ui.eventTags): tagObj.usage = i*10 ## for testing
         self.optionsChanged()
         self.show_all()
@@ -339,8 +339,9 @@ class TagsListBox(gtk.VBox):
 
 
 class TagEditorDialog(gtk.Dialog):
-    def __init__(self, eventType=''):
+    def __init__(self, eventType='', parent=None):
         gtk.Dialog.__init__(self, title=_('Tags'))
+        self.set_transient_for(None)
         self.tags = []
         self.tagsBox = TagsListBox(eventType)
         self.vbox.pack_start(self.tagsBox, 1, 1)
@@ -366,7 +367,7 @@ class ViewEditTagsHbox(gtk.HBox):
         self.pack_start(gtk.Label(_('Tags')+':  '), 0, 0)
         self.tagsLabel = gtk.Label('')
         self.pack_start(self.tagsLabel, 1, 1)
-        self.dialog = TagEditorDialog(eventType)
+        self.dialog = TagEditorDialog(eventType, parent=self)
         self.dialog.connect('response', self.dialogResponse)
         self.editButton = gtk.Button()
         self.editButton.set_label(_('_Edit'))
