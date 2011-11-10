@@ -291,7 +291,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             (group, event) = obj_list
             #print 'right click on event', event.summary
             if group.name != 'trash':
-                menu.add(labelStockMenuItem('_Edit', gtk.STOCK_EDIT, self.editEventFromMenu))
+                menu.add(labelStockMenuItem('_Edit', gtk.STOCK_EDIT, self.editEventFromMenu, path))
                 menu.add(gtk.SeparatorMenuItem())
             menu.add(labelStockMenuItem('Cu_t', gtk.STOCK_CUT, self.cutEvent, path))
             menu.add(labelStockMenuItem('_Copy', gtk.STOCK_COPY, self.copyEvent, path))
@@ -445,16 +445,31 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             return
         ui.deleteEventGroup(group)
         self.treestore.remove(self.treestore.get_iter(path))
+        self.reloadEvents()## FIXME
     def addEventToGroupFromMenu(self, menu, path, group, eventType, title):
         event = EventEditorDialog(eventType=eventType, title=title).run()
         if event is None:
             return
         event.saveConfig()
         group.append(event)
+        group.saveConfig()
         self.treestore.append(
             self.treestore.get_iter(path),## parent
             self.getEventRow(event), ## row
         )
+    def editEventFromMenu(self, menu, path):
+        (group, event) = self.getObjsByPath(path)
+        event = EventEditorDialog(event=event).run()
+        if event is None:
+            return
+        event.saveConfig()
+        eventIter = self.treestore.get_iter(path)
+        for i, value in enumerate(self.getEventRow(event)):
+            self.treestore.set_value(
+                eventIter,
+                i,
+                value,
+            )
     def editTrash(self, menu):
         pass
     def emptyTrash(self, menu):
@@ -465,8 +480,6 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         pass
     def groupActionClicked(self, menu, group, actionFuncName):
         getattr(group, actionFuncName)()
-    def editEventFromMenu(self, menu):
-        pass
     def cutEvent(self, menu, path):
         self.toPasteEvent = (path, True)
     def copyEvent(self, menu, path):
@@ -533,9 +546,11 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         group.saveConfig()
         ui.eventTrash.append(event)
         ui.eventTrash.saveConfig()
-        self.treestore.move_before(
-            self.treestore.get_iter(path),
-            self.treestore.iter_nth_child(self.trashIter, 0),## GtkWarning: Given children are not in the same level
+        self.treestore.remove(self.treestore.get_iter(path))
+        self.treestore.insert(
+            self.trashIter,
+            0,
+            self.getEventRow(event),
         )
     def deleteEventFromTrash(self, menu, path):
         pass

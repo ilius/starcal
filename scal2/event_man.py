@@ -28,7 +28,7 @@ from scal2.color_utils import hslToRgb
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName
 from scal2 import core
-from scal2.core import myRaise, getEpochFromJd, log
+from scal2.core import myRaise, getEpochFromJd, getEpochFromJhms, log, to_jd, jd_to
 
 def makeDir(direc):
     if not isdir(direc):
@@ -330,7 +330,7 @@ class YearEventRule(EventRule):
     def calcOccurrence(self, startEpoch, endEpoch, rulesDict=None):## improve performance ## FIXME
         jdList = []
         for jd in core.getJdListFromEpochRange(startEpoch, endEpoch):
-            if jd not in jdList and core.jd_to(jd, self.getMode())[0]==self.year:
+            if jd not in jdList and jd_to(jd, self.getMode())[0]==self.year:
                 jdList.append(jd)
         return JdListOccurrence(jdList)
     getInfo = lambda self: self.desc + ': ' + _(self.year)
@@ -352,7 +352,7 @@ class MonthEventRule(EventRule):
     def calcOccurrence(self, startEpoch, endEpoch, rulesDict=None):## improve performance ## FIXME
         jdList = []
         for jd in core.getJdListFromEpochRange(startEpoch, endEpoch):
-            if jd not in jdList and core.jd_to(jd, self.getMode())[1]==self.month:
+            if jd not in jdList and jd_to(jd, self.getMode())[1]==self.month:
                 jdList.append(jd)
         return JdListOccurrence(jdList)
     getInfo = lambda self: self.desc + ': ' + getMonthName(self.getMode(), self.month)
@@ -372,7 +372,7 @@ class DayOfMonthEventRule(EventRule):
     def calcOccurrence(self, startEpoch, endEpoch, rulesDict=None):## improve performance ## FIXME
         jdList = []
         for jd in core.getJdListFromEpochRange(startEpoch, endEpoch):
-            if jd not in jdList and core.jd_to(jd, self.getMode())[2]==self.day:
+            if jd not in jdList and jd_to(jd, self.getMode())[2]==self.day:
                 jdList.append(jd)
         return JdListOccurrence(jdList)
     getInfo = lambda self: self.desc + '(' + _(self.getMode()) + '): ' + _(self.day)
@@ -397,7 +397,7 @@ class WeekNumberModeEventRule(EventRule):
         self.weekNumMode = self.weekNumModeNames.index(modeName)
     def calcOccurrence(self, startEpoch, endEpoch, rulesDict):## improve performance ## FIXME
         (y, m, d) = rulesDict['start'].date ## ruleStartDate
-        startAbsWeekNum = core.getAbsWeekNumberFromJd(core.to_jd(y, m, d, self.getMode())) - 1 ## 1st week ## FIXME
+        startAbsWeekNum = core.getAbsWeekNumberFromJd(to_jd(y, m, d, self.getMode())) - 1 ## 1st week ## FIXME
         jdListAll = core.getJdListFromEpochRange(startEpoch, endEpoch)
         if self.weekNumMode==self.EVERY_WEEK:
             jdList = jdListAll
@@ -466,12 +466,12 @@ class CycleDaysEventRule(EventRule):
         self.cycleDays = cycleDays
     def calcOccurrence(self, startEpoch, endEpoch, rulesDict):## improve performance ## FIXME
         (year, month, day) = rulesDict['start'].date
-        startJd = max(core.to_jd(year, month, day, self.getMode()),
+        startJd = max(to_jd(year, month, day, self.getMode()),
                       core.getJdFromEpoch(startEpoch))
         endJd = core.getJdFromEpoch(endEpoch-0.01)+1
         if rulesDict.has_key('end'):
             (year, month, day) = rulesDict['end'].date
-            endJd = min(endJd, core.to_jd(year, month, day, self.getMode())+1) ## +1 FIXME
+            endJd = min(endJd, to_jd(year, month, day, self.getMode())+1) ## +1 FIXME
         return JdListOccurrence(range(startJd, endJd, self.cycleDays))
     getInfo = lambda self: _('Repeat: Every %s Days')%_(self.cycleDays)
 
@@ -514,7 +514,7 @@ class DateAndTimeEventRule(EventRule):
         self.time = time.localtime()[3:6]
     def getEpoch(self):
         (year, month, day) = self.date
-        return core.getEpochFromJhms(core.to_jd(year, month, day, self.getMode()), *tuple(self.time))
+        return getEpochFromJhms(to_jd(year, month, day, self.getMode()), *tuple(self.time))
     def getData(self):
         return {
             'date': dateEncode(self.date),
@@ -1320,31 +1320,38 @@ class DayOccurrenceView(OccurrenceView):
                     #print 'updateData: TimeRangeListOccurrence', occur.getTimeRangeList()
                     for (startEpoch, endEpoch) in occur.getTimeRangeList():
                         (jd1, h1, min1, s1) = core.getJhmsFromEpoch(startEpoch)
-                        (jd2, h2, min2, s2) = core.getJhmsFromEpoch(endEpoch)
-                        if jd1==self.jd==jd2:
+                        if endEpoch is None:
                             self.data.append({
-                                'time':hmsRangeToStr(h1, min1, s1, h2, min2, s2),
+                                'time':timeEncode((h1, min1, s1), True),
                                 'text':text,
                                 'icon':icon
                             })
-                        elif jd1==self.jd and self.jd < jd2:
-                            self.data.append({
-                                'time':hmsRangeToStr(h1, min1, s1, 24, 0, 0),
-                                'text':text,
-                                'icon':icon
-                            })
-                        elif jd1 < self.jd < jd2:
-                            self.data.append({
-                                'time':'',
-                                'text':text,
-                                'icon':icon
-                            })
-                        elif jd1 < self.jd and self.jd==jd2:
-                            self.data.append({
-                                'time':hmsRangeToStr(0, 0, 0, h2, min2, s2),
-                                'text':text,
-                                'icon':icon
-                            })
+                        else:
+                            (jd2, h2, min2, s2) = core.getJhmsFromEpoch(endEpoch)
+                            if jd1==self.jd==jd2:
+                                self.data.append({
+                                    'time':hmsRangeToStr(h1, min1, s1, h2, min2, s2),
+                                    'text':text,
+                                    'icon':icon
+                                })
+                            elif jd1==self.jd and self.jd < jd2:
+                                self.data.append({
+                                    'time':hmsRangeToStr(h1, min1, s1, 24, 0, 0),
+                                    'text':text,
+                                    'icon':icon
+                                })
+                            elif jd1 < self.jd < jd2:
+                                self.data.append({
+                                    'time':'',
+                                    'text':text,
+                                    'icon':icon
+                                })
+                            elif jd1 < self.jd and self.jd==jd2:
+                                self.data.append({
+                                    'time':hmsRangeToStr(0, 0, 0, h2, min2, s2),
+                                    'text':text,
+                                    'icon':icon
+                                })
                 elif isinstance(occur, TimeListOccurrence):
                     #print 'updateData: TimeListOccurrence', occur.epochList
                     for epoch in occur.epochList:
@@ -1448,13 +1455,13 @@ class MonthOccurrenceView(OccurrenceView):
     #name = 'month'## a GtkWidget will inherit this class FIXME
     #desc = _('Month Occurrence View')
     def __init__(self, jd):
-        (year, month, day) = core.jd_to(jd, core.primaryMode)
+        (year, month, day) = jd_to(jd, core.primaryMode)
         self.year = year
         self.month = month
         #self.updateData()
     getJdRange = lambda self: core.getJdRangeForMonth(self.year, self.month, core.primaryMode)
     def setJd(self, jd):
-        (year, month, day) = core.jd_to(jd, core.primaryMode)
+        (year, month, day) = jd_to(jd, core.primaryMode)
         if (year, month) != (self.year, self.month):
             self.year = year
             self.month = month
@@ -1475,14 +1482,14 @@ class MonthOccurrenceView(OccurrenceView):
                 icon = event.icon
                 if isinstance(occur, JdListOccurrence):
                     for jd in occur.getDaysJdList():
-                        (year, month, day) = core.jd_to(jd, core.primaryMode)
+                        (year, month, day) = jd_to(jd, core.primaryMode)
                         if year==self.year and month==self.month:
                             self.data.append({'day':day, 'time':'', 'text':text, 'icon':icon})
                 elif isinstance(occur, TimeRangeListOccurrence):
                     for (startEpoch, endEpoch) in occur.getTimeRangeList():
                         (jd1, h1, min1, s1) = core.getJhmsFromEpoch(startEpoch)
                         (jd2, h2, min2, s2) = core.getJhmsFromEpoch(endEpoch)
-                        (year, month, day) = core.jd_to(jd1, core.primaryMode)
+                        (year, month, day) = jd_to(jd1, core.primaryMode)
                         if year==self.year and month==self.month:
                             if jd1==jd2:
                                 self.data.append({
@@ -1499,7 +1506,7 @@ class MonthOccurrenceView(OccurrenceView):
                                     'icon':icon
                                 })
                                 for jd in range(jd1+1, jd2):
-                                    (year, month, day) = core.jd_to(jd, core.primaryMode)
+                                    (year, month, day) = jd_to(jd, core.primaryMode)
                                     if year==self.year and month==self.month:
                                         self.data.append({
                                             'day':day,
@@ -1509,7 +1516,7 @@ class MonthOccurrenceView(OccurrenceView):
                                         })
                                     else:
                                         break
-                                (year, month, day) = core.jd_to(jd2, core.primaryMode)
+                                (year, month, day) = jd_to(jd2, core.primaryMode)
                                 if year==self.year and month==self.month:
                                     self.data.append({
                                         'day':day,
@@ -1520,7 +1527,7 @@ class MonthOccurrenceView(OccurrenceView):
                 elif isinstance(occur, TimeListOccurrence):
                     for epoch in occur.epochList:
                         (jd, hour, minute, sec) = core.getJhmsFromEpoch(epoch)
-                        (year, month, day) = core.jd_to(jd1, core.primaryMode)
+                        (year, month, day) = jd_to(jd1, core.primaryMode)
                         if year==self.year and month==self.month:
                             self.data.append({
                                 'day':day,
