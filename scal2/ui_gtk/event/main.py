@@ -30,7 +30,7 @@ from scal2 import event_man
 
 from scal2 import ui
 from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile, rectangleContainsPoint, \
-                               labelStockMenuItem, labelImageMenuItem
+                               labelStockMenuItem, labelImageMenuItem, confirm
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 #from scal2.ui_gtk.mywidgets.multi_spin_box import DateBox, TimeBox
@@ -96,7 +96,7 @@ class EventEditorDialog(gtk.Dialog):
         event = event_man.eventsClassList[combo.get_active()]()
         if self.event:
             event.copyFrom(self.event)
-            event.setEid(self.event.eid)
+            event.setId(self.event.eid)
             del self.event
         self.event = event
         self.activeEventWidget = event.makeWidget()
@@ -116,6 +116,70 @@ class EventEditorDialog(gtk.Dialog):
         self.activeEventWidget.updateVars()
         self.destroy()
         return self.event
+
+
+class GroupEditorDialog(gtk.Dialog):
+    def __init__(self, group=None):
+        gtk.Dialog.__init__(self)
+        self.set_title(_('Edit Group') if group else _('Add Group'))
+        #self.connect('delete-event', lambda obj, e: self.destroy())
+        #self.resize(800, 600)
+        ###
+        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        if ui.autoLocale:
+            cancelB.set_label(_('_Cancel'))
+            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
+            okB.set_label(_('_OK'))
+            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        self.connect('response', lambda w, e: self.hide())
+        #######
+        self._group = group
+        self.activeGroupWidget = None
+        #######
+        hbox = gtk.HBox()
+        combo = gtk.combo_box_new_text()
+        for cls in event_man.eventGroupsClassList:
+            combo.append_text(cls.desc)
+        hbox.pack_start(gtk.Label(_('Group Type')), 0, 0)
+        hbox.pack_start(combo, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.vbox.pack_start(hbox, 0, 0)
+        ####
+        if self._group:
+            combo.set_active(event_man.eventGroupsClassNameList.index(self._group.name))
+        else:
+            combo.set_active(event_man.defaultGroupTypeIndex)
+            self._group = event_man.eventGroupsClassList[event_man.defaultGroupTypeIndex]()
+        self.activeGroupWidget = self._group.makeWidget()## FIXME
+        combo.connect('changed', self.groupTypeChanged)
+        self.comboGroupType = combo
+        self.vbox.pack_start(self.activeGroupWidget, 0, 0)
+        self.vbox.show_all()
+    def dateModeChanged(self, combo):
+        pass
+    def groupTypeChanged(self, combo):
+        if self.activeGroupWidget:
+            self.activeGroupWidget.destroy()
+        group = event_man.eventGroupsClassList[combo.get_active()]()
+        if self._group:
+            group.copyFrom(self._group)
+            group.setId(self._group.gid)
+            del self._group
+        self._group = group
+        self.activeGroupWidget = group.makeWidget()
+        self.vbox.pack_start(self.activeGroupWidget, 0, 0)
+        self.activeGroupWidget.show_all()
+    def run(self):
+        if self.activeGroupWidget is None or self._group is None:
+            return None
+        if gtk.Dialog.run(self)!=gtk.RESPONSE_OK:
+            return None
+        self.activeGroupWidget.updateVars()
+        self.destroy()
+        return self._group
+
+
 
 
 class EventManagerDialog(gtk.Dialog):## FIXME
@@ -168,6 +232,11 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         #####
         self.vbox.show_all()
         #self.reloadEvents()## FIXME
+    def canPasteToGroup(self, group):
+        if self.toPasteEvent is None:
+            return False
+        ## check event type here? FIXME
+        return True
     def openRightClickMenu(self, path, etime=None):
         ## how about multi-selection? FIXME
         ## and Select _All menu item
@@ -181,16 +250,38 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         if len(obj_list)==1:
             group = obj_list[0]
             if group.name == 'trash':
-                print 'right click on trash', group.title
+                #print 'right click on trash', group.title
                 menu.add(labelStockMenuItem('_Edit', gtk.STOCK_EDIT, self.editTrash))
                 menu.add(labelStockMenuItem('_Clear', gtk.STOCK_EDIT, self.clearTrash))
             else:
-                print 'right click on group', group.title
-                menu.add(labelStockMenuItem('_Edit', gtk.STOCK_EDIT, self.editGroup, group))
-                ##
-                pasteItem = labelStockMenuItem('_Paste', gtk.STOCK_PASTE, self.pasteEventIntoGroup, path)
-                pasteItem.set_sensitive(self.toPasteEvent is not None)
+                #print 'right click on group', group.title
+                menu.add(labelStockMenuItem('_Edit', gtk.STOCK_EDIT, self.editGroup, path, group))
+                eventTypes = group.acceptsEventTypes
+                if eventTypes is None:
+                    eventTypes = event_man.eventsClassNameList
+                for eventType in eventTypes:
+                    if eventType == 'custom':## FIXME
+                        eventType = ''
+                        desc = _('Event')
+                    else:
+                        desc = event_man.eventsClassDict[eventType].desc
+                    menu.add(labelStockMenuItem(
+                        _('_Add ') + ' ' + desc,
+                        gtk.STOCK_ADD,
+                        self.addEventToGroupFromMenu,
+                        path,
+                        group,
+                        eventType,
+                        _('Add') + ' ' + desc,
+                    ))
+                pasteItem = labelStockMenuItem('_Paste Event', gtk.STOCK_PASTE, self.pasteEventIntoGroup, path)
+                pasteItem.set_sensitive(self.canPasteToGroup(group))
                 menu.add(pasteItem)
+                ##
+                menu.add(gtk.SeparatorMenuItem())
+                menu.add(labelStockMenuItem('_Add New Group', gtk.STOCK_NEW, self.addGroupAfterGroup, path))
+                menu.add(gtk.SeparatorMenuItem())
+                menu.add(labelStockMenuItem('_Delete Group', gtk.STOCK_NEW, self.deleteGroup, path))
                 ##
                 menu.add(labelStockMenuItem('Move _Up', gtk.STOCK_EDIT, self.moveGroupUp, group))
                 menu.add(labelStockMenuItem('Move _Down', gtk.STOCK_EDIT, self.moveGroupDown, group))
@@ -198,7 +289,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                     menu.add(labelStockMenuItem(_(actionName), None, self.groupActionClicked, group, actionFuncName))
         elif len(obj_list)==2:
             (group, event) = obj_list
-            print 'right click on event', event.summary
+            #print 'right click on event', event.summary
             if group.name != 'trash':
                 menu.add(labelStockMenuItem('_Edit', gtk.STOCK_EDIT, self.editEventFromMenu))
                 menu.add(gtk.SeparatorMenuItem())
@@ -210,8 +301,9 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 menu.add(labelStockMenuItem('_Delete', gtk.STOCK_DELETE, self.deleteEventFromTrash, path))
             else:
                 pasteItem = labelStockMenuItem('_Paste', gtk.STOCK_PASTE, self.pasteEventAfterEvent, path)
-                pasteItem.set_sensitive(self.toPasteEvent is not None)
+                pasteItem.set_sensitive(self.canPasteToGroup(group))
                 menu.add(pasteItem)
+                ##
                 menu.add(gtk.SeparatorMenuItem())
                 menu.add(labelImageMenuItem('_Move to Trash', ui.eventTrash.icon, self.moveEventToTrash, path))
         else:
@@ -229,21 +321,22 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         event.summary,
         event.description,
     )
+    getGroupRow = lambda self, group, rowBgColor: (
+        group.gid,
+        newOutlineSquarePixbuf(
+            group.color,
+            20,
+            0 if group.enable else 15,
+            rowBgColor,
+        ),
+        group.title,
+        '',
+    )
     def reloadEvents(self):
         self.treestore.clear()
         rowBgColor = self.getRowBgColor()
         for group in ui.eventGroups:
-            groupIter = self.treestore.append(None, (
-                group.gid,
-                newOutlineSquarePixbuf(
-                    group.color,
-                    20,
-                    0 if group.enable else 15,
-                    rowBgColor,
-                ),
-                group.title,
-                '',
-            ))
+            groupIter = self.treestore.append(None, self.getGroupRow(group, rowBgColor))
             for event in group:
                 self.treestore.append(groupIter, self.getEventRow(event))
         self.trashIter = self.treestore.append(None, (
@@ -316,15 +409,58 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                         )
         elif g_event.button == 3:
             self.openRightClickMenu(path, g_event.time)
+    def addGroupAfterGroup(self, menu, path):
+        (index,) = path
+        group = GroupEditorDialog().run()
+        if group is None:
+            return
+        group.saveConfig()
+        ui.eventGroups.insert(index+1, group)
+        ui.eventGroups.saveConfig()
+        afterGroupIter = self.treestore.get_iter(path)
+        self.treestore.insert_after(
+            #self.treestore.get_iter_root(),## parent
+            self.treestore.iter_parent(afterGroupIter),
+            afterGroupIter,## sibling
+            self.getGroupRow(group, self.getRowBgColor()), ## row
+        )
+    def editGroup(self, menu, path, group):
+        print 'editGroup'
+        group = GroupEditorDialog(group).run()
+        if group is None:
+            return
+        group.saveConfig()## FIXME
+        #self.reloadEvents()## perfomance FIXME
+        groupIter = self.treestore.get_iter(path)
+        for i, value in enumerate(self.getGroupRow(group)):
+            self.treestore.set_value(
+                groupIter,
+                i,
+                value,
+            )
+    def deleteGroup(self, menu, path):
+        (index,) = path
+        (group,) = self.getObjsByPath(path)
+        if not confirm(_('Press OK if you are sure to delete group "%s"')%group.title):
+            return
+        ui.deleteEventGroup(group)
+        self.treestore.remove(self.treestore.get_iter(path))
+    def addEventToGroupFromMenu(self, menu, path, group, eventType, title):
+        event = EventEditorDialog(eventType=eventType, title=title).run()
+        if event is None:
+            return
+        group.append(event)
+        self.treestore.append(
+            self.treestore.get_iter(path),## parent
+            self.getEventRow(event), ## row
+        )
     def editTrash(self, menu):
         pass
     def clearTrash(self, menu):
         pass
-    def editGroup(self, menu, group):
+    def moveGroupUp(self, menu, path):
         pass
-    def moveGroupUp(self, menu, group):
-        pass
-    def moveGroupDown(self, menu, group):
+    def moveGroupDown(self, menu, path):
         pass
     def groupActionClicked(self, menu, group, actionFuncName):
         getattr(group, actionFuncName)()
@@ -406,22 +542,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
     #    pass
     #def selectAllEventInTrash(self, menu):## FIXME
     #    pass
-    def addEvent(self, eventType):## FIXME
-        if eventType:
-            title = _('Add') + ' ' + event_man.eventsClassDict[eventType].desc
-        else:
-            title = _('Add') + ' ' + _('Event')
-        event = EventEditorDialog(eventType=eventType, title=title).run()
-        #print 'event =', event
-        if event is not None:
-            ui.addEvent(event)
-            self.reloadEvents()## perfomance FIXME
-    def addCustomEvent(self, obj=None):
-        self.addEvent('')
-    def addYearlyEvent(self, obj=None):
-        self.addEvent('yearly')
-    def addDailyNote(self, obj=None):
-        self.addEvent('dailyNote')
+
 
 
 
@@ -631,10 +752,22 @@ for cls in event_man.eventNotifiersClassList:
     except:
         myRaise()
 
+for cls in event_man.eventGroupsClassList:
+    try:
+        module = __import__(modPrefix + 'groups.' + cls.name, fromlist=['GroupWidget'])
+    except:
+        myRaise()
+        continue
+    try:
+        cls.WidgetClass = module.GroupWidget
+    except AttributeError:
+        print 'no class GroupWidget defined in module "%s"'%cls.name
+
+
 event_man.Event.makeWidget = makeWidget
 event_man.EventRule.makeWidget = makeWidget
 event_man.EventNotifier.makeWidget = makeWidget
-
+event_man.EventGroup.makeWidget = makeWidget
 
 ui.eventGroups.loadConfig()
 ui.eventTrash.loadConfig()

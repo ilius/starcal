@@ -2,6 +2,8 @@ from scal2.locale_man import tr as _
 from scal2.utils import myRaise
 from scal2.paths import pixDir
 
+from scal2 import ui
+
 import os
 from os.path import join
 from subprocess import Popen
@@ -140,4 +142,26 @@ def getTreeviewPathStr(path):
     return '/'.join([str(x) for x in path])
 
 rectangleContainsPoint = lambda r, x, y: r.x <= x < r.x + r.width and r.y <= y < r.y + r.height
+
+def confirm(msg, parent=None):
+    win = gtk.MessageDialog(
+        parent=parent,
+        flags=0,
+        type=gtk.MESSAGE_INFO,
+        buttons=gtk.BUTTONS_NONE,
+        message_format=msg,
+    )
+    cancelB = win.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+    okB = win.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+    if ui.autoLocale:
+        cancelB.set_label(_('_Cancel'))
+        cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
+        okB.set_label(_('_OK'))
+        okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+    ok = win.run() == gtk.RESPONSE_OK
+    win.destroy()
+    return ok
+
+
+
 

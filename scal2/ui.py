@@ -394,22 +394,12 @@ def loadCustomDB():## remove FIXME
         customDB.append(item)
 
 
+def deleteEventGroup(group):
+    eventTrash.eventIds += group.eventIds
+    group.eventIds = []
+    eventGroups.delete(group)
+    eventGroups.saveConfig()
 
-
-#def deleteEvent(e):## remove? FIXME
-#    global events, eventsById
-#    events.remove(e)
-#    del eventsById[e.eid]
-#    shutil.rmtree(e.eventDir)
-
-#def addEvent(e):## remove? FIXME
-#    global events, eventsById
-#    events.append(e)
-#    eventsById[e.eid] = e
-#    e.saveConfig()
-
-#def updateEvent(e):## remove? FIXME
-#    e.saveConfig()
 
 ######################################################################
 shownCals = [

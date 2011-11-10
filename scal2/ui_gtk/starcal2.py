@@ -1157,7 +1157,7 @@ class MainWin(gtk.Window):
         menu.add(labelStockMenuItem('Copy _Time', gtk.STOCK_COPY, self.copyTime))
         menu.add(labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday))
         menu.add(labelStockMenuItem('Ad_just System Time', gtk.STOCK_PREFERENCES, self.adjustTime))
-        menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, self.eventManDialog.addCustomEvent))
+        #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, self.eventManDialog.addCustomEvent))## FIXME
         menu.add(labelStockMenuItem('_Export to HTML', gtk.STOCK_CONVERT, self.exportClickedTray))
         menu.add(labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
         menu.add(labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
@@ -1175,7 +1175,7 @@ class MainWin(gtk.Window):
         menu.add(labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
         menu.add(labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
         menu.add(labelStockMenuItem('_Export to HTML', gtk.STOCK_CONVERT, self.exportClickedTray))
-        menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, self.eventManDialog.addCustomEvent))
+        #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, self.eventManDialog.addCustomEvent))## FIXME
         menu.add(labelStockMenuItem('Ad_just System Time', gtk.STOCK_PREFERENCES, self.adjustTime))
         menu.add(labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday))
         menu.add(labelStockMenuItem('Copy _Time', gtk.STOCK_COPY, self.copyTime))
@@ -1227,9 +1227,9 @@ class MainWin(gtk.Window):
         self.connect('delete-event', self.dialogClose)
         ######### Building menu of right click on a day
         menu = gtk.Menu()
-        #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD,   self.eventManDialog.addCustomEvent))
-        menu.add(labelStockMenuItem('_Add Yearly Event', gtk.STOCK_ADD, self.eventManDialog.addYearlyEvent))
-        menu.add(labelStockMenuItem('_Add Note', gtk.STOCK_ADD, self.eventManDialog.addDailyNote))
+        #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD,   self.eventManDialog.addCustomEvent))## FIXME
+        #menu.add(labelStockMenuItem('_Add Yearly Event', gtk.STOCK_ADD, self.eventManDialog.addYearlyEvent))## FIXME
+        #menu.add(labelStockMenuItem('_Add Note', gtk.STOCK_ADD, self.eventManDialog.addDailyNote))## FIXME
         menu.add(labelStockMenuItem('_Copy Date', gtk.STOCK_COPY, self.copyDate))
         menu.add(gtk.SeparatorMenuItem())
         menu.add(labelStockMenuItem('Select _Today', gtk.STOCK_HOME, self.goToday))

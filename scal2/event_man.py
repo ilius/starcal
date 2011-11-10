@@ -28,7 +28,7 @@ from scal2.color_utils import hslToRgb
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName
 from scal2 import core
-from scal2.core import myRaise, getEpochFromJd
+from scal2.core import myRaise, getEpochFromJd, log
 
 def makeDir(direc):
     if not isdir(direc):
@@ -128,15 +128,20 @@ def intersectionOfTwoTimeRangeList(rList1, rList2):
 dataToJson = lambda data: json.dumps(data, sort_keys=True, indent=4)
 dataToCompactJson = lambda data: json.dumps(data, sort_keys=True, separators=(',', ':'))
 
-class EventItemBase:
+class EventBaseClass:
     order = 0 ## an int or str or everything, just effect to visible order in GUI
     getData = lambda self: None
     setData = lambda self: None
     getJson = lambda self: dataToJson(self.getData())
     getCompactJson = lambda self: dataToCompactJson(self.getData())
     setJson = lambda self, jsonStr: self.setData(json.loads(jsonStr))
+    copyFrom = lambda self, other: self.setData(other.getData())
+    def copy(self):
+        newObj = self.__class__()
+        newObj.copyFrom(self)
+        return newObj
 
-#class JsonEventItem(EventItemBase):## FIXME
+#class JsonEventItem(EventBaseClass):## FIXME
 #    def __init__(self, jsonPath):
 #        self.jsonPath = jsonPath
 #    def saveConfig(self):
@@ -148,7 +153,7 @@ class EventItemBase:
 #        if jsonStr:
 #            self.setJson(jsonStr)## FIXME
     
-class Occurrence(EventItemBase):
+class Occurrence(EventBaseClass):
     def __init__(self):
         self.event = None
     def __nonzero__(self):
@@ -283,8 +288,8 @@ class TimeListOccurrence(Occurrence):
         }
 
 
-class EventRule(EventItemBase):
-    name = 'custom'## FIXME
+class EventRule(EventBaseClass):
+    name = 'custom'## or 'event' or '' FIXME
     desc = _('Custom Event Rule')## FIXME
     provide = ()
     need = ()
@@ -309,7 +314,6 @@ class EventRule(EventItemBase):
             for (key, value) in data.items():
                 if key in self.params:
                     setattr(self, key, value)
-    copyFrom = lambda self, other: self.setData(other.getData())
     getInfo = lambda self: ''
 
 class YearEventRule(EventRule):
@@ -578,6 +582,10 @@ class CycleLenEventRule(EventRule):
         return TimeListOccurrence(startEpoch, endEpoch, cycleSec)
     getInfo = lambda self: _('Repeat: Every %s Days and %s')%(_(self.cycleDays), timeEncode(self.cycleExtraTime))
 
+#class HolidayEventRule(EventRule):## FIXME
+#    name = 'holiday'
+#    desc = _('Holiday')
+
 
 #class ShowInMCalEventRule(EventRule):## FIXME
 #    name = 'show_cal'
@@ -590,7 +598,7 @@ class CycleLenEventRule(EventRule):
 ## ... minutes after Sun Set        eval('sunSet+x')
 
 
-class EventNotifier(EventItemBase):
+class EventNotifier(EventBaseClass):
     name = 'custom'## FIXME
     desc = _('Custom Event Notifier')## FIXME
     params = ()
@@ -658,7 +666,7 @@ class CommandNotifier(EventNotifier):
         self.pyEval = False
     
 
-class Event(EventItemBase):
+class Event(EventBaseClass):
     name = 'custom'
     desc = _('Custom Event')
     requiredRules = ()
@@ -679,7 +687,7 @@ class Event(EventItemBase):
         self.notifiers = []
         self.checkRequirements()
         self.setDefaults()
-    __nonzero__ = lambda self: self.enable and bool(self.rules)
+    __nonzero__ = lambda self: bool(self.rules)## and self.enable ## FIXME
     def getInfo(self):
         lines = []
         rulesDict = self.getRulesDict()
@@ -738,10 +746,6 @@ class Event(EventItemBase):
             self.rules = event.rules[:]
         self.notifiers = event.notifiers[:]## FIXME
         self.checkRequirements()
-    def copy(self):
-        newEvent = self.__class__()
-        newEvent.copyFrom(self)
-        return newEvent
     def loadFiles(self):
         self.files = []
         if isdir(self.filesDir):
@@ -986,7 +990,7 @@ class UniversityClassEvent(Event):## FIXME
     desc = _('University Class')
     requiredRules = ()
 
-class EventContainer(EventItemBase):
+class EventContainer(EventBaseClass):
     name = ''
     desc = ''
     def __init__(self):
@@ -1020,12 +1024,12 @@ class EventGroup(EventContainer):
         self.setId(gid)
         self.enable = True
         self.title = 'Event Group'
-        #self.icon = ''
-        self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)
+        self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)## FIXME
         self.defaultEventType = 'custom'
         self.defaultMode = core.primaryMode
         self.eventCacheSize = 0
         self.eventCache = {} ## from eid to event object
+    __nonzero__ = lambda self: True ## FIXME
     def setId(self, gid=None):
         if gid is None or gid<0:
             gid = core.lastEventGroupId + 1 ## FIXME
@@ -1039,7 +1043,7 @@ class EventGroup(EventContainer):
             'enable': self.enable,
             'type': self.name,
             'title': self.title,
-            #'icon': self.icon,
+            'color': self.color,
             'defaultEventType': self.defaultEventType,
             'defaultCalType': core.modules[self.defaultMode].name,
             'eventCacheSize': self.eventCacheSize,
@@ -1050,7 +1054,8 @@ class EventGroup(EventContainer):
             self.setId(data['id'])
         self.enable = data.get('enable', True)
         self.title = data['title']
-        #self.icon = data.get('icon', '')
+        if 'color' in data:
+            self.color = data['color']
         self.eventCacheSize = data.get('eventCacheSize', 0)
         self.eventIds = data.get('eventIds', [])
         ####
@@ -1099,6 +1104,9 @@ class EventGroup(EventContainer):
         except:
             pass
         return index
+    def excludeAll(self):
+        self.eventIds = []
+        self.eventCache = {}
     def insert(self, index, event):
         self.eventIds.insert(index, event.eid)
         if len(self.eventCache) < self.eventCacheSize:
@@ -1109,17 +1117,7 @@ class EventGroup(EventContainer):
             self.eventCache[event.eid] = event
 
 
-
-
-
-
-        
-
-class UniversityTerm(EventGroup):
-    name = 'universityTerm'
-    desc = _('University Term')
-    acceptsEventTypes = ('universityClass',)
-    #actions = EventGroup.actions + []
+## TaskList, NoteBook, UniversityTerm, EventGroup
 
 class TaskList(EventGroup):
     name = 'taskList'
@@ -1131,6 +1129,12 @@ class NoteBook(EventGroup):
     name = 'noteBook'
     desc = _('Note Book')
     acceptsEventTypes = ('dailyNote',)
+    #actions = EventGroup.actions + []
+
+class UniversityTerm(EventGroup):
+    name = 'universityTerm'
+    desc = _('University Term')
+    acceptsEventTypes = ('universityClass',)
     #actions = EventGroup.actions + []
 
 class EventGroupsHolder:
@@ -1185,16 +1189,23 @@ class EventGroupsHolder:
         #eventIds = []
         if isfile(groupListFile):
             for gid in json.loads(open(groupListFile).read()):
-                group = EventGroup(gid)
-                group.loadConfig()
+                groupFile = join(groupsDir, '%s.json'%gid)
+                if not isfile(groupFile):
+                    log.error('error while loading group file %r: no such file'%groupFile)## FIXME
+                    continue
+                data = json.loads(open(groupFile).read())
+                data['gid'] = gid ## FIXME
+                group = eventGroupsClassDict[data['type']](gid)
+                group.setData(data)
                 self.append(group)
                 ## here check that non of group.eventIds are in eventIds ## FIXME
                 #eventIds += group.eventIds
         else:
-            group = EventGroup()
-            group.setData({'title': _('Events')})## FIXME
-            group.saveConfig()
-            self.append(group)
+            for cls in eventGroupsClassList:
+                group = cls()## FIXME
+                group.setData({'title': cls.desc})## FIXME
+                group.saveConfig()
+                self.append(group)
             ###
             #trash = EventTrash()## FIXME
             #group.saveConfig()
@@ -1549,10 +1560,11 @@ def loadEventTrash(groups=[]):
 
 ########################################################################
 
-eventsClassList = [Event, YearlyEvent, DailyNoteEvent, TaskEvent]## UniversityClassEvent
+eventsClassList = [TaskEvent, DailyNoteEvent, YearlyEvent, Event]## UniversityClassEvent
 eventsClassDict = dict([(cls.name, cls) for cls in eventsClassList])
 eventsClassNameList = [cls.name for cls in eventsClassList]
-defaultEventTypeIndex = 3 ## DailyNoteEvent
+#eventsClassNameDescList = [(cls.name, cls.desc) for cls in eventsClassList]
+defaultEventTypeIndex = 0 ## FIXME
 
 eventRulesClassList = [
     YearEventRule,
@@ -1577,10 +1589,12 @@ eventNotifiersClassDict = dict([(cls.name, cls) for cls in eventNotifiersClassLi
 
 eventGroupsClassList = [
     EventGroup,
-    UniversityTerm,
     TaskList,
     NoteBook,
+    UniversityTerm,
 ]
+eventGroupsClassNameList = [cls.name for cls in eventGroupsClassList]
+defaultGroupTypeIndex = 0 ## FIXME
 eventGroupsClassDict = dict([(cls.name, cls) for cls in eventGroupsClassList])
 
 
