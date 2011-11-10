@@ -1560,7 +1560,7 @@ def loadEventTrash(groups=[]):
 
 ########################################################################
 
-eventsClassList = [TaskEvent, DailyNoteEvent, YearlyEvent, Event]## UniversityClassEvent
+eventsClassList = [TaskEvent, DailyNoteEvent, YearlyEvent, UniversityClassEvent, Event]
 eventsClassDict = dict([(cls.name, cls) for cls in eventsClassList])
 eventsClassNameList = [cls.name for cls in eventsClassList]
 #eventsClassNameDescList = [(cls.name, cls.desc) for cls in eventsClassList]

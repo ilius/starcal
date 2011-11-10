@@ -252,7 +252,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             if group.name == 'trash':
                 #print 'right click on trash', group.title
                 menu.add(labelStockMenuItem('_Edit', gtk.STOCK_EDIT, self.editTrash))
-                menu.add(labelStockMenuItem('_Clear', gtk.STOCK_EDIT, self.clearTrash))
+                menu.add(labelStockMenuItem('_Empty Trash', gtk.STOCK_EDIT, self.emptyTrash))
             else:
                 #print 'right click on group', group.title
                 menu.add(labelStockMenuItem('_Edit', gtk.STOCK_EDIT, self.editGroup, path, group))
@@ -456,7 +456,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         )
     def editTrash(self, menu):
         pass
-    def clearTrash(self, menu):
+    def emptyTrash(self, menu):
         pass
     def moveGroupUp(self, menu, path):
         pass

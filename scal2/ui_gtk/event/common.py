@@ -66,7 +66,10 @@ class EventWidget(gtk.VBox):
         textview = gtk.TextView()
         textview.set_wrap_mode(gtk.WRAP_WORD)
         self.descriptionBuff = textview.get_buffer()
-        hbox.pack_start(textview, 1, 1)
+        frame = gtk.Frame()
+        frame.set_border_width(4)
+        frame.add(textview)
+        hbox.pack_start(frame, 1, 1)
         self.pack_start(hbox, 0, 0)
         ###########
         self.modeCombo.connect('changed', self.modeComboChanged)## right place? before updateWidget? FIXME
