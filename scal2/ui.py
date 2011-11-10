@@ -394,11 +394,14 @@ def loadCustomDB():## remove FIXME
         customDB.append(item)
 
 
-def deleteEventGroup(group):
-    eventTrash.eventIds += group.eventIds
+def deleteEventGroup(group, addToFirst=True):
+    if addToFirst:
+        eventTrash.eventIds = group.eventIds + eventTrash.eventIds
+    else:
+        eventTrash.eventIds += group.eventIds
     group.eventIds = []
     eventGroups.delete(group)
-    eventGroups.saveConfig()
+    eventTrash.saveConfig()
 
 
 ######################################################################

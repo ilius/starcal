@@ -17,7 +17,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-import time, json, random
+import time, json, random, os, shutil
 from os.path import join, split, isdir, isfile
 from os import listdir
 from paths import *
@@ -995,11 +995,12 @@ class EventContainer(EventBaseClass):
     desc = ''
     def __init__(self):
        self.eventIds = [] 
+       self.title = 'Untitled'
     def getEvent(self, eid):
         assert eid in self.eventIds
         eventFile = join(eventsDir, str(eid), 'event.json')
         if not isfile(eventFile):
-            raise IOError('error while loading event file %r: no such file'%eventFile)
+            raise IOError('error while loading event file %r: no such file (container title: %s)'%(eventFile, self.title))
         data = json.loads(open(eventFile).read())
         data['eid'] = eid ## FIXME
         event = eventsClassDict[data['type']](eid)
@@ -1226,6 +1227,8 @@ class EventTrash(EventContainer):
         self.title = _('Trash')
         self.icon = 'trash.png'
     def deleteEvent(self, eid):
+        if not isinstance(eid, int):
+            raise TypeError("deleteEvent takes event ID that is integer")
         assert eid in self.eventIds
         try:
             shutil.rmtree(join(eventsDir, str(eid)))
@@ -1243,6 +1246,7 @@ class EventTrash(EventContainer):
             else:
                 eventIds2.remove(eid)
         self.eventIds = eventIds2
+        self.saveConfig()
     def getData(self):
         return {
             'title': self.title,

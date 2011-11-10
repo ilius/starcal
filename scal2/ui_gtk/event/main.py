@@ -470,9 +470,32 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 i,
                 value,
             )
-    def editTrash(self, menu):
-        pass
+    def moveEventToTrash(self, menu, path):
+        (group, event) = self.getObjsByPath(path)
+        group.excludeEvent(event.eid)
+        group.saveConfig()
+        ui.eventTrash.insert(0, event)
+        ## ui.eventTrash.append(event)## FIXME
+        ui.eventTrash.saveConfig()
+        self.treestore.remove(self.treestore.get_iter(path))
+        self.treestore.insert(
+            self.trashIter,
+            0,
+            self.getEventRow(event),
+        )
+    def deleteEventFromTrash(self, menu, path):
+        (trash, event) = self.getObjsByPath(path)
+        trash.deleteEvent(event.eid)## trash == ui.eventTrash
+        trash.saveConfig()
+        self.treestore.remove(self.treestore.get_iter(path))
     def emptyTrash(self, menu):
+        ui.eventTrash.empty()
+        while True:
+            childIter = self.treestore.iter_children(self.trashIter)
+            if childIter is None:
+                break
+            self.treestore.remove(childIter)
+    def editTrash(self, menu):
         pass
     def moveGroupUp(self, menu, path):
         pass
@@ -540,20 +563,6 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 self.getEventRow(newEvent), ## row
             )
         self.toPasteEvent = None
-    def moveEventToTrash(self, menu, path):
-        (group, event) = self.getObjsByPath(path)
-        group.excludeEvent(event.eid)
-        group.saveConfig()
-        ui.eventTrash.append(event)
-        ui.eventTrash.saveConfig()
-        self.treestore.remove(self.treestore.get_iter(path))
-        self.treestore.insert(
-            self.trashIter,
-            0,
-            self.getEventRow(event),
-        )
-    def deleteEventFromTrash(self, menu, path):
-        pass
     #def selectAllEventInGroup(self, menu):## FIXME
     #    pass
     #def selectAllEventInTrash(self, menu):## FIXME
