@@ -252,11 +252,11 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             group = obj_list[0]
             if group.name == 'trash':
                 #print 'right click on trash', group.title
-                menu.add(labelStockMenuItem('_Edit', gtk.STOCK_EDIT, self.editTrash))
-                menu.add(labelStockMenuItem('_Empty Trash', gtk.STOCK_EDIT, self.emptyTrash))
+                menu.add(labelStockMenuItem('Edit', gtk.STOCK_EDIT, self.editTrash))
+                menu.add(labelStockMenuItem('Empty Trash', gtk.STOCK_EDIT, self.emptyTrash))
             else:
                 #print 'right click on group', group.title
-                menu.add(labelStockMenuItem('_Edit', gtk.STOCK_EDIT, self.editGroup, path, group))
+                menu.add(labelStockMenuItem('Edit', gtk.STOCK_EDIT, self.editGroup, path, group))
                 eventTypes = group.acceptsEventTypes
                 if eventTypes is None:
                     eventTypes = event_man.eventsClassNameList
@@ -267,7 +267,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                     else:
                         desc = event_man.eventsClassDict[eventType].desc
                     menu.add(labelStockMenuItem(
-                        _('_Add ') + ' ' + desc,
+                        _('Add ') + desc,
                         gtk.STOCK_ADD,
                         self.addEventToGroupFromMenu,
                         path,
@@ -275,38 +275,38 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                         eventType,
                         _('Add') + ' ' + desc,
                     ))
-                pasteItem = labelStockMenuItem('_Paste Event', gtk.STOCK_PASTE, self.pasteEventIntoGroup, path)
+                pasteItem = labelStockMenuItem('Paste Event', gtk.STOCK_PASTE, self.pasteEventIntoGroup, path)
                 pasteItem.set_sensitive(self.canPasteToGroup(group))
                 menu.add(pasteItem)
                 ##
                 menu.add(gtk.SeparatorMenuItem())
-                menu.add(labelStockMenuItem('_Add New Group', gtk.STOCK_NEW, self.addGroupAfterGroup, path))
+                menu.add(labelStockMenuItem('Add New Group', gtk.STOCK_NEW, self.addGroupAfterGroup, path))
                 menu.add(gtk.SeparatorMenuItem())
-                menu.add(labelStockMenuItem('_Delete Group', gtk.STOCK_NEW, self.deleteGroup, path))
+                menu.add(labelStockMenuItem('Delete Group', gtk.STOCK_NEW, self.deleteGroup, path))
                 ##
-                menu.add(labelStockMenuItem('Move _Up', gtk.STOCK_EDIT, self.moveGroupUp, group))
-                menu.add(labelStockMenuItem('Move _Down', gtk.STOCK_EDIT, self.moveGroupDown, group))
+                menu.add(labelStockMenuItem('Move Up', gtk.STOCK_EDIT, self.moveGroupUp, group))
+                menu.add(labelStockMenuItem('Move Down', gtk.STOCK_EDIT, self.moveGroupDown, group))
                 for (actionName, actionFuncName) in group.actions:
                     menu.add(labelStockMenuItem(_(actionName), None, self.groupActionClicked, group, actionFuncName))
         elif len(obj_list)==2:
             (group, event) = obj_list
             #print 'right click on event', event.summary
             if group.name != 'trash':
-                menu.add(labelStockMenuItem('_Edit', gtk.STOCK_EDIT, self.editEventFromMenu, path))
+                menu.add(labelStockMenuItem('Edit', gtk.STOCK_EDIT, self.editEventFromMenu, path))
                 menu.add(gtk.SeparatorMenuItem())
-            menu.add(labelStockMenuItem('Cu_t', gtk.STOCK_CUT, self.cutEvent, path))
-            menu.add(labelStockMenuItem('_Copy', gtk.STOCK_COPY, self.copyEvent, path))
+            menu.add(labelStockMenuItem('Cut', gtk.STOCK_CUT, self.cutEvent, path))
+            menu.add(labelStockMenuItem('Copy', gtk.STOCK_COPY, self.copyEvent, path))
             ##
             if group.name == 'trash':
                 menu.add(gtk.SeparatorMenuItem())
-                menu.add(labelStockMenuItem('_Delete', gtk.STOCK_DELETE, self.deleteEventFromTrash, path))
+                menu.add(labelStockMenuItem('Delete', gtk.STOCK_DELETE, self.deleteEventFromTrash, path))
             else:
-                pasteItem = labelStockMenuItem('_Paste', gtk.STOCK_PASTE, self.pasteEventAfterEvent, path)
+                pasteItem = labelStockMenuItem('Paste', gtk.STOCK_PASTE, self.pasteEventAfterEvent, path)
                 pasteItem.set_sensitive(self.canPasteToGroup(group))
                 menu.add(pasteItem)
                 ##
                 menu.add(gtk.SeparatorMenuItem())
-                menu.add(labelImageMenuItem('_Move to Trash', ui.eventTrash.icon, self.moveEventToTrash, path))
+                menu.add(labelImageMenuItem('Move to Trash', ui.eventTrash.icon, self.moveEventToTrash, path))
         else:
             return
         menu.show_all()
@@ -521,20 +521,18 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             srcGroup.saveConfig()
             tarGroup.insert(tarPath[1], srcEvent)
             tarGroup.saveConfig()
-            self.treestore.move_after(
-                self.treestore.get_iter(srcPath),
-                self.treestore.get_iter(tarPath),
-            )
+            self.treestore.remove(self.treestore.get_iter(srcPath))
+            newEvent = srcEvent
         else:
             newEvent = srcEvent.copy()
             newEvent.saveConfig()
             tarGroup.insert(tarPath[1], newEvent)
             tarGroup.saveConfig()
-            self.treestore.insert_after(
-                self.treestore.get_iter(tarPath[:1]),## parent
-                self.treestore.get_iter(tarPath),## sibling
-                self.getEventRow(newEvent), ## row
-            )
+        self.treestore.insert_after(
+            self.treestore.get_iter(tarPath[:1]),## parent
+            self.treestore.get_iter(tarPath),## sibling
+            self.getEventRow(newEvent), ## row
+        )
         self.toPasteEvent = None
     def pasteEventIntoGroup(self, menu, tarPath):## tarPath is a 1-lengthed tuple
         if not self.toPasteEvent:
@@ -550,19 +548,17 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             tarGroup.append(srcEvent)
             tarGroup.saveConfig()
             tarGroupCount = self.treestore.iter_n_children(tarGroupIter)
-            self.treestore.move_after(
-                self.treestore.get_iter(srcPath),
-                self.treestore.get_iter((tarPath[0], tarGroupCount-1)),
-            )
+            self.treestore.remove(self.treestore.get_iter(srcPath))
+            newEvent = srcEvent
         else:
             newEvent = srcEvent.copy()
             newEvent.saveConfig()
             tarGroup.append(newEvent)
             tarGroup.saveConfig()
-            self.treestore.append(
-                tarGroupIter,## parent
-                self.getEventRow(newEvent), ## row
-            )
+        self.treestore.append(
+            tarGroupIter,## parent
+            self.getEventRow(newEvent), ## row
+        )
         self.toPasteEvent = None
     #def selectAllEventInGroup(self, menu):## FIXME
     #    pass

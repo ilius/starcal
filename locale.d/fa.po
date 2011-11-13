@@ -34,6 +34,11 @@ msgid "_Edit"
 msgstr ""
 "_ویرایش"
 
+msgid "Edit"
+msgstr ""
+"ویرایش"
+
+
 msgid "_License"
 msgstr ""
 "_مجوز"
@@ -590,6 +595,10 @@ msgid "Daily Note"
 msgstr ""
 "یادداشت روزانه"
 
+msgid "University Class"
+msgstr ""
+"کلاس دانشگاه"
+
 msgid "Events"
 msgstr ""
 "رویدادها"
@@ -704,21 +713,88 @@ msgid "File"
 msgstr ""
 "فایل"
 
-msgid "_Add File"
+msgid "Add File"
 msgstr ""
 "افزودن فایل"
 
-msgid "_Add Yearly Event"
+msgid "_Add File"
 msgstr ""
-"افزودن رویداد سالیانه"
+"_افزودن فایل"
 
-msgid "_Add Note"
-msgstr ""
-"افزودن یادداشت"
 
 msgid "Edit Event"
 msgstr ""
 "ویرایش رویداد"
+
+
+msgid "Add "
+msgstr ""
+"افزودن "
+
+
+msgid "Empty Trash"
+msgstr ""
+"خالی کردن زباله‌دان"
+
+msgid "Trash"
+msgstr ""
+"زباله‌دان"
+
+msgid "Copy"
+msgstr ""
+"کپی"
+
+msgid "Cut"
+msgstr ""
+"بریدن"
+
+msgid "Paste"
+msgstr ""
+"چسباندن"
+
+msgid "Paste Event"
+msgstr ""
+"چسباندن رویداد"
+
+msgid "Event Group"
+msgstr ""
+"گروه رویدادها"
+
+msgid "Task List"
+msgstr ""
+"فهرست کارها"
+
+msgid "Note Book"
+msgstr ""
+"دفترچهٔ یادداشت"
+
+msgid "University Term"
+msgstr ""
+"ترم دانشگاه"
+
+
+msgid "Add New Group"
+msgstr ""
+"افزودن گروه تازه"
+
+msgid "Delete Group"
+msgstr ""
+"حذف گروه"
+
+msgid "Move Up"
+msgstr ""
+"جابجایی به بالا"
+
+msgid "Move Down"
+msgstr ""
+"جابجایی به پایین"
+
+msgid "Press OK if you are sure to delete group \"%s\""
+msgstr "اگر مطمئنید که می‌خواهید گروه «%s» را حذف کنید، دکمهٔ تائید را فشار دهید"
+""
+
+
+
 
 msgid "Time Line"
 msgstr ""

@@ -19,7 +19,7 @@
 
 import sys, os
 from os import listdir, makedirs
-from os.path import join, isfile, isdir, exists
+from os.path import join, isfile, isdir, exists, dirname
 from time import time, localtime, sleep
 from subprocess import Popen, PIPE
 
@@ -31,6 +31,8 @@ from glib import MainLoop
 sys.path.append(dirname(dirname(__file__))) ## FIXME
 
 from scal2.paths import *
+from scal2.os_utils import getUsersData
+from scal2.time_utils import getCurrentTime
 from scal2.cal_modules import to_jd, DATE_GREG
 from scal2 import event_man
 from scal2.event_man import eventsDir
@@ -46,16 +48,28 @@ except:
 
 
 ########################## Global Variables #########################
-
-uidList = [1000] ## FIXME
 uiName = 'gtk'
-notifyCmd = [join(rootDir, 'run'), join('ui_'+uiName, 'event', 'notify.py')]
-pidFile = '/var/run/starcal2d.pid'
+notifyCmd = [join(rootDir, 'scripts', 'run'), join('scal2', 'ui_'+uiName, 'event', 'notify.py')]
 pid = os.getpid()
+thisUid = os.getuid()
+
+if thisUid==0 and os.sep=='/':## running with root ## FIXME
+    pidFile = '/var/run/starcal2d.pid'
+    uidList = []
+    for user in getUsersData():
+        if isdir(join(user['home_dir'], '.starcal2', 'event')):
+            uidList.append(user['uid'])
+    print 'uidList=%s'%uidList
+else:
+    pidFile = join(confDir, 'event', 'starcal2d.pid')
+    uidList = [thisUid]
+
 
 open(pidFile, 'w').write(str(pid))
 
-events = event_man.loadEvents()
+
+eventGroups = event_man.EventGroupsHolder()
+eventGroups.loadConfig()
 
 ########################## Functions #################################
 
@@ -68,29 +82,36 @@ def assertDir(path):
 def notify(eid):
     #log.debug('notify eid %s'%eid)
     for uid in uidList:
+        print 'notify, uid=%s, eid=%s'%(uid, eid)
         Popen(notifyCmd+[str(eid), str(uid)], stdout=PIPE)
 
 def prepareToday():
-    tm = time()
+    tm = getCurrentTime()
     (y, m, d) = localtime(tm)[:3]
     #log.debug('Date: %s/%s/%s   Epoch: %s'%(y, m, d, tm))
     todayJd = to_jd(y, m, d, DATE_GREG)
     dayRemainSecondsCeil = int(-(tm - 1)%(24*3600))
     timeout_add_seconds(dayRemainSecondsCeil, prepareToday)
-    for event in events:
-        if not event.enable:
+    for group in eventGroups:
+        if not group.enable:
             continue
-        if not event.notifiers:
-            continue
-        eid = event.eid
-        occur = event.calcOccurrenceForJdRange(todayJd, todayJd+1)
-        #addList = []
-        for (start, end) in occur.getTimeRangeList():
-            if start >= tm:
-                timeout_add_seconds(int(start-tm)+1, notify, eid)
-                #log.debug(str(int(start-tm)+1))
-                #addList.append(int(start-tm)+1)
-            #log.debug('start=%s, tm=%s, start-tm=%s'%(start, tm, start-tm))
+        for event in group:
+            if not event:
+                continue
+            if not event.notifiers:
+                continue
+            eid = event.eid
+            occur = event.calcOccurrenceForJdRange(todayJd, todayJd+1)
+            if not occur:
+                continue
+            #addList = []
+            for (start, end) in occur.getTimeRangeList():
+                if start >= tm:
+                    #print 'start=%s, seconds_later=%s'%(start, int(start-tm)+1)
+                    timeout_add_seconds(int(start-tm)+1, notify, eid)
+                    #log.debug(str(int(start-tm)+1))
+                    #addList.append(int(start-tm)+1)
+                #log.debug('start=%s, tm=%s, start-tm=%s'%(start, tm, start-tm))
     #addList.sort()
     #log.debug('addList=%r'%addList[:20])
 

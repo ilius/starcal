@@ -687,7 +687,7 @@ class Event(EventBaseClass):
         self.notifiers = []
         self.checkRequirements()
         self.setDefaults()
-    __nonzero__ = lambda self: bool(self.rules)## and self.enable ## FIXME
+    __nonzero__ = lambda self: bool(self.rules) and self.enable ## FIXME
     def getInfo(self):
         lines = []
         rulesDict = self.getRulesDict()

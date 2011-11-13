@@ -28,24 +28,6 @@ class EventWidget(common.EventWidget):
         self.warnLabel.set_alignment(0, 0.5)
         #self.warnLabel.set_visible(False)## FIXME
         ###########
-        self.notifiersHboxDict = {}
-        notifiersBox = gtk.VBox()
-        for cls in event_man.eventNotifiersClassList:
-            notifier = cls(self.event)
-            inputWidget = notifier.makeWidget()
-            hbox = gtk.HBox()
-            cb = gtk.CheckButton(notifier.desc)
-            cb.inputWidget = inputWidget
-            cb.connect('clicked', lambda check: check.inputWidget.set_sensitive(check.get_active()))
-            cb.set_active(False)
-            hbox.pack_start(cb, 0, 0)
-            hbox.cb = cb
-            #hbox.pack_start(gtk.Label(''), 1, 1)
-            hbox.pack_start(inputWidget, 1, 1)
-            hbox.inputWidget = inputWidget
-            self.notifiersHboxDict[notifier.name] = hbox
-            notifiersBox.pack_start(hbox, 0, 0)
-        ###########
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Icon')+':'), 0, 0)
         self.iconSelect = common.IconSelectButton()
@@ -81,10 +63,9 @@ class EventWidget(common.EventWidget):
         self.pack_start(self.ruleAddBox, 0, 0)
         self.pack_start(self.warnLabel, 0, 0)
         ###
-        notifiersFrame = gtk.Expander(_('Notifiers'))
-        notifiersFrame.add(notifiersBox)
-        notifiersFrame.set_expanded(True)
-        self.pack_start(notifiersFrame, 0, 0)
+        self.notifiersBox = common.NotifiersCheckList()
+        self.notifiersBox.set_expanded(True)
+        self.pack_start(self.notifiersBox, 0, 0)
         ###########
         self.addRuleModel = gtk.ListStore(str, str)
         self.addRuleCombo = gtk.ComboBox(self.addRuleModel)
@@ -151,38 +132,19 @@ class EventWidget(common.EventWidget):
         for hbox in self.rulesBox.get_children():
             hbox.inputWidget.updateVars()
             self.event.rules.append(hbox.inputWidget.rule)
-    def updateNotifiersWidget(self):
-        for hbox in self.notifiersHboxDict.values():
-            hbox.cb.set_active(False)
-            hbox.inputWidget.set_sensitive(False)
-        for notifier in self.event.notifiers:
-            hbox = self.notifiersHboxDict[notifier.name]
-            hbox.cb.set_active(True)
-            hbox.inputWidget.set_sensitive(True)
-            hbox.inputWidget.notifier = notifier
-            hbox.inputWidget.updateWidget()
-    def updateNotifiers(self):
-        self.event.notifiers = []
-        for hbox in self.notifiersHboxDict.values():
-            if hbox.cb.get_active():
-                hbox.inputWidget.updateVars()
-                self.event.notifiers.append(hbox.inputWidget.notifier)
     def updateWidget(self):
         common.EventWidget.updateWidget(self)
         self.iconSelect.set_filename(self.event.icon)
         self.tagsBox.setData(self.event.tags)
-        ####
         self.addRuleModel.clear()
         self.updateRulesWidget()
-        ####
-        self.updateNotifiersWidget()
+        self.notifiersBox.setNotifiers(self.event.notifiers)
     def updateVars(self):
         common.EventWidget.updateVars(self)
         self.event.icon = self.iconSelect.get_filename()
         self.event.tags = self.tagsBox.getData()
-        ####
         self.updateRules()
-        self.updateNotifiers()
+        self.event.notifiers = self.notifiersBox.getNotifiers()
     def modeComboChanged(self, combo):## FIXME
         newMode = combo.get_active()
         for hbox in self.rulesBox.get_children():

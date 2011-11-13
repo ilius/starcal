@@ -35,4 +35,6 @@ getTimeZoneByJd = lambda jd: getTimeZoneByEpoch(getEpochFromJd(jd))
 
 getCurrentTimeZone = lambda: getTimeZoneByEpoch(time.time())
 #getCurrentTimeZone = lambda: -time.altzone if time.daylight and localtime().tm_isdst else -time.timezone
+getCurrentTime = lambda: time.time() + getCurrentTimeZone()
+
 

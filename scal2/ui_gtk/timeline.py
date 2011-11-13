@@ -25,7 +25,7 @@ from scal2 import core
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl
 
-from scal2.core import myRaise, getCurrentTimeZone
+from scal2.core import myRaise, getCurrentTime
                        
 from scal2 import ui
 from scal2.timeline import *
@@ -45,7 +45,7 @@ def show_event(widget, event):
 
 rootWindow = gdk.get_default_root_window() ## Good Place?????
 
-getCurrentTime = lambda: time.time() + getCurrentTimeZone()
+
 
 class TimeLine(gtk.Widget):
     def centerToNow(self):

@@ -29,6 +29,10 @@ class EventWidget(common.EventWidget):
         ##
         self.pack_start(hbox, 0, 0)
         #############
+        self.notifiersBox = common.NotifiersCheckList()
+        self.notifiersBox.set_expanded(False)
+        self.pack_start(self.notifiersBox, 0, 0)
+        #############
         self.filesBox = common.FilesBox(self.event)
         self.pack_start(self.filesBox, 0, 0)
         #############
@@ -37,8 +41,10 @@ class EventWidget(common.EventWidget):
         common.EventWidget.updateWidget(self)
         self.dateInput.set_date(self.event.getDate())
         self.timeInput.set_time(self.event.getTime())
+        self.notifiersBox.setNotifiers(self.event.notifiers)
     def updateVars(self):## FIXME
         common.EventWidget.updateVars(self)
         self.event.setDate(*self.dateInput.get_date())
         self.event.setTime(*self.timeInput.get_time())
+        self.event.notifiers = self.notifiersBox.getNotifiers()
 

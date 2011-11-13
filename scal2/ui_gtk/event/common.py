@@ -424,10 +424,13 @@ class FilesBox(gtk.VBox):
         self.vbox.pack_start(hbox, 0, 0)
         hbox.show_all()
     def addClicked(self, button):
-        fcd = gtk.FileChooserDialog(buttons=(
-            toStr(_('_OK')), gtk.RESPONSE_OK,
-            toStr(_('_Cancel')), gtk.RESPONSE_CANCEL,
-        ))
+        fcd = gtk.FileChooserDialog(
+            buttons=(
+                toStr(_('_OK')), gtk.RESPONSE_OK,
+                toStr(_('_Cancel')), gtk.RESPONSE_CANCEL,
+            ),
+            title=_('Add File'),
+        )
         fcd.connect('response', lambda w, e: fcd.hide())
         if fcd.run()==gtk.RESPONSE_OK:
             fpath = fcd.get_filename()
@@ -458,6 +461,46 @@ class FilesBox(gtk.VBox):
             hbox.destroy()
         for fname in self.event.files:
             self.showFile(fname)
+
+class NotifiersCheckList(gtk.Expander):
+    def __init__(self):
+        gtk.Expander.__init__(self, _('Notifiers'))
+        self.hboxDict = {}
+        totalVbox = gtk.VBox()
+        for cls in event_man.eventNotifiersClassList:
+            notifier = cls(self.event)
+            inputWidget = notifier.makeWidget()
+            hbox = gtk.HBox()
+            cb = gtk.CheckButton(notifier.desc)
+            cb.inputWidget = inputWidget
+            cb.connect('clicked', lambda check: check.inputWidget.set_sensitive(check.get_active()))
+            cb.set_active(False)
+            hbox.pack_start(cb, 0, 0)
+            hbox.cb = cb
+            #hbox.pack_start(gtk.Label(''), 1, 1)
+            hbox.pack_start(inputWidget, 1, 1)
+            hbox.inputWidget = inputWidget
+            self.hboxDict[notifier.name] = hbox
+            totalVbox.pack_start(hbox, 0, 0)
+        self.add(totalVbox)
+    def setNotifiers(self, notifiers):
+        for hbox in self.hboxDict.values():
+            hbox.cb.set_active(False)
+            hbox.inputWidget.set_sensitive(False)
+        for notifier in notifiers:
+            hbox = self.hboxDict[notifier.name]
+            hbox.cb.set_active(True)
+            hbox.inputWidget.set_sensitive(True)
+            hbox.inputWidget.notifier = notifier
+            hbox.inputWidget.updateWidget()
+    def getNotifiers(self):
+        notifiers = []
+        for hbox in self.hboxDict.values():
+            if hbox.cb.get_active():
+                hbox.inputWidget.updateVars()
+                notifiers.append(hbox.inputWidget.notifier)
+        return notifiers
+
 
 if __name__ == '__main__':
     from pprint import pformat
