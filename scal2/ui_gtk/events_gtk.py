@@ -256,6 +256,45 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         self.resize(600, 300)
         self.connect('delete-event', self.onDeleteEvent)
         ###
+        treeBox = gtk.HBox()
+        #####
+        self.treeview = gtk.TreeView()
+        swin = gtk.ScrolledWindow()
+        swin.add(self.treeview)
+        swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        treeBox.pack_start(swin, 1, 1)
+        self.vbox.pack_start(vpan)
+        #####
+        self.treestore = gtk.ListStore(int, gdk.Pixbuf, str, str)## eid, icon, summary, description
+        self.treeview.set_model(self.treestore)
+        ###      
+        col = gtk.TreeViewColumn('', gtk.CellRendererPixbuf(), pixbuf=1)
+        col.set_resizable(True)
+        self.treeview.append_column(col)
+        ###
+        col = gtk.TreeViewColumn(_('Summary'), gtk.CellRendererText(), text=2)
+        col.set_resizable(True)
+        self.treeview.append_column(col)
+        self.treeview.set_search_column(1)
+        ###
+        col = gtk.TreeViewColumn(_('Description'), gtk.CellRendererText(), text=3)
+        self.treeview.append_column(col)
+        #self.treeview.set_search_column(2)
+        ###
+        self.treeview.connect('cursor-changed', self.treeviewCursorChanged)
+        #####
+        self.vbox.show_all()
+        self.reloadEvents()
+
+
+
+class EventManagerDialog0(gtk.Dialog):## FIXME
+    def __init__(self, mainWin=None):## mainWin is needed? FIXME
+        gtk.Dialog.__init__(self)
+        self.set_title(_('Event Manager'))
+        self.resize(600, 300)
+        self.connect('delete-event', self.onDeleteEvent)
+        ###
         vpan = gtk.VPaned()
         headerBox = gtk.HBox()
         treeBox = gtk.HBox()
@@ -287,16 +326,14 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         headerButtonBox.set_layout(gtk.BUTTONBOX_END)
         ####
         addButton = gtk.Button(stock=gtk.STOCK_ADD)
-        '''
-        addButton = gtk.OptionMenu(stock=gtk.STOCK_ADD)
-        menu = gtk.Menu()
-        menu.set_border_width(0)
-        #for eventType in ('custom', 'yearly', 'dailyNote', 'task'):## FIXME
-        for cls in eventsClassList:## order? FIXME
-            item = gtk.MenuItem(cls.desc)## ImageMenuItem
-            #item.set_image(imageFromFile(...))
-            item.connect('activate', self.addCustomEvent, cls)
-        '''
+        #addButton = gtk.OptionMenu(stock=gtk.STOCK_ADD)
+        #menu = gtk.Menu()
+        #menu.set_border_width(0)
+        ##for eventType in ('custom', 'yearly', 'dailyNote', 'task'):## FIXME
+        #for cls in eventsClassList:## order? FIXME
+        #    item = gtk.MenuItem(cls.desc)## ImageMenuItem
+        #    #item.set_image(imageFromFile(...))
+        #    item.connect('activate', self.addCustomEvent, cls)
         ####
         editButton = gtk.Button(stock=gtk.STOCK_EDIT)
         delButton = gtk.Button(stock=gtk.STOCK_DELETE)

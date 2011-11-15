@@ -564,6 +564,16 @@ class CycleLenEventRule(EventRule):
     getInfo = lambda self: _('Repeat: Every %s Days and %s')%(_(self.cycleDays), timeEncode(self.cycleExtraTime))
 
 
+#class ShowInMCalEventRule(EventRule):## FIXME
+#    name = 'show_cal'
+#    desc = _('Show in Calendar')
+
+#class SunTimeRule(EventRule):## FIXME
+## ... minutes before Sun Rise      eval('sunRise-x')
+## ... minutes after Sun Rise       eval('sunRise+x')
+## ... minutes before Sun Set       eval('sunSet-x')
+## ... minutes after Sun Set        eval('sunSet+x')
+
 
 class EventNotifier(EventItemBase):
     name = 'custom'## FIXME
@@ -631,15 +641,7 @@ class CommandNotifier(EventNotifier):
         EventNotifier.__init__(self, event)
         self.command = ''
         self.pyEval = False
-
-
     
-
-"""
-class ShowInMCalEventRule(EventRule):## FIXME
-    name = 'show_cal'
-    desc = _('Show in Calendar')
-"""
 
 class Event(EventItemBase):
     name = 'custom'
@@ -970,6 +972,7 @@ class EventGroup(EventItemBase):
     name = 'group'
     desc = _('Event Group')
     acceptsEventTypes = None ## None means all event types
+    actions = []## [('Export to CSV', 'exportCsv')]
     def __init__(self):
         self.enable = True
         self.title = 'Event Group'
@@ -1045,16 +1048,19 @@ class UniversityTerm(EventGroup):
     name = 'universityTerm'
     desc = _('University Term')
     acceptsEventTypes = ('universityClass',)
+    #actions = EventGroup.actions + []
 
 class TaskList(EventGroup):
     name = 'taskList'
     desc = _('Task List')
     acceptsEventTypes = ('task',)
+    #actions = EventGroup.actions + []
 
 class NoteBook(EventGroup):
     name = 'noteBook'
     desc = _('Note Book')
     acceptsEventTypes = ('dailyNote',)
+    #actions = EventGroup.actions + []
 
 
 
