@@ -463,7 +463,7 @@ class DateLabel(gtk.Label):
         ##
         self.menu.show_all()
     def popupPopulate(self, label, menu):
-        #self.itemCopy.set_sensitive(self.get_property('cursor-position') > self.get_property('selection-bound'))## FIXME
+        self.itemCopy.set_sensitive(self.get_property('cursor-position') > self.get_property('selection-bound'))## FIXME
         self.menu.popup(None, None, None, 3, 0)
         if self.onPopupFunc:
             self.onPopupFunc()
