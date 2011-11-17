@@ -401,6 +401,7 @@ def deleteEventGroup(group, addToFirst=True):
         eventTrash.eventIds += group.eventIds
     group.eventIds = []
     eventGroups.delete(group)
+    eventGroups.saveConfig()
     eventTrash.saveConfig()
 
 
@@ -475,6 +476,7 @@ eventGroups = event_man.EventGroupsHolder()
 #eventGroups.loadConfig()## FIXME here or in ui_*/event/main.py
 eventTrash = event_man.EventTrash()
 #eventTrash.loadConfig()## FIXME here or in ui_*/event/main.py
+event_man.checkAndStartDaemon()## FIXME here or in ui_*/event/main.py
 
 
 #def updateEventTagsUsage():## FIXME where to use?

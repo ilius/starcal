@@ -731,14 +731,27 @@ msgid "Add "
 msgstr ""
 "افزودن "
 
+msgid "Edit "
+msgstr ""
+"ویرایش "
+
+msgid "Trash"
+msgstr ""
+"زباله‌دان"
 
 msgid "Empty Trash"
 msgstr ""
 "خالی کردن زباله‌دان"
 
-msgid "Trash"
+msgid "Move to Trash"
 msgstr ""
-"زباله‌دان"
+"انتقال به زباله‌دان"
+
+msgid "Move to %s"
+msgstr ""
+"جابجایی به %s"
+
+
 
 msgid "Copy"
 msgstr ""
@@ -780,6 +793,29 @@ msgstr ""
 msgid "Delete Group"
 msgstr ""
 "حذف گروه"
+
+msgid "Group Type"
+msgstr ""
+"نوع گروه"
+
+msgid "Title"
+msgstr ""
+"عنوان"
+
+msgid "Color"
+msgstr ""
+"رنگ"
+
+msgid "Default Calendar Type"
+msgstr ""
+"نوع تقویم پیش‌فرض"
+
+msgid "Event Cache Size"
+msgstr ""
+"اندازهٔ cache رویدادها"
+
+
+
 
 msgid "Move Up"
 msgstr ""

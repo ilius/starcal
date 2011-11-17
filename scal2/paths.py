@@ -40,8 +40,9 @@ elif os.sep=='\\':
 #print 'srcDir=%r'%srcDir
 
 rootDir = dirname(srcDir)
-pixDir = os.path.join(rootDir, 'pixmaps')
-plugDir = os.path.join(rootDir, 'plugins')
+pixDir = join(rootDir, 'pixmaps')
+plugDir = join(rootDir, 'plugins')
+daemonFile = join(rootDir, 'scal2', 'starcal2-daemon.py')
 
 if os.sep=='/':## Unix-like OS
     homeDir = os.getenv('HOME')
@@ -73,8 +74,8 @@ else:
 
 userPlugConf = join(confDir, 'plugin.conf')
 modDir = '%s/cal_modules'%srcDir
-plugDirUser = os.path.join(confDir, 'plugins')
-plugConfDir = os.path.join(confDir, 'plugins.conf')
+plugDirUser = join(confDir, 'plugins')
+plugConfDir = join(confDir, 'plugins.conf')
 
 
 

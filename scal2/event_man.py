@@ -284,7 +284,7 @@ class TimeListOccurrence(Occurrence):
         return {
             'startEpoch': self.startEpoch,
             'endEpoch': self.endEpoch,
-            'stepSeconds': self.stepSeconds
+            'stepSeconds': self.stepSeconds,
         }
 
 
@@ -858,7 +858,7 @@ class Event(EventBaseClass):
                         _('Conflict between'),
                         _(rule.desc),
                         _('and'),
-                        _(rulesDict[conflictName].desc)
+                        _(rulesDict[conflictName].desc),
                     ))
             for needName in rule.need:
                 if not needName in provideList:
@@ -866,7 +866,7 @@ class Event(EventBaseClass):
                     return (False, '"%s" %s "%s"'%(
                         _(rule.desc),
                         _('needs'),
-                        _(needName) #_(rulesDict[needName].desc)
+                        _(needName), #_(rulesDict[needName].desc)
                     ))
         return (True, '')
     getRulesData = lambda self: [(rule.name, rule.getData()) for rule in self.rules]
@@ -976,9 +976,10 @@ class TaskEvent(DailyNoteEvent):
     def calcOccurrenceForJdRange(self, startJd, endJd):
         jd = self.getJd()
         if startJd <= jd < endJd:
+            epoch = getEpochFromJhms(jd, *self.getTime())
             return TimeRangeListOccurrence(
                 [
-                    (getEpochFromJhms(jd, *self.getTime()), None)
+                    (epoch, None)
                 ]
             )
         else:
@@ -1013,6 +1014,14 @@ class EventContainer(EventBaseClass):
     __len__ = lambda self: len(self.eventIds)
     insert = lambda self, index, event: self.eventIds.insert(index, event.eid)
     append = lambda self, event: self.eventIds.append(event.eid)
+    def excludeEvent(self, eid):## call when moving to trash
+        '''
+            excludes event from this container (group or trash), not remove event data completely
+            and returns the index of (previously contained) event
+        '''
+        index = self.eventIds.index(eid)
+        self.eventIds.remove(eid)
+        return index
 
 class EventGroup(EventContainer):
     name = 'group'
@@ -1020,11 +1029,13 @@ class EventGroup(EventContainer):
     acceptsEventTypes = None ## None means all event types
     actions = []## [('Export to CSV', 'exportCsv')]
     eventActions = [] ## FIXME
-    def __init__(self, gid=None):
+    def __init__(self, gid=None, title=None):
         EventContainer.__init__(self)
         self.setId(gid)
         self.enable = True
-        self.title = 'Event Group'
+        if title is None:
+            title = self.desc
+        self.title = title
         self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)## FIXME
         self.defaultEventType = 'custom'
         self.defaultMode = core.primaryMode
@@ -1094,12 +1105,7 @@ class EventGroup(EventContainer):
             self.eventCache[eid] = event
         return event
     def excludeEvent(self, eid):## call when moving to trash
-        '''
-            excludes event from this group (not remove event data completely)
-            and returns the index of (previously contained) event
-        '''
-        index = self.eventIds.index(eid)
-        self.eventIds.remove(eid)
+        index = EventContainer.excludeEvent(self, eid)
         try:
             del self.eventCache[eid]
         except:
@@ -1116,7 +1122,8 @@ class EventGroup(EventContainer):
         self.eventIds.append(event.eid)
         if len(self.eventCache) < self.eventCacheSize:
             self.eventCache[event.eid] = event
-
+    moveUp = lambda self, index: self.eventIds.insert(index-1, self.eventIds.pop(index))
+    moveDown = lambda self, index: self.eventIds.insert(index+1, self.eventIds.pop(index))
 
 ## TaskList, NoteBook, UniversityTerm, EventGroup
 
@@ -1125,6 +1132,21 @@ class TaskList(EventGroup):
     desc = _('Task List')
     acceptsEventTypes = ('task',)
     #actions = EventGroup.actions + []
+    #def __init__(self, gid=None, title=None):
+    #    EventGroup.__init__(self, gid, title)
+    #    self.defaultTaskDuration = 0 ## in seconds
+    #    ## if defaultTaskDuration is set to zero, the checkbox for task's end, will be unchecked for new tasks
+    #def getData(self):
+    #    data = EventGroup.getData(self)
+    #    data.update({
+    #        'defaultTaskDuration': self.defaultTaskDuration,
+    #    })
+    #    return data
+    #def setData(self, data):
+    #    EventGroup.setData(self, data)
+    #    if 'defaultTaskDuration' in data:
+    #        self.defaultTaskDuration = data['defaultTaskDuration']
+
 
 class NoteBook(EventGroup):
     name = 'noteBook'
@@ -1171,14 +1193,20 @@ class EventGroupsHolder:
         else:
             del self.groupsDict[gid]
             self.groupIds.remove(gid)
-    def moveUp(self, gid):
-        i = self.groupIds.index(gid)
-        assert i > 0
-        self.groupIds.insert(i-1, self.groupIds.pop(i))
-    def moveDown(self, gid):
-        i = self.groupIds.index(gid)
-        assert i < len(self.groupIds) - 1
-        self.groupIds.insert(i+1, self.groupIds.pop(i))
+    def pop(self, index):
+        gid = self.groupIds.pop(index)
+        group = self.groupsDict.pop(gid)
+        return group
+    moveUp = lambda self, index: self.groupIds.insert(index-1, self.groupIds.pop(index))
+    moveDown = lambda self, index: self.groupIds.insert(index+1, self.groupIds.pop(index))
+    #def moveUp(self, gid):
+    #    index = self.groupIds.index(gid)
+    #    assert index > 0
+    #    self.groupIds.insert(index-1, self.groupIds.pop(index))
+    #def moveDown(self, gid):
+    #    index = self.groupIds.index(gid)
+    #    assert index < len(self.groupIds) - 1
+    #    self.groupIds.insert(index+1, self.groupIds.pop(index))
     #def swap(self, gid1, gid2):
     #    #assert gid1 in self.groupIds and gid2 in self.groupIds
     #    i1 = self.groupIds.index(gid1)
@@ -1225,7 +1253,7 @@ class EventTrash(EventContainer):
     def __init__(self):
         EventContainer.__init__(self)
         self.title = _('Trash')
-        self.icon = 'trash.png'
+        self.icon = join(pixDir, 'trash.png')
     def deleteEvent(self, eid):
         if not isinstance(eid, int):
             raise TypeError("deleteEvent takes event ID that is integer")
@@ -1328,7 +1356,7 @@ class DayOccurrenceView(OccurrenceView):
                             self.data.append({
                                 'time':timeEncode((h1, min1, s1), True),
                                 'text':text,
-                                'icon':icon
+                                'icon':icon,
                             })
                         else:
                             (jd2, h2, min2, s2) = core.getJhmsFromEpoch(endEpoch)
@@ -1336,7 +1364,7 @@ class DayOccurrenceView(OccurrenceView):
                                 self.data.append({
                                     'time':hmsRangeToStr(h1, min1, s1, h2, min2, s2),
                                     'text':text,
-                                    'icon':icon
+                                    'icon':icon,
                                 })
                             elif jd1==self.jd and self.jd < jd2:
                                 self.data.append({
@@ -1348,13 +1376,13 @@ class DayOccurrenceView(OccurrenceView):
                                 self.data.append({
                                     'time':'',
                                     'text':text,
-                                    'icon':icon
+                                    'icon':icon,
                                 })
                             elif jd1 < self.jd and self.jd==jd2:
                                 self.data.append({
                                     'time':hmsRangeToStr(0, 0, 0, h2, min2, s2),
                                     'text':text,
-                                    'icon':icon
+                                    'icon':icon,
                                 })
                 elif isinstance(occur, TimeListOccurrence):
                     #print 'updateData: TimeListOccurrence', occur.epochList
@@ -1364,7 +1392,7 @@ class DayOccurrenceView(OccurrenceView):
                             self.data.append({
                                 'time':timeEncode((hour, minute, sec), True),
                                 'text':text,
-                                'icon':icon
+                                'icon':icon,
                             })
                 else:
                     raise TypeError
@@ -1412,14 +1440,14 @@ class WeekOccurrenceView(OccurrenceView):
                                     'weekDay':weekDay,
                                     'time':hmsRangeToStr(h1, min1, s1, h2, min2, s2),
                                     'text':text,
-                                    'icon':icon
+                                    'icon':icon,
                                 })
                             else:## FIXME
                                 self.data.append({
                                     'weekDay':weekDay,
                                     'time':hmsRangeToStr(h1, min1, s1, 24, 0, 0),
                                     'text':text,
-                                    'icon':icon
+                                    'icon':icon,
                                 })
                                 for jd in range(jd1+1, jd2):
                                     (absWeekNumber, weekDay) = core.getWeekDateFromJd(jd)
@@ -1428,7 +1456,7 @@ class WeekOccurrenceView(OccurrenceView):
                                             'weekDay':weekDay,
                                             'time':'',
                                             'text':text,
-                                            'icon':icon
+                                            'icon':icon,
                                         })
                                     else:
                                         break
@@ -1438,7 +1466,7 @@ class WeekOccurrenceView(OccurrenceView):
                                         'weekDay':weekDay,
                                         'time':hmsRangeToStr(0, 0, 0, h2, min2, s2),
                                         'text':text,
-                                        'icon':icon
+                                        'icon':icon,
                                     })
                 elif isinstance(occur, TimeListOccurrence):
                     for epoch in occur.epochList:
@@ -1449,7 +1477,7 @@ class WeekOccurrenceView(OccurrenceView):
                                 'weekDay':weekDay,
                                 'time':timeEncode((hour, minute, sec), True),
                                 'text':text,
-                                'icon':icon
+                                'icon':icon,
                             })
                 else:
                     raise TypeError
@@ -1500,14 +1528,14 @@ class MonthOccurrenceView(OccurrenceView):
                                     'day':day,
                                     'time':hmsRangeToStr(h1, min1, s1, h2, min2, s2),
                                     'text':text,
-                                    'icon':icon
+                                    'icon':icon,
                                 })
                             else:## FIXME
                                 self.data.append({
                                     'day':day,
                                     'time':hmsRangeToStr(h1, min1, s1, 24, 0, 0),
                                     'text':text,
-                                    'icon':icon
+                                    'icon':icon,
                                 })
                                 for jd in range(jd1+1, jd2):
                                     (year, month, day) = jd_to(jd, core.primaryMode)
@@ -1516,7 +1544,7 @@ class MonthOccurrenceView(OccurrenceView):
                                             'day':day,
                                             'time':'',
                                             'text':text,
-                                            'icon':icon
+                                            'icon':icon,
                                         })
                                     else:
                                         break
@@ -1526,7 +1554,7 @@ class MonthOccurrenceView(OccurrenceView):
                                         'day':day,
                                         'time':hmsRangeToStr(0, 0, 0, h2, min2, s2),
                                         'text':text,
-                                        'icon':icon
+                                        'icon':icon,
                                     })
                 elif isinstance(occur, TimeListOccurrence):
                     for epoch in occur.epochList:
@@ -1537,15 +1565,10 @@ class MonthOccurrenceView(OccurrenceView):
                                 'day':day,
                                 'time':timeEncode((hour, minute, sec), True),
                                 'text':text,
-                                'icon':icon
+                                'icon':icon,
                             })
                 else:
                     raise TypeError
-
-
-## def loadEvent(eid): ## moved to group
-## def loadEvents(): ## moved to group
-
 
 def loadEventTrash(groups=[]):
     trash = EventTrash()
@@ -1567,6 +1590,40 @@ def loadEventTrash(groups=[]):
         trash.saveConfig()
     ###
     return trash
+
+def startDaemon():
+    from subprocess import Popen
+    Popen([daemonFile])
+
+def checkAndStartDaemon():
+    from scal2.os_utils import dead
+    pidFile = join(confDir, 'event', 'daemon.pid')
+    if isfile(pidFile):
+        pid = int(open(pidFile).read())
+        if not dead(pid):
+            return
+    startDaemon()
+
+def stopDaemon():
+    from scal2.os_utils import goodkill
+    pidFile = join(confDir, 'event', 'daemon.pid')
+    if not isfile(pidFile):
+        return
+    pid = int(open(pidFile).read())
+    try:
+        goodkill(pid)
+    except Exception, e:
+        log.error('Error while killing daemon process: %s'%e)
+        raise e
+    else:
+        try:
+            os.remove(pidFile)## FIXME, it should have done in daemon's source itself, using atexit! But it doesn't work
+        except:
+            pass
+
+def restartDaemon():
+    stopDaemon()
+    startDaemon()
 
 
 ########################################################################

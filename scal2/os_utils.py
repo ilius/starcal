@@ -33,3 +33,68 @@ def getUsersData():
     return data
 
 
+def kill(pid, signal=0):
+    '''
+        sends a signal to a process
+        returns True if the pid is dead
+        with no signal argument, sends no signal
+    '''
+    #if 'ps --no-headers' returns no lines, the pid is dead
+    from os import kill
+    try:
+        return kill(pid, signal)
+    except OSError, e:
+        #process is dead
+        if e.errno == 3:
+            return True
+        #no permissions
+        elif e.errno == 1:
+            return False
+        else:
+            raise e
+
+def dead(pid):
+    if kill(pid):
+        return True
+
+    #maybe the pid is a zombie that needs us to wait for it
+    from os import waitpid, WNOHANG
+    try:
+        dead = waitpid(pid, WNOHANG)[0]
+    except OSError, e:
+        #pid is not a child
+        if e.errno == 10:
+            return False
+        else:
+            raise e
+    return dead
+
+#def kill(pid, sig=0): pass #DEBUG: test hang condition
+
+
+def goodkill(pid, interval=1, hung=20):
+    'let process die gracefully, gradually send harsher signals if necessary'
+    from signal import SIGTERM, SIGINT, SIGHUP, SIGKILL
+    from time import sleep
+
+    for signal in (SIGTERM, SIGINT, SIGHUP):
+        if kill(pid, signal):
+            return
+        if dead(pid):
+            return
+        sleep(interval)
+
+    i = 0
+    while True:
+        #infinite-loop protection
+        if i < hung:
+            i += 1
+        else:
+            raise OSError('Process %s is hung. Giving up kill.'%pid)
+        if kill(pid, SIGKILL):
+            return
+        if dead(pid):
+            return
+        sleep(interval) 
+
+

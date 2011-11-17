@@ -26,19 +26,21 @@ from scal2.locale_man import tr as _
 from scal2.locale_man import rtl
 
 from scal2 import event_man
-#from scal2.event import dateEncode, timeEncode, dateDecode, timeDecode
-
+#from scal2.event_man import dateEncode, timeEncode, dateDecode, timeDecode
 from scal2 import ui
+
+from gobject import timeout_add_seconds
+import gtk
+from gtk import gdk
+
+
 from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile, rectangleContainsPoint, \
-                               labelStockMenuItem, labelImageMenuItem, confirm
+                               labelStockMenuItem, labelImageMenuItem, confirm, toolButtonFromStock, set_tooltip
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 #from scal2.ui_gtk.mywidgets.multi_spin_box import DateBox, TimeBox
-
 from scal2.ui_gtk.event.occurrence_view import *
-
-import gtk
-from gtk import gdk
+from scal2.ui_gtk.event.common import IconSelectButton
 
 #print 'Testing translator', __file__, _('About')
 
@@ -148,25 +150,42 @@ class GroupEditorDialog(gtk.Dialog):
         self.vbox.pack_start(hbox, 0, 0)
         ####
         if self._group:
+            self.isNewGroup = False
             combo.set_active(event_man.eventGroupsClassNameList.index(self._group.name))
         else:
+            self.isNewGroup = True
             combo.set_active(event_man.defaultGroupTypeIndex)
             self._group = event_man.eventGroupsClassList[event_man.defaultGroupTypeIndex]()
-        self.activeGroupWidget = self._group.makeWidget()## FIXME
+        self.activeGroupWidget = None
         combo.connect('changed', self.groupTypeChanged)
         self.comboGroupType = combo
-        self.vbox.pack_start(self.activeGroupWidget, 0, 0)
         self.vbox.show_all()
+        self.groupTypeChanged()
     def dateModeChanged(self, combo):
         pass
-    def groupTypeChanged(self, combo):
+    def getNewGroupTitle(self, baseTitle):
+        usedTitles = [group.title for group in ui.eventGroups]
+        if not baseTitle in usedTitles:
+            return usedTitles
+        i = 1
+        while True:
+            newTitle = baseTitle+' '+_(i)
+            if newTitle in usedTitles:
+                i += 1
+            else:
+                return newTitle
+    def groupTypeChanged(self, combo=None):
         if self.activeGroupWidget:
+            self.activeGroupWidget.updateVars()
             self.activeGroupWidget.destroy()
-        group = event_man.eventGroupsClassList[combo.get_active()]()
+        cls = event_man.eventGroupsClassList[self.comboGroupType.get_active()]
+        group = cls()
         if self._group:
             group.copyFrom(self._group)
             group.setId(self._group.gid)
             del self._group
+        if self.isNewGroup:
+            group.title = self.getNewGroupTitle(cls.desc)
         self._group = group
         self.activeGroupWidget = group.makeWidget()
         self.vbox.pack_start(self.activeGroupWidget, 0, 0)
@@ -181,15 +200,78 @@ class GroupEditorDialog(gtk.Dialog):
         return self._group
 
 
+class TrashEditorDialog(gtk.Dialog):
+    def __init__(self):
+        gtk.Dialog.__init__(self)
+        self.set_title(_('Edit Trash'))
+        #self.connect('delete-event', lambda obj, e: self.destroy())
+        #self.resize(800, 600)
+        ###
+        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        if ui.autoLocale:
+            cancelB.set_label(_('_Cancel'))
+            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
+            okB.set_label(_('_OK'))
+            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        self.connect('response', lambda w, e: self.hide())
+        #######
+        self.trash = ui.eventTrash
+        ##
+        sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        #######
+        hbox = gtk.HBox()
+        label = gtk.Label(_('Title'))
+        label.set_alignment(0, 0.5)
+        hbox.pack_start(label, 0, 0)
+        sizeGroup.add_widget(label)
+        self.titleEntry = gtk.Entry()
+        hbox.pack_start(self.titleEntry, 1, 1)
+        self.vbox.pack_start(hbox, 0, 0)
+        ####
+        hbox = gtk.HBox()
+        label = gtk.Label(_('Icon'))
+        label.set_alignment(0, 0.5)
+        hbox.pack_start(label, 0, 0)
+        sizeGroup.add_widget(label)
+        self.iconSelect = IconSelectButton()
+        hbox.pack_start(self.iconSelect, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.vbox.pack_start(hbox, 0, 0)
+        ####
+        self.vbox.show_all()
+        self.updateWidget()
+    def run(self):
+        if gtk.Dialog.run(self)==gtk.RESPONSE_OK:
+            self.updateVars()
+        self.destroy()
+    def updateWidget(self):
+        self.titleEntry.set_text(self.trash.title)
+        self.iconSelect.set_filename(self.trash.icon)
+    def updateVars(self):
+        self.trash.title = self.titleEntry.get_text()
+        self.trash.icon = self.iconSelect.filename
+        self.trash.saveConfig()
+
 
 
 class EventManagerDialog(gtk.Dialog):## FIXME
+    def onResponse(self, win, event):
+        self.hide()
+        timeout_add_seconds(0, event_man.restartDaemon)## FIXME
     def __init__(self, mainWin=None):## mainWin is needed? FIXME
         gtk.Dialog.__init__(self)
         self.set_title(_('Event Manager'))
         self.resize(600, 300)
         self.connect('delete-event', self.onDeleteEvent)
-        ###
+        ##
+        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        if ui.autoLocale:
+            okB.set_label(_('_OK'))
+            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        #self.connect('response', lambda w, e: self.hide())
+        self.connect('response', self.onResponse)
+        #######
         treeBox = gtk.HBox()
         #####
         self.treeview = gtk.TreeView()
@@ -199,13 +281,30 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         self.treeview.connect('realize', self.onTreeviewRealize)
         self.treeview.connect('cursor-changed', self.treeviewCursorChanged)## FIXME
         self.treeview.connect('button-press-event', self.treeviewButtonPress)
-        ###
+        #####
         swin = gtk.ScrolledWindow()
         swin.add(self.treeview)
         swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         treeBox.pack_start(swin, 1, 1)
-        self.vbox.pack_start(treeBox)
+        ###
+        toolbar = gtk.Toolbar()
+        toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
+        size = gtk.ICON_SIZE_SMALL_TOOLBAR
+        ###
+        tb = toolButtonFromStock(gtk.STOCK_GO_UP, size)
+        set_tooltip(tb, _('Move up'))
+        tb.connect('clicked', self.moveUpByButton)
+        toolbar.insert(tb, -1)
+        ###
+        tb = toolButtonFromStock(gtk.STOCK_GO_DOWN, size)
+        set_tooltip(tb, _('Move down'))
+        tb.connect('clicked', self.moveDownByButton)
+        toolbar.insert(tb, -1)
+        ###
+        treeBox.pack_start(toolbar, 0, 0)
         #####
+        self.vbox.pack_start(treeBox)
+        #######
         self.treestore = gtk.TreeStore(int, gdk.Pixbuf, str, str)
         ## event: event_id,  event_icon,   event_summary, event_description
         ## group: group_id,  group_pixbuf, group_title,   ?description     ## -group_id-2 ? FIXME
@@ -253,7 +352,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             if group.name == 'trash':
                 #print 'right click on trash', group.title
                 menu.add(labelStockMenuItem('Edit', gtk.STOCK_EDIT, self.editTrash))
-                menu.add(labelStockMenuItem('Empty Trash', gtk.STOCK_EDIT, self.emptyTrash))
+                menu.add(labelStockMenuItem('Empty Trash', gtk.STOCK_CLEAR, self.emptyTrash))
             else:
                 #print 'right click on group', group.title
                 menu.add(labelStockMenuItem('Edit', gtk.STOCK_EDIT, self.editGroup, path, group))
@@ -282,10 +381,10 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 menu.add(gtk.SeparatorMenuItem())
                 menu.add(labelStockMenuItem('Add New Group', gtk.STOCK_NEW, self.addGroupAfterGroup, path))
                 menu.add(gtk.SeparatorMenuItem())
-                menu.add(labelStockMenuItem('Delete Group', gtk.STOCK_NEW, self.deleteGroup, path))
+                menu.add(labelStockMenuItem('Delete Group', gtk.STOCK_DELETE, self.deleteGroup, path))
                 ##
-                menu.add(labelStockMenuItem('Move Up', gtk.STOCK_EDIT, self.moveGroupUp, group))
-                menu.add(labelStockMenuItem('Move Down', gtk.STOCK_EDIT, self.moveGroupDown, group))
+                menu.add(labelStockMenuItem('Move Up', gtk.STOCK_GO_UP, self.moveUpFromMenu, path))
+                menu.add(labelStockMenuItem('Move Down', gtk.STOCK_GO_DOWN, self.moveDownFromMenu, path))
                 for (actionName, actionFuncName) in group.actions:
                     menu.add(labelStockMenuItem(_(actionName), None, self.groupActionClicked, group, actionFuncName))
         elif len(obj_list)==2:
@@ -306,7 +405,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 menu.add(pasteItem)
                 ##
                 menu.add(gtk.SeparatorMenuItem())
-                menu.add(labelImageMenuItem('Move to Trash', ui.eventTrash.icon, self.moveEventToTrash, path))
+                #menu.add(labelImageMenuItem(_('Move to Trash'), ui.eventTrash.icon, self.moveEventToTrash, path))
+                menu.add(labelImageMenuItem(_('Move to %s')%ui.eventTrash.title, ui.eventTrash.icon, self.moveEventToTrash, path))
         else:
             return
         menu.show_all()
@@ -426,14 +526,13 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             self.getGroupRow(group, self.getRowBgColor()), ## row
         )
     def editGroup(self, menu, path, group):
-        print 'editGroup'
         group = GroupEditorDialog(group).run()
         if group is None:
             return
         group.saveConfig()## FIXME
         #self.reloadEvents()## perfomance FIXME
         groupIter = self.treestore.get_iter(path)
-        for i, value in enumerate(self.getGroupRow(group)):
+        for i, value in enumerate(self.getGroupRow(group, self.getRowBgColor())):
             self.treestore.set_value(
                 groupIter,
                 i,
@@ -448,7 +547,11 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         self.treestore.remove(self.treestore.get_iter(path))
         self.reloadEvents()## FIXME
     def addEventToGroupFromMenu(self, menu, path, group, eventType, title):
-        event = EventEditorDialog(eventType=eventType, title=title, parent=self).run()
+        event = EventEditorDialog(
+            eventType=eventType,
+            title=title,
+            parent=self,
+        ).run()
         if event is None:
             return
         event.saveConfig()
@@ -460,7 +563,11 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         )
     def editEventFromMenu(self, menu, path):
         (group, event) = self.getObjsByPath(path)
-        event = EventEditorDialog(event=event, parent=self).run()
+        event = EventEditorDialog(
+            event=event,
+            title=_('Edit ')+event.desc,
+            parent=self,
+        ).run()
         if event is None:
             return
         event.saveConfig()
@@ -497,11 +604,118 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 break
             self.treestore.remove(childIter)
     def editTrash(self, menu):
-        pass
-    def moveGroupUp(self, menu, path):
-        pass
-    def moveGroupDown(self, menu, path):
-        pass
+        TrashEditorDialog().run()
+        self.treestore.set_value(
+            self.trashIter,
+            1,
+            pixbufFromFile(ui.eventTrash.icon),
+        )
+        self.treestore.set_value(
+            self.trashIter,
+            2,
+            ui.eventTrash.title,
+        )
+    def moveUp(self, path):
+        if len(path)==1:
+            if path[0]==0:
+                return
+            srcIter = self.treestore.get_iter(path)
+            if self.treestore.get_value(srcIter, 0)==-1:
+                return
+            tarIter = self.treestore.get_iter((path[0]-1))
+            self.treestore.move_before(srcIter, tarIter)
+            ui.eventGroups.moveUp(path[0])
+            ui.eventGroups.saveConfig()
+        elif len(path)==2:
+            (parentObj, event) = self.getObjsByPath(path)
+            parentLen = len(parentObj)
+            srcIter = self.treestore.get_iter(path)
+            (parentIndex, eventIndex) = path
+            #print eventIndex, parentLen
+            if eventIndex > 0:
+                tarIter = self.treestore.get_iter((parentIndex, eventIndex-1))
+                self.treestore.move_before(srcIter, tarIter)
+                parentObj.moveUp(eventIndex)
+                parentObj.saveConfig()
+            else:
+                ## move event to end of previous group
+                if parentObj.name == 'trash':
+                    return
+                if parentIndex < 1:
+                    return
+                newParentIter = self.treestore.get_iter((parentIndex - 1))
+                newParentId = self.treestore.get_value(newParentIter, 0)
+                if newParentId==-1:## could not be!
+                    return
+                newGroup = ui.eventGroups[newParentId]
+                self.treestore.remove(srcIter)
+                eventNewPath = self.treestore.get_path(self.treestore.append(
+                    newParentIter,## parent
+                    self.getEventRow(event), ## row
+                ))
+                self.treeview.expand_to_path(eventNewPath)
+                self.treeview.set_cursor(eventNewPath)
+                ###
+                parentObj.excludeEvent(event.eid)
+                parentObj.saveConfig()
+                newGroup.append(event)
+                newGroup.saveConfig()
+    def moveDown(self, path):
+        if len(path)==1:
+            srcIter = self.treestore.get_iter(path)
+            if self.treestore.get_value(srcIter, 0)==-1:
+                return
+            tarIter = self.treestore.get_iter((path[0]+1))
+            if self.treestore.get_value(tarIter, 0)==-1:
+                return
+            self.treestore.move_after(srcIter, tarIter)
+            ui.eventGroups.moveDown(path[0])
+            ui.eventGroups.saveConfig()
+        elif len(path)==2:
+            (parentObj, event) = self.getObjsByPath(path)
+            parentLen = len(parentObj)
+            srcIter = self.treestore.get_iter(path)
+            (parentIndex, eventIndex) = path
+            #print eventIndex, parentLen
+            if eventIndex < parentLen-1:
+                tarIter = self.treestore.get_iter((parentIndex, eventIndex+1))
+                self.treestore.move_after(srcIter, tarIter)
+                parentObj.moveDown(eventIndex)
+                parentObj.saveConfig()
+            else:
+                ## move event to top of next group
+                if parentObj.name == 'trash':
+                    return
+                newParentIter = self.treestore.get_iter((parentIndex + 1))
+                newParentId = self.treestore.get_value(newParentIter, 0)
+                if newParentId==-1:
+                    return
+                newGroup = ui.eventGroups[newParentId]
+                self.treestore.remove(srcIter)
+                eventNewPath = self.treestore.get_path(self.treestore.insert(
+                    newParentIter,## parent
+                    0,## position
+                    self.getEventRow(event), ## row
+                ))
+                self.treeview.expand_to_path(eventNewPath)
+                self.treeview.set_cursor(eventNewPath)
+                ###
+                parentObj.excludeEvent(event.eid)
+                parentObj.saveConfig()
+                newGroup.insert(0, event)
+                newGroup.saveConfig()
+    moveUpFromMenu = lambda self, menu, path: self.moveUp(path)
+    moveDownFromMenu = lambda self, menu, path: self.moveDown(path)
+    def moveUpByButton(self, button):
+        cur = self.treeview.get_cursor()
+        if not cur:
+            return
+        self.moveUp(cur[0])
+    def moveDownByButton(self, button):
+        cur = self.treeview.get_cursor()
+        if not cur:
+            return
+        self.moveDown(cur[0])
     def groupActionClicked(self, menu, group, actionFuncName):
         getattr(group, actionFuncName)()
     def cutEvent(self, menu, path):
@@ -514,6 +728,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         (srcPath, move) = self.toPasteEvent
         (srcGroup, srcEvent) = self.getObjsByPath(srcPath)
         (tarGroup, tarEvent) = self.getObjsByPath(tarPath)
+        tarGroupIter = self.treestore.get_iter(tarPath[:1])
+        tarEventIter = self.treestore.get_iter(tarPath)
         # tarEvent is not used
         ###
         if move:
@@ -528,11 +744,12 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             newEvent.saveConfig()
             tarGroup.insert(tarPath[1], newEvent)
             tarGroup.saveConfig()
-        self.treestore.insert_after(
-            self.treestore.get_iter(tarPath[:1]),## parent
-            self.treestore.get_iter(tarPath),## sibling
+        newEventPath = self.treestore.get_path(self.treestore.insert_after(
+            tarGroupIter,## parent
+            tarEventIter,## sibling
             self.getEventRow(newEvent), ## row
-        )
+        ))
+        self.treeview.set_cursor(newEventPath)
         self.toPasteEvent = None
     def pasteEventIntoGroup(self, menu, tarPath):## tarPath is a 1-lengthed tuple
         if not self.toPasteEvent:

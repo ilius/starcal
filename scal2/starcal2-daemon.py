@@ -53,23 +53,20 @@ notifyCmd = [join(rootDir, 'scripts', 'run'), join('scal2', 'ui_'+uiName, 'event
 pid = os.getpid()
 thisUid = os.getuid()
 
-if thisUid==0 and os.sep=='/':## running with root ## FIXME
-    pidFile = '/var/run/starcal2d.pid'
-    uidList = []
-    for user in getUsersData():
-        if isdir(join(user['home_dir'], '.starcal2', 'event')):
-            uidList.append(user['uid'])
-    print 'uidList=%s'%uidList
-else:
-    pidFile = join(confDir, 'event', 'starcal2d.pid')
-    uidList = [thisUid]
+pidFile = join(confDir, 'event', 'daemon.pid')
+uidList = [thisUid]
 
+
+import atexit
+
+def onDaemonExit():
+    #log.debug('starcal2-daemon: exiting')
+    os.remove(pidFile)
 
 open(pidFile, 'w').write(str(pid))
-
+atexit.register(onDaemonExit)
 
 eventGroups = event_man.EventGroupsHolder()
-eventGroups.loadConfig()
 
 ########################## Functions #################################
 
@@ -115,10 +112,11 @@ def prepareToday():
     #addList.sort()
     #log.debug('addList=%r'%addList[:20])
 
+
 ########################## Starting Program ###########################
 
+eventGroups.loadConfig()
 prepareToday()
 MainLoop().run()
-#log.debug('starcal2-daemon: exiting')
-os.remove(pidFile)
+
 
