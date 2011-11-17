@@ -133,9 +133,9 @@ def checkNeedRestart():
             return True
     return False
 
-def restart():
-    Popen(['sh', '-c', 'sleep 0.1 ; export LANG="" ; '+sys.argv[0]])## sleep time FIXME
-    sys.exit(0)
+getPywPath = lambda: join(rootDir, APP_NAME + ('-qt' if uiName=='qt' else '') + '.pyw')
+
+restart = lambda: os.execl(sys.executable, sys.executable, *sys.argv)## will not return from function
 
 def winMakeShortcut(srcPath, dstPath, iconPath=None):
     from win32com.client import Dispatch
