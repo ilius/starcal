@@ -674,7 +674,6 @@ class Event(EventBaseClass):
     requiredNotifiers = ()
     def __init__(self, eid=None):
         self.setId(eid)
-        self.enable = True
         self.mode = core.primaryMode
         self.icon = '' ## to show in calendar
         self.summary = ''
@@ -688,7 +687,7 @@ class Event(EventBaseClass):
         self.notifiers = []
         self.checkRequirements()
         self.setDefaults()
-    __nonzero__ = lambda self: bool(self.rules) and self.enable ## FIXME
+    __nonzero__ = lambda self: bool(self.rules) ## FIXME
     def getInfo(self):
         lines = []
         rulesDict = self.getRulesDict()
@@ -730,7 +729,6 @@ class Event(EventBaseClass):
     def setDefaults(self):
         pass
     def copyFrom(self, other, onlySameRules=True):## FIXME
-        self.enable = other.enable
         self.mode = other.mode
         self.icon = other.icon
         self.summary = other.summary
@@ -780,7 +778,6 @@ class Event(EventBaseClass):
         self.loadFiles()
     def getData(self):
         return {
-            'enable': self.enable,
             'type': self.name,
             'calType': core.modules[self.mode].name,
             'rules': self.getRulesData(),
@@ -793,7 +790,7 @@ class Event(EventBaseClass):
     def setData(self, data):
         if 'id' in data:
             self.setId(data['id'])
-        for attr in ('enable', 'icon', 'summary', 'description', 'tags'):
+        for attr in ('icon', 'summary', 'description', 'tags'):
             if attr in data:
                 setattr(self, attr, data[attr])
         ####

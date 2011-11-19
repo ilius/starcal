@@ -39,11 +39,6 @@ class EventWidget(gtk.VBox):
         ###########
         hbox = gtk.HBox()
         ###
-        self.enableCheck = gtk.CheckButton(_('Enable'))
-        self.enableCheck.set_active(True)
-        hbox.pack_start(self.enableCheck, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        ###
         hbox.pack_start(gtk.Label(_('Calendar Type')+':'), 0, 0)
         combo = gtk.combo_box_new_text()
         for module in core.modules:
@@ -74,7 +69,6 @@ class EventWidget(gtk.VBox):
         ###########
         self.modeCombo.connect('changed', self.modeComboChanged)## right place? before updateWidget? FIXME
     def updateWidget(self):
-        self.enableCheck.set_active(self.event.enable)
         self.modeCombo.set_active(self.event.mode)
         self.summuryEntry.set_text(self.event.summary)
         self.descriptionBuff.set_text(self.event.description)
@@ -86,7 +80,6 @@ class EventWidget(gtk.VBox):
             filesBox.updateWidget()
         self.modeComboChanged(self.modeCombo)
     def updateVars(self):
-        self.event.enable = self.enableCheck.get_active()
         self.event.mode = self.modeCombo.get_active()
         self.event.summary = self.summuryEntry.get_text()
         self.event.description = buffer_get_text(self.descriptionBuff)
