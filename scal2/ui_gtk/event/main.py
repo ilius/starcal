@@ -217,6 +217,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         self.treeview.connect('realize', self.onTreeviewRealize)
         self.treeview.connect('cursor-changed', self.treeviewCursorChanged)## FIXME
         self.treeview.connect('button-press-event', self.treeviewButtonPress)
+        self.treeview.connect('row-activated', self.onRowActivated)
         #####
         swin = gtk.ScrolledWindow()
         swin.add(self.treeview)
@@ -351,6 +352,14 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         menu.popup(None, None, None, 3, etime)
     def onTreeviewRealize(self, event):
         self.reloadEvents()## FIXME
+    def onRowActivated(self, treev, path, col):
+        if len(path)==1:
+            if self.treeview.row_expanded(path):
+                self.treeview.collapse_row(path)
+            else:
+                self.treeview.expand_row(path, False)
+        elif len(path)==2:
+            self.editEventByPath(path)
     getRowBgColor = lambda self: gdkColorToRgb(self.treeview.style.base[gtk.STATE_NORMAL])## bg color of non-selected rows
     getEventRow = lambda self, event: (
         event.eid,
@@ -494,7 +503,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             self.treestore.get_iter(path),## parent
             self.getEventRow(event), ## row
         )
-    def editEventFromMenu(self, menu, path):
+    def editEventByPath(self, path):
         (group, event) = self.getObjsByPath(path)
         event = EventEditorDialog(
             event=event,
@@ -507,6 +516,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         eventIter = self.treestore.get_iter(path)
         for i, value in enumerate(self.getEventRow(event)):
             self.treestore.set_value(eventIter, i, value)
+    editEventFromMenu = lambda self, menu, path: self.editEventByPath(path)
     def moveEventToTrash(self, menu, path):
         (group, event) = self.getObjsByPath(path)
         group.excludeEvent(event.eid)
