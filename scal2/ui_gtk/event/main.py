@@ -40,86 +40,9 @@ from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 #from scal2.ui_gtk.mywidgets.multi_spin_box import DateBox, TimeBox
 from scal2.ui_gtk.event.occurrence_view import *
-from scal2.ui_gtk.event.common import IconSelectButton
+from scal2.ui_gtk.event.common import IconSelectButton, EventEditorDialog
 
 #print 'Testing translator', __file__, _('About')
-
-
-class EventEditorDialog(gtk.Dialog):
-    def __init__(self, event=None, eventType='', title=None, parent=None):## don't give both event a eventType
-        gtk.Dialog.__init__(self, parent=parent)
-        #self.set_transient_for(parent)
-        if title:
-            self.set_title(title)
-        #self.connect('delete-event', lambda obj, e: self.destroy())
-        #self.resize(800, 600)
-        ###
-        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        if ui.autoLocale:
-            cancelB.set_label(_('_Cancel'))
-            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
-            okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
-        self.connect('response', lambda w, e: self.hide())
-        #######
-        self.event = event
-        self.activeEventWidget = None
-        #######
-        #print 'eventType = %r'%eventType
-        if eventType:
-            cls = event_man.eventsClassDict[eventType]
-            self.event = cls()
-            self.activeEventWidget = self.event.makeWidget()
-        else:
-            hbox = gtk.HBox()
-            combo = gtk.combo_box_new_text()
-            for cls in event_man.eventsClassList:
-                combo.append_text(cls.desc)
-            hbox.pack_start(gtk.Label(_('Event Type')), 0, 0)
-            hbox.pack_start(combo, 0, 0)
-            hbox.pack_start(gtk.Label(''), 1, 1)
-            self.vbox.pack_start(hbox, 0, 0)
-            ####
-            if self.event:
-                combo.set_active(event_man.eventsClassNameList.index(self.event.name))
-            else:
-                combo.set_active(event_man.defaultEventTypeIndex)
-                self.event = event_man.eventsClassList[event_man.defaultEventTypeIndex]()
-            self.activeEventWidget = self.event.makeWidget()
-            combo.connect('changed', self.eventTypeChanged)
-            self.comboEventType = combo
-        self.vbox.pack_start(self.activeEventWidget, 0, 0)
-        self.vbox.show_all()
-    def dateModeChanged(self, combo):
-        pass
-    def eventTypeChanged(self, combo):
-        if self.activeEventWidget:
-            self.activeEventWidget.destroy()
-        event = event_man.eventsClassList[combo.get_active()]()
-        if self.event:
-            event.copyFrom(self.event)
-            event.setId(self.event.eid)
-            del self.event
-        self.event = event
-        self.activeEventWidget = event.makeWidget()
-        self.vbox.pack_start(self.activeEventWidget, 0, 0)
-        self.activeEventWidget.show_all()
-    def run(self):
-        if not self.activeEventWidget or not self.event:
-            return None
-        if gtk.Dialog.run(self)!=gtk.RESPONSE_OK:
-            try:
-                filesBox = self.activeEventWidget.filesBox
-            except AttributeError:
-                pass
-            else:
-                filesBox.removeNewFiles()
-            return None
-        self.activeEventWidget.updateVars()
-        self.destroy()
-        return self.event
-
 
 class GroupEditorDialog(gtk.Dialog):
     def __init__(self, group=None):
@@ -259,6 +182,18 @@ class EventManagerDialog(gtk.Dialog):## FIXME
     def onResponse(self, win, event):
         self.hide()
         timeout_add_seconds(0, event_man.restartDaemon)## FIXME
+    def onShow(self, widget):
+        for gid, eid in ui.changedEvents:
+            print 'changedEvents', gid, eid
+            groupIndex = ui.eventGroups.index(gid)
+            group = ui.eventGroups[gid]
+            eventIndex = group.index(eid)
+            event = group.getEvent(eid)
+            eventPath = (groupIndex, eventIndex)
+            eventIter = self.treestore.get_iter(eventPath)
+            for i, value in enumerate(self.getEventRow(event)):
+                self.treestore.set_value(eventIter, i, value)
+        ui.changedEvents = []
     def __init__(self, mainWin=None):## mainWin is needed? FIXME
         gtk.Dialog.__init__(self)
         self.set_title(_('Event Manager'))
@@ -271,6 +206,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
         #self.connect('response', lambda w, e: self.hide())
         self.connect('response', self.onResponse)
+        self.connect('show', self.onShow)
         #######
         treeBox = gtk.HBox()
         #####
@@ -306,8 +242,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         self.vbox.pack_start(treeBox)
         #######
         self.treestore = gtk.TreeStore(int, gdk.Pixbuf, str, str)
-        ## event: event_id,  event_icon,   event_summary, event_description
-        ## group: group_id,  group_pixbuf, group_title,   ?description     ## -group_id-2 ? FIXME
+        ## event: eid,  event_icon,   event_summary, event_description
+        ## group: gid,  group_pixbuf, group_title,   ?description
         ## trash: -1,        trash_icon,   _('Trash'),    ''
         self.treeview.set_model(self.treestore)
         ###
@@ -533,11 +469,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         #self.reloadEvents()## perfomance FIXME
         groupIter = self.treestore.get_iter(path)
         for i, value in enumerate(self.getGroupRow(group, self.getRowBgColor())):
-            self.treestore.set_value(
-                groupIter,
-                i,
-                value,
-            )
+            self.treestore.set_value(groupIter, i, value)
     def deleteGroup(self, menu, path):
         (index,) = path
         (group,) = self.getObjsByPath(path)
@@ -554,6 +486,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         ).run()
         if event is None:
             return
+        if not event.icon:
+            event.icon = group.defaultIcon
         event.saveConfig()
         group.append(event)
         group.saveConfig()
@@ -573,11 +507,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         event.saveConfig()
         eventIter = self.treestore.get_iter(path)
         for i, value in enumerate(self.getEventRow(event)):
-            self.treestore.set_value(
-                eventIter,
-                i,
-                value,
-            )
+            self.treestore.set_value(eventIter, i, value)
     def moveEventToTrash(self, menu, path):
         (group, event) = self.getObjsByPath(path)
         group.excludeEvent(event.eid)
@@ -634,7 +564,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             #print eventIndex, parentLen
             if eventIndex > 0:
                 tarIter = self.treestore.get_iter((parentIndex, eventIndex-1))
-                self.treestore.move_before(srcIter, tarIter)
+                self.treestore.move_before(srcIter, tarIter)## or use self.treestore.swap FIXME
                 parentObj.moveUp(eventIndex)
                 parentObj.saveConfig()
             else:
@@ -668,7 +598,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             tarIter = self.treestore.get_iter((path[0]+1))
             if self.treestore.get_value(tarIter, 0)==-1:
                 return
-            self.treestore.move_after(srcIter, tarIter)
+            self.treestore.move_after(srcIter, tarIter)## or use self.treestore.swap FIXME
             ui.eventGroups.moveDown(path[0])
             ui.eventGroups.saveConfig()
         elif len(path)==2:

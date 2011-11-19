@@ -310,10 +310,10 @@ class EventRule(EventBaseClass):
     def getData(self):
         return dict([(param, getattr(self, param)) for param in self.params])
     def setData(self, data):
-        if isinstance(data, dict):
-            for (key, value) in data.items():
-                if key in self.params:
-                    setattr(self, key, value)
+        #if isinstance(data, dict):## FIXME
+        for (key, value) in data.items():
+            if key in self.params:
+                setattr(self, key, value)
     getInfo = lambda self: ''
 
 class YearEventRule(EventRule):
@@ -611,10 +611,10 @@ class EventNotifier(EventBaseClass):
     def getData(self):
         return dict([(param, getattr(self, param)) for param in self.params])
     def setData(self, data):
-        if isinstance(data, dict):
-            for (key, value) in data.items():
-                if key in self.params:
-                    setattr(self, key, value)
+        #if isinstance(data, dict):## FIXME
+        for (key, value) in data.items():
+            if key in self.params:
+                setattr(self, key, value)
 
 
 
@@ -669,6 +669,7 @@ class CommandNotifier(EventNotifier):
 class Event(EventBaseClass):
     name = 'custom'
     desc = _('Custom Event')
+    defaultTag = ''
     requiredRules = ()
     requiredNotifiers = ()
     def __init__(self, eid=None):
@@ -679,9 +680,9 @@ class Event(EventBaseClass):
         self.summary = ''
         self.description = ''
         self.tags = []
+        self.calType = core.primaryMode
         self.showInTimeLine = False ## FIXME
         self.files = []
-        self.color = None ## FIXME
         ######
         self.rules = []
         self.notifiers = []
@@ -728,23 +729,25 @@ class Event(EventBaseClass):
                 self.notifiers.append(eventNotifiersClassDict[name](self))
     def setDefaults(self):
         pass
-    def copyFrom(self, event, onlySameRules=True):## FIXME
-        self.enable = event.enable
-        self.mode = event.mode
-        self.icon = event.icon
-        self.summary = event.summary
-        self.description = event.description
-        self.tags = event.tags[:]
-        self.showInTimeLine = event.showInTimeLine
+    def copyFrom(self, other, onlySameRules=True):## FIXME
+        self.enable = other.enable
+        self.mode = other.mode
+        self.icon = other.icon
+        self.summary = other.summary
+        self.description = other.description
+        self.tags = other.tags[:]
+        self.calType = other.calType
+        self.showInTimeLine = other.showInTimeLine
+        self.files = other.files
         ######
         if onlySameRules:
-            rd = event.getRulesDict()
+            rd = other.getRulesDict()
             for rule in self.rules:
                 if rule.name in rd:
                     rule.copyFrom(rd[rule.name])
         else:
-            self.rules = event.rules[:]
-        self.notifiers = event.notifiers[:]## FIXME
+            self.rules = other.rules[:]
+        self.notifiers = other.notifiers[:]## FIXME
         self.checkRequirements()
     def loadFiles(self):
         self.files = []
@@ -790,15 +793,18 @@ class Event(EventBaseClass):
     def setData(self, data):
         if 'id' in data:
             self.setId(data['id'])
-        self.enable = data.get('enable', True)
+        for attr in ('enable', 'icon', 'summary', 'description', 'tags'):
+            if attr in data:
+                setattr(self, attr, data[attr])
         ####
-        calType = data['calType']
-        for (i, module) in enumerate(core.modules):
-            if module.name == calType:
-                self.mode = i
-                break
-        else:
-            raise ValueError('Invalid calType: %r'%calType)
+        if 'calType' in data:
+            calType = data['calType']
+            for (i, module) in enumerate(core.modules):
+                if module.name == calType:
+                    self.mode = i
+                    break
+            else:
+                raise ValueError('Invalid calType: %r'%calType)
         ####
         self.rules = []
         for (rule_name, rule_data) in data['rules']:
@@ -807,14 +813,11 @@ class Event(EventBaseClass):
             self.rules.append(rule)
         ####
         self.notifiers = []
-        for (notifier_name, notifier_data) in data['notifiers']:
-            notifier = eventNotifiersClassDict[notifier_name](self)
-            notifier.setData(notifier_data)
-            self.notifiers.append(notifier)
-        ####
-        for attr in ('icon', 'summary', 'description'):
-            setattr(self, attr, data.get(attr, ''))
-        self.tags = data.get('tags', [])
+        if 'notifiers' in data:
+            for (notifier_name, notifier_data) in data['notifiers']:
+                notifier = eventNotifiersClassDict[notifier_name](self)
+                notifier.setData(notifier_data)
+                self.notifiers.append(notifier)
     def saveConfig(self):
         if not isdir(self.eventDir):
             os.makedirs(self.eventDir)
@@ -941,6 +944,7 @@ class YearlyEvent(Event):
 class DailyNoteEvent(YearlyEvent):
     name = 'dailyNote'
     desc = _('Daily Note')
+    defaultTag = 'note'
     requiredRules = ('year', 'month', 'day')
     getYear = lambda self: self.getRulesDict()['year'].year
     def setYear(self, year):
@@ -965,6 +969,7 @@ class TaskEvent(DailyNoteEvent):
     ## [x] showInTimeLine
     name = 'task'
     desc = _('Task')
+    defaultTag = 'task'
     requiredRules = ('year', 'month', 'day', 'dayTime')
     def setTime(self, hour, minute, second):
         self.getRulesDict()['dayTime'].dayTime = (hour, minute, second)
@@ -989,6 +994,7 @@ class UniversityClassEvent(Event):## FIXME
     ## start, end, weekDay, weekNumberMode, dayTime --- notifierName='alarm' --- showInTimeLine
     name = 'universityClass'
     desc = _('University Class')
+    defaultTag = 'university'
     requiredRules = ()
 
 class EventContainer(EventBaseClass):
@@ -1014,6 +1020,7 @@ class EventContainer(EventBaseClass):
     __len__ = lambda self: len(self.eventIds)
     insert = lambda self, index, event: self.eventIds.insert(index, event.eid)
     append = lambda self, event: self.eventIds.append(event.eid)
+    index = lambda self, eid: self.eventIds.index(eid)
     def excludeEvent(self, eid):## call when moving to trash
         '''
             excludes event from this container (group or trash), not remove event data completely
@@ -1037,6 +1044,12 @@ class EventGroup(EventContainer):
             title = self.desc
         self.title = title
         self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)## FIXME
+        self.defaultIcon = ''
+        if self.acceptsEventTypes:
+            if len(self.acceptsEventTypes)==1:
+                defaultTag = eventsClassDict[self.acceptsEventTypes[0]].defaultTag
+                if defaultTag:
+                    self.defaultIcon = join(pixDir, 'tags', defaultTag+'.png')
         self.defaultEventType = 'custom'
         self.defaultMode = core.primaryMode
         self.eventCacheSize = 0
@@ -1056,6 +1069,7 @@ class EventGroup(EventContainer):
             'type': self.name,
             'title': self.title,
             'color': self.color,
+            'defaultIcon': self.defaultIcon,
             'defaultEventType': self.defaultEventType,
             'defaultCalType': core.modules[self.defaultMode].name,
             'eventCacheSize': self.eventCacheSize,
@@ -1064,19 +1078,14 @@ class EventGroup(EventContainer):
     def setData(self, data):
         if 'id' in data:
             self.setId(data['id'])
-        self.enable = data.get('enable', True)
-        self.title = data['title']
-        if 'color' in data:
-            self.color = data['color']
-        self.eventCacheSize = data.get('eventCacheSize', 0)
-        self.eventIds = data.get('eventIds', [])
+        for attr in ('enable', 'title', 'color', 'defaultIcon', 'eventCacheSize', 'eventIds'):
+            if attr in data:
+                setattr(self, attr, data[attr])
         ####
         if 'defaultEventType' in data:
             self.defaultEventType = data['defaultEventType']
             if not self.defaultEventType in eventsClassDict:
                 raise ValueError('Invalid defaultEventType: %r'%self.defaultEventType)
-        else:
-            self.defaultEventType = 'custom' ## FIXME
         ####
         if 'defaultCalType' in data:
             defaultCalType = data['defaultCalType']
@@ -1086,8 +1095,6 @@ class EventGroup(EventContainer):
                     break
             else:
                 raise ValueError('Invalid defaultCalType: %r'%defaultCalType)
-        else:
-            self.defaultMode = core.primaryMode
     def saveConfig(self):
         open(self.groupFile, 'w').write(self.getJson())
     def loadConfig(self):
@@ -1132,20 +1139,21 @@ class TaskList(EventGroup):
     desc = _('Task List')
     acceptsEventTypes = ('task',)
     #actions = EventGroup.actions + []
-    #def __init__(self, gid=None, title=None):
-    #    EventGroup.__init__(self, gid, title)
-    #    self.defaultTaskDuration = 0 ## in seconds
-    #    ## if defaultTaskDuration is set to zero, the checkbox for task's end, will be unchecked for new tasks
-    #def getData(self):
-    #    data = EventGroup.getData(self)
-    #    data.update({
-    #        'defaultTaskDuration': self.defaultTaskDuration,
-    #    })
-    #    return data
-    #def setData(self, data):
-    #    EventGroup.setData(self, data)
-    #    if 'defaultTaskDuration' in data:
-    #        self.defaultTaskDuration = data['defaultTaskDuration']
+    def __init__(self, gid=None, title=None):
+        EventGroup.__init__(self, gid, title)
+        #self.tags = ['task']## FIXME
+        #self.defaultTaskDuration = 0 ## in seconds FIXME
+        ## if defaultTaskDuration is set to zero, the checkbox for task's end, will be unchecked for new tasks
+    def getData(self):
+        data = EventGroup.getData(self)
+        #data.update({
+        #    'defaultTaskDuration': self.defaultTaskDuration,
+        #})
+        return data
+    def setData(self, data):
+        EventGroup.setData(self, data)
+        #if 'defaultTaskDuration' in data:
+        #    self.defaultTaskDuration = data['defaultTaskDuration']
 
 
 class NoteBook(EventGroup):
@@ -1171,6 +1179,7 @@ class EventGroupsHolder:
             yield self.groupsDict[gid]
     __iter__ = lambda self: IteratorFromGen(self.iterGen())
     __len__ = lambda self: len(self.groupIds)
+    index = lambda self, gid: self.groupIds.index(gid) ## or get group obj instead of gid? FIXME
     __getitem__ = lambda self, key: self.groupsDict.__getitem__(key)
     def insert(self, index, group):
         gid = group.gid
@@ -1343,11 +1352,17 @@ class DayOccurrenceView(OccurrenceView):
                     text += '\n<a href="%s">%s</a>'%(url, fname)
                 icon = event.icon
                 #print '\nupdateData: checking event', event.summary
+                ids = (group.gid, event.eid)
                 if isinstance(occur, JdListOccurrence):
                     #print 'updateData: JdListOccurrence', occur.getDaysJdList()
                     for jd in occur.getDaysJdList():
                         if jd==self.jd:
-                            self.data.append({'time':'', 'text':text, 'icon':icon})
+                            self.data.append({
+                                'time':'',
+                                'text':text,
+                                'icon':icon,
+                                'ids': ids,
+                            })
                 elif isinstance(occur, TimeRangeListOccurrence):
                     #print 'updateData: TimeRangeListOccurrence', occur.getTimeRangeList()
                     for (startEpoch, endEpoch) in occur.getTimeRangeList():
@@ -1357,6 +1372,7 @@ class DayOccurrenceView(OccurrenceView):
                                 'time':timeEncode((h1, min1, s1), True),
                                 'text':text,
                                 'icon':icon,
+                                'ids': ids,
                             })
                         else:
                             (jd2, h2, min2, s2) = core.getJhmsFromEpoch(endEpoch)
@@ -1365,24 +1381,28 @@ class DayOccurrenceView(OccurrenceView):
                                     'time':hmsRangeToStr(h1, min1, s1, h2, min2, s2),
                                     'text':text,
                                     'icon':icon,
+                                    'ids': ids,
                                 })
                             elif jd1==self.jd and self.jd < jd2:
                                 self.data.append({
                                     'time':hmsRangeToStr(h1, min1, s1, 24, 0, 0),
                                     'text':text,
-                                    'icon':icon
+                                    'icon':icon,
+                                    'ids': ids,
                                 })
                             elif jd1 < self.jd < jd2:
                                 self.data.append({
                                     'time':'',
                                     'text':text,
                                     'icon':icon,
+                                    'ids': ids,
                                 })
                             elif jd1 < self.jd and self.jd==jd2:
                                 self.data.append({
                                     'time':hmsRangeToStr(0, 0, 0, h2, min2, s2),
                                     'text':text,
                                     'icon':icon,
+                                    'ids': ids,
                                 })
                 elif isinstance(occur, TimeListOccurrence):
                     #print 'updateData: TimeListOccurrence', occur.epochList
@@ -1393,6 +1413,7 @@ class DayOccurrenceView(OccurrenceView):
                                 'time':timeEncode((hour, minute, sec), True),
                                 'text':text,
                                 'icon':icon,
+                                'ids': ids,
                             })
                 else:
                     raise TypeError
@@ -1424,11 +1445,18 @@ class WeekOccurrenceView(OccurrenceView):
                     continue
                 text = event.getText()
                 icon = event.icon
+                ids = (group.gid, event.eid)
                 if isinstance(occur, JdListOccurrence):
                     for jd in occur.getDaysJdList():
                         (absWeekNumber, weekDay) = core.getWeekDateFromJd(jd)
                         if absWeekNumber==self.absWeekNumber:
-                            self.data.append({'weekDay':weekDay, 'time':'', 'text':text, 'icon':icon})
+                            self.data.append({
+                                'weekDay':weekDay,
+                                'time':'',
+                                'text':text,
+                                'icon':icon,
+                                'ids': ids,
+                            })
                 elif isinstance(occur, TimeRangeListOccurrence):
                     for (startEpoch, endEpoch) in occur.getTimeRangeList():
                         (jd1, h1, min1, s1) = core.getJhmsFromEpoch(startEpoch)
@@ -1441,6 +1469,7 @@ class WeekOccurrenceView(OccurrenceView):
                                     'time':hmsRangeToStr(h1, min1, s1, h2, min2, s2),
                                     'text':text,
                                     'icon':icon,
+                                    'ids': ids,
                                 })
                             else:## FIXME
                                 self.data.append({
@@ -1448,6 +1477,7 @@ class WeekOccurrenceView(OccurrenceView):
                                     'time':hmsRangeToStr(h1, min1, s1, 24, 0, 0),
                                     'text':text,
                                     'icon':icon,
+                                    'ids': ids,
                                 })
                                 for jd in range(jd1+1, jd2):
                                     (absWeekNumber, weekDay) = core.getWeekDateFromJd(jd)
@@ -1457,6 +1487,7 @@ class WeekOccurrenceView(OccurrenceView):
                                             'time':'',
                                             'text':text,
                                             'icon':icon,
+                                            'ids': ids,
                                         })
                                     else:
                                         break
@@ -1467,6 +1498,7 @@ class WeekOccurrenceView(OccurrenceView):
                                         'time':hmsRangeToStr(0, 0, 0, h2, min2, s2),
                                         'text':text,
                                         'icon':icon,
+                                        'ids': ids,
                                     })
                 elif isinstance(occur, TimeListOccurrence):
                     for epoch in occur.epochList:
@@ -1478,6 +1510,7 @@ class WeekOccurrenceView(OccurrenceView):
                                 'time':timeEncode((hour, minute, sec), True),
                                 'text':text,
                                 'icon':icon,
+                                'ids': ids,
                             })
                 else:
                     raise TypeError
@@ -1512,11 +1545,18 @@ class MonthOccurrenceView(OccurrenceView):
                     continue
                 text = event.getText()
                 icon = event.icon
+                ids = (group.gid, event.eid)
                 if isinstance(occur, JdListOccurrence):
                     for jd in occur.getDaysJdList():
                         (year, month, day) = jd_to(jd, core.primaryMode)
                         if year==self.year and month==self.month:
-                            self.data.append({'day':day, 'time':'', 'text':text, 'icon':icon})
+                            self.data.append({
+                                'day':day,
+                                'time':'',
+                                'text':text,
+                                'icon':icon,
+                                'ids': ids,
+                            })
                 elif isinstance(occur, TimeRangeListOccurrence):
                     for (startEpoch, endEpoch) in occur.getTimeRangeList():
                         (jd1, h1, min1, s1) = core.getJhmsFromEpoch(startEpoch)
@@ -1529,6 +1569,7 @@ class MonthOccurrenceView(OccurrenceView):
                                     'time':hmsRangeToStr(h1, min1, s1, h2, min2, s2),
                                     'text':text,
                                     'icon':icon,
+                                    'ids': ids,
                                 })
                             else:## FIXME
                                 self.data.append({
@@ -1536,6 +1577,7 @@ class MonthOccurrenceView(OccurrenceView):
                                     'time':hmsRangeToStr(h1, min1, s1, 24, 0, 0),
                                     'text':text,
                                     'icon':icon,
+                                    'ids': ids,
                                 })
                                 for jd in range(jd1+1, jd2):
                                     (year, month, day) = jd_to(jd, core.primaryMode)
@@ -1545,6 +1587,7 @@ class MonthOccurrenceView(OccurrenceView):
                                             'time':'',
                                             'text':text,
                                             'icon':icon,
+                                            'ids': ids,
                                         })
                                     else:
                                         break
@@ -1555,6 +1598,7 @@ class MonthOccurrenceView(OccurrenceView):
                                         'time':hmsRangeToStr(0, 0, 0, h2, min2, s2),
                                         'text':text,
                                         'icon':icon,
+                                        'ids': ids,
                                     })
                 elif isinstance(occur, TimeListOccurrence):
                     for epoch in occur.epochList:
@@ -1566,6 +1610,7 @@ class MonthOccurrenceView(OccurrenceView):
                                 'time':timeEncode((hour, minute, sec), True),
                                 'text':text,
                                 'icon':icon,
+                                'ids': ids,
                             })
                 else:
                     raise TypeError
@@ -1630,6 +1675,8 @@ def restartDaemon():
 
 eventsClassList = [TaskEvent, DailyNoteEvent, YearlyEvent, UniversityClassEvent, Event]
 eventsClassDict = dict([(cls.name, cls) for cls in eventsClassList])
+eventsClassByDesc = dict([(cls.desc, cls) for cls in eventsClassList])
+
 eventsClassNameList = [cls.name for cls in eventsClassList]
 #eventsClassNameDescList = [(cls.name, cls.desc) for cls in eventsClassList]
 defaultEventTypeIndex = 0 ## FIXME

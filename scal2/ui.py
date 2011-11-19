@@ -404,6 +404,7 @@ def deleteEventGroup(group, addToFirst=True):
     eventGroups.saveConfig()
     eventTrash.saveConfig()
 
+#getEvent = lambda group_id, event_id: eventGroups[group_id].getEvent(event_id)
 
 ######################################################################
 shownCals = [
@@ -477,7 +478,7 @@ eventGroups = event_man.EventGroupsHolder()
 eventTrash = event_man.EventTrash()
 #eventTrash.loadConfig()## FIXME here or in ui_*/event/main.py
 event_man.checkAndStartDaemon()## FIXME here or in ui_*/event/main.py
-
+changedEvents = [] ## a list of (group_id, event_id) 's
 
 #def updateEventTagsUsage():## FIXME where to use?
 #    tagsDict = getEventTagsDict()

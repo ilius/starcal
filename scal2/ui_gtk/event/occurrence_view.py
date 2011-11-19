@@ -1,9 +1,13 @@
+from scal2.utils import toStr, toUnicode
 from scal2.locale_man import tr as _
 
 from scal2 import event_man
 from scal2 import ui
 
 import gtk
+
+from scal2.ui_gtk.utils import imageFromFile
+from scal2.ui_gtk.event.common import EventEditorDialog
 
 class DayOccurrenceView(event_man.DayOccurrenceView, gtk.VBox):
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
@@ -12,6 +16,7 @@ class DayOccurrenceView(event_man.DayOccurrenceView, gtk.VBox):
         gtk.VBox.__init__(self)
         ## what to do with populatePopupFunc FIXME
         ## self.textview.connect('populate-popup', populatePopupFunc)
+        self.clipboard = gtk.clipboard_get()
         self.updateWidget()
     def updateWidget(self):
         self.updateData()
@@ -29,11 +34,57 @@ class DayOccurrenceView(event_man.DayOccurrenceView, gtk.VBox):
             label.set_selectable(True)
             label.set_line_wrap(True)
             label.set_use_markup(True)
+            label.connect('populate-popup', self.onLabelPopupPopulate, item['ids'])
             hbox.pack_start(label, 1, 1)
             self.pack_start(hbox, 0, 0)
         self.show_all()
         self.set_visible(bool(self.data))
-
+    def onLabelPopupPopulate(self, label, menu, ids):
+        menu = gtk.Menu()
+        ##
+        itemCopyAll = gtk.ImageMenuItem(_('Copy _All'))
+        itemCopyAll.set_image(gtk.image_new_from_stock(gtk.STOCK_COPY, gtk.ICON_SIZE_MENU))
+        itemCopyAll.connect('activate', self.copyAll, label)
+        menu.add(itemCopyAll)
+        ##
+        itemCopy = gtk.ImageMenuItem(_('_Copy'))
+        itemCopy.set_image(gtk.image_new_from_stock(gtk.STOCK_COPY, gtk.ICON_SIZE_MENU))
+        if label.get_property('cursor-position') > label.get_property('selection-bound'):
+            itemCopy.connect('activate', self.copy, label)
+        else:
+            itemCopy.set_sensitive(False)
+        menu.add(itemCopy)
+        ##
+        menu.add(gtk.SeparatorMenuItem())
+        ##
+        (group_id, event_id) = ids
+        event = ui.eventGroups[group_id].getEvent(event_id)
+        winTitle = _('Edit ') + event.desc
+        itemEdit = gtk.ImageMenuItem(winTitle)
+        itemEdit.set_image(gtk.image_new_from_stock(gtk.STOCK_EDIT, gtk.ICON_SIZE_MENU))
+        itemEdit.connect('activate', self.editEventClicked, winTitle, event, group_id)
+        menu.add(itemEdit)
+        ## How about moving event to trash from here?
+        ##
+        menu.show_all()
+        menu.popup(None, None, None, 3, 0)
+    def editEventClicked(self, item, winTitle, event, group_id):
+        event = EventEditorDialog(
+            event=event,
+            title=winTitle,
+            #parent=self,## FIXME
+        ).run()
+        if event is None:
+            return
+        event.saveConfig()
+        self.updateWidget()
+        ## also should be updated in event manager dialog (treestore) FIXME
+        ui.changedEvents.append((group_id, event.eid))
+    def copy(self, item, label):
+        start = label.get_property('selection-bound')
+        end = label.get_property('cursor-position')
+        self.clipboard.set_text(toStr(toUnicode(label.get_text())[start:end]))
+    copyAll = lambda self, item, label: self.clipboard.set_text(label.get_label())
 
 class WeekOccurrenceView(event_man.WeekOccurrenceView, gtk.TreeView):
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)

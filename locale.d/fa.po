@@ -726,6 +726,9 @@ msgid "Edit Event"
 msgstr ""
 "ویرایش رویداد"
 
+msgid "_Edit Event"
+msgstr ""
+"_ویرایش رویداد"
 
 msgid "Add "
 msgstr ""
@@ -805,6 +808,10 @@ msgstr ""
 msgid "Color"
 msgstr ""
 "رنگ"
+
+msgid "Default Icon"
+msgstr ""
+"آیکون پیش‌فرض"
 
 msgid "Default Calendar Type"
 msgstr ""

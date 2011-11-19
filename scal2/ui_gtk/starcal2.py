@@ -134,7 +134,6 @@ class MonthLabel(gtk.EventBox):
         gtk.EventBox.__init__(self)
         #self.set_border_width(1)#???????????
         """
-        ## ???????? how to get color from current theme
         print 'fg:STATE_NORMAL', gdkColorToRgb(self.style.fg[gtk.STATE_NORMAL])
         print 'fg:STATE_ACTIVE', gdkColorToRgb(self.style.fg[gtk.STATE_ACTIVE])
         print 'fg:STATE_PRELIGHT', gdkColorToRgb(self.style.fg[gtk.STATE_PRELIGHT])
@@ -147,8 +146,7 @@ class MonthLabel(gtk.EventBox):
         print 'bg:STATE_SELECTED', gdkColorToRgb(self.style.bg[gtk.STATE_SELECTED])
         print 'bg:STATE_INSENSITIVE', gdkColorToRgb(self.style.bg[gtk.STATE_INSENSITIVE])
         print
-        print
-        ## Not differs for different gtk themes
+        ## Not differs for different gtk themes, unless you get theme after "realize"
         """
         self.mode = mode
         self.module = core.modules[mode]
@@ -468,7 +466,7 @@ class DateLabel(gtk.Label):
         self.menu.popup(None, None, None, 3, 0)
         if self.onPopupFunc:
             self.onPopupFunc()
-    def copy(self, label):
+    def copy(self, item):
         start = self.get_property('selection-bound')
         end = self.get_property('cursor-position')
         self.clipboard.set_text(toStr(toUnicode(self.get_text())[start:end]))
@@ -1488,39 +1486,6 @@ class MainWin(gtk.Window):
     prefShow = lambda self, obj=None, data=None: self.prefDialog.present()
     customizeShow = lambda self, obj=None, data=None: self.customizeDialog.present()
     eventManShow = lambda self, obj=None, data=None: self.eventManDialog.present()
-    '''
-    def showCustomDay(self, obj=None, data=None, month=None, day=None):
-        if month==None:
-            month = ui.cell.month
-        if day==None:
-            day = ui.cell.day
-        self.customDayDialog.set_month_day(month, day)
-        self.customDayDialog.entryComment.set_text('')
-        self.customDayDialog.entryComment.grab_focus()
-        self.customDayDialog.present()
-    def showCustomDayTray(self, item, event=None):
-        (year, month, day) = core.getSysDate()
-        self.customDayDialog.set_month_day(month, day)
-        #self.customDayDialog.entryComment.set_text('')
-        #self.customDayDialog.entryComment.grab_focus()
-        self.customDayDialog.present()
-    def hideCustomDay(self, *args):
-        self.customDayDialog.hide()
-        ui.loadCustomDB()
-        ui.cellCache.clear()
-        self.onDateChange()
-        return True                                
-    def removeCustomDay(self, widget):
-        self.customDayDialog.element_delete_date(ui.cell.month, ui.cell.day)
-        ui.loadCustomDB()
-        ui.cellCache.clear()
-        self.onDateChange()
-    def editCustomDay(self, widget):
-        self.customDayDialog.element_search_select(ui.cell.month, ui.cell.day)
-        self.customDayDialog.entryComment.grab_focus()
-        self.customDayDialog.entryComment.select_region(0, 0)
-        self.customDayDialog.present()
-    '''
     def trayInit(self):
         if self.trayMode==2:
             self.sicon = gtk.StatusIcon()

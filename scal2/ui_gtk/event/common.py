@@ -502,6 +502,87 @@ class NotifiersCheckList(gtk.Expander):
         return notifiers
 
 
+class GroupComboBox(gtk.ComboBox):
+    def __init__(self):
+        pass
+
+
+class EventEditorDialog(gtk.Dialog):
+    def __init__(self, event=None, eventType='', title=None, parent=None):## don't give both event a eventType
+        gtk.Dialog.__init__(self, parent=parent)
+        #self.set_transient_for(parent)
+        if title:
+            self.set_title(title)
+        #self.connect('delete-event', lambda obj, e: self.destroy())
+        #self.resize(800, 600)
+        ###
+        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        if ui.autoLocale:
+            cancelB.set_label(_('_Cancel'))
+            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
+            okB.set_label(_('_OK'))
+            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        self.connect('response', lambda w, e: self.hide())
+        #######
+        self.event = event
+        self.activeEventWidget = None
+        #######
+        #print 'eventType = %r'%eventType
+        if eventType:
+            cls = event_man.eventsClassDict[eventType]
+            self.event = cls()
+            self.activeEventWidget = self.event.makeWidget()
+        else:
+            hbox = gtk.HBox()
+            combo = gtk.combo_box_new_text()
+            for cls in event_man.eventsClassList:
+                combo.append_text(cls.desc)
+            hbox.pack_start(gtk.Label(_('Event Type')), 0, 0)
+            hbox.pack_start(combo, 0, 0)
+            hbox.pack_start(gtk.Label(''), 1, 1)
+            self.vbox.pack_start(hbox, 0, 0)
+            ####
+            if self.event:
+                combo.set_active(event_man.eventsClassNameList.index(self.event.name))
+            else:
+                combo.set_active(event_man.defaultEventTypeIndex)
+                self.event = event_man.eventsClassList[event_man.defaultEventTypeIndex]()
+            self.activeEventWidget = self.event.makeWidget()
+            combo.connect('changed', self.eventTypeChanged)
+            self.comboEventType = combo
+        self.vbox.pack_start(self.activeEventWidget, 0, 0)
+        self.vbox.show_all()
+    def dateModeChanged(self, combo):
+        pass
+    def eventTypeChanged(self, combo):
+        if self.activeEventWidget:
+            self.activeEventWidget.destroy()
+        event = event_man.eventsClassList[combo.get_active()]()
+        #event = event_man.eventsClassByDesc[combo.get_active_text()]()## FIXME
+        if self.event:
+            event.copyFrom(self.event)
+            event.setId(self.event.eid)
+            del self.event
+        self.event = event
+        self.activeEventWidget = event.makeWidget()
+        self.vbox.pack_start(self.activeEventWidget, 0, 0)
+        self.activeEventWidget.show_all()
+    def run(self):
+        if not self.activeEventWidget or not self.event:
+            return None
+        if gtk.Dialog.run(self)!=gtk.RESPONSE_OK:
+            try:
+                filesBox = self.activeEventWidget.filesBox
+            except AttributeError:
+                pass
+            else:
+                filesBox.removeNewFiles()
+            return None
+        self.activeEventWidget.updateVars()
+        self.destroy()
+        return self.event
+
 if __name__ == '__main__':
     from pprint import pformat
     if core.rtl:
