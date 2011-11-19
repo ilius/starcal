@@ -669,7 +669,7 @@ class CommandNotifier(EventNotifier):
 class Event(EventBaseClass):
     name = 'custom'
     desc = _('Custom Event')
-    defaultTag = ''
+    defaultIconName = ''
     requiredRules = ()
     requiredNotifiers = ()
     def __init__(self, eid=None):
@@ -678,7 +678,6 @@ class Event(EventBaseClass):
         self.icon = '' ## to show in calendar
         self.summary = ''
         self.description = ''
-        self.tags = []
         self.calType = core.primaryMode
         self.showInTimeLine = False ## FIXME
         self.files = []
@@ -733,7 +732,6 @@ class Event(EventBaseClass):
         self.icon = other.icon
         self.summary = other.summary
         self.description = other.description
-        self.tags = other.tags[:]
         self.calType = other.calType
         self.showInTimeLine = other.showInTimeLine
         self.files = other.files
@@ -785,12 +783,11 @@ class Event(EventBaseClass):
             'icon': self.icon,
             'summary': self.summary,
             'description': self.description,
-            'tags': self.tags,
         }
     def setData(self, data):
         if 'id' in data:
             self.setId(data['id'])
-        for attr in ('icon', 'summary', 'description', 'tags'):
+        for attr in ('icon', 'summary', 'description'):
             if attr in data:
                 setattr(self, attr, data[attr])
         ####
@@ -941,7 +938,7 @@ class YearlyEvent(Event):
 class DailyNoteEvent(YearlyEvent):
     name = 'dailyNote'
     desc = _('Daily Note')
-    defaultTag = 'note'
+    defaultIconName = 'note'
     requiredRules = ('year', 'month', 'day')
     getYear = lambda self: self.getRulesDict()['year'].year
     def setYear(self, year):
@@ -966,7 +963,7 @@ class TaskEvent(DailyNoteEvent):
     ## [x] showInTimeLine
     name = 'task'
     desc = _('Task')
-    defaultTag = 'task'
+    defaultIconName = 'task'
     requiredRules = ('year', 'month', 'day', 'dayTime')
     def setTime(self, hour, minute, second):
         self.getRulesDict()['dayTime'].dayTime = (hour, minute, second)
@@ -991,7 +988,7 @@ class UniversityClassEvent(Event):## FIXME
     ## start, end, weekDay, weekNumberMode, dayTime --- notifierName='alarm' --- showInTimeLine
     name = 'universityClass'
     desc = _('University Class')
-    defaultTag = 'university'
+    defaultIconName = 'university'
     requiredRules = ()
 
 class EventContainer(EventBaseClass):
@@ -1044,9 +1041,9 @@ class EventGroup(EventContainer):
         self.defaultIcon = ''
         if self.acceptsEventTypes:
             if len(self.acceptsEventTypes)==1:
-                defaultTag = eventsClassDict[self.acceptsEventTypes[0]].defaultTag
-                if defaultTag:
-                    self.defaultIcon = join(pixDir, 'tags', defaultTag+'.png')
+                defaultIconName = eventsClassDict[self.acceptsEventTypes[0]].defaultIconName
+                if defaultIconName:
+                    self.defaultIcon = join(pixDir, 'event', defaultIconName+'.png')
         self.defaultEventType = 'custom'
         self.defaultMode = core.primaryMode
         self.eventCacheSize = 0
@@ -1138,7 +1135,6 @@ class TaskList(EventGroup):
     #actions = EventGroup.actions + []
     def __init__(self, gid=None, title=None):
         EventGroup.__init__(self, gid, title)
-        #self.tags = ['task']## FIXME
         #self.defaultTaskDuration = 0 ## in seconds FIXME
         ## if defaultTaskDuration is set to zero, the checkbox for task's end, will be unchecked for new tasks
     def getData(self):

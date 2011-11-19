@@ -481,13 +481,12 @@ class EventManagerDialog(gtk.Dialog):## FIXME
     def addEventToGroupFromMenu(self, menu, path, group, eventType, title):
         event = EventEditorDialog(
             eventType=eventType,
+            group=group,
             title=title,
             parent=self,
         ).run()
         if event is None:
             return
-        if not event.icon:
-            event.icon = group.defaultIcon
         event.saveConfig()
         group.append(event)
         group.saveConfig()

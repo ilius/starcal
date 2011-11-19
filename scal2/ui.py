@@ -416,16 +416,16 @@ core.primaryMode = shownCals[0]['mode']
 ################################
 customFile = join(confDir, 'customday.xml') ## FIXME
 customdayModes=(
-    (_('Birthday'),         'tags/birthday.png'),
-    (_('Marriage Jubilee'), 'tags/marriage.png'),
-    (_('Obituary'),         'tags/obituary.png'),
-    (_('Note'),             'tags/note.png'),
-    (_('Task'),             'tags/task.png'),
-    (_('Alarm'),            'tags/alarm.png')
+    (_('Birthday'),         'event/birthday.png'),
+    (_('Marriage Jubilee'), 'event/marriage.png'),
+    (_('Obituary'),         'event/obituary.png'),
+    (_('Note'),             'event/note.png'),
+    (_('Task'),             'event/task.png'),
+    (_('Alarm'),            'event/alarm.png')
 )
 customdayShowIcon = True ## FIXME
 ###################
-tagsDir = join(pixDir, 'tags')
+tagsDir = join(pixDir, 'event')
 
 class TagIconItem:
     def __init__(self, name, desc='', icon='', eventTypes=()):
@@ -461,7 +461,6 @@ eventTags = (
     TagIconItem('meeting', eventTypes=('task',)),
     TagIconItem('phone_call', desc='Phone Call', eventTypes=('task',)),
     TagIconItem('university', eventTypes=('task',)),## FIXME
-    TagIconItem('school'),
     TagIconItem('education'),
     TagIconItem('holiday'),
     TagIconItem('travel'),

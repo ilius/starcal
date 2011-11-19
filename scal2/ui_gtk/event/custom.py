@@ -28,32 +28,6 @@ class EventWidget(common.EventWidget):
         self.warnLabel.set_alignment(0, 0.5)
         #self.warnLabel.set_visible(False)## FIXME
         ###########
-        hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Icon')+':'), 0, 0)
-        self.iconSelect = common.IconSelectButton()
-        #print join(pixDir, self.defaultIcon)
-        hbox.pack_start(self.iconSelect, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        ###
-        self.pack_start(hbox, 0, 0)
-        ###########
-        '''
-        hbox = gtk.HBox()
-        hbox.set_tooltip_text(_('Seperate tags using character |'))
-        hbox.pack_start(gtk.Label(_('Tags')), 0, 0)
-        self.tagsEntry = gtk.Entry()
-        hbox.pack_start(self.tagsEntry, 1, 1)
-        self.pack_start(hbox, 0, 0)
-        ###
-        exp = gtk.Expander(_('Tags'))
-        exp.set_expanded(True)
-        self.tagsBox = common.TagsListBox()
-        exp.add(self.tagsBox)
-        self.pack_start(exp, 1, 1)
-        '''
-        self.tagsBox = common.ViewEditTagsHbox()
-        self.pack_start(self.tagsBox, 0, 0)
-        ###########
         self.rulesExp = gtk.Expander(_('Rules'))
         self.rulesExp.set_expanded(True)
         self.rulesBox = gtk.VBox()
@@ -134,15 +108,11 @@ class EventWidget(common.EventWidget):
             self.event.rules.append(hbox.inputWidget.rule)
     def updateWidget(self):
         common.EventWidget.updateWidget(self)
-        self.iconSelect.set_filename(self.event.icon)
-        self.tagsBox.setData(self.event.tags)
         self.addRuleModel.clear()
         self.updateRulesWidget()
         self.notifiersBox.setNotifiers(self.event.notifiers)
     def updateVars(self):
         common.EventWidget.updateVars(self)
-        self.event.icon = self.iconSelect.get_filename()
-        self.event.tags = self.tagsBox.getData()
         self.updateRules()
         self.event.notifiers = self.notifiersBox.getNotifiers()
     def modeComboChanged(self, combo):## FIXME

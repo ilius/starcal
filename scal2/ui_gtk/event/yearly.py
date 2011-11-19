@@ -14,9 +14,6 @@ class EventWidget(common.EventWidget):
     def __init__(self, event):## FIXME
         common.EventWidget.__init__(self, event)
         ################
-        self.tagIconBox = common.EventTagsAndIconSelect()
-        self.pack_start(self.tagIconBox, 0, 0)
-        ###
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Month')), 0, 0)
         self.monthCombo = gtk.combo_box_new_text()
