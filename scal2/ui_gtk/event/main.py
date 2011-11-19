@@ -16,7 +16,7 @@
 # with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
 # Or on Debian systems, from /usr/share/common-licenses/GPL
 
-import os, sys, shlex
+import os, sys, shlex, time
 from os.path import join, dirname
 
 from scal2 import core
@@ -190,9 +190,9 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             eventIndex = group.index(eid)
             event = group.getEvent(eid)
             eventPath = (groupIndex, eventIndex)
-            eventIter = self.treestore.get_iter(eventPath)
+            eventIter = self.trees.get_iter(eventPath)
             for i, value in enumerate(self.getEventRow(event)):
-                self.treestore.set_value(eventIter, i, value)
+                self.trees.set_value(eventIter, i, value)
         ui.changedEvents = []
     def __init__(self, mainWin=None):## mainWin is needed? FIXME
         gtk.Dialog.__init__(self)
@@ -210,17 +210,18 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         #######
         treeBox = gtk.HBox()
         #####
-        self.treeview = gtk.TreeView()
-        #self.treeview.set_headers_visible(False)## FIXME
-        #self.treeview.get_selection().set_mode(gtk.SELECTION_MULTIPLE)## FIXME
-        #self.treeview.set_rubber_banding(gtk.SELECTION_MULTIPLE)## FIXME
-        self.treeview.connect('realize', self.onTreeviewRealize)
-        self.treeview.connect('cursor-changed', self.treeviewCursorChanged)## FIXME
-        self.treeview.connect('button-press-event', self.treeviewButtonPress)
-        self.treeview.connect('row-activated', self.onRowActivated)
+        self.treev = gtk.TreeView()
+        #self.treev.set_headers_visible(False)## FIXME
+        #self.treev.get_selection().set_mode(gtk.SELECTION_MULTIPLE)## FIXME
+        #self.treev.set_rubber_banding(gtk.SELECTION_MULTIPLE)## FIXME
+        self.treev.connect('realize', self.onTreeviewRealize)
+        self.treev.connect('cursor-changed', self.treeviewCursorChanged)## FIXME
+        self.treev.connect('button-press-event', self.treeviewButtonPress)
+        self.treev.connect('row-activated', self.onRowActivated)
+        self.treev.connect('key-press-event', self.onKeyPress)
         #####
         swin = gtk.ScrolledWindow()
-        swin.add(self.treeview)
+        swin.add(self.treev)
         swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
         treeBox.pack_start(swin, 1, 1)
         ###
@@ -242,26 +243,26 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         #####
         self.vbox.pack_start(treeBox)
         #######
-        self.treestore = gtk.TreeStore(int, gdk.Pixbuf, str, str)
+        self.trees = gtk.TreeStore(int, gdk.Pixbuf, str, str)
         ## event: eid,  event_icon,   event_summary, event_description
         ## group: gid,  group_pixbuf, group_title,   ?description
         ## trash: -1,        trash_icon,   _('Trash'),    ''
-        self.treeview.set_model(self.treestore)
+        self.treev.set_model(self.trees)
         ###
         col = gtk.TreeViewColumn()
         cell = gtk.CellRendererPixbuf()
         col.pack_start(cell)
         col.add_attribute(cell, 'pixbuf', 1)
-        self.treeview.append_column(col)
+        self.treev.append_column(col)
         ###
         col = gtk.TreeViewColumn(_('Summary'), gtk.CellRendererText(), text=2)
         col.set_resizable(True)
-        self.treeview.append_column(col)
+        self.treev.append_column(col)
         ###
         col = gtk.TreeViewColumn(_('Description'), gtk.CellRendererText(), text=3)
-        self.treeview.append_column(col)
+        self.treev.append_column(col)
         ###
-        #self.treeview.set_search_column(2)## or 3
+        #self.treev.set_search_column(2)## or 3
         ###
         #self.clipboard = gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD)
         #self.clipboard = gtk.clipboard_get()
@@ -274,10 +275,10 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             return False
         ## check event type here? FIXME
         return True
-    def openRightClickMenu(self, path, etime=None):
+    def genRightClickMenu(self, path):
         ## how about multi-selection? FIXME
         ## and Select _All menu item
-        #cur = self.treeview.get_cursor()
+        #cur = self.treev.get_cursor()
         #if not cur:
         #    return None
         #(path, col) = cur
@@ -347,20 +348,52 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         else:
             return
         menu.show_all()
+        return menu
+    def openRightClickMenu(self, path, etime=None):
+        menu = self.genRightClickMenu(path)
+        if not menu:
+            return
         if etime is None:
-            pass ## FIXME
+            etime = gtk.get_current_event_time()
         menu.popup(None, None, None, 3, etime)
     def onTreeviewRealize(self, event):
         self.reloadEvents()## FIXME
     def onRowActivated(self, treev, path, col):
         if len(path)==1:
-            if self.treeview.row_expanded(path):
-                self.treeview.collapse_row(path)
+            if self.treev.row_expanded(path):
+                self.treev.collapse_row(path)
             else:
-                self.treeview.expand_row(path, False)
+                self.treev.expand_row(path, False)
         elif len(path)==2:
             self.editEventByPath(path)
-    getRowBgColor = lambda self: gdkColorToRgb(self.treeview.style.base[gtk.STATE_NORMAL])## bg color of non-selected rows
+    def onKeyPress(self, treev, g_event):
+        #from scal2.time_utils import getCurrentTime, getGtkTimeFromEpoch
+        #print g_event.time-getGtkTimeFromEpoch(time.time())## FIXME
+        #print getCurrentTime()-gdk.CURRENT_TIME/1000.0
+        ## gdk.CURRENT_TIME == 0## FIXME
+        ## g_event.time == gtk.get_current_event_time() ## OK
+        k = g_event.keyval
+        if k==65383:# Simulate right click (key beside Right-Ctrl)
+            cur = self.treev.get_cursor()
+            if not cur:
+                return
+            (path, col) = cur
+            menu = self.genRightClickMenu(path)
+            if not menu:
+                return
+            rect = self.treev.get_cell_area(path, self.treev.get_column(1))
+            x = rect.x
+            if rtl:
+                x -= 100
+            else:
+                x += 50
+            (dx, dy) = self.treev.translate_coordinates(self, x, rect.y + rect.height)
+            (wx, wy) = self.window.get_origin()
+            menu.popup(None, None, lambda m: (wx+dx, wy+dy+20, True), 3, g_event.time)
+        else:
+            return False
+        return True
+    getRowBgColor = lambda self: gdkColorToRgb(self.treev.style.base[gtk.STATE_NORMAL])## bg color of non-selected rows
     getEventRow = lambda self, event: (
         event.eid,
         pixbufFromFile(event.icon),
@@ -379,20 +412,20 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         '',
     )
     def reloadEvents(self):
-        self.treestore.clear()
+        self.trees.clear()
         rowBgColor = self.getRowBgColor()
         for group in ui.eventGroups:
-            groupIter = self.treestore.append(None, self.getGroupRow(group, rowBgColor))
+            groupIter = self.trees.append(None, self.getGroupRow(group, rowBgColor))
             for event in group:
-                self.treestore.append(groupIter, self.getEventRow(event))
-        self.trashIter = self.treestore.append(None, (
+                self.trees.append(groupIter, self.getEventRow(event))
+        self.trashIter = self.trees.append(None, (
             -1,
             pixbufFromFile(ui.eventTrash.icon),
             ui.eventTrash.title,
             '',
         ))
         for event in ui.eventTrash:
-            self.treestore.append(self.trashIter, self.getEventRow(event))
+            self.trees.append(self.trashIter, self.getEventRow(event))
         self.treeviewCursorChanged()
     def onDeleteEvent(self, obj, event):
         self.hide()
@@ -400,8 +433,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
     def getObjsByPath(self, path):
         obj_list = []
         for i in range(len(path)):
-            it = self.treestore.get_iter(path[:i+1])
-            obj_id = self.treestore.get_value(it, 0)
+            it = self.trees.get_iter(path[:i+1])
+            obj_id = self.trees.get_value(it, 0)
             if i==0:
                 if obj_id==-1:
                     obj_list.append(ui.eventTrash)
@@ -411,7 +444,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 obj_list.append(obj_list[i-1].getEvent(obj_id))
         return obj_list
     def treeviewCursorChanged(self, treev=None):
-        cur = self.treeview.get_cursor()
+        cur = self.treev.get_cursor()
         if not cur:
             return
         (path, col) = cur
@@ -431,7 +464,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             return
         if g_event.button == 1:
             obj_list = self.getObjsByPath(path)
-            node_iter = self.treestore.get_iter(path)
+            node_iter = self.trees.get_iter(path)
             if len(obj_list) == 1:## group, not event
                 group = obj_list[0]
                 if group.name != 'trash':
@@ -443,7 +476,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                     else:
                         group.enable = not group.enable
                         group.saveConfig()
-                        self.treestore.set_value(
+                        self.trees.set_value(
                             node_iter,
                             1,
                             newOutlineSquarePixbuf(
@@ -463,10 +496,10 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         group.saveConfig()
         ui.eventGroups.insert(index+1, group)
         ui.eventGroups.saveConfig()
-        afterGroupIter = self.treestore.get_iter(path)
-        self.treestore.insert_after(
-            #self.treestore.get_iter_root(),## parent
-            self.treestore.iter_parent(afterGroupIter),
+        afterGroupIter = self.trees.get_iter(path)
+        self.trees.insert_after(
+            #self.trees.get_iter_root(),## parent
+            self.trees.iter_parent(afterGroupIter),
             afterGroupIter,## sibling
             self.getGroupRow(group, self.getRowBgColor()), ## row
         )
@@ -476,16 +509,16 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             return
         group.saveConfig()## FIXME
         #self.reloadEvents()## perfomance FIXME
-        groupIter = self.treestore.get_iter(path)
+        groupIter = self.trees.get_iter(path)
         for i, value in enumerate(self.getGroupRow(group, self.getRowBgColor())):
-            self.treestore.set_value(groupIter, i, value)
+            self.trees.set_value(groupIter, i, value)
     def deleteGroup(self, menu, path):
         (index,) = path
         (group,) = self.getObjsByPath(path)
         if not confirm(_('Press OK if you are sure to delete group "%s"')%group.title):
             return
         ui.deleteEventGroup(group)
-        self.treestore.remove(self.treestore.get_iter(path))
+        self.trees.remove(self.trees.get_iter(path))
         self.reloadEvents()## FIXME
     def addEventToGroupFromMenu(self, menu, path, group, eventType, title):
         event = EventEditorDialog(
@@ -499,8 +532,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         event.saveConfig()
         group.append(event)
         group.saveConfig()
-        self.treestore.append(
-            self.treestore.get_iter(path),## parent
+        self.trees.append(
+            self.trees.get_iter(path),## parent
             self.getEventRow(event), ## row
         )
     def editEventByPath(self, path):
@@ -513,9 +546,9 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         if event is None:
             return
         event.saveConfig()
-        eventIter = self.treestore.get_iter(path)
+        eventIter = self.trees.get_iter(path)
         for i, value in enumerate(self.getEventRow(event)):
-            self.treestore.set_value(eventIter, i, value)
+            self.trees.set_value(eventIter, i, value)
     editEventFromMenu = lambda self, menu, path: self.editEventByPath(path)
     def moveEventToTrash(self, menu, path):
         (group, event) = self.getObjsByPath(path)
@@ -524,8 +557,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         ui.eventTrash.insert(0, event)
         ## ui.eventTrash.append(event)## FIXME
         ui.eventTrash.saveConfig()
-        self.treestore.remove(self.treestore.get_iter(path))
-        self.treestore.insert(
+        self.trees.remove(self.trees.get_iter(path))
+        self.trees.insert(
             self.trashIter,
             0,
             self.getEventRow(event),
@@ -534,22 +567,22 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         (trash, event) = self.getObjsByPath(path)
         trash.deleteEvent(event.eid)## trash == ui.eventTrash
         trash.saveConfig()
-        self.treestore.remove(self.treestore.get_iter(path))
+        self.trees.remove(self.trees.get_iter(path))
     def emptyTrash(self, menu):
         ui.eventTrash.empty()
         while True:
-            childIter = self.treestore.iter_children(self.trashIter)
+            childIter = self.trees.iter_children(self.trashIter)
             if childIter is None:
                 break
-            self.treestore.remove(childIter)
+            self.trees.remove(childIter)
     def editTrash(self, menu):
         TrashEditorDialog().run()
-        self.treestore.set_value(
+        self.trees.set_value(
             self.trashIter,
             1,
             pixbufFromFile(ui.eventTrash.icon),
         )
-        self.treestore.set_value(
+        self.trees.set_value(
             self.trashIter,
             2,
             ui.eventTrash.title,
@@ -558,22 +591,22 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         if len(path)==1:
             if path[0]==0:
                 return
-            srcIter = self.treestore.get_iter(path)
-            if self.treestore.get_value(srcIter, 0)==-1:
+            srcIter = self.trees.get_iter(path)
+            if self.trees.get_value(srcIter, 0)==-1:
                 return
-            tarIter = self.treestore.get_iter((path[0]-1))
-            self.treestore.move_before(srcIter, tarIter)
+            tarIter = self.trees.get_iter((path[0]-1))
+            self.trees.move_before(srcIter, tarIter)
             ui.eventGroups.moveUp(path[0])
             ui.eventGroups.saveConfig()
         elif len(path)==2:
             (parentObj, event) = self.getObjsByPath(path)
             parentLen = len(parentObj)
-            srcIter = self.treestore.get_iter(path)
+            srcIter = self.trees.get_iter(path)
             (parentIndex, eventIndex) = path
             #print eventIndex, parentLen
             if eventIndex > 0:
-                tarIter = self.treestore.get_iter((parentIndex, eventIndex-1))
-                self.treestore.move_before(srcIter, tarIter)## or use self.treestore.swap FIXME
+                tarIter = self.trees.get_iter((parentIndex, eventIndex-1))
+                self.trees.move_before(srcIter, tarIter)## or use self.trees.swap FIXME
                 parentObj.moveUp(eventIndex)
                 parentObj.saveConfig()
             else:
@@ -582,18 +615,18 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                     return
                 if parentIndex < 1:
                     return
-                newParentIter = self.treestore.get_iter((parentIndex - 1))
-                newParentId = self.treestore.get_value(newParentIter, 0)
+                newParentIter = self.trees.get_iter((parentIndex - 1))
+                newParentId = self.trees.get_value(newParentIter, 0)
                 if newParentId==-1:## could not be!
                     return
                 newGroup = ui.eventGroups[newParentId]
-                self.treestore.remove(srcIter)
-                eventNewPath = self.treestore.get_path(self.treestore.append(
+                self.trees.remove(srcIter)
+                eventNewPath = self.trees.get_path(self.trees.append(
                     newParentIter,## parent
                     self.getEventRow(event), ## row
                 ))
-                self.treeview.expand_to_path(eventNewPath)
-                self.treeview.set_cursor(eventNewPath)
+                self.treev.expand_to_path(eventNewPath)
+                self.treev.set_cursor(eventNewPath)
                 ###
                 parentObj.excludeEvent(event.eid)
                 parentObj.saveConfig()
@@ -601,43 +634,43 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 newGroup.saveConfig()
     def moveDown(self, path):
         if len(path)==1:
-            srcIter = self.treestore.get_iter(path)
-            if self.treestore.get_value(srcIter, 0)==-1:
+            srcIter = self.trees.get_iter(path)
+            if self.trees.get_value(srcIter, 0)==-1:
                 return
-            tarIter = self.treestore.get_iter((path[0]+1))
-            if self.treestore.get_value(tarIter, 0)==-1:
+            tarIter = self.trees.get_iter((path[0]+1))
+            if self.trees.get_value(tarIter, 0)==-1:
                 return
-            self.treestore.move_after(srcIter, tarIter)## or use self.treestore.swap FIXME
+            self.trees.move_after(srcIter, tarIter)## or use self.trees.swap FIXME
             ui.eventGroups.moveDown(path[0])
             ui.eventGroups.saveConfig()
         elif len(path)==2:
             (parentObj, event) = self.getObjsByPath(path)
             parentLen = len(parentObj)
-            srcIter = self.treestore.get_iter(path)
+            srcIter = self.trees.get_iter(path)
             (parentIndex, eventIndex) = path
             #print eventIndex, parentLen
             if eventIndex < parentLen-1:
-                tarIter = self.treestore.get_iter((parentIndex, eventIndex+1))
-                self.treestore.move_after(srcIter, tarIter)
+                tarIter = self.trees.get_iter((parentIndex, eventIndex+1))
+                self.trees.move_after(srcIter, tarIter)
                 parentObj.moveDown(eventIndex)
                 parentObj.saveConfig()
             else:
                 ## move event to top of next group
                 if parentObj.name == 'trash':
                     return
-                newParentIter = self.treestore.get_iter((parentIndex + 1))
-                newParentId = self.treestore.get_value(newParentIter, 0)
+                newParentIter = self.trees.get_iter((parentIndex + 1))
+                newParentId = self.trees.get_value(newParentIter, 0)
                 if newParentId==-1:
                     return
                 newGroup = ui.eventGroups[newParentId]
-                self.treestore.remove(srcIter)
-                eventNewPath = self.treestore.get_path(self.treestore.insert(
+                self.trees.remove(srcIter)
+                eventNewPath = self.trees.get_path(self.trees.insert(
                     newParentIter,## parent
                     0,## position
                     self.getEventRow(event), ## row
                 ))
-                self.treeview.expand_to_path(eventNewPath)
-                self.treeview.set_cursor(eventNewPath)
+                self.treev.expand_to_path(eventNewPath)
+                self.treev.set_cursor(eventNewPath)
                 ###
                 parentObj.excludeEvent(event.eid)
                 parentObj.saveConfig()
@@ -646,12 +679,12 @@ class EventManagerDialog(gtk.Dialog):## FIXME
     moveUpFromMenu = lambda self, menu, path: self.moveUp(path)
     moveDownFromMenu = lambda self, menu, path: self.moveDown(path)
     def moveUpByButton(self, button):
-        cur = self.treeview.get_cursor()
+        cur = self.treev.get_cursor()
         if not cur:
             return
         self.moveUp(cur[0])
     def moveDownByButton(self, button):
-        cur = self.treeview.get_cursor()
+        cur = self.treev.get_cursor()
         if not cur:
             return
         self.moveDown(cur[0])
@@ -667,8 +700,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         (srcPath, move) = self.toPasteEvent
         (srcGroup, srcEvent) = self.getObjsByPath(srcPath)
         (tarGroup, tarEvent) = self.getObjsByPath(tarPath)
-        tarGroupIter = self.treestore.get_iter(tarPath[:1])
-        tarEventIter = self.treestore.get_iter(tarPath)
+        tarGroupIter = self.trees.get_iter(tarPath[:1])
+        tarEventIter = self.trees.get_iter(tarPath)
         # tarEvent is not used
         ###
         if move:
@@ -676,19 +709,19 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             srcGroup.saveConfig()
             tarGroup.insert(tarPath[1], srcEvent)
             tarGroup.saveConfig()
-            self.treestore.remove(self.treestore.get_iter(srcPath))
+            self.trees.remove(self.trees.get_iter(srcPath))
             newEvent = srcEvent
         else:
             newEvent = srcEvent.copy()
             newEvent.saveConfig()
             tarGroup.insert(tarPath[1], newEvent)
             tarGroup.saveConfig()
-        newEventPath = self.treestore.get_path(self.treestore.insert_after(
+        newEventPath = self.trees.get_path(self.trees.insert_after(
             tarGroupIter,## parent
             tarEventIter,## sibling
             self.getEventRow(newEvent), ## row
         ))
-        self.treeview.set_cursor(newEventPath)
+        self.treev.set_cursor(newEventPath)
         self.toPasteEvent = None
     def pasteEventIntoGroup(self, menu, tarPath):## tarPath is a 1-lengthed tuple
         if not self.toPasteEvent:
@@ -696,22 +729,22 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         (srcPath, move) = self.toPasteEvent
         (srcGroup, srcEvent) = self.getObjsByPath(srcPath)
         (tarGroup,) = self.getObjsByPath(tarPath)
-        tarGroupIter = self.treestore.get_iter(tarPath)
+        tarGroupIter = self.trees.get_iter(tarPath)
         ###
         if move:
             srcGroup.excludeEvent(srcEvent.eid)
             srcGroup.saveConfig()
             tarGroup.append(srcEvent)
             tarGroup.saveConfig()
-            tarGroupCount = self.treestore.iter_n_children(tarGroupIter)
-            self.treestore.remove(self.treestore.get_iter(srcPath))
+            tarGroupCount = self.trees.iter_n_children(tarGroupIter)
+            self.trees.remove(self.trees.get_iter(srcPath))
             newEvent = srcEvent
         else:
             newEvent = srcEvent.copy()
             newEvent.saveConfig()
             tarGroup.append(newEvent)
             tarGroup.saveConfig()
-        self.treestore.append(
+        self.trees.append(
             tarGroupIter,## parent
             self.getEventRow(newEvent), ## row
         )

@@ -37,4 +37,9 @@ getCurrentTimeZone = lambda: getTimeZoneByEpoch(time.time())
 #getCurrentTimeZone = lambda: -time.altzone if time.daylight and localtime().tm_isdst else -time.timezone
 getCurrentTime = lambda: time.time() + getCurrentTimeZone()
 
+getGtkTimeFromEpoch = lambda epoch: (epoch-1.32171528839e+9)*1000//1
+
+#print '---- J1970=%s'%J1970
+#print 'getEpochFromJd(J1970)=%s'%getEpochFromJd(J1970)
+print 'getJhmsFromEpoch', getJhmsFromEpoch(1321715288.39)
 
