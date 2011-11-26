@@ -56,11 +56,13 @@ class LangData:
         if isfile(path):
             transPath = path
         else:
+            #print '-------- File %r does not exists'%path
             for prefix in ('/usr', '/usr/local'):
                 path = join(prefix, 'share', 'locale', fileName, 'LC_MESSAGES', '%s.mo'%APP_NAME)
                 if isfile(path):
                     transPath = path
                     break
+        #print code, transPath
         self.transPath = transPath
         ###
         if not flag.startswith('/'):
@@ -124,15 +126,15 @@ def prepareLanguage(lang1):
 def loadTranslator(ui_is_qt=False):
     global tr
     ## FIXME: How to say to gettext that itself detects coding(charset) from locale name and return a unicode object instead of str?
-    if isdir(localeDir):
-        transObj = gettext.translation(APP_NAME, localeDir, languages=[langActive, langDefault], fallback=True)
-    else:## for example on windows (what about mac?)
-        try:
-            fd = open(langDict[langActive].transPath, 'rb')
-        except:
-            transObj = None
-        else:
-            transObj = gettext.GNUTranslations(fd)
+    #if isdir(localeDir):
+    #    transObj = gettext.translation(APP_NAME, localeDir, languages=[langActive, langDefault], fallback=True)
+    #else:## for example on windows (what about mac?)
+    try:
+        fd = open(langDict[langActive].transPath, 'rb')
+    except:
+        transObj = None
+    else:
+        transObj = gettext.GNUTranslations(fd)
     if transObj:
         if ui_is_qt:## qt takes "&" instead of "_" as trigger
             tr = lambda s: numLocale(s) if isinstance(s, int) else transObj.gettext(toStr(s)).replace('_', '&').decode('utf-8')
@@ -140,11 +142,7 @@ def loadTranslator(ui_is_qt=False):
             tr = lambda s: numLocale(s) if isinstance(s, int) else transObj.gettext(toStr(s)).decode('utf-8')
     return tr
 
-def rtlSgn():
-    if rtl:
-        return 1
-    else:
-        return -1
+rtlSgn = lambda: 1 if rtl else -1
 
 getMonthName = lambda mode, month, year=None: tr(modules[mode].getMonthName(month, year))
 
