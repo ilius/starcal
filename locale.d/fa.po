@@ -998,6 +998,10 @@ msgid "About Plugin"
 msgstr ""
 "دربارهٔ افزونه"
 
+msgid "_Configure"
+msgstr ""
+"_تنظیم"
+
 msgid "C_onfigure Plugin"
 msgstr ""
 "_تنظیم افزونه"

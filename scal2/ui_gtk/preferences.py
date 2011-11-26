@@ -45,6 +45,7 @@ from scal2.ui_gtk.drawing import newTextLayout
 from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
 from scal2.ui_gtk.utils import *
+from scal2.ui_gtk.export import ExportToIcsDialog
 
 ############################################################
 
@@ -1558,7 +1559,7 @@ class PrefDialog(gtk.Dialog):
         plug = core.allPlugList[j]
         self.plugButtonAbout.set_sensitive(plug.about!=None)
         self.plugButtonConf.set_sensitive(plug.has_config)
-    def plugAboutClicked(self, button):
+    def plugAboutClicked(self, obj=None):
         cur = self.plugTreeview.get_cursor()[0]
         if cur==None:
             return
@@ -1584,7 +1585,7 @@ class PrefDialog(gtk.Dialog):
         #about.set_resizable(True)
         #about.vbox.show_all()## OR about.vbox.show_all() ; about.run()
         about.present()
-    def plugConfClicked(self, button):
+    def plugConfClicked(self, obj=None):
         cur = self.plugTreeview.get_cursor()[0]
         if cur==None:
             return
@@ -1594,6 +1595,8 @@ class PrefDialog(gtk.Dialog):
         if not plug.has_config:
             return
         plug.open_configure()
+    def plugExportToIcsClicked(self, menu, plug):
+        ExportToIcsDialog(plug.exportToIcs, plug.desc).run()
     def plugTreevRActivate(self, treev, path, col):
         if col.get_title()==_('Description'):##??????????
             self.plugAboutClicked(None) #??????
@@ -1602,14 +1605,25 @@ class PrefDialog(gtk.Dialog):
         b = event.button
         #print 'plugTreevButtonPress', b
         if b==3:
-            cur = treev.get_cursor()[0]
+            cur = self.plugTreeview.get_cursor()[0]
             if cur:
                 i = cur[0]
                 j = self.plugTreestore[i][0]
                 plug = core.allPlugList[j]
                 menu = gtk.Menu()
-                #labelStockMenuItem('_Configure', gtk.STOCK_PREFERENCES, self.showCustomDay)
-                #bool(plug.about)
+                ##
+                item = labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.plugAboutClicked)
+                item.set_sensitive(bool(plug.about))
+                menu.add(item)
+                ##
+                item = labelStockMenuItem('_Configure', gtk.STOCK_PREFERENCES, self.plugConfClicked)
+                item.set_sensitive(plug.has_config)
+                menu.add(item)
+                ##
+                menu.add(labelImageMenuItem('Export to iCalendar', 'ical-32.png', self.plugExportToIcsClicked, plug))
+                ##
+                menu.show_all()
+                menu.popup(None, None, None, 3, event.time)
             return True
         return False
     def plugAddClicked(self, button):
