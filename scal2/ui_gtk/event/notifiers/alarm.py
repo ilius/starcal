@@ -12,15 +12,25 @@ from gtk import gdk
 from scal2.ui_gtk import player
 from subprocess import Popen, PIPE
 
-class NotifierWidget(player.PlayerBox):
+#class NotifierWidget(player.PlayerBox):
+#    def __init__(self, notifier):
+#        self.notifier = notifier
+#        player.PlayerBox.__init__(self)
+#    def updateWidget(self):
+#        if self.notifier.alarmSound:
+#            self.openFile(self.notifier.alarmSound)
+#    def updateVars(self):
+#        self.notifier.alarmSound = self.getFile()
+
+class NotifierWidget(gtk.FileChooserButton):
     def __init__(self, notifier):
         self.notifier = notifier
-        player.PlayerBox.__init__(self)
+        gtk.FileChooserButton.__init__(self, _('Select Sound'))
     def updateWidget(self):
         if self.notifier.alarmSound:
-            self.openFile(self.notifier.alarmSound)
+            self.set_filename(self.notifier.alarmSound)
     def updateVars(self):
-        self.notifier.alarmSound = self.getFile()
+        self.notifier.alarmSound = self.get_filename()
 
 def notifyWait(notifier, finishFunc):
     if notifier.alarmSound and notifier.playerCmd:
