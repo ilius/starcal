@@ -190,6 +190,22 @@ class JdListOccurrence(Occurrence):
     getData = lambda self: list(self.jdSet)
     def setData(self, jdList):
         self.jdSet = set(jdList)
+    def calcJdRanges(self):
+        jdList = list(self.jdSet) ## jdList is sorted
+        if not jdList:
+            return []
+        startJd = jdList[0]
+        endJd = startJd + 1
+        jdRanges = []
+        for jd in jdList[1:]:
+            if jd == endJd:
+                endJd += 1
+            else:
+               jdRanges.append((startJd, endJd))
+               startJd = jd
+               endJd = startJd + 1
+        jdRanges.append((startJd, endJd))
+        return jdRanges
 
 
 class TimeRangeListOccurrence(Occurrence):
@@ -1276,6 +1292,43 @@ class EventGroup(EventContainer):
         self.eventIds.append(event.eid)
         if len(self.eventCache) < self.eventCacheSize:
             self.eventCache[event.eid] = event
+    def exportToIcs(self, fpath, startJd, endJd):
+        from scal2.ics import icsTmFormat, icsHeader, getIcsTimeByEpoch
+        from time import strftime
+        icsText = icsHeader
+        currentTimeStamp = strftime(icsTmFormat)
+        for event in self:
+            occur = event.calcOccurrenceForJdRange(startJd, endJd)
+            if not occur:
+                continue
+            if isinstance(occur, JdListOccurrence):
+                for sectionStartJd, sectionEndJd in occur.calcJdRanges():
+                    icsText += 'BEGIN:VEVENT\n'
+                    icsText += 'CREATED:%s\n'%currentTimeStamp
+                    icsText += 'LAST-MODIFIED:%s\n'%currentTimeStamp
+                    icsText += 'DTSTART;VALUE=DATE:%.4d%.2d%.2d\n'%jd_to(sectionStartJd, DATE_GREG)
+                    icsText += 'DTEND;VALUE=DATE:%.4d%.2d%.2d\n'%jd_to(sectionEndJd, DATE_GREG)
+                    icsText += 'CATEGORIES:%s\n'%self.title
+                    icsText += 'TRANSP:TRANSPARENT\n' ## http://www.kanzaki.com/docs/ical/transp.html
+                    icsText += 'SUMMARY:%s\n'%event.summary
+                    icsText += 'END:VEVENT\n'
+            elif isinstance(occur, (TimeRangeListOccurrence, TimeListOccurrence)):
+                for startEpoch, endEpoch in occur.getTimeRangeList():
+                    icsText += 'BEGIN:VEVENT\n'
+                    icsText += 'CREATED:%s\n'%currentTimeStamp
+                    icsText += 'LAST-MODIFIED:%s\n'%currentTimeStamp
+                    icsText += 'DTSTART:%s\n'%getIcsTimeByEpoch(startEpoch)
+                    if endEpoch is not None and endEpoch-startEpoch > 1:
+                        icsText += 'DTEND:%s\n'%getIcsTimeByEpoch(int(endEpoch))## why its float? FIXME
+                    icsText += 'CATEGORIES:%s\n'%self.title
+                    icsText += 'TRANSP:OPAQUE\n' ## FIXME ## http://www.kanzaki.com/docs/ical/transp.html
+                    icsText += 'SUMMARY:%s\n'%event.summary
+                    icsText += 'END:VEVENT\n'
+            else:
+                raise RuntimeError
+        icsText += 'END:VCALENDAR\n'
+        open(fpath, 'w').write(icsText)
+
 
 ## TaskList, NoteBook, UniversityTerm, EventGroup
 
@@ -1875,9 +1928,15 @@ def testIntersection():
         [(0,1.5), (3,5), (7,9)],
         [(1,3.5), (4,7.5), (8,10)]
     ))
+    
+
+def testJdRanges():
+    import pprint
+    pprint.pprint(JdListOccurrence([1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 18]).calcJdRanges())
 
 
 if __name__=='__main__':
-    testIntersection()
+    #testIntersection()
+    testJdRanges()
 
 

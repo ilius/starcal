@@ -67,6 +67,7 @@ class TimeLine(gtk.Widget):
         self.queue_draw()
     def __init__(self, closeFunc, mainWin=None):
         gtk.Widget.__init__(self)
+        self.closeFunc = closeFunc
         self.mainWin = mainWin
         self.connect('expose-event', self.onExposeEvent)
         self.connect('scroll-event', self.onScroll)
@@ -324,7 +325,7 @@ class TimeLine(gtk.Widget):
         elif k=='down':
             self.stopMovingAnim()
         elif k=='q':
-            gtk.main_quit()## FIXME
+            self.closeFunc()
         #elif k=='end':
         #    pass
         #elif k=='page_up':
@@ -398,6 +399,7 @@ class TimeLine(gtk.Widget):
 
 class TimeLineWindow(gtk.Window):
     def __init__(self, mainWin=None):
+        self.mainWin = mainWin
         gtk.Window.__init__(self)
         self.set_title(_('Time Line'))
         self.set_decorated(False)
@@ -408,8 +410,10 @@ class TimeLineWindow(gtk.Window):
         self.add(self.tline)
         self.tline.show()
     def closeClicked(self, arg=None, event=None):
-        #self.hide()
-        gtk.main_quit()## FIXME
+        if self.mainWin:
+            self.hide()
+        else:
+            gtk.main_quit()## FIXME
         return True
     def buttonPress(self, obj, event):
         if event.button==1:

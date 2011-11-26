@@ -29,6 +29,7 @@ from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
 from scal2.export import exportToHtml
 
 from scal2.ui_gtk.mywidgets.multi_spin_box import YearMonthBox
+from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, TimeButton
 
 import gtk
 from gtk import gdk
@@ -160,5 +161,63 @@ class ExportDialog(gtk.Dialog):
         self.mainWin.dateChange((year, month, day))
         surface.finish()
 
+
+
+
+class ExportToIcsDialog(gtk.Dialog):
+    def __init__(self, saveIcsFunc, defaultFileName):
+        self.saveIcsFunc = saveIcsFunc
+        gtk.Dialog.__init__(self, title=_('Export to iCalendar'), parent=None)
+        self.set_has_separator(False)
+        ########
+        hbox = gtk.HBox(spacing=2)
+        hbox.pack_start(gtk.Label(_('From')+' '), 0, 0)
+        self.startDateInput = DateButton(lang=core.langSh)
+        hbox.pack_start(self.startDateInput, 0, 0)
+        hbox.pack_start(gtk.Label(' '+_('To')+' '), 0, 0)
+        self.endDateInput = DateButton(lang=core.langSh)
+        hbox.pack_start(self.endDateInput, 0, 0)
+        self.vbox.pack_start(hbox, 0, 0)
+        ####
+        (year, month, day) = ui.todayCell.dates[core.primaryMode]
+        self.startDateInput.set_date((year, 1, 1))
+        self.endDateInput.set_date((year+1, 1, 1))
+        ########
+        self.fcw = gtk.FileChooserWidget(action=gtk.FILE_CHOOSER_ACTION_SAVE)
+        self.vbox.pack_start(self.fcw, 1, 1)
+        self.vbox.show_all()
+        canB = self.add_button(gtk.STOCK_CANCEL, 1)
+        saveB = self.add_button(gtk.STOCK_SAVE, 2)
+        if ui.autoLocale:
+            canB.set_label(_('_Cancel'))
+            canB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
+            saveB.set_label(_('_Save'))
+            saveB.set_image(gtk.image_new_from_stock(gtk.STOCK_SAVE,gtk.ICON_SIZE_BUTTON))
+        self.connect('delete-event', self.onDelete)
+        canB.connect('clicked', self.onDelete)
+        saveB.connect('clicked', self.save)
+        try:
+            self.fcw.set_current_folder('%s/Desktop'%homeDir)
+        except:##?????????????????????
+            pass
+        if not defaultFileName.endswith('.ics'):
+            defaultFileName += '.ics'
+        self.fcw.set_current_name(defaultFileName)
+    def onDelete(self, widget=None, event=None):## hide(close) File Chooser Dialog
+        self.destroy()
+        return True
+    def save(self, widget=None):
+        self.window.set_cursor(gdk.Cursor(gdk.WATCH))
+        while gtk.events_pending():
+            gtk.main_iteration_do(False)
+        path = self.fcw.get_filename()
+        if path in (None, ''):
+            return
+        print 'Exporting to ics file "%s"'%path
+        startJd = core.to_jd_primary(*self.startDateInput.get_date())
+        endJd = core.to_jd_primary(*self.endDateInput.get_date())
+        self.saveIcsFunc(path, startJd, endJd)
+        self.window.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
+        self.destroy()
 
 

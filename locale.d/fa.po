@@ -805,6 +805,10 @@ msgid "Edit Group"
 msgstr ""
 "ویرایش گروه"
 
+msgid "Export to iCalendar"
+msgstr ""
+"صدور به iCalendar"
+
 msgid "Group Type"
 msgstr ""
 "نوع گروه"

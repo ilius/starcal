@@ -106,6 +106,7 @@ from scal2.cal_modules import modules, moduleNames, modNum, jd_to, to_jd, conver
 
 popen_output = lambda cmd: subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
 
+to_jd_primary = lambda y, m, d: modules[primaryMode].to_jd(y, m, d)
 
 def getCurrentJd():## time() and mktime(localtime()) both return GMT, not local
     (y, m, d) = localtime()[:3]

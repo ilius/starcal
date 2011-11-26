@@ -39,6 +39,8 @@ from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile, rectangleContainsP
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 #from scal2.ui_gtk.mywidgets.multi_spin_box import DateBox, TimeBox
+from scal2.ui_gtk.export import ExportToIcsDialog
+
 from scal2.ui_gtk.event.occurrence_view import *
 from scal2.ui_gtk.event.common import IconSelectButton, EventEditorDialog, GroupEditorDialog
 
@@ -270,6 +272,9 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 ##
                 menu.add(labelStockMenuItem('Move Up', gtk.STOCK_GO_UP, self.moveUpFromMenu, path))
                 menu.add(labelStockMenuItem('Move Down', gtk.STOCK_GO_DOWN, self.moveDownFromMenu, path))
+                ##
+                menu.add(labelImageMenuItem('Export to iCalendar', 'ical-32.png', self.exportGroupToIcsFromMenu, group))
+                ###
                 for (actionName, actionFuncName) in group.actions:
                     menu.add(labelStockMenuItem(_(actionName), None, self.groupActionClicked, group, actionFuncName))
         elif len(obj_list)==2:
@@ -629,6 +634,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         if not cur:
             return
         self.moveDown(cur[0])
+    def exportGroupToIcsFromMenu(self, menu, group):
+        ExportToIcsDialog(group.exportToIcs, group.title).run()
     def groupActionClicked(self, menu, group, actionFuncName):
         getattr(group, actionFuncName)()
     def cutEvent(self, menu, path):

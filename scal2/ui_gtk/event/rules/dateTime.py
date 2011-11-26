@@ -14,7 +14,7 @@ class RuleWidget(gtk.HBox):
         ###
         gtk.HBox.__init__(self)
         ###
-        dbox = DateButton()
+        dbox = DateButton(lang=core.langSh)
         self.pack_start(dbox, 0, 0)
         ###
         self.pack_start(gtk.Label('   '+_('Time')), 0, 0)
