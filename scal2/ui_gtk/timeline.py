@@ -25,14 +25,18 @@ from scal2 import core
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl
 
+from scal2.utils import toUnicode
 from scal2.core import myRaise, getCurrentTime
                        
 from scal2 import ui
 from scal2.timeline import *
 
+from scal2.ui_gtk.font_utils import pfontEncode
+from scal2.ui_gtk.utils import labelStockMenuItem, labelImageMenuItem
 from scal2.ui_gtk.drawing import setColor, fillColor, newLimitedWidthTextLayout, Button
 #from scal2.ui_gtk import preferences
 import scal2.ui_gtk.event.main
+from scal2.ui_gtk.event.common import EventEditorDialog, GroupEditorDialog
 
 import gobject
 from gobject import timeout_add
@@ -45,7 +49,14 @@ def show_event(widget, event):
 
 rootWindow = gdk.get_default_root_window() ## Good Place?????
 
-
+class GBox:
+    def __init__(self, x0, x1, y0, y1, ids):
+        self.x0 = x0
+        self.x1 = x1
+        self.y0 = y0
+        self.y1 = y1
+        self.ids = ids
+    contains = lambda self, px, py: self.x0 <= px < self.x1 and self.y0 <= py < self.y1
 
 class TimeLine(gtk.Widget):
     def centerToNow(self):
@@ -54,8 +65,9 @@ class TimeLine(gtk.Widget):
     def centerToNowClicked(self, arg=None):
         self.centerToNow()
         self.queue_draw()
-    def __init__(self, closeFunc):
+    def __init__(self, closeFunc, mainWin=None):
         gtk.Widget.__init__(self)
+        self.mainWin = mainWin
         self.connect('expose-event', self.onExposeEvent)
         self.connect('scroll-event', self.onScroll)
         self.connect('button-press-event', self.buttonPress)
@@ -70,6 +82,7 @@ class TimeLine(gtk.Widget):
             Button('week-exit.png', closeFunc, 35, -1, False)
         ]
         ## zoom in and zoom out buttons FIXME
+        self.gboxes = []
         ########
         self.movingLastPress = 0
         self.movingV = 0
@@ -146,21 +159,27 @@ class TimeLine(gtk.Widget):
                 else:
                     cr.show_layout(layout)## with the same tick.color
         ######
-        baforBoxH = maxTickHeight ## FIXME
-        maxBoxH = height - baforBoxH
+        beforeBoxH = maxTickHeight ## FIXME
+        maxBoxH = height - beforeBoxH
         d = boxLineWidth
+        self.gboxes = []
         for box in data['boxes']:
             x = (box.t0-self.timeStart)*pixelPerSec
             w = (box.t1 - box.t0)*pixelPerSec
-            y = baforBoxH + maxBoxH * box.y0
+            y = beforeBoxH + maxBoxH * box.y0
             h = maxBoxH * (box.y1 - box.y0)
+            self.gboxes.append(GBox(x, x+w, y, y+h, box.ids))
             ###
             cr.rectangle(x, y, w, h)
+            try:
+                alpha = box.color[3]
+            except IndexError:
+                alpha = 255
             fillColor(cr, (
                 box.color[0],
                 box.color[1],
                 box.color[2],
-                int(box.color[3]*boxInnerAlpha),
+                int(alpha*boxInnerAlpha),
             ))
             ###
             cr.move_to(x, y)
@@ -175,6 +194,34 @@ class TimeLine(gtk.Widget):
             cr.line_to(x+d, y+d)
             cr.close_path()
             fillColor(cr, box.color)
+            ## now draw the text
+            ## how to find the best font size based in the box's width and height, and font family? FIXME
+            ## possibly write in many lines? or just in one line and wrap if needed?
+            if box.text:
+                textW = 0.9*w
+                textH = 0.9*h
+                avgCharW = float(textW) / len(toUnicode(box.text))
+                #print 'avgCharW=%s'%avgCharW
+                if avgCharW > 3:## FIXME
+                    font = list(ui.getFont())
+                    layout = widget.create_pango_layout(box.text) ## a pango.Layout object
+                    layout.set_font_description(pfontEncode(font))
+                    layoutW, layoutH = layout.get_pixel_size()
+                    #print 'orig font size: %s'%font[3]
+                    etaFontSize = min(
+                        float(font[3])*textW/layoutW,
+                        float(font[3])*textH/layoutH,
+                    )
+                    #print ' eta font size: %s'%etaFontSize
+                    font[3] = etaFontSize
+                    layout.set_font_description(pfontEncode(font))
+                    layoutW, layoutH = layout.get_pixel_size()
+                    fillColor(cr, fgColor)## before cr.move_to
+                    cr.move_to(
+                        x + (w-layoutW)/2.0,
+                        y + (h-layoutH)/2.0,
+                    )
+                    cr.show_layout(layout)
         ######
         if self.timeStart <= self.currentTime <= self.timeStart + self.timeWidth:
             setColor(cr, currenTimeMarkerColor)
@@ -210,7 +257,53 @@ class TimeLine(gtk.Widget):
                 if button.contains(x, y, w, h):
                     button.func(event)
                     return True
+        elif event.button==3:
+            for gbox in self.gboxes:
+                if gbox.contains(x, y):
+                    (gid, eid) = gbox.ids
+                    group = ui.eventGroups[gid]
+                    event = group.getEvent(eid)
+                    ###
+                    menu = gtk.Menu()
+                    ##
+                    winTitle = _('Edit') + ' ' + event.desc
+                    menu.add(labelStockMenuItem(winTitle, gtk.STOCK_EDIT, self.editEventClicked, winTitle, event, gid))
+                    ##
+                    winTitle = _('Edit') + ' ' + group.desc
+                    menu.add(labelStockMenuItem(winTitle, gtk.STOCK_EDIT, self.editGroupClicked, winTitle, group))
+                    ##
+                    menu.add(gtk.SeparatorMenuItem())
+                    ##
+                    menu.add(labelImageMenuItem(_('Move to %s')%ui.eventTrash.title, ui.eventTrash.icon, self.moveEventToTrash, group, event))
+                    ##
+                    menu.show_all()
+                    menu.popup(None, None, None, 3, 0)
         return False
+    def editEventClicked(self, menu, winTitle, event, gid):
+        event = EventEditorDialog(
+            event=event,
+            title=winTitle,
+            #parent=self,## FIXME
+        ).run()
+        if event is None:
+            return
+        #self.updateWidget()
+        ui.changedEvents.append((gid, event.eid))
+        if self.mainWin:
+            self.mainWin.onConfigChange(self.mainWin)
+    def editGroupClicked(self, menu, winTitle, group):
+        if GroupEditorDialog(group).run() is not None:
+            ui.changedGroups.append(group.gid)
+            if self.mainWin:
+                self.mainWin.onConfigChange(self.mainWin)
+    def onConfigChange(self):
+        pass
+    def moveEventToTrash(self, menu, group, event):
+        eventIndex = group.index(event.eid)
+        ui.moveEventToTrash(group, event)
+        ui.trashedEvents.append((group.gid, event.eid, eventIndex))
+        if self.mainWin:
+            self.mainWin.onConfigChange(self.mainWin)
     def startResize(self, event):
         self.parent.begin_resize_drag(
             gdk.WINDOW_EDGE_SOUTH_EAST,
@@ -310,7 +403,7 @@ class TimeLineWindow(gtk.Window):
         self.set_decorated(False)
         self.connect('delete-event', self.closeClicked)
         self.connect('button-press-event', self.buttonPress)
-        self.tline = TimeLine(self.closeClicked)
+        self.tline = TimeLine(self.closeClicked, mainWin)
         self.connect('key-press-event', self.tline.keyPress)
         self.add(self.tline)
         self.tline.show()
@@ -324,6 +417,9 @@ class TimeLineWindow(gtk.Window):
             self.begin_move_drag(event.button, px, py, event.time)
             return True
         return False
+    def onConfigChange(self):
+        self.tline.onConfigChange()
+
 
 gobject.type_register(TimeLine)
 

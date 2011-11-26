@@ -273,8 +273,6 @@ class NotifierWidget(gtk.HBox):
         self.pack_start(gtk.Label(_('Text Color')), 0, 0)
         self.pack_start(self.textColorButton, 0, 0)
         self.pack_start(gtk.Label(''), 1, 1)
-        ##
-        self.updateWidget()
     def updateWidget(self):
         self.fillWidthCb.set_active(self.notifier.fillWidth)
         self.speedSpin.set_value(self.notifier.speed)

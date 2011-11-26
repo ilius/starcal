@@ -14,13 +14,8 @@ from gtk import gdk
 class EventWidget(common.EventWidget):
     def __init__(self, event):## FIXME
         common.EventWidget.__init__(self, event)
-        ###
-        
-        
-        self.updateWidget()
     def updateWidget(self):## FIXME
         common.EventWidget.updateWidget(self)
-        
     def updateVars(self):## FIXME
         common.EventWidget.updateVars(self)
 

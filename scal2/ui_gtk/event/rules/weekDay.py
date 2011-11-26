@@ -20,8 +20,6 @@ class RuleWidget(gtk.HBox):
             self.pack_start(ls[(s+i)%7], 1, 1)
         self.cbList = ls
         self.start = s
-        ###
-        self.updateWidget()
     def setStart(self, s):
         b = self.widget
         ls = self.cbList

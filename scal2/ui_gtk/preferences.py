@@ -109,6 +109,7 @@ toolbarItemsData = (
     ToolbarItem('preferences', 'preferences', 'prefShow',),
 #    ToolbarItem('add',         'add',         'showCustomDay',  'Add Custom Day',     ),
     ToolbarItem('add',         'add',         'eventManShow',   'Event Manager',     ),
+#    ToolbarItem('timeline',    'add',         'eventManShow',   'Event Manager',     ),
     ToolbarItem('export',      'convert',     'exportClicked',  'Export to HTML',     ),
     ToolbarItem('about',       'about',       'aboutShow',      'About StarCalendar', ),
     ToolbarItem('quit',        'quit',        'quit',)

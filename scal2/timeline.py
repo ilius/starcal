@@ -120,13 +120,14 @@ class Tick:
 conflicts = lambda a0, a1, b0, b1: a0 < b0 < a1  or  a0 < b1 < a1  or  b0 < a0 < b1  or  b0 < a1 < b1
 
 class Box:
-    def __init__(self, t0, t1, y0, y1, text, color):
+    def __init__(self, t0, t1, y0, y1, text, color, ids):
         self.t0 = t0
         self.t1 = t1
         self.y0 = y0
         self.y1 = y1
         self.text = text
         self.color = color
+        self.ids = ids ## (groupId, eventId)
         self.tConflictBefore = []
     tConflicts = lambda self, other: conflicts(self.t0, self.t1, other.t0, other.t1)
     yConflicts = lambda self, other: conflicts(self.y0, self.y1, other.y0, other.y1)
@@ -365,6 +366,8 @@ def calcTimeLineData(timeStart, timeWidth, width):
             #if len(occur.getTimeRangeList())>1:
             #    print event.eid, occur.getTimeRangeList()
             for (t0, t1) in occur.getTimeRangeList():
+                if t1 is None:
+                    t1 = t0
                 if t0 <= timeStart and timeEnd <= t1:## Fills Range ## FIXME
                     continue
                 tw = t1 - t0
@@ -372,7 +375,15 @@ def calcTimeLineData(timeStart, timeWidth, width):
                     twd = (minEventBoxWidthSec - tw)/2.0
                     t1 += twd
                     t0 -= twd
-                boxes.append(Box(t0, t1, 0, 1, event.summary, group.color))## or event.color FIXME
+                boxes.append(Box(
+                    t0,
+                    t1,
+                    0,
+                    1,
+                    event.summary,
+                    group.color,
+                    (group.gid, event.eid),
+                ))## or event.color FIXME
     #boxes.sort(reverse=True) ## FIXME
     placedBoxes = []
     for box in boxes:

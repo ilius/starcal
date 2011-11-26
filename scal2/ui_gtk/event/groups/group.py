@@ -79,9 +79,9 @@ class GroupWidget(gtk.VBox):
         spin.set_direction(gtk.TEXT_DIR_LTR)
         hbox.pack_start(spin, 0, 0)
         self.cacheSizeSpin = spin
+        ##
+        self.sizeGroup = sizeGroup
         self.pack_start(hbox, 0, 0)
-        ####
-        self.updateWidget()
     def updateWidget(self):
         self.titleEntry.set_text(self.group.title)
         self.colorButton.set_color(self.group.color)
@@ -94,8 +94,5 @@ class GroupWidget(gtk.VBox):
         self.group.defaultIcon = self.defaultIconSelect.get_filename()
         self.group.defaultMode = self.defaultModeCombo.get_active()
         self.group.eventCacheSize = int(self.cacheSizeSpin.get_value())
-
-
-
 
 

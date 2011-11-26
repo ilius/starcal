@@ -13,7 +13,6 @@ class RuleWidget(gtk.SpinButton):
         gtk.SpinButton.__init__(self)
         self.set_increments(1, 10)
         self.set_range(0, 100000)
-        self.updateWidget()
     def updateWidget(self):
         self.set_value(self.rule.cycleDays)
     def updateVars(self):

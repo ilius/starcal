@@ -12,7 +12,6 @@ class RuleWidget(TimeBox):
     def __init__(self, rule):
         self.rule = rule
         TimeBox.__init__(self)
-        self.updateWidget()
     def updateWidget(self):
         self.set_time(self.rule.dayTime)
     def updateVars(self):

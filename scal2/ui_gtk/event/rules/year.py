@@ -15,8 +15,6 @@ class RuleWidget(gtk.SpinButton):
         self.set_increments(1, 10)
         self.set_range(0, 9999)
         self.set_width_chars(4)
-        ###
-        self.updateWidget()
     def updateWidget(self):
         self.set_value(self.rule.year)
     getYear = lambda self: int(self.get_value())

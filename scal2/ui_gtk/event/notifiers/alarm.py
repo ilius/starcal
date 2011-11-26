@@ -16,7 +16,6 @@ class NotifierWidget(player.PlayerBox):
     def __init__(self, notifier):
         self.notifier = notifier
         player.PlayerBox.__init__(self)
-        self.updateWidget()
     def updateWidget(self):
         if self.notifier.alarmSound:
             self.openFile(self.notifier.alarmSound)

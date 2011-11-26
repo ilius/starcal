@@ -17,7 +17,6 @@ class DayOccurrenceView(event_man.DayOccurrenceView, gtk.VBox):
         ## what to do with populatePopupFunc FIXME
         ## self.textview.connect('populate-popup', populatePopupFunc)
         self.clipboard = gtk.clipboard_get()
-        self.updateWidget()
     def updateWidget(self):
         self.updateData()
         ## destroy all VBox contents and add again
@@ -76,9 +75,7 @@ class DayOccurrenceView(event_man.DayOccurrenceView, gtk.VBox):
         ).run()
         if event is None:
             return
-        event.saveConfig()
         self.updateWidget()
-        ## also should be updated in event manager dialog (treestore) FIXME
         ui.changedEvents.append((group_id, event.eid))
     def copy(self, item, label):
         start = label.get_property('selection-bound')

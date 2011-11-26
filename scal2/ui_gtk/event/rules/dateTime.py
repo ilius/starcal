@@ -23,7 +23,6 @@ class RuleWidget(gtk.HBox):
         ###
         self.dbox = dbox
         self.tbox = tbox
-        self.updateWidget()
     def updateWidget(self):
         self.dbox.set_date(self.rule.date)
         self.tbox.set_time(self.rule.time)

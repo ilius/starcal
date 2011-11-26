@@ -2,6 +2,7 @@ import os, shutil
 from os.path import join, split
 
 from scal2.utils import toStr
+from scal2.time_utils import durationUnitsAbs, durationUnitValues
 from scal2 import core
 from scal2.locale_man import tr as _
 from scal2.core import pixDir, myRaise
@@ -261,6 +262,32 @@ class NotifiersCheckList(gtk.Expander):
         return notifiers
 
 
+class DurationInputBox(gtk.HBox):
+    def __init__(self):
+        gtk.HBox.__init__(self)
+        ##
+        spin = gtk.SpinButton()
+        spin.set_increments(1, 10)
+        spin.set_range(0, 999)
+        spin.set_digits(1)
+        spin.set_direction(gtk.TEXT_DIR_LTR)
+        #spin.set_width_chars
+        self.pack_start(spin, 0, 0)
+        self.valueSpin = spin
+        ##
+        combo = gtk.combo_box_new_text()
+        for unitValue, unitName in durationUnitsAbs:
+            combo.append_text(_(' '+unitName.capitalize()+'s'))
+        combo.set_active(2) ## hour FIXME
+        self.pack_start(combo, 0, 0)
+        self.unitCombo = combo
+    def getDuration(self):
+        return self.valueSpin.get_value(), durationUnitValues[self.unitCombo.get_active()]
+    def setDuration(self, value, unit):
+        self.valueSpin.set_value(value)
+        self.unitCombo.set_active(durationUnitValues.index(unit))
+
+
 class GroupComboBox(gtk.ComboBox):
     def __init__(self):
         pass
@@ -291,8 +318,9 @@ class EventEditorDialog(gtk.Dialog):
         if eventType:
             cls = event_man.eventsClassDict[eventType]
             self.event = cls()
+            self.event.setDefaultsFromGroup(group)
             if group:## FIXME
-                self.event.icon = group.defaultIcon
+                self.event.setDefaultsFromGroup(group)
             self.activeEventWidget = self.event.makeWidget()
         else:
             hbox = gtk.HBox()
@@ -302,6 +330,7 @@ class EventEditorDialog(gtk.Dialog):
             hbox.pack_start(gtk.Label(_('Event Type')), 0, 0)
             hbox.pack_start(combo, 0, 0)
             hbox.pack_start(gtk.Label(''), 1, 1)
+            hbox.show_all()
             self.vbox.pack_start(hbox, 0, 0)
             ####
             if self.event:
@@ -310,12 +339,12 @@ class EventEditorDialog(gtk.Dialog):
                 combo.set_active(event_man.defaultEventTypeIndex)
                 self.event = event_man.eventsClassList[event_man.defaultEventTypeIndex]()
                 if group:## FIXME
-                    self.event.icon = group.defaultIcon
+                    self.event.setDefaultsFromGroup(group)
             self.activeEventWidget = self.event.makeWidget()
             combo.connect('changed', self.eventTypeChanged)
             self.comboEventType = combo
         self.vbox.pack_start(self.activeEventWidget, 0, 0)
-        self.vbox.show_all()
+        self.vbox.show()
     def dateModeChanged(self, combo):
         pass
     def eventTypeChanged(self, combo):
@@ -330,7 +359,6 @@ class EventEditorDialog(gtk.Dialog):
         self.event = event
         self.activeEventWidget = event.makeWidget()
         self.vbox.pack_start(self.activeEventWidget, 0, 0)
-        self.activeEventWidget.show_all()
     def run(self):
         if not self.activeEventWidget or not self.event:
             return None
@@ -343,8 +371,91 @@ class EventEditorDialog(gtk.Dialog):
                 filesBox.removeNewFiles()
             return None
         self.activeEventWidget.updateVars()
+        self.event.saveConfig()
         self.destroy()
         return self.event
+
+class GroupEditorDialog(gtk.Dialog):
+    def __init__(self, group=None):
+        gtk.Dialog.__init__(self)
+        self.set_title(_('Edit Group') if group else _('Add New Group'))
+        #self.connect('delete-event', lambda obj, e: self.destroy())
+        #self.resize(800, 600)
+        ###
+        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        if ui.autoLocale:
+            cancelB.set_label(_('_Cancel'))
+            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
+            okB.set_label(_('_OK'))
+            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        self.connect('response', lambda w, e: self.hide())
+        #######
+        self._group = group
+        self.activeGroupWidget = None
+        #######
+        hbox = gtk.HBox()
+        combo = gtk.combo_box_new_text()
+        for cls in event_man.eventGroupsClassList:
+            combo.append_text(cls.desc)
+        hbox.pack_start(gtk.Label(_('Group Type')), 0, 0)
+        hbox.pack_start(combo, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.vbox.pack_start(hbox, 0, 0)
+        ####
+        if self._group:
+            self.isNewGroup = False
+            combo.set_active(event_man.eventGroupsClassNameList.index(self._group.name))
+        else:
+            self.isNewGroup = True
+            combo.set_active(event_man.defaultGroupTypeIndex)
+            self._group = event_man.eventGroupsClassList[event_man.defaultGroupTypeIndex]()
+        self.activeGroupWidget = None
+        combo.connect('changed', self.groupTypeChanged)
+        self.comboGroupType = combo
+        self.vbox.show_all()
+        self.groupTypeChanged()
+    def dateModeChanged(self, combo):
+        pass
+    def getNewGroupTitle(self, baseTitle):
+        usedTitles = [group.title for group in ui.eventGroups]
+        if not baseTitle in usedTitles:
+            return baseTitle
+        i = 1
+        while True:
+            newTitle = baseTitle + ' ' + _(i)
+            if newTitle in usedTitles:
+                i += 1
+            else:
+                return newTitle
+    def groupTypeChanged(self, combo=None):
+        if self.activeGroupWidget:
+            self.activeGroupWidget.updateVars()
+            self.activeGroupWidget.destroy()
+        cls = event_man.eventGroupsClassList[self.comboGroupType.get_active()]
+        group = cls()
+        if self._group:
+            if self.isNewGroup:
+                if group.defaultIcon:
+                    self._group.defaultIcon = group.defaultIcon
+            group.copyFrom(self._group)
+            group.setId(self._group.gid)
+            del self._group
+        if self.isNewGroup:
+            group.title = self.getNewGroupTitle(cls.desc)
+        self._group = group
+        self.activeGroupWidget = group.makeWidget()
+        self.vbox.pack_start(self.activeGroupWidget, 0, 0)
+    def run(self):
+        if self.activeGroupWidget is None or self._group is None:
+            return None
+        if gtk.Dialog.run(self)!=gtk.RESPONSE_OK:
+            return None
+        self.activeGroupWidget.updateVars()
+        self._group.saveConfig()
+        ui.eventGroups[self._group.gid] = self._group
+        self.destroy()
+        return self._group
 
 if __name__ == '__main__':
     from pprint import pformat

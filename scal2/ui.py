@@ -404,6 +404,12 @@ def deleteEventGroup(group, addToFirst=True):
     eventGroups.saveConfig()
     eventTrash.saveConfig()
 
+def moveEventToTrash(group, event):
+    group.excludeEvent(event.eid)
+    group.saveConfig()
+    eventTrash.insert(0, event)## or append? FIXME
+    eventTrash.saveConfig()
+
 #getEvent = lambda group_id, event_id: eventGroups[group_id].getEvent(event_id)
 
 ######################################################################
@@ -478,6 +484,9 @@ eventTrash = event_man.EventTrash()
 #eventTrash.loadConfig()## FIXME here or in ui_*/event/main.py
 event_man.checkAndStartDaemon()## FIXME here or in ui_*/event/main.py
 changedEvents = [] ## a list of (group_id, event_id) 's
+changedGroups = []
+trashedEvents = []
+
 
 #def updateEventTagsUsage():## FIXME where to use?
 #    tagsDict = getEventTagsDict()

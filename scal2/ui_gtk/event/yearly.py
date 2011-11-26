@@ -35,8 +35,6 @@ class EventWidget(common.EventWidget):
         ####
         self.filesBox = common.FilesBox(self.event)
         self.pack_start(self.filesBox, 0, 0)
-        ###
-        self.updateWidget()
     def updateWidget(self):## FIXME
         common.EventWidget.updateWidget(self)
         self.monthCombo.set_active(self.event.getMonth()-1)

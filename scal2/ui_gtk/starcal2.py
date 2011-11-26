@@ -76,6 +76,7 @@ from scal2.ui_gtk.customize import CustomizableWidgetWrapper, MainWinItem, Custo
 from scal2.ui_gtk.monthcal import MonthCal
 
 from scal2.ui_gtk.event.main import DayOccurrenceView, EventManagerDialog
+from scal2.ui_gtk.timeline import TimeLineWindow
 
 from scal2 import unity
 if unity.needToAdd():
@@ -998,7 +999,9 @@ class EventViewMainWinItem(DayOccurrenceView, MainWinItem):## FIXME
     def onDateChange(self):
         self.setJd(ui.cell.jd)
         self.updateWidget()
-    ## should event occurances be saved in ui.cell object ?
+    def onConfigChange(self):
+        self.updateWidget()
+    ## should event occurances be saved in ui.cell object? FIXME
 
 
 class MainWin(gtk.Window):
@@ -1020,6 +1023,9 @@ class MainWin(gtk.Window):
             ## 2: standard tray icon
         self.trayMode = trayMode
         self.eventManDialog = EventManagerDialog(self)
+        self.timeLineWin = TimeLineWindow(self)
+        self.timeLineWin.resize(rootWindow.get_geometry()[2], 150)
+        self.timeLineWin.move(0, 0)
         ###########
         ##self.connect('window-state-event', selfStateEvent)
         self.set_title('StarCalendar %s'%core.VERSION)
@@ -1210,6 +1216,7 @@ class MainWin(gtk.Window):
         menu.add(labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
         #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, self.eventManDialog.addCustomEvent))
         menu.add(labelStockMenuItem('_Event Manager', gtk.STOCK_ADD, self.eventManShow))
+        menu.add(labelImageMenuItem('Time Line', 'timeline-18.png', self.timeLineShow))
         menu.add(labelStockMenuItem('_Export to HTML', gtk.STOCK_CONVERT, self.exportClicked))
         menu.add(labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
         if self.trayMode!=1:
@@ -1265,6 +1272,7 @@ class MainWin(gtk.Window):
             if plug.external and hasattr(plug, 'set_dialog'):
                 plug.set_dialog(self)
         ###########################
+        self.connectedWindows = [self.eventManDialog, self.timeLineWin]
         self.onConfigChange()
         #rootWindow.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
     #def mainWinStateEvent(self, obj, event):
@@ -1486,6 +1494,7 @@ class MainWin(gtk.Window):
     prefShow = lambda self, obj=None, data=None: self.prefDialog.present()
     customizeShow = lambda self, obj=None, data=None: self.customizeDialog.present()
     eventManShow = lambda self, obj=None, data=None: self.eventManDialog.present()
+    timeLineShow = lambda self, obj=None, data=None: self.timeLineWin.present()
     def trayInit(self):
         if self.trayMode==2:
             self.sicon = gtk.StatusIcon()
@@ -1621,11 +1630,13 @@ class MainWin(gtk.Window):
     def exportClickedTray(self, widget=None, event=None):
         (y, m) = core.getSysDate()[:2]
         self.export.showDialog(y, m)
-    def onConfigChange(self):
+    def onConfigChange(self, senderWindow=None):
         #self.set_property('skip-taskbar-hint', not ui.winTaskbar) ## self.set_skip_taskbar_hint ## FIXME
         ## skip-taskbar-hint  need to restart ro be applied
-        preferences.settings.set_property('gtk-font-name',
-            pfontEncode(ui.getFont()))
+        preferences.settings.set_property(
+            'gtk-font-name',
+            pfontEncode(ui.getFont()),
+        )
         self.updateMenuSize()
         #self.updateToolbarClock()## FIXME
         self.updateTrayClock()
@@ -1640,6 +1651,10 @@ class MainWin(gtk.Window):
             item.onConfigChange()
         self.trayUpdate()
         self.onDateChange()
+        ###
+        for window in self.connectedWindows:
+            if window!=senderWindow:
+                window.onConfigChange()
 
 
 ###########################################################################3

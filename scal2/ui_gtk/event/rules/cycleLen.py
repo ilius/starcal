@@ -24,8 +24,6 @@ class RuleWidget(gtk.HBox):
         tbox = TimeButton()
         self.pack_start(tbox, 0, 0)
         self.tbox = tbox
-        ##
-        self.updateWidget()
     def updateWidget(self):
         self.spin.set_value(self.rule.cycleDays)   
         self.tbox.set_time(self.rule.cycleExtraTime)

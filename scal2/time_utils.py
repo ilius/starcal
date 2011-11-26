@@ -39,7 +39,41 @@ getCurrentTime = lambda: time.time() + getCurrentTimeZone()
 
 getGtkTimeFromEpoch = lambda epoch: (epoch-1.32171528839e+9)*1000//1
 
-#print '---- J1970=%s'%J1970
-#print 'getEpochFromJd(J1970)=%s'%getEpochFromJd(J1970)
-print 'getJhmsFromEpoch', getJhmsFromEpoch(1321715288.39)
+
+durationUnitsRel = (
+    (1, 'second'),
+    (60, 'minute'),
+    (60, 'hour'),
+    (24, 'day'),
+    (7, 'week'),
+)
+
+durationUnitsAbs = []
+num = 1
+for item in durationUnitsRel:
+    num *= item[0]
+    durationUnitsAbs.append((num, item[1]))
+
+durationUnitValueToName = dict(durationUnitsAbs)
+durationUnitValues = [item[0] for item in durationUnitsAbs]
+durationUnitNames = [item[1] for item in durationUnitsAbs]
+
+def encodeDuration(value, unit):
+    iValue = int(value)
+    if iValue==value:
+        value = iValue
+    return '%s %s'%(value, durationUnitValueToName[unit])
+
+def decodeDuration(durStr):
+    durStr = durStr.strip()
+    if ' ' in durStr:
+        (value, unit) = durStr.split(' ')
+        value = float(value)
+        unit = unit.lower()
+        if not unit:
+            return (value, 1)
+        for unitValue, unitName in durationUnitsAbs:
+            if unit in (unitName, unitName+'s'):## ,unitName[0]
+                return (value, unitValue)
+    raise ValueError('invalid duration %r'%durStr)
 

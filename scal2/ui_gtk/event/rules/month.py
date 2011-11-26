@@ -21,8 +21,6 @@ class RuleWidget(gtk.ComboBox):
         ###
         for m in core.modules[rule.getMode()].monthName:
             self.append_text(_(m))
-        ###
-        self.updateWidget()
     def updateWidget(self):
         self.set_active(self.rule.month-1)
     def updateVars(self):

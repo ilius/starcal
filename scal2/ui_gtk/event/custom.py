@@ -60,11 +60,8 @@ class EventWidget(common.EventWidget):
         self.filesBox = common.FilesBox(self.event)
         self.pack_start(self.filesBox, 0, 0)
         #############
-        self.updateWidget()
-        #############
         self.addRuleCombo.connect('changed', self.addRuleComboChanged)
         self.ruleAddButton.connect('clicked', self.addClicked)
-        self.show_all() ## needed, why? FIXME
     def makeRuleHbox(self, rule):
         hbox = gtk.HBox(spacing=5)
         lab = gtk.Label(rule.desc)
@@ -101,6 +98,7 @@ class EventWidget(common.EventWidget):
         self.rulesBox.show_all()
         for ruleName in comboItems:
             self.addRuleModel.append((ruleName, event_man.eventRulesClassDict[ruleName].desc))
+        self.addRuleComboChanged()
     def updateRules(self):
         self.event.rules = []
         for hbox in self.rulesBox.get_children():

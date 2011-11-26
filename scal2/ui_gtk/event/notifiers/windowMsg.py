@@ -12,7 +12,6 @@ class NotifierWidget(gtk.Entry):
     def __init__(self, notifier):
         self.notifier = notifier
         gtk.Entry.__init__(self)
-        self.updateWidget()
     def updateWidget(self):
         self.set_text(self.notifier.extraMessage)
     def updateVars(self):

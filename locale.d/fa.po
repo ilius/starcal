@@ -789,6 +789,10 @@ msgstr ""
 "ترم دانشگاه"
 
 
+msgid "Add Group"
+msgstr ""
+"افزودن گروه"
+
 msgid "Add New Group"
 msgstr ""
 "افزودن گروه تازه"
@@ -796,6 +800,10 @@ msgstr ""
 msgid "Delete Group"
 msgstr ""
 "حذف گروه"
+
+msgid "Edit Group"
+msgstr ""
+"ویرایش گروه"
 
 msgid "Group Type"
 msgstr ""
@@ -833,8 +841,47 @@ msgstr ""
 "جابجایی به پایین"
 
 msgid "Press OK if you are sure to delete group \"%s\""
-msgstr "اگر مطمئنید که می‌خواهید گروه «%s» را حذف کنید، دکمهٔ تائید را فشار دهید"
-""
+msgstr ""
+"اگر مطمئنید که می‌خواهید گروه «%s» را حذف کنید، دکمهٔ تائید را فشار دهید"
+
+
+msgid "For"
+msgstr ""
+"برای"
+
+msgid "Until"
+msgstr ""
+"تا"
+
+msgid "Duration"
+msgstr ""
+"مدت"
+
+msgid "Default Task Duration"
+msgstr ""
+"مدت‌زمان پیش‌فرض کار"
+
+
+msgid " Seconds"
+msgstr ""
+" ثانیه"
+
+msgid " Minutes"
+msgstr ""
+" دقیقه"
+
+msgid " Hours"
+msgstr ""
+" ساعت"
+
+msgid " Days"
+msgstr ""
+" روز"
+
+msgid " Weeks"
+msgstr ""
+" هفته"
+
 
 
 

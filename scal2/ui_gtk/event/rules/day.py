@@ -14,7 +14,6 @@ class RuleWidget(gtk.SpinButton):
         self.set_increments(1, 10)
         self.set_range(1, 31)## FIXME
         self.set_width_chars(2)
-        self.updateWidget()
     def updateWidget(self):
         self.set_value(self.rule.day)
     def updateVars(self):

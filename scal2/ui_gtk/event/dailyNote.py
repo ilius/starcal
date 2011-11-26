@@ -25,8 +25,6 @@ class EventWidget(common.EventWidget):
         #############
         self.filesBox = common.FilesBox(self.event)
         self.pack_start(self.filesBox, 0, 0)
-        #############
-        self.updateWidget()
     def updateWidget(self):
         common.EventWidget.updateWidget(self)
         self.dateInput.set_date(self.event.getDate())

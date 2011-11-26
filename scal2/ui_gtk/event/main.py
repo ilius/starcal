@@ -40,87 +40,9 @@ from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 #from scal2.ui_gtk.mywidgets.multi_spin_box import DateBox, TimeBox
 from scal2.ui_gtk.event.occurrence_view import *
-from scal2.ui_gtk.event.common import IconSelectButton, EventEditorDialog
+from scal2.ui_gtk.event.common import IconSelectButton, EventEditorDialog, GroupEditorDialog
 
 #print 'Testing translator', __file__, _('About')
-
-class GroupEditorDialog(gtk.Dialog):
-    def __init__(self, group=None):
-        gtk.Dialog.__init__(self)
-        self.set_title(_('Edit Group') if group else _('Add Group'))
-        #self.connect('delete-event', lambda obj, e: self.destroy())
-        #self.resize(800, 600)
-        ###
-        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        if ui.autoLocale:
-            cancelB.set_label(_('_Cancel'))
-            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
-            okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
-        self.connect('response', lambda w, e: self.hide())
-        #######
-        self._group = group
-        self.activeGroupWidget = None
-        #######
-        hbox = gtk.HBox()
-        combo = gtk.combo_box_new_text()
-        for cls in event_man.eventGroupsClassList:
-            combo.append_text(cls.desc)
-        hbox.pack_start(gtk.Label(_('Group Type')), 0, 0)
-        hbox.pack_start(combo, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
-        ####
-        if self._group:
-            self.isNewGroup = False
-            combo.set_active(event_man.eventGroupsClassNameList.index(self._group.name))
-        else:
-            self.isNewGroup = True
-            combo.set_active(event_man.defaultGroupTypeIndex)
-            self._group = event_man.eventGroupsClassList[event_man.defaultGroupTypeIndex]()
-        self.activeGroupWidget = None
-        combo.connect('changed', self.groupTypeChanged)
-        self.comboGroupType = combo
-        self.vbox.show_all()
-        self.groupTypeChanged()
-    def dateModeChanged(self, combo):
-        pass
-    def getNewGroupTitle(self, baseTitle):
-        usedTitles = [group.title for group in ui.eventGroups]
-        if not baseTitle in usedTitles:
-            return usedTitles
-        i = 1
-        while True:
-            newTitle = baseTitle+' '+_(i)
-            if newTitle in usedTitles:
-                i += 1
-            else:
-                return newTitle
-    def groupTypeChanged(self, combo=None):
-        if self.activeGroupWidget:
-            self.activeGroupWidget.updateVars()
-            self.activeGroupWidget.destroy()
-        cls = event_man.eventGroupsClassList[self.comboGroupType.get_active()]
-        group = cls()
-        if self._group:
-            group.copyFrom(self._group)
-            group.setId(self._group.gid)
-            del self._group
-        if self.isNewGroup:
-            group.title = self.getNewGroupTitle(cls.desc)
-        self._group = group
-        self.activeGroupWidget = group.makeWidget()
-        self.vbox.pack_start(self.activeGroupWidget, 0, 0)
-        self.activeGroupWidget.show_all()
-    def run(self):
-        if self.activeGroupWidget is None or self._group is None:
-            return None
-        if gtk.Dialog.run(self)!=gtk.RESPONSE_OK:
-            return None
-        self.activeGroupWidget.updateVars()
-        self.destroy()
-        return self._group
 
 
 class TrashEditorDialog(gtk.Dialog):
@@ -181,10 +103,23 @@ class TrashEditorDialog(gtk.Dialog):
 class EventManagerDialog(gtk.Dialog):## FIXME
     def onResponse(self, win, event):
         self.hide()
+        if self.mainWin:
+            self.mainWin.onConfigChange()
         timeout_add_seconds(0, event_man.restartDaemon)## FIXME
-    def onShow(self, widget):
+    def onConfigChange(self):
+        if not self.isLoaded:
+            return
+        for gid, eid, eventIndex in ui.trashedEvents:
+            groupIndex = ui.eventGroups.index(gid)
+            event = ui.eventTrash.getEvent(eid)
+            self.trees.remove(self.trees.get_iter((groupIndex, eventIndex)))
+            self.trees.insert(
+                self.trashIter,
+                0,
+                self.getEventRow(event),
+            )
+        ###
         for gid, eid in ui.changedEvents:
-            print 'changedEvents', gid, eid
             groupIndex = ui.eventGroups.index(gid)
             group = ui.eventGroups[gid]
             eventIndex = group.index(eid)
@@ -193,9 +128,21 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             eventIter = self.trees.get_iter(eventPath)
             for i, value in enumerate(self.getEventRow(event)):
                 self.trees.set_value(eventIter, i, value)
+        ###
         ui.changedEvents = []
-    def __init__(self, mainWin=None):## mainWin is needed? FIXME
+        for gid in ui.changedGroups:
+            groupIndex = ui.eventGroups.index(gid)
+            group = ui.eventGroups[gid]
+            groupIter = self.trees.get_iter((groupIndex,))
+            for i, value in enumerate(self.getGroupRow(group)):
+                self.trees.set_value(groupIter, i, value)
+        ui.changedGroups = []
+    def onShow(self, widget):
+        self.onConfigChange()
+    def __init__(self, mainWin=None):
         gtk.Dialog.__init__(self)
+        self.mainWin = mainWin
+        self.isLoaded = False
         self.set_title(_('Event Manager'))
         self.resize(600, 300)
         self.connect('delete-event', self.onDeleteEvent)
@@ -358,6 +305,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         menu.popup(None, None, None, 3, etime)
     def onTreeviewRealize(self, event):
         self.reloadEvents()## FIXME
+        self.isLoaded = True
     def onRowActivated(self, treev, path, col):
         if len(path)==1:
             if self.treev.row_expanded(path):
@@ -507,8 +455,6 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         group = GroupEditorDialog(group).run()
         if group is None:
             return
-        group.saveConfig()## FIXME
-        #self.reloadEvents()## perfomance FIXME
         groupIter = self.trees.get_iter(path)
         for i, value in enumerate(self.getGroupRow(group, self.getRowBgColor())):
             self.trees.set_value(groupIter, i, value)
@@ -529,7 +475,6 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         ).run()
         if event is None:
             return
-        event.saveConfig()
         group.append(event)
         group.saveConfig()
         self.trees.append(
@@ -552,11 +497,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
     editEventFromMenu = lambda self, menu, path: self.editEventByPath(path)
     def moveEventToTrash(self, menu, path):
         (group, event) = self.getObjsByPath(path)
-        group.excludeEvent(event.eid)
-        group.saveConfig()
-        ui.eventTrash.insert(0, event)
-        ## ui.eventTrash.append(event)## FIXME
-        ui.eventTrash.saveConfig()
+        ui.moveEventToTrash(group, event)
         self.trees.remove(self.trees.get_iter(path))
         self.trees.insert(
             self.trashIter,
@@ -611,8 +552,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 parentObj.saveConfig()
             else:
                 ## move event to end of previous group
-                if parentObj.name == 'trash':
-                    return
+                #if parentObj.name == 'trash':
+                #    return
                 if parentIndex < 1:
                     return
                 newParentIter = self.trees.get_iter((parentIndex - 1))
@@ -760,7 +701,13 @@ class EventManagerDialog(gtk.Dialog):## FIXME
 
 def makeWidget(obj):## obj is an instance of Event or EventRule or EventNotifier
     if hasattr(obj, 'WidgetClass'):
-        return obj.WidgetClass(obj)
+        widget = obj.WidgetClass(obj)
+        try:
+            widget.show_all()
+        except AttributeError:
+            widget.show()
+        widget.updateWidget()## FIXME
+        return widget
     else:
         return None
 
