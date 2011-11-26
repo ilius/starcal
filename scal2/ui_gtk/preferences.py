@@ -1598,6 +1598,17 @@ class PrefDialog(gtk.Dialog):
     def plugTreevButtonPress(self, widget, event):
         b = event.button
         #print 'plugTreevButtonPress', b
+        if b==3:
+            cur = treev.get_cursor()[0]
+            if cur:
+                i = cur[0]
+                j = self.plugTreestore[i][0]
+                plug = core.allPlugList[j]
+                menu = gtk.Menu()
+                #labelStockMenuItem('_Configure', gtk.STOCK_PREFERENCES, self.showCustomDay)
+                #bool(plug.about)
+            return True
+        return False
     def plugAddClicked(self, button):
         ## ???????????????????????????
         ## Reize window to show all texts
