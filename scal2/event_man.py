@@ -20,6 +20,8 @@
 import time, json, random, os, shutil
 from os.path import join, split, isdir, isfile
 from os import listdir
+from collections import OrderedDict
+
 from paths import *
 
 from scal2.utils import arange, ifloor, iceil, IteratorFromGen
@@ -700,6 +702,8 @@ class Event(EventBaseClass):
     requiredRules = ()
     supportedRules = None
     requiredNotifiers = ()
+    def clearRules(self):
+        self.rulesOd = OrderedDict()
     def __init__(self, eid=None):
         self.setId(eid)
         self.group = None
@@ -711,11 +715,11 @@ class Event(EventBaseClass):
         self.showInTimeLine = False ## FIXME
         self.files = []
         ######
-        self.rules = []
+        self.clearRules()
         self.notifiers = []
         self.checkRequirements()
         self.setDefaults()
-    __nonzero__ = lambda self: bool(self.rules) ## FIXME
+    __nonzero__ = lambda self: bool(self.rulesOd) ## FIXME
     def getInfo(self):
         lines = []
         rulesDict = self.getRulesDict()
@@ -746,10 +750,9 @@ class Event(EventBaseClass):
             lines.append(rule.getInfo())
         return '\n'.join(lines)
     def checkRequirements(self):
-        ruleNames = (rule.name for rule in self.rules)
         for name in self.requiredRules:
-            if not name in ruleNames:
-                self.rules.append(eventRulesClassDict[name](self))
+            if not name in self.rulesOd:
+                self.addNewRule(name)
         notifierNames = (notifier.name for notifier in self.notifiers)
         for name in self.requiredNotifiers:
             if not name in notifierNames:
@@ -769,15 +772,14 @@ class Event(EventBaseClass):
         self.files = other.files
         ######
         if self.supportedRules is None:
-            self.rules = other.rules[:]
+            self.rulesOd = other.rulesOd.copy()
         else:
-            rulesDict = self.getRulesDict()
-            for rule in other.rules:
-                if rule.name in self.supportedRules:
+            for ruleName, rule in other.rulesOd.items():
+                if ruleName in self.supportedRules:
                     try:
-                        rulesDict[rule.name].copyFrom(rule)
+                        self.rulesOd[ruleName].copyFrom(rule)
                     except KeyError:
-                        self.rules.append(rule)
+                        self.addRule(rule)
         self.notifiers = other.notifiers[:]## FIXME
         self.checkRequirements()
     def loadFiles(self):
@@ -837,11 +839,11 @@ class Event(EventBaseClass):
             else:
                 raise ValueError('Invalid calType: %r'%calType)
         ####
-        self.rules = []
-        for (rule_name, rule_data) in data['rules']:
-            rule = eventRulesClassDict[rule_name](self)
-            rule.setData(rule_data)
-            self.rules.append(rule)
+        self.clearRules()
+        for (ruleName, ruleData) in data['rules']:
+            rule = eventRulesClassDict[ruleName](self)
+            rule.setData(ruleData)
+            self.addRule(rule)
         ####
         self.notifiers = []
         if 'notifiers' in data:
@@ -862,38 +864,41 @@ class Event(EventBaseClass):
         jsonStr = open(self.eventFile).read()
         if jsonStr:
             self.setJson(jsonStr)## FIXME
-    def addRule(self, rule):
+    __iter__ = lambda self: self.rulesOd.itervalues()
+    addRule = lambda self, rule: self.rulesOd.__setitem__(rule.name, rule)
+    addNewRule = lambda self, ruleType: self.addRule(eventRulesClassDict[ruleType](self))
+    def checkAndAddRule(self, rule):
         (ok, msg) = self.checkRulesDependencies(newRule=rule)
         if ok:
-            self.rules.append(rule)
+            self.addRule(rule)
         return (ok, msg)
-    def removeRule(self, rule):
+    removeRule = lambda self, rule: self.rulesOd.__delitem__(rule.name)
+    def checkAndRemoveRule(self, rule):
         (ok, msg) = self.checkRulesDependencies(disabledRule=rule)
         if ok:
-            self.rules.remove(rule)
+            self.removeRule(rule)
         return (ok, msg)
     def checkRulesDependencies(self, newRule=None, disabledRule=None, autoCheck=True):
-        rules = self.rules[:]
+        rulesOd = self.rulesOd.copy()
         if newRule:
-            rules.append(newRule)
+            rulesOd[newRule.name] = newRule
         if disabledRule:
             #try:
-            rules.remove(disabledRule)
+            del rulesOd[disabledRule.name]
             #except:
             #    pass
-        rulesDict = dict([(rule.name, rule) for rule in rules])
         provideList = []
-        for rule in rules:
-            provideList.append(rule.name)
+        for ruleName, rule in rulesOd.items():
+            provideList.append(ruleName)
             provideList += rule.provide
-        for rule in rules:
+        for rule in rulesOd.values():
             for conflictName in rule.conflict:
                 if conflictName in provideList:
                     return (False, '%s "%s" %s "%s"'%(
                         _('Conflict between'),
                         _(rule.desc),
                         _('and'),
-                        _(rulesDict[conflictName].desc),
+                        _(rulesOd[conflictName].desc),
                     ))
             for needName in rule.need:
                 if not needName in provideList:
@@ -901,43 +906,32 @@ class Event(EventBaseClass):
                     return (False, '"%s" %s "%s"'%(
                         _(rule.desc),
                         _('needs'),
-                        _(needName), #_(rulesDict[needName].desc)
+                        _(needName), #_(rulesOd[needName].desc)
                     ))
         return (True, '')
-    getRulesData = lambda self: [(rule.name, rule.getData()) for rule in self.rules]
-    getRulesDict = lambda self: dict([(rule.name, rule) for rule in self.rules])
-    getRuleNames = lambda self: [rule.name for rule in self.rules]
+    getRulesData = lambda self: [(rule.name, rule.getData()) for rule in self.rules.values]
+    getRulesDict = lambda self: self.rulesOd
+    getRuleNames = lambda self: self.rulesOd.keys()
     def __getitem__(self, ruleType):## or getRule
-        for rule in self.rules:
-            if rule.name == ruleType:
-                return rule
+        #try:
+        return self.rulesOd[ruleType]
+        #except:
+        #   return self.group.rulesOd[ruleType]
     getNotifiersData = lambda self: [(notifier.name, notifier.getData()) for notifier in self.notifiers]
     getNotifiersDict = lambda self: dict(self.getNotifiersData())
     def removeSomeRuleTypes(self, *rmTypes):
-        rules2 = []
-        for rule in self.rules:
-            if not rule.name in rmTypes:
-                rules2.append(rule)
-        self.rules = rules2
+        for ruleType in rmTypes:
+            del self.rulesOd[ruleType]
     def calcOccurrenceForJdRange(self, startJd, endJd):## float jd ## cache Occurrences ## FIXME
-        if not self.rules:
+        if not self.rulesOd:
             return []
         startEpoch = getEpochFromJd(startJd)
         endEpoch = getEpochFromJd(endJd)
-        rulesDict = self.getRulesDict()
-        occur = self.rules[0].calcOccurrence(startEpoch, endEpoch, rulesDict)
-        if not hasattr(occur, 'intersection'):
-            print self.rules[0].name, occur.__class__.__name__, occur #dir(occur)
-            raise
-        #if self.eid==3:
-        #    print 'occur = %r\n\n'%occur
-        for rule in self.rules[1:]:
-            #if self.eid==3:
-            #    print 'occur = %r'%occur
-            #    print 'occur intersection with %r'%rule.calcOccurrence(startEpoch, endEpoch, rulesDict)
+        rulesDict = self.rulesOd
+        rules = self.rulesOd.values()
+        occur = rules[0].calcOccurrence(startEpoch, endEpoch, rulesDict)
+        for rule in rules[1:]:
             occur = occur.intersection(rule.calcOccurrence(startEpoch, endEpoch, rulesDict))
-        #if self.eid==3:
-        #    print 'final occur = %r\n\n'%occur
         occur.event = self
         return occur ## FIXME
     def notify(self, finishFunc):
@@ -1047,10 +1041,10 @@ class TaskEvent(Event):
             (rule.value, rule.unit) = values
         else:
             raise ValueError('invalid endType=%r'%endType)
-        self.rules.append(rule)
+        self.addRule(rule)
     def removeEnd(self):
         try:
-            self.rules.remove(self['end'])
+            del self.rulesOd['end']
         except:
             pass
     def getStart(self):

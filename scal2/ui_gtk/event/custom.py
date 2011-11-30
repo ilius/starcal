@@ -90,7 +90,7 @@ class EventWidget(common.EventWidget):
         for hbox in self.rulesBox.get_children():
             hbox.destroy()
         comboItems = [ruleClass.name for ruleClass in event_man.eventRulesClassList]
-        for rule in self.event.rules:
+        for rule in self.event:
             hbox = self.makeRuleHbox(rule)
             self.rulesBox.pack_start(hbox, 0, 0)
             #hbox.show_all()
@@ -100,10 +100,10 @@ class EventWidget(common.EventWidget):
             self.addRuleModel.append((ruleName, event_man.eventRulesClassDict[ruleName].desc))
         self.addRuleComboChanged()
     def updateRules(self):
-        self.event.rules = []
+        self.event.clearRules()
         for hbox in self.rulesBox.get_children():
             hbox.inputWidget.updateVars()
-            self.event.rules.append(hbox.inputWidget.rule)
+            self.event.addRule(hbox.inputWidget.rule)
     def updateWidget(self):
         common.EventWidget.updateWidget(self)
         self.addRuleModel.clear()
@@ -126,7 +126,7 @@ class EventWidget(common.EventWidget):
         self.warnLabel.set_label(msg)
         if not ok:
             return
-        self.event.rules.remove(rule)
+        self.event.checkAndRemoveRule(rule)
         ####
         self.addRuleModel.append((rule.name, rule.desc))
         ####
@@ -147,7 +147,7 @@ class EventWidget(common.EventWidget):
             return
         ruleName = self.addRuleModel[ci][0]
         rule = event_man.eventRulesClassDict[ruleName](self.event)
-        (ok, msg) = self.event.addRule(rule)
+        (ok, msg) = self.event.checkAndAddRule(rule)
         if not ok:
             return
         hbox = self.makeRuleHbox(rule)
