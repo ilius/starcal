@@ -42,7 +42,7 @@ class EventWidget(common.EventWidget):
     def updateVars(self):## FIXME
         common.EventWidget.updateVars(self)
         self.event.setMonth(self.monthCombo.get_active()+1)
-        self.event.setDay(self.daySpin.get_value())
+        self.event.setDay(int(self.daySpin.get_value()))
     def modeComboChanged(self, combo):## FIXME
         module = core.modules[combo.get_active()]
         monthCombo = self.monthCombo

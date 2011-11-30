@@ -192,7 +192,7 @@ class MultiSpinButton(gtk.SpinButton):
         for i in range(self.size):
             uni = u''
             try:
-                n = ints[i]
+                n = int(ints[i])
             except:
                 n = self.mins[i]
             for j in range(self.fields[i]):
