@@ -23,7 +23,7 @@ from os import listdir
 from paths import *
 
 from scal2.utils import arange, ifloor, iceil, IteratorFromGen
-from scal2.time_utils import encodeDuration, decodeDuration
+from scal2.time_utils import *
 from scal2.color_utils import hslToRgb
 
 from scal2.locale_man import tr as _
@@ -46,46 +46,6 @@ makeDir(groupsDir)
 
 class BadEventFile(Exception):## FIXME
     pass
-
-
-def dateEncode(date):
-    return '%.4d/%.2d/%.2d'%tuple(date)
-
-def timeEncode(tm, checkSec=False):
-    if checkSec:
-        if len(tm)==3 and tm[2]>0:
-            return '%.2d:%.2d:%.2d'%tuple(tm)
-        else:
-            return '%.2d:%.2d'%tuple(tm[:2])
-    else:
-        return '%.2d:%.2d:%.2d'%tuple(tm)
-
-def dateDecode(st):
-    parts = st.split('/')
-    if len(parts)!=3:
-        raise ValueError('bad date %s'%st)
-    try:
-        date = tuple([int(p) for p in parts])
-    except ValueError:
-        raise ValueError('bad date %s'%st)
-    return date
-
-def timeDecode(st):
-    parts = st.split(':')
-    try:
-        tm = tuple([int(p) for p in parts])
-    except ValueError:
-        raise ValueError('bad time %s'%st)
-    if len(tm)==1:
-        tm += (0, 0)
-    elif len(tm)==2:
-        tm += (0,)
-    elif len(tm)!=3:
-        raise ValueError('bad time %s'%st)
-    return tm
-
-
-hmsRangeToStr = lambda h1, m1, s1, h2, m2, s2: timeEncode((h1, m1, s1), True) + ' - ' + timeEncode((h2, m2, s2), True)
 
 
 def makeCleanTimeRangeList(timeRangeList):
@@ -307,7 +267,7 @@ class TimeListOccurrence(Occurrence):
 
 
 class EventRule(EventBaseClass):
-    name = 'custom'## or 'event' or '' FIXME
+    name = 'custom'## or 'rule' or '' FIXME
     desc = _('Custom Event Rule')## FIXME
     provide = ()
     need = ()
@@ -536,7 +496,7 @@ class DayTimeRangeEventRule(EventRule):## use for UniversityClassEvent
         return (timeEncode(self.dayTimeStart), timeEncode(self.dayTimeEnd))
     def setData(self, data):
         self.dayTimeStart = timeDecode(data[0])
-        self.dayTimeEnd = timeEncode(data[1])
+        self.dayTimeEnd = timeDecode(data[1])
     def calcOccurrence(self, startEpoch, endEpoch, rulesDict):
         daySecStart = getSecondsFromHms(*self.dayTimeStart)
         daySecEnd = getSecondsFromHms(*self.dayTimeEnd)
@@ -609,10 +569,10 @@ class DurationEventRule(EventRule):
     getSeconds = lambda self: self.value * self.unit
     def setData(self, data):
         try:
-            (self.value, self.unit) = decodeDuration(data)
+            (self.value, self.unit) = durationDecode(data)
         except Exception, e:
             log.error('Error while loading event rule "%s": %s'%(self.name, e))
-    getData = lambda self: encodeDuration(self.value, self.unit)
+    getData = lambda self: durationEncode(self.value, self.unit)
     def calcOccurrence(self, startEpoch, endEpoch, rulesDict):
         endEpoch = min(endEpoch, rulesDict['start'].getEpoch() + self.getSeconds())
         if startEpoch >= endEpoch:## how about startEpoch==endEpoch FIXME
@@ -666,7 +626,7 @@ class CycleLenEventRule(EventRule):
 
 
 class EventNotifier(EventBaseClass):
-    name = 'custom'## FIXME
+    name = 'custom'## or 'notifier' or '' FIXME
     desc = _('Custom Event Notifier')## FIXME
     params = ()
     def __init__(self, event):
@@ -734,7 +694,7 @@ class CommandNotifier(EventNotifier):
     
 
 class Event(EventBaseClass):
-    name = 'custom'
+    name = 'custom'## or 'event' or '' FIXME
     desc = _('Custom Event')
     defaultIconName = ''
     requiredRules = ()
@@ -742,6 +702,7 @@ class Event(EventBaseClass):
     requiredNotifiers = ()
     def __init__(self, eid=None):
         self.setId(eid)
+        self.group = None
         self.mode = core.primaryMode
         self.icon = '' ## to show in calendar
         self.summary = self.desc + ' (' + _(self.eid) + ')'
@@ -862,8 +823,10 @@ class Event(EventBaseClass):
         if 'id' in data:
             self.setId(data['id'])
         for attr in ('icon', 'summary', 'description'):
-            if attr in data:
+            try:
                 setattr(self, attr, data[attr])
+            except KeyError:
+                pass
         ####
         if 'calType' in data:
             calType = data['calType']
@@ -1008,6 +971,13 @@ class YearlyEvent(Event):
         (y, m, d) = core.getSysDate(self.mode)
         self.setMonth(m)
         self.setDay(d)
+    def copyFrom(self, other):
+        Event.copyFrom(self, other)
+        otherRulesDict = other.getRulesDict()
+        if 'start' in otherRulesDict:
+            (y, m, d) = otherRulesDict['start'].date
+            self.setMonth(m)
+            self.setDay(d)
     def calcOccurrenceForJdRange(self, startJd, endJd):## float jd
         mode = self.mode
         month = self.getMonth()
@@ -1039,6 +1009,11 @@ class DailyNoteEvent(YearlyEvent):
         self.setDay(day)
     def setDefaults(self):
         self.setDate(*core.getSysDate(self.mode))
+    def copyFrom(self, other):
+        Event.copyFrom(self, other)
+        otherRulesDict = other.getRulesDict()
+        if 'start' in otherRulesDict:
+            self.setDate(*otherRulesDict['start'].date)
     def calcOccurrenceForJdRange(self, startJd, endJd):## float jd
         jd = self.getJd()
         return JdListOccurrence([jd] if startJd <= jd < endJd else [])
@@ -1123,6 +1098,22 @@ class TaskEvent(Event):
             value, unit = group.defaultDuration
             if value > 0:
                 self.setEnd('duration', value, unit)
+    def copyFrom(self, other):
+        Event.copyFrom(self, other)
+        myStartRule = self['start']
+        otherRulesDict = other.getRulesDict()
+        ##
+        date = list(myStartRule.date)
+        if 'year' in otherRulesDict:
+            date[0] = otherRulesDict['year'].year
+        if 'month' in otherRulesDict:
+            date[1] = otherRulesDict['month'].month
+        if 'day' in otherRulesDict:
+            date[2] = otherRulesDict['day'].day
+        myStartRule.date = tuple(date)
+        ##
+        if 'dayTime' in otherRulesDict:
+            myStartRule.time = otherRulesDict['dayTime'].dayTime
     def calcOccurrenceForJdRange(self, startJd, endJd):
         startEpoch = max(getEpochFromJd(startJd), self.getStartEpoch())
         endEpoch = getEpochFromJd(endJd)
@@ -1150,12 +1141,16 @@ class TaskEvent(Event):
 
 
 class UniversityClassEvent(Event):## FIXME
-    ## start, end, weekDay, weekNumberMode, dayTime --- notifierName='alarm' --- showInTimeLine
     name = 'universityClass'
     desc = _('University Class')
     defaultIconName = 'university'
-    #requiredRules = 
-    #supportedRules = 
+    requiredRules  = ('weekNumMode', 'weekDay', 'dayTimeRange',)
+    supportedRules = ('weekNumMode', 'weekDay', 'dayTimeRange',)
+    def __init__(self, eid=None):
+        ## assert group is not None ## FIXME
+        Event.__init__(self, eid)
+        self.courseId = None ## FIXME
+
 
 class EventContainer(EventBaseClass):
     name = ''
@@ -1195,9 +1190,11 @@ class EventContainer(EventBaseClass):
 class EventGroup(EventContainer):
     name = 'group'
     desc = _('Event Group')
-    acceptsEventTypes = None ## None means all event types
+    acceptsEventTypes = ('yearly', 'dailyNote', 'task', 'custom')
     actions = []## [('Export to CSV', 'exportCsv')]
     eventActions = [] ## FIXME
+    def checkEventToAdd(self, event):
+        return event.name in self.acceptsEventTypes
     def __init__(self, gid=None, title=None):
         EventContainer.__init__(self)
         self.setId(gid)
@@ -1207,11 +1204,10 @@ class EventGroup(EventContainer):
         self.title = title
         self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)## FIXME
         self.defaultIcon = ''
-        if self.acceptsEventTypes:
-            if len(self.acceptsEventTypes)==1:
-                defaultIconName = eventsClassDict[self.acceptsEventTypes[0]].defaultIconName
-                if defaultIconName:
-                    self.defaultIcon = join(pixDir, 'event', defaultIconName+'.png')
+        if len(self.acceptsEventTypes)==1:
+            defaultIconName = eventsClassDict[self.acceptsEventTypes[0]].defaultIconName
+            if defaultIconName:
+                self.defaultIcon = join(pixDir, 'event', defaultIconName+'.png')
         self.defaultEventType = 'custom'
         self.defaultMode = core.primaryMode
         self.eventCacheSize = 0
@@ -1241,8 +1237,10 @@ class EventGroup(EventContainer):
         if 'id' in data:
             self.setId(data['id'])
         for attr in ('enable', 'title', 'color', 'defaultIcon', 'eventCacheSize', 'eventIds'):
-            if attr in data:
+            try:
                 setattr(self, attr, data[attr])
+            except KeyError:
+                pass
         ####
         if 'defaultEventType' in data:
             self.defaultEventType = data['defaultEventType']
@@ -1271,8 +1269,15 @@ class EventGroup(EventContainer):
         if eid in self.eventCache:
             return self.eventCache[eid]
         event = EventContainer.getEvent(self, eid)
+        event.group = self
         if len(self.eventCache) < self.eventCacheSize:
             self.eventCache[eid] = event
+        return event
+    def createEvent(self, eventType):
+        assert eventType in self.acceptsEventTypes
+        event = eventsClassDict[eventType]()
+        event.group = self
+        event.setDefaultsFromGroup(self)
         return event
     def excludeEvent(self, eid):## call when moving to trash
         index = EventContainer.excludeEvent(self, eid)
@@ -1292,6 +1297,20 @@ class EventGroup(EventContainer):
         self.eventIds.append(event.eid)
         if len(self.eventCache) < self.eventCacheSize:
             self.eventCache[event.eid] = event
+    def updateCache(self, event):
+        if event.eid in self.eventCache:
+            self.eventCache[event.eid] = event
+    def copy(self):
+        newGroup = EventBaseClass.copy(self)
+        newGroup.excludeAll()
+        return newGroup
+    def deepCopy(self):
+        newGroup = self.copy()
+        for event in self:
+            newEvent = event.copy()
+            newEvent.saveConfig()
+            newGroup.append(newEvent)
+        return newGroup
     def exportToIcs(self, fpath, startJd, endJd):
         from scal2.ics import icsTmFormat, icsHeader, getIcsTimeByEpoch
         from time import strftime
@@ -1330,6 +1349,7 @@ class EventGroup(EventContainer):
         open(fpath, 'w').write(icsText)
 
 
+
 ## TaskList, NoteBook, UniversityTerm, EventGroup
 
 class TaskList(EventGroup):
@@ -1344,14 +1364,13 @@ class TaskList(EventGroup):
     def getData(self):
         data = EventGroup.getData(self)
         data.update({
-            'defaultDuration': encodeDuration(*self.defaultDuration),
+            'defaultDuration': durationEncode(*self.defaultDuration),
         })
         return data
     def setData(self, data):
         EventGroup.setData(self, data)
         if 'defaultDuration' in data:
-            self.defaultDuration = decodeDuration(data['defaultDuration'])
-
+            self.defaultDuration = durationDecode(data['defaultDuration'])
 
 class NoteBook(EventGroup):
     name = 'noteBook'
@@ -1359,11 +1378,49 @@ class NoteBook(EventGroup):
     acceptsEventTypes = ('dailyNote',)
     #actions = EventGroup.actions + []
 
+
 class UniversityTerm(EventGroup):
     name = 'universityTerm'
     desc = _('University Term')
     acceptsEventTypes = ('universityClass',)
     #actions = EventGroup.actions + []
+    def __init__(self, gid=None, title=None):
+        EventGroup.__init__(self, gid, title)
+        self.startJd = core.getCurrentJd() ## FIXME
+        self.endJd = self.startJd
+        self.courses = [] ## list of (courseId, courseName, courseUnits)
+        self.lastCourseId = max([1]+[course[0] for course in self.courses])
+        self.classTimeBounds = [
+            (8, 0),
+            (10, 0),
+            (12, 0),
+            (14, 0),
+            (16, 0),
+            (18, 0),
+        ] ## FIXME
+    def getNewCourseID(self):
+        self.lastCourseId += 1
+        return self.lastCourseId
+    def getData(self):
+        data = EventGroup.getData(self)
+        data.update({
+            'classTimeBounds': [hmEncode(hm) for hm in self.classTimeBounds],
+        })
+        for attr in ('startJd', 'endJd', 'courses'):
+            data.update({attr: getattr(self, attr)})
+        return data
+    def setData(self, data):
+        EventGroup.setData(self, data)
+        ##
+        if 'classTimeBounds' in data:
+            self.classTimeBounds = sorted([hmDecode(hm) for hm in data['classTimeBounds']])
+        ##
+        for attr in ('startJd', 'endJd', 'courses', 'classTimeBounds'):
+            try:
+                setattr(self, attr, data[attr])
+            except KeyError:
+                pass
+
 
 class EventGroupsHolder:
     def __init__(self):
@@ -1889,12 +1946,14 @@ eventRulesClassList = [
     WeekDayEventRule,
     CycleDaysEventRule,
     DayTimeEventRule,
+    DayTimeRangeEventRule,
     StartEventRule,
     EndEventRule,
     DurationEventRule,
     CycleLenEventRule,
 ]
 eventRulesClassDict = dict([(cls.name, cls) for cls in eventRulesClassList])
+eventRulesClassByDesc = dict([(cls.desc, cls) for cls in eventRulesClassList])
 
 eventNotifiersClassList = [
     AlarmNotifier,

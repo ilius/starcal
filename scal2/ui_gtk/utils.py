@@ -2,6 +2,7 @@ from scal2.locale_man import tr as _
 from scal2.utils import myRaise
 from scal2.paths import pixDir
 
+from scal2 import core
 from scal2 import ui
 
 import os
@@ -51,6 +52,7 @@ def set_tooltip(widget, text):
         except:
             myRaise(__file__)
 
+buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter())
 
 #if hasattr(gtk, 'image_new_from_file'):
 #    imageFromFile = gtk.image_new_from_file
@@ -162,6 +164,47 @@ def confirm(msg, parent=None):
     win.destroy()
     return ok
 
+def showError(msg, parent=None):
+    win = gtk.MessageDialog(
+        parent=parent,
+        flags=0,
+        type=gtk.MESSAGE_ERROR,
+        buttons=gtk.BUTTONS_NONE,
+        message_format=msg,
+    )
+    closeB = win.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_OK)
+    if ui.autoLocale:
+        closeB.set_label(_('_Close'))
+        closeB.set_image(gtk.image_new_from_stock(gtk.STOCK_CLOSE, gtk.ICON_SIZE_BUTTON))
+    win.run()
+    win.destroy()
+
+
+class WeekDayComboBox(gtk.ComboBox):
+    def __init__(self):
+        ls = gtk.ListStore(str)
+        gtk.ComboBox.__init__(self, ls)
+        self.firstWeekDay = core.firstWeekDay
+        ###
+        cell = gtk.CellRendererText()
+        self.pack_start(cell, True)
+        self.add_attribute(cell, 'text', 0)
+        ###
+        for i in range(7):
+            ls.append([core.weekDayName[(i+self.firstWeekDay)%7]])
+        self.set_active(0)
+    def getValue(self):
+        return self.firstWeekDay + self.get_active()
+    def setValue(self, value):
+        self.set_active((value-self.firstWeekDay)%7)
+
+
+
+
+
+
+
+        
 
 
 

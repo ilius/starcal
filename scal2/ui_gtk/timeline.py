@@ -282,7 +282,7 @@ class TimeLine(gtk.Widget):
         return False
     def editEventClicked(self, menu, winTitle, event, gid):
         event = EventEditorDialog(
-            event=event,
+            event,
             title=winTitle,
             #parent=self,## FIXME
         ).run()

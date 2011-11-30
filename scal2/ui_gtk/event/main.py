@@ -34,7 +34,7 @@ import gtk
 from gtk import gdk
 
 
-from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile, rectangleContainsPoint, \
+from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile, rectangleContainsPoint, showError,\
                                labelStockMenuItem, labelImageMenuItem, confirm, toolButtonFromStock, set_tooltip
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
@@ -103,6 +103,10 @@ class TrashEditorDialog(gtk.Dialog):
 
 
 class EventManagerDialog(gtk.Dialog):## FIXME
+    def checkEventToAdd(self, group, event):
+        if not group.checkEventToAdd(event):
+            showError(_('Group type "%s" can not contain event type "%s"')%(group.desc, event.desc), self)
+            raise RuntimeError('Invalid event type for this group')
     def onResponse(self, win, event):
         self.hide()
         if self.mainWin:
@@ -247,11 +251,10 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 if eventTypes is None:
                     eventTypes = event_man.eventsClassNameList
                 for eventType in eventTypes:
-                    if eventType == 'custom':## FIXME
-                        eventType = ''
-                        desc = _('Event')
-                    else:
-                        desc = event_man.eventsClassDict[eventType].desc
+                    #if eventType == 'custom':## FIXME
+                    #    desc = _('Event')
+                    #else:
+                    desc = event_man.eventsClassDict[eventType].desc
                     menu.add(labelStockMenuItem(
                         _('Add ') + desc,
                         gtk.STOCK_ADD,
@@ -267,6 +270,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 ##
                 menu.add(gtk.SeparatorMenuItem())
                 menu.add(labelStockMenuItem('Add New Group', gtk.STOCK_NEW, self.addGroupAfterGroup, path))
+                menu.add(labelStockMenuItem('Duplicate', gtk.STOCK_NEW, self.duplicateGroup, path, group))
+                menu.add(labelStockMenuItem('Duplicate with All Events', gtk.STOCK_NEW, self.duplicateGroupWithEvents, path, group))
                 menu.add(gtk.SeparatorMenuItem())
                 menu.add(labelStockMenuItem('Delete Group', gtk.STOCK_DELETE, self.deleteGroup, path))
                 ##
@@ -456,6 +461,32 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             afterGroupIter,## sibling
             self.getGroupRow(group, self.getRowBgColor()), ## row
         )
+    def duplicateGroup(self, menu, path, group):
+        (index,) = path
+        newGroup = group.copy()
+        ui.duplicateGroupTitle(newGroup)
+        newGroup.saveConfig()
+        ui.eventGroups.insert(index+1, newGroup)
+        ui.eventGroups.saveConfig()
+        self.trees.insert(
+            None,
+            index+1,
+            self.getGroupRow(newGroup, self.getRowBgColor()),
+        )
+    def duplicateGroupWithEvents(self, menu, path, group):
+        (index,) = path
+        newGroup = group.deepCopy()
+        ui.duplicateGroupTitle(newGroup)
+        newGroup.saveConfig()
+        ui.eventGroups.insert(index+1, newGroup)
+        ui.eventGroups.saveConfig()
+        newGroupIter = self.trees.insert(
+            None,
+            index+1,
+            self.getGroupRow(newGroup, self.getRowBgColor()),
+        )
+        for event in newGroup:
+            self.trees.append(newGroupIter, self.getEventRow(event))
     def editGroup(self, menu, path, group):
         group = GroupEditorDialog(group).run()
         if group is None:
@@ -472,9 +503,10 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         self.trees.remove(self.trees.get_iter(path))
         self.reloadEvents()## FIXME
     def addEventToGroupFromMenu(self, menu, path, group, eventType, title):
+        event = group.createEvent(eventType)
         event = EventEditorDialog(
-            eventType=eventType,
-            group=group,
+            event,
+            eventTypeChangable=(eventType=='custom'),## or True FIXME
             title=title,
             parent=self,
         ).run()
@@ -489,7 +521,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
     def editEventByPath(self, path):
         (group, event) = self.getObjsByPath(path)
         event = EventEditorDialog(
-            event=event,
+            event,
             title=_('Edit ')+event.desc,
             parent=self,
         ).run()
@@ -566,6 +598,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 if newParentId==-1:## could not be!
                     return
                 newGroup = ui.eventGroups[newParentId]
+                self.checkEventToAdd(newGroup, event)
                 self.trees.remove(srcIter)
                 eventNewPath = self.trees.get_path(self.trees.append(
                     newParentIter,## parent
@@ -609,6 +642,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 if newParentId==-1:
                     return
                 newGroup = ui.eventGroups[newParentId]
+                self.checkEventToAdd(newGroup, event)
                 self.trees.remove(srcIter)
                 eventNewPath = self.trees.get_path(self.trees.insert(
                     newParentIter,## parent
@@ -648,6 +682,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         (srcPath, move) = self.toPasteEvent
         (srcGroup, srcEvent) = self.getObjsByPath(srcPath)
         (tarGroup, tarEvent) = self.getObjsByPath(tarPath)
+        self.checkEventToAdd(tarGroup, srcEvent)
         tarGroupIter = self.trees.get_iter(tarPath[:1])
         tarEventIter = self.trees.get_iter(tarPath)
         # tarEvent is not used
@@ -677,6 +712,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         (srcPath, move) = self.toPasteEvent
         (srcGroup, srcEvent) = self.getObjsByPath(srcPath)
         (tarGroup,) = self.getObjsByPath(tarPath)
+        self.checkEventToAdd(tarGroup, srcEvent)
         tarGroupIter = self.trees.get_iter(tarPath)
         ###
         if move:

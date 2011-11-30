@@ -4,7 +4,7 @@ import os, string
 from os.path import join, isfile, isdir
 import locale, gettext
 from paths import *
-from scal2.utils import StrOrderedDict, toStr
+from scal2.utils import StrOrderedDict, toStr, toUnicode
 from scal2.cal_modules import modules
 
 
@@ -20,6 +20,8 @@ digits = {
     'hi':(u'०', u'१', u'२', u'३', u'४', u'५', u'६', u'७', u'८', u'९', u'.'),## point FIXME
     'th':(u'๐', u'๑', u'๒', u'๓', u'๔', u'๕', u'๖', u'๗', u'๘', u'๙', u'.'),## point FIXME
 }
+
+
 
 ## ar: Aarbic   ar_*    Arabic-indic                       Arabic Contries
 ## fa: Persian  fa_IR   Eastern (Extended) Arabic-indic    Iran & Afghanintan
@@ -176,6 +178,31 @@ def numLocale(num, mode=None, fillZero=0, negEnd=False):
         else:
             res = '-' + res
     return res
+
+def localeNumDecode(numSt):
+    try:
+        return int(numSt)
+    except ValueError:
+        pass
+    numSt = toUnicode(numSt)
+    tryLangs = digits.keys()
+    if langSh in digits:
+        tryLangs.remove(langSh)
+        tryLangs.insert(0, langSh)
+    for tryLang in tryLangs:
+        tryLangDigits = digits[tryLang]
+        numEn = ''
+        for dig in numSt:
+            try:
+                numEn += str(tryLangDigits.index(dig))
+            except ValueError:
+                break
+        else:
+            return int(numEn)
+    raise ValueError('invalid locale number %s'%numSt)
+        
+        
+    
 
 def dateLocale(year, month, day):
     return numLocale(year, fillZero=4) + '/' + numLocale(month, fillZero=2) + '/' + numLocale(day, fillZero=2)

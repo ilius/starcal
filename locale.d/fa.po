@@ -768,6 +768,14 @@ msgid "Paste"
 msgstr ""
 "چسباندن"
 
+msgid "Duplicate"
+msgstr ""
+"دوتا کردن"
+
+msgid "Duplicate with All Events"
+msgstr ""
+"دوتا کردن با تمام رویدادها"
+
 msgid "Paste Event"
 msgstr ""
 "چسباندن رویداد"
@@ -788,6 +796,30 @@ msgid "University Term"
 msgstr ""
 "ترم دانشگاه"
 
+msgid "Course List"
+msgstr ""
+"لیست درس‌ها"
+
+msgid "Course Name"
+msgstr ""
+"نام درس"
+
+msgid "Course Units"
+msgstr ""
+"واحدهای درس"
+
+msgid "Units"
+msgstr ""
+"واحدها"
+
+
+msgid "New Course"
+msgstr ""
+"درس جدید"
+
+msgid "Class Time Bounds"
+msgstr ""
+"مرز زمان کلاس‌ها"
 
 msgid "Add Group"
 msgstr ""
@@ -885,6 +917,10 @@ msgstr ""
 msgid " Weeks"
 msgstr ""
 " هفته"
+
+msgid "Group type \"%s\" can not contain event type \"%s\""
+msgstr ""
+"نوع گروه «%s» نمی‌تواند شامل نوع رویداد «%s» باشد"
 
 
 

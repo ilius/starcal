@@ -69,7 +69,7 @@ class DayOccurrenceView(event_man.DayOccurrenceView, gtk.VBox):
         menu.popup(None, None, None, 3, 0)
     def editEventClicked(self, item, winTitle, event, group_id):
         event = EventEditorDialog(
-            event=event,
+            event,
             title=winTitle,
             #parent=self,## FIXME
         ).run()

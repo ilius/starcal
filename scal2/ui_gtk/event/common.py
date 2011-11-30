@@ -5,32 +5,19 @@ from scal2.utils import toStr
 from scal2.time_utils import durationUnitsAbs, durationUnitValues
 from scal2 import core
 from scal2.locale_man import tr as _
+from scal2.locale_man import localeNumDecode
+
 from scal2.core import pixDir, myRaise
 
 from scal2 import event_man
 from scal2 import ui
 
+from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, buffer_get_text
+
 import gtk
 from gtk import gdk
 
 #print 'Testing translator', __file__, _('_About')## OK
-
-buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter())
-
-def hideList(widgets):
-    for w in widgets:
-        w.hide()
-def showList(widgets):
-    for w in widgets:
-        w.show()
-def set_tooltip(widget, text):
-    try:
-        widget.set_tooltip_text(text)## PyGTK 2.12 or above
-    except AttributeError:
-        try:
-            widget.set_tooltip(gtk.Tooltips(), text)
-        except:
-            myRaise(__file__)
 
 
 class IconSelectButton(gtk.Button):
@@ -288,13 +275,95 @@ class DurationInputBox(gtk.HBox):
         self.unitCombo.set_active(durationUnitValues.index(unit))
 
 
+class StrListEditor(gtk.HBox):
+    def __init__(self, defaultValue=''):
+        self.defaultValue = defaultValue
+        #####
+        gtk.HBox.__init__(self)
+        self.treev = gtk.TreeView()
+        self.treev.set_headers_visible(False)
+        self.trees = gtk.ListStore(str)
+        self.treev.set_model(self.trees)
+        ##########
+        cell = gtk.CellRendererText()
+        cell.set_property('editable', True)
+        col = gtk.TreeViewColumn('', cell, text=0)
+        self.treev.append_column(col)
+        ####
+        self.pack_start(self.treev, 1, 1)
+        ##########
+        toolbar = gtk.Toolbar()
+        toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
+        #try:## DeprecationWarning #?????????????
+            #toolbar.set_icon_size(gtk.ICON_SIZE_SMALL_TOOLBAR)
+            ### no different (argument to set_icon_size does not affect) ?????????
+        #except:
+        #    pass
+        size = gtk.ICON_SIZE_SMALL_TOOLBAR
+        ##no different(argument2 to image_new_from_stock does not affect) ?????????
+        #### gtk.ICON_SIZE_SMALL_TOOLBAR or gtk.ICON_SIZE_MENU
+        tb = toolButtonFromStock(gtk.STOCK_ADD, size)
+        set_tooltip(tb, _('Add'))
+        tb.connect('clicked', self.addClicked)
+        toolbar.insert(tb, -1)
+        #self.buttonAdd = tb
+        ####
+        tb = toolButtonFromStock(gtk.STOCK_GO_UP, size)
+        set_tooltip(tb, _('Move up'))
+        tb.connect('clicked', self.moveUpClicked)
+        toolbar.insert(tb, -1)
+        ####
+        tb = toolButtonFromStock(gtk.STOCK_GO_DOWN, size)
+        set_tooltip(tb, _('Move down'))
+        tb.connect('clicked', self.moveDownClicked)
+        toolbar.insert(tb, -1)
+        #######
+        self.pack_start(toolbar, 0, 0)
+    def addClicked(self, button):
+        cur = self.treev.get_cursor()
+        if cur:
+            self.trees.insert(cur[0], [self.defaultValue])
+        else:
+            self.trees.append([self.defaultValue])
+    def moveUpClicked(self, button):
+        cur = self.treev.get_cursor()
+        if not cur:
+            return
+        i = cur[0]
+        t = self.trees
+        if i<=0 or i>=len(t):
+            gdk.beep()
+            return
+        t.swap(t.get_iter(i-1), t.get_iter(i))
+        self.treev.set_cursor(i-1)
+    def moveDownClicked(self, button):
+        cur = self.treev.get_cursor()
+        if not cur:
+            return
+        i = cur[0]
+        t = self.trees
+        if i<0 or i>=len(t)-1:
+            gdk.beep()
+            return
+        t.swap(t.get_iter(i), t.get_iter(i+1))
+        self.treev.set_cursor(i+1)
+    def setData(self, strList):
+        self.trees.clear()
+        for st in strList:
+            self.trees.append([st])
+    def getData(self):
+        return [row[0] for row in self.trees]
+
+
+
+
 class GroupComboBox(gtk.ComboBox):
     def __init__(self):
         pass
 
 
 class EventEditorDialog(gtk.Dialog):
-    def __init__(self, event=None, eventType='', group=None, title=None, parent=None):## don't give both event a eventType
+    def __init__(self, event, eventTypeChangable=True, title=None, parent=None):## don't give both event a eventType
         gtk.Dialog.__init__(self, parent=parent)
         #self.set_transient_for(parent)
         if title:
@@ -312,37 +381,25 @@ class EventEditorDialog(gtk.Dialog):
         self.connect('response', lambda w, e: self.hide())
         #######
         self.event = event
+        self._group = event.group
         self.activeEventWidget = None
         #######
-        #print 'eventType = %r'%eventType
-        if eventType:
-            cls = event_man.eventsClassDict[eventType]
-            self.event = cls()
-            self.event.setDefaultsFromGroup(group)
-            if group:## FIXME
-                self.event.setDefaultsFromGroup(group)
-            self.activeEventWidget = self.event.makeWidget()
-        else:
+        if eventTypeChangable and len(event.group.acceptsEventTypes)>1:## FIXME
             hbox = gtk.HBox()
             combo = gtk.combo_box_new_text()
-            for cls in event_man.eventsClassList:
-                combo.append_text(cls.desc)
+            for eventType in event.group.acceptsEventTypes:
+                combo.append_text(event_man.eventsClassDict[eventType].desc)
             hbox.pack_start(gtk.Label(_('Event Type')), 0, 0)
             hbox.pack_start(combo, 0, 0)
             hbox.pack_start(gtk.Label(''), 1, 1)
             hbox.show_all()
             self.vbox.pack_start(hbox, 0, 0)
             ####
-            if self.event:
-                combo.set_active(event_man.eventsClassNameList.index(self.event.name))
-            else:
-                combo.set_active(event_man.defaultEventTypeIndex)
-                self.event = event_man.eventsClassList[event_man.defaultEventTypeIndex]()
-                if group:## FIXME
-                    self.event.setDefaultsFromGroup(group)
-            self.activeEventWidget = self.event.makeWidget()
+            combo.set_active(event.group.acceptsEventTypes.index(event.name))
+            #self.activeEventWidget = event.makeWidget()
             combo.connect('changed', self.eventTypeChanged)
             self.comboEventType = combo
+        self.activeEventWidget = event.makeWidget()
         self.vbox.pack_start(self.activeEventWidget, 0, 0)
         self.vbox.show()
     def dateModeChanged(self, combo):
@@ -350,18 +407,17 @@ class EventEditorDialog(gtk.Dialog):
     def eventTypeChanged(self, combo):
         if self.activeEventWidget:
             self.activeEventWidget.destroy()
-        event = event_man.eventsClassList[combo.get_active()]()
-        #event = event_man.eventsClassByDesc[combo.get_active_text()]()## FIXME
-        if self.event:
-            event.copyFrom(self.event)
-            event.setId(self.event.eid)
-            del self.event
-        self.event = event
-        self.activeEventWidget = event.makeWidget()
+        eventType = self._group.acceptsEventTypes[combo.get_active()]
+        newEvent = self._group.createEvent(eventType)
+        newEvent.copyFrom(self.event)
+        newEvent.setId(self.event.eid)
+        self.event = newEvent
+        self._group.updateCache(newEvent)## needed? FIXME
+        self.activeEventWidget = newEvent.makeWidget()
         self.vbox.pack_start(self.activeEventWidget, 0, 0)
     def run(self):
-        if not self.activeEventWidget or not self.event:
-            return None
+        #if not self.activeEventWidget:
+        #    return None
         if gtk.Dialog.run(self)!=gtk.RESPONSE_OK:
             try:
                 filesBox = self.activeEventWidget.filesBox

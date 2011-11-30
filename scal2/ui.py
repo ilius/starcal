@@ -26,7 +26,7 @@ from xml.dom.minidom import parse## remove FIXME
 from subprocess import Popen
 from collections import OrderedDict
 
-from scal2.utils import NullObj
+from scal2.utils import NullObj, toStr
 from scal2.paths import *
 
 import scal2.locale_man
@@ -411,6 +411,24 @@ def moveEventToTrash(group, event):
     eventTrash.saveConfig()
 
 #getEvent = lambda group_id, event_id: eventGroups[group_id].getEvent(event_id)
+
+def duplicateGroupTitle(group):
+    title = toStr(group.title)
+    titleList = [toStr(g.title) for g in eventGroups]
+    parts = title.split('#')
+    try:
+        index = int(parts[-1])
+        title = '#'.join(parts[:-1])
+    except:
+        #myRaise()
+        index = 1
+    index += 1
+    while True:
+        newTitle = title + '#%d'%index
+        if newTitle not in titleList:
+            group.title = newTitle
+            return
+        index += 1
 
 ######################################################################
 shownCals = [
