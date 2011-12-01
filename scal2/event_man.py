@@ -1153,6 +1153,16 @@ class UniversityClassEvent(Event):## FIXME
         ## assert group is not None ## FIXME
         Event.__init__(self, eid)
         self.courseId = None ## FIXME
+    #def __getitem__(self, key):
+    #    if key=='start':
+    #        ## FIXME
+    #        date = jd_to(self.group.startJd, self.mode)
+    #        startRule = StartEventRule()
+    #        startRule.date = date
+    #        startRule.time = (0, 0, 0)
+    #        return startRule
+    #    else:
+    #        return Event.__getitem__(key)
 
 
 class EventContainer(EventBaseClass):
