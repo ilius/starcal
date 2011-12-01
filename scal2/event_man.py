@@ -279,8 +279,7 @@ class EventRule(EventBaseClass):
     params = ()
     def __init__(self, event):
         self.event = event
-        self.mode = None ## use event.mode
-    getMode = lambda self: self.event.mode if self.mode is None else self.mode
+    getMode = lambda self: self.event.mode
     def getConfigLine(self):
         return self.name
     def setFromConfig(self, parts):
@@ -640,8 +639,7 @@ class EventNotifier(EventBaseClass):
     params = ()
     def __init__(self, event):
         self.event = event
-        self.mode = None ## use event.mode
-    getMode = lambda self: self.event.mode if self.mode is None else self.mode
+    getMode = lambda self: self.event.mode
     def notify(self, finishFunc):
         pass
     def getData(self):
