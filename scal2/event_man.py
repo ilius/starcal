@@ -127,6 +127,11 @@ class Occurrence(EventBaseClass):
     getDaysJdList = lambda self: []
     getTimeRangeList = lambda self: []
     containsMoment = lambda self, epoch: False
+    def getStartEpoch(self):
+        raise NotImplementedError
+    def getEndEpoch(self):
+        raise NotImplementedError
+    
 
 class JdListOccurrence(Occurrence):
     name = 'jdList'
@@ -137,6 +142,8 @@ class JdListOccurrence(Occurrence):
             jdList = []
         self.jdSet = set(jdList)
     __nonzero__ = lambda self: bool(self.jdSet)
+    getStartEpoch = lambda self: getEpochFromJd(min(self.jdSet))
+    getEndEpoch = lambda self: getEpochFromJd(max(self.jdSet)+1)
     def intersection(self, occur):
         if isinstance(occur, JdListOccurrence):
             return JdListOccurrence(self.jdSet.intersection(occur.jdSet))
@@ -179,6 +186,8 @@ class TimeRangeListOccurrence(Occurrence):
             rangeList = []
         self.rangeList = rangeList
     __nonzero__ = lambda self: bool(self.rangeList)
+    getStartEpoch = lambda self: min([r[0] for r in self.rangeList])
+    getEndEpoch = lambda self: max([r[1] for r in self.rangeList]+[r[1] for r in self.rangeList])
     def intersection(self, occur):
         if isinstance(occur, (JdListOccurrence, TimeRangeListOccurrence)):
             return TimeRangeListOccurrence(intersectionOfTwoTimeRangeList(self.getTimeRangeList(), occur.getTimeRangeList()))
@@ -223,6 +232,8 @@ class TimeListOccurrence(Occurrence):
             raise ValueError
     #__nonzero__ = lambda self: self.startEpoch == self.endEpoch
     __nonzero__ = lambda self: bool(self.epochList)
+    getStartEpoch = lambda self: min(self.epochList)
+    getEndEpoch = lambda self: max(self.epochList)+1
     def setRange(self, startEpoch, endEpoch, stepSeconds):
         self.startEpoch = startEpoch
         self.endEpoch = endEpoch
@@ -277,14 +288,14 @@ class EventRule(EventBaseClass):
     sgroup = -1
     expand = False
     params = ()
-    def __init__(self, event):
-        self.event = event
-    getMode = lambda self: self.event.mode
+    def __init__(self, parent):## parent can be an event or group
+        self.parent = parent
+    getMode = lambda self: self.parent.mode
     def getConfigLine(self):
         return self.name
     def setFromConfig(self, parts):
         pass
-    def calcOccurrence(self, startEpoch, endEpoch):
+    def calcOccurrence(self, startEpoch, endEpoch, event):
         raise NotImplementedError
     def getData(self):
         return dict([(param, getattr(self, param)) for param in self.params])
@@ -299,14 +310,14 @@ class YearEventRule(EventRule):
     name = 'year'
     desc = _('Year')
     params = ('year',)
-    def __init__(self, event):
-        EventRule.__init__(self, event)
+    def __init__(self, parent):
+        EventRule.__init__(self, parent)
         self.year = core.getSysDate(self.getMode())[0] ## FIXME
     def getData(self):
         return self.year
     def setData(self, year):
         self.year = year
-    def calcOccurrence(self, startEpoch, endEpoch):## improve performance ## FIXME
+    def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
         jdList = []
         for jd in core.getJdListFromEpochRange(startEpoch, endEpoch):
             if jd not in jdList and jd_to(jd, self.getMode())[0]==self.year:
@@ -321,14 +332,14 @@ class MonthEventRule(EventRule):
     name = 'month'
     desc = _('Month')
     params = ('month',)
-    def __init__(self, event):
-        EventRule.__init__(self, event)
+    def __init__(self, parent):
+        EventRule.__init__(self, parent)
         self.month = 1
     def getData(self):
         return self.month
     def setData(self, month):
         self.month = month
-    def calcOccurrence(self, startEpoch, endEpoch):## improve performance ## FIXME
+    def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
         jdList = []
         for jd in core.getJdListFromEpochRange(startEpoch, endEpoch):
             if jd not in jdList and jd_to(jd, self.getMode())[1]==self.month:
@@ -341,14 +352,14 @@ class DayOfMonthEventRule(EventRule):
     name = 'day'
     desc = _('Day of Month')
     params = ('day',)
-    def __init__(self, event):
-        EventRule.__init__(self, event)
+    def __init__(self, parent):
+        EventRule.__init__(self, parent)
         self.day = 1
     def getData(self):
         return self.day
     def setData(self, day):
         self.day = day
-    def calcOccurrence(self, startEpoch, endEpoch):## improve performance ## FIXME
+    def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
         jdList = []
         for jd in core.getJdListFromEpochRange(startEpoch, endEpoch):
             if jd not in jdList and jd_to(jd, self.getMode())[2]==self.day:
@@ -361,11 +372,12 @@ class DayOfMonthEventRule(EventRule):
 class WeekNumberModeEventRule(EventRule):
     name = 'weekNumMode'
     desc = _('Week Number')
+    need = ('start',)## FIXME
     params = ('weekNumMode',)
     (EVERY_WEEK, ODD_WEEKS, EVEN_WEEKS) = range(3) ## remove EVERY_WEEK? FIXME
     weekNumModeNames = ('any', 'odd', 'even')## remove 'any'? FIXME
-    def __init__(self, event):
-        EventRule.__init__(self, event)
+    def __init__(self, parent):
+        EventRule.__init__(self, parent)
         self.weekNumMode = self.EVERY_WEEK
     def getData(self):
         return self.weekNumModeNames[self.weekNumMode]
@@ -374,9 +386,8 @@ class WeekNumberModeEventRule(EventRule):
             raise BadEventFile('bad rule weekNumMode=%r, the value for weekNumMode must be one of %r'\
                 %(modeName, self.weekNumModeNames))
         self.weekNumMode = self.weekNumModeNames.index(modeName)
-    def calcOccurrence(self, startEpoch, endEpoch):## improve performance ## FIXME
-        (y, m, d) = self.event['start'].date ## ruleStartDate
-        startAbsWeekNum = core.getAbsWeekNumberFromJd(to_jd(y, m, d, self.getMode())) - 1 ## 1st week ## FIXME
+    def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
+        startAbsWeekNum = core.getAbsWeekNumberFromJd(event['start'].getJd()) - 1 ## 1st week ## FIXME
         jdListAll = core.getJdListFromEpochRange(startEpoch, endEpoch)
         if self.weekNumMode==self.EVERY_WEEK:
             jdList = jdListAll
@@ -403,8 +414,8 @@ class WeekDayEventRule(EventRule):
     name = 'weekDay'
     desc = _('Day of Week')
     params = ('weekDayList',)
-    def __init__(self, event):
-        EventRule.__init__(self, event)
+    def __init__(self, parent):
+        EventRule.__init__(self, parent)
         self.weekDayList = range(7) ## or [] ## FIXME
     def getData(self):
         return self.weekDayList
@@ -415,7 +426,7 @@ class WeekDayEventRule(EventRule):
             self.weekDayList = data
         else:
             raise BadEventFile('bad rule weekDayList=%s, value for weekDayList must be a list of integers (0 for sunday)'%data)
-    def calcOccurrence(self, startEpoch, endEpoch):## improve performance ## FIXME
+    def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
         jdList = []
         for jd in core.getJdListFromEpochRange(startEpoch, endEpoch):
             if core.jwday(jd) in self.weekDayList and not jd in jdList:
@@ -436,25 +447,16 @@ class CycleDaysEventRule(EventRule):
     need = ('start',)
     conflict = ('dayTime', 'cycleLen')
     params = ('cycleDays',)
-    def __init__(self, event):
-        EventRule.__init__(self, event)
+    def __init__(self, parent):
+        EventRule.__init__(self, parent)
         self.cycleDays = 7
     def getData(self):
         return self.cycleDays
     def setData(self, cycleDays):
         self.cycleDays = cycleDays
-    def calcOccurrence(self, startEpoch, endEpoch):## improve performance ## FIXME
-        (year, month, day) = self.event['start'].date
-        startJd = max(to_jd(year, month, day, self.getMode()),
-                      core.getJdFromEpoch(startEpoch))
+    def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
+        startJd = max(event['start'].getJd(), core.getJdFromEpoch(startEpoch))
         endJd = core.getJdFromEpoch(endEpoch-0.01)+1
-        try:
-            endRule = self.event['end']
-        except KeyError:
-            pass
-        else:
-            (year, month, day) = endRule.date
-            endJd = min(endJd, to_jd(year, month, day, self.getMode())+1) ## +1 FIXME
         return JdListOccurrence(range(startJd, endJd, self.cycleDays))
     getInfo = lambda self: _('Repeat: Every %s Days')%_(self.cycleDays)
 
@@ -464,14 +466,14 @@ class DayTimeEventRule(EventRule):## Moment Event
     provide = ('time',)
     conflict = ('cycleLen',)
     params = ('dayTime',)
-    def __init__(self, event):
-        EventRule.__init__(self, event)
+    def __init__(self, parent):
+        EventRule.__init__(self, parent)
         self.dayTime = time.localtime()[3:6]
     def getData(self):
         return timeEncode(self.dayTime)
     def setData(self, data):
         self.dayTime = timeDecode(data)
-    def calcOccurrence(self, startEpoch, endEpoch):
+    def calcOccurrence(self, startEpoch, endEpoch, event):
         mySec = core.getSecondsFromHms(*self.dayTime)
         (startJd, startExtraSec) = core.getJdAndSecondsFromEpoch(startEpoch)
         (endJd, endExtraSec) = core.getJdAndSecondsFromEpoch(endEpoch)
@@ -493,8 +495,8 @@ class DayTimeRangeEventRule(EventRule):## use for UniversityClassEvent
     desc = 'Day Time Range'
     conflict = ('dayTime',)
     params = ('dayTimeStart', 'dayTimeEnd')
-    def __init__(self, event):
-        EventRule.__init__(self, event)
+    def __init__(self, parent):
+        EventRule.__init__(self, parent)
         self.dayTimeStart = (0, 0, 0)
         self.dayTimeEnd = (24, 0, 0)
     def getData(self):
@@ -502,7 +504,7 @@ class DayTimeRangeEventRule(EventRule):## use for UniversityClassEvent
     def setData(self, data):
         self.dayTimeStart = timeDecode(data[0])
         self.dayTimeEnd = timeDecode(data[1])
-    def calcOccurrence(self, startEpoch, endEpoch):
+    def calcOccurrence(self, startEpoch, endEpoch, event):
         daySecStart = getSecondsFromHms(*self.dayTimeStart)
         daySecEnd = getSecondsFromHms(*self.dayTimeEnd)
         startDiv, startMod = divmod(startEpoch, 24*3600)
@@ -516,13 +518,15 @@ class DayTimeRangeEventRule(EventRule):## use for UniversityClassEvent
 class DateAndTimeEventRule(EventRule):
     sgroup = 1
     params = ('date', 'time')
-    def __init__(self, event):
-        EventRule.__init__(self, event)
+    def __init__(self, parent):
+        EventRule.__init__(self, parent)
         self.date = core.getSysDate(self.getMode())
         self.time = time.localtime()[3:6]
-    def getEpoch(self):
+    def getJd(self):
         (year, month, day) = self.date
-        return getEpochFromJhms(to_jd(year, month, day, self.getMode()), *tuple(self.time))
+        return to_jd(year, month, day, self.getMode())
+    def getEpoch(self):
+        return getEpochFromJhms(self.getJd(), *tuple(self.time))
     def getData(self):
         return {
             'date': dateEncode(self.date),
@@ -542,7 +546,7 @@ class DateAndTimeEventRule(EventRule):
 class StartEventRule(DateAndTimeEventRule):
     name = 'start'
     desc = _('Start')
-    def calcOccurrence(self, startEpoch, endEpoch):
+    def calcOccurrence(self, startEpoch, endEpoch, event):
         myEpoch = self.getEpoch()
         if endEpoch <= myEpoch:
             return TimeRangeListOccurrence([])
@@ -553,7 +557,7 @@ class StartEventRule(DateAndTimeEventRule):
 class EndEventRule(DateAndTimeEventRule):
     name = 'end'
     desc = _('End')
-    def calcOccurrence(self, startEpoch, endEpoch):
+    def calcOccurrence(self, startEpoch, endEpoch, event):
         endEpoch = min(endEpoch, self.getEpoch())
         if startEpoch >= endEpoch:## how about startEpoch==endEpoch FIXME
             return TimeRangeListOccurrence([])
@@ -567,8 +571,8 @@ class DurationEventRule(EventRule):
     need = ('start',)
     conflict = ('end',)
     sgroup = 1
-    def __init__(self, event):
-        EventRule.__init__(self, event)
+    def __init__(self, parent):
+        EventRule.__init__(self, parent)
         self.value = 0
         self.unit = 1 ## seconds
     getSeconds = lambda self: self.value * self.unit
@@ -578,7 +582,7 @@ class DurationEventRule(EventRule):
         except Exception, e:
             log.error('Error while loading event rule "%s": %s'%(self.name, e))
     getData = lambda self: durationEncode(self.value, self.unit)
-    def calcOccurrence(self, startEpoch, endEpoch):
+    def calcOccurrence(self, startEpoch, endEpoch, event):
         endEpoch = min(endEpoch, self.event['start'].getEpoch() + self.getSeconds())
         if startEpoch >= endEpoch:## how about startEpoch==endEpoch FIXME
             return TimeRangeListOccurrence([])
@@ -592,8 +596,8 @@ class CycleLenEventRule(EventRule):
     need = ('start',)
     conflict = ('dayTime', 'cycleDays',)
     params = ('cycleDays', 'cycleExtraTime',)
-    def __init__(self, event):
-        EventRule.__init__(self, event)
+    def __init__(self, parent):
+        EventRule.__init__(self, parent)
         self.cycleDays = 7
         self.cycleExtraTime = (0, 0, 0)
     def getData(self):
@@ -604,15 +608,8 @@ class CycleLenEventRule(EventRule):
     def setData(self, arg):
         self.cycleDays = arg['days']
         self.cycleExtraTime = timeDecode(arg['extraTime'])
-    def calcOccurrence(self, startEpoch, endEpoch):
+    def calcOccurrence(self, startEpoch, endEpoch, event):
         startEpoch = max(startEpoch, self.event['start'].getEpoch())
-        try:
-            endEpoch = min(endEpoch, self.event['end'].getEpoch())
-        except KeyError:
-            try:
-                endEpoch = min(endEpoch, startEpoch + self.event['duration'].getSeconds())
-            except KeyError:
-                pass
         cycleSec = self.cycleDays*24*3600 + core.getSecondsFromHms(*self.cycleExtraTime)
         return TimeListOccurrence(startEpoch, endEpoch, cycleSec)
     getInfo = lambda self: _('Repeat: Every %s Days and %s')%(_(self.cycleDays), timeEncode(self.cycleExtraTime))
@@ -656,13 +653,10 @@ class AlarmNotifier(EventNotifier):
     name = 'alarm'
     desc = _('Alarm')
     params = ('alarmSound', 'playerCmd')
-    ###
-    defaultAlarmSound = '' ## FIXME
-    defaultPlayerCmd = 'mplayer'
     def __init__(self, event):
         EventNotifier.__init__(self, event)
-        self.alarmSound = self.defaultAlarmSound
-        self.playerCmd = self.defaultPlayerCmd
+        self.alarmSound = '' ## FIXME
+        self.playerCmd = 'mplayer'
 
 
 class FloatingMsgNotifier(EventNotifier):
@@ -698,186 +692,42 @@ class CommandNotifier(EventNotifier):
         EventNotifier.__init__(self, event)
         self.command = ''
         self.pyEval = False
-    
 
-class Event(EventBaseClass):
-    name = 'custom'## or 'event' or '' FIXME
-    desc = _('Custom Event')
-    defaultIconName = ''
+
+class RuleContainer:
     requiredRules = ()
     supportedRules = None
-    requiredNotifiers = ()
     def clearRules(self):
         self.rulesOd = OrderedDict()
-    def __init__(self, eid=None):
-        self.setId(eid)
-        self.group = None
-        self.mode = core.primaryMode
-        self.icon = '' ## to show in calendar
-        self.summary = self.desc + ' (' + _(self.eid) + ')'
-        self.description = ''
-        self.calType = core.primaryMode
-        self.showInTimeLine = False ## FIXME
-        self.files = []
-        ######
+    __iter__ = lambda self: self.rulesOd.itervalues()
+    __getitem__ = lambda self, key: self.rulesOd.__getitem__(key)
+    __setitem__ = lambda self, key, value: self.rulesOd.__setitem__(key, value)
+    getRulesData = lambda self: [(rule.name, rule.getData()) for rule in self.rulesOd.values()]
+    getRuleNames = lambda self: self.rulesOd.keys()
+    addRule = lambda self, rule: self.rulesOd.__setitem__(rule.name, rule)
+    addNewRule = lambda self, ruleType: self.addRule(eventRulesClassDict[ruleType](self))
+    removeRule = lambda self, rule: self.rulesOd.__delitem__(rule.name)
+    def setRulesData(self, rulesData):
         self.clearRules()
-        self.notifiers = []
-        self.checkRequirements()
-        self.setDefaults()
-    __nonzero__ = lambda self: bool(self.rulesOd) ## FIXME
-    def getInfo(self):
-        lines = []
-        rulesDict = self.rulesOd.copy()
-        ##
-        hasYear = 'year' in rulesDict
-        year = rulesDict['year'].year if hasYear else None
-        ##
-        hasMonth = 'month' in rulesDict
-        month = rulesDict['month'].month if hasMonth else None
-        ##
-        hasDay = 'day' in rulesDict
-        day = rulesDict['day'].day if hasDay else None
-        ##
-        if hasMonth:
-            if hasYear:
-                if hasDay:
-                   lines.append(dateEncode((year, month, day)))
-                   del rulesDict['day']
-                else:
-                   lines.append(getMonthName(self.mode, month, year) + ' ' + _(year))
-                del rulesDict['year'], rulesDict['month']
-            else:
-                if hasDay:
-                    lines.append(_(day) + ' ' + getMonthName(self.mode, month, year))
-                    rulesDict['month'], rulesDict['day']
-        ##
-        for rule in sorted(rulesDict.values()):
-            lines.append(rule.getInfo())
-        return '\n'.join(lines)
-    def checkRequirements(self):
-        for name in self.requiredRules:
-            if not name in self.rulesOd:
-                self.addNewRule(name)
-        notifierNames = (notifier.name for notifier in self.notifiers)
-        for name in self.requiredNotifiers:
-            if not name in notifierNames:
-                self.notifiers.append(eventNotifiersClassDict[name](self))
-    def setDefaults(self):
-        pass
-    def setDefaultsFromGroup(self, group):
-        if not self.icon:
-            self.icon = group.defaultIcon 
-    def copyFrom(self, other):## FIXME
-        self.mode = other.mode
-        self.icon = other.icon
-        self.summary = other.summary
-        self.description = other.description
-        self.calType = other.calType
-        self.showInTimeLine = other.showInTimeLine
-        self.files = other.files
-        ######
-        if self.supportedRules is None:
-            self.rulesOd = other.rulesOd.copy()
-        else:
-            for ruleName, rule in other.rulesOd.items():
-                if ruleName in self.supportedRules:
-                    try:
-                        self.rulesOd[ruleName].copyFrom(rule)
-                    except KeyError:
-                        self.addRule(rule)
-        self.notifiers = other.notifiers[:]## FIXME
-        self.checkRequirements()
-    def loadFiles(self):
-        self.files = []
-        if isdir(self.filesDir):
-            for fname in listdir(self.filesDir):
-                if isfile(join(self.filesDir, fname)) and not fname.endswith('~'):## FIXME
-                    self.files.append(fname)
-    getUrlForFile = lambda self, fname: 'file:' + os.sep*2 + self.filesDir + os.sep + fname
-    def getFilesUrls(self):
-        data = []
-        baseUrl = self.getUrlForFile('')
-        for fname in self.files:
-            data.append((
-                baseUrl + fname,
-                _('File') + ': ' + fname,
-            ))
-        return data
-    getText = lambda self: self.summary if self.summary else self.description
-    def setId(self, eid=None):
-        if eid is None or eid<0:
-            eid = core.lastEventId + 1 ## FIXME
-            core.lastEventId = eid
-        elif eid > core.lastEventId:
-            core.lastEventId = eid
-        self.eid = eid
-        self.eventDir = join(eventsDir, str(self.eid))
-        self.eventFile = join(self.eventDir, 'event.json')
-        self.occurrenceFile = join(self.eventDir, 'occurrence')## file or directory? ## FIXME
-        self.filesDir = join(self.eventDir, 'files')
-        self.loadFiles()
-    def getData(self):
-        return {
-            'type': self.name,
-            'calType': core.modules[self.mode].name,
-            'rules': self.getRulesData(),
-            'notifiers': self.getNotifiersData(),
-            'icon': self.icon,
-            'summary': self.summary,
-            'description': self.description,
-        }
-    def setData(self, data):
-        if 'id' in data:
-            self.setId(data['id'])
-        for attr in ('icon', 'summary', 'description'):
-            try:
-                setattr(self, attr, data[attr])
-            except KeyError:
-                pass
-        ####
-        if 'calType' in data:
-            calType = data['calType']
-            for (i, module) in enumerate(core.modules):
-                if module.name == calType:
-                    self.mode = i
-                    break
-            else:
-                raise ValueError('Invalid calType: %r'%calType)
-        ####
-        self.clearRules()
-        for (ruleName, ruleData) in data['rules']:
+        for (ruleName, ruleData) in rulesData:
             rule = eventRulesClassDict[ruleName](self)
             rule.setData(ruleData)
             self.addRule(rule)
-        ####
-        self.notifiers = []
-        if 'notifiers' in data:
-            for (notifier_name, notifier_data) in data['notifiers']:
-                notifier = eventNotifiersClassDict[notifier_name](self)
-                notifier.setData(notifier_data)
-                self.notifiers.append(notifier)
-    def saveConfig(self):
-        if not isdir(self.eventDir):
-            os.makedirs(self.eventDir)
-        jstr = self.getJson()
-        open(self.eventFile, 'w').write(jstr)
-    def loadConfig(self):## skipRules arg for use in ui_gtk/event/notify.py ## FIXME
-        if not isdir(self.eventDir):
-            raise IOError('error while loading event directory %r: no such directory'%self.eventDir)
-        if not isfile(self.eventFile):
-            raise IOError('error while loading event file %r: no such file'%self.eventFile)
-        jsonStr = open(self.eventFile).read()
-        if jsonStr:
-            self.setJson(jsonStr)## FIXME
-    __iter__ = lambda self: self.rulesOd.itervalues()
-    addRule = lambda self, rule: self.rulesOd.__setitem__(rule.name, rule)
-    addNewRule = lambda self, ruleType: self.addRule(eventRulesClassDict[ruleType](self))
+    def addRequirements(self):
+        for name in self.requiredRules:
+            if not name in self.rulesOd:
+                self.addNewRule(name)
     def checkAndAddRule(self, rule):
         (ok, msg) = self.checkRulesDependencies(newRule=rule)
         if ok:
             self.addRule(rule)
         return (ok, msg)
-    removeRule = lambda self, rule: self.rulesOd.__delitem__(rule.name)
+    def removeSomeRuleTypes(self, *rmTypes):
+        for ruleType in rmTypes:
+            try:
+                del self.rulesOd[ruleType]
+            except KeyError:
+                pass
     def checkAndRemoveRule(self, rule):
         (ok, msg) = self.checkRulesDependencies(disabledRule=rule)
         if ok:
@@ -914,27 +764,196 @@ class Event(EventBaseClass):
                         _(needName), #_(rulesOd[needName].desc)
                     ))
         return (True, '')
-    getRulesData = lambda self: [(rule.name, rule.getData()) for rule in self.rulesOd.values()]
-    getRuleNames = lambda self: self.rulesOd.keys()
-    __getitem__ = lambda self, key: self.rulesOd.__getitem__(key)
-    __setitem__ = lambda self, key, value: self.rulesOd.__setitem__(key, value)
-    getNotifiersData = lambda self: [(notifier.name, notifier.getData()) for notifier in self.notifiers]
-    getNotifiersDict = lambda self: dict(self.getNotifiersData())
-    def removeSomeRuleTypes(self, *rmTypes):
-        for ruleType in rmTypes:
+    def copyRulesFrom(self, other):
+        if self.supportedRules is None:
+            self.rulesOd = other.rulesOd.copy()
+        else:
+            for ruleName, rule in other.rulesOd.items():
+                if ruleName in self.supportedRules:
+                    try:
+                        self.rulesOd[ruleName].copyFrom(rule)
+                    except KeyError:
+                        self.addRule(rule)
+
+
+
+class Event(EventBaseClass, RuleContainer):
+    name = 'custom'## or 'event' or '' FIXME
+    desc = _('Custom Event')
+    iconName = ''
+    requiredNotifiers = ()
+    def __init__(self, eid=None):
+        self.setId(eid)
+        self.group = None
+        self.mode = core.primaryMode
+        self.icon = '' ## to show in calendar
+        self.summary = self.desc + ' (' + _(self.eid) + ')'
+        self.description = ''
+        #self.showInTimeLine = False ## FIXME
+        self.files = []
+        ######
+        self.clearRules()
+        self.notifiers = []
+        self.addRequirements()
+        self.setDefaults()
+    def setDefaults(self):
+        '''
+            sets default values that depends on event type
+            not common parameters, like those are set in __init__
+        '''
+        pass
+    def setDefaultsFromGroup(self, group):
+        if not self.icon:
+            self.icon = group.icon 
+    __nonzero__ = lambda self: bool(self.rulesOd) ## FIXME
+    def getInfo(self):
+        lines = []
+        rulesDict = self.rulesOd.copy()
+        ##
+        hasYear = 'year' in rulesDict
+        year = rulesDict['year'].year if hasYear else None
+        ##
+        hasMonth = 'month' in rulesDict
+        month = rulesDict['month'].month if hasMonth else None
+        ##
+        hasDay = 'day' in rulesDict
+        day = rulesDict['day'].day if hasDay else None
+        ##
+        if hasMonth:
+            if hasYear:
+                if hasDay:
+                   lines.append(dateEncode((year, month, day)))
+                   del rulesDict['day']
+                else:
+                   lines.append(getMonthName(self.mode, month, year) + ' ' + _(year))
+                del rulesDict['year'], rulesDict['month']
+            else:
+                if hasDay:
+                    lines.append(_(day) + ' ' + getMonthName(self.mode, month, year))
+                    rulesDict['month'], rulesDict['day']
+        ##
+        for rule in sorted(rulesDict.values()):
+            lines.append(rule.getInfo())
+        return '\n'.join(lines)
+    def addRequirements(self):
+        RuleContainer.addRequirements(self)
+        notifierNames = (notifier.name for notifier in self.notifiers)
+        for name in self.requiredNotifiers:
+            if not name in notifierNames:
+                self.notifiers.append(eventNotifiersClassDict[name](self))
+    def loadFiles(self):
+        self.files = []
+        if isdir(self.filesDir):
+            for fname in listdir(self.filesDir):
+                if isfile(join(self.filesDir, fname)) and not fname.endswith('~'):## FIXME
+                    self.files.append(fname)
+    getUrlForFile = lambda self, fname: 'file:' + os.sep*2 + self.filesDir + os.sep + fname
+    def getFilesUrls(self):
+        data = []
+        baseUrl = self.getUrlForFile('')
+        for fname in self.files:
+            data.append((
+                baseUrl + fname,
+                _('File') + ': ' + fname,
+            ))
+        return data
+    getText = lambda self: self.summary if self.summary else self.description
+    def setId(self, eid=None):
+        if eid is None or eid<0:
+            eid = core.lastEventId + 1 ## FIXME
+            core.lastEventId = eid
+        elif eid > core.lastEventId:
+            core.lastEventId = eid
+        self.eid = eid
+        self.eventDir = join(eventsDir, str(self.eid))
+        self.eventFile = join(self.eventDir, 'event.json')
+        self.occurrenceFile = join(self.eventDir, 'occurrence')## file or directory? ## FIXME
+        self.filesDir = join(self.eventDir, 'files')
+        self.loadFiles()
+    def copyFrom(self, other):## FIXME
+        self.mode = other.mode
+        self.copyRulesFrom(other)
+        self.notifiers = other.notifiers[:]## FIXME
+        self.icon = other.icon
+        self.summary = other.summary
+        self.description = other.description
+        #self.showInTimeLine = other.showInTimeLine
+        self.files = other.files
+        self.addRequirements()
+    def getData(self):
+        return {
+            'type': self.name,
+            'calType': core.modules[self.mode].name,
+            'rules': self.getRulesData(),
+            'notifiers': self.getNotifiersData(),
+            'icon': self.icon,
+            'summary': self.summary,
+            'description': self.description,
+        }
+    def setData(self, data):
+        if 'id' in data:
+            self.setId(data['id'])
+        if 'calType' in data:
+            calType = data['calType']
+            for (i, module) in enumerate(core.modules):
+                if module.name == calType:
+                    self.mode = i
+                    break
+            else:
+                raise ValueError('Invalid calType: %r'%calType)
+        self.setRulesData(data['rules'])
+        self.notifiers = []
+        if 'notifiers' in data:
+            for (notifier_name, notifier_data) in data['notifiers']:
+                notifier = eventNotifiersClassDict[notifier_name](self)
+                notifier.setData(notifier_data)
+                self.notifiers.append(notifier)
+        for attr in ('icon', 'summary', 'description'):
             try:
-                del self.rulesOd[ruleType]
+                setattr(self, attr, data[attr])
             except KeyError:
                 pass
+    def saveConfig(self):
+        if not isdir(self.eventDir):
+            os.makedirs(self.eventDir)
+        jstr = self.getJson()
+        open(self.eventFile, 'w').write(jstr)
+    def loadConfig(self):## skipRules arg for use in ui_gtk/event/notify.py ## FIXME
+        if not isdir(self.eventDir):
+            raise IOError('error while loading event directory %r: no such directory'%self.eventDir)
+        if not isfile(self.eventFile):
+            raise IOError('error while loading event file %r: no such file'%self.eventFile)
+        jsonStr = open(self.eventFile).read()
+        if jsonStr:
+            self.setJson(jsonStr)## FIXME
+    def __getitem__(self, key):
+        try:
+            return self.rulesOd[key]
+        except KeyError:
+            return self.group.rulesOd[key]
+    getNotifiersData = lambda self: [(notifier.name, notifier.getData()) for notifier in self.notifiers]
+    getNotifiersDict = lambda self: dict(self.getNotifiersData())
+    def getRulesWithGroup(self):
+        rulesOd = self.group.rulesOd.copy()
+        rulesOd.update(self.rulesOd)
+        return rulesOd.values()
     def calcOccurrenceForJdRange(self, startJd, endJd):## float jd ## cache Occurrences ## FIXME
-        if not self.rulesOd:
-            return []
+        rules = self.getRulesWithGroup()
+        if not rules:
+            return JdListOccurrence()
         startEpoch = getEpochFromJd(startJd)
         endEpoch = getEpochFromJd(endJd)
-        rules = self.rulesOd.values()
-        occur = rules[0].calcOccurrence(startEpoch, endEpoch)
+        occur = rules[0].calcOccurrence(startEpoch, endEpoch, self)
         for rule in rules[1:]:
-            occur = occur.intersection(rule.calcOccurrence(startEpoch, endEpoch))
+            try:
+                startEpoch = occur.getStartEpoch()
+            except ValueError:
+                pass
+            try:
+                endEpoch = occur.getEndEpoch()
+            except ValueError:
+                pass
+            occur = occur.intersection(rule.calcOccurrence(startEpoch, endEpoch, self))
         occur.event = self
         return occur ## FIXME
     def notify(self, finishFunc):
@@ -994,7 +1013,7 @@ class YearlyEvent(Event):
 class DailyNoteEvent(YearlyEvent):
     name = 'dailyNote'
     desc = _('Daily Note')
-    defaultIconName = 'note'
+    iconName = 'note'
     requiredRules = ('year', 'month', 'day')
     supportedRules = ('year', 'month', 'day')
     getYear = lambda self: self['year'].year
@@ -1024,11 +1043,22 @@ class TaskEvent(Event):
     ## Y/m/d H:M until Y/m/d H:M   ==> start, end
     name = 'task'
     desc = _('Task')
-    defaultIconName = 'task'
+    iconName = 'task'
     requiredRules = ('start',)
     supportedRules = ('start', 'end', 'duration')
     def __init__(self, eid=None):
         Event.__init__(self, eid)
+    def setDefaults(self):
+        self.setStart(
+            core.getSysDate(self.mode),
+            tuple(time.localtime()[3:6]),
+        )
+    def setDefaultsFromGroup(self, group):
+        Event.setDefaultsFromGroup(self, group)
+        if group.name == 'taskList':
+            value, unit = group.defaultDuration
+            if value > 0:
+                self.setEnd('duration', value, unit)
     def setStart(self, date, dayTime):
         startRule = self['start']
         startRule.date = date
@@ -1081,17 +1111,6 @@ class TaskEvent(Event):
         else:
             return self['start'].getEpoch() + rule.getSeconds()
         return None
-    def setDefaults(self):
-        self.setStart(
-            core.getSysDate(self.mode),
-            tuple(time.localtime()[3:6]),
-        )
-    def setDefaultsFromGroup(self, group):
-        Event.setDefaultsFromGroup(self, group)
-        if group.name == 'taskList':
-            value, unit = group.defaultDuration
-            if value > 0:
-                self.setEnd('duration', value, unit)
     def copyFrom(self, other):
         Event.copyFrom(self, other)
         myStartRule = self['start']
@@ -1144,7 +1163,7 @@ class TaskEvent(Event):
 class UniversityClassEvent(Event):## FIXME
     name = 'universityClass'
     desc = _('University Class')
-    defaultIconName = 'university'
+    iconName = 'university'
     requiredRules  = ('weekNumMode', 'weekDay', 'dayTimeRange',)
     supportedRules = ('weekNumMode', 'weekDay', 'dayTimeRange',)
     def __init__(self, eid=None):
@@ -1198,7 +1217,7 @@ class EventContainer(EventBaseClass):
         self.eventIds.remove(eid)
         return index
 
-class EventGroup(EventContainer):
+class EventGroup(EventContainer, RuleContainer):
     name = 'group'
     desc = _('Event Group')
     acceptsEventTypes = ('yearly', 'dailyNote', 'task', 'custom')
@@ -1214,15 +1233,24 @@ class EventGroup(EventContainer):
             title = self.desc
         self.title = title
         self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)## FIXME
-        self.defaultIcon = ''
+        self.icon = ''
         if len(self.acceptsEventTypes)==1:
-            defaultIconName = eventsClassDict[self.acceptsEventTypes[0]].defaultIconName
-            if defaultIconName:
-                self.defaultIcon = join(pixDir, 'event', defaultIconName+'.png')
+            iconName = eventsClassDict[self.acceptsEventTypes[0]].iconName
+            if iconName:
+                self.icon = join(pixDir, 'event', iconName+'.png')
         self.defaultEventType = 'custom'
-        self.defaultMode = core.primaryMode
+        self.mode = core.primaryMode
         self.eventCacheSize = 0
         self.eventCache = {} ## from eid to event object
+        self.clearRules()
+        self.addRequirements()
+        self.setDefaults()
+    def setDefaults(self):
+        '''
+            sets default values that depends on group type
+            not common parameters, like those are set in __init__
+        '''
+        pass
     __nonzero__ = lambda self: True ## FIXME
     def setId(self, gid=None):
         if gid is None or gid<0:
@@ -1232,22 +1260,34 @@ class EventGroup(EventContainer):
             core.lastEventGroupId = gid
         self.gid = gid
         self.groupFile = join(groupsDir, '%d.json'%self.gid)
+    def copyFrom(self, other):
+        self.enable = other.enable
+        self.mode = other.mode
+        self.copyRulesFrom(other)
+        self.icon = other.icon
+        self.color = other.color
+        self.title = other.title
+        #self.defaultEventType = other.defaultEventType ## FIXME
+        self.eventCacheSize = other.eventCacheSize
+        self.eventIds = other.eventIds ## FIXME
+        self.addRequirements()
     def getData(self):
         return {
             'enable': self.enable,
             'type': self.name,
-            'title': self.title,
+            'calType': core.modules[self.mode].name,
+            'rules': self.getRulesData(),
+            'icon': self.icon,
             'color': self.color,
-            'defaultIcon': self.defaultIcon,
+            'title': self.title,
             'defaultEventType': self.defaultEventType,
-            'defaultCalType': core.modules[self.defaultMode].name,
             'eventCacheSize': self.eventCacheSize,
             'eventIds': self.eventIds,
         }
     def setData(self, data):
         if 'id' in data:
             self.setId(data['id'])
-        for attr in ('enable', 'title', 'color', 'defaultIcon', 'eventCacheSize', 'eventIds'):
+        for attr in ('enable', 'title', 'color', 'icon', 'eventCacheSize', 'eventIds'):
             try:
                 setattr(self, attr, data[attr])
             except KeyError:
@@ -1258,14 +1298,17 @@ class EventGroup(EventContainer):
             if not self.defaultEventType in eventsClassDict:
                 raise ValueError('Invalid defaultEventType: %r'%self.defaultEventType)
         ####
-        if 'defaultCalType' in data:
-            defaultCalType = data['defaultCalType']
+        if 'calType' in data:
+            calType = data['calType']
             for (i, module) in enumerate(core.modules):
-                if module.name == defaultCalType:
-                    self.defaultMode = i
+                if module.name == calType:
+                    self.mode = i
                     break
             else:
-                raise ValueError('Invalid defaultCalType: %r'%defaultCalType)
+                raise ValueError('Invalid calType: %r'%calType)
+        ####
+        if 'rules' in data:
+            self.setRulesData(data['rules'])
     def saveConfig(self):
         jstr = self.getJson()
         open(self.groupFile, 'w').write(jstr)
@@ -1393,12 +1436,12 @@ class NoteBook(EventGroup):
 class UniversityTerm(EventGroup):
     name = 'universityTerm'
     desc = _('University Term')
+    requiredRules = ('start', 'end')
+    supportedRules = ('start', 'end')
     acceptsEventTypes = ('universityClass',)
     #actions = EventGroup.actions + []
     def __init__(self, gid=None, title=None):
         EventGroup.__init__(self, gid, title)
-        self.startJd = core.getCurrentJd() ## FIXME
-        self.endJd = self.startJd
         self.courses = [] ## list of (courseId, courseName, courseUnits)
         self.lastCourseId = max([1]+[course[0] for course in self.courses])
         self.classTimeBounds = [
@@ -1409,15 +1452,44 @@ class UniversityTerm(EventGroup):
             (16, 0),
             (18, 0),
         ] ## FIXME
+    def setDefaults(self):
+        startRule = self['start']
+        endRule = self['end']
+        startRule.time = (0, 0, 0)
+        endRule.time = (24, 0, 0)## FIXME
+        calType = core.moduleNames[self.mode]
+        ## FIXME
+        ## odd term or even term?
+        jd = core.getCurrentJd()
+        (year, month, day) = jd_to(jd, self.mode)
+        md = (month, day)
+        if calType=='jalali':
+            ## 0/07/01 to 0/11/01
+            ## 0/11/15 to 1/03/20
+            if (1, 1) <= md < (4, 1):
+                startRule.date = (year-1, 11, 15)
+                endRule.date = (year, 3, 20)
+            elif (4, 1) <= md < (10, 1):
+                startRule.date = (year, 7, 1)
+                endRule.date = (year, 11, 1)
+            else:## md >= (10, 1)
+                startRule.date = (year, 11, 15)
+                endRule.date = (year+1, 3, 20)
+        #elif calType=='gregorian':
+        #    pass
     def getNewCourseID(self):
         self.lastCourseId += 1
         return self.lastCourseId
+    def copyFrom(self, other):
+        EventGroup.copyFrom(self, other)
+        self.courses = other.courses[:]
+        self.classTimeBounds = other.classTimeBounds[:]
     def getData(self):
         data = EventGroup.getData(self)
         data.update({
             'classTimeBounds': [hmEncode(hm) for hm in self.classTimeBounds],
         })
-        for attr in ('startJd', 'endJd', 'courses'):
+        for attr in ('courses',):
             data.update({attr: getattr(self, attr)})
         return data
     def setData(self, data):
@@ -1426,7 +1498,7 @@ class UniversityTerm(EventGroup):
         if 'classTimeBounds' in data:
             self.classTimeBounds = sorted([hmDecode(hm) for hm in data['classTimeBounds']])
         ##
-        for attr in ('startJd', 'endJd', 'courses', 'classTimeBounds'):
+        for attr in ('courses',):
             try:
                 setattr(self, attr, data[attr])
             except KeyError:

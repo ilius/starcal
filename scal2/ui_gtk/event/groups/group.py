@@ -43,12 +43,12 @@ class GroupWidget(gtk.VBox):
         self.pack_start(hbox, 0, 0)
         ##
         hbox = gtk.HBox()
-        label = gtk.Label(_('Default Icon'))
+        label = gtk.Label(_('Default Icon'))## FIXME
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
         sizeGroup.add_widget(label)
-        self.defaultIconSelect = common.IconSelectButton()
-        hbox.pack_start(self.defaultIconSelect, 0, 0)
+        self.iconSelect = common.IconSelectButton()
+        hbox.pack_start(self.iconSelect, 0, 0)
         self.pack_start(hbox, 0, 0)
         ##
         hbox = gtk.HBox()
@@ -63,7 +63,7 @@ class GroupWidget(gtk.VBox):
         #    combo.append_text(_('Julian Day'))
         hbox.pack_start(combo, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
-        self.defaultModeCombo = combo
+        self.modeCombo = combo
         self.pack_start(hbox, 0, 0)
         ##
         hbox = gtk.HBox()
@@ -85,14 +85,14 @@ class GroupWidget(gtk.VBox):
     def updateWidget(self):
         self.titleEntry.set_text(self.group.title)
         self.colorButton.set_color(self.group.color)
-        self.defaultIconSelect.set_filename(self.group.defaultIcon)
-        self.defaultModeCombo.set_active(self.group.defaultMode)
+        self.iconSelect.set_filename(self.group.icon)
+        self.modeCombo.set_active(self.group.mode)
         self.cacheSizeSpin.set_value(self.group.eventCacheSize)
     def updateVars(self):
         self.group.title = self.titleEntry.get_text()
         self.group.color = self.colorButton.get_color()
-        self.group.defaultIcon = self.defaultIconSelect.get_filename()
-        self.group.defaultMode = self.defaultModeCombo.get_active()
+        self.group.icon = self.iconSelect.get_filename()
+        self.group.mode = self.modeCombo.get_active()
         self.group.eventCacheSize = int(self.cacheSizeSpin.get_value())
 
 

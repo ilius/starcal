@@ -228,7 +228,7 @@ class ClassTimeBoundsEditor(gtk.HBox):
     def setData(self, hmList):
         self.trees.clear()
         for hm in hmList:
-            self.trees.append([hmEncode((h, m))])
+            self.trees.append([hmEncode(hm)])
     def getData(self):
         return sorted([hmDecode(row[0]) for row in self.trees])
 
@@ -278,22 +278,23 @@ class GroupWidget(BaseGroupWidget):
         self.pack_start(totalFrame, 1, 1)## expand? FIXME
     def updateWidget(self):## FIXME
         BaseGroupWidget.updateWidget(self)
-        ##
-        dateMode = core.primaryMode ## or self.group.defaultMode FIXME
-        self.startDateInput.set_date(core.jd_to(self.group.startJd, dateMode))
-        self.endDateInput.set_date(core.jd_to(self.group.endJd, dateMode))
-        ##
+        self.startDateInput.set_date(self.group['start'].date)
+        self.endDateInput.set_date(self.group['end'].date)
         self.courseListEditor.setData(self.group.courses)
+        self.classTimeBoundsEditor.setData(self.group.classTimeBounds)
     def updateVars(self):
         BaseGroupWidget.updateVars(self)
         ##
-        dateMode = core.primaryMode ## or self.group.defaultMode FIXME
-        (y0, m0, d0) = self.startDateInput.get_date()
-        self.group.startJd = core.to_jd(y0, m0, d0, dateMode)
-        (y0, m0, d0) = self.startDateInput.get_date()
-        self.group.endJd = core.to_jd(y0, m0, d0, dateMode)
+        startRule = self.group['start']
+        startRule.date = self.startDateInput.get_date()
+        startRule.time = (0, 0, 0)
+        ##
+        endRule = self.group['end']
+        endRule.date = self.endDateInput.get_date()
+        endRule.time = (24, 0, 0) ## FIXME
+        ##
         self.group.courses = self.courseListEditor.getData()
-        
+        self.group.classTimeBounds = self.classTimeBoundsEditor.getData()
 
 
 

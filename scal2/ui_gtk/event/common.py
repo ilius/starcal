@@ -111,7 +111,7 @@ class EventWidget(gtk.VBox):
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Icon')+':'), 0, 0)
         self.iconSelect = IconSelectButton()
-        #print join(pixDir, self.defaultIcon)
+        #print join(pixDir, self.icon)
         hbox.pack_start(self.iconSelect, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         self.pack_start(hbox, 0, 0)
@@ -492,8 +492,8 @@ class GroupEditorDialog(gtk.Dialog):
         group = cls()
         if self._group:
             if self.isNewGroup:
-                if group.defaultIcon:
-                    self._group.defaultIcon = group.defaultIcon
+                if group.icon:
+                    self._group.icon = group.icon
             group.copyFrom(self._group)
             group.setId(self._group.gid)
             del self._group
