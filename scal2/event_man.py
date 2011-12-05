@@ -882,7 +882,7 @@ class Event(EventBaseClass, RuleContainer):
         self.summary = other.summary
         self.description = other.description
         #self.showInTimeLine = other.showInTimeLine
-        self.files = other.files[:]
+        #self.files = other.files[:]
         self.addRequirements()
     def getData(self):
         return {
@@ -1251,6 +1251,7 @@ class EventGroup(EventContainer, RuleContainer):
         self.title = title
         self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)## FIXME
         self.icon = ''
+        #self.defaultNotifyBefore = (10, 60) ## FIXME
         if len(self.acceptsEventTypes)==1:
             iconName = eventsClassDict[self.acceptsEventTypes[0]].iconName
             if iconName:

@@ -59,8 +59,8 @@ class EventWidget(common.EventWidget):
         self.notificationBox = common.NotificationBox(event)
         self.pack_start(self.notificationBox, 0, 0)
         #############
-        self.filesBox = common.FilesBox(self.event)
-        self.pack_start(self.filesBox, 0, 0)
+        #self.filesBox = common.FilesBox(self.event)
+        #self.pack_start(self.filesBox, 0, 0)
     def endTypeComboChanged(self, combo=None):
         active = self.endTypeCombo.get_active()
         if active==0:

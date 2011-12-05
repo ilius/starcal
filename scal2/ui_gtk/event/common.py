@@ -118,6 +118,7 @@ class EventWidget(gtk.VBox):
         ##########
         self.modeCombo.connect('changed', self.modeComboChanged)## right place? before updateWidget? FIXME
     def updateWidget(self):
+        #print 'updateWidget', self.event.files
         self.modeCombo.set_active(self.event.mode)
         self.summuryEntry.set_text(self.event.summary)
         self.descriptionBuff.set_text(self.event.description)

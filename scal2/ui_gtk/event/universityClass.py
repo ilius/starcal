@@ -116,7 +116,10 @@ class EventWidget(gtk.VBox):
         ######
         self.notificationBox = common.NotificationBox(event)
         self.pack_start(self.notificationBox, 0, 0)
-        #####
+        ######
+        #self.filesBox = common.FilesBox(self.event)
+        #self.pack_start(self.filesBox, 0, 0)
+        ######
         self.courseCombo.set_active(0)
         self.updateSummary()
     def updateSummary(self, widget=None):
@@ -151,6 +154,8 @@ class EventWidget(gtk.VBox):
         self.iconSelect.set_filename(self.event.icon)
         ####
         self.notificationBox.updateWidget()
+        ####
+        #self.filesBox.updateWidget()
     def updateVars(self):## FIXME
         courseIndex = self.courseCombo.get_active()
         if courseIndex is None:
