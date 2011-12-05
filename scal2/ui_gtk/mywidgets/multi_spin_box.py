@@ -289,8 +289,7 @@ class MultiSpinBox(gtk.HBox):
     def _entry_activate(self, widget):
         self.add_history()
         self.emit('activate')
-    def clear_history(self):
-        self.combo.get_model().clear()
+    clear_history = lambda self: self.combo.get_model().clear()
     def add_history(self, nums=None):
         if nums==None:
             text = self.entry_validate()

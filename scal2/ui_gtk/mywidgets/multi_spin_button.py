@@ -369,6 +369,17 @@ class TimeButton(MultiSpinButton):
         self.set_time((h, m, s))
         ##return day
 
+class HourMinuteButton(MultiSpinButton):
+    def __init__(self, hms=None, **kwargs):
+        if hms==None:
+            hms = localtime()[3:5]
+        MultiSpinButton.__init__(self, mins=(0,0), maxs=(23,59), fields=(2,2), sep=(u':',), nums=hms, **kwargs)
+        self.get_hm = self.get_nums
+        self.set_hm = self.set_nums
+    get_time = lambda self: self.get_hm() + [0]
+    set_time = lambda self, tm: self.set_hm(tm[:2])
+
+
 class DateTimeButton(MultiSpinButton):
     def __init__(self, date_time=None, **kwargs):
         if date_time==None:

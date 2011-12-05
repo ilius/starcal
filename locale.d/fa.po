@@ -832,17 +832,32 @@ msgid "New Course"
 msgstr ""
 "درس جدید"
 
-msgid "Class Time Bounds"
-msgstr ""
-"مرز زمان کلاس‌ها"
+#msgid "University Class"
+#msgstr ""
+#"کلاس دانشگاه"
 
-msgid "University Class"
+msgid "Class"
 msgstr ""
-"کلاس دانشگاه"
+"کلاس"
 
 msgid "%s Class"
 msgstr ""
 "کلاس %s"
+
+msgid "Class Time Bounds"
+msgstr ""
+"مرز زمان کلاس‌ها"
+
+msgid "Exam"
+msgstr ""
+"امتحان"
+
+msgid "%s Exam"
+msgstr ""
+"امتحان %s"
+
+
+
 
 msgid "Add Group"
 msgstr ""

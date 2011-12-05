@@ -490,7 +490,7 @@ class DayTimeEventRule(EventRule):## Moment Event
     getInfo = lambda self: _('Time in Day') + ': ' + timeEncode(self.dayTime)
 
 
-class DayTimeRangeEventRule(EventRule):## use for UniversityClassEvent
+class DayTimeRangeEventRule(EventRule):
     name = 'dayTimeRange'
     desc = _('Day Time Range')
     conflict = ('dayTime',)
@@ -499,11 +499,11 @@ class DayTimeRangeEventRule(EventRule):## use for UniversityClassEvent
         EventRule.__init__(self, parent)
         self.dayTimeStart = (0, 0, 0)
         self.dayTimeEnd = (24, 0, 0)
-    def getData(self):
-        return (timeEncode(self.dayTimeStart), timeEncode(self.dayTimeEnd))
-    def setData(self, data):
-        self.dayTimeStart = timeDecode(data[0])
-        self.dayTimeEnd = timeDecode(data[1])
+    def setRange(self, start, end):
+        self.dayTimeStart = tuple(start)
+        self.dayTimeEnd = tuple(end)
+    getData = lambda self: (timeEncode(self.dayTimeStart), timeEncode(self.dayTimeEnd))
+    setData = lambda self, data: self.setRange(timeDecode(data[0]), timeDecode(data[1]))
     def calcOccurrence(self, startEpoch, endEpoch, event):
         daySecStart = getSecondsFromHms(*self.dayTimeStart)
         daySecEnd = getSecondsFromHms(*self.dayTimeEnd)
@@ -937,7 +937,10 @@ class Event(EventBaseClass, RuleContainer):
         try:
             return self.rulesOd[key]
         except KeyError:
-            return self.group.rulesOd[key]
+            try:
+                return self.group.rulesOd[key]
+            except (KeyError, AttributeError):
+                raise KeyError('Event %s has no rule %s'%(self.eid, key))
     getNotifiersData = lambda self: [(notifier.name, notifier.getData()) for notifier in self.notifiers]
     getNotifiersDict = lambda self: dict(self.getNotifiersData())
     def getRulesWithGroup(self):
@@ -1167,7 +1170,7 @@ class TaskEvent(Event):
 
 class UniversityClassEvent(Event):## FIXME
     name = 'universityClass'
-    desc = _('University Class')
+    desc = _('Class')
     iconName = 'university'
     requiredRules  = ('weekNumMode', 'weekDay', 'dayTimeRange',)
     supportedRules = ('weekNumMode', 'weekDay', 'dayTimeRange',)
@@ -1179,12 +1182,15 @@ class UniversityClassEvent(Event):## FIXME
     #    pass
     def setDefaultsFromGroup(self, group):
         Event.setDefaultsFromGroup(self, group)
-        timeRangeRule = self['dayTimeRange']
         try:
-            timeRangeRule.dayTimeStart = group.classTimeBounds[0] + (0,)
-            timeRangeRule.dayTimeEnd = group.classTimeBounds[1] + (0,)
+            (tm0, tm1) = group.classTimeBounds[:2]
         except:
             myRaise()
+        else:
+            self['dayTimeRange'].setRange(
+                tm0 + (0,),
+                tm1 + (0,),
+            )
     def copyFrom(self, other):
         Event.copyFrom(self, other)
         self.courseId = other.courseId
@@ -1198,6 +1204,41 @@ class UniversityClassEvent(Event):## FIXME
             self.courseId = data['courseId']
         except KeyError:
             pass
+
+class UniversityExamEvent(DailyNoteEvent):
+    name = 'universityExam'
+    desc = _('Exam')
+    requiredRules  = ('year', 'month', 'day', 'dayTimeRange',)
+    supportedRules = ('year', 'month', 'day', 'dayTimeRange',)
+    def __init__(self, eid=None):
+        ## assert group is not None ## FIXME
+        Event.__init__(self, eid)
+        self.courseId = None ## FIXME
+    def setDefaultsFromGroup(self, group):
+        DailyNoteEvent.setDefaultsFromGroup(self, group)
+        self.setDate(*group['end'].date)## FIXME
+        self['dayTimeRange'].setRange((9, 0), (11, 0))## FIXME
+    def copyFrom(self, other):
+        Event.copyFrom(self, other)
+        self.courseId = other.courseId
+    def getData(self):
+        data = Event.getData(self)
+        data['courseId'] = self.courseId
+        return data
+    def setData(self, data):
+        Event.setData(self, data)
+        try:
+            self.courseId = data['courseId']
+        except KeyError:
+            pass
+    def calcOccurrenceForJdRange(self, startJd, endJd):
+        return DailyNoteEvent.calcOccurrenceForJdRange(self, startJd, endJd).intersection(
+            self['dayTimeRange'].calcOccurrence(
+                getEpochFromJd(startJd),
+                getEpochFromJd(endJd),
+                self,
+            )
+        )
 
 class EventContainer(EventBaseClass):
     name = ''
@@ -1461,7 +1502,7 @@ class UniversityTerm(EventGroup):
     desc = _('University Term')
     requiredRules = ('start', 'end')
     supportedRules = ('start', 'end')
-    acceptsEventTypes = ('universityClass',)
+    acceptsEventTypes = ('universityClass', 'universityExam')
     #actions = EventGroup.actions + []
     def __init__(self, gid=None, title=None):
         EventGroup.__init__(self, gid, title)
@@ -2039,7 +2080,7 @@ def restartDaemon():
 
 ########################################################################
 
-eventsClassList = [TaskEvent, DailyNoteEvent, YearlyEvent, UniversityClassEvent, Event]
+eventsClassList = [TaskEvent, DailyNoteEvent, YearlyEvent, UniversityClassEvent, UniversityExamEvent, Event]
 eventsClassDict = dict([(cls.name, cls) for cls in eventsClassList])
 eventsClassByDesc = dict([(cls.desc, cls) for cls in eventsClassList])
 

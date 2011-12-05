@@ -6,10 +6,9 @@ from scal2.locale_man import tr as _
 from scal2 import event_man
 
 from scal2 import ui
-from scal2.ui_gtk.mywidgets.multi_spin_box import HourMinuteBox
+from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, HourMinuteButton
 from scal2.ui_gtk.event import common
-from scal2.ui_gtk.event.rules.weekNumMode import RuleWidget as WeekNumModeRuleWidget
-from scal2.ui_gtk.utils import showError, WeekDayComboBox, buffer_get_text
+from scal2.ui_gtk.utils import showError, buffer_get_text
 
 import gtk
 from gtk import gdk
@@ -44,22 +43,12 @@ class EventWidget(gtk.VBox):
         self.pack_start(hbox, 0, 0)
         #####
         hbox = gtk.HBox()
-        label = gtk.Label(_('Week'))
+        label = gtk.Label(_('Date'))
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
-        self.weekNumModeCombo = WeekNumModeRuleWidget(event['weekNumMode'])
-        hbox.pack_start(self.weekNumModeCombo, 0, 0)
-        self.pack_start(hbox, 0, 0)
-        #####
-        hbox = gtk.HBox()
-        label = gtk.Label(_('Week Day'))
-        label.set_alignment(0, 0.5)
-        sizeGroup.add_widget(label)
-        hbox.pack_start(label, 0, 0)
-        self.weekDayCombo = WeekDayComboBox()
-        self.weekDayCombo.connect('changed', self.updateSummary)
-        hbox.pack_start(self.weekDayCombo, 0, 0)
+        self.dateInput = DateButton(lang=core.langSh)
+        hbox.pack_start(self.dateInput, 0, 0)
         self.pack_start(hbox, 0, 0)
         #####
         hbox = gtk.HBox()
@@ -68,8 +57,8 @@ class EventWidget(gtk.VBox):
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
         ##
-        self.dayTimeStartCombo = HourMinuteBox(lang=core.langSh)
-        self.dayTimeEndCombo = HourMinuteBox(lang=core.langSh)
+        self.dayTimeStartCombo = HourMinuteButton(lang=core.langSh)
+        self.dayTimeEndCombo = HourMinuteButton(lang=core.langSh)
         ##
         #self.dayTimeStartCombo.child.set_direction(gtk.TEXT_DIR_LTR)
         #self.dayTimeEndCombo.child.set_direction(gtk.TEXT_DIR_LTR)
@@ -123,7 +112,7 @@ class EventWidget(gtk.VBox):
         self.updateSummary()
     def updateSummary(self, widget=None):
         courseIndex = self.courseCombo.get_active()
-        summary = _('%s Class')%self.courseNames[courseIndex] + ' (' + self.weekDayCombo.get_active_text() + ')'
+        summary = _('%s Exam')%self.courseNames[courseIndex]
         self.summuryEntry.set_text(summary)
         self.event.summary = summary
     def updateWidget(self):## FIXME
@@ -132,18 +121,8 @@ class EventWidget(gtk.VBox):
         else:
             self.courseCombo.set_active(self.courseIds.index(self.event.courseId))
         ##
-        self.weekNumModeCombo.updateWidget()
-        weekDayList = self.event['weekDay'].weekDayList
-        if len(weekDayList)==1:
-            self.weekDayCombo.setValue(weekDayList[0])## FIXME
-        else:
-            self.weekDayCombo.set_active(0)
+        self.dateInput.set_date(self.event.getDate())
         ##
-        self.dayTimeStartCombo.clear_history()
-        self.dayTimeEndCombo.clear_history()
-        for hm in reversed(self.event.group.classTimeBounds):
-            self.dayTimeStartCombo.add_history(hm)
-            self.dayTimeEndCombo.add_history(hm)
         timeRangeRule = self.event['dayTimeRange']
         self.dayTimeStartCombo.set_time(timeRangeRule.dayTimeStart)
         self.dayTimeEndCombo.set_time(timeRangeRule.dayTimeEnd)
@@ -163,8 +142,7 @@ class EventWidget(gtk.VBox):
         else:
             self.event.courseId = self.courseIds[courseIndex]
         ##
-        self.weekNumModeCombo.updateVars()
-        self.event['weekDay'].weekDayList = [self.weekDayCombo.getValue()]## FIXME
+        self.event.setDate(*tuple(self.dateInput.get_date()))
         ##
         self.event['dayTimeRange'].setRange(
             self.dayTimeStartCombo.get_time(),
