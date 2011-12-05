@@ -192,6 +192,11 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         tb.connect('clicked', self.moveDownByButton)
         toolbar.insert(tb, -1)
         ###
+        tb = toolButtonFromStock(gtk.STOCK_COPY, size)
+        set_tooltip(tb, _('Duplicate'))
+        tb.connect('clicked', self.duplicateButtonClicked)
+        toolbar.insert(tb, -1)
+        ###
         treeBox.pack_start(toolbar, 0, 0)
         #####
         self.vbox.pack_start(treeBox)
@@ -270,8 +275,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 ##
                 menu.add(gtk.SeparatorMenuItem())
                 menu.add(labelStockMenuItem('Add New Group', gtk.STOCK_NEW, self.addGroupAfterGroup, path))
-                menu.add(labelStockMenuItem('Duplicate', gtk.STOCK_NEW, self.duplicateGroup, path, group))
-                menu.add(labelStockMenuItem('Duplicate with All Events', gtk.STOCK_NEW, self.duplicateGroupWithEvents, path, group))
+                menu.add(labelStockMenuItem('Duplicate', gtk.STOCK_COPY, self.duplicateGroupFromMenu, path))
+                menu.add(labelStockMenuItem('Duplicate with All Events', gtk.STOCK_COPY, self.duplicateGroupWithEventsFromMenu, path))
                 menu.add(gtk.SeparatorMenuItem())
                 menu.add(labelStockMenuItem('Delete Group', gtk.STOCK_DELETE, self.deleteGroup, path))
                 ##
@@ -461,8 +466,9 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             afterGroupIter,## sibling
             self.getGroupRow(group, self.getRowBgColor()), ## row
         )
-    def duplicateGroup(self, menu, path, group):
+    def duplicateGroup(self, path):
         (index,) = path
+        (group,) = self.getObjsByPath(path)
         newGroup = group.copy()
         ui.duplicateGroupTitle(newGroup)
         newGroup.saveConfig()
@@ -473,8 +479,9 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             index+1,
             self.getGroupRow(newGroup, self.getRowBgColor()),
         )
-    def duplicateGroupWithEvents(self, menu, path, group):
+    def duplicateGroupWithEvents(self, path):
         (index,) = path
+        (group,) = self.getObjsByPath(path)
         newGroup = group.deepCopy()
         ui.duplicateGroupTitle(newGroup)
         newGroup.saveConfig()
@@ -487,6 +494,18 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         )
         for event in newGroup:
             self.trees.append(newGroupIter, self.getEventRow(event))
+    duplicateGroupFromMenu = lambda self, menu, path: self.duplicateGroup(path[0])
+    duplicateGroupWithEventsFromMenu = lambda self, menu, path: self.duplicateGroupWithEvents(path)
+    def duplicateButtonClicked(self, button):
+        cur = self.treev.get_cursor()
+        if not cur:
+            return
+        (path, col) = cur
+        if len(path)==1:
+            self.duplicateGroup(path)
+        elif len(path)==2:## FIXME
+            self.toPasteEvent = (path, False)
+            self.pasteEventAfterEvent(None, path)
     def editGroup(self, menu, path, group):
         group = GroupEditorDialog(group).run()
         if group is None:

@@ -1598,6 +1598,7 @@ class EventGroupsHolder:
     __len__ = lambda self: len(self.groupIds)
     index = lambda self, gid: self.groupIds.index(gid) ## or get group obj instead of gid? FIXME
     __getitem__ = lambda self, gid: self.groupsDict.__getitem__(gid)
+    #byIndex = lambda 
     __setitem__ = lambda self, gid, group: self.groupsDict.__setitem__(gid, group)
     def insert(self, index, group):
         gid = group.gid
