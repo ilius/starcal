@@ -103,11 +103,12 @@ def prepareToday():
                 continue
             #addList = []
             for (start, end) in occur.getTimeRangeList():
-                if start >= tm:
+                dt = start - event.getNotifyBeforeSec() - tm
+                if dt >= 0:
                     #print 'start=%s, seconds_later=%s'%(start, int(start-tm)+1)
-                    timeout_add_seconds(int(start-tm)+1, notify, eid)
-                    #log.debug(str(int(start-tm)+1))
-                    #addList.append(int(start-tm)+1)
+                    timeout_add_seconds(int(dt)+1, notify, eid)
+                    #log.debug(str(int(dt)+1))
+                    #addList.append(int(dt)+1)
                 #log.debug('start=%s, tm=%s, start-tm=%s'%(start, tm, start-tm))
     #addList.sort()
     #log.debug('addList=%r'%addList[:20])

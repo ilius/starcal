@@ -209,11 +209,19 @@ class FilesBox(gtk.VBox):
         for fname in self.event.files:
             self.showFile(fname)
 
-class NotifiersCheckList(gtk.Expander):
-    def __init__(self):
-        gtk.Expander.__init__(self, _('Notifiers'))
+class NotificationBox(gtk.Expander):## or NotificationBox FIXME
+    def __init__(self, event):
+        gtk.Expander.__init__(self, _('Notification'))
+        self.event = event
         self.hboxDict = {}
         totalVbox = gtk.VBox()
+        ###
+        hbox = gtk.HBox()
+        hbox.pack_start(gtk.Label(_('Notify Before')), 0, 0)## or at the end?
+        self.notifyBeforeInput = DurationInputBox()
+        hbox.pack_start(self.notifyBeforeInput, 1, 1)
+        totalVbox.pack_start(hbox, 0, 0)
+        ###
         for cls in event_man.eventNotifiersClassList:
             notifier = cls(self.event)
             inputWidget = notifier.makeWidget()
@@ -230,23 +238,27 @@ class NotifiersCheckList(gtk.Expander):
             self.hboxDict[notifier.name] = hbox
             totalVbox.pack_start(hbox, 0, 0)
         self.add(totalVbox)
-    def setNotifiers(self, notifiers):
+    def updateWidget(self):
+        self.notifyBeforeInput.setDuration(*self.event.notifyBefore)
         for hbox in self.hboxDict.values():
             hbox.cb.set_active(False)
             hbox.inputWidget.set_sensitive(False)
-        for notifier in notifiers:
+        for notifier in self.event.notifiers:
             hbox = self.hboxDict[notifier.name]
             hbox.cb.set_active(True)
             hbox.inputWidget.set_sensitive(True)
             hbox.inputWidget.notifier = notifier
             hbox.inputWidget.updateWidget()
-    def getNotifiers(self):
+        self.set_expanded(bool(self.event.notifiers))
+    def updateVars(self):
+        self.event.notifyBefore = self.notifyBeforeInput.getDuration()
+        ###
         notifiers = []
         for hbox in self.hboxDict.values():
             if hbox.cb.get_active():
                 hbox.inputWidget.updateVars()
                 notifiers.append(hbox.inputWidget.notifier)
-        return notifiers
+        self.event.notifiers = notifiers
 
 
 class DurationInputBox(gtk.HBox):

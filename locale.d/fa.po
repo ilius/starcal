@@ -137,6 +137,9 @@ msgstr "و"
 msgid "or"
 msgstr "یا"
 
+msgid "to"
+msgstr "تا"
+
 msgid ","
 msgstr "،"
 
@@ -595,10 +598,6 @@ msgid "Daily Note"
 msgstr ""
 "یادداشت روزانه"
 
-msgid "University Class"
-msgstr ""
-"کلاس دانشگاه"
-
 msgid "Events"
 msgstr ""
 "رویدادها"
@@ -642,6 +641,10 @@ msgstr ""
 msgid "Time in Day"
 msgstr ""
 "زمان در روز"
+
+msgid "Day Time Range"
+msgstr ""
+"بازهٔ زمانی در روز"
 
 msgid "Start"
 msgstr ""
@@ -796,6 +799,18 @@ msgid "University Term"
 msgstr ""
 "ترم دانشگاه"
 
+msgid "Course"
+msgstr ""
+"درس"
+
+msgid "Week"
+msgstr ""
+"هفته"
+
+msgid "Week Day"
+msgstr ""
+"روز هفته"
+
 msgid "Course List"
 msgstr ""
 "لیست درس‌ها"
@@ -820,6 +835,14 @@ msgstr ""
 msgid "Class Time Bounds"
 msgstr ""
 "مرز زمان کلاس‌ها"
+
+msgid "University Class"
+msgstr ""
+"کلاس دانشگاه"
+
+msgid "%s Class"
+msgstr ""
+"کلاس %s"
 
 msgid "Add Group"
 msgstr ""
@@ -1646,6 +1669,14 @@ msgstr ""
 msgid "Notifiers"
 msgstr ""
 "یادآورها"
+
+msgid "Notification"
+msgstr ""
+"یادآوری"
+
+msgid "Notify Before"
+msgstr ""
+"یادآوری کردن قبل از"
 
 msgid "Floating Message"
 msgstr ""

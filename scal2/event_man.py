@@ -391,12 +391,12 @@ class WeekNumberModeEventRule(EventRule):
         jdListAll = core.getJdListFromEpochRange(startEpoch, endEpoch)
         if self.weekNumMode==self.EVERY_WEEK:
             jdList = jdListAll
-        elif self.weekNumMode==ODD_WEEKS:
+        elif self.weekNumMode==self.ODD_WEEKS:
             jdList = []
             for jd in jdListAll:
                 if (core.getAbsWeekNumberFromJd(jd)-startAbsWeekNum)%2==1:
                     jdList.append(jd)
-        elif self.weekNumMode==EVEN_WEEKS:
+        elif self.weekNumMode==self.EVEN_WEEKS:
             jdList = []
             for jd in jdListAll:
                 if (core.getAbsWeekNumberFromJd(jd)-startAbsWeekNum)%2==0:
@@ -492,7 +492,7 @@ class DayTimeEventRule(EventRule):## Moment Event
 
 class DayTimeRangeEventRule(EventRule):## use for UniversityClassEvent
     name = 'dayTimeRange'
-    desc = 'Day Time Range'
+    desc = _('Day Time Range')
     conflict = ('dayTime',)
     params = ('dayTimeStart', 'dayTimeEnd')
     def __init__(self, parent):
@@ -509,10 +509,10 @@ class DayTimeRangeEventRule(EventRule):## use for UniversityClassEvent
         daySecEnd = getSecondsFromHms(*self.dayTimeEnd)
         startDiv, startMod = divmod(startEpoch, 24*3600)
         endDiv, endMod = divmod(endEpoch, 24*3600)
-        return intersectionOfTwoTimeRangeList(
+        return TimeRangeListOccurrence(intersectionOfTwoTimeRangeList(
             [(i*24*3600+daySecStart, i*24*3600+daySecEnd) for i in range(startDiv, endDiv+1)],
             [(startEpoch, endEpoch)],
-        )
+        ))
 
 
 class DateAndTimeEventRule(EventRule):
@@ -794,8 +794,11 @@ class Event(EventBaseClass, RuleContainer):
         ######
         self.clearRules()
         self.notifiers = []
+        self.notifyBefore = (0, 1) ## (value, unit) like DurationEventRule
+        ## self.snoozeTime = (5, 60) ## (value, unit) like DurationEventRule ## FIXME
         self.addRequirements()
         self.setDefaults()
+    getNotifyBeforeSec = lambda self: self.notifyBefore[0] * self.notifyBefore[1]
     def setDefaults(self):
         '''
             sets default values that depends on event type
@@ -874,11 +877,12 @@ class Event(EventBaseClass, RuleContainer):
         self.mode = other.mode
         self.copyRulesFrom(other)
         self.notifiers = other.notifiers[:]## FIXME
+        self.notifyBefore = other.notifyBefore[:]
         self.icon = other.icon
         self.summary = other.summary
         self.description = other.description
         #self.showInTimeLine = other.showInTimeLine
-        self.files = other.files
+        self.files = other.files[:]
         self.addRequirements()
     def getData(self):
         return {
@@ -886,6 +890,7 @@ class Event(EventBaseClass, RuleContainer):
             'calType': core.modules[self.mode].name,
             'rules': self.getRulesData(),
             'notifiers': self.getNotifiersData(),
+            'notifyBefore': durationEncode(*self.notifyBefore),
             'icon': self.icon,
             'summary': self.summary,
             'description': self.description,
@@ -908,6 +913,8 @@ class Event(EventBaseClass, RuleContainer):
                 notifier = eventNotifiersClassDict[notifier_name](self)
                 notifier.setData(notifier_data)
                 self.notifiers.append(notifier)
+        if 'notifyBefore' in data:
+            self.notifyBefore = durationDecode(data['notifyBefore'])
         for attr in ('icon', 'summary', 'description'):
             try:
                 setattr(self, attr, data[attr])
@@ -1046,8 +1053,6 @@ class TaskEvent(Event):
     iconName = 'task'
     requiredRules = ('start',)
     supportedRules = ('start', 'end', 'duration')
-    def __init__(self, eid=None):
-        Event.__init__(self, eid)
     def setDefaults(self):
         self.setStart(
             core.getSysDate(self.mode),
@@ -1170,17 +1175,29 @@ class UniversityClassEvent(Event):## FIXME
         ## assert group is not None ## FIXME
         Event.__init__(self, eid)
         self.courseId = None ## FIXME
-    #def __getitem__(self, key):
-    #    if key=='start':
-    #        ## FIXME
-    #        date = jd_to(self.group.startJd, self.mode)
-    #        startRule = StartEventRule()
-    #        startRule.date = date
-    #        startRule.time = (0, 0, 0)
-    #        return startRule
-    #    else:
-    #        return Event.__getitem__(key)
-
+    #def setDefaults(self):
+    #    pass
+    def setDefaultsFromGroup(self, group):
+        Event.setDefaultsFromGroup(self, group)
+        timeRangeRule = self['dayTimeRange']
+        try:
+            timeRangeRule.dayTimeStart = group.classTimeBounds[0] + (0,)
+            timeRangeRule.dayTimeEnd = group.classTimeBounds[1] + (0,)
+        except:
+            myRaise()
+    def copyFrom(self, other):
+        Event.copyFrom(self, other)
+        self.courseId = other.courseId
+    def getData(self):
+        data = Event.getData(self)
+        data['courseId'] = self.courseId
+        return data
+    def setData(self, data):
+        Event.setData(self, data)
+        try:
+            self.courseId = data['courseId']
+        except KeyError:
+            pass
 
 class EventContainer(EventBaseClass):
     name = ''
@@ -1238,7 +1255,10 @@ class EventGroup(EventContainer, RuleContainer):
             iconName = eventsClassDict[self.acceptsEventTypes[0]].iconName
             if iconName:
                 self.icon = join(pixDir, 'event', iconName+'.png')
-        self.defaultEventType = 'custom'
+        if len(self.acceptsEventTypes)==1:
+            self.defaultEventType = self.acceptsEventTypes[0]
+        else:
+            self.defaultEventType = 'custom'
         self.mode = core.primaryMode
         self.eventCacheSize = 0
         self.eventCache = {} ## from eid to event object
@@ -1280,7 +1300,7 @@ class EventGroup(EventContainer, RuleContainer):
             'icon': self.icon,
             'color': self.color,
             'title': self.title,
-            'defaultEventType': self.defaultEventType,
+            #'defaultEventType': self.defaultEventType,
             'eventCacheSize': self.eventCacheSize,
             'eventIds': self.eventIds,
         }
@@ -1293,10 +1313,10 @@ class EventGroup(EventContainer, RuleContainer):
             except KeyError:
                 pass
         ####
-        if 'defaultEventType' in data:
-            self.defaultEventType = data['defaultEventType']
-            if not self.defaultEventType in eventsClassDict:
-                raise ValueError('Invalid defaultEventType: %r'%self.defaultEventType)
+        #if 'defaultEventType' in data:
+        #    self.defaultEventType = data['defaultEventType']
+        #    if not self.defaultEventType in eventsClassDict:
+        #        raise ValueError('Invalid defaultEventType: %r'%self.defaultEventType)
         ####
         if 'calType' in data:
             calType = data['calType']
@@ -1415,11 +1435,13 @@ class TaskList(EventGroup):
         EventGroup.__init__(self, gid, title)
         self.defaultDuration = (0, 1) ## (value, unit)
         ## if defaultDuration[0] is set to zero, the checkbox for task's end, will be unchecked for new tasks
+    def copyFrom(self, other):
+        EventGroup.copyFrom(self, other)
+        if other.name == self.name:
+            self.defaultDuration = other.defaultDuration[:]
     def getData(self):
         data = EventGroup.getData(self)
-        data.update({
-            'defaultDuration': durationEncode(*self.defaultDuration),
-        })
+        data['defaultDuration'] = durationEncode(*self.defaultDuration)
         return data
     def setData(self, data):
         EventGroup.setData(self, data)
@@ -1442,8 +1464,7 @@ class UniversityTerm(EventGroup):
     #actions = EventGroup.actions + []
     def __init__(self, gid=None, title=None):
         EventGroup.__init__(self, gid, title)
-        self.courses = [] ## list of (courseId, courseName, courseUnits)
-        self.lastCourseId = max([1]+[course[0] for course in self.courses])
+        self.setCourses([]) ## list of (courseId, courseName, courseUnits)
         self.classTimeBounds = [
             (8, 0),
             (10, 0),
@@ -1452,6 +1473,9 @@ class UniversityTerm(EventGroup):
             (16, 0),
             (18, 0),
         ] ## FIXME
+    def setCourses(self, courses):
+        self.courses = courses
+        self.lastCourseId = max([1]+[course[0] for course in self.courses])
     def setDefaults(self):
         startRule = self['start']
         endRule = self['end']
@@ -1482,8 +1506,9 @@ class UniversityTerm(EventGroup):
         return self.lastCourseId
     def copyFrom(self, other):
         EventGroup.copyFrom(self, other)
-        self.courses = other.courses[:]
-        self.classTimeBounds = other.classTimeBounds[:]
+        if other.name == self.name:
+            self.courses = other.courses[:]
+            self.classTimeBounds = other.classTimeBounds[:]
     def getData(self):
         data = EventGroup.getData(self)
         data.update({

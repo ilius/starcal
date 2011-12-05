@@ -293,7 +293,7 @@ class GroupWidget(BaseGroupWidget):
         endRule.date = self.endDateInput.get_date()
         endRule.time = (24, 0, 0) ## FIXME
         ##
-        self.group.courses = self.courseListEditor.getData()
+        self.group.setCourses(self.courseListEditor.getData())
         self.group.classTimeBounds = self.classTimeBoundsEditor.getData()
 
 

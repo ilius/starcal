@@ -6,16 +6,19 @@ from scal2.locale_man import tr as _
 from scal2 import event_man
 
 from scal2 import ui
+from scal2.ui_gtk.mywidgets.multi_spin_box import HourMinuteBox
 from scal2.ui_gtk.event import common
 from scal2.ui_gtk.event.rules.weekNumMode import RuleWidget as WeekNumModeRuleWidget
-from scal2.ui_gtk.utils import showError, WeekDayComboBox
+from scal2.ui_gtk.utils import showError, WeekDayComboBox, buffer_get_text
+from scal2.time_utils import hmEncode
 
 import gtk
 from gtk import gdk
 
-class EventWidget(common.EventWidget):
+class EventWidget(gtk.VBox):
     def __init__(self, event):## FIXME
-        common.EventWidget.__init__(self, event)
+        gtk.VBox.__init__(self)
+        self.event = event
         assert event.group and event.group.name == 'universityTerm' ## FIXME
         sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
         #####
@@ -23,12 +26,13 @@ class EventWidget(common.EventWidget):
             showError(_('Edit University Term and add some Courses before you add a Class'))
             raise RuntimeError('No courses added')
         self.courseIds = []
-        #self.courseNames = []
+        self.courseNames = []
         combo = gtk.combo_box_new_text()
         for course in event.group.courses:
             self.courseIds.append(course[0])
-            #self.courseNames.append(course[1])
+            self.courseNames.append(course[1])
             combo.append_text(course[1])
+        combo.connect('changed', self.updateSummary)
         self.courseCombo = combo
         ##
         hbox = gtk.HBox()
@@ -55,21 +59,99 @@ class EventWidget(common.EventWidget):
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
         self.weekDayCombo = WeekDayComboBox()
+        self.weekDayCombo.connect('changed', self.updateSummary)
         hbox.pack_start(self.weekDayCombo, 0, 0)
         self.pack_start(hbox, 0, 0)
-    def updateWidget(self):## FIXME
-        common.EventWidget.updateWidget(self)
+        #####
+        hbox = gtk.HBox()
+        label = gtk.Label(_('Time'))
+        label.set_alignment(0, 0.5)
+        sizeGroup.add_widget(label)
+        hbox.pack_start(label, 0, 0)
         ##
+        self.dayTimeStartCombo = HourMinuteBox(lang=core.langSh)
+        self.dayTimeEndCombo = HourMinuteBox(lang=core.langSh)
+        ##
+        #self.dayTimeStartCombo.child.set_direction(gtk.TEXT_DIR_LTR)
+        #self.dayTimeEndCombo.child.set_direction(gtk.TEXT_DIR_LTR)
+        ##
+        hbox.pack_start(self.dayTimeStartCombo, 0, 0)
+        hbox.pack_start(gtk.Label(' ' + _('to') + ' '), 0, 0)
+        hbox.pack_start(self.dayTimeEndCombo, 0, 0)
+        self.pack_start(hbox, 0, 0)
+        ###########
+        hbox = gtk.HBox()
+        label = gtk.Label(_('Summary'))
+        label.set_alignment(0, 0.5)
+        sizeGroup.add_widget(label)
+        hbox.pack_start(label, 0, 0)
+        self.summuryEntry = gtk.Entry()
+        hbox.pack_start(self.summuryEntry, 1, 1)
+        self.pack_start(hbox, 0, 0)
+        #####
+        hbox = gtk.HBox()
+        label = gtk.Label(_('Description'))
+        label.set_alignment(0, 0.5)
+        sizeGroup.add_widget(label)
+        hbox.pack_start(label, 0, 0)
+        textview = gtk.TextView()
+        textview.set_wrap_mode(gtk.WRAP_WORD)
+        self.descriptionBuff = textview.get_buffer()
+        frame = gtk.Frame()
+        frame.set_border_width(4)
+        frame.add(textview)
+        hbox.pack_start(frame, 1, 1)
+        self.pack_start(hbox, 0, 0)
+        #####
+        hbox = gtk.HBox()
+        label = gtk.Label(_('Icon'))
+        label.set_alignment(0, 0.5)
+        sizeGroup.add_widget(label)
+        hbox.pack_start(label, 0, 0)
+        self.iconSelect = common.IconSelectButton()
+        #print join(pixDir, self.icon)
+        hbox.pack_start(self.iconSelect, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.pack_start(hbox, 0, 0)
+        ######
+        self.notificationBox = common.NotificationBox(event)
+        self.pack_start(self.notificationBox, 0, 0)
+        #####
+        self.courseCombo.set_active(0)
+        self.updateSummary()
+    def updateSummary(self, widget=None):
+        courseIndex = self.courseCombo.get_active()
+        summary = _('%s Class')%self.courseNames[courseIndex] + ' (' + self.weekDayCombo.get_active_text() + ')'
+        self.summuryEntry.set_text(summary)
+        self.event.summary = summary
+    def updateWidget(self):## FIXME
         if self.event.courseId is None:
             pass
         else:
             self.courseCombo.set_active(self.courseIds.index(self.event.courseId))
         ##
         self.weekNumModeCombo.updateWidget()
-        self.weekDayCombo.setValue(self.event['weekDay'].weekDayList[0])## FIXME
-    def updateVars(self):## FIXME
-        common.EventWidget.updateVars(self)
+        weekDayList = self.event['weekDay'].weekDayList
+        if len(weekDayList)==1:
+            self.weekDayCombo.setValue(weekDayList[0])## FIXME
+        else:
+            self.weekDayCombo.set_active(0)
         ##
+        self.dayTimeStartCombo.clear_history()
+        self.dayTimeEndCombo.clear_history()
+        for hm in reversed(self.event.group.classTimeBounds):
+            self.dayTimeStartCombo.add_history(hm)
+            self.dayTimeEndCombo.add_history(hm)
+        timeRangeRule = self.event['dayTimeRange']
+        self.dayTimeStartCombo.set_time(timeRangeRule.dayTimeStart)
+        self.dayTimeEndCombo.set_time(timeRangeRule.dayTimeEnd)
+        ####
+        self.summuryEntry.set_text(self.event.summary)
+        self.descriptionBuff.set_text(self.event.description)
+        self.iconSelect.set_filename(self.event.icon)
+        ####
+        self.notificationBox.updateWidget()
+    def updateVars(self):## FIXME
         courseIndex = self.courseCombo.get_active()
         if courseIndex is None:
             showError(_('No course is selected'), self)
@@ -79,8 +161,16 @@ class EventWidget(common.EventWidget):
         ##
         self.weekNumModeCombo.updateVars()
         self.event['weekDay'].weekDayList = [self.weekDayCombo.getValue()]## FIXME
-        
-
+        ##
+        timeRangeRule = self.event['dayTimeRange']
+        timeRangeRule.dayTimeStart = tuple(self.dayTimeStartCombo.get_time())
+        timeRangeRule.dayTimeEnd = tuple(self.dayTimeEndCombo.get_time())
+        ####
+        self.event.summary = self.summuryEntry.get_text()
+        self.event.description = buffer_get_text(self.descriptionBuff)
+        self.event.icon = self.iconSelect.get_filename()
+        ####
+        self.notificationBox.updateVars()
 
 
 

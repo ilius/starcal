@@ -37,9 +37,8 @@ class EventWidget(common.EventWidget):
         self.pack_start(self.ruleAddBox, 0, 0)
         self.pack_start(self.warnLabel, 0, 0)
         ###
-        self.notifiersBox = common.NotifiersCheckList()
-        self.notifiersBox.set_expanded(True)
-        self.pack_start(self.notifiersBox, 0, 0)
+        self.notificationBox = common.NotificationBox(event)
+        self.pack_start(self.notificationBox, 0, 0)
         ###########
         self.addRuleModel = gtk.ListStore(str, str)
         self.addRuleCombo = gtk.ComboBox(self.addRuleModel)
@@ -108,11 +107,11 @@ class EventWidget(common.EventWidget):
         common.EventWidget.updateWidget(self)
         self.addRuleModel.clear()
         self.updateRulesWidget()
-        self.notifiersBox.setNotifiers(self.event.notifiers)
+        self.notificationBox.updateWidget()
     def updateVars(self):
         common.EventWidget.updateVars(self)
         self.updateRules()
-        self.event.notifiers = self.notifiersBox.getNotifiers()
+        self.notificationBox.updateVars()
     def modeComboChanged(self, combo):## FIXME
         newMode = combo.get_active()
         for hbox in self.rulesBox.get_children():

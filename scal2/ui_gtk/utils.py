@@ -194,7 +194,7 @@ class WeekDayComboBox(gtk.ComboBox):
             ls.append([core.weekDayName[(i+self.firstWeekDay)%7]])
         self.set_active(0)
     def getValue(self):
-        return self.firstWeekDay + self.get_active()
+        return (self.firstWeekDay + self.get_active())%7
     def setValue(self, value):
         self.set_active((value-self.firstWeekDay)%7)
 

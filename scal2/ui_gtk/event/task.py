@@ -56,9 +56,8 @@ class EventWidget(common.EventWidget):
         hbox.pack_start(gtk.Label(''), 1, 1)
         self.pack_start(hbox, 0, 0)
         #############
-        self.notifiersBox = common.NotifiersCheckList()
-        self.notifiersBox.set_expanded(False)
-        self.pack_start(self.notifiersBox, 0, 0)
+        self.notificationBox = common.NotificationBox(event)
+        self.pack_start(self.notificationBox, 0, 0)
         #############
         self.filesBox = common.FilesBox(self.event)
         self.pack_start(self.filesBox, 0, 0)
@@ -100,7 +99,7 @@ class EventWidget(common.EventWidget):
             raise RuntimeError
         self.endTypeComboChanged()
         ###
-        self.notifiersBox.setNotifiers(self.event.notifiers)
+        self.notificationBox.updateWidget()
     def updateVars(self):## FIXME
         common.EventWidget.updateVars(self)
         self.event.setStart(self.startDateInput.get_date(), self.startTimeInput.get_time())
@@ -117,7 +116,7 @@ class EventWidget(common.EventWidget):
                 self.endTimeInput.get_time(),
             )
         ###
-        self.event.notifiers = self.notifiersBox.getNotifiers()
+        self.notificationBox.updateVars()
 
 
 

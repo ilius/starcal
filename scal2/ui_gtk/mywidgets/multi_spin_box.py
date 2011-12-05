@@ -289,6 +289,8 @@ class MultiSpinBox(gtk.HBox):
     def _entry_activate(self, widget):
         self.add_history()
         self.emit('activate')
+    def clear_history(self):
+        self.combo.get_model().clear()
     def add_history(self, nums=None):
         if nums==None:
             text = self.entry_validate()
@@ -431,6 +433,16 @@ class TimeBox(MultiSpinBox):
         (m, s) = divmod(s, 60)
         self.set_time((h, m, s))
         ##return day
+
+class HourMinuteBox(MultiSpinBox):
+    def __init__(self, hms=None, **kwargs):
+        if hms==None:
+            hms = time.localtime()[3:5]
+        MultiSpinBox.__init__(self, mins=(0,0), maxs=(23,59), fields=(2,2), sep=(u':',), nums=hms, **kwargs)
+        self.get_hm = self.get_nums
+        self.set_hm = self.set_nums
+    get_time = lambda self: self.get_hm() + [0]
+    set_time = lambda self, tm: self.set_hm(tm[:2])
 
 class DateTimeBox(MultiSpinBox):
     def __init__(self, date_time=None, **kwargs):
