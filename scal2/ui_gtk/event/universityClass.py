@@ -31,7 +31,7 @@ class EventWidget(gtk.VBox):
             self.courseIds.append(course[0])
             self.courseNames.append(course[1])
             combo.append_text(course[1])
-        combo.connect('changed', self.updateSummary)
+        #combo.connect('changed', self.updateSummary)
         self.courseCombo = combo
         ##
         hbox = gtk.HBox()
@@ -58,7 +58,7 @@ class EventWidget(gtk.VBox):
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
         self.weekDayCombo = WeekDayComboBox()
-        self.weekDayCombo.connect('changed', self.updateSummary)
+        #self.weekDayCombo.connect('changed', self.updateSummary)
         hbox.pack_start(self.weekDayCombo, 0, 0)
         self.pack_start(hbox, 0, 0)
         #####
@@ -79,14 +79,14 @@ class EventWidget(gtk.VBox):
         hbox.pack_start(self.dayTimeEndCombo, 0, 0)
         self.pack_start(hbox, 0, 0)
         ###########
-        hbox = gtk.HBox()
-        label = gtk.Label(_('Summary'))
-        label.set_alignment(0, 0.5)
-        sizeGroup.add_widget(label)
-        hbox.pack_start(label, 0, 0)
-        self.summuryEntry = gtk.Entry()
-        hbox.pack_start(self.summuryEntry, 1, 1)
-        self.pack_start(hbox, 0, 0)
+        #hbox = gtk.HBox()
+        #label = gtk.Label(_('Summary'))
+        #label.set_alignment(0, 0.5)
+        #sizeGroup.add_widget(label)
+        #hbox.pack_start(label, 0, 0)
+        #self.summuryEntry = gtk.Entry()
+        #hbox.pack_start(self.summuryEntry, 1, 1)
+        #self.pack_start(hbox, 0, 0)
         #####
         hbox = gtk.HBox()
         label = gtk.Label(_('Description'))
@@ -120,12 +120,12 @@ class EventWidget(gtk.VBox):
         #self.pack_start(self.filesBox, 0, 0)
         ######
         self.courseCombo.set_active(0)
-        self.updateSummary()
-    def updateSummary(self, widget=None):
-        courseIndex = self.courseCombo.get_active()
-        summary = _('%s Class')%self.courseNames[courseIndex] + ' (' + self.weekDayCombo.get_active_text() + ')'
-        self.summuryEntry.set_text(summary)
-        self.event.summary = summary
+        #self.updateSummary()
+    #def updateSummary(self, widget=None):
+    #    courseIndex = self.courseCombo.get_active()
+    #    summary = _('%s Class')%self.courseNames[courseIndex] + ' (' + self.weekDayCombo.get_active_text() + ')'
+    #    self.summuryEntry.set_text(summary)
+    #    self.event.summary = summary
     def updateWidget(self):## FIXME
         if self.event.courseId is None:
             pass
@@ -148,7 +148,7 @@ class EventWidget(gtk.VBox):
         self.dayTimeStartCombo.set_time(timeRangeRule.dayTimeStart)
         self.dayTimeEndCombo.set_time(timeRangeRule.dayTimeEnd)
         ####
-        self.summuryEntry.set_text(self.event.summary)
+        #self.summuryEntry.set_text(self.event.summary)
         self.descriptionBuff.set_text(self.event.description)
         self.iconSelect.set_filename(self.event.icon)
         ####
@@ -171,11 +171,12 @@ class EventWidget(gtk.VBox):
             self.dayTimeEndCombo.get_time(),
         )
         ####
-        self.event.summary = self.summuryEntry.get_text()
+        #self.event.summary = self.summuryEntry.get_text()
         self.event.description = buffer_get_text(self.descriptionBuff)
         self.event.icon = self.iconSelect.get_filename()
         ####
         self.notificationBox.updateVars()
+        self.event.updateSummary()
 
 
 

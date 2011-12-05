@@ -795,6 +795,14 @@ msgid "Note Book"
 msgstr ""
 "دفترچهٔ یادداشت"
 
+msgid "Week"
+msgstr ""
+"هفته"
+
+msgid "Week Day"
+msgstr ""
+"روز هفته"
+
 msgid "University Term"
 msgstr ""
 "ترم دانشگاه"
@@ -803,13 +811,9 @@ msgid "Course"
 msgstr ""
 "درس"
 
-msgid "Week"
+msgid "Deleted Course"
 msgstr ""
-"هفته"
-
-msgid "Week Day"
-msgstr ""
-"روز هفته"
+"درس حذف‌شده"
 
 msgid "Course List"
 msgstr ""

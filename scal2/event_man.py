@@ -1166,9 +1166,9 @@ class TaskEvent(Event):
             else:
                 return TimeRangeListOccurrence()
 
+#class UniversityCourseOwner(Event):## FIXME
 
-
-class UniversityClassEvent(Event):## FIXME
+class UniversityClassEvent(Event):
     name = 'universityClass'
     desc = _('Class')
     iconName = 'university'
@@ -1191,6 +1191,10 @@ class UniversityClassEvent(Event):## FIXME
                 tm0 + (0,),
                 tm1 + (0,),
             )
+    getCourseName = lambda self: self.group.getCourseNameById(self.courseId)
+    getWeekDayName = lambda self: core.weekDayName[self['weekDay'].weekDayList[0]]
+    def updateSummary(self):
+        self.summary = _('%s Class')%self.getCourseName() + ' (' + self.getWeekDayName() + ')'
     def copyFrom(self, other):
         Event.copyFrom(self, other)
         self.courseId = other.courseId
@@ -1212,12 +1216,15 @@ class UniversityExamEvent(DailyNoteEvent):
     supportedRules = ('year', 'month', 'day', 'dayTimeRange',)
     def __init__(self, eid=None):
         ## assert group is not None ## FIXME
-        Event.__init__(self, eid)
+        DailyNoteEvent.__init__(self, eid)
         self.courseId = None ## FIXME
     def setDefaultsFromGroup(self, group):
         DailyNoteEvent.setDefaultsFromGroup(self, group)
         self.setDate(*group['end'].date)## FIXME
         self['dayTimeRange'].setRange((9, 0), (11, 0))## FIXME
+    getCourseName = lambda self: self.group.getCourseNameById(self.courseId)
+    def updateSummary(self):
+        self.summary = _('%s Exam')%self.getCourseName()
     def copyFrom(self, other):
         Event.copyFrom(self, other)
         self.courseId = other.courseId
@@ -1518,6 +1525,12 @@ class UniversityTerm(EventGroup):
     def setCourses(self, courses):
         self.courses = courses
         self.lastCourseId = max([1]+[course[0] for course in self.courses])
+    #getCourseNamesDictById = lambda self: dict([c[:2] for c in self.courses])
+    def getCourseNameById(self, courseId):
+        for course in self.courses:
+            if course[0] == courseId:
+                return course[1]
+        return _('Deleted Course')
     def setDefaults(self):
         startRule = self['start']
         endRule = self['end']
