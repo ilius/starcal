@@ -108,9 +108,7 @@ toolbarItemsData = (
     ToolbarItem('date',        'index',       'selectDateShow', 'Select Date...', 'Date...'),
     ToolbarItem('customize',   'edit',        'customizeShow'),
     ToolbarItem('preferences', 'preferences', 'prefShow',),
-#    ToolbarItem('add',         'add',         'showCustomDay',  'Add Custom Day',     ),
     ToolbarItem('add',         'add',         'eventManShow',   'Event Manager',     ),
-#    ToolbarItem('timeline',    'add',         'eventManShow',   'Event Manager',     ),
     ToolbarItem('export',      'convert',     'exportClicked',  'Export to HTML',     ),
     ToolbarItem('about',       'about',       'aboutShow',      'About StarCalendar', ),
     ToolbarItem('quit',        'quit',        'quit',)
@@ -773,13 +771,6 @@ class PrefDialog(gtk.Dialog):
         hbox.pack_start(gtk.Label(''), 1, 1)
         #customItem.widget.connect('clicked', self.checkbFontClicked)
         defaultItem.widget.connect('clicked', lambda w: customItem.widget.set_sensitive(not w.get_active()))## FIXME
-        vbox.pack_start(hbox, 0, 0)
-        ###########################
-        hbox = gtk.HBox(spacing=2)
-        item = CheckPrefItem(ui, 'customdayShowIcon', _('Custom days icon (in the calendar)'))
-        self.uiPrefItems.append(item)
-        hbox.pack_start(item.widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
         vbox.pack_start(hbox, 0, 0)
         ########################### Theme #####################
         hbox = gtk.HBox(spacing=3)

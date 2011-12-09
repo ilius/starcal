@@ -44,14 +44,6 @@ invertColor = lambda r, g, b: (255-r, 255-g, 255-b)
 ## htmlColorToGdk=lambda hc: gdk.Color(int(hc[1:3], 16)*256, int(hc[3:5], 16)*256, int(hc[5:7], 16)*256)
 ## htmlColorToGdk = lambda hc: gdk.color_parse(hc)
 
-def getElementText(el):## remove FIXME
-    rc = u''
-    name = el.nodeName
-    for node in el.childNodes:
-        if node.nodeType == node.TEXT_NODE:
-            rc = rc + node.data
-    return (name, rc.strip())
-
 def parseDroppedDate(text):
     part = text.split('/')
     if len(part)==3:
@@ -290,11 +282,7 @@ class CellCache:
             pluginData['setParamsCallable'](local_cell)
         self.jdCells[jd] = local_cell
         #########
-        ## too bad performance! and replace with events ## FIXME
-        if customDB:
-            for item in customDB:## month, day, type, desc
-                if item['month'] == local_cell.month and item['day'] == local_cell.day:
-                    local_cell.customday = {'type': item['type'], 'desc': item['desc']}
+        ## local_cell.customday = {'type': item['type'], 'desc': item['desc']} ## and replace with events ## FIXME
         #########
         ## Clean Cache
         n = len(self.jdCells)
@@ -370,29 +358,6 @@ def checkMainWinItems():
         #print '------ new', name
         mainWinItems.append((name, False))## FIXME
 
-def loadCustomDB():## remove FIXME
-    global customDB
-    if not isfile(customFile):
-        customDB = None
-        return
-    db = parse(customFile).documentElement.getElementsByTagName('day')
-    customDB = []
-    for record in db:
-        item = {}
-        for element in record.childNodes:
-            if element.nodeType != element.TEXT_NODE:
-                if element.nodeType != element.TEXT_NODE:
-                    name, data = getElementText(element)
-                    if name=='num':
-                        sp = data.split('/')
-                        item['month'] = int(sp[0])
-                        item['day'] = int(sp[1])
-                    elif name=='kind':
-                        item['type'] = int(data)
-                    elif name=='desc':
-                        item['desc'] = data
-        customDB.append(item)
-
 
 def deleteEventGroup(group, addToFirst=True):
     if addToFirst:
@@ -438,17 +403,6 @@ shownCals = [
 ]
 core.primaryMode = shownCals[0]['mode']
 ################################
-customFile = join(confDir, 'customday.xml') ## FIXME
-customdayModes=(
-    (_('Birthday'),         'event/birthday.png'),
-    (_('Marriage Jubilee'), 'event/marriage.png'),
-    (_('Obituary'),         'event/obituary.png'),
-    (_('Note'),             'event/note.png'),
-    (_('Task'),             'event/task.png'),
-    (_('Alarm'),            'event/alarm.png')
-)
-customdayShowIcon = True ## FIXME
-###################
 tagsDir = join(pixDir, 'event')
 
 class TagIconItem:
@@ -494,8 +448,6 @@ getEventTagsDict = lambda: dict([(tagObj.name, tagObj) for tagObj in eventTags])
 eventTagsDesc = dict([(t.name, t.desc) for t in eventTags])
 
 ###################
-customDB = []
-loadCustomDB()
 eventGroups = event_man.EventGroupsHolder()
 #eventGroups.loadConfig()## FIXME here or in ui_*/event/main.py
 eventTrash = event_man.EventTrash()

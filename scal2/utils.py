@@ -180,3 +180,11 @@ class IteratorFromGen(Iterator):
         self.gen = gen
     next = lambda self: self.gen.next()
 
+def getElementText(el):## remove FIXME
+    rc = u''
+    name = el.nodeName
+    for node in el.childNodes:
+        if node.nodeType == node.TEXT_NODE:
+            rc = rc + node.data
+    return (name, rc.strip())
+

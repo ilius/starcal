@@ -91,7 +91,6 @@ class StarCalApplet(MainWin):
     _('Copy _Time'),
     _('Copy _Date'),
     _('Ad_just System Time'),
-    _('_Add Custom Day'),
     _('_Export to HTML'),
     _('_Preferences'),
     _('_About')

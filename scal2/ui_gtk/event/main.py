@@ -107,7 +107,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         if not group.checkEventToAdd(event):
             showError(_('Group type "%s" can not contain event type "%s"')%(group.desc, event.desc), self)
             raise RuntimeError('Invalid event type for this group')
-    def onResponse(self, win, event):
+    def onResponse(self, dialog, response_id):
         self.hide()
         if self.mainWin:
             self.mainWin.onConfigChange()
@@ -832,6 +832,11 @@ event_man.EventGroup.makeWidget = makeWidget
 
 ui.eventGroups.loadConfig()
 ui.eventTrash.loadConfig()
+
+
+
+import scal2.ui_gtk.event.importer ## opens a dialog is neccessery
+    
 
 def testCustomEventEditor():
     from pprint import pprint, pformat

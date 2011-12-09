@@ -265,7 +265,7 @@ class MonthCal(gtk.Widget, MainWinItem):
                         if ui.cursorCornerOval:
                             cr.scale(1, 1.0/yscale)
                 ##### end of Drawing Cursor
-                if c.customday and ui.customdayShowIcon:
+                if c.customday:
                     #print c.customday
                     try:
                         pix = gdk.pixbuf_new_from_file(join(pixDir, ui.customdayModes[c.customday['type']][1]))

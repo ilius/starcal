@@ -16,7 +16,7 @@ import pango
 import gtk
 from gtk import gdk
 
-from scal2.ui_gtk.font_utils import pfontDecode, gfontDecode
+from scal2.ui_gtk.font_utils import gfontDecode
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 
 langConfDir = join(rootDir, 'conf', 'defaults')
@@ -114,11 +114,37 @@ weekNumberMode=%r'''%(holidayWeekDays, firstWeekDayAuto, firstWeekDay, weekNumbe
             maxCache *= 50
         
             text = ''
-            for name in ('shownCals', 'showMain', 'winTaskbar', 'showWinController', 'showDigClockTr', 'calGrid',
-            'gridColor', 'fontUseDefault', 'fontCustom', 'customdayShowIcon', 'bgUseDesk', 'bgColor',
-            'borderColor', 'cursorOutColor', 'cursorBgColor', 'holidayColor', 'inactiveColor', 'borderTextColor',
-            'calLeftMargin', 'calTopMargin', 'cursorD', 'cursorR', 'cursorFixed', 'cursorW', 'cursorH', 'dragIconCell',
-            'maxCache', 'extradayTray', 'showYmArrows', 'prefPagesOrder'):
+            for name in (
+                'shownCals',
+                'showMain',
+                'winTaskbar',
+                'showWinController',
+                'showDigClockTr',
+                'calGrid',
+                'gridColor',
+                'fontUseDefault',
+                'fontCustom',
+                'bgUseDesk',
+                'bgColor',
+                'borderColor',
+                'cursorOutColor',
+                'cursorBgColor',
+                'holidayColor',
+                'inactiveColor',
+                'borderTextColor',
+                'calLeftMargin',
+                'calTopMargin',
+                'cursorD',
+                'cursorR',
+                'cursorFixed',
+                'cursorW',
+                'cursorH',
+                'dragIconCell',
+                'maxCache',
+                'extradayTray',
+                'showYmArrows',
+                'prefPagesOrder',
+            ):
                 text += '%s = %r\n'%(name, eval(name))
             open(ui_conf, 'w').write(text)
         ui_gtk_conf = join(confDir, 'ui-gtk.conf')
@@ -149,4 +175,6 @@ nextStock=%s
     if calHeightReq>0:
         calHeight = calHeightReq
         open(join(confDir, 'ui-customize.conf'), 'w').write('ui.calHeight=%s'%calHeight)
+
+
 

@@ -1,0 +1,59 @@
+from os.path import isfile
+
+from scal2.import_customday import customFile, importAndDeleteCustomDB
+from scal2.locale_man import tr as _
+from scal2 import core
+from scal2 import ui
+
+import gtk
+from gtk import gdk
+
+class CustomDayImporterDialog(gtk.Dialog):
+    def onResponse(self, dialog, response_id):
+        if response_id==gtk.RESPONSE_OK:
+            importAndDeleteCustomDB(
+                self.modeCombo.get_active(),
+                self.groupTitleEntry.get_text(),
+            )
+        self.destroy()
+    def __init__(self):
+        gtk.Dialog.__init__(self)
+        ####
+        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        if ui.autoLocale:
+            okB.set_label(_('_OK'))
+            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        self.connect('response', self.onResponse)
+        ####
+        sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        ####
+        hbox = gtk.HBox()
+        label = gtk.Label(_('Calendar Type'))
+        label.set_alignment(0, 0.5)
+        sizeGroup.add_widget(label)
+        hbox.pack_start(label, 0, 0)
+        combo = gtk.combo_box_new_text()
+        for module in core.modules:
+            combo.append_text(_(module.desc))
+        combo.set_active(core.primaryMode)
+        hbox.pack_start(combo, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.vbox.pack_start(hbox, 0, 0)
+        self.modeCombo = combo
+        ####
+        hbox = gtk.HBox()
+        hbox = gtk.HBox()
+        label = gtk.Label(_('Group Title'))
+        label.set_alignment(0, 0.5)
+        sizeGroup.add_widget(label)
+        hbox.pack_start(label, 0, 0)
+        self.groupTitleEntry = gtk.Entry()
+        self.groupTitleEntry.set_text(_('Imported Events'))
+        hbox.pack_start(self.groupTitleEntry, 0, 0)
+        self.vbox.pack_start(hbox, 0, 0)
+        ####
+        self.vbox.show_all()
+
+if isfile(customFile):
+    CustomDayImporterDialog().run()
+

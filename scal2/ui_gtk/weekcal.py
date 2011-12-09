@@ -25,6 +25,7 @@ from math import pi
 from os.path import join, isfile
 from xml.dom.minidom import parse
 
+from scal2.utils import getElementText
 from scal2 import core
 
 from scal2.locale_man import tr as _
@@ -48,14 +49,6 @@ if rtl:
     (prevImage, nextImage) = (nextImage, prevImage)
 
 weekCalRowItems = []
-
-def getElementText(el):
-    rc = u''
-    name = el.nodeName
-    for node in el.childNodes:
-        if node.nodeType == node.TEXT_NODE:
-            rc = rc + node.data
-    return name, rc.strip()
 
 def show_event(widget, event):
     print type(widget), event.type.value_name, event.get_time()#, event.send_event

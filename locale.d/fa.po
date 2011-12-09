@@ -891,6 +891,14 @@ msgid "Title"
 msgstr ""
 "عنوان"
 
+msgid "Group Title"
+msgstr ""
+"عنوان گروه"
+
+msgid "Imported Events"
+msgstr ""
+"رویدادهای وارد شده"
+
 msgid "Color"
 msgstr ""
 "رنگ"
