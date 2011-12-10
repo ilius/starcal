@@ -992,7 +992,7 @@ class PrefDialog(gtk.Dialog):
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
         ##sgroup.add_widget(label)
-        item = SpinPrefItem(ui, 'maxCache', 0, 9999, 0, 1, 30)
+        item = SpinPrefItem(ui, 'maxDayCacheSize', 0, 9999, 0, 1, 30)
         self.uiPrefItems.append(item)
         hbox.pack_start(item.widget, 0, 0)
         vbox.pack_start(hbox, 0, 0)

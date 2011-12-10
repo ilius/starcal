@@ -1726,6 +1726,264 @@ class EventTrash(EventContainer):
             self.saveConfig()
 
 
+def getDayOccurrenceData(curJd, groups):
+    data = []
+    for group in groups:
+        if not group.enable:
+            continue
+        for event in group:
+            if not event:
+                continue
+            occur = event.calcOccurrenceForJdRange(curJd, curJd+1)
+            if not occur:
+                continue
+            text = event.getText()
+            for url, fname in event.getFilesUrls():
+                text += '\n<a href="%s">%s</a>'%(url, fname)
+            icon = event.icon
+            #print '\nupdateData: checking event', event.summary
+            ids = (group.gid, event.eid)
+            if isinstance(occur, JdListOccurrence):
+                #print 'updateData: JdListOccurrence', occur.getDaysJdList()
+                for jd in occur.getDaysJdList():
+                    if jd==curJd:
+                        data.append({
+                            'time':'',
+                            'text':text,
+                            'icon':icon,
+                            'ids': ids,
+                        })
+            elif isinstance(occur, TimeRangeListOccurrence):
+                #print 'updateData: TimeRangeListOccurrence', occur.getTimeRangeList()
+                for (startEpoch, endEpoch) in occur.getTimeRangeList():
+                    (jd1, h1, min1, s1) = core.getJhmsFromEpoch(startEpoch)
+                    if endEpoch is None:
+                        data.append({
+                            'time':timeEncode((h1, min1, s1), True),
+                            'text':text,
+                            'icon':icon,
+                            'ids': ids,
+                        })
+                    else:
+                        (jd2, h2, min2, s2) = core.getJhmsFromEpoch(endEpoch)
+                        if jd1==curJd==jd2:
+                            data.append({
+                                'time':hmsRangeToStr(h1, min1, s1, h2, min2, s2),
+                                'text':text,
+                                'icon':icon,
+                                'ids': ids,
+                            })
+                        elif jd1==curJd and curJd < jd2:
+                            data.append({
+                                'time':hmsRangeToStr(h1, min1, s1, 24, 0, 0),
+                                'text':text,
+                                'icon':icon,
+                                'ids': ids,
+                            })
+                        elif jd1 < curJd < jd2:
+                            data.append({
+                                'time':'',
+                                'text':text,
+                                'icon':icon,
+                                'ids': ids,
+                            })
+                        elif jd1 < curJd and curJd==jd2:
+                            data.append({
+                                'time':hmsRangeToStr(0, 0, 0, h2, min2, s2),
+                                'text':text,
+                                'icon':icon,
+                                'ids': ids,
+                            })
+            elif isinstance(occur, TimeListOccurrence):
+                #print 'updateData: TimeListOccurrence', occur.epochList
+                for epoch in occur.epochList:
+                    (jd, hour, minute, sec) = core.getJhmsFromEpoch(epoch)
+                    if jd == curJd:
+                        data.append({
+                            'time':timeEncode((hour, minute, sec), True),
+                            'text':text,
+                            'icon':icon,
+                            'ids': ids,
+                        })
+            else:
+                raise TypeError
+    return data
+
+
+def getWeekOccurrenceData(curAbsWeekNumber, groups):
+    (startJd, endJd) = core.getJdRangeOfAbsWeekNumber(absWeekNumber)
+    data = []
+    for group in groups:
+        if not group.enable:
+            continue
+        for event in group:
+            if not event:
+                continue
+            occur = event.calcOccurrenceForJdRange(startJd, endJd)
+            if not occur:
+                continue
+            text = event.getText()
+            icon = event.icon
+            ids = (group.gid, event.eid)
+            if isinstance(occur, JdListOccurrence):
+                for jd in occur.getDaysJdList():
+                    (wnum, weekDay) = core.getWeekDateFromJd(jd)
+                    if wnum==curAbsWeekNumber:
+                        data.append({
+                            'weekDay':weekDay,
+                            'time':'',
+                            'text':text,
+                            'icon':icon,
+                            'ids': ids,
+                        })
+            elif isinstance(occur, TimeRangeListOccurrence):
+                for (startEpoch, endEpoch) in occur.getTimeRangeList():
+                    (jd1, h1, min1, s1) = core.getJhmsFromEpoch(startEpoch)
+                    (jd2, h2, min2, s2) = core.getJhmsFromEpoch(endEpoch)
+                    (wnum, weekDay) = core.getWeekDateFromJd(jd1)
+                    if wnum==curAbsWeekNumber:
+                        if jd1==jd2:
+                            data.append({
+                                'weekDay':weekDay,
+                                'time':hmsRangeToStr(h1, min1, s1, h2, min2, s2),
+                                'text':text,
+                                'icon':icon,
+                                'ids': ids,
+                            })
+                        else:## FIXME
+                            data.append({
+                                'weekDay':weekDay,
+                                'time':hmsRangeToStr(h1, min1, s1, 24, 0, 0),
+                                'text':text,
+                                'icon':icon,
+                                'ids': ids,
+                            })
+                            for jd in range(jd1+1, jd2):
+                                (wnum, weekDay) = core.getWeekDateFromJd(jd)
+                                if wnum==curAbsWeekNumber:
+                                    data.append({
+                                        'weekDay':weekDay,
+                                        'time':'',
+                                        'text':text,
+                                        'icon':icon,
+                                        'ids': ids,
+                                    })
+                                else:
+                                    break
+                            (wnum, weekDay) = core.getWeekDateFromJd(jd2)
+                            if wnum==curAbsWeekNumber:
+                                data.append({
+                                    'weekDay':weekDay,
+                                    'time':hmsRangeToStr(0, 0, 0, h2, min2, s2),
+                                    'text':text,
+                                    'icon':icon,
+                                    'ids': ids,
+                                })
+            elif isinstance(occur, TimeListOccurrence):
+                for epoch in occur.epochList:
+                    (jd, hour, minute, sec) = core.getJhmsFromEpoch(epoch)
+                    (wnum, weekDay) = core.getWeekDateFromJd(jd)
+                    if wnum==curAbsWeekNumber:
+                        data.append({
+                            'weekDay':weekDay,
+                            'time':timeEncode((hour, minute, sec), True),
+                            'text':text,
+                            'icon':icon,
+                            'ids': ids,
+                        })
+            else:
+                raise TypeError
+    return data
+
+
+def getMonthOccurrenceData(curYear, curMonth, groups):
+    (startJd, endJd) = core.getJdRangeForMonth(curYear, curMonth, core.primaryMode)
+    data = []
+    for group in groups:
+        if not group.enable:
+            continue
+        for event in group:
+            if not event:
+                continue
+            occur = event.calcOccurrenceForJdRange(startJd, endJd)
+            if not occur:
+                continue
+            text = event.getText()
+            icon = event.icon
+            ids = (group.gid, event.eid)
+            if isinstance(occur, JdListOccurrence):
+                for jd in occur.getDaysJdList():
+                    (y, m, d) = jd_to(jd, core.primaryMode)
+                    if y==curYear and m==curMonth:
+                        data.append({
+                            'day':d,
+                            'time':'',
+                            'text':text,
+                            'icon':icon,
+                            'ids': ids,
+                        })
+            elif isinstance(occur, TimeRangeListOccurrence):
+                for (startEpoch, endEpoch) in occur.getTimeRangeList():
+                    (jd1, h1, min1, s1) = core.getJhmsFromEpoch(startEpoch)
+                    (jd2, h2, min2, s2) = core.getJhmsFromEpoch(endEpoch)
+                    (y, m, d) = jd_to(jd1, core.primaryMode)
+                    if y==curYear and m==curMonth:
+                        if jd1==jd2:
+                            data.append({
+                                'day':d,
+                                'time':hmsRangeToStr(h1, min1, s1, h2, min2, s2),
+                                'text':text,
+                                'icon':icon,
+                                'ids': ids,
+                            })
+                        else:## FIXME
+                            data.append({
+                                'day':d,
+                                'time':hmsRangeToStr(h1, min1, s1, 24, 0, 0),
+                                'text':text,
+                                'icon':icon,
+                                'ids': ids,
+                            })
+                            for jd in range(jd1+1, jd2):
+                                (y, m, d) = jd_to(jd, core.primaryMode)
+                                if y==curYear and m==curMonth:
+                                    data.append({
+                                        'day':d,
+                                        'time':'',
+                                        'text':text,
+                                        'icon':icon,
+                                        'ids': ids,
+                                    })
+                                else:
+                                    break
+                            (y, m, d) = jd_to(jd2, core.primaryMode)
+                            if y==curYear and m==curMonth:
+                                data.append({
+                                    'day':d,
+                                    'time':hmsRangeToStr(0, 0, 0, h2, min2, s2),
+                                    'text':text,
+                                    'icon':icon,
+                                    'ids': ids,
+                                })
+            elif isinstance(occur, TimeListOccurrence):
+                for epoch in occur.epochList:
+                    (jd, hour, minute, sec) = core.getJhmsFromEpoch(epoch)
+                    (y, m, d) = jd_to(jd1, core.primaryMode)
+                    if y==curYear and m==curMonth:
+                        data.append({
+                            'day':d,
+                            'time':timeEncode((hour, minute, sec), True),
+                            'text':text,
+                            'icon':icon,
+                            'ids': ids,
+                        })
+            else:
+                raise TypeError
+    return data
+
+
+'''
+
 class OccurrenceView:
     #name = ''## a GtkWidget will inherit a child of this class FIXME
     #desc = _('Occurrence View')
@@ -1756,89 +2014,7 @@ class DayOccurrenceView(OccurrenceView):
             self.jd = jd
             self.updateData()
     def updateDataByGroups(self, groups):
-        startJd = self.jd
-        endJd = self.jd + 1
-        self.data = []
-        for group in groups:
-            if not group.enable:
-                continue
-            for event in group:
-                if not event:
-                    continue
-                occur = event.calcOccurrenceForJdRange(startJd, endJd)
-                if not occur:
-                    continue
-                text = event.getText()
-                for url, fname in event.getFilesUrls():
-                    text += '\n<a href="%s">%s</a>'%(url, fname)
-                icon = event.icon
-                #print '\nupdateData: checking event', event.summary
-                ids = (group.gid, event.eid)
-                if isinstance(occur, JdListOccurrence):
-                    #print 'updateData: JdListOccurrence', occur.getDaysJdList()
-                    for jd in occur.getDaysJdList():
-                        if jd==self.jd:
-                            self.data.append({
-                                'time':'',
-                                'text':text,
-                                'icon':icon,
-                                'ids': ids,
-                            })
-                elif isinstance(occur, TimeRangeListOccurrence):
-                    #print 'updateData: TimeRangeListOccurrence', occur.getTimeRangeList()
-                    for (startEpoch, endEpoch) in occur.getTimeRangeList():
-                        (jd1, h1, min1, s1) = core.getJhmsFromEpoch(startEpoch)
-                        if endEpoch is None:
-                            self.data.append({
-                                'time':timeEncode((h1, min1, s1), True),
-                                'text':text,
-                                'icon':icon,
-                                'ids': ids,
-                            })
-                        else:
-                            (jd2, h2, min2, s2) = core.getJhmsFromEpoch(endEpoch)
-                            if jd1==self.jd==jd2:
-                                self.data.append({
-                                    'time':hmsRangeToStr(h1, min1, s1, h2, min2, s2),
-                                    'text':text,
-                                    'icon':icon,
-                                    'ids': ids,
-                                })
-                            elif jd1==self.jd and self.jd < jd2:
-                                self.data.append({
-                                    'time':hmsRangeToStr(h1, min1, s1, 24, 0, 0),
-                                    'text':text,
-                                    'icon':icon,
-                                    'ids': ids,
-                                })
-                            elif jd1 < self.jd < jd2:
-                                self.data.append({
-                                    'time':'',
-                                    'text':text,
-                                    'icon':icon,
-                                    'ids': ids,
-                                })
-                            elif jd1 < self.jd and self.jd==jd2:
-                                self.data.append({
-                                    'time':hmsRangeToStr(0, 0, 0, h2, min2, s2),
-                                    'text':text,
-                                    'icon':icon,
-                                    'ids': ids,
-                                })
-                elif isinstance(occur, TimeListOccurrence):
-                    #print 'updateData: TimeListOccurrence', occur.epochList
-                    for epoch in occur.epochList:
-                        (jd, hour, minute, sec) = core.getJhmsFromEpoch(epoch)
-                        if jd == self.jd:
-                            self.data.append({
-                                'time':timeEncode((hour, minute, sec), True),
-                                'text':text,
-                                'icon':icon,
-                                'ids': ids,
-                            })
-                else:
-                    raise TypeError
-
+        self.data = getDayOccurrenceData(self.jd, groups)
 
 class WeekOccurrenceView(OccurrenceView):
     #name = 'week'## a GtkWidget will inherit this class FIXME
@@ -1848,94 +2024,12 @@ class WeekOccurrenceView(OccurrenceView):
         #self.updateData()
     getJdRange = lambda self: core.getJdRangeOfAbsWeekNumber(self.absWeekNumber)
     def setJd(self, jd):
-        absWeekNumber = core.getAbsWeekNumberFromJd(jd)
-        if absWeekNumber != self.absWeekNumber:
-            self.absWeekNumber = absWeekNumber
+        wnum = core.getAbsWeekNumberFromJd(jd)
+        if wnum != self.absWeekNumber:
+            self.absWeekNumber = wnum
             self.updateData()
     def updateDataByGroups(self, groups):
-        (startJd, endJd) = self.getJdRange()
-        self.data = []
-        for group in groups:
-            if not group.enable:
-                continue
-            for event in group:
-                if not event:
-                    continue
-                occur = event.calcOccurrenceForJdRange(startJd, endJd)
-                if not occur:
-                    continue
-                text = event.getText()
-                icon = event.icon
-                ids = (group.gid, event.eid)
-                if isinstance(occur, JdListOccurrence):
-                    for jd in occur.getDaysJdList():
-                        (absWeekNumber, weekDay) = core.getWeekDateFromJd(jd)
-                        if absWeekNumber==self.absWeekNumber:
-                            self.data.append({
-                                'weekDay':weekDay,
-                                'time':'',
-                                'text':text,
-                                'icon':icon,
-                                'ids': ids,
-                            })
-                elif isinstance(occur, TimeRangeListOccurrence):
-                    for (startEpoch, endEpoch) in occur.getTimeRangeList():
-                        (jd1, h1, min1, s1) = core.getJhmsFromEpoch(startEpoch)
-                        (jd2, h2, min2, s2) = core.getJhmsFromEpoch(endEpoch)
-                        (absWeekNumber, weekDay) = core.getWeekDateFromJd(jd1)
-                        if absWeekNumber==self.absWeekNumber:
-                            if jd1==jd2:
-                                self.data.append({
-                                    'weekDay':weekDay,
-                                    'time':hmsRangeToStr(h1, min1, s1, h2, min2, s2),
-                                    'text':text,
-                                    'icon':icon,
-                                    'ids': ids,
-                                })
-                            else:## FIXME
-                                self.data.append({
-                                    'weekDay':weekDay,
-                                    'time':hmsRangeToStr(h1, min1, s1, 24, 0, 0),
-                                    'text':text,
-                                    'icon':icon,
-                                    'ids': ids,
-                                })
-                                for jd in range(jd1+1, jd2):
-                                    (absWeekNumber, weekDay) = core.getWeekDateFromJd(jd)
-                                    if absWeekNumber==self.absWeekNumber:
-                                        self.data.append({
-                                            'weekDay':weekDay,
-                                            'time':'',
-                                            'text':text,
-                                            'icon':icon,
-                                            'ids': ids,
-                                        })
-                                    else:
-                                        break
-                                (absWeekNumber, weekDay) = core.getWeekDateFromJd(jd2)
-                                if absWeekNumber==self.absWeekNumber:
-                                    self.data.append({
-                                        'weekDay':weekDay,
-                                        'time':hmsRangeToStr(0, 0, 0, h2, min2, s2),
-                                        'text':text,
-                                        'icon':icon,
-                                        'ids': ids,
-                                    })
-                elif isinstance(occur, TimeListOccurrence):
-                    for epoch in occur.epochList:
-                        (jd, hour, minute, sec) = core.getJhmsFromEpoch(epoch)
-                        (absWeekNumber, weekDay) = core.getWeekDateFromJd(jd)
-                        if absWeekNumber==self.absWeekNumber:
-                            self.data.append({
-                                'weekDay':weekDay,
-                                'time':timeEncode((hour, minute, sec), True),
-                                'text':text,
-                                'icon':icon,
-                                'ids': ids,
-                            })
-                else:
-                    raise TypeError
-
+        self.data = getWeekOccurrenceData(absWeekNumber, groups)
 
 class MonthOccurrenceView(OccurrenceView):
     #name = 'month'## a GtkWidget will inherit this class FIXME
@@ -1953,88 +2047,9 @@ class MonthOccurrenceView(OccurrenceView):
             self.month = month
             self.updateData()
     def updateDataByGroups(self, groups):
-        (startJd, endJd) = self.getJdRange()
-        self.data = []
-        for group in groups:
-            if not group.enable:
-                continue
-            for event in group:
-                if not event:
-                    continue
-                occur = event.calcOccurrenceForJdRange(startJd, endJd)
-                if not occur:
-                    continue
-                text = event.getText()
-                icon = event.icon
-                ids = (group.gid, event.eid)
-                if isinstance(occur, JdListOccurrence):
-                    for jd in occur.getDaysJdList():
-                        (year, month, day) = jd_to(jd, core.primaryMode)
-                        if year==self.year and month==self.month:
-                            self.data.append({
-                                'day':day,
-                                'time':'',
-                                'text':text,
-                                'icon':icon,
-                                'ids': ids,
-                            })
-                elif isinstance(occur, TimeRangeListOccurrence):
-                    for (startEpoch, endEpoch) in occur.getTimeRangeList():
-                        (jd1, h1, min1, s1) = core.getJhmsFromEpoch(startEpoch)
-                        (jd2, h2, min2, s2) = core.getJhmsFromEpoch(endEpoch)
-                        (year, month, day) = jd_to(jd1, core.primaryMode)
-                        if year==self.year and month==self.month:
-                            if jd1==jd2:
-                                self.data.append({
-                                    'day':day,
-                                    'time':hmsRangeToStr(h1, min1, s1, h2, min2, s2),
-                                    'text':text,
-                                    'icon':icon,
-                                    'ids': ids,
-                                })
-                            else:## FIXME
-                                self.data.append({
-                                    'day':day,
-                                    'time':hmsRangeToStr(h1, min1, s1, 24, 0, 0),
-                                    'text':text,
-                                    'icon':icon,
-                                    'ids': ids,
-                                })
-                                for jd in range(jd1+1, jd2):
-                                    (year, month, day) = jd_to(jd, core.primaryMode)
-                                    if year==self.year and month==self.month:
-                                        self.data.append({
-                                            'day':day,
-                                            'time':'',
-                                            'text':text,
-                                            'icon':icon,
-                                            'ids': ids,
-                                        })
-                                    else:
-                                        break
-                                (year, month, day) = jd_to(jd2, core.primaryMode)
-                                if year==self.year and month==self.month:
-                                    self.data.append({
-                                        'day':day,
-                                        'time':hmsRangeToStr(0, 0, 0, h2, min2, s2),
-                                        'text':text,
-                                        'icon':icon,
-                                        'ids': ids,
-                                    })
-                elif isinstance(occur, TimeListOccurrence):
-                    for epoch in occur.epochList:
-                        (jd, hour, minute, sec) = core.getJhmsFromEpoch(epoch)
-                        (year, month, day) = jd_to(jd1, core.primaryMode)
-                        if year==self.year and month==self.month:
-                            self.data.append({
-                                'day':day,
-                                'time':timeEncode((hour, minute, sec), True),
-                                'text':text,
-                                'icon':icon,
-                                'ids': ids,
-                            })
-                else:
-                    raise TypeError
+        self.data = getMonthOccurrenceData(self.year, self.month, groups)
+'''
+
 
 def loadEventTrash(groups=[]):
     trash = EventTrash()

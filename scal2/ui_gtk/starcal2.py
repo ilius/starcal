@@ -997,7 +997,7 @@ class EventViewMainWinItem(DayOccurrenceView, MainWinItem):## FIXME
         DayOccurrenceView.__init__(self, populatePopupFunc)
         MainWinItem.__init__(self, 'eventDayView', _('Events of Day'))
     def onDateChange(self):
-        self.setJd(ui.cell.jd)
+        self.jd = ui.cell.jd
         self.updateWidget()
     def onConfigChange(self):
         self.updateWidget()

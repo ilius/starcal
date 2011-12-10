@@ -111,7 +111,8 @@ weekNumberMode=%r'''%(holidayWeekDays, firstWeekDayAuto, firstWeekDay, weekNumbe
             cursorOutColor = gdkColorToRgb(cursorOutColor)
             cursorBgColor = gdkColorToRgb(cursorBgColor) + (cursorBgAlpha/257,)
             
-            maxCache *= 50
+            maxDayCacheSize = maxCache*30
+            maxWeekCacheSize = maxCache*4
         
             text = ''
             for name in (
@@ -140,7 +141,8 @@ weekNumberMode=%r'''%(holidayWeekDays, firstWeekDayAuto, firstWeekDay, weekNumbe
                 'cursorW',
                 'cursorH',
                 'dragIconCell',
-                'maxCache',
+                'maxDayCacheSize',
+                'maxWeekCacheSize'
                 'extradayTray',
                 'showYmArrows',
                 'prefPagesOrder',

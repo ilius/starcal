@@ -188,3 +188,15 @@ def getElementText(el):## remove FIXME
             rc = rc + node.data
     return (name, rc.strip())
 
+def cleanCacheDict(cache, maxSize, currentValue):
+    n = len(cache)
+    if n >= maxSize > 2:
+        keys = sorted(cache.keys())
+        if keys[n//2] < currentValue:
+            rm = keys[0]
+        else:
+            rm = keys[-1]
+        cache.pop(rm)
+
+
+

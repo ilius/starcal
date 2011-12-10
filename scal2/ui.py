@@ -26,7 +26,7 @@ from xml.dom.minidom import parse## remove FIXME
 from subprocess import Popen
 from collections import OrderedDict
 
-from scal2.utils import NullObj, toStr
+from scal2.utils import NullObj, toStr, cleanCacheDict
 from scal2.paths import *
 
 import scal2.locale_man
@@ -211,7 +211,8 @@ def dayOpenSunbird(arg=None):
 
 class Cell:## status and information of a cell
     def __init__(self, jd):
-        self.customday = None ## FIXME
+        self.customday = None ## remove FIXME
+        self.eventsData = []
         self.extraday = ''
         ###
         self.jd = jd
@@ -245,9 +246,11 @@ class CellCache:
     def __init__(self):
         self.jdCells = {} ## a mapping from julan_day to Cell instance
         self.plugins = {}
+        self.weekEvents = {}
     def clear(self):
         global cell, todayCell
         self.jdCells = {}
+        self.weekEvents = {}
         cell = self.getCell(cell.jd)
         todayCell = self.getCell(todayCell.jd)
     def registerPlugin(self, name, setParamsCallable, getCellGroupCallable):
@@ -281,22 +284,21 @@ class CellCache:
         for pluginData in self.plugins.values():
             pluginData['setParamsCallable'](local_cell)
         self.jdCells[jd] = local_cell
-        #########
-        ## local_cell.customday = {'type': item['type'], 'desc': item['desc']} ## and replace with events ## FIXME
-        #########
-        ## Clean Cache
-        n = len(self.jdCells)
-        if n >= maxCache > 2:
-            keys = sorted(self.jdCells.keys())
-            if keys[n//2] < jd:
-                rm = keys[0]
-            else:
-                rm = keys[-1]
-            self.jdCells.pop(rm)
-        #########
+        local_cell.eventsData = event_man.getDayOccurrenceData(jd, eventGroups)## FIXME
+        cleanCacheDict(self.jdCells, maxDayCacheSize, jd)
         return local_cell
-    def getCellGroup(self, pluginName, *args):
-        return self.plugins[pluginName]['getCellGroupCallable'](self, *args)
+    getCellGroup = lambda self, pluginName, *args: self.plugins[pluginName]['getCellGroupCallable'](self, *args)
+    def getWeekData(self, absWeekNumber):
+        cells = self.getCellGroup('WeekCal', absWeekNumber)
+        try:
+            wEventData = self.weekEvents[absWeekNumber]
+        except KeyError:
+            wEventData = event_man.getWeekOccurrenceData(absWeekNumber, eventGroups)
+            cleanCacheDict(self.weekEvents, maxWeekCacheSize, absWeekNumber)
+            self.weekEvents[absWeekNumber] = wEventData
+        return (cells, wEventData)
+    #def getMonthData(self, year, month):## needed? FIXME
+    
 
 def changeDate(year, month, day, mode=None):
     global cell
@@ -472,7 +474,9 @@ trashedEvents = []
 
 ###################
 ## BUILD CACHE AFTER SETTING core.primaryMode
-maxCache = 100 ## maximum size of cellCache (days number, not months number)
+maxDayCacheSize = 100 ## maximum size of cellCache (days number)
+maxWeekCacheSize = 12
+
 cellCache = CellCache()
 todayCell = cell = cellCache.getTodayCell() ## FIXME
 ###########################

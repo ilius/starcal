@@ -9,20 +9,20 @@ import gtk
 from scal2.ui_gtk.utils import imageFromFile
 from scal2.ui_gtk.event.common import EventEditorDialog
 
-class DayOccurrenceView(event_man.DayOccurrenceView, gtk.VBox):
+class DayOccurrenceView(gtk.VBox):
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
     def __init__(self, populatePopupFunc=None):
-        event_man.DayOccurrenceView.__init__(self, ui.cell.jd)
+        self.jd = ui.cell.jd
         gtk.VBox.__init__(self)
         ## what to do with populatePopupFunc FIXME
         ## self.textview.connect('populate-popup', populatePopupFunc)
         self.clipboard = gtk.clipboard_get()
     def updateWidget(self):
-        self.updateData()
+        cell = ui.cellCache.getCell(self.jd)
         ## destroy all VBox contents and add again
         for hbox in self.get_children():
             hbox.destroy()
-        for item in self.data:
+        for item in cell.eventsData:
             ## item['time'], item['text'], item['icon']
             hbox = gtk.HBox()
             if item['icon']:
@@ -39,7 +39,7 @@ class DayOccurrenceView(event_man.DayOccurrenceView, gtk.VBox):
             hbox.pack_start(label, 1, 1)
             self.pack_start(hbox, 0, 0)
         self.show_all()
-        self.set_visible(bool(self.data))
+        self.set_visible(bool(cell.eventsData))
     def onLabelPopupPopulate(self, label, menu, ids):
         menu = gtk.Menu()
         ##
@@ -85,11 +85,11 @@ class DayOccurrenceView(event_man.DayOccurrenceView, gtk.VBox):
         self.clipboard.set_text(toStr(toUnicode(label.get_text())[start:end]))
     copyAll = lambda self, item, label: self.clipboard.set_text(label.get_label())
 
-class WeekOccurrenceView(event_man.WeekOccurrenceView, gtk.TreeView):
+class WeekOccurrenceView(gtk.TreeView):
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
     def __init__(self, abrivateWeekDays=False):
         self.abrivateWeekDays = abrivateWeekDays
-        event_man.WeekOccurrenceView.__init__(self, ui.cell.jd)
+        self.absWeekNumber = core.getAbsWeekNumberFromJd(ui.cell.jd)
         gtk.TreeView.__init__(self)
         self.set_headers_visible(False)
         self.ls = gtk.ListStore(gdk.Pixbuf, str, str, str)## icon, weekDay, time, text
@@ -118,9 +118,9 @@ class WeekOccurrenceView(event_man.WeekOccurrenceView, gtk.TreeView):
         col.set_resizable(True)
         self.append_column(col)
     def updateWidget(self):
-        self.updateData()
+        (cells, wEventData) = ui.cellCache.getWeekData(self.absWeekNumber)
         self.ls.clear()
-        for item in self.data:
+        for item in wEventData:
             self.ls.append(
                 pixbufFromFile(item['icon']),
                 core.weekDayNameAb(item['weekDay']) if self.abrivateWeekDays else core.weekDayName(item['weekDay']),
@@ -128,6 +128,8 @@ class WeekOccurrenceView(event_man.WeekOccurrenceView, gtk.TreeView):
                 item['text'],
             )
 
+
+'''
 class MonthOccurrenceView(event_man.MonthOccurrenceView, gtk.TreeView):
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
     def __init__(self):
@@ -169,3 +171,6 @@ class MonthOccurrenceView(event_man.MonthOccurrenceView, gtk.TreeView):
                 item['time'],
                 item['text'],
             )
+'''
+
+
