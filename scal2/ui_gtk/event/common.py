@@ -29,8 +29,16 @@ class IconSelectButton(gtk.Button):
             title=_('Select Icon File'),
             action=gtk.FILE_CHOOSER_ACTION_OPEN,
         )
-        okB = self.dialog.add_button(gtk.STOCK_OK, 0)
-        cancelB = self.dialog.add_button(gtk.STOCK_CANCEL, 1)
+        okB = self.dialog.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        cancelB = self.dialog.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        clearB = self.dialog.add_button(gtk.STOCK_CLEAR, gtk.RESPONSE_REJECT)
+        if ui.autoLocale:
+            cancelB.set_label(_('_Cancel'))
+            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
+            okB.set_label(_('_OK'))
+            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+            clearB.set_label(_('Clear'))
+            clearB.set_image(gtk.image_new_from_stock(gtk.STOCK_CLEAR,gtk.ICON_SIZE_BUTTON))
         ###
         menu = gtk.Menu()
         self.menu = menu
@@ -57,9 +65,11 @@ class IconSelectButton(gtk.Button):
             self.menu.popup(None, None, None, b, event.time)
     menuItemActivate = lambda self, widget, icon: self.set_filename(icon)
     def dialogResponse(self, dialog, response=0):
-        if response==0:
-            self.image.set_from_file(dialog.get_filename())
-        self.dialog.hide()
+        if response==gtk.RESPONSE_OK:
+            self.set_filename(dialog.get_filename())
+        elif response==gtk.RESPONSE_REJECT:
+            self.set_filename('')
+        dialog.hide()
     def fileActivated(self, dialog):
         self.filename = dialog.get_filename()
         self.image.set_from_file(self.filename)
@@ -376,7 +386,7 @@ class GroupComboBox(gtk.ComboBox):
 
 
 class EventEditorDialog(gtk.Dialog):
-    def __init__(self, event, eventTypeChangable=True, title=None, parent=None):## don't give both event a eventType
+    def __init__(self, event, eventTypeChangable=True, title=None, parent=None, useSelectedDate=False):
         gtk.Dialog.__init__(self, parent=parent)
         #self.set_transient_for(parent)
         if title:
@@ -412,21 +422,21 @@ class EventEditorDialog(gtk.Dialog):
             #self.activeEventWidget = event.makeWidget()
             combo.connect('changed', self.eventTypeChanged)
             self.comboEventType = combo
+        if useSelectedDate:
+            self.event.setJd(ui.cell.jd)
         self.activeEventWidget = event.makeWidget()
         self.vbox.pack_start(self.activeEventWidget, 0, 0)
         self.vbox.show()
     def dateModeChanged(self, combo):
         pass
     def eventTypeChanged(self, combo):
+        print '--- eventTypeChanged'
         if self.activeEventWidget:
             self.activeEventWidget.destroy()
         eventType = self._group.acceptsEventTypes[combo.get_active()]
-        newEvent = self._group.createEvent(eventType)
-        newEvent.copyFrom(self.event)
-        newEvent.setId(self.event.eid)
-        self.event = newEvent
-        self._group.updateCache(newEvent)## needed? FIXME
-        self.activeEventWidget = newEvent.makeWidget()
+        self.event = self._group.copyEventWithType(self.event, eventType)
+        self._group.updateCache(self.event)## needed? FIXME
+        self.activeEventWidget = self.event.makeWidget()
         self.vbox.pack_start(self.activeEventWidget, 0, 0)
     def run(self):
         #if not self.activeEventWidget:
@@ -443,6 +453,20 @@ class EventEditorDialog(gtk.Dialog):
         self.event.saveConfig()
         self.destroy()
         return self.event
+
+def addNewEvent(group, eventType, title, **kw):
+    event = group.createEvent(eventType)
+    event = EventEditorDialog(
+        event,
+        eventTypeChangable=(eventType=='custom'),## or True FIXME
+        title=title,
+        **kw
+    ).run()
+    if event is None:
+        return
+    group.append(event)
+    group.saveConfig()
+    return event
 
 class GroupEditorDialog(gtk.Dialog):
     def __init__(self, group=None):

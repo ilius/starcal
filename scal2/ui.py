@@ -211,7 +211,6 @@ def dayOpenSunbird(arg=None):
 
 class Cell:## status and information of a cell
     def __init__(self, jd):
-        self.customday = None ## remove FIXME
         self.eventsData = []
         self.extraday = ''
         ###
@@ -270,7 +269,7 @@ class CellCache:
             return self.jdCells[jd]
         else:
             return self.buildCell(jd)
-    def getTmpCell(self, jd):## don't keep, no customday, no plugin params
+    def getTmpCell(self, jd):## don't keep, no eventsData, no plugin params
         if self.jdCells.has_key(jd):
             return self.jdCells[jd]
         else:
@@ -377,7 +376,7 @@ def moveEventToTrash(group, event):
     eventTrash.insert(0, event)## or append? FIXME
     eventTrash.saveConfig()
 
-#getEvent = lambda group_id, event_id: eventGroups[group_id].getEvent(event_id)
+getEvent = lambda group_id, event_id: eventGroups[group_id].getEvent(event_id)
 
 def duplicateGroupTitle(group):
     title = toStr(group.title)
@@ -458,6 +457,7 @@ event_man.checkAndStartDaemon()## FIXME here or in ui_*/event/main.py
 changedEvents = [] ## a list of (group_id, event_id) 's
 changedGroups = []
 trashedEvents = []
+newEvents = []
 
 
 #def updateEventTagsUsage():## FIXME where to use?

@@ -6,6 +6,10 @@ msgid "_Add"
 msgstr ""
 "_افزودن"
 
+msgid "_Add to"
+msgstr ""
+"_افزودن به"
+
 msgid "_Apply"
 msgstr ""
 "_اعمال"
@@ -37,6 +41,10 @@ msgstr ""
 msgid "Edit"
 msgstr ""
 "ویرایش"
+
+msgid "Clear"
+msgstr ""
+"پاک کردن"
 
 
 msgid "_License"

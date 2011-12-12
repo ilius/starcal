@@ -96,7 +96,7 @@ def newLimitedWidthTextLayout(widget, text, width, font=None, truncate=True):
             #print
     return layout
 
-def newOutlineSquarePixbuf(color, size, innerSize, bgColor=None):
+def newOutlineSquarePixbuf(color, size, innerSize=0, bgColor=None):
     pmap = gdk.Pixmap(None, size, size, depth=24)
     cr = pmap.cairo_create()
     ###

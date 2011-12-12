@@ -42,7 +42,7 @@ from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk.export import ExportToIcsDialog
 
 from scal2.ui_gtk.event.occurrence_view import *
-from scal2.ui_gtk.event.common import IconSelectButton, EventEditorDialog, GroupEditorDialog
+from scal2.ui_gtk.event.common import IconSelectButton, EventEditorDialog, addNewEvent, GroupEditorDialog
 
 #print 'Testing translator', __file__, _('About')
 
@@ -117,25 +117,23 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             return
         for gid, eid, eventIndex in ui.trashedEvents:
             groupIndex = ui.eventGroups.index(gid)
-            event = ui.eventTrash.getEvent(eid)
             self.trees.remove(self.trees.get_iter((groupIndex, eventIndex)))
             self.trees.insert(
                 self.trashIter,
                 0,
-                self.getEventRow(event),
+                self.getEventRow(ui.eventTrash.getEvent(eid)),
             )
+        ui.trashedEvents = []
         ###
         for gid, eid in ui.changedEvents:
             groupIndex = ui.eventGroups.index(gid)
             group = ui.eventGroups[gid]
             eventIndex = group.index(eid)
-            event = group.getEvent(eid)
-            eventPath = (groupIndex, eventIndex)
-            eventIter = self.trees.get_iter(eventPath)
-            for i, value in enumerate(self.getEventRow(event)):
+            eventIter = self.trees.get_iter((groupIndex, eventIndex))
+            for i, value in enumerate(self.getEventRow(group.getEvent(eid))):
                 self.trees.set_value(eventIter, i, value)
-        ###
         ui.changedEvents = []
+        ###
         for gid in ui.changedGroups:
             groupIndex = ui.eventGroups.index(gid)
             group = ui.eventGroups[gid]
@@ -143,6 +141,15 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             for i, value in enumerate(self.getGroupRow(group)):
                 self.trees.set_value(groupIter, i, value)
         ui.changedGroups = []
+        ###
+        for gid, eid in ui.newEvents:
+            groupIndex = ui.eventGroups.index(gid)
+            self.trees.append(
+                self.trees.get_iter((groupIndex,)),
+                self.getEventRow(ui.getEvent(gid, eid)),
+            )
+        ui.newEvents = []
+        ###
     def onShow(self, widget):
         self.onConfigChange()
     def __init__(self, mainWin=None):
@@ -522,17 +529,9 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         self.trees.remove(self.trees.get_iter(path))
         self.reloadEvents()## FIXME
     def addEventToGroupFromMenu(self, menu, path, group, eventType, title):
-        event = group.createEvent(eventType)
-        event = EventEditorDialog(
-            event,
-            eventTypeChangable=(eventType=='custom'),## or True FIXME
-            title=title,
-            parent=self,
-        ).run()
+        event = addNewEvent(group, eventType, title, parent=self)
         if event is None:
             return
-        group.append(event)
-        group.saveConfig()
         self.trees.append(
             self.trees.get_iter(path),## parent
             self.getEventRow(event), ## row

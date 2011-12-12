@@ -782,11 +782,14 @@ class Event(EventBaseClass, RuleContainer):
     desc = _('Custom Event')
     iconName = ''
     requiredNotifiers = ()
+    @classmethod
+    def getDefaultIcon(cls):
+        return join(pixDir, 'event', cls.iconName+'.png') if cls.iconName else ''
     def __init__(self, eid=None):
         self.setId(eid)
         self.group = None
         self.mode = core.primaryMode
-        self.icon = '' ## to show in calendar
+        self.icon = self.__class__.getDefaultIcon()
         self.summary = self.desc + ' (' + _(self.eid) + ')'
         self.description = ''
         #self.showInTimeLine = False ## FIXME
@@ -803,11 +806,15 @@ class Event(EventBaseClass, RuleContainer):
         '''
             sets default values that depends on event type
             not common parameters, like those are set in __init__
+            DON'T call this method from parent event class
         '''
         pass
     def setDefaultsFromGroup(self, group):
-        if not self.icon:
-            self.icon = group.icon 
+        '''
+            Call this method from parent event class
+        '''
+        if group.icon:## and not self.icon FIXME
+            self.icon = group.icon
     __nonzero__ = lambda self: bool(self.rulesOd) ## FIXME
     def getInfo(self):
         lines = []
@@ -977,11 +984,13 @@ class Event(EventBaseClass, RuleContainer):
                     pass
         for notifier in self.notifiers:
             notifier.notify(notifierFinishFunc)
-
+    def setJd(self, jd):
+        pass
 
 class YearlyEvent(Event):
     name = 'yearly'
     desc = _('Yearly Event')
+    iconName = 'birthday'
     requiredRules = ('month', 'day')
     supportedRules = ('month', 'day')
     getMonth = lambda self: self['month'].month
@@ -1018,7 +1027,10 @@ class YearlyEvent(Event):
             if startJd <= jd < endJd:
                 jdList.append(jd)
         return JdListOccurrence(jdList)
-
+    def setJd(self, jd):
+        (y, m, d) = core.jd_to(jd, self.mode)
+        self.setMonth(m)
+        self.setDay(d)
 
 class DailyNoteEvent(YearlyEvent):
     name = 'dailyNote'
@@ -1046,6 +1058,11 @@ class DailyNoteEvent(YearlyEvent):
     def calcOccurrenceForJdRange(self, startJd, endJd):## float jd
         jd = self.getJd()
         return JdListOccurrence([jd] if startJd <= jd < endJd else [])
+    def setJd(self, jd):
+        (y, m, d) = core.jd_to(jd, self.mode)
+        self.setYear(y)
+        self.setMonth(m)
+        self.setDay(d)
 
 class TaskEvent(Event):
     ## Y/m/d H:M none              ==> start, None
@@ -1165,6 +1182,8 @@ class TaskEvent(Event):
                 )
             else:
                 return TimeRangeListOccurrence()
+    def setJd(self, jd):
+        self['start'].date = core.jd_to(jd, self.mode)
 
 #class UniversityCourseOwner(Event):## FIXME
 
@@ -1182,15 +1201,16 @@ class UniversityClassEvent(Event):
     #    pass
     def setDefaultsFromGroup(self, group):
         Event.setDefaultsFromGroup(self, group)
-        try:
-            (tm0, tm1) = group.classTimeBounds[:2]
-        except:
-            myRaise()
-        else:
-            self['dayTimeRange'].setRange(
-                tm0 + (0,),
-                tm1 + (0,),
-            )
+        if group.name=='universityTerm':
+            try:
+                (tm0, tm1) = group.classTimeBounds[:2]
+            except:
+                myRaise()
+            else:
+                self['dayTimeRange'].setRange(
+                    tm0 + (0,),
+                    tm1 + (0,),
+                )
     getCourseName = lambda self: self.group.getCourseNameById(self.courseId)
     getWeekDayName = lambda self: core.weekDayName[self['weekDay'].weekDayList[0]]
     def updateSummary(self):
@@ -1208,20 +1228,26 @@ class UniversityClassEvent(Event):
             self.courseId = data['courseId']
         except KeyError:
             pass
+    def setJd(self, jd):
+        self['weekDay'].weekDayList = [core.jwday(jd)]
+        ## set weekNumMode from absWeekNumber FIXME
 
 class UniversityExamEvent(DailyNoteEvent):
     name = 'universityExam'
     desc = _('Exam')
+    iconName = 'university'
     requiredRules  = ('year', 'month', 'day', 'dayTimeRange',)
     supportedRules = ('year', 'month', 'day', 'dayTimeRange',)
     def __init__(self, eid=None):
         ## assert group is not None ## FIXME
         DailyNoteEvent.__init__(self, eid)
         self.courseId = None ## FIXME
+    def setDefaults(self):
+        self['dayTimeRange'].setRange((9, 0), (11, 0))## FIXME
     def setDefaultsFromGroup(self, group):
         DailyNoteEvent.setDefaultsFromGroup(self, group)
-        self.setDate(*group['end'].date)## FIXME
-        self['dayTimeRange'].setRange((9, 0), (11, 0))## FIXME
+        if group.name=='universityTerm':
+            self.setDate(*group['end'].date)## FIXME
     getCourseName = lambda self: self.group.getCourseNameById(self.courseId)
     def updateSummary(self):
         self.summary = _('%s Exam')%self.getCourseName()
@@ -1301,11 +1327,10 @@ class EventGroup(EventContainer, RuleContainer):
         self.icon = ''
         #self.defaultNotifyBefore = (10, 60) ## FIXME
         if len(self.acceptsEventTypes)==1:
-            iconName = eventsClassDict[self.acceptsEventTypes[0]].iconName
-            if iconName:
-                self.icon = join(pixDir, 'event', iconName+'.png')
-        if len(self.acceptsEventTypes)==1:
             self.defaultEventType = self.acceptsEventTypes[0]
+            icon = eventsClassDict[self.acceptsEventTypes[0]].getDefaultIcon()
+            if icon:
+                self.icon = icon
         else:
             self.defaultEventType = 'custom'
         self.mode = core.primaryMode
@@ -1402,6 +1427,11 @@ class EventGroup(EventContainer, RuleContainer):
         event.group = self
         event.setDefaultsFromGroup(self)
         return event
+    def copyEventWithType(self, event, eventType):## FIXME
+        newEvent = self.createEvent(eventType)
+        newEvent.setId(event.eid)
+        newEvent.copyFrom(event)
+        return newEvent
     def excludeEvent(self, eid):## call when moving to trash
         index = EventContainer.excludeEvent(self, eid)
         try:
@@ -1513,6 +1543,7 @@ class UniversityTerm(EventGroup):
     #actions = EventGroup.actions + []
     def __init__(self, gid=None, title=None):
         EventGroup.__init__(self, gid, title)
+        self.classesEndDate = core.getSysDate(self.mode)## FIXME
         self.setCourses([]) ## list of (courseId, courseName, courseUnits)
         self.classTimeBounds = [
             (8, 0),
@@ -1547,12 +1578,15 @@ class UniversityTerm(EventGroup):
             ## 0/11/15 to 1/03/20
             if (1, 1) <= md < (4, 1):
                 startRule.date = (year-1, 11, 15)
-                endRule.date = (year, 3, 20)
+                self.classesEndDate = (year, 3, 20)
+                endRule.date = (year, 4, 10)
             elif (4, 1) <= md < (10, 1):
                 startRule.date = (year, 7, 1)
+                self.classesEndDate = (year, 11, 1)
                 endRule.date = (year, 11, 1)
             else:## md >= (10, 1)
                 startRule.date = (year, 11, 15)
+                self.classesEndDate = (year+1, 3, 1)
                 endRule.date = (year+1, 3, 20)
         #elif calType=='gregorian':
         #    pass
@@ -1562,22 +1596,24 @@ class UniversityTerm(EventGroup):
     def copyFrom(self, other):
         EventGroup.copyFrom(self, other)
         if other.name == self.name:
+            self.classesEndDate = other.classesEndDate[:]
             self.courses = other.courses[:]
             self.classTimeBounds = other.classTimeBounds[:]
     def getData(self):
         data = EventGroup.getData(self)
         data.update({
             'classTimeBounds': [hmEncode(hm) for hm in self.classTimeBounds],
+            'classesEndDate': dateEncode(self.classesEndDate),
         })
         for attr in ('courses',):
             data.update({attr: getattr(self, attr)})
         return data
     def setData(self, data):
         EventGroup.setData(self, data)
-        ##
+        if 'classesEndDate' in data:
+            self.classesEndDate = dateDecode(data['classesEndDate'])
         if 'classTimeBounds' in data:
             self.classTimeBounds = sorted([hmDecode(hm) for hm in data['classTimeBounds']])
-        ##
         for attr in ('courses',):
             try:
                 setattr(self, attr, data[attr])
@@ -2109,6 +2145,7 @@ def restartDaemon():
 
 ########################################################################
 
+
 eventsClassList = [TaskEvent, DailyNoteEvent, YearlyEvent, UniversityClassEvent, UniversityExamEvent, Event]
 eventsClassDict = dict([(cls.name, cls) for cls in eventsClassList])
 eventsClassByDesc = dict([(cls.desc, cls) for cls in eventsClassList])
@@ -2116,6 +2153,7 @@ eventsClassByDesc = dict([(cls.desc, cls) for cls in eventsClassList])
 eventsClassNameList = [cls.name for cls in eventsClassList]
 #eventsClassNameDescList = [(cls.name, cls.desc) for cls in eventsClassList]
 defaultEventTypeIndex = 0 ## FIXME
+getEventDesc = lambda eventType: eventsClassDict[eventType].desc
 
 eventRulesClassList = [
     YearEventRule,

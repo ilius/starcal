@@ -67,7 +67,7 @@ from scal2.ui_gtk import listener
 import scal2.ui_gtk.export
 import scal2.ui_gtk.selectdate
 
-from scal2.ui_gtk.drawing import newTextLayout
+from scal2.ui_gtk.drawing import newTextLayout, newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets.clock import FClockLabel
 #from ui_gtk.mywidgets2.multi_spin_button import DateButtonOption
 from scal2.ui_gtk import preferences
@@ -75,6 +75,7 @@ from scal2.ui_gtk.preferences import PrefItem, gdkColorToRgb, gfontEncode, pfont
 from scal2.ui_gtk.customize import CustomizableWidgetWrapper, MainWinItem, CustomizeDialog
 from scal2.ui_gtk.monthcal import MonthCal
 
+from scal2.ui_gtk.event.common import addNewEvent
 from scal2.ui_gtk.event.main import DayOccurrenceView, EventManagerDialog
 from scal2.ui_gtk.timeline import TimeLineWindow
 
@@ -1005,8 +1006,6 @@ class EventViewMainWinItem(DayOccurrenceView, MainWinItem):## FIXME
 
 
 class MainWin(gtk.Window):
-    #menuCellWidth = 145
-    #menuMainWidth = 145
     timeout = 1 ## second
     setMinHeight = lambda self: self.resize(ui.winWidth, 2)
     def __init__(self, trayMode=3):
@@ -1230,39 +1229,6 @@ class MainWin(gtk.Window):
         #    timeout_add_seconds(self.timeout, self.trayUpdate)
         #########
         self.connect('delete-event', self.dialogClose)
-        ######### Building menu of right click on a day
-        menu = gtk.Menu()
-        #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD,   self.eventManDialog.addCustomEvent))## FIXME
-        #menu.add(labelStockMenuItem('_Add Yearly Event', gtk.STOCK_ADD, self.eventManDialog.addYearlyEvent))## FIXME
-        #menu.add(labelStockMenuItem('_Add Note', gtk.STOCK_ADD, self.eventManDialog.addDailyNote))## FIXME
-        menu.add(labelStockMenuItem('_Copy Date', gtk.STOCK_COPY, self.copyDate))
-        menu.add(gtk.SeparatorMenuItem())
-        menu.add(labelStockMenuItem('Select _Today', gtk.STOCK_HOME, self.goToday))
-        menu.add(labelStockMenuItem('Select _Date...', gtk.STOCK_INDEX, selectDateShow))
-        if isfile('/usr/bin/evolution'):##??????????????????
-            menu.add(labelImageMenuItem('In E_volution', 'evolution-18.png', ui.dayOpenEvolution))
-        #if isfile('/usr/bin/sunbird'):##??????????????????
-        #    menu.add(labelImageMenuItem('In _Sunbird', 'sunbird-18.png', ui.dayOpenSunbird))
-        menu.num = 1
-        self.menuCell1 = menu
-        self.menuCell = menu ## may be changed later frequently, here just initialized
-        menu.show_all()
-        ########## Building menu of right click on a day (that has Event Icon) FIXME
-        #menu = gtk.Menu()
-        ##menu.add(labelStockMenuItem('_Edit Event', gtk.STOCK_EDIT, self.editEvent))## FIXME
-        #menu.add(labelStockMenuItem('_Copy Date', gtk.STOCK_COPY, self.copyDate))
-        #menu.add(gtk.SeparatorMenuItem())
-        ##menu.add(labelStockMenuItem('_Remove Event', gtk.STOCK_DELETE, self.removeEvent))## FIXME
-        #menu.add(gtk.SeparatorMenuItem())
-        #menu.add(labelStockMenuItem('Select _Today', gtk.STOCK_HOME, self.goToday))
-        #menu.add(labelStockMenuItem('Select _Date...', gtk.STOCK_INDEX, selectDateShow))
-        #if isfile('/usr/bin/evolution'):##??????????????????
-        #    menu.add(labelImageMenuItem('In E_volution', 'evolution-18.png', ui.dayOpenEvolution))
-        ##if isfile('/usr/bin/sunbird'):##??????????????????
-        ##    menu.add(labelImageMenuItem('In _Sunbird', 'sunbird-18.png', ui.dayOpenSunbird))
-        #menu.show_all()
-        #menu.num = 2
-        self.menuCell2 = menu
         ######################
         self.updateMenuSize()
         self.prefDialog.updatePrefGui()
@@ -1380,10 +1346,6 @@ class MainWin(gtk.Window):
         #    except AttributeError:
         #        pass
         self.setMinHeight()
-        #if ui.cell.customday!=None:#if Cell has CustomDay ## FIXME
-        #    self.menuCell = self.menuCell2
-        #else:
-        self.menuCell = self.menuCell1
         for j in range(len(core.plugIndex)):
             try:
                 core.allPlugList[core.plugIndex[j]].date_change_after(*date)
@@ -1391,18 +1353,64 @@ class MainWin(gtk.Window):
                 pass
     def popupMenuCell(self, mcal, etime, x, y):
         ui.focusTime = time()
-        menu = self.menuCell
+        menu = gtk.Menu()
+        ####
+        item = labelStockMenuItem('_Add to', gtk.STOCK_ADD)
+        menu2 = gtk.Menu()
+        ##
+        for group in ui.eventGroups:
+            eventTypes = group.acceptsEventTypes
+            item2 = gtk.ImageMenuItem()
+            item2.set_label(group.title)
+            ##
+            image = gtk.Image()
+            if group.icon:
+                image.set_from_file(group.icon)
+            else:
+                image.set_from_pixbuf(newOutlineSquarePixbuf(group.color, 20))
+            item2.set_image(image)
+            ##
+            if len(eventTypes)==1:
+                item2.connect('activate', self.addToGroupFromMenu, group, eventTypes[0])
+            else:
+                menu3 = gtk.Menu()
+                for eventType in eventTypes:
+                    eventClass = event_man.eventsClassDict[eventType]
+                    item3 = gtk.ImageMenuItem()
+                    item3.set_label(eventClass.desc)
+                    icon = eventClass.getDefaultIcon()
+                    if icon:
+                        item3.set_image(gtk.image_new_from_file(icon))
+                    item3.connect('activate', self.addToGroupFromMenu, group, eventType)
+                    menu3.add(item3)
+                menu3.show_all()
+                item2.set_submenu(menu3)
+            menu2.add(item2)
+        ##
+        menu2.show_all()
+        item.set_submenu(menu2)
+        menu.add(item)
+        ####
+        menu.add(labelStockMenuItem('_Copy Date', gtk.STOCK_COPY, self.copyDate))
+        menu.add(gtk.SeparatorMenuItem())
+        menu.add(labelStockMenuItem('Select _Today', gtk.STOCK_HOME, self.goToday))
+        menu.add(labelStockMenuItem('Select _Date...', gtk.STOCK_INDEX, self.selectDateShow))
+        if isfile('/usr/bin/evolution'):##??????????????????
+            menu.add(labelImageMenuItem('In E_volution', 'evolution-18.png', ui.dayOpenEvolution))
+        #if isfile('/usr/bin/sunbird'):##??????????????????
+        #    menu.add(labelImageMenuItem('In _Sunbird', 'sunbird-18.png', ui.dayOpenSunbird))
+        ####
+        menu.show_all()
         (dx, dy) = mcal.translate_coordinates(self, x, y)
         (wx, wy) = self.window.get_origin()
         x = wx+dx
         y = wy+dy
         if rtl:
-            mw = menu.allocation.width
-            if mw < 2:# menu width
-                mw = 145
+            #mw = menu.allocation.width
+            #if mw < 2:# menu width
+            mw = 145 ## FIXME
             x -= mw
         menu.popup(None, None, lambda m: (x, y, True), 3, etime)
-        #self.menuCellWidth = menu.allocation.width
     def popupMenuMain(self, mcal, etime, x, y):
         ui.focusTime = time()
         menu = self.menuMain
@@ -1417,6 +1425,13 @@ class MainWin(gtk.Window):
             x -= mw
         menu.popup(None, None, lambda m: (x, y, True), 3, etime)
         #self.menuMainWidth = menu.allocation.width
+    def addToGroupFromMenu(self, menu, group, eventType):
+        #print 'addToGroupFromMenu', group.title, eventType
+        title = _('Add ') + event_man.getEventDesc(eventType)
+        event = addNewEvent(group, eventType, title, parent=self, useSelectedDate=True)
+        if event is None:
+            return
+        ui.newEvents.append((group.gid, event.eid))
     def prefUpdateBgColor(self, cal):
         self.prefDialog.colorbBg.set_color(ui.bgColor)
         ui.saveLiveConf()
@@ -1438,10 +1453,6 @@ class MainWin(gtk.Window):
         getMenuPos = lambda widget: (screenW, 0, True)
         self.menuMain.popup(None, None, getMenuPos, 3, 0)
         self.menuMain.hide()
-        self.menuCell1.popup(None, None, getMenuPos, 3, 0)
-        self.menuCell1.hide()
-        self.menuCell2.popup(None, None, getMenuPos, 3, 0)
-        self.menuCell2.hide()
         self.menuTray1.popup(None, None, getMenuPos, 3, 0)
         self.menuTray1.hide()
         self.menuTray2.allocation = self.menuTray1.allocation
