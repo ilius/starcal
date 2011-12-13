@@ -1078,6 +1078,7 @@ class TaskEvent(Event):
             core.getSysDate(self.mode),
             tuple(time.localtime()[3:6]),
         )
+        self.setEnd('duration', 1, 3600)
     def setDefaultsFromGroup(self, group):
         Event.setDefaultsFromGroup(self, group)
         if group.name == 'taskList':
@@ -1090,10 +1091,6 @@ class TaskEvent(Event):
         startRule.time = dayTime
     def setEnd(self, endType, *values):
         self.removeSomeRuleTypes('end', 'duration')
-        if not endType:
-            return
-        if not values:
-            return
         if endType=='date':
             rule = EndEventRule(self)
             (rule.date, rule.time) = values
@@ -1103,7 +1100,6 @@ class TaskEvent(Event):
         else:
             raise ValueError('invalid endType=%r'%endType)
         self.addRule(rule)
-    removeEnd = lambda self: self.removeSomeRuleTypes('end')
     def getStart(self):
         startRule = self['start']
         return (startRule.date, startRule.time)
@@ -1121,7 +1117,7 @@ class TaskEvent(Event):
             pass
         else:
             return ('duration', (rule.value, rule.unit))
-        return (None, ())
+        raise ValueError('no end date neither duration specified for task')
     def getEndEpoch(self):
         try:
             rule = self['end']
@@ -1135,7 +1131,7 @@ class TaskEvent(Event):
             pass
         else:
             return self['start'].getEpoch() + rule.getSeconds()
-        return None
+        raise ValueError('no end date neither duration specified for task')
     def copyFrom(self, other):
         Event.copyFrom(self, other)
         myStartRule = self['start']
@@ -1736,8 +1732,7 @@ class EventTrash(EventContainer):
                 shutil.rmtree(join(eventsDir, str(eid)))
             except:
                 myRaise()
-            else:
-                eventIds2.remove(eid)
+            eventIds2.remove(eid)
         self.eventIds = eventIds2
         self.saveConfig()
     def getData(self):

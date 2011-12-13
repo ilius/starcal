@@ -34,7 +34,7 @@ class EventWidget(common.EventWidget):
         ######
         hbox = gtk.HBox()
         self.endTypeCombo = gtk.combo_box_new_text()
-        for item in ('---', 'Duration', 'End'):
+        for item in ('Duration', 'End'):
             self.endTypeCombo.append_text(_(item))
         self.endTypeCombo.connect('changed', self.endTypeComboChanged)
         sizeGroup.add_widget(self.endTypeCombo)
@@ -63,13 +63,10 @@ class EventWidget(common.EventWidget):
         #self.pack_start(self.filesBox, 0, 0)
     def endTypeComboChanged(self, combo=None):
         active = self.endTypeCombo.get_active()
-        if active==0:
-            self.durationBox.hide()
-            self.endDateHbox.hide()
-        elif active==1:## duration
+        if active==0:## duration
             self.durationBox.show()
             self.endDateHbox.hide()
-        elif active==2:## end date
+        elif active==1:## end date
             self.durationBox.hide()
             self.endDateHbox.show()
         else:
@@ -82,17 +79,13 @@ class EventWidget(common.EventWidget):
         self.startTimeInput.set_time(startTime)
         ###
         (endType, values) = self.event.getEnd()
-        if not endType:
+        if endType=='duration':
             self.endTypeCombo.set_active(0)
-            self.endDateInput.set_date(startDate)
-            self.endTimeInput.set_time(startTime)
-        elif endType=='duration':
-            self.endTypeCombo.set_active(1)
             self.durationBox.setDuration(*values)
             self.endDateInput.set_date(startDate)## FIXME
             self.endTimeInput.set_time(startTime)## FIXME
         elif endType=='end':
-            self.endTypeCombo.set_active(2)
+            self.endTypeCombo.set_active(1)
             self.endDateInput.set_date(values[0])
             self.endTimeInput.set_time(values[1])
         else:
@@ -106,10 +99,8 @@ class EventWidget(common.EventWidget):
         ###
         active = self.endTypeCombo.get_active()
         if active==0:
-            self.event.setEnd(None)
-        elif active==1:
             self.event.setEnd('duration', *self.durationBox.getDuration())
-        elif active==2:
+        elif active==1:
             self.event.setEnd(
                 'date',
                 self.endDateInput.get_date(),

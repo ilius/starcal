@@ -256,6 +256,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 #print 'right click on trash', group.title
                 menu.add(labelStockMenuItem('Edit', gtk.STOCK_EDIT, self.editTrash))
                 menu.add(labelStockMenuItem('Empty Trash', gtk.STOCK_CLEAR, self.emptyTrash))
+                menu.add(gtk.SeparatorMenuItem())
+                menu.add(labelStockMenuItem('Add New Group', gtk.STOCK_NEW, self.addGroupBeforeTrash))
             else:
                 #print 'right click on group', group.title
                 menu.add(labelStockMenuItem('Edit', gtk.STOCK_EDIT, self.editGroup, path, group))
@@ -471,7 +473,19 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             #self.trees.get_iter_root(),## parent
             self.trees.iter_parent(afterGroupIter),
             afterGroupIter,## sibling
-            self.getGroupRow(group, self.getRowBgColor()), ## row
+            self.getGroupRow(group, self.getRowBgColor()),
+        )
+    def addGroupBeforeTrash(self, menu):
+        group = GroupEditorDialog().run()
+        if group is None:
+            return
+        group.saveConfig()
+        ui.eventGroups.append(group)
+        ui.eventGroups.saveConfig()
+        self.trees.insert_before(
+            self.trees.iter_parent(self.trashIter),
+            self.trashIter,
+            self.getGroupRow(group, self.getRowBgColor()),
         )
     def duplicateGroup(self, path):
         (index,) = path
