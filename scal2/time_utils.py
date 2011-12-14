@@ -80,6 +80,23 @@ def timeEncode(tm, checkSec=False):
     else:
         return '%.2d:%.2d:%.2d'%tuple(tm)
 
+def simpleTimeEncode(tm):
+    if len(tm)==1:
+        return '%d'%tm
+    elif len(tm)==2:
+        if tm[1]==0:
+            return '%d'%tm[0]
+        else:
+            return '%d:%.2d'%tm
+    elif len(tm)==3:
+        if tm[1]==0:
+            if tm[2]==0:
+                return '%d'%tm[0]
+            else:
+                return '%d:%.2d:%.2d'%tm
+        else:
+            return '%d:%.2d:%.2d'%tm
+
 def timeDecode(st):
     parts = st.split(':')
     try:
@@ -127,4 +144,33 @@ def durationDecode(durStr):
             if unit in (unitName, unitName+'s'):## ,unitName[0]
                 return (value, unitValue)
     raise ValueError('invalid duration %r'%durStr)
+
+
+timeToFloatHour = lambda h, m, s=0: h + m/60.0 + s/3600.0
+
+def floatHourToTime(fh):
+    h, r = divmod(fh, 1)
+    m, r = divmod(r*60, 1)
+    return (
+        int(h),
+        int(m),
+        int(r*60),
+    )
+
+if __name__=='__main__':
+    #print floatHourToTime(3.6)
+    for tm in (
+        (8, 0, 0),
+        (8, 0),
+        (8,),
+        (8, 30),
+        (8, 30, 55),
+        (8, 0, 10),
+    ):
+        print '%r, %r'%(tm, simpleTimeEncode(tm))
+
+
+
+
+
 

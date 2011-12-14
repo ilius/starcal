@@ -31,7 +31,7 @@ from scal2.color_utils import hslToRgb
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName
 from scal2 import core
-from scal2.core import myRaise, getEpochFromJd, getEpochFromJhms, log, to_jd, jd_to
+from scal2.core import myRaise, getEpochFromJd, getEpochFromJhms, log, to_jd, jd_to, getAbsWeekNumberFromJd
 
 def makeDir(direc):
     if not isdir(direc):
@@ -387,19 +387,19 @@ class WeekNumberModeEventRule(EventRule):
                 %(modeName, self.weekNumModeNames))
         self.weekNumMode = self.weekNumModeNames.index(modeName)
     def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
-        startAbsWeekNum = core.getAbsWeekNumberFromJd(event['start'].getJd()) - 1 ## 1st week ## FIXME
+        startAbsWeekNum = getAbsWeekNumberFromJd(event['start'].getJd()) - 1 ## 1st week ## FIXME
         jdListAll = core.getJdListFromEpochRange(startEpoch, endEpoch)
         if self.weekNumMode==self.EVERY_WEEK:
             jdList = jdListAll
         elif self.weekNumMode==self.ODD_WEEKS:
             jdList = []
             for jd in jdListAll:
-                if (core.getAbsWeekNumberFromJd(jd)-startAbsWeekNum)%2==1:
+                if (getAbsWeekNumberFromJd(jd)-startAbsWeekNum)%2==1:
                     jdList.append(jd)
         elif self.weekNumMode==self.EVEN_WEEKS:
             jdList = []
             for jd in jdListAll:
-                if (core.getAbsWeekNumberFromJd(jd)-startAbsWeekNum)%2==0:
+                if (getAbsWeekNumberFromJd(jd)-startAbsWeekNum)%2==0:
                     jdList.append(jd)
         return JdListOccurrence(jdList)
     def getInfo(self):
@@ -502,6 +502,10 @@ class DayTimeRangeEventRule(EventRule):
     def setRange(self, start, end):
         self.dayTimeStart = tuple(start)
         self.dayTimeEnd = tuple(end)
+    getHourRange = lambda self: (
+        timeToFloatHour(self.dayTimeStart),
+        timeToFloatHour(self.dayTimeEnd),
+    )
     getData = lambda self: (timeEncode(self.dayTimeStart), timeEncode(self.dayTimeEnd))
     setData = lambda self, data: self.setRange(timeDecode(data[0]), timeDecode(data[1]))
     def calcOccurrence(self, startEpoch, endEpoch, event):
@@ -1537,6 +1541,7 @@ class UniversityTerm(EventGroup):
     supportedRules = ('start', 'end')
     acceptsEventTypes = ('universityClass', 'universityExam')
     #actions = EventGroup.actions + []
+    actions = [('View Weekly Schedule', 'viewWeeklySchedule')]
     def __init__(self, gid=None, title=None):
         EventGroup.__init__(self, gid, title)
         self.classesEndDate = core.getSysDate(self.mode)## FIXME
@@ -1549,6 +1554,60 @@ class UniversityTerm(EventGroup):
             (16, 0),
             (18, 0),
         ] ## FIXME
+    def getClassBoundsFormatted(self):
+        count = len(self.classTimeBounds)
+        if count < 2:
+            return
+        titles = []
+        tmfactors = []
+        firstTm = timeToFloatHour(self.classTimeBounds[0])
+        lastTm = timeToFloatHour(self.classTimeBounds[-1])
+        deltaTm = lastTm - firstTm
+        for i in range(count-1):
+            (tm0, tm1) = self.classTimeBounds[i:i+2]
+            titles.append(
+                _(simpleTimeEncode(tm0)) + _('to') + _(simpleTimeEncode(tm1))
+            )
+            tmfactors.append(float(tm1-firstTm)/deltaTm)
+        return (titles, tmfactors)
+    def getWeeklyScheduleData(self, currentWeekOnly=False):
+        boundsCount = len(self.classTimeBounds)
+        boundsHour = [h + m/60.0 for h,m in self.classTimeBounds]
+        data = [
+            [
+                [] for i in range(boundsCount)
+            ] for weekDay in range(7)
+        ]
+        ## data[weekDay][intervalIndex] = {'name': 'Course Name', 'weekNumMode': 'odd'}
+        ###
+        if currentWeekOnly:
+            currentJd = core.getCurrentJd()            
+            if ( getAbsWeekNumberFromJd(currentJd) -  getAbsWeekNumberFromJd(self['start'].getJd()) ) % 2 == 1:
+                currentWeekNumMode = 'odd'
+            else:
+                currentWeekNumMode = 'even'
+        else:
+            currentWeekNumMode = ''
+        ###
+        for event in self:
+            if event.name != 'universityClass':
+                continue
+            ## 'weekNumMode', 'weekDay', 'dayTimeRange'
+            weekNumMode = self['weekNumMode'].getData()
+            if currentWeekNumMode and currentWeekNumMode!=weekNumMode:
+                continue
+            weekDay = self['weekDay'].weekDayList[0]
+            (h0, h1) = self['dayTimeRange'].getHourRange()
+            startIndex = findNearestIndex(boundsHour, h0)
+            endIndex = findNearestIndex(boundsHour, h1)
+            classData = {
+                'name': self.getCourseNameById(event.courseId),
+                'weekNumMode': weekNumMode,
+            }
+            for i in range(startIndex, endIndex):
+                data[weekDay][i].append(classData)
+
+        return data
     def setCourses(self, courses):
         self.courses = courses
         self.lastCourseId = max([1]+[course[0] for course in self.courses])
@@ -2051,11 +2110,11 @@ class WeekOccurrenceView(OccurrenceView):
     #name = 'week'## a GtkWidget will inherit this class FIXME
     #desc = _('Week Occurrence View')
     def __init__(self, jd):
-        self.absWeekNumber = core.getAbsWeekNumberFromJd(jd)
+        self.absWeekNumber = getAbsWeekNumberFromJd(jd)
         #self.updateData()
     getJdRange = lambda self: core.getJdRangeOfAbsWeekNumber(self.absWeekNumber)
     def setJd(self, jd):
-        wnum = core.getAbsWeekNumberFromJd(jd)
+        wnum = getAbsWeekNumberFromJd(jd)
         if wnum != self.absWeekNumber:
             self.absWeekNumber = wnum
             self.updateData()

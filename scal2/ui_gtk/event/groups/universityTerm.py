@@ -297,4 +297,77 @@ class GroupWidget(BaseGroupWidget):
         self.group.classTimeBounds = self.classTimeBoundsEditor.getData()
 
 
+class WeeklyScheduleWidget(gtk.Widget):
+    def __init__(self, term):
+        self.term = term
+        self.data = []
+        ####
+        gtk.Widget.__init__(self)
+        #self.connect('button-press-event', self.buttonPress)
+        self.connect('expose-event', self.onExposeEvent)
+        self.connect('destroy', self.quit)
+        #self.connect('event', show_event)
+    def do_realize(self):
+        self.set_flags(self.flags() | gtk.REALIZED)
+        self.window = gdk.Window(
+            self.get_parent_window(), 
+            width=self.allocation.width, 
+            height=self.allocation.height, 
+            window_type=gdk.WINDOW_CHILD, 
+            wclass=gdk.INPUT_OUTPUT, 
+            event_mask=self.get_events() | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK
+                | gdk.BUTTON_PRESS_MASK | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK,
+            #colormap=self.get_screen().get_rgba_colormap(),
+        )
+        #self.window.set_composited(True)
+        self.window.set_user_data(self)
+        self.style.attach(self.window)#?????? Needed??
+        self.style.set_background(self.window, gtk.STATE_NORMAL)
+        self.window.move_resize(*self.allocation)
+        #self.onExposeEvent()
+    def onExposeEvent(self, widget=None, event=None):
+        self.drawCairo(self.window.cairo_create())
+    def drawCairo(self, cr):
+        gridWidth = 1
+        ##
+        t0 = time.time()
+        w = self.allocation.width
+        h = self.allocation.height
+        cr.rectangle(0, 0, w, h)
+        fillColor(cr, ui.bgColor)
+        textColor = ui.shownCals[0]['color']
+        gridColor = ui.gridColor
+        ###
+        #classBounds = self.term.classTimeBounds
+        (titles, tmfactors) = self.term.getClassBoundsFormatted()
+        ###
+        weekDayLayouts = []
+        weekDayLayoutsWidth = []
+        for i in range(7):
+            layout = newTextLayout(self, core.getWeekDayN(i))
+            layoutW, layoutH = layout.get_pixel_size()
+            weekDayLayouts.append(layout)
+            weekDayLayoutsWidth.append(layoutW)
+        leftMargin = max(weekDayLayoutsWidth) + 6
+        ### Draw grid
+        for factor in tmfactors[:-1]:
+            x = factor * (w-leftMargin)
+            
+            cr.rectangle(x, 0, gridWidth, h)
+            fillColor(cr, gridColor)        
+            
+        
+        
+        ###
+        for wdayData in self.data:
+            
+
+
+
+def viewWeeklySchedule(group):
+    print 'viewWeeklySchedule'
+
+
+
+
 

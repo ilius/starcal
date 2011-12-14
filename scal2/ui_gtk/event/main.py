@@ -837,6 +837,14 @@ for cls in event_man.eventGroupsClassList:
     except AttributeError:
         print 'no class GroupWidget defined in module "%s"'%cls.name
 
+    for actionDesc, actionName in cls.actions:
+        try:
+            func = getattr(module, actionName)
+        except AttributeError:
+            print 'no function %s defined in module "%s"'%(actionName, cls.name)
+        else:
+            setattr(cls, actionName, func)
+
 
 event_man.Event.makeWidget = makeWidget
 event_man.EventRule.makeWidget = makeWidget

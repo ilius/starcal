@@ -200,3 +200,31 @@ def cleanCacheDict(cache, maxSize, currentValue):
 
 
 
+def findNearestNum(lst, num):
+    if not lst:
+        return
+    best = lst[0]
+    for x in lst[1:]:
+        if abs(x-num) < abs(best-num):
+            best = x
+    return best
+
+def findNearestIndex(lst, num):
+    if not lst:
+        return
+    index = 0
+    count = len(lst)
+    for i in range(1, count)
+        if abs(lst[i]-num) < abs(lst[index]-num):
+            index = i
+    return index
+
+
+
+
+
+#if __name__=='__main__':
+#    print findNearestNum([1, 2, 4, 6, 3, 7], 3.6)
+
+
+

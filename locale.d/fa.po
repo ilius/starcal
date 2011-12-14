@@ -868,7 +868,9 @@ msgid "%s Exam"
 msgstr ""
 "امتحان %s"
 
-
+msgid "View Weekly Schedule"
+msgstr ""
+"مشاهدهٔ برنامهٔ هفتگی"
 
 
 msgid "Add Group"
