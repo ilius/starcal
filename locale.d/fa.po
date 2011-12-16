@@ -642,6 +642,18 @@ msgid "Odd Weeks"
 msgstr ""
 "هفته‌های فرد"
 
+msgid "Even"
+msgstr ""
+"زوج"
+
+msgid "Odd"
+msgstr ""
+"فرد"
+
+msgid "Current Week Only"
+msgstr ""
+"فقط هفتهٔ جاری"
+
 msgid "Day of Week"
 msgstr ""
 "روز هفته"
@@ -889,9 +901,6 @@ msgid "Edit Group"
 msgstr ""
 "ویرایش گروه"
 
-msgid "Export to iCalendar"
-msgstr ""
-"صدور به iCalendar"
 
 msgid "Group Type"
 msgstr ""
@@ -1444,9 +1453,9 @@ msgid "Export"
 msgstr ""
 "صدور"
 
-msgid "Export to HTML"
+msgid "Export to "
 msgstr ""
-"صدور به HTML"
+"صدور به "
 
 msgid "Month Range"
 msgstr ""
@@ -1559,9 +1568,9 @@ msgid "_Edit Custom Day"
 msgstr ""
 "_ویرایش روز دلخواه"
 
-msgid "_Export to HTML"
+msgid "_Export to "
 msgstr ""
-"_صدور به HTML"
+"_صدور به "
 
 
 msgid "Need Restart StarCalendar"

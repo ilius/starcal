@@ -1,20 +1,25 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from scal2.paths import deskDir
 from scal2.time_utils import hmEncode, hmDecode
 from scal2.locale_man import tr as _
 from scal2.locale_man import localeNumDecode
 
 from scal2 import core
 
+from scal2.ui_gtk.drawing import *
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
 from scal2.ui_gtk.event import common
 from scal2.ui_gtk.event.groups.group import GroupWidget as BaseGroupWidget
 
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip
 
-import gtk
+import time
 
+import gobject
+import gtk
+from gtk import gdk
 
 
 class CourseListEditor(gtk.HBox):
@@ -305,7 +310,6 @@ class WeeklyScheduleWidget(gtk.Widget):
         gtk.Widget.__init__(self)
         #self.connect('button-press-event', self.buttonPress)
         self.connect('expose-event', self.onExposeEvent)
-        self.connect('destroy', self.quit)
         #self.connect('event', show_event)
     def do_realize(self):
         self.set_flags(self.flags() | gtk.REALIZED)
@@ -328,8 +332,8 @@ class WeeklyScheduleWidget(gtk.Widget):
     def onExposeEvent(self, widget=None, event=None):
         self.drawCairo(self.window.cairo_create())
     def drawCairo(self, cr):
-        gridWidth = 1
-        ##
+        if not self.data:
+            return
         t0 = time.time()
         w = self.allocation.width
         h = self.allocation.height
@@ -343,31 +347,147 @@ class WeeklyScheduleWidget(gtk.Widget):
         ###
         weekDayLayouts = []
         weekDayLayoutsWidth = []
-        for i in range(7):
-            layout = newTextLayout(self, core.getWeekDayN(i))
+        for j in range(7):
+            layout = newTextLayout(self, core.getWeekDayN(j))
             layoutW, layoutH = layout.get_pixel_size()
             weekDayLayouts.append(layout)
             weekDayLayoutsWidth.append(layoutW)
         leftMargin = max(weekDayLayoutsWidth) + 6
-        ### Draw grid
-        for factor in tmfactors[:-1]:
-            x = factor * (w-leftMargin)
-            
-            cr.rectangle(x, 0, gridWidth, h)
-            fillColor(cr, gridColor)        
-            
-        
-        
         ###
-        for wdayData in self.data:
-            
+        topMargin = 20 ## FIXME
+        ### Calc Coordinates: ycenters(list), dy(float)
+        ycenters = [
+            topMargin + (h-topMargin)*(1.0+2*i)/14.0
+            for i in xrange(7)
+        ] ## centers y
+        dy = (h-topMargin)/7.0 ## delta y
+        ### Draw grid
+        ## tmfactors includes 0 at the first, and 1 at the end
+        setColor(cr, ui.gridColor)
+        ##
+        for i in xrange(7):
+            cr.rectangle(0, ycenters[i]-dy/2.0, w, 1)
+            cr.fill()
+        ##
+        for factor in tmfactors[:-1]:
+            x = leftMargin + factor*(w-leftMargin)
+            if rtl: x = w - x
+            cr.rectangle(x, 0, 1, h)
+            cr.fill()
+        ###
+        setColor(cr, textColor)
+        for i,title in enumerate(titles):
+            layout = newTextLayout(self, title)
+            (layoutW, layoutH) = layout.get_pixel_size()
+            ##
+            dx = (w - leftMargin) * (tmfactors[i+1] - tmfactors[i])
+            if dx < layoutW:
+                continue
+            ##
+            factor = (tmfactors[i] + tmfactors[i+1])/2.0
+            x = factor*(w-leftMargin) + leftMargin
+            if rtl: x = w - x
+            x -= layoutW/2.0
+            ##
+            y = (topMargin-layoutH)/2.0 - 1
+            ##
+            cr.move_to(x, y)
+            cr.show_layout(layout)
+        ###
+        for j in range(7):
+            layout = weekDayLayouts[j]
+            (layoutW, layoutH) = layout.get_pixel_size()
+            x = leftMargin/2.0
+            if rtl: x = w - x
+            x -= layoutW/2.0
+            ##
+            y = topMargin + (h-topMargin)*(j+0.5)/7.0 - layoutH/2.0
+            ##
+            cr.move_to(x, y)
+            cr.show_layout(layout)
+        for j in range(7):
+            wd = (j+core.firstWeekDay)%7
+            for i,dayData in enumerate(self.data[wd]):
+                textList = []
+                for classData in dayData:
+                    text = classData['name']
+                    if classData['weekNumMode']:
+                        text += '(<span color="#f00">' + _(classData['weekNumMode'].capitalize()) + '</span>)'
+                    textList.append(text)
+                dx = (w - leftMargin) * (tmfactors[i+1] - tmfactors[i])
+                layout = newTextLayout(self, '\n'.join(textList), maxSize=(dx, dy))
+                (layoutW, layoutH) = layout.get_pixel_size()
+                ##
+                factor = (tmfactors[i] + tmfactors[i+1])/2.0
+                x = factor*(w-leftMargin) + leftMargin
+                if rtl: x = w - x
+                x -= layoutW/2.0
+                ##
+                y = topMargin + (h-topMargin)*(j+0.5)/7.0 - layoutH/2.0
+                ##
+                cr.move_to(x, y)
+                cr.show_layout(layout)
+
+gobject.type_register(WeeklyScheduleWidget)
+
+class WeeklyScheduleWindow(gtk.Dialog):
+    def __init__(self, term, **kwargs):
+        self.term = term
+        gtk.Dialog.__init__(self, **kwargs)
+        self.resize(800, 500)
+        self.set_title(_('View Weekly Schedule'))
+        self.connect('delete-event', self.onDeleteEvent)
+        #####
+        hbox = gtk.HBox()
+        self.currentWOnlyCheck = gtk.CheckButton(_('Current Week Only'))
+        self.currentWOnlyCheck.connect('clicked', lambda obj: self.updateWidget())
+        hbox.pack_start(self.currentWOnlyCheck, 0, 0)
+        ##
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        ##
+        button = gtk.Button(_('Export to ')+'SVG')
+        button.connect('clicked', self.exportToSvgClicked)
+        hbox.pack_start(button, 0, 0)
+        ##
+        self.vbox.pack_start(hbox, 0, 0)
+        #####
+        self.widget = WeeklyScheduleWidget(term)
+        self.vbox.pack_start(self.widget, 1, 1)
+        #####
+        self.vbox.show_all()
+        self.updateWidget()
+    def onDeleteEvent(self, win, event):
+        self.destroy()
+        return True
+    def updateWidget(self):
+        self.widget.data = self.term.getWeeklyScheduleData(self.currentWOnlyCheck.get_active())
+        self.widget.queue_draw()
+    def exportToSvg(self, fpath):
+        (x, y, w, h) = self.widget.allocation
+        fo = open(fpath, 'w')
+        surface = cairo.SVGSurface(fo, w, h)
+        cr0 = cairo.Context(surface)
+        cr = gtk.gdk.CairoContext(cr0)
+        #surface.set_device_offset(0, 0)
+        self.widget.drawCairo(cr)
+        surface.finish()
+    def exportToSvgClicked(self, obj=None):
+        fcd = gtk.FileChooserDialog(parent=self, action=gtk.FILE_CHOOSER_ACTION_SAVE)
+        fcd.set_current_folder(deskDir)
+        fcd.set_current_name(self.term.title + '.svg')
+        canB = fcd.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        saveB = fcd.add_button(gtk.STOCK_SAVE, gtk.RESPONSE_OK)
+        if ui.autoLocale:
+            canB.set_label(_('_Cancel'))
+            canB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
+            saveB.set_label(_('_Save'))
+            saveB.set_image(gtk.image_new_from_stock(gtk.STOCK_SAVE,gtk.ICON_SIZE_BUTTON))
+        if fcd.run()==gtk.RESPONSE_OK:
+            self.exportToSvg(fcd.get_filename())
+        fcd.destroy()
 
 
-
-def viewWeeklySchedule(group):
-    print 'viewWeeklySchedule'
-
-
-
+def viewWeeklySchedule(group, parentWin=None):
+    WeeklyScheduleWindow(group, parent=parentWin).show()
 
 

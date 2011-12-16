@@ -22,7 +22,7 @@ import os, sys
 from scal2.locale_man import tr as _
 
 from scal2 import core
-from scal2.core import homeDir, numLocale
+from scal2.core import deskDir, numLocale
 
 from scal2 import ui
 from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
@@ -42,7 +42,7 @@ class ExportDialog(gtk.Dialog):
     def __init__(self, mainWin):
         self.mainWin = mainWin
         self.mcal = mainWin.mcal
-        gtk.Dialog.__init__(self, title=_('Export to HTML'), parent=None)
+        gtk.Dialog.__init__(self, title=_('Export to ')+'HTML', parent=None)
         self.set_has_separator(False)
         ########
         hbox = gtk.HBox(spacing=2)
@@ -82,7 +82,7 @@ class ExportDialog(gtk.Dialog):
         canB.connect('clicked', self.onDelete)
         saveB.connect('clicked', self.save)
         try:
-            self.fcw.set_current_folder('%s/Desktop'%homeDir)
+            self.fcw.set_current_folder(deskDir)
         except:##?????????????????????
             pass    
     def comboChanged(self, widget=None, ym=None):
@@ -167,7 +167,7 @@ class ExportDialog(gtk.Dialog):
 class ExportToIcsDialog(gtk.Dialog):
     def __init__(self, saveIcsFunc, defaultFileName):
         self.saveIcsFunc = saveIcsFunc
-        gtk.Dialog.__init__(self, title=_('Export to iCalendar'), parent=None)
+        gtk.Dialog.__init__(self, title=_('Export to ')+'iCalendar', parent=None)
         self.set_has_separator(False)
         ########
         hbox = gtk.HBox(spacing=2)
@@ -197,7 +197,7 @@ class ExportToIcsDialog(gtk.Dialog):
         canB.connect('clicked', self.onDelete)
         saveB.connect('clicked', self.save)
         try:
-            self.fcw.set_current_folder('%s/Desktop'%homeDir)
+            self.fcw.set_current_folder(deskDir)
         except:##?????????????????????
             pass
         if not defaultFileName.endswith('.ics'):

@@ -328,7 +328,7 @@ def yearPlus(plus=1):
     day = min(cell.day, getMonthLen(year, month, core.primaryMode))
     cell = cellCache.getCellByDate(year, month, day)
 
-getFont = lambda: fontDefault if fontUseDefault else fontCustom
+getFont = lambda: list(fontDefault if fontUseDefault else fontCustom)
 
 def getHolidaysJdList(startJd, endJd):
     jdList = []
@@ -637,6 +637,8 @@ if newPrimaryMode!= core.primaryMode:
     core.primaryMode = newPrimaryMode
     cellCache.clear()
 del newPrimaryMode
+
+## monthcal: 
 
 
 needRestartPref = {} ### Right place ????????

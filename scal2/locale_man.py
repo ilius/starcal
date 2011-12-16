@@ -179,6 +179,26 @@ def numLocale(num, mode=None, fillZero=0, negEnd=False):
             res = '-' + res
     return res
 
+def textNumLocale(st, mode=None):
+    if mode==None:
+        mode = langSh
+    elif isinstance(mode, int):
+        if langSh != 'en':
+            try:
+                mode = modules[mode].origLang
+            except AttributeError:
+                mode = langSh
+    dig = digits[mode]
+    res = u''
+    for c in toUnicode(st):
+        try:
+            i = int(c)
+        except:
+            res += c
+        else:
+            res += dig[i]
+    return res ## .encode('utf8')
+
 def localeNumDecode(numSt):
     try:
         return int(numSt)

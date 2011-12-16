@@ -703,7 +703,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
     def exportGroupToIcsFromMenu(self, menu, group):
         ExportToIcsDialog(group.exportToIcs, group.title).run()
     def groupActionClicked(self, menu, group, actionFuncName):
-        getattr(group, actionFuncName)()
+        getattr(group, actionFuncName)(parentWin=self)
     def cutEvent(self, menu, path):
         self.toPasteEvent = (path, True)
     def copyEvent(self, menu, path):

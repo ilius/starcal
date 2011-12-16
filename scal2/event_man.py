@@ -24,12 +24,12 @@ from collections import OrderedDict
 
 from paths import *
 
-from scal2.utils import arange, ifloor, iceil, IteratorFromGen
+from scal2.utils import arange, ifloor, iceil, IteratorFromGen, findNearestIndex
 from scal2.time_utils import *
 from scal2.color_utils import hslToRgb
 
 from scal2.locale_man import tr as _
-from scal2.locale_man import getMonthName
+from scal2.locale_man import getMonthName, textNumLocale
 from scal2 import core
 from scal2.core import myRaise, getEpochFromJd, getEpochFromJhms, log, to_jd, jd_to, getAbsWeekNumberFromJd
 
@@ -503,8 +503,8 @@ class DayTimeRangeEventRule(EventRule):
         self.dayTimeStart = tuple(start)
         self.dayTimeEnd = tuple(end)
     getHourRange = lambda self: (
-        timeToFloatHour(self.dayTimeStart),
-        timeToFloatHour(self.dayTimeEnd),
+        timeToFloatHour(*self.dayTimeStart),
+        timeToFloatHour(*self.dayTimeEnd),
     )
     getData = lambda self: (timeEncode(self.dayTimeStart), timeEncode(self.dayTimeEnd))
     setData = lambda self, data: self.setRange(timeDecode(data[0]), timeDecode(data[1]))
@@ -1560,22 +1560,23 @@ class UniversityTerm(EventGroup):
             return
         titles = []
         tmfactors = []
-        firstTm = timeToFloatHour(self.classTimeBounds[0])
-        lastTm = timeToFloatHour(self.classTimeBounds[-1])
+        firstTm = timeToFloatHour(*self.classTimeBounds[0])
+        lastTm = timeToFloatHour(*self.classTimeBounds[-1])
         deltaTm = lastTm - firstTm
         for i in range(count-1):
             (tm0, tm1) = self.classTimeBounds[i:i+2]
             titles.append(
-                _(simpleTimeEncode(tm0)) + _('to') + _(simpleTimeEncode(tm1))
+                textNumLocale(simpleTimeEncode(tm0)) + ' ' + _('to') + ' ' + textNumLocale(simpleTimeEncode(tm1))
             )
-            tmfactors.append(float(tm1-firstTm)/deltaTm)
+        for tm1 in self.classTimeBounds:
+            tmfactors.append((timeToFloatHour(*tm1)-firstTm)/deltaTm)
         return (titles, tmfactors)
     def getWeeklyScheduleData(self, currentWeekOnly=False):
         boundsCount = len(self.classTimeBounds)
         boundsHour = [h + m/60.0 for h,m in self.classTimeBounds]
         data = [
             [
-                [] for i in range(boundsCount)
+                [] for i in range(boundsCount-1)
             ] for weekDay in range(7)
         ]
         ## data[weekDay][intervalIndex] = {'name': 'Course Name', 'weekNumMode': 'odd'}
@@ -1586,20 +1587,27 @@ class UniversityTerm(EventGroup):
                 currentWeekNumMode = 'odd'
             else:
                 currentWeekNumMode = 'even'
+            #print 'currentWeekNumMode = %r'%currentWeekNumMode
         else:
             currentWeekNumMode = ''
         ###
         for event in self:
             if event.name != 'universityClass':
                 continue
-            ## 'weekNumMode', 'weekDay', 'dayTimeRange'
-            weekNumMode = self['weekNumMode'].getData()
-            if currentWeekNumMode and currentWeekNumMode!=weekNumMode:
-                continue
-            weekDay = self['weekDay'].weekDayList[0]
-            (h0, h1) = self['dayTimeRange'].getHourRange()
+            weekNumMode = event['weekNumMode'].getData()
+            if currentWeekNumMode:
+                if weekNumMode not in ('any', currentWeekNumMode):
+                    continue
+                weekNumMode = ''
+            else:
+                if weekNumMode=='any':
+                    weekNumMode = ''
+            ###
+            weekDay = event['weekDay'].weekDayList[0]
+            (h0, h1) = event['dayTimeRange'].getHourRange()
             startIndex = findNearestIndex(boundsHour, h0)
             endIndex = findNearestIndex(boundsHour, h1)
+            ###
             classData = {
                 'name': self.getCourseNameById(event.courseId),
                 'weekNumMode': weekNumMode,

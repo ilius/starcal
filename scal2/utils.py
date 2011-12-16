@@ -214,7 +214,7 @@ def findNearestIndex(lst, num):
         return
     index = 0
     count = len(lst)
-    for i in range(1, count)
+    for i in range(1, count):
         if abs(lst[i]-num) < abs(lst[index]-num):
             index = i
     return index

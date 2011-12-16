@@ -50,6 +50,7 @@ if os.sep=='/':## Unix-like OS
     #user = os.getenv('USER')
     if psys=='Darwin':## MacOS X
         confPath = homeDir + '/Library/Preferences/' + APP_NAME ## OR '/Library/' + APP_NAME
+        sysConfDir = join(rootDir, 'config')## FIXME
         ## os.environ['OSTYPE'] == 'darwin10.0'
         ## os.environ['MACHTYPE'] == 'x86_64-apple-darwin10.0'
         ## platform.dist() == ('', '', '')
@@ -71,6 +72,9 @@ elif os.sep=='\\':## Dos/Windows OS
     winStartupFile = join(winStartupDir, APP_NAME+'.lnk')
 else:
     raise RuntimeError('bad seperator (os.sep=="%s") !! What is your Operating System?!'%os.sep)
+
+
+deskDir = join(homeDir, 'Desktop')## in all operating systems? FIXME
 
 userPlugConf = join(confDir, 'plugin.conf')
 modDir = '%s/cal_modules'%srcDir

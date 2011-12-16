@@ -45,7 +45,7 @@ from scal2.locale_man import rtl, lang #, loadTranslator ## import scal2.locale_
 #_ = loadTranslator(False)## FIXME
 from scal2.locale_man import tr as _
 
-from scal2.core import rootDir, pixDir, homeDir, myRaise, numLocale, getMonthName
+from scal2.core import rootDir, pixDir, deskDir, myRaise, numLocale, getMonthName
 
 core.showInfo()
 
@@ -1759,7 +1759,7 @@ def main():
             #    mainWin.exportHtml('calendar.html') ## exportHtml(path, months, title)
             #    sys.exit(0)
             #elif sys.argv[1]=='--svg':#????????????
-            #    mainWin.export.exportSvg('%s/Desktop/2010-01.svg'%homeDir, [(2010, 1)])
+            #    mainWin.export.exportSvg('%s/2010-01.svg'%deskDir, [(2010, 1)])
             #    sys.exit(0)
             else:
                 show = ui.showMain or not mainWin.sicon

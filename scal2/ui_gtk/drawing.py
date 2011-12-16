@@ -58,11 +58,36 @@ def fillColor(cr, color):
     cr.fill()
 
 
-def newTextLayout(widget, text='', font=None):
-    layout = widget.create_pango_layout(text) ## a pango.Layout object
+def newTextLayout(widget, text='', font=None, maxSize=None, truncate=False):
+    layout = widget.create_pango_layout('') ## a pango.Layout object
     if not font:
         font = ui.getFont()
     layout.set_font_description(pfontEncode(font))
+    if text:
+        layout.set_markup(text)
+        if maxSize:
+            (maxW, maxH) = maxSize
+            layoutW, layoutH = layout.get_pixel_size()
+            if layoutH > maxH:
+                font[3] = int(font[3]*maxH//layoutH)
+                layout.set_font_description(pfontEncode(font))
+            layoutW, layoutH = layout.get_pixel_size()
+            if layoutW > maxW:
+                if truncate:
+                    char_w = layoutW/len(text)
+                    char_num = int(maxW//char_w)
+                    while layoutW > maxW:
+                        text = cutText(text, char_num)
+                        layout.set_markup(text)
+                        layout.set_font_description(pfontEncode(font))
+                        layoutW, layoutH = layout.get_pixel_size()
+                        char_num -= max(int((layoutW-maxW)//char_w), 1)
+                        if char_num<0:
+                            layout = None
+                            break
+                else:## use smaller font, don't truncate text
+                    font[3] = int(font[3]*float(maxW)/layoutW)
+                    layout.set_font_description(pfontEncode(font))
     return layout
 
 def newLimitedWidthTextLayout(widget, text, width, font=None, truncate=True):
