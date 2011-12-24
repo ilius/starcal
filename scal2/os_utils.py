@@ -18,6 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 import os
+from os.path import isdir
 
 def makeDir(direc):
     if not isdir(direc):
