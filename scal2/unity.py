@@ -21,8 +21,17 @@ def removeFromWhileList():
         ls.remove(APP_NAME)
         setWhileList(ls)
 
+def isRunning():
+    (output, error) = Popen('ps aux | grep unity-panel-service | grep -v grep', stdout=PIPE, shell=True).communicate()
+    output = str(output)
+    #error = str(error)
+    #open('/tmp/starcal2-unity-out', 'w').write(output)
+    #open('/tmp/starcal2-unity-error', 'w').write(error)
+    #print 'Unity is Running:', bool(output)
+    return bool(output)
+
 def needToAdd():
-    if getOsDesc()=='Ubuntu 11.04':
+    if isRunning():
         if APP_NAME not in getWhileList():
             return True
     return False
