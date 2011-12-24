@@ -17,6 +17,11 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+import os
+
+def makeDir(direc):
+    if not isdir(direc):
+        os.makedirs(direc)
 
 def getUsersData():
     data = []

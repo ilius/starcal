@@ -27,6 +27,7 @@ from subprocess import Popen
 from collections import OrderedDict
 
 from scal2.utils import NullObj, toStr, cleanCacheDict
+from scal2.os_utils import makeDir
 from scal2.paths import *
 
 import scal2.locale_man
@@ -141,8 +142,7 @@ def winMakeShortcut(srcPath, dstPath, iconPath=None):
 
 def addStartup():
     if psys=='Windows':
-        if not isdir(winStartupDir):
-            os.makedirs(winStartupDir)
+        makeDir(winStartupDir)
         #fname = APP_NAME + ('-qt' if uiName=='qt' else '') + '.pyw'
         fname = core.COMMAND + '.pyw'
         fpath = join(rootDir, fname)
@@ -159,10 +159,7 @@ Type=Application
 Name=StarCalendar %s
 Icon=%s
 Exec=%s'''%(core.VERSION, APP_NAME, core.COMMAND)## double quotes needed when the exec path has space
-        try:
-            os.makedirs(comDeskDir)
-        except:
-            pass
+        makeDir(comDeskDir)
         try:
             fp = open(comDesk, 'w')
         except:

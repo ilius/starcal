@@ -25,6 +25,7 @@ from collections import OrderedDict
 from paths import *
 
 from scal2.utils import arange, ifloor, iceil, IteratorFromGen, findNearestIndex
+from scal2.os_utils import makeDir
 from scal2.time_utils import *
 from scal2.color_utils import hslToRgb
 
@@ -32,10 +33,6 @@ from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName, textNumLocale
 from scal2 import core
 from scal2.core import myRaise, getEpochFromJd, getEpochFromJhms, log, to_jd, jd_to, getAbsWeekNumberFromJd
-
-def makeDir(direc):
-    if not isdir(direc):
-        os.makedirs(direc)
 
 eventsDir = join(confDir, 'event', 'events')
 groupsDir = join(confDir, 'event', 'groups')
@@ -291,10 +288,6 @@ class EventRule(EventBaseClass):
     def __init__(self, parent):## parent can be an event or group
         self.parent = parent
     getMode = lambda self: self.parent.mode
-    def getConfigLine(self):
-        return self.name
-    def setFromConfig(self, parts):
-        pass
     def calcOccurrence(self, startEpoch, endEpoch, event):
         raise NotImplementedError
     def getData(self):
@@ -304,83 +297,125 @@ class EventRule(EventBaseClass):
         for (key, value) in data.items():
             if key in self.params:
                 setattr(self, key, value)
-    getInfo = lambda self: ''
+    getInfo = lambda self: self.desc + ': %s'%self
 
-class YearEventRule(EventRule):
+class MultiValueEventRule(EventRule):
+    #params = ('values',)
+    def __init__(self, parent):
+        EventRule.__init__(self, parent, value)
+        self.values = [value]
+    getData = lambda self: self.values
+    def setData(self, data):
+        if isinstance(data, (tuple, list)):
+            self.values = data
+        else:
+            self.values = [data]
+    formatValue = lambda self, v: _(v)
+    __str__ = lambda self: (_(',')+' ').join([self.formatValue(v) for v in self.values])    
+
+class YearEventRule(MultiValueEventRule):
     name = 'year'
     desc = _('Year')
-    params = ('year',)
     def __init__(self, parent):
-        EventRule.__init__(self, parent)
-        self.year = core.getSysDate(self.getMode())[0] ## FIXME
-    def getData(self):
-        return self.year
-    def setData(self, year):
-        self.year = year
+        MultiValueEventRule.__init__(
+            self,
+            parent,
+            core.getSysDate(self.getMode())[0],
+        )
     def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
         jdList = []
         for jd in core.getJdListFromEpochRange(startEpoch, endEpoch):
-            if jd not in jdList and jd_to(jd, self.getMode())[0]==self.year:
+            if jd not in jdList and jd_to(jd, self.getMode())[0] in self.values:
                 jdList.append(jd)
         return JdListOccurrence(jdList)
-    getInfo = lambda self: self.desc + ': ' + _(self.year)
 
 
 
-
-class MonthEventRule(EventRule):
+class MonthEventRule(MultiValueEventRule):
     name = 'month'
     desc = _('Month')
-    params = ('month',)
     def __init__(self, parent):
-        EventRule.__init__(self, parent)
-        self.month = 1
-    def getData(self):
-        return self.month
-    def setData(self, month):
-        self.month = month
+        MultiValueEventRule.__init__(
+            self,
+            parent,
+            1,
+        )
     def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
         jdList = []
         for jd in core.getJdListFromEpochRange(startEpoch, endEpoch):
-            if jd not in jdList and jd_to(jd, self.getMode())[1]==self.month:
+            if jd not in jdList and jd_to(jd, self.getMode())[1] in self.values:
                 jdList.append(jd)
         return JdListOccurrence(jdList)
-    getInfo = lambda self: self.desc + ': ' + getMonthName(self.getMode(), self.month)
+    formatValue = lambda self, v: getMonthName(self.getMode(), v)
 
 
-class DayOfMonthEventRule(EventRule):
+class DayOfMonthEventRule(MultiValueEventRule):
     name = 'day'
     desc = _('Day of Month')
-    params = ('day',)
     def __init__(self, parent):
-        EventRule.__init__(self, parent)
-        self.day = 1
-    def getData(self):
-        return self.day
-    def setData(self, day):
-        self.day = day
+        MultiValueEventRule.__init__(
+            self,
+            parent,
+            1,
+        )
     def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
         jdList = []
         for jd in core.getJdListFromEpochRange(startEpoch, endEpoch):
-            if jd not in jdList and jd_to(jd, self.getMode())[2]==self.day:
+            if jd not in jdList and jd_to(jd, self.getMode())[2] in self.values:
                 jdList.append(jd)
         return JdListOccurrence(jdList)
-    getInfo = lambda self: self.desc + '(' + _(self.getMode()) + '): ' + _(self.day)
 
-
+class DateEventRule(EventRule):
+    name = 'date'
+    desc = _('Date')
+    need = ()
+    conflict = (
+        'year', 'month', 'day', 'weekNumMode', 'weekDay'
+        'start', 'end', 'cycleDays', 'duration', 'cycleLen'
+    )## all rules except for dayTime and dayTimeRange (and possibly hourList, minuteList, secondList)
+    ## also conflict with 'holiday' ## FIXME
+    __str__ = lambda self: dateEncode(self.date)
+    def __init__(self, parent):
+        EventRule.__init__(self, parent)
+        self.date = core.getSysDate(self.getMode())
+    getData = lambda self: str(self)
+    def setData(self, data):
+        self.date = dateDecode(data)
+    def getJd(self):
+        (year, month, day) = self.date
+        return to_jd(year, month, day, self.getMode())
+    def setJd(self, jd):
+        self.date = core.jd_to(jd, self.getMode())
+    def calcOccurrence(self, startEpoch, endEpoch, event):
+        myJd = self.getJd()
+        myStartEpoch = getEpochFromJd(myJd)
+        myEndEpoch = getEpochFromJd(myJd+1)
+        if startEpoch <= myStartEpoch and myEndEpoch <= endEpoch:
+            return JdListOccurrence([myJd])
+        startEpoch = max(startEpoch, myStartEpoch)
+        endEpoch = min(endEpoch, myEndEpoch)
+        if endEpoch >= startEpoch:
+            return TimeRangeListOccurrence(
+                [
+                    (startEpoch, endEpoch),
+                ]
+            )
+        else:
+            return TimeRangeListOccurrence()        
+            
 
 class WeekNumberModeEventRule(EventRule):
     name = 'weekNumMode'
     desc = _('Week Number')
     need = ('start',)## FIXME
+    conflict = ('date',)
     params = ('weekNumMode',)
     (EVERY_WEEK, ODD_WEEKS, EVEN_WEEKS) = range(3) ## remove EVERY_WEEK? FIXME
     weekNumModeNames = ('any', 'odd', 'even')## remove 'any'? FIXME
     def __init__(self, parent):
         EventRule.__init__(self, parent)
         self.weekNumMode = self.EVERY_WEEK
-    def getData(self):
-        return self.weekNumModeNames[self.weekNumMode]
+    getData = lambda self: self.weekNumModeNames[self.weekNumMode]
     def setData(self, modeName):
         if not modeName in self.weekNumModeNames:
             raise BadEventFile('bad rule weekNumMode=%r, the value for weekNumMode must be one of %r'\
@@ -413,6 +448,7 @@ class WeekNumberModeEventRule(EventRule):
 class WeekDayEventRule(EventRule):
     name = 'weekDay'
     desc = _('Day of Week')
+    conflict = ('date',)
     params = ('weekDayList',)
     def __init__(self, parent):
         EventRule.__init__(self, parent)
@@ -441,36 +477,17 @@ class WeekDayEventRule(EventRule):
                sep.join([core.weekDayName[wd] for wd in self.weekDayList[:-1]]) + \
                sep2 + core.weekDayName[self.weekDayList[-1]]
 
-class CycleDaysEventRule(EventRule):
-    name = 'cycleDays'
-    desc = _('Cycle Days Number')
-    need = ('start',)
-    conflict = ('dayTime', 'cycleLen')
-    params = ('cycleDays',)
-    def __init__(self, parent):
-        EventRule.__init__(self, parent)
-        self.cycleDays = 7
-    def getData(self):
-        return self.cycleDays
-    def setData(self, cycleDays):
-        self.cycleDays = cycleDays
-    def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
-        startJd = max(event['start'].getJd(), core.getJdFromEpoch(startEpoch))
-        endJd = core.getJdFromEpoch(endEpoch-0.01)+1
-        return JdListOccurrence(range(startJd, endJd, self.cycleDays))
-    getInfo = lambda self: _('Repeat: Every %s Days')%_(self.cycleDays)
 
 class DayTimeEventRule(EventRule):## Moment Event
     name = 'dayTime'
     desc = _('Time in Day')
     provide = ('time',)
-    conflict = ('cycleLen',)
+    conflict = ('dayTimeRange', 'cycleLen',)
     params = ('dayTime',)
     def __init__(self, parent):
         EventRule.__init__(self, parent)
         self.dayTime = time.localtime()[3:6]
-    def getData(self):
-        return timeEncode(self.dayTime)
+    getData = lambda self: timeEncode(self.dayTime)
     def setData(self, data):
         self.dayTime = timeDecode(data)
     def calcOccurrence(self, startEpoch, endEpoch, event):
@@ -482,18 +499,17 @@ class DayTimeEventRule(EventRule):## Moment Event
         if endExtraSec < mySec:
             endJd -= 1
         return TimeListOccurrence(## FIXME
-            getEpochFromJd(startJd)+mySec,
-            getEpochFromJd(endJd)+mySec+1,
+            getEpochFromJd(startJd) + mySec,
+            getEpochFromJd(endJd) + mySec + 1,
             24*3600,
         )
-        
     getInfo = lambda self: _('Time in Day') + ': ' + timeEncode(self.dayTime)
 
 
 class DayTimeRangeEventRule(EventRule):
     name = 'dayTimeRange'
     desc = _('Day Time Range')
-    conflict = ('dayTime',)
+    conflict = ('dayTime', 'cycleLen',)
     params = ('dayTimeStart', 'dayTimeEnd')
     def __init__(self, parent):
         EventRule.__init__(self, parent)
@@ -529,13 +545,11 @@ class DateAndTimeEventRule(EventRule):
     def getJd(self):
         (year, month, day) = self.date
         return to_jd(year, month, day, self.getMode())
-    def getEpoch(self):
-        return getEpochFromJhms(self.getJd(), *tuple(self.time))
-    def getData(self):
-        return {
-            'date': dateEncode(self.date),
-            'time': timeEncode(self.time),
-        }
+    getEpoch = lambda self: getEpochFromJhms(self.getJd(), *tuple(self.time))
+    getData = lambda self: {
+        'date': dateEncode(self.date),
+        'time': timeEncode(self.time),
+    }
     def setData(self, arg):
         if isinstance(arg, dict):
             self.date = dateDecode(arg['date'])
@@ -550,6 +564,7 @@ class DateAndTimeEventRule(EventRule):
 class StartEventRule(DateAndTimeEventRule):
     name = 'start'
     desc = _('Start')
+    conflict = ('date',)
     def calcOccurrence(self, startEpoch, endEpoch, event):
         myEpoch = self.getEpoch()
         if endEpoch <= myEpoch:
@@ -561,6 +576,7 @@ class StartEventRule(DateAndTimeEventRule):
 class EndEventRule(DateAndTimeEventRule):
     name = 'end'
     desc = _('End')
+    conflict = ('date', 'duration',)
     def calcOccurrence(self, startEpoch, endEpoch, event):
         endEpoch = min(endEpoch, self.getEpoch())
         if startEpoch >= endEpoch:## how about startEpoch==endEpoch FIXME
@@ -568,12 +584,11 @@ class EndEventRule(DateAndTimeEventRule):
         else:
             return TimeRangeListOccurrence([(startEpoch, endEpoch)])
 
-
 class DurationEventRule(EventRule):
     name = 'duration'
     desc = _('Duration')
     need = ('start',)
-    conflict = ('end',)
+    conflict = ('date', 'end',)
     sgroup = 1
     def __init__(self, parent):
         EventRule.__init__(self, parent)
@@ -593,12 +608,30 @@ class DurationEventRule(EventRule):
         else:
             return TimeRangeListOccurrence([(startEpoch, endEpoch)])
 
+class CycleDaysEventRule(EventRule):
+    name = 'cycleDays'
+    desc = _('Cycle Days Number')
+    need = ('start',)
+    conflict = ('date', 'cycleLen')
+    params = ('cycleDays',)
+    def __init__(self, parent):
+        EventRule.__init__(self, parent)
+        self.cycleDays = 7
+    getData = lambda self: self.cycleDays
+    def setData(self, cycleDays):
+        self.cycleDays = cycleDays
+    def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
+        startJd = max(event['start'].getJd(), core.getJdFromEpoch(startEpoch))
+        endJd = core.getJdFromEpoch(endEpoch-0.01)+1
+        return JdListOccurrence(range(startJd, endJd, self.cycleDays))
+    getInfo = lambda self: _('Repeat: Every %s Days')%_(self.cycleDays)
+
 class CycleLenEventRule(EventRule):
     name = 'cycleLen'
     desc = _('Cycle Length (Days & Time)')
     provide = ('time',)
     need = ('start',)
-    conflict = ('dayTime', 'cycleDays',)
+    conflict = ('date', 'dayTime', 'dayTimeRange', 'cycleDays',)
     params = ('cycleDays', 'cycleExtraTime',)
     def __init__(self, parent):
         EventRule.__init__(self, parent)
@@ -621,6 +654,7 @@ class CycleLenEventRule(EventRule):
 #class HolidayEventRule(EventRule):## FIXME
 #    name = 'holiday'
 #    desc = _('Holiday')
+#    conflict = ('date',)
 
 
 #class ShowInMCalEventRule(EventRule):## FIXME
@@ -650,7 +684,6 @@ class EventNotifier(EventBaseClass):
         for (key, value) in data.items():
             if key in self.params:
                 setattr(self, key, value)
-
 
 
 class AlarmNotifier(EventNotifier):
@@ -932,8 +965,7 @@ class Event(EventBaseClass, RuleContainer):
             except KeyError:
                 pass
     def saveConfig(self):
-        if not isdir(self.eventDir):
-            os.makedirs(self.eventDir)
+        makeDir(self.eventDir)
         jstr = self.getJson()
         open(self.eventFile, 'w').write(jstr)
     def loadConfig(self):## skipRules arg for use in ui_gtk/event/notify.py ## FIXME
@@ -1036,37 +1068,41 @@ class YearlyEvent(Event):
         self.setMonth(m)
         self.setDay(d)
 
-class DailyNoteEvent(YearlyEvent):
+class DailyNoteEvent(Event):
     name = 'dailyNote'
     desc = _('Daily Note')
     iconName = 'note'
-    requiredRules = ('year', 'month', 'day')
-    supportedRules = ('year', 'month', 'day')
-    getYear = lambda self: self['year'].year
-    def setYear(self, year):
-        self['year'].year = year
-    getDate = lambda self: (self.getYear(), self.getMonth(), self.getDay())
-    getJd = lambda self: to_jd(self.getYear(), self.getMonth(), self.getDay(), self.mode)
+    requiredRules = ('date')
+    supportedRules = ('date')
+    getDate = lambda self: self['date'].date
     def setDate(self, year, month, day):
-        self.setYear(year)
-        self.setMonth(month)
-        self.setDay(day)
+        self['date'].date = (year, month, day)
+    getJd = lambda self: self['date'].getJd()
+    setJd = lambda self, jd: self['date'].setJd(jd)
     def setDefaults(self):
         self.setDate(*core.getSysDate(self.mode))
     def copyFrom(self, other):
         Event.copyFrom(self, other)
+        rule = self['date']
         try:
-            self.setDate(*other['start'].date)
+            rule.date = other['start'].date
         except KeyError:
-            pass
+            try:
+                rule.date[0] = other['year'].values[0]
+            except:
+                pass
+            try:
+                rule.date[1] = other['month'].values[0]
+            except:
+                pass
+            try:
+                rule.date[2] = other['day'].values[0]
+            except:
+                pass
     def calcOccurrenceForJdRange(self, startJd, endJd):## float jd
         jd = self.getJd()
         return JdListOccurrence([jd] if startJd <= jd < endJd else [])
-    def setJd(self, jd):
-        (y, m, d) = core.jd_to(jd, self.mode)
-        self.setYear(y)
-        self.setMonth(m)
-        self.setDay(d)
+
 
 class TaskEvent(Event):
     ## Y/m/d H:M none              ==> start, None
@@ -2223,12 +2259,16 @@ eventRulesClassList = [
     DayOfMonthEventRule,
     WeekNumberModeEventRule,
     WeekDayEventRule,
-    CycleDaysEventRule,
+    ##
+    DateEventRule,
+    ##
     DayTimeEventRule,
     DayTimeRangeEventRule,
+    ##
     StartEventRule,
     EndEventRule,
     DurationEventRule,
+    CycleDaysEventRule,
     CycleLenEventRule,
 ]
 eventRulesClassDict = dict([(cls.name, cls) for cls in eventRulesClassList])
