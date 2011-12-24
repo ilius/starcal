@@ -43,7 +43,7 @@ Version: $version
 Architecture: all
 Maintainer: Saeed Rasooli <saeed.gnu@gmail.com>
 Installed-Size: $installedSize
-Depends: python(>=2.5), python(<<3.0), python-gtk2(>=2.8), python-numpy
+Depends: python(>=2.5), python(<<3.0), python-gtk2(>=2.8)
 Recommends: itools
 Section: Utilities
 Priority: optional
