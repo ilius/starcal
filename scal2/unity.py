@@ -32,7 +32,8 @@ def isRunning():
 
 def needToAdd():
     if isRunning():
-        if APP_NAME not in getWhileList():
+        wlist = getWhileList()
+        if not (APP_NAME in wlist or 'all' in wlist):
             return True
     return False
 
