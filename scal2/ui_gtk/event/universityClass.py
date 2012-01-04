@@ -68,8 +68,8 @@ class EventWidget(gtk.VBox):
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
         ##
-        self.dayTimeStartCombo = HourMinuteBox(lang=core.langSh)
-        self.dayTimeEndCombo = HourMinuteBox(lang=core.langSh)
+        self.dayTimeStartCombo = HourMinuteBox()
+        self.dayTimeEndCombo = HourMinuteBox()
         ##
         #self.dayTimeStartCombo.child.set_direction(gtk.TEXT_DIR_LTR)
         #self.dayTimeEndCombo.child.set_direction(gtk.TEXT_DIR_LTR)

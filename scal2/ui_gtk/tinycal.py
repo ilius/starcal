@@ -33,7 +33,7 @@ from scal2.locale_man import rtl, rtlSgn
 
 
 from scal2 import core
-from scal2.core import myRaise, numLocale, getMonthName, getMonthLen, getNextMonth, getPrevMonth,\
+from scal2.core import myRaise, getMonthName, getMonthLen, getNextMonth, getPrevMonth,\
                           rootDir, pixDir, plugDir, plugDirUser, homeDir, confDir, sysConfDir, modDir
 
 from scal2 import ui
@@ -97,14 +97,14 @@ class YearObject(TextObject):
         TextObject.__init__(self, parent, x, y, color, font)
         self.mode = mode
     def getText(self):
-        return numLocale(self.parent.dates[self.mode][2], self.mode)
+        return _(self.parent.dates[self.mode][2], self.mode)
 
 class MonthObject(TextObject):
     def __init__(self, parent, mode, x=0, y=0, color=(0,0,0), font=None):
         TextObject.__init__(self, parent, x, y, color, font)
         self.mode = mode
     def getText(self):
-        return numLocale(self.parent.dates[self.mode][1], self.mode)
+        return _(self.parent.dates[self.mode][1], self.mode)
 
 class MonthNameObject(TextObject):
     def __init__(self, parent, mode, x=0, y=0, color=(0,0,0), font=None):

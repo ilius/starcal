@@ -31,7 +31,7 @@ from scal2 import core
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl, rtlSgn
 
-from scal2.core import myRaise, numLocale, getMonthName, getMonthLen, getNextMonth, getPrevMonth, pixDir
+from scal2.core import myRaise, getMonthName, getMonthLen, getNextMonth, getPrevMonth, pixDir
 
 from scal2 import ui
 from scal2.weekcal import getCurrentWeekStatus
@@ -65,7 +65,7 @@ class RowWeekDayItem:
         self.expand = expand
 
 class RowDayNumItem:
-    getText = lambda self, row: numLocale(row.dates[self.mode][2], self.mode)
+    getText = lambda self, row: _(row.dates[self.mode][2], self.mode)
     def __init__(self, mode, width=30, textAlign=0.5, expand=False):
         self.mode = mode
         self.width = width

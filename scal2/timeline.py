@@ -22,7 +22,7 @@ from math import ceil, sqrt
 
 from scal2 import core
 from scal2.locale_man import tr as _
-from scal2.locale_man import numLocale, rtl
+from scal2.locale_man import rtl
 
 from scal2.core import myRaise, getMonthName, getJdFromEpoch, getFloatJdFromEpoch, getEpochFromJd, jd_to, to_jd, \
                        getJhmsFromEpoch, getEpochFromDate, jwday
@@ -244,7 +244,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
         if tmEpoch in tickEpochList:
             continue
         unitSize = size*yearPixel
-        label = numLocale(year, negEnd=rtl) if unitSize >= majorStepMin else ''
+        label = _(year, negEnd=rtl) if unitSize >= majorStepMin else ''
         ticks.append(Tick(
             tmEpoch,
             getEPos(tmEpoch),

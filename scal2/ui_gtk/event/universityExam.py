@@ -47,7 +47,7 @@ class EventWidget(gtk.VBox):
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
-        self.dateInput = DateButton(lang=core.langSh)
+        self.dateInput = DateButton()
         hbox.pack_start(self.dateInput, 0, 0)
         self.pack_start(hbox, 0, 0)
         #####
@@ -57,8 +57,8 @@ class EventWidget(gtk.VBox):
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
         ##
-        self.dayTimeStartCombo = HourMinuteButton(lang=core.langSh)
-        self.dayTimeEndCombo = HourMinuteButton(lang=core.langSh)
+        self.dayTimeStartCombo = HourMinuteButton()
+        self.dayTimeEndCombo = HourMinuteButton()
         ##
         #self.dayTimeStartCombo.child.set_direction(gtk.TEXT_DIR_LTR)
         #self.dayTimeEndCombo.child.set_direction(gtk.TEXT_DIR_LTR)

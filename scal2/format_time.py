@@ -86,22 +86,22 @@ def compileTmFormat(format, hasTime=True):
             i += 2
             continue
         if c1=='Y':
-            funcs.append(lambda cell, mode, tm: core.numLocale(cell.dates[mode][0], fillZero=4))
+            funcs.append(lambda cell, mode, tm: _(cell.dates[mode][0], fillZero=4))
             pyFmt += '%s'
             i += 2
             continue
         elif c1=='y':
-            funcs.append(lambda cell, mode, tm: core.numLocale(cell.dates[mode][0]%100, fillZero=2))
+            funcs.append(lambda cell, mode, tm: _(cell.dates[mode][0]%100, fillZero=2))
             pyFmt += '%s'
             i += 2
             continue
         elif c1=='m':
-            funcs.append(lambda cell, mode, tm: core.numLocale(cell.dates[mode][1], fillZero=2))
+            funcs.append(lambda cell, mode, tm: _(cell.dates[mode][1], fillZero=2))
             pyFmt += '%s'
             i += 2
             continue
         elif c1=='d':
-            funcs.append(lambda cell, mode, tm: core.numLocale(cell.dates[mode][2], fillZero=2))
+            funcs.append(lambda cell, mode, tm: _(cell.dates[mode][2], fillZero=2))
             pyFmt += '%s'
             i += 2
             continue
@@ -133,73 +133,73 @@ def compileTmFormat(format, hasTime=True):
         #elif c1=='c':## ????? locale's date and time (e.g., Thu Mar    3 23:05:25 2005)
         #elif c1=='x':## ????? locale's date representation (e.g., 12/31/99)
         elif c1=='C':
-            funcs.append(lambda cell, mode, tm: core.numLocale(cell.dates[mode][0]//100, fillZero=2))
+            funcs.append(lambda cell, mode, tm: _(cell.dates[mode][0]//100, fillZero=2))
             pyFmt += '%s'
             i += 2
             continue
         elif c1=='D':## %m/%d/%y
             funcs += [
-                lambda cell, mode, tm: core.numLocale(cell.dates[mode][1], fillZero=2),
-                lambda cell, mode, tm: core.numLocale(cell.dates[mode][2], fillZero=2),
-                lambda cell, mode, tm: core.numLocale(cell.dates[mode][0]%100, fillZero=2)
+                lambda cell, mode, tm: _(cell.dates[mode][1], fillZero=2),
+                lambda cell, mode, tm: _(cell.dates[mode][2], fillZero=2),
+                lambda cell, mode, tm: _(cell.dates[mode][0]%100, fillZero=2)
             ]
             pyFmt += '%s/%s/%s'
             i += 2
             continue
         elif c1=='e':## day of month, space padded; same as %_d
-            funcs.append(lambda cell, mode, tm: core.numLocale(cell.dates[mode][2], fillZero=2))
+            funcs.append(lambda cell, mode, tm: _(cell.dates[mode][2], fillZero=2))
             pyFmt += '%2s'
             i += 2
             continue
         elif c1=='F':## %Y-%m-%d
             funcs += [
-                lambda cell, mode, tm: core.numLocale(cell.dates[mode][0], fillZero=4),
-                lambda cell, mode, tm: core.numLocale(cell.dates[mode][1], fillZero=2),
-                lambda cell, mode, tm: core.numLocale(cell.dates[mode][2], fillZero=2)
+                lambda cell, mode, tm: _(cell.dates[mode][0], fillZero=4),
+                lambda cell, mode, tm: _(cell.dates[mode][1], fillZero=2),
+                lambda cell, mode, tm: _(cell.dates[mode][2], fillZero=2)
             ]
             pyFmt += '%s-%s-%s'
             i += 2
             continue
         elif c1=='g':## not affected by mode!
-            funcs.append(lambda cell, mode, tm: core.numLocale(isow_year(cell.jd)%100, fillZero=2))
+            funcs.append(lambda cell, mode, tm: _(isow_year(cell.jd)%100, fillZero=2))
             pyFmt += '%s'
             i += 2
             continue
         elif c1=='G':## not affected by mode!
-            funcs.append(lambda cell, mode, tm: core.numLocale(isow_year(cell.jd), fillZero=4))
+            funcs.append(lambda cell, mode, tm: _(isow_year(cell.jd), fillZero=4))
             pyFmt += '%s'
             i += 2
             continue
         elif c1=='V':## not affected by mode!
-            funcs.append(lambda cell, mode, tm: core.numLocale(isow(cell.jd), fillZero=2))
+            funcs.append(lambda cell, mode, tm: _(isow(cell.jd), fillZero=2))
             pyFmt += '%s'
             i += 2
             continue
         elif c1=='u':
-            funcs.append(lambda cell, mode, tm: core.numLocale(cell.jd%7 + 1))
+            funcs.append(lambda cell, mode, tm: _(cell.jd%7 + 1))
             pyFmt += '%s'
             i += 2
             continue
         elif c1=='w':
-            funcs.append(lambda cell, mode, tm: core.numLocale((cell.jd+1)%7)) ## jwday
+            funcs.append(lambda cell, mode, tm: _((cell.jd+1)%7)) ## jwday
             pyFmt += '%s'
             i += 2
             continue
         elif c1=='W':
             def weekNumberMonday(a):
                 jd0 = to_jd(cell.dates[mode][0], 1, 1, mode)
-                return core.numLocale((cell.jd - jd0 + jd0%7) / 7, fillZero=2)
+                return _((cell.jd - jd0 + jd0%7) / 7, fillZero=2)
             funcs.append(weekNumberMonday)
             pyFmt += '%s'
             i += 2
             continue
         #elif c1=='U':##????????????????????????????????????????
-        #    funcs.append(lambda cell, mode, tm: core.numLocale())
+        #    funcs.append(lambda cell, mode, tm: _())
         #    pyFmt += '%s'
         #    i += 2
         #    continue
         elif c1=='j':
-            funcs.append(lambda cell, mode, tm: core.numLocale(
+            funcs.append(lambda cell, mode, tm: _(
                 cell.jd - to_jd(cell.dates[mode][0], 1, 1, mode) + 1,
                 fillZero=3
             ))
@@ -217,7 +217,7 @@ def compileTmFormat(format, hasTime=True):
         elif c1=='z':
             def tz(a):
                 m = int(timezoneSec(cell.dates[mode][0], cell.dates[mode][1], cell.dates[mode][2])/60)
-                return core.numLocale(m//60, fillZero=2) + core.numLocale(m%60, fillZero=2)
+                return _(m//60, fillZero=2) + _(m%60, fillZero=2)
             funcs.append(tz)
             pyFmt += '%s'
             i += 2
@@ -228,7 +228,7 @@ def compileTmFormat(format, hasTime=True):
             if c2=='z':## %:z
                 def tz(a):
                     s = int(timezoneSec(cell.dates[mode][0], cell.dates[mode][1], cell.dates[mode][2]))
-                    return core.numLocale(m//60, fillZero=2) + ':' + core.numLocale(m%60, fillZero=2)
+                    return _(m//60, fillZero=2) + ':' + _(m%60, fillZero=2)
                 funcs.append(tz)
                 pyFmt += '%s'
                 i += 3
@@ -237,30 +237,30 @@ def compileTmFormat(format, hasTime=True):
             #elif c2==':':## ???????????????????????
         elif hasTime:
             if c1=='H':
-                funcs.append(lambda cell, mode, tm: core.numLocale(tm[0], fillZero=2))
+                funcs.append(lambda cell, mode, tm: _(tm[0], fillZero=2))
                 pyFmt += '%s'
                 i += 2
                 continue
             elif c1=='I':
-                funcs.append(lambda cell, mode, tm: core.numLocale((tm[0]-1)%12+1, fillZero=2)) ## ????????
+                funcs.append(lambda cell, mode, tm: _((tm[0]-1)%12+1, fillZero=2)) ## ????????
                 pyFmt += '%s'
                 i += 2
                 continue
             elif c1=='k':
-                funcs.append(lambda cell, mode, tm: core.numLocale(tm[0]))
+                funcs.append(lambda cell, mode, tm: _(tm[0]))
                 pyFmt += '%s'
                 i += 2
                 continue
             elif c1=='l':
-                funcs.append(lambda cell, mode, tm: core.numLocale((tm[0]-1)%12+1)) ## ????????
+                funcs.append(lambda cell, mode, tm: _((tm[0]-1)%12+1)) ## ????????
                 pyFmt += '%s'
                 i += 2
                 continue
             elif c1=='r':## %I:%M:%s PM
                 funcs.append(lambda cell, mode, tm: \
-                    core.numLocale((tm[0]-1)%12+1, fillZero=2) + ':' +\
-                    core.numLocale(tm[1], fillZero=2)          + ':' +\
-                    core.numLocale(tm[2], fillZero=2)          + ' ' +\
+                    _((tm[0]-1)%12+1, fillZero=2) + ':' +\
+                    _(tm[1], fillZero=2)          + ':' +\
+                    _(tm[2], fillZero=2)          + ' ' +\
                     _('AM' if tm[0]<12 else 'PM')
                 )
                 pyFmt += '%s'
@@ -268,30 +268,30 @@ def compileTmFormat(format, hasTime=True):
                 continue
             elif c1=='R':## %H:%M
                 funcs.append(lambda cell, mode, tm: \
-                    core.numLocale(tm[0], fillZero=2) + ':' +\
-                    core.numLocale(tm[1], fillZero=2)
+                    _(tm[0], fillZero=2) + ':' +\
+                    _(tm[1], fillZero=2)
                 )
                 pyFmt += '%s'
                 i += 2
                 continue
             elif c1=='M':
-                funcs.append(lambda cell, mode, tm: core.numLocale(tm[1], fillZero=2))
+                funcs.append(lambda cell, mode, tm: _(tm[1], fillZero=2))
                 pyFmt += '%s'
                 i += 2
                 continue
             elif c1=='S':
-                funcs.append(lambda cell, mode, tm: core.numLocale(int(tm[2]), fillZero=2))
+                funcs.append(lambda cell, mode, tm: _(int(tm[2]), fillZero=2))
                 pyFmt += '%s'
                 i += 2
                 continue
             elif c1=='s':## seconds since 1970-01-01 00:00:00 UTC
-                #funcs.append(lambda cell, mode, tm: core.numLocale(int(time.mktime(a[2:7]+(int(tm[2]), 0, 0, 1)))))
-                funcs.append(lambda cell, mode, tm: core.numLocale(core.getEpochFromJhms(cell.jd, *tm)))
+                #funcs.append(lambda cell, mode, tm: _(int(time.mktime(a[2:7]+(int(tm[2]), 0, 0, 1)))))
+                funcs.append(lambda cell, mode, tm: _(core.getEpochFromJhms(cell.jd, *tm)))
                 pyFmt += '%s'
                 i += 2
                 continue
             elif c1=='N':
-                funcs.append(lambda cell, mode, tm: core.numLocale(int(tm[2]*1000000000%1000000000)))
+                funcs.append(lambda cell, mode, tm: _(int(tm[2]*1000000000%1000000000)))
                 pyFmt += '%s'
                 i += 2
                 continue
@@ -307,18 +307,18 @@ def compileTmFormat(format, hasTime=True):
                 continue
             elif c1=='T':## %%H:%M:%S
                 funcs.append(lambda cell, mode, tm: \
-                    core.numLocale(tm[0], fillZero=2) + ':' +\
-                    core.numLocale(tm[1], fillZero=2) + ':' +\
-                    core.numLocale(tm[2], fillZero=2)
+                    _(tm[0], fillZero=2) + ':' +\
+                    _(tm[1], fillZero=2) + ':' +\
+                    _(tm[2], fillZero=2)
                 )
                 pyFmt += '%s'
                 i += 2
                 continue
             elif c1=='X':## locale's time representation (e.g., 23:13:48)
                 funcs.append(lambda cell, mode, tm: \
-                    core.numLocale(tm[0], fillZero=2) + ':' +\
-                    core.numLocale(tm[1], fillZero=2) + ':' +\
-                    core.numLocale(tm[2], fillZero=2)
+                    _(tm[0], fillZero=2) + ':' +\
+                    _(tm[1], fillZero=2) + ':' +\
+                    _(tm[2], fillZero=2)
                 )
                 pyFmt += '%s'
                 i += 2

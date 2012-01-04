@@ -19,7 +19,7 @@ class EventWidget(common.EventWidget):
         ###
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Date')), 0, 0)
-        self.dateInput = DateButton(lang=core.langSh)
+        self.dateInput = DateButton()
         hbox.pack_start(self.dateInput, 0, 0)
         self.pack_start(hbox, 0, 0)
         #############

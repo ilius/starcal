@@ -30,7 +30,7 @@ from scal2.time_utils import *
 from scal2.color_utils import hslToRgb
 
 from scal2.locale_man import tr as _
-from scal2.locale_man import getMonthName, textNumLocale
+from scal2.locale_man import getMonthName, textNumEncode
 from scal2 import core
 from scal2.core import myRaise, getEpochFromJd, getEpochFromJhms, log, to_jd, jd_to, getAbsWeekNumberFromJd
 
@@ -301,17 +301,26 @@ class EventRule(EventBaseClass):
 
 class MultiValueEventRule(EventRule):
     #params = ('values',)
-    def __init__(self, parent):
-        EventRule.__init__(self, parent, value)
+    def __init__(self, parent, value):
+        EventRule.__init__(self, parent)
         self.values = [value]
     getData = lambda self: self.values
     def setData(self, data):
-        if isinstance(data, (tuple, list)):
-            self.values = data
-        else:
-            self.values = [data]
+        if not isinstance(data, (tuple, list)):
+            data = [data]
+        self.values = data
     formatValue = lambda self, v: _(v)
     __str__ = lambda self: (_(',')+' ').join([self.formatValue(v) for v in self.values])    
+    def hasValue(self, value):
+        for item in self.values:
+            if isinstance(item, (tuple, list)):
+                if item[0] <= value <= item[1]:
+                    return True
+            else:
+                if item == value:
+                    return True
+        return False
+
 
 class YearEventRule(MultiValueEventRule):
     name = 'year'
@@ -325,7 +334,7 @@ class YearEventRule(MultiValueEventRule):
     def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
         jdList = []
         for jd in core.getJdListFromEpochRange(startEpoch, endEpoch):
-            if jd not in jdList and jd_to(jd, self.getMode())[0] in self.values:
+            if jd not in jdList and self.hasValue(jd_to(jd, self.getMode())[0]):
                 jdList.append(jd)
         return JdListOccurrence(jdList)
 
@@ -343,7 +352,7 @@ class MonthEventRule(MultiValueEventRule):
     def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
         jdList = []
         for jd in core.getJdListFromEpochRange(startEpoch, endEpoch):
-            if jd not in jdList and jd_to(jd, self.getMode())[1] in self.values:
+            if jd not in jdList and self.hasValue(jd_to(jd, self.getMode())[1]):
                 jdList.append(jd)
         return JdListOccurrence(jdList)
     formatValue = lambda self, v: getMonthName(self.getMode(), v)
@@ -361,7 +370,7 @@ class DayOfMonthEventRule(MultiValueEventRule):
     def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
         jdList = []
         for jd in core.getJdListFromEpochRange(startEpoch, endEpoch):
-            if jd not in jdList and jd_to(jd, self.getMode())[2] in self.values:
+            if jd not in jdList and self.hasValue(jd_to(jd, self.getMode())[2]):
                 jdList.append(jd)
         return JdListOccurrence(jdList)
 
@@ -856,30 +865,7 @@ class Event(EventBaseClass, RuleContainer):
     def getInfo(self):
         lines = []
         rulesDict = self.rulesOd.copy()
-        ##
-        hasYear = 'year' in rulesDict
-        year = rulesDict['year'].year if hasYear else None
-        ##
-        hasMonth = 'month' in rulesDict
-        month = rulesDict['month'].month if hasMonth else None
-        ##
-        hasDay = 'day' in rulesDict
-        day = rulesDict['day'].day if hasDay else None
-        ##
-        if hasMonth:
-            if hasYear:
-                if hasDay:
-                   lines.append(dateEncode((year, month, day)))
-                   del rulesDict['day']
-                else:
-                   lines.append(getMonthName(self.mode, month, year) + ' ' + _(year))
-                del rulesDict['year'], rulesDict['month']
-            else:
-                if hasDay:
-                    lines.append(_(day) + ' ' + getMonthName(self.mode, month, year))
-                    rulesDict['month'], rulesDict['day']
-        ##
-        for rule in sorted(rulesDict.values()):
+        for rule in rulesDict.values():
             lines.append(rule.getInfo())
         return '\n'.join(lines)
     def addRequirements(self):
@@ -1029,15 +1015,10 @@ class YearlyEvent(Event):
     iconName = 'birthday'
     requiredRules = ('month', 'day')
     supportedRules = ('month', 'day')
-    getMonth = lambda self: self['month'].month
-    def setMonth(self, month):
-        self['month'].month = month
-    getDay = lambda self: self['day'].day
-    def setDay(self, day):
-        self['day'].day = day
-    #getIcon = lambda self: self.icon ## FIXME
-    #def setIcon(self, icon): ## FIXME
-    #    self.icon = icon
+    getMonth = lambda self: self['month'].values[0]
+    setMonth = lambda self, month: self['month'].setData(month)
+    getDay = lambda self: self['day'].values[0]
+    setDay = lambda self, day: self['day'].setData(day)
     def setDefaults(self):
         (y, m, d) = core.getSysDate(self.mode)
         self.setMonth(m)
@@ -1072,8 +1053,8 @@ class DailyNoteEvent(Event):
     name = 'dailyNote'
     desc = _('Daily Note')
     iconName = 'note'
-    requiredRules = ('date')
-    supportedRules = ('date')
+    requiredRules = ('date',)
+    supportedRules = ('date',)
     getDate = lambda self: self['date'].date
     def setDate(self, year, month, day):
         self['date'].date = (year, month, day)
@@ -1602,7 +1583,7 @@ class UniversityTerm(EventGroup):
         for i in range(count-1):
             (tm0, tm1) = self.classTimeBounds[i:i+2]
             titles.append(
-                textNumLocale(simpleTimeEncode(tm0)) + ' ' + _('to') + ' ' + textNumLocale(simpleTimeEncode(tm1))
+                textNumEncode(simpleTimeEncode(tm0)) + ' ' + _('to') + ' ' + textNumEncode(simpleTimeEncode(tm1))
             )
         for tm1 in self.classTimeBounds:
             tmfactors.append((timeToFloatHour(*tm1)-firstTm)/deltaTm)

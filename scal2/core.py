@@ -26,7 +26,7 @@ from os.path import isfile, isdir, exists, dirname, join, split, splitext
 
 
 from scal2.paths import *
-from scal2.locale_man import * ## prepareLanguage, loadTranslator, numLocale, getMonthName
+from scal2.locale_man import * ## prepareLanguage, loadTranslator, getMonthName
 from scal2.plugin_man import *
 from scal2.time_utils import *
 from scal2.utils import cmpVersion

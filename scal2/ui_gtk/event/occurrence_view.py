@@ -167,7 +167,7 @@ class MonthOccurrenceView(event_man.MonthOccurrenceView, gtk.TreeView):
         for item in self.data:
             self.ls.append(
                 pixbufFromFile(item['icon']),
-                numLocale(item['day']),
+                _(item['day']),
                 item['time'],
                 item['text'],
             )

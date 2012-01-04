@@ -20,7 +20,7 @@ import os, sys, shlex, time
 from os.path import join, dirname
 
 from scal2 import core
-from scal2.core import pixDir, convert, numLocale, myRaise
+from scal2.core import pixDir, convert, myRaise
 
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl
@@ -344,8 +344,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         #print getCurrentTime()-gdk.CURRENT_TIME/1000.0
         ## gdk.CURRENT_TIME == 0## FIXME
         ## g_event.time == gtk.get_current_event_time() ## OK
-        k = g_event.keyval
-        if k==65383:# Simulate right click (key beside Right-Ctrl)
+        kname = gdk.keyval_name(g_event.keyval)
+        if kname=='Menu':## Simulate right click (key beside Right-Ctrl)
             cur = self.treev.get_cursor()
             if not cur:
                 return

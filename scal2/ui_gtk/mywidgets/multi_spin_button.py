@@ -23,8 +23,7 @@ from gobject import timeout_add, type_register, signal_new, SIGNAL_RUN_LAST, TYP
 import gtk
 from gtk import gdk
 
-
-
+from scal2.locale_man import numEncode, numDecode
 
 class MultiSpinButton(gtk.SpinButton):
     #from gtk import SpinButton, TEXT_DIR_LTR
@@ -151,7 +150,7 @@ class MultiSpinButton(gtk.SpinButton):
                 num = self.mins[i]
             else:
                 try:
-                    num = self._str2int(nums[i])
+                    num = numDecode(nums[i])
                 except ValueError:
                     try:
                         num = int(nums[i])
@@ -182,57 +181,29 @@ class MultiSpinButton(gtk.SpinButton):
         gtk.SpinButton.set_editable(self, editable)
         self.editable = editable
     def _ints2str(self, ints):
-        if self.lang=='fa':
-            off = ord(u'۰')
-        elif self.lang=='ar':
-            off = ord(u'٠')
-        else:
-            off = ord(u'0')
         text = u''
         for i in range(self.size):
-            uni = u''
             try:
                 n = int(ints[i])
             except:
                 n = self.mins[i]
-            for j in range(self.fields[i]):
-                (d, m) = divmod(n, 10)
-                uni = unichr(m+off) + uni
-                n = d
-            text += (uni+self.sep[i])
+            text += numEncode(n, fillZero=self.fields[i]) + self.sep[i]
         return text
-    def _str2int(self, st):
-        if self.lang=='en':
-            return int(st)
-        if self.lang=='fa':
-                off = ord(u'۰')
-        elif self.lang=='ar':
-                off = ord(u'٠')
-        else:
-                raise ValueError('bad lang %s'%self.lang)
-        num = 0
-        u = st.decode('utf-8')
-        for c in u:
-                n = ord(c)-off
-                if n<0 or n>9:
-                    raise ValueError('bad num %s'%st)
-                num = num*10 + n
-        return num
     def _key_press(self, widget, event):
-        key = event.keyval
-        if key==65362:    # Up
+        kname = gdk.keyval_name(event.keyval)
+        if kname=='Up':
             if self.editable:
                 #self._arrow_enter_notify(self.window_up)
                 #timeout_add(30, self._arrow_leave_notify, self.window_up)
                 self.entry_plus(1)
             return True
-        elif key==65364:    # Down
+        elif kname=='Down':
             if self.editable:
                 #self._arrow_enter_notify(self.window_down)
                 #timeout_add(30, self._arrow_leave_notify, self.window_down)
                 self.entry_plus(-1)
             return True
-        elif key==65361:    # Left
+        elif kname=='Left':
             if not self.editable or not self.arrow_select:
                 return False
             self.entry_validate()
@@ -250,7 +221,7 @@ class MultiSpinButton(gtk.SpinButton):
             else:
                 self.select_region(self.sep_index[part-1]+len(self.sep[part-1]), self.sep_index[part])
             return True
-        elif key==65363:    #Right
+        elif kname=='Right':
             if not self.editable or not self.arrow_select:
                 return False
             self.entry_validate()

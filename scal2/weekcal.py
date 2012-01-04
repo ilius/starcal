@@ -20,7 +20,7 @@
 #from scal2.locale_man import tr as _
 
 from scal2 import core
-from scal2.core import myRaise, numLocale, getMonthName, getMonthLen, getNextMonth, getPrevMonth, pixDir
+from scal2.core import myRaise, getMonthName, getMonthLen, getNextMonth, getPrevMonth, pixDir
 
 from scal2 import ui
 

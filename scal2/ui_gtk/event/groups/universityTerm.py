@@ -4,7 +4,7 @@
 from scal2.paths import deskDir
 from scal2.time_utils import hmEncode, hmDecode
 from scal2.locale_man import tr as _
-from scal2.locale_man import localeNumDecode
+from scal2.locale_man import numDecode
 
 from scal2 import core
 
@@ -130,7 +130,7 @@ class CourseListEditor(gtk.HBox):
         self.trees[index][1] = newText
     def courseUnitsEdited(self, cell, path, newText):
         index = int(path)
-        units = localeNumDecode(newText)
+        units = numDecode(newText)
         self.trees[index][2] = units
     def setData(self, rows):
         self.trees.clear()
@@ -225,8 +225,8 @@ class ClassTimeBoundsEditor(gtk.HBox):
     def timeEdited(self, cell, path, newText):
         index = int(path)
         parts = newText.split(':')
-        h = localeNumDecode(parts[0])
-        m = localeNumDecode(parts[1])
+        h = numDecode(parts[0])
+        m = numDecode(parts[1])
         hm = hmEncode((h, m))
         self.trees[index][0] = hm
         #self.trees.sort()## FIXME
@@ -250,7 +250,7 @@ class GroupWidget(BaseGroupWidget):
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
         sizeGroup.add_widget(label)
-        self.startDateInput = DateButton(lang=core.langSh)
+        self.startDateInput = DateButton()
         hbox.pack_start(self.startDateInput, 0, 0)
         totalVbox.pack_start(hbox, 0, 0)
         ###
@@ -259,7 +259,7 @@ class GroupWidget(BaseGroupWidget):
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
         sizeGroup.add_widget(label)
-        self.endDateInput = DateButton(lang=core.langSh)
+        self.endDateInput = DateButton()
         hbox.pack_start(self.endDateInput, 0, 0)
         totalVbox.pack_start(hbox, 0, 0)
         ###

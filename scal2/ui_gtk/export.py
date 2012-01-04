@@ -22,7 +22,7 @@ import os, sys
 from scal2.locale_man import tr as _
 
 from scal2 import core
-from scal2.core import deskDir, numLocale
+from scal2.core import deskDir
 
 from scal2 import ui
 from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
@@ -56,11 +56,11 @@ class ExportDialog(gtk.Dialog):
         ###
         hbox2 = gtk.HBox(spacing=2)
         hbox2.pack_start(gtk.Label(_('from month')), 0, 0)
-        self.ymBox0 = YearMonthBox(lang=core.langSh)
+        self.ymBox0 = YearMonthBox()
         hbox2.pack_start(self.ymBox0, 0, 0)
         hbox2.pack_start(gtk.Label(''), 1, 1)
         hbox2.pack_start(gtk.Label(_('to month')), 0, 0)
-        self.ymBox1 = YearMonthBox(lang=core.langSh)
+        self.ymBox1 = YearMonthBox()
         hbox2.pack_start(self.ymBox1, 0, 0)
         hbox.pack_start(hbox2, 1, 1)
         self.hbox2 = hbox2
@@ -116,11 +116,11 @@ class ExportDialog(gtk.Dialog):
         if i==0:
             s = getCurrentMonthStatus()
             months = [s]
-            title = '%s %s'%(core.getMonthName(core.primaryMode, s.month, s.year), numLocale(s.year))
+            title = '%s %s'%(core.getMonthName(core.primaryMode, s.month, s.year), _(s.year))
         elif i==1:
             for i in xrange(1, 13):
                 months.append(getMonthStatus(ui.cell.year, i))
-            title = '%s %s'%(_('Calendar'), numLocale(ui.cell.year))
+            title = '%s %s'%(_('Calendar'), _(ui.cell.year))
         elif i==2:
             (y0, m0) = self.ymBox0.get_date()
             (y1, m1) = self.ymBox1.get_date()
@@ -172,10 +172,10 @@ class ExportToIcsDialog(gtk.Dialog):
         ########
         hbox = gtk.HBox(spacing=2)
         hbox.pack_start(gtk.Label(_('From')+' '), 0, 0)
-        self.startDateInput = DateButton(lang=core.langSh)
+        self.startDateInput = DateButton()
         hbox.pack_start(self.startDateInput, 0, 0)
         hbox.pack_start(gtk.Label(' '+_('To')+' '), 0, 0)
-        self.endDateInput = DateButton(lang=core.langSh)
+        self.endDateInput = DateButton()
         hbox.pack_start(self.endDateInput, 0, 0)
         self.vbox.pack_start(hbox, 0, 0)
         ####

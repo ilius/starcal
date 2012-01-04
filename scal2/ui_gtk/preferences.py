@@ -30,7 +30,7 @@ from scal2.locale_man import tr as _
 from scal2.paths import *
 
 from scal2 import core
-from scal2.core import myRaise, convert, numLocale
+from scal2.core import myRaise, convert
 
 from scal2.format_time import compileTmFormat
 

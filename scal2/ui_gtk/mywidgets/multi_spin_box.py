@@ -22,7 +22,7 @@ from gobject import timeout_add, type_register, signal_new, SIGNAL_RUN_LAST, TYP
 import gtk
 from gtk import gdk
 
-
+from scal2.locale_man import numEncode, numDecode
 
 def myRaise():
     i = sys.exc_info()
@@ -39,7 +39,7 @@ time_rem = lambda: int(1000*(1.01-time.time()%1))
 class MultiSpinBox(gtk.HBox):
     #from gtk import HBox, EventBox, Arrow, gdk.Color, combo_box_entry_new_text, TEXT_DIR_LTR, ARROW_UP, ARROW_DOWN, SHADOW_IN
     def __init__(self, mins, maxs, fields, sep, is_hbox=False, arrow=True, nums=None, spacing=0,\
-        hist_size=10, lang='en', arrow_select=True):##force_select=False
+        hist_size=10, arrow_select=True):##force_select=False
         if not is_hbox:
             gtk.HBox.__init__(self, False, spacing)
         n = len(mins)
@@ -81,7 +81,6 @@ class MultiSpinBox(gtk.HBox):
         self.colorNames = names
         self.colorI = 0
         '''
-        self.lang = lang
         self.editable = True
         self.combo = gtk.combo_box_entry_new_text()
         self.entry = self.combo.child
@@ -219,7 +218,7 @@ class MultiSpinBox(gtk.HBox):
                 num = self.mins[i]
             else:
                 try:
-                    num = self._str2int(nums[i])
+                    num = numDecode(nums[i])
                 except ValueError:
                     try:
                         num = int(nums[i])
@@ -250,42 +249,14 @@ class MultiSpinBox(gtk.HBox):
         self.entry.set_editable(editable)
         self.editable = editable
     def _ints2str(self, ints):
-        if self.lang=='fa':
-            off = ord(u'۰')
-        elif self.lang=='ar':
-            off = ord(u'٠')
-        else:
-            off = ord(u'0')
         text = u''
         for i in range(self.size):
-            uni = u''
             try:
                 n = int(ints[i])
             except:
                 n = self.mins[i]
-            for j in range(self.fields[i]):
-                (d, m) = divmod(n, 10)
-                uni = unichr(m+off) + uni
-                n = d
-            text += (uni+self.sep[i])
+            text += numEncode(n, fillZero=self.fields[i]) + self.sep[i]
         return text
-    def _str2int(self, st):
-        if self.lang=='en':
-            return int(st)
-        if self.lang=='fa':
-                off = ord(u'۰')
-        elif self.lang=='ar':
-                off = ord(u'٠')
-        else:
-                raise ValueError('bad lang %s'%self.lang)
-        num = 0
-        u = st.decode('utf-8')
-        for c in u:
-                n = ord(c)-off
-                if n<0 or n>9:
-                    raise ValueError('bad num %s'%st)
-                num = num*10 + n
-        return num
     def _entry_activate(self, widget):
         self.add_history()
         self.emit('activate')
@@ -310,20 +281,20 @@ class MultiSpinBox(gtk.HBox):
         if    n > self.hist_size:
             m.remove(m.get_iter(n-1))
     def _entry_key_press(self, widget, event):
-        key = event.keyval
-        if key==65362:	# Up
+        kname = gdk.keyval_name(event.keyval)
+        if kname=='Up':
             if self.editable:
                 self._arrow_enter_notify(self.eventU)
                 timeout_add(30, self._arrow_leave_notify, self.eventU)
                 self.entry_plus(1)
             return True
-        elif key==65364:	# Down
+        elif kname=='Down':
             if self.editable:
                 self._arrow_enter_notify(self.eventD)
                 timeout_add(30, self._arrow_leave_notify, self.eventD)
                 self.entry_plus(-1)
             return True
-        elif key==65361:	# Left
+        elif kname=='Left':
             if not self.editable or not self.arrow_select:
                 return False
             self.entry_validate()
@@ -341,7 +312,7 @@ class MultiSpinBox(gtk.HBox):
             else:
                 self.entry.select_region(self.sep_index[part-1]+len(self.sep[part-1]), self.sep_index[part])
             return True
-        elif key==65363:	#Right
+        elif kname=='Right':
             if not self.editable or not self.arrow_select:
                 return False
             self.entry_validate()

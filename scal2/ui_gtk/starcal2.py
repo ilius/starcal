@@ -45,7 +45,7 @@ from scal2.locale_man import rtl, lang #, loadTranslator ## import scal2.locale_
 #_ = loadTranslator(False)## FIXME
 from scal2.locale_man import tr as _
 
-from scal2.core import rootDir, pixDir, deskDir, myRaise, numLocale, getMonthName
+from scal2.core import rootDir, pixDir, deskDir, myRaise, getMonthName
 
 core.showInfo()
 
@@ -128,7 +128,7 @@ def liveConfChanged():
 
 class MonthLabel(gtk.EventBox):
     highlightColor = gdk.Color(45000, 45000, 45000)
-    getItemStr = lambda self, i: numLocale(i+1, fillZero=2)
+    getItemStr = lambda self, i: _(i+1, fillZero=2)
     getActiveStr = lambda self, s: '<span color="%s">%s</span>'%(ui.menuActiveLabelColor, s)
     #getActiveStr = lambda self, s: '<b>%s</b>'%s
     def __init__(self, mode, active=0):
@@ -288,9 +288,9 @@ class IntLabel(gtk.EventBox):
         self.height = height
         #self.delay = delay
         if ui.boldYmLabel:
-            s = '<b>%s</b>'%numLocale(active)
+            s = '<b>%s</b>'%_(active)
         else:
-            s = numLocale(active)
+            s = _(active)
         self.label = gtk.Label(s)
         self.label.set_use_markup(True)
         self.add(self.label)
@@ -352,9 +352,9 @@ class IntLabel(gtk.EventBox):
         self.connect('leave-notify-event', self.unhighlight)
     def setActive(self, active):
         if ui.boldYmLabel:
-            self.label.set_label('<b>%s</b>'%numLocale(active))
+            self.label.set_label('<b>%s</b>'%_(active))
         else:
-            self.label.set_label(numLocale(active))
+            self.label.set_label(_(active))
         self.active = active
     def updateMenu(self, start=None):
         if start==None:
@@ -362,9 +362,9 @@ class IntLabel(gtk.EventBox):
         self.start = start
         for i in range(self.height):
             if start+i==self.active:
-                self.menuLabels[i].set_label(self.getActiveStr(numLocale(start+i)))
+                self.menuLabels[i].set_label(self.getActiveStr(_(start+i)))
             else:
-                self.menuLabels[i].set_label(numLocale(start+i))
+                self.menuLabels[i].set_label(_(start+i))
     def itemActivate(self, widget, item):
         self.setActive(self.start+item)
         self.emit('changed', self.start+item)
@@ -1252,21 +1252,23 @@ class MainWin(gtk.Window):
         ui.changeDate(y, m, d)
         self.onDateChange()
     def keyPress(self, arg, event):
-        k = event.keyval
-        #print time(), 'MainWin.keyPress', k
-        if k==65307:                # Esc
+        kval = event.keyval
+        kname = gdk.keyval_name(event.keyval)
+        #print time(), 'MainWin.keyPress', kname
+        if kname=='Escape':
             self.dialogEsc()
-        elif k==65470:              # F1:
+        elif kname=='F1':
             self.aboutShow()
-        elif k in (65379, 43, 65451): # Insert or plus or KP_Add
+        elif kname in ('Insert', 'plus', 'KP_Add'):
             self.eventManShow()
-        elif k in (113, 81, 1494):    # q Q
+        elif kname in ('q', 'Q', 'Arabic_dad'):## FIXME
             self.quit()
-        #elif gdk.keyval_name(k).startswith('ALT'):## Alt+F7 ##???????????? Does not receive "F7"
+        #elif kname.startswith('ALT'):## Alt+F7, Does not receive "F7" FIXME
         #    self.startManualMoving()
         else:
+            #print kname
             for item in self.items:
-                if item.enable and k in item.myKeys:
+                if item.enable and kname in item.myKeys:
                     item.emit('key-press-event', event)
         return True ## FIXME
     def buildWinCont(self):
@@ -1548,7 +1550,7 @@ class MainWin(gtk.Window):
         im = Image.open(imagePath)
         (w, h) = im.size
         draw = ImageDraw.Draw(im)
-        text = numLocale(ddate[2]).decode('utf8')
+        text = _(ddate[2]).decode('utf8')
         font = ImageFont.truetype('/usr/share/fonts/TTF/DejaVuSans.ttf', 15)
         (fw, fh) = font.getsize(text)
         draw.text(
@@ -1563,7 +1565,7 @@ class MainWin(gtk.Window):
         ##pixbuf.scale() #????????????
         ###################### PUTTING A TEXT ON A PIXBUF
         pmap = pixbuf.render_pixmap_and_mask(alpha_threshold=127)[0] ## pixmap is also a drawable
-        textLay = newTextLayout(self, numLocale(ddate[2]), ui.trayFont)
+        textLay = newTextLayout(self, _(ddate[2]), ui.trayFont)
         (w, h) = textLay.get_pixel_size()
         s = ui.traySize
         if ui.trayY0 == None:
@@ -1586,7 +1588,7 @@ class MainWin(gtk.Window):
                 mode = item['mode']
                 module = core.modules[mode]
                 (y, m, d) = ui.todayCell.dates[mode]
-                tt += '%s%s %s %s'%(sep, numLocale(d), getMonthName(mode, m, y), numLocale(y))
+                tt += '%s%s %s %s'%(sep, _(d), getMonthName(mode, m, y), _(y))
         if ui.extradayTray:
             text = ui.todayCell.extraday
             if text!='':

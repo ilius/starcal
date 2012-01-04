@@ -22,7 +22,6 @@ from scal2.utils import toStr
 from scal2.locale_man import rtl
 from scal2.locale_man import tr as _
 from scal2 import core
-from scal2.core import numLocale
 
 from scal2 import ui
 from scal2.monthcal import getMonthDesc
@@ -104,7 +103,7 @@ CELLPADDING=4 CELLSPACING=0>
             <P ALIGN=CENTER>
                 <FONT COLOR="%s"><B>%s</B></FONT>
             </P>
-        </TD>\n'''%(borderColor,borderTextColor,core.getWeekDayN(j))
+        </TD>\n'''%(borderColor, borderTextColor, core.getWeekDayN(j))
         extra = '<P><FONT COLOR="%s">\n'%colors[0]
         text += '        </TR>\n'
         for i in xrange(6):
@@ -113,7 +112,7 @@ CELLPADDING=4 CELLSPACING=0>
             <P ALIGN=CENTER>
                 <FONT COLOR="%s"><B>%s</B></FONT>
             </P>
-        </TD>\n'''%(borderColor, borderTextColor, numLocale(status.weekNum[i]))
+        </TD>\n'''%(borderColor, borderTextColor, _(status.weekNum[i]))
             for j in xrange(7):
                 cell = status[i][j]
                 text += '            <TD WIDTH=13%>\n                <P DIR="LTR" ALIGN=CENTER>\n'
@@ -121,7 +120,7 @@ CELLPADDING=4 CELLSPACING=0>
                     if not dates[ind]['enable']:
                         continue
                     mode = dates[ind]['mode']
-                    day = numLocale(cell.dates[mode][2], mode)## , 2
+                    day = _(cell.dates[mode][2], mode)## , 2
                     font = dates[ind]['font']
                     face = font[0]
                     if font[1]:
@@ -163,7 +162,7 @@ CELLPADDING=4 CELLSPACING=0>
                     t = cell.extraday.replace('\n', extraSep)
                     if t!='':
                         extra+='<B><FONT COLOR="%s">%s</FONT>:</B>    <SMALL>%s</SMALL>'\
-                            %(color, numLocale(cell.dates[core.primaryMode][2]), t)
+                            %(color, _(cell.dates[core.primaryMode][2]), t)
                         if extraPerLine:
                             extra+='<BR>\n'
                         else:

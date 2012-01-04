@@ -23,11 +23,11 @@ class EventWidget(common.EventWidget):
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
-        self.startDateInput = DateButton(lang=core.langSh)
+        self.startDateInput = DateButton()
         hbox.pack_start(self.startDateInput, 0, 0)
         ##
         hbox.pack_start(gtk.Label(' '+_('Time')), 0, 0)
-        self.startTimeInput = TimeButton(lang=core.langSh)
+        self.startTimeInput = TimeButton()
         hbox.pack_start(self.startTimeInput, 0, 0)
         ##
         self.pack_start(hbox, 0, 0)
@@ -44,11 +44,11 @@ class EventWidget(common.EventWidget):
         hbox.pack_start(self.durationBox, 1, 1)
         ####
         self.endDateHbox = gtk.HBox()
-        self.endDateInput = DateButton(lang=core.langSh)
+        self.endDateInput = DateButton()
         self.endDateHbox.pack_start(self.endDateInput, 0, 0)
         ##
         self.endDateHbox.pack_start(gtk.Label(' '+_('Time')), 0, 0)
-        self.endTimeInput = TimeButton(lang=core.langSh)
+        self.endTimeInput = TimeButton()
         self.endDateHbox.pack_start(self.endTimeInput, 0, 0)
         ##
         hbox.pack_start(self.endDateHbox, 1, 1)

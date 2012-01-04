@@ -86,7 +86,7 @@ class SelectDateDialog(gtk.Dialog):
         ########
         hb2 = gtk.HBox(spacing=4)
         hb2.pack_start(gtk.Label('yyyy/mm/dd'), 0, 0)
-        dateInput = DateBox(lang=core.langSh, hist_size=16) ## lang='fa' | 'fa_IR.UTF-8' ????????
+        dateInput = DateBox(hist_size=16)
         hb2.pack_start(dateInput, 0, 0)
         rb2 = gtk.RadioButton()
         rb2.num = 2

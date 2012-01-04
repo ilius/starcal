@@ -27,7 +27,7 @@ from scal2.locale_man import rtl, rtlSgn
 from scal2.locale_man import tr as _
 
 from scal2 import core
-from scal2.core import log, myRaise, numLocale, getMonthName, getMonthLen, getNextMonth, getPrevMonth, pixDir
+from scal2.core import log, myRaise, getMonthName, getMonthLen, getNextMonth, getPrevMonth, pixDir
 
 from scal2 import ui
 from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
@@ -101,7 +101,10 @@ class MonthCal(gtk.Widget, MainWinItem):
         self.connect('expose-event', self.drawAll)
         self.connect('button-press-event', self.buttonPress)
         #self.connect('screen-changed', self.screenChanged)
-        self.myKeys = (65362, 65364, 65363, 65361, 32, 65360, 65367, 65365, 65366, 65383, 65479, 109, 77)
+        self.myKeys = (
+            'Up', 'Down', 'Right', 'Left', 'Page_Up', 'Page_Down',
+            'space', 'Home', 'End', 'Menu', 'F10', 'm', 'M',
+        )
         self.connect('key-press-event', self.keyPress)
         self.connect('scroll-event', self.scroll)
         ######################
@@ -200,7 +203,7 @@ class MonthCal(gtk.Widget, MainWinItem):
             ##### Drawing week numbers
             setColor(cr, ui.borderTextColor)
             for i in xrange(6):
-                lay = newTextLayout(self, numLocale(status.weekNum[i]))
+                lay = newTextLayout(self, _(status.weekNum[i]))
                 fontw, fonth = lay.get_pixel_size()
                 if rtl:
                     cr.move_to(w-(ui.calLeftMargin+fontw)/2.0, self.cy[i]-fonth/2.0+2)
@@ -293,7 +296,7 @@ class MonthCal(gtk.Widget, MainWinItem):
                 ####
                 if shown[0]['enable']:
                     mode = shown[0]['mode']
-                    daynum = newTextLayout(self, numLocale(c.dates[mode][2], mode), shown[0]['font'])
+                    daynum = newTextLayout(self, _(c.dates[mode][2], mode), shown[0]['font'])
                     (fontw, fonth) = daynum.get_pixel_size()
                     #if c.gray != 0:
                     if cellInactive:
@@ -309,7 +312,7 @@ class MonthCal(gtk.Widget, MainWinItem):
                     for item in shown[1:]:
                         if item['enable']:
                             mode = item['mode']
-                            daynum = newTextLayout(self, numLocale(c.dates[mode][2], mode), item['font'])
+                            daynum = newTextLayout(self, _(c.dates[mode][2], mode), item['font'])
                             (fontw, fonth) = daynum.get_pixel_size()
                             setColor(cr, item['color'])
                             cr.move_to(x0 - fontw/2.0 + item['x'],
@@ -632,41 +635,39 @@ class MonthCal(gtk.Widget, MainWinItem):
         t = time()
         #if t-self.kTime < ui.keyDelay:
         #    return True
-        k = event.keyval
-        #print t, 'MonthCal.keyPress', k
-        #print gdk.keyval_name(k), k
-        #if gdk.keyval_name(k).startswith('Alt'):
+        kname = gdk.keyval_name(event.keyval)
+        #if kname.startswith('Alt'):
         #    return True
         ## How to disable Alt+Space of metacity ?????????????????????
-        if k==65362:		# Up
+        if kname=='Up':
             self.jdPlus(-7)
-        elif k==65364:		# Down
+        elif kname=='Down':
             self.jdPlus(7)
-        elif k==65363:		# Right
+        elif kname=='Right':
             if rtl:
                 self.jdPlus(-1)
             else:
                 self.jdPlus(1)
-        elif k==65361:		# Left
+        elif kname=='Left':
             if rtl:
                 self.jdPlus(1)
             else:
                 self.jdPlus(-1)
-        elif k==32 or k==65360:	# Space or Home
+        elif kname in ('space', 'Home'):
             self.goToday()
-        elif k==65367:		# End
+        elif kname=='End':
             self.changeDate(ui.cell.year, ui.cell.month, getMonthLen(ui.cell.year, ui.cell.month, core.primaryMode))
-        elif k==65365:		# Page Up
+        elif kname=='Page_Up':
             ui.monthPlus(-1)
             self.queue_draw()
             self.emit('date-change')
-        elif k==65366:		# Page Down
+        elif kname=='Page_Down':
             ui.monthPlus(1)
             self.queue_draw()
             self.emit('date-change')
-        elif k==65383:		# Simulate right click (key beside Right-Ctrl)
+        elif kname=='Menu':
             self.emit('popup-menu-cell', event.time, *self.getCellPos())
-        elif k in (65479,109,77):	# F10 or m or M
+        elif kname in ('F10', 'm', 'M'):
             if event.state & gdk.SHIFT_MASK:
                 # Simulate right click (key beside Right-Ctrl)
                 self.emit('popup-menu-cell', event.time, *self.getCellPos())

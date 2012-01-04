@@ -219,9 +219,30 @@ def findNearestIndex(lst, num):
             index = i
     return index
 
+def numRangesEncode(values):
+    parts = []
+    for value in values:
+        if isinstance(value, (int, long)):
+            parts.append(str(value))
+        elif isinstance(value, (tuple, list)):
+            parts.append('%d-%d'%(value[0], value[1]))
+    return ', '.joinj(parts)
 
-
-
+def numRangesDecode(text):
+    values = []
+    for part in text.split(','):
+        pparts = part.strip().split('-')
+        try:
+            if len(pparts)==1:
+                values.append(int(pparts[0]))
+            elif len(pparts) > 1:
+                values.append((
+                    int(pparts[0]),
+                    int(pparts[1]),
+                ))
+        except:
+            myRaise()
+    return values
 
 #if __name__=='__main__':
 #    print findNearestNum([1, 2, 4, 6, 3, 7], 3.6)

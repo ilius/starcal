@@ -21,7 +21,7 @@ from scal2.locale_man import rtl, rtlSgn
 from scal2.locale_man import tr as _
 
 from scal2 import core
-from scal2.core import myRaise, numLocale, getMonthName, getMonthLen, getNextMonth, getPrevMonth, pixDir
+from scal2.core import myRaise, getMonthName, getMonthLen, getNextMonth, getPrevMonth, pixDir
 
 from scal2 import ui
 
@@ -100,7 +100,7 @@ def getMonthDesc(status=None):
         module = core.modules[mode]
         if mode==core.primaryMode:
             (y, m) = first.dates[mode][:2] ## = (status.year, status.month)
-            text += '%s %s'%(getMonthName(mode, m), numLocale(y))
+            text += '%s %s'%(getMonthName(mode, m), _(y))
         else:
             (y1, m1) = first.dates[mode][:2]
             (y2, m2) = last.dates[mode][:2]
@@ -113,22 +113,22 @@ def getMonthDesc(status=None):
             else:
                 raise RuntimeError('y1=%d, m1=%d, y2=%d, m2=%d'%(y1, m1, y2, m2))
             if dm==0:
-                text += '%s %s'%(_(module.getMonthName(m1)), numLocale(y1))
+                text += '%s %s'%(_(module.getMonthName(m1)), _(y1))
             elif dm==1:
                 if dy==0:
                     text += '%s %s %s %s'%(
                         _(module.getMonthName(m1)),
                         _('and'),
                         _(module.getMonthName(m2)),
-                        numLocale(y1),
+                        _(y1),
                     )
                 else:
                     text += '%s %s %s %s %s'%(
                         _(module.getMonthName(m1)),
-                        numLocale(y1),
+                        _(y1),
                         _('and'),
                         _(module.getMonthName(m2)),
-                        numLocale(y2),
+                        _(y2),
                     )
             elif dm==2:
                 if dy==0:
@@ -138,7 +138,7 @@ def getMonthDesc(status=None):
                         _(module.getMonthName(m1+1)),
                         _('and'),
                         _(module.getMonthName(m2)),
-                        numLocale(y1),
+                        _(y1),
                     )
                 else:
                     if m1==11:
@@ -146,20 +146,20 @@ def getMonthDesc(status=None):
                             _(module.getMonthName(m1)),
                             _('and'),
                             _(module.getMonthName(m1+1)),
-                            numLocale(y1),
+                            _(y1),
                             _('and'),
                             _(module.getMonthName(1)),
-                            numLocale(y2),
+                            _(y2),
                         )
                     elif m1==12:
                         text += '%s %s %s %s %s %s %s'%(
                             _(module.getMonthName(m1)),
-                            numLocale(y1),
+                            _(y1),
                             _('and'),
                             _(module.getMonthName(1)),
                             _('and'),
                             _(module.getMonthName(2)),
-                            numLocale(y2),
+                            _(y2),
                         )
     return text
 

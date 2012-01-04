@@ -5,7 +5,6 @@ from scal2.utils import toStr
 from scal2.time_utils import durationUnitsAbs, durationUnitValues
 from scal2 import core
 from scal2.locale_man import tr as _
-from scal2.locale_man import localeNumDecode
 
 from scal2.core import pixDir, myRaise
 

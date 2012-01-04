@@ -27,7 +27,7 @@ from scal2.cal_modules import moduleNames, moduleDescNames
 
 from scal2 import core
 from scal2.core import jd_to, to_jd
-from scal2.locale_man import rtl, numLocale, dateLocale
+from scal2.locale_man import rtl, dateLocale
 from scal2.locale_man import tr as _
 
 from scal2 import ui
@@ -55,7 +55,7 @@ class EditDbDialog(gtk.Dialog):
         hbox = gtk.HBox()
         self.topLabel = gtk.Label()
         hbox.pack_start(self.topLabel, 0, 0)
-        self.startDateInput = DateButton(lang=core.langSh)
+        self.startDateInput = DateButton()
         self.startDateInput.set_editable(False)## FIXME
         self.startDateInput.connect('changed', lambda widget: self.updateEndDates())
         hbox.pack_start(self.startDateInput, 0, 0)
@@ -144,7 +144,7 @@ class EditDbDialog(gtk.Dialog):
             (year, month0) = divmod(ym, 12)
             self.trees.append([
                 ym,
-                numLocale(year),
+                _(year),
                 _(monthName[month0]),
                 mLen,
                 '',

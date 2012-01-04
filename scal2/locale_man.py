@@ -138,17 +138,35 @@ def loadTranslator(ui_is_qt=False):
     else:
         transObj = gettext.GNUTranslations(fd)
     if transObj:
+        def tr(s, *a, **ka):
+            if isinstance(s, (int, long)):
+                s = numEncode(s, *a, **ka)
+            else:
+                s = transObj.gettext(toStr(s)).decode('utf-8')
+                if ui_is_qt:
+                    s = s.replace(u'_', u'&')
+                if a:
+                    s = s % a
+                if ka:
+                    s = s % ka
+            return s
+        '''
         if ui_is_qt:## qt takes "&" instead of "_" as trigger
-            tr = lambda s: numLocale(s) if isinstance(s, int) else transObj.gettext(toStr(s)).replace('_', '&').decode('utf-8')
+            tr = lambda s, *a, **ka: numEncode(s, *a, **ka) \
+                if isinstance(s, int) \
+                else transObj.gettext(toStr(s)).replace('_', '&').decode('utf-8')
         else:
-            tr = lambda s: numLocale(s) if isinstance(s, int) else transObj.gettext(toStr(s)).decode('utf-8')
+            tr = lambda s, *a, **ka: numEncode(s, *a, **ka) \
+                if isinstance(s, int) \
+                else transObj.gettext(toStr(s)).decode('utf-8')
+        '''
     return tr
 
 rtlSgn = lambda: 1 if rtl else -1
 
 getMonthName = lambda mode, month, year=None: tr(modules[mode].getMonthName(month, year))
 
-def numLocale(num, mode=None, fillZero=0, negEnd=False):
+def numEncode(num, mode=None, fillZero=0, negEnd=False):
     if mode==None:
         mode = langSh
     elif isinstance(mode, int):
@@ -174,12 +192,12 @@ def numLocale(num, mode=None, fillZero=0, negEnd=False):
         res = res.rjust(fillZero, dig[0])
     if neg:
         if negEnd:
-            res = res + '-'
+            res = res + u'-'
         else:
-            res = '-' + res
+            res = u'-' + res
     return res
 
-def textNumLocale(st, mode=None):
+def textNumEncode(st, mode=None):
     if mode==None:
         mode = langSh
     elif isinstance(mode, int):
@@ -199,7 +217,8 @@ def textNumLocale(st, mode=None):
             res += dig[i]
     return res ## .encode('utf8')
 
-def localeNumDecode(numSt):
+def numDecode(numSt):
+    numSt = numSt.strip()
     try:
         return int(numSt)
     except ValueError:
@@ -221,11 +240,21 @@ def localeNumDecode(numSt):
             return int(numEn)
     raise ValueError('invalid locale number %s'%numSt)
         
-        
-    
+
+def textNumDecode(text):## converts '۱۲:۰۰, ۱۳' to '12:00, 13'
+    text = toUnicode(text)
+    textEn = u''
+    langDigits = digits[langSh]
+    for ch in text:
+        try:
+            textEn += unicode(langDigits.index(ch))
+        except ValueError:
+            textEn += ch
+    return textEn
+
 
 def dateLocale(year, month, day):
-    return numLocale(year, fillZero=4) + '/' + numLocale(month, fillZero=2) + '/' + numLocale(day, fillZero=2)
+    return numEncode(year, fillZero=4) + '/' + numEncode(month, fillZero=2) + '/' + numEncode(day, fillZero=2)
 
 def cutText(text, n):
     text_cutted = text[:n]
@@ -233,4 +262,8 @@ def cutText(text, n):
         if text[n] not in list(string.printable)+[ZWNJ]:
             text_cutted += ZWJ
     return text_cutted
+
+if __name__=='__main__':
+    from scal2 import core
+    print numDecode('۱۲۳')
 
