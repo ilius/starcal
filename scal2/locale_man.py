@@ -47,7 +47,9 @@ langActive = ''
 ## langActive will not changed via program (because need for restart program to apply new language)
 langSh = '' ## short language name, for example 'en', 'fa', 'fr', ...
 rtl = False ## right to left
-tr = str ## translator
+
+## translator
+tr = lambda s, *a, **ka: numEncode(s, *a, **ka) if isinstance(s, (int, long)) else str(s)
 
 class LangData:
     def __init__(self, code, name, nativeName, fileName, flag, rtl):
