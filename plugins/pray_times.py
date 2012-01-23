@@ -28,18 +28,20 @@ if _mypath.endswith('.pyc'):
 dataDir = dirname(_mypath) + '/pray_times_files/'
 rootDir = '/usr/share/starcal2'
 
-sys.path.insert(0, dataDir) ## FIXME
-sys.path.insert(0, rootDir) ## FIXME
+sys.path.insert(0, dataDir)## FIXME
+sys.path.insert(0, rootDir)## FIXME
 
 
 from scal2.paths import *
 from pray_times_backend import PrayTimes
 
 ## DO NOT IMPORT core IN PLUGINS
+from scal2.time_utils import floatHourToTime
 from scal2.locale_man import tr as _
 from scal2.plugin_man import BasePlugin
 from scal2.cal_modules.gregorian import to_jd as gregorian_to_jd
 from scal2.time_utils import getTimeZoneByJd
+#from scal2 import event_man## needs core!! FIXME
 
 #if 'gtk' in sys.modules:
 from pray_times_gtk import *
@@ -86,24 +88,35 @@ def earthDistance(lat1, lng1, lat2, lng2):
     return deg*earthR
     #return ang*180/pi
     
-def hms(x):
-    (days, s) = divmod(int(x), 24*3600)
-    (m, s) = divmod(s, 60)
-    (h, m) = divmod(m, 60)
-    return '%d:%.2d:%.2d'%(h, m, s)
 
-def hm(x):
-    (days, m) = divmod(int(x/60), 24*60)
-    (h, m) = divmod(m, 60)
-    return '%d:%.2d'%(m, s)
-
-
+'''
+class PrayTimeEventRule(event_man.EventRule):
+    name = 'prayTime'
+    desc = _('Pray Time')
+    provide = ('time',)
+    need = ()
+    conflict = ('dayTimeRange', 'cycleLen',)
+    def __init__(self, parent, plug):
+        EventRule.__init__(self, parent)
+        #self.plug = plug
+    def calcOccurrence(self, startEpoch, endEpoch, event):
+        self.plug.get_times_jd(jd)
+    getInfo = lambda self: self.desc
+''' 
 
 class TextPlug(BasePlugin, TextPlugUI):
-    ## all options (except "enable" and "show_date") will be saved in file confPath
+    ## all options (except for "enable" and "show_date") will be saved in file confPath
     def __init__(self, enable=True, show_date=False):
-        BasePlugin.__init__(self, path=_mypath, mode='gregorian', desc=_('Islamic Pray Times'),
-                            enable=enable, show_date=show_date, last_day_merge=False)
+        print '----------- praytime TextPlug.__init__'
+        BasePlugin.__init__(
+            self,
+            path=_mypath,
+            mode='gregorian',
+            desc=_('Islamic Pray Times'),
+            enable=enable,
+            show_date=show_date,
+            last_day_merge=False,
+        )
         self.external = True
         self.name = _('Islamic Pray Times')
         self.about = _('Islamic Pray Times') ## FIXME
@@ -127,8 +140,11 @@ class TextPlug(BasePlugin, TextPlugUI):
         self.imsak = imsak
         self.ptObj = PrayTimes(lat, lng, methodName=method, imsak='%d min'%imsak)
         self.shownTimeNames = shownTimeNames
-        ###
-        self.makeWidget()
+        #######
+        #PrayTimeEventRule.plug = self
+        #event_man.registerEventRuleClass(PrayTimeEventRule)
+        #######
+        self.makeWidget()## FIXME
     def saveConfig(self):
         text = 'locName=%r\n'%self.locName
         text += 'lat=%r\n'%self.ptObj.lat
@@ -143,20 +159,28 @@ class TextPlug(BasePlugin, TextPlugUI):
     #def menu_unmap(self, menu):
     #    menu.remove(self.menuitem)
     #    menu.disconnect(self.menu_unmap_id)
-    def get_text_jd(self, jd):
+    def get_times_jd(self, jd):
         times = self.ptObj.getTimesByJd(
             jd,
             getTimeZoneByJd(jd)/3600.0,
         )
-        return '\t'.join(['%s: %s'%(_(name.capitalize()), times[name]) for name in self.shownTimeNames])
+        return [(name, times[name]) for name in self.shownTimeNames]
+    def getFormattedTime(self, tm):## tm is float hour
+        (h, m, s) = floatHourToTime(tm)
+        return '%d:%.2d'%(h, m)
+    def get_text_jd(self, jd):
+        return '\t'.join([
+            '%s: %s'%(_(name.capitalize()), self.getFormattedTime(tm))
+            for name, tm in self.get_times_jd(jd)
+        ])
     def get_text(self, year, month, day):## just for compatibity (usage by external programs)
         return self.get_text_jd(gregorian_to_jd(year, month, day))
     def update_cell(self, c):
         text = self.get_text_jd(c.jd)
         if text!='':
-            if c.extraday!='':
-                c.extraday += '\n'
-            c.extraday += text    
+            if c.pluginsText!='':
+                c.pluginsText += '\n'
+            c.pluginsText += text    
 
 
 if __name__=='__main__':

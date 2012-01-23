@@ -23,8 +23,8 @@ class EventWidget(common.EventWidget):
         hbox.pack_start(self.dateInput, 0, 0)
         self.pack_start(hbox, 0, 0)
         #############
-        self.filesBox = common.FilesBox(self.event)
-        self.pack_start(self.filesBox, 0, 0)
+        #self.filesBox = common.FilesBox(self.event)
+        #self.pack_start(self.filesBox, 0, 0)
     def updateWidget(self):
         common.EventWidget.updateWidget(self)
         self.dateInput.set_date(self.event.getDate())

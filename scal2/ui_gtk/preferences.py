@@ -652,9 +652,7 @@ class ToolbarIconSizePrefItem(PrefItem):
 
 
 class PrefDialog(gtk.Dialog):
-    def __init__(self, mainWin):
-        self.mainWin = mainWin
-        trayMode = mainWin.trayMode
+    def __init__(self, trayMode):
         gtk.Dialog.__init__(self, title=_('Preferences'))
         self.connect('delete-event', self.onDelete)
         self.set_has_separator(False)
@@ -699,7 +697,7 @@ class PrefDialog(gtk.Dialog):
         itemShownCals = VListPrefItem(
             ui,
             'shownCals',
-            [CalPropPrefItem(None, '', self.mainWin, sgroupFont) for i in xrange(max(ui.shownCalsNum,3))],
+            [CalPropPrefItem(None, '', self, sgroupFont) for i in xrange(max(ui.shownCalsNum,3))],
         )
         self.uiPrefItems.append(itemShownCals)
         exp.add(itemShownCals.widget)
@@ -1050,12 +1048,12 @@ class PrefDialog(gtk.Dialog):
         vbox = gtk.VBox()
         vbox3 = vbox
         #####
-        ##extradayTray:
+        ##pluginsTextTray:
         hbox = gtk.HBox()
         if trayMode==1:
-            item = CheckPrefItem(ui, 'extradayTray', _('Show in applet (for today)'))
+            item = CheckPrefItem(ui, 'pluginsTextTray', _('Show in applet (for today)'))
         else:
-            item = CheckPrefItem(ui, 'extradayTray', _('Show in tray (for today)'))
+            item = CheckPrefItem(ui, 'pluginsTextTray', _('Show in tray (for today)'))
         self.uiPrefItems.append(item)
         hbox.pack_start(item.widget, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
@@ -1484,32 +1482,33 @@ class PrefDialog(gtk.Dialog):
         text += 'adjustTimeCmd=%r\n'%adjustTimeCmd ##???????????
         open(confPath, 'w').write(text)
         ################################################### Updating Main GUI
-        self.mainWin.onConfigChange()
-        """
-        if ui.bgUseDesk and ui.bgColor[3]==255:
-            msg = gtk.MessageDialog(buttons=gtk.BUTTONS_OK_CANCEL, message_format=_(
-            'If you want to have a transparent calendar (and see your desktop),'+\
-            'change the opacity of calendar background color!'))
-            if msg.run()==gtk.RESPONSE_OK:
-                self.colorbBg.emit('clicked')
-            msg.destroy()
-        """
-        if ui.checkNeedRestart():
-            d = gtk.Dialog(_('Need Restart StarCalendar'), self,
-                gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT | gtk.DIALOG_NO_SEPARATOR,
-                (gtk.STOCK_CANCEL, 0))
-            d.set_keep_above(True)
-            label = gtk.Label(_('Some preferences need for restart StarCalendar to apply.'))
-            label.set_line_wrap(True)
-            d.vbox.pack_start(label)
-            resBut = d.add_button(_('_Restart'), 1)
-            resBut.set_image(gtk.image_new_from_stock(gtk.STOCK_REFRESH,gtk.ICON_SIZE_BUTTON))
-            resBut.grab_default()
-            d.vbox.show_all()
-            if d.run()==1:
-                self.mainWin.restart()
-            else:
-                d.destroy()
+        if ui.mainWin:
+            ui.mainWin.onConfigChange()
+            """
+            if ui.bgUseDesk and ui.bgColor[3]==255:
+                msg = gtk.MessageDialog(buttons=gtk.BUTTONS_OK_CANCEL, message_format=_(
+                'If you want to have a transparent calendar (and see your desktop),'+\
+                'change the opacity of calendar background color!'))
+                if msg.run()==gtk.RESPONSE_OK:
+                    self.colorbBg.emit('clicked')
+                msg.destroy()
+            """
+            if ui.checkNeedRestart():
+                d = gtk.Dialog(_('Need Restart StarCalendar'), self,
+                    gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT | gtk.DIALOG_NO_SEPARATOR,
+                    (gtk.STOCK_CANCEL, 0))
+                d.set_keep_above(True)
+                label = gtk.Label(_('Some preferences need for restart StarCalendar to apply.'))
+                label.set_line_wrap(True)
+                d.vbox.pack_start(label)
+                resBut = d.add_button(_('_Restart'), 1)
+                resBut.set_image(gtk.image_new_from_stock(gtk.STOCK_REFRESH,gtk.ICON_SIZE_BUTTON))
+                resBut.grab_default()
+                d.vbox.show_all()
+                if d.run()==1:
+                    ui.mainWin.restart()
+                else:
+                    d.destroy()
     def updatePrefGui(self):############### Updating Pref Gui (NOT MAIN GUI)
         for opt in self.getAllPrefItems():
             opt.updateWidget()

@@ -58,18 +58,18 @@ class DayOccurrenceView(gtk.VBox):
         ##
         menu.add(gtk.SeparatorMenuItem())
         ##
-        (group_id, event_id) = ids
-        event = ui.eventGroups[group_id].getEvent(event_id)
+        (groupId, eventId) = ids
+        event = ui.getEvent(groupId, eventId)
         winTitle = _('Edit ') + event.desc
         itemEdit = gtk.ImageMenuItem(winTitle)
         itemEdit.set_image(gtk.image_new_from_stock(gtk.STOCK_EDIT, gtk.ICON_SIZE_MENU))
-        itemEdit.connect('activate', self.editEventClicked, winTitle, event, group_id)
+        itemEdit.connect('activate', self.editEventClicked, winTitle, event, groupId)
         menu.add(itemEdit)
         ## How about moving event to trash from here?
         ##
         menu.show_all()
         menu.popup(None, None, None, 3, 0)
-    def editEventClicked(self, item, winTitle, event, group_id):
+    def editEventClicked(self, item, winTitle, event, groupId):
         event = EventEditorDialog(
             event,
             title=winTitle,
@@ -77,8 +77,8 @@ class DayOccurrenceView(gtk.VBox):
         ).run()
         if event is None:
             return
-        self.updateWidget()
-        ui.changedEvents.append((group_id, event.eid))
+        ui.mainWin.onConfigChange()
+        ui.changedEvents.append((groupId, event.eid))
     def copy(self, item, label):
         start = label.get_property('selection-bound')
         end = label.get_property('cursor-position')

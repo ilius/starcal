@@ -449,7 +449,7 @@ class EventEditorDialog(gtk.Dialog):
                 filesBox.removeNewFiles()
             return None
         self.activeEventWidget.updateVars()
-        self.event.saveConfig()
+        self.event.save()
         self.destroy()
         return self.event
 
@@ -464,7 +464,7 @@ def addNewEvent(group, eventType, title, **kw):
     if event is None:
         return
     group.append(event)
-    group.saveConfig()
+    group.save()
     return event
 
 class GroupEditorDialog(gtk.Dialog):
@@ -544,7 +544,7 @@ class GroupEditorDialog(gtk.Dialog):
         if gtk.Dialog.run(self)!=gtk.RESPONSE_OK:
             return None
         self.activeGroupWidget.updateVars()
-        self._group.saveConfig()
+        self._group.save()
         ui.eventGroups[self._group.gid] = self._group
         self.destroy()
         return self._group

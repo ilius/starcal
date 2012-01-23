@@ -65,10 +65,9 @@ class TimeLine(gtk.Widget):
     def centerToNowClicked(self, arg=None):
         self.centerToNow()
         self.queue_draw()
-    def __init__(self, closeFunc, mainWin=None):
+    def __init__(self, closeFunc):
         gtk.Widget.__init__(self)
         self.closeFunc = closeFunc
-        self.mainWin = mainWin
         self.connect('expose-event', self.onExposeEvent)
         self.connect('scroll-event', self.onScroll)
         self.connect('button-press-event', self.buttonPress)
@@ -288,23 +287,23 @@ class TimeLine(gtk.Widget):
         ).run()
         if event is None:
             return
-        #self.updateWidget()
         ui.changedEvents.append((gid, event.eid))
-        if self.mainWin:
-            self.mainWin.onConfigChange(self.mainWin)
+        self.queue_draw()
+        if ui.mainWin:
+            ui.mainWin.onConfigChange(ui.mainWin)
     def editGroupClicked(self, menu, winTitle, group):
         if GroupEditorDialog(group).run() is not None:
             ui.changedGroups.append(group.gid)
-            if self.mainWin:
-                self.mainWin.onConfigChange(self.mainWin)
+            if ui.mainWin:
+                ui.mainWin.onConfigChange(ui.mainWin)
     def onConfigChange(self):
         pass
     def moveEventToTrash(self, menu, group, event):
         eventIndex = group.index(event.eid)
         ui.moveEventToTrash(group, event)
         ui.trashedEvents.append((group.gid, event.eid, eventIndex))
-        if self.mainWin:
-            self.mainWin.onConfigChange(self.mainWin)
+        if ui.mainWin:
+            ui.mainWin.onConfigChange(ui.mainWin)
     def startResize(self, event):
         self.parent.begin_resize_drag(
             gdk.WINDOW_EDGE_SOUTH_EAST,
@@ -398,19 +397,18 @@ class TimeLine(gtk.Widget):
 
 
 class TimeLineWindow(gtk.Window):
-    def __init__(self, mainWin=None):
-        self.mainWin = mainWin
+    def __init__(self):
         gtk.Window.__init__(self)
         self.set_title(_('Time Line'))
         self.set_decorated(False)
         self.connect('delete-event', self.closeClicked)
         self.connect('button-press-event', self.buttonPress)
-        self.tline = TimeLine(self.closeClicked, mainWin)
+        self.tline = TimeLine(self.closeClicked)
         self.connect('key-press-event', self.tline.keyPress)
         self.add(self.tline)
         self.tline.show()
     def closeClicked(self, arg=None, event=None):
-        if self.mainWin:
+        if ui.mainWin:
             self.hide()
         else:
             gtk.main_quit()## FIXME

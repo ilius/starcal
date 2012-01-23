@@ -36,7 +36,7 @@ def myRaise():
         print i
 
 class NumRangesEntry(gtk.Entry):
-    def __init__(self, _min=0, _max=9999, pageStep=10):
+    def __init__(self, _min, _max, pageStep=10):
         self._min = _min
         self._max= _max
         self.digs = locale_man.digits[locale_man.langSh]
@@ -133,7 +133,7 @@ class NumRangesEntry(gtk.Entry):
         #    self.insertText(u'[')
         #elif kname in ('braceright', 'bracketright'):
         #    self.insertText(u']')
-        elif kname=='comma':
+        elif kname in ('comma', 'Arabic_comma'):
             self.insertText(u', ', False)
         elif kname=='minus':
             pos = self.get_position()
@@ -160,7 +160,9 @@ class NumRangesEntry(gtk.Entry):
                 print kval, kname
         return True
     getValues = lambda self: numRangesDecode(textNumDecode(self.get_text()))
-    setValues = lambda self, values: self.set_text(textNumEncode(numRangesEncode(values)))
+    setValues = lambda self, values: self.set_text(
+        textNumEncode(numRangesEncode(values), changeSpecialChars=False)
+    )
     validate = lambda self: self.setValues(self.getValues())
 
         

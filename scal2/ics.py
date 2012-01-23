@@ -23,6 +23,7 @@ from time import strftime
 from os.path import join, split, splitext
 
 from scal2.paths import *
+from scal2.time_utils import getJhmsFromEpoch
 from scal2.cal_modules import jd_to, to_jd, convert, DATE_GREG
 from scal2.plugin_man import HolidayPlugin, BuiltinTextPlugin
 from scal2 import core
@@ -36,11 +37,17 @@ VERSION:2.0
 PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.1//EN
 '''
 
+icsWeekDays = ('SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA')
+
+encodeIcsWeekDayList = lambda weekDayList: ','.join([icsWeekDays[wd] for wd in weekDayList])
 
 def getIcsTimeByEpoch(epoch):
-    (jd, hour, minute, second) = core.getJhmsFromEpoch(epoch)
+    (jd, hour, minute, second) = getJhmsFromEpoch(epoch)
     (year, month, day) = jd_to(jd, DATE_GREG)
     return strftime(icsTmFormat, (year, month, day, hour, minute, second, 0, 0, 0))
+
+getIcsDate = lambda y, m, d: '%.4d%.2d%.2d'%(y, m, d)
+getIcsDateByJd = lambda jd: getIcsDate(*jd_to(jd, DATE_GREG))
 
 def convertHolidayPlugToIcs(plug, startJd, endJd, namePostfix=''):
     icsText = icsHeader

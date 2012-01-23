@@ -268,37 +268,37 @@ class MonthCal(gtk.Widget, MainWinItem):
                         if ui.cursorCornerOval:
                             cr.scale(1, 1.0/yscale)
                 ######## end of Drawing Cursor
-                iconList = []
-                for item in c.eventsData:
-                    icon = item['icon']
-                    if icon and not icon in iconList:
-                        iconList.append(icon)
-                iconsN = len(iconList)
-                fromRight = 0
-                for index, icon in enumerate(iconList):
-                    ## if len(iconList) > 1 ## FIXME
-                    try:
-                        pix = gdk.pixbuf_new_from_file(icon)
-                    except:
-                        myRaise(__file__)
-                        continue
-                    pix_w = pix.get_width()
-                    pix_h = pix.get_height()
-                    ## right buttom corner ?????????????????????
-                    x1 = (self.cx[xPos] + self.dx/2.0)*iconsN - fromRight - pix_w # right side
-                    y1 = (self.cy[yPos] + self.dy/2.0)*iconsN - pix_h # buttom side
-                    cr.scale(1.0/iconsN, 1.0/iconsN)
-                    cr.set_source_pixbuf(pix, x1, y1)
-                    cr.rectangle(x1, y1, pix_w, pix_h)
-                    cr.fill()
-                    cr.scale(iconsN, iconsN)
-                    fromRight += pix_w
+                if not cellInactive:
+                    iconList = []
+                    for item in c.eventsData:
+                        icon = item['icon']
+                        if icon and not icon in iconList:
+                            iconList.append(icon)
+                    iconsN = len(iconList)
+                    fromRight = 0
+                    for index, icon in enumerate(iconList):
+                        ## if len(iconList) > 1 ## FIXME
+                        try:
+                            pix = gdk.pixbuf_new_from_file(icon)
+                        except:
+                            myRaise(__file__)
+                            continue
+                        pix_w = pix.get_width()
+                        pix_h = pix.get_height()
+                        ## right buttom corner ?????????????????????
+                        x1 = (self.cx[xPos] + self.dx/2.0)*iconsN - fromRight - pix_w # right side
+                        y1 = (self.cy[yPos] + self.dy/2.0)*iconsN - pix_h # buttom side
+                        cr.scale(1.0/iconsN, 1.0/iconsN)
+                        cr.set_source_pixbuf(pix, x1, y1)
+                        cr.rectangle(x1, y1, pix_w, pix_h)
+                        cr.fill()
+                        cr.scale(iconsN, iconsN)
+                        fromRight += pix_w
                 ####
                 if shown[0]['enable']:
                     mode = shown[0]['mode']
                     daynum = newTextLayout(self, _(c.dates[mode][2], mode), shown[0]['font'])
                     (fontw, fonth) = daynum.get_pixel_size()
-                    #if c.gray != 0:
                     if cellInactive:
                         setColor(cr, ui.inactiveColor)
                     elif c.holiday:
@@ -611,7 +611,6 @@ class MonthCal(gtk.Widget, MainWinItem):
             self.changeDate(*cell.dates[core.primaryMode])
             if event.type==gdk._2BUTTON_PRESS:
                 self.emit('2button-press')
-            #if b == 3 and cell.gray == 0:## right click on a normal cell
             if b == 3 and cell.month == ui.cell.month:## right click on a normal cell
                 #self.emit('popup-menu-cell', event.time, *self.getCellPos())
                 self.emit('popup-menu-cell', event.time, event.x, event.y)

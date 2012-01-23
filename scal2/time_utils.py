@@ -1,6 +1,7 @@
 import time
 from time import localtime
 import datetime
+import struct
 
 from scal2.cal_modules.gregorian import J1970
 
@@ -15,7 +16,7 @@ getEpochFromJd = lambda jd: (jd-J1970)*(24*3600)
 def getJhmsFromEpoch(epoch, local=False):## return a tuple (julain_day, hour, minute, second) from epoch
     #if local:
     #    epoch -= getCurrentTimeZone()
-    (days, second) = divmod(epoch, 24*3600)
+    (days, second) = divmod(int(epoch), 24*3600)
     (minute, second) = divmod(second, 60)
     (hour, minute) = divmod(minute, 60)
     return (days + J1970, hour, minute, second)
@@ -36,9 +37,7 @@ getTimeZoneByJd = lambda jd: getTimeZoneByEpoch(getEpochFromJd(jd))
 getCurrentTimeZone = lambda: getTimeZoneByEpoch(time.time())
 #getCurrentTimeZone = lambda: -time.altzone if time.daylight and localtime().tm_isdst else -time.timezone
 getCurrentTime = lambda: time.time() + getCurrentTimeZone()
-
-getGtkTimeFromEpoch = lambda epoch: (epoch-1.32171528839e+9)*1000//1
-
+getGtkTimeFromEpoch = lambda epoch: (epoch-1.32171528839e+9)*1000 // 1
 
 durationUnitsRel = (
     (1, 'second'),
@@ -61,14 +60,26 @@ durationUnitNames = [item[1] for item in durationUnitsAbs]
 def dateEncode(date):
     return '%.4d/%.2d/%.2d'%tuple(date)
 
+def checkDate(date):
+    if not 1 <= date[1] <= 12:
+        raise ValueError('bad date %s (invalid month)'%st)
+    if not 1 <= date[2] <= 31:
+        raise ValueError('bad date %s (invalid day)'%st)
+
 def dateDecode(st):
-    parts = st.split('/')
+    if '-' in st:
+        parts = st.split('-')
+    elif '/' in st:
+        parts = st.split('/')
+    else:
+        raise ValueError('bad date %s (invalid seperator)'%st)
     if len(parts)!=3:
-        raise ValueError('bad date %s'%st)
+        raise ValueError('bad date %s (invalid numbers count)'%st)
     try:
         date = tuple([int(p) for p in parts])
     except ValueError:
-        raise ValueError('bad date %s'%st)
+        raise ValueError('bad date %s (omitting non-numeric)'%st)
+    checkDate(date)
     return date
 
 def timeEncode(tm, checkSec=False):

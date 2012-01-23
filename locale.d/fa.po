@@ -151,6 +151,8 @@ msgstr "تا"
 msgid ","
 msgstr "،"
 
+msgid "_"
+msgstr "ـ"
 
 msgid "Gregorian"
 msgstr ""
@@ -1711,6 +1713,12 @@ msgid "_Remove"
 msgstr ""
 "_حذف"
 
+msgid "Exception"
+msgstr ""
+"استثناء"
+
+msgid "%s items"
+msgstr "%s مورد"
 
 msgid "Notifiers"
 msgstr ""

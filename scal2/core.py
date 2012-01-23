@@ -29,6 +29,8 @@ from scal2.paths import *
 from scal2.locale_man import * ## prepareLanguage, loadTranslator, getMonthName
 from scal2.plugin_man import *
 from scal2.time_utils import *
+from scal2.os_utils import *
+from scal2.json_utils import *
 from scal2.utils import cmpVersion
 
 
@@ -42,12 +44,9 @@ except NameError:
 VERSION = '1.9.4'
 APP_NAME = 'starcal2'
 COMMAND = 'starcal2'
-
-
 homePage = 'http://starcal.sourceforge.net/'
-
 primaryMode = 0 ## suitable place ???????????
-
+osName = getOsName()
 ################################################################################
 
 if exists(confDir):
@@ -403,32 +402,10 @@ def validDate(mode, y, m, d):## move to cal-modules
         return False
     return True
 
-def getOsDesc():
-    name = ''
-    if isfile('/etc/lsb-release'):
-        lines = open('/etc/lsb-release').read().split('\n')
-        for line in lines:
-            if line.startswith('DISTRIB_DESCRIPTION='):
-                name = line.split('=')[1]
-                if name[0]=='"' and name[-1]=='"':
-                    return name[1:-1]
-    if isfile('/suse/etc/SuSE-release'):
-        return open('/suse/etc/SuSE-release').read().split('\n')[0]
-    try:
-        import platform
-        return ' '.join(platform.dist()).strip().title()
-        #return platform.platform().replace('-', ' ')
-    except ImportError:
-        pass
-    if os.name=='posix':
-        osType = os.getenv('OSTYPE')
-        if osType!='':
-            return osType
-    ## sys.platform == 'linux2'
-    return os.name
+compressLongInt = lambda num: struct.pack('L', num).rstrip('\x00').encode('base64')[:-3].replace('/', '_')
+getCompactTime = lambda maxDays=1000, minSec=0.1: compressLongInt(long(time.time()%(maxDays*24*3600) / minSec))
 
-
-showInfo = lambda: log.debug('StarCalendar %s, OS: %s, Python %s'%(VERSION, getOsDesc(), sys.version.replace('\n', ' ')))
+showInfo = lambda: log.debug('StarCalendar %s, OS: %s, Python %s'%(VERSION, getOsFullDesc(), sys.version.replace('\n', ' ')))
 
 ################################################################################
 #################### End of class and function defenitions #####################
@@ -547,4 +524,8 @@ loadAllPlugins()## FIXME
 
 lastEventId = 0
 lastEventGroupId = 0
+lastEventAccountId = 0
+
+useCompactJson = False## FIXME
+dataToJson =  lambda data: dataToCompactJson(data) if useCompactJson else dataToPrettyJson(data)
 

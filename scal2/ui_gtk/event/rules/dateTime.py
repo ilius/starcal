@@ -34,6 +34,3 @@ class RuleWidget(gtk.HBox):
         if mode!=curMode:
             (y, m, d) = self.dbox.get_date()
             self.dbox.set_date(core.convert(y, m, d, curMode, mode))
-            self.updateVars()
-
-

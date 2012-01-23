@@ -59,7 +59,7 @@ from gobject import timeout_add, timeout_add_seconds
 import gtk
 from gtk import gdk
 
-from scal2.ui_gtk.utils import hideList, showList, myUrlShow, set_tooltip, imageFromFile, setupMenuHideOnLeave, \
+from scal2.ui_gtk.utils import hideList, showList, set_tooltip, imageFromFile, setupMenuHideOnLeave, \
                                labelStockMenuItem, labelImageMenuItem, modify_bg_all
                                
 from scal2.ui_gtk.color_utils import rgbToGdkColor
@@ -925,10 +925,10 @@ class StatusBox(gtk.HBox, MainWinItem):
             else:
                 self.dateLabel[i].hide()
 
-class ExtraTextWidget(gtk.VBox, MainWinItem):
+class PluginsTextBox(gtk.VBox, MainWinItem):
     def __init__(self, populatePopupFunc=None):
         gtk.VBox.__init__(self)
-        self.enableExpander = ui.extraTextInsideExpander
+        self.enableExpander = ui.pluginsTextInsideExpander
         #####
         self.textview = gtk.TextView()
         self.textview.set_wrap_mode(gtk.WRAP_WORD)
@@ -944,7 +944,7 @@ class ExtraTextWidget(gtk.VBox, MainWinItem):
         if self.enableExpander:
             self.expander.add(self.textview)
             self.pack_start(self.expander, 0, 0)
-            self.expander.set_expanded(ui.extraTextIsExpanded)
+            self.expander.set_expanded(ui.pluginsTextIsExpanded)
         else:
             self.pack_start(self.textview, 0, 0)
         #####
@@ -955,9 +955,9 @@ class ExtraTextWidget(gtk.VBox, MainWinItem):
         self.setEnableExpander(self.enableExpander)
         optionsWidget.pack_start(self.enableExpanderCheckb, 0, 0)
         ####
-        MainWinItem.__init__(self, 'extraText', _('Plugins Text'), optionsWidget=optionsWidget)
+        MainWinItem.__init__(self, 'pluginsText', _('Plugins Text'), optionsWidget=optionsWidget)
     def expanderExpanded(self, exp):
-        ui.extraTextIsExpanded = not exp.get_expanded()
+        ui.pluginsTextIsExpanded = not exp.get_expanded()
         ui.saveLiveConf()
     getWidget = lambda self: self.expander if self.enableExpander else self.textview
     def setText(self, text):
@@ -984,14 +984,14 @@ class ExtraTextWidget(gtk.VBox, MainWinItem):
         self.enableExpander = enable
         self.onDateChange()
     def updateVars(self):
-        ui.extraTextInsideExpander = self.enableExpander
+        ui.pluginsTextInsideExpander = self.enableExpander
     def confStr(self):
         text = ''
-        for mod_attr in ('ui.extraTextInsideExpander',):
+        for mod_attr in ('ui.pluginsTextInsideExpander',):
             text += '%s=%r\n'%(mod_attr, eval(mod_attr))
         return text
     def onDateChange(self):
-        self.setText(ui.cell.extraday)
+        self.setText(ui.cell.pluginsText)
 
 class EventViewMainWinItem(DayOccurrenceView, MainWinItem):## FIXME
     def __init__(self, populatePopupFunc=None):
@@ -1009,6 +1009,7 @@ class MainWin(gtk.Window):
     timeout = 1 ## second
     setMinHeight = lambda self: self.resize(ui.winWidth, 2)
     def __init__(self, trayMode=3):
+        ui.mainWin = self
         gtk.Window.__init__(self)##, gtk.WINDOW_POPUP) ## ????????????
         ##################
         ## trayMode:
@@ -1021,10 +1022,10 @@ class MainWin(gtk.Window):
             ## 1: applet
             ## 2: standard tray icon
         self.trayMode = trayMode
-        self.eventManDialog = EventManagerDialog(self)
-        self.timeLineWin = TimeLineWindow(self)
-        self.timeLineWin.resize(rootWindow.get_geometry()[2], 150)
-        self.timeLineWin.move(0, 0)
+        ui.eventManDialog = EventManagerDialog()
+        ui.timeLineWin = TimeLineWindow()
+        ui.timeLineWin.resize(rootWindow.get_geometry()[2], 150)
+        ui.timeLineWin.move(0, 0)
         ###########
         ##self.connect('window-state-event', selfStateEvent)
         self.set_title('StarCalendar %s'%core.VERSION)
@@ -1082,7 +1083,7 @@ class MainWin(gtk.Window):
         else:
             self.winCon = None
         ########
-        self.extraText = ExtraTextWidget(self.populatePopup)
+        self.pluginsTextBox = PluginsTextBox(self.populatePopup)
         self.eventDayView = EventViewMainWinItem(self.populatePopup)
         ############
         toolbar = CustomizableToolbar(self)
@@ -1101,7 +1102,7 @@ class MainWin(gtk.Window):
             YearMonthLabelBox(),
             self.mcal,
             StatusBox(self),
-            self.extraText,
+            self.pluginsTextBox,
             self.eventDayView,
         ]
         defaultItemsDict = dict([(obj._name, obj) for obj in defaultItems])
@@ -1117,7 +1118,7 @@ class MainWin(gtk.Window):
             item.connect('date-change', self.onDateChange)
             #modify_bg_all(item.widget, gtk.STATE_NORMAL, rgbToGdkColor(*ui.bgColor))
             self.items.append(item)
-        self.customizeDialog = CustomizeDialog(items=self.items, mainWin=self)
+        self.customizeDialog = CustomizeDialog(items=self.items)
         self.vbox.pack_start(self.customizeDialog.widget, 0, 0)
         #######
         self.add(self.vbox)
@@ -1125,8 +1126,8 @@ class MainWin(gtk.Window):
         ####################
         self.isMaximized = False
         ####################
-        self.prefDialog = preferences.PrefDialog(self)
-        self.export = scal2.ui_gtk.export.ExportDialog(self)
+        ui.prefDialog = preferences.PrefDialog(self.trayMode)
+        self.exportDialog = scal2.ui_gtk.export.ExportDialog()
         self.selectDateDialog = scal2.ui_gtk.selectdate.SelectDateDialog()
         self.selectDateDialog.connect('response-date', self.selectDateResponse)
         selectDateShow = self.selectDateShow
@@ -1154,38 +1155,6 @@ class MainWin(gtk.Window):
             buttons[2].set_image(gtk.image_new_from_stock(gtk.STOCK_CLOSE,gtk.ICON_SIZE_BUTTON))
             buttons[0].set_label(_('_License'))
         self.about = about
-        ########################## Building menu of right click on the tray icon
-        ### When menu will show above the pointer
-        menu = gtk.Menu()
-        menu.add(labelStockMenuItem('Copy _Time', gtk.STOCK_COPY, self.copyTime))
-        menu.add(labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday))
-        menu.add(labelStockMenuItem('Ad_just System Time', gtk.STOCK_PREFERENCES, self.adjustTime))
-        #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, self.eventManDialog.addCustomEvent))## FIXME
-        menu.add(labelStockMenuItem('_Export to HTML', gtk.STOCK_CONVERT, self.exportClickedTray))
-        menu.add(labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
-        menu.add(labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
-        menu.add(gtk.SeparatorMenuItem())
-        menu.add(labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit))
-        if os.sep == '\\':
-            setupMenuHideOnLeave(menu)
-        menu.show_all()
-        self.menuTray = self.menuTray1 = menu
-        ##########################################################
-        ### When menu will show below the pointer
-        menu = gtk.Menu()
-        menu.add(labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit))
-        menu.add(gtk.SeparatorMenuItem())
-        menu.add(labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
-        menu.add(labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
-        menu.add(labelStockMenuItem('_Export to HTML', gtk.STOCK_CONVERT, self.exportClickedTray))
-        #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, self.eventManDialog.addCustomEvent))## FIXME
-        menu.add(labelStockMenuItem('Ad_just System Time', gtk.STOCK_PREFERENCES, self.adjustTime))
-        menu.add(labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday))
-        menu.add(labelStockMenuItem('Copy _Time', gtk.STOCK_COPY, self.copyTime))
-        if os.sep == '\\':
-            setupMenuHideOnLeave(menu)
-        menu.show_all()
-        self.menuTray2 = menu
         ########################################### Building main menu
         menu = gtk.Menu()
         ####
@@ -1213,7 +1182,7 @@ class MainWin(gtk.Window):
         menu.add(labelStockMenuItem('Select _Date...', gtk.STOCK_INDEX, selectDateShow))
         menu.add(labelStockMenuItem('_Customize', gtk.STOCK_EDIT, self.customizeShow))
         menu.add(labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
-        #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, self.eventManDialog.addCustomEvent))
+        #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, ui.eventManDialog.addCustomEvent))
         menu.add(labelStockMenuItem('_Event Manager', gtk.STOCK_ADD, self.eventManShow))
         menu.add(labelImageMenuItem('Time Line', 'timeline-18.png', self.timeLineShow))
         menu.add(labelStockMenuItem('_Export to HTML', gtk.STOCK_CONVERT, self.exportClicked))
@@ -1231,14 +1200,14 @@ class MainWin(gtk.Window):
         self.connect('delete-event', self.dialogClose)
         ######################
         self.updateMenuSize()
-        self.prefDialog.updatePrefGui()
+        ui.prefDialog.updatePrefGui()
         self.clipboard = gtk.clipboard_get(gdk.SELECTION_CLIPBOARD)
         #########################################
         for plug in core.allPlugList:
             if plug.external and hasattr(plug, 'set_dialog'):
                 plug.set_dialog(self)
         ###########################
-        self.connectedWindows = [self.eventManDialog, self.timeLineWin]
+        self.connectedWindows = [ui.eventManDialog, ui.timeLineWin]
         self.onConfigChange()
         #rootWindow.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
     #def mainWinStateEvent(self, obj, event):
@@ -1435,7 +1404,7 @@ class MainWin(gtk.Window):
             return
         ui.newEvents.append((group.gid, event.eid))
     def prefUpdateBgColor(self, cal):
-        self.prefDialog.colorbBg.set_color(ui.bgColor)
+        ui.prefDialog.colorbBg.set_color(ui.bgColor)
         ui.saveLiveConf()
     def keepAboveClicked(self, check):
         act = check.get_active()
@@ -1455,9 +1424,6 @@ class MainWin(gtk.Window):
         getMenuPos = lambda widget: (screenW, 0, True)
         self.menuMain.popup(None, None, getMenuPos, 3, 0)
         self.menuMain.hide()
-        self.menuTray1.popup(None, None, getMenuPos, 3, 0)
-        self.menuTray1.hide()
-        self.menuTray2.allocation = self.menuTray1.allocation
     def copyDate(self, obj=None, event=None):
         self.clipboard.set_text(ui.cell.format(preferences.dateBinFmt, core.primaryMode))
         #self.clipboard.store() ## ?????? No need!
@@ -1504,10 +1470,10 @@ class MainWin(gtk.Window):
     def aboutHide(self, widget, arg=None):## arg maybe an event, or response id
         self.about.hide()
         return True
-    prefShow = lambda self, obj=None, data=None: self.prefDialog.present()
+    prefShow = lambda self, obj=None, data=None: ui.prefDialog.present()
     customizeShow = lambda self, obj=None, data=None: self.customizeDialog.present()
-    eventManShow = lambda self, obj=None, data=None: self.eventManDialog.present()
-    timeLineShow = lambda self, obj=None, data=None: self.timeLineWin.present()
+    eventManShow = lambda self, obj=None, data=None: ui.eventManDialog.present()
+    timeLineShow = lambda self, obj=None, data=None: ui.timeLineWin.present()
     def trayInit(self):
         if self.trayMode==2:
             self.sicon = gtk.StatusIcon()
@@ -1521,17 +1487,35 @@ class MainWin(gtk.Window):
         else:
             self.sicon = None
     def trayPopup(self, sicon, button, etime):
-        geo = self.sicon.get_geometry() ## Returns None on windows
         core.focusTime = time()    ## needed?????
-        if geo==None:## on windows, why??????? ## taskbar is on buttom(below)
-            self.menuTray2.popup(None, None, None, button, etime, self.sicon)
+        menu = gtk.Menu()
+        if os.sep == '\\':
+            setupMenuHideOnLeave(menu)        
+        items = [
+            labelStockMenuItem('Copy _Time', gtk.STOCK_COPY, self.copyTime),
+            labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday),
+            labelStockMenuItem('Ad_just System Time', gtk.STOCK_PREFERENCES, self.adjustTime),
+            #labelStockMenuItem('_Add Event', gtk.STOCK_ADD, ui.eventManDialog.addCustomEvent),## FIXME
+            labelStockMenuItem('_Export to HTML', gtk.STOCK_CONVERT, self.exportClickedTray),
+            labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow),
+            labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow),
+            gtk.SeparatorMenuItem(),
+            labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit),
+        ]
+        geo = self.sicon.get_geometry() ## Returns None on windows, why???
+        if geo==None:## windows, taskbar is on buttom(below)
+            items.reverse()
+            get_pos_func = None
         else:
             y1 = geo[1][1]
-            y = gtk.status_icon_position_menu(self.menuTray, self.sicon)[1]
+            y = gtk.status_icon_position_menu(menu, self.sicon)[1]
             if y<y1:## taskbar is on bottom
-                self.menuTray2.popup(None, None, gtk.status_icon_position_menu, button, etime, self.sicon)
-            else:## taskbar is on top
-                self.menuTray1.popup(None, None, gtk.status_icon_position_menu, button, etime, self.sicon)
+                items.reverse()
+            get_pos_func = gtk.status_icon_position_menu
+        for item in items:
+            menu.add(item)
+        menu.show_all()
+        menu.popup(None, None, get_pos_func, button, etime, self.sicon)
     def onCurrentDateChange(self, gdate):
         self.trayUpdate(gdate=gdate)
     def trayUpdate(self, gdate=None, checkTrayMode=True):
@@ -1579,7 +1563,7 @@ class MainWin(gtk.Window):
         ######################################
         ##tt = core.weekDayName[core.getWeekDay(*ddate)]
         tt = core.weekDayName[core.jwday(ui.todayCell.jd)]
-        #if ui.extradayTray:##?????????
+        #if ui.pluginsTextTray:##?????????
         #    sep = _(',')+' '
         #else:
         sep = '\n'
@@ -1589,8 +1573,8 @@ class MainWin(gtk.Window):
                 module = core.modules[mode]
                 (y, m, d) = ui.todayCell.dates[mode]
                 tt += '%s%s %s %s'%(sep, _(d), getMonthName(mode, m, y), _(y))
-        if ui.extradayTray:
-            text = ui.todayCell.extraday
+        if ui.pluginsTextTray:
+            text = ui.todayCell.pluginsText
             if text!='':
                 tt += '\n\n%s'%text.replace('\t', '\n') #????????????
         set_tooltip(self.sicon, tt)
@@ -1639,10 +1623,10 @@ class MainWin(gtk.Window):
         ui.restart()
     def adjustTime(self, widget=None, event=None):
         Popen(preferences.adjustTimeCmd)
-    exportClicked = lambda self, widget=None: self.export.showDialog(ui.cell.year, ui.cell.month)
+    exportClicked = lambda self, widget=None: self.exportDialog.showDialog(ui.cell.year, ui.cell.month)
     def exportClickedTray(self, widget=None, event=None):
         (y, m) = core.getSysDate()[:2]
-        self.export.showDialog(y, m)
+        self.exportDialog.showDialog(y, m)
     def onConfigChange(self, senderWindow=None):
         #self.set_property('skip-taskbar-hint', not ui.winTaskbar) ## self.set_skip_taskbar_hint ## FIXME
         ## skip-taskbar-hint  need to restart ro be applied
@@ -1674,7 +1658,7 @@ class MainWin(gtk.Window):
 
 gobject.type_register(MainWin)
 
-for cls in (CustomizableToolbar, YearMonthLabelBox, StatusBox, ExtraTextWidget, EventViewMainWinItem):
+for cls in (CustomizableToolbar, YearMonthLabelBox, StatusBox, PluginsTextBox, EventViewMainWinItem):
     gobject.type_register(cls)
     gobject.signal_new('date-change', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
 
@@ -1700,7 +1684,7 @@ gtk.init_check()
 gtk.window_set_default_icon_from_file(ui.logo)
 
 
-clickWebsite = lambda widget, link: myUrlShow(link)
+clickWebsite = lambda widget, url: ui.openUrl(url)
 try:
     gtk.link_button_set_uri_hook(clickWebsite)
 except:## old PyGTK (older than 2.10)

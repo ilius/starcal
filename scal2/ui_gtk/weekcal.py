@@ -56,7 +56,7 @@ def show_event(widget, event):
 
 
 
-class RowWeekDayItem:
+class WeekDayRowItem:
     getText = lambda self, row: core.getWeekDayN(row.weekDayIndex)
     def __init__(self, width=70, textAlign=0.5, expand=False):
         self.width = width
@@ -64,7 +64,7 @@ class RowWeekDayItem:
         self.holidayColorize = True
         self.expand = expand
 
-class RowDayNumItem:
+class DayNumRowItem:
     getText = lambda self, row: _(row.dates[self.mode][2], self.mode)
     def __init__(self, mode, width=30, textAlign=0.5, expand=False):
         self.mode = mode
@@ -73,8 +73,8 @@ class RowDayNumItem:
         self.holidayColorize = True
         self.expand = expand
 
-class RowExtraTextItem:
-    getText = lambda self, row: row.extraday.replace('\n', ' | ')
+class PluginsTextRowItem:
+    getText = lambda self, row: row.pluginsText.replace('\n', ' | ')
     def __init__(self, width=200, textAlign=0.5, expand=True):
         self.width = width
         self.textAlign = textAlign
@@ -260,10 +260,10 @@ class WeekCalWindow(gtk.Window):
 gobject.type_register(WeekCal)
 
 if __name__=='__main__':
-    #weekCalRowItems = [RowWeekDayItem(), RowDayNumItem(0), RowExtraTextItem(500), RowDayNumItem(1)]
-    weekCalRowItems = [RowWeekDayItem(), RowExtraTextItem()]
+    #weekCalRowItems = [WeekDayRowItem(), DayNumRowItem(0), PluginsTextRowItem(500), DayNumRowItem(1)]
+    weekCalRowItems = [WeekDayRowItem(), PluginsTextRowItem()]
     for cal in ui.shownCals:
-        weekCalRowItems.append(RowDayNumItem(cal['mode']))
+        weekCalRowItems.append(DayNumRowItem(cal['mode']))
     ##########
     win = WeekCalWindow()
     win.show_all()

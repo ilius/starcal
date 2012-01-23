@@ -226,7 +226,7 @@ def numRangesEncode(values):
             parts.append(str(value))
         elif isinstance(value, (tuple, list)):
             parts.append('%d-%d'%(value[0], value[1]))
-    return ', '.joinj(parts)
+    return ', '.join(parts)
 
 def numRangesDecode(text):
     values = []

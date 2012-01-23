@@ -39,9 +39,7 @@ from gtk import gdk
 
 
 class ExportDialog(gtk.Dialog):
-    def __init__(self, mainWin):
-        self.mainWin = mainWin
-        self.mcal = mainWin.mcal
+    def __init__(self):
         gtk.Dialog.__init__(self, title=_('Export to ')+'HTML', parent=None)
         self.set_has_separator(False)
         ########
@@ -142,7 +140,8 @@ class ExportDialog(gtk.Dialog):
         ## monthList is a list of tuples (year, month)
         import cairo
         hspace = 20
-        (x, y, w, h0) = self.mcal.allocation
+        mcal = ui.mainWin.mcal
+        (x, y, w, h0) = mcal.allocation
         n = len(monthList)
         h = n*h0 + (n-1)*hspace
         fo = open(path+'.svg', 'w')
@@ -152,13 +151,13 @@ class ExportDialog(gtk.Dialog):
         year = ui.cell.year
         month = ui.cell.month
         day = self.mcal.day
-        self.mainWin.show() ## ??????????????
+        ui.mainWin.show() ## ??????????????
         for i in range(n):
             surface.set_device_offset(0, i*(h0+hspace))
-            self.mcal.dateChange((monthList[i][0], monthList[i][1], 1))
-            self.mcal.drawAll(cr=cr, cursor=False)
-            self.mcal.queue_draw()
-        self.mainWin.dateChange((year, month, day))
+            mcal.dateChange((monthList[i][0], monthList[i][1], 1))
+            mcal.drawAll(cr=cr, cursor=False)
+            mcal.queue_draw()
+        ui.mainWin.dateChange((year, month, day))
         surface.finish()
 
 

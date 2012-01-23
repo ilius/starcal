@@ -34,16 +34,12 @@ import scal2.locale_man
 from scal2.locale_man import tr as _
 
 from scal2 import core
-from scal2.core import APP_NAME, myRaise, myRaiseTback, getMonthLen, getNextMonth, getPrevMonth
+from scal2.core import APP_NAME, myRaise, myRaiseTback, getMonthLen, getNextMonth, getPrevMonth, osName
 
 from scal2 import event_man
 
 uiName = ''
 null = NullObj()
-
-invertColor = lambda r, g, b: (255-r, 255-g, 255-b)
-## htmlColorToGdk=lambda hc: gdk.Color(int(hc[1:3], 16)*256, int(hc[3:5], 16)*256, int(hc[5:7], 16)*256)
-## htmlColorToGdk = lambda hc: gdk.color_parse(hc)
 
 def parseDroppedDate(text):
     part = text.split('/')
@@ -108,7 +104,7 @@ def shownCalsStr():
 
 def saveLiveConf():
     text = ''
-    for key in ('winX', 'winY', 'winWidth', 'winKeepAbove', 'winSticky', 'extraTextIsExpanded', 'bgColor'):
+    for key in ('winX', 'winY', 'winWidth', 'winKeepAbove', 'winSticky', 'pluginsTextIsExpanded', 'bgColor'):
         text += '%s=%r\n'%(key, eval(key))
     open(confPathLive, 'w').write(text)
 
@@ -141,7 +137,7 @@ def winMakeShortcut(srcPath, dstPath, iconPath=None):
     
 
 def addStartup():
-    if psys=='Windows':
+    if osName=='win':
         makeDir(winStartupDir)
         #fname = APP_NAME + ('-qt' if uiName=='qt' else '') + '.pyw'
         fname = core.COMMAND + '.pyw'
@@ -153,7 +149,7 @@ def addStartup():
             return False
         else:
             return True
-    elif isdir('%s/.config'%homeDir):## sys=='Linux' ## maybe Gnome/KDE on Solaris, *BSD, ...
+    elif isdir('%s/.config'%homeDir):## osName in ('linux', 'mac') ## maybe Gnome/KDE on Solaris, *BSD, ...
         text = '''[Desktop Entry]
 Type=Application
 Name=StarCalendar %s
@@ -168,23 +164,54 @@ Exec=%s'''%(core.VERSION, APP_NAME, core.COMMAND)## double quotes needed when th
         else:
             fp.write(text)
             return True
-    elif psys=='Darwin':## FIXME
+    elif osName=='mac':## FIXME
         pass
     return False
 
 def removeStartup():
-    if psys=='Windows':## FIXME
+    if osName=='win':## FIXME
         if isfile(winStartupFile):
             os.remove(winStartupFile)
     elif isfile(comDesk):
         os.remove(comDesk)
 
 def checkStartup():
-    if psys=='Windows':
+    if osName=='win':
         return isfile(winStartupFile)
     elif isfile(comDesk):
         return True
     return False
+
+def openUrl(url):
+    if osName=='win':
+        return Popen([url])
+    if osName=='mac':
+        return Popen(['open', url])
+    try:
+        Popen(['xdg-open', url])
+    except:
+        myRaise()
+    else:
+        return
+    #if not url.startswith('http'):## FIXME
+    #    return
+    try:
+        import webbrowser
+        return webbrowser.open(url)
+    except ImportError:
+        pass
+    try:
+        import gnomevfs
+        return gnomevfs.url_show(url)
+    except ImportError:
+        pass
+    for command in ('gnome-www-browser', 'firefox', 'iceweasel', 'konqueror'):
+        try:
+            Popen([command, url])
+        except:
+            pass
+        else:
+            return
 
 def dayOpenEvolution(arg=None):
     ##(y, m, d) = core.jd_to(cell.jd-1, core.DATE_GREG) ## in gnome-cal opens prev day! why??
@@ -209,14 +236,13 @@ def dayOpenSunbird(arg=None):
 class Cell:## status and information of a cell
     def __init__(self, jd):
         self.eventsData = []
-        self.extraday = ''
+        self.pluginsText = ''
         ###
         self.jd = jd
         date = core.jd_to(jd, core.primaryMode)
         (self.year, self.month, self.day) = date
         self.weekDay = core.jwday(jd)
         self.holiday = (self.weekDay in core.holidayWeekDays)
-        self.holidayExtra = self.holiday
         ###################
         self.dates = []
         for mode in xrange(core.modNum):
@@ -364,16 +390,16 @@ def deleteEventGroup(group, addToFirst=True):
         eventTrash.eventIds += group.eventIds
     group.eventIds = []
     eventGroups.delete(group)
-    eventGroups.saveConfig()
-    eventTrash.saveConfig()
+    eventGroups.save()
+    eventTrash.save()
 
 def moveEventToTrash(group, event):
-    group.excludeEvent(event.eid)
-    group.saveConfig()
+    group.remove(event)
+    group.save()
     eventTrash.insert(0, event)## or append? FIXME
-    eventTrash.saveConfig()
+    eventTrash.save()
 
-getEvent = lambda group_id, event_id: eventGroups[group_id].getEvent(event_id)
+getEvent = lambda groupId, eventId: eventGroups[groupId].getEvent(eventId)
 
 def duplicateGroupTitle(group):
     title = toStr(group.title)
@@ -447,11 +473,11 @@ eventTagsDesc = dict([(t.name, t.desc) for t in eventTags])
 
 ###################
 eventGroups = event_man.EventGroupsHolder()
-#eventGroups.loadConfig()## FIXME here or in ui_*/event/main.py
+#eventGroups.load()## FIXME here or in ui_*/event/main.py
 eventTrash = event_man.EventTrash()
-#eventTrash.loadConfig()## FIXME here or in ui_*/event/main.py
+#eventTrash.load()## FIXME here or in ui_*/event/main.py
 event_man.checkAndStartDaemon()## FIXME here or in ui_*/event/main.py
-changedEvents = [] ## a list of (group_id, event_id) 's
+changedEvents = [] ## a list of (groupId, eventId) 's
 changedGroups = []
 trashedEvents = []
 newEvents = []
@@ -543,9 +569,9 @@ trayY0		= 4
 
 ####################
 menuActiveLabelColor = "#ff0000"
-extradayTray = False
-extraTextInsideExpander = True
-extraTextIsExpanded = True ## affect only if extraTextInsideExpander
+pluginsTextTray = False
+pluginsTextInsideExpander = True
+pluginsTextIsExpanded = True ## affect only if pluginsTextInsideExpander
 ####################
 dragGetMode	= core.DATE_GREG  ##Apply in Pref - FIXME
 #dragGetDateFormat = '%Y/%m/%d'
@@ -574,7 +600,7 @@ mainWinItems = (
     ('labelBox', True),
     ('monthCal', True),
     ('statusBar', True),
-    ('extraText', True),
+    ('pluginsText', True),
     ('eventDayView', True),
 )
 
@@ -589,6 +615,8 @@ ntpServers = (
     'south-america.pool.ntp.org',
     'ntp.ubuntu.com'
 )
+
+
 #####################
 dailyNoteChDateOnEdit = True ## change date of a dailyNoteEvent when editing it
 #####################
@@ -644,4 +672,18 @@ for key in ('scal2.locale_man.lang', 'winTaskbar', 'showYmArrows'): # What other
 
 if menuTextColor is None:
     menuTextColor = borderTextColor
+
+##################################
+
+mainWin = None
+prefDialog = None
+eventManDialog = None
+timeLineWin = None
+
+
+
+
+
+
+
 

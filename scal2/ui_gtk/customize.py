@@ -57,7 +57,7 @@ class MainWinItem(CustomizableWidgetWrapper):
     onConfigChange = lambda self: None
 
 class CustomizeDialog(gtk.Dialog):
-    def __init__(self, items=[], mainWin=None):
+    def __init__(self, items=[]):
         gtk.Dialog.__init__(self)
         self.set_title(_('Customize'))
         self.set_has_separator(False)
@@ -69,7 +69,6 @@ class CustomizeDialog(gtk.Dialog):
         closeB.connect('clicked', self.close)
         ###
         self.items = items
-        self.mainWin = mainWin
         self.activeOptionsWidget = None
         ###
         model = gtk.TreeStore(bool, str) ## (gdk.Pixbuf, str)
@@ -238,20 +237,20 @@ class CustomizeDialog(gtk.Dialog):
             item.onDateChange()
         else:
             item.widget.hide()
-        if self.mainWin:
-            self.mainWin.setMinHeight()
+        if ui.mainWin:
+            ui.mainWin.setMinHeight()
     def moveItemUp(self, i):
         self.widget.reorder_child(self.items[i].widget, i-1)## self.widget is VBox
         self.items.insert(i-1, self.items.pop(i))
     #def confStr(self):## FIXME
     def close(self, button=None, event=None):
         text = ''
-        mainWinItems = []
+        itemsData = []
         for item in self.items:
             item.updateVars()
             text += item.confStr()
-            mainWinItems.append((item._name, item.enable))
-        text += 'ui.mainWinItems=%r\n'%mainWinItems
+            itemsData.append((item._name, item.enable))
+        text += 'ui.mainWinItems=%r\n'%itemsData
         open(preferences.customizeConfPath, 'w').write(text) # FIXME
         self.hide()
         return True

@@ -33,8 +33,8 @@ class EventWidget(common.EventWidget):
         hbox.pack_start(gtk.Label(''), 1, 1)
         self.pack_start(hbox, 0, 0)
         ####
-        self.filesBox = common.FilesBox(self.event)
-        self.pack_start(self.filesBox, 0, 0)
+        #self.filesBox = common.FilesBox(self.event)
+        #self.pack_start(self.filesBox, 0, 0)
     def updateWidget(self):## FIXME
         common.EventWidget.updateWidget(self)
         self.monthCombo.set_active(self.event.getMonth()-1)

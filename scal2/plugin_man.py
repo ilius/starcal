@@ -97,9 +97,9 @@ class BasePlugin:
                 if nt!='':
                     text += nt
         if text!='':
-            if c.extraday!='':
-                c.extraday += '\n'
-            c.extraday += text    
+            if c.pluginsText!='':
+                c.pluginsText += '\n'
+            c.pluginsText += text    
     def exportToIcs(self, fileName, startJd, endJd):
         currentTimeStamp = strftime(icsTmFormat)
         self.load() ## FIXME
@@ -389,8 +389,6 @@ class BuiltinTextPlugin(BasePlugin):
         #    self.mode, self.desc.replace('"', '\\"'), self.enable, self.show_date)
 
 
-#class EveryDayTextPlugin(BasePlugin):
-
 
 class IcsTextPlugin(BasePlugin):
     def __init__(self, path, enable=True, show_date=False, all_years=False):
@@ -547,7 +545,8 @@ class IcsTextPlugin(BasePlugin):
     def open_about(self):
         pass
 
-## class RandomTextPlug: #??????????????
+## class EveryDayTextPlugin(BasePlugin):
+## class RandomTextPlugin(BasePlugin):
 
 
 

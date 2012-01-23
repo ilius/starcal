@@ -2,7 +2,7 @@
 import sys
 from subprocess import Popen, PIPE
 
-from scal2.core import APP_NAME, getOsDesc
+from scal2.core import APP_NAME
 from scal2 import ui
 
 getWhileList = lambda: eval(Popen(['gsettings', 'get', 'com.canonical.Unity.Panel', 'systray-whitelist'], stdout=PIPE).communicate()[0])

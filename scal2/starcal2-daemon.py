@@ -116,7 +116,7 @@ def prepareToday():
 
 ########################## Starting Program ###########################
 
-eventGroups.loadConfig()
+eventGroups.load()
 prepareToday()
 MainLoop().run()
 

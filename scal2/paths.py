@@ -19,11 +19,12 @@
 
 import os
 from os.path import dirname, join
-import platform
+
+from scal2.os_utils import getOsName
 
 APP_NAME = 'starcal2'
 
-psys = platform.system()## 'Linux', 'Windows', 'Darwin'
+osName = getOsName()
 
 srcDir = dirname(__file__)
 cwd = os.getcwd()
@@ -44,21 +45,19 @@ pixDir = join(rootDir, 'pixmaps')
 plugDir = join(rootDir, 'plugins')
 daemonFile = join(rootDir, 'scal2', 'starcal2-daemon.py')
 
-if os.sep=='/':## Unix-like OS
+if osName in ('linux', 'unix'):
     homeDir = os.getenv('HOME')
+    confDir = homeDir + '/.' + APP_NAME
+    sysConfDir = '/etc/' + APP_NAME
     #tmpDir = '/tmp'
     #user = os.getenv('USER')
-    if psys=='Darwin':## MacOS X
-        confPath = homeDir + '/Library/Preferences/' + APP_NAME ## OR '/Library/' + APP_NAME
-        sysConfDir = join(rootDir, 'config')## FIXME
-        ## os.environ['OSTYPE'] == 'darwin10.0'
-        ## os.environ['MACHTYPE'] == 'x86_64-apple-darwin10.0'
-        ## platform.dist() == ('', '', '')
-        ## platform.release() == '10.3.0'
-    else:## GNU/Linux, ...
-        confDir = homeDir + '/.' + APP_NAME
-        sysConfDir = '/etc/' + APP_NAME
-elif os.sep=='\\':## Dos/Windows OS
+elif osName=='mac':
+    homeDir = os.getenv('HOME')
+    confPath = homeDir + '/Library/Preferences/' + APP_NAME ## OR '/Library/' + APP_NAME
+    sysConfDir = join(rootDir, 'config')## FIXME
+    #tmpDir = '/tmp'
+    #user = os.getenv('USER')
+elif osName=='win':
     #homeDrive = os.environ['HOMEDRIVE']
     homeDir = os.getenv('HOMEPATH')
     confDir = os.getenv('APPDATA') + '\\' + APP_NAME
@@ -71,8 +70,7 @@ elif os.sep=='\\':## Dos/Windows OS
     #winStartupDirSys = os.getenv('ALLUSERSPROFILE') + winStartupRelPath
     winStartupFile = join(winStartupDir, APP_NAME+'.lnk')
 else:
-    raise RuntimeError('bad seperator (os.sep=="%s") !! What is your Operating System?!'%os.sep)
-
+    raise OSError('Unkown operating system!')
 
 deskDir = join(homeDir, 'Desktop')## in all operating systems? FIXME
 
@@ -81,6 +79,5 @@ modDir = '%s/cal_modules'%srcDir
 plugDirUser = join(confDir, 'plugins')
 plugConfDir = join(confDir, 'plugins.conf')
 
-
-
+purpleDir = join(homeDir, '.purple')## FIXME
 

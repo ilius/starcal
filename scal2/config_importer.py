@@ -111,6 +111,7 @@ weekNumberMode=%r'''%(holidayWeekDays, firstWeekDayAuto, firstWeekDay, weekNumbe
             cursorOutColor = gdkColorToRgb(cursorOutColor)
             cursorBgColor = gdkColorToRgb(cursorBgColor) + (cursorBgAlpha/257,)
             
+            pluginsTextTray = extradayTray
             maxDayCacheSize = maxCache*30
             maxWeekCacheSize = maxCache*4
         
@@ -143,7 +144,7 @@ weekNumberMode=%r'''%(holidayWeekDays, firstWeekDayAuto, firstWeekDay, weekNumbe
                 'dragIconCell',
                 'maxDayCacheSize',
                 'maxWeekCacheSize'
-                'extradayTray',
+                'pluginsTextTray',
                 'showYmArrows',
                 'prefPagesOrder',
             ):

@@ -21,7 +21,11 @@ digits = {
     'th':(u'๐', u'๑', u'๒', u'๓', u'๔', u'๕', u'๖', u'๗', u'๘', u'๙', u'.'),## point FIXME
 }
 
-
+def getLangDigits(langSh0):
+    try:
+        return digits[langSh0]
+    except KeyError:
+        return digits['en']
 
 ## ar: Aarbic   ar_*    Arabic-indic                       Arabic Contries
 ## fa: Persian  fa_IR   Eastern (Extended) Arabic-indic    Iran & Afghanintan
@@ -181,7 +185,7 @@ def numEncode(num, mode=None, fillZero=0, negEnd=False):
         else:
             return u'%d'%num
     neg = (num<0)
-    dig = digits[mode]
+    dig = getLangDigits(mode)
     res = u''
     for c in unicode(abs(num)):
         if c==u'.':
@@ -197,7 +201,7 @@ def numEncode(num, mode=None, fillZero=0, negEnd=False):
             res = u'-' + res
     return res
 
-def textNumEncode(st, mode=None):
+def textNumEncode(st, mode=None, changeSpecialChars=True):
     if mode==None:
         mode = langSh
     elif isinstance(mode, int):
@@ -206,12 +210,14 @@ def textNumEncode(st, mode=None):
                 mode = modules[mode].origLang
             except AttributeError:
                 mode = langSh
-    dig = digits[mode]
+    dig = getLangDigits(mode)
     res = u''
     for c in toUnicode(st):
         try:
             i = int(c)
         except:
+            if changeSpecialChars and c in (u',', '_'):## FIXME
+                c = tr(c)
             res += c
         else:
             res += dig[i]
@@ -244,11 +250,15 @@ def numDecode(numSt):
 def textNumDecode(text):## converts '۱۲:۰۰, ۱۳' to '12:00, 13'
     text = toUnicode(text)
     textEn = u''
-    langDigits = digits[langSh]
+    langDigits = getLangDigits(langSh)
     for ch in text:
         try:
             textEn += unicode(langDigits.index(ch))
         except ValueError:
+            for sch in (u',', u'_'):
+                if ch == tr(sch):
+                    ch = sch
+                    break
             textEn += ch
     return textEn
 

@@ -7,22 +7,18 @@ from scal2 import event_man
 import gtk
 from gtk import gdk
 
-class RuleWidget(gtk.SpinButton):
+from scal2.ui_gtk.mywidgets.num_ranges_entry import NumRangesEntry
+
+class RuleWidget(NumRangesEntry):
     def __init__(self, rule):
         self.rule = rule
-        ###
-        gtk.SpinButton.__init__(self)
-        self.set_increments(1, 10)
-        self.set_range(0, 9999)
-        self.set_width_chars(4)
+        NumRangesEntry.__init__(self, 0, 9999, 10)
     def updateWidget(self):
-        self.set_value(self.rule.year)
-    getYear = lambda self: int(self.get_value())
+        self.setValues(self.rule.values)
     def updateVars(self):
-        self.rule.year = self.getYear()
+        self.rule.values = self.getValues()
     def changeMode(self, mode):
         curMode = self.rule.getMode()
         if mode!=curMode:
-            self.set_value(core.convert(self.getYear(), 7, 1, curMode, mode)[0])
-            self.updateVars()
+            self.setValues(self.rule.newModeValues(mode))
 

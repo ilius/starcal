@@ -16,7 +16,7 @@
 # with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
 # Or on Debian systems, from /usr/share/common-licenses/GPL
 
-import os, sys, shlex, time
+import os, sys, shlex, time, thread
 from os.path import join, dirname
 
 from scal2 import core
@@ -98,7 +98,7 @@ class TrashEditorDialog(gtk.Dialog):
     def updateVars(self):
         self.trash.title = self.titleEntry.get_text()
         self.trash.icon = self.iconSelect.filename
-        self.trash.saveConfig()
+        self.trash.save()
 
 
 
@@ -109,9 +109,9 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             raise RuntimeError('Invalid event type for this group')
     def onResponse(self, dialog, response_id):
         self.hide()
-        if self.mainWin:
-            self.mainWin.onConfigChange()
-        timeout_add_seconds(0, event_man.restartDaemon)## FIXME
+        if ui.mainWin:
+            ui.mainWin.onConfigChange()
+        thread.start_new_thread(event_man.restartDaemon, ())
     def onConfigChange(self):
         if not self.isLoaded:
             return
@@ -138,7 +138,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             groupIndex = ui.eventGroups.index(gid)
             group = ui.eventGroups[gid]
             groupIter = self.trees.get_iter((groupIndex,))
-            for i, value in enumerate(self.getGroupRow(group)):
+            for i, value in enumerate(self.getGroupRow(group, self.getRowBgColor())):
                 self.trees.set_value(groupIter, i, value)
         ui.changedGroups = []
         ###
@@ -152,9 +152,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         ###
     def onShow(self, widget):
         self.onConfigChange()
-    def __init__(self, mainWin=None):
+    def __init__(self):
         gtk.Dialog.__init__(self)
-        self.mainWin = mainWin
         self.isLoaded = False
         self.set_title(_('Event Manager'))
         self.resize(600, 300)
@@ -447,7 +446,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                         pass
                     else:
                         group.enable = not group.enable
-                        group.saveConfig()
+                        group.save()
                         self.trees.set_value(
                             node_iter,
                             1,
@@ -465,9 +464,9 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         group = GroupEditorDialog().run()
         if group is None:
             return
-        group.saveConfig()
+        group.save()
         ui.eventGroups.insert(index+1, group)
-        ui.eventGroups.saveConfig()
+        ui.eventGroups.save()
         afterGroupIter = self.trees.get_iter(path)
         self.trees.insert_after(
             #self.trees.get_iter_root(),## parent
@@ -479,9 +478,9 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         group = GroupEditorDialog().run()
         if group is None:
             return
-        group.saveConfig()
+        group.save()
         ui.eventGroups.append(group)
-        ui.eventGroups.saveConfig()
+        ui.eventGroups.save()
         self.trees.insert_before(
             self.trees.iter_parent(self.trashIter),
             self.trashIter,
@@ -492,9 +491,9 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         (group,) = self.getObjsByPath(path)
         newGroup = group.copy()
         ui.duplicateGroupTitle(newGroup)
-        newGroup.saveConfig()
+        newGroup.save()
         ui.eventGroups.insert(index+1, newGroup)
-        ui.eventGroups.saveConfig()
+        ui.eventGroups.save()
         self.trees.insert(
             None,
             index+1,
@@ -505,9 +504,9 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         (group,) = self.getObjsByPath(path)
         newGroup = group.deepCopy()
         ui.duplicateGroupTitle(newGroup)
-        newGroup.saveConfig()
+        newGroup.save()
         ui.eventGroups.insert(index+1, newGroup)
-        ui.eventGroups.saveConfig()
+        ui.eventGroups.save()
         newGroupIter = self.trees.insert(
             None,
             index+1,
@@ -559,7 +558,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         ).run()
         if event is None:
             return
-        event.saveConfig()
+        event.save()
         eventIter = self.trees.get_iter(path)
         for i, value in enumerate(self.getEventRow(event)):
             self.trees.set_value(eventIter, i, value)
@@ -575,8 +574,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         )
     def deleteEventFromTrash(self, menu, path):
         (trash, event) = self.getObjsByPath(path)
-        trash.deleteEvent(event.eid)## trash == ui.eventTrash
-        trash.saveConfig()
+        trash.delete(event.eid)## trash == ui.eventTrash
+        trash.save()
         self.trees.remove(self.trees.get_iter(path))
     def emptyTrash(self, menu):
         ui.eventTrash.empty()
@@ -598,27 +597,26 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             ui.eventTrash.title,
         )
     def moveUp(self, path):
+        srcIter = self.trees.get_iter(path)
         if len(path)==1:
             if path[0]==0:
                 return
-            srcIter = self.trees.get_iter(path)
             if self.trees.get_value(srcIter, 0)==-1:
                 return
             tarIter = self.trees.get_iter((path[0]-1))
             self.trees.move_before(srcIter, tarIter)
             ui.eventGroups.moveUp(path[0])
-            ui.eventGroups.saveConfig()
+            ui.eventGroups.save()
         elif len(path)==2:
             (parentObj, event) = self.getObjsByPath(path)
             parentLen = len(parentObj)
-            srcIter = self.trees.get_iter(path)
             (parentIndex, eventIndex) = path
             #print eventIndex, parentLen
             if eventIndex > 0:
                 tarIter = self.trees.get_iter((parentIndex, eventIndex-1))
                 self.trees.move_before(srcIter, tarIter)## or use self.trees.swap FIXME
                 parentObj.moveUp(eventIndex)
-                parentObj.saveConfig()
+                parentObj.save()
             else:
                 ## move event to end of previous group
                 #if parentObj.name == 'trash':
@@ -632,20 +630,25 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 newGroup = ui.eventGroups[newParentId]
                 self.checkEventToAdd(newGroup, event)
                 self.trees.remove(srcIter)
-                eventNewPath = self.trees.get_path(self.trees.append(
+                srcIter = self.trees.append(
                     newParentIter,## parent
                     self.getEventRow(event), ## row
-                ))
-                self.treev.expand_to_path(eventNewPath)
-                self.treev.set_cursor(eventNewPath)
+                )
                 ###
-                parentObj.excludeEvent(event.eid)
-                parentObj.saveConfig()
+                parentObj.remove(event)
+                parentObj.save()
                 newGroup.append(event)
-                newGroup.saveConfig()
+                newGroup.save()
+        else:
+            raise RuntimeError('invalid tree path %s'%path)
+        newPath = self.trees.get_path(srcIter)
+        if len(path)==2:
+            self.treev.expand_to_path(newPath)
+        self.treev.set_cursor(newPath)
+        self.treev.scroll_to_cell(newPath)
     def moveDown(self, path):
+        srcIter = self.trees.get_iter(path)
         if len(path)==1:
-            srcIter = self.trees.get_iter(path)
             if self.trees.get_value(srcIter, 0)==-1:
                 return
             tarIter = self.trees.get_iter((path[0]+1))
@@ -653,18 +656,17 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 return
             self.trees.move_after(srcIter, tarIter)## or use self.trees.swap FIXME
             ui.eventGroups.moveDown(path[0])
-            ui.eventGroups.saveConfig()
+            ui.eventGroups.save()
         elif len(path)==2:
             (parentObj, event) = self.getObjsByPath(path)
             parentLen = len(parentObj)
-            srcIter = self.trees.get_iter(path)
             (parentIndex, eventIndex) = path
             #print eventIndex, parentLen
             if eventIndex < parentLen-1:
                 tarIter = self.trees.get_iter((parentIndex, eventIndex+1))
                 self.trees.move_after(srcIter, tarIter)
                 parentObj.moveDown(eventIndex)
-                parentObj.saveConfig()
+                parentObj.save()
             else:
                 ## move event to top of next group
                 if parentObj.name == 'trash':
@@ -676,18 +678,23 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 newGroup = ui.eventGroups[newParentId]
                 self.checkEventToAdd(newGroup, event)
                 self.trees.remove(srcIter)
-                eventNewPath = self.trees.get_path(self.trees.insert(
+                srcIter = self.trees.insert(
                     newParentIter,## parent
                     0,## position
                     self.getEventRow(event), ## row
-                ))
-                self.treev.expand_to_path(eventNewPath)
-                self.treev.set_cursor(eventNewPath)
+                )
                 ###
-                parentObj.excludeEvent(event.eid)
-                parentObj.saveConfig()
+                parentObj.remove(event)
+                parentObj.save()
                 newGroup.insert(0, event)
-                newGroup.saveConfig()
+                newGroup.save()
+        else:
+            raise RuntimeError('invalid tree path %s'%path)
+        newPath = self.trees.get_path(srcIter)
+        if len(path)==2:
+            self.treev.expand_to_path(newPath)
+        self.treev.set_cursor(newPath)
+        self.treev.scroll_to_cell(newPath)
     moveUpFromMenu = lambda self, menu, path: self.moveUp(path)
     moveDownFromMenu = lambda self, menu, path: self.moveDown(path)
     def moveUpByButton(self, button):
@@ -720,17 +727,17 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         # tarEvent is not used
         ###
         if move:
-            srcGroup.excludeEvent(srcEvent.eid)
-            srcGroup.saveConfig()
+            srcGroup.remove(srcEvent)
+            srcGroup.save()
             tarGroup.insert(tarPath[1], srcEvent)
-            tarGroup.saveConfig()
+            tarGroup.save()
             self.trees.remove(self.trees.get_iter(srcPath))
             newEvent = srcEvent
         else:
             newEvent = srcEvent.copy()
-            newEvent.saveConfig()
+            newEvent.save()
             tarGroup.insert(tarPath[1], newEvent)
-            tarGroup.saveConfig()
+            tarGroup.save()
         newEventPath = self.trees.get_path(self.trees.insert_after(
             tarGroupIter,## parent
             tarEventIter,## sibling
@@ -748,18 +755,18 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         tarGroupIter = self.trees.get_iter(tarPath)
         ###
         if move:
-            srcGroup.excludeEvent(srcEvent.eid)
-            srcGroup.saveConfig()
+            srcGroup.remove(srcEvent)
+            srcGroup.save()
             tarGroup.append(srcEvent)
-            tarGroup.saveConfig()
+            tarGroup.save()
             tarGroupCount = self.trees.iter_n_children(tarGroupIter)
             self.trees.remove(self.trees.get_iter(srcPath))
             newEvent = srcEvent
         else:
             newEvent = srcEvent.copy()
-            newEvent.saveConfig()
+            newEvent.save()
             tarGroup.append(newEvent)
-            tarGroup.saveConfig()
+            tarGroup.save()
         self.trees.append(
             tarGroupIter,## parent
             self.getEventRow(newEvent), ## row
@@ -774,7 +781,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
 
 
 
-def makeWidget(obj):## obj is an instance of Event or EventRule or EventNotifier
+def makeWidget(obj):## obj is an instance of Event, EventRule, EventNotifier or EventGroup
     if hasattr(obj, 'WidgetClass'):
         widget = obj.WidgetClass(obj)
         try:
@@ -811,6 +818,7 @@ for cls in event_man.eventRulesClassList:
     try:
         module = __import__(modPrefix + 'rules.' + cls.name, fromlist=['RuleWidget'])
     except:
+        #if not cls.name.startswith('ex_'):
         myRaise()
         continue
     try:
@@ -851,8 +859,8 @@ event_man.EventRule.makeWidget = makeWidget
 event_man.EventNotifier.makeWidget = makeWidget
 event_man.EventGroup.makeWidget = makeWidget
 
-ui.eventGroups.loadConfig()
-ui.eventTrash.loadConfig()
+ui.eventGroups.load()
+ui.eventTrash.load()
 
 
 
@@ -864,14 +872,14 @@ def testCustomEventEditor():
     dialog = gtk.Dialog()
     #dialog.vbox.pack_start(IconSelectButton('/usr/share/starcal2/pixmaps/starcal2.png'))
     event = event_man.Event(1)
-    event.loadConfig()
+    event.load()
     widget = event.makeWidget()
     dialog.vbox.pack_start(widget)
     dialog.vbox.show_all()
     dialog.add_button('OK', 0)
     def on_response(d, e):
         widget.updateVars()
-        widget.event.saveConfig()
+        widget.event.save()
         pprint(widget.event.getData())
     dialog.connect('response', on_response)
     #dialog.run()

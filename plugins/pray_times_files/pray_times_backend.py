@@ -134,29 +134,31 @@ class PrayTimes:
         return self.computeTimes()
 
     # convert float time to the given format (see timeFormats)
-    def getFormattedTime(self, tm):
+    def getFormattedTime(self, tm, format=None):
         assert isinstance(tm, float)
-        if self.timeFormat == 'Float':
+        if not format:
+            format = self.timeFormat
+        if format == 'float':
             return tm
         else:
             tm = fixHour(tm+0.5/60) ## add 0.5 minutes to round
             hours = floor(tm)
             minutes = floor((tm-hours)*60)
-            if self.timeFormat == '24h':
+            if format == '24h':
                 return '%d:%.2d'%(hours, minutes)
-            elif self.timeFormat == '12h':
+            elif format == '12h':
                 return '%d:%.2d %s'%(
                     (hours-1)%12 + 1,
                     minutes,
                     tr('AM') if hours<12 else tr('PM'),
                 )
-            elif self.timeFormat == '12hNS':
+            elif format == '12hNS':
                 return '%d:%.2d'%(
                     (hours-1)%12 + 1,
                     minutes,
                 )
             else:
-                raise ValueError('bad time format %s'%self.timeFormat)
+                raise ValueError('bad time format %s'%format)
     
     # compute mid-day time
     def midDay(self, tm):
@@ -222,7 +224,7 @@ class PrayTimes:
     #---------------------- Compute Prayer Times -----------------------
 
     # compute prayer times 
-    def computeTimes(self):
+    def computeTimes(self, format=None):
         # default times
         times = {
             'imsak': 5,
@@ -275,8 +277,8 @@ class PrayTimes:
         )
 
         #times = self.tuneTimes(times) ## FIXME
-        for key in times:
-            times[key] = self.getFormattedTime(times[key])
+        #for key in times:
+        #    times[key] = self.getFormattedTime(times[key], format)
 
         times['timezone'] = 'GMT%+.1f'%self.timeZone
 

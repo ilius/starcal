@@ -8,22 +8,34 @@ from scal2 import event_man
 import gtk
 from gtk import gdk
 
-class RuleWidget(gtk.ComboBox):
+from scal2.ui_gtk.utils import set_tooltip
+
+class RuleWidget(gtk.HBox):
     def __init__(self, rule):
         self.rule = rule
         ###
-        ls = gtk.ListStore(str)
-        gtk.ComboBox.__init__(self, ls)
+        gtk.HBox.__init__(self)
         ###
-        cell = gtk.CellRendererText()
-        self.pack_start(cell, True)
-        self.add_attribute(cell, 'text', 0)
-        ###
-        for m in core.modules[rule.getMode()].monthName:
-            self.append_text(_(m))
+        self.buttons = []
+        mode = self.rule.getMode()
+        for i in range(12):
+            b = gtk.ToggleButton(_(i+1))
+            set_tooltip(b, core.getMonthName(mode, i+1))
+            self.pack_start(b, 0, 0)
+            self.buttons.append(b)
     def updateWidget(self):
-        self.set_active(self.rule.month-1)
+        monthList = self.rule.getValuesPlain()
+        for i in range(12):
+            self.buttons[i].set_active((i+1) in monthList)
     def updateVars(self):
-        self.rule.month = self.get_active() + 1
+        monthList = []
+        for i in range(12):
+            if self.buttons[i].get_active():
+                monthList.append(i+1)
+        self.rule.setValuesPlain(monthList)
+    def changeMode(self, mode):
+        if mode!=self.rule.getMode():
+            for i in range(12):
+                set_tooltip(self.buttons[i], core.getMonthName(mode, i+1))
 
 

@@ -12,7 +12,7 @@ import gtk
 import scal2.ui_gtk.event.main
 
 event = event_man.Event(eid)
-event.loadConfig()
+event.load()
 event.notify(gtk.main_quit)
 
 gtk.main()

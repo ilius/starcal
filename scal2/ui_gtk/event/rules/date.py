@@ -21,5 +21,3 @@ class RuleWidget(DateButton):
         if mode!=curMode:
             (y, m, d) = self.get_date()
             self.set_date(core.convert(y, m, d, curMode, mode))
-            self.updateVars()
-

@@ -57,12 +57,12 @@ def importAndDeleteCustomDB(mode, groupTitle):
                 event.summary = item['desc']## desc could be multi-line FIXME
                 event.icon = join(pixDir, customdayModes[item['type']][1])
                 group.append(event)
-                event.saveConfig()
+                event.save()
             except:
                 myRaise()
-            group.saveConfig()
+            group.save()
         ui.eventGroups.append(group)
-        ui.eventGroups.saveConfig()
+        ui.eventGroups.save()
     os.remove(customFile)
 
 
