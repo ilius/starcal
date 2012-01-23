@@ -38,7 +38,7 @@ tr = str ## FIXME
 
 timeNames = ('imsak', 'fajr', 'sunrise', 'dhuhr', 'asr', 'sunset', 'maghrib', 'isha', 'midnight', 'timezone')
 
-ASR_STANDARD, ASR_HANAFI = range(2)
+ASR_STANDARD, ASR_HANAFI = (1, 2)
 ## asr juristics:
 ##   standard => Shafi`i, Maliki, Ja`fari, Hanbali
 ##   hanafi => Hanafi

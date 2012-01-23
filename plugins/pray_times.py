@@ -166,8 +166,12 @@ class TextPlug(BasePlugin, TextPlugUI):
         )
         return [(name, times[name]) for name in self.shownTimeNames]
     def getFormattedTime(self, tm):## tm is float hour
-        (h, m, s) = floatHourToTime(tm)
-        return '%d:%.2d'%(h, m)
+        try:
+            (h, m, s) = floatHourToTime(float(tm))
+        except ValueError:
+            return tm
+        else:
+            return '%d:%.2d'%(h, m)
     def get_text_jd(self, jd):
         return '\t'.join([
             '%s: %s'%(_(name.capitalize()), self.getFormattedTime(tm))
