@@ -45,11 +45,19 @@ class MyFontButton(gtk.FontButton):
     def __init__(self, parent):
         gtk.FontButton.__init__(self)
         ##########
-        self.drag_source_set(gdk.MODIFIER_MASK, (('a',1,1),), gdk.ACTION_COPY)
+        self.drag_source_set(
+            gdk.MODIFIER_MASK,
+            (('text/plain', 0, 0),),
+            gdk.ACTION_COPY,
+        )
         self.drag_source_add_text_targets()
         self.connect('drag-data-get', self.dragDataGet)
         self.connect('drag-begin', self.dragBegin, parent)
-        self.drag_dest_set(gdk.MODIFIER_MASK, (('b',0,0),), gdk.ACTION_COPY)
+        self.drag_dest_set(
+            gdk.MODIFIER_MASK,
+            (('text/plain', 0, 1),),
+            gdk.ACTION_COPY,
+        )
         self.drag_dest_add_text_targets()
         self.connect('drag-data-received', self.dragDataRec)
     def dragDataGet(self, fontb, context, selection, target_id, etime):
@@ -60,20 +68,36 @@ class MyFontButton(gtk.FontButton):
         #dtype = selection.get_data_type()
         #print dtype ## UTF8_STRING
         text = selection.get_text()
-        #print 'fontButtonDragDataRec    text=', text
-        if text!=None:
-            fontb.set_font_name(text)
+        #\print 'fontButtonDragDataRec    text=', text
+        if text:
+            pfont = pango.FontDescription(text)
+            if pfont.get_family() and pfont.get_size() > 0:
+                gtk.FontButton.set_font_name(fontb, text)
         return True
     def dragBegin(self, fontb, context, parent):
         #print 'fontBottonDragBegin'## caled before dragCalDataGet
         textLay = newTextLayout(self, gtk.FontButton.get_font_name(self))
         (w, h) = textLay.get_pixel_size()
         pmap = gdk.Pixmap(None, w, h, 24)
-        pmap.draw_layout(pmap.new_gc(), 0, 0, textLay, gdk.Color(0, 0, 0),
-                                         gdk.Color(-1, -1, -1))## , foreground, background)
+        pmap.draw_layout(
+            pmap.new_gc(),
+            0,
+            0,
+            textLay,
+            gdk.Color(0, 0, 0),# foreground
+            gdk.Color(-1, -1, -1),# background
+        )
         pbuf = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, w, h)
-        pbuf.get_from_drawable(pmap, parent.get_screen().get_system_colormap(),
-                                                     0, 0, 0, 0, -1, -1)
+        pbuf.get_from_drawable(
+            pmap,
+            parent.get_screen().get_system_colormap(),
+            0,
+            0,
+            0,
+            0,
+            -1,
+            -1,
+        )
         #fontb.drag_source_set_icon_pixbuf(pbuf)
         context.set_icon_pixbuf(pbuf, -16, -10)
         return True
