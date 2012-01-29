@@ -17,6 +17,7 @@
 developerKey = 'AI39si4QJ0bmdZJd7nVz0j3zuo1JYS3WUJX8y0f2mvGteDtiKY8TUSzTsY4oAcGlYAM0LmOxHmWWyFLU'## FIXME
 
 import sys
+from os.path import splitext
 import socket
 import BaseHTTPServer
 
@@ -41,7 +42,7 @@ from oauth2client.file import Storage
 from oauth2client.client import OAuth2WebServerFlow
 
 
-
+from scal2.utils import toUnicode, toStr
 from scal2.ics import *
 from scal2.locale_man import tr as _
 from scal2 import core
@@ -56,11 +57,6 @@ auth_local_webserver = True
 auth_host_name = 'localhost'
 auth_host_port = [8080, 8090]
 
-#maxYearsInPast = 30
-#maxYearsInFuture = 30
-
-minStartYear = 1970
-maxEndYear = 2050
 
 getNewRemoteEventId = lambda event: 'starcal#%s#%s#%s'%(
     event.name,
@@ -68,107 +64,40 @@ getNewRemoteEventId = lambda event: 'starcal#%s#%s#%s'%(
     getCompactTime(),
 )
 
-def exportEvent(event, group):
+def exportEvent(event):
+    icsData = event.getIcsData()
+    if not icsData:
+        return
     gevent = {
         'kind': 'calendar#event',
-        'summary': event.summary,
-        'description': event.description,
+        'summary': toUnicode(event.summary),
+        'description': toUnicode(event.description),
         #'id': getNewRemoteEventId(event),
+        'attendees': [],
+        'status': 'confirmed',
+        'visibility': 'default',
+        'guestsCanModify': False,
+        'reminders': {
+            'overrides': {
+                'minutes': event.getNotifyBeforeMin(),
+                'method': 'popup',## FIXME
+            },
+        },
     }
-    ## start, end, recurrence
-    rulesOd = event.rulesOd.copy()
-    if event.name=='task':
-        gevent.update({
-            'start': {
-                'dateTime': getIcsTimeByEpoch(event.getStartEpoch()),
-                'timeZone': 'GMT',
-            },
-            'end': {
-                'dateTime': getIcsTimeByEpoch(event.getEndEpoch()),
-                'timeZone': 'GMT',
-            },
-        })
-        return gevent
-    elif event.name=='dailyNote':
-        jd = event.getJd()
-        gevent.update({
-            'start': {
-                'date': getIcsDateByJd(jd),
-                'timeZone': 'GMT',
-            },
-            'end': {
-                'date': getIcsDateByJd(jd+1),
-                'timeZone': 'GMT',
-            },
-        })
-        return gevent
-    elif event.name=='yearly':
-        month = event.getMonth()
-        day = event.getDay()
-        jd = to_jd(
-            minStartYear,
-            month,
-            day,
-            DATE_GREG,
-        )
-        gevent.update({
-            'start': {
-                'date': getIcsDateByJd(jd),
-                'timeZone': 'GMT',
-            },
-            'end': {
-                'date': getIcsDateByJd(jd+1),
-                'timeZone': 'GMT',
-            },
-            'recurrence': [
-                'RRULE:FREQ=YEARLY;BYMONTH=%d;BYMONTHDAY=%d'%(
-                    month,
-                    day,
-                ),
-            ],
-        })
-        return gevent
-    elif event.name=='universityClass':
-        startJd = group['start'].getJd()
-        endJd = group['end'].getJd()
-        occur = event.calcOccurrenceForJdRange(startJd, endJd)
-        tRangeList = occur.getTimeRangeList()
-        if not tRangeList:
-            return
-        gevent.update({
-            'start': {
-                'dateTime': getIcsTimeByEpoch(tRangeList[0][0]),
-                'timeZone': 'GMT',
-            },
-            'end': {
-                'dateTime': getIcsTimeByEpoch(tRangeList[0][1]),
-                'timeZone': 'GMT',
-            },
-            'recurrence': [
-                'RRULE:FREQ=WEEKLY;UNTIL=%s;INTERVAL=%s;BYDAY=%s'%(
-                    getIcsDateByJd(endJd),
-                    1 if event['weekNumMode'].getData()=='any' else 2,
-                    encodeIcsWeekDayList(event['weekDay'].weekDayList),
-                ),
-            ],
-        })
-        return gevent
-    elif event.name=='universityExam':
-        dayStart = event['date'].getEpoch()
-        (startSec, endSec) = event['dayTimeRange'].getSecondsRange()
-        gevent.update({
-            'start': {
-                'dateTime': getIcsTimeByEpoch(dayStart + startSec),
-                'timeZone': 'GMT',
-            },
-            'end': {
-                'dateTime': getIcsTimeByEpoch(dayStart + endSec),
-                'timeZone': 'GMT',
-            },
-        })
-        return gevent
-    ## now its a custom event
-    #if 'date' in rulesOd:
+    for key, value in icsData:
+        if key=='DTSTART':
+            gevent['start'] = {
+                ('dateTime' if 'T' in value else 'date'): value,
+            }            
+        elif key=='DTEND':
+            gevent['end'] = {
+                ('dateTime' if 'T' in value else 'date'): value,
+            }            
+        elif key in ('RRULE', 'RDATE', 'EXRULE', 'EXDATE'):
+            if not 'recurrence' in gevent:
+                gevent['recurrence'] = []
+            gevent['recurrence'].append(key + ':' + value)
+    return gevent
     
 #def exportToEvent(event, group, gevent):## FIXME
 
@@ -176,6 +105,9 @@ def exportEvent(event, group):
 def importEvent(gevent):
     pass
 
+
+def setEtag(gevent):
+    gevent['etag'] = compressLongInt(abs(hash(repr(gevent))))
 
 class ClientRedirectServer(BaseHTTPServer.HTTPServer):
   """A server to handle OAuth 2.0 redirects back to localhost.
@@ -218,9 +150,10 @@ class ClientRedirectHandler(BaseHTTPServer.BaseHTTPRequestHandler):
 class GoogleAccount(Account):
     name = 'google'
     desc = _('Google')
-    def __init__(self, aid=None):
+    def __init__(self, aid=None, email=''):
         Account.__init__(self, aid)
-        self.authFile = join(purpleDir, 'google.oauth2')
+        self.authFile = splitext(self.file)[0] + '.oauth2'
+        self.email = email
         self.flow = OAuth2WebServerFlow(
             client_id='536861675971.apps.googleusercontent.com',
             client_secret='BviBsCKTbXrzY0hZbioS6FAt',
@@ -230,7 +163,19 @@ class GoogleAccount(Account):
             ],
             user_agent='StarCalendar 2.0.0',
         )
-    #def getData
+    def getData(self):
+        data = Account.getData(self)
+        data.update({
+            'email', self.email,
+        })
+        return data
+    def setData(self, data):
+        Account.setData(self, data)
+        for attr in ('email',):
+            try:
+                setattr(self, attr, data[attr])
+            except KeyError:
+                pass
     def askVerificationCode(self):
         return raw_input('Enter verification code: ').strip()
     def showError(self, error):
@@ -359,10 +304,19 @@ class GoogleAccount(Account):
             if remoteEventId:
                 if lastPush and event.modified < lastPush:
                     continue
-            gevent = exportEvent(event, group)
+            gevent = exportEvent(event)
             if gevent is None:
                 continue
-            gevent['calendarId'] = remoteGroupId
+            setEtag(gevent)
+            #print 'etag = %r'%gevent['etag']            
+            gevent.update({
+                'calendarId': remoteGroupId,
+                'sequence': group.index(event.eid),
+                'organizer': = {
+                    'displayName': self.email,## FIXME
+                    'email': self.email,
+                },
+            })
             if remoteEventId:
                 #gevent['id'] = remoteEventId
                 #if not 'recurrence' in gevent:
@@ -377,11 +331,11 @@ class GoogleAccount(Account):
                 request = service.events().insert(
                     body=gevent,
                     calendarId=remoteGroupId,
-                    sendNotifications=False,
+                    #sendNotifications=False,
                 )
                 #headers={'applicationName': 'StarCalendar/2.0.0'},
-                print dir(request)
-                print 'headers =', request.headers
+                #print dir(request)
+                #print 'headers =', request.headers
                 #request.headers['application-name'] = 'StarCalendar/2.0.0'
                 open('/tmp/starcal-request', 'w').write('uri=%r\nmethod=%r\nheaders=%r\nbody=%r'%(
                     request.uri,
@@ -405,14 +359,14 @@ if __name__=='__main__':
     account = GoogleAccount(aid=1)
     account.load()
     #account.addNewGroup('StarCalendar')
-    account.fetchGroups()
+    #account.fetchGroups()
     #account.save()
-    print 'remoteGroups = %s'%pformat(account.remoteGroups)
-    #remoteGroupId = u'93mfmsvanup0tllng6tgpm1g88@group.calendar.google.com'
-    #groupId = 8
-    #ui.eventGroups.load()
-    #group = ui.eventGroups[groupId]
-    #account.push(group, remoteGroupId)
+    #print 'remoteGroups = %s'%pformat(account.remoteGroups)
+    ui.eventGroups.load()
+    account.push(
+        ui.eventGroups[8],
+        u'93mfmsvanup0tllng6tgpm1g88@group.calendar.google.com',
+    )
     
 
 

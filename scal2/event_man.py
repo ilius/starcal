@@ -37,6 +37,9 @@ from scal2.core import myRaise, getEpochFromJd, getEpochFromJhms, log, to_jd, jd
 
 epsTm = 0.01## seconds ## configure somewhere? FIXME
 
+icsMinStartYear = 1970
+icsMaxEndYear = 2050
+
 eventsDir = join(confDir, 'event', 'events')
 groupsDir = join(confDir, 'event', 'groups')
 accountsDir = join(confDir, 'event', 'accounts')
@@ -973,6 +976,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         self.modified = time.time()
         #self.group.eventsModified = self.modified
     getNotifyBeforeSec = lambda self: self.notifyBefore[0] * self.notifyBefore[1]
+    getNotifyBeforeMin = lambda self: int(self.getNotifyBeforeSec()/60)
     def setDefaults(self):
         '''
             sets default values that depends on event type
@@ -1127,8 +1131,8 @@ class Event(JsonEventBaseClass, RuleContainer):
             notifier.notify(notifierFinishFunc)
     def setJd(self, jd):
         pass
-    #def getGcalData(self):
-    #    ruleNames = set(self.rulesOd.keys())
+    def getIcsData(self):## FIXME
+        return None
 
 
 class YearlyEvent(Event):
@@ -1170,6 +1174,20 @@ class YearlyEvent(Event):
         (y, m, d) = core.jd_to(jd, self.mode)
         self.setMonth(m)
         self.setDay(d)
+    def getIcsData(self):
+        month = event.getMonth()
+        day = event.getDay()
+        jd = to_jd(
+            icsMinStartYear,
+            month,
+            day,
+            DATE_GREG,
+        )
+        return [
+            ('DTSTART', getIcsDateByJd(jd)),
+            ('DTEND', getIcsDateByJd(jd+1)),
+            ('RRULE', 'FREQ=YEARLY;BYMONTH=%d;BYMONTHDAY=%d'%(month, day)),
+        ]
 
 class DailyNoteEvent(Event):
     name = 'dailyNote'
@@ -1205,7 +1223,12 @@ class DailyNoteEvent(Event):
     def calcOccurrenceForJdRange(self, startJd, endJd):## float jd
         jd = self.getJd()
         return JdListOccurrence([jd] if startJd <= jd < endJd else [])
-
+    def getIcsData(self):
+        jd = event.getJd()
+        return [
+            ('DTSTART', getIcsDateByJd(jd)),
+            ('DTEND', getIcsDateByJd(jd+1)),
+        ]
 
 class TaskEvent(Event):
     ## Y/m/d H:M none              ==> start, None
@@ -1323,6 +1346,11 @@ class TaskEvent(Event):
                 return TimeRangeListOccurrence()
     def setJd(self, jd):
         self['start'].date = core.jd_to(jd, self.mode)
+    def getIcsData(self):
+        return [
+            ('DTSTART', getIcsTimeByEpoch(self.getStartEpoch())),
+            ('DTEND', getIcsTimeByEpoch(self.getEndEpoch())),
+        ]
 
 #class UniversityCourseOwner(Event):## FIXME
 
@@ -1370,6 +1398,22 @@ class UniversityClassEvent(Event):
     def setJd(self, jd):
         self['weekDay'].weekDayList = [core.jwday(jd)]
         ## set weekNumMode from absWeekNumber FIXME
+    def getIcsData(self):
+        startJd = self['start'].getJd()
+        endJd = self['end'].getJd()
+        occur = event.calcOccurrenceForJdRange(startJd, endJd)
+        tRangeList = occur.getTimeRangeList()
+        if not tRangeList:
+            return
+        return [
+            ('DTSTART', getIcsTimeByEpoch(tRangeList[0][0])),
+            ('DTEND', getIcsTimeByEpoch(tRangeList[0][1])),
+            ('RRULE', 'FREQ=WEEKLY;UNTIL=%s;INTERVAL=%s;BYDAY=%s'%(
+                getIcsDateByJd(endJd),
+                1 if event['weekNumMode'].getData()=='any' else 2,
+                encodeIcsWeekDayList(event['weekDay'].weekDayList),
+            )),
+        ]
 
 class UniversityExamEvent(DailyNoteEvent):
     name = 'universityExam'
@@ -1411,6 +1455,13 @@ class UniversityExamEvent(DailyNoteEvent):
                 self,
             )
         )
+    def getIcsData(self):
+        dayStart = self['date'].getEpoch()
+        (startSec, endSec) = self['dayTimeRange'].getSecondsRange()
+        return [
+            ('DTSTART', getIcsTimeByEpoch(dayStart + startSec)),
+            ('DTEND', getIcsTimeByEpoch(dayStart + endSec)),
+        ]
 
 class EventContainer(JsonEventBaseClass):
     name = ''
@@ -1857,7 +1908,7 @@ class UniversityTerm(EventGroup):
                 pass
 
 
-class EventGroupsHolder:
+class EventGroupsHolder(JsonEventBaseClass):
     file = join(confDir, 'event', 'group_list.json')
     def __init__(self):
         self.clear()

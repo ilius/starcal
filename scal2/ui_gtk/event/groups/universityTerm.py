@@ -23,7 +23,7 @@ from gtk import gdk
 
 
 class CourseListEditor(gtk.HBox):
-    def __init__(self, term, defaultCourseName=_('New Course'), defaultCourseUnits=3):
+    def __init__(self, term, defaultCourseName=_('New Course'), defaultCourseUnits=3, enableScrollbars=False):
         self.term = term ## UniversityTerm obj
         self.defaultCourseName = defaultCourseName
         self.defaultCourseUnits = defaultCourseUnits
@@ -46,7 +46,13 @@ class CourseListEditor(gtk.HBox):
         col = gtk.TreeViewColumn(_('Units'), cell, text=2)
         self.treev.append_column(col)
         ####
-        self.pack_start(self.treev, 1, 1)
+        if enableScrollbars:## FIXME
+            swin = gtk.ScrolledWindow()
+            swin.add(self.treev)
+            swin.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+            self.pack_start(swin, 1, 1)
+        else:
+            self.pack_start(self.treev, 1, 1)
         ##########
         toolbar = gtk.Toolbar()
         toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
@@ -275,7 +281,7 @@ class GroupWidget(BaseGroupWidget):
         self.classTimeBoundsEditor = ClassTimeBoundsEditor(self.group)
         self.classTimeBoundsEditor.set_size_request(50, 150)
         frame.add(self.classTimeBoundsEditor)
-        expandHbox.pack_start(frame, 1, 1)
+        expandHbox.pack_start(frame, 0, 0)
         ##
         totalVbox.pack_start(expandHbox, 1, 1)
         #####
