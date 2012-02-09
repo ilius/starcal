@@ -78,31 +78,26 @@ class StarCalApplet(MainWin):
         self.sicon.set_relief(gtk.RELIEF_NONE)
         self.sicon.connect('toggled', self.trayClicked)
         self.sicon.connect('button_press_event', self.appletButtonPress)
-        self.applet.setup_menu(
-'''<popup name="button3">
-<menuitem name="ctime"  verb="ctime"  label="%s" pixtype="stock" pixname="gtk-copy"/>
-<menuitem name="cdate"  verb="cdate"  label="%s" pixtype="stock" pixname="gtk-copy"/>
-<menuitem name="adjust" verb="adjust" label="%s" pixtype="stock" pixname="gtk-preferences"/>
-<menuitem name="add"    verb="add"    label="%s" pixtype="stock" pixname="gtk-add"/>
-<menuitem name="export" verb="export" label="%s" pixtype="stock" pixname="gtk-convert"/>
-<menuitem name="pref"   verb="pref"   label="%s" pixtype="stock" pixname="gtk-preferences"/>
-<menuitem name="about"  verb="about"  label="%s" pixtype="stock" pixname="gtk-about"/>
-</popup>'''%(
-    _('Copy _Time'),
-    _('Copy _Date'),
-    _('Ad_just System Time'),
-    _('_Export to ')+'HTML',
-    _('_Preferences'),
-    _('_About')
-), [
-    ('ctime', self.copyTime),
-    ('cdate', self.copyDateToday),
-    ('adjust', self.adjustTime),
-    ('add', self.showCustomDayTray),
-    ('pref', self.prefShow),
-    ('export', self.exportClickedTray),
-    ('about', self.aboutShow)
-], None)
+        menuData = (
+            ('copyTime', _('Copy _Time'), 'copy'),
+            ('copyDateToday', _('Copy _Date'), 'copy'),
+            ('adjustTime', _('Ad_just System Time'), 'preferences'),
+            #('addEvent', _('Add Event'), 'add'),
+            ('prefShow', _('_Preferences'), 'preferences'),
+            ('exportClickedTray', _('_Export to ')+'HTML', 'convert'),
+            ('aboutShow', _('_About'), 'about'),
+        )
+        xml = '<popup name="button3">'
+        funcList = []
+        for funcName, label, icon in menuData:
+            xml += '<menuitem name="%s" verb="%s" label="%s" pixtype="stock" pixname="gtk-%s"/>'%(
+                funcName,
+                funcName,
+                label,
+                icon,
+            )
+            funcList.append((funcName, getattr(self, funcName)))
+        self.applet.setup_menu(xml, funcList, None)
         ###################################
         #popup = self.applet.get_popup_component()
         #print type(popup)
