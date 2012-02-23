@@ -232,7 +232,7 @@ class NotificationBox(gtk.Expander):## or NotificationBox FIXME
         hbox.pack_start(self.notifyBeforeInput, 1, 1)
         totalVbox.pack_start(hbox, 0, 0)
         ###
-        for cls in event_man.eventNotifiersClassList:
+        for cls in event_man.classes.notifier:
             notifier = cls(self.event)
             inputWidget = notifier.makeWidget()
             hbox = gtk.HBox()
@@ -410,7 +410,7 @@ class EventEditorDialog(gtk.Dialog):
             hbox = gtk.HBox()
             combo = gtk.combo_box_new_text()
             for eventType in event.group.acceptsEventTypes:
-                combo.append_text(event_man.eventsClassDict[eventType].desc)
+                combo.append_text(event_man.classes.event.byName[eventType].desc)
             hbox.pack_start(gtk.Label(_('Event Type')), 0, 0)
             hbox.pack_start(combo, 0, 0)
             hbox.pack_start(gtk.Label(''), 1, 1)
@@ -449,6 +449,7 @@ class EventEditorDialog(gtk.Dialog):
                 filesBox.removeNewFiles()
             return None
         self.activeEventWidget.updateVars()
+        self.event.afterModify()
         self.event.save()
         self.destroy()
         return self.event
@@ -488,7 +489,7 @@ class GroupEditorDialog(gtk.Dialog):
         #######
         hbox = gtk.HBox()
         combo = gtk.combo_box_new_text()
-        for cls in event_man.eventGroupsClassList:
+        for cls in event_man.classes.group:
             combo.append_text(cls.desc)
         hbox.pack_start(gtk.Label(_('Group Type')), 0, 0)
         hbox.pack_start(combo, 0, 0)
@@ -497,11 +498,11 @@ class GroupEditorDialog(gtk.Dialog):
         ####
         if self._group:
             self.isNewGroup = False
-            combo.set_active(event_man.eventGroupsClassNameList.index(self._group.name))
+            combo.set_active(event_man.classes.group.names.index(self._group.name))
         else:
             self.isNewGroup = True
             combo.set_active(event_man.defaultGroupTypeIndex)
-            self._group = event_man.eventGroupsClassList[event_man.defaultGroupTypeIndex]()
+            self._group = event_man.classes.group[event_man.defaultGroupTypeIndex]()
         self.activeGroupWidget = None
         combo.connect('changed', self.groupTypeChanged)
         self.comboGroupType = combo
@@ -524,7 +525,7 @@ class GroupEditorDialog(gtk.Dialog):
         if self.activeGroupWidget:
             self.activeGroupWidget.updateVars()
             self.activeGroupWidget.destroy()
-        cls = event_man.eventGroupsClassList[self.comboGroupType.get_active()]
+        cls = event_man.classes.group[self.comboGroupType.get_active()]
         group = cls()
         if self._group:
             if self.isNewGroup:

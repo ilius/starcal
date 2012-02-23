@@ -25,7 +25,6 @@ from math import pi
 from os.path import join, isfile
 from xml.dom.minidom import parse
 
-from scal2.utils import getElementText
 from scal2 import core
 
 from scal2.locale_man import tr as _
@@ -35,6 +34,10 @@ from scal2.core import myRaise, getMonthName, getMonthLen, getNextMonth, getPrev
 
 from scal2 import ui
 from scal2.weekcal import getCurrentWeekStatus
+
+import gobject
+import gtk
+from gtk import gdk
 
 from scal2.ui_gtk.drawing import setColor, fillColor, newLimitedWidthTextLayout, Button
 from scal2.ui_gtk import preferences
@@ -50,10 +53,14 @@ if rtl:
 
 weekCalRowItems = []
 
+weekCalRowItems = [WeekDayRowItem(), PluginsTextRowItem()]
+for cal in ui.shownCals:
+    weekCalRowItems.append(DayNumRowItem(cal['mode']))
+
+
+
 def show_event(widget, event):
     print type(widget), event.type.value_name, event.get_time()#, event.send_event
-
-
 
 
 class WeekDayRowItem:
@@ -80,6 +87,8 @@ class PluginsTextRowItem:
         self.textAlign = textAlign
         self.holidayColorize = False
         self.expand = expand
+
+#class Widget:
 
 
 class Button:
@@ -220,6 +229,7 @@ class WeekCal(gtk.Widget):
                 if text:
                     layout = newLimitedWidthTextLayout(self, text, itemW)
                     if layout:
+                        layoutW, layoutH = layout.get_pixel_size()
                         layoutX = x + item.textAlign * (itemW-layoutW)
                         if rtl:
                             layoutX -= itemW
@@ -260,11 +270,6 @@ class WeekCalWindow(gtk.Window):
 gobject.type_register(WeekCal)
 
 if __name__=='__main__':
-    #weekCalRowItems = [WeekDayRowItem(), DayNumRowItem(0), PluginsTextRowItem(500), DayNumRowItem(1)]
-    weekCalRowItems = [WeekDayRowItem(), PluginsTextRowItem()]
-    for cal in ui.shownCals:
-        weekCalRowItems.append(DayNumRowItem(cal['mode']))
-    ##########
     win = WeekCalWindow()
     win.show_all()
     gtk.main()

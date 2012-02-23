@@ -180,14 +180,6 @@ class IteratorFromGen(Iterator):
         self.gen = gen
     next = lambda self: self.gen.next()
 
-def getElementText(el):## remove FIXME
-    rc = u''
-    name = el.nodeName
-    for node in el.childNodes:
-        if node.nodeType == node.TEXT_NODE:
-            rc = rc + node.data
-    return (name, rc.strip())
-
 def cleanCacheDict(cache, maxSize, currentValue):
     n = len(cache)
     if n >= maxSize > 2:
@@ -198,7 +190,30 @@ def cleanCacheDict(cache, maxSize, currentValue):
             rm = keys[-1]
         cache.pop(rm)
 
-
+def urlToPath(url):
+    if len(url)<7:
+        return url
+    if url[:7]!='file://':
+        return url
+    path = url[7:]
+    if path[-2:]=='\r\n':
+        path = path[:-2]
+    elif path[-1]=='\r':
+        path = path[:-1]
+    ## here convert html unicode symbols to utf8 string:
+    if not '%' in path:
+        return path
+    path2 = ''
+    n = len(path)
+    i = 0
+    while i<n:
+        if path[i]=='%' and i<n-2:
+            path2 += chr(int(path[i+1:i+3], 16)) ## OR chr(eval('0x%s'%path[i+1:i+3]))
+            i += 3
+        else:
+            path2 += path[i]
+            i += 1
+    return path2
 
 def findNearestNum(lst, num):
     if not lst:
@@ -243,6 +258,8 @@ def numRangesDecode(text):
         except:
             myRaise()
     return values
+
+
 
 #if __name__=='__main__':
 #    print findNearestNum([1, 2, 4, 6, 3, 7], 3.6)

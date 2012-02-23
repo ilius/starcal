@@ -21,6 +21,8 @@ from os.path import splitext
 import socket
 import BaseHTTPServer
 
+from pprint import pprint, pformat
+
 try:
     from urlparse import parse_qsl
 except ImportError:
@@ -46,7 +48,7 @@ from scal2.utils import toUnicode, toStr
 from scal2.ics import *
 from scal2.locale_man import tr as _
 from scal2 import core
-from scal2.core import to_jd, jd_to, DATE_GREG, getCompactTime, compressLongInt
+from scal2.core import to_jd, jd_to, DATE_GREG, compressLongInt
 
 from scal2 import event_man
 from scal2.event_man import Account
@@ -58,21 +60,33 @@ auth_host_name = 'localhost'
 auth_host_port = [8080, 8090]
 
 
-getNewRemoteEventId = lambda event: 'starcal#%s#%s#%s'%(
-    event.name,
-    compressLongInt(event.eid),
-    getCompactTime(),
-)
+def decodeIcsStartEnd(value):
+    return {
+        ('dateTime' if 'T' in value else 'date'): value,
+        'timeZone': 'GMT',
+    }
+
+def encodeIcsStartEnd(value):
+    timeZone = value.get('timeZone', 'GMT')## FIXME
+    if 'date' in value:
+        icsValue = value['date'].replace('-', '')
+    elif 'dateTime' in value:
+        icsValue = value['date'].replace('-', '').replace(':', '')
+    else:
+        raise ValueError('bad gcal start/end value %r'%value)
+    return icsValue
+
 
 def exportEvent(event):
-    icsData = event.getIcsData()
+    if not event.changeMode(DATE_GREG):
+        return
+    icsData = event.getIcsData(True)
     if not icsData:
         return
     gevent = {
         'kind': 'calendar#event',
         'summary': toUnicode(event.summary),
         'description': toUnicode(event.description),
-        #'id': getNewRemoteEventId(event),
         'attendees': [],
         'status': 'confirmed',
         'visibility': 'default',
@@ -83,27 +97,58 @@ def exportEvent(event):
                 'method': 'popup',## FIXME
             },
         },
+        'extendedProperties':{
+            'shared': {
+                'starcal_type': event.name,
+            },
+        }
     }
     for key, value in icsData:
+        key = key.upper()
         if key=='DTSTART':
-            gevent['start'] = {
-                ('dateTime' if 'T' in value else 'date'): value,
-            }            
+            gevent['start'] = decodeIcsStartEnd(value)
         elif key=='DTEND':
-            gevent['end'] = {
-                ('dateTime' if 'T' in value else 'date'): value,
-            }            
+            gevent['end'] = decodeIcsStartEnd(value)          
         elif key in ('RRULE', 'RDATE', 'EXRULE', 'EXDATE'):
             if not 'recurrence' in gevent:
                 gevent['recurrence'] = []
             gevent['recurrence'].append(key + ':' + value)
+        elif key=='TRANSP':
+            gevent['transparency'] = value.lower()
+        #elif key=='CATEGORIES':
     return gevent
     
 #def exportToEvent(event, group, gevent):## FIXME
 
 
-def importEvent(gevent):
-    pass
+def importEvent(gevent, group):
+    if gevent['status'] != 'confirmed':## FIXME
+        return
+    try:
+        eventType = gevent['extendedProperties']['shared']['starcal_type']
+    except KeyError:
+        eventType = 'custom'
+    ##
+    icsData = [
+        ('DTSTART', encodeIcsStartEnd(gevent['start']))
+        ('DTEND', encodeIcsStartEnd(gevent['end']))
+    ]
+    ##
+    event = group.createEvent(eventType)
+    if not event.changeMode(DATE_GREG):
+        return
+    if not event.setIcsDict(dict(icsData)):
+        return
+    event.summary = toStr(gevent['summary'])
+    event.description = toStr(gevent['description'])
+    if 'reminders' in gevent:
+        try:
+            minutes = gevent['reminders']['overrides']['minutes']
+        except:
+            pass## FIXME
+        else:
+            self.notifyBefore = (minutes, 60)
+
 
 
 def setEtag(gevent):
@@ -147,6 +192,7 @@ class ClientRedirectHandler(BaseHTTPServer.BaseHTTPRequestHandler):
     pass
 
 
+@event_man.classes.account.register
 class GoogleAccount(Account):
     name = 'google'
     desc = _('Google')
@@ -161,12 +207,12 @@ class GoogleAccount(Account):
                 'https://www.googleapis.com/auth/calendar',
                 'https://www.googleapis.com/auth/tasks',
             ],
-            user_agent='StarCalendar 2.0.0',
+            user_agent='%s/%s'%(core.APP_NAME, core.VERSION),
         )
     def getData(self):
         data = Account.getData(self)
         data.update({
-            'email', self.email,
+            'email': self.email,
         })
         return data
     def setData(self, data):
@@ -235,33 +281,28 @@ class GoogleAccount(Account):
         credentials = self.authenticate()
         if not credentials:
             return False
-        http = httplib2.Http()
-        #http = HttpRequest()
-        return credentials.authorize(http)
+        return credentials.authorize(httplib2.Http())
     def getCalendarService(self):
-        http = self.getHttp()
-        #print 'getCalendarService: http=%s'%http
         return build(
             serviceName='calendar',
             version='v3',
-            http=http,
+            http=self.getHttp(),
             developerKey=developerKey,
         )
     def getTasksService(self):
-        http = self.getHttp()
         return build(
             serviceName='tasks',
             version='v1',
-            http=http,
+            http=self.getHttp(),
             developerKey=developerKey,
         )
     def addNewGroup(self, title):
-        service = self.getCalendarService()
-        service.calendars().insert(body={
+        return self.getCalendarService().calendars().insert(body={
             'kind': 'calendar#calendar',
             'summary': title,
-        }).execute()
-        return True
+        }).execute()['id']
+    def deleteGroup(self, remoteGroupId):
+        self.getCalendarService().calendars().delete(calendarId=remoteGroupId).execute()
     def fetchGroups(self):
         service = self.getCalendarService()
         groups = []
@@ -273,10 +314,17 @@ class GoogleAccount(Account):
             })
         self.remoteGroups = groups
         return True
-    def pull(self, group, remoteGroupId, resPerPage=50):
+    def fetchAllEventsInGroup(self, remoteGroupId):
+        eventsRes = self.getCalendarService().events().list(
+            calendarId=remoteGroupId,
+            orderBy='updated',
+        ).execute()
+        return eventsRes.get('items', [])
+    def sync(self, group, remoteGroupId, resPerPage=50):
         service = self.getCalendarService()
         ## if remoteGroupId=='tasks':## FIXME
-        lastPull = group.getLastPull()
+        lastSync = group.getLastSync()
+        ########################### Pull
         kwargs = dict(
             calendarId=remoteGroupId,
             orderBy='updated',
@@ -285,35 +333,50 @@ class GoogleAccount(Account):
             #timeZone="GMT",
             #pageToken=0,
         )
-        if lastPull:
-            kwargs['updatedMin'] = getIcsTimeByEpoch(lastPull)
-        eventsRes = service.events().list(**kwargs).execute()
-        events = eventsRes['items']
-
-
-        return True
-    def push(self, group, remoteGroupId):
-        service = self.getCalendarService()
+        if lastSync:
+            kwargs['updatedMin'] = getIcsTimeByEpoch(lastSync, True)
+        geventsRes = service.events().list(**kwargs).execute()
+        gevents = eventsRes['items']
+        for gevent in gevents:
+            event = importEvent(gevent, group)
+            if not event:
+                print '---------- event %s can not be pulled'%event.summary
+                continue
+            remoteIds = (self.aid, remoteGroupId, gevent['id'])
+            eventId = group.eventIdByRemoteIds.get(remoteIds, None)
+            if eventId is None:
+                group.append(event)
+                event.save()
+                group.save()
+                print '---------- event %s added in starcal'%event.summary
+            else:
+                try:
+                    event = group[eventId]
+                except Exception, e:
+                    pass
+        ########################### Push
         ## if remoteGroupId=='tasks':## FIXME
-        lastPush = group.getLastPush()
         for event in group:
+            #print '---------- event %s'%event.summary
             remoteEventId = None
             if event.remoteIds:
                 if event.remoteIds[0]==self.aid and event.remoteIds[1]==remoteGroupId:
                     remoteEventId = event.remoteIds[2]
-            if remoteEventId:
-                if lastPush and event.modified < lastPush:
-                    continue
+            #print '---------- remoteEventId = %s'%remoteEventId
+            if remoteEventId and lastSync and event.modified < lastSync:
+                #print '---------- skipping event %s (modified = %s < %s = lastPush)'%(event.summary, event.modified, lastPush)
+                continue
             gevent = exportEvent(event)
             if gevent is None:
+                print '---------- event %s can not be pushed'%event.summary
                 continue
             setEtag(gevent)
             #print 'etag = %r'%gevent['etag']            
             gevent.update({
                 'calendarId': remoteGroupId,
                 'sequence': group.index(event.eid),
-                'organizer': = {
-                    'displayName': self.email,## FIXME
+                'organizer': {
+                    'displayName': core.userDisplayName,## FIXME
                     'email': self.email,
                 },
             })
@@ -321,52 +384,54 @@ class GoogleAccount(Account):
                 #gevent['id'] = remoteEventId
                 #if not 'recurrence' in gevent:
                 #    gevent['recurrence'] = None ## or [] FIXME
-                service.events().patch(## patch or update? FIXME
+                service.events().update(## patch or update? FIXME
                     eventId=remoteEventId,
                     body=gevent,
+                    calendarId=remoteGroupId
                 ).execute()
+                print '---------- event %s updated on server'%event.summary
             else:## FIXME
-                remoteEventId = getNewRemoteEventId(event)
-                gevent['id'] = remoteEventId
                 request = service.events().insert(
                     body=gevent,
                     calendarId=remoteGroupId,
-                    #sendNotifications=False,
+                    sendNotifications=False,
                 )
-                #headers={'applicationName': 'StarCalendar/2.0.0'},
-                #print dir(request)
-                #print 'headers =', request.headers
-                #request.headers['application-name'] = 'StarCalendar/2.0.0'
-                open('/tmp/starcal-request', 'w').write('uri=%r\nmethod=%r\nheaders=%r\nbody=%r'%(
-                    request.uri,
-                    request.method,
-                    request.headers,
-                    request.body,
-                ))
-                request.execute()
-                return
+                #open('/tmp/starcal-request', 'w').write('uri=%r\nmethod=%r\nheaders=%r\nbody=%r'%(
+                #    request.uri,
+                #    request.method,
+                #    request.headers,
+                #    request.body,
+                #))
+                response = request.execute()
+                #print 'response = %s'%pformat(response)
+                remoteEventId = response['id']
+                print '----------- event %s added on server'%event.summary
             event.remoteIds = [self.aid, remoteGroupId, remoteEventId]
             event.save()
-            group.eventIdByRemoteIds[event.remoteIds] = event.eid
-        group.afterPush()## FIXME
+            group.eventIdByRemoteIds[tuple(event.remoteIds)] = event.eid## TypeError: unhashable type: 'list'
+        group.afterSync()## FIXME
         group.save()## FIXME
         return True
 
 
+def printAllEvent(account, remoteGroupId):
+    for gevent in account.fetchAllEventsInGroup(remoteGroupId):
+        print gevent['summary'], gevent['updated']
+
+
 if __name__=='__main__':
-    from pprint import pprint, pformat
     from scal2 import ui
     account = GoogleAccount(aid=1)
     account.load()
-    #account.addNewGroup('StarCalendar')
-    #account.fetchGroups()
-    #account.save()
-    #print 'remoteGroups = %s'%pformat(account.remoteGroups)
+    remoteGroupId = 'gi646vjovfrh2u2u2l9hnatvq0@group.calendar.google.com'
     ui.eventGroups.load()
-    account.push(
-        ui.eventGroups[8],
-        u'93mfmsvanup0tllng6tgpm1g88@group.calendar.google.com',
-    )
+    group = ui.eventGroups[8]
+    #print 'group.remoteIds', group.remoteIds
+    group.remoteIds = (account.aid, remoteGroupId)
+    account.sync(group, remoteGroupId)
+
+    
+    
     
 
 

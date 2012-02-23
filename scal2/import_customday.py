@@ -2,7 +2,6 @@ import os
 from os.path import isfile, join
 
 from scal2.paths import pixDir, confDir
-from scal2.utils import getElementText
 from scal2.locale_man import tr as _
 from scal2 import event_man
 from scal2 import ui
@@ -17,6 +16,14 @@ customdayModes = (
     (_('Task'),             'event/task.png'),
     (_('Alarm'),            'event/alarm.png'),
 )
+
+def getElementText(el):
+    rc = u''
+    name = el.nodeName
+    for node in el.childNodes:
+        if node.nodeType == node.TEXT_NODE:
+            rc = rc + node.data
+    return (name, rc.strip())
 
 def loadCustomDB():
     from xml.dom.minidom import parse

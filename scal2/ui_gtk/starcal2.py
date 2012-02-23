@@ -80,6 +80,7 @@ from scal2.ui_gtk.event.main import DayOccurrenceView, EventManagerDialog
 from scal2.ui_gtk.timeline import TimeLineWindow
 
 from scal2 import unity
+
 if unity.needToAdd():
     dialog = gtk.Dialog('Tray Icon')
     okB = dialog.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
@@ -1028,7 +1029,7 @@ class MainWin(gtk.Window):
         ui.timeLineWin.move(0, 0)
         ###########
         ##self.connect('window-state-event', selfStateEvent)
-        self.set_title('StarCalendar %s'%core.VERSION)
+        self.set_title('%s %s'%(core.APP_DESC, core.VERSION))
         #self.connect('main-show', lambda arg: self.present())
         #self.connect('main-hide', lambda arg: self.hide())
         self.set_decorated(False)
@@ -1133,9 +1134,9 @@ class MainWin(gtk.Window):
         selectDateShow = self.selectDateShow
         ############### Building About Dialog
         about = gtk.AboutDialog()
-        about.set_name('StarCalendar') ## or set_program_name
+        about.set_name(core.APP_DESC) ## or set_program_name
         about.set_version(core.VERSION)
-        about.set_title(_('About ')+'StarCalendar') ## must call after set_name and set_version !
+        about.set_title(_('About ')+core.APP_DESC) ## must call after set_name and set_version !
         about.set_authors([_(line) for line in open(join(rootDir, 'authors-dialog')).read().splitlines()])
         about.set_comments(core.aboutText)
         about.set_license(core.licenseText)
@@ -1185,7 +1186,7 @@ class MainWin(gtk.Window):
         #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, ui.eventManDialog.addCustomEvent))
         menu.add(labelStockMenuItem('_Event Manager', gtk.STOCK_ADD, self.eventManShow))
         menu.add(labelImageMenuItem('Time Line', 'timeline-18.png', self.timeLineShow))
-        menu.add(labelStockMenuItem('_Export to HTML', gtk.STOCK_CONVERT, self.exportClicked))
+        menu.add(labelStockMenuItem(_('Export to ')+'HTML', gtk.STOCK_CONVERT, self.exportClicked))
         menu.add(labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
         if self.trayMode!=1:
             menu.add(labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit))
@@ -1346,7 +1347,7 @@ class MainWin(gtk.Window):
             else:
                 menu3 = gtk.Menu()
                 for eventType in eventTypes:
-                    eventClass = event_man.eventsClassDict[eventType]
+                    eventClass = event_man.classes.event.byName[eventType]
                     item3 = gtk.ImageMenuItem()
                     item3.set_label(eventClass.desc)
                     icon = eventClass.getDefaultIcon()
@@ -1479,7 +1480,7 @@ class MainWin(gtk.Window):
             self.sicon = gtk.StatusIcon()
             ##self.sicon.set_blinking(True) ## for Alarms ## some problem with gnome-shell
             #self.sicon.set_name('starcal2')## Warning: g_object_notify: object class `GtkStatusIcon' has no property named `name'
-            self.sicon.set_title('StarCalendar')
+            self.sicon.set_title(core.APP_DESC)
             self.sicon.set_visible(True)## is needed ????????
             self.sicon.connect('activate', self.trayClicked)
             self.sicon.connect('popup-menu', self.trayPopup)
@@ -1496,7 +1497,7 @@ class MainWin(gtk.Window):
             labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday),
             labelStockMenuItem('Ad_just System Time', gtk.STOCK_PREFERENCES, self.adjustTime),
             #labelStockMenuItem('_Add Event', gtk.STOCK_ADD, ui.eventManDialog.addCustomEvent),## FIXME
-            labelStockMenuItem('_Export to HTML', gtk.STOCK_CONVERT, self.exportClickedTray),
+            labelStockMenuItem(_('Export to ')+'HTML', gtk.STOCK_CONVERT, self.exportClickedTray),
             labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow),
             labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow),
             gtk.SeparatorMenuItem(),

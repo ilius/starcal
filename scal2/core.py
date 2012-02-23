@@ -23,7 +23,7 @@ from time import localtime
 import sys, os, subprocess, traceback
 from StringIO import StringIO
 from os.path import isfile, isdir, exists, dirname, join, split, splitext
-
+from pprint import pprint
 
 from scal2.paths import *
 from scal2.locale_man import * ## prepareLanguage, loadTranslator, getMonthName
@@ -43,12 +43,42 @@ except NameError:
 
 VERSION = '1.9.4'
 APP_NAME = 'starcal2'
+APP_DESC = 'StarCalendar'
 COMMAND = 'starcal2'
 homePage = 'http://starcal.sourceforge.net/'
 primaryMode = 0 ## suitable place ???????????
 osName = getOsName()
-################################################################################
+userDisplayName = getUserDisplayName()
+#print '--------- Hello %s'%userDisplayName
 
+#print '__file__ = %r'%__file__
+#print '__name__ = %r'%__name__
+#print '__package__ = %r'%__package__
+#print '__builtins__',
+#pprint(__builtins__)
+#print
+#print 'core.dir:'
+#pprint(dir())
+
+#print 'sys.modules =',
+#pprint(sys.modules)
+
+__plugin_api_get__ = [
+    'VERSION', 'APP_NAME', 'APP_DESC', 'COMMAND', 'homePage', 'primaryMode', 'osName', 'userDisplayName'
+    'to_jd', 'jd_to', 'convert', 'jd_to_primary', 'primary_to_jd',
+]
+__plugin_api_set__ = []
+
+#def pluginCanGet(funcClass):
+#    global __plugin_api_get__
+#    __plugin_api_get__.append(funcClass.__name__)
+#    return funcClass
+
+def pluginCanSet(funcClass):
+    global __plugin_api_set__
+    __plugin_api_set__.append(funcClass.__name__)
+
+################################################################################
 if exists(confDir):
     if not isdir(confDir):
         os.rename(confDir, confDir+'-old')
@@ -57,17 +87,8 @@ if exists(confDir):
 else:
     os.mkdir(confDir)
 
-
-try:
-    os.mkdir(plugConfDir)
-except:
-    pass
-
-try:
-    os.mkdir(join(confDir, 'log'))
-except:
-    pass
-
+makeDir(plugConfDir)
+makeDir(join(confDir, 'log'))
 ################################################################################
 
 try:
@@ -79,7 +100,7 @@ try:
         logConfText = logConfText.replace(varName, eval(varName))
 
     logging.config.fileConfig(StringIO(logConfText))
-    log = logging.getLogger('starcal2')
+    log = logging.getLogger(APP_NAME)
 except:
     from scal2.utils import FallbackLogger
     log = FallbackLogger()
@@ -105,7 +126,7 @@ from scal2.cal_modules import modules, moduleNames, modNum, jd_to, to_jd, conver
 
 popen_output = lambda cmd: subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
 
-to_jd_primary = lambda y, m, d: modules[primaryMode].to_jd(y, m, d)
+primary_to_jd = lambda y, m, d: modules[primaryMode].to_jd(y, m, d)
 
 def getCurrentJd():## time() and mktime(localtime()) both return GMT, not local
     (y, m, d) = localtime()[:3]
@@ -118,17 +139,10 @@ def getWeekDateHmsFromEpoch(epoch):
    (absWeekNumber, weekDay) = getWeekDateFromJd(jd)
    return (absWeekNumber, weekDay, hour, minute, sec)
 
-def getJdListFromEpochRange(startEpoch, endEpoch):
-    startJd = getJdFromEpoch(startEpoch)
-    endJd = getJdFromEpoch(endEpoch-0.01) + 1
-    return range(startJd, endJd)
-
 def getJdRangeForMonth(year, month, mode):
     day = getMonthLen(year, month, mode)
     return (to_jd(year, month, 1, mode),
             to_jd(year, month, day, mode) + 1)
-
-
 
 
 ## jwday: Calculate day of week from Julian day
@@ -136,7 +150,7 @@ def getJdRangeForMonth(year, month, mode):
 ## 1 = Monday
 jwday = lambda jd: (jd + 1) % 7
 
-getWeekDay = lambda y, m, d: jwday(to_jd(y, m, d, primaryMode)-firstWeekDay)
+getWeekDay = lambda y, m, d: jwday(primary_to_jd(y, m, d)-firstWeekDay)
 
 getWeekDayN = lambda i: weekDayName[(i+firstWeekDay)%7]
 ## 0 <= i < 7    (0 = first day)
@@ -147,10 +161,9 @@ def getWeekDayAuto(i, abr=False):
         return weekDayName[(i+firstWeekDay)%7]
         
 
-datesDiff=lambda y1,m1,d1,y2,m2,d2: to_jd(y2,m2,d2,primaryMode)\
-    - to_jd(y1,m1,d1,primaryMode)
+datesDiff = lambda y1, m1, d1, y2, m2, d2: primary_to_jd(y2, m2, d2) - primary_to_jd(y1, m1, d1)
 
-dayOfYear=lambda y, m, d: datesDiff(y, 1, 1, y, m, d)+1
+dayOfYear = lambda y, m, d: datesDiff(y, 1, 1, y, m, d) + 1
         
 def getLocaleFirstWeekDay():
     #log.debug('first_weekday', popen_output(['locale', 'first_weekday']))
@@ -162,8 +175,8 @@ def getLocaleFirstWeekDay():
         
 ## week number in year
 def getWeekNumber(year, month, day, adjustZero=True):
-    jd = to_jd(year, month, day, primaryMode)
-    jd0 = to_jd(year, 1, 1, primaryMode)
+    jd = primary_to_jd(year, month, day)
+    jd0 = primary_to_jd(year, 1, 1)
     first = jwday(jd-firstWeekDay) - 1
     if weekNumberMode==7:
         weekNumber = (jd - jd0 + first%7) / 7 + 1
@@ -288,6 +301,7 @@ def getHolidayPlugins():
             hPlugs.append(plug)
     return hPlugs
 
+
 def updatePlugins():
     for i in plugIndex:
         plug = allPlugList[i]
@@ -319,7 +333,6 @@ getAllPlugListRepr = lambda: '[\n' + '\n'.join(['  %r,'%plug for plug in allPlug
 
 #########################################################
 
-
 def ymdRange((y1, m1, d1), (y2, m2, d2), mode=None):
     if y1==y2 and m1==m2:
         return [(y1, m1, d) for d in range(d1, d2)]
@@ -331,34 +344,6 @@ def ymdRange((y1, m1, d1), (y2, m2, d2), mode=None):
     for j in range(j1, j2):
         l.append(jd_to(j, mode))
     return l
-
-def urlToPath(url):
-    if len(url)<7:
-        return url
-    if url[:7]!='file://':
-        return url
-    path=url[7:]
-    if path[-2:]=='\r\n':
-        path=path[:-2]
-    elif path[-1]=='\r':
-        path=path[:-1]
-    ## here convert html unicode symbols to utf8 string:
-    if not '%' in path:
-        return path
-    path2=''
-    n=len(path)
-    i=0
-    while i<n:
-        if path[i]=='%' and i<n-2:
-            path2 += chr(int(path[i+1:i+3], 16)) ## OR chr(eval('0x%s'%path[i+1:i+3]))
-            i += 3
-        else:
-            path2 += path[i]
-            i += 1
-    return path2
-
-
-
 
 def getSysDate(mode=None):
     if mode is None:
@@ -392,8 +377,6 @@ def mktime(t, mode=None):
 '''
 
 def validDate(mode, y, m, d):## move to cal-modules
-    if mode is None:
-        mode = primaryMode
     if y<0:
         return False
     if m<1 or m>12:
@@ -405,7 +388,7 @@ def validDate(mode, y, m, d):## move to cal-modules
 compressLongInt = lambda num: struct.pack('L', num).rstrip('\x00').encode('base64')[:-3].replace('/', '_')
 getCompactTime = lambda maxDays=1000, minSec=0.1: compressLongInt(long(time.time()%(maxDays*24*3600) / minSec))
 
-showInfo = lambda: log.debug('StarCalendar %s, OS: %s, Python %s'%(VERSION, getOsFullDesc(), sys.version.replace('\n', ' ')))
+showInfo = lambda: log.debug('%s %s, OS: %s, Python %s'%(APP_DESC, VERSION, getOsFullDesc(), sys.version.replace('\n', ' ')))
 
 ################################################################################
 #################### End of class and function defenitions #####################
@@ -425,15 +408,14 @@ if len(sys.argv)>1:
 #    tr('5th day'), tr('6th day'), tr('Last day'))
 #holidayWeekEnable = True
 
-
-pyVersion = sys.version_info[:2]
-if pyVersion==(2, 6):
-    sys.path.insert(0, '%s/lib/python2.6'%rootDir)
-elif pyVersion==(2, 5):
-    sys.path.insert(0, '%s/lib/python2.5'%rootDir)
-elif pyVersion==(2, 4):
-    sys.path.insert(0, '%s/lib/python2.4'%rootDir)
-del pyVersion
+libDir = join(rootDir, 'lib')
+if isdir(libDir):
+    sys.path.insert(libDir)
+    pyVersion = '%d.%d'%tuple(sys.version_info[:2])
+    pyLibDir = join(libDir, pyVersion)
+    if isdir(pyLibDir):
+        sys.path.insert(0, pyLibDir)
+    del pyVersion, pyLibDir
 
 
 ################################################################################
@@ -460,7 +442,7 @@ weekNumberMode = 7
 ################################################################################
 ################################################################################
 
-#confPathDef = '/etc/starcal2/core.conf' ## ????????????????????????
+#confPathDef = '/etc/%s/core.conf'%APP_NAME ## ????????????????????????
 #if isfile(confPathDef):## ????????????????????????
 #    try:
 #        exec(open(confPathDef).read())
@@ -479,7 +461,7 @@ if isfile(localeConfPath):
         myRaise(__file__)
 
 langSh = prepareLanguage(lang)
-tr = loadTranslator()
+_ = tr = loadTranslator()
 
 sysConfPath = join(sysConfDir, 'core.conf')
 if isfile(sysConfPath):
@@ -499,21 +481,20 @@ if isfile(confPath):
 ################################################################################
 
 
-licenseText = tr('licenseText')
+licenseText = _('licenseText')
 if licenseText in ('licenseText', ''):
     licenseText = open('%s/license'%rootDir).read()
 
-aboutText = tr('aboutText')
+aboutText = _('aboutText')
 if aboutText in ('aboutText', ''):
     aboutText = open('%s/about'%rootDir).read()
 
 
+weekDayName = (_('Sunday'), _('Monday'), _('Tuesday'), _('Wednesday'), _('Thursday'), _('Friday'), _('Saturday'))
+weekDayNameAb = (_('Sun'), _('Mon'), _('Tue'), _('Wed'), _('Thu'), _('Fri'), _('Sat'))
 
-weekDayName = (tr('Sunday'), tr('Monday'), tr('Tuesday'), tr('Wednesday'), tr('Thursday'), tr('Friday'), tr('Saturday'))
-weekDayNameAb = (tr('Sun'), tr('Mon'), tr('Tue'), tr('Wed'), tr('Thu'), tr('Fri'), tr('Sat'))
 
-
-loadAllPlugins()## FIXME
+#loadAllPlugins()## FIXME
 
 
 #if firstWeekDayAuto and os.sep=='/':## only if unix

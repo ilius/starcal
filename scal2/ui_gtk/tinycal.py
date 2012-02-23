@@ -26,8 +26,6 @@ from math import pi
 import struct
 import os.path, cairo
 
-from xml.dom.minidom import parse
-
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl, rtlSgn
 
@@ -46,8 +44,7 @@ from scal2.ui_gtk import preferences
 from scal2.ui_gtk.preferences import pfontEncode
 
 
-from scal2.ui_gtk.monthcal import rgbToGdkColor, fillColor, newTextLayout,\
-    _get_text, Cell
+from scal2.ui_gtk.monthcal import rgbToGdkColor, fillColor, newTextLayout
 
 
 class WeekStatus(list):
@@ -125,10 +122,10 @@ class PlainStrObject(TextObject):
 class TinyCal(gtk.Window):## (gtk.DrawingArea OR gtk.Widget)
     def __init__(self):
         gtk.Window.__init__(self)
-        self.set_title('StarCalendar Tiny')
+        self.set_title(core.APP_DESC+' Tiny')
         self.set_decorated(False)
         self.set_property('skip-taskbar-hint', None)
-        self.set_role('starcal2-tiny')
+        self.set_role(core.APP_NAME+'-tiny')
         ##################
         self.objects = []
     def startEditing(self):

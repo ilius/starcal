@@ -17,6 +17,8 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+APP_NAME = 'starcal2'
+
 import sys, traceback
 from time import strftime
 from os.path import isfile, dirname, join, split, splitext
@@ -29,7 +31,7 @@ from scal2.paths import *
 
 try:
     import logging
-    log = logging.getLogger('starcal2')
+    log = logging.getLogger(APP_NAME)
 except:
     from scal2.utils import FallbackLogger
     log = FallbackLogger()

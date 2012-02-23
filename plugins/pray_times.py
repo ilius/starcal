@@ -31,6 +31,7 @@ rootDir = '/usr/share/starcal2'
 sys.path.insert(0, dataDir)## FIXME
 sys.path.insert(0, rootDir)## FIXME
 
+from scal2 import plugin_api as api
 
 from scal2.paths import *
 from pray_times_backend import PrayTimes
@@ -87,27 +88,32 @@ def earthDistance(lat1, lng1, lat2, lng2):
         deg = 2*pi-deg
     return deg*earthR
     #return ang*180/pi
-    
 
 '''
-class PrayTimeEventRule(event_man.EventRule):
+event_classes = api.get('event_man', 'classes')
+EventRule = api.get('event_man', 'EventRule')
+
+@event_classes.rule.register
+class PrayTimeEventRule(EventRule):
+    plug = None ## FIXME
     name = 'prayTime'
     desc = _('Pray Time')
     provide = ('time',)
     need = ()
     conflict = ('dayTimeRange', 'cycleLen',)
-    def __init__(self, parent, plug):
+    def __init__(self, parent):
         EventRule.__init__(self, parent)
-        #self.plug = plug
     def calcOccurrence(self, startEpoch, endEpoch, event):
         self.plug.get_times_jd(jd)
     getInfo = lambda self: self.desc
-''' 
+'''
 
 class TextPlug(BasePlugin, TextPlugUI):
     ## all options (except for "enable" and "show_date") will be saved in file confPath
     def __init__(self, enable=True, show_date=False):
         print '----------- praytime TextPlug.__init__'
+        #print 'From plugin: core.VERSION=%s'%api.get('core', 'VERSION')
+        #print 'From plugin: core.aaa=%s'%api.get('core', 'aaa')
         BasePlugin.__init__(
             self,
             path=_mypath,
@@ -142,7 +148,6 @@ class TextPlug(BasePlugin, TextPlugUI):
         self.shownTimeNames = shownTimeNames
         #######
         #PrayTimeEventRule.plug = self
-        #event_man.registerEventRuleClass(PrayTimeEventRule)
         #######
         self.makeWidget()## FIXME
     def saveConfig(self):

@@ -213,8 +213,8 @@ class ExportToIcsDialog(gtk.Dialog):
         if path in (None, ''):
             return
         print 'Exporting to ics file "%s"'%path
-        startJd = core.to_jd_primary(*self.startDateInput.get_date())
-        endJd = core.to_jd_primary(*self.endDateInput.get_date())
+        startJd = core.primary_to_jd(*self.startDateInput.get_date())
+        endJd = core.primary_to_jd(*self.endDateInput.get_date())
         self.saveIcsFunc(path, startJd, endJd)
         self.window.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
         self.destroy()

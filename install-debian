@@ -43,8 +43,8 @@ Version: $version
 Architecture: all
 Maintainer: Saeed Rasooli <saeed.gnu@gmail.com>
 Installed-Size: $installedSize
-Depends: python(>=2.7), python(<<3.0), python-gtk2(>=2.8)
-Recommends: itools
+Depends: python(>=2.6), python(<<3.0), python-gtk2(>=2.8)
+Recommends: 
 Section: Utilities
 Priority: optional
 Homepage: http://starcal.sourceforge.net/
@@ -53,8 +53,8 @@ Description: A full-featured international calendar writen in Python
  with both PyGTK and PyQt interfaces, that supports Jalai(Iranian),
  Hijri(Islamic), and Indian National calendars, as well as common 
  english(Gregorian) calendar
- Homepage: http://starcal.sourceforge.net/
- Author: Saeed Rasooli <saeed.gnu@gmail.com>" > "$tmpDir/DEBIAN/control"
+ Homepage: http://starcal.sourceforge.net
+" > "$tmpDir/DEBIAN/control"
 
 pkgFile=${pkgName}_${version}-1_all.deb
 dpkg-deb -b "$tmpDir" "$pkgFile"

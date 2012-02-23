@@ -24,7 +24,6 @@ from os import listdir
 from os.path import dirname, join, isfile, isdir
 from xml.dom.minidom import parse## remove FIXME
 from subprocess import Popen
-from collections import OrderedDict
 
 from scal2.utils import NullObj, toStr, cleanCacheDict
 from scal2.os_utils import makeDir
@@ -152,9 +151,9 @@ def addStartup():
     elif isdir('%s/.config'%homeDir):## osName in ('linux', 'mac') ## maybe Gnome/KDE on Solaris, *BSD, ...
         text = '''[Desktop Entry]
 Type=Application
-Name=StarCalendar %s
+Name=%s %s
 Icon=%s
-Exec=%s'''%(core.VERSION, APP_NAME, core.COMMAND)## double quotes needed when the exec path has space
+Exec=%s'''%(core.VERSION, core.APP_DESC, APP_NAME, core.COMMAND)## double quotes needed when the exec path has space
         makeDir(comDeskDir)
         try:
             fp = open(comDesk, 'w')
@@ -399,7 +398,7 @@ def moveEventToTrash(group, event):
     eventTrash.insert(0, event)## or append? FIXME
     eventTrash.save()
 
-getEvent = lambda groupId, eventId: eventGroups[groupId].getEvent(eventId)
+getEvent = lambda groupId, eventId: eventGroups[groupId][eventId]
 
 def duplicateGroupTitle(group):
     title = toStr(group.title)
@@ -423,7 +422,7 @@ def duplicateGroupTitle(group):
 shownCals = [
     {'enable':True, 'mode':0, 'x':0,  'y':-2, 'font':None, 'color':(220, 220, 220)}, 
     {'enable':True, 'mode':1, 'x':18, 'y':5,  'font':None, 'color':(165, 255, 114)}, 
-    {'enable':True, 'mode':2, 'x':-18,'y':4,  'font':None, 'color':(0, 200, 205)}
+    {'enable':True, 'mode':2, 'x':-18,'y':4,  'font':None, 'color':(0, 200, 205)},
 ]
 core.primaryMode = shownCals[0]['mode']
 ################################
@@ -496,6 +495,8 @@ newEvents = []
 
 
 ###################
+core.loadAllPlugins()## FIXME
+###################
 ## BUILD CACHE AFTER SETTING core.primaryMode
 maxDayCacheSize = 100 ## maximum size of cellCache (days number)
 maxWeekCacheSize = 12
@@ -512,59 +513,59 @@ comDesk = '%s/%s.desktop'%(comDeskDir, APP_NAME)
 #themeDir = join(rootDir, 'themes')
 #theme = None
 ########################### Options ###########################
-keyDelay 	= 0 #0.07 ## delay between listening of key press in calendar
-winWidth	= 480
-calHeight   = 250
-winTaskbar	= False
-#showDigClockTb	= True ## On Toolbar ## FIXME
-showDigClockTr	= True ## On Tray
+keyDelay = 0 #0.07 ## delay between listening of key press in calendar
+winWidth = 480
+calHeight = 250
+winTaskbar = False
+#showDigClockTb = True ## On Toolbar ## FIXME
+showDigClockTr = True ## On Tray
 ####
 toolbarItems = []
 toolbarIconSize = 'Large Toolbar'
 toolbarIconSizePixel = 24 ## used in pyqt ui
 toolbarStyle = 'Icon'
 ####
-bgColor		= (26, 0, 1, 255)## or None
-bgUseDesk 	= False
-borderColor	= (123, 40, 0, 255)
-borderTextColor	= (255, 255, 255, 255) ## text of weekDays and weekNumbers
-#menuBgColor	= borderColor ##???????????????
-menuTextColor	= None##borderTextColor##???????????????
-holidayColor	= (255, 160, 0, 255)
-inactiveColor	= (255, 255, 255, 115)
+bgColor = (26, 0, 1, 255)## or None
+bgUseDesk = False
+borderColor = (123, 40, 0, 255)
+borderTextColor = (255, 255, 255, 255) ## text of weekDays and weekNumbers
+#menuBgColor = borderColor ##???????????????
+menuTextColor = None##borderTextColor##???????????????
+holidayColor = (255, 160, 0, 255)
+inactiveColor = (255, 255, 255, 115)
 todayCellColor  = (0, 255, 0, 50)
 cursorFixed = False
-cursorOutColor	= (213, 207, 0, 255)
-cursorBgColor	= (41, 41, 41, 255)
-cursorD 	= 3.0
-cursorR		= 7.0 ## Rounded Rectangle
+cursorOutColor = (213, 207, 0, 255)
+cursorBgColor = (41, 41, 41, 255)
+cursorD = 3.0
+cursorR = 7.0 ## Rounded Rectangle
 cursorCornerOval = False ## Apply in Pref? FIXME
-cursorW 	= 57
-cursorH		= 24
-calGrid 	= True
-gridColor 	= (255, 252, 0, 82)
-calLeftMargin 	= 30
-calTopMargin 	= 30
-boldYmLabel	= True	##Apply in Pref FIXME
-showYmArrows	= True	##Apply in Pref FIXME
+cursorW = 57
+cursorH = 24
+calGrid = True
+gridColor = (255, 252, 0, 82)
+calLeftMargin = 30
+calTopMargin = 30
+boldYmLabel = True ##Apply in Pref FIXME
+showYmArrows = True ##Apply in Pref FIXME
 labelMenuDelay = 0.1 ## delay for shift up/down items of menu for right click on YearLabel
 ####################
-trayImage	= join(pixDir, 'tray-green.png')
-trayImageHoli	= join(pixDir, 'tray-red.png')
-trayBgColor	= (-1, -1, -1, 0) ## how to get bg color of gnome panel ????????????
-trayTextColor	= (0, 0, 0)
-traySize	= 22
-trayFont	= None
-trayY0		= None
+trayImage = join(pixDir, 'tray-green.png')
+trayImageHoli = join(pixDir, 'tray-red.png')
+trayBgColor = (-1, -1, -1, 0) ## how to get bg color of gnome panel ????????????
+trayTextColor = (0, 0, 0)
+traySize = 22
+trayFont = None
+trayY0 = None
 
 '''
-trayImage	= join(pixDir, 'tray-dark.png')
-trayImageHoli	= join(pixDir, 'tray-dark.png')
-trayBgColor	= (0, 0, 0, 0) ## how to get bg color of gnome panel ????????????
+trayImage = join(pixDir, 'tray-dark.png')
+trayImageHoli = join(pixDir, 'tray-dark.png')
+trayBgColor = (0, 0, 0, 0) ## how to get bg color of gnome panel ????????????
 trayTextColor = (255, 255, 255)
-traySize	= 21
-trayFont	= None
-trayY0		= 4
+traySize = 21
+trayFont = None
+trayY0 = 4
 '''
 
 ####################
@@ -573,10 +574,10 @@ pluginsTextTray = False
 pluginsTextInsideExpander = True
 pluginsTextIsExpanded = True ## affect only if pluginsTextInsideExpander
 ####################
-dragGetMode	= core.DATE_GREG  ##Apply in Pref - FIXME
+dragGetMode = core.DATE_GREG  ##Apply in Pref - FIXME
 #dragGetDateFormat = '%Y/%m/%d'
-dragRecMode	= core.DATE_GREG  ##Apply in Pref - FIXME
-dragIconCell	= False
+dragRecMode = core.DATE_GREG  ##Apply in Pref - FIXME
+dragIconCell = False
 ####################
 monthRMenuNum = True
 #monthRMenu

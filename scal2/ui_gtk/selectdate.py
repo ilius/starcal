@@ -129,7 +129,7 @@ class SelectDateDialog(gtk.Dialog):
         text = selection.get_text()
         if text==None:
             return
-        date = core.parseDroppedDate(text)
+        date = ui.parseDroppedDate(text)
         if date==None:
             print 'selectDateDialog: dropped text "%s"'%text
             return

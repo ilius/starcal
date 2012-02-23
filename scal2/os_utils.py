@@ -76,11 +76,26 @@ def getUsersData():
             'login': parts[0],
             'uid': parts[2],
             'gid': parts[3],
-            'read_name': parts[4],
+            'real_name': parts[4],
             'home_dir': parts[5],
             'shell': parts[6],
         })
     return data
+
+def getUserDisplayName():
+    if os.sep=='/':
+        username = os.getenv('USER')
+        if isfile('/etc/passwd'):
+            for user in getUsersData():
+                if user['login'] == username:
+                    if user['real_name']:
+                        return user['real_name']
+                    else:
+                        return username
+        return username
+    else:## FIXME
+        username = os.getenv('USERNAME')
+        return username
 
 
 def kill(pid, signal=0):

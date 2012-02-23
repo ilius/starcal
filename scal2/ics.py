@@ -30,7 +30,8 @@ from scal2 import core
 
 
 
-icsTmFormat = '%Y%m%dT%H%M%S'## timezone? (Z%Z or Z%z) FIXME
+icsTmFormat = '%Y%m%dT%H%M%S'## timezone? (Z%Z or Z%z)
+icsTmFormatPretty = '%Y-%m-%dT%H:%M:%S'## timezone? (Z%Z or Z%z)
 
 icsHeader = '''BEGIN:VCALENDAR
 VERSION:2.0
@@ -41,13 +42,42 @@ icsWeekDays = ('SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA')
 
 encodeIcsWeekDayList = lambda weekDayList: ','.join([icsWeekDays[wd] for wd in weekDayList])
 
-def getIcsTimeByEpoch(epoch):
-    (jd, hour, minute, second) = getJhmsFromEpoch(epoch)
-    (year, month, day) = jd_to(jd, DATE_GREG)
-    return strftime(icsTmFormat, (year, month, day, hour, minute, second, 0, 0, 0))
 
-getIcsDate = lambda y, m, d: '%.4d%.2d%.2d'%(y, m, d)
-getIcsDateByJd = lambda jd: getIcsDate(*jd_to(jd, DATE_GREG))
+def getIcsTimeByEpoch(epoch, pretty=False):
+    format = icsTmFormatPretty if pretty else icsTmFormat
+    return strftime(format, time.gmtime(epoch))
+    #(jd, hour, minute, second) = getJhmsFromEpoch(epoch)
+    #(year, month, day) = jd_to(jd, DATE_GREG)
+    #return strftime(format, (year, month, day, hour, minute, second, 0, 0, 0))
+
+
+
+def getIcsDate(y, m, d, pretty=False):
+    format = '%.4d-%.2d-%.2d' if pretty else '%.4d%.2d%.2d'
+    return format % (y, m, d)
+
+def getIcsDateByJd(jd, pretty=False):
+    (y, m, d) = jd_to(jd, DATE_GREG)
+    return getIcsDate(y, m, d, pretty)
+
+def getJdByIcsDate(icsDate):
+    tm = time.strptime(icsDate, '%Y%m%d')
+    return to_jd(tm.tm_year, tm.tm_mon, tm.tm.mday, DATE_GREG)
+
+def getEpochByIcsTime(icsTime):
+    return int(time.mktime(time.strptime(icsDate, icsTmFormat)))
+
+def splitIcsValue(value):
+    data = []
+    for p in value.split(';'):
+        pp = p.split('=')
+        if len(pp)==1:
+            data.append([pp[0], ''])
+        elif len(pp)==2:
+            data.append(pp)
+        else:
+            raise ValueError('unkown ics value %r'%value)
+    return data
 
 def convertHolidayPlugToIcs(plug, startJd, endJd, namePostfix=''):
     icsText = icsHeader

@@ -519,10 +519,6 @@ msgid "Today"
 msgstr ""
 "امروز"
 
-msgid "Add Custom Day"
-msgstr ""
-"افزودن روز دلخواه"
-
 msgid "Use (Iranian) database for Hijri months length"
 msgstr ""
 "از دیتابیس طول ماه‌های قمری استفاده‌کن (تقویم رسمی ایران)"
@@ -1114,14 +1110,6 @@ msgstr ""
 "_تنظیم افزونه"
 
 
-msgid "Custom days text (below calendar)"
-msgstr ""
-"متن مناسبت‌های دلخواه (زیر تقویم)"
-
-msgid "Custom days icon (in the calendar)"
-msgstr ""
-"آیکون مناسبت‌های دلخواه (درون تقویم)"
-
 msgid "Calendar height"
 msgstr ""
 "ارتفاع تقویم"
@@ -1256,14 +1244,6 @@ msgstr ""
 msgid "Type"
 msgstr ""
 "نوع"
-
-msgid "Remove Custom Day"
-msgstr ""
-"حذف روز دلخواه"
-
-msgid "Edit Custom Day"
-msgstr ""
-"ویرایش روز دلخواه"
 
 msgid "_General"
 msgstr ""
@@ -1558,17 +1538,6 @@ msgid "Select _Date..."
 msgstr ""
 "انتخاب _تاریخ..."
 
-msgid "_Add Custom Day"
-msgstr ""
-"_افزودن روز دلخواه"
-
-msgid "_Remove Custom Day"
-msgstr ""
-"_حذف روز دلخواه"
-
-msgid "_Edit Custom Day"
-msgstr ""
-"_ویرایش روز دلخواه"
 
 msgid "_Export to "
 msgstr ""
@@ -1657,10 +1626,6 @@ msgstr ""
 msgid "Plugins Text"
 msgstr ""
 "متن افزونه‌ها"
-
-msgid "CustomDay Text"
-msgstr ""
-"متن روزهای دلخواه"
 
 msgid "Icon Size:"
 msgstr ""

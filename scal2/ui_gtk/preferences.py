@@ -30,12 +30,11 @@ from scal2.locale_man import tr as _
 from scal2.paths import *
 
 from scal2 import core
-from scal2.core import myRaise, convert
+from scal2.core import myRaise, convert, APP_DESC
 
 from scal2.format_time import compileTmFormat
 
 from scal2 import ui
-##from scal2.ui_gtk import starcal_gtk
 
 import gtk
 from gtk import gdk
@@ -104,14 +103,14 @@ class ToolbarItem:
         self.tooltip = _(tooltip)
 
 toolbarItemsData = (
-    ToolbarItem('today',       'home',        'goToday',        'Select Today'),
-    ToolbarItem('date',        'index',       'selectDateShow', 'Select Date...', 'Date...'),
-    ToolbarItem('customize',   'edit',        'customizeShow'),
-    ToolbarItem('preferences', 'preferences', 'prefShow',),
-    ToolbarItem('add',         'add',         'eventManShow',   'Event Manager',     ),
-    ToolbarItem('export',      'convert',     'exportClicked',  'Export to HTML',     ),
-    ToolbarItem('about',       'about',       'aboutShow',      'About StarCalendar', ),
-    ToolbarItem('quit',        'quit',        'quit',)
+    ToolbarItem('today', 'home', 'goToday', 'Select Today'),
+    ToolbarItem('date', 'index', 'selectDateShow', 'Select Date...', 'Date...'),
+    ToolbarItem('customize', 'edit', 'customizeShow'),
+    ToolbarItem('preferences', 'preferences', 'prefShow'),
+    ToolbarItem('add', 'add', 'eventManShow', 'Event Manager'),
+    ToolbarItem('export', 'convert', 'exportClicked', _('Export to ')+'HTML'),
+    ToolbarItem('about', 'about', 'aboutShow', _('About ')+APP_DESC),
+    ToolbarItem('quit', 'quit', 'quit')
 )
 
 toolbarItemsDataDict = dict([(item.name, item) for item in toolbarItemsData])
@@ -1494,11 +1493,11 @@ class PrefDialog(gtk.Dialog):
                 msg.destroy()
             """
             if ui.checkNeedRestart():
-                d = gtk.Dialog(_('Need Restart StarCalendar'), self,
+                d = gtk.Dialog(_('Need Restart '+APP_DESC), self,
                     gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT | gtk.DIALOG_NO_SEPARATOR,
                     (gtk.STOCK_CANCEL, 0))
                 d.set_keep_above(True)
-                label = gtk.Label(_('Some preferences need for restart StarCalendar to apply.'))
+                label = gtk.Label(_('Some preferences need for restart %s to apply.'%APP_DESC))
                 label.set_line_wrap(True)
                 d.vbox.pack_start(label)
                 resBut = d.add_button(_('_Restart'), 1)
@@ -1610,7 +1609,7 @@ class PrefDialog(gtk.Dialog):
                 item.set_sensitive(plug.has_config)
                 menu.add(item)
                 ##
-                menu.add(labelImageMenuItem('Export to iCalendar', 'ical-32.png', self.plugExportToIcsClicked, plug))
+                menu.add(labelImageMenuItem(_('Export to ')+'iCalendar', 'ical-32.png', self.plugExportToIcsClicked, plug))
                 ##
                 menu.show_all()
                 menu.popup(None, None, None, 3, event.time)

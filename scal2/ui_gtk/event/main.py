@@ -121,7 +121,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             self.trees.insert(
                 self.trashIter,
                 0,
-                self.getEventRow(ui.eventTrash.getEvent(eid)),
+                self.getEventRow(ui.eventTrash[eid]),
             )
         ui.trashedEvents = []
         ###
@@ -130,7 +130,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             group = ui.eventGroups[gid]
             eventIndex = group.index(eid)
             eventIter = self.trees.get_iter((groupIndex, eventIndex))
-            for i, value in enumerate(self.getEventRow(group.getEvent(eid))):
+            for i, value in enumerate(self.getEventRow(group[eid])):
                 self.trees.set_value(eventIter, i, value)
         ui.changedEvents = []
         ###
@@ -138,7 +138,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             groupIndex = ui.eventGroups.index(gid)
             group = ui.eventGroups[gid]
             groupIter = self.trees.get_iter((groupIndex,))
-            for i, value in enumerate(self.getGroupRow(group, self.getRowBgColor())):
+            for i, value in enumerate(self.getGroupRow(group)):
                 self.trees.set_value(groupIter, i, value)
         ui.changedGroups = []
         ###
@@ -262,12 +262,12 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 menu.add(labelStockMenuItem('Edit', gtk.STOCK_EDIT, self.editGroup, path, group))
                 eventTypes = group.acceptsEventTypes
                 if eventTypes is None:
-                    eventTypes = event_man.eventsClassNameList
+                    eventTypes = event_man.classes.event.names
                 for eventType in eventTypes:
                     #if eventType == 'custom':## FIXME
                     #    desc = _('Event')
                     #else:
-                    desc = event_man.eventsClassDict[eventType].desc
+                    desc = event_man.classes.event.byName[eventType].desc
                     menu.add(labelStockMenuItem(
                         _('Add ') + desc,
                         gtk.STOCK_ADD,
@@ -291,7 +291,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 menu.add(labelStockMenuItem('Move Up', gtk.STOCK_GO_UP, self.moveUpFromMenu, path))
                 menu.add(labelStockMenuItem('Move Down', gtk.STOCK_GO_DOWN, self.moveDownFromMenu, path))
                 ##
-                menu.add(labelImageMenuItem('Export to iCalendar', 'ical-32.png', self.exportGroupToIcsFromMenu, group))
+                menu.add(labelImageMenuItem(_('Export to ')+'iCalendar', 'ical-32.png', self.exportGroupToIcsFromMenu, group))
                 ###
                 for (actionName, actionFuncName) in group.actions:
                     menu.add(labelStockMenuItem(_(actionName), None, self.groupActionClicked, group, actionFuncName))
@@ -369,19 +369,22 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         event.eid,
         pixbufFromFile(event.icon),
         event.summary,
-        event.description,
+        event.getShownDescription(),
     )
-    getGroupRow = lambda self, group, rowBgColor: (
-        group.gid,
-        newOutlineSquarePixbuf(
-            group.color,
-            20,
-            0 if group.enable else 15,
-            rowBgColor,
-        ),
-        group.title,
-        '',
-    )
+    def getGroupRow(self, group, rowBgColor=None):
+        if not rowBgColor:
+            rowBgColor = self.getRowBgColor()
+        return (
+            group.gid,
+            newOutlineSquarePixbuf(
+                group.color,
+                20,
+                0 if group.enable else 15,
+                rowBgColor,
+            ),
+            group.title,
+            '',
+        )
     def reloadEvents(self):
         self.trees.clear()
         rowBgColor = self.getRowBgColor()
@@ -412,7 +415,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 else:
                     obj_list.append(ui.eventGroups[obj_id])
             else:
-                obj_list.append(obj_list[i-1].getEvent(obj_id))
+                obj_list.append(obj_list[i-1][obj_id])
         return obj_list
     def treeviewCursorChanged(self, treev=None):
         cur = self.treev.get_cursor()
@@ -472,7 +475,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             #self.trees.get_iter_root(),## parent
             self.trees.iter_parent(afterGroupIter),
             afterGroupIter,## sibling
-            self.getGroupRow(group, self.getRowBgColor()),
+            self.getGroupRow(group),
         )
     def addGroupBeforeTrash(self, menu):
         group = GroupEditorDialog().run()
@@ -484,7 +487,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         self.trees.insert_before(
             self.trees.iter_parent(self.trashIter),
             self.trashIter,
-            self.getGroupRow(group, self.getRowBgColor()),
+            self.getGroupRow(group),
         )
     def duplicateGroup(self, path):
         (index,) = path
@@ -497,7 +500,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         self.trees.insert(
             None,
             index+1,
-            self.getGroupRow(newGroup, self.getRowBgColor()),
+            self.getGroupRow(newGroup),
         )
     def duplicateGroupWithEvents(self, path):
         (index,) = path
@@ -510,7 +513,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         newGroupIter = self.trees.insert(
             None,
             index+1,
-            self.getGroupRow(newGroup, self.getRowBgColor()),
+            self.getGroupRow(newGroup),
         )
         for event in newGroup:
             self.trees.append(newGroupIter, self.getEventRow(event))
@@ -531,7 +534,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         if group is None:
             return
         groupIter = self.trees.get_iter(path)
-        for i, value in enumerate(self.getGroupRow(group, self.getRowBgColor())):
+        for i, value in enumerate(self.getGroupRow(group)):
             self.trees.set_value(groupIter, i, value)
     def deleteGroup(self, menu, path):
         (index,) = path
@@ -807,14 +810,14 @@ if rtl:
 
 modPrefix = 'scal2.ui_gtk.event.'
 
-for cls in event_man.eventsClassList:
+for cls in event_man.classes.event:
     try:
         module = __import__(modPrefix + cls.name, fromlist=['EventWidget'])
         cls.WidgetClass = module.EventWidget
     except:
         myRaise()
 
-for cls in event_man.eventRulesClassList:
+for cls in event_man.classes.rule:
     try:
         module = __import__(modPrefix + 'rules.' + cls.name, fromlist=['RuleWidget'])
     except:
@@ -826,7 +829,7 @@ for cls in event_man.eventRulesClassList:
     except AttributeError:
         print 'no class RuleWidget defined in module "%s"'%cls.name
 
-for cls in event_man.eventNotifiersClassList:
+for cls in event_man.classes.notifier:
     try:
         module = __import__(modPrefix + 'notifiers.' + cls.name, fromlist=['NotifierWidget', 'notify'])
         cls.WidgetClass = module.NotifierWidget
@@ -834,7 +837,7 @@ for cls in event_man.eventNotifiersClassList:
     except:
         myRaise()
 
-for cls in event_man.eventGroupsClassList:
+for cls in event_man.classes.group:
     try:
         module = __import__(modPrefix + 'groups.' + cls.name, fromlist=['GroupWidget'])
     except:
@@ -870,7 +873,7 @@ import scal2.ui_gtk.event.importer ## opens a dialog is neccessery
 def testCustomEventEditor():
     from pprint import pprint, pformat
     dialog = gtk.Dialog()
-    #dialog.vbox.pack_start(IconSelectButton('/usr/share/starcal2/pixmaps/starcal2.png'))
+    #dialog.vbox.pack_start(IconSelectButton(ui.logo))
     event = event_man.Event(1)
     event.load()
     widget = event.makeWidget()
@@ -879,6 +882,7 @@ def testCustomEventEditor():
     dialog.add_button('OK', 0)
     def on_response(d, e):
         widget.updateVars()
+        #widget.event.afterModify()
         widget.event.save()
         pprint(widget.event.getData())
     dialog.connect('response', on_response)

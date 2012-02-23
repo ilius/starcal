@@ -60,7 +60,7 @@ uidList = [thisUid]
 import atexit
 
 def onDaemonExit():
-    #log.debug('starcal2-daemon: exiting')
+    #log.debug('daemon: exiting')
     os.remove(pidFile)
 
 open(pidFile, 'w').write(str(pid))

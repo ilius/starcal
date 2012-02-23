@@ -2,7 +2,7 @@
 import sys
 from subprocess import Popen, PIPE
 
-from scal2.core import APP_NAME
+from scal2.core import APP_NAME, APP_DESC
 from scal2 import ui
 
 getWhileList = lambda: eval(Popen(['gsettings', 'get', 'com.canonical.Unity.Panel', 'systray-whitelist'], stdout=PIPE).communicate()[0])
@@ -41,7 +41,7 @@ def addAndRestart():
     addToWhileList()
     Popen('LANG=en_US.UTF-8 unity', shell=True)
 
-addAndRestartText = "Seems that you are using a Unity desktop and StarCalendar is not allowed to use Tray icon. Press OK to add StarCalendar to Unity's white list and then restart Unity"
+addAndRestartText = "Seems that you are using a Unity desktop and %s is not allowed to use Tray icon. Press OK to add %s to Unity's white list and then restart Unity"%(APP_DESC, APP_DESC)
 
 if __name__=='__main__':
     if len(sys.argv)>1:

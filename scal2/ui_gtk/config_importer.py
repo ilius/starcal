@@ -17,6 +17,8 @@
 ##    with this program. Or on Debian systems, from /usr/share/common-licenses/GPL
 ##    If not, see <http://www.gnu.org/licenses/gpl.txt>.
 
+APP_DESC = 'StarCalendar'
+
 import os, shutil
 from os.path import dirname
 from os.path import join, isfile, isdir
@@ -33,7 +35,7 @@ langCodeList = []
 
 langDefaultCode = ''
 
-win = gtk.Dialog(title='StarCalendar - First Run', buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+win = gtk.Dialog(title=APP_DESC+' - First Run', buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 langHbox = gtk.HBox()
 langHbox.pack_start(gtk.Label('Select Language:'), 0, 0)
 
@@ -41,7 +43,7 @@ langHbox.pack_start(gtk.Label('Select Language:'), 0, 0)
 importCheckb = None
 oldVersion = getOldVersion()
 if oldVersion and '1.5.0' < oldVersion < '1.6.0':## FIXME
-    importCheckb = gtk.CheckButton('Import configurations from StarCalendar %s'%oldVersion)
+    importCheckb = gtk.CheckButton('Import configurations from %s %s'%(APP_DESC, oldVersion))
     importCheckb.connect('clicked', lambda cb: langHbox.set_sensitive(not cb.get_active()))
     importCheckb.set_active(True)
     win.vbox.pack_start(importCheckb)

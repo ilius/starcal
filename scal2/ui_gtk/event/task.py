@@ -84,7 +84,7 @@ class EventWidget(common.EventWidget):
             self.durationBox.setDuration(*values)
             self.endDateInput.set_date(startDate)## FIXME
             self.endTimeInput.set_time(startTime)## FIXME
-        elif endType=='end':
+        elif endType=='date':
             self.endTypeCombo.set_active(1)
             self.endDateInput.set_date(values[0])
             self.endTimeInput.set_time(values[1])

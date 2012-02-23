@@ -13,6 +13,11 @@ getFloatJdFromEpoch = lambda epoch: epoch/(24.0*3600) + J1970
 
 getEpochFromJd = lambda jd: (jd-J1970)*(24*3600)
 
+def getJdListFromEpochRange(startEpoch, endEpoch):
+    startJd = getJdFromEpoch(startEpoch)
+    endJd = getJdFromEpoch(endEpoch-0.01) + 1
+    return range(startJd, endJd)
+
 def getJhmsFromEpoch(epoch, local=False):## return a tuple (julain_day, hour, minute, second) from epoch
     #if local:
     #    epoch -= getCurrentTimeZone()

@@ -262,7 +262,7 @@ class TimeLine(gtk.Widget):
                 if gbox.contains(x, y):
                     (gid, eid) = gbox.ids
                     group = ui.eventGroups[gid]
-                    event = group.getEvent(eid)
+                    event = group[eid]
                     ###
                     menu = gtk.Menu()
                     ##

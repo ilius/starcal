@@ -170,7 +170,7 @@ def starcalAppletFactory(applet, iid):
 
 if len(sys.argv)>1 and sys.argv[1] in ('-w', '--window'):
     main_window = gtk.Window(gtk.WINDOW_TOPLEVEL)
-    main_window.set_title('StarCalendar Gnome Applet')
+    main_window.set_title(core.APP_DESC+' Gnome Applet')
     main_window.connect('destroy', gtk.main_quit) 
     app = gnomeapplet.Applet()
     starcalAppletFactory(app, None)
@@ -182,7 +182,7 @@ if __name__ == '__main__':
     gnomeapplet.bonobo_factory(
         'OAFIID:GNOME_Starcal2Applet_Factory',
          gnomeapplet.Applet.__gtype__,
-         'StarCalendar',
+         core.APP_DESC,
          '0',
          starcalAppletFactory,
      )
