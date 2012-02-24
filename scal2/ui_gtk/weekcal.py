@@ -143,10 +143,10 @@ class WeekCal(gtk.Widget):
         #self.connect('event', show_event)
         self.buttons = [
             Button(prevImage, self.goBack, 5, 5, True),
-            Button('week-home.png', self.goToday, 35, 5, True),
+            Button('home.png', self.goToday, 35, 5, True),
             Button(nextImage, self.goNext, 65, 5, True),
-            Button('week-small.png', self.startResize, -1, -1, False),
-            Button('week-exit.png', self.quit, -5, 5, True),
+            Button('resize-small.png', self.startResize, -1, -1, False),
+            Button('exit.png', self.quit, -5, 5, True),
         ]
     def onDateChange(self):
         self.queue_draw()

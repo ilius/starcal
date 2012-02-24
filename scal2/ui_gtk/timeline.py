@@ -77,9 +77,9 @@ class TimeLine(gtk.Widget):
         self.timeWidth = 24*3600
         self.timeStart = self.currentTime - self.timeWidth/2.0
         self.buttons = [
-            Button('week-home.png', self.centerToNowClicked, 1, -1, False),
-            Button('week-small.png', self.startResize, -1, -1, False),
-            Button('week-exit.png', closeFunc, 35, -1, False)
+            Button('home.png', self.centerToNowClicked, 1, -1, False),
+            Button('resize-small.png', self.startResize, -1, -1, False),
+            Button('exit.png', closeFunc, 35, -1, False)
         ]
         ## zoom in and zoom out buttons FIXME
         self.gboxes = []
