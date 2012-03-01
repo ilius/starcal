@@ -2067,63 +2067,52 @@ class UniversityTerm(EventGroup):
                 pass
 
 
-class EventGroupsHolder(JsonEventBaseClass):
-    file = join(confDir, 'event', 'group_list.json')
+class JsonObjectsHolder(JsonEventBaseClass):
     def __init__(self):
         self.clear()
     def clear(self):
-        self.groupsDict = {}
-        self.groupIds = []
+        self.byId = {}
+        self.idList = []
     def iterGen(self):
-        for gid in self.groupIds:
-            yield self.groupsDict[gid]
+        for _id in self.idList:
+            yield self.byId[_id]
     __iter__ = lambda self: IteratorFromGen(self.iterGen())
-    __len__ = lambda self: len(self.groupIds)
-    index = lambda self, gid: self.groupIds.index(gid) ## or get group obj instead of gid? FIXME
-    __getitem__ = lambda self, gid: self.groupsDict.__getitem__(gid)
+    __len__ = lambda self: len(self.idList)
+    index = lambda self, _id: self.idList.index(_id) ## or get object instead of obj_id? FIXME
+    __getitem__ = lambda self, _id: self.byId.__getitem__(_id)
     #byIndex = lambda 
-    __setitem__ = lambda self, gid, group: self.groupsDict.__setitem__(gid, group)
+    __setitem__ = lambda self, _id, group: self.byId.__setitem__(_id, group)
+
+
+class EventGroupsHolder(JsonObjectsHolder):
+    file = join(confDir, 'event', 'group_list.json')
     def insert(self, index, group):
         gid = group.gid
-        assert not gid in self.groupIds
-        self.groupsDict[gid] = group
-        self.groupIds.insert(index, gid)
+        assert not gid in self.idList
+        self.byId[gid] = group
+        self.idList.insert(index, gid)
     def append(self, group):
         gid = group.gid
-        assert not gid in self.groupIds
-        self.groupsDict[gid] = group
-        self.groupIds.append(gid)
+        assert not gid in self.idList
+        self.byId[gid] = group
+        self.idList.append(gid)
     def delete(self, group):
         gid = group.gid
-        assert gid in self.groupIds
+        assert gid in self.idList
         assert not group.eventIds ## FIXME
         try:
             os.remove(group.groupFile)
         except:
             myRaise()
         else:
-            del self.groupsDict[gid]
-            self.groupIds.remove(gid)
+            del self.byId[gid]
+            self.idList.remove(gid)
     def pop(self, index):
-        gid = self.groupIds.pop(index)
-        group = self.groupsDict.pop(gid)
+        gid = self.idList.pop(index)
+        group = self.byId.pop(gid)
         return group
-    moveUp = lambda self, index: self.groupIds.insert(index-1, self.groupIds.pop(index))
-    moveDown = lambda self, index: self.groupIds.insert(index+1, self.groupIds.pop(index))
-    #def moveUp(self, gid):
-    #    index = self.groupIds.index(gid)
-    #    assert index > 0
-    #    self.groupIds.insert(index-1, self.groupIds.pop(index))
-    #def moveDown(self, gid):
-    #    index = self.groupIds.index(gid)
-    #    assert index < len(self.groupIds) - 1
-    #    self.groupIds.insert(index+1, self.groupIds.pop(index))
-    #def swap(self, gid1, gid2):
-    #    #assert gid1 in self.groupIds and gid2 in self.groupIds
-    #    i1 = self.groupIds.index(gid1)
-    #    group1 = self.groupIds.pop(i1)
-    #    i2 = self.groupIds.index(gid2)
-    #    self.groupIds.insert(i2+1, group1)
+    moveUp = lambda self, index: self.idList.insert(index-1, self.idList.pop(index))
+    moveDown = lambda self, index: self.idList.insert(index+1, self.idList.pop(index))
     def load(self):
         self.clear()
         #eventIds = []
@@ -2154,9 +2143,9 @@ class EventGroupsHolder(JsonEventBaseClass):
             self.save()
         ## here check for non-grouped event ids ## FIXME
     #def setData(self, data):
-    #    self.groupIds = data
+    #    self.idList = data
     def getData(self):
-        return self.groupIds
+        return self.idList
 
 
 

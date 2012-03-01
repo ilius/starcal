@@ -1160,7 +1160,7 @@ class MainWin(gtk.Window):
         menu = gtk.Menu()
         ####
         item = gtk.ImageMenuItem(_('Resize'))
-        item.set_image(imageFromFile('%s/resize.png'%pixDir))
+        item.set_image(imageFromFile('resize.png'))
         item.connect('button-press-event', self.startResize)
         menu.add(item)
         ####

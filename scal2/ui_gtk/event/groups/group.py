@@ -21,13 +21,13 @@ class GroupWidget(gtk.VBox):
         gtk.VBox.__init__(self)
         self.group = group
         ########
-        sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        self.sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
         #####
         hbox = gtk.HBox()
         label = gtk.Label(_('Title'))
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
-        sizeGroup.add_widget(label)
+        self.sizeGroup.add_widget(label)
         self.titleEntry = gtk.Entry()
         hbox.pack_start(self.titleEntry, 1, 1)
         self.pack_start(hbox, 0, 0)
@@ -36,7 +36,7 @@ class GroupWidget(gtk.VBox):
         label = gtk.Label(_('Color'))
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
-        sizeGroup.add_widget(label)
+        self.sizeGroup.add_widget(label)
         self.colorButton = MyColorButton()
         self.colorButton.set_use_alpha(True) ## FIXME
         hbox.pack_start(self.colorButton, 0, 0)
@@ -46,7 +46,7 @@ class GroupWidget(gtk.VBox):
         label = gtk.Label(_('Default Icon'))## FIXME
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
-        sizeGroup.add_widget(label)
+        self.sizeGroup.add_widget(label)
         self.iconSelect = common.IconSelectButton()
         hbox.pack_start(self.iconSelect, 0, 0)
         self.pack_start(hbox, 0, 0)
@@ -55,7 +55,7 @@ class GroupWidget(gtk.VBox):
         label = gtk.Label(_('Default Calendar Type'))
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
-        sizeGroup.add_widget(label)
+        self.sizeGroup.add_widget(label)
         combo = gtk.combo_box_new_text()
         for m in core.modules:
             combo.append_text(_(m.desc))
@@ -70,7 +70,7 @@ class GroupWidget(gtk.VBox):
         label = gtk.Label(_('Event Cache Size'))
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
-        sizeGroup.add_widget(label)
+        self.sizeGroup.add_widget(label)
         spin = gtk.SpinButton()
         spin.set_increments(1, 10)
         spin.set_range(0, 9999)
@@ -85,12 +85,10 @@ class GroupWidget(gtk.VBox):
         #label = gtk.Label(_('Show Full Event Description'))
         #label.set_alignment(0, 0.5)
         #hbox.pack_start(label, 0, 0)
-        #sizeGroup.add_widget(label)
+        #self.sizeGroup.add_widget(label)
         #self.showFullEventDescCheck = gtk.CheckButton('')
         #hbox.pack_start(self.showFullEventDescCheck, 1, 1)
         #self.pack_start(hbox, 0, 0)
-        ########
-        self.sizeGroup = sizeGroup
     def updateWidget(self):
         self.titleEntry.set_text(self.group.title)
         self.colorButton.set_color(self.group.color)

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # 
-# Copyright (C) 2009-2011 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
+# Copyright (C) 2009-2012 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -18,6 +18,8 @@
 
 import os, sys, shlex, time, thread
 from os.path import join, dirname
+
+from scal2.paths import *
 
 from scal2 import core
 from scal2.core import pixDir, convert, myRaise
@@ -100,6 +102,72 @@ class TrashEditorDialog(gtk.Dialog):
         self.trash.icon = self.iconSelect.filename
         self.trash.save()
 
+class AccountEditorDialog(gtk.Dialog):
+    def __init__(self, account=None):
+        gtk.Dialog.__init__(self)
+        self.set_title(_('Edit Account') if account else _('Add New Account'))
+        ###
+        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        if ui.autoLocale:
+            cancelB.set_label(_('_Cancel'))
+            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
+            okB.set_label(_('_OK'))
+            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        self.connect('response', lambda w, e: self.hide())
+        #######
+        self.account = account
+        self.activeWidget = None
+        #######
+        hbox = gtk.HBox()
+        combo = gtk.combo_box_new_text()
+        for cls in event_man.classes.account:
+            combo.append_text(cls.desc)
+        hbox.pack_start(gtk.Label(_('Account Type')), 0, 0)
+        hbox.pack_start(combo, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.vbox.pack_start(hbox, 0, 0)
+        ####
+        if self.account:
+            self.isNew = False
+            combo.set_active(event_man.classes.account.names.index(self.account.name))
+        else:
+            self.isNew = True
+            defaultAccountTypeIndex = 0
+            combo.set_active(defaultAccountTypeIndex)
+            self.account = event_man.classes.account[defaultAccountTypeIndex]()
+        self.activeWidget = None
+        combo.connect('changed', self.typeChanged)
+        self.comboType = combo
+        self.vbox.show_all()
+        self.typeChanged()
+    def dateModeChanged(self, combo):
+        pass
+    def typeChanged(self, combo=None):
+        if self.activeWidget:
+            self.activeWidget.updateVars()
+            self.activeWidget.destroy()
+        cls = event_man.classes.account[self.comboType.get_active()]
+        account = cls()
+        if self.account:
+            account.copyFrom(self.account)
+            account.setId(self.account.aid)
+            del self.account
+        if self.isNew:
+            account.title = cls.desc ## FIXME
+        self.account = account
+        self.activeWidget = account.makeWidget()
+        self.vbox.pack_start(self.activeWidget, 0, 0)
+    def run(self):
+        if self.activeWidget is None or self.account is None:
+            return None
+        if gtk.Dialog.run(self) != gtk.RESPONSE_OK:
+            return None
+        self.activeWidget.updateVars()
+        self.account.save()
+        ui.eventAccounts[self.account.gid] = self.account
+        self.destroy()
+        return self.account
 
 
 class EventManagerDialog(gtk.Dialog):## FIXME
@@ -232,6 +300,13 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         #self.clipboard = gtk.clipboard_get()
         self.toPasteEvent = None ## (path, bool move)
         #####
+        self.sbar = gtk.Statusbar()
+        self.sbar.set_direction(gtk.TEXT_DIR_LTR)
+        #self.sbar.set_has_resize_grip(False)
+        self.vbox.pack_start(self.sbar, 0, 0)
+        #####
+        self.syncing = None ## or a tuple of (groupId, statusText)
+        #####
         self.vbox.show_all()
         #self.reloadEvents()## FIXME
     def canPasteToGroup(self, group):
@@ -292,6 +367,9 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 menu.add(labelStockMenuItem('Move Down', gtk.STOCK_GO_DOWN, self.moveDownFromMenu, path))
                 ##
                 menu.add(labelImageMenuItem(_('Export to ')+'iCalendar', 'ical-32.png', self.exportGroupToIcsFromMenu, group))
+                #if group.remoteIds:
+                #    account = ui.eventAccounts[group.remoteIds[0]]
+                #    menu.add(labelImageMenuItem(_('Synchronize with %s')%account.title, gtk.STOCK_REFRESH, self.syncGroup, path))
                 ###
                 for (actionName, actionFuncName) in group.actions:
                     menu.add(labelStockMenuItem(_(actionName), None, self.groupActionClicked, group, actionFuncName))
@@ -423,6 +501,15 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             return
         (path, col) = cur
         ## update eventInfoBox
+        #print 'treeviewCursorChanged', path
+        if not self.syncing:
+            if path and len(path)==1:
+                group = self.getObjsByPath(path)[0]
+                #message_id = self.sbar.push(0, _('%s contains %s events')%(group.title, _(len(group))))
+                message_id = self.sbar.push(0, _('contains %s events')%_(len(group)))
+            else:
+                #self.sbar.remove_all(0)
+                message_id = self.sbar.push(0, '')
         return True
     def treeviewButtonPress(self, treev, g_event):
         pos_t = treev.get_path_at_pos(int(g_event.x), int(g_event.y))
@@ -856,11 +943,34 @@ for cls in event_man.classes.group:
         else:
             setattr(cls, actionName, func)
 
+for fname in os.listdir(join(srcDir, 'accounts')):
+    name, ext = os.path.splitext(fname)
+    if ext == '.py' and name != '__init__':
+        try:
+            __import__('scal2.accounts.%s'%name)
+        except:
+            core.myRaiseTback()
 
-event_man.Event.makeWidget = makeWidget
+#print 'accounts', event_man.classes.account.names
+
+
+for cls in event_man.classes.account:
+    try:
+        module = __import__(modPrefix + 'accounts.' + cls.name, fromlist=['AccountWidget'])
+    except:
+        myRaise()
+        continue
+    try:
+        cls.WidgetClass = module.AccountWidget
+    except AttributeError:
+        print 'no class AccountWidget defined in module "%s"'%cls.name
+
+
 event_man.EventRule.makeWidget = makeWidget
 event_man.EventNotifier.makeWidget = makeWidget
+event_man.Event.makeWidget = makeWidget
 event_man.EventGroup.makeWidget = makeWidget
+event_man.Account.makeWidget = makeWidget
 
 ui.eventGroups.load()
 ui.eventTrash.load()

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #        
-# Copyright (C) 2009-2011 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
+# Copyright (C) 2009-2012 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -677,9 +677,13 @@ class PrefDialog(gtk.Dialog):
         self.corePrefItems = []
         self.uiPrefItems = []
         self.herePrefItems = [] ## FIXME
-        ################################ Tab 1 ############################################
+        #####
+        self.prefPages = []
+        ################################ Tab 1 (General) ############################################
         vbox = gtk.VBox()
-        vbox1 = vbox
+        vbox.label = _('_General')
+        vbox.icon = 'preferences-other.png'
+        self.prefPages.append(vbox)
         hbox = gtk.HBox(spacing=3)
         hbox.pack_start(gtk.Label(_('Language')), 0, 0)
         itemLang = LangPrefItem()
@@ -741,9 +745,12 @@ class PrefDialog(gtk.Dialog):
         hbox.pack_start(item.widget, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         vbox.pack_start(hbox, 0, 0)
-        ################################ Tab 2 ################################################
+        ################################ Tab 2 (Appearance) ###########################################
         vbox = gtk.VBox()
-        vbox2 = vbox
+        vbox.label = _('A_ppearance')
+        vbox.icon = 'preferences-desktop-theme.png'
+        self.prefPages.append(vbox)
+        ########
         hbox = gtk.HBox(spacing=2)
         ########
         item = CheckPrefItem(ui, 'calGrid', _('Grid'))
@@ -943,6 +950,10 @@ class PrefDialog(gtk.Dialog):
         vbox.pack_start(item.widget, 0, 0)
         ################################ Tab 3 (Advanced) ###########################################
         vbox = gtk.VBox()
+        vbox.label = _('A_dvanced')
+        vbox.icon = 'applications-system.png'
+        self.prefPages.append(vbox)
+        ######
         sgroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
         ######
         hbox = gtk.HBox(spacing=5)
@@ -951,9 +962,16 @@ class PrefDialog(gtk.Dialog):
         hbox.pack_start(label, 0, 0)
         sgroup.add_widget(label)
         #hbox.pack_start(gtk.Label(''), 1, 1)
-        item = ComboEntryTextPrefItem(None, 'dateFormat', 
-            ('%Y/%m/%d', '%Y-%m-%d', '%y/%m/%d', '%y-%m-%d',
-            '%OY/%Om/%Od', '%OY-%Om-%Od', '%m/%d', '%m/%d/%Y'))
+        item = ComboEntryTextPrefItem(None, 'dateFormat', (
+            '%Y/%m/%d',
+            '%Y-%m-%d',
+            '%y/%m/%d',
+            '%y-%m-%d',
+            '%OY/%Om/%Od',
+            '%OY-%Om-%Od',
+            '%m/%d',
+            '%m/%d/%Y',
+        ))
         self.herePrefItems.append(item)
         hbox.pack_start(item.widget, 1, 1)
         vbox.pack_start(hbox, 0, 0)
@@ -1043,9 +1061,10 @@ class PrefDialog(gtk.Dialog):
                 vbox.pack_start(optl.widget, 0, 0)
         self.moduleOptions = options
         ################################ Tab 4 (Manage DB) ############################################
-        #'''
         vbox = gtk.VBox()
-        vbox3 = vbox
+        vbox.label = _('_Manage Plugin')
+        vbox.icon = 'preferences-plugin.png'
+        self.prefPages.append(vbox)
         #####
         ##pluginsTextTray:
         hbox = gtk.HBox()
@@ -1243,91 +1262,110 @@ class PrefDialog(gtk.Dialog):
         #############
         ##treev.set_resize_mode(gtk.RESIZE_IMMEDIATE)
         ##self.plugAddItems = []
+        ####################################### Tab 5 (Accounts)
+        vbox = gtk.VBox()
+        vbox.label = _('Accounts')
+        vbox.icon = 'web-system.png'
+        self.prefPages.append(vbox)
+
+        treev = gtk.TreeView()
+        treev.set_headers_clickable(True)
+        trees = gtk.ListStore(int, bool, bool, str)
+        treev.set_model(trees)
+        treev.enable_model_drag_source(gdk.BUTTON1_MASK, [('row', gtk.TARGET_SAME_WIDGET, 0)], gdk.ACTION_MOVE)
+        treev.enable_model_drag_dest([('row', gtk.TARGET_SAME_WIDGET, 0)], gdk.ACTION_MOVE)
+        treev.connect('row-activated', self.accountsTreevRActivate)
+        treev.connect('button-press-event', self.accountsTreevButtonPress)
+        ###
+        ###
+        swin = gtk.ScrolledWindow()
+        swin.add(treev)
+        swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        ######
+        cell = gtk.CellRendererToggle()
+        #cell.set_property('activatable', True)
+        cell.connect('toggled', self.plugTreeviewCellToggled)
+        col = gtk.TreeViewColumn(_('Enable'), cell)
+        col.add_attribute(cell, 'active', 1)
+        #cell.set_active(False)
+        col.set_resizable(True)
+        treev.append_column(col)
+        ######
+        cell = gtk.CellRendererText()
+        col = gtk.TreeViewColumn(_('Title'), cell, text=2)
+        #col.set_resizable(True)## No need!
+        treev.append_column(col)
+        ######
+        self.accountsTreeview = treev
+        self.accountsTreestore = trees
+        #######################
+        hbox = gtk.HBox()
+        vboxPlug = gtk.VBox()
+        vboxPlug.pack_start(swin, 1, 1)
+        hbox.pack_start(vboxPlug, 1, 1)
+        ###
+        toolbar = gtk.Toolbar()
+        toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
+        #try:## DeprecationWarning #?????????????
+            #toolbar.set_icon_size(gtk.ICON_SIZE_SMALL_TOOLBAR)
+            ### no different (argument to set_icon_size does not affect) ?????????
+        #except:
+        #    pass
+        size = gtk.ICON_SIZE_SMALL_TOOLBAR
+        ##no different(argument2 to image_new_from_stock does not affect) ?????????
+        ######## gtk.ICON_SIZE_SMALL_TOOLBAR or gtk.ICON_SIZE_MENU
+        tb = toolButtonFromStock(gtk.STOCK_ADD, size)
+        set_tooltip(tb, _('Edit'))
+        tb.connect('clicked', self.accountsEditClicked)
+        toolbar.insert(tb, -1)
+        ###########
+        tb = toolButtonFromStock(gtk.STOCK_ADD, size)
+        set_tooltip(tb, _('Add'))
+        tb.connect('clicked', self.accountsAddClicked)
+        toolbar.insert(tb, -1)
+        ###########
+        tb = toolButtonFromStock(gtk.STOCK_DELETE, size)
+        set_tooltip(tb, _('Delete'))
+        tb.connect('clicked', self.accountsDelClicked)
+        toolbar.insert(tb, -1)
+        ##########        
+        tb = toolButtonFromStock(gtk.STOCK_GO_UP, size)
+        set_tooltip(tb, _('Move up'))
+        tb.connect('clicked', self.accountsUpClicked)
+        toolbar.insert(tb, -1)
+        #########
+        tb = toolButtonFromStock(gtk.STOCK_GO_DOWN, size)
+        set_tooltip(tb, _('Move down'))
+        tb.connect('clicked', self.accountsDownClicked)
+        toolbar.insert(tb, -1)
+        ###########
+        hbox.pack_start(toolbar, 0, 0)
+        vbox.pack_start(hbox, 1, 1)
         ###################################################################################################
         notebook = gtk.Notebook()
         self.notebook = notebook
         #####################################
-        """### to test
-        notebook.set_property('homogeneous', True)
-        notebook.set_property('show-tabs', True)
-        
-        notebook.append_page(vbox1)
-        notebook.set_tab_label_packing(vbox1, True, True, gtk.PACK_START)
-        notebook.set_tab_label(vbox1, gtk.Label('General'))
-        notebook.set_tab_reorderable(vbox1, True)
-        
-        notebook.append_page(vbox2)
-        notebook.set_tab_label_packing(vbox2, True, True, gtk.PACK_START)
-        notebook.set_tab_label(vbox2, gtk.Label('Appearance'))
-        notebook.set_tab_reorderable(vbox2, True)
-        """
-        ######################
-        l = gtk.Label(_('_General'))
-        l.set_use_underline(True)
-        #eb = gtk.EventBox()
-        vb = gtk.VBox()
-        vb.pack_start(imageFromFile('%s/preferences-other.png'%pixDir))
-        vb.pack_start(l)
-        #eb.add(vb)
-        #eb.set_above_child(True)
-        #eb.set_visible_window(False)
-        #vb.set_extension_events(gtk.gdk.EXTENSION_EVENTS_ALL)
-        #vb.set_events(gtk.gdk.ALL_EVENTS_MASK)
-        #vb.pack_start(eb, 0, 0)
-        #vb.add_events(gtk.gdk.EXPOSURE_MASK | gtk.gdk.BUTTON_PRESS_MASK)
-        vb.show_all()
-        notebook.append_page(vbox1, vb)
-        #notebook.set_tab_label_packing(vbox1, False, False, gtk.PACK_START)
-        ###
-        #notebook.connect('event', show_event)
-        #vb.connect('expose-event', show_event)
-        #vb.connect('expose-event', lambda obj, ev: vb.show_all())
-        #vbox1.connect('event', show_event)
-        ###
-        l = gtk.Label(_('A_ppearance'))
-        l.set_use_underline(True)
-        vb = gtk.VBox()
-        vb.pack_start(imageFromFile('%s/preferences-desktop-theme.png'%pixDir))
-        vb.pack_start(l)
-        vb.show_all()
-        #vb.set_events(gtk.gdk.ALL_EVENTS_MASK)
-        #vb.set_extension_events(gtk.gdk.EXTENSION_EVENTS_ALL)
-        notebook.append_page(vbox2, vb)
-        #notebook.set_tab_label_packing(vbox2, False, False, gtk.PACK_START)
-        #vb.connect('drag-begin', show_event)
-        ###
-        l = gtk.Label(_('_Manage Plugin'))
-        l.set_use_underline(True)
-        vb = gtk.VBox()
-        vb.pack_start(imageFromFile('%s/preferences-plugin.png'%pixDir))
-        vb.pack_start(l)
-        vb.show_all()
-        notebook.append_page(vbox3, vb)
-        #notebook.set_tab_label_packing(vbox3, False, False, gtk.PACK_START)
-        ###
-        l = gtk.Label(_('A_dvanced'))
-        l.set_use_underline(True)
-        vb = gtk.VBox()
-        vb.pack_start(imageFromFile('%s/applications-system.png'%pixDir))
-        vb.pack_start(l)
-        vb.show_all()
-        notebook.append_page(vbox4, vb)
-        #notebook.set_tab_label_packing(vbox4, False, False, gtk.PACK_START)
-        #"""
-        ###
-        try:
-            notebook.set_tab_reorderable(vbox1, True)
-            notebook.set_tab_reorderable(vbox2, True)
-            notebook.set_tab_reorderable(vbox3, True)
-            notebook.set_tab_reorderable(vbox4, True)
-        except AttributeError:
-            pass
+        for vbox in self.prefPages:
+            l = gtk.Label(vbox.label)
+            l.set_use_underline(True)
+            vb = gtk.VBox()
+            vb.pack_start(imageFromFile(vbox.icon))
+            vb.pack_start(l)
+            vb.show_all()
+            notebook.append_page(vbox, vb)
+            try:
+                notebook.set_tab_reorderable(vbox, True)
+            except AttributeError:
+                pass
+        #######################
         notebook.set_property('homogeneous', True)
         self.vbox.pack_start(notebook)
         self.vbox.show_all()
-        self.prefPages = (vbox1, vbox2, vbox3, vbox4)
         for i in ui.prefPagesOrder:
-            j = ui.prefPagesOrder[i]
+            try:
+                j = ui.prefPagesOrder[i]
+            except IndexError:
+                continue
             notebook.reorder_child(self.prefPages[i], j)
     checkYmArrowsClicked = lambda self, check: self.ymArrowHbox.set_sensitive(check.get_active())
     cursorFixedClicked = lambda self, check, hbox: hbox.set_sensitive(check.get_active())
@@ -1743,5 +1781,42 @@ class PrefDialog(gtk.Dialog):
         self.plugTreeview.set_cursor(pos)### pos==1- #????????
     def plugAddTreevRActivate(self, treev, path, col):
         self.plugAddDialogOK(None)#???????
+    def accountsEditClicked(self, button):
+        pass
+    def accountsAddClicked(self, button):
+        pass
+    def accountsDelClicked(self, button):
+        pass
+    def accountsUpClicked(self, button):
+        pass
+    def accountsDownClicked(self, button):
+        pass
+    def accountsTreevRActivate(self, treev, path, col):
+        pass
+    def accountsTreevButtonPress(self, widget, event):
+        b = event.button
+        #print 'plugTreevButtonPress', b
+        if b==3:
+            cur = self.plugTreeview.get_cursor()[0]
+            if cur:
+                i = cur[0]
+                j = self.plugTreestore[i][0]
+                plug = core.allPlugList[j]
+                menu = gtk.Menu()
+                ##
+                ## FIXME
+                ##
+                menu.show_all()
+                menu.popup(None, None, None, 3, event.time)
+            return True
+        return False
+
+
+
+
+
+
+
+
 
 

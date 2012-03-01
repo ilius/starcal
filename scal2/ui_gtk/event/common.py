@@ -64,9 +64,9 @@ class IconSelectButton(gtk.Button):
             self.menu.popup(None, None, None, b, event.time)
     menuItemActivate = lambda self, widget, icon: self.set_filename(icon)
     def dialogResponse(self, dialog, response=0):
-        if response==gtk.RESPONSE_OK:
+        if response == gtk.RESPONSE_OK:
             self.set_filename(dialog.get_filename())
-        elif response==gtk.RESPONSE_REJECT:
+        elif response == gtk.RESPONSE_REJECT:
             self.set_filename('')
         dialog.hide()
     def fileActivated(self, dialog):
@@ -189,7 +189,7 @@ class FilesBox(gtk.VBox):
             title=_('Add File'),
         )
         fcd.connect('response', lambda w, e: fcd.hide())
-        if fcd.run()==gtk.RESPONSE_OK:
+        if fcd.run() == gtk.RESPONSE_OK:
             fpath = fcd.get_filename()
             fname = split(fpath)[-1]
             dstDir = self.event.filesDir
@@ -385,7 +385,7 @@ class GroupComboBox(gtk.ComboBox):
 
 
 class EventEditorDialog(gtk.Dialog):
-    def __init__(self, event, eventTypeChangable=True, title=None, parent=None, useSelectedDate=False):
+    def __init__(self, event, typeChangable=True, title=None, parent=None, useSelectedDate=False):
         gtk.Dialog.__init__(self, parent=parent)
         #self.set_transient_for(parent)
         if title:
@@ -404,9 +404,9 @@ class EventEditorDialog(gtk.Dialog):
         #######
         self.event = event
         self._group = event.group
-        self.activeEventWidget = None
+        self.activeWidget = None
         #######
-        if eventTypeChangable and len(event.group.acceptsEventTypes)>1:## FIXME
+        if typeChangable and len(event.group.acceptsEventTypes)>1:## FIXME
             hbox = gtk.HBox()
             combo = gtk.combo_box_new_text()
             for eventType in event.group.acceptsEventTypes:
@@ -418,37 +418,37 @@ class EventEditorDialog(gtk.Dialog):
             self.vbox.pack_start(hbox, 0, 0)
             ####
             combo.set_active(event.group.acceptsEventTypes.index(event.name))
-            #self.activeEventWidget = event.makeWidget()
-            combo.connect('changed', self.eventTypeChanged)
+            #self.activeWidget = event.makeWidget()
+            combo.connect('changed', self.typeChanged)
             self.comboEventType = combo
         if useSelectedDate:
             self.event.setJd(ui.cell.jd)
-        self.activeEventWidget = event.makeWidget()
-        self.vbox.pack_start(self.activeEventWidget, 0, 0)
+        self.activeWidget = event.makeWidget()
+        self.vbox.pack_start(self.activeWidget, 0, 0)
         self.vbox.show()
     def dateModeChanged(self, combo):
         pass
-    def eventTypeChanged(self, combo):
-        print '--- eventTypeChanged'
-        if self.activeEventWidget:
-            self.activeEventWidget.destroy()
+    def typeChanged(self, combo):
+        print '--- typeChanged'
+        if self.activeWidget:
+            self.activeWidget.destroy()
         eventType = self._group.acceptsEventTypes[combo.get_active()]
         self.event = self._group.copyEventWithType(self.event, eventType)
         self._group.updateCache(self.event)## needed? FIXME
-        self.activeEventWidget = self.event.makeWidget()
-        self.vbox.pack_start(self.activeEventWidget, 0, 0)
+        self.activeWidget = self.event.makeWidget()
+        self.vbox.pack_start(self.activeWidget, 0, 0)
     def run(self):
-        #if not self.activeEventWidget:
+        #if not self.activeWidget:
         #    return None
-        if gtk.Dialog.run(self)!=gtk.RESPONSE_OK:
+        if gtk.Dialog.run(self) != gtk.RESPONSE_OK:
             try:
-                filesBox = self.activeEventWidget.filesBox
+                filesBox = self.activeWidget.filesBox
             except AttributeError:
                 pass
             else:
                 filesBox.removeNewFiles()
             return None
-        self.activeEventWidget.updateVars()
+        self.activeWidget.updateVars()
         self.event.afterModify()
         self.event.save()
         self.destroy()
@@ -458,7 +458,7 @@ def addNewEvent(group, eventType, title, **kw):
     event = group.createEvent(eventType)
     event = EventEditorDialog(
         event,
-        eventTypeChangable=(eventType=='custom'),## or True FIXME
+        typeChangable=(eventType=='custom'),## or True FIXME
         title=title,
         **kw
     ).run()
@@ -485,7 +485,7 @@ class GroupEditorDialog(gtk.Dialog):
         self.connect('response', lambda w, e: self.hide())
         #######
         self._group = group
-        self.activeGroupWidget = None
+        self.activeWidget = None
         #######
         hbox = gtk.HBox()
         combo = gtk.combo_box_new_text()
@@ -497,17 +497,17 @@ class GroupEditorDialog(gtk.Dialog):
         self.vbox.pack_start(hbox, 0, 0)
         ####
         if self._group:
-            self.isNewGroup = False
+            self.isNew = False
             combo.set_active(event_man.classes.group.names.index(self._group.name))
         else:
-            self.isNewGroup = True
+            self.isNew = True
             combo.set_active(event_man.defaultGroupTypeIndex)
             self._group = event_man.classes.group[event_man.defaultGroupTypeIndex]()
-        self.activeGroupWidget = None
-        combo.connect('changed', self.groupTypeChanged)
-        self.comboGroupType = combo
+        self.activeWidget = None
+        combo.connect('changed', self.typeChanged)
+        self.comboType = combo
         self.vbox.show_all()
-        self.groupTypeChanged()
+        self.typeChanged()
     def dateModeChanged(self, combo):
         pass
     def getNewGroupTitle(self, baseTitle):
@@ -521,30 +521,30 @@ class GroupEditorDialog(gtk.Dialog):
                 i += 1
             else:
                 return newTitle
-    def groupTypeChanged(self, combo=None):
-        if self.activeGroupWidget:
-            self.activeGroupWidget.updateVars()
-            self.activeGroupWidget.destroy()
-        cls = event_man.classes.group[self.comboGroupType.get_active()]
+    def typeChanged(self, combo=None):
+        if self.activeWidget:
+            self.activeWidget.updateVars()
+            self.activeWidget.destroy()
+        cls = event_man.classes.group[self.comboType.get_active()]
         group = cls()
         if self._group:
-            if self.isNewGroup:
+            if self.isNew:
                 if group.icon:
                     self._group.icon = group.icon
             group.copyFrom(self._group)
             group.setId(self._group.gid)
             del self._group
-        if self.isNewGroup:
+        if self.isNew:
             group.title = self.getNewGroupTitle(cls.desc)
         self._group = group
-        self.activeGroupWidget = group.makeWidget()
-        self.vbox.pack_start(self.activeGroupWidget, 0, 0)
+        self.activeWidget = group.makeWidget()
+        self.vbox.pack_start(self.activeWidget, 0, 0)
     def run(self):
-        if self.activeGroupWidget is None or self._group is None:
+        if self.activeWidget is None or self._group is None:
             return None
-        if gtk.Dialog.run(self)!=gtk.RESPONSE_OK:
+        if gtk.Dialog.run(self) != gtk.RESPONSE_OK:
             return None
-        self.activeGroupWidget.updateVars()
+        self.activeWidget.updateVars()
         self._group.save()
         ui.eventGroups[self._group.gid] = self._group
         self.destroy()

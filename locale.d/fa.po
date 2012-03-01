@@ -990,6 +990,14 @@ msgstr ""
 "نوع گروه «%s» نمی‌تواند شامل نوع رویداد «%s» باشد"
 
 
+msgid "contains %s events"
+msgstr ""
+"شامل %s رویداد"
+
+
+msgid "%s contains %s events"
+msgstr ""
+"%s شامل %s رویداد است"
 
 
 

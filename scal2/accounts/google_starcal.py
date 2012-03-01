@@ -28,7 +28,6 @@ try:
 except ImportError:
     from cgi import parse_qsl
 
-import gflags
 import httplib2
 from httplib2 import *
 
