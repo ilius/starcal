@@ -1002,7 +1002,7 @@ class Event(JsonEventBaseClass, RuleContainer):
             try:
                 return self.group.rulesOd[key]
             except (KeyError, AttributeError):
-                raise KeyError('Event %s has no rule %s'%(self.eid, key))
+                raise KeyError('Event %s has no rule %s'%(self.id, key))
     __getitem__ = lambda self, key: self.getRule(key)
     __setitem__ = lambda self, key, value: self.setRule(key, value)
     __iter__ = lambda self: self.rulesOd.itervalues()
@@ -1012,7 +1012,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         self.group = None
         self.mode = core.primaryMode
         self.icon = self.__class__.getDefaultIcon()
-        self.summary = self.desc + ' (' + _(self.eid) + ')'
+        self.summary = self.desc + ' (' + _(self.id) + ')'
         self.description = ''
         #self.showInTimeLine = False ## FIXME
         self.files = []
@@ -1091,8 +1091,8 @@ class Event(JsonEventBaseClass, RuleContainer):
             core.lastEventId = eid
         elif eid > core.lastEventId:
             core.lastEventId = eid
-        self.eid = eid
-        self.dir = join(eventsDir, str(self.eid))
+        self.id = eid
+        self.dir = join(eventsDir, str(self.id))
         self.file = join(self.dir, 'event.json')
         self.occurrenceFile = join(self.dir, 'occurrence')## file or directory? ## FIXME
         self.filesDir = join(self.dir, 'files')
@@ -1613,8 +1613,8 @@ class EventContainer(JsonEventBaseClass):
             yield self.getEvent(eid)
     __iter__ = lambda self: IteratorFromGen(self.getEventsGen())
     __len__ = lambda self: len(self.eventIds)
-    insert = lambda self, index, event: self.eventIds.insert(index, event.eid)
-    append = lambda self, event: self.eventIds.append(event.eid)
+    insert = lambda self, index, event: self.eventIds.insert(index, event.id)
+    append = lambda self, event: self.eventIds.append(event.id)
     index = lambda self, eid: self.eventIds.index(eid)
     moveUp = lambda self, index: self.eventIds.insert(index-1, self.eventIds.pop(index))
     moveDown = lambda self, index: self.eventIds.insert(index+1, self.eventIds.pop(index))
@@ -1623,8 +1623,8 @@ class EventContainer(JsonEventBaseClass):
             excludes event from this container (group or trash), not delete event data completely
             and returns the index of (previously contained) event
         '''
-        index = self.eventIds.index(event.eid)
-        self.eventIds.remove(event.eid)
+        index = self.eventIds.index(event.id)
+        self.eventIds.remove(event.id)
         return index
     def copyFrom(self, other):
         for attr in (
@@ -1728,8 +1728,8 @@ class EventGroup(EventContainer, RuleContainer):
             core.lastEventGroupId = gid
         elif gid > core.lastEventGroupId:
             core.lastEventGroupId = gid
-        self.gid = gid
-        self.file = join(groupsDir, '%d.json'%self.gid)
+        self.id = gid
+        self.file = join(groupsDir, '%d.json'%self.id)
     def copyFrom(self, other):
         EventContainer.copyFrom(self, other)
         for attr in (
@@ -1807,13 +1807,13 @@ class EventGroup(EventContainer, RuleContainer):
         return event
     def copyEventWithType(self, event, eventType):## FIXME
         newEvent = self.createEvent(eventType)
-        newEvent.setId(event.eid)
+        newEvent.setId(event.id)
         newEvent.copyFrom(event)
         return newEvent
     def remove(self, event):## call when moving to trash
         index = EventContainer.remove(self, event)
         try:
-            del self.eventCache[event.eid]
+            del self.eventCache[event.id]
         except:
             pass
         try:
@@ -1826,18 +1826,18 @@ class EventGroup(EventContainer, RuleContainer):
         self.eventCache = {}
     def _postAdd(self, event):
         if len(self.eventCache) < self.eventCacheSize:
-            self.eventCache[event.eid] = event
+            self.eventCache[event.id] = event
         if event.remoteIds:
-            self.eventIdByRemoteIds[event.remoteIds] = event.eid
+            self.eventIdByRemoteIds[event.remoteIds] = event.id
     def insert(self, index, event):
-        self.eventIds.insert(index, event.eid)
+        self.eventIds.insert(index, event.id)
         self._postAdd(event)
     def append(self, event):
-        self.eventIds.append(event.eid)
+        self.eventIds.append(event.id)
         self._postAdd(event)
     def updateCache(self, event):
-        if event.eid in self.eventCache:
-            self.eventCache[event.eid] = event
+        if event.id in self.eventCache:
+            self.eventCache[event.id] = event
     def copy(self):
         newGroup = EventBaseClass.copy(self)
         newGroup.removeAll()
@@ -2087,17 +2087,17 @@ class JsonObjectsHolder(JsonEventBaseClass):
 class EventGroupsHolder(JsonObjectsHolder):
     file = join(confDir, 'event', 'group_list.json')
     def insert(self, index, group):
-        gid = group.gid
+        gid = group.id
         assert not gid in self.idList
         self.byId[gid] = group
         self.idList.insert(index, gid)
     def append(self, group):
-        gid = group.gid
+        gid = group.id
         assert not gid in self.idList
         self.byId[gid] = group
         self.idList.append(gid)
     def delete(self, group):
-        gid = group.gid
+        gid = group.id
         assert gid in self.idList
         assert not group.eventIds ## FIXME
         try:
@@ -2207,7 +2207,7 @@ def getDayOccurrenceData(curJd, groups):
                 text += '\n<a href="%s">%s</a>'%(url, fname)
             icon = event.icon
             #print '\nupdateData: checking event', event.summary
-            ids = (group.gid, event.eid)
+            ids = (group.id, event.id)
             if isinstance(occur, JdListOccurrence):
                 #print 'updateData: JdListOccurrence', occur.getDaysJdList()
                 for jd in occur.getDaysJdList():
@@ -2291,8 +2291,8 @@ class Account(JsonEventBaseClass):
             core.lastEventAccountId = aid
         elif aid > core.lastEventAccountId:
             core.lastEventAccountId = aid
-        self.aid = aid
-        self.file = join(accountsDir, '%d.json'%self.aid)
+        self.id = aid
+        self.file = join(accountsDir, '%d.json'%self.id)
     def stop(self):
         self.status = None
     def fetchGroups(self):
@@ -2329,7 +2329,7 @@ def getWeekOccurrenceData(curAbsWeekNumber, groups):
                 continue
             text = event.getText()
             icon = event.icon
-            ids = (group.gid, event.eid)
+            ids = (group.id, event.id)
             if isinstance(occur, JdListOccurrence):
                 for jd in occur.getDaysJdList():
                     (wnum, weekDay) = core.getWeekDateFromJd(jd)
@@ -2415,7 +2415,7 @@ def getMonthOccurrenceData(curYear, curMonth, groups):
                 continue
             text = event.getText()
             icon = event.icon
-            ids = (group.gid, event.eid)
+            ids = (group.id, event.id)
             if isinstance(occur, JdListOccurrence):
                 for jd in occur.getDaysJdList():
                     (y, m, d) = jd_to(jd, core.primaryMode)

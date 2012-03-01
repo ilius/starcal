@@ -341,7 +341,7 @@ class GoogleAccount(Account):
             if not event:
                 print '---------- event %s can not be pulled'%event.summary
                 continue
-            remoteIds = (self.aid, remoteGroupId, gevent['id'])
+            remoteIds = (self.id, remoteGroupId, gevent['id'])
             eventId = group.eventIdByRemoteIds.get(remoteIds, None)
             if eventId is None:
                 group.append(event)
@@ -359,7 +359,7 @@ class GoogleAccount(Account):
             #print '---------- event %s'%event.summary
             remoteEventId = None
             if event.remoteIds:
-                if event.remoteIds[0]==self.aid and event.remoteIds[1]==remoteGroupId:
+                if event.remoteIds[0]==self.id and event.remoteIds[1]==remoteGroupId:
                     remoteEventId = event.remoteIds[2]
             #print '---------- remoteEventId = %s'%remoteEventId
             if remoteEventId and lastSync and event.modified < lastSync:
@@ -373,7 +373,7 @@ class GoogleAccount(Account):
             #print 'etag = %r'%gevent['etag']            
             gevent.update({
                 'calendarId': remoteGroupId,
-                'sequence': group.index(event.eid),
+                'sequence': group.index(event.id),
                 'organizer': {
                     'displayName': core.userDisplayName,## FIXME
                     'email': self.email,
@@ -405,9 +405,9 @@ class GoogleAccount(Account):
                 #print 'response = %s'%pformat(response)
                 remoteEventId = response['id']
                 print '----------- event %s added on server'%event.summary
-            event.remoteIds = [self.aid, remoteGroupId, remoteEventId]
+            event.remoteIds = [self.id, remoteGroupId, remoteEventId]
             event.save()
-            group.eventIdByRemoteIds[tuple(event.remoteIds)] = event.eid## TypeError: unhashable type: 'list'
+            group.eventIdByRemoteIds[tuple(event.remoteIds)] = event.id## TypeError: unhashable type: 'list'
         group.afterSync()## FIXME
         group.save()## FIXME
         return True
@@ -426,7 +426,7 @@ if __name__=='__main__':
     ui.eventGroups.load()
     group = ui.eventGroups[8]
     #print 'group.remoteIds', group.remoteIds
-    group.remoteIds = (account.aid, remoteGroupId)
+    group.remoteIds = (account.id, remoteGroupId)
     account.sync(group, remoteGroupId)
 
     

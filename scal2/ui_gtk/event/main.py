@@ -151,7 +151,7 @@ class AccountEditorDialog(gtk.Dialog):
         account = cls()
         if self.account:
             account.copyFrom(self.account)
-            account.setId(self.account.aid)
+            account.setId(self.account.id)
             del self.account
         if self.isNew:
             account.title = cls.desc ## FIXME
@@ -165,7 +165,7 @@ class AccountEditorDialog(gtk.Dialog):
             return None
         self.activeWidget.updateVars()
         self.account.save()
-        ui.eventAccounts[self.account.gid] = self.account
+        ui.eventAccounts[self.account.id] = self.account
         self.destroy()
         return self.account
 
@@ -444,7 +444,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         return True
     getRowBgColor = lambda self: gdkColorToRgb(self.treev.style.base[gtk.STATE_NORMAL])## bg color of non-selected rows
     getEventRow = lambda self, event: (
-        event.eid,
+        event.id,
         pixbufFromFile(event.icon),
         event.summary,
         event.getShownDescription(),
@@ -453,7 +453,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         if not rowBgColor:
             rowBgColor = self.getRowBgColor()
         return (
-            group.gid,
+            group.id,
             newOutlineSquarePixbuf(
                 group.color,
                 20,
@@ -664,7 +664,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         )
     def deleteEventFromTrash(self, menu, path):
         (trash, event) = self.getObjsByPath(path)
-        trash.delete(event.eid)## trash == ui.eventTrash
+        trash.delete(event.id)## trash == ui.eventTrash
         trash.save()
         self.trees.remove(self.trees.get_iter(path))
     def emptyTrash(self, menu):

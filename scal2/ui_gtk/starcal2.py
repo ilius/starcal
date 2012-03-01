@@ -1403,7 +1403,7 @@ class MainWin(gtk.Window):
         event = addNewEvent(group, eventType, title, parent=self, useSelectedDate=True)
         if event is None:
             return
-        ui.newEvents.append((group.gid, event.eid))
+        ui.newEvents.append((group.id, event.id))
     def prefUpdateBgColor(self, cal):
         ui.prefDialog.colorbBg.set_color(ui.bgColor)
         ui.saveLiveConf()

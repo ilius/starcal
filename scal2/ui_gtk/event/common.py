@@ -532,7 +532,7 @@ class GroupEditorDialog(gtk.Dialog):
                 if group.icon:
                     self._group.icon = group.icon
             group.copyFrom(self._group)
-            group.setId(self._group.gid)
+            group.setId(self._group.id)
             del self._group
         if self.isNew:
             group.title = self.getNewGroupTitle(cls.desc)
@@ -546,7 +546,7 @@ class GroupEditorDialog(gtk.Dialog):
             return None
         self.activeWidget.updateVars()
         self._group.save()
-        ui.eventGroups[self._group.gid] = self._group
+        ui.eventGroups[self._group.id] = self._group
         self.destroy()
         return self._group
 

@@ -78,7 +78,7 @@ class DayOccurrenceView(gtk.VBox):
         if event is None:
             return
         ui.mainWin.onConfigChange()
-        ui.changedEvents.append((groupId, event.eid))
+        ui.changedEvents.append((groupId, event.id))
     def copy(self, item, label):
         start = label.get_property('selection-bound')
         end = label.get_property('cursor-position')

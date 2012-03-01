@@ -97,7 +97,7 @@ def prepareToday():
                 continue
             if not event.notifiers:
                 continue
-            eid = event.eid
+            eid = event.id
             occur = event.calcOccurrenceForJdRange(todayJd, todayJd+1)
             if not occur:
                 continue

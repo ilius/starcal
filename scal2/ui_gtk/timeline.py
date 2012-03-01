@@ -287,21 +287,21 @@ class TimeLine(gtk.Widget):
         ).run()
         if event is None:
             return
-        ui.changedEvents.append((gid, event.eid))
+        ui.changedEvents.append((gid, event.id))
         self.queue_draw()
         if ui.mainWin:
             ui.mainWin.onConfigChange(ui.mainWin)
     def editGroupClicked(self, menu, winTitle, group):
         if GroupEditorDialog(group).run() is not None:
-            ui.changedGroups.append(group.gid)
+            ui.changedGroups.append(group.id)
             if ui.mainWin:
                 ui.mainWin.onConfigChange(ui.mainWin)
     def onConfigChange(self):
         pass
     def moveEventToTrash(self, menu, group, event):
-        eventIndex = group.index(event.eid)
+        eventIndex = group.index(event.id)
         ui.moveEventToTrash(group, event)
-        ui.trashedEvents.append((group.gid, event.eid, eventIndex))
+        ui.trashedEvents.append((group.id, event.id, eventIndex))
         if ui.mainWin:
             ui.mainWin.onConfigChange(ui.mainWin)
     def startResize(self, event):

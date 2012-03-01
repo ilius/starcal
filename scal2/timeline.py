@@ -364,7 +364,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
             #if isinstance(occur, TimeListOccurrence):
             #    occur.epochList
             #if len(occur.getTimeRangeList())>1:
-            #    print event.eid, occur.getTimeRangeList()
+            #    print event.id, occur.getTimeRangeList()
             for (t0, t1) in occur.getTimeRangeList():
                 if t1 is None:
                     t1 = t0
@@ -382,7 +382,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
                     1,
                     event.summary,
                     group.color,
-                    (group.gid, event.eid),
+                    (group.id, event.id),
                 ))## or event.color FIXME
     #boxes.sort(reverse=True) ## FIXME
     placedBoxes = []
