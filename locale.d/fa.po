@@ -771,6 +771,10 @@ msgid "Move to Trash"
 msgstr ""
 "انتقال به زباله‌دان"
 
+msgid "Edit Trash"
+msgstr ""
+"ویرایش زباله‌دان"
+
 msgid "Move to %s"
 msgstr ""
 "جابجایی به %s"
@@ -898,7 +902,6 @@ msgstr ""
 msgid "Edit Group"
 msgstr ""
 "ویرایش گروه"
-
 
 msgid "Group Type"
 msgstr ""
@@ -1268,6 +1271,32 @@ msgstr ""
 msgid "A_dvanced"
 msgstr ""
 "_پیشرفته"
+
+msgid "Accounts"
+msgstr ""
+"حساب‌ها"
+
+msgid "Edit Account"
+msgstr ""
+"ویرایش حساب"
+
+msgid "Add New Account"
+msgstr ""
+"افزودن حساب جدید"
+
+msgid "Account Type"
+msgstr ""
+"نوع حساب"
+
+
+msgid "Google"
+msgstr ""
+"گوگل"
+
+msgid "Email"
+msgstr ""
+"ایمیل"
+
 
 
 msgid "Show main window on start"

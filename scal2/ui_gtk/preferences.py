@@ -45,6 +45,7 @@ from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
 from scal2.ui_gtk.utils import *
 from scal2.ui_gtk.export import ExportToIcsDialog
+from scal2.ui_gtk.event.main import AccountEditorDialog
 
 ############################################################
 
@@ -1265,18 +1266,17 @@ class PrefDialog(gtk.Dialog):
         ####################################### Tab 5 (Accounts)
         vbox = gtk.VBox()
         vbox.label = _('Accounts')
-        vbox.icon = 'web-system.png'
+        vbox.icon = 'web-settings.png'
         self.prefPages.append(vbox)
-
+        #####
         treev = gtk.TreeView()
         treev.set_headers_clickable(True)
-        trees = gtk.ListStore(int, bool, bool, str)
+        trees = gtk.ListStore(int, bool, str)## id (hidden), enable, title
         treev.set_model(trees)
         treev.enable_model_drag_source(gdk.BUTTON1_MASK, [('row', gtk.TARGET_SAME_WIDGET, 0)], gdk.ACTION_MOVE)
         treev.enable_model_drag_dest([('row', gtk.TARGET_SAME_WIDGET, 0)], gdk.ACTION_MOVE)
         treev.connect('row-activated', self.accountsTreevRActivate)
         treev.connect('button-press-event', self.accountsTreevButtonPress)
-        ###
         ###
         swin = gtk.ScrolledWindow()
         swin.add(treev)
@@ -1284,7 +1284,7 @@ class PrefDialog(gtk.Dialog):
         ######
         cell = gtk.CellRendererToggle()
         #cell.set_property('activatable', True)
-        cell.connect('toggled', self.plugTreeviewCellToggled)
+        cell.connect('toggled', self.accountsTreeviewCellToggled)
         col = gtk.TreeViewColumn(_('Enable'), cell)
         col.add_attribute(cell, 'active', 1)
         #cell.set_active(False)
@@ -1314,7 +1314,7 @@ class PrefDialog(gtk.Dialog):
         size = gtk.ICON_SIZE_SMALL_TOOLBAR
         ##no different(argument2 to image_new_from_stock does not affect) ?????????
         ######## gtk.ICON_SIZE_SMALL_TOOLBAR or gtk.ICON_SIZE_MENU
-        tb = toolButtonFromStock(gtk.STOCK_ADD, size)
+        tb = toolButtonFromStock(gtk.STOCK_EDIT, size)
         set_tooltip(tb, _('Edit'))
         tb.connect('clicked', self.accountsEditClicked)
         toolbar.insert(tb, -1)
@@ -1575,6 +1575,10 @@ class PrefDialog(gtk.Dialog):
             self.plugAddItems.append(i)
             self.plugAddTreestore.append([desc])
             self.plugButtonAdd.set_sensitive(True)
+        ###### Accounts
+        self.accountsTreestore.clear()
+        for account in ui.eventAccounts:
+            self.accountsTreestore.append([account.id, account.enable, account.title])
     #def plugTreevExpose(self, widget, event):
         #self.plugDescCell.set_property('wrap-width', self.plugDescCol.get_width()+2)
     def plugTreevCursorChanged(self, treev):
@@ -1781,36 +1785,96 @@ class PrefDialog(gtk.Dialog):
         self.plugTreeview.set_cursor(pos)### pos==1- #????????
     def plugAddTreevRActivate(self, treev, path, col):
         self.plugAddDialogOK(None)#???????
+    def editAccount(self, index):
+        accountId = self.accountsTreestore[index][0]
+        account = ui.eventAccounts[accountId]
+        account = AccountEditorDialog(account).run()
+        if account is None:
+            return
+        account.save()
+        ui.eventAccounts.save()
+        self.accountsTreestore[index][2] = account.title
     def accountsEditClicked(self, button):
-        pass
+        cur = self.accountsTreeview.get_cursor()[0]
+        if cur==None:
+            return
+        index = cur[0]
+        self.editAccount(index)
     def accountsAddClicked(self, button):
-        pass
+        account = AccountEditorDialog().run()
+        if account is None:
+            return
+        account.save()
+        ui.eventAccounts.append(account)
+        ui.eventAccounts.save()
+        self.accountsTreestore.append([account.id, account.enable, account.title])
     def accountsDelClicked(self, button):
-        pass
+        cur = self.accountsTreeview.get_cursor()[0]
+        if cur==None:
+            return
+        index = cur[0]
+        accountId = self.accountsTreestore[index][0]
+        account = ui.eventAccounts[accountId]
+        if not confirm(_('Do you want to delete account "%s"')%account.title):
+            return
+        ui.eventAccounts.delete(account)
+        del self.accountsTreestore[index]
     def accountsUpClicked(self, button):
-        pass
+        cur = self.accountsTreeview.get_cursor()[0]
+        if cur==None:
+            return
+        index = cur[0]
+        t = self.accountsTreestore
+        if index<=0 or index>=len(t):
+            gdk.beep()
+            return
+        ui.eventAccounts.moveUp(index)
+        ui.eventAccounts.save()
+        t.swap(t.get_iter(index-1), t.get_iter(index))
+        self.accountsTreeview.set_cursor(index-1)
     def accountsDownClicked(self, button):
-        pass
+        cur = self.accountsTreeview.get_cursor()[0]
+        if cur==None:
+            return
+        index = cur[0]
+        t = self.accountsTreestore
+        if index<0 or index>=len(t)-1:
+            gdk.beep()
+            return
+        ui.eventAccounts.moveDown(index)
+        ui.eventAccounts.save()
+        t.swap(t.get_iter(index), t.get_iter(index+1))
+        self.accountsTreeview.set_cursor(index+1)
     def accountsTreevRActivate(self, treev, path, col):
-        pass
+        index = path[0]
+        self.editAccount(index)
     def accountsTreevButtonPress(self, widget, event):
         b = event.button
-        #print 'plugTreevButtonPress', b
         if b==3:
-            cur = self.plugTreeview.get_cursor()[0]
+            cur = self.accountsTreeview.get_cursor()[0]
             if cur:
-                i = cur[0]
-                j = self.plugTreestore[i][0]
-                plug = core.allPlugList[j]
+                index = cur[0]
+                accountId = self.accountsTreestore[index][0]
+                account = ui.eventAccounts[accountId]
                 menu = gtk.Menu()
                 ##
                 ## FIXME
                 ##
-                menu.show_all()
-                menu.popup(None, None, None, 3, event.time)
+                #menu.show_all()
+                #menu.popup(None, None, None, 3, event.time)
             return True
         return False
-
+    def accountsTreeviewCellToggled(self, cell, path):
+        index = int(path)
+        active = not cell.get_active()
+        ###
+        accountId = self.accountsTreestore[index][0]
+        account = ui.eventAccounts[accountId]
+        account.enable = active
+        account.save()
+        ###
+        self.accountsTreestore[index][1] = active
+        cell.set_active(active)
 
 
 

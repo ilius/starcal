@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from scal2.ui_gtk.event.accounts import common
+from scal2.locale_man import tr as _
 
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.event.accounts import common
 
 class AccountWidget(common.AccountWidget):
     def __init__(self, account):

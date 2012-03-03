@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from scal2.locale_man import tr as _
+
 import gtk
 from gtk import gdk
 

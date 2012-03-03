@@ -170,6 +170,12 @@ class AccountEditorDialog(gtk.Dialog):
         return self.account
 
 
+class FetchRemoteGroupsDialog(gtk.Dialog):
+    def __init__(self, account):
+        gtk.Dialog.__init__(self)
+        self.account = account
+
+
 class EventManagerDialog(gtk.Dialog):## FIXME
     def checkEventToAdd(self, group, event):
         if not group.checkEventToAdd(event):
@@ -972,6 +978,7 @@ event_man.Event.makeWidget = makeWidget
 event_man.EventGroup.makeWidget = makeWidget
 event_man.Account.makeWidget = makeWidget
 
+ui.eventAccounts.load()
 ui.eventGroups.load()
 ui.eventTrash.load()
 

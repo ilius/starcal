@@ -382,15 +382,8 @@ def checkMainWinItems():
         mainWinItems.append((name, False))## FIXME
 
 
-def deleteEventGroup(group, addToFirst=True):
-    if addToFirst:
-        eventTrash.eventIds = group.eventIds + eventTrash.eventIds
-    else:
-        eventTrash.eventIds += group.eventIds
-    group.eventIds = []
-    eventGroups.delete(group)
-    eventGroups.save()
-    eventTrash.save()
+def deleteEventGroup(group):
+    eventGroups.moveToTrash(group, eventTrash, addToFirst=True)
 
 def moveEventToTrash(group, event):
     group.remove(event)
@@ -471,6 +464,7 @@ getEventTagsDict = lambda: dict([(tagObj.name, tagObj) for tagObj in eventTags])
 eventTagsDesc = dict([(t.name, t.desc) for t in eventTags])
 
 ###################
+eventAccounts = event_man.EventAccountsHolder()
 eventGroups = event_man.EventGroupsHolder()
 #eventGroups.load()## FIXME here or in ui_*/event/main.py
 eventTrash = event_man.EventTrash()

@@ -1114,7 +1114,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         self.addRequirements()
     def getData(self):
         data = {
-            'type': self.name,        
+            'type': self.name,
             'calType': moduleNames[self.mode],
             'rules': self.getRulesData(),
             'notifiers': self.getNotifiersData(),
@@ -1589,7 +1589,7 @@ class EventContainer(JsonEventBaseClass):
             raise TypeError('invalid key type %r give to EventContainer.__getitem__'%key)
     def __init__(self):
         self.mode = core.primaryMode
-        self.eventIds = [] 
+        self.idList = [] 
         self.title = 'Untitled'
         self.icon = ''
         self.showFullEventDesc = False
@@ -1599,36 +1599,36 @@ class EventContainer(JsonEventBaseClass):
     def afterModify(self):
         self.modified = time.time()
     def getEvent(self, eid):
-        assert eid in self.eventIds
+        assert eid in self.idList
         eventFile = join(eventsDir, str(eid), 'event.json')
         if not isfile(eventFile):
             raise IOError('error while loading event file %r: no such file (container title: %s)'%(eventFile, self.title))
         data = jsonToData(open(eventFile).read())
-        data['eid'] = eid ## FIXME
+        data['id'] = eid ## FIXME
         event = classes.event.byName[data['type']](eid)
         event.setData(data)
         return event
     def getEventsGen(self):
-        for eid in self.eventIds:
+        for eid in self.idList:
             yield self.getEvent(eid)
     __iter__ = lambda self: IteratorFromGen(self.getEventsGen())
-    __len__ = lambda self: len(self.eventIds)
-    insert = lambda self, index, event: self.eventIds.insert(index, event.id)
-    append = lambda self, event: self.eventIds.append(event.id)
-    index = lambda self, eid: self.eventIds.index(eid)
-    moveUp = lambda self, index: self.eventIds.insert(index-1, self.eventIds.pop(index))
-    moveDown = lambda self, index: self.eventIds.insert(index+1, self.eventIds.pop(index))
+    __len__ = lambda self: len(self.idList)
+    insert = lambda self, index, event: self.idList.insert(index, event.id)
+    append = lambda self, event: self.idList.append(event.id)
+    index = lambda self, eid: self.idList.index(eid)
+    moveUp = lambda self, index: self.idList.insert(index-1, self.idList.pop(index))
+    moveDown = lambda self, index: self.idList.insert(index+1, self.idList.pop(index))
     def remove(self, event):## call when moving to trash
         '''
             excludes event from this container (group or trash), not delete event data completely
             and returns the index of (previously contained) event
         '''
-        index = self.eventIds.index(event.id)
-        self.eventIds.remove(event.id)
+        index = self.idList.index(event.id)
+        self.idList.remove(event.id)
         return index
     def copyFrom(self, other):
         for attr in (
-            'mode', 'title', 'icon', 'showFullEventDesc', 'eventIds',
+            'mode', 'title', 'icon', 'showFullEventDesc', 'idList',
         ):
             setattr(
                 self,
@@ -1639,7 +1639,7 @@ class EventContainer(JsonEventBaseClass):
         data = {
             'calType': moduleNames[self.mode],
         }
-        for attr in ('title', 'icon', 'showFullEventDesc', 'eventIds'):
+        for attr in ('title', 'icon', 'showFullEventDesc', 'idList'):
             data[attr] = getattr(self, attr)
         return data
     def setData(self, data):
@@ -1650,7 +1650,7 @@ class EventContainer(JsonEventBaseClass):
             except ValueError:
                 raise ValueError('Invalid calType: %r'%calType)
         ####
-        for attr in ('title', 'icon', 'showFullEventDesc', 'eventIds'):
+        for attr in ('title', 'icon', 'showFullEventDesc', 'idList'):
             try:
                 setattr(self, attr, data[attr])
             except KeyError:
@@ -1791,7 +1791,7 @@ class EventGroup(EventContainer, RuleContainer):
                 self.eventIdByRemoteIds[tuple(remoteIds)] = eventId
             #print self.eventIdByRemoteIds
     def getEvent(self, eid):
-        assert eid in self.eventIds
+        assert eid in self.idList
         if eid in self.eventCache:
             return self.eventCache[eid]
         event = EventContainer.getEvent(self, eid)
@@ -1822,7 +1822,7 @@ class EventGroup(EventContainer, RuleContainer):
             pass
         return index
     def removeAll(self):## clearEvents or excludeAll or removeAll FIXME
-        self.eventIds = []
+        self.idList = []
         self.eventCache = {}
     def _postAdd(self, event):
         if len(self.eventCache) < self.eventCacheSize:
@@ -1830,10 +1830,10 @@ class EventGroup(EventContainer, RuleContainer):
         if event.remoteIds:
             self.eventIdByRemoteIds[event.remoteIds] = event.id
     def insert(self, index, event):
-        self.eventIds.insert(index, event.id)
+        self.idList.insert(index, event.id)
         self._postAdd(event)
     def append(self, event):
-        self.eventIds.append(event.id)
+        self.idList.append(event.id)
         self._postAdd(event)
     def updateCache(self, event):
         if event.id in self.eventCache:
@@ -1883,7 +1883,6 @@ class EventGroup(EventContainer, RuleContainer):
             icsText += vevent
         icsText += 'END:VCALENDAR\n'
         open(fpath, 'w').write(icsText)
-
 
 
 @classes.group.register
@@ -2068,6 +2067,8 @@ class UniversityTerm(EventGroup):
 
 
 class JsonObjectsHolder(JsonEventBaseClass):
+    ## keeps all objects in memory
+    ## Only use to keep groups and accounts, but not events
     def __init__(self):
         self.clear()
     def clear(self):
@@ -2082,72 +2083,94 @@ class JsonObjectsHolder(JsonEventBaseClass):
     __getitem__ = lambda self, _id: self.byId.__getitem__(_id)
     #byIndex = lambda 
     __setitem__ = lambda self, _id, group: self.byId.__setitem__(_id, group)
-
-
-class EventGroupsHolder(JsonObjectsHolder):
-    file = join(confDir, 'event', 'group_list.json')
-    def insert(self, index, group):
-        gid = group.id
-        assert not gid in self.idList
-        self.byId[gid] = group
-        self.idList.insert(index, gid)
-    def append(self, group):
-        gid = group.id
-        assert not gid in self.idList
-        self.byId[gid] = group
-        self.idList.append(gid)
-    def delete(self, group):
-        gid = group.id
-        assert gid in self.idList
-        assert not group.eventIds ## FIXME
+    def insert(self, index, obj):
+        assert not obj.id in self.idList
+        self.byId[obj.id] = obj
+        self.idList.insert(index, obj.id)
+    def append(self, obj):
+        assert not obj.id in self.idList
+        self.byId[obj.id] = obj
+        self.idList.append(obj.id)
+    def delete(self, obj):
+        assert obj.id in self.idList
         try:
-            os.remove(group.groupFile)
+            os.remove(obj.file)
         except:
             myRaise()
         else:
-            del self.byId[gid]
-            self.idList.remove(gid)
+            del self.byId[obj.id]
+            self.idList.remove(obj.id)
     def pop(self, index):
-        gid = self.idList.pop(index)
-        group = self.byId.pop(gid)
-        return group
+        return self.byId.pop(self.idList.pop(index))
     moveUp = lambda self, index: self.idList.insert(index-1, self.idList.pop(index))
     moveDown = lambda self, index: self.idList.insert(index+1, self.idList.pop(index))
-    def load(self):
-        self.clear()
-        #eventIds = []
-        if isfile(self.file):
-            for gid in jsonToData(open(self.file).read()):
-                groupFile = join(groupsDir, '%s.json'%gid)
-                if not isfile(groupFile):
-                    log.error('error while loading group file %r: no such file'%groupFile)## FIXME
-                    continue
-                data = jsonToData(open(groupFile).read())
-                data['gid'] = gid ## FIXME
-                group = classes.group.byName[data['type']](gid)
-                group.setData(data)
-                self.append(group)
-                ## here check that non of group.eventIds are in eventIds ## FIXME
-                #eventIds += group.eventIds
-        else:
-            for cls in classes.rule:
-                group = cls()## FIXME
-                group.setData({'title': cls.desc})## FIXME
-                group.save()
-                self.append(group)
-            ###
-            #trash = EventTrash()## FIXME
-            #group.save()
-            #self.append(trash)
-            ###
-            self.save()
-        ## here check for non-grouped event ids ## FIXME
-    #def setData(self, data):
-    #    self.idList = data
+    def setData(self, data):
+        self.idList = data
     def getData(self):
         return self.idList
 
 
+class EventGroupsHolder(JsonObjectsHolder):
+    file = join(confDir, 'event', 'group_list.json')
+    def delete(self, obj):
+        assert not obj.idList ## FIXME
+        JsonObjectsHolder.delete(self, obj)
+    def load(self):
+        self.clear()
+        #eventIdList = []
+        if isfile(self.file):
+            for _id in jsonToData(open(self.file).read()):
+                objFile = join(groupsDir, '%s.json'%_id)
+                if not isfile(objFile):
+                    log.error('error while loading group file %r: no such file'%objFile)## FIXME
+                    continue
+                data = jsonToData(open(objFile).read())
+                data['id'] = _id ## FIXME
+                obj = classes.group.byName[data['type']](_id)
+                obj.setData(data)
+                self.append(obj)
+                ## here check that non of obj.idList are in eventIdList ## FIXME
+                #eventIdList += obj.idList
+        else:
+            for cls in classes.rule:
+                obj = cls()## FIXME
+                obj.setData({'title': cls.desc})## FIXME
+                obj.save()
+                self.append(obj)
+            ###
+            #trash = EventTrash()## FIXME
+            #obj.save()
+            #self.append(trash)
+            ###
+            self.save()
+        ## here check for non-grouped event ids ## FIXME
+    def moveToTrash(self, group, trash, addToFirst=True):
+        if addToFirst:
+            trash.idList = group.idList + trash.idList
+        else:
+            trash.idList += group.idList
+        group.idList = []
+        self.delete(group)
+        self.save()
+        trash.save()
+
+
+
+class EventAccountsHolder(JsonObjectsHolder):
+    file = join(confDir, 'event', 'account_list.json')
+    def load(self):
+        self.clear()
+        if isfile(self.file):
+            for _id in jsonToData(open(self.file).read()):
+                objFile = join(accountsDir, '%s.json'%_id)
+                if not isfile(objFile):
+                    log.error('error while loading account file %r: no such file'%objFile)## FIXME
+                    continue
+                data = jsonToData(open(objFile).read())
+                data['id'] = _id ## FIXME
+                obj = classes.account.byName[data['type']](_id)
+                obj.setData(data)
+                self.append(obj)
 
 
 class EventTrash(EventContainer):
@@ -2165,22 +2188,22 @@ class EventTrash(EventContainer):
         ## but after delete(), there is no event file, and not event data
         if not isinstance(eid, int):
             raise TypeError("delete takes event ID that is integer")
-        assert eid in self.eventIds
+        assert eid in self.idList
         try:
             shutil.rmtree(join(eventsDir, str(eid)))
         except:
             myRaise()
         else:
-            self.eventIds.remove(eid)
+            self.idList.remove(eid)
     def empty(self):
-        eventIds2 = self.eventIds[:]
-        for eid in self.eventIds:
+        idList2 = self.idList[:]
+        for eid in self.idList:
             try:
                 shutil.rmtree(join(eventsDir, str(eid)))
             except:
                 myRaise()
-            eventIds2.remove(eid)
-        self.eventIds = eventIds2
+            idList2.remove(eid)
+        self.idList = idList2
         self.save()
     def load(self):
         if isfile(self.file):
@@ -2281,6 +2304,7 @@ class Account(JsonEventBaseClass):
     desc = ''
     def __init__(self, aid=None):
         self.setId(aid)
+        self.enable = True
         self.title = 'Account'
         self.remoteGroups = []## a list of dictionarise {'id':..., 'title':...}
         self.status = None## {'action': 'pull', 'done': 10, 'total': 20} 
@@ -2302,12 +2326,14 @@ class Account(JsonEventBaseClass):
     def sync(self, group, remoteGroupId):
         raise NotImplementedError
     def getData(self):
-        data = {}
-        for attr in ('title', 'remoteGroups'):
+        data = {
+            'type': self.name,
+        }
+        for attr in ('enable', 'title', 'remoteGroups'):
             data[attr] = getattr(self, attr)
         return data
     def setData(self, data):
-        for attr in ('title', 'remoteGroups'):
+        for attr in ('enable', 'title', 'remoteGroups'):
             try:
                 setattr(self, attr, data[attr])
             except KeyError:
@@ -2494,9 +2520,9 @@ def loadEventTrash(groups=[]):
     trash = EventTrash()
     trash.load()
     ###
-    groupedIds = trash.eventIds[:]
+    groupedIds = trash.idList[:]
     for group in groups:
-        groupedIds += group.eventIds
+        groupedIds += group.idList
     nonGroupedIds = []
     for eid in listdir(eventsDir):
         try:
@@ -2506,7 +2532,7 @@ def loadEventTrash(groups=[]):
         if not eid in groupedIds:
             nonGroupedIds.append(eid)
     if nonGroupedIds:
-        trash.eventIds += nonGroupedIds
+        trash.idList += nonGroupedIds
         trash.save()
     ###
     return trash
