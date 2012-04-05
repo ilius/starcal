@@ -102,9 +102,16 @@ movingKeyTimeout = 0.1 ## seconds ## continiouse keyPress delay is about 0.05 se
 
 minEventBoxWidthSec = 1 ## seconds
 
+truncateTickLabel = False
+
+rotateBoxLabel = -1
+## 0: no rotation
+## 1: 90 deg CCW (if needed)
+## -1: 90 deg CW (if needed)
+
 
 class Tick:
-    def __init__(self, epoch, pos, unitSize, label, color=None, truncateLabel=False):
+    def __init__(self, epoch, pos, unitSize, label, color=None):
         self.epoch = epoch
         self.pos = pos ## pixel position
         self.height = unitSize ** 0.5 * baseTickHeight
@@ -115,9 +122,8 @@ class Tick:
         if color is None:
             color = fgColor
         self.color = color
-        self.truncateLabel = truncateLabel
 
-conflicts = lambda a0, a1, b0, b1: a0 < b0 < a1  or  a0 < b1 < a1  or  b0 < a0 < b1  or  b0 < a1 < b1
+conflicts = lambda a0, a1, b0, b1: a0 <= b0 < a1  or  a0 < b1 <= a1  or  b0 <= a0 < b1  or  b0 < a1 <= b1
 
 class Box:
     def __init__(self, t0, t1, y0, y1, text, color, ids):
@@ -346,7 +352,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
             tickEpochList.append(tmEpoch)
     ######################## Event Boxes
     boxes = []
-    fjd0 = getFloatJdFromEpoch(timeStart) - 0.0001
+    fjd0 = getFloatJdFromEpoch(timeStart) - 1
     fjd1 = getFloatJdFromEpoch(timeEnd) + 0.0001
     for group in ui.eventGroups:
         if not group.enable:

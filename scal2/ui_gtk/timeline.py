@@ -19,6 +19,9 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 import time
+import math
+from math import pi
+
 
 from scal2 import core
 
@@ -147,7 +150,13 @@ class TimeLine(gtk.Widget):
                 False,
                 tick.fontSize,
             )
-            layout = newLimitedWidthTextLayout(self, tick.label, tick.maxLabelWidth, font=font, truncate=tick.truncateLabel)## FIXME
+            layout = newLimitedWidthTextLayout(
+                self,
+                tick.label,
+                tick.maxLabelWidth,
+                font=font,
+                truncate=truncateTickLabel,
+            )## FIXME
             if layout:
                 layoutW, layoutH = layout.get_pixel_size()
                 layoutX = tick.pos - layoutW/2.0
@@ -198,9 +207,15 @@ class TimeLine(gtk.Widget):
             ## how to find the best font size based in the box's width and height, and font family? FIXME
             ## possibly write in many lines? or just in one line and wrap if needed?
             if box.text:
+                #print box.text
                 textW = 0.9*w
                 textH = 0.9*h
-                avgCharW = float(textW) / len(toUnicode(box.text))
+                textLen = len(toUnicode(box.text))
+                #print 'textLen=%s'%textLen
+                if rotateBoxLabel == 0:
+                    avgCharW = float(textW) / textLen
+                else:
+                    avgCharW = float(max(textW, textH)) / textLen
                 #print 'avgCharW=%s'%avgCharW
                 if avgCharW > 3:## FIXME
                     font = list(ui.getFont())
@@ -208,20 +223,38 @@ class TimeLine(gtk.Widget):
                     layout.set_font_description(pfontEncode(font))
                     layoutW, layoutH = layout.get_pixel_size()
                     #print 'orig font size: %s'%font[3]
-                    etaFontSize = min(
-                        float(font[3])*textW/layoutW,
-                        float(font[3])*textH/layoutH,
+                    normRatio = min(
+                        float(textW)/layoutW,
+                        float(textH)/layoutH,
                     )
-                    #print ' eta font size: %s'%etaFontSize
-                    font[3] = etaFontSize
-                    layout.set_font_description(pfontEncode(font))
-                    layoutW, layoutH = layout.get_pixel_size()
-                    fillColor(cr, fgColor)## before cr.move_to
-                    cr.move_to(
-                        x + (w-layoutW)/2.0,
-                        y + (h-layoutH)/2.0,
+                    rotateRatio = min(
+                        float(textW)/layoutH,
+                        float(textH)/layoutW,
                     )
-                    cr.show_layout(layout)
+                    if rotateBoxLabel != 0 and rotateRatio > normRatio:
+                        font[3] *= max(normRatio, rotateRatio)
+                        layout.set_font_description(pfontEncode(font))
+                        layoutW, layoutH = layout.get_pixel_size()
+                        fillColor(cr, fgColor)## before cr.move_to
+                        #print 'x=%s, y=%s, w=%s, h=%s, layoutW=%s, layoutH=%s'%(x,y,w,h,layoutW,layoutH)
+                        cr.move_to(
+                            x + (w - rotateBoxLabel*layoutH)/2.0,
+                            y + (h + rotateBoxLabel*layoutW)/2.0,
+                        )
+                        cr.rotate(-rotateBoxLabel*pi/2)
+                        cr.show_layout(layout)
+                        cr.rotate(rotateBoxLabel*pi/2)
+                    else:
+                        font[3] *= normRatio
+                        layout.set_font_description(pfontEncode(font))
+                        layoutW, layoutH = layout.get_pixel_size()
+                        fillColor(cr, fgColor)## before cr.move_to
+                        cr.move_to(
+                            x + (w-layoutW)/2.0,
+                            y + (h-layoutH)/2.0,
+                        )
+                        cr.show_layout(layout)
+                        
         ######
         if self.timeStart <= self.currentTime <= self.timeStart + self.timeWidth:
             setColor(cr, currenTimeMarkerColor)
@@ -397,8 +430,9 @@ class TimeLine(gtk.Widget):
 
 
 class TimeLineWindow(gtk.Window):
-    def __init__(self):
+    def __init__(self, width=600):
         gtk.Window.__init__(self)
+        self.resize(width, 150)
         self.set_title(_('Time Line'))
         self.set_decorated(False)
         self.connect('delete-event', self.closeClicked)
