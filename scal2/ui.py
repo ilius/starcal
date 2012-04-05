@@ -24,6 +24,7 @@ from os import listdir
 from os.path import dirname, join, isfile, isdir
 from xml.dom.minidom import parse## remove FIXME
 from subprocess import Popen
+from gobject import timeout_add, timeout_add_seconds ## FIXME
 
 from scal2.utils import NullObj, toStr, cleanCacheDict
 from scal2.os_utils import makeDir
@@ -235,6 +236,7 @@ def dayOpenSunbird(arg=None):
 class Cell:## status and information of a cell
     def __init__(self, jd):
         self.eventsData = []
+        self.eventsDataIsSet = False
         self.pluginsText = ''
         ###
         self.jd = jd
@@ -282,7 +284,7 @@ class CellCache:
         """
         self.plugins[name] = {
             'setParamsCallable': setParamsCallable,
-            'getCellGroupCallable': getCellGroupCallable
+            'getCellGroupCallable': getCellGroupCallable,
         }
         for local_cell in self.jdCells.values():
             setParamsCallable(local_cell)
@@ -304,11 +306,23 @@ class CellCache:
         local_cell = Cell(jd)
         for pluginData in self.plugins.values():
             pluginData['setParamsCallable'](local_cell)
+        #local_cell.eventsData = event_man.getDayOccurrenceData(local_cell.jd, eventGroups)
         self.jdCells[jd] = local_cell
-        local_cell.eventsData = event_man.getDayOccurrenceData(jd, eventGroups)## FIXME
         cleanCacheDict(self.jdCells, maxDayCacheSize, jd)
         return local_cell
-    getCellGroup = lambda self, pluginName, *args: self.plugins[pluginName]['getCellGroupCallable'](self, *args)
+    def calcEventsData(self, cellList):
+        changed = False
+        for local_cell in cellList:
+            if not local_cell.eventsDataIsSet:
+                changed = True
+                local_cell.eventsData = event_man.getDayOccurrenceData(local_cell.jd, eventGroups)
+                local_cell.eventsDataIsSet = True
+        if changed and mainWin:## prevent from infinit loop!
+            mainWin.onDateChange()
+    def getCellGroup(self, pluginName, *args):
+        cellGroup = self.plugins[pluginName]['getCellGroupCallable'](self, *args)
+        timeout_add_seconds(0, self.calcEventsData, cellGroup.allCells())
+        return cellGroup
     def getWeekData(self, absWeekNumber):
         cells = self.getCellGroup('WeekCal', absWeekNumber)
         try:
@@ -674,7 +688,7 @@ mainWin = None
 prefDialog = None
 eventManDialog = None
 timeLineWin = None
-
+weekCalWin = None
 
 
 

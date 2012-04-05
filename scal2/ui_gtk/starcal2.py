@@ -78,6 +78,7 @@ from scal2.ui_gtk.monthcal import MonthCal
 from scal2.ui_gtk.event.common import addNewEvent
 from scal2.ui_gtk.event.main import DayOccurrenceView, EventManagerDialog
 from scal2.ui_gtk.timeline import TimeLineWindow
+from scal2.ui_gtk.weekcal import WeekCalWindow
 
 from scal2 import unity
 
@@ -1023,10 +1024,10 @@ class MainWin(gtk.Window):
             ## 1: applet
             ## 2: standard tray icon
         self.trayMode = trayMode
+        ###
         ui.eventManDialog = EventManagerDialog()
-        ui.timeLineWin = TimeLineWindow()
-        ui.timeLineWin.resize(rootWindow.get_geometry()[2], 150)
-        ui.timeLineWin.move(0, 0)
+        ui.timeLineWin = TimeLineWindow(width=rootWindow.get_geometry()[2])
+        ui.weekCalWin = WeekCalWindow()
         ###########
         ##self.connect('window-state-event', selfStateEvent)
         self.set_title('%s %s'%(core.APP_DESC, core.VERSION))
@@ -1186,7 +1187,8 @@ class MainWin(gtk.Window):
         #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, ui.eventManDialog.addCustomEvent))
         menu.add(labelStockMenuItem('_Event Manager', gtk.STOCK_ADD, self.eventManShow))
         menu.add(labelImageMenuItem('Time Line', 'timeline-18.png', self.timeLineShow))
-        menu.add(labelStockMenuItem(_('Export to ')+'HTML', gtk.STOCK_CONVERT, self.exportClicked))
+        menu.add(labelImageMenuItem('Week Calendar', 'weekcal-18.png', self.weekCalShow))
+        menu.add(labelStockMenuItem(_('Export to %s')%'HTML', gtk.STOCK_CONVERT, self.exportClicked))
         menu.add(labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
         if self.trayMode!=1:
             menu.add(labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit))
@@ -1208,7 +1210,7 @@ class MainWin(gtk.Window):
             if plug.external and hasattr(plug, 'set_dialog'):
                 plug.set_dialog(self)
         ###########################
-        self.connectedWindows = [ui.eventManDialog, ui.timeLineWin]
+        self.connectedWindows = [ui.eventManDialog, ui.timeLineWin, ui.weekCalWin]
         self.onConfigChange()
         #rootWindow.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
     #def mainWinStateEvent(self, obj, event):
@@ -1309,6 +1311,7 @@ class MainWin(gtk.Window):
         self.onDateChange()
     goToday = lambda self, widget=None: self.changeDate(*core.getSysDate())
     def onDateChange(self, sender=None):
+        #print 'MainWin.onDateChange', time()
         for item in self.items:
             if item.enable and item is not sender:
                 item.onDateChange()
@@ -1323,11 +1326,8 @@ class MainWin(gtk.Window):
                 core.allPlugList[core.plugIndex[j]].date_change_after(*date)
             except AttributeError:
                 pass
-    def popupMenuCell(self, mcal, etime, x, y):
-        ui.focusTime = time()
-        menu = gtk.Menu()
-        ####
-        item = labelStockMenuItem('_Add to', gtk.STOCK_ADD)
+    def getEventAddToMenuItem(self):
+        addToItem = labelStockMenuItem('_Add to', gtk.STOCK_ADD)
         menu2 = gtk.Menu()
         ##
         for group in ui.eventGroups:
@@ -1360,10 +1360,14 @@ class MainWin(gtk.Window):
             menu2.add(item2)
         ##
         menu2.show_all()
-        item.set_submenu(menu2)
-        menu.add(item)
+        addToItem.set_submenu(menu2)
+        return addToItem
+    def popupMenuCell(self, mcal, etime, x, y):
+        ui.focusTime = time()
+        menu = gtk.Menu()
         ####
         menu.add(labelStockMenuItem('_Copy Date', gtk.STOCK_COPY, self.copyDate))
+        menu.add(self.getEventAddToMenuItem())
         menu.add(gtk.SeparatorMenuItem())
         menu.add(labelStockMenuItem('Select _Today', gtk.STOCK_HOME, self.goToday))
         menu.add(labelStockMenuItem('Select _Date...', gtk.STOCK_INDEX, self.selectDateShow))
@@ -1399,7 +1403,7 @@ class MainWin(gtk.Window):
         #self.menuMainWidth = menu.allocation.width
     def addToGroupFromMenu(self, menu, group, eventType):
         #print 'addToGroupFromMenu', group.title, eventType
-        title = _('Add ') + event_man.getEventDesc(eventType)
+        title = _('Add ') + event_man.classes.event.byName[eventType].desc
         event = addNewEvent(group, eventType, title, parent=self, useSelectedDate=True)
         if event is None:
             return
@@ -1475,6 +1479,7 @@ class MainWin(gtk.Window):
     customizeShow = lambda self, obj=None, data=None: self.customizeDialog.present()
     eventManShow = lambda self, obj=None, data=None: ui.eventManDialog.present()
     timeLineShow = lambda self, obj=None, data=None: ui.timeLineWin.present()
+    weekCalShow = lambda self, obj=None, data=None: ui.weekCalWin.present()
     def trayInit(self):
         if self.trayMode==2:
             self.sicon = gtk.StatusIcon()
@@ -1497,8 +1502,9 @@ class MainWin(gtk.Window):
             labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday),
             labelStockMenuItem('Ad_just System Time', gtk.STOCK_PREFERENCES, self.adjustTime),
             #labelStockMenuItem('_Add Event', gtk.STOCK_ADD, ui.eventManDialog.addCustomEvent),## FIXME
-            labelStockMenuItem(_('Export to ')+'HTML', gtk.STOCK_CONVERT, self.exportClickedTray),
+            labelStockMenuItem(_('Export to %s')%'HTML', gtk.STOCK_CONVERT, self.exportClickedTray),
             labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow),
+            labelStockMenuItem('_Event Manager', gtk.STOCK_ADD, self.eventManShow),
             labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow),
             gtk.SeparatorMenuItem(),
             labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit),

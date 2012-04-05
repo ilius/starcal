@@ -40,7 +40,7 @@ class WeekStatus(list):
         for jd in range(startJd, endJd):
             #print 'WeekStatus', jd
             self.append(cellCache.getCell(jd))
-
+    allCells = lambda self: self
 
 def setParamsFunc(cell):
     (cell.absWeekNumber, cell.weekDayIndex) = core.getWeekDateFromJd(cell.jd)

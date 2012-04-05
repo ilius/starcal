@@ -80,6 +80,13 @@ msgid "_Save"
 msgstr ""
 "ذ_خیره"
 
+msgid "From"
+msgstr ""
+"از"
+
+msgid "To"
+msgstr ""
+"تا"
 
 
 
@@ -1008,6 +1015,10 @@ msgid "Time Line"
 msgstr ""
 "خط زمان"
 
+msgid "Week Calendar"
+msgstr ""
+"تقویم هفتگی"
+
 
 
 msgid "aboutText"
@@ -1470,11 +1481,37 @@ msgstr ""
 
 msgid "Export"
 msgstr ""
-"صدور"
+"صادر کردن"
 
-msgid "Export to "
+msgid "Export to %s"
 msgstr ""
-"صدور به "
+"صادر کردن به %s"
+
+msgid "_Export to %s"
+msgstr ""
+"_صادر کردن به %s"
+msgid "Export Group"
+msgstr ""
+"صادر کردن گروه"
+
+
+msgid "Import"
+msgstr ""
+"وارد کردن"
+
+msgid "Import from %s"
+msgstr ""
+"وارد کردن از %s"
+msgid "Format"
+msgstr ""
+"فرمت"
+
+#msgid "Compact JSON (StarCalendar)"
+#msgstr "JSON فشرده (StarCalendar)"
+
+#msgid "Pretty JSON (StarCalendar)"
+#msgstr "JSON زیبا (StarCalendar)"
+
 
 msgid "Month Range"
 msgstr ""
@@ -1574,11 +1611,6 @@ msgstr ""
 msgid "Select _Date..."
 msgstr ""
 "انتخاب _تاریخ..."
-
-
-msgid "_Export to "
-msgstr ""
-"_صدور به "
 
 
 msgid "Need Restart StarCalendar"

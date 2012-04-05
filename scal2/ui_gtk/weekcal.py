@@ -51,12 +51,6 @@ nextImage = 'week-next.png'
 if rtl:
     (prevImage, nextImage) = (nextImage, prevImage)
 
-weekCalRowItems = []
-
-weekCalRowItems = [WeekDayRowItem(), PluginsTextRowItem()]
-for cal in ui.shownCals:
-    weekCalRowItems.append(DayNumRowItem(cal['mode']))
-
 
 
 def show_event(widget, event):
@@ -135,21 +129,26 @@ class Button:
 class WeekCal(gtk.Widget):
     topMargin = 30
     widthSpacing = 20
-    def __init__(self):
+    def __init__(self, closeFunc):
         gtk.Widget.__init__(self)
+        self.closeFunc = closeFunc
         self.connect('button-press-event', self.buttonPress)
         self.connect('expose-event', self.onExposeEvent)
-        self.connect('destroy', self.quit)
         #self.connect('event', show_event)
         self.buttons = [
             Button(prevImage, self.goBack, 5, 5, True),
             Button('home.png', self.goToday, 35, 5, True),
             Button(nextImage, self.goNext, 65, 5, True),
             Button('resize-small.png', self.startResize, -1, -1, False),
-            Button('exit.png', self.quit, -5, 5, True),
+            Button('exit.png', closeFunc, -5, 5, True),
         ]
+        self.rowItems = [WeekDayRowItem(), PluginsTextRowItem()]
+        for cal in ui.shownCals:
+            self.rowItems.append(DayNumRowItem(cal['mode']))
     def onDateChange(self):
         self.queue_draw()
+    def onConfigChange(self):
+        pass
     def changeDate(self, year, month, day):
         ui.changeDate(year, month, day)
         self.onDateChange()
@@ -162,8 +161,11 @@ class WeekCal(gtk.Widget):
     def startResize(self, event):
         self.parent.begin_resize_drag(gdk.WINDOW_EDGE_SOUTH_EAST, event.button,
                                       int(event.x_root), int(event.y_root), event.time)
-    def quit(self, arg=None):
-        return gtk.main_quit()
+    def quit(self, *args):
+        if ui.mainWin:
+            self.hide()
+        else:
+            gtk.main_quit()## FIXME
     def buttonPress(self, obj, event):
         b = event.button
         #print 'buttonPress', b
@@ -207,7 +209,7 @@ class WeekCal(gtk.Widget):
         rowH = (h-self.topMargin)/7
         widthList = []
         expandIndex = []
-        for (i, item) in enumerate(weekCalRowItems):
+        for (i, item) in enumerate(self.rowItems):
             widthList.append(item.width + self.widthSpacing)
             if item.expand:
                 expandIndex.append(i)
@@ -223,7 +225,7 @@ class WeekCal(gtk.Widget):
                 x = w
             else:
                 x = 0
-            for (j, item) in enumerate(weekCalRowItems):
+            for (j, item) in enumerate(self.rowItems):
                 itemW = widthList[j]
                 text = item.getText(row).decode('utf8')
                 if text:
@@ -251,14 +253,22 @@ class WeekCalWindow(gtk.Window):
     def __init__(self):
         gtk.Window.__init__(self)
         self.set_decorated(False)
+        self.set_title('Week Calendar')
         ######
-        self.wcal = WeekCal()
+        self.wcal = WeekCal(self.closeClicked)
         self.add(self.wcal)
         ######
-        self.connect('delete-event', gtk.main_quit)
+        self.connect('delete-event', self.wcal.quit)
         self.connect('button-press-event', self.buttonPress)
         ######
         self.resize(600, 300)
+        self.wcal.show()
+    def closeClicked(self, arg=None, event=None):
+        if ui.mainWin:
+            self.hide()
+        else:
+            gtk.main_quit()## FIXME
+        return True
     def buttonPress(self, obj, event):
         b = event.button
         #print 'buttonPress', b
@@ -266,6 +276,9 @@ class WeekCalWindow(gtk.Window):
             (x, y, mask) = rootWindow.get_pointer()
             self.begin_move_drag(event.button, x, y, event.time)
         return False
+    onDateChange = lambda self: self.wcal.onDateChange()
+    onConfigChange = lambda self: self.wcal.onConfigChange()
+
 
 gobject.type_register(WeekCal)
 

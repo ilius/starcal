@@ -1743,26 +1743,28 @@ class EventGroup(EventContainer, RuleContainer):
             )
         self.copyRulesFrom(other)
         self.addRequirements()
-    def getData(self):
+    def getBasicData(self):
         data = EventContainer.getData(self)
-        data.update({
-            'type': self.name,
-            'rules': self.getRulesData(),
-            'remoteSyncData': sorted(self.remoteSyncData.items()),
-            'eventIdByRemoteIds': sorted(self.eventIdByRemoteIds.items()),
-        })
+        data['type'] = self.name
+        data['rules'] = self.getRulesData()
         for attr in (
-            'enable', 'color', 'eventCacheSize', 'remoteIds',
+            'enable', 'color', 'eventCacheSize',
             ## 'defaultEventType'
         ):
-            data[attr] = getattr(self, attr)
+            data[attr] = getattr(self, attr)  
+        return data      
+    def getData(self):
+        data = self.getBasicData()
+        data['remoteIds'] = self.remoteIds
+        data['remoteSyncData'] = sorted(self.remoteSyncData.items())
+        data['eventIdByRemoteIds'] = sorted(self.eventIdByRemoteIds.items())
         return data
-    def setData(self, data):
+    def setBasicData(self, data):
         EventContainer.setData(self, data)
         if 'id' in data:
             self.setId(data['id'])
         for attr in (
-            'enable', 'color', 'eventCacheSize', 'remoteIds',
+            'enable', 'color', 'eventCacheSize',
             ## 'defaultEventType'
         ):
             try:
@@ -1777,6 +1779,10 @@ class EventGroup(EventContainer, RuleContainer):
         ####
         if 'rules' in data:
             self.setRulesData(data['rules'])
+    def setData(self, data):
+        self.setBasicData(data)
+        if 'remoteIds' in data:
+            self.remoteIds = data['remoteIds']
         if 'remoteSyncData' in data:
             self.remoteSyncData = {}
             for remoteIds, syncData in data['remoteSyncData']:
@@ -1803,6 +1809,7 @@ class EventGroup(EventContainer, RuleContainer):
         assert eventType in self.acceptsEventTypes
         event = classes.event.byName[eventType]()
         event.group = self
+        event.mode = self.mode ## FIXME
         event.setDefaultsFromGroup(self)
         return event
     def copyEventWithType(self, event, eventType):## FIXME
@@ -1849,7 +1856,7 @@ class EventGroup(EventContainer, RuleContainer):
             newEvent.save()
             newGroup.append(newEvent)
         return newGroup
-    def exportToIcs(self, fpath, startJd, endJd):
+    def getIcsText(self, startJd, endJd):
         icsText = icsHeader
         currentTimeStamp = getIcsTimeByEpoch(time.time())
         for event in self:
@@ -1882,8 +1889,33 @@ class EventGroup(EventContainer, RuleContainer):
             vevent += 'END:VEVENT\n'
             icsText += vevent
         icsText += 'END:VCALENDAR\n'
+        return icsText
+    def exportToIcs(self, fpath, startJd, endJd):
+        icsText = self.getIcsText(startJd, endJd)
         open(fpath, 'w').write(icsText)
-
+    def exportData(self):
+        data = self.getBasicData()
+        data['events'] = []
+        for eventId in self.idList:
+            eventData = EventContainer.getEvent(self, eventId).getData()
+            data['events'].append(eventData)
+        del data['idList']
+        ###
+        data['info'] = {
+            'appName': core.APP_NAME,
+            'version': core.VERSION,
+            #'exportDate':
+        }
+        ###
+        return data
+    def importData(self, data):
+        self.setBasicData(data)
+        for eventData in data['events']:
+            event = self.createEvent(eventData['type'])
+            event.setData(eventData)## or setBasicData FIXME
+            event.save()
+            self.append(event)
+        self.save()
 
 @classes.group.register
 class TaskList(EventGroup):
@@ -2132,7 +2164,7 @@ class EventGroupsHolder(JsonObjectsHolder):
                 ## here check that non of obj.idList are in eventIdList ## FIXME
                 #eventIdList += obj.idList
         else:
-            for cls in classes.rule:
+            for cls in classes.group:
                 obj = cls()## FIXME
                 obj.setData({'title': cls.desc})## FIXME
                 obj.save()
@@ -2232,15 +2264,13 @@ def getDayOccurrenceData(curJd, groups):
             #print '\nupdateData: checking event', event.summary
             ids = (group.id, event.id)
             if isinstance(occur, JdListOccurrence):
-                #print 'updateData: JdListOccurrence', occur.getDaysJdList()
-                for jd in occur.getDaysJdList():
-                    if jd==curJd:
-                        data.append({
-                            'time':'',
-                            'text':text,
-                            'icon':icon,
-                            'ids': ids,
-                        })
+                ### len(occur) == len(occur.getDaysJdList()) == 1
+                data.append({
+                    'time':'',
+                    'text':text,
+                    'icon':icon,
+                    'ids': ids,
+                })
             elif isinstance(occur, TimeRangeListOccurrence):
                 #print 'updateData: TimeRangeListOccurrence', occur.getTimeRangeList()
                 for (startEpoch, endEpoch) in occur.getTimeRangeList():

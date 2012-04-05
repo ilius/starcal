@@ -47,7 +47,11 @@ class MonthStatus(list): ## FIXME
     #def getDayCell(self, day):## needed? FIXME
     #    (yPos, xPos) = divmod(day + self.offset - 1, 7)
     #    return self[yPos][xPos]
-
+    def allCells(self):
+        l = []
+        for row in self:
+            l += row
+        return l 
 
 def setParamsFunc(cell):
     offset = core.getWeekDay(cell.year, cell.month, 1)## month start offset

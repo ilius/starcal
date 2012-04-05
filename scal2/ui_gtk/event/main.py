@@ -17,12 +17,13 @@
 # Or on Debian systems, from /usr/share/common-licenses/GPL
 
 import os, sys, shlex, time, thread
-from os.path import join, dirname
+from os.path import join, dirname, split, splitext
 
 from scal2.paths import *
+from scal2.json_utils import *
 
 from scal2 import core
-from scal2.core import pixDir, convert, myRaise
+from scal2.core import pixDir, convert, myRaise, fixStrForFileName
 
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl
@@ -40,13 +41,144 @@ from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile, rectangleContainsP
                                labelStockMenuItem, labelImageMenuItem, confirm, toolButtonFromStock, set_tooltip
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
-#from scal2.ui_gtk.mywidgets.multi_spin_box import DateBox, TimeBox
-from scal2.ui_gtk.export import ExportToIcsDialog
+from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
 
 from scal2.ui_gtk.event.occurrence_view import *
 from scal2.ui_gtk.event.common import IconSelectButton, EventEditorDialog, addNewEvent, GroupEditorDialog
 
 #print 'Testing translator', __file__, _('About')
+
+class GroupExportDialog(gtk.Dialog):
+    def __init__(self, group):
+        self._group = group
+        gtk.Dialog.__init__(self)
+        self.set_title(_('Export Group'))
+        ####
+        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        if ui.autoLocale:
+            cancelB.set_label(_('_Cancel'))
+            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
+            okB.set_label(_('_OK'))
+            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        self.connect('response', lambda w, e: self.hide())
+        ####
+        hbox = gtk.HBox()
+        frame = gtk.Frame(_('Format'))
+        radioBox = gtk.VBox()
+        ##
+        self.radioIcs = gtk.RadioButton(label='iCalendar')
+        self.radioJsonCompact = gtk.RadioButton(label=_('Compact JSON (StarCalendar)'), group=self.radioIcs)
+        self.radioJsonPretty = gtk.RadioButton(label=_('Pretty JSON (StarCalendar)'), group=self.radioIcs)
+        ##
+        radioBox.pack_start(self.radioJsonCompact, 0, 0)
+        radioBox.pack_start(self.radioJsonPretty, 0, 0)
+        radioBox.pack_start(self.radioIcs, 0, 0)
+        ##
+        self.radioJsonCompact.set_active(True)
+        self.radioIcs.connect('clicked', self.formatRadioChanged)
+        self.radioJsonCompact.connect('clicked', self.formatRadioChanged)
+        self.radioJsonPretty.connect('clicked', self.formatRadioChanged)
+        ##
+        frame.add(radioBox)
+        hbox.pack_start(frame, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.vbox.pack_start(hbox, 0, 0)
+        ####
+        hbox = gtk.HBox(spacing=2)
+        hbox.pack_start(gtk.Label(_('From')+' '), 0, 0)
+        self.startDateInput = DateButton()
+        hbox.pack_start(self.startDateInput, 0, 0)
+        hbox.pack_start(gtk.Label(' '+_('To')+' '), 0, 0)
+        self.endDateInput = DateButton()
+        hbox.pack_start(self.endDateInput, 0, 0)
+        self.vbox.pack_start(hbox, 0, 0)
+        self.dateRangeBox = hbox
+        ####
+        (year, month, day) = ui.todayCell.dates[core.primaryMode]
+        self.startDateInput.set_date((year, 1, 1))
+        self.endDateInput.set_date((year+1, 1, 1))
+        ########
+        self.fcw = gtk.FileChooserWidget(action=gtk.FILE_CHOOSER_ACTION_SAVE)
+        try:
+            self.fcw.set_current_folder(core.deskDir)
+        except AttributeError:## PyGTK < 2.4
+            pass
+        self.vbox.pack_start(self.fcw, 1, 1)
+        ####
+        self.vbox.show_all()
+        self.formatRadioChanged()
+    def formatRadioChanged(self, widget=None):
+        self.dateRangeBox.set_visible(self.radioIcs.get_active())
+        ###
+        fpath = self.fcw.get_filename()
+        if fpath:
+            fname_nox, ext = splitext(split(fpath)[1])
+        else:
+            fname_nox, ext = '', ''
+        if not fname_nox:
+            fname_nox = fixStrForFileName(self._group.title)
+        if self.radioIcs.get_active():
+            if ext != '.ics':
+                ext = '.ics'
+        else:
+            if ext != '.json':
+                ext = '.json'
+        self.fcw.set_current_name(fname_nox + ext)
+    def save(self):
+        if self.radioJsonCompact.get_active():
+            text = dataToCompactJson(self._group.exportData())
+        elif self.radioJsonPretty.get_active():
+            text = dataToPrettyJson(self._group.exportData())
+        elif self.radioIcs.get_active():
+            text = self._group.getIcsText(
+                core.primary_to_jd(*self.startDateInput.get_date()),
+                core.primary_to_jd(*self.endDateInput.get_date()),
+            )
+        else:
+            return
+        open(self.fcw.get_filename(), 'w').write(text)
+    def run(self):
+        if gtk.Dialog.run(self)==gtk.RESPONSE_OK:
+            self.save()
+        self.destroy()
+
+
+class GroupImportDialog(gtk.Dialog):
+    def __init__(self, group):
+        self._group = group
+        gtk.Dialog.__init__(self)
+        self.set_title(_('Import Group'))
+        ####
+        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        if ui.autoLocale:
+            cancelB.set_label(_('_Cancel'))
+            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
+            okB.set_label(_('_OK'))
+            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        self.connect('response', lambda w, e: self.hide())
+        ####
+        hbox = gtk.HBox()
+        frame = gtk.Frame(_('Format'))
+        radioBox = gtk.VBox()
+        ##
+        self.radioJson = gtk.RadioButton(label=_('JSON (StarCalendar)'))
+        #self.radioIcs = gtk.RadioButton(label='iCalendar', group=self.radioJson)
+        ##
+        radioBox.pack_start(self.radioJson, 0, 0)
+        #radioBox.pack_start(self.radioIcs, 0, 0)
+        ##
+        self.radioJson.set_active(True)
+        #self.radioJson.connect('clicked', self.formatRadioChanged)
+        ##self.radioIcs.connect('clicked', self.formatRadioChanged)
+        ##
+        frame.add(radioBox)
+        hbox.pack_start(frame, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.vbox.pack_start(hbox, 0, 0)
+        ####
+
 
 
 class TrashEditorDialog(gtk.Dialog):
@@ -372,7 +504,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 menu.add(labelStockMenuItem('Move Up', gtk.STOCK_GO_UP, self.moveUpFromMenu, path))
                 menu.add(labelStockMenuItem('Move Down', gtk.STOCK_GO_DOWN, self.moveDownFromMenu, path))
                 ##
-                menu.add(labelImageMenuItem(_('Export to ')+'iCalendar', 'ical-32.png', self.exportGroupToIcsFromMenu, group))
+                menu.add(labelStockMenuItem(_('Export'), gtk.STOCK_CONVERT, self.exportGroupFromMenu, group))
                 #if group.remoteIds:
                 #    account = ui.eventAccounts[group.remoteIds[0]]
                 #    menu.add(labelImageMenuItem(_('Synchronize with %s')%account.title, gtk.STOCK_REFRESH, self.syncGroup, path))
@@ -803,8 +935,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         if not cur:
             return
         self.moveDown(cur[0])
-    def exportGroupToIcsFromMenu(self, menu, group):
-        ExportToIcsDialog(group.exportToIcs, group.title).run()
+    def exportGroupFromMenu(self, menu, group):
+        GroupExportDialog(group).run()
     def groupActionClicked(self, menu, group, actionFuncName):
         getattr(group, actionFuncName)(parentWin=self)
     def cutEvent(self, menu, path):
@@ -950,7 +1082,7 @@ for cls in event_man.classes.group:
             setattr(cls, actionName, func)
 
 for fname in os.listdir(join(srcDir, 'accounts')):
-    name, ext = os.path.splitext(fname)
+    name, ext = splitext(fname)
     if ext == '.py' and name != '__init__':
         try:
             __import__('scal2.accounts.%s'%name)

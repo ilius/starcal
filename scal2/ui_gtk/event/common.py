@@ -93,7 +93,7 @@ class EventWidget(gtk.VBox):
         combo = gtk.combo_box_new_text()
         for module in core.modules:
             combo.append_text(_(module.desc))
-        combo.set_active(core.primaryMode)
+        combo.set_active(core.primaryMode)## overwritten in updateWidget()
         hbox.pack_start(combo, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         self.modeCombo = combo

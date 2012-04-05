@@ -84,7 +84,7 @@ class StarCalApplet(MainWin):
             ('adjustTime', _('Ad_just System Time'), 'preferences'),
             #('addEvent', _('Add Event'), 'add'),
             ('prefShow', _('_Preferences'), 'preferences'),
-            ('exportClickedTray', _('_Export to ')+'HTML', 'convert'),
+            ('exportClickedTray', _('_Export to %s')%'HTML', 'convert'),
             ('aboutShow', _('_About'), 'about'),
         )
         xml = '<popup name="button3">'

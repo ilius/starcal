@@ -294,7 +294,13 @@ class MonthCal(gtk.Widget, MainWinItem):
                         cr.fill()
                         cr.scale(iconsN, iconsN)
                         fromRight += pix_w
-                ####
+                #### Drawing numbers inside every cell
+                #cr.rectangle(
+                #    x0-self.dx/2.0+1,
+                #    y0-self.dy/2.0+1,
+                #    self.dx-1,
+                #    self.dy-1,
+                #)
                 if shown[0]['enable']:
                     mode = shown[0]['mode']
                     daynum = newTextLayout(self, _(c.dates[mode][2], mode), shown[0]['font'])
@@ -305,8 +311,10 @@ class MonthCal(gtk.Widget, MainWinItem):
                         setColor(cr, ui.holidayColor)
                     else:
                         setColor(cr, shown[0]['color'])
-                    cr.move_to(x0 - fontw/2.0 + shown[0]['x'],
-                               y0 - fonth/2.0 + shown[0]['y'])
+                    cr.move_to(
+                        x0 - fontw/2.0 + shown[0]['x'],
+                        y0 - fonth/2.0 + shown[0]['y'],
+                    )
                     cr.show_layout(daynum)
                 if not cellInactive:
                     for item in shown[1:]:
@@ -315,8 +323,10 @@ class MonthCal(gtk.Widget, MainWinItem):
                             daynum = newTextLayout(self, _(c.dates[mode][2], mode), item['font'])
                             (fontw, fonth) = daynum.get_pixel_size()
                             setColor(cr, item['color'])
-                            cr.move_to(x0 - fontw/2.0 + item['x'],
-                                       y0 - fonth/2.0 + item['y'])
+                            cr.move_to(
+                                x0 - fontw/2.0 + item['x'],
+                                y0 - fonth/2.0 + item['y'],
+                            )
                             cr.show_layout(daynum)
                     if cellHasCursor:
                         ##### Drawing Cursor Outline
@@ -565,7 +575,7 @@ class MonthCal(gtk.Widget, MainWinItem):
             0,
             0,
             0,
-            0,
+            0,G
             -1,
             -1,
         )

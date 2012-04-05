@@ -22,7 +22,6 @@ import os, sys
 from scal2.locale_man import tr as _
 
 from scal2 import core
-from scal2.core import deskDir
 
 from scal2 import ui
 from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
@@ -40,7 +39,7 @@ from gtk import gdk
 
 class ExportDialog(gtk.Dialog):
     def __init__(self):
-        gtk.Dialog.__init__(self, title=_('Export to ')+'HTML', parent=None)
+        gtk.Dialog.__init__(self, title=_('Export to %s')%'HTML', parent=None)
         self.set_has_separator(False)
         ########
         hbox = gtk.HBox(spacing=2)
@@ -80,8 +79,8 @@ class ExportDialog(gtk.Dialog):
         canB.connect('clicked', self.onDelete)
         saveB.connect('clicked', self.save)
         try:
-            self.fcw.set_current_folder(deskDir)
-        except:##?????????????????????
+            self.fcw.set_current_folder(core.deskDir)
+        except AttributeError:## PyGTK < 2.4
             pass    
     def comboChanged(self, widget=None, ym=None):
         i = self.combo.get_active()
@@ -166,7 +165,7 @@ class ExportDialog(gtk.Dialog):
 class ExportToIcsDialog(gtk.Dialog):
     def __init__(self, saveIcsFunc, defaultFileName):
         self.saveIcsFunc = saveIcsFunc
-        gtk.Dialog.__init__(self, title=_('Export to ')+'iCalendar', parent=None)
+        gtk.Dialog.__init__(self, title=_('Export to %s')%'iCalendar', parent=None)
         self.set_has_separator(False)
         ########
         hbox = gtk.HBox(spacing=2)
@@ -196,8 +195,8 @@ class ExportToIcsDialog(gtk.Dialog):
         canB.connect('clicked', self.onDelete)
         saveB.connect('clicked', self.save)
         try:
-            self.fcw.set_current_folder(deskDir)
-        except:##?????????????????????
+            self.fcw.set_current_folder(core.deskDir)
+        except AttributeError:## PyGTK < 2.4
             pass
         if not defaultFileName.endswith('.ics'):
             defaultFileName += '.ics'
@@ -213,9 +212,11 @@ class ExportToIcsDialog(gtk.Dialog):
         if path in (None, ''):
             return
         print 'Exporting to ics file "%s"'%path
-        startJd = core.primary_to_jd(*self.startDateInput.get_date())
-        endJd = core.primary_to_jd(*self.endDateInput.get_date())
-        self.saveIcsFunc(path, startJd, endJd)
+        self.saveIcsFunc(
+            path,
+            core.primary_to_jd(*self.startDateInput.get_date()),
+            core.primary_to_jd(*self.endDateInput.get_date()),
+        )
         self.window.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
         self.destroy()
 

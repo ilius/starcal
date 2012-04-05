@@ -390,6 +390,11 @@ getCompactTime = lambda maxDays=1000, minSec=0.1: compressLongInt(long(time.time
 
 showInfo = lambda: log.debug('%s %s, OS: %s, Python %s'%(APP_DESC, VERSION, getOsFullDesc(), sys.version.replace('\n', ' ')))
 
+def fixStrForFileName(fname):
+    fname = fname.replace('/', '_').replace('\\', '_')
+    #if osName=='win':## FIXME
+    return fname
+
 ################################################################################
 #################### End of class and function defenitions #####################
 ################################################################################

@@ -109,7 +109,7 @@ toolbarItemsData = (
     ToolbarItem('customize', 'edit', 'customizeShow'),
     ToolbarItem('preferences', 'preferences', 'prefShow'),
     ToolbarItem('add', 'add', 'eventManShow', 'Event Manager'),
-    ToolbarItem('export', 'convert', 'exportClicked', _('Export to ')+'HTML'),
+    ToolbarItem('export', 'convert', 'exportClicked', _('Export to %s')%'HTML'),
     ToolbarItem('about', 'about', 'aboutShow', _('About ')+APP_DESC),
     ToolbarItem('quit', 'quit', 'quit')
 )
@@ -1008,7 +1008,7 @@ class PrefDialog(gtk.Dialog):
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
         ##sgroup.add_widget(label)
-        item = SpinPrefItem(ui, 'maxDayCacheSize', 0, 9999, 0, 1, 30)
+        item = SpinPrefItem(ui, 'maxDayCacheSize', 100, 9999, 0, 1, 30)
         self.uiPrefItems.append(item)
         hbox.pack_start(item.widget, 0, 0)
         vbox.pack_start(hbox, 0, 0)
@@ -1651,7 +1651,7 @@ class PrefDialog(gtk.Dialog):
                 item.set_sensitive(plug.has_config)
                 menu.add(item)
                 ##
-                menu.add(labelImageMenuItem(_('Export to ')+'iCalendar', 'ical-32.png', self.plugExportToIcsClicked, plug))
+                menu.add(labelImageMenuItem(_('Export to %s')%'iCalendar', 'ical-32.png', self.plugExportToIcsClicked, plug))
                 ##
                 menu.show_all()
                 menu.popup(None, None, None, 3, event.time)
