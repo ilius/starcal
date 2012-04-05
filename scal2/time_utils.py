@@ -67,9 +67,9 @@ def dateEncode(date):
 
 def checkDate(date):
     if not 1 <= date[1] <= 12:
-        raise ValueError('bad date %s (invalid month)'%st)
+        raise ValueError('bad date %s (invalid month)'%date)
     if not 1 <= date[2] <= 31:
-        raise ValueError('bad date %s (invalid day)'%st)
+        raise ValueError('bad date %s (invalid day)'%date)
 
 def dateDecode(st):
     if '-' in st:
