@@ -1007,10 +1007,10 @@ class Event(JsonEventBaseClass, RuleContainer):
     __setitem__ = lambda self, key, value: self.setRule(key, value)
     __iter__ = lambda self: self.rulesOd.itervalues()
     __nonzero__ = lambda self: bool(self.rulesOd) ## FIXME
-    def __init__(self, eid=None):
+    def __init__(self, eid=None, group=None):
         self.setId(eid)
-        self.group = None
-        self.mode = core.primaryMode
+        self.group = group
+        self.mode = group.mode if group else core.primaryMode
         self.icon = self.__class__.getDefaultIcon()
         self.summary = self.desc + ' (' + _(self.id) + ')'
         self.description = ''
@@ -1023,6 +1023,8 @@ class Event(JsonEventBaseClass, RuleContainer):
         ## self.snoozeTime = (5, 60) ## (value, unit) like DurationEventRule ## FIXME
         self.addRequirements()
         self.setDefaults()
+        if group:
+            self.setDefaultsFromGroup(group)
         ######
         self.modified = time.time()
         self.remoteIds = None## (accountId, groupId, eventId)
@@ -1807,10 +1809,7 @@ class EventGroup(EventContainer, RuleContainer):
         return event
     def createEvent(self, eventType):
         assert eventType in self.acceptsEventTypes
-        event = classes.event.byName[eventType]()
-        event.group = self
-        event.mode = self.mode ## FIXME
-        event.setDefaultsFromGroup(self)
+        event = classes.event.byName[eventType](group=self)
         return event
     def copyEventWithType(self, event, eventType):## FIXME
         newEvent = self.createEvent(eventType)
