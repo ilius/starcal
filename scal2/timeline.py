@@ -17,18 +17,18 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from math import ceil, sqrt
+from math import sqrt, floor, ceil, log10
 #import random
 
 from scal2 import core
 from scal2.locale_man import tr as _
-from scal2.locale_man import rtl
+from scal2.locale_man import rtl, numEncode, textNumEncode, LRM
 
 from scal2.core import myRaise, getMonthName, getJdFromEpoch, getFloatJdFromEpoch, getEpochFromJd, jd_to, to_jd, \
                        getJhmsFromEpoch, getEpochFromDate, jwday
 
 from scal2.color_utils import hslToRgb
-from scal2.utils import iceil
+from scal2.utils import ifloor, iceil
 from scal2 import ui
 from scal2.ui import getHolidaysJdList
 
@@ -123,7 +123,11 @@ class Tick:
             color = fgColor
         self.color = color
 
-conflicts = lambda a0, a1, b0, b1: a0 <= b0 < a1  or  a0 < b1 <= a1  or  b0 <= a0 < b1  or  b0 < a1 <= b1
+overlaps = lambda a0, a1, b0, b1: \
+    a0 <= b0 <  a1 or \
+    a0 <  b1 <= a1 or \
+    b0 <= a0 <  b1 or \
+    b0 <  a1 <= b1
 
 class Box:
     def __init__(self, t0, t1, y0, y1, text, color, ids):
@@ -135,8 +139,8 @@ class Box:
         self.color = color
         self.ids = ids ## (groupId, eventId)
         self.tConflictBefore = []
-    tConflicts = lambda self, other: conflicts(self.t0, self.t1, other.t0, other.t1)
-    yConflicts = lambda self, other: conflicts(self.y0, self.y1, other.y0, other.y1)
+    tOverlaps = lambda self, other: overlaps(self.t0, self.t1, other.t0, other.t1)
+    yOverlaps = lambda self, other: overlaps(self.y0, self.y1, other.y0, other.y1)
     getWidth = lambda self: self.t1 - self.t0
     getHeight = lambda self: self.y1 - self.y0
     __cmp__ = lambda self, other: cmp(self.getWidth(), other.getWidth())
@@ -146,7 +150,7 @@ def yResizeBox(box1, rat):
     box1.y0 *= rat
     box1.y1 *= rat
     for box2 in box1.tConflictBefore:
-        if box1.yConflicts(box2):
+        if box1.yOverlaps(box2):
             yResizeBox(box2, rat)
 
 class Range:
@@ -197,20 +201,50 @@ def formatEpochTime(epoch):
     else:
         return '%s:%s:%s'%(_(h), _(m), _(s))
 
+def getNum10FactPow(n):
+    if n == 0:
+        return 0, 1
+    n = str(int(n))
+    nozero = n.rstrip('0')
+    return int(nozero), len(n) - len(nozero)
+
+getNum10Pow = lambda n: getNum10FactPow(n)[1]
+
 def getYearRangeTickValues(y0, y1, minStepYear):
-    data = []
-    numList = []
-    #for n in (1000, 500, 100, 50, 10, 1):
-    for n in (1000, 100, 10, 1):
-        if n<minStepYear:
-            break
-        numList.append(n)
-    for y in range(y0, y1):
-        for n in numList:
-            if y%n == 0:
-                data.append((n, y))
-                break
-    return data
+    data = {}
+    step = 10 ** max(0, ifloor(log10(y1 - y0)) - 1)
+    y0 = step * (y0//step)
+    for y in range(y0, y1, step):
+        n = 10 ** getNum10Pow(y)
+        if n >= minStepYear:
+            data[y] = n
+    if y0 <= 0 <= y1:
+        data[0] = max(data.values())
+    return sorted(data.items())
+
+def formatYear(y, prettyPower=False):
+    if abs(y) < 10 ** 4:## FIXME
+        y_st = _(y)
+    else:
+        #y_st = textNumEncode('%.0E'%y, changeDot=True)## FIXME
+        fac, pw = getNum10FactPow(y)
+        if not prettyPower or abs(fac) >= 100:## FIXME
+            y_e = '%E'%y
+            for i in range(10):
+                y_e = y_e.replace('0E', 'E')
+            y_e = y_e.replace('.E', 'E')
+            y_st = textNumEncode(y_e, changeDot=True)
+        else:
+            sign = (u'-' if fac < 0 else '')
+            fac = abs(fac)
+            if fac == 1:
+                fac_s = u''
+            else:
+                fac_s = u'%s×'%_(fac)
+            pw_s = _(10) + u'ˆ' + _(pw)
+            ## pw_s = _(10) + '<span rise="5" size="small">' + _(pw) + '</span>'## Pango Markup Language
+            y_st = sign + fac_s + pw_s
+    return LRM + y_st
 
 #def setRandomColorsToEvents():
 #    events = ui.events[:]
@@ -243,14 +277,14 @@ def calcTimeLineData(timeStart, timeWidth, width):
     (y0, m0, d0) = jd_to(jd0, core.primaryMode)
     (y1, m1, d1) = jd_to(jd1, core.primaryMode)
     ############ Year
-    minStepYear = int(minStep/minYearLenSec) ## years
+    minStepYear = minStep//minYearLenSec ## years ## int or iceil?
     yearPixel = minYearLenSec*pixelPerSec ## pixels
-    for (size, year) in getYearRangeTickValues(y0, y1+1, minStepYear):
+    for (year, size) in getYearRangeTickValues(y0, y1+1, minStepYear):
         tmEpoch = getEpochFromDate(year, 1, 1, core.primaryMode)
         if tmEpoch in tickEpochList:
             continue
         unitSize = size*yearPixel
-        label = _(year, negEnd=rtl) if unitSize >= majorStepMin else ''
+        label = formatYear(year) if unitSize >= majorStepMin else ''
         ticks.append(Tick(
             tmEpoch,
             getEPos(tmEpoch),
@@ -396,7 +430,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
         conflictRanges = []
         minConflictH = 1
         for box1 in placedBoxes:
-            if box1.tConflicts(box):
+            if box1.tOverlaps(box):
                 box.tConflictBefore.append(box1)
                 conflictRanges.append((box1.y0, box1.y1))
                 minConflictH = min(minConflictH, box1.getHeight())
@@ -415,7 +449,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
         box.y0 = 1 - h
         box.y1 = 1
         for box1 in box.tConflictBefore:## FIXME
-            if box.yConflicts(box1):
+            if box.yOverlaps(box1):
                 yResizeBox(box1, 1-h)                        
     return {
         'holidays': holidays,

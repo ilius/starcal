@@ -36,7 +36,8 @@ def getLangDigits(langSh0):
 ## Urdu digits is a combination of Arabic and Persian digits, except for Zero that is
 ## named ARABIC-INDIC DIGIT ZERO in unicode database
 
-#RLM = '\xe2\x80\x8f' ## u'\u200f' ## right to left mark
+LRM = '\xe2\x80\x8e'
+RLM = '\xe2\x80\x8f' ## u'\u200f' ## right to left mark
 ZWNJ = '\xe2\x80\x8c'
 ZWJ = '\xe2\x80\x8d'
 
@@ -203,7 +204,7 @@ def numEncode(num, mode=None, fillZero=0, negEnd=False):
             res = u'-' + res
     return res
 
-def textNumEncode(st, mode=None, changeSpecialChars=True):
+def textNumEncode(st, mode=None, changeSpecialChars=True, changeDot=False):
     if mode==None:
         mode = langSh
     elif isinstance(mode, int):
@@ -218,8 +219,12 @@ def textNumEncode(st, mode=None, changeSpecialChars=True):
         try:
             i = int(c)
         except:
-            if changeSpecialChars and c in (u',', '_'):## FIXME
-                c = tr(c)
+            if c in (',', '_'):## FIXME
+                if changeSpecialChars:
+                    c = tr(c)
+            elif c=='.':## FIXME
+                if changeDot:
+                    c = tr(c)
             res += c
         else:
             res += dig[i]

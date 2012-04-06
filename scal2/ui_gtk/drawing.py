@@ -90,10 +90,14 @@ def newTextLayout(widget, text='', font=None, maxSize=None, truncate=False):
                     layout.set_font_description(pfontEncode(font))
     return layout
 
-def newLimitedWidthTextLayout(widget, text, width, font=None, truncate=True):
+def newLimitedWidthTextLayout(widget, text, width, font=None, truncate=True, markup=True):
     if not font:
         font = ui.getFont()
-    layout = widget.create_pango_layout(text)
+    layout = widget.create_pango_layout('')
+    if markup:
+        layout.set_markup(text)
+    else:
+        layout.set_text(text)
     layout.set_font_description(pfontEncode(font))
     if not layout:
         return None

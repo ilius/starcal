@@ -466,6 +466,8 @@ if __name__=='__main__':
     win = TimeLineWindow()
     win.resize(rootWindow.get_geometry()[2], 150)
     win.move(0, 0)
+    win.tline.timeStart = -10**17
+    win.tline.timeWidth = 2*10**17
     win.show()
     gtk.main()
 

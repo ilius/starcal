@@ -35,7 +35,11 @@ def getJdAndSecondsFromEpoch(epoch):## return a tuple (julain_day, extra_seconds
     (days, second) = divmod(epoch, 24*3600)
     return (days + J1970, second)
 
-getTimeZoneByEpoch = lambda epoch: (datetime.datetime.fromtimestamp(epoch) - datetime.datetime.utcfromtimestamp(epoch)).seconds
+def getTimeZoneByEpoch(epoch):
+    try:
+        return (datetime.datetime.fromtimestamp(epoch) - datetime.datetime.utcfromtimestamp(epoch)).seconds
+    except ValueError:## year is out of range
+        return 0
 
 getTimeZoneByJd = lambda jd: getTimeZoneByEpoch(getEpochFromJd(jd))
 

@@ -161,6 +161,10 @@ msgstr "،"
 msgid "_"
 msgstr "ـ"
 
+msgid "."
+msgstr "٫"
+
+
 msgid "Gregorian"
 msgstr ""
 "گریگوری(میلادی)"
