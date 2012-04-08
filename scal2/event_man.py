@@ -1457,9 +1457,9 @@ class UniversityClassEvent(Event):
     iconName = 'university'
     requiredRules  = ('weekNumMode', 'weekDay', 'dayTimeRange',)
     supportedRules = ('weekNumMode', 'weekDay', 'dayTimeRange',)
-    def __init__(self, eid=None):
+    def __init__(self, *args, **kw):
         ## assert group is not None ## FIXME
-        Event.__init__(self, eid)
+        Event.__init__(self, *args, **kw)
         self.courseId = None ## FIXME
     #def setDefaults(self):
     #    pass
@@ -1527,9 +1527,9 @@ class UniversityExamEvent(DailyNoteEvent):
     iconName = 'university'
     requiredRules  = ('date', 'dayTimeRange',)
     supportedRules = ('date', 'dayTimeRange',)
-    def __init__(self, eid=None):
+    def __init__(self, *args, **kw):
         ## assert group is not None ## FIXME
-        DailyNoteEvent.__init__(self, eid)
+        DailyNoteEvent.__init__(self, *args, **kw)
         self.courseId = None ## FIXME
     def setDefaults(self):
         self['dayTimeRange'].setRange((9, 0), (11, 0))## FIXME
