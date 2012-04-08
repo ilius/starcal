@@ -456,7 +456,7 @@ class TagIconItem:
 
 eventTags = (
     TagIconItem('birthday', eventTypes=('yearly',)),
-    TagIconItem('marriage', desc=_('Marriage Jubilee'), eventTypes=('yearly',)),
+    TagIconItem('marriage', desc=_('Marriage'), eventTypes=('yearly',)),
     TagIconItem('obituary', eventTypes=('yearly',)),
     TagIconItem('note', eventTypes=('dailyNote',)),
     TagIconItem('task', eventTypes=('task',)),

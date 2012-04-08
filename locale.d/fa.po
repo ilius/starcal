@@ -517,9 +517,9 @@ msgid "Birthday"
 msgstr ""
 "تولد"
 
-msgid "Marriage Jubilee"
+msgid "Marriage"
 msgstr ""
-"سالگرد ازدواج"
+"ازدواج"
 
 msgid "Obituary"
 msgstr ""

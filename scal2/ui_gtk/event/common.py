@@ -429,7 +429,6 @@ class EventEditorDialog(gtk.Dialog):
     def dateModeChanged(self, combo):
         pass
     def typeChanged(self, combo):
-        print '--- typeChanged'
         if self.activeWidget:
             self.activeWidget.destroy()
         eventType = self._group.acceptsEventTypes[combo.get_active()]
