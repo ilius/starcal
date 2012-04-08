@@ -102,8 +102,8 @@ class MonthCal(gtk.Widget, MainWinItem):
         self.connect('button-press-event', self.buttonPress)
         #self.connect('screen-changed', self.screenChanged)
         self.myKeys = (
-            'Up', 'Down', 'Right', 'Left', 'Page_Up', 'Page_Down',
-            'space', 'Home', 'End', 'Menu', 'F10', 'm', 'M',
+            'up', 'down', 'right', 'left', 'page_up', 'page_down',
+            'space', 'home', 'end', 'menu', 'f10', 'm',
         )
         self.connect('key-press-event', self.keyPress)
         self.connect('scroll-event', self.scroll)
@@ -119,8 +119,9 @@ class MonthCal(gtk.Widget, MainWinItem):
             height=self.allocation.height, 
             window_type=gdk.WINDOW_CHILD, 
             wclass=gdk.INPUT_OUTPUT, 
-            event_mask=self.get_events() | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK
-                                         | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK
+            event_mask=self.get_events() \
+                | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK
+                | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK
         )
         self.window.set_user_data(self)
         self.style.attach(self.window)#?????? Needed??
@@ -180,18 +181,25 @@ class MonthCal(gtk.Widget, MainWinItem):
                 except:
                     myRaise(__file__)
                     (fontw, fonth) = wday.get_pixel_size()
-                cr.move_to(self.cx[i]-fontw/2.0, (ui.calTopMargin-fonth)/2.0-1)
+                cr.move_to(
+                    self.cx[i]-fontw/2.0,
+                    (ui.calTopMargin-fonth)/2.0-1,
+                )
                 cr.show_layout(wday)
             ######## Drawing "Menu" label
             setColor(cr, ui.menuTextColor)
             text = newTextLayout(self, _('Menu'))
             (fontw, fonth) = text.get_pixel_size()
             if rtl:
-                cr.move_to(w-(ui.calLeftMargin+fontw)/2.0 - 3,
-                           (ui.calTopMargin-fonth)/2.0 - 1)
+                cr.move_to(
+                    w-(ui.calLeftMargin+fontw)/2.0 - 3,
+                    (ui.calTopMargin-fonth)/2.0 - 1,
+                )
             else:
-                cr.move_to((ui.calLeftMargin-fontw)/2.0,
-                           (ui.calTopMargin-fonth)/2.0 - 1)
+                cr.move_to(
+                    (ui.calLeftMargin-fontw)/2.0,
+                    (ui.calTopMargin-fonth)/2.0 - 1,
+                )
             cr.show_layout(text)
         if ui.calLeftMargin>0:
             ##### Drawing border left background
@@ -206,9 +214,15 @@ class MonthCal(gtk.Widget, MainWinItem):
                 lay = newTextLayout(self, _(status.weekNum[i]))
                 fontw, fonth = lay.get_pixel_size()
                 if rtl:
-                    cr.move_to(w-(ui.calLeftMargin+fontw)/2.0, self.cy[i]-fonth/2.0+2)
+                    cr.move_to(
+                        w-(ui.calLeftMargin+fontw)/2.0,
+                        self.cy[i]-fonth/2.0+2,
+                    )
                 else:
-                    cr.move_to((ui.calLeftMargin-fontw)/2.0, self.cy[i]-fonth/2.0+2)
+                    cr.move_to(
+                        (ui.calLeftMargin-fontw)/2.0,
+                        self.cy[i]-fonth/2.0+2,
+                    )
                 cr.show_layout(lay)
         selectedCellPos = ui.cell.monthPos
         shown = self.shownCals
@@ -644,39 +658,39 @@ class MonthCal(gtk.Widget, MainWinItem):
         t = time()
         #if t-self.kTime < ui.keyDelay:
         #    return True
-        kname = gdk.keyval_name(event.keyval)
-        #if kname.startswith('Alt'):
+        kname = gdk.keyval_name(event.keyval).lower()
+        #if kname.startswith('alt'):
         #    return True
         ## How to disable Alt+Space of metacity ?????????????????????
-        if kname=='Up':
+        if kname=='up':
             self.jdPlus(-7)
-        elif kname=='Down':
+        elif kname=='down':
             self.jdPlus(7)
-        elif kname=='Right':
+        elif kname=='right':
             if rtl:
                 self.jdPlus(-1)
             else:
                 self.jdPlus(1)
-        elif kname=='Left':
+        elif kname=='left':
             if rtl:
                 self.jdPlus(1)
             else:
                 self.jdPlus(-1)
-        elif kname in ('space', 'Home'):
+        elif kname in ('space', 'home'):
             self.goToday()
-        elif kname=='End':
+        elif kname=='end':
             self.changeDate(ui.cell.year, ui.cell.month, getMonthLen(ui.cell.year, ui.cell.month, core.primaryMode))
-        elif kname=='Page_Up':
+        elif kname=='page_up':
             ui.monthPlus(-1)
             self.queue_draw()
             self.emit('date-change')
-        elif kname=='Page_Down':
+        elif kname=='page_down':
             ui.monthPlus(1)
             self.queue_draw()
             self.emit('date-change')
-        elif kname=='Menu':
+        elif kname=='menu':
             self.emit('popup-menu-cell', event.time, *self.getCellPos())
-        elif kname in ('F10', 'm', 'M'):
+        elif kname in ('f10', 'm'):
             if event.state & gdk.SHIFT_MASK:
                 # Simulate right click (key beside Right-Ctrl)
                 self.emit('popup-menu-cell', event.time, *self.getCellPos())

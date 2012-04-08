@@ -281,20 +281,20 @@ class MultiSpinBox(gtk.HBox):
         if    n > self.hist_size:
             m.remove(m.get_iter(n-1))
     def _entry_key_press(self, widget, event):
-        kname = gdk.keyval_name(event.keyval)
-        if kname=='Up':
+        kname = gdk.keyval_name(event.keyval).lower()
+        if kname=='up':
             if self.editable:
                 self._arrow_enter_notify(self.eventU)
                 timeout_add(30, self._arrow_leave_notify, self.eventU)
                 self.entry_plus(1)
             return True
-        elif kname=='Down':
+        elif kname=='down':
             if self.editable:
                 self._arrow_enter_notify(self.eventD)
                 timeout_add(30, self._arrow_leave_notify, self.eventD)
                 self.entry_plus(-1)
             return True
-        elif kname=='Left':
+        elif kname=='left':
             if not self.editable or not self.arrow_select:
                 return False
             self.entry_validate()
@@ -312,7 +312,7 @@ class MultiSpinBox(gtk.HBox):
             else:
                 self.entry.select_region(self.sep_index[part-1]+len(self.sep[part-1]), self.sep_index[part])
             return True
-        elif kname=='Right':
+        elif kname=='right':
             if not self.editable or not self.arrow_select:
                 return False
             self.entry_validate()

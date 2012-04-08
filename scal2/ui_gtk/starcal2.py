@@ -1225,18 +1225,16 @@ class MainWin(gtk.Window):
         self.onDateChange()
     def keyPress(self, arg, event):
         kval = event.keyval
-        kname = gdk.keyval_name(event.keyval)
+        kname = gdk.keyval_name(event.keyval).lower()
         #print time(), 'MainWin.keyPress', kname
-        if kname=='Escape':
+        if kname=='escape':
             self.dialogEsc()
-        elif kname=='F1':
+        elif kname=='f1':
             self.aboutShow()
-        elif kname in ('Insert', 'plus', 'KP_Add'):
+        elif kname in ('insert', 'plus', 'kp_add'):
             self.eventManShow()
-        elif kname in ('q', 'Q', 'Arabic_dad'):## FIXME
+        elif kname in ('q', 'arabic_dad'):## FIXME
             self.quit()
-        #elif kname.startswith('ALT'):## Alt+F7, Does not receive "F7" FIXME
-        #    self.startManualMoving()
         else:
             #print kname
             for item in self.items:

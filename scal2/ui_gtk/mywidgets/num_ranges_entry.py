@@ -105,35 +105,35 @@ class NumRangesEntry(gtk.Entry):
         )            
     def keyPress(self, obj, event):
         kval = event.keyval
-        kname = gdk.keyval_name(event.keyval)
+        kname = gdk.keyval_name(event.keyval).lower()
         #print kval, kname
         if kname in (
-            'Tab', 'Escape', 'BackSpace', 'Delete', 'Insert',
-            'Home', 'End',
-            'Control_L', 'Control_R',
-            'ISO_Next_Group',
+            'tab', 'escape', 'backspace', 'delete', 'insert',
+            'home', 'end',
+            'control_l', 'control_r',
+            'iso_next_group',
         ):
             return False
-        elif kname in ('Return',):
+        elif kname == 'return':
             self.validate()
             return False
-        elif kname=='Up':
+        elif kname=='up':
             self.numPlus(1)
-        elif kname=='Down':
+        elif kname=='down':
             self.numPlus(-1)
-        elif kname=='Page_Up':
+        elif kname=='page_up':
             self.numPlus(self.pageStep)
-        elif kname=='Page_Down':
+        elif kname=='page_down':
             self.numPlus(-self.pageStep)
-        elif kname=='Left':
+        elif kname=='left':
             return False## FIXME
-        elif kname=='Right':
+        elif kname=='right':
             return False## FIXME
         #elif kname in ('braceleft', 'bracketleft'):
         #    self.insertText(u'[')
         #elif kname in ('braceright', 'bracketright'):
         #    self.insertText(u']')
-        elif kname in ('comma', 'Arabic_comma'):
+        elif kname in ('comma', 'arabic_comma'):
             self.insertText(u', ', False)
         elif kname=='minus':
             pos = self.get_position()

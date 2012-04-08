@@ -190,20 +190,20 @@ class MultiSpinButton(gtk.SpinButton):
             text += numEncode(n, fillZero=self.fields[i]) + self.sep[i]
         return text
     def _key_press(self, widget, event):
-        kname = gdk.keyval_name(event.keyval)
-        if kname=='Up':
+        kname = gdk.keyval_name(event.keyval).lower()
+        if kname=='up':
             if self.editable:
                 #self._arrow_enter_notify(self.window_up)
                 #timeout_add(30, self._arrow_leave_notify, self.window_up)
                 self.entry_plus(1)
             return True
-        elif kname=='Down':
+        elif kname=='down':
             if self.editable:
                 #self._arrow_enter_notify(self.window_down)
                 #timeout_add(30, self._arrow_leave_notify, self.window_down)
                 self.entry_plus(-1)
             return True
-        elif kname=='Left':
+        elif kname=='left':
             if not self.editable or not self.arrow_select:
                 return False
             self.entry_validate()
@@ -221,7 +221,7 @@ class MultiSpinButton(gtk.SpinButton):
             else:
                 self.select_region(self.sep_index[part-1]+len(self.sep[part-1]), self.sep_index[part])
             return True
-        elif kname=='Right':
+        elif kname=='right':
             if not self.editable or not self.arrow_select:
                 return False
             self.entry_validate()
@@ -236,13 +236,12 @@ class MultiSpinButton(gtk.SpinButton):
             #self.grab_focus()
             self.select_region(self.sep_index[part-1]+len(self.sep[part-1]), self.sep_index[part])
             return True
-        #elif key==65293:    #Enter
+        #elif kname=='return':## Enter
         #    self.entry_validate()
         #    return True
-        #elif key in (65365, 65366): ## PageUp, PageDown
+        #elif kname in ('page_up', 'page_down'):
         #    return True
         else:
-            #print key
             return False
     def _button_press(self, widget, e):
         #print e.window.get_data('name')

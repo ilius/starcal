@@ -429,8 +429,6 @@ if isdir(libDir):
 allPlugList = []
 plugIndex = []
 
-#lang = ''
-#langSh = 'en'
 holidayWeekDays = [0] ## 0 means Sunday (5 means Friday)
 ## [5] or [4,5] in Iran
 ## [0] in most of contries
