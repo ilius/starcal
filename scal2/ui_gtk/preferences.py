@@ -24,7 +24,7 @@ from os.path import dirname
 from os.path import join
 from subprocess import Popen
 
-import scal2.locale_man
+from scal2 import locale_man
 from scal2.locale_man import langDict, langSh
 from scal2.locale_man import tr as _
 from scal2.paths import *
@@ -315,7 +315,7 @@ class ComboImageTextPrefItem(PrefItem):
 
 class LangPrefItem(PrefItem):
     def __init__(self):
-        self.module = scal2.locale_man
+        self.module = locale_man
         self.varName = 'lang'
         ###
         ls = gtk.ListStore(gdk.Pixbuf, str)
@@ -1045,6 +1045,13 @@ class PrefDialog(gtk.Dialog):
         hbox.pack_start(gtk.Label(''), 1, 1)
         vbox.pack_start(hbox, 0, 0)
         self.comboWeekYear = combo
+        #########
+        hbox = gtk.HBox(spacing=3)
+        item = CheckPrefItem(locale_man, 'enableNumLocale', _('Numbers Localization'))
+        self.localePrefItems.append(item)
+        hbox.pack_start(item.widget, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        vbox.pack_start(hbox, 0, 0)
         ##################################################
         ################################
         options = []
@@ -1493,7 +1500,7 @@ class PrefDialog(gtk.Dialog):
         text = ''
         for item in self.localePrefItems:
             text += item.confStr()
-        open(core.localeConfPath, 'w').write(text)        
+        open(locale_man.localeConfPath, 'w').write(text)        
         ##################### Saving core config
         text = 'allPlugList=%s\n\nplugIndex=%r\n'%(core.getAllPlugListRepr(), core.plugIndex)
         for item in self.corePrefItems:

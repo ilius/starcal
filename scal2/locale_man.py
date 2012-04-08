@@ -49,6 +49,16 @@ langActive = ''
 langSh = '' ## short language name, for example 'en', 'fa', 'fr', ...
 rtl = False ## right to left
 
+enableNumLocale = True
+
+
+localeConfPath = join(confDir, 'locale.conf')
+if isfile(localeConfPath):
+    try:
+        exec(open(localeConfPath).read())
+    except:
+        myRaise(__file__)
+
 ## translator
 tr = lambda s, *a, **ka: numEncode(s, *a, **ka) if isinstance(s, (int, long)) else str(s)
 
@@ -101,9 +111,8 @@ for fname in os.listdir(langDir):
 langDict.sort('name') ## OR 'code' or 'nativeName' ????????????
 
 
-def prepareLanguage(lang1):
+def prepareLanguage():
     global lang, langActive, langSh, rtl
-    lang = lang1
     if lang=='':
         #langActive = locale.setlocale(locale.LC_ALL, '')
         langActive = os.environ.get('LANG', '')
@@ -174,6 +183,8 @@ rtlSgn = lambda: 1 if rtl else -1
 getMonthName = lambda mode, month, year=None: tr(modules[mode].getMonthName(month, year))
 
 def numEncode(num, mode=None, fillZero=0, negEnd=False):
+    if not enableNumLocale:
+        mode = 'en'
     if mode==None:
         mode = langSh
     elif isinstance(mode, int):
@@ -205,6 +216,8 @@ def numEncode(num, mode=None, fillZero=0, negEnd=False):
     return res
 
 def textNumEncode(st, mode=None, changeSpecialChars=True, changeDot=False):
+    if not enableNumLocale:
+        mode = 'en'
     if mode==None:
         mode = langSh
     elif isinstance(mode, int):
@@ -279,6 +292,15 @@ def cutText(text, n):
         if text[n] not in list(string.printable)+[ZWNJ]:
             text_cutted += ZWJ
     return text_cutted
+
+##############################################
+
+
+prepareLanguage()
+loadTranslator()
+
+
+
 
 if __name__=='__main__':
     from scal2 import core

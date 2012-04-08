@@ -26,7 +26,8 @@ from os.path import isfile, isdir, exists, dirname, join, split, splitext
 from pprint import pprint
 
 from scal2.paths import *
-from scal2.locale_man import * ## prepareLanguage, loadTranslator, getMonthName
+from scal2.locale_man import getMonthName, lang, langSh
+from scal2.locale_man import tr as _
 from scal2.plugin_man import *
 from scal2.time_utils import *
 from scal2.os_utils import *
@@ -428,8 +429,8 @@ if isdir(libDir):
 allPlugList = []
 plugIndex = []
 
-lang = ''
-langSh = 'en'
+#lang = ''
+#langSh = 'en'
 holidayWeekDays = [0] ## 0 means Sunday (5 means Friday)
 ## [5] or [4,5] in Iran
 ## [0] in most of contries
@@ -437,6 +438,7 @@ firstWeekDayAuto = True
 firstWeekDay = 0 ## 0 means Sunday (6 means Saturday)
 weekNumberModeAuto = False #????????????
 weekNumberMode = 7
+
 # 0: First week contains first Sunday of year
 # 4: First week contains first Thursday of year (ISO 8601, Gnome Clock)
 # 6: First week contains first Saturday of year
@@ -458,15 +460,8 @@ weekNumberMode = 7
 ################################################################################
 #################### Loading user core configuration ###########################
 
-localeConfPath = join(confDir, 'locale.conf')
-if isfile(localeConfPath):
-    try:
-        exec(open(localeConfPath).read())
-    except:
-        myRaise(__file__)
 
-langSh = prepareLanguage(lang)
-_ = tr = loadTranslator()
+
 
 sysConfPath = join(sysConfDir, 'core.conf')
 if isfile(sysConfPath):

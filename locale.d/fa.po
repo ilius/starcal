@@ -221,6 +221,10 @@ msgstr ""
 #msgstr ""
 #"العربية"
 
+msgid "Numbers Localization"
+msgstr ""
+"بومی‌سازی اعداد"
+
 msgid "AM"
 msgstr "ق‍.ظ"
 
