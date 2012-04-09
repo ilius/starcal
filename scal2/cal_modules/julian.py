@@ -64,7 +64,7 @@ def to_jd(y, m, d):
     return ifloor(d + kal_s(m, int(p2==0)) + 1461*p1 + 365*p2 + 1721058)
 
 def jd_to(jd):
-    assert type(jd)==int
+    #assert isinstance(jd, (int, long))
     ##wjd = ifloor(jd - 0.5) + 1
     (p1, q1) = divmod(jd-1721058, 1461)
     #if q1==0:## ??????????????????

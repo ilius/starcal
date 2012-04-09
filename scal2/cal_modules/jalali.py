@@ -146,7 +146,7 @@ def to_jd(year, month, day):
         raise RuntimeError('bad option jalaliAlg=%s'%jalaliAlg)
 
 def jd_to(jd):
-    assert type(jd)==int
+    #assert isinstance(jd, (int, long))
     "JD_TO_JALALI: Calculate Jalali date from Julian day"
     if jalaliAlg==1:
         (cycle, cyear) = divmod(jd - to_jd(475, 1, 1), 1029983)
