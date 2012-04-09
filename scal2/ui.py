@@ -26,7 +26,7 @@ from xml.dom.minidom import parse## remove FIXME
 from subprocess import Popen
 from gobject import timeout_add, timeout_add_seconds ## FIXME
 
-from scal2.utils import NullObj, toStr, cleanCacheDict
+from scal2.utils import NullObj, toStr, cleanCacheDict, restart
 from scal2.os_utils import makeDir
 from scal2.paths import *
 
@@ -123,8 +123,6 @@ def checkNeedRestart():
     return False
 
 getPywPath = lambda: join(rootDir, APP_NAME + ('-qt' if uiName=='qt' else '') + '.pyw')
-
-restart = lambda: os.execl(sys.executable, sys.executable, *sys.argv)## will not return from function
 
 def winMakeShortcut(srcPath, dstPath, iconPath=None):
     from win32com.client import Dispatch
@@ -483,7 +481,14 @@ eventGroups = event_man.EventGroupsHolder()
 #eventGroups.load()## FIXME here or in ui_*/event/main.py
 eventTrash = event_man.EventTrash()
 #eventTrash.load()## FIXME here or in ui_*/event/main.py
-event_man.checkAndStartDaemon()## FIXME here or in ui_*/event/main.py
+
+try:
+    event_man.checkAndStartDaemon()## FIXME here or in ui_*/event/main.py
+except:
+    print 'Error while starting daemon'
+    myRaise()
+
+
 changedEvents = [] ## a list of (groupId, eventId) 's
 changedGroups = []
 trashedEvents = []

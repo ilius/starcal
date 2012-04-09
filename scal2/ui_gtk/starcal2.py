@@ -31,13 +31,14 @@ from subprocess import Popen
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 from scal2.paths import *
-from scal2.utils import myRaise
+from scal2.utils import myRaise, restart
 
 if not isdir(confDir):
     try:
         __import__('scal2.ui_gtk.config_importer')
     except:
         myRaise()
+    restart()
 
 from scal2.utils import toStr, toUnicode
 from scal2 import core
@@ -1224,7 +1225,6 @@ class MainWin(gtk.Window):
         ui.changeDate(y, m, d)
         self.onDateChange()
     def keyPress(self, arg, event):
-        kval = event.keyval
         kname = gdk.keyval_name(event.keyval).lower()
         #print time(), 'MainWin.keyPress', kname
         if kname=='escape':
@@ -1625,7 +1625,7 @@ class MainWin(gtk.Window):
         return gtk.main_quit()
     def restart(self):
         self.quit()
-        ui.restart()
+        restart()
     def adjustTime(self, widget=None, event=None):
         Popen(preferences.adjustTimeCmd)
     exportClicked = lambda self, widget=None: self.exportDialog.showDialog(ui.cell.year, ui.cell.month)
