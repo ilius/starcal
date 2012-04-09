@@ -33,10 +33,8 @@ def set_tooltip(widget, text):
 
 buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter())
 
-#if hasattr(gtk, 'image_new_from_file'):
-#    imageFromFile = gtk.image_new_from_file
 def imageFromFile(path):## the file must exist
-    if os.sep=='/' and not path.startswith('/'):
+    if not os.sep in path:
         path = join(pixDir, path)
     im = gtk.Image()
     try:
