@@ -965,6 +965,30 @@ msgid "Press OK if you are sure to delete group \"%s\""
 msgstr ""
 "اگر مطمئنید که می‌خواهید گروه «%s» را حذف کنید، دکمهٔ تائید را فشار دهید"
 
+msgid "Sort Events"
+msgstr ""
+"مرتب کردن رویدادها"
+
+msgid "Sort events of group \"%s\""
+msgstr ""
+"مرتب کردن دویدادهای گروه «%s»"
+
+msgid "Based on"
+msgstr ""
+"بر اساس"
+
+msgid "Descending"
+msgstr ""
+"نزولی"
+
+msgid "Convert Calendar Type"
+msgstr ""
+"تبدیل نوع تقویم"
+
+
+msgid "This is going to convert calendar types of all events inside group \"%s\" to a specific type. This operation does not work for Yearly events and also some of Custom events. You have to edit those events manually to change calendar type."
+msgstr ""
+"اینجا نوع تقویم تمام رویدادهای داخل گروه «%s» قرار است به یک نوع خاص تبدیل شود. این عملیات برای رویدادهای سالیانه و همینطور برای بعضی از رویدادهای دلخواه کار نمی‌کند. شما برای تغییر نوع تقویم، باید آن رویدادها را دستی ویرایش کنید."
 
 msgid "For"
 msgstr ""

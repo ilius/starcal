@@ -143,12 +143,11 @@ class GroupExportDialog(gtk.Dialog):
             self.save()
         self.destroy()
 
-
-class GroupImportDialog(gtk.Dialog):
+class GroupSortDialog(gtk.Dialog):
     def __init__(self, group):
         self._group = group
         gtk.Dialog.__init__(self)
-        self.set_title(_('Import Group'))
+        self.set_title(_('Sort Events'))
         ####
         cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
         okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
@@ -160,25 +159,81 @@ class GroupImportDialog(gtk.Dialog):
         self.connect('response', lambda w, e: self.hide())
         ####
         hbox = gtk.HBox()
-        frame = gtk.Frame(_('Format'))
-        radioBox = gtk.VBox()
-        ##
-        self.radioJson = gtk.RadioButton(label=_('JSON (StarCalendar)'))
-        #self.radioIcs = gtk.RadioButton(label='iCalendar', group=self.radioJson)
-        ##
-        radioBox.pack_start(self.radioJson, 0, 0)
-        #radioBox.pack_start(self.radioIcs, 0, 0)
-        ##
-        self.radioJson.set_active(True)
-        #self.radioJson.connect('clicked', self.formatRadioChanged)
-        ##self.radioIcs.connect('clicked', self.formatRadioChanged)
-        ##
-        frame.add(radioBox)
-        hbox.pack_start(frame, 0, 0)
+        hbox.pack_start(gtk.Label(_('Sort events of group "%s"')%group.title), 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.vbox.pack_start(hbox, 0, 0)
+        ###
+        hbox = gtk.HBox()
+        hbox.pack_start(gtk.Label(_('Based on')+' '), 0, 0)
+        self.sortByNames = []
+        self.sortByCombo = gtk.combo_box_new_text()
+        for item in group.sortBys:
+            self.sortByNames.append(item[0])
+            self.sortByCombo.append_text(item[1])
+        self.sortByCombo.set_active(self.sortByNames.index(group.sortByDefault))## FIXME
+        hbox.pack_start(self.sortByCombo, 0, 0)
+        self.reverseCheck = gtk.CheckButton(_('Descending'))
+        hbox.pack_start(self.reverseCheck, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         self.vbox.pack_start(hbox, 0, 0)
         ####
+        self.vbox.show_all()
+    def run(self):
+        if gtk.Dialog.run(self)==gtk.RESPONSE_OK:
+            self._group.sort(
+                self.sortByNames[self.sortByCombo.get_active()],
+                self.reverseCheck.get_active(),
+            )
+            self._group.save()
+            return True
+        self.destroy()
 
+
+
+class GroupConvertModeDialog(gtk.Dialog):
+    def __init__(self, group):
+        self._group = group
+        gtk.Dialog.__init__(self)
+        self.set_title(_('Convert Calendar Type'))
+        ####
+        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        if ui.autoLocale:
+            cancelB.set_label(_('_Cancel'))
+            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
+            okB.set_label(_('_OK'))
+            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        self.connect('response', lambda w, e: self.hide())
+        ####
+        hbox = gtk.HBox()
+        label = gtk.Label(_('This is going to convert calendar types of all events inside group \"%s\" to a specific type. This operation does not work for Yearly events and also some of Custom events. You have to edit those events manually to change calendar type.')%group.title)
+        label.set_line_wrap(True)
+        hbox.pack_start(label, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.vbox.pack_start(hbox, 0, 0)
+        ###
+        hbox = gtk.HBox()
+        hbox.pack_start(gtk.Label(_('Calendar Type')+':'), 0, 0)
+        combo = gtk.combo_box_new_text()
+        for module in core.modules:
+            combo.append_text(_(module.desc))
+        combo.set_active(group.mode)
+        hbox.pack_start(combo, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.modeCombo = combo
+        self.vbox.pack_start(hbox, 0, 0)
+        ####
+        self.vbox.show_all()
+    def run(self):
+        if gtk.Dialog.run(self)==gtk.RESPONSE_OK:
+            mode = self.modeCombo.get_active()
+            failedSummaryList = []
+            for event in self._group:
+                if not event.changeMode(mode):
+                    failedSummaryList.append(event.summary)
+            if failedSummaryList:## FIXME
+                print failedSummaryList
+        self.destroy()
 
 
 class TrashEditorDialog(gtk.Dialog):
@@ -500,11 +555,14 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 menu.add(labelStockMenuItem('Duplicate with All Events', gtk.STOCK_COPY, self.duplicateGroupWithEventsFromMenu, path))
                 menu.add(gtk.SeparatorMenuItem())
                 menu.add(labelStockMenuItem('Delete Group', gtk.STOCK_DELETE, self.deleteGroup, path))
+                menu.add(gtk.SeparatorMenuItem())
                 ##
-                menu.add(labelStockMenuItem('Move Up', gtk.STOCK_GO_UP, self.moveUpFromMenu, path))
-                menu.add(labelStockMenuItem('Move Down', gtk.STOCK_GO_DOWN, self.moveDownFromMenu, path))
+                #menu.add(labelStockMenuItem('Move Up', gtk.STOCK_GO_UP, self.moveUpFromMenu, path))
+                #menu.add(labelStockMenuItem('Move Down', gtk.STOCK_GO_DOWN, self.moveDownFromMenu, path))
                 ##
-                menu.add(labelStockMenuItem(_('Export'), gtk.STOCK_CONVERT, self.exportGroupFromMenu, group))
+                menu.add(labelStockMenuItem(_('Export'), gtk.STOCK_CONVERT, self.groupExportFromMenu, group))
+                menu.add(labelStockMenuItem(_('Sort Events'), gtk.STOCK_SORT_ASCENDING, self.groupSortFromMenu, path))
+                menu.add(labelStockMenuItem(_('Convert Calendar Type'), gtk.STOCK_CONVERT, self.groupConvertModeFromMenu, group))
                 #if group.remoteIds:
                 #    account = ui.eventAccounts[group.remoteIds[0]]
                 #    menu.add(labelImageMenuItem(_('Synchronize with %s')%account.title, gtk.STOCK_REFRESH, self.syncGroup, path))
@@ -559,8 +617,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         #print getCurrentTime()-gdk.CURRENT_TIME/1000.0
         ## gdk.CURRENT_TIME == 0## FIXME
         ## g_event.time == gtk.get_current_event_time() ## OK
-        kname = gdk.keyval_name(g_event.keyval)
-        if kname=='Menu':## Simulate right click (key beside Right-Ctrl)
+        kname = gdk.keyval_name(g_event.keyval).lower()
+        if kname=='menu':## Simulate right click (key beside Right-Ctrl)
             cur = self.treev.get_cursor()
             if not cur:
                 return
@@ -779,6 +837,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         )
     def editEventByPath(self, path):
         (group, event) = self.getObjsByPath(path)
+        if group.name == 'trash':## FIXME
+            return
         event = EventEditorDialog(
             event,
             title=_('Edit ')+event.desc,
@@ -805,13 +865,15 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         trash.delete(event.id)## trash == ui.eventTrash
         trash.save()
         self.trees.remove(self.trees.get_iter(path))
-    def emptyTrash(self, menu):
-        ui.eventTrash.empty()
+    def removeIterChildren(self, _iter):
         while True:
-            childIter = self.trees.iter_children(self.trashIter)
+            childIter = self.trees.iter_children(_iter)
             if childIter is None:
                 break
             self.trees.remove(childIter)
+    def emptyTrash(self, menu):
+        ui.eventTrash.empty()
+        self.removeIterChildren(self.trashIter)
     def editTrash(self, menu):
         TrashEditorDialog().run()
         self.trees.set_value(
@@ -935,8 +997,21 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         if not cur:
             return
         self.moveDown(cur[0])
-    def exportGroupFromMenu(self, menu, group):
+    def groupExportFromMenu(self, menu, group):
         GroupExportDialog(group).run()
+    def groupSortFromMenu(self, menu, path):
+        (index,) = path
+        (group,) = self.getObjsByPath(path)
+        if GroupSortDialog(group).run():
+            groupIter = self.trees.get_iter(path)
+            expanded = self.treev.row_expanded(path)
+            self.removeIterChildren(groupIter)
+            for event in group:
+                self.trees.append(groupIter, self.getEventRow(event))
+            if expanded:
+                self.treev.expand_row(path, False)
+    def groupConvertModeFromMenu(self, menu, group):
+        GroupConvertModeDialog(group).run()
     def groupActionClicked(self, menu, group, actionFuncName):
         getattr(group, actionFuncName)(parentWin=self)
     def cutEvent(self, menu, path):

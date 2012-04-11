@@ -1666,6 +1666,24 @@ class EventGroup(EventContainer, RuleContainer):
     acceptsEventTypes = ('yearly', 'dailyNote', 'task', 'custom')
     actions = []## [('Export to ICS', 'exportToIcs')]
     eventActions = [] ## FIXME
+    sortBys = (
+        ('mode', _('Calendar Type')),
+        ('summary', _('Summary')),
+        ('description', _('Description')),
+        ('icon', _('Icon')),
+    )
+    sortByDefault = 'summary'
+    getSortByValue = lambda self, event, attr: getattr(event, attr, None)
+    def sort(self, attr='summary', reverse=False):
+        event_cmp = lambda event1, event2: cmp(
+            (event1.name, self.getSortByValue(event1, attr)),
+            (event2.name, self.getSortByValue(event2, attr)),
+        )
+        eid_cmp = lambda eid1, eid2: event_cmp(
+            self.getEvent(eid1),
+            self.getEvent(eid2),
+        )
+        self.idList = sorted(self.idList, cmp=eid_cmp, reverse=reverse)
     def __getitem__(self, key):
         if isinstance(key, basestring):## ruleName
             return self.getRule(key)
@@ -1799,6 +1817,8 @@ class EventGroup(EventContainer, RuleContainer):
                 self.eventIdByRemoteIds[tuple(remoteIds)] = eventId
             #print self.eventIdByRemoteIds
     def getEvent(self, eid):
+        if not eid in self.idList:
+            print 'EventGroup.getEvent(%s): not in %s'%(eid, self.idList)
         assert eid in self.idList
         if eid in self.eventCache:
             return self.eventCache[eid]
@@ -1922,6 +1942,18 @@ class TaskList(EventGroup):
     desc = _('Task List')
     acceptsEventTypes = ('task',)
     #actions = EventGroup.actions + []
+    sortBys = EventGroup.sortBys + (
+        ('start', _('Start')),
+        ('end', _('End')),
+    )
+    sortByDefault = 'start'
+    def getSortByValue(self, event, attr):
+        if event.name in self.acceptsEventTypes:
+            if attr=='start':
+                return event.getStartEpoch()
+            elif attr=='end':
+                return event.getEndEpoch()
+        return EventGroup.getSortByValue(self, event, attr)
     def __init__(self, gid=None, title=None):
         EventGroup.__init__(self, gid, title)
         self.defaultDuration = (0, 1) ## (value, unit)
@@ -1945,6 +1977,15 @@ class NoteBook(EventGroup):
     desc = _('Note Book')
     acceptsEventTypes = ('dailyNote',)
     #actions = EventGroup.actions + []
+    sortBys = EventGroup.sortBys + (
+        ('date', _('Date')),
+    )
+    sortByDefault = 'date'
+    def getSortByValue(self, event, attr):
+        if event.name in self.acceptsEventTypes:
+            if attr=='date':
+                return event.getDate()
+        return EventGroup.getSortByValue(self, event, attr)
 
 @classes.group.register
 class UniversityTerm(EventGroup):
@@ -1955,6 +1996,22 @@ class UniversityTerm(EventGroup):
     acceptsEventTypes = ('universityClass', 'universityExam')
     #actions = EventGroup.actions + []
     actions = [('View Weekly Schedule', 'viewWeeklySchedule')]
+    sortBys = EventGroup.sortBys + (
+        ('course', _('Course')),
+        ('time', _('Time')),
+    )
+    sortByDefault = 'time'
+    def getSortByValue(self, event, attr):
+        if event.name in self.acceptsEventTypes:
+            if attr=='course':
+                return event.name, event.courseId
+            elif attr=='time':
+                if event.name == 'universityClass':
+                    wd = event['weekDay'].weekDayList[0]
+                    return (wd - core.firstWeekDay)%7, event['dayTimeRange'].getHourRange()
+                elif event.name == 'universityExam':
+                    return event['date'].getJd(), event['dayTimeRange'].getHourRange()
+        return EventGroup.getSortByValue(self, event, attr)
     def __init__(self, gid=None, title=None):
         EventGroup.__init__(self, gid, title)
         self.classesEndDate = core.getSysDate(self.mode)## FIXME
