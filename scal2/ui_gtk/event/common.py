@@ -545,7 +545,8 @@ class GroupEditorDialog(gtk.Dialog):
             return None
         self.activeWidget.updateVars()
         self._group.save()
-        ui.eventGroups[self._group.id] = self._group
+        if not self.isNew:
+            ui.eventGroups[self._group.id] = self._group## FIXME
         self.destroy()
         return self._group
 

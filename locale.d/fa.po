@@ -79,6 +79,11 @@ msgstr ""
 msgid "_Save"
 msgstr ""
 "ذ_خیره"
+msgid "_File"
+msgstr ""
+"_فایل"
+
+
 
 msgid "From"
 msgstr ""
@@ -800,17 +805,48 @@ msgid "Copy"
 msgstr ""
 "کپی"
 
+msgid "_Copy"
+msgstr ""
+"_کپی"
+
+msgid "Copy _All"
+msgstr ""
+"کپی _همه"
+
+msgid "_Copy Date"
+msgstr ""
+"_کپی تاریخ"
+
+msgid "Copy _Date"
+msgstr ""
+"کپی _تاریخ"
+
+msgid "Copy _Time"
+msgstr ""
+"کپی _زمان"
+
 msgid "Cut"
 msgstr ""
 "بریدن"
+
+msgid "Cu_t"
+msgstr ""
+"_بریدن"
 
 msgid "Paste"
 msgstr ""
 "چسباندن"
 
+msgid "_Paste"
+msgstr ""
+"_چسباندن"
+
 msgid "Duplicate"
 msgstr ""
 "دوتا کردن"
+msgid "_Duplicate"
+msgstr ""
+"_دوتا کردن"
 
 msgid "Duplicate with All Events"
 msgstr ""
@@ -1516,6 +1552,11 @@ msgid "Export"
 msgstr ""
 "صادر کردن"
 
+msgid "_Export"
+msgstr ""
+"_صادر کردن"
+
+
 msgid "Export to %s"
 msgstr ""
 "صادر کردن به %s"
@@ -1527,14 +1568,31 @@ msgid "Export Group"
 msgstr ""
 "صادر کردن گروه"
 
+msgid "Export: Select File"
+msgstr ""
+"صادر کردن: انتخاب فایل"
+
 
 msgid "Import"
 msgstr ""
 "وارد کردن"
 
+msgid "_Import"
+msgstr ""
+"_وارد کردن"
+
+msgid "Import Events"
+msgstr ""
+"وارد کردن رویدادها"
+
 msgid "Import from %s"
 msgstr ""
 "وارد کردن از %s"
+
+msgid "Import: Select File"
+msgstr ""
+"وارد کردن: انتخاب فایل"
+
 msgid "Format"
 msgstr ""
 "فرمت"
@@ -1615,25 +1673,6 @@ msgid "_Sticky"
 msgstr ""
 "_چسبناک"
 
-msgid "_Copy"
-msgstr ""
-"_کپی"
-
-msgid "Copy _All"
-msgstr ""
-"کپی _همه"
-
-msgid "_Copy Date"
-msgstr ""
-"_کپی تاریخ"
-
-msgid "Copy _Date"
-msgstr ""
-"کپی _تاریخ"
-
-msgid "Copy _Time"
-msgstr ""
-"کپی _زمان"
 
 msgid "Ad_just System Time"
 msgstr ""

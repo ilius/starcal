@@ -48,7 +48,7 @@ from scal2.ui_gtk.event.common import IconSelectButton, EventEditorDialog, addNe
 
 #print 'Testing translator', __file__, _('About')
 
-class GroupExportDialog(gtk.Dialog):
+class SingleGroupExportDialog(gtk.Dialog):
     def __init__(self, group):
         self._group = group
         gtk.Dialog.__init__(self)
@@ -142,6 +142,145 @@ class GroupExportDialog(gtk.Dialog):
         if gtk.Dialog.run(self)==gtk.RESPONSE_OK:
             self.save()
         self.destroy()
+
+
+class GroupsTreeCheckList(gtk.TreeView):
+    def __init__(self):
+        gtk.TreeView.__init__(self)
+        self.trees = gtk.ListStore(int, bool, str)## groupId(hidden), enable, summary
+        self.set_model(self.trees)
+        self.set_headers_visible(False)
+        ###
+        cell = gtk.CellRendererToggle()
+        #cell.set_property('activatable', True)
+        cell.connect('toggled', self.enableCellToggled)
+        col = gtk.TreeViewColumn(_('Enable'), cell)
+        col.add_attribute(cell, 'active', 1)
+        #cell.set_active(True)
+        col.set_resizable(True)
+        self.append_column(col)
+        ###
+        col = gtk.TreeViewColumn(_('Title'), gtk.CellRendererText(), text=2)
+        col.set_resizable(True)
+        self.append_column(col)
+        ###
+        for group in ui.eventGroups:
+            self.trees.append([group.id, True, group.title])
+    def enableCellToggled(self, cell, path):
+        i = int(path)
+        active = not cell.get_active()
+        self.trees[i][1] = active
+        cell.set_active(active)
+    def getValue(self):
+        return [row[0] for row in self.trees if row[1]]
+    def setValue(self, gids):
+        for row in self.trees:
+            row[1] = (row[0] in gids)
+
+
+class MultiGroupExportDialog(gtk.Dialog):
+    def __init__(self):
+        gtk.Dialog.__init__(self)
+        self.set_title(_('Export'))
+        self.vbox.set_spacing(10)
+        ####
+        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        if ui.autoLocale:
+            cancelB.set_label(_('_Cancel'))
+            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
+            okB.set_label(_('_OK'))
+            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        self.connect('response', lambda w, e: self.hide())
+        ####
+        hbox = gtk.HBox()
+        frame = gtk.Frame(_('Format'))
+        radioBox = gtk.VBox()
+        ##
+        self.radioIcs = gtk.RadioButton(label='iCalendar')
+        self.radioJsonCompact = gtk.RadioButton(label=_('Compact JSON (StarCalendar)'), group=self.radioIcs)
+        self.radioJsonPretty = gtk.RadioButton(label=_('Pretty JSON (StarCalendar)'), group=self.radioIcs)
+        ##
+        radioBox.pack_start(self.radioJsonCompact, 0, 0)
+        radioBox.pack_start(self.radioJsonPretty, 0, 0)
+        radioBox.pack_start(self.radioIcs, 0, 0)
+        ##
+        self.radioJsonCompact.set_active(True)
+        self.radioIcs.connect('clicked', self.formatRadioChanged)
+        self.radioJsonCompact.connect('clicked', self.formatRadioChanged)
+        self.radioJsonPretty.connect('clicked', self.formatRadioChanged)
+        ##
+        frame.add(radioBox)
+        hbox.pack_start(frame, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.vbox.pack_start(hbox, 0, 0)
+        ####
+        hbox = gtk.HBox(spacing=2)
+        hbox.pack_start(gtk.Label(_('From')+' '), 0, 0)
+        self.startDateInput = DateButton()
+        hbox.pack_start(self.startDateInput, 0, 0)
+        hbox.pack_start(gtk.Label(' '+_('To')+' '), 0, 0)
+        self.endDateInput = DateButton()
+        hbox.pack_start(self.endDateInput, 0, 0)
+        self.vbox.pack_start(hbox, 0, 0)
+        self.dateRangeBox = hbox
+        ####
+        (year, month, day) = ui.todayCell.dates[core.primaryMode]
+        self.startDateInput.set_date((year, 1, 1))
+        self.endDateInput.set_date((year+1, 1, 1))
+        ########
+        hbox = gtk.HBox(spacing=2)
+        hbox.pack_start(gtk.Label(_('File')+':'), 0, 0)
+        self.fpathEntry = gtk.Entry()
+        self.fpathEntry.set_text(join(core.deskDir, 'events'))
+        hbox.pack_start(self.fpathEntry, 1, 1)
+        self.vbox.pack_start(hbox, 0, 0)
+        ####
+        self.groupSelect = GroupsTreeCheckList()
+        swin = gtk.ScrolledWindow()
+        swin.add(self.groupSelect)
+        swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        self.vbox.pack_start(swin, 1, 1)
+        ####
+        self.vbox.show_all()
+        self.formatRadioChanged()
+        self.resize(600, 600)
+    def formatRadioChanged(self, widget=None):
+        self.dateRangeBox.set_visible(self.radioIcs.get_active())
+        ###
+        fpath = self.fpathEntry.get_text()
+        if fpath:
+            fpath_nox, ext = splitext(fpath)
+            if fpath_nox:
+                if self.radioIcs.get_active():
+                    if ext != '.ics':
+                        ext = '.ics'
+                else:
+                    if ext != '.json':
+                        ext = '.json'
+                self.fpathEntry.set_text(fpath_nox + ext)
+    def save(self):
+        activeGroups = [ui.eventGroups[gid] for gid in self.groupSelect.getValue()]
+        if self.radioIcs.get_active():
+            jd0 = core.primary_to_jd(*self.startDateInput.get_date())
+            jd1 = core.primary_to_jd(*self.endDateInput.get_date())
+            text = '\n'.join([group.getIcsText(jd0, jd1) for group in activeGroups])
+        else:
+            data = [group.exportData() for group in activeGroups]
+            ## what to do with all groupData['info'] s? FIXME
+            if self.radioJsonCompact.get_active():
+                text = dataToCompactJson(data)
+            elif self.radioJsonPretty.get_active():
+                text = dataToPrettyJson(data)
+            else:
+                raise RuntimeError
+        open(self.fpathEntry.get_text(), 'w').write(text)
+    def run(self):
+        if gtk.Dialog.run(self)==gtk.RESPONSE_OK:
+            self.save()
+        self.destroy()
+
+
 
 class GroupSortDialog(gtk.Dialog):
     def __init__(self, group):
@@ -428,6 +567,67 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         self.connect('response', self.onResponse)
         self.connect('show', self.onShow)
         #######
+        menubar = gtk.MenuBar()
+        ####
+        fileItem = gtk.MenuItem(_('_File'))
+        fileMenu = gtk.Menu()
+        fileItem.set_submenu(fileMenu)
+        menubar.append(fileItem)
+        ##
+        addGroupItem = gtk.MenuItem(_('Add New Group'))
+        addGroupItem.connect('activate', self.addGroupBeforeTrash)
+        fileMenu.append(addGroupItem)
+        ##
+        exportItem = gtk.MenuItem(_('_Export'))
+        exportItem.connect('activate', self.mbarExportClicked)
+        fileMenu.append(exportItem)
+        ##
+        importItem = gtk.MenuItem(_('_Import'))
+        importItem.connect('activate', self.mbarImportClicked)
+        fileMenu.append(importItem)
+        ####
+        editItem = gtk.MenuItem(_('_Edit'))
+        editMenu = gtk.Menu()
+        editItem.set_submenu(editMenu)
+        menubar.append(editItem)
+        ##
+        editEditItem = gtk.MenuItem(_('Edit'))
+        editEditItem.connect('activate', self.mbarEditClicked)
+        editMenu.append(editEditItem)
+        ##
+        editMenu.append(gtk.SeparatorMenuItem())
+        ##
+        cutItem = gtk.MenuItem(_('Cu_t'))
+        cutItem.connect('activate', self.mbarCutClicked)
+        editMenu.append(cutItem)
+        ##
+        copyItem = gtk.MenuItem(_('_Copy'))
+        copyItem.connect('activate', self.mbarCopyClicked)
+        editMenu.append(copyItem)
+        ##
+        pasteItem = gtk.MenuItem(_('_Paste'))
+        pasteItem.connect('activate', self.mbarPasteClicked)
+        editMenu.append(pasteItem)
+        self.mbarPasteItem = pasteItem
+        ##
+        editMenu.append(gtk.SeparatorMenuItem())
+        ##
+        dupItem = gtk.MenuItem(_('_Duplicate'))
+        dupItem.connect('activate', self.duplicateSelectedObj)
+        editMenu.append(dupItem)
+        ####
+        #testItem = gtk.MenuItem(_('Test'))
+        #testMenu = gtk.Menu()
+        #testItem.set_submenu(testMenu)
+        #menubar.append(testItem)
+        ###
+        #item = gtk.MenuItem('GroupsTreeCheckList')
+        #item.connect('activate', testGroupsTreeCheckList)
+        #testMenu.append(item)
+        ####
+        menubar.show_all()
+        self.vbox.pack_start(menubar, 0, 0)
+        #######
         treeBox = gtk.HBox()
         #####
         self.treev = gtk.TreeView()
@@ -461,7 +661,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         ###
         tb = toolButtonFromStock(gtk.STOCK_COPY, size)
         set_tooltip(tb, _('Duplicate'))
-        tb.connect('clicked', self.duplicateButtonClicked)
+        tb.connect('clicked', self.duplicateSelectedObj)
         toolbar.insert(tb, -1)
         ###
         treeBox.pack_start(toolbar, 0, 0)
@@ -527,7 +727,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 menu.add(labelStockMenuItem('Add New Group', gtk.STOCK_NEW, self.addGroupBeforeTrash))
             else:
                 #print 'right click on group', group.title
-                menu.add(labelStockMenuItem('Edit', gtk.STOCK_EDIT, self.editGroup, path, group))
+                menu.add(labelStockMenuItem('Edit', gtk.STOCK_EDIT, self.editGroupFromMenu, path))
                 eventTypes = group.acceptsEventTypes
                 if eventTypes is None:
                     eventTypes = event_man.classes.event.names
@@ -545,7 +745,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                         eventType,
                         _('Add') + ' ' + desc,
                     ))
-                pasteItem = labelStockMenuItem('Paste Event', gtk.STOCK_PASTE, self.pasteEventIntoGroup, path)
+                pasteItem = labelStockMenuItem('Paste Event', gtk.STOCK_PASTE, self.pasteEventFromMenu, path)
                 pasteItem.set_sensitive(self.canPasteToGroup(group))
                 menu.add(pasteItem)
                 ##
@@ -582,7 +782,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 menu.add(gtk.SeparatorMenuItem())
                 menu.add(labelStockMenuItem('Delete', gtk.STOCK_DELETE, self.deleteEventFromTrash, path))
             else:
-                pasteItem = labelStockMenuItem('Paste', gtk.STOCK_PASTE, self.pasteEventAfterEvent, path)
+                pasteItem = labelStockMenuItem('Paste', gtk.STOCK_PASTE, self.pasteEventFromMenu, path)
                 pasteItem.set_sensitive(self.canPasteToGroup(group))
                 menu.add(pasteItem)
                 ##
@@ -691,6 +891,39 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             else:
                 obj_list.append(obj_list[i-1][obj_id])
         return obj_list
+    def mbarExportClicked(self, obj):
+        MultiGroupExportDialog().run()
+    def mbarImportClicked(self, obj):
+        pass
+    def mbarEditClicked(self, obj):
+        cur = self.treev.get_cursor()
+        if not cur:
+            return
+        path = cur[0]
+        if len(path)==1:
+            self.editGroupByPath(path)
+        elif len(path)==2:
+            self.editEventByPath(path)
+    def mbarCutClicked(self, obj):
+        cur = self.treev.get_cursor()
+        if not cur:
+            return
+        path = cur[0]
+        if len(path)==2:
+            self.toPasteEvent = (path, True)
+    def mbarCopyClicked(self, obj):
+        cur = self.treev.get_cursor()
+        if not cur:
+            return
+        path = cur[0]
+        if len(path)==2:
+            self.toPasteEvent = (path, False)
+    def mbarPasteClicked(self, obj):
+        cur = self.treev.get_cursor()
+        if not cur:
+            return
+        path = cur[0]
+        self.pasteEventToPath(path)
     def treeviewCursorChanged(self, treev=None):
         cur = self.treev.get_cursor()
         if not cur:
@@ -750,7 +983,6 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         group = GroupEditorDialog().run()
         if group is None:
             return
-        group.save()
         ui.eventGroups.insert(index+1, group)
         ui.eventGroups.save()
         afterGroupIter = self.trees.get_iter(path)
@@ -760,11 +992,10 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             afterGroupIter,## sibling
             self.getGroupRow(group),
         )
-    def addGroupBeforeTrash(self, menu):
+    def addGroupBeforeTrash(self, obj=None):
         group = GroupEditorDialog().run()
         if group is None:
             return
-        group.save()
         ui.eventGroups.append(group)
         ui.eventGroups.save()
         self.trees.insert_before(
@@ -802,7 +1033,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             self.trees.append(newGroupIter, self.getEventRow(event))
     duplicateGroupFromMenu = lambda self, menu, path: self.duplicateGroup(path[0])
     duplicateGroupWithEventsFromMenu = lambda self, menu, path: self.duplicateGroupWithEvents(path)
-    def duplicateButtonClicked(self, button):
+    def duplicateSelectedObj(self, button=None):
         cur = self.treev.get_cursor()
         if not cur:
             return
@@ -811,14 +1042,16 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             self.duplicateGroup(path)
         elif len(path)==2:## FIXME
             self.toPasteEvent = (path, False)
-            self.pasteEventAfterEvent(None, path)
-    def editGroup(self, menu, path, group):
+            self.pasteEventToPath(path)
+    def editGroupByPath(self, path):
+        (group,) = self.getObjsByPath(path)
         group = GroupEditorDialog(group).run()
         if group is None:
             return
         groupIter = self.trees.get_iter(path)
         for i, value in enumerate(self.getGroupRow(group)):
             self.trees.set_value(groupIter, i, value)
+    editGroupFromMenu = lambda self, menu, path: self.editGroupByPath(path)
     def deleteGroup(self, menu, path):
         (index,) = path
         (group,) = self.getObjsByPath(path)
@@ -846,7 +1079,6 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         ).run()
         if event is None:
             return
-        event.save()
         eventIter = self.trees.get_iter(path)
         for i, value in enumerate(self.getEventRow(event)):
             self.trees.set_value(eventIter, i, value)
@@ -998,7 +1230,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             return
         self.moveDown(cur[0])
     def groupExportFromMenu(self, menu, group):
-        GroupExportDialog(group).run()
+        SingleGroupExportDialog(group).run()
     def groupSortFromMenu(self, menu, path):
         (index,) = path
         (group,) = self.getObjsByPath(path)
@@ -1018,62 +1250,48 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         self.toPasteEvent = (path, True)
     def copyEvent(self, menu, path):
         self.toPasteEvent = (path, False)
-    def pasteEventAfterEvent(self, menu, tarPath):## tarPath is a 2-lengthed tuple
+    pasteEventFromMenu = lambda self, menu, tarPath: self.pasteEventToPath(tarPath)
+    def pasteEventToPath(self, tarPath):
         if not self.toPasteEvent:
             return
         (srcPath, move) = self.toPasteEvent
         (srcGroup, srcEvent) = self.getObjsByPath(srcPath)
-        (tarGroup, tarEvent) = self.getObjsByPath(tarPath)
+        tarGroup = self.getObjsByPath(tarPath)[0]
         self.checkEventToAdd(tarGroup, srcEvent)
-        tarGroupIter = self.trees.get_iter(tarPath[:1])
-        tarEventIter = self.trees.get_iter(tarPath)
-        # tarEvent is not used
-        ###
+        if len(tarPath)==1:
+            tarGroupIter = self.trees.get_iter(tarPath)
+            tarEventIter = None
+            tarEventIndex = len(tarGroup)
+        elif len(tarPath)==2:
+            tarGroupIter = self.trees.get_iter(tarPath[:1])
+            tarEventIter = self.trees.get_iter(tarPath)
+            tarEventIndex = tarPath[1]
+        ####
         if move:
             srcGroup.remove(srcEvent)
             srcGroup.save()
-            tarGroup.insert(tarPath[1], srcEvent)
+            tarGroup.insert(tarEventIndex, srcEvent)
             tarGroup.save()
             self.trees.remove(self.trees.get_iter(srcPath))
             newEvent = srcEvent
         else:
             newEvent = srcEvent.copy()
             newEvent.save()
-            tarGroup.insert(tarPath[1], newEvent)
+            tarGroup.insert(tarEventIndex, newEvent)
             tarGroup.save()
-        newEventPath = self.trees.get_path(self.trees.insert_after(
-            tarGroupIter,## parent
-            tarEventIter,## sibling
-            self.getEventRow(newEvent), ## row
-        ))
-        self.treev.set_cursor(newEventPath)
-        self.toPasteEvent = None
-    def pasteEventIntoGroup(self, menu, tarPath):## tarPath is a 1-lengthed tuple
-        if not self.toPasteEvent:
-            return
-        (srcPath, move) = self.toPasteEvent
-        (srcGroup, srcEvent) = self.getObjsByPath(srcPath)
-        (tarGroup,) = self.getObjsByPath(tarPath)
-        self.checkEventToAdd(tarGroup, srcEvent)
-        tarGroupIter = self.trees.get_iter(tarPath)
-        ###
-        if move:
-            srcGroup.remove(srcEvent)
-            srcGroup.save()
-            tarGroup.append(srcEvent)
-            tarGroup.save()
-            tarGroupCount = self.trees.iter_n_children(tarGroupIter)
-            self.trees.remove(self.trees.get_iter(srcPath))
-            newEvent = srcEvent
+        ####
+        if tarEventIter:
+            newEventIter = self.trees.insert_after(
+                tarGroupIter,## parent
+                tarEventIter,## sibling
+                self.getEventRow(newEvent), ## row
+            )
         else:
-            newEvent = srcEvent.copy()
-            newEvent.save()
-            tarGroup.append(newEvent)
-            tarGroup.save()
-        self.trees.append(
-            tarGroupIter,## parent
-            self.getEventRow(newEvent), ## row
-        )
+            newEventIter = self.trees.append(
+                tarGroupIter,## parent
+                self.getEventRow(newEvent), ## row
+            )
+        self.treev.set_cursor(self.trees.get_path(newEventIter))
         self.toPasteEvent = None
     #def selectAllEventInGroup(self, menu):## FIXME
     #    pass
@@ -1204,17 +1422,29 @@ def testCustomEventEditor():
     dialog.vbox.pack_start(widget)
     dialog.vbox.show_all()
     dialog.add_button('OK', 0)
-    def on_response(d, e):
+    if dialog.run()==0:
         widget.updateVars()
         #widget.event.afterModify()
         widget.event.save()
         pprint(widget.event.getData())
-    dialog.connect('response', on_response)
-    #dialog.run()
-    dialog.present()
-    gtk.main()
+
+
+def testGroupsTreeCheckList(obj=None):
+    dialog = gtk.Dialog()
+    treev = GroupsTreeCheckList()
+    swin = gtk.ScrolledWindow()
+    swin.add(treev)
+    swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+    dialog.vbox.pack_start(swin, 1, 1)
+    dialog.vbox.show_all()
+    dialog.resize(500, 500)
+    treev.setValue([8, 7, 1, 3])
+    dialog.run()
+    print treev.getValue()
+    
 
 if __name__=='__main__':
-    testCustomEventEditor()
+    #testCustomEventEditor()
+    testGroupsTreeCheckList()
 
 
