@@ -1912,20 +1912,19 @@ class EventGroup(EventContainer, RuleContainer):
     def exportToIcs(self, fpath, startJd, endJd):
         icsText = self.getIcsText(startJd, endJd)
         open(fpath, 'w').write(icsText)
-    def exportData(self):
+    def exportData(self, putInfo=True):
         data = self.getBasicData()
         data['events'] = []
         for eventId in self.idList:
             eventData = EventContainer.getEvent(self, eventId).getData()
             data['events'].append(eventData)
         del data['idList']
-        ###
-        data['info'] = {
-            'appName': core.APP_NAME,
-            'version': core.VERSION,
-            #'exportDate':
-        }
-        ###
+        if putInfo:
+            data['info'] = {
+                'appName': core.APP_NAME,
+                'version': core.VERSION,
+                #'exportDate':
+            }
         return data
     def importData(self, data):
         self.setBasicData(data)
@@ -2203,6 +2202,11 @@ class EventGroupsHolder(JsonObjectsHolder):
     def delete(self, obj):
         assert not obj.idList ## FIXME
         JsonObjectsHolder.delete(self, obj)
+    def appendNew(self, data):
+        obj = classes.group.byName[data['type']](data['id'])
+        obj.setData(data)
+        self.append(obj)
+        return obj
     def load(self):
         self.clear()
         #eventIdList = []
@@ -2214,9 +2218,7 @@ class EventGroupsHolder(JsonObjectsHolder):
                     continue
                 data = jsonToData(open(objFile).read())
                 data['id'] = _id ## FIXME
-                obj = classes.group.byName[data['type']](_id)
-                obj.setData(data)
-                self.append(obj)
+                obj = self.appendNew(data)
                 ## here check that non of obj.idList are in eventIdList ## FIXME
                 #eventIdList += obj.idList
         else:
@@ -2241,8 +2243,31 @@ class EventGroupsHolder(JsonObjectsHolder):
         self.delete(group)
         self.save()
         trash.save()
+    def exportData(self, gidList):
+        data = {
+            'groups': [],
+            'info': {
+                'appName': core.APP_NAME,
+                'version': core.VERSION,
+                #'exportDate':
+            },
+        }
+        for gid in gidList:
+            data['groups'].append(self.byId[gid].exportData(False))
+        return data
+    def importData(self, data):
+        newGroups = []
+        for gdata in data['groups']:
+            group = classes.group.byName[gdata['type']]()
+            group.importData(gdata)
+            self.append(group)
+            newGroups.append(group)
+        self.save()## FIXME
+        return newGroups
+    importJsonFile = lambda self, fpath: self.importData(jsonToData(open(fpath, 'rb').read()))
 
-
+        
+        
 
 class EventAccountsHolder(JsonObjectsHolder):
     file = join(confDir, 'event', 'account_list.json')

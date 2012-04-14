@@ -37,14 +37,17 @@ import gtk
 from gtk import gdk
 
 
-from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile, rectangleContainsPoint, showError,\
-                               labelStockMenuItem, labelImageMenuItem, confirm, toolButtonFromStock, set_tooltip
+from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile, rectangleContainsPoint, showError, \
+                               labelStockMenuItem, labelImageMenuItem, confirm, toolButtonFromStock, set_tooltip, \
+                               hideList, GtkBufferFile
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
 
 from scal2.ui_gtk.event.occurrence_view import *
 from scal2.ui_gtk.event.common import IconSelectButton, EventEditorDialog, addNewEvent, GroupEditorDialog
+
+
 
 #print 'Testing translator', __file__, _('About')
 
@@ -101,7 +104,7 @@ class SingleGroupExportDialog(gtk.Dialog):
         ########
         self.fcw = gtk.FileChooserWidget(action=gtk.FILE_CHOOSER_ACTION_SAVE)
         try:
-            self.fcw.set_current_folder(core.deskDir)
+            self.fcw.set_current_folder(deskDir)
         except AttributeError:## PyGTK < 2.4
             pass
         self.vbox.pack_start(self.fcw, 1, 1)
@@ -127,9 +130,9 @@ class SingleGroupExportDialog(gtk.Dialog):
         self.fcw.set_current_name(fname_nox + ext)
     def save(self):
         if self.radioJsonCompact.get_active():
-            text = dataToCompactJson(self._group.exportData())
+            text = dataToCompactJson(ui.eventGroups.exportData([self._group.id]))
         elif self.radioJsonPretty.get_active():
-            text = dataToPrettyJson(self._group.exportData())
+            text =  dataToPrettyJson(ui.eventGroups.exportData([self._group.id]))
         elif self.radioIcs.get_active():
             text = self._group.getIcsText(
                 core.primary_to_jd(*self.startDateInput.get_date()),
@@ -137,7 +140,7 @@ class SingleGroupExportDialog(gtk.Dialog):
             )
         else:
             return
-        open(self.fcw.get_filename(), 'w').write(text)
+        open(self.fcw.get_filename(), 'wb').write(text)
     def run(self):
         if gtk.Dialog.run(self)==gtk.RESPONSE_OK:
             self.save()
@@ -232,7 +235,7 @@ class MultiGroupExportDialog(gtk.Dialog):
         hbox = gtk.HBox(spacing=2)
         hbox.pack_start(gtk.Label(_('File')+':'), 0, 0)
         self.fpathEntry = gtk.Entry()
-        self.fpathEntry.set_text(join(core.deskDir, 'events'))
+        self.fpathEntry.set_text(join(deskDir, 'events'))
         hbox.pack_start(self.fpathEntry, 1, 1)
         self.vbox.pack_start(hbox, 0, 0)
         ####
@@ -260,13 +263,14 @@ class MultiGroupExportDialog(gtk.Dialog):
                         ext = '.json'
                 self.fpathEntry.set_text(fpath_nox + ext)
     def save(self):
-        activeGroups = [ui.eventGroups[gid] for gid in self.groupSelect.getValue()]
+        activeGroupIds = self.groupSelect.getValue()
         if self.radioIcs.get_active():
             jd0 = core.primary_to_jd(*self.startDateInput.get_date())
             jd1 = core.primary_to_jd(*self.endDateInput.get_date())
+            activeGroups = [ui.eventGroups[gid] for gid in activeGroupIds]
             text = '\n'.join([group.getIcsText(jd0, jd1) for group in activeGroups])
         else:
-            data = [group.exportData() for group in activeGroups]
+            data = ui.eventGroups.exportData(activeGroupIds)
             ## what to do with all groupData['info'] s? FIXME
             if self.radioJsonCompact.get_active():
                 text = dataToCompactJson(data)
@@ -280,6 +284,173 @@ class MultiGroupExportDialog(gtk.Dialog):
             self.save()
         self.destroy()
 
+
+class WizardWindow(gtk.Window):
+    stepClasses = []
+    def __init__(self, title):
+        gtk.Window.__init__(self)
+        self.set_title(title)
+        self.connect('delete-event', lambda obj, e: self.destroy())
+        self.connect('key-press-event', self.keyPress)
+        self.vbox = gtk.VBox()
+        self.add(self.vbox)
+        ####
+        self.steps = []
+        for cls in self.stepClasses:
+            step = cls(self)
+            self.steps.append(step)
+            self.vbox.pack_start(step, 1, 1)
+        self.stepIndex = 0
+        ####
+        self.buttonBox = gtk.HButtonBox()
+        self.buttonBox.set_layout(gtk.BUTTONBOX_END)
+        self.buttonBox.set_spacing(20)
+        self.vbox.pack_start(self.buttonBox, 0, 0)
+        ####
+        self.showStep(0)
+        self.vbox.show()
+        #self.vbox.pack_end(
+        #print id(self.get_action_area())
+    def keyPress(self, arg, event):
+        kname = gdk.keyval_name(event.keyval).lower()
+        if kname=='escape':
+            self.destroy()
+        return True
+    def showStep(self, stepIndex, *args):
+        step = self.steps[stepIndex]
+        step.run(*args)
+        hideList(self.steps)
+        step.show()
+        self.stepIndex = stepIndex
+        ###
+        bbox = self.buttonBox
+        for child in bbox.get_children():
+            child.destroy()
+        for label, func in step.buttons:
+            #print label, func
+            button = gtk.Button(label)
+            button.connect('clicked', func)
+            bbox.add(button)
+            #bbox.pack_start(button, 0, 0)
+        bbox.show_all()
+
+class EventsImportWindow(WizardWindow):
+    def __init__(self, manager):
+        self.manager = manager
+        WizardWindow.__init__(self, _('Import Events'))
+        self.resize(400, 200)
+    class FirstStep(gtk.VBox):
+        def __init__(self, win):
+            gtk.VBox.__init__(self, spacing=20)
+            self.win = win
+            self.buttons = (
+                (_('Cancel'), self.cancelClicked),
+                (_('Next'), self.nextClicked),
+            )
+            ####
+            hbox = gtk.HBox(spacing=10)
+            frame = gtk.Frame(_('Format'))
+            #frame.set_border_width(10)
+            radioBox = gtk.VBox(spacing=10)
+            radioBox.set_border_width(10)
+            ##
+            self.radioJson = gtk.RadioButton(label=_('JSON (StarCalendar)'))
+            #self.radioIcs = gtk.RadioButton(label='iCalendar', group=self.radioJson)
+            ##
+            radioBox.pack_start(self.radioJson, 0, 0)
+            #radioBox.pack_start(self.radioIcs, 0, 0)
+            ##
+            self.radioJson.set_active(True)
+            #self.radioJson.connect('clicked', self.formatRadioChanged)
+            ##self.radioIcs.connect('clicked', self.formatRadioChanged)
+            ##
+            frame.add(radioBox)
+            hbox.pack_start(frame, 0, 0, 10)
+            hbox.pack_start(gtk.Label(''), 1, 1)
+            self.pack_start(hbox, 0, 0)
+            ####
+            hbox = gtk.HBox()
+            hbox.pack_start(gtk.Label(_('File')+':'), 0, 0)
+            self.fcb = gtk.FileChooserButton(_('Import: Select File'))
+            self.fcb.set_current_folder(deskDir)
+            hbox.pack_start(self.fcb, 1, 1)
+            self.pack_start(hbox, 0, 0)
+            ####
+            self.show_all()
+        def run(self):
+            pass
+        def cancelClicked(self, obj):
+            self.win.destroy()
+        def nextClicked(self, obj):
+            fpath = self.fcb.get_filename()
+            if not fpath:
+                return
+            if self.radioJson.get_active():
+                format = 'json'
+            #elif self.radioIcs.get_active():
+            #    format = 'ics'
+            else:
+                return
+            self.win.showStep(1, format, fpath)
+    class SecondStep(gtk.VBox):
+        def __init__(self, win):
+            gtk.VBox.__init__(self, spacing=20)
+            self.win = win
+            self.buttons = (
+                (_('Back'), self.backClicked),
+                (_('Close'), self.closeClicked),
+            )
+            ####
+            self.textview = gtk.TextView()
+            self.pack_start(self.textview, 1, 1)
+            ####
+            self.show_all()
+        def redirectStdOutErr(self):
+            t_table = gtk.TextTagTable()
+            tag_out = gtk.TextTag('output')
+            t_table.add(tag_out)
+            tag_err = gtk.TextTag('error')
+            t_table.add(tag_err)
+            self.buffer = gtk.TextBuffer(t_table)
+            self.textview.set_buffer(self.buffer)
+            self.out_fp = GtkBufferFile(self.buffer, tag_out)
+            sys.stdout = self.out_fp
+            self.err_fp = GtkBufferFile(self.buffer, tag_err)
+            sys.stderr = self.err_fp
+        def restoreStdOutErr(self):
+            sys.stdout = sys.__stdout__
+            sys.stderr = sys.__stderr__
+        def run(self, format, fpath):
+            self.redirectStdOutErr()
+            try:
+                if format=='json':
+                    try:
+                        text = open(fpath, 'rb').read()
+                    except Exception, e:
+                        sys.stderr.write(_('Error in reading file')+'\n%s\n'%e)
+                    else:
+                        try:
+                            data = jsonToData(text)
+                        except Exception, e:
+                            sys.stderr.write(_('Error in loading JSON data')+'\n%s\n'%e)
+                        else:
+                            try:
+                                newGroups = ui.eventGroups.importData(data)
+                            except Exception, e:
+                                sys.stderr.write(_('Error in importing events')+'\n%s\n'%e)
+                            else:
+                                for group in newGroups:
+                                    self.win.manager.appendGroupTree(group)
+                                print _('%s groups imported successfully')%_(len(newGroups))
+                else:
+                    raise ValueError('invalid format %r'%format)
+            finally:            
+                self.restoreStdOutErr()
+        def backClicked(self, obj):
+            self.win.showStep(0)
+        def closeClicked(self, obj):
+            self.win.destroy()
+    stepClasses = [FirstStep, SecondStep]
 
 
 class GroupSortDialog(gtk.Dialog):
@@ -859,19 +1030,20 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             group.title,
             '',
         )
+    def appendGroupTree(self, group):
+        groupIter = self.trees.insert_before(None, self.trashIter, self.getGroupRow(group))
+        for event in group:
+            self.trees.append(groupIter, self.getEventRow(event))
     def reloadEvents(self):
         self.trees.clear()
-        rowBgColor = self.getRowBgColor()
-        for group in ui.eventGroups:
-            groupIter = self.trees.append(None, self.getGroupRow(group, rowBgColor))
-            for event in group:
-                self.trees.append(groupIter, self.getEventRow(event))
         self.trashIter = self.trees.append(None, (
             -1,
             pixbufFromFile(ui.eventTrash.icon),
             ui.eventTrash.title,
             '',
         ))
+        for group in ui.eventGroups:
+            self.appendGroupTree(group)
         for event in ui.eventTrash:
             self.trees.append(self.trashIter, self.getEventRow(event))
         self.treeviewCursorChanged()
@@ -894,7 +1066,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
     def mbarExportClicked(self, obj):
         MultiGroupExportDialog().run()
     def mbarImportClicked(self, obj):
-        pass
+        EventsImportWindow(self).present()
     def mbarEditClicked(self, obj):
         cur = self.treev.get_cursor()
         if not cur:

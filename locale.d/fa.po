@@ -14,6 +14,11 @@ msgid "_Apply"
 msgstr ""
 "_اعمال"
 
+msgid "Cancel"
+msgstr ""
+"انصراف"
+
+
 msgid "_Cancel"
 msgstr ""
 "_انصراف"
@@ -21,6 +26,10 @@ msgstr ""
 msgid "_Close"
 msgstr ""
 "_بستن"
+
+msgid "Close"
+msgstr ""
+"بستن"
 
 msgid "_Reset to Defaults"
 msgstr ""
@@ -1592,6 +1601,22 @@ msgstr ""
 msgid "Import: Select File"
 msgstr ""
 "وارد کردن: انتخاب فایل"
+
+msgid "%s groups imported successfully"
+msgstr "%s گروه با موفقیت وارد شد"
+
+
+msgid "Error in reading file"
+msgstr ""
+"خطا در خواندن فایل"
+
+msgid "Error in loading JSON data"
+msgstr ""
+"خطا در بارگذاری دادهٔ JSON"
+
+msgid "Error in importing events"
+msgstr ""
+"خطا در وارد کردن رویدادها"
 
 msgid "Format"
 msgstr ""
