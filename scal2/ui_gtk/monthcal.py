@@ -7,7 +7,7 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful, 
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
@@ -114,11 +114,11 @@ class MonthCal(gtk.Widget, MainWinItem):
     def do_realize(self):
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(
-            self.get_parent_window(), 
-            width=self.allocation.width, 
-            height=self.allocation.height, 
-            window_type=gdk.WINDOW_CHILD, 
-            wclass=gdk.INPUT_OUTPUT, 
+            self.get_parent_window(),
+            width=self.allocation.width,
+            height=self.allocation.height,
+            window_type=gdk.WINDOW_CHILD,
+            wclass=gdk.INPUT_OUTPUT,
             event_mask=self.get_events() \
                 | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK
                 | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK
@@ -261,7 +261,7 @@ class MonthCal(gtk.Widget, MainWinItem):
                             yscale = float(ch/cw)
                             cr.scale(1, yscale)
                             cy0 /= yscale
-                            ch = cw    
+                            ch = cw
                         ######### Circular Rounded
                         ro = min(ui.cursorR, cw/2, ch/2)
                         #a = min(cw, ch); ri = ro*(a-2*d)/a
@@ -371,7 +371,7 @@ class MonthCal(gtk.Widget, MainWinItem):
                                 yscale = float(ch/cw)
                                 cr.scale(1, yscale)
                                 cy0 /= yscale
-                                ch = cw    
+                                ch = cw
                             ######### Circular Rounded
                             ro = min(ui.cursorR, cw/2, ch/2)
                             #a = min(cw, ch); ri = ro*(a-2*d)/a
@@ -432,7 +432,7 @@ class MonthCal(gtk.Widget, MainWinItem):
         except AttributeError:## Old PyGTK
             dtype = selection.type
         text = selection.get_text()
-        ## data_type: "UTF8_STRING", "application/x-color", "text/uri-list", 
+        ## data_type: "UTF8_STRING", "application/x-color", "text/uri-list",
         if dtype=='UTF8_STRING':
             #text = selection.get_text()
             #print 'Dropped text "%s"'%text
@@ -500,7 +500,7 @@ class MonthCal(gtk.Widget, MainWinItem):
                 x = int(self.cx[xPos]-ui.cursorW/2.0-ui.cursorD)
                 y = int(self.cy[yPos]-ui.cursorH/2.0-ui.cursorD)
                 w = int(ui.cursorW + 2*ui.cursorD)
-                h = int(ui.cursorH + 2*ui.cursorD) 
+                h = int(ui.cursorH + 2*ui.cursorD)
             else:
                 x = int(self.cx[xPos]-self.dx/2.0+1)
                 y = int(self.cy[yPos]-self.dy/2.0+1)
@@ -603,7 +603,7 @@ class MonthCal(gtk.Widget, MainWinItem):
             lay.set_text(core.weekDayName[i])
             w = lay.get_pixel_size()[0] ## ????????
             #w = lay.get_pixel_extents()[0] ## ????????
-            #print w, 
+            #print w,
             if w > wm:
                 wm = w
         self.wdaysWidth = wm*7 + ui.calLeftMargin ## ????????
@@ -645,7 +645,7 @@ class MonthCal(gtk.Widget, MainWinItem):
             self.cx = [(w-ui.calLeftMargin)*(13.0-2*i)/14.0 for i in xrange(7) ] ## centers x
         else:
             self.cx = [
-                ui.calLeftMargin + (w-ui.calLeftMargin)*(1.0+2*i)/14.0 
+                ui.calLeftMargin + (w-ui.calLeftMargin)*(1.0+2*i)/14.0
                 for i in xrange(7)
             ] ## centers x
         self.cy = [
@@ -716,7 +716,7 @@ class MonthCal(gtk.Widget, MainWinItem):
         self.queue_draw()
         self.emit('date-change')
     goToday = lambda self, widget=None: self.changeDate(*core.getSysDate())
-    getCellPos = lambda self: (int(self.cx[ui.cell.monthPos[0]]), 
+    getCellPos = lambda self: (int(self.cx[ui.cell.monthPos[0]]),
                                int(self.cy[ui.cell.monthPos[1]] + self.dy/2.0))
     def getMainMenuPos(self):#???????????????????
         if rtl:

@@ -85,6 +85,6 @@ def getMonthLen(y, m):
         return to_jd(y+1, 1, 1) - to_jd(y, 12, 1)
     else:
         return to_jd(y, m+1, 1) - to_jd(y, m, 1)
-        
+
 
 

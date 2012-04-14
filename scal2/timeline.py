@@ -7,7 +7,7 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful, 
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
@@ -190,7 +190,7 @@ def realRangeListsDiff(r1, r2):
     if pending:
         i1 = pending[0]
         i2 = pending[-1] + 1
-        r3.append((boundaryList[i1], boundaryList[i2]))  
+        r3.append((boundaryList[i1], boundaryList[i2]))
     return r3
 
 
@@ -450,7 +450,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
         box.y1 = 1
         for box1 in box.tConflictBefore:## FIXME
             if box.yOverlaps(box1):
-                yResizeBox(box1, 1-h)                        
+                yResizeBox(box1, 1-h)
     return {
         'holidays': holidays,
         'ticks': ticks,

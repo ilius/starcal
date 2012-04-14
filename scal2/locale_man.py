@@ -265,7 +265,7 @@ def numDecode(numSt):
         else:
             return int(numEn)
     raise ValueError('invalid locale number %s'%numSt)
-        
+
 
 def textNumDecode(text):## converts '۱۲:۰۰, ۱۳' to '12:00, 13'
     text = toUnicode(text)

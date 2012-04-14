@@ -18,7 +18,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-##    Iranian (Jalali) calendar: 
+##    Iranian (Jalali) calendar:
 ##                    http://en.wikipedia.org/wiki/Iranian_calendar
 
 name = 'jalali'
@@ -107,7 +107,7 @@ def isLeap(year):
                 leap = False
         if gdays % 1461 >= 366:
             leap = False
-        return leap    
+        return leap
     else:
         raise RuntimeError('bad option jalaliAlg=%s'%jalaliAlg)
 

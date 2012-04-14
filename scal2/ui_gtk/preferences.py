@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#        
+#
 # Copyright (C) 2009-2012 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
 #
 # This program is free software; you can redistribute it and/or modify
@@ -7,7 +7,7 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful, 
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
@@ -200,7 +200,7 @@ class ModuleOptionItem:
         ####
         self.updateVar = lambda: setattr(self.module, self.var_name, self.get_value())
         self.updateWidget = lambda: self.set_value(getattr(self.module, self.var_name))
-        
+
 
 ## ('button', LABEL, CLICKED_MODULE_NAME, CLICKED_FUNCTION_NAME)
 class ModuleOptionButton:
@@ -216,7 +216,7 @@ class ModuleOptionButton:
         pass
     def updateWidget(self):
         pass
-        
+
 
 
 class PrefItem():
@@ -292,11 +292,11 @@ class ComboImageTextPrefItem(PrefItem):
         ###
         cell = gtk.CellRendererPixbuf()
         combo.pack_start(cell, False)
-        combo.add_attribute(cell, 'pixbuf', 0)    
+        combo.add_attribute(cell, 'pixbuf', 0)
         ###
         cell = gtk.CellRendererText()
         combo.pack_start(cell, True)
-        combo.add_attribute(cell, 'text', 1)    
+        combo.add_attribute(cell, 'text', 1)
         ###
         self.widget = combo
         self.ls = ls
@@ -323,11 +323,11 @@ class LangPrefItem(PrefItem):
         ###
         cell = gtk.CellRendererPixbuf()
         combo.pack_start(cell, False)
-        combo.add_attribute(cell, 'pixbuf', 0)    
+        combo.add_attribute(cell, 'pixbuf', 0)
         ###
         cell = gtk.CellRendererText()
         combo.pack_start(cell, True)
-        combo.add_attribute(cell, 'text', 1)    
+        combo.add_attribute(cell, 'text', 1)
         ###
         self.widget = combo
         self.ls = ls
@@ -361,7 +361,7 @@ class LangPrefItem(PrefItem):
             else:
                 self.widget.set_active(i+1)
     #def updateVar(self):
-    #    lang = 
+    #    lang =
 
 
 
@@ -689,7 +689,7 @@ class PrefDialog(gtk.Dialog):
         hbox.pack_start(gtk.Label(_('Language')), 0, 0)
         itemLang = LangPrefItem()
         self.localePrefItems.append(itemLang)
-        ###    
+        ###
         hbox.pack_start(itemLang.widget, 0, 0)
         if langSh!='en':
             hbox.pack_start(gtk.Label('Language'), 0, 0)
@@ -716,7 +716,7 @@ class PrefDialog(gtk.Dialog):
             ########################
             item = CheckPrefItem(ui, 'showMain', _('Show main window on start'))
             self.uiPrefItems.append(item)
-            vbox.pack_start(item.widget, 0, 0) 
+            vbox.pack_start(item.widget, 0, 0)
         ##########################
         item = CheckPrefItem(ui, 'winTaskbar', _('Window in Taskbar'))
         self.uiPrefItems.append(item)
@@ -987,13 +987,13 @@ class PrefDialog(gtk.Dialog):
             '%T',
             '%X',
             '%Y/%m/%d - %T',
-            '%OY/%Om/%Od - %X', 
+            '%OY/%Om/%Od - %X',
             '<i>%Y/%m/%d</i> - %T',
             '<b>%T</b>',
             '<b>%X</b>',
             '%H:%M',
             '<b>%H:%M</b>',
-            '<span size="smaller">%OY/%Om/%Od</span>,%X' 
+            '<span size="smaller">%OY/%Om/%Od</span>,%X'
             '%OY/%Om/%Od,<span color="#ff0000">%X</span>',
             '<span font="bold">%X</span>',
             '%OH:%OM',
@@ -1335,7 +1335,7 @@ class PrefDialog(gtk.Dialog):
         set_tooltip(tb, _('Delete'))
         tb.connect('clicked', self.accountsDelClicked)
         toolbar.insert(tb, -1)
-        ##########        
+        ##########
         tb = toolButtonFromStock(gtk.STOCK_GO_UP, size)
         set_tooltip(tb, _('Move up'))
         tb.connect('clicked', self.accountsUpClicked)
@@ -1500,7 +1500,7 @@ class PrefDialog(gtk.Dialog):
         text = ''
         for item in self.localePrefItems:
             text += item.confStr()
-        open(locale_man.localeConfPath, 'w').write(text)        
+        open(locale_man.localeConfPath, 'w').write(text)
         ##################### Saving core config
         text = 'allPlugList=%s\n\nplugIndex=%r\n'%(core.getAllPlugListRepr(), core.plugIndex)
         for item in self.corePrefItems:

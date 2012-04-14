@@ -320,11 +320,11 @@ class WeeklyScheduleWidget(gtk.Widget):
     def do_realize(self):
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(
-            self.get_parent_window(), 
-            width=self.allocation.width, 
-            height=self.allocation.height, 
-            window_type=gdk.WINDOW_CHILD, 
-            wclass=gdk.INPUT_OUTPUT, 
+            self.get_parent_window(),
+            width=self.allocation.width,
+            height=self.allocation.height,
+            window_type=gdk.WINDOW_CHILD,
+            wclass=gdk.INPUT_OUTPUT,
             event_mask=self.get_events() | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK
                 | gdk.BUTTON_PRESS_MASK | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK,
             #colormap=self.get_screen().get_rgba_colormap(),

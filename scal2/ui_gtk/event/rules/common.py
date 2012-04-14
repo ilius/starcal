@@ -21,12 +21,12 @@ class MultiValueRule(gtk.HBox):
         self.removeButton.set_image(gtk.image_new_from_stock(gtk.STOCK_REMOVE, gtk.ICON_SIZE_MENU))
         self.removeButton.connect('clicked', self.removeLastWidget)
         ##
-        
-        
+
+
         ##
         self.removeButton.hide()## FIXME
 
     def removeLastWidget(self, obj=None):
-        
+
     def addWidget(self, obj=None):
         widget = self.ValueWidgetClass()

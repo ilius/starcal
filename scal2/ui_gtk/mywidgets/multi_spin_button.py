@@ -134,7 +134,7 @@ class MultiSpinButton(gtk.SpinButton):
             else:
                 [j, np] = nfound[0]
                 nums[j] = text[p:p2].strip()
-                nfound = []    
+                nfound = []
                 nums.append('')
             p = p2 + len(self.sep[i])
         if p2==-1:
@@ -468,7 +468,7 @@ class DateButtonOption(MultiSpinOptionBox):
         MultiSpinOptionBox.__init__(self, mins=(0,1,1), maxs=(9999,12,31), fields=(4,2,2), sep=(u'/', u'/'), nums=date, **kwargs)
         self.get_date = self.get_nums
         self.set_date = self.set_nums
-        
+
 
 
 

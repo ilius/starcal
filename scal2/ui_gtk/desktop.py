@@ -10,7 +10,7 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful, 
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
@@ -45,7 +45,7 @@ def get_wallcolor(width, height):
     client.add_dir("/desktop/gnome/background", gconf.CLIENT_PRELOAD_RECURSIVE)
     value = client.get("/desktop/gnome/background/primary_color")
     color = value.get_string()
-    
+
     pbuf = gtk.gdk.Pixbuf(0, 1, 8, width, height)
     c = gtk.gdk.color_parse(color)
     fillr = (c.red / 256) << 24
@@ -64,7 +64,7 @@ def get_wallcolor(width, height):
 def get_wallpaper_fallback(x, y, width, height):
 
     x, y, width, height = _crop_coords(x, y, width, height)
-    
+
     pbuf = gtk.gdk.Pixbuf(0, 1, 8, width, height)
     pbuf.get_from_drawable(root, root.get_colormap(),
                            x, y, 0, 0, width, height)

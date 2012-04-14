@@ -37,6 +37,6 @@ class EventWidget(common.EventWidget):
         y, m, d = self.dateInput.get_date()
         self.dateInput.set_date(convert(y, m, d, self.event.mode, newMode))
         self.event.mode = newMode
-        
-        
+
+
 

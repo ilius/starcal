@@ -141,7 +141,7 @@ def jd_to(jd):
         day = indianDayOfYear
     elif indianDayOfYear <= daysInMonth1 + 5*31:
         month = (indianDayOfYear-daysInMonth1-1)/31 + 2
-        day = indianDayOfYear - daysInMonth1 - (month-2)*31 
+        day = indianDayOfYear - daysInMonth1 - (month-2)*31
     else:
         month = (indianDayOfYear - daysInMonth1 - 5*31 - 1) / 30 + 7
         day = indianDayOfYear - daysInMonth1 - 5*31 - (month-7)*30

@@ -7,7 +7,7 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful, 
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
@@ -115,7 +115,7 @@ class PlainStrObject(TextObject):
         TextObject.__init__(self, parent, x, y, color, font)
         self.text = text
     def getText(self):
-        return self.text 
+        return self.text
 
 
 
@@ -132,7 +132,7 @@ class TinyCal(gtk.Window):## (gtk.DrawingArea OR gtk.Widget)
         pass
     def endEditing(self):
         pass
-    
+
 
 
 

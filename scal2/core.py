@@ -7,7 +7,7 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful, 
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
@@ -160,20 +160,20 @@ def getWeekDayAuto(i, abr=False):
         return weekDayNameAb[(i+firstWeekDay)%7]
     else:
         return weekDayName[(i+firstWeekDay)%7]
-        
+
 
 datesDiff = lambda y1, m1, d1, y2, m2, d2: primary_to_jd(y2, m2, d2) - primary_to_jd(y1, m1, d1)
 
 dayOfYear = lambda y, m, d: datesDiff(y, 1, 1, y, m, d) + 1
-        
+
 def getLocaleFirstWeekDay():
     #log.debug('first_weekday', popen_output(['locale', 'first_weekday']))
     return int(popen_output(['locale', 'first_weekday']))-1
     #return int(popen_output('LANG=%s locale first_weekday'%lang))-1
-    ##retrun int(trans('calendar:week_start:0').split(':')[-1]) 
+    ##retrun int(trans('calendar:week_start:0').split(':')[-1])
     ## "trans" must read from gtk-2.0.mo !!
-        
-        
+
+
 ## week number in year
 def getWeekNumber(year, month, day, adjustZero=True):
     jd = primary_to_jd(year, month, day)
@@ -193,7 +193,7 @@ def getJdFromWeek(year, weekNumber):## FIXME
     wn0 = getWeekNumber(year, 1, 1, False)
     jd0 = to_jd(year, 1, 1, primaryMode)
     return jd0 - wd0 + (weekNumber-wn0)*7
-    
+
 
 getWeekDateFromJd = lambda jd: divmod(jd - firstWeekDay + 1, 7)
 ## return (absWeekNumber, weekDay)
@@ -221,7 +221,7 @@ def getPrevMonth(year, month):
         return (year-1, 12)
     else:
         return (year, month-1)
-        
+
 
 def getLocaleWeekNumberMode():##????????????
     return (int(popen_output(['locale', 'week-1stweek']))-1)%8
@@ -275,7 +275,7 @@ def loadAllPlugins():
             continue
         for fname in os.listdir(direc):
             if fname=='__init__.py' or fname in names:##??????????
-                continue 
+                continue
             path = '%s/%s'%(direc, fname)
             name = splitext(fname)[0]
             #if path in paths:# The plugin is not new, currently exists in allPlugList

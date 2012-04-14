@@ -17,4 +17,4 @@ class RuleWidget(gtk.SpinButton):
         self.set_value(self.rule.cycleDays)
     def updateVars(self):
         self.rule.cycleDays = self.get_value()
-    
+

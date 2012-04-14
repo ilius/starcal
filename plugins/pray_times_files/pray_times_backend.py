@@ -4,30 +4,30 @@
 # Prayer Times Calculator
 # Copyright (C) 2007-2010 Hamid Zarrabi-Zadeh
 # Copyright (C) 2011 Saeed Rasooli
-# 
+#
 # Source: http://praytimes.org
 # License: GNU General Public License, version 3
-# 
-# Permission is granted to use this code, with or without 
-# modification, in any website or application provided that 
+#
+# Permission is granted to use this code, with or without
+# modification, in any website or application provided that
 # the following conditions are met:
-# 
-#    1. Credit is given to the original work with a 
+#
+#    1. Credit is given to the original work with a
 #       link back to PrayTimes.org.
-# 
-#    2. Redistributions of the source code and its 
-#       translations into other programming languages 
+#
+#    2. Redistributions of the source code and its
+#       translations into other programming languages
 #       must retain the above copyright notice.
-# 
-# This program is distributed in the hope that it will 
-# be useful, but WITHOUT ANY WARRANTY. 
-# 
+#
+# This program is distributed in the hope that it will
+# be useful, but WITHOUT ANY WARRANTY.
+#
 # PLEASE DO NOT REMOVE THIS COPYRIGHT BLOCK.
 
-# User's Manual: 
+# User's Manual:
 # http://praytimes.org/manual
-# 
-# Calculation Formulas: 
+#
+# Calculation Formulas:
 # http://praytimes.org/calculation
 
 import time
@@ -159,7 +159,7 @@ class PrayTimes:
                 )
             else:
                 raise ValueError('bad time format %s'%format)
-    
+
     # compute mid-day time
     def midDay(self, tm):
         return fixHour(12-self.sunEquation(self.jDate+tm))
@@ -177,7 +177,7 @@ class PrayTimes:
         #    return 0
         return noon + dirSign(direction)*t
 
-    # compute asr time 
+    # compute asr time
     def asrTime(self, factor, tm):
         return self.sunAngleTime(
             -arccot(factor + tan(abs(self.lat-self.sunDeclination(self.jDate+tm)))),
@@ -219,18 +219,18 @@ class PrayTimes:
         L = fixAngle(q + 1.915*sin(g) + 0.020*sin(2*g))
         e = 23.439 - 0.00000036*D
         RA = arctan2(cos(e)*sin(L), cos(L)) / 15.0
-        return q/15.0 - fixHour(RA)   
+        return q/15.0 - fixHour(RA)
 
     #---------------------- Compute Prayer Times -----------------------
 
-    # compute prayer times 
+    # compute prayer times
     def computeTimes(self, format=None):
         # default times
         times = {
             'imsak': 5,
             'fajr': 5,
             'sunrise': 6,
-            'dhuhr': 12, 
+            'dhuhr': 12,
             'asr': 13,
             'sunset': 18,
             'maghrib': 18,
@@ -251,7 +251,7 @@ class PrayTimes:
             times['sunset']  = self.sunAngleTime(self.riseSetAngle(), times['sunset'])
             times['maghrib'] = self.sunAngleTime(minEval(self.method.maghrib), times['maghrib'])
             times['isha']    = self.sunAngleTime(minEval(self.method.isha), times['isha'])
-            
+
         ## adjustTimes
         for key in times:
             times[key] += self.timeZone - self.lng/15.0
@@ -262,14 +262,14 @@ class PrayTimes:
             times['fajr']  = self.adjustHLTime(times['fajr'], times['sunrise'], minEval(self.method.fajr), nightTime, 'ccw')
             times['isha']  = self.adjustHLTime(times['isha'], times['sunset'], minEval(self.method.isha), nightTime)
             times['maghrib'] = self.adjustHLTime(times['maghrib'], times['sunset'], minEval(self.method.maghrib), nightTime)
-            
+
         if isMin(self.imsak):
             times['imsak'] = times['fajr'] - minEval(self.imsak)/60.0
         if isMin(self.method.maghrib):
             times['maghrib'] = times['sunset'] + minEval(self.method.maghrib)/60.0
         if isMin(self.method.isha):
             times['isha'] = times['maghrib'] + minEval(self.method.isha)/60.0
-        
+
         # add midnight time
         times['midnight'] = timesMiddle(
             times['sunset'],

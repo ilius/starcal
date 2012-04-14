@@ -376,7 +376,7 @@ def testOutput():
     tm = (year, month, day, 12, 10, 0, 15, 1, 1)
     print formatTime(binFmt, core.DATE_GREG, jd, tm)
     print strftime('%OY/%Om/%Od', tm)
-    
+
 
 
 if __name__=='__main__':

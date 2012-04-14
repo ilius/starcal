@@ -7,7 +7,7 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful, 
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
@@ -182,11 +182,11 @@ class WeekCal(gtk.Widget):
     def do_realize(self):
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(
-            self.get_parent_window(), 
-            width=self.allocation.width, 
-            height=self.allocation.height, 
-            window_type=gdk.WINDOW_CHILD, 
-            wclass=gdk.INPUT_OUTPUT, 
+            self.get_parent_window(),
+            width=self.allocation.width,
+            height=self.allocation.height,
+            window_type=gdk.WINDOW_CHILD,
+            wclass=gdk.INPUT_OUTPUT,
             event_mask=self.get_events() | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK
                 | gdk.BUTTON_PRESS_MASK | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK,
             #colormap=self.get_screen().get_rgba_colormap(),

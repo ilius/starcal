@@ -222,5 +222,5 @@ if __name__=='__main__':
         (y, m) = divmod(ym, 12)
         m += 1
         print to_jd(y, m, 1) - to_jd_c(y, m, 1)
-        
+
 

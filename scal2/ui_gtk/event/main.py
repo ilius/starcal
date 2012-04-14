@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# 
+#
 # Copyright (C) 2009-2012 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
 #
 # This program is free software; you can redistribute it and/or modify
@@ -7,7 +7,7 @@
 # the Free Software Foundation; either version 3 of the License,    or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful, 
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
 # GNU General Public License for more details.
@@ -450,7 +450,7 @@ class EventsImportWindow(WizardWindow):
                                 print _('%s groups imported successfully')%_(len(newGroups))
                 else:
                     raise ValueError('invalid format %r'%format)
-            finally:            
+            finally:
                 self.restoreStdOutErr()
         def backClicked(self, obj):
             self.win.showStep(0)
@@ -1589,7 +1589,7 @@ ui.eventTrash.load()
 
 
 import scal2.ui_gtk.event.import_customday ## opens a dialog if neccessery
-    
+
 
 def testCustomEventEditor():
     from pprint import pprint, pformat
@@ -1620,7 +1620,7 @@ def testGroupsTreeCheckList(obj=None):
     treev.setValue([8, 7, 1, 3])
     dialog.run()
     print treev.getValue()
-    
+
 
 if __name__=='__main__':
     #testCustomEventEditor()

@@ -8,7 +8,7 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful, 
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
@@ -154,7 +154,7 @@ class StarCalApplet(MainWin):
         elif (typ == gnomeapplet.PIXMAP_BACKGROUND):
             style = applet.style
             style.bg_pixmap[gtk.STATE_NORMAL] = pixmap
-            applet.set_style(style)    
+            applet.set_style(style)
     def quit(self, widget=None, event=None):
         ui.saveLiveConf()
         sys.exit(0)
@@ -171,7 +171,7 @@ def starcalAppletFactory(applet, iid):
 if len(sys.argv)>1 and sys.argv[1] in ('-w', '--window'):
     main_window = gtk.Window(gtk.WINDOW_TOPLEVEL)
     main_window.set_title(core.APP_DESC+' Gnome Applet')
-    main_window.connect('destroy', gtk.main_quit) 
+    main_window.connect('destroy', gtk.main_quit)
     app = gnomeapplet.Applet()
     starcalAppletFactory(app, None)
     app.reparent(main_window)

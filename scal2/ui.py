@@ -7,7 +7,7 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful, 
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
@@ -131,8 +131,8 @@ def winMakeShortcut(srcPath, dstPath, iconPath=None):
     shortcut.Targetpath = srcPath
     #shortcut.WorkingDirectory = ...
     shortcut.save()
-    
-    
+
+
 
 def addStartup():
     if osName=='win':
@@ -331,7 +331,7 @@ class CellCache:
             self.weekEvents[absWeekNumber] = wEventData
         return (cells, wEventData)
     #def getMonthData(self, year, month):## needed? FIXME
-    
+
 
 def changeDate(year, month, day, mode=None):
     global cell
@@ -425,8 +425,8 @@ def duplicateGroupTitle(group):
 
 ######################################################################
 shownCals = [
-    {'enable':True, 'mode':0, 'x':0,  'y':-2, 'font':None, 'color':(220, 220, 220)}, 
-    {'enable':True, 'mode':1, 'x':18, 'y':5,  'font':None, 'color':(165, 255, 114)}, 
+    {'enable':True, 'mode':0, 'x':0,  'y':-2, 'font':None, 'color':(220, 220, 220)},
+    {'enable':True, 'mode':1, 'x':18, 'y':5,  'font':None, 'color':(165, 255, 114)},
     {'enable':True, 'mode':2, 'x':-18,'y':4,  'font':None, 'color':(0, 200, 205)},
 ]
 core.primaryMode = shownCals[0]['mode']
@@ -450,7 +450,7 @@ class TagIconItem:
         self.eventTypes = eventTypes
         self.usage = 0
     __repr__ = lambda self: 'TagIconItem(%r, desc=%r, icon=%r, eventTypes=%r)'%(self.name, self.desc, self.icon, self.eventTypes)
-    
+
 
 eventTags = (
     TagIconItem('birthday', eventTypes=('yearly',)),
@@ -677,11 +677,11 @@ if newPrimaryMode!= core.primaryMode:
     cellCache.clear()
 del newPrimaryMode
 
-## monthcal: 
+## monthcal:
 
 
 needRestartPref = {} ### Right place ????????
-for key in ('scal2.locale_man.lang', 'winTaskbar', 'showYmArrows'): # What other???? 
+for key in ('scal2.locale_man.lang', 'winTaskbar', 'showYmArrows'): # What other????
     needRestartPref[key] = eval(key)
 
 if menuTextColor is None:

@@ -8,7 +8,7 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful, 
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
@@ -30,7 +30,7 @@ from scal2.locale_man import rtl
 
 from scal2.utils import toUnicode
 from scal2.core import myRaise, getCurrentTime
-                       
+
 from scal2 import ui
 from scal2.timeline import *
 
@@ -93,11 +93,11 @@ class TimeLine(gtk.Widget):
     def do_realize(self):
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(
-            self.get_parent_window(), 
-            width=self.allocation.width, 
-            height=self.allocation.height, 
-            window_type=gdk.WINDOW_CHILD, 
-            wclass=gdk.INPUT_OUTPUT, 
+            self.get_parent_window(),
+            width=self.allocation.width,
+            height=self.allocation.height,
+            window_type=gdk.WINDOW_CHILD,
+            wclass=gdk.INPUT_OUTPUT,
             event_mask=self.get_events() | gdk.EXPOSURE_MASK
             | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK
             | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK)
@@ -254,7 +254,7 @@ class TimeLine(gtk.Widget):
                             y + (h-layoutH)/2.0,
                         )
                         cr.show_layout(layout)
-                        
+
         ######
         if self.timeStart <= self.currentTime <= self.timeStart + self.timeWidth:
             setColor(cr, currenTimeMarkerColor)
@@ -279,7 +279,7 @@ class TimeLine(gtk.Widget):
         else:
             self.movingUserEvent(-1 if isUp else 1)## FIXME
         self.queue_draw()
-        return True            
+        return True
     def buttonPress(self, obj, event):
         x = event.x
         y = event.y
@@ -342,7 +342,7 @@ class TimeLine(gtk.Widget):
             gdk.WINDOW_EDGE_SOUTH_EAST,
             event.button,
             int(event.x_root),
-            int(event.y_root), 
+            int(event.y_root),
             event.time,
         )
     def keyPress(self, arg, event):

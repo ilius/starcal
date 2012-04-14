@@ -1,6 +1,6 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-#        
+#
 # Copyright (C) 2009-2011 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
 # Based on program "pygme-0.0.6", writen by Vinay Reddy <vinayvinay@gmail.com>
 #
@@ -9,7 +9,7 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful, 
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
@@ -29,14 +29,14 @@ try:
     import fcntl
 except:
     pass
-    
+
 
 ## Control
 SEEK_TIME_SMALL = 10 # in seconds
 
 ## Mplayer
 STATUS_UPDATE_TIMEOUT = 1000
-VOLUME_STEP = 5 
+VOLUME_STEP = 5
 
 class MPlayer:
     pbox, mplayerIn, mplayerOut = None, None, None
@@ -58,13 +58,13 @@ class MPlayer:
 
         cmd = 'mplayer ' + mplayerOptions + ' -quiet -slave \'' + path + '\''# 2>/dev/null'
         self.mplayerIn, self.mplayerOut = os.popen2(cmd) #open pipes
-        
+
         try:
             #set mplayerOut to non-blocking mode
             fcntl.fcntl(self.mplayerOut, fcntl.F_SETFL, os.O_NONBLOCK)
         except NameError:
             return
-        
+
         self.startHandleEof()
         self.startStatusQuery()
         #if self.mplayerIn!=None:
@@ -76,7 +76,7 @@ class MPlayer:
     def getLength(self):
         self.cmd('get_time_length')
         sleep(0.1)
-        
+
         status = None
         try: # get the last line of output
             for status in self.mplayerOut:
@@ -98,8 +98,8 @@ class MPlayer:
 
     # Toggle between play and pause
     def pause(self):
-        if not self.mplayerIn: 
-            return 
+        if not self.mplayerIn:
+            return
         if self.cmd('pause'):
             if self.paused:
                 self.startStatusQuery()
@@ -130,19 +130,19 @@ class MPlayer:
             print 'Cannot set volume: %s'%message
 
     # Change volume by the amount specified
-    # Changing the adjustment automatically updates 
+    # Changing the adjustment automatically updates
     # the range widget and increases the vol
     def stepVolume(self, increase):
         if increase:
             self.pbox.volAdj.value += VOLUME_STEP
             if self.pbox.volAdj.value > 100:
-                self.pbox.volAdj.value = 100 
+                self.pbox.volAdj.value = 100
 
         else:
             if self.pbox.volAdj.value <= VOLUME_STEP:
                 self.pbox.volAdj.value = 0
             else:
-                self.pbox.volAdj.value -= VOLUME_STEP 
+                self.pbox.volAdj.value -= VOLUME_STEP
     # Close mplayer
     def close(self):
         if self.paused:
@@ -155,7 +155,7 @@ class MPlayer:
         try:
             self.mplayerIn.close()
             self.mplayerOut.close()
-        except StandardError: 
+        except StandardError:
             pass
         self.mplayerIn, self.mplayerOut = None, None
         self.playTime = None
@@ -163,7 +163,7 @@ class MPlayer:
         #self.pbox.seekBar.set_sensitive(False)
         #self.pbox.fcb.set_sensitive(True)
     def cmd(self, command):
-        if not self.mplayerIn: 
+        if not self.mplayerIn:
             return False
         try:
             self.mplayerIn.write(command + '\n')
@@ -190,7 +190,7 @@ class MPlayer:
             return True
 
         self.pbox.seekAdj.value = int(status.replace('ANS_PERCENT_POSITION=', ''))
-        
+
         return True
 
     # Handle EOF in mplayerOut
@@ -212,7 +212,7 @@ class MPlayer:
         print 'start'
         self.statusQuery = gobject.timeout_add(STATUS_UPDATE_TIMEOUT, self.queryStatus)
 
-    # Stop calling the function that fetches status periodically 
+    # Stop calling the function that fetches status periodically
     def stopStatusQuery(self):
         gobject.source_remove(self.statusQuery)
 
@@ -305,7 +305,7 @@ class PlayerBox(gtk.HBox):
             return str(int(value)) + '% of ' #+ self.playlist.getCurrentSongTime()
         else:
             return str(int(value)) + '%'
-    def seek(self, widget, event):# Seek on changing the seekBar 
+    def seek(self, widget, event):# Seek on changing the seekBar
         #print 'seek', self.seekAdj.value, self.mplayer.mplayerIn
         if not self.mplayer.mplayerIn:
             print 'abc'
@@ -340,7 +340,7 @@ class PlayerBox(gtk.HBox):
         playing = bool(self.mplayer.mplayerIn)
         self.fcb.set_sensitive(not playing)
         self.seekBar.set_sensitive(playing)
-    def stop(self, button):# Stop mplayer if it's running 
+    def stop(self, button):# Stop mplayer if it's running
         self.mplayer.close()
         self.playPauseBut.set_image(gtk.image_new_from_stock(gtk.STOCK_MEDIA_PLAY,gtk.ICON_SIZE_SMALL_TOOLBAR))
         self.fcb.set_sensitive(self.mplayer.mplayerIn==None)

@@ -107,7 +107,7 @@ def exportEvent(event):
         if key=='DTSTART':
             gevent['start'] = decodeIcsStartEnd(value)
         elif key=='DTEND':
-            gevent['end'] = decodeIcsStartEnd(value)          
+            gevent['end'] = decodeIcsStartEnd(value)
         elif key in ('RRULE', 'RDATE', 'EXRULE', 'EXDATE'):
             if not 'recurrence' in gevent:
                 gevent['recurrence'] = []
@@ -116,7 +116,7 @@ def exportEvent(event):
             gevent['transparency'] = value.lower()
         #elif key=='CATEGORIES':
     return gevent
-    
+
 #def exportToEvent(event, group, gevent):## FIXME
 
 
@@ -370,7 +370,7 @@ class GoogleAccount(Account):
                 print '---------- event %s can not be pushed'%event.summary
                 continue
             setEtag(gevent)
-            #print 'etag = %r'%gevent['etag']            
+            #print 'etag = %r'%gevent['etag']
             gevent.update({
                 'calendarId': remoteGroupId,
                 'sequence': group.index(event.id),
@@ -429,8 +429,8 @@ if __name__=='__main__':
     group.remoteIds = (account.id, remoteGroupId)
     account.sync(group, remoteGroupId)
 
-    
-    
-    
+
+
+
 
 

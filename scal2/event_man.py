@@ -188,7 +188,7 @@ class Occurrence(EventBaseClass):
         raise NotImplementedError
     def getEndEpoch(self):
         raise NotImplementedError
-    
+
 
 class JdListOccurrence(Occurrence):
     name = 'jdList'
@@ -570,7 +570,7 @@ class DateEventRule(EventRule):
                 ]
             )
         else:
-            return TimeRangeListOccurrence()        
+            return TimeRangeListOccurrence()
     def changeMode(self, mode):
         self.date = convert(self.date[0], self.date[1], self.date[2], self.getMode(), mode)
         return True
@@ -716,7 +716,7 @@ class DurationEventRule(EventRule):
             return TimeRangeListOccurrence([])
         else:
             return TimeRangeListOccurrence([(startEpoch, endEpoch)])
-        
+
 @classes.rule.register
 class CycleDaysEventRule(EventRule):
     name = 'cycleDays'
@@ -1447,7 +1447,7 @@ class YearlyEvent(Event):
         self.mode = DATE_GREG
         return True
 
-#@classes.event.register        
+#@classes.event.register
 #class UniversityCourseOwner(Event):## FIXME
 
 @classes.event.register
@@ -1591,7 +1591,7 @@ class EventContainer(JsonEventBaseClass):
             raise TypeError('invalid key type %r give to EventContainer.__getitem__'%key)
     def __init__(self):
         self.mode = core.primaryMode
-        self.idList = [] 
+        self.idList = []
         self.title = 'Untitled'
         self.icon = ''
         self.showFullEventDesc = False
@@ -1771,8 +1771,8 @@ class EventGroup(EventContainer, RuleContainer):
             'enable', 'color', 'eventCacheSize',
             ## 'defaultEventType'
         ):
-            data[attr] = getattr(self, attr)  
-        return data      
+            data[attr] = getattr(self, attr)
+        return data
     def getData(self):
         data = self.getBasicData()
         data['remoteIds'] = self.remoteIds
@@ -2051,7 +2051,7 @@ class UniversityTerm(EventGroup):
         ## data[weekDay][intervalIndex] = {'name': 'Course Name', 'weekNumMode': 'odd'}
         ###
         if currentWeekOnly:
-            currentJd = core.getCurrentJd()            
+            currentJd = core.getCurrentJd()
             if ( getAbsWeekNumberFromJd(currentJd) -  getAbsWeekNumberFromJd(self['start'].getJd()) ) % 2 == 1:
                 currentWeekNumMode = 'odd'
             else:
@@ -2168,7 +2168,7 @@ class JsonObjectsHolder(JsonEventBaseClass):
     __len__ = lambda self: len(self.idList)
     index = lambda self, _id: self.idList.index(_id) ## or get object instead of obj_id? FIXME
     __getitem__ = lambda self, _id: self.byId.__getitem__(_id)
-    #byIndex = lambda 
+    #byIndex = lambda
     __setitem__ = lambda self, _id, group: self.byId.__setitem__(_id, group)
     def insert(self, index, obj):
         assert not obj.id in self.idList
@@ -2266,8 +2266,8 @@ class EventGroupsHolder(JsonObjectsHolder):
         return newGroups
     importJsonFile = lambda self, fpath: self.importData(jsonToData(open(fpath, 'rb').read()))
 
-        
-        
+
+
 
 class EventAccountsHolder(JsonObjectsHolder):
     file = join(confDir, 'event', 'account_list.json')
@@ -2418,7 +2418,7 @@ class Account(JsonEventBaseClass):
         self.enable = True
         self.title = 'Account'
         self.remoteGroups = []## a list of dictionarise {'id':..., 'title':...}
-        self.status = None## {'action': 'pull', 'done': 10, 'total': 20} 
+        self.status = None## {'action': 'pull', 'done': 10, 'total': 20}
         ## action values: 'fetchGroups', 'pull', 'push'
     def setId(self, aid=None):
         if aid is None or aid<0:

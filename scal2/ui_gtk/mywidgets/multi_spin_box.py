@@ -202,7 +202,7 @@ class MultiSpinBox(gtk.HBox):
             else:
                 [j, np] = nfound[0]
                 nums[j] = text[p:p2].strip()
-                nfound = []    
+                nfound = []
                 nums.append('')
             p = p2 + len(self.sep[i])
         if p2==-1:

@@ -84,7 +84,7 @@ def importConfigFrom15(overwrite=True):
             open(locale_conf, 'w').write('lang=%r'%lang)
         core_conf = join(confDir, 'core.conf')
         if overwrite or not isfile(core_conf):
-            
+
             open(core_conf, 'w').write(\
 '''
 holidayWeekDays=%r
@@ -95,7 +95,7 @@ weekNumberMode=%r'''%(holidayWeekDays, firstWeekDayAuto, firstWeekDay, weekNumbe
         ui_conf = join(confDir, 'ui.conf')
         if overwrite or not isfile(ui_conf):
             shownCals = shownDates
-            
+
             for item in shownDates:
                 item['font'] = gfontDecode(item['font'])
                 item['color'] = gdkColorToRgb(item['color'])
@@ -110,11 +110,11 @@ weekNumberMode=%r'''%(holidayWeekDays, firstWeekDayAuto, firstWeekDay, weekNumbe
             inactiveColor = gdkColorToRgb(inactiveColor) + (inactiveColorAlpha/257,)
             cursorOutColor = gdkColorToRgb(cursorOutColor)
             cursorBgColor = gdkColorToRgb(cursorBgColor) + (cursorBgAlpha/257,)
-            
+
             pluginsTextTray = extradayTray
             maxDayCacheSize = maxCache*30
             maxWeekCacheSize = maxCache*4
-        
+
             text = ''
             for name in (
                 'shownCals',

@@ -189,7 +189,7 @@ class TextPlug(BasePlugin, TextPlugUI):
         if text!='':
             if c.pluginsText!='':
                 c.pluginsText += '\n'
-            c.pluginsText += text    
+            c.pluginsText += text
 
 
 if __name__=='__main__':
@@ -204,7 +204,7 @@ if __name__=='__main__':
     dialog.resize(600, 600)
     print dialog.run()
     #gtk.main()
-    
+
 
 
 

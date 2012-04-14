@@ -22,11 +22,11 @@ class EventTagsAndIconSelect(gtk.HBox):
         ###
         cell = gtk.CellRendererPixbuf()
         combo.pack_start(cell, False)
-        combo.add_attribute(cell, 'pixbuf', 0)  
+        combo.add_attribute(cell, 'pixbuf', 0)
         ###
         cell = gtk.CellRendererText()
         combo.pack_start(cell, True)
-        combo.add_attribute(cell, 'text', 1)  
+        combo.add_attribute(cell, 'text', 1)
         ###
         ls.append([None, _('Custom')])## first or last FIXME
         for item in ui.eventTags:
@@ -39,7 +39,7 @@ class EventTagsAndIconSelect(gtk.HBox):
         hbox.pack_start(combo, 0, 0)
         self.typeCombo = combo
         self.typeStore = ls
-        
+
         ###
         vbox = gtk.VBox()
         vbox.pack_start(hbox, 0, 0)

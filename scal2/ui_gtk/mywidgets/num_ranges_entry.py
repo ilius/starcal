@@ -102,7 +102,7 @@ class NumRangesEntry(gtk.Entry):
         self.select_region(
             startI,
             endI - len(thisNumStr) + len(newNumStr),
-        )            
+        )
     def keyPress(self, obj, event):
         kval = event.keyval
         kname = gdk.keyval_name(event.keyval).lower()
@@ -165,7 +165,7 @@ class NumRangesEntry(gtk.Entry):
     )
     validate = lambda self: self.setValues(self.getValues())
 
-        
+
 type_register(NumRangesEntry)
 
 if __name__=='__main__':
@@ -177,6 +177,6 @@ if __name__=='__main__':
     win.vbox.show_all()
     win.resize(100, 40)
     win.run()
-    
-    
+
+
 

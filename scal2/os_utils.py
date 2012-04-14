@@ -7,7 +7,7 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful, 
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
@@ -22,7 +22,7 @@ from os.path import isdir, isfile
 import platform
 
 def getOsName():## 'linux', 'win', 'mac', 'unix'
-    psys = platform.system().lower()## 'linux', 'windows', 'darwin', ... 
+    psys = platform.system().lower()## 'linux', 'windows', 'darwin', ...
     if psys=='linux':
         return 'linux'
     elif psys=='windows':
@@ -160,6 +160,6 @@ def goodkill(pid, interval=1, hung=20):
             return
         if dead(pid):
             return
-        sleep(interval) 
+        sleep(interval)
 
 

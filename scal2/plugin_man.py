@@ -7,7 +7,7 @@
 # the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful, 
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
@@ -101,7 +101,7 @@ class BasePlugin:
         if text!='':
             if c.pluginsText!='':
                 c.pluginsText += '\n'
-            c.pluginsText += text    
+            c.pluginsText += text
     def exportToIcs(self, fileName, startJd, endJd):
         currentTimeStamp = strftime(icsTmFormat)
         self.load() ## FIXME
@@ -242,7 +242,7 @@ class HolidayPlugin(BasePlugin):
         icsText += 'END:VCALENDAR\n'
         open(fileName, 'w').write(icsText)
     #def getJdList(self, startJd, endJd):
-        
+
 
 
 
@@ -381,7 +381,7 @@ class BuiltinTextPlugin(BasePlugin):
                 text += '\n'
             if self.show_date:
                 text2 = '%s %s %s: %s'%(_(day), getMonthName(mode, month, year), _(year), text2)
-                    
+
             text += text2
         return text
     #def pref_str(self):
