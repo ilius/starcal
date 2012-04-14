@@ -8,7 +8,7 @@
 # the Free Software Foundation; either version 3 of the License,    or
 # (at your option) any later version.
 #
-# This program is distributed in the hope that it will be useful, 
+# This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
 # GNU General Public License for more details.
@@ -62,7 +62,7 @@ from gtk import gdk
 
 from scal2.ui_gtk.utils import hideList, showList, set_tooltip, imageFromFile, setupMenuHideOnLeave, \
                                labelStockMenuItem, labelImageMenuItem, modify_bg_all
-                               
+
 from scal2.ui_gtk.color_utils import rgbToGdkColor
 from scal2.ui_gtk import listener
 import scal2.ui_gtk.export
@@ -480,7 +480,7 @@ class DateLabel(gtk.Label):
 
 
 
-## What is "GTK Window Decorator" ?????????? 
+## What is "GTK Window Decorator" ??????????
 class WinController(gtk.HBox):
     BUTTON_MIN         = 0
     BUTTON_MAX         = 1
@@ -900,7 +900,7 @@ class StatusBox(gtk.HBox, MainWinItem):
         sbar = gtk.Statusbar()
         if rtl:
             self.set_direction(gtk.TEXT_DIR_LTR)
-            sbar.set_direction(gtk.TEXT_DIR_LTR) 
+            sbar.set_direction(gtk.TEXT_DIR_LTR)
         sbar.set_property('width-request', 18)
         sbar.connect('button-press-event', self.mainWin.startResize)
         self.pack_start(sbar, 0, 0)
@@ -1011,6 +1011,28 @@ class EventViewMainWinItem(DayOccurrenceView, MainWinItem):## FIXME
 class MainWin(gtk.Window):
     timeout = 1 ## second
     setMinHeight = lambda self: self.resize(ui.winWidth, 2)
+    '''
+    def do_realize(self):
+        self.set_flags(self.flags() | gtk.REALIZED)
+        self.window = gdk.Window(
+            self.get_parent_window(),
+            width=self.allocation.width,
+            height=self.allocation.height,
+            window_type=gdk.WINDOW_TOPLEVEL,
+            wclass=gdk.INPUT_OUTPUT,
+            event_mask=self.get_events() \
+                | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK
+                | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK
+        )
+        self.window.set_user_data(self)
+        self.style.attach(self.window)#?????? Needed??
+        self.style.set_background(self.window, gtk.STATE_NORMAL)
+        self.window.move_resize(*self.allocation)
+        self.window.set_decorations(gdk.DECORE_CLOSE)
+        self.window.set_functions(gdk.FUNC_CLOSE)
+    '''
+    #def maximize(self):
+    #    pass
     def __init__(self, trayMode=3):
         ui.mainWin = self
         gtk.Window.__init__(self)##, gtk.WINDOW_POPUP) ## ????????????
@@ -1038,6 +1060,8 @@ class MainWin(gtk.Window):
         self.set_property('skip-taskbar-hint', not ui.winTaskbar) ## self.set_skip_taskbar_hint  ## FIXME
         self.set_role('starcal2')
         #self.set_focus_on_map(True)#????????
+        #self.set_type_hint(gdk.WINDOW_TYPE_HINT_NORMAL)
+        #self.connect('realize', self.onRealize)
         self.set_default_size(ui.winWidth, 1)
         try:
             self.move(ui.winX, ui.winY)
@@ -1064,7 +1088,7 @@ class MainWin(gtk.Window):
         ## Compiz does not send configure-event(or any event) when MOVING window(sends in last point,
         ## when moving completed)
         #self.connect('drag-motion', show_event)
-        rootWindow.set_events(...     
+        rootWindow.set_events(...
         rootWindow.add_filter(self.onRootWinEvent)
         #self.realize()
         #gdk.flush()
@@ -1494,7 +1518,7 @@ class MainWin(gtk.Window):
         core.focusTime = time()    ## needed?????
         menu = gtk.Menu()
         if os.sep == '\\':
-            setupMenuHideOnLeave(menu)        
+            setupMenuHideOnLeave(menu)
         items = [
             labelStockMenuItem('Copy _Time', gtk.STOCK_COPY, self.copyTime),
             labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday),

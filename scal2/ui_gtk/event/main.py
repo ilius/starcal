@@ -304,7 +304,8 @@ class WizardWindow(gtk.Window):
         ####
         self.buttonBox = gtk.HButtonBox()
         self.buttonBox.set_layout(gtk.BUTTONBOX_END)
-        self.buttonBox.set_spacing(20)
+        self.buttonBox.set_spacing(15)
+        self.buttonBox.set_border_width(15)
         self.vbox.pack_start(self.buttonBox, 0, 0)
         ####
         self.showStep(0)
@@ -338,6 +339,11 @@ class EventsImportWindow(WizardWindow):
     def __init__(self, manager):
         self.manager = manager
         WizardWindow.__init__(self, _('Import Events'))
+        self.set_type_hint(gdk.WINDOW_TYPE_HINT_DIALOG)
+        #self.set_property('skip-taskbar-hint', True)
+        #self.set_modal(True)
+        #self.set_transient_for(manager)
+        #self.set_destroy_with_parent(True)
         self.resize(400, 200)
     class FirstStep(gtk.VBox):
         def __init__(self, win):
@@ -729,6 +735,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         self.set_title(_('Event Manager'))
         self.resize(600, 300)
         self.connect('delete-event', self.onDeleteEvent)
+        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_NORMAL)
         ##
         okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
         if ui.autoLocale:
