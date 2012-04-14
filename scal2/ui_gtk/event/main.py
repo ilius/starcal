@@ -1409,7 +1409,7 @@ ui.eventTrash.load()
 
 
 
-import scal2.ui_gtk.event.importer ## opens a dialog is neccessery
+import scal2.ui_gtk.event.import_customday ## opens a dialog if neccessery
     
 
 def testCustomEventEditor():
