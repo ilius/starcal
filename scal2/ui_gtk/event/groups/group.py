@@ -10,6 +10,7 @@ from scal2 import event_man
 from scal2 import ui
 
 from scal2.ui_gtk.event import common
+from scal2.ui_gtk.utils import set_tooltip
 
 import gtk
 from gtk import gdk
@@ -80,6 +81,16 @@ class GroupWidget(gtk.VBox):
         hbox.pack_start(spin, 0, 0)
         self.cacheSizeSpin = spin
         self.pack_start(hbox, 0, 0)
+		#####
+        hbox = gtk.HBox()
+        label = gtk.Label(_('Event Text Seperator'))
+        label.set_alignment(0, 0.5)
+        hbox.pack_start(label, 0, 0)
+        self.sizeGroup.add_widget(label)
+        self.sepEntry = gtk.Entry()
+        hbox.pack_start(self.sepEntry, 1, 1)
+        self.pack_start(hbox, 0, 0)
+        set_tooltip(hbox, _('Using to seperate Summary and Description when displaying event'))
         #####
         #hbox = gtk.HBox()
         #label = gtk.Label(_('Show Full Event Description'))
@@ -95,6 +106,7 @@ class GroupWidget(gtk.VBox):
         self.iconSelect.set_filename(self.group.icon)
         self.modeCombo.set_active(self.group.mode)
         self.cacheSizeSpin.set_value(self.group.eventCacheSize)
+        self.sepEntry.set_text(self.group.eventTextSep)
         #self.showFullEventDescCheck.set_active(self.group.showFullEventDesc)
     def updateVars(self):
         self.group.title = self.titleEntry.get_text()
@@ -102,5 +114,6 @@ class GroupWidget(gtk.VBox):
         self.group.icon = self.iconSelect.get_filename()
         self.group.mode = self.modeCombo.get_active()
         self.group.eventCacheSize = int(self.cacheSizeSpin.get_value())
+        self.group.eventTextSep = self.sepEntry.get_text()
         #self.group.showFullEventDesc = self.showFullEventDescCheck.get_active()
 

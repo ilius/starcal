@@ -447,6 +447,9 @@ weekNumberMode = 7
 ################################################################################
 ################################################################################
 
+useCompactJson = False## FIXME
+eventTextSep = ': ' ## use to seperate summary from description for display
+
 #confPathDef = '/etc/%s/core.conf'%APP_NAME ## ????????????????????????
 #if isfile(confPathDef):## ????????????????????????
 #    try:
@@ -505,6 +508,5 @@ lastEventId = 0
 lastEventGroupId = 0
 lastEventAccountId = 0
 
-useCompactJson = False## FIXME
 dataToJson =  lambda data: dataToCompactJson(data) if useCompactJson else dataToPrettyJson(data)
 

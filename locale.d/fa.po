@@ -995,6 +995,14 @@ msgid "Event Cache Size"
 msgstr ""
 "اندازهٔ cache رویدادها"
 
+msgid "Event Text Seperator"
+msgstr ""
+"جداکنندهٔ متن رویداد"
+
+msgid "Using to seperate Summary and Description when displaying event"
+msgstr ""
+"برای جدا کردن خلاصه و توضیح رویداد هنگاه نمایش رویداد استفاده می‌شود"
+
 
 
 

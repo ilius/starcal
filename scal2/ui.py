@@ -632,7 +632,7 @@ ntpServers = (
 
 
 #####################
-dailyNoteChDateOnEdit = True ## change date of a dailyNoteEvent when editing it
+#dailyNoteChDateOnEdit = True ## change date of a dailyNoteEvent when editing it
 #####################
 focusTime = 0
 lastLiveConfChangeTime = 0

@@ -1086,7 +1086,16 @@ class Event(JsonEventBaseClass, RuleContainer):
                 _('File') + ': ' + fname,
             ))
         return data
-    getText = lambda self: self.summary if self.summary else self.description
+    #getText = lambda self: self.summary if self.summary else self.description
+    def getText(self):## FIXME
+    	sep = self.group.eventTextSep if self.group else core.eventTextSep
+        if self.summary:
+            if self.description:
+                return '%s%s%s'%(self.summary, sep, self.description)
+            else:
+                return self.summary
+        else:
+            return self.description
     def setId(self, eid=None):
         if eid is None or eid<0:
             eid = core.lastEventId + 1 ## FIXME
@@ -1717,6 +1726,7 @@ class EventGroup(EventContainer, RuleContainer):
         else:
             self.defaultEventType = 'custom'
         self.eventCacheSize = 0
+        self.eventTextSep = core.eventTextSep
         #####
         self.eventCache = {} ## from eid to event object
         self.clearRules()
@@ -1753,7 +1763,7 @@ class EventGroup(EventContainer, RuleContainer):
     def copyFrom(self, other):
         EventContainer.copyFrom(self, other)
         for attr in (
-            'enable', 'color', 'eventCacheSize',
+            'enable', 'color', 'eventCacheSize', 'eventTextSep',
             'remoteIds', 'remoteSyncData', 'eventIdByRemoteIds'
         ):#'defaultEventType'
             setattr(
@@ -1768,7 +1778,7 @@ class EventGroup(EventContainer, RuleContainer):
         data['type'] = self.name
         data['rules'] = self.getRulesData()
         for attr in (
-            'enable', 'color', 'eventCacheSize',
+            'enable', 'color', 'eventCacheSize', 'eventTextSep',
             ## 'defaultEventType'
         ):
             data[attr] = getattr(self, attr)
@@ -1784,7 +1794,7 @@ class EventGroup(EventContainer, RuleContainer):
         if 'id' in data:
             self.setId(data['id'])
         for attr in (
-            'enable', 'color', 'eventCacheSize',
+            'enable', 'color', 'eventCacheSize', 'eventTextSep',
             ## 'defaultEventType'
         ):
             try:
