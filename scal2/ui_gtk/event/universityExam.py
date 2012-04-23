@@ -155,6 +155,9 @@ class EventWidget(gtk.VBox):
         ####
         self.notificationBox.updateVars()
         self.event.updateSummary()
-
+    def modeComboChanged(self, obj=None):## overwrite method from common.EventWidget
+        newMode = self.modeCombo.get_active()
+        self.dateInput.changeMode(self.event.mode, newMode)
+        self.event.mode = newMode
 
 

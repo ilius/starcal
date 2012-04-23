@@ -120,6 +120,7 @@ class GroupWidget(gtk.VBox):
         hbox.pack_start(self.endDateInput, 0, 0)
         self.pack_start(hbox, 0, 0)
         ###
+        self.modeCombo.connect('changed', self.modeComboChanged)## right place? before updateWidget? FIXME
     def updateWidget(self):
         self.titleEntry.set_text(self.group.title)
         self.colorButton.set_color(self.group.color)
@@ -128,8 +129,8 @@ class GroupWidget(gtk.VBox):
         self.cacheSizeSpin.set_value(self.group.eventCacheSize)
         self.sepEntry.set_text(self.group.eventTextSep)
         #self.showFullEventDescCheck.set_active(self.group.showFullEventDesc)
-        self.startDateInput.set_date(self.group['start'].date)
-        self.endDateInput.set_date(self.group['end'].date)
+        self.startDateInput.set_date(jd_to(self.group.startJd, self.group.mode))
+        self.endDateInput.set_date(jd_to(self.group.endJd, self.group.mode))
     def updateVars(self):
         self.group.title = self.titleEntry.get_text()
         self.group.color = self.colorButton.get_color()
@@ -138,12 +139,11 @@ class GroupWidget(gtk.VBox):
         self.group.eventCacheSize = int(self.cacheSizeSpin.get_value())
         self.group.eventTextSep = self.sepEntry.get_text()
         #self.group.showFullEventDesc = self.showFullEventDescCheck.get_active()
-        ##
-        startRule = self.group['start']
-        startRule.date = self.startDateInput.get_date()
-        startRule.time = (0, 0, 0)
-        ##
-        endRule = self.group['end']
-        endRule.date = self.endDateInput.get_date()
-        endRule.time = (24, 0, 0) ## FIXME
+        self.group.startJd = self.startDateInput.get_jd(self.group.mode)
+        self.group.endJd = self.endDateInput.get_jd(self.group.mode)
+    def modeComboChanged(self, obj=None):## FIXME
+        newMode = self.modeCombo.get_active()
+        self.startDateInput.changeMode(self.group.mode, newMode)
+        self.endDateInput.changeMode(self.group.mode, newMode)
+        self.group.mode = newMode
 

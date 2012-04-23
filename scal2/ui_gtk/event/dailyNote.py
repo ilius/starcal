@@ -32,10 +32,9 @@ class EventWidget(common.EventWidget):
     def updateVars(self):
         common.EventWidget.updateVars(self)
         self.event.setDate(*self.dateInput.get_date())
-    def modeComboChanged(self, combo):## overwrite method from common.EventWidget
-        newMode = combo.get_active()
-        y, m, d = self.dateInput.get_date()
-        self.dateInput.set_date(convert(y, m, d, self.event.mode, newMode))
+    def modeComboChanged(self, obj=None):## overwrite method from common.EventWidget
+        newMode = self.modeCombo.get_active()
+        self.dateInput.changeMode(self.event.mode, newMode)
         self.event.mode = newMode
 
 

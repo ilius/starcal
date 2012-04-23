@@ -138,13 +138,13 @@ class EventWidget(gtk.VBox):
             pass
         else:
             filesBox.updateWidget()
-        self.modeComboChanged(self.modeCombo)
+        self.modeComboChanged()
     def updateVars(self):
         self.event.mode = self.modeCombo.get_active()
         self.event.summary = self.summuryEntry.get_text()
         self.event.description = buffer_get_text(self.descriptionBuff)
         self.event.icon = self.iconSelect.get_filename()
-    def modeComboChanged(self, combo):## FIXME
+    def modeComboChanged(self, obj=None):## FIXME
         pass
 
 
@@ -426,16 +426,16 @@ class EventEditorDialog(gtk.Dialog):
         self.activeWidget = event.makeWidget()
         self.vbox.pack_start(self.activeWidget, 0, 0)
         self.vbox.show()
-    def dateModeChanged(self, combo):
-        pass
     def typeChanged(self, combo):
         if self.activeWidget:
+            self.activeWidget.updateVars()
             self.activeWidget.destroy()
         eventType = self._group.acceptsEventTypes[combo.get_active()]
         self.event = self._group.copyEventWithType(self.event, eventType)
         self._group.updateCache(self.event)## needed? FIXME
         self.activeWidget = self.event.makeWidget()
         self.vbox.pack_start(self.activeWidget, 0, 0)
+        #self.activeWidget.modeComboChanged()## apearantly not needed
     def run(self):
         #if not self.activeWidget:
         #    return None

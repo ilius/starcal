@@ -108,7 +108,11 @@ class EventWidget(common.EventWidget):
             )
         ###
         self.notificationBox.updateVars()
-
+    def modeComboChanged(self, obj=None):## overwrite method from common.EventWidget
+        newMode = self.modeCombo.get_active()
+        self.startDateInput.changeMode(self.event.mode, newMode)
+        self.endDateInput.changeMode(self.event.mode, newMode)
+        self.event.mode = newMode
 
 
 

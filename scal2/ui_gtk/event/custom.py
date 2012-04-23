@@ -112,8 +112,8 @@ class EventWidget(common.EventWidget):
         common.EventWidget.updateVars(self)
         self.updateRules()
         self.notificationBox.updateVars()
-    def modeComboChanged(self, combo):## overwrite method from common.EventWidget
-        newMode = combo.get_active()
+    def modeComboChanged(self, obj=None):## overwrite method from common.EventWidget
+        newMode = self.modeCombo.get_active()
         for hbox in self.rulesBox.get_children():
             widget = hbox.inputWidget
             if hasattr(widget, 'changeMode'):

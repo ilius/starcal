@@ -25,6 +25,8 @@ from gtk import gdk
 
 from scal2.locale_man import numEncode, numDecode
 
+from scal2.cal_modules import to_jd, jd_to, convert
+
 class MultiSpinButton(gtk.SpinButton):
     #from gtk import SpinButton, TEXT_DIR_LTR
     def __init__(self, mins, maxs, fields, sep, nums=None, lang='en', arrow_select=True):##force_select=False
@@ -313,6 +315,11 @@ class DateButton(MultiSpinButton):
         MultiSpinButton.__init__(self, mins=(0,1,1), maxs=(9999,12,31), fields=(4,2,2), sep=(u'/', u'/'), nums=date, **kwargs)
         self.get_date = self.get_nums
         self.set_date = self.set_nums
+    def get_jd(self, mode):
+        y, m, d = self.get_date()
+        return to_jd(y, m, d, mode)
+    changeMode = lambda self, fromMode, toMode: self.set_date(jd_to(self.get_jd(fromMode), toMode))
+    
 
 class YearMonthButton(MultiSpinButton):
     def __init__(self, date=None, **kwargs):

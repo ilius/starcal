@@ -1001,14 +1001,7 @@ class Event(JsonEventBaseClass, RuleContainer):
     @classmethod
     def getDefaultIcon(cls):
         return join(pixDir, 'event', cls.iconName+'.png') if cls.iconName else ''
-    def getRule(self, key):
-        try:
-            return self.rulesOd[key]
-        except KeyError:
-            try:
-                return self.group.rulesOd[key]
-            except (KeyError, AttributeError):
-                raise KeyError('Event %s has no rule %s'%(self.id, key))
+    getRule = lambda self, key:  self.rulesOd[key]
     __getitem__ = lambda self, key: self.getRule(key)
     __setitem__ = lambda self, key, value: self.setRule(key, value)
     __iter__ = lambda self: self.rulesOd.itervalues()
@@ -1129,6 +1122,8 @@ class Event(JsonEventBaseClass, RuleContainer):
     def save(self):
         makeDir(self.dir)
         JsonEventBaseClass.save(self)
+    getJd = lambda self: None
+    setJd = lambda self, jd: None
     def copyFrom(self, other):## FIXME
         for attr in ('mode', 'icon', 'summary', 'description'):# 'showInTimeLine'
             setattr(
@@ -1141,6 +1136,11 @@ class Event(JsonEventBaseClass, RuleContainer):
         self.notifiers = other.notifiers[:]## FIXME
         self.copyRulesFrom(other)
         self.addRequirements()
+        ####
+        ## copy dates between different rule types in different event types
+        jd = other.getJd()
+        if jd is not None:
+            self.setJd(jd)
     def getData(self):
         data = {
             'type': self.name,
@@ -1178,12 +1178,8 @@ class Event(JsonEventBaseClass, RuleContainer):
     #def load(self):## skipRules arg for use in ui_gtk/event/notify.py ## FIXME
     getNotifiersData = lambda self: [(notifier.name, notifier.getData()) for notifier in self.notifiers]
     getNotifiersDict = lambda self: dict(self.getNotifiersData())
-    def getRulesWithGroup(self):
-        rulesOd = self.group.rulesOd.copy()
-        rulesOd.update(self.rulesOd)
-        return rulesOd.values()
     def calcOccurrenceForJdRange(self, startJd, endJd):## float jd ## cache Occurrences ## FIXME
-        rules = self.getRulesWithGroup()
+        rules = self.rulesOd.values()
         if not rules:
             return JdListOccurrence()
         startEpoch = getEpochFromJd(startJd)
@@ -1302,24 +1298,11 @@ class TaskEvent(Event):
         else:
             return self['start'].getEpoch() + rule.getSeconds()
         raise ValueError('no end date neither duration specified for task')
+    getJd = lambda self: self['start'].getJd()
+    setJd = lambda self, jd: self['start'].setJd(jd)
     def copyFrom(self, other):
         Event.copyFrom(self, other)
         myStartRule = self['start']
-        ##
-        date = list(myStartRule.date)
-        try:
-            date[0] = other['year'].year
-        except KeyError:
-            pass
-        try:
-            date[1] = other['month'].month
-        except KeyError:
-            pass
-        try:
-            date[2] = other['day'].day
-        except KeyError:
-            pass
-        myStartRule.date = tuple(date)
         ##
         try:
             myStartRule.time = other['dayTime'].dayTime
@@ -1371,24 +1354,6 @@ class DailyNoteEvent(Event):
     setJd = lambda self, jd: self['date'].setJd(jd)
     def setDefaults(self):
         self.setDate(*core.getSysDate(self.mode))
-    def copyFrom(self, other):
-        Event.copyFrom(self, other)
-        rule = self['date']
-        try:
-            rule.date = other['start'].date
-        except KeyError:
-            try:
-                rule.date[0] = other['year'].values[0]
-            except:
-                pass
-            try:
-                rule.date[1] = other['month'].values[0]
-            except:
-                pass
-            try:
-                rule.date[2] = other['day'].values[0]
-            except:
-                pass
     def calcOccurrenceForJdRange(self, startJd, endJd):## float jd
         jd = self.getJd()
         return JdListOccurrence([jd] if startJd <= jd < endJd else [])
@@ -1419,15 +1384,15 @@ class YearlyEvent(Event):
         (y, m, d) = core.getSysDate(self.mode)
         self.setMonth(m)
         self.setDay(d)
-    def copyFrom(self, other):
-        Event.copyFrom(self, other)
-        try:
-            (y, m, d) = other['start'].date
-        except KeyError:
-            pass
-        else:
-            self.setMonth(m)
-            self.setDay(d)
+    def getJd(self):## used only for copyFrom
+        y, m, d = core.getSysDate(self.mode)
+        m = self.getMonth()
+        d = self.getDay()
+        return to_jd(y, m, d, self.mode)
+    def setJd(self, jd):## used only for copyFrom
+        y, m, d = jd_to(jd, self.mode)
+        self.setMonth(m)
+        self.setDay(d)
     def calcOccurrenceForJdRange(self, startJd, endJd):## float jd
         mode = self.mode
         month = self.getMonth()
@@ -1690,11 +1655,9 @@ class EventContainer(JsonEventBaseClass):
 
 
 @classes.group.register
-class EventGroup(EventContainer, RuleContainer):
+class EventGroup(EventContainer):
     name = 'group'
     desc = _('Event Group')
-    requiredRules = ('start', 'end')
-    supportedRules = ('start', 'end')
     acceptsEventTypes = ('yearly', 'dailyNote', 'task', 'custom')
     actions = []## [('Export to ICS', 'exportToIcs')]
     eventActions = [] ## FIXME
@@ -1717,9 +1680,9 @@ class EventGroup(EventContainer, RuleContainer):
         )
         self.idList = sorted(self.idList, cmp=eid_cmp, reverse=reverse)
     def __getitem__(self, key):
-        if isinstance(key, basestring):## ruleName
-            return self.getRule(key)
-        elif isinstance(key, int):## eventId
+        #if isinstance(key, basestring):## ruleName
+        #    return self.getRule(key)
+        if isinstance(key, int):## eventId
             return self.getEvent(key)
         else:
             raise TypeError('invalid key type %r give to EventGroup.__getitem__'%key)
@@ -1753,11 +1716,13 @@ class EventGroup(EventContainer, RuleContainer):
         self.node = CenterNode()## offset=?? (J2000 by default)
         #self.nodeLoaded = False
         #####
-        RuleContainer.__init__(self)
         self.eventCache = {} ## from eid to event object
-        self.addRequirements()
+        ###
+        (year, month, day) = core.getSysDate(self.mode)
+        self.startJd = to_jd(year-10, 1, 1, self.mode)
+        self.endJd = to_jd(year+5, 1, 1, self.mode)
+        ###
         self.setDefaults()
-        self.updateRulesHash()
         if self.enable:
             self.updateOccurrenceNode()
         ###########
@@ -1781,14 +1746,6 @@ class EventGroup(EventContainer, RuleContainer):
             sets default values that depends on group type
             not common parameters, like those are set in __init__
         '''
-        startRule = self['start']
-        endRule = self['end']
-        startRule.time = (0, 0, 0)
-        endRule.time = (24, 0, 0)## FIXME
-        ###
-        (year, month, day) = core.getSysDate(self.mode)
-        startRule.date = (year-10, 1, 1)
-        endRule.date = (year+5, 1, 1)
     __nonzero__ = lambda self: self.enable ## FIXME
     def setId(self, gid=None):
         if gid is None or gid<0:
@@ -1809,12 +1766,10 @@ class EventGroup(EventContainer, RuleContainer):
                 attr,
                 getattr(other, attr),
             )
-        self.copyRulesFrom(other)
         self.addRequirements()
     def getBasicData(self):
         data = EventContainer.getData(self)
         data['type'] = self.name
-        data['rules'] = self.getRulesData()
         for attr in (
             'enable', 'color', 'eventCacheSize', 'eventTextSep',
             ## 'defaultEventType'
@@ -1844,9 +1799,6 @@ class EventGroup(EventContainer, RuleContainer):
         #    self.defaultEventType = data['defaultEventType']
         #    if not self.defaultEventType in classes.event.names:
         #        raise ValueError('Invalid defaultEventType: %r'%self.defaultEventType)
-        ####
-        if 'rules' in data:
-            self.setRulesData(data['rules'])
     def setData(self, data):
         self.setBasicData(data)
         if 'remoteIds' in data:
@@ -1882,6 +1834,7 @@ class EventGroup(EventContainer, RuleContainer):
     def copyEventWithType(self, event, eventType):## FIXME
         newEvent = self.createEvent(eventType)
         newEvent.setId(event.id)
+        newEvent.changeMode(event.mode)
         newEvent.copyFrom(event)
         return newEvent
     def remove(self, event):## call when moving to trash
@@ -1925,8 +1878,8 @@ class EventGroup(EventContainer, RuleContainer):
         return newGroup
     def calcOccurrenceAll(self):
         occurList = []
-        startJd = self['start'].getJd()
-        endJd = self['end'].getJd()
+        startJd = self.startJd
+        endJd = self.endJd
         for event in self:
             occur = event.calcOccurrenceForJdRange(startJd, endJd)
             if occur:
@@ -1935,10 +1888,7 @@ class EventGroup(EventContainer, RuleContainer):
     def afterModify(self):## FIXME
         EventContainer.afterModify(self)
         if self.enable:
-            #rulesHash = self.getRulesHash()
-            #if rulesHash != self.rulesHash:
             self.updateOccurrenceNode()## FIXME
-            #    self.rulesHash = rulesHash
     def updateOccurrenceNode(self):
         self.node.clear()
         for eid, occur in self.calcOccurrenceAll():
@@ -2006,11 +1956,6 @@ class EventGroup(EventContainer, RuleContainer):
             event.save()
             self.append(event)
         self.save()
-    def updateRulesHash(self):
-        if self.enable:
-            self.rulesHash = self.getRulesHash()
-        else:
-            self.rulesHash = ''
 
 @classes.group.register
 class TaskList(EventGroup):
@@ -2170,9 +2115,6 @@ class UniversityTerm(EventGroup):
                 return course[1]
         return _('Deleted Course')
     def setDefaults(self):
-        EventGroup.setDefaults(self)
-        startRule = self['start']
-        endRule = self['end']
         calType = core.moduleNames[self.mode]
         ## FIXME
         ## odd term or even term?
@@ -2183,17 +2125,17 @@ class UniversityTerm(EventGroup):
             ## 0/07/01 to 0/11/01
             ## 0/11/15 to 1/03/20
             if (1, 1) <= md < (4, 1):
-                startRule.date = (year-1, 11, 15)
+                self.startJd = to_jd(year-1, 11, 15, self.mode)
                 self.classesEndDate = (year, 3, 20)
-                endRule.date = (year, 4, 10)
+                self.endJd = to_jd(year, 4, 10, self.mode)
             elif (4, 1) <= md < (10, 1):
-                startRule.date = (year, 7, 1)
+                self.startJd = to_jd(year, 7, 1, self.mode)
                 self.classesEndDate = (year, 11, 1)
-                endRule.date = (year, 11, 1)
+                self.endJd = to_jd(year, 11, 1, self.mode)
             else:## md >= (10, 1)
-                startRule.date = (year, 11, 15)
+                self.startJd = to_jd(year, 11, 15, self.mode)
                 self.classesEndDate = (year+1, 3, 1)
-                endRule.date = (year+1, 3, 20)
+                self.endJd = to_jd(year+1, 3, 20, self.mode)
         #elif calType=='gregorian':
         #    pass
     def getNewCourseID(self):
@@ -2279,7 +2221,6 @@ class EventGroupsHolder(JsonObjectsHolder):
     def appendNew(self, data):
         obj = classes.group.byName[data['type']](data['id'])
         obj.setData(data)
-        obj.addRequirements()
         self.append(obj)
         return obj
     def load(self):

@@ -378,6 +378,11 @@ class DateBox(MultiSpinBox):
         MultiSpinBox.__init__(self, mins=(0,1,1), maxs=(9999,12,31), fields=(4,2,2), sep=(u'/', u'/'), nums=date, **kwargs)
         self.get_date = self.get_nums
         self.set_date = self.set_nums
+    def get_jd(self, mode):
+        y, m, d = self.get_date()
+        return to_jd(y, m, d, mode)
+    changeMode = lambda self, fromMode, toMode: self.set_date(jd_to(self.get_jd(fromMode), toMode))
+
 
 class YearMonthBox(MultiSpinBox):
     def __init__(self, date=None, **kwargs):

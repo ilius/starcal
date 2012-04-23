@@ -43,8 +43,8 @@ class EventWidget(common.EventWidget):
         common.EventWidget.updateVars(self)
         self.event.setMonth(self.monthCombo.get_active()+1)
         self.event.setDay(int(self.daySpin.get_value()))
-    def modeComboChanged(self, combo):## FIXME
-        module = core.modules[combo.get_active()]
+    def modeComboChanged(self, obj=None):## overwrite method from common.EventWidget
+        module = core.modules[self.modeCombo.get_active()]
         monthCombo = self.monthCombo
         active = monthCombo.get_active()
         for i in range(len(monthCombo.get_model())):
