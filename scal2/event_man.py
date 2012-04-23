@@ -1766,7 +1766,6 @@ class EventGroup(EventContainer):
                 attr,
                 getattr(other, attr),
             )
-        self.addRequirements()
     def getBasicData(self):
         data = EventContainer.getData(self)
         data['type'] = self.name
