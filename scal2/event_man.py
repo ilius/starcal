@@ -34,6 +34,7 @@ from scal2.time_utils import *
 from scal2.json_utils import *
 from scal2.color_utils import hslToRgb
 from scal2.ics import *
+from scal2.binary_time_line import CenterNode
 
 from scal2.cal_modules import moduleNames, jd_to, to_jd, convert, DATE_GREG
 from scal2.locale_man import tr as _
@@ -183,12 +184,19 @@ class Occurrence(EventBaseClass):
         raise NotImplementedError
     getDaysJdList = lambda self: []
     getTimeRangeList = lambda self: []
+    def getFloatJdRangeList(self):
+        ls = []
+        for ep0, ep1 in self.getTimeRangeList():
+            if ep1 is None:## FIXME
+                ep1 = ep0 + eps
+            ls.append((getFloatJdFromEpoch(ep0), getFloatJdFromEpoch(ep1)))
+        return ls
     containsMoment = lambda self, epoch: False
     def getStartEpoch(self):
         raise NotImplementedError
     def getEndEpoch(self):
         raise NotImplementedError
-
+    #__iter__ = lambda self: iter(self.getTimeRangeList())
 
 class JdListOccurrence(Occurrence):
     name = 'jdList'
@@ -572,8 +580,31 @@ class DateEventRule(EventRule):
         else:
             return TimeRangeListOccurrence()
     def changeMode(self, mode):
-        self.date = convert(self.date[0], self.date[1], self.date[2], self.getMode(), mode)
+        self.date = jd_to(self.getJd(), mode)
         return True
+
+class DateAndTimeEventRule(DateEventRule):
+    sgroup = 1
+    params = ('date', 'time')
+    def __init__(self, parent):
+        DateEventRule.__init__(self, parent)
+        self.time = time.localtime()[3:6]
+    getEpoch = lambda self: getEpochFromJhms(self.getJd(), *tuple(self.time))
+    getData = lambda self: {
+        'date': dateEncode(self.date),
+        'time': timeEncode(self.time),
+    }
+    def setData(self, arg):
+        if isinstance(arg, dict):
+            self.date = dateDecode(arg['date'])
+            if arg.has_key('time'):
+                self.time = timeDecode(arg['time'])
+        elif isinstance(arg, basestring):
+            self.date = dateDecode(arg)
+        else:
+            raise BadEventFile('bad rule %s=%r'%(self.name, arg))
+    getInfo = lambda self: self.desc + ': ' + dateEncode(self.date) + _(',') + ' ' + _('Time') + ': ' + timeEncode(self.time)
+
 
 
 @classes.rule.register
@@ -637,35 +668,6 @@ class DayTimeRangeEventRule(EventRule):
             [(startEpoch, endEpoch)],
         ))
 
-
-class DateAndTimeEventRule(EventRule):
-    sgroup = 1
-    params = ('date', 'time')
-    def __init__(self, parent):
-        EventRule.__init__(self, parent)
-        self.date = core.getSysDate(self.getMode())
-        self.time = time.localtime()[3:6]
-    def getJd(self):
-        (year, month, day) = self.date
-        return to_jd(year, month, day, self.getMode())
-    getEpoch = lambda self: getEpochFromJhms(self.getJd(), *tuple(self.time))
-    getData = lambda self: {
-        'date': dateEncode(self.date),
-        'time': timeEncode(self.time),
-    }
-    def setData(self, arg):
-        if isinstance(arg, dict):
-            self.date = dateDecode(arg['date'])
-            if arg.has_key('time'):
-                self.time = timeDecode(arg['time'])
-        elif isinstance(arg, basestring):
-            self.date = dateDecode(arg)
-        else:
-            raise BadEventFile('bad rule %s=%r'%(self.name, arg))
-    getInfo = lambda self: self.desc + ': ' + dateEncode(self.date) + _(',') + ' ' + _('Time') + ': ' + timeEncode(self.time)
-    def changeMode(self, mode):
-        self.date = jd_to(self.getJd(), mode)
-        return True
 
 @classes.rule.register
 class StartEventRule(DateAndTimeEventRule):
@@ -908,11 +910,15 @@ class CommandNotifier(EventNotifier):
 class RuleContainer:
     requiredRules = ()
     supportedRules = None
+    def __init__(self):
+        self.clearRules()
+        self.rulesHash = None
     def clearRules(self):
         self.rulesOd = OrderedDict()
     getRule = lambda self, key: self.rulesOd.__getitem__(key)
     setRule = lambda self, key, value: self.rulesOd.__setitem__(key, value)
     getRulesData = lambda self: [(rule.name, rule.getData()) for rule in self.rulesOd.values()]
+    getRulesHash = lambda self: hash(str(sorted(self.getRulesData())))
     getRuleNames = lambda self: self.rulesOd.keys()
     addRule = lambda self, rule: self.rulesOd.__setitem__(rule.name, rule)
     addNewRule = lambda self, ruleType: self.addRule(classes.rule.byName[ruleType](self))
@@ -1017,7 +1023,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         #self.showInTimeLine = False ## FIXME
         self.files = []
         ######
-        self.clearRules()
+        RuleContainer.__init__(self)
         self.notifiers = []
         self.notifyBefore = (0, 1) ## (value, unit) like DurationEventRule
         ## self.snoozeTime = (5, 60) ## (value, unit) like DurationEventRule ## FIXME
@@ -1025,6 +1031,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         self.setDefaults()
         if group:
             self.setDefaultsFromGroup(group)
+        self.updateRulesHash()
         ######
         self.modified = time.time()
         self.remoteIds = None## (accountId, groupId, eventId)
@@ -1043,6 +1050,14 @@ class Event(JsonEventBaseClass, RuleContainer):
     def afterModify(self):
         self.modified = time.time()
         #self.group.eventsModified = self.modified
+        ###
+        if self.group:## None or enbale=False
+            rulesHash = self.getRulesHash()
+            if rulesHash != self.rulesHash:
+                self.group.updateOccurrenceNode()
+                self.rulesHash = rulesHash
+        else:
+            self.rulesHash = ''
     getNotifyBeforeSec = lambda self: self.notifyBefore[0] * self.notifyBefore[1]
     getNotifyBeforeMin = lambda self: int(self.getNotifyBeforeSec()/60)
     def setDefaults(self):
@@ -1070,6 +1085,9 @@ class Event(JsonEventBaseClass, RuleContainer):
         for name in self.requiredNotifiers:
             if not name in notifierNames:
                 self.notifiers.append(classes.notifier.byName[name](self))
+    #def load(self):
+    #    JsonEventBaseClass.load(self)
+    #    self.addRequirements()
     def loadFiles(self):
         self.files = []
         if isdir(self.filesDir):
@@ -1209,7 +1227,11 @@ class Event(JsonEventBaseClass, RuleContainer):
                     return False
             self.mode = mode
         return True
-
+    def updateRulesHash(self):
+        if self.group:
+            self.rulesHash = self.getRulesHash()
+        else:
+            self.rulesHash = ''
 
 @classes.event.register
 class TaskEvent(Event):
@@ -1326,8 +1348,7 @@ class TaskEvent(Event):
                 )
             else:
                 return TimeRangeListOccurrence()
-    def setJd(self, jd):
-        self['start'].date = jd_to(jd, self.mode)
+    setJd = lambda self, jd: self['start'].setJd(jd)
     def getIcsData(self, prettyDateTime=False):
         return [
             ('DTSTART', getIcsTimeByEpoch(self.getStartEpoch(), prettyDateTime)),
@@ -1672,6 +1693,8 @@ class EventContainer(JsonEventBaseClass):
 class EventGroup(EventContainer, RuleContainer):
     name = 'group'
     desc = _('Event Group')
+    requiredRules = ('start', 'end')
+    supportedRules = ('start', 'end')
     acceptsEventTypes = ('yearly', 'dailyNote', 'task', 'custom')
     actions = []## [('Export to ICS', 'exportToIcs')]
     eventActions = [] ## FIXME
@@ -1727,16 +1750,24 @@ class EventGroup(EventContainer, RuleContainer):
             self.defaultEventType = 'custom'
         self.eventCacheSize = 0
         self.eventTextSep = core.eventTextSep
+        self.node = CenterNode()## offset=?? (J2000 by default)
+        #self.nodeLoaded = False
         #####
+        RuleContainer.__init__(self)
         self.eventCache = {} ## from eid to event object
-        self.clearRules()
         self.addRequirements()
         self.setDefaults()
+        self.updateRulesHash()
+        if self.enable:
+            self.updateOccurrenceNode()
         ###########
         self.remoteIds = None## (accountId, groupId)
         ## remote groupId can be an integer or string or unicode (depending on remote account type)
         self.remoteSyncData = {}
         self.eventIdByRemoteIds = {}
+    #def load(self):
+    #    EventContainer.load(self)
+    #    self.addRequirements()
     def afterSync(self):
         self.remoteSyncData[self.remoteIds] = time.time()
     def getLastSync(self):
@@ -1750,8 +1781,15 @@ class EventGroup(EventContainer, RuleContainer):
             sets default values that depends on group type
             not common parameters, like those are set in __init__
         '''
-        pass
-    __nonzero__ = lambda self: True ## FIXME
+        startRule = self['start']
+        endRule = self['end']
+        startRule.time = (0, 0, 0)
+        endRule.time = (24, 0, 0)## FIXME
+        ###
+        (year, month, day) = core.getSysDate(self.mode)
+        startRule.date = (year-10, 1, 1)
+        endRule.date = (year+5, 1, 1)
+    __nonzero__ = lambda self: self.enable ## FIXME
     def setId(self, gid=None):
         if gid is None or gid<0:
             gid = core.lastEventGroupId + 1 ## FIXME
@@ -1885,6 +1923,30 @@ class EventGroup(EventContainer, RuleContainer):
             newEvent.save()
             newGroup.append(newEvent)
         return newGroup
+    def calcOccurrenceAll(self):
+        occurList = []
+        startJd = self['start'].getJd()
+        endJd = self['end'].getJd()
+        for event in self:
+            occur = event.calcOccurrenceForJdRange(startJd, endJd)
+            if occur:
+                occurList.append((event.id, occur))
+        return occurList
+    def afterModify(self):## FIXME
+        EventContainer.afterModify(self)
+        if self.enable:
+            #rulesHash = self.getRulesHash()
+            #if rulesHash != self.rulesHash:
+            self.updateOccurrenceNode()## FIXME
+            #    self.rulesHash = rulesHash
+    def updateOccurrenceNode(self):
+        self.node.clear()
+        for eid, occur in self.calcOccurrenceAll():
+            for jd0, jd1 in occur.getFloatJdRangeList():
+                self.node.addEvent(jd0, jd1, eid)
+        #self.nodeLoaded = True
+    #def getOccurrence(self, startJd, endJd):
+    #    for t0, t1, eid in self.node.getEvents(startJd, endJd):
     def getIcsText(self, startJd, endJd):
         icsText = icsHeader
         currentTimeStamp = getIcsTimeByEpoch(time.time())
@@ -1944,6 +2006,11 @@ class EventGroup(EventContainer, RuleContainer):
             event.save()
             self.append(event)
         self.save()
+    def updateRulesHash(self):
+        if self.enable:
+            self.rulesHash = self.getRulesHash()
+        else:
+            self.rulesHash = ''
 
 @classes.group.register
 class TaskList(EventGroup):
@@ -2000,8 +2067,6 @@ class NoteBook(EventGroup):
 class UniversityTerm(EventGroup):
     name = 'universityTerm'
     desc = _('University Term')
-    requiredRules = ('start', 'end')
-    supportedRules = ('start', 'end')
     acceptsEventTypes = ('universityClass', 'universityExam')
     #actions = EventGroup.actions + []
     actions = [('View Weekly Schedule', 'viewWeeklySchedule')]
@@ -2105,10 +2170,9 @@ class UniversityTerm(EventGroup):
                 return course[1]
         return _('Deleted Course')
     def setDefaults(self):
+        EventGroup.setDefaults(self)
         startRule = self['start']
         endRule = self['end']
-        startRule.time = (0, 0, 0)
-        endRule.time = (24, 0, 0)## FIXME
         calType = core.moduleNames[self.mode]
         ## FIXME
         ## odd term or even term?
@@ -2215,6 +2279,7 @@ class EventGroupsHolder(JsonObjectsHolder):
     def appendNew(self, data):
         obj = classes.group.byName[data['type']](data['id'])
         obj.setData(data)
+        obj.addRequirements()
         self.append(obj)
         return obj
     def load(self):
@@ -2229,6 +2294,8 @@ class EventGroupsHolder(JsonObjectsHolder):
                 data = jsonToData(open(objFile).read())
                 data['id'] = _id ## FIXME
                 obj = self.appendNew(data)
+                if obj.enable:
+                    obj.updateOccurrenceNode()
                 ## here check that non of obj.idList are in eventIdList ## FIXME
                 #eventIdList += obj.idList
         else:
@@ -2304,6 +2371,7 @@ class EventTrash(EventContainer):
         EventContainer.__init__(self)
         self.title = _('Trash')
         self.icon = join(pixDir, 'trash.png')
+        self.enable = False
     def delete(self, eid):
         ## different from EventContainer.remove
         ## remove() only removes event from this group, but event file and data still available
@@ -2342,18 +2410,34 @@ def getDayOccurrenceData(curJd, groups):
     for group in groups:
         if not group.enable:
             continue
-        for event in group:
-            if not event:
-                continue
-            occur = event.calcOccurrenceForJdRange(curJd, curJd+1)
-            if not occur:
-                continue
+        #print '\nupdateData: checking event', event.summary
+        gid = group.id
+        for fjd0, fjd1, eid in group.node.getEvents(curJd, curJd+1):
+            event = group[eid]
             text = event.getText()
             for url, fname in event.getFilesUrls():
                 text += '\n<a href="%s">%s</a>'%(url, fname)
-            icon = event.icon
-            #print '\nupdateData: checking event', event.summary
-            ids = (group.id, event.id)
+            if fjd1-fjd0==1:
+                data.append({
+                    'time':'',
+                    'text':text,
+                    'icon':event.icon,
+                    'ids': (gid, eid),
+                })
+            else:
+                h0, m0, s0 = getHmsFromSeconds((fjd0%1)*24*3600)
+                h1, m1, s1 = getHmsFromSeconds((fjd1%1)*24*3600)
+                data.append({
+                    'time':hmsRangeToStr(h0, m0, s0, h1, m1, s1),
+                    'text':text,
+                    'icon':event.icon,
+                    'ids': (gid, eid),
+                })
+
+            '''
+            occur = event.calcOccurrenceForJdRange(curJd, curJd+1)
+            if not occur:
+                continue
             if isinstance(occur, JdListOccurrence):
                 ### len(occur) == len(occur.getDaysJdList()) == 1
                 data.append({
@@ -2416,6 +2500,7 @@ def getDayOccurrenceData(curJd, groups):
                         })
             else:
                 raise TypeError
+            '''
     return data
 
 

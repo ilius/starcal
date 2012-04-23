@@ -20,6 +20,7 @@
 from math import sqrt, floor, ceil, log10
 #import random
 
+from scal2.time_utils import overlaps
 from scal2 import core
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl, numEncode, textNumEncode, LRM
@@ -122,12 +123,6 @@ class Tick:
         if color is None:
             color = fgColor
         self.color = color
-
-overlaps = lambda a0, a1, b0, b1: \
-    a0 <= b0 <  a1 or \
-    a0 <  b1 <= a1 or \
-    b0 <= a0 <  b1 or \
-    b0 <  a1 <= b1
 
 class Box:
     def __init__(self, t0, t1, y0, y1, text, color, ids):
@@ -391,39 +386,27 @@ def calcTimeLineData(timeStart, timeWidth, width):
     for group in ui.eventGroups:
         if not group.enable:
             continue
-        for event in group:
-            #print 'event %s'%event.summary
-            #if not event.showInTimeLine:## FIXME
-            #    continue
-            #event.timeLineIndex = -1 ## FIXME
-            if not event:
+        for ejd0, ejd1, eid in group.node.getEvents(fjd0, fjd1):
+            t0 = getEpochFromJd(ejd0)
+            t1 = getEpochFromJd(ejd1)
+            event = group[eid]
+            if t0 <= timeStart and timeEnd <= t1:## Fills Range ## FIXME
                 continue
-            occur = event.calcOccurrenceForJdRange(fjd0, fjd1)
-            if not occur:
-                continue
-            #if isinstance(occur, TimeListOccurrence):
-            #    occur.epochList
-            #if len(occur.getTimeRangeList())>1:
-            #    print event.id, occur.getTimeRangeList()
-            for (t0, t1) in occur.getTimeRangeList():
-                if t1 is None:
-                    t1 = t0
-                if t0 <= timeStart and timeEnd <= t1:## Fills Range ## FIXME
-                    continue
-                tw = t1 - t0
-                if tw < minEventBoxWidthSec:
-                    twd = (minEventBoxWidthSec - tw)/2.0
-                    t1 += twd
-                    t0 -= twd
-                boxes.append(Box(
-                    t0,
-                    t1,
-                    0,
-                    1,
-                    event.summary,
-                    group.color,
-                    (group.id, event.id),
-                ))## or event.color FIXME
+            tw = t1 - t0
+            if tw < minEventBoxWidthSec:
+                twd = (minEventBoxWidthSec - tw)/2.0
+                t1 += twd
+                t0 -= twd
+                del twd
+            boxes.append(Box(
+                t0,
+                t1,
+                0,
+                1,
+                event.summary,
+                group.color,
+                (group.id, event.id),
+            ))## or event.color FIXME
     #boxes.sort(reverse=True) ## FIXME
     placedBoxes = []
     for box in boxes:

@@ -18,13 +18,16 @@ def getJdListFromEpochRange(startEpoch, endEpoch):
     endJd = getJdFromEpoch(endEpoch-0.01) + 1
     return range(startJd, endJd)
 
+def getHmsFromSeconds(second):
+    (minute, second) = divmod(int(second), 60)
+    (hour, minute) = divmod(minute, 60)
+    return hour, minute, second
+
 def getJhmsFromEpoch(epoch, local=False):## return a tuple (julain_day, hour, minute, second) from epoch
     #if local:
     #    epoch -= getCurrentTimeZone()
     (days, second) = divmod(int(epoch), 24*3600)
-    (minute, second) = divmod(second, 60)
-    (hour, minute) = divmod(minute, 60)
-    return (days + J1970, hour, minute, second)
+    return (days+J1970,) + getHmsFromSeconds(second)
 
 def getSecondsFromHms(hour, minute, second):
     return hour*3600 + minute*60 + second
@@ -167,6 +170,12 @@ def durationDecode(durStr):
 
 
 timeToFloatHour = lambda h, m, s=0: h + m/60.0 + s/3600.0
+
+overlaps = lambda a0, a1, b0, b1: \
+    a0 <= b0 <  a1 or \
+    a0 <  b1 <= a1 or \
+    b0 <= a0 <  b1 or \
+    b0 <  a1 <= b1
 
 def floatHourToTime(fh):
     h, r = divmod(fh, 1)

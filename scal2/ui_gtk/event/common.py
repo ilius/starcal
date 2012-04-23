@@ -470,7 +470,8 @@ def addNewEvent(group, eventType, title, **kw):
 class GroupEditorDialog(gtk.Dialog):
     def __init__(self, group=None):
         gtk.Dialog.__init__(self)
-        self.set_title(_('Edit Group') if group else _('Add New Group'))
+        self.isNew = (group is None)
+        self.set_title(_('Add New Group') if self.isNew else _('Edit Group'))
         #self.connect('delete-event', lambda obj, e: self.destroy())
         #self.resize(800, 600)
         ###
@@ -483,7 +484,6 @@ class GroupEditorDialog(gtk.Dialog):
             okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
         self.connect('response', lambda w, e: self.hide())
         #######
-        self._group = group
         self.activeWidget = None
         #######
         hbox = gtk.HBox()
@@ -495,13 +495,12 @@ class GroupEditorDialog(gtk.Dialog):
         hbox.pack_start(gtk.Label(''), 1, 1)
         self.vbox.pack_start(hbox, 0, 0)
         ####
-        if self._group:
-            self.isNew = False
-            combo.set_active(event_man.classes.group.names.index(self._group.name))
-        else:
-            self.isNew = True
-            combo.set_active(event_man.defaultGroupTypeIndex)
+        if self.isNew:
             self._group = event_man.classes.group[event_man.defaultGroupTypeIndex]()
+            combo.set_active(event_man.defaultGroupTypeIndex)
+        else:
+            self._group = group
+            combo.set_active(event_man.classes.group.names.index(group.name))
         self.activeWidget = None
         combo.connect('changed', self.typeChanged)
         self.comboType = combo
@@ -526,27 +525,25 @@ class GroupEditorDialog(gtk.Dialog):
             self.activeWidget.destroy()
         cls = event_man.classes.group[self.comboType.get_active()]
         group = cls()
-        if self._group:
-            if self.isNew:
-                if group.icon:
-                    self._group.icon = group.icon
-            group.copyFrom(self._group)
-            group.setId(self._group.id)
-            del self._group
+        if self.isNew:
+            if group.icon:
+                self._group.icon = group.icon
+        group.copyFrom(self._group)
+        group.setId(self._group.id)
         if self.isNew:
             group.title = self.getNewGroupTitle(cls.desc)
         self._group = group
         self.activeWidget = group.makeWidget()
         self.vbox.pack_start(self.activeWidget, 0, 0)
     def run(self):
-        if self.activeWidget is None or self._group is None:
+        if self.activeWidget is None:
             return None
         if gtk.Dialog.run(self) != gtk.RESPONSE_OK:
             return None
         self.activeWidget.updateVars()
         self._group.save()
         if not self.isNew:
-            ui.eventGroups[self._group.id] = self._group## FIXME
+            ui.eventGroups[self._group.id] = self._group ## FIXME
         self.destroy()
         return self._group
 

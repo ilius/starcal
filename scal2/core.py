@@ -389,6 +389,11 @@ def validDate(mode, y, m, d):## move to cal-modules
 compressLongInt = lambda num: struct.pack('L', num).rstrip('\x00').encode('base64')[:-3].replace('/', '_')
 getCompactTime = lambda maxDays=1000, minSec=0.1: compressLongInt(long(time.time()%(maxDays*24*3600) / minSec))
 
+def floatJdEncode(jd, mode):
+    jd, hour, minute, second = getJhmsFromEpoch(getEpochFromJd(jd))
+    return dateEncode(jd_to(jd, mode)) + ' ' + timeEncode((hour, minute, second))
+    
+
 showInfo = lambda: log.debug('%s %s, OS: %s, Python %s'%(APP_DESC, VERSION, getOsFullDesc(), sys.version.replace('\n', ' ')))
 
 def fixStrForFileName(fname):

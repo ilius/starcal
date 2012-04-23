@@ -92,26 +92,14 @@ def prepareToday():
     for group in eventGroups:
         if not group.enable:
             continue
-        for event in group:
-            if not event:
-                continue
+        for fjd0, fjd1, eid in group.node.getEvents(todayJd, todayJd+1):
+            event = group[eid]
             if not event.notifiers:
                 continue
-            eid = event.id
-            occur = event.calcOccurrenceForJdRange(todayJd, todayJd+1)
-            if not occur:
-                continue
-            #addList = []
-            for (start, end) in occur.getTimeRangeList():
-                dt = start - event.getNotifyBeforeSec() - tm
-                if dt >= 0:
-                    #print 'start=%s, seconds_later=%s'%(start, int(start-tm)+1)
-                    timeout_add_seconds(int(dt)+1, notify, eid)
-                    #log.debug(str(int(dt)+1))
-                    #addList.append(int(dt)+1)
-                #log.debug('start=%s, tm=%s, start-tm=%s'%(start, tm, start-tm))
-    #addList.sort()
-    #log.debug('addList=%r'%addList[:20])
+            dt = getEpochFromJd(fjd0) - event.getNotifyBeforeSec() - tm
+            if dt >= 0:
+                timeout_add_seconds(int(dt)+1, notify, eid)
+                #log.debug(str(int(dt)+1))
 
 
 ########################## Starting Program ###########################

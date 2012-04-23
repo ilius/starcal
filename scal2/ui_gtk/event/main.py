@@ -1119,6 +1119,11 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 #self.sbar.remove_all(0)
                 message_id = self.sbar.push(0, '')
         return True
+    def onModifyGroup(self, group):
+        self.window.set_cursor(gdk.Cursor(gdk.WATCH))
+        group.afterModify()## FIXME
+        group.save()
+        self.window.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
     def treeviewButtonPress(self, treev, g_event):
         pos_t = treev.get_path_at_pos(int(g_event.x), int(g_event.y))
         if not pos_t:
@@ -1144,7 +1149,6 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                         pass
                     else:
                         group.enable = not group.enable
-                        group.save()
                         self.trees.set_value(
                             node_iter,
                             1,
@@ -1155,6 +1159,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                                 self.getRowBgColor(),
                             ),
                         )
+                        timeout_add_seconds(0, self.onModifyGroup, group)
         elif g_event.button == 3:
             self.openRightClickMenu(path, g_event.time)
     def addGroupAfterGroup(self, menu, path):

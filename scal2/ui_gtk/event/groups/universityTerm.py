@@ -9,7 +9,6 @@ from scal2.locale_man import numDecode
 from scal2 import core
 
 from scal2.ui_gtk.drawing import *
-from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
 from scal2.ui_gtk.event import common
 from scal2.ui_gtk.event.groups.group import GroupWidget as BaseGroupWidget
 
@@ -249,25 +248,6 @@ class GroupWidget(BaseGroupWidget):
         #####
         totalFrame = gtk.Frame(group.desc)
         totalVbox = gtk.VBox()
-        sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
-        ###
-        hbox = gtk.HBox()
-        label = gtk.Label(_('Start'))
-        label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
-        sizeGroup.add_widget(label)
-        self.startDateInput = DateButton()
-        hbox.pack_start(self.startDateInput, 0, 0)
-        totalVbox.pack_start(hbox, 0, 0)
-        ###
-        hbox = gtk.HBox()
-        label = gtk.Label(_('End'))
-        label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
-        sizeGroup.add_widget(label)
-        self.endDateInput = DateButton()
-        hbox.pack_start(self.endDateInput, 0, 0)
-        totalVbox.pack_start(hbox, 0, 0)
         ###
         expandHbox = gtk.HBox()## for courseList and classTimeBounds
         ##
@@ -289,20 +269,10 @@ class GroupWidget(BaseGroupWidget):
         self.pack_start(totalFrame, 1, 1)## expand? FIXME
     def updateWidget(self):## FIXME
         BaseGroupWidget.updateWidget(self)
-        self.startDateInput.set_date(self.group['start'].date)
-        self.endDateInput.set_date(self.group['end'].date)
         self.courseListEditor.setData(self.group.courses)
         self.classTimeBoundsEditor.setData(self.group.classTimeBounds)
     def updateVars(self):
         BaseGroupWidget.updateVars(self)
-        ##
-        startRule = self.group['start']
-        startRule.date = self.startDateInput.get_date()
-        startRule.time = (0, 0, 0)
-        ##
-        endRule = self.group['end']
-        endRule.date = self.endDateInput.get_date()
-        endRule.time = (24, 0, 0) ## FIXME
         ##
         self.group.setCourses(self.courseListEditor.getData())
         self.group.classTimeBounds = self.classTimeBoundsEditor.getData()

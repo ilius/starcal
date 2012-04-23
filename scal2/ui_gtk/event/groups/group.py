@@ -11,6 +11,7 @@ from scal2 import ui
 
 from scal2.ui_gtk.event import common
 from scal2.ui_gtk.utils import set_tooltip
+from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
 
 import gtk
 from gtk import gdk
@@ -100,6 +101,25 @@ class GroupWidget(gtk.VBox):
         #self.showFullEventDescCheck = gtk.CheckButton('')
         #hbox.pack_start(self.showFullEventDescCheck, 1, 1)
         #self.pack_start(hbox, 0, 0)
+        ####
+        hbox = gtk.HBox()
+        label = gtk.Label(_('Start'))
+        label.set_alignment(0, 0.5)
+        hbox.pack_start(label, 0, 0)
+        self.sizeGroup.add_widget(label)
+        self.startDateInput = DateButton()
+        hbox.pack_start(self.startDateInput, 0, 0)
+        self.pack_start(hbox, 0, 0)
+        ###
+        hbox = gtk.HBox()
+        label = gtk.Label(_('End'))
+        label.set_alignment(0, 0.5)
+        hbox.pack_start(label, 0, 0)
+        self.sizeGroup.add_widget(label)
+        self.endDateInput = DateButton()
+        hbox.pack_start(self.endDateInput, 0, 0)
+        self.pack_start(hbox, 0, 0)
+        ###
     def updateWidget(self):
         self.titleEntry.set_text(self.group.title)
         self.colorButton.set_color(self.group.color)
@@ -108,6 +128,8 @@ class GroupWidget(gtk.VBox):
         self.cacheSizeSpin.set_value(self.group.eventCacheSize)
         self.sepEntry.set_text(self.group.eventTextSep)
         #self.showFullEventDescCheck.set_active(self.group.showFullEventDesc)
+        self.startDateInput.set_date(self.group['start'].date)
+        self.endDateInput.set_date(self.group['end'].date)
     def updateVars(self):
         self.group.title = self.titleEntry.get_text()
         self.group.color = self.colorButton.get_color()
@@ -116,4 +138,12 @@ class GroupWidget(gtk.VBox):
         self.group.eventCacheSize = int(self.cacheSizeSpin.get_value())
         self.group.eventTextSep = self.sepEntry.get_text()
         #self.group.showFullEventDesc = self.showFullEventDescCheck.get_active()
+        ##
+        startRule = self.group['start']
+        startRule.date = self.startDateInput.get_date()
+        startRule.time = (0, 0, 0)
+        ##
+        endRule = self.group['end']
+        endRule.date = self.endDateInput.get_date()
+        endRule.time = (24, 0, 0) ## FIXME
 
