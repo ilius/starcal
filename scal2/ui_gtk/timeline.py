@@ -210,60 +210,60 @@ class TimeLine(gtk.Widget):
                 cr.line_to(x+d, y+d)
                 cr.close_path()
                 fillColor(cr, box.color)
-            ## now draw the text
-            ## how to find the best font size based in the box's width and height, and font family? FIXME
-            ## possibly write in many lines? or just in one line and wrap if needed?
-            if box.text:
-                #print box.text
-                textW = 0.9*w
-                textH = 0.9*h
-                textLen = len(toUnicode(box.text))
-                #print 'textLen=%s'%textLen
-                if rotateBoxLabel == 0:
-                    avgCharW = float(textW) / textLen
-                else:
-                    avgCharW = float(max(textW, textH)) / textLen
-                #print 'avgCharW=%s'%avgCharW
-                if avgCharW > 3:## FIXME
-                    font = list(ui.getFont())
-                    layout = widget.create_pango_layout(box.text) ## a pango.Layout object
-                    layout.set_font_description(pfontEncode(font))
-                    layoutW, layoutH = layout.get_pixel_size()
-                    #print 'orig font size: %s'%font[3]
-                    normRatio = min(
-                        float(textW)/layoutW,
-                        float(textH)/layoutH,
-                    )
-                    rotateRatio = min(
-                        float(textW)/layoutH,
-                        float(textH)/layoutW,
-                    )
-                    if rotateBoxLabel != 0 and rotateRatio > normRatio:
-                        font[3] *= max(normRatio, rotateRatio)
-                        layout.set_font_description(pfontEncode(font))
-                        layoutW, layoutH = layout.get_pixel_size()
-                        fillColor(cr, fgColor)## before cr.move_to
-                        #print 'x=%s, y=%s, w=%s, h=%s, layoutW=%s, layoutH=%s'%(x,y,w,h,layoutW,layoutH)
-                        cr.move_to(
-                            x + (w - rotateBoxLabel*layoutH)/2.0,
-                            y + (h + rotateBoxLabel*layoutW)/2.0,
-                        )
-                        cr.rotate(-rotateBoxLabel*pi/2)
-                        cr.show_layout(layout)
-                        try:
-                            cr.rotate(rotateBoxLabel*pi/2)
-                        except:
-                            print 'counld not rotate by %s*pi/2 = %s'%(rotateBoxLabel, rotateBoxLabel*pi/2)
+                ## now draw the text
+                ## how to find the best font size based in the box's width and height, and font family? FIXME
+                ## possibly write in many lines? or just in one line and wrap if needed?
+                if box.text:
+                    #print box.text
+                    textW = 0.9*w
+                    textH = 0.9*h
+                    textLen = len(toUnicode(box.text))
+                    #print 'textLen=%s'%textLen
+                    if rotateBoxLabel == 0:
+                        avgCharW = float(textW) / textLen
                     else:
-                        font[3] *= normRatio
+                        avgCharW = float(max(textW, textH)) / textLen
+                    #print 'avgCharW=%s'%avgCharW
+                    if avgCharW > 3:## FIXME
+                        font = list(ui.getFont())
+                        layout = widget.create_pango_layout(box.text) ## a pango.Layout object
                         layout.set_font_description(pfontEncode(font))
                         layoutW, layoutH = layout.get_pixel_size()
-                        fillColor(cr, fgColor)## before cr.move_to
-                        cr.move_to(
-                            x + (w-layoutW)/2.0,
-                            y + (h-layoutH)/2.0,
+                        #print 'orig font size: %s'%font[3]
+                        normRatio = min(
+                            float(textW)/layoutW,
+                            float(textH)/layoutH,
                         )
-                        cr.show_layout(layout)
+                        rotateRatio = min(
+                            float(textW)/layoutH,
+                            float(textH)/layoutW,
+                        )
+                        if rotateBoxLabel != 0 and rotateRatio > normRatio:
+                            font[3] *= max(normRatio, rotateRatio)
+                            layout.set_font_description(pfontEncode(font))
+                            layoutW, layoutH = layout.get_pixel_size()
+                            fillColor(cr, fgColor)## before cr.move_to
+                            #print 'x=%s, y=%s, w=%s, h=%s, layoutW=%s, layoutH=%s'%(x,y,w,h,layoutW,layoutH)
+                            cr.move_to(
+                                x + (w - rotateBoxLabel*layoutH)/2.0,
+                                y + (h + rotateBoxLabel*layoutW)/2.0,
+                            )
+                            cr.rotate(-rotateBoxLabel*pi/2)
+                            cr.show_layout(layout)
+                            try:
+                                cr.rotate(rotateBoxLabel*pi/2)
+                            except:
+                                print 'counld not rotate by %s*pi/2 = %s'%(rotateBoxLabel, rotateBoxLabel*pi/2)
+                        else:
+                            font[3] *= normRatio
+                            layout.set_font_description(pfontEncode(font))
+                            layoutW, layoutH = layout.get_pixel_size()
+                            fillColor(cr, fgColor)## before cr.move_to
+                            cr.move_to(
+                                x + (w-layoutW)/2.0,
+                                y + (h-layoutH)/2.0,
+                            )
+                            cr.show_layout(layout)
 
         ######
         if self.timeStart <= self.currentTime <= self.timeStart + self.timeWidth:

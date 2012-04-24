@@ -103,7 +103,7 @@ movingKeyTimeout = 0.1 ## seconds ## continiouse keyPress delay is about 0.05 se
 
 
 skipEventPixelLimit = 0.1 ## pixels
-compressEventPixelLimit = 2 ## pixels
+compressEventPixelLimit = 4 ## pixels
 
 
 truncateTickLabel = False
