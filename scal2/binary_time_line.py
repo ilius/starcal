@@ -98,7 +98,7 @@ class Node:
         return parent
 
 class CenterNode:
-    def __init__(self, base=8, offset=J2000):
+    def __init__(self, base=16, offset=J2000):
         self.base = base
         self.offset = offset
         self.clear()
