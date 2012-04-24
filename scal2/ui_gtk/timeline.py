@@ -44,6 +44,7 @@ from scal2.ui_gtk.event.common import EventEditorDialog, GroupEditorDialog
 import gobject
 from gobject import timeout_add
 
+import cairo
 import gtk
 from gtk import gdk
 
@@ -170,9 +171,9 @@ class TimeLine(gtk.Widget):
         ######
         beforeBoxH = maxTickHeight ## FIXME
         maxBoxH = height - beforeBoxH
-        d = boxLineWidth
         self.gboxes = []
         for box in data['boxes']:
+            d = box.lineW
             x = (box.t0-self.timeStart)*pixelPerSec
             w = (box.t1 - box.t0)*pixelPerSec
             y = beforeBoxH + maxBoxH * box.y0
@@ -180,29 +181,35 @@ class TimeLine(gtk.Widget):
             self.gboxes.append(GBox(x, x+w, y, y+h, box.ids))
             ###
             cr.rectangle(x, y, w, h)
-            try:
-                alpha = box.color[3]
-            except IndexError:
-                alpha = 255
-            fillColor(cr, (
-                box.color[0],
-                box.color[1],
-                box.color[2],
-                int(alpha*boxInnerAlpha),
-            ))
-            ###
-            cr.move_to(x, y)
-            cr.line_to(x+w, y)
-            cr.line_to(x+w, y+h)
-            cr.line_to(x, y+h)
-            cr.line_to(x, y)
-            cr.line_to(x+d, y)
-            cr.line_to(x+d, y+h-d)
-            cr.line_to(x+w-d, y+h-d)
-            cr.line_to(x+w-d, y+d)
-            cr.line_to(x+d, y+d)
-            cr.close_path()
-            fillColor(cr, box.color)
+            if d == 0:
+                fillColor(cr, box.color)
+            else:
+                try:
+                    alpha = box.color[3]
+                except IndexError:
+                    alpha = 255
+                try:
+                    fillColor(cr, (
+                        box.color[0],
+                        box.color[1],
+                        box.color[2],
+                        int(alpha*boxInnerAlpha),
+                    ))
+                except cairo.Error:
+                    continue
+                ###
+                cr.move_to(x, y)
+                cr.line_to(x+w, y)
+                cr.line_to(x+w, y+h)
+                cr.line_to(x, y+h)
+                cr.line_to(x, y)
+                cr.line_to(x+d, y)
+                cr.line_to(x+d, y+h-d)
+                cr.line_to(x+w-d, y+h-d)
+                cr.line_to(x+w-d, y+d)
+                cr.line_to(x+d, y+d)
+                cr.close_path()
+                fillColor(cr, box.color)
             ## now draw the text
             ## how to find the best font size based in the box's width and height, and font family? FIXME
             ## possibly write in many lines? or just in one line and wrap if needed?

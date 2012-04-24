@@ -101,11 +101,14 @@ movingMaxSpeed = (movingHandForce-movingSurfaceForce)*4 ## px / sec ## reach to 
 movingKeyTimeoutFirst = 0.5
 movingKeyTimeout = 0.1 ## seconds ## continiouse keyPress delay is about 0.05 sec
 
-minEventBoxWidthSec = 1 ## seconds
+
+skipEventPixelLimit = 0.1 ## pixels
+compressEventPixelLimit = 2 ## pixels
+
 
 truncateTickLabel = False
 
-rotateBoxLabel = 0 # -1
+rotateBoxLabel = -1
 ## 0: no rotation
 ## 1: 90 deg CCW (if needed)
 ## -1: 90 deg CW (if needed)
@@ -125,7 +128,7 @@ class Tick:
         self.color = color
 
 class Box:
-    def __init__(self, t0, t1, y0, y1, text, color, ids):
+    def __init__(self, t0, t1, y0, y1, text, color, ids, order):
         self.t0 = t0
         self.t1 = t1
         self.y0 = y0
@@ -133,13 +136,17 @@ class Box:
         self.text = text
         self.color = color
         self.ids = ids ## (groupId, eventId)
+        self.order = order ## (groupIndex, eventIndex)
         self.tConflictBefore = []
+        self.lineW = boxLineWidth
     tOverlaps = lambda self, other: overlaps(self.t0, self.t1, other.t0, other.t1)
     yOverlaps = lambda self, other: overlaps(self.y0, self.y1, other.y0, other.y1)
     getWidth = lambda self: self.t1 - self.t0
     getHeight = lambda self: self.y1 - self.y0
-    __cmp__ = lambda self, other: cmp(self.getWidth(), other.getWidth())
-
+    def __cmp__(self, other):## FIXME
+        c = cmp(self.getWidth(), other.getWidth())
+        if c != 0: return c
+        return cmp(self.order, other.order)
 
 def yResizeBox(box1, rat):
     box1.y0 *= rat
@@ -383,24 +390,20 @@ def calcTimeLineData(timeStart, timeWidth, width):
     boxesDict = {}
     fjd0 = getFloatJdFromEpoch(timeStart) - 1
     fjd1 = getFloatJdFromEpoch(timeEnd) + 0.0001
-    for group in ui.eventGroups:
+    for groupIndex in range(len(ui.eventGroups)):
+        group = ui.eventGroups.byIndex(groupIndex)
         if not group.enable:
             continue
         for ejd0, ejd1, eid in group.node.getEvents(fjd0, fjd1):
-            #print ejd1 - ejd0
-            #if ejd1 - ejd0 < 0:
-            #    print 'timeline: bad jd range'
             t0 = getEpochFromJd(ejd0)
             t1 = getEpochFromJd(ejd1)
+            pixBoxW = (t1-t0)*pixelPerSec
+            if pixBoxW < skipEventPixelLimit:
+                continue
             event = group[eid]
+            eventIndex = group.index(eid)
             if t0 <= timeStart and timeEnd <= t1:## Fills Range ## FIXME
                 continue
-            tw = t1 - t0
-            if tw < minEventBoxWidthSec:
-                twd = (minEventBoxWidthSec - tw)/2.0
-                t1 += twd
-                t0 -= twd
-                del twd
             box = Box(
                 t0,
                 t1,
@@ -409,7 +412,10 @@ def calcTimeLineData(timeStart, timeWidth, width):
                 event.summary,
                 group.color,
                 (group.id, event.id),
+                (groupIndex, eventIndex),
             )## or event.color FIXME
+            if pixBoxW < compressEventPixelLimit:
+                box.lineW = 0
             boxValue = (group.id, t0, t1)
             try:
                 boxesDict[boxValue].append(box)
@@ -431,10 +437,11 @@ def calcTimeLineData(timeStart, timeWidth, width):
                 _('%s events')%_(len(blist)),
                 blist[0].color,
                 None,
+                blist[0].order,
             ))
     del boxesDict
     ###
-    #boxes.sort(reverse=True) ## FIXME
+    boxes.sort() ## FIXME
     placedBoxes = []
     for box in boxes:
         conflictRanges = []

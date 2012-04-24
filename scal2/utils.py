@@ -261,7 +261,24 @@ def numRangesDecode(text):
             myRaise()
     return values
 
+def inputDate(msg):
+    while True:
+        try:
+            date = raw_input(msg)
+        except KeyboardInterrupt:
+            return
+        if date == 'q':
+            return
+        try:
+            return dateDecode(date)
+        except Exception, e:
+            print str(e)
 
+def inputDateJd(msg):
+    date = inputDate(msg)
+    if date:
+        (y, m, d) = date
+        return to_jd(y, m, d, DATE_GREG)
 
 #if __name__=='__main__':
 #    print findNearestNum([1, 2, 4, 6, 3, 7], 3.6)

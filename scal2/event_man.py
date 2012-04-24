@@ -2242,6 +2242,7 @@ class JsonObjectsHolder(JsonEventBaseClass):
     __len__ = lambda self: len(self.idList)
     index = lambda self, _id: self.idList.index(_id) ## or get object instead of obj_id? FIXME
     __getitem__ = lambda self, _id: self.byId.__getitem__(_id)
+    byIndex = lambda self, index: self.byId[self.idList[index]]
     #byIndex = lambda
     __setitem__ = lambda self, _id, group: self.byId.__setitem__(_id, group)
     def insert(self, index, obj):
