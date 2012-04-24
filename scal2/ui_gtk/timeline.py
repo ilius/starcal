@@ -368,7 +368,7 @@ class TimeLine(gtk.Widget):
             self.movingUserEvent(-1)
         elif k=='down':
             self.stopMovingAnim()
-        elif k=='q':
+        elif k in ('q', 'escape'):
             self.closeFunc()
         #elif k=='end':
         #    pass
