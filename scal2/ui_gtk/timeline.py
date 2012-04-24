@@ -243,7 +243,10 @@ class TimeLine(gtk.Widget):
                         )
                         cr.rotate(-rotateBoxLabel*pi/2)
                         cr.show_layout(layout)
-                        cr.rotate(rotateBoxLabel*pi/2)
+                        try:
+                            cr.rotate(rotateBoxLabel*pi/2)
+                        except:
+                            print 'counld not rotate by %s*pi/2 = %s'%(rotateBoxLabel, rotateBoxLabel*pi/2)
                     else:
                         font[3] *= normRatio
                         layout.set_font_description(pfontEncode(font))
@@ -292,6 +295,8 @@ class TimeLine(gtk.Widget):
                     return True
         elif event.button==3:
             for gbox in self.gboxes:
+                if not gbox.ids:
+                    continue
                 if gbox.contains(x, y):
                     (gid, eid) = gbox.ids
                     group = ui.eventGroups[gid]
@@ -466,8 +471,8 @@ if __name__=='__main__':
     win = TimeLineWindow()
     win.resize(rootWindow.get_geometry()[2], 150)
     win.move(0, 0)
-    win.tline.timeStart = -10**17
-    win.tline.timeWidth = 2*10**17
+    win.tline.timeWidth = 100 * 365 * 24 * 3600 # 2*10**17
+    win.tline.timeStart = time.time() - win.tline.timeWidth # -10**17
     win.show()
     gtk.main()
 

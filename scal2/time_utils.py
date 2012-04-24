@@ -4,11 +4,12 @@ import datetime
 import struct
 
 from scal2.cal_modules.gregorian import J1970
+from scal2.utils import ifloor, iceil
 
 ## time() ~~ epoch
 ## jd == epoch/(24*3600.0) + J1970
 ## epoch == (jd-J1970)*24*3600
-getJdFromEpoch = lambda epoch: int(epoch//(24*3600) + J1970)
+getJdFromEpoch = lambda epoch: ifloor(epoch//(24*3600) + J1970)
 getFloatJdFromEpoch = lambda epoch: epoch/(24.0*3600) + J1970
 
 getEpochFromJd = lambda jd: (jd-J1970)*(24*3600)
@@ -26,7 +27,7 @@ def getHmsFromSeconds(second):
 def getJhmsFromEpoch(epoch, local=False):## return a tuple (julain_day, hour, minute, second) from epoch
     #if local:
     #    epoch -= getCurrentTimeZone()
-    (days, second) = divmod(int(epoch), 24*3600)
+    (days, second) = divmod(ifloor(epoch), 24*3600)
     return (days+J1970,) + getHmsFromSeconds(second)
 
 def getSecondsFromHms(hour, minute, second):

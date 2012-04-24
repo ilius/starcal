@@ -40,6 +40,9 @@ class Node:
             return self.offset, self.offset + self.base ** self.level
         else:
             return self.offset - self.base ** self.level, self.offset
+    def inScope(self, tm):
+        s = self.getScope()
+        return s[0] <= tm <= s[1]
     def getEvents(self, t0, t1):## t0 < t1
         '''
             returns a list of (ev_t0, ev_t1, ev_id) s
@@ -69,9 +72,11 @@ class Node:
         self.offset + index * self.base ** (self.level - 1),
         self.rightOri,
     )
-    def getChildAt(self, tm):
-        scope = self.getScope()
-        assert scope[0] <= tm <= scope[1]
+    #def getChildAtIndex(
+    def getChildAtTime(self, tm):
+        if not self.inScope(tm):
+            #print 'Out of scope, level=%s, offset=%s, rightOri=%s'%(self.level, self.offset, self.rightOri)
+            return None
         dt = self.base ** (self.level - 1)
         index = int((tm-self.offset) // dt)
         try:
@@ -108,13 +113,31 @@ class CenterNode:
             return self.left.getEvents(t0, t1)
         else:
             raise RuntimeError
-    def getLevel(self, tm):
-        dt = abs(tm-self.offset)
-        if dt < self.base:
-            return 0
-        else:
-            return log(dt)/log(self.base)
+    #def calcCoverNode(self, t0, t1):
+    #    base = self.base
+    #    dt0 = abs(t0-self.offset)
+    #    dt1 = abs(t1-self.offset)
+    #    if min(dt0, dt1) < base:## FIXME
+    #        return (0, 0)
+    #    lgb = log(base)
+    #    lgt0 = log(dt0)
+    #    lgt1 = log(dt1)
+    #    flevel_t0 = lgt0 / lgb
+    #    flevel_t1 = lgt1 / lgb
+    #    testLevel = max(
+    #        ifloor(flevel_t0),
+    #        ifloor(flevel_t1) + 1,
+    #    )
+    #    while True:
+    #        w = base**testLevel
+    #        factor_t0 = dt0 // w
+    #        factor_t1 = dt1 // w
+    #        if factor_t0 == factor_t1:
+    #            return (testLevel, factor_t0)
+    #        testLevel += 1
     def addEvent(self, t0, t1, ev_id):
+        #if t1 < t0:
+        #    print 'CenterNode.addEvent, dt=%s'%(t1-t0)
         if self.offset <= t0:
             isRight = True
             node = self.right
@@ -128,20 +151,28 @@ class CenterNode:
         else:
             raise RuntimeError
         ########
-        level0 = self.getLevel(t0)
-        level1 = self.getLevel(t1)
-        level = min(level0, level1)
-        if node.level > level:
-            while node.level > level + 1:
-                node = node.getChildAt(t0)## or t1
+        #level, factor = self.calcCoverNode(t0, t1)
+        while True:
+            #if node.inScope(t0) and node.level >= level:
+            if node.inScope(t0) and node.inScope(t1):
+                break
+            node = node.newParent()
+        if isRight:
+            self.right = node
         else:
-            while node.level <= level:
-                node = node.newParent()
-            if isRight:
-                self.right = node
+            self.left = node
+        while True:
+            childNode = node.getChildAtTime(t0)
+            if childNode.inScope(t1):
+                node = childNode
             else:
-                self.left = node
-            node = node.getChildAt(t0)
+                break
+        #while node.level > level:
+            #childNode = node.getChildAtTime(t0)
+            #if not childNode:
+            #    print 'Out of scope'
+            #    return
+            #node = childNode
         node.events.append((t0-node.offset, t1-node.offset, ev_id))
 
 

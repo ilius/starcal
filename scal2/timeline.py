@@ -105,7 +105,7 @@ minEventBoxWidthSec = 1 ## seconds
 
 truncateTickLabel = False
 
-rotateBoxLabel = -1
+rotateBoxLabel = 0 # -1
 ## 0: no rotation
 ## 1: 90 deg CCW (if needed)
 ## -1: 90 deg CW (if needed)
@@ -380,13 +380,16 @@ def calcTimeLineData(timeStart, timeWidth, width):
             ))
             tickEpochList.append(tmEpoch)
     ######################## Event Boxes
-    boxes = []
+    boxesDict = {}
     fjd0 = getFloatJdFromEpoch(timeStart) - 1
     fjd1 = getFloatJdFromEpoch(timeEnd) + 0.0001
     for group in ui.eventGroups:
         if not group.enable:
             continue
         for ejd0, ejd1, eid in group.node.getEvents(fjd0, fjd1):
+            #print ejd1 - ejd0
+            #if ejd1 - ejd0 < 0:
+            #    print 'timeline: bad jd range'
             t0 = getEpochFromJd(ejd0)
             t1 = getEpochFromJd(ejd1)
             event = group[eid]
@@ -398,7 +401,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
                 t1 += twd
                 t0 -= twd
                 del twd
-            boxes.append(Box(
+            box = Box(
                 t0,
                 t1,
                 0,
@@ -406,7 +409,31 @@ def calcTimeLineData(timeStart, timeWidth, width):
                 event.summary,
                 group.color,
                 (group.id, event.id),
-            ))## or event.color FIXME
+            )## or event.color FIXME
+            boxValue = (group.id, t0, t1)
+            try:
+                boxesDict[boxValue].append(box)
+            except KeyError:
+                boxesDict[boxValue] = [box]
+    ###
+    boxes = []
+    for bvalue, blist in boxesDict.iteritems():
+        if len(blist) < 4:
+            boxes += blist
+        else:
+            #print 'len(blist)', len(blist)
+            #print (blist[0].t1 - blist[0].t0), 'secs'
+            boxes.append(Box(
+                bvalue[1],
+                bvalue[2],
+                0,
+                1,
+                _('%s events')%_(len(blist)),
+                blist[0].color,
+                None,
+            ))
+    del boxesDict
+    ###
     #boxes.sort(reverse=True) ## FIXME
     placedBoxes = []
     for box in boxes:

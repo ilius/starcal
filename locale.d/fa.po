@@ -262,6 +262,31 @@ msgstr ""
 "نوع روز"
 
 
+msgid "Years"
+msgstr ""
+"سال"
+
+msgid "%s Years"
+msgstr "%s سال"
+
+msgid "Centuries"
+msgstr ""
+"قرن"
+
+msgid "Thousand Years"
+msgstr ""
+"هزار سال"
+
+msgid "Million Years"
+msgstr ""
+"میلیون سال"
+
+msgid "Billion (10^9) Years"
+msgstr ""
+"میلیارد سال"
+
+
+
 msgid "Sunday"
 msgstr ""
 "یک‌شنبه"
@@ -947,6 +972,14 @@ msgstr ""
 "مشاهدهٔ برنامهٔ هفتگی"
 
 
+msgid "Large Scale Event"
+msgstr ""
+"رویداد مقیاس‌بالا"
+
+msgid "Scale"
+msgstr ""
+"مقیاس"
+
 msgid "Add Group"
 msgstr ""
 "افزودن گروه"
@@ -1084,11 +1117,12 @@ msgid "Group type \"%s\" can not contain event type \"%s\""
 msgstr ""
 "نوع گروه «%s» نمی‌تواند شامل نوع رویداد «%s» باشد"
 
+msgid "%s events"
+msgstr "%s رویداد"
 
 msgid "contains %s events"
 msgstr ""
 "شامل %s رویداد"
-
 
 msgid "%s contains %s events"
 msgstr ""

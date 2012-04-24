@@ -36,7 +36,7 @@ from scal2.color_utils import hslToRgb
 from scal2.ics import *
 from scal2.binary_time_line import CenterNode
 
-from scal2.cal_modules import moduleNames, jd_to, to_jd, convert, DATE_GREG
+from scal2.cal_modules import moduleNames, jd_to, to_jd, convert, DATE_GREG, avgYearLength
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName, textNumEncode
 from scal2 import core
@@ -189,6 +189,9 @@ class Occurrence(EventBaseClass):
         for ep0, ep1 in self.getTimeRangeList():
             if ep1 is None:## FIXME
                 ep1 = ep0 + eps
+            if ep1-ep0 < 0:
+                print 'getFloatJdRangeList: ep1-ep0=%s'%(ep1-ep0)
+                #ep0, ep1 = ep1, ep0
             ls.append((getFloatJdFromEpoch(ep0), getFloatJdFromEpoch(ep1)))
         return ls
     containsMoment = lambda self, epoch: False
@@ -1161,7 +1164,9 @@ class Event(JsonEventBaseClass, RuleContainer):
                 self.mode = moduleNames.index(calType)
             except ValueError:
                 raise ValueError('Invalid calType: %r'%calType)
-        self.setRulesData(data['rules'])
+        self.clearRules()
+        if 'rules' in data:
+            self.setRulesData(data['rules'])
         self.notifiers = []
         if 'notifiers' in data:
             for (notifierName, notifierData) in data['notifiers']:
@@ -1572,6 +1577,56 @@ class UniversityExamEvent(DailyNoteEvent):
         ]
 
 @classes.event.register
+class LargeScaleEvent(Event):
+    name = 'largeScale'
+    desc = _('Large Scale Event')
+    __nonzero__ = lambda self: True
+    def __init__(self, *args, **kw):
+        Event.__init__(self, *args, **kw)
+        self.scale = 1 ## 1, 1000, 1000**2, 1000**3
+        self.start = 0
+        self.duration = 1
+    #def setDefaultsFromGroup(self, group):
+    #    Event.setDefaultsFromGroup(self, group)
+    #    if group.name == 'largeScale':
+    #        self.scale = group.scale
+    def copyFrom(self, other):
+        Event.copyFrom(self, other)
+        if other.name == self.name:
+            self.scale = other.scale
+            self.start = other.start
+            self.duration = other.duration
+    def getData(self):
+        data = Event.getData(self)
+        for attr in ('scale', 'start', 'duration'):
+            data[attr] = getattr(self, attr)
+        return data
+    def setData(self, data):
+        Event.setData(self, data)
+        for attr in ('scale', 'start', 'duration'):
+            try:
+                setattr(self, attr, data[attr])
+            except KeyError:
+                pass
+    def calcOccurrenceForJdRange(self, startJd, endJd):
+        myStartJd = iceil(to_jd(self.scale*self.start, 1, 1, self.mode))
+        myEndJd = ifloor(to_jd(self.scale*(self.start+self.duration), 1, 1, self.mode))
+        ## myEndJd = ifloor(startJd + self.scale*self.duration*avgYearLength)
+        return TimeRangeListOccurrence(
+            intersectionOfTwoTimeRangeList(
+                [
+                    (getEpochFromJd(startJd), getEpochFromJd(endJd))
+                ],
+                [
+                    (getEpochFromJd(myStartJd), getEpochFromJd(myEndJd))
+                ],
+            )
+        )
+    #def getIcsData(self, prettyDateTime=False):
+    #    pass
+
+
+@classes.event.register
 class CustomEvent(Event):
     name = 'custom'
     desc = _('Custom Event')
@@ -1658,7 +1713,7 @@ class EventContainer(JsonEventBaseClass):
 class EventGroup(EventContainer):
     name = 'group'
     desc = _('Event Group')
-    acceptsEventTypes = ('yearly', 'dailyNote', 'task', 'custom')
+    acceptsEventTypes = ('yearly', 'dailyNote', 'task', 'largeScale', 'custom')
     actions = []## [('Export to ICS', 'exportToIcs')]
     eventActions = [] ## FIXME
     sortBys = (
@@ -1713,14 +1768,15 @@ class EventGroup(EventContainer):
             self.defaultEventType = 'custom'
         self.eventCacheSize = 0
         self.eventTextSep = core.eventTextSep
-        self.node = CenterNode()## offset=?? (J2000 by default)
         #self.nodeLoaded = False
-        #####
+        ###
         self.eventCache = {} ## from eid to event object
         ###
         (year, month, day) = core.getSysDate(self.mode)
         self.startJd = to_jd(year-10, 1, 1, self.mode)
         self.endJd = to_jd(year+5, 1, 1, self.mode)
+        ###
+        self.node = CenterNode(offset=self.startJd)## offset=?? (J2000 by default)
         ###
         self.setDefaults()
         if self.enable:
@@ -1759,7 +1815,8 @@ class EventGroup(EventContainer):
         EventContainer.copyFrom(self, other)
         for attr in (
             'enable', 'color', 'eventCacheSize', 'eventTextSep',
-            'remoteIds', 'remoteSyncData', 'eventIdByRemoteIds'
+            'remoteIds', 'remoteSyncData', 'eventIdByRemoteIds',
+            'startJd', 'endJd',
         ):#'defaultEventType'
             setattr(
                 self,
@@ -1770,7 +1827,7 @@ class EventGroup(EventContainer):
         data = EventContainer.getData(self)
         data['type'] = self.name
         for attr in (
-            'enable', 'color', 'eventCacheSize', 'eventTextSep',
+            'enable', 'color', 'eventCacheSize', 'eventTextSep', 'startJd', 'endJd',
             ## 'defaultEventType'
         ):
             data[attr] = getattr(self, attr)
@@ -1786,7 +1843,7 @@ class EventGroup(EventContainer):
         if 'id' in data:
             self.setId(data['id'])
         for attr in (
-            'enable', 'color', 'eventCacheSize', 'eventTextSep',
+            'enable', 'color', 'eventCacheSize', 'eventTextSep', 'startJd', 'endJd',
             ## 'defaultEventType'
         ):
             try:
@@ -1892,6 +1949,8 @@ class EventGroup(EventContainer):
         self.node.clear()
         for eid, occur in self.calcOccurrenceAll():
             for jd0, jd1 in occur.getFloatJdRangeList():
+                if jd1-jd0 < 0:
+                    print 'updateOccurrenceNode: jd1-jd0=%s'%(jd1-jd0)
                 self.node.addEvent(jd0, jd1, eid)
         #self.nodeLoaded = True
     #def getOccurrence(self, startJd, endJd):

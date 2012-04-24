@@ -1159,6 +1159,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                                 self.getRowBgColor(),
                             ),
                         )
+                        group.save()
                         timeout_add_seconds(0, self.onModifyGroup, group)
         elif g_event.button == 3:
             self.openRightClickMenu(path, g_event.time)
