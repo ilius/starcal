@@ -593,6 +593,7 @@ class DateAndTimeEventRule(DateEventRule):
         DateEventRule.__init__(self, parent)
         self.time = time.localtime()[3:6]
     getEpoch = lambda self: getEpochFromJhms(self.getJd(), *tuple(self.time))
+    getDate = lambda self, mode: convert(self.date[0], self.date[1], self.date[2], self.mode, mode)
     getData = lambda self: {
         'date': dateEncode(self.date),
         'time': timeEncode(self.time),
@@ -924,8 +925,20 @@ class RuleContainer:
     getRulesHash = lambda self: hash(str(sorted(self.getRulesData())))
     getRuleNames = lambda self: self.rulesOd.keys()
     addRule = lambda self, rule: self.rulesOd.__setitem__(rule.name, rule)
-    addNewRule = lambda self, ruleType: self.addRule(classes.rule.byName[ruleType](self))
+    def addNewRule(self, ruleType):
+        rule = classes.rule.byName[ruleType](self)
+        self.addRule(rule)
+        return rule
+    def getAddRule(self, ruleType):
+        try:
+            return self.getRule(ruleType)
+        except KeyError:
+            return self.addNewRule(ruleType)
     removeRule = lambda self, rule: self.rulesOd.__delitem__(rule.name)
+    __delitem__ = lambda self, key: self.rulesOd.__delitem__(key)
+    __getitem__ = lambda self, key: self.getRule(key)
+    __setitem__ = lambda self, key, value: self.setRule(key, value)
+    __iter__ = lambda self: self.rulesOd.itervalues()
     def setRulesData(self, rulesData):
         self.clearRules()
         for (ruleName, ruleData) in rulesData:
@@ -1000,14 +1013,10 @@ class Event(JsonEventBaseClass, RuleContainer):
     name = 'custom'## or 'event' or '' FIXME
     desc = _('Custom Event')
     iconName = ''
-    requiredNotifiers = ()
+    #requiredNotifiers = ()## needed? FIXME
     @classmethod
     def getDefaultIcon(cls):
         return join(pixDir, 'event', cls.iconName+'.png') if cls.iconName else ''
-    getRule = lambda self, key:  self.rulesOd[key]
-    __getitem__ = lambda self, key: self.getRule(key)
-    __setitem__ = lambda self, key, value: self.setRule(key, value)
-    __iter__ = lambda self: self.rulesOd.itervalues()
     __nonzero__ = lambda self: bool(self.rulesOd) ## FIXME
     def __init__(self, eid=None, group=None):
         self.setId(eid)
@@ -1075,12 +1084,12 @@ class Event(JsonEventBaseClass, RuleContainer):
         for rule in rulesDict.values():
             lines.append(rule.getInfo())
         return '\n'.join(lines)
-    def addRequirements(self):
-        RuleContainer.addRequirements(self)
-        notifierNames = (notifier.name for notifier in self.notifiers)
-        for name in self.requiredNotifiers:
-            if not name in notifierNames:
-                self.notifiers.append(classes.notifier.byName[name](self))
+    #def addRequirements(self):
+    #    RuleContainer.addRequirements(self)
+    #    notifierNames = (notifier.name for notifier in self.notifiers)
+    #    for name in self.requiredNotifiers:
+    #        if not name in notifierNames:
+    #            self.notifiers.append(classes.notifier.byName[name](self))
     #def load(self):
     #    JsonEventBaseClass.load(self)
     #    self.addRequirements()
@@ -1102,7 +1111,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         return data
     #getText = lambda self: self.summary if self.summary else self.description
     def getText(self):## FIXME
-    	sep = self.group.eventTextSep if self.group else core.eventTextSep
+    	sep = self.group.eventTextSep if self.group is not None else core.eventTextSep
         if self.summary:
             if self.description:
                 return '%s%s%s'%(self.summary, sep, self.description)
@@ -1380,11 +1389,11 @@ class YearlyEvent(Event):
     desc = _('Yearly Event')
     iconName = 'birthday'
     requiredRules = ('month', 'day')
-    supportedRules = ('month', 'day')
+    supportedRules = ('month', 'day', 'start')
     getMonth = lambda self: self['month'].values[0]
-    setMonth = lambda self, month: self['month'].setData(month)
+    setMonth = lambda self, month: self.getAddRule('month').setData(month)
     getDay = lambda self: self['day'].values[0]
-    setDay = lambda self, day: self['day'].setData(day)
+    setDay = lambda self, day: self.getAddRule('day').setData(day)
     def setDefaults(self):
         (y, m, d) = core.getSysDate(self.mode)
         self.setMonth(m)
@@ -1402,6 +1411,12 @@ class YearlyEvent(Event):
         mode = self.mode
         month = self.getMonth()
         day = self.getDay()
+        try:
+            startRule = self['start']
+        except:
+            pass
+        else:
+            startJd = max(startJd, startRule.getJd())
         startYear = jd_to(ifloor(startJd), mode)[0]
         endYear = jd_to(iceil(endJd), mode)[0]
         jdList = []
@@ -1414,13 +1429,66 @@ class YearlyEvent(Event):
         (y, m, d) = jd_to(jd, self.mode)
         self.setMonth(m)
         self.setDay(d)
+    def getData(self):
+        data = Event.getData(self)
+        try:
+            data['startYear'] = int(self['start'].date[0])
+        except KeyError:
+            pass
+        data['month'] = self.getMonth()
+        data['day'] = self.getDay()
+        del data['rules']
+        return data
+    def setData(self, data):
+        Event.setData(self, data)
+        try:
+            startYear = int(data['startYear'])
+        except KeyError:
+            pass
+        except Exception, e:
+            print str(e)
+        else:
+            self.getAddRule('start').date = (startYear, 1, 1)
+        try:
+            month = data['month']
+        except KeyError:
+            pass
+        else:
+            self.setMonth(month)
+        try:
+            day = data['day']
+        except KeyError:
+            pass
+        else:
+            self.setDay(day)
+    def getText(self):
+        text = Event.getText(self)
+        newParts = [
+            _(self.getDay()),
+            getMonthName(self.mode, self.getMonth()),
+        ]
+        try:
+            startRule = self['start']
+        except KeyError:
+            pass
+        else:
+            newParts.append(_(startRule.date[0]))
+        return ' '.join(newParts) + ': ' + text
     def getIcsData(self, prettyDateTime=False):
         if self.mode != DATE_GREG:
             return None
         month = self.getMonth()
         day = self.getDay()
+        startYear = icsMinStartYear
+        try:
+            startRule = self['start']
+        except:
+            if self.group is not None:
+                startYear = jd_to(self.group.startJd, DATE_GREG)[0]
+        else:
+            startYear = startRule.getDate(DATE_GREG)[0]
         jd = to_jd(
-            icsMinStartYear,
+            startYear,
             month,
             day,
             DATE_GREG,
@@ -1742,12 +1810,17 @@ class EventGroup(EventContainer):
         else:
             raise TypeError('invalid key type %r give to EventGroup.__getitem__'%key)
     def __setitem__(self, key, value):
-        if isinstance(key, basestring):## ruleName
-            return self.setRule(key, value)
-        elif isinstance(key, int):## eventId
+        #if isinstance(key, basestring):## ruleName
+        #    return self.setRule(key, value)
+        if isinstance(key, int):## eventId
             raise TypeError('can not assign event to group')## FIXME
         else:
             raise TypeError('invalid key type %r give to EventGroup.__setitem__'%key)
+    def __delitem__(self, key):
+        if isinstance(key, int):## eventId
+            self.remove(self.getEvent(key))
+        else:
+            raise TypeError('invalid key type %r give to EventGroup.__delitem__'%key)
     def checkEventToAdd(self, event):
         return event.name in self.acceptsEventTypes
     def __init__(self, gid=None, title=None):

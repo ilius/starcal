@@ -726,6 +726,10 @@ msgid "start"
 msgstr ""
 "شروع"
 
+msgid "Start Year"
+msgstr ""
+"سال شروع"
+
 msgid "End"
 msgstr ""
 "پایان"
