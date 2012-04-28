@@ -8,21 +8,20 @@ from scal2.core import to_jd, jd_to, convert, DATE_GREG, floatJdEncode
 
 J2000 = to_jd(2000, 1, 1, DATE_GREG)
 
-maxLevel = 1
-minLevel = 1
+#maxLevel = 1
+#minLevel = 1
 
 class Node:
-    def __init__(self, parent, base, level, offset, rightOri):
-        global maxLevel, minLevel
-        self.parent = parent ## need to keep parent? FIXME
+    def __init__(self, base, level, offset, rightOri):
+        #global maxLevel, minLevel
         self.base = base ## 8 or 16 is better
         self.level = level ## base ** level is the mathematical scope of the node (with its children)
-        if level > maxLevel:
-            maxLevel = level
-            print 'maxLevel =', level
-        if level < minLevel:
-            minLevel = level
-            print 'minLevel =', level
+        #if level > maxLevel:
+        #    maxLevel = level
+        #    print 'maxLevel =', level
+        #if level < minLevel:
+        #    minLevel = level
+        #    print 'minLevel =', level
         self.offset = offset ## in days
         self.rightOri = rightOri ## FIXME
         self.clear()
@@ -62,7 +61,6 @@ class Node:
             events += child.getEvents(t0, t1)
         return events
     newChild = lambda self, index: Node(
-        self,
         self.base,
         self.level-1,
         self.offset + index * self.base ** (self.level - 1),
@@ -82,13 +80,11 @@ class Node:
         return child
     def newParent(self):
         parent = Node(
-             None,
              self.base,
              self.level+1,
              self.offset,
              self.rightOri,
         )
-        self.parent = parent
         parent.children[0] = self
         return parent
 
@@ -98,8 +94,8 @@ class CenterNode:
         self.offset = offset
         self.clear()
     def clear(self):
-        self.right = Node(None, self.base, 1, self.offset, True)
-        self.left = Node(None, self.base, 1, self.offset, False)
+        self.right = Node(self.base, 1, self.offset, True)
+        self.left = Node(self.base, 1, self.offset, False)
     def getEvents(self, t0, t1):
         if self.offset <= t0:
             return self.right.getEvents(t0, t1)
