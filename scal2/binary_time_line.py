@@ -25,9 +25,6 @@ class Node:
         self.offset = offset ## in days
         self.rightOri = rightOri ## FIXME
         self.clear()
-        ###
-        ## self.next ? FIXME
-        ## next node with the same level (not a child of it)
     def clear(self):
         self.children = {} ## possible keys are 0 to base-1, or -(base-1) to 0
         self.events = [] ## list of tuples (rel_start, rel_end, event_id)
@@ -47,7 +44,6 @@ class Node:
             returns a list of (ev_t0, ev_t1, ev_id) s
         '''
         ## t0 and t1 are absolute. not relative to the self.offset
-        ## all time values are in days
         if not self.overlapScope(t0, t1):
             return []
         events = []
@@ -66,8 +62,7 @@ class Node:
         self.offset + index * self.base ** (self.level - 1),
         self.rightOri,
     )
-    #def getChildAtIndex(
-    def getChildAtTime(self, tm):
+    def getChild(self, tm):
         if not self.inScope(tm):
             #print 'Out of scope, level=%s, offset=%s, rightOri=%s'%(self.level, self.offset, self.rightOri)
             return None
@@ -128,7 +123,7 @@ class CenterNode:
         else:
             self.left = node
         while True:
-            childNode = node.getChildAtTime(t0)
+            childNode = node.getChild(t0)
             if childNode.inScope(t1):
                 node = childNode
             else:
