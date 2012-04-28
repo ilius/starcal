@@ -32,7 +32,7 @@ sys.path.append(dirname(dirname(__file__))) ## FIXME
 
 from scal2.paths import *
 from scal2.os_utils import getUsersData
-from scal2.time_utils import getCurrentTime
+from scal2.time_utils import getCurrentTime, getEpochFromJd
 from scal2.cal_modules import to_jd, DATE_GREG
 from scal2 import event_man
 from scal2.event_man import eventsDir
@@ -92,11 +92,11 @@ def prepareToday():
     for group in eventGroups:
         if not group.enable:
             continue
-        for fjd0, fjd1, eid in group.node.getEvents(todayJd, todayJd+1):
+        for epoch0, epoch1, eid in group.node.getEvents(getEpochFromJd(todayJd), getEpochFromJd(todayJd+1)):
             event = group[eid]
             if not event.notifiers:
                 continue
-            dt = getEpochFromJd(fjd0) - event.getNotifyBeforeSec() - tm
+            dt = epoch0 - event.getNotifyBeforeSec() - tm
             if dt >= 0:
                 timeout_add_seconds(int(dt)+1, notify, eid)
                 #log.debug(str(int(dt)+1))

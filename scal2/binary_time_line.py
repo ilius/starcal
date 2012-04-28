@@ -8,14 +8,21 @@ from scal2.core import to_jd, jd_to, convert, DATE_GREG, floatJdEncode
 
 J2000 = to_jd(2000, 1, 1, DATE_GREG)
 
-#maxLevel = 1
+maxLevel = 1
+minLevel = 1
 
 class Node:
     def __init__(self, parent, base, level, offset, rightOri):
-        self.parent = parent
+        global maxLevel, minLevel
+        self.parent = parent ## need to keep parent? FIXME
         self.base = base ## 8 or 16 is better
         self.level = level ## base ** level is the mathematical scope of the node (with its children)
-        ## level > 0
+        if level > maxLevel:
+            maxLevel = level
+            print 'maxLevel =', level
+        if level < minLevel:
+            minLevel = level
+            print 'minLevel =', level
         self.offset = offset ## in days
         self.rightOri = rightOri ## FIXME
         self.clear()
@@ -25,17 +32,6 @@ class Node:
     def clear(self):
         self.children = {} ## possible keys are 0 to base-1, or -(base-1) to 0
         self.events = [] ## list of tuples (rel_start, rel_end, event_id)
-    def getIndexRange(self, t0, t1):
-        if self.rightOri:
-            dt = self.base ** (self.level - 1)
-            i0 = max(0, int((t0-self.offset) // dt))
-            i1 = min(self.base, int((t1-1-self.offset)//dt) + 1)
-            return range(i0, i1)
-        else:
-            dt = self.base ** (self.level - 1)
-            i0 = min(0, int((t0-self.offset) // dt))
-            i1 = max(-self.base, int((t1+1-self.offset)//dt) + 1)
-            return range(i0, i1, -1)
     def getScope(self):
         if self.rightOri:
             return self.offset, self.offset + self.base ** self.level
@@ -44,12 +40,17 @@ class Node:
     def inScope(self, tm):
         s = self.getScope()
         return s[0] <= tm <= s[1]
+    def overlapScope(self, t0, t1):
+        s0, s1 = self.getScope()
+        return overlaps(t0, t1, s0, s1)
     def getEvents(self, t0, t1):## t0 < t1
         '''
             returns a list of (ev_t0, ev_t1, ev_id) s
         '''
         ## t0 and t1 are absolute. not relative to the self.offset
         ## all time values are in days
+        if not self.overlapScope(t0, t1):
+            return []
         events = []
         for ev_rt0, ev_rt1, ev_id in self.events:
             ev_t0 = ev_rt0 + self.offset
@@ -57,14 +58,8 @@ class Node:
             if overlaps(t0, t1, ev_t0, ev_t1):
                 ## events.append((ev_t0, ev_t1, ev_id))
                 events.append((max(t0, ev_t0), min(t1, ev_t1), ev_id))
-        if self.children:
-            for i in self.getIndexRange(t0, t1):
-                try:
-                    child = self.children[i]
-                except KeyError:
-                    pass
-                else:
-                    events += child.getEvents(t0, t1)
+        for child in self.children.values():
+            events += child.getEvents(t0, t1)
         return events
     newChild = lambda self, index: Node(
         self,
@@ -115,7 +110,6 @@ class CenterNode:
         else:
             raise RuntimeError
     def addEvent(self, t0, t1, ev_id):
-        #global maxLevel
         if self.offset <= t0:
             isRight = True
             node = self.right
@@ -137,9 +131,6 @@ class CenterNode:
             self.right = node
         else:
             self.left = node
-        #if node.level > maxLevel:
-        #    maxLevel = node.level
-        #    print 'maxLevel =', maxLevel
         while True:
             childNode = node.getChildAtTime(t0)
             if childNode.inScope(t1):

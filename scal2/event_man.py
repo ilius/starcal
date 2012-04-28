@@ -45,6 +45,7 @@ from scal2.core import myRaise, getEpochFromJd, getEpochFromJhms, log, getAbsWee
 from scal2.ics import icsHeader, getIcsTimeByEpoch, getIcsDateByJd, getJdByIcsDate, getEpochByIcsTime
 
 epsTm = 0.01## seconds ## configure somewhere? FIXME
+dayLen = 24*3600
 
 icsMinStartYear = 1970
 icsMaxEndYear = 2050
@@ -635,7 +636,7 @@ class DayTimeEventRule(EventRule):## Moment Event
         return TimeListOccurrence(## FIXME
             getEpochFromJd(startJd) + mySec,
             getEpochFromJd(endJd) + mySec + 1,
-            24*3600,
+            dayLen,
         )
     getInfo = lambda self: _('Time in Day') + ': ' + timeEncode(self.dayTime)
 
@@ -665,10 +666,10 @@ class DayTimeRangeEventRule(EventRule):
     def calcOccurrence(self, startEpoch, endEpoch, event):
         daySecStart = getSecondsFromHms(*self.dayTimeStart)
         daySecEnd = getSecondsFromHms(*self.dayTimeEnd)
-        startDiv = int(startEpoch // (24*3600))
-        endDiv = int(endEpoch // (24*3600))
+        startDiv = int(startEpoch//dayLen)
+        endDiv = int(endEpoch//dayLen)
         return TimeRangeListOccurrence(intersectionOfTwoTimeRangeList(
-            [(i*24*3600+daySecStart, i*24*3600+daySecEnd) for i in range(startDiv, endDiv+1)],
+            [(i*dayLen+daySecStart, i*dayLen+daySecEnd) for i in range(startDiv, endDiv+1)],
             [(startEpoch, endEpoch)],
         ))
 
@@ -764,7 +765,7 @@ class CycleLenEventRule(EventRule):
         self.cycleExtraTime = timeDecode(arg['extraTime'])
     def calcOccurrence(self, startEpoch, endEpoch, event):
         startEpoch = max(startEpoch, self.event['start'].getEpoch())
-        cycleSec = self.cycleDays*24*3600 + core.getSecondsFromHms(*self.cycleExtraTime)
+        cycleSec = self.cycleDays*dayLen + core.getSecondsFromHms(*self.cycleExtraTime)
         return TimeListOccurrence(startEpoch, endEpoch, cycleSec)
     getInfo = lambda self: _('Repeat: Every %s Days and %s')%(_(self.cycleDays), timeEncode(self.cycleExtraTime))
 
@@ -2021,13 +2022,9 @@ class EventGroup(EventContainer):
     def updateOccurrenceNode(self):
         self.node.clear()
         for eid, occur in self.calcOccurrenceAll():
-            for jd0, jd1 in occur.getFloatJdRangeList():
-                if jd1-jd0 < 0:
-                    print 'updateOccurrenceNode: jd1-jd0=%s'%(jd1-jd0)
-                self.node.addEvent(jd0, jd1, eid)
+            for t0, t1 in occur.getTimeRangeList():
+                self.node.addEvent(t0, t1, eid)
         #self.nodeLoaded = True
-    #def getOccurrence(self, startJd, endJd):
-    #    for t0, t1, eid in self.node.getEvents(startJd, endJd):
     def getIcsText(self, startJd, endJd):
         icsText = icsHeader
         currentTimeStamp = getIcsTimeByEpoch(time.time())
@@ -2485,12 +2482,12 @@ def getDayOccurrenceData(curJd, groups):
             continue
         #print '\nupdateData: checking event', event.summary
         gid = group.id
-        for fjd0, fjd1, eid in group.node.getEvents(curJd, curJd+1):
+        for epoch0, epoch1, eid in group.node.getEvents(getEpochFromJd(curJd), getEpochFromJd(curJd+1)):
             event = group[eid]
             text = event.getText()
             for url, fname in event.getFilesUrls():
                 text += '\n<a href="%s">%s</a>'%(url, fname)
-            if fjd1-fjd0==1:
+            if epoch1-epoch0==dayLen:
                 data.append({
                     'time':'',
                     'text':text,
@@ -2498,8 +2495,8 @@ def getDayOccurrenceData(curJd, groups):
                     'ids': (gid, eid),
                 })
             else:
-                h0, m0, s0 = getHmsFromSeconds((fjd0%1)*24*3600)
-                h1, m1, s1 = getHmsFromSeconds((fjd1%1)*24*3600)
+                h0, m0, s0 = getHmsFromSeconds(epoch0 % dayLen)
+                h1, m1, s1 = getHmsFromSeconds(epoch1 % dayLen)
                 data.append({
                     'time':hmsRangeToStr(h0, m0, s0, h1, m1, s1),
                     'text':text,

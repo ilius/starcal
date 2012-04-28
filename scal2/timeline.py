@@ -388,15 +388,11 @@ def calcTimeLineData(timeStart, timeWidth, width):
             tickEpochList.append(tmEpoch)
     ######################## Event Boxes
     boxesDict = {}
-    fjd0 = getFloatJdFromEpoch(timeStart) - 1
-    fjd1 = getFloatJdFromEpoch(timeEnd) + 0.0001
     for groupIndex in range(len(ui.eventGroups)):
         group = ui.eventGroups.byIndex(groupIndex)
         if not group.enable:
             continue
-        for ejd0, ejd1, eid in group.node.getEvents(fjd0, fjd1):
-            t0 = getEpochFromJd(ejd0)
-            t1 = getEpochFromJd(ejd1)
+        for t0, t1, eid in group.node.getEvents(timeStart, timeEnd):## -1, +1? FIXME
             pixBoxW = (t1-t0)*pixelPerSec
             if pixBoxW < skipEventPixelLimit:
                 continue
