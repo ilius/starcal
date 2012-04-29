@@ -1022,7 +1022,7 @@ class Event(JsonEventBaseClass, RuleContainer):
     def __init__(self, eid=None, group=None):
         self.setId(eid)
         self.group = group
-        self.mode = group.mode if group else core.primaryMode
+        self.mode = group.mode if group is not None else core.primaryMode
         self.icon = self.__class__.getDefaultIcon()
         self.summary = self.desc + ' (' + _(self.id) + ')'
         self.description = ''
@@ -1035,7 +1035,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         ## self.snoozeTime = (5, 60) ## (value, unit) like DurationEventRule ## FIXME
         self.addRequirements()
         self.setDefaults()
-        if group:
+        if group is not None:
             self.setDefaultsFromGroup(group)
         ######
         self.modified = time.time()
@@ -1647,14 +1647,15 @@ class LargeScaleEvent(Event):
     desc = _('Large Scale Event')
     __nonzero__ = lambda self: True
     def __init__(self, *args, **kw):
-        Event.__init__(self, *args, **kw)
         self.scale = 1 ## 1, 1000, 1000**2, 1000**3
         self.start = 0
         self.duration = 1
-    #def setDefaultsFromGroup(self, group):
-    #    Event.setDefaultsFromGroup(self, group)
-    #    if group.name == 'largeScale':
-    #        self.scale = group.scale
+        Event.__init__(self, *args, **kw)
+    def setDefaultsFromGroup(self, group):
+        Event.setDefaultsFromGroup(self, group)
+        if group.name == 'largeScale':
+            self.scale = group.scale
+            self.start = group.getStartValue()
     def copyFrom(self, other):
         Event.copyFrom(self, other)
         if other.name == self.name:
@@ -1920,6 +1921,8 @@ class EventGroup(EventContainer):
                 setattr(self, attr, data[attr])
             except KeyError:
                 pass
+        self.startJd = int(self.startJd)
+        self.endJd = int(self.endJd)
         ####
         #if 'defaultEventType' in data:
         #    self.defaultEventType = data['defaultEventType']
@@ -2153,6 +2156,14 @@ class NoteBook(EventGroup):
                 return event.getDate()
         return EventGroup.getSortByValue(self, event, attr)
 
+
+@classes.group.register
+class YearlyGroup(EventGroup):
+    name = 'yearly'
+    desc = _('Yearly Events Group')
+    acceptsEventTypes = ('yearly',)
+
+
 @classes.group.register
 class UniversityTerm(EventGroup):
     name = 'universityTerm'
@@ -2313,6 +2324,47 @@ class UniversityTerm(EventGroup):
             except KeyError:
                 pass
 
+
+@classes.group.register
+class LargeScaleGroup(EventGroup):
+    name = 'largeScale'
+    desc = _('Large Scale Events Group')
+    acceptsEventTypes = ('largeScale',)
+    sortBys = EventGroup.sortBys + (
+        ('start', _('Start')),
+    )
+    sortByDefault = 'start'
+    def getSortByValue(self, event, attr):
+        if event.name in self.acceptsEventTypes:
+            if attr=='start':
+                return event.name, event.start * event.scale
+        return EventGroup.getSortByValue(self, event, attr)
+    def __init__(self, gid=None, title=None):
+        self.scale = 1 ## 1, 1000, 1000**2, 1000**3
+        EventGroup.__init__(self, gid, title)
+    def setDefaults(self):
+        self.startJd = 0
+        self.endJd = self.startJd + self.scale * 9999
+    def copyFrom(self, other):
+        EventGroup.copyFrom(self, other)
+        if other.name == self.name:
+            self.scale = other.scale
+    def getData(self):
+        data = EventGroup.getData(self)
+        data['scale'] = self.scale
+        return data
+    def setData(self, data):
+        EventGroup.setData(self, data)
+        try:
+            self.scale = data['scale']
+        except KeyError:
+            pass
+    getStartValue = lambda self: jd_to(self.startJd, self.mode)[0]//self.scale
+    getEndValue = lambda self: jd_to(self.endJd, self.mode)[0]//self.scale
+    def setStartValue(self, start):
+        self.startJd = int(to_jd(start*self.scale, 1, 1, self.mode))
+    def setEndValue(self, end):
+        self.endJd = int(to_jd(end*self.scale, 1, 1, self.mode))
 
 class JsonObjectsHolder(JsonEventBaseClass):
     ## keeps all objects in memory

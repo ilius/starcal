@@ -377,6 +377,30 @@ class StrListEditor(gtk.HBox):
         return [row[0] for row in self.trees]
 
 
+class Scale10PowerComboBox(gtk.ComboBox):
+    def __init__(self):
+        self.ls = gtk.ListStore(int, str)
+        gtk.ComboBox.__init__(self, self.ls)
+        ###
+        cell = gtk.CellRendererText()
+        self.pack_start(cell, True)
+        self.add_attribute(cell, 'text', 1)
+        ###
+        self.ls.append((1, _('Years')))
+        self.ls.append((100, _('Centuries')))
+        self.ls.append((1000, _('Thousand Years')))
+        self.ls.append((1000**2, _('Million Years')))
+        self.ls.append((1000**3, _('Billion (10^9) Years')))
+        ###
+        self.set_active(0)
+    get_value = lambda self: self.ls[self.get_active()][0]
+    def set_value(self, value):
+        for i, row in enumerate(self.ls):
+            if row[0] == value:
+                self.set_active(i)
+                return
+        self.ls.append((value, _('%s Years')%_(value)))
+        self.set_active(len(self.ls)-1)
 
 
 class GroupComboBox(gtk.ComboBox):

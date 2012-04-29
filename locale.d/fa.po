@@ -629,7 +629,6 @@ msgid "time"
 msgstr ""
 "زمان"
 
-
 msgid "Remind Window"
 msgstr ""
 "پنجرهٔ یادآوری"
@@ -638,25 +637,45 @@ msgid "Alarm"
 msgstr ""
 "زنگ"
 
-msgid "Task"
-msgstr ""
-"کار"
-
 msgid "Event"
 msgstr ""
 "رویداد"
 
-msgid "Custom Event"
+msgid "Task"
 msgstr ""
-"رویداد دلخواه"
+"کار"
+
+msgid "Task List"
+msgstr ""
+"فهرست کارها"
+
+msgid "Daily Note"
+msgstr ""
+"یادداشت روزانه"
+
+msgid "Note Book"
+msgstr ""
+"دفترچهٔ یادداشت"
 
 msgid "Yearly Event"
 msgstr ""
 "رویداد سالیانه"
 
-msgid "Daily Note"
+msgid "Yearly Events Group"
 msgstr ""
-"یادداشت روزانه"
+"گروه رویدادهای سالیانه"
+
+msgid "Large Scale Event"
+msgstr ""
+"رویداد مقیاس‌بالا"
+
+msgid "Large Scale Events Group"
+msgstr ""
+"گروه رویدادهای مقیاس‌بالا"
+
+msgid "Custom Event"
+msgstr ""
+"رویداد دلخواه"
 
 msgid "Events"
 msgstr ""
@@ -898,14 +917,6 @@ msgid "Event Group"
 msgstr ""
 "گروه رویدادها"
 
-msgid "Task List"
-msgstr ""
-"فهرست کارها"
-
-msgid "Note Book"
-msgstr ""
-"دفترچهٔ یادداشت"
-
 msgid "Week"
 msgstr ""
 "هفته"
@@ -975,10 +986,6 @@ msgid "View Weekly Schedule"
 msgstr ""
 "مشاهدهٔ برنامهٔ هفتگی"
 
-
-msgid "Large Scale Event"
-msgstr ""
-"رویداد مقیاس‌بالا"
 
 msgid "Scale"
 msgstr ""

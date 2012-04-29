@@ -4,13 +4,13 @@
 from scal2.locale_man import tr as _
 
 from scal2.ui_gtk.event import common
-from scal2.ui_gtk.event.groups.group import GroupWidget as BaseGroupWidget
+from scal2.ui_gtk.event.groups.group import GroupWidget as NormalGroupWidget
 
 import gtk
 
-class GroupWidget(BaseGroupWidget):
+class GroupWidget(NormalGroupWidget):
     def __init__(self, group):
-        BaseGroupWidget.__init__(self, group)
+        NormalGroupWidget.__init__(self, group)
         ###
         hbox = gtk.HBox()
         label = gtk.Label(_('Default Task Duration'))
@@ -21,10 +21,10 @@ class GroupWidget(BaseGroupWidget):
         hbox.pack_start(self.defaultDurationBox, 0, 0)
         self.pack_start(hbox, 0, 0)
     def updateWidget(self):## FIXME
-        BaseGroupWidget.updateWidget(self)
+        NormalGroupWidget.updateWidget(self)
         self.defaultDurationBox.setDuration(*self.group.defaultDuration)
     def updateVars(self):
-        BaseGroupWidget.updateVars(self)
+        NormalGroupWidget.updateVars(self)
         self.group.defaultDuration = self.defaultDurationBox.getDuration()
 
 

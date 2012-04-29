@@ -9,8 +9,7 @@ from scal2.locale_man import numDecode
 from scal2 import core
 
 from scal2.ui_gtk.drawing import *
-from scal2.ui_gtk.event import common
-from scal2.ui_gtk.event.groups.group import GroupWidget as BaseGroupWidget
+from scal2.ui_gtk.event.groups.group import GroupWidget as NormalGroupWidget
 
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip
 
@@ -242,9 +241,9 @@ class ClassTimeBoundsEditor(gtk.HBox):
     def getData(self):
         return sorted([hmDecode(row[0]) for row in self.trees])
 
-class GroupWidget(BaseGroupWidget):
+class GroupWidget(NormalGroupWidget):
     def __init__(self, group):
-        BaseGroupWidget.__init__(self, group)
+        NormalGroupWidget.__init__(self, group)
         #####
         totalFrame = gtk.Frame(group.desc)
         totalVbox = gtk.VBox()
@@ -268,11 +267,11 @@ class GroupWidget(BaseGroupWidget):
         totalFrame.add(totalVbox)
         self.pack_start(totalFrame, 1, 1)## expand? FIXME
     def updateWidget(self):## FIXME
-        BaseGroupWidget.updateWidget(self)
+        NormalGroupWidget.updateWidget(self)
         self.courseListEditor.setData(self.group.courses)
         self.classTimeBoundsEditor.setData(self.group.classTimeBounds)
     def updateVars(self):
-        BaseGroupWidget.updateVars(self)
+        NormalGroupWidget.updateVars(self)
         ##
         self.group.setCourses(self.courseListEditor.getData())
         self.group.classTimeBounds = self.classTimeBoundsEditor.getData()
