@@ -20,8 +20,8 @@
 from time import time, localtime
 
 import sys, os
-from math import pi
 from os.path import join, isfile
+from math import pi, sqrt
 
 from scal2.locale_man import rtl, rtlSgn
 from scal2.locale_man import tr as _
@@ -288,26 +288,28 @@ class MonthCal(gtk.Widget, MainWinItem):
                         icon = item['icon']
                         if icon and not icon in iconList:
                             iconList.append(icon)
-                    iconsN = len(iconList)
-                    fromRight = 0
-                    for index, icon in enumerate(iconList):
-                        ## if len(iconList) > 1 ## FIXME
-                        try:
-                            pix = gdk.pixbuf_new_from_file(icon)
-                        except:
-                            myRaise(__file__)
-                            continue
-                        pix_w = pix.get_width()
-                        pix_h = pix.get_height()
-                        ## right buttom corner ?????????????????????
-                        x1 = (self.cx[xPos] + self.dx/2.0)*iconsN - fromRight - pix_w # right side
-                        y1 = (self.cy[yPos] + self.dy/2.0)*iconsN - pix_h # buttom side
-                        cr.scale(1.0/iconsN, 1.0/iconsN)
-                        cr.set_source_pixbuf(pix, x1, y1)
-                        cr.rectangle(x1, y1, pix_w, pix_h)
-                        cr.fill()
-                        cr.scale(iconsN, iconsN)
-                        fromRight += pix_w
+                    if iconList:
+                        iconsN = len(iconList)
+                        scaleFact = 1.0 / sqrt(iconsN)
+                        fromRight = 0
+                        for index, icon in enumerate(iconList):
+                            ## if len(iconList) > 1 ## FIXME
+                            try:
+                                pix = gdk.pixbuf_new_from_file(icon)
+                            except:
+                                myRaise(__file__)
+                                continue
+                            pix_w = pix.get_width()
+                            pix_h = pix.get_height()
+                            ## right buttom corner ?????????????????????
+                            x1 = (self.cx[xPos] + self.dx/2.0)/scaleFact - fromRight - pix_w # right side
+                            y1 = (self.cy[yPos] + self.dy/2.0)/scaleFact - pix_h # buttom side
+                            cr.scale(scaleFact, scaleFact)
+                            cr.set_source_pixbuf(pix, x1, y1)
+                            cr.rectangle(x1, y1, pix_w, pix_h)
+                            cr.fill()
+                            cr.scale(1.0/scaleFact, 1.0/scaleFact)
+                            fromRight += pix_w
                 #### Drawing numbers inside every cell
                 #cr.rectangle(
                 #    x0-self.dx/2.0+1,

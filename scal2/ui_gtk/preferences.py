@@ -111,7 +111,7 @@ toolbarItemsData = (
     ToolbarItem('add', 'add', 'eventManShow', 'Event Manager'),
     ToolbarItem('export', 'convert', 'exportClicked', _('Export to %s')%'HTML'),
     ToolbarItem('about', 'about', 'aboutShow', _('About ')+APP_DESC),
-    ToolbarItem('quit', 'quit', 'quit')
+    ToolbarItem('quit', 'quit', 'quit'),
 )
 
 toolbarItemsDataDict = dict([(item.name, item) for item in toolbarItemsData])
