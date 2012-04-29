@@ -888,10 +888,6 @@ class EventManagerDialog(gtk.Dialog):## FIXME
     def genRightClickMenu(self, path):
         ## how about multi-selection? FIXME
         ## and Select _All menu item
-        #cur = self.treev.get_cursor()
-        #if not cur:
-        #    return None
-        #(path, col) = cur
         obj_list = self.getObjsByPath(path)
         #print len(obj_list)
         menu = gtk.Menu()
@@ -997,22 +993,20 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         ## g_event.time == gtk.get_current_event_time() ## OK
         kname = gdk.keyval_name(g_event.keyval).lower()
         if kname=='menu':## Simulate right click (key beside Right-Ctrl)
-            cur = self.treev.get_cursor()
-            if not cur:
-                return
-            (path, col) = cur
-            menu = self.genRightClickMenu(path)
-            if not menu:
-                return
-            rect = self.treev.get_cell_area(path, self.treev.get_column(1))
-            x = rect.x
-            if rtl:
-                x -= 100
-            else:
-                x += 50
-            (dx, dy) = self.treev.translate_coordinates(self, x, rect.y + rect.height)
-            (wx, wy) = self.window.get_origin()
-            menu.popup(None, None, lambda m: (wx+dx, wy+dy+20, True), 3, g_event.time)
+            path = self.treev.get_cursor()[0]
+            if path:
+                menu = self.genRightClickMenu(path)
+                if not menu:
+                    return
+                rect = self.treev.get_cell_area(path, self.treev.get_column(1))
+                x = rect.x
+                if rtl:
+                    x -= 100
+                else:
+                    x += 50
+                (dx, dy) = self.treev.translate_coordinates(self, x, rect.y + rect.height)
+                (wx, wy) = self.window.get_origin()
+                menu.popup(None, None, lambda m: (wx+dx, wy+dy+20, True), 3, g_event.time)
         else:
             return False
         return True
@@ -1075,39 +1069,32 @@ class EventManagerDialog(gtk.Dialog):## FIXME
     def mbarImportClicked(self, obj):
         EventsImportWindow(self).present()
     def mbarEditClicked(self, obj):
-        cur = self.treev.get_cursor()
-        if not cur:
+        path = self.treev.get_cursor()[0]
+        if not path:
             return
-        path = cur[0]
         if len(path)==1:
             self.editGroupByPath(path)
         elif len(path)==2:
             self.editEventByPath(path)
     def mbarCutClicked(self, obj):
-        cur = self.treev.get_cursor()
-        if not cur:
+        path = self.treev.get_cursor()[0]
+        if not path:
             return
-        path = cur[0]
         if len(path)==2:
             self.toPasteEvent = (path, True)
     def mbarCopyClicked(self, obj):
-        cur = self.treev.get_cursor()
-        if not cur:
+        path = self.treev.get_cursor()[0]
+        if not path:
             return
-        path = cur[0]
         if len(path)==2:
             self.toPasteEvent = (path, False)
     def mbarPasteClicked(self, obj):
-        cur = self.treev.get_cursor()
-        if not cur:
+        path = self.treev.get_cursor()[0]
+        if not path:
             return
-        path = cur[0]
         self.pasteEventToPath(path)
     def treeviewCursorChanged(self, treev=None):
-        cur = self.treev.get_cursor()
-        if not cur:
-            return
-        (path, col) = cur
+        path = self.treev.get_cursor()[0]
         ## update eventInfoBox
         #print 'treeviewCursorChanged', path
         if not self.syncing:
@@ -1119,7 +1106,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 #self.sbar.remove_all(0)
                 message_id = self.sbar.push(0, '')
         return True
-    def onModifyGroup(self, group):
+    def onGroupModify(self, group):
         self.window.set_cursor(gdk.Cursor(gdk.WATCH))
         group.afterModify()## FIXME
         group.save()
@@ -1131,14 +1118,14 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         (path, col, xRel, yRel) = pos_t
         if not path:
             return
-        if not col:
-            return
-        rect = treev.get_cell_area(path, col)
-        if not rectangleContainsPoint(rect, g_event.x, g_event.y):
-            return
-        if g_event.button == 1:
+        if g_event.button == 3:
+            self.openRightClickMenu(path, g_event.time)
+        elif g_event.button == 1:
+            if not col:
+                return
+            if not rectangleContainsPoint(treev.get_cell_area(path, col), g_event.x, g_event.y):
+                return
             obj_list = self.getObjsByPath(path)
-            node_iter = self.trees.get_iter(path)
             if len(obj_list) == 1:## group, not event
                 group = obj_list[0]
                 if group.name != 'trash':
@@ -1150,7 +1137,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                     else:
                         group.enable = not group.enable
                         self.trees.set_value(
-                            node_iter,
+                            self.trees.get_iter(path),
                             1,
                             newOutlineSquarePixbuf(
                                 group.color,
@@ -1160,9 +1147,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                             ),
                         )
                         group.save()
-                        timeout_add_seconds(0, self.onModifyGroup, group)
-        elif g_event.button == 3:
-            self.openRightClickMenu(path, g_event.time)
+                        timeout_add_seconds(0, self.onGroupModify, group)
     def addGroupAfterGroup(self, menu, path):
         (index,) = path
         group = GroupEditorDialog().run()
@@ -1177,6 +1162,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             afterGroupIter,## sibling
             self.getGroupRow(group),
         )
+        self.onGroupModify(group)
     def addGroupBeforeTrash(self, obj=None):
         group = GroupEditorDialog().run()
         if group is None:
@@ -1188,6 +1174,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             self.trashIter,
             self.getGroupRow(group),
         )
+        self.onGroupModify(group)
     def duplicateGroup(self, path):
         (index,) = path
         (group,) = self.getObjsByPath(path)
@@ -1219,10 +1206,9 @@ class EventManagerDialog(gtk.Dialog):## FIXME
     duplicateGroupFromMenu = lambda self, menu, path: self.duplicateGroup(path[0])
     duplicateGroupWithEventsFromMenu = lambda self, menu, path: self.duplicateGroupWithEvents(path)
     def duplicateSelectedObj(self, button=None):
-        cur = self.treev.get_cursor()
-        if not cur:
+        path = self.treev.get_cursor()[0]
+        if not path:
             return
-        (path, col) = cur
         if len(path)==1:
             self.duplicateGroup(path)
         elif len(path)==2:## FIXME
@@ -1236,6 +1222,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         groupIter = self.trees.get_iter(path)
         for i, value in enumerate(self.getGroupRow(group)):
             self.trees.set_value(groupIter, i, value)
+        self.onGroupModify(group)
     editGroupFromMenu = lambda self, menu, path: self.editGroupByPath(path)
     def deleteGroup(self, menu, path):
         (index,) = path
@@ -1405,15 +1392,15 @@ class EventManagerDialog(gtk.Dialog):## FIXME
     moveUpFromMenu = lambda self, menu, path: self.moveUp(path)
     moveDownFromMenu = lambda self, menu, path: self.moveDown(path)
     def moveUpByButton(self, button):
-        cur = self.treev.get_cursor()
-        if not cur:
+        path = self.treev.get_cursor()[0]
+        if not path:
             return
-        self.moveUp(cur[0])
+        self.moveUp(path)
     def moveDownByButton(self, button):
-        cur = self.treev.get_cursor()
-        if not cur:
+        path = self.treev.get_cursor()[0]
+        if not path:
             return
-        self.moveDown(cur[0])
+        self.moveDown(path)
     def groupExportFromMenu(self, menu, group):
         SingleGroupExportDialog(group).run()
     def groupSortFromMenu(self, menu, path):

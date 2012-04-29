@@ -1037,7 +1037,6 @@ class Event(JsonEventBaseClass, RuleContainer):
         self.setDefaults()
         if group:
             self.setDefaultsFromGroup(group)
-        self.updateRulesHash()
         ######
         self.modified = time.time()
         self.remoteIds = None## (accountId, groupId, eventId)
@@ -1057,12 +1056,12 @@ class Event(JsonEventBaseClass, RuleContainer):
         self.modified = time.time()
         #self.group.eventsModified = self.modified
         ###
-        if self.group:## None or enbale=False
+        if self.group:
             rulesHash = self.getRulesHash()
             if rulesHash != self.rulesHash:
-                self.group.updateOccurrenceNode()
+                self.group.updateOccurrenceNodeEvent(self)
                 self.rulesHash = rulesHash
-        else:
+        else:## None or enbale=False
             self.rulesHash = ''
     getNotifyBeforeSec = lambda self: self.notifyBefore[0] * self.notifyBefore[1]
     getNotifyBeforeMin = lambda self: int(self.getNotifyBeforeSec()/60)
@@ -1212,6 +1211,7 @@ class Event(JsonEventBaseClass, RuleContainer):
             occur = occur.intersection(rule.calcOccurrence(startEpoch, endEpoch, self))
         occur.event = self
         return occur ## FIXME
+    calcOccurrenceAll = lambda self: self.calcOccurrenceForJdRange(self.group.startJd, self.group.endJd)
     #def calcFirstOccurrenceAfterJd(self, startJd):## too much tricky! FIXME
     def notify(self, finishFunc):
         self.n = len(self.notifiers)
@@ -1238,11 +1238,7 @@ class Event(JsonEventBaseClass, RuleContainer):
                     return False
             self.mode = mode
         return True
-    def updateRulesHash(self):
-        if self.group:
-            self.rulesHash = self.getRulesHash()
-        else:
-            self.rulesHash = ''
+
 
 @classes.event.register
 class TaskEvent(Event):
@@ -1946,6 +1942,7 @@ class EventGroup(EventContainer):
             for remoteIds, eventId in data['eventIdByRemoteIds']:
                 self.eventIdByRemoteIds[tuple(remoteIds)] = eventId
             #print self.eventIdByRemoteIds
+    ################# Event objects should be accessed from outside only within one of these 3 methods
     def getEvent(self, eid):
         if not eid in self.idList:
             print 'EventGroup.getEvent(%s): not in %s'%(eid, self.idList)
@@ -1954,6 +1951,7 @@ class EventGroup(EventContainer):
             return self.eventCache[eid]
         event = EventContainer.getEvent(self, eid)
         event.group = self
+        event.rulesHash = event.getRulesHash()
         if len(self.eventCache) < self.eventCacheSize:
             self.eventCache[eid] = event
         return event
@@ -1967,7 +1965,9 @@ class EventGroup(EventContainer):
         newEvent.changeMode(event.mode)
         newEvent.copyFrom(event)
         return newEvent
+    ###############################################
     def remove(self, event):## call when moving to trash
+        event.parent = None
         index = EventContainer.remove(self, event)
         try:
             del self.eventCache[event.id]
@@ -1977,15 +1977,24 @@ class EventGroup(EventContainer):
             del self.eventIdByRemoteIds[event.remoteIds]
         except:
             pass
+        self.node.delEvent(event.id)
         return index
     def removeAll(self):## clearEvents or excludeAll or removeAll FIXME
+        for event in self.eventCache.values():
+            event.group = None ## needed? FIXME
+        ###
         self.idList = []
         self.eventCache = {}
+        self.node.clear()
     def _postAdd(self, event):
+        event.group = self ## needed? FIXME
         if len(self.eventCache) < self.eventCacheSize:
             self.eventCache[event.id] = event
         if event.remoteIds:
             self.eventIdByRemoteIds[event.remoteIds] = event.id
+        ## need to update self.node?
+        ## its done in event.afterModify() right? not when moving event from another group
+        self.updateOccurrenceNodeEvent(event)
     def insert(self, index, event):
         self.idList.insert(index, event.id)
         self._postAdd(event)
@@ -1995,6 +2004,8 @@ class EventGroup(EventContainer):
     def updateCache(self, event):
         if event.id in self.eventCache:
             self.eventCache[event.id] = event
+        self.node.delEvent(event.id)
+        event.afterModify()
     def copy(self):
         newGroup = EventBaseClass.copy(self)
         newGroup.removeAll()
@@ -2019,6 +2030,12 @@ class EventGroup(EventContainer):
         EventContainer.afterModify(self)
         if self.enable:
             self.updateOccurrenceNode()## FIXME
+    def updateOccurrenceNodeEvent(self, event):
+        node = self.node
+        eid = event.id
+        node.delEvent(eid)
+        for t0, t1 in event.calcOccurrenceAll().getTimeRangeList():
+            node.addEvent(t0, t1, eid)
     def updateOccurrenceNode(self):
         self.node.clear()
         for eid, occur in self.calcOccurrenceAll():

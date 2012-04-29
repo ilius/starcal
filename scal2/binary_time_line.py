@@ -26,7 +26,7 @@ class Node:
         self.rightOri = rightOri ## FIXME
         self.clear()
     def clear(self):
-        self.children = {} ## possible keys are 0 to base-1, or -(base-1) to 0
+        self.children = {} ## possible keys are 0 to base-1 for right node, or -(base-1) to 0 for left node
         self.events = [] ## list of tuples (rel_start, rel_end, event_id)
     def getScope(self):
         if self.rightOri:
@@ -34,8 +34,8 @@ class Node:
         else:
             return self.offset - self.base ** self.level, self.offset
     def inScope(self, tm):
-        s = self.getScope()
-        return s[0] <= tm <= s[1]
+        s0, s1 = self.getScope()
+        return s0 <= tm < s1
     def overlapScope(self, t0, t1):
         s0, s1 = self.getScope()
         return overlaps(t0, t1, s0, s1)
@@ -56,23 +56,22 @@ class Node:
         for child in self.children.values():
             events += child.getEvents(t0, t1)
         return events
-    newChild = lambda self, index: Node(
-        self.base,
-        self.level-1,
-        self.offset + index * self.base ** (self.level - 1),
-        self.rightOri,
-    )
     def getChild(self, tm):
         if not self.inScope(tm):
-            #print 'Out of scope, level=%s, offset=%s, rightOri=%s'%(self.level, self.offset, self.rightOri)
-            return None
+            raise RuntimeError('Node.getChild: Out of scope (level=%s, offset=%s, rightOri=%s'%
+                (self.level, self.offset, self.rightOri))
         dt = self.base ** (self.level - 1)
         index = int((tm-self.offset) // dt)
         try:
-            child = self.children[index]
+            return self.children[index]
         except KeyError:
-            child = self.children[index] = self.newChild(index)
-        return child
+            child = self.children[index] = Node(
+                self.base,
+                self.level-1,
+                self.offset + index * self.base ** (self.level - 1),
+                self.rightOri,
+            )
+            return child
     def newParent(self):
         parent = Node(
              self.base,
@@ -91,6 +90,7 @@ class CenterNode:
     def clear(self):
         self.right = Node(self.base, 1, self.offset, True)
         self.left = Node(self.base, 1, self.offset, False)
+        self.byEvent = {}
     def getEvents(self, t0, t1):
         if self.offset <= t0:
             return self.right.getEvents(t0, t1)
@@ -118,17 +118,37 @@ class CenterNode:
             if node.inScope(t0) and node.inScope(t1):
                 break
             node = node.newParent()
+        ## now `node` is the root node
         if isRight:
             self.right = node
         else:
             self.left = node
         while True:
-            childNode = node.getChild(t0)
-            if childNode.inScope(t1):
-                node = childNode
+            child = node.getChild(t0)
+            if child.inScope(t1):
+                node = child
             else:
                 break
-        node.events.append((t0-node.offset, t1-node.offset, ev_id))
+        ## now `node` is the node that event should be placed in
+        ev_tuple = (t0-node.offset, t1-node.offset, ev_id)
+        node.events.append(ev_tuple)
+        try:
+            self.byEvent[ev_id].append((node, ev_tuple))
+        except KeyError:
+            self.byEvent[ev_id] = [(node, ev_tuple)]
+    def delEvent(self, ev_id):
+        try:
+            refList = self.byEvent.pop(ev_id)
+        except KeyError:
+            return
+        for node, ev_tuple in refList:
+            try:
+                node.events.remove(ev_tuple)
+            except ValueError:
+                continue
+            #if not node.events:
+            #   node.parent.removeChild(node)
+
 
 if __name__=='__main__':
     from scal2 import ui
