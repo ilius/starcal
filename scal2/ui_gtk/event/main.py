@@ -694,29 +694,42 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             return
         for gid, eid, eventIndex in ui.trashedEvents:
             groupIndex = ui.eventGroups.index(gid)
-            self.trees.remove(self.trees.get_iter((groupIndex, eventIndex)))
-            self.trees.insert(
-                self.trashIter,
-                0,
-                self.getEventRow(ui.eventTrash[eid]),
-            )
+            try:
+                eventIter = self.trees.get_iter((groupIndex, eventIndex))
+            except:
+                print 'trashed event: invalid tree path: (%s, %s)'%(groupIndex, eventIndex)
+            else:
+                self.trees.remove(eventIter)
+                self.trees.insert(
+                    self.trashIter,
+                    0,
+                    self.getEventRow(ui.eventTrash[eid]),
+                )
         ui.trashedEvents = []
         ###
         for gid, eid in ui.changedEvents:
             groupIndex = ui.eventGroups.index(gid)
             group = ui.eventGroups[gid]
             eventIndex = group.index(eid)
-            eventIter = self.trees.get_iter((groupIndex, eventIndex))
-            for i, value in enumerate(self.getEventRow(group[eid])):
-                self.trees.set_value(eventIter, i, value)
+            try:
+                eventIter = self.trees.get_iter((groupIndex, eventIndex))
+            except:
+                print 'changed event: invalid tree path: (%s, %s)'%(groupIndex, eventIndex)
+            else:
+                for i, value in enumerate(self.getEventRow(group[eid])):
+                    self.trees.set_value(eventIter, i, value)
         ui.changedEvents = []
         ###
         for gid in ui.changedGroups:
             groupIndex = ui.eventGroups.index(gid)
             group = ui.eventGroups[gid]
-            groupIter = self.trees.get_iter((groupIndex,))
-            for i, value in enumerate(self.getGroupRow(group)):
-                self.trees.set_value(groupIter, i, value)
+            try:
+                groupIter = self.trees.get_iter((groupIndex,))
+            except:
+                print 'changed group: invalid tree path: (%s,)'%groupIndex
+            else:
+                for i, value in enumerate(self.getGroupRow(group)):
+                    self.trees.set_value(groupIter, i, value)
         ui.changedGroups = []
         ###
         for gid, eid in ui.newEvents:

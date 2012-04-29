@@ -6,7 +6,7 @@ from scal2 import ui
 
 import gtk
 
-from scal2.ui_gtk.utils import imageFromFile
+from scal2.ui_gtk.utils import imageFromFile, labelStockMenuItem, labelImageMenuItem
 from scal2.ui_gtk.event.common import EventEditorDialog
 
 class DayOccurrenceView(gtk.VBox):
@@ -42,12 +42,12 @@ class DayOccurrenceView(gtk.VBox):
         self.set_visible(bool(cell.eventsData))
     def onLabelPopupPopulate(self, label, menu, ids):
         menu = gtk.Menu()
-        ##
+        ####
         itemCopyAll = gtk.ImageMenuItem(_('Copy _All'))
         itemCopyAll.set_image(gtk.image_new_from_stock(gtk.STOCK_COPY, gtk.ICON_SIZE_MENU))
         itemCopyAll.connect('activate', self.copyAll, label)
         menu.add(itemCopyAll)
-        ##
+        ####
         itemCopy = gtk.ImageMenuItem(_('_Copy'))
         itemCopy.set_image(gtk.image_new_from_stock(gtk.STOCK_COPY, gtk.ICON_SIZE_MENU))
         if label.get_property('cursor-position') > label.get_property('selection-bound'):
@@ -55,18 +55,32 @@ class DayOccurrenceView(gtk.VBox):
         else:
             itemCopy.set_sensitive(False)
         menu.add(itemCopy)
-        ##
+        ####
         menu.add(gtk.SeparatorMenuItem())
-        ##
+        ####
         (groupId, eventId) = ids
         event = ui.getEvent(groupId, eventId)
+        ###
         winTitle = _('Edit ') + event.desc
-        itemEdit = gtk.ImageMenuItem(winTitle)
-        itemEdit.set_image(gtk.image_new_from_stock(gtk.STOCK_EDIT, gtk.ICON_SIZE_MENU))
-        itemEdit.connect('activate', self.editEventClicked, winTitle, event, groupId)
-        menu.add(itemEdit)
-        ## How about moving event to trash from here?
-        ##
+        menu.add(labelStockMenuItem(
+            winTitle,
+            gtk.STOCK_EDIT,
+            self.editEventClicked,
+            winTitle,
+            event,
+            groupId,
+        ))
+        ###
+        menu.add(gtk.SeparatorMenuItem())
+        ###
+        menu.add(labelImageMenuItem(
+            _('Move to %s')%ui.eventTrash.title,
+            ui.eventTrash.icon,
+            self.moveEventToTrash,
+            event,
+            groupId,
+        ))
+        ####
         menu.show_all()
         menu.popup(None, None, None, 3, 0)
     def editEventClicked(self, item, winTitle, event, groupId):
@@ -77,8 +91,13 @@ class DayOccurrenceView(gtk.VBox):
         ).run()
         if event is None:
             return
-        ui.mainWin.onConfigChange()
         ui.changedEvents.append((groupId, event.id))
+        ui.mainWin.onConfigChange()
+    def moveEventToTrash(self, item, event, groupId):
+        #if not confirm(_('Press OK if you are sure to move event "%s" to trash')%event.summary):
+        #    return
+        ui.moveEventToTrashFromOutside(ui.eventGroups[groupId], event)
+        ui.mainWin.onConfigChange()
     def copy(self, item, label):
         start = label.get_property('selection-bound')
         end = label.get_property('cursor-position')

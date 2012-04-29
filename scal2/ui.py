@@ -403,6 +403,12 @@ def moveEventToTrash(group, event):
     eventTrash.insert(0, event)## or append? FIXME
     eventTrash.save()
 
+def moveEventToTrashFromOutside(group, event):
+    global trashedEvents
+    eventIndex = group.index(event.id)
+    moveEventToTrash(group, event)
+    trashedEvents.append((group.id, event.id, eventIndex))
+
 getEvent = lambda groupId, eventId: eventGroups[groupId][eventId]
 
 def duplicateGroupTitle(group):
