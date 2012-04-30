@@ -427,13 +427,13 @@ class EventEditorDialog(gtk.Dialog):
         self.connect('response', lambda w, e: self.hide())
         #######
         self.event = event
-        self._group = event.group
+        self._group = event.parent
         self.activeWidget = None
         #######
-        if typeChangable and len(event.group.acceptsEventTypes)>1:## FIXME
+        if typeChangable and len(self._group.acceptsEventTypes)>1:## FIXME
             hbox = gtk.HBox()
             combo = gtk.combo_box_new_text()
-            for eventType in event.group.acceptsEventTypes:
+            for eventType in self._group.acceptsEventTypes:
                 combo.append_text(event_man.classes.event.byName[eventType].desc)
             hbox.pack_start(gtk.Label(_('Event Type')), 0, 0)
             hbox.pack_start(combo, 0, 0)
@@ -441,7 +441,7 @@ class EventEditorDialog(gtk.Dialog):
             hbox.show_all()
             self.vbox.pack_start(hbox, 0, 0)
             ####
-            combo.set_active(event.group.acceptsEventTypes.index(event.name))
+            combo.set_active(self._group.acceptsEventTypes.index(event.name))
             #self.activeWidget = event.makeWidget()
             combo.connect('changed', self.typeChanged)
             self.comboEventType = combo

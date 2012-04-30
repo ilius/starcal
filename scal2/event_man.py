@@ -1019,10 +1019,13 @@ class Event(JsonEventBaseClass, RuleContainer):
     def getDefaultIcon(cls):
         return join(pixDir, 'event', cls.iconName+'.png') if cls.iconName else ''
     __nonzero__ = lambda self: bool(self.rulesOd) ## FIXME
-    def __init__(self, eid=None, group=None):
+    def __init__(self, eid=None, parent=None):
         self.setId(eid)
-        self.group = group
-        self.mode = group.mode if group is not None else core.primaryMode
+        self.parent = parent
+        try:
+            self.mode = parent.mode
+        except:
+            self.mode = core.primaryMode
         self.icon = self.__class__.getDefaultIcon()
         self.summary = self.desc + ' (' + _(self.id) + ')'
         self.description = ''
@@ -1035,8 +1038,8 @@ class Event(JsonEventBaseClass, RuleContainer):
         ## self.snoozeTime = (5, 60) ## (value, unit) like DurationEventRule ## FIXME
         self.addRequirements()
         self.setDefaults()
-        if group is not None:
-            self.setDefaultsFromGroup(group)
+        if parent is not None:
+            self.setDefaultsFromGroup(parent)
         ######
         self.modified = time.time()
         self.remoteIds = None## (accountId, groupId, eventId)
@@ -1045,7 +1048,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         if not self.description:
             return ''
         try:
-            showFull = self.group.showFullEventDesc
+            showFull = self.parent.showFullEventDesc
         except:
             showFull = False
         if showFull:
@@ -1054,12 +1057,12 @@ class Event(JsonEventBaseClass, RuleContainer):
             return self.description.split('\n')[0]
     def afterModify(self):
         self.modified = time.time()
-        #self.group.eventsModified = self.modified
+        #self.parent.eventsModified = self.modified
         ###
-        if self.group:
+        if self.parent:
             rulesHash = self.getRulesHash()
             if rulesHash != self.rulesHash:
-                self.group.updateOccurrenceNodeEvent(self)
+                self.parent.updateOccurrenceNodeEvent(self)
                 self.rulesHash = rulesHash
         else:## None or enbale=False
             self.rulesHash = ''
@@ -1111,7 +1114,10 @@ class Event(JsonEventBaseClass, RuleContainer):
         return data
     #getText = lambda self: self.summary if self.summary else self.description
     def getText(self):## FIXME
-    	sep = self.group.eventTextSep if self.group is not None else core.eventTextSep
+        try:
+    	    sep = self.parent.eventTextSep
+	    except:
+	        sep = core.eventTextSep
         if self.summary:
             if self.description:
                 return '%s%s%s'%(self.summary, sep, self.description)
@@ -1211,7 +1217,7 @@ class Event(JsonEventBaseClass, RuleContainer):
             occur = occur.intersection(rule.calcOccurrence(startEpoch, endEpoch, self))
         occur.event = self
         return occur ## FIXME
-    calcOccurrenceAll = lambda self: self.calcOccurrenceForJdRange(self.group.startJd, self.group.endJd)
+    calcOccurrenceAll = lambda self: self.calcOccurrenceForJdRange(self.parent.startJd, self.parent.endJd)
     #def calcFirstOccurrenceAfterJd(self, startJd):## too much tricky! FIXME
     def notify(self, finishFunc):
         self.n = len(self.notifiers)
@@ -1480,8 +1486,10 @@ class YearlyEvent(Event):
         try:
             startRule = self['start']
         except:
-            if self.group is not None:
-                startYear = jd_to(self.group.startJd, DATE_GREG)[0]
+            try:
+                startYear = jd_to(self.parent.startJd, DATE_GREG)[0]
+            except AttributeError:
+                pass
         else:
             startYear = startRule.getDate(DATE_GREG)[0]
         jd = to_jd(
@@ -1540,7 +1548,7 @@ class UniversityClassEvent(Event):
                     tm0 + (0,),
                     tm1 + (0,),
                 )
-    getCourseName = lambda self: self.group.getCourseNameById(self.courseId)
+    getCourseName = lambda self: self.parent.getCourseNameById(self.courseId)
     getWeekDayName = lambda self: core.weekDayName[self['weekDay'].weekDayList[0]]
     def updateSummary(self):
         self.summary = _('%s Class')%self.getCourseName() + ' (' + self.getWeekDayName() + ')'
@@ -1602,7 +1610,7 @@ class UniversityExamEvent(DailyNoteEvent):
         DailyNoteEvent.setDefaultsFromGroup(self, group)
         if group.name=='universityTerm':
             self.setDate(*group['end'].date)## FIXME
-    getCourseName = lambda self: self.group.getCourseNameById(self.courseId)
+    getCourseName = lambda self: self.parent.getCourseNameById(self.courseId)
     def updateSummary(self):
         self.summary = _('%s Exam')%self.getCourseName()
     def copyFrom(self, other):
@@ -1953,14 +1961,14 @@ class EventGroup(EventContainer):
         if eid in self.eventCache:
             return self.eventCache[eid]
         event = EventContainer.getEvent(self, eid)
-        event.group = self
+        event.parent = self
         event.rulesHash = event.getRulesHash()
         if len(self.eventCache) < self.eventCacheSize:
             self.eventCache[eid] = event
         return event
     def createEvent(self, eventType):
         assert eventType in self.acceptsEventTypes
-        event = classes.event.byName[eventType](group=self)
+        event = classes.event.byName[eventType](parent=self)
         return event
     def copyEventWithType(self, event, eventType):## FIXME
         newEvent = self.createEvent(eventType)
@@ -1984,13 +1992,13 @@ class EventGroup(EventContainer):
         return index
     def removeAll(self):## clearEvents or excludeAll or removeAll FIXME
         for event in self.eventCache.values():
-            event.group = None ## needed? FIXME
+            event.parent = None ## needed? FIXME
         ###
         self.idList = []
         self.eventCache = {}
         self.node.clear()
     def _postAdd(self, event):
-        event.group = self ## needed? FIXME
+        event.parent = self ## needed? FIXME
         if len(self.eventCache) < self.eventCacheSize:
             self.eventCache[event.id] = event
         if event.remoteIds:

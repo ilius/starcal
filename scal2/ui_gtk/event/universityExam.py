@@ -17,16 +17,16 @@ class EventWidget(gtk.VBox):
     def __init__(self, event):## FIXME
         gtk.VBox.__init__(self)
         self.event = event
-        assert event.group and event.group.name == 'universityTerm' ## FIXME
+        assert event.parent.name == 'universityTerm' ## FIXME
         sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
         #####
-        if not event.group.courses:
+        if not event.parent.courses:
             showError(_('Edit University Term and add some Courses before you add a Class'))
             raise RuntimeError('No courses added')
         self.courseIds = []
         self.courseNames = []
         combo = gtk.combo_box_new_text()
-        for course in event.group.courses:
+        for course in event.parent.courses:
             self.courseIds.append(course[0])
             self.courseNames.append(course[1])
             combo.append_text(course[1])
