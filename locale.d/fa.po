@@ -929,6 +929,10 @@ msgid "Collapse All"
 msgstr ""
 "جمع کردن همه"
 
+msgid "Show _Description"
+msgstr ""
+"نمایش _توضیح"
+
 
 msgid "Week"
 msgstr ""

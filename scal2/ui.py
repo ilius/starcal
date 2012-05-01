@@ -104,7 +104,12 @@ def shownCalsStr():
 
 def saveLiveConf():
     text = ''
-    for key in ('winX', 'winY', 'winWidth', 'winKeepAbove', 'winSticky', 'pluginsTextIsExpanded', 'bgColor'):
+    for key in (
+        'winX', 'winY', 'winWidth',
+        'winKeepAbove', 'winSticky',
+        'pluginsTextIsExpanded', 'bgColor',
+        'eventManShowDescription',## FIXME
+    ):
         text += '%s=%r\n'%(key, eval(key))
     open(confPathLive, 'w').write(text)
 
@@ -651,6 +656,7 @@ ntpServers = (
 
 #####################
 #dailyNoteChDateOnEdit = True ## change date of a dailyNoteEvent when editing it
+eventManShowDescription = True
 #####################
 focusTime = 0
 lastLiveConfChangeTime = 0

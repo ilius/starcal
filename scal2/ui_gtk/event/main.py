@@ -821,6 +821,13 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         expandItem = gtk.MenuItem(_('Expand All'))
         expandItem.connect('activate', self.expandAllClicked)
         viewMenu.append(expandItem)
+        ##
+        viewMenu.append(gtk.SeparatorMenuItem())
+        ##
+        self.showDescItem = gtk.CheckMenuItem(_('Show _Description'))
+        self.showDescItem.set_active(ui.eventManShowDescription)
+        self.showDescItem.connect('toggled', self.showDescItemToggled)
+        viewMenu.append(self.showDescItem)
         ####
         #testItem = gtk.MenuItem(_('Test'))
         #testMenu = gtk.Menu()
@@ -890,8 +897,9 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         col.set_resizable(True)
         self.treev.append_column(col)
         ###
-        col = gtk.TreeViewColumn(_('Description'), gtk.CellRendererText(), text=3)
-        self.treev.append_column(col)
+        self.colDesc = gtk.TreeViewColumn(_('Description'), gtk.CellRendererText(), text=3)
+        if ui.eventManShowDescription:
+            self.treev.append_column(self.colDesc)
         ###
         #self.treev.set_search_column(2)## or 3
         ###
@@ -1123,6 +1131,15 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         self.pasteEventToPath(path)
     collapseAllClicked = lambda self, obj: self.treev.collapse_all()
     expandAllClicked = lambda self, obj: self.treev.expand_all()
+    def showDescItemToggled(self, obj):
+        active = self.showDescItem.get_active()
+        #self.showDescItem.set_active(active)
+        ui.eventManShowDescription = active
+        ui.saveLiveConf()## FIXME
+        if active:
+            self.treev.append_column(self.colDesc)
+        else:
+            self.treev.remove_column(self.colDesc)
     def treeviewCursorChanged(self, treev=None):
         path = self.treev.get_cursor()[0]
         ## update eventInfoBox
