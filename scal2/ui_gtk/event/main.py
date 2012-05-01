@@ -14,7 +14,9 @@
 #
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
-# Or on Debian systems, from /usr/share/common-licenses/GPL
+# Also avalable in /usr/share/common-licenses/GPL on Debian systems
+# or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
+
 from time import time
 #print time(), __file__ ## FIXME
 
