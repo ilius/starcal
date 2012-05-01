@@ -111,7 +111,7 @@ class PrayTimeEventRule(EventRule):
 class TextPlug(BasePlugin, TextPlugUI):
     ## all options (except for "enable" and "show_date") will be saved in file confPath
     def __init__(self, enable=True, show_date=False):
-        print '----------- praytime TextPlug.__init__'
+        #print '----------- praytime TextPlug.__init__'
         #print 'From plugin: core.VERSION=%s'%api.get('core', 'VERSION')
         #print 'From plugin: core.aaa=%s'%api.get('core', 'aaa')
         BasePlugin.__init__(

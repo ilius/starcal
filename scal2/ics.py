@@ -16,10 +16,10 @@
 # with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
+from time import strftime, gmtime, strptime, mktime
 
+import sys
 
-import sys, time
-from time import strftime
 from os.path import join, split, splitext
 
 from scal2.paths import *
@@ -45,7 +45,7 @@ encodeIcsWeekDayList = lambda weekDayList: ','.join([icsWeekDays[wd] for wd in w
 
 def getIcsTimeByEpoch(epoch, pretty=False):
     format = icsTmFormatPretty if pretty else icsTmFormat
-    return strftime(format, time.gmtime(epoch))
+    return strftime(format, gmtime(epoch))
     #(jd, hour, minute, second) = getJhmsFromEpoch(epoch)
     #(year, month, day) = jd_to(jd, DATE_GREG)
     #return strftime(format, (year, month, day, hour, minute, second, 0, 0, 0))
@@ -61,11 +61,11 @@ def getIcsDateByJd(jd, pretty=False):
     return getIcsDate(y, m, d, pretty)
 
 def getJdByIcsDate(icsDate):
-    tm = time.strptime(icsDate, '%Y%m%d')
+    tm = strptime(icsDate, '%Y%m%d')
     return to_jd(tm.tm_year, tm.tm_mon, tm.tm.mday, DATE_GREG)
 
 def getEpochByIcsTime(icsTime):
-    return int(time.mktime(time.strptime(icsDate, icsTmFormat)))
+    return int(mktime(strptime(icsDate, icsTmFormat)))
 
 def splitIcsValue(value):
     data = []

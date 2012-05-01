@@ -15,21 +15,23 @@
 # You should have received a copy of the GNU General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
 # Or on Debian systems, from /usr/share/common-licenses/GPL
+from time import time
+#print time(), __file__ ## FIXME
 
-import os, sys, shlex, time, thread
+import os, sys, shlex, thread
 from os.path import join, dirname, split, splitext
 
 from scal2.paths import *
 from scal2.json_utils import *
+from scal2.cal_modules import convert
 
 from scal2 import core
-from scal2.core import pixDir, convert, myRaise, fixStrForFileName
+from scal2.core import myRaise, fixStrForFileName
 
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl
 
 from scal2 import event_man
-#from scal2.event_man import dateEncode, timeEncode, dateDecode, timeDecode
 from scal2 import ui
 
 from gobject import timeout_add_seconds
@@ -1000,7 +1002,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             self.editEventByPath(path)
     def onKeyPress(self, treev, g_event):
         #from scal2.time_utils import getCurrentTime, getGtkTimeFromEpoch
-        #print g_event.time-getGtkTimeFromEpoch(time.time())## FIXME
+        #print g_event.time-getGtkTimeFromEpoch(time())## FIXME
         #print getCurrentTime()-gdk.CURRENT_TIME/1000.0
         ## gdk.CURRENT_TIME == 0## FIXME
         ## g_event.time == gtk.get_current_event_time() ## OK
@@ -1120,10 +1122,14 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 message_id = self.sbar.push(0, '')
         return True
     def onGroupModify(self, group):
+        self.vbox.set_sensitive(False)
         self.window.set_cursor(gdk.Cursor(gdk.WATCH))
+        while gtk.events_pending():
+            gtk.main_iteration_do(False)
         group.afterModify()## FIXME
         group.save()
         self.window.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
+        self.vbox.set_sensitive(True)
     def treeviewButtonPress(self, treev, g_event):
         pos_t = treev.get_path_at_pos(int(g_event.x), int(g_event.y))
         if not pos_t:
@@ -1160,7 +1166,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                             ),
                         )
                         group.save()
-                        timeout_add_seconds(0, self.onGroupModify, group)
+                        #timeout_add_seconds(0, self.onGroupModify, group)
+                        self.onGroupModify(group)
     def addGroupAfterGroup(self, menu, path):
         (index,) = path
         group = GroupEditorDialog().run()
@@ -1499,11 +1506,6 @@ def makeWidget(obj):## obj is an instance of Event, EventRule, EventNotifier or 
     else:
         return None
 
-##############################################################################
-
-
-
-
 
 ##############################################################################
 
@@ -1559,16 +1561,6 @@ for cls in event_man.classes.group:
         else:
             setattr(cls, actionName, func)
 
-for fname in os.listdir(join(srcDir, 'accounts')):
-    name, ext = splitext(fname)
-    if ext == '.py' and name != '__init__':
-        try:
-            __import__('scal2.accounts.%s'%name)
-        except:
-            core.myRaiseTback()
-
-#print 'accounts', event_man.classes.account.names
-
 
 for cls in event_man.classes.account:
     try:
@@ -1588,14 +1580,17 @@ event_man.Event.makeWidget = makeWidget
 event_man.EventGroup.makeWidget = makeWidget
 event_man.Account.makeWidget = makeWidget
 
-ui.eventAccounts.load()
-ui.eventGroups.load()
-ui.eventTrash.load()
+
+### Load accounts, groups and trash? FIXME
+
+
 
 
 
 import scal2.ui_gtk.event.import_customday ## opens a dialog if neccessery
 
+
+##############################################################################
 
 def testCustomEventEditor():
     from pprint import pprint, pformat

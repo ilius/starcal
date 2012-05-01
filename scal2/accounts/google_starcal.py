@@ -52,7 +52,6 @@ from scal2.core import to_jd, jd_to, DATE_GREG, compressLongInt
 from scal2 import event_man
 from scal2.event_man import Account
 
-from scal2.ui import openUrl ## FIXME
 
 auth_local_webserver = True
 auth_host_name = 'localhost'
@@ -226,6 +225,7 @@ class GoogleAccount(Account):
     def showError(self, error):
         sys.stderr.write(error+'\n')
     def authenticate(self):
+        from scal2.ui import openUrl ## FIXME
         global auth_local_webserver
         storage = Storage(self.authFile)
         credentials = storage.get()
@@ -418,16 +418,16 @@ def printAllEvent(account, remoteGroupId):
         print gevent['summary'], gevent['updated']
 
 
-if __name__=='__main__':
-    from scal2 import ui
-    account = GoogleAccount(aid=1)
-    account.load()
-    remoteGroupId = 'gi646vjovfrh2u2u2l9hnatvq0@group.calendar.google.com'
-    ui.eventGroups.load()
-    group = ui.eventGroups[8]
-    #print 'group.remoteIds', group.remoteIds
-    group.remoteIds = (account.id, remoteGroupId)
-    account.sync(group, remoteGroupId)
+#if __name__=='__main__':
+#    from scal2 import ui
+#    account = GoogleAccount(aid=1)
+#    account.load()
+#    remoteGroupId = 'gi646vjovfrh2u2u2l9hnatvq0@group.calendar.google.com'
+#    ui.eventGroups.load()
+#    group = ui.eventGroups[8]
+#    #print 'group.remoteIds', group.remoteIds
+#    group.remoteIds = (account.id, remoteGroupId)
+#    account.sync(group, remoteGroupId)
 
 
 

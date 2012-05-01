@@ -16,12 +16,12 @@
 # with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
-
 from time import time
+#print time(), __file__ ## FIXME
 
 import sys, os, os.path, shutil
 from os import listdir
-from os.path import dirname, join, isfile, isdir
+from os.path import dirname, join, isfile, isdir, splitext
 from xml.dom.minidom import parse## remove FIXME
 from subprocess import Popen
 from gobject import timeout_add, timeout_add_seconds ## FIXME
@@ -482,11 +482,23 @@ getEventTagsDict = lambda: dict([(tagObj.name, tagObj) for tagObj in eventTags])
 eventTagsDesc = dict([(t.name, t.desc) for t in eventTags])
 
 ###################
+for fname in os.listdir(join(srcDir, 'accounts')):
+    name, ext = splitext(fname)
+    if ext == '.py' and name != '__init__':
+        try:
+            __import__('scal2.accounts.%s'%name)
+        except:
+            core.myRaiseTback()
+#print 'accounts', event_man.classes.account.names
+###########
 eventAccounts = event_man.EventAccountsHolder()
 eventGroups = event_man.EventGroupsHolder()
-#eventGroups.load()## FIXME here or in ui_*/event/main.py
 eventTrash = event_man.EventTrash()
-#eventTrash.load()## FIXME here or in ui_*/event/main.py
+#### Load accounts, groups and trash? FIXME
+eventAccounts.load()
+eventGroups.load()
+eventTrash.load()
+
 
 try:
     event_man.checkAndStartDaemon()## FIXME here or in ui_*/event/main.py

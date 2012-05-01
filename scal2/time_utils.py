@@ -1,5 +1,5 @@
-import time
-from time import localtime
+from time import time, localtime
+#from time import timezone, altzone, daylight
 import datetime
 import struct
 
@@ -47,9 +47,9 @@ def getTimeZoneByEpoch(epoch):
 
 getTimeZoneByJd = lambda jd: getTimeZoneByEpoch(getEpochFromJd(jd))
 
-getCurrentTimeZone = lambda: getTimeZoneByEpoch(time.time())
-#getCurrentTimeZone = lambda: -time.altzone if time.daylight and localtime().tm_isdst else -time.timezone
-getCurrentTime = lambda: time.time() + getCurrentTimeZone()
+getCurrentTimeZone = lambda: getTimeZoneByEpoch(time())
+#getCurrentTimeZone = lambda: -altzone if daylight and localtime().tm_isdst else -timezone
+getCurrentTime = lambda: time() + getCurrentTimeZone()
 getGtkTimeFromEpoch = lambda epoch: (epoch-1.32171528839e+9)*1000 // 1
 
 durationUnitsRel = (

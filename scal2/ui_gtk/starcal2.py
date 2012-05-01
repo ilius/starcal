@@ -17,6 +17,8 @@
 # with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
+from time import time, localtime
+#print time(), __file__ ## FIXME
 
 import sys
 
@@ -26,7 +28,6 @@ if sys.version_info[0] != 2:
 
 import os
 from os.path import join, dirname, isfile, isdir
-from time import time, localtime
 from subprocess import Popen
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
@@ -53,6 +54,8 @@ core.showInfo()
 from scal2 import event_man
 from scal2 import ui
 from scal2.ui import showYmArrows
+
+from scal2 import unity
 
 import gobject ##?????
 from gobject import timeout_add, timeout_add_seconds
@@ -81,7 +84,6 @@ from scal2.ui_gtk.event.main import DayOccurrenceView, EventManagerDialog
 from scal2.ui_gtk.timeline import TimeLineWindow
 from scal2.ui_gtk.weekcal import WeekCalWindow
 
-from scal2 import unity
 
 if unity.needToAdd():
     dialog = gtk.Dialog('Tray Icon')

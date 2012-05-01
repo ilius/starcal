@@ -150,14 +150,14 @@ class CenterNode:
             #   node.parent.removeChild(node)
 
 
-if __name__=='__main__':
-    from scal2 import ui
-    import time
-    ui.eventGroups.load()
-    for group in ui.eventGroups:
-        t0 = time.time()
-        group.updateOccurrenceNode()
-        print time.time()-t0, group.title
+#if __name__=='__main__':
+#    from scal2 import ui
+#    import time
+#    ui.eventGroups.load()
+#    for group in ui.eventGroups:
+#        t0 = time.time()
+#        group.updateOccurrenceNode()
+#        print time.time()-t0, group.title
     
 
 

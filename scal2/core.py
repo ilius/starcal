@@ -16,10 +16,9 @@
 # with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
+from time import time, localtime
+#print time(), __file__ ## FIXME
 
-import time
-#print time.time(), __file__ ## FIXME
-from time import localtime
 import sys, os, subprocess, traceback
 from StringIO import StringIO
 from os.path import isfile, isdir, exists, dirname, join, split, splitext
@@ -362,20 +361,6 @@ def mylocaltime(sec=None, mode=None):
     t[:3] = convert(t[0], t[1], t[2], DATE_GREG, mode)
     return t
 
-'''
-def gmtime(sec=None, mode=None):
-    if mode==None:##DATE_GREG
-        return time.gmtime(sec)
-    t = time.gmtime(sec)
-    t[:3] = convert(t[0], t[1], t[2], DATE_GREG, mode)
-    return t
-
-def mktime(t, mode=None):
-    if mode==None:##DATE_GREG
-        return time.mktime(t)
-    t[:3] = convert(t[0], t[1], t[2], mode, DATE_GREG)
-    return time.mktime(t)
-'''
 
 def validDate(mode, y, m, d):## move to cal-modules
     if y<0:
@@ -387,7 +372,7 @@ def validDate(mode, y, m, d):## move to cal-modules
     return True
 
 compressLongInt = lambda num: struct.pack('L', num).rstrip('\x00').encode('base64')[:-3].replace('/', '_')
-getCompactTime = lambda maxDays=1000, minSec=0.1: compressLongInt(long(time.time()%(maxDays*24*3600) / minSec))
+getCompactTime = lambda maxDays=1000, minSec=0.1: compressLongInt(long(time()%(maxDays*24*3600) / minSec))
 
 def floatJdEncode(jd, mode):
     jd, hour, minute, second = getJhmsFromEpoch(getEpochFromJd(jd))

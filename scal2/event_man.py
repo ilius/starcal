@@ -16,8 +16,10 @@
 # with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
+from time import time, localtime
+#print time(), __file__ ## FIXME
 
-import time, json, random, os, shutil
+import json, random, os, shutil
 from os.path import join, split, isdir, isfile, dirname
 from os import listdir
 
@@ -190,9 +192,6 @@ class Occurrence(EventBaseClass):
         for ep0, ep1 in self.getTimeRangeList():
             if ep1 is None:## FIXME
                 ep1 = ep0 + eps
-            if ep1-ep0 < 0:
-                print 'getFloatJdRangeList: ep1-ep0=%s'%(ep1-ep0)
-                #ep0, ep1 = ep1, ep0
             ls.append((getFloatJdFromEpoch(ep0), getFloatJdFromEpoch(ep1)))
         return ls
     containsMoment = lambda self, epoch: False
@@ -592,7 +591,7 @@ class DateAndTimeEventRule(DateEventRule):
     params = ('date', 'time')
     def __init__(self, parent):
         DateEventRule.__init__(self, parent)
-        self.time = time.localtime()[3:6]
+        self.time = localtime()[3:6]
     getEpoch = lambda self: getEpochFromJhms(self.getJd(), *tuple(self.time))
     getDate = lambda self, mode: convert(self.date[0], self.date[1], self.date[2], self.mode, mode)
     getData = lambda self: {
@@ -621,7 +620,7 @@ class DayTimeEventRule(EventRule):## Moment Event
     params = ('dayTime',)
     def __init__(self, parent):
         EventRule.__init__(self, parent)
-        self.dayTime = time.localtime()[3:6]
+        self.dayTime = localtime()[3:6]
     getData = lambda self: timeEncode(self.dayTime)
     def setData(self, data):
         self.dayTime = timeDecode(data)
@@ -1041,7 +1040,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         if parent is not None:
             self.setDefaultsFromGroup(parent)
         ######
-        self.modified = time.time()
+        self.modified = time()
         self.remoteIds = None## (accountId, groupId, eventId)
         ## remote groupId and eventId both can be integer or string or unicode (depending on remote account type)
     def getShownDescription(self):
@@ -1056,7 +1055,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         else:
             return self.description.split('\n')[0]
     def afterModify(self):
-        self.modified = time.time()
+        self.modified = time()
         #self.parent.eventsModified = self.modified
         ###
         if self.parent:
@@ -1259,7 +1258,7 @@ class TaskEvent(Event):
     def setDefaults(self):
         self.setStart(
             core.getSysDate(self.mode),
-            tuple(time.localtime()[3:6]),
+            tuple(localtime()[3:6]),
         )
         self.setEnd('duration', 1, 3600)
     def setDefaultsFromGroup(self, group):
@@ -1720,10 +1719,10 @@ class EventContainer(JsonEventBaseClass):
         self.icon = ''
         self.showFullEventDesc = False
         ######
-        self.modified = time.time()
+        self.modified = time()
         #self.eventsModified = self.modified
     def afterModify(self):
-        self.modified = time.time()
+        self.modified = time()
     def getEvent(self, eid):
         assert eid in self.idList
         eventFile = join(eventsDir, str(eid), 'event.json')
@@ -1858,8 +1857,6 @@ class EventGroup(EventContainer):
         self.node = CenterNode(offset=self.startJd)## offset=?? (J2000 by default)
         ###
         self.setDefaults()
-        if self.enable:
-            self.updateOccurrenceNode()
         ###########
         self.remoteIds = None## (accountId, groupId)
         ## remote groupId can be an integer or string or unicode (depending on remote account type)
@@ -1869,7 +1866,7 @@ class EventGroup(EventContainer):
     #    EventContainer.load(self)
     #    self.addRequirements()
     def afterSync(self):
-        self.remoteSyncData[self.remoteIds] = time.time()
+        self.remoteSyncData[self.remoteIds] = time()
     def getLastSync(self):
         if self.remoteIds:
             try:
@@ -2005,7 +2002,8 @@ class EventGroup(EventContainer):
             self.eventIdByRemoteIds[event.remoteIds] = event.id
         ## need to update self.node?
         ## its done in event.afterModify() right? not when moving event from another group
-        self.updateOccurrenceNodeEvent(event)
+        if self.enable:
+            self.updateOccurrenceNodeEvent(event)
     def insert(self, index, event):
         self.idList.insert(index, event.id)
         self._postAdd(event)
@@ -2040,7 +2038,10 @@ class EventGroup(EventContainer):
     def afterModify(self):## FIXME
         EventContainer.afterModify(self)
         if self.enable:
+            #print 'EventGroup.afterModify: running updateOccurrenceNode'
             self.updateOccurrenceNode()## FIXME
+        else:
+            self.node.clear()
     def updateOccurrenceNodeEvent(self, event):
         node = self.node
         eid = event.id
@@ -2048,14 +2049,17 @@ class EventGroup(EventContainer):
         for t0, t1 in event.calcOccurrenceAll().getTimeRangeList():
             node.addEvent(t0, t1, eid)
     def updateOccurrenceNode(self):
+        #stm0 = time()
+        #print 'updateOccurrenceNode', self.id, self.title
         self.node.clear()
         for eid, occur in self.calcOccurrenceAll():
             for t0, t1 in occur.getTimeRangeList():
                 self.node.addEvent(t0, t1, eid)
         #self.nodeLoaded = True
+        #print time()-stm0
     def getIcsText(self, startJd, endJd):
         icsText = icsHeader
-        currentTimeStamp = getIcsTimeByEpoch(time.time())
+        currentTimeStamp = getIcsTimeByEpoch(time())
         for event in self:
             icsData = event.getIcsData()
             vevent = 'BEGIN:VEVENT\n'
@@ -2387,6 +2391,7 @@ class JsonObjectsHolder(JsonEventBaseClass):
             yield self.byId[_id]
     __iter__ = lambda self: IteratorFromGen(self.iterGen())
     __len__ = lambda self: len(self.idList)
+    __nonzero__ = lambda self: bool(self.idList)
     index = lambda self, _id: self.idList.index(_id) ## or get object instead of obj_id? FIXME
     __getitem__ = lambda self, _id: self.byId.__getitem__(_id)
     byIndex = lambda self, index: self.byId[self.idList[index]]
@@ -2430,6 +2435,7 @@ class EventGroupsHolder(JsonObjectsHolder):
         self.append(obj)
         return obj
     def load(self):
+        #print '------------ EventGroupsHolder.load'
         self.clear()
         #eventIdList = []
         if isfile(self.file):
@@ -2496,6 +2502,7 @@ class EventGroupsHolder(JsonObjectsHolder):
 class EventAccountsHolder(JsonObjectsHolder):
     file = join(confDir, 'event', 'account_list.json')
     def load(self):
+        #print '------------ EventAccountsHolder.load'
         self.clear()
         if isfile(self.file):
             for _id in jsonToData(open(self.file).read()):
