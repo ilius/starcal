@@ -512,10 +512,12 @@ except:
     myRaise()
 
 
-changedEvents = [] ## a list of (groupId, eventId) 's
-changedGroups = []
-trashedEvents = []
-newEvents = []
+newGroups = []## list of groupId's
+changedGroups = []## list of groupId's
+newEvents = []## a list of (groupId, eventId) 's
+changedEvents = []## a list of (groupId, eventId) 's
+trashedEvents = []## a list of (groupId, eventId) 's
+
 
 
 #def updateEventTagsUsage():## FIXME where to use?
