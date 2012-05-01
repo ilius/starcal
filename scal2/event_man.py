@@ -1788,6 +1788,7 @@ class EventGroup(EventContainer):
     name = 'group'
     desc = _('Event Group')
     acceptsEventTypes = ('yearly', 'dailyNote', 'task', 'largeScale', 'custom')
+    canConvertTo = ()
     actions = []## [('Export to ICS', 'exportToIcs')]
     eventActions = [] ## FIXME
     sortBys = (
@@ -2020,10 +2021,26 @@ class EventGroup(EventContainer):
         newGroup = EventBaseClass.copy(self)
         newGroup.removeAll()
         return newGroup
+    def copyAs(self, newGroupType):
+        newGroup = classes.group.byName[newGroupType]()
+        newGroup.copyFrom(self)
+        newGroup.removeAll()
+        return newGroup
     def deepCopy(self):
         newGroup = self.copy()
         for event in self:
             newEvent = event.copy()
+            newEvent.save()
+            newGroup.append(newEvent)
+        return newGroup
+    def deepCopyAs(self, newGroupType):
+        newGroup = self.copyAs(newGroupType)
+        newEventType = newGroup.acceptsEventTypes[0]
+        for event in self:
+            newEvent = newGroup.createEvent(newEventType)
+            newEvent.changeMode(event.mode)## FIXME needed?
+            newEvent.copyFrom(event)
+            newEvent.setId(event.id)
             newEvent.save()
             newGroup.append(newEvent)
         return newGroup
@@ -2158,6 +2175,7 @@ class NoteBook(EventGroup):
     name = 'noteBook'
     desc = _('Note Book')
     acceptsEventTypes = ('dailyNote',)
+    canConvertTo = ('yearly',)
     #actions = EventGroup.actions + []
     sortBys = EventGroup.sortBys + (
         ('date', _('Date')),
@@ -2175,15 +2193,15 @@ class YearlyGroup(EventGroup):
     name = 'yearly'
     desc = _('Yearly Events Group')
     acceptsEventTypes = ('yearly',)
-
+    canConvertTo = ('noteBook',)
+                
 
 @classes.group.register
 class UniversityTerm(EventGroup):
     name = 'universityTerm'
     desc = _('University Term')
     acceptsEventTypes = ('universityClass', 'universityExam')
-    #actions = EventGroup.actions + []
-    actions = [('View Weekly Schedule', 'viewWeeklySchedule')]
+    actions = EventGroup.actions + [('View Weekly Schedule', 'viewWeeklySchedule')]
     sortBys = EventGroup.sortBys + (
         ('course', _('Course')),
         ('time', _('Time')),
@@ -2474,6 +2492,14 @@ class EventGroupsHolder(JsonObjectsHolder):
         self.delete(group)
         self.save()
         trash.save()
+    def convertGroupTo(self, group, newGroupType):
+        groupIndex = self.index(group.id)
+        newGroup = group.deepCopyAs(newGroupType)
+        newGroup.setId(group.id)
+        newGroup.save()
+        self.byId[newGroup.id] = newGroup
+        return newGroup
+        ## and then never use old `group` object
     def exportData(self, gidList):
         data = {
             'groups': [],

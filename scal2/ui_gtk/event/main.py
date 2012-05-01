@@ -995,6 +995,16 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 #    account = ui.eventAccounts[group.remoteIds[0]]
                 #    menu.add(labelImageMenuItem(_('Synchronize with %s')%account.title, gtk.STOCK_REFRESH, self.syncGroup, path))
                 ###
+                if group.canConvertTo:
+                    for newGroupType in group.canConvertTo:
+                        menu.add(labelStockMenuItem(
+                            _('Convert to %s')%event_man.classes.group.byName[newGroupType].desc,
+                            None,
+                            self.groupConvertTo,
+                            group,
+                            newGroupType,
+                        ))
+                ###
                 for (actionName, actionFuncName) in group.actions:
                     menu.add(labelStockMenuItem(_(actionName), None, self.groupActionClicked, group, actionFuncName))
         elif len(obj_list)==2:
@@ -1486,6 +1496,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 self.treev.expand_row(path, False)
     def groupConvertModeFromMenu(self, menu, group):
         GroupConvertModeDialog(group).run()
+    def groupConvertTo(self, menu, group, newGroupType):
+        ui.eventGroups.convertGroupTo(group, newGroupType)
     def groupActionClicked(self, menu, group, actionFuncName):
         getattr(group, actionFuncName)(parentWin=self)
     def cutEvent(self, menu, path):
