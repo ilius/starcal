@@ -1115,9 +1115,9 @@ class Event(JsonEventBaseClass, RuleContainer):
     #getText = lambda self: self.summary if self.summary else self.description
     def getText(self):## FIXME
         try:
-    	    sep = self.parent.eventTextSep
-	    except:
-	        sep = core.eventTextSep
+            sep = self.parent.eventTextSep
+        except:
+            sep = core.eventTextSep
         if self.summary:
             if self.description:
                 return '%s%s%s'%(self.summary, sep, self.description)
