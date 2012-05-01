@@ -51,6 +51,10 @@ msgid "Edit"
 msgstr ""
 "ویرایش"
 
+msgid "_View"
+msgstr ""
+"_نما"
+
 msgid "Clear"
 msgstr ""
 "پاک کردن"
@@ -916,6 +920,15 @@ msgstr ""
 msgid "Event Group"
 msgstr ""
 "گروه رویدادها"
+
+msgid "Expand All"
+msgstr ""
+"گستردن همه"
+
+msgid "Collapse All"
+msgstr ""
+"جمع کردن همه"
+
 
 msgid "Week"
 msgstr ""

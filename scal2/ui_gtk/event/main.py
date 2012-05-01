@@ -809,6 +809,19 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         dupItem.connect('activate', self.duplicateSelectedObj)
         editMenu.append(dupItem)
         ####
+        viewItem = gtk.MenuItem(_('_View'))
+        viewMenu = gtk.Menu()
+        viewItem.set_submenu(viewMenu)
+        menubar.append(viewItem)
+        ##
+        collapseItem = gtk.MenuItem(_('Collapse All'))
+        collapseItem.connect('activate', self.collapseAllClicked)
+        viewMenu.append(collapseItem)
+        ##
+        expandItem = gtk.MenuItem(_('Expand All'))
+        expandItem.connect('activate', self.expandAllClicked)
+        viewMenu.append(expandItem)
+        ####
         #testItem = gtk.MenuItem(_('Test'))
         #testMenu = gtk.Menu()
         #testItem.set_submenu(testMenu)
@@ -1108,6 +1121,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         if not path:
             return
         self.pasteEventToPath(path)
+    collapseAllClicked = lambda self, obj: self.treev.collapse_all()
+    expandAllClicked = lambda self, obj: self.treev.expand_all()
     def treeviewCursorChanged(self, treev=None):
         path = self.treev.get_cursor()[0]
         ## update eventInfoBox
