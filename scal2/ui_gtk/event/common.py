@@ -450,21 +450,24 @@ class EventEditorDialog(gtk.Dialog):
         self._group = event.parent
         self.activeWidget = None
         #######
+        hbox = gtk.HBox()
+        hbox.pack_start(gtk.Label(_('Event Type')), 0, 0)
         if typeChangable and len(self._group.acceptsEventTypes)>1:## FIXME
-            hbox = gtk.HBox()
             combo = gtk.combo_box_new_text()
             for eventType in self._group.acceptsEventTypes:
                 combo.append_text(event_man.classes.event.byName[eventType].desc)
-            hbox.pack_start(gtk.Label(_('Event Type')), 0, 0)
             hbox.pack_start(combo, 0, 0)
-            hbox.pack_start(gtk.Label(''), 1, 1)
-            hbox.show_all()
-            self.vbox.pack_start(hbox, 0, 0)
             ####
             combo.set_active(self._group.acceptsEventTypes.index(event.name))
             #self.activeWidget = event.makeWidget()
             combo.connect('changed', self.typeChanged)
             self.comboEventType = combo
+        else:
+            hbox.pack_start(gtk.Label(':  '+event.desc), 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        hbox.show_all()
+        self.vbox.pack_start(hbox, 0, 0)
+        #####
         if useSelectedDate:
             self.event.setJd(ui.cell.jd)
         self.activeWidget = event.makeWidget()
