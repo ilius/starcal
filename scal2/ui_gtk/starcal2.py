@@ -1529,6 +1529,7 @@ class MainWin(gtk.Window):
             labelStockMenuItem(_('Export to %s')%'HTML', gtk.STOCK_CONVERT, self.exportClickedTray),
             labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow),
             labelStockMenuItem('_Event Manager', gtk.STOCK_ADD, self.eventManShow),
+            labelImageMenuItem('Time Line', 'timeline-18.png', self.timeLineShow),
             labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow),
             gtk.SeparatorMenuItem(),
             labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit),

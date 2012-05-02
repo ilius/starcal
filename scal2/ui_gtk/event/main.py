@@ -693,23 +693,24 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         if ui.mainWin:
             ui.mainWin.onConfigChange()
         thread.start_new_thread(event_man.restartDaemon, ())
+    def showNewGroup(self, group):
+        groupIndex = ui.eventGroups.index(group.id)
+        groupIter = self.trees.insert(
+            None,
+            groupIndex,
+            self.getGroupRow(group),
+        )
+        for event in group:
+            self.trees.append(
+                groupIter,
+                self.getEventRow(event),
+            )
     def onConfigChange(self):
         if not self.isLoaded:
             return
         ###
         for gid in ui.newGroups:
-            groupIndex = ui.eventGroups.index(gid)
-            group = ui.eventGroups[gid]
-            groupIter = self.trees.insert(
-                None,
-                groupIndex,
-                self.getGroupRow(group),
-            )
-            for event in group:
-                self.trees.append(
-                    groupIter,
-                    self.getEventRow(event),
-                )
+            self.showNewGroup(ui.eventGroups[gid])
         ui.newGroups = []
         ###
         for gid in ui.changedGroups:
@@ -796,6 +797,10 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         importItem = gtk.MenuItem(_('_Import'))
         importItem.connect('activate', self.mbarImportClicked)
         fileMenu.append(importItem)
+        ##
+        orphanItem = gtk.MenuItem(_('Check for Orphan Events'))
+        orphanItem.connect('activate', self.mbarOrphanClicked)
+        fileMenu.append(orphanItem)
         ####
         editItem = gtk.MenuItem(_('_Edit'))
         editMenu = gtk.Menu()
@@ -952,7 +957,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 menu.add(labelStockMenuItem('Edit', gtk.STOCK_EDIT, self.editTrash))
                 menu.add(labelStockMenuItem('Empty Trash', gtk.STOCK_CLEAR, self.emptyTrash))
                 menu.add(gtk.SeparatorMenuItem())
-                menu.add(labelStockMenuItem('Add New Group', gtk.STOCK_NEW, self.addGroupBeforeTrash))
+                #menu.add(labelStockMenuItem('Add New Group', gtk.STOCK_NEW, self.addGroupBeforeTrash))## FIXME
             else:
                 #print 'right click on group', group.title
                 menu.add(labelStockMenuItem('Edit', gtk.STOCK_EDIT, self.editGroupFromMenu, path))
@@ -978,7 +983,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 menu.add(pasteItem)
                 ##
                 menu.add(gtk.SeparatorMenuItem())
-                menu.add(labelStockMenuItem('Add New Group', gtk.STOCK_NEW, self.addGroupAfterGroup, path))
+                #menu.add(labelStockMenuItem('Add New Group', gtk.STOCK_NEW, self.addGroupAfterGroup, path))## FIXME
                 menu.add(labelStockMenuItem('Duplicate', gtk.STOCK_COPY, self.duplicateGroupFromMenu, path))
                 menu.add(labelStockMenuItem('Duplicate with All Events', gtk.STOCK_COPY, self.duplicateGroupWithEventsFromMenu, path))
                 menu.add(gtk.SeparatorMenuItem())
@@ -1132,6 +1137,12 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         MultiGroupExportDialog().run()
     def mbarImportClicked(self, obj):
         EventsImportWindow(self).present()
+    def mbarOrphanClicked(self, obj):
+        self.startWaiting()
+        newGroup = ui.eventGroups.checkForOrphans()
+        if newGroup is not None:
+            self.showNewGroup(newGroup)
+        self.endWaiting()
     def mbarEditClicked(self, obj):
         path = self.treev.get_cursor()[0]
         if not path:
@@ -1182,14 +1193,10 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 message_id = self.sbar.push(0, '')
         return True
     def onGroupModify(self, group):
-        self.vbox.set_sensitive(False)
-        self.window.set_cursor(gdk.Cursor(gdk.WATCH))
-        while gtk.events_pending():
-            gtk.main_iteration_do(False)
-        group.afterModify()## FIXME
+        self.startWaiting()
+        group.afterModify()
         group.save()
-        self.window.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
-        self.vbox.set_sensitive(True)
+        self.endWaiting()
     def treeviewButtonPress(self, treev, g_event):
         pos_t = treev.get_path_at_pos(int(g_event.x), int(g_event.y))
         if not pos_t:
@@ -1496,8 +1503,18 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 self.treev.expand_row(path, False)
     def groupConvertModeFromMenu(self, menu, group):
         GroupConvertModeDialog(group).run()
+    def startWaiting(self):
+        self.vbox.set_sensitive(False)
+        self.window.set_cursor(gdk.Cursor(gdk.WATCH))
+        while gtk.events_pending():
+            gtk.main_iteration_do(False)
+    def endWaiting(self):
+        self.window.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
+        self.vbox.set_sensitive(True)
     def groupConvertTo(self, menu, group, newGroupType):
-        ui.eventGroups.convertGroupTo(group, newGroupType)
+        self.startWaiting()
+        newGroup = ui.eventGroups.convertGroupTo(group, newGroupType)
+        self.endWaiting()
     def groupActionClicked(self, menu, group, actionFuncName):
         getattr(group, actionFuncName)(parentWin=self)
     def cutEvent(self, menu, path):

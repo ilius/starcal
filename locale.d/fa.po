@@ -1737,6 +1737,10 @@ msgstr ""
 "نسخهٔ"
 
 
+msgid "Check for Orphan Events"
+msgstr ""
+"بررسی رویدادهای یتیم"
+
 
 #msgid "_General"
 #msgstr ""

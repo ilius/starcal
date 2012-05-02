@@ -21,7 +21,7 @@ from time import time, localtime
 #print time(), __file__ ## FIXME
 
 import json, random, os, shutil
-from os.path import join, split, isdir, isfile, dirname
+from os.path import join, split, isdir, isfile, dirname, splitext
 from os import listdir
 
 try:
@@ -2033,9 +2033,10 @@ class EventGroup(EventContainer):
             newEvent.save()
             newGroup.append(newEvent)
         return newGroup
-    def deepCopyAs(self, newGroupType):
+    def deepConvertTo(self, newGroupType):
         newGroup = self.copyAs(newGroupType)
         newEventType = newGroup.acceptsEventTypes[0]
+        newGroup.enable = False ## to prevent per-event node update
         for event in self:
             newEvent = newGroup.createEvent(newEventType)
             newEvent.changeMode(event.mode)## FIXME needed?
@@ -2043,6 +2044,8 @@ class EventGroup(EventContainer):
             newEvent.setId(event.id)
             newEvent.save()
             newGroup.append(newEvent)
+        newGroup.enable = self.enable
+        self.removeAll()## events with the same id's, can not be contained by two groups
         return newGroup
     def calcOccurrenceAll(self):
         occurList = []
@@ -2061,6 +2064,7 @@ class EventGroup(EventContainer):
         else:
             self.node.clear()
     def updateOccurrenceNodeEvent(self, event):
+        #print 'updateOccurrenceNodeEvent', self.id, self.title, event.id
         node = self.node
         eid = event.id
         node.delEvent(eid)
@@ -2494,8 +2498,9 @@ class EventGroupsHolder(JsonObjectsHolder):
         trash.save()
     def convertGroupTo(self, group, newGroupType):
         groupIndex = self.index(group.id)
-        newGroup = group.deepCopyAs(newGroupType)
+        newGroup = group.deepConvertTo(newGroupType)
         newGroup.setId(group.id)
+        newGroup.afterModify()
         newGroup.save()
         self.byId[newGroup.id] = newGroup
         return newGroup
@@ -2522,8 +2527,43 @@ class EventGroupsHolder(JsonObjectsHolder):
         self.save()## FIXME
         return newGroups
     importJsonFile = lambda self, fpath: self.importData(jsonToData(open(fpath, 'rb').read()))
-
-
+    def checkForOrphans(self):
+        newGroup = EventGroup()
+        newGroup.setData({
+            'title': 'Orphan Events',
+            'enable': False,
+            'color': (255, 255, 0),
+        })
+        for gid_fname in listdir(groupsDir):
+            try:
+                gid = int(splitext(gid_fname)[0])
+            except ValueError:
+                continue
+            if not gid in self.idList:
+                try:
+                    os.remove(join(groupsDir, gid_fname))
+                except:
+                    myRaise()
+        ######
+        myEventIds = []
+        for group in self:
+            myEventIds += group.idList
+        myEventIds = set(myEventIds)
+        ##
+        for eid_dname in listdir(eventsDir):
+            try:
+                eid = int(eid_dname)
+            except ValueError:
+                continue
+            if not eid in myEventIds:
+                newGroup.idList.append(eid)
+        if newGroup.idList:
+            newGroup.save()
+            self.append(newGroup)
+            self.save()
+            return newGroup
+        else:
+            return
 
 
 class EventAccountsHolder(JsonObjectsHolder):

@@ -102,7 +102,7 @@ movingKeyTimeoutFirst = 0.5
 movingKeyTimeout = 0.1 ## seconds ## continiouse keyPress delay is about 0.05 sec
 
 
-skipEventPixelLimit = 0.1 ## pixels
+skipEventPixelLimit = 0.03 ## pixels
 compressEventPixelLimit = 4 ## pixels
 
 
