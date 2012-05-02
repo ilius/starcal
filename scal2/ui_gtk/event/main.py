@@ -1257,7 +1257,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             groupIndex = path[0]
         else:
             groupIndex = len(self.trees)-1
-        self.insertNewGroup(path[0])
+        self.insertNewGroup(groupIndex)
     def duplicateGroup(self, path):
         (index,) = path
         (group,) = self.getObjsByPath(path)
