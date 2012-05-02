@@ -787,7 +787,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         menubar.append(fileItem)
         ##
         addGroupItem = gtk.MenuItem(_('Add New Group'))
-        addGroupItem.connect('activate', self.addGroupBeforeTrash)
+        addGroupItem.connect('activate', self.addGroupBeforeSelection)## or before selected group? FIXME
         fileMenu.append(addGroupItem)
         ##
         exportItem = gtk.MenuItem(_('_Export'))
@@ -957,7 +957,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 menu.add(labelStockMenuItem('Edit', gtk.STOCK_EDIT, self.editTrash))
                 menu.add(labelStockMenuItem('Empty Trash', gtk.STOCK_CLEAR, self.emptyTrash))
                 menu.add(gtk.SeparatorMenuItem())
-                #menu.add(labelStockMenuItem('Add New Group', gtk.STOCK_NEW, self.addGroupBeforeTrash))## FIXME
+                #menu.add(labelStockMenuItem('Add New Group', gtk.STOCK_NEW, self.addGroupBeforeSelection))## FIXME
             else:
                 #print 'right click on group', group.title
                 menu.add(labelStockMenuItem('Edit', gtk.STOCK_EDIT, self.editGroupFromMenu, path))
@@ -983,7 +983,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 menu.add(pasteItem)
                 ##
                 menu.add(gtk.SeparatorMenuItem())
-                #menu.add(labelStockMenuItem('Add New Group', gtk.STOCK_NEW, self.addGroupAfterGroup, path))## FIXME
+                #menu.add(labelStockMenuItem('Add New Group', gtk.STOCK_NEW, self.addGroupBeforeGroup, path))## FIXME
                 menu.add(labelStockMenuItem('Duplicate', gtk.STOCK_COPY, self.duplicateGroupFromMenu, path))
                 menu.add(labelStockMenuItem('Duplicate with All Events', gtk.STOCK_COPY, self.duplicateGroupWithEventsFromMenu, path))
                 menu.add(gtk.SeparatorMenuItem())
@@ -1235,33 +1235,29 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                         group.save()
                         #timeout_add_seconds(0, self.onGroupModify, group)
                         self.onGroupModify(group)
-    def addGroupAfterGroup(self, menu, path):
-        (index,) = path
+    def insertNewGroup(self, groupIndex):
         group = GroupEditorDialog().run()
         if group is None:
             return
-        ui.eventGroups.insert(index+1, group)
+        ui.eventGroups.insert(groupIndex, group)
         ui.eventGroups.save()
-        afterGroupIter = self.trees.get_iter(path)
-        self.trees.insert_after(
-            #self.trees.get_iter_root(),## parent
-            self.trees.iter_parent(afterGroupIter),
-            afterGroupIter,## sibling
-            self.getGroupRow(group),
-        )
-        self.onGroupModify(group)
-    def addGroupBeforeTrash(self, obj=None):
-        group = GroupEditorDialog().run()
-        if group is None:
-            return
-        ui.eventGroups.append(group)
-        ui.eventGroups.save()
+        beforeGroupIter = self.trees.get_iter((groupIndex,))
         self.trees.insert_before(
-            self.trees.iter_parent(self.trashIter),
-            self.trashIter,
+            #self.trees.get_iter_root(),## parent
+            self.trees.iter_parent(beforeGroupIter),
+            beforeGroupIter,## sibling
             self.getGroupRow(group),
         )
         self.onGroupModify(group)
+    def addGroupBeforeGroup(self, menu, path):
+        self.insertNewGroup(path[0])
+    def addGroupBeforeSelection(self, obj=None):
+        path = self.treev.get_cursor()[0]
+        if path:
+            groupIndex = path[0]
+        else:
+            groupIndex = len(self.trees)-1
+        self.insertNewGroup(path[0])
     def duplicateGroup(self, path):
         (index,) = path
         (group,) = self.getObjsByPath(path)
