@@ -1316,9 +1316,10 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         (group,) = self.getObjsByPath(path)
         if not confirm(_('Press OK if you are sure to delete group "%s"')%group.title):
             return
+        self.startWaiting()
         ui.deleteEventGroup(group)
         self.trees.remove(self.trees.get_iter(path))
-        self.reloadEvents()## FIXME
+        self.endWaiting()
     def addEventToGroupFromMenu(self, menu, path, group, eventType, title):
         event = addNewEvent(group, eventType, title, parent=self)
         if event is None:
