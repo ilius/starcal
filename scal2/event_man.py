@@ -1422,16 +1422,19 @@ class YearlyEvent(Event):
             startJd = max(startJd, startRule.getJd())
         startYear = jd_to(ifloor(startJd), mode)[0]
         endYear = jd_to(iceil(endJd), mode)[0]
-        jdList = []
-        for year in range(startYear, endYear+1):
+        jdList = set()
+        for year in (startYear, endYear+1):
             jd = to_jd(year, month, day, mode)
             if startJd <= jd < endJd:
-                jdList.append(jd)
+                jdList.add(jd)
+        for year in range(startYear+1, endYear):
+            jdList.add(to_jd(year, month, day, mode))
         return JdListOccurrence(jdList)
     def setJd(self, jd):
         (y, m, d) = jd_to(jd, self.mode)
         self.setMonth(m)
         self.setDay(d)
+        self.getAddRule('start').date = (y, 1, 1)
     def getData(self):
         data = Event.getData(self)
         try:
