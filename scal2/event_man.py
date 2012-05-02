@@ -1467,6 +1467,12 @@ class YearlyEvent(Event):
             pass
         else:
             self.setDay(day)
+    def getSuggestedStartYear(self):
+        try:
+            startJd = self.parent.startJd
+        except:
+            startJd = core.getCurrentJd()
+        return jd_to(startJd, self.mode)[0]
     def getText(self):
         text = Event.getText(self)
         newParts = [

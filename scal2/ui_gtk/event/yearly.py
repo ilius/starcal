@@ -76,7 +76,7 @@ class EventWidget(common.EventWidget):
             startRule = self.event['start']
         except:
             self.startYearCheck.set_active(False)
-            self.startYearSpin.set_value(core.getSysDate(self.event.mode)[0])
+            self.startYearSpin.set_value(self.event.getSuggestedStartYear())
         else:
             self.startYearCheck.set_active(True)
             self.startYearSpin.set_value(startRule.date[0])
