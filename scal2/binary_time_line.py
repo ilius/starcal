@@ -54,7 +54,7 @@ class Node:
             return self.offset - self.base ** self.level, self.offset
     def inScope(self, tm):
         s0, s1 = self.getScope()
-        return s0 <= tm < s1
+        return s0 <= tm <= s1
     def overlapScope(self, t0, t1):
         s0, s1 = self.getScope()
         return overlaps(t0, t1, s0, s1)
@@ -103,6 +103,7 @@ class Node:
 
 class CenterNode:
     def __init__(self, base=4, offset=J2000):
+        ## base 4 and 8 are the best (about speed of both addEvent and getEvents)
         self.base = base
         self.offset = offset
         self.clear()
@@ -134,7 +135,8 @@ class CenterNode:
             raise RuntimeError
         ########
         while True:
-            if node.inScope(t0) and node.inScope(t1):
+            s0, s1 = node.getScope()
+            if s0 <= t0 < s1 and s0 < t1 <= s1:
                 break
             node = node.newParent()
         ## now `node` is the root node
