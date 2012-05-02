@@ -1233,8 +1233,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                             ),
                         )
                         group.save()
-                        #timeout_add_seconds(0, self.onGroupModify, group)
                         self.onGroupModify(group)
+                        return True
     def insertNewGroup(self, groupIndex):
         group = GroupEditorDialog().run()
         if group is None:
