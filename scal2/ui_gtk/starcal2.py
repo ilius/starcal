@@ -80,7 +80,9 @@ from scal2.ui_gtk.customize import CustomizableWidgetWrapper, MainWinItem, Custo
 from scal2.ui_gtk.monthcal import MonthCal
 
 from scal2.ui_gtk.event.common import addNewEvent
-from scal2.ui_gtk.event.main import DayOccurrenceView, EventManagerDialog
+from scal2.ui_gtk.event.occurrence_view import DayOccurrenceView
+from scal2.ui_gtk.event.main import EventManagerDialog
+
 from scal2.ui_gtk.timeline import TimeLineWindow
 from scal2.ui_gtk.weekcal import WeekCalWindow
 
