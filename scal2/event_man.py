@@ -2098,15 +2098,15 @@ class EventGroup(EventContainer):
         newGroup.enable = self.enable
         self.removeAll()## events with the same id's, can not be contained by two groups
         return newGroup
-    def calcOccurrenceAll(self):
+    def calcOccurrenceAllGen(self):
         occurList = []
         startJd = self.startJd
         endJd = self.endJd
         for event in self:
             occur = event.calcOccurrenceForJdRange(startJd, endJd)
             if occur:
-                occurList.append((event.id, occur))
-        return occurList
+                yield event, occur
+    calcOccurrenceAll = lambda self: IteratorFromGen(self.calcOccurrenceAllGen()) 
     def afterModify(self):## FIXME
         EventContainer.afterModify(self)
         #### recreate node with new offset and base
@@ -2131,48 +2131,54 @@ class EventGroup(EventContainer):
     def updateOccurrenceNode(self):
         stm0 = time()
         self.node.clear()
-        for eid, occur in self.calcOccurrenceAll():
+        for event, occur in self.calcOccurrenceAll():
             for t0, t1 in occur.getTimeRangeList():
-                self.node.addEvent(t0, t1, eid)
+                self.node.addEvent(t0, t1, event.id)
         #self.nodeLoaded = True
         print 'updateOccurrenceNode, id=%s, title=%s, length=%s, time=%s'%(self.id, self.title, len(self), time()-stm0)
-    def getIcsText(self, startJd, endJd):
-        icsText = icsHeader
+    def exportToIcsFp(self, fp):
         currentTimeStamp = getIcsTimeByEpoch(time())
         for event in self:
+            print 'exportToIcsFp', event.id
             icsData = event.getIcsData()
-            vevent = 'BEGIN:VEVENT\n'
-            vevent += 'CREATED:%s\n'%currentTimeStamp
-            vevent += 'LAST-MODIFIED:%s\n'%currentTimeStamp
-            vevent += 'SUMMARY:%s\n'%event.summary
-            #vevent += 'CATEGORIES:%s\n'%self.title## FIXME
-            vevent += 'CATEGORIES:%s\n'%event.name## FIXME
+            ###
+            commonText = 'BEGIN:VEVENT\n'
+            commonText += 'CREATED:%s\n'%currentTimeStamp
+            commonText += 'LAST-MODIFIED:%s\n'%currentTimeStamp
+            commonText += 'SUMMARY:%s\n'%event.getText()
+            #commonText += 'CATEGORIES:%s\n'%self.title## FIXME
+            commonText += 'CATEGORIES:%s\n'%event.name## FIXME
+            ###
             if icsData is None:
-                occur = event.calcOccurrenceForJdRange(startJd, endJd)
+                occur = event.calcOccurrenceAll()
                 if occur:
                     if isinstance(occur, JdListOccurrence):
                         for sectionStartJd, sectionEndJd in occur.calcJdRanges():
+                        #for sectionStartJd in occur.getDaysJdList():
+                            #sectionEndJd = sectionStartJd + 1
+                            vevent = commonText
                             vevent += 'DTSTART;VALUE=DATE:%.4d%.2d%.2d\n'%jd_to(sectionStartJd, DATE_GREG)
                             vevent += 'DTEND;VALUE=DATE:%.4d%.2d%.2d\n'%jd_to(sectionEndJd, DATE_GREG)
                             vevent += 'TRANSP:TRANSPARENT\n' ## http://www.kanzaki.com/docs/ical/transp.html
+                            vevent += 'END:VEVENT\n'
+                            fp.write(vevent)
                     elif isinstance(occur, (TimeRangeListOccurrence, TimeListOccurrence)):
                         for startEpoch, endEpoch in occur.getTimeRangeList():
+                            vevent = commonText
                             vevent += 'DTSTART:%s\n'%getIcsTimeByEpoch(startEpoch)
                             if endEpoch is not None and endEpoch-startEpoch > 1:
                                 vevent += 'DTEND:%s\n'%getIcsTimeByEpoch(int(endEpoch))## why its float? FIXME
                             vevent += 'TRANSP:OPAQUE\n' ## FIXME ## http://www.kanzaki.com/docs/ical/transp.html
+                            vevent += 'END:VEVENT\n'
+                            fp.write(vevent)
                     else:
                         raise RuntimeError
             else:
+                vevent = commonText
                 for key, value in icsData:
                     vevent += '%s:%s\n'%(key, value)
-            vevent += 'END:VEVENT\n'
-            icsText += vevent
-        icsText += 'END:VCALENDAR\n'
-        return icsText
-    def exportToIcs(self, fpath, startJd, endJd):
-        icsText = self.getIcsText(startJd, endJd)
-        open(fpath, 'w').write(icsText)
+                vevent += 'END:VEVENT\n'
+                fp.write(vevent)
     def exportData(self, putInfo=True):
         data = self.getBasicData()
         data['events'] = []
@@ -2584,6 +2590,13 @@ class EventGroupsHolder(JsonObjectsHolder):
         self.save()## FIXME
         return newGroups
     importJsonFile = lambda self, fpath: self.importData(jsonToData(open(fpath, 'rb').read()))
+    def exportToIcs(self, fpath, gidList):
+        fp = open(fpath, 'w')
+        fp.write(icsHeader)
+        for gid in gidList:
+            self[gid].exportToIcsFp(fp)
+        fp.write('END:VCALENDAR\n')
+        fp.close()
     def checkForOrphans(self):
         newGroup = EventGroup()
         newGroup.setData({

@@ -91,20 +91,6 @@ class SingleGroupExportDialog(gtk.Dialog):
         hbox.pack_start(frame, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         self.vbox.pack_start(hbox, 0, 0)
-        ####
-        hbox = gtk.HBox(spacing=2)
-        hbox.pack_start(gtk.Label(_('From')+' '), 0, 0)
-        self.startDateInput = DateButton()
-        hbox.pack_start(self.startDateInput, 0, 0)
-        hbox.pack_start(gtk.Label(' '+_('To')+' '), 0, 0)
-        self.endDateInput = DateButton()
-        hbox.pack_start(self.endDateInput, 0, 0)
-        self.vbox.pack_start(hbox, 0, 0)
-        self.dateRangeBox = hbox
-        ####
-        (year, month, day) = ui.todayCell.dates[core.primaryMode]
-        self.startDateInput.set_date((year, 1, 1))
-        self.endDateInput.set_date((year+1, 1, 1))
         ########
         self.fcw = gtk.FileChooserWidget(action=gtk.FILE_CHOOSER_ACTION_SAVE)
         try:
@@ -116,8 +102,6 @@ class SingleGroupExportDialog(gtk.Dialog):
         self.vbox.show_all()
         self.formatRadioChanged()
     def formatRadioChanged(self, widget=None):
-        self.dateRangeBox.set_visible(self.radioIcs.get_active())
-        ###
         fpath = self.fcw.get_filename()
         if fpath:
             fname_nox, ext = splitext(split(fpath)[1])
@@ -133,18 +117,15 @@ class SingleGroupExportDialog(gtk.Dialog):
                 ext = '.json'
         self.fcw.set_current_name(fname_nox + ext)
     def save(self):
+        fpath = self.fcw.get_filename()
         if self.radioJsonCompact.get_active():
             text = dataToCompactJson(ui.eventGroups.exportData([self._group.id]))
+            open(fpath, 'wb').write(text)
         elif self.radioJsonPretty.get_active():
             text =  dataToPrettyJson(ui.eventGroups.exportData([self._group.id]))
+            open(fpath, 'wb').write(text)
         elif self.radioIcs.get_active():
-            text = self._group.getIcsText(
-                core.primary_to_jd(*self.startDateInput.get_date()),
-                core.primary_to_jd(*self.endDateInput.get_date()),
-            )
-        else:
-            return
-        open(self.fcw.get_filename(), 'wb').write(text)
+            ui.eventGroups.exportToIcs(fpath, [self._group.id])
     def run(self):
         if gtk.Dialog.run(self)==gtk.RESPONSE_OK:
             self.save()
@@ -221,20 +202,6 @@ class MultiGroupExportDialog(gtk.Dialog):
         hbox.pack_start(frame, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         self.vbox.pack_start(hbox, 0, 0)
-        ####
-        hbox = gtk.HBox(spacing=2)
-        hbox.pack_start(gtk.Label(_('From')+' '), 0, 0)
-        self.startDateInput = DateButton()
-        hbox.pack_start(self.startDateInput, 0, 0)
-        hbox.pack_start(gtk.Label(' '+_('To')+' '), 0, 0)
-        self.endDateInput = DateButton()
-        hbox.pack_start(self.endDateInput, 0, 0)
-        self.vbox.pack_start(hbox, 0, 0)
-        self.dateRangeBox = hbox
-        ####
-        (year, month, day) = ui.todayCell.dates[core.primaryMode]
-        self.startDateInput.set_date((year, 1, 1))
-        self.endDateInput.set_date((year+1, 1, 1))
         ########
         hbox = gtk.HBox(spacing=2)
         hbox.pack_start(gtk.Label(_('File')+':'), 0, 0)
@@ -253,7 +220,7 @@ class MultiGroupExportDialog(gtk.Dialog):
         self.formatRadioChanged()
         self.resize(600, 600)
     def formatRadioChanged(self, widget=None):
-        self.dateRangeBox.set_visible(self.radioIcs.get_active())
+        #self.dateRangeBox.set_visible(self.radioIcs.get_active())
         ###
         fpath = self.fpathEntry.get_text()
         if fpath:
@@ -267,12 +234,10 @@ class MultiGroupExportDialog(gtk.Dialog):
                         ext = '.json'
                 self.fpathEntry.set_text(fpath_nox + ext)
     def save(self):
+        fpath = self.fpathEntry.get_text()
         activeGroupIds = self.groupSelect.getValue()
         if self.radioIcs.get_active():
-            jd0 = core.primary_to_jd(*self.startDateInput.get_date())
-            jd1 = core.primary_to_jd(*self.endDateInput.get_date())
-            activeGroups = [ui.eventGroups[gid] for gid in activeGroupIds]
-            text = '\n'.join([group.getIcsText(jd0, jd1) for group in activeGroups])
+            ui.eventGroups.exportToIcs(fpath, activeGroupIds)
         else:
             data = ui.eventGroups.exportData(activeGroupIds)
             ## what to do with all groupData['info'] s? FIXME
@@ -282,7 +247,7 @@ class MultiGroupExportDialog(gtk.Dialog):
                 text = dataToPrettyJson(data)
             else:
                 raise RuntimeError
-        open(self.fpathEntry.get_text(), 'w').write(text)
+            open(fpath, 'w').write(text)
     def run(self):
         if gtk.Dialog.run(self)==gtk.RESPONSE_OK:
             self.save()
