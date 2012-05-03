@@ -672,7 +672,10 @@ class AccountEditorDialog(gtk.Dialog):
             return None
         self.activeWidget.updateVars()
         self.account.save()
-        ui.eventAccounts[self.account.id] = self.account
+        if self.isNew:
+            event_man.saveLastIds()
+        else:
+            ui.eventAccounts[self.account.id] = self.account
         self.destroy()
         return self.account
 

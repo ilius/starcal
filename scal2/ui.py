@@ -503,6 +503,9 @@ eventTrash = event_man.EventTrash()
 eventAccounts.load()
 eventGroups.load()
 eventTrash.load()
+####
+event_man.saveLastIds()
+
 
 
 try:

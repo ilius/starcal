@@ -495,9 +495,6 @@ weekDayNameAb = (_('Sun'), _('Mon'), _('Tue'), _('Wed'), _('Thu'), _('Fri'), _('
 #if weekNumberModeAuto and os.sep=='/':## FIXME
 #    weekNumberMode = getLocaleWeekNumberMode()
 
-lastEventId = 0
-lastEventGroupId = 0
-lastEventAccountId = 0
 
 dataToJson =  lambda data: dataToCompactJson(data) if useCompactJson else dataToPrettyJson(data)
 

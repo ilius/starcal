@@ -57,6 +57,34 @@ eventsDir = join(confDir, 'event', 'events')
 groupsDir = join(confDir, 'event', 'groups')
 accountsDir = join(confDir, 'event', 'accounts')
 
+lastEventId = 0
+lastEventGroupId = 0
+lastEventAccountId = 0
+
+###########################################################################
+
+lastIdsFile = join(confDir, 'event', 'last_ids.json')
+
+
+def loadLastIds():
+    global lastEventId, lastEventGroupId, lastEventAccountId
+    if not isfile(lastIdsFile):
+        return
+    data = jsonToData(open(lastIdsFile).read())
+    lastEventId = data['event']
+    lastEventGroupId = data['group']
+    lastEventAccountId = data['account']
+
+def saveLastIds():
+    open(lastIdsFile, 'w').write(dataToJson({
+        'event': lastEventId,
+        'group': lastEventGroupId,
+        'account': lastEventAccountId,
+    }))
+
+
+###########################################################################
+
 makeDir(eventsDir)
 makeDir(groupsDir)
 makeDir(accountsDir)
@@ -1019,8 +1047,11 @@ class Event(JsonEventBaseClass, RuleContainer):
     def getDefaultIcon(cls):
         return join(pixDir, 'event', cls.iconName+'.png') if cls.iconName else ''
     __nonzero__ = lambda self: bool(self.rulesOd) ## FIXME
-    def __init__(self, eid=None, parent=None):
-        self.setId(eid)
+    def __init__(self, _id=None, parent=None):
+        if _id is None:
+            self.id = None
+        else:
+            self.setId(_id)
         self.parent = parent
         try:
             self.mode = parent.mode
@@ -1044,6 +1075,10 @@ class Event(JsonEventBaseClass, RuleContainer):
         self.modified = time()
         self.remoteIds = None## (accountId, groupId, eventId)
         ## remote groupId and eventId both can be integer or string or unicode (depending on remote account type)
+    def save(self):
+        if self.id is None:
+            self.setId()
+        JsonEventBaseClass.save(self)
     def getShownDescription(self):
         if not self.description:
             return ''
@@ -1125,13 +1160,14 @@ class Event(JsonEventBaseClass, RuleContainer):
                 return self.summary
         else:
             return self.description
-    def setId(self, eid=None):
-        if eid is None or eid<0:
-            eid = core.lastEventId + 1 ## FIXME
-            core.lastEventId = eid
-        elif eid > core.lastEventId:
-            core.lastEventId = eid
-        self.id = eid
+    def setId(self, _id=None):
+        global lastEventId
+        if _id is None or _id<0:
+            _id = lastEventId + 1 ## FIXME
+            lastEventId = _id
+        elif _id > lastEventId:
+            lastEventId = _id
+        self.id = _id
         self.dir = join(eventsDir, str(self.id))
         self.file = join(self.dir, 'event.json')
         self.occurrenceFile = join(self.dir, 'occurrence')## file or directory? ## FIXME
@@ -1839,9 +1875,12 @@ class EventGroup(EventContainer):
             raise TypeError('invalid key type %r give to EventGroup.__delitem__'%key)
     def checkEventToAdd(self, event):
         return event.name in self.acceptsEventTypes
-    def __init__(self, gid=None, title=None):
+    def __init__(self, _id=None, title=None):
         EventContainer.__init__(self)
-        self.setId(gid)
+        if _id is None:
+            self.id = None
+        else:
+            self.setId(_id)
         self.enable = True
         if title is None:
             title = self.desc
@@ -1873,6 +1912,10 @@ class EventGroup(EventContainer):
         ## remote groupId can be an integer or string or unicode (depending on remote account type)
         self.remoteSyncData = {}
         self.eventIdByRemoteIds = {}
+    def save(self):
+        if self.id is None:
+            self.setId()
+        EventContainer.save(self)
     #def load(self):
     #    EventContainer.load(self)
     #    self.addRequirements()
@@ -1890,13 +1933,14 @@ class EventGroup(EventContainer):
             not common parameters, like those are set in __init__
         '''
     __nonzero__ = lambda self: self.enable ## FIXME
-    def setId(self, gid=None):
-        if gid is None or gid<0:
-            gid = core.lastEventGroupId + 1 ## FIXME
-            core.lastEventGroupId = gid
-        elif gid > core.lastEventGroupId:
-            core.lastEventGroupId = gid
-        self.id = gid
+    def setId(self, _id=None):
+        global lastEventGroupId
+        if _id is None or _id<0:
+            _id = lastEventGroupId + 1 ## FIXME
+            lastEventGroupId = _id
+        elif _id > lastEventGroupId:
+            lastEventGroupId = _id
+        self.id = _id
         self.file = join(groupsDir, '%d.json'%self.id)
     def copyFrom(self, other):
         EventContainer.copyFrom(self, other)
@@ -2172,8 +2216,8 @@ class TaskList(EventGroup):
             elif attr=='end':
                 return event.getEndEpoch()
         return EventGroup.getSortByValue(self, event, attr)
-    def __init__(self, gid=None, title=None):
-        EventGroup.__init__(self, gid, title)
+    def __init__(self, *args, **kwargs):
+        EventGroup.__init__(self, *args, **kwargs)
         self.defaultDuration = (0, 1) ## (value, unit)
         ## if defaultDuration[0] is set to zero, the checkbox for task's end, will be unchecked for new tasks
     def copyFrom(self, other):
@@ -2237,8 +2281,8 @@ class UniversityTerm(EventGroup):
                 elif event.name == 'universityExam':
                     return event['date'].getJd(), event['dayTimeRange'].getHourRange()
         return EventGroup.getSortByValue(self, event, attr)
-    def __init__(self, gid=None, title=None):
-        EventGroup.__init__(self, gid, title)
+    def __init__(self, *args, **kwargs):
+        EventGroup.__init__(self, *args, **kwargs)
         self.classesEndDate = core.getSysDate(self.mode)## FIXME
         self.setCourses([]) ## list of (courseId, courseName, courseUnits)
         self.classTimeBounds = [
@@ -2389,9 +2433,9 @@ class LargeScaleGroup(EventGroup):
             if attr=='start':
                 return event.name, event.start * event.scale
         return EventGroup.getSortByValue(self, event, attr)
-    def __init__(self, gid=None, title=None):
+    def __init__(self, *args, **kwargs):
         self.scale = 1 ## 1, 1000, 1000**2, 1000**3
-        EventGroup.__init__(self, gid, title)
+        EventGroup.__init__(self, *args, **kwargs)
     def setDefaults(self):
         self.startJd = 0
         self.endJd = self.startJd + self.scale * 9999
@@ -2468,7 +2512,7 @@ class EventGroupsHolder(JsonObjectsHolder):
         assert not obj.idList ## FIXME
         JsonObjectsHolder.delete(self, obj)
     def appendNew(self, data):
-        obj = classes.group.byName[data['type']](data['id'])
+        obj = classes.group.byName[data['type']](_id=data['id'])
         obj.setData(data)
         self.append(obj)
         return obj
@@ -2744,20 +2788,28 @@ def getDayOccurrenceData(curJd, groups):
 class Account(JsonEventBaseClass):
     name = ''
     desc = ''
-    def __init__(self, aid=None):
-        self.setId(aid)
+    def __init__(self, _id=None):
+        if _id is None:
+            self.id = None
+        else:
+            self.setId(_id)
         self.enable = True
         self.title = 'Account'
         self.remoteGroups = []## a list of dictionarise {'id':..., 'title':...}
         self.status = None## {'action': 'pull', 'done': 10, 'total': 20}
         ## action values: 'fetchGroups', 'pull', 'push'
-    def setId(self, aid=None):
-        if aid is None or aid<0:
-            aid = core.lastEventAccountId + 1 ## FIXME
-            core.lastEventAccountId = aid
-        elif aid > core.lastEventAccountId:
-            core.lastEventAccountId = aid
-        self.id = aid
+    def save(self):
+        if self.id is None:
+            self.setId()
+        JsonEventBaseClass.save()
+    def setId(self, _id=None):
+        global lastEventAccountId
+        if _id is None or _id<0:
+            _id = lastEventAccountId + 1 ## FIXME
+            lastEventAccountId = _id
+        elif _id > lastEventAccountId:
+            lastEventAccountId = _id
+        self.id = _id
         self.file = join(accountsDir, '%d.json'%self.id)
     def stop(self):
         self.status = None
