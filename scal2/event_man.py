@@ -1857,15 +1857,15 @@ class EventGroup(EventContainer):
             self.defaultEventType = 'custom'
         self.eventCacheSize = 0
         self.eventTextSep = core.eventTextSep
-        #self.nodeLoaded = False
         ###
         self.eventCache = {} ## from eid to event object
         ###
         (year, month, day) = core.getSysDate(self.mode)
         self.startJd = to_jd(year-10, 1, 1, self.mode)
         self.endJd = to_jd(year+5, 1, 1, self.mode)
-        ###
-        self.node = CenterNode(offset=self.startJd)## offset=?? (J2000 by default)
+        ##
+        self.node = CenterNode(offset=self.endJd, base=core.btlBase)
+        #self.nodeLoaded = False
         ###
         self.setDefaults()
         ###########
@@ -1971,7 +1971,7 @@ class EventGroup(EventContainer):
         event = EventContainer.getEvent(self, eid)
         event.parent = self
         event.rulesHash = event.getRulesHash()
-        if len(self.eventCache) < self.eventCacheSize:
+        if self.enable and len(self.eventCache) < self.eventCacheSize:
             self.eventCache[eid] = event
         return event
     def createEvent(self, eventType):
@@ -2067,11 +2067,18 @@ class EventGroup(EventContainer):
         return occurList
     def afterModify(self):## FIXME
         EventContainer.afterModify(self)
-        if self.enable:
-            #print 'EventGroup.afterModify: running updateOccurrenceNode'
-            self.updateOccurrenceNode()## FIXME
+        #### recreate node with new offset and base
+        todayJd = core.getCurrentJd()
+        if self.endJd - todayJd < todayJd - self.startJd:
+            offset = self.endJd
         else:
-            self.node.clear()
+            offset = self.startJd
+        self.node = CenterNode(offset=offset, base=core.btlBase)
+        ####
+        if self.enable:
+            self.updateOccurrenceNode()
+        else:
+            self.eventCache = {}
     def updateOccurrenceNodeEvent(self, event):
         #print 'updateOccurrenceNodeEvent', self.id, self.title, event.id
         node = self.node
@@ -2080,14 +2087,13 @@ class EventGroup(EventContainer):
         for t0, t1 in event.calcOccurrenceAll().getTimeRangeList():
             node.addEvent(t0, t1, eid)
     def updateOccurrenceNode(self):
-        #stm0 = time()
-        #print 'updateOccurrenceNode', self.id, self.title
+        stm0 = time()
         self.node.clear()
         for eid, occur in self.calcOccurrenceAll():
             for t0, t1 in occur.getTimeRangeList():
                 self.node.addEvent(t0, t1, eid)
         #self.nodeLoaded = True
-        #print time()-stm0
+        print 'updateOccurrenceNode, id=%s, title=%s, length=%s, time=%s'%(self.id, self.title, len(self), time()-stm0)
     def getIcsText(self, startJd, endJd):
         icsText = icsHeader
         currentTimeStamp = getIcsTimeByEpoch(time())
