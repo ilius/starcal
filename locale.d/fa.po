@@ -556,6 +556,10 @@ msgstr ""
 "ماه بعد"
 
 
+msgid "None"
+msgstr ""
+"هیچ"
+
 msgid "Birthday"
 msgstr ""
 "تولد"

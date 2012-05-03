@@ -31,7 +31,7 @@ from scal2.core import pixDir, myRaise
 from scal2 import event_man
 from scal2 import ui
 
-from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, buffer_get_text
+from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, buffer_get_text, labelStockMenuItem
 
 import gtk
 from gtk import gdk
@@ -61,6 +61,7 @@ class IconSelectButton(gtk.Button):
         ###
         menu = gtk.Menu()
         self.menu = menu
+        menu.add(labelStockMenuItem(_('None'), None, self.menuItemActivate, ''))
         for item in ui.eventTags:
             icon = item.icon
             if icon:
