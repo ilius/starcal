@@ -69,7 +69,7 @@ class DayOccurrenceView(gtk.VBox):
         ####
         itemCopy = gtk.ImageMenuItem(_('_Copy'))
         itemCopy.set_image(gtk.image_new_from_stock(gtk.STOCK_COPY, gtk.ICON_SIZE_MENU))
-        if label.get_property('cursor-position') > label.get_property('selection-bound'):
+        if label.get_property('cursor-position') != label.get_property('selection-bound'):
             itemCopy.connect('activate', self.copy, label)
         else:
             itemCopy.set_sensitive(False)
@@ -118,8 +118,10 @@ class DayOccurrenceView(gtk.VBox):
         ui.moveEventToTrashFromOutside(ui.eventGroups[groupId], event)
         ui.mainWin.onConfigChange()
     def copy(self, item, label):
-        start = label.get_property('selection-bound')
-        end = label.get_property('cursor-position')
+        bound = label.get_property('selection-bound')
+        cursor = label.get_property('cursor-position')
+        start = min(bound, cursor)
+        end = max(bound, cursor)
         self.clipboard.set_text(toStr(toUnicode(label.get_text())[start:end]))
     copyAll = lambda self, item, label: self.clipboard.set_text(label.get_label())
 
