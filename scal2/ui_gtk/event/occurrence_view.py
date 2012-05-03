@@ -55,7 +55,7 @@ class DayOccurrenceView(gtk.VBox):
             label.set_line_wrap(True)
             label.set_use_markup(True)
             label.connect('populate-popup', self.onLabelPopupPopulate, item['ids'])
-            hbox.pack_start(label, 1, 1)
+            hbox.pack_start(label, 0, 0)## or 1, 1 (center) FIXME
             self.pack_start(hbox, 0, 0)
         self.show_all()
         self.set_visible(bool(cell.eventsData))
