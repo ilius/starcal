@@ -1058,7 +1058,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         except:
             self.mode = core.primaryMode
         self.icon = self.__class__.getDefaultIcon()
-        self.summary = self.desc + ' (' + _(self.id) + ')'
+        self.summary = self.desc ## + ' (' + _(self.id) + ')' ## FIXME
         self.description = ''
         #self.showInTimeLine = False ## FIXME
         self.files = []
@@ -2545,7 +2545,7 @@ class EventGroupsHolder(JsonObjectsHolder):
             self.save()
         ## here check for non-grouped event ids ## FIXME
     def moveToTrash(self, group, trash, addToFirst=True):
-        if addToFirst:
+        if core.eventTrashLastTop:
             trash.idList = group.idList + trash.idList
         else:
             trash.idList += group.idList

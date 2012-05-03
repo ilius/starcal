@@ -439,6 +439,8 @@ weekNumberMode = 7
 
 useCompactJson = False## FIXME
 eventTextSep = ': ' ## use to seperate summary from description for display
+eventTrashLastTop = True
+
 btlBase = 4
 
 #confPathDef = '/etc/%s/core.conf'%APP_NAME ## ????????????????????????

@@ -1316,6 +1316,20 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         if not confirm(_('Press OK if you are sure to delete group "%s"')%group.title):
             return
         self.startWaiting()
+        trashedIds = group.idList
+        if core.eventTrashLastTop:
+            for eid in reversed(trashedIds):
+                self.trees.insert(
+                    self.trashIter,
+                    0,
+                    self.getEventRow(group[eid]),
+                )
+        else:
+            for eid in trashedIds:
+                self.trees.append(
+                    self.trashIter,
+                    self.getEventRow(group[eid]),
+                )
         ui.deleteEventGroup(group)
         self.trees.remove(self.trees.get_iter(path))
         self.endWaiting()
@@ -1346,11 +1360,17 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         (group, event) = self.getObjsByPath(path)
         ui.moveEventToTrash(group, event)
         self.trees.remove(self.trees.get_iter(path))
-        self.trees.insert(
-            self.trashIter,
-            0,
-            self.getEventRow(event),
-        )
+        if core.eventTrashLastTop:
+            self.trees.insert(
+                self.trashIter,
+                0,
+                self.getEventRow(event),
+            )
+        else:
+            self.trees.append(
+                self.trashIter,
+                self.getEventRow(event),
+            )
     def deleteEventFromTrash(self, menu, path):
         (trash, event) = self.getObjsByPath(path)
         trash.delete(event.id)## trash == ui.eventTrash

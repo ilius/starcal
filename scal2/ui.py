@@ -400,7 +400,7 @@ def checkMainWinItems():
 
 
 def deleteEventGroup(group):
-    eventGroups.moveToTrash(group, eventTrash, addToFirst=True)
+    eventGroups.moveToTrash(group, eventTrash)
 
 def moveEventToTrash(group, event):
     group.remove(event)
