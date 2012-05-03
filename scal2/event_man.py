@@ -1075,10 +1075,6 @@ class Event(JsonEventBaseClass, RuleContainer):
         self.modified = time()
         self.remoteIds = None## (accountId, groupId, eventId)
         ## remote groupId and eventId both can be integer or string or unicode (depending on remote account type)
-    def save(self):
-        if self.id is None:
-            self.setId()
-        JsonEventBaseClass.save(self)
     def getShownDescription(self):
         if not self.description:
             return ''
@@ -1174,6 +1170,8 @@ class Event(JsonEventBaseClass, RuleContainer):
         self.filesDir = join(self.dir, 'files')
         self.loadFiles()
     def save(self):
+        if self.id is None:
+            self.setId()
         makeDir(self.dir)
         JsonEventBaseClass.save(self)
     getJd = lambda self: None
