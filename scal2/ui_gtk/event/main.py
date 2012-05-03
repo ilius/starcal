@@ -835,6 +835,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         treeBox = gtk.HBox()
         #####
         self.treev = gtk.TreeView()
+        self.treev.set_search_column(2)
         #self.treev.set_headers_visible(False)## FIXME
         #self.treev.get_selection().set_mode(gtk.SELECTION_MULTIPLE)## FIXME
         #self.treev.set_rubber_banding(gtk.SELECTION_MULTIPLE)## FIXME
