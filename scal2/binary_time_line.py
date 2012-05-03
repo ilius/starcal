@@ -161,7 +161,8 @@ class CenterNode:
         try:
             refList = self.byEvent.pop(ev_id)
         except KeyError:
-            return
+            return 0
+        n = len(refList)
         for node, ev_tuple in refList:
             try:
                 node.events.remove(ev_tuple)
@@ -169,7 +170,7 @@ class CenterNode:
                 continue
             #if not node.events:
             #   node.parent.removeChild(node)
-
+        return n
 
 #if __name__=='__main__':
 #    from scal2 import ui

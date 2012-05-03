@@ -1154,8 +1154,10 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         if not self.syncing:
             if path and len(path)==1:
                 group = self.getObjsByPath(path)[0]
-                #message_id = self.sbar.push(0, _('%s contains %s events')%(group.title, _(len(group))))
-                message_id = self.sbar.push(0, _('contains %s events')%_(len(group)))
+                message_id = self.sbar.push(0, _('contains %s events and %s occurences')%(
+                    _(len(group)),
+                    _(group.occurCount),
+                ))
             else:
                 #self.sbar.remove_all(0)
                 message_id = self.sbar.push(0, '')
@@ -1202,6 +1204,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                         )
                         group.save()
                         self.onGroupModify(group)
+                        self.treev.set_cursor(path)
                         return True
     def insertNewGroup(self, groupIndex):
         group = GroupEditorDialog().run()

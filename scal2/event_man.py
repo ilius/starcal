@@ -1903,6 +1903,7 @@ class EventGroup(EventContainer):
         ##
         self.node = CenterNode(offset=self.endJd, base=core.btlBase)
         #self.nodeLoaded = False
+        self.occurCount = 0
         ###
         self.setDefaults()
         ###########
@@ -2038,7 +2039,7 @@ class EventGroup(EventContainer):
             del self.eventIdByRemoteIds[event.remoteIds]
         except:
             pass
-        self.node.delEvent(event.id)
+        self.occurCount -= self.node.delEvent(event.id)
         return index
     def removeAll(self):## clearEvents or excludeAll or removeAll FIXME
         for event in self.eventCache.values():
@@ -2047,6 +2048,7 @@ class EventGroup(EventContainer):
         self.idList = []
         self.eventCache = {}
         self.node.clear()
+        self.occurCount = 0
     def _postAdd(self, event):
         event.parent = self ## needed? FIXME
         if len(self.eventCache) < self.eventCacheSize:
@@ -2066,7 +2068,7 @@ class EventGroup(EventContainer):
     def updateCache(self, event):
         if event.id in self.eventCache:
             self.eventCache[event.id] = event
-        self.node.delEvent(event.id)
+        self.occurCount -= self.node.delEvent(event.id)
         event.afterModify()
     def copy(self):
         newGroup = EventBaseClass.copy(self)
@@ -2116,6 +2118,7 @@ class EventGroup(EventContainer):
         else:
             offset = self.startJd
         self.node = CenterNode(offset=offset, base=core.btlBase)
+        self.occurCount = 0
         ####
         if self.enable:
             self.updateOccurrenceNode()
@@ -2128,12 +2131,15 @@ class EventGroup(EventContainer):
         node.delEvent(eid)
         for t0, t1 in event.calcOccurrenceAll().getTimeRangeList():
             node.addEvent(t0, t1, eid)
+            self.occurCount += 1
     def updateOccurrenceNode(self):
         stm0 = time()
         self.node.clear()
+        self.occurCount = 0
         for event, occur in self.calcOccurrenceAll():
             for t0, t1 in occur.getTimeRangeList():
                 self.node.addEvent(t0, t1, event.id)
+                self.occurCount += 1
         #self.nodeLoaded = True
         print 'updateOccurrenceNode, id=%s, title=%s, length=%s, time=%s'%(self.id, self.title, len(self), time()-stm0)
     def exportToIcsFp(self, fp):
