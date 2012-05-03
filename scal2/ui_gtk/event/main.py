@@ -1154,9 +1154,13 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         if not self.syncing:
             if path and len(path)==1:
                 group = self.getObjsByPath(path)[0]
+                if group.name == 'trash':
+                    occurCount = 0
+                else:
+                    occurCount = group.occurCount
                 message_id = self.sbar.push(0, _('contains %s events and %s occurences')%(
                     _(len(group)),
-                    _(group.occurCount),
+                    _(occurCount),
                 ))
             else:
                 #self.sbar.remove_all(0)
