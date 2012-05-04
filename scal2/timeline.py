@@ -101,10 +101,7 @@ movingMaxSpeed = (movingHandForce-movingSurfaceForce)*4 ## px / sec ## reach to 
 movingKeyTimeoutFirst = 0.5
 movingKeyTimeout = 0.1 ## seconds ## continiouse keyPress delay is about 0.05 sec
 
-
-skipEventPixelLimit = 0.03 ## pixels
-compressEventPixelLimit = 4 ## pixels
-
+skipEventPixelLimit = 0.1 ## pixels
 
 truncateTickLabel = False
 
@@ -264,6 +261,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
     widthDays = timeWidth / (24.0*3600)
     pixelPerSec = float(width)/timeWidth ## pixel/second
     dayPixel = 24*3600*pixelPerSec ## pixel
+    #print 'dayPixel = %s px'%dayPixel
     getEPos = lambda epoch: (epoch-timeStart)*pixelPerSec
     getJPos = lambda jd: (getEpochFromJd(jd)-timeStart)*pixelPerSec
     ######################## Holidays
@@ -407,10 +405,10 @@ def calcTimeLineData(timeStart, timeWidth, width):
                 1,
                 event.summary,
                 group.color,
-                (group.id, event.id),
+                (group.id, event.id) if pixBoxW > 0.5 else None,
                 (groupIndex, eventIndex),
             )## or event.color FIXME
-            if pixBoxW < compressEventPixelLimit:
+            if pixBoxW <= 2*boxLineWidth:
                 box.lineW = 0
             boxValue = (group.id, t0, t1)
             try:
@@ -423,18 +421,12 @@ def calcTimeLineData(timeStart, timeWidth, width):
         if len(blist) < 4:
             boxes += blist
         else:
+            box = blist[0]
+            box.text = _('%s events')%_(len(blist))
+            box.ids = None
             #print 'len(blist)', len(blist)
-            #print (blist[0].t1 - blist[0].t0), 'secs'
-            boxes.append(Box(
-                bvalue[1],
-                bvalue[2],
-                0,
-                1,
-                _('%s events')%_(len(blist)),
-                blist[0].color,
-                None,
-                blist[0].order,
-            ))
+            #print (box.t1 - box.t0), 'secs'
+            boxes.append(box)
     del boxesDict
     ###
     boxes.sort() ## FIXME
