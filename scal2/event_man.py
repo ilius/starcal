@@ -1176,7 +1176,8 @@ class Event(JsonEventBaseClass, RuleContainer):
         JsonEventBaseClass.save(self)
     getJd = lambda self: None
     setJd = lambda self, jd: None
-    def copyFrom(self, other):## FIXME
+    setJdExact = lambda self, jd: self.setJd(jd)
+    def copyFrom(self, other, exact=False):## FIXME
         for attr in ('mode', 'icon', 'summary', 'description'):# 'showInTimeLine'
             setattr(
                 self,
@@ -1192,7 +1193,10 @@ class Event(JsonEventBaseClass, RuleContainer):
         ## copy dates between different rule types in different event types
         jd = other.getJd()
         if jd is not None:
-            self.setJd(jd)
+            if exact:
+                self.setJdExact(jd)
+            else:
+                self.setJd(jd)
     def getData(self):
         data = {
             'type': self.name,
@@ -1351,8 +1355,13 @@ class TaskEvent(Event):
         raise ValueError('no end date neither duration specified for task')
     getJd = lambda self: self['start'].getJd()
     setJd = lambda self, jd: self['start'].setJd(jd)
-    def copyFrom(self, other):
-        Event.copyFrom(self, other)
+    def setJdExact(self, jd):
+        start = self['start']
+        start.setJd(jd)
+        start.time = (0, 0, 0)
+        self.setEnd('duration', 24, 3600)
+    def copyFrom(self, other, *args, **kwargs):
+        Event.copyFrom(self, other, *args, **kwargs)
         myStartRule = self['start']
         ##
         try:
@@ -1382,7 +1391,6 @@ class TaskEvent(Event):
                 )
             else:
                 return TimeRangeListOccurrence()
-    setJd = lambda self, jd: self['start'].setJd(jd)
     def getIcsData(self, prettyDateTime=False):
         return [
             ('DTSTART', getIcsTimeByEpoch(self.getStartEpoch(), prettyDateTime)),
@@ -1596,8 +1604,8 @@ class UniversityClassEvent(Event):
     getWeekDayName = lambda self: core.weekDayName[self['weekDay'].weekDayList[0]]
     def updateSummary(self):
         self.summary = _('%s Class')%self.getCourseName() + ' (' + self.getWeekDayName() + ')'
-    def copyFrom(self, other):
-        Event.copyFrom(self, other)
+    def copyFrom(self, other, *args, **kwargs):
+        Event.copyFrom(self, other, *args, **kwargs)
         self.courseId = other.courseId
     def getData(self):
         data = Event.getData(self)
@@ -1658,7 +1666,7 @@ class UniversityExamEvent(DailyNoteEvent):
     def updateSummary(self):
         self.summary = _('%s Exam')%self.getCourseName()
     def copyFrom(self, other):
-        Event.copyFrom(self, other)
+        Event.copyFrom(self, other, *args, **kwargs)
         self.courseId = other.courseId
     def getData(self):
         data = Event.getData(self)
@@ -1709,7 +1717,7 @@ class LargeScaleEvent(Event):
             self.scale = group.scale
             self.start = group.getStartValue()
     def copyFrom(self, other):
-        Event.copyFrom(self, other)
+        Event.copyFrom(self, other, *args, **kwargs)
         if other.name == self.name:
             self.scale = other.scale
             self.start = other.start
@@ -2094,7 +2102,7 @@ class EventGroup(EventContainer):
         for event in self:
             newEvent = newGroup.createEvent(newEventType)
             newEvent.changeMode(event.mode)## FIXME needed?
-            newEvent.copyFrom(event)
+            newEvent.copyFrom(event, True)
             newEvent.setId(event.id)
             newEvent.save()
             newGroup.append(newEvent)
@@ -2249,7 +2257,7 @@ class NoteBook(EventGroup):
     name = 'noteBook'
     desc = _('Note Book')
     acceptsEventTypes = ('dailyNote',)
-    canConvertTo = ('yearly',)
+    canConvertTo = ('yearly', 'taskList')
     #actions = EventGroup.actions + []
     sortBys = EventGroup.sortBys + (
         ('date', _('Date')),
