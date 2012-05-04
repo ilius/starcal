@@ -622,7 +622,7 @@ class DateAndTimeEventRule(DateEventRule):
         DateEventRule.__init__(self, parent)
         self.time = localtime()[3:6]
     getEpoch = lambda self: getEpochFromJhms(self.getJd(), *tuple(self.time))
-    getDate = lambda self, mode: convert(self.date[0], self.date[1], self.date[2], self.mode, mode)
+    getDate = lambda self, mode: convert(self.date[0], self.date[1], self.date[2], self.getMode(), mode)
     getData = lambda self: {
         'date': dateEncode(self.date),
         'time': timeEncode(self.time),
@@ -1436,7 +1436,12 @@ class YearlyEvent(Event):
         self.setMonth(m)
         self.setDay(d)
     def getJd(self):## used only for copyFrom
-        y, m, d = core.getSysDate(self.mode)
+        try:
+            startRule = self['start']
+        except:
+            y = core.getSysDate(self.mode)[0]
+        else:
+            y = startRule.getDate(self.mode)[0]
         m = self.getMonth()
         d = self.getDay()
         return to_jd(y, m, d, self.mode)
