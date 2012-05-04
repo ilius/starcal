@@ -1441,9 +1441,10 @@ class YearlyEvent(Event):
         d = self.getDay()
         return to_jd(y, m, d, self.mode)
     def setJd(self, jd):## used only for copyFrom
-        y, m, d = jd_to(jd, self.mode)
+        (y, m, d) = jd_to(jd, self.mode)
         self.setMonth(m)
         self.setDay(d)
+        self.getAddRule('start').date = (y, 1, 1)
     def calcOccurrenceForJdRange(self, startJd, endJd):## float jd
         mode = self.mode
         month = self.getMonth()
@@ -1464,11 +1465,6 @@ class YearlyEvent(Event):
         for year in range(startYear+1, endYear):
             jdList.add(to_jd(year, month, day, mode))
         return JdListOccurrence(jdList)
-    def setJd(self, jd):
-        (y, m, d) = jd_to(jd, self.mode)
-        self.setMonth(m)
-        self.setDay(d)
-        self.getAddRule('start').date = (y, 1, 1)
     def getData(self):
         data = Event.getData(self)
         try:
