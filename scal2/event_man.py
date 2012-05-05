@@ -1087,6 +1087,8 @@ class Event(JsonEventBaseClass, RuleContainer):
         else:
             return self.description.split('\n')[0]
     def afterModify(self):
+        if self.id is None:
+            self.setId()
         self.modified = time()
         #self.parent.eventsModified = self.modified
         ###
