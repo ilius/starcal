@@ -1357,6 +1357,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
     def emptyTrash(self, menu):
         ui.eventTrash.empty()
         self.removeIterChildren(self.trashIter)
+        self.treeviewCursorChanged()
     def editTrash(self, menu):
         TrashEditorDialog().run()
         self.trees.set_value(
