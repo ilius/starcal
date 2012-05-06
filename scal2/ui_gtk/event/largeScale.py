@@ -13,7 +13,7 @@ from gtk import gdk
 
 
 maxStart = 999999
-maxDur = 999
+maxDur = 99999
 
 class EventWidget(common.EventWidget):
     def __init__(self, event):## FIXME
