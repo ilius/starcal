@@ -1743,6 +1743,7 @@ class LargeScaleEvent(Event):
         self.start = 0
         self.duration = 1
         Event.__init__(self, *args, **kw)
+    getRulesHash = lambda self: hash(str(('largeScale', self.scale, self.start, self.duration)))
     def setDefaultsFromGroup(self, group):
         Event.setDefaultsFromGroup(self, group)
         if group.name == 'largeScale':
