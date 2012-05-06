@@ -123,8 +123,8 @@ class EventWidget(gtk.VBox):
         ###########
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Summary')), 0, 0)
-        self.summuryEntry = gtk.Entry()
-        hbox.pack_start(self.summuryEntry, 1, 1)
+        self.summaryEntry = gtk.Entry()
+        hbox.pack_start(self.summaryEntry, 1, 1)
         self.pack_start(hbox, 0, 0)
         ###########
         hbox = gtk.HBox()
@@ -430,11 +430,12 @@ class GroupComboBox(gtk.ComboBox):
 
 
 class EventEditorDialog(gtk.Dialog):
-    def __init__(self, event, typeChangable=True, title=None, parent=None, useSelectedDate=False):
+    def __init__(self, event, typeChangable=True, title=None, isNew=False, parent=None, useSelectedDate=False):
         gtk.Dialog.__init__(self, parent=parent)
         #self.set_transient_for(parent)
         if title:
             self.set_title(title)
+        self.isNew = isNew
         #self.connect('delete-event', lambda obj, e: self.destroy())
         #self.resize(800, 600)
         ###
@@ -472,6 +473,8 @@ class EventEditorDialog(gtk.Dialog):
         if useSelectedDate:
             self.event.setJd(ui.cell.jd)
         self.activeWidget = event.makeWidget()
+        if self.isNew:
+            self.activeWidget.focusSummary()
         self.vbox.pack_start(self.activeWidget, 0, 0)
         self.vbox.show()
     def typeChanged(self, combo):
@@ -482,6 +485,8 @@ class EventEditorDialog(gtk.Dialog):
         self.event = self._group.copyEventWithType(self.event, eventType)
         self._group.updateCache(self.event)## needed? FIXME
         self.activeWidget = self.event.makeWidget()
+        if self.isNew:
+            self.activeWidget.focusSummary()
         self.vbox.pack_start(self.activeWidget, 0, 0)
         #self.activeWidget.modeComboChanged()## apearantly not needed
     def run(self):
@@ -508,6 +513,7 @@ def addNewEvent(group, eventType, title, **kw):
         event,
         typeChangable=(eventType=='custom'),## or True FIXME
         title=title,
+        isNew=True,
         **kw
     ).run()
     if event is None:
