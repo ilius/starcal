@@ -63,6 +63,11 @@ changeHolidayBgMaxDays = 60
 boxLineWidth = 2
 boxInnerAlpha = 0.1
 
+boxMoveBorder = 10
+boxMoveLineW = 0.5
+
+movableEventTypes = ('task',)
+
 #boxColorSaturation = 1.0
 #boxColorLightness = 0.3 ## for random colors
 
@@ -125,29 +130,43 @@ class Tick:
         self.color = color
 
 class Box:
-    def __init__(self, t0, t1, y0, y1, text, color, ids, order):
+    def __init__(self, t0, t1, u0, u1, text, color, ids, order):
         self.t0 = t0
         self.t1 = t1
-        self.y0 = y0
-        self.y1 = y1
+        self.u0 = u0
+        self.u1 = u1
+        ####
+        self.x = None
+        self.w = None
+        self.y = None
+        self.h = None
+        ####
         self.text = text
         self.color = color
         self.ids = ids ## (groupId, eventId)
         self.order = order ## (groupIndex, eventIndex)
         self.tConflictBefore = []
         self.lineW = boxLineWidth
+        self.hasBorder = False
     tOverlaps = lambda self, other: overlaps(self.t0, self.t1, other.t0, other.t1)
-    yOverlaps = lambda self, other: overlaps(self.y0, self.y1, other.y0, other.y1)
-    getWidth = lambda self: self.t1 - self.t0
-    getHeight = lambda self: self.y1 - self.y0
+    yOverlaps = lambda self, other: overlaps(self.u0, self.u1, other.u0, other.u1)
+    dt = lambda self: self.t1 - self.t0
+    du = lambda self: self.u1 - self.u0
     def __cmp__(self, other):## FIXME
-        c = cmp(self.getWidth(), other.getWidth())
-        if c != 0: return c
+        #c = cmp(self.dt(), other.dt())
+        #if c != 0: return c
         return cmp(self.order, other.order)
+    def setPixelValues(self, timeStart, pixelPerSec, beforeBoxH, maxBoxH):
+        self.x = (self.t0-timeStart)*pixelPerSec
+        self.w = (self.t1 - self.t0)*pixelPerSec
+        self.y = beforeBoxH + maxBoxH * self.u0
+        self.h = maxBoxH * (self.u1 - self.u0)
+    contains = lambda self, px, py: 0 <= px-self.x < self.w and 0 <= py-self.y < self.h
+        
 
 def yResizeBox(box1, rat):
-    box1.y0 *= rat
-    box1.y1 *= rat
+    box1.u0 *= rat
+    box1.u1 *= rat
     for box2 in box1.tConflictBefore:
         if box1.yOverlaps(box2):
             yResizeBox(box2, rat)
@@ -156,8 +175,8 @@ class Range:
     def __init__(self, start, end):
         self.start = start
         self.end = end
-    getWidth = lambda self: self.end - self.start
-    __cmp__ = lambda self, other: cmp(self.getWidth(), other.getWidth())
+    dt = lambda self: self.end - self.start
+    __cmp__ = lambda self, other: cmp(self.dt(), other.dt())
 
 
 def realRangeListsDiff(r1, r2):
@@ -209,15 +228,15 @@ def getNum10FactPow(n):
 
 getNum10Pow = lambda n: getNum10FactPow(n)[1]
 
-def getYearRangeTickValues(y0, y1, minStepYear):
+def getYearRangeTickValues(u0, y1, minStepYear):
     data = {}
-    step = 10 ** max(0, ifloor(log10(y1 - y0)) - 1)
-    y0 = step * (y0//step)
-    for y in range(y0, y1, step):
+    step = 10 ** max(0, ifloor(log10(y1 - u0)) - 1)
+    u0 = step * (u0//step)
+    for y in range(u0, y1, step):
         n = 10 ** getNum10Pow(y)
         if n >= minStepYear:
             data[y] = n
-    if y0 <= 0 <= y1:
+    if u0 <= 0 <= y1:
         data[0] = max(data.values())
     return sorted(data.items())
 
@@ -274,12 +293,12 @@ def calcTimeLineData(timeStart, timeWidth, width):
     tickEpochList = []
     minStep = minorStepMin/pixelPerSec ## second
     #################
-    (y0, m0, d0) = jd_to(jd0, core.primaryMode)
-    (y1, m1, d1) = jd_to(jd1, core.primaryMode)
+    (year0, month0, day0) = jd_to(jd0, core.primaryMode)
+    (year1, month1, day1) = jd_to(jd1, core.primaryMode)
     ############ Year
     minStepYear = minStep//minYearLenSec ## years ## int or iceil?
     yearPixel = minYearLenSec*pixelPerSec ## pixels
-    for (year, size) in getYearRangeTickValues(y0, y1+1, minStepYear):
+    for (year, size) in getYearRangeTickValues(year0, year1+1, minStepYear):
         tmEpoch = getEpochFromDate(year, 1, 1, core.primaryMode)
         if tmEpoch in tickEpochList:
             continue
@@ -293,12 +312,10 @@ def calcTimeLineData(timeStart, timeWidth, width):
         ))
         tickEpochList.append(tmEpoch)
     ############ Month
-    ym0 = y0*12 + m0-1
-    ym1 = y1*12 + m1-1
     monthPixel = avgMonthLen*pixelPerSec ## pixel
     minMonthUnit = float(minStep)/avgMonthLen ## month
     if minMonthUnit <= 3:
-        for ym in range(ym0, ym1+1):
+        for ym in range(year0*12+month0-1, year1*12+month1-1+1):## +1 FIXME
             if ym%3==0:
                 monthUnit = 3
             else:
@@ -390,9 +407,13 @@ def calcTimeLineData(timeStart, timeWidth, width):
         group = ui.eventGroups.byIndex(groupIndex)
         if not group.enable:
             continue
-        for t0, t1, eid in group.node.getEvents(timeStart, timeEnd):## -1, +1? FIXME
+        borderTm = (boxMoveBorder+boxMoveLineW)/pixelPerSec
+        for t0, t1, eid in group.node.getEvents(timeStart-borderTm, timeEnd+borderTm):## -1, +1? FIXME
             pixBoxW = (t1-t0)*pixelPerSec
             if pixBoxW < skipEventPixelLimit:
+                continue
+            if not isinstance(eid, int):
+                print '----- bad eid from getEvents: %r'%eid
                 continue
             event = group[eid]
             eventIndex = group.index(eid)
@@ -410,6 +431,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
             )## or event.color FIXME
             if pixBoxW <= 2*boxLineWidth:
                 box.lineW = 0
+            box.hasBorder = (event.name in movableEventTypes)
             boxValue = (group.id, t0, t1)
             try:
                 boxesDict[boxValue].append(box)
@@ -437,22 +459,22 @@ def calcTimeLineData(timeStart, timeWidth, width):
         for box1 in placedBoxes:
             if box1.tOverlaps(box):
                 box.tConflictBefore.append(box1)
-                conflictRanges.append((box1.y0, box1.y1))
-                minConflictH = min(minConflictH, box1.getHeight())
+                conflictRanges.append((box1.u0, box1.u1))
+                minConflictH = min(minConflictH, box1.du())
         placedBoxes.append(box)
         freeRanges = realRangeListsDiff([(0, 1)], conflictRanges)
         if freeRanges:
             bigestFree = max([Range(a, b) for (a, b) in freeRanges])
-            bigestFreeH = bigestFree.getWidth() ## biggest free range height
+            bigestFreeH = bigestFree.dt() ## biggest free range height
             #if bigestFreeH==1 or bigestFreeH/(1.0-bigestFreeH) >= minConflictH:
             if bigestFreeH >= minConflictH:
-                box.y0 = bigestFree.start
-                box.y1 = bigestFree.end
+                box.u0 = bigestFree.start
+                box.u1 = bigestFree.end
                 continue
         ## now we should compress all conflicting boxes and place the new box on top of them
         h = 1 - 1.0/(minConflictH+1)
-        box.y0 = 1 - h
-        box.y1 = 1
+        box.u0 = 1 - h
+        box.u1 = 1
         for box1 in box.tConflictBefore:## FIXME
             if box.yOverlaps(box1):
                 yResizeBox(box1, 1-h)

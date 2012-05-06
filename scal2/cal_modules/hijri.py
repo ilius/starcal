@@ -38,7 +38,12 @@ getMonthsInYear = lambda y: 12
 from math import floor, ceil
 ifloor = lambda x: int(floor(x))
 
+
 epoch = 1948439.5
+minMonthLen = 29
+maxMonthLen = 30
+avgYearLen = 354.3666 ## FIXME
+
 
 hijriAlg = 0
 hijriUseDB = True
@@ -53,8 +58,6 @@ options = (
 )
 
 
-minMonthLen = 29
-maxMonthLen = 30
 
 import os
 from os.path import join, isfile

@@ -144,6 +144,17 @@ def getJdRangeForMonth(year, month, mode):
     return (to_jd(year, month, 1, mode),
             to_jd(year, month, day, mode) + 1)
 
+def getFloatYearFromEpoch(epoch, mode):
+    module = modules[mode]
+    return float(epoch - module.epoch)/module.avgYearLen + 1
+
+def getEpochFromFloatYear(year, mode):
+    module = modules[mode]
+    return module.epoch + (year-1)*module.avgYearLen
+
+getFloatYearFromJd = lambda jd, mode: getFloatYearFromEpoch(getEpochFromJd(jd), mode)
+
+getJdFromFloatYear = lambda year, mode: getJdFromEpoch(getEpochFromFloatYear(year, mode))
 
 ## jwday: Calculate day of week from Julian day
 ## 0 = Sunday

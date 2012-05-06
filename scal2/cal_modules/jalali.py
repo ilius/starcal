@@ -57,9 +57,11 @@ from math import floor, ceil
 ifloor = lambda x: int(floor(x))
 
 epoch = 1948321
-GREGORIAN_EPOCH = 1721426
 minMonthLen = 29
 maxMonthLen = 31
+avgYearLen = 365.2425 ## FIXME
+
+GREGORIAN_EPOCH = 1721426
 jalaliMonthLen = (31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29)
 
 

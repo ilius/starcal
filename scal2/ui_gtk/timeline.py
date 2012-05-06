@@ -53,14 +53,6 @@ def show_event(widget, event):
 
 rootWindow = gdk.get_default_root_window() ## Good Place?????
 
-class GBox:
-    def __init__(self, x0, x1, y0, y1, ids):
-        self.x0 = x0
-        self.x1 = x1
-        self.y0 = y0
-        self.y1 = y1
-        self.ids = ids
-    contains = lambda self, px, py: self.x0 <= px < self.x1 and self.y0 <= py < self.y1
 
 class TimeLine(gtk.Widget):
     def centerToNow(self):
@@ -75,6 +67,8 @@ class TimeLine(gtk.Widget):
         self.connect('expose-event', self.onExposeEvent)
         self.connect('scroll-event', self.onScroll)
         self.connect('button-press-event', self.buttonPress)
+        self.connect('motion-notify-event', self.motionNotify)
+        self.connect('button-release-event', self.buttonRelease)
         self.connect('key-press-event', self.keyPress)
         #self.connect('event', show_event)
         self.currentTime = getCurrentTime()
@@ -86,11 +80,17 @@ class TimeLine(gtk.Widget):
             Button('exit.png', closeFunc, 35, -1, False)
         ]
         ## zoom in and zoom out buttons FIXME
-        self.gboxes = []
+        self.data = None
         ########
         self.movingLastPress = 0
         self.movingV = 0
         self.movingF = 0
+        #######
+        self.boxEditing = None
+        ## or (editType, box, x0, t0)
+        ## editType=0   moving
+        ## editType=-1  resizing to left
+        ## editType=+1  resizing to right
     def do_realize(self):
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(
@@ -100,7 +100,7 @@ class TimeLine(gtk.Widget):
             window_type=gdk.WINDOW_CHILD,
             wclass=gdk.INPUT_OUTPUT,
             event_mask=self.get_events() | gdk.EXPOSURE_MASK
-            | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK
+            | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK | gdk.BUTTON_RELEASE_MASK
             | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK)
             #colormap=self.get_screen().get_rgba_colormap())
         #self.window.set_composited(True)
@@ -115,161 +115,203 @@ class TimeLine(gtk.Widget):
         self.currentTime = int(tm)
         if self.timeStart <= tm <= self.timeStart + self.timeWidth + 1:
             self.queue_draw()
-    def onExposeEvent(self, widget=None, event=None):
+    def updateData(self):
+        width = self.allocation.width
+        self.data = calcTimeLineData(self.timeStart, self.timeWidth, width)
+        self.pixelPerSec = float(width) / self.timeWidth ## pixel/second
+    def drawTick(self, cr, tick, maxTickHeight):
+        tickH = tick.height
+        tickW = tick.width
+        tickH = min(tickH, maxTickHeight)
+        ###
+        tickX = tick.pos - tickW/2.0
+        tickY = 1
+        cr.rectangle(tickX, tickY, tickW, tickH)
+        try:
+            fillColor(cr, tick.color)
+        except:
+            print 'error in fill, x=%.2f, y=%.2f, w=%.2f, h=%.2f'%(tickX, tickY, tickW, tickH)
+        ###
+        font = (
+            fontFamily,
+            False,
+            False,
+            tick.fontSize,
+        )
+        layout = newLimitedWidthTextLayout(
+            self,
+            tick.label,
+            tick.maxLabelWidth,
+            font=font,
+            truncate=truncateTickLabel,
+        )## FIXME
+        if layout:
+            layoutW, layoutH = layout.get_pixel_size()
+            layoutX = tick.pos - layoutW/2.0
+            layoutY = tickH*labelYRatio
+            try:
+                cr.move_to(layoutX, layoutY)
+            except:
+                print 'error in move_to, x=%.2f, y=%.2f'%(layoutX, layoutY)
+            else:
+                cr.show_layout(layout)## with the same tick.color
+    def drawBox(self, cr, box):
+        d = box.lineW
+        x = box.x
+        w = box.w
+        y = box.y
+        h = box.h
+        ###
+        cr.rectangle(x, y, w, h)
+        if d == 0:
+            fillColor(cr, box.color)
+        else:
+            try:
+                alpha = box.color[3]
+            except IndexError:
+                alpha = 255
+            try:
+                fillColor(cr, (
+                    box.color[0],
+                    box.color[1],
+                    box.color[2],
+                    int(alpha*boxInnerAlpha),
+                ))
+            except cairo.Error:
+                return
+            ###
+            cr.set_line_width(0)
+            cr.move_to(x, y)
+            cr.line_to(x+w, y)
+            cr.line_to(x+w, y+h)
+            cr.line_to(x, y+h)
+            cr.line_to(x, y)
+            cr.line_to(x+d, y)
+            cr.line_to(x+d, y+h-d)
+            cr.line_to(x+w-d, y+h-d)
+            cr.line_to(x+w-d, y+d)
+            cr.line_to(x+d, y+d)
+            cr.close_path()
+            fillColor(cr, box.color)
+            ######## Draw Move/Resize Border
+            if box.hasBorder:
+                if w > boxMoveBorder*2 and h > boxMoveBorder:
+                    b = boxMoveBorder
+                    bd = boxMoveLineW
+                    #cr.set_line_width(bd)
+                    cr.move_to(x+b, y+h)
+                    cr.line_to(x+b, y+b)
+                    cr.line_to(x+w-b, y+b)
+                    cr.line_to(x+w-b, y+h)
+                    cr.line_to(x+w-b-bd, y+h)
+                    cr.line_to(x+w-b-bd, y+b+bd)
+                    cr.line_to(x+b+bd, y+b+bd)
+                    cr.line_to(x+b+bd, y+h)
+                    cr.close_path()
+                    fillColor(cr, box.color)
+                    ###
+                    bds = 0.7*bd
+                    cr.move_to(x, y)
+                    cr.line_to(x+bds, y)
+                    cr.line_to(x+b+bds, y+b)
+                    cr.line_to(x+b, y+b+bds)
+                    cr.line_to(x, y+bds)
+                    cr.close_path()
+                    fillColor(cr, box.color)
+                    ##
+                    cr.move_to(x+w, y)
+                    cr.line_to(x+w-bds, y)
+                    cr.line_to(x+w-b-bds, y+b)
+                    cr.line_to(x+w-b, y+b+bds)
+                    cr.line_to(x+w, y+bds)
+                    cr.close_path()
+                    fillColor(cr, box.color)
+                else:
+                    box.hasBorder = False
+            ########
+            ## now draw the text
+            ## how to find the best font size based in the box's width and height, and font family? FIXME
+            ## possibly write in many lines? or just in one line and wrap if needed?
+            if box.text:
+                #print box.text
+                textW = 0.9*w
+                textH = 0.9*h
+                textLen = len(toUnicode(box.text))
+                #print 'textLen=%s'%textLen
+                if rotateBoxLabel == 0:
+                    avgCharW = float(textW) / textLen
+                else:
+                    avgCharW = float(max(textW, textH)) / textLen
+                #print 'avgCharW=%s'%avgCharW
+                if avgCharW > 3:## FIXME
+                    font = list(ui.getFont())
+                    layout = self.create_pango_layout(box.text) ## a pango.Layout object
+                    layout.set_font_description(pfontEncode(font))
+                    layoutW, layoutH = layout.get_pixel_size()
+                    #print 'orig font size: %s'%font[3]
+                    normRatio = min(
+                        float(textW)/layoutW,
+                        float(textH)/layoutH,
+                    )
+                    rotateRatio = min(
+                        float(textW)/layoutH,
+                        float(textH)/layoutW,
+                    )
+                    if rotateBoxLabel != 0 and rotateRatio > normRatio:
+                        font[3] *= max(normRatio, rotateRatio)
+                        layout.set_font_description(pfontEncode(font))
+                        layoutW, layoutH = layout.get_pixel_size()
+                        fillColor(cr, fgColor)## before cr.move_to
+                        #print 'x=%s, y=%s, w=%s, h=%s, layoutW=%s, layoutH=%s'%(x,y,w,h,layoutW,layoutH)
+                        cr.move_to(
+                            x + (w - rotateBoxLabel*layoutH)/2.0,
+                            y + (h + rotateBoxLabel*layoutW)/2.0,
+                        )
+                        cr.rotate(-rotateBoxLabel*pi/2)
+                        cr.show_layout(layout)
+                        try:
+                            cr.rotate(rotateBoxLabel*pi/2)
+                        except:
+                            print 'counld not rotate by %s*pi/2 = %s'%(rotateBoxLabel, rotateBoxLabel*pi/2)
+                    else:
+                        font[3] *= normRatio
+                        layout.set_font_description(pfontEncode(font))
+                        layoutW, layoutH = layout.get_pixel_size()
+                        fillColor(cr, fgColor)## before cr.move_to
+                        cr.move_to(
+                            x + (w-layoutW)/2.0,
+                            y + (h-layoutH)/2.0,
+                        )
+                        cr.show_layout(layout)
+    def drawAll(self, cr):
         width = self.allocation.width
         height = self.allocation.height
-        pixelPerSec = float(self.allocation.width)/self.timeWidth ## pixel/second
-        dayPixel = 24*3600*pixelPerSec ## pixel
-        maxTickHeight = maxTickHeightRatio*height
+        pixelPerSec = self.pixelPerSec
+        dayPixel = 24*3600 * pixelPerSec ## pixel
+        maxTickHeight = maxTickHeightRatio * height
         #####
-        cr = self.window.cairo_create()
         cr.rectangle(0, 0, width, height)
         fillColor(cr, bgColor)
-        data = calcTimeLineData(self.timeStart, self.timeWidth, width)
         #####
         setColor(cr, holidayBgBolor)
-        for x in data['holidays']:
+        for x in self.data['holidays']:
             cr.rectangle(x, 0, dayPixel, height)
             cr.fill()
         #####
-        for tick in data['ticks']:
-            tickH = tick.height
-            tickW = tick.width
-            tickH = min(tickH, maxTickHeight)
-            ###
-            tickX = tick.pos-tickW/2.0
-            tickY = 1
-            cr.rectangle(tickX, tickY, tickW, tickH)
-            try:
-                fillColor(cr, tick.color)
-            except:
-                print 'error in fill, x=%.2f, y=%.2f, w=%.2f, h=%.2f'%(tickX, tickY, tickW, tickH)
-            ###
-            font = (
-                fontFamily,
-                False,
-                False,
-                tick.fontSize,
-            )
-            layout = newLimitedWidthTextLayout(
-                self,
-                tick.label,
-                tick.maxLabelWidth,
-                font=font,
-                truncate=truncateTickLabel,
-            )## FIXME
-            if layout:
-                layoutW, layoutH = layout.get_pixel_size()
-                layoutX = tick.pos - layoutW/2.0
-                layoutY = tickH*labelYRatio
-                try:
-                    cr.move_to(layoutX, layoutY)
-                except:
-                    print 'error in move_to, x=%.2f, y=%.2f'%(layoutX, layoutY)
-                else:
-                    cr.show_layout(layout)## with the same tick.color
+        for tick in self.data['ticks']:
+            self.drawTick(cr, tick, maxTickHeight)
         ######
         beforeBoxH = maxTickHeight ## FIXME
         maxBoxH = height - beforeBoxH
-        self.gboxes = []
-        for box in data['boxes']:
-            d = box.lineW
-            x = (box.t0-self.timeStart)*pixelPerSec
-            w = (box.t1 - box.t0)*pixelPerSec
-            y = beforeBoxH + maxBoxH * box.y0
-            h = maxBoxH * (box.y1 - box.y0)
-            self.gboxes.append(GBox(x, x+w, y, y+h, box.ids))
-            ###
-            cr.rectangle(x, y, w, h)
-            if d == 0:
-                fillColor(cr, box.color)
-            else:
-                try:
-                    alpha = box.color[3]
-                except IndexError:
-                    alpha = 255
-                try:
-                    fillColor(cr, (
-                        box.color[0],
-                        box.color[1],
-                        box.color[2],
-                        int(alpha*boxInnerAlpha),
-                    ))
-                except cairo.Error:
-                    continue
-                ###
-                cr.move_to(x, y)
-                cr.line_to(x+w, y)
-                cr.line_to(x+w, y+h)
-                cr.line_to(x, y+h)
-                cr.line_to(x, y)
-                cr.line_to(x+d, y)
-                cr.line_to(x+d, y+h-d)
-                cr.line_to(x+w-d, y+h-d)
-                cr.line_to(x+w-d, y+d)
-                cr.line_to(x+d, y+d)
-                cr.close_path()
-                fillColor(cr, box.color)
-                ## now draw the text
-                ## how to find the best font size based in the box's width and height, and font family? FIXME
-                ## possibly write in many lines? or just in one line and wrap if needed?
-                if box.text:
-                    #print box.text
-                    textW = 0.9*w
-                    textH = 0.9*h
-                    textLen = len(toUnicode(box.text))
-                    #print 'textLen=%s'%textLen
-                    if rotateBoxLabel == 0:
-                        avgCharW = float(textW) / textLen
-                    else:
-                        avgCharW = float(max(textW, textH)) / textLen
-                    #print 'avgCharW=%s'%avgCharW
-                    if avgCharW > 3:## FIXME
-                        font = list(ui.getFont())
-                        layout = widget.create_pango_layout(box.text) ## a pango.Layout object
-                        layout.set_font_description(pfontEncode(font))
-                        layoutW, layoutH = layout.get_pixel_size()
-                        #print 'orig font size: %s'%font[3]
-                        normRatio = min(
-                            float(textW)/layoutW,
-                            float(textH)/layoutH,
-                        )
-                        rotateRatio = min(
-                            float(textW)/layoutH,
-                            float(textH)/layoutW,
-                        )
-                        if rotateBoxLabel != 0 and rotateRatio > normRatio:
-                            font[3] *= max(normRatio, rotateRatio)
-                            layout.set_font_description(pfontEncode(font))
-                            layoutW, layoutH = layout.get_pixel_size()
-                            fillColor(cr, fgColor)## before cr.move_to
-                            #print 'x=%s, y=%s, w=%s, h=%s, layoutW=%s, layoutH=%s'%(x,y,w,h,layoutW,layoutH)
-                            cr.move_to(
-                                x + (w - rotateBoxLabel*layoutH)/2.0,
-                                y + (h + rotateBoxLabel*layoutW)/2.0,
-                            )
-                            cr.rotate(-rotateBoxLabel*pi/2)
-                            cr.show_layout(layout)
-                            try:
-                                cr.rotate(rotateBoxLabel*pi/2)
-                            except:
-                                print 'counld not rotate by %s*pi/2 = %s'%(rotateBoxLabel, rotateBoxLabel*pi/2)
-                        else:
-                            font[3] *= normRatio
-                            layout.set_font_description(pfontEncode(font))
-                            layoutW, layoutH = layout.get_pixel_size()
-                            fillColor(cr, fgColor)## before cr.move_to
-                            cr.move_to(
-                                x + (w-layoutW)/2.0,
-                                y + (h-layoutH)/2.0,
-                            )
-                            cr.show_layout(layout)
-
-        ######
-        if self.timeStart <= self.currentTime <= self.timeStart + self.timeWidth:
+        for box in self.data['boxes']:
+            box.setPixelValues(self.timeStart, pixelPerSec, beforeBoxH, maxBoxH)
+            self.drawBox(cr, box)
+        ###### Drae Current Time Marker
+        dt = self.currentTime - self.timeStart
+        if 0 <= dt <= self.timeWidth:
             setColor(cr, currenTimeMarkerColor)
             cr.rectangle(
-                (self.currentTime-self.timeStart)*pixelPerSec - currentTimeMarkerWidth/2.0,
+                dt*pixelPerSec - currentTimeMarkerWidth/2.0,
                 0,
                 currentTimeMarkerWidth,
                 currentTimeMarkerHeightRatio * self.allocation.height
@@ -278,6 +320,10 @@ class TimeLine(gtk.Widget):
         ######
         for button in self.buttons:
             button.draw(cr, width, height)
+    def onExposeEvent(self, widget=None, event=None):
+        if not self.boxEditing:
+            self.updateData()
+        self.drawAll(self.window.cairo_create())
     def onScroll(self, widget, event):
         isUp = event.direction.value_nick=='up'
         if event.state & gdk.CONTROL_MASK:
@@ -290,40 +336,104 @@ class TimeLine(gtk.Widget):
             self.movingUserEvent(-1 if isUp else 1)## FIXME
         self.queue_draw()
         return True
-    def buttonPress(self, obj, event):
-        x = event.x
-        y = event.y
+    def buttonPress(self, obj, gevent):
+        x = gevent.x
+        y = gevent.y
         w = self.allocation.width
         h = self.allocation.height
-        if event.button==1:
+        b = gevent.button
+        if b==1:
             for button in self.buttons:
                 if button.contains(x, y, w, h):
-                    button.func(event)
+                    button.func(gevent)
                     return True
-        elif event.button==3:
-            for gbox in self.gboxes:
-                if not gbox.ids:
+        if b in (1, 3):
+            for box in self.data['boxes']:
+                if not box.ids:
                     continue
-                if gbox.contains(x, y):
-                    (gid, eid) = gbox.ids
+                if box.contains(x, y):
+                    (gid, eid) = box.ids
                     group = ui.eventGroups[gid]
                     event = group[eid]
                     ###
-                    menu = gtk.Menu()
-                    ##
-                    winTitle = _('Edit') + ' ' + event.desc
-                    menu.add(labelStockMenuItem(winTitle, gtk.STOCK_EDIT, self.editEventClicked, winTitle, event, gid))
-                    ##
-                    winTitle = _('Edit') + ' ' + group.desc
-                    menu.add(labelStockMenuItem(winTitle, gtk.STOCK_EDIT, self.editGroupClicked, winTitle, group))
-                    ##
-                    menu.add(gtk.SeparatorMenuItem())
-                    ##
-                    menu.add(labelImageMenuItem(_('Move to %s')%ui.eventTrash.title, ui.eventTrash.icon, self.moveEventToTrash, group, event))
-                    ##
-                    menu.show_all()
-                    menu.popup(None, None, None, 3, 0)
+                    if b==1:
+                        if box.hasBorder:
+                            top = y - box.y
+                            left = x - box.x
+                            right = box.x + box.w - x
+                            minA = min(boxMoveBorder, top, left, right)
+                            editType = None
+                            if top == minA:
+                                editType = 0
+                                t0 = event.getStartEpoch()
+                                self.window.set_cursor(gdk.Cursor(gdk.FLEUR))
+                            elif right == minA:
+                                editType = 1
+                                t0 = event.getEndEpoch()
+                                self.window.set_cursor(gdk.Cursor(gdk.RIGHT_SIDE))
+                            elif left == minA:
+                                editType = -1
+                                t0 = event.getStartEpoch()
+                                self.window.set_cursor(gdk.Cursor(gdk.LEFT_SIDE))
+                            if editType is not None:
+                                self.boxEditing = (editType, event, box, x, t0)
+                                return True
+                    elif b==3:
+                        menu = gtk.Menu()
+                        ##
+                        winTitle = _('Edit') + ' ' + event.desc
+                        menu.add(labelStockMenuItem(
+                            winTitle,
+                            gtk.STOCK_EDIT,
+                            self.editEventClicked,
+                            winTitle,
+                            event,
+                            gid,
+                        ))
+                        ##
+                        winTitle = _('Edit') + ' ' + group.desc
+                        menu.add(labelStockMenuItem(winTitle, gtk.STOCK_EDIT, self.editGroupClicked, winTitle, group))
+                        ##
+                        menu.add(gtk.SeparatorMenuItem())
+                        ##
+                        menu.add(labelImageMenuItem(
+                            _('Move to %s')%ui.eventTrash.title,
+                            ui.eventTrash.icon,
+                            self.moveEventToTrash,
+                            group,
+                            event,
+                        ))
+                        ##
+                        menu.show_all()
+                        menu.popup(None, None, None, 3, 0)
         return False
+    def motionNotify(self, obj, gevent):
+        if self.boxEditing:
+            editType, event, box, x0, t0 = self.boxEditing
+            t1 = t0 + (gevent.x - x0)/self.pixelPerSec
+            if editType==0:
+                box.t0, box.t1 = t1, box.t1 + t1 - box.t0
+            elif editType==1:
+                if t1-box.t0 > 2*boxMoveBorder/self.pixelPerSec:
+                    box.t1 = t1
+            elif editType==-1:
+                if box.t1-t1 > 2*boxMoveBorder/self.pixelPerSec:
+                    box.t0 = t1
+            self.queue_draw()
+    def buttonRelease(self, obj, gevent):
+        if self.boxEditing:
+            editType, event, box, x0, t0 = self.boxEditing
+            if editType==0:
+                event.modifyPos(box.t0)
+            elif editType==1:
+                event.modifyEnd(box.t1)
+            elif editType==-1:
+                event.modifyStart(box.t0)
+            event.afterModify()
+            event.save()
+            self.boxEditing = None
+        self.window.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
+        #self.queue_draw()## needed?
     def editEventClicked(self, menu, winTitle, event, gid):
         event = EventEditorDialog(
             event,
@@ -449,6 +559,7 @@ class TimeLineWindow(gtk.Window):
         self.set_decorated(False)
         self.connect('delete-event', self.closeClicked)
         self.connect('button-press-event', self.buttonPress)
+        ###
         self.tline = TimeLine(self.closeClicked)
         self.connect('key-press-event', self.tline.keyPress)
         self.add(self.tline)

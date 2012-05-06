@@ -39,8 +39,10 @@ getMonthNameAb = lambda m, y=None: monthNameAb.__getitem__(m-1)
 
 getMonthsInYear = lambda y: 12
 
+epoch = 1721058
 minMonthLen = 28
 maxMonthLen = 32
+avgYearLen = 365.2425 ## FIXME
 
 options = ()
 
@@ -61,12 +63,12 @@ def kal_s(m, p):
 
 def to_jd(y, m, d):
     (p1, p2) = divmod(y, 4)
-    return ifloor(d + kal_s(m, int(p2==0)) + 1461*p1 + 365*p2 + 1721058)
+    return ifloor(d + kal_s(m, int(p2==0)) + 1461*p1 + 365*p2 + epoch)
 
 def jd_to(jd):
     #assert isinstance(jd, (int, long))
     ##wjd = ifloor(jd - 0.5) + 1
-    (p1, q1) = divmod(jd-1721058, 1461)
+    (p1, q1) = divmod(jd-epoch, 1461)
     #if q1==0:## ??????????????????
     #    return (4*p1, 1, 1)
     #else:

@@ -40,6 +40,7 @@ getMonthsInYear = lambda y: 12
 epoch = 1721426
 minMonthLen = 29
 maxMonthLen = 31
+avgYearLen = 365.2425 ## FIXME
 
 options = ()
 

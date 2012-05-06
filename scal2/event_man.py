@@ -39,7 +39,7 @@ from scal2.color_utils import hslToRgb
 from scal2.ics import *
 from scal2.binary_time_line import CenterNode
 
-from scal2.cal_modules import moduleNames, jd_to, to_jd, convert, DATE_GREG, avgYearLength
+from scal2.cal_modules import moduleNames, jd_to, to_jd, convert, DATE_GREG
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName, textNumEncode
 from scal2 import core
@@ -622,6 +622,10 @@ class DateAndTimeEventRule(DateEventRule):
         DateEventRule.__init__(self, parent)
         self.time = localtime()[3:6]
     getEpoch = lambda self: getEpochFromJhms(self.getJd(), *tuple(self.time))
+    def setEpoch(self, epoch):
+        jd, h, m, s = getJhmsFromEpoch(epoch)
+        self.setJd(jd)
+        self.time = (h, m, s)
     getDate = lambda self, mode: convert(self.date[0], self.date[1], self.date[2], self.getMode(), mode)
     getData = lambda self: {
         'date': dateEncode(self.date),
@@ -1309,9 +1313,9 @@ class TaskEvent(Event):
             if value > 0:
                 self.setEnd('duration', value, unit)
     def setStart(self, date, dayTime):
-        startRule = self['start']
-        startRule.date = date
-        startRule.time = dayTime
+        start = self['start']
+        start.date = date
+        start.time = dayTime
     def setEnd(self, endType, *values):
         self.removeSomeRuleTypes('end', 'duration')
         if endType=='date':
@@ -1324,37 +1328,63 @@ class TaskEvent(Event):
             raise ValueError('invalid endType=%r'%endType)
         self.addRule(rule)
     def getStart(self):
-        startRule = self['start']
-        return (startRule.date, startRule.time)
+        start = self['start']
+        return (start.date, start.time)
     getStartEpoch = lambda self: self['start'].getEpoch()
     def getEnd(self):
         try:
-            rule = self['end']
+            end = self['end']
         except KeyError:
             pass
         else:
-            return ('date', (rule.date, rule.time))
+            return ('date', (end.date, end.time))
         try:
-            rule = self['duration']
+            duration = self['duration']
         except KeyError:
             pass
         else:
-            return ('duration', (rule.value, rule.unit))
+            return ('duration', (duration.value, duration.unit))
         raise ValueError('no end date neither duration specified for task')
     def getEndEpoch(self):
         try:
-            rule = self['end']
+            end = self['end']
         except KeyError:
             pass
         else:
-            return rule.getEpoch()
+            return end.getEpoch()
         try:
-            rule = self['duration']
+            duration = self['duration']
         except KeyError:
             pass
         else:
-            return self['start'].getEpoch() + rule.getSeconds()
+            return self['start'].getEpoch() + duration.getSeconds()
         raise ValueError('no end date neither duration specified for task')
+    def modifyPos(self, newStartEpoch):
+        start = self['start']
+        try:
+            end = self['end']
+        except KeyError:
+            pass
+        else:
+            end.setEpoch(end.getEpoch()+newStartEpoch-start.getEpoch())
+        start.setEpoch(newStartEpoch)
+    def modifyStart(self, newStartEpoch):
+        start = self['start']
+        try:
+            duration = self['duration']
+        except KeyError:
+            pass
+        else:
+            duration.value -= float(newStartEpoch - start.getEpoch())/duration.unit
+        start.setEpoch(newStartEpoch)
+    def modifyEnd(self, newEndEpoch):
+        try:
+            end = self['end']
+        except KeyError:
+            duration = self['duration']
+            duration.value = float(newEndEpoch-self.getStartEpoch())/duration.unit
+        else:
+            end.setEpoch(newEndEpoch)
     getJd = lambda self: self['start'].getJd()
     setJd = lambda self, jd: self['start'].setJd(jd)
     def setJdExact(self, jd):
@@ -1364,10 +1394,10 @@ class TaskEvent(Event):
         self.setEnd('duration', 24, 3600)
     def copyFrom(self, other, *args, **kwargs):
         Event.copyFrom(self, other, *args, **kwargs)
-        myStartRule = self['start']
+        myStart = self['start']
         ##
         try:
-            myStartRule.time = other['dayTime'].dayTime
+            myStart.time = other['dayTime'].dayTime
         except KeyError:
             pass
     def calcOccurrenceForJdRange(self, startJd, endJd):
@@ -1718,6 +1748,25 @@ class LargeScaleEvent(Event):
         if group.name == 'largeScale':
             self.scale = group.scale
             self.start = group.getStartValue()
+    #getStartEpoch = lambda self: getEpochFromJd(to_jd(self.start*self.scale, 1, 1, self.mode))
+    #getEndEpoch = lambda self: getEpochFromJd(to_jd((self.start+self.duration)*self.scale, 1, 1, self.mode))
+    #getStartEpoch = lambda self: core.getEpochFromFloatYear(self.start*self.scale, self.mode)
+    #getEndEpoch = lambda self: core.getEpochFromFloatYear((self.start+self.duration)*self.scale, self.mode)
+    #def modifyPos(self, newStartEpoch):
+    #    self.start = core.getFloatYearFromEpoch(newStartEpoch, self.mode)/self.scale
+    #def modifyStart(self, newStartEpoch):
+    #    newStart = core.getFloatYearFromEpoch(newStartEpoch, self.mode)/self.scale
+    #    self.duration += (self.start - newStart)
+    #    self.start = newStart
+    #def modifyEnd(self, newEndEpoch):
+    #    newEnd = core.getFloatYearFromEpoch(newEndEpoch, self.mode)/self.scale
+    #    self.duration = newEnd - self.start
+    #getJd = lambda self: core.getJdFromFloatYear(self.start*self.scale, self.mode)
+    #def setJd(self, jd):
+    #    self.start = core.getFloatYearFromJd(jd, self.mode)/self.scale
+    getJd = lambda self: to_jd(self.start*self.scale, 1, 1, self.mode)
+    def setJd(self, jd):
+        self.start = jd_to(jd, self.mode)[0]//self.scale
     def copyFrom(self, other):
         Event.copyFrom(self, other, *args, **kwargs)
         if other.name == self.name:
@@ -1739,7 +1788,7 @@ class LargeScaleEvent(Event):
     def calcOccurrenceForJdRange(self, startJd, endJd):
         myStartJd = iceil(to_jd(self.scale*self.start, 1, 1, self.mode))
         myEndJd = ifloor(to_jd(self.scale*(self.start+self.duration), 1, 1, self.mode))
-        ## myEndJd = ifloor(startJd + self.scale*self.duration*avgYearLength)
+        ## myEndJd = ifloor(startJd + self.scale*self.duration*modules[self.mode].avgYearLen)
         return TimeRangeListOccurrence(
             intersectionOfTwoTimeRangeList(
                 [

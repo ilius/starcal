@@ -6,7 +6,6 @@ from scal2.paths import *
 
 DATE_GREG = 0 ## Gregorian (common calendar)
 modules = [gregorian]
-avgYearLength = 365.24 ## FIXME
 
 def myRaise():
     i = sys.exc_info()
