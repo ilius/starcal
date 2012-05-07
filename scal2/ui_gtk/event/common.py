@@ -147,24 +147,35 @@ class EventWidget(gtk.VBox):
         self.pack_start(hbox, 0, 0)
         ##########
         self.modeCombo.connect('changed', self.modeComboChanged)## right place? before updateWidget? FIXME
+    def focusSummary(self):
+        self.summaryEntry.select_region(0, -1)
+        self.summaryEntry.grab_focus()
     def updateWidget(self):
         #print 'updateWidget', self.event.files
         self.modeCombo.set_active(self.event.mode)
-        self.summuryEntry.set_text(self.event.summary)
+        self.summaryEntry.set_text(self.event.summary)
         self.descriptionBuff.set_text(self.event.description)
         self.iconSelect.set_filename(self.event.icon)
-        try:
-            filesBox = self.filesBox
-        except AttributeError:
-            pass
-        else:
-            filesBox.updateWidget()
+        #####
+        for attr in ('notificationBox', 'filesBox'):
+            try:
+                getattr(self, attr).updateWidget()
+            except AttributeError:
+                pass
+        #####
         self.modeComboChanged()
     def updateVars(self):
         self.event.mode = self.modeCombo.get_active()
-        self.event.summary = self.summuryEntry.get_text()
+        self.event.summary = self.summaryEntry.get_text()
         self.event.description = buffer_get_text(self.descriptionBuff)
         self.event.icon = self.iconSelect.get_filename()
+        #####
+        for attr in ('notificationBox', 'filesBox'):
+            try:
+                getattr(self, attr).updateVars()
+            except AttributeError:
+                pass
+        #####
     def modeComboChanged(self, obj=None):## FIXME
         pass
 
@@ -239,6 +250,9 @@ class FilesBox(gtk.VBox):
             hbox.destroy()
         for fname in self.event.files:
             self.showFile(fname)
+    def updateVars(self):## FIXME
+        pass
+
 
 class NotificationBox(gtk.Expander):## or NotificationBox FIXME
     def __init__(self, event):

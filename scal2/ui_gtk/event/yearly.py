@@ -65,6 +65,9 @@ class EventWidget(common.EventWidget):
         self.pack_start(hbox, 0, 0)
         self.startYearCheck.connect('clicked', self.startYearCheckClicked)
         ####
+        self.notificationBox = common.NotificationBox(event)
+        self.pack_start(self.notificationBox, 0, 0)
+        ####
         #self.filesBox = common.FilesBox(self.event)
         #self.pack_start(self.filesBox, 0, 0)
     startYearCheckClicked = lambda self, obj=None: self.startYearSpin.set_sensitive(self.startYearCheck.get_active())

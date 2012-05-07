@@ -108,8 +108,6 @@ class EventWidget(common.EventWidget):
         else:
             raise RuntimeError
         self.endTypeComboChanged()
-        ###
-        self.notificationBox.updateWidget()
     def updateVars(self):## FIXME
         common.EventWidget.updateVars(self)
         self.event.setStart(self.startDateInput.get_date(), self.startTimeInput.get_time())
@@ -123,8 +121,6 @@ class EventWidget(common.EventWidget):
                 self.endDateInput.get_date(),
                 self.endTimeInput.get_time(),
             )
-        ###
-        self.notificationBox.updateVars()
     def modeComboChanged(self, obj=None):## overwrite method from common.EventWidget
         newMode = self.modeCombo.get_active()
         self.startDateInput.changeMode(self.event.mode, newMode)
