@@ -71,7 +71,7 @@ class Node:
             ev_t1 = ev_rt1 + self.offset
             if overlaps(t0, t1, ev_t0, ev_t1):
                 ## events.append((ev_t0, ev_t1, ev_id))
-                events.append((max(t0, ev_t0), min(t1, ev_t1), ev_id))
+                events.append((max(t0, ev_t0), min(t1, ev_t1), ev_id, ev_t1-ev_t0))
         for child in self.children.values():
             events += child.getEvents(t0, t1)
         return events

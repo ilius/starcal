@@ -130,9 +130,12 @@ class Tick:
         self.color = color
 
 class Box:
-    def __init__(self, t0, t1, u0, u1, text, color, ids, order):
+    def __init__(self, t0, t1, odt, u0, u1, text, color, ids, order):
         self.t0 = t0
         self.t1 = t1
+        self.odt = odt ## original delta t
+        #if t1-t0 != odt:
+        #    print 'Box, dt=%s, odt=%s'%(t1-t0, odt)
         self.u0 = u0
         self.u1 = u1
         ####
@@ -153,8 +156,8 @@ class Box:
     dt = lambda self: self.t1 - self.t0
     du = lambda self: self.u1 - self.u0
     def __cmp__(self, other):## FIXME
-        #c = cmp(self.dt(), other.dt())
-        #if c != 0: return c
+        c = -cmp(self.odt, other.odt)
+        if c != 0: return c
         return cmp(self.order, other.order)
     def setPixelValues(self, timeStart, pixelPerSec, beforeBoxH, maxBoxH):
         self.x = (self.t0-timeStart)*pixelPerSec
@@ -408,7 +411,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
         if not group.enable:
             continue
         borderTm = (boxMoveBorder+boxMoveLineW)/pixelPerSec
-        for t0, t1, eid in group.node.getEvents(timeStart-borderTm, timeEnd+borderTm):## -1, +1? FIXME
+        for t0, t1, eid, odt in group.node.getEvents(timeStart-borderTm, timeEnd+borderTm):
             pixBoxW = (t1-t0)*pixelPerSec
             if pixBoxW < skipEventPixelLimit:
                 continue
@@ -422,6 +425,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
             box = Box(
                 t0,
                 t1,
+                odt,
                 0,
                 1,
                 event.summary,
