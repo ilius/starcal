@@ -507,11 +507,11 @@ event_man.saveLastIds()
 
 
 
-try:
-    event_man.checkAndStartDaemon()## FIXME here or in ui_*/event/main.py
-except:
-    print 'Error while starting daemon'
-    myRaise()
+#try:
+#    event_man.checkAndStartDaemon()## FIXME here or in ui_*/event/main.py
+#except:
+#    print 'Error while starting daemon'
+#    myRaise()
 
 
 newGroups = []## list of groupId's

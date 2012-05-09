@@ -659,7 +659,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         self.hide()
         if ui.mainWin:
             ui.mainWin.onConfigChange()
-        thread.start_new_thread(event_man.restartDaemon, ())
+        #thread.start_new_thread(event_man.restartDaemon, ())
     def showNewGroup(self, group):
         groupIndex = ui.eventGroups.index(group.id)
         groupIter = self.trees.insert(
