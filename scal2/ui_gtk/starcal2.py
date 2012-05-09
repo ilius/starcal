@@ -1434,6 +1434,7 @@ class MainWin(gtk.Window):
         if event is None:
             return
         ui.newEvents.append((group.id, event.id))
+        self.onConfigChange()
     def prefUpdateBgColor(self, cal):
         ui.prefDialog.colorbBg.set_color(ui.bgColor)
         ui.saveLiveConf()
