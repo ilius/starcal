@@ -24,7 +24,6 @@ from os import listdir
 from os.path import dirname, join, isfile, isdir, splitext
 from xml.dom.minidom import parse## remove FIXME
 from subprocess import Popen
-from gobject import timeout_add, timeout_add_seconds ## FIXME
 
 from scal2.utils import NullObj, toStr, cleanCacheDict, restart
 from scal2.os_utils import makeDir
@@ -324,7 +323,7 @@ class CellCache:
             mainWin.onDateChange()
     def getCellGroup(self, pluginName, *args):
         cellGroup = self.plugins[pluginName]['getCellGroupCallable'](self, *args)
-        timeout_add_seconds(0, self.calcEventsData, cellGroup.allCells())
+        self.calcEventsData(cellGroup.allCells())
         return cellGroup
     def getWeekData(self, absWeekNumber):
         cells = self.getCellGroup('WeekCal', absWeekNumber)
