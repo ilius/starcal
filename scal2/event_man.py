@@ -2770,7 +2770,7 @@ def getDayOccurrenceData(curJd, groups):
             continue
         #print '\nupdateData: checking event', event.summary
         gid = group.id
-        for epoch0, epoch1, eid in group.node.getEvents(getEpochFromJd(curJd), getEpochFromJd(curJd+1)):
+        for epoch0, epoch1, eid, odt in group.node.getEvents(getEpochFromJd(curJd), getEpochFromJd(curJd+1)):
             event = group[eid]
             text = event.getText()
             for url, fname in event.getFilesUrls():
