@@ -1041,6 +1041,21 @@ class RuleContainer:
                         self.addRule(rule)
 
 
+def setIconToData(self, data):
+    icon = self.icon
+    iconDir, iconName = split(icon)
+    if iconDir == join(pixDir, 'event'):
+        icon = iconName
+    data['icon'] = icon
+
+def setIconFromData(self, data):
+    if 'icon' in data:
+        icon = data['icon']
+        if icon and not '/' in icon:
+            icon = join(pixDir, 'event', icon)
+        self.icon = icon
+
+
 ## Should not be registered, or instantiate directly
 class Event(JsonEventBaseClass, RuleContainer):
     name = 'custom'## or 'event' or '' FIXME
@@ -1211,7 +1226,8 @@ class Event(JsonEventBaseClass, RuleContainer):
             'notifiers': self.getNotifiersData(),
             'notifyBefore': durationEncode(*self.notifyBefore),
         }
-        for attr in ('icon', 'summary', 'description', 'remoteIds', 'modified'):
+        setIconToData(self, data)
+        for attr in ('summary', 'description', 'remoteIds', 'modified'):
             data[attr] = getattr(self, attr)
         return data
     def setData(self, data):
@@ -1234,7 +1250,8 @@ class Event(JsonEventBaseClass, RuleContainer):
                 self.notifiers.append(notifier)
         if 'notifyBefore' in data:
             self.notifyBefore = durationDecode(data['notifyBefore'])
-        for attr in ('icon', 'summary', 'description', 'remoteIds', 'modified'):
+        setIconFromData(self, data)
+        for attr in ('summary', 'description', 'remoteIds', 'modified'):
             try:
                 setattr(self, attr, data[attr])
             except KeyError:
@@ -1892,7 +1909,10 @@ class EventContainer(JsonEventBaseClass):
         data = {
             'calType': moduleNames[self.mode],
         }
-        for attr in ('title', 'icon', 'showFullEventDesc', 'idList'):
+        ###
+        setIconToData(self, data)
+        ###
+        for attr in ('title', 'showFullEventDesc', 'idList'):
             data[attr] = getattr(self, attr)
         return data
     def setData(self, data):
@@ -1902,8 +1922,10 @@ class EventContainer(JsonEventBaseClass):
                 self.mode = moduleNames.index(calType)
             except ValueError:
                 raise ValueError('Invalid calType: %r'%calType)
-        ####
-        for attr in ('title', 'icon', 'showFullEventDesc', 'idList'):
+        ###
+        setIconFromData(self, data)
+        ###
+        for attr in ('title', 'showFullEventDesc', 'idList'):
             try:
                 setattr(self, attr, data[attr])
             except KeyError:
