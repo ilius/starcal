@@ -2247,7 +2247,7 @@ class EventGroup(EventContainer):
                 self.node.addEvent(t0, t1, event.id)
                 self.occurCount += 1
         #self.nodeLoaded = True
-        print 'updateOccurrenceNode, id=%s, title=%s, length=%s, time=%s'%(self.id, self.title, len(self), time()-stm0)
+        #print 'updateOccurrenceNode, id=%s, title=%s, length=%s, time=%s'%(self.id, self.title, len(self), time()-stm0)
     def exportToIcsFp(self, fp):
         currentTimeStamp = getIcsTimeByEpoch(time())
         for event in self:
