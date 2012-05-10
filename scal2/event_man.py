@@ -1772,7 +1772,7 @@ class LifeTimeEvent(SingleStartEndEvent):
 
 
 @classes.event.register
-class LargeScaleEvent(Event):
+class LargeScaleEvent(Event):## or MegaEvent? FIXME
     name = 'largeScale'
     desc = _('Large Scale Event')
     __nonzero__ = lambda self: True
