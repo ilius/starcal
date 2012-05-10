@@ -1768,7 +1768,7 @@ class LargeScaleEvent(Event):
     getJd = lambda self: to_jd(self.start*self.scale, 1, 1, self.mode)
     def setJd(self, jd):
         self.start = jd_to(jd, self.mode)[0]//self.scale
-    def copyFrom(self, other):
+    def copyFrom(self, other, *args, **kwargs):
         Event.copyFrom(self, other, *args, **kwargs)
         if other.name == self.name:
             self.scale = other.scale
