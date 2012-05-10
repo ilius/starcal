@@ -225,7 +225,6 @@ class GoogleAccount(Account):
     def showError(self, error):
         sys.stderr.write(error+'\n')
     def authenticate(self):
-        from scal2.ui import openUrl ## FIXME
         global auth_local_webserver
         storage = Storage(self.authFile)
         credentials = storage.get()
@@ -253,7 +252,7 @@ class GoogleAccount(Account):
             oauth_callback = 'http://%s:%s/' % (auth_host_name, port_number)
         else:
             oauth_callback = 'oob'
-        openUrl(self.flow.step1_get_authorize_url(oauth_callback))
+        core.openUrl(self.flow.step1_get_authorize_url(oauth_callback))
 
         code = None
         if auth_local_webserver:

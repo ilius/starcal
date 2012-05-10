@@ -1719,7 +1719,7 @@ gtk.init_check()
 gtk.window_set_default_icon_from_file(ui.logo)
 
 
-clickWebsite = lambda widget, url: ui.openUrl(url)
+clickWebsite = lambda widget, url: core.openUrl(url)
 try:
     gtk.link_button_set_uri_hook(clickWebsite)
 except:## old PyGTK (older than 2.10)

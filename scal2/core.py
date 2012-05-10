@@ -397,6 +397,38 @@ def fixStrForFileName(fname):
     #if osName=='win':## FIXME
     return fname
 
+
+def openUrl(url):
+    if osName=='win':
+        return Popen([url])
+    if osName=='mac':
+        return Popen(['open', url])
+    try:
+        Popen(['xdg-open', url])
+    except:
+        myRaise()
+    else:
+        return
+    #if not url.startswith('http'):## FIXME
+    #    return
+    try:
+        import webbrowser
+        return webbrowser.open(url)
+    except ImportError:
+        pass
+    try:
+        import gnomevfs
+        return gnomevfs.url_show(url)
+    except ImportError:
+        pass
+    for command in ('gnome-www-browser', 'firefox', 'iceweasel', 'konqueror'):
+        try:
+            Popen([command, url])
+        except:
+            pass
+        else:
+            return
+
 ################################################################################
 #################### End of class and function defenitions #####################
 ################################################################################

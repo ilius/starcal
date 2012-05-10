@@ -184,37 +184,6 @@ def checkStartup():
         return True
     return False
 
-def openUrl(url):
-    if osName=='win':
-        return Popen([url])
-    if osName=='mac':
-        return Popen(['open', url])
-    try:
-        Popen(['xdg-open', url])
-    except:
-        myRaise()
-    else:
-        return
-    #if not url.startswith('http'):## FIXME
-    #    return
-    try:
-        import webbrowser
-        return webbrowser.open(url)
-    except ImportError:
-        pass
-    try:
-        import gnomevfs
-        return gnomevfs.url_show(url)
-    except ImportError:
-        pass
-    for command in ('gnome-www-browser', 'firefox', 'iceweasel', 'konqueror'):
-        try:
-            Popen([command, url])
-        except:
-            pass
-        else:
-            return
-
 def dayOpenEvolution(arg=None):
     ##(y, m, d) = core.jd_to(cell.jd-1, core.DATE_GREG) ## in gnome-cal opens prev day! why??
     (y, m, d) = cell.dates[core.DATE_GREG]
