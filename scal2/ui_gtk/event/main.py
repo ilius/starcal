@@ -1280,13 +1280,16 @@ class EventManagerDialog(gtk.Dialog):## FIXME
             self.pasteEventToPath(path)
     def editGroupByPath(self, path):
         (group,) = self.getObjsByPath(path)
-        group = GroupEditorDialog(group).run()
-        if group is None:
-            return
-        groupIter = self.trees.get_iter(path)
-        for i, value in enumerate(self.getGroupRow(group)):
-            self.trees.set_value(groupIter, i, value)
-        self.onGroupModify(group)
+        if group.name == 'trash':
+            self.editTrash()
+        else:
+            group = GroupEditorDialog(group).run()
+            if group is None:
+                return
+            groupIter = self.trees.get_iter(path)
+            for i, value in enumerate(self.getGroupRow(group)):
+                self.trees.set_value(groupIter, i, value)
+            self.onGroupModify(group)
     editGroupFromMenu = lambda self, menu, path: self.editGroupByPath(path)
     def deleteGroup(self, menu, path):
         (index,) = path
@@ -1364,7 +1367,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         ui.eventTrash.empty()
         self.removeIterChildren(self.trashIter)
         self.treeviewCursorChanged()
-    def editTrash(self, menu):
+    def editTrash(self, obj=None):
         TrashEditorDialog().run()
         self.trees.set_value(
             self.trashIter,
