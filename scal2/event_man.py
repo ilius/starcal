@@ -1310,13 +1310,21 @@ class SingleStartEndEvent(Event):
             ('TRANSP', 'OPAQUE'),
             ('CATEGORIES', self.name),## FIXME
         ]
+    def calcOccurrenceForJdRange(self, startJd, endJd):
+        startEpoch = max(getEpochFromJd(startJd), self.getStartEpoch())
+        endEpoch = min(getEpochFromJd(endJd), self.getEndEpoch())
+        if endEpoch > startEpoch:
+            return TimeRangeListOccurrence(
+                [
+                    (startEpoch, endEpoch),
+                ]
+            )
+        else:
+            return TimeRangeListOccurrence()
 
 
 @classes.event.register
-class TaskEvent(SingleStartEndEvent):
-    ## Y/m/d H:M none              ==> start, None
-    ## Y/m/d H:M for H:M           ==> start, end
-    ## Y/m/d H:M until Y/m/d H:M   ==> start, end
+class TaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from SingleStartEndEvent
     name = 'task'
     desc = _('Task')
     iconName = 'task'
@@ -1419,29 +1427,6 @@ class TaskEvent(SingleStartEndEvent):
             myStart.time = other['dayTime'].dayTime
         except KeyError:
             pass
-    def calcOccurrenceForJdRange(self, startJd, endJd):
-        startEpoch = max(getEpochFromJd(startJd), self.getStartEpoch())
-        endEpoch = getEpochFromJd(endJd)
-        myEndEpoch = self.getEndEpoch()
-        if myEndEpoch is None:
-            if endEpoch >= startEpoch:
-                return TimeRangeListOccurrence(
-                    [
-                        (startEpoch, None),
-                    ]
-                )
-            else:
-                return TimeRangeListOccurrence()
-        else:
-            endEpoch = min(endEpoch, myEndEpoch)
-            if endEpoch >= startEpoch:
-                return TimeRangeListOccurrence(
-                    [
-                        (startEpoch, endEpoch),
-                    ]
-                )
-            else:
-                return TimeRangeListOccurrence()
 
 
 @classes.event.register
