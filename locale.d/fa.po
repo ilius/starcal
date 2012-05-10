@@ -673,6 +673,10 @@ msgid "Yearly Events Group"
 msgstr ""
 "گروه رویدادهای سالیانه"
 
+msgid "Life Time Event"
+msgstr ""
+"رویداد زیست زمان"
+
 msgid "Large Scale Event"
 msgstr ""
 "رویداد مقیاس‌بالا"

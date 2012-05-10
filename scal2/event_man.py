@@ -1290,8 +1290,30 @@ class Event(JsonEventBaseClass, RuleContainer):
         return True
 
 
+class SingleStartEndEvent(Event):
+    getStartEpoch = lambda self: self['start'].getEpoch()
+    getEndEpoch = lambda self: self['end'].getEpoch()
+    getJd = lambda self: self['start'].getJd()
+    setJd = lambda self, jd: self.getAddRule('start').setJd(jd)
+    def setJdExact(self, jd):
+        start = self.getAddRule('start')
+        start.setJd(jd)
+        start.time = (0, 0, 0)
+        ###
+        end = self.getAddRule('end')
+        end.setJd(jd+1)
+        end.time = (0, 0, 0)
+    def getIcsData(self, prettyDateTime=False):
+        return [
+            ('DTSTART', getIcsTimeByEpoch(self.getStartEpoch(), prettyDateTime)),
+            ('DTEND', getIcsTimeByEpoch(self.getEndEpoch(), prettyDateTime)),
+            ('TRANSP', 'OPAQUE'),
+            ('CATEGORIES', self.name),## FIXME
+        ]
+
+
 @classes.event.register
-class TaskEvent(Event):
+class TaskEvent(SingleStartEndEvent):
     ## Y/m/d H:M none              ==> start, None
     ## Y/m/d H:M for H:M           ==> start, end
     ## Y/m/d H:M until Y/m/d H:M   ==> start, end
@@ -1330,7 +1352,6 @@ class TaskEvent(Event):
     def getStart(self):
         start = self['start']
         return (start.date, start.time)
-    getStartEpoch = lambda self: self['start'].getEpoch()
     def getEnd(self):
         try:
             end = self['end']
@@ -1385,8 +1406,6 @@ class TaskEvent(Event):
             duration.value = float(newEndEpoch-self.getStartEpoch())/duration.unit
         else:
             end.setEpoch(newEndEpoch)
-    getJd = lambda self: self['start'].getJd()
-    setJd = lambda self, jd: self['start'].setJd(jd)
     def setJdExact(self, jd):
         start = self['start']
         start.setJd(jd)
@@ -1423,13 +1442,7 @@ class TaskEvent(Event):
                 )
             else:
                 return TimeRangeListOccurrence()
-    def getIcsData(self, prettyDateTime=False):
-        return [
-            ('DTSTART', getIcsTimeByEpoch(self.getStartEpoch(), prettyDateTime)),
-            ('DTEND', getIcsTimeByEpoch(self.getEndEpoch(), prettyDateTime)),
-            ('TRANSP', 'OPAQUE'),
-            ('CATEGORIES', self.name),## FIXME
-        ]
+
 
 @classes.event.register
 class DailyNoteEvent(Event):
@@ -1733,6 +1746,31 @@ class UniversityExamEvent(DailyNoteEvent):
             ('TRANSP', 'OPAQUE'),
         ]
 
+
+
+
+
+@classes.event.register
+class LifeTimeEvent(SingleStartEndEvent):
+    name = 'lifeTime'
+    desc = _('Life Time Event')
+    requiredRules  = ('start', 'end',)
+    supportedRules = ('start', 'end',)
+    #def setDefaults(self):
+    #    self['start'].date = ...
+    def setJd(self, jd):
+        start = self.getAddRule('start')
+        start.setJd(jd)
+        start.time = (0, 0, 0)
+
+
+
+
+
+
+
+
+
 @classes.event.register
 class LargeScaleEvent(Event):
     name = 'largeScale'
@@ -1891,7 +1929,7 @@ class EventContainer(JsonEventBaseClass):
 class EventGroup(EventContainer):
     name = 'group'
     desc = _('Event Group')
-    acceptsEventTypes = ('yearly', 'dailyNote', 'task', 'largeScale', 'custom')
+    acceptsEventTypes = ('yearly', 'dailyNote', 'task', 'lifeTime', 'largeScale', 'custom')
     canConvertTo = ()
     actions = []## [('Export to ICS', 'exportToIcs')]
     eventActions = [] ## FIXME
