@@ -43,8 +43,10 @@ if not isdir(confDir):
 
 from scal2.utils import toStr, toUnicode
 from scal2 import core
-from scal2.locale_man import rtl, lang #, loadTranslator ## import scal2.locale_man after core
-#_ = loadTranslator(False)## FIXME
+
+from scal2 import locale_man
+from scal2.locale_man import rtl, lang ## import scal2.locale_man after core
+#_ = locale_man.loadTranslator(False)## FIXME
 from scal2.locale_man import tr as _
 
 from scal2.core import rootDir, pixDir, deskDir, myRaise, getMonthName
@@ -219,8 +221,8 @@ class MonthLabel(gtk.EventBox):
             self.label.set_label('<b>%s</b>'%s)
         else:
             self.label.set_label(s)
-        if lang!='':##?????????
-            set_tooltip(self, module.getMonthName(active+1)) ### No translate
+        if not locale_man.langSh in ('', 'en'):
+            set_tooltip(self, module.getMonthName(active+1)) ## not translation
         self.active = active
     def changeMode(self, mode):
         module = core.modules[mode]
@@ -1655,6 +1657,7 @@ class MainWin(gtk.Window):
         return gtk.main_quit()
     def restart(self):
         self.quit()
+        os.environ['LANG'] = locale_man.sysLangDefault
         restart()
     def adjustTime(self, widget=None, event=None):
         Popen(preferences.adjustTimeCmd)

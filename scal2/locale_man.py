@@ -58,6 +58,8 @@ RLM = '\xe2\x80\x8f' ## u'\u200f' ## right to left mark
 ZWNJ = '\xe2\x80\x8c'
 ZWJ = '\xe2\x80\x8d'
 
+sysLangDefault = os.environ.get('LANG', '')
+
 langDefault = ''
 lang = ''
 langActive = ''
@@ -132,7 +134,7 @@ def prepareLanguage():
     global lang, langActive, langSh, rtl
     if lang=='':
         #langActive = locale.setlocale(locale.LC_ALL, '')
-        langActive = os.environ.get('LANG', '')
+        langActive = sysLangDefault
         if not langActive in langDict.keyList:
             langActive = langDefault
         #os.environ['LANG'] = langActive
