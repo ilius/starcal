@@ -28,6 +28,9 @@ import os
 from os.path import join
 from subprocess import Popen
 from time import time
+
+from gobject import timeout_add
+
 import gtk
 from gtk import gdk
 
