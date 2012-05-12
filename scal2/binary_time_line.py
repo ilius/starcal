@@ -23,9 +23,6 @@ from math import log
 sys.path.append('/starcal2')
 
 from scal2.time_utils import *
-from scal2.core import to_jd, jd_to, convert, DATE_GREG, floatJdEncode
-
-J2000 = to_jd(2000, 1, 1, DATE_GREG)
 
 #maxLevel = 1
 #minLevel = 1
@@ -102,7 +99,7 @@ class Node:
         return parent
 
 class CenterNode:
-    def __init__(self, base=4, offset=J2000):
+    def __init__(self, offset=0, base=4):
         ## base 4 and 8 are the best (about speed of both addEvent and getEvents)
         self.base = base
         self.offset = offset
