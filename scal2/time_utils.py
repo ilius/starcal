@@ -99,6 +99,10 @@ def checkDate(date):
         raise ValueError('bad date %s (invalid day)'%date)
 
 def dateDecode(st):
+    neg = False
+    if st.startswith('-'):
+        neg = True
+        st = st[1:]
     if '-' in st:
         parts = st.split('-')
     elif '/' in st:
@@ -106,11 +110,13 @@ def dateDecode(st):
     else:
         raise ValueError('bad date %s (invalid seperator)'%st)
     if len(parts)!=3:
-        raise ValueError('bad date %s (invalid numbers count)'%st)
+        raise ValueError('bad date %s (invalid numbers count %s)'%(st, len(parts)))
     try:
-        date = tuple([int(p) for p in parts])
+        date = [int(p) for p in parts]
     except ValueError:
         raise ValueError('bad date %s (omitting non-numeric)'%st)
+    if neg:
+        date[0] *= -1
     checkDate(date)
     return date
 
