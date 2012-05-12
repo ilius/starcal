@@ -22,6 +22,8 @@ from scal2.locale_man import tr as _
 
 from scal2 import ui
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
+from scal2.ui_gtk.mywidgets.ymd import YearMonthDayBox
+
 from scal2.ui_gtk.event import common
 
 import gtk
@@ -32,21 +34,30 @@ class EventWidget(common.EventWidget):
         ######
         sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
         ######
+        try:
+            seperated = event.parent.showSeperatedYmdInputs
+        except AttributeError:
+            seperated = False
+        if seperated:
+            self.startDateInput = YearMonthDayBox()
+            self.endDateInput = YearMonthDayBox()
+        else:
+            self.startDateInput = DateButton()
+            self.endDateInput = DateButton()
+        ######
         hbox = gtk.HBox()
-        label = gtk.Label(_('Start'))
+        label = gtk.Label(_('Start')+': ')
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
-        self.startDateInput = DateButton()
         hbox.pack_start(self.startDateInput, 0, 0)
         self.pack_start(hbox, 0, 0)
         ######
         hbox = gtk.HBox()
-        label = gtk.Label(_('End'))
+        label = gtk.Label(_('End')+': ')
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
-        self.endDateInput = DateButton()
         hbox.pack_start(self.endDateInput, 0, 0)
         self.pack_start(hbox, 0, 0)
         #############

@@ -677,6 +677,14 @@ msgid "Life Time Event"
 msgstr ""
 "رویداد زیست زمان"
 
+msgid "Life Time Events Group"
+msgstr ""
+"گروه رویدادهای زیست زمان"
+
+msgid "Show Seperated Inputs for Year, Month and Day"
+msgstr ""
+"نمایش ورودی‌های مجزا برای سال، ماه و روز"
+
 msgid "Large Scale Event"
 msgstr ""
 "رویداد مقیاس‌بالا"

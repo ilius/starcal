@@ -2534,6 +2534,45 @@ class UniversityTerm(EventGroup):
             except KeyError:
                 pass
 
+@classes.group.register
+class LifeTimeGroup(EventGroup):
+    name = 'lifeTime'
+    desc = _('Life Time Events Group')
+    acceptsEventTypes = ('lifeTime',)
+    sortBys = EventGroup.sortBys + (
+        ('start', _('Start')),
+    )
+    def getSortByValue(self, event, attr):
+        if event.name in self.acceptsEventTypes:
+            if attr=='start':
+                return event.name, event.getJd()
+            elif attr=='end':
+                return event.name, event['end'].getJd()
+        return EventGroup.getSortByValue(self, event, attr)
+    def __init__(self, *args, **kwargs):
+        self.showSeperatedYmdInputs = False
+        EventGroup.__init__(self, *args, **kwargs)
+    def copyFrom(self, other):
+        EventGroup.copyFrom(self, other)
+        try:
+            self.showSeperatedYmdInputs = other.showSeperatedYmdInputs
+        except AttributeError:
+            pass
+    def getData(self):
+        data = EventGroup.getData(self)
+        data['showSeperatedYmdInputs'] = self.showSeperatedYmdInputs
+        return data
+    def setData(self, data):
+        EventGroup.setData(self, data)
+        for attr in (
+            'showSeperatedYmdInputs',
+        ):
+            try:
+                setattr(self, attr, data[attr])
+            except KeyError:
+                pass
+
+
 
 @classes.group.register
 class LargeScaleGroup(EventGroup):
