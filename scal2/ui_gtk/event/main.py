@@ -736,6 +736,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         self.set_title(_('Event Manager'))
         self.resize(600, 300)
         self.connect('delete-event', self.onDeleteEvent)
+        self.set_transient_for(None)
         self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_NORMAL)
         ##
         okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)

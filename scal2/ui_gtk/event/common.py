@@ -446,7 +446,8 @@ class GroupComboBox(gtk.ComboBox):
 class EventEditorDialog(gtk.Dialog):
     def __init__(self, event, typeChangable=True, title=None, isNew=False, parent=None, useSelectedDate=False):
         gtk.Dialog.__init__(self, parent=parent)
-        #self.set_transient_for(parent)
+        #self.set_transient_for(None)
+        #self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_NORMAL)
         if title:
             self.set_title(title)
         self.isNew = isNew
