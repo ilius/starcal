@@ -19,7 +19,43 @@
 
 import sys, traceback, os
 from math import floor, ceil
-from collections import Iterator
+
+try:
+    from collections import Iterable 
+except ImportError:
+    class Iterable:
+    
+        def __iter__(self):
+            raise NotImplementedError
+    
+        @classmethod
+        def __subclasshook__(cls, C):
+            if cls is Iterable:
+                if any('__iter__' in B.__dict__ for B in C.__mro__):
+                    return True
+            return NotImplemented
+
+try:
+    from collections import Iterator 
+except ImportError:
+    class Iterator(Iterable):
+    
+        def __next__(self):
+            raise StopIteration
+    
+        def __iter__(self):
+            return self
+    
+        @classmethod
+        def __subclasshook__(cls, C):
+            if cls is Iterator:
+                if (any('__next__' in B.__dict__ for B in C.__mro__) and
+                    any('__iter__' in B.__dict__ for B in C.__mro__)):
+                    return True
+            return NotImplemented
+
+
+
 
 ifloor = lambda x: int(floor(x))
 iceil = lambda x: int(ceil(x))
