@@ -39,15 +39,13 @@ class ClockLabel(gtk.Label):
     def start(self):
         self.running = True
         self.update()
-    def get_time(self):## Local: time.strftime('%X')
-        if self.seconds:
-            return '%.2d:%.2d:%.2d'%tuple(time.localtime()[3:6])
-        else:
-            return '%.2d:%.2d'%tuple(time.localtime()[3:5])
     def update(self):
         if self.running:
             timeout_add(time_rem(), self.update)
-            l = self.get_time()
+            if self.seconds:
+                l = '%.2d:%.2d:%.2d'%tuple(time.localtime()[3:6])
+            else:
+                l = '%.2d:%.2d'%tuple(time.localtime()[3:5])
             if self.bold:
                 l = '<b>%s</b>'%l
             self.set_label(l)

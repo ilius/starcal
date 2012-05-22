@@ -30,8 +30,7 @@ from scal2 import ui
 from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
 from scal2.export import exportToHtml
 
-from scal2.ui_gtk.mywidgets.multi_spin_box import YearMonthBox
-from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, TimeButton
+from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, TimeButton, YearMonthButton
 
 import gtk
 from gtk import gdk
@@ -56,11 +55,11 @@ class ExportDialog(gtk.Dialog):
         ###
         hbox2 = gtk.HBox(spacing=2)
         hbox2.pack_start(gtk.Label(_('from month')), 0, 0)
-        self.ymBox0 = YearMonthBox()
+        self.ymBox0 = YearMonthButton()
         hbox2.pack_start(self.ymBox0, 0, 0)
         hbox2.pack_start(gtk.Label(''), 1, 1)
         hbox2.pack_start(gtk.Label(_('to month')), 0, 0)
-        self.ymBox1 = YearMonthBox()
+        self.ymBox1 = YearMonthButton()
         hbox2.pack_start(self.ymBox1, 0, 0)
         hbox.pack_start(hbox2, 1, 1)
         self.hbox2 = hbox2
@@ -122,8 +121,8 @@ class ExportDialog(gtk.Dialog):
                 months.append(getMonthStatus(ui.cell.year, i))
             title = '%s %s'%(_('Calendar'), _(ui.cell.year))
         elif i==2:
-            (y0, m0) = self.ymBox0.get_date()
-            (y1, m1) = self.ymBox1.get_date()
+            (y0, m0) = self.ymBox0.get_value()
+            (y1, m1) = self.ymBox1.get_value()
             for ym in xrange(y0*12+m0-1, y1*12+m1):
                 (y, m) = divmod(ym, 12)
                 m += 1
@@ -134,8 +133,8 @@ class ExportDialog(gtk.Dialog):
         self.hide()
     def showDialog(self, year, month):
         self.comboChanged(ym=(year, month))
-        self.ymBox0.set_date((year, month))
-        self.ymBox1.set_date((year, month))
+        self.ymBox0.set_value((year, month))
+        self.ymBox1.set_value((year, month))
         self.resize(1, 1)
         self.present()
     def exportSvg(self, path, monthList):## FIXME
@@ -181,8 +180,8 @@ class ExportToIcsDialog(gtk.Dialog):
         self.vbox.pack_start(hbox, 0, 0)
         ####
         (year, month, day) = ui.todayCell.dates[core.primaryMode]
-        self.startDateInput.set_date((year, 1, 1))
-        self.endDateInput.set_date((year+1, 1, 1))
+        self.startDateInput.set_value((year, 1, 1))
+        self.endDateInput.set_value((year+1, 1, 1))
         ########
         self.fcw = gtk.FileChooserWidget(action=gtk.FILE_CHOOSER_ACTION_SAVE)
         self.vbox.pack_start(self.fcw, 1, 1)
@@ -217,8 +216,8 @@ class ExportToIcsDialog(gtk.Dialog):
         print 'Exporting to ics file "%s"'%path
         self.saveIcsFunc(
             path,
-            core.primary_to_jd(*self.startDateInput.get_date()),
-            core.primary_to_jd(*self.endDateInput.get_date()),
+            core.primary_to_jd(*self.startDateInput.get_value()),
+            core.primary_to_jd(*self.endDateInput.get_value()),
         )
         self.window.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
         self.destroy()

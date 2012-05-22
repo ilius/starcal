@@ -18,7 +18,7 @@
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 import sys, os, time
-from gobject import timeout_add, type_register, signal_new, SIGNAL_RUN_LAST, TYPE_NONE
+from gobject import type_register
 import gtk
 from gtk import gdk
 
@@ -36,11 +36,11 @@ def myRaise():
         print i
 
 class NumRangesEntry(gtk.Entry):
-    def __init__(self, _min, _max, pageStep=10):
+    def __init__(self, _min, _max, page_step=10):
         self._min = _min
-        self._max= _max
+        self._max = _max
         self.digs = locale_man.digits[locale_man.langSh]
-        self.pageStep = pageStep
+        self.page_step = page_step
         ####
         gtk.Entry.__init__(self)
         self.connect('key-press-event', self.keyPress)
@@ -103,9 +103,9 @@ class NumRangesEntry(gtk.Entry):
             startI,
             endI - len(thisNumStr) + len(newNumStr),
         )
-    def keyPress(self, obj, event):
-        kval = event.keyval
-        kname = gdk.keyval_name(event.keyval).lower()
+    def keyPress(self, obj, gevent):
+        kval = gevent.keyval
+        kname = gdk.keyval_name(gevent.keyval).lower()
         #print kval, kname
         if kname in (
             'tab', 'escape', 'backspace', 'delete', 'insert',
@@ -122,9 +122,9 @@ class NumRangesEntry(gtk.Entry):
         elif kname=='down':
             self.numPlus(-1)
         elif kname=='page_up':
-            self.numPlus(self.pageStep)
+            self.numPlus(self.page_step)
         elif kname=='page_down':
-            self.numPlus(-self.pageStep)
+            self.numPlus(-self.page_step)
         elif kname=='left':
             return False## FIXME
         elif kname=='right':
@@ -154,7 +154,7 @@ class NumRangesEntry(gtk.Entry):
                 #print 'ch=%r'%ch
                 if ch in self.digs:
                     self.insertText(ch)
-                if event.state & gdk.CONTROL_MASK:## Shortcuts like Ctrl + [A, C, X, V]
+                if gevent.state & gdk.CONTROL_MASK:## Shortcuts like Ctrl + [A, C, X, V]
                     return False
             else:
                 print kval, kname

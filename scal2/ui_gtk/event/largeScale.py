@@ -11,6 +11,7 @@ from scal2.ui_gtk.event import common
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 
 maxStart = 999999
 maxDur = 99999
@@ -35,12 +36,8 @@ class EventWidget(common.EventWidget):
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
-        spin = gtk.SpinButton()
-        spin.set_increments(1, 10)
-        spin.set_range(-maxStart, maxStart)
-        spin.set_direction(gtk.TEXT_DIR_LTR)
-        hbox.pack_start(spin, 0, 0)
-        self.startSpin = spin
+        self.startSpin = IntSpinButton(-maxStart, maxStart)
+        hbox.pack_start(self.startSpin, 0, 0)
         self.pack_start(hbox, 0, 0)
         ####
         hbox = gtk.HBox()
@@ -48,12 +45,8 @@ class EventWidget(common.EventWidget):
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
-        spin = gtk.SpinButton()
-        spin.set_increments(1, 10)
-        spin.set_range(0, maxDur)
-        spin.set_direction(gtk.TEXT_DIR_LTR)
-        hbox.pack_start(spin, 0, 0)
-        self.durationSpin = spin
+        self.durationSpin = IntSpinButton(0, maxDur)
+        hbox.pack_start(self.durationSpin, 0, 0)
         self.pack_start(hbox, 0, 0)
         ####
     def updateWidget(self):

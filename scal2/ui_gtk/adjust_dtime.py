@@ -34,7 +34,7 @@ _ = str ## FIXME
 #gtk.widget_set_default_direction(gtk.TEXT_DIR_LTR)
 
 from scal2 import ui
-from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, TimeButton
+from scal2.ui_gtk.mywidgets.multi_spin_button import dateInput, timeInput
 
 
 def error_exit(text, parent=None):
@@ -81,8 +81,8 @@ class AdjusterDialog(gtk.Dialog):
         self.ckeckbEditTime.connect('clicked', self.ckeckbEditTimeClicked)
         hbox.pack_start(self.ckeckbEditTime, 0, 0)
         sg.add_widget(self.ckeckbEditTime)
-        self.timebutton = TimeButton() ## ??????? options
-        hbox.pack_start(self.timebutton, 0, 0)
+        self.timeInput = timeInput() ## ??????? options
+        hbox.pack_start(self.timeInput, 0, 0)
         vb.pack_start(hbox, 0, 0)
         ###
         hbox = gtk.HBox()
@@ -96,8 +96,8 @@ class AdjusterDialog(gtk.Dialog):
         self.ckeckbEditDate.connect('clicked', self.ckeckbEditDateClicked)
         hbox.pack_start(self.ckeckbEditDate, 0, 0)
         sg.add_widget(self.ckeckbEditDate)
-        self.datebutton = DateButton() ## ??????? options
-        hbox.pack_start(self.datebutton, 0, 0)
+        self.dateInput = dateInput() ## ??????? options
+        hbox.pack_start(self.dateInput, 0, 0)
         vb.pack_start(hbox, 0, 0)
         ###
         self.vbox.pack_start(vb, 0, 0, 10)#?????
@@ -151,11 +151,11 @@ class AdjusterDialog(gtk.Dialog):
         self.updateSetButtonSensitive()
     def ckeckbEditTimeClicked(self, checkb=None):
         self.editTime = self.ckeckbEditTime.get_active()
-        self.timebutton.set_sensitive(self.editTime)
+        self.timeInput.set_sensitive(self.editTime)
         self.updateSetButtonSensitive()
     def ckeckbEditDateClicked(self, checkb=None):
         self.editDate = self.ckeckbEditDate.get_active()
-        self.datebutton.set_sensitive(self.editDate)
+        self.dateInput.set_sensitive(self.editDate)
         self.updateSetButtonSensitive()
     """def set_sys_time(self):
         if os.path.isfile('/bin/date'):
@@ -172,9 +172,9 @@ class AdjusterDialog(gtk.Dialog):
         lt = time.localtime()
         self.label_cur.set_label(_('Current:')+' %.4d/%.2d/%.2d - %.2d:%.2d:%.2d'%lt[:6])
         if not self.editTime:
-            self.timebutton.set_time(lt[3:6])
+            self.timeInput.set_value(lt[3:6])
         if not self.editDate:
-            self.datebutton.set_date(lt[:3])
+            self.dateInput.set_value(lt[:3])
         return False
     def updateSetButtonSensitive(self, widget=None):
         if self.radioMan.get_active():
@@ -184,16 +184,16 @@ class AdjusterDialog(gtk.Dialog):
     def setSysTimeClicked(self, widget=None):
         if self.radioMan.get_active():
             if self.editTime:
-                (h, m, s) = self.timebutton.get_time()
+                (h, m, s) = self.timeInput.get_value()
                 if self.editDate:
-                    (Y, M, D) = self.datebutton.get_date()
+                    (Y, M, D) = self.dateInput.get_value()
                     cmd = ['/bin/date', '-s', '%.4d/%.2d/%.2d %.2d:%.2d:%.2d'%(Y,M,D,h,m,s)]
                 else:
                     cmd = ['/bin/date', '-s', '%.2d:%.2d:%.2d'%(h, m, s)]
             else:
                 if self.editDate:
-                    (Y, M, D) = self.datebutton.get_date()
-                    ##(h, m, s) = self.timebutton.get_time()
+                    (Y, M, D) = self.dateInput.get_value()
+                    ##(h, m, s) = self.timeInput.get_value()
                     (h, m, s) = time.localtime()[3:6]
                     cmd = ['/bin/date', '-s', '%.4d/%.2d/%.2d %.2d:%.2d:%.2d'%(Y,M,D,h,m,s)]
                 else:

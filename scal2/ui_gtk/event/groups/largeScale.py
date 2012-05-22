@@ -3,9 +3,9 @@ from scal2.locale_man import tr as _
 from scal2.ui_gtk.event.groups.base import BaseGroupWidget
 from scal2.ui_gtk.event import common
 
-
-
 import gtk
+
+from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 
 maxStartEnd = 999999
 
@@ -29,12 +29,8 @@ class GroupWidget(BaseGroupWidget):
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
-        spin = gtk.SpinButton()
-        spin.set_increments(1, 10)
-        spin.set_range(-maxStartEnd, maxStartEnd)
-        spin.set_direction(gtk.TEXT_DIR_LTR)
-        hbox.pack_start(spin, 0, 0)
-        self.startSpin = spin
+        self.startSpin = IntSpinButton(-maxStartEnd, maxStartEnd)
+        hbox.pack_start(self.startSpin, 0, 0)
         self.pack_start(hbox, 0, 0)
         ####
         hbox = gtk.HBox()
@@ -42,12 +38,8 @@ class GroupWidget(BaseGroupWidget):
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
-        spin = gtk.SpinButton()
-        spin.set_increments(1, 10)
-        spin.set_range(-maxStartEnd, maxStartEnd)
-        spin.set_direction(gtk.TEXT_DIR_LTR)
-        hbox.pack_start(spin, 0, 0)
-        self.endSpin = spin
+        self.endSpin = IntSpinButton(-maxStartEnd, maxStartEnd)
+        hbox.pack_start(self.endSpin, 0, 0)
         self.pack_start(hbox, 0, 0)
     def updateWidget(self):
         BaseGroupWidget.updateWidget(self)

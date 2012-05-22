@@ -678,7 +678,12 @@ del newPrimaryMode
 
 
 needRestartPref = {} ### Right place ????????
-for key in ('scal2.locale_man.lang', 'winTaskbar', 'showYmArrows'): # What other????
+for key in (
+    'scal2.locale_man.lang',
+    'scal2.locale_man.enableNumLocale',
+    'winTaskbar',
+    'showYmArrows',
+): # What other????
     needRestartPref[key] = eval(key)
 
 if menuTextColor is None:

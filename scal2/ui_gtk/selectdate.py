@@ -28,7 +28,7 @@ from scal2 import core
 from scal2.core import convert, getMonthName
 
 from scal2 import ui
-from scal2.ui_gtk.mywidgets.multi_spin_box import DateBox
+from scal2.ui_gtk.mywidgets.multi_spin_button import DateButtonOption
 from scal2.ui_gtk.mywidgets.ymd import YearMonthDayBox
 
 import gtk, gobject
@@ -66,7 +66,7 @@ class SelectDateDialog(gtk.Dialog):
         ########
         hb2 = gtk.HBox(spacing=4)
         hb2.pack_start(gtk.Label('yyyy/mm/dd'), 0, 0)
-        dateInput = DateBox(hist_size=16)
+        dateInput = DateButtonOption(hist_size=16)
         hb2.pack_start(dateInput, 0, 0)
         rb2 = gtk.RadioButton()
         rb2.num = 2
@@ -111,7 +111,7 @@ class SelectDateDialog(gtk.Dialog):
         mode = self.comboMode.get_active()
         if mode!=ui.dragGetMode:
             date = convert(date[0], date[1], date[2], ui.dragGetMode, mode)
-        self.dateInput.set_date(date)
+        self.dateInput.set_value(date)
         self.dateInput.add_history()
         return True
     def show(self):
@@ -125,15 +125,15 @@ class SelectDateDialog(gtk.Dialog):
         self.hide()
         return True
     def set(self, y, m, d):
-        self.ymdBox.set_date((y, m, d))
-        self.dateInput.set_date((y, m, d))
+        self.ymdBox.set_value((y, m, d))
+        self.dateInput.set_value((y, m, d))
         self.dateInput.add_history()
     def set_mode(self, mode):
         self.mode = mode
         module = core.modules[mode]
         self.comboMode.set_active(mode)
         self.ymdBox.set_mode(mode)
-        self.dateInput.maxs = (9999, 12, module.maxMonthLen)
+        self.dateInput.setMaxDay(module.maxMonthLen)
     def comboModeChanged(self, widget=None):
         pMode = self.mode
         pDate = self.get()
@@ -145,15 +145,15 @@ class SelectDateDialog(gtk.Dialog):
             (y0, m0, d0) = pDate
             (y, m, d) = convert(y0, m0, d0, pMode, mode)
         self.ymdBox.set_mode(mode)
-        self.dateInput.maxs = (9999, 12, module.maxMonthLen)
+        self.dateInput.setMaxDay(module.maxMonthLen)
         self.set(y, m, d)
         self.mode = mode
     def get(self):
         mode = self.comboMode.get_active()
         if self.radio1.get_active():
-            y0, m0, d0 = self.ymdBox.get_date()
+            y0, m0, d0 = self.ymdBox.get_value()
         elif self.radio2.get_active():
-            (y0, m0, d0) = self.dateInput.get_date()
+            (y0, m0, d0) = self.dateInput.get_value()
         return (y0, m0, d0)
     def ok(self, widget):
         mode = self.comboMode.get_active()
@@ -172,8 +172,10 @@ class SelectDateDialog(gtk.Dialog):
             return
         self.emit('response-date', y, m, d)
         self.hide()
-        self.dateInput.add_history((y0, m0, d0))
-        #self.dateInput.add_history((y, m, d))
+        self.dateInput.set_value((y0, m0, d0))
+        self.dateInput.add_history()
+        print 'spinD.get_value', gtk.SpinButton.get_value(self.ymdBox.spinD)
+        print 'spinY.get_value', gtk.SpinButton.get_value(self.ymdBox.spinY)
     def radioChanged(self, widget=None):
         if self.radio1.get_active():
             self.ymdBox.set_sensitive(True)

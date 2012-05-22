@@ -89,25 +89,25 @@ class EventWidget(common.EventWidget):
         common.EventWidget.updateWidget(self)
         ###
         (startDate, startTime) = self.event.getStart()
-        self.startDateInput.set_date(startDate)
-        self.startTimeInput.set_time(startTime)
+        self.startDateInput.set_value(startDate)
+        self.startTimeInput.set_value(startTime)
         ###
         (endType, values) = self.event.getEnd()
         if endType=='duration':
             self.endTypeCombo.set_active(0)
             self.durationBox.setDuration(*values)
-            self.endDateInput.set_date(startDate)## FIXME
-            self.endTimeInput.set_time(startTime)## FIXME
+            self.endDateInput.set_value(startDate)## FIXME
+            self.endTimeInput.set_value(startTime)## FIXME
         elif endType=='date':
             self.endTypeCombo.set_active(1)
-            self.endDateInput.set_date(values[0])
-            self.endTimeInput.set_time(values[1])
+            self.endDateInput.set_value(values[0])
+            self.endTimeInput.set_value(values[1])
         else:
             raise RuntimeError
         self.endTypeComboChanged()
     def updateVars(self):## FIXME
         common.EventWidget.updateVars(self)
-        self.event.setStart(self.startDateInput.get_date(), self.startTimeInput.get_time())
+        self.event.setStart(self.startDateInput.get_value(), self.startTimeInput.get_value())
         ###
         active = self.endTypeCombo.get_active()
         if active==0:
@@ -115,8 +115,8 @@ class EventWidget(common.EventWidget):
         elif active==1:
             self.event.setEnd(
                 'date',
-                self.endDateInput.get_date(),
-                self.endTimeInput.get_time(),
+                self.endDateInput.get_value(),
+                self.endTimeInput.get_value(),
             )
     def modeComboChanged(self, obj=None):## overwrite method from common.EventWidget
         newMode = self.modeCombo.get_active()

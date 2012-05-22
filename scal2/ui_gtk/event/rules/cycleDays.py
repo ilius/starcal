@@ -7,12 +7,12 @@ from scal2 import event_man
 import gtk
 from gtk import gdk
 
-class RuleWidget(gtk.SpinButton):
+from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
+
+class RuleWidget(IntSpinButton):
     def __init__(self, rule):
         self.rule = rule
-        gtk.SpinButton.__init__(self)
-        self.set_increments(1, 10)
-        self.set_range(0, 100000)
+        IntSpinButton.__init__(self, 0, 999999)
     def updateWidget(self):
         self.set_value(self.rule.cycleDays)
     def updateVars(self):

@@ -34,8 +34,8 @@ class GroupWidget(BaseGroupWidget):
         self.pack_start(hbox, 0, 0)
     def updateWidget(self):
         BaseGroupWidget.updateWidget(self)
-        self.startDateInput.set_date(jd_to(self.group.startJd, self.group.mode))
-        self.endDateInput.set_date(jd_to(self.group.endJd, self.group.mode))
+        self.startDateInput.set_value(jd_to(self.group.startJd, self.group.mode))
+        self.endDateInput.set_value(jd_to(self.group.endJd, self.group.mode))
     def updateVars(self):
         BaseGroupWidget.updateVars(self)
         self.group.startJd = self.startDateInput.get_jd(self.group.mode)

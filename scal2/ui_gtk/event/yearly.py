@@ -25,6 +25,7 @@ from scal2 import event_man
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.mywidgets.multi_spin_button import YearSpinButton, DaySpinButton
 from scal2.ui_gtk.event import common
 
 
@@ -41,26 +42,16 @@ class EventWidget(common.EventWidget):
         ###
         #hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Day')), 0, 0)
-        spin = gtk.SpinButton()
-        spin.set_increments(1, 10)
-        spin.set_range(1, 31)
-        spin.set_digits(0)
-        spin.set_direction(gtk.TEXT_DIR_LTR)
-        self.daySpin = spin
-        hbox.pack_start(spin, 0, 0)
+        self.daySpin = DaySpinButton()
+        hbox.pack_start(self.daySpin, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         self.pack_start(hbox, 0, 0)
         ###
         hbox = gtk.HBox()
         self.startYearCheck = gtk.CheckButton(_('Start Year'))
         hbox.pack_start(self.startYearCheck, 0, 0)
-        spin = gtk.SpinButton()
-        spin.set_increments(1, 10)
-        spin.set_range(1, 9999)
-        spin.set_digits(0)
-        spin.set_direction(gtk.TEXT_DIR_LTR)
-        self.startYearSpin = spin
-        hbox.pack_start(spin, 0, 0)
+        self.startYearSpin = YearSpinButton()
+        hbox.pack_start(self.startYearSpin, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         self.pack_start(hbox, 0, 0)
         self.startYearCheck.connect('clicked', self.startYearCheckClicked)

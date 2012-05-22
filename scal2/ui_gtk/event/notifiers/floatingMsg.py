@@ -29,6 +29,8 @@ from scal2 import event_man
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
+
 rootWin = gtk.gdk.get_default_root_window()
 screenWidth = rootWin.get_size()[0]
 
@@ -271,14 +273,9 @@ class NotifierWidget(gtk.HBox):
         self.pack_start(self.fillWidthCb, 0, 0)
         self.pack_start(gtk.Label(''), 1, 1)
         ##
-        speedSpin = gtk.SpinButton()
-        speedSpin.set_increments(1, 10)
-        speedSpin.set_range(1, 999)
-        speedSpin.set_digits(0)
-        speedSpin.set_direction(gtk.TEXT_DIR_LTR)
-        self.speedSpin = speedSpin
+        self.speedSpin = IntSpinButton(1, 999)
         self.pack_start(gtk.Label(_('Speed')), 0, 0)
-        self.pack_start(speedSpin, 0, 0)
+        self.pack_start(self.speedSpin, 0, 0)
         self.pack_start(gtk.Label(''), 1, 1)
         ##
         self.bgColorButton = MyColorButton()

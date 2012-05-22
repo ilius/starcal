@@ -138,11 +138,11 @@ class EventWidget(gtk.VBox):
         else:
             self.courseCombo.set_active(self.courseIds.index(self.event.courseId))
         ##
-        self.dateInput.set_date(self.event.getDate())
+        self.dateInput.set_value(self.event.getDate())
         ##
         timeRangeRule = self.event['dayTimeRange']
-        self.dayTimeStartCombo.set_time(timeRangeRule.dayTimeStart)
-        self.dayTimeEndCombo.set_time(timeRangeRule.dayTimeEnd)
+        self.dayTimeStartCombo.set_value(timeRangeRule.dayTimeStart)
+        self.dayTimeEndCombo.set_value(timeRangeRule.dayTimeEnd)
         ####
         #self.summuryEntry.set_text(self.event.summary)
         self.descriptionBuff.set_text(self.event.description)
@@ -159,11 +159,11 @@ class EventWidget(gtk.VBox):
         else:
             self.event.courseId = self.courseIds[courseIndex]
         ##
-        self.event.setDate(*tuple(self.dateInput.get_date()))
+        self.event.setDate(*tuple(self.dateInput.get_value()))
         ##
         self.event['dayTimeRange'].setRange(
-            self.dayTimeStartCombo.get_time(),
-            self.dayTimeEndCombo.get_time(),
+            self.dayTimeStartCombo.get_value(),
+            self.dayTimeEndCombo.get_value(),
         )
         ####
         #self.event.summary = self.summuryEntry.get_text()

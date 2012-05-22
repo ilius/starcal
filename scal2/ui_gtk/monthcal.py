@@ -44,11 +44,12 @@ import gobject
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 
 class MonthCal(gtk.Widget, MainWinItem):
     cx = [0, 0, 0, 0, 0, 0, 0]
     def heightSpinChanged(self, spin):
-        h = spin.get_value_as_int()
+        h = spin.get_value()
         self.set_property('height-request', h)
         ui.calHeight = h
     confStr = lambda self: 'ui.calHeight=%r\n'%ui.calHeight
@@ -57,11 +58,7 @@ class MonthCal(gtk.Widget, MainWinItem):
         self.set_property('height-request', ui.calHeight)
         ######
         hbox = gtk.HBox()
-        spin = gtk.SpinButton()
-        spin.set_increments(1, 10)
-        spin.set_range(1, 999)
-        spin.set_digits(0)
-        spin.set_direction(gtk.TEXT_DIR_LTR)
+        spin = IntSpinButton(1, 999)
         spin.set_value(ui.calHeight)
         spin.connect('changed', self.heightSpinChanged)
         hbox.pack_start(gtk.Label(_('Height:')), 0, 0)

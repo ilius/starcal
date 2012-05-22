@@ -49,7 +49,7 @@ import gtk
 from gtk import gdk
 
 def show_event(widget, event):
-    print type(widget), event.type.value_name, event.get_time()#, event.send_event
+    print type(widget), event.type.value_name, event.get_value()#, event.send_event
 
 rootWindow = gdk.get_default_root_window() ## Good Place?????
 

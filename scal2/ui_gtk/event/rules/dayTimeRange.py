@@ -20,10 +20,10 @@ class RuleWidget(gtk.HBox):
         self.pack_start(gtk.Label(' ' + _('to') + ' '), 0, 0)
         self.pack_start(self.endTbox, 0, 0)
     def updateWidget(self):
-        self.startTbox.set_time(self.rule.dayTimeStart)
-        self.endTbox.set_time(self.rule.dayTimeEnd)
+        self.startTbox.set_value(self.rule.dayTimeStart)
+        self.endTbox.set_value(self.rule.dayTimeEnd)
     def updateVars(self):
-        self.rule.dayTimeStart = self.startTbox.get_time()
-        self.rule.dayTimeEnd = self.endTbox.get_time()
+        self.rule.dayTimeStart = self.startTbox.get_value()
+        self.rule.dayTimeEnd = self.endTbox.get_value()
 
 

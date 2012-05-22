@@ -201,6 +201,27 @@ rtlSgn = lambda: 1 if rtl else -1
 
 getMonthName = lambda mode, month, year=None: tr(modules[mode].getMonthName(month, year))
 
+getNumSep = lambda: tr(u'.') if enableNumLocale else u'.'
+
+def getDigits():
+    if enableNumLocale:
+        try:
+            return digits[langSh]
+        except KeyError:
+            pass
+    return digits['en']
+
+def getAvailableDigitKeys():
+    keys = set(digits['en'])
+    if langSh != 'en':
+        try:
+            locDigits = digits[langSh]
+        except KeyError:
+            pass
+        else:
+            keys.update(locDigits)
+    return keys
+
 def numEncode(num, mode=None, fillZero=0, negEnd=False):
     if not enableNumLocale:
         mode = 'en'

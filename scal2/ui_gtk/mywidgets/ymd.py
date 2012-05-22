@@ -4,7 +4,7 @@ from scal2.core import getMonthLen
 
 import gtk
 
-
+from scal2.ui_gtk.mywidgets.multi_spin_button import YearSpinButton, DaySpinButton
 
 class YearMonthDayBox(gtk.HBox):
     def __init__(self):
@@ -12,13 +12,8 @@ class YearMonthDayBox(gtk.HBox):
         self.mode = core.primaryMode
         ####
         self.pack_start(gtk.Label(_('Year')), 0, 0)
-        spinY = gtk.SpinButton()
-        spinY.set_increments(1, 10)
-        spinY.set_range(-9999, 9999)
-        spinY.set_width_chars(5)
-        spinY.set_direction(gtk.TEXT_DIR_LTR)
-        self.pack_start(spinY, 0, 0)
-        self.spinY = spinY
+        self.spinY = YearSpinButton()
+        self.pack_start(self.spinY, 0, 0)
         ####
         self.pack_start(gtk.Label(_('Month')), 0, 0)
         comboMonth = gtk.combo_box_new_text()
@@ -30,16 +25,10 @@ class YearMonthDayBox(gtk.HBox):
         self.comboMonth = comboMonth
         ####
         self.pack_start(gtk.Label(_('Day')), 0, 0)
-        spinD = gtk.SpinButton()
-        spinD.set_increments(1, 5)
-        spinD.set_range(1, 31)
-        spinD.set_width_chars(3)
-        spinD.set_direction(gtk.TEXT_DIR_LTR)
-        self.pack_start(spinD, 0, 0)
-        self.spinD = spinD
-        ####
+        self.spinD = DaySpinButton()
+        self.pack_start(self.spinD, 0, 0)
         self.comboMonthConn = comboMonth.connect('changed', self.comboMonthChanged)
-        spinY.connect('changed', self.comboMonthChanged) 
+        self.spinY.connect('changed', self.comboMonthChanged) 
     def set_mode(self, mode):
         self.comboMonth.disconnect(self.comboMonthConn)
         self.mode = mode
@@ -53,20 +42,20 @@ class YearMonthDayBox(gtk.HBox):
         self.comboMonthConn = self.comboMonth.connect('changed', self.comboMonthChanged)
     def changeMode(self, mode, newMode):## FIXME naming standard?
         self.set_mode(newMode)
-    def set_date(self, date):
+    def set_value(self, date):
         (y, m, d) = date
         self.spinY.set_value(y)
         self.comboMonth.set_active(m-1)
         self.spinD.set_value(d)
-    def get_date(self):
+    def get_value(self):
         return (
-            self.spinY.get_value_as_int(),
+            self.spinY.get_value(),
             self.comboMonth.get_active() + 1,
-            self.spinD.get_value_as_int(),
+            self.spinD.get_value(),
         )
     def comboMonthChanged(self, widget=None):
         self.spinD.set_range(1, getMonthLen(
-            self.spinY.get_value_as_int(),
+            self.spinY.get_value(),
             self.comboMonth.get_active() + 1,
             self.mode,
         ))

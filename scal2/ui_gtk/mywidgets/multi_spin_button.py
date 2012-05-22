@@ -19,51 +19,38 @@
 
 import sys, os
 from time import time, localtime
+
+from scal2.utils import toUnicode, toStr, strFindNth, iceil
+
+from scal2 import locale_man
+
+from scal2.cal_modules import to_jd, jd_to, convert
+
+from scal2.mywidgets.multi_spin import *
+
 from gobject import timeout_add, type_register, signal_new, SIGNAL_RUN_LAST, TYPE_NONE
 import gtk
 from gtk import gdk
 
-from scal2.locale_man import numEncode, numDecode
-
-from scal2.cal_modules import to_jd, jd_to, convert
 
 class MultiSpinButton(gtk.SpinButton):
-    #from gtk import SpinButton, TEXT_DIR_LTR
-    def __init__(self, mins, maxs, fields, sep, nums=None, lang='en', arrow_select=True):##force_select=False
+    def __init__(self, sep, fields, arrow_select=True, page_step=10):
         gtk.SpinButton.__init__(self)
-        #self.window_up = None
-        #self.window_down = None
-        self.set_increments(1, 1)
-        self.set_range(-99, 99)
-        n = len(mins)
-        if len(sep) == n-1:
-            sep = sep + ('',)
-        elif len(sep)!=n:
-            raise ValueError('bad sep list')
-        if len(maxs)!=n:
-            raise ValueError('bad maxs list')
-        if len(fields)!=n:
-            raise ValueError('bad fields list')
-        self.sep = sep
-        self.size = n
-        self.mins = mins
-        self.maxs = maxs
-        self.fields = fields
+        ####
+        self.field = ContainerField(sep, *fields)
         self.arrow_select = arrow_select
-        #self.force_select = force_select
-        self.lang = lang
+        self.page_step = page_step
         self.editable = True
+        ###
+        self.digs = locale_man.getDigits()
+        ###
+        ####
         self.set_direction(gtk.TEXT_DIR_LTR) ## self is a gtk.Entry
-        #############################
-        self.sep_index = []
-        pos = 0
-        for i in range(self.size):
-            pos += fields[i]
-            self.sep_index.append(pos)
-            pos += len(sep[i])
-        self.set_width_chars(pos)
-        self.char_width = pos
-        ############################
+        self.set_width_chars(self.field.getMaxWidth())
+        self.set_value(0)
+        self.set_digits(0)
+        self.set_range(-2, 2)
+        self.set_increments(1, page_step)
         #self.connect('activate', lambda obj: self.entry_validate())
         self.connect('activate', self._entry_activate)
         self.connect('key-press-event', self._key_press)
@@ -71,203 +58,113 @@ class MultiSpinButton(gtk.SpinButton):
         self.connect('button-press-event', self._button_press)
         self.connect('button-release-event', self._button_release)
         self.connect('output', lambda obj: True)##Disable auto-numeric-validating(the entry text is not a numebr)
-        #if force_select:#??????????
-        #    self.connect('move-cursor', self._entry_move_cursor)
-        #self.connect('event', show_event)
-        #############
+        ####
+        #self.select_region(0, 0)
     def _entry_activate(self, widget):
+        #print '_entry_activate', self.get_text()
         self.entry_validate()
+        #print self.get_text()
         return True
-    def entry_plus(self, plus=1, part=None):
-        self.entry_validate()
+    def get_value(self):
+        self.field.setText(self.get_text())
+        return self.field.getValue()
+    def set_value(self, value):
         pos = self.get_position()
-        if part==None:
-            part = self.size-1
-            for i in range(self.size):
-                if pos <= self.sep_index[i]:
-                    part = i
-                    break
-        #print part, self.nums
-        new = self.nums[part] + plus
-        if new > self.maxs[part]:#or self.maxs[part]==None:
-            new = self.mins[part]
-            if part==0:
-                self.emit('first-max')
-            else:
-                self.entry_plus(1, part-1)
-        elif new < self.mins[part]:
-            new = self.maxs[part]
-            if part==0:
-                self.emit('first-min')
-            else:
-                self.entry_plus(-1, part-1)
-        self.nums[part] = new
-        self.set_text(self._ints2str(self.nums))
-        self.grab_focus()
-        if self.arrow_select:
-                if part==0:
-                    self.select_region(0, self.sep_index[0])
-                else:
-                    self.select_region(self.sep_index[part-1]+len(self.sep[part-1]), self.sep_index[part])
-        else:
-            self.set_position(pos)
-        return True
+        self.field.setValue(value)
+        self.set_text(self.field.getText())
+        self.set_position(pos)
     def entry_validate(self):
-        n = self.size
         pos = self.get_position()
-        text = self.get_text().decode('utf-8')
-        nums = []
-        nfound = [] ## not found seperator
-        p = 0
-        for i in range(n):
-            if i==n-1 and self.sep[i]=='':
-                if nfound==[]:
-                    nums.append(text[p:])
-                else:
-                    nums.append('')
-                break
-            p2 = text.find(self.sep[i], p)
-            if p2==-1:
-                    nums.append('')
-                    nfound.append([i, p])
-                    continue
-            if nfound==[]:
-                nums.append(text[p:p2].strip())
-            else:
-                [j, np] = nfound[0]
-                nums[j] = text[p:p2].strip()
-                nfound = []
-                nums.append('')
-            p = p2 + len(self.sep[i])
-        if p2==-1:
-            [j, p] = nfound[0]
-            nums[j] = text[p:]
-        if len(nums)>n:
-            nums = nums[:n]
-        else:
-            while len(nums)<n:
-                nums.append('')
-        for i in range(n):
-            if nums[i]=='':
-                num = self.mins[i]
-            else:
-                try:
-                    num = numDecode(nums[i])
-                except ValueError:
-                    try:
-                        num = int(nums[i])
-                    except:
-                        num = self.mins[i]
-                if num > self.maxs[i]:#or self.maxs[part]==None:
-                    num = self.maxs[i]
-                #elif num==0:
-                #    num = self.mins[i]
-            nums[i] = num
-        ntext = self._ints2str(nums)
-        if ntext!=text:
-            self.set_text(ntext)
-            self.set_position(pos)
-        self.nums = nums
-        return ntext
-    def get_nums(self):
-        self.entry_validate()
-        return self.nums
-    def set_nums(self, nums=(0,0,0)):
-        if len(nums)!=self.size:
-            raise ValueError('argument nums has length %s instaed of %s'%(len(nums), self.size))
-        pos = self.get_position()
-        self.nums = list(nums)
-        self.set_text(self._ints2str(nums))
+        self.field.setText(toUnicode(self.get_text()))
+        self.set_text(self.field.getText())
         self.set_position(pos)
     def set_editable(self, editable):
         gtk.SpinButton.set_editable(self, editable)
         self.editable = editable
-    def _ints2str(self, ints):
-        text = u''
-        for i in range(self.size):
-            try:
-                n = int(ints[i])
-            except:
-                n = self.mins[i]
-            text += numEncode(n, fillZero=self.fields[i]) + self.sep[i]
-        return text
-    def _key_press(self, widget, event):
-        kname = gdk.keyval_name(event.keyval).lower()
-        if kname=='up':
-            if self.editable:
-                #self._arrow_enter_notify(self.window_up)
-                #timeout_add(30, self._arrow_leave_notify, self.window_up)
-                self.entry_plus(1)
-            return True
-        elif kname=='down':
-            if self.editable:
-                #self._arrow_enter_notify(self.window_down)
-                #timeout_add(30, self._arrow_leave_notify, self.window_down)
-                self.entry_plus(-1)
-            return True
-        elif kname=='left':
-            if not self.editable or not self.arrow_select:
-                return False
-            self.entry_validate()
+    def insertText(self, s, clearSeceltion=True):
+        selection = self.get_selection_bounds()
+        if selection and clearSeceltion:
+            (start, end) = selection
+            text = toUnicode(self.get_text())
+            text = text[:start] + s + text[end:]
+            self.set_text(text)
+            self.set_position(start+len(s))
+        else:
             pos = self.get_position()
-            part = self.size-1
-            for i in range(self.size):
-                if pos <= self.sep_index[i]:
-                    part = i
-                    break
-            if part>0:
-                part -=1
-            #self.grab_focus()
-            if part==0:
-                self.select_region(0, self.sep_index[0])
+            self.insert_text(s, pos)
+            self.set_position(pos + len(s))
+    def entry_plus(self, p):
+        self.entry_validate()
+        pos = self.get_position()
+        self.field.getFieldAt(toUnicode(self.get_text()), self.get_position()).plus(p)
+        self.set_text(self.field.getText())
+        self.set_position(pos)
+    def _key_press(self, widget, gevent):
+        kval = gevent.keyval
+        kname = gdk.keyval_name(kval).lower()
+        size = len(self.field)
+        sep = self.field.sep
+        if kname in ('up', 'down', 'page_up', 'page_down', 'left', 'right'):
+            if not self.editable:
+                return True
+            if kname in ('left', 'right'):
+                return False
+                #if not self.arrow_select:
+                #    return False
+                #shift = {
+                #    'left': -1,
+                #    'right': 1
+                #}[kname]
+                #FIXME
             else:
-                self.select_region(self.sep_index[part-1]+len(self.sep[part-1]), self.sep_index[part])
-            return True
-        elif kname=='right':
-            if not self.editable or not self.arrow_select:
-                return False
-            self.entry_validate()
-            pos = self.get_position()
-            part = self.size-1
-            for i in range(self.size):
-                if pos <= self.sep_index[i]:
-                    part = i
-                    break
-            if part < self.size-1:
-                part += 1
-            #self.grab_focus()
-            self.select_region(self.sep_index[part-1]+len(self.sep[part-1]), self.sep_index[part])
+                p = {
+                    'up': 1,
+                    'down': -1,
+                    'page_up': self.page_step,
+                    'page_down': -self.page_step,
+                }[kname]
+                self.entry_plus(p)
+            #if fieldIndex==0:
+            #    i1 = 0
+            #else:
+            #    i1 = strFindNth(text, sep, fieldIndex) + len(sep)
+            #i2 = strFindNth(text, sep, fieldIndex+1)
+            ##self.grab_focus()
+            #self.select_region(i1, i2)
             return True
         #elif kname=='return':## Enter
         #    self.entry_validate()
+        #    ##self.emit('activate')
         #    return True
-        #elif kname in ('page_up', 'page_down'):
-        #    return True
+        elif ord('0') <= kval <= ord('9'):
+            self.insertText(self.digs[kval-ord('0')])
+            return True
         else:
             return False
-    def _button_press(self, widget, e):
-        #print e.window.get_data('name')
+    def _button_press(self, widget, gevent):
+        gwin = gevent.window
+        #print gwin.get_data('name')
         #r = self.allocation ; print 'allocation', r[0], r[2]
-        if e.type==gdk._2BUTTON_PRESS or e.type==gdk._3BUTTON_PRESS:
+        if gevent.type==gdk._2BUTTON_PRESS or gevent.type==gdk._3BUTTON_PRESS:
             return True
-        if e.button==1:
-            #print 'event window position:', e.window.get_position()
-            ## e.window.get_pointer()[0] == e.x
-            if e.window.get_position()[0] < 5:## 2 or 3 (depending to theme)
+        if gevent.button==1:
+            #print 'event window position:', gwin.get_position()
+            ## gwin.get_pointer()[0] == gevent.x
+            if gwin.get_position()[0] < 5:## 2 or 3 (depending to theme)
                 return False
             else:
                 if self.editable:
-                    if e.y*2 < self.allocation[3]:
+                    if gevent.y*2 < self.allocation[3]:
                         self._arrow_press(1)
-                        #self.window_up = e.window #??????????
+                        #self.window_up = gwin #??????????
                     else:
                         self._arrow_press(-1)
-                        #self.window_down = e.window #?????????
-                    #e.window.focus(e.time)#???????????
-                    #e.window.clear()
+                        #self.window_down = gwin #?????????
+                    #gwin.focus(gevent.time)#???????????
+                    #gwin.clear()
                 return True
         else:
-            if e.window.get_position()[0] < 5:## 2 or 3 (depending to theme)
+            if gwin.get_position()[0] < 5:## 2 or 3 (depending to theme)
                 return False
             else:
                 return True
@@ -308,63 +205,180 @@ class MultiSpinButton(gtk.SpinButton):
             gtkWin.set_background(gdk.Color(-1, -1, -1))
     #"""
 
+class SingleSpinButton(MultiSpinButton):
+    def __init__(self, field, **kwargs):
+        MultiSpinButton.__init__(
+            self,
+            ' ',
+            (field,),
+            **kwargs
+        )
+    get_value = lambda self: MultiSpinButton.get_value(self)[0]
+
+
+class IntSpinButton(SingleSpinButton):
+    def __init__(self, _min, _max, **kwargs):
+        SingleSpinButton.__init__(
+            self,
+            IntField(_min, _max),
+            **kwargs
+        )
+
+
+class YearSpinButton(SingleSpinButton):
+    def __init__(self, **kwargs):
+        SingleSpinButton.__init__(
+            self,
+            YearField(),
+            **kwargs
+        )
+
+class DaySpinButton(SingleSpinButton):
+    def __init__(self, **kwargs):
+        SingleSpinButton.__init__(
+            self,
+            DayField(pad=0),
+            **kwargs
+        )
+
+class FloatSpinButton(MultiSpinButton):
+    def __init__(self, _min, _max, digNum, **kwargs):
+        self.digDec = 10**digNum
+        self._min = _min
+        self._max = _max
+        MultiSpinButton.__init__(
+            self,
+            locale_man.getNumSep(),
+            (
+                IntField(_min, _max),
+                IntField(0, self.digDec-1),
+            ),
+            **kwargs
+        )
+    def get_value(self):
+        v1, v2 = MultiSpinButton.get_value(self)
+        return v1 + float(v2)/self.digDec
+    def set_value(self, value):
+        if value < self._min:
+            value = self._min
+        elif value > self._max:
+            value = self._max
+        v1, v2 = divmod(value, 1)
+        v1 = int(v1)
+        v2 = iceil(v2*self.digDec)
+        MultiSpinButton.set_value(self, (v1, v2))
+    def entry_plus(self, p):
+        MultiSpinButton.entry_plus(self, p)
+        self.set_value(self.get_value())
+
 class DateButton(MultiSpinButton):
     def __init__(self, date=None, **kwargs):
+        MultiSpinButton.__init__(
+            self,
+            u'/',
+            (
+                YearField(),
+                MonthField(),
+                DayField(),
+            ),
+            **kwargs
+        )
         if date==None:
             date = localtime()[:3]
-        MultiSpinButton.__init__(self, mins=(0,1,1), maxs=(9999,12,31), fields=(4,2,2), sep=(u'/', u'/'), nums=date, **kwargs)
-        self.get_date = self.get_nums
-        self.set_date = self.set_nums
+        self.set_value(date)
     def get_jd(self, mode):
-        y, m, d = self.get_date()
+        y, m, d = self.get_value()
         return to_jd(y, m, d, mode)
-    changeMode = lambda self, fromMode, toMode: self.set_date(jd_to(self.get_jd(fromMode), toMode))
-    
+    changeMode = lambda self, fromMode, toMode: self.set_value(jd_to(self.get_jd(fromMode), toMode))
+    def setMaxDay(self, _max):
+        self.field.children[2].setMax(_max)
+        self.entry_validate()
 
 class YearMonthButton(MultiSpinButton):
     def __init__(self, date=None, **kwargs):
+        MultiSpinButton.__init__(
+            self,
+            u'/',
+            (
+                YearField(),
+                MonthField(),
+            ),
+            **kwargs
+        )
         if date==None:
             date = localtime()[:2]
-        MultiSpinButton.__init__(self, mins=(0,1), maxs=(9999,12), fields=(4,2), sep=(u'/',), nums=date, **kwargs)
-        self.get_date = self.get_nums
-        self.set_date = self.set_nums
+        self.set_value(date)
 
 class TimeButton(MultiSpinButton):
     def __init__(self, hms=None, **kwargs):
+        MultiSpinButton.__init__(
+            self,
+            u':',
+            (
+                HourField(),
+                Z60Field(),
+                Z60Field(),
+            ),
+            **kwargs
+        )
         if hms==None:
             hms = localtime()[3:6]
-        MultiSpinButton.__init__(self, mins=(0,0,0), maxs=(23,59,59), fields=(2,2,2), sep=(u':', u':'), nums=hms, **kwargs)
-        self.get_time = self.get_nums
-        self.set_time = self.set_nums
+        self.set_value(hms)
     def get_seconds(self):
-        (h, m, s) = self.get_time()
+        (h, m, s) = self.get_value()
         return h*3600 + m*60 + s
     def set_seconds(self, seconds):
         (day, s) = divmod(seconds, 86400) ## do what with "day" ?????
         (h, s) = divmod(s, 3600)
         (m, s) = divmod(s, 60)
-        self.set_time((h, m, s))
+        self.set_value((h, m, s))
         ##return day
 
 class HourMinuteButton(MultiSpinButton):
-    def __init__(self, hms=None, **kwargs):
-        if hms==None:
-            hms = localtime()[3:5]
-        MultiSpinButton.__init__(self, mins=(0,0), maxs=(23,59), fields=(2,2), sep=(u':',), nums=hms, **kwargs)
-        self.get_hm = self.get_nums
-        self.set_hm = self.set_nums
-    get_time = lambda self: self.get_hm() + [0]
-    set_time = lambda self, tm: self.set_hm(tm[:2])
+    def __init__(self, hm=None, **kwargs):
+        MultiSpinButton.__init__(
+            self,
+            u':',
+            (
+                HourField(),
+                Z60Field(),
+            ),
+            **kwargs
+        )
+        if hm==None:
+            hm = localtime()[3:5]
+        self.set_value(hm)
+    get_value = lambda self: self.get_value() + [0]
+    set_value = lambda self, tm: self.set_value(tm[:2])
 
 
 class DateTimeButton(MultiSpinButton):
     def __init__(self, date_time=None, **kwargs):
+        MultiSpinButton.__init__(
+            self,
+            u' ',
+            (
+                ContainerField(
+                    u'/',
+                    YearField(),
+                    MonthField(),
+                    DayField(),
+                ),
+                ContainerField(
+                    u':',
+                    HourField(),
+                    Z60Field(),
+                    Z60Field(),
+                ),
+            ),
+            #StrConField('seconds'),
+            **kwargs
+        )
         if date_time==None:
             date_time = localtime()[:6]
-        MultiSpinButton.__init__(self, mins=(0,1,1,0,0,0), maxs=(9999,12,31,23,59,59),\
-            fields=(4,2,2,2,2,2), sep=(u'/', u'/',u'     ',u':',u':',' seconds'), nums=date_time, **kwargs)
-        self.get_date_time = self.get_nums
-        self.set_date_time = self.set_nums
+        self.set_value(date_time)
+
+
 
 class TimerButton(TimeButton):
     def __init__(self, **kwargs):
@@ -408,7 +422,7 @@ class TimerButton(TimeButton):
     def clock_update(self):
         if self.clock:
             timeout_add(time_rem(), self.clock_update)
-            self.set_time(localtime()[3:6])
+            self.set_value(localtime()[3:6])
 
 
 
@@ -420,10 +434,10 @@ class MultiSpinOptionBox(gtk.HBox):
         #self.add_history()
         self.emit('activate')
         return False
-    def __init__(self, spacing=0, is_hbox=False, hist_size=10, **kwargs):
+    def __init__(self, sep, fields, spacing=0, is_hbox=False, hist_size=10, **kwargs):
         if not is_hbox:
             gtk.HBox.__init__(self, spacing=spacing)
-        self.spin = MultiSpinButton(**kwargs)
+        self.spin = MultiSpinButton(sep, fields, **kwargs)
         self.pack_start(self.spin, 1, 1)
         self.hist_size = hist_size
         self.option = gtk.Button()
@@ -436,19 +450,16 @@ class MultiSpinOptionBox(gtk.HBox):
         #self.option.set_sensitive(False) #???????
         #self.spin._entry_activate = self._entry_activate
         self.spin.connect('activate', self._entry_activate)
-        self.get_nums = self.spin.get_nums
-        self.set_nums = self.spin.set_nums
+        self.get_value = self.spin.get_value
+        self.set_value = self.spin.set_value
     def option_pressed(self, widget, event):
         #(x, y, w, h) = self.option.
         self.menu.popup(None, None, None, event.button, event.time)
-    def add_history(self, nums=None):
-        if nums==None:
-            text = self.spin.entry_validate()
-        else:
-            self.spin.entry_validate() #??????
-            text = self.spin._ints2str(nums)
-        n = len(self.menuItems)
+    def add_history(self):
+        self.spin.entry_validate()
+        text = self.spin.get_text()
         found = -1
+        n = len(self.menuItems)
         for i in range(n):
             if self.menuItems[i].text==text:
                 found = i
@@ -470,36 +481,24 @@ class MultiSpinOptionBox(gtk.HBox):
 
 class DateButtonOption(MultiSpinOptionBox):
     def __init__(self, date=None, **kwargs):
+        MultiSpinOptionBox.__init__(
+            self,
+            u'/',
+            (
+                YearField(),
+                MonthField(),
+                DayField(),
+            ),
+            **kwargs
+        )
         if date==None:
             date = localtime()[:3]
-        MultiSpinOptionBox.__init__(self, mins=(0,1,1), maxs=(9999,12,31), fields=(4,2,2), sep=(u'/', u'/'), nums=date, **kwargs)
-        self.get_date = self.get_nums
-        self.set_date = self.set_nums
+        self.set_value(date)
+    def setMaxDay(self, _max):
+        self.spin.field.children[2].setMax(_max)
+        self.spin.entry_validate()
 
 
-
-
-class DateHourBox(gtk.HBox):
-    def __init__(self):
-        def __init__(self):
-            gtk.HBox.__init__(self)
-            self.dbutton = DateButton()
-            ###
-            self.hourSpin = gtk.SpinButton()
-            self.hourSpin.set_increments(1, 6)
-            self.hourSpin.set_range(0, 23)
-            self.hourSpin.set_digits(0)
-            self.hourSpin.set_direction(gtk.TEXT_DIR_LTR)
-            ###
-            self.pack_start(self.dbutton, 0, 0)
-            self.pack_start(self.hourSpin, 0, 0)
-    def set(self, ymdh):
-        self.dbutton.set_date(ymdh[:3])
-        self.hourSpin.set_value(ymdh[4])
-    def get(self):
-        (y, m, d) = self.dbutton.get_date()
-        h = int(self.hourSpin.get_value())
-        return (y, m, d, h)
 
 
 
@@ -518,15 +517,29 @@ signal_new('first-min', MultiSpinButton, SIGNAL_RUN_LAST, TYPE_NONE, [])
 signal_new('time-elapse', TimerButton, SIGNAL_RUN_LAST, TYPE_NONE, [])
 signal_new('activate', MultiSpinOptionBox, SIGNAL_RUN_LAST, TYPE_NONE, [])
 
+def getDateTimeWidget():
+    btn = DateTimeButton()
+    btn.set_value((2011, 1, 1))
+    return btn
+
+def getFloatWidget():
+    btn = FloatSpinButton(0, 30, 2)
+    btn.set_value(3.67)
+    return btn
+
+def getFloatBuiltinWidget():
+    btn = gtk.SpinButton()
+    btn.set_range(0, 90)
+    btn.set_digits(2)
+    btn.set_increments(0.01, 1)
+    return btn
 
 
 if __name__=='__main__':
     d = gtk.Dialog()
-    tbutton = DateButton()
-    tbutton.set_date((2011, 1, 1))
-    d.vbox.pack_start(tbutton, 1, 1)
-    d.connect('delete-event', lambda widget, event: gtk.main_quit())
-    d.show_all()
-    gtk.main()
-
+    btn = getFloatWidget()
+    d.vbox.pack_start(btn, 1, 1)
+    d.vbox.show_all()
+    d.run()
+    print btn.get_value()
 

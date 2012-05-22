@@ -133,7 +133,7 @@ class EditDbDialog(gtk.Dialog):
                 self.altModeDesc = modeDesc
                 break
         self.topLabel.set_label(_('Start')+': '+dateLocale(*monthDb.startDate)+' '+_('Equals to')+' %s'%_(self.altModeDesc))
-        self.startDateInput.set_date(jd_to(monthDb.startJd, self.altMode))
+        self.startDateInput.set_value(jd_to(monthDb.startJd, self.altMode))
         ###########
         selectYm = getCurrentYm() - 1 ## previous month
         selectIndex = None
@@ -155,7 +155,7 @@ class EditDbDialog(gtk.Dialog):
             self.treev.scroll_to_cell(str(selectIndex))
             self.treev.set_cursor(str(selectIndex))
     def updateEndDates(self):
-        (y, m, d) = self.startDateInput.get_date()
+        (y, m, d) = self.startDateInput.get_value()
         jd0 = to_jd(y, m, d, self.altMode) - 1
         for row in self.trees:
             mLen = row[3]
@@ -184,7 +184,7 @@ class EditDbDialog(gtk.Dialog):
                     break
         self.updateEndDates()
     def updateVars(self):
-        (y, m, d) = self.startDateInput.get_date()
+        (y, m, d) = self.startDateInput.get_value()
         monthDb.endJd = monthDb.startJd = to_jd(y, m, d, self.altMode)
         monthDb.monthLenByYm = {}
         for row in self.trees:

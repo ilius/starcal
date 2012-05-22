@@ -13,11 +13,11 @@ class RuleWidget(DateButton):
         self.rule = rule
         DateButton.__init__(self)
     def updateWidget(self):
-        self.set_date(self.rule.date)
+        self.set_value(self.rule.date)
     def updateVars(self):
-        self.rule.date = self.get_date()
+        self.rule.date = self.get_value()
     def changeMode(self, mode):
         curMode = self.rule.getMode()
         if mode!=curMode:
-            (y, m, d) = self.get_date()
-            self.set_date(core.convert(y, m, d, curMode, mode))
+            (y, m, d) = self.get_value()
+            self.set_value(core.convert(y, m, d, curMode, mode))

@@ -4,7 +4,7 @@ from scal2 import core
 from scal2.locale_man import tr as _
 
 from scal2 import event_man
-from scal2.ui_gtk.mywidgets.multi_spin_button import TimeButton
+from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, TimeButton
 import gtk
 from gtk import gdk
 
@@ -13,10 +13,7 @@ class RuleWidget(gtk.HBox):
         self.rule = rule
         ###
         gtk.HBox.__init__(self)
-        spin = gtk.SpinButton()
-        spin.set_increments(1, 10)
-        spin.set_range(0, 999)
-        spin.set_direction(gtk.TEXT_DIR_LTR)
+        spin = IntSpinButton(0, 9999)
         self.pack_start(spin, 0, 0)
         self.spin = spin
         ##
@@ -26,8 +23,8 @@ class RuleWidget(gtk.HBox):
         self.tbox = tbox
     def updateWidget(self):
         self.spin.set_value(self.rule.cycleDays)
-        self.tbox.set_time(self.rule.cycleExtraTime)
+        self.tbox.set_value(self.rule.cycleExtraTime)
     def updateVars(self):
         self.rule.cycleDays = self.spin.get_value()
-        self.rule.cycleExtraTime = self.tbox.get_time()
+        self.rule.cycleExtraTime = self.tbox.get_value()
 

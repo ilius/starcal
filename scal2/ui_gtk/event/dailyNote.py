@@ -28,10 +28,10 @@ class EventWidget(common.EventWidget):
         #self.pack_start(self.filesBox, 0, 0)
     def updateWidget(self):
         common.EventWidget.updateWidget(self)
-        self.dateInput.set_date(self.event.getDate())
+        self.dateInput.set_value(self.event.getDate())
     def updateVars(self):
         common.EventWidget.updateVars(self)
-        self.event.setDate(*self.dateInput.get_date())
+        self.event.setDate(*self.dateInput.get_value())
     def modeComboChanged(self, obj=None):## overwrite method from common.EventWidget
         newMode = self.modeCombo.get_active()
         self.dateInput.changeMode(self.event.mode, newMode)

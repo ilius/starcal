@@ -14,23 +14,20 @@ class RuleWidget(gtk.HBox):
         ###
         gtk.HBox.__init__(self)
         ###
-        dbox = DateButton()
-        self.pack_start(dbox, 0, 0)
+        self.dateInput = DateButton()
+        self.pack_start(self.dateInput, 0, 0)
         ###
         self.pack_start(gtk.Label('   '+_('Time')), 0, 0)
-        tbox = TimeButton()
-        self.pack_start(tbox, 0, 0)
-        ###
-        self.dbox = dbox
-        self.tbox = tbox
+        self.timeInput = TimeButton()
+        self.pack_start(self.timeInput, 0, 0)
     def updateWidget(self):
-        self.dbox.set_date(self.rule.date)
-        self.tbox.set_time(self.rule.time)
+        self.dateInput.set_value(self.rule.date)
+        self.timeInput.set_value(self.rule.time)
     def updateVars(self):
-        self.rule.date = self.dbox.get_date()
-        self.rule.time = self.tbox.get_time()
+        self.rule.date = self.dateInput.get_value()
+        self.rule.time = self.timeInput.get_value()
     def changeMode(self, mode):
         curMode = self.rule.getMode()
         if mode!=curMode:
-            (y, m, d) = self.dbox.get_date()
-            self.dbox.set_date(core.convert(y, m, d, curMode, mode))
+            (y, m, d) = self.dateInput.get_value()
+            self.dateInput.set_value(core.convert(y, m, d, curMode, mode))

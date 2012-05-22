@@ -36,6 +36,8 @@ from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, buffer_get_text
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
+
 #print 'Testing translator', __file__, _('_About')## OK
 
 
@@ -310,14 +312,8 @@ class DurationInputBox(gtk.HBox):
     def __init__(self):
         gtk.HBox.__init__(self)
         ##
-        spin = gtk.SpinButton()
-        spin.set_increments(1, 10)
-        spin.set_range(0, 999)
-        spin.set_digits(1)
-        spin.set_direction(gtk.TEXT_DIR_LTR)
-        #spin.set_width_chars
-        self.pack_start(spin, 0, 0)
-        self.valueSpin = spin
+        self.valueSpin = FloatSpinButton(0, 999, 1)
+        self.pack_start(self.valueSpin, 0, 0)
         ##
         combo = gtk.combo_box_new_text()
         for unitValue, unitName in durationUnitsAbs:

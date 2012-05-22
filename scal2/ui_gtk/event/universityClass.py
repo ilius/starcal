@@ -23,7 +23,7 @@ from scal2.locale_man import tr as _
 from scal2 import event_man
 
 from scal2 import ui
-from scal2.ui_gtk.mywidgets.multi_spin_box import HourMinuteBox
+from scal2.ui_gtk.mywidgets.multi_spin_button import HourMinuteButton
 from scal2.ui_gtk.event import common
 from scal2.ui_gtk.event.rules.weekNumMode import RuleWidget as WeekNumModeRuleWidget
 from scal2.ui_gtk.utils import showError, WeekDayComboBox, buffer_get_text
@@ -85,8 +85,8 @@ class EventWidget(gtk.VBox):
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
         ##
-        self.dayTimeStartCombo = HourMinuteBox()
-        self.dayTimeEndCombo = HourMinuteBox()
+        self.dayTimeStartCombo = HourMinuteButton()
+        self.dayTimeEndCombo = HourMinuteButton()
         ##
         #self.dayTimeStartCombo.child.set_direction(gtk.TEXT_DIR_LTR)
         #self.dayTimeEndCombo.child.set_direction(gtk.TEXT_DIR_LTR)
@@ -162,8 +162,8 @@ class EventWidget(gtk.VBox):
             self.dayTimeStartCombo.add_history(hm)
             self.dayTimeEndCombo.add_history(hm)
         timeRangeRule = self.event['dayTimeRange']
-        self.dayTimeStartCombo.set_time(timeRangeRule.dayTimeStart)
-        self.dayTimeEndCombo.set_time(timeRangeRule.dayTimeEnd)
+        self.dayTimeStartCombo.set_value(timeRangeRule.dayTimeStart)
+        self.dayTimeEndCombo.set_value(timeRangeRule.dayTimeEnd)
         ####
         #self.summuryEntry.set_text(self.event.summary)
         self.descriptionBuff.set_text(self.event.description)
@@ -184,8 +184,8 @@ class EventWidget(gtk.VBox):
         self.event['weekDay'].weekDayList = [self.weekDayCombo.getValue()]## FIXME
         ##
         self.event['dayTimeRange'].setRange(
-            self.dayTimeStartCombo.get_time(),
-            self.dayTimeEndCombo.get_time(),
+            self.dayTimeStartCombo.get_value(),
+            self.dayTimeEndCombo.get_value(),
         )
         ####
         #self.event.summary = self.summuryEntry.get_text()

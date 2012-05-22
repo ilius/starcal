@@ -272,6 +272,15 @@ def findNearestIndex(lst, num):
             index = i
     return index
 
+def strFindNth(st, sub, n):
+    pos = 0
+    for i in range(n):
+        pos = st.find(sub, pos+1)
+        if pos == -1:
+            break
+    return pos
+
+
 def numRangesEncode(values):
     parts = []
     for value in values:

@@ -65,12 +65,12 @@ class EventWidget(common.EventWidget):
         #self.pack_start(self.filesBox, 0, 0)
     def updateWidget(self):
         common.EventWidget.updateWidget(self)
-        self.startDateInput.set_date(self.event['start'].date)
-        self.endDateInput.set_date(self.event['end'].date)
+        self.startDateInput.set_value(self.event['start'].date)
+        self.endDateInput.set_value(self.event['end'].date)
     def updateVars(self):## FIXME
         common.EventWidget.updateVars(self)
-        self.event['start'].date = self.startDateInput.get_date()
-        self.event['end'].date = self.endDateInput.get_date()
+        self.event['start'].date = self.startDateInput.get_value()
+        self.event['end'].date = self.endDateInput.get_value()
     def modeComboChanged(self, obj=None):## overwrite method from common.EventWidget
         newMode = self.modeCombo.get_active()
         self.startDateInput.changeMode(self.event.mode, newMode)

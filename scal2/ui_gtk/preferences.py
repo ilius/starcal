@@ -40,6 +40,8 @@ import gtk
 from gtk import gdk
 
 from scal2.ui_gtk.mywidgets import MyFontButton, MyColorButton
+from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
+
 from scal2.ui_gtk.drawing import newTextLayout
 from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
@@ -177,20 +179,12 @@ class ModuleOptionItem:
             self.set_value = w.set_active
         elif t==int:
             hbox.pack_start(gtk.Label(_(opt[2])), 0, 0)
-            w = gtk.SpinButton()
-            w.set_increments(1, 10)
-            w.set_range(opt[3], opt[4])
-            w.set_digits(0)
-            w.set_direction(gtk.TEXT_DIR_LTR)
+            w = IntSpinButton(opt[3], opt[4])
             self.get_value = w.get_value
             self.set_value = w.set_value
         elif t==float:
             hbox.pack_start(gtk.Label(_(opt[2])), 0, 0)
-            w = gtk.SpinButton()
-            w.set_increments(0.1, 1)
-            w.set_range(opt[3], opt[4])
-            w.set_digits(opt[5])
-            w.set_direction(gtk.TEXT_DIR_LTR)
+            w = FloatSpinButton(opt[3], opt[4], opt[5])
             self.get_value = w.get_value
             self.set_value = w.set_value
         else:
@@ -438,15 +432,11 @@ class ColorPrefItem(PrefItem):
             self.widget.set_color(color)
 
 class SpinPrefItem(PrefItem):
-    def __init__(self, module, varName, min_=-99, max_=99, digits=1, inc1=1, inc2=10):
+    def __init__(self, module, varName, _min, _max, digits=1):
         self.module = module
         self.varName = varName
-        w = gtk.SpinButton()
+        w = FloatSpinButton(_min, _max, digits)
         self.widget = w
-        w.set_range(min_, max_)
-        w.set_digits(digits)
-        w.set_increments(inc1, inc2)
-        w.set_direction(gtk.TEXT_DIR_LTR)
         self.get = w.get_value
         self.set = w.set_value
 
@@ -546,22 +536,12 @@ class CalPropPrefItem(PrefItem):
         ###
         hbox.pack_start(label, 0, 0)
         ###
-        spin = gtk.SpinButton()
-        spin.set_increments(1, 10)
-        spin.set_range(-99, 99)
-        spin.set_digits(1)
-        #spin.set_width_chars(3)
+        spin = FloatSpinButton(-99, 99, 1)
         self.spinX = spin
-        spin.set_direction(gtk.TEXT_DIR_LTR)
         hbox.pack_start(spin, 0, 0)
         ###
-        spin = gtk.SpinButton()
-        spin.set_increments(1, 10)
-        spin.set_range(-99, 99)
-        spin.set_digits(1)
-        #spin.set_width_chars(3)
+        spin = FloatSpinButton(-99, 99, 1)
         self.spinY = spin
-        spin.set_direction(gtk.TEXT_DIR_LTR)
         hbox.pack_start(spin, 0, 0)
         ####
         hbox.pack_start(gtk.Label(''), 1, 1)
@@ -890,12 +870,12 @@ class PrefDialog(gtk.Dialog):
         hbox.pack_start(hbox2, 1, 1)
         #########
         hbox.pack_start(gtk.Label(_('Left Margin')), 0, 0)
-        item = SpinPrefItem(ui, 'calLeftMargin', 0, 99, 0, 1, 10)
+        item = SpinPrefItem(ui, 'calLeftMargin', 0, 99)
         self.uiPrefItems.append(item)
         hbox.pack_start(item.widget, 0, 0)
         ####
         hbox.pack_start(gtk.Label(_('Top')), 0, 0)
-        item = SpinPrefItem(ui, 'calTopMargin', 0, 99, 0, 1, 10)
+        item = SpinPrefItem(ui, 'calTopMargin', 0, 99)
         self.uiPrefItems.append(item)
         hbox.pack_start(item.widget, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
@@ -908,13 +888,13 @@ class PrefDialog(gtk.Dialog):
         hbox.pack_start(label, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         hbox.pack_start(gtk.Label(_('Diameter')), 0, 0)
-        item = SpinPrefItem(ui, 'cursorD', 0, 20, 1, 1, 10)
+        item = SpinPrefItem(ui, 'cursorD', 0, 20, 1)
         self.uiPrefItems.append(item)
         hbox.pack_start(item.widget, 0, 0)
         ###
         hbox.pack_start(gtk.Label(''), 1, 1)
         hbox.pack_start(gtk.Label(_('Round')), 0, 0)
-        item = SpinPrefItem(ui, 'cursorR', 0, 20, 1, 1, 10)
+        item = SpinPrefItem(ui, 'cursorR', 0, 20, 1)
         self.uiPrefItems.append(item)
         hbox.pack_start(item.widget, 0, 0)
         #hbox.pack_start(gtk.Label(''), 1, 1)
@@ -928,13 +908,13 @@ class PrefDialog(gtk.Dialog):
         hbox.pack_start(item.widget, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         hbox2.pack_start(gtk.Label(_('Width')), 0, 0)
-        item = SpinPrefItem(ui, 'cursorW', 0, 99, 0, 1, 10)
+        item = SpinPrefItem(ui, 'cursorW', 0, 99, 0)
         self.uiPrefItems.append(item)
         hbox2.pack_start(item.widget, 0, 0)
         #hbox.pack_start(gtk.Label(''), 1, 1)
         ####
         hbox2.pack_start(gtk.Label(_('Height')), 0, 0)
-        item = SpinPrefItem(ui, 'cursorH', 0, 99, 0, 1, 10)
+        item = SpinPrefItem(ui, 'cursorH', 0, 99, 0)
         self.uiPrefItems.append(item)
         hbox2.pack_start(item.widget, 0, 0)
         #hbox2.pack_start(gtk.Label(''), 1, 1)
@@ -1008,7 +988,7 @@ class PrefDialog(gtk.Dialog):
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
         ##sgroup.add_widget(label)
-        item = SpinPrefItem(ui, 'maxDayCacheSize', 100, 9999, 0, 1, 30)
+        item = SpinPrefItem(ui, 'maxDayCacheSize', 100, 9999, 0)
         self.uiPrefItems.append(item)
         hbox.pack_start(item.widget, 0, 0)
         vbox.pack_start(hbox, 0, 0)
