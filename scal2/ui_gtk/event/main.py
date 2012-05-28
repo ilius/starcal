@@ -43,7 +43,7 @@ from gtk import gdk
 
 from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile, rectangleContainsPoint, showError, \
                                labelStockMenuItem, labelImageMenuItem, confirm, toolButtonFromStock, set_tooltip, \
-                               hideList, GtkBufferFile
+                               hideList, GtkBufferFile, buffer_get_text
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
@@ -520,6 +520,152 @@ class GroupConvertModeDialog(gtk.Dialog):
         self.destroy()
 
 
+class GroupBulkEditDialog(gtk.Dialog):
+    def __init__(self, group):
+        self._group = group
+        gtk.Dialog.__init__(self)
+        self.set_title(_('Bulk Edit Events'))
+        ####
+        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
+        if ui.autoLocale:
+            cancelB.set_label(_('_Cancel'))
+            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
+            okB.set_label(_('_OK'))
+            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        self.connect('response', lambda w, e: self.hide())
+        ####
+        label = gtk.Label(_('Here you are going to modify all events inside group "%s" at once. You better make a backup from you events before doing this. Just right click on group and select "Export" (or a full backup: menu File -> Export)')%group.title+'\n\n')
+        label.set_line_wrap(True)
+        self.vbox.pack_start(label, 0, 0)
+        ####
+        hbox = gtk.HBox()
+        self.iconRadio = gtk.RadioButton(label=_('Icon'))
+        hbox.pack_start(self.iconRadio, 1, 1)
+        self.summaryRadio = gtk.RadioButton(label=_('Summary'), group=self.iconRadio)
+        hbox.pack_start(self.summaryRadio, 1, 1)
+        self.descriptionRadio = gtk.RadioButton(label=_('Description'), group=self.iconRadio)
+        hbox.pack_start(self.descriptionRadio, 1, 1)
+        self.vbox.pack_start(hbox, 0, 0)
+        ###
+        self.iconRadio.connect('clicked', self.firstRadioChanged)
+        self.summaryRadio.connect('clicked', self.firstRadioChanged)
+        self.descriptionRadio.connect('clicked', self.firstRadioChanged)
+        ####
+        hbox = gtk.HBox()
+        self.iconChangeCombo = gtk.combo_box_new_text()
+        self.iconChangeCombo.append_text('----')
+        self.iconChangeCombo.append_text(_('Change'))
+        self.iconChangeCombo.append_text(_('Change if empty'))
+        hbox.pack_start(self.iconChangeCombo, 0, 0)
+        hbox.pack_start(gtk.Label('  '), 0, 0)
+        self.iconSelect = IconSelectButton()
+        self.iconSelect.set_filename(group.icon)
+        hbox.pack_start(self.iconSelect, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.vbox.pack_start(hbox, 0, 0)
+        self.iconHbox = hbox
+        ####
+        self.textVbox = gtk.VBox()
+        ###
+        hbox = gtk.HBox()
+        self.textChangeCombo = gtk.combo_box_new_text()
+        self.textChangeCombo.append_text('----')
+        self.textChangeCombo.append_text(_('Add to beginning'))
+        self.textChangeCombo.append_text(_('Add to end'))
+        self.textChangeCombo.append_text(_('Replace text'))
+        self.textChangeCombo.connect('changed', self.textChangeComboChanged)
+        hbox.pack_start(self.textChangeCombo, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        ## CheckButton(_('Regexp'))
+        self.textVbox.pack_start(hbox, 0, 0)
+        ###
+        textview = gtk.TextView()
+        textview.set_wrap_mode(gtk.WRAP_WORD)
+        self.textBuf1 = textview.get_buffer()
+        frame = gtk.Frame()
+        frame.set_border_width(4)
+        frame.add(textview)
+        self.textVbox.pack_start(frame, 1, 1)
+        self.textWidget1 = frame
+        ###
+        hbox = gtk.HBox()
+        hbox.pack_start(gtk.Label(_('with')), 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.textVbox.pack_start(hbox, 1, 1)
+        self.withHbox = hbox
+        ###
+        textview = gtk.TextView()
+        textview.set_wrap_mode(gtk.WRAP_WORD)
+        self.textBuf2 = textview.get_buffer()
+        frame = gtk.Frame()
+        frame.set_border_width(4)
+        frame.add(textview)
+        self.textVbox.pack_start(frame, 1, 1)
+        self.textWidget2 = frame
+        ####
+        self.vbox.pack_start(self.textVbox, 1, 1)
+        self.vbox.show_all()
+        self.iconRadio.set_active(True)
+        self.iconChangeCombo.set_active(0)
+        self.textChangeCombo.set_active(0)
+        self.firstRadioChanged()
+    def firstRadioChanged(self, w=None):
+        if self.iconRadio.get_active():
+            self.iconHbox.show()
+            self.textVbox.hide()
+        else:
+            self.iconHbox.hide()
+            self.textChangeComboChanged()
+    def textChangeComboChanged(self, w=None):
+        self.textVbox.show_all()
+        chType = self.textChangeCombo.get_active()
+        if chType==0:
+            self.textWidget1.hide()
+            self.withHbox.hide()
+            self.textWidget2.hide()
+        elif chType in (1, 2):
+            self.withHbox.hide()
+            self.textWidget2.hide()
+    def doAction(self):
+        group = self._group
+        if self.iconRadio.get_active():
+            chType = self.iconChangeCombo.get_active()
+            if chType!=0:
+                icon = self.iconSelect.get_filename()
+                for event in group:
+                    if not (chType==2 and event.icon):
+                        event.icon = icon
+                        event.afterModify()
+                        event.save()
+        else:
+            chType = self.textChangeCombo.get_active()
+            if chType!=0:
+                text1 = buffer_get_text(self.textBuf1)
+                text2 = buffer_get_text(self.textBuf2)
+                if self.summaryRadio.get_active():
+                    for event in group:
+                        if chType==1:
+                            event.summary = text1 + event.summary
+                        elif chType==2:
+                            event.summary = event.summary + text1
+                        elif chType==3:
+                            event.summary = event.summary.replace(text1, text2)
+                        event.afterModify()
+                        event.save()
+                elif self.descriptionRadio.get_active():
+                    for event in group:
+                        if chType==1:
+                            event.description = text1 + event.description
+                        elif chType==2:
+                            event.description = event.description + text1
+                        elif chType==3:
+                            event.description = event.description.replace(text1, text2)
+                        event.afterModify()
+                        event.save()
+
+
+
 class TrashEditorDialog(gtk.Dialog):
     def __init__(self):
         gtk.Dialog.__init__(self)
@@ -660,8 +806,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         if ui.mainWin:
             ui.mainWin.onConfigChange()
         #thread.start_new_thread(event_man.restartDaemon, ())
-    def showNewGroup(self, group):
-        groupIndex = ui.eventGroups.index(group.id)
+    def showNewGroupAtIndex(self, group, groupIndex):
         groupIter = self.trees.insert(
             None,
             groupIndex,
@@ -672,6 +817,7 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 groupIter,
                 self.getEventRow(event),
             )
+    showNewGroup = lambda self, group: self.showNewGroupAtIndex(group, ui.eventGroups.index(group.id))
     def onConfigChange(self):
         if not self.isLoaded:
             return
@@ -984,6 +1130,14 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                             group,
                             newGroupType,
                         ))
+                ###
+                menu.add(labelStockMenuItem(
+                    _('Bulk Edit Events'),
+                    gtk.STOCK_EDIT,
+                    self.groupBulkEditFromMenu,
+                    group,
+                    path,
+                ))
                 ###
                 for (actionName, actionFuncName) in group.actions:
                     menu.add(labelStockMenuItem(_(actionName), None, self.groupActionClicked, group, actionFuncName))
@@ -1518,6 +1672,18 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         self.startWaiting()
         newGroup = ui.eventGroups.convertGroupTo(group, newGroupType)
         self.endWaiting()
+    def groupBulkEditFromMenu(self, menu, group, path):
+        dialog = GroupBulkEditDialog(group)
+        if dialog.run()==gtk.RESPONSE_OK:
+            self.startWaiting()
+            expanded = self.treev.row_expanded(path)
+            dialog.doAction()
+            dialog.destroy()
+            self.trees.remove(self.trees.get_iter(path))
+            self.showNewGroupAtIndex(group, path[0])
+            if expanded:
+                self.treev.expand_row(path, False)
+            self.endWaiting()
     def groupActionClicked(self, menu, group, actionFuncName):
         getattr(group, actionFuncName)(parentWin=self)
     def cutEvent(self, menu, path):

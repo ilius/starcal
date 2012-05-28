@@ -1124,6 +1124,40 @@ msgid "This is going to convert calendar types of all events inside group \"%s\"
 msgstr ""
 "اینجا نوع تقویم تمام رویدادهای داخل گروه «%s» قرار است به یک نوع خاص تبدیل شود. این عملیات برای رویدادهای سالیانه و همینطور برای بعضی از رویدادهای دلخواه کار نمی‌کند. شما برای تغییر نوع تقویم، باید آن رویدادها را دستی ویرایش کنید."
 
+msgid "Bulk Edit Events"
+msgstr ""
+"ویرایش گروهیِ رویدادها"
+
+msgid "Here you are going to modify all events inside group \"%s\" at once. You better make a backup from you events before doing this. Just right click on group and select \"Export\" (or a full backup: menu File -> Export)"
+msgstr ""
+"اینجا شما در حال تغییر دادن همهٔ رویدادهای گروه «%s» به یکباره هستید. بهتر است قبل از این کار، یک پشتیبان از رویدادهای خود بگیرید. روی گروه راست کلیک کرده و «صادر کردن» را بزنید (یا یک پشتیبان کامل: منو فایل -> صادر کردن)"
+
+
+msgid "Change"
+msgstr ""
+"تغییر"
+
+msgid "Change if empty"
+msgstr ""
+"تغییر در صورت خالی بودن"
+
+msgid "Add to beginning"
+msgstr ""
+"افزودن به ابتدا"
+
+msgid "Add to end"
+msgstr ""
+"افزودن به انتها"
+
+msgid "Replace text"
+msgstr ""
+"جایگزینی متن"
+
+msgid "with"
+msgstr ""
+"با"
+
+
 msgid "For"
 msgstr ""
 "برای"
