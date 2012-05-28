@@ -1788,6 +1788,10 @@ msgid "Check for Orphan Events"
 msgstr ""
 "بررسی رویدادهای یتیم"
 
+msgid "Orphan Events"
+msgstr ""
+"رویدادهای یتیم"
+
 
 #msgid "_General"
 #msgstr ""

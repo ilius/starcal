@@ -2751,7 +2751,7 @@ class EventGroupsHolder(JsonObjectsHolder):
     def checkForOrphans(self):
         newGroup = EventGroup()
         newGroup.setData({
-            'title': 'Orphan Events',
+            'title': _('Orphan Events'),
             'enable': False,
             'color': (255, 255, 0),
         })
