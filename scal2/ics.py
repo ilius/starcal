@@ -31,7 +31,7 @@ from scal2 import core
 
 
 icsTmFormat = '%Y%m%dT%H%M%S'## timezone? (Z%Z or Z%z)
-icsTmFormatPretty = '%Y-%m-%dT%H:%M:%S'## timezone? (Z%Z or Z%z)
+icsTmFormatPretty = '%Y-%m-%dT%H:%M:%SZ'## timezone? (Z%Z or Z%z)
 
 icsHeader = '''BEGIN:VCALENDAR
 VERSION:2.0
@@ -60,12 +60,16 @@ def getIcsDateByJd(jd, pretty=False):
     (y, m, d) = jd_to(jd, DATE_GREG)
     return getIcsDate(y, m, d, pretty)
 
-def getJdByIcsDate(icsDate):
-    tm = strptime(icsDate, '%Y%m%d')
-    return to_jd(tm.tm_year, tm.tm_mon, tm.tm.mday, DATE_GREG)
+def getJdByIcsDate(dateStr):
+    tm = strptime(dateStr, '%Y%m%d')
+    return to_jd(tm.tm_year, tm.tm_mon, tm.tm_mday, DATE_GREG)
 
-def getEpochByIcsTime(icsTime):
-    return int(mktime(strptime(icsDate, icsTmFormat)))
+def getEpochByIcsTime(tmStr):
+    try:
+        tm = strptime(tmStr, icsTmFormat)
+    except:
+        tm = strptime(tmStr, '%Y%m%d')
+    return int(mktime(tm))
 
 def splitIcsValue(value):
     data = []

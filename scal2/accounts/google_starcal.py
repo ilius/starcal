@@ -69,7 +69,7 @@ def encodeIcsStartEnd(value):
     if 'date' in value:
         icsValue = value['date'].replace('-', '')
     elif 'dateTime' in value:
-        icsValue = value['date'].replace('-', '').replace(':', '')
+        icsValue = value['dateTime'].replace('-', '').replace(':', '')
     else:
         raise ValueError('bad gcal start/end value %r'%value)
     return icsValue
@@ -122,23 +122,31 @@ def exportEvent(event):
 def importEvent(gevent, group):
     if gevent['status'] != 'confirmed':## FIXME
         return
+    open('/tmp/gevent.js', 'a').write('%s\n\n'%pformat(gevent))
+    icsData = [
+        ('DTSTART', encodeIcsStartEnd(gevent['start'])),
+        ('DTEND', encodeIcsStartEnd(gevent['end'])),
+    ]
+    ##
+    recurring = False
+    if 'recurrence' in gevent:
+        key, value = gevent['recurrence'].upper().split(':')## multi line? FIXME
+        icsData.append((key, value))
+        recurring = True
     try:
         eventType = gevent['extendedProperties']['shared']['starcal_type']
     except KeyError:
-        eventType = 'custom'
-    ##
-    icsData = [
-        ('DTSTART', encodeIcsStartEnd(gevent['start']))
-        ('DTEND', encodeIcsStartEnd(gevent['end']))
-    ]
+        if recurring:
+            eventType = 'custom'
+        else:
+            eventType = 'task'
     ##
     event = group.createEvent(eventType)
-    if not event.changeMode(DATE_GREG):
-        return
+    event.mode = DATE_GREG ## FIXME
     if not event.setIcsDict(dict(icsData)):
         return
     event.summary = toStr(gevent['summary'])
-    event.description = toStr(gevent['description'])
+    event.description = toStr(gevent.get('description', ''))
     if 'reminders' in gevent:
         try:
             minutes = gevent['reminders']['overrides']['minutes']
@@ -146,7 +154,7 @@ def importEvent(gevent, group):
             pass## FIXME
         else:
             self.notifyBefore = (minutes, 60)
-
+    return event
 
 
 def setEtag(gevent):
@@ -188,6 +196,15 @@ class ClientRedirectHandler(BaseHTTPServer.BaseHTTPRequestHandler):
   def log_message(self, format, *args):
     """Do not log messages to stdout while running as command line program."""
     pass
+
+
+def dumpRequest(request):
+    open('/tmp/starcal-request', 'a').write('uri=%r\nmethod=%r\nheaders=%r\nbody=%r\n\n\n'%(
+        request.uri,
+        request.method,
+        request.headers,
+        request.body,
+    ))
 
 
 @event_man.classes.account.register
@@ -332,17 +349,25 @@ class GoogleAccount(Account):
             #pageToken=0,
         )
         if lastSync:
-            kwargs['updatedMin'] = getIcsTimeByEpoch(lastSync, True)
-        geventsRes = service.events().list(**kwargs).execute()
-        gevents = eventsRes['items']
+            kwargs['updatedMin'] = getIcsTimeByEpoch(lastSync, True) ## FIXME
+            ## int(lastSync)
+        request = service.events().list(**kwargs)
+        dumpRequest(request)
+        geventsRes = request.execute()
+        #pprint(geventsRes)
+        try:
+            gevents = geventsRes['items']
+        except KeyError:
+            gevents = []
         for gevent in gevents:
             event = importEvent(gevent, group)
             if not event:
-                print '---------- event %s can not be pulled'%event.summary
+                print '---------- event %s can not be pulled'%event
                 continue
             remoteIds = (self.id, remoteGroupId, gevent['id'])
             eventId = group.eventIdByRemoteIds.get(remoteIds, None)
             if eventId is None:
+                event.afterModify()
                 group.append(event)
                 event.save()
                 group.save()
@@ -394,12 +419,7 @@ class GoogleAccount(Account):
                     calendarId=remoteGroupId,
                     sendNotifications=False,
                 )
-                #open('/tmp/starcal-request', 'w').write('uri=%r\nmethod=%r\nheaders=%r\nbody=%r'%(
-                #    request.uri,
-                #    request.method,
-                #    request.headers,
-                #    request.body,
-                #))
+                #dumpRequest(request)
                 response = request.execute()
                 #print 'response = %s'%pformat(response)
                 remoteEventId = response['id']
@@ -417,16 +437,18 @@ def printAllEvent(account, remoteGroupId):
         print gevent['summary'], gevent['updated']
 
 
-#if __name__=='__main__':
-#    from scal2 import ui
-#    account = GoogleAccount(aid=1)
-#    account.load()
-#    remoteGroupId = 'gi646vjovfrh2u2u2l9hnatvq0@group.calendar.google.com'
-#    ui.eventGroups.load()
-#    group = ui.eventGroups[8]
-#    #print 'group.remoteIds', group.remoteIds
-#    group.remoteIds = (account.id, remoteGroupId)
-#    account.sync(group, remoteGroupId)
+if __name__=='__main__':
+    from scal2 import ui
+    account = GoogleAccount(aid=1)
+    account.load()
+    remoteGroupId = 'gi646vjovfrh2u2u2l9hnatvq0@group.calendar.google.com'
+    groupId = 66
+    ui.eventGroups.load()
+    group = ui.eventGroups[groupId]
+    #print 'group.remoteIds', group.remoteIds
+    group.remoteIds = (account.id, remoteGroupId)
+    account.sync(group, remoteGroupId)
+    group.save()
 
 
 

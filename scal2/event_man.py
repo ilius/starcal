@@ -738,11 +738,18 @@ class DurationEventRule(EventRule):
     need = ('start',)
     conflict = ('date', 'end',)
     sgroup = 1
+    units = (1, 60, 3600, dayLen, 7*dayLen)
     def __init__(self, parent):
         EventRule.__init__(self, parent)
         self.value = 0
         self.unit = 1 ## seconds
     getSeconds = lambda self: self.value * self.unit
+    def setSeconds(self, s):
+        for unit in reversed(self.units):
+            if s%unit == 0:
+                self.value, self.unit = int(s//unit), unit
+                return
+        self.unit, self.value = int(s), 1
     def setData(self, data):
         try:
             (self.value, self.unit) = durationDecode(data)
@@ -1066,6 +1073,7 @@ class Event(JsonEventBaseClass, RuleContainer):
     def getDefaultIcon(cls):
         return join(pixDir, 'event', cls.iconName+'.png') if cls.iconName else ''
     __nonzero__ = lambda self: bool(self.rulesOd) ## FIXME
+    __str__ = lambda self: 'Event(id=%s, summary=%s)'%(self.id, self.summary)
     def __init__(self, _id=None, parent=None):
         if _id is None:
             self.id = None
@@ -1296,6 +1304,28 @@ class Event(JsonEventBaseClass, RuleContainer):
     def getIcsData(self, prettyDateTime=False):## FIXME
         return None
     def setIcsDict(self, data):
+        '''
+        if 'T' in data['DTSTART']:
+            return False
+        if 'T' in data['DTEND']:
+            return False
+        startJd = getJdByIcsDate(data['DTSTART'])
+        endJd = getJdByIcsDate(data['DTEND'])
+        if 'RRULE' in data:
+            rrule = dict(splitIcsValue(data['RRULE']))
+            if rrule['FREQ'] == 'YEARLY':
+                y0, m0, d0 = jd_to(startJd, self.mode)
+                y1, m1, d1 = jd_to(endJd, self.mode)
+                if y0 != y1:## FIXME
+                    return False
+                yr = self.getAddRule('year')
+                interval = int(rrule.get('INTERVAL', 1))
+                
+            elif rrule['FREQ'] == 'MONTHLY':
+                pass
+            elif rrule['FREQ'] == 'WEEKLY':
+                pass
+        '''
         return False
     def changeMode(self, mode):
         ## don't forget to call event.load() if this function failed (returned False)
@@ -1310,6 +1340,8 @@ class Event(JsonEventBaseClass, RuleContainer):
 class SingleStartEndEvent(Event):
     getStartEpoch = lambda self: self['start'].getEpoch()
     getEndEpoch = lambda self: self['end'].getEpoch()
+    setStartEpoch = lambda self, epoch: self.getAddRule('start').setEpoch(epoch)
+    setEndEpoch = lambda self, epoch: self.getAddRule('end').setEpoch(epoch)
     getJd = lambda self: self['start'].getJd()
     setJd = lambda self, jd: self.getAddRule('start').setJd(jd)
     def setJdExact(self, jd):
@@ -1405,6 +1437,22 @@ class TaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from SingleStartE
         else:
             return self['start'].getEpoch() + duration.getSeconds()
         raise ValueError('no end date neither duration specified for task')
+    def setEndEpoch(self, epoch):
+        try:
+            end = self['end']
+        except KeyError:
+            pass
+        else:
+            end.setEpoch(epoch)
+            return
+        try:
+            duration = self['duration']
+        except KeyError:
+            pass
+        else:
+            duration.setSeconds(epoch-self['start'].getEpoch())
+            return
+        raise ValueError('no end date neither duration specified for task')
     def modifyPos(self, newStartEpoch):
         start = self['start']
         try:
@@ -1444,7 +1492,18 @@ class TaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from SingleStartE
             myStart.time = other['dayTime'].dayTime
         except KeyError:
             pass
-
+    def getIcsData(self, prettyDateTime=False):
+        jd = self.getJd()
+        return [
+            ('DTSTART', getIcsTimeByEpoch(self.getStartEpoch(), prettyDateTime)),
+            ('DTEND', getIcsTimeByEpoch(self.getEndEpoch(), prettyDateTime)),
+            ('TRANSP', 'OPAQUE'),
+            ('CATEGORIES', self.name),## FIXME
+        ]
+    def setIcsDict(self, data):
+        self.setStartEpoch(getEpochByIcsTime(data['DTSTART']))
+        self.setEndEpoch(getEpochByIcsTime(data['DTEND']))
+        return True
 
 @classes.event.register
 class DailyNoteEvent(Event):
