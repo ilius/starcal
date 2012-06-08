@@ -267,9 +267,6 @@ class JdListOccurrence(Occurrence):
     getDaysJdList = lambda self: self.jdSet
     getTimeRangeList = lambda self: [(getEpochFromJd(jd), getEpochFromJd(jd+1)) for jd in self.jdSet]
     containsMoment = lambda self, epoch: (getJdFromEpoch(epoch) in self.jdSet)
-    getData = lambda self: list(self.jdSet)
-    def setData(self, jdList):
-        self.jdSet = set(jdList)
     def calcJdRanges(self):
         jdList = list(self.jdSet) ## jdList is sorted
         if not jdList:
@@ -321,10 +318,6 @@ class TimeRangeListOccurrence(Occurrence):
             if startEpoch <= epoch < endEpoch:
                 return True
         return False
-    def getData(self):
-        return self.rangeList
-    def setData(self, rangeList):
-        self.rangeList = rangeList
 
 
 class TimeListOccurrence(Occurrence):
@@ -379,17 +372,6 @@ class TimeListOccurrence(Occurrence):
                     epochBetween.append(epoch)
                     break
         return epochBetween
-    def setData(self, data):
-        self.startEpoch = data['startEpoch']
-        self.endEpoch = data['endEpoch']
-        self.stepSeconds = data['stepSeconds']
-        self.epochList = set(arange(self.startEpoch, self.endEpoch, self.stepSeconds))
-    def getData(self):
-        return {
-            'startEpoch': self.startEpoch,
-            'endEpoch': self.endEpoch,
-            'stepSeconds': self.stepSeconds,
-        }
 
 
 ## Should not be registered, or instantiate directly
