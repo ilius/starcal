@@ -649,6 +649,15 @@ msgid "Event"
 msgstr ""
 "رویداد"
 
+msgid "Event ID: %s"
+msgstr ""
+"شمارهٔ رویداد: %s"
+
+msgid "Group ID: %s"
+msgstr ""
+"شمارهٔ گروه: %s"
+
+
 msgid "Task"
 msgstr ""
 "کار"

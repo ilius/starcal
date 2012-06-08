@@ -1313,19 +1313,24 @@ class EventManagerDialog(gtk.Dialog):## FIXME
         ## update eventInfoBox
         #print 'treeviewCursorChanged', path
         if not self.syncing:
-            if path and len(path)==1:
-                group = self.getObjsByPath(path)[0]
-                if group.name == 'trash':
-                    occurCount = 0
-                else:
-                    occurCount = group.occurCount
-                message_id = self.sbar.push(0, _('contains %s events and %s occurences')%(
-                    _(len(group)),
-                    _(occurCount),
-                ))
-            else:
-                #self.sbar.remove_all(0)
-                message_id = self.sbar.push(0, '')
+            text = ''
+            if path:
+                if len(path)==1:
+                    (group,) = self.getObjsByPath(path)
+                    if group.name == 'trash':
+                        occurCount = 0
+                    else:
+                        occurCount = group.occurCount
+                    text = _('contains %s events and %s occurences')%(
+                        _(len(group)),
+                        _(occurCount),
+                    )
+                    if group.name != 'trash':
+                        text += '. ' + _('Group ID: %s')%_(group.id)
+                elif len(path)==2:
+                    group, event = self.getObjsByPath(path)
+                    text = _('Event ID: %s')%_(event.id)
+            message_id = self.sbar.push(0, text)
         return True
     def onGroupModify(self, group):
         self.startWaiting()
