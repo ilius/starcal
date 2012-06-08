@@ -76,11 +76,11 @@ def loadLastIds():
     lastEventAccountId = data['account']
 
 def saveLastIds():
-    open(lastIdsFile, 'w').write(dataToJson({
-        'event': lastEventId,
-        'group': lastEventGroupId,
-        'account': lastEventAccountId,
-    }))
+    open(lastIdsFile, 'w').write(dataToJson(OrderedDict([
+        ('event', lastEventId),
+        ('group', lastEventGroupId),
+        ('account', lastEventAccountId),
+    ])))
 
 
 ###########################################################################
@@ -194,7 +194,20 @@ class EventBaseClass:
 
 class JsonEventBaseClass(EventBaseClass):
     file = ''
-    getJson = lambda self: dataToJson(self.getData())
+    jsonParams = ()
+    def getJson(self):
+        data = self.getData()
+        if isinstance(data, dict):
+            if self.jsonParams:
+                data = data.items()
+                def paramIndex(key):
+                    try:
+                        return self.jsonParams.index(key)
+                    except ValueError:
+                        return len(self.jsonParams)
+                data.sort(cmp=lambda x, y: cmp(paramIndex(x[0]), paramIndex(y[0])))
+                data = OrderedDict(data)
+        return dataToJson(data)
     setJson = lambda self, jsonStr: self.setData(jsonToData(jsonStr))
     def save(self):
         jstr = self.getJson()
@@ -389,6 +402,7 @@ class EventRule(EventBaseClass):
     sgroup = -1
     expand = False
     params = ()
+    #jsonParams = ()## FIXME
     def __init__(self, parent):## parent can be an event or group
         self.parent = parent
     getMode = lambda self: self.parent.mode
@@ -894,6 +908,7 @@ class EventNotifier(EventBaseClass):
     name = ''
     desc = ''
     params = ()
+    #jsonParams = ()## FIXME
     def __init__(self, event):
         self.event = event
     getMode = lambda self: self.event.mode
@@ -1069,6 +1084,17 @@ class Event(JsonEventBaseClass, RuleContainer):
     desc = _('Custom Event')
     iconName = ''
     #requiredNotifiers = ()## needed? FIXME
+    jsonParams = (
+        'type',
+        'calType',
+        'summary',
+        'description',
+        'rules',
+        'notifiers',
+        'notifyBefore',
+        'remoteIds',
+        'modified',
+    )
     @classmethod
     def getDefaultIcon(cls):
         return join(pixDir, 'event', cls.iconName+'.png') if cls.iconName else ''
@@ -1541,6 +1567,7 @@ class YearlyEvent(Event):
     iconName = 'birthday'
     requiredRules = ('month', 'day')
     supportedRules = ('month', 'day', 'start')
+    jsonParams = Event.jsonParams + ('startYear', 'month', 'day')
     getMonth = lambda self: self['month'].values[0]
     setMonth = lambda self, month: self.getAddRule('month').setData(month)
     getDay = lambda self: self['day'].values[0]
@@ -1836,6 +1863,7 @@ class LifeTimeEvent(SingleStartEndEvent):
 class LargeScaleEvent(Event):## or MegaEvent? FIXME
     name = 'largeScale'
     desc = _('Large Scale Event')
+    jsonParams = Event.jsonParams + ('scale', 'start', 'duration')
     __nonzero__ = lambda self: True
     def __init__(self, *args, **kw):
         self.scale = 1 ## 1, 1000, 1000**2, 1000**3
@@ -2004,6 +2032,23 @@ class EventGroup(EventContainer):
         ('summary', _('Summary')),
         ('description', _('Description')),
         ('icon', _('Icon')),
+    )
+    jsonParams = (
+        'enable',
+        'type',
+        'title',
+        'calType',
+        'showFullEventDesc',
+        'color',
+        'icon',
+        'eventCacheSize',
+        'eventTextSep',
+        'startJd',
+        'endJd',
+        'remoteIds',
+        'remoteSyncData',
+        'eventIdByRemoteIds',
+        'idList',
     )
     sortByDefault = 'summary'
     getSortByValue = lambda self, event, attr: getattr(event, attr, None)
@@ -2445,6 +2490,11 @@ class UniversityTerm(EventGroup):
         ('time', _('Time')),
     )
     sortByDefault = 'time'
+    jsonParams = EventGroup.jsonParams + (
+        'classTimeBounds',
+        'classesEndDate',
+        'courses',
+    )
     def getSortByValue(self, event, attr):
         if event.name in self.acceptsEventTypes:
             if attr=='course':
@@ -3009,6 +3059,12 @@ def getDayOccurrenceData(curJd, groups):
 class Account(JsonEventBaseClass):
     name = ''
     desc = ''
+    jsonParams = (
+        'enable',
+        'type',
+        'title',
+        'remoteGroups',
+    )
     def __init__(self, _id=None):
         if _id is None:
             self.id = None
