@@ -37,7 +37,7 @@ Summary:        A full-featured international calendar writen in Python
 Group:          User Interface/Desktops
 License:        GPLv3+
 URL:            http://starcal.sourceforge.net/
-Requires:       python >= 2.6, python-gtk
+Requires:       python >= 2.6, python-gtk, python-gflags
 Provides:       /usr
 BuildArch:      noarch
 
