@@ -1211,6 +1211,11 @@ msgstr ""
 msgid "%s events"
 msgstr "%s رویداد"
 
+msgid "contains %s events"
+msgstr ""
+"شامل %s رویداد"
+
+
 msgid "contains %s events and %s occurences"
 msgstr ""
 "شامل %s رویداد و %s رخداد"

@@ -1318,15 +1318,12 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 if len(path)==1:
                     (group,) = self.getObjsByPath(path)
                     if group.name == 'trash':
-                        occurCount = 0
+                        text = _('contains %s events')%_(len(group))
                     else:
-                        occurCount = group.occurCount
-                    text = _('contains %s events and %s occurences')%(
-                        _(len(group)),
-                        _(occurCount),
-                    )
-                    if group.name != 'trash':
-                        text += '. ' + _('Group ID: %s')%_(group.id)
+                        text = _('contains %s events and %s occurences')%(
+                            _(len(group)),
+                            _(group.occurCount),
+                        ) + '. ' + _('Group ID: %s')%_(group.id)
                 elif len(path)==2:
                     group, event = self.getObjsByPath(path)
                     text = _('Event ID: %s')%_(event.id)
