@@ -588,7 +588,7 @@ class MonthCal(gtk.Widget, MainWinItem):
             0,
             0,
             0,
-            0,G
+            0,
             -1,
             -1,
         )
