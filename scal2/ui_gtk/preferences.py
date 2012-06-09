@@ -1602,7 +1602,7 @@ class PrefDialog(gtk.Dialog):
         about.connect('response', lambda w, e: w.destroy())
         #about.set_resizable(True)
         #about.vbox.show_all()## OR about.vbox.show_all() ; about.run()
-        about.present()
+        openWindow(about)## FIXME
     def plugConfClicked(self, obj=None):
         cur = self.plugTreeview.get_cursor()[0]
         if cur==None:

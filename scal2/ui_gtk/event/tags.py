@@ -23,6 +23,7 @@ from scal2.core import pixDir, myRaise
 
 from scal2 import event_man
 from scal2 import ui
+from scal2.ui_gtk.utils import openWindow
 
 import gtk
 from gtk import gdk
@@ -255,7 +256,7 @@ class ViewEditTagsHbox(gtk.HBox):
         self.pack_start(self.editButton, 0, 0)
         self.show_all()
     def editButtonClicked(self, widget):
-        self.dialog.present()
+        openWindow(self.dialog)
     def dialogResponse(self, dialog, resp):
         #print 'dialogResponse', dialog, resp
         if resp==gtk.RESPONSE_OK:

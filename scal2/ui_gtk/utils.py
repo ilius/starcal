@@ -214,7 +214,9 @@ class GtkBufferFile:
     isatty = lambda self: False
 
 
-
+def openWindow(win):
+    win.set_keep_above(ui.winKeepAbove)
+    win.present()
 
 
 

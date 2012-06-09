@@ -31,6 +31,7 @@ from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
 from scal2.export import exportToHtml
 
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, TimeButton, YearMonthButton
+from scal2.ui_gtk.utils import openWindow
 
 import gtk
 from gtk import gdk
@@ -136,7 +137,7 @@ class ExportDialog(gtk.Dialog):
         self.ymBox0.set_value((year, month))
         self.ymBox1.set_value((year, month))
         self.resize(1, 1)
-        self.present()
+        openWindow(self)
     def exportSvg(self, path, monthList):## FIXME
         ## monthList is a list of tuples (year, month)
         import cairo

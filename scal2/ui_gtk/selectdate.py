@@ -30,6 +30,7 @@ from scal2.core import convert, getMonthName
 from scal2 import ui
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButtonOption
 from scal2.ui_gtk.mywidgets.ymd import YearMonthDayBox
+from scal2.ui_gtk.utils import openWindow
 
 import gtk, gobject
 from gtk import gdk
@@ -120,7 +121,7 @@ class SelectDateDialog(gtk.Dialog):
         (y, m, d) = ui.cell.dates[mode]
         self.set_mode(mode)
         self.set(y, m, d)
-        self.present()
+        openWindow(self)
     def hideMe(self, widget, event=None):
         self.hide()
         return True

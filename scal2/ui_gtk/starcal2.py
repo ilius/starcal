@@ -66,7 +66,7 @@ import gtk
 from gtk import gdk
 
 from scal2.ui_gtk.utils import hideList, showList, set_tooltip, imageFromFile, setupMenuHideOnLeave, \
-                               labelStockMenuItem, labelImageMenuItem, modify_bg_all
+                               labelStockMenuItem, labelImageMenuItem, modify_bg_all, openWindow
 
 from scal2.ui_gtk.color_utils import rgbToGdkColor
 from scal2.ui_gtk import listener
@@ -1500,15 +1500,15 @@ class MainWin(gtk.Window):
             if self.clockTr!=None:
                 self.clockTr.destroy()
                 self.clockTr = None
-    aboutShow = lambda self, obj=None, data=None: self.about.present()## or run() #?????????
+    aboutShow = lambda self, obj=None, data=None: openWindow(self.about)
     def aboutHide(self, widget, arg=None):## arg maybe an event, or response id
         self.about.hide()
         return True
-    prefShow = lambda self, obj=None, data=None: ui.prefDialog.present()
-    customizeShow = lambda self, obj=None, data=None: self.customizeDialog.present()
-    eventManShow = lambda self, obj=None, data=None: ui.eventManDialog.present()
-    timeLineShow = lambda self, obj=None, data=None: ui.timeLineWin.present()
-    weekCalShow = lambda self, obj=None, data=None: ui.weekCalWin.present()
+    prefShow = lambda self, obj=None, data=None: openWindow(ui.prefDialog)
+    customizeShow = lambda self, obj=None, data=None: openWindow(self.customizeDialog)
+    eventManShow = lambda self, obj=None, data=None: openWindow(ui.eventManDialog)
+    timeLineShow = lambda self, obj=None, data=None: openWindow(ui.timeLineWin)
+    weekCalShow = lambda self, obj=None, data=None: openWindow(ui.weekCalWin)
     def trayInit(self):
         if self.trayMode==2:
             self.sicon = gtk.StatusIcon()
