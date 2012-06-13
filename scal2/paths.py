@@ -49,20 +49,20 @@ if osName in ('linux', 'unix'):
     homeDir = os.getenv('HOME')
     confDir = homeDir + '/.' + APP_NAME
     sysConfDir = '/etc/' + APP_NAME
-    #tmpDir = '/tmp'
+    tmpDir = '/tmp'
     #user = os.getenv('USER')
 elif osName=='mac':
     homeDir = os.getenv('HOME')
     confPath = homeDir + '/Library/Preferences/' + APP_NAME ## OR '/Library/' + APP_NAME
     sysConfDir = join(rootDir, 'config')## FIXME
-    #tmpDir = '/tmp'
+    tmpDir = '/tmp'
     #user = os.getenv('USER')
 elif osName=='win':
     #homeDrive = os.environ['HOMEDRIVE']
     homeDir = os.getenv('HOMEPATH')
     confDir = os.getenv('APPDATA') + '\\' + APP_NAME
     sysConfDir = join(rootDir, 'config')
-    #tmpDir = os.getenv('TEMP')
+    tmpDir = os.getenv('TEMP')
     #user = os.getenv('USERNAME')
     ####
     winStartupRelPath = r'\Microsoft\Windows\Start Menu\Programs\Startup'

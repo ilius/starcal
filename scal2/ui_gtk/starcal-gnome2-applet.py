@@ -25,7 +25,6 @@ sys.path.insert(0, dirname(dirname(dirname(__file__))))
 from scal2 import core
 from scal2.locale_man import tr as _
 
-from scal2.ui_gtk.preferences import pfontEncode
 from scal2.ui_gtk.starcal2 import *
 
 import gtk
@@ -34,8 +33,6 @@ from gtk import gdk
 import gnomeapplet
 ## import gnomeapplet module AFTRE scal2.* modules, to prevent crash on first run (after boot up)
 
-
-rgbToGdkColor = lambda r, g, b, a=None: gdk.Color(int(r*257), int(g*257), int(b*257))
 
 #class MyApplet(gnomeapplet.Applet):
 #    def __init__(self, applet):

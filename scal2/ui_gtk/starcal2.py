@@ -57,8 +57,6 @@ from scal2 import event_man
 from scal2 import ui
 from scal2.ui import showYmArrows
 
-from scal2 import unity
-
 import gobject ##?????
 from gobject import timeout_add, timeout_add_seconds
 
@@ -88,23 +86,6 @@ from scal2.ui_gtk.event.main import EventManagerDialog
 from scal2.ui_gtk.timeline import TimeLineWindow
 from scal2.ui_gtk.weekcal import WeekCalWindow
 
-
-if unity.needToAdd():
-    dialog = gtk.Dialog('Tray Icon')
-    okB = dialog.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-    cancelB = dialog.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-    if ui.autoLocale:
-        okB.set_label(_('_OK'))
-        okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK, gtk.ICON_SIZE_BUTTON))
-        cancelB.set_label(_('_Cancel'))
-        cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL, gtk.ICON_SIZE_BUTTON))
-    label = gtk.Label(_(unity.addAndRestartText))
-    label.set_line_wrap(True)
-    dialog.vbox.pack_start(label, 1, 1)
-    dialog.vbox.show_all()
-    if dialog.run()==gtk.RESPONSE_OK:
-        unity.addAndRestart()
-    dialog.destroy()
 
 iconSizeList = [
     ('Menu', gtk.ICON_SIZE_MENU),
@@ -1511,22 +1492,27 @@ class MainWin(gtk.Window):
     weekCalShow = lambda self, obj=None, data=None: openWindow(ui.weekCalWin)
     def trayInit(self):
         if self.trayMode==2:
-            self.sicon = gtk.StatusIcon()
-            ##self.sicon.set_blinking(True) ## for Alarms ## some problem with gnome-shell
-            #self.sicon.set_name('starcal2')## Warning: g_object_notify: object class `GtkStatusIcon' has no property named `name'
-            self.sicon.set_title(core.APP_DESC)
-            self.sicon.set_visible(True)## is needed ????????
-            self.sicon.connect('activate', self.trayClicked)
-            self.sicon.connect('popup-menu', self.trayPopup)
+            try:
+                import appindicator
+            except ImportError:
+                self.sicon = gtk.StatusIcon()
+                ##self.sicon.set_blinking(True) ## for Alarms ## some problem with gnome-shell
+                #self.sicon.set_name('starcal2')## Warning: g_object_notify: object class `GtkStatusIcon' has no property named `name'
+                self.sicon.set_title(core.APP_DESC)
+                self.sicon.set_visible(True)## is needed ????????
+                self.sicon.connect('activate', self.trayClicked)
+                self.sicon.connect('popup-menu', self.trayPopup)
+            else:
+                from scal2.ui_gtk.starcal2_appindicator import IndicatorStatusIconWrapper
+                self.sicon = IndicatorStatusIconWrapper(self)
             self.trayPix = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, ui.traySize, ui.traySize)
         else:
             self.sicon = None
-    def trayPopup(self, sicon, button, etime):
-        core.focusTime = time()    ## needed?????
-        menu = gtk.Menu()
-        if os.sep == '\\':
-            setupMenuHideOnLeave(menu)
-        items = [
+    def getTrayPopupItems(self, showMainItem=False):
+        items = []
+        if showMainItem:
+            items.append(labelStockMenuItem('Main Window', None, self.trayClicked))
+        items += [
             labelStockMenuItem('Copy _Time', gtk.STOCK_COPY, self.copyTime),
             labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday),
             labelStockMenuItem('Ad_just System Time', gtk.STOCK_PREFERENCES, self.adjustTime),
@@ -1539,6 +1525,13 @@ class MainWin(gtk.Window):
             gtk.SeparatorMenuItem(),
             labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit),
         ]
+        return items
+    def trayPopup(self, sicon, button, etime):
+        core.focusTime = time()    ## needed?????
+        menu = gtk.Menu()
+        if os.sep == '\\':
+            setupMenuHideOnLeave(menu)
+        items = self.getTrayPopupItems()
         geo = self.sicon.get_geometry() ## Returns None on windows, why???
         if geo==None:## windows, taskbar is on buttom(below)
             items.reverse()
@@ -1556,7 +1549,7 @@ class MainWin(gtk.Window):
     def onCurrentDateChange(self, gdate):
         self.trayUpdate(gdate=gdate)
     def trayUpdate(self, gdate=None, checkTrayMode=True):
-        if checkTrayMode and self.trayMode!=2:
+        if checkTrayMode and self.trayMode < 1:
             return
         if gdate is None:
             gdate = localtime()[:3]
@@ -1616,7 +1609,7 @@ class MainWin(gtk.Window):
                 tt += '\n\n%s'%text.replace('\t', '\n') #????????????
         set_tooltip(self.sicon, tt)
         return True
-    def trayClicked(self, widget):
+    def trayClicked(self, obj=None):
         if self.get_property('visible'):
             (ui.winX, ui.winY) = self.get_position()
             self.hide()
@@ -1769,28 +1762,30 @@ def main():
         psyco.full()
         print('Using module "psyco" to speed up execution.')
         psyco_found=True'''
+    trayMode = 2
+    action = ''
+    if ui.showMain:
+        action = 'show'
     if len(sys.argv)>1:
         if sys.argv[1]=='--no-tray': ## no tray icon
-            mainWin = MainWin(trayMode=0)
-            show = True
-        else:
-            mainWin = MainWin(trayMode=2)
-            if sys.argv[1]=='--hide':
-                show = False
-            elif sys.argv[1]=='--show':
-                show = True
-            #elif sys.argv[1]=='--html':#????????????
-            #    mainWin.exportHtml('calendar.html') ## exportHtml(path, months, title)
-            #    sys.exit(0)
-            #elif sys.argv[1]=='--svg':#????????????
-            #    mainWin.export.exportSvg('%s/2010-01.svg'%deskDir, [(2010, 1)])
-            #    sys.exit(0)
-            else:
-                show = ui.showMain or not mainWin.sicon
-    else:
-        mainWin = MainWin(trayMode=2)
-        show = ui.showMain or not mainWin.sicon
-    if show:
+            trayMode = 0
+            action = 'show'
+        elif sys.argv[1]=='--hide':
+            action = ''
+        elif sys.argv[1]=='--show':
+            action = 'show'
+        #elif sys.argv[1]=='--html':#????????????
+        #    action = 'html'
+        #elif sys.argv[1]=='--svg':#????????????
+        #    action = 'svg'
+    mainWin = MainWin(trayMode=trayMode)
+    #if action=='html':
+    #    mainWin.exportHtml('calendar.html') ## exportHtml(path, months, title)
+    #    sys.exit(0)
+    #elif action=='svg':
+    #    mainWin.export.exportSvg('%s/2010-01.svg'%deskDir, [(2010, 1)])
+    #    sys.exit(0)
+    if action=='show' or not mainWin.sicon:
         mainWin.present()
     ##rootWindow.set_cursor(gdk.Cursor(gdk.LEFT_PTR))#???????????
     return gtk.main()

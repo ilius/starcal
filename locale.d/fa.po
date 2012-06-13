@@ -106,6 +106,9 @@ msgid "To"
 msgstr ""
 "تا"
 
+msgid "Main Window"
+msgstr ""
+"پنجرهٔ اصلی"
 
 
 msgid "Preferences"
