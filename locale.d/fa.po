@@ -1273,6 +1273,10 @@ msgid "Menu"
 msgstr ""
 "منو"
 
+msgid "More"
+msgstr ""
+"بیشتر"
+
 msgid "Date"
 msgstr ""
 "تاریخ"
