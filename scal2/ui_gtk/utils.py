@@ -218,6 +218,12 @@ def openWindow(win):
     win.set_keep_above(ui.winKeepAbove)
     win.present()
 
-
+class CopyLabelMenuItem(gtk.MenuItem):
+    def __init__(self, label):
+        gtk.MenuItem.__init__(self, label=label, use_underline=False)
+        self.clipboard = gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD)
+        self.connect('activate', self.on_activate)
+    def on_activate(self, item):
+        self.clipboard.set_text(self.get_property('label'))
 
 

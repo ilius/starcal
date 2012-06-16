@@ -1508,30 +1508,27 @@ class MainWin(gtk.Window):
             self.trayPix = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, ui.traySize, ui.traySize)
         else:
             self.sicon = None
-    def getTrayPopupItems(self, showMainItem=False):
-        items = []
-        if showMainItem:
-            items.append(labelStockMenuItem('Main Window', None, self.trayClicked))
-        items += [
-            labelStockMenuItem('Copy _Time', gtk.STOCK_COPY, self.copyTime),
-            labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday),
-            labelStockMenuItem('Ad_just System Time', gtk.STOCK_PREFERENCES, self.adjustTime),
-            #labelStockMenuItem('_Add Event', gtk.STOCK_ADD, ui.eventManDialog.addCustomEvent),## FIXME
-            labelStockMenuItem(_('Export to %s')%'HTML', gtk.STOCK_CONVERT, self.exportClickedTray),
-            labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow),
-            labelStockMenuItem('_Event Manager', gtk.STOCK_ADD, self.eventManShow),
-            labelImageMenuItem('Time Line', 'timeline-18.png', self.timeLineShow),
-            labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow),
-            gtk.SeparatorMenuItem(),
-            labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit),
-        ]
-        return items
+    getMainWinMenuItem = lambda self: labelStockMenuItem('Main Window', None, self.trayClicked)
+    getTrayPopupItems = lambda self: [
+        labelStockMenuItem('Copy _Time', gtk.STOCK_COPY, self.copyTime),
+        labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday),
+        labelStockMenuItem('Ad_just System Time', gtk.STOCK_PREFERENCES, self.adjustTime),
+        #labelStockMenuItem('_Add Event', gtk.STOCK_ADD, ui.eventManDialog.addCustomEvent),## FIXME
+        labelStockMenuItem(_('Export to %s')%'HTML', gtk.STOCK_CONVERT, self.exportClickedTray),
+        labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow),
+        labelStockMenuItem('_Event Manager', gtk.STOCK_ADD, self.eventManShow),
+        labelImageMenuItem('Time Line', 'timeline-18.png', self.timeLineShow),
+        labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow),
+        gtk.SeparatorMenuItem(),
+        labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit),
+    ]
     def trayPopup(self, sicon, button, etime):
         core.focusTime = time()    ## needed?????
         menu = gtk.Menu()
         if os.sep == '\\':
             setupMenuHideOnLeave(menu)
         items = self.getTrayPopupItems()
+        # items.insert(0, self.getMainWinMenuItem())## FIXME
         geo = self.sicon.get_geometry() ## Returns None on windows, why???
         if geo==None:## windows, taskbar is on buttom(below)
             items.reverse()
@@ -1548,6 +1545,24 @@ class MainWin(gtk.Window):
         menu.popup(None, None, get_pos_func, button, etime, self.sicon)
     def onCurrentDateChange(self, gdate):
         self.trayUpdate(gdate=gdate)
+    def getTrayTooltip(self):
+        ##tt = core.weekDayName[core.getWeekDay(*ddate)]
+        tt = core.weekDayName[core.jwday(ui.todayCell.jd)]
+        #if ui.pluginsTextTray:##?????????
+        #    sep = _(',')+' '
+        #else:
+        sep = '\n'
+        for item in ui.shownCals:
+            if item['enable']:
+                mode = item['mode']
+                module = core.modules[mode]
+                (y, m, d) = ui.todayCell.dates[mode]
+                tt += '%s%s %s %s'%(sep, _(d), getMonthName(mode, m, y), _(y))
+        if ui.pluginsTextTray:
+            text = ui.todayCell.pluginsText
+            if text!='':
+                tt += '\n\n%s'%text.replace('\t', '\n') #????????????
+        return tt
     def trayUpdate(self, gdate=None, checkTrayMode=True):
         if checkTrayMode and self.trayMode < 1:
             return
@@ -1591,23 +1606,7 @@ class MainWin(gtk.Window):
         ######################################
         self.sicon.set_from_pixbuf(self.trayPix)
         ######################################
-        ##tt = core.weekDayName[core.getWeekDay(*ddate)]
-        tt = core.weekDayName[core.jwday(ui.todayCell.jd)]
-        #if ui.pluginsTextTray:##?????????
-        #    sep = _(',')+' '
-        #else:
-        sep = '\n'
-        for item in ui.shownCals:
-            if item['enable']:
-                mode = item['mode']
-                module = core.modules[mode]
-                (y, m, d) = ui.todayCell.dates[mode]
-                tt += '%s%s %s %s'%(sep, _(d), getMonthName(mode, m, y), _(y))
-        if ui.pluginsTextTray:
-            text = ui.todayCell.pluginsText
-            if text!='':
-                tt += '\n\n%s'%text.replace('\t', '\n') #????????????
-        set_tooltip(self.sicon, tt)
+        set_tooltip(self.sicon, self.getTrayTooltip())
         return True
     def trayClicked(self, obj=None):
         if self.get_property('visible'):

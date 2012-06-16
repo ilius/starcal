@@ -25,13 +25,16 @@ sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
 from scal2.paths import *
 from scal2 import locale_man
+from scal2.locale_man import tr as _
 
 import gtk
 import appindicator
 
+from scal2.ui_gtk.utils import CopyLabelMenuItem
 
 class IndicatorStatusIconWrapper(appindicator.Indicator):
     def __init__(self, mainWin):
+        self.mainWin = mainWin
         appindicator.Indicator.__init__(
             self,
             'starcal2',## app id
@@ -41,16 +44,40 @@ class IndicatorStatusIconWrapper(appindicator.Indicator):
         self.set_status(appindicator.STATUS_ACTIVE)
         #self.set_attention_icon("new-messages-red")
         ######
+        menu = self.create_menu2()
+        self.set_menu(menu)
+        #self.menu = menu
+    def create_menu(self):
         menu = gtk.Menu()
         ###
-        for item in mainWin.getTrayPopupItems(True):
-            menu.add(item)
+        for item in [self.mainWin.getMainWinMenuItem()] + self.mainWin.getTrayPopupItems():
             item.show()
+            menu.add(item)
         ###
         #if locale_man.rtl:
             #menu.set_direction(gtk.TEXT_DIR_RTL)
-        self.set_menu(menu)
-        self.menu = menu
+        return menu
+    def create_menu2(self):
+        menu = gtk.Menu()
+        ####
+        for line in self.mainWin.getTrayTooltip().split('\n'):
+            item = CopyLabelMenuItem(line)
+            item.show()
+            menu.append(item)
+        ####
+        item = self.mainWin.getMainWinMenuItem()
+        item.show()
+        menu.append(item)
+        ####
+        submenu = gtk.Menu()
+        for item in self.mainWin.getTrayPopupItems():
+            item.show()
+            submenu.add(item)
+        sitem = gtk.MenuItem(label=_('Menu'))
+        sitem.set_submenu(submenu)
+        sitem.show()
+        menu.append(sitem)
+        return menu
     def set_from_pixbuf(self, pbuf):
         fpath = join(tmpDir, 'starcal2-tray-%s.png'%os.getuid())## FIXME
         pbuf.save(fpath, 'png')
