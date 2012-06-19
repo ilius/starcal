@@ -24,10 +24,7 @@ import json, random, os, shutil
 from os.path import join, split, isdir, isfile, dirname, splitext
 from os import listdir
 
-try:
-    from collections import OrderedDict
-except:## python < 2.7
-    from scal2.lib.ordereddict import OrderedDict
+from scal2.lib import OrderedDict
 
 from paths import *
 

@@ -145,10 +145,10 @@ class WeekCal(gtk.Widget):
         self.rowItems = [WeekDayRowItem(), PluginsTextRowItem()]
         for cal in ui.shownCals:
             self.rowItems.append(DayNumRowItem(cal['mode']))
-    def onDateChange(self):
-        self.queue_draw()
     def onConfigChange(self):
         pass
+    def onDateChange(self):
+        self.queue_draw()
     def changeDate(self, year, month, day):
         ui.changeDate(year, month, day)
         self.onDateChange()
@@ -159,8 +159,13 @@ class WeekCal(gtk.Widget):
     goBack = lambda self, event=None: self.jdPlus(-7)
     goNext = lambda self, event=None: self.jdPlus(7)
     def startResize(self, event):
-        self.parent.begin_resize_drag(gdk.WINDOW_EDGE_SOUTH_EAST, event.button,
-                                      int(event.x_root), int(event.y_root), event.time)
+        self.parent.begin_resize_drag(
+            gdk.WINDOW_EDGE_SOUTH_EAST,
+            event.button,
+            int(event.x_root),
+            int(event.y_root),
+            event.time,
+        )
     def quit(self, *args):
         if ui.mainWin:
             self.hide()

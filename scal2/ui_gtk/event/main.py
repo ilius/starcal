@@ -874,6 +874,8 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 )
         ui.trashedEvents = []
         ###
+    def onDateChange(self):
+        pass
     def onShow(self, widget):
         self.onConfigChange()
     def __init__(self):

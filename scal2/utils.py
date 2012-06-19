@@ -20,6 +20,8 @@
 import sys, traceback, os
 from math import floor, ceil
 
+from scal2.lib import OrderedDict
+
 try:
     from collections import Iterable 
 except ImportError:
@@ -324,6 +326,10 @@ def inputDateJd(msg):
     if date:
         (y, m, d) = date
         return to_jd(y, m, d, DATE_GREG)
+
+
+
+
 
 #if __name__=='__main__':
 #    print findNearestNum([1, 2, 4, 6, 3, 7], 3.6)
