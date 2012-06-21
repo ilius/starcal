@@ -1046,8 +1046,6 @@ toolbarItemsData = (
 
 toolbarItemsDataDict = dict([(item._name, item) for item in toolbarItemsData])
 
-#pprint(toolbarItemsDataDict)
-
 
 class MainWin(gtk.Window, IntegratedCalWidget):
     timeout = 1 ## second
@@ -1164,7 +1162,6 @@ class MainWin(gtk.Window, IntegratedCalWidget):
         toolbar = CustomizableToolbar(self)
         if not ui.toolbarItems:
             ui.toolbarItems = [(item._name, True) for item in toolbarItemsData]
-        #pprint(ui.toolbarItems)
         for (name, enable) in ui.toolbarItems:
             try:
                 item = toolbarItemsDataDict[name]
