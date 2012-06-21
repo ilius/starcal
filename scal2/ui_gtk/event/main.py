@@ -995,8 +995,8 @@ class EventManagerDialog(gtk.Dialog, IntegratedCalWidget):## FIXME
         self.treev.connect('realize', self.onTreeviewRealize)
         self.treev.connect('cursor-changed', self.treeviewCursorChanged)## FIXME
         self.treev.connect('button-press-event', self.treeviewButtonPress)
-        self.treev.connect('row-activated', self.onRowActivated)
-        self.treev.connect('key-press-event', self.onKeyPress)
+        self.treev.connect('row-activated', self.rowActivated)
+        self.treev.connect('key-press-event', self.keyPress)
         #####
         swin = gtk.ScrolledWindow()
         swin.add(self.treev)
@@ -1182,7 +1182,7 @@ class EventManagerDialog(gtk.Dialog, IntegratedCalWidget):## FIXME
     def onTreeviewRealize(self, event):
         self.reloadEvents()## FIXME
         self.isLoaded = True
-    def onRowActivated(self, treev, path, col):
+    def rowActivated(self, treev, path, col):
         if len(path)==1:
             if self.treev.row_expanded(path):
                 self.treev.collapse_row(path)
@@ -1190,7 +1190,7 @@ class EventManagerDialog(gtk.Dialog, IntegratedCalWidget):## FIXME
                 self.treev.expand_row(path, False)
         elif len(path)==2:
             self.editEventByPath(path)
-    def onKeyPress(self, treev, g_event):
+    def keyPress(self, treev, g_event):
         #from scal2.time_utils import getCurrentTime, getGtkTimeFromEpoch
         #print g_event.time-getGtkTimeFromEpoch(time())## FIXME
         #print getCurrentTime()-gdk.CURRENT_TIME/1000.0
