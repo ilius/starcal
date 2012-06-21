@@ -37,6 +37,8 @@ from scal2.timeline import *
 from scal2.ui_gtk.font_utils import pfontEncode
 from scal2.ui_gtk.utils import labelStockMenuItem, labelImageMenuItem
 from scal2.ui_gtk.drawing import setColor, fillColor, newLimitedWidthTextLayout, Button
+from scal2.ui_gtk import gcommon
+from scal2.ui_gtk.gcommon import IntegratedCalWidget
 #from scal2.ui_gtk import preferences
 import scal2.ui_gtk.event.main
 from scal2.ui_gtk.event.common import EventEditorDialog, GroupEditorDialog
@@ -54,7 +56,7 @@ def show_event(widget, event):
 rootWindow = gdk.get_default_root_window() ## Good Place?????
 
 
-class TimeLine(gtk.Widget):
+class TimeLine(gtk.Widget, IntegratedCalWidget):
     def centerToNow(self):
         self.stopMovingAnim()
         self.timeStart = getCurrentTime() - self.timeWidth/2.0
@@ -63,6 +65,8 @@ class TimeLine(gtk.Widget):
         self.queue_draw()
     def __init__(self, closeFunc):
         gtk.Widget.__init__(self)
+        self.initVars('timeLine', _('Time Line'))
+        ###
         self.closeFunc = closeFunc
         self.connect('expose-event', self.onExposeEvent)
         self.connect('scroll-event', self.onScroll)
@@ -434,6 +438,9 @@ class TimeLine(gtk.Widget):
             self.boxEditing = None
         self.window.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
         #self.queue_draw()## needed?
+    #def onConfigChange(self, *a, **kw):
+    #    IntegratedCalWidget.onConfigChange(self, *a, **kw)
+    #    self.onDateChange()
     def editEventClicked(self, menu, winTitle, event, gid):
         event = EventEditorDialog(
             event,
@@ -443,24 +450,17 @@ class TimeLine(gtk.Widget):
         if event is None:
             return
         ui.changedEvents.append((gid, event.id))
-        self.queue_draw()
-        if ui.mainWin:
-            ui.mainWin.onConfigChange()
+        self.onConfigChange()
     def editGroupClicked(self, menu, winTitle, group):
         if GroupEditorDialog(group).run() is not None:
             ui.changedGroups.append(group.id)
             if ui.mainWin:
                 ui.mainWin.onConfigChange()
-    def onConfigChange(self):
-        pass
-    def onDateChange(self):
-        pass
     def moveEventToTrash(self, menu, group, event):
         eventIndex = group.index(event.id)
         ui.moveEventToTrash(group, event)
         ui.trashedEvents.append((group.id, event.id, eventIndex))
-        if ui.mainWin:
-            ui.mainWin.onConfigChange()
+        self.onConfigChange()
     def startResize(self, event):
         self.parent.begin_resize_drag(
             gdk.WINDOW_EDGE_SOUTH_EAST,
@@ -553,9 +553,12 @@ class TimeLine(gtk.Widget):
         self.movingV = 0
 
 
-class TimeLineWindow(gtk.Window):
+class TimeLineWindow(gtk.Window, IntegratedCalWidget):
     def __init__(self, width=600):
         gtk.Window.__init__(self)
+        self.initVars('timeLineWin', _('Time Line'))
+        gcommon.windowList.appendItem(self)
+        ###
         self.resize(width, 150)
         self.set_title(_('Time Line'))
         self.set_decorated(False)
@@ -566,6 +569,7 @@ class TimeLineWindow(gtk.Window):
         self.connect('key-press-event', self.tline.keyPress)
         self.add(self.tline)
         self.tline.show()
+        self.appendItem(self.tline)
     def closeClicked(self, arg=None, event=None):
         if ui.mainWin:
             self.hide()
@@ -578,11 +582,11 @@ class TimeLineWindow(gtk.Window):
             self.begin_move_drag(event.button, px, py, event.time)
             return True
         return False
-    def onConfigChange(self):
-        self.tline.onConfigChange()
 
 
 gobject.type_register(TimeLine)
+TimeLine.registerSignals()
+TimeLineWindow.registerSignals()
 
 if __name__=='__main__':
     gtk.window_set_default_icon_from_file(ui.logo)

@@ -34,8 +34,9 @@ from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
 
 from scal2.ui_gtk.drawing import *
 from scal2.ui_gtk import listener
+from scal2.ui_gtk import gcommon
 from scal2.ui_gtk import preferences
-from scal2.ui_gtk.customize import MainWinItem
+from scal2.ui_gtk.customize import CustomizableWidgetWrapper
 
 #from scal2.ui_gtk import desktop
 #from scal2.ui_gtk import wallpaper
@@ -46,7 +47,7 @@ from gtk import gdk
 
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 
-class MonthCal(gtk.Widget, MainWinItem):
+class MonthCal(gtk.Widget, CustomizableWidgetWrapper):
     cx = [0, 0, 0, 0, 0, 0, 0]
     def heightSpinChanged(self, spin):
         h = spin.get_value()
@@ -63,7 +64,7 @@ class MonthCal(gtk.Widget, MainWinItem):
         spin.connect('changed', self.heightSpinChanged)
         hbox.pack_start(gtk.Label(_('Height:')), 0, 0)
         hbox.pack_start(spin, 0, 0)
-        MainWinItem.__init__(self, 'monthCal', _('Month Calendar'), optionsWidget=hbox)
+        self.initVars('monthCal', _('Month Calendar'), optionsWidget=hbox)
         ######
         self.shownCals = shownCals
         ######################
@@ -681,12 +682,10 @@ class MonthCal(gtk.Widget, MainWinItem):
             self.changeDate(ui.cell.year, ui.cell.month, getMonthLen(ui.cell.year, ui.cell.month, core.primaryMode))
         elif kname=='page_up':
             ui.monthPlus(-1)
-            self.queue_draw()
-            self.emit('date-change')
+            self.onDateChange()
         elif kname=='page_down':
             ui.monthPlus(1)
-            self.queue_draw()
-            self.emit('date-change')
+            self.onDateChange()
         elif kname=='menu':
             self.emit('popup-menu-cell', event.time, *self.getCellPos())
         elif kname in ('f10', 'm'):
@@ -700,8 +699,7 @@ class MonthCal(gtk.Widget, MainWinItem):
         return True
     def jdPlus(self, plus):
         ui.jdPlus(plus)
-        self.queue_draw()
-        self.emit('date-change')
+        self.onDateChange()
     def scroll(self, widget, event):
         d = event.direction.value_nick
         if d=='up':
@@ -712,41 +710,53 @@ class MonthCal(gtk.Widget, MainWinItem):
             return False
     def changeDate(self, year, month, day, mode=None):
         ui.changeDate(year, month, day, mode)
-        self.queue_draw()
-        self.emit('date-change')
+        self.onDateChange()
     goToday = lambda self, widget=None: self.changeDate(*core.getSysDate())
-    getCellPos = lambda self: (int(self.cx[ui.cell.monthPos[0]]),
-                               int(self.cy[ui.cell.monthPos[1]] + self.dy/2.0))
+    getCellPos = lambda self: (
+        int(self.cx[ui.cell.monthPos[0]]),
+        int(self.cy[ui.cell.monthPos[1]] + self.dy/2.0),
+    )
     def getMainMenuPos(self):#???????????????????
         if rtl:
-            return (int(self.allocation.width - ui.calLeftMargin/2.0),
-                    int(ui.calTopMargin/2.0 ))
+            return (
+                int(self.allocation.width - ui.calLeftMargin/2.0),
+                int(ui.calTopMargin/2.0),
+            )
         else:
-            return (int(ui.calLeftMargin/2.0),
-                    int(ui.calTopMargin/2.0 ))
-    def onDateChange(self):
+            return (
+                int(ui.calLeftMargin/2.0),
+                int(ui.calTopMargin/2.0),
+            )
+    def onDateChange(self, *a, **kw):
+        CustomizableWidgetWrapper.onDateChange(self, *a, **kw)
         self.queue_draw()
-    def onConfigChange(self):
+    def onConfigChange(self, *a, **kw):
+        CustomizableWidgetWrapper.onConfigChange(self, *a, **kw)
         self.shownCals = ui.shownCals
         self.updateTextWidth()
+        #self.onDateChange()
     def onCurrentDateChange(self, gdate):
         self.queue_draw()
 
 
-gobject.type_register(MonthCal)
-gobject.signal_new('date-change', MonthCal, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
-gobject.signal_new('popup-menu-cell', MonthCal, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [int, int, int])
-gobject.signal_new('popup-menu-main', MonthCal, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [int, int, int])
-gobject.signal_new('2button-press', MonthCal, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
-gobject.signal_new('pref-update-bg-color', MonthCal, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
+cls = MonthCal
+gobject.type_register(cls)
+cls.registerSignals()
+gobject.signal_new('popup-menu-cell', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [int, int, int])
+gobject.signal_new('popup-menu-main', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [int, int, int])
+gobject.signal_new('2button-press', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
+gobject.signal_new('pref-update-bg-color', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
+
 
 
 if __name__=='__main__':
     win = gtk.Dialog()
     cal = MonthCal()
-    win.add_events(gdk.POINTER_MOTION_MASK | gdk.FOCUS_CHANGE_MASK | gdk.BUTTON_MOTION_MASK | gdk.BUTTON_PRESS_MASK |
-        gdk.BUTTON_RELEASE_MASK | gdk.SCROLL_MASK | gdk.KEY_PRESS_MASK | gdk.VISIBILITY_NOTIFY_MASK |
-        gdk.EXPOSURE_MASK)
+    win.add_events(
+        gdk.POINTER_MOTION_MASK | gdk.FOCUS_CHANGE_MASK | gdk.BUTTON_MOTION_MASK |
+        gdk.BUTTON_PRESS_MASK | gdk.BUTTON_RELEASE_MASK | gdk.SCROLL_MASK |
+        gdk.KEY_PRESS_MASK | gdk.VISIBILITY_NOTIFY_MASK | gdk.EXPOSURE_MASK
+    )
     win.vbox.pack_start(cal, 1, 1)
     win.vbox.show_all()
     win.resize(600, 400)

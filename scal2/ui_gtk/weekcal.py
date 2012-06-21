@@ -40,6 +40,8 @@ import gtk
 from gtk import gdk
 
 from scal2.ui_gtk.drawing import setColor, fillColor, newLimitedWidthTextLayout, Button
+from scal2.ui_gtk import gcommon
+from scal2.ui_gtk.gcommon import IntegratedCalWidget
 from scal2.ui_gtk import preferences
 #from scal2.ui_gtk import desktop
 #from scal2.ui_gtk import wallpaper
@@ -126,11 +128,13 @@ class Button:
 
 
 
-class WeekCal(gtk.Widget):
+class WeekCal(gtk.Widget, IntegratedCalWidget):
     topMargin = 30
     widthSpacing = 20
     def __init__(self, closeFunc):
         gtk.Widget.__init__(self)
+        self.initVars('weekCal', _('Week Calendar'))
+        ###
         self.closeFunc = closeFunc
         self.connect('button-press-event', self.buttonPress)
         self.connect('expose-event', self.onExposeEvent)
@@ -145,9 +149,11 @@ class WeekCal(gtk.Widget):
         self.rowItems = [WeekDayRowItem(), PluginsTextRowItem()]
         for cal in ui.shownCals:
             self.rowItems.append(DayNumRowItem(cal['mode']))
-    def onConfigChange(self):
-        pass
-    def onDateChange(self):
+    #def onConfigChange(self, *a, **kw):
+    #    IntegratedCalWidget.onConfigChange(self, *a, **kw)
+    #    self.onDateChange()
+    def onDateChange(self, *a, **kw):
+        IntegratedCalWidget.onDateChange(self, *a, **kw)
         self.queue_draw()
     def changeDate(self, year, month, day):
         ui.changeDate(year, month, day)
@@ -254,9 +260,12 @@ class WeekCal(gtk.Widget):
 
 
 
-class WeekCalWindow(gtk.Window):
+class WeekCalWindow(gtk.Window, IntegratedCalWidget):
     def __init__(self):
         gtk.Window.__init__(self)
+        self.initVars('weekCalWin', _('Week Calendar'))
+        gcommon.windowList.appendItem(self)
+        ####
         self.set_decorated(False)
         self.set_title('Week Calendar')
         ######
@@ -268,6 +277,7 @@ class WeekCalWindow(gtk.Window):
         ######
         self.resize(600, 300)
         self.wcal.show()
+        self.appendItem(self.wcal)
     def closeClicked(self, arg=None, event=None):
         if ui.mainWin:
             self.hide()
@@ -281,11 +291,13 @@ class WeekCalWindow(gtk.Window):
             (x, y, mask) = rootWindow.get_pointer()
             self.begin_move_drag(event.button, x, y, event.time)
         return False
-    onDateChange = lambda self: self.wcal.onDateChange()
-    onConfigChange = lambda self: self.wcal.onConfigChange()
+
 
 
 gobject.type_register(WeekCal)
+WeekCal.registerSignals()
+WeekCalWindow.registerSignals()
+
 
 if __name__=='__main__':
     win = WeekCalWindow()

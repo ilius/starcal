@@ -29,6 +29,7 @@ if sys.version_info[0] != 2:
 import os
 from os.path import join, dirname, isfile, isdir
 from subprocess import Popen
+from pprint import pprint, pformat
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 from scal2.paths import *
@@ -49,7 +50,7 @@ from scal2.locale_man import rtl, lang ## import scal2.locale_man after core
 #_ = locale_man.loadTranslator(False)## FIXME
 from scal2.locale_man import tr as _
 
-from scal2.core import rootDir, pixDir, deskDir, myRaise, getMonthName
+from scal2.core import rootDir, pixDir, deskDir, myRaise, getMonthName, APP_DESC
 
 core.showInfo()
 
@@ -74,9 +75,12 @@ import scal2.ui_gtk.selectdate
 from scal2.ui_gtk.drawing import newTextLayout, newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets.clock import FClockLabel
 #from ui_gtk.mywidgets2.multi_spin_button import DateButtonOption
+
+from scal2.ui_gtk import gcommon
+from scal2.ui_gtk.gcommon import IntegratedCalWidget
 from scal2.ui_gtk import preferences
 from scal2.ui_gtk.preferences import PrefItem, gdkColorToRgb, gfontEncode, pfontEncode
-from scal2.ui_gtk.customize import CustomizableWidgetWrapper, MainWinItem, CustomizeDialog
+from scal2.ui_gtk.customize import CustomizableWidgetWrapper, CustomizeDialog
 from scal2.ui_gtk.monthcal import MonthCal
 
 from scal2.ui_gtk.event.common import addNewEvent
@@ -570,8 +574,29 @@ class WinController(gtk.HBox):
 
 
 
+class ToolbarItem(gtk.ToolButton, CustomizableWidgetWrapper):
+    def __init__(self, name, stockName, method, tooltip='', text=''):
+        #print 'ToolbarItem', name, stockName, method, tooltip, text
+        self.method = method
+        ######
+        if not tooltip:
+            tooltip = name.capitalize()
+        tooltip = _(tooltip)
+        ###
+        if not text:
+            text = name.capitalize()
+        text = _(text)
+        ######
+        gtk.ToolButton.__init__(
+            self,
+            gtk.image_new_from_stock(getattr(gtk, 'STOCK_%s'%(stockName.upper())), gtk.ICON_SIZE_DIALOG),
+            text,
+        )
+        self.initVars(name, tooltip)
+        set_tooltip(self, tooltip)
+        self.set_is_important(True)## FIXME
 
-class CustomizableToolbar(gtk.Toolbar, MainWinItem):
+class CustomizableToolbar(gtk.Toolbar, CustomizableWidgetWrapper):
     styleList = ('Icon', 'Text', 'Text below Icon', 'Text beside Icon')
     def __init__(self, mainWin):
         gtk.Toolbar.__init__(self)
@@ -603,7 +628,7 @@ class CustomizableToolbar(gtk.Toolbar, MainWinItem):
         optionsWidget.pack_start(hbox, 0, 0)
         self.iconSizeHbox = hbox
         ##
-        MainWinItem.__init__(self, 'toolbar', _('Toolbar'), optionsWidget=optionsWidget)
+        self.initVars('toolbar', _('Toolbar'), optionsWidget=optionsWidget)
         self.iconSizeCombo.connect('changed', self.iconSizeComboChanged)
         self.styleCombo.connect('changed', self.styleComboChanged)
         self.styleComboChanged()
@@ -624,13 +649,6 @@ class CustomizableToolbar(gtk.Toolbar, MainWinItem):
         self.set_style(style)
         self.show_all()
         self.iconSizeHbox.set_sensitive(style!=1)
-    def addButton(self, item, enable):
-        button = gtk.ToolButton(gtk.image_new_from_stock(item.stock, gtk.ICON_SIZE_DIALOG), item.text)
-        button.set_is_important(True)
-        set_tooltip(button, item.tooltip)
-        button.connect('clicked', getattr(self.mainWin, item.method))
-        self.insert(button, -1)
-        self.items.append(CustomizableWidgetWrapper(button, item.name, item.tooltip, enable=enable))
     def updateVars(self):
         ui.toolbarItems = [(child._name, child.enable) for child in self.items]
         ui.toolbarIconSize = self.getIconSizeName()
@@ -641,11 +659,19 @@ class CustomizableToolbar(gtk.Toolbar, MainWinItem):
             text += '%s=%r\n'%(mod_attr, eval(mod_attr))
         return text
     def moveItemUp(self, i):
-        button = self.items[i].widget
+        button = self.items[i]
         self.remove(button)
         self.insert(button, i-1)
         self.items.insert(i-1, self.items.pop(i))
-
+    #def insertItem(self, item, pos):
+    #    CustomizableWidgetWrapper.insertItem(self, pos, item)
+    #    gtk.Toolbar.insert(self, item, pos)
+    #    item.show()
+    def appendItem(self, item):
+        CustomizableWidgetWrapper.appendItem(self, item)
+        gtk.Toolbar.insert(self, item, -1)
+        item.show()
+        
 
 
 '''
@@ -675,7 +701,7 @@ class MainWinToolbar(CustomizableToolbar):
         """
 '''
 
-class YearMonthLabelBox(gtk.HBox, MainWinItem):
+class YearMonthLabelBox(gtk.HBox, CustomizableWidgetWrapper):
     def __init__(self):
         gtk.HBox.__init__(self)
         #self.set_border_width(2)
@@ -752,11 +778,10 @@ class YearMonthLabelBox(gtk.HBox, MainWinItem):
             set_tooltip(self.arrowNY, _('Next Year'))
             set_tooltip(self.arrowPM, _('Previous Month'))
             set_tooltip(self.arrowNM, _('Next Month'))
-        MainWinItem.__init__(self, 'labelBox', _('Year & Month Labels'))
+        self.initVars('labelBox', _('Year & Month Labels'))
     def monthPlus(self, plus=1):
         ui.monthPlus(plus)
         self.onDateChange()
-        self.emit('date-change')
     def monthButtonPress(self, widget, plus, remain=True):
         self.ymPressTime = time()
         self.remain = remain
@@ -769,7 +794,6 @@ class YearMonthLabelBox(gtk.HBox, MainWinItem):
     def yearPlus(self, plus=1):
         ui.yearPlus(plus)
         self.onDateChange()
-        self.emit('date-change')
     def yearButtonPress(self, widget, plus, remain=True):
         self.ymPressTime = time()
         self.remain = remain
@@ -785,12 +809,10 @@ class YearMonthLabelBox(gtk.HBox, MainWinItem):
         mode = ui.shownCals[num]['mode']
         (y, m, d) = ui.cell.dates[mode]
         ui.changeDate(item, m, d, mode)
-        self.onDateChange()
         self.emit('date-change')
     def monthLabelChange(self, mlabel, item):
         (y, m, d) = ui.cell.dates[mlabel.mode]
         ui.changeDate(y, item+1, d, mlabel.mode)
-        self.onDateChange()
         self.emit('date-change')
     def updateArrows(self):
         if showYmArrows:
@@ -843,7 +865,8 @@ class YearMonthLabelBox(gtk.HBox, MainWinItem):
             width.append(wm)
         for i in range(ui.shownCalsNum):
             self.monthLabel[i].set_property('width-request', width[ui.shownCals[i]['mode']])
-    def onConfigChange(self):
+    def onConfigChange(self, *a, **kw):
+        CustomizableWidgetWrapper.onConfigChange(self, *a, **kw)
         self.updateTextWidth()
         self.updateArrows()
         #####################
@@ -857,7 +880,9 @@ class YearMonthLabelBox(gtk.HBox, MainWinItem):
                 hideList(self.wgroup[i])
         #if not ui.shownCals[0]['enable']:##???????
         #    self.vsep0.hide()
-    def onDateChange(self):
+        #self.onDateChange()
+    def onDateChange(self, *a, **kw):
+        CustomizableWidgetWrapper.onDateChange(self, *a, **kw)
         for (i, item) in enumerate(ui.shownCals):
             if item['enable']:
                 (y, m, d) = ui.cell.dates[item['mode']]
@@ -867,11 +892,11 @@ class YearMonthLabelBox(gtk.HBox, MainWinItem):
 
 
 
-class StatusBox(gtk.HBox, MainWinItem):
+class StatusBox(gtk.HBox, CustomizableWidgetWrapper):
     def __init__(self, mainWin):
         gtk.HBox.__init__(self)
         self.mainWin = mainWin
-        MainWinItem.__init__(self, 'statusBar', _('Status Bar'))
+        self.initVars('statusBar', _('Status Bar'))
         self.dateLabel = []
         for i in range(ui.shownCalsNum):
             label = DateLabel(None, mainWin.populatePopup)
@@ -891,7 +916,11 @@ class StatusBox(gtk.HBox, MainWinItem):
         sbar.set_property('width-request', 18)
         sbar.connect('button-press-event', self.mainWin.startResize)
         self.pack_start(sbar, 0, 0)
-    def onDateChange(self):
+    #def onConfigChange(self, *a, **kw):
+    #    CustomizableWidgetWrapper.onConfigChange(self, *a, **kw)
+    #    self.onDateChange()
+    def onDateChange(self, *a, **kw):
+        CustomizableWidgetWrapper.onDateChange(self, *a, **kw)
         n = len(ui.shownCals) # ui.shownCalsNum
         nm = core.modNum
         if n < nm:
@@ -915,9 +944,11 @@ class StatusBox(gtk.HBox, MainWinItem):
             else:
                 self.dateLabel[i].hide()
 
-class PluginsTextBox(gtk.VBox, MainWinItem):
+class PluginsTextBox(gtk.VBox, CustomizableWidgetWrapper):
     def __init__(self, populatePopupFunc=None):
         gtk.VBox.__init__(self)
+        self.initVars('pluginsText', _('Plugins Text'))
+        ####
         self.enableExpander = ui.pluginsTextInsideExpander
         #####
         self.textview = gtk.TextView()
@@ -945,7 +976,8 @@ class PluginsTextBox(gtk.VBox, MainWinItem):
         self.setEnableExpander(self.enableExpander)
         optionsWidget.pack_start(self.enableExpanderCheckb, 0, 0)
         ####
-        MainWinItem.__init__(self, 'pluginsText', _('Plugins Text'), optionsWidget=optionsWidget)
+        optionsWidget.show_all()
+        self.optionsWidget = optionsWidget
     def expanderExpanded(self, exp):
         ui.pluginsTextIsExpanded = not exp.get_expanded()
         ui.saveLiveConf()
@@ -980,22 +1012,44 @@ class PluginsTextBox(gtk.VBox, MainWinItem):
         for mod_attr in ('ui.pluginsTextInsideExpander',):
             text += '%s=%r\n'%(mod_attr, eval(mod_attr))
         return text
-    def onDateChange(self):
+    def onDateChange(self, *a, **kw):
+        CustomizableWidgetWrapper.onDateChange(self, *a, **kw)
         self.setText(ui.cell.pluginsText)
 
-class EventViewMainWinItem(DayOccurrenceView, MainWinItem):## FIXME
+class EventViewMainWinItem(DayOccurrenceView, CustomizableWidgetWrapper):## FIXME
     def __init__(self, populatePopupFunc=None):
         DayOccurrenceView.__init__(self, populatePopupFunc)
-        MainWinItem.__init__(self, 'eventDayView', _('Events of Day'))
-    def onDateChange(self):
+        self.initVars('eventDayView', _('Events of Day'))
+    def onDateChange(self, *a, **kw):
+        CustomizableWidgetWrapper.onDateChange(self, *a, **kw)
         self.jd = ui.cell.jd
         self.updateWidget()
-    def onConfigChange(self):
+    def onConfigChange(self, *a, **kw):
+        CustomizableWidgetWrapper.onConfigChange(self, *a, **kw)
         self.updateWidget()
+        #self.onDateChange()
     ## should event occurances be saved in ui.cell object? FIXME
 
 
-class MainWin(gtk.Window):
+ToolbarItem.registerSignals()
+
+toolbarItemsData = (
+    ToolbarItem('today', 'home', 'goToday', 'Select Today'),
+    ToolbarItem('date', 'index', 'selectDateShow', 'Select Date...', 'Date...'),
+    ToolbarItem('customize', 'edit', 'customizeShow'),
+    ToolbarItem('preferences', 'preferences', 'prefShow'),
+    ToolbarItem('add', 'add', 'eventManShow', 'Event Manager'),
+    ToolbarItem('export', 'convert', 'exportClicked', _('Export to %s')%'HTML'),
+    ToolbarItem('about', 'about', 'aboutShow', _('About ')+APP_DESC),
+    ToolbarItem('quit', 'quit', 'quit'),
+)
+
+toolbarItemsDataDict = dict([(item._name, item) for item in toolbarItemsData])
+
+#pprint(toolbarItemsDataDict)
+
+
+class MainWin(gtk.Window, IntegratedCalWidget):
     timeout = 1 ## second
     setMinHeight = lambda self: self.resize(ui.winWidth, 2)
     '''
@@ -1021,8 +1075,10 @@ class MainWin(gtk.Window):
     #def maximize(self):
     #    pass
     def __init__(self, trayMode=3):
-        ui.mainWin = self
         gtk.Window.__init__(self)##, gtk.WINDOW_POPUP) ## ????????????
+        self.initVars('mainWin', _('Main Window'))
+        gcommon.windowList.appendItem(self)
+        ui.mainWin = self
         ##################
         ## trayMode:
             ## ('none', 'none')
@@ -1036,8 +1092,13 @@ class MainWin(gtk.Window):
         self.trayMode = trayMode
         ###
         ui.eventManDialog = EventManagerDialog()
+        gcommon.windowList.appendItem(ui.eventManDialog)
+        ###
         ui.timeLineWin = TimeLineWindow(width=rootWindow.get_geometry()[2])
+        gcommon.windowList.appendItem(ui.timeLineWin)
+        ###
         ui.weekCalWin = WeekCalWindow()
+        gcommon.windowList.appendItem(ui.weekCalWin)
         ###########
         ##self.connect('window-state-event', selfStateEvent)
         self.set_title('%s %s'%(core.APP_DESC, core.VERSION))
@@ -1102,14 +1163,17 @@ class MainWin(gtk.Window):
         ############
         toolbar = CustomizableToolbar(self)
         if not ui.toolbarItems:
-            ui.toolbarItems = [(item.name, True) for item in preferences.toolbarItemsData]
+            ui.toolbarItems = [(item._name, True) for item in toolbarItemsData]
+        #pprint(ui.toolbarItems)
         for (name, enable) in ui.toolbarItems:
             try:
-                item = preferences.toolbarItemsDataDict[name]
+                item = toolbarItemsDataDict[name]
             except KeyError:
                 myRaise()
             else:
-                toolbar.addButton(item, enable)
+                item.enable = enable
+                item.connect('clicked', getattr(self, item.method))
+                toolbar.appendItem(item)
         ############
         defaultItems = [
             toolbar,
@@ -1128,10 +1192,9 @@ class MainWin(gtk.Window):
                 myRaise()
                 continue
             item.enable = enable
-            item.connect('size-request', self.childSizeRequest) ## or item.widget.connect
-            item.connect('date-change', self.onDateChange)
-            #modify_bg_all(item.widget, gtk.STATE_NORMAL, rgbToGdkColor(*ui.bgColor))
-            self.items.append(item)
+            item.connect('size-request', self.childSizeRequest) ## or item.connect
+            #modify_bg_all(item, gtk.STATE_NORMAL, rgbToGdkColor(*ui.bgColor))
+            self.appendItem(item)
         self.customizeDialog = CustomizeDialog(items=self.items)
         self.vbox.pack_start(self.customizeDialog.widget, 0, 0)
         #######
@@ -1222,7 +1285,6 @@ class MainWin(gtk.Window):
             if plug.external and hasattr(plug, 'set_dialog'):
                 plug.set_dialog(self)
         ###########################
-        self.connectedWindows = [ui.eventManDialog, ui.timeLineWin, ui.weekCalWin]
         self.onConfigChange()
         #rootWindow.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
     #def mainWinStateEvent(self, obj, event):
@@ -1319,11 +1381,8 @@ class MainWin(gtk.Window):
         ui.changeDate(year, month, day)
         self.onDateChange()
     goToday = lambda self, widget=None: self.changeDate(*core.getSysDate())
-    def onDateChange(self, sender=None):
-        #print 'MainWin.onDateChange', time()
-        for item in self.items:
-            if item.enable and item is not sender:
-                item.onDateChange()
+    def onDateChange(self, *a, **kw):
+        IntegratedCalWidget.onDateChange(self, *a, **kw)
         #for j in range(len(core.plugIndex)):##????????????????????
         #    try:
         #        core.allPlugList[core.plugIndex[j]].date_change(*date)
@@ -1657,7 +1716,8 @@ class MainWin(gtk.Window):
     def exportClickedTray(self, widget=None, event=None):
         (y, m) = core.getSysDate()[:2]
         self.exportDialog.showDialog(y, m)
-    def onConfigChange(self, senderWindow=None):
+    def onConfigChange(self, *a, **kw):
+        IntegratedCalWidget.onConfigChange(self, *a, **kw)
         #self.set_property('skip-taskbar-hint', not ui.winTaskbar) ## self.set_skip_taskbar_hint ## FIXME
         ## skip-taskbar-hint  need to restart ro be applied
         preferences.settings.set_property(
@@ -1674,23 +1734,12 @@ class MainWin(gtk.Window):
             if self.winCon!=None:
                 self.destroyWinCont()
         ui.cellCache.clear()
-        for item in self.items:
-            item.onConfigChange()
         self.trayUpdate()
-        self.onDateChange()
-        ###
-        for window in self.connectedWindows:
-            if window!=senderWindow:
-                window.onConfigChange()
+        #self.onDateChange()
 
 
 ###########################################################################3
 
-gobject.type_register(MainWin)
-
-for cls in (CustomizableToolbar, YearMonthLabelBox, StatusBox, PluginsTextBox, EventViewMainWinItem):
-    gobject.type_register(cls)
-    gobject.signal_new('date-change', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
 
 gobject.type_register(MonthLabel)
 gobject.signal_new('changed', MonthLabel, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [int])
@@ -1699,7 +1748,15 @@ gobject.type_register(IntLabel)
 gobject.signal_new('changed', IntLabel, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [int])
 
 
-
+for cls in (
+    CustomizableToolbar,
+    YearMonthLabelBox,
+    StatusBox,
+    PluginsTextBox,
+    EventViewMainWinItem,
+    MainWin,
+):
+    cls.registerSignals()
 
 
 

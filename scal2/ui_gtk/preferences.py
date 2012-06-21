@@ -46,6 +46,7 @@ from scal2.ui_gtk.drawing import newTextLayout
 from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
 from scal2.ui_gtk.utils import *
+
 from scal2.ui_gtk.export import ExportToIcsDialog
 from scal2.ui_gtk.event.main import AccountEditorDialog
 
@@ -91,32 +92,6 @@ clockFormatBin = compileTmFormat(clockFormat)
 
 adjustTimeCmd = ''
 
-############################################################
-
-class ToolbarItem:
-    def __init__(self, name, stockName, method, tooltip='', text=''):
-        self.name = name
-        self.stock = getattr(gtk, 'STOCK_%s'%(stockName.upper()))
-        self.method = method
-        if not text:
-            text = name.capitalize()
-        self.text = _(text)
-        if not tooltip:
-            tooltip = name.capitalize()
-        self.tooltip = _(tooltip)
-
-toolbarItemsData = (
-    ToolbarItem('today', 'home', 'goToday', 'Select Today'),
-    ToolbarItem('date', 'index', 'selectDateShow', 'Select Date...', 'Date...'),
-    ToolbarItem('customize', 'edit', 'customizeShow'),
-    ToolbarItem('preferences', 'preferences', 'prefShow'),
-    ToolbarItem('add', 'add', 'eventManShow', 'Event Manager'),
-    ToolbarItem('export', 'convert', 'exportClicked', _('Export to %s')%'HTML'),
-    ToolbarItem('about', 'about', 'aboutShow', _('About ')+APP_DESC),
-    ToolbarItem('quit', 'quit', 'quit'),
-)
-
-toolbarItemsDataDict = dict([(item.name, item) for item in toolbarItemsData])
 
 ############################################################
 
@@ -131,13 +106,6 @@ confPath = join(confDir, 'ui-gtk.conf')
 if os.path.isfile(confPath):
     try:
         exec(open(confPath).read())
-    except:
-        myRaise(__file__)
-
-customizeConfPath = join(confDir, 'ui-customize.conf')
-if os.path.isfile(customizeConfPath):
-    try:
-        exec(open(customizeConfPath).read())
     except:
         myRaise(__file__)
 

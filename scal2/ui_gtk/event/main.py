@@ -47,6 +47,8 @@ from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile, rectangleContainsP
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
+from scal2.ui_gtk import gcommon
+from scal2.ui_gtk.gcommon import IntegratedCalWidget
 
 from scal2.ui_gtk.event.common import IconSelectButton, EventEditorDialog, addNewEvent, GroupEditorDialog
 
@@ -796,15 +798,14 @@ class FetchRemoteGroupsDialog(gtk.Dialog):
         self.account = account
 
 
-class EventManagerDialog(gtk.Dialog):## FIXME
+class EventManagerDialog(gtk.Dialog, IntegratedCalWidget):## FIXME
     def checkEventToAdd(self, group, event):
         if not group.checkEventToAdd(event):
             showError(_('Group type "%s" can not contain event type "%s"')%(group.desc, event.desc), self)
             raise RuntimeError('Invalid event type for this group')
     def onResponse(self, dialog, response_id):
         self.hide()
-        if ui.mainWin:
-            ui.mainWin.onConfigChange()
+        self.emit('config-change')
         #thread.start_new_thread(event_man.restartDaemon, ())
     def showNewGroupAtIndex(self, group, groupIndex):
         groupIter = self.trees.insert(
@@ -818,7 +819,9 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 self.getEventRow(event),
             )
     showNewGroup = lambda self, group: self.showNewGroupAtIndex(group, ui.eventGroups.index(group.id))
-    def onConfigChange(self):
+    def onConfigChange(self, *a, **kw):
+        IntegratedCalWidget.onConfigChange(self, *a, **kw)
+        ###
         if not self.isLoaded:
             return
         ###
@@ -874,12 +877,14 @@ class EventManagerDialog(gtk.Dialog):## FIXME
                 )
         ui.trashedEvents = []
         ###
-    def onDateChange(self):
-        pass
+        #self.onDateChange()
     def onShow(self, widget):
         self.onConfigChange()
     def __init__(self):
         gtk.Dialog.__init__(self)
+        self.initVars('eventMan', _('Event Manager'))
+        gcommon.windowList.appendItem(self)
+        ####
         self.isLoaded = False
         self.set_title(_('Event Manager'))
         self.resize(600, 300)
@@ -1760,6 +1765,8 @@ def makeWidget(obj):## obj is an instance of Event, EventRule, EventNotifier or 
 
 
 ##############################################################################
+
+EventManagerDialog.registerSignals()
 
 if rtl:
     gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)

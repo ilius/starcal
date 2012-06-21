@@ -17,44 +17,45 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal2.paths import *
+from scal2.utils import StrOrderedDict
 from scal2.locale_man import tr as _
 
 from scal2 import core
 from scal2.core import myRaise
 from scal2 import ui
 
+import gobject
+
 import gtk
 from gtk import gdk
 
-from scal2.ui_gtk.utils import toolButtonFromStock
-from scal2.ui_gtk import preferences
-from scal2.ui_gtk.preferences import set_tooltip
+from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip
+from scal2.ui_gtk.gcommon import IntegratedCalWidget
 
 
-class CustomizableWidgetWrapper:
-    def __init__(self, widget, name, desc, items=None, optionsWidget=None, enable=True):
-        self.widget = widget
-        self._name = name
-        self.desc = desc
-        if not items:
-            items = []
-        self.items = items
+confPath = join(confDir, 'ui-customize.conf')
+if os.path.isfile(confPath):
+    try:
+        exec(open(confPath).read())
+    except:
+        myRaise(__file__)
+
+
+
+class CustomizableWidgetWrapper(IntegratedCalWidget):
+    def initVars(self, name, desc, optionsWidget=None):
+        IntegratedCalWidget.initVars(self, name, desc)
         self.optionsWidget = optionsWidget
-        self.enable = enable
+        self.myKeys = []
         if self.optionsWidget:
             self.optionsWidget.show_all()
     updateVars = lambda self: None
     confStr = lambda self: ''
     def moveItemUp(self, i):## override this method for non-GtkBox containers
-        self.widget.reorder_child(self.items[i].widget, i-1)## for GtkBox (HBox and VBox)
+        self.reorder_child(self.items[i], i-1)## for GtkBox (HBox and VBox)
         self.items.insert(i-1, self.items.pop(i))
-    onDateChange = lambda self: None
 
-class MainWinItem(CustomizableWidgetWrapper):
-    def __init__(self, *args, **kwargs):
-        CustomizableWidgetWrapper.__init__(self, self, *args, **kwargs)
-        self.myKeys = []
-    onConfigChange = lambda self: None
 
 class CustomizeDialog(gtk.Dialog):
     def __init__(self, items=[]):
@@ -130,19 +131,21 @@ class CustomizeDialog(gtk.Dialog):
         ###
         self.widget = gtk.VBox() ## itemsBox
         for item in items:
-            self.widget.pack_start(item.widget, 0, 0)
-        self.widget.show_all()
-        for item in items:
-            if item.enable:
-                for chItem in item.items:
-                    if not chItem.enable:
-                        chItem.widget.hide()
-            else:
-                item.widget.hide()
+            self.widget.pack_start(item, 0, 0)
+        self.showItems()
         ###
         self.vbox.connect('size-request', self.vboxSizeRequest)
         self.vbox.show_all()
         treev.connect('cursor-changed', self.treevCursorChanged)
+    def showItems(self):
+        self.widget.show_all()
+        for item in self.items:
+            if item.enable:
+                for chItem in item.items:
+                    if not chItem.enable:
+                        chItem.hide()
+            else:
+                item.hide()
     def vboxSizeRequest(self, widget, req):
         self.resize(self.get_size()[0], 1)
     def getItemByPath(self, path):
@@ -233,14 +236,14 @@ class CustomizeDialog(gtk.Dialog):
         item = self.getItemByPath(path)
         item.enable = active
         if active:
-            item.widget.show()
+            item.show()
             item.onDateChange()
         else:
-            item.widget.hide()
+            item.hide()
         if ui.mainWin:
             ui.mainWin.setMinHeight()
     def moveItemUp(self, i):
-        self.widget.reorder_child(self.items[i].widget, i-1)## self.widget is VBox
+        self.widget.reorder_child(self.items[i], i-1)## self.widget is VBox
         self.items.insert(i-1, self.items.pop(i))
     #def confStr(self):## FIXME
     def close(self, button=None, event=None):
@@ -251,9 +254,12 @@ class CustomizeDialog(gtk.Dialog):
             text += item.confStr()
             itemsData.append((item._name, item.enable))
         text += 'ui.mainWinItems=%r\n'%itemsData
-        open(preferences.customizeConfPath, 'w').write(text) # FIXME
+        open(confPath, 'w').write(text) # FIXME
         self.hide()
         return True
+
+
+
 
 
 

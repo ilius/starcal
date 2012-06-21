@@ -26,9 +26,10 @@ from scal2 import ui
 import gtk
 
 from scal2.ui_gtk.utils import imageFromFile, labelStockMenuItem, labelImageMenuItem
+from scal2.ui_gtk.gcommon import IntegratedCalWidget
 from scal2.ui_gtk.event.common import EventEditorDialog
 
-class DayOccurrenceView(gtk.VBox):
+class DayOccurrenceView(gtk.VBox, IntegratedCalWidget):
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
     def __init__(self, populatePopupFunc=None):
         self.jd = ui.cell.jd
@@ -111,12 +112,12 @@ class DayOccurrenceView(gtk.VBox):
         if event is None:
             return
         ui.changedEvents.append((groupId, event.id))
-        ui.mainWin.onConfigChange()
+        self.onConfigChange()
     def moveEventToTrash(self, item, event, groupId):
         #if not confirm(_('Press OK if you are sure to move event "%s" to trash')%event.summary):
         #    return
         ui.moveEventToTrashFromOutside(ui.eventGroups[groupId], event)
-        ui.mainWin.onConfigChange()
+        self.onConfigChange()
     def copy(self, item, label):
         bound = label.get_property('selection-bound')
         cursor = label.get_property('cursor-position')
