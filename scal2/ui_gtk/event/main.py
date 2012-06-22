@@ -1115,7 +1115,7 @@ class EventManagerDialog(gtk.Dialog, IntegratedCalWidget):## FIXME
                         path,
                     ))
                 menu.add(gtk.SeparatorMenuItem())
-                menu.add(labelStockMenuItem('Delete Group', gtk.STOCK_DELETE, self.deleteGroup, path))
+                menu.add(labelStockMenuItem('Delete Group', gtk.STOCK_DELETE, self.deleteGroupFromMenu, path))
                 menu.add(gtk.SeparatorMenuItem())
                 ##
                 #menu.add(labelStockMenuItem('Move Up', gtk.STOCK_GO_UP, self.moveUpFromMenu, path))
@@ -1166,8 +1166,12 @@ class EventManagerDialog(gtk.Dialog, IntegratedCalWidget):## FIXME
                 menu.add(pasteItem)
                 ##
                 menu.add(gtk.SeparatorMenuItem())
-                #menu.add(labelImageMenuItem(_('Move to Trash'), ui.eventTrash.icon, self.moveEventToTrash, path))
-                menu.add(labelImageMenuItem(_('Move to %s')%ui.eventTrash.title, ui.eventTrash.icon, self.moveEventToTrash, path))
+                menu.add(labelImageMenuItem(
+                    _('Move to %s')%ui.eventTrash.title,
+                    ui.eventTrash.icon,
+                    self.moveEventToTrashFromMenu,
+                    path,
+                ))
         else:
             return
         menu.show_all()
@@ -1212,7 +1216,10 @@ class EventManagerDialog(gtk.Dialog, IntegratedCalWidget):## FIXME
                 (dx, dy) = self.treev.translate_coordinates(self, x, rect.y + rect.height)
                 (wx, wy) = self.window.get_origin()
                 menu.popup(None, None, lambda m: (wx+dx, wy+dy+20, True), 3, g_event.time)
+        elif kname=='delete':
+            self.moveSelectionToTrash()
         else:
+            #print kname
             return False
         return True
     getRowBgColor = lambda self: gdkColorToRgb(self.treev.style.base[gtk.STATE_NORMAL])## bg color of non-selected rows
@@ -1455,10 +1462,10 @@ class EventManagerDialog(gtk.Dialog, IntegratedCalWidget):## FIXME
                 self.trees.set_value(groupIter, i, value)
             self.onGroupModify(group)
     editGroupFromMenu = lambda self, menu, path: self.editGroupByPath(path)
-    def deleteGroup(self, menu, path):
+    def deleteGroup(self, path):
         (index,) = path
         (group,) = self.getObjsByPath(path)
-        if not confirm(_('Press OK if you are sure to delete group "%s"')%group.title):
+        if not confirm(_('Press OK if you want to delete group "%s" and move all its events to trash')%group.title):
             return
         self.startWaiting()
         trashedIds = group.idList
@@ -1478,6 +1485,7 @@ class EventManagerDialog(gtk.Dialog, IntegratedCalWidget):## FIXME
         ui.deleteEventGroup(group)
         self.trees.remove(self.trees.get_iter(path))
         self.endWaiting()
+    deleteGroupFromMenu = lambda self, menu, path: self.deleteGroup(path)
     def addEventToGroupFromMenu(self, menu, path, group, eventType, title):
         event = addNewEvent(group, eventType, title, parent=self)
         if event is None:
@@ -1501,7 +1509,7 @@ class EventManagerDialog(gtk.Dialog, IntegratedCalWidget):## FIXME
         for i, value in enumerate(self.getEventRow(event)):
             self.trees.set_value(eventIter, i, value)
     editEventFromMenu = lambda self, menu, path: self.editEventByPath(path)
-    def moveEventToTrash(self, menu, path):
+    def moveEventToTrash(self, path):
         (group, event) = self.getObjsByPath(path)
         ui.moveEventToTrash(group, event)
         self.trees.remove(self.trees.get_iter(path))
@@ -1516,6 +1524,17 @@ class EventManagerDialog(gtk.Dialog, IntegratedCalWidget):## FIXME
                 self.trashIter,
                 self.getEventRow(event),
             )
+    moveEventToTrashFromMenu = lambda self, menu, path: self.moveEventToTrash(path)
+    def moveSelectionToTrash(self):
+        path = self.treev.get_cursor()[0]
+        if not path:
+            return
+        objs = self.getObjsByPath(path)
+        if len(path)==1:
+            self.deleteGroup(path)
+        elif len(path)==2:
+            if confirm(_('Press OK if you want to move event "%s" to trash')%objs[1].summary):
+                self.moveEventToTrash(path)
     def deleteEventFromTrash(self, menu, path):
         (trash, event) = self.getObjsByPath(path)
         trash.delete(event.id)## trash == ui.eventTrash

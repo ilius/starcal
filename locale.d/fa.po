@@ -1107,9 +1107,15 @@ msgid "Move Down"
 msgstr ""
 "جابجایی به پایین"
 
-msgid "Press OK if you are sure to delete group \"%s\""
+msgid "Press OK if you want to delete group \"%s\" and move all its events to trash"
 msgstr ""
-"اگر مطمئنید که می‌خواهید گروه «%s» را حذف کنید، دکمهٔ تائید را فشار دهید"
+"اگر می‌خواهید گروه «%s» حذف شده و تمام رویدادهایش به زباله‌دان منتقل شود، دکمهٔ تائید را فشار دهید"
+
+
+msgid "Press OK if you want to move event \"%s\" to trash"
+msgstr ""
+"اگر می‌خواهید رویداد «%s» به زباله‌دان منتقل شود، دکمهٔ تائید را فشار دهید"
+
 
 msgid "Sort Events"
 msgstr ""
@@ -1117,7 +1123,7 @@ msgstr ""
 
 msgid "Sort events of group \"%s\""
 msgstr ""
-"مرتب کردن دویدادهای گروه «%s»"
+"مرتب کردن رویدادهای گروه «%s»"
 
 msgid "Based on"
 msgstr ""
