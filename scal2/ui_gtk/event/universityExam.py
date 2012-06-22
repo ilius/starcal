@@ -38,7 +38,7 @@ class EventWidget(gtk.VBox):
         sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
         #####
         if not event.parent.courses:
-            showError(_('Edit University Term and add some Courses before you add a Class'))
+            showError(event.parent.noCourseError)
             raise RuntimeError('No courses added')
         self.courseIds = []
         self.courseNames = []
@@ -127,6 +127,8 @@ class EventWidget(gtk.VBox):
         ######
         self.courseCombo.set_active(0)
         #self.updateSummary()
+    def focusSummary(self):
+        pass
     #def updateSummary(self, widget=None):
     #    courseIndex = self.courseCombo.get_active()
     #    summary = _('%s Exam')%self.courseNames[courseIndex]

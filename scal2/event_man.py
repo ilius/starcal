@@ -1773,7 +1773,7 @@ class UniversityExamEvent(DailyNoteEvent):
     def setDefaultsFromGroup(self, group):
         DailyNoteEvent.setDefaultsFromGroup(self, group)
         if group.name=='universityTerm':
-            self.setDate(*group['end'].date)## FIXME
+            self.setJd(group.endJd)## FIXME
     getCourseName = lambda self: self.parent.getCourseNameById(self.courseId)
     def updateSummary(self):
         self.summary = _('%s Exam')%self.getCourseName()
@@ -2047,19 +2047,19 @@ class EventGroup(EventContainer):
         if isinstance(key, int):## eventId
             return self.getEvent(key)
         else:
-            raise TypeError('invalid key type %r give to EventGroup.__getitem__'%key)
+            raise TypeError('invalid key %r give to EventGroup.__getitem__'%key)
     def __setitem__(self, key, value):
         #if isinstance(key, basestring):## ruleName
         #    return self.setRule(key, value)
         if isinstance(key, int):## eventId
             raise TypeError('can not assign event to group')## FIXME
         else:
-            raise TypeError('invalid key type %r give to EventGroup.__setitem__'%key)
+            raise TypeError('invalid key %r give to EventGroup.__setitem__'%key)
     def __delitem__(self, key):
         if isinstance(key, int):## eventId
             self.remove(self.getEvent(key))
         else:
-            raise TypeError('invalid key type %r give to EventGroup.__delitem__'%key)
+            raise TypeError('invalid key %r give to EventGroup.__delitem__'%key)
     def checkEventToAdd(self, event):
         return event.name in self.acceptsEventTypes
     def __init__(self, _id=None, title=None):
@@ -2474,6 +2474,7 @@ class UniversityTerm(EventGroup):
         'classesEndDate',
         'courses',
     )
+    noCourseError = _('Edit University Term and define some Courses before you add a Class/Exam')
     def getSortByValue(self, event, attr):
         if event.name in self.acceptsEventTypes:
             if attr=='course':

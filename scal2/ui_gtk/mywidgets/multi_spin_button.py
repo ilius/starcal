@@ -348,9 +348,13 @@ class HourMinuteButton(MultiSpinButton):
         if hm==None:
             hm = localtime()[3:5]
         self.set_value(hm)
-    get_value = lambda self: self.get_value() + [0]
-    set_value = lambda self, tm: self.set_value(tm[:2])
-
+    get_value = lambda self: MultiSpinButton.get_value(self) + [0]
+    def set_value(self, value):
+        if isinstance(value, int):
+            value = [value, 0]
+        else:
+            value = value[:2]
+        MultiSpinButton.set_value(self, value)
 
 class DateTimeButton(MultiSpinButton):
     def __init__(self, date_time=None, **kwargs):
@@ -470,6 +474,7 @@ class MultiSpinOptionBox(gtk.HBox):
             n += 1
         #m.prepend([text])#self.combo.prepend_text(text)
         item = gtk.MenuItem(text)
+        item.connect('activate', lambda obj: self.spin.set_text(text))
         item.text = text
         self.menu.add(item)
         self.menu.reorder_child(item, 0)
@@ -477,7 +482,9 @@ class MultiSpinOptionBox(gtk.HBox):
             self.menu.remove(self.menuItems.pop(n-1))
         self.menu.show_all()
         #self.option.set_sensitive(True) #???????
-
+    def clear_history(self):
+        for item in self.menu.get_children():
+            self.menu.remove(item)
 
 class DateButtonOption(MultiSpinOptionBox):
     def __init__(self, date=None, **kwargs):
@@ -499,7 +506,27 @@ class DateButtonOption(MultiSpinOptionBox):
         self.spin.entry_validate()
 
 
-
+class HourMinuteButtonOption(MultiSpinOptionBox):
+    def __init__(self, hm=None, **kwargs):
+        MultiSpinOptionBox.__init__(
+            self,
+            u':',
+            (
+                HourField(),
+                Z60Field(),
+            ),
+            **kwargs
+        )
+        if hm==None:
+            hm = localtime()[3:5]
+        self.set_value(hm)
+    get_value = lambda self: MultiSpinOptionBox.get_value(self) + [0]
+    def set_value(self, value):
+        if isinstance(value, int):
+            value = [value, 0]
+        else:
+            value = value[:2]
+        MultiSpinOptionBox.set_value(self, value)
 
 
 #####################################################################################

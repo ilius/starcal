@@ -984,6 +984,12 @@ msgid "University Term"
 msgstr ""
 "ترم دانشگاه"
 
+msgid "Edit University Term and define some Courses before you add a Class/Exam"
+msgstr ""
+"قبل از اضافه کردن کلاس/امتحان، ترم دانشگاه را ویرایش کنید و چند درس تعریف کنید"
+
+
+
 msgid "Course"
 msgstr ""
 "درس"

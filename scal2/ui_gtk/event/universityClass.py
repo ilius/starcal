@@ -23,7 +23,7 @@ from scal2.locale_man import tr as _
 from scal2 import event_man
 
 from scal2 import ui
-from scal2.ui_gtk.mywidgets.multi_spin_button import HourMinuteButton
+from scal2.ui_gtk.mywidgets.multi_spin_button import HourMinuteButtonOption
 from scal2.ui_gtk.event import common
 from scal2.ui_gtk.event.rules.weekNumMode import RuleWidget as WeekNumModeRuleWidget
 from scal2.ui_gtk.utils import showError, WeekDayComboBox, buffer_get_text
@@ -39,7 +39,7 @@ class EventWidget(gtk.VBox):
         sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
         #####
         if not event.parent.courses:
-            showError(_('Edit University Term and add some Courses before you add a Class'))
+            showError(event.parent.noCourseError)
             raise RuntimeError('No courses added')
         self.courseIds = []
         self.courseNames = []
@@ -85,8 +85,8 @@ class EventWidget(gtk.VBox):
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
         ##
-        self.dayTimeStartCombo = HourMinuteButton()
-        self.dayTimeEndCombo = HourMinuteButton()
+        self.dayTimeStartCombo = HourMinuteButtonOption()
+        self.dayTimeEndCombo = HourMinuteButtonOption()
         ##
         #self.dayTimeStartCombo.child.set_direction(gtk.TEXT_DIR_LTR)
         #self.dayTimeEndCombo.child.set_direction(gtk.TEXT_DIR_LTR)
@@ -138,6 +138,8 @@ class EventWidget(gtk.VBox):
         ######
         self.courseCombo.set_active(0)
         #self.updateSummary()
+    def focusSummary(self):
+        pass
     #def updateSummary(self, widget=None):
     #    courseIndex = self.courseCombo.get_active()
     #    summary = _('%s Class')%self.courseNames[courseIndex] + ' (' + self.weekDayCombo.get_active_text() + ')'
@@ -159,8 +161,9 @@ class EventWidget(gtk.VBox):
         self.dayTimeStartCombo.clear_history()
         self.dayTimeEndCombo.clear_history()
         for hm in reversed(self.event.parent.classTimeBounds):
-            self.dayTimeStartCombo.add_history(hm)
-            self.dayTimeEndCombo.add_history(hm)
+            for combo in (self.dayTimeStartCombo, self.dayTimeEndCombo):
+                combo.set_value(hm)
+                combo.add_history()
         timeRangeRule = self.event['dayTimeRange']
         self.dayTimeStartCombo.set_value(timeRangeRule.dayTimeStart)
         self.dayTimeEndCombo.set_value(timeRangeRule.dayTimeEnd)

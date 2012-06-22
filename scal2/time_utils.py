@@ -121,6 +121,8 @@ def dateDecode(st):
     return date
 
 def timeEncode(tm, checkSec=False):
+    if len(tm)==2:
+        tm = tm + (0,)
     if checkSec:
         if len(tm)==3 and tm[2]>0:
             return '%.2d:%.2d:%.2d'%tuple(tm)
