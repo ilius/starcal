@@ -17,7 +17,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-
+import sys
 
 from scal2.paths import deskDir
 from scal2.time_utils import hmEncode, hmDecode
@@ -53,6 +53,9 @@ class CourseListEditor(gtk.HBox):
         cell = gtk.CellRendererText()
         cell.set_property('editable', True)
         cell.connect('edited', self.courseNameEdited)
+        #cell.connect('editing-started', lambda cell0, editable, path:
+        #    sys.stdout.write('editing-started %s\n'%path))
+        #cell.connect('editing-canceled', lambda cell0:sys.stdout.write('editing-canceled\n'))
         col = gtk.TreeViewColumn(_('Course Name'), cell, text=1)
         self.treev.append_column(col)
         ###
@@ -148,6 +151,7 @@ class CourseListEditor(gtk.HBox):
         t.swap(t.get_iter(index), t.get_iter(index+1))
         self.treev.set_cursor(index+1)
     def courseNameEdited(self, cell, path, newText):
+        #print 'courseNameEdited', newText
         index = int(path)
         self.trees[index][1] = newText
     def courseUnitsEdited(self, cell, path, newText):
