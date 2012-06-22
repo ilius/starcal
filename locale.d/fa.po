@@ -860,6 +860,12 @@ msgid "_Edit Event"
 msgstr ""
 "_ویرایش رویداد"
 
+
+msgid "Add Event"
+msgstr ""
+"افزودن رویداد"
+
+
 msgid "Add "
 msgstr ""
 "افزودن "

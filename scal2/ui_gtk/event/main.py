@@ -1086,20 +1086,29 @@ class EventManagerDialog(gtk.Dialog, IntegratedCalWidget):## FIXME
                 eventTypes = group.acceptsEventTypes
                 if eventTypes is None:
                     eventTypes = event_man.classes.event.names
-                for eventType in eventTypes:
-                    #if eventType == 'custom':## FIXME
-                    #    desc = _('Event')
-                    #else:
-                    desc = event_man.classes.event.byName[eventType].desc
+                if len(eventTypes) > 3:
                     menu.add(labelStockMenuItem(
-                        _('Add ') + desc,
+                        _('Add Event'),
                         gtk.STOCK_ADD,
-                        self.addEventToGroupFromMenu,
+                        self.addGenericEventToGroupFromMenu,
                         path,
                         group,
-                        eventType,
-                        _('Add') + ' ' + desc,
                     ))
+                else:
+                    for eventType in eventTypes:
+                        #if eventType == 'custom':## FIXME
+                        #    desc = _('Event')
+                        #else:
+                        desc = event_man.classes.event.byName[eventType].desc
+                        menu.add(labelStockMenuItem(
+                            _('Add ') + desc,
+                            gtk.STOCK_ADD,
+                            self.addEventToGroupFromMenu,
+                            path,
+                            group,
+                            eventType,
+                            _('Add') + ' ' + desc,
+                        ))
                 pasteItem = labelStockMenuItem('Paste Event', gtk.STOCK_PASTE, self.pasteEventFromMenu, path)
                 pasteItem.set_sensitive(self.canPasteToGroup(group))
                 menu.add(pasteItem)
@@ -1487,7 +1496,26 @@ class EventManagerDialog(gtk.Dialog, IntegratedCalWidget):## FIXME
         self.endWaiting()
     deleteGroupFromMenu = lambda self, menu, path: self.deleteGroup(path)
     def addEventToGroupFromMenu(self, menu, path, group, eventType, title):
-        event = addNewEvent(group, eventType, title, parent=self)
+        event = addNewEvent(
+            group,
+            eventType,
+            title,
+            parent=self,
+        )
+        if event is None:
+            return
+        self.trees.append(
+            self.trees.get_iter(path),## parent
+            self.getEventRow(event), ## row
+        )
+    def addGenericEventToGroupFromMenu(self, menu, path, group):
+        event = addNewEvent(
+            group,
+            group.acceptsEventTypes[0],
+            _('Add Event'),
+            typeChangable=True,
+            parent=self,
+        )
         if event is None:
             return
         self.trees.append(

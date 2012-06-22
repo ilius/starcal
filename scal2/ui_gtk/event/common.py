@@ -518,11 +518,13 @@ class EventEditorDialog(gtk.Dialog):
         self.destroy()
         return self.event
 
-def addNewEvent(group, eventType, title, **kw):
+def addNewEvent(group, eventType, title, typeChangable=False, **kw):
     event = group.createEvent(eventType)
+    if eventType=='custom':## FIXME
+        typeChangable = True
     event = EventEditorDialog(
         event,
-        typeChangable=(eventType=='custom'),## or True FIXME
+        typeChangable=typeChangable,
         title=title,
         isNew=True,
         **kw
