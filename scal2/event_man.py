@@ -509,7 +509,7 @@ class WeekNumberModeEventRule(EventRule):
                 %(modeName, self.weekNumModeNames))
         self.weekNumMode = self.weekNumModeNames.index(modeName)
     def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
-        startAbsWeekNum = getAbsWeekNumberFromJd(event['start'].getJd()) - 1 ## 1st week ## FIXME
+        startAbsWeekNum = getAbsWeekNumberFromJd(event.getStartJd()) - 1 ## 1st week ## FIXME
         jdListAll = getJdListFromEpochRange(startEpoch, endEpoch)
         if self.weekNumMode==self.EVERY_WEEK:
             jdList = jdListAll
@@ -1340,7 +1340,11 @@ class Event(JsonEventBaseClass, RuleContainer):
                     return False
             self.mode = mode
         return True
-
+    def getStartJd(self):## FIXME
+        try:
+            return self['start'].getJd()
+        except KeyError:
+            return self.parent.startJd
 
 class SingleStartEndEvent(Event):
     getStartEpoch = lambda self: self['start'].getEpoch()
