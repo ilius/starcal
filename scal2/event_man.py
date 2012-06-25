@@ -2115,7 +2115,7 @@ class EventContainer(JsonEventBaseClass):
 class EventGroup(EventContainer):
     name = 'group'
     desc = _('Event Group')
-    acceptsEventTypes = ('yearly', 'dailyNote', 'task', 'lifeTime', 'largeScale', 'custom')
+    acceptsEventTypes = ('yearly', 'dailyNote', 'task', 'allDayTask', 'lifeTime', 'largeScale', 'custom')
     canConvertTo = ()
     actions = []## [('Export to ICS', 'exportToIcs')]
     eventActions = [] ## FIXME
