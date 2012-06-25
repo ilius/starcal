@@ -665,6 +665,10 @@ msgid "Task"
 msgstr ""
 "کار"
 
+msgid "All-Day Task"
+msgstr ""
+"کار تمام‌روز"
+
 msgid "Task List"
 msgstr ""
 "فهرست کارها"
@@ -2063,6 +2067,11 @@ msgstr ""
 msgid "Conflict between"
 msgstr ""
 "تضاد بین"
+
+
+msgid " days"
+msgstr ""
+" روز"
 
 msgid "days and"
 msgstr ""

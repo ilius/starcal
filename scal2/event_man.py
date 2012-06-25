@@ -756,6 +756,8 @@ class DurationEventRule(EventRule):
         else:
             return TimeRangeListOccurrence([(startEpoch, endEpoch)])
 
+
+
 @classes.rule.register
 class CycleDaysEventRule(EventRule):
     name = 'cycleDays'
@@ -1511,8 +1513,115 @@ class TaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from SingleStartE
         ]
     def setIcsDict(self, data):
         self.setStartEpoch(getEpochByIcsTime(data['DTSTART']))
-        self.setEndEpoch(getEpochByIcsTime(data['DTEND']))
+        self.setEndEpoch(getEpochByIcsTime(data['DTEND']))## FIXME
         return True
+
+
+@classes.event.register
+class AllDayTaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from SingleStartEndEvent
+    name = 'allDayTask'
+    desc = _('All-Day Task')
+    iconName = 'task'
+    requiredRules = ('start',)
+    supportedRules = ('start', 'end', 'duration')
+    def setJd(self, jd):
+        rule = self.getAddRule('start')
+        rule.setJd(jd)
+        rule.time = (0, 0, 0)
+    def setStartDate(self, date):
+        rule = self.getAddRule('start')
+        rule.date = date
+        rule.time = (0, 0, 0)
+    def setJdExact(self, jd):
+        self.setJd(jd)
+        self.setEnd('duration', 1)
+    def setDefaults(self):
+        jd = core.getCurrentJd()
+        self.setJd(jd)
+        self.setEnd('duration', 1)
+    #def setDefaultsFromGroup(self, group):## FIXME
+    #    Event.setDefaultsFromGroup(self, group)
+    #    if group.name == 'taskList':
+    #        value, unit = group.defaultAllDayDuration
+    #        if value > 0:
+    #            self.setEnd('duration', value)
+    def setEnd(self, endType, value):
+        self.removeSomeRuleTypes('end', 'duration')
+        if endType=='date':
+            rule = EndEventRule(self)
+            rule.date = value
+            rule.time = (0, 0, 0)
+        elif endType=='duration':
+            rule = DurationEventRule(self)
+            rule.value = value
+            rule.unit = dayLen
+        else:
+            raise ValueError('invalid endType=%r'%endType)
+        self.addRule(rule)
+    def getEnd(self):
+        try:
+            end = self['end']
+        except KeyError:
+            pass
+        else:
+            return ('date', end.date)
+        try:
+            duration = self['duration']
+        except KeyError:
+            pass
+        else:
+            return ('duration', (duration.value, duration.unit//dayLen))
+        raise ValueError('no end date neither duration specified for task')
+    def getEndJd(self):
+        try:
+            end = self['end']
+        except KeyError:
+            pass
+        else:
+            return end.getJd()
+        try:
+            duration = self['duration']
+        except KeyError:
+            pass
+        else:
+            return self['start'].getJd() + duration.getSeconds()//dayLen
+        raise ValueError('no end date neither duration specified for task')
+    getEndEpoch = lambda self: getEpochFromJd(self.getEndJd())
+    #def setEndJd(self, jd):
+    #    rule = self.getAddRule('end')
+    #    rule.setJd(jd)
+    #    rule.time = (0, 0, 0)
+    def setEndJd(self, jd):
+        try:
+            end = self['end']
+        except KeyError:
+            pass
+        else:
+            end.setJd(jd)
+            return
+        try:
+            duration = self['duration']
+        except KeyError:
+            pass
+        else:
+            duration.setSeconds(dayLen*(jd-self['start'].getJd()))
+            return
+        raise ValueError('no end date neither duration specified for task')
+    #def copyFrom(self, other, *args, **kwargs):
+    #    Event.copyFrom(self, other, *args, **kwargs)
+    def getIcsData(self, prettyDateTime=False):
+        return [
+            ('DTSTART', getIcsDateByJd(self.getJd(), prettyDateTime)),
+            ('DTEND', getIcsDateByJd(self.getEndJd(), prettyDateTime)),
+            ('TRANSP', 'OPAQUE'),
+            ('CATEGORIES', self.name),## FIXME
+        ]
+    def setIcsDict(self, data):
+        self.setJd(getJdByIcsDate(data['DTSTART']))
+        self.setEndJd(getJdByIcsDate(data['DTEND']))## FIXME
+        return True
+
+
 
 @classes.event.register
 class DailyNoteEvent(Event):
@@ -2405,7 +2514,7 @@ class EventGroup(EventContainer):
 class TaskList(EventGroup):
     name = 'taskList'
     desc = _('Task List')
-    acceptsEventTypes = ('task',)
+    acceptsEventTypes = ('task', 'allDayTask')
     #actions = EventGroup.actions + []
     sortBys = EventGroup.sortBys + (
         ('start', _('Start')),
