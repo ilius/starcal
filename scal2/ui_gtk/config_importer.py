@@ -74,6 +74,7 @@ win.vbox.pack_start(langHbox)
 win.vbox.show_all()
 
 if win.run()==gtk.RESPONSE_OK:
+    #print 'RESPONSE_OK'
     if importCheckb and importCheckb.get_active():
         importConfigFrom15()
     else:
@@ -96,4 +97,8 @@ if win.run()==gtk.RESPONSE_OK:
             open(join(confDir, 'locale.conf'), 'w').write('lang=%r'%langCode)
 
 win.destroy()
+
+if not os.path.isdir(confDir):
+    os.mkdir(confDir, 0755)
+
 
