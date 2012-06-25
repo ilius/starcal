@@ -156,7 +156,7 @@ def addStartup():
 Type=Application
 Name=%s %s
 Icon=%s
-Exec=%s'''%(core.VERSION, core.APP_DESC, APP_NAME, core.COMMAND)## double quotes needed when the exec path has space
+Exec=%s'''%(core.APP_DESC, core.VERSION, APP_NAME, core.COMMAND)## double quotes needed when the exec path has space
         makeDir(comDeskDir)
         try:
             fp = open(comDesk, 'w')
