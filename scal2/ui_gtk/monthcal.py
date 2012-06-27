@@ -36,7 +36,7 @@ from scal2.ui_gtk.drawing import *
 from scal2.ui_gtk import listener
 from scal2.ui_gtk import gcommon
 from scal2.ui_gtk import preferences
-from scal2.ui_gtk.customize import CustomizableWidgetWrapper
+from scal2.ui_gtk.customize import CustomizableCalObj
 
 #from scal2.ui_gtk import desktop
 #from scal2.ui_gtk import wallpaper
@@ -47,7 +47,7 @@ from gtk import gdk
 
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 
-class MonthCal(gtk.Widget, CustomizableWidgetWrapper):
+class MonthCal(gtk.Widget, CustomizableCalObj):
     cx = [0, 0, 0, 0, 0, 0, 0]
     def heightSpinChanged(self, spin):
         h = spin.get_value()
@@ -728,10 +728,10 @@ class MonthCal(gtk.Widget, CustomizableWidgetWrapper):
                 int(ui.calTopMargin/2.0),
             )
     def onDateChange(self, *a, **kw):
-        CustomizableWidgetWrapper.onDateChange(self, *a, **kw)
+        CustomizableCalObj.onDateChange(self, *a, **kw)
         self.queue_draw()
     def onConfigChange(self, *a, **kw):
-        CustomizableWidgetWrapper.onConfigChange(self, *a, **kw)
+        CustomizableCalObj.onConfigChange(self, *a, **kw)
         self.shownCals = ui.shownCals
         self.updateTextWidth()
         #self.onDateChange()

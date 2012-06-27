@@ -43,7 +43,7 @@ if os.path.isfile(confPath):
 
 
 
-class CustomizableWidgetWrapper(IntegratedCalObj):
+class CustomizableCalObj(IntegratedCalObj):
     def initVars(self, name, desc, optionsWidget=None):
         IntegratedCalObj.initVars(self, name, desc)
         self.optionsWidget = optionsWidget

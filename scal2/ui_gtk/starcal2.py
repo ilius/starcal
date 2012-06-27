@@ -80,7 +80,7 @@ from scal2.ui_gtk import gcommon
 from scal2.ui_gtk.gcommon import IntegratedCalObj
 from scal2.ui_gtk import preferences
 from scal2.ui_gtk.preferences import PrefItem, gdkColorToRgb, gfontEncode, pfontEncode
-from scal2.ui_gtk.customize import CustomizableWidgetWrapper, CustomizeDialog
+from scal2.ui_gtk.customize import CustomizableCalObj, CustomizeDialog
 from scal2.ui_gtk.monthcal import MonthCal
 
 from scal2.ui_gtk.event.common import addNewEvent
@@ -574,7 +574,7 @@ class WinController(gtk.HBox):
 
 
 
-class ToolbarItem(gtk.ToolButton, CustomizableWidgetWrapper):
+class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
     def __init__(self, name, stockName, method, tooltip='', text=''):
         #print 'ToolbarItem', name, stockName, method, tooltip, text
         self.method = method
@@ -596,7 +596,7 @@ class ToolbarItem(gtk.ToolButton, CustomizableWidgetWrapper):
         set_tooltip(self, tooltip)
         self.set_is_important(True)## FIXME
 
-class CustomizableToolbar(gtk.Toolbar, CustomizableWidgetWrapper):
+class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
     styleList = ('Icon', 'Text', 'Text below Icon', 'Text beside Icon')
     def __init__(self, mainWin):
         gtk.Toolbar.__init__(self)
@@ -664,11 +664,11 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableWidgetWrapper):
         self.insert(button, i-1)
         self.items.insert(i-1, self.items.pop(i))
     #def insertItem(self, item, pos):
-    #    CustomizableWidgetWrapper.insertItem(self, pos, item)
+    #    CustomizableCalObj.insertItem(self, pos, item)
     #    gtk.Toolbar.insert(self, item, pos)
     #    item.show()
     def appendItem(self, item):
-        CustomizableWidgetWrapper.appendItem(self, item)
+        CustomizableCalObj.appendItem(self, item)
         gtk.Toolbar.insert(self, item, -1)
         item.show()
         
@@ -701,7 +701,7 @@ class MainWinToolbar(CustomizableToolbar):
         """
 '''
 
-class YearMonthLabelBox(gtk.HBox, CustomizableWidgetWrapper):
+class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
     def __init__(self):
         gtk.HBox.__init__(self)
         #self.set_border_width(2)
@@ -866,7 +866,7 @@ class YearMonthLabelBox(gtk.HBox, CustomizableWidgetWrapper):
         for i in range(ui.shownCalsNum):
             self.monthLabel[i].set_property('width-request', width[ui.shownCals[i]['mode']])
     def onConfigChange(self, *a, **kw):
-        CustomizableWidgetWrapper.onConfigChange(self, *a, **kw)
+        CustomizableCalObj.onConfigChange(self, *a, **kw)
         self.updateTextWidth()
         self.updateArrows()
         #####################
@@ -882,7 +882,7 @@ class YearMonthLabelBox(gtk.HBox, CustomizableWidgetWrapper):
         #    self.vsep0.hide()
         #self.onDateChange()
     def onDateChange(self, *a, **kw):
-        CustomizableWidgetWrapper.onDateChange(self, *a, **kw)
+        CustomizableCalObj.onDateChange(self, *a, **kw)
         for (i, item) in enumerate(ui.shownCals):
             if item['enable']:
                 (y, m, d) = ui.cell.dates[item['mode']]
@@ -892,7 +892,7 @@ class YearMonthLabelBox(gtk.HBox, CustomizableWidgetWrapper):
 
 
 
-class StatusBox(gtk.HBox, CustomizableWidgetWrapper):
+class StatusBox(gtk.HBox, CustomizableCalObj):
     def __init__(self, mainWin):
         gtk.HBox.__init__(self)
         self.mainWin = mainWin
@@ -917,10 +917,10 @@ class StatusBox(gtk.HBox, CustomizableWidgetWrapper):
         sbar.connect('button-press-event', self.mainWin.startResize)
         self.pack_start(sbar, 0, 0)
     #def onConfigChange(self, *a, **kw):
-    #    CustomizableWidgetWrapper.onConfigChange(self, *a, **kw)
+    #    CustomizableCalObj.onConfigChange(self, *a, **kw)
     #    self.onDateChange()
     def onDateChange(self, *a, **kw):
-        CustomizableWidgetWrapper.onDateChange(self, *a, **kw)
+        CustomizableCalObj.onDateChange(self, *a, **kw)
         n = len(ui.shownCals) # ui.shownCalsNum
         nm = core.modNum
         if n < nm:
@@ -944,7 +944,7 @@ class StatusBox(gtk.HBox, CustomizableWidgetWrapper):
             else:
                 self.dateLabel[i].hide()
 
-class PluginsTextBox(gtk.VBox, CustomizableWidgetWrapper):
+class PluginsTextBox(gtk.VBox, CustomizableCalObj):
     def __init__(self, populatePopupFunc=None):
         gtk.VBox.__init__(self)
         self.initVars('pluginsText', _('Plugins Text'))
@@ -1013,19 +1013,19 @@ class PluginsTextBox(gtk.VBox, CustomizableWidgetWrapper):
             text += '%s=%r\n'%(mod_attr, eval(mod_attr))
         return text
     def onDateChange(self, *a, **kw):
-        CustomizableWidgetWrapper.onDateChange(self, *a, **kw)
+        CustomizableCalObj.onDateChange(self, *a, **kw)
         self.setText(ui.cell.pluginsText)
 
-class EventViewMainWinItem(DayOccurrenceView, CustomizableWidgetWrapper):## FIXME
+class EventViewMainWinItem(DayOccurrenceView, CustomizableCalObj):## FIXME
     def __init__(self, populatePopupFunc=None):
         DayOccurrenceView.__init__(self, populatePopupFunc)
         self.initVars('eventDayView', _('Events of Day'))
     def onDateChange(self, *a, **kw):
-        CustomizableWidgetWrapper.onDateChange(self, *a, **kw)
+        CustomizableCalObj.onDateChange(self, *a, **kw)
         self.jd = ui.cell.jd
         self.updateWidget()
     def onConfigChange(self, *a, **kw):
-        CustomizableWidgetWrapper.onConfigChange(self, *a, **kw)
+        CustomizableCalObj.onConfigChange(self, *a, **kw)
         self.updateWidget()
         #self.onDateChange()
     ## should event occurances be saved in ui.cell object? FIXME
