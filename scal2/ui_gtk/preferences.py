@@ -727,20 +727,6 @@ class PrefDialog(gtk.Dialog):
         ####
         vbox.pack_start(hbox, 0, 0)
         ###################
-        hbox = gtk.HBox(spacing=3)
-        hbox.pack_start(gtk.Label(_('Left Margin')), 0, 0)
-        item = SpinPrefItem(ui, 'mcalLeftMargin', 0, 99)
-        self.uiPrefItems.append(item)
-        hbox.pack_start(item.widget, 0, 0)
-        ####
-        hbox.pack_start(gtk.Label(_('Top')), 0, 0)
-        item = SpinPrefItem(ui, 'mcalTopMargin', 0, 99)
-        self.uiPrefItems.append(item)
-        hbox.pack_start(item.widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        ####
-        vbox.pack_start(hbox, 0, 0)
-        ################
         hbox = gtk.HBox(spacing=1)
         label = gtk.Label('<b>%s</b>:'%_('Cursor'))
         label.set_use_markup(True)

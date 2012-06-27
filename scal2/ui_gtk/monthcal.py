@@ -50,21 +50,53 @@ from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 class MonthCal(gtk.Widget, CustomizableCalObj):
     cx = [0, 0, 0, 0, 0, 0, 0]
     def heightSpinChanged(self, spin):
-        h = spin.get_value()
-        self.set_property('height-request', h)
-        ui.calHeight = h
-    confStr = lambda self: 'ui.calHeight=%r\n'%ui.calHeight
+        v = spin.get_value()
+        self.set_property('height-request', v)
+        ui.calHeight = v
+    def leftMarginSpinChanged(self, spin):
+        ui.mcalLeftMargin = spin.get_value()
+        self.queue_draw()
+    def topMarginSpinChanged(self, spin):
+        ui.mcalTopMargin = spin.get_value()
+        self.queue_draw()
+    def confStr(self):
+        text = ''
+        text += 'ui.calHeight=%r\n'%ui.calHeight
+        text += 'ui.mcalLeftMargin=%r\n'%ui.mcalLeftMargin
+        text += 'ui.mcalTopMargin=%r\n'%ui.mcalTopMargin
+        return text
     def __init__(self, shownCals=ui.shownCals):
         gtk.Widget.__init__(self)
         self.set_property('height-request', ui.calHeight)
         ######
+        vbox = gtk.VBox()
+        ###
         hbox = gtk.HBox()
         spin = IntSpinButton(1, 999)
         spin.set_value(ui.calHeight)
         spin.connect('changed', self.heightSpinChanged)
         hbox.pack_start(gtk.Label(_('Height:')), 0, 0)
         hbox.pack_start(spin, 0, 0)
-        self.initVars('monthCal', _('Month Calendar'), optionsWidget=hbox)
+        vbox.pack_start(hbox, 0, 0)
+        ####
+        hbox = gtk.HBox(spacing=3)
+        ##
+        hbox.pack_start(gtk.Label(_('Left Margin')), 0, 0)
+        spin = IntSpinButton(0, 99)
+        spin.set_value(ui.mcalLeftMargin)
+        spin.connect('changed', self.leftMarginSpinChanged)
+        hbox.pack_start(spin, 0, 0)
+        ##
+        hbox.pack_start(gtk.Label(_('Top')), 0, 0)
+        spin = IntSpinButton(0, 99)
+        spin.set_value(ui.mcalTopMargin)
+        spin.connect('changed', self.topMarginSpinChanged)
+        hbox.pack_start(spin, 0, 0)
+        ##
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        vbox.pack_start(hbox, 0, 0)
+        ####
+        self.initVars('monthCal', _('Month Calendar'), optionsWidget=vbox)
         ######
         self.shownCals = shownCals
         ######################
