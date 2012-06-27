@@ -163,10 +163,10 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         fillColor(cr, ui.bgColor)
         status = getCurrentMonthStatus()
         #################################### Drawing Border
-        if ui.calTopMargin>0:
+        if ui.mcalTopMargin>0:
             ##### Drawing border top background
             ##menuBgColor == borderColor ##???????????????
-            cr.rectangle(0, 0, w, ui.calTopMargin)
+            cr.rectangle(0, 0, w, ui.mcalTopMargin)
             fillColor(cr, ui.borderColor)
             ######## Drawing weekDays names
             setColor(cr, ui.borderTextColor)
@@ -181,7 +181,7 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
                     (fontw, fonth) = wday.get_pixel_size()
                 cr.move_to(
                     self.cx[i]-fontw/2.0,
-                    (ui.calTopMargin-fonth)/2.0-1,
+                    (ui.mcalTopMargin-fonth)/2.0-1,
                 )
                 cr.show_layout(wday)
             ######## Drawing "Menu" label
@@ -190,21 +190,21 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
             (fontw, fonth) = text.get_pixel_size()
             if rtl:
                 cr.move_to(
-                    w-(ui.calLeftMargin+fontw)/2.0 - 3,
-                    (ui.calTopMargin-fonth)/2.0 - 1,
+                    w-(ui.mcalLeftMargin+fontw)/2.0 - 3,
+                    (ui.mcalTopMargin-fonth)/2.0 - 1,
                 )
             else:
                 cr.move_to(
-                    (ui.calLeftMargin-fontw)/2.0,
-                    (ui.calTopMargin-fonth)/2.0 - 1,
+                    (ui.mcalLeftMargin-fontw)/2.0,
+                    (ui.mcalTopMargin-fonth)/2.0 - 1,
                 )
             cr.show_layout(text)
-        if ui.calLeftMargin>0:
+        if ui.mcalLeftMargin>0:
             ##### Drawing border left background
             if rtl:
-                cr.rectangle(w-ui.calLeftMargin, ui.calTopMargin, ui.calLeftMargin, h-ui.calTopMargin)
+                cr.rectangle(w-ui.mcalLeftMargin, ui.mcalTopMargin, ui.mcalLeftMargin, h-ui.mcalTopMargin)
             else:
-                cr.rectangle(0, ui.calTopMargin, ui.calLeftMargin, h-ui.calTopMargin)
+                cr.rectangle(0, ui.mcalTopMargin, ui.mcalLeftMargin, h-ui.mcalTopMargin)
             fillColor(cr, ui.borderColor)
             ##### Drawing week numbers
             setColor(cr, ui.borderTextColor)
@@ -213,12 +213,12 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
                 fontw, fonth = lay.get_pixel_size()
                 if rtl:
                     cr.move_to(
-                        w-(ui.calLeftMargin+fontw)/2.0,
+                        w-(ui.mcalLeftMargin+fontw)/2.0,
                         self.cy[i]-fonth/2.0+2,
                     )
                 else:
                     cr.move_to(
-                        (ui.calLeftMargin-fontw)/2.0,
+                        (ui.mcalLeftMargin-fontw)/2.0,
                         self.cy[i]-fonth/2.0+2,
                     )
                 cr.show_layout(lay)
@@ -606,8 +606,8 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
             #print w,
             if w > wm:
                 wm = w
-        self.wdaysWidth = wm*7 + ui.calLeftMargin ## ????????
-        #self.wdaysWidth = wm*7*0.7 + ui.calLeftMargin ## ????????
+        self.wdaysWidth = wm*7 + ui.mcalLeftMargin ## ????????
+        #self.wdaysWidth = wm*7*0.7 + ui.mcalLeftMargin ## ????????
         #print 'max =', wm, '     wdaysWidth =', self.wdaysWidth
     def buttonPress(self, obj, event):
         ## self.winActivate() #?????????
@@ -642,18 +642,18 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
     def calcCoord(self):## calculates coordidates (x and y of cells centers)
         x, y, w, h = self.allocation
         if rtl:
-            self.cx = [(w-ui.calLeftMargin)*(13.0-2*i)/14.0 for i in xrange(7) ] ## centers x
+            self.cx = [(w-ui.mcalLeftMargin)*(13.0-2*i)/14.0 for i in xrange(7) ] ## centers x
         else:
             self.cx = [
-                ui.calLeftMargin + (w-ui.calLeftMargin)*(1.0+2*i)/14.0
+                ui.mcalLeftMargin + (w-ui.mcalLeftMargin)*(1.0+2*i)/14.0
                 for i in xrange(7)
             ] ## centers x
         self.cy = [
-            ui.calTopMargin + (h-ui.calTopMargin)*(1.0+2*i)/12.0
+            ui.mcalTopMargin + (h-ui.mcalTopMargin)*(1.0+2*i)/12.0
             for i in xrange(6)
         ] ## centers y
-        self.dx = (w-ui.calLeftMargin)/7.0 ## delta x
-        self.dy = (h-ui.calTopMargin)/6.0 ## delta y
+        self.dx = (w-ui.mcalLeftMargin)/7.0 ## delta x
+        self.dy = (h-ui.mcalTopMargin)/6.0 ## delta y
     def keyPress(self, arg, event):
         t = time()
         #if t-self.kTime < ui.keyDelay:
@@ -719,13 +719,13 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
     def getMainMenuPos(self):#???????????????????
         if rtl:
             return (
-                int(self.allocation.width - ui.calLeftMargin/2.0),
-                int(ui.calTopMargin/2.0),
+                int(self.allocation.width - ui.mcalLeftMargin/2.0),
+                int(ui.mcalTopMargin/2.0),
             )
         else:
             return (
-                int(ui.calLeftMargin/2.0),
-                int(ui.calTopMargin/2.0),
+                int(ui.mcalLeftMargin/2.0),
+                int(ui.mcalTopMargin/2.0),
             )
     def onDateChange(self, *a, **kw):
         CustomizableCalObj.onDateChange(self, *a, **kw)

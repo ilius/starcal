@@ -729,12 +729,12 @@ class PrefDialog(gtk.Dialog):
         ###################
         hbox = gtk.HBox(spacing=3)
         hbox.pack_start(gtk.Label(_('Left Margin')), 0, 0)
-        item = SpinPrefItem(ui, 'calLeftMargin', 0, 99)
+        item = SpinPrefItem(ui, 'mcalLeftMargin', 0, 99)
         self.uiPrefItems.append(item)
         hbox.pack_start(item.widget, 0, 0)
         ####
         hbox.pack_start(gtk.Label(_('Top')), 0, 0)
-        item = SpinPrefItem(ui, 'calTopMargin', 0, 99)
+        item = SpinPrefItem(ui, 'mcalTopMargin', 0, 99)
         self.uiPrefItems.append(item)
         hbox.pack_start(item.widget, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
