@@ -48,7 +48,7 @@ from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
 from scal2.ui_gtk import gcommon
-from scal2.ui_gtk.gcommon import IntegratedCalWidget
+from scal2.ui_gtk.gcommon import IntegratedCalObj
 
 from scal2.ui_gtk.event.common import IconSelectButton, EventEditorDialog, addNewEvent, GroupEditorDialog
 
@@ -798,7 +798,7 @@ class FetchRemoteGroupsDialog(gtk.Dialog):
         self.account = account
 
 
-class EventManagerDialog(gtk.Dialog, IntegratedCalWidget):## FIXME
+class EventManagerDialog(gtk.Dialog, IntegratedCalObj):## FIXME
     def checkEventToAdd(self, group, event):
         if not group.checkEventToAdd(event):
             showError(_('Group type "%s" can not contain event type "%s"')%(group.desc, event.desc), self)
@@ -820,7 +820,7 @@ class EventManagerDialog(gtk.Dialog, IntegratedCalWidget):## FIXME
             )
     showNewGroup = lambda self, group: self.showNewGroupAtIndex(group, ui.eventGroups.index(group.id))
     def onConfigChange(self, *a, **kw):
-        IntegratedCalWidget.onConfigChange(self, *a, **kw)
+        IntegratedCalObj.onConfigChange(self, *a, **kw)
         ###
         if not self.isLoaded:
             return

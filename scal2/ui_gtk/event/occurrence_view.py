@@ -26,10 +26,10 @@ from scal2 import ui
 import gtk
 
 from scal2.ui_gtk.utils import imageFromFile, labelStockMenuItem, labelImageMenuItem
-from scal2.ui_gtk.gcommon import IntegratedCalWidget
+from scal2.ui_gtk.gcommon import IntegratedCalObj
 from scal2.ui_gtk.event.common import EventEditorDialog
 
-class DayOccurrenceView(gtk.VBox, IntegratedCalWidget):
+class DayOccurrenceView(gtk.VBox, IntegratedCalObj):
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
     def __init__(self, populatePopupFunc=None):
         self.jd = ui.cell.jd

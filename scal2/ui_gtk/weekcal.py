@@ -41,7 +41,7 @@ from gtk import gdk
 
 from scal2.ui_gtk.drawing import setColor, fillColor, newLimitedWidthTextLayout, Button
 from scal2.ui_gtk import gcommon
-from scal2.ui_gtk.gcommon import IntegratedCalWidget
+from scal2.ui_gtk.gcommon import IntegratedCalObj
 from scal2.ui_gtk import preferences
 #from scal2.ui_gtk import desktop
 #from scal2.ui_gtk import wallpaper
@@ -128,7 +128,7 @@ class Button:
 
 
 
-class WeekCal(gtk.Widget, IntegratedCalWidget):
+class WeekCal(gtk.Widget, IntegratedCalObj):
     topMargin = 30
     widthSpacing = 20
     def __init__(self, closeFunc):
@@ -150,10 +150,10 @@ class WeekCal(gtk.Widget, IntegratedCalWidget):
         for cal in ui.shownCals:
             self.rowItems.append(DayNumRowItem(cal['mode']))
     #def onConfigChange(self, *a, **kw):
-    #    IntegratedCalWidget.onConfigChange(self, *a, **kw)
+    #    IntegratedCalObj.onConfigChange(self, *a, **kw)
     #    self.onDateChange()
     def onDateChange(self, *a, **kw):
-        IntegratedCalWidget.onDateChange(self, *a, **kw)
+        IntegratedCalObj.onDateChange(self, *a, **kw)
         self.queue_draw()
     def changeDate(self, year, month, day):
         ui.changeDate(year, month, day)
@@ -260,7 +260,7 @@ class WeekCal(gtk.Widget, IntegratedCalWidget):
 
 
 
-class WeekCalWindow(gtk.Window, IntegratedCalWidget):
+class WeekCalWindow(gtk.Window, IntegratedCalObj):
     def __init__(self):
         gtk.Window.__init__(self)
         self.initVars('weekCalWin', _('Week Calendar'))

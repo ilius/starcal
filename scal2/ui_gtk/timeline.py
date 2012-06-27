@@ -38,7 +38,7 @@ from scal2.ui_gtk.font_utils import pfontEncode
 from scal2.ui_gtk.utils import labelStockMenuItem, labelImageMenuItem
 from scal2.ui_gtk.drawing import setColor, fillColor, newLimitedWidthTextLayout, Button
 from scal2.ui_gtk import gcommon
-from scal2.ui_gtk.gcommon import IntegratedCalWidget
+from scal2.ui_gtk.gcommon import IntegratedCalObj
 #from scal2.ui_gtk import preferences
 import scal2.ui_gtk.event.main
 from scal2.ui_gtk.event.common import EventEditorDialog, GroupEditorDialog
@@ -56,7 +56,7 @@ def show_event(widget, event):
 rootWindow = gdk.get_default_root_window() ## Good Place?????
 
 
-class TimeLine(gtk.Widget, IntegratedCalWidget):
+class TimeLine(gtk.Widget, IntegratedCalObj):
     def centerToNow(self):
         self.stopMovingAnim()
         self.timeStart = getCurrentTime() - self.timeWidth/2.0
@@ -439,7 +439,7 @@ class TimeLine(gtk.Widget, IntegratedCalWidget):
         self.window.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
         #self.queue_draw()## needed?
     #def onConfigChange(self, *a, **kw):
-    #    IntegratedCalWidget.onConfigChange(self, *a, **kw)
+    #    IntegratedCalObj.onConfigChange(self, *a, **kw)
     #    self.onDateChange()
     def editEventClicked(self, menu, winTitle, event, gid):
         event = EventEditorDialog(
@@ -553,7 +553,7 @@ class TimeLine(gtk.Widget, IntegratedCalWidget):
         self.movingV = 0
 
 
-class TimeLineWindow(gtk.Window, IntegratedCalWidget):
+class TimeLineWindow(gtk.Window, IntegratedCalObj):
     def __init__(self, width=600):
         gtk.Window.__init__(self)
         self.initVars('timeLineWin', _('Time Line'))

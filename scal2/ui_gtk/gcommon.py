@@ -3,7 +3,7 @@ import gobject
 import gtk
 from gtk import gdk
 
-class IntegratedCalWidget(gtk.Object):
+class IntegratedCalObj(gtk.Object):
     name = ''
     desc = ''
     items = [] ## FIXME
@@ -44,15 +44,15 @@ class IntegratedCalWidget(gtk.Object):
         gobject.signal_new('date-change', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
 
 
-class IntegatedWindowList(IntegratedCalWidget):
+class IntegatedWindowList(IntegratedCalObj):
     def __init__(self):
         gtk.Object.__init__(self)
         self.initVars('windowList', 'Window List')
     def onConfigChange(self, *a, **ka):
-        IntegratedCalWidget.onConfigChange(self, *a, **ka)
+        IntegratedCalObj.onConfigChange(self, *a, **ka)
         self.onDateChange()
 
-#IntegratedCalWidget.registerSignals()
+#IntegratedCalObj.registerSignals()
 IntegatedWindowList.registerSignals()
 
 windowList = IntegatedWindowList()

@@ -77,7 +77,7 @@ from scal2.ui_gtk.mywidgets.clock import FClockLabel
 #from ui_gtk.mywidgets2.multi_spin_button import DateButtonOption
 
 from scal2.ui_gtk import gcommon
-from scal2.ui_gtk.gcommon import IntegratedCalWidget
+from scal2.ui_gtk.gcommon import IntegratedCalObj
 from scal2.ui_gtk import preferences
 from scal2.ui_gtk.preferences import PrefItem, gdkColorToRgb, gfontEncode, pfontEncode
 from scal2.ui_gtk.customize import CustomizableWidgetWrapper, CustomizeDialog
@@ -1047,7 +1047,7 @@ toolbarItemsData = (
 toolbarItemsDataDict = dict([(item._name, item) for item in toolbarItemsData])
 
 
-class MainWin(gtk.Window, IntegratedCalWidget):
+class MainWin(gtk.Window, IntegratedCalObj):
     timeout = 1 ## second
     setMinHeight = lambda self: self.resize(ui.winWidth, 2)
     '''
@@ -1379,7 +1379,7 @@ class MainWin(gtk.Window, IntegratedCalWidget):
         self.onDateChange()
     goToday = lambda self, widget=None: self.changeDate(*core.getSysDate())
     def onDateChange(self, *a, **kw):
-        IntegratedCalWidget.onDateChange(self, *a, **kw)
+        IntegratedCalObj.onDateChange(self, *a, **kw)
         #for j in range(len(core.plugIndex)):##????????????????????
         #    try:
         #        core.allPlugList[core.plugIndex[j]].date_change(*date)
@@ -1714,7 +1714,7 @@ class MainWin(gtk.Window, IntegratedCalWidget):
         (y, m) = core.getSysDate()[:2]
         self.exportDialog.showDialog(y, m)
     def onConfigChange(self, *a, **kw):
-        IntegratedCalWidget.onConfigChange(self, *a, **kw)
+        IntegratedCalObj.onConfigChange(self, *a, **kw)
         #self.set_property('skip-taskbar-hint', not ui.winTaskbar) ## self.set_skip_taskbar_hint ## FIXME
         ## skip-taskbar-hint  need to restart ro be applied
         preferences.settings.set_property(

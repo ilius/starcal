@@ -31,7 +31,7 @@ import gtk
 from gtk import gdk
 
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip
-from scal2.ui_gtk.gcommon import IntegratedCalWidget
+from scal2.ui_gtk.gcommon import IntegratedCalObj
 
 
 confPath = join(confDir, 'ui-customize.conf')
@@ -43,9 +43,9 @@ if os.path.isfile(confPath):
 
 
 
-class CustomizableWidgetWrapper(IntegratedCalWidget):
+class CustomizableWidgetWrapper(IntegratedCalObj):
     def initVars(self, name, desc, optionsWidget=None):
-        IntegratedCalWidget.initVars(self, name, desc)
+        IntegratedCalObj.initVars(self, name, desc)
         self.optionsWidget = optionsWidget
         self.myKeys = []
         if self.optionsWidget:
