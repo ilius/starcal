@@ -3171,7 +3171,7 @@ class Account(JsonEventBaseClass):
     def save(self):
         if self.id is None:
             self.setId()
-        JsonEventBaseClass.save()
+        JsonEventBaseClass.save(self)
     def setId(self, _id=None):
         global lastEventAccountId
         if _id is None or _id<0:
