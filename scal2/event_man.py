@@ -2036,10 +2036,11 @@ class EventContainer(JsonEventBaseClass):
             return self.getEvent(key)
         else:
             raise TypeError('invalid key type %r give to EventContainer.__getitem__'%key)
-    def __init__(self):
+    __repr__ = lambda self: '%s(title=%r)'%(self.__class__.__name__, self.title)
+    def __init__(self, title='Untitled'):
         self.mode = core.primaryMode
         self.idList = []
-        self.title = 'Untitled'
+        self.title = title
         self.icon = ''
         self.showFullEventDesc = False
         ######
@@ -2051,7 +2052,7 @@ class EventContainer(JsonEventBaseClass):
         assert eid in self.idList
         eventFile = join(eventsDir, str(eid), 'event.json')
         if not isfile(eventFile):
-            raise IOError('error while loading event file %r: no such file (container title: %s)'%(eventFile, self.title))
+            raise IOError('error while loading event file %r: no such file (container: %r)'%(eventFile, self))
         data = jsonToData(open(eventFile).read())
         data['id'] = eid ## FIXME
         event = classes.event.byName[data['type']](eid)
@@ -2175,16 +2176,16 @@ class EventGroup(EventContainer):
             raise TypeError('invalid key %r give to EventGroup.__delitem__'%key)
     def checkEventToAdd(self, event):
         return event.name in self.acceptsEventTypes
+    __repr__ = lambda self: '%s(_id=%r, title=%r)'%(self.__class__.__name__, self.id, self.title)
     def __init__(self, _id=None, title=None):
-        EventContainer.__init__(self)
+        if title is None:
+            title = self.desc
+        EventContainer.__init__(self, title=title)
         if _id is None:
             self.id = None
         else:
             self.setId(_id)
         self.enable = True
-        if title is None:
-            title = self.desc
-        self.title = title
         self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)## FIXME
         #self.defaultNotifyBefore = (10, 60) ## FIXME
         if len(self.acceptsEventTypes)==1:
@@ -3011,9 +3012,8 @@ class EventTrash(EventContainer):
     name = 'trash'
     desc = _('Trash')
     file = join(confDir, 'event', 'trash.json')## FIXME
-    def __init__(self):
-        EventContainer.__init__(self)
-        self.title = _('Trash')
+    def __init__(self, title=_('Trash')):
+        EventContainer.__init__(self, title=title)
         self.icon = join(pixDir, 'trash.png')
         self.enable = False
     def delete(self, eid):
