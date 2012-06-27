@@ -89,7 +89,7 @@ def setupMenuHideOnLeave(menu):
 
 def stock_arrow_repr(item):
     if isinstance(item, gtk._gtk.ArrowType):
-        return 'gtk.%s\n'%item.value_name[4:]
+        return 'gtk.%s'%item.value_name[4:]
     else:
         return repr(item)
 

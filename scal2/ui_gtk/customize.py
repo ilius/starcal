@@ -31,6 +31,7 @@ import gtk
 from gtk import gdk
 
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip
+from scal2.ui_gtk import gcommon
 from scal2.ui_gtk.gcommon import IntegratedCalObj
 
 

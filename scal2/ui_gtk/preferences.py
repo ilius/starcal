@@ -32,8 +32,6 @@ from scal2.paths import *
 from scal2 import core
 from scal2.core import myRaise, convert, APP_DESC
 
-from scal2.format_time import compileTmFormat
-
 from scal2 import ui
 
 import gtk
@@ -47,80 +45,11 @@ from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
 from scal2.ui_gtk.utils import *
 
+from scal2.ui_gtk import gcommon
 from scal2.ui_gtk.export import ExportToIcsDialog
 from scal2.ui_gtk.event.main import AccountEditorDialog
 
 ############################################################
-
-## stock image of "Next" and "Previous" buttons(year/month)
-## STOCK_GO_BACK, STOCK_GO_FORWARD, STOCK_GO_DOWN, STOCK_GO_UP, STOCK_ZOOM_OUT, STOCK_ZOOM_IN
-prevStock = gtk.STOCK_GO_BACK
-nextStock = gtk.STOCK_GO_FORWARD
-
-##############################
-
-settings = gtk.settings_get_default()
-
-ui.fontDefault = gfontDecode(settings.get_property('gtk-font-name'))
-if not ui.fontCustom:
-    ui.fontCustom = ui.fontDefault
-
-if ui.shownCals[0]['font']==None:
-    ui.shownCals[0]['font'] = ui.fontDefault
-
-(name, bold, underline, size) = ui.fontDefault
-for item in ui.shownCals[1:]:
-    if item['font']==None:
-        item['font'] = (name, bold, underline, int(size*0.6))
-del name, bold, underline, size
-
-##############################
-
-#print settings.get_property('gtk-timeout-initial')## 200
-#print settings.get_property('gtk-timeout-repeat')## 20
-#settings.set_property('gtk-timeout-repeat', 100)##???????????????? Dosn't affect!!
-
-
-#if not fontUseDefault:##????????????????
-#    settings.set_property('gtk-font-name', fontCustom)
-
-dateFormat = '%Y/%m/%d'
-clockFormat = '%X' ## '%T', '%X' (local), '<b>%T</b>', '%m:%d'
-
-dateBinFmt = compileTmFormat(dateFormat)
-clockFormatBin = compileTmFormat(clockFormat)
-
-adjustTimeCmd = ''
-
-
-############################################################
-
-sysConfPath = join(sysConfDir, 'ui-gtk.conf')
-if os.path.isfile(sysConfPath):
-    try:
-        exec(open(sysConfPath).read())
-    except:
-        myRaise(__file__)
-
-confPath = join(confDir, 'ui-gtk.conf')
-if os.path.isfile(confPath):
-    try:
-        exec(open(confPath).read())
-    except:
-        myRaise(__file__)
-
-ui.checkMainWinItems()
-
-#if adjustTimeCmd=='':## FIXME
-for cmd in ('gksudo', 'kdesudo', 'gksu', 'gnomesu', 'kdesu'):
-    if os.path.isfile('/usr/bin/%s'%cmd):
-        adjustTimeCmd = [
-            cmd,
-            join(rootDir, 'scripts', 'run'),
-            'scal2/ui_gtk/adjust_dtime.py'
-        ]
-        break
-
 
 ## (VAR_NAME, bool,	    CHECKBUTTON_TEXT)					## CheckButton
 ## (VAR_NAME, list,	    LABEL_TEXT, (ITEM1, ITEM2, ...))	## ComboBox
@@ -625,7 +554,7 @@ class PrefDialog(gtk.Dialog):
         self.localePrefItems = []
         self.corePrefItems = []
         self.uiPrefItems = []
-        self.herePrefItems = [] ## FIXME
+        self.gtkPrefItems = [] ## FIXME
         #####
         self.prefPages = []
         ################################ Tab 1 (General) ############################################
@@ -799,44 +728,6 @@ class PrefDialog(gtk.Dialog):
         vbox.pack_start(hbox, 0, 0)
         ###################
         hbox = gtk.HBox(spacing=3)
-        hbox2 = gtk.HBox(spacing=3)
-        self.checkYmArrows = gtk.CheckButton('')
-        self.checkYmArrows.connect('clicked', self.checkYmArrowsClicked)
-        self.ymArrowHbox = hbox2
-        #self.checkYmArrows.connect('clicked', lambda obj: hbox2.set_sensitive(self.checkYmArrows.get_active()))
-        hbox.pack_start(self.checkYmArrows, 0, 0)
-        hbox2.pack_start(gtk.Label(_('Previous year/month button')), 0, 0)
-        im1 = gtk.Image()
-        ev1 = gtk.EventBox()
-        ev1.set_visible_window(False)
-        ev1.add(im1)
-        ev1.connect('button-press-event', self.imageClicked, 1)
-        hbox2.pack_start(ev1, 0, 0)
-        ##
-        hbox2.pack_start(gtk.Label(''), 1, 1)
-        hbox2.pack_start(gtk.Label(_('Next')), 0, 0)
-        im2 = gtk.Image()
-        ev2 = gtk.EventBox()
-        ev2.set_visible_window(False)
-        ev2.add(im2)
-        ev2.connect('button-press-event', self.imageClicked, 2)
-        hbox2.pack_start(ev2, 0, 0)
-        ##
-        menu = gtk.Menu()
-        for stock in (gtk.STOCK_GO_UP,gtk.STOCK_GO_DOWN,gtk.STOCK_GO_BACK,gtk.STOCK_GO_FORWARD,\
-        gtk.STOCK_ZOOM_IN,gtk.STOCK_ZOOM_OUT,gtk.STOCK_ADD,gtk.STOCK_REMOVE):
-                menu.add(self.stockMenuItem(stock, self.imageSet, stock))
-        for arrow in (gtk.ARROW_LEFT, gtk.ARROW_RIGHT, gtk.ARROW_UP, gtk.ARROW_DOWN):
-                menu.add(self.newArrowMenuItem(arrow, self.imageSet, arrow))
-        menu.show_all()
-        self.menu_im = menu
-        self.im1 = im1
-        self.im2 = im2
-        self.ev1 = ev1
-        self.ev2 = ev2
-        hbox2.pack_start(gtk.Label(''), 1, 1)
-        hbox.pack_start(hbox2, 1, 1)
-        #########
         hbox.pack_start(gtk.Label(_('Left Margin')), 0, 0)
         item = SpinPrefItem(ui, 'calLeftMargin', 0, 99)
         self.uiPrefItems.append(item)
@@ -911,7 +802,7 @@ class PrefDialog(gtk.Dialog):
         hbox.pack_start(label, 0, 0)
         sgroup.add_widget(label)
         #hbox.pack_start(gtk.Label(''), 1, 1)
-        item = ComboEntryTextPrefItem(None, 'dateFormat', (
+        item = ComboEntryTextPrefItem(gcommon, 'dateFormat', (
             '%Y/%m/%d',
             '%Y-%m-%d',
             '%y/%m/%d',
@@ -921,7 +812,7 @@ class PrefDialog(gtk.Dialog):
             '%m/%d',
             '%m/%d/%Y',
         ))
-        self.herePrefItems.append(item)
+        self.gtkPrefItems.append(item)
         hbox.pack_start(item.widget, 1, 1)
         vbox.pack_start(hbox, 0, 0)
         ###
@@ -931,7 +822,7 @@ class PrefDialog(gtk.Dialog):
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
         sgroup.add_widget(label)
-        item = ComboEntryTextPrefItem(None, 'clockFormat', (
+        item = ComboEntryTextPrefItem(gcommon, 'clockFormat', (
             '%T',
             '%X',
             '%Y/%m/%d - %T',
@@ -947,7 +838,7 @@ class PrefDialog(gtk.Dialog):
             '%OH:%OM',
             '<b>%OH:%OM</b>',
         ))
-        self.herePrefItems.append(item)
+        self.gtkPrefItems.append(item)
         hbox.pack_start(item.widget, 1, 1)
         vbox.pack_start(hbox, 0, 0)
         ######
@@ -1322,7 +1213,6 @@ class PrefDialog(gtk.Dialog):
             except IndexError:
                 continue
             notebook.reorder_child(self.prefPages[i], j)
-    checkYmArrowsClicked = lambda self, check: self.ymArrowHbox.set_sensitive(check.get_active())
     cursorFixedClicked = lambda self, check, hbox: hbox.set_sensitive(check.get_active())
     def comboFirstWDChanged(self, combo):
         f = self.comboFirstWD.get_active() ## 0 means Sunday
@@ -1333,55 +1223,6 @@ class PrefDialog(gtk.Dialog):
                 pass
         ## core.firstWeekDay will be later = f
         self.holiWDItem.setStart(f)
-    def stockMenuItem(self, stock, func, *args):
-        item = gtk.MenuItem()
-        item.add(gtk.image_new_from_stock(stock, gtk.ICON_SIZE_MENU))
-        item.connect('activate', func, *args)
-        return item
-    def newArrowMenuItem(self, arrowType, func=None, *args):
-        item = gtk.MenuItem()
-        #ev = gtk.EventBox()
-        #ev.connect('activate', func, *args)
-        item.add(gtk.Arrow(arrowType, gtk.SHADOW_IN))
-        if func!=None:
-            item.connect('activate', func, *args)
-        return item
-    def imageClicked(self, widget, event, num):
-        self.menu_im.popup(None, None, None, event.button, event.time)
-        self.im_num = num
-    def imageSet(self, widget, stock):
-        if isinstance(stock, str):
-            if self.im_num==1:
-                self.ev1.remove(self.im1)
-                self.im1.destroy()
-                self.im1 = gtk.image_new_from_stock(stock, gtk.ICON_SIZE_SMALL_TOOLBAR)
-                self.im1.type = stock
-                self.ev1.add(self.im1)
-                self.im1.show()
-            elif self.im_num==2:
-                self.ev2.remove(self.im2)
-                self.im2.destroy()
-                self.im2 = gtk.image_new_from_stock(stock, gtk.ICON_SIZE_SMALL_TOOLBAR)
-                self.im2.type = stock
-                self.ev2.add(self.im2)
-                self.im2.show()
-        elif isinstance(stock, gtk._gtk.ArrowType):
-            if self.im_num==1:
-                self.ev1.remove(self.im1)
-                self.im1.destroy()
-                self.im1 = gtk.Arrow(stock, gtk.SHADOW_IN)
-                self.im1.type = stock
-                self.ev1.add(self.im1)
-                self.im1.show()
-            elif self.im_num==2:
-                self.ev2.remove(self.im2)
-                self.im2.destroy()
-                self.im2 = gtk.Arrow(stock, gtk.SHADOW_IN)
-                self.im2.type = stock
-                self.ev2.add(self.im2)
-                self.im2.show()
-        else:
-            raise ValueError('bad stock or arrow type %s'%stock)
     def onDelete(self, obj=None, data=None):
         self.hide()
         return True
@@ -1393,12 +1234,11 @@ class PrefDialog(gtk.Dialog):
         self.updatePrefGui()
         return True
     getAllPrefItems = lambda self: self.moduleOptions + self.localePrefItems + self.corePrefItems +\
-                                   self.uiPrefItems + self.herePrefItems
+                                   self.uiPrefItems + self.gtkPrefItems
     def apply(self, widget=None):
-        global prevStock, nextStock
         ####### ?????????????????
         #print 'fontDefault =', ui.fontDefault
-        ui.fontDefault = gfontDecode(gtk.settings_get_default().get_property('gtk-font-name'))
+        ui.fontDefault = gfontDecode(gcommon.settings.get_property('gtk-font-name'))
         #print 'fontDefault =', ui.fontDefault
         ############################################## Updating pref variables
         for opt in self.getAllPrefItems():
@@ -1435,10 +1275,6 @@ class PrefDialog(gtk.Dialog):
             core.weekNumberModeAuto = False
             core.weekNumberMode = mode
         ######
-        ui.showYmArrows = self.checkYmArrows.get_active()
-        prevStock = self.im1.type ##?????????
-        nextStock = self.im2.type ##?????????
-        ######
         ui.cellCache.clear() ## Very important, specially when core.primaryMode will be changed
         core.primaryMode = ui.shownCals[0]['mode']
         #################################################### Saving Preferences
@@ -1467,12 +1303,10 @@ class PrefDialog(gtk.Dialog):
         open(ui.confPath, 'w').write(text)
         ##################### Saving here config
         text = ''
-        for item in self.herePrefItems:
+        for item in self.gtkPrefItems:
             text += item.confStr()
-        for key in ('prevStock', 'nextStock'):
-            text += '%s=%s\n'%(key, stock_arrow_repr(eval(key)))
-        text += 'adjustTimeCmd=%r\n'%adjustTimeCmd ##???????????
-        open(confPath, 'w').write(text)
+        text += 'adjustTimeCmd=%r\n'%gcommon.adjustTimeCmd ## FIXME
+        open(gcommon.confPath, 'w').write(text)
         ################################################### Updating Main GUI
         if ui.mainWin:
             ui.mainWin.onConfigChange()
@@ -1513,13 +1347,6 @@ class PrefDialog(gtk.Dialog):
             self.comboWeekYear.set_active(8)
         else:
             self.comboWeekYear.set_active(core.weekNumberMode)
-        #######
-        self.checkYmArrows.set_active(ui.showYmArrows)
-        self.ymArrowHbox.set_sensitive(ui.showYmArrows)
-        self.im_num = 1
-        self.imageSet(None, prevStock)
-        self.im_num = 2
-        self.imageSet(None, nextStock)
         ###### Plugin Manager
         self.plugTreestore.clear()
         for row in core.getPluginsTable():

@@ -56,7 +56,6 @@ core.showInfo()
 
 from scal2 import event_man
 from scal2 import ui
-from scal2.ui import showYmArrows
 
 import gobject ##?????
 from gobject import timeout_add, timeout_add_seconds
@@ -65,7 +64,7 @@ import gtk
 from gtk import gdk
 
 from scal2.ui_gtk.utils import hideList, showList, set_tooltip, imageFromFile, setupMenuHideOnLeave, \
-                               labelStockMenuItem, labelImageMenuItem, modify_bg_all, openWindow
+                               labelStockMenuItem, labelImageMenuItem, modify_bg_all, openWindow, stock_arrow_repr
 
 from scal2.ui_gtk.color_utils import rgbToGdkColor
 from scal2.ui_gtk import listener
@@ -716,13 +715,13 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
             self.pack_start(arrow, 0, 0)
             self.wgroup[0].append(arrow)
             return arrow
-        if showYmArrows:
+        if ui.showYmArrows:
             self.arrowPY = addNewArrow()## PY = Previous Year
         self.yearLabel[0] = IntLabel()
         self.yearLabel[0].connect('changed', self.yearLabelChange, 0)
         self.pack_start(self.yearLabel[0], 0, 0)
         self.wgroup[0].append(self.yearLabel[0])
-        if showYmArrows:
+        if ui.showYmArrows:
             self.arrowNY = addNewArrow()## NY = Next Year
             sep = gtk.VSeparator()
             self.pack_start(sep, 1, 1)
@@ -732,7 +731,7 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
         self.monthLabel[0].connect('changed', self.monthLabelChange)
         self.pack_start(self.monthLabel[0], 0, 0)
         self.wgroup[0].append(self.monthLabel[0])
-        if showYmArrows:
+        if ui.showYmArrows:
             self.arrowNM = addNewArrow()## NM = Next Month
             self.updateArrows()
         #############################
@@ -760,7 +759,7 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
             self.pack_start(label, 0, 0)
             self.wgroup[i].append(label)
         #############################
-        if showYmArrows:
+        if ui.showYmArrows:
             self.arrowPY.connect('pressed', self.yearButtonPress,-1)
             self.arrowNY.connect('pressed', self.yearButtonPress, 1)
             self.arrowPY.connect('activate', self.yearButtonPress,-1, False)
@@ -778,7 +777,120 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
             set_tooltip(self.arrowNY, _('Next Year'))
             set_tooltip(self.arrowPM, _('Previous Month'))
             set_tooltip(self.arrowNM, _('Next Month'))
-        self.initVars('labelBox', _('Year & Month Labels'))
+        ########################
+        ## stock image of "Next" and "Previous" buttons(year/month)
+        ## STOCK_GO_BACK, STOCK_GO_FORWARD, STOCK_GO_DOWN, STOCK_GO_UP, STOCK_ZOOM_OUT, STOCK_ZOOM_IN
+
+        ##############
+        optionsWidget = gtk.HBox(spacing=3)
+        hbox2 = gtk.HBox(spacing=3)
+        self.checkYmArrows = gtk.CheckButton('')
+        self.checkYmArrows.set_active(ui.showYmArrows)
+        self.checkYmArrows.connect('clicked', self.checkYmArrowsClicked)
+        self.ymArrowHbox = hbox2
+        self.ymArrowHbox.set_sensitive(ui.showYmArrows)
+        #self.checkYmArrows.connect('clicked', lambda obj: hbox2.set_sensitive(self.checkYmArrows.get_active()))
+        optionsWidget.pack_start(self.checkYmArrows, 0, 0)
+        hbox2.pack_start(gtk.Label(_('Previous year/month button')), 0, 0)
+        im1 = gtk.Image()
+        ev1 = gtk.EventBox()
+        ev1.set_visible_window(False)
+        ev1.add(im1)
+        ev1.connect('button-press-event', self.imageClicked, 1)
+        hbox2.pack_start(ev1, 0, 0)
+        ##
+        hbox2.pack_start(gtk.Label(''), 1, 1)
+        hbox2.pack_start(gtk.Label(_('Next')), 0, 0)
+        im2 = gtk.Image()
+        ev2 = gtk.EventBox()
+        ev2.set_visible_window(False)
+        ev2.add(im2)
+        ev2.connect('button-press-event', self.imageClicked, 2)
+        hbox2.pack_start(ev2, 0, 0)
+        ##
+        menu = gtk.Menu()
+        for stock in (
+            gtk.STOCK_GO_UP,
+            gtk.STOCK_GO_DOWN,
+            gtk.STOCK_GO_BACK,
+            gtk.STOCK_GO_FORWARD,
+            gtk.STOCK_ZOOM_IN,
+            gtk.STOCK_ZOOM_OUT,
+            gtk.STOCK_ADD,
+            gtk.STOCK_REMOVE,
+        ):
+            menu.add(self.stockMenuItem(stock, self.imageSet, stock))
+        for arrow in (gtk.ARROW_LEFT, gtk.ARROW_RIGHT, gtk.ARROW_UP, gtk.ARROW_DOWN):
+            menu.add(self.newArrowMenuItem(arrow, self.imageSet, arrow))
+        menu.show_all()
+        self.menu_im = menu
+        self.im1 = im1
+        self.im2 = im2
+        self.ev1 = ev1
+        self.ev2 = ev2
+        hbox2.pack_start(gtk.Label(''), 1, 1)
+        optionsWidget.pack_start(hbox2, 1, 1)
+        self.im_num = 1
+        self.imageSet(None, gcommon.prevStock)
+        self.im_num = 2
+        self.imageSet(None, gcommon.nextStock)
+        ## FIXME
+        ########################
+        self.initVars('labelBox', _('Year & Month Labels'), optionsWidget=optionsWidget)
+    def checkYmArrowsClicked(self, check):
+        active = check.get_active()
+        self.ymArrowHbox.set_sensitive(active)
+        ui.showYmArrows = active
+    def stockMenuItem(self, stock, func, *args):
+        item = gtk.MenuItem()
+        item.add(gtk.image_new_from_stock(stock, gtk.ICON_SIZE_MENU))
+        item.connect('activate', func, *args)
+        return item
+    def newArrowMenuItem(self, arrowType, func=None, *args):
+        item = gtk.MenuItem()
+        #ev = gtk.EventBox()
+        #ev.connect('activate', func, *args)
+        item.add(gtk.Arrow(arrowType, gtk.SHADOW_IN))
+        if func!=None:
+            item.connect('activate', func, *args)
+        return item
+    def imageClicked(self, widget, event, num):
+        self.menu_im.popup(None, None, None, event.button, event.time)
+        self.im_num = num
+    def imageSet(self, widget, stock):
+        if isinstance(stock, str):
+            if self.im_num==1:
+                self.ev1.remove(self.im1)
+                self.im1.destroy()
+                self.im1 = gtk.image_new_from_stock(stock, gtk.ICON_SIZE_SMALL_TOOLBAR)
+                gcommon.prevStock = stock
+                self.ev1.add(self.im1)
+                self.im1.show()
+            elif self.im_num==2:
+                self.ev2.remove(self.im2)
+                self.im2.destroy()
+                self.im2 = gtk.image_new_from_stock(stock, gtk.ICON_SIZE_SMALL_TOOLBAR)
+                gcommon.nextStock = stock
+                self.ev2.add(self.im2)
+                self.im2.show()
+        elif isinstance(stock, gtk._gtk.ArrowType):
+            if self.im_num==1:
+                self.ev1.remove(self.im1)
+                self.im1.destroy()
+                self.im1 = gtk.Arrow(stock, gtk.SHADOW_IN)
+                gcommon.prevStock = stock
+                self.ev1.add(self.im1)
+                self.im1.show()
+            elif self.im_num==2:
+                self.ev2.remove(self.im2)
+                self.im2.destroy()
+                self.im2 = gtk.Arrow(stock, gtk.SHADOW_IN)
+                gcommon.nextStock = stock
+                self.ev2.add(self.im2)
+                self.im2.show()
+        else:
+            raise ValueError('bad stock or arrow type %s'%stock)
+        self.updateArrows()
     def monthPlus(self, plus=1):
         ui.monthPlus(plus)
         self.onDateChange()
@@ -815,36 +927,36 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
         ui.changeDate(y, item+1, d, mlabel.mode)
         self.emit('date-change')
     def updateArrows(self):
-        if showYmArrows:
-            if isinstance(preferences.prevStock, str):
-                self.arrowPY.set_image(gtk.image_new_from_stock(preferences.prevStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
-                self.arrowPM.set_image(gtk.image_new_from_stock(preferences.prevStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
-            elif isinstance(preferences.prevStock, gtk._gtk.ArrowType):
+        if ui.showYmArrows:
+            if isinstance(gcommon.prevStock, str):
+                self.arrowPY.set_image(gtk.image_new_from_stock(gcommon.prevStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
+                self.arrowPM.set_image(gtk.image_new_from_stock(gcommon.prevStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
+            elif isinstance(gcommon.prevStock, gtk._gtk.ArrowType):
                 if self.arrowPY.child!=None:
                     self.arrowPY.remove(self.arrowPY.child)
-                arrow = gtk.Arrow(preferences.prevStock, gtk.SHADOW_IN)
+                arrow = gtk.Arrow(gcommon.prevStock, gtk.SHADOW_IN)
                 self.arrowPY.add(arrow)
                 arrow.show()
                 ######
                 if self.arrowPM.child!=None:
                     self.arrowPM.remove(self.arrowPM.child)
-                arrow = gtk.Arrow(preferences.prevStock, gtk.SHADOW_IN)
+                arrow = gtk.Arrow(gcommon.prevStock, gtk.SHADOW_IN)
                 self.arrowPM.add(arrow)
                 arrow.show()
             #################
-            if isinstance(preferences.nextStock, str):
-                self.arrowNY.set_image(gtk.image_new_from_stock(preferences.nextStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
-                self.arrowNM.set_image(gtk.image_new_from_stock(preferences.nextStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
-            elif isinstance(preferences.nextStock, gtk._gtk.ArrowType):
+            if isinstance(gcommon.nextStock, str):
+                self.arrowNY.set_image(gtk.image_new_from_stock(gcommon.nextStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
+                self.arrowNM.set_image(gtk.image_new_from_stock(gcommon.nextStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
+            elif isinstance(gcommon.nextStock, gtk._gtk.ArrowType):
                 if self.arrowNY.child!=None:
                     self.arrowNY.remove(self.arrowNY.child)
-                arrow = gtk.Arrow(preferences.nextStock, gtk.SHADOW_IN)
+                arrow = gtk.Arrow(gcommon.nextStock, gtk.SHADOW_IN)
                 self.arrowNY.add(arrow)
                 arrow.show()
                 ######
                 if self.arrowNM.child!=None:
                     self.arrowNM.remove(self.arrowNM.child)
-                arrow = gtk.Arrow(preferences.nextStock, gtk.SHADOW_IN)
+                arrow = gtk.Arrow(gcommon.nextStock, gtk.SHADOW_IN)
                 self.arrowNM.add(arrow)
                 arrow.show()
     def updateTextWidth(self):
@@ -868,7 +980,6 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
     def onConfigChange(self, *a, **kw):
         CustomizableCalObj.onConfigChange(self, *a, **kw)
         self.updateTextWidth()
-        self.updateArrows()
         #####################
         for i in range(len(self.monthLabel)):
             self.monthLabel[i].changeMode(ui.shownCals[i]['mode'])
@@ -888,7 +999,12 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
                 (y, m, d) = ui.cell.dates[item['mode']]
                 self.monthLabel[i].setActive(m-1)
                 self.yearLabel[i].setActive(y)
-
+    def confStr(self):
+        text = ''
+        text += 'ui.showYmArrows=%r\n'%ui.showYmArrows
+        for key in ('prevStock', 'nextStock'):
+            text += 'gcommon.%s=%s\n'%(key, stock_arrow_repr(getattr(gcommon, key)))
+        return text
 
 
 
@@ -936,7 +1052,7 @@ class StatusBox(gtk.HBox, CustomizableCalObj):
             if ui.shownCals[i]['enable']:
                 self.dateLabel[i].show()
                 mode = ui.shownCals[i]['mode']
-                text = ui.cell.format(preferences.dateBinFmt, mode)
+                text = ui.cell.format(gcommon.dateBinFmt, mode)
                 if i==0:
                     self.dateLabel[i].set_label('<b>%s</b>'%text)
                 else:
@@ -1496,13 +1612,13 @@ class MainWin(gtk.Window, IntegratedCalObj):
         self.menuMain.popup(None, None, getMenuPos, 3, 0)
         self.menuMain.hide()
     def copyDate(self, obj=None, event=None):
-        self.clipboard.set_text(ui.cell.format(preferences.dateBinFmt, core.primaryMode))
+        self.clipboard.set_text(ui.cell.format(gcommon.dateBinFmt, core.primaryMode))
         #self.clipboard.store() ## ?????? No need!
     def copyDateToday(self, obj=None, event=None):
-        self.clipboard.set_text(ui.todayCell.format(preferences.dateBinFmt, core.primaryMode))
+        self.clipboard.set_text(ui.todayCell.format(gcommon.dateBinFmt, core.primaryMode))
         #self.clipboard.store() ## ?????? No need!
     def copyTime(self, obj=None, event=None):
-        self.clipboard.set_text(ui.todayCell.format(preferences.clockFormatBin, core.primaryMode, localtime()[3:6]))
+        self.clipboard.set_text(ui.todayCell.format(gcommon.clockFormatBin, core.primaryMode, localtime()[3:6]))
         #self.clipboard.store() ## ?????? No need!
     """
     def updateToolbarClock(self):
@@ -1708,7 +1824,7 @@ class MainWin(gtk.Window, IntegratedCalObj):
         os.environ['LANG'] = locale_man.sysLangDefault
         restart()
     def adjustTime(self, widget=None, event=None):
-        Popen(preferences.adjustTimeCmd)
+        Popen(gcommon.adjustTimeCmd)
     exportClicked = lambda self, widget=None: self.exportDialog.showDialog(ui.cell.year, ui.cell.month)
     def exportClickedTray(self, widget=None, event=None):
         (y, m) = core.getSysDate()[:2]
@@ -1717,7 +1833,7 @@ class MainWin(gtk.Window, IntegratedCalObj):
         IntegratedCalObj.onConfigChange(self, *a, **kw)
         #self.set_property('skip-taskbar-hint', not ui.winTaskbar) ## self.set_skip_taskbar_hint ## FIXME
         ## skip-taskbar-hint  need to restart ro be applied
-        preferences.settings.set_property(
+        gcommon.settings.set_property(
             'gtk-font-name',
             pfontEncode(ui.getFont()),
         )
