@@ -20,7 +20,7 @@
 import sys, os
 from time import time, localtime
 
-from scal2.utils import toUnicode, toStr, strFindNth, iceil
+from scal2.utils import toUnicode, toStr, strFindNth, iceil, ifloor
 
 from scal2 import locale_man
 
@@ -243,6 +243,7 @@ class DaySpinButton(SingleSpinButton):
 
 class FloatSpinButton(MultiSpinButton):
     def __init__(self, _min, _max, digNum, **kwargs):
+        self.digNum = digNum
         self.digDec = 10**digNum
         self._min = _min
         self._max = _max
@@ -250,22 +251,22 @@ class FloatSpinButton(MultiSpinButton):
             self,
             locale_man.getNumSep(),
             (
-                IntField(_min, _max),
+                IntField(int(_min), int(_max)),
                 IntField(0, self.digDec-1),
             ),
             **kwargs
         )
     def get_value(self):
-        v1, v2 = MultiSpinButton.get_value(self)
-        return v1 + float(v2)/self.digDec
+        return float('%d.%d'%tuple(MultiSpinButton.get_value(self)))
     def set_value(self, value):
         if value < self._min:
             value = self._min
         elif value > self._max:
             value = self._max
-        v1, v2 = divmod(value, 1)
-        v1 = int(v1)
-        v2 = iceil(v2*self.digDec)
+        s1, s2 = str(float(value)).split('.')
+        v1 = int(s1)
+        v2 = int(s2[:self.digNum])
+        #print value, v1, v2
         MultiSpinButton.set_value(self, (v1, v2))
     def entry_plus(self, p):
         MultiSpinButton.entry_plus(self, p)
@@ -549,8 +550,13 @@ def getDateTimeWidget():
     btn.set_value((2011, 1, 1))
     return btn
 
+def getIntWidget():
+    btn = IntSpinButton(0, 99)
+    btn.set_value(12)
+    return btn
+
 def getFloatWidget():
-    btn = FloatSpinButton(0, 30, 2)
+    btn = FloatSpinButton(-3.3, 5.5, 1)
     btn.set_value(3.67)
     return btn
 
