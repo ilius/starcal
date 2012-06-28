@@ -332,7 +332,10 @@ class SpinPrefItem(PrefItem):
     def __init__(self, module, varName, _min, _max, digits=1):
         self.module = module
         self.varName = varName
-        w = FloatSpinButton(_min, _max, digits)
+        if digits==0:
+            w = IntSpinButton(_min, _max)
+        else:
+            w = FloatSpinButton(_min, _max, digits)
         self.widget = w
         self.get = w.get_value
         self.set = w.set_value

@@ -243,6 +243,8 @@ class DaySpinButton(SingleSpinButton):
 
 class FloatSpinButton(MultiSpinButton):
     def __init__(self, _min, _max, digNum, **kwargs):
+        if digNum < 1:
+            raise ValueError('FloatSpinButton: invalid digNum=%r'%digNum)
         self.digNum = digNum
         self.digDec = 10**digNum
         self._min = _min
