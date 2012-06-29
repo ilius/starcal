@@ -1512,6 +1512,8 @@ class MainWin(gtk.Window, IntegratedCalObj):
         menu2 = gtk.Menu()
         ##
         for group in ui.eventGroups:
+            if not group.enable:
+                continue
             eventTypes = group.acceptsEventTypes
             item2 = gtk.ImageMenuItem()
             item2.set_label(group.title)
