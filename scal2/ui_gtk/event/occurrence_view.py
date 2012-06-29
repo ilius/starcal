@@ -51,6 +51,7 @@ class DayOccurrenceView(gtk.VBox, IntegratedCalObj):
                 label = gtk.Label(item['time'])
                 label.set_direction(gtk.TEXT_DIR_LTR)
                 hbox.pack_start(label, 0, 0)
+                hbox.pack_start(gtk.Label('  '), 0, 0)
             label = gtk.Label(item['text'])
             label.set_selectable(True)
             label.set_line_wrap(True)
