@@ -1392,10 +1392,14 @@ msgstr ""
 
 
 
-msgid "Show Window Controllers"
+msgid "Window Controller"
 msgstr ""
-"نمایش کنترل‌کننده‌های پنجره"
+"کنترل‌کنندهٔ پنجره"
 
+
+msgid "Seperator"
+msgstr ""
+"جداکننده"
 
 msgid "Show Digital Clock:"
 msgstr ""
