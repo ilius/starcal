@@ -47,8 +47,7 @@ from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile, rectangleContainsP
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
-from scal2.ui_gtk import gcommon
-from scal2.ui_gtk.gcommon import IntegratedCalObj
+from scal2.ui_gtk import gtk_ud as ud
 
 from scal2.ui_gtk.event.common import IconSelectButton, EventEditorDialog, addNewEvent, GroupEditorDialog
 
@@ -798,7 +797,7 @@ class FetchRemoteGroupsDialog(gtk.Dialog):
         self.account = account
 
 
-class EventManagerDialog(gtk.Dialog, IntegratedCalObj):## FIXME
+class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
     def checkEventToAdd(self, group, event):
         if not group.checkEventToAdd(event):
             showError(_('Group type "%s" can not contain event type "%s"')%(group.desc, event.desc), self)
@@ -820,7 +819,7 @@ class EventManagerDialog(gtk.Dialog, IntegratedCalObj):## FIXME
             )
     showNewGroup = lambda self, group: self.showNewGroupAtIndex(group, ui.eventGroups.index(group.id))
     def onConfigChange(self, *a, **kw):
-        IntegratedCalObj.onConfigChange(self, *a, **kw)
+        ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
         ###
         if not self.isLoaded:
             return
@@ -883,7 +882,7 @@ class EventManagerDialog(gtk.Dialog, IntegratedCalObj):## FIXME
     def __init__(self):
         gtk.Dialog.__init__(self)
         self.initVars('eventMan', _('Event Manager'))
-        gcommon.windowList.appendItem(self)
+        ud.windowList.appendItem(self)
         ####
         self.isLoaded = False
         self.set_title(_('Event Manager'))

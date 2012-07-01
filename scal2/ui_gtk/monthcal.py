@@ -34,7 +34,7 @@ from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
 
 from scal2.ui_gtk.drawing import *
 from scal2.ui_gtk import listener
-from scal2.ui_gtk import gcommon
+from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk import preferences
 from scal2.ui_gtk.customize import CustomizableCalObj
 

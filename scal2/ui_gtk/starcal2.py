@@ -75,8 +75,7 @@ from scal2.ui_gtk.drawing import newTextLayout, newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets.clock import FClockLabel
 #from ui_gtk.mywidgets2.multi_spin_button import DateButtonOption
 
-from scal2.ui_gtk import gcommon
-from scal2.ui_gtk.gcommon import IntegratedCalObj
+from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk import preferences
 from scal2.ui_gtk.preferences import PrefItem, gdkColorToRgb, gfontEncode, pfontEncode
 from scal2.ui_gtk.customize import CustomizableCalObj, CustomizeDialog
@@ -831,9 +830,9 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
         hbox2.pack_start(gtk.Label(''), 1, 1)
         optionsWidget.pack_start(hbox2, 1, 1)
         self.im_num = 1
-        self.imageSet(None, gcommon.prevStock)
+        self.imageSet(None, ud.prevStock)
         self.im_num = 2
-        self.imageSet(None, gcommon.nextStock)
+        self.imageSet(None, ud.nextStock)
         ## FIXME
         ########################
         self.initVars('labelBox', _('Year & Month Labels'), optionsWidget=optionsWidget)
@@ -863,14 +862,14 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
                 self.ev1.remove(self.im1)
                 self.im1.destroy()
                 self.im1 = gtk.image_new_from_stock(stock, gtk.ICON_SIZE_SMALL_TOOLBAR)
-                gcommon.prevStock = stock
+                ud.prevStock = stock
                 self.ev1.add(self.im1)
                 self.im1.show()
             elif self.im_num==2:
                 self.ev2.remove(self.im2)
                 self.im2.destroy()
                 self.im2 = gtk.image_new_from_stock(stock, gtk.ICON_SIZE_SMALL_TOOLBAR)
-                gcommon.nextStock = stock
+                ud.nextStock = stock
                 self.ev2.add(self.im2)
                 self.im2.show()
         elif isinstance(stock, gtk._gtk.ArrowType):
@@ -878,14 +877,14 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
                 self.ev1.remove(self.im1)
                 self.im1.destroy()
                 self.im1 = gtk.Arrow(stock, gtk.SHADOW_IN)
-                gcommon.prevStock = stock
+                ud.prevStock = stock
                 self.ev1.add(self.im1)
                 self.im1.show()
             elif self.im_num==2:
                 self.ev2.remove(self.im2)
                 self.im2.destroy()
                 self.im2 = gtk.Arrow(stock, gtk.SHADOW_IN)
-                gcommon.nextStock = stock
+                ud.nextStock = stock
                 self.ev2.add(self.im2)
                 self.im2.show()
         else:
@@ -928,35 +927,35 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
         self.emit('date-change')
     def updateArrows(self):
         if ui.showYmArrows:
-            if isinstance(gcommon.prevStock, str):
-                self.arrowPY.set_image(gtk.image_new_from_stock(gcommon.prevStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
-                self.arrowPM.set_image(gtk.image_new_from_stock(gcommon.prevStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
-            elif isinstance(gcommon.prevStock, gtk._gtk.ArrowType):
+            if isinstance(ud.prevStock, str):
+                self.arrowPY.set_image(gtk.image_new_from_stock(ud.prevStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
+                self.arrowPM.set_image(gtk.image_new_from_stock(ud.prevStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
+            elif isinstance(ud.prevStock, gtk._gtk.ArrowType):
                 if self.arrowPY.child!=None:
                     self.arrowPY.remove(self.arrowPY.child)
-                arrow = gtk.Arrow(gcommon.prevStock, gtk.SHADOW_IN)
+                arrow = gtk.Arrow(ud.prevStock, gtk.SHADOW_IN)
                 self.arrowPY.add(arrow)
                 arrow.show()
                 ######
                 if self.arrowPM.child!=None:
                     self.arrowPM.remove(self.arrowPM.child)
-                arrow = gtk.Arrow(gcommon.prevStock, gtk.SHADOW_IN)
+                arrow = gtk.Arrow(ud.prevStock, gtk.SHADOW_IN)
                 self.arrowPM.add(arrow)
                 arrow.show()
             #################
-            if isinstance(gcommon.nextStock, str):
-                self.arrowNY.set_image(gtk.image_new_from_stock(gcommon.nextStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
-                self.arrowNM.set_image(gtk.image_new_from_stock(gcommon.nextStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
-            elif isinstance(gcommon.nextStock, gtk._gtk.ArrowType):
+            if isinstance(ud.nextStock, str):
+                self.arrowNY.set_image(gtk.image_new_from_stock(ud.nextStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
+                self.arrowNM.set_image(gtk.image_new_from_stock(ud.nextStock, gtk.ICON_SIZE_SMALL_TOOLBAR))
+            elif isinstance(ud.nextStock, gtk._gtk.ArrowType):
                 if self.arrowNY.child!=None:
                     self.arrowNY.remove(self.arrowNY.child)
-                arrow = gtk.Arrow(gcommon.nextStock, gtk.SHADOW_IN)
+                arrow = gtk.Arrow(ud.nextStock, gtk.SHADOW_IN)
                 self.arrowNY.add(arrow)
                 arrow.show()
                 ######
                 if self.arrowNM.child!=None:
                     self.arrowNM.remove(self.arrowNM.child)
-                arrow = gtk.Arrow(gcommon.nextStock, gtk.SHADOW_IN)
+                arrow = gtk.Arrow(ud.nextStock, gtk.SHADOW_IN)
                 self.arrowNM.add(arrow)
                 arrow.show()
     def updateTextWidth(self):
@@ -1003,7 +1002,7 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
         text = ''
         text += 'ui.showYmArrows=%r\n'%ui.showYmArrows
         for key in ('prevStock', 'nextStock'):
-            text += 'gcommon.%s=%s\n'%(key, stock_arrow_repr(getattr(gcommon, key)))
+            text += 'ud.%s=%s\n'%(key, stock_arrow_repr(getattr(ud, key)))
         return text
 
 
@@ -1052,7 +1051,7 @@ class StatusBox(gtk.HBox, CustomizableCalObj):
             if ui.shownCals[i]['enable']:
                 self.dateLabel[i].show()
                 mode = ui.shownCals[i]['mode']
-                text = ui.cell.format(gcommon.dateBinFmt, mode)
+                text = ui.cell.format(ud.dateBinFmt, mode)
                 if i==0:
                     self.dateLabel[i].set_label('<b>%s</b>'%text)
                 else:
@@ -1163,7 +1162,7 @@ toolbarItemsData = (
 toolbarItemsDataDict = dict([(item._name, item) for item in toolbarItemsData])
 
 
-class MainWin(gtk.Window, IntegratedCalObj):
+class MainWin(gtk.Window, ud.IntegratedCalObj):
     timeout = 1 ## second
     setMinHeight = lambda self: self.resize(ui.winWidth, 2)
     '''
@@ -1191,7 +1190,7 @@ class MainWin(gtk.Window, IntegratedCalObj):
     def __init__(self, trayMode=3):
         gtk.Window.__init__(self)##, gtk.WINDOW_POPUP) ## ????????????
         self.initVars('mainWin', _('Main Window'))
-        gcommon.windowList.appendItem(self)
+        ud.windowList.appendItem(self)
         ui.mainWin = self
         ##################
         ## trayMode:
@@ -1206,13 +1205,13 @@ class MainWin(gtk.Window, IntegratedCalObj):
         self.trayMode = trayMode
         ###
         ui.eventManDialog = EventManagerDialog()
-        gcommon.windowList.appendItem(ui.eventManDialog)
+        ud.windowList.appendItem(ui.eventManDialog)
         ###
         ui.timeLineWin = TimeLineWindow(width=rootWindow.get_geometry()[2])
-        gcommon.windowList.appendItem(ui.timeLineWin)
+        ud.windowList.appendItem(ui.timeLineWin)
         ###
         ui.weekCalWin = WeekCalWindow()
-        gcommon.windowList.appendItem(ui.weekCalWin)
+        ud.windowList.appendItem(ui.weekCalWin)
         ###########
         ##self.connect('window-state-event', selfStateEvent)
         self.set_title('%s %s'%(core.APP_DESC, core.VERSION))
@@ -1495,7 +1494,7 @@ class MainWin(gtk.Window, IntegratedCalObj):
         self.onDateChange()
     goToday = lambda self, widget=None: self.changeDate(*core.getSysDate())
     def onDateChange(self, *a, **kw):
-        IntegratedCalObj.onDateChange(self, *a, **kw)
+        ud.IntegratedCalObj.onDateChange(self, *a, **kw)
         #for j in range(len(core.plugIndex)):##????????????????????
         #    try:
         #        core.allPlugList[core.plugIndex[j]].date_change(*date)
@@ -1614,13 +1613,13 @@ class MainWin(gtk.Window, IntegratedCalObj):
         self.menuMain.popup(None, None, getMenuPos, 3, 0)
         self.menuMain.hide()
     def copyDate(self, obj=None, event=None):
-        self.clipboard.set_text(ui.cell.format(gcommon.dateBinFmt, core.primaryMode))
+        self.clipboard.set_text(ui.cell.format(ud.dateBinFmt, core.primaryMode))
         #self.clipboard.store() ## ?????? No need!
     def copyDateToday(self, obj=None, event=None):
-        self.clipboard.set_text(ui.todayCell.format(gcommon.dateBinFmt, core.primaryMode))
+        self.clipboard.set_text(ui.todayCell.format(ud.dateBinFmt, core.primaryMode))
         #self.clipboard.store() ## ?????? No need!
     def copyTime(self, obj=None, event=None):
-        self.clipboard.set_text(ui.todayCell.format(gcommon.clockFormatBin, core.primaryMode, localtime()[3:6]))
+        self.clipboard.set_text(ui.todayCell.format(ud.clockFormatBin, core.primaryMode, localtime()[3:6]))
         #self.clipboard.store() ## ?????? No need!
     """
     def updateToolbarClock(self):
@@ -1826,16 +1825,16 @@ class MainWin(gtk.Window, IntegratedCalObj):
         os.environ['LANG'] = locale_man.sysLangDefault
         restart()
     def adjustTime(self, widget=None, event=None):
-        Popen(gcommon.adjustTimeCmd)
+        Popen(ud.adjustTimeCmd)
     exportClicked = lambda self, widget=None: self.exportDialog.showDialog(ui.cell.year, ui.cell.month)
     def exportClickedTray(self, widget=None, event=None):
         (y, m) = core.getSysDate()[:2]
         self.exportDialog.showDialog(y, m)
     def onConfigChange(self, *a, **kw):
-        IntegratedCalObj.onConfigChange(self, *a, **kw)
+        ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
         #self.set_property('skip-taskbar-hint', not ui.winTaskbar) ## self.set_skip_taskbar_hint ## FIXME
         ## skip-taskbar-hint  need to restart ro be applied
-        gcommon.settings.set_property(
+        ud.settings.set_property(
             'gtk-font-name',
             pfontEncode(ui.getFont()),
         )

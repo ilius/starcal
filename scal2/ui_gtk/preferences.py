@@ -45,7 +45,7 @@ from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
 from scal2.ui_gtk.utils import *
 
-from scal2.ui_gtk import gcommon
+from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.export import ExportToIcsDialog
 from scal2.ui_gtk.event.main import AccountEditorDialog
 
@@ -791,7 +791,7 @@ class PrefDialog(gtk.Dialog):
         hbox.pack_start(label, 0, 0)
         sgroup.add_widget(label)
         #hbox.pack_start(gtk.Label(''), 1, 1)
-        item = ComboEntryTextPrefItem(gcommon, 'dateFormat', (
+        item = ComboEntryTextPrefItem(ud, 'dateFormat', (
             '%Y/%m/%d',
             '%Y-%m-%d',
             '%y/%m/%d',
@@ -811,7 +811,7 @@ class PrefDialog(gtk.Dialog):
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
         sgroup.add_widget(label)
-        item = ComboEntryTextPrefItem(gcommon, 'clockFormat', (
+        item = ComboEntryTextPrefItem(ud, 'clockFormat', (
             '%T',
             '%X',
             '%Y/%m/%d - %T',
@@ -1227,7 +1227,7 @@ class PrefDialog(gtk.Dialog):
     def apply(self, widget=None):
         ####### ?????????????????
         #print 'fontDefault =', ui.fontDefault
-        ui.fontDefault = gfontDecode(gcommon.settings.get_property('gtk-font-name'))
+        ui.fontDefault = gfontDecode(ud.settings.get_property('gtk-font-name'))
         #print 'fontDefault =', ui.fontDefault
         ############################################## Updating pref variables
         for opt in self.getAllPrefItems():
@@ -1294,8 +1294,8 @@ class PrefDialog(gtk.Dialog):
         text = ''
         for item in self.gtkPrefItems:
             text += item.confStr()
-        text += 'adjustTimeCmd=%r\n'%gcommon.adjustTimeCmd ## FIXME
-        open(gcommon.confPath, 'w').write(text)
+        text += 'adjustTimeCmd=%r\n'%ud.adjustTimeCmd ## FIXME
+        open(ud.confPath, 'w').write(text)
         ################################################### Updating Main GUI
         if ui.mainWin:
             ui.mainWin.onConfigChange()
