@@ -44,8 +44,8 @@ if os.path.isfile(confPath):
 
 
 class CustomizableCalObj(ud.IntegratedCalObj):
-    def initVars(self, name, desc, optionsWidget=None):
-        ud.IntegratedCalObj.initVars(self, name, desc)
+    def initVars(self, optionsWidget=None):
+        ud.IntegratedCalObj.initVars(self)
         self.optionsWidget = optionsWidget
         self.myKeys = []
         if self.optionsWidget:

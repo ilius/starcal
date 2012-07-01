@@ -36,12 +36,9 @@ from gtk import gdk
 from scal2.ui_gtk.font_utils import gfontDecode
 
 class IntegratedCalObj(gtk.Object):
-    name = ''
+    _name = ''
     desc = ''
-    items = [] ## FIXME
-    def initVars(self, name, desc):
-        self._name = name
-        self.desc = desc
+    def initVars(self):
         self.items = []
         self.enable = True
     def onConfigChange(self, sender=None, emit=True):
@@ -58,7 +55,7 @@ class IntegratedCalObj(gtk.Object):
                 item.onDateChange(emit=False)
     def __getitem__(self, key):
         for item in self.items:
-            if item.name == key:
+            if item._name == key:
                 return item
     def connectItem(self, item):
         item.connect('config-change', self.onConfigChange)
@@ -77,9 +74,11 @@ class IntegratedCalObj(gtk.Object):
 
 
 class IntegatedWindowList(IntegratedCalObj):
+    _name = 'windowList'
+    desc = 'Window List'
     def __init__(self):
         gtk.Object.__init__(self)
-        self.initVars('windowList', 'Window List')
+        self.initVars()
     def onConfigChange(self, *a, **ka):
         IntegratedCalObj.onConfigChange(self, *a, **ka)
         self.onDateChange()
@@ -140,8 +139,6 @@ if os.path.isfile(confPath):
         exec(open(confPath).read())
     except:
         myRaise(__file__)
-
-ui.checkMainWinItems()
 
 #if adjustTimeCmd=='':## FIXME
 for cmd in ('gksudo', 'kdesudo', 'gksu', 'gnomesu', 'kdesu'):

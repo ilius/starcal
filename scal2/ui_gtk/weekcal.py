@@ -128,11 +128,13 @@ class Button:
 
 
 class WeekCal(gtk.Widget, ud.IntegratedCalObj):
+    _name = 'weekCal'
+    desc = _('Week Calendar')
     topMargin = 30
     widthSpacing = 20
     def __init__(self, closeFunc):
         gtk.Widget.__init__(self)
-        self.initVars('weekCal', _('Week Calendar'))
+        self.initVars()
         ###
         self.closeFunc = closeFunc
         self.connect('button-press-event', self.buttonPress)
@@ -260,9 +262,11 @@ class WeekCal(gtk.Widget, ud.IntegratedCalObj):
 
 
 class WeekCalWindow(gtk.Window, ud.IntegratedCalObj):
+    _name = 'weekCalWin'
+    desc = _('Week Calendar')
     def __init__(self):
         gtk.Window.__init__(self)
-        self.initVars('weekCalWin', _('Week Calendar'))
+        self.initVars()
         ud.windowList.appendItem(self)
         ####
         self.set_decorated(False)

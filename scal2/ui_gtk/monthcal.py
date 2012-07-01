@@ -48,6 +48,8 @@ from gtk import gdk
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 
 class MonthCal(gtk.Widget, CustomizableCalObj):
+    _name = 'monthCal'
+    desc = _('Month Calendar')
     cx = [0, 0, 0, 0, 0, 0, 0]
     def heightSpinChanged(self, spin):
         v = spin.get_value()
@@ -96,7 +98,7 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         hbox.pack_start(gtk.Label(''), 1, 1)
         vbox.pack_start(hbox, 0, 0)
         ####
-        self.initVars('monthCal', _('Month Calendar'), optionsWidget=vbox)
+        self.initVars(optionsWidget=vbox)
         ######
         self.shownCals = shownCals
         ######################

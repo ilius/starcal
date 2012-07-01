@@ -358,12 +358,24 @@ def checkMainWinItems():
         indexes[name] = i
         names.add(name)
     defaultNames = set([name for (name, i) in mainWinItemsDefault])
-    #print sorted(list(names)), sorted(list(defaultNames))
-    for name in names.difference(defaultNames):
+    #print mainWinItems
+    #print sorted(list(names))
+    #print sorted(list(defaultNames))
+    ###
+    removedNames = names.difference(defaultNames)
+    for name in removedNames:
         #print '----- removed', name, mainWinItems[indexes[name]]
         mainWinItems.pop(indexes[name])
-    for name in defaultNames.difference(names):
-        #print '------ new', name
+    ###
+    newNames = defaultNames.difference(names)
+    #print 'mainWinItems: newNames =', newNames
+    ###
+    name = 'winContronller'
+    if name in newNames:
+        mainWinItems.insert(0, (name, True))
+        newNames.remove(name)
+    ###
+    for name in newNames:
         mainWinItems.append((name, False))## FIXME
 
 
@@ -591,7 +603,16 @@ dragIconCell = False
 monthRMenuNum = True
 #monthRMenu
 prefPagesOrder = (0, 1, 2, 3)
-showWinController = True
+winControllerButtons = (
+    ('sep', True),
+    ('min', True),
+    ('max', False),
+    ('close', True),
+    ('sep', False),
+    ('sep', False),
+    ('sep', False),
+)
+winControllerSpacing = 0
 ####################
 winKeepAbove = True
 winSticky = True
@@ -606,6 +627,7 @@ weekCalTextColor = (255, 255, 255)
 showMain = True ## Show main window on start (or only goto tray)
 #####################
 mainWinItems = (
+    ('winContronller', True),
     ('toolbar', True),
     ('labelBox', True),
     ('monthCal', True),

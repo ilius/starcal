@@ -604,11 +604,6 @@ class PrefDialog(gtk.Dialog):
         hbox.pack_start(item.widget, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         ###########
-        item = CheckPrefItem(ui, 'showWinController', _('Show Window Controllers'))
-        self.uiPrefItems.append(item)
-        hbox.pack_start(item.widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        ##
         vbox.pack_start(hbox, 0, 0)
         ##########################
         hbox = gtk.HBox(spacing=3)

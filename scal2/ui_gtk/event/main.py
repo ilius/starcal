@@ -798,6 +798,8 @@ class FetchRemoteGroupsDialog(gtk.Dialog):
 
 
 class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
+    _name = 'eventMan'
+    desc = _('Event Manager')
     def checkEventToAdd(self, group, event):
         if not group.checkEventToAdd(event):
             showError(_('Group type "%s" can not contain event type "%s"')%(group.desc, event.desc), self)
@@ -881,7 +883,7 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         self.onConfigChange()
     def __init__(self):
         gtk.Dialog.__init__(self)
-        self.initVars('eventMan', _('Event Manager'))
+        self.initVars()
         ud.windowList.appendItem(self)
         ####
         self.isLoaded = False

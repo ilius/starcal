@@ -56,6 +56,8 @@ rootWindow = gdk.get_default_root_window() ## Good Place?????
 
 
 class TimeLine(gtk.Widget, ud.IntegratedCalObj):
+    _name = 'timeLine'
+    desc = _('Time Line')
     def centerToNow(self):
         self.stopMovingAnim()
         self.timeStart = getCurrentTime() - self.timeWidth/2.0
@@ -64,7 +66,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         self.queue_draw()
     def __init__(self, closeFunc):
         gtk.Widget.__init__(self)
-        self.initVars('timeLine', _('Time Line'))
+        self.initVars()
         ###
         self.closeFunc = closeFunc
         self.connect('expose-event', self.onExposeEvent)
@@ -553,9 +555,11 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
 
 
 class TimeLineWindow(gtk.Window, ud.IntegratedCalObj):
+    _name = 'timeLineWin'
+    desc = _('Time Line')
     def __init__(self, width=600):
         gtk.Window.__init__(self)
-        self.initVars('timeLineWin', _('Time Line'))
+        self.initVars()
         ud.windowList.appendItem(self)
         ###
         self.resize(width, 150)
