@@ -750,7 +750,7 @@ class DurationEventRule(EventRule):
             log.error('Error while loading event rule "%s": %s'%(self.name, e))
     getData = lambda self: durationEncode(self.value, self.unit)
     def calcOccurrence(self, startEpoch, endEpoch, event):
-        endEpoch = min(endEpoch, self.event['start'].getEpoch() + self.getSeconds())
+        endEpoch = min(endEpoch, self.parent['start'].getEpoch() + self.getSeconds())
         if startEpoch >= endEpoch:## how about startEpoch==endEpoch FIXME
             return TimeRangeListOccurrence([])
         else:
@@ -798,7 +798,7 @@ class CycleLenEventRule(EventRule):
         self.cycleDays = arg['days']
         self.cycleExtraTime = timeDecode(arg['extraTime'])
     def calcOccurrence(self, startEpoch, endEpoch, event):
-        startEpoch = max(startEpoch, self.event['start'].getEpoch())
+        startEpoch = max(startEpoch, self.parent['start'].getEpoch())
         cycleSec = self.cycleDays*dayLen + core.getSecondsFromHms(*self.cycleExtraTime)
         return TimeListOccurrence(startEpoch, endEpoch, cycleSec)
     getInfo = lambda self: _('Repeat: Every %s Days and %s')%(_(self.cycleDays), timeEncode(self.cycleExtraTime))
