@@ -1198,10 +1198,10 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         self.isLoaded = True
     def rowActivated(self, treev, path, col):
         if len(path)==1:
-            if self.treev.row_expanded(path):
-                self.treev.collapse_row(path)
+            if treev.row_expanded(path):
+                treev.collapse_row(path)
             else:
-                self.treev.expand_row(path, False)
+                treev.expand_row(path, False)
         elif len(path)==2:
             self.editEventByPath(path)
     def keyPress(self, treev, g_event):
@@ -1212,18 +1212,18 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         ## g_event.time == gtk.get_current_event_time() ## OK
         kname = gdk.keyval_name(g_event.keyval).lower()
         if kname=='menu':## Simulate right click (key beside Right-Ctrl)
-            path = self.treev.get_cursor()[0]
+            path = treev.get_cursor()[0]
             if path:
                 menu = self.genRightClickMenu(path)
                 if not menu:
                     return
-                rect = self.treev.get_cell_area(path, self.treev.get_column(1))
+                rect = treev.get_cell_area(path, treev.get_column(1))
                 x = rect.x
                 if rtl:
                     x -= 100
                 else:
                     x += 50
-                (dx, dy) = self.treev.translate_coordinates(self, x, rect.y + rect.height)
+                (dx, dy) = treev.translate_coordinates(self, x, rect.y + rect.height)
                 (wx, wy) = self.window.get_origin()
                 menu.popup(None, None, lambda m: (wx+dx, wy+dy+20, True), 3, g_event.time)
         elif kname=='delete':
@@ -1395,7 +1395,7 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                         )
                         group.save()
                         self.onGroupModify(group)
-                        self.treev.set_cursor(path)
+                        treev.set_cursor(path)
                         return True
     def insertNewGroup(self, groupIndex):
         group = GroupEditorDialog().run()

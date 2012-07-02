@@ -706,33 +706,6 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
         
 
 
-'''
-class MainWinToolbar(CustomizableToolbar):
-    def __init__(self):
-        CustomizableToolbar.__init__(self)
-        if not ui.toolbarItems:
-            ui.toolbarItems = range(len(preferences.toolbarItems))
-        for i in ui.toolbarItems:
-            try:
-                item = preferences.toolbarItems[i]
-            except IndexError:
-                myRaise()
-            else:
-                self.addButton(item[0], item[1], item[2], eval(item[3]))
-        #if self.trayMode!=1:## FIXME
-        #    self.addButton(gtk.STOCK_QUIT, 'Quit', self.quit)
-        """
-        hbox = gtk.HBox()
-        hbox.pack_start(toolbar, 1, 1)
-        if ui.showDigClockTb:
-            self.clock = FClockLabel(preferences.clockFormat)
-            hbox.pack_start(self.clock, 0, 0)
-        else:
-            self.clock = None
-        self.toolbBox = hbox
-        """
-'''
-
 class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
     _name = 'labelBox'
     desc = _('Year & Month Labels')
@@ -1231,7 +1204,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
     '''
     #def maximize(self):
     #    pass
-    def __init__(self, trayMode=3):
+    def __init__(self, trayMode=2):
         gtk.Window.__init__(self)##, gtk.WINDOW_POPUP) ## ????????????
         self.initVars()
         ud.windowList.appendItem(self)
@@ -1659,22 +1632,22 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
     def updateToolbarClock(self):
         if ui.showDigClockTb:
             if self.clock==None:
-                self.clock = FClockLabel(preferences.clockFormat)
+                self.clock = FClockLabel(ud.clockFormat)
                 self.toolbBox.pack_start(self.clock, 0, 0)
                 self.clock.show()
             else:
-                self.clock.format = preferences.clockFormat
+                self.clock.format = ud.clockFormat
         else:
             if self.clock!=None:
                 self.clock.destroy()
                 self.clock = None
     """
     def updateTrayClock(self, checkTrayMode=True):
-        if checkTrayMode and self.trayMode!=3:
+        if checkTrayMode and self.trayMode!=2:
             return
         if ui.showDigClockTr:
             if self.clockTr==None:
-                self.clockTr = FClockLabel(preferences.clockFormat)
+                self.clockTr = FClockLabel(ud.clockFormat)
                 try:
                     self.trayHbox.pack_start(self.clockTr, 0, 0)
                 except AttributeError:
@@ -1683,7 +1656,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
                 else:
                     self.clockTr.show()
             else:
-                self.clockTr.format = preferences.clockFormat
+                self.clockTr.format = ud.clockFormat
         else:
             if self.clockTr!=None:
                 self.clockTr.destroy()

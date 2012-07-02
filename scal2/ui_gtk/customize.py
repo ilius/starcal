@@ -80,6 +80,7 @@ class CustomizeDialog(gtk.Dialog):
         ##
         treev.set_enable_tree_lines(True)
         treev.set_headers_visible(False)
+        treev.connect('row-activated', self.rowActivated)
         ##
         col = gtk.TreeViewColumn('Widget')
         ##
@@ -230,6 +231,11 @@ class CustomizeDialog(gtk.Dialog):
             index_list2 = index_list[:-1] + (i+1,)
             model.swap(model.get_iter(index_list), model.get_iter(index_list2))
             self.treev.set_cursor(index_list2)
+    def rowActivated(self, treev, path, col):
+        if treev.row_expanded(path):
+            treev.collapse_row(path)
+        else:
+            treev.expand_row(path, False)
     def enableCellToggled(self, cell, path):
         active = not cell.get_active()
         self.model.set_value(self.model.get_iter(path), 0, active) ## or set(...)
