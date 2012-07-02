@@ -42,7 +42,6 @@ if os.path.isfile(confPath):
         myRaise(__file__)
 
 
-
 class CustomizableCalObj(ud.IntegratedCalObj):
     def initVars(self, optionsWidget=None):
         ud.IntegratedCalObj.initVars(self)
@@ -55,10 +54,29 @@ class CustomizableCalObj(ud.IntegratedCalObj):
     def moveItemUp(self, i):## override this method for non-GtkBox containers
         self.reorder_child(self.items[i], i-1)## for GtkBox (HBox and VBox)
         self.items.insert(i-1, self.items.pop(i))
+    def _hideDisabledItems(self):
+        for item in self.items:
+            if item.enable:
+                for chItem in item.items:
+                    if not chItem.enable:
+                        chItem.hide()
+            else:
+                item.hide()
+    def buildWidget(self):## overwrite if items are not widgets
+        self.connect('key-press-event', self.keyPress)
+        for item in self.items:
+            self.pack_start(item, 0, 0)
+        self.show_all()
+        self._hideDisabledItems()
+    def keyPress(self, arg, event):
+        kname = gdk.keyval_name(event.keyval).lower()
+        for item in self.items:
+            if item.enable and kname in item.myKeys:
+                item.emit('key-press-event', event)
 
 
 class CustomizeDialog(gtk.Dialog):
-    def __init__(self, items=[]):
+    def __init__(self, widget):
         gtk.Dialog.__init__(self)
         self.set_title(_('Customize'))
         self.set_has_separator(False)
@@ -69,7 +87,7 @@ class CustomizeDialog(gtk.Dialog):
             closeB.set_image(gtk.image_new_from_stock(gtk.STOCK_CLOSE, gtk.ICON_SIZE_BUTTON))
         closeB.connect('clicked', self.close)
         ###
-        self.items = items
+        self.widget = widget
         self.activeOptionsWidget = None
         ###
         model = gtk.TreeStore(bool, str) ## (gdk.Pixbuf, str)
@@ -98,7 +116,7 @@ class CustomizeDialog(gtk.Dialog):
         ##
         treev.append_column(col)
         ###
-        for item in items:
+        for item in widget.items:
             itemIter = model.append(None)
             model.set(itemIter, 0, item.enable, 1, item.desc)
             for child in item.items:
@@ -130,23 +148,9 @@ class CustomizeDialog(gtk.Dialog):
         self.vbox.pack_start(hbox, 1, 1)
         self.vbox_l = vbox_l
         ###
-        self.widget = gtk.VBox() ## itemsBox
-        for item in items:
-            self.widget.pack_start(item, 0, 0)
-        self.showItems()
-        ###
         self.vbox.connect('size-request', self.vboxSizeRequest)
         self.vbox.show_all()
         treev.connect('cursor-changed', self.treevCursorChanged)
-    def showItems(self):
-        self.widget.show_all()
-        for item in self.items:
-            if item.enable:
-                for chItem in item.items:
-                    if not chItem.enable:
-                        chItem.hide()
-            else:
-                item.hide()
     def vboxSizeRequest(self, widget, req):
         self.resize(self.get_size()[0], 1)
     def getItemByPath(self, path):
@@ -156,7 +160,7 @@ class CustomizeDialog(gtk.Dialog):
             path = [path]
         elif not isinstance(path, (tuple, list)):
             raise TypeError('argument %s given to getItemByPath has bad type'%path)
-        item = self.items[path[0]]
+        item = self.widget.items[path[0]]
         for i in path[1:]:
             item = item.items[i]
         return item
@@ -186,7 +190,7 @@ class CustomizeDialog(gtk.Dialog):
                 gdk.beep()
                 return
             ###
-            self.moveItemUp(i)
+            self.widget.moveItemUp(i)
             model.swap(model.get_iter(i-1), model.get_iter(i))
             self.treev.set_cursor(i-1)
         else:
@@ -214,7 +218,7 @@ class CustomizeDialog(gtk.Dialog):
                 gdk.beep()
                 return
             ###
-            self.moveItemUp(i+1)
+            self.widget.moveItemUp(i+1)
             model.swap(model.get_iter(i), model.get_iter(i+1))
             self.treev.set_cursor(i+1)
         else:
@@ -248,14 +252,11 @@ class CustomizeDialog(gtk.Dialog):
             item.hide()
         if ui.mainWin:
             ui.mainWin.setMinHeight()
-    def moveItemUp(self, i):
-        self.widget.reorder_child(self.items[i], i-1)## self.widget is VBox
-        self.items.insert(i-1, self.items.pop(i))
     #def confStr(self):## FIXME
     def close(self, button=None, event=None):
         text = ''
         itemsData = []
-        for item in self.items:
+        for item in self.widget.items:
             item.updateVars()
             text += item.confStr()
             itemsData.append((item._name, item.enable))

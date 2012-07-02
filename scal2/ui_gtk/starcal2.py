@@ -1177,6 +1177,13 @@ toolbarItemsData = (
 toolbarItemsDataDict = dict([(item._name, item) for item in toolbarItemsData])
 
 
+class MainWinVbox(CustomizableCalObj, gtk.VBox):
+    _name = 'mainWin'
+    desc = _('Main Window')
+    def __init__(self):
+        gtk.VBox.__init__(self)
+        self.initVars()
+
 class MainWin(gtk.Window, ud.IntegratedCalObj):
     _name = 'mainWin'
     desc = _('Main Window')
@@ -1281,8 +1288,6 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.focusOutTime = 0
         self.clockTr = None
         ############################################################################
-        self.vbox = gtk.VBox()
-        #########
         self.pluginsTextBox = PluginsTextBox(self.populatePopup)
         self.eventDayView = EventViewMainWinItem(self.populatePopup)
         ############
@@ -1312,6 +1317,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ]
         defaultItemsDict = dict([(obj._name, obj) for obj in defaultItems])
         ui.checkMainWinItems()
+        self.vbox = MainWinVbox()
         for (name, enable) in ui.mainWinItems:
             #print name, enable
             try:
@@ -1322,12 +1328,12 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             item.enable = enable
             item.connect('size-request', self.childSizeRequest) ## or item.connect
             #modify_bg_all(item, gtk.STATE_NORMAL, rgbToGdkColor(*ui.bgColor))
-            self.appendItem(item)
-        self.customizeDialog = CustomizeDialog(items=self.items)
-        self.vbox.pack_start(self.customizeDialog.widget, 0, 0)
+            self.vbox.appendItem(item)
+        self.vbox.buildWidget()
+        self.appendItem(self.vbox)
+        self.customizeDialog = CustomizeDialog(self.vbox)
         #######
         self.add(self.vbox)
-        self.vbox.show()
         ####################
         self.isMaximized = False
         ####################
@@ -1439,8 +1445,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         else:
             #print kname
             for item in self.items:
-                if item.enable and kname in item.myKeys:
-                    item.emit('key-press-event', event)
+                item.keyPress(arg, event)
         return True ## FIXME
     def populatePopup(self, widget=None, event=None):
         ui.focusTime = time()
@@ -1871,6 +1876,7 @@ for cls in (
     StatusBox,
     PluginsTextBox,
     EventViewMainWinItem,
+    MainWinVbox,
     MainWin,
 ):
     cls.registerSignals()
