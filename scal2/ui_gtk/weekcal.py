@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2009-2011 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
+# Copyright (C) 2009-2012 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -20,10 +20,8 @@
 import time
 #print time.time(), __file__
 
-import sys, os, struct
+import sys, os
 from math import pi
-from os.path import join, isfile
-from xml.dom.minidom import parse
 
 from scal2 import core
 
@@ -40,12 +38,9 @@ import gtk
 from gtk import gdk
 
 from scal2.ui_gtk.drawing import setColor, fillColor, newLimitedWidthTextLayout, Button
+from scal2.ui_gtk.utils import pixbufFromFile
 from scal2.ui_gtk import gtk_ud as ud
-from scal2.ui_gtk import preferences
-#from scal2.ui_gtk import desktop
-#from scal2.ui_gtk import wallpaper
 
-rootWindow = gdk.get_default_root_window() ## Good Place?????
 
 prevImage = 'week-previous.png'
 nextImage = 'week-next.png'
@@ -92,7 +87,7 @@ class Button:
         if imageName.startswith('gtk-'):
             self.pixbuf = gdk.pixbuf_new_from_stock(imageName)
         else:
-            self.pixbuf = gdk.pixbuf_new_from_file(join(pixDir, imageName))
+            self.pixbuf = pixbufFromFile(imageName)
         self.func = func
         self.width = self.pixbuf.get_width()
         self.height = self.pixbuf.get_height()
@@ -291,7 +286,7 @@ class WeekCalWindow(gtk.Window, ud.IntegratedCalObj):
         b = event.button
         #print 'buttonPress', b
         if b==1:
-            (x, y, mask) = rootWindow.get_pointer()
+            (x, y, mask) = ud.rootWindow.get_pointer()
             self.begin_move_drag(event.button, x, y, event.time)
         return False
 

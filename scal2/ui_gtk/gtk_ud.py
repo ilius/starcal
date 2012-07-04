@@ -151,5 +151,12 @@ for cmd in ('gksudo', 'kdesudo', 'gksu', 'gnomesu', 'kdesu'):
         break
 
 
+############################################################
+
+rootWindow = gdk.get_default_root_window() ## Good Place?????
+##import atexit
+##atexit.register(rootWindow.set_cursor, gdk.Cursor(gdk.LEFT_PTR)) ## ?????????????????????
+#rootWindow.set_cursor(cursor=gdk.Cursor(gdk.WATCH)) ## ???????????????????
+(screenW, screenH) = rootWindow.get_size()
 
 

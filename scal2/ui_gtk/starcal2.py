@@ -184,7 +184,7 @@ class MonthLabel(gtk.EventBox):
         self.connect('leave-notify-event', self.unhighlight)
         ####### update menu width
         if rtl:
-            get_menu_pos = lambda widget: (screenW, 0, True)
+            get_menu_pos = lambda widget: (ud.screenW, 0, True)
             menu.popup(None, None, get_menu_pos, 3, 0)
             menu.hide()
     def setActive(self, active):
@@ -1231,7 +1231,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ui.eventManDialog = EventManagerDialog()
         ud.windowList.appendItem(ui.eventManDialog)
         ###
-        ui.timeLineWin = TimeLineWindow(width=rootWindow.get_geometry()[2])
+        ui.timeLineWin = TimeLineWindow(width=ud.screenW)
         ud.windowList.appendItem(ui.timeLineWin)
         ###
         ui.weekCalWin = WeekCalWindow()
@@ -1273,8 +1273,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ## Compiz does not send configure-event(or any event) when MOVING window(sends in last point,
         ## when moving completed)
         #self.connect('drag-motion', show_event)
-        rootWindow.set_events(...
-        rootWindow.add_filter(self.onRootWinEvent)
+        ud.rootWindow.set_events(...
+        ud.rootWindow.add_filter(self.onRootWinEvent)
         #self.realize()
         #gdk.flush()
         #self.configureEvent(None, None)
@@ -1420,7 +1420,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
                 plug.set_dialog(self)
         ###########################
         self.onConfigChange()
-        #rootWindow.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
+        #ud.rootWindow.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
     #def mainWinStateEvent(self, obj, event):
         #print dir(event)
         #print event.new_window_state
@@ -1493,12 +1493,12 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             ui.focusTime = time()
             self.menuMain.popup(None, None, None, 3, event.time)
         elif b==1:
-            (x, y, mask) = rootWindow.get_pointer()
+            (x, y, mask) = ud.rootWindow.get_pointer()
             self.begin_move_drag(event.button, x, y, event.time)
         return False
     def startResize(self, widget, event):
         self.menuMain.hide()
-        (x, y, mask) = rootWindow.get_pointer()
+        (x, y, mask) = ud.rootWindow.get_pointer()
         self.begin_resize_drag(gdk.WINDOW_EDGE_SOUTH_EAST, event.button, x, y, event.time)
         return True
     def changeDate(self, year, month, day):
@@ -1621,7 +1621,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ui.saveLiveConf()
     def updateMenuSize(self):## DIRTY FIXME
         ## To calc/update menus size (width is used)
-        getMenuPos = lambda widget: (screenW, 0, True)
+        getMenuPos = lambda widget: (ud.screenW, 0, True)
         self.menuMain.popup(None, None, getMenuPos, 3, 0)
         self.menuMain.hide()
     def copyDate(self, obj=None, event=None):
@@ -1922,12 +1922,6 @@ if theme!=None:
 
 
 
-rootWindow = gdk.get_default_root_window() ## Good Place?????
-##import atexit
-##atexit.register(rootWindow.set_cursor, gdk.Cursor(gdk.LEFT_PTR)) ## ?????????????????????
-#rootWindow.set_cursor(cursor=gdk.Cursor(gdk.WATCH)) ## ???????????????????
-(screenW, screenH) = rootWindow.get_size()
-
 
 
 def main():
@@ -1966,7 +1960,7 @@ def main():
     #    sys.exit(0)
     if action=='show' or not mainWin.sicon:
         mainWin.present()
-    ##rootWindow.set_cursor(gdk.Cursor(gdk.LEFT_PTR))#???????????
+    ##ud.rootWindow.set_cursor(gdk.Cursor(gdk.LEFT_PTR))#???????????
     return gtk.main()
 
 

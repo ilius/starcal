@@ -52,8 +52,6 @@ from gtk import gdk
 def show_event(widget, event):
     print type(widget), event.type.value_name, event.get_value()#, event.send_event
 
-rootWindow = gdk.get_default_root_window() ## Good Place?????
-
 
 class TimeLine(gtk.Widget, ud.IntegratedCalObj):
     _name = 'timeLine'
@@ -581,7 +579,7 @@ class TimeLineWindow(gtk.Window, ud.IntegratedCalObj):
         return True
     def buttonPress(self, obj, event):
         if event.button==1:
-            (px, py, mask) = rootWindow.get_pointer()
+            (px, py, mask) = ud.rootWindow.get_pointer()
             self.begin_move_drag(event.button, px, py, event.time)
             return True
         return False
@@ -596,7 +594,7 @@ if __name__=='__main__':
     if rtl:
         gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
     win = TimeLineWindow()
-    win.resize(rootWindow.get_geometry()[2], 150)
+    win.resize(ud.screenW, 150)
     win.move(0, 0)
     #win.tline.timeWidth = 100 * 365 * 24 * 3600 # 2*10**17
     #win.tline.timeStart = time.time() - win.tline.timeWidth # -10**17
