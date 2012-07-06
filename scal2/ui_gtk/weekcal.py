@@ -42,8 +42,8 @@ from scal2.ui_gtk.utils import pixbufFromFile
 from scal2.ui_gtk import gtk_ud as ud
 
 
-prevImage = 'week-previous.png'
-nextImage = 'week-next.png'
+prevImage = 'arrow-left.png'
+nextImage = 'arrow-right.png'
 if rtl:
     (prevImage, nextImage) = (nextImage, prevImage)
 
@@ -81,44 +81,6 @@ class PluginsTextRowItem:
 #class Widget:
 
 
-class Button:
-    def __init__(self, imageName, func, x, y, autoDir=True):
-        self.imageName = imageName
-        if imageName.startswith('gtk-'):
-            self.pixbuf = gdk.pixbuf_new_from_stock(imageName)
-        else:
-            self.pixbuf = pixbufFromFile(imageName)
-        self.func = func
-        self.width = self.pixbuf.get_width()
-        self.height = self.pixbuf.get_height()
-        self.x = x
-        self.y = y
-        self.autoDir = autoDir
-    __repr__ = lambda self: 'Button(%r, %r, %r, %r, %r)'%(
-        self.imageName,
-        self.func.__name__,
-        self.x,
-        self.y,
-        self.autoDir,
-    )
-    def getAbsPos(self, w, h):
-        x = self.x
-        y = self.y
-        if self.autoDir and rtl:
-            x = -x
-        if x<0:
-            x = w - self.width + x
-        if y<0:
-            y = h - self.height + y
-        return (x, y)
-    def draw(self, cr, w, h):
-        (x, y) = self.getAbsPos(w, h)
-        cr.set_source_pixbuf(self.pixbuf, x, y)
-        cr.rectangle(x, y, self.width, self.height)
-        cr.fill()
-    def contains(self, px, py, w, h):
-        (x, y) = self.getAbsPos(w, h)
-        return (x <= px < x+self.width and y <= py < y+self.height)
 
 
 
@@ -144,7 +106,8 @@ class WeekCal(gtk.Widget, ud.IntegratedCalObj):
         ]
         self.rowItems = [WeekDayRowItem(), PluginsTextRowItem()]
         for cal in ui.shownCals:
-            self.rowItems.append(DayNumRowItem(cal['mode']))
+            if cal['enable']:
+                self.rowItems.append(DayNumRowItem(cal['mode']))
     #def onConfigChange(self, *a, **kw):
     #    ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
     #    self.onDateChange()
@@ -211,7 +174,7 @@ class WeekCal(gtk.Widget, ud.IntegratedCalObj):
         cr = self.window.cairo_create()
         cr.rectangle(0, 0, w, h)
         fillColor(cr, ui.bgColor)
-        setColor(cr, ui.weekCalTextColor)
+        setColor(cr, ui.wcalTextColor)
         status = getCurrentWeekStatus()
         rowH = (h-self.topMargin)/7
         widthList = []
@@ -246,7 +209,7 @@ class WeekCal(gtk.Widget, ud.IntegratedCalObj):
                         if row.holiday and item.holidayColorize:
                             setColor(cr, ui.holidayColor)
                         else:
-                            setColor(cr, ui.weekCalTextColor)
+                            setColor(cr, ui.wcalTextColor)
                         cr.show_layout(layout)
                 x = x - rtlSgn() * itemW
         for button in self.buttons:

@@ -153,7 +153,7 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
             wclass=gdk.INPUT_OUTPUT,
             event_mask=self.get_events() \
                 | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK
-                | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK
+                | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK,
         )
         self.window.set_user_data(self)
         self.style.attach(self.window)#?????? Needed??
@@ -315,11 +315,7 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
                             cr.scale(1, 1.0/yscale)
                 ######## end of Drawing Cursor
                 if not cellInactive:
-                    iconList = []
-                    for item in c.eventsData:
-                        icon = item['icon']
-                        if icon and not icon in iconList:
-                            iconList.append(icon)
+                    iconList = c.getEventIcons()
                     if iconList:
                         iconsN = len(iconList)
                         scaleFact = 1.0 / sqrt(iconsN)

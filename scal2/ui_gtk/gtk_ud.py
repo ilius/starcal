@@ -124,6 +124,12 @@ adjustTimeCmd = ''
 prevStock = gtk.STOCK_GO_BACK
 nextStock = gtk.STOCK_GO_FORWARD
 
+mainToolbarData = {
+    'items': [],
+    'iconSize': 'Large Toolbar',
+    'style': 'Icon',
+}
+
 ############################################################
 
 sysConfPath = join(sysConfDir, 'ui-gtk.conf')

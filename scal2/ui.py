@@ -235,6 +235,22 @@ class Cell:## status and information of a cell
         return pyFmt%tuple(f(self, mode, tm) for f in funcs)
     def inSameMonth(self, other):
         return self.dates[core.primaryMode][:2] == other.dates[core.primaryMode][:2]
+    def getEventIcons(self):
+        iconList = []
+        for item in self.eventsData:
+            icon = item['icon']
+            if icon and not icon in iconList:
+                iconList.append(icon)
+        return iconList
+    def getEventText(self):
+        lines = []
+        for ed in self.eventsData:
+            line = ed['text']
+            if ed['time']:
+                line = ed['time'] + ' ' + line
+            lines.append(line)
+        return '\n'.join(lines)
+
 
 class CellCache:
     def __init__(self):
@@ -541,10 +557,7 @@ winTaskbar = False
 #showDigClockTb = True ## On Toolbar ## FIXME
 showDigClockTr = True ## On Tray
 ####
-toolbarItems = []
-toolbarIconSize = 'Large Toolbar'
 toolbarIconSizePixel = 24 ## used in pyqt ui
-toolbarStyle = 'Icon'
 ####
 bgColor = (26, 0, 1, 255)## or None
 bgUseDesk = False
@@ -555,6 +568,7 @@ menuTextColor = None##borderTextColor##???????????????
 holidayColor = (255, 160, 0, 255)
 inactiveColor = (255, 255, 255, 115)
 todayCellColor  = (0, 255, 0, 50)
+##########
 cursorFixed = False
 cursorOutColor = (213, 207, 0, 255)
 cursorBgColor = (41, 41, 41, 255)
@@ -565,8 +579,20 @@ cursorW = 57
 cursorH = 24
 calGrid = True
 gridColor = (255, 252, 0, 82)
+##########
 mcalLeftMargin = 30
 mcalTopMargin = 30
+####################
+wcalHeight = 200
+wcalTextColor = (255, 255, 255)
+wcalPadding = 10
+wcalButtonsWidth = 30
+wcalButtonsSpacing = 10
+wcalWeekDaysWidth = 60
+wcalEventsIconColWidth = 50
+
+
+####################
 boldYmLabel = True ##Apply in Pref FIXME
 showYmArrows = True ##Apply in Pref FIXME
 labelMenuDelay = 0.1 ## delay for shift up/down items of menu for right click on YearLabel
@@ -622,8 +648,6 @@ fontUseDefault = True
 fontDefault = ('Sans', False, False, 12)
 fontCustom = None
 #####################
-weekCalTextColor = (255, 255, 255)
-#####################
 showMain = True ## Show main window on start (or only goto tray)
 #####################
 mainWinItems = (
@@ -631,6 +655,7 @@ mainWinItems = (
     ('toolbar', True),
     ('labelBox', True),
     ('monthCal', True),
+    ('weekCal', True),
     ('statusBar', True),
     ('pluginsText', True),
     ('eventDayView', True),

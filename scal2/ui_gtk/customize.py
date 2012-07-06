@@ -43,6 +43,7 @@ if os.path.isfile(confPath):
 
 
 class CustomizableCalObj(ud.IntegratedCalObj):
+    expand = False
     def initVars(self, optionsWidget=None):
         ud.IntegratedCalObj.initVars(self)
         self.optionsWidget = optionsWidget
@@ -65,7 +66,7 @@ class CustomizableCalObj(ud.IntegratedCalObj):
     def buildWidget(self):## overwrite if items are not widgets
         self.connect('key-press-event', self.keyPress)
         for item in self.items:
-            self.pack_start(item, 0, 0)
+            self.pack_start(item, item.expand, item.expand)
         self.show_all()
         self._hideDisabledItems()
     def keyPress(self, arg, event):
