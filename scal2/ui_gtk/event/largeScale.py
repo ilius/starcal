@@ -59,7 +59,6 @@ class EventWidget(common.EventWidget):
         self.event.scale = self.scaleCombo.get_value()
         self.event.start = self.startSpin.get_value()
         self.event.duration = self.durationSpin.get_value()
-        print 'self.startSpin.get_value()', self.startSpin.get_value()
 
 
 
