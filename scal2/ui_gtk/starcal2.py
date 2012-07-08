@@ -954,6 +954,7 @@ class StatusBox(gtk.HBox, CustomizableCalObj):
             sbar.set_direction(gtk.TEXT_DIR_LTR)
         sbar.set_property('width-request', 18)
         sbar.connect('button-press-event', self.mainWin.startResize)
+        sbar.show()
         self.pack_start(sbar, 0, 0)
     #def onConfigChange(self, *a, **kw):
     #    CustomizableCalObj.onConfigChange(self, *a, **kw)
