@@ -57,7 +57,6 @@ class IntField(Field):
     def setDefault(self):
         self.value = self._min
     def setValue(self, v):
-        print 'IntField.setValue', v
         v = int(v)
         if v < self._min:
             v = self._min
