@@ -41,6 +41,7 @@ from gtk import gdk
 from scal2.ui_gtk.drawing import *
 from scal2.ui_gtk.utils import pixbufFromFile, DirectionComboBox
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
+from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox
 from scal2.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
@@ -410,6 +411,7 @@ class WeekCal(gtk.HBox, CustomizableCalBox):
         self.optionsWidget = optionsWidget
         #####
         self.updateStatus()
+        listener.dateChange.add(self)
     def heightSpinChanged(self, spin):
         v = spin.get_value()
         self.set_property('height-request', v)
@@ -480,6 +482,8 @@ class WeekCal(gtk.HBox, CustomizableCalBox):
             self.jdPlus(1)
         else:
             return False
+    def onCurrentDateChange(self, gdate):
+        self.queue_draw()
 
 
 for cls in (
