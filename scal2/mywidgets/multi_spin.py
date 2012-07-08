@@ -17,7 +17,7 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
-from scal2.utils import toUnicode, toStr
+from scal2.utils import toUnicode, toStr, myRaise
 
 from scal2 import locale_man
 from scal2.locale_man import numEncode, numDecode
@@ -57,6 +57,7 @@ class IntField(Field):
     def setDefault(self):
         self.value = self._min
     def setValue(self, v):
+        print 'IntField.setValue', v
         v = int(v)
         if v < self._min:
             v = self._min
@@ -69,6 +70,7 @@ class IntField(Field):
         try:
             num = numDecode(text)
         except:
+            myRaise()
             self.setDefault()
         else:
             self.setValue(num)

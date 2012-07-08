@@ -298,10 +298,15 @@ def numDecode(numSt):
         tryLangDigits = digits[tryLang]
         numEn = ''
         for dig in numSt:
-            try:
-                numEn += str(tryLangDigits.index(dig))
-            except ValueError:
-                break
+            if dig=='-':
+                numEn += dig
+            else:
+                try:
+                    numEn += str(tryLangDigits.index(dig))
+                except ValueError, e:
+                    print 'error in decoding num char %s'%dig
+                    #raise e
+                    break
         else:
             return int(numEn)
     raise ValueError('invalid locale number %s'%numSt)
