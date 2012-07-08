@@ -1082,6 +1082,16 @@ class MainWinVbox(gtk.VBox, CustomizableCalBox):
         text = CustomizableCalBox.confStr(self)
         text += 'ui.mainWinItems=%s\n'%repr(ui.mainWinItems)
         return text
+    def keyPress(self, arg, event):
+        kname = gdk.keyval_name(event.keyval).lower()
+        #print kname
+        for item in self.items:
+            #print item._name, item.myKeys
+            if item.enable and kname in item.myKeys:
+                print kname, 'sending to', item._name
+                item.keyPress(arg, event)
+                break ## FIXME
+        return True ## FIXME
 
 class MainWin(gtk.Window, ud.IntegratedCalObj):
     _name = 'mainWin'
@@ -1332,9 +1342,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         elif kname in ('q', 'arabic_dad'):## FIXME
             self.quit()
         else:
-            #print kname
-            for item in self.items:
-                item.keyPress(arg, event)
+            self.vbox.keyPress(arg, event)
         return True ## FIXME
     def populatePopup(self, widget=None, event=None):
         ui.focusTime = time()
