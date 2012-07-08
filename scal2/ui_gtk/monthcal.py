@@ -134,8 +134,11 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         self.connect('button-press-event', self.buttonPress)
         #self.connect('screen-changed', self.screenChanged)
         self.myKeys = (
-            'up', 'down', 'right', 'left', 'page_up', 'page_down',
-            'space', 'home', 'end', 'menu', 'f10', 'm',
+            'up', 'down',
+            'right', 'left',
+            'page_up', 'page_down',
+            'space', 'home', 'end',
+            'menu', 'f10', 'm',
         )
         self.connect('key-press-event', self.keyPress)
         self.connect('scroll-event', self.scroll)
@@ -614,6 +617,13 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         ] ## centers y
         self.dx = (w-ui.mcalLeftMargin)/7.0 ## delta x
         self.dy = (h-ui.mcalTopMargin)/6.0 ## delta y
+    def jdPlus(self, plus):
+        ui.jdPlus(plus)
+        self.onDateChange()
+    def changeDate(self, year, month, day, mode=None):
+        ui.changeDate(year, month, day, mode)
+        self.onDateChange()
+    goToday = lambda self, widget=None: self.changeDate(*core.getSysDate())
     def keyPress(self, arg, event):
         t = time()
         #if t-self.kTime < ui.keyDelay:
@@ -657,9 +667,6 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         else:
             return False
         return True
-    def jdPlus(self, plus):
-        ui.jdPlus(plus)
-        self.onDateChange()
     def scroll(self, widget, event):
         d = event.direction.value_nick
         if d=='up':
@@ -668,10 +675,6 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
             self.jdPlus(7)
         else:
             return False
-    def changeDate(self, year, month, day, mode=None):
-        ui.changeDate(year, month, day, mode)
-        self.onDateChange()
-    goToday = lambda self, widget=None: self.changeDate(*core.getSysDate())
     getCellPos = lambda self: (
         int(self.cx[ui.cell.monthPos[0]]),
         int(self.cy[ui.cell.monthPos[1]] + self.dy/2.0),
