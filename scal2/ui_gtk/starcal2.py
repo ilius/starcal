@@ -1086,9 +1086,8 @@ class MainWinVbox(gtk.VBox, CustomizableCalBox):
         kname = gdk.keyval_name(event.keyval).lower()
         #print kname
         for item in self.items:
-            #print item._name, item.myKeys
             if item.enable and kname in item.myKeys:
-                print kname, 'sending to', item._name
+                #print kname, 'sending to', item._name
                 item.keyPress(arg, event)
                 break ## FIXME
         return True ## FIXME

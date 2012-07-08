@@ -368,6 +368,13 @@ class WeekCal(gtk.HBox, CustomizableCalBox):
         gtk.HBox.__init__(self)
         self.set_property('height-request', ui.wcalHeight)
         self.initVars()
+        self.myKeys = (
+            'up', 'down', 'page_up', 'page_down',
+            'space', 'home', 'end',
+            #'menu', 'f10', 'm',
+        )
+        self.connect('key-press-event', self.keyPress)
+        self.connect('scroll-event', self.scroll)
         ###
         self.connect('button-press-event', self.buttonPress)
         #####
@@ -424,25 +431,55 @@ class WeekCal(gtk.HBox, CustomizableCalBox):
     def gotoJd(self, jd):
         ui.gotoJd(jd)
         self.onDateChange()
+    def jdPlus(self, p):
+        ui.jdPlus(p)
+        self.onDateChange()
     def goBackward4(self, obj=None):
-        ui.jdPlus(-28)
-        self.onDateChange()
+        self.jdPlus(-28)
     def goBackward(self, obj=None):
-        ui.jdPlus(-7)
-        self.onDateChange()
+        self.jdPlus(-7)
     goToday = lambda self, obj=None: self.gotoJd(core.getCurrentJd())
     def goForward(self, obj=None):
-        ui.jdPlus(7)
-        self.onDateChange()
+        self.jdPlus(7)
     def goForward4(self, obj=None):
-        ui.jdPlus(28)
-        self.onDateChange()
+        self.jdPlus(28)
     def buttonPress(self, obj, event):
         i = int(event.y * 7.0 / self.allocation.height)
         self.gotoJd(self.status[i].jd)
         return True
-
-
+    def keyPress(self, arg, event):
+        kname = gdk.keyval_name(event.keyval).lower()
+        if kname=='up':
+            self.jdPlus(-1)
+        elif kname=='down':
+            self.jdPlus(1)
+        elif kname in ('space', 'home'):
+            self.goToday()
+        elif kname=='end':
+            self.gotoJd(self.status[-1].jd)
+        elif kname=='page_up':
+            self.jdPlus(-7)
+        elif kname=='page_down':
+            self.jdPlus(7)
+        #elif kname=='menu':
+        #    self.emit('popup-menu-cell', event.time, *self.getCellPos())
+        #elif kname in ('f10', 'm'):
+        #    if event.state & gdk.SHIFT_MASK:
+        #        # Simulate right click (key beside Right-Ctrl)
+        #        self.emit('popup-menu-cell', event.time, *self.getCellPos())
+        #    else:
+        #        self.emit('popup-menu-main', event.time, *self.getMainMenuPos())
+        else:
+            return False
+        return True
+    def scroll(self, widget, event):
+        d = event.direction.value_nick
+        if d=='up':
+            self.jdPlus(-1)
+        elif d=='down':
+            self.jdPlus(1)
+        else:
+            return False
 
 
 for cls in (
