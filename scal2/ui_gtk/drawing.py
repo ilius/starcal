@@ -196,6 +196,56 @@ def newRoundedSquarePixbuf(color, size, roundR=0, bgColor=None):## a rounded squ
         pbuf = pbuf.add_alpha(True, *bgColor)
     return pbuf
 
+
+def drawRoundedRect(cr, cx0, cy0, cw, ch, ro):
+    ro = min(ro, cw/2.0, ch/2.0)
+    cr.move_to(cx0+ro, cy0)
+    cr.line_to(cx0+cw-ro, cy0)
+    cr.arc(cx0+cw-ro, cy0+ro, ro, 3*pi/2, 2*pi) ## up right corner
+    cr.line_to(cx0+cw, cy0+ch-ro)
+    cr.arc(cx0+cw-ro, cy0+ch-ro, ro, 0, pi/2) ## down right corner
+    cr.line_to(cx0+ro, cy0+ch)
+    cr.arc(cx0+ro, cy0+ch-ro, ro, pi/2, pi) ## down left corner
+    cr.line_to(cx0, cy0+ro)
+    cr.arc(cx0+ro, cy0+ro, ro, pi, 3*pi/2) ## up left corner
+    cr.close_path()
+
+
+def drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ro, d):
+    ro = min(ro, cw/2.0, ch/2.0)
+    #a = min(cw, ch); ri = ro*(a-2*d)/a
+    ri = max(0, ro-d)
+    #print ro, ri
+    ######### Outline:
+    cr.move_to(cx0+ro, cy0)
+    cr.line_to(cx0+cw-ro, cy0)
+    cr.arc(cx0+cw-ro, cy0+ro, ro, 3*pi/2, 2*pi) ## up right corner
+    cr.line_to(cx0+cw, cy0+ch-ro)
+    cr.arc(cx0+cw-ro, cy0+ch-ro, ro, 0, pi/2) ## down right corner
+    cr.line_to(cx0+ro, cy0+ch)
+    cr.arc(cx0+ro, cy0+ch-ro, ro, pi/2, pi) ## down left corner
+    cr.line_to(cx0, cy0+ro)
+    cr.arc(cx0+ro, cy0+ro, ro, pi, 3*pi/2) ## up left corner
+    #### Inline:
+    if ri==0:
+        cr.move_to(cx0+d, cy0+d)
+        cr.line_to(cx0+d, cy0+ch-d)
+        cr.line_to(cx0+cw-d, cy0+ch-d)
+        cr.line_to(cx0+cw-d, cy0+d)
+        cr.line_to(cx0+d, cy0+d)
+    else:
+        cr.move_to(cx0+ro, cy0+d)## or line_to
+        cr.arc_negative(cx0+ro, cy0+ro, ri, 3*pi/2, pi) ## up left corner
+        cr.line_to(cx0+d, cy0+ch-ro)
+        cr.arc_negative(cx0+ro, cy0+ch-ro, ri, pi, pi/2) ## down left
+        cr.line_to(cx0+cw-ro, cy0+ch-d)
+        cr.arc_negative(cx0+cw-ro, cy0+ch-ro, ri, pi/2, 0) ## down right
+        cr.line_to(cx0+cw-d, cy0+ro)
+        cr.arc_negative(cx0+cw-ro, cy0+ro, ri, 2*pi, 3*pi/2) ## up right
+        cr.line_to(cx0+ro, cy0+d)
+    cr.close_path()
+
+
 class Button:
     def __init__(self, imageName, func, x, y, autoDir=True):
         self.imageName = imageName

@@ -198,6 +198,29 @@ class WeekDayComboBox(gtk.ComboBox):
         self.set_active((value-self.firstWeekDay)%7)
 
 
+class DirectionComboBox(gtk.ComboBox):
+    keys = ['ltr', 'rtl', 'auto']
+    descs = [
+        _('Left to Right'),
+        _('Right to Left'),
+        _('Auto'),
+    ]
+    def __init__(self):
+        ls = gtk.ListStore(str)
+        gtk.ComboBox.__init__(self, ls)
+        ###
+        cell = gtk.CellRendererText()
+        self.pack_start(cell, True)
+        self.add_attribute(cell, 'text', 0)
+        ###
+        for d in self.descs:
+            ls.append([d])
+        self.set_active(0)
+    def getValue(self):
+        return self.keys[self.get_active()]
+    def setValue(self, value):
+        self.set_active(self.keys.index(value))
+
 
 ## Thanks to 'Pier Carteri' <m3tr0@dei.unipd.it> for program Py_Shell.py
 class GtkBufferFile:

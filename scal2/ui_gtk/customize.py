@@ -44,39 +44,55 @@ if os.path.isfile(confPath):
 
 class CustomizableCalObj(ud.IntegratedCalObj):
     expand = False
+    params = ()
     def initVars(self, optionsWidget=None):
         ud.IntegratedCalObj.initVars(self)
         self.optionsWidget = optionsWidget
         self.myKeys = []
         if self.optionsWidget:
             self.optionsWidget.show_all()
-    updateVars = lambda self: None
-    confStr = lambda self: ''
+        try:
+            self.connect('key-press-event', self.keyPress)## FIXME
+        except:
+            pass
+    getItemsData = lambda self: [(item._name, item.enable) for item in self.items]
+    def updateVars(self):
+        for item in self.items:
+            item.updateVars()
+    def confStr(self):
+        text = ''
+        for mod_attr in self.params:
+            text += '%s=%s\n'%(mod_attr, repr(eval(mod_attr)))
+        for item in self.items:
+            text += item.confStr()
+        return text
     def moveItemUp(self, i):## override this method for non-GtkBox containers
         self.reorder_child(self.items[i], i-1)## for GtkBox (HBox and VBox)
         self.items.insert(i-1, self.items.pop(i))
-    def _hideDisabledItems(self):
-        for item in self.items:
-            if item.enable:
-                for chItem in item.items:
-                    if not chItem.enable:
-                        chItem.hide()
-            else:
-                item.hide()
-    def buildWidget(self):## overwrite if items are not widgets
-        self.connect('key-press-event', self.keyPress)
-        for item in self.items:
-            self.pack_start(item, item.expand, item.expand)
-        self.show_all()
-        self._hideDisabledItems()
     def keyPress(self, arg, event):
         kname = gdk.keyval_name(event.keyval).lower()
         for item in self.items:
             if item.enable and kname in item.myKeys:
                 item.emit('key-press-event', event)
+    def showHideWidgets(self):
+        for item in self.items:
+            item.set_visible(item.enable)
+
+
+class CustomizableCalBox(CustomizableCalObj):
+    def appendItem(self, item):
+        CustomizableCalObj.appendItem(self, item)
+        self.pack_start(item, item.expand, item.expand)
+        if item.enable:
+            item.show()
 
 
 class CustomizeDialog(gtk.Dialog):
+    def appendItemTree(self, item, parentIter):
+        itemIter = self.model.append(parentIter)
+        self.model.set(itemIter, 0, item.enable, 1, item.desc)
+        for child in item.items:
+            self.appendItemTree(child, itemIter)
     def __init__(self, widget):
         gtk.Dialog.__init__(self)
         self.set_title(_('Customize'))
@@ -91,11 +107,8 @@ class CustomizeDialog(gtk.Dialog):
         self.widget = widget
         self.activeOptionsWidget = None
         ###
-        model = gtk.TreeStore(bool, str) ## (gdk.Pixbuf, str)
-        treev = gtk.TreeView(model)
-        ##
-        self.model = model
-        self.treev = treev
+        self.model = gtk.TreeStore(bool, str) ## (gdk.Pixbuf, str)
+        treev = self.treev = gtk.TreeView(self.model)
         ##
         treev.set_enable_tree_lines(True)
         treev.set_headers_visible(False)
@@ -118,11 +131,7 @@ class CustomizeDialog(gtk.Dialog):
         treev.append_column(col)
         ###
         for item in widget.items:
-            itemIter = model.append(None)
-            model.set(itemIter, 0, item.enable, 1, item.desc)
-            for child in item.items:
-                childIter = model.append(itemIter)
-                model.set(childIter, 0, child.enable, 1, child.desc)
+            self.appendItemTree(item, None)
         ###
         hbox = gtk.HBox()
         vbox_l = gtk.VBox()
@@ -253,15 +262,11 @@ class CustomizeDialog(gtk.Dialog):
             item.hide()
         if ui.mainWin:
             ui.mainWin.setMinHeight()
-    #def confStr(self):## FIXME
     def close(self, button=None, event=None):
         text = ''
         itemsData = []
-        for item in self.widget.items:
-            item.updateVars()
-            text += item.confStr()
-            itemsData.append((item._name, item.enable))
-        text += 'ui.mainWinItems=%r\n'%itemsData
+        self.widget.updateVars()
+        text = self.widget.confStr()
         open(confPath, 'w').write(text) # FIXME
         self.hide()
         return True

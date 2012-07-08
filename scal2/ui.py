@@ -328,6 +328,9 @@ def changeDate(year, month, day, mode=None):
         mode = core.primaryMode
     cell = cellCache.getCell(core.to_jd(year, month, day, mode))
 
+def gotoJd(jd):
+    global cell
+    cell = cellCache.getCell(jd)
 
 def jdPlus(plus=1):
     global cell
@@ -552,7 +555,7 @@ comDesk = '%s/%s.desktop'%(comDeskDir, APP_NAME)
 ########################### Options ###########################
 keyDelay = 0 #0.07 ## delay between listening of key press in calendar
 winWidth = 480
-calHeight = 250
+mcalHeight = 250
 winTaskbar = False
 #showDigClockTb = True ## On Toolbar ## FIXME
 showDigClockTr = True ## On Tray
@@ -574,7 +577,6 @@ cursorOutColor = (213, 207, 0, 255)
 cursorBgColor = (41, 41, 41, 255)
 cursorD = 3.0
 cursorR = 7.0 ## Rounded Rectangle
-cursorCornerOval = False ## Apply in Pref? FIXME
 cursorW = 57
 cursorH = 24
 calGrid = True
@@ -590,8 +592,8 @@ wcalButtonsWidth = 30
 wcalButtonsSpacing = 10
 wcalWeekDaysWidth = 60
 wcalEventsIconColWidth = 50
-
-
+wcalDaysOfMonthColWidth = 30
+wcalDaysOfMonthColDir = 'ltr' ## ltr/rtl/auto
 ####################
 boldYmLabel = True ##Apply in Pref FIXME
 showYmArrows = True ##Apply in Pref FIXME
@@ -662,6 +664,19 @@ mainWinItems = (
 )
 
 mainWinItemsDefault = mainWinItems[:]
+
+wcalItems = (
+    ('toolbar', True),
+    ('weekDays', True),
+    ('pluginsText', True),
+    ('eventsIcon', True),
+    ('eventsText', True),
+    ('daysOfMonth', True),
+)
+
+wcalItemsDefault = wcalItems[:]
+
+####################
 
 ntpServers = (
     'pool.ntp.org',

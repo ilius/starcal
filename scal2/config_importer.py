@@ -192,8 +192,8 @@ nextStock=%s
             open(live_conf, 'w').write(text)
 
     if calHeightReq>0:
-        calHeight = calHeightReq
-        open(join(confDir, 'ui-customize.conf'), 'w').write('ui.calHeight=%s'%calHeight)
+        mcalHeight = calHeightReq
+        open(join(confDir, 'ui-customize.conf'), 'w').write('ui.mcalHeight=%s'%mcalHeight)
 
 
 

@@ -78,7 +78,8 @@ from scal2.ui_gtk.mywidgets.clock import FClockLabel
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk import preferences
 from scal2.ui_gtk.preferences import PrefItem, gdkColorToRgb, gfontEncode, pfontEncode
-from scal2.ui_gtk.customize import CustomizableCalObj, CustomizeDialog
+from scal2.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox, CustomizeDialog
+from scal2.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
 from scal2.ui_gtk.monthcal import MonthCal
 
 from scal2.ui_gtk.event.common import addNewEvent
@@ -86,19 +87,9 @@ from scal2.ui_gtk.event.occurrence_view import DayOccurrenceView
 from scal2.ui_gtk.event.main import EventManagerDialog
 
 from scal2.ui_gtk.timeline import TimeLineWindow
-#from scal2.ui_gtk.weekcal import WeekCalWindow
-from scal2.ui_gtk.weekcal_new import WeekCal
+#from scal2.ui_gtk.weekcal_old import WeekCalWindow
+from scal2.ui_gtk.weekcal import WeekCal
 
-
-iconSizeList = [
-    ('Menu', gtk.ICON_SIZE_MENU),
-    ('Small Toolbar', gtk.ICON_SIZE_SMALL_TOOLBAR),
-    ('Button', gtk.ICON_SIZE_BUTTON),
-    ('Large Toolbar', gtk.ICON_SIZE_LARGE_TOOLBAR),
-    ('DND', gtk.ICON_SIZE_DND),
-    ('Dialog', gtk.ICON_SIZE_DIALOG),
-] ## in size order
-iconSizeDict = dict(iconSizeList)
 
 
 ui.uiName = 'gtk'
@@ -515,6 +506,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
         if event.button==1:
             self.onClicked(self.controller.gWin, event)
         return False
+    show = lambda self: self.show_all()
 
 class WinConButtonMin(WinConButton):
     _name = 'min'
@@ -564,9 +556,10 @@ class WinConButtonSep(WinConButton):
 ## Below
 
 ## What is "GTK Window Decorator" ??????????
-class WinController(gtk.HBox, CustomizableCalObj):
+class WinController(gtk.HBox, CustomizableCalBox):
     _name = 'winContronller'
     desc = _('Window Controller')
+    params = ('ui.winControllerButtons',)
     buttonClassList = (WinConButtonMin, WinConButtonMax, WinConButtonClose, WinConButtonSep)
     buttonClassDict = dict([(cls._name, cls) for cls in buttonClassList])
     def __init__(self, gWin):
@@ -579,17 +572,12 @@ class WinController(gtk.HBox, CustomizableCalObj):
             button = self.buttonClassDict[bname](self)
             button.enable = enable
             self.appendItem(button)
-            self.pack_start(button, button.expand, button.expand)
         self.set_property('can-focus', True)
         ##################
         self.gWin = gWin
         ##gWin.connect('focus-in-event', self.windowFocusIn)
         ##gWin.connect('focus-out-event', self.windowFocusOut)
         self.winFocused = True
-        self.show_all()
-    def confStr(self):
-        return 'ui.winControllerButtons = %s\n'%repr(ui.winControllerButtons)
-        return False
     def windowFocusIn(self, widget=None, event=None):
         for b in self.items:
             b.setFocus(False)
@@ -603,128 +591,9 @@ class WinController(gtk.HBox, CustomizableCalObj):
 
 
 
-class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
-    def __init__(self, name, stockName, method, tooltip='', text=''):
-        #print 'ToolbarItem', name, stockName, method, tooltip, text
-        self.method = method
-        ######
-        if not tooltip:
-            tooltip = name.capitalize()
-        tooltip = _(tooltip)
-        ###
-        if not text:
-            text = name.capitalize()
-        text = _(text)
-        ######
-        gtk.ToolButton.__init__(
-            self,
-            gtk.image_new_from_stock(getattr(gtk, 'STOCK_%s'%(stockName.upper())), gtk.ICON_SIZE_DIALOG),
-            text,
-        )
-        self._name = name
-        self.desc = tooltip
-        self.initVars()
-        set_tooltip(self, tooltip)
-        self.set_is_important(True)## FIXME
-
-ToolbarItem.registerSignals()
-
-class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
-    _name = 'toolbar'
-    desc = _('Toolbar')
-    styleList = ('Icon', 'Text', 'Text below Icon', 'Text beside Icon')
-    defaultItems = []
-    defaultItemsDict = {}
-    def __init__(self, mainWin, vertical=False):
-        gtk.Toolbar.__init__(self)
-        self.mainWin = mainWin
-        self.set_orientation(gtk.ORIENTATION_VERTICAL if vertical else gtk.ORIENTATION_HORIZONTAL)
-        self.add_events(gdk.POINTER_MOTION_MASK)
-        ###
-        optionsWidget = gtk.VBox()
-        ##
-        hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Style:')), 0, 0)
-        self.styleCombo = gtk.combo_box_new_text()
-        for item in self.styleList:
-            self.styleCombo.append_text(_(item))
-        hbox.pack_start(self.styleCombo, 0, 0)
-        optionsWidget.pack_start(hbox, 0, 0)
-        ##
-        hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Icon Size:')), 0, 0)
-        self.iconSizeCombo = gtk.combo_box_new_text()
-        for (i, item) in enumerate(iconSizeList):
-            self.iconSizeCombo.append_text(_(item[0]))
-        hbox.pack_start(self.iconSizeCombo, 0, 0)
-        optionsWidget.pack_start(hbox, 0, 0)
-        self.iconSizeHbox = hbox
-        ##
-        self.initVars(optionsWidget=optionsWidget)
-        self.iconSizeCombo.connect('changed', self.iconSizeComboChanged)
-        self.styleCombo.connect('changed', self.styleComboChanged)
-        self.styleComboChanged()
-        ##
-        #print 'toolbar state', self.get_state()## STATE_NORMAL
-        #self.set_state(gtk.STATE_ACTIVE)## FIXME
-        #self.set_property('border-width', 0)
-        #style = self.get_style()
-        #style.border_width = 10
-        #self.set_style(style)
-    getIconSizeName = lambda self: iconSizeList[self.iconSizeCombo.get_active()][0]
-    setIconSizeName = lambda self, size_name: self.set_icon_size(iconSizeDict[size_name])
-    ## gtk.Toolbar.set_icon_size was previously Deprecated, but it's not Deprecated now!!
-    def iconSizeComboChanged(self, combo=None):
-        self.setIconSizeName(self.getIconSizeName())
-    def styleComboChanged(self, combo=None):
-        style = self.styleCombo.get_active()
-        self.set_style(style)
-        self.show_all()
-        self.iconSizeHbox.set_sensitive(style!=1)
-    def moveItemUp(self, i):
-        button = self.items[i]
-        self.remove(button)
-        self.insert(button, i-1)
-        self.items.insert(i-1, self.items.pop(i))
-    #def insertItem(self, item, pos):
-    #    CustomizableCalObj.insertItem(self, pos, item)
-    #    gtk.Toolbar.insert(self, item, pos)
-    #    item.show()
-    def appendItem(self, item):
-        CustomizableCalObj.appendItem(self, item)
-        gtk.Toolbar.insert(self, item, -1)
-        #item.set_border_width(10)## FIXME
-        item.show()
-    def getData(self):
-        return {
-            'items': [(child._name, child.enable) for child in self.items],
-            'iconSize': self.getIconSizeName(),
-            'style': self.styleList[self.styleCombo.get_active()],
-        }
-    def setData(self, data):
-        for (name, enable) in data['items']:
-            try:
-                item = self.defaultItemsDict[name]
-            except KeyError:
-                myRaise()
-            else:
-                item.enable = enable
-                item.connect('clicked', getattr(self.mainWin, item.method))
-                self.appendItem(item)
-        ###
-        iconSize = data['iconSize']
-        for (i, item) in enumerate(iconSizeList):
-            if item[0]==iconSize:
-                self.iconSizeCombo.set_active(i)
-        self.setIconSizeName(iconSize)
-        ###
-        styleNum = self.styleList.index(data['style'])
-        self.styleCombo.set_active(styleNum)
-        self.set_style(styleNum)
-
-
 
 class MainWinToolbar(CustomizableToolbar):
+    params = ('ud.mainToolbarData',)
     defaultItems = [
         ToolbarItem('today', 'home', 'goToday', 'Select Today'),
         ToolbarItem('date', 'index', 'selectDateShow', 'Select Date...', 'Date...'),
@@ -736,18 +605,14 @@ class MainWinToolbar(CustomizableToolbar):
         ToolbarItem('quit', 'quit', 'quit'),
     ]
     defaultItemsDict = dict([(item._name, item) for item in defaultItems])
-    def __init__(self, mainWin):
-        CustomizableToolbar.__init__(self, mainWin, vertical=False)
+    def __init__(self, funcOwner):
+        CustomizableToolbar.__init__(self, funcOwner, vertical=False)
         if not ud.mainToolbarData['items']:
             ud.mainToolbarData['items'] = [(item._name, True) for item in self.defaultItems]
         self.setData(ud.mainToolbarData)
     def updateVars(self):
+        CustomizableToolbar.updateVars(self)
         ud.mainToolbarData = self.getData()
-    def confStr(self):
-        text = ''
-        for mod_attr in ('ud.mainToolbarData',):
-            text += '%s=%r\n'%(mod_attr, eval(mod_attr))
-        return text
 
 
 class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
@@ -889,6 +754,8 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
         ## FIXME
         ########################
         self.initVars(optionsWidget=optionsWidget)
+        self.show_all()
+        self.showHideWidgets()
     def checkYmArrowsClicked(self, check):
         active = check.get_active()
         self.ymArrowHbox.set_sensitive(active)
@@ -1029,6 +896,12 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
             width.append(wm)
         for i in range(ui.shownCalsNum):
             self.monthLabel[i].set_property('width-request', width[ui.shownCals[i]['mode']])
+    def showHideWidgets(self):
+        for i in range(ui.shownCalsNum):
+            if ui.shownCals[i]['enable']:
+                showList(self.wgroup[i])
+            else:
+                hideList(self.wgroup[i])
     def onConfigChange(self, *a, **kw):
         CustomizableCalObj.onConfigChange(self, *a, **kw)
         self.updateTextWidth()
@@ -1036,11 +909,7 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
         for i in range(len(self.monthLabel)):
             self.monthLabel[i].changeMode(ui.shownCals[i]['mode'])
         #####################
-        for i in range(ui.shownCalsNum):
-            if ui.shownCals[i]['enable']:
-                showList(self.wgroup[i])
-            else:
-                hideList(self.wgroup[i])
+        self.showHideWidgets()
         #if not ui.shownCals[0]['enable']:##???????
         #    self.vsep0.hide()
         #self.onDateChange()
@@ -1052,7 +921,7 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
                 self.monthLabel[i].setActive(m-1)
                 self.yearLabel[i].setActive(y)
     def confStr(self):
-        text = ''
+        text = CustomizableCalObj.confStr(self)
         text += 'ui.showYmArrows=%r\n'%ui.showYmArrows
         for key in ('prevStock', 'nextStock'):
             text += 'ud.%s=%s\n'%(key, stock_arrow_repr(getattr(ud, key)))
@@ -1117,12 +986,11 @@ class StatusBox(gtk.HBox, CustomizableCalObj):
 class PluginsTextBox(gtk.VBox, CustomizableCalObj):
     _name = 'pluginsText'
     desc = _('Plugins Text')
+    params = ('ui.pluginsTextInsideExpander',)
     def __init__(self, populatePopupFunc=None):
         gtk.VBox.__init__(self)
         self.initVars()
         ####
-        self.enableExpander = ui.pluginsTextInsideExpander
-        #####
         self.textview = gtk.TextView()
         self.textview.set_wrap_mode(gtk.WRAP_WORD)
         self.textview.set_editable(False)
@@ -1134,7 +1002,7 @@ class PluginsTextBox(gtk.VBox, CustomizableCalObj):
         ##
         self.expander = gtk.Expander()
         self.expander.connect('activate', self.expanderExpanded)
-        if self.enableExpander:
+        if ui.pluginsTextInsideExpander:
             self.expander.add(self.textview)
             self.pack_start(self.expander, 0, 0)
             self.expander.set_expanded(ui.pluginsTextIsExpanded)
@@ -1143,9 +1011,9 @@ class PluginsTextBox(gtk.VBox, CustomizableCalObj):
         #####
         optionsWidget = gtk.HBox()
         self.enableExpanderCheckb = gtk.CheckButton(_('Inside Expander'))
-        self.enableExpanderCheckb.set_active(self.enableExpander)
+        self.enableExpanderCheckb.set_active(ui.pluginsTextInsideExpander)
         self.enableExpanderCheckb.connect('clicked', lambda check: self.setEnableExpander(check.get_active()))
-        self.setEnableExpander(self.enableExpander)
+        self.setEnableExpander(ui.pluginsTextInsideExpander)
         optionsWidget.pack_start(self.enableExpanderCheckb, 0, 0)
         ####
         optionsWidget.show_all()
@@ -1153,7 +1021,7 @@ class PluginsTextBox(gtk.VBox, CustomizableCalObj):
     def expanderExpanded(self, exp):
         ui.pluginsTextIsExpanded = not exp.get_expanded()
         ui.saveLiveConf()
-    getWidget = lambda self: self.expander if self.enableExpander else self.textview
+    getWidget = lambda self: self.expander if ui.pluginsTextInsideExpander else self.textview
     def setText(self, text):
         if text:
             self.textbuff.set_text(text)
@@ -1164,26 +1032,19 @@ class PluginsTextBox(gtk.VBox, CustomizableCalObj):
     def setEnableExpander(self, enable):
         #print 'setEnableExpander', enable
         if enable:
-            if not self.enableExpander:
+            if not ui.pluginsTextInsideExpander:
                 self.remove(self.textview)
                 self.expander.add(self.textview)
                 self.pack_start(self.expander, 0, 0)
                 self.expander.show_all()
         else:
-            if self.enableExpander:
+            if ui.pluginsTextInsideExpander:
                 self.expander.remove(self.textview)
                 self.remove(self.expander)
                 self.pack_start(self.textview, 0, 0)
                 self.textview.show()
-        self.enableExpander = enable
+        ui.pluginsTextInsideExpander = enable
         self.onDateChange()
-    def updateVars(self):
-        ui.pluginsTextInsideExpander = self.enableExpander
-    def confStr(self):
-        text = ''
-        for mod_attr in ('ui.pluginsTextInsideExpander',):
-            text += '%s=%r\n'%(mod_attr, eval(mod_attr))
-        return text
     def onDateChange(self, *a, **kw):
         CustomizableCalObj.onDateChange(self, *a, **kw)
         self.setText(ui.cell.pluginsText)
@@ -1208,12 +1069,19 @@ class EventViewMainWinItem(DayOccurrenceView, CustomizableCalObj):## FIXME
 
 
 
-class MainWinVbox(CustomizableCalObj, gtk.VBox):
+class MainWinVbox(gtk.VBox, CustomizableCalBox):
     _name = 'mainWin'
     desc = _('Main Window')
     def __init__(self):
         gtk.VBox.__init__(self)
         self.initVars()
+    def updateVars(self):
+        CustomizableCalBox.updateVars(self)
+        ui.mainWinItems = self.getItemsData()
+    def confStr(self):
+        text = CustomizableCalBox.confStr(self)
+        text += 'ui.mainWinItems=%s\n'%repr(ui.mainWinItems)
+        return text
 
 class MainWin(gtk.Window, ud.IntegratedCalObj):
     _name = 'mainWin'
@@ -1326,13 +1194,9 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ############
         self.winCon = WinController(self)
         ############
-        toolbar = MainWinToolbar(self)
-
-
-        ############
         defaultItems = [
             self.winCon,
-            toolbar,
+            MainWinToolbar(self),
             YearMonthLabelBox(),
             self.mcal,
             self.wcal,
@@ -1354,8 +1218,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             item.connect('size-request', self.childSizeRequest) ## or item.connect
             #modify_bg_all(item, gtk.STATE_NORMAL, rgbToGdkColor(*ui.bgColor))
             self.vbox.appendItem(item)
-        self.vbox.buildWidget()
         self.appendItem(self.vbox)
+        self.vbox.show()
         self.customizeDialog = CustomizeDialog(self.vbox)
         #######
         self.add(self.vbox)
@@ -1494,10 +1358,10 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
 
     """
     def checkResize(self, widget, req):
-        if ui.calHeight != req.height:# and ui.winWidth==req.width:
+        if ui.mcalHeight != req.height:# and ui.winWidth==req.width:
             if req.height==0:
                 req.height=1
-            ui.calHeight = req.height
+            ui.mcalHeight = req.height
     """
     def configureEvent(self, widget, event):
         liveConfChanged()
@@ -1529,9 +1393,9 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
     def changeDate(self, year, month, day):
         ui.changeDate(year, month, day)
         self.onDateChange()
-    goToday = lambda self, widget=None: self.changeDate(*core.getSysDate())
+    goToday = lambda self, obj=None: self.changeDate(*core.getSysDate())
     def onDateChange(self, *a, **kw):
-        print 'MainWin.onDateChange'
+        #print 'MainWin.onDateChange'
         ud.IntegratedCalObj.onDateChange(self, *a, **kw)
         #for j in range(len(core.plugIndex)):##????????????????????
         #    try:

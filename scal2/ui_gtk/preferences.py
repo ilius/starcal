@@ -767,7 +767,7 @@ class PrefDialog(gtk.Dialog):
         #############
         item = RadioHListPrefItem(ui, 'dragIconCell',
             (_('Date String'), _('Cell Image')),
-            _('Drag & Drop Icon:'))
+            _('Drag & Drop Icon'))
         self.uiPrefItems.append(item)
         set_tooltip(item.radios[0], 'yyyy/mm/dd')
         item.set(0)
@@ -849,7 +849,7 @@ class PrefDialog(gtk.Dialog):
         vbox.pack_start(hbox, 0, 0)
         #########
         hbox0 = gtk.HBox(spacing=0)
-        hbox0.pack_start(gtk.Label(_('Holidays:')+'    '), 0, 0)
+        hbox0.pack_start(gtk.Label(_('Holidays')+'    '), 0, 0)
         item = WeekDayCheckListPrefItem(core, 'holidayWeekDays')
         self.corePrefItems.append(item)
         self.holiWDItem = item ## Holiday Week Days Item
@@ -857,7 +857,7 @@ class PrefDialog(gtk.Dialog):
         vbox.pack_start(hbox0, 0, 0)
         #########
         hbox = gtk.HBox(spacing=3)
-        hbox.pack_start(gtk.Label(_('First week of year containts:')), 0, 0)
+        hbox.pack_start(gtk.Label(_('First week of year containts')), 0, 0)
         combo = gtk.combo_box_new_text()
         texts = [_('First %s of year')%name for name in core.weekDayName]+[_('First day of year')]
         texts[4] += ' (ISO 8601)' ##??????

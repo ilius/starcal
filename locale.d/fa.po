@@ -1256,6 +1256,38 @@ msgid "Week Calendar"
 msgstr ""
 "تقویم هفتگی"
 
+msgid "Week Days"
+msgstr ""
+"روزهای هفته"
+
+msgid "Events Text"
+msgstr ""
+"متن رویدادها"
+
+msgid "Events Icon"
+msgstr ""
+"آیکون رویدادها"
+
+msgid "Days of Month"
+msgstr ""
+"روزهای ماه"
+
+msgid "Direction"
+msgstr ""
+"جهت"
+
+msgid "Left to Right"
+msgstr ""
+"چپ به راست"
+
+msgid "Right to Left"
+msgstr ""
+"راست به چپ"
+
+msgid "Auto"
+msgstr ""
+"خودکار"
+
 
 
 msgid "aboutText"
@@ -1446,9 +1478,22 @@ msgid "Back"
 msgstr ""
 "عقب"
 
+msgid "Backward"
+msgstr ""
+"عقب"
+
 msgid "Forward"
 msgstr ""
 "جلو"
+
+msgid "Backward 4 Weeks"
+msgstr ""
+"۴ هفته به عقب"
+
+msgid "Forward 4 Weeks"
+msgstr ""
+"۴ هفته به جلو"
+
 
 msgid "Plus"
 msgstr ""
@@ -1471,7 +1516,7 @@ msgid "Date..."
 msgstr ""
 "تاریخ..."
 
-msgid "Style:"
+msgid "Style"
 msgstr ""
 "سَبک"
 
@@ -1582,14 +1627,14 @@ msgstr ""
 "خودکار"
 
 
-msgid "Holidays:"
+msgid "Holidays"
 msgstr ""
-"روزهای تعطیل:"
+"روزهای تعطیل"
 
 
-msgid "First week of year containts:"
+msgid "First week of year containts"
 msgstr ""
-"اولین هفتهٔ سال شامل:"
+"اولین هفتهٔ سال شامل"
 
 msgid "First %s of year"
 msgstr ""
@@ -1668,10 +1713,6 @@ msgid "Height"
 msgstr ""
 "ارتفاع"
 
-msgid "Height:"
-msgstr ""
-"ارتفاع:"
-
 msgid "Fixed Size"
 msgstr ""
 "اندازهٔ ثابت"
@@ -1704,17 +1745,13 @@ msgid "Use system font"
 msgstr ""
 "استفاده از فونت سیستم"
 
-msgid "Holidays"
-msgstr ""
-"تعطیلات"
-
 msgid "Change color of non-weekly holidays"
 msgstr ""
 "تغییر رنگ تعطیلات غیر هفتگی"
 
-msgid "Drag & Drop Icon:"
+msgid "Drag & Drop Icon"
 msgstr ""
-"شمایلِ کشیدن و رها کردن:"
+"شمایلِ کشیدن و رها کردن"
 
 msgid "Date String"
 msgstr ""
@@ -1969,7 +2006,7 @@ msgid "Plugins Text"
 msgstr ""
 "متن افزونه‌ها"
 
-msgid "Icon Size:"
+msgid "Icon Size"
 msgstr ""
 "اندازهٔ آیکون"
 
@@ -1992,6 +2029,10 @@ msgstr ""
 msgid "Dialog"
 msgstr ""
 "دیالوگ"
+
+msgid "Buttons Border"
+msgstr ""
+"حاشیهٔ دکمه‌ها"
 
 
 msgid "Inside Expander"

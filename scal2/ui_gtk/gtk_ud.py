@@ -60,9 +60,9 @@ class IntegratedCalObj(gtk.Object):
     def connectItem(self, item):
         item.connect('config-change', self.onConfigChange)
         item.connect('date-change', self.onDateChange)
-    def insertItem(self, index, item):
-        self.items.insert(index, item)
-        self.connectItem(item)
+    #def insertItem(self, index, item):
+    #    self.items.insert(index, item)
+    #    self.connectItem(item)
     def appendItem(self, item):
         self.items.append(item)
         self.connectItem(item)
@@ -107,6 +107,13 @@ for item in ui.shownCals[1:]:
         item['font'] = (name, bold, underline, int(size*0.6))
 del name, bold, underline, size
 
+###########
+textDirDict = {
+    'ltr': gtk.TEXT_DIR_LTR,
+    'rtl': gtk.TEXT_DIR_RTL,
+    'auto': gtk.TEXT_DIR_NONE,
+}
+
 ##############################
 
 #if not ui.fontUseDefault:## FIXME
@@ -128,6 +135,14 @@ mainToolbarData = {
     'items': [],
     'iconSize': 'Large Toolbar',
     'style': 'Icon',
+    'buttonsBorder': 0,
+}
+
+wcalToolbarData = {
+    'items': [],
+    'iconSize': 'Button',
+    'style': 'Icon',
+    'buttonsBorder': 0,
 }
 
 ############################################################

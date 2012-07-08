@@ -54,7 +54,7 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
     def heightSpinChanged(self, spin):
         v = spin.get_value()
         self.set_property('height-request', v)
-        ui.calHeight = v
+        ui.mcalHeight = v
     def leftMarginSpinChanged(self, spin):
         ui.mcalLeftMargin = spin.get_value()
         self.queue_draw()
@@ -62,24 +62,24 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         ui.mcalTopMargin = spin.get_value()
         self.queue_draw()
     def confStr(self):
-        text = ''
-        text += 'ui.calHeight=%r\n'%ui.calHeight
+        text = CustomizableCalObj.confStr(self)
+        text += 'ui.mcalHeight=%r\n'%ui.mcalHeight
         text += 'ui.mcalLeftMargin=%r\n'%ui.mcalLeftMargin
         text += 'ui.mcalTopMargin=%r\n'%ui.mcalTopMargin
         return text
     def __init__(self, shownCals=ui.shownCals):
         gtk.Widget.__init__(self)
-        self.set_property('height-request', ui.calHeight)
+        self.set_property('height-request', ui.mcalHeight)
         ######
-        vbox = gtk.VBox()
+        optionsWidget = gtk.VBox()
         ###
         hbox = gtk.HBox()
-        spin = IntSpinButton(1, 999)
-        spin.set_value(ui.calHeight)
+        spin = IntSpinButton(1, 9999)
+        spin.set_value(ui.mcalHeight)
         spin.connect('changed', self.heightSpinChanged)
-        hbox.pack_start(gtk.Label(_('Height:')), 0, 0)
+        hbox.pack_start(gtk.Label(_('Height')), 0, 0)
         hbox.pack_start(spin, 0, 0)
-        vbox.pack_start(hbox, 0, 0)
+        optionsWidget.pack_start(hbox, 0, 0)
         ####
         hbox = gtk.HBox(spacing=3)
         ##
@@ -96,9 +96,9 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         hbox.pack_start(spin, 0, 0)
         ##
         hbox.pack_start(gtk.Label(''), 1, 1)
-        vbox.pack_start(hbox, 0, 0)
+        optionsWidget.pack_start(hbox, 0, 0)
         ####
-        self.initVars(optionsWidget=vbox)
+        self.initVars(optionsWidget=optionsWidget)
         ######
         self.shownCals = shownCals
         ######################
@@ -284,35 +284,9 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
                         cy0 = y0-self.dy/2.0+1
                         cw = self.dx-1
                         ch = self.dy-1
-                    if ui.cursorR==0:
-                        cr.rectangle(cx0, cy0, cw, ch)
-                        fillColor(cr, ui.cursorBgColor)
-                    else:
-                        if ui.cursorCornerOval:
-                            ## Oval Rounded
-                            yscale = float(ch/cw)
-                            cr.scale(1, yscale)
-                            cy0 /= yscale
-                            ch = cw
-                        ######### Circular Rounded
-                        ro = min(ui.cursorR, cw/2, ch/2)
-                        #a = min(cw, ch); ri = ro*(a-2*d)/a
-                        ri = max(ro-d, 0)
-                        ######### Outline:
-                        cr.move_to(cx0+ro, cy0)
-                        cr.line_to(cx0+cw-ro, cy0)
-                        cr.arc(cx0+cw-ro, cy0+ro, ro, 3*pi/2, 2*pi) ## up right corner
-                        cr.line_to(cx0+cw, cy0+ch-ro)
-                        cr.arc(cx0+cw-ro, cy0+ch-ro, ro, 0, pi/2) ## down right corner
-                        cr.line_to(cx0+ro, cy0+ch)
-                        cr.arc(cx0+ro, cy0+ch-ro, ro, pi/2, pi) ## down left corner
-                        cr.line_to(cx0, cy0+ro)
-                        cr.arc(cx0+ro, cy0+ro, ro, pi, 3*pi/2) ## up left corner
-                        ####
-                        cr.close_path()
-                        fillColor(cr, ui.cursorBgColor)
-                        if ui.cursorCornerOval:
-                            cr.scale(1, 1.0/yscale)
+                    ######### Circular Rounded
+                    drawRoundedRect(cr, cx0, cy0, cw, ch, ui.cursorR)
+                    fillColor(cr, ui.cursorBgColor)
                 ######## end of Drawing Cursor
                 if not cellInactive:
                     iconList = c.getEventIcons()
@@ -385,52 +359,9 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
                             cy0 = y0-self.dy/2.0+1
                             cw = self.dx-1
                             ch = self.dy-1
-                        setColor(cr, ui.cursorOutColor)
-                        if ui.cursorR==0:
-                            cr.rectangle(cx0, cy0, cw, d)
-                            cr.fill()
-                            cr.rectangle(cx0, cy0+ch-d, cw, d)
-                            cr.fill()
-                            cr.rectangle(cx0, cy0, d, ch)
-                            cr.fill()
-                            cr.rectangle(cx0+cw-d, cy0, d, ch)
-                            cr.fill()
-                        else:
-                            if ui.cursorCornerOval:
-                                ## Oval Rounded
-                                yscale = float(ch/cw)
-                                cr.scale(1, yscale)
-                                cy0 /= yscale
-                                ch = cw
-                            ######### Circular Rounded
-                            ro = min(ui.cursorR, cw/2, ch/2)
-                            #a = min(cw, ch); ri = ro*(a-2*d)/a
-                            ri = max(ro-d, 0)
-                            ######### Outline:
-                            cr.move_to(cx0+ro, cy0)
-                            cr.line_to(cx0+cw-ro, cy0)
-                            cr.arc(cx0+cw-ro, cy0+ro, ro, 3*pi/2, 2*pi) ## up right corner
-                            cr.line_to(cx0+cw, cy0+ch-ro)
-                            cr.arc(cx0+cw-ro, cy0+ch-ro, ro, 0, pi/2) ## down right corner
-                            cr.line_to(cx0+ro, cy0+ch)
-                            cr.arc(cx0+ro, cy0+ch-ro, ro, pi/2, pi) ## down left corner
-                            cr.line_to(cx0, cy0+ro)
-                            cr.arc(cx0+ro, cy0+ro, ro, pi, 3*pi/2) ## up left corner
-                            #### Inline:
-                            cr.move_to(cx0+ro, cy0+d) ## or line to?
-                            cr.arc_negative(cx0+ro, cy0+ro, ri, 3*pi/2, pi) ## up left corner
-                            cr.line_to(cx0+d, cy0+ch-ro)
-                            cr.arc_negative(cx0+ro, cy0+ch-ro, ri, pi, pi/2) ## down left
-                            cr.line_to(cx0+cw-ro, cy0+ch-d)
-                            cr.arc_negative(cx0+cw-ro, cy0+ch-ro, ri, pi/2, 0) ## down right
-                            cr.line_to(cx0+cw-d, cy0+ro)
-                            cr.arc_negative(cx0+cw-ro, cy0+ro, ri, 2*pi, 3*pi/2) ## up right
-                            cr.line_to(cx0+ro, cy0+d)
-                            ####
-                            cr.close_path()
-                            cr.fill()
-                            if ui.cursorCornerOval:
-                                cr.scale(1, 1.0/yscale)
+                        ######### Circular Rounded
+                        drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ui.cursorR, d)
+                        fillColor(cr, ui.cursorOutColor)
                         ##### end of Drawing Cursor Outline
         ################ end of drawing cells
         ##### drawGrid
@@ -550,7 +481,6 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
             #    self.get_screen().get_system_colormap() , x, y, 0, 0, w, h)
             pbuf.get_from_drawable(self.window, self.window.get_colormap() , x, y, 0, 0, w, h)
             ########## Making Cursor Mask
-            ## if ui.cursorCornerOval ## FIXME
             mask = gdk.Pixmap(None, w, h, 1)
             cr = mask.cairo_create()
             cr.rectangle(0, 0, w, h)
