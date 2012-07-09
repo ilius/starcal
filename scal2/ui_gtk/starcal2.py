@@ -77,7 +77,7 @@ from scal2.ui_gtk.mywidgets.clock import FClockLabel
 
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk import preferences
-from scal2.ui_gtk.preferences import PrefItem, gdkColorToRgb, gfontEncode, pfontEncode
+from scal2.ui_gtk.preferences import PrefItem, gdkColorToRgb
 from scal2.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox, CustomizeDialog
 from scal2.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
 from scal2.ui_gtk.monthcal import MonthCal
@@ -1746,14 +1746,9 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
         #self.set_property('skip-taskbar-hint', not ui.winTaskbar) ## self.set_skip_taskbar_hint ## FIXME
         ## skip-taskbar-hint  need to restart ro be applied
-        ud.settings.set_property(
-            'gtk-font-name',
-            pfontEncode(ui.getFont()),
-        )
         self.updateMenuSize()
         #self.updateToolbarClock()## FIXME
         self.updateTrayClock()
-        ui.cellCache.clear()
         self.trayUpdate()
         #self.onDateChange()
 

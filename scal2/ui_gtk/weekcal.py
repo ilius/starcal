@@ -131,6 +131,9 @@ class Column(gtk.Widget, CustomizableCalObj):
                 cr.show_layout(layout)
     def buttonPress(self, widget, event):
         return False
+    def onDateChange(self, *a, **kw):
+        CustomizableCalObj.onDateChange(self, *a, **kw)
+        self.queue_draw()
 
 
 
@@ -147,7 +150,6 @@ class ToolbarColumn(CustomizableToolbar):
     params = ('ud.wcalToolbarData',)
     def __init__(self, wcal):
         CustomizableToolbar.__init__(self, wcal, vertical=True)
-        #print 'ud.wcalToolbarData', ud.wcalToolbarData
         if not ud.wcalToolbarData['items']:
             ud.wcalToolbarData['items'] = [(item._name, True) for item in self.defaultItems]
         self.setData(ud.wcalToolbarData)
@@ -252,11 +254,9 @@ class EventsIconColumn(Column):
         ###
         rowH = h/7.0
         itemW = w - ui.wcalPadding
-        #print
         for i in range(7):
             c = self.wcal.status[i]
             iconList = c.getEventIcons()
-            #print i, iconList
             if iconList:
                 n = len(iconList)
                 scaleFact = min(
@@ -264,7 +264,6 @@ class EventsIconColumn(Column):
                     h/self.maxPixH,
                     w/(n*self.maxPixW),
                 )
-                #print 'scaleFact', h/self.maxPixH, w/(n*self.maxPixW)
                 x0 = (w/scaleFact - (n-1)*self.maxPixW)/2.0
                 y0 = (2*i+1) * h / (14.0*scaleFact)
                 if rtl:
@@ -297,9 +296,6 @@ class DaysOfMonthColumn(Column):
         self.updateWidth()
         ###
         self.connect('expose-event', self.onExposeEvent)
-    def onDateChange(self, *a, **kw):
-        CustomizableCalObj.onDateChange(self, *a, **kw)
-        self.queue_draw()
     def onExposeEvent(self, widget=None, event=None):
         cr = self.window.cairo_create()
         self.drawBg(cr)
@@ -347,20 +343,17 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox):
         ui.wcalDaysOfMonthColDir = combo.getValue()
         self.updateDir()
     def updateCols(self):
-        #print 'updateCols'
         for child in self.get_children():
             child.destroy()
         for cal in ui.shownCals:
             if cal['enable']:
-                #print cal['mode']
                 col = DaysOfMonthColumn(self.wcal, cal['mode'])
                 col.show()
                 self.pack_start(col, 0, 0)
-        #print
     def onConfigChange(self, *a, **ka):
         CustomizableCalBox.onConfigChange(self, *a, **ka)
         self.updateCols()
-        self.onDateChange()
+        #self.onDateChange()
 
 class WeekCal(gtk.HBox, CustomizableCalBox):
     _name = 'weekCal'
@@ -430,6 +423,8 @@ class WeekCal(gtk.HBox, CustomizableCalBox):
         CustomizableCalBox.onDateChange(self, *a, **kw)
         self.updateStatus()
         self.queue_draw()
+        for item in self.items:
+            item.queue_draw()
     def gotoJd(self, jd):
         ui.gotoJd(jd)
         self.onDateChange()
@@ -494,6 +489,8 @@ class WeekCal(gtk.HBox, CustomizableCalBox):
     def onCurrentDateChange(self, gdate):
         self.queue_draw()
 
+    
+
 
 for cls in (
     Column,
@@ -517,7 +514,6 @@ gobject.signal_new('2button-press', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_N
 if __name__=='__main__':
     win = gtk.Dialog()
     cal = WeekCal()
-    #print cal.items
     win.add_events(
         gdk.POINTER_MOTION_MASK | gdk.FOCUS_CHANGE_MASK | gdk.BUTTON_MOTION_MASK |
         gdk.BUTTON_PRESS_MASK | gdk.BUTTON_RELEASE_MASK | gdk.SCROLL_MASK |

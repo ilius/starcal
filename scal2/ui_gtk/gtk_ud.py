@@ -21,6 +21,7 @@
 ## ud = ui dependent
 ## upper the "ui" module
 
+import time
 from os.path import join
 
 from scal2.paths import *
@@ -33,7 +34,7 @@ import gobject
 import gtk
 from gtk import gdk
 
-from scal2.ui_gtk.font_utils import gfontDecode
+from scal2.ui_gtk.font_utils import gfontDecode, pfontEncode
 
 class IntegratedCalObj(gtk.Object):
     _name = ''
@@ -80,6 +81,12 @@ class IntegatedWindowList(IntegratedCalObj):
         gtk.Object.__init__(self)
         self.initVars()
     def onConfigChange(self, *a, **ka):
+        ui.cellCache.clear()
+        settings.set_property(
+            'gtk-font-name',
+            pfontEncode(ui.getFont()),
+        )
+        ####
         IntegratedCalObj.onConfigChange(self, *a, **ka)
         self.onDateChange()
 
