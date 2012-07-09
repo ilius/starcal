@@ -1177,6 +1177,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.mcal.connect('pref-update-bg-color', self.prefUpdateBgColor)
         #############################################################
         self.wcal = WeekCal()
+        self.wcal.connect('popup-menu-cell', self.popupMenuCell)
+        self.wcal.connect('2button-press', ui.dayOpenEvolution)
         #############################################################
         """
         #self.add_events(gdk.VISIBILITY_NOTIFY_MASK)
@@ -1454,7 +1456,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         menu2.show_all()
         addToItem.set_submenu(menu2)
         return addToItem
-    def popupMenuCell(self, mcal, etime, x, y):
+    def popupMenuCell(self, widget, etime, x, y):
         ui.focusTime = time()
         menu = gtk.Menu()
         ####
@@ -1469,7 +1471,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         #    menu.add(labelImageMenuItem('In _Sunbird', 'sunbird-18.png', ui.dayOpenSunbird))
         ####
         menu.show_all()
-        (dx, dy) = mcal.translate_coordinates(self, x, y)
+        (dx, dy) = widget.translate_coordinates(self, x, y)
         (wx, wy) = self.window.get_origin()
         x = wx+dx
         y = wy+dy
@@ -1479,10 +1481,10 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             mw = 145 ## FIXME
             x -= mw
         menu.popup(None, None, lambda m: (x, y, True), 3, etime)
-    def popupMenuMain(self, mcal, etime, x, y):
+    def popupMenuMain(self, widget, etime, x, y):
         ui.focusTime = time()
         menu = self.menuMain
-        (dx, dy) = mcal.translate_coordinates(self, x, y)
+        (dx, dy) = widget.translate_coordinates(self, x, y)
         (wx, wy) = self.window.get_origin()
         x = wx+dx
         y = wy+dy

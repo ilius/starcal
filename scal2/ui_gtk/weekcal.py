@@ -129,7 +129,7 @@ class Column(gtk.Widget, CustomizableCalObj):
                 else:
                     setColor(cr, ui.wcalTextColor)
                 cr.show_layout(layout)
-    def buttonPress(self, obj, event):
+    def buttonPress(self, widget, event):
         return False
 
 
@@ -445,9 +445,18 @@ class WeekCal(gtk.HBox, CustomizableCalBox):
         self.jdPlus(7)
     def goForward4(self, obj=None):
         self.jdPlus(28)
-    def buttonPress(self, obj, event):
+    def buttonPress(self, widget, event):
+        b = event.button
+        #(x, y, mask) = event.window.get_pointer()
+        (x, y) = self.get_pointer()
+        #y += 10
         i = int(event.y * 7.0 / self.allocation.height)
-        self.gotoJd(self.status[i].jd)
+        cell = self.status[i]
+        self.gotoJd(cell.jd)
+        if event.type==gdk._2BUTTON_PRESS:
+            self.emit('2button-press')
+        if b == 3:
+            self.emit('popup-menu-cell', event.time, x, y)
         return True
     def keyPress(self, arg, event):
         kname = gdk.keyval_name(event.keyval).lower()
@@ -501,9 +510,7 @@ for cls in (
 
 cls = WeekCal
 gobject.signal_new('popup-menu-cell', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [int, int, int])
-gobject.signal_new('popup-menu-main', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [int, int, int])
 gobject.signal_new('2button-press', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
-gobject.signal_new('pref-update-bg-color', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
 
 
 
