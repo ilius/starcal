@@ -697,7 +697,6 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         CustomizableCalObj.onConfigChange(self, *a, **kw)
         self.shownCals = ui.shownCals
         self.updateTextWidth()
-        #self.onDateChange()
     def onCurrentDateChange(self, gdate):
         self.queue_draw()
 

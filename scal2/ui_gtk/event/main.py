@@ -877,8 +877,6 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                     self.getEventRow(ui.eventTrash[eid]),
                 )
         ui.trashedEvents = []
-        ###
-        #self.onDateChange()
     def onShow(self, widget):
         self.onConfigChange()
     def __init__(self):

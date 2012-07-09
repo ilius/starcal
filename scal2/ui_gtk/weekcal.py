@@ -353,7 +353,6 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox):
     def onConfigChange(self, *a, **ka):
         CustomizableCalBox.onConfigChange(self, *a, **ka)
         self.updateCols()
-        #self.onDateChange()
 
 class WeekCal(gtk.HBox, CustomizableCalBox):
     _name = 'weekCal'

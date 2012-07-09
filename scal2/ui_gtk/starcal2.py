@@ -912,7 +912,6 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
         self.showHideWidgets()
         #if not ui.shownCals[0]['enable']:##???????
         #    self.vsep0.hide()
-        #self.onDateChange()
     def onDateChange(self, *a, **kw):
         CustomizableCalObj.onDateChange(self, *a, **kw)
         for (i, item) in enumerate(ui.shownCals):
@@ -1063,7 +1062,6 @@ class EventViewMainWinItem(DayOccurrenceView, CustomizableCalObj):## FIXME
     def onConfigChange(self, *a, **kw):
         CustomizableCalObj.onConfigChange(self, *a, **kw)
         self.updateWidget()
-        #self.onDateChange()
     ## should event occurances be saved in ui.cell object? FIXME
 
 
@@ -1750,7 +1748,6 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         #self.updateToolbarClock()## FIXME
         self.updateTrayClock()
         self.trayUpdate()
-        #self.onDateChange()
 
 
 ###########################################################################3
