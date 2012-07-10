@@ -23,7 +23,7 @@ from scal2.core import pixDir, myRaise
 
 from scal2 import event_man
 from scal2 import ui
-from scal2.ui_gtk.utils import openWindow
+from scal2.ui_gtk.utils import openWindow, dialog_add_button
 
 import gtk
 from gtk import gdk
@@ -226,13 +226,9 @@ class TagEditorDialog(gtk.Dialog):
         self.tagsBox = TagsListBox(eventType)
         self.vbox.pack_start(self.tagsBox, 1, 1)
         ####
-        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        #if ui.autoLocale:
-        cancelB.set_label(_('_Cancel'))
-        cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL, gtk.ICON_SIZE_BUTTON))
-        okB.set_label(_('_OK'))
-        okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK, gtk.ICON_SIZE_BUTTON))
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        ####
         self.vbox.show_all()
         self.getData = self.tagsBox.getData
         self.setData = self.tagsBox.setData

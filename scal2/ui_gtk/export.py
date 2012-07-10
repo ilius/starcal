@@ -31,7 +31,7 @@ from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
 from scal2.export import exportToHtml
 
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, TimeButton, YearMonthButton
-from scal2.ui_gtk.utils import openWindow
+from scal2.ui_gtk.utils import openWindow, dialog_add_button
 
 import gtk
 from gtk import gdk
@@ -71,16 +71,11 @@ class ExportDialog(gtk.Dialog):
         self.vbox.pack_start(self.fcw, 1, 1)
         self.vbox.show_all()
         combo.connect('changed', self.comboChanged)
-        canB = self.add_button(gtk.STOCK_CANCEL, 1)
-        saveB = self.add_button(gtk.STOCK_SAVE, 2)
-        if ui.autoLocale:
-            canB.set_label(_('_Cancel'))
-            canB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
-            saveB.set_label(_('_Save'))
-            saveB.set_image(gtk.image_new_from_stock(gtk.STOCK_SAVE,gtk.ICON_SIZE_BUTTON))
+        ##
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), 1, self.onDelete)
+        dialog_add_button(self, gtk.STOCK_SAVE, _('_Save'), 2, self.save)
+        ##
         self.connect('delete-event', self.onDelete)
-        canB.connect('clicked', self.onDelete)
-        saveB.connect('clicked', self.save)
         try:
             self.fcw.set_current_folder(core.deskDir)
         except AttributeError:## PyGTK < 2.4
@@ -187,16 +182,11 @@ class ExportToIcsDialog(gtk.Dialog):
         self.fcw = gtk.FileChooserWidget(action=gtk.FILE_CHOOSER_ACTION_SAVE)
         self.vbox.pack_start(self.fcw, 1, 1)
         self.vbox.show_all()
-        canB = self.add_button(gtk.STOCK_CANCEL, 1)
-        saveB = self.add_button(gtk.STOCK_SAVE, 2)
-        if ui.autoLocale:
-            canB.set_label(_('_Cancel'))
-            canB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
-            saveB.set_label(_('_Save'))
-            saveB.set_image(gtk.image_new_from_stock(gtk.STOCK_SAVE,gtk.ICON_SIZE_BUTTON))
+        ##
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), 1, self.onDelete)
+        dialog_add_button(self, gtk.STOCK_SAVE, _('_Save'), 2, self.save)
+        ##
         self.connect('delete-event', self.onDelete)
-        canB.connect('clicked', self.onDelete)
-        saveB.connect('clicked', self.save)
         try:
             self.fcw.set_current_folder(core.deskDir)
         except AttributeError:## PyGTK < 2.4

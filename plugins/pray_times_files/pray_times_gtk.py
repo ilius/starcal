@@ -19,12 +19,35 @@
 
 import os
 from os.path import dirname
-import gtk
+
 from scal2.locale_man import tr as _
 from pray_times_backend import timeNames, methodsList
 
+import gtk
+
 dataDir = dirname(__file__)
 earthR = 6370
+
+class AboutDialog(gtk.AboutDialog):## I had to duplicate!!
+    def __init__(self, name='', version='', title='', authors=[], comments='', license='', website=''):
+        gtk.AboutDialog.__init__(self)
+        self.set_name(name)## or set_program_name FIXME
+        self.set_version(version)
+        self.set_title(title) ## must call after set_name and set_version !
+        self.set_authors(authors)
+        self.set_comments(comments)
+        if license:
+            self.set_license(license)
+            self.set_wrap_license(True)
+        if website:
+            self.set_website(website) ## A palin label (not link)
+        #if ui.autoLocale:
+        buttonbox = self.vbox.get_children()[1]
+        buttons = buttonbox.get_children()## List of buttons of about dialogs
+        buttons[1].set_label(_('C_redits'))
+        buttons[2].set_label(_('_Close'))
+        buttons[2].set_image(gtk.image_new_from_stock(gtk.STOCK_CLOSE,gtk.ICON_SIZE_BUTTON))
+        buttons[0].set_label(_('_License'))
 
 class LocationDialog(gtk.Dialog):
     EXIT_OK     = 0
@@ -366,25 +389,17 @@ class TextPlugUI:
     def open_configure(self):
         self.confDialog.run()
     def open_about(self):
-        about = gtk.AboutDialog()
-        about.set_name(self.name) ## or set_program_name
-        #about.set_version(VERSION)
-        about.set_title(_('About')+' '+self.name) ## must call after set_name and set_version !
-        about.set_authors([
-            _('Hamid Zarrabi-Zadeh <zarrabi@scs.carleton.ca>'),
-            _('Saeed Rasooli <saeed.gnu@gmail.com>')
-        ])
-        #about.set_comments(_(''))
+        about = AboutDialog(
+            name=self.name,
+            title=_('About')+' '+self.name,
+            authors=[
+                _('Hamid Zarrabi-Zadeh <zarrabi@scs.carleton.ca>'),
+                _('Saeed Rasooli <saeed.gnu@gmail.com>')
+            ],
+        )
         about.connect('delete-event', lambda w, e: about.destroy())
         #about.connect('response', lambda w: about.hide())
         #about.set_skip_taskbar_hint(True)
-        #buttonbox = about.vbox.get_children()[1]
-        ##buttonbox.set_homogeneous(False)
-        ##buttonbox.set_layout(gtk.BUTTONBOX_SPREAD)
-        #buttons = buttonbox.get_children()## List of buttons of about dialogs
-        #buttons[1].set_label(_('C_redits'))
-        #buttons[2].set_label(_('_Close'))
-        #buttons[2].set_image(gtk.image_new_from_stock(gtk.STOCK_CLOSE,gtk.ICON_SIZE_BUTTON))
         about.run()
         about.destroy()
 

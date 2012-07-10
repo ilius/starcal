@@ -31,7 +31,7 @@ from scal2.core import pixDir, myRaise
 from scal2 import event_man
 from scal2 import ui
 
-from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, buffer_get_text, labelStockMenuItem
+from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, buffer_get_text, labelStockMenuItem, dialog_add_button
 
 import gtk
 from gtk import gdk
@@ -450,13 +450,9 @@ class EventEditorDialog(gtk.Dialog):
         #self.connect('delete-event', lambda obj, e: self.destroy())
         #self.resize(800, 600)
         ###
-        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        if ui.autoLocale:
-            cancelB.set_label(_('_Cancel'))
-            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
-            okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        ###
         self.connect('response', lambda w, e: self.hide())
         #######
         self.event = event
@@ -543,13 +539,8 @@ class GroupEditorDialog(gtk.Dialog):
         #self.connect('delete-event', lambda obj, e: self.destroy())
         #self.resize(800, 600)
         ###
-        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        if ui.autoLocale:
-            cancelB.set_label(_('_Cancel'))
-            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
-            okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
         self.connect('response', lambda w, e: self.hide())
         #######
         self.activeWidget = None

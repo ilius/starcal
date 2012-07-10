@@ -63,9 +63,7 @@ from gobject import timeout_add, timeout_add_seconds
 import gtk
 from gtk import gdk
 
-from scal2.ui_gtk.utils import hideList, showList, set_tooltip, imageFromFile, setupMenuHideOnLeave, \
-                               labelStockMenuItem, labelImageMenuItem, modify_bg_all, openWindow, stock_arrow_repr
-
+from scal2.ui_gtk.utils import *
 from scal2.ui_gtk.color_utils import rgbToGdkColor
 from scal2.ui_gtk import listener
 import scal2.ui_gtk.export
@@ -1248,28 +1246,20 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.selectDateDialog.connect('response-date', self.selectDateResponse)
         selectDateShow = self.selectDateShow
         ############### Building About Dialog
-        about = gtk.AboutDialog()
-        about.set_name(core.APP_DESC) ## or set_program_name
-        about.set_version(core.VERSION)
-        about.set_title(_('About ')+core.APP_DESC) ## must call after set_name and set_version !
-        about.set_authors([_(line) for line in open(join(rootDir, 'authors-dialog')).read().splitlines()])
-        about.set_comments(core.aboutText)
-        about.set_license(core.licenseText)
-        about.set_wrap_license(True)
+        about = AboutDialog(
+            name=core.APP_DESC,
+            version=core.VERSION,
+            title=_('About ')+core.APP_DESC,
+            authors=[_(line) for line in open(join(rootDir, 'authors-dialog')).read().splitlines()],
+            comments=core.aboutText,
+            license=core.licenseText,
+            website=core.homePage,
+        )
+        ## add Donate button ## FIXME
         about.connect('delete-event', self.aboutHide)
         about.connect('response', self.aboutHide)
-        about.set_website(core.homePage) ## A palin label (not link)
-        about.set_logo(gdk.pixbuf_new_from_file(ui.logo))
+        #about.set_logo(gdk.pixbuf_new_from_file(ui.logo))
         #about.set_skip_taskbar_hint(True)
-        if ui.autoLocale:
-            buttonbox = about.vbox.get_children()[1]## add Donate button ## FIXME
-            #buttonbox.set_homogeneous(False)
-            #buttonbox.set_layout(gtk.BUTTONBOX_SPREAD)
-            buttons = buttonbox.get_children()## List of buttons of about dialogs
-            buttons[1].set_label(_('C_redits'))
-            buttons[2].set_label(_('_Close'))
-            buttons[2].set_image(gtk.image_new_from_stock(gtk.STOCK_CLOSE,gtk.ICON_SIZE_BUTTON))
-            buttons[0].set_label(_('_License'))
         self.about = about
         ########################################### Building main menu
         menu = gtk.Menu()

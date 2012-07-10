@@ -41,9 +41,7 @@ import gtk
 from gtk import gdk
 
 
-from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile, rectangleContainsPoint, showError, \
-                               labelStockMenuItem, labelImageMenuItem, confirm, toolButtonFromStock, set_tooltip, \
-                               hideList, GtkBufferFile, buffer_get_text
+from scal2.ui_gtk.utils import *
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
@@ -61,13 +59,8 @@ class SingleGroupExportDialog(gtk.Dialog):
         gtk.Dialog.__init__(self)
         self.set_title(_('Export Group'))
         ####
-        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        if ui.autoLocale:
-            cancelB.set_label(_('_Cancel'))
-            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
-            okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
         self.connect('response', lambda w, e: self.hide())
         ####
         hbox = gtk.HBox()
@@ -172,13 +165,8 @@ class MultiGroupExportDialog(gtk.Dialog):
         self.set_title(_('Export'))
         self.vbox.set_spacing(10)
         ####
-        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        if ui.autoLocale:
-            cancelB.set_label(_('_Cancel'))
-            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
-            okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
         self.connect('response', lambda w, e: self.hide())
         ####
         hbox = gtk.HBox()
@@ -434,13 +422,9 @@ class GroupSortDialog(gtk.Dialog):
         gtk.Dialog.__init__(self)
         self.set_title(_('Sort Events'))
         ####
-        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        if ui.autoLocale:
-            cancelB.set_label(_('_Cancel'))
-            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
-            okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        ##
         self.connect('response', lambda w, e: self.hide())
         ####
         hbox = gtk.HBox()
@@ -481,13 +465,9 @@ class GroupConvertModeDialog(gtk.Dialog):
         gtk.Dialog.__init__(self)
         self.set_title(_('Convert Calendar Type'))
         ####
-        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        if ui.autoLocale:
-            cancelB.set_label(_('_Cancel'))
-            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
-            okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        ##
         self.connect('response', lambda w, e: self.hide())
         ####
         hbox = gtk.HBox()
@@ -527,13 +507,9 @@ class GroupBulkEditDialog(gtk.Dialog):
         gtk.Dialog.__init__(self)
         self.set_title(_('Bulk Edit Events'))
         ####
-        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        if ui.autoLocale:
-            cancelB.set_label(_('_Cancel'))
-            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
-            okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        ##
         self.connect('response', lambda w, e: self.hide())
         ####
         label = gtk.Label(_('Here you are going to modify all events inside group "%s" at once. You better make a backup from you events before doing this. Just right click on group and select "Export" (or a full backup: menu File -> Export)')%group.title+'\n\n')
@@ -674,13 +650,9 @@ class TrashEditorDialog(gtk.Dialog):
         #self.connect('delete-event', lambda obj, e: self.destroy())
         #self.resize(800, 600)
         ###
-        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        if ui.autoLocale:
-            cancelB.set_label(_('_Cancel'))
-            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
-            okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        ##
         self.connect('response', lambda w, e: self.hide())
         #######
         self.trash = ui.eventTrash
@@ -725,13 +697,9 @@ class AccountEditorDialog(gtk.Dialog):
         gtk.Dialog.__init__(self)
         self.set_title(_('Edit Account') if account else _('Add New Account'))
         ###
-        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        if ui.autoLocale:
-            cancelB.set_label(_('_Cancel'))
-            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
-            okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        ##
         self.connect('response', lambda w, e: self.hide())
         #######
         self.account = account
@@ -891,10 +859,7 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         self.set_transient_for(None)
         self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_NORMAL)
         ##
-        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        if ui.autoLocale:
-            okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
         #self.connect('response', lambda w, e: self.hide())
         self.connect('response', self.onResponse)
         self.connect('show', self.onShow)

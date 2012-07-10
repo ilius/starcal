@@ -100,17 +100,14 @@ class EditDbDialog(gtk.Dialog):
         self.trees = trees
         self.vbox.pack_start(swin, 1, 1)
         ######
-        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        cancelB = self.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
+        ##
         resetB = self.add_button(gtk.STOCK_UNDO, gtk.RESPONSE_NONE)
-        if ui.autoLocale:
-            okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK, gtk.ICON_SIZE_BUTTON))
-            cancelB.set_label(_('_Cancel'))
-            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL, gtk.ICON_SIZE_BUTTON))
         resetB.set_label(_('_Reset to Defaults'))
         resetB.set_image(gtk.image_new_from_stock(gtk.STOCK_UNDO, gtk.ICON_SIZE_BUTTON))
         resetB.connect('clicked', self.resetToDefaults)
+        ##
         self.connect('response', self.onResponse)
         #print dir(self.get_action_area())
         #self.get_action_area().set_homogeneous(False)

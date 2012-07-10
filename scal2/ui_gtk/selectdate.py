@@ -30,7 +30,7 @@ from scal2.core import convert, getMonthName
 from scal2 import ui
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButtonOption
 from scal2.ui_gtk.mywidgets.ymd import YearMonthDayBox
-from scal2.ui_gtk.utils import openWindow
+from scal2.ui_gtk.utils import openWindow, dialog_add_button
 
 import gtk, gobject
 from gtk import gdk
@@ -77,13 +77,8 @@ class SelectDateDialog(gtk.Dialog):
         hb2i.pack_start(hb2, 0, 0)
         self.vbox.pack_start(hb2i, 0, 0)
         #######
-        canB = self.add_button(gtk.STOCK_CANCEL, 2)
-        okB = self.add_button(gtk.STOCK_OK, 1)
-        if ui.autoLocale:
-            okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
-            canB.set_label(_('_Cancel'))
-            canB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), 2, self.hideMe)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), 1, self.ok)
         #######
         self.comboMode = combo
         self.dateInput = dateInput
@@ -95,8 +90,6 @@ class SelectDateDialog(gtk.Dialog):
         rb1.connect_after('clicked', self.radioChanged)
         rb2.connect_after('clicked', self.radioChanged)
         dateInput.connect('activate', self.ok)
-        okB.connect('clicked', self.ok)
-        canB.connect('clicked', self.hideMe)
         self.radioChanged()
         #######
         self.vbox.show_all()

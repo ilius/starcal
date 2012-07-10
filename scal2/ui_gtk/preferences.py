@@ -537,22 +537,12 @@ class PrefDialog(gtk.Dialog):
         self.connect('delete-event', self.onDelete)
         self.set_has_separator(False)
         #self.set_skip_taskbar_hint(True)
-        cancelB = self.add_button(gtk.STOCK_CANCEL, 1)
-        applyB = self.add_button(gtk.STOCK_APPLY, 2)
-        okB = self.add_button(gtk.STOCK_OK, 3)
-        if ui.autoLocale:
-            cancelB.set_label(_('_Cancel'))
-            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL, gtk.ICON_SIZE_BUTTON))
-            applyB.set_label(_('_Apply'))
-            applyB.set_image(gtk.image_new_from_stock(gtk.STOCK_APPLY, gtk.ICON_SIZE_BUTTON))
-            okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK, gtk.ICON_SIZE_BUTTON))
+        ###
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), 1, self.cancel)
+        dialog_add_button(self, gtk.STOCK_APPLY, _('_Apply'), 2, self.apply)
+        okB = dialog_add_button(self, gtk.STOCK_OK, _('_OK'), 3, self.ok, tooltip=_('Apply and Close'))
         okB.grab_default()## FIXME
         #okB.grab_focus()## FIXME
-        cancelB.connect('clicked', self.cancel)
-        applyB.connect('clicked', self.apply)
-        okB.connect('clicked', self.ok)
-        set_tooltip(okB, _('Apply and Close'))
         ##############################################
         self.localePrefItems = []
         self.corePrefItems = []
@@ -1060,15 +1050,10 @@ class PrefDialog(gtk.Dialog):
         d.set_has_separator(False)
         d.connect('delete-event', self.plugAddDialogClose)
         d.set_title(_('Add Plugin'))
-        canB = d.add_button(gtk.STOCK_CANCEL, 1)
-        okB = d.add_button(gtk.STOCK_OK, 2)
-        canB.connect('clicked', self.plugAddDialogClose)
-        okB.connect('clicked', self.plugAddDialogOK)
-        if ui.autoLocale:
-            okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
-            canB.set_label(_('_Cancel'))
-            canB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
+        ###
+        dialog_add_button(d, gtk.STOCK_CANCEL, _('_Cancel'), 1, self.plugAddDialogClose)
+        dialog_add_button(d, gtk.STOCK_OK, _('_OK'), 2, self.plugAddDialogOK)
+        ###
         treev = gtk.TreeView()
         trees = gtk.ListStore(str)
         treev.set_model(trees)
@@ -1367,16 +1352,13 @@ class PrefDialog(gtk.Dialog):
             return plug.open_about()
         if plug.about==None:
             return
-        about = gtk.AboutDialog()
+        about = AboutDialog(
+            name='',## FIXME
+            title=_('About Plugin'),## _('About ')+plug.desc
+            authors=plug.authors,
+            comments=plug.about,
+        )
         about.set_transient_for(self)
-        about.set_name('')
-        #about.set_name(plug.desc) ## or set_program_name
-        #about.set_title(_('About ')+plug.desc) ## must call after set_name and set_version !
-        about.set_title(_('About Plugin'))
-        about.set_authors(plug.authors)
-        about.set_comments(plug.about)
-        #about.set_license(core.licenseText)
-        #about.set_wrap_license(True)
         about.connect('delete-event', lambda w, e: w.destroy())
         about.connect('response', lambda w, e: w.destroy())
         #about.set_resizable(True)

@@ -30,7 +30,7 @@ import gobject
 import gtk
 from gtk import gdk
 
-from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip
+from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, dialog_add_button
 from scal2.ui_gtk import gtk_ud as ud
 
 
@@ -98,11 +98,7 @@ class CustomizeDialog(gtk.Dialog):
         self.set_title(_('Customize'))
         self.set_has_separator(False)
         self.connect('delete-event', self.close)
-        closeB = self.add_button(gtk.STOCK_CLOSE, 0)
-        if ui.autoLocale:
-            closeB.set_label(_('_Close'))
-            closeB.set_image(gtk.image_new_from_stock(gtk.STOCK_CLOSE, gtk.ICON_SIZE_BUTTON))
-        closeB.connect('clicked', self.close)
+        dialog_add_button(self, gtk.STOCK_CLOSE, _('_Close'), 0, self.close)
         ###
         self.widget = widget
         self.activeOptionsWidget = None

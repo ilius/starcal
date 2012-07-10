@@ -8,6 +8,8 @@ from scal2 import ui
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.utils import dialog_add_button
+
 class CustomDayImporterDialog(gtk.Dialog):
     def onResponse(self, dialog, response_id):
         if response_id==gtk.RESPONSE_OK:
@@ -19,10 +21,7 @@ class CustomDayImporterDialog(gtk.Dialog):
     def __init__(self):
         gtk.Dialog.__init__(self)
         ####
-        okB = self.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        if ui.autoLocale:
-            okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
         self.connect('response', self.onResponse)
         ####
         sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
