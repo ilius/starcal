@@ -183,14 +183,18 @@ class MonthLabel(gtk.EventBox):
     ## (Performance) update menu here, or make menu entirly before popup ????????????????
         #assert 0<=active<12
         module = self.module
+        s = _(module.getMonthName(active+1))
+        s2 = _(module.getMonthName(self.active+1))
         if ui.monthRMenuNum:
-            self.menuLabels[self.active].set_label('%s: %s'%
-                (self.getItemStr(self.active), _(module.getMonthName(self.active+1))))
-            s = _(module.getMonthName(active+1))
+            self.menuLabels[self.active].set_label(
+                '%s: %s'%(
+                    self.getItemStr(self.active),
+                    s2,
+                )
+            )
             self.menuLabels[active].set_label(self.getActiveStr('%s: %s'%(self.getItemStr(active), s)))
         else:
-            self.menuLabels[self.active].set_label(_(module.getMonthName(self.active+1)))
-            s = _(module.getMonthName(active+1))
+            self.menuLabels[self.active].set_label(s2)
             self.menuLabels[active].set_label(self.getActiveStr(s))
         if ui.boldYmLabel:
             self.label.set_label('<b>%s</b>'%s)
@@ -207,12 +211,14 @@ class MonthLabel(gtk.EventBox):
             self.label.set_label('<b>%s</b>'%_(module.getMonthName(self.active+1)))
         else:
             self.label.set_label(_(module.getMonthName(self.active+1)))
-        if ui.monthRMenuNum:
-            for i in range(12):
-                self.menuLabels[i].set_label('%s: %s'%(self.getItemStr(i), _(module.getMonthName(i+1))))
-        else:
-            for i in range(12):
-                self.menuLabels[i].set_label(_(module.getMonthName(i+1)))
+        for i in range(12):
+            if ui.monthRMenuNum:
+                s = '%s: %s'%(self.getItemStr(i), _(module.getMonthName(i+1)))
+            else:
+                s = _(module.getMonthName(i+1))
+            if i==self.active:
+                s = self.getActiveStr(s)
+            self.menuLabels[i].set_label(s)
     def itemActivate(self, item, index):
         self.setActive(index)
         self.emit('changed', index)
@@ -840,11 +846,11 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
         mode = ui.shownCals[num]['mode']
         (y, m, d) = ui.cell.dates[mode]
         ui.changeDate(item, m, d, mode)
-        self.emit('date-change')
+        self.onDateChange()
     def monthLabelChange(self, mlabel, item):
         (y, m, d) = ui.cell.dates[mlabel.mode]
         ui.changeDate(y, item+1, d, mlabel.mode)
-        self.emit('date-change')
+        self.onDateChange()
     def updateArrows(self):
         if ui.showYmArrows:
             if isinstance(ud.prevStock, str):
