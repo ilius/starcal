@@ -246,7 +246,7 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
             ##### Drawing week numbers
             setColor(cr, ui.borderTextColor)
             for i in xrange(6):
-                lay = newTextLayout(self, _(status[i].weekNum))
+                lay = newTextLayout(self, _(status.weekNum[i]))
                 fontw, fonth = lay.get_pixel_size()
                 if rtl:
                     cr.move_to(

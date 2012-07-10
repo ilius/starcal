@@ -35,7 +35,7 @@ class MonthStatus(list): ## FIXME
         self.month = month
         self.monthLen = getMonthLen(year, month, core.primaryMode)
         self.offset = core.getWeekDay(year, month, 1)## month start offset
-        #self.weekNum = [core.getWeekNumber(year, month, 1+7*i) for i in range(6)]
+        self.weekNum = [core.getWeekNumber(year, month, 1+7*i) for i in range(6)]
         #########
         (startJd, endJd) = core.getJdRangeForMonth(year, month, core.primaryMode)
         tableStartJd = startJd - self.offset
