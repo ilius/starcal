@@ -214,6 +214,7 @@ class Cell:## status and information of a cell
         date = core.jd_to(jd, core.primaryMode)
         (self.year, self.month, self.day) = date
         self.weekDay = core.jwday(jd)
+        self.weekNum = core.getWeekNumber(self.year, self.month, self.day)
         self.holiday = (self.weekDay in core.holidayWeekDays)
         ###################
         self.dates = []

@@ -136,10 +136,20 @@ class Column(gtk.Widget, CustomizableCalObj):
         self.queue_draw()
 
 
+class WeekNumToolbarItem(ToolbarItem):
+    def __init__(self):
+        ToolbarItem.__init__(self, 'weekNum', None, '', tooltip=_('Week Number'), text='')
+        self.label = gtk.Label()
+        self.set_property('label-widget', self.label)
+    def onDateChange(self, *a, **ka):
+        ToolbarItem.onDateChange(self, *a, **ka)
+        self.label.set_label(_(ui.cell.weekNum))
+
 
 class ToolbarColumn(CustomizableToolbar):
     params = ('ud.wcalToolbarData',)
     defaultItems = [
+        WeekNumToolbarItem(),
         ToolbarItem('backward4', 'goto_top', 'goBackward4', 'Backward 4 Weeks'),
         ToolbarItem('backward', 'go_up', 'goBackward', 'Backward'),
         ToolbarItem('today', 'home', 'goToday', 'Today'),

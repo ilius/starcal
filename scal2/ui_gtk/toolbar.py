@@ -35,7 +35,10 @@ class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
         ######
         gtk.ToolButton.__init__(
             self,
-            gtk.image_new_from_stock(getattr(gtk, 'STOCK_%s'%(stockName.upper())), gtk.ICON_SIZE_DIALOG),
+            gtk.image_new_from_stock(
+                getattr(gtk, 'STOCK_%s'%(stockName.upper())),
+                gtk.ICON_SIZE_DIALOG,
+            ) if stockName else None,
             text,
         )
         self._name = name
@@ -140,7 +143,8 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
                 myRaise()
             else:
                 item.enable = enable
-                item.connect('clicked', getattr(self.funcOwner, item.method))
+                if item.method:
+                    item.connect('clicked', getattr(self.funcOwner, item.method))
                 self.appendItem(item)
         ###
         iconSize = data['iconSize']
