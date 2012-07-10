@@ -558,6 +558,14 @@ msgid "Next Month"
 msgstr ""
 "ماه بعد"
 
+msgid "Previous Week"
+msgstr ""
+"هفتهٔ قبل"
+
+msgid "Next Week"
+msgstr ""
+"هفتهٔ بعد"
+
 
 msgid "None"
 msgstr ""

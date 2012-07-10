@@ -151,9 +151,9 @@ class ToolbarColumn(CustomizableToolbar):
     defaultItems = [
         WeekNumToolbarItem(),
         ToolbarItem('backward4', 'goto_top', 'goBackward4', 'Backward 4 Weeks'),
-        ToolbarItem('backward', 'go_up', 'goBackward', 'Backward'),
+        ToolbarItem('backward', 'go_up', 'goBackward', 'Previous Week'),
         ToolbarItem('today', 'home', 'goToday', 'Today'),
-        ToolbarItem('forward', 'go_down', 'goForward', 'Forward'),
+        ToolbarItem('forward', 'go_down', 'goForward', 'Next Week'),
         ToolbarItem('forward4', 'goto_bottom', 'goForward4', 'Forward 4 Weeks'),
     ]
     defaultItemsDict = dict([(item._name, item) for item in defaultItems])
