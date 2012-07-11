@@ -5,7 +5,7 @@ from scal2 import ui
 import gtk
 from gtk import gdk
 
-from scal2.ui_gtk.utils import set_tooltip
+from scal2.ui_gtk.utils import set_tooltip, myRaise
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.customize import CustomizableCalObj
