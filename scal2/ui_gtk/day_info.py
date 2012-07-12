@@ -64,7 +64,7 @@ class AllDateLabelsVBox(gtk.VBox, ud.IntegratedCalObj):
             ###
             self.pack_start(hbox, 0, 0)
         self.show_all()
-            
+
 
 class PluginsTextView(gtk.TextView, ud.IntegratedCalObj):
     _name = 'pluginsText'
@@ -106,7 +106,6 @@ class DayInfoDialog(gtk.Dialog, ud.IntegratedCalObj):
         for item in (self.allDateLabels, self.pluginsTextView, self.eventsView):
             self.appendItem(item)
             ###
-            #hbox = gtk.HBox()
             exp = gtk.Expander(item.desc)
             exp.add(item)
             exp.set_expanded(True)
@@ -116,8 +115,6 @@ class DayInfoDialog(gtk.Dialog, ud.IntegratedCalObj):
     def onClose(self, obj=None, event=None):
         self.hide()
         return True
-    #def onDateChange(self, *a, **ka):
-    #    ud.IntegratedCalObj.onDateChange(self, *a, **ka)
     def goBack(self, obj=None):
         ui.jdPlus(-1)
         self.onDateChange()
@@ -127,11 +124,6 @@ class DayInfoDialog(gtk.Dialog, ud.IntegratedCalObj):
     def goNext(self, obj=None):
         ui.jdPlus(1)
         self.onDateChange()
-    
-    
-        
-
-
 
 
 
@@ -140,15 +132,9 @@ for cls in (
     AllDateLabelsVBox,
     PluginsTextView,
     DayInfoDialog,
-    
+
 ):
     cls.registerSignals()
-
-
-
-
-
-
 
 
 
