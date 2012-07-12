@@ -30,15 +30,18 @@ from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.event.common import EventEditorDialog
 
 class DayOccurrenceView(gtk.VBox, ud.IntegratedCalObj):
+    _name = 'eventDayView'
+    desc = _('Events of Day')
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
     def __init__(self, populatePopupFunc=None):
-        self.jd = ui.cell.jd
         gtk.VBox.__init__(self)
+        self.initVars()
         ## what to do with populatePopupFunc FIXME
         ## self.textview.connect('populate-popup', populatePopupFunc)
         self.clipboard = gtk.clipboard_get()
-    def updateWidget(self):
-        cell = ui.cellCache.getCell(self.jd)
+    def onDateChange(self, *a, **kw):
+        ud.IntegratedCalObj.onDateChange(self, *a, **kw)
+        cell = ui.cell
         ## destroy all VBox contents and add again
         for hbox in self.get_children():
             hbox.destroy()
@@ -131,7 +134,7 @@ class WeekOccurrenceView(gtk.TreeView):
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
     def __init__(self, abrivateWeekDays=False):
         self.abrivateWeekDays = abrivateWeekDays
-        self.absWeekNumber = core.getAbsWeekNumberFromJd(ui.cell.jd)
+        self.absWeekNumber = core.getAbsWeekNumberFromJd(ui.cell.jd)## FIXME
         gtk.TreeView.__init__(self)
         self.set_headers_visible(False)
         self.ls = gtk.ListStore(gdk.Pixbuf, str, str, str)## icon, weekDay, time, text
@@ -214,5 +217,9 @@ class MonthOccurrenceView(event_man.MonthOccurrenceView, gtk.TreeView):
                 item['text'],
             )
 '''
+
+
+DayOccurrenceView.registerSignals()
+
 
 

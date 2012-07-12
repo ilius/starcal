@@ -87,6 +87,7 @@ from scal2.ui_gtk.event.main import EventManagerDialog
 from scal2.ui_gtk.timeline import TimeLineWindow
 #from scal2.ui_gtk.weekcal_old import WeekCalWindow
 from scal2.ui_gtk.weekcal import WeekCal
+from scal2.ui_gtk.day_info import DayInfoDialog
 
 
 
@@ -1053,21 +1054,10 @@ class PluginsTextBox(gtk.VBox, CustomizableCalObj):
         CustomizableCalObj.onDateChange(self, *a, **kw)
         self.setText(ui.cell.pluginsText)
 
-class EventViewMainWinItem(DayOccurrenceView, CustomizableCalObj):## FIXME
-    _name = 'eventDayView'
-    desc = _('Events of Day')
-    def __init__(self, populatePopupFunc=None):
-        DayOccurrenceView.__init__(self, populatePopupFunc)
-        self.initVars()
-    def onDateChange(self, *a, **kw):
-        CustomizableCalObj.onDateChange(self, *a, **kw)
-        self.jd = ui.cell.jd
-        self.updateWidget()
-    def onConfigChange(self, *a, **kw):
-        CustomizableCalObj.onConfigChange(self, *a, **kw)
-        self.updateWidget()
-    ## should event occurances be saved in ui.cell object? FIXME
 
+class EventViewMainWinItem(DayOccurrenceView, CustomizableCalObj):## FIXME
+    pass
+    ## add optionsWidget? FIXME
 
 
 
@@ -1140,13 +1130,14 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.trayMode = trayMode
         ###
         ui.eventManDialog = EventManagerDialog()
-        ud.windowList.appendItem(ui.eventManDialog)
         ###
         ui.timeLineWin = TimeLineWindow(width=ud.screenW)
-        ud.windowList.appendItem(ui.timeLineWin)
         ###
         #ui.weekCalWin = WeekCalWindow()
         #ud.windowList.appendItem(ui.weekCalWin)
+        ###
+        self.dayInfoDialog = DayInfoDialog()
+        #print 'windowList.items', [item._name for item in ud.windowList.items]
         ###########
         ##self.connect('window-state-event', selfStateEvent)
         self.set_title('%s %s'%(core.APP_DESC, core.VERSION))
@@ -1323,6 +1314,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
     def childSizeRequest(self, cal, req):
         self.setMinHeight()
     selectDateShow = lambda self, widget: self.selectDateDialog.show()
+    dayInfoShow = lambda self, widget: self.dayInfoDialog.show()
     def selectDateResponse(self, widget, y, m, d):
         ui.changeDate(y, m, d)
         self.onDateChange()
@@ -1454,6 +1446,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ui.focusTime = time()
         menu = gtk.Menu()
         ####
+        menu.add(labelStockMenuItem('Day Info', gtk.STOCK_INFO, self.dayInfoShow))
         menu.add(labelStockMenuItem('_Copy Date', gtk.STOCK_COPY, self.copyDate))
         menu.add(self.getEventAddToMenuItem())
         menu.add(gtk.SeparatorMenuItem())
@@ -1763,7 +1756,7 @@ for cls in (
     YearMonthLabelBox,
     StatusBox,
     PluginsTextBox,
-    EventViewMainWinItem,
+    #EventViewMainWinItem,
     MainWinVbox,
     MainWin,
 ):

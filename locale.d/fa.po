@@ -541,7 +541,6 @@ msgstr "ایلول"
 
 
 
-
 msgid "Previous Year"
 msgstr ""
 "سال قبل"
@@ -905,6 +904,14 @@ msgstr ""
 msgid "Move to %s"
 msgstr ""
 "جابجایی به %s"
+
+msgid "Day Info"
+msgstr ""
+"اطلاعات روز"
+
+msgid "Dates"
+msgstr ""
+"تاریخ‌ها"
 
 
 
@@ -1469,6 +1476,10 @@ msgstr ""
 msgid "Next year/month button"
 msgstr ""
 "دکمهٔ سال/ماه بعد"
+
+msgid "Previous"
+msgstr ""
+"قبل"
 
 msgid "Next"
 msgstr ""
