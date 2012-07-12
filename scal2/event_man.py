@@ -189,22 +189,25 @@ class EventBaseClass:
         return newObj
 
 
+def makeOrderedData(data, params):
+    if isinstance(data, dict):
+        if params:
+            data = data.items()
+            def paramIndex(key):
+                try:
+                    return params.index(key)
+                except ValueError:
+                    return len(params)
+            data.sort(cmp=lambda x, y: cmp(paramIndex(x[0]), paramIndex(y[0])))
+            data = OrderedDict(data)
+    return data
+
+
 class JsonEventBaseClass(EventBaseClass):
     file = ''
     jsonParams = ()
-    def getJson(self):
-        data = self.getData()
-        if isinstance(data, dict):
-            if self.jsonParams:
-                data = data.items()
-                def paramIndex(key):
-                    try:
-                        return self.jsonParams.index(key)
-                    except ValueError:
-                        return len(self.jsonParams)
-                data.sort(cmp=lambda x, y: cmp(paramIndex(x[0]), paramIndex(y[0])))
-                data = OrderedDict(data)
-        return dataToJson(data)
+    getDataOrdered = lambda self: makeOrderedData(self.getData(), self.jsonParams)
+    getJson = lambda self: dataToJson(self.getDataOrdered())
     setJson = lambda self, jsonStr: self.setData(jsonToData(jsonStr))
     def save(self):
         jstr = self.getJson()
@@ -2488,19 +2491,17 @@ class EventGroup(EventContainer):
                     vevent += '%s:%s\n'%(key, value)
                 vevent += 'END:VEVENT\n'
                 fp.write(vevent)
-    def exportData(self, putInfo=True):
-        data = self.getBasicData()
+    def exportData(self):
+        data = makeOrderedData(self.getBasicData(), self.jsonParams)
         data['events'] = []
         for eventId in self.idList:
-            eventData = EventContainer.getEvent(self, eventId).getData()
+            eventData = EventContainer.getEvent(self, eventId).getDataOrdered()
             data['events'].append(eventData)
+            del eventData['remoteIds'] ## FIXME
+            if not eventData['notifiers']:
+                del eventData['notifiers']
+                del eventData['notifyBefore']
         del data['idList']
-        if putInfo:
-            data['info'] = {
-                'appName': core.APP_NAME,
-                'version': core.VERSION,
-                #'exportDate':
-            }
         return data
     def importData(self, data):
         self.setBasicData(data)
@@ -2923,16 +2924,15 @@ class EventGroupsHolder(JsonObjectsHolder):
         return newGroup
         ## and then never use old `group` object
     def exportData(self, gidList):
-        data = {
-            'groups': [],
-            'info': {
-                'appName': core.APP_NAME,
-                'version': core.VERSION,
-                #'exportDate':
-            },
-        }
+        data = OrderedDict([
+            ('info', OrderedDict([
+                ('appName', core.APP_NAME),
+                ('version', core.VERSION),
+            ])),
+            ('groups', []),
+        ])
         for gid in gidList:
-            data['groups'].append(self.byId[gid].exportData(False))
+            data['groups'].append(self.byId[gid].exportData())
         return data
     def importData(self, data):
         newGroups = []
