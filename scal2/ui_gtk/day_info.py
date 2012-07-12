@@ -39,6 +39,8 @@ class AllDateLabelsVBox(gtk.VBox, ud.IntegratedCalObj):
     def __init__(self):
         gtk.VBox.__init__(self)
         self.initVars()
+        ##
+        self.set_spacing(5)
     def onDateChange(self, *a, **ka):
         ud.IntegratedCalObj.onDateChange(self, *a, **ka)
         for child in self.get_children():
@@ -90,6 +92,7 @@ class DayInfoDialog(gtk.Dialog, ud.IntegratedCalObj):
         ###
         self.set_title(_('Day Info'))
         self.connect('delete-event', self.onClose)
+        self.vbox.set_spacing(15)
         ###
         dialog_add_button(self, gtk.STOCK_CLOSE, _('Close'), 0, self.onClose)
         dialog_add_button(self, '', _('Previous'), 1, self.goBack)
