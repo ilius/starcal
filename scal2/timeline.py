@@ -218,9 +218,9 @@ def realRangeListsDiff(r1, r2):
 def formatEpochTime(epoch):
     (jd, h, m, s) = getJhmsFromEpoch(epoch)
     if s==0:
-        return '%s:%s'%(_(h), _(m))
+        return '%s:%s'%(_(h), _(m, fillZero=2))
     else:
-        return '%s:%s:%s'%(_(h), _(m), _(s))
+        return '%s:%s:%s'%(_(h), _(m, fillZero=2), _(s, fillZero=2))
 
 def getNum10FactPow(n):
     if n == 0:
