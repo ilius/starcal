@@ -36,6 +36,7 @@ import gtk
 from gtk import gdk
 
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
+from scal2.ui_gtk.utils import dialog_add_button
 
 hijriMode = moduleNames.index('hijri')
 
