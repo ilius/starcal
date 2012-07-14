@@ -94,7 +94,7 @@ def exportToHtml(fpath, monthsStatus, title=''):
         text += '''    <TABLE WIDTH=100%% BGCOLOR="%s" BORDER=%s BORDERCOLOR="#000000"
 CELLPADDING=4 CELLSPACING=0>
     <TR VALIGN=TOP>\n'''\
-            %(bgColor, int(ui.calGrid))
+            %(bgColor, int(ui.mcalGrid))
         text += '''            <TD WIDTH=9%% BGCOLOR="%s">
             <P ALIGN=CENTER></P>
         </TD>\n'''%borderColor## what text????????

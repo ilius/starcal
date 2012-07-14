@@ -580,7 +580,7 @@ cursorD = 3.0
 cursorR = 7.0 ## Rounded Rectangle
 cursorW = 57
 cursorH = 24
-calGrid = True
+mcalGrid = True
 gridColor = (255, 252, 0, 82)
 ##########
 mcalLeftMargin = 30

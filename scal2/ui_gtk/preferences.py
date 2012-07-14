@@ -619,7 +619,7 @@ class PrefDialog(gtk.Dialog):
         ########
         hbox = gtk.HBox(spacing=2)
         ########
-        item = CheckPrefItem(ui, 'calGrid', _('Grid'))
+        item = CheckPrefItem(ui, 'mcalGrid', _('Grid'))
         self.uiPrefItems.append(item)
         cbGrid = item.widget
         hbox.pack_start(cbGrid, 0, 0)
@@ -628,7 +628,7 @@ class PrefDialog(gtk.Dialog):
         self.uiPrefItems.append(item)
         hbox.pack_start(item.widget, 0, 0)
         cbGrid.connect('clicked', lambda wid: item.widget.set_sensitive(wid.get_active()))
-        #item.widget.set_sensitive(ui.calGrid)## FIXME
+        #item.widget.set_sensitive(ui.mcalGrid)## FIXME
         ########
         hbox.pack_start(gtk.Label(''), 1, 1)
         defaultItem = CheckPrefItem(ui, 'fontUseDefault', _('Use system font'), gfontEncode(ui.fontDefault))

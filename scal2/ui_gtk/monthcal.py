@@ -368,7 +368,7 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
                         ##### end of Drawing Cursor Outline
         ################ end of drawing cells
         ##### drawGrid
-        if ui.calGrid:
+        if ui.mcalGrid:
             setColor(cr, ui.gridColor)
             for i in xrange(7):
                 cr.rectangle(self.cx[i]+rtlSgn()*self.dx/2.0, 0, 1, h)

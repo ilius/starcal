@@ -138,7 +138,7 @@ weekNumberMode=%r'''%(holidayWeekDays, firstWeekDayAuto, firstWeekDay, weekNumbe
                 'showMain',
                 'winTaskbar',
                 'showDigClockTr',
-                'calGrid',
+                'mcalGrid',
                 'gridColor',
                 'fontUseDefault',
                 'fontCustom',
