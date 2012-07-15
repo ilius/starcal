@@ -29,13 +29,14 @@ APP_NAME = 'starcal2'
 langDir = join(rootDir, 'conf', 'lang')
 localeDir = '/usr/share/locale'
 
+## point FIXME
 digits = {
-    'en':(u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9', u'.'),
-    'ar':(u'٠', u'١', u'٢', u'٣', u'٤', u'٥', u'٦', u'٧', u'٨', u'٩', u'٫'),
-    'fa':(u'۰', u'۱', u'۲', u'۳', u'۴', u'۵', u'۶', u'۷', u'۸', u'۹', u'٫'),
-    'ur':(u'۔', u'١', u'٢', u'٣', u'۴', u'۵', u'٦', u'٧', u'٨', u'٩', u'٫'),
-    'hi':(u'०', u'१', u'२', u'३', u'४', u'५', u'६', u'७', u'८', u'९', u'.'),## point FIXME
-    'th':(u'๐', u'๑', u'๒', u'๓', u'๔', u'๕', u'๖', u'๗', u'๘', u'๙', u'.'),## point FIXME
+    'en':(u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9'),
+    'ar':(u'٠', u'١', u'٢', u'٣', u'٤', u'٥', u'٦', u'٧', u'٨', u'٩'),
+    'fa':(u'۰', u'۱', u'۲', u'۳', u'۴', u'۵', u'۶', u'۷', u'۸', u'۹'),
+    'ur':(u'۔', u'١', u'٢', u'٣', u'۴', u'۵', u'٦', u'٧', u'٨', u'٩'),
+    'hi':(u'०', u'१', u'२', u'३', u'४', u'५', u'६', u'७', u'८', u'९'),
+    'th':(u'๐', u'๑', u'๒', u'๓', u'๔', u'๕', u'๖', u'๗', u'๘', u'๙'),
 }
 
 def getLangDigits(langSh0):
@@ -320,7 +321,7 @@ def textNumDecode(text):## converts '۱۲:۰۰, ۱۳' to '12:00, 13'
         try:
             textEn += unicode(langDigits.index(ch))
         except ValueError:
-            for sch in (u',', u'_'):
+            for sch in (u',', u'_', u'.'):
                 if ch == tr(sch):
                     ch = sch
                     break

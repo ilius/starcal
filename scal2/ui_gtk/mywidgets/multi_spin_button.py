@@ -23,6 +23,7 @@ from time import time, localtime
 from scal2.utils import toUnicode, toStr, strFindNth, iceil, ifloor
 
 from scal2 import locale_man
+from scal2.locale_man import tr as _
 
 from scal2.cal_modules import to_jd, jd_to, convert
 
@@ -139,7 +140,14 @@ class MultiSpinButton(gtk.SpinButton):
         elif ord('0') <= kval <= ord('9'):
             self.insertText(self.digs[kval-ord('0')])
             return True
+        elif 'kp_0' <= kname <= 'kp_9':
+            self.insertText(self.digs[int(kname[-1])])
+            return True
+        elif kname in ('period', 'kp_decimal', 'slash', 'kp_divide'):
+            self.insertText(_('.'))
+            return True
         else:
+            print kname, kval
             return False
     def _button_press(self, widget, gevent):
         gwin = gevent.window
@@ -254,18 +262,18 @@ class FloatSpinButton(MultiSpinButton):
             locale_man.getNumSep(),
             (
                 IntField(int(_min), int(_max)),
-                IntField(0, self.digDec-1),
+                IntField(0, self.digDec-1, digNum),
             ),
             **kwargs
         )
     def get_value(self):
-        return float('%d.%d'%tuple(MultiSpinButton.get_value(self)))
+        return float(locale_man.textNumDecode(self.get_text()))
     def set_value(self, value):
         if value < self._min:
             value = self._min
         elif value > self._max:
             value = self._max
-        s1, s2 = str(float(value)).split('.')
+        s1, s2 = ('%.*f'%(self.digNum, value)).split('.')
         v1 = int(s1)
         v2 = int(s2[:self.digNum])
         #print value, v1, v2
