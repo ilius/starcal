@@ -276,19 +276,12 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
                 cellHasCursor = (cursor and (xPos, yPos) == selectedCellPos)
                 if cellHasCursor:
                     ##### Drawing Cursor
-                    d = ui.cursorD
-                    if ui.cursorFixed:
-                        cx0 = x0-ui.cursorW/2.0 - d
-                        cy0 = y0-ui.cursorH/2.0 - d
-                        cw = ui.cursorW + 2*d
-                        ch = ui.cursorH + 2*d
-                    else:
-                        cx0 = x0-self.dx/2.0+1
-                        cy0 = y0-self.dy/2.0+1
-                        cw = self.dx-1
-                        ch = self.dy-1
+                    cx0 = x0-self.dx/2.0+1
+                    cy0 = y0-self.dy/2.0+1
+                    cw = self.dx-1
+                    ch = self.dy-1
                     ######### Circular Rounded
-                    drawRoundedRect(cr, cx0, cy0, cw, ch, ui.cursorR)
+                    drawCursorBg(cr, cx0, cy0, cw, ch)
                     fillColor(cr, ui.cursorBgColor)
                 ######## end of Drawing Cursor
                 if not cellInactive:
@@ -351,19 +344,12 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
                             cr.show_layout(daynum)
                     if cellHasCursor:
                         ##### Drawing Cursor Outline
-                        d = ui.cursorD
-                        if ui.cursorFixed:
-                            cx0 = x0 - ui.cursorW/2.0 - d
-                            cy0 = y0 - ui.cursorH/2.0 - d
-                            cw = ui.cursorW + 2*d
-                            ch = ui.cursorH + 2* d
-                        else:
-                            cx0 = x0-self.dx/2.0+1
-                            cy0 = y0-self.dy/2.0+1
-                            cw = self.dx-1
-                            ch = self.dy-1
+                        cx0 = x0-self.dx/2.0+1
+                        cy0 = y0-self.dy/2.0+1
+                        cw = self.dx-1
+                        ch = self.dy-1
                         ######### Circular Rounded
-                        drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ui.cursorR, d)
+                        drawCursorOutline(cr, cx0, cy0, cw, ch)
                         fillColor(cr, ui.cursorOutColor)
                         ##### end of Drawing Cursor Outline
         ################ end of drawing cells
@@ -460,16 +446,10 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         ui.focusTime = time()
         if ui.dragIconCell:
             (xPos, yPos) = ui.cell.monthPos
-            if ui.cursorFixed:
-                x = int(self.cx[xPos]-ui.cursorW/2.0-ui.cursorD)
-                y = int(self.cy[yPos]-ui.cursorH/2.0-ui.cursorD)
-                w = int(ui.cursorW + 2*ui.cursorD)
-                h = int(ui.cursorH + 2*ui.cursorD)
-            else:
-                x = int(self.cx[xPos]-self.dx/2.0+1)
-                y = int(self.cy[yPos]-self.dy/2.0+1)
-                w = int(self.dx)
-                h = int(self.dy)
+            x = int(self.cx[xPos]-self.dx/2.0+1)
+            y = int(self.cy[yPos]-self.dy/2.0+1)
+            w = int(self.dx)
+            h = int(self.dy)
             (px, py) = self.pointer
             pmap = gdk.Pixmap(self.window, w, h, self.window.get_depth())
             #print self.window.get_visual().depth, self.window.get_depth(), pmap.get_depth(), pmap.get_visual().depth

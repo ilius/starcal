@@ -95,7 +95,7 @@ class Column(gtk.Widget, CustomizableCalObj):
                 cr.rectangle(0, i*rowH, w, rowH)
                 fillColor(cr, ui.todayCellColor)
             if self.showCursor and c.jd == ui.cell.jd:
-                drawRoundedRect(cr, 0, y0, w, rowH, ui.cursorR)
+                drawCursorBg(cr, 0, y0, w, rowH)
                 fillColor(cr, ui.cursorBgColor)
     def drawCursorFg(self, cr):
         w = self.allocation.width
@@ -105,7 +105,7 @@ class Column(gtk.Widget, CustomizableCalObj):
             c = self.wcal.status[i]
             y0 = i*rowH
             if self.showCursor and c.jd == ui.cell.jd:
-                drawOutlineRoundedRect(cr, 0, y0, w, rowH, ui.cursorR, ui.cursorD)
+                drawCursorOutline(cr, 0, y0, w, rowH)
                 fillColor(cr, ui.cursorOutColor)
     def drawTextList(self, cr, textList):
         w = self.allocation.width

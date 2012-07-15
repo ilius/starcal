@@ -720,39 +720,18 @@ class PrefDialog(gtk.Dialog):
         label.set_use_markup(True)
         hbox.pack_start(label, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
-        hbox.pack_start(gtk.Label(_('Diameter')), 0, 0)
-        item = SpinPrefItem(ui, 'cursorD', 0, 20, 1)
+        hbox.pack_start(gtk.Label(_('Diameter Factor')), 0, 0)
+        item = SpinPrefItem(ui, 'cursorDiaFactor', 0, 1, 2)
         self.uiPrefItems.append(item)
         hbox.pack_start(item.widget, 0, 0)
         ###
         hbox.pack_start(gtk.Label(''), 1, 1)
-        hbox.pack_start(gtk.Label(_('Round')), 0, 0)
-        item = SpinPrefItem(ui, 'cursorR', 0, 20, 1)
+        hbox.pack_start(gtk.Label(_('Rounding Factor')), 0, 0)
+        item = SpinPrefItem(ui, 'cursorRoundingFactor', 0, 1, 2)
         self.uiPrefItems.append(item)
         hbox.pack_start(item.widget, 0, 0)
-        #hbox.pack_start(gtk.Label(''), 1, 1)
+        hbox.pack_start(gtk.Label(''), 1, 1)
         ###
-        hbox2 = gtk.HBox(spacing=1)
-        item = CheckPrefItem(ui, 'cursorFixed', _('Fixed Size'))
-        self.uiPrefItems.append(item)
-        item.widget.connect('clicked', self.cursorFixedClicked, hbox2)
-        hbox2.set_sensitive(ui.cursorFixed)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        hbox.pack_start(item.widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        hbox2.pack_start(gtk.Label(_('Width')), 0, 0)
-        item = SpinPrefItem(ui, 'cursorW', 0, 99, 0)
-        self.uiPrefItems.append(item)
-        hbox2.pack_start(item.widget, 0, 0)
-        #hbox.pack_start(gtk.Label(''), 1, 1)
-        ####
-        hbox2.pack_start(gtk.Label(_('Height')), 0, 0)
-        item = SpinPrefItem(ui, 'cursorH', 0, 99, 0)
-        self.uiPrefItems.append(item)
-        hbox2.pack_start(item.widget, 0, 0)
-        #hbox2.pack_start(gtk.Label(''), 1, 1)
-        ####
-        hbox.pack_start(hbox2, 1, 1)
         vbox.pack_start(hbox, 0, 0)
         #############
         item = RadioHListPrefItem(ui, 'dragIconCell',
@@ -1182,7 +1161,6 @@ class PrefDialog(gtk.Dialog):
             except IndexError:
                 continue
             notebook.reorder_child(self.prefPages[i], j)
-    cursorFixedClicked = lambda self, check, hbox: hbox.set_sensitive(check.get_active())
     def comboFirstWDChanged(self, combo):
         f = self.comboFirstWD.get_active() ## 0 means Sunday
         if f==7: ## auto

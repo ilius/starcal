@@ -211,6 +211,11 @@ def drawRoundedRect(cr, cx0, cy0, cw, ch, ro):
     cr.close_path()
 
 
+def drawCursorBg(cr, cx0, cy0, cw, ch):
+    cursorRadius = ui.cursorRoundingFactor * min(cw, ch) * 0.5
+    drawRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius)
+
+
 def drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ro, d):
     ro = min(ro, cw/2.0, ch/2.0)
     #a = min(cw, ch); ri = ro*(a-2*d)/a
@@ -244,6 +249,11 @@ def drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ro, d):
         cr.arc_negative(cx0+cw-ro, cy0+ro, ri, 2*pi, 3*pi/2) ## up right
         cr.line_to(cx0+ro, cy0+d)
     cr.close_path()
+
+def drawCursorOutline(cr, cx0, cy0, cw, ch):
+    cursorRadius = ui.cursorRoundingFactor * min(cw, ch) * 0.5
+    cursorDia = ui.cursorDiaFactor * min(cw, ch) * 0.5
+    drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius, cursorDia)
 
 
 class Button:

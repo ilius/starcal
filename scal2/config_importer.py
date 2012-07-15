@@ -150,13 +150,6 @@ weekNumberMode=%r'''%(holidayWeekDays, firstWeekDayAuto, firstWeekDay, weekNumbe
                 'holidayColor',
                 'inactiveColor',
                 'borderTextColor',
-                'mcalLeftMargin',
-                'mcalTopMargin',
-                'cursorD',
-                'cursorR',
-                'cursorFixed',
-                'cursorW',
-                'cursorH',
                 'dragIconCell',
                 'maxDayCacheSize',
                 'maxWeekCacheSize'

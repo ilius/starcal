@@ -573,13 +573,10 @@ holidayColor = (255, 160, 0, 255)
 inactiveColor = (255, 255, 255, 115)
 todayCellColor  = (0, 255, 0, 50)
 ##########
-cursorFixed = False
 cursorOutColor = (213, 207, 0, 255)
 cursorBgColor = (41, 41, 41, 255)
-cursorD = 3.0
-cursorR = 7.0 ## Rounded Rectangle
-cursorW = 57
-cursorH = 24
+cursorDiaFactor = 0.15
+cursorRoundingFactor = 0.50
 mcalGrid = True
 gridColor = (255, 252, 0, 82)
 ##########

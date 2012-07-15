@@ -1714,14 +1714,14 @@ msgid "Cursor BG"
 msgstr ""
 "زمینهٔ مکان‌نما"
 
-msgid "Diameter"
+msgid "Diameter Factor"
 msgstr ""
-"ضخامت"
+"ضریب ضخامت"
 
 
-msgid "Round"
+msgid "Rounding Factor"
 msgstr ""
-"گردی"
+"ضریب گردی"
 
 
 msgid "Width"
@@ -1731,22 +1731,6 @@ msgstr ""
 msgid "Height"
 msgstr ""
 "ارتفاع"
-
-msgid "Fixed Size"
-msgstr ""
-"اندازهٔ ثابت"
-
-#msgid "Cursor Diameter"
-#msgstr ""
-#"ضخامت مکان‌نما"
-
-#msgid "Cursor Width"
-#msgstr ""
-#"عرض مکان‌نما"
-
-#msgid "Cursor Height"
-#msgstr ""
-#"ارتفاع مکان‌نما"
 
 msgid "Days maximum cache size"
 msgstr ""
