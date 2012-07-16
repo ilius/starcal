@@ -279,8 +279,7 @@ class FloatSpinButton(MultiSpinButton):
         #print value, v1, v2
         MultiSpinButton.set_value(self, (v1, v2))
     def entry_plus(self, p):
-        MultiSpinButton.entry_plus(self, p)
-        self.set_value(self.get_value())
+        self.set_value(self.get_value()+float(p)/self.digDec)
 
 class DateButton(MultiSpinButton):
     def __init__(self, date=None, **kwargs):
