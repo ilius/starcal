@@ -62,6 +62,14 @@ options = (
 import os
 from os.path import join, isfile
 from scal2.paths import sysConfDir, confDir, modDir
+from scal2.json_utils import jsonToData, dataToPrettyJson
+from scal2.lib import OrderedDict
+
+
+oldDbPath = '%s/hijri.db'%confDir
+if isfile(oldDbPath):
+    os.remove(oldDbPath)
+
 
 ## Here load user options (hijriUseDB) from file
 sysConfPath = '%s/%s.conf'%(sysConfDir, name)
@@ -88,8 +96,8 @@ class MonthDbHolder:
         self.startJd = 2453441 ## hijriDbInitJD
         self.endJd = self.startJd ## hijriDbEndJD
         self.monthLenByYm = {} ## hijriMonthLen
-        self.userDbPath = join(confDir, 'hijri.db')
-        self.sysDbPath = '%s/hijri.db'%modDir
+        self.userDbPath = join(confDir, 'hijri-monthes.json')
+        self.sysDbPath = '%s/hijri-monthes.json'%modDir
     def setMonthLenByYear(self, monthLenByYear):
         self.endJd = self.startJd
         self.monthLenByYm = {}
@@ -97,40 +105,48 @@ class MonthDbHolder:
             lst = monthLenByYear[y]
             for m in xrange(len(lst)):
                 ml = lst[m]
-                if ml!=0:
+                if ml:## positive integer
+                    assert ml in (29, 30)
                     self.monthLenByYm[y*12+m] = ml
                     self.endJd += ml
-    def load(self):
-        dbPath = self.userDbPath
-        if not isfile(dbPath):
-            dbPath = self.sysDbPath
-        if not isfile(dbPath):
-            return ## FIXME
+    def setData(self, data):
+        self.startDate = tuple(data['startDate'])
+        self.startJd = data['startJd']
+        ###
         monthLenByYear = {}
-        lines = open(dbPath).read().splitlines()
-        for line in lines[1:]:
-            if line!='' and not line.startswith('#'):
-                parts = [int(p) for p in line.split(' ')]
-                monthLenByYear[parts[0]] = parts[1:]
-        parts = [int(p) for p in lines[0].split(' ')]
-        self.startDate = parts[:3]
-        self.startJd = parts[3]
+        for row in data['monthLen']:
+            monthLenByYear[row[0]] = row[1:]
         self.setMonthLenByYear(monthLenByYear)
-    #def setData(
+    def load(self):
+        data = jsonToData(open(self.sysDbPath).read())
+        self.origVersion = data['version']
+        ##
+        if isfile(self.userDbPath):
+            userData = jsonToData(open(self.userDbPath).read())
+            if userData['origVersion'] >= self.origVersion:
+                data = userData
+            else:
+                print '---- ignoring user\'s old db', self.userDbPath
+        self.setData(data)
     def getMonthLenByYear(self):
         monthLenByYear = {}
         for ym, mLen in self.monthLenByYm.iteritems():
             (year, month0) = divmod(ym, 12)
             if not year in monthLenByYear:
-                monthLenByYear[year] = [None,] * month0
+                monthLenByYear[year] = [0,] * month0
             monthLenByYear[year].append(mLen)
         return monthLenByYear
     def save(self):
-        lines = []
-        lines.append('%d %d %d %d'%tuple(self.startDate + [self.startJd]))
+        mLenData = []
         for year, mLenList in self.getMonthLenByYear().iteritems():
-            lines.append(' '.join(['%.4d'%year]+['%.2d'%n if n else '00' for n in mLenList]))
-        open(self.userDbPath, 'w').write('\n'.join(lines))
+            mLenData.append([year]+mLenList)
+        text = dataToPrettyJson(OrderedDict([
+            ('origVersion', self.origVersion),
+            ('startDate', self.startDate),
+            ('startJd', self.startJd),
+            ('monthLen', mLenData),
+        ]))
+        open(self.userDbPath, 'w').write(text)
     def getMonthLenList(self):## returns a list of (index, ym, mLen)
         ls = []
         for index, ym in enumerate(sorted(self.monthLenByYm.keys())):
