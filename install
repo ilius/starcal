@@ -1,4 +1,5 @@
 #!/bin/bash
+UI_QT_ENABLE=
 
 function printUsage {
     ## echo "Usage: $0 [TERGET_DIR] [--for-pkg|--portable] [--prefix=/usr/local]"
@@ -166,14 +167,16 @@ fi
 
 echo "#!/bin/bash
 $PY $runDirStr/scal2/ui_gtk/starcal2.py \"\$@\"" > "${targetPrefix}/bin/$pkgName"
-
-
-echo "#!/bin/bash
-$PY $runDirStr/scal2/ui_qt/starcal2.py \"\$@\"" > "${targetPrefix}/bin/$pkgName-qt"
-
-
 chmod 755 "${targetPrefix}/bin/$pkgName"
-chmod 755 "${targetPrefix}/bin/$pkgName-qt"
+
+if [ $UI_QT_ENABLE ] ; then
+    echo "#!/bin/bash
+    $PY $runDirStr/scal2/ui_qt/starcal2.py \"\$@\"" > "${targetPrefix}/bin/$pkgName-qt"
+    chmod 755 "${targetPrefix}/bin/$pkgName-qt"
+fi
+
+
+
 
 
 
@@ -190,7 +193,8 @@ Categories=Application;Utility;
 StartupNotify=true" > "${shareDir}/applications/$pkgName.desktop"
 
 
-echo "[Desktop Entry]
+if [ $UI_QT_ENABLE ] ; then
+    echo "[Desktop Entry]
 Encoding=UTF-8
 Name=StarCalendar $version (Qt)
 Comment=A Perfect Calendar Program (Qt Interface)
@@ -201,7 +205,7 @@ Type=Application
 Terminal=false
 Categories=Application;Utility;
 StartupNotify=true" > "${shareDir}/applications/$pkgName-qt.desktop"
-
+fi
 
 
 "$sourceDir/locale.d/install" "${targetPrefix}" ## FIXME
