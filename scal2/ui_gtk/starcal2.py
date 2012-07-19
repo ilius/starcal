@@ -1011,6 +1011,7 @@ class PluginsTextBox(gtk.VBox, CustomizableCalObj):
             self.expander.add(self.textview)
             self.pack_start(self.expander, 0, 0)
             self.expander.set_expanded(ui.pluginsTextIsExpanded)
+            self.textview.show()
         else:
             self.pack_start(self.textview, 0, 0)
         #####
