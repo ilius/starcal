@@ -135,8 +135,8 @@ clockFormatBin = compileTmFormat(clockFormat)
 
 adjustTimeCmd = ''
 
-prevStock = gtk.STOCK_GO_BACK
-nextStock = gtk.STOCK_GO_FORWARD
+prevStock = gtk.ARROW_LEFT
+nextStock = gtk.ARROW_RIGHT
 
 mainToolbarData = {
     'items': [],
