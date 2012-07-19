@@ -119,7 +119,7 @@ class DayInfoDialog(gtk.Dialog, ud.IntegratedCalObj):
         ui.jdPlus(-1)
         self.onDateChange()
     def goToday(self, obj=None):
-        ui.goToday()
+        ui.gotoJd(core.getCurrentJd())
         self.onDateChange()
     def goNext(self, obj=None):
         ui.jdPlus(1)
