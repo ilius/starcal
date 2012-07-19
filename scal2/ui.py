@@ -654,7 +654,7 @@ mainWinItems = (
     ('winContronller', True),
     ('toolbar', True),
     ('labelBox', True),
-    ('monthCal', True),
+    ('monthCal', False),
     ('weekCal', True),
     ('statusBar', True),
     ('pluginsText', True),
