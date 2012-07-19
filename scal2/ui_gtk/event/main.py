@@ -1158,7 +1158,6 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         menu.popup(None, None, None, 3, etime)
     def onTreeviewRealize(self, event):
         self.reloadEvents()## FIXME
-        self.isLoaded = True
     def rowActivated(self, treev, path, col):
         if len(path)==1:
             if treev.row_expanded(path):
@@ -1233,6 +1232,14 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         for event in ui.eventTrash:
             self.trees.append(self.trashIter, self.getEventRow(event))
         self.treeviewCursorChanged()
+        ####
+        ui.newGroups = []
+        ui.changedGroups = []
+        ui.newEvents = []
+        ui.changedEvents = []
+        ui.trashedEvents = []
+        ####
+        self.isLoaded = True
     def onDeleteEvent(self, obj, event):
         self.hide()
         return True
