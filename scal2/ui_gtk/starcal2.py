@@ -1587,7 +1587,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
                 self.sicon.connect('popup-menu', self.trayPopup)
         else:
             self.sicon = None
-    getMainWinMenuItem = lambda self: labelStockMenuItem('Main Window', None, self.trayClicked)
+    getMainWinMenuItem = lambda self: labelMenuItem('Main Window', self.trayClicked)
     getTrayPopupItems = lambda self: [
         labelStockMenuItem('Copy _Time', gtk.STOCK_COPY, self.copyTime),
         labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday),
