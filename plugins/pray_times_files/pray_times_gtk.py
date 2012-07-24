@@ -20,10 +20,15 @@
 import os
 from os.path import dirname
 
+from scal2 import locale_man
 from scal2.locale_man import tr as _
 from pray_times_backend import timeNames, methodsList
 
 import gtk
+
+buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter())
+buffer_select_all = lambda b: b.select_range(b.get_start_iter(), b.get_end_iter())
+
 
 dataDir = dirname(__file__)
 earthR = 6370
@@ -332,6 +337,20 @@ class TextPlugUI:
         hbox.pack_start(gtk.Label(' '+_('minutes before fajr')), 0, 0)
         self.confDialog.vbox.pack_start(hbox, 0, 0)
         ######
+        hbox = gtk.HBox()
+        hbox.pack_start(gtk.Label(_('Seperator')), 0, 0)
+        textview = gtk.TextView()
+        textview.set_wrap_mode(gtk.WRAP_CHAR)
+        if locale_man.rtl:
+            textview.set_direction(gtk.TEXT_DIR_RTL)
+        self.sepView = textview
+        self.sepBuff = textview.get_buffer()
+        frame = gtk.Frame()
+        frame.set_border_width(4)
+        frame.add(textview)
+        hbox.pack_start(frame, 1, 1)
+        self.confDialog.vbox.pack_start(hbox, 0, 0)
+        ######
         self.updateConfWidget()
         ###
         cancelB = self.confDialog.add_button(gtk.STOCK_CANCEL, 1)
@@ -364,6 +383,8 @@ class TextPlugUI:
             row[0] = (row[2] in self.shownTimeNames)
         ###
         self.imsakSpin.set_value(self.imsak)
+        self.sepBuff.set_text(self.sep)
+        buffer_select_all(self.sepBuff)
     def updateConfVars(self):
         self.locName = self.locButton.locName
         self.ptObj.lat = self.locButton.lat
@@ -371,6 +392,7 @@ class TextPlugUI:
         self.ptObj.method = methodsList[self.methodCombo.get_active()]
         self.shownTimeNames = [row[2] for row in self.shownTimesTreestore if row[0]]
         self.imsak = int(self.imsakSpin.get_value())
+        self.sep = buffer_get_text(self.sepBuff)
         self.ptObj.imsak = '%d min'%self.imsak
     def confDialogCancel(self, widget):
         self.confDialog.hide()

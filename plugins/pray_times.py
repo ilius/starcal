@@ -138,6 +138,7 @@ class TextPlug(BasePlugin, TextPlugUI):
         #highLats='NightMiddle'
         #timeFormat='24h'
         shownTimeNames = ('fajr', 'sunrise', 'dhuhr', 'maghrib', 'midnight')
+        sep = '     '
         ####
         if isfile(confPath):
             exec(open(confPath).read())
@@ -146,6 +147,7 @@ class TextPlug(BasePlugin, TextPlugUI):
         self.imsak = imsak
         self.ptObj = PrayTimes(lat, lng, methodName=method, imsak='%d min'%imsak)
         self.shownTimeNames = shownTimeNames
+        self.sep = sep
         #######
         #PrayTimeEventRule.plug = self
         #######
@@ -157,6 +159,7 @@ class TextPlug(BasePlugin, TextPlugUI):
         text += 'method=%r\n'%self.ptObj.method.name
         text += 'shownTimeNames=%r\n'%self.shownTimeNames
         text += 'imsak=%r\n'%self.imsak
+        text += 'sep=%r\n'%self.sep
         open(confPath, 'w').write(text)
     #def date_change_after(self, widget, year, month, day):
     #    self.dialog.menuCell.add(self.menuitem)
@@ -178,7 +181,7 @@ class TextPlug(BasePlugin, TextPlugUI):
         else:
             return '%d:%.2d'%(h, m)
     def get_text_jd(self, jd):
-        return '\t'.join([
+        return self.sep.join([
             '%s: %s'%(_(name.capitalize()), self.getFormattedTime(tm))
             for name, tm in self.get_times_jd(jd)
         ])
