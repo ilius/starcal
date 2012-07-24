@@ -81,6 +81,7 @@ class IndicatorStatusIconWrapper(appindicator.Indicator):
     def set_from_pixbuf(self, pbuf):
         fpath = join(tmpDir, 'starcal2-tray-%s.png'%os.getuid())## FIXME
         pbuf.save(fpath, 'png')
+        self.set_icon('')
         self.set_icon(fpath)
     def is_embedded(self):## FIXME
         return True
