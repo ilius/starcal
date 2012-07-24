@@ -2063,7 +2063,12 @@ class EventContainer(JsonEventBaseClass):
         return event
     def getEventsGen(self):
         for eid in self.idList:
-            yield self.getEvent(eid)
+            try:
+                event = self.getEvent(eid)
+            except Exception, e:
+                myRaise(e)
+            else:
+                yield event
     __iter__ = lambda self: IteratorFromGen(self.getEventsGen())
     __len__ = lambda self: len(self.idList)
     insert = lambda self, index, event: self.idList.insert(index, event.id)
