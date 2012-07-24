@@ -558,6 +558,7 @@ keyDelay = 0 #0.07 ## delay between listening of key press in calendar
 winWidth = 480
 mcalHeight = 250
 winTaskbar = False
+useAppIndicator = True
 #showDigClockTb = True ## On Toolbar ## FIXME
 showDigClockTr = True ## On Tray
 ####

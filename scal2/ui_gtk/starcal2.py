@@ -1565,20 +1565,26 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
     #weekCalShow = lambda self, obj=None, data=None: openWindow(ui.weekCalWin)
     def trayInit(self):
         if self.trayMode==2:
-            try:
-                import appindicator
-            except ImportError:
+            self.trayPix = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, ui.traySize, ui.traySize)
+            ####
+            useAppIndicator = ui.useAppIndicator
+            if useAppIndicator:
+                try:
+                    import appindicator
+                except ImportError:
+                    useAppIndicator = False
+            if useAppIndicator:
+                from scal2.ui_gtk.starcal2_appindicator import IndicatorStatusIconWrapper
+                self.sicon = IndicatorStatusIconWrapper(self)
+            else:
                 self.sicon = gtk.StatusIcon()
                 ##self.sicon.set_blinking(True) ## for Alarms ## some problem with gnome-shell
-                #self.sicon.set_name('starcal2')## Warning: g_object_notify: object class `GtkStatusIcon' has no property named `name'
+                #self.sicon.set_name('starcal2')
+                ## Warning: g_object_notify: object class `GtkStatusIcon' has no property named `name'
                 self.sicon.set_title(core.APP_DESC)
                 self.sicon.set_visible(True)## is needed ????????
                 self.sicon.connect('activate', self.trayClicked)
                 self.sicon.connect('popup-menu', self.trayPopup)
-            else:
-                from scal2.ui_gtk.starcal2_appindicator import IndicatorStatusIconWrapper
-                self.sicon = IndicatorStatusIconWrapper(self)
-            self.trayPix = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, ui.traySize, ui.traySize)
         else:
             self.sicon = None
     getMainWinMenuItem = lambda self: labelStockMenuItem('Main Window', None, self.trayClicked)

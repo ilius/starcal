@@ -1437,6 +1437,10 @@ msgid "Window in Taskbar"
 msgstr ""
 "پنجره در نواروظیفه"
 
+msgid "Use AppIndicator"
+msgstr ""
+"استفاده از AppIndicator"
+
 
 
 msgid "Window Controller"
