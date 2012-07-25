@@ -30,7 +30,7 @@ pkgdesc='A full-featured international calendar writen in Python'
 arch=('any')
 url=(http://starcal.sourceforge.net)
 license=('GPLv3')
-depends=('python2>=2.6' 'pygtk>=2.8' 'pygobject' 'python2-gflags')
+depends=('python2>=2.6' 'pygtk>=2.8' 'pygobject' 'python2-gflags' 'python2-httplib2')
 optdepends=('python-gnomeapplet' 'python2-gnomevfs')
 makedepends=()
 conflicts=('starcal-git')
