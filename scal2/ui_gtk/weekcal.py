@@ -159,7 +159,7 @@ class ToolbarColumn(CustomizableToolbar):
     defaultItemsDict = dict([(item._name, item) for item in defaultItems])
     params = ('ud.wcalToolbarData',)
     def __init__(self, wcal):
-        CustomizableToolbar.__init__(self, wcal, vertical=True)
+        CustomizableToolbar.__init__(self, wcal, True, True)
         if not ud.wcalToolbarData['items']:
             ud.wcalToolbarData['items'] = [(item._name, True) for item in self.defaultItems]
         self.setData(ud.wcalToolbarData)

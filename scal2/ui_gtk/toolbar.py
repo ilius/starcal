@@ -1,6 +1,10 @@
+from time import time
+
 from scal2 import core
 from scal2.locale_man import tr as _
 from scal2 import ui
+
+from gobject import timeout_add
 
 import gtk
 from gtk import gdk
@@ -56,11 +60,12 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
     styleList = ('Icon', 'Text', 'Text below Icon', 'Text beside Icon')
     defaultItems = []
     defaultItemsDict = {}
-    def __init__(self, funcOwner, vertical=False):
+    def __init__(self, funcOwner, vertical=False, onPressContinue=False):
         gtk.Toolbar.__init__(self)
         self.funcOwner = funcOwner
         self.set_orientation(gtk.ORIENTATION_VERTICAL if vertical else gtk.ORIENTATION_HORIZONTAL)
         self.add_events(gdk.POINTER_MOTION_MASK)
+        self.onPressContinue = onPressContinue
         ###
         optionsWidget = gtk.VBox()
         ##
@@ -135,6 +140,14 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
             'style': self.styleList[self.styleCombo.get_active()],
             'buttonsBorder': self.buttonsBorderSpin.get_value(),
         }
+    def setupItemSignals(self, item):
+        if item.method:
+            func = getattr(self.funcOwner, item.method)
+            if self.onPressContinue:
+                item.child.connect('button-press-event', lambda obj, ev: self.itemPress(func))
+                item.child.connect('button-release-event', self.itemRelease)
+            else:
+                item.connect('clicked', func)
     def setData(self, data):
         for (name, enable) in data['items']:
             try:
@@ -143,8 +156,7 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
                 myRaise()
             else:
                 item.enable = enable
-                if item.method:
-                    item.connect('clicked', getattr(self.funcOwner, item.method))
+                self.setupItemSignals(item)
                 self.appendItem(item)
         ###
         iconSize = data['iconSize']
@@ -161,7 +173,16 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
         self.buttonsBorderSpin.set_value(bb)
         self.setButtonsBorder(bb)
         ###
-
-
+    def itemPress(self, func):
+        self.lastPressTime = time()
+        self.remain = True
+        func()
+        timeout_add(300, self.itemPressRemain, func)
+    def itemPressRemain(self, func):
+        if self.remain and time()-self.lastPressTime>=0.3:
+            func()
+            timeout_add(150, self.itemPressRemain, func)
+    def itemRelease(self, widget, event=None):
+        self.remain = False
 
 
