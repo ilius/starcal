@@ -684,14 +684,10 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
         if ui.showYmArrows:
             self.arrowPY.connect('pressed', self.yearButtonPress,-1)
             self.arrowNY.connect('pressed', self.yearButtonPress, 1)
-            self.arrowPY.connect('activate', self.yearButtonPress,-1, False)
-            self.arrowNY.connect('activate', self.yearButtonPress, 1, False)
             self.arrowPY.connect('released', self.arrowRelease)
             self.arrowNY.connect('released', self.arrowRelease)
             self.arrowPM.connect('pressed', self.monthButtonPress,-1)
             self.arrowNM.connect('pressed', self.monthButtonPress, 1)
-            self.arrowPM.connect('activate', self.monthButtonPress,-1, False)
-            self.arrowNM.connect('activate', self.monthButtonPress, 1, False)
             self.arrowPM.connect('released', self.arrowRelease)
             self.arrowNM.connect('released', self.arrowRelease)
             #############################
@@ -818,9 +814,9 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
     def monthPlus(self, plus=1):
         ui.monthPlus(plus)
         self.onDateChange()
-    def monthButtonPress(self, widget, plus, remain=True):
+    def monthButtonPress(self, widget, plus):
         self.ymPressTime = time()
-        self.remain = remain
+        self.remain = True
         self.monthPlus(plus)
         timeout_add(300, self.monthButtonRemain, plus)
     def monthButtonRemain(self, plus):
@@ -830,9 +826,9 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
     def yearPlus(self, plus=1):
         ui.yearPlus(plus)
         self.onDateChange()
-    def yearButtonPress(self, widget, plus, remain=True):
+    def yearButtonPress(self, widget, plus):
         self.ymPressTime = time()
-        self.remain = remain
+        self.remain = True
         self.yearPlus(plus)
         timeout_add(300, self.yearButtonRemain, plus)
     def yearButtonRemain(self, plus):
