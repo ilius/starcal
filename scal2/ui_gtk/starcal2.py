@@ -1591,6 +1591,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         #labelStockMenuItem('_Add Event', gtk.STOCK_ADD, ui.eventManDialog.addCustomEvent),## FIXME
         labelStockMenuItem(_('Export to %s')%'HTML', gtk.STOCK_CONVERT, self.exportClickedTray),
         labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow),
+        labelStockMenuItem('_Customize', gtk.STOCK_EDIT, self.customizeShow),
         labelStockMenuItem('_Event Manager', gtk.STOCK_ADD, self.eventManShow),
         labelImageMenuItem('Time Line', 'timeline-18.png', self.timeLineShow),
         labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow),
