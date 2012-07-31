@@ -44,10 +44,9 @@ class IndicatorStatusIconWrapper(appindicator.Indicator):
         self.set_status(appindicator.STATUS_ACTIVE)
         #self.set_attention_icon("new-messages-red")
         ######
-        menu = self.create_menu2()
-        self.set_menu(menu)
-        #self.menu = menu
-    def create_menu(self):
+        self.create_menu()
+    '''
+    def create_menu_simple(self):
         menu = gtk.Menu()
         ###
         for item in [self.mainWin.getMainWinMenuItem()] + self.mainWin.getTrayPopupItems():
@@ -56,8 +55,9 @@ class IndicatorStatusIconWrapper(appindicator.Indicator):
         ###
         #if locale_man.rtl:
             #menu.set_direction(gtk.TEXT_DIR_RTL)
-        return menu
-    def create_menu2(self):
+        self.set_menu(menu)
+    '''
+    def create_menu(self):
         menu = gtk.Menu()
         ####
         for line in self.mainWin.getTrayTooltip().split('\n'):
@@ -77,12 +77,13 @@ class IndicatorStatusIconWrapper(appindicator.Indicator):
         sitem.set_submenu(submenu)
         sitem.show()
         menu.append(sitem)
-        return menu
+        self.set_menu(menu)
     def set_from_pixbuf(self, pbuf):
         fpath = join(tmpDir, 'starcal2-tray-%s.png'%os.getuid())## FIXME
         pbuf.save(fpath, 'png')
         self.set_icon('')
         self.set_icon(fpath)
+        self.create_menu()
     def is_embedded(self):## FIXME
         return True
     def set_visible(self, visible):## FIXME
