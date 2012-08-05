@@ -214,7 +214,7 @@ class WeekDaysColumn(Column):
         #####
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Width')), 0, 0)
-        spin = IntSpinButton(0, 99)
+        spin = IntSpinButton(0, 999)
         hbox.pack_start(spin, 0, 0)
         spin.set_value(ui.wcalWeekDaysWidth)
         spin.connect('changed', self.widthSpinChanged)
@@ -272,7 +272,7 @@ class EventsIconColumn(Column):
         #####
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Width')), 0, 0)
-        spin = IntSpinButton(0, 99)
+        spin = IntSpinButton(0, 999)
         hbox.pack_start(spin, 0, 0)
         spin.set_value(ui.wcalEventsIconColWidth)
         spin.connect('changed', self.widthSpinChanged)
@@ -356,7 +356,7 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
         #####
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Width')), 0, 0)
-        spin = IntSpinButton(0, 99)
+        spin = IntSpinButton(0, 999)
         hbox.pack_start(spin, 0, 0)
         spin.set_value(ui.wcalDaysOfMonthColWidth)
         spin.connect('changed', self.widthSpinChanged)
