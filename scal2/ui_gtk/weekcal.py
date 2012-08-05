@@ -141,7 +141,7 @@ class Column(gtk.Widget, ColumnBase):
         rowH = h/7.0
         itemW = w - ui.wcalPadding
         fontName = self.getFontValue()
-        font = [fontName, False, False, ui.fontDefault[3]] if fontName else None
+        font = [fontName, False, False, 10000] if fontName else None
         for i in range(7):
             layout = newTextLayout(
                 self,
