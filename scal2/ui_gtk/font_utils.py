@@ -19,4 +19,11 @@ gfontDecode = lambda gfont: pfontDecode(pango.FontDescription(gfont))## gfont is
 
 gfontEncode = lambda font: pfontEncode(font).to_string()
 
+getFontFamilyList = lambda widget: sorted(
+    (
+        f.get_name() for f in widget.get_pango_context().list_families()
+    ),
+    key=str.upper,
+)
+
 

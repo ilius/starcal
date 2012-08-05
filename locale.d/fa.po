@@ -1752,6 +1752,10 @@ msgid "Use system font"
 msgstr ""
 "استفاده از فونت سیستم"
 
+msgid "Font Family"
+msgstr ""
+"خانوادهٔ فونت"
+
 msgid "Change color of non-weekly holidays"
 msgstr ""
 "تغییر رنگ تعطیلات غیر هفتگی"
