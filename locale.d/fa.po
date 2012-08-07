@@ -1756,6 +1756,10 @@ msgid "Font Family"
 msgstr ""
 "خانوادهٔ فونت"
 
+msgid "Text Size Scale"
+msgstr ""
+"مقیاس اندازهٔ متن"
+
 msgid "Change color of non-weekly holidays"
 msgstr ""
 "تغییر رنگ تعطیلات غیر هفتگی"

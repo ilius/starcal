@@ -585,6 +585,7 @@ mcalLeftMargin = 30
 mcalTopMargin = 30
 ####################
 wcalHeight = 200
+wcalTextSizeScale = 0.6 ## between 0 and 1
 wcalTextColor = (255, 255, 255)
 wcalPadding = 10
 wcalButtonsWidth = 30

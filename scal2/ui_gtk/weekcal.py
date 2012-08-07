@@ -40,7 +40,7 @@ from gtk import gdk
 
 from scal2.ui_gtk.drawing import *
 from scal2.ui_gtk.utils import pixbufFromFile, DirectionComboBox
-from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
+from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
 from scal2.ui_gtk.mywidgets.font_family_combo import FontFamilyCombo
 from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
@@ -141,13 +141,15 @@ class Column(gtk.Widget, ColumnBase):
         rowH = h/7.0
         itemW = w - ui.wcalPadding
         fontName = self.getFontValue()
-        font = [fontName, False, False, 10000] if fontName else None
+        fontSize = ui.getFont()[-1] ## FIXME
+        font = [fontName, False, False, fontSize] if fontName else None
         for i in range(7):
             layout = newTextLayout(
                 self,
                 text=textList[i],
                 font=font,
                 maxSize=(itemW, rowH),
+                maximizeScale=ui.wcalTextSizeScale,
             )
             if layout:
                 layoutW, layoutH = layout.get_pixel_size()
@@ -344,7 +346,6 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
     _name = 'daysOfMonth'
     desc = _('Days of Month')
     params = ('ui.wcalDaysOfMonthColWidth', 'ui.wcalDaysOfMonthColDir')
-    customizeFont = True
     updateDir = lambda self: self.set_direction(ud.textDirDict[ui.wcalDaysOfMonthColDir])
     def __init__(self, wcal):
         gtk.HBox.__init__(self)
@@ -433,6 +434,14 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase):
         hbox.pack_start(spin, 0, 0)
         self.optionsWidget.pack_start(hbox, 0, 0)
         ###
+        hbox = gtk.HBox()
+        spin = FloatSpinButton(0, 1, 2)
+        spin.set_value(ui.wcalTextSizeScale)
+        spin.connect('changed', self.textSizeScaleSpinChanged)
+        hbox.pack_start(gtk.Label(_('Text Size Scale')), 0, 0)
+        hbox.pack_start(spin, 0, 0)
+        self.optionsWidget.pack_start(hbox, 0, 0)
+        ###
         self.optionsWidget.show_all()
         #####
         self.updateStatus()
@@ -441,12 +450,16 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase):
         v = spin.get_value()
         self.set_property('height-request', v)
         ui.wcalHeight = v
+    def textSizeScaleSpinChanged(self, spin):
+        ui.wcalTextSizeScale = spin.get_value()
+        self.queue_draw()
     def updateVars(self):
         CustomizableCalBox.updateVars(self)
         ui.wcalItems = self.getItemsData()
     def confStr(self):
         text = ColumnBase.confStr(self)
         text += 'ui.wcalHeight=%s\n'%repr(ui.wcalHeight)
+        text += 'ui.wcalTextSizeScale=%s\n'%repr(ui.wcalTextSizeScale)
         text += 'ui.wcalItems=%s\n'%repr(ui.wcalItems)
         return text
     def updateStatus(self):
