@@ -792,6 +792,10 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
         ###
         if not self.isLoaded:
+            if self.get_property('visible'):
+                self.startWaiting()
+                self.reloadEvents()## FIXME
+                self.endWaiting()
             return
         ###
         for gid in ui.newGroups:
@@ -956,7 +960,7 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         #self.treev.set_headers_visible(False)## FIXME
         #self.treev.get_selection().set_mode(gtk.SELECTION_MULTIPLE)## FIXME
         #self.treev.set_rubber_banding(gtk.SELECTION_MULTIPLE)## FIXME
-        self.treev.connect('realize', self.onTreeviewRealize)
+        #self.treev.connect('realize', self.onTreeviewRealize)
         self.treev.connect('cursor-changed', self.treeviewCursorChanged)## FIXME
         self.treev.connect('button-press-event', self.treeviewButtonPress)
         self.treev.connect('row-activated', self.rowActivated)
@@ -1024,7 +1028,6 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         self.syncing = None ## or a tuple of (groupId, statusText)
         #####
         self.vbox.show_all()
-        #self.reloadEvents()## FIXME
     def canPasteToGroup(self, group):
         if self.toPasteEvent is None:
             return False
@@ -1156,8 +1159,9 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         if etime is None:
             etime = gtk.get_current_event_time()
         menu.popup(None, None, None, 3, etime)
-    def onTreeviewRealize(self, event):
-        self.reloadEvents()## FIXME
+    #def onTreeviewRealize(self, event):
+    #    #self.reloadEvents()## FIXME
+    #    pass
     def rowActivated(self, treev, path, col):
         if len(path)==1:
             if treev.row_expanded(path):
