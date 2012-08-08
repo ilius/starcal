@@ -744,6 +744,7 @@ for key in (
     'scal2.locale_man.enableNumLocale',
     'winTaskbar',
     'showYmArrows',
+    'useAppIndicator',
 ): # What other????
     needRestartPref[key] = eval(key)
 
