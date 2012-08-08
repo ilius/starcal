@@ -1454,6 +1454,22 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         #if isfile('/usr/bin/sunbird'):##??????????????????
         #    menu.add(labelImageMenuItem('In _Sunbird', 'sunbird-18.png', ui.dayOpenSunbird))
         ####
+        moreMenu = gtk.Menu()
+        moreMenu.add(labelStockMenuItem('_Customize', gtk.STOCK_EDIT, self.customizeShow))
+        moreMenu.add(labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
+        moreMenu.add(labelStockMenuItem('_Event Manager', gtk.STOCK_ADD, self.eventManShow))
+        moreMenu.add(labelImageMenuItem('Time Line', 'timeline-18.png', self.timeLineShow))
+        #moreMenu.add(labelImageMenuItem('Week Calendar', 'weekcal-18.png', self.weekCalShow))
+        moreMenu.add(labelStockMenuItem(_('Export to %s')%'HTML', gtk.STOCK_CONVERT, self.exportClicked))
+        moreMenu.add(labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
+        if self.trayMode!=1:
+            moreMenu.add(labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit))
+        ##
+        moreMenu.show_all()
+        moreItem = gtk.MenuItem(_('More'))
+        moreItem.set_submenu(moreMenu)
+        menu.add(moreItem)
+        ####
         menu.show_all()
         (dx, dy) = widget.translate_coordinates(self, x, y)
         (wx, wy) = self.window.get_origin()
@@ -1464,6 +1480,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             #if mw < 2:# menu width
             mw = 145 ## FIXME
             x -= mw
+        ####
         menu.popup(None, None, lambda m: (x, y, True), 3, etime)
     def popupMenuMain(self, widget, etime, x, y):
         ui.focusTime = time()
