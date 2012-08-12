@@ -15,6 +15,6 @@ class RuleWidget(TimeButton):
     def updateWidget(self):
         self.set_value(self.rule.dayTime)
     def updateVars(self):
-        (self.rule.hour, self.rule.minute, self.rule.second) = self.get_value()
+        self.rule.dayTime = self.get_value()
 
 
