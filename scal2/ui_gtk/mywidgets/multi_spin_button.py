@@ -147,7 +147,7 @@ class MultiSpinButton(gtk.SpinButton):
             self.insertText(_('.'))
             return True
         else:
-            print kname, kval
+            #print kname, kval
             return False
     def _button_press(self, widget, gevent):
         gwin = gevent.window
