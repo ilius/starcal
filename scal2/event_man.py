@@ -3075,14 +3075,21 @@ def getDayOccurrenceData(curJd, groups):
                 })
             else:
                 h0, m0, s0 = getHmsFromSeconds(epoch0 % dayLen)
-                h1, m1, s1 = getHmsFromSeconds(epoch1 % dayLen)
-                data.append({
-                    'time':hmsRangeToStr(h0, m0, s0, h1, m1, s1),
-                    'text':text,
-                    'icon':event.icon,
-                    'ids': (gid, eid),
-                })
-
+                if epoch1 - epoch0 < 1:
+                    data.append({
+                        'time':timeEncode((h0, m0, s0), True),
+                        'text':text,
+                        'icon':event.icon,
+                        'ids': (gid, eid),
+                    })
+                else:
+                    h1, m1, s1 = getHmsFromSeconds(epoch1 % dayLen)
+                    data.append({
+                        'time':hmsRangeToStr(h0, m0, s0, h1, m1, s1),
+                        'text':text,
+                        'icon':event.icon,
+                        'ids': (gid, eid),
+                    })
             '''
             occur = event.calcOccurrenceForJdRange(curJd, curJd+1)
             if not occur:
