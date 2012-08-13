@@ -50,6 +50,9 @@ english(Gregorian) calendar
 %install
 \"$sourceDir/install\" \"%{buildroot}\" --for-pkg --prefix=%{_prefix}
 
+%post
+/usr/share/starcal2/scripts/assert_python2
+
 %files
 %defattr(-,root,root,-)
 %{_prefix}/share/starcal2/*
