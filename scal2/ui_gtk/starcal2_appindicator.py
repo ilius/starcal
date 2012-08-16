@@ -33,6 +33,7 @@ import appindicator
 from scal2.ui_gtk.utils import CopyLabelMenuItem
 
 class IndicatorStatusIconWrapper(appindicator.Indicator):
+    imPath = join(tmpDir, 'starcal2-indicator-%s.png'%os.getuid())## FIXME
     def __init__(self, mainWin):
         self.mainWin = mainWin
         appindicator.Indicator.__init__(
@@ -79,11 +80,12 @@ class IndicatorStatusIconWrapper(appindicator.Indicator):
         menu.append(sitem)
         self.set_menu(menu)
     def set_from_pixbuf(self, pbuf):
-        fpath = join(tmpDir, 'starcal2-tray-%s.png'%os.getuid())## FIXME
-        pbuf.save(fpath, 'png')
+        pbuf.save(self.imPath, 'png')
         self.set_icon('')
-        self.set_icon(fpath)
+        self.set_icon(self.imPath)
         self.create_menu()
+    #def __del__(self):
+    #    os.remove(self.imPath)
     def is_embedded(self):## FIXME
         return True
     def set_visible(self, visible):## FIXME

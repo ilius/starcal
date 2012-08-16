@@ -258,18 +258,28 @@ class BuiltinTextPlugin(BasePlugin):
             enable = default_enable
         if show_date==None:
             show_date = default_show_date
-        self.db_path = dirname(path)+'/'+db_name
-        BasePlugin.__init__(self, path, mode, desc, enable, show_date,
-            about, authors, has_config, has_image)
+        self.db_path = dirname(path) + '/' + db_name
+        BasePlugin.__init__(
+            self,
+            path,
+            mode,
+            desc,
+            enable,
+            show_date,
+            about,
+            authors,
+            has_config,
+            has_image,
+        )
     def clear(self):
         self.data = []
     def load(self):
         db = []
         for j in xrange(12):
-                monthDb=[]
-                for k in xrange(modules[self.mode].maxMonthLen):
-                    monthDb.append('')
-                db.append(monthDb)
+            monthDb=[]
+            for k in xrange(modules[self.mode].maxMonthLen):
+                monthDb.append('')
+            db.append(monthDb)
         ## last item is a dict of dates (y, m, d) and the description of day:
         db.append({})
         ext = splitext(self.db_path)[1]
@@ -415,10 +425,10 @@ class IcsTextPlugin(BasePlugin):
                 log.error('bad ics file "%s"'%self.path)
                 return
             i += 1
-        SUMMARY		= ''
-        DESCRIPTION	= ''
-        DTSTART		= None
-        DTEND		= None
+        SUMMARY = ''
+        DESCRIPTION = ''
+        DTSTART = None
+        DTEND = None
         if self.all_years:
             md = {}
             while True:
@@ -436,10 +446,10 @@ class IcsTextPlugin(BasePlugin):
                             md[(m, d)] = text
                     else:
                         log.error('unsupported ics event, SUMMARY=%s, DTSTART=%s, DTEND=%s'%(SUMMARY, DTSTART,DTEND))
-                    SUMMARY		= ''
-                    DESCRIPTION	= ''
-                    DTSTART		= None
-                    DTEND			= None
+                    SUMMARY = ''
+                    DESCRIPTION = ''
+                    DTSTART = None
+                    DTEND = None
                 elif line.startswith('SUMMARY:'):
                     SUMMARY = line[8:].replace('\\,', ',').replace('\\n', '\n')
                 elif line.startswith('DESCRIPTION:'):
@@ -489,10 +499,10 @@ class IcsTextPlugin(BasePlugin):
                             text += '\n%s'%DESCRIPTION
                         for (y, m, d) in ymdRange(DTSTART, DTEND):
                             ymd[(y, m, d)] = text
-                    SUMMARY		= ''
-                    DESCRIPTION	= ''
-                    DTSTART		= None
-                    DTEND			= None
+                    SUMMARY = ''
+                    DESCRIPTION = ''
+                    DTSTART = None
+                    DTEND = None
                 elif line.startswith('SUMMARY:'):
                     SUMMARY = line[8:].replace('\\,', ',').replace('\\n', '\n')
                 elif line.startswith('DESCRIPTION:'):
