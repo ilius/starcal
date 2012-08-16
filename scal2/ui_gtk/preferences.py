@@ -1154,7 +1154,7 @@ class PrefDialog(gtk.Dialog):
         for vbox in self.prefPages:
             l = gtk.Label(vbox.label)
             l.set_use_underline(True)
-            vb = gtk.VBox()
+            vb = gtk.VBox(spacing=3)
             vb.pack_start(imageFromFile(vbox.icon))
             vb.pack_start(l)
             vb.show_all()
