@@ -1380,10 +1380,6 @@ msgid "Show Date"
 msgstr ""
 "نمایش تاریخ"
 
-#msgid "_Manage Plugin"
-#msgstr ""
-#"م_دیریت افزونه"
-
 msgid "Move up"
 msgstr ""
 "جابجایی به بالا"
@@ -1589,9 +1585,9 @@ msgid "A_ppearance"
 msgstr ""
 "_ظاهر"
 
-msgid "_Manage Plugin"
+msgid "_Plugins"
 msgstr ""
-"م_دیریت افزونه"
+"_افزونه‌ها"
 
 msgid "A_dvanced"
 msgstr ""
@@ -1891,10 +1887,6 @@ msgstr ""
 #msgid "_Appearance"
 #msgstr ""
 #"_ظاهر"
-
-#msgid "_Manage DB"
-#msgstr ""
-#"مدیریت دیتابیس"
 
 #msgid "_Advanced"
 #msgstr ""

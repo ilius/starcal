@@ -872,9 +872,9 @@ class PrefDialog(gtk.Dialog):
                 options.append(optl)
                 vbox.pack_start(optl.widget, 0, 0)
         self.moduleOptions = options
-        ################################ Tab 4 (Manage DB) ############################################
+        ################################ Tab 4 (Plugins) ############################################
         vbox = gtk.VBox()
-        vbox.label = _('_Manage Plugin')
+        vbox.label = _('_Plugins')
         vbox.icon = 'preferences-plugin.png'
         self.prefPages.append(vbox)
         #####
@@ -1165,6 +1165,8 @@ class PrefDialog(gtk.Dialog):
                 pass
         #######################
         notebook.set_property('homogeneous', True)
+        notebook.set_property('tab-border', 5)
+        notebook.set_property('tab-hborder', 15)
         self.vbox.pack_start(notebook)
         self.vbox.show_all()
         for i in ui.prefPagesOrder:
