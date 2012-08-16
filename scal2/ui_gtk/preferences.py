@@ -51,10 +51,10 @@ from scal2.ui_gtk.event.main import AccountEditorDialog
 
 ############################################################
 
-## (VAR_NAME, bool,	    CHECKBUTTON_TEXT)					## CheckButton
-## (VAR_NAME, list,	    LABEL_TEXT, (ITEM1, ITEM2, ...))	## ComboBox
-## (VAR_NAME, int,	    LABEL_TEXT, MIN, MAX)				## SpinButton
-## (VAR_NAME, float,    LABEL_TEXT, MIN, MAX, DIGITS)		## SpinButton
+## (VAR_NAME, bool,     CHECKBUTTON_TEXT)                 ## CheckButton
+## (VAR_NAME, list,     LABEL_TEXT, (ITEM1, ITEM2, ...))  ## ComboBox
+## (VAR_NAME, int,      LABEL_TEXT, MIN, MAX)             ## SpinButton
+## (VAR_NAME, float,    LABEL_TEXT, MIN, MAX, DIGITS)     ## SpinButton
 class ModuleOptionItem:
     def __init__(self, module, opt):
         t = opt[1]

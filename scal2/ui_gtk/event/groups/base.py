@@ -87,7 +87,7 @@ class BaseGroupWidget(gtk.VBox):
         self.cacheSizeSpin = IntSpinButton(0, 9999)
         hbox.pack_start(self.cacheSizeSpin, 0, 0)
         self.pack_start(hbox, 0, 0)
-		#####
+        #####
         hbox = gtk.HBox()
         label = gtk.Label(_('Event Text Seperator'))
         label.set_alignment(0, 0.5)
