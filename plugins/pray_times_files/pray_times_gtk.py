@@ -62,6 +62,15 @@ class LocationDialog(gtk.Dialog):
         self.set_title(_('Location'))
         self.maxResults = maxResults
         ###############
+        cancelB = self.add_button(gtk.STOCK_CANCEL, self.EXIT_CANCEL)
+        okB = self.add_button(gtk.STOCK_OK, self.EXIT_OK)
+        #if autoLocale:
+        cancelB.set_label(_('_Cancel'))
+        cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL, gtk.ICON_SIZE_BUTTON))
+        okB.set_label(_('_OK'))
+        okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK, gtk.ICON_SIZE_BUTTON))
+        self.okB = okB
+        ###############
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Search Cities:')), 0, 0)
         entry = gtk.Entry()
@@ -93,34 +102,6 @@ class LocationDialog(gtk.Dialog):
         treev.append_column(col)
         #########
         treev.set_search_column(1)
-        #########
-        lines = file(dataDir+'/locations.txt').read().split('\n')
-        cityData = []
-        country = ''
-        for l in lines:
-            p = l.split('\t')
-            if len(p)<2:
-                #print p
-                continue
-            if p[0]=='':
-                if p[1]=='':
-                    (city, lat, lng) = p[2:5]
-                    #if country=='Iran':
-                    #    print city
-                    if len(p)>4:
-                        cityData.append((
-                            country + '/' + city,
-                            _(country) + '/' + _(city),
-                            float(lat),
-                            float(lng)
-                        ))
-                    else:
-                        print country, p
-                else:
-                    country = p[1]
-
-        self.cityData = cityData
-        self.update_list()
         ###########
         frame = gtk.Frame()
         checkb = gtk.CheckButton(_('Edit Manually'))
@@ -181,14 +162,36 @@ class LocationDialog(gtk.Dialog):
         frame.add(vbox)
         self.vbox_edit = vbox
         self.vbox.pack_start(frame, 0, 0)
-        cancelB = self.add_button(gtk.STOCK_CANCEL, self.EXIT_CANCEL)
-        okB = self.add_button(gtk.STOCK_OK, self.EXIT_OK)
-        #if autoLocale:
-        cancelB.set_label(_('_Cancel'))
-        cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL, gtk.ICON_SIZE_BUTTON))
-        okB.set_label(_('_OK'))
-        okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK, gtk.ICON_SIZE_BUTTON))
+        ###
         self.vbox.show_all()
+        #########
+        lines = file(dataDir+'/locations.txt').read().split('\n')
+        cityData = []
+        country = ''
+        for l in lines:
+            p = l.split('\t')
+            if len(p)<2:
+                #print p
+                continue
+            if p[0]=='':
+                if p[1]=='':
+                    (city, lat, lng) = p[2:5]
+                    #if country=='Iran':
+                    #    print city
+                    if len(p)>4:
+                        cityData.append((
+                            country + '/' + city,
+                            _(country) + '/' + _(city),
+                            float(lat),
+                            float(lng)
+                        ))
+                    else:
+                        print country, p
+                else:
+                    country = p[1]
+
+        self.cityData = cityData
+        self.update_list()
     def calc_clicked(self, button):
         lat = self.spin_lat.get_value()
         lng = self.spin_lng.get_value()
@@ -210,6 +213,7 @@ class LocationDialog(gtk.Dialog):
             self.spin_lat.set_value(self.cityData[j][2])
             self.spin_lng.set_value(self.cityData[j][3])
             self.lowerLabel.set_label(_('%s kilometers from %s')%(0.0, s))
+        self.okB.set_sensitive(True)
     def edit_checkb_clicked(self, checkb):
         active = checkb.get_active()
         self.vbox_edit.set_sensitive(active)
@@ -226,6 +230,10 @@ class LocationDialog(gtk.Dialog):
             self.entry_edit_name.set_text(lname)
             self.spin_lat.set_value(lat)
             self.spin_lng.set_value(lng)
+        self.updateOkButton()
+    updateOkButton = lambda self: self.okB.set_sensitive(
+        bool(self.treev.get_cursor()[0] or self.checkbEdit.get_active())
+    )
     def update_list(self, s=''):
         s = s.lower()
         t = self.trees
@@ -244,6 +252,7 @@ class LocationDialog(gtk.Dialog):
                     r += 1
                     if r>=mr:
                         break
+        self.okB.set_sensitive(self.checkbEdit.get_active())
     entry_changed = lambda self, entry: self.update_list(entry.get_text())
     def run(self):
         ex = gtk.Dialog.run(self)
