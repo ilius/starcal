@@ -21,7 +21,7 @@ from scal2 import core
 from scal2.locale_man import tr as _
 
 from scal2.ui_gtk.event import common
-from scal2.ui_gtk.utils import set_tooltip
+from scal2.ui_gtk.utils import set_tooltip, DateTypeCombo
 
 import gtk
 
@@ -69,11 +69,7 @@ class BaseGroupWidget(gtk.VBox):
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
         self.sizeGroup.add_widget(label)
-        combo = gtk.combo_box_new_text()
-        for m in core.modules:
-            combo.append_text(_(m.desc))
-        #if i>0:## FIXME
-        #    combo.append_text(_('Julian Day'))
+        combo = DateTypeCombo()
         hbox.pack_start(combo, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         self.modeCombo = combo

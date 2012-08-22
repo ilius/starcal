@@ -95,11 +95,9 @@ def getMonthDesc(status=None):
                 else:
                     continue
     text = ''
-    for item in ui.shownCals:
-        if text!='':
-            text+='\n'
-        mode = item['mode']
-        module = core.modules[mode]
+    for mode in core.calModules.active:
+        if text != '':
+            text += '\n'
         if mode==core.primaryMode:
             (y, m) = first.dates[mode][:2] ## = (status.year, status.month)
             text += '%s %s'%(getMonthName(mode, m), _(y))
@@ -115,52 +113,52 @@ def getMonthDesc(status=None):
             else:
                 raise RuntimeError('y1=%d, m1=%d, y2=%d, m2=%d'%(y1, m1, y2, m2))
             if dm==0:
-                text += '%s %s'%(_(module.getMonthName(m1)), _(y1))
+                text += '%s %s'%(getMonthName(mode, m1), _(y1))
             elif dm==1:
                 if dy==0:
                     text += '%s %s %s %s'%(
-                        _(module.getMonthName(m1)),
+                        getMonthName(mode, m1),
                         _('and'),
-                        _(module.getMonthName(m2)),
+                        getMonthName(mode, m2),
                         _(y1),
                     )
                 else:
                     text += '%s %s %s %s %s'%(
-                        _(module.getMonthName(m1)),
+                        getMonthName(mode, m1),
                         _(y1),
                         _('and'),
-                        _(module.getMonthName(m2)),
+                        getMonthName(mode, m2),
                         _(y2),
                     )
             elif dm==2:
                 if dy==0:
                     text += '%s%s %s %s %s %s'%(
-                        _(module.getMonthName(m1)),
+                        getMonthName(mode, m1),
                         _(','),
-                        _(module.getMonthName(m1+1)),
+                        getMonthName(mode, m1+1),
                         _('and'),
-                        _(module.getMonthName(m2)),
+                        getMonthName(mode, m2),
                         _(y1),
                     )
                 else:
                     if m1==11:
                         text += '%s %s %s %s %s %s %s'%(
-                            _(module.getMonthName(m1)),
+                            getMonthName(mode, m1),
                             _('and'),
-                            _(module.getMonthName(m1+1)),
+                            getMonthName(mode, m1+1),
                             _(y1),
                             _('and'),
-                            _(module.getMonthName(1)),
+                            getMonthName(mode, 1),
                             _(y2),
                         )
                     elif m1==12:
                         text += '%s %s %s %s %s %s %s'%(
-                            _(module.getMonthName(m1)),
+                            getMonthName(mode, m1),
                             _(y1),
                             _('and'),
-                            _(module.getMonthName(1)),
+                            getMonthName(mode, 1),
                             _('and'),
-                            _(module.getMonthName(2)),
+                            getMonthName(mode, 2),
                             _(y2),
                         )
     return text

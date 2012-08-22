@@ -31,7 +31,8 @@ from scal2.core import pixDir, myRaise
 from scal2 import event_man
 from scal2 import ui
 
-from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, buffer_get_text, labelStockMenuItem, dialog_add_button
+from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, buffer_get_text, labelStockMenuItem
+from scal2.ui_gtk.utils import dialog_add_button, DateTypeCombo
 
 import gtk
 from gtk import gdk
@@ -113,9 +114,7 @@ class EventWidget(gtk.VBox):
         hbox = gtk.HBox()
         ###
         hbox.pack_start(gtk.Label(_('Calendar Type')+':'), 0, 0)
-        combo = gtk.combo_box_new_text()
-        for module in core.modules:
-            combo.append_text(_(module.desc))
+        combo = DateTypeCombo()
         combo.set_active(core.primaryMode)## overwritten in updateWidget()
         hbox.pack_start(combo, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)

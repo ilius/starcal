@@ -611,9 +611,25 @@ msgid "End Date"
 msgstr ""
 "تاریخ پایان"
 
-msgid "Shown Calendars"
+msgid "Calendars"
 msgstr ""
-"تقویم‌های نمایش داده شده"
+"تقویم‌ها"
+
+msgid "Calendar Types"
+msgstr ""
+"نوع تقویم‌ها"
+
+msgid "Active"
+msgstr ""
+"فعال"
+
+msgid "Inactive"
+msgstr ""
+"غیرفعال"
+
+msgid "Activate/Inactivate"
+msgstr ""
+"فعال/غیرفعال کردن"
 
 msgid "Jalali Calculation Algorithm"
 msgstr ""
@@ -1693,6 +1709,10 @@ msgstr ""
 msgid "Border"
 msgstr ""
 "حاشیه"
+
+msgid "Normal"
+msgstr ""
+"عادی"
 
 msgid "Holiday"
 msgstr ""

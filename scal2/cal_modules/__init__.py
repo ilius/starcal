@@ -5,7 +5,7 @@ from scal2.cal_modules import gregorian
 from scal2.paths import *
 
 DATE_GREG = 0 ## Gregorian (common calendar)
-modules = [gregorian]
+calModulesList = [gregorian]
 
 def myRaise():
     i = sys.exc_info()
@@ -29,17 +29,16 @@ for name in open(join(modDir, 'modules.list')).read().split('\n'):
                  'minMonthLen','maxMonthLen','getMonthLen','to_jd','jd_to','options','save'):
         if not hasattr(mod, attr):
             sys.stdout.write('Invalid calendar module: module "%s" has no attribute "%s"\n'%(name, attr))
-    modules.append(mod)
+    calModulesList.append(mod)
 
-moduleNames = [mod.name for mod in modules]
-moduleDescNames = [mod.desc for mod in modules]
-modNum = len(modules)
-## calOrigLang = [m.origLang for m in modules]
+calModulesDict = dict([(mod.name, mod) for mod in calModulesList])
+calModuleNames = [mod.name for mod in calModulesList]
+## calOrigLang = [m.origLang for m in calModulesList]
 
-jd_to = lambda jd, target: modules[target].jd_to(jd)
-to_jd = lambda y, m, d, source: modules[source].to_jd(y, m, d)
+jd_to = lambda jd, target: calModulesList[target].jd_to(jd)
+to_jd = lambda y, m, d, source: calModulesList[source].to_jd(y, m, d)
 convert = lambda y, m, d, source, target:\
-    (y, m, d) if source==target else modules[target].jd_to(modules[source].to_jd(y, m, d))
+    (y, m, d) if source==target else calModulesList[target].jd_to(calModulesList[source].to_jd(y, m, d))
 
 
 

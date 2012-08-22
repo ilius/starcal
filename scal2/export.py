@@ -65,14 +65,13 @@ def exportToHtml(fpath, monthsStatus, title=''):
     pluginsTextSep = ' <B>ـ</B> '
     pluginsTextPerLine = True ## description of each day in one line
     #####################
-    dates = ui.shownCals
-    #####################
     bgColor = rgbToHtml(*ui.bgColor)
     inactiveColor = rgbToHtml(*colorComposite(ui.inactiveColor, ui.bgColor))
     borderColor= rgbToHtml(*colorComposite(ui.borderColor, ui.bgColor))
     borderTextColor = rgbToHtml(*ui.borderTextColor)
+    textColor = rgbToHtml(*ui.textColor)
     holidayColor = rgbToHtml(*ui.holidayColor)
-    colors = [rgbToHtml(*x['color']) for x in dates]
+    colors = [rgbToHtml(*x['color']) for x in ui.mcalTypeParams]
     if rtl:
         DIR = 'RTL'
     else:
@@ -85,11 +84,13 @@ def exportToHtml(fpath, monthsStatus, title=''):
 </HEAD>
 <BODY LANG="%s" DIR="%s" BGCOLOR="%s">\n'''%(title, core.langSh, DIR, bgColor)
     for status in monthsStatus:
-        mDesc = getMonthDesc(status).split('\n')
         text += '    <P>\n'
-        for i in xrange(len(dates)):
-            if dates[i]['enable']:
-                text += '        <FONT COLOR="%s">%s</FONT>\n        <BR>\n'%(colors[i], mDesc[i])
+        for i, line in enumerate(getMonthDesc(status).split('\n')):
+            try:
+                color = colors[i]
+            except IndexError:
+                color = textColor
+            text += '        <FONT COLOR="%s">%s</FONT>\n        <BR>\n'%(color, line)
         text += '    </P>\n'
         text += '''    <TABLE WIDTH=100%% BGCOLOR="%s" BORDER=%s BORDERCOLOR="#000000"
 CELLPADDING=4 CELLSPACING=0>
@@ -117,11 +118,16 @@ CELLPADDING=4 CELLSPACING=0>
                 cell = status[i][j]
                 text += '            <TD WIDTH=13%>\n                <P DIR="LTR" ALIGN=CENTER>\n'
                 for (ind, tag) in format:
-                    if not dates[ind]['enable']:
+                    try:
+                        mode = core.calModules.active[ind]
+                    except IndexError:
                         continue
-                    mode = dates[ind]['mode']
+                    try:
+                        params = ui.mcalTypeParams[ind]
+                    except IndexError:
+                        continue
                     day = _(cell.dates[mode][2], mode)## , 2
-                    font = dates[ind]['font']
+                    font = params['font']
                     face = font[0]
                     if font[1]:
                         face += ' Bold'

@@ -382,11 +382,10 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
     def updateCols(self):
         for child in self.get_children():
             child.destroy()
-        for cal in ui.shownCals:
-            if cal['enable']:
-                col = DaysOfMonthColumn(self.wcal, cal['mode'])
-                col.show()
-                self.pack_start(col, 0, 0)
+        for mode in core.calModules.active:
+            col = DaysOfMonthColumn(self.wcal, mode)
+            col.show()
+            self.pack_start(col, 0, 0)
     def onConfigChange(self, *a, **ka):
         CustomizableCalBox.onConfigChange(self, *a, **ka)
         self.updateCols()

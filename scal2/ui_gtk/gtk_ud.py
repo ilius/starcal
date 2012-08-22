@@ -105,14 +105,14 @@ ui.fontDefault = gfontDecode(settings.get_property('gtk-font-name'))
 if not ui.fontCustom:
     ui.fontCustom = ui.fontDefault
 
-if ui.shownCals[0]['font']==None:
-    ui.shownCals[0]['font'] = ui.fontDefault
+if ui.mcalTypeParams[0]['font']==None:
+    ui.mcalTypeParams[0]['font'] = ui.getFont()
 
-(name, bold, underline, size) = ui.fontDefault
-for item in ui.shownCals[1:]:
+smallFont = ui.getFontSmall()
+for item in ui.mcalTypeParams[1:]:
     if item['font']==None:
-        item['font'] = (name, bold, underline, int(size*0.6))
-del name, bold, underline, size
+        item['font'] = smallFont[:]
+del smallFont
 
 ###########
 textDirDict = {
@@ -134,9 +134,6 @@ dateBinFmt = compileTmFormat(dateFormat)
 clockFormatBin = compileTmFormat(clockFormat)
 
 adjustTimeCmd = ''
-
-prevStock = gtk.ARROW_LEFT
-nextStock = gtk.ARROW_RIGHT
 
 mainToolbarData = {
     'items': [],

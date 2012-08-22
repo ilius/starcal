@@ -336,7 +336,7 @@ class WeeklyScheduleWidget(gtk.Widget):
         h = self.allocation.height
         cr.rectangle(0, 0, w, h)
         fillColor(cr, ui.bgColor)
-        textColor = ui.shownCals[0]['color']
+        textColor = ui.textColor
         gridColor = ui.gridColor
         ###
         #classBounds = self.term.classTimeBounds

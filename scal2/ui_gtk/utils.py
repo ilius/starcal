@@ -261,6 +261,28 @@ class DirectionComboBox(gtk.ComboBox):
     def setValue(self, value):
         self.set_active(self.keys.index(value))
 
+class DateTypeCombo(gtk.ComboBox):
+    def __init__(self):## , showInactive=True FIXME
+        ls = gtk.ListStore(int, str)
+        gtk.ComboBox.__init__(self, ls)
+        ###
+        cell = gtk.CellRendererText()
+        self.pack_start(cell, True)
+        self.add_attribute(cell, 'text', 1)
+        ###
+        for i, mod in core.calModules.iterIndexModule():
+            ls.append([i, mod.desc])
+    def set_active(self, mode):
+        ls = self.get_model()
+        for i in range(len(ls)):
+            if ls[i][0]==mode:
+                gtk.ComboBox.set_active(self, i)
+                return
+    def get_active(self):
+        i = gtk.ComboBox.get_active(self)
+        if i is None:
+            return
+        return self.get_model()[i][0]
 
 ## Thanks to 'Pier Carteri' <m3tr0@dei.unipd.it> for program Py_Shell.py
 class GtkBufferFile:

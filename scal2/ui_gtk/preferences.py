@@ -25,7 +25,7 @@ from os.path import join
 from subprocess import Popen
 
 from scal2 import locale_man
-from scal2.locale_man import langDict, langSh
+from scal2.locale_man import langDict, langSh, rtl
 from scal2.locale_man import tr as _
 from scal2.paths import *
 
@@ -411,68 +411,232 @@ class VListPrefItem(ListPrefItem):
     def __init__(self, *args, **kwargs):
         ListPrefItem.__init__(self, True, *args, **kwargs)
 
-class CalPropPrefItem(PrefItem):
-    def __init__(self, module, varName, parent, sgroupFont):
-        self.module = module
-        self.varName = varName
-        hbox = gtk.HBox()
-        ######
-        checkb = gtk.CheckButton()
-        set_tooltip(checkb, _('Enable/Disable'))
-        self.checkb = checkb
-        hbox.pack_start(checkb, 0, 0)
-        ####
-        combo = gtk.combo_box_new_text()
-        for m in core.modules:
-            combo.append_text(_(m.desc))
-        #if i>0:## FIXME
-        #    combo.append_text(_('Julian Day'))
-        self.combo = combo
-        hbox.pack_start(combo, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        ###
-        label = gtk.Label(_('position'))
-        self.label = label
-        ###
-        hbox.pack_start(label, 0, 0)
-        ###
-        spin = FloatSpinButton(-99, 99, 1)
-        self.spinX = spin
-        hbox.pack_start(spin, 0, 0)
-        ###
-        spin = FloatSpinButton(-99, 99, 1)
-        self.spinY = spin
-        hbox.pack_start(spin, 0, 0)
-        ####
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        ###
-        fontb = MyFontButton(parent)
-        self.fontb = fontb
-        hbox.pack_start(fontb, 0, 0)
-        sgroupFont.add_widget(fontb)
-        ####
-        colorb = MyColorButton()
-        self.colorb = colorb
-        hbox.pack_start(colorb, 0, 0)
-        #########
-        self.widget = hbox
-    def get(self):
-        return {
-            'enable':self.checkb.get_active(),
-            'mode'  :self.combo.get_active(),
-            'x'     :self.spinX.get_value(),
-            'y'     :self.spinY.get_value(),
-            'font'  :self.fontb.get_font_name(),
-            'color' :self.colorb.get_color()
-        }
-    def set(self, data):
-        self.checkb.set_active(data['enable'])
-        self.combo.set_active(data['mode'])
-        self.spinX.set_value(data['x'])
-        self.spinY.set_value(data['y'])
-        self.fontb.set_font_name(data['font'])
-        self.colorb.set_color(data['color'])
 
+class AICalsTreeview(gtk.TreeView):
+    def __init__(self):
+        gtk.TreeView.__init__(self)
+        self.set_headers_clickable(False)
+        self.set_model(gtk.ListStore(str, str))
+        ###
+        self.enable_model_drag_source(
+            gdk.BUTTON1_MASK,
+            [
+                ('row', gtk.TARGET_SAME_APP, self.dragId),
+            ],
+            gdk.ACTION_MOVE,
+        )
+        self.enable_model_drag_dest(
+            [
+                ('row', gtk.TARGET_SAME_APP, self.dragId),
+            ],
+            gdk.ACTION_MOVE,
+        )
+        self.connect('drag-data-get', self.dragDataGet)
+        self.connect('drag_data_received', self.dragDataReceived)
+        ####
+        cell = gtk.CellRendererText()
+        col = gtk.TreeViewColumn(self.title, cell, text=1)
+        col.set_resizable(True)
+        self.append_column(col)
+        self.set_search_column(1)
+    def dragDataGet(self, treev, context, selection, dragId, etime):
+        path, col = treev.get_cursor()
+        if path is None:
+            return
+        self.dragPath = path
+        return True
+    def dragDataReceived(self, treev, context, x, y, selection, dragId, etime):
+        srcTreev = context.get_source_widget()
+        if not isinstance(srcTreev, AICalsTreeview):
+            return
+        srcDragId = srcTreev.dragId
+        model = treev.get_model()
+        dest = treev.get_dest_row_at_pos(x, y)
+        if srcDragId == self.dragId:
+            path, col = treev.get_cursor()
+            if path==None:
+                return
+            i = path[0]
+            if dest is None:
+                model.move_after(model.get_iter(i), model.get_iter(len(model)-1))
+            elif dest[1] in (gtk.TREE_VIEW_DROP_BEFORE, gtk.TREE_VIEW_DROP_INTO_OR_BEFORE):
+                model.move_before(model.get_iter(i), model.get_iter(dest[0][0]))
+            else:
+                model.move_after(model.get_iter(i), model.get_iter(dest[0][0]))
+        else:
+            smodel = srcTreev.get_model()
+            sIter = smodel.get_iter(srcTreev.dragPath)
+            row = [smodel.get(sIter, j)[0] for j in range(2)]
+            smodel.remove(sIter)
+            if dest is None:
+                model.append(row)
+            elif dest[1] in (gtk.TREE_VIEW_DROP_BEFORE, gtk.TREE_VIEW_DROP_INTO_OR_BEFORE):
+                model.insert_before(model.get_iter(dest[0]), row)
+            else:
+                model.insert_after(model.get_iter(dest[0]), row)
+    def makeSwin(self):
+        swin = gtk.ScrolledWindow()
+        swin.add(self)
+        swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        swin.set_property('width-request', 200)
+        return swin
+
+
+class ActiveCalsTreeView(AICalsTreeview):
+    isActive = True
+    title = _('Active')
+    dragId = 100
+
+class InactiveCalsTreeView(AICalsTreeview):
+    isActive = False
+    title = _('Inactive')
+    dragId = 101
+
+
+
+class AICalsPrefItem():
+    def __init__(self):
+        self.widget = gtk.HBox()
+        size = gtk.ICON_SIZE_SMALL_TOOLBAR
+        ######
+        toolbar = gtk.Toolbar()
+        toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
+        ########
+        treev = ActiveCalsTreeView()
+        treev.connect('row-activated', self.activeTreevRActivate)
+        treev.connect('focus-in-event', self.activeTreevFocus)
+        ###
+        self.widget.pack_start(treev.makeSwin(), 0, 0)
+        ####
+        self.activeTreev = treev
+        self.activeTrees = treev.get_model()
+        ########
+        toolbar = gtk.Toolbar()
+        toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
+        ####
+        tb = gtk.ToolButton()
+        tb.set_direction(gtk.TEXT_DIR_LTR)
+        tb.action = ''
+        self.leftRightButton = tb
+        set_tooltip(tb, _('Activate/Inactivate'))
+        tb.connect('clicked', self.leftRightClicked)
+        toolbar.insert(tb, -1)
+        ####
+        tb = toolButtonFromStock(gtk.STOCK_GO_UP, size)
+        set_tooltip(tb, _('Move up'))
+        tb.connect('clicked', self.upClicked)
+        toolbar.insert(tb, -1)
+        ##
+        tb = toolButtonFromStock(gtk.STOCK_GO_DOWN, size)
+        set_tooltip(tb, _('Move down'))
+        tb.connect('clicked', self.downClicked)
+        toolbar.insert(tb, -1)
+        ##
+        self.widget.pack_start(toolbar, 0, 0)
+        ########
+        treev = InactiveCalsTreeView()
+        treev.connect('row-activated', self.inactiveTreevRActivate)
+        treev.connect('focus-in-event', self.inactiveTreevFocus)
+        ###
+        self.widget.pack_start(treev.makeSwin(), 0, 0)
+        ####
+        self.inactiveTreev = treev
+        self.inactiveTrees = treev.get_model()
+        ########
+    def setLeftRight(self, isRight):
+        tb = self.leftRightButton
+        tb.set_label_widget(
+            gtk.image_new_from_stock(
+                gtk.STOCK_GO_FORWARD if isRight ^ rtl else gtk.STOCK_GO_BACK,
+                gtk.ICON_SIZE_SMALL_TOOLBAR,
+            )
+        )
+        tb.action = 'inactivate' if isRight else 'activate'
+        tb.show_all()
+    def activeTreevFocus(self, treev, gevent=None):
+        self.setLeftRight(True)
+        #self.inactiveTreev.set_cursor(None)## FIXME
+    def inactiveTreevFocus(self, treev, gevent=None):
+        self.setLeftRight(False)
+        #self.activeTreev.set_cursor(None)## FIXME
+    def leftRightClicked(self, obj=None):
+        tb = self.leftRightButton
+        if tb.action == 'inactivate':
+            if len(self.activeTrees) > 1:
+                (path, col) = self.activeTreev.get_cursor()
+                if path:
+                    self.inactivateIndex(path[0])
+        elif tb.action == 'activate':
+            (path, col) = self.inactiveTreev.get_cursor()
+            if path:
+                self.activateIndex(path[0])
+    def upClicked(self, obj=None):
+        if self.activeTreev.has_focus():
+            treev = self.activeTreev
+        elif self.inactiveTreev.has_focus():
+            treev = self.inactiveTreev
+        else:
+            return
+        (path, col) = treev.get_cursor()
+        if path:
+            i = path[0]
+            s = treev.get_model()
+            if i > 0:
+                s.swap(s.get_iter(i-1), s.get_iter(i))
+                treev.set_cursor(i-1)
+    def downClicked(self, obj=None):
+        if self.activeTreev.has_focus():
+            treev = self.activeTreev
+        elif self.inactiveTreev.has_focus():
+            treev = self.inactiveTreev
+        else:
+            return
+        (path, col) = treev.get_cursor()
+        if path:
+            i = path[0]
+            s = treev.get_model()
+            if i < len(s)-1:
+                s.swap(s.get_iter(i), s.get_iter(i+1))
+                treev.set_cursor(i+1)
+    def inactivateIndex(self, index):
+        self.inactiveTrees.append(self.activeTrees[index])
+        del self.activeTrees[index]
+        self.inactiveTreev.set_cursor(len(self.inactiveTrees)-1)## FIXME
+        self.activeTreev.set_cursor(min(index, len(self.activeTrees)-2))
+        self.inactiveTreev.grab_focus()## FIXME
+    def activateIndex(self, index):
+        self.activeTrees.append(self.inactiveTrees[index])
+        del self.inactiveTrees[index]
+        self.activeTreev.set_cursor(len(self.activeTrees)-1)## FIXME
+        try:
+            self.inactiveTreev.set_cursor(min(index, len(self.inactiveTrees)-2))
+        except:
+            pass
+        self.activeTreev.grab_focus()## FIXME
+    def activeTreevRActivate(self, treev, path, col):
+        self.inactivateIndex(path[0])
+    def inactiveTreevRActivate(self, treev, path, col):
+        self.activateIndex(path[0])
+    def updateVar(self):
+        core.activeCalNames = [row[0] for row in self.activeTrees]
+        core.inactiveCalNames = [row[0] for row in self.inactiveTrees]
+        core.calModules.update()
+    def updateWidget(self):
+        self.activeTrees.clear()
+        self.inactiveTrees.clear()
+        ##
+        for mode in core.calModules.active:
+            module = core.calModules[mode]
+            self.activeTrees.append([module.name, _(module.desc)])
+        ##
+        for mode in core.calModules.inactive:
+            module = core.calModules[mode]
+            self.inactiveTrees.append([module.name, _(module.desc)])
+    def confStr(self):
+        text = ''
+        text += 'activeCalNames = %r\n'%core.activeCalNames
+        text += 'inactiveCalNames = %r\n'%core.inactiveCalNames
+        return text
 
 class WeekDayCheckListPrefItem(PrefItem):### use synopsis (Sun, Mon, ...) FIXME
     def __init__(self, module, varName, vertical=False, homo=True, abbreviateNames=True):
@@ -565,17 +729,16 @@ class PrefDialog(gtk.Dialog):
             hbox.pack_start(gtk.Label('Language'), 0, 0)
         vbox.pack_start(hbox, 0, 0)
         ##########################
-        sgroupFont = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
-        exp = gtk.Expander(_('Shown Calendars'))
-        exp.set_expanded(True)
-        itemShownCals = VListPrefItem(
-            ui,
-            'shownCals',
-            [CalPropPrefItem(None, '', self, sgroupFont) for i in xrange(max(ui.shownCalsNum,3))],
-        )
-        self.uiPrefItems.append(itemShownCals)
-        exp.add(itemShownCals.widget)
-        vbox.pack_start(exp, 0, 0)
+        hbox = gtk.HBox()
+        frame = gtk.Frame(_('Calendar Types'))
+        itemCals = AICalsPrefItem()
+        self.corePrefItems.append(itemCals)
+        frame.add(itemCals.widget)
+        hbox.pack_start(frame, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        hbox.set_border_width(5)
+        #frame.set_border_width(5)
+        vbox.pack_start(hbox, 1, 1)
         ##########################
         if trayMode!=1:
             hbox = gtk.HBox(spacing=3)
@@ -707,6 +870,12 @@ class PrefDialog(gtk.Dialog):
         hbox.pack_start(lab, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         ####
+        hbox.pack_start(gtk.Label(_('Normal')), 0, 0)
+        item = ColorPrefItem(ui, 'textColor', False)
+        self.uiPrefItems.append(item)
+        hbox.pack_start(item.widget, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        ###
         hbox.pack_start(gtk.Label(_('Holiday')), 0, 0)
         item = ColorPrefItem(ui, 'holidayColor', False)
         self.uiPrefItems.append(item)
@@ -859,7 +1028,7 @@ class PrefDialog(gtk.Dialog):
         ##################################################
         ################################
         options = []
-        for mod in core.modules:
+        for mod in core.calModules:
             for opt in mod.options:
                 if opt[0]=='button':
                     try:
@@ -1235,9 +1404,8 @@ class PrefDialog(gtk.Dialog):
             core.weekNumberMode = mode
         ######
         ui.cellCache.clear() ## Very important, specially when core.primaryMode will be changed
-        core.primaryMode = ui.shownCals[0]['mode']
         #################################################### Saving Preferences
-        for mod in core.modules:
+        for mod in core.calModules:
             mod.save()
         ##################### Saving locale config
         text = ''
@@ -1266,9 +1434,9 @@ class PrefDialog(gtk.Dialog):
             text += item.confStr()
         text += 'adjustTimeCmd=%r\n'%ud.adjustTimeCmd ## FIXME
         open(ud.confPath, 'w').write(text)
-        ################################################### Updating Main GUI
+        ################################################### Updating GUI
+        ud.windowList.onConfigChange()
         if ui.mainWin:
-            ui.mainWin.onConfigChange()
             """
             if ui.bgUseDesk and ui.bgColor[3]==255:
                 msg = gtk.MessageDialog(buttons=gtk.BUTTONS_OK_CANCEL, message_format=_(

@@ -29,6 +29,8 @@ from scal2.utils import NullObj, toStr, cleanCacheDict, restart
 from scal2.os_utils import makeDir
 from scal2.paths import *
 
+from scal2.cal_modules import calModulesList
+
 import scal2.locale_man
 from scal2.locale_man import tr as _
 
@@ -78,12 +80,12 @@ def parseDroppedDate(text):
     #    year += 2000
     return (year, month, day)
 
-def shownCalsStr():
-    n = len(shownCals)
-    st='('
+def dictsTupleConfStr(data):
+    n = len(data)
+    st = '('
     for i in range(n):
-        d = shownCals[i].copy()
-        st+='\n{'
+        d = data[i].copy()
+        st += '\n{'
         for k in d.keys():
             v = d[k]
             if type(k)==str:
@@ -218,7 +220,7 @@ class Cell:## status and information of a cell
         self.holiday = (self.weekDay in core.holidayWeekDays)
         ###################
         self.dates = []
-        for mode in xrange(core.modNum):
+        for mode in range(len(calModulesList)):
             if mode==core.primaryMode:
                 self.dates.append((self.year, self.month, self.day))
             else:
@@ -357,6 +359,10 @@ def yearPlus(plus=1):
 
 getFont = lambda: list(fontDefault if fontUseDefault else fontCustom)
 
+def getFontSmall():
+    (name, bold, underline, size) = getFont()
+    return (name, bold, underline, int(size*0.6))
+
 def getHolidaysJdList(startJd, endJd):
     jdList = []
     for jd in range(startJd, endJd):
@@ -435,12 +441,24 @@ def duplicateGroupTitle(group):
         index += 1
 
 ######################################################################
-shownCals = [
-    {'enable':True, 'mode':0, 'x':0,  'y':-2, 'font':None, 'color':(220, 220, 220)},
-    {'enable':True, 'mode':1, 'x':18, 'y':5,  'font':None, 'color':(165, 255, 114)},
-    {'enable':True, 'mode':2, 'x':-18,'y':4,  'font':None, 'color':(0, 200, 205)},
+shownCals = [] ## FIXME
+mcalTypeParams = [
+    {'pos':(0, -2), 'font':None, 'color':(220, 220, 220)},
+    {'pos':(18, 5), 'font':None, 'color':(165, 255, 114)},
+    {'pos':(-18, 4), 'font':None, 'color':(0, 200, 205)},
 ]
-core.primaryMode = shownCals[0]['mode']
+
+def getMcalMinorTypeParams():
+    ls = []
+    for i, mode in enumerate(core.calModules.active):
+        try:
+            params = mcalTypeParams[i]
+        except IndexError:
+            break
+        else:
+            ls.append((mode, params))
+    return ls
+
 ################################
 tagsDir = join(pixDir, 'event')
 
@@ -569,6 +587,7 @@ bgUseDesk = False
 borderColor = (123, 40, 0, 255)
 borderTextColor = (255, 255, 255, 255) ## text of weekDays and weekNumbers
 #menuBgColor = borderColor ##???????????????
+textColor = (255, 255, 255, 255)
 menuTextColor = None##borderTextColor##???????????????
 holidayColor = (255, 160, 0, 255)
 inactiveColor = (255, 255, 255, 115)
@@ -728,13 +747,22 @@ else:
     prefVersion = version
     del version
 
-shownCalsNum = len(shownCals)
 
-newPrimaryMode = shownCals[0]['mode']
-if newPrimaryMode!= core.primaryMode:
-    core.primaryMode = newPrimaryMode
-    cellCache.clear()
-del newPrimaryMode
+if shownCals:
+    mcalTypeParams = []
+    for item in shownCals:
+        mcalTypeParams.append({
+            'pos': (item['x'], item['y']),
+            'font': item['font'],
+            'color': item['color'],
+        })
+
+## FIXME
+#newPrimaryMode = shownCals[0]['mode']
+#if newPrimaryMode!= core.primaryMode:
+#    core.primaryMode = newPrimaryMode
+#    cellCache.clear()
+#del newPrimaryMode
 
 ## monthcal:
 
@@ -746,7 +774,7 @@ for key in (
     'winTaskbar',
     'showYmArrows',
     'useAppIndicator',
-): # What other????
+):
     needRestartPref[key] = eval(key)
 
 if menuTextColor is None:

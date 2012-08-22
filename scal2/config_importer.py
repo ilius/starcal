@@ -111,8 +111,6 @@ weekNumberModeAuto=%r
 weekNumberMode=%r'''%(holidayWeekDays, firstWeekDayAuto, firstWeekDay, weekNumberModeAuto, weekNumberMode))
         ui_conf = join(confDir, 'ui.conf')
         if overwrite or not isfile(ui_conf):
-            shownCals = shownDates
-
             for item in shownDates:
                 item['font'] = gfontDecode(item['font'])
                 item['color'] = gdkColorToRgb(item['color'])
@@ -134,7 +132,6 @@ weekNumberMode=%r'''%(holidayWeekDays, firstWeekDayAuto, firstWeekDay, weekNumbe
 
             text = ''
             for name in (
-                'shownCals',
                 'showMain',
                 'winTaskbar',
                 'showDigClockTr',
@@ -165,13 +162,9 @@ weekNumberMode=%r'''%(holidayWeekDays, firstWeekDayAuto, firstWeekDay, weekNumbe
             open(ui_gtk_conf, 'w').write(\
 '''dateFormat=%r
 clockFormat=%r
-prevStock=%s
-nextStock=%s
 '''%(
         dateFormat,
         clockFormat,
-        stock_arrow_repr(prevStock),
-        stock_arrow_repr(nextStock),
     ))
 
     live_conf_old = join(confDirOld, 'live-confg')

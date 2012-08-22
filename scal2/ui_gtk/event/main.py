@@ -479,9 +479,7 @@ class GroupConvertModeDialog(gtk.Dialog):
         ###
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Calendar Type')+':'), 0, 0)
-        combo = gtk.combo_box_new_text()
-        for module in core.modules:
-            combo.append_text(_(module.desc))
+        combo = DateTypeCombo()
         combo.set_active(group.mode)
         hbox.pack_start(combo, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)

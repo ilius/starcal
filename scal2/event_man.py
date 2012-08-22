@@ -36,7 +36,7 @@ from scal2.color_utils import hslToRgb
 from scal2.ics import *
 from scal2.binary_time_line import CenterNode
 
-from scal2.cal_modules import moduleNames, jd_to, to_jd, convert, DATE_GREG
+from scal2.cal_modules import calModuleNames, jd_to, to_jd, convert, DATE_GREG
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName, textNumEncode
 from scal2 import core
@@ -1239,7 +1239,7 @@ class Event(JsonEventBaseClass, RuleContainer):
     def getData(self):
         data = {
             'type': self.name,
-            'calType': moduleNames[self.mode],
+            'calType': calModuleNames[self.mode],
             'rules': self.getRulesData(),
             'notifiers': self.getNotifiersData(),
             'notifyBefore': durationEncode(*self.notifyBefore),
@@ -1254,7 +1254,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         if 'calType' in data:
             calType = data['calType']
             try:
-                self.mode = moduleNames.index(calType)
+                self.mode = calModuleNames.index(calType)
             except ValueError:
                 raise ValueError('Invalid calType: %r'%calType)
         self.clearRules()
@@ -2095,7 +2095,7 @@ class EventContainer(JsonEventBaseClass):
             )
     def getData(self):
         data = {
-            'calType': moduleNames[self.mode],
+            'calType': calModuleNames[self.mode],
         }
         ###
         setIconToData(self, data)
@@ -2107,7 +2107,7 @@ class EventContainer(JsonEventBaseClass):
         if 'calType' in data:
             calType = data['calType']
             try:
-                self.mode = moduleNames.index(calType)
+                self.mode = calModuleNames.index(calType)
             except ValueError:
                 raise ValueError('Invalid calType: %r'%calType)
         ###
@@ -2690,7 +2690,7 @@ class UniversityTerm(EventGroup):
                 return course[1]
         return _('Deleted Course')
     def setDefaults(self):
-        calType = core.moduleNames[self.mode]
+        calType = core.calModuleNames[self.mode]
         ## FIXME
         ## odd term or even term?
         jd = core.getCurrentJd()
