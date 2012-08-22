@@ -59,6 +59,7 @@ class LocationDialog(gtk.Dialog):
     EXIT_CANCEL = 1
     def __init__(self, maxResults=200):
         gtk.Dialog.__init__(self)
+        self.set_title(_('Location'))
         self.maxResults = maxResults
         ###############
         hbox = gtk.HBox()
