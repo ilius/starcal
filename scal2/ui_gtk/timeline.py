@@ -489,7 +489,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         #    pass
         #elif k=='menu':# Simulate right click (key beside Right-Ctrl)
         #    #self.emit('popup-menu-cell', event.time, *self.getCellPos())
-        #elif k in ('f10','m'):	# F10 or m or M
+        #elif k in ('f10','m'): # F10 or m or M
         #    if event.state & gdk.SHIFT_MASK:
         #        # Simulate right click (key beside Right-Ctrl)
         #        self.emit('popup-menu-cell', event.time, *self.getCellPos())

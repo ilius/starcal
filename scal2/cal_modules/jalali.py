@@ -129,11 +129,13 @@ def to_jd(year, month, day):
             mm = (month - 1) * 31
         else:
             mm = ((month - 1) * 30) + 6
-        return ifloor(day + mm 				+ \
-                    ifloor(((epyear * 682) - 110) / 2816)	+ \
-                    (epyear - 1) * 365			+ \
-                    ifloor(epbase / 2820) * 1029983	+ \
-                    epoch - 1)
+        return ifloor(
+            day + mm + \
+            ifloor(((epyear * 682) - 110) / 2816) + \
+            (epyear - 1) * 365 + \
+            ifloor(epbase / 2820) * 1029983 + \
+            epoch - 1
+        )
     elif jalaliAlg==0:
         ## Use 33 year algorithm
         ##taken from farsiweb code writen by Roozbeh Pournader <roozbeh@sharif.edu>
@@ -192,8 +194,8 @@ def jd_to(jd):
     return year, month, day
 
 
-## Normal:	esfand = 29 days
-## Leap:	esfand = 30 days
+## Normal: esfand = 29 days
+## Leap: esfand = 30 days
 
 def getMonthLen(year, month):
     if month==12:

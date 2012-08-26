@@ -51,10 +51,10 @@ from scal2.ui_gtk.event.main import AccountEditorDialog
 
 ############################################################
 
-## (VAR_NAME, bool,	    CHECKBUTTON_TEXT)					## CheckButton
-## (VAR_NAME, list,	    LABEL_TEXT, (ITEM1, ITEM2, ...))	## ComboBox
-## (VAR_NAME, int,	    LABEL_TEXT, MIN, MAX)				## SpinButton
-## (VAR_NAME, float,    LABEL_TEXT, MIN, MAX, DIGITS)		## SpinButton
+## (VAR_NAME, bool,     CHECKBUTTON_TEXT)                 ## CheckButton
+## (VAR_NAME, list,     LABEL_TEXT, (ITEM1, ITEM2, ...))  ## ComboBox
+## (VAR_NAME, int,      LABEL_TEXT, MIN, MAX)             ## SpinButton
+## (VAR_NAME, float,    LABEL_TEXT, MIN, MAX, DIGITS)     ## SpinButton
 class ModuleOptionItem:
     def __init__(self, module, opt):
         t = opt[1]
@@ -1044,9 +1044,9 @@ class PrefDialog(gtk.Dialog):
                 options.append(optl)
                 vbox.pack_start(optl.widget, 0, 0)
         self.moduleOptions = options
-        ################################ Tab 4 (Manage DB) ############################################
+        ################################ Tab 4 (Plugins) ############################################
         vbox = gtk.VBox()
-        vbox.label = _('_Manage Plugin')
+        vbox.label = _('_Plugins')
         vbox.icon = 'preferences-plugin.png'
         self.prefPages.append(vbox)
         #####
@@ -1326,7 +1326,7 @@ class PrefDialog(gtk.Dialog):
         for vbox in self.prefPages:
             l = gtk.Label(vbox.label)
             l.set_use_underline(True)
-            vb = gtk.VBox()
+            vb = gtk.VBox(spacing=3)
             vb.pack_start(imageFromFile(vbox.icon))
             vb.pack_start(l)
             vb.show_all()
@@ -1337,6 +1337,8 @@ class PrefDialog(gtk.Dialog):
                 pass
         #######################
         notebook.set_property('homogeneous', True)
+        notebook.set_property('tab-border', 5)
+        notebook.set_property('tab-hborder', 15)
         self.vbox.pack_start(notebook)
         self.vbox.show_all()
         for i in ui.prefPagesOrder:
