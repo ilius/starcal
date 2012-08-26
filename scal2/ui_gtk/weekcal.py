@@ -380,12 +380,23 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
         ui.wcalDaysOfMonthColDir = combo.getValue()
         self.updateDir()
     def updateCols(self):
-        for child in self.get_children():
-            child.destroy()
-        for mode in core.calModules.active:
-            col = DaysOfMonthColumn(self.wcal, mode)
-            col.show()
-            self.pack_start(col, 0, 0)
+        #self.foreach(gtk.Widget.destroy)## Couses crash tray icon in gnome3
+        #self.foreach(lambda child: self.remove(child))## Couses crash tray icon in gnome3
+        ########
+        children = self.get_children()
+        n = len(children)
+        n2 = len(core.calModules.active)
+        if n > n2:
+            for i in range(n2, n):
+                children[i].destroy()
+        elif n < n2:
+            for i in range(n, n2):
+                col = DaysOfMonthColumn(self.wcal, 0)
+                self.pack_start(col, 0, 0)
+                children.append(col)
+        for i, mode in enumerate(core.calModules.active):
+            children[i].mode = mode
+            children[i].show()
     def onConfigChange(self, *a, **ka):
         CustomizableCalBox.onConfigChange(self, *a, **ka)
         self.updateCols()
