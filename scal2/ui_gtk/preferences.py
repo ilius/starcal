@@ -602,14 +602,17 @@ class AICalsPrefItem():
         self.inactiveTrees.append(self.activeTrees[index])
         del self.activeTrees[index]
         self.inactiveTreev.set_cursor(len(self.inactiveTrees)-1)## FIXME
-        self.activeTreev.set_cursor(min(index, len(self.activeTrees)-2))
+        try:
+            self.activeTreev.set_cursor(min(index, len(self.activeTrees)-1))
+        except:
+            pass
         self.inactiveTreev.grab_focus()## FIXME
     def activateIndex(self, index):
         self.activeTrees.append(self.inactiveTrees[index])
         del self.inactiveTrees[index]
         self.activeTreev.set_cursor(len(self.activeTrees)-1)## FIXME
         try:
-            self.inactiveTreev.set_cursor(min(index, len(self.inactiveTrees)-2))
+            self.inactiveTreev.set_cursor(min(index, len(self.inactiveTrees)-1))
         except:
             pass
         self.activeTreev.grab_focus()## FIXME
