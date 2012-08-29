@@ -637,8 +637,8 @@ class AICalsPrefItem():
             self.inactiveTrees.append([module.name, _(module.desc)])
     def confStr(self):
         text = ''
-        text += 'activeCalNames = %r\n'%core.activeCalNames
-        text += 'inactiveCalNames = %r\n'%core.inactiveCalNames
+        text += 'activeCalNames=%r\n'%core.activeCalNames
+        text += 'inactiveCalNames=%r\n'%core.inactiveCalNames
         return text
 
 class WeekDayCheckListPrefItem(PrefItem):### use synopsis (Sun, Mon, ...) FIXME
