@@ -124,7 +124,7 @@ from scal2.cal_modules import calModulesList, jd_to, to_jd, convert, DATE_GREG
 ####################### class and function defenitions #########################
 ################################################################################
 
-activeCalNames = ['gregorian', 'jalali']
+activeCalNames = ['gregorian']
 inactiveCalNames = []
 
 class CalModulesHolder:
@@ -146,14 +146,20 @@ class CalModulesHolder:
         ####
         primaryMode = self.active[0]
         ####
+        inactiveToRemove = []
         for name in inactiveCalNames:
             try:
                 i = calModuleNames.index(name)
             except ValueError:
                 pass
             else:
-                self.inactive.append(i)
-                remainingNames.remove(name)
+                if i in self.active:
+                    inactiveToRemove.append(name)
+                else:
+                    self.inactive.append(i)
+                    remainingNames.remove(name)
+        for name in inactiveToRemove:
+            inactiveCalNames.remove(name)
         ####
         for name in remainingNames:
             try:

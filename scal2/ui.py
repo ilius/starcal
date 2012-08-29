@@ -29,7 +29,7 @@ from scal2.utils import NullObj, toStr, cleanCacheDict, restart
 from scal2.os_utils import makeDir
 from scal2.paths import *
 
-from scal2.cal_modules import calModulesList
+from scal2.cal_modules import calModulesList, calModuleNames
 
 import scal2.locale_man
 from scal2.locale_man import tr as _
@@ -750,12 +750,15 @@ else:
 
 if shownCals:
     mcalTypeParams = []
+    core.activeCalNames = []
     for item in shownCals:
         mcalTypeParams.append({
             'pos': (item['x'], item['y']),
             'font': item['font'],
             'color': item['color'],
         })
+        core.activeCalNames.append(calModuleNames[item['mode']])
+    core.calModules.update()
 
 ## FIXME
 #newPrimaryMode = shownCals[0]['mode']
