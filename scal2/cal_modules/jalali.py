@@ -152,7 +152,7 @@ def to_jd(year, month, day):
 def jd_to(jd):
     #assert isinstance(jd, (int, long))
     "JD_TO_JALALI: Calculate Jalali date from Julian day"
-    if jalaliAlg==1:
+    if jalaliAlg==1:## 2820
         (cycle, cyear) = divmod(jd - to_jd(475, 1, 1), 1029983)
         if cyear == 1029982 :
             ycycle = 2820
@@ -168,6 +168,13 @@ def jd_to(jd):
         else:
             month = int(ceil((yday - 6) / 30))
         day = int(jd - to_jd(year, month, 1)) + 1
+        if day > 31:
+            day -= 31
+            if month==12:
+                month = 1
+                year += 1
+            else:
+                month += 1
     elif jalaliAlg==0:
         ## Use 33 year algorithm
         ##taken from farsiweb code writen by Roozbeh Pournader <roozbeh@sharif.edu> and Mohammad Toossi <mohammad@bamdad.org> at 2001
