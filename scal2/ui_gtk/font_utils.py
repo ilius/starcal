@@ -1,11 +1,11 @@
 import pango
 
-pfontDecode = lambda pfont: (
+pfontDecode = lambda pfont: [
     pfont.get_family(),
     pfont.get_weight()==pango.WEIGHT_BOLD,
     pfont.get_style()==pango.STYLE_ITALIC,
     pfont.get_size()/1024,
-)
+]
 
 def pfontEncode(font):
     pfont = pango.FontDescription()

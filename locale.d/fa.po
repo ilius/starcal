@@ -1764,6 +1764,10 @@ msgid "Grid"
 msgstr ""
 "جدول‌بندی"
 
+msgid "Font"
+msgstr ""
+"فونت"
+
 msgid "Use system font"
 msgstr ""
 "استفاده از فونت سیستم"

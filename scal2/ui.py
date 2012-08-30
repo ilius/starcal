@@ -448,6 +448,14 @@ mcalTypeParams = [
     {'pos':(-18, 4), 'font':None, 'color':(0, 200, 205)},
 ]
 
+wcalTypeParams = [
+    {'font':None},
+    {'font':None},
+    {'font':None},
+]
+
+
+
 def getMcalMinorTypeParams():
     ls = []
     for i, mode in enumerate(core.calModules.active):
@@ -750,12 +758,16 @@ else:
 
 if shownCals:
     mcalTypeParams = []
+    wcalTypeParams = []
     core.activeCalNames = []
     for item in shownCals:
         mcalTypeParams.append({
             'pos': (item['x'], item['y']),
             'font': item['font'],
             'color': item['color'],
+        })
+        wcalTypeParams.append({
+            'font': item['font'],
         })
         core.activeCalNames.append(calModuleNames[item['mode']])
     core.calModules.update()
