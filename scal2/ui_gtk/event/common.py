@@ -489,7 +489,10 @@ class EventEditorDialog(gtk.Dialog):
             self.activeWidget.updateVars()
             self.activeWidget.destroy()
         eventType = self._group.acceptsEventTypes[combo.get_active()]
-        self.event = self._group.copyEventWithType(self.event, eventType)
+        if self.isNew:
+            self.event = self._group.createEvent(eventType)
+        else:
+            self.event = self._group.copyEventWithType(self.event, eventType)
         self._group.updateCache(self.event)## needed? FIXME
         self.activeWidget = self.event.makeWidget()
         if self.isNew:
