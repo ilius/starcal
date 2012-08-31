@@ -87,12 +87,6 @@ def setupMenuHideOnLeave(menu):
     menu.connect('leave-notify-event', menuLeaveNotify)
 
 
-def stock_arrow_repr(item):
-    if isinstance(item, gtk._gtk.ArrowType):
-        return 'gtk.%s'%item.value_name[4:]
-    else:
-        return repr(item)
-
 def labelStockMenuItem(label, stock=None, func=None, *args):
     item = gtk.ImageMenuItem(_(label))
     if stock:
