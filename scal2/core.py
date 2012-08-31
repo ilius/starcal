@@ -25,6 +25,7 @@ from os.path import isfile, isdir, exists, dirname, join, split, splitext
 from pprint import pprint
 
 from scal2.paths import *
+from scal2 import locale_man
 from scal2.locale_man import getMonthName, lang, langSh
 from scal2.locale_man import tr as _
 from scal2.plugin_man import *
@@ -404,6 +405,9 @@ def getDeletedPluginsTable():## returns a list of (i, description)
 
 getAllPlugListRepr = lambda: '[\n' + '\n'.join(['  %r,'%plug for plug in allPlugList]) + '\n]'
 
+def restart():## will not return from function
+    os.environ['LANG'] = locale_man.sysLangDefault
+    restartLow()
 
 #########################################################
 

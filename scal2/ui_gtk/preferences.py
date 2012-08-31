@@ -1464,7 +1464,7 @@ class PrefDialog(gtk.Dialog):
                 resBut.grab_default()
                 d.vbox.show_all()
                 if d.run()==1:
-                    ui.mainWin.restart()
+                    core.restart()
                 else:
                     d.destroy()
     def updatePrefGui(self):############### Updating Pref Gui (NOT MAIN GUI)

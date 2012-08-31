@@ -453,8 +453,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
     def editGroupClicked(self, menu, winTitle, group):
         if GroupEditorDialog(group).run() is not None:
             ui.changedGroups.append(group.id)
-            if ui.mainWin:
-                ui.mainWin.onConfigChange()
+            ud.windowList.onConfigChange()
     def moveEventToTrash(self, menu, group, event):
         eventIndex = group.index(event.id)
         ui.moveEventToTrash(group, event)

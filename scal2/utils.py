@@ -112,7 +112,7 @@ def myRaiseTback():
     (typ, value, tback) = sys.exc_info()
     sys.stderr.write("".join(traceback.format_exception(typ, value, tback)))
 
-restart = lambda: os.execl(sys.executable, sys.executable, *sys.argv)## will not return from function
+restartLow = lambda: os.execl(sys.executable, sys.executable, *sys.argv)## will not return from function
 
 class StrOrderedDict(dict):
     ## A dict from strings to objects, with ordered keys

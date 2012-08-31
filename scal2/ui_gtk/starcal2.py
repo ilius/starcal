@@ -33,14 +33,14 @@ from pprint import pprint, pformat
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 from scal2.paths import *
-from scal2.utils import myRaise, restart
+from scal2.utils import myRaise, restartLow
 
 if not isdir(confDir):
     try:
         __import__('scal2.ui_gtk.config_importer')
     except:
         myRaise()
-    restart()
+    restartLow()
 
 from scal2.utils import toStr, toUnicode
 from scal2 import core
@@ -1099,10 +1099,6 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         if self.trayMode>1 and self.sicon:
             self.sicon.set_visible(False) ## needed for windows ## before or after main_quit ?
         return gtk.main_quit()
-    def restart(self):
-        self.quit()
-        os.environ['LANG'] = locale_man.sysLangDefault
-        restart()
     def adjustTime(self, widget=None, event=None):
         Popen(ud.adjustTimeCmd)
     exportClicked = lambda self, widget=None: self.exportDialog.showDialog(ui.cell.year, ui.cell.month)

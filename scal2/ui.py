@@ -25,13 +25,13 @@ from os.path import dirname, join, isfile, isdir, splitext
 from xml.dom.minidom import parse## remove FIXME
 from subprocess import Popen
 
-from scal2.utils import NullObj, toStr, cleanCacheDict, restart
+from scal2.utils import NullObj, toStr, cleanCacheDict
 from scal2.os_utils import makeDir
 from scal2.paths import *
 
 from scal2.cal_modules import calModulesList, calModuleNames
 
-import scal2.locale_man
+from scal2 import locale_man
 from scal2.locale_man import tr as _
 
 from scal2 import core
@@ -784,8 +784,8 @@ if shownCals:
 
 needRestartPref = {} ### Right place ????????
 for key in (
-    'scal2.locale_man.lang',
-    'scal2.locale_man.enableNumLocale',
+    'locale_man.lang',
+    'locale_man.enableNumLocale',
     'winTaskbar',
     'showYmArrows',
     'useAppIndicator',
