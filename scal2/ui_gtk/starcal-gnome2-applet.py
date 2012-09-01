@@ -155,8 +155,9 @@ class StarCalApplet(MainWin):
     def quit(self, widget=None, event=None):
         ui.saveLiveConf()
         sys.exit(0)
-    def restart(self):
-        self.quit()
+    ## FIXME
+    #def restart(self):
+    #    self.quit()
 
 def starcalAppletFactory(applet, iid):
     scal = StarCalApplet(applet, iid)
