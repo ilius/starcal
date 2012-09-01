@@ -589,7 +589,8 @@ class GroupEditorDialog(gtk.Dialog):
         if self.isNew:
             if group.icon:
                 self._group.icon = group.icon
-        group.copyFrom(self._group)
+        if not self.isNew:
+            group.copyFrom(self._group)
         group.setId(self._group.id)
         if self.isNew:
             group.title = self.getNewGroupTitle(cls.desc)

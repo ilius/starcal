@@ -1097,7 +1097,6 @@ class Event(JsonEventBaseClass, RuleContainer):
         self.icon = self.__class__.getDefaultIcon()
         self.summary = self.desc ## + ' (' + _(self.id) + ')' ## FIXME
         self.description = ''
-        #self.showInTimeLine = False ## FIXME
         self.files = []
         ######
         RuleContainer.__init__(self)
@@ -1217,7 +1216,7 @@ class Event(JsonEventBaseClass, RuleContainer):
     setJd = lambda self, jd: None
     setJdExact = lambda self, jd: self.setJd(jd)
     def copyFrom(self, other, exact=False):## FIXME
-        for attr in ('mode', 'icon', 'summary', 'description'):# 'showInTimeLine'
+        for attr in ('mode', 'icon', 'summary', 'description'):
             setattr(
                 self,
                 attr,
@@ -2139,6 +2138,8 @@ class EventGroup(EventContainer):
         'type',
         'title',
         'calType',
+        'showInCal',
+        'showInTimeLine',
         'showFullEventDesc',
         'color',
         'icon',
@@ -2194,6 +2195,8 @@ class EventGroup(EventContainer):
         else:
             self.setId(_id)
         self.enable = True
+        self.showInCal = True
+        self.showInTimeLine = True
         self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)## FIXME
         #self.defaultNotifyBefore = (10, 60) ## FIXME
         if len(self.acceptsEventTypes)==1:
@@ -2252,13 +2255,24 @@ class EventGroup(EventContainer):
             lastEventGroupId = _id
         self.id = _id
         self.file = join(groupsDir, '%d.json'%self.id)
+    basicAttrs = (
+        'enable',
+        'showInCal',
+        'showInTimeLine',
+        'color',
+        'eventCacheSize',
+        'eventTextSep',
+        'startJd',
+        'endJd',
+        ## 'defaultEventType'
+    )
     def copyFrom(self, other):
         EventContainer.copyFrom(self, other)
-        for attr in (
-            'enable', 'color', 'eventCacheSize', 'eventTextSep',
-            'remoteIds', 'remoteSyncData', 'eventIdByRemoteIds',
-            'startJd', 'endJd',
-        ):#'defaultEventType'
+        for attr in self.basicAttrs + (
+            'remoteIds',
+            'remoteSyncData',
+            'eventIdByRemoteIds',
+        ):
             setattr(
                 self,
                 attr,
@@ -2267,10 +2281,7 @@ class EventGroup(EventContainer):
     def getBasicData(self):
         data = EventContainer.getData(self)
         data['type'] = self.name
-        for attr in (
-            'enable', 'color', 'eventCacheSize', 'eventTextSep', 'startJd', 'endJd',
-            ## 'defaultEventType'
-        ):
+        for attr in self.basicAttrs:
             data[attr] = getattr(self, attr)
         return data
     def getData(self):
@@ -2283,10 +2294,7 @@ class EventGroup(EventContainer):
         EventContainer.setData(self, data)
         if 'id' in data:
             self.setId(data['id'])
-        for attr in (
-            'enable', 'color', 'eventCacheSize', 'eventTextSep', 'startJd', 'endJd',
-            ## 'defaultEventType'
-        ):
+        for attr in self.basicAttrs:
             try:
                 setattr(self, attr, data[attr])
             except KeyError:
@@ -2803,6 +2811,7 @@ class LargeScaleGroup(EventGroup):
     def setDefaults(self):
         self.startJd = 0
         self.endJd = self.startJd + self.scale * 9999
+        self.showInCal = False ## only in time line ## or in init? FIXME
     def copyFrom(self, other):
         EventGroup.copyFrom(self, other)
         if other.name == self.name:
@@ -3058,6 +3067,8 @@ def getDayOccurrenceData(curJd, groups):
     data = []
     for group in groups:
         if not group.enable:
+            continue
+        if not group.showInCal:
             continue
         #print '\nupdateData: checking event', event.summary
         gid = group.id

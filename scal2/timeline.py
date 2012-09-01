@@ -410,6 +410,8 @@ def calcTimeLineData(timeStart, timeWidth, width):
         group = ui.eventGroups.byIndex(groupIndex)
         if not group.enable:
             continue
+        if not group.showInTimeLine:
+            continue
         borderTm = (boxMoveBorder+boxMoveLineW)/pixelPerSec
         for t0, t1, eid, odt in group.node.getEvents(timeStart-borderTm, timeEnd+borderTm):
             pixBoxW = (t1-t0)*pixelPerSec

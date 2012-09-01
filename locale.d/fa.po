@@ -1370,6 +1370,10 @@ msgid "Comment"
 msgstr ""
 "توضیح"
 
+msgid "Show in"
+msgstr ""
+"نمایش در"
+
 msgid "Show below calendar"
 msgstr ""
 "نمایش زیر تقویم"
