@@ -27,7 +27,7 @@ from scal2.time_utils import *
 #maxLevel = 1
 #minLevel = 1
 
-class Node:
+class BtlNode:
     def __init__(self, base, level, offset, rightOri):
         #global maxLevel, minLevel
         self.base = base ## 8 or 16 is better
@@ -40,21 +40,18 @@ class Node:
         #    print 'minLevel =', level
         self.offset = offset ## in days
         self.rightOri = rightOri ## FIXME
+        ###
+        width = self.base ** self.level
+        if self.rightOri:
+            self.s0, self.s1 = self.offset, self.offset+width
+        else:
+            self.s0, self.s1 = self.offset-width, self.offset
+        ###
         self.clear()
     def clear(self):
         self.children = {} ## possible keys are 0 to base-1 for right node, or -(base-1) to 0 for left node
         self.events = [] ## list of tuples (rel_start, rel_end, event_id)
-    def getScope(self):
-        if self.rightOri:
-            return self.offset, self.offset + self.base ** self.level
-        else:
-            return self.offset - self.base ** self.level, self.offset
-    def inScope(self, tm):
-        s0, s1 = self.getScope()
-        return s0 <= tm <= s1
-    def overlapScope(self, t0, t1):
-        s0, s1 = self.getScope()
-        return overlaps(t0, t1, s0, s1)
+    overlapScope = lambda self, t0, t1: overlaps(t0, t1, self.s0, self.s1)
     def getEvents(self, t0, t1):## t0 < t1
         '''
             returns a list of (ev_t0, ev_t1, ev_id) s
@@ -68,20 +65,25 @@ class Node:
             ev_t1 = ev_rt1 + self.offset
             if overlaps(t0, t1, ev_t0, ev_t1):
                 ## events.append((ev_t0, ev_t1, ev_id))
-                events.append((max(t0, ev_t0), min(t1, ev_t1), ev_id, ev_t1-ev_t0))
+                events.append((
+                    max(t0, ev_t0),
+                    min(t1, ev_t1),
+                    ev_id,
+                    ev_rt1 - ev_rt0,
+                ))
         for child in self.children.values():
             events += child.getEvents(t0, t1)
         return events
     def getChild(self, tm):
-        if not self.inScope(tm):
-            raise RuntimeError('Node.getChild: Out of scope (level=%s, offset=%s, rightOri=%s'%
+        if not self.s0 <= tm <= self.s1:
+            raise RuntimeError('BtlNode.getChild: Out of scope (level=%s, offset=%s, rightOri=%s'%
                 (self.level, self.offset, self.rightOri))
         dt = self.base ** (self.level - 1)
         index = int((tm-self.offset) // dt)
         try:
             return self.children[index]
         except KeyError:
-            child = self.children[index] = Node(
+            child = self.children[index] = self.__class__(
                 self.base,
                 self.level-1,
                 self.offset + index * self.base ** (self.level - 1),
@@ -89,7 +91,7 @@ class Node:
             )
             return child
     def newParent(self):
-        parent = Node(
+        parent = self.__class__(
              self.base,
              self.level+1,
              self.offset,
@@ -98,15 +100,15 @@ class Node:
         parent.children[0] = self
         return parent
 
-class CenterNode:
+class BtlRootNode:
     def __init__(self, offset=0, base=4):
         ## base 4 and 8 are the best (about speed of both addEvent and getEvents)
         self.base = base
         self.offset = offset
         self.clear()
     def clear(self):
-        self.right = Node(self.base, 1, self.offset, True)
-        self.left = Node(self.base, 1, self.offset, False)
+        self.right = BtlNode(self.base, 1, self.offset, True)
+        self.left = BtlNode(self.base, 1, self.offset, False)
         self.byEvent = {}
     def getEvents(self, t0, t1):
         if self.offset <= t0:
@@ -132,18 +134,17 @@ class CenterNode:
             raise RuntimeError
         ########
         while True:
-            s0, s1 = node.getScope()
-            if s0 <= t0 < s1 and s0 < t1 <= s1:
+            if node.s0 <= t0 < node.s1 and node.s0 < t1 <= node.s1:
                 break
             node = node.newParent()
-        ## now `node` is the root node
+        ## now `node` is the new side (left/right) node
         if isRight:
             self.right = node
         else:
             self.left = node
         while True:
             child = node.getChild(t0)
-            if child.inScope(t1):
+            if child.s0 <= t1 <= child.s1:
                 node = child
             else:
                 break

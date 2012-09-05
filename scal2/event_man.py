@@ -34,7 +34,7 @@ from scal2.time_utils import *
 from scal2.json_utils import *
 from scal2.color_utils import hslToRgb
 from scal2.ics import *
-from scal2.binary_time_line import CenterNode
+from scal2.binary_time_line import BtlRootNode
 
 from scal2.cal_modules import calModuleNames, jd_to, to_jd, convert, DATE_GREG
 from scal2.locale_man import tr as _
@@ -2199,8 +2199,8 @@ class EventGroup(EventContainer):
         self.startJd = to_jd(year-10, 1, 1, self.mode)
         self.endJd = to_jd(year+5, 1, 1, self.mode)
         ##
-        self.node = CenterNode(offset=getEpochFromJd(self.endJd), base=core.btlBase)
-        #self.nodeLoaded = False
+        self.btl = BtlRootNode(offset=getEpochFromJd(self.endJd), base=core.btlBase)
+        #self.btlLoaded = False
         self.occurCount = 0
         ###
         self.setDefaults()
@@ -2342,7 +2342,7 @@ class EventGroup(EventContainer):
             del self.eventIdByRemoteIds[event.remoteIds]
         except:
             pass
-        self.occurCount -= self.node.delEvent(event.id)
+        self.occurCount -= self.btl.delEvent(event.id)
         return index
     def removeAll(self):## clearEvents or excludeAll or removeAll FIXME
         for event in self.eventCache.values():
@@ -2350,7 +2350,7 @@ class EventGroup(EventContainer):
         ###
         self.idList = []
         self.eventCache = {}
-        self.node.clear()
+        self.btl.clear()
         self.occurCount = 0
     def _postAdd(self, event):
         event.parent = self ## needed? FIXME
@@ -2358,7 +2358,7 @@ class EventGroup(EventContainer):
             self.eventCache[event.id] = event
         if event.remoteIds:
             self.eventIdByRemoteIds[event.remoteIds] = event.id
-        ## need to update self.node?
+        ## need to update self.btl?
         ## its done in event.afterModify() right? not when moving event from another group
         if self.enable:
             self.updateOccurrenceNodeEvent(event)
@@ -2371,7 +2371,7 @@ class EventGroup(EventContainer):
     def updateCache(self, event):
         if event.id in self.eventCache:
             self.eventCache[event.id] = event
-        self.occurCount -= self.node.delEvent(event.id)
+        self.occurCount -= self.btl.delEvent(event.id)
         event.afterModify()
     def copy(self):
         newGroup = EventBaseClass.copy(self)
@@ -2420,7 +2420,7 @@ class EventGroup(EventContainer):
             offsetJd = self.endJd
         else:
             offsetJd = self.startJd
-        self.node = CenterNode(offset=getEpochFromJd(offsetJd), base=core.btlBase)
+        self.btl = BtlRootNode(offset=getEpochFromJd(offsetJd), base=core.btlBase)
         self.occurCount = 0
         ####
         if self.enable:
@@ -2429,7 +2429,7 @@ class EventGroup(EventContainer):
             self.eventCache = {}
     def updateOccurrenceNodeEvent(self, event):
         #print 'updateOccurrenceNodeEvent', self.id, self.title, event.id
-        node = self.node
+        node = self.btl
         eid = event.id
         node.delEvent(eid)
         for t0, t1 in event.calcOccurrenceAll().getTimeRangeList():
@@ -2437,13 +2437,13 @@ class EventGroup(EventContainer):
             self.occurCount += 1
     def updateOccurrenceNode(self):
         stm0 = time()
-        self.node.clear()
+        self.btl.clear()
         self.occurCount = 0
         for event, occur in self.calcOccurrenceAll():
             for t0, t1 in occur.getTimeRangeList():
-                self.node.addEvent(t0, t1, event.id)
+                self.btl.addEvent(t0, t1, event.id)
                 self.occurCount += 1
-        #self.nodeLoaded = True
+        #self.btlLoaded = True
         #print 'updateOccurrenceNode, id=%s, title=%s, length=%s, time=%s'%(self.id, self.title, len(self), time()-stm0)
     def exportToIcsFp(self, fp):
         currentTimeStamp = getIcsTimeByEpoch(time())
@@ -3056,7 +3056,7 @@ def getDayOccurrenceData(curJd, groups):
             continue
         #print '\nupdateData: checking event', event.summary
         gid = group.id
-        for epoch0, epoch1, eid, odt in group.node.getEvents(getEpochFromJd(curJd), getEpochFromJd(curJd+1)):
+        for epoch0, epoch1, eid, odt in group.btl.getEvents(getEpochFromJd(curJd), getEpochFromJd(curJd+1)):
             event = group[eid]
             text = event.getText()
             for url, fname in event.getFilesUrls():
