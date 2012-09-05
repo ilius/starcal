@@ -1970,22 +1970,6 @@ class LargeScaleEvent(Event):## or MegaEvent? FIXME
         if group.name == 'largeScale':
             self.scale = group.scale
             self.start = group.getStartValue()
-    #getStartEpoch = lambda self: getEpochFromJd(to_jd(self.start*self.scale, 1, 1, self.mode))
-    #getEndEpoch = lambda self: getEpochFromJd(to_jd((self.start+self.duration)*self.scale, 1, 1, self.mode))
-    #getStartEpoch = lambda self: core.getEpochFromFloatYear(self.start*self.scale, self.mode)
-    #getEndEpoch = lambda self: core.getEpochFromFloatYear((self.start+self.duration)*self.scale, self.mode)
-    #def modifyPos(self, newStartEpoch):
-    #    self.start = core.getFloatYearFromEpoch(newStartEpoch, self.mode)/self.scale
-    #def modifyStart(self, newStartEpoch):
-    #    newStart = core.getFloatYearFromEpoch(newStartEpoch, self.mode)/self.scale
-    #    self.duration += (self.start - newStart)
-    #    self.start = newStart
-    #def modifyEnd(self, newEndEpoch):
-    #    newEnd = core.getFloatYearFromEpoch(newEndEpoch, self.mode)/self.scale
-    #    self.duration = newEnd - self.start
-    #getJd = lambda self: core.getJdFromFloatYear(self.start*self.scale, self.mode)
-    #def setJd(self, jd):
-    #    self.start = core.getFloatYearFromJd(jd, self.mode)/self.scale
     getJd = lambda self: to_jd(self.start*self.scale, 1, 1, self.mode)
     def setJd(self, jd):
         self.start = jd_to(jd, self.mode)[0]//self.scale
