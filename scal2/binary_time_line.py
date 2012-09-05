@@ -41,11 +41,11 @@ class BtlNode:
         self.offset = offset ## in days
         self.rightOri = rightOri ## FIXME
         ###
-        width = self.base ** self.level
-        if self.rightOri:
-            self.s0, self.s1 = self.offset, self.offset+width
+        width = base ** level
+        if rightOri:
+            self.s0, self.s1 = offset, offset + width
         else:
-            self.s0, self.s1 = self.offset-width, self.offset
+            self.s0, self.s1 = offset - width, offset
         ###
         self.clear()
     def clear(self):
@@ -86,7 +86,7 @@ class BtlNode:
             child = self.children[index] = self.__class__(
                 self.base,
                 self.level-1,
-                self.offset + index * self.base ** (self.level - 1),
+                self.offset + index * dt,
                 self.rightOri,
             )
             return child
