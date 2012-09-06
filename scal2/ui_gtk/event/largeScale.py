@@ -37,28 +37,47 @@ class EventWidget(common.EventWidget):
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
         self.startSpin = IntSpinButton(-maxStart, maxStart)
+        self.startSpin.connect('changed', self.startSpinChanged)
         hbox.pack_start(self.startSpin, 0, 0)
         self.pack_start(hbox, 0, 0)
         ####
         hbox = gtk.HBox()
-        label = gtk.Label(_('Duration'))
-        label.set_alignment(0, 0.5)
-        sizeGroup.add_widget(label)
-        hbox.pack_start(label, 0, 0)
-        self.durationSpin = IntSpinButton(0, maxDur)
-        hbox.pack_start(self.durationSpin, 0, 0)
+        self.endRelCombo = gtk.combo_box_new_text()
+        for item in ('Duration', 'End'):
+            self.endRelCombo.append_text(_(item))
+        self.endRelCombo.connect('changed', self.endRelComboChanged)
+        sizeGroup.add_widget(self.endRelCombo)
+        hbox.pack_start(self.endRelCombo, 0, 0)
+        self.endSpin = IntSpinButton(-maxDur, maxDur)
+        hbox.pack_start(self.endSpin, 0, 0)
         self.pack_start(hbox, 0, 0)
         ####
+        self.endRelComboChanged()
+    def endRelComboChanged(self, combo=None):
+        rel = self.endRelCombo.get_active()
+        start = self.startSpin.get_value()
+        end = self.endSpin.get_value()
+        if rel==0:## reletive(duration)
+            self.endSpin.set_range(1, maxStart)
+            self.endSpin.set_value(max(1, end-start))
+        elif rel==1:## absolute(end)
+            self.endSpin.set_range(start+1, maxStart)
+            self.endSpin.set_value(max(start+1, start+end))
+    def startSpinChanged(self, spin=None):
+        if self.endRelCombo.get_active() == 1:## absolute(end)
+            self.endSpin.set_range(self.startSpin.get_value()+1, maxStart)
     def updateWidget(self):
         common.EventWidget.updateWidget(self)
         self.scaleCombo.set_value(self.event.scale)
         self.startSpin.set_value(self.event.start)
-        self.durationSpin.set_value(self.event.duration)
+        self.endRelCombo.set_active(0 if self.event.endRel else 1)
+        self.endSpin.set_value(self.event.end)
     def updateVars(self):## FIXME
         common.EventWidget.updateVars(self)
         self.event.scale = self.scaleCombo.get_value()
         self.event.start = self.startSpin.get_value()
-        self.event.duration = self.durationSpin.get_value()
+        self.event.endRel = (self.endRelCombo.get_active()==0)
+        self.event.end = self.endSpin.get_value()
 
 
 

@@ -54,6 +54,10 @@ class IntField(Field):
         self.fill = fill
         self.myKeys = locale_man.getAvailableDigitKeys()
         self.setDefault()
+    def setRange(self, _min, _max):
+        self._min = _min
+        self._max = _max
+        self.setValue(self.value)
     def setDefault(self):
         self.value = self._min
     def setValue(self, v):

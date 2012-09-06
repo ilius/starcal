@@ -50,7 +50,7 @@ class MultiSpinButton(gtk.SpinButton):
         self.set_width_chars(self.field.getMaxWidth())
         self.set_value(0)
         self.set_digits(0)
-        self.set_range(-2, 2)
+        gtk.SpinButton.set_range(self, -2, 2)
         self.set_increments(1, page_step)
         #self.connect('activate', lambda obj: self.entry_validate())
         self.connect('activate', self._entry_activate)
@@ -232,7 +232,9 @@ class IntSpinButton(SingleSpinButton):
             IntField(_min, _max),
             **kwargs
         )
-
+    def set_range(self, _min, _max):
+        self.field.children[0].setRange(_min, _max)
+        self.set_text(self.field.getText())
 
 class YearSpinButton(SingleSpinButton):
     def __init__(self, **kwargs):

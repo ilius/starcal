@@ -1958,14 +1958,17 @@ class LifeTimeEvent(SingleStartEndEvent):
 class LargeScaleEvent(Event):## or MegaEvent? FIXME
     name = 'largeScale'
     desc = _('Large Scale Event')
-    jsonParams = Event.jsonParams + ('scale', 'start', 'duration')
+    typeParams = ('scale', 'start', 'end', 'endRel')
+    jsonParams = Event.jsonParams + typeParams
     __nonzero__ = lambda self: True
     def __init__(self, *args, **kw):
         self.scale = 1 ## 1, 1000, 1000**2, 1000**3
         self.start = 0
-        self.duration = 1
+        self.end = 1
+        self.endRel = True
         Event.__init__(self, *args, **kw)
-    getRulesHash = lambda self: hash(str(('largeScale', self.scale, self.start, self.duration)))
+    getRulesHash = lambda self: hash(str(('largeScale', self.scale, self.start, self.end, self.endRel)))
+    getEnd = lambda self: self.start + self.end if self.endRel else self.end
     def setDefaultsFromGroup(self, group):
         Event.setDefaultsFromGroup(self, group)
         if group.name == 'largeScale':
@@ -1993,25 +1996,29 @@ class LargeScaleEvent(Event):## or MegaEvent? FIXME
     def copyFrom(self, other, *args, **kwargs):
         Event.copyFrom(self, other, *args, **kwargs)
         if other.name == self.name:
-            self.scale = other.scale
-            self.start = other.start
-            self.duration = other.duration
+            for attr in self.typeParams:
+                setattr(
+                    self,
+                    attr,
+                    getattr(other, attr),
+                )
     def getData(self):
         data = Event.getData(self)
-        for attr in ('scale', 'start', 'duration'):
+        for attr in self.typeParams:
             data[attr] = getattr(self, attr)
         return data
     def setData(self, data):
         Event.setData(self, data)
-        for attr in ('scale', 'start', 'duration'):
+        for attr in self.typeParams:
             try:
                 setattr(self, attr, data[attr])
             except KeyError:
                 pass
+        if 'duration' in data:
+            self.end, self.endRel = data['duration'], True
     def calcOccurrenceForJdRange(self, startJd, endJd):
         myStartJd = iceil(to_jd(self.scale*self.start, 1, 1, self.mode))
-        myEndJd = ifloor(to_jd(self.scale*(self.start+self.duration), 1, 1, self.mode))
-        ## myEndJd = ifloor(startJd + self.scale*self.duration*modules[self.mode].avgYearLen)
+        myEndJd = ifloor(to_jd(self.scale*self.getEnd(), 1, 1, self.mode))
         return TimeRangeListOccurrence(
             intersectionOfTwoTimeRangeList(
                 [
