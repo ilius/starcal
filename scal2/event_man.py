@@ -23,6 +23,7 @@ from time import time, localtime
 import json, random, os, shutil
 from os.path import join, split, isdir, isfile, dirname, splitext
 from os import listdir
+from copy import deepcopy
 
 from scal2.lib import OrderedDict
 
@@ -180,13 +181,30 @@ def intersectionOfTwoTimeRangeList(rList1, rList2):
 
 
 class EventBaseClass:
-    getData = lambda self: None
-    setData = lambda self: None
-    copyFrom = lambda self, other: self.setData(other.getData())
+    params = ()## used in getData and setData and copyFrom
+    def copyFrom(self, other):
+        for attr in self.params:
+            try:
+                value = getattr(other, attr)
+            except AttributeError:
+                continue
+            setattr(
+                self,
+                attr,
+                deepcopy(value),
+            )
     def copy(self):
         newObj = self.__class__()
         newObj.copyFrom(self)
         return newObj
+    def getData(self):
+        return dict([(param, getattr(self, param)) for param in self.params])
+    def setData(self, data):
+        #if isinstance(data, dict):## FIXME
+        for (key, value) in data.items():
+            if key in self.params:
+                setattr(self, key, value)
+
 
 
 def makeOrderedData(data, params):
@@ -384,7 +402,6 @@ class EventRule(EventBaseClass):
     sgroup = -1
     expand = False
     params = ()
-    #jsonParams = ()## FIXME
     def __init__(self, parent):## parent can be an event or group
         self.parent = parent
     getMode = lambda self: self.parent.mode
@@ -392,13 +409,6 @@ class EventRule(EventBaseClass):
         return True
     def calcOccurrence(self, startEpoch, endEpoch, event):
         raise NotImplementedError
-    def getData(self):
-        return dict([(param, getattr(self, param)) for param in self.params])
-    def setData(self, data):
-        #if isinstance(data, dict):## FIXME
-        for (key, value) in data.items():
-            if key in self.params:
-                setattr(self, key, value)
     getInfo = lambda self: self.desc + ': %s'%self
 
 ## Should not be registered, or instantiate directly
@@ -795,7 +805,7 @@ class CycleLenEventRule(EventRule):
     def getData(self):
         return {
             'days': self.cycleDays,
-            'extraTime': timeEncode(self.cycleExtraTime)
+            'extraTime': timeEncode(self.cycleExtraTime),
         }
     def setData(self, arg):
         self.cycleDays = arg['days']
@@ -892,19 +902,11 @@ class EventNotifier(EventBaseClass):
     name = ''
     desc = ''
     params = ()
-    #jsonParams = ()## FIXME
     def __init__(self, event):
         self.event = event
     getMode = lambda self: self.event.mode
     def notify(self, finishFunc):
         pass
-    def getData(self):
-        return dict([(param, getattr(self, param)) for param in self.params])
-    def setData(self, data):
-        #if isinstance(data, dict):## FIXME
-        for (key, value) in data.items():
-            if key in self.params:
-                setattr(self, key, value)
 
 @classes.notifier.register
 class AlarmNotifier(EventNotifier):
@@ -1047,19 +1049,18 @@ class RuleContainer:
                         self.addRule(rule)
 
 
-def setIconToData(self, data):
-    icon = self.icon
+def fixIconInData(data):
+    icon = data['icon']
     iconDir, iconName = split(icon)
     if iconDir == join(pixDir, 'event'):
         icon = iconName
     data['icon'] = icon
 
-def setIconFromData(self, data):
-    if 'icon' in data:
-        icon = data['icon']
-        if icon and not '/' in icon:
-            icon = join(pixDir, 'event', icon)
-        self.icon = icon
+def fixIconInObj(self):
+    icon = self.icon
+    if icon and not '/' in icon:
+        icon = join(pixDir, 'event', icon)
+    self.icon = icon
 
 
 ## Should not be registered, or instantiate directly
@@ -1068,6 +1069,7 @@ class Event(JsonEventBaseClass, RuleContainer):
     desc = _('Custom Event')
     iconName = ''
     #requiredNotifiers = ()## needed? FIXME
+    params = ('icon', 'summary', 'description', 'remoteIds', 'modified')
     jsonParams = (
         'type',
         'calType',
@@ -1216,12 +1218,8 @@ class Event(JsonEventBaseClass, RuleContainer):
     setJd = lambda self, jd: None
     setJdExact = lambda self, jd: self.setJd(jd)
     def copyFrom(self, other, exact=False):## FIXME
-        for attr in ('mode', 'icon', 'summary', 'description'):
-            setattr(
-                self,
-                attr,
-                getattr(other, attr),
-            )
+        JsonEventBaseClass.copyFrom(self, other)
+        self.mode = other.mode
         self.notifyBefore = other.notifyBefore[:]
         #self.files = other.files[:]
         self.notifiers = other.notifiers[:]## FIXME
@@ -1236,18 +1234,18 @@ class Event(JsonEventBaseClass, RuleContainer):
             else:
                 self.setJd(jd)
     def getData(self):
-        data = {
+        data = JsonEventBaseClass.getData(self)
+        data.update({
             'type': self.name,
             'calType': calModuleNames[self.mode],
             'rules': self.getRulesData(),
             'notifiers': self.getNotifiersData(),
             'notifyBefore': durationEncode(*self.notifyBefore),
-        }
-        setIconToData(self, data)
-        for attr in ('summary', 'description', 'remoteIds', 'modified'):
-            data[attr] = getattr(self, attr)
+        })
+        fixIconInData(data)
         return data
     def setData(self, data):
+        JsonEventBaseClass.setData(self, data)
         if 'id' in data:
             self.setId(data['id'])
         if 'calType' in data:
@@ -1267,12 +1265,7 @@ class Event(JsonEventBaseClass, RuleContainer):
                 self.notifiers.append(notifier)
         if 'notifyBefore' in data:
             self.notifyBefore = durationDecode(data['notifyBefore'])
-        setIconFromData(self, data)
-        for attr in ('summary', 'description', 'remoteIds', 'modified'):
-            try:
-                setattr(self, attr, data[attr])
-            except KeyError:
-                pass
+        fixIconInObj(self)
     #def load(self):## skipRules arg for use in ui_gtk/event/notify.py ## FIXME
     getNotifiersData = lambda self: [(notifier.name, notifier.getData()) for notifier in self.notifiers]
     getNotifiersDict = lambda self: dict(self.getNotifiersData())
@@ -1497,8 +1490,8 @@ class TaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from SingleStartE
         start.setJd(jd)
         start.time = (0, 0, 0)
         self.setEnd('duration', 24, 3600)
-    def copyFrom(self, other, *args, **kwargs):
-        Event.copyFrom(self, other, *args, **kwargs)
+    def copyFrom(self, other, *a, **kw):
+        Event.copyFrom(self, other, *a, **kw)
         myStart = self['start']
         ##
         try:
@@ -1609,8 +1602,6 @@ class AllDayTaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from Single
             duration.setSeconds(dayLen*(jd-self['start'].getJd()))
             return
         raise ValueError('no end date neither duration specified for task')
-    #def copyFrom(self, other, *args, **kwargs):
-    #    Event.copyFrom(self, other, *args, **kwargs)
     def getIcsData(self, prettyDateTime=False):
         return [
             ('DTSTART', getIcsDateByJd(self.getJd(), prettyDateTime)),
@@ -1809,6 +1800,7 @@ class UniversityClassEvent(Event):
     iconName = 'university'
     requiredRules  = ('weekNumMode', 'weekDay', 'dayTimeRange',)
     supportedRules = ('weekNumMode', 'weekDay', 'dayTimeRange',)
+    params = Event.params + ('courseId',)
     def __init__(self, *args, **kw):
         ## assert group is not None ## FIXME
         Event.__init__(self, *args, **kw)
@@ -1831,19 +1823,6 @@ class UniversityClassEvent(Event):
     getWeekDayName = lambda self: core.weekDayName[self['weekDay'].weekDayList[0]]
     def updateSummary(self):
         self.summary = _('%s Class')%self.getCourseName() + ' (' + self.getWeekDayName() + ')'
-    def copyFrom(self, other, *args, **kwargs):
-        Event.copyFrom(self, other, *args, **kwargs)
-        self.courseId = other.courseId
-    def getData(self):
-        data = Event.getData(self)
-        data['courseId'] = self.courseId
-        return data
-    def setData(self, data):
-        Event.setData(self, data)
-        try:
-            self.courseId = data['courseId']
-        except KeyError:
-            pass
     def setJd(self, jd):
         self['weekDay'].weekDayList = [core.jwday(jd)]
         ## set weekNumMode from absWeekNumber FIXME
@@ -1879,6 +1858,7 @@ class UniversityExamEvent(DailyNoteEvent):
     iconName = 'university'
     requiredRules  = ('date', 'dayTimeRange',)
     supportedRules = ('date', 'dayTimeRange',)
+    params = DailyNoteEvent.params + ('courseId',)
     def __init__(self, *args, **kw):
         ## assert group is not None ## FIXME
         DailyNoteEvent.__init__(self, *args, **kw)
@@ -1892,19 +1872,6 @@ class UniversityExamEvent(DailyNoteEvent):
     getCourseName = lambda self: self.parent.getCourseNameById(self.courseId)
     def updateSummary(self):
         self.summary = _('%s Exam')%self.getCourseName()
-    def copyFrom(self, other):
-        Event.copyFrom(self, other, *args, **kwargs)
-        self.courseId = other.courseId
-    def getData(self):
-        data = Event.getData(self)
-        data['courseId'] = self.courseId
-        return data
-    def setData(self, data):
-        Event.setData(self, data)
-        try:
-            self.courseId = data['courseId']
-        except KeyError:
-            pass
     def calcOccurrenceForJdRange(self, startJd, endJd):
         return DailyNoteEvent.calcOccurrenceForJdRange(self, startJd, endJd).intersection(
             self['dayTimeRange'].calcOccurrence(
@@ -1957,8 +1924,9 @@ class LifeTimeEvent(SingleStartEndEvent):
 class LargeScaleEvent(Event):## or MegaEvent? FIXME
     name = 'largeScale'
     desc = _('Large Scale Event')
-    typeParams = ('scale', 'start', 'end', 'endRel')
-    jsonParams = Event.jsonParams + typeParams
+    _myParams = ('scale', 'start', 'end', 'endRel')
+    params = Event.params + _myParams
+    jsonParams = Event.jsonParams + _myParams
     __nonzero__ = lambda self: True
     def __init__(self, *args, **kw):
         self.scale = 1 ## 1, 1000, 1000**2, 1000**3
@@ -1976,29 +1944,6 @@ class LargeScaleEvent(Event):## or MegaEvent? FIXME
     getJd = lambda self: to_jd(self.start*self.scale, 1, 1, self.mode)
     def setJd(self, jd):
         self.start = jd_to(jd, self.mode)[0]//self.scale
-    def copyFrom(self, other, *args, **kwargs):
-        Event.copyFrom(self, other, *args, **kwargs)
-        if other.name == self.name:
-            for attr in self.typeParams:
-                setattr(
-                    self,
-                    attr,
-                    getattr(other, attr),
-                )
-    def getData(self):
-        data = Event.getData(self)
-        for attr in self.typeParams:
-            data[attr] = getattr(self, attr)
-        return data
-    def setData(self, data):
-        Event.setData(self, data)
-        for attr in self.typeParams:
-            try:
-                setattr(self, attr, data[attr])
-            except KeyError:
-                pass
-        if 'duration' in data:
-            self.end, self.endRel = data['duration'], True
     def calcOccurrenceForJdRange(self, startJd, endJd):
         myStartJd = iceil(to_jd(self.scale*self.start, 1, 1, self.mode))
         myEndJd = ifloor(to_jd(self.scale*self.getEnd(), 1, 1, self.mode))
@@ -2024,6 +1969,7 @@ class CustomEvent(Event):
 class EventContainer(JsonEventBaseClass):
     name = ''
     desc = ''
+    params = JsonEventBaseClass.params + ('icon', 'title', 'showFullEventDesc', 'idList')
     def __getitem__(self, key):
         if isinstance(key, int):## eventId
             return self.getEvent(key)
@@ -2075,25 +2021,15 @@ class EventContainer(JsonEventBaseClass):
         self.idList.remove(event.id)
         return index
     def copyFrom(self, other):
-        for attr in (
-            'mode', 'title', 'icon', 'showFullEventDesc', 'idList',
-        ):
-            setattr(
-                self,
-                attr,
-                getattr(other, attr),
-            )
+        JsonEventBaseClass.copyFrom(self, other)
+        self.mode = other.mode
     def getData(self):
-        data = {
-            'calType': calModuleNames[self.mode],
-        }
-        ###
-        setIconToData(self, data)
-        ###
-        for attr in ('title', 'showFullEventDesc', 'idList'):
-            data[attr] = getattr(self, attr)
+        data = JsonEventBaseClass.getData(self)
+        data['calType'] = calModuleNames[self.mode]
+        fixIconInData(data)
         return data
     def setData(self, data):
+        JsonEventBaseClass.setData(self, data)
         if 'calType' in data:
             calType = data['calType']
             try:
@@ -2101,13 +2037,7 @@ class EventContainer(JsonEventBaseClass):
             except ValueError:
                 raise ValueError('Invalid calType: %r'%calType)
         ###
-        setIconFromData(self, data)
-        ###
-        for attr in ('title', 'showFullEventDesc', 'idList'):
-            try:
-                setattr(self, attr, data[attr])
-            except KeyError:
-                pass
+        fixIconInObj(self)
 
 
 @classes.group.register
@@ -2212,6 +2142,8 @@ class EventGroup(EventContainer):
         ###
         self.setDefaults()
         ###########
+        self.clearRemoteAttrs()
+    def clearRemoteAttrs(self):
         self.remoteIds = None## (accountId, groupId)
         ## remote groupId can be an integer or string or unicode (depending on remote account type)
         self.remoteSyncData = {}
@@ -2246,7 +2178,7 @@ class EventGroup(EventContainer):
             lastEventGroupId = _id
         self.id = _id
         self.file = join(groupsDir, '%d.json'%self.id)
-    basicAttrs = (
+    _myParams = (
         'enable',
         'showInCal',
         'showInTimeLine',
@@ -2255,52 +2187,28 @@ class EventGroup(EventContainer):
         'eventTextSep',
         'startJd',
         'endJd',
+        'remoteIds',
+        'remoteSyncData',
+        'eventIdByRemoteIds',
         ## 'defaultEventType'
     )
-    def copyFrom(self, other):
-        EventContainer.copyFrom(self, other)
-        for attr in self.basicAttrs + (
-            'remoteIds',
-            'remoteSyncData',
-            'eventIdByRemoteIds',
-        ):
-            setattr(
-                self,
-                attr,
-                getattr(other, attr),
-            )
-    def getBasicData(self):
+    params = EventContainer.params + _myParams
+    def getData(self):
         data = EventContainer.getData(self)
         data['type'] = self.name
-        for attr in self.basicAttrs:
-            data[attr] = getattr(self, attr)
+        for attr in ('remoteSyncData', 'eventIdByRemoteIds'):
+            data[attr] = sorted(data[attr].items())
         return data
-    def getData(self):
-        data = self.getBasicData()
-        data['remoteIds'] = self.remoteIds
-        data['remoteSyncData'] = sorted(self.remoteSyncData.items())
-        data['eventIdByRemoteIds'] = sorted(self.eventIdByRemoteIds.items())
-        return data
-    def setBasicData(self, data):
-        EventContainer.setData(self, data)
-        if 'id' in data:
-            self.setId(data['id'])
-        for attr in self.basicAttrs:
-            try:
-                setattr(self, attr, data[attr])
-            except KeyError:
-                pass
-        self.startJd = int(self.startJd)
-        self.endJd = int(self.endJd)
-        ####
-        #if 'defaultEventType' in data:
-        #    self.defaultEventType = data['defaultEventType']
-        #    if not self.defaultEventType in classes.event.names:
-        #        raise ValueError('Invalid defaultEventType: %r'%self.defaultEventType)
     def setData(self, data):
-        self.setBasicData(data)
-        if 'remoteIds' in data:
-            self.remoteIds = data['remoteIds']
+        EventContainer.setData(self, data)
+        for attr in ('remoteSyncData', 'eventIdByRemoteIds'):
+            value = getattr(self, attr)
+            if isinstance(value, list):
+                value = dict([
+                    (tuple(k), v) for k, v in value
+                ])
+                setattr(self, attr, value)
+        '''
         if 'remoteSyncData' in data:
             self.remoteSyncData = {}
             for remoteIds, syncData in data['remoteSyncData']:
@@ -2314,6 +2222,16 @@ class EventGroup(EventContainer):
             for remoteIds, eventId in data['eventIdByRemoteIds']:
                 self.eventIdByRemoteIds[tuple(remoteIds)] = eventId
             #print self.eventIdByRemoteIds
+        '''
+        if 'id' in data:
+            self.setId(data['id'])
+        self.startJd = int(self.startJd)
+        self.endJd = int(self.endJd)
+        ####
+        #if 'defaultEventType' in data:
+        #    self.defaultEventType = data['defaultEventType']
+        #    if not self.defaultEventType in classes.event.names:
+        #        raise ValueError('Invalid defaultEventType: %r'%self.defaultEventType)
     ################# Event objects should be accessed from outside only within one of these 3 methods
     def getEvent(self, eid):
         if not eid in self.idList:
@@ -2495,8 +2413,12 @@ class EventGroup(EventContainer):
                     vevent += '%s:%s\n'%(key, value)
                 vevent += 'END:VEVENT\n'
                 fp.write(vevent)
+    importExportExclude = 'remoteIds', 'remoteSyncData', 'eventIdByRemoteIds'
     def exportData(self):
-        data = makeOrderedData(self.getBasicData(), self.jsonParams)
+        data = self.getData()
+        for attr in self.importExportExclude:
+            del data[attr]
+        data = makeOrderedData(data, self.jsonParams)
         data['events'] = []
         for eventId in self.idList:
             eventData = EventContainer.getEvent(self, eventId).getDataOrdered()
@@ -2508,10 +2430,11 @@ class EventGroup(EventContainer):
         del data['idList']
         return data
     def importData(self, data):
-        self.setBasicData(data)
+        self.setData(data)
+        self.clearRemoteAttrs()
         for eventData in data['events']:
             event = self.createEvent(eventData['type'])
-            event.setData(eventData)## or setBasicData FIXME
+            event.setData(eventData)
             event.save()
             self.append(event)
         self.save()
@@ -2582,12 +2505,15 @@ class UniversityTerm(EventGroup):
     name = 'universityTerm'
     desc = _('University Term')
     acceptsEventTypes = ('universityClass', 'universityExam')
-    actions = EventGroup.actions + [('View Weekly Schedule', 'viewWeeklySchedule')]
+    actions = EventGroup.actions + [
+        ('View Weekly Schedule', 'viewWeeklySchedule'),
+    ]
     sortBys = EventGroup.sortBys + (
         ('course', _('Course')),
         ('time', _('Time')),
     )
     sortByDefault = 'time'
+    params = EventGroup.params + ('courses',)
     jsonParams = EventGroup.jsonParams + (
         'classTimeBounds',
         'classesEndDate',
@@ -2719,7 +2645,6 @@ class UniversityTerm(EventGroup):
         EventGroup.copyFrom(self, other)
         if other.name == self.name:
             self.classesEndDate = other.classesEndDate[:]
-            self.courses = other.courses[:]
             self.classTimeBounds = other.classTimeBounds[:]
     def getData(self):
         data = EventGroup.getData(self)
@@ -2727,8 +2652,6 @@ class UniversityTerm(EventGroup):
             'classTimeBounds': [hmEncode(hm) for hm in self.classTimeBounds],
             'classesEndDate': dateEncode(self.classesEndDate),
         })
-        for attr in ('courses',):
-            data.update({attr: getattr(self, attr)})
         return data
     def setData(self, data):
         EventGroup.setData(self, data)
@@ -2736,11 +2659,7 @@ class UniversityTerm(EventGroup):
             self.classesEndDate = dateDecode(data['classesEndDate'])
         if 'classTimeBounds' in data:
             self.classTimeBounds = sorted([hmDecode(hm) for hm in data['classTimeBounds']])
-        for attr in ('courses',):
-            try:
-                setattr(self, attr, data[attr])
-            except KeyError:
-                pass
+
 
 @classes.group.register
 class LifeTimeGroup(EventGroup):
@@ -2750,6 +2669,7 @@ class LifeTimeGroup(EventGroup):
     sortBys = EventGroup.sortBys + (
         ('start', _('Start')),
     )
+    params = EventGroup.params + ('showSeperatedYmdInputs',)
     def getSortByValue(self, event, attr):
         if event.name in self.acceptsEventTypes:
             if attr=='start':
@@ -2760,25 +2680,6 @@ class LifeTimeGroup(EventGroup):
     def __init__(self, *args, **kwargs):
         self.showSeperatedYmdInputs = False
         EventGroup.__init__(self, *args, **kwargs)
-    def copyFrom(self, other):
-        EventGroup.copyFrom(self, other)
-        try:
-            self.showSeperatedYmdInputs = other.showSeperatedYmdInputs
-        except AttributeError:
-            pass
-    def getData(self):
-        data = EventGroup.getData(self)
-        data['showSeperatedYmdInputs'] = self.showSeperatedYmdInputs
-        return data
-    def setData(self, data):
-        EventGroup.setData(self, data)
-        for attr in (
-            'showSeperatedYmdInputs',
-        ):
-            try:
-                setattr(self, attr, data[attr])
-            except KeyError:
-                pass
 
 
 
@@ -3099,6 +3000,7 @@ def getDayOccurrenceData(curJd, groups):
 class Account(JsonEventBaseClass):
     name = ''
     desc = ''
+    params = ('enable', 'title', 'remoteGroups')
     jsonParams = (
         'enable',
         'type',
@@ -3137,18 +3039,10 @@ class Account(JsonEventBaseClass):
     def sync(self, group, remoteGroupId):
         raise NotImplementedError
     def getData(self):
-        data = {
-            'type': self.name,
-        }
-        for attr in ('enable', 'title', 'remoteGroups'):
-            data[attr] = getattr(self, attr)
+        data = JsonEventBaseClass.getData(self)
+        data['type'] = self.name
         return data
-    def setData(self, data):
-        for attr in ('enable', 'title', 'remoteGroups'):
-            try:
-                setattr(self, attr, data[attr])
-            except KeyError:
-                pass
+
 
 ########################################################################
 
