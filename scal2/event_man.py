@@ -2091,7 +2091,7 @@ class EventGroup(EventContainer):
         if isinstance(key, int):## eventId
             return self.getEvent(key)
         else:
-            raise TypeError('invalid key %r give to EventGroup.__getitem__'%key)
+            raise TypeError('invalid key %r given to EventGroup.__getitem__'%key)
     def __setitem__(self, key, value):
         #if isinstance(key, basestring):## ruleName
         #    return self.setRule(key, value)
@@ -2659,7 +2659,15 @@ class UniversityTerm(EventGroup):
             self.classesEndDate = dateDecode(data['classesEndDate'])
         if 'classTimeBounds' in data:
             self.classTimeBounds = sorted([hmDecode(hm) for hm in data['classTimeBounds']])
-
+    def afterModify(self):
+        EventGroup.afterModify(self)
+        for event in self:
+            try:
+                event.updateSummary()
+            except AttributeError:
+                pass
+            else:
+                event.save()
 
 @classes.group.register
 class LifeTimeGroup(EventGroup):

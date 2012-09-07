@@ -1325,10 +1325,19 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                     text = _('Event ID: %s')%_(event.id)
             message_id = self.sbar.push(0, text)
         return True
-    def onGroupModify(self, group):
+    def onGroupModify(self, group, groupIter):
         self.startWaiting()
         group.afterModify()
         group.save()
+        try:
+            if group.name == 'universityTerm':## FIXME
+                n = self.trees.iter_n_children(groupIter)
+                for i in range(n):
+                    eventIter = self.trees.iter_nth_child(groupIter, i)
+                    eid = self.trees.get(eventIter, 0)[0]
+                    self.trees.set(eventIter, 2, group[eid].summary)
+        except:
+            myRaise()
         self.endWaiting()
     def treeviewButtonPress(self, treev, g_event):
         pos_t = treev.get_path_at_pos(int(g_event.x), int(g_event.y))
@@ -1355,8 +1364,9 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                         pass
                     else:
                         group.enable = not group.enable
+                        groupIter = self.trees.get_iter(path)
                         self.trees.set_value(
-                            self.trees.get_iter(path),
+                            groupIter,
                             1,
                             newOutlineSquarePixbuf(
                                 group.color,
@@ -1366,7 +1376,7 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                             ),
                         )
                         group.save()
-                        self.onGroupModify(group)
+                        self.onGroupModify(group, groupIter)
                         treev.set_cursor(path)
                         return True
     def insertNewGroup(self, groupIndex):
@@ -1376,13 +1386,13 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         ui.eventGroups.insert(groupIndex, group)
         ui.eventGroups.save()
         beforeGroupIter = self.trees.get_iter((groupIndex,))
-        self.trees.insert_before(
+        groupIter = self.trees.insert_before(
             #self.trees.get_iter_root(),## parent
             self.trees.iter_parent(beforeGroupIter),
             beforeGroupIter,## sibling
             self.getGroupRow(group),
         )
-        self.onGroupModify(group)
+        self.onGroupModify(group, groupIter)
     def addGroupBeforeGroup(self, menu, path):
         self.insertNewGroup(path[0])
     def addGroupBeforeSelection(self, obj=None):
@@ -1442,7 +1452,7 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
             groupIter = self.trees.get_iter(path)
             for i, value in enumerate(self.getGroupRow(group)):
                 self.trees.set_value(groupIter, i, value)
-            self.onGroupModify(group)
+            self.onGroupModify(group, groupIter)
     editGroupFromMenu = lambda self, menu, path: self.editGroupByPath(path)
     def deleteGroup(self, path):
         (index,) = path
