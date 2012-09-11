@@ -436,7 +436,7 @@ class GroupSortDialog(gtk.Dialog):
         hbox.pack_start(gtk.Label(_('Based on')+' '), 0, 0)
         self.sortByNames = []
         self.sortByCombo = gtk.combo_box_new_text()
-        for item in group.sortBys:
+        for item in group.getSortBys():
             self.sortByNames.append(item[0])
             self.sortByCombo.append_text(item[1])
         self.sortByCombo.set_active(self.sortByNames.index(group.sortByDefault))## FIXME

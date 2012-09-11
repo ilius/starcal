@@ -2049,10 +2049,11 @@ class EventGroup(EventContainer):
     actions = []## [('Export to ICS', 'exportToIcs')]
     eventActions = [] ## FIXME
     sortBys = (
-        ('mode', _('Calendar Type')),
-        ('summary', _('Summary')),
-        ('description', _('Description')),
-        ('icon', _('Icon')),
+        ## name, description, is_type_dependent
+        ('mode', _('Calendar Type'), False),
+        ('summary', _('Summary'), False),
+        ('description', _('Description'), False),
+        ('icon', _('Icon'), False),
     )
     jsonParams = (
         'enable',
@@ -2074,12 +2075,36 @@ class EventGroup(EventContainer):
         'idList',
     )
     sortByDefault = 'summary'
-    getSortByValue = lambda self, event, attr: getattr(event, attr, None)
+    def getSortBys(self):
+        l = list(self.sortBys)
+        if self.enable:
+            l.append(('time_last', _('Last Occurrence Time'), False))
+        return l
+    def getSortByValue(self, event, attr):
+        if attr=='time_last':
+            if self.enable:
+                last = self.btl.getLastOfEvent(event.id)
+                if last:
+                    return last[0]
+                else:
+                    return None
+        return getattr(event, attr, None)
     def sort(self, attr='summary', reverse=False):
-        event_cmp = lambda event1, event2: cmp(
-            (event1.name, self.getSortByValue(event1, attr)),
-            (event2.name, self.getSortByValue(event2, attr)),
-        )
+        isTypeDep = True
+        for name, desc, dep in self.getSortBys():
+            if name == attr:
+                isTypeDep = dep
+                break
+        if isTypeDep:
+            event_cmp = lambda event1, event2: cmp(
+                (event1.name, self.getSortByValue(event1, attr)),
+                (event2.name, self.getSortByValue(event2, attr)),
+            )
+        else:
+            event_cmp = lambda event1, event2: cmp(
+                self.getSortByValue(event1, attr),
+                self.getSortByValue(event2, attr),
+            )
         eid_cmp = lambda eid1, eid2: event_cmp(
             self.getEvent(eid1),
             self.getEvent(eid2),
@@ -2446,8 +2471,8 @@ class TaskList(EventGroup):
     acceptsEventTypes = ('task', 'allDayTask')
     #actions = EventGroup.actions + []
     sortBys = EventGroup.sortBys + (
-        ('start', _('Start')),
-        ('end', _('End')),
+        ('start', _('Start'), True),
+        ('end', _('End'), True),
     )
     sortByDefault = 'start'
     def getSortByValue(self, event, attr):
@@ -2482,7 +2507,7 @@ class NoteBook(EventGroup):
     canConvertTo = ('yearly', 'taskList')
     #actions = EventGroup.actions + []
     sortBys = EventGroup.sortBys + (
-        ('date', _('Date')),
+        ('date', _('Date'), True),
     )
     sortByDefault = 'date'
     def getSortByValue(self, event, attr):
@@ -2509,8 +2534,8 @@ class UniversityTerm(EventGroup):
         ('View Weekly Schedule', 'viewWeeklySchedule'),
     ]
     sortBys = EventGroup.sortBys + (
-        ('course', _('Course')),
-        ('time', _('Time')),
+        ('course', _('Course'), True),
+        ('time', _('Time'), True),
     )
     sortByDefault = 'time'
     params = EventGroup.params + ('courses',)
@@ -2523,7 +2548,7 @@ class UniversityTerm(EventGroup):
     def getSortByValue(self, event, attr):
         if event.name in self.acceptsEventTypes:
             if attr=='course':
-                return event.name, event.courseId
+                return event.courseId
             elif attr=='time':
                 if event.name == 'universityClass':
                     wd = event['weekDay'].weekDayList[0]
@@ -2675,15 +2700,15 @@ class LifeTimeGroup(EventGroup):
     desc = _('Life Time Events Group')
     acceptsEventTypes = ('lifeTime',)
     sortBys = EventGroup.sortBys + (
-        ('start', _('Start')),
+        ('start', _('Start'), True),
     )
     params = EventGroup.params + ('showSeperatedYmdInputs',)
     def getSortByValue(self, event, attr):
         if event.name in self.acceptsEventTypes:
             if attr=='start':
-                return event.name, event.getJd()
+                return event.getJd()
             elif attr=='end':
-                return event.name, event['end'].getJd()
+                return event['end'].getJd()
         return EventGroup.getSortByValue(self, event, attr)
     def __init__(self, *args, **kwargs):
         self.showSeperatedYmdInputs = False
@@ -2697,16 +2722,16 @@ class LargeScaleGroup(EventGroup):
     desc = _('Large Scale Events Group')
     acceptsEventTypes = ('largeScale',)
     sortBys = EventGroup.sortBys + (
-        ('start', _('Start')),
-        ('end', _('End')),
+        ('start', _('Start'), True),
+        ('end', _('End'), True),
     )
     sortByDefault = 'start'
     def getSortByValue(self, event, attr):
         if event.name in self.acceptsEventTypes:
             if attr=='start':
-                return event.name, event.start * event.scale
+                return event.start * event.scale
             elif attr=='end':
-                return event.name, event.getEnd() * event.scale
+                return event.getEnd() * event.scale
         return EventGroup.getSortByValue(self, event, attr)
     def __init__(self, *args, **kwargs):
         self.scale = 1 ## 1, 1000, 1000**2, 1000**3

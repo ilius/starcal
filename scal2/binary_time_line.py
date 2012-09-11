@@ -169,6 +169,13 @@ class BtlRootNode:
             #if not node.events:
             #   node.parent.removeChild(node)
         return n
+    def getLastOfEvent(self, ev_id):
+        try:
+            node, ev_tuple = self.byEvent[ev_id][-1]
+        except KeyError, IndexError:
+            return None
+        return ev_tuple[0], ev_tuple[1]
+
 
 #if __name__=='__main__':
 #    from scal2 import ui

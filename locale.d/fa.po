@@ -1276,6 +1276,10 @@ msgid "contains %s events and %s occurences"
 msgstr ""
 "شامل %s رویداد و %s رخداد"
 
+msgid "Last Occurrence Time"
+msgstr ""
+"زمان آخرین رخداد"
+
 
 
 
