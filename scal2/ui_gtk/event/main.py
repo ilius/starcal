@@ -1418,7 +1418,7 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         )
         for event in newGroup:
             self.trees.append(newGroupIter, self.getEventRow(event))
-    duplicateGroupFromMenu = lambda self, menu, path: self.duplicateGroup(path[0])
+    duplicateGroupFromMenu = lambda self, menu, path: self.duplicateGroup(path)
     duplicateGroupWithEventsFromMenu = lambda self, menu, path: self.duplicateGroupWithEvents(path)
     def duplicateSelectedObj(self, button=None):
         path = self.treev.get_cursor()[0]
