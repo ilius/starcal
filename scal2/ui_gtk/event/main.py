@@ -39,7 +39,8 @@ from gtk import gdk
 
 
 from scal2.ui_gtk.utils import set_tooltip, dialog_add_button, confirm
-from scal2.ui_gtk.utils import toolButtonFromStock, pixbufFromFile, labelStockMenuItem, rectangleContainsPoint
+from scal2.ui_gtk.utils import toolButtonFromStock, labelImageMenuItem, labelStockMenuItem
+from scal2.ui_gtk.utils import pixbufFromFile, rectangleContainsPoint
 
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
