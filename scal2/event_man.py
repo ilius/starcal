@@ -182,6 +182,7 @@ def intersectionOfTwoTimeRangeList(rList1, rList2):
 
 class EventBaseClass:
     params = ()## used in getData and setData and copyFrom
+    __str__ = lambda self: self.__repr__()
     def copyFrom(self, other):
         for attr in self.params:
             try:
@@ -1085,7 +1086,7 @@ class Event(JsonEventBaseClass, RuleContainer):
     def getDefaultIcon(cls):
         return join(pixDir, 'event', cls.iconName+'.png') if cls.iconName else ''
     __nonzero__ = lambda self: bool(self.rulesOd) ## FIXME
-    __str__ = lambda self: 'Event(id=%s, summary=%s)'%(self.id, self.summary)
+    __repr__ = lambda self: 'Event(id=%s, summary=%s)'%(self.id, toStr(self.summary))
     def __init__(self, _id=None, parent=None):
         if _id is None:
             self.id = None
@@ -1977,7 +1978,7 @@ class EventContainer(JsonEventBaseClass):
             return self.getEvent(key)
         else:
             raise TypeError('invalid key type %r give to EventContainer.__getitem__'%key)
-    __repr__ = lambda self: '%s(title=%r)'%(self.__class__.__name__, self.title)
+    __repr__ = lambda self: '%s(title=%s)'%(self.__class__.__name__, toStr(self.title))
     def __init__(self, title='Untitled'):
         self.mode = core.primaryMode
         self.idList = []
@@ -1990,7 +1991,8 @@ class EventContainer(JsonEventBaseClass):
     def afterModify(self):
         self.modified = time()
     def getEvent(self, eid):
-        assert eid in self.idList
+        if not eid in self.idList:
+            raise ValueError('%s does not contain %s'%(self, eid))
         eventFile = join(eventsDir, str(eid), 'event.json')
         if not isfile(eventFile):
             raise IOError('error while loading event file %r: no such file (container: %r)'%(eventFile, self))
@@ -2010,8 +2012,10 @@ class EventContainer(JsonEventBaseClass):
     __iter__ = lambda self: IteratorFromGen(self.getEventsGen())
     __len__ = lambda self: len(self.idList)
     def preAdd(self, event):
-        assert event.id not in self.idList
-        assert event.parent is None
+        if event.id in self.idList:
+            raise ValueError('%s already contains %s'%(self, event))
+        if event.parent not in (None, self):
+            raise ValueError('%s already has a parent=%s, trying to add to %s'%(event, event.parent, self))
     def postAdd(self, event):
         event.parent = self ## needed? FIXME
     def insert(self, index, event):
@@ -2145,7 +2149,7 @@ class EventGroup(EventContainer):
             raise TypeError('invalid key %r give to EventGroup.__delitem__'%key)
     def checkEventToAdd(self, event):
         return event.name in self.acceptsEventTypes
-    __repr__ = lambda self: '%s(_id=%r, title=%r)'%(self.__class__.__name__, self.id, self.title)
+    __repr__ = lambda self: '%s(_id=%s, title=%s)'%(self.__class__.__name__, self.id, toStr(self.title))
     def __init__(self, _id=None, title=None):
         if title is None:
             title = self.desc
@@ -2274,8 +2278,7 @@ class EventGroup(EventContainer):
     ################# Event objects should be accessed from outside only within one of these 3 methods
     def getEvent(self, eid):
         if not eid in self.idList:
-            print 'EventGroup.getEvent(%s): not in %s'%(eid, self.idList)
-        assert eid in self.idList
+            raise ValueError('%s does not contain %s'%(self, eid))
         if eid in self.eventCache:
             return self.eventCache[eid]
         event = EventContainer.getEvent(self, eid)
@@ -2287,7 +2290,7 @@ class EventGroup(EventContainer):
     def createEvent(self, eventType):
         #if not eventType in self.acceptsEventTypes:## FIXME
         #    raise ValueError('Event type "%s" not supported in group "%s"'%(eventType, self.name))
-        event = classes.event.byName[eventType](parent=self)
+        event = classes.event.byName[eventType](parent=self)## FIXME
         return event
     def copyEventWithType(self, event, eventType):## FIXME
         newEvent = self.createEvent(eventType)
