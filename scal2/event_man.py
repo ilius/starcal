@@ -2367,6 +2367,9 @@ class EventGroup(EventContainer):
         self.eventCache = {}
         self.node.clear()
         self.occurCount = 0
+    def _preAdd(self, event):
+        assert event.id not in self.idList
+        assert event.parent is None
     def _postAdd(self, event):
         event.parent = self ## needed? FIXME
         if len(self.eventCache) < self.eventCacheSize:
@@ -2378,9 +2381,11 @@ class EventGroup(EventContainer):
         if self.enable:
             self.updateOccurrenceNodeEvent(event)
     def insert(self, index, event):
+        self._preAdd(event)
         self.idList.insert(index, event.id)
         self._postAdd(event)
     def append(self, event):
+        self._preAdd(event)
         self.idList.append(event.id)
         self._postAdd(event)
     def updateCache(self, event):
