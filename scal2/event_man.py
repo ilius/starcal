@@ -2488,7 +2488,7 @@ class NoteBook(EventGroup):
     def getSortByValue(self, event, attr):
         if event.name in self.acceptsEventTypes:
             if attr=='date':
-                return event.getDate()
+                return event.getJd()
         return EventGroup.getSortByValue(self, event, attr)
 
 
