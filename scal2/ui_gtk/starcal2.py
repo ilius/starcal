@@ -1136,13 +1136,7 @@ for cls in (
 #core.COMMAND = sys.argv[0] ## OR __file__ ## ????????
 
 
-if rtl:
-    gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
-
-
 gtk.init_check()
-gtk.window_set_default_icon_from_file(ui.logo)
-
 
 clickWebsite = lambda widget, url: core.openUrl(url)
 try:

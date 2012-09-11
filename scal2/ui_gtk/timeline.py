@@ -49,6 +49,8 @@ import cairo
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk import gtk_ud as ud
+
 def show_event(widget, event):
     print type(widget), event.type.value_name, event.get_value()#, event.send_event
 
@@ -589,9 +591,6 @@ TimeLine.registerSignals()
 TimeLineWindow.registerSignals()
 
 if __name__=='__main__':
-    gtk.window_set_default_icon_from_file(ui.logo)
-    if rtl:
-        gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
     win = TimeLineWindow()
     win.resize(ud.screenW, 150)
     win.move(0, 0)

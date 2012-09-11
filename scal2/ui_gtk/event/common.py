@@ -648,8 +648,6 @@ class GroupsTreeCheckList(gtk.TreeView):
 
 if __name__ == '__main__':
     from pprint import pformat
-    if core.rtl:
-        gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
     dialog = gtk.Window()
     dialog.vbox = gtk.VBox()
     dialog.add(dialog.vbox)

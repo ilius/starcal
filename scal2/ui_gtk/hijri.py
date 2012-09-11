@@ -38,6 +38,8 @@ from gtk import gdk
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
 from scal2.ui_gtk.utils import dialog_add_button
 
+from scal2.ui_gtk import gtk_ud as ud
+
 hijriMode = calModuleNames.index('hijri')
 
 def getCurrentYm():
@@ -208,8 +210,6 @@ class EditDbDialog(gtk.Dialog):
         return True
 
 def tuneHijriMonthes(widget=None):
-    if rtl:
-        gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
     dialog = EditDbDialog()
     dialog.resize(400, 400)
     dialog.run()

@@ -24,8 +24,6 @@ import os, sys, shlex, thread
 from os.path import join, dirname, split, splitext
 
 from scal2.paths import *
-from scal2.json_utils import *
-from scal2.cal_modules import convert
 
 from scal2 import core
 from scal2.core import myRaise
@@ -36,15 +34,15 @@ from scal2.locale_man import rtl
 from scal2 import event_man
 from scal2 import ui
 
-from gobject import timeout_add_seconds
 import gtk
 from gtk import gdk
 
 
-from scal2.ui_gtk.utils import *
+from scal2.ui_gtk.utils import dialog_add_button, set_tooltip
+from scal2.ui_gtk.utils import toolButtonFromStock, pixbufFromFile, labelStockMenuItem, rectangleContainsPoint
+
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
-from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
 from scal2.ui_gtk import gtk_ud as ud
 
 from scal2.ui_gtk.event.common import EventEditorDialog, addNewEvent, GroupEditorDialog
@@ -1091,10 +1089,6 @@ def makeWidget(obj):## obj is an instance of Event, EventRule, EventNotifier or 
 ##############################################################################
 
 EventManagerDialog.registerSignals()
-
-if rtl:
-    gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
-
 
 modPrefix = 'scal2.ui_gtk.event.'
 

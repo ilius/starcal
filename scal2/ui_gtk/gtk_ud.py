@@ -25,6 +25,7 @@ import time
 from os.path import join
 
 from scal2.paths import *
+from scal2.locale_man import rtl
 from scal2 import core
 from scal2 import ui
 from scal2.format_time import compileTmFormat
@@ -98,6 +99,11 @@ IntegatedWindowList.registerSignals()
 windowList = IntegatedWindowList()
 
 ###########
+
+if rtl:
+    gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
+
+gtk.window_set_default_icon_from_file(ui.logo)
 
 settings = gtk.settings_get_default()
 
