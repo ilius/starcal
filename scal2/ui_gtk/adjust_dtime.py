@@ -31,7 +31,6 @@ iceil = lambda f: int(ceil(f))
 
 
 _ = str ## FIXME
-#gtk.widget_set_default_direction(gtk.TEXT_DIR_LTR)
 
 from scal2 import ui
 from scal2.ui_gtk.mywidgets.multi_spin_button import dateInput, timeInput

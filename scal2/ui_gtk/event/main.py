@@ -236,8 +236,8 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         #testItem.set_submenu(testMenu)
         #menubar.append(testItem)
         ###
-        #item = gtk.MenuItem('GroupsTreeCheckList')
-        #item.connect('activate', testGroupsTreeCheckList)
+        #item = gtk.MenuItem('')
+        #item.connect('activate', )
         #testMenu.append(item)
         ####
         menubar.show_all()
@@ -1162,45 +1162,10 @@ event_man.Account.makeWidget = makeWidget
 
 
 
-
-
 import scal2.ui_gtk.event.import_customday ## opens a dialog if neccessery
 
 
 ##############################################################################
 
-def testCustomEventEditor():
-    from pprint import pprint, pformat
-    dialog = gtk.Dialog()
-    event = event_man.Event(1)
-    event.load()
-    widget = event.makeWidget()
-    dialog.vbox.pack_start(widget)
-    dialog.vbox.show_all()
-    dialog.add_button('OK', 0)
-    if dialog.run()==0:
-        widget.updateVars()
-        #widget.event.afterModify()
-        widget.event.save()
-        pprint(widget.event.getData())
-
-
-def testGroupsTreeCheckList(obj=None):
-    dialog = gtk.Dialog()
-    treev = GroupsTreeCheckList()
-    swin = gtk.ScrolledWindow()
-    swin.add(treev)
-    swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-    dialog.vbox.pack_start(swin, 1, 1)
-    dialog.vbox.show_all()
-    dialog.resize(500, 500)
-    treev.setValue([8, 7, 1, 3])
-    dialog.run()
-    print treev.getValue()
-
-
-if __name__=='__main__':
-    #testCustomEventEditor()
-    testGroupsTreeCheckList()
 
 
