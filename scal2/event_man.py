@@ -2797,12 +2797,15 @@ class LargeScaleGroup(EventGroup):
     acceptsEventTypes = ('largeScale',)
     sortBys = EventGroup.sortBys + (
         ('start', _('Start')),
+        ('end', _('End')),
     )
     sortByDefault = 'start'
     def getSortByValue(self, event, attr):
         if event.name in self.acceptsEventTypes:
             if attr=='start':
                 return event.name, event.start * event.scale
+            elif attr=='end':
+                return event.name, event.getEnd() * event.scale
         return EventGroup.getSortByValue(self, event, attr)
     def __init__(self, *args, **kwargs):
         self.scale = 1 ## 1, 1000, 1000**2, 1000**3
