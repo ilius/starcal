@@ -611,6 +611,41 @@ class GroupEditorDialog(gtk.Dialog):
         self.destroy()
         return self._group
 
+
+class GroupsTreeCheckList(gtk.TreeView):
+    def __init__(self):
+        gtk.TreeView.__init__(self)
+        self.trees = gtk.ListStore(int, bool, str)## groupId(hidden), enable, summary
+        self.set_model(self.trees)
+        self.set_headers_visible(False)
+        ###
+        cell = gtk.CellRendererToggle()
+        #cell.set_property('activatable', True)
+        cell.connect('toggled', self.enableCellToggled)
+        col = gtk.TreeViewColumn(_('Enable'), cell)
+        col.add_attribute(cell, 'active', 1)
+        #cell.set_active(True)
+        col.set_resizable(True)
+        self.append_column(col)
+        ###
+        col = gtk.TreeViewColumn(_('Title'), gtk.CellRendererText(), text=2)
+        col.set_resizable(True)
+        self.append_column(col)
+        ###
+        for group in ui.eventGroups:
+            self.trees.append([group.id, True, group.title])
+    def enableCellToggled(self, cell, path):
+        i = int(path)
+        active = not cell.get_active()
+        self.trees[i][1] = active
+        cell.set_active(active)
+    def getValue(self):
+        return [row[0] for row in self.trees if row[1]]
+    def setValue(self, gids):
+        for row in self.trees:
+            row[1] = (row[0] in gids)
+
+
 if __name__ == '__main__':
     from pprint import pformat
     if core.rtl:

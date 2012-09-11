@@ -47,7 +47,7 @@ from scal2.ui_gtk.utils import *
 
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.export import ExportToIcsDialog
-from scal2.ui_gtk.event.main import AccountEditorDialog
+from scal2.ui_gtk.event.account_op import AccountEditorDialog
 
 ############################################################
 
