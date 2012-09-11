@@ -1246,6 +1246,8 @@ class Event(JsonEventBaseClass, RuleContainer):
         return data
     def setData(self, data):
         JsonEventBaseClass.setData(self, data)
+        if self.remoteIds:
+            self.remoteIds = tuple(self.remoteIds)
         if 'id' in data:
             self.setId(data['id'])
         if 'calType' in data:
@@ -2271,7 +2273,8 @@ class EventGroup(EventContainer):
             self.eventCache[eid] = event
         return event
     def createEvent(self, eventType):
-        assert eventType in self.acceptsEventTypes
+        #if not eventType in self.acceptsEventTypes:## FIXME
+        #    raise ValueError('Event type "%s" not supported in group "%s"'%(eventType, self.name))
         event = classes.event.byName[eventType](parent=self)
         return event
     def copyEventWithType(self, event, eventType):## FIXME
