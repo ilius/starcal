@@ -126,7 +126,6 @@ class EditDbDialog(gtk.Dialog):
         #for index, module in core.calModules.iterIndexModule():
         #    if module.name != 'hijri':
         for mode in core.calModules.active:
-            mode = item['mode']
             modeDesc = core.calModules[mode].desc
             if not 'hijri' in modeDesc.lower():
                 self.altMode = mode
