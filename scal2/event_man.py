@@ -2009,8 +2009,19 @@ class EventContainer(JsonEventBaseClass):
                 yield event
     __iter__ = lambda self: IteratorFromGen(self.getEventsGen())
     __len__ = lambda self: len(self.idList)
-    insert = lambda self, index, event: self.idList.insert(index, event.id)
-    append = lambda self, event: self.idList.append(event.id)
+    def preAdd(self, event):
+        assert event.id not in self.idList
+        assert event.parent is None
+    def postAdd(self, event):
+        event.parent = self ## needed? FIXME
+    def insert(self, index, event):
+        self.preAdd(event)
+        self.idList.insert(index, event.id)
+        self.postAdd(event)
+    def append(self, event):
+        self.preAdd(event)
+        self.idList.append(event.id)
+        self.postAdd(event)
     index = lambda self, eid: self.idList.index(eid)
     moveUp = lambda self, index: self.idList.insert(index-1, self.idList.pop(index))
     moveDown = lambda self, index: self.idList.insert(index+1, self.idList.pop(index))
@@ -2021,6 +2032,7 @@ class EventContainer(JsonEventBaseClass):
         '''
         index = self.idList.index(event.id)
         self.idList.remove(event.id)
+        event.parent = None
         return index
     def copyFrom(self, other):
         JsonEventBaseClass.copyFrom(self, other)
@@ -2285,7 +2297,6 @@ class EventGroup(EventContainer):
         return newEvent
     ###############################################
     def remove(self, event):## call when moving to trash
-        event.parent = None
         index = EventContainer.remove(self, event)
         try:
             del self.eventCache[event.id]
@@ -2305,11 +2316,8 @@ class EventGroup(EventContainer):
         self.eventCache = {}
         self.btl.clear()
         self.occurCount = 0
-    def _preAdd(self, event):
-        assert event.id not in self.idList
-        assert event.parent is None
-    def _postAdd(self, event):
-        event.parent = self ## needed? FIXME
+    def postAdd(self, event):
+        EventContainer.postAdd(self, event)
         if len(self.eventCache) < self.eventCacheSize:
             self.eventCache[event.id] = event
         if event.remoteIds:
@@ -2318,14 +2326,6 @@ class EventGroup(EventContainer):
         ## its done in event.afterModify() right? not when moving event from another group
         if self.enable:
             self.updateOccurrenceNodeEvent(event)
-    def insert(self, index, event):
-        self._preAdd(event)
-        self.idList.insert(index, event.id)
-        self._postAdd(event)
-    def append(self, event):
-        self._preAdd(event)
-        self.idList.append(event.id)
-        self._postAdd(event)
     def updateCache(self, event):
         if event.id in self.eventCache:
             self.eventCache[event.id] = event
@@ -2802,9 +2802,14 @@ class JsonObjectsHolder(JsonEventBaseClass):
             os.remove(obj.file)
         except:
             myRaise()
-        else:
+        try:
             del self.byId[obj.id]
+        except:
+            myRaise()
+        try:
             self.idList.remove(obj.id)
+        except:
+            myRaise()
     def pop(self, index):
         return self.byId.pop(self.idList.pop(index))
     moveUp = lambda self, index: self.idList.insert(index-1, self.idList.pop(index))
