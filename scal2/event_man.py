@@ -1937,7 +1937,13 @@ class LargeScaleEvent(Event):## or MegaEvent? FIXME
         self.end = 1
         self.endRel = True
         Event.__init__(self, *args, **kw)
-    getRulesHash = lambda self: hash(str(('largeScale', self.scale, self.start, self.end, self.endRel)))
+    getRulesHash = lambda self: hash(str((
+        'largeScale',
+        self.scale,
+        self.start,
+        self.end,
+        self.endRel,
+    )))## FIXME hash(tpl) ot hash(str(tpl))
     getEnd = lambda self: self.start + self.end if self.endRel else self.end
     def setDefaultsFromGroup(self, group):
         Event.setDefaultsFromGroup(self, group)
