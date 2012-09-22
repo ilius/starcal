@@ -674,7 +674,7 @@ winSticky = True
 winX = 0
 winY = 0
 fontUseDefault = True
-fontDefault = ('Sans', False, False, 12)
+fontDefault = ['Sans', False, False, 12]
 fontCustom = None
 #####################
 showMain = True ## Show main window on start (or only goto tray)
@@ -763,11 +763,11 @@ if shownCals:
     for item in shownCals:
         mcalTypeParams.append({
             'pos': (item['x'], item['y']),
-            'font': item['font'],
+            'font': list(item['font']),
             'color': item['color'],
         })
         wcalTypeParams.append({
-            'font': item['font'],
+            'font': list(item['font']),
         })
         core.activeCalNames.append(calModuleNames[item['mode']])
     core.calModules.update()
