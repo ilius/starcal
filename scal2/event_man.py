@@ -2315,7 +2315,7 @@ class EventGroup(EventContainer):
             del self.eventIdByRemoteIds[event.remoteIds]
         except:
             pass
-        self.occurCount -= self.btl.delEvent(event.id)
+        self.occurCount -= self.btl.delete(event.id)
         return index
     def removeAll(self):## clearEvents or excludeAll or removeAll FIXME
         for event in self.eventCache.values():
@@ -2338,7 +2338,7 @@ class EventGroup(EventContainer):
     def updateCache(self, event):
         if event.id in self.eventCache:
             self.eventCache[event.id] = event
-        self.occurCount -= self.btl.delEvent(event.id)
+        self.occurCount -= self.btl.delete(event.id)
         event.afterModify()
     def copy(self):
         newGroup = EventBaseClass.copy(self)
@@ -2398,9 +2398,9 @@ class EventGroup(EventContainer):
         #print 'updateOccurrenceNodeEvent', self.id, self.title, event.id
         node = self.btl
         eid = event.id
-        node.delEvent(eid)
+        node.delete(eid)
         for t0, t1 in event.calcOccurrenceAll().getTimeRangeList():
-            node.addEvent(t0, t1, eid)
+            node.add(t0, t1, eid)
             self.occurCount += 1
     def updateOccurrenceNode(self):
         stm0 = time()
@@ -2408,7 +2408,7 @@ class EventGroup(EventContainer):
         self.occurCount = 0
         for event, occur in self.calcOccurrenceAll():
             for t0, t1 in occur.getTimeRangeList():
-                self.btl.addEvent(t0, t1, event.id)
+                self.btl.add(t0, t1, event.id)
                 self.occurCount += 1
         #self.btlLoaded = True
         #print 'updateOccurrenceNode, id=%s, title=%s, length=%s, time=%s'%(self.id, self.title, len(self), time()-stm0)
@@ -3022,7 +3022,7 @@ def getDayOccurrenceData(curJd, groups):
             continue
         #print '\nupdateData: checking event', event.summary
         gid = group.id
-        for epoch0, epoch1, eid, odt in group.btl.getEvents(getEpochFromJd(curJd), getEpochFromJd(curJd+1)):
+        for epoch0, epoch1, eid, odt in group.btl.search(getEpochFromJd(curJd), getEpochFromJd(curJd+1)):
             event = group[eid]
             text = event.getText()
             for url, fname in event.getFilesUrls():

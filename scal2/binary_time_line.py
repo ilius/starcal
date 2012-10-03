@@ -52,7 +52,7 @@ class BtlNode:
         self.children = {} ## possible keys are 0 to base-1 for right node, or -(base-1) to 0 for left node
         self.events = [] ## list of tuples (rel_start, rel_end, event_id)
     overlapScope = lambda self, t0, t1: overlaps(t0, t1, self.s0, self.s1)
-    def getEvents(self, t0, t1):## t0 < t1
+    def search(self, t0, t1):## t0 < t1
         '''
             returns a list of (ev_t0, ev_t1, ev_id) s
         '''
@@ -72,7 +72,7 @@ class BtlNode:
                     ev_rt1 - ev_rt0,
                 ))
         for child in self.children.values():
-            events += child.getEvents(t0, t1)
+            events += child.search(t0, t1)
         return events
     def getChild(self, tm):
         if not self.s0 <= tm <= self.s1:
@@ -102,7 +102,7 @@ class BtlNode:
 
 class BtlRootNode:
     def __init__(self, offset=0, base=4):
-        ## base 4 and 8 are the best (about speed of both addEvent and getEvents)
+        ## base 4 and 8 are the best (about speed of both add and search)
         self.base = base
         self.offset = offset
         self.clear()
@@ -110,22 +110,22 @@ class BtlRootNode:
         self.right = BtlNode(self.base, 1, self.offset, True)
         self.left = BtlNode(self.base, 1, self.offset, False)
         self.byEvent = {}
-    def getEvents(self, t0, t1):
+    def search(self, t0, t1):
         if self.offset <= t0:
-            return self.right.getEvents(t0, t1)
+            return self.right.search(t0, t1)
         elif t0 < self.offset < t1:
-            return self.left.getEvents(t0, self.offset) + self.right.getEvents(self.offset, t1)
+            return self.left.search(t0, self.offset) + self.right.search(self.offset, t1)
         elif t1 <= self.offset:
-            return self.left.getEvents(t0, t1)
+            return self.left.search(t0, t1)
         else:
             raise RuntimeError
-    def addEvent(self, t0, t1, ev_id):
+    def add(self, t0, t1, ev_id):
         if self.offset <= t0:
             isRight = True
             node = self.right
         elif t0 < self.offset < t1:
-            self.addEvent(t0, self.offset, ev_id)
-            self.addEvent(self.offset, t1, ev_id)
+            self.add(t0, self.offset, ev_id)
+            self.add(self.offset, t1, ev_id)
             return
         elif t1 <= self.offset:
             isRight = False
@@ -155,7 +155,7 @@ class BtlRootNode:
             self.byEvent[ev_id].append((node, ev_tuple))
         except KeyError:
             self.byEvent[ev_id] = [(node, ev_tuple)]
-    def delEvent(self, ev_id):
+    def delete(self, ev_id):
         try:
             refList = self.byEvent.pop(ev_id)
         except KeyError:

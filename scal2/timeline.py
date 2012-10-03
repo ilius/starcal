@@ -413,12 +413,12 @@ def calcTimeLineData(timeStart, timeWidth, width):
         if not group.showInTimeLine:
             continue
         borderTm = (boxMoveBorder+boxMoveLineW)/pixelPerSec
-        for t0, t1, eid, odt in group.btl.getEvents(timeStart-borderTm, timeEnd+borderTm):
+        for t0, t1, eid, odt in group.btl.search(timeStart-borderTm, timeEnd+borderTm):
             pixBoxW = (t1-t0) * pixelPerSec
             if pixBoxW < skipEventPixelLimit:
                 continue
             #if not isinstance(eid, int):
-            #    print '----- bad eid from getEvents: %r'%eid
+            #    print '----- bad eid from search: %r'%eid
             #    continue
             event = group[eid]
             eventIndex = group.index(eid)
