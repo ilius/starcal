@@ -64,16 +64,16 @@ class EventSearchTree:
     def clear(self):
         self.root = None
         self.byId = {}
-    def addNode(self, node, t0, t1, mt, dt, eid):
+    def addStep(self, node, t0, t1, mt, dt, eid):
         if node is None:
             node = Node(mt)
             node.add(t0, t1, dt, eid)
             return node
         cm = cmp(mt, node.mt)
         if cm < 0:
-            node.left  = self.addNode(node.left , t0, t1, mt, dt, eid)
+            node.left  = self.addStep(node.left , t0, t1, mt, dt, eid)
         elif cm > 0:
-            node.right = self.addNode(node.right, t0, t1, mt, dt, eid)
+            node.right = self.addStep(node.right, t0, t1, mt, dt, eid)
         else:## cm == 0
             node.add(t0, t1, dt, eid)
         node.updateMinMax()
@@ -83,7 +83,7 @@ class EventSearchTree:
         assert t1 > t0
         mt = (t0 + t1)/2.0
         dt = (t1 - t0)/2.0
-        self.root = self.addNode(self.root, t0, t1, mt, dt, eid)
+        self.root = self.addStep(self.root, t0, t1, mt, dt, eid)
         try:
             hp = self.byId[eid]
         except KeyError:
@@ -133,14 +133,14 @@ class EventSearchTree:
         )
     def getDepth(self):
         return self.getDepthNone(self.root)
-    def deleteNode(self, node, mt, dt, eid):
+    def deleteStep(self, node, mt, dt, eid):
         if node is None:
             return None
         cm = cmp(mt, node.mt)
         if cm < 0:
-            node.left = self.deleteNode(node.left, mt, dt, eid)
+            node.left = self.deleteStep(node.left, mt, dt, eid)
         elif cm > 0:
-            node.right = self.deleteNode(node.right, mt, dt, eid)
+            node.right = self.deleteStep(node.right, mt, dt, eid)
         else:## cm == 0
             node.events.delete(dt, eid)
             if node.events:
@@ -151,7 +151,7 @@ class EventSearchTree:
                 return node.right
             node2 = node
             node = self.min(node2.right)
-            node.right = self.deleteNode(node2.right)
+            node.right = self.deleteStep(node2.right)
             node.left = node2.left
         #node.count = self.size(node.left) + self.size(node.right) + 1
         return node
@@ -164,7 +164,7 @@ class EventSearchTree:
             n = 0
             for mt, dt in hp.getAll():
                 try:
-                    self.root = self.deleteNode(self.root, mt, dt, eid)
+                    self.root = self.deleteStep(self.root, mt, dt, eid)
                 except:
                     myRaise()
                 else:
