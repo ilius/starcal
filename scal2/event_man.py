@@ -30,7 +30,7 @@ from scal2.lib import OrderedDict
 
 from paths import *
 
-from scal2.utils import arange, ifloor, iceil, IteratorFromGen, findNearestIndex
+from scal2.utils import toStr, arange, ifloor, iceil, IteratorFromGen, findNearestIndex
 from scal2.os_utils import makeDir
 from scal2.time_utils import *
 from scal2.json_utils import *
