@@ -1939,6 +1939,11 @@ class LargeScaleEvent(Event):## or MegaEvent? FIXME
         self.end = 1
         self.endRel = True
         Event.__init__(self, *args, **kw)
+    def setData(self, data):
+        if 'duration' in data:
+            data['end'] = data['duration']
+            data['endRel'] = True
+        Event.setData(self, data)
     getRulesHash = lambda self: hash(str((
         'largeScale',
         self.scale,
