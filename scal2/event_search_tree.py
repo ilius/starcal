@@ -107,10 +107,9 @@ class EventSearchTree:
             dt_list = node.events.getAll()
         else:
             dt_list = node.events.moreThan(min_dt)
-        res = [(node.mt, e_dt, eid) for e_dt, eid in dt_list]
-        return res + \
-            self.searchStep(node.left, t0, t1) + \
-            self.searchStep(node.right, t0, t1)
+        return self.searchStep(node.left, t0, t1) + \
+               [(node.mt, e_dt, eid) for e_dt, eid in dt_list] + \
+               self.searchStep(node.right, t0, t1)
     search = lambda self, t0, t1: [
         (
             max(t0, mt-dt),
