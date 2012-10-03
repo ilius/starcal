@@ -80,7 +80,6 @@ class EventSearchTree:
         #node.updateCount()
         return node
     def add(self, t0, t1, eid):
-        assert t1 > t0
         mt = (t0 + t1)/2.0
         dt = (t1 - t0)/2.0
         self.root = self.addStep(self.root, t0, t1, mt, dt, eid)
