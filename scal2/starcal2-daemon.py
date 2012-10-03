@@ -93,7 +93,7 @@ def prepareToday():
     for group in eventGroups:
         if not group.enable:
             continue
-        for epoch0, epoch1, eid in group.btl.search(getEpochFromJd(todayJd), getEpochFromJd(todayJd+1)):
+        for epoch0, epoch1, eid in group.occur.search(getEpochFromJd(todayJd), getEpochFromJd(todayJd+1)):
             event = group[eid]
             if not event.notifiers:
                 continue

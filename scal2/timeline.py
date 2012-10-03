@@ -413,7 +413,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
         if not group.showInTimeLine:
             continue
         borderTm = (boxMoveBorder+boxMoveLineW)/pixelPerSec
-        for t0, t1, eid, odt in group.btl.search(timeStart-borderTm, timeEnd+borderTm):
+        for t0, t1, eid, odt in group.occur.search(timeStart-borderTm, timeEnd+borderTm):
             pixBoxW = (t1-t0) * pixelPerSec
             if pixBoxW < skipEventPixelLimit:
                 continue
