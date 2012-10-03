@@ -24,6 +24,7 @@ import json, random, os, shutil
 from os.path import join, split, isdir, isfile, dirname, splitext
 from os import listdir
 from copy import deepcopy
+from random import shuffle
 
 from scal2.lib import OrderedDict
 
@@ -35,7 +36,8 @@ from scal2.time_utils import *
 from scal2.json_utils import *
 from scal2.color_utils import hslToRgb
 from scal2.ics import *
-from scal2.binary_time_line import BtlRootNode
+#from scal2.binary_time_line import BtlRootNode
+from scal2.event_search_tree import EventSearchTree
 
 from scal2.cal_modules import calModuleNames, jd_to, to_jd, convert, DATE_GREG
 from scal2.locale_man import tr as _
@@ -2185,7 +2187,8 @@ class EventGroup(EventContainer):
         self.startJd = to_jd(year-10, 1, 1, self.mode)
         self.endJd = to_jd(year+5, 1, 1, self.mode)
         ##
-        self.btl = BtlRootNode(offset=getEpochFromJd(self.endJd), base=core.btlBase)
+        #self.btl = BtlRootNode(offset=getEpochFromJd(self.endJd), base=core.btlBase)
+        self.btl = EventSearchTree()
         #self.btlLoaded = False
         self.occurCount = 0
         ###
@@ -2387,7 +2390,8 @@ class EventGroup(EventContainer):
             offsetJd = self.endJd
         else:
             offsetJd = self.startJd
-        self.btl = BtlRootNode(offset=getEpochFromJd(offsetJd), base=core.btlBase)
+        #self.btl = BtlRootNode(offset=getEpochFromJd(offsetJd), base=core.btlBase)
+        self.btl = EventSearchTree()
         self.occurCount = 0
         ####
         if self.enable:
@@ -2406,10 +2410,14 @@ class EventGroup(EventContainer):
         stm0 = time()
         self.btl.clear()
         self.occurCount = 0
+        occurList = []
         for event, occur in self.calcOccurrenceAll():
             for t0, t1 in occur.getTimeRangeList():
-                self.btl.add(t0, t1, event.id)
-                self.occurCount += 1
+                occurList.append((t0, t1, event.id))
+        shuffle(occurList)
+        for t0, t1, eid in occurList:
+            self.btl.add(t0, t1, eid)
+        self.occurCount += len(occurList)
         #self.btlLoaded = True
         #print 'updateOccurrenceNode, id=%s, title=%s, length=%s, time=%s'%(self.id, self.title, len(self), time()-stm0)
     def exportToIcsFp(self, fp):

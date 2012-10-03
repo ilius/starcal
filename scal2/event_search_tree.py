@@ -1,0 +1,186 @@
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) 2012 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
+#
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2 of the License, or (at your option) any later version.
+#
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
+# Lesser General Public License for more details.
+#
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program. If not, see <http://www.gnu.org/licenses/lgpl.txt>.
+# Also avalable in /usr/share/common-licenses/LGPL on Debian systems
+# or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
+
+import sys
+from math import log
+
+sys.path.append('/starcal2')
+
+from scal2.utils import myRaise
+from scal2.time_utils import *
+from scal2.bin_heap import MaxHeap
+
+class Node:
+    def __init__(self, mt):
+        self.mt = mt
+        self.min_t = mt
+        self.max_t = mt
+        self.events = MaxHeap()
+        self.left = None
+        self.right = None
+        #self.count = 0
+    def add(self, t0, t1, dt, eid):
+        self.events.add(dt, eid)
+        if t0 < self.min_t:
+            self.min_t = t0
+        if t1 > self.max_t:
+            self.max_t = t1
+    def updateMinMax(self):
+        self.updateMinMaxChild(self.left)
+        self.updateMinMaxChild(self.right)
+    def updateMinMaxChild(self, child):
+        if child:
+            if child.max_t > self.max_t:
+                self.max_t = child.max_t 
+            if child.min_t < self.min_t:
+                self.min_t = child.min_t
+    #def updateCount(self):
+    #    self.count = 1
+    #    if self.left:
+    #        self.count += self.left.count
+    #    if self.right:
+    #        self.count += self.right.count
+
+
+class EventSearchTree:
+    def __init__(self):
+        self.clear()
+    def clear(self):
+        self.root = None
+        self.byId = {}
+    def addNode(self, node, t0, t1, mt, dt, eid):
+        if node is None:
+            node = Node(mt)
+            node.add(t0, t1, dt, eid)
+            return node
+        cm = cmp(mt, node.mt)
+        if cm < 0:
+            node.left  = self.addNode(node.left , t0, t1, mt, dt, eid)
+        elif cm > 0:
+            node.right = self.addNode(node.right, t0, t1, mt, dt, eid)
+        else:## cm == 0
+            node.add(t0, t1, dt, eid)
+        node.updateMinMax()
+        #node.updateCount()
+        return node
+    def add(self, t0, t1, eid):
+        assert t1 > t0
+        mt = (t0 + t1)/2.0
+        dt = (t1 - t0)/2.0
+        self.root = self.addNode(self.root, t0, t1, mt, dt, eid)
+        try:
+            hp = self.byId[eid]
+        except KeyError:
+            hp = self.byId[eid] = MaxHeap()
+        hp.add(mt, dt)## FIXME
+    #def size(self, node='root'):
+    #    if node == 'root':
+    #        node = self.root
+    #    if node is None:
+    #        return 0
+    #    return node.count
+    def searchStep(self, node, t0, t1):
+        if node is None:
+            return []
+        t0 = max(t0, node.min_t)
+        t1 = min(t1, node.max_t)
+        if t0 >= t1:
+            return []
+        min_dt = abs((t0 + t1)/2.0 - node.mt) - (t1 - t0)/2.0
+        if min_dt <= 0:
+            dt_list = node.events.getAll()
+        else:
+            dt_list = node.events.moreThan(min_dt)
+        res = [(node.mt, e_dt, eid) for e_dt, eid in dt_list]
+        return res + \
+            self.searchStep(node.left, t0, t1) + \
+            self.searchStep(node.right, t0, t1)
+    search = lambda self, t0, t1: [
+        (
+            max(t0, mt-dt),
+            min(t1, mt+dt),
+            eid,
+            2*dt,
+        ) \
+        for mt, dt, eid in self.searchStep(
+            self.root,
+            t0,
+            t1,
+        )
+    ]
+    def getDepthNone(self, node):
+        if node is None:
+            return 0
+        return 1 + max(
+            self.getDepthNone(node.left),
+            self.getDepthNone(node.right),
+        )
+    def getDepth(self):
+        return self.getDepthNone(self.root)
+    def deleteNode(self, node, mt, dt, eid):
+        if node is None:
+            return None
+        cm = cmp(mt, node.mt)
+        if cm < 0:
+            node.left = self.deleteNode(node.left, mt, dt, eid)
+        elif cm > 0:
+            node.right = self.deleteNode(node.right, mt, dt, eid)
+        else:## cm == 0
+            node.events.delete(dt, eid)
+            if node.events:
+                return node
+            if node.right is None:
+                return node.left
+            if node.left is None:
+                return node.right
+            node2 = node
+            node = self.min(node2.right)
+            node.right = self.deleteNode(node2.right)
+            node.left = node2.left
+        #node.count = self.size(node.left) + self.size(node.right) + 1
+        return node
+    def delete(self, eid):
+        try:
+            hp = self.byId[eid]
+        except KeyError:
+            return 0
+        else:
+            n = 0
+            for mt, dt in hp.getAll():
+                try:
+                    self.root = self.deleteNode(self.root, mt, dt, eid)
+                except:
+                    myRaise()
+                else:
+                    n += 1
+            return n
+    def getLastOfEvent(self, eid):
+        try:
+            hp = self.byId[eid]
+        except KeyError:
+            return
+        try:
+            mt, dt = hp.getMax()
+        except ValueError:
+            return
+        return mt-dt, mt+dt
+
+
+
+

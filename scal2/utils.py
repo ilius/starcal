@@ -220,6 +220,11 @@ class IteratorFromGen(Iterator):
         self.gen = gen
     next = lambda self: self.gen.next()
 
+int_split = lambda s: [int(x) for x in s.split()]
+
+s_join = lambda l: ' '.join([str(x) for x in l])
+
+
 def cleanCacheDict(cache, maxSize, currentValue):
     n = len(cache)
     if n >= maxSize > 2:
