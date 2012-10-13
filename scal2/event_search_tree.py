@@ -65,7 +65,7 @@ def isRed(x):
     return x.red
 
 def rotateLeft(h):
-    assert isRed(h.right)
+    #assert isRed(h.right)
     x = h.right
     h.right = x.left
     x.left = h
@@ -74,7 +74,7 @@ def rotateLeft(h):
     return x
 
 def rotateRight(h):
-    assert isRed(h.left)
+    #assert isRed(h.left)
     x = h.left
     h.left = x.right
     x.right = h
@@ -84,8 +84,8 @@ def rotateRight(h):
 
 def flipColors(h):
     #assert not isRed(h)
-    assert isRed(h.left)
-    assert isRed(h.right)
+    #assert isRed(h.left)
+    #assert isRed(h.right)
     h.red = True
     h.left.red = False
     h.right.red = False
