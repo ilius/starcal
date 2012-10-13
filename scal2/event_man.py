@@ -1137,7 +1137,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         if self.parent:
             rulesHash = self.getRulesHash()
             if rulesHash != self.rulesHash:
-                self.parent.updateOccurrenceNodeEvent(self)
+                self.parent.updateOccurrenceEvent(self)
                 self.rulesHash = rulesHash
         else:## None or enbale=False
             self.rulesHash = ''
@@ -2193,10 +2193,7 @@ class EventGroup(EventContainer):
         self.startJd = to_jd(year-10, 1, 1, self.mode)
         self.endJd = to_jd(year+5, 1, 1, self.mode)
         ##
-        #self.occur = BtlRootNode(offset=getEpochFromJd(self.endJd), base=core.occurBase)
-        self.occur = EventSearchTree()
-        #self.occurLoaded = False
-        self.occurCount = 0
+        self.initOccurrence()
         ###
         self.setDefaults()
         ###########
@@ -2343,7 +2340,7 @@ class EventGroup(EventContainer):
         ## need to update self.occur?
         ## its done in event.afterModify() right? not when moving event from another group
         if self.enable:
-            self.updateOccurrenceNodeEvent(event)
+            self.updateOccurrenceEvent(event)
     def updateCache(self, event):
         if event.id in self.eventCache:
             self.eventCache[event.id] = event
@@ -2390,29 +2387,26 @@ class EventGroup(EventContainer):
     calcOccurrenceAll = lambda self: IteratorFromGen(self.calcOccurrenceAllGen()) 
     def afterModify(self):## FIXME
         EventContainer.afterModify(self)
-        #### recreate node with new offset and base
-        todayJd = core.getCurrentJd()
-        if self.endJd - todayJd < todayJd - self.startJd:
-            offsetJd = self.endJd
-        else:
-            offsetJd = self.startJd
-        #self.occur = BtlRootNode(offset=getEpochFromJd(offsetJd), base=core.occurBase)
-        self.occur = EventSearchTree()
-        self.occurCount = 0
+        self.initOccurrence()
         ####
         if self.enable:
-            self.updateOccurrenceNode()
+            self.updateOccurrence()
         else:
             self.eventCache = {}
-    def updateOccurrenceNodeEvent(self, event):
-        #print 'updateOccurrenceNodeEvent', self.id, self.title, event.id
+    def updateOccurrenceEvent(self, event):
+        #print 'updateOccurrenceEvent', self.id, self.title, event.id
         node = self.occur
         eid = event.id
         node.delete(eid)
         for t0, t1 in event.calcOccurrenceAll().getTimeRangeList():
             node.add(t0, t1, eid)
             self.occurCount += 1
-    def updateOccurrenceNode(self):
+    def initOccurrence(self):
+        #self.occur = BtlRootNode(offset=getEpochFromJd(self.endJd), base=4)
+        self.occur = EventSearchTree()
+        #self.occurLoaded = False
+        self.occurCount = 0
+    def updateOccurrence(self):
         stm0 = time()
         self.occur.clear()
         self.occurCount = 0
@@ -2429,12 +2423,12 @@ class EventGroup(EventContainer):
         #    self.occur.getDepth(),
         #    2*math.log(len(occurList), 2),
         #)
-        #print 'updateOccurrenceNode, id=%s, title=%s, length=%s, time=%s'%(
-        #    self.id,
-        #    self.title,
-        #    len(self),
-        #    time()-stm0,
-        #)
+        print 'updateOccurrence, id=%s, title=%s, count=%s, time=%s'%(
+            self.id,
+            self.title,
+            self.occurCount,
+            time()-stm0,
+        )
     def exportToIcsFp(self, fp):
         currentTimeStamp = getIcsTimeByEpoch(time())
         for event in self:
@@ -2876,7 +2870,7 @@ class EventGroupsHolder(JsonObjectsHolder):
                 data['id'] = _id ## FIXME
                 obj = self.appendNew(data)
                 if obj.enable:
-                    obj.updateOccurrenceNode()
+                    obj.updateOccurrence()
                 ## here check that non of obj.idList are in eventIdList ## FIXME
                 #eventIdList += obj.idList
         else:
