@@ -25,6 +25,7 @@ from os.path import join, split, isdir, isfile, dirname, splitext
 from os import listdir
 from copy import deepcopy
 from random import shuffle
+import math
 
 from scal2.lib import OrderedDict
 
@@ -2419,12 +2420,21 @@ class EventGroup(EventContainer):
         for event, occur in self.calcOccurrenceAll():
             for t0, t1 in occur.getTimeRangeList():
                 occurList.append((t0, t1, event.id))
-        shuffle(occurList)
+        #shuffle(occurList)
         for t0, t1, eid in occurList:
             self.occur.add(t0, t1, eid)
         self.occurCount += len(occurList)
         #self.occurLoaded = True
-        #print 'updateOccurrenceNode, id=%s, title=%s, length=%s, time=%s'%(self.id, self.title, len(self), time()-stm0)
+        #print 'depth=%s \t 2*lg(N)=%.1f'%(
+        #    self.occur.getDepth(),
+        #    2*math.log(len(occurList), 2),
+        #)
+        #print 'updateOccurrenceNode, id=%s, title=%s, length=%s, time=%s'%(
+        #    self.id,
+        #    self.title,
+        #    len(self),
+        #    time()-stm0,
+        #)
     def exportToIcsFp(self, fp):
         currentTimeStamp = getIcsTimeByEpoch(time())
         for event in self:

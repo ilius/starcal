@@ -27,8 +27,9 @@ from scal2.time_utils import *
 from scal2.bin_heap import MaxHeap
 
 class Node:
-    def __init__(self, mt):
+    def __init__(self, mt, red=True):
         self.mt = mt
+        self.red = red
         self.min_t = mt
         self.max_t = mt
         self.events = MaxHeap()
@@ -58,6 +59,37 @@ class Node:
     #        self.count += self.right.count
 
 
+def isRed(x):
+    if x is None:
+        return False
+    return x.red
+
+def rotateLeft(h):
+    assert isRed(h.right)
+    x = h.right
+    h.right = x.left
+    x.left = h
+    x.red = h.red
+    h.red = True
+    return x
+
+def rotateRight(h):
+    assert isRed(h.left)
+    x = h.left
+    h.left = x.right
+    x.right = h
+    x.red = h.red
+    h.red = True
+    return x
+
+def flipColors(h):
+    #assert not isRed(h)
+    assert isRed(h.left)
+    assert isRed(h.right)
+    h.red = True
+    h.left.red = False
+    h.right.red = False
+
 class EventSearchTree:
     def __init__(self):
         self.clear()
@@ -76,6 +108,14 @@ class EventSearchTree:
             node.right = self.addStep(node.right, t0, t1, mt, dt, eid)
         else:## cm == 0
             node.add(t0, t1, dt, eid)
+
+        if isRed(node.right) and not isRed(node.left):
+            node = rotateLeft(node)
+        if isRed(node.left) and isRed(node.left.left):
+            node = rotateRight(node)
+        if isRed(node.left) and isRed(node.right):
+            flipColors(node)
+
         node.updateMinMax()
         #node.updateCount()
         return node
