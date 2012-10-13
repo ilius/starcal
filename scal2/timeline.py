@@ -21,6 +21,7 @@ from math import sqrt, floor, ceil, log10
 #import random
 
 from scal2.time_utils import overlaps
+from scal2.event_search_tree import EventSearchTree
 from scal2 import core
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl, numEncode, textNumEncode, LRM
@@ -458,16 +459,16 @@ def calcTimeLineData(timeStart, timeWidth, width):
     del boxesDict
     ###
     boxes.sort() ## FIXME
-    placedBoxes = []
-    for box in boxes:
+    placedBoxes = EventSearchTree()
+    for boxIndex, box in enumerate(boxes):
         conflictRanges = []
         minConflictH = 1
-        for box1 in placedBoxes:
-            if box1.tOverlaps(box):
-                box.tConflictBefore.append(box1)
-                conflictRanges.append((box1.u0, box1.u1))
-                minConflictH = min(minConflictH, box1.du())
-        placedBoxes.append(box)
+        for c_t0, c_t1, c_index, c_dt in placedBoxes.search(box.t0, box.t1):
+            c_box = boxes[c_index]
+            box.tConflictBefore.append(c_box)
+            conflictRanges.append((c_box.u0, c_box.u1))
+            minConflictH = min(minConflictH, c_box.du())
+        placedBoxes.add(box.t0, box.t1, boxIndex)
         freeRanges = realRangeListsDiff([(0, 1)], conflictRanges)
         if freeRanges:
             bigestFree = max([Range(a, b) for (a, b) in freeRanges])
