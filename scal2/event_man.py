@@ -3301,25 +3301,3 @@ def restartDaemon():
     print 'event daemon started'
 
 
-########################################################################
-
-
-def testIntersection():
-    pprint.pprint(intersectionOfTwoTimeRangeList(
-        [(0,1.5), (3,5), (7,9)],
-        [(1,3.5), (4,7.5), (8,10)]
-    ))
-
-def testJdRanges():
-    pprint.pprint(JdListOccurrence([1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 18]).calcJdRanges())
-
-def testSimplifyNumList():
-    pprint.pprint(simplifyNumList([1, 2, 3, 4, 5, 7, 9, 10, 14, 16, 17, 18, 19, 21, 22, 23, 24]))
-
-if __name__=='__main__':
-    import pprint
-    #testIntersection()
-    #testJdRanges()
-    testSimplifyNumList()
-
-

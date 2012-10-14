@@ -4,12 +4,12 @@
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License,    or
+# the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along
@@ -78,4 +78,27 @@ def intersectionOfTwoTimeRangeList(rList1, rList2):
             result.append((frontiers[i], frontiers[i+1]))
     #cleanTimeRangeList(result)## not needed when both timeRangeList are clean!
     return result
+
+
+########################################################################
+
+
+def testIntersection():
+    pprint.pprint(intersectionOfTwoTimeRangeList(
+        [(0,1.5), (3,5), (7,9)],
+        [(1,3.5), (4,7.5), (8,10)]
+    ))
+
+def testJdRanges():
+    pprint.pprint(JdListOccurrence([1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 18]).calcJdRanges())
+
+def testSimplifyNumList():
+    pprint.pprint(simplifyNumList([1, 2, 3, 4, 5, 7, 9, 10, 14, 16, 17, 18, 19, 21, 22, 23, 24]))
+
+if __name__=='__main__':
+    import pprint
+    #testIntersection()
+    #testJdRanges()
+    testSimplifyNumList()
+
 
