@@ -20,7 +20,7 @@
 from math import sqrt, floor, ceil, log10
 #import random
 
-from scal2.time_utils import overlaps
+from scal2.interval_utils import overlaps
 from scal2.event_search_tree import EventSearchTree
 from scal2 import core
 from scal2.locale_man import tr as _

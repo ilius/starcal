@@ -22,6 +22,7 @@ from math import log
 
 sys.path.append('/starcal2')
 
+from scal2.interval_utils import overlaps
 from scal2.time_utils import *
 
 #maxLevel = 1

@@ -199,12 +199,6 @@ def durationDecode(durStr):
 
 timeToFloatHour = lambda h, m, s=0: h + m/60.0 + s/3600.0
 
-overlaps = lambda a0, a1, b0, b1: \
-    a0 <= b0 <  a1 or \
-    a0 <  b1 <= a1 or \
-    b0 <= a0 <  b1 or \
-    b0 <  a1 <= b1
-
 def floatHourToTime(fh):
     h, r = divmod(fh, 1)
     m, r = divmod(r*60, 1)
