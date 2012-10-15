@@ -73,6 +73,8 @@ movableEventTypes = ('task',)
 #boxColorLightness = 0.3 ## for random colors
 
 boxReverseGravity = False
+boxMaxHeightFactor = 0.9 ## less than 1.0
+
 
 scrollZoomStep = 1.2
 
@@ -484,19 +486,22 @@ def calcTimeLineData(timeStart, timeWidth, width):
             print 'unable to find a free space for box, box.ids=%s'%(box.ids,)
             box.u0 = box.u1 = 0
             continue
-        bigestFree = max(
-            freeSpaces,
-            key=lambda sp: sp[1] - sp[0]
-        )
-        height = 0.9 * min(
-            bigestFree[1] - bigestFree[0],
-            1.0 / max(segCountList[segI0:segI1]),
-        )
+        freeSp = freeSpaces[0 if boxReverseGravity else -1]
+        height = boxMaxHeightFactor / max(segCountList[segI0:segI1])
+        if freeSp[1] - freeSp[0] < height:
+            freeSp = max(
+                freeSpaces,
+                key=lambda sp: sp[1] - sp[0]
+            )
+            height = min(
+                height,
+                boxMaxHeightFactor * (freeSp[1] - freeSp[0]),
+            )
         if boxReverseGravity:
-            box.u0 = bigestFree[0]
+            box.u0 = freeSp[0]
             box.u1 = box.u0 + height
         else:
-            box.u1 = bigestFree[1]
+            box.u1 = freeSp[1]
             box.u0 = box.u1 - height
         placedBoxes.add(box.t0, box.t1, boxI)
 
