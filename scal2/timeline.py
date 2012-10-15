@@ -488,7 +488,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
             freeSpaces,
             key=lambda sp: sp[1] - sp[0]
         )
-        height = min(
+        height = 0.9 * min(
             bigestFree[1] - bigestFree[0],
             1.0 / max(segCountList[segI0:segI1]),
         )
