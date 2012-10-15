@@ -227,7 +227,7 @@ class JdListOccurrence(Occurrence):
         if isinstance(occur, JdListOccurrence):
             return JdListOccurrence(self.jdSet.intersection(occur.jdSet))
         elif isinstance(occur, TimeRangeListOccurrence):
-            return TimeRangeListOccurrence(intersectionOfTwoTimeRangeList(self.getTimeRangeList(), occur.getTimeRangeList()))
+            return TimeRangeListOccurrence(intersectionOfTwoIntervalList(self.getTimeRangeList(), occur.getTimeRangeList()))
         elif isinstance(occur, TimeListOccurrence):
             return occur.intersection(self)
         else:
@@ -268,7 +268,7 @@ class TimeRangeListOccurrence(Occurrence):
     getEndEpoch = lambda self: max([r[1] for r in self.rangeList]+[r[1] for r in self.rangeList])
     def intersection(self, occur):
         if isinstance(occur, (JdListOccurrence, TimeRangeListOccurrence)):
-            return TimeRangeListOccurrence(intersectionOfTwoTimeRangeList(self.getTimeRangeList(), occur.getTimeRangeList()))
+            return TimeRangeListOccurrence(intersectionOfTwoIntervalList(self.getTimeRangeList(), occur.getTimeRangeList()))
         elif isinstance(occur, TimeListOccurrence):
             return occur.intersection(self)
         else:
@@ -656,7 +656,7 @@ class DayTimeRangeEventRule(EventRule):
         daySecEnd = getSecondsFromHms(*self.dayTimeEnd)
         startDiv = int(startEpoch//dayLen)
         endDiv = int(endEpoch//dayLen)
-        return TimeRangeListOccurrence(intersectionOfTwoTimeRangeList(
+        return TimeRangeListOccurrence(intersectionOfTwoIntervalList(
             [(i*dayLen+daySecStart, i*dayLen+daySecEnd) for i in range(startDiv, endDiv+1)],
             [(startEpoch, endEpoch)],
         ))
@@ -1911,7 +1911,7 @@ class LargeScaleEvent(Event):## or MegaEvent? FIXME
         myStartJd = iceil(to_jd(self.scale*self.start, 1, 1, self.mode))
         myEndJd = ifloor(to_jd(self.scale*self.getEnd(), 1, 1, self.mode))
         return TimeRangeListOccurrence(
-            intersectionOfTwoTimeRangeList(
+            intersectionOfTwoIntervalList(
                 [
                     (getEpochFromJd(startJd), getEpochFromJd(endJd))
                 ],

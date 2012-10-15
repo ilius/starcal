@@ -53,29 +53,32 @@ def cleanTimeRangeList(timeRangeList):
         else:
             i += 1
 
-def intersectionOfTwoTimeRangeList(rList1, rList2):
-    #frontiers = []
-    frontiers = set()
-    for (start, end) in rList1 + rList2:
-        frontiers.add(start)
-        frontiers.add(end)
-    frontiers = sorted(frontiers)
-    partsNum = len(frontiers)-1
-    partsContained = [[False, False] for i in range(partsNum)]
-    for (start, end) in rList1:
-        startIndex = frontiers.index(start)
-        endIndex = frontiers.index(end)
+def intervalListBoundaries(lst):
+    boundaries = set()
+    for start, end in lst:
+        boundaries.add(start)
+        boundaries.add(end)
+    return sorted(boundaries)
+
+
+def intersectionOfTwoIntervalList(lst1, lst2):
+    boundaries = intervalListBoundaries(lst1 + lst2)
+    segmentsNum = len(boundaries) - 1
+    segmentsContained = [[False, False] for i in range(segmentsNum)]
+    for (start, end) in lst1:
+        startIndex = boundaries.index(start)
+        endIndex = boundaries.index(end)
         for i in range(startIndex, endIndex):
-            partsContained[i][0] = True
-    for (start, end) in rList2:
-        startIndex = frontiers.index(start)
-        endIndex = frontiers.index(end)
+            segmentsContained[i][0] = True
+    for (start, end) in lst2:
+        startIndex = boundaries.index(start)
+        endIndex = boundaries.index(end)
         for i in range(startIndex, endIndex):
-            partsContained[i][1] = True
+            segmentsContained[i][1] = True
     result = []
-    for i in range(partsNum):
-        if partsContained[i][0] and partsContained[i][1]:
-            result.append((frontiers[i], frontiers[i+1]))
+    for i in range(segmentsNum):
+        if segmentsContained[i][0] and segmentsContained[i][1]:
+            result.append((boundaries[i], boundaries[i+1]))
     #cleanTimeRangeList(result)## not needed when both timeRangeList are clean!
     return result
 
@@ -84,7 +87,7 @@ def intersectionOfTwoTimeRangeList(rList1, rList2):
 
 
 def testIntersection():
-    pprint.pprint(intersectionOfTwoTimeRangeList(
+    pprint.pprint(intersectionOfTwoIntervalList(
         [(0,1.5), (3,5), (7,9)],
         [(1,3.5), (4,7.5), (8,10)]
     ))

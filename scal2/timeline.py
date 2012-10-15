@@ -72,6 +72,7 @@ movableEventTypes = ('task',)
 #boxColorSaturation = 1.0
 #boxColorLightness = 0.3 ## for random colors
 
+boxReverseGravity = False
 
 scrollZoomStep = 1.2
 
@@ -168,19 +169,12 @@ class Box:
     contains = lambda self, px, py: 0 <= px-self.x < self.w and 0 <= py-self.y < self.h
         
 
-def yResizeBox(box1, rat):
-    box1.u0 *= rat
-    box1.u1 *= rat
-    for box2 in box1.tConflictBefore:
-        if box1.yOverlaps(box2):
-            yResizeBox(box2, rat)
-
-class Range:
-    def __init__(self, start, end):
-        self.start = start
-        self.end = end
-    dt = lambda self: self.end - self.start
-    __cmp__ = lambda self, other: cmp(self.dt(), other.dt())
+#class Range:
+#    def __init__(self, start, end):
+#        self.start = start
+#        self.end = end
+#    dt = lambda self: self.end - self.start
+#    __cmp__ = lambda self, other: cmp(self.dt(), other.dt())
 
 
 def realRangeListsDiff(r1, r2):
@@ -457,34 +451,56 @@ def calcTimeLineData(timeStart, timeWidth, width):
             #print (box.t1 - box.t0), 'secs'
             boxes.append(box)
     del boxesDict
-    ###
+    #####
     boxes.sort() ## FIXME
+    ##
+    boundaries = set()
+    for box in boxes:
+        boundaries.add(box.t0)
+        boundaries.add(box.t1)
+    boundaries = sorted(boundaries)
+    ##
+    segNum = len(boundaries) - 1
+    segCountList = [0] * segNum
+    boxesIndex = []
+    for boxI, box in enumerate(boxes):
+        segI0 = boundaries.index(box.t0)
+        segI1 = boundaries.index(box.t1)
+        boxesIndex.append((box, boxI, segI0, segI1))
+        for i in range(segI0, segI1):
+            segCountList[i] += 1
     placedBoxes = EventSearchTree()
-    for boxIndex, box in enumerate(boxes):
+    for box, boxI, segI0, segI1 in boxesIndex:
         conflictRanges = []
-        minConflictH = 1
-        for c_t0, c_t1, c_index, c_dt in placedBoxes.search(box.t0, box.t1):
-            c_box = boxes[c_index]
-            box.tConflictBefore.append(c_box)
-            conflictRanges.append((c_box.u0, c_box.u1))
-            minConflictH = min(minConflictH, c_box.du())
-        placedBoxes.add(box.t0, box.t1, boxIndex)
-        freeRanges = realRangeListsDiff([(0, 1)], conflictRanges)
-        if freeRanges:
-            bigestFree = max([Range(a, b) for (a, b) in freeRanges])
-            bigestFreeH = bigestFree.dt() ## biggest free range height
-            #if bigestFreeH==1 or bigestFreeH/(1.0-bigestFreeH) >= minConflictH:
-            if bigestFreeH >= minConflictH:
-                box.u0 = bigestFree.start
-                box.u1 = bigestFree.end
+        for c_t0, c_t1, c_boxI, c_dt in placedBoxes.search(box.t0, box.t1):
+            c_box = boxes[c_boxI]
+            if not box.tOverlaps(c_box):
+                #print 'two boxes (%s,%s) and (%s,%s) does not overlap'%(box.t0, box.t1, c_box.t0, c_box.t1)
+                ## FIXME why??
                 continue
-        ## now we should compress all conflicting boxes and place the new box on top of them
-        h = 1 - 1.0/(minConflictH+1)
-        box.u0 = 1 - h
-        box.u1 = 1
-        for box1 in box.tConflictBefore:## FIXME
-            if box.yOverlaps(box1):
-                yResizeBox(box1, 1-h)
+            conflictRanges.append((c_box.u0, c_box.u1))
+        freeSpaces = realRangeListsDiff([(0, 1)], conflictRanges)
+        if not freeSpaces:
+            print 'unable to find a free space for box, box.ids=%s'%(box.ids,)
+            box.u0 = box.u1 = 0
+            continue
+        bigestFree = max(
+            freeSpaces,
+            key=lambda sp: sp[1] - sp[0]
+        )
+        height = min(
+            bigestFree[1] - bigestFree[0],
+            1.0 / max(segCountList[segI0:segI1]),
+        )
+        if boxReverseGravity:
+            box.u0 = bigestFree[0]
+            box.u1 = box.u0 + height
+        else:
+            box.u1 = bigestFree[1]
+            box.u0 = box.u1 - height
+        placedBoxes.add(box.t0, box.t1, boxI)
+
+    
     return {
         'holidays': holidays,
         'ticks': ticks,
