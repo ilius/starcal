@@ -31,6 +31,7 @@ from scal2.core import myRaise, getMonthName, getJdFromEpoch, getFloatJdFromEpoc
 
 from scal2.color_utils import hslToRgb
 from scal2.utils import ifloor, iceil
+from scal2.event_man import epsTm
 from scal2 import ui
 from scal2.ui import getHolidaysJdList
 
@@ -474,12 +475,25 @@ def calcTimeLineData(timeStart, timeWidth, width):
     placedBoxes = EventSearchTree()
     for box, boxI, segI0, segI1 in boxesIndex:
         conflictRanges = []
-        for c_t0, c_t1, c_boxI, c_dt in placedBoxes.search(box.t0, box.t1):
+        for c_t0, c_t1, c_boxI, c_dt in placedBoxes.search(box.t0 + epsTm, box.t1 - epsTm):## FIXME
             c_box = boxes[c_boxI]
+            '''
             if not box.tOverlaps(c_box):
-                #print 'two boxes (%s,%s) and (%s,%s) does not overlap'%(box.t0, box.t1, c_box.t0, c_box.t1)
-                ## FIXME why??
+                min4 = min(box.t0, c_box.t0)
+                max4 = max(box.t1, c_box.t1)
+                dmm = max4 - min4
+                tran = lambda t: (t-min4)/dmm
+                print 'no overlap (%s, %s) and (%s, %s)'%(
+                    tran(box.t0),
+                    tran(box.t1),
+                    tran(c_box.t0),
+                    tran(c_box.t1),
+                )
+                ## box.t1 == c_box.t0   OR   c_box.t1 == box.t0
+                ## this should not be returned in EventSearchTree.search()
+                ## FIXME
                 continue
+            '''
             conflictRanges.append((c_box.u0, c_box.u1))
         freeSpaces = realRangeListsDiff([(0, 1)], conflictRanges)
         if not freeSpaces:
