@@ -614,7 +614,7 @@ class DayTimeEventRule(EventRule):## Moment Event
     def setData(self, data):
         self.dayTime = timeDecode(data)
     def calcOccurrence(self, startEpoch, endEpoch, event):
-        mySec = core.getSecondsFromHms(*self.dayTime)
+        mySec = getSecondsFromHms(*self.dayTime)
         (startJd, startExtraSec) = core.getJdAndSecondsFromEpoch(startEpoch)
         (endJd, endExtraSec) = core.getJdAndSecondsFromEpoch(endEpoch)
         if startExtraSec > mySec:
@@ -762,7 +762,7 @@ class CycleLenEventRule(EventRule):
         self.cycleExtraTime = timeDecode(arg['extraTime'])
     def calcOccurrence(self, startEpoch, endEpoch, event):
         startEpoch = max(startEpoch, self.parent['start'].getEpoch())
-        cycleSec = self.cycleDays*dayLen + core.getSecondsFromHms(*self.cycleExtraTime)
+        cycleSec = self.cycleDays*dayLen + getSecondsFromHms(*self.cycleExtraTime)
         return TimeListOccurrence(startEpoch, endEpoch, cycleSec)
     getInfo = lambda self: _('Repeat: Every %s Days and %s')%(_(self.cycleDays), timeEncode(self.cycleExtraTime))
 
