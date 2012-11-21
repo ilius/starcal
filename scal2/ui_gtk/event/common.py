@@ -37,7 +37,7 @@ from scal2.ui_gtk.utils import dialog_add_button, DateTypeCombo
 import gtk
 from gtk import gdk
 
-from scal2.ui_gtk.mywidgets import MyTextViewFrame
+from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
 
 #print 'Testing translator', __file__, _('_About')## OK
@@ -131,7 +131,7 @@ class EventWidget(gtk.VBox):
         ###########
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Description')), 0, 0)
-        self.descriptionInput = MyTextViewFrame()
+        self.descriptionInput = TextFrame()
         hbox.pack_start(self.descriptionInput, 1, 1)
         self.pack_start(hbox, 0, 0)
         ###########

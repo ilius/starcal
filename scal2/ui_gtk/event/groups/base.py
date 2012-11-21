@@ -25,7 +25,7 @@ from scal2.ui_gtk.utils import set_tooltip, DateTypeCombo
 
 import gtk
 
-from scal2.ui_gtk.mywidgets import MyColorButton, MyTextViewFrame
+from scal2.ui_gtk.mywidgets import MyColorButton, TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 
 
@@ -102,7 +102,7 @@ class BaseGroupWidget(gtk.VBox):
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
         self.sizeGroup.add_widget(label)
-        self.sepInput = MyTextViewFrame()
+        self.sepInput = TextFrame()
         hbox.pack_start(self.sepInput, 1, 1)
         self.pack_start(hbox, 0, 0)
         set_tooltip(hbox, _('Using to seperate Summary and Description when displaying event'))

@@ -23,7 +23,7 @@ from scal2.locale_man import tr as _
 from scal2 import event_man
 
 from scal2 import ui
-from scal2.ui_gtk.mywidgets import MyTextViewFrame
+from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin_button import HourMinuteButtonOption
 from scal2.ui_gtk.event import common
 from scal2.ui_gtk.event.rules.weekNumMode import RuleWidget as WeekNumModeRuleWidget
@@ -111,7 +111,7 @@ class EventWidget(gtk.VBox):
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
-        self.descriptionInput = MyTextViewFrame()
+        self.descriptionInput = TextFrame()
         hbox.pack_start(self.descriptionInput, 1, 1)
         self.pack_start(hbox, 0, 0)
         #####

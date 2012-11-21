@@ -154,7 +154,7 @@ class MyColorButton(gtk.ColorButton): ## for tooltip text
         return int(gtk.ColorButton.get_alpha(self)/257)
 
 
-class MyTextViewFrame(gtk.Frame):
+class TextFrame(gtk.Frame):
     def __init__(self):
         gtk.Frame.__init__(self)
         self.set_border_width(4)

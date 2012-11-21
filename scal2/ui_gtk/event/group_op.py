@@ -146,7 +146,7 @@ class GroupBulkEditDialog(gtk.Dialog):
         ## CheckButton(_('Regexp'))
         self.textVbox.pack_start(hbox, 0, 0)
         ###
-        self.textInput1 = MyTextViewFrame()
+        self.textInput1 = TextFrame()
         self.textVbox.pack_start(self.textInput, 1, 1)
         ###
         hbox = gtk.HBox()
@@ -155,7 +155,7 @@ class GroupBulkEditDialog(gtk.Dialog):
         self.textVbox.pack_start(hbox, 1, 1)
         self.withHbox = hbox
         ###
-        self.textInput2 = MyTextViewFrame()
+        self.textInput2 = TextFrame()
         self.textVbox.pack_start(self.textInput2, 1, 1)
         ####
         self.vbox.pack_start(self.textVbox, 1, 1)
