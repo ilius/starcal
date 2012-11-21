@@ -23,10 +23,11 @@ from scal2.locale_man import tr as _
 from scal2 import event_man
 
 from scal2 import ui
+from scal2.ui_gtk.mywidgets import MyTextViewFrame
 from scal2.ui_gtk.mywidgets.multi_spin_button import HourMinuteButtonOption
 from scal2.ui_gtk.event import common
 from scal2.ui_gtk.event.rules.weekNumMode import RuleWidget as WeekNumModeRuleWidget
-from scal2.ui_gtk.utils import showError, WeekDayComboBox, buffer_get_text
+from scal2.ui_gtk.utils import showError, WeekDayComboBox
 
 import gtk
 from gtk import gdk
@@ -110,13 +111,8 @@ class EventWidget(gtk.VBox):
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
-        textview = gtk.TextView()
-        textview.set_wrap_mode(gtk.WRAP_WORD)
-        self.descriptionBuff = textview.get_buffer()
-        frame = gtk.Frame()
-        frame.set_border_width(4)
-        frame.add(textview)
-        hbox.pack_start(frame, 1, 1)
+        self.descriptionInput = MyTextViewFrame()
+        hbox.pack_start(self.descriptionInput, 1, 1)
         self.pack_start(hbox, 0, 0)
         #####
         hbox = gtk.HBox()
@@ -169,7 +165,7 @@ class EventWidget(gtk.VBox):
         self.dayTimeEndCombo.set_value(timeRangeRule.dayTimeEnd)
         ####
         #self.summuryEntry.set_text(self.event.summary)
-        self.descriptionBuff.set_text(self.event.description)
+        self.descriptionInput.set_text(self.event.description)
         self.iconSelect.set_filename(self.event.icon)
         ####
         self.notificationBox.updateWidget()
@@ -192,7 +188,7 @@ class EventWidget(gtk.VBox):
         )
         ####
         #self.event.summary = self.summuryEntry.get_text()
-        self.event.description = buffer_get_text(self.descriptionBuff)
+        self.event.description = self.descriptionInput.get_text()
         self.event.icon = self.iconSelect.get_filename()
         ####
         self.notificationBox.updateVars()

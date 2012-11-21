@@ -31,12 +31,13 @@ from scal2.core import pixDir, myRaise
 from scal2 import event_man
 from scal2 import ui
 
-from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, buffer_get_text, labelStockMenuItem
+from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, labelStockMenuItem
 from scal2.ui_gtk.utils import dialog_add_button, DateTypeCombo
 
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.mywidgets import MyTextViewFrame
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
 
 #print 'Testing translator', __file__, _('_About')## OK
@@ -130,13 +131,8 @@ class EventWidget(gtk.VBox):
         ###########
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Description')), 0, 0)
-        textview = gtk.TextView()
-        textview.set_wrap_mode(gtk.WRAP_WORD)
-        self.descriptionBuff = textview.get_buffer()
-        frame = gtk.Frame()
-        frame.set_border_width(4)
-        frame.add(textview)
-        hbox.pack_start(frame, 1, 1)
+        self.descriptionInput = MyTextViewFrame()
+        hbox.pack_start(self.descriptionInput, 1, 1)
         self.pack_start(hbox, 0, 0)
         ###########
         hbox = gtk.HBox()
@@ -155,7 +151,7 @@ class EventWidget(gtk.VBox):
         #print 'updateWidget', self.event.files
         self.modeCombo.set_active(self.event.mode)
         self.summaryEntry.set_text(self.event.summary)
-        self.descriptionBuff.set_text(self.event.description)
+        self.descriptionInput.set_text(self.event.description)
         self.iconSelect.set_filename(self.event.icon)
         #####
         for attr in ('notificationBox', 'filesBox'):
@@ -168,7 +164,7 @@ class EventWidget(gtk.VBox):
     def updateVars(self):
         self.event.mode = self.modeCombo.get_active()
         self.event.summary = self.summaryEntry.get_text()
-        self.event.description = buffer_get_text(self.descriptionBuff)
+        self.event.description = self.descriptionInput.get_text()
         self.event.icon = self.iconSelect.get_filename()
         #####
         for attr in ('notificationBox', 'filesBox'):

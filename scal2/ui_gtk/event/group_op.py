@@ -2,7 +2,7 @@ from scal2.locale_man import tr as _
 
 import gtk
 
-from scal2.ui_gtk.utils import DateTypeCombo, dialog_add_button, buffer_get_text
+from scal2.ui_gtk.utils import DateTypeCombo, dialog_add_button
 from scal2.ui_gtk.event.common import IconSelectButton
 
 class GroupSortDialog(gtk.Dialog):
@@ -146,14 +146,8 @@ class GroupBulkEditDialog(gtk.Dialog):
         ## CheckButton(_('Regexp'))
         self.textVbox.pack_start(hbox, 0, 0)
         ###
-        textview = gtk.TextView()
-        textview.set_wrap_mode(gtk.WRAP_WORD)
-        self.textBuf1 = textview.get_buffer()
-        frame = gtk.Frame()
-        frame.set_border_width(4)
-        frame.add(textview)
-        self.textVbox.pack_start(frame, 1, 1)
-        self.textWidget1 = frame
+        self.textInput1 = MyTextViewFrame()
+        self.textVbox.pack_start(self.textInput, 1, 1)
         ###
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('with')), 0, 0)
@@ -161,14 +155,8 @@ class GroupBulkEditDialog(gtk.Dialog):
         self.textVbox.pack_start(hbox, 1, 1)
         self.withHbox = hbox
         ###
-        textview = gtk.TextView()
-        textview.set_wrap_mode(gtk.WRAP_WORD)
-        self.textBuf2 = textview.get_buffer()
-        frame = gtk.Frame()
-        frame.set_border_width(4)
-        frame.add(textview)
-        self.textVbox.pack_start(frame, 1, 1)
-        self.textWidget2 = frame
+        self.textInput2 = MyTextViewFrame()
+        self.textVbox.pack_start(self.textInput2, 1, 1)
         ####
         self.vbox.pack_start(self.textVbox, 1, 1)
         self.vbox.show_all()
@@ -187,12 +175,12 @@ class GroupBulkEditDialog(gtk.Dialog):
         self.textVbox.show_all()
         chType = self.textChangeCombo.get_active()
         if chType==0:
-            self.textWidget1.hide()
+            self.textInput1.hide()
             self.withHbox.hide()
-            self.textWidget2.hide()
+            self.textInput2.hide()
         elif chType in (1, 2):
             self.withHbox.hide()
-            self.textWidget2.hide()
+            self.textInput2.hide()
     def doAction(self):
         group = self._group
         if self.iconRadio.get_active():
@@ -207,8 +195,8 @@ class GroupBulkEditDialog(gtk.Dialog):
         else:
             chType = self.textChangeCombo.get_active()
             if chType!=0:
-                text1 = buffer_get_text(self.textBuf1)
-                text2 = buffer_get_text(self.textBuf2)
+                text1 = self.textInput1.get_text()
+                text2 = self.textInput2.get_text()
                 if self.summaryRadio.get_active():
                     for event in group:
                         if chType==1:
