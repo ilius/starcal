@@ -49,7 +49,7 @@ def getJhmsFromEpoch(epoch, local=False):## return a tuple (julain_day, hour, mi
     (days, second) = divmod(ifloor(epoch), 24*3600)
     return (days+J1970,) + getHmsFromSeconds(second)
 
-def getSecondsFromHms(hour, minute, second):
+def getSecondsFromHms(hour, minute, second=0):
     return hour*3600 + minute*60 + second
 
 getEpochFromJhms = lambda jd, hour, minute, second: getEpochFromJd(jd) + getSecondsFromHms(hour, minute, second)
