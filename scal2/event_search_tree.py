@@ -171,6 +171,12 @@ class EventSearchTree:
         )
     def getDepth(self):
         return self.getDepthNone(self.root)
+    def min(self, node):
+        if node is None:
+            return
+        while node.left is not None:
+            node = node.left
+        return node
     def deleteStep(self, node, mt, dt, eid):
         if node is None:
             return None
