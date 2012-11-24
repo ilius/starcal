@@ -143,9 +143,10 @@ class MultiSpinButton(gtk.SpinButton):
         elif 'kp_0' <= kname <= 'kp_9':
             self.insertText(self.digs[int(kname[-1])])
             return True
-        elif kname in ('period', 'kp_decimal', 'slash', 'kp_divide'):
+        elif kname in ('period', 'kp_decimal'):
             self.insertText(_('.'))
             return True
+        ## ('slash', 'kp_divide') ## FIXME
         else:
             #print kname, kval
             return False
