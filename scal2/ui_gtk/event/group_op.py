@@ -4,6 +4,7 @@ import gtk
 
 from scal2.ui_gtk.utils import DateTypeCombo, dialog_add_button
 from scal2.ui_gtk.event.common import IconSelectButton
+from scal2.ui_gtk.mywidgets import TextFrame
 
 class GroupSortDialog(gtk.Dialog):
     def __init__(self, group):
@@ -147,7 +148,7 @@ class GroupBulkEditDialog(gtk.Dialog):
         self.textVbox.pack_start(hbox, 0, 0)
         ###
         self.textInput1 = TextFrame()
-        self.textVbox.pack_start(self.textInput, 1, 1)
+        self.textVbox.pack_start(self.textInput1, 1, 1)
         ###
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('with')), 0, 0)
