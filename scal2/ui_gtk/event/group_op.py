@@ -26,10 +26,11 @@ class GroupSortDialog(gtk.Dialog):
         hbox.pack_start(gtk.Label(_('Based on')+' '), 0, 0)
         self.sortByNames = []
         self.sortByCombo = gtk.combo_box_new_text()
-        for item in group.getSortBys():
+        sortByDefault, sortBys = group.getSortBys()
+        for item in sortBys:
             self.sortByNames.append(item[0])
             self.sortByCombo.append_text(item[1])
-        self.sortByCombo.set_active(self.sortByNames.index(group.sortByDefault))## FIXME
+        self.sortByCombo.set_active(self.sortByNames.index(sortByDefault))## FIXME
         hbox.pack_start(self.sortByCombo, 0, 0)
         self.reverseCheck = gtk.CheckButton(_('Descending'))
         hbox.pack_start(self.reverseCheck, 0, 0)

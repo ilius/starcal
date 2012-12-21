@@ -2057,7 +2057,9 @@ class EventGroup(EventContainer):
         l = list(self.sortBys)
         if self.enable:
             l.append(('time_last', _('Last Occurrence Time'), False))
-        return l
+            return 'time_last', l
+        else:
+            return self.sortByDefault, l
     def getSortByValue(self, event, attr):
         if attr=='time_last':
             if self.enable:
@@ -2069,7 +2071,7 @@ class EventGroup(EventContainer):
         return getattr(event, attr, None)
     def sort(self, attr='summary', reverse=False):
         isTypeDep = True
-        for name, desc, dep in self.getSortBys():
+        for name, desc, dep in self.getSortBys()[1]:
             if name == attr:
                 isTypeDep = dep
                 break
