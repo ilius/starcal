@@ -461,7 +461,7 @@ class DateLabel(gtk.Label):
         start = self.get_property('selection-bound')
         end = self.get_property('cursor-position')
         self.clipboard.set_text(toStr(toUnicode(self.get_text())[start:end]))
-    copyAll = lambda self, label: self.clipboard.set_text(self.get_label())
+    copyAll = lambda self, label: self.clipboard.set_text(self.get_text())
 
 
 
