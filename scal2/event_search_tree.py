@@ -195,7 +195,7 @@ class EventSearchTree:
                 return node.right
             node2 = node
             node = self.min(node2.right)
-            node.right = self.deleteStep(node2.right)
+            node.right = self.deleteStep(node2.right, mt, dt, eid)
             node.left = node2.left
         #node.count = self.size(node.left) + self.size(node.right) + 1
         return node
