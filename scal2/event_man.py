@@ -2989,34 +2989,31 @@ def getDayOccurrenceData(curJd, groups):
         gid = group.id
         for epoch0, epoch1, eid, odt in group.occur.search(getEpochFromJd(curJd), getEpochFromJd(curJd+1)):
             event = group[eid]
+            ###
             text = event.getText()
             for url, fname in event.getFilesUrls():
                 text += '\n<a href="%s">%s</a>'%(url, fname)
-            if epoch1-epoch0==dayLen:
-                data.append({
-                    'time':'',
-                    'text':text,
-                    'icon':event.icon,
-                    'ids': (gid, eid),
-                })
-            else:
+            ###
+            timeStr = ''
+            if epoch1-epoch0 < dayLen:
                 h0, m0, s0 = getHmsFromSeconds(epoch0 % dayLen)
                 if epoch1 - epoch0 < 1:
-                    data.append({
-                        'time':timeEncode((h0, m0, s0), True),
-                        'text':text,
-                        'icon':event.icon,
-                        'ids': (gid, eid),
-                    })
+                    timeStr = timeEncode((h0, m0, s0), True)
                 else:
                     h1, m1, s1 = getHmsFromSeconds(epoch1 % dayLen)
-                    data.append({
-                        'time':hmsRangeToStr(h0, m0, s0, h1, m1, s1),
-                        'text':text,
-                        'icon':event.icon,
-                        'ids': (gid, eid),
-                    })
-    return data
+                    timeStr = hmsRangeToStr(h0, m0, s0, h1, m1, s1)
+            ###
+            data.append((
+                (epoch0, epoch1, gid, eid),## FIXME for sorting
+                {
+                    'time': timeStr,
+                    'text': text,
+                    'icon': event.icon,
+                    'ids': (gid, eid),
+                }
+            ))
+    data.sort()
+    return [item[1] for item in data]
 
 
 ## Should not be registered, or instantiate directly
