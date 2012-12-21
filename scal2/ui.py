@@ -370,31 +370,29 @@ def getHolidaysJdList(startJd, endJd):
 
 def checkMainWinItems():
     global mainWinItems
-    #print ui.mainWinItems
+    #print mainWinItems
     ## cleaning and updating mainWinItems
-    indexes = {}
-    names = set()
-    for (i, (name, enable)) in enumerate(mainWinItems):
-        indexes[name] = i
-        names.add(name)
+    names = set([name for (name, i) in mainWinItems])
     defaultNames = set([name for (name, i) in mainWinItemsDefault])
     #print mainWinItems
     #print sorted(list(names))
     #print sorted(list(defaultNames))
-    ###
-    removedNames = names.difference(defaultNames)
-    for name in removedNames:
-        #print '----- removed', name, mainWinItems[indexes[name]]
-        mainWinItems.pop(indexes[name])
-    ###
+    #####
+    ## removing items that are no longer supported
+    mainWinItems, mainWinItemsTmp = [], mainWinItems
+    for name, enable in mainWinItemsTmp:
+        if name in defaultNames:
+            mainWinItems.append((name, enable))
+    #####
+    ## adding items newly added in this version, this is for user's convenience
     newNames = defaultNames.difference(names)
     #print 'mainWinItems: newNames =', newNames
-    ###
+    ##
     name = 'winContronller'
     if name in newNames:
         mainWinItems.insert(0, (name, True))
         newNames.remove(name)
-    ###
+    ##
     for name in newNames:
         mainWinItems.append((name, False))## FIXME
 
