@@ -1759,6 +1759,10 @@ msgstr ""
 msgid "Height"
 msgstr ""
 "ارتفاع"
+msgid "Maximum Height"
+msgstr ""
+"حداکثر ارتفاع"
+
 
 msgid "Days maximum cache size"
 msgstr ""

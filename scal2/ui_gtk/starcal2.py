@@ -71,6 +71,7 @@ import scal2.ui_gtk.selectdate
 
 from scal2.ui_gtk.drawing import newTextLayout, newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets.clock import FClockLabel
+from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 #from ui_gtk.mywidgets2.multi_spin_button import DateButtonOption
 
 from scal2.ui_gtk import gtk_ud as ud
@@ -415,9 +416,24 @@ class PluginsTextBox(gtk.VBox, CustomizableCalObj):
 
 
 class EventViewMainWinItem(DayOccurrenceView, CustomizableCalObj):## FIXME
-    pass
-    ## add optionsWidget? FIXME
-
+    def __init__(self, populatePopup):
+        DayOccurrenceView.__init__(self, populatePopup)
+        self.maxHeight = ui.eventViewMaxHeight
+        self.optionsWidget = gtk.HBox()
+        ###
+        hbox = gtk.HBox()
+        spin = IntSpinButton(1, 9999)
+        spin.set_value(ui.eventViewMaxHeight)
+        spin.connect('changed', self.heightSpinChanged)
+        hbox.pack_start(gtk.Label(_('Maximum Height')), 0, 0)
+        hbox.pack_start(spin, 0, 0)
+        self.optionsWidget.pack_start(hbox, 0, 0)
+        ###
+        self.optionsWidget.show_all()
+    def heightSpinChanged(self, spin):
+        v = spin.get_value()
+        self.maxHeight = ui.eventViewMaxHeight = v
+        self.queue_resize()
 
 
 

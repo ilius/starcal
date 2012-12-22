@@ -29,21 +29,33 @@ from scal2.ui_gtk.utils import imageFromFile, labelStockMenuItem, labelImageMenu
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.event.common import EventEditorDialog
 
-class DayOccurrenceView(gtk.VBox, ud.IntegratedCalObj):
+class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
     _name = 'eventDayView'
     desc = _('Events of Day')
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
     def __init__(self, populatePopupFunc=None):
-        gtk.VBox.__init__(self)
+        gtk.ScrolledWindow.__init__(self)
+        self.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+        self.connect('size-request', self.onSizeRequest)
+        self.vbox = gtk.VBox()
+        self.add_with_viewport(self.vbox)
         self.initVars()
         ## what to do with populatePopupFunc FIXME
         ## self.textview.connect('populate-popup', populatePopupFunc)
         self.clipboard = gtk.clipboard_get()
+        self.maxHeight = 200
+    def onSizeRequest(self, widget, requisition):
+        #print 'onSizeRequest', requisition.width, requisition.height
+        requisition.height = min(
+            self.maxHeight,## FIXME
+            self.vbox.size_request()[1] + 2,## >=2 FIXME
+        )
+        return True
     def onDateChange(self, *a, **kw):
         ud.IntegratedCalObj.onDateChange(self, *a, **kw)
         cell = ui.cell
         ## destroy all VBox contents and add again
-        for hbox in self.get_children():
+        for hbox in self.vbox.get_children():
             hbox.destroy()
         for item in cell.eventsData:
             ## item['time'], item['text'], item['icon']
@@ -61,8 +73,9 @@ class DayOccurrenceView(gtk.VBox, ud.IntegratedCalObj):
             label.set_use_markup(True)
             label.connect('populate-popup', self.onLabelPopupPopulate, item['ids'])
             hbox.pack_start(label, 0, 0)## or 1, 1 (center) FIXME
-            self.pack_start(hbox, 0, 0)
+            self.vbox.pack_start(hbox, 0, 0)
         self.show_all()
+        self.vbox.show_all()
         self.set_visible(bool(cell.eventsData))
     def onLabelPopupPopulate(self, label, menu, ids):
         menu = gtk.Menu()

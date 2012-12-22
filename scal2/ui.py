@@ -108,7 +108,7 @@ def saveLiveConf():
     for key in (
         'winX', 'winY', 'winWidth',
         'winKeepAbove', 'winSticky',
-        'pluginsTextIsExpanded', 'bgColor',
+        'pluginsTextIsExpanded', 'eventViewMaxHeight', 'bgColor',
         'eventManShowDescription',## FIXME
     ):
         text += '%s=%r\n'%(key, eval(key))
@@ -647,6 +647,7 @@ menuActiveLabelColor = "#ff0000"
 pluginsTextTray = False
 pluginsTextInsideExpander = True
 pluginsTextIsExpanded = True ## affect only if pluginsTextInsideExpander
+eventViewMaxHeight = 200
 ####################
 dragGetMode = core.DATE_GREG  ##Apply in Pref - FIXME
 #dragGetDateFormat = '%Y/%m/%d'
