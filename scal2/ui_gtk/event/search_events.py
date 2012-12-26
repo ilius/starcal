@@ -330,6 +330,9 @@ class EventSearchWindow(gtk.Window, ud.IntegratedCalObj):
         self.clearResults()
         self.onConfigChange()
         return True
+    def present(self):
+        self.groupCombo.updateItems()
+        gtk.Window.present(self)
     def keyPress(self, arg, gevent):
         kname = gdk.keyval_name(gevent.keyval).lower()
         if kname == 'escape':

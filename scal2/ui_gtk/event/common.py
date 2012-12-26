@@ -666,23 +666,41 @@ class SingleGroupComboBox(gtk.ComboBox):
         self.pack_start(cell, 1)
         self.add_attribute(cell, 'text', 2)
         #####
+        self.updateItems()
+    def updateItems(self):
+        ls = self.get_model()
+        activeGid = self.get_active()
+        ls.clear()
+        ###
         rowBgColor = gdkColorToRgb(self.style.base[gtk.STATE_NORMAL])## bg color of non-selected rows FIXME
         for group in ui.eventGroups:
             if not group.enable:## FIXME
                 continue
             ls.append(getGroupRow(group, rowBgColor))
-        #####
-        try:
-            gtk.ComboBox.set_active(self, 0)
-        except:
-            pass
+        ###
+        #try:
+        gtk.ComboBox.set_active(self, 0)
+        #except:
+        #    pass
+        if activeGid not in (None, -1):
+            try:
+                self.set_active(activeGid)
+            except ValueError:
+                pass
     def get_active(self):
         index = gtk.ComboBox.get_active(self)
-        if index is None:
+        if index in (None, -1):
             return
         gid = self.get_model()[index][0]
         return gid
-
+    def set_active(self, gid):
+        ls = self.get_model()
+        for i, row in enumerate(ls):
+            if row[0] == gid:
+                gtk.ComboBox.set_active(self, i)
+                break
+        else:
+            raise ValueError('SingleGroupComboBox.set_active: Group ID %s is not in items'%gid)
 
 if __name__ == '__main__':
     from pprint import pformat
