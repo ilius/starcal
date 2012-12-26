@@ -46,12 +46,14 @@ from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk import gtk_ud as ud
 
+from scal2.ui_gtk.event import common
 from scal2.ui_gtk.event.common import EventEditorDialog, addNewEvent, GroupEditorDialog
 from scal2.ui_gtk.event.trash import TrashEditorDialog
 from scal2.ui_gtk.event.export import SingleGroupExportDialog, MultiGroupExportDialog
 from scal2.ui_gtk.event.import_event import EventsImportWindow
 from scal2.ui_gtk.event.group_op import GroupSortDialog, GroupConvertModeDialog, GroupBulkEditDialog
 from scal2.ui_gtk.event.account_op import FetchRemoteGroupsDialog
+from scal2.ui_gtk.event.search_events import EventSearchWindow
 
 #print 'Testing translator', __file__, _('About')
 
@@ -159,6 +161,8 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         self.connect('response', self.onResponse)
         self.connect('show', self.onShow)
         #######
+        self.searchWin = EventSearchWindow()
+        #######
         menubar = gtk.MenuBar()
         ####
         fileItem = gtk.MenuItem(_('_File'))
@@ -169,6 +173,10 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         addGroupItem = gtk.MenuItem(_('Add New Group'))
         addGroupItem.connect('activate', self.addGroupBeforeSelection)## or before selected group? FIXME
         fileMenu.append(addGroupItem)
+        ##
+        searchItem = gtk.MenuItem(_('_Search Events'))## FIXME right place?
+        searchItem.connect('activate', self.mbarSearchClicked)
+        fileMenu.append(searchItem)
         ##
         exportItem = gtk.MenuItem(_('_Export'))
         exportItem.connect('activate', self.mbarExportClicked)
@@ -496,20 +504,8 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         event.summary,
         event.getShownDescription(),
     )
-    def getGroupRow(self, group, rowBgColor=None):
-        if not rowBgColor:
-            rowBgColor = self.getRowBgColor()
-        return (
-            group.id,
-            newOutlineSquarePixbuf(
-                group.color,
-                20,
-                0 if group.enable else 15,
-                rowBgColor,
-            ),
-            group.title,
-            '',
-        )
+    def getGroupRow(self, group):
+        return common.getGroupRow(group, self.getRowBgColor()) + ('',)
     def appendGroupTree(self, group):
         groupIter = self.trees.insert_before(None, self.trashIter, self.getGroupRow(group))
         for event in group:
@@ -555,6 +551,8 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         MultiGroupExportDialog().run()
     def mbarImportClicked(self, obj):
         EventsImportWindow(self).present()
+    def mbarSearchClicked(self, obj):
+        self.searchWin.present()
     def mbarOrphanClicked(self, obj):
         self.startWaiting()
         newGroup = ui.eventGroups.checkForOrphans()

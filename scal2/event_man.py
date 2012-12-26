@@ -2445,6 +2445,53 @@ class EventGroup(EventContainer):
             event.save()
             self.append(event)
         self.save()
+    simpleFilters = {
+        'text': lambda event, text: not text or text in event.getText(),
+        'modified_from': lambda event, epoch: event.modified >= epoch,
+        'type': lambda event, _type: event.name == _type,
+    }
+    def search(self, conds):
+        if 'time_from' in conds or 'time_to' in conds:
+            try:
+                time_from = conds['time_from']
+            except KeyError:
+                time_from = getEpochFromJd(self.startJd)
+            else:
+                del conds['time_from']
+            try:
+                time_to = conds['time_to']
+            except KeyError:
+                time_to = getEpochFromJd(self.endJd)
+            else:
+                del conds['time_to']
+            idList = set()
+            for epoch0, epoch1, eid, odt in self.occur.search(time_from, time_to):
+                idList.add(eid)
+            idList = list(idList)
+        else:
+            idList = self.idList
+        #####
+        data = []
+        for eid in idList:
+            try:
+                event = self[eid]
+            except:
+                continue
+            for key, value in conds.items():
+                func = self.simpleFilters[key]
+                if not func(event, value):
+                    break
+            else:
+                data.append({
+                    'id': eid,
+                    'icon': event.icon,
+                    'summary': event.summary,
+                    'description': event.getShownDescription(),
+                })
+        #####
+        return data
+                
+
 
 @classes.group.register
 class TaskList(EventGroup):
@@ -2794,6 +2841,7 @@ class JsonObjectsHolder(JsonEventBaseClass):
         return self.idList
 
 
+
 class EventGroupsHolder(JsonObjectsHolder):
     file = join(confDir, 'event', 'group_list.json')
     def delete(self, obj):
@@ -2834,6 +2882,12 @@ class EventGroupsHolder(JsonObjectsHolder):
             ###
             self.save()
         ## here check for non-grouped event ids ## FIXME
+    def getEnableIds(self):
+        ids = []
+        for group in self:
+            if group.enable:
+                ids.append(group.id)
+        return ids
     def moveToTrash(self, group, trash, addToFirst=True):
         if core.eventTrashLastTop:
             trash.idList = group.idList + trash.idList

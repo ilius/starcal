@@ -34,6 +34,9 @@ from scal2 import ui
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, labelStockMenuItem
 from scal2.ui_gtk.utils import dialog_add_button, DateTypeCombo
 
+from scal2.ui_gtk.color_utils import gdkColorToRgb
+from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
+
 import gtk
 from gtk import gdk
 
@@ -42,6 +45,17 @@ from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinBut
 
 #print 'Testing translator', __file__, _('_About')## OK
 
+
+getGroupRow = lambda group, rowBgColor: (
+    group.id,
+    newOutlineSquarePixbuf(
+        group.color,
+        20,
+        0 if group.enable else 15,
+        rowBgColor,
+    ),
+    group.title
+)
 
 class IconSelectButton(gtk.Button):
     def __init__(self, filename=''):
@@ -429,11 +443,6 @@ class Scale10PowerComboBox(gtk.ComboBox):
         self.set_active(len(self.ls)-1)
 
 
-class GroupComboBox(gtk.ComboBox):
-    def __init__(self):
-        pass
-
-
 class EventEditorDialog(gtk.Dialog):
     def __init__(self, event, typeChangable=True, title=None, isNew=False, parent=None, useSelectedDate=False):
         gtk.Dialog.__init__(self, parent=parent)
@@ -642,14 +651,48 @@ class GroupsTreeCheckList(gtk.TreeView):
             row[1] = (row[0] in gids)
 
 
+
+
+class SingleGroupComboBox(gtk.ComboBox):
+    def __init__(self):
+        ls = gtk.ListStore(int, gdk.Pixbuf, str)
+        gtk.ComboBox.__init__(self, ls)
+        #####
+        cell = gtk.CellRendererPixbuf()
+        self.pack_start(cell, 0)
+        self.add_attribute(cell, 'pixbuf', 1)
+        ###
+        cell = gtk.CellRendererText()
+        self.pack_start(cell, 1)
+        self.add_attribute(cell, 'text', 2)
+        #####
+        rowBgColor = gdkColorToRgb(self.style.base[gtk.STATE_NORMAL])## bg color of non-selected rows FIXME
+        for group in ui.eventGroups:
+            if not group.enable:## FIXME
+                continue
+            ls.append(getGroupRow(group, rowBgColor))
+        #####
+        try:
+            gtk.ComboBox.set_active(self, 0)
+        except:
+            pass
+    def get_active(self):
+        index = gtk.ComboBox.get_active(self)
+        if index is None:
+            return
+        gid = self.get_model()[index][0]
+        return gid
+
+
 if __name__ == '__main__':
     from pprint import pformat
     dialog = gtk.Window()
     dialog.vbox = gtk.VBox()
     dialog.add(dialog.vbox)
     #widget = ViewEditTagsHbox()
-    widget = EventTagsAndIconSelect()
+    #widget = EventTagsAndIconSelect()
     #widget = TagsListBox('task')
+    widget = SingleGroupComboBox()
     dialog.vbox.pack_start(widget, 1, 1)
     #dialog.vbox.show_all()
     #dialog.resize(300, 500)

@@ -994,6 +994,10 @@ msgid "Event Group"
 msgstr ""
 "گروه رویدادها"
 
+msgid "Group"
+msgstr ""
+"گروه"
+
 msgid "Expand All"
 msgstr ""
 "گستردن همه"
@@ -1857,6 +1861,31 @@ msgstr ""
 msgid "%s groups imported successfully"
 msgstr "%s گروه با موفقیت وارد شد"
 
+msgid "_Search"
+msgstr "_جستجو"
+
+msgid "Search Events"
+msgstr ""
+"جستجوی رویدادها"
+
+msgid "_Search Events"
+msgstr ""
+"_جستجوی رویدادها"
+
+msgid "Modified From"
+msgstr ""
+"تغییر کرده از"
+
+msgid "Search Results"
+msgstr ""
+"نتایج جستجو"
+
+msgid "Found %s events"
+msgstr "%s رویداد پیدا شد"
+
+msgid "Columns"
+msgstr ""
+"ستون‌ها"
 
 msgid "Error in reading file"
 msgstr ""

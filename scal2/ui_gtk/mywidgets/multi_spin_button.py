@@ -21,6 +21,7 @@ import sys, os
 from time import time, localtime
 
 from scal2.utils import toUnicode, toStr, strFindNth, iceil, ifloor
+from scal2.time_utils import getEpochFromJhms
 
 from scal2 import locale_man
 from scal2.locale_man import tr as _
@@ -394,7 +395,12 @@ class DateTimeButton(MultiSpinButton):
         if date_time==None:
             date_time = localtime()[:6]
         self.set_value(date_time)
-
+    def get_epoch(self, mode):
+        date, hms = self.get_value()
+        return getEpochFromJhms(
+            to_jd(date[0], date[1], date[2], mode),
+            *hms
+        )
 
 
 class TimerButton(TimeButton):
