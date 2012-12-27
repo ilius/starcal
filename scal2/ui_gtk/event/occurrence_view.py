@@ -37,7 +37,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         gtk.ScrolledWindow.__init__(self)
         self.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
         self.connect('size-request', self.onSizeRequest)
-        self.vbox = gtk.VBox()
+        self.vbox = gtk.VBox(spacing=5)
         self.add_with_viewport(self.vbox)
         self.initVars()
         ## what to do with populatePopupFunc FIXME
@@ -59,7 +59,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
             hbox.destroy()
         for item in cell.eventsData:
             ## item['time'], item['text'], item['icon']
-            hbox = gtk.HBox()
+            hbox = gtk.HBox(spacing=5)
             if item['icon']:
                 hbox.pack_start(imageFromFile(item['icon']), 0, 0)
             if item['time']:
@@ -74,6 +74,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
             label.connect('populate-popup', self.onLabelPopupPopulate, item['ids'])
             hbox.pack_start(label, 0, 0)## or 1, 1 (center) FIXME
             self.vbox.pack_start(hbox, 0, 0)
+            self.vbox.pack_start(gtk.HSeparator(), 0, 0)
         self.show_all()
         self.vbox.show_all()
         self.set_visible(bool(cell.eventsData))
