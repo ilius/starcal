@@ -1955,6 +1955,8 @@ class EventContainer(JsonEventBaseClass):
             raise ValueError('%s does not contain %s'%(self, eid))
         eventFile = join(eventsDir, str(eid), 'event.json')
         if not isfile(eventFile):
+            self.idList.remove(eid)
+            self.save()## FIXME
             raise IOError('error while loading event file %r: no such file (container: %r)'%(eventFile, self))
         data = jsonToData(open(eventFile).read())
         data['id'] = eid ## FIXME
