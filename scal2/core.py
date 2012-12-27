@@ -191,6 +191,7 @@ class CalModulesHolder:
 popen_output = lambda cmd: subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
 
 primary_to_jd = lambda y, m, d: calModulesList[primaryMode].to_jd(y, m, d)
+jd_to_primary = lambda jd: calModulesList[primaryMode].jd_to(jd)
 
 def getCurrentJd():## time() and mktime(localtime()) both return GMT, not local
     (y, m, d) = localtime()[:3]
@@ -249,23 +250,30 @@ def getLocaleFirstWeekDay():
 
 
 ## week number in year
-def getWeekNumber(year, month, day, adjustZero=True):
+def getWeekNumber(year, month, day):
     jd = primary_to_jd(year, month, day)
-    jd0 = primary_to_jd(year, 1, 1)
-    first = jwday(jd-firstWeekDay) - 1
-    if weekNumberMode==7:
-        weekNumber = (jd - jd0 + first%7) / 7 + 1
-    else:
-        weekNumber = (jd - jd0 + first%7) / 7 + (first < weekNumberMode-firstWeekDay)
-        if adjustZero and weekNumber==0:
-            weekNumber = getWeekNumber(*jd_to(jd-7, primaryMode)) + 1
-    return weekNumber
+    ###
+    if primary_to_jd(year+1, 1, 1) - jd < 7:## FIXME
+        if getWeekNumber(*jd_to_primary(jd+14)) == 3:
+            return 1
+    ###
+    absWeekNum, weekDay = getWeekDateFromJd(jd)
+    ystartAbsWeekNum, ystartWeekDay = getWeekDateFromJd(primary_to_jd(year, 1, 1))
+    weekNum = absWeekNum - ystartAbsWeekNum + 1
+    ###
+    if weekNumberMode < 7:
+        if ystartWeekDay > (weekNumberMode-firstWeekDay)%7:
+            weekNum -= 1
+            if weekNum==0:
+                weekNum = getWeekNumber(*jd_to_primary(jd-7)) + 1
+    ###
+    return weekNum
 
 def getJdFromWeek(year, weekNumber):## FIXME
     ## weekDay == 0
     wd0 = getWeekDay(year, 1, 1) - 1
     wn0 = getWeekNumber(year, 1, 1, False)
-    jd0 = to_jd(year, 1, 1, primaryMode)
+    jd0 = primary_to_jd(year, 1, 1)
     return jd0 - wd0 + (weekNumber-wn0)*7
 
 
