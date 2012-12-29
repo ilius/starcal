@@ -337,7 +337,8 @@ class EventSearchWindow(gtk.Window, ud.IntegratedCalObj):
         kname = gdk.keyval_name(gevent.keyval).lower()
         if kname == 'escape':
             self.closed()
-        return True
+            return True
+        return False
 
 EventSearchWindow.registerSignals()
 
