@@ -18,8 +18,8 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-##    Iranian (Jalali) calendar:
-##                    http://en.wikipedia.org/wiki/Iranian_calendar
+## Iranian (Jalali) calendar:
+## http://en.wikipedia.org/wiki/Iranian_calendar
 
 name = 'jalali'
 desc = 'Jalali'
@@ -91,7 +91,7 @@ maxMonthLen = 31
 avgYearLen = 365.2425 ## FIXME
 
 GREGORIAN_EPOCH = 1721426
-jalaliMonthLen = (31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29)
+monthLen = (31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29)
 
 
 import os
@@ -176,7 +176,7 @@ def to_jd(year, month, day):
         y2 = year-979
         jdays = 365*y2 + (y2/33)*8 + (y2%33+3)/4
         for i in xrange(month-1):
-            jdays += jalaliMonthLen[i]
+            jdays += monthLen[i]
         jdays += (day-1)
         return jdays + 584101 + GREGORIAN_EPOCH
     else:
@@ -223,8 +223,8 @@ def jd_to(jd):
             jdays = (jdays-1)%365
         month = 12
         for i in xrange(11):
-            if jdays >= jalaliMonthLen[i]:
-                jdays -= jalaliMonthLen[i]
+            if jdays >= monthLen[i]:
+                jdays -= monthLen[i]
             else:
                 month = i+1
                 break
@@ -239,10 +239,7 @@ def jd_to(jd):
 
 def getMonthLen(year, month):
     if month==12:
-        if isLeap(year):
-            return 30
-        else:
-            return 29
+        return 29 + isLeap(year)
     else:
-        return jalaliMonthLen[month-1]
+        return monthLen[month-1]
 
