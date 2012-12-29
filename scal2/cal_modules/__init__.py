@@ -25,8 +25,20 @@ for name in open(join(modDir, 'modules.list')).read().split('\n'):
     #    myRaise()
     #    sys.stdout.write('Could not load calendar modules "%s"\n%s\n'%(name,sys.exc_info()[1]))
     #    continue
-    for attr in ('name','desc','origLang','monthName','getMonthName',
-                 'minMonthLen','maxMonthLen','getMonthLen','to_jd','jd_to','options','save'):
+    for attr in (
+        'name',
+        'desc',
+        'origLang',
+        'getMonthName',
+        'getMonthNameAb',
+        'minMonthLen',
+        'maxMonthLen',
+        'getMonthLen',
+        'to_jd',
+        'jd_to',
+        'options',
+        'save',
+    ):
         if not hasattr(mod, attr):
             sys.stdout.write('Invalid calendar module: module "%s" has no attribute "%s"\n'%(name, attr))
     calModulesList.append(mod)

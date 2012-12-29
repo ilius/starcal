@@ -451,6 +451,123 @@ msgstr ""
 "اسفند"
 
 
+
+msgid "Xakelêwe"
+msgstr "خاکەلێوە"
+
+msgid "Gullan"
+msgstr "گوڵان"
+
+msgid "Cozerdan"
+msgstr "جۆزەردان"
+
+msgid "Pûşper"
+msgstr "پووشپەڕ"
+
+msgid "Gelawêj"
+msgstr "گەلاوێژ"
+
+msgid "Xermanan"
+msgstr "خەرمانان"
+
+msgid "Rezber"
+msgstr "ڕەزبەر"
+
+msgid "Gelarêzan"
+msgstr "گەڵاڕێزان"
+
+msgid "Sermawez"
+msgstr "سەرماوەز"
+
+msgid "Befranbar"
+msgstr "بەفرانبار"
+
+msgid "Rêbendan"
+msgstr "ڕێبەندان"
+
+msgid "Reşeme"
+msgstr "ڕەشەمە"
+
+         
+         
+
+msgid "Hamal"
+msgstr "حمل"
+
+msgid "Sawr"
+msgstr "ثور"
+
+msgid "Jawzā"
+msgstr "جوزا"
+
+msgid "Saratān"
+msgstr "سرطان"
+
+msgid "Asad"
+msgstr "اسد"
+
+msgid "Sonbola"
+msgstr "سنبله"
+
+msgid "Mizān"
+msgstr "میزان"
+
+msgid "Aqrab"
+msgstr "عقرب"
+
+msgid "Qaws"
+msgstr "قوس"
+
+msgid "Jadi"
+msgstr "جدی"
+
+msgid "Dalvæ"
+msgstr "دلو"
+
+msgid "Hūt"
+msgstr "حوت"
+
+
+
+
+msgid "Wray"
+msgstr "وری"
+
+msgid "Ǧwayay"
+msgstr "غويی"
+
+msgid "Ǧbargolay"
+msgstr "غبرګولی"
+
+msgid "Čungāx̌"
+msgstr "چنګاښ"
+
+msgid "Zmaray"
+msgstr "زمری"
+
+msgid "Waǵay"
+msgstr "وږی"
+
+msgid "Təla"
+msgstr "تله"
+
+msgid "Laṛam"
+msgstr "لړم"
+
+msgid "Līndəi"
+msgstr "ليندۍ"
+
+msgid "Marǧūmay"
+msgstr "مرغومی"
+
+msgid "Salwāǧa"
+msgstr "سلواغه"
+
+msgid "Kab"
+msgstr "كب"
+
+
+
 msgid "Muharram"
 msgstr ""
 "محرم"
@@ -630,6 +747,22 @@ msgstr ""
 msgid "Activate/Inactivate"
 msgstr ""
 "فعال/غیرفعال کردن"
+
+msgid "Jalali Month Names"
+msgstr ""
+"نام ماه‌های جلالی"
+
+msgid "Iranian"
+msgstr "ایرانی"
+
+msgid "Kurdish"
+msgstr "کردی"
+
+msgid "Dari"
+msgstr "دری"
+
+msgid "Pashto"
+msgstr "پشتو"
 
 msgid "Jalali Calculation Algorithm"
 msgstr ""
