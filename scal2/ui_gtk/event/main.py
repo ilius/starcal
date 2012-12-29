@@ -991,6 +991,7 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
     def groupConvertModeFromMenu(self, menu, group):
         GroupConvertModeDialog(group).run()
     def startWaiting(self):
+        self.queue_draw()
         self.vbox.set_sensitive(False)
         self.window.set_cursor(gdk.Cursor(gdk.WATCH))
         while gtk.events_pending():
