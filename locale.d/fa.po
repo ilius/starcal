@@ -617,6 +617,49 @@ msgstr ""
 "ذو‌الحجه"
 
 
+msgid "Ethiopian"
+msgstr "اتیوپیایی"
+
+msgid "Meskerem"
+msgstr "مسکرم"
+
+msgid "Tekimt"
+msgstr "تکیمت"
+
+msgid "Hidar"
+msgstr "هیدار"
+
+msgid "Tahsas"
+msgstr "طه ساز"
+
+msgid "Ter"
+msgstr "تر"
+
+msgid "Yekoutit"
+msgstr "یکوتیت"
+
+msgid "Meyabit"
+msgstr "مگابیت"
+
+msgid "Meyaziya"
+msgstr "میازیا"
+
+msgid "Genbot"
+msgstr "گین بوت"
+
+msgid "Sene"
+msgstr "سنه"
+
+msgid "Hamle"
+msgstr "حمله"
+
+msgid "Nahse"
+msgstr "نحسه"
+
+msgid "Pagume"
+msgstr "پاگومه"
+
+
 msgid "Tishri"
 msgstr "تیشری"
 
