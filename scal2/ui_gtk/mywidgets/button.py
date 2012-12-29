@@ -1,6 +1,8 @@
 from time import time
 import sys
 
+from scal2 import ui
+
 import gobject
 from gobject import timeout_add
 
