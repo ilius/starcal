@@ -107,6 +107,10 @@ gtk.window_set_default_icon_from_file(ui.logo)
 
 settings = gtk.settings_get_default()
 
+## ui.timeout_initial = settings.get_property('gtk-timeout-initial') ## == 200 FIXME
+## ui.timeout_repeat = settings.get_property('gtk-timeout-repeat') ## == 20 too small!! FIXME
+
+
 ui.fontDefault = gfontDecode(settings.get_property('gtk-font-name'))
 if not ui.fontCustom:
     ui.fontCustom = ui.fontDefault

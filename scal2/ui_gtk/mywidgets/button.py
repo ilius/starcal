@@ -7,6 +7,9 @@ from gobject import timeout_add
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk import gtk_ud as ud
+
+
 class ConButtonBase:
     def __init__(self):
         self.pressTm = 0
@@ -19,11 +22,11 @@ class ConButtonBase:
         self.pressTm = time()
         self.remain = True
         self.doTrigger()
-        timeout_add(300, self.onPressRemain, self.doTrigger)
+        timeout_add(ui.timeout_initial, self.onPressRemain, self.doTrigger)
     def onPressRemain(self, func):
-        if self.remain and time()-self.pressTm>=0.3:
+        if self.remain and time()-self.pressTm>=ui.timeout_repeat/1000.0:
             func()
-            timeout_add(150, self.onPressRemain, self.doTrigger)
+            timeout_add(ui.timeout_repeat, self.onPressRemain, self.doTrigger)
     def onRelease(self, widget, event=None):
         self.remain = False
 

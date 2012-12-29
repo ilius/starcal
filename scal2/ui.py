@@ -721,7 +721,8 @@ eventManShowDescription = True
 #####################
 focusTime = 0
 lastLiveConfChangeTime = 0
-
+timeout_initial = 200
+timeout_repeat = 50
 
 sysConfPath = join(sysConfDir, 'ui.conf') ## also includes LIVE config
 if os.path.isfile(sysConfPath):
