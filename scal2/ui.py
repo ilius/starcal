@@ -245,12 +245,12 @@ class Cell:## status and information of a cell
             if icon and not icon in iconList:
                 iconList.append(icon)
         return iconList
-    def getEventText(self):
+    def getEventText(self, showDesc=True):
         lines = []
-        for ed in self.eventsData:
-            line = ed['text']
-            if ed['time']:
-                line = ed['time'] + ' ' + line
+        for item in self.eventsData:
+            line = ''.join(item['text']) if showDesc else item['text'][0]
+            if item['time']:
+                line = item['time'] + ' ' + line
             lines.append(line)
         return '\n'.join(lines)
 
@@ -617,6 +617,7 @@ wcalButtonsWidth = 30
 wcalButtonsSpacing = 10
 wcalWeekDaysWidth = 60
 wcalEventsIconColWidth = 50
+wcalEventsTextShowDesc = True
 wcalDaysOfMonthColWidth = 30
 wcalDaysOfMonthColDir = 'ltr' ## ltr/rtl/auto
 ####################

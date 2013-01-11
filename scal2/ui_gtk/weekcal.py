@@ -182,7 +182,6 @@ class WeekNumToolbarItem(ToolbarItem):
 
 
 class ToolbarColumn(CustomizableToolbar, ColumnBase):
-    params = ('ud.wcalToolbarData',)
     defaultItems = [
         WeekNumToolbarItem(),
         ToolbarItem('backward4', 'goto_top', 'goBackward4', 'Backward 4 Weeks'),
@@ -258,13 +257,30 @@ class EventsTextColumn(Column):
     desc = _('Events Text')
     expand = True
     customizeFont = True
+    params = ('ui.wcalEventsTextShowDesc',)
     def __init__(self, wcal):
         Column.__init__(self, wcal)
         self.connect('expose-event', self.onExposeEvent)
+        #####
+        hbox = gtk.HBox()
+        check = gtk.CheckButton(_('Show Description'))
+        check.set_active(ui.wcalEventsTextShowDesc)
+        hbox.pack_start(check, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        check.connect('clicked', self.descCheckClicked)
+        self.optionsWidget.pack_start(hbox, 0, 0)
+        ##
+        self.optionsWidget.show_all()
+    def descCheckClicked(self, check):
+        ui.wcalEventsTextShowDesc = check.get_active()
+        self.queue_draw()
     def onExposeEvent(self, widget=None, event=None):
         cr = self.window.cairo_create()
         self.drawBg(cr)
-        self.drawTextList(cr, [self.wcal.status[i].getEventText() for i in range(7)])
+        self.drawTextList(
+            cr,
+            [self.wcal.status[i].getEventText(ui.wcalEventsTextShowDesc) for i in range(7)]
+        )
 
 class EventsIconColumn(Column):
     _name = 'eventsIcon'

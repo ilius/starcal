@@ -1133,19 +1133,16 @@ class Event(JsonEventBaseClass, RuleContainer):
                 _('File') + ': ' + fname,
             ))
         return data
-    #getText = lambda self: self.summary if self.summary else self.description
-    def getText(self):## FIXME
+    def getTextParts(self):
         try:
             sep = self.parent.eventTextSep
         except:
             sep = core.eventTextSep
-        if self.summary:
-            if self.description:
-                return '%s%s%s'%(self.summary, sep, self.description)
-            else:
-                return self.summary
+        if self.description:
+            return (self.summary, sep, self.description)
         else:
-            return self.description
+            return (self.summary,)
+    getText = lambda self, showDesc=True: ''.join(self.getTextParts()) if showDesc else self.summary
     def setId(self, _id=None):
         global lastEventId
         if _id is None or _id<0:
@@ -3046,9 +3043,7 @@ def getDayOccurrenceData(curJd, groups):
         for epoch0, epoch1, eid, odt in group.occur.search(getEpochFromJd(curJd), getEpochFromJd(curJd+1)):
             event = group[eid]
             ###
-            text = event.getText()
-            for url, fname in event.getFilesUrls():
-                text += '\n<a href="%s">%s</a>'%(url, fname)
+            text = event.getTextParts()
             ###
             timeStr = ''
             if epoch1-epoch0 < dayLen:

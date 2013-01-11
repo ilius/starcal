@@ -1580,6 +1580,10 @@ msgid "Description"
 msgstr ""
 "توضیح"
 
+msgid "Show Description"
+msgstr ""
+"نمایش توضیح"
+
 msgid "Show Date"
 msgstr ""
 "نمایش تاریخ"

@@ -44,6 +44,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         ## self.textview.connect('populate-popup', populatePopupFunc)
         self.clipboard = gtk.clipboard_get()
         self.maxHeight = 200
+        self.showDesc = True
     def onSizeRequest(self, widget, requisition):
         #print 'onSizeRequest', requisition.width, requisition.height
         requisition.height = min(
@@ -59,6 +60,8 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
             hbox.destroy()
         for item in cell.eventsData:
             ## item['time'], item['text'], item['icon']
+            text = ''.join(item['text']) if self.showDesc else item['text'][0]
+            ###
             hbox = gtk.HBox(spacing=5)
             if item['icon']:
                 hbox.pack_start(imageFromFile(item['icon']), 0, 0)
@@ -67,7 +70,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
                 label.set_direction(gtk.TEXT_DIR_LTR)
                 hbox.pack_start(label, 0, 0)
                 hbox.pack_start(gtk.Label('  '), 0, 0)
-            label = gtk.Label(item['text'])
+            label = gtk.Label(text)
             label.set_selectable(True)
             label.set_line_wrap(True)
             label.set_use_markup(True)
