@@ -25,11 +25,13 @@ from os.path import dirname, join, isfile, isdir, splitext
 from xml.dom.minidom import parse## remove FIXME
 from subprocess import Popen
 
-from scal2.utils import NullObj, toStr, cleanCacheDict, restart
+from scal2.utils import NullObj, toStr, cleanCacheDict
 from scal2.os_utils import makeDir
 from scal2.paths import *
 
-import scal2.locale_man
+from scal2.cal_modules import calModulesList, calModuleNames
+
+from scal2 import locale_man
 from scal2.locale_man import tr as _
 
 from scal2 import core
@@ -78,12 +80,12 @@ def parseDroppedDate(text):
     #    year += 2000
     return (year, month, day)
 
-def shownCalsStr():
-    n = len(shownCals)
-    st='('
+def dictsTupleConfStr(data):
+    n = len(data)
+    st = '('
     for i in range(n):
-        d = shownCals[i].copy()
-        st+='\n{'
+        d = data[i].copy()
+        st += '\n{'
         for k in d.keys():
             v = d[k]
             if type(k)==str:
@@ -106,7 +108,7 @@ def saveLiveConf():
     for key in (
         'winX', 'winY', 'winWidth',
         'winKeepAbove', 'winSticky',
-        'pluginsTextIsExpanded', 'bgColor',
+        'pluginsTextIsExpanded', 'eventViewMaxHeight', 'bgColor',
         'eventManShowDescription',## FIXME
     ):
         text += '%s=%r\n'%(key, eval(key))
@@ -218,7 +220,7 @@ class Cell:## status and information of a cell
         self.holiday = (self.weekDay in core.holidayWeekDays)
         ###################
         self.dates = []
-        for mode in xrange(core.modNum):
+        for mode in range(len(calModulesList)):
             if mode==core.primaryMode:
                 self.dates.append((self.year, self.month, self.day))
             else:
@@ -243,12 +245,12 @@ class Cell:## status and information of a cell
             if icon and not icon in iconList:
                 iconList.append(icon)
         return iconList
-    def getEventText(self):
+    def getEventText(self, showDesc=True):
         lines = []
-        for ed in self.eventsData:
-            line = ed['text']
-            if ed['time']:
-                line = ed['time'] + ' ' + line
+        for item in self.eventsData:
+            line = ''.join(item['text']) if showDesc else item['text'][0]
+            if item['time']:
+                line = item['time'] + ' ' + line
             lines.append(line)
         return '\n'.join(lines)
 
@@ -357,6 +359,10 @@ def yearPlus(plus=1):
 
 getFont = lambda: list(fontDefault if fontUseDefault else fontCustom)
 
+def getFontSmall():
+    (name, bold, underline, size) = getFont()
+    return (name, bold, underline, int(size*0.6))
+
 def getHolidaysJdList(startJd, endJd):
     jdList = []
     for jd in range(startJd, endJd):
@@ -433,12 +439,32 @@ def duplicateGroupTitle(group):
         index += 1
 
 ######################################################################
-shownCals = [
-    {'enable':True, 'mode':0, 'x':0,  'y':-2, 'font':None, 'color':(220, 220, 220)},
-    {'enable':True, 'mode':1, 'x':18, 'y':5,  'font':None, 'color':(165, 255, 114)},
-    {'enable':True, 'mode':2, 'x':-18,'y':4,  'font':None, 'color':(0, 200, 205)},
+shownCals = [] ## FIXME
+mcalTypeParams = [
+    {'pos':(0, -2), 'font':None, 'color':(220, 220, 220)},
+    {'pos':(18, 5), 'font':None, 'color':(165, 255, 114)},
+    {'pos':(-18, 4), 'font':None, 'color':(0, 200, 205)},
 ]
-core.primaryMode = shownCals[0]['mode']
+
+wcalTypeParams = [
+    {'font':None},
+    {'font':None},
+    {'font':None},
+]
+
+
+
+def getMcalMinorTypeParams():
+    ls = []
+    for i, mode in enumerate(core.calModules.active):
+        try:
+            params = mcalTypeParams[i]
+        except IndexError:
+            break
+        else:
+            ls.append((mode, params))
+    return ls
+
 ################################
 tagsDir = join(pixDir, 'event')
 
@@ -567,6 +593,7 @@ bgUseDesk = False
 borderColor = (123, 40, 0, 255)
 borderTextColor = (255, 255, 255, 255) ## text of weekDays and weekNumbers
 #menuBgColor = borderColor ##???????????????
+textColor = (255, 255, 255, 255)
 menuTextColor = None##borderTextColor##???????????????
 holidayColor = (255, 160, 0, 255)
 inactiveColor = (255, 255, 255, 115)
@@ -583,12 +610,14 @@ mcalLeftMargin = 30
 mcalTopMargin = 30
 ####################
 wcalHeight = 200
+wcalTextSizeScale = 0.6 ## between 0 and 1
 wcalTextColor = (255, 255, 255)
 wcalPadding = 10
 wcalButtonsWidth = 30
 wcalButtonsSpacing = 10
 wcalWeekDaysWidth = 60
 wcalEventsIconColWidth = 50
+wcalEventsTextShowDesc = True
 wcalDaysOfMonthColWidth = 30
 wcalDaysOfMonthColDir = 'ltr' ## ltr/rtl/auto
 ####################
@@ -619,6 +648,7 @@ menuActiveLabelColor = "#ff0000"
 pluginsTextTray = False
 pluginsTextInsideExpander = True
 pluginsTextIsExpanded = True ## affect only if pluginsTextInsideExpander
+eventViewMaxHeight = 200
 ####################
 dragGetMode = core.DATE_GREG  ##Apply in Pref - FIXME
 #dragGetDateFormat = '%Y/%m/%d'
@@ -644,7 +674,7 @@ winSticky = True
 winX = 0
 winY = 0
 fontUseDefault = True
-fontDefault = ('Sans', False, False, 12)
+fontDefault = ['Sans', False, False, 12]
 fontCustom = None
 #####################
 showMain = True ## Show main window on start (or only goto tray)
@@ -692,7 +722,8 @@ eventManShowDescription = True
 #####################
 focusTime = 0
 lastLiveConfChangeTime = 0
-
+timeout_initial = 200
+timeout_repeat = 50
 
 sysConfPath = join(sysConfDir, 'ui.conf') ## also includes LIVE config
 if os.path.isfile(sysConfPath):
@@ -725,25 +756,41 @@ else:
     prefVersion = version
     del version
 
-shownCalsNum = len(shownCals)
 
-newPrimaryMode = shownCals[0]['mode']
-if newPrimaryMode!= core.primaryMode:
-    core.primaryMode = newPrimaryMode
-    cellCache.clear()
-del newPrimaryMode
+if shownCals:
+    mcalTypeParams = []
+    wcalTypeParams = []
+    core.activeCalNames = []
+    for item in shownCals:
+        mcalTypeParams.append({
+            'pos': (item['x'], item['y']),
+            'font': list(item['font']),
+            'color': item['color'],
+        })
+        wcalTypeParams.append({
+            'font': list(item['font']),
+        })
+        core.activeCalNames.append(calModuleNames[item['mode']])
+    core.calModules.update()
+
+## FIXME
+#newPrimaryMode = shownCals[0]['mode']
+#if newPrimaryMode!= core.primaryMode:
+#    core.primaryMode = newPrimaryMode
+#    cellCache.clear()
+#del newPrimaryMode
 
 ## monthcal:
 
 
 needRestartPref = {} ### Right place ????????
 for key in (
-    'scal2.locale_man.lang',
-    'scal2.locale_man.enableNumLocale',
+    'locale_man.lang',
+    'locale_man.enableNumLocale',
     'winTaskbar',
     'showYmArrows',
     'useAppIndicator',
-): # What other????
+):
     needRestartPref[key] = eval(key)
 
 if menuTextColor is None:

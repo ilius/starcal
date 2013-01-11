@@ -4,12 +4,12 @@
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License,    or
+# the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along
@@ -22,7 +22,7 @@ from os.path import join, isfile, isdir
 import locale, gettext
 from paths import *
 from scal2.utils import StrOrderedDict, toStr, toUnicode
-from scal2.cal_modules import modules
+from scal2.cal_modules import calModulesList
 
 
 APP_NAME = 'starcal2'
@@ -200,7 +200,7 @@ def loadTranslator(ui_is_qt=False):
 
 rtlSgn = lambda: 1 if rtl else -1
 
-getMonthName = lambda mode, month, year=None: tr(modules[mode].getMonthName(month, year))
+getMonthName = lambda mode, month, year=None: tr(calModulesList[mode].getMonthName(month, year))
 
 getNumSep = lambda: tr(u'.') if enableNumLocale else u'.'
 
@@ -231,7 +231,7 @@ def numEncode(num, mode=None, fillZero=0, negEnd=False):
     elif isinstance(mode, int):
         if langSh != 'en':
             try:
-                mode = modules[mode].origLang
+                mode = calModulesList[mode].origLang
             except AttributeError:
                 mode = langSh
     if mode=='en' or not mode in digits.keys():
@@ -264,7 +264,7 @@ def textNumEncode(st, mode=None, changeSpecialChars=True, changeDot=False):
     elif isinstance(mode, int):
         if langSh != 'en':
             try:
-                mode = modules[mode].origLang
+                mode = calModulesList[mode].origLang
             except AttributeError:
                 mode = langSh
     dig = getLangDigits(mode)

@@ -23,7 +23,7 @@ import os
 from os.path import isfile
 
 from scal2.cal_modules.hijri import monthDb, monthName
-from scal2.cal_modules import moduleNames, moduleDescNames
+from scal2.cal_modules import calModuleNames
 
 from scal2 import core
 from scal2.core import jd_to, to_jd
@@ -38,7 +38,9 @@ from gtk import gdk
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
 from scal2.ui_gtk.utils import dialog_add_button
 
-hijriMode = moduleNames.index('hijri')
+from scal2.ui_gtk import gtk_ud as ud
+
+hijriMode = calModuleNames.index('hijri')
 
 def getCurrentYm():
     (y, m, d) = ui.todayCell.dates[hijriMode]
@@ -121,11 +123,10 @@ class EditDbDialog(gtk.Dialog):
         self.updateWidget()
         return True
     def updateWidget(self):
-        #for index, module in enumerate(core.modules):
+        #for index, module in core.calModules.iterIndexModule():
         #    if module.name != 'hijri':
-        for item in ui.shownCals:
-            mode = item['mode']
-            modeDesc = moduleDescNames[mode]
+        for mode in core.calModules.active:
+            modeDesc = core.calModules[mode].desc
             if not 'hijri' in modeDesc.lower():
                 self.altMode = mode
                 self.altModeDesc = modeDesc
@@ -208,8 +209,6 @@ class EditDbDialog(gtk.Dialog):
         return True
 
 def tuneHijriMonthes(widget=None):
-    if rtl:
-        gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
     dialog = EditDbDialog()
     dialog.resize(400, 400)
     dialog.run()

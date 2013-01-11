@@ -22,12 +22,13 @@ from math import log
 
 sys.path.append('/starcal2')
 
+from scal2.interval_utils import overlaps
 from scal2.time_utils import *
 
 #maxLevel = 1
 #minLevel = 1
 
-class Node:
+class BtlNode:
     def __init__(self, base, level, offset, rightOri):
         #global maxLevel, minLevel
         self.base = base ## 8 or 16 is better
@@ -40,22 +41,19 @@ class Node:
         #    print 'minLevel =', level
         self.offset = offset ## in days
         self.rightOri = rightOri ## FIXME
+        ###
+        width = base ** level
+        if rightOri:
+            self.s0, self.s1 = offset, offset + width
+        else:
+            self.s0, self.s1 = offset - width, offset
+        ###
         self.clear()
     def clear(self):
         self.children = {} ## possible keys are 0 to base-1 for right node, or -(base-1) to 0 for left node
         self.events = [] ## list of tuples (rel_start, rel_end, event_id)
-    def getScope(self):
-        if self.rightOri:
-            return self.offset, self.offset + self.base ** self.level
-        else:
-            return self.offset - self.base ** self.level, self.offset
-    def inScope(self, tm):
-        s0, s1 = self.getScope()
-        return s0 <= tm <= s1
-    def overlapScope(self, t0, t1):
-        s0, s1 = self.getScope()
-        return overlaps(t0, t1, s0, s1)
-    def getEvents(self, t0, t1):## t0 < t1
+    overlapScope = lambda self, t0, t1: overlaps(t0, t1, self.s0, self.s1)
+    def search(self, t0, t1):## t0 < t1
         '''
             returns a list of (ev_t0, ev_t1, ev_id) s
         '''
@@ -68,28 +66,33 @@ class Node:
             ev_t1 = ev_rt1 + self.offset
             if overlaps(t0, t1, ev_t0, ev_t1):
                 ## events.append((ev_t0, ev_t1, ev_id))
-                events.append((max(t0, ev_t0), min(t1, ev_t1), ev_id, ev_t1-ev_t0))
+                events.append((
+                    max(t0, ev_t0),
+                    min(t1, ev_t1),
+                    ev_id,
+                    ev_rt1 - ev_rt0,
+                ))
         for child in self.children.values():
-            events += child.getEvents(t0, t1)
+            events += child.search(t0, t1)
         return events
     def getChild(self, tm):
-        if not self.inScope(tm):
-            raise RuntimeError('Node.getChild: Out of scope (level=%s, offset=%s, rightOri=%s'%
+        if not self.s0 <= tm <= self.s1:
+            raise RuntimeError('BtlNode.getChild: Out of scope (level=%s, offset=%s, rightOri=%s'%
                 (self.level, self.offset, self.rightOri))
         dt = self.base ** (self.level - 1)
         index = int((tm-self.offset) // dt)
         try:
             return self.children[index]
         except KeyError:
-            child = self.children[index] = Node(
+            child = self.children[index] = self.__class__(
                 self.base,
                 self.level-1,
-                self.offset + index * self.base ** (self.level - 1),
+                self.offset + index * dt,
                 self.rightOri,
             )
             return child
     def newParent(self):
-        parent = Node(
+        parent = self.__class__(
              self.base,
              self.level+1,
              self.offset,
@@ -98,32 +101,32 @@ class Node:
         parent.children[0] = self
         return parent
 
-class CenterNode:
+class BtlRootNode:
     def __init__(self, offset=0, base=4):
-        ## base 4 and 8 are the best (about speed of both addEvent and getEvents)
+        ## base 4 and 8 are the best (about speed of both add and search)
         self.base = base
         self.offset = offset
         self.clear()
     def clear(self):
-        self.right = Node(self.base, 1, self.offset, True)
-        self.left = Node(self.base, 1, self.offset, False)
+        self.right = BtlNode(self.base, 1, self.offset, True)
+        self.left = BtlNode(self.base, 1, self.offset, False)
         self.byEvent = {}
-    def getEvents(self, t0, t1):
+    def search(self, t0, t1):
         if self.offset <= t0:
-            return self.right.getEvents(t0, t1)
+            return self.right.search(t0, t1)
         elif t0 < self.offset < t1:
-            return self.left.getEvents(t0, self.offset) + self.right.getEvents(self.offset, t1)
+            return self.left.search(t0, self.offset) + self.right.search(self.offset, t1)
         elif t1 <= self.offset:
-            return self.left.getEvents(t0, t1)
+            return self.left.search(t0, t1)
         else:
             raise RuntimeError
-    def addEvent(self, t0, t1, ev_id):
+    def add(self, t0, t1, ev_id):
         if self.offset <= t0:
             isRight = True
             node = self.right
         elif t0 < self.offset < t1:
-            self.addEvent(t0, self.offset, ev_id)
-            self.addEvent(self.offset, t1, ev_id)
+            self.add(t0, self.offset, ev_id)
+            self.add(self.offset, t1, ev_id)
             return
         elif t1 <= self.offset:
             isRight = False
@@ -132,18 +135,17 @@ class CenterNode:
             raise RuntimeError
         ########
         while True:
-            s0, s1 = node.getScope()
-            if s0 <= t0 < s1 and s0 < t1 <= s1:
+            if node.s0 <= t0 < node.s1 and node.s0 < t1 <= node.s1:
                 break
             node = node.newParent()
-        ## now `node` is the root node
+        ## now `node` is the new side (left/right) node
         if isRight:
             self.right = node
         else:
             self.left = node
         while True:
             child = node.getChild(t0)
-            if child.inScope(t1):
+            if child.s0 <= t1 <= child.s1:
                 node = child
             else:
                 break
@@ -154,7 +156,7 @@ class CenterNode:
             self.byEvent[ev_id].append((node, ev_tuple))
         except KeyError:
             self.byEvent[ev_id] = [(node, ev_tuple)]
-    def delEvent(self, ev_id):
+    def delete(self, ev_id):
         try:
             refList = self.byEvent.pop(ev_id)
         except KeyError:
@@ -168,6 +170,13 @@ class CenterNode:
             #if not node.events:
             #   node.parent.removeChild(node)
         return n
+    def getLastOfEvent(self, ev_id):
+        try:
+            node, ev_tuple = self.byEvent[ev_id][-1]
+        except KeyError, IndexError:
+            return None
+        return ev_tuple[0], ev_tuple[1]
+
 
 #if __name__=='__main__':
 #    from scal2 import ui

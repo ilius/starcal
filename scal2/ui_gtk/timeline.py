@@ -49,6 +49,8 @@ import cairo
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk import gtk_ud as ud
+
 def show_event(widget, event):
     print type(widget), event.type.value_name, event.get_value()#, event.send_event
 
@@ -453,8 +455,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
     def editGroupClicked(self, menu, winTitle, group):
         if GroupEditorDialog(group).run() is not None:
             ui.changedGroups.append(group.id)
-            if ui.mainWin:
-                ui.mainWin.onConfigChange()
+            ud.windowList.onConfigChange()
     def moveEventToTrash(self, menu, group, event):
         eventIndex = group.index(event.id)
         ui.moveEventToTrash(group, event)
@@ -590,9 +591,6 @@ TimeLine.registerSignals()
 TimeLineWindow.registerSignals()
 
 if __name__=='__main__':
-    gtk.window_set_default_icon_from_file(ui.logo)
-    if rtl:
-        gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
     win = TimeLineWindow()
     win.resize(ud.screenW, 150)
     win.move(0, 0)

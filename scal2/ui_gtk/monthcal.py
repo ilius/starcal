@@ -32,7 +32,13 @@ from scal2.core import log, myRaise, getMonthName, getMonthLen, getNextMonth, ge
 from scal2 import ui
 from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
 
+import gobject
+import gtk
+from gtk import gdk
+
 from scal2.ui_gtk.drawing import *
+from scal2.ui_gtk.mywidgets import MyFontButton, MyColorButton
+from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
 from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk import preferences
@@ -41,11 +47,61 @@ from scal2.ui_gtk.customize import CustomizableCalObj
 #from scal2.ui_gtk import desktop
 #from scal2.ui_gtk import wallpaper
 
-import gobject
-import gtk
-from gtk import gdk
 
-from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
+class McalTypeParamBox(gtk.HBox):
+    def __init__(self, mcal, index, mode, params, sgroupLabel, sgroupFont):
+        gtk.HBox.__init__(self)
+        self.mcal = mcal
+        self.index = index
+        self.mode = mode
+        ######
+        label = gtk.Label(_(core.calModules[mode].desc)+'  ')
+        label.set_alignment(0, 0.5)
+        self.pack_start(label, 0, 0)
+        sgroupLabel.add_widget(label)
+        ###
+        self.pack_start(gtk.Label(''), 1, 1)
+        self.pack_start(gtk.Label(_('position')), 0, 0)
+        ###
+        spin = FloatSpinButton(-99, 99, 1)
+        self.spinX = spin
+        self.pack_start(spin, 0, 0)
+        ###
+        spin = FloatSpinButton(-99, 99, 1)
+        self.spinY = spin
+        self.pack_start(spin, 0, 0)
+        ####
+        self.pack_start(gtk.Label(''), 1, 1)
+        ###
+        fontb = MyFontButton(mcal)
+        self.fontb = fontb
+        self.pack_start(fontb, 0, 0)
+        sgroupFont.add_widget(fontb)
+        ####
+        colorb = MyColorButton()
+        self.colorb = colorb
+        self.pack_start(colorb, 0, 0)
+        ####
+        self.set(params)
+        ####
+        self.spinX.connect('changed', self.onChange)
+        self.spinY.connect('changed', self.onChange)
+        fontb.connect('font-set', self.onChange)
+        colorb.connect('color-set', self.onChange)
+    def get(self):
+        return {
+            'pos': (self.spinX.get_value(), self.spinY.get_value()),
+            'font': self.fontb.get_font_name(),
+            'color': self.colorb.get_color()
+        }
+    def set(self, data):
+        self.spinX.set_value(data['pos'][0])
+        self.spinY.set_value(data['pos'][1])
+        self.fontb.set_font_name(data['font'])
+        self.colorb.set_color(data['color'])
+    def onChange(self, obj=None, event=None):
+        ui.mcalTypeParams[self.index] = self.get()
+        self.mcal.queue_draw()
 
 class MonthCal(gtk.Widget, CustomizableCalObj):
     _name = 'monthCal'
@@ -66,8 +122,32 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         text += 'ui.mcalHeight=%r\n'%ui.mcalHeight
         text += 'ui.mcalLeftMargin=%r\n'%ui.mcalLeftMargin
         text += 'ui.mcalTopMargin=%r\n'%ui.mcalTopMargin
+        text += 'ui.mcalTypeParams=%r\n'%ui.mcalTypeParams
         return text
-    def __init__(self, shownCals=ui.shownCals):
+    def updateTypeParamsWidget(self):
+        vbox = self.typeParamsVbox
+        for child in vbox.get_children():
+            child.destroy()
+        ###
+        n = len(core.calModules.active)
+        while len(ui.mcalTypeParams) < n:
+            ui.mcalTypeParams.append({
+                'pos': (0, 0),
+                'font': ui.getFontSmall(),
+                'color': ui.textColor,
+            })
+        sgroupLabel = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        sgroupFont = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        for i, mode in enumerate(core.calModules.active):
+            #try:
+            params = ui.mcalTypeParams[i]
+            #except IndexError:
+            ##
+            hbox = McalTypeParamBox(self, i, mode, params, sgroupLabel, sgroupFont)
+            vbox.pack_start(hbox, 0, 0)
+        ###
+        vbox.show_all()
+    def __init__(self):
         gtk.Widget.__init__(self)
         self.set_property('height-request', ui.mcalHeight)
         ######
@@ -98,13 +178,24 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         hbox.pack_start(gtk.Label(''), 1, 1)
         optionsWidget.pack_start(hbox, 0, 0)
         ####
+        frame = gtk.Frame(_('Calendars'))
+        self.typeParamsVbox = gtk.VBox()
+        frame.add(self.typeParamsVbox)
+        frame.show_all()
+        optionsWidget.pack_start(frame, 0, 0)
+        self.updateTypeParamsWidget()## FIXME
+        ####
         self.initVars(optionsWidget=optionsWidget)
-        ######
-        self.shownCals = shownCals
         ######################
         #self.kTime = 0
         ######################
-        self.drag_source_set(gdk.MODIFIER_MASK,(('',0,0),),gdk.ACTION_COPY)
+        self.drag_source_set(
+            gdk.MODIFIER_MASK,
+            (
+                ('', 0, 0),
+            ),
+            gdk.ACTION_COPY,
+        )
         self.drag_source_add_text_targets()
         self.connect('drag-data-get', self.dragDataGet)
         self.connect('drag-begin', self.dragBegin)
@@ -260,7 +351,6 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
                     )
                 cr.show_layout(lay)
         selectedCellPos = ui.cell.monthPos
-        shown = self.shownCals
         if ui.todayCell.inSameMonth(ui.cell):
             (tx, ty) = ui.todayCell.monthPos ## today x and y
             x0 = self.cx[tx] - self.dx/2.0
@@ -315,33 +405,31 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
                 #    self.dx-1,
                 #    self.dy-1,
                 #)
-                if shown[0]['enable']:
-                    mode = shown[0]['mode']
-                    daynum = newTextLayout(self, _(c.dates[mode][2], mode), shown[0]['font'])
-                    (fontw, fonth) = daynum.get_pixel_size()
-                    if cellInactive:
-                        setColor(cr, ui.inactiveColor)
-                    elif c.holiday:
-                        setColor(cr, ui.holidayColor)
-                    else:
-                        setColor(cr, shown[0]['color'])
-                    cr.move_to(
-                        x0 - fontw/2.0 + shown[0]['x'],
-                        y0 - fonth/2.0 + shown[0]['y'],
-                    )
-                    cr.show_layout(daynum)
+                mode = core.primaryMode
+                params = ui.mcalTypeParams[0]
+                daynum = newTextLayout(self, _(c.dates[mode][2], mode), params['font'])
+                (fontw, fonth) = daynum.get_pixel_size()
+                if cellInactive:
+                    setColor(cr, ui.inactiveColor)
+                elif c.holiday:
+                    setColor(cr, ui.holidayColor)
+                else:
+                    setColor(cr, params['color'])
+                cr.move_to(
+                    x0 - fontw/2.0 + params['pos'][0],
+                    y0 - fonth/2.0 + params['pos'][1],
+                )
+                cr.show_layout(daynum)
                 if not cellInactive:
-                    for item in shown[1:]:
-                        if item['enable']:
-                            mode = item['mode']
-                            daynum = newTextLayout(self, _(c.dates[mode][2], mode), item['font'])
-                            (fontw, fonth) = daynum.get_pixel_size()
-                            setColor(cr, item['color'])
-                            cr.move_to(
-                                x0 - fontw/2.0 + item['x'],
-                                y0 - fonth/2.0 + item['y'],
-                            )
-                            cr.show_layout(daynum)
+                    for mode, params in ui.getMcalMinorTypeParams():
+                        daynum = newTextLayout(self, _(c.dates[mode][2], mode), params['font'])
+                        (fontw, fonth) = daynum.get_pixel_size()
+                        setColor(cr, params['color'])
+                        cr.move_to(
+                            x0 - fontw/2.0 + params['pos'][0],
+                            y0 - fonth/2.0 + params['pos'][1],
+                        )
+                        cr.show_layout(daynum)                        
                     if cellHasCursor:
                         ##### Drawing Cursor Outline
                         cx0 = x0-self.dx/2.0+1
@@ -520,10 +608,10 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
             0,
             0,
             textLay,
-            rgbToGdkColor(*self.shownCals[0]['color']),
+            rgbToGdkColor(*ui.mcalTypeParams[0]['color']),
             rgbToGdkColor(*ui.bgColor),
         )
-        #c = self.shownCals[0]['color']
+        #c = ui.mcalTypeParams[0]['color']
         #pmap.draw_layout(gc, 0, 0, textLay, c, ui.gdkColorInvert(c))##??????????
         pbuf = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, w , h)
         pbuf.get_from_drawable(
@@ -675,8 +763,8 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         self.queue_draw()
     def onConfigChange(self, *a, **kw):
         CustomizableCalObj.onConfigChange(self, *a, **kw)
-        self.shownCals = ui.shownCals
         self.updateTextWidth()
+        self.updateTypeParamsWidget()
     def onCurrentDateChange(self, gdate):
         self.queue_draw()
 

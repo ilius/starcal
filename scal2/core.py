@@ -25,13 +25,14 @@ from os.path import isfile, isdir, exists, dirname, join, split, splitext
 from pprint import pprint
 
 from scal2.paths import *
+from scal2 import locale_man
 from scal2.locale_man import getMonthName, lang, langSh
 from scal2.locale_man import tr as _
 from scal2.plugin_man import *
 from scal2.time_utils import *
 from scal2.os_utils import *
 from scal2.json_utils import *
-from scal2.utils import cmpVersion
+from scal2.utils import *
 
 
 try:
@@ -117,16 +118,80 @@ def myRaiseTback(f=None):
     (typ, value, tback) = sys.exc_info()
     log.error("".join(traceback.format_exception(typ, value, tback)))
 
-from scal2.cal_modules import modules, moduleNames, modNum, jd_to, to_jd, convert, DATE_GREG
+from scal2.cal_modules import calModulesList, jd_to, to_jd, convert, DATE_GREG
 
 
 ################################################################################
 ####################### class and function defenitions #########################
 ################################################################################
 
+activeCalNames = ['gregorian']
+inactiveCalNames = []
+
+class CalModulesHolder:
+    def __init__(self):
+        self.update()
+    def update(self):
+        global activeCalNames, inactiveCalNames, primaryMode
+        self.active = []
+        self.inactive = [] ## range(len(calModulesList))
+        remainingNames = calModuleNames[:]
+        for name in activeCalNames:
+            try:
+                i = calModuleNames.index(name)
+            except ValueError:
+                pass
+            else:
+                self.active.append(i)
+                remainingNames.remove(name)
+        ####
+        primaryMode = self.active[0]
+        ####
+        inactiveToRemove = []
+        for name in inactiveCalNames:
+            try:
+                i = calModuleNames.index(name)
+            except ValueError:
+                pass
+            else:
+                if i in self.active:
+                    inactiveToRemove.append(name)
+                else:
+                    self.inactive.append(i)
+                    remainingNames.remove(name)
+        for name in inactiveToRemove:
+            inactiveCalNames.remove(name)
+        ####
+        for name in remainingNames:
+            try:
+                i = calModuleNames.index(name)
+            except ValueError:
+                pass
+            else:
+                self.inactive.append(i)
+                inactiveCalNames.append(name)
+    def getModulesGen(self):
+        for i in self.active + self.inactive:
+            yield calModulesList[i]
+    __iter__ = lambda self: IteratorFromGen(self.getModulesGen())
+    def getIndexModulesGen(self):
+        for i in self.active + self.inactive:
+            yield i, calModulesList[i]
+    iterIndexModule = lambda self: IteratorFromGen(self.getIndexModulesGen())
+    allIndexes = lambda self: self.active + self.inactive
+    def __getitem__(self, key):
+        if isinstance(key, basestring):
+            return calModulesDict[key]
+        if isinstance(key, int):
+            return calModulesList[key]
+        else:
+            raise TypeError('invalid key %r give to CalModuleHolder.__getitem__'%key)
+
+
 popen_output = lambda cmd: subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
 
-primary_to_jd = lambda y, m, d: modules[primaryMode].to_jd(y, m, d)
+primary_to_jd = lambda y, m, d: calModulesList[primaryMode].to_jd(y, m, d)
+jd_to_primary = lambda jd: calModulesList[primaryMode].jd_to(jd)
 
 def getCurrentJd():## time() and mktime(localtime()) both return GMT, not local
     (y, m, d) = localtime()[:3]
@@ -145,11 +210,11 @@ def getJdRangeForMonth(year, month, mode):
             to_jd(year, month, day, mode) + 1)
 
 def getFloatYearFromEpoch(epoch, mode):
-    module = modules[mode]
+    module = calModulesList[mode]
     return float(epoch - module.epoch)/module.avgYearLen + 1
 
 def getEpochFromFloatYear(year, mode):
-    module = modules[mode]
+    module = calModulesList[mode]
     return module.epoch + (year-1)*module.avgYearLen
 
 getFloatYearFromJd = lambda jd, mode: getFloatYearFromEpoch(getEpochFromJd(jd), mode)
@@ -185,23 +250,30 @@ def getLocaleFirstWeekDay():
 
 
 ## week number in year
-def getWeekNumber(year, month, day, adjustZero=True):
+def getWeekNumber(year, month, day):
     jd = primary_to_jd(year, month, day)
-    jd0 = primary_to_jd(year, 1, 1)
-    first = jwday(jd-firstWeekDay) - 1
-    if weekNumberMode==7:
-        weekNumber = (jd - jd0 + first%7) / 7 + 1
-    else:
-        weekNumber = (jd - jd0 + first%7) / 7 + (first < weekNumberMode-firstWeekDay)
-        if adjustZero and weekNumber==0:
-            weekNumber = getWeekNumber(*jd_to(jd-7, primaryMode)) + 1
-    return weekNumber
+    ###
+    if primary_to_jd(year+1, 1, 1) - jd < 7:## FIXME
+        if getWeekNumber(*jd_to_primary(jd+14)) == 3:
+            return 1
+    ###
+    absWeekNum, weekDay = getWeekDateFromJd(jd)
+    ystartAbsWeekNum, ystartWeekDay = getWeekDateFromJd(primary_to_jd(year, 1, 1))
+    weekNum = absWeekNum - ystartAbsWeekNum + 1
+    ###
+    if weekNumberMode < 7:
+        if ystartWeekDay > (weekNumberMode-firstWeekDay)%7:
+            weekNum -= 1
+            if weekNum==0:
+                weekNum = getWeekNumber(*jd_to_primary(jd-7)) + 1
+    ###
+    return weekNum
 
 def getJdFromWeek(year, weekNumber):## FIXME
     ## weekDay == 0
     wd0 = getWeekDay(year, 1, 1) - 1
     wn0 = getWeekNumber(year, 1, 1, False)
-    jd0 = to_jd(year, 1, 1, primaryMode)
+    jd0 = primary_to_jd(year, 1, 1)
     return jd0 - wd0 + (weekNumber-wn0)*7
 
 
@@ -216,7 +288,7 @@ def getJdRangeOfAbsWeekNumber(absWeekNumber):
     return (jd, jd+7)
 
 
-getMonthLen = lambda year, month, mode: modules[mode].getMonthLen(year, month)
+getMonthLen = lambda year, month, mode: calModulesList[mode].getMonthLen(year, month)
 
 def getNextMonth(year, month):
     assert month <= 12
@@ -341,6 +413,9 @@ def getDeletedPluginsTable():## returns a list of (i, description)
 
 getAllPlugListRepr = lambda: '[\n' + '\n'.join(['  %r,'%plug for plug in allPlugList]) + '\n]'
 
+def restart():## will not return from function
+    os.environ['LANG'] = locale_man.sysLangDefault
+    restartLow()
 
 #########################################################
 
@@ -484,7 +559,6 @@ useCompactJson = False## FIXME
 eventTextSep = ': ' ## use to seperate summary from description for display
 eventTrashLastTop = True
 
-btlBase = 4
 
 #confPathDef = '/etc/%s/core.conf'%APP_NAME ## ????????????????????????
 #if isfile(confPathDef):## ????????????????????????
@@ -517,6 +591,7 @@ if isfile(confPath):
 
 ################################################################################
 
+calModules = CalModulesHolder()
 
 licenseText = _('licenseText')
 if licenseText in ('licenseText', ''):

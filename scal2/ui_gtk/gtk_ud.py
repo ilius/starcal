@@ -25,6 +25,7 @@ import time
 from os.path import join
 
 from scal2.paths import *
+from scal2.locale_man import rtl
 from scal2 import core
 from scal2 import ui
 from scal2.format_time import compileTmFormat
@@ -99,20 +100,29 @@ windowList = IntegatedWindowList()
 
 ###########
 
+if rtl:
+    gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
+
+gtk.window_set_default_icon_from_file(ui.logo)
+
 settings = gtk.settings_get_default()
+
+## ui.timeout_initial = settings.get_property('gtk-timeout-initial') ## == 200 FIXME
+## ui.timeout_repeat = settings.get_property('gtk-timeout-repeat') ## == 20 too small!! FIXME
+
 
 ui.fontDefault = gfontDecode(settings.get_property('gtk-font-name'))
 if not ui.fontCustom:
     ui.fontCustom = ui.fontDefault
 
-if ui.shownCals[0]['font']==None:
-    ui.shownCals[0]['font'] = ui.fontDefault
+if ui.mcalTypeParams[0]['font']==None:
+    ui.mcalTypeParams[0]['font'] = ui.getFont()
 
-(name, bold, underline, size) = ui.fontDefault
-for item in ui.shownCals[1:]:
+smallFont = ui.getFontSmall()
+for item in ui.mcalTypeParams[1:]:
     if item['font']==None:
-        item['font'] = (name, bold, underline, int(size*0.6))
-del name, bold, underline, size
+        item['font'] = smallFont[:]
+del smallFont
 
 ###########
 textDirDict = {
@@ -134,9 +144,6 @@ dateBinFmt = compileTmFormat(dateFormat)
 clockFormatBin = compileTmFormat(clockFormat)
 
 adjustTimeCmd = ''
-
-prevStock = gtk.ARROW_LEFT
-nextStock = gtk.ARROW_RIGHT
 
 mainToolbarData = {
     'items': [],

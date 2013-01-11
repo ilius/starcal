@@ -30,7 +30,7 @@ from scal2.core import convert, getMonthName
 from scal2 import ui
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButtonOption
 from scal2.ui_gtk.mywidgets.ymd import YearMonthDayBox
-from scal2.ui_gtk.utils import openWindow, dialog_add_button
+from scal2.ui_gtk.utils import openWindow, dialog_add_button, DateTypeCombo
 
 import gtk, gobject
 from gtk import gdk
@@ -50,9 +50,7 @@ class SelectDateDialog(gtk.Dialog):
         ######
         hb0 = gtk.HBox(spacing=4)
         hb0.pack_start(gtk.Label(_('Date Mode')), 0, 0)
-        combo = gtk.combo_box_new_text()
-        for m in core.modules:
-            combo.append_text(_(m.desc))
+        combo = DateTypeCombo()
         combo.set_active(self.mode)
         hb0.pack_start(combo, 0, 0)
         self.vbox.pack_start(hb0, 0, 0)
@@ -124,7 +122,7 @@ class SelectDateDialog(gtk.Dialog):
         self.dateInput.add_history()
     def set_mode(self, mode):
         self.mode = mode
-        module = core.modules[mode]
+        module = core.calModules[mode]
         self.comboMode.set_active(mode)
         self.ymdBox.set_mode(mode)
         self.dateInput.setMaxDay(module.maxMonthLen)
@@ -132,7 +130,7 @@ class SelectDateDialog(gtk.Dialog):
         pMode = self.mode
         pDate = self.get()
         mode = self.comboMode.get_active()
-        module = core.modules[mode]
+        module = core.calModules[mode]
         if pDate==None:
             (y, m, d) = ui.cell.dates[mode]
         else:

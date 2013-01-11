@@ -4,12 +4,12 @@
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License,    or
+# the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along
@@ -21,11 +21,11 @@ from scal2 import core
 from scal2.locale_man import tr as _
 
 from scal2.ui_gtk.event import common
-from scal2.ui_gtk.utils import set_tooltip
+from scal2.ui_gtk.utils import set_tooltip, DateTypeCombo
 
 import gtk
 
-from scal2.ui_gtk.mywidgets import MyColorButton
+from scal2.ui_gtk.mywidgets import MyColorButton, TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 
 
@@ -69,14 +69,23 @@ class BaseGroupWidget(gtk.VBox):
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
         self.sizeGroup.add_widget(label)
-        combo = gtk.combo_box_new_text()
-        for m in core.modules:
-            combo.append_text(_(m.desc))
-        #if i>0:## FIXME
-        #    combo.append_text(_('Julian Day'))
+        combo = DateTypeCombo()
         hbox.pack_start(combo, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         self.modeCombo = combo
+        self.pack_start(hbox, 0, 0)
+        #####
+        hbox = gtk.HBox()
+        label = gtk.Label(_('Show in'))
+        label.set_alignment(0, 0.5)
+        hbox.pack_start(label, 0, 0)
+        self.sizeGroup.add_widget(label)
+        self.showInCalCheck = gtk.CheckButton(_('Calendar'))
+        self.showInTimeLineCheck = gtk.CheckButton(_('Time Line'))
+        hbox.pack_start(self.showInCalCheck, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        hbox.pack_start(self.showInTimeLineCheck, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
         self.pack_start(hbox, 0, 0)
         #####
         hbox = gtk.HBox()
@@ -93,8 +102,8 @@ class BaseGroupWidget(gtk.VBox):
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
         self.sizeGroup.add_widget(label)
-        self.sepEntry = gtk.Entry()
-        hbox.pack_start(self.sepEntry, 1, 1)
+        self.sepInput = TextFrame()
+        hbox.pack_start(self.sepInput, 1, 1)
         self.pack_start(hbox, 0, 0)
         set_tooltip(hbox, _('Using to seperate Summary and Description when displaying event'))
         #####
@@ -113,16 +122,20 @@ class BaseGroupWidget(gtk.VBox):
         self.colorButton.set_color(self.group.color)
         self.iconSelect.set_filename(self.group.icon)
         self.modeCombo.set_active(self.group.mode)
+        self.showInCalCheck.set_active(self.group.showInCal)
+        self.showInTimeLineCheck.set_active(self.group.showInTimeLine)
         self.cacheSizeSpin.set_value(self.group.eventCacheSize)
-        self.sepEntry.set_text(self.group.eventTextSep)
+        self.sepInput.set_text(self.group.eventTextSep)
         #self.showFullEventDescCheck.set_active(self.group.showFullEventDesc)
     def updateVars(self):
         self.group.title = self.titleEntry.get_text()
         self.group.color = self.colorButton.get_color()
         self.group.icon = self.iconSelect.get_filename()
         self.group.mode = self.modeCombo.get_active()
+        self.group.showInCal = self.showInCalCheck.get_active()
+        self.group.showInTimeLine = self.showInTimeLineCheck.get_active()
         self.group.eventCacheSize = int(self.cacheSizeSpin.get_value())
-        self.group.eventTextSep = self.sepEntry.get_text()
+        self.group.eventTextSep = self.sepInput.get_text()
         #self.group.showFullEventDesc = self.showFullEventDescCheck.get_active()
     def modeComboChanged(self, obj=None):
         pass

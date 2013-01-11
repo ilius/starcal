@@ -40,7 +40,9 @@ from gtk import gdk
 
 from scal2.ui_gtk.drawing import *
 from scal2.ui_gtk.utils import pixbufFromFile, DirectionComboBox
-from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
+from scal2.ui_gtk.mywidgets import MyFontButton
+from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
+from scal2.ui_gtk.mywidgets.font_family_combo import FontFamilyCombo
 from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox
@@ -49,15 +51,41 @@ from scal2.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
 
 
 
-
 def show_event(widget, event):
     print type(widget), event.type.value_name#, event.get_value()#, event.send_event
 
 
+class ColumnBase(CustomizableCalObj):
+    customizeFont = False
+    getFontAttr = lambda self: 'wcalFont_%s'%self._name
+    getFontValue = lambda self: getattr(ui, self.getFontAttr(), None)
+    def fontFamilyComboChanged(self, combo):
+        if self._name:
+            setattr(ui, self.getFontAttr(), combo.get_value())
+            self.onDateChange()
+    def confStr(self):
+        text = CustomizableCalObj.confStr(self)
+        if self.customizeFont:
+            text += 'ui.%s = %r\n'%(
+                self.getFontAttr(),
+                self.getFontValue(),
+            )
+        return text
+    def initVars(self, *a, **ka):
+        CustomizableCalObj.initVars(self, *a, **ka)
+        self.optionsWidget = gtk.VBox()
+        ####
+        if self.customizeFont:
+            hbox = gtk.HBox()
+            hbox.pack_start(gtk.Label(_('Font Family')), 0, 0)
+            combo = FontFamilyCombo(hasAuto=True)
+            combo.set_value(self.getFontValue())
+            hbox.pack_start(combo, 0, 0)
+            combo.connect('changed', self.fontFamilyComboChanged)
+            self.optionsWidget.pack_start(hbox, 0, 0)
 
 
-
-class Column(gtk.Widget, CustomizableCalObj):
+class Column(gtk.Widget, ColumnBase):
     colorizeHolidayText = False
     showCursor = False
     def __init__(self, wcal):
@@ -107,17 +135,23 @@ class Column(gtk.Widget, CustomizableCalObj):
             if self.showCursor and c.jd == ui.cell.jd:
                 drawCursorOutline(cr, 0, y0, w, rowH)
                 fillColor(cr, ui.cursorOutColor)
-    def drawTextList(self, cr, textList):
+    def drawTextList(self, cr, textList, font=None):
         w = self.allocation.width
         h = self.allocation.height
         ###
         rowH = h/7.0
         itemW = w - ui.wcalPadding
+        if font is None:
+            fontName = self.getFontValue()
+            fontSize = ui.getFont()[-1] ## FIXME
+            font = [fontName, False, False, fontSize] if fontName else None
         for i in range(7):
             layout = newTextLayout(
                 self,
-                textList[i],
+                text=textList[i],
+                font=font,
                 maxSize=(itemW, rowH),
+                maximizeScale=ui.wcalTextSizeScale,
             )
             if layout:
                 layoutW, layoutH = layout.get_pixel_size()
@@ -136,6 +170,7 @@ class Column(gtk.Widget, CustomizableCalObj):
         self.queue_draw()
 
 
+
 class WeekNumToolbarItem(ToolbarItem):
     def __init__(self):
         ToolbarItem.__init__(self, 'weekNum', None, '', tooltip=_('Week Number'), text='')
@@ -146,8 +181,7 @@ class WeekNumToolbarItem(ToolbarItem):
         self.label.set_label(_(ui.cell.weekNum))
 
 
-class ToolbarColumn(CustomizableToolbar):
-    params = ('ud.wcalToolbarData',)
+class ToolbarColumn(CustomizableToolbar, ColumnBase):
     defaultItems = [
         WeekNumToolbarItem(),
         ToolbarItem('backward4', 'goto_top', 'goBackward4', 'Backward 4 Weeks'),
@@ -175,23 +209,21 @@ class WeekDaysColumn(Column):
     colorizeHolidayText = True
     showCursor = True
     params = ('ui.wcalWeekDaysWidth',)
+    customizeFont = True
     def __init__(self, wcal):
         Column.__init__(self, wcal)
         self.set_property('width-request', ui.wcalWeekDaysWidth)
         self.connect('expose-event', self.onExposeEvent)
         #####
-        optionsWidget = gtk.VBox()
-        ##
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Width')), 0, 0)
-        spin = IntSpinButton(0, 99)
+        spin = IntSpinButton(0, 999)
         hbox.pack_start(spin, 0, 0)
         spin.set_value(ui.wcalWeekDaysWidth)
         spin.connect('changed', self.widthSpinChanged)
-        optionsWidget.pack_start(hbox, 0, 0)
+        self.optionsWidget.pack_start(hbox, 0, 0)
         ##
-        optionsWidget.show_all()
-        self.optionsWidget = optionsWidget
+        self.optionsWidget.show_all()
     def widthSpinChanged(self, spin):
         value = spin.get_value()
         ui.wcalWeekDaysWidth = value
@@ -199,7 +231,10 @@ class WeekDaysColumn(Column):
     def onExposeEvent(self, widget=None, event=None):
         cr = self.window.cairo_create()
         self.drawBg(cr)
-        self.drawTextList(cr, [core.getWeekDayN(i) for i in range(7)])
+        self.drawTextList(
+            cr,
+            [core.getWeekDayN(i) for i in range(7)],
+        )
         self.drawCursorFg(cr)
         
         
@@ -207,6 +242,7 @@ class PluginsTextColumn(Column):
     _name = 'pluginsText'
     desc = _('Plugins Text')
     expand = True
+    customizeFont = True
     def __init__(self, wcal):
         Column.__init__(self, wcal)
         self.connect('expose-event', self.onExposeEvent)
@@ -220,13 +256,31 @@ class EventsTextColumn(Column):
     _name = 'eventsText'
     desc = _('Events Text')
     expand = True
+    customizeFont = True
+    params = ('ui.wcalEventsTextShowDesc',)
     def __init__(self, wcal):
         Column.__init__(self, wcal)
         self.connect('expose-event', self.onExposeEvent)
+        #####
+        hbox = gtk.HBox()
+        check = gtk.CheckButton(_('Show Description'))
+        check.set_active(ui.wcalEventsTextShowDesc)
+        hbox.pack_start(check, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        check.connect('clicked', self.descCheckClicked)
+        self.optionsWidget.pack_start(hbox, 0, 0)
+        ##
+        self.optionsWidget.show_all()
+    def descCheckClicked(self, check):
+        ui.wcalEventsTextShowDesc = check.get_active()
+        self.queue_draw()
     def onExposeEvent(self, widget=None, event=None):
         cr = self.window.cairo_create()
         self.drawBg(cr)
-        self.drawTextList(cr, [self.wcal.status[i].getEventText() for i in range(7)])
+        self.drawTextList(
+            cr,
+            [self.wcal.status[i].getEventText(ui.wcalEventsTextShowDesc) for i in range(7)]
+        )
 
 class EventsIconColumn(Column):
     _name = 'eventsIcon'
@@ -239,18 +293,15 @@ class EventsIconColumn(Column):
         self.set_property('width-request', ui.wcalEventsIconColWidth)
         self.connect('expose-event', self.onExposeEvent)
         #####
-        optionsWidget = gtk.VBox()
-        ##
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Width')), 0, 0)
-        spin = IntSpinButton(0, 99)
+        spin = IntSpinButton(0, 999)
         hbox.pack_start(spin, 0, 0)
         spin.set_value(ui.wcalEventsIconColWidth)
         spin.connect('changed', self.widthSpinChanged)
-        optionsWidget.pack_start(hbox, 0, 0)
+        self.optionsWidget.pack_start(hbox, 0, 0)
         ##
-        optionsWidget.show_all()
-        self.optionsWidget = optionsWidget
+        self.optionsWidget.show_all()
     def widthSpinChanged(self, spin):
         value = spin.get_value()
         ui.wcalEventsIconColWidth = value
@@ -295,24 +346,72 @@ class EventsIconColumn(Column):
                     cr.scale(1.0/scaleFact, 1.0/scaleFact)
         
 
+class WcalTypeParamBox(gtk.HBox):
+    def __init__(self, wcal, index, mode, params, sgroupLabel, sgroupFont):
+        gtk.HBox.__init__(self)
+        self.wcal = wcal
+        self.index = index
+        self.mode = mode
+        ######
+        label = gtk.Label(_(core.calModules[mode].desc)+'  ')
+        label.set_alignment(0, 0.5)
+        self.pack_start(label, 0, 0)
+        sgroupLabel.add_widget(label)
+        ###
+        self.fontCheck = gtk.CheckButton(_('Font'))
+        self.pack_start(gtk.Label(''), 1, 1)
+        self.pack_start(self.fontCheck, 0, 0)
+        ###
+        self.fontb = MyFontButton(wcal)
+        self.pack_start(self.fontb, 0, 0)
+        sgroupFont.add_widget(self.fontb)
+        ####
+        self.set(params)
+        ####
+        self.fontCheck.connect('clicked', self.onChange)
+        self.fontb.connect('font-set', self.onChange)
+    def get(self):
+        return {
+            'font': self.fontb.get_font_name() if self.fontCheck.get_active() else None,
+        }
+    def set(self, data):
+        font = data['font']
+        self.fontCheck.set_active(bool(font))
+        if not font:
+            font = ui.getFont()
+        self.fontb.set_font_name(font)
+    def onChange(self, obj=None, event=None):
+        ui.wcalTypeParams[self.index] = self.get()
+        self.wcal.queue_draw()
+
 class DaysOfMonthColumn(Column):
     colorizeHolidayText = True
     showCursor = True
     def updateWidth(self):
         self.set_property('width-request', ui.wcalDaysOfMonthColWidth)
-    def __init__(self, wcal, mode):
+    def __init__(self, wcal, cgroup, mode, index):
         Column.__init__(self, wcal)
+        self.cgroup = cgroup
         self.mode = mode
+        self.index = index
         self.updateWidth()
         ###
         self.connect('expose-event', self.onExposeEvent)
     def onExposeEvent(self, widget=None, event=None):
         cr = self.window.cairo_create()
         self.drawBg(cr)
-        self.drawTextList(cr, [_(self.wcal.status[i].dates[self.mode][2], self.mode) for i in range(7)])
+        try:
+            font = ui.wcalTypeParams[self.index]['font']
+        except:
+            font = None
+        self.drawTextList(
+            cr,
+            [_(self.wcal.status[i].dates[self.mode][2], self.mode) for i in range(7)],
+            font=font,
+        )
         self.drawCursorFg(cr)
 
-class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox):
+class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
     _name = 'daysOfMonth'
     desc = _('Days of Month')
     params = ('ui.wcalDaysOfMonthColWidth', 'ui.wcalDaysOfMonthColDir')
@@ -325,15 +424,13 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox):
         self.updateDir()
         self.show()
         #####
-        optionsWidget = gtk.VBox()
-        ##
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Width')), 0, 0)
-        spin = IntSpinButton(0, 99)
+        spin = IntSpinButton(0, 999)
         hbox.pack_start(spin, 0, 0)
         spin.set_value(ui.wcalDaysOfMonthColWidth)
         spin.connect('changed', self.widthSpinChanged)
-        optionsWidget.pack_start(hbox, 0, 0)
+        self.optionsWidget.pack_start(hbox, 0, 0)
         ##
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Direction')), 0, 0)
@@ -341,10 +438,16 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox):
         hbox.pack_start(combo, 0, 0)
         combo.setValue(ui.wcalDaysOfMonthColDir)
         combo.connect('changed', self.dirComboChanged)
-        optionsWidget.pack_start(hbox, 0, 0)
-        ##
-        optionsWidget.show_all()
-        self.optionsWidget = optionsWidget
+        self.optionsWidget.pack_start(hbox, 0, 0)
+        ####
+        frame = gtk.Frame(_('Calendars'))
+        self.typeParamsVbox = gtk.VBox()
+        frame.add(self.typeParamsVbox)
+        frame.show_all()
+        self.optionsWidget.pack_start(frame, 0, 0)
+        self.updateTypeParamsWidget()## FIXME
+        ####
+        self.optionsWidget.show_all()
     def widthSpinChanged(self, spin):
         ui.wcalDaysOfMonthColWidth = spin.get_value()
         for child in self.get_children():
@@ -353,18 +456,57 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox):
         ui.wcalDaysOfMonthColDir = combo.getValue()
         self.updateDir()
     def updateCols(self):
-        for child in self.get_children():
-            child.destroy()
-        for cal in ui.shownCals:
-            if cal['enable']:
-                col = DaysOfMonthColumn(self.wcal, cal['mode'])
-                col.show()
+        #self.foreach(gtk.Widget.destroy)## Couses crash tray icon in gnome3
+        #self.foreach(lambda child: self.remove(child))## Couses crash tray icon in gnome3
+        ########
+        children = self.get_children()
+        n = len(children)
+        n2 = len(core.calModules.active)
+        if n > n2:
+            for i in range(n2, n):
+                children[i].destroy()
+        elif n < n2:
+            for i in range(n, n2):
+                col = DaysOfMonthColumn(self.wcal, self, 0, i)
                 self.pack_start(col, 0, 0)
+                children.append(col)
+        for i, mode in enumerate(core.calModules.active):
+            children[i].mode = mode
+            children[i].show()
+    def confStr(self):
+        text = ColumnBase.confStr(self)
+        text += 'ui.wcalTypeParams=%r\n'%ui.wcalTypeParams
+        return text
+    def updateTypeParamsWidget(self):
+        vbox = self.typeParamsVbox
+        for child in vbox.get_children():
+            child.destroy()
+        ###
+        n = len(core.calModules.active)
+        while len(ui.wcalTypeParams) < n:
+            ui.wcalTypeParams.append({
+                'font': None,
+            })
+        sgroupLabel = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        sgroupFont = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        for i, mode in enumerate(core.calModules.active):
+            #try:
+            params = ui.wcalTypeParams[i]
+            #except IndexError:
+            ##
+            hbox = WcalTypeParamBox(self.wcal, i, mode, params, sgroupLabel, sgroupFont)
+            vbox.pack_start(hbox, 0, 0)
+        ###
+        vbox.show_all()
     def onConfigChange(self, *a, **ka):
         CustomizableCalBox.onConfigChange(self, *a, **ka)
         self.updateCols()
+        self.updateTypeParamsWidget()
 
-class WeekCal(gtk.HBox, CustomizableCalBox):
+
+
+
+class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase):
     _name = 'weekCal'
     desc = _('Week Calendar')
     def __init__(self):
@@ -399,18 +541,23 @@ class WeekCal(gtk.HBox, CustomizableCalBox):
                 item.enable = enable
                 self.appendItem(item)
         #####
-        optionsWidget = gtk.VBox()
-        ##
         hbox = gtk.HBox()
         spin = IntSpinButton(1, 9999)
         spin.set_value(ui.wcalHeight)
         spin.connect('changed', self.heightSpinChanged)
         hbox.pack_start(gtk.Label(_('Height')), 0, 0)
         hbox.pack_start(spin, 0, 0)
-        optionsWidget.pack_start(hbox, 0, 0)
+        self.optionsWidget.pack_start(hbox, 0, 0)
         ###
-        optionsWidget.show_all()
-        self.optionsWidget = optionsWidget
+        hbox = gtk.HBox()
+        spin = FloatSpinButton(0, 1, 2)
+        spin.set_value(ui.wcalTextSizeScale)
+        spin.connect('changed', self.textSizeScaleSpinChanged)
+        hbox.pack_start(gtk.Label(_('Text Size Scale')), 0, 0)
+        hbox.pack_start(spin, 0, 0)
+        self.optionsWidget.pack_start(hbox, 0, 0)
+        ###
+        self.optionsWidget.show_all()
         #####
         self.updateStatus()
         listener.dateChange.add(self)
@@ -418,12 +565,16 @@ class WeekCal(gtk.HBox, CustomizableCalBox):
         v = spin.get_value()
         self.set_property('height-request', v)
         ui.wcalHeight = v
+    def textSizeScaleSpinChanged(self, spin):
+        ui.wcalTextSizeScale = spin.get_value()
+        self.queue_draw()
     def updateVars(self):
         CustomizableCalBox.updateVars(self)
         ui.wcalItems = self.getItemsData()
     def confStr(self):
-        text = CustomizableCalBox.confStr(self)
+        text = ColumnBase.confStr(self)
         text += 'ui.wcalHeight=%s\n'%repr(ui.wcalHeight)
+        text += 'ui.wcalTextSizeScale=%s\n'%repr(ui.wcalTextSizeScale)
         text += 'ui.wcalItems=%s\n'%repr(ui.wcalItems)
         return text
     def updateStatus(self):

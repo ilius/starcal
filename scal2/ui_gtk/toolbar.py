@@ -9,6 +9,7 @@ from gobject import timeout_add
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.utils import set_tooltip, myRaise
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 from scal2.ui_gtk import gtk_ud as ud
@@ -177,11 +178,11 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
         self.lastPressTime = time()
         self.remain = True
         func()
-        timeout_add(300, self.itemPressRemain, func)
+        timeout_add(ui.timeout_initial, self.itemPressRemain, func)
     def itemPressRemain(self, func):
-        if self.remain and time()-self.lastPressTime>=0.3:
+        if self.remain and time()-self.lastPressTime>=ui.timeout_repeat/1000.0:
             func()
-            timeout_add(150, self.itemPressRemain, func)
+            timeout_add(ui.timeout_repeat, self.itemPressRemain, func)
     def itemRelease(self, widget, event=None):
         self.remain = False
 

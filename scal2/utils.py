@@ -112,7 +112,7 @@ def myRaiseTback():
     (typ, value, tback) = sys.exc_info()
     sys.stderr.write("".join(traceback.format_exception(typ, value, tback)))
 
-restart = lambda: os.execl(sys.executable, sys.executable, *sys.argv)## will not return from function
+restartLow = lambda: os.execl(sys.executable, sys.executable, *sys.argv)## will not return from function
 
 class StrOrderedDict(dict):
     ## A dict from strings to objects, with ordered keys
@@ -219,6 +219,11 @@ class IteratorFromGen(Iterator):
     def __init__(self, gen):
         self.gen = gen
     next = lambda self: self.gen.next()
+
+int_split = lambda s: [int(x) for x in s.split()]
+
+s_join = lambda l: ' '.join([str(x) for x in l])
+
 
 def cleanCacheDict(cache, maxSize, currentValue):
     n = len(cache)

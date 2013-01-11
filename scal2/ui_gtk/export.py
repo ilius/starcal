@@ -107,7 +107,7 @@ class ExportDialog(gtk.Dialog):
         print 'Exporting to html file "%s"'%path
         i = self.combo.get_active()
         months = []
-        module = core.modules[core.primaryMode]
+        module = core.calModules[core.primaryMode]
         if i==0:
             s = getCurrentMonthStatus()
             months = [s]

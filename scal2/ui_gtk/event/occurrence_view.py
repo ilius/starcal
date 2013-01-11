@@ -4,12 +4,12 @@
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License,    or
+# the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along
@@ -29,25 +29,40 @@ from scal2.ui_gtk.utils import imageFromFile, labelStockMenuItem, labelImageMenu
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.event.common import EventEditorDialog
 
-class DayOccurrenceView(gtk.VBox, ud.IntegratedCalObj):
+class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
     _name = 'eventDayView'
     desc = _('Events of Day')
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
     def __init__(self, populatePopupFunc=None):
-        gtk.VBox.__init__(self)
+        gtk.ScrolledWindow.__init__(self)
+        self.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+        self.connect('size-request', self.onSizeRequest)
+        self.vbox = gtk.VBox(spacing=5)
+        self.add_with_viewport(self.vbox)
         self.initVars()
         ## what to do with populatePopupFunc FIXME
         ## self.textview.connect('populate-popup', populatePopupFunc)
         self.clipboard = gtk.clipboard_get()
+        self.maxHeight = 200
+        self.showDesc = True
+    def onSizeRequest(self, widget, requisition):
+        #print 'onSizeRequest', requisition.width, requisition.height
+        requisition.height = min(
+            self.maxHeight,## FIXME
+            self.vbox.size_request()[1] + 2,## >=2 FIXME
+        )
+        return True
     def onDateChange(self, *a, **kw):
         ud.IntegratedCalObj.onDateChange(self, *a, **kw)
         cell = ui.cell
         ## destroy all VBox contents and add again
-        for hbox in self.get_children():
+        for hbox in self.vbox.get_children():
             hbox.destroy()
         for item in cell.eventsData:
             ## item['time'], item['text'], item['icon']
-            hbox = gtk.HBox()
+            text = ''.join(item['text']) if self.showDesc else item['text'][0]
+            ###
+            hbox = gtk.HBox(spacing=5)
             if item['icon']:
                 hbox.pack_start(imageFromFile(item['icon']), 0, 0)
             if item['time']:
@@ -55,14 +70,16 @@ class DayOccurrenceView(gtk.VBox, ud.IntegratedCalObj):
                 label.set_direction(gtk.TEXT_DIR_LTR)
                 hbox.pack_start(label, 0, 0)
                 hbox.pack_start(gtk.Label('  '), 0, 0)
-            label = gtk.Label(item['text'])
+            label = gtk.Label(text)
             label.set_selectable(True)
             label.set_line_wrap(True)
             label.set_use_markup(True)
             label.connect('populate-popup', self.onLabelPopupPopulate, item['ids'])
             hbox.pack_start(label, 0, 0)## or 1, 1 (center) FIXME
-            self.pack_start(hbox, 0, 0)
+            self.vbox.pack_start(hbox, 0, 0)
+            self.vbox.pack_start(gtk.HSeparator(), 0, 0)
         self.show_all()
+        self.vbox.show_all()
         self.set_visible(bool(cell.eventsData))
     def onLabelPopupPopulate(self, label, menu, ids):
         menu = gtk.Menu()

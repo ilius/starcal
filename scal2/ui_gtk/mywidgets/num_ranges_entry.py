@@ -36,11 +36,11 @@ def myRaise():
         print i
 
 class NumRangesEntry(gtk.Entry):
-    def __init__(self, _min, _max, page_step=10):
+    def __init__(self, _min, _max, page_inc=10):
         self._min = _min
         self._max = _max
         self.digs = locale_man.digits[locale_man.langSh]
-        self.page_step = page_step
+        self.page_inc = page_inc
         ####
         gtk.Entry.__init__(self)
         self.connect('key-press-event', self.keyPress)
@@ -122,9 +122,9 @@ class NumRangesEntry(gtk.Entry):
         elif kname=='down':
             self.numPlus(-1)
         elif kname=='page_up':
-            self.numPlus(self.page_step)
+            self.numPlus(self.page_inc)
         elif kname=='page_down':
-            self.numPlus(-self.page_step)
+            self.numPlus(-self.page_inc)
         elif kname=='left':
             return False## FIXME
         elif kname=='right':

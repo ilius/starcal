@@ -451,6 +451,123 @@ msgstr ""
 "اسفند"
 
 
+
+msgid "Xakelêwe"
+msgstr "خاکەلێوە"
+
+msgid "Gullan"
+msgstr "گوڵان"
+
+msgid "Cozerdan"
+msgstr "جۆزەردان"
+
+msgid "Pûşper"
+msgstr "پووشپەڕ"
+
+msgid "Gelawêj"
+msgstr "گەلاوێژ"
+
+msgid "Xermanan"
+msgstr "خەرمانان"
+
+msgid "Rezber"
+msgstr "ڕەزبەر"
+
+msgid "Gelarêzan"
+msgstr "گەڵاڕێزان"
+
+msgid "Sermawez"
+msgstr "سەرماوەز"
+
+msgid "Befranbar"
+msgstr "بەفرانبار"
+
+msgid "Rêbendan"
+msgstr "ڕێبەندان"
+
+msgid "Reşeme"
+msgstr "ڕەشەمە"
+
+         
+         
+
+msgid "Hamal"
+msgstr "حمل"
+
+msgid "Sawr"
+msgstr "ثور"
+
+msgid "Jawzā"
+msgstr "جوزا"
+
+msgid "Saratān"
+msgstr "سرطان"
+
+msgid "Asad"
+msgstr "اسد"
+
+msgid "Sonbola"
+msgstr "سنبله"
+
+msgid "Mizān"
+msgstr "میزان"
+
+msgid "Aqrab"
+msgstr "عقرب"
+
+msgid "Qaws"
+msgstr "قوس"
+
+msgid "Jadi"
+msgstr "جدی"
+
+msgid "Dalvæ"
+msgstr "دلو"
+
+msgid "Hūt"
+msgstr "حوت"
+
+
+
+
+msgid "Wray"
+msgstr "وری"
+
+msgid "Ǧwayay"
+msgstr "غويی"
+
+msgid "Ǧbargolay"
+msgstr "غبرګولی"
+
+msgid "Čungāx̌"
+msgstr "چنګاښ"
+
+msgid "Zmaray"
+msgstr "زمری"
+
+msgid "Waǵay"
+msgstr "وږی"
+
+msgid "Təla"
+msgstr "تله"
+
+msgid "Laṛam"
+msgstr "لړم"
+
+msgid "Līndəi"
+msgstr "ليندۍ"
+
+msgid "Marǧūmay"
+msgstr "مرغومی"
+
+msgid "Salwāǧa"
+msgstr "سلواغه"
+
+msgid "Kab"
+msgstr "كب"
+
+
+
 msgid "Muharram"
 msgstr ""
 "محرم"
@@ -498,6 +615,49 @@ msgstr ""
 msgid "Dhu'l Hijjah"
 msgstr ""
 "ذو‌الحجه"
+
+
+msgid "Ethiopian"
+msgstr "اتیوپیایی"
+
+msgid "Meskerem"
+msgstr "مسکرم"
+
+msgid "Tekimt"
+msgstr "تکیمت"
+
+msgid "Hidar"
+msgstr "هیدار"
+
+msgid "Tahsas"
+msgstr "طه ساز"
+
+msgid "Ter"
+msgstr "تر"
+
+msgid "Yekoutit"
+msgstr "یکوتیت"
+
+msgid "Meyabit"
+msgstr "مگابیت"
+
+msgid "Meyaziya"
+msgstr "میازیا"
+
+msgid "Genbot"
+msgstr "گین بوت"
+
+msgid "Sene"
+msgstr "سنه"
+
+msgid "Hamle"
+msgstr "حمله"
+
+msgid "Nahse"
+msgstr "نحسه"
+
+msgid "Pagume"
+msgstr "پاگومه"
 
 
 msgid "Tishri"
@@ -611,9 +771,41 @@ msgid "End Date"
 msgstr ""
 "تاریخ پایان"
 
-msgid "Shown Calendars"
+msgid "Calendars"
 msgstr ""
-"تقویم‌های نمایش داده شده"
+"تقویم‌ها"
+
+msgid "Calendar Types"
+msgstr ""
+"نوع تقویم‌ها"
+
+msgid "Active"
+msgstr ""
+"فعال"
+
+msgid "Inactive"
+msgstr ""
+"غیرفعال"
+
+msgid "Activate/Inactivate"
+msgstr ""
+"فعال/غیرفعال کردن"
+
+msgid "Jalali Month Names"
+msgstr ""
+"نام ماه‌های جلالی"
+
+msgid "Iranian"
+msgstr "ایرانی"
+
+msgid "Kurdish"
+msgstr "کردی"
+
+msgid "Dari"
+msgstr "دری"
+
+msgid "Pashto"
+msgstr "پشتو"
 
 msgid "Jalali Calculation Algorithm"
 msgstr ""
@@ -978,6 +1170,10 @@ msgid "Event Group"
 msgstr ""
 "گروه رویدادها"
 
+msgid "Group"
+msgstr ""
+"گروه"
+
 msgid "Expand All"
 msgstr ""
 "گستردن همه"
@@ -1260,6 +1456,10 @@ msgid "contains %s events and %s occurences"
 msgstr ""
 "شامل %s رویداد و %s رخداد"
 
+msgid "Last Occurrence Time"
+msgstr ""
+"زمان آخرین رخداد"
+
 
 
 
@@ -1354,6 +1554,10 @@ msgid "Comment"
 msgstr ""
 "توضیح"
 
+msgid "Show in"
+msgstr ""
+"نمایش در"
+
 msgid "Show below calendar"
 msgstr ""
 "نمایش زیر تقویم"
@@ -1375,6 +1579,10 @@ msgstr ""
 msgid "Description"
 msgstr ""
 "توضیح"
+
+msgid "Show Description"
+msgstr ""
+"نمایش توضیح"
 
 msgid "Show Date"
 msgstr ""
@@ -1690,6 +1898,10 @@ msgid "Border"
 msgstr ""
 "حاشیه"
 
+msgid "Normal"
+msgstr ""
+"عادی"
+
 msgid "Holiday"
 msgstr ""
 "روز‌ تعطیل"
@@ -1731,6 +1943,10 @@ msgstr ""
 msgid "Height"
 msgstr ""
 "ارتفاع"
+msgid "Maximum Height"
+msgstr ""
+"حداکثر ارتفاع"
+
 
 msgid "Days maximum cache size"
 msgstr ""
@@ -1744,9 +1960,21 @@ msgid "Grid"
 msgstr ""
 "جدول‌بندی"
 
+msgid "Font"
+msgstr ""
+"فونت"
+
 msgid "Use system font"
 msgstr ""
 "استفاده از فونت سیستم"
+
+msgid "Font Family"
+msgstr ""
+"خانوادهٔ فونت"
+
+msgid "Text Size Scale"
+msgstr ""
+"مقیاس اندازهٔ متن"
 
 msgid "Change color of non-weekly holidays"
 msgstr ""
@@ -1813,6 +2041,31 @@ msgstr ""
 msgid "%s groups imported successfully"
 msgstr "%s گروه با موفقیت وارد شد"
 
+msgid "_Search"
+msgstr "_جستجو"
+
+msgid "Search Events"
+msgstr ""
+"جستجوی رویدادها"
+
+msgid "_Search Events"
+msgstr ""
+"_جستجوی رویدادها"
+
+msgid "Modified From"
+msgstr ""
+"تغییر کرده از"
+
+msgid "Search Results"
+msgstr ""
+"نتایج جستجو"
+
+msgid "Found %s events"
+msgstr "%s رویداد پیدا شد"
+
+msgid "Columns"
+msgstr ""
+"ستون‌ها"
 
 msgid "Error in reading file"
 msgstr ""

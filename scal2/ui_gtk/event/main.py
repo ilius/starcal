@@ -4,12 +4,12 @@
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License,    or
+# the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along
@@ -24,11 +24,9 @@ import os, sys, shlex, thread
 from os.path import join, dirname, split, splitext
 
 from scal2.paths import *
-from scal2.json_utils import *
-from scal2.cal_modules import convert
 
 from scal2 import core
-from scal2.core import myRaise, fixStrForFileName
+from scal2.core import myRaise
 
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl
@@ -36,733 +34,28 @@ from scal2.locale_man import rtl
 from scal2 import event_man
 from scal2 import ui
 
-from gobject import timeout_add_seconds
 import gtk
 from gtk import gdk
 
 
-from scal2.ui_gtk.utils import *
+from scal2.ui_gtk.utils import set_tooltip, dialog_add_button, confirm
+from scal2.ui_gtk.utils import toolButtonFromStock, labelImageMenuItem, labelStockMenuItem
+from scal2.ui_gtk.utils import pixbufFromFile, rectangleContainsPoint
+
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
-from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
 from scal2.ui_gtk import gtk_ud as ud
 
-from scal2.ui_gtk.event.common import IconSelectButton, EventEditorDialog, addNewEvent, GroupEditorDialog
-
-
+from scal2.ui_gtk.event import common
+from scal2.ui_gtk.event.common import EventEditorDialog, addNewEvent, GroupEditorDialog
+from scal2.ui_gtk.event.trash import TrashEditorDialog
+from scal2.ui_gtk.event.export import SingleGroupExportDialog, MultiGroupExportDialog
+from scal2.ui_gtk.event.import_event import EventsImportWindow
+from scal2.ui_gtk.event.group_op import GroupSortDialog, GroupConvertModeDialog, GroupBulkEditDialog
+from scal2.ui_gtk.event.account_op import FetchRemoteGroupsDialog
+from scal2.ui_gtk.event.search_events import EventSearchWindow
 
 #print 'Testing translator', __file__, _('About')
-
-class SingleGroupExportDialog(gtk.Dialog):
-    def __init__(self, group):
-        self._group = group
-        gtk.Dialog.__init__(self)
-        self.set_title(_('Export Group'))
-        ####
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
-        self.connect('response', lambda w, e: self.hide())
-        ####
-        hbox = gtk.HBox()
-        frame = gtk.Frame(_('Format'))
-        radioBox = gtk.VBox()
-        ##
-        self.radioIcs = gtk.RadioButton(label='iCalendar')
-        self.radioJsonCompact = gtk.RadioButton(label=_('Compact JSON (StarCalendar)'), group=self.radioIcs)
-        self.radioJsonPretty = gtk.RadioButton(label=_('Pretty JSON (StarCalendar)'), group=self.radioIcs)
-        ##
-        radioBox.pack_start(self.radioJsonCompact, 0, 0)
-        radioBox.pack_start(self.radioJsonPretty, 0, 0)
-        radioBox.pack_start(self.radioIcs, 0, 0)
-        ##
-        self.radioJsonCompact.set_active(True)
-        self.radioIcs.connect('clicked', self.formatRadioChanged)
-        self.radioJsonCompact.connect('clicked', self.formatRadioChanged)
-        self.radioJsonPretty.connect('clicked', self.formatRadioChanged)
-        ##
-        frame.add(radioBox)
-        hbox.pack_start(frame, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
-        ########
-        self.fcw = gtk.FileChooserWidget(action=gtk.FILE_CHOOSER_ACTION_SAVE)
-        try:
-            self.fcw.set_current_folder(deskDir)
-        except AttributeError:## PyGTK < 2.4
-            pass
-        self.vbox.pack_start(self.fcw, 1, 1)
-        ####
-        self.vbox.show_all()
-        self.formatRadioChanged()
-    def formatRadioChanged(self, widget=None):
-        fpath = self.fcw.get_filename()
-        if fpath:
-            fname_nox, ext = splitext(split(fpath)[1])
-        else:
-            fname_nox, ext = '', ''
-        if not fname_nox:
-            fname_nox = fixStrForFileName(self._group.title)
-        if self.radioIcs.get_active():
-            if ext != '.ics':
-                ext = '.ics'
-        else:
-            if ext != '.json':
-                ext = '.json'
-        self.fcw.set_current_name(fname_nox + ext)
-    def save(self):
-        fpath = self.fcw.get_filename()
-        if self.radioJsonCompact.get_active():
-            text = dataToCompactJson(ui.eventGroups.exportData([self._group.id]))
-            open(fpath, 'wb').write(text)
-        elif self.radioJsonPretty.get_active():
-            text =  dataToPrettyJson(ui.eventGroups.exportData([self._group.id]))
-            open(fpath, 'wb').write(text)
-        elif self.radioIcs.get_active():
-            ui.eventGroups.exportToIcs(fpath, [self._group.id])
-    def run(self):
-        if gtk.Dialog.run(self)==gtk.RESPONSE_OK:
-            self.save()
-        self.destroy()
-
-
-class GroupsTreeCheckList(gtk.TreeView):
-    def __init__(self):
-        gtk.TreeView.__init__(self)
-        self.trees = gtk.ListStore(int, bool, str)## groupId(hidden), enable, summary
-        self.set_model(self.trees)
-        self.set_headers_visible(False)
-        ###
-        cell = gtk.CellRendererToggle()
-        #cell.set_property('activatable', True)
-        cell.connect('toggled', self.enableCellToggled)
-        col = gtk.TreeViewColumn(_('Enable'), cell)
-        col.add_attribute(cell, 'active', 1)
-        #cell.set_active(True)
-        col.set_resizable(True)
-        self.append_column(col)
-        ###
-        col = gtk.TreeViewColumn(_('Title'), gtk.CellRendererText(), text=2)
-        col.set_resizable(True)
-        self.append_column(col)
-        ###
-        for group in ui.eventGroups:
-            self.trees.append([group.id, True, group.title])
-    def enableCellToggled(self, cell, path):
-        i = int(path)
-        active = not cell.get_active()
-        self.trees[i][1] = active
-        cell.set_active(active)
-    def getValue(self):
-        return [row[0] for row in self.trees if row[1]]
-    def setValue(self, gids):
-        for row in self.trees:
-            row[1] = (row[0] in gids)
-
-
-class MultiGroupExportDialog(gtk.Dialog):
-    def __init__(self):
-        gtk.Dialog.__init__(self)
-        self.set_title(_('Export'))
-        self.vbox.set_spacing(10)
-        ####
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
-        self.connect('response', lambda w, e: self.hide())
-        ####
-        hbox = gtk.HBox()
-        frame = gtk.Frame(_('Format'))
-        radioBox = gtk.VBox()
-        ##
-        self.radioIcs = gtk.RadioButton(label='iCalendar')
-        self.radioJsonCompact = gtk.RadioButton(label=_('Compact JSON (StarCalendar)'), group=self.radioIcs)
-        self.radioJsonPretty = gtk.RadioButton(label=_('Pretty JSON (StarCalendar)'), group=self.radioIcs)
-        ##
-        radioBox.pack_start(self.radioJsonCompact, 0, 0)
-        radioBox.pack_start(self.radioJsonPretty, 0, 0)
-        radioBox.pack_start(self.radioIcs, 0, 0)
-        ##
-        self.radioJsonCompact.set_active(True)
-        self.radioIcs.connect('clicked', self.formatRadioChanged)
-        self.radioJsonCompact.connect('clicked', self.formatRadioChanged)
-        self.radioJsonPretty.connect('clicked', self.formatRadioChanged)
-        ##
-        frame.add(radioBox)
-        hbox.pack_start(frame, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
-        ########
-        hbox = gtk.HBox(spacing=2)
-        hbox.pack_start(gtk.Label(_('File')+':'), 0, 0)
-        self.fpathEntry = gtk.Entry()
-        self.fpathEntry.set_text(join(deskDir, 'events-%.4d-%.2d-%.2d'%core.getSysDate()))
-        hbox.pack_start(self.fpathEntry, 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
-        ####
-        self.groupSelect = GroupsTreeCheckList()
-        swin = gtk.ScrolledWindow()
-        swin.add(self.groupSelect)
-        swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.vbox.pack_start(swin, 1, 1)
-        ####
-        self.vbox.show_all()
-        self.formatRadioChanged()
-        self.resize(600, 600)
-    def formatRadioChanged(self, widget=None):
-        #self.dateRangeBox.set_visible(self.radioIcs.get_active())
-        ###
-        fpath = self.fpathEntry.get_text()
-        if fpath:
-            fpath_nox, ext = splitext(fpath)
-            if fpath_nox:
-                if self.radioIcs.get_active():
-                    if ext != '.ics':
-                        ext = '.ics'
-                else:
-                    if ext != '.json':
-                        ext = '.json'
-                self.fpathEntry.set_text(fpath_nox + ext)
-    def save(self):
-        fpath = self.fpathEntry.get_text()
-        activeGroupIds = self.groupSelect.getValue()
-        if self.radioIcs.get_active():
-            ui.eventGroups.exportToIcs(fpath, activeGroupIds)
-        else:
-            data = ui.eventGroups.exportData(activeGroupIds)
-            ## what to do with all groupData['info'] s? FIXME
-            if self.radioJsonCompact.get_active():
-                text = dataToCompactJson(data)
-            elif self.radioJsonPretty.get_active():
-                text = dataToPrettyJson(data)
-            else:
-                raise RuntimeError
-            open(fpath, 'w').write(text)
-    def run(self):
-        if gtk.Dialog.run(self)==gtk.RESPONSE_OK:
-            self.save()
-        self.destroy()
-
-
-class WizardWindow(gtk.Window):
-    stepClasses = []
-    def __init__(self, title):
-        gtk.Window.__init__(self)
-        self.set_title(title)
-        self.connect('delete-event', lambda obj, e: self.destroy())
-        self.connect('key-press-event', self.keyPress)
-        self.vbox = gtk.VBox()
-        self.add(self.vbox)
-        ####
-        self.steps = []
-        for cls in self.stepClasses:
-            step = cls(self)
-            self.steps.append(step)
-            self.vbox.pack_start(step, 1, 1)
-        self.stepIndex = 0
-        ####
-        self.buttonBox = gtk.HButtonBox()
-        self.buttonBox.set_layout(gtk.BUTTONBOX_END)
-        self.buttonBox.set_spacing(15)
-        self.buttonBox.set_border_width(15)
-        self.vbox.pack_start(self.buttonBox, 0, 0)
-        ####
-        self.showStep(0)
-        self.vbox.show()
-        #self.vbox.pack_end(
-        #print id(self.get_action_area())
-    def keyPress(self, arg, event):
-        kname = gdk.keyval_name(event.keyval).lower()
-        if kname=='escape':
-            self.destroy()
-        return True
-    def showStep(self, stepIndex, *args):
-        step = self.steps[stepIndex]
-        step.run(*args)
-        hideList(self.steps)
-        step.show()
-        self.stepIndex = stepIndex
-        ###
-        bbox = self.buttonBox
-        for child in bbox.get_children():
-            child.destroy()
-        for label, func in step.buttons:
-            #print label, func
-            button = gtk.Button(label)
-            button.connect('clicked', func)
-            bbox.add(button)
-            #bbox.pack_start(button, 0, 0)
-        bbox.show_all()
-
-class EventsImportWindow(WizardWindow):
-    def __init__(self, manager):
-        self.manager = manager
-        WizardWindow.__init__(self, _('Import Events'))
-        self.set_type_hint(gdk.WINDOW_TYPE_HINT_DIALOG)
-        #self.set_property('skip-taskbar-hint', True)
-        #self.set_modal(True)
-        #self.set_transient_for(manager)
-        #self.set_destroy_with_parent(True)
-        self.resize(400, 200)
-    class FirstStep(gtk.VBox):
-        def __init__(self, win):
-            gtk.VBox.__init__(self, spacing=20)
-            self.win = win
-            self.buttons = (
-                (_('Cancel'), self.cancelClicked),
-                (_('Next'), self.nextClicked),
-            )
-            ####
-            hbox = gtk.HBox(spacing=10)
-            frame = gtk.Frame(_('Format'))
-            #frame.set_border_width(10)
-            radioBox = gtk.VBox(spacing=10)
-            radioBox.set_border_width(10)
-            ##
-            self.radioJson = gtk.RadioButton(label=_('JSON (StarCalendar)'))
-            #self.radioIcs = gtk.RadioButton(label='iCalendar', group=self.radioJson)
-            ##
-            radioBox.pack_start(self.radioJson, 0, 0)
-            #radioBox.pack_start(self.radioIcs, 0, 0)
-            ##
-            self.radioJson.set_active(True)
-            #self.radioJson.connect('clicked', self.formatRadioChanged)
-            ##self.radioIcs.connect('clicked', self.formatRadioChanged)
-            ##
-            frame.add(radioBox)
-            hbox.pack_start(frame, 0, 0, 10)
-            hbox.pack_start(gtk.Label(''), 1, 1)
-            self.pack_start(hbox, 0, 0)
-            ####
-            hbox = gtk.HBox()
-            hbox.pack_start(gtk.Label(_('File')+':'), 0, 0)
-            self.fcb = gtk.FileChooserButton(_('Import: Select File'))
-            self.fcb.set_current_folder(deskDir)
-            hbox.pack_start(self.fcb, 1, 1)
-            self.pack_start(hbox, 0, 0)
-            ####
-            self.show_all()
-        def run(self):
-            pass
-        def cancelClicked(self, obj):
-            self.win.destroy()
-        def nextClicked(self, obj):
-            fpath = self.fcb.get_filename()
-            if not fpath:
-                return
-            if self.radioJson.get_active():
-                format = 'json'
-            #elif self.radioIcs.get_active():
-            #    format = 'ics'
-            else:
-                return
-            self.win.showStep(1, format, fpath)
-    class SecondStep(gtk.VBox):
-        def __init__(self, win):
-            gtk.VBox.__init__(self, spacing=20)
-            self.win = win
-            self.buttons = (
-                (_('Back'), self.backClicked),
-                (_('Close'), self.closeClicked),
-            )
-            ####
-            self.textview = gtk.TextView()
-            self.pack_start(self.textview, 1, 1)
-            ####
-            self.show_all()
-        def redirectStdOutErr(self):
-            t_table = gtk.TextTagTable()
-            tag_out = gtk.TextTag('output')
-            t_table.add(tag_out)
-            tag_err = gtk.TextTag('error')
-            t_table.add(tag_err)
-            self.buffer = gtk.TextBuffer(t_table)
-            self.textview.set_buffer(self.buffer)
-            self.out_fp = GtkBufferFile(self.buffer, tag_out)
-            sys.stdout = self.out_fp
-            self.err_fp = GtkBufferFile(self.buffer, tag_err)
-            sys.stderr = self.err_fp
-        def restoreStdOutErr(self):
-            sys.stdout = sys.__stdout__
-            sys.stderr = sys.__stderr__
-        def run(self, format, fpath):
-            self.redirectStdOutErr()
-            try:
-                if format=='json':
-                    try:
-                        text = open(fpath, 'rb').read()
-                    except Exception, e:
-                        sys.stderr.write(_('Error in reading file')+'\n%s\n'%e)
-                    else:
-                        try:
-                            data = jsonToData(text)
-                        except Exception, e:
-                            sys.stderr.write(_('Error in loading JSON data')+'\n%s\n'%e)
-                        else:
-                            try:
-                                newGroups = ui.eventGroups.importData(data)
-                            except Exception, e:
-                                sys.stderr.write(_('Error in importing events')+'\n%s\n'%e)
-                            else:
-                                for group in newGroups:
-                                    self.win.manager.appendGroupTree(group)
-                                print _('%s groups imported successfully')%_(len(newGroups))
-                else:
-                    raise ValueError('invalid format %r'%format)
-            finally:
-                self.restoreStdOutErr()
-        def backClicked(self, obj):
-            self.win.showStep(0)
-        def closeClicked(self, obj):
-            self.win.destroy()
-    stepClasses = [FirstStep, SecondStep]
-
-
-class GroupSortDialog(gtk.Dialog):
-    def __init__(self, group):
-        self._group = group
-        gtk.Dialog.__init__(self)
-        self.set_title(_('Sort Events'))
-        ####
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
-        ##
-        self.connect('response', lambda w, e: self.hide())
-        ####
-        hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Sort events of group "%s"')%group.title), 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
-        ###
-        hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Based on')+' '), 0, 0)
-        self.sortByNames = []
-        self.sortByCombo = gtk.combo_box_new_text()
-        for item in group.sortBys:
-            self.sortByNames.append(item[0])
-            self.sortByCombo.append_text(item[1])
-        self.sortByCombo.set_active(self.sortByNames.index(group.sortByDefault))## FIXME
-        hbox.pack_start(self.sortByCombo, 0, 0)
-        self.reverseCheck = gtk.CheckButton(_('Descending'))
-        hbox.pack_start(self.reverseCheck, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
-        ####
-        self.vbox.show_all()
-    def run(self):
-        if gtk.Dialog.run(self)==gtk.RESPONSE_OK:
-            self._group.sort(
-                self.sortByNames[self.sortByCombo.get_active()],
-                self.reverseCheck.get_active(),
-            )
-            self._group.save()
-            return True
-        self.destroy()
-
-
-
-class GroupConvertModeDialog(gtk.Dialog):
-    def __init__(self, group):
-        self._group = group
-        gtk.Dialog.__init__(self)
-        self.set_title(_('Convert Calendar Type'))
-        ####
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
-        ##
-        self.connect('response', lambda w, e: self.hide())
-        ####
-        hbox = gtk.HBox()
-        label = gtk.Label(_('This is going to convert calendar types of all events inside group \"%s\" to a specific type. This operation does not work for Yearly events and also some of Custom events. You have to edit those events manually to change calendar type.')%group.title)
-        label.set_line_wrap(True)
-        hbox.pack_start(label, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
-        ###
-        hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Calendar Type')+':'), 0, 0)
-        combo = gtk.combo_box_new_text()
-        for module in core.modules:
-            combo.append_text(_(module.desc))
-        combo.set_active(group.mode)
-        hbox.pack_start(combo, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.modeCombo = combo
-        self.vbox.pack_start(hbox, 0, 0)
-        ####
-        self.vbox.show_all()
-    def run(self):
-        if gtk.Dialog.run(self)==gtk.RESPONSE_OK:
-            mode = self.modeCombo.get_active()
-            failedSummaryList = []
-            for event in self._group:
-                if not event.changeMode(mode):
-                    failedSummaryList.append(event.summary)
-            if failedSummaryList:## FIXME
-                print failedSummaryList
-        self.destroy()
-
-
-class GroupBulkEditDialog(gtk.Dialog):
-    def __init__(self, group):
-        self._group = group
-        gtk.Dialog.__init__(self)
-        self.set_title(_('Bulk Edit Events'))
-        ####
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
-        ##
-        self.connect('response', lambda w, e: self.hide())
-        ####
-        label = gtk.Label(_('Here you are going to modify all events inside group "%s" at once. You better make a backup from you events before doing this. Just right click on group and select "Export" (or a full backup: menu File -> Export)')%group.title+'\n\n')
-        label.set_line_wrap(True)
-        self.vbox.pack_start(label, 0, 0)
-        ####
-        hbox = gtk.HBox()
-        self.iconRadio = gtk.RadioButton(label=_('Icon'))
-        hbox.pack_start(self.iconRadio, 1, 1)
-        self.summaryRadio = gtk.RadioButton(label=_('Summary'), group=self.iconRadio)
-        hbox.pack_start(self.summaryRadio, 1, 1)
-        self.descriptionRadio = gtk.RadioButton(label=_('Description'), group=self.iconRadio)
-        hbox.pack_start(self.descriptionRadio, 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
-        ###
-        self.iconRadio.connect('clicked', self.firstRadioChanged)
-        self.summaryRadio.connect('clicked', self.firstRadioChanged)
-        self.descriptionRadio.connect('clicked', self.firstRadioChanged)
-        ####
-        hbox = gtk.HBox()
-        self.iconChangeCombo = gtk.combo_box_new_text()
-        self.iconChangeCombo.append_text('----')
-        self.iconChangeCombo.append_text(_('Change'))
-        self.iconChangeCombo.append_text(_('Change if empty'))
-        hbox.pack_start(self.iconChangeCombo, 0, 0)
-        hbox.pack_start(gtk.Label('  '), 0, 0)
-        self.iconSelect = IconSelectButton()
-        self.iconSelect.set_filename(group.icon)
-        hbox.pack_start(self.iconSelect, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
-        self.iconHbox = hbox
-        ####
-        self.textVbox = gtk.VBox()
-        ###
-        hbox = gtk.HBox()
-        self.textChangeCombo = gtk.combo_box_new_text()
-        self.textChangeCombo.append_text('----')
-        self.textChangeCombo.append_text(_('Add to beginning'))
-        self.textChangeCombo.append_text(_('Add to end'))
-        self.textChangeCombo.append_text(_('Replace text'))
-        self.textChangeCombo.connect('changed', self.textChangeComboChanged)
-        hbox.pack_start(self.textChangeCombo, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        ## CheckButton(_('Regexp'))
-        self.textVbox.pack_start(hbox, 0, 0)
-        ###
-        textview = gtk.TextView()
-        textview.set_wrap_mode(gtk.WRAP_WORD)
-        self.textBuf1 = textview.get_buffer()
-        frame = gtk.Frame()
-        frame.set_border_width(4)
-        frame.add(textview)
-        self.textVbox.pack_start(frame, 1, 1)
-        self.textWidget1 = frame
-        ###
-        hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('with')), 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.textVbox.pack_start(hbox, 1, 1)
-        self.withHbox = hbox
-        ###
-        textview = gtk.TextView()
-        textview.set_wrap_mode(gtk.WRAP_WORD)
-        self.textBuf2 = textview.get_buffer()
-        frame = gtk.Frame()
-        frame.set_border_width(4)
-        frame.add(textview)
-        self.textVbox.pack_start(frame, 1, 1)
-        self.textWidget2 = frame
-        ####
-        self.vbox.pack_start(self.textVbox, 1, 1)
-        self.vbox.show_all()
-        self.iconRadio.set_active(True)
-        self.iconChangeCombo.set_active(0)
-        self.textChangeCombo.set_active(0)
-        self.firstRadioChanged()
-    def firstRadioChanged(self, w=None):
-        if self.iconRadio.get_active():
-            self.iconHbox.show()
-            self.textVbox.hide()
-        else:
-            self.iconHbox.hide()
-            self.textChangeComboChanged()
-    def textChangeComboChanged(self, w=None):
-        self.textVbox.show_all()
-        chType = self.textChangeCombo.get_active()
-        if chType==0:
-            self.textWidget1.hide()
-            self.withHbox.hide()
-            self.textWidget2.hide()
-        elif chType in (1, 2):
-            self.withHbox.hide()
-            self.textWidget2.hide()
-    def doAction(self):
-        group = self._group
-        if self.iconRadio.get_active():
-            chType = self.iconChangeCombo.get_active()
-            if chType!=0:
-                icon = self.iconSelect.get_filename()
-                for event in group:
-                    if not (chType==2 and event.icon):
-                        event.icon = icon
-                        event.afterModify()
-                        event.save()
-        else:
-            chType = self.textChangeCombo.get_active()
-            if chType!=0:
-                text1 = buffer_get_text(self.textBuf1)
-                text2 = buffer_get_text(self.textBuf2)
-                if self.summaryRadio.get_active():
-                    for event in group:
-                        if chType==1:
-                            event.summary = text1 + event.summary
-                        elif chType==2:
-                            event.summary = event.summary + text1
-                        elif chType==3:
-                            event.summary = event.summary.replace(text1, text2)
-                        event.afterModify()
-                        event.save()
-                elif self.descriptionRadio.get_active():
-                    for event in group:
-                        if chType==1:
-                            event.description = text1 + event.description
-                        elif chType==2:
-                            event.description = event.description + text1
-                        elif chType==3:
-                            event.description = event.description.replace(text1, text2)
-                        event.afterModify()
-                        event.save()
-
-
-
-class TrashEditorDialog(gtk.Dialog):
-    def __init__(self):
-        gtk.Dialog.__init__(self)
-        self.set_title(_('Edit Trash'))
-        #self.connect('delete-event', lambda obj, e: self.destroy())
-        #self.resize(800, 600)
-        ###
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
-        ##
-        self.connect('response', lambda w, e: self.hide())
-        #######
-        self.trash = ui.eventTrash
-        ##
-        sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
-        #######
-        hbox = gtk.HBox()
-        label = gtk.Label(_('Title'))
-        label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
-        sizeGroup.add_widget(label)
-        self.titleEntry = gtk.Entry()
-        hbox.pack_start(self.titleEntry, 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
-        ####
-        hbox = gtk.HBox()
-        label = gtk.Label(_('Icon'))
-        label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
-        sizeGroup.add_widget(label)
-        self.iconSelect = IconSelectButton()
-        hbox.pack_start(self.iconSelect, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
-        ####
-        self.vbox.show_all()
-        self.updateWidget()
-    def run(self):
-        if gtk.Dialog.run(self)==gtk.RESPONSE_OK:
-            self.updateVars()
-        self.destroy()
-    def updateWidget(self):
-        self.titleEntry.set_text(self.trash.title)
-        self.iconSelect.set_filename(self.trash.icon)
-    def updateVars(self):
-        self.trash.title = self.titleEntry.get_text()
-        self.trash.icon = self.iconSelect.filename
-        self.trash.save()
-
-class AccountEditorDialog(gtk.Dialog):
-    def __init__(self, account=None):
-        gtk.Dialog.__init__(self)
-        self.set_title(_('Edit Account') if account else _('Add New Account'))
-        ###
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
-        ##
-        self.connect('response', lambda w, e: self.hide())
-        #######
-        self.account = account
-        self.activeWidget = None
-        #######
-        hbox = gtk.HBox()
-        combo = gtk.combo_box_new_text()
-        for cls in event_man.classes.account:
-            combo.append_text(cls.desc)
-        hbox.pack_start(gtk.Label(_('Account Type')), 0, 0)
-        hbox.pack_start(combo, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
-        ####
-        if self.account:
-            self.isNew = False
-            combo.set_active(event_man.classes.account.names.index(self.account.name))
-        else:
-            self.isNew = True
-            defaultAccountTypeIndex = 0
-            combo.set_active(defaultAccountTypeIndex)
-            self.account = event_man.classes.account[defaultAccountTypeIndex]()
-        self.activeWidget = None
-        combo.connect('changed', self.typeChanged)
-        self.comboType = combo
-        self.vbox.show_all()
-        self.typeChanged()
-    def dateModeChanged(self, combo):
-        pass
-    def typeChanged(self, combo=None):
-        if self.activeWidget:
-            self.activeWidget.updateVars()
-            self.activeWidget.destroy()
-        cls = event_man.classes.account[self.comboType.get_active()]
-        account = cls()
-        if self.account:
-            account.copyFrom(self.account)
-            account.setId(self.account.id)
-            del self.account
-        if self.isNew:
-            account.title = cls.desc ## FIXME
-        self.account = account
-        self.activeWidget = account.makeWidget()
-        self.vbox.pack_start(self.activeWidget, 0, 0)
-    def run(self):
-        if self.activeWidget is None or self.account is None:
-            return None
-        if gtk.Dialog.run(self) != gtk.RESPONSE_OK:
-            return None
-        self.activeWidget.updateVars()
-        self.account.save()
-        if self.isNew:
-            event_man.saveLastIds()
-        else:
-            ui.eventAccounts[self.account.id] = self.account
-        self.destroy()
-        return self.account
-
-
-class FetchRemoteGroupsDialog(gtk.Dialog):
-    def __init__(self, account):
-        gtk.Dialog.__init__(self)
-        self.account = account
 
 
 class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
@@ -792,6 +85,10 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
         ###
         if not self.isLoaded:
+            if self.get_property('visible'):
+                self.startWaiting()
+                self.reloadEvents()## FIXME
+                self.endWaiting()
             return
         ###
         for gid in ui.newGroups:
@@ -864,6 +161,8 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         self.connect('response', self.onResponse)
         self.connect('show', self.onShow)
         #######
+        self.searchWin = EventSearchWindow()
+        #######
         menubar = gtk.MenuBar()
         ####
         fileItem = gtk.MenuItem(_('_File'))
@@ -874,6 +173,10 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         addGroupItem = gtk.MenuItem(_('Add New Group'))
         addGroupItem.connect('activate', self.addGroupBeforeSelection)## or before selected group? FIXME
         fileMenu.append(addGroupItem)
+        ##
+        searchItem = gtk.MenuItem(_('_Search Events'))## FIXME right place?
+        searchItem.connect('activate', self.mbarSearchClicked)
+        fileMenu.append(searchItem)
         ##
         exportItem = gtk.MenuItem(_('_Export'))
         exportItem.connect('activate', self.mbarExportClicked)
@@ -942,8 +245,8 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         #testItem.set_submenu(testMenu)
         #menubar.append(testItem)
         ###
-        #item = gtk.MenuItem('GroupsTreeCheckList')
-        #item.connect('activate', testGroupsTreeCheckList)
+        #item = gtk.MenuItem('')
+        #item.connect('activate', )
         #testMenu.append(item)
         ####
         menubar.show_all()
@@ -956,7 +259,7 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         #self.treev.set_headers_visible(False)## FIXME
         #self.treev.get_selection().set_mode(gtk.SELECTION_MULTIPLE)## FIXME
         #self.treev.set_rubber_banding(gtk.SELECTION_MULTIPLE)## FIXME
-        self.treev.connect('realize', self.onTreeviewRealize)
+        #self.treev.connect('realize', self.onTreeviewRealize)
         self.treev.connect('cursor-changed', self.treeviewCursorChanged)## FIXME
         self.treev.connect('button-press-event', self.treeviewButtonPress)
         self.treev.connect('row-activated', self.rowActivated)
@@ -1024,7 +327,6 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         self.syncing = None ## or a tuple of (groupId, statusText)
         #####
         self.vbox.show_all()
-        #self.reloadEvents()## FIXME
     def canPasteToGroup(self, group):
         if self.toPasteEvent is None:
             return False
@@ -1156,8 +458,9 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         if etime is None:
             etime = gtk.get_current_event_time()
         menu.popup(None, None, None, 3, etime)
-    def onTreeviewRealize(self, event):
-        self.reloadEvents()## FIXME
+    #def onTreeviewRealize(self, event):
+    #    #self.reloadEvents()## FIXME
+    #    pass
     def rowActivated(self, treev, path, col):
         if len(path)==1:
             if treev.row_expanded(path):
@@ -1201,20 +504,8 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         event.summary,
         event.getShownDescription(),
     )
-    def getGroupRow(self, group, rowBgColor=None):
-        if not rowBgColor:
-            rowBgColor = self.getRowBgColor()
-        return (
-            group.id,
-            newOutlineSquarePixbuf(
-                group.color,
-                20,
-                0 if group.enable else 15,
-                rowBgColor,
-            ),
-            group.title,
-            '',
-        )
+    def getGroupRow(self, group):
+        return common.getGroupRow(group, self.getRowBgColor()) + ('',)
     def appendGroupTree(self, group):
         groupIter = self.trees.insert_before(None, self.trashIter, self.getGroupRow(group))
         for event in group:
@@ -1260,6 +551,8 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         MultiGroupExportDialog().run()
     def mbarImportClicked(self, obj):
         EventsImportWindow(self).present()
+    def mbarSearchClicked(self, obj):
+        self.searchWin.present()
     def mbarOrphanClicked(self, obj):
         self.startWaiting()
         newGroup = ui.eventGroups.checkForOrphans()
@@ -1323,10 +616,19 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                     text = _('Event ID: %s')%_(event.id)
             message_id = self.sbar.push(0, text)
         return True
-    def onGroupModify(self, group):
+    def onGroupModify(self, group, groupIter):
         self.startWaiting()
         group.afterModify()
         group.save()
+        try:
+            if group.name == 'universityTerm':## FIXME
+                n = self.trees.iter_n_children(groupIter)
+                for i in range(n):
+                    eventIter = self.trees.iter_nth_child(groupIter, i)
+                    eid = self.trees.get(eventIter, 0)[0]
+                    self.trees.set(eventIter, 2, group[eid].summary)
+        except:
+            myRaise()
         self.endWaiting()
     def treeviewButtonPress(self, treev, g_event):
         pos_t = treev.get_path_at_pos(int(g_event.x), int(g_event.y))
@@ -1353,8 +655,9 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                         pass
                     else:
                         group.enable = not group.enable
+                        groupIter = self.trees.get_iter(path)
                         self.trees.set_value(
-                            self.trees.get_iter(path),
+                            groupIter,
                             1,
                             newOutlineSquarePixbuf(
                                 group.color,
@@ -1364,7 +667,7 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                             ),
                         )
                         group.save()
-                        self.onGroupModify(group)
+                        self.onGroupModify(group, groupIter)
                         treev.set_cursor(path)
                         return True
     def insertNewGroup(self, groupIndex):
@@ -1374,13 +677,13 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         ui.eventGroups.insert(groupIndex, group)
         ui.eventGroups.save()
         beforeGroupIter = self.trees.get_iter((groupIndex,))
-        self.trees.insert_before(
+        groupIter = self.trees.insert_before(
             #self.trees.get_iter_root(),## parent
             self.trees.iter_parent(beforeGroupIter),
             beforeGroupIter,## sibling
             self.getGroupRow(group),
         )
-        self.onGroupModify(group)
+        self.onGroupModify(group, groupIter)
     def addGroupBeforeGroup(self, menu, path):
         self.insertNewGroup(path[0])
     def addGroupBeforeSelection(self, obj=None):
@@ -1440,7 +743,7 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
             groupIter = self.trees.get_iter(path)
             for i, value in enumerate(self.getGroupRow(group)):
                 self.trees.set_value(groupIter, i, value)
-            self.onGroupModify(group)
+            self.onGroupModify(group, groupIter)
     editGroupFromMenu = lambda self, menu, path: self.editGroupByPath(path)
     def deleteGroup(self, path):
         (index,) = path
@@ -1688,6 +991,7 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
     def groupConvertModeFromMenu(self, menu, group):
         GroupConvertModeDialog(group).run()
     def startWaiting(self):
+        self.queue_draw()
         self.vbox.set_sensitive(False)
         self.window.set_cursor(gdk.Cursor(gdk.WATCH))
         while gtk.events_pending():
@@ -1786,10 +1090,6 @@ def makeWidget(obj):## obj is an instance of Event, EventRule, EventNotifier or 
 
 EventManagerDialog.registerSignals()
 
-if rtl:
-    gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
-
-
 modPrefix = 'scal2.ui_gtk.event.'
 
 for cls in event_man.classes.event:
@@ -1862,46 +1162,10 @@ event_man.Account.makeWidget = makeWidget
 
 
 
-
-
 import scal2.ui_gtk.event.import_customday ## opens a dialog if neccessery
 
 
 ##############################################################################
 
-def testCustomEventEditor():
-    from pprint import pprint, pformat
-    dialog = gtk.Dialog()
-    #dialog.vbox.pack_start(IconSelectButton(ui.logo))
-    event = event_man.Event(1)
-    event.load()
-    widget = event.makeWidget()
-    dialog.vbox.pack_start(widget)
-    dialog.vbox.show_all()
-    dialog.add_button('OK', 0)
-    if dialog.run()==0:
-        widget.updateVars()
-        #widget.event.afterModify()
-        widget.event.save()
-        pprint(widget.event.getData())
-
-
-def testGroupsTreeCheckList(obj=None):
-    dialog = gtk.Dialog()
-    treev = GroupsTreeCheckList()
-    swin = gtk.ScrolledWindow()
-    swin.add(treev)
-    swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-    dialog.vbox.pack_start(swin, 1, 1)
-    dialog.vbox.show_all()
-    dialog.resize(500, 500)
-    treev.setValue([8, 7, 1, 3])
-    dialog.run()
-    print treev.getValue()
-
-
-if __name__=='__main__':
-    #testCustomEventEditor()
-    testGroupsTreeCheckList()
 
 

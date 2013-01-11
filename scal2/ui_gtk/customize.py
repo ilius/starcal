@@ -58,13 +58,15 @@ class CustomizableCalObj(ud.IntegratedCalObj):
     getItemsData = lambda self: [(item._name, item.enable) for item in self.items]
     def updateVars(self):
         for item in self.items:
-            item.updateVars()
+            if isinstance(item, CustomizableCalObj):
+                item.updateVars()
     def confStr(self):
         text = ''
         for mod_attr in self.params:
             text += '%s=%s\n'%(mod_attr, repr(eval(mod_attr)))
         for item in self.items:
-            text += item.confStr()
+            if isinstance(item, CustomizableCalObj):
+                text += item.confStr()
         return text
     def moveItemUp(self, i):## override this method for non-GtkBox containers
         self.reorder_child(self.items[i], i-1)## for GtkBox (HBox and VBox)
@@ -92,7 +94,8 @@ class CustomizeDialog(gtk.Dialog):
         itemIter = self.model.append(parentIter)
         self.model.set(itemIter, 0, item.enable, 1, item.desc)
         for child in item.items:
-            self.appendItemTree(child, itemIter)
+            if isinstance(item, CustomizableCalObj):
+                self.appendItemTree(child, itemIter)
     def __init__(self, widget):
         gtk.Dialog.__init__(self)
         self.set_title(_('Customize'))
@@ -127,7 +130,8 @@ class CustomizeDialog(gtk.Dialog):
         treev.append_column(col)
         ###
         for item in widget.items:
-            self.appendItemTree(item, None)
+            if isinstance(item, CustomizableCalObj):
+                self.appendItemTree(item, None)
         ###
         hbox = gtk.HBox()
         vbox_l = gtk.VBox()

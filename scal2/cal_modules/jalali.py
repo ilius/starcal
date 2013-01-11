@@ -18,8 +18,8 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-##    Iranian (Jalali) calendar:
-##                    http://en.wikipedia.org/wiki/Iranian_calendar
+## Iranian (Jalali) calendar:
+## http://en.wikipedia.org/wiki/Iranian_calendar
 
 name = 'jalali'
 desc = 'Jalali'
@@ -28,28 +28,57 @@ origLang = 'fa'
 monthNameMode = 0
 jalaliAlg = 0
 options = (
-    #('monthNameMode',list,'Jalali Months Names', ('Persian','Kurdish','Dari Persian','Afghan Pashto')),
-    ('jalaliAlg',list,'Jalali Calculation Algorithm', ('33 year algorithm','2820 year algorithm')),
+    (
+        'monthNameMode',
+        list,
+        'Jalali Month Names',
+        ('Iranian', 'Kurdish', 'Dari', 'Pashto'),
+    ),
+    (
+        'jalaliAlg',
+        list,
+        'Jalali Calculation Algorithm',
+        ('33 year algorithm', '2820 year algorithm'),
+    ),
 )
 
-monthName = ('Farvardin','Ordibehesht','Khordad','Teer','Mordad','Shahrivar',
-             'Mehr','Aban','Azar','Dey','Bahman','Esfand')
 
-monthNameAb = ('Far', 'Ord', 'Khr', 'Tir', 'Mor', 'Shr',
-               'Meh', 'Abn', 'Azr', 'Dey', 'Bah', 'Esf')
+monthNameVars = (
+    (
+        ('Farvardin','Ordibehesht','Khordad','Teer','Mordad','Shahrivar',
+         'Mehr','Aban','Azar','Dey','Bahman','Esfand'),
+        ('Far', 'Ord', 'Khr', 'Tir', 'Mor', 'Shr',
+         'Meh', 'Abn', 'Azr', 'Dey', 'Bah', 'Esf'),
+    ),
+    (
+        ('Xakelêwe','Gullan','Cozerdan','Pûşper','Gelawêj','Xermanan',
+         'Rezber','Gelarêzan','Sermawez','Befranbar','Rêbendan','Reşeme'),
+    ),
+    (
+        ('Hamal','Sawr','Jawzā','Saratān','Asad','Sonbola',
+         'Mizān','Aqrab','Qaws','Jadi','Dalvæ','Hūt'),
+    ),
+    (
+        ('Wray','Ǧwayay','Ǧbargolay','Čungāx̌','Zmaray','Waǵay',
+         'Təla','Laṛam','Līndəi','Marǧūmay','Salwāǧa','Kab'),
+    ),
+)
 
-"""
-monthNameAll = (,
-('Xakelêwe','Gullan','Cozerdan','Pûşper','Gelawêj','Xermanan',
-    'Rezber','Gelarêzan','Sermawez','Befranbar','Rêbendan','Reşeme'),
-('','','','','','',
-    '','','','','',''),
-('','','','','','',
-    '','','','','','')
-)"""
+#        ('','','','','','',
+#         '','','','','','')
 
-getMonthName = lambda m, y=None: monthName.__getitem__(m-1)
-getMonthNameAb = lambda m, y=None: monthNameAb.__getitem__(m-1)
+
+getMonthName = lambda m, y=None: monthNameVars[monthNameMode][0][m-1]
+
+def getMonthNameAb(m, y=None):
+    v = monthNameVars[monthNameMode]
+    try:
+        l = v[1]
+    except IndexError:
+        l = v[0]
+    return l[m-1]
+
+
 
 getMonthsInYear = lambda y: 12
 
@@ -62,7 +91,7 @@ maxMonthLen = 31
 avgYearLen = 365.2425 ## FIXME
 
 GREGORIAN_EPOCH = 1721426
-jalaliMonthLen = (31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29)
+monthLen = (31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29)
 
 
 import os
@@ -85,8 +114,11 @@ if os.path.isfile(confPath):
 
 
 
-def save():## Here save user options(jalaliAlg) to file
-    file(confPath, 'w').write('jalaliAlg=%s'%jalaliAlg)
+def save():## Here save user options to file
+    text = ''
+    text += 'monthNameMode=%s\n'%monthNameMode
+    text += 'jalaliAlg=%s\n'%jalaliAlg
+    file(confPath, 'w').write(text)
 
 
 
@@ -96,7 +128,8 @@ def isLeap(year):
         return (( (year - 473 - (year>0)) %2820 + 512) * 682) % 2816 < 682
     elif jalaliAlg==0:
         ## Use 33 year algorithm
-        ##taken from farsiweb code writen by Roozbeh Pournader <roozbeh@sharif.edu> and Mohammad Toossi <mohammad@bamdad.org> at 2001
+        ## taken from farsiweb code writen by Roozbeh Pournader <roozbeh@sharif.edu>
+        ## and Mohammad Toossi <mohammad@bamdad.org> at 2001
         jy = year - 979
         gdays = ( 365*jy + (jy/33)*8 + (jy%33+3)/4    +    79 ) % 146097
         leap = True
@@ -143,7 +176,7 @@ def to_jd(year, month, day):
         y2 = year-979
         jdays = 365*y2 + (y2/33)*8 + (y2%33+3)/4
         for i in xrange(month-1):
-            jdays += jalaliMonthLen[i]
+            jdays += monthLen[i]
         jdays += (day-1)
         return jdays + 584101 + GREGORIAN_EPOCH
     else:
@@ -190,8 +223,8 @@ def jd_to(jd):
             jdays = (jdays-1)%365
         month = 12
         for i in xrange(11):
-            if jdays >= jalaliMonthLen[i]:
-                jdays -= jalaliMonthLen[i]
+            if jdays >= monthLen[i]:
+                jdays -= monthLen[i]
             else:
                 month = i+1
                 break
@@ -206,10 +239,7 @@ def jd_to(jd):
 
 def getMonthLen(year, month):
     if month==12:
-        if isLeap(year):
-            return 30
-        else:
-            return 29
+        return 29 + isLeap(year)
     else:
-        return jalaliMonthLen[month-1]
+        return monthLen[month-1]
 

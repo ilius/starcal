@@ -4,12 +4,12 @@
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License,    or
+# the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along
@@ -31,15 +31,31 @@ from scal2.core import pixDir, myRaise
 from scal2 import event_man
 from scal2 import ui
 
-from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, buffer_get_text, labelStockMenuItem, dialog_add_button
+from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, labelStockMenuItem
+from scal2.ui_gtk.utils import dialog_add_button, DateTypeCombo
+
+from scal2.ui_gtk.color_utils import gdkColorToRgb
+from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
 
 #print 'Testing translator', __file__, _('_About')## OK
 
+
+getGroupRow = lambda group, rowBgColor: (
+    group.id,
+    newOutlineSquarePixbuf(
+        group.color,
+        20,
+        0 if group.enable else 15,
+        rowBgColor,
+    ),
+    group.title
+)
 
 class IconSelectButton(gtk.Button):
     def __init__(self, filename=''):
@@ -113,9 +129,7 @@ class EventWidget(gtk.VBox):
         hbox = gtk.HBox()
         ###
         hbox.pack_start(gtk.Label(_('Calendar Type')+':'), 0, 0)
-        combo = gtk.combo_box_new_text()
-        for module in core.modules:
-            combo.append_text(_(module.desc))
+        combo = DateTypeCombo()
         combo.set_active(core.primaryMode)## overwritten in updateWidget()
         hbox.pack_start(combo, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
@@ -131,13 +145,8 @@ class EventWidget(gtk.VBox):
         ###########
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Description')), 0, 0)
-        textview = gtk.TextView()
-        textview.set_wrap_mode(gtk.WRAP_WORD)
-        self.descriptionBuff = textview.get_buffer()
-        frame = gtk.Frame()
-        frame.set_border_width(4)
-        frame.add(textview)
-        hbox.pack_start(frame, 1, 1)
+        self.descriptionInput = TextFrame()
+        hbox.pack_start(self.descriptionInput, 1, 1)
         self.pack_start(hbox, 0, 0)
         ###########
         hbox = gtk.HBox()
@@ -156,7 +165,7 @@ class EventWidget(gtk.VBox):
         #print 'updateWidget', self.event.files
         self.modeCombo.set_active(self.event.mode)
         self.summaryEntry.set_text(self.event.summary)
-        self.descriptionBuff.set_text(self.event.description)
+        self.descriptionInput.set_text(self.event.description)
         self.iconSelect.set_filename(self.event.icon)
         #####
         for attr in ('notificationBox', 'filesBox'):
@@ -169,7 +178,7 @@ class EventWidget(gtk.VBox):
     def updateVars(self):
         self.event.mode = self.modeCombo.get_active()
         self.event.summary = self.summaryEntry.get_text()
-        self.event.description = buffer_get_text(self.descriptionBuff)
+        self.event.description = self.descriptionInput.get_text()
         self.event.icon = self.iconSelect.get_filename()
         #####
         for attr in ('notificationBox', 'filesBox'):
@@ -434,11 +443,6 @@ class Scale10PowerComboBox(gtk.ComboBox):
         self.set_active(len(self.ls)-1)
 
 
-class GroupComboBox(gtk.ComboBox):
-    def __init__(self):
-        pass
-
-
 class EventEditorDialog(gtk.Dialog):
     def __init__(self, event, typeChangable=True, title=None, isNew=False, parent=None, useSelectedDate=False):
         gtk.Dialog.__init__(self, parent=parent)
@@ -590,7 +594,8 @@ class GroupEditorDialog(gtk.Dialog):
         if self.isNew:
             if group.icon:
                 self._group.icon = group.icon
-        group.copyFrom(self._group)
+        if not self.isNew:
+            group.copyFrom(self._group)
         group.setId(self._group.id)
         if self.isNew:
             group.title = self.getNewGroupTitle(cls.desc)
@@ -611,16 +616,101 @@ class GroupEditorDialog(gtk.Dialog):
         self.destroy()
         return self._group
 
+
+class GroupsTreeCheckList(gtk.TreeView):
+    def __init__(self):
+        gtk.TreeView.__init__(self)
+        self.trees = gtk.ListStore(int, bool, str)## groupId(hidden), enable, summary
+        self.set_model(self.trees)
+        self.set_headers_visible(False)
+        ###
+        cell = gtk.CellRendererToggle()
+        #cell.set_property('activatable', True)
+        cell.connect('toggled', self.enableCellToggled)
+        col = gtk.TreeViewColumn(_('Enable'), cell)
+        col.add_attribute(cell, 'active', 1)
+        #cell.set_active(True)
+        col.set_resizable(True)
+        self.append_column(col)
+        ###
+        col = gtk.TreeViewColumn(_('Title'), gtk.CellRendererText(), text=2)
+        col.set_resizable(True)
+        self.append_column(col)
+        ###
+        for group in ui.eventGroups:
+            self.trees.append([group.id, True, group.title])
+    def enableCellToggled(self, cell, path):
+        i = int(path)
+        active = not cell.get_active()
+        self.trees[i][1] = active
+        cell.set_active(active)
+    def getValue(self):
+        return [row[0] for row in self.trees if row[1]]
+    def setValue(self, gids):
+        for row in self.trees:
+            row[1] = (row[0] in gids)
+
+
+
+
+class SingleGroupComboBox(gtk.ComboBox):
+    def __init__(self):
+        ls = gtk.ListStore(int, gdk.Pixbuf, str)
+        gtk.ComboBox.__init__(self, ls)
+        #####
+        cell = gtk.CellRendererPixbuf()
+        self.pack_start(cell, 0)
+        self.add_attribute(cell, 'pixbuf', 1)
+        ###
+        cell = gtk.CellRendererText()
+        self.pack_start(cell, 1)
+        self.add_attribute(cell, 'text', 2)
+        #####
+        self.updateItems()
+    def updateItems(self):
+        ls = self.get_model()
+        activeGid = self.get_active()
+        ls.clear()
+        ###
+        rowBgColor = gdkColorToRgb(self.style.base[gtk.STATE_NORMAL])## bg color of non-selected rows FIXME
+        for group in ui.eventGroups:
+            if not group.enable:## FIXME
+                continue
+            ls.append(getGroupRow(group, rowBgColor))
+        ###
+        #try:
+        gtk.ComboBox.set_active(self, 0)
+        #except:
+        #    pass
+        if activeGid not in (None, -1):
+            try:
+                self.set_active(activeGid)
+            except ValueError:
+                pass
+    def get_active(self):
+        index = gtk.ComboBox.get_active(self)
+        if index in (None, -1):
+            return
+        gid = self.get_model()[index][0]
+        return gid
+    def set_active(self, gid):
+        ls = self.get_model()
+        for i, row in enumerate(ls):
+            if row[0] == gid:
+                gtk.ComboBox.set_active(self, i)
+                break
+        else:
+            raise ValueError('SingleGroupComboBox.set_active: Group ID %s is not in items'%gid)
+
 if __name__ == '__main__':
     from pprint import pformat
-    if core.rtl:
-        gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
     dialog = gtk.Window()
     dialog.vbox = gtk.VBox()
     dialog.add(dialog.vbox)
     #widget = ViewEditTagsHbox()
-    widget = EventTagsAndIconSelect()
+    #widget = EventTagsAndIconSelect()
     #widget = TagsListBox('task')
+    widget = SingleGroupComboBox()
     dialog.vbox.pack_start(widget, 1, 1)
     #dialog.vbox.show_all()
     #dialog.resize(300, 500)

@@ -4,12 +4,12 @@
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License,    or
+# the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along
@@ -198,12 +198,6 @@ def durationDecode(durStr):
 
 
 timeToFloatHour = lambda h, m, s=0: h + m/60.0 + s/3600.0
-
-overlaps = lambda a0, a1, b0, b1: \
-    a0 <= b0 <  a1 or \
-    a0 <  b1 <= a1 or \
-    b0 <= a0 <  b1 or \
-    b0 <  a1 <= b1
 
 def floatHourToTime(fh):
     h, r = divmod(fh, 1)

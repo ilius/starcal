@@ -27,6 +27,7 @@ from gtk import gdk
 from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
 from scal2.ui_gtk.drawing import newTextLayout
+from scal2.ui_gtk.utils import buffer_get_text
 
 def myRaise():
     i = sys.exc_info()
@@ -151,6 +152,20 @@ class MyColorButton(gtk.ColorButton): ## for tooltip text
         return (int(color.red/257), int(color.green/257), int(color.blue/257))
     def get_alpha(self):
         return int(gtk.ColorButton.get_alpha(self)/257)
+
+
+class TextFrame(gtk.Frame):
+    def __init__(self):
+        gtk.Frame.__init__(self)
+        self.set_border_width(4)
+        ####
+        self.textview = gtk.TextView()
+        self.textview.set_wrap_mode(gtk.WRAP_WORD)
+        self.add(self.textview)
+        ####
+        self.buff = self.textview.get_buffer()
+    set_text = lambda self, text: self.buff.set_text(text)
+    get_text = lambda self: buffer_get_text(self.buff)
 
 
 if __name__=='__main__':

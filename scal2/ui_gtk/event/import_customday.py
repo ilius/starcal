@@ -8,7 +8,7 @@ from scal2 import ui
 import gtk
 from gtk import gdk
 
-from scal2.ui_gtk.utils import dialog_add_button
+from scal2.ui_gtk.utils import dialog_add_button, DateTypeCombo
 
 class CustomDayImporterDialog(gtk.Dialog):
     def onResponse(self, dialog, response_id):
@@ -31,9 +31,7 @@ class CustomDayImporterDialog(gtk.Dialog):
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
-        combo = gtk.combo_box_new_text()
-        for module in core.modules:
-            combo.append_text(_(module.desc))
+        combo = DateTypeCombo()
         combo.set_active(core.primaryMode)
         hbox.pack_start(combo, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)

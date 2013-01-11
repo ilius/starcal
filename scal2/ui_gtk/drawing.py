@@ -4,12 +4,12 @@
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
-# the Free Software Foundation; either version 3 of the License,    or
+# the Free Software Foundation; either version 3 of the License, or
 # (at your option) any later version.
 #
 # This program is distributed in the hope that it will be useful,
 # but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.    See the
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 # GNU General Public License for more details.
 #
 # You should have received a copy of the GNU General Public License along
@@ -58,7 +58,7 @@ def fillColor(cr, color):
     cr.fill()
 
 
-def newTextLayout(widget, text='', font=None, maxSize=None, truncate=False):
+def newTextLayout(widget, text='', font=None, maxSize=None, maximizeScale=0.6):
     layout = widget.create_pango_layout('') ## a pango.Layout object
     if not font:
         font = ui.getFont()
@@ -67,27 +67,19 @@ def newTextLayout(widget, text='', font=None, maxSize=None, truncate=False):
         layout.set_markup(text)
         if maxSize:
             (maxW, maxH) = maxSize
+            maxW = float(maxW)
+            maxH = float(maxH)
+            ##
             layoutW, layoutH = layout.get_pixel_size()
-            if layoutH > maxH:
-                font[3] = int(font[3]*maxH//layoutH)
-                layout.set_font_description(pfontEncode(font))
-            layoutW, layoutH = layout.get_pixel_size()
-            if layoutW > maxW:
-                if truncate:
-                    char_w = layoutW/len(text)
-                    char_num = int(maxW//char_w)
-                    while layoutW > maxW:
-                        text = cutText(text, char_num)
-                        layout.set_markup(text)
-                        layout.set_font_description(pfontEncode(font))
-                        layoutW, layoutH = layout.get_pixel_size()
-                        char_num -= max(int((layoutW-maxW)//char_w), 1)
-                        if char_num<0:
-                            layout = None
-                            break
-                else:## use smaller font, don't truncate text
-                    font[3] = int(font[3]*float(maxW)/layoutW)
-                    layout.set_font_description(pfontEncode(font))
+            ##
+            minRat = max(layoutW/maxW, layoutH/maxH)
+            if minRat > 1:
+                font[3] = int(font[3]/minRat)
+            else:
+                minRat /= maximizeScale
+                if minRat < 1:
+                    font[3] = int(font[3]/minRat)
+            layout.set_font_description(pfontEncode(font))
     return layout
 
 def newLimitedWidthTextLayout(widget, text, width, font=None, truncate=True, markup=True):
