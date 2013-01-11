@@ -1,6 +1,10 @@
 from scal2.locale_man import tr as _
+from scal2 import event_man
+from scal2 import ui
 
 import gtk
+
+from scal2.ui_gtk.utils import dialog_add_button
 
 class AccountEditorDialog(gtk.Dialog):
     def __init__(self, account=None):

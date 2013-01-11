@@ -211,6 +211,8 @@ def dumpRequest(request):
 class GoogleAccount(Account):
     name = 'google'
     desc = _('Google')
+    jsonParams = Account.jsonParams + ('email',)
+    params = Account.params + ('email',)
     def __init__(self, aid=None, email=''):
         Account.__init__(self, aid)
         self.authFile = splitext(self.file)[0] + '.oauth2'
