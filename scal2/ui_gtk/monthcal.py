@@ -421,7 +421,7 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
                 )
                 cr.show_layout(daynum)
                 if not cellInactive:
-                    for mode, params in ui.getMcalMinorTypeParams():
+                    for mode, params in ui.getMcalMinorTypeParams()[1:]:
                         daynum = newTextLayout(self, _(c.dates[mode][2], mode), params['font'])
                         (fontw, fonth) = daynum.get_pixel_size()
                         setColor(cr, params['color'])
