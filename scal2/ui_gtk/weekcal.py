@@ -514,8 +514,13 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase):
         self.set_property('height-request', ui.wcalHeight)
         self.initVars()
         self.myKeys = (
-            'up', 'down', 'page_up', 'page_down',
-            'space', 'home', 'end',
+            'up', 'down',
+            'page_up',
+            'k', 'p',
+            'page_down',
+            'j', 'n',
+            'space', 'home', 't',
+            'end',
             #'menu', 'f10', 'm',
         )
         self.connect('key-press-event', self.keyPress)
@@ -619,13 +624,13 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase):
             self.jdPlus(-1)
         elif kname=='down':
             self.jdPlus(1)
-        elif kname in ('space', 'home'):
+        elif kname in ('space', 'home', 't'):
             self.goToday()
         elif kname=='end':
             self.gotoJd(self.status[-1].jd)
-        elif kname=='page_up':
+        elif kname in ('page_up', 'k', 'p'):
             self.jdPlus(-7)
-        elif kname=='page_down':
+        elif kname in ('page_down', 'j', 'n'):
             self.jdPlus(7)
         #elif kname=='menu':
         #    self.emit('popup-menu-cell', event.time, *self.getCellPos())

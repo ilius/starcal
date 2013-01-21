@@ -227,8 +227,12 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         self.myKeys = (
             'up', 'down',
             'right', 'left',
-            'page_up', 'page_down',
-            'space', 'home', 'end',
+            'page_up',
+            'k', 'p',
+            'page_down',
+            'j', 'n',
+            'space', 'home', 't',
+            'end',
             'menu', 'f10', 'm',
         )
         self.connect('key-press-event', self.keyPress)
@@ -688,6 +692,9 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
     def jdPlus(self, plus):
         ui.jdPlus(plus)
         self.onDateChange()
+    def monthPlus(self, p):
+        ui.monthPlus(p)
+        self.onDateChange()
     def changeDate(self, year, month, day, mode=None):
         ui.changeDate(year, month, day, mode)
         self.onDateChange()
@@ -714,16 +721,14 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
                 self.jdPlus(1)
             else:
                 self.jdPlus(-1)
-        elif kname in ('space', 'home'):
+        elif kname in ('space', 'home', 't'):
             self.goToday()
         elif kname=='end':
             self.changeDate(ui.cell.year, ui.cell.month, getMonthLen(ui.cell.year, ui.cell.month, core.primaryMode))
-        elif kname=='page_up':
-            ui.monthPlus(-1)
-            self.onDateChange()
-        elif kname=='page_down':
-            ui.monthPlus(1)
-            self.onDateChange()
+        elif kname in ('page_up', 'k', 'p'):
+            self.monthPlus(-1)
+        elif kname in ('page_down', 'j', 'n'):
+            self.monthPlus(1)
         elif kname=='menu':
             self.emit('popup-menu-cell', event.time, *self.getCellPos())
         elif kname in ('f10', 'm'):
