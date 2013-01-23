@@ -57,6 +57,7 @@ def show_event(widget, event):
 
 class ColumnBase(CustomizableCalObj):
     customizeFont = False
+    autoButtonPressHandler = True
     getFontAttr = lambda self: 'wcalFont_%s'%self._name
     getFontValue = lambda self: getattr(ui, self.getFontAttr(), None)
     def fontFamilyComboChanged(self, combo):
@@ -182,6 +183,7 @@ class WeekNumToolbarItem(ToolbarItem):
 
 
 class ToolbarColumn(CustomizableToolbar, ColumnBase):
+    autoButtonPressHandler = False
     defaultItems = [
         WeekNumToolbarItem(),
         ToolbarItem('backward4', 'goto_top', 'goBackward4', 'Backward 4 Weeks'),
@@ -606,10 +608,20 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase):
     def goForward4(self, obj=None):
         self.jdPlus(28)
     def buttonPress(self, widget, event):
+        col = event.window.get_user_data()
+        while not isinstance(col, ColumnBase):
+            col = col.get_parent()
+            if col is None:
+                break
+        else:
+            if not col.autoButtonPressHandler:
+                return False
+        ###
         b = event.button
         #(x, y, mask) = event.window.get_pointer()
         (x, y) = self.get_pointer()
         #y += 10
+        ###
         i = int(event.y * 7.0 / self.allocation.height)
         cell = self.status[i]
         self.gotoJd(cell.jd)
