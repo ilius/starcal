@@ -438,6 +438,16 @@ def duplicateGroupTitle(group):
             return
         index += 1
 
+def init():
+    core.init()
+    #### Load accounts, groups and trash? FIXME
+    eventAccounts.load()
+    eventGroups.load()
+    eventTrash.load()
+    ####
+    event_man.saveLastIds()
+
+
 ######################################################################
 shownCals = [] ## FIXME
 mcalTypeParams = [
@@ -523,12 +533,6 @@ for fname in os.listdir(join(srcDir, 'accounts')):
 eventAccounts = event_man.EventAccountsHolder()
 eventGroups = event_man.EventGroupsHolder()
 eventTrash = event_man.EventTrash()
-#### Load accounts, groups and trash? FIXME
-eventAccounts.load()
-eventGroups.load()
-eventTrash.load()
-####
-event_man.saveLastIds()
 
 
 

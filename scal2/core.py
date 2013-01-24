@@ -504,6 +504,9 @@ def openUrl(url):
         else:
             return
 
+def init():
+    loadAllPlugins()
+
 ################################################################################
 #################### End of class and function defenitions #####################
 ################################################################################
@@ -605,8 +608,6 @@ if aboutText in ('aboutText', ''):
 weekDayName = (_('Sunday'), _('Monday'), _('Tuesday'), _('Wednesday'), _('Thursday'), _('Friday'), _('Saturday'))
 weekDayNameAb = (_('Sun'), _('Mon'), _('Tue'), _('Wed'), _('Thu'), _('Fri'), _('Sat'))
 
-
-#loadAllPlugins()## FIXME
 
 
 #if firstWeekDayAuto and os.sep=='/':## only if unix

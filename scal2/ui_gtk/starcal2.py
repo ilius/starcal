@@ -1213,6 +1213,7 @@ def main():
         #    action = 'html'
         #elif sys.argv[1]=='--svg':#????????????
         #    action = 'svg'
+    ui.init()
     mainWin = MainWin(trayMode=trayMode)
     #if action=='html':
     #    mainWin.exportHtml('calendar.html') ## exportHtml(path, months, title)
