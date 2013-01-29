@@ -332,11 +332,11 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
     def onScroll(self, widget, event):
         isUp = event.direction.value_nick=='up'
         if event.state & gdk.CONTROL_MASK:
-            timeLeft = event.x*self.timeWidth/self.allocation.width
-            zoomTime = self.timeStart + timeLeft
-            zoomValue = 1.0/scrollZoomStep if isUp else scrollZoomStep
-            self.timeStart = zoomTime - timeLeft*zoomValue
-            self.timeWidth = self.timeWidth*zoomValue
+            self.zoom(
+                isUp,
+                scrollZoomStep, 
+                event.x / self.allocation.width
+            )
         else:
             self.movingUserEvent(-1 if isUp else 1)## FIXME
         self.queue_draw()
@@ -469,6 +469,11 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             int(event.y_root),
             event.time,
         )
+    def zoom(self, zoomIn, stepFact, posFact):
+        zoomValue = 1.0/stepFact if zoomIn else stepFact
+        self.timeStart += self.timeWidth * (1-zoomValue) * posFact
+        self.timeWidth *= zoomValue
+    keyboardZoom = lambda self, zoomIn: self.zoom(zoomIn, keyboardZoomStep, 0.5)
     def keyPress(self, arg, event):
         k = gdk.keyval_name(event.keyval).lower()
         #print '%.3f'%time.time()
@@ -496,7 +501,12 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         #        self.emit('popup-menu-cell', event.time, *self.getCellPos())
         #    else:
         #        self.emit('popup-menu-main', event.time, *self.getMainMenuPos())
+        elif k in ('plus', 'equal', 'kp_add'):
+            self.keyboardZoom(True)
+        elif k in ('minus', 'kp_subtract'):
+            self.keyboardZoom(False)
         else:
+            #print k
             return False
         self.queue_draw()
         return True
