@@ -198,16 +198,20 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         editEditItem = gtk.MenuItem(_('Edit'))
         editEditItem.connect('activate', self.mbarEditClicked)
         editMenu.append(editEditItem)
+        editMenu.connect('show', self.mbarEditMenuPopup)
+        self.mbarEditItem = editEditItem
         ##
         editMenu.append(gtk.SeparatorMenuItem())
         ##
         cutItem = gtk.MenuItem(_('Cu_t'))
         cutItem.connect('activate', self.mbarCutClicked)
         editMenu.append(cutItem)
+        self.mbarCutItem = cutItem
         ##
         copyItem = gtk.MenuItem(_('_Copy'))
         copyItem.connect('activate', self.mbarCopyClicked)
         editMenu.append(copyItem)
+        self.mbarCopyItem = copyItem
         ##
         pasteItem = gtk.MenuItem(_('_Paste'))
         pasteItem.connect('activate', self.mbarPasteClicked)
@@ -219,6 +223,7 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         dupItem = gtk.MenuItem(_('_Duplicate'))
         dupItem.connect('activate', self.duplicateSelectedObj)
         editMenu.append(dupItem)
+        self.mbarDupItem = dupItem
         ####
         viewItem = gtk.MenuItem(_('_View'))
         viewMenu = gtk.Menu()
@@ -559,6 +564,17 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         if newGroup is not None:
             self.showNewGroup(newGroup)
         self.endWaiting()
+    def mbarEditMenuPopup(self, obj):
+        path = self.treev.get_cursor()[0]
+        selected = bool(path)
+        eventSelected = selected and len(path)==2
+        ###
+        self.mbarEditItem.set_sensitive(selected)
+        self.mbarCutItem.set_sensitive(eventSelected)
+        self.mbarCopyItem.set_sensitive(eventSelected)
+        self.mbarDupItem.set_sensitive(selected)
+        ###
+        self.mbarPasteItem.set_sensitive(selected and bool(self.toPasteEvent))
     def mbarEditClicked(self, obj):
         path = self.treev.get_cursor()[0]
         if not path:
