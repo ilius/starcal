@@ -42,7 +42,7 @@ except NameError:
     __file__ = join(dirname(inspect.getfile(scal2)), 'core.py')
 
 
-VERSION = '2.1.1'
+VERSION = '2.1.2'
 APP_NAME = 'starcal2'
 APP_DESC = 'StarCalendar'
 COMMAND = 'starcal2'
@@ -504,6 +504,9 @@ def openUrl(url):
         else:
             return
 
+def init():
+    loadAllPlugins()
+
 ################################################################################
 #################### End of class and function defenitions #####################
 ################################################################################
@@ -605,8 +608,6 @@ if aboutText in ('aboutText', ''):
 weekDayName = (_('Sunday'), _('Monday'), _('Tuesday'), _('Wednesday'), _('Thursday'), _('Friday'), _('Saturday'))
 weekDayNameAb = (_('Sun'), _('Mon'), _('Tue'), _('Wed'), _('Thu'), _('Fri'), _('Sat'))
 
-
-#loadAllPlugins()## FIXME
 
 
 #if firstWeekDayAuto and os.sep=='/':## only if unix

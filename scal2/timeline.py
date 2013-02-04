@@ -78,7 +78,7 @@ boxMaxHeightFactor = 0.9 ## less than 1.0
 
 
 scrollZoomStep = 1.2
-
+keyboardZoomStep = 1.4
 
 unitSteps = (
     (3600, 12),

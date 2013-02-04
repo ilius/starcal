@@ -1,0 +1,11 @@
+*~
+*.py[oc]
+.cache
+.cdtproject
+.cproject
+.project
+.pydevproject
+.metadata
+.settings
+build
+dist
