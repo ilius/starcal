@@ -30,6 +30,8 @@ from scal2.cal_modules import to_jd, jd_to, convert
 
 from scal2.mywidgets.multi_spin import *
 
+from scal2 import ui
+
 from gobject import timeout_add, type_register, signal_new, SIGNAL_RUN_LAST, TYPE_NONE
 import gtk
 from gtk import gdk
