@@ -24,14 +24,12 @@ from os.path import join, split, splitext
 
 from scal2.paths import *
 from scal2.time_utils import getJhmsFromEpoch
-from scal2.cal_modules import jd_to, to_jd, convert, DATE_GREG
-from scal2.plugin_man import HolidayPlugin, BuiltinTextPlugin
-from scal2 import core
+from scal2.cal_modules import jd_to, to_jd, DATE_GREG
 
 
-
-icsTmFormat = '%Y%m%dT%H%M%S'## timezone? (Z%Z or Z%z)
-icsTmFormatPretty = '%Y-%m-%dT%H:%M:%SZ'## timezone? (Z%Z or Z%z)
+icsTmFormat = '%Y%m%dT%H%M%S'
+icsTmFormatPretty = '%Y-%m-%dT%H:%M:%SZ'
+## timezone? (Z%Z or Z%z)
 
 icsHeader = '''BEGIN:VCALENDAR
 VERSION:2.0
@@ -43,18 +41,17 @@ icsWeekDays = ('SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA')
 encodeIcsWeekDayList = lambda weekDayList: ','.join([icsWeekDays[wd] for wd in weekDayList])
 
 
-def getIcsTimeByEpoch(epoch, pretty=False):
-    format = icsTmFormatPretty if pretty else icsTmFormat
-    return strftime(format, gmtime(epoch))
+getIcsTimeByEpoch = lambda epoch, pretty=False: strftime(
+    icsTmFormatPretty if pretty else icsTmFormat,
+    gmtime(epoch)
+)
+    #format = icsTmFormatPretty if pretty else icsTmFormat
     #(jd, hour, minute, second) = getJhmsFromEpoch(epoch)
     #(year, month, day) = jd_to(jd, DATE_GREG)
     #return strftime(format, (year, month, day, hour, minute, second, 0, 0, 0))
 
+getIcsDate = lambda y, m, d, pretty=False: ('%.4d-%.2d-%.2d' if pretty else '%.4d%.2d%.2d') % (y, m, d)
 
-
-def getIcsDate(y, m, d, pretty=False):
-    format = '%.4d-%.2d-%.2d' if pretty else '%.4d%.2d%.2d'
-    return format % (y, m, d)
 
 def getIcsDateByJd(jd, pretty=False):
     (y, m, d) = jd_to(jd, DATE_GREG)
@@ -94,8 +91,8 @@ def convertHolidayPlugToIcs(plug, startJd, endJd, namePostfix=''):
                 isHoliday = True
                 break
         if isHoliday:
-            (gyear, gmonth, gday) = jd_to(jd, DATE_GREG)
-            (gyear_next, gmonth_next, gday_next) = jd_to(jd+1, DATE_GREG)
+            gyear, gmonth, gday = jd_to(jd, DATE_GREG)
+            gyear_next, gmonth_next, gday_next = jd_to(jd+1, DATE_GREG)
             #######
             icsText += 'BEGIN:VEVENT\n'
             icsText += 'CREATED:%s\n'%currentTimeStamp
@@ -106,7 +103,7 @@ def convertHolidayPlugToIcs(plug, startJd, endJd, namePostfix=''):
             icsText += 'TRANSP:TRANSPARENT\n'
             ## TRANSPARENT because being in holiday time, does not make you busy!
             ## see http://www.kanzaki.com/docs/ical/transp.html
-            icsText += 'SUMMARY:تعطیل\n'
+            icsText += 'SUMMARY:%s\n'%_('Holiday')
             icsText += 'END:VEVENT\n'
     icsText += 'END:VCALENDAR\n'
     fname = split(plug.path)[-1]
@@ -136,17 +133,5 @@ def convertBuiltinTextPlugToIcs(plug, startJd, endJd, namePostfix=''):
     fname = split(plug.path)[-1]
     fname = splitext(fname)[0] + '%s.ics'%namePostfix
     open(fname, 'w').write(icsText)
-
-def convertAllPluginsToIcs(startYear, endYear):
-    startJd = to_jd(startYear, 1, 1, DATE_GREG)
-    endJd = to_jd(endYear+1, 1, 1, DATE_GREG)
-    namePostfix = '-%d-%d'%(startYear, endYear)
-    for plug in core.allPlugList:
-        if isinstance(plug, HolidayPlugin):
-            convertHolidayPlugToIcs(plug, startJd, endJd, namePostfix)
-        elif isinstance(plug, BuiltinTextPlugin):
-            convertBuiltinTextPlugToIcs(plug, startJd, endJd, namePostfix)
-        else:
-            print 'Ignoring unsupported plugin %s'%plug.path
 
 

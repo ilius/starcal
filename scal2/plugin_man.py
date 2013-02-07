@@ -21,13 +21,14 @@ APP_NAME = 'starcal2'
 
 import sys, traceback
 from time import strftime
-from os.path import isfile, dirname, join, split, splitext
+from os.path import isfile, dirname, join, split, splitext, isabs
 
 
+from scal2.paths import *
 from scal2.cal_modules import calModulesList, calModuleNames, jd_to, to_jd, convert, DATE_GREG
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName
-from scal2.paths import *
+from scal2.ics import icsTmFormat, icsHeader
 
 try:
     import logging
@@ -41,45 +42,55 @@ def myRaise(File=__file__):
     log.error('File "%s", line %s: %s: %s\n'%(File, i[2].tb_lineno, i[0].__name__, i[1]))
 
 def myRaiseTback(f=None):
-    (typ, value, tback) = sys.exc_info()
+    typ, value, tback = sys.exc_info()
     log.error("".join(traceback.format_exception(typ, value, tback)))
-
-
-
-icsTmFormat = '%Y%m%dT%H%M%SZ'
-icsHeader = '''BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.1//EN
-'''
 
 
 
 class BasePlugin:
     __repr__ = lambda self: 'loadPlugin(%r, enable=%r, show_date=%r)'%(self.path, self.enable, self.show_date)
-    def __init__(self, path, mode=0, desc='', enable=True, show_date=False,
-                 about=None, authors=[], has_config=False, has_image=False, last_day_merge=True):
+    params = {
+        'mode': DATE_GREG,
+        'desc': '',
+        'enable': True,
+        'show_date': False,
+        'about': '',
+        'authors': [],
+        'has_config': False,
+        'has_image': False,
+        'last_day_merge': True,
+    }
+    def __init__(
+        self,
+        path,
+        mode=0,
+        **kwargs
+    ):
         self.external = False
         self.path = path
-        if mode==None or isinstance(mode, int):
-            self.mode = mode
-        else:
+        if isinstance(mode, basestring):
             try:
-                self.mode = calModuleNames.index(mode)
+                mode = calModuleNames.index(mode)
             except ValueError:
                 log.error('Plugin "%s" needs calendar module "%s" that is not loaded!\n'%(path, mode))
-                self.mode = None
-        self.desc = desc
-        self.enable = enable
-        self.show_date = show_date
-        self.about = about
-        self.authors = authors
-        self.has_config = has_config
-        self.has_image = has_image
-        self.last_day_merge = last_day_merge
+                mode = None
+        elif mode==None or isinstance(mode, int):
+            pass
+        else:
+            raise TypeError('invalid mode %r'%mode)
+        ######
+        kwargs.update(locals())
+        for k, v in self.prepareParams(kwargs).items():
+            setattr(self, k, v)
         #########
         self.text = ''
         self.holiday = False
         self.load()
+    def prepareParams(self, d):
+        d2 = {}
+        for k, v in self.params.items():
+            d2[k] = d.get(k, v)
+        return d2
     def clear(self):
         pass
     def load(self):
@@ -87,19 +98,20 @@ class BasePlugin:
     def get_text(self, year, month, day):
         return ''
     def update_cell(self, c):
-        (y, m, d) = c.dates[self.mode]
+        y, m, d = c.dates[self.mode]
         text = ''
         t = self.get_text(y, m, d)
-        if t!='':
+        if t:
             text += t
-        if self.last_day_merge and d>=calModulesList[self.mode].minMonthLen:## and d<=calModulesList[self.mode].maxMonthLen:
-            (ny, nm, nd) = jd_to(c.jd+1, self.mode)
-            if nm>m or ny>y:
+        if self.last_day_merge and d>=calModulesList[self.mode].minMonthLen:
+        ## and d<=calModulesList[self.mode].maxMonthLen:
+            ny, nm, nd = jd_to(c.jd + 1, self.mode)
+            if nm > m or ny > y:
                 nt = self.get_text(y, m, d+1)
-                if nt!='':
+                if nt:
                     text += nt
-        if text!='':
-            if c.pluginsText!='':
+        if text:
+            if c.pluginsText:
                 c.pluginsText += '\n'
             c.pluginsText += text
     def exportToIcs(self, fileName, startJd, endJd):
@@ -108,11 +120,11 @@ class BasePlugin:
         mode = self.mode
         icsText = icsHeader
         for jd in range(startJd, endJd):
-            (myear, mmonth, mday) = jd_to(jd, mode)
+            myear, mmonth, mday = jd_to(jd, mode)
             dayText = self.get_text(myear, mmonth, mday)
             if dayText:
-                (gyear, gmonth, gday) = jd_to(jd, DATE_GREG)
-                (gyear_next, gmonth_next, gday_next) = jd_to(jd+1, DATE_GREG)
+                gyear, gmonth, gday = jd_to(jd, DATE_GREG)
+                gyear_next, gmonth_next, gday_next = jd_to(jd+1, DATE_GREG)
                 #######
                 icsText += 'BEGIN:VEVENT\n'
                 icsText += 'CREATED:%s\n'%currentTimeStamp
@@ -131,7 +143,7 @@ def loadExternalPlugin(path, enable=True, show_date=True):
         #try:
         #    plugIndex.remove(
         return None #?????????????????????????
-        ##plug = BasePlugin(path, 0, 'Failed to load plugin', enable, show_date)
+        ##plug = BasePlugin(path, mode=0, desc='Failed to load plugin', enable=enable, show_date=show_date)
         ##plug.external = True
         ##return plug
     fname = split(path)[1]
@@ -191,8 +203,13 @@ class HolidayPlugin(BasePlugin):
             enable = default_enable
         if show_date==None:
             show_date = default_show_date
-        BasePlugin.__init__(self, path, None, desc, enable, show_date,
-            about, authors, has_config, False)
+        mode = None ## FIXME
+        last_day_merge = True ## FIXME
+        BasePlugin.__init__(
+            self,
+            path,
+            **self.prepareParams(locals())
+        )
         self.holidays = {}
         for modeName in holidays.keys():## .keys() in not neccesery
             try:
@@ -202,16 +219,16 @@ class HolidayPlugin(BasePlugin):
             self.holidays[mode] = holidays[modeName]
     def update_cell(self, c):
         if not c.holiday:
-            for mode in self.holidays.keys():## .keys() in not neccesery
-                (y, m, d) = c.dates[mode]
-                for (hm, hd) in self.holidays[mode]:
+            for mode in self.holidays:
+                y, m, d = c.dates[mode]
+                for hm, hd in self.holidays[mode]:
                     if m==hm:
                         if d==hd:
                             c.holiday = True
                             break
-                        elif d==hd-1 and hd>=calModulesList[mode].minMonthLen:
-                            (ny, nm, nd) = jd_to(c.jd+1, mode)
-                            if nm>m or ny>y:
+                        elif self.last_day_merge and d==hd-1 and hd>=calModulesList[mode].minMonthLen:
+                            ny, nm, nd = jd_to(c.jd+1, mode)
+                            if (ny, nm) > (y, m):
                                 c.holiday = True
                                 break
     def exportToIcs(self, fileName, startJd, endJd):
@@ -220,13 +237,13 @@ class HolidayPlugin(BasePlugin):
         for jd in range(startJd, endJd):
             isHoliday = False
             for mode in self.holidays.keys():
-                (myear, mmonth, mday) = jd_to(jd, mode)
+                myear, mmonth, mday = jd_to(jd, mode)
                 if (mmonth, mday) in self.holidays[mode]:
                     isHoliday = True
                     break
             if isHoliday:
-                (gyear, gmonth, gday) = jd_to(jd, DATE_GREG)
-                (gyear_next, gmonth_next, gday_next) = jd_to(jd+1, DATE_GREG)
+                gyear, gmonth, gday = jd_to(jd, DATE_GREG)
+                gyear_next, gmonth_next, gday_next = jd_to(jd+1, DATE_GREG)
                 #######
                 icsText += 'BEGIN:VEVENT\n'
                 icsText += 'CREATED:%s\n'%currentTimeStamp
@@ -262,135 +279,78 @@ class BuiltinTextPlugin(BasePlugin):
         BasePlugin.__init__(
             self,
             path,
-            mode,
-            desc,
-            enable,
-            show_date,
-            about,
-            authors,
-            has_config,
-            has_image,
+            **self.prepareParams(locals())
         )
     def clear(self):
         self.data = []
     def load(self):
         db = []
-        for j in xrange(12):
-            monthDb=[]
-            for k in xrange(calModulesList[self.mode].maxMonthLen):
+        for j in range(12):
+            monthDb = []
+            for k in range(calModulesList[self.mode].maxMonthLen):
                 monthDb.append('')
             db.append(monthDb)
         ## last item is a dict of dates (y, m, d) and the description of day:
         db.append({})
-        ext = splitext(self.db_path)[1]
-        if ext=='.xml':
-                tmp = parse(self.db_path).documentElement
-                db_xml=tmp.getElementsByTagName('day')
-                for record in db_xml:
-                    for element in record.childNodes:
-                        if element.nodeType != element.TEXT_NODE:
-                            if element.nodeType != element.TEXT_NODE:
-                                name, data = _get_text(element)
-                                if name=='num':
-                                    sp=data.split('/')
-                                    find = True
-                                if name=='desc' and find:
-                                    if len(sp)==2:
-                                        try:
-                                            m = int(sp[0])
-                                            d = int(sp[1])
-                                            db[m-1][d-1] = data
-                                        except:
-                                            myRaise()
-                                    elif len(sp)==3:
-                                        try:
-                                            y = int(sp[0])
-                                            m = int(sp[1])
-                                            d = int(sp[2])
-                                            db[12][(y,m,d)] = data
-                                        except:
-                                            myRaise()
-                                    find = False
-        elif ext=='.titled':## Titled text db (used for Owghat)
-                sep = '\t'
-                lines = open(self.db_path).read().split('\n')
-                year = 0
-                month = 1
-                day = 1
-                heads = lines[0].split('\t')
-                n = len(heads)
-                for line in lines[1:]:
-                    if line=='':
-                        continue
-                    if line[0]=='#':
-                        continue
-                    parts = line.split('\t')
-                    assert len(parts)==n
-                    date = parts[0].split('/')
-                    if len(date)==3:
-                        year = int(date[0])
-                        month = int(date[1])
-                        day = int(date[2])
-                    elif len(date)==2:
-                        month = int(date[0])
-                        day = int(date[1])
-                    elif len(date)==1:
-                        day = int(date[0])
-                    else:
-                        raise IOError, 'Bad line in database %s:\n%s'%(db_file, line)
-                    tp = []
-                    for j in xrange(1, n):#????????????????????
-                        tp.append('%s: %s'%(heads[j], parts[j]))
-                    db[12][(year, month, day)] = sep.join(tp)
-        elif ext in ('.txt', '.db'):
-                sep = '\t'
-                lines = open(self.db_path).read().split('\n')
-                for line in lines[1:]:
-                    if line=='':
-                        continue
-                    if line[0]=='#':
-                        continue
-                    parts = line.split('\t')
-                    if len(parts)<2:
-                        continue
-                    date = parts[0].split('/')
-                    text = '\t'.join(parts[1:])
-                    if len(date)==3:
-                        y = int(date[0])
-                        m = int(date[1])
-                        d = int(date[2])
-                        db[12][(y, m, d)] = text
-                    elif len(date)==2:
-                        m = int(date[0])
-                        d = int(date[1])
-                        db[m-1][d-1] = text
-                    else:
-                        raise IOError, 'Bad line in database %s:\n%s'%(self.db_path, line)
+        ext = splitext(self.db_path)[1].lower()
+        if ext == '.db':
+            sep = '\t'
+            lines = open(self.db_path).read().split('\n')
+            for line in lines[1:]:
+                if line=='':
+                    continue
+                if line[0]=='#':
+                    continue
+                parts = line.split('\t')
+                if len(parts)<2:
+                    continue
+                date = parts[0].split('/')
+                text = '\t'.join(parts[1:])
+                if len(date)==3:
+                    y = int(date[0])
+                    m = int(date[1])
+                    d = int(date[2])
+                    db[12][(y, m, d)] = text
+                elif len(date)==2:
+                    m = int(date[0])
+                    d = int(date[1])
+                    db[m-1][d-1] = text
+                else:
+                    raise IOError, 'Bad line in database %s:\n%s'%(self.db_path, line)
         self.data = db
     def get_text(self, year, month, day):
         db = self.data
-        if db==None:
+        if not db:
             return ''
         mode = self.mode
         text = ''
         #if mode!=primaryMode:
-        #    (year, month, day) = convert(year, month, day, primaryMode, mode)
+        #    year, month, day = convert(year, month, day, primaryMode, mode)
         try:
             text = db[month-1][day-1]
         except:## KeyError or IndexError
             pass
         else:
-            if self.show_date and text!='':
-                text = '%s %s: %s'%(_(day), getMonthName(mode, month), text)
+            if self.show_date and text:
+                text = '%s %s: %s'%(
+                    _(day),
+                    getMonthName(mode, month),
+                    text,
+                )
         try:
             text2 = db[12][(year, month, day)]
         except:## KeyError or IndexError
             pass
         else:
-            if text!='':
+            if text:
                 text += '\n'
             if self.show_date:
-                text2 = '%s %s %s: %s'%(_(day), getMonthName(mode, month, year), _(year), text2)
+                text2 = '%s %s %s: %s'%(
+                    _(day),
+                    getMonthName(mode, month, year),
+                    _(year),
+                    text2,
+                )
 
             text += text2
         return text
@@ -408,7 +368,14 @@ class IcsTextPlugin(BasePlugin):
         self.ymd = None
         self.md = None
         self.all_years = all_years
-        BasePlugin.__init__(self, path, DATE_GREG, desc, enable, show_date)
+        BasePlugin.__init__(
+            self,
+            path,
+            mode=DATE_GREG,
+            desc=desc,
+            enable=enable,
+            show_date=show_date,
+        )
         #self.load()
     def clear(self):
         self.ymd = None
@@ -438,14 +405,18 @@ class IcsTextPlugin(BasePlugin):
                 except IndexError:
                     break
                 if line=='END:VEVENT':
-                    if SUMMARY!='' and DTSTART!=None and DTEND!=None:
+                    if SUMMARY and DTSTART and DTEND:
                         text = SUMMARY
-                        if DESCRIPTION!='':
+                        if DESCRIPTION:
                             text += '\n%s'%DESCRIPTION
                         for (y, m, d) in ymdRange(DTSTART, DTEND):
                             md[(m, d)] = text
                     else:
-                        log.error('unsupported ics event, SUMMARY=%s, DTSTART=%s, DTEND=%s'%(SUMMARY, DTSTART,DTEND))
+                        log.error('unsupported ics event, SUMMARY=%s, DTSTART=%s, DTEND=%s'%(
+                            SUMMARY,
+                            DTSTART,
+                            DTEND,
+                        ))
                     SUMMARY = ''
                     DESCRIPTION = ''
                     DTSTART = None
@@ -493,9 +464,9 @@ class IcsTextPlugin(BasePlugin):
                 except IndexError:
                     break
                 if line=='END:VEVENT':
-                    if SUMMARY!='' and DTSTART!=None and DTEND!=None:
+                    if SUMMARY and DTSTART and DTEND:
                         text = SUMMARY
-                        if DESCRIPTION!='':
+                        if DESCRIPTION:
                             text += '\n%s'%DESCRIPTION
                         for (y, m, d) in ymdRange(DTSTART, DTEND):
                             ymd[(y, m, d)] = text
@@ -538,17 +509,22 @@ class IcsTextPlugin(BasePlugin):
             self.ymd = ymd
             self.md = None
     def get_text(self, y, m, d):
-        if self.ymd!=None:
+        if self.ymd:
             if (y, m, d) in self.ymd:
                 if self.show_date:
                     return '%s %s %s: %s'%(_(d), getMonthName(self.mode, m),
                         _(y), self.ymd[(y, m, d)])
                 else:
                     return self.ymd[(y, m, d)]
-        if self.md!=None:
+        if self.md:
             if (m, d) in self.md:
                 if self.show_date:
-                    return '%s %s %s: %s'%(_(d), getMonthName(self.mode, m), _(y), self.ymd[(y, m, d)])
+                    return '%s %s %s: %s'%(
+                        _(d),
+                        getMonthName(self.mode, m),
+                        _(y),
+                        self.ymd[(y, m, d)],
+                    )
                 else:
                     return self.md[(m, d)]
         return ''
@@ -563,7 +539,7 @@ class IcsTextPlugin(BasePlugin):
 
 
 def loadPlugin(path, **kwargs):
-    if not path.startswith('/'):
+    if not isabs(path):
         path = join(plugDir, path)
     if not isfile(path):
         log.error('error while loading plugin "%s": no such file!\n'%path)
@@ -585,4 +561,7 @@ def loadPlugin(path, **kwargs):
     #    log.error('error while loading plugin "%s": %s: %s\n'%(path, i[0].__name__, i[1]))
     #    ### How to get line number of error in plugin file ????????????????
     #    return None
+
+
+
 

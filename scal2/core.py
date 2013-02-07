@@ -413,6 +413,20 @@ def getDeletedPluginsTable():## returns a list of (i, description)
 
 getAllPlugListRepr = lambda: '[\n' + '\n'.join(['  %r,'%plug for plug in allPlugList]) + '\n]'
 
+def convertAllPluginsToIcs(startYear, endYear):
+    startJd = to_jd(startYear, 1, 1, DATE_GREG)
+    endJd = to_jd(endYear+1, 1, 1, DATE_GREG)
+    namePostfix = '-%d-%d'%(startYear, endYear)
+    for plug in core.allPlugList:
+        if isinstance(plug, HolidayPlugin):
+            convertHolidayPlugToIcs(plug, startJd, endJd, namePostfix)
+        elif isinstance(plug, BuiltinTextPlugin):
+            convertBuiltinTextPlugToIcs(plug, startJd, endJd, namePostfix)
+        else:
+            print 'Ignoring unsupported plugin %s'%plug.path
+
+#########################################################
+
 def restart():## will not return from function
     os.environ['LANG'] = locale_man.sysLangDefault
     restartLow()

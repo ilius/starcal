@@ -25,7 +25,7 @@ from scal2 import core
 from scal2 import ui
 
 import os
-from os.path import join
+from os.path import join, isabs
 from subprocess import Popen
 from time import time
 
@@ -68,13 +68,14 @@ def imageFromFile(path):## the file must exist
 def pixbufFromFile(path):## the file may not exist
     if not path:
         return None
-    if os.sep=='/' and not path.startswith('/'):
+    if not isabs(path):
         path = join(pixDir, path)
     try:
         return gdk.pixbuf_new_from_file(path)
     except:
         myRaise()
         return None
+
 toolButtonFromStock = lambda stock, size: gtk.ToolButton(gtk.image_new_from_stock(stock, size))
 
 def setupMenuHideOnLeave(menu):

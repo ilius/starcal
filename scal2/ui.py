@@ -21,7 +21,7 @@ from time import time
 
 import sys, os, os.path, shutil
 from os import listdir
-from os.path import dirname, join, isfile, isdir, splitext
+from os.path import dirname, join, isfile, isdir, splitext, isabs
 from xml.dom.minidom import parse## remove FIXME
 from subprocess import Popen
 
@@ -485,7 +485,7 @@ class TagIconItem:
             desc = name.capitalize()
         self.desc = _(desc)
         if icon:
-            if not icon.startswith('/'):
+            if not isabs(icon):
                 icon = join(tagsDir, icon)
         else:
             iconTmp = join(tagsDir, name)+'.png'

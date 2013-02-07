@@ -18,7 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 import os, string
-from os.path import join, isfile, isdir
+from os.path import join, isfile, isdir, isabs
 import locale, gettext
 from paths import *
 from scal2.utils import StrOrderedDict, toStr, toUnicode
@@ -104,7 +104,7 @@ class LangData:
         #print code, transPath
         self.transPath = transPath
         ###
-        if not flag.startswith('/'):
+        if not isabs(flag):
             flag = join(pixDir, 'flags', flag)
         self.flag = flag
         self.rtl = rtl

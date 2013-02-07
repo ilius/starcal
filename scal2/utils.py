@@ -112,7 +112,11 @@ def myRaiseTback():
     (typ, value, tback) = sys.exc_info()
     sys.stderr.write("".join(traceback.format_exception(typ, value, tback)))
 
-restartLow = lambda: os.execl(sys.executable, sys.executable, *sys.argv)## will not return from function
+restartLow = lambda: os.execl(
+    sys.executable,
+    sys.executable,
+    *sys.argv
+)## will not return from the function
 
 class StrOrderedDict(dict):
     ## A dict from strings to objects, with ordered keys
@@ -134,12 +138,13 @@ class StrOrderedDict(dict):
             return dict.__getitem__(self, self.keyList[arg])
         elif isinstance(arg, basestring):
             return dict.__getitem__(self, arg)
-        elif isinstance(arg, slice):## ???????????? is not tested
-            return StrOrderedDict([(key, dict.__getitem__(self, key))
-                                                         for key in self.keyList.__getitem__(arg)])
+        elif isinstance(arg, slice):## not tested FIXME
+            return StrOrderedDict([
+                (key, dict.__getitem__(self, key)) \
+                for key in self.keyList.__getitem__(arg)
+            ])
         else:
-            raise ValueError('Bad type argument given to StrOrderedDict.__getitem__: %s'
-                %type(arg))
+            raise ValueError('Bad type argument given to StrOrderedDict.__getitem__: %s'%type(arg))
     def __setitem__(self, arg, value):
         if isinstance(arg, int):
             dict.__setitem__(self, self.keyList[arg], value)
@@ -170,8 +175,7 @@ class StrOrderedDict(dict):
                 dict.__delitem__(self, key)
             self.keyList.__delitem__(arg)
         else:
-            raise ValueError('Bad type argument given to StrOrderedDict.__delitem__: %s'
-                %type(arg))
+            raise ValueError('Bad type argument given to StrOrderedDict.__delitem__: %s'%type(arg))
     pop = lambda self, key: self.__delitem__(key)
     def clear(self):
         self.keyList = []
@@ -191,7 +195,7 @@ class StrOrderedDict(dict):
         else:
             myCmp = lambda k1, k2: cmp(
                 getattr(dict.__getitem__(self, k1), attr),
-                getattr(dict.__getitem__(self, k2), attr)
+                getattr(dict.__getitem__(self, k2), attr),
             )
             self.keyList.sort(myCmp)
     __iter__ = lambda self: self.keyList.__iter__()
@@ -319,7 +323,7 @@ def inputDate(msg):
             date = raw_input(msg)
         except KeyboardInterrupt:
             return
-        if date == 'q':
+        if date.lower() == 'q':
             return
         try:
             return dateDecode(date)
