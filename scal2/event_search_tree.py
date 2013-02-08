@@ -189,6 +189,11 @@ class EventSearchTree:
         while node.left is not None:
             node = node.left
         return node
+    def deleteMinNode(self, node):
+        if node.left is None:
+            return node.right
+        node.left = self.deleteMinNode(node.left)
+        return node
     def deleteStep(self, node, mt, dt, eid):
         if node is None:
             return None
@@ -199,16 +204,15 @@ class EventSearchTree:
             node.right = self.deleteStep(node.right, mt, dt, eid)
         else:## cm == 0
             node.events.delete(dt, eid)
-            if node.events:
-                return node
-            if node.right is None:
-                return node.left
-            if node.left is None:
-                return node.right
-            node2 = node
-            node = self.min(node2.right)
-            node.right = self.deleteStep(node2.right, mt, dt, eid)
-            node.left = node2.left
+            if not node.events:
+                if node.right is None:
+                    return node.left
+                if node.left is None:
+                    return node.right
+                node2 = node
+                node = self.min(node2.right)
+                node.right = self.deleteMinNode(node2.right)
+                node.left = node2.left
         #node.count = self.size(node.left) + self.size(node.right) + 1
         return node
     def delete(self, eid):
