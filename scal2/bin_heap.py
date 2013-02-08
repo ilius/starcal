@@ -7,6 +7,8 @@ class MaxHeap(list):
     add = lambda self, key, value: heappush(self, (-key, value))
     moreThan = lambda self, key: self.moreThanStep(key, 0)
     def moreThanStep(self, key, index):
+        if index < 0:
+            return []
         try:
             item = self[index]
         except IndexError:
