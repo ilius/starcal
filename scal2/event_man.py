@@ -2384,8 +2384,8 @@ class EventGroup(EventContainer):
             node.add(t0, t1, eid)## debug=True
             self.occurCount += 1
     def initOccurrence(self):
-        #self.occur = BtlRootNode(offset=getEpochFromJd(self.endJd), base=4)
-        self.occur = EventSearchTree()
+        self.occur = BtlRootNode(offset=getEpochFromJd(self.endJd), base=4)
+        #self.occur = EventSearchTree()
         #self.occurLoaded = False
         self.occurCount = 0
     def updateOccurrence(self):
