@@ -183,7 +183,7 @@ class EventSearchTree:
         )
     def getDepth(self):
         return self.getDepthNone(self.root)
-    def min(self, node):
+    def getMinNode(self, node):
         if node is None:
             return
         while node.left is not None:
@@ -204,13 +204,13 @@ class EventSearchTree:
             node.right = self.deleteStep(node.right, mt, dt, eid)
         else:## cm == 0
             node.events.delete(dt, eid)
-            if not node.events:
+            if not node.events:## Cleaning tree, not essential
                 if node.right is None:
                     return node.left
                 if node.left is None:
                     return node.right
                 node2 = node
-                node = self.min(node2.right)
+                node = self.getMinNode(node2.right)
                 node.right = self.deleteMinNode(node2.right)
                 node.left = node2.left
         #node.count = self.size(node.left) + self.size(node.right) + 1
