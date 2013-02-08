@@ -55,21 +55,21 @@ class BtlNode:
     overlapScope = lambda self, t0, t1: overlaps(t0, t1, self.s0, self.s1)
     def search(self, t0, t1):## t0 < t1
         '''
-            returns a list of (ev_t0, ev_t1, ev_id) s
+            returns a list of (ev_t0, ev_t1, eid) s
         '''
         ## t0 and t1 are absolute. not relative to the self.offset
         if not self.overlapScope(t0, t1):
             return []
         events = []
-        for ev_rt0, ev_rt1, ev_id in self.events:
+        for ev_rt0, ev_rt1, eid in self.events:
             ev_t0 = ev_rt0 + self.offset
             ev_t1 = ev_rt1 + self.offset
             if overlaps(t0, t1, ev_t0, ev_t1):
-                ## events.append((ev_t0, ev_t1, ev_id))
+                ## events.append((ev_t0, ev_t1, eid))
                 events.append((
                     max(t0, ev_t0),
                     min(t1, ev_t1),
-                    ev_id,
+                    eid,
                     ev_rt1 - ev_rt0,
                 ))
         for child in self.children.values():
@@ -120,13 +120,13 @@ class BtlRootNode:
             return self.left.search(t0, t1)
         else:
             raise RuntimeError
-    def add(self, t0, t1, ev_id):
+    def add(self, t0, t1, eid):
         if self.offset <= t0:
             isRight = True
             node = self.right
         elif t0 < self.offset < t1:
-            self.add(t0, self.offset, ev_id)
-            self.add(self.offset, t1, ev_id)
+            self.add(t0, self.offset, eid)
+            self.add(self.offset, t1, eid)
             return
         elif t1 <= self.offset:
             isRight = False
@@ -150,15 +150,15 @@ class BtlRootNode:
             else:
                 break
         ## now `node` is the node that event should be placed in
-        ev_tuple = (t0-node.offset, t1-node.offset, ev_id)
+        ev_tuple = (t0-node.offset, t1-node.offset, eid)
         node.events.append(ev_tuple)
         try:
-            self.byEvent[ev_id].append((node, ev_tuple))
+            self.byEvent[eid].append((node, ev_tuple))
         except KeyError:
-            self.byEvent[ev_id] = [(node, ev_tuple)]
-    def delete(self, ev_id):
+            self.byEvent[eid] = [(node, ev_tuple)]
+    def delete(self, eid):
         try:
-            refList = self.byEvent.pop(ev_id)
+            refList = self.byEvent.pop(eid)
         except KeyError:
             return 0
         n = len(refList)
@@ -170,9 +170,9 @@ class BtlRootNode:
             #if not node.events:
             #   node.parent.removeChild(node)
         return n
-    def getLastOfEvent(self, ev_id):
+    def getLastOfEvent(self, eid):
         try:
-            node, ev_tuple = self.byEvent[ev_id][-1]
+            node, ev_tuple = self.byEvent[eid][-1]
         except KeyError, IndexError:
             return None
         return ev_tuple[0], ev_tuple[1]
