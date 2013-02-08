@@ -120,7 +120,14 @@ class BtlRootNode:
             return self.left.search(t0, t1)
         else:
             raise RuntimeError
-    def add(self, t0, t1, eid):
+    def add(self, t0, t1, eid, debug=False):
+        if debug:
+            from time import strftime, localtime
+            f = '%F, %T'
+            print 'BtlRootNode.add: %s\t%s'%(
+                strftime(f, localtime(t0)),
+                strftime(f, localtime(t1)),
+            )
         if self.offset <= t0:
             isRight = True
             node = self.right
