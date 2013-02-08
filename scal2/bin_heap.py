@@ -21,7 +21,11 @@ class MaxHeap(list):
             self.moreThanStep(key, 2*index+1) + \
             self.moreThanStep(key, 2*index+2)
     __str__ = lambda self: ' '.join(['%s:%s'%(-k, v) for k, v in self])
-    delete = lambda self, key, value: list.remove(self, (-key, value))
+    def delete(self, key, value):
+        try:
+            list.remove(self, (-key, value))
+        except ValueError:
+            pass
     getAll = lambda self: [(-key, value) for key, value in self]
     def getMax(self):
         if not self:
