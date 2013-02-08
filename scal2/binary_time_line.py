@@ -100,6 +100,12 @@ class BtlNode:
         )
         parent.children[0] = self
         return parent
+    def getDepth(self):
+        if self.children:
+            return 1 + max([c.getDepth() for c in self.children.values()])
+        else:
+            return 0
+
 
 class BtlRootNode:
     def __init__(self, offset=0, base=4):
@@ -183,7 +189,11 @@ class BtlRootNode:
         except KeyError, IndexError:
             return None
         return ev_tuple[0], ev_tuple[1]
-
+    def getDepth(self):
+        return 1 + max(
+            self.left.getDepth(),
+            self.right.getDepth(),
+        )
 
 #if __name__=='__main__':
 #    from scal2 import ui
