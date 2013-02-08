@@ -52,7 +52,7 @@ from scal2.locale_man import tr as _
 
 from scal2.core import rootDir, pixDir, deskDir, myRaise, getMonthName, APP_DESC
 
-core.showInfo()
+#core.showInfo()
 
 from scal2 import event_man
 from scal2 import ui
@@ -527,7 +527,6 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.set_default_size(ui.winWidth, 1)
         try:
             self.move(ui.winX, ui.winY)
-            print (ui.winX, ui.winY)
         except:
             pass
         #############################################################

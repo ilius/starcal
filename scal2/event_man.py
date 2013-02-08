@@ -2401,16 +2401,15 @@ class EventGroup(EventContainer):
             self.occur.add(t0, t1, eid)
         self.occurCount += len(occurList)
         #self.occurLoaded = True
-        #print 'depth=%s \t 2*lg(N)=%.1f'%(
-        #    self.occur.getDepth(),
-        #    2*math.log(len(occurList), 2),
+        #print 'updateOccurrence, id=%s, title=%s, count=%s, time=%s'%(
+        #    self.id,
+        #    self.title,
+        #    self.occurCount,
+        #    time()-stm0,
         #)
-        print 'updateOccurrence, id=%s, title=%s, count=%s, time=%s'%(
-            self.id,
-            self.title,
-            self.occurCount,
-            time()-stm0,
-        )
+        #print 'depth=%s, N=%s'%(self.occur.getDepth(), len(occurList))
+        #print '2*lg(N)=%.1f'%(2*math.log(len(occurList), 2))
+        #print
     def exportToIcsFp(self, fp):
         currentTimeStamp = getIcsTimeByEpoch(time())
         for event in self:
