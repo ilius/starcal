@@ -97,6 +97,8 @@ class EventSearchTree:
         self.root = None
         self.byId = {}
     def addStep(self, node, t0, t1, mt, dt, eid):
+        if t0 >= t1:
+            return node
         if node is None:
             node = Node(mt)
             node.add(t0, t1, dt, eid)
@@ -119,15 +121,25 @@ class EventSearchTree:
         node.updateMinMax()
         #node.updateCount()
         return node
-    def add(self, t0, t1, eid):
-        mt = (t0 + t1)/2.0
-        dt = (t1 - t0)/2.0
-        self.root = self.addStep(self.root, t0, t1, mt, dt, eid)
+    def add(self, t0, t1, eid, debug=False):
+        if debug:
+            from time import strftime, localtime
+            f = '%F, %T'
+            print 'EventSearchTree.add: %s\t%s'%(
+                strftime(f, localtime(t0)),
+                strftime(f, localtime(t1)),
+            )
         try:
-            hp = self.byId[eid]
-        except KeyError:
-            hp = self.byId[eid] = MaxHeap()
-        hp.add(mt, dt)## FIXME
+            mt = (t0 + t1)/2.0
+            dt = (t1 - t0)/2.0
+            self.root = self.addStep(self.root, t0, t1, mt, dt, eid)
+            try:
+                hp = self.byId[eid]
+            except KeyError:
+                hp = self.byId[eid] = MaxHeap()
+            hp.add(mt, dt)## FIXME
+        except:
+            myRaise()
     #def size(self, node='root'):
     #    if node == 'root':
     #        node = self.root

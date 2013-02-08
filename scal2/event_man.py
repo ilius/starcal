@@ -38,7 +38,8 @@ from scal2.time_utils import *
 from scal2.json_utils import *
 from scal2.color_utils import hslToRgb
 from scal2.ics import *
-#from scal2.binary_time_line import BtlRootNode
+
+from scal2.binary_time_line import BtlRootNode
 from scal2.event_search_tree import EventSearchTree
 
 from scal2.cal_modules import calModuleNames, jd_to, to_jd, convert, DATE_GREG
@@ -582,6 +583,12 @@ class DateAndTimeEventRule(DateEventRule):
         jd, h, m, s = getJhmsFromEpoch(epoch)
         self.setJd(jd)
         self.time = (h, m, s)
+    def setJdExact(self, jd):
+        self.setJd(self, jd)
+        self.time = (0, 0, 0)
+    def setDate(self, date):
+        self.date = date
+        self.time = (0, 0, 0)
     getDate = lambda self, mode: convert(self.date[0], self.date[1], self.date[2], self.getMode(), mode)
     getData = lambda self: {
         'date': dateEncode(self.date),
@@ -724,47 +731,67 @@ class DurationEventRule(EventRule):
 @classes.rule.register
 class CycleDaysEventRule(EventRule):
     name = 'cycleDays'
-    desc = _('Cycle Days Number')
+    desc = _('Cycle (Days)')
     need = ('start',)
     conflict = ('date', 'cycleLen')
-    params = ('cycleDays',)
+    params = ('days',)
     def __init__(self, parent):
         EventRule.__init__(self, parent)
-        self.cycleDays = 7
-    getData = lambda self: self.cycleDays
-    def setData(self, cycleDays):
-        self.cycleDays = cycleDays
+        self.days = 7
+    getData = lambda self: self.days
+    def setData(self, days):
+        self.days = days
     def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
-        startJd = max(event['start'].getJd(), core.getJdFromEpoch(startEpoch))
+        startJd = max(event.getStartJd(), core.getJdFromEpoch(startEpoch))
         endJd = core.getJdFromEpoch(endEpoch - epsTm) + 1
-        return JdListOccurrence(range(startJd, endJd, self.cycleDays))
-    getInfo = lambda self: _('Repeat: Every %s Days')%_(self.cycleDays)
+        return JdListOccurrence(range(startJd, endJd, self.days))
+    getInfo = lambda self: _('Repeat: Every %s Days')%_(self.days)
+
+@classes.rule.register
+class CycleWeeksEventRule(EventRule):
+    name = 'cycleWeeks'
+    desc = _('Cycle (Weeks)')
+    need = ('start',)
+    conflict = ('date', 'cycleDays', 'cycleLen')
+    params = ('weeks',)
+    def __init__(self, parent):
+        EventRule.__init__(self, parent)
+        self.weeks = 1
+    getData = lambda self: self.weeks
+    def setData(self, weeks):
+        self.weeks = weeks
+    def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
+        startJd = max(event.getStartJd(), core.getJdFromEpoch(startEpoch))
+        endJd = core.getJdFromEpoch(endEpoch - epsTm) + 1
+        return JdListOccurrence(range(startJd, endJd, self.weeks*7))
+    getInfo = lambda self: _('Repeat: Every %s Weeks')%_(self.weeks)
+
 
 @classes.rule.register
 class CycleLenEventRule(EventRule):
-    name = 'cycleLen'
-    desc = _('Cycle Length (Days & Time)')
+    name = 'cycleLen' ## or 'cycle' FIXME
+    desc = _('Cycle (Days & Time)')
     provide = ('time',)
     need = ('start',)
     conflict = ('date', 'dayTime', 'dayTimeRange', 'cycleDays',)
-    params = ('cycleDays', 'cycleExtraTime',)
+    params = ('days', 'extraTime',)
     def __init__(self, parent):
         EventRule.__init__(self, parent)
-        self.cycleDays = 7
-        self.cycleExtraTime = (0, 0, 0)
+        self.days = 7
+        self.extraTime = (0, 0, 0)
     def getData(self):
         return {
-            'days': self.cycleDays,
-            'extraTime': timeEncode(self.cycleExtraTime),
+            'days': self.days,
+            'extraTime': timeEncode(self.extraTime),
         }
     def setData(self, arg):
-        self.cycleDays = arg['days']
-        self.cycleExtraTime = timeDecode(arg['extraTime'])
+        self.days = arg['days']
+        self.extraTime = timeDecode(arg['extraTime'])
     def calcOccurrence(self, startEpoch, endEpoch, event):
         startEpoch = max(startEpoch, self.parent['start'].getEpoch())
-        cycleSec = self.cycleDays*dayLen + getSecondsFromHms(*self.cycleExtraTime)
+        cycleSec = self.days*dayLen + getSecondsFromHms(*self.extraTime)
         return TimeListOccurrence(startEpoch, endEpoch, cycleSec)
-    getInfo = lambda self: _('Repeat: Every %s Days and %s')%(_(self.cycleDays), timeEncode(self.cycleExtraTime))
+    getInfo = lambda self: _('Repeat: Every %s Days and %s')%(_(self.days), timeEncode(self.extraTime))
 
 @classes.rule.register
 class ExYearEventRule(YearEventRule):
@@ -1291,6 +1318,12 @@ class Event(JsonEventBaseClass, RuleContainer):
             return self['start'].getJd()
         except KeyError:
             return self.parent.startJd
+    def getEndJd(self):## FIXME
+        try:
+            return self['end'].getJd()
+        except KeyError:
+            return self.parent.endJd
+
 
 class SingleStartEndEvent(Event):
     getStartEpoch = lambda self: self['start'].getEpoch()
@@ -1300,13 +1333,8 @@ class SingleStartEndEvent(Event):
     getJd = lambda self: self['start'].getJd()
     setJd = lambda self, jd: self.getAddRule('start').setJd(jd)
     def setJdExact(self, jd):
-        start = self.getAddRule('start')
-        start.setJd(jd)
-        start.time = (0, 0, 0)
-        ###
-        end = self.getAddRule('end')
-        end.setJd(jd+1)
-        end.time = (0, 0, 0)
+        self.getAddRule('start').setJdExact(jd)
+        self.getAddRule('end').setJdExact(jd+1)
     def getIcsData(self, prettyDateTime=False):
         return [
             ('DTSTART', getIcsTimeByEpoch(self.getStartEpoch(), prettyDateTime)),
@@ -1435,9 +1463,7 @@ class TaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from SingleStartE
         else:
             end.setEpoch(newEndEpoch)
     def setJdExact(self, jd):
-        start = self['start']
-        start.setJd(jd)
-        start.time = (0, 0, 0)
+        self.getAddRule('start').setJdExact(jd)
         self.setEnd('duration', 24, 3600)
     def copyFrom(self, other, *a, **kw):
         Event.copyFrom(self, other, *a, **kw)
@@ -1469,13 +1495,9 @@ class AllDayTaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from Single
     requiredRules = ('start',)
     supportedRules = ('start', 'end', 'duration')
     def setJd(self, jd):
-        rule = self.getAddRule('start')
-        rule.setJd(jd)
-        rule.time = (0, 0, 0)
+        self.getAddRule('start').setJdExact(jd)
     def setStartDate(self, date):
-        rule = self.getAddRule('start')
-        rule.date = date
-        rule.time = (0, 0, 0)
+        self.getAddRule('start').setDate(date)
     def setJdExact(self, jd):
         self.setJd(jd)
         self.setEnd('duration', 1)
@@ -1493,8 +1515,7 @@ class AllDayTaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from Single
         self.removeSomeRuleTypes('end', 'duration')
         if endType=='date':
             rule = EndEventRule(self)
-            rule.date = value
-            rule.time = (0, 0, 0)
+            rule.setDate(value)
         elif endType=='duration':
             rule = DurationEventRule(self)
             rule.value = value
@@ -1532,9 +1553,7 @@ class AllDayTaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from Single
         raise ValueError('no end date neither duration specified for task')
     getEndEpoch = lambda self: getEpochFromJd(self.getEndJd())
     #def setEndJd(self, jd):
-    #    rule = self.getAddRule('end')
-    #    rule.setJd(jd)
-    #    rule.time = (0, 0, 0)
+    #    self.getAddRule('end').setJdExact(jd)
     def setEndJd(self, jd):
         try:
             end = self['end']
@@ -1600,7 +1619,7 @@ class YearlyEvent(Event):
     desc = _('Yearly Event')
     iconName = 'birthday'
     requiredRules = ('month', 'day')
-    supportedRules = ('month', 'day', 'start')
+    supportedRules = requiredRules + ('start',)
     jsonParams = Event.jsonParams + ('startYear', 'month', 'day')
     getMonth = lambda self: self['month'].values[0]
     setMonth = lambda self, month: self.getAddRule('month').setData(month)
@@ -1739,6 +1758,15 @@ class YearlyEvent(Event):
         self.mode = DATE_GREG
         return True
 
+@classes.event.register
+class WeeklyEvent(Event):
+    name = 'weekly'
+    desc = _('Weekly Event')
+    iconName = ''
+    requiredRules = ('start', 'end', 'cycleWeeks', 'dayTimeRange')
+    supportedRules = requiredRules
+
+
 #@classes.event.register
 #class UniversityCourseOwner(Event):## FIXME
 
@@ -1857,9 +1885,7 @@ class LifeTimeEvent(SingleStartEndEvent):
     #def setDefaults(self):
     #    self['start'].date = ...
     def setJd(self, jd):
-        start = self.getAddRule('start')
-        start.setJd(jd)
-        start.time = (0, 0, 0)
+        self.getAddRule('start').setJdExact(jd)
 
 
 
@@ -2021,7 +2047,16 @@ class EventContainer(JsonEventBaseClass):
 class EventGroup(EventContainer):
     name = 'group'
     desc = _('Event Group')
-    acceptsEventTypes = ('yearly', 'dailyNote', 'task', 'allDayTask', 'lifeTime', 'largeScale', 'custom')
+    acceptsEventTypes = (
+        'yearly',
+        'dailyNote',
+        'task',
+        'allDayTask',
+        'weekly',
+        'lifeTime',
+        'largeScale',
+        'custom',
+    )
     canConvertTo = ()
     actions = []## [('Export to ICS', 'exportToIcs')]
     eventActions = [] ## FIXME
@@ -2346,7 +2381,7 @@ class EventGroup(EventContainer):
         eid = event.id
         node.delete(eid)
         for t0, t1 in event.calcOccurrenceAll().getTimeRangeList():
-            node.add(t0, t1, eid)
+            node.add(t0, t1, eid)## debug=True
             self.occurCount += 1
     def initOccurrence(self):
         #self.occur = BtlRootNode(offset=getEpochFromJd(self.endJd), base=4)
@@ -2532,7 +2567,10 @@ class NoteBook(EventGroup):
     name = 'noteBook'
     desc = _('Note Book')
     acceptsEventTypes = ('dailyNote',)
-    canConvertTo = ('yearly', 'taskList')
+    canConvertTo = (
+        'yearly',
+        'taskList',
+    )
     #actions = EventGroup.actions + []
     sortBys = EventGroup.sortBys + (
         ('date', _('Date'), True),

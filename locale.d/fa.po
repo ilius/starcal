@@ -888,6 +888,15 @@ msgid "Yearly Events Group"
 msgstr ""
 "گروه رویدادهای سالیانه"
 
+msgid "Weekly Event"
+msgstr ""
+"رویداد هفتگی"
+
+msgid "Repeat Every "
+msgstr ""
+"تکرار هر "
+
+
 msgid "Life Time Event"
 msgstr ""
 "رویداد زیست زمان"
@@ -993,11 +1002,15 @@ msgstr ""
 "پایان"
 
 
-msgid "Cycle Days Number"
+msgid "Cycle (Days)"
 msgstr ""
-"تعداد روزهای دوره"
+"طول دوره (روزها)"
 
-msgid "Cycle Length (Days & Time)"
+msgid "Cycle (Weeks)"
+msgstr ""
+"طول دوره (هفته‌ها)"
+
+msgid "Cycle (Days & Time)"
 msgstr ""
 "طول دوره (روزها و زمان)"
 
@@ -1033,6 +1046,15 @@ msgstr ""
 msgid "Provided by"
 msgstr ""
 "تأمین شده توسط"
+
+msgid "Repeat: Every %s Days"
+msgstr ""
+"تکرار: هر %s روز"
+
+msgid "Repeat: Every %s Weeks"
+msgstr ""
+"تکرار: هر %s هفته"
+
 
 msgid "Repeat: Every %s Days and %s"
 msgstr ""
