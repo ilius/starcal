@@ -40,6 +40,7 @@ from gtk import gdk
 
 from scal2.ui_gtk.drawing import *
 from scal2.ui_gtk.utils import pixbufFromFile, DirectionComboBox
+from scal2.ui_gtk.color_utils import colorize
 from scal2.ui_gtk.mywidgets import MyFontButton
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
 from scal2.ui_gtk.mywidgets.font_family_combo import FontFamilyCombo
@@ -147,9 +148,10 @@ class Column(gtk.Widget, ColumnBase):
             fontSize = ui.getFont()[-1] ## FIXME
             font = [fontName, False, False, fontSize] if fontName else None
         for i in range(7):
+            text = textList[i]
             layout = newTextLayout(
                 self,
-                text=textList[i],
+                text=text,
                 font=font,
                 maxSize=(itemW, rowH),
                 maximizeScale=ui.wcalTextSizeScale,
@@ -259,7 +261,10 @@ class EventsTextColumn(Column):
     desc = _('Events Text')
     expand = True
     customizeFont = True
-    params = ('ui.wcalEventsTextShowDesc',)
+    params = (
+        'ui.wcalEventsTextShowDesc',
+        'ui.wcalEventsTextColorize',
+    )
     def __init__(self, wcal):
         Column.__init__(self, wcal)
         self.connect('expose-event', self.onExposeEvent)
@@ -272,16 +277,30 @@ class EventsTextColumn(Column):
         check.connect('clicked', self.descCheckClicked)
         self.optionsWidget.pack_start(hbox, 0, 0)
         ##
+        hbox = gtk.HBox()
+        check = gtk.CheckButton(_('Colorize'))
+        check.set_active(ui.wcalEventsTextColorize)
+        hbox.pack_start(check, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        check.connect('clicked', self.colorizeCheckClicked)
+        self.optionsWidget.pack_start(hbox, 0, 0)
+        ##
         self.optionsWidget.show_all()
     def descCheckClicked(self, check):
         ui.wcalEventsTextShowDesc = check.get_active()
+        self.queue_draw()
+    def colorizeCheckClicked(self, check):
+        ui.wcalEventsTextColorize = check.get_active()
         self.queue_draw()
     def onExposeEvent(self, widget=None, event=None):
         cr = self.window.cairo_create()
         self.drawBg(cr)
         self.drawTextList(
             cr,
-            [self.wcal.status[i].getEventText(ui.wcalEventsTextShowDesc) for i in range(7)]
+            [self.wcal.status[i].getEventText(
+                showDesc=ui.wcalEventsTextShowDesc,
+                colorizeFunc=colorize if ui.wcalEventsTextColorize else None,
+            ) for i in range(7)],
         )
 
 class EventsIconColumn(Column):

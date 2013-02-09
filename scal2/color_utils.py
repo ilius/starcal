@@ -60,6 +60,7 @@ def getRandomHueColor(s, l):
     h = random.uniform(0, 360)
     return hslToRgb(h, s, l)
 
-#htmlColorToRgb = lambda hc: (int(hc[1:3], 16), int(hc[3:5], 16), int(hc[5:7], 16))
+htmlColorToRgb = lambda hc: (int(hc[1:3], 16), int(hc[3:5], 16), int(hc[5:7], 16))
 
+rgbToHtmlColor = lambda r, g, b: '#%.2x%.2x%.2x'%(r, g, b)
 

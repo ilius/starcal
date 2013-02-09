@@ -1606,6 +1606,10 @@ msgid "Show Description"
 msgstr ""
 "نمایش توضیح"
 
+msgid "Colorize"
+msgstr ""
+"رنگی کردن"
+
 msgid "Show Date"
 msgstr ""
 "نمایش تاریخ"

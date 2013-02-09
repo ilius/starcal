@@ -3077,6 +3077,7 @@ def getDayOccurrenceData(curJd, groups):
             continue
         #print '\nupdateData: checking event', event.summary
         gid = group.id
+        color = group.color
         for epoch0, epoch1, eid, odt in group.occur.search(getEpochFromJd(curJd), getEpochFromJd(curJd+1)):
             event = group[eid]
             ###
@@ -3097,6 +3098,7 @@ def getDayOccurrenceData(curJd, groups):
                     'time': timeStr,
                     'text': text,
                     'icon': event.icon,
+                    'color': color,
                     'ids': (gid, eid),
                 }
             ))
