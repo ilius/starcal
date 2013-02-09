@@ -46,6 +46,7 @@ from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinBut
 from scal2.ui_gtk.mywidgets.font_family_combo import FontFamilyCombo
 from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
+from scal2.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
 from scal2.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox
 from scal2.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
 
@@ -127,6 +128,12 @@ class Column(gtk.Widget, ColumnBase):
             if self.showCursor and c.jd == ui.cell.jd:
                 drawCursorBg(cr, 0, y0, w, rowH)
                 fillColor(cr, ui.cursorBgColor)
+        if ui.wcalGrid:
+            w = self.allocation.width
+            h = self.allocation.height
+            setColor(cr, ui.wcalGridColor)
+            cr.rectangle(w-1, 0, 1, h)
+            cr.fill()
     def drawCursorFg(self, cr):
         w = self.allocation.width
         h = self.allocation.height
@@ -530,6 +537,13 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
 class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase):
     _name = 'weekCal'
     desc = _('Week Calendar')
+    params = (
+        'ui.wcalHeight',
+        'ui.wcalTextSizeScale',
+        'ui.wcalItems',
+        'ui.wcalGrid',
+        'ui.wcalGridColor',
+    )
     def __init__(self):
         gtk.HBox.__init__(self)
         self.set_property('height-request', ui.wcalHeight)
@@ -582,6 +596,25 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase):
         hbox.pack_start(gtk.Label(_('Text Size Scale')), 0, 0)
         hbox.pack_start(spin, 0, 0)
         self.optionsWidget.pack_start(hbox, 0, 0)
+        ########
+        hbox = gtk.HBox(spacing=3)
+        ####
+        item = CheckPrefItem(ui, 'wcalGrid', _('Grid'))
+        item.updateWidget()
+        gridCheck = item.widget
+        hbox.pack_start(gridCheck, 0, 0)
+        gridCheck.item = item
+        ####
+        colorItem = ColorPrefItem(ui, 'wcalGridColor', True)
+        colorItem.updateWidget()
+        hbox.pack_start(colorItem.widget, 0, 0)
+        gridCheck.colorb = colorItem.widget
+        gridCheck.connect('clicked', self.gridCheckClicked)
+        colorItem.widget.item = colorItem
+        colorItem.widget.connect('color-set', self.gridColorChanged)
+        colorItem.widget.set_sensitive(ui.wcalGrid)
+        ####
+        self.optionsWidget.pack_start(hbox, 0, 0)
         ###
         self.optionsWidget.show_all()
         #####
@@ -594,15 +627,16 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase):
     def textSizeScaleSpinChanged(self, spin):
         ui.wcalTextSizeScale = spin.get_value()
         self.queue_draw()
+    def gridCheckClicked(self, checkb):
+        checkb.colorb.set_sensitive(checkb.get_active())
+        checkb.item.updateVar()
+        self.queue_draw()
+    def gridColorChanged(self, colorb):
+        colorb.item.updateVar()
+        self.queue_draw()
     def updateVars(self):
         CustomizableCalBox.updateVars(self)
         ui.wcalItems = self.getItemsData()
-    def confStr(self):
-        text = ColumnBase.confStr(self)
-        text += 'ui.wcalHeight=%s\n'%repr(ui.wcalHeight)
-        text += 'ui.wcalTextSizeScale=%s\n'%repr(ui.wcalTextSizeScale)
-        text += 'ui.wcalItems=%s\n'%repr(ui.wcalItems)
-        return text
     def updateStatus(self):
         self.status = getCurrentWeekStatus()
     def onDateChange(self, *a, **kw):
