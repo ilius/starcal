@@ -610,7 +610,7 @@ cursorBgColor = (41, 41, 41, 255)
 cursorDiaFactor = 0.15
 cursorRoundingFactor = 0.50
 mcalGrid = True
-gridColor = (255, 252, 0, 82)
+mcalGridColor = (255, 252, 0, 82)
 ##########
 mcalLeftMargin = 30
 mcalTopMargin = 30
@@ -627,6 +627,8 @@ wcalEventsTextShowDesc = True
 wcalEventsTextColorize = True
 wcalDaysOfMonthColWidth = 30
 wcalDaysOfMonthColDir = 'ltr' ## ltr/rtl/auto
+wcalGrid = False
+wcalGridColor = (255, 252, 0, 82)
 ####################
 boldYmLabel = True ##Apply in Pref FIXME
 showYmArrows = True ##Apply in Pref FIXME
@@ -754,6 +756,11 @@ if os.path.isfile(confPathLive):
     except:
         myRaise(__file__)
 ################################
+
+try:
+    mcalGridColor = wcalGridColor = gridColor
+except NameError:
+    pass
 
 try:
     version

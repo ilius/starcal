@@ -185,6 +185,9 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         optionsWidget.pack_start(frame, 0, 0)
         self.updateTypeParamsWidget()## FIXME
         ####
+        
+        
+        ####
         self.initVars(optionsWidget=optionsWidget)
         ######################
         #self.kTime = 0
@@ -446,7 +449,7 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         ################ end of drawing cells
         ##### drawGrid
         if ui.mcalGrid:
-            setColor(cr, ui.gridColor)
+            setColor(cr, ui.mcalGridColor)
             for i in xrange(7):
                 cr.rectangle(self.cx[i]+rtlSgn()*self.dx/2.0, 0, 1, h)
                 cr.fill()

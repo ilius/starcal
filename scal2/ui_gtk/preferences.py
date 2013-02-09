@@ -802,7 +802,7 @@ class PrefDialog(gtk.Dialog):
         cbGrid = item.widget
         hbox.pack_start(cbGrid, 0, 0)
         ########
-        item = ColorPrefItem(ui, 'gridColor', True)
+        item = ColorPrefItem(ui, 'mcalGridColor', True)
         self.uiPrefItems.append(item)
         hbox.pack_start(item.widget, 0, 0)
         cbGrid.connect('clicked', lambda wid: item.widget.set_sensitive(wid.get_active()))
