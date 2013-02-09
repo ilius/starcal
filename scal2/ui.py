@@ -609,7 +609,7 @@ cursorOutColor = (213, 207, 0, 255)
 cursorBgColor = (41, 41, 41, 255)
 cursorDiaFactor = 0.15
 cursorRoundingFactor = 0.50
-mcalGrid = True
+mcalGrid = False
 mcalGridColor = (255, 252, 0, 82)
 ##########
 mcalLeftMargin = 30

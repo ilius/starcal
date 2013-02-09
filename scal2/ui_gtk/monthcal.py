@@ -41,9 +41,10 @@ from scal2.ui_gtk.mywidgets import MyFontButton, MyColorButton
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
 from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
+from scal2.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
 from scal2.ui_gtk import preferences
 from scal2.ui_gtk.customize import CustomizableCalObj
-from scal2.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
+
 
 #from scal2.ui_gtk import desktop
 #from scal2.ui_gtk import wallpaper
@@ -205,6 +206,7 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         gridCheck.connect('clicked', self.gridCheckClicked)
         colorItem.widget.item = colorItem
         colorItem.widget.connect('color-set', self.gridColorChanged)
+        colorItem.widget.set_sensitive(ui.mcalGrid)
         ####
         optionsWidget.pack_start(hbox, 0, 0)
         ########
