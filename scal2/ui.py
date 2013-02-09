@@ -246,7 +246,6 @@ class Cell:## status and information of a cell
                 iconList.append(icon)
         return iconList
     def getEventText(self, showDesc=True, colorizeFunc=None):
-        
         lines = []
         for item in self.eventsData:
             line = ''.join(item['text']) if showDesc else item['text'][0]
