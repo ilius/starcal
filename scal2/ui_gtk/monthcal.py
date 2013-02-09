@@ -269,28 +269,27 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
             cr = self.window.cairo_create()
             #cr.set_line_width(0)#??????????????
             #cr.scale(0.5, 0.5)
-        """
         wx = ui.winX
         wy = ui.winY
         if ui.bgUseDesk:## FIXME
             ### ????????????????? Need for mainWin !!!!!
             coord = self.translate_coordinates(self, wx, wy)
             if len(coord)==2:
+                from scal2.ui_gtk import desktop
                 (x0, y0) = coord
                 try:
                     bg = desktop.get_wallpaper(x0, y0, w, h)
                 except:
                     print 'Could not get wallpaper!'
                     myRaise(__file__)
-                    os.popen('gnome-settings-daemon')
+                    #os.popen('gnome-settings-daemon')
                     ui.bgUseDesk = False ##??????????????????
                     #self.prefDialog.checkDeskBg.set_active(False)##??????????????????
                 else:
                     cr.set_source_pixbuf(bg, 0, 0)
                     cr.paint()
-            else:
-                print coord
-        """
+            #else:
+            #    print coord
         cr.rectangle(0, 0, w, h)
         fillColor(cr, ui.bgColor)
         status = getCurrentMonthStatus()

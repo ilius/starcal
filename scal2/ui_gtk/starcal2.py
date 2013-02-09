@@ -738,8 +738,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ###
         (wx, wy) = self.get_position()
         (ww, wh) = self.get_size()
-        #if ui.bgUseDesk and max(abs(ui.winX-wx), abs(ui.winY-wy))>1:## FIXME
-        #    self.mcal.queue_draw()
+        if ui.bgUseDesk and max(abs(ui.winX-wx), abs(ui.winY-wy))>1:## FIXME
+            self.queue_draw()
         if self.get_property('visible'):
             (ui.winX, ui.winY) = (wx, wy)## FIXME
         ui.winWidth = ww
