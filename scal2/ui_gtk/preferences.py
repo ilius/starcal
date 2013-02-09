@@ -253,14 +253,6 @@ class PrefDialog(gtk.Dialog):
         hbox.pack_start(gtk.Label(''), 1, 1)
         ###
         vbox.pack_start(hbox, 0, 0)
-        #############
-        item = RadioHListPrefItem(ui, 'dragIconCell',
-            (_('Date String'), _('Cell Image')),
-            _('Drag & Drop Icon'))
-        self.uiPrefItems.append(item)
-        set_tooltip(item.radios[0], 'yyyy/mm/dd')
-        item.set(0)
-        vbox.pack_start(item.widget, 0, 0)
         ################################ Tab 3 (Advanced) ###########################################
         vbox = gtk.VBox()
         vbox.label = _('A_dvanced')

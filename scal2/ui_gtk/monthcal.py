@@ -567,66 +567,6 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         return False
     def dragBegin(self, obj, context):
         ui.focusTime = time()
-        if ui.dragIconCell:
-            (xPos, yPos) = ui.cell.monthPos
-            x = int(self.cx[xPos]-self.dx/2.0+1)
-            y = int(self.cy[yPos]-self.dy/2.0+1)
-            w = int(self.dx)
-            h = int(self.dy)
-            (px, py) = self.pointer
-            pmap = gdk.Pixmap(self.window, w, h, self.window.get_depth())
-            #print self.window.get_visual().depth, self.window.get_depth(), pmap.get_depth(), pmap.get_visual().depth
-            pmap.set_colormap(self.window.get_colormap())
-            pmap.draw_drawable(pmap.new_gc(), self.window, x, y, 0, 0, w, h)## a black thin outline FIXME
-            """cr = pmap.cairo_create()
-            cr.set_line_width(0)#??????????????
-            cr.rectangle(0, 0, w, h)
-            fillColor(cr, ui.cursorOutColor)"""
-            pbuf = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, w , h)
-            #pbuf.get_from_drawable(self.window,
-            #    self.get_screen().get_system_colormap() , x, y, 0, 0, w, h)
-            pbuf.get_from_drawable(self.window, self.window.get_colormap() , x, y, 0, 0, w, h)
-            ########## Making Cursor Mask
-            mask = gdk.Pixmap(None, w, h, 1)
-            cr = mask.cairo_create()
-            cr.rectangle(0, 0, w, h)
-            cr.set_operator(cairo.OPERATOR_CLEAR)
-            cr.fill()
-            cr.set_operator(cairo.OPERATOR_SOURCE)
-            if ui.cursorR==0:
-                cr.rectangle(0, 0, w, h)
-                cr.fill()
-                return mask
-            ## Circular Rounded
-            ro = min(ui.cursorR, w/2, h/2)
-            ## Outline:
-            x0 = y0 = 0
-            #e = 0.2
-            #x0 = y0 = e
-            #w -= 2*x0
-            #h -= 2*y0
-            ####
-            cr.move_to(x0+ro, y0)
-            cr.line_to(x0+w-ro, y0)
-            cr.arc(x0+w-ro, y0+ro, ro, 3*pi/2, 2*pi) ## up right corner
-            cr.line_to(x0+w, y0+h-ro)
-            cr.arc(x0+w-ro, y0+h-ro, ro, 0, pi/2) ## down right corner
-            cr.line_to(x0+ro, y0+h)
-            cr.arc(x0+ro, y0+h-ro, ro, pi/2, pi) ## down left corner
-            cr.line_to(x0, y0+ro)
-            cr.arc(x0+ro, y0+ro, ro, pi, 3*pi/2) ## up left corner
-            #####
-            cr.close_path()
-            cr.fill()
-            ############ End of Making Cursor Mask
-            #context.set_icon_pixmap(self.get_screen().get_system_colormap(), pmap, mask, px-x, py-y)
-            #pbuf.add_alpha(True, '0', '0', '0')
-            #context.set_icon_pixbuf(pbuf, px-x, py-y)
-            pmap = gdk.Pixmap(None, w, h, 24) ##???????????????????
-            pmap.draw_pixbuf(pmap.new_gc(), pbuf, 0, 0, 0, 0)
-            ##, width=-1, height=-1, dither=gtk.gdk.RGB_DITHER_NORMAL, x_dither=0, y_dither=0)
-            context.set_icon_pixmap(pmap.get_colormap(), pmap, mask, px-x, py-y)
-            return True
         #############################################
         text = '%.2d/%.2d/%.2d'%ui.cell.dates[ui.dragGetMode]
         textLay = newTextLayout(self, text)

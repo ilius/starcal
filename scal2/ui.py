@@ -662,7 +662,6 @@ eventViewMaxHeight = 200
 dragGetMode = core.DATE_GREG  ##Apply in Pref - FIXME
 #dragGetDateFormat = '%Y/%m/%d'
 dragRecMode = core.DATE_GREG  ##Apply in Pref - FIXME
-dragIconCell = False
 ####################
 monthRMenuNum = True
 #monthRMenu
