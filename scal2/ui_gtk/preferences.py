@@ -144,19 +144,7 @@ class PrefDialog(gtk.Dialog):
         self.prefPages.append(vbox)
         ########
         hbox = gtk.HBox(spacing=2)
-        ########
-        item = CheckPrefItem(ui, 'mcalGrid', _('Grid'))
-        self.uiPrefItems.append(item)
-        cbGrid = item.widget
-        hbox.pack_start(cbGrid, 0, 0)
-        ########
-        item = ColorPrefItem(ui, 'mcalGridColor', True)
-        self.uiPrefItems.append(item)
-        hbox.pack_start(item.widget, 0, 0)
-        cbGrid.connect('clicked', lambda wid: item.widget.set_sensitive(wid.get_active()))
-        #item.widget.set_sensitive(ui.mcalGrid)## FIXME
-        ########
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        ###
         defaultItem = CheckPrefItem(ui, 'fontUseDefault', _('Use system font'), gfontEncode(ui.fontDefault))
         self.uiPrefItems.append(defaultItem)
         hbox.pack_start(defaultItem.widget, 0, 0)

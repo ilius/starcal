@@ -43,6 +43,7 @@ from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk import preferences
 from scal2.ui_gtk.customize import CustomizableCalObj
+from scal2.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
 
 #from scal2.ui_gtk import desktop
 #from scal2.ui_gtk import wallpaper
@@ -107,6 +108,14 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
     _name = 'monthCal'
     desc = _('Month Calendar')
     cx = [0, 0, 0, 0, 0, 0, 0]
+    params = (
+        'ui.mcalHeight',
+        'ui.mcalLeftMargin',
+        'ui.mcalTopMargin',
+        'ui.mcalTypeParams',
+        'ui.mcalGrid',
+        'ui.mcalGridColor',
+    )
     def heightSpinChanged(self, spin):
         v = spin.get_value()
         self.set_property('height-request', v)
@@ -117,13 +126,16 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
     def topMarginSpinChanged(self, spin):
         ui.mcalTopMargin = spin.get_value()
         self.queue_draw()
-    def confStr(self):
-        text = CustomizableCalObj.confStr(self)
-        text += 'ui.mcalHeight=%r\n'%ui.mcalHeight
-        text += 'ui.mcalLeftMargin=%r\n'%ui.mcalLeftMargin
-        text += 'ui.mcalTopMargin=%r\n'%ui.mcalTopMargin
-        text += 'ui.mcalTypeParams=%r\n'%ui.mcalTypeParams
-        return text
+    def gridCheckClicked(self, checkb):
+        checkb.colorb.set_sensitive(checkb.get_active())
+        checkb.item.updateVar()
+        self.queue_draw()
+    def gridColorChanged(self, colorb):
+        colorb.item.updateVar()
+        self.queue_draw()
+    #def confStr(self):
+    #    text = CustomizableCalObj.confStr(self)
+    #    return text
     def updateTypeParamsWidget(self):
         vbox = self.typeParamsVbox
         for child in vbox.get_children():
@@ -177,16 +189,31 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         ##
         hbox.pack_start(gtk.Label(''), 1, 1)
         optionsWidget.pack_start(hbox, 0, 0)
+        ########
+        hbox = gtk.HBox(spacing=3)
         ####
+        item = CheckPrefItem(ui, 'mcalGrid', _('Grid'))
+        item.updateWidget()
+        gridCheck = item.widget
+        hbox.pack_start(gridCheck, 0, 0)
+        gridCheck.item = item
+        ####
+        colorItem = ColorPrefItem(ui, 'mcalGridColor', True)
+        colorItem.updateWidget()
+        hbox.pack_start(colorItem.widget, 0, 0)
+        gridCheck.colorb = colorItem.widget
+        gridCheck.connect('clicked', self.gridCheckClicked)
+        colorItem.widget.item = colorItem
+        colorItem.widget.connect('color-set', self.gridColorChanged)
+        ####
+        optionsWidget.pack_start(hbox, 0, 0)
+        ########
         frame = gtk.Frame(_('Calendars'))
         self.typeParamsVbox = gtk.VBox()
         frame.add(self.typeParamsVbox)
         frame.show_all()
         optionsWidget.pack_start(frame, 0, 0)
         self.updateTypeParamsWidget()## FIXME
-        ####
-        
-        
         ####
         self.initVars(optionsWidget=optionsWidget)
         ######################
