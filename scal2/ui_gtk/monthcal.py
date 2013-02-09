@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2009-2011 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
+# Copyright (C) 2009-2013 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -37,14 +37,15 @@ import gtk
 from gtk import gdk
 
 from scal2.ui_gtk.drawing import *
+
 from scal2.ui_gtk.mywidgets import MyFontButton, MyColorButton
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
 from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
+from scal2.ui_gtk.cal_base import CalBase
 from scal2.ui_gtk import preferences
 from scal2.ui_gtk.customize import CustomizableCalObj
-
 
 #from scal2.ui_gtk import desktop
 #from scal2.ui_gtk import wallpaper
@@ -105,7 +106,7 @@ class McalTypeParamBox(gtk.HBox):
         ui.mcalTypeParams[self.index] = self.get()
         self.mcal.queue_draw()
 
-class MonthCal(gtk.Widget, CustomizableCalObj):
+class MonthCal(gtk.Widget, CustomizableCalObj, CalBase):
     _name = 'monthCal'
     desc = _('Month Calendar')
     cx = [0, 0, 0, 0, 0, 0, 0]
@@ -221,37 +222,7 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
         ######################
         #self.kTime = 0
         ######################
-        self.drag_source_set(
-            gdk.MODIFIER_MASK,
-            (
-                ('', 0, 0),
-            ),
-            gdk.ACTION_COPY,
-        )
-        self.drag_source_add_text_targets()
-        self.connect('drag-data-get', self.dragDataGet)
-        self.connect('drag-begin', self.dragBegin)
-        self.connect('drag-data-received', self.dragDataRec)
-        self.drag_dest_set(
-            gdk.MODIFIER_MASK,
-            (
-                ('', 0, 0),
-                ('application/x-color', 0, 0),
-            ),
-            gdk.ACTION_COPY,
-        )
-        self.drag_dest_add_text_targets()
-        self.drag_dest_add_uri_targets()
-        """
-        ## ACTION_MOVE ?????????????????????
-        ## if source ACTION was ACTION_COPY, calendar recieves its own dragged day
-        ## just like gnome-calendar-applet (but it seems not a logical behaviar)
-        #self.drag_source_add_uri_targets()#???????
-        ##self.connect('drag-end', self.dragCalEnd)
-        ##self.connect('drag-drop', self.dragCalDrop)
-        ##self.connect('drag-failed', self.dragCalFailed)
-        #self.connect('drag-leave', self.dragLeave)
-        """
+        self.defineDragAndDrop()
         ######################
         self.connect('expose-event', self.drawAll)
         self.connect('button-press-event', self.buttonPress)
@@ -486,121 +457,6 @@ class MonthCal(gtk.Widget, CustomizableCalObj):
                 cr.rectangle(0, self.cy[i]-self.dy/2.0, w, 1)
                 cr.fill()
         return False
-    def dragDataGet(self, obj, context, selection, target_id, etime):
-        text = '%.2d/%.2d/%.2d'%ui.cell.dates[ui.dragGetMode]
-        #selection.set(selection.target, 8, text)
-        selection.set_text(text)
-        return True
-    def dragLeave(self, obj, context, etime):
-        #print 'dragLeave'
-        #context.drag_status(gdk.ACTION_ASK, etime)
-        #context.finish(False, True, etime)
-        context.drop_reply(False, etime)
-        #context.drop_finish(False, etime)
-        #context.drag_abort(etime)##Segmentation fault
-        return True
-    def dragDataRec(self, obj, context, x, y, selection, target_id, etime):
-        try:
-            dtype = selection.get_data_type()
-        except AttributeError:## Old PyGTK
-            dtype = selection.type
-        text = selection.get_text()
-        ## data_type: "UTF8_STRING", "application/x-color", "text/uri-list",
-        if dtype=='UTF8_STRING':
-            #text = selection.get_text()
-            #print 'Dropped text "%s"'%text
-            if text.startswith('file://'):
-                path = core.urlToPath(text)
-                try:
-                    t = os.stat(path).st_mtime ## modification time
-                except OSError:
-                    print 'Dropped invalid file "%s"'%path
-                else:
-                    (y, m, d) = localtime(t)[:3]
-                    #print 'Dropped file "%s", modification time: %s/%s/%s'%(path, y, m, d)
-                    self.changeDate(y, m, d, core.DATE_GREG)
-                """
-            elif text.startswith('#') and len(text)>=7:## not occures! disable it????
-                ui.bgColor = ui.htmlColorToGdk(text)
-                self.emit('pref-update-bg-color')
-                self.queue_draw()"""
-            else:
-                date = ui.parseDroppedDate(text)
-                if date:
-                    (y, m, d) = date
-                    self.changeDate(y, m, d, ui.dragRecMode)
-                else:
-                    ## Hot to deny(throw down) dragged object (to return to it's first location)
-                    ##??????????????????????????????????????????????????????
-                    print 'Dropped unknown text "%s"'%text
-                    #print etime
-                    #context.drag_status(gdk.ACTION_DEFAULT, etime)
-                    #context.drop_reply(False, etime)
-                    #context.drag_abort(etime)##Segmentation fault
-                    #context.drop_finish(False, etime)
-                    #context.finish(False, True, etime)
-                    #return True
-        elif dtype=='application/x-color':
-            ## selection.get_text() == None
-            text = selection.data
-            ui.bgColor = (
-                ord(text[1]),
-                ord(text[3]),
-                ord(text[5]),
-                ord(text[7]),
-            )
-            self.emit('pref-update-bg-color')
-            self.queue_draw()
-        elif dtype=='text/uri-list':
-                path = core.urlToPath(selection.data)
-                try:
-                    t = os.stat(path).st_mtime ## modification time
-                except OSError:
-                    print 'Dropped invalid uri "%s"'%path
-                    return True
-                else:
-                    (y, m, d) = localtime(t)[:3]
-                    self.changeDate(y, m, d, core.DATE_GREG)
-        else:
-            print 'Unknown dropped data type "%s", text="%s", data="%s"'%(dtype, text, selection.data)
-            return True
-        return False
-    def dragBegin(self, obj, context):
-        ui.focusTime = time()
-        #############################################
-        text = '%.2d/%.2d/%.2d'%ui.cell.dates[ui.dragGetMode]
-        textLay = newTextLayout(self, text)
-        (w, h) = textLay.get_pixel_size()
-        pmap = gdk.Pixmap(None, w, h, 24)
-        pmap.set_colormap(self.get_screen().get_system_colormap())
-        gc = pmap.new_gc()
-        gc.set_foreground(rgbToGdkColor(*ui.bgColor))
-        pmap.draw_rectangle(gc, True, 0, 0, w, h)
-        #gc.set_background(ui.bgColor)
-        ##pmap.set_direction(gtk.DIR_LTR)#????????
-        pmap.draw_layout(
-            gc,
-            0,
-            0,
-            textLay,
-            rgbToGdkColor(*ui.mcalTypeParams[0]['color']),
-            rgbToGdkColor(*ui.bgColor),
-        )
-        #c = ui.mcalTypeParams[0]['color']
-        #pmap.draw_layout(gc, 0, 0, textLay, c, ui.gdkColorInvert(c))##??????????
-        pbuf = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, w , h)
-        pbuf.get_from_drawable(
-            pmap,
-            self.get_screen().get_system_colormap(),
-            0,
-            0,
-            0,
-            0,
-            -1,
-            -1,
-        )
-        context.set_icon_pixbuf(pbuf, w/2-10, -20) ## x offset ???????????
-        return True
     def updateTextWidth(self):
         ### update width of week days names to understand that should be synopsis or no
         lay = newTextLayout(self)

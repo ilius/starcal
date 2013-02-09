@@ -47,6 +47,7 @@ from scal2.ui_gtk.mywidgets.font_family_combo import FontFamilyCombo
 from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
+from scal2.ui_gtk.cal_base import CalBase
 from scal2.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox
 from scal2.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
 
@@ -534,7 +535,7 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
 
 
 
-class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase):
+class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
     _name = 'weekCal'
     desc = _('Week Calendar')
     params = (
@@ -558,6 +559,9 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase):
             'end',
             #'menu', 'f10', 'm',
         )
+        ######################
+        self.defineDragAndDrop()
+        ######################
         self.connect('key-press-event', self.keyPress)
         self.connect('scroll-event', self.scroll)
         ###
