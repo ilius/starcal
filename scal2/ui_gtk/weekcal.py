@@ -171,7 +171,7 @@ class Column(gtk.Widget, ColumnBase):
                 if self.colorizeHolidayText and self.wcal.status[i].holiday:
                     setColor(cr, ui.holidayColor)
                 else:
-                    setColor(cr, ui.wcalTextColor)
+                    setColor(cr, ui.textColor)
                 cr.show_layout(layout)
     def buttonPress(self, widget, event):
         return False
