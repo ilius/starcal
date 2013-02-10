@@ -36,7 +36,7 @@ class CalBase:
             (
                 ('', 0, 0),
             ),
-            gdk.ACTION_COPY,
+            gdk.ACTION_MOVE,## FIXME
         )
         self.drag_source_add_text_targets()
         self.connect('drag-data-get', self.dragDataGet)
@@ -48,20 +48,20 @@ class CalBase:
                 ('', 0, 0),
                 ('application/x-color', 0, 0),
             ),
-            gdk.ACTION_MOVE,
+            gdk.ACTION_COPY,## FIXME
         )
         self.drag_dest_add_text_targets()
         self.drag_dest_add_uri_targets()
         ## ACTION_MOVE ?????????????????????
         ## if source ACTION was ACTION_COPY, calendar recieves its own dragged day
         ## just like gnome-calendar-applet (but it seems not a logical behaviar)
-        """
+        '''
         #self.drag_source_add_uri_targets()#???????
         ##self.connect('drag-end', self.dragCalEnd)
         ##self.connect('drag-drop', self.dragCalDrop)
         ##self.connect('drag-failed', self.dragCalFailed)
         #self.connect('drag-leave', self.dragLeave)
-        """
+        '''
     def dragDataGet(self, obj, context, selection, target_id, etime):
         selection.set_text('%.2d/%.2d/%.2d'%ui.cell.dates[ui.dragGetMode])
         return True
@@ -104,7 +104,7 @@ class CalBase:
         gc.set_foreground(rgbToGdkColor(*ui.bgColor))
         pmap.draw_rectangle(gc, True, 0, 0, w, h)
         #gc.set_background(ui.bgColor)
-        ##pmap.set_direction(gtk.DIR_LTR)#????????
+        ##pmap.set_direction(gtk.DIR_LTR)## FIXME
         pmap.draw_layout(
             gc,
             0,
@@ -126,6 +126,6 @@ class CalBase:
             -1,
             -1,
         )
-        context.set_icon_pixbuf(pbuf, w/2-10, -20) ## x offset ???????????
+        context.set_icon_pixbuf(pbuf, w/2-10, -20) ## x offset FIXME
         return True
 

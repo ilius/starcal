@@ -546,6 +546,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.wcal = WeekCal()
         self.wcal.connect('popup-menu-cell', self.popupMenuCell)
         self.wcal.connect('2button-press', ui.dayOpenEvolution)
+        self.wcal.connect('pref-update-bg-color', self.prefUpdateBgColor)
         #############################################################
         """
         #self.add_events(gdk.VISIBILITY_NOTIFY_MASK)

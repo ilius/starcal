@@ -742,6 +742,7 @@ for cls in (
 cls = WeekCal
 gobject.signal_new('popup-menu-cell', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [int, int, int])
 gobject.signal_new('2button-press', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
+gobject.signal_new('pref-update-bg-color', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
 
 
 
