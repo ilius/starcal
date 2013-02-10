@@ -110,34 +110,11 @@ class PrefItem():
         raise NotImplementedError
     def set(self, value):
         raise NotImplementedError
-    #updateVar = lambda self: setattr(self.module, self.varName, self.get())
-    def updateVar(self):
-        if self.module==None:
-            if self.varName=='':
-                print 'PrefItem.updateVar: this PrefItem instance has no reference variable to write to!'
-            else:
-                exec('global %s;%s=%r'%(self.varName, self.varName, self.get()))
-        else:
-            setattr(self.module, self.varName, self.get())
-    #updateWidget = lambda self: self.set(getattr(self.module, self.varName))
-    def updateWidget(self):
-        if self.module==None:
-            if self.varName=='':
-                print 'PrefItem.updateWidget: this PrefItem instance has no reference variable to read from!'
-            else:
-                self.set(eval(self.varName))
-        else:
-            self.set(getattr(self.module, self.varName))
+    updateVar = lambda self: setattr(self.module, self.varName, self.get())
+    updateWidget = lambda self: self.set(getattr(self.module, self.varName))
     ## confStr(): gets the value from variable (not from GUI) and returns a string to save to file
     ## the string will has a NEWLINE at the END
-    def confStr(self):
-        if self.module==None:
-            if self.varName=='':
-                return ''
-            else:
-                return '%s=%r\n'%(self.varName, eval(self.varName))
-        else:
-            return '%s=%r\n'%(self.varName, getattr(self.module, self.varName))
+    confStr = lambda self: '%s=%r\n'%(self.varName, getattr(self.module, self.varName))
 
 
 class ComboTextPrefItem(PrefItem):
@@ -188,12 +165,12 @@ class ComboImageTextPrefItem(PrefItem):
         self.get = combo.get_active
         self.set = combo.set_active
     def append(self, imPath, label):
-        if imPath=='':
-            pix = None
-        else:
+        if imPath:
             if not imPath.startswith(os.sep):
                 imPath = join(pixDir, imPath)
             pix = gdk.pixbuf_new_from_file(imPath)
+        else:
+            pix = None
         self.ls.append([pix, label])
 
 
@@ -438,26 +415,25 @@ class LangPrefItem(PrefItem):
     #def updateVar(self):
     #    lang =
 
-class CheckStartupPrefItem(PrefItem):### cbStartCommon
+class CheckStartupPrefItem():## FIXME
     def __init__(self):
-        self.module = None
-        self.varName = ''
         w = gtk.CheckButton(_('Run on session startup'))
         set_tooltip(w, 'Run on startup of Gnome, KDE, Xfce, LXDE, ...\nFile: %s'%ui.comDesk)
         self.widget = w
         self.get = w.get_active
         self.set = w.set_active
     def updateVar(self):
-        if self.widget.get_active():
+        if self.get():
             if not ui.addStartup():
-                self.widget.set_active(False)
+                self.set(False)
         else:
             try:
                 ui.removeStartup()
             except:
                 pass
     def updateWidget(self):
-        self.widget.set_active(ui.checkStartup())
+        self.set(ui.checkStartup())
+    confStr = lambda self: ''
 
 class AICalsTreeview(gtk.TreeView):
     def __init__(self):
