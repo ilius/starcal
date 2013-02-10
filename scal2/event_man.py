@@ -49,6 +49,7 @@ from scal2 import core
 from scal2.core import myRaise, getEpochFromJd, getEpochFromJhms, log, getAbsWeekNumberFromJd, dataToJson
 
 from scal2.ics import icsHeader, getIcsTimeByEpoch, getIcsDateByJd, getJdByIcsDate, getEpochByIcsTime
+from scal2.vcs_modules import vcsModuleDict
 
 epsTm = 0.01## seconds ## configure somewhere? FIXME
 dayLen = 24*3600
@@ -202,7 +203,7 @@ class Occurrence(EventBaseClass):
         ls = []
         for ep0, ep1 in self.getTimeRangeList():
             if ep1 is None:## FIXME
-                ep1 = ep0 + eps
+                ep1 = ep0 + epsTm
             ls.append((getFloatJdFromEpoch(ep0), getFloatJdFromEpoch(ep1)))
         return ls
     containsMoment = lambda self, epoch: False
@@ -873,6 +874,8 @@ class ExDatesEventRule(EventRule):
 ## ... minutes before Sun Set       eval('sunSet-x')
 ## ... minutes after Sun Set        eval('sunSet+x')
 
+###########################################################################
+###########################################################################
 
 ## Should not be registered, or instantiate directly
 class EventNotifier(EventBaseClass):
@@ -928,6 +931,8 @@ class CommandNotifier(EventNotifier):
         self.command = ''
         self.pyEval = False
 
+###########################################################################
+###########################################################################
 
 class RuleContainer:
     requiredRules = ()
@@ -1039,6 +1044,8 @@ def fixIconInObj(self):
         icon = join(pixDir, 'event', icon)
     self.icon = icon
 
+###########################################################################
+###########################################################################
 
 ## Should not be registered, or instantiate directly
 class Event(JsonEventBaseClass, RuleContainer):
@@ -1947,10 +1954,16 @@ class LargeScaleEvent(Event):## or MegaEvent? FIXME
     #    pass
 
 
+
 @classes.event.register
 class CustomEvent(Event):
     name = 'custom'
     desc = _('Custom Event')
+
+
+###########################################################################
+###########################################################################
+
 
 class EventContainer(JsonEventBaseClass):
     name = ''
@@ -2825,6 +2838,76 @@ class LargeScaleGroup(EventGroup):
         self.startJd = int(to_jd(start*self.scale, 1, 1, self.mode))
     def setEndValue(self, end):
         self.endJd = int(to_jd(end*self.scale, 1, 1, self.mode))
+
+
+###########################################################################
+###########################################################################
+
+class VcsCommitEvent(Event):
+    name = 'vcs'
+    desc = _('VCS Commit')
+    def __init__(self, _id, epoch, summary, description='', icon=''):
+        self.id = _id
+        self.epoch = epoch
+        self.summary = summary
+        self.description = description
+        self.icon = icon
+
+@classes.group.register
+class VcsEventGroup(EventGroup):
+    name = 'vcs'
+    desc = _('VCS Repository')
+    acceptsEventTypes = ()
+    params = EventGroup.params + (
+        'vcsType',
+        'vcsDir',
+    )
+    jsonParams = EventGroup.jsonParams + (
+        'vcsType',
+        'vcsDir',
+    )
+    def __init__(self, *args, **kw):
+        self.vcsType = 'git'
+        self.vcsDir = ''
+        #self.branch = 'master'
+        EventGroup.__init__(self, *args, **kw)
+    def updateOccurrence(self):
+        if not self.vcsDir:
+            return
+        mod = vcsModuleDict[self.vcsType]
+        self.occur.clear()
+        clist = mod.getCommitList(self.vcsDir, startJd=self.startJd, endJd=self.endJd)
+        for epoch, commit_id in clist:
+            self.occur.add(epoch, epoch+epsTm, commit_id)
+        self.occurCount = len(clist)
+    def getEvent(self, commit_id):
+        mod = vcsModuleDict[self.vcsType]
+        info = mod.getCommitInfo(self.vcsDir, commit_id)
+        if not info:
+            raise ValueError('No commit with id=%r'%commit_id)
+        return VcsCommitEvent(
+            commit_id,
+            info['epoch'],
+            info['subject'],
+            '',
+            self.icon,
+        )
+    def __getitem__(self, key):
+        if len(key) < 20:
+            return EventGroup.__getitem__(self, key)
+        else:## len(commit_id)==40 for git
+            return self.getEvent(key)
+    getRulesHash = lambda self: hash(str((
+        'vcs',
+        self.vcsType,
+        self.vcsDir,
+    )))
+
+
+
+
+###########################################################################
+###########################################################################
 
 class JsonObjectsHolder(JsonEventBaseClass):
     ## keeps all objects in memory

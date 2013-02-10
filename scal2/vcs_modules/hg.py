@@ -1,4 +1,6 @@
-#!/usr/bin/python2
+# -*- coding: utf-8 -*-
+
+
 from subprocess import Popen, PIPE
 from os import chdir
 
@@ -6,7 +8,7 @@ fixEpochStr = lambda epoch_str: int(epoch_str.split('.')[0])
 
 def getCommitList(direc):
     '''
-        returns a list of (epoch_time, long_commit_id) tuples
+        returns a list of (epoch, commit_id) tuples
     '''
     chdir(direc)
     p = Popen([

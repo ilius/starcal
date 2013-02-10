@@ -1,19 +1,31 @@
-#!/usr/bin/python2
+# -*- coding: utf-8 -*-
+
+from os.path import join
 from subprocess import Popen, PIPE
-from os import chdir
+from scal2.time_utils import dateEncode
+from scal2.cal_modules import jd_to, to_jd, DATE_GREG
 
-
-def getCommitList(direc):
+def getCommitList(direc, startJd=None, endJd=None):
     '''
-        returns a list of (epoch_time, long_commit_id) tuples
+        returns a list of (epoch, commit_id) tuples
     '''
-    chdir(direc)
-    p = Popen([
+    cmd = [
         'git',
+        '--git-dir', join(direc, '.git'),
         'log',
         '--pretty=format:%ct %H',
-        #'--git-dir', '%s/.git'%direc,
-    ], stdout=PIPE)
+    ]
+    if startJd is not None:
+        cmd += [
+            '--since',
+            dateEncode(jd_to(startJd, DATE_GREG)),
+        ]
+    if endJd is not None:
+        cmd += [
+            '--until',
+            dateEncode(jd_to(endJd, DATE_GREG)),
+        ]
+    p = Popen(cmd, stdout=PIPE)
     p.wait()
     data = []
     for line in p.stdout:
@@ -24,11 +36,34 @@ def getCommitList(direc):
         ))
     return data
 
-def getShortStat(direc):
+def getCommitInfo(direc, commid_id):
+    cmd = [
+        'git',
+        '--git-dir', join(direc, '.git'),
+        'log',
+        '-1',
+        '--pretty=%at%n%s%n%cn <%ce>',
+        commid_id,
+    ]
+    parts = Popen(cmd, stdout=PIPE).stdout.read().split('\n')
+    if not parts:
+        return
+    return {
+        'epoch': parts[0],
+        'subject': parts[1],
+        'author': parts[2],
+    }
+
+#def getLog(direc, startJd, endJd):
+#    log = []
+#    for epoch, commit_id in getCommitList(direc):
+
+
+
+def getStat(direc):
     '''
         returns a list of (epoch, files_changed, insertions, deletions) tuples
     '''
-    chdir(direc)
     stat = []
     commits = getCommitList(direc)
     n = len(commits) - 1
