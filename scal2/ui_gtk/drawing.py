@@ -59,6 +59,9 @@ def fillColor(cr, color):
 
 
 def newTextLayout(widget, text='', font=None, maxSize=None, maximizeScale=0.6):
+    '''
+        None return value should be expected and handled, only if maxSize is given
+    '''
     layout = widget.create_pango_layout('') ## a pango.Layout object
     if not font:
         font = ui.getFont()
@@ -66,9 +69,11 @@ def newTextLayout(widget, text='', font=None, maxSize=None, maximizeScale=0.6):
     if text:
         layout.set_markup(text)
         if maxSize:
-            (maxW, maxH) = maxSize
+            maxW, maxH = maxSize
             maxW = float(maxW)
             maxH = float(maxH)
+            if maxW <= 0 or maxH<=0:
+                return
             ##
             layoutW, layoutH = layout.get_pixel_size()
             ##
