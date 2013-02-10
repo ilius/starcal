@@ -72,7 +72,7 @@ def newTextLayout(widget, text='', font=None, maxSize=None, maximizeScale=0.6):
             maxW, maxH = maxSize
             maxW = float(maxW)
             maxH = float(maxH)
-            if maxW <= 0 or maxH<=0:
+            if maxW <= 0 or maxH <= 0:
                 return
             ##
             layoutW, layoutH = layout.get_pixel_size()
