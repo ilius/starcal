@@ -18,7 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 import sys, os
-from os.path import join
+from os.path import join, isabs
 
 from scal2 import locale_man
 from scal2.locale_man import langDict, langSh, rtl
@@ -166,7 +166,7 @@ class ComboImageTextPrefItem(PrefItem):
         self.set = combo.set_active
     def append(self, imPath, label):
         if imPath:
-            if not imPath.startswith(os.sep):
+            if not isabs(imPath):
                 imPath = join(pixDir, imPath)
             pix = gdk.pixbuf_new_from_file(imPath)
         else:
@@ -390,7 +390,7 @@ class LangPrefItem(PrefItem):
         if imPath=='':
             pix = None
         else:
-            if not imPath.startswith(os.sep):
+            if not isabs(imPath):
                 imPath = join(pixDir, imPath)
             pix = gdk.pixbuf_new_from_file(imPath)
         self.ls.append([pix, label])
