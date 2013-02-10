@@ -196,58 +196,6 @@ class ComboImageTextPrefItem(PrefItem):
             pix = gdk.pixbuf_new_from_file(imPath)
         self.ls.append([pix, label])
 
-class LangPrefItem(PrefItem):
-    def __init__(self):
-        self.module = locale_man
-        self.varName = 'lang'
-        ###
-        ls = gtk.ListStore(gdk.Pixbuf, str)
-        combo = gtk.ComboBox(ls)
-        ###
-        cell = gtk.CellRendererPixbuf()
-        combo.pack_start(cell, False)
-        combo.add_attribute(cell, 'pixbuf', 0)
-        ###
-        cell = gtk.CellRendererText()
-        combo.pack_start(cell, True)
-        combo.add_attribute(cell, 'text', 1)
-        ###
-        self.widget = combo
-        self.ls = ls
-        self.append(join(pixDir, 'computer.png'), _('System Setting'))
-        for (key, data) in langDict.items():
-            self.append(data.flag, data.name)
-    def append(self, imPath, label):
-        if imPath=='':
-            pix = None
-        else:
-            if not imPath.startswith(os.sep):
-                imPath = join(pixDir, imPath)
-            pix = gdk.pixbuf_new_from_file(imPath)
-        self.ls.append([pix, label])
-    def get(self):
-        i = self.widget.get_active()
-        if i==0:
-            return ''
-        else:
-            return langDict.keyList[i-1]
-    def set(self, value):
-        assert isinstance(value, str)
-        if value=='':
-            self.widget.set_active(0)
-        else:
-            try:
-                i = langDict.keyList.index(value)
-            except ValueError:
-                print 'language %s in not in list!'%value
-                self.widget.set_active(0)
-            else:
-                self.widget.set_active(i+1)
-    #def updateVar(self):
-    #    lang =
-
-
-
 
 class FontPrefItem(PrefItem):##????????????
     def __init__(self, module, varName, parent):
@@ -268,28 +216,6 @@ class CheckPrefItem(PrefItem):
         self.widget = w
         self.get = w.get_active
         self.set = w.set_active
-
-class CheckStartupPrefItem(PrefItem):### cbStartCommon
-    def __init__(self):
-        self.module = None
-        self.varName = ''
-        w = gtk.CheckButton(_('Run on session startup'))
-        set_tooltip(w, 'Run on startup of Gnome, KDE, Xfce, LXDE, ...\nFile: %s'%ui.comDesk)
-        self.widget = w
-        self.get = w.get_active
-        self.set = w.set_active
-    def updateVar(self):
-        if self.widget.get_active():
-            if not ui.addStartup():
-                self.widget.set_active(False)
-        else:
-            try:
-                ui.removeStartup()
-            except:
-                pass
-    def updateWidget(self):
-        self.widget.set_active(ui.checkStartup())
-
 
 class ColorPrefItem(PrefItem):
     def __init__(self, module, varName, useAlpha=False):
@@ -403,6 +329,135 @@ class VListPrefItem(ListPrefItem):
     def __init__(self, *args, **kwargs):
         ListPrefItem.__init__(self, True, *args, **kwargs)
 
+
+class WeekDayCheckListPrefItem(PrefItem):
+    def __init__(self, module, varName, vertical=False, homo=True, abbreviateNames=True):
+        self.module = module
+        self.varName = varName
+        if vertical:
+            box = gtk.VBox()
+        else:
+            box = gtk.HBox()
+        box.set_homogeneous(homo)
+        nameList = core.weekDayNameAb if abbreviateNames else core.weekDayName
+        ls = [gtk.ToggleButton(item) for item in nameList]
+        s = core.firstWeekDay
+        for i in range(7):
+            box.pack_start(ls[(s+i)%7], 1, 1)
+        self.cbList = ls
+        self.widget = box
+        self.start = s
+    def setStart(self, s):
+        b = self.widget
+        ls = self.cbList
+        for j in range(7):## or range(6)
+            b.reorder_child(ls[(s+j)%7], j)
+        self.start = s
+    def get(self):
+        value = []
+        cbl = self.cbList
+        for j in range(7):
+            if cbl[j].get_active():
+                value.append(j)
+        return tuple(value)
+    def set(self, value):
+        cbl = self.cbList
+        for cb in cbl:
+            cb.set_active(False)
+        for j in value:
+            cbl[j].set_active(True)
+
+
+'''
+class ToolbarIconSizePrefItem(PrefItem):
+    def __init__(self, module, varName):
+        self.module = module
+        self.varName = varName
+        ####
+        self.widget = gtk.combo_box_new_text()
+        for item in iconSizeList:
+            self.widget.append_text(item[0])
+    def get(self):
+        return iconSizeList[self.widget.get_active()][0]
+    def set(self, value):
+        for (i, item) in enumerate(iconSizeList):
+            if item[0]==value:
+                self.widget.set_active(i)
+                return
+'''
+
+############################################################
+
+class LangPrefItem(PrefItem):
+    def __init__(self):
+        self.module = locale_man
+        self.varName = 'lang'
+        ###
+        ls = gtk.ListStore(gdk.Pixbuf, str)
+        combo = gtk.ComboBox(ls)
+        ###
+        cell = gtk.CellRendererPixbuf()
+        combo.pack_start(cell, False)
+        combo.add_attribute(cell, 'pixbuf', 0)
+        ###
+        cell = gtk.CellRendererText()
+        combo.pack_start(cell, True)
+        combo.add_attribute(cell, 'text', 1)
+        ###
+        self.widget = combo
+        self.ls = ls
+        self.append(join(pixDir, 'computer.png'), _('System Setting'))
+        for (key, data) in langDict.items():
+            self.append(data.flag, data.name)
+    def append(self, imPath, label):
+        if imPath=='':
+            pix = None
+        else:
+            if not imPath.startswith(os.sep):
+                imPath = join(pixDir, imPath)
+            pix = gdk.pixbuf_new_from_file(imPath)
+        self.ls.append([pix, label])
+    def get(self):
+        i = self.widget.get_active()
+        if i==0:
+            return ''
+        else:
+            return langDict.keyList[i-1]
+    def set(self, value):
+        assert isinstance(value, str)
+        if value=='':
+            self.widget.set_active(0)
+        else:
+            try:
+                i = langDict.keyList.index(value)
+            except ValueError:
+                print 'language %s in not in list!'%value
+                self.widget.set_active(0)
+            else:
+                self.widget.set_active(i+1)
+    #def updateVar(self):
+    #    lang =
+
+class CheckStartupPrefItem(PrefItem):### cbStartCommon
+    def __init__(self):
+        self.module = None
+        self.varName = ''
+        w = gtk.CheckButton(_('Run on session startup'))
+        set_tooltip(w, 'Run on startup of Gnome, KDE, Xfce, LXDE, ...\nFile: %s'%ui.comDesk)
+        self.widget = w
+        self.get = w.get_active
+        self.set = w.set_active
+    def updateVar(self):
+        if self.widget.get_active():
+            if not ui.addStartup():
+                self.widget.set_active(False)
+        else:
+            try:
+                ui.removeStartup()
+            except:
+                pass
+    def updateWidget(self):
+        self.widget.set_active(ui.checkStartup())
 
 class AICalsTreeview(gtk.TreeView):
     def __init__(self):
@@ -633,59 +688,5 @@ class AICalsPrefItem():
         text += 'inactiveCalNames=%r\n'%core.inactiveCalNames
         return text
 
-class WeekDayCheckListPrefItem(PrefItem):### use synopsis (Sun, Mon, ...) FIXME
-    def __init__(self, module, varName, vertical=False, homo=True, abbreviateNames=True):
-        self.module = module
-        self.varName = varName
-        if vertical:
-            box = gtk.VBox()
-        else:
-            box = gtk.HBox()
-        box.set_homogeneous(homo)
-        nameList = core.weekDayNameAb if abbreviateNames else core.weekDayName
-        ls = [gtk.ToggleButton(item) for item in nameList]
-        s = core.firstWeekDay
-        for i in range(7):
-            box.pack_start(ls[(s+i)%7], 1, 1)
-        self.cbList = ls
-        self.widget = box
-        self.start = s
-    def setStart(self, s):
-        b = self.widget
-        ls = self.cbList
-        for j in range(7):## or range(6)
-            b.reorder_child(ls[(s+j)%7], j)
-        self.start = s
-    def get(self):
-        value = []
-        cbl = self.cbList
-        for j in range(7):
-            if cbl[j].get_active():
-                value.append(j)
-        return tuple(value)
-    def set(self, value):
-        cbl = self.cbList
-        for cb in cbl:
-            cb.set_active(False)
-        for j in value:
-            cbl[j].set_active(True)
 
-
-"""
-class ToolbarIconSizePrefItem(PrefItem):
-    def __init__(self, module, varName):
-        self.module = module
-        self.varName = varName
-        ####
-        self.widget = gtk.combo_box_new_text()
-        for item in iconSizeList:
-            self.widget.append_text(item[0])
-    def get(self):
-        return iconSizeList[self.widget.get_active()][0]
-    def set(self, value):
-        for (i, item) in enumerate(iconSizeList):
-            if item[0]==value:
-                self.widget.set_active(i)
-                return
-"""
 
