@@ -58,9 +58,7 @@ class NotifierWidget(gtk.HBox):
 
 def notify(notifier, finishFunc):## FIXME
     cls = FloatingMsg if notifier.fillWidth else NoFillFloatingMsgWindow
-    text = notifier.event.summary
-    if notifier.event.description:
-        text = text + ': ' + notifier.event.description
+    text = notifier.event.getText()
     msg = cls(
         text,
         speed = notifier.speed,

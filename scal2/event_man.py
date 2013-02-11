@@ -1186,15 +1186,21 @@ class Event(JsonEventBaseClass, RuleContainer):
                 _('File') + ': ' + fname,
             ))
         return data
+    def getSummary(self):
+        return self.summary
+    def getDescription(self):
+        return self.description
     def getTextParts(self):
+        summary = self.getSummary()
+        description = self.getDescription()
         try:
             sep = self.parent.eventTextSep
         except:
             sep = core.eventTextSep
-        if self.description:
-            return (self.summary, sep, self.description)
+        if description:
+            return (summary, sep, description)
         else:
-            return (self.summary,)
+            return (summary,)
     getText = lambda self, showDesc=True: ''.join(self.getTextParts()) if showDesc else self.summary
     def setId(self, _id=None):
         global lastEventId
@@ -1728,8 +1734,8 @@ class YearlyEvent(Event):
         except:
             startJd = core.getCurrentJd()
         return jd_to(startJd, self.mode)[0]
-    def getText(self):
-        text = Event.getText(self)
+    def getSummary(self):
+        summary = Event.getSummary(self)
         newParts = [
             _(self.getDay()),
             getMonthName(self.mode, self.getMonth()),
@@ -1740,7 +1746,7 @@ class YearlyEvent(Event):
             pass
         else:
             newParts.append(_(startRule.date[0]))
-        return ' '.join(newParts) + ': ' + text
+        return ' '.join(newParts) + ': ' + summary
     def getIcsData(self, prettyDateTime=False):
         if self.mode != DATE_GREG:
             return None

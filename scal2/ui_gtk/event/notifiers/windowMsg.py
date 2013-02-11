@@ -26,10 +26,7 @@ def notify(notifier, finishFunc):## FIXME
     dialog = gtk.Dialog()
     ####
     lines = []
-    if event.summary:
-        lines.append(event.summary)
-    if event.description:
-        lines.append(event.description)
+    lines.append(event.getText())
     if notifier.extraMessage:
         lines.append(notifier.extraMessage)
     text = '\n'.join(lines)

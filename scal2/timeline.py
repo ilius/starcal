@@ -428,7 +428,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
                 odt,
                 0,
                 1,
-                event.summary,
+                event.getSummary(),
                 group.color,
                 (group.id, event.id) if pixBoxW > 0.5 else None,
                 (groupIndex, eventIndex),
