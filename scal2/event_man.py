@@ -2889,7 +2889,7 @@ class VcsEventGroup(EventGroup):
             raise ValueError('No commit with id=%r'%commit_id)
         return VcsCommitEvent(
             commit_id,
-            info['subject'],
+            self.title +': ' + info['subject'],
             '',
             self.icon,
         )
