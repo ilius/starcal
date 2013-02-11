@@ -3,13 +3,13 @@ from scal2.vcs_modules import vcsModuleNames
 
 import gtk
 
-from scal2.ui_gtk.event.groups.base import BaseGroupWidget
+from scal2.ui_gtk.event.groups.group import GroupWidget as NormalGroupWidget
 from scal2.ui_gtk.event import common
 
 
-class GroupWidget(BaseGroupWidget):
+class GroupWidget(NormalGroupWidget):
     def __init__(self, group):
-        BaseGroupWidget.__init__(self, group)
+        NormalGroupWidget.__init__(self, group)
         ######
         sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
         ######
@@ -36,11 +36,11 @@ class GroupWidget(BaseGroupWidget):
         ##
         self.pack_start(hbox, 0, 0)
     def updateWidget(self):
-        BaseGroupWidget.updateWidget(self)
+        NormalGroupWidget.updateWidget(self)
         self.vcsTypeCombo.set_active(vcsModuleNames.index(self.group.vcsType))
         self.dirEntry.set_text(self.group.vcsDir)
     def updateVars(self):
-        BaseGroupWidget.updateVars(self)
+        NormalGroupWidget.updateVars(self)
         self.group.vcsType = vcsModuleNames[self.vcsTypeCombo.get_active()]
         self.group.vcsDir = self.dirEntry.get_text()
 

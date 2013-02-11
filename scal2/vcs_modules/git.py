@@ -49,7 +49,7 @@ def getCommitInfo(direc, commid_id):
     if not parts:
         return
     return {
-        'epoch': parts[0],
+        'epoch': int(parts[0]),
         'subject': parts[1],
         'author': parts[2],
     }

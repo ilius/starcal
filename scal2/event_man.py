@@ -2846,9 +2846,8 @@ class LargeScaleGroup(EventGroup):
 class VcsCommitEvent(Event):
     name = 'vcs'
     desc = _('VCS Commit')
-    def __init__(self, _id, epoch, summary, description='', icon=''):
+    def __init__(self, _id, summary, description='', icon=''):
         self.id = _id
-        self.epoch = epoch
         self.summary = summary
         self.description = description
         self.icon = icon
@@ -2872,12 +2871,15 @@ class VcsEventGroup(EventGroup):
         #self.branch = 'master'
         EventGroup.__init__(self, *args, **kw)
     def updateOccurrence(self):
+        self.occur.clear()
         if not self.vcsDir:
+            self.occurCount = 0
             return
         mod = vcsModuleDict[self.vcsType]
-        self.occur.clear()
         clist = mod.getCommitList(self.vcsDir, startJd=self.startJd, endJd=self.endJd)
+        tz = getCurrentTimeZone()
         for epoch, commit_id in clist:
+            epoch += tz
             self.occur.add(epoch, epoch+epsTm, commit_id)
         self.occurCount = len(clist)
     def getEvent(self, commit_id):
@@ -2887,7 +2889,6 @@ class VcsEventGroup(EventGroup):
             raise ValueError('No commit with id=%r'%commit_id)
         return VcsCommitEvent(
             commit_id,
-            info['epoch'],
             info['subject'],
             '',
             self.icon,
