@@ -89,8 +89,8 @@ durationUnitValueToName = dict(durationUnitsAbs)
 durationUnitValues = [item[0] for item in durationUnitsAbs]
 durationUnitNames = [item[1] for item in durationUnitsAbs]
 
-def dateEncode(date):
-    return '%.4d/%.2d/%.2d'%tuple(date)
+dateEncode = lambda date: '%.4d/%.2d/%.2d'%tuple(date)
+dateEncodeDash = lambda date: '%.4d-%.2d-%.2d'%tuple(date)
 
 def checkDate(date):
     if not 1 <= date[1] <= 12:

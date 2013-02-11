@@ -93,10 +93,3 @@ def getStat(direc):
     return stat
 
 
-if __name__=='__main__':
-    for item in  getStat('/starcal2'):
-        print item
-
-
-
-
