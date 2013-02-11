@@ -892,7 +892,10 @@ class EventNotifier(EventBaseClass):
 class AlarmNotifier(EventNotifier):
     name = 'alarm'
     desc = _('Alarm')
-    params = ('alarmSound', 'playerCmd')
+    params = (
+        'alarmSound',
+        'playerCmd',
+    )
     def __init__(self, event):
         EventNotifier.__init__(self, event)
         self.alarmSound = '' ## FIXME
@@ -902,7 +905,12 @@ class AlarmNotifier(EventNotifier):
 class FloatingMsgNotifier(EventNotifier):
     name = 'floatingMsg'
     desc = _('Floating Message')
-    params = ('fillWidth', 'speed', 'bgColor', 'textColor')
+    params = (
+        'fillWidth',
+        'speed',
+        'bgColor',
+        'textColor',
+    )
     def __init__(self, event):
         EventNotifier.__init__(self, event)
         ###
@@ -915,7 +923,9 @@ class FloatingMsgNotifier(EventNotifier):
 class WindowMsgNotifier(EventNotifier):
     name = 'windowMsg'
     desc = _('Message Window')## FIXME
-    params = ('extraMessage',)
+    params = (
+        'extraMessage',
+    )
     def __init__(self, event):
         EventNotifier.__init__(self, event)
         self.extraMessage = ''
@@ -925,7 +935,10 @@ class WindowMsgNotifier(EventNotifier):
 class CommandNotifier(EventNotifier):
     name = 'command'
     desc = _('Run a Command')
-    params = ('command', 'pyEval')
+    params = (
+        'command',
+        'pyEval',
+    )
     def __init__(self, event):
         EventNotifier.__init__(self, event)
         self.command = ''
@@ -1053,7 +1066,13 @@ class Event(JsonEventBaseClass, RuleContainer):
     desc = _('Custom Event')
     iconName = ''
     #requiredNotifiers = ()## needed? FIXME
-    params = ('icon', 'summary', 'description', 'remoteIds', 'modified')
+    params = (
+        'icon',
+        'summary',
+        'description',
+        'remoteIds',
+        'modified',
+    )
     jsonParams = (
         'type',
         'calType',
@@ -1784,7 +1803,9 @@ class UniversityClassEvent(Event):
     iconName = 'university'
     requiredRules  = ('weekNumMode', 'weekDay', 'dayTimeRange',)
     supportedRules = ('weekNumMode', 'weekDay', 'dayTimeRange',)
-    params = Event.params + ('courseId',)
+    params = Event.params + (
+        'courseId',
+    )
     def __init__(self, *args, **kw):
         ## assert group is not None ## FIXME
         Event.__init__(self, *args, **kw)
@@ -1842,7 +1863,9 @@ class UniversityExamEvent(DailyNoteEvent):
     iconName = 'university'
     requiredRules  = ('date', 'dayTimeRange',)
     supportedRules = ('date', 'dayTimeRange',)
-    params = DailyNoteEvent.params + ('courseId',)
+    params = DailyNoteEvent.params + (
+        'courseId',
+    )
     def __init__(self, *args, **kw):
         ## assert group is not None ## FIXME
         DailyNoteEvent.__init__(self, *args, **kw)
@@ -1906,7 +1929,12 @@ class LifeTimeEvent(SingleStartEndEvent):
 class LargeScaleEvent(Event):## or MegaEvent? FIXME
     name = 'largeScale'
     desc = _('Large Scale Event')
-    _myParams = ('scale', 'start', 'end', 'endRel')
+    _myParams = (
+        'scale',
+        'start',
+        'end',
+        'endRel',
+    )
     params = Event.params + _myParams
     jsonParams = Event.jsonParams + _myParams
     __nonzero__ = lambda self: True
@@ -1968,7 +1996,12 @@ class CustomEvent(Event):
 class EventContainer(JsonEventBaseClass):
     name = ''
     desc = ''
-    params = JsonEventBaseClass.params + ('icon', 'title', 'showFullEventDesc', 'idList')
+    params = JsonEventBaseClass.params + (
+        'icon',
+        'title',
+        'showFullEventDesc',
+        'idList',
+    )
     def __getitem__(self, key):
         if isinstance(key, int):## eventId
             return self.getEvent(key)
@@ -2616,7 +2649,9 @@ class UniversityTerm(EventGroup):
         ('time', _('Time'), True),
     )
     sortByDefault = 'time'
-    params = EventGroup.params + ('courses',)
+    params = EventGroup.params + (
+        'courses',
+    )
     jsonParams = EventGroup.jsonParams + (
         'classTimeBounds',
         'classesEndDate',
@@ -2780,7 +2815,9 @@ class LifeTimeGroup(EventGroup):
     sortBys = EventGroup.sortBys + (
         ('start', _('Start'), True),
     )
-    params = EventGroup.params + ('showSeperatedYmdInputs',)
+    params = EventGroup.params + (
+        'showSeperatedYmdInputs',
+    )
     def getSortByValue(self, event, attr):
         if event.name in self.acceptsEventTypes:
             if attr=='start':
@@ -2857,14 +2894,12 @@ class VcsEventGroup(EventGroup):
     name = 'vcs'
     desc = _('VCS Repository')
     acceptsEventTypes = ()
-    params = EventGroup.params + (
+    _myParams = (
         'vcsType',
         'vcsDir',
     )
-    jsonParams = EventGroup.jsonParams + (
-        'vcsType',
-        'vcsDir',
-    )
+    params = EventGroup.params + _myParams
+    jsonParams = EventGroup.jsonParams + _myParams
     def __init__(self, *args, **kw):
         self.vcsType = 'git'
         self.vcsDir = ''
@@ -3194,7 +3229,11 @@ def getDayOccurrenceData(curJd, groups):
 class Account(JsonEventBaseClass):
     name = ''
     desc = ''
-    params = ('enable', 'title', 'remoteGroups')
+    params = (
+        'enable',
+        'title',
+        'remoteGroups',
+    )
     jsonParams = (
         'enable',
         'type',
