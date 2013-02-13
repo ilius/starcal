@@ -38,7 +38,7 @@ import gtk
 from gtk import gdk
 
 
-from scal2.ui_gtk.utils import set_tooltip, dialog_add_button, confirm
+from scal2.ui_gtk.utils import set_tooltip, dialog_add_button, confirm, showError
 from scal2.ui_gtk.utils import toolButtonFromStock, labelImageMenuItem, labelStockMenuItem
 from scal2.ui_gtk.utils import pixbufFromFile, rectangleContainsPoint
 
@@ -335,6 +335,8 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
     def canPasteToGroup(self, group):
         if self.toPasteEvent is None:
             return False
+        if not group.acceptsEventTypes:
+            return False
         ## check event type here? FIXME
         return True
     def genRightClickMenu(self, path):
@@ -574,7 +576,7 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
         self.mbarCopyItem.set_sensitive(eventSelected)
         self.mbarDupItem.set_sensitive(selected)
         ###
-        self.mbarPasteItem.set_sensitive(selected and bool(self.toPasteEvent))
+        self.mbarPasteItem.set_sensitive(selected and self.canPasteToGroup(self.getObjsByPath(path)[0]))
     def mbarEditClicked(self, obj):
         path = self.treev.get_cursor()[0]
         if not path:
