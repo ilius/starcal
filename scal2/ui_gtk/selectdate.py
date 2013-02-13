@@ -166,8 +166,6 @@ class SelectDateDialog(gtk.Dialog):
         self.hide()
         self.dateInput.set_value((y0, m0, d0))
         self.dateInput.add_history()
-        print 'spinD.get_value', gtk.SpinButton.get_value(self.ymdBox.spinD)
-        print 'spinY.get_value', gtk.SpinButton.get_value(self.ymdBox.spinY)
     def radioChanged(self, widget=None):
         if self.radio1.get_active():
             self.ymdBox.set_sensitive(True)
