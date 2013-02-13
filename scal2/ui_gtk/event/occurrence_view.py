@@ -97,30 +97,30 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
             itemCopy.set_sensitive(False)
         menu.add(itemCopy)
         ####
-        menu.add(gtk.SeparatorMenuItem())
-        ####
         (groupId, eventId) = ids
         event = ui.getEvent(groupId, eventId)
-        ###
-        winTitle = _('Edit ') + event.desc
-        menu.add(labelStockMenuItem(
-            winTitle,
-            gtk.STOCK_EDIT,
-            self.editEventClicked,
-            winTitle,
-            event,
-            groupId,
-        ))
-        ###
-        menu.add(gtk.SeparatorMenuItem())
-        ###
-        menu.add(labelImageMenuItem(
-            _('Move to %s')%ui.eventTrash.title,
-            ui.eventTrash.icon,
-            self.moveEventToTrash,
-            event,
-            groupId,
-        ))
+        if not event.readOnly:
+            menu.add(gtk.SeparatorMenuItem())
+            ###
+            winTitle = _('Edit ') + event.desc
+            menu.add(labelStockMenuItem(
+                winTitle,
+                gtk.STOCK_EDIT,
+                self.editEventClicked,
+                winTitle,
+                event,
+                groupId,
+            ))
+            ###
+            menu.add(gtk.SeparatorMenuItem())
+            ###
+            menu.add(labelImageMenuItem(
+                _('Move to %s')%ui.eventTrash.title,
+                ui.eventTrash.icon,
+                self.moveEventToTrash,
+                event,
+                groupId,
+            ))
         ####
         menu.show_all()
         menu.popup(None, None, None, 3, 0)

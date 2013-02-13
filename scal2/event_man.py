@@ -1066,6 +1066,7 @@ class Event(JsonEventBaseClass, RuleContainer):
     desc = _('Custom Event')
     iconName = ''
     #requiredNotifiers = ()## needed? FIXME
+    readOnly = False
     params = (
         'icon',
         'summary',
@@ -2889,6 +2890,7 @@ class LargeScaleGroup(EventGroup):
 class VcsCommitEvent(Event):
     name = 'vcs'
     desc = _('VCS Commit')
+    readOnly = True
     def __init__(self, _id, summary, description='', icon=''):
         self.id = _id
         self.summary = summary
