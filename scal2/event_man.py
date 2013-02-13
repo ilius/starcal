@@ -2891,11 +2891,28 @@ class VcsCommitEvent(Event):
     name = 'vcs'
     desc = _('VCS Commit')
     readOnly = True
-    def __init__(self, _id, summary, description='', icon=''):
+    params = Event.params + (
+        'epoch',
+        'author',
+        'shortHash',
+    )
+    def __init__(self, parent, _id):
+        Event.__init__(self, parent=parent)
         self.id = _id
-        self.summary = summary
-        self.description = description
-        self.icon = icon
+        ###
+        self.epoch = None
+        self.author = ''
+        self.shortHash = ''
+    def updateDesc(self):
+        lines = []
+        if self.parent.showAuthor and self.author:
+            lines.append(_('Author')+': '+self.author)
+        if self.parent.showShortHash and self.shortHash:
+            lines.append(_('Hash')+': '+self.shortHash)
+        self.description = '\n'.join(lines)
+        
+
+
 
 @classes.group.register
 class VcsEventGroup(EventGroup):
@@ -2905,14 +2922,20 @@ class VcsEventGroup(EventGroup):
     _myParams = (
         'vcsType',
         'vcsDir',
+        'showAuthor',
+        'showShortHash',
     )
     params = EventGroup.params + _myParams
     jsonParams = EventGroup.jsonParams + _myParams
     def __init__(self, *args, **kw):
         self.vcsType = 'git'
         self.vcsDir = ''
+        self.showAuthor = True
+        self.showShortHash = True
         #self.branch = 'master'
         EventGroup.__init__(self, *args, **kw)
+    def setDefaults(self):
+        self.eventTextSep = '\n'
     def updateOccurrence(self):
         self.occur.clear()
         if not self.vcsDir:
@@ -2927,15 +2950,15 @@ class VcsEventGroup(EventGroup):
         self.occurCount = len(clist)
     def getEvent(self, commit_id):
         mod = vcsModuleDict[self.vcsType]
-        info = mod.getCommitInfo(self.vcsDir, commit_id)
-        if not info:
+        data = mod.getCommitInfo(self.vcsDir, commit_id)
+        if not data:
             raise ValueError('No commit with id=%r'%commit_id)
-        return VcsCommitEvent(
-            commit_id,
-            self.title +': ' + info['subject'],
-            '',
-            self.icon,
-        )
+        data['summary'] = self.title +': ' + data['summary']
+        data['icon'] = self.icon
+        event = VcsCommitEvent(self, commit_id)
+        event.setData(data)
+        event.updateDesc()
+        return event
     def __getitem__(self, key):
         if len(key) < 20:
             return EventGroup.__getitem__(self, key)

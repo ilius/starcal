@@ -42,7 +42,7 @@ def getCommitInfo(direc, commid_id):
         '--git-dir', join(direc, '.git'),
         'log',
         '-1',
-        '--pretty=%at%n%s%n%cn <%ce>',
+        '--pretty=%at\n%s\n%cn <%ce>\n%h',
         commid_id,
     ]
     parts = Popen(cmd, stdout=PIPE).stdout.read().split('\n')
@@ -50,8 +50,9 @@ def getCommitInfo(direc, commid_id):
         return
     return {
         'epoch': int(parts[0]),
-        'subject': parts[1],
+        'summary': parts[1],
         'author': parts[2],
+        'shortHash': parts[3],
     }
 
 #def getLog(direc, startJd, endJd):

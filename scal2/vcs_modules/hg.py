@@ -54,15 +54,16 @@ def getCommitInfo(direc, commid_id):
         '-R', direc,
         'log',
         '-r', commid_id,
-        '--template', '{date}\n{desc}\n{author}',
+        '--template', '{date}\n{desc}\n{author}\n{node|short}',
     ]
     parts = Popen(cmd, stdout=PIPE).stdout.read().split('\n')
     if not parts:
         return
     return {
         'epoch': fixEpochStr(parts[0]),
-        'subject': parts[1],
+        'summary': parts[1],
         'author': parts[2],
+        'shortHash': parts[3],
     }
 
 
