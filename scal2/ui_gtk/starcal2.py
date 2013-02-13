@@ -789,6 +789,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             if not group.showInCal:## FIXME
                 continue
             eventTypes = group.acceptsEventTypes
+            if not eventTypes:
+                continue
             item2 = gtk.ImageMenuItem()
             item2.set_label(group.title)
             ##
