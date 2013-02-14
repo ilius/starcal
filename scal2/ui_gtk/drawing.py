@@ -77,7 +77,7 @@ def newTextLayout(widget, text='', font=None, maxSize=None, maximizeScale=0.6):
             ##
             layoutW, layoutH = layout.get_pixel_size()
             ##
-            minRat = max(layoutW/maxW, layoutH/maxH)
+            minRat = 1.01 * max(layoutW/maxW, layoutH/maxH)
             if minRat > 1:
                 font[3] = int(font[3]/minRat)
             else:
