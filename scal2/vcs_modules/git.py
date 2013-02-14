@@ -55,13 +55,46 @@ def getCommitInfo(direc, commid_id):
         'shortHash': parts[3],
     }
 
-#def getLog(direc, startJd, endJd):
-#    log = []
-#    for epoch, commit_id in getCommitList(direc):
+
+def getCommitShortStatLine(direc, commit_id):
+    '''
+        returns str
+    '''
+    p = Popen([
+        'git',
+        '--git-dir', join(direc, '.git'),
+        'log',
+        '--shortstat',
+        '-1',
+        '--pretty=%%',
+        commit_id,
+    ], stdout=PIPE)
+    p.wait()
+    nums = []
+    for line in p.stdout.readlines():
+        if line.startswith(' '):
+            return line.strip()
+    return ''
+
+def getCommitShortStat(direc, commit_id):
+    '''
+        returns (files_changed, insertions, deletions)
+    '''
+    statLine = getCommitShortStatLine(direc, commit_id)
+    if not statLine:
+        return 0, 0, 0
+    for section in statLine.split(','):
+        try:
+            num = int(section.strip().split(' ')[0])
+        except:
+            print 'bad section: %r, statLine=%r'%(section, statLine)
+        else:
+            nums.append(num)
+    return nums[:3]
 
 
-
-def getStat(direc):
+"""
+def getShortStatList(direc):
     '''
         returns a list of (epoch, files_changed, insertions, deletions) tuples
     '''
@@ -69,28 +102,18 @@ def getStat(direc):
     commits = getCommitList(direc)
     n = len(commits) - 1
     for i in range(n):
-        epoch = commits[i][0]
-        p = Popen([
-            'git',
-            'diff',
-            '--shortstat',
-            commits[i][1],
-            commits[i+1][1],
-        ], stdout=PIPE)
-        p.wait()
-        nums = []
-        output = p.stdout.read().strip()
-        if not output:
-            continue
-        for section in output.split(','):
-            try:
-                num = int(section.strip().split(' ')[0])
-            except:
-                print 'bad section: %r, output=%r'%(section, output)
-            else:
-                nums.append(num)
-        ## nums == (files_changed, insertions, deletions)
-        stat.append((epoch, nums[0], nums[1], nums[2]))
+        epoch, commit_id = commits[i]
+        files_changed, insertions, deletions = getCommitShortStat(
+            direc,
+            commit_id,
+        )
+        stat.append((epoch, files_changed, insertions, deletions))
     return stat
+"""
+
+#def getLog(direc, startJd, endJd):
+#    log = []
+#    for epoch, commit_id in getCommitList(direc):
+
 
 

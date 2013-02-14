@@ -2903,13 +2903,7 @@ class VcsCommitEvent(Event):
         self.epoch = None
         self.author = ''
         self.shortHash = ''
-    def updateDesc(self):
-        lines = []
-        if self.parent.showAuthor and self.author:
-            lines.append(_('Author')+': '+self.author)
-        if self.parent.showShortHash and self.shortHash:
-            lines.append(_('Hash')+': '+self.shortHash)
-        self.description = '\n'.join(lines)
+
         
 
 
@@ -2922,6 +2916,7 @@ class VcsEventGroup(EventGroup):
     _myParams = (
         'vcsType',
         'vcsDir',
+        'showStat',
         'showAuthor',
         'showShortHash',
     )
@@ -2930,6 +2925,7 @@ class VcsEventGroup(EventGroup):
     def __init__(self, *args, **kw):
         self.vcsType = 'git'
         self.vcsDir = ''
+        self.showStat = True
         self.showAuthor = True
         self.showShortHash = True
         #self.branch = 'master'
@@ -2948,6 +2944,18 @@ class VcsEventGroup(EventGroup):
             epoch += tz
             self.occur.add(epoch, epoch+epsTm, commit_id)
         self.occurCount = len(clist)
+    def updateEventDesc(self, event):
+        mod = vcsModuleDict[self.vcsType]
+        lines = []
+        if self.showStat:
+            statLine = mod.getCommitShortStatLine(self.vcsDir, event.id)
+            if statLine:
+                lines.append(statLine)## translation FIXME
+        if self.showAuthor and event.author:
+            lines.append(_('Author')+': '+event.author)
+        if self.showShortHash and event.shortHash:
+            lines.append(_('Hash')+': '+event.shortHash)
+        event.description = '\n'.join(lines)
     def getEvent(self, commit_id):
         mod = vcsModuleDict[self.vcsType]
         data = mod.getCommitInfo(self.vcsDir, commit_id)
@@ -2957,7 +2965,7 @@ class VcsEventGroup(EventGroup):
         data['icon'] = self.icon
         event = VcsCommitEvent(self, commit_id)
         event.setData(data)
-        event.updateDesc()
+        self.updateEventDesc(event)
         return event
     def __getitem__(self, key):
         if len(key) < 20:

@@ -41,22 +41,33 @@ class GroupWidget(NormalGroupWidget):
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
+        ##
+        self.statCheck = gtk.CheckButton(_('Stat'))
+        hbox.pack_start(self.statCheck, 0, 0)
+        ##
+        hbox.pack_start(gtk.Label('   '), 0, 0)
+        ##
         self.authorCheck = gtk.CheckButton(_('Author'))
         hbox.pack_start(self.authorCheck, 0, 0)
+        ##
         hbox.pack_start(gtk.Label('   '), 0, 0)
+        ##
         self.shortHashCheck = gtk.CheckButton(_('Short Hash'))
         hbox.pack_start(self.shortHashCheck, 0, 0)
+        ##
         self.pack_start(hbox, 0, 0)
     def updateWidget(self):
         NormalGroupWidget.updateWidget(self)
         self.vcsTypeCombo.set_active(vcsModuleNames.index(self.group.vcsType))
         self.dirEntry.set_text(self.group.vcsDir)
+        self.statCheck.set_active(self.group.showStat)
         self.authorCheck.set_active(self.group.showAuthor)
         self.shortHashCheck.set_active(self.group.showShortHash)
     def updateVars(self):
         NormalGroupWidget.updateVars(self)
         self.group.vcsType = vcsModuleNames[self.vcsTypeCombo.get_active()]
         self.group.vcsDir = self.dirEntry.get_text()
+        self.group.showStat = self.statCheck.get_active()
         self.group.showAuthor = self.authorCheck.get_active()
         self.group.showShortHash = self.shortHashCheck.get_active()
 

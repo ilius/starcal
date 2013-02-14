@@ -66,9 +66,44 @@ def getCommitInfo(direc, commid_id):
         'shortHash': parts[3],
     }
 
+def getCommitShortStat(direc, commit_id):
+    '''
+        returns (files_changed, insertions, deletions)
+    '''
+    p = Popen([
+        'hg',
+        '-R', direc,
+        'log',
+        '-r', commit_id,
+        '--template',
+        '{diffstat}',
+    ], stdout=PIPE)
+    p.wait()
+    parts = p.stdout.read().strip().split(' ')
+    files_changed = int(parts[0].split(':')[0])
+    insertions, deletions = parts[1].split('/')
+    insertions = int(insertions)
+    deletions = -int(deletions)
+    return files_changed, insertions, deletions
 
+def getCommitShortStatLine(direc, commit_id):
+    '''
+        returns str
+    '''
+    files_changed, insertions, deletions = getCommitShortStat(direc, commit_id)
+    parts = []
+    if files_changed == 1:
+        parts.append('1 file changed')
+    else:
+        parts.append('%d files changed'%files_changed)
+    if insertions > 0:
+        parts.append('%d insertions(+)'%insertions)
+    if deletions > 0:
+        parts.append('%d deletions(-)'%deletions)
+    return ', '.join(parts)
 
-def getStat(direc):
+"""
+def getShortStatList(direc):
     '''
         returns a list of (epoch, files_changed, insertions, deletions) tuples
     '''
@@ -90,5 +125,5 @@ def getStat(direc):
         deletions = -int(deletions)
         data.append((epoch, files_changed, insertions, deletions))
     return data
-
+"""
 
