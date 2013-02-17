@@ -133,8 +133,13 @@ class Column(gtk.Widget, ColumnBase):
             w = self.allocation.width
             h = self.allocation.height
             setColor(cr, ui.wcalGridColor)
+            ###
             cr.rectangle(w-1, 0, 1, h)
             cr.fill()
+            ###
+            for i in range(1, 7):
+                cr.rectangle(0, i*rowH, w, 1)
+                cr.fill()
     def drawCursorFg(self, cr):
         w = self.allocation.width
         h = self.allocation.height
