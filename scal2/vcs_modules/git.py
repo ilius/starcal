@@ -36,6 +36,41 @@ def getCommitList(direc, startJd=None, endJd=None):
         ))
     return data
 
+def getTagList(direc):## , startJd=None, endJd=None
+    '''
+        returns a list of (epoch, commit_id, tag_name) tuples
+    '''
+    cmd = [
+        'git',
+        '--git-dir', join(direc, '.git'),
+        'tag',
+    ]
+    p = Popen(cmd, stdout=PIPE)
+    p.wait()
+    data = []
+    for line in p.stdout:
+        tag = line.strip()
+        if not tag:
+            continue
+        parts = Popen([
+            'git',
+            '--git-dir', join(direc, '.git'),
+            'log',
+            '-1',
+            tag,
+            '--pretty=%ct %H',
+        ], stdout=PIPE).stdout.read().split(' ')
+        epoch, commit_id = parts
+        epoch = int(epoch)
+        data.append((
+            epoch,
+            commit_id,
+            tag,
+        ))
+    return data
+
+
+
 def getCommitInfo(direc, commid_id):
     cmd = [
         'git',
@@ -115,5 +150,7 @@ def getShortStatList(direc):
 #    log = []
 #    for epoch, commit_id in getCommitList(direc):
 
-
+if __name__=='__main__':
+    from pprint import pprint
+    pprint(getTagList('/starcal2'))
 

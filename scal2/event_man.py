@@ -2887,25 +2887,54 @@ class LargeScaleGroup(EventGroup):
 ###########################################################################
 ###########################################################################
 
-class VcsCommitEvent(Event):
-    name = 'vcs'
-    desc = _('VCS Commit')
+class VcsBaseEvent(Event):
     readOnly = True
     params = Event.params + (
         'epoch',
+    )
+    __nonzero__ = lambda self: True
+    def save(self):
+        pass
+    def load(self):## FIXME
+        pass
+    def afterModify(self):
+        pass
+    getInfo = lambda self: self.getText()## FIXME
+    def calcOccurrenceForJdRange(self, startJd, endJd):
+        if self.epoch is not None:
+            if getEpochFromJd(startJd) <= self.epoch < getEpochFromJd(endJd):
+                return TimeListOccurrence(self.epoch)
+        return TimeListOccurrence()
+
+#@classes.event.register ## FIXME
+class VcsCommitEvent(VcsBaseEvent):
+    name = 'vcs'
+    desc = _('VCS Commit')
+    params = VcsBaseEvent.params + (
         'author',
         'shortHash',
     )
     def __init__(self, parent, _id):
         Event.__init__(self, parent=parent)
-        self.id = _id
+        self.id = _id ## commit full hash
         ###
         self.epoch = None
         self.author = ''
         self.shortHash = ''
+    __repr__ = lambda self: '%r.getEvent(%r)'%(self.parent, self.id)
 
-        
 
+
+class VcsTagEvent(VcsBaseEvent):
+    name = 'vcsTag'
+    desc = _('VCS Tag')
+    params = VcsBaseEvent.params + (
+    )
+    def __init__(self, parent, _id):
+        Event.__init__(self, parent=parent)
+        self.id = _id ## tag name
+        self.epoch = None
+        self.author = ''
 
 
 @classes.group.register
@@ -2922,14 +2951,15 @@ class VcsEventGroup(EventGroup):
     )
     params = EventGroup.params + _myParams
     jsonParams = EventGroup.jsonParams + _myParams
-    def __init__(self, *args, **kw):
-        self.vcsType = 'git'
-        self.vcsDir = ''
+    def __init__(self, vcsType='git', vcsDir='', *args, **kw):
+        self.vcsType = vcsType
+        self.vcsDir = vcsDir
         self.showStat = True
         self.showAuthor = True
         self.showShortHash = True
         #self.branch = 'master'
         EventGroup.__init__(self, *args, **kw)
+    __repr__ = lambda self: 'VcsEventGroup(vcsType=%r, vcsDir=%r)'%(self.vcsType, self.vcsDir)
     def setDefaults(self):
         self.eventTextSep = '\n'
     def updateOccurrence(self):
@@ -2956,7 +2986,7 @@ class VcsEventGroup(EventGroup):
         if self.showShortHash and event.shortHash:
             lines.append(_('Hash')+': '+event.shortHash)
         event.description = '\n'.join(lines)
-    def getEvent(self, commit_id):
+    def getEvent(self, commit_id):## cache commit data FIXME
         mod = vcsModuleDict[self.vcsType]
         data = mod.getCommitInfo(self.vcsDir, commit_id)
         if not data:
