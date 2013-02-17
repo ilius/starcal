@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ## StarCal Builtin Plugin
-db_name = 'extra-iran-bastani.db'
+db_name = 'iran-ancient.db'
 mode = 'jalali'
 desc = 'جشن‌های باستانی ایران'
 about = \

@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 ## StarCal Builtin Plugin
-db_name = 'extra-gregorian.db'
-mode = 'gregorian'
+db_name = 'iran-jalali-2.db'
+mode = 'jalali'
 desc = \
-'مناسبت‌های میلادی (تقویم رسمی ایران)'
+'مناسبت‌های هجری شمسی (سایر)'
 about = \
-'''مناسبت‌های میلادی (تقویم رسمی ایران)
+'''مناسبت‌های هجری شمسی (سایر)
+مناسبت‌های هجری شمسی که توسط مؤلف برنامه اضافه شده‌اند و در تقویم رسمی ایران نیست. و یا به تازگی از تقویم رسمی ایران حذف شده‌اند.
 آخرین تغییرات: ۲۰۱۰/۰۲/۲۴'''
 authors = [
 'شورای مرکز تقویم مؤسسهٔ ژئوفیزیک دانشگاه تهران و شورای فرهنگ عمومی',
@@ -15,6 +16,6 @@ authors = [
 has_config = False
 has_image = False
 
-default_enable = True
+default_enable = False
 default_show_date = False
 
