@@ -622,9 +622,9 @@ class AICalsPrefItem():
                 s.swap(s.get_iter(i), s.get_iter(i+1))
                 treev.set_cursor(i+1)
     def inactivateIndex(self, index):
-        self.inactiveTrees.append(self.activeTrees[index])
+        self.inactiveTrees.prepend(self.activeTrees[index])
         del self.activeTrees[index]
-        self.inactiveTreev.set_cursor(len(self.inactiveTrees)-1)## FIXME
+        self.inactiveTreev.set_cursor(0)
         try:
             self.activeTreev.set_cursor(min(index, len(self.activeTrees)-1))
         except:
