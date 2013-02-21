@@ -7,7 +7,7 @@ from scal2 import event_man
 import gtk
 from gtk import gdk
 
-
+'''
 class MultiValueRule(gtk.HBox):
     def __init__(self, rule, ValueWidgetClass):
         self.rule = rule
@@ -30,3 +30,6 @@ class MultiValueRule(gtk.HBox):
 
     def addWidget(self, obj=None):
         widget = self.ValueWidgetClass()
+'''
+
+
