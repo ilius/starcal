@@ -22,9 +22,9 @@ class RuleWidget(gtk.HBox):
         self.pack_start(tbox, 0, 0)
         self.tbox = tbox
     def updateWidget(self):
-        self.spin.set_value(self.rule.cycleDays)
-        self.tbox.set_value(self.rule.cycleExtraTime)
+        self.spin.set_value(self.rule.days)
+        self.tbox.set_value(self.rule.extraTime)
     def updateVars(self):
-        self.rule.cycleDays = self.spin.get_value()
-        self.rule.cycleExtraTime = self.tbox.get_value()
+        self.rule.days = self.spin.get_value()
+        self.rule.extraTime = self.tbox.get_value()
 

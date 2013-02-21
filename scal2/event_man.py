@@ -46,7 +46,7 @@ from scal2.cal_modules import calModuleNames, jd_to, to_jd, convert, DATE_GREG
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName, textNumEncode
 from scal2 import core
-from scal2.core import myRaise, getEpochFromJd, getEpochFromJhms, log, getAbsWeekNumberFromJd, dataToJson
+from scal2.core import myRaise, getJdFromEpoch, getEpochFromJd, getEpochFromJhms, log, getAbsWeekNumberFromJd, dataToJson, jwday
 
 from scal2.ics import icsHeader, getIcsTimeByEpoch, getIcsDateByJd, getJdByIcsDate, getEpochByIcsTime
 from scal2.vcs_modules import vcsModuleDict
@@ -207,34 +207,39 @@ class Occurrence(EventBaseClass):
             ls.append((getFloatJdFromEpoch(ep0), getFloatJdFromEpoch(ep1)))
         return ls
     containsMoment = lambda self, epoch: False
-    def getStartEpoch(self):
+    def getStartJd(self):
         raise NotImplementedError
-    def getEndEpoch(self):
+    def getEndJd(self):
         raise NotImplementedError
     #__iter__ = lambda self: iter(self.getTimeRangeList())
 
-class JdListOccurrence(Occurrence):
-    name = 'jdList'
-    def __init__(self, jdList=None):
+class JdSetOccurrence(Occurrence):
+    name = 'jdSet'
+    def __init__(self, jdSet=None):
         Occurrence.__init__(self)
-        if not jdList:
-            jdList = []
-        self.jdSet = set(jdList)
-    __repr__ = lambda self: 'JdListOccurrence(%r)'%list(self.jdSet)
+        if not jdSet:
+            jdSet = []
+        self.jdSet = set(jdSet)
+    __repr__ = lambda self: 'JdSetOccurrence(%r)'%list(self.jdSet)
     __nonzero__ = lambda self: bool(self.jdSet)
     __len__ = lambda self: len(self.jdSet)
-    getStartEpoch = lambda self: getEpochFromJd(min(self.jdSet))
-    getEndEpoch = lambda self: getEpochFromJd(max(self.jdSet)+1)
+    getStartJd = lambda self: min(self.jdSet)
+    getEndJd = lambda self: max(self.jdSet)+1
     def intersection(self, occur):
-        if isinstance(occur, JdListOccurrence):
-            return JdListOccurrence(self.jdSet.intersection(occur.jdSet))
+        if isinstance(occur, JdSetOccurrence):
+            return JdSetOccurrence(self.jdSet.intersection(occur.jdSet))
         elif isinstance(occur, TimeRangeListOccurrence):
-            return TimeRangeListOccurrence(intersectionOfTwoIntervalList(self.getTimeRangeList(), occur.getTimeRangeList()))
+            return TimeRangeListOccurrence(
+                intersectionOfTwoIntervalList(
+                    self.getTimeRangeList(),
+                    occur.getTimeRangeList(),
+                )
+            )
         elif isinstance(occur, TimeListOccurrence):
             return occur.intersection(self)
         else:
             raise TypeError
-    getDaysJdList = lambda self: self.jdSet
+    getDaysJdList = lambda self: sorted(self.jdSet)
     getTimeRangeList = lambda self: [(getEpochFromJd(jd), getEpochFromJd(jd+1)) for jd in self.jdSet]
     containsMoment = lambda self, epoch: (getJdFromEpoch(epoch) in self.jdSet)
     def calcJdRanges(self):
@@ -266,22 +271,21 @@ class TimeRangeListOccurrence(Occurrence):
     __nonzero__ = lambda self: bool(self.rangeList)
     __len__ = lambda self: len(self.rangeList)
     #__getitem__ = lambda i: self.rangeList.__getitem__(i)## FIXME
-    getStartEpoch = lambda self: min([r[0] for r in self.rangeList])
-    getEndEpoch = lambda self: max([r[1] for r in self.rangeList]+[r[1] for r in self.rangeList])
+    getStartJd = lambda self: getJdFromEpoch(min([r[0] for r in self.rangeList]))
+    getEndJd = lambda self: getJdFromEpoch(max([r[1] for r in self.rangeList]+[r[1] for r in self.rangeList]))
     def intersection(self, occur):
-        if isinstance(occur, (JdListOccurrence, TimeRangeListOccurrence)):
+        if isinstance(occur, (JdSetOccurrence, TimeRangeListOccurrence)):
             return TimeRangeListOccurrence(intersectionOfTwoIntervalList(self.getTimeRangeList(), occur.getTimeRangeList()))
         elif isinstance(occur, TimeListOccurrence):
             return occur.intersection(self)
         else:
             raise TypeError('bad type %s (%r)'%(occur.__class__.__name__, occur))
     def getDaysJdList(self):
-        jdList = []
+        jds = set()
         for (startEpoch, endEpoch) in self.rangeList:
             for jd in getJdListFromEpochRange(startEpoch, endEpoch):
-                if not jd in jdList:
-                    jdList.append(jd)
-        return jdList
+                jds.add(jd)
+        return sorted(jds)
     getTimeRangeList = lambda self: self.rangeList
     def containsMoment(self, epoch):
         for (startEpoch, endEpoch) in self.rangeList:
@@ -308,27 +312,25 @@ class TimeListOccurrence(Occurrence):
     __repr__ = lambda self: 'TimeListOccurrence(%r)'%self.epochList
     #__nonzero__ = lambda self: self.startEpoch == self.endEpoch
     __nonzero__ = lambda self: bool(self.epochList)
-    getStartEpoch = lambda self: min(self.epochList)
-    getEndEpoch = lambda self: max(self.epochList)+1
+    getStartJd = lambda self: getJdFromEpoch(min(self.epochList))
+    getEndJd = lambda self: getJdFromEpoch(max(self.epochList)+1)
     def setRange(self, startEpoch, endEpoch, stepSeconds):
         self.startEpoch = startEpoch
         self.endEpoch = endEpoch
         self.stepSeconds = stepSeconds
         self.epochList = set(arange(startEpoch, endEpoch, stepSeconds))
     def intersection(self, occur):
-        if isinstance(occur, (JdListOccurrence, TimeRangeListOccurrence)):
+        if isinstance(occur, (JdSetOccurrence, TimeRangeListOccurrence)):
             return TimeListOccurrence(self.getMomentsInsideTimeRangeList(occur.getTimeRangeList()))
         elif isinstance(occur, TimeListOccurrence):
             return TimeListOccurrence(self.epochList.intersection(occur.epochList))
         else:
             raise TypeError
     def getDaysJdList(self):## improve performance ## FIXME
-        jdList = []
+        jds = set()
         for epoch in self.epochList:
-            jd = getJdFromEpoch(epoch)
-            if not jd in jdList:
-                jdList.append(jd)
-        return jdList
+            jds.add(getJdFromEpoch(epoch))
+        return sorted(jds)
     def getTimeRangeList(self):
         return [(epoch, epoch + epsTm) for epoch in self.epochList]## or end=None ## FIXME
     def containsMoment(self, epoch):## FIXME
@@ -359,12 +361,21 @@ class EventRule(EventBaseClass):
     getMode = lambda self: self.parent.mode
     def changeMode(self, mode):
         return True
-    def calcOccurrence(self, startEpoch, endEpoch, event):
+    def calcOccurrence(self, startJd, endJd, event):
         raise NotImplementedError
     getInfo = lambda self: self.desc + ': %s'%self
 
+class AllDayEventRule(EventRule):
+    jdMatches = lambda self, jd: True
+    def calcOccurrence(self, startJd, endJd, event):## improve performance ## FIXME
+        jds = set()
+        for jd in range(startJd, endJd):
+            if self.jdMatches(jd):
+                jds.add(jd)## benchmark FIXME
+        return JdSetOccurrence(jds)
+
 ## Should not be registered, or instantiate directly
-class MultiValueEventRule(EventRule):
+class MultiValueEventRule(AllDayEventRule):
     #params = ('values',)
     expand = True## FIXME
     def __init__(self, parent):
@@ -386,13 +397,6 @@ class MultiValueEventRule(EventRule):
                 if item == value:
                     return True
         return False
-    jdMatches = lambda self, jd: True
-    def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
-        jdList = []
-        for jd in getJdListFromEpochRange(startEpoch, endEpoch):
-            if jd not in jdList and self.jdMatches(jd):
-                jdList.append(jd)
-        return JdListOccurrence(jdList)
     def getValuesPlain(self):
         ls = []
         for item in self.values:
@@ -473,22 +477,22 @@ class WeekNumberModeEventRule(EventRule):
             raise BadEventFile('bad rule weekNumMode=%r, the value for weekNumMode must be one of %r'\
                 %(modeName, self.weekNumModeNames))
         self.weekNumMode = self.weekNumModeNames.index(modeName)
-    def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
+    def calcOccurrence(self, startJd, endJd, event):## improve performance ## FIXME
         startAbsWeekNum = getAbsWeekNumberFromJd(event.getStartJd()) - 1 ## 1st week ## FIXME
-        jdListAll = getJdListFromEpochRange(startEpoch, endEpoch)
         if self.weekNumMode==self.EVERY_WEEK:
-            jdList = jdListAll
+            return JdSetOccurrence(range(startJd, endJd))
         elif self.weekNumMode==self.ODD_WEEKS:
-            jdList = []
-            for jd in jdListAll:
+            jds = set()
+            for jd in range(startJd, endJd):
                 if (getAbsWeekNumberFromJd(jd)-startAbsWeekNum)%2==1:
-                    jdList.append(jd)
+                    jds.add(jd)
+            return JdSetOccurrence(jds)
         elif self.weekNumMode==self.EVEN_WEEKS:
-            jdList = []
-            for jd in jdListAll:
+            jds = set()
+            for jd in range(startJd, endJd):
                 if (getAbsWeekNumberFromJd(jd)-startAbsWeekNum)%2==0:
-                    jdList.append(jd)
-        return JdListOccurrence(jdList)
+                    jds.add(jd)
+            return JdSetOccurrence(jds)
     def getInfo(self):
         if self.weekNumMode == self.EVERY_WEEK:
             return ''
@@ -498,7 +502,7 @@ class WeekNumberModeEventRule(EventRule):
             return _('Even Weeks')
 
 @classes.rule.register
-class WeekDayEventRule(EventRule):
+class WeekDayEventRule(AllDayEventRule):
     name = 'weekDay'
     desc = _('Day of Week')
     conflict = ('date',)
@@ -515,12 +519,7 @@ class WeekDayEventRule(EventRule):
             self.weekDayList = data
         else:
             raise BadEventFile('bad rule weekDayList=%s, value for weekDayList must be a list of integers (0 for sunday)'%data)
-    def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
-        jdList = []
-        for jd in getJdListFromEpochRange(startEpoch, endEpoch):
-            if core.jwday(jd) in self.weekDayList and not jd in jdList:
-                jdList.append(jd)
-        return JdListOccurrence(jdList)
+    jdMatches = lambda self, jd: jwday(jd) in self.weekDayList
     def getInfo(self):
         if self.weekDayList == range(7):
             return ''
@@ -529,6 +528,7 @@ class WeekDayEventRule(EventRule):
         return _('Day of Week') + ': ' + \
                sep.join([core.weekDayName[wd] for wd in self.weekDayList[:-1]]) + \
                sep2 + core.weekDayName[self.weekDayList[-1]]
+
 
 @classes.rule.register
 class DateEventRule(EventRule):
@@ -553,22 +553,12 @@ class DateEventRule(EventRule):
     getEpoch = lambda self: getEpochFromJd(self.getJd())
     def setJd(self, jd):
         self.date = jd_to(jd, self.getMode())
-    def calcOccurrence(self, startEpoch, endEpoch, event):
+    def calcOccurrence(self, startJd, endJd, event):
         myJd = self.getJd()
-        myStartEpoch = getEpochFromJd(myJd)
-        myEndEpoch = getEpochFromJd(myJd+1)
-        if startEpoch <= myStartEpoch and myEndEpoch <= endEpoch:
-            return JdListOccurrence([myJd])
-        startEpoch = max(startEpoch, myStartEpoch)
-        endEpoch = min(endEpoch, myEndEpoch)
-        if endEpoch >= startEpoch:
-            return TimeRangeListOccurrence(
-                [
-                    (startEpoch, endEpoch),
-                ]
-            )
+        if startJd <= myJd < endJd:
+            return JdSetOccurrence([myJd])
         else:
-            return TimeRangeListOccurrence()
+            return JdSetOccurrence()
     def changeMode(self, mode):
         self.date = jd_to(self.getJd(), mode)
         return True
@@ -621,14 +611,8 @@ class DayTimeEventRule(EventRule):## Moment Event
     getData = lambda self: timeEncode(self.dayTime)
     def setData(self, data):
         self.dayTime = timeDecode(data)
-    def calcOccurrence(self, startEpoch, endEpoch, event):
+    def calcOccurrence(self, startJd, endJd, event):
         mySec = getSecondsFromHms(*self.dayTime)
-        (startJd, startExtraSec) = core.getJdAndSecondsFromEpoch(startEpoch)
-        (endJd, endExtraSec) = core.getJdAndSecondsFromEpoch(endEpoch)
-        if startExtraSec > mySec:
-            startJd += 1
-        if endExtraSec < mySec:
-            endJd -= 1
         return TimeListOccurrence(## FIXME
             getEpochFromJd(startJd) + mySec,
             getEpochFromJd(endJd) + mySec + 1,
@@ -659,15 +643,14 @@ class DayTimeRangeEventRule(EventRule):
     )
     getData = lambda self: (timeEncode(self.dayTimeStart), timeEncode(self.dayTimeEnd))
     setData = lambda self, data: self.setRange(timeDecode(data[0]), timeDecode(data[1]))
-    def calcOccurrence(self, startEpoch, endEpoch, event):
+    def calcOccurrence(self, startJd, endJd, event):
         daySecStart = getSecondsFromHms(*self.dayTimeStart)
         daySecEnd = getSecondsFromHms(*self.dayTimeEnd)
-        startDiv = int(startEpoch//dayLen)
-        endDiv = int(endEpoch//dayLen)
-        return TimeRangeListOccurrence(intersectionOfTwoIntervalList(
-            [(i*dayLen+daySecStart, i*dayLen+daySecEnd) for i in range(startDiv, endDiv+1)],
-            [(startEpoch, endEpoch)],
-        ))
+        tmList = []
+        for jd in range(startJd, endJd):
+            epoch = getEpochFromJd(jd)
+            tmList.append((epoch+daySecStart, epoch+daySecEnd))
+        return TimeRangeListOccurrence(tmList)
 
 
 @classes.rule.register
@@ -675,8 +658,10 @@ class StartEventRule(DateAndTimeEventRule):
     name = 'start'
     desc = _('Start')
     conflict = ('date',)
-    def calcOccurrence(self, startEpoch, endEpoch, event):
+    def calcOccurrence(self, startJd, endJd, event):
         myEpoch = self.getEpoch()
+        startEpoch = getEpochFromJd(startJd)
+        endEpoch = getEpochFromJd(endJd)
         if endEpoch <= myEpoch:
             return TimeRangeListOccurrence([])
         if startEpoch < myEpoch:
@@ -688,8 +673,9 @@ class EndEventRule(DateAndTimeEventRule):
     name = 'end'
     desc = _('End')
     conflict = ('date', 'duration',)
-    def calcOccurrence(self, startEpoch, endEpoch, event):
-        endEpoch = min(endEpoch, self.getEpoch())
+    def calcOccurrence(self, startJd, endJd, event):
+        startEpoch = getEpochFromJd(startJd)
+        endEpoch = min(getEpochFromJd(endJd), self.getEpoch())
         if startEpoch >= endEpoch:## how about startEpoch==endEpoch FIXME
             return TimeRangeListOccurrence([])
         else:
@@ -720,14 +706,27 @@ class DurationEventRule(EventRule):
         except Exception, e:
             log.error('Error while loading event rule "%s": %s'%(self.name, e))
     getData = lambda self: durationEncode(self.value, self.unit)
-    def calcOccurrence(self, startEpoch, endEpoch, event):
-        endEpoch = min(endEpoch, self.parent['start'].getEpoch() + self.getSeconds())
+    def calcOccurrence(self, startJd, endJd, event):
+        startEpoch = getEpochFromJd(startJd)
+        endEpoch = min(getEpochFromJd(endJd), self.parent['start'].getEpoch() + self.getSeconds())
         if startEpoch >= endEpoch:## how about startEpoch==endEpoch FIXME
             return TimeRangeListOccurrence([])
         else:
             return TimeRangeListOccurrence([(startEpoch, endEpoch)])
 
 
+
+def cycleDaysCalcOccurrence(days, startJd, endJd, event):
+    eStartJd = event.getStartJd()
+    if startJd <= eStartJd:
+        startJd = eStartJd
+    else:
+        startJd = eStartJd + ((startJd - eStartJd - 1) // days + 1) * days
+    return JdSetOccurrence(range(
+        startJd,
+        endJd,
+        days,
+    ))
 
 @classes.rule.register
 class CycleDaysEventRule(EventRule):
@@ -742,10 +741,7 @@ class CycleDaysEventRule(EventRule):
     getData = lambda self: self.days
     def setData(self, days):
         self.days = days
-    def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
-        startJd = max(event.getStartJd(), core.getJdFromEpoch(startEpoch))
-        endJd = core.getJdFromEpoch(endEpoch - epsTm) + 1
-        return JdListOccurrence(range(startJd, endJd, self.days))
+    calcOccurrence = lambda self, startJd, endJd, event: cycleDaysCalcOccurrence(self.days, startJd, endJd, event)
     getInfo = lambda self: _('Repeat: Every %s Days')%_(self.days)
 
 @classes.rule.register
@@ -761,10 +757,7 @@ class CycleWeeksEventRule(EventRule):
     getData = lambda self: self.weeks
     def setData(self, weeks):
         self.weeks = weeks
-    def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
-        startJd = max(event.getStartJd(), core.getJdFromEpoch(startEpoch))
-        endJd = core.getJdFromEpoch(endEpoch - epsTm) + 1
-        return JdListOccurrence(range(startJd, endJd, self.weeks*7))
+    calcOccurrence = lambda self, startJd, endJd, event: cycleDaysCalcOccurrence(self.weeks*7, startJd, endJd, event)
     getInfo = lambda self: _('Repeat: Every %s Weeks')%_(self.weeks)
 
 
@@ -788,10 +781,22 @@ class CycleLenEventRule(EventRule):
     def setData(self, arg):
         self.days = arg['days']
         self.extraTime = timeDecode(arg['extraTime'])
-    def calcOccurrence(self, startEpoch, endEpoch, event):
-        startEpoch = max(startEpoch, self.parent['start'].getEpoch())
+    def calcOccurrence(self, startJd, endJd, event):
+        startEpoch = getEpochFromJd(startJd)
+        eventStartEpoch = event.getStartEpoch()
+        ##
         cycleSec = self.days*dayLen + getSecondsFromHms(*self.extraTime)
-        return TimeListOccurrence(startEpoch, endEpoch, cycleSec)
+        ##
+        if startEpoch <= eventStartEpoch:
+            startEpoch = eventStartEpoch
+        else:
+            startEpoch = eventStartEpoch + ((startEpoch - eventStartEpoch - 1) // cycleSec + 1) * cycleSec
+        ##
+        return TimeListOccurrence(
+            startEpoch,
+            getEpochFromJd(endJd),
+            cycleSec,
+        )
     getInfo = lambda self: _('Repeat: Every %s Days and %s')%(_(self.days), timeEncode(self.extraTime))
 
 @classes.rule.register
@@ -827,9 +832,9 @@ class ExDatesEventRule(EventRule):
     def setDates(self, dates):
         self.dates = dates
         self.jdList = [to_jd(y, m, d, self.getMode()) for (y, m, d) in dates]
-    def calcOccurrence(self, startEpoch, endEpoch, event):## improve performance ## FIXME
-        return JdListOccurrence(
-            set(getJdListFromEpochRange(startEpoch, endEpoch)).difference(self.jdList)
+    def calcOccurrence(self, startJd, endJd, event):## improve performance ## FIXME
+        return JdSetOccurrence(
+            set(range(startJd, endJd)).difference(self.jdList)
         )
     def getData(self):
         datesConf = []
@@ -1278,26 +1283,24 @@ class Event(JsonEventBaseClass, RuleContainer):
     #def load(self):## skipRules arg for use in ui_gtk/event/notify.py ## FIXME
     getNotifiersData = lambda self: [(notifier.name, notifier.getData()) for notifier in self.notifiers]
     getNotifiersDict = lambda self: dict(self.getNotifiersData())
-    def calcOccurrenceForJdRange(self, startJd, endJd):## float jd ## cache Occurrences ## FIXME
+    def calcOccurrence(self, startJd, endJd):## float jd ## cache Occurrences ## FIXME
         rules = self.rulesOd.values()
         if not rules:
-            return JdListOccurrence()
-        startEpoch = getEpochFromJd(startJd)
-        endEpoch = getEpochFromJd(endJd)
-        occur = rules[0].calcOccurrence(startEpoch, endEpoch, self)
+            return JdSetOccurrence()
+        occur = rules[0].calcOccurrence(startJd, endJd, self)
         for rule in rules[1:]:
             try:
-                startEpoch = occur.getStartEpoch()
-            except ValueError:
+                startJd = occur.getStartJd()
+            except:
                 pass
             try:
-                endEpoch = occur.getEndEpoch()
-            except ValueError:
+                endJd = occur.getEndJd()
+            except:
                 pass
-            occur = occur.intersection(rule.calcOccurrence(startEpoch, endEpoch, self))
+            occur = occur.intersection(rule.calcOccurrence(startJd, endJd, self))
         occur.event = self
         return occur ## FIXME
-    calcOccurrenceAll = lambda self: self.calcOccurrenceForJdRange(self.parent.startJd, self.parent.endJd)
+    calcOccurrenceAll = lambda self: self.calcOccurrence(self.parent.startJd, self.parent.endJd)
     #def calcFirstOccurrenceAfterJd(self, startJd):## too much tricky! FIXME
     def notify(self, finishFunc):
         self.n = len(self.notifiers)
@@ -1356,11 +1359,20 @@ class Event(JsonEventBaseClass, RuleContainer):
             return self['end'].getJd()
         except KeyError:
             return self.parent.endJd
-
+    def getStartEpoch(self):## FIXME
+        try:
+            return self['start'].getEpoch()
+        except KeyError:
+            return getEpochFromJd(self.parent.startJd)
+    def getEndEpoch(self):## FIXME
+        try:
+            return self['end'].getEpoch()
+        except KeyError:
+            return getEpochFromJd(self.parent.endJd)
 
 class SingleStartEndEvent(Event):
-    getStartEpoch = lambda self: self['start'].getEpoch()
-    getEndEpoch = lambda self: self['end'].getEpoch()
+    getStartJd = lambda self: self['start'].getJd()
+    getEndJd = lambda self: self['end'].getJd()
     setStartEpoch = lambda self, epoch: self.getAddRule('start').setEpoch(epoch)
     setEndEpoch = lambda self, epoch: self.getAddRule('end').setEpoch(epoch)
     getJd = lambda self: self['start'].getJd()
@@ -1375,7 +1387,7 @@ class SingleStartEndEvent(Event):
             ('TRANSP', 'OPAQUE'),
             ('CATEGORIES', self.name),## FIXME
         ]
-    def calcOccurrenceForJdRange(self, startJd, endJd):
+    def calcOccurrence(self, startJd, endJd):
         startEpoch = max(getEpochFromJd(startJd), self.getStartEpoch())
         endEpoch = min(getEpochFromJd(endJd), self.getEndEpoch())
         if endEpoch > startEpoch:
@@ -1631,9 +1643,9 @@ class DailyNoteEvent(Event):
     setJd = lambda self, jd: self['date'].setJd(jd)
     def setDefaults(self):
         self.setDate(*core.getSysDate(self.mode))
-    def calcOccurrenceForJdRange(self, startJd, endJd):## float jd
+    def calcOccurrence(self, startJd, endJd):## float jd
         jd = self.getJd()
-        return JdListOccurrence([jd] if startJd <= jd < endJd else [])
+        return JdSetOccurrence([jd] if startJd <= jd < endJd else [])
     def getIcsData(self, prettyDateTime=False):
         jd = self.getJd()
         return [
@@ -1677,7 +1689,7 @@ class YearlyEvent(Event):
         self.setMonth(m)
         self.setDay(d)
         self.getAddRule('start').date = (y, 1, 1)
-    def calcOccurrenceForJdRange(self, startJd, endJd):## float jd
+    def calcOccurrence(self, startJd, endJd):## float jd
         mode = self.mode
         month = self.getMonth()
         day = self.getDay()
@@ -1689,14 +1701,14 @@ class YearlyEvent(Event):
             startJd = max(startJd, startRule.getJd())
         startYear = jd_to(ifloor(startJd), mode)[0]
         endYear = jd_to(iceil(endJd), mode)[0]
-        jdList = set()
+        jds = set()
         for year in (startYear, endYear+1):
             jd = to_jd(year, month, day, mode)
             if startJd <= jd < endJd:
-                jdList.add(jd)
+                jds.add(jd)
         for year in range(startYear+1, endYear):
-            jdList.add(to_jd(year, month, day, mode))
-        return JdListOccurrence(jdList)
+            jds.add(to_jd(year, month, day, mode))
+        return JdSetOccurrence(jds)
     def getData(self):
         data = Event.getData(self)
         try:
@@ -1836,12 +1848,12 @@ class UniversityClassEvent(Event):
     def updateSummary(self):
         self.summary = _('%s Class')%self.getCourseName() + ' (' + self.getWeekDayName() + ')'
     def setJd(self, jd):
-        self['weekDay'].weekDayList = [core.jwday(jd)]
+        self['weekDay'].weekDayList = [jwday(jd)]
         ## set weekNumMode from absWeekNumber FIXME
     def getIcsData(self, prettyDateTime=False):
         startJd = self['start'].getJd()
         endJd = self['end'].getJd()
-        occur = event.calcOccurrenceForJdRange(startJd, endJd)
+        occur = event.calcOccurrence(startJd, endJd)
         tRangeList = occur.getTimeRangeList()
         if not tRangeList:
             return
@@ -1886,8 +1898,8 @@ class UniversityExamEvent(DailyNoteEvent):
     getCourseName = lambda self: self.parent.getCourseNameById(self.courseId)
     def updateSummary(self):
         self.summary = _('%s Exam')%self.getCourseName()
-    def calcOccurrenceForJdRange(self, startJd, endJd):
-        return DailyNoteEvent.calcOccurrenceForJdRange(self, startJd, endJd).intersection(
+    def calcOccurrence(self, startJd, endJd):
+        return DailyNoteEvent.calcOccurrence(self, startJd, endJd).intersection(
             self['dayTimeRange'].calcOccurrence(
                 getEpochFromJd(startJd),
                 getEpochFromJd(endJd),
@@ -1972,7 +1984,7 @@ class LargeScaleEvent(Event):## or MegaEvent? FIXME
     getJd = lambda self: to_jd(self.start*self.scale, 1, 1, self.mode)
     def setJd(self, jd):
         self.start = jd_to(jd, self.mode)[0]//self.scale
-    def calcOccurrenceForJdRange(self, startJd, endJd):
+    def calcOccurrence(self, startJd, endJd):
         myStartJd = iceil(to_jd(self.scale*self.start, 1, 1, self.mode))
         myEndJd = ifloor(to_jd(self.scale*self.getEnd(), 1, 1, self.mode))
         return TimeRangeListOccurrence(
@@ -2416,7 +2428,7 @@ class EventGroup(EventContainer):
         startJd = self.startJd
         endJd = self.endJd
         for event in self:
-            occur = event.calcOccurrenceForJdRange(startJd, endJd)
+            occur = event.calcOccurrence(startJd, endJd)
             if occur:
                 yield event, occur
     calcOccurrenceAll = lambda self: IteratorFromGen(self.calcOccurrenceAllGen()) 
@@ -2479,7 +2491,7 @@ class EventGroup(EventContainer):
             if icsData is None:
                 occur = event.calcOccurrenceAll()
                 if occur:
-                    if isinstance(occur, JdListOccurrence):
+                    if isinstance(occur, JdSetOccurrence):
                         for sectionStartJd, sectionEndJd in occur.calcJdRanges():
                         #for sectionStartJd in occur.getDaysJdList():
                             #sectionEndJd = sectionStartJd + 1
@@ -2900,7 +2912,7 @@ class VcsBaseEvent(Event):
     def afterModify(self):
         pass
     getInfo = lambda self: self.getText()## FIXME
-    def calcOccurrenceForJdRange(self, startJd, endJd):
+    def calcOccurrence(self, startJd, endJd):
         if self.epoch is not None:
             if getEpochFromJd(startJd) <= self.epoch < getEpochFromJd(endJd):
                 return TimeListOccurrence(self.epoch)
@@ -3357,13 +3369,13 @@ def getWeekOccurrenceData(curAbsWeekNumber, groups):
         for event in group:
             if not event:
                 continue
-            occur = event.calcOccurrenceForJdRange(startJd, endJd)
+            occur = event.calcOccurrence(startJd, endJd)
             if not occur:
                 continue
             text = event.getText()
             icon = event.icon
             ids = (group.id, event.id)
-            if isinstance(occur, JdListOccurrence):
+            if isinstance(occur, JdSetOccurrence):
                 for jd in occur.getDaysJdList():
                     (wnum, weekDay) = core.getWeekDateFromJd(jd)
                     if wnum==curAbsWeekNumber:
@@ -3443,13 +3455,13 @@ def getMonthOccurrenceData(curYear, curMonth, groups):
         for event in group:
             if not event:
                 continue
-            occur = event.calcOccurrenceForJdRange(startJd, endJd)
+            occur = event.calcOccurrence(startJd, endJd)
             if not occur:
                 continue
             text = event.getText()
             icon = event.icon
             ids = (group.id, event.id)
-            if isinstance(occur, JdListOccurrence):
+            if isinstance(occur, JdSetOccurrence):
                 for jd in occur.getDaysJdList():
                     (y, m, d) = jd_to(jd, core.primaryMode)
                     if y==curYear and m==curMonth:
