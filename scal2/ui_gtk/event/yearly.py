@@ -25,6 +25,7 @@ from scal2 import event_man
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.utils import MonthComboBox
 from scal2.ui_gtk.mywidgets.multi_spin_button import YearSpinButton, DaySpinButton
 from scal2.ui_gtk.event import common
 
@@ -35,7 +36,8 @@ class EventWidget(common.EventWidget):
         ################
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Month')), 0, 0)
-        self.monthCombo = gtk.combo_box_new_text()
+        self.monthCombo = MonthComboBox()
+        self.monthCombo.build(event.mode)
         hbox.pack_start(self.monthCombo, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         #self.pack_start(hbox, 0, 0)
@@ -64,7 +66,7 @@ class EventWidget(common.EventWidget):
     startYearCheckClicked = lambda self, obj=None: self.startYearSpin.set_sensitive(self.startYearCheck.get_active())
     def updateWidget(self):## FIXME
         common.EventWidget.updateWidget(self)
-        self.monthCombo.set_active(self.event.getMonth()-1)
+        self.monthCombo.setValue(self.event.getMonth())
         self.daySpin.set_value(self.event.getDay())
         try:
             startRule = self.event['start']
@@ -77,7 +79,7 @@ class EventWidget(common.EventWidget):
         self.startYearCheckClicked()
     def updateVars(self):## FIXME
         common.EventWidget.updateVars(self)
-        self.event.setMonth(self.monthCombo.get_active()+1)
+        self.event.setMonth(self.monthCombo.getValue())
         self.event.setDay(int(self.daySpin.get_value()))
         if self.startYearCheck.get_active():
             startRule = self.event.getAddRule('start')
@@ -91,21 +93,17 @@ class EventWidget(common.EventWidget):
         newMode = self.modeCombo.get_active()
         module = core.calModules[newMode]
         monthCombo = self.monthCombo
-        active = monthCombo.get_active()
-        for i in range(len(monthCombo.get_model())):
-            monthCombo.remove_text(0)
-        for i in range(12):
-            monthCombo.append_text(_(module.getMonthName(i+1)))
-        #monthCombo.set_active(active)
+        month = monthCombo.getValue()
+        monthCombo.build(newMode)
         y2, m2, d2 = convert(
             int(self.startYearSpin.get_value()),
-            active + 1,
+            month,
             int(self.daySpin.get_value()),
             self.event.mode,
             newMode,
         )
         self.startYearSpin.set_value(y2)
-        monthCombo.set_active(m2-1)
+        monthCombo.setValue(m2)
         self.daySpin.set_value(d2)
         self.event.mode = newMode
         
