@@ -973,6 +973,36 @@ msgid "Day of Week"
 msgstr ""
 "روز هفته"
 
+
+msgid "Week-Month"
+msgstr ""
+"هفته-ماه"
+
+
+msgid "First"
+msgstr ""
+"اولین"
+
+msgid "Second"
+msgstr ""
+"دومین"
+
+msgid "Third"
+msgstr ""
+"سومین"
+
+msgid "Fourth"
+msgstr ""
+"چهارمین"
+
+msgid "Last"
+msgstr ""
+"آخرین"
+
+msgid " of "
+msgstr ""
+" از "
+
 msgid "Time in Day"
 msgstr ""
 "زمان در روز"

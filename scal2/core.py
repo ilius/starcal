@@ -204,6 +204,13 @@ def getWeekDateHmsFromEpoch(epoch):
    (absWeekNumber, weekDay) = getWeekDateFromJd(jd)
    return (absWeekNumber, weekDay, hour, minute, sec)
 
+def getMonthWeekNth(jd, mode):
+    year, month, day = jd_to(jd, mode)
+    absWeekNumber, weekDay = getWeekDateFromJd(jd)
+    ##
+    dayDiv, dayMode = divmod(day-1, 7)
+    return month, dayDiv, weekDay
+
 def getJdRangeForMonth(year, month, mode):
     day = getMonthLen(year, month, mode)
     return (to_jd(year, month, 1, mode),

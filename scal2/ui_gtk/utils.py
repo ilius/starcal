@@ -275,6 +275,27 @@ class WeekDayComboBox(gtk.ComboBox):
         self.set_active((value-self.firstWeekDay)%7)
 
 
+class MonthComboBox(gtk.ComboBox):
+    def __init__(self):
+        ls = gtk.ListStore(str)
+        gtk.ComboBox.__init__(self, ls)
+        ###
+        cell = gtk.CellRendererText()
+        self.pack_start(cell, True)
+        self.add_attribute(cell, 'text', 0)
+    def build(self, mode):
+        active = self.get_active()
+        ls = self.get_model()
+        ls.clear()
+        for m in range(1, 13):
+            ls.append([core.getMonthName(mode, m)])
+        if active is not None:
+            self.set_active(active)
+    def getValue(self):
+        return self.get_active() + 1
+    def setValue(self, value):
+        self.set_active(value - 1)
+
 class DirectionComboBox(gtk.ComboBox):
     keys = ['ltr', 'rtl', 'auto']
     descs = [

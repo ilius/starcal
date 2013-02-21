@@ -531,6 +531,59 @@ class WeekDayEventRule(AllDayEventRule):
 
 
 @classes.rule.register
+class WeekMonthEventRule(EventRule):
+    name = 'weekMonth'
+    desc = _('Week-Month')
+    conflict = (
+        'date',
+        'month',
+        'day',
+        'weekNumMode'
+        'weekday',
+        'start',
+        'end',
+        'cycleDays',
+        'duration',
+        'cycleLen',
+    )
+    params = (
+        'month',## 1..12
+        'wmIndex',## 0..4
+        'weekDay',## 0..7
+    )
+    wmIndexNames = (
+        _('First'),## 0
+        _('Second'),## 1
+        _('Third'),## 2
+        _('Fourth'),## 3
+        _('Last'),## 4
+    )
+    def __init__(self, parent):
+        EventRule.__init__(self, parent)
+        self.month = 1
+        self.wmIndex = 4
+        self.weekDay = core.firstWeekDay
+    #def setJd(self, jd):## usefull? FIXME
+    #    self.month, self.wmIndex, self.weekDay = core.getMonthWeekNth(jd, self.getMode())
+    #def getJd(self):
+    def calcOccurrence(self, startJd, endJd, event):
+        mode = self.getMode()
+        startYear, startMonth, startDay = jd_to(startJd, mode)
+        endYear, endMonth, endDay = jd_to(endJd, mode)
+        jds = set()
+        for year in range(startYear, endYear):
+            jd = to_jd(year, self.month, 7*self.wmIndex+1, mode)
+            jd += (self.weekDay-jwday(jd))%7
+            if self.wmIndex == 4:## Last (Fouth or Fifth)
+                if jd_to(jd, mode)[1] != self.month:
+                    jd -= 7
+            if startJd <= jd < endJd:
+                jds.add(jd)
+        return JdSetOccurrence(jds)
+        
+
+
+@classes.rule.register
 class DateEventRule(EventRule):
     name = 'date'
     desc = _('Date')
