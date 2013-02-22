@@ -2,7 +2,7 @@
 
 from os.path import join
 from subprocess import Popen, PIPE
-from scal2.time_utils import dateEncode
+from scal2.time_utils import dateEncode, getEpochFromJd
 from scal2.cal_modules import jd_to, to_jd, DATE_GREG
 
 def getCommitList(direc, startJd=None, endJd=None):
@@ -35,40 +35,6 @@ def getCommitList(direc, startJd=None, endJd=None):
             parts[1],
         ))
     return data
-
-def getTagList(direc):## , startJd=None, endJd=None
-    '''
-        returns a list of (epoch, commit_id, tag_name) tuples
-    '''
-    cmd = [
-        'git',
-        '--git-dir', join(direc, '.git'),
-        'tag',
-    ]
-    p = Popen(cmd, stdout=PIPE)
-    p.wait()
-    data = []
-    for line in p.stdout:
-        tag = line.strip()
-        if not tag:
-            continue
-        parts = Popen([
-            'git',
-            '--git-dir', join(direc, '.git'),
-            'log',
-            '-1',
-            tag,
-            '--pretty=%ct %H',
-        ], stdout=PIPE).stdout.read().split(' ')
-        epoch, commit_id = parts
-        epoch = int(epoch)
-        data.append((
-            epoch,
-            commit_id,
-            tag,
-        ))
-    return data
-
 
 
 def getCommitInfo(direc, commid_id):
@@ -145,6 +111,67 @@ def getShortStatList(direc):
         stat.append((epoch, files_changed, insertions, deletions))
     return stat
 """
+
+
+def getTagList(direc, startJd, endJd):
+    '''
+        returns a list of (epoch, tag_name) tuples
+    '''
+    startEpoch = getEpochFromJd(startJd)
+    endEpoch = getEpochFromJd(endJd)
+    cmd = [
+        'git',
+        '--git-dir', join(direc, '.git'),
+        'tag',
+    ]
+    p = Popen(cmd, stdout=PIPE)
+    p.wait()
+    data = []
+    for line in p.stdout:
+        tag = line.strip()
+        if not tag:
+            continue
+        line = Popen([
+            'git',
+            '--git-dir', join(direc, '.git'),
+            'log',
+            '-1',
+            tag,
+            '--pretty=%ct',
+        ], stdout=PIPE).stdout.read().strip()
+        epoch = int(line)
+        if epoch < startEpoch:
+            continue
+        if epoch >= endEpoch:
+            break
+        data.append((
+            epoch,
+            tag,
+        ))
+    return data
+
+def getTagShortStatLine(direc, prevTag, tag):
+    '''
+        returns str
+    '''
+    cmd = [
+        'git',
+        '--git-dir', join(direc, '.git'),
+        'diff',
+        '--shortstat',
+    ]
+    if prevTag:
+        cmd += [
+            prevTag,
+            tag,
+        ]
+    else:
+        cmd += [
+            tag,
+        ]
+    p = Popen(cmd, stdout=PIPE)
+    p.wait()
+    return p.stdout.read().strip()
 
 #def getLog(direc, startJd, endJd):
 #    log = []

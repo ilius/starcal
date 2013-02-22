@@ -2,7 +2,7 @@
 
 
 from subprocess import Popen, PIPE
-from scal2.time_utils import dateEncodeDash
+from scal2.time_utils import dateEncodeDash, getEpochFromJd
 from scal2.cal_modules import jd_to, to_jd, DATE_GREG
 
 fixEpochStr = lambda epoch_str: int(epoch_str.split('.')[0])
@@ -47,6 +47,7 @@ def getCommitList(direc, startJd=None, endJd=None):
             parts[1],
         ))
     return data
+
 
 def getCommitInfo(direc, commid_id):
     cmd = [
@@ -126,4 +127,53 @@ def getShortStatList(direc):
         data.append((epoch, files_changed, insertions, deletions))
     return data
 """
+
+def getTagList(direc, startJd, endJd):
+    '''
+        returns a list of (epoch, tag_name) tuples
+    '''
+    startEpoch = getEpochFromJd(startJd)
+    endEpoch = getEpochFromJd(endJd)
+    cmd = [
+        'hg',
+        '-R', direc,
+        'tags',
+    ]
+    p = Popen(cmd, stdout=PIPE)
+    p.wait()
+    data = []
+    for line in p.stdout:
+        line = line.strip()
+        if not line:
+            continue
+        parts = line.split(' ')
+        tag = ' '.join(parts[:-1]).strip()
+        if not tag:
+            continue
+        shortHash = parts[-1]
+        line = Popen([
+            'hg',
+            '-R', direc,
+            'log',
+            '-r', shortHash,
+            '--template', '{date}',
+        ], stdout=PIPE).stdout.read().strip()
+        epoch = fixEpochStr(line)
+        if epoch < startEpoch:
+            continue
+        if epoch >= endEpoch:
+            break
+        data.append((
+            epoch,
+            tag,
+        ))
+    return data
+
+
+def getTagShortStatLine(direc, prevTag, tag):## FIXME
+    '''
+        returns str
+    '''
+    ## tag name is not enough, we need (short or long) hash code!!
+    return ''
 

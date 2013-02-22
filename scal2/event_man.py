@@ -3002,43 +3002,60 @@ class VcsTagEvent(VcsBaseEvent):
         self.author = ''
 
 
-@classes.group.register
-class VcsEventGroup(EventGroup):
-    name = 'vcs'
-    desc = _('VCS Repository')
+class VcsBaseEventGroup(EventGroup):
     acceptsEventTypes = ()
-    _myParams = (
+    myParams = (
         'vcsType',
         'vcsDir',
-        'showStat',
-        'showAuthor',
-        'showShortHash',
     )
-    params = EventGroup.params + _myParams
-    jsonParams = EventGroup.jsonParams + _myParams
     def __init__(self, vcsType='git', vcsDir='', *args, **kw):
         self.vcsType = vcsType
         self.vcsDir = vcsDir
-        self.showStat = True
-        self.showAuthor = True
-        self.showShortHash = True
         #self.branch = 'master'
         EventGroup.__init__(self, *args, **kw)
-    __repr__ = lambda self: 'VcsEventGroup(vcsType=%r, vcsDir=%r)'%(self.vcsType, self.vcsDir)
+    __repr__ = lambda self: '%s(vcsType=%r, vcsDir=%r)'%(self.__class__.__name__, self.vcsType, self.vcsDir)
     def setDefaults(self):
         self.eventTextSep = '\n'
+    getRulesHash = lambda self: hash(str((
+        self.name,
+        self.vcsType,
+        self.vcsDir,
+    )))
+    def __getitem__(self, key):
+        if key in classes.rule.names:
+            return EventGroup.__getitem__(self, key)
+        else:## len(commit_id)==40 for git
+            return self.getEvent(key)
+
+
+@classes.group.register
+class VcsCommitEventGroup(VcsBaseEventGroup):
+    name = 'vcs'
+    desc = _('VCS Repository (Commits)')
+    myParams = VcsBaseEventGroup.myParams + (
+        'showAuthor',
+        'showShortHash',
+        'showStat',
+    )
+    params = EventGroup.params + myParams
+    jsonParams = EventGroup.jsonParams + myParams
+    def __init__(self, *args, **kw):
+        VcsBaseEventGroup.__init__(self, *args, **kw)
+        self.showAuthor = True
+        self.showShortHash = True
+        self.showStat = True
     def updateOccurrence(self):
         self.occur.clear()
         if not self.vcsDir:
             self.occurCount = 0
             return
         mod = vcsModuleDict[self.vcsType]
-        clist = mod.getCommitList(self.vcsDir, startJd=self.startJd, endJd=self.endJd)
+        commitsData = mod.getCommitList(self.vcsDir, startJd=self.startJd, endJd=self.endJd)
         tz = getCurrentTimeZone()
-        for epoch, commit_id in clist:
+        for epoch, commit_id in commitsData:
             epoch += tz
             self.occur.add(epoch, epoch+epsTm, commit_id)
-        self.occurCount = len(clist)
+        self.occurCount = len(commitsData)
     def updateEventDesc(self, event):
         mod = vcsModuleDict[self.vcsType]
         lines = []
@@ -3062,16 +3079,63 @@ class VcsEventGroup(EventGroup):
         event.setData(data)
         self.updateEventDesc(event)
         return event
-    def __getitem__(self, key):
-        if len(key) < 20:
-            return EventGroup.__getitem__(self, key)
-        else:## len(commit_id)==40 for git
-            return self.getEvent(key)
-    getRulesHash = lambda self: hash(str((
-        'vcs',
-        self.vcsType,
-        self.vcsDir,
-    )))
+
+
+
+
+
+@classes.group.register
+class VcsTagEventGroup(VcsBaseEventGroup):
+    name = 'vcsTag'
+    desc = _('VCS Repository (Tags)')
+    myParams = VcsBaseEventGroup.myParams + (
+        'showStat',
+    )
+    params = EventGroup.params + myParams
+    jsonParams = EventGroup.jsonParams + myParams
+    def __init__(self, *args, **kw):
+        VcsBaseEventGroup.__init__(self, *args, **kw)
+        self.tags = []
+        self.showStat = True
+    def updateOccurrence(self):
+        self.occur.clear()
+        self.tags = []
+        if not self.vcsDir:
+            self.occurCount = 0
+            return
+        mod = vcsModuleDict[self.vcsType]
+        tagsData = mod.getTagList(self.vcsDir, self.startJd, self.endJd)
+        tz = getCurrentTimeZone()
+        for epoch, tag in tagsData:
+            epoch += tz
+            self.occur.add(epoch, epoch+epsTm, tag)
+            self.tags.append(tag)
+        self.occurCount = len(tagsData)
+    def updateEventDesc(self, event):
+        mod = vcsModuleDict[self.vcsType]
+        tag = event.id
+        lines = []
+        if self.showStat:
+            tagIndex = self.tags.index(tag)
+            if tagIndex > 0:
+                prevTag = self.tags[tagIndex-1]
+            else:
+                prevTag = None
+            statLine = mod.getTagShortStatLine(self.vcsDir, prevTag, tag)
+            if statLine:
+                lines.append(statLine)## translation FIXME
+        event.description = '\n'.join(lines)
+    def getEvent(self, tag):## cache commit data FIXME
+        if not tag in self.tags:
+            raise ValueError('No tag %r'%tag)
+        data = {}
+        data['summary'] = self.title + ' ' + tag ## FIXME
+        data['icon'] = self.icon
+        event = VcsTagEvent(self, tag)
+        event.setData(data)
+        self.updateEventDesc(event)
+        return event
+
 
 
 
