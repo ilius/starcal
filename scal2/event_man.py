@@ -3387,7 +3387,7 @@ class EventTrash(EventContainer):
 
 def getDayOccurrenceData(curJd, groups):
     data = []
-    for group in groups:
+    for groupIndex, group in enumerate(groups):
         if not group.enable:
             continue
         if not group.showInCal:
@@ -3410,7 +3410,7 @@ def getDayOccurrenceData(curJd, groups):
                     timeStr = hmsRangeToStr(h0, m0, s0, h1, m1, s1)
             ###
             data.append((
-                (epoch0, epoch1, gid, eid),## FIXME for sorting
+                (epoch0, epoch1, groupIndex, eid),## FIXME for sorting
                 {
                     'time': timeStr,
                     'text': text,
