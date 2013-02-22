@@ -153,7 +153,13 @@ mainToolbarData = {
 }
 
 wcalToolbarData = {
-    'items': [],
+    'items': [
+        ('backward4', False),
+        ('backward', True),
+        ('today', True),
+        ('forward', True),
+        ('forward4', False),
+    ],
     'iconSize': 'Button',
     'style': 'Icon',
     'buttonsBorder': 0,
