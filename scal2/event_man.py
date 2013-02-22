@@ -3385,44 +3385,6 @@ class EventTrash(EventContainer):
             self.save()
 
 
-def getDayOccurrenceData(curJd, groups):
-    data = []
-    for groupIndex, group in enumerate(groups):
-        if not group.enable:
-            continue
-        if not group.showInCal:
-            continue
-        #print '\nupdateData: checking event', event.summary
-        gid = group.id
-        color = group.color
-        for epoch0, epoch1, eid, odt in group.occur.search(getEpochFromJd(curJd), getEpochFromJd(curJd+1)):
-            event = group[eid]
-            ###
-            text = event.getTextParts()
-            ###
-            timeStr = ''
-            if epoch1-epoch0 < dayLen:
-                h0, m0, s0 = getHmsFromSeconds(epoch0 % dayLen)
-                if epoch1 - epoch0 < 1:
-                    timeStr = timeEncode((h0, m0, s0), True)
-                else:
-                    h1, m1, s1 = getHmsFromSeconds(epoch1 % dayLen)
-                    timeStr = hmsRangeToStr(h0, m0, s0, h1, m1, s1)
-            ###
-            data.append((
-                (epoch0, epoch1, groupIndex, eid),## FIXME for sorting
-                {
-                    'time': timeStr,
-                    'text': text,
-                    'icon': event.icon,
-                    'color': color,
-                    'ids': (gid, eid),
-                }
-            ))
-    data.sort()
-    return [item[1] for item in data]
-
-
 ## Should not be registered, or instantiate directly
 class Account(JsonEventBaseClass):
     name = ''
@@ -3476,6 +3438,44 @@ class Account(JsonEventBaseClass):
 
 
 ########################################################################
+
+def getDayOccurrenceData(curJd, groups):
+    data = []
+    for groupIndex, group in enumerate(groups):
+        if not group.enable:
+            continue
+        if not group.showInCal:
+            continue
+        #print '\nupdateData: checking event', event.summary
+        gid = group.id
+        color = group.color
+        for epoch0, epoch1, eid, odt in group.occur.search(getEpochFromJd(curJd), getEpochFromJd(curJd+1)):
+            event = group[eid]
+            ###
+            text = event.getTextParts()
+            ###
+            timeStr = ''
+            if epoch1-epoch0 < dayLen:
+                h0, m0, s0 = getHmsFromSeconds(epoch0 % dayLen)
+                if epoch1 - epoch0 < 1:
+                    timeStr = timeEncode((h0, m0, s0), True)
+                else:
+                    h1, m1, s1 = getHmsFromSeconds(epoch1 % dayLen)
+                    timeStr = hmsRangeToStr(h0, m0, s0, h1, m1, s1)
+            ###
+            data.append((
+                (epoch0, epoch1, groupIndex, eid),## FIXME for sorting
+                {
+                    'time': timeStr,
+                    'text': text,
+                    'icon': event.icon,
+                    'color': color,
+                    'ids': (gid, eid),
+                }
+            ))
+    data.sort()
+    return [item[1] for item in data]
+
 
 def getWeekOccurrenceData(curAbsWeekNumber, groups):
     (startJd, endJd) = core.getJdRangeOfAbsWeekNumber(absWeekNumber)
