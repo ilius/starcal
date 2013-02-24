@@ -174,6 +174,22 @@ def getTagShortStatLine(direc, prevTag, tag):## FIXME
     '''
         returns str
     '''
-    ## tag name is not enough, we need (short or long) hash code!!
-    return ''
+    cmd = [
+        'hg',
+        '-R', direc,
+        'diff',
+        '--stat',
+        '-r',
+    ]
+    if prevTag:
+        cmd += [
+            "tag('%s'):tag('%s')"%(prevTag, tag),
+        ]
+    else:
+        cmd += [
+            "tag('%s')"%tag,
+        ]
+    p = Popen(cmd, stdout=PIPE)
+    return p.stdout.readlines()[-1].strip()
+
 
