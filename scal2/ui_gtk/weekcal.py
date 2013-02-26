@@ -565,7 +565,8 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
             'j', 'n',
             'space', 'home', 't',
             'end',
-            #'menu', 'f10', 'm',
+            'menu',
+            #'f10', 'm',
         )
         ######################
         self.defineDragAndDrop()
@@ -709,8 +710,8 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
             self.jdPlus(-7)
         elif kname in ('page_down', 'j', 'n'):
             self.jdPlus(7)
-        #elif kname=='menu':
-        #    self.emit('popup-menu-cell', event.time, *self.getCellPos())
+        elif kname=='menu':
+            self.emit('popup-menu-cell', event.time, *self.getCellPos())
         #elif kname in ('f10', 'm'):
         #    if event.state & gdk.SHIFT_MASK:
         #        # Simulate right click (key beside Right-Ctrl)
@@ -728,6 +729,10 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
             self.jdPlus(1)
         else:
             return False
+    getCellPos = lambda self: (
+        int(self.allocation.width / 2.0),
+        (ui.cell.weekDayIndex+1) * self.allocation.height / 7.0,
+    )
     def onCurrentDateChange(self, gdate):
         self.queue_draw()
 
