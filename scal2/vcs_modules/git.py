@@ -43,17 +43,18 @@ def getCommitInfo(direc, commid_id):
         '--git-dir', join(direc, '.git'),
         'log',
         '-1',
-        '--pretty=%at\n%s\n%cn <%ce>\n%h',
+        '--pretty=%at\n%cn <%ce>\n%h\n%s',
         commid_id,
     ]
-    parts = Popen(cmd, stdout=PIPE).stdout.read().split('\n')
+    parts = Popen(cmd, stdout=PIPE).stdout.read().strip().split('\n')
     if not parts:
         return
     return {
         'epoch': int(parts[0]),
-        'summary': parts[1],
-        'author': parts[2],
-        'shortHash': parts[3],
+        'author': parts[1],
+        'shortHash': parts[2],
+        'summary': parts[3],
+        'description': '\n'.join(parts[4:]),
     }
 
 

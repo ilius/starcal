@@ -3059,6 +3059,8 @@ class VcsCommitEventGroup(VcsBaseEventGroup):
     def updateEventDesc(self, event):
         mod = vcsModuleDict[self.vcsType]
         lines = []
+        if event.description:
+            lines.append(event.description)
         if self.showStat:
             statLine = mod.getCommitShortStatLine(self.vcsDir, event.id)
             if statLine:
