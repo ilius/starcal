@@ -305,15 +305,18 @@ class EventsTextColumn(Column):
     def colorizeCheckClicked(self, check):
         ui.wcalEventsTextColorize = check.get_active()
         self.queue_draw()
+    def getDayText(self, i):
+        return self.wcal.status[i].getEventText(
+            showDesc=ui.wcalEventsTextShowDesc,
+            colorizeFunc=colorize if ui.wcalEventsTextColorize else None,
+            xmlEscape=True,
+        )
     def onExposeEvent(self, widget=None, event=None):
         cr = self.window.cairo_create()
         self.drawBg(cr)
         self.drawTextList(
             cr,
-            [self.wcal.status[i].getEventText(
-                showDesc=ui.wcalEventsTextShowDesc,
-                colorizeFunc=colorize if ui.wcalEventsTextColorize else None,
-            ) for i in range(7)],
+            [self.getDayText(i) for i in range(7)],
         )
 
 class EventsIconColumn(Column):
