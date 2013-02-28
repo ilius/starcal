@@ -367,6 +367,21 @@ def getFontSmall():
     (name, bold, underline, size) = getFont()
     return (name, bold, underline, int(size*0.6))
 
+def initFonts(fontDefaultNew):
+    global fontDefault, fontCustom, mcalTypeParams
+    fontDefault = fontDefaultNew
+    if not fontCustom:
+        fontCustom = fontDefault
+    ###
+    if mcalTypeParams[0]['font']==None:
+        mcalTypeParams[0]['font'] = getFont()
+    ###
+    smallFont = getFontSmall()
+    for item in mcalTypeParams[1:]:
+        if item['font']==None:
+            item['font'] = smallFont[:]
+
+
 def getHolidaysJdList(startJd, endJd):
     jdList = []
     for jd in range(startJd, endJd):

@@ -90,6 +90,9 @@ def cmpVersion(v0, v1):
     return cmp([ int(p) for p in v0.split('.') ], [ int(p) for p in v1.split('.') ])
 
 
+def printError(text):
+    sys.stderr.write('%s\n'%text)
+
 class FallbackLogger:
     def __init__(self):
         pass

@@ -111,18 +111,7 @@ settings = gtk.settings_get_default()
 ## ui.timeout_repeat = settings.get_property('gtk-timeout-repeat') ## == 20 too small!! FIXME
 
 
-ui.fontDefault = gfontDecode(settings.get_property('gtk-font-name'))
-if not ui.fontCustom:
-    ui.fontCustom = ui.fontDefault
-
-if ui.mcalTypeParams[0]['font']==None:
-    ui.mcalTypeParams[0]['font'] = ui.getFont()
-
-smallFont = ui.getFontSmall()
-for item in ui.mcalTypeParams[1:]:
-    if item['font']==None:
-        item['font'] = smallFont[:]
-del smallFont
+ui.initFonts(gfontDecode(settings.get_property('gtk-font-name')))
 
 ###########
 textDirDict = {
