@@ -273,7 +273,14 @@ class FloatSpinButton(MultiSpinButton):
             **kwargs
         )
     def get_value(self):
-        return float(locale_man.textNumDecode(self.get_text()))
+        s = locale_man.textNumDecode(self.get_text())
+        try:
+            v = float(s)
+        except ValueError:
+            printError('could not convert number string %s to float'%s)
+            return self._min
+        else:
+            return v
     def set_value(self, value):
         if value < self._min:
             value = self._min
