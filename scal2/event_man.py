@@ -628,7 +628,7 @@ class DateAndTimeEventRule(DateEventRule):
         self.setJd(jd)
         self.time = (h, m, s)
     def setJdExact(self, jd):
-        self.setJd(self, jd)
+        self.setJd(jd)
         self.time = (0, 0, 0)
     def setDate(self, date):
         self.date = date
