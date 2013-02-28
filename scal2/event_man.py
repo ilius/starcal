@@ -31,7 +31,7 @@ from scal2.lib import OrderedDict
 
 from paths import *
 
-from scal2.utils import toStr, arange, ifloor, iceil, IteratorFromGen, findNearestIndex
+from scal2.utils import printError, toStr, arange, ifloor, iceil, IteratorFromGen, findNearestIndex
 from scal2.os_utils import makeDir
 from scal2.interval_utils import *
 from scal2.time_utils import *
@@ -3046,11 +3046,19 @@ class VcsCommitEventGroup(VcsBaseEventGroup):
         self.showStat = True
     def updateOccurrence(self):
         self.occur.clear()
+        self.occurCount = 0
         if not self.vcsDir:
-            self.occurCount = 0
             return
         mod = vcsModuleDict[self.vcsType]
-        commitsData = mod.getCommitList(self.vcsDir, startJd=self.startJd, endJd=self.endJd)
+        try:
+            commitsData = mod.getCommitList(self.vcsDir, startJd=self.startJd, endJd=self.endJd)
+        except:
+            printError('Error while fetching commit list of %s repository in %s'%(
+                self.vcsType,
+                self.vcsDir,
+            ))
+            myRaise()
+            return
         tz = getCurrentTimeZone()
         for epoch, commit_id in commitsData:
             epoch += tz
@@ -3102,11 +3110,19 @@ class VcsTagEventGroup(VcsBaseEventGroup):
     def updateOccurrence(self):
         self.occur.clear()
         self.tags = []
+        self.occurCount = 0
         if not self.vcsDir:
-            self.occurCount = 0
             return
         mod = vcsModuleDict[self.vcsType]
-        tagsData = mod.getTagList(self.vcsDir, self.startJd, self.endJd)
+        try:
+            tagsData = mod.getTagList(self.vcsDir, self.startJd, self.endJd)
+        except:
+            printError('Error while fetching tag list of %s repository in %s'%(
+                self.vcsType,
+                self.vcsDir,
+            ))
+            myRaise()
+            return
         tz = getCurrentTimeZone()
         for epoch, tag in tagsData:
             epoch += tz
