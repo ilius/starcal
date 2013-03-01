@@ -749,7 +749,7 @@ class PrefDialog(gtk.Dialog):
         ##################### Saving core config
         text = ''
         text += 'allPlugList=%s\n\n'%core.getAllPlugListRepr()
-        text += 'plugIndex=%r\n'core.plugIndex
+        text += 'plugIndex=%r\n'%core.plugIndex
         for item in self.corePrefItems:
             text += item.confStr()
         for key in (
