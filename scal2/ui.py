@@ -361,7 +361,7 @@ def yearPlus(plus=1):
     day = min(cell.day, getMonthLen(year, month, core.primaryMode))
     cell = cellCache.getCellByDate(year, month, day)
 
-getFont = lambda: list(fontDefault if fontUseDefault else fontCustom)
+getFont = lambda: list(fontCustom if fontCustomEnable else fontDefault)
 
 def getFontSmall():
     (name, bold, underline, size) = getFont()
@@ -698,9 +698,10 @@ winKeepAbove = True
 winSticky = True
 winX = 0
 winY = 0
-fontUseDefault = True
+###
 fontDefault = ['Sans', False, False, 12]
 fontCustom = None
+fontCustomEnable = False
 #####################
 showMain = True ## Show main window on start (or only goto tray)
 #####################
@@ -777,6 +778,14 @@ try:
     mcalGridColor = wcalGridColor = gridColor
 except NameError:
     pass
+
+try:
+    fontUseDefault
+except NameError:
+    pass
+else:
+    fontCustomEnable = not fontUseDefault ## for compatibilty
+    del fontUseDefault
 
 try:
     version

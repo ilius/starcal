@@ -6,7 +6,7 @@ shownDates[1]['color'] = gtk.gdk.Color(0, 40000, 0)
 shownDates[2]['color'] = gtk.gdk.Color(0, 0, 50000)
 
 fontCustom="Terafik 12"
-fontUseDefault=True
+fontCustomEnable=False
 calGrid=True
 gridAlpha=9000
 gridColor=gtk.gdk.Color(0, 0, 0)

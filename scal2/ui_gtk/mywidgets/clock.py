@@ -121,10 +121,7 @@ class FClockWidget(gtk.DrawingArea): ## Time is in Local
         """
         textLay = self.create_pango_layout('') ## markup
         textLay.set_markup(text)
-        if fontUseDefault:
-            textLay.set_font_description(pango.FontDescription(fontDefault))
-        else:
-            textLay.set_font_description(pango.FontDescription(fontCustom))
+        textLay.set_font_description(pango.FontDescription(ui.getFont()))
         (w, h) = textLay.get_pixel_size()
         pixbuf = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, w, h)
         pixbuf = pixbuf.add_alpha(True, '0','0','0')

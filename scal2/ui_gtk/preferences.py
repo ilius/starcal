@@ -145,16 +145,17 @@ class PrefDialog(gtk.Dialog):
         ########
         hbox = gtk.HBox(spacing=2)
         ###
-        defaultItem = CheckPrefItem(ui, 'fontUseDefault', _('Use system font'), gfontEncode(ui.fontDefault))
-        self.uiPrefItems.append(defaultItem)
-        hbox.pack_start(defaultItem.widget, 0, 0)
+        customCheckItem = CheckPrefItem(ui, 'fontCustomEnable', _('Application font'))
+        self.uiPrefItems.append(customCheckItem)
+        hbox.pack_start(customCheckItem.widget, 0, 0)
         ###
         customItem = FontPrefItem(ui, 'fontCustom', self)
         self.uiPrefItems.append(customItem)
         hbox.pack_start(customItem.widget, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
+        customItem.widget.set_sensitive(ui.fontCustomEnable)
         #customItem.widget.connect('clicked', self.checkbFontClicked)
-        defaultItem.widget.connect('clicked', lambda w: customItem.widget.set_sensitive(not w.get_active()))## FIXME
+        customCheckItem.widget.connect('clicked', lambda w: customItem.widget.set_sensitive(w.get_active()))## FIXME
         vbox.pack_start(hbox, 0, 0)
         ########################### Theme #####################
         hbox = gtk.HBox(spacing=3)

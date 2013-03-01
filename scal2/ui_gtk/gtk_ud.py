@@ -122,7 +122,7 @@ textDirDict = {
 
 ##############################
 
-#if not ui.fontUseDefault:## FIXME
+#if ui.fontCustomEnable:## FIXME
 #    settings.set_property('gtk-font-name', fontCustom)
 
 

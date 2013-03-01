@@ -151,6 +151,8 @@ def getTagList(direc, startJd, endJd):
         tag = ' '.join(parts[:-1]).strip()
         if not tag:
             continue
+        if tag == 'tip':
+            continue
         shortHash = parts[-1]
         line = Popen([
             'hg',
@@ -191,6 +193,9 @@ def getTagShortStatLine(direc, prevTag, tag):## FIXME
             "tag('%s')"%tag,
         ]
     p = Popen(cmd, stdout=PIPE)
-    return p.stdout.readlines()[-1].strip()
+    lines = p.stdout.readlines()
+    if not lines:
+        return ''
+    return lines[-1].strip()
 
 

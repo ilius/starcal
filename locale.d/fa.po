@@ -2020,9 +2020,13 @@ msgid "Font"
 msgstr ""
 "فونت"
 
-msgid "Use system font"
+msgid "Application font"
 msgstr ""
-"استفاده از فونت سیستم"
+"فونت برنامه"
+
+msgid "Tray Font"
+msgstr
+"فونت tray"
 
 msgid "Font Family"
 msgstr ""
