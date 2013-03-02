@@ -757,6 +757,7 @@ class PrefDialog(gtk.Dialog):
             'firstWeekDay',
             'weekNumberModeAuto',
             'weekNumberMode',
+            'debugMode',
         ):
             value = eval('core.'+key)
             text += '%s=%r\n'%(key, value)

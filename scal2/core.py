@@ -578,7 +578,7 @@ weekNumberMode = 7
 ## 1999(53),2000(52),2005(53),2010(53),2011(52),2016(53),2021,2022,2027,2028
 ################################################################################
 ################################################################################
-
+debugMode = False
 useCompactJson = False## FIXME
 eventTextSep = ': ' ## use to seperate summary from description for display
 eventTrashLastTop = True

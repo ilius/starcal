@@ -2506,6 +2506,20 @@ class EventGroup(EventContainer):
         self.occur = EventSearchTree()
         #self.occurLoaded = False
         self.occurCount = 0
+    def clear(self):
+       self.occur.clear()
+       self.occurCount = 0
+    def addOccur(self, t0, t1, eid):
+        self.occur.add(t0, t1, eid)
+        self.occurCount += 1
+    def updateOccurrenceLog(self, stm0):
+        if core.debugMode:
+            print 'updateOccurrence, id=%s, title=%s, count=%s, time=%s'%(
+                self.id,
+                self.title,
+                self.occurCount,
+                time()-stm0,
+            )
     def updateOccurrence(self):
         stm0 = time()
         self.occur.clear()
@@ -2519,12 +2533,13 @@ class EventGroup(EventContainer):
             self.occur.add(t0, t1, eid)
         self.occurCount += len(occurList)
         #self.occurLoaded = True
-        #print 'updateOccurrence, id=%s, title=%s, count=%s, time=%s'%(
-        #    self.id,
-        #    self.title,
-        #    self.occurCount,
-        #    time()-stm0,
-        #)
+        if core.debugMode:
+            print 'updateOccurrence, id=%s, title=%s, count=%s, time=%s'%(
+                self.id,
+                self.title,
+                self.occurCount,
+                time()-stm0,
+            )
         #print 'depth=%s, N=%s'%(self.occur.getDepth(), len(occurList))
         #print '2*lg(N)=%.1f'%(2*math.log(len(occurList), 2))
         #print
@@ -2641,7 +2656,7 @@ class EventGroup(EventContainer):
                 })
         #####
         return data
-                
+
 
 
 @classes.group.register
@@ -3045,8 +3060,8 @@ class VcsCommitEventGroup(VcsBaseEventGroup):
         self.showShortHash = True
         self.showStat = True
     def updateOccurrence(self):
-        self.occur.clear()
-        self.occurCount = 0
+        stm0 = time()
+        self.clear()
         if not self.vcsDir:
             return
         mod = vcsModuleDict[self.vcsType]
@@ -3062,8 +3077,9 @@ class VcsCommitEventGroup(VcsBaseEventGroup):
         tz = getCurrentTimeZone()
         for epoch, commit_id in commitsData:
             epoch += tz
-            self.occur.add(epoch, epoch+epsTm, commit_id)
-        self.occurCount = len(commitsData)
+            self.addOccur(epoch, epoch+epsTm, commit_id)
+        ###
+        self.updateOccurrenceLog(stm0)
     def updateEventDesc(self, event):
         mod = vcsModuleDict[self.vcsType]
         lines = []
@@ -3107,15 +3123,20 @@ class VcsTagEventGroup(VcsBaseEventGroup):
         VcsBaseEventGroup.__init__(self, *args, **kw)
         self.tags = []
         self.showStat = True
-    def updateOccurrence(self):
-        self.occur.clear()
+    def clear(self):
+        EventGroup.clear(self)
         self.tags = []
-        self.occurCount = 0
+    def addOccur(self, t0, t1, eid):
+        EventGroup.addOccur(self, t0, t1, eid)
+        self.tags.append(eid)
+    def updateOccurrence(self):
+        stm0 = time()
+        self.clear()
         if not self.vcsDir:
             return
         mod = vcsModuleDict[self.vcsType]
         try:
-            tagsData = mod.getTagList(self.vcsDir, self.startJd, self.endJd)
+            tagsData = mod.getTagList(self.vcsDir, self.startJd, self.endJd)## TOO SLOW
         except:
             printError('Error while fetching tag list of %s repository in %s'%(
                 self.vcsType,
@@ -3123,12 +3144,13 @@ class VcsTagEventGroup(VcsBaseEventGroup):
             ))
             myRaise()
             return
+        #self.updateOccurrenceLog(stm0)
         tz = getCurrentTimeZone()
         for epoch, tag in tagsData:
             epoch += tz
-            self.occur.add(epoch, epoch+epsTm, tag)
-            self.tags.append(tag)
-        self.occurCount = len(tagsData)
+            self.addOccur(epoch, epoch+epsTm, tag)
+        ###
+        self.updateOccurrenceLog(stm0)
     def updateEventDesc(self, event):
         mod = vcsModuleDict[self.vcsType]
         tag = event.id
