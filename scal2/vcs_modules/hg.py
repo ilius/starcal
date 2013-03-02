@@ -1,98 +1,73 @@
 # -*- coding: utf-8 -*-
 
 
-from subprocess import Popen, PIPE
-from scal2.time_utils import dateEncodeDash, getEpochFromJd
-from scal2.cal_modules import jd_to, to_jd, DATE_GREG
+from scal2.time_utils import getEpochFromJd
 
-fixEpochStr = lambda epoch_str: int(epoch_str.split('.')[0])
+import mercurial.ui
+from mercurial.localrepo import localrepository
+from mercurial.patch import diff, diffstatdata, diffstatsum
+from mercurial.util import iterlines
 
-def getCommitList(direc, startJd=None, endJd=None):
+def getCommitList(direc, startJd, endJd):
     '''
         returns a list of (epoch, commit_id) tuples
     '''
-    cmd = [
-        'hg',
-        '-R', direc,
-        'log',
-        '--template',
-        '{date} {node}\n',
-    ]
-    if startJd is not None:
-        if endJd is not None:
-            cmd += [
-                '-d',
-                '%s to %s'%(
-                    dateEncodeDash(jd_to(startJd, DATE_GREG)),
-                    dateEncodeDash(jd_to(endJd, DATE_GREG)),
-                )
-            ]
-        else:
-            cmd += [
-                '-d',
-                '>%s'%dateEncodeDash(jd_to(startJd, DATE_GREG)),
-            ]
-    elif endJd is not None:
-        cmd += [
-            '-d',
-            '<%s'%dateEncodeDash(jd_to(endJd, DATE_GREG)),
-        ]
-    p = Popen(cmd, stdout=PIPE)
-    p.wait()
+    startEpoch = getEpochFromJd(startJd)
+    endEpoch = getEpochFromJd(endJd)
+    ###
+    repo = localrepository(mercurial.ui.ui(), direc)
     data = []
-    for line in p.stdout:
-        parts = line.strip().split(' ')
-        data.append((
-            fixEpochStr(parts[0]),
-            parts[1],
-        ))
+    for rev in repo.changelog:
+        ctx = repo[rev]
+        epoch = ctx.date()[0]
+        if epoch < startEpoch:
+            continue
+        if epoch >= endEpoch:
+            break
+        data.append((epoch, str(ctx)))
     return data
 
 
 def getCommitInfo(direc, commid_id):
-    cmd = [
-        'hg',
-        '-R', direc,
-        'log',
-        '-r', commid_id,
-        '--template', '{date}\n{author}\n{node|short}\n{desc}',
-    ]
-    parts = Popen(cmd, stdout=PIPE).stdout.read().split('\n')
-    if not parts:
-        return
+    repo = localrepository(mercurial.ui.ui(), direc)
+    ctx = repo[commid_id]
+    lines = ctx.description().split('\n')
     return {
-        'epoch': fixEpochStr(parts[0]),
-        'author': parts[1],
-        'shortHash': parts[2],
-        'summary': parts[3],
-        'description': '\n'.join(parts[4:]),
+        'epoch': ctx.date()[0],
+        'author': ctx.user(),
+        'shortHash': str(ctx),
+        'summary': lines[0],
+        'description': '\n'.join(lines[1:]),
     }
+
+
+def getShortStat(repo, node1, node2):
+    stats = diffstatdata(
+        iterlines(
+            diff(
+                repo,
+                str(node1),
+                str(node2),
+            )
+        )
+    )
+    maxname, maxtotal, insertions, deletions, hasbinary = diffstatsum(stats)
+    return len(stats), insertions, deletions
+
 
 def getCommitShortStat(direc, commit_id):
     '''
         returns (files_changed, insertions, deletions)
     '''
-    p = Popen([
-        'hg',
-        '-R', direc,
-        'log',
-        '-r', commit_id,
-        '--template',
-        '{diffstat}',
-    ], stdout=PIPE)
-    p.wait()
-    parts = p.stdout.read().strip().split(' ')
-    files_changed = int(parts[0].split(':')[0])
-    insertions, deletions = parts[1].split('/')
-    insertions = int(insertions)
-    deletions = -int(deletions)
-    return files_changed, insertions, deletions
+    repo = localrepository(mercurial.ui.ui(), direc)
+    ctx = repo[commit_id]
+    return getShortStat(
+        repo,
+        ctx.p1(),
+        ctx,
+    )
 
-def getCommitShortStatLine(direc, commit_id):
-    '''
-        returns str
-    '''
-    files_changed, insertions, deletions = getCommitShortStat(direc, commit_id)
+def encodeShortStat(files_changed, insertions, deletions):
     parts = []
     if files_changed == 1:
         parts.append('1 file changed')
@@ -104,30 +79,12 @@ def getCommitShortStatLine(direc, commit_id):
         parts.append('%d deletions(-)'%deletions)
     return ', '.join(parts)
 
-"""
-def getShortStatList(direc):
+def getCommitShortStatLine(direc, commit_id):
     '''
-        returns a list of (epoch, files_changed, insertions, deletions) tuples
+        returns str
     '''
-    p = Popen([
-        'hg',
-        '-R', direc,
-        'log',
-        '--template',
-        '{date} {diffstat}\n',
-    ], stdout=PIPE)
-    p.wait()
-    data = []
-    for line in p.stdout:
-        parts = line.strip().split(' ')
-        epoch = fixEpochStr(parts[0])
-        files_changed = int(parts[1].split(':')[0])
-        insertions, deletions = parts[2].split('/')
-        insertions = int(insertions)
-        deletions = -int(deletions)
-        data.append((epoch, files_changed, insertions, deletions))
-    return data
-"""
+    return encodeShortStat(*getCommitShortStat(direc, commit_id))
+
 
 def getTagList(direc, startJd, endJd):
     '''
@@ -135,33 +92,13 @@ def getTagList(direc, startJd, endJd):
     '''
     startEpoch = getEpochFromJd(startJd)
     endEpoch = getEpochFromJd(endJd)
-    cmd = [
-        'hg',
-        '-R', direc,
-        'tags',
-    ]
-    p = Popen(cmd, stdout=PIPE)
-    p.wait()
+    ###
+    repo = localrepository(mercurial.ui.ui(), direc)
     data = []
-    for line in p.stdout:
-        line = line.strip()
-        if not line:
-            continue
-        parts = line.split(' ')
-        tag = ' '.join(parts[:-1]).strip()
-        if not tag:
-            continue
+    for tag, unkown in repo.tagslist():
         if tag == 'tip':
             continue
-        shortHash = parts[-1]
-        line = Popen([
-            'hg',
-            '-R', direc,
-            'log',
-            '-r', shortHash,
-            '--template', '{date}',
-        ], stdout=PIPE).stdout.read().strip()
-        epoch = fixEpochStr(line)
+        epoch = repo[tag].date()[0]
         if epoch < startEpoch:
             continue
         if epoch >= endEpoch:
@@ -172,30 +109,21 @@ def getTagList(direc, startJd, endJd):
         ))
     return data
 
+def getTagShortStat(direc, prevTag, tag):
+    repo = localrepository(mercurial.ui.ui(), direc)
+    return getShortStat(
+        repo,
+        repo[prevTag if prevTag else 0],
+        repo[tag],
+    )
 
-def getTagShortStatLine(direc, prevTag, tag):## FIXME
+
+def getTagShortStatLine(direc, prevTag, tag):
     '''
         returns str
     '''
-    cmd = [
-        'hg',
-        '-R', direc,
-        'diff',
-        '--stat',
-        '-r',
-    ]
-    if prevTag:
-        cmd += [
-            "tag('%s'):tag('%s')"%(prevTag, tag),
-        ]
-    else:
-        cmd += [
-            "tag('%s')"%tag,
-        ]
-    p = Popen(cmd, stdout=PIPE)
-    lines = p.stdout.readlines()
-    if not lines:
-        return ''
-    return lines[-1].strip()
+    return encodeShortStat(*getTagShortStat(direc, prevTag, tag))
+
+
 
 
