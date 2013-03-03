@@ -22,13 +22,19 @@ from subprocess import Popen, PIPE
 from scal2.time_utils import dateEncode, getEpochFromJd
 from scal2.cal_modules import jd_to, to_jd, DATE_GREG
 
-def getCommitList(direc, startJd=None, endJd=None):
+def prepareObj(obj):
+    pass
+
+def clearObj(obj):
+    pass
+
+def getCommitList(obj, startJd=None, endJd=None):
     '''
         returns a list of (epoch, commit_id) tuples
     '''
     cmd = [
         'git',
-        '--git-dir', join(direc, '.git'),
+        '--git-dir', join(obj.vcsDir, '.git'),
         'log',
         '--pretty=format:%ct %H',
     ]
@@ -54,10 +60,10 @@ def getCommitList(direc, startJd=None, endJd=None):
     return data
 
 
-def getCommitInfo(direc, commid_id):
+def getCommitInfo(obj, commid_id):
     cmd = [
         'git',
-        '--git-dir', join(direc, '.git'),
+        '--git-dir', join(obj.vcsDir, '.git'),
         'log',
         '-1',
         '--pretty=%at\n%cn <%ce>\n%h\n%s',
@@ -75,13 +81,13 @@ def getCommitInfo(direc, commid_id):
     }
 
 
-def getCommitShortStatLine(direc, commit_id):
+def getCommitShortStatLine(obj, commit_id):
     '''
         returns str
     '''
     p = Popen([
         'git',
-        '--git-dir', join(direc, '.git'),
+        '--git-dir', join(obj.vcsDir, '.git'),
         'log',
         '--shortstat',
         '-1',
@@ -95,11 +101,11 @@ def getCommitShortStatLine(direc, commit_id):
             return line.strip()
     return ''
 
-def getCommitShortStat(direc, commit_id):
+def getCommitShortStat(obj, commit_id):
     '''
         returns (files_changed, insertions, deletions)
     '''
-    statLine = getCommitShortStatLine(direc, commit_id)
+    statLine = getCommitShortStatLine(obj.vcsDir, commit_id)
     if not statLine:
         return 0, 0, 0
     for section in statLine.split(','):
@@ -112,26 +118,7 @@ def getCommitShortStat(direc, commit_id):
     return nums[:3]
 
 
-"""
-def getShortStatList(direc):
-    '''
-        returns a list of (epoch, files_changed, insertions, deletions) tuples
-    '''
-    stat = []
-    commits = getCommitList(direc)
-    n = len(commits) - 1
-    for i in range(n):
-        epoch, commit_id = commits[i]
-        files_changed, insertions, deletions = getCommitShortStat(
-            direc,
-            commit_id,
-        )
-        stat.append((epoch, files_changed, insertions, deletions))
-    return stat
-"""
-
-
-def getTagList(direc, startJd, endJd):
+def getTagList(obj, startJd, endJd):
     '''
         returns a list of (epoch, tag_name) tuples
     '''
@@ -139,7 +126,7 @@ def getTagList(direc, startJd, endJd):
     endEpoch = getEpochFromJd(endJd)
     cmd = [
         'git',
-        '--git-dir', join(direc, '.git'),
+        '--git-dir', join(obj.vcsDir, '.git'),
         'tag',
     ]
     p = Popen(cmd, stdout=PIPE)
@@ -151,7 +138,7 @@ def getTagList(direc, startJd, endJd):
             continue
         line = Popen([
             'git',
-            '--git-dir', join(direc, '.git'),
+            '--git-dir', join(obj.vcsDir, '.git'),
             'log',
             '-1',
             tag,
@@ -168,13 +155,13 @@ def getTagList(direc, startJd, endJd):
         ))
     return data
 
-def getTagShortStatLine(direc, prevTag, tag):
+def getTagShortStatLine(obj, prevTag, tag):
     '''
         returns str
     '''
     cmd = [
         'git',
-        '--git-dir', join(direc, '.git'),
+        '--git-dir', join(obj.vcsDir, '.git'),
         'diff',
         '--shortstat',
     ]
@@ -191,11 +178,4 @@ def getTagShortStatLine(direc, prevTag, tag):
     p.wait()
     return p.stdout.read().strip()
 
-#def getLog(direc, startJd, endJd):
-#    log = []
-#    for epoch, commit_id in getCommitList(direc):
-
-if __name__=='__main__':
-    from pprint import pprint
-    pprint(getTagList('/starcal2'))
 

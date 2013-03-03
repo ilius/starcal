@@ -24,17 +24,24 @@ from mercurial.localrepo import localrepository
 from mercurial.patch import diff, diffstatdata, diffstatsum
 from mercurial.util import iterlines
 
-def getCommitList(direc, startJd, endJd):
+def prepareObj(obj):
+    obj.repo = localrepository(mercurial.ui.ui(), obj.vcsDir)
+
+def clearObj(obj):
+    obj.repo = None
+
+def getCommitList(obj, startJd, endJd):
     '''
         returns a list of (epoch, commit_id) tuples
     '''
+    if not obj.repo:
+        return []
     startEpoch = getEpochFromJd(startJd)
     endEpoch = getEpochFromJd(endJd)
     ###
-    repo = localrepository(mercurial.ui.ui(), direc)
     data = []
-    for rev in repo.changelog:
-        ctx = repo[rev]
+    for rev in obj.repo.changelog:
+        ctx = obj.repo[rev]
         epoch = ctx.date()[0]
         if epoch < startEpoch:
             continue
@@ -44,9 +51,8 @@ def getCommitList(direc, startJd, endJd):
     return data
 
 
-def getCommitInfo(direc, commid_id):
-    repo = localrepository(mercurial.ui.ui(), direc)
-    ctx = repo[commid_id]
+def getCommitInfo(obj, commid_id):
+    ctx = obj.repo[commid_id]
     lines = ctx.description().split('\n')
     return {
         'epoch': ctx.date()[0],
@@ -71,14 +77,13 @@ def getShortStat(repo, node1, node2):
     return len(stats), insertions, deletions
 
 
-def getCommitShortStat(direc, commit_id):
+def getCommitShortStat(obj, commit_id):
     '''
         returns (files_changed, insertions, deletions)
     '''
-    repo = localrepository(mercurial.ui.ui(), direc)
-    ctx = repo[commit_id]
+    ctx = obj.repo[commit_id]
     return getShortStat(
-        repo,
+        obj.repo,
         ctx.p1(),
         ctx,
     )
@@ -95,26 +100,27 @@ def encodeShortStat(files_changed, insertions, deletions):
         parts.append('%d deletions(-)'%deletions)
     return ', '.join(parts)
 
-def getCommitShortStatLine(direc, commit_id):
+def getCommitShortStatLine(obj, commit_id):
     '''
         returns str
     '''
-    return encodeShortStat(*getCommitShortStat(direc, commit_id))
+    return encodeShortStat(*getCommitShortStat(obj, commit_id))
 
 
-def getTagList(direc, startJd, endJd):
+def getTagList(obj, startJd, endJd):
     '''
         returns a list of (epoch, tag_name) tuples
     '''
+    if not obj.repo:
+        return []
     startEpoch = getEpochFromJd(startJd)
     endEpoch = getEpochFromJd(endJd)
     ###
-    repo = localrepository(mercurial.ui.ui(), direc)
     data = []
-    for tag, unkown in repo.tagslist():
+    for tag, unkown in obj.repo.tagslist():
         if tag == 'tip':
             continue
-        epoch = repo[tag].date()[0]
+        epoch = obj.repo[tag].date()[0]
         if epoch < startEpoch:
             continue
         if epoch >= endEpoch:
@@ -125,8 +131,8 @@ def getTagList(direc, startJd, endJd):
         ))
     return data
 
-def getTagShortStat(direc, prevTag, tag):
-    repo = localrepository(mercurial.ui.ui(), direc)
+def getTagShortStat(obj, prevTag, tag):
+    repo = obj.repo
     return getShortStat(
         repo,
         repo[prevTag if prevTag else 0],
@@ -134,11 +140,11 @@ def getTagShortStat(direc, prevTag, tag):
     )
 
 
-def getTagShortStatLine(direc, prevTag, tag):
+def getTagShortStatLine(obj, prevTag, tag):
     '''
         returns str
     '''
-    return encodeShortStat(*getTagShortStat(direc, prevTag, tag))
+    return encodeShortStat(*getTagShortStat(obj, prevTag, tag))
 
 
 

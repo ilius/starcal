@@ -3041,6 +3041,18 @@ class VcsBaseEventGroup(EventGroup):
             return EventGroup.__getitem__(self, key)
         else:## len(commit_id)==40 for git
             return self.getEvent(key)
+    def updateVcsModuleObj(self):
+        mod = vcsModuleDict[self.vcsType]
+        if self.enable and self.vcsDir:
+            mod.prepareObj(self)
+        else:
+            mod.clearObj(self)
+    def afterModify(self):
+        self.updateVcsModuleObj()
+        EventGroup.afterModify(self)
+    def setData(self, data):
+        EventGroup.setData(self, data)
+        self.updateVcsModuleObj()
 
 
 @classes.group.register
@@ -3066,7 +3078,7 @@ class VcsCommitEventGroup(VcsBaseEventGroup):
             return
         mod = vcsModuleDict[self.vcsType]
         try:
-            commitsData = mod.getCommitList(self.vcsDir, startJd=self.startJd, endJd=self.endJd)
+            commitsData = mod.getCommitList(self, startJd=self.startJd, endJd=self.endJd)
         except:
             printError('Error while fetching commit list of %s repository in %s'%(
                 self.vcsType,
@@ -3086,7 +3098,7 @@ class VcsCommitEventGroup(VcsBaseEventGroup):
         if event.description:
             lines.append(event.description)
         if self.showStat:
-            statLine = mod.getCommitShortStatLine(self.vcsDir, event.id)
+            statLine = mod.getCommitShortStatLine(self, event.id)
             if statLine:
                 lines.append(statLine)## translation FIXME
         if self.showAuthor and event.author:
@@ -3096,7 +3108,7 @@ class VcsCommitEventGroup(VcsBaseEventGroup):
         event.description = '\n'.join(lines)
     def getEvent(self, commit_id):## cache commit data FIXME
         mod = vcsModuleDict[self.vcsType]
-        data = mod.getCommitInfo(self.vcsDir, commit_id)
+        data = mod.getCommitInfo(self, commit_id)
         if not data:
             raise ValueError('No commit with id=%r'%commit_id)
         data['summary'] = self.title +': ' + data['summary']
