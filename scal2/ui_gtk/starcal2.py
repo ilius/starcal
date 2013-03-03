@@ -652,6 +652,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         #####
         menu.add(labelStockMenuItem('Select _Today', gtk.STOCK_HOME, self.goToday))
         menu.add(labelStockMenuItem('Select _Date...', gtk.STOCK_INDEX, selectDateShow))
+        menu.add(labelStockMenuItem('Day Info', gtk.STOCK_INFO, self.dayInfoShow))
         menu.add(labelStockMenuItem('_Customize', gtk.STOCK_EDIT, self.customizeShow))
         menu.add(labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
         #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, ui.eventManDialog.addCustomEvent))
