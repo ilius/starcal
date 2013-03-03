@@ -233,6 +233,8 @@ class Cell:## status and information of a cell
                     plug.update_cell(self)
                 except:
                     myRaiseTback()
+        ###################
+        self.eventsData = event_man.getDayOccurrenceData(jd, eventGroups)
     def format(self, binFmt, mode, tm=null):## FIXME
         (pyFmt, funcs) = binFmt
         return pyFmt%tuple(f(self, mode, tm) for f in funcs)
@@ -276,47 +278,33 @@ class CellCache:
             getCellGroupCallable(cellCache, *args): return cell_group
                 call cellCache.getCell(jd) inside getCellGroupFunc
         """
-        self.plugins[name] = {
-            'setParamsCallable': setParamsCallable,
-            'getCellGroupCallable': getCellGroupCallable,
-        }
-        for local_cell in self.jdCells.values():
-            setParamsCallable(local_cell)
+        self.plugins[name] = (
+            setParamsCallable,
+            getCellGroupCallable,
+        )
+        for localCell in self.jdCells.values():
+            setParamsCallable(localCell)
     def getCell(self, jd):
-        if self.jdCells.has_key(jd):
+        try:
             return self.jdCells[jd]
-        else:
+        except KeyError:
             return self.buildCell(jd)
     def getTmpCell(self, jd):## don't keep, no eventsData, no plugin params
-        if self.jdCells.has_key(jd):
+        try:
             return self.jdCells[jd]
-        else:
+        except KeyError:
             return Cell(jd)
-    getCellByDate = lambda self, year, month, day: self.getCell(core.to_jd(year, month, day, core.primaryMode))
+    getCellByDate = lambda self, y, m, d: self.getCell(core.to_jd(y, m, d, core.primaryMode))
     getTodayCell = lambda self: self.getCell(core.getCurrentJd())
-    def getCellByDate(self, year, month, day):
-        return self.getCell(core.to_jd(year, month, day, core.primaryMode))
     def buildCell(self, jd):
-        local_cell = Cell(jd)
+        localCell = Cell(jd)
         for pluginData in self.plugins.values():
-            pluginData['setParamsCallable'](local_cell)
-        #local_cell.eventsData = event_man.getDayOccurrenceData(local_cell.jd, eventGroups)
-        self.jdCells[jd] = local_cell
+            pluginData[0](localCell)
+        self.jdCells[jd] = localCell
         cleanCacheDict(self.jdCells, maxDayCacheSize, jd)
-        return local_cell
-    def calcEventsData(self, cellList):
-        changed = False
-        for local_cell in cellList:
-            if not local_cell.eventsDataIsSet:
-                changed = True
-                local_cell.eventsData = event_man.getDayOccurrenceData(local_cell.jd, eventGroups)
-                local_cell.eventsDataIsSet = True
-        if changed and mainWin:## prevent from infinit loop!
-            mainWin.onDateChange()
-    def getCellGroup(self, pluginName, *args):
-        cellGroup = self.plugins[pluginName]['getCellGroupCallable'](self, *args)
-        self.calcEventsData(cellGroup.allCells())
-        return cellGroup
+        return localCell
+    getCellGroup = lambda self, pluginName, *args:\
+        self.plugins[pluginName][1](self, *args)
     def getWeekData(self, absWeekNumber):
         cells = self.getCellGroup('WeekCal', absWeekNumber)
         try:
