@@ -3031,6 +3031,7 @@ class VcsBaseEventGroup(EventGroup):
     __repr__ = lambda self: '%s(vcsType=%r, vcsDir=%r)'%(self.__class__.__name__, self.vcsType, self.vcsDir)
     def setDefaults(self):
         self.eventTextSep = '\n'
+        self.showInTimeLine = False
     getRulesHash = lambda self: hash(str((
         self.name,
         self.vcsType,
