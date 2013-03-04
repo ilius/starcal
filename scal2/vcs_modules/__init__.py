@@ -3,6 +3,7 @@
 vcsModuleNames = [
     'git',
     'hg',
+    'bzr',
 ]
 
 vcsModuleDict = dict([
