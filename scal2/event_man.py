@@ -3044,10 +3044,12 @@ class VcsBaseEventGroup(EventGroup):
             return self.getEvent(key)
     def updateVcsModuleObj(self):
         mod = vcsModuleDict[self.vcsType]
+        mod.clearObj(self)
         if self.enable and self.vcsDir:
-            mod.prepareObj(self)
-        else:
-            mod.clearObj(self)
+            try:
+                mod.prepareObj(self)
+            except:
+                myRaise()
     def afterModify(self):
         self.updateVcsModuleObj()
         EventGroup.afterModify(self)
@@ -3149,7 +3151,7 @@ class VcsTagEventGroup(VcsBaseEventGroup):
             return
         mod = vcsModuleDict[self.vcsType]
         try:
-            tagsData = mod.getTagList(self.vcsDir, self.startJd, self.endJd)## TOO SLOW
+            tagsData = mod.getTagList(self, self.startJd, self.endJd)## TOO SLOW
         except:
             printError('Error while fetching tag list of %s repository in %s'%(
                 self.vcsType,
@@ -3174,7 +3176,7 @@ class VcsTagEventGroup(VcsBaseEventGroup):
                 prevTag = self.tags[tagIndex-1]
             else:
                 prevTag = None
-            statLine = mod.getTagShortStatLine(self.vcsDir, prevTag, tag)
+            statLine = mod.getTagShortStatLine(self, prevTag, tag)
             if statLine:
                 lines.append(statLine)## translation FIXME
         event.description = '\n'.join(lines)
