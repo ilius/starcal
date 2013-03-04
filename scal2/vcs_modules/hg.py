@@ -18,6 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 from scal2.time_utils import getEpochFromJd
+from scal2.vcs_modules.common import encodeShortStat
 
 import mercurial.ui
 from mercurial.localrepo import localrepository
@@ -88,17 +89,6 @@ def getCommitShortStat(obj, commit_id):
         ctx,
     )
 
-def encodeShortStat(files_changed, insertions, deletions):
-    parts = []
-    if files_changed == 1:
-        parts.append('1 file changed')
-    else:
-        parts.append('%d files changed'%files_changed)
-    if insertions > 0:
-        parts.append('%d insertions(+)'%insertions)
-    if deletions > 0:
-        parts.append('%d deletions(-)'%deletions)
-    return ', '.join(parts)
 
 def getCommitShortStatLine(obj, commit_id):
     '''
