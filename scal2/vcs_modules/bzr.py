@@ -154,7 +154,16 @@ def getTagList(obj, startJd, endJd):
     return data
 
 def getTagShortStat(obj, prevTag, tag):
-    return 0, 0, 0
+    '''
+        returns (files_changed, insertions, deletions)
+    '''
+    repo = obj.repo
+    td = obj.branch.tags.get_tag_dict()
+    return getShortStat(
+        repo,
+        repo.revision_tree(td[prevTag] if prevTag else None),
+        repo.revision_tree(td[tag]),
+    )
 
 
 def getTagShortStatLine(obj, prevTag, tag):
