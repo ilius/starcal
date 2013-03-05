@@ -17,10 +17,17 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from StringIO import StringIO
+from difflib import SequenceMatcher
+
+from scal2.utils import NullObj
 from scal2.time_utils import getEpochFromJd
 from scal2.vcs_modules.common import encodeShortStat
 
 from bzrlib.bzrdir import BzrDir
+from bzrlib.diff import DiffText
+from bzrlib import revision as _mod_revision
+
 
 def prepareObj(obj):
     tree, branch, repository, relpath = \
@@ -69,27 +76,60 @@ def getCommitInfo(obj, rev_id):
     }
 
 
-#def getShortStat(repo, node1, node2):
-#    return files_changed, insertions, deletions
+def getShortStat(repo, old_tree, tree):
+    files_changed = 0
+    insertions = 0
+    deletions = 0
+    ####
+    tree.lock_read()
+    for file_id, (old_path, new_path), changed_content,\
+    versioned, parent, name, (old_kind, new_kind), executable in tree.iter_changes(old_tree):
+        if changed_content:
+            if new_kind == 'file':
+                files_changed += 1
+                if old_kind == None:
+                    insertions += len(tree.get_file_lines(file_id))
+                elif old_kind == 'file':
+                    seq = SequenceMatcher(
+                        None,
+                        old_tree.get_file_lines(file_id),
+                        tree.get_file_lines(file_id),
+                    )
+                    for op, i1, i2, j1, j2 in seq.get_opcodes():
+                        if op == 'equal':
+                            continue
+                        ## op in 'insert', 'delete', 'replace'
+                        insertions += (j2 - j1)
+                        deletions += (i2 - i1)
+            elif new_kind == None:
+                if old_kind == 'file':
+                    files_changed += 1
+                    deletions += len(old_tree.get_file_lines(file_id))
+    return files_changed, insertions, deletions
 
 
 def getCommitShortStat(obj, rev_id):
     '''
         returns (files_changed, insertions, deletions)
     '''
-    ## file level only (not code lines)
-    delta = obj.repo.get_revision_delta(rev_id)
-    #for item in delta.modified:
-    #    print 'delta modified:', item
-    #print
-    return 0, 0, 0
+    repo = obj.repo
+    rev = repo.get_revision(rev_id)
+    tree = repo.revision_tree(rev_id)
+    try:
+        old_rev_id = rev.parent_ids[0]
+    except IndexError:
+        old_rev_id = _mod_revision.NULL_REVISION
+    return getShortStat(
+        repo,
+        repo.revision_tree(old_rev_id),
+        tree,
+    )
 
 def getCommitShortStatLine(obj, rev_id):
     '''
         returns str
     '''
-    #return encodeShortStat(*getCommitShortStat(obj, rev_id))
-    return ''
+    return encodeShortStat(*getCommitShortStat(obj, rev_id))
 
 
 def getTagList(obj, startJd, endJd):
