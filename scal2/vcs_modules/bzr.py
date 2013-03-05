@@ -145,14 +145,12 @@ def getTagList(obj, startJd, endJd):
     for tag, rev_id in obj.branch.tags.get_tag_dict().iteritems():
         rev = obj.repo.get_revision(rev_id)
         epoch = rev.timestamp
-        if epoch < startEpoch:
-            continue
-        if epoch >= endEpoch:
-            continue
-        data.append((
-            epoch,
-            tag,
-        ))
+        if startEpoch <= epoch < endEpoch:
+            data.append((
+                epoch,
+                tag,
+            ))
+    data.sort()
     return data
 
 def getTagShortStat(obj, prevTag, tag):
