@@ -27,7 +27,7 @@ from scal2.vcs_modules.common import encodeShortStat
 from bzrlib.bzrdir import BzrDir
 from bzrlib.diff import DiffText
 from bzrlib import revision as _mod_revision
-
+from bzrlib.osutils import split_lines
 
 def prepareObj(obj):
     tree, branch, repository, relpath = \
@@ -85,26 +85,35 @@ def getShortStat(repo, old_tree, tree):
     for file_id, (old_path, new_path), changed_content,\
     versioned, parent, name, (old_kind, new_kind), executable in tree.iter_changes(old_tree):
         if changed_content:
-            if new_kind == 'file':
+            #for kind in (old_kind, new_kind):
+            #    if not kind in (None, 'file', 'symlink', 'directory'):
+            #        print 'kind', old_kind, new_kind
+            if new_kind in ('file', 'symlink'):
                 files_changed += 1
-                if old_kind == None:
-                    insertions += len(tree.get_file_lines(file_id))
-                elif old_kind == 'file':
-                    seq = SequenceMatcher(
-                        None,
-                        old_tree.get_file_lines(file_id),
-                        tree.get_file_lines(file_id),
-                    )
-                    for op, i1, i2, j1, j2 in seq.get_opcodes():
-                        if op == 'equal':
-                            continue
-                        ## op in 'insert', 'delete', 'replace'
-                        insertions += (j2 - j1)
-                        deletions += (i2 - i1)
+                text = tree.get_file_text(file_id)
+                if not '\x00' in text[:1024]:## FIXME
+                    if old_kind == None:
+                        insertions += len(split_lines(text))
+                    elif old_kind in ('file', 'symlink'):
+                        old_text = old_tree.get_file_text(file_id)
+                        seq = SequenceMatcher(
+                            None,
+                            split_lines(old_text),
+                            split_lines(text),
+                        )
+                        for op, i1, i2, j1, j2 in seq.get_opcodes():
+                            if op == 'equal':
+                                continue
+                            #if not op in ('insert', 'delete', 'replace'):
+                            #    print 'op', op
+                            insertions += (j2 - j1)
+                            deletions += (i2 - i1)
             elif new_kind == None:
-                if old_kind == 'file':
+                if old_kind in ('file', 'symlink'):
                     files_changed += 1
-                    deletions += len(old_tree.get_file_lines(file_id))
+                    old_text = old_tree.get_file_text(file_id)
+                    if not '\x00' in old_text[:1024]:## FIXME
+                        deletions += len(split_lines(old_text))
     return files_changed, insertions, deletions
 
 
