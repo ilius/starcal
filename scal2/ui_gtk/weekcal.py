@@ -77,7 +77,8 @@ class ColumnBase(CustomizableCalObj):
         return text
     def initVars(self, *a, **ka):
         CustomizableCalObj.initVars(self, *a, **ka)
-        self.optionsWidget = gtk.VBox()
+        if not self.optionsWidget:
+            self.optionsWidget = gtk.VBox()
         ####
         if self.customizeFont:
             hbox = gtk.HBox()
