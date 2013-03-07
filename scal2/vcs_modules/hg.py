@@ -64,7 +64,7 @@ def getCommitInfo(obj, commid_id):
     }
 
 
-def getShortStat(repo, node1, node2):
+def getShortStat(repo, node1, node2):## SLOW FIXME
     stats = diffstatdata(
         iterlines(
             diff(
@@ -111,14 +111,12 @@ def getTagList(obj, startJd, endJd):
         if tag == 'tip':
             continue
         epoch = obj.repo[tag].date()[0]
-        if epoch < startEpoch:
-            continue
-        if epoch >= endEpoch:
-            break
-        data.append((
-            epoch,
-            tag,
-        ))
+        if startEpoch <= epoch < endEpoch:
+            data.append((
+                epoch,
+                tag,
+            ))
+    data.sort()
     return data
 
 def getTagShortStat(obj, prevTag, tag):
