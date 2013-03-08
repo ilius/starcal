@@ -314,7 +314,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         ###### Drae Current Time Marker
         dt = self.currentTime - self.timeStart
         if 0 <= dt <= self.timeWidth:
-            setColor(cr, currenTimeMarkerColor)
+            setColor(cr, currentTimeMarkerColor)
             cr.rectangle(
                 dt*pixelPerSec - currentTimeMarkerWidth/2.0,
                 0,

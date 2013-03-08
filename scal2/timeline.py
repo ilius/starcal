@@ -50,7 +50,7 @@ baseFontSize = 8
 labelYRatio = 1.1
 bgColor = (40, 40, 40)
 fgColor = (255, 255, 255)
-currenTimeMarkerColor = (255, 100, 100)
+currentTimeMarkerColor = (255, 100, 100)
 
 showWeekStart = True
 weekStartTickColor = (0, 200, 0)
