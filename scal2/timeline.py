@@ -73,6 +73,8 @@ boxInnerAlpha = 0.1
 boxMoveBorder = 10
 boxMoveLineW = 0.5
 
+editingBoxHelperLineWidth = 0.3 ## px
+
 movableEventTypes = ('task',)
 
 #boxColorSaturation = 1.0

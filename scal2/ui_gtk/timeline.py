@@ -288,6 +288,26 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
                             y + (h-layoutH)/2.0,
                         )
                         cr.show_layout(layout)
+    def drawBoxEditingHelperLines(self, cr):
+        if not self.boxEditing:
+            return
+        (editType, event, box, x, t0) = self.boxEditing
+        setColor(cr, fgColor)
+        d = editingBoxHelperLineWidth
+        cr.rectangle(
+            box.x,
+            0,
+            d,
+            box.y,
+        )
+        cr.fill()
+        cr.rectangle(
+            box.x + box.w - d,
+            0,
+            d,
+            box.y,
+        )
+        cr.fill()
     def drawAll(self, cr):
         width = self.allocation.width
         height = self.allocation.height
@@ -311,6 +331,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         for box in self.data['boxes']:
             box.setPixelValues(self.timeStart, pixelPerSec, beforeBoxH, maxBoxH)
             self.drawBox(cr, box)
+        self.drawBoxEditingHelperLines(cr)
         ###### Drae Current Time Marker
         dt = self.currentTime - self.timeStart
         if 0 <= dt <= self.timeWidth:
