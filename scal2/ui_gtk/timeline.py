@@ -332,7 +332,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             box.setPixelValues(self.timeStart, pixelPerSec, beforeBoxH, maxBoxH)
             self.drawBox(cr, box)
         self.drawBoxEditingHelperLines(cr)
-        ###### Drae Current Time Marker
+        ###### Draw Current Time Marker
         dt = self.currentTime - self.timeStart
         if 0 <= dt <= self.timeWidth:
             setColor(cr, currentTimeMarkerColor)
