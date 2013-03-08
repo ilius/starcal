@@ -35,7 +35,12 @@ from scal2.event_man import epsTm
 from scal2 import ui
 from scal2.ui import getHolidaysJdList
 
-#sunLightH = 10## FIXME
+####################################################
+
+bgColor = (40, 40, 40)
+fgColor = (255, 255, 255)
+baseFontSize = 8
+
 majorStepMin = 50 ## with label
 minorStepMin = 5 ## with or without label
 maxLabelWidth = 60 ## or the same majorStepMin
@@ -43,24 +48,24 @@ baseTickHeight = 1
 baseTickWidth = 0.5
 maxTickWidth = 20
 maxTickHeightRatio = 0.3
+labelYRatio = 1.1
+
 currentTimeMarkerHeightRatio = 0.3
 currentTimeMarkerWidth = 2
-fontFamily = ui.getFont()[0]
-baseFontSize = 8
-labelYRatio = 1.1
-bgColor = (40, 40, 40)
-fgColor = (255, 255, 255)
 currentTimeMarkerColor = (255, 100, 100)
 
+#sunLightH = 10## FIXME
+
+
 showWeekStart = True
-weekStartTickColor = (0, 200, 0)
 showWeekStartMinDays = 1
 showWeekStartMaxDays = 60
+weekStartTickColor = (0, 200, 0)
 
-changeHolidayBg = True
-holidayBgBolor = (60, 35, 35)
+changeHolidayBg = False
 changeHolidayBgMinDays = 1
 changeHolidayBgMaxDays = 60
+holidayBgBolor = (60, 35, 35)
 
 boxLineWidth = 2
 boxInnerAlpha = 0.1
@@ -73,12 +78,58 @@ movableEventTypes = ('task',)
 #boxColorSaturation = 1.0
 #boxColorLightness = 0.3 ## for random colors
 
+
 boxReverseGravity = False
-boxMaxHeightFactor = 0.9 ## less than 1.0
+boxMaxHeightFactor = 0.9 ## < 1.0
 
 
-scrollZoomStep = 1.2
-keyboardZoomStep = 1.4
+scrollZoomStep = 1.2 ## > 1
+keyboardZoomStep = 1.4 ## > 1
+
+#############################################
+
+enableAnimation = True
+movingStaticStep = 20
+movingUpdateTime = 10 ## milisecons
+
+movingV0 = 0
+
+## Force is the same as Acceleration, assuming Mass == 1
+
+## different for keyboard (arrows) and mouse (scroll) FIXME
+movingHandForce = 1100 ## px / (sec**2)
+movingHandSmallForce = 900 ## px / (sec**2)
+
+movingFrictionForce = 600 ## px / (sec**2)
+## movingHandForce > movingFrictionForce
+
+movingMaxSpeed = 1200 ## px / sec
+## movingMaxSpeed = movingAccel * 4
+## reach to maximum speed in 4 seconds
+
+
+
+movingKeyTimeoutFirst = 0.5
+movingKeyTimeout = 0.1 ## seconds ## continiouse keyPress delay is about 0.05 sec
+
+#############################################
+
+skipEventPixelLimit = 0.1 ## pixels
+
+truncateTickLabel = False
+
+rotateBoxLabel = -1
+## 0: no rotation
+## 1: 90 deg CCW (if needed)
+## -1: 90 deg CW (if needed)
+
+####################################################
+
+fontFamily = ui.getFont()[0]
+
+dayLen = 24 * 3600
+minYearLenSec = 365 * dayLen
+avgMonthLen = 30 * dayLen
 
 unitSteps = (
     (3600, 12),
@@ -94,31 +145,6 @@ unitSteps = (
     (1, 5),
     (1, 1),
 )
-
-minYearLenSec = 365*24*3600
-avgMonthLen = 30*24*3600
-
-enableAnimation = True
-
-staticMoveStep = 20
-
-movingUpdateTime = 10 ## milisecons
-movingV0 = 30
-movingAccel = 300
-movingSurfaceForce = 600 ## px / (sec**2)
-movingHandForce = movingSurfaceForce + movingAccel ## px / (sec**2)
-movingMaxSpeed = (movingHandForce-movingSurfaceForce)*4 ## px / sec ## reach to maximum speed in 3 seconds
-movingKeyTimeoutFirst = 0.5
-movingKeyTimeout = 0.1 ## seconds ## continiouse keyPress delay is about 0.05 sec
-
-skipEventPixelLimit = 0.1 ## pixels
-
-truncateTickLabel = False
-
-rotateBoxLabel = -1
-## 0: no rotation
-## 1: 90 deg CCW (if needed)
-## -1: 90 deg CW (if needed)
 
 
 class Tick:
@@ -278,9 +304,9 @@ def calcTimeLineData(timeStart, timeWidth, width):
     timeEnd = timeStart + timeWidth
     jd0 = getJdFromEpoch(timeStart)
     jd1 = getJdFromEpoch(timeEnd)
-    widthDays = timeWidth / (24.0*3600)
-    pixelPerSec = float(width)/timeWidth ## pixel/second
-    dayPixel = 24*3600*pixelPerSec ## pixel
+    widthDays = float(timeWidth) / dayLen
+    pixelPerSec = float(width) / timeWidth ## px / sec
+    dayPixel = dayLen * pixelPerSec ## px
     #print 'dayPixel = %s px'%dayPixel
     getEPos = lambda epoch: (epoch-timeStart)*pixelPerSec
     getJPos = lambda jd: (getEpochFromJd(jd)-timeStart)*pixelPerSec
@@ -292,18 +318,18 @@ def calcTimeLineData(timeStart, timeWidth, width):
     ######################## Ticks
     ticks = []
     tickEpochList = []
-    minStep = minorStepMin/pixelPerSec ## second
+    minStep = minorStepMin / pixelPerSec ## second
     #################
     (year0, month0, day0) = jd_to(jd0, core.primaryMode)
     (year1, month1, day1) = jd_to(jd1, core.primaryMode)
     ############ Year
-    minStepYear = minStep//minYearLenSec ## years ## int or iceil?
-    yearPixel = minYearLenSec*pixelPerSec ## pixels
+    minStepYear = minStep // minYearLenSec ## years ## int or iceil?
+    yearPixel = minYearLenSec * pixelPerSec ## pixels
     for (year, size) in getYearRangeTickValues(year0, year1+1, minStepYear):
         tmEpoch = getEpochFromDate(year, 1, 1, core.primaryMode)
         if tmEpoch in tickEpochList:
             continue
-        unitSize = size*yearPixel
+        unitSize = size * yearPixel
         label = formatYear(year) if unitSize >= majorStepMin else ''
         ticks.append(Tick(
             tmEpoch,
@@ -313,8 +339,8 @@ def calcTimeLineData(timeStart, timeWidth, width):
         ))
         tickEpochList.append(tmEpoch)
     ############ Month
-    monthPixel = avgMonthLen*pixelPerSec ## pixel
-    minMonthUnit = float(minStep)/avgMonthLen ## month
+    monthPixel = avgMonthLen * pixelPerSec ## px
+    minMonthUnit = float(minStep) / avgMonthLen ## month
     if minMonthUnit <= 3:
         for ym in range(year0*12+month0-1, year1*12+month1-1+1):## +1 FIXME
             if ym%3==0:
@@ -327,7 +353,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
             tmEpoch = getEpochFromDate(y, m, 1, core.primaryMode)
             if tmEpoch in tickEpochList:
                 continue
-            unitSize = monthPixel*monthUnit
+            unitSize = monthPixel * monthUnit
             ticks.append(Tick(
                 tmEpoch,
                 getEPos(tmEpoch),
@@ -338,8 +364,8 @@ def calcTimeLineData(timeStart, timeWidth, width):
     ################
     if showWeekStart and showWeekStartMinDays < widthDays < showWeekStartMaxDays:
         wd0 = jwday(jd0)
-        jdw0 = jd0 + (core.firstWeekDay-wd0)%7
-        unitSize = dayPixel*7
+        jdw0 = jd0 + (core.firstWeekDay - wd0) % 7
+        unitSize = dayPixel * 7
         if unitSize < majorStepMin:
             label = ''
         else:
@@ -355,8 +381,8 @@ def calcTimeLineData(timeStart, timeWidth, width):
             ))
             #tickEpochList.append(tmEpoch)
     ############ Day of Month
-    hasMonthName = timeWidth < 5*24*3600
-    minDayUnit = float(minStep)/(24*3600) ## day
+    hasMonthName = timeWidth < 5 * dayLen
+    minDayUnit = float(minStep) / dayLen ## days
     if minDayUnit <= 15:
         for jd in range(jd0, jd1+1):
             tmEpoch = getEpochFromJd(jd)

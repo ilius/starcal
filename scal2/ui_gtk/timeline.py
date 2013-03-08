@@ -77,7 +77,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         self.connect('key-press-event', self.keyPress)
         #self.connect('event', show_event)
         self.currentTime = getCurrentTime()
-        self.timeWidth = 24*3600
+        self.timeWidth = dayLen
         self.timeStart = self.currentTime - self.timeWidth/2.0
         self.buttons = [
             Button('home.png', self.centerToNowClicked, 1, -1, False),
@@ -292,7 +292,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         width = self.allocation.width
         height = self.allocation.height
         pixelPerSec = self.pixelPerSec
-        dayPixel = 24*3600 * pixelPerSec ## pixel
+        dayPixel = dayLen * pixelPerSec ## pixel
         maxTickHeight = maxTickHeightRatio * height
         #####
         cr.rectangle(0, 0, width, height)
@@ -335,10 +335,12 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             self.zoom(
                 isUp,
                 scrollZoomStep, 
-                event.x / self.allocation.width
+                event.x / self.allocation.width,
             )
         else:
-            self.movingUserEvent(-1 if isUp else 1)## FIXME
+            self.movingUserEvent(
+                direction=(-1 if isUp else 1),
+            )## FIXME
         self.queue_draw()
         return True
     def buttonPress(self, obj, gevent):
@@ -346,71 +348,87 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         y = gevent.y
         w = self.allocation.width
         h = self.allocation.height
-        b = gevent.button
-        if b==1:
+        if gevent.button==1:
             for button in self.buttons:
                 if button.contains(x, y, w, h):
                     button.func(gevent)
                     return True
-        if b in (1, 3):
+            ####
+            for box in self.data['boxes']:
+                if not box.hasBorder:
+                    continue
+                if not box.ids:
+                    continue
+                if not box.contains(x, y):
+                    continue
+                (gid, eid) = box.ids
+                group = ui.eventGroups[gid]
+                event = group[eid]
+                ####
+                top = y - box.y
+                left = x - box.x
+                right = box.x + box.w - x
+                minA = min(boxMoveBorder, top, left, right)
+                editType = None
+                if top == minA:
+                    editType = 0
+                    t0 = event.getStartEpoch()
+                    self.window.set_cursor(gdk.Cursor(gdk.FLEUR))
+                elif right == minA:
+                    editType = 1
+                    t0 = event.getEndEpoch()
+                    self.window.set_cursor(gdk.Cursor(gdk.RIGHT_SIDE))
+                elif left == minA:
+                    editType = -1
+                    t0 = event.getStartEpoch()
+                    self.window.set_cursor(gdk.Cursor(gdk.LEFT_SIDE))
+                if editType is not None:
+                    self.boxEditing = (editType, event, box, x, t0)
+                    return True
+        elif gevent.button==3:
             for box in self.data['boxes']:
                 if not box.ids:
                     continue
-                if box.contains(x, y):
-                    (gid, eid) = box.ids
-                    group = ui.eventGroups[gid]
-                    event = group[eid]
-                    ###
-                    if b==1:
-                        if box.hasBorder:
-                            top = y - box.y
-                            left = x - box.x
-                            right = box.x + box.w - x
-                            minA = min(boxMoveBorder, top, left, right)
-                            editType = None
-                            if top == minA:
-                                editType = 0
-                                t0 = event.getStartEpoch()
-                                self.window.set_cursor(gdk.Cursor(gdk.FLEUR))
-                            elif right == minA:
-                                editType = 1
-                                t0 = event.getEndEpoch()
-                                self.window.set_cursor(gdk.Cursor(gdk.RIGHT_SIDE))
-                            elif left == minA:
-                                editType = -1
-                                t0 = event.getStartEpoch()
-                                self.window.set_cursor(gdk.Cursor(gdk.LEFT_SIDE))
-                            if editType is not None:
-                                self.boxEditing = (editType, event, box, x, t0)
-                                return True
-                    elif b==3:
-                        menu = gtk.Menu()
-                        ##
-                        winTitle = _('Edit') + ' ' + event.desc
-                        menu.add(labelStockMenuItem(
-                            winTitle,
-                            gtk.STOCK_EDIT,
-                            self.editEventClicked,
-                            winTitle,
-                            event,
-                            gid,
-                        ))
-                        ##
-                        winTitle = _('Edit') + ' ' + group.desc
-                        menu.add(labelStockMenuItem(winTitle, gtk.STOCK_EDIT, self.editGroupClicked, winTitle, group))
-                        ##
-                        menu.add(gtk.SeparatorMenuItem())
-                        ##
-                        menu.add(labelImageMenuItem(
-                            _('Move to %s')%ui.eventTrash.title,
-                            ui.eventTrash.icon,
-                            self.moveEventToTrash,
-                            group,
-                            event,
-                        ))
-                        ##
-                        menu.show_all()
-                        menu.popup(None, None, None, 3, 0)
+                if not box.contains(x, y):
+                    continue
+                (gid, eid) = box.ids
+                group = ui.eventGroups[gid]
+                event = group[eid]
+                ####
+                menu = gtk.Menu()
+                ##
+                if not event.readOnly:
+                    winTitle = _('Edit') + ' ' + event.desc
+                    menu.add(labelStockMenuItem(
+                        winTitle,
+                        gtk.STOCK_EDIT,
+                        self.editEventClicked,
+                        winTitle,
+                        event,
+                        gid,
+                    ))
+                ##
+                winTitle = _('Edit') + ' ' + group.desc
+                menu.add(labelStockMenuItem(
+                    winTitle,
+                    gtk.STOCK_EDIT,
+                    self.editGroupClicked,
+                    winTitle,
+                    group,
+                ))
+                ##
+                menu.add(gtk.SeparatorMenuItem())
+                ##
+                menu.add(labelImageMenuItem(
+                    _('Move to %s')%ui.eventTrash.title,
+                    ui.eventTrash.icon,
+                    self.moveEventToTrash,
+                    group,
+                    event,
+                ))
+                ##
+                menu.show_all()
+                menu.popup(None, None, None, 3, 0)
         return False
     def motionNotify(self, obj, gevent):
         if self.boxEditing:
@@ -480,9 +498,15 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         if k in ('space', 'home'):
             self.centerToNow()
         elif k=='right':
-            self.movingUserEvent(1)
+            self.movingUserEvent(
+                direction=1,
+                smallForce=(event.state & gdk.SHIFT_MASK),
+            )
         elif k=='left':
-            self.movingUserEvent(-1)
+            self.movingUserEvent(
+                direction=-1,
+                smallForce=(event.state & gdk.SHIFT_MASK),
+            )
         elif k=='down':
             self.stopMovingAnim()
         elif k in ('q', 'escape'):
@@ -510,7 +534,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             return False
         self.queue_draw()
         return True
-    def movingUserEvent(self, force=1):
+    def movingUserEvent(self, direction=1, smallForce=False):
         if enableAnimation:
             tm = time.time()
             #dtEvent = tm - self.movingLastPress
@@ -521,12 +545,15 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
                     force direction has been change, OR
                     its currently still (no speed and no force)
             '''
-            if self.movingF*force < 0 or self.movingF*self.movingV==0:## or dtEvent > movingKeyTimeout
-                self.movingF = force * movingHandForce
-                self.movingV += movingV0*force
+            if self.movingF*direction < 0 or self.movingF*self.movingV==0:
+            ## or dtEvent > movingKeyTimeout
+                self.movingF = direction * \
+                    (movingHandSmallForce if smallForce else movingHandForce)
+                self.movingV += movingV0 * direction
                 self.updateMovingAnim(self.movingF, tm, tm, self.movingV, self.movingF)
         else:
-            self.timeStart += force * staticMoveStep * self.timeWidth/float(self.allocation.width)
+            self.timeStart += direction * movingStaticStep * \
+                self.timeWidth/float(self.allocation.width)
     def updateMovingAnim(self, f1, t0, t1, v0, a1):
         t2 = time.time()
         f = self.movingF
@@ -539,9 +566,9 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         if f!=0 and t2 - self.movingLastPress >= timeout:## Stopping
             f = self.movingF = 0
         if v1 > 0:
-            a2 = f - movingSurfaceForce
+            a2 = f - movingFrictionForce
         elif v1 < 0:
-            a2 = f + movingSurfaceForce
+            a2 = f + movingFrictionForce
         else:
             a2 = f
         if a2 != a1:
@@ -604,7 +631,7 @@ if __name__=='__main__':
     win = TimeLineWindow()
     win.resize(ud.screenW, 150)
     win.move(0, 0)
-    #win.tline.timeWidth = 100 * 365 * 24 * 3600 # 2*10**17
+    #win.tline.timeWidth = 100 * minYearLenSec # 2 * 10**17
     #win.tline.timeStart = time.time() - win.tline.timeWidth # -10**17
     win.show()
     gtk.main()
