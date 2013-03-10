@@ -414,15 +414,15 @@ def deleteEventGroup(group):
     eventGroups.moveToTrash(group, eventTrash)
 
 def moveEventToTrash(group, event):
-    group.remove(event)
+    eventIndex = group.remove(event)
     group.save()
     eventTrash.insert(0, event)## or append? FIXME
     eventTrash.save()
+    return eventIndex
 
 def moveEventToTrashFromOutside(group, event):
     global trashedEvents
-    eventIndex = group.index(event.id)
-    moveEventToTrash(group, event)
+    eventIndex = moveEventToTrash(group, event)
     trashedEvents.append((group.id, event.id, eventIndex))
 
 getEvent = lambda groupId, eventId: eventGroups[groupId][eventId]
