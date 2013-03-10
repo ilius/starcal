@@ -826,8 +826,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ui.focusTime = time()
         menu = gtk.Menu()
         ####
-        menu.add(labelStockMenuItem('Day Info', gtk.STOCK_INFO, self.dayInfoShow))
         menu.add(labelStockMenuItem('_Copy Date', gtk.STOCK_COPY, self.copyDate))
+        menu.add(labelStockMenuItem('Day Info', gtk.STOCK_INFO, self.dayInfoShow))
         menu.add(self.getEventAddToMenuItem())
         menu.add(gtk.SeparatorMenuItem())
         menu.add(labelStockMenuItem('Select _Today', gtk.STOCK_HOME, self.goToday))
