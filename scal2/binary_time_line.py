@@ -186,6 +186,7 @@ class BtlRootNode:
     def getLastOfEvent(self, eid):
         try:
             node, ev_tuple = self.byEvent[eid][-1]
+            ## self.byEvent is sorted by time? FIXME
         except KeyError, IndexError:
             return None
         return ev_tuple[0], ev_tuple[1]
