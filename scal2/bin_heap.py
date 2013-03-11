@@ -21,7 +21,6 @@ class MaxHeap(list):
             self.moreThanStep(key, 2*index+1) + \
             self.moreThanStep(key, 2*index+2)
     __str__ = lambda self: ' '.join(['%s:%s'%(-k, v) for k, v in self])
-    keyCmp = lambda x1, x2: cmp(x1[0], x2[0])
     def delete(self, key, value):
         try:
             list.remove(self, (-key, value))
