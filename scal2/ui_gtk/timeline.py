@@ -347,9 +347,13 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         for button in self.buttons:
             button.draw(cr, width, height)
     def onExposeEvent(self, widget=None, event=None):
+        #t0 = time.time()
         if not self.boxEditing:
             self.updateData()
+        #t1 = time.time()
         self.drawAll(self.window.cairo_create())
+        #t2 = time.time()
+        #print 'drawing time / data calc time: %.2f'%((t2-t1)/(t1-t0))
     def onScroll(self, widget, event):
         isUp = event.direction.value_nick=='up'
         if event.state & gdk.CONTROL_MASK:
