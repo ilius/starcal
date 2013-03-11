@@ -240,6 +240,16 @@ class EventSearchTree:
         except ValueError:
             return
         return mt-dt, mt+dt
+    def getFirstOfEvent(self, eid):
+        try:
+            hp = self.byId[eid]
+        except KeyError:
+            return
+        try:
+            mt, dt = hp.getMin()
+        except ValueError:
+            return
+        return mt-dt, mt+dt
 
 
 

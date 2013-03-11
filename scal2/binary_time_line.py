@@ -190,6 +190,12 @@ class BtlRootNode:
         except KeyError, IndexError:
             return None
         return ev_tuple[0], ev_tuple[1]
+    def getFirstOfEvent(self, eid):
+        try:
+            node, ev_tuple = self.byEvent[eid][0]
+        except KeyError, IndexError:
+            return None
+        return ev_tuple[0], ev_tuple[1]
     def getDepth(self):
         return 1 + max(
             self.left.getDepth(),

@@ -2209,6 +2209,7 @@ class EventGroup(EventContainer):
         l = list(self.sortBys)
         if self.enable:
             l.append(('time_last', _('Last Occurrence Time'), False))
+            l.append(('time_first', _('First Occurrence Time'), False))
             return 'time_last', l
         else:
             return self.sortByDefault, l
@@ -2218,6 +2219,13 @@ class EventGroup(EventContainer):
                 last = self.occur.getLastOfEvent(event.id)
                 if last:
                     return last[0]
+                else:
+                    return None
+        elif attr=='time_first':
+            if self.enable:
+                first = self.occur.getFirstOfEvent(event.id)
+                if first:
+                    return first[0]
                 else:
                     return None
         return getattr(event, attr, None)
