@@ -67,7 +67,10 @@ english(Gregorian) calendar
 " > $pkgName.spec
 
 pkgPath=`rpmbuild -bb $pkgName.spec | grep -o /usr/src/packages/RPMS/.*rpm`
-echo "pkgPath=$pkgPath"
+
+if [ -z $pkgPath ] ; then
+    exit 1
+fi
 
 if [ ! -f $pkgPath ] ; then
     echo "Package file $pkgPath does not exit"
