@@ -4,6 +4,30 @@ from scal2.utils import s_join
 from heapq import heappush
 
 class MaxHeap(list):
+    def copy(self):
+        return MaxHeap(self[:])
+    def exch(self, i, j):
+        self[i], self[j] = self[j], self[i]
+    less = lambda self, i, j: self[i][0] > self[j][0]
+    def swim(self, k):
+        while k > 0:
+            j = (k-1) // 2
+            if self.less(k, j):
+                break
+            self.exch(k, j)
+            k = j
+    def sink(self, k):
+        N = len(self)
+        while True:
+            j = 2*k + 1
+            if j > N-1:
+                break
+            if j < N-1 and self.less(j, j+1):
+                j += 1
+            if self.less(j, k):
+                break
+            self.exch(k, j)
+            k = j
     add = lambda self, key, value: heappush(self, (-key, value))
     moreThan = lambda self, key: self.moreThanStep(key, 0)
     def moreThanStep(self, key, index):
@@ -20,12 +44,45 @@ class MaxHeap(list):
             ] + \
             self.moreThanStep(key, 2*index+1) + \
             self.moreThanStep(key, 2*index+2)
-    __str__ = lambda self: ' '.join(['%s:%s'%(-k, v) for k, v in self])
+    __str__ = lambda self: ' '.join(['%s'%(-k) for k, v in self])
     def delete(self, key, value):
         try:
-            list.remove(self, (-key, value))
+            index = self.index((-key, value))## not optimal FIXME
         except ValueError:
             pass
+        else:
+            self.deleteIndex(index)
+    def deleteIndex(self, index):
+        N = len(self)
+        if index < 0 or index > N-1:
+            raise ValueError('invalid index to deleteIndex()')
+        if index == N-1:
+            return self.pop(index)
+        self.exch(index, N-1)
+        key = -self.pop(N-1)[0]
+        self.sink(index)
+        self.swim(index)
+        return key
+    verify = lambda self: self.verifyIndex(0)
+    def verifyIndex(self, i):
+        assert i >= 0
+        try:
+            k = self[i]
+        except IndexError:
+            return True
+        try:
+            if self[2*i + 1] < k:
+                print '[%s] > [%s]'%(2*i + 1, i)
+                return False
+        except IndexError:
+            return True
+        try:
+            if self[2*i + 2] < k:
+                print '[%s] > [%s]'%(2*i + 2, i)
+                return False
+        except IndexError:
+            return True
+        return self.verifyIndex(2*i + 1) and self.verifyIndex(2*i + 2)
     getAll = lambda self: [(-key, value) for key, value in self]
     def getMax(self):
         if not self:
@@ -61,9 +118,34 @@ def getMinTest(N):
     #print 'time getMin(h)/min(h) = %.5f'%((t2-t1)/(t1-t0))
     #print 'min key = %s'%k1
 
+def testDeleteStep(N, maxKey):
+    from random import randint
+    from heapq import heapify
+    ###
+    h = MaxHeap()
+    for i in range(N):
+        h.add(randint(0, maxKey), 0)
+    h0 = h.copy()
+    rmIndex = randint(0, N-1)
+    rmKey = -h[rmIndex][0]
+    rmKey2 = h.deleteIndex(rmIndex)
+    if not h.verify():
+        print 'not verified, N=%s, I=%s'%(N, rmIndex)
+        print h0
+        print h
+        print '------------------------'
+        return False
+    return True
+
+
+def testDelete():
+    for N in range(10, 30):
+        for p in range(10000):
+            if not testDeleteStep(N, 10000):
+                break
+
 #if __name__=='__main__':
-#    for i in range(10000):
-#        getMinTest(100)
+#    testDelete()
 
 
 
