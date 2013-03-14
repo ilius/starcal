@@ -342,7 +342,7 @@ class StatusBox(gtk.HBox, CustomizableCalObj):
     def onDateChange(self, *a, **kw):
         CustomizableCalObj.onDateChange(self, *a, **kw)
         for i, label in enumerate(self.labelBox.get_children()):
-            text = ui.cell.format(ud.dateBinFmt, label.mode)
+            text = ui.cell.format(ud.dateFormatBin, label.mode)
             if i==0:
                 text = '<b>%s</b>'%text
             label.set_label(text)
@@ -909,10 +909,10 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.menuMain.popup(None, None, getMenuPos, 3, 0)
         self.menuMain.hide()
     def copyDate(self, obj=None, event=None):
-        self.clipboard.set_text(ui.cell.format(ud.dateBinFmt, core.primaryMode))
+        self.clipboard.set_text(ui.cell.format(ud.dateFormatBin, core.primaryMode))
         #self.clipboard.store() ## ?????? No need!
     def copyDateToday(self, obj=None, event=None):
-        self.clipboard.set_text(ui.todayCell.format(ud.dateBinFmt, core.primaryMode))
+        self.clipboard.set_text(ui.todayCell.format(ud.dateFormatBin, core.primaryMode))
         #self.clipboard.store() ## ?????? No need!
     def copyTime(self, obj=None, event=None):
         self.clipboard.set_text(ui.todayCell.format(ud.clockFormatBin, core.primaryMode, localtime()[3:6]))

@@ -56,7 +56,7 @@ class AllDateLabelsVBox(gtk.VBox, ud.IntegratedCalObj):
             ###
             hbox.pack_start(
                 gtk.Label(
-                    ui.cell.format(ud.dateBinFmt, i)
+                    ui.cell.format(ud.dateFormatBin, i)
                 ),
                 0,
                 0,

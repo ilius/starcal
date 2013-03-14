@@ -129,8 +129,13 @@ textDirDict = {
 dateFormat = '%Y/%m/%d'
 clockFormat = '%X' ## '%T', '%X' (local), '<b>%T</b>', '%m:%d'
 
-dateBinFmt = compileTmFormat(dateFormat)
-clockFormatBin = compileTmFormat(clockFormat)
+dateFormatBin = None
+clockFormatBin = None
+
+def updateFormatsBin():
+    global dateFormatBin, clockFormatBin
+    dateFormatBin = compileTmFormat(dateFormat)
+    clockFormatBin = compileTmFormat(clockFormat)
 
 adjustTimeCmd = ''
 
@@ -169,6 +174,8 @@ if os.path.isfile(confPath):
         exec(open(confPath).read())
     except:
         myRaise(__file__)
+
+updateFormatsBin()
 
 #if adjustTimeCmd=='':## FIXME
 for cmd in ('gksudo', 'kdesudo', 'gksu', 'gnomesu', 'kdesu'):

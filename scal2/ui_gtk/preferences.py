@@ -738,6 +738,8 @@ class PrefDialog(gtk.Dialog):
             core.weekNumberMode = mode
         ######
         ui.cellCache.clear() ## Very important, specially when core.primaryMode will be changed
+        ######
+        ud.updateFormatsBin()
         #################################################### Saving Preferences
         for mod in core.calModules:
             mod.save()
