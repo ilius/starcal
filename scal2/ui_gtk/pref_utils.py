@@ -287,7 +287,7 @@ class ListPrefItem(PrefItem):
         self.num = len(items)
         self.items = items
         self.widget = box
-    get = lambda self: tuple([item.get() for item in self.items])
+    get = lambda self: [item.get() for item in self.items]
     def set(self, valueL):
         assert len(valueL)==self.num
         for i in range(self.num):
@@ -336,7 +336,7 @@ class WeekDayCheckListPrefItem(PrefItem):
         for j in range(7):
             if cbl[j].get_active():
                 value.append(j)
-        return tuple(value)
+        return value
     def set(self, value):
         cbl = self.cbList
         for cb in cbl:
