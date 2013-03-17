@@ -522,9 +522,6 @@ class MonthCal(gtk.Widget, CustomizableCalObj, CalBase):
     def monthPlus(self, p):
         ui.monthPlus(p)
         self.onDateChange()
-    def changeDate(self, year, month, day, mode=None):
-        ui.changeDate(year, month, day, mode)
-        self.onDateChange()
     goToday = lambda self, widget=None: self.changeDate(*core.getSysDate())
     def keyPress(self, arg, event):
         t = time()

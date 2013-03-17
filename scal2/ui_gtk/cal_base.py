@@ -30,6 +30,9 @@ from scal2.ui_gtk.utils import processDroppedDate
 
 
 class CalBase:
+    def changeDate(self, year, month, day, mode=None):
+        ui.changeDate(year, month, day, mode)
+        self.onDateChange()
     def defineDragAndDrop(self):
         self.drag_source_set(
             gdk.MODIFIER_MASK,
