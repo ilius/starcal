@@ -250,6 +250,20 @@ class EventSearchTree:
         except ValueError:
             return
         return mt-dt, mt+dt
+    '''
+    def deleteMoreThanStep(self, node, t0):
+        if node is None:
+            return None
+        if node.max_t <= t0:
+            return node
+        max_dt = node.mt - t0
+        if max_dt > 0:
+            node.events.deleteLessThan(max_dt) ## FIXME
+        self.deleteMoreThanStep(self, node.left, t0)
+        self.deleteMoreThanStep(self, node.right, t0)
+    def deleteMoreThan(self, t0):
+        self.root = self.deleteMoreThanStep(self.root, t0)
+    '''
 
 
 

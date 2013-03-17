@@ -99,7 +99,17 @@ class MaxHeap(list):
             ):]
         )
         return -k, v
-
+    '''
+    def deleteLessThanStep(self, key, index):
+        try:
+            key1, value1 = self[index]
+        except IndexError:
+            return
+        key1 = -key1
+        #if key
+    def deleteLessThan(self, key):
+        pass
+    '''
 
 
 def getMinTest(N):
