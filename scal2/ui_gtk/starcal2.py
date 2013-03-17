@@ -114,9 +114,8 @@ def liveConfChanged():
 
 
 class DateLabel(gtk.Label):
-    def __init__(self, text=None, onPopupFunc=None):
+    def __init__(self, text=None):
         gtk.Label.__init__(self, text)
-        self.onPopupFunc = onPopupFunc
         self.set_selectable(True)
         #self.set_cursor_visible(False)## FIXME
         self.set_can_focus(False)
@@ -141,8 +140,7 @@ class DateLabel(gtk.Label):
     def popupPopulate(self, label, menu):
         self.itemCopy.set_sensitive(self.get_property('cursor-position') > self.get_property('selection-bound'))## FIXME
         self.menu.popup(None, None, None, 3, 0)
-        if self.onPopupFunc:
-            self.onPopupFunc()
+        ui.updateFocusTime()
     def copy(self, item):
         start = self.get_property('selection-bound')
         end = self.get_property('cursor-position')
@@ -333,7 +331,7 @@ class StatusBox(gtk.HBox, CustomizableCalObj):
             label.destroy()
         ###
         for mode in core.calModules.active:
-            label = DateLabel(None, self.mainWin.populatePopup)
+            label = DateLabel(None)
             label.mode = mode
             self.labelBox.pack_start(label, 1, 0, 0)
         self.show_all()
@@ -351,7 +349,7 @@ class PluginsTextBox(gtk.VBox, CustomizableCalObj):
     _name = 'pluginsText'
     desc = _('Plugins Text')
     params = ('ui.pluginsTextInsideExpander',)
-    def __init__(self, populatePopupFunc=None):
+    def __init__(self):
         gtk.VBox.__init__(self)
         self.initVars()
         ####
@@ -361,8 +359,7 @@ class PluginsTextBox(gtk.VBox, CustomizableCalObj):
         self.textview.set_cursor_visible(False)
         self.textview.set_justification(gtk.JUSTIFY_CENTER)
         self.textbuff = self.textview.get_buffer()
-        if populatePopupFunc:
-            self.textview.connect('populate-popup', populatePopupFunc)
+        self.textview.connect('populate-popup', ui.updateFocusTime)
         ##
         self.expander = gtk.Expander()
         self.expander.connect('activate', self.expanderExpanded)
@@ -416,8 +413,8 @@ class PluginsTextBox(gtk.VBox, CustomizableCalObj):
 
 
 class EventViewMainWinItem(DayOccurrenceView, CustomizableCalObj):## FIXME
-    def __init__(self, populatePopup):
-        DayOccurrenceView.__init__(self, populatePopup)
+    def __init__(self):
+        DayOccurrenceView.__init__(self)
         self.maxHeight = ui.eventViewMaxHeight
         self.optionsWidget = gtk.HBox()
         ###
@@ -569,8 +566,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.focusOutTime = 0
         self.clockTr = None
         ############################################################################
-        self.pluginsTextBox = PluginsTextBox(self.populatePopup)
-        self.eventDayView = EventViewMainWinItem(self.populatePopup)
+        self.pluginsTextBox = PluginsTextBox()
+        self.eventDayView = EventViewMainWinItem()
         ############
         self.winCon = WinController(self)
         ############
@@ -708,16 +705,15 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         else:
             self.vbox.keyPress(arg, event)
         return True ## FIXME
-    def populatePopup(self, widget=None, event=None):
-        ui.focusTime = time()
     def focusIn(self, widegt, event, data=None):
         self.focus = True
         if self.winCon.enable:
             self.winCon.windowFocusIn()
     def focusOut(self, widegt, event, data=None):
-        ## called 0.0004 sec (max) after focusIn (if swiched between two windows)
+        ## called 0.0004 sec (max) after focusIn (if switched between two windows)
         dt = time()-ui.focusTime
-        if dt>0.02: ## max=0.011 for first populate popup of textview
+        #print 'focusOut', dt
+        if dt > 0.05: ## FIXME
             self.focus = False
             timeout_add(2, self.focusOutDo)
     def focusOutDo(self):
@@ -745,14 +741,13 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         if self.get_property('visible'):
             (ui.winX, ui.winY) = (wx, wy)## FIXME
         ui.winWidth = ww
-        #ui.focusTime = time() ##????????????
         return False
     def buttonPress(self, obj, event):
         b = event.button
         #print 'buttonPress', b
         if b==3:
-            ui.focusTime = time()
             self.menuMain.popup(None, None, None, 3, event.time)
+            ui.updateFocusTime()
         elif b==1:
             (x, y, mask) = ud.rootWindow.get_pointer()
             self.begin_move_drag(event.button, x, y, event.time)
@@ -823,7 +818,6 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         addToItem.set_submenu(menu2)
         return addToItem
     def popupMenuCell(self, widget, etime, x, y):
-        ui.focusTime = time()
         menu = gtk.Menu()
         ####
         menu.add(labelStockMenuItem('_Copy Date', gtk.STOCK_COPY, self.copyDate))
@@ -865,8 +859,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             x -= mw
         ####
         menu.popup(None, None, lambda m: (x, y, True), 3, etime)
+        ui.updateFocusTime()
     def popupMenuMain(self, widget, etime, x, y):
-        ui.focusTime = time()
         menu = self.menuMain
         (dx, dy) = widget.translate_coordinates(self, x, y)
         (wx, wy) = self.window.get_origin()
@@ -879,6 +873,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             x -= mw
         menu.popup(None, None, lambda m: (x, y, True), 3, etime)
         #self.menuMainWidth = menu.allocation.width
+        ui.updateFocusTime()
     def addToGroupFromMenu(self, menu, group, eventType):
         #print 'addToGroupFromMenu', group.title, eventType
         title = _('Add ') + event_man.classes.event.byName[eventType].desc
@@ -909,13 +904,13 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.menuMain.popup(None, None, getMenuPos, 3, 0)
         self.menuMain.hide()
     def copyDate(self, obj=None, event=None):
-        self.clipboard.set_text(ui.cell.format(ud.dateFormatBin, core.primaryMode))
+        self.clipboard.set_text(ui.cell.format(ud.dateFormatBin))
         #self.clipboard.store() ## ?????? No need!
     def copyDateToday(self, obj=None, event=None):
-        self.clipboard.set_text(ui.todayCell.format(ud.dateFormatBin, core.primaryMode))
+        self.clipboard.set_text(ui.todayCell.format(ud.dateFormatBin))
         #self.clipboard.store() ## ?????? No need!
     def copyTime(self, obj=None, event=None):
-        self.clipboard.set_text(ui.todayCell.format(ud.clockFormatBin, core.primaryMode, localtime()[3:6]))
+        self.clipboard.set_text(ui.todayCell.format(ud.clockFormatBin, tm=localtime()[3:6]))
         #self.clipboard.store() ## ?????? No need!
     """
     def updateToolbarClock(self):
@@ -999,14 +994,13 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit),
     ]
     def trayPopup(self, sicon, button, etime):
-        core.focusTime = time()    ## needed?????
         menu = gtk.Menu()
         if os.sep == '\\':
             setupMenuHideOnLeave(menu)
         items = self.getTrayPopupItems()
         # items.insert(0, self.getMainWinMenuItem())## FIXME
         geo = self.sicon.get_geometry() ## Returns None on windows, why???
-        if geo==None:## windows, taskbar is on buttom(below)
+        if geo is None:## windows, taskbar is on buttom(below)
             items.reverse()
             get_pos_func = None
         else:
@@ -1019,6 +1013,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             menu.add(item)
         menu.show_all()
         menu.popup(None, None, get_pos_func, button, etime, self.sicon)
+        ui.updateFocusTime()
     def onCurrentDateChange(self, gdate):
         self.trayUpdate(gdate=gdate)
     def getTrayTooltip(self):

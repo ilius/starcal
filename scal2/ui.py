@@ -235,7 +235,9 @@ class Cell:## status and information of a cell
                     myRaiseTback()
         ###################
         self.eventsData = event_man.getDayOccurrenceData(jd, eventGroups)
-    def format(self, binFmt, mode, tm=null):## FIXME
+    def format(self, binFmt, mode=None, tm=null):## FIXME
+        if mode is None:
+            mode = core.primaryMode
         (pyFmt, funcs) = binFmt
         return pyFmt%tuple(f(self, mode, tm) for f in funcs)
     def inSameMonth(self, other):
@@ -738,6 +740,11 @@ focusTime = 0
 lastLiveConfChangeTime = 0
 timeout_initial = 200
 timeout_repeat = 50
+
+def updateFocusTime(*args):
+    global focusTime
+    focusTime = time()
+
 
 sysConfPath = join(sysConfDir, 'ui.conf') ## also includes LIVE config
 if os.path.isfile(sysConfPath):

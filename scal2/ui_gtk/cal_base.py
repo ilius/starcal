@@ -96,13 +96,13 @@ class CalBase:
             return True
         return False
     def dragBegin(self, obj, context):
-        ui.focusTime = time()
+        colormap = self.get_screen().get_system_colormap()
         #############################################
         text = '%.2d/%.2d/%.2d'%ui.cell.dates[ui.dragGetMode]
         textLay = newTextLayout(self, text)
         (w, h) = textLay.get_pixel_size()
         pmap = gdk.Pixmap(None, w, h, 24)
-        pmap.set_colormap(self.get_screen().get_system_colormap())
+        #pmap.set_colormap(colormap)
         gc = pmap.new_gc()
         gc.set_foreground(rgbToGdkColor(*ui.bgColor))
         pmap.draw_rectangle(gc, True, 0, 0, w, h)
@@ -114,14 +114,12 @@ class CalBase:
             0,
             textLay,
             rgbToGdkColor(*ui.textColor),
-            rgbToGdkColor(*ui.bgColor),
+            rgbToGdkColor(*ui.bgColor),## rgbToGdkColor(ui.gdkColorInvert(*ui.textColor))
         )
-        #c = ui.textColor
-        #pmap.draw_layout(gc, 0, 0, textLay, c, ui.gdkColorInvert(c))##??????????
         pbuf = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, w , h)
         pbuf.get_from_drawable(
             pmap,
-            self.get_screen().get_system_colormap(),
+            colormap,
             0,
             0,
             0,
@@ -129,6 +127,10 @@ class CalBase:
             -1,
             -1,
         )
-        context.set_icon_pixbuf(pbuf, w/2-10, -20) ## x offset FIXME
+        context.set_icon_pixbuf(
+            pbuf,
+            w/2,## y offset
+            -10,## x offset FIXME - not to be hidden behind mouse cursor
+        )
         return True
 

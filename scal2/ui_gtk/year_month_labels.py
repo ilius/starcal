@@ -136,7 +136,6 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
         ui.changeDate(y, m, d, self.mode)
         self.onDateChange()
     def buttonPress(self, widget, event):
-        global focusTime
         if event.button==3:
             (x, y) = self.window.get_origin()
             y += self.allocation.height
@@ -146,8 +145,8 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
                 if mw>1:
                     x -= (mw - self.allocation.width)
             #x -= 7 ## ????????? because of menu padding
-            focusTime = time()
             self.menu.popup(None, None, lambda widget: (x, y, True), event.button, event.time)
+            ui.updateFocusTime()
             return True
         else:
             return False
@@ -275,14 +274,13 @@ class IntLabel(gtk.EventBox):
         self.setActive(self.start+item)
         self.emit('changed', self.start+item)
     def buttonPress(self, widget, event):
-        global focusTime
         if event.button==3:
             self.updateMenu()
             (x, y) = self.window.get_origin()
             y += self.allocation.height
             x -= 7 ## ????????? because of menu padding
-            focusTime = time()
             self.menu.popup(None, None, lambda widget: (x, y, True), event.button, event.time)
+            ui.updateFocusTime()
             return True
         else:
             return False

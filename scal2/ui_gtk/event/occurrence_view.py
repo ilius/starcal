@@ -33,15 +33,13 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
     _name = 'eventDayView'
     desc = _('Events of Day')
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
-    def __init__(self, populatePopupFunc=None):
+    def __init__(self):
         gtk.ScrolledWindow.__init__(self)
         self.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
         self.connect('size-request', self.onSizeRequest)
         self.vbox = gtk.VBox(spacing=5)
         self.add_with_viewport(self.vbox)
         self.initVars()
-        ## what to do with populatePopupFunc FIXME
-        ## self.textview.connect('populate-popup', populatePopupFunc)
         self.clipboard = gtk.clipboard_get()
         self.maxHeight = 200
         self.showDesc = True
@@ -124,6 +122,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         ####
         menu.show_all()
         menu.popup(None, None, None, 3, 0)
+        ui.updateFocusTime()
     def editEventClicked(self, item, winTitle, event, groupId):
         event = EventEditorDialog(
             event,
