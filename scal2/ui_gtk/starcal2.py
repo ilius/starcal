@@ -245,13 +245,13 @@ class WinConButtonSep(WinConButton):
 ## Below
 
 ## What is "GTK Window Decorator" ??????????
-class WinController(gtk.HBox, CustomizableCalBox):
+class MainWinController(gtk.HBox, CustomizableCalBox):
     _name = 'winContronller'
     desc = _('Window Controller')
     params = ('ui.winControllerButtons',)
     buttonClassList = (WinConButtonMin, WinConButtonMax, WinConButtonClose, WinConButtonSep)
     buttonClassDict = dict([(cls._name, cls) for cls in buttonClassList])
-    def __init__(self, gWin):
+    def __init__(self):
         gtk.HBox.__init__(self, spacing=ui.winControllerSpacing)
         self.set_property('height-request', 15)
         self.set_direction(gtk.TEXT_DIR_LTR)## FIXME
@@ -263,7 +263,7 @@ class WinController(gtk.HBox, CustomizableCalBox):
             self.appendItem(button)
         self.set_property('can-focus', True)
         ##################
-        self.gWin = gWin
+        self.gWin = ui.mainWin
         ##gWin.connect('focus-in-event', self.windowFocusIn)
         ##gWin.connect('focus-out-event', self.windowFocusOut)
         self.winFocused = True
@@ -294,8 +294,8 @@ class MainWinToolbar(CustomizableToolbar):
         ToolbarItem('quit', 'quit', 'quit'),
     ]
     defaultItemsDict = dict([(item._name, item) for item in defaultItems])
-    def __init__(self, funcOwner):
-        CustomizableToolbar.__init__(self, funcOwner, vertical=False)
+    def __init__(self):
+        CustomizableToolbar.__init__(self, ui.mainWin, vertical=False)
         if not ud.mainToolbarData['items']:
             ud.mainToolbarData['items'] = [(item._name, True) for item in self.defaultItems]
         self.setData(ud.mainToolbarData)
@@ -309,9 +309,8 @@ class MainWinToolbar(CustomizableToolbar):
 class StatusBox(gtk.HBox, CustomizableCalObj):
     _name = 'statusBar'
     desc = _('Status Bar')
-    def __init__(self, mainWin):
+    def __init__(self):
         gtk.HBox.__init__(self)
-        self.mainWin = mainWin
         self.initVars()
         self.labelBox = gtk.HBox()
         self.pack_start(self.labelBox, 1, 1)
@@ -321,9 +320,10 @@ class StatusBox(gtk.HBox, CustomizableCalObj):
             sbar.set_direction(gtk.TEXT_DIR_LTR)
             self.labelBox.set_direction(gtk.TEXT_DIR_LTR)
         sbar.set_property('width-request', 18)
-        sbar.connect('button-press-event', self.mainWin.startResize)
+        sbar.connect('button-press-event', self.sbarButtonPress)
         sbar.show()
         self.pack_start(sbar, 0, 0)
+    sbarButtonPress = lambda self, widget, event: ui.mainWin.startResize(widget, event)
     def onConfigChange(self, *a, **kw):
         CustomizableCalObj.onConfigChange(self, *a, **kw)
         ###
@@ -534,17 +534,6 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.connect('configure-event', self.configureEvent)
         self.connect('destroy', self.quit)
         #############################################################
-        self.mcal = MonthCal()
-        self.mcal.connect('popup-menu-cell', self.popupMenuCell)
-        self.mcal.connect('popup-menu-main', self.popupMenuMain)
-        self.mcal.connect('2button-press', ui.dayOpenEvolution)
-        self.mcal.connect('pref-update-bg-color', self.prefUpdateBgColor)
-        #############################################################
-        self.wcal = WeekCal()
-        self.wcal.connect('popup-menu-cell', self.popupMenuCell)
-        self.wcal.connect('2button-press', ui.dayOpenEvolution)
-        self.wcal.connect('pref-update-bg-color', self.prefUpdateBgColor)
-        #############################################################
         """
         #self.add_events(gdk.VISIBILITY_NOTIFY_MASK)
         #self.connect('frame-event', show_event)
@@ -563,23 +552,20 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         """
         ##################################################################
         self.focus = False
-        self.focusOutTime = 0
-        self.clockTr = None
+        #self.focusOutTime = 0
+        #self.clockTr = None
         ############################################################################
-        self.pluginsTextBox = PluginsTextBox()
-        self.eventDayView = EventViewMainWinItem()
-        ############
-        self.winCon = WinController(self)
+        self.winCon = MainWinController()
         ############
         defaultItems = [
             self.winCon,
-            MainWinToolbar(self),
+            MainWinToolbar(),
             YearMonthLabelBox(),
-            self.mcal,
-            self.wcal,
-            StatusBox(self),
-            self.pluginsTextBox,
-            self.eventDayView,
+            MonthCal(),
+            WeekCal(),
+            StatusBox(),
+            PluginsTextBox(),
+            EventViewMainWinItem(),
         ]
         defaultItemsDict = dict([(obj._name, obj) for obj in defaultItems])
         ui.checkMainWinItems()
@@ -925,7 +911,6 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             if self.clock!=None:
                 self.clock.destroy()
                 self.clock = None
-    """
     def updateTrayClock(self, checkTrayMode=True):
         if checkTrayMode and self.trayMode!=2:
             return
@@ -945,6 +930,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             if self.clockTr!=None:
                 self.clockTr.destroy()
                 self.clockTr = None
+    """
     aboutShow = lambda self, obj=None, data=None: openWindow(self.about)
     def aboutHide(self, widget, arg=None):## arg maybe an event, or response id
         self.about.hide()
@@ -1137,7 +1123,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
 
 for cls in (
     WinConButton,
-    WinController,
+    MainWinController,
     CustomizableToolbar,
     StatusBox,
     PluginsTextBox,

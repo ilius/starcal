@@ -33,7 +33,6 @@ from scal2.core import myRaise, getMonthName, getMonthLen, getNextMonth, getPrev
 from scal2 import ui
 from scal2.weekcal import getCurrentWeekStatus
 
-import gobject
 import gtk
 from gtk import gdk
 
@@ -556,6 +555,7 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
     )
     def __init__(self):
         gtk.HBox.__init__(self)
+        CalBase.__init__(self)
         self.set_property('height-request', ui.wcalHeight)
         self.initVars()
         self.myKeys = (
@@ -569,8 +569,6 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
             'menu',
             #'f10', 'm',
         )
-        ######################
-        self.defineDragAndDrop()
         ######################
         self.connect('key-press-event', self.keyPress)
         self.connect('scroll-event', self.scroll)
@@ -641,13 +639,6 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
     def textSizeScaleSpinChanged(self, spin):
         ui.wcalTextSizeScale = spin.get_value()
         self.queue_draw()
-    def gridCheckClicked(self, checkb):
-        checkb.colorb.set_sensitive(checkb.get_active())
-        checkb.item.updateVar()
-        self.queue_draw()
-    def gridColorChanged(self, colorb):
-        colorb.item.updateVar()
-        self.queue_draw()
     def updateVars(self):
         CustomizableCalBox.updateVars(self)
         ui.wcalItems = self.getItemsData()
@@ -657,19 +648,12 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         CustomizableCalBox.onDateChange(self, *a, **kw)
         self.updateStatus()
         self.queue_draw()
-        for item in self.items:
-            item.queue_draw()
-    def gotoJd(self, jd):
-        ui.gotoJd(jd)
-        self.onDateChange()
-    def jdPlus(self, p):
-        ui.jdPlus(p)
-        self.onDateChange()
+        #for item in self.items:
+        #    item.queue_draw()
     def goBackward4(self, obj=None):
         self.jdPlus(-28)
     def goBackward(self, obj=None):
         self.jdPlus(-7)
-    goToday = lambda self, obj=None: self.gotoJd(core.getCurrentJd())
     def goForward(self, obj=None):
         self.jdPlus(7)
     def goForward4(self, obj=None):
@@ -734,8 +718,7 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         int(self.allocation.width / 2.0),
         (ui.cell.weekDayIndex+1) * self.allocation.height / 7.0,
     )
-    def onCurrentDateChange(self, gdate):
-        self.queue_draw()
+
 
     
 
@@ -745,7 +728,6 @@ for cls in (
     DaysOfMonthColumnGroup,
     WeekCal,
 ):
-    gobject.type_register(cls)
     cls.registerSignals()
     
 
@@ -753,10 +735,6 @@ for cls in (
 
 
 
-cls = WeekCal
-gobject.signal_new('popup-menu-cell', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [int, int, int])
-gobject.signal_new('2button-press', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
-gobject.signal_new('pref-update-bg-color', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
 
 
 

@@ -597,7 +597,7 @@ mcalHeight = 250
 winTaskbar = False
 useAppIndicator = True
 #showDigClockTb = True ## On Toolbar ## FIXME
-showDigClockTr = True ## On Tray
+#showDigClockTr = True ## On Tray
 ####
 toolbarIconSizePixel = 24 ## used in pyqt ui
 ####

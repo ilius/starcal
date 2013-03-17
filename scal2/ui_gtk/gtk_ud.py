@@ -40,6 +40,10 @@ from scal2.ui_gtk.font_utils import gfontDecode, pfontEncode
 class IntegratedCalObj(gtk.Object):
     _name = ''
     desc = ''
+    signals = [
+        ('config-change', []),
+        ('date-change', []),
+    ]
     def initVars(self):
         self.items = []
         self.enable = True
@@ -71,8 +75,8 @@ class IntegratedCalObj(gtk.Object):
     @classmethod
     def registerSignals(cls):
         gobject.type_register(cls)
-        gobject.signal_new('config-change', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
-        gobject.signal_new('date-change', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
+        for name, args in cls.signals:
+            gobject.signal_new(name, cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, args)
 
 
 class IntegatedWindowList(IntegratedCalObj):
@@ -93,8 +97,7 @@ class IntegatedWindowList(IntegratedCalObj):
 
 ####################################################
 
-#IntegratedCalObj.registerSignals()
-IntegatedWindowList.registerSignals()
+IntegratedCalObj.registerSignals()
 
 windowList = IntegatedWindowList()
 

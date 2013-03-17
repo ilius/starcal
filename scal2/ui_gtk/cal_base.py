@@ -19,6 +19,7 @@
 
 from time import time
 
+from scal2 import core
 from scal2 import ui
 
 import gtk
@@ -27,12 +28,42 @@ from gtk import gdk
 from scal2.ui_gtk.drawing import newTextLayout
 from scal2.ui_gtk.color_utils import rgbToGdkColor
 from scal2.ui_gtk.utils import processDroppedDate
+from scal2.ui_gtk.customize import CustomizableCalObj
 
 
-class CalBase:
+class CalBase(CustomizableCalObj):
+    signals = CustomizableCalObj.signals + [
+        ('popup-menu-cell', [int, int, int]),
+        ('popup-menu-main', [int, int, int]),
+        ('2button-press', []),
+        ('pref-update-bg-color', []),
+    ]
+    def __init__(self):
+        self.defineDragAndDrop()
+        self.connect('2button-press', ui.dayOpenEvolution)
+        if ui.mainWin:
+            self.connect('popup-menu-cell', ui.mainWin.popupMenuCell)
+            self.connect('popup-menu-main', ui.mainWin.popupMenuMain)
+            self.connect('pref-update-bg-color', ui.mainWin.prefUpdateBgColor)
+    def gotoJd(self, jd):
+        ui.gotoJd(jd)
+        self.onDateChange()
+    goToday = lambda self, obj=None: self.gotoJd(core.getCurrentJd())
+    def jdPlus(self, p):
+        ui.jdPlus(p)
+        self.onDateChange()
     def changeDate(self, year, month, day, mode=None):
         ui.changeDate(year, month, day, mode)
         self.onDateChange()
+    def onCurrentDateChange(self, gdate):
+        self.queue_draw()
+    def gridCheckClicked(self, checkb):
+        checkb.colorb.set_sensitive(checkb.get_active())
+        checkb.item.updateVar()
+        self.queue_draw()
+    def gridColorChanged(self, colorb):
+        colorb.item.updateVar()
+        self.queue_draw()
     def defineDragAndDrop(self):
         self.drag_source_set(
             gdk.MODIFIER_MASK,
@@ -133,4 +164,6 @@ class CalBase:
             -10,## x offset FIXME - not to be hidden behind mouse cursor
         )
         return True
+
+
 

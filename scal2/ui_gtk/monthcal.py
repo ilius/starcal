@@ -32,7 +32,6 @@ from scal2.core import log, myRaise, getMonthName, getMonthLen, getNextMonth, ge
 from scal2 import ui
 from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
 
-import gobject
 import gtk
 from gtk import gdk
 
@@ -106,7 +105,7 @@ class McalTypeParamBox(gtk.HBox):
         ui.mcalTypeParams[self.index] = self.get()
         self.mcal.queue_draw()
 
-class MonthCal(gtk.Widget, CustomizableCalObj, CalBase):
+class MonthCal(gtk.Widget, CalBase):
     _name = 'monthCal'
     desc = _('Month Calendar')
     cx = [0, 0, 0, 0, 0, 0, 0]
@@ -127,13 +126,6 @@ class MonthCal(gtk.Widget, CustomizableCalObj, CalBase):
         self.queue_draw()
     def topMarginSpinChanged(self, spin):
         ui.mcalTopMargin = spin.get_value()
-        self.queue_draw()
-    def gridCheckClicked(self, checkb):
-        checkb.colorb.set_sensitive(checkb.get_active())
-        checkb.item.updateVar()
-        self.queue_draw()
-    def gridColorChanged(self, colorb):
-        colorb.item.updateVar()
         self.queue_draw()
     #def confStr(self):
     #    text = CustomizableCalObj.confStr(self)
@@ -163,6 +155,7 @@ class MonthCal(gtk.Widget, CustomizableCalObj, CalBase):
         vbox.show_all()
     def __init__(self):
         gtk.Widget.__init__(self)
+        CalBase.__init__(self)
         self.set_property('height-request', ui.mcalHeight)
         ######
         optionsWidget = gtk.VBox()
@@ -221,8 +214,6 @@ class MonthCal(gtk.Widget, CustomizableCalObj, CalBase):
         self.initVars(optionsWidget=optionsWidget)
         ######################
         #self.kTime = 0
-        ######################
-        self.defineDragAndDrop()
         ######################
         self.connect('expose-event', self.drawAll)
         self.connect('button-press-event', self.buttonPress)
@@ -516,13 +507,9 @@ class MonthCal(gtk.Widget, CustomizableCalObj, CalBase):
         ] ## centers y
         self.dx = (w-ui.mcalLeftMargin)/7.0 ## delta x
         self.dy = (h-ui.mcalTopMargin)/6.0 ## delta y
-    def jdPlus(self, plus):
-        ui.jdPlus(plus)
-        self.onDateChange()
     def monthPlus(self, p):
         ui.monthPlus(p)
         self.onDateChange()
-    goToday = lambda self, widget=None: self.changeDate(*core.getSysDate())
     def keyPress(self, arg, event):
         t = time()
         #if t-self.kTime < ui.keyDelay:
@@ -594,18 +581,9 @@ class MonthCal(gtk.Widget, CustomizableCalObj, CalBase):
         CustomizableCalObj.onConfigChange(self, *a, **kw)
         self.updateTextWidth()
         self.updateTypeParamsWidget()
-    def onCurrentDateChange(self, gdate):
-        self.queue_draw()
 
 
-cls = MonthCal
-gobject.type_register(cls)
-cls.registerSignals()
-gobject.signal_new('popup-menu-cell', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [int, int, int])
-gobject.signal_new('popup-menu-main', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [int, int, int])
-gobject.signal_new('2button-press', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
-gobject.signal_new('pref-update-bg-color', cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
-
+MonthCal.registerSignals()
 
 
 if __name__=='__main__':
