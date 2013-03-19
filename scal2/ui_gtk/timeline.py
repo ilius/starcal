@@ -618,12 +618,13 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
 class TimeLineWindow(gtk.Window, ud.IntegratedCalObj):
     _name = 'timeLineWin'
     desc = _('Time Line')
-    def __init__(self, width=600):
+    def __init__(self):
         gtk.Window.__init__(self)
         self.initVars()
         ud.windowList.appendItem(self)
         ###
-        self.resize(width, 150)
+        self.resize(ud.screenW, 150)
+        self.move(0, 0)
         self.set_title(_('Time Line'))
         self.set_decorated(False)
         self.connect('delete-event', self.closeClicked)
@@ -654,8 +655,6 @@ TimeLineWindow.registerSignals()
 
 if __name__=='__main__':
     win = TimeLineWindow()
-    win.resize(ud.screenW, 150)
-    win.move(0, 0)
     #win.tline.timeWidth = 100 * minYearLenSec # 2 * 10**17
     #win.tline.timeStart = time.time() - win.tline.timeWidth # -10**17
     win.show()

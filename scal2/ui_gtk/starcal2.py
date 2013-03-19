@@ -503,7 +503,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ###
         ui.eventManDialog = EventManagerDialog()
         ###
-        ui.timeLineWin = TimeLineWindow(width=ud.screenW)
+        ui.timeLineWin = TimeLineWindow()
         ###
         #ui.weekCalWin = WeekCalWindow()
         #ud.windowList.appendItem(ui.weekCalWin)

@@ -636,8 +636,8 @@ wcalDaysOfMonthColDir = 'ltr' ## ltr/rtl/auto
 wcalGrid = False
 wcalGridColor = (255, 252, 0, 82)
 ####################
-boldYmLabel = True ##Apply in Pref FIXME
-showYmArrows = True ##Apply in Pref FIXME
+boldYmLabel = True ## apply in Pref FIXME
+showYmArrows = True ## apply in Pref FIXME
 labelMenuDelay = 0.1 ## delay for shift up/down items of menu for right click on YearLabel
 ####################
 trayImage = join(pixDir, 'tray-green.png')
@@ -665,9 +665,9 @@ pluginsTextInsideExpander = True
 pluginsTextIsExpanded = True ## affect only if pluginsTextInsideExpander
 eventViewMaxHeight = 200
 ####################
-dragGetMode = core.DATE_GREG  ##Apply in Pref - FIXME
+dragGetMode = core.DATE_GREG  ## apply in Pref FIXME
 #dragGetDateFormat = '%Y/%m/%d'
-dragRecMode = core.DATE_GREG  ##Apply in Pref - FIXME
+dragRecMode = core.DATE_GREG  ## apply in Pref FIXME
 ####################
 monthRMenuNum = True
 #monthRMenu
@@ -727,7 +727,7 @@ ntpServers = (
     'north-america.pool.ntp.org',
     'oceania.pool.ntp.org',
     'south-america.pool.ntp.org',
-    'ntp.ubuntu.com'
+    'ntp.ubuntu.com',
 )
 
 
@@ -737,8 +737,12 @@ eventManShowDescription = True
 #####################
 focusTime = 0
 lastLiveConfChangeTime = 0
+
+
+saveLiveConfDelay = 0.5 ## seconds
 timeout_initial = 200
 timeout_repeat = 50
+
 
 def updateFocusTime(*args):
     global focusTime
@@ -759,7 +763,6 @@ if os.path.isfile(confPath):
     except:
         myRaise(__file__)
 
-saveLiveConfDelay = 0.5 ## seconds
 confPathLive = join(confDir, 'ui-live.conf')
 if os.path.isfile(confPathLive):
     try:
