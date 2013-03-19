@@ -26,7 +26,7 @@ from math import pi
 from scal2 import core
 
 from scal2.locale_man import tr as _
-from scal2.locale_man import rtl
+from scal2.locale_man import rtl, LRM
 
 from scal2.utils import toUnicode
 from scal2.core import myRaise, getCurrentTime
@@ -145,12 +145,14 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         )
         layout = newLimitedWidthTextLayout(
             self,
-            tick.label,
+            LRM + tick.label,## Numbers are never Right To Left
             tick.maxLabelWidth,
             font=font,
             truncate=truncateTickLabel,
         )## FIXME
         if layout:
+            #layout.set_auto_dir(0)## FIXME
+            #print 'layout.get_auto_dir() = %s'%layout.get_auto_dir()
             layoutW, layoutH = layout.get_pixel_size()
             layoutX = tick.pos - layoutW/2.0
             layoutY = tickH*labelYRatio

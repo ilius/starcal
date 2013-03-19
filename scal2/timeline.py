@@ -241,12 +241,6 @@ def realRangeListsDiff(r1, r2):
     return r3
 
 
-def formatEpochTime(epoch):
-    (jd, h, m, s) = getJhmsFromEpoch(epoch)
-    if s==0:
-        return '%s:%s'%(_(h), _(m, fillZero=2))
-    else:
-        return '%s:%s:%s'%(_(h), _(m, fillZero=2), _(s, fillZero=2))
 
 def getNum10FactPow(n):
     if n == 0:
@@ -423,11 +417,28 @@ def calcTimeLineData(timeStart, timeWidth, width):
         for tmEpoch in range(firstEpoch, iceil(timeEnd), stepSec):
             if tmEpoch in tickEpochList:
                 continue
+            if unitSize < majorStepMin:
+                label = ''
+            else:
+                (jd, h, m, s) = getJhmsFromEpoch(tmEpoch)
+                if s==0:
+                    label = '%s:%s'%(
+                        _(h),
+                        _(m, fillZero=2),
+                    )
+                else:# elif timeWidth < 60 or stepSec < 30:
+                    label = '%s"'%_(s, fillZero=2)
+                #else:
+                #    label = '%s:%s:%s'%(
+                #        _(h),
+                #        _(m, fillZero=2),
+                #        _(s, fillZero=2),
+                #    )
             ticks.append(Tick(
                 tmEpoch,
                 getEPos(tmEpoch),
                 unitSize,
-                formatEpochTime(tmEpoch) if unitSize >= majorStepMin else '',
+                label,
             ))
             tickEpochList.append(tmEpoch)
     ######################## Event Boxes
