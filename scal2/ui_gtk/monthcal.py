@@ -520,9 +520,6 @@ class MonthCal(gtk.Widget, CalBase):
         ui.monthPlus(p)
         self.onDateChange()
     def keyPress(self, arg, event):
-        #t = time()
-        #if t-self.kTime < ui.keyDelay:
-        #    return True
         kname = gdk.keyval_name(event.keyval).lower()
         #if kname.startswith('alt'):
         #    return True

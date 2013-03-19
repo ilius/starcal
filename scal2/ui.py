@@ -591,7 +591,6 @@ comDesk = '%s/%s.desktop'%(comDeskDir, APP_NAME)
 #themeDir = join(rootDir, 'themes')
 #theme = None
 ########################### Options ###########################
-keyDelay = 0 #0.07 ## delay between listening of key press in calendar
 winWidth = 480
 mcalHeight = 250
 winTaskbar = False
