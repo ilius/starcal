@@ -312,7 +312,6 @@ def numDecode(numSt):
             return int(numEn)
     raise ValueError('invalid locale number %s'%numSt)
 
-
 def textNumDecode(text):## converts '۱۲:۰۰, ۱۳' to '12:00, 13'
     text = toUnicode(text)
     textEn = u''
@@ -328,27 +327,21 @@ def textNumDecode(text):## converts '۱۲:۰۰, ۱۳' to '12:00, 13'
             textEn += ch
     return textEn
 
-
-def dateLocale(year, month, day):
-    return numEncode(year, fillZero=4) + '/' + numEncode(month, fillZero=2) + '/' + numEncode(day, fillZero=2)
+dateLocale = lambda year, month, day:\
+    numEncode(year, fillZero=4) + '/' + \
+    numEncode(month, fillZero=2) + '/' + \
+    numEncode(day, fillZero=2)
 
 def cutText(text, n):
-    text_cutted = text[:n]
-    if len(text)>n:
+    newText = text[:n]
+    if len(text) > n:
         if text[n] not in list(string.printable)+[ZWNJ]:
-            text_cutted += ZWJ
-    return text_cutted
+            newText += ZWJ
+    return newText
 
 ##############################################
-
 
 prepareLanguage()
 loadTranslator()
 
-
-
-
-if __name__=='__main__':
-    from scal2 import core
-    print numDecode('۱۲۳')
 
