@@ -39,7 +39,6 @@ from scal2.ui_gtk.drawing import *
 
 from scal2.ui_gtk.mywidgets import MyFontButton, MyColorButton
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
-from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
 from scal2.ui_gtk.cal_base import CalBase
@@ -158,15 +157,13 @@ class MonthCal(gtk.Widget, CalBase):
         CalBase.__init__(self)
         self.set_property('height-request', ui.mcalHeight)
         ######
-        optionsWidget = gtk.VBox()
-        ###
         hbox = gtk.HBox()
         spin = IntSpinButton(1, 9999)
         spin.set_value(ui.mcalHeight)
         spin.connect('changed', self.heightSpinChanged)
         hbox.pack_start(gtk.Label(_('Height')), 0, 0)
         hbox.pack_start(spin, 0, 0)
-        optionsWidget.pack_start(hbox, 0, 0)
+        self.optionsWidget.pack_start(hbox, 0, 0)
         ####
         hbox = gtk.HBox(spacing=3)
         ##
@@ -183,7 +180,7 @@ class MonthCal(gtk.Widget, CalBase):
         hbox.pack_start(spin, 0, 0)
         ##
         hbox.pack_start(gtk.Label(''), 1, 1)
-        optionsWidget.pack_start(hbox, 0, 0)
+        self.optionsWidget.pack_start(hbox, 0, 0)
         ########
         hbox = gtk.HBox(spacing=3)
         ####
@@ -202,16 +199,15 @@ class MonthCal(gtk.Widget, CalBase):
         colorItem.widget.connect('color-set', self.gridColorChanged)
         colorItem.widget.set_sensitive(ui.mcalGrid)
         ####
-        optionsWidget.pack_start(hbox, 0, 0)
+        self.optionsWidget.pack_start(hbox, 0, 0)
         ########
         frame = gtk.Frame(_('Calendars'))
         self.typeParamsVbox = gtk.VBox()
         frame.add(self.typeParamsVbox)
         frame.show_all()
-        optionsWidget.pack_start(frame, 0, 0)
+        self.optionsWidget.pack_start(frame, 0, 0)
+        self.optionsWidget.show_all()
         self.updateTypeParamsWidget()## FIXME
-        ####
-        self.initVars(optionsWidget=optionsWidget)
         ######################
         #self.kTime = 0
         ######################
@@ -227,14 +223,14 @@ class MonthCal(gtk.Widget, CalBase):
             'j', 'n',
             'space', 'home', 't',
             'end',
-            'menu', 'f10', 'm',
+            'menu',
+            'f10', 'm',
         )
         self.connect('key-press-event', self.keyPress)
         self.connect('scroll-event', self.scroll)
         ######################
         self.updateTextWidth()
         ######################
-        listener.dateChange.add(self)
     def do_realize(self):
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(
@@ -327,9 +323,19 @@ class MonthCal(gtk.Widget, CalBase):
         if ui.mcalLeftMargin>0:
             ##### Drawing border left background
             if rtl:
-                cr.rectangle(w-ui.mcalLeftMargin, ui.mcalTopMargin, ui.mcalLeftMargin, h-ui.mcalTopMargin)
+                cr.rectangle(
+                    w - ui.mcalLeftMargin,
+                    ui.mcalTopMargin,
+                    ui.mcalLeftMargin,
+                    h - ui.mcalTopMargin,
+                )
             else:
-                cr.rectangle(0, ui.mcalTopMargin, ui.mcalLeftMargin, h-ui.mcalTopMargin)
+                cr.rectangle(
+                    0,
+                    ui.mcalTopMargin,
+                    ui.mcalLeftMargin,
+                    h - ui.mcalTopMargin,
+                )
             fillColor(cr, ui.borderColor)
             ##### Drawing week numbers
             setColor(cr, ui.borderTextColor)
@@ -338,13 +344,13 @@ class MonthCal(gtk.Widget, CalBase):
                 fontw, fonth = lay.get_pixel_size()
                 if rtl:
                     cr.move_to(
-                        w-(ui.mcalLeftMargin+fontw)/2.0,
-                        self.cy[i]-fonth/2.0+2,
+                        w - (ui.mcalLeftMargin+fontw)/2.0,
+                        self.cy[i]-fonth/2.0 + 2,
                     )
                 else:
                     cr.move_to(
                         (ui.mcalLeftMargin-fontw)/2.0,
-                        self.cy[i]-fonth/2.0+2,
+                        self.cy[i]-fonth/2.0 + 2,
                     )
                 cr.show_layout(lay)
         selectedCellPos = ui.cell.monthPos
@@ -363,10 +369,10 @@ class MonthCal(gtk.Widget, CalBase):
                 cellHasCursor = (cursor and (xPos, yPos) == selectedCellPos)
                 if cellHasCursor:
                     ##### Drawing Cursor
-                    cx0 = x0-self.dx/2.0+1
-                    cy0 = y0-self.dy/2.0+1
-                    cw = self.dx-1
-                    ch = self.dy-1
+                    cx0 = x0 - self.dx/2.0 + 1
+                    cy0 = y0 - self.dy/2.0 + 1
+                    cw = self.dx - 1
+                    ch = self.dy - 1
                     ######### Circular Rounded
                     drawCursorBg(cr, cx0, cy0, cw, ch)
                     fillColor(cr, ui.cursorBgColor)
@@ -480,10 +486,10 @@ class MonthCal(gtk.Widget, CalBase):
                 yPos = i
                 break
         status = getCurrentMonthStatus()
-        if yPos==-1 or xPos==-1:
+        if yPos == -1 or xPos == -1:
             self.emit('popup-menu-main', event.time, event.x, event.y)
             #self.menuMainWidth = self.menuMain.allocation.width ## menu.allocation[3]
-        elif yPos>=0 and xPos>=0:
+        elif yPos >= 0 and xPos >= 0:
             cell = status[yPos][xPos]
             self.changeDate(*cell.dates[core.primaryMode])
             if event.type==gdk._2BUTTON_PRESS:
@@ -495,23 +501,26 @@ class MonthCal(gtk.Widget, CalBase):
     def calcCoord(self):## calculates coordidates (x and y of cells centers)
         x, y, w, h = self.allocation
         if rtl:
-            self.cx = [(w-ui.mcalLeftMargin)*(13.0-2*i)/14.0 for i in xrange(7) ] ## centers x
+            self.cx = [
+                (w - ui.mcalLeftMargin) * (13.0 - 2*i) / 14.0
+                for i in xrange(7)
+            ] ## centers x
         else:
             self.cx = [
-                ui.mcalLeftMargin + (w-ui.mcalLeftMargin)*(1.0+2*i)/14.0
+                ui.mcalLeftMargin + (w-ui.mcalLeftMargin) * (1.0 + 2*i) / 14.0
                 for i in xrange(7)
             ] ## centers x
         self.cy = [
-            ui.mcalTopMargin + (h-ui.mcalTopMargin)*(1.0+2*i)/12.0
+            ui.mcalTopMargin + (h - ui.mcalTopMargin) * (1.0 + 2*i) / 12.0
             for i in xrange(6)
         ] ## centers y
-        self.dx = (w-ui.mcalLeftMargin)/7.0 ## delta x
-        self.dy = (h-ui.mcalTopMargin)/6.0 ## delta y
+        self.dx = (w - ui.mcalLeftMargin) / 7.0 ## delta x
+        self.dy = (h - ui.mcalTopMargin) / 6.0 ## delta y
     def monthPlus(self, p):
         ui.monthPlus(p)
         self.onDateChange()
     def keyPress(self, arg, event):
-        t = time()
+        #t = time()
         #if t-self.kTime < ui.keyDelay:
         #    return True
         kname = gdk.keyval_name(event.keyval).lower()
@@ -535,7 +544,11 @@ class MonthCal(gtk.Widget, CalBase):
         elif kname in ('space', 'home', 't'):
             self.goToday()
         elif kname=='end':
-            self.changeDate(ui.cell.year, ui.cell.month, getMonthLen(ui.cell.year, ui.cell.month, core.primaryMode))
+            self.changeDate(
+                ui.cell.year,
+                ui.cell.month,
+                getMonthLen(ui.cell.year, ui.cell.month, core.primaryMode),
+            )
         elif kname in ('page_up', 'k', 'p'):
             self.monthPlus(-1)
         elif kname in ('page_down', 'j', 'n'):
@@ -563,7 +576,7 @@ class MonthCal(gtk.Widget, CalBase):
         int(self.cx[ui.cell.monthPos[0]]),
         int(self.cy[ui.cell.monthPos[1]] + self.dy/2.0),
     )
-    def getMainMenuPos(self):#???????????????????
+    def getMainMenuPos(self):## FIXME
         if rtl:
             return (
                 int(self.allocation.width - ui.mcalLeftMargin/2.0),

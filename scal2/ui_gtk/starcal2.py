@@ -165,12 +165,12 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
     def onClicked(self, gWin, event):
         raise NotImplementedError
     setImage = lambda self, imName: self.im.set_from_file('%s/wm/%s'%(pixDir, imName))
-    def setFocus(self, focus):
+    setFocus = lambda self, focus:\
         self.setImage(self.imageNameFocus if focus else self.imageName)
     setInactive = lambda self: self.setImage(self.imageNameInactive)
     def build(self):
         self.im = gtk.Image()
-        self.setImage(self.imageName)
+        self.setFocus(False)
         self.im.set_size_request(self.size, self.size)
         self.add(self.im)
         self.connect('enter-notify-event', self.enterNotify)

@@ -43,7 +43,6 @@ from scal2.ui_gtk.color_utils import colorize
 from scal2.ui_gtk.mywidgets import MyFontButton
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
 from scal2.ui_gtk.mywidgets.font_family_combo import FontFamilyCombo
-from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
 from scal2.ui_gtk.cal_base import CalBase
@@ -557,7 +556,6 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         gtk.HBox.__init__(self)
         CalBase.__init__(self)
         self.set_property('height-request', ui.wcalHeight)
-        self.initVars()
         self.myKeys = (
             'up', 'down',
             'page_up',
@@ -630,8 +628,6 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         ###
         self.optionsWidget.show_all()
         #####
-        self.updateStatus()
-        listener.dateChange.add(self)
     def heightSpinChanged(self, spin):
         v = spin.get_value()
         self.set_property('height-request', v)

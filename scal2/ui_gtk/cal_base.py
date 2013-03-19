@@ -25,10 +25,12 @@ from scal2 import ui
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk import listener
 from scal2.ui_gtk.drawing import newTextLayout
 from scal2.ui_gtk.color_utils import rgbToGdkColor
 from scal2.ui_gtk.utils import processDroppedDate
 from scal2.ui_gtk.customize import CustomizableCalObj
+
 
 
 class CalBase(CustomizableCalObj):
@@ -39,6 +41,10 @@ class CalBase(CustomizableCalObj):
         ('pref-update-bg-color', []),
     ]
     def __init__(self):
+        self.initVars()
+        listener.dateChange.add(self)
+        self.optionsWidget = gtk.VBox()
+        ####
         self.defineDragAndDrop()
         self.connect('2button-press', ui.dayOpenEvolution)
         if ui.mainWin:

@@ -3,8 +3,6 @@ from time import localtime
 
 from scal2.time_utils import getCurrentTimeZone
 from scal2 import core
-#from scal2.core import
-
 from scal2 import ui
 
 import gobject, glib
