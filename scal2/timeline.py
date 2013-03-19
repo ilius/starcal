@@ -427,7 +427,7 @@ def calcTimeLineData(timeStart, timeWidth, width):
                         _(m, fillZero=2),
                     )
                 else:# elif timeWidth < 60 or stepSec < 30:
-                    label = '%s"'%_(s, fillZero=2)
+                    label = LRM + '%s"'%_(s, fillZero=2)
                 #else:
                 #    label = '%s:%s:%s'%(
                 #        _(h),
