@@ -82,7 +82,7 @@ movableEventTypes = ('task',)
 
 
 boxReverseGravity = False
-boxMaxHeightFactor = 0.9 ## < 1.0
+boxMaxHeightFactor = 0.8 ## < 1.0
 
 
 scrollZoomStep = 1.2 ## > 1
@@ -514,7 +514,10 @@ def calcTimeLineData(timeStart, timeWidth, width):
     placedBoxes = EventSearchTree()
     for box, boxI, segI0, segI1 in boxesIndex:
         conflictRanges = []
-        for c_t0, c_t1, c_boxI, c_dt in placedBoxes.search(box.t0 + epsTm, box.t1 - epsTm):## FIXME
+        for c_t0, c_t1, c_boxI, c_dt in placedBoxes.search(
+            box.t0 + epsTm,
+            box.t1 - epsTm,
+        ):## FIXME
             c_box = boxes[c_boxI]
             '''
             if not box.tOverlaps(c_box):
@@ -539,17 +542,20 @@ def calcTimeLineData(timeStart, timeWidth, width):
             print 'unable to find a free space for box, box.ids=%s'%(box.ids,)
             box.u0 = box.u1 = 0
             continue
-        freeSp = freeSpaces[0 if boxReverseGravity else -1]
-        height = boxMaxHeightFactor / max(segCountList[segI0:segI1])
-        if freeSp[1] - freeSp[0] < height:
-            freeSp = max(
-                freeSpaces,
-                key=lambda sp: sp[1] - sp[0]
-            )
-            height = min(
-                height,
-                boxMaxHeightFactor * (freeSp[1] - freeSp[0]),
-            )
+        if boxReverseGravity:
+            freeSpaces.reverse()
+        height = min(
+            max([sp[1] - sp[0] for sp in freeSpaces]),
+            boxMaxHeightFactor / max(segCountList[segI0:segI1]),
+        )
+        freeSp = None
+        for sp in freeSpaces:
+            if sp[1] - sp[0] >= height:
+                freeSp = sp
+                break
+        freeSpH = freeSp[1] - freeSp[0]
+        if 0.5*freeSpH < height < 0.75*freeSpH:## for better height balancing FIXME
+            height = 0.5*freeSpH
         if boxReverseGravity:
             box.u0 = freeSp[0]
             box.u1 = box.u0 + height
