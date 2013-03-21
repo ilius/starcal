@@ -2222,6 +2222,7 @@ class EventGroup(EventContainer):
                 if last:
                     return last[0]
                 else:
+                    print 'no time_last returned for event %s'%event.id
                     return None
         elif attr=='time_first':
             if self.enable:

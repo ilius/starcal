@@ -63,7 +63,6 @@ class EventWidget(common.EventWidget):
         #############
         #self.filesBox = common.FilesBox(self.event)
         #self.pack_start(self.filesBox, 0, 0)
-        print self.event['start'].time, self.event['end'].time
     def updateWidget(self):
         common.EventWidget.updateWidget(self)
         self.startDateInput.set_value(self.event['start'].date)
