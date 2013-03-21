@@ -118,8 +118,10 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         tm = getCurrentTime()
         timeout_add(int(1000*(1.01-tm%1)), self.currentTimeUpdate)
         self.currentTime = int(tm)
-        if self.timeStart <= tm <= self.timeStart + self.timeWidth + 1:
-            self.queue_draw()
+        if self.parent:
+            if self.parent.get_visible() and \
+            self.timeStart <= tm <= self.timeStart + self.timeWidth + 1:
+                self.queue_draw()
     def updateData(self):
         width = self.allocation.width
         self.data = calcTimeLineData(self.timeStart, self.timeWidth, width)
