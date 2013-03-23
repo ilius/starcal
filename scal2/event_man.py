@@ -206,7 +206,6 @@ class Occurrence(EventBaseClass):
                 ep1 = ep0 + epsTm
             ls.append((getFloatJdFromEpoch(ep0), getFloatJdFromEpoch(ep1)))
         return ls
-    containsMoment = lambda self, epoch: False
     def getStartJd(self):
         raise NotImplementedError
     def getEndJd(self):
@@ -241,7 +240,6 @@ class JdSetOccurrence(Occurrence):
             raise TypeError
     getDaysJdList = lambda self: sorted(self.jdSet)
     getTimeRangeList = lambda self: [(getEpochFromJd(jd), getEpochFromJd(jd+1)) for jd in self.jdSet]
-    containsMoment = lambda self, epoch: getJdFromEpoch(epoch) in self.jdSet
     def calcJdRanges(self):
         jdList = list(self.jdSet) ## jdList is sorted
         if not jdList:
@@ -292,11 +290,6 @@ class TimeRangeListOccurrence(Occurrence):
                 jds.add(jd)
         return sorted(jds)
     getTimeRangeList = lambda self: self.rangeList
-    def containsMoment(self, epoch):
-        for startEpoch, endEpoch in self.rangeList:
-            if startEpoch <= epoch < endEpoch:
-                return True
-        return False
 
 
 class TimeListOccurrence(Occurrence):
@@ -346,8 +339,6 @@ class TimeListOccurrence(Occurrence):
         return sorted(jds)
     def getTimeRangeList(self):
         return [(epoch, epoch + epsTm) for epoch in self.epochList]## or end=None ## FIXME
-    def containsMoment(self, epoch):## FIXME
-        return (epoch in self.epochList)
 
 
 
