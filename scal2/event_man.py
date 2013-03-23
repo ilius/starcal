@@ -31,7 +31,7 @@ from scal2.lib import OrderedDict
 
 from paths import *
 
-from scal2.utils import printError, toStr, arange, ifloor, iceil, IteratorFromGen, findNearestIndex
+from scal2.utils import printError, toStr, arange, ifloor, iceil, findNearestIndex
 from scal2.os_utils import makeDir
 from scal2.interval_utils import *
 from scal2.time_utils import *
@@ -2117,7 +2117,7 @@ class EventContainer(JsonEventBaseClass):
         event = classes.event.byName[data['type']](eid)
         event.setData(data)
         return event
-    def getEventsGen(self):
+    def __iter__(self):
         for eid in self.idList:
             try:
                 event = self.getEvent(eid)
@@ -2125,7 +2125,6 @@ class EventContainer(JsonEventBaseClass):
                 myRaise(e)
             else:
                 yield event
-    __iter__ = lambda self: IteratorFromGen(self.getEventsGen())
     __len__ = lambda self: len(self.idList)
     def preAdd(self, event):
         if event.id in self.idList:
@@ -2498,7 +2497,7 @@ class EventGroup(EventContainer):
         newGroup.enable = self.enable
         self.removeAll()## events with the same id's, can not be contained by two groups
         return newGroup
-    def calcOccurrenceAllGen(self):
+    def calcOccurrenceAll(self):
         occurList = []
         startJd = self.startJd
         endJd = self.endJd
@@ -2506,7 +2505,6 @@ class EventGroup(EventContainer):
             occur = event.calcOccurrence(startJd, endJd)
             if occur:
                 yield event, occur
-    calcOccurrenceAll = lambda self: IteratorFromGen(self.calcOccurrenceAllGen()) 
     def afterModify(self):## FIXME
         EventContainer.afterModify(self)
         self.initOccurrence()
@@ -3231,10 +3229,9 @@ class JsonObjectsHolder(JsonEventBaseClass):
     def clear(self):
         self.byId = {}
         self.idList = []
-    def iterGen(self):
+    def __iter__(self):
         for _id in self.idList:
             yield self.byId[_id]
-    __iter__ = lambda self: IteratorFromGen(self.iterGen())
     __len__ = lambda self: len(self.idList)
     __nonzero__ = lambda self: bool(self.idList)
     index = lambda self, _id: self.idList.index(_id) ## or get object instead of obj_id? FIXME

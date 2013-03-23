@@ -170,14 +170,12 @@ class CalModulesHolder:
             else:
                 self.inactive.append(i)
                 inactiveCalNames.append(name)
-    def getModulesGen(self):
+    def __iter__(self):
         for i in self.active + self.inactive:
             yield calModulesList[i]
-    __iter__ = lambda self: IteratorFromGen(self.getModulesGen())
-    def getIndexModulesGen(self):
+    def iterIndexModule(self):
         for i in self.active + self.inactive:
             yield i, calModulesList[i]
-    iterIndexModule = lambda self: IteratorFromGen(self.getIndexModulesGen())
     allIndexes = lambda self: self.active + self.inactive
     def __getitem__(self, key):
         if isinstance(key, basestring):
