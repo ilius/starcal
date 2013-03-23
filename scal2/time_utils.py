@@ -33,6 +33,8 @@ getFloatJdFromEpoch = lambda epoch: epoch/(24.0*3600) + J1970
 
 getEpochFromJd = lambda jd: (jd-J1970)*(24*3600)
 
+roundEpochToDay = lambda epoch: getEpochFromJd(round(getFloatJdFromEpoch(epoch)))
+
 def getJdListFromEpochRange(startEpoch, endEpoch):
     startJd = getJdFromEpoch(startEpoch)
     endJd = getJdFromEpoch(endEpoch-0.01) + 1

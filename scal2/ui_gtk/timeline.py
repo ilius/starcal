@@ -248,11 +248,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             textH = 0.9 * h
             textLen = len(toUnicode(box.text))
             #print 'textLen=%s'%textLen
-            if rotateBoxLabel == 0:
-                avgCharW = float(textW) / textLen
-            else:
-                avgCharW = float(max(textW, textH)) / textLen
-            #print 'avgCharW=%s'%avgCharW
+            avgCharW = float(textW if rotateBoxLabel == 0 else max(textW, textH)) / textLen
             if avgCharW > 3:## FIXME
                 font = list(ui.getFont())
                 layout = self.create_pango_layout(box.text) ## a pango.Layout object
@@ -272,7 +268,8 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
                     layout.set_font_description(pfontEncode(font))
                     layoutW, layoutH = layout.get_pixel_size()
                     fillColor(cr, fgColor)## before cr.move_to
-                    #print 'x=%s, y=%s, w=%s, h=%s, layoutW=%s, layoutH=%s'%(x,y,w,h,layoutW,layoutH)
+                    #print 'x=%s, y=%s, w=%s, h=%s, layoutW=%s, layoutH=%s'\
+                    #   %(x,y,w,h,layoutW,layoutH)
                     cr.move_to(
                         x + (w - rotateBoxLabel*layoutH)/2.0,
                         y + (h + rotateBoxLabel*layoutW)/2.0,
@@ -282,7 +279,10 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
                     try:
                         cr.rotate(rotateBoxLabel*pi/2)
                     except:
-                        print 'counld not rotate by %s*pi/2 = %s'%(rotateBoxLabel, rotateBoxLabel*pi/2)
+                        print 'counld not rotate by %s*pi/2 = %s'%(
+                            rotateBoxLabel,
+                            rotateBoxLabel*pi/2,
+                        )
                 else:
                     font[3] *= normRatio
                     layout.set_font_description(pfontEncode(font))
@@ -296,7 +296,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
     def drawBoxEditingHelperLines(self, cr):
         if not self.boxEditing:
             return
-        (editType, event, box, x, t0) = self.boxEditing
+        (editType, event, box, x0, t0) = self.boxEditing
         setColor(cr, fgColor)
         d = editingBoxHelperLineWidth
         cr.rectangle(
@@ -365,7 +365,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             self.zoom(
                 isUp,
                 scrollZoomStep, 
-                event.x / self.allocation.width,
+                float(event.x) / self.allocation.width,
             )
         else:
             self.movingUserEvent(
@@ -465,28 +465,24 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             editType, event, box, x0, t0 = self.boxEditing
             t1 = t0 + (gevent.x - x0)/self.pixelPerSec
             if editType==0:
-                box.t0, box.t1 = t1, box.t1 + t1 - box.t0
+                event.modifyPos(t1)
             elif editType==1:
                 if t1-box.t0 > 2*boxMoveBorder/self.pixelPerSec:
-                    box.t1 = t1
+                    event.modifyEnd(t1)
             elif editType==-1:
                 if box.t1-t1 > 2*boxMoveBorder/self.pixelPerSec:
-                    box.t0 = t1
+                    event.modifyStart(t1)
+            box.t0 = max(event.getStartEpoch(), self.timeStart - epsTm)
+            box.t1 = min(event.getEndEpoch(), self.timeStart + self.timeWidth + epsTm)
             self.queue_draw()
     def buttonRelease(self, obj, gevent):
         if self.boxEditing:
             editType, event, box, x0, t0 = self.boxEditing
-            if editType==0:
-                event.modifyPos(box.t0)
-            elif editType==1:
-                event.modifyEnd(box.t1)
-            elif editType==-1:
-                event.modifyStart(box.t0)
             event.afterModify()
             event.save()
             self.boxEditing = None
         self.window.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
-        #self.queue_draw()## needed?
+        self.queue_draw()## needed?
     #def onConfigChange(self, *a, **kw):
     #    ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
     #    self.onDateChange()

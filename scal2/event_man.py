@@ -1279,9 +1279,6 @@ class Event(JsonEventBaseClass, RuleContainer):
             self.setId()
         makeDir(self.dir)
         JsonEventBaseClass.save(self)
-    getJd = lambda self: None
-    setJd = lambda self, jd: None
-    setJdExact = lambda self, jd: self.setJd(jd)
     def copyFrom(self, other, exact=False):## FIXME
         JsonEventBaseClass.copyFrom(self, other)
         self.mode = other.mode
@@ -1366,8 +1363,6 @@ class Event(JsonEventBaseClass, RuleContainer):
                     pass
         for notifier in self.notifiers:
             notifier.notify(notifierFinishFunc)
-    def setJd(self, jd):
-        pass
     def getIcsData(self, prettyDateTime=False):## FIXME
         return None
     def setIcsDict(self, data):
@@ -1422,13 +1417,14 @@ class Event(JsonEventBaseClass, RuleContainer):
             return self['end'].getEpoch()
         except KeyError:
             return getEpochFromJd(self.parent.endJd)
+    getJd = lambda self: self.getStartJd()
+    setJd = lambda self, jd: None
+    setJdExact = lambda self, jd: self.setJd(jd)
+
 
 class SingleStartEndEvent(Event):
-    getStartJd = lambda self: self['start'].getJd()
-    getEndJd = lambda self: self['end'].getJd()
     setStartEpoch = lambda self, epoch: self.getAddRule('start').setEpoch(epoch)
     setEndEpoch = lambda self, epoch: self.getAddRule('end').setEpoch(epoch)
-    getJd = lambda self: self['start'].getJd()
     setJd = lambda self, jd: self.getAddRule('start').setJd(jd)
     def setJdExact(self, jd):
         self.getAddRule('start').setJdExact(jd)
@@ -1454,7 +1450,12 @@ class SingleStartEndEvent(Event):
 
 
 @classes.event.register
-class TaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from SingleStartEndEvent
+class TaskEvent(SingleStartEndEvent):
+    ## overwrites getEndEpoch from Event
+    ## overwrites setEndEpoch from SingleStartEndEvent
+    ## overwrites setJdExact from SingleStartEndEvent
+    ## Method neccessery for hand edniting event in timeline:
+    ##   getStartEpoch, getEndEpoch, modifyStart, modifyEnd, modifyPos
     name = 'task'
     desc = _('Task')
     iconName = 'task'
@@ -1541,7 +1542,7 @@ class TaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from SingleStartE
         except KeyError:
             pass
         else:
-            end.setEpoch(end.getEpoch()+newStartEpoch-start.getEpoch())
+            end.setEpoch(end.getEpoch() + newStartEpoch - start.getEpoch())
         start.setEpoch(newStartEpoch)
     def modifyStart(self, newStartEpoch):
         start = self['start']
@@ -1550,14 +1551,14 @@ class TaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from SingleStartE
         except KeyError:
             pass
         else:
-            duration.value -= float(newStartEpoch - start.getEpoch())/duration.unit
+            duration.value -= float(newStartEpoch - start.getEpoch()) / duration.unit
         start.setEpoch(newStartEpoch)
     def modifyEnd(self, newEndEpoch):
         try:
             end = self['end']
         except KeyError:
             duration = self['duration']
-            duration.value = float(newEndEpoch-self.getStartEpoch())/duration.unit
+            duration.value = float(newEndEpoch - self.getStartEpoch()) / duration.unit
         else:
             end.setEpoch(newEndEpoch)
     def setJdExact(self, jd):
@@ -1992,6 +1993,16 @@ class LifeTimeEvent(SingleStartEndEvent):
         if rule.name in ('start', 'end'):
             rule.time = (0, 0, 0)
         SingleStartEndEvent.addRule(self, rule)
+    def modifyPos(self, newStartEpoch):
+        start = self['start']
+        end = self['end']
+        newStartJd = round(getFloatJdFromEpoch(newStartEpoch))
+        end.setJdExact(end.getJd() + newStartJd - start.getJd())
+        start.setJdExact(newStartJd)
+    def modifyStart(self, newEpoch):
+        self['start'].setEpoch(roundEpochToDay(newEpoch))
+    def modifyEnd(self, newEpoch):
+        self['end'].setEpoch(roundEpochToDay(newEpoch))
 
 
 
@@ -2808,7 +2819,10 @@ class UniversityTerm(EventGroup):
         ###
         if currentWeekOnly:
             currentJd = core.getCurrentJd()
-            if ( getAbsWeekNumberFromJd(currentJd) -  getAbsWeekNumberFromJd(self['start'].getJd()) ) % 2 == 1:
+            if (
+                getAbsWeekNumberFromJd(currentJd) - \
+                getAbsWeekNumberFromJd(self['start'].getJd())
+            ) % 2 == 1:
                 currentWeekNumMode = 'odd'
             else:
                 currentWeekNumMode = 'even'
@@ -2919,9 +2933,9 @@ class LifeTimeGroup(EventGroup):
     def getSortByValue(self, event, attr):
         if event.name in self.acceptsEventTypes:
             if attr=='start':
-                return event.getJd()
+                return event.getStartJd()
             elif attr=='end':
-                return event['end'].getJd()
+                return event.getEndJd()
         return EventGroup.getSortByValue(self, event, attr)
     def __init__(self, *args, **kwargs):
         self.showSeperatedYmdInputs = False

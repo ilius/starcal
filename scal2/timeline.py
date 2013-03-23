@@ -75,7 +75,10 @@ boxMoveLineW = 0.5
 
 editingBoxHelperLineWidth = 0.3 ## px
 
-movableEventTypes = ('task',)
+movableEventTypes = (
+    'task',
+    'lifeTime',
+)
 
 #boxColorSaturation = 1.0
 #boxColorLightness = 0.3 ## for random colors
@@ -193,8 +196,8 @@ class Box:
         if c != 0: return c
         return cmp(self.order, other.order)
     def setPixelValues(self, timeStart, pixelPerSec, beforeBoxH, maxBoxH):
-        self.x = (self.t0-timeStart)*pixelPerSec
-        self.w = (self.t1 - self.t0)*pixelPerSec
+        self.x = (self.t0 - timeStart) * pixelPerSec
+        self.w = (self.t1 - self.t0) * pixelPerSec
         self.y = beforeBoxH + maxBoxH * self.u0
         self.h = maxBoxH * (self.u1 - self.u0)
     contains = lambda self, px, py: 0 <= px-self.x < self.w and 0 <= py-self.y < self.h
