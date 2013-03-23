@@ -2,7 +2,7 @@ import sys
 from os.path import join
 
 from scal2.cal_modules import gregorian
-from scal2.paths import *
+from scal2.path import *
 
 DATE_GREG = 0 ## Gregorian (common calendar)
 calModulesList = [gregorian]

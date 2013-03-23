@@ -61,7 +61,7 @@ options = (
 
 import os
 from os.path import join, isfile
-from scal2.paths import sysConfDir, confDir, modDir
+from scal2.path import sysConfDir, confDir, modDir
 from scal2.json_utils import jsonToData, dataToPrettyJson
 from scal2.lib import OrderedDict
 

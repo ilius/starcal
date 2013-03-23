@@ -25,7 +25,7 @@ from os.path import join
 from scal2 import locale_man
 from scal2.locale_man import langSh
 from scal2.locale_man import tr as _
-from scal2.paths import *
+from scal2.path import *
 
 from scal2 import core
 from scal2.core import myRaise, convert, APP_DESC

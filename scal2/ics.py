@@ -22,7 +22,7 @@ import sys
 
 from os.path import join, split, splitext
 
-from scal2.paths import *
+from scal2.path import *
 from scal2.time_utils import getJhmsFromEpoch
 from scal2.cal_modules import jd_to, to_jd, DATE_GREG
 

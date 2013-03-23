@@ -17,7 +17,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from scal2.paths import *
+from scal2.path import *
 from scal2.utils import StrOrderedDict
 from scal2.locale_man import tr as _
 

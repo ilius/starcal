@@ -23,7 +23,7 @@ import os
 from os.path import dirname
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
-from scal2.paths import *
+from scal2.path import *
 from scal2 import locale_man
 from scal2.locale_man import tr as _
 

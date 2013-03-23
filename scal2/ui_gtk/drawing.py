@@ -19,7 +19,7 @@
 from os.path import join
 from math import pi
 
-from scal2.paths import *
+from scal2.path import *
 
 from scal2.locale_man import cutText, rtl
 from scal2 import ui

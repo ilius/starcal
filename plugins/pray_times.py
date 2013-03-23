@@ -33,7 +33,7 @@ sys.path.insert(0, rootDir)## FIXME
 
 from scal2 import plugin_api as api
 
-from scal2.paths import *
+from scal2.path import *
 from pray_times_backend import PrayTimes
 
 ## DO NOT IMPORT core IN PLUGINS

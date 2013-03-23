@@ -23,7 +23,7 @@ import os, shutil
 from os.path import dirname
 from os.path import join, isfile, isdir
 
-from scal2.paths import *
+from scal2.path import *
 from scal2.config_importer import importConfigFrom15, getOldVersion, langDir, langConfDir
 
 import gtk

@@ -19,7 +19,7 @@
 
 import sys
 
-from scal2.paths import deskDir
+from scal2.path import deskDir
 from scal2.time_utils import hmEncode, hmDecode
 from scal2.locale_man import tr as _
 from scal2.locale_man import numDecode

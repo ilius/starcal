@@ -24,7 +24,7 @@ from StringIO import StringIO
 from os.path import isfile, isdir, exists, dirname, join, split, splitext
 from pprint import pprint
 
-from scal2.paths import *
+from scal2.path import *
 from scal2 import locale_man
 from scal2.locale_man import getMonthName, lang, langSh
 from scal2.locale_man import tr as _
@@ -365,7 +365,7 @@ def loadAllPlugins():
                 continue
             path = '%s/%s'%(direc, fname)
             name = splitext(fname)[0]
-            #if path in paths:# The plugin is not new, currently exists in allPlugList
+            #if path in path:# The plugin is not new, currently exists in allPlugList
                 #log.warning('plugin "%s" already exists.'%path)
                 #continue
             if not isfile(path):

@@ -23,7 +23,7 @@ from os.path import join, isabs
 from scal2 import locale_man
 from scal2.locale_man import langDict, langSh, rtl
 from scal2.locale_man import tr as _
-from scal2.paths import *
+from scal2.path import *
 
 from scal2 import core
 

@@ -20,7 +20,7 @@
 import os, string
 from os.path import join, isfile, isdir, isabs
 import locale, gettext
-from paths import *
+from path import *
 from scal2.utils import StrOrderedDict, toStr, toUnicode
 from scal2.cal_modules import calModulesList
 

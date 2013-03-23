@@ -19,7 +19,7 @@
 
 from scal2.locale_man import tr as _
 from scal2.utils import myRaise
-from scal2.paths import pixDir
+from scal2.path import pixDir
 
 from scal2 import core
 from scal2 import ui

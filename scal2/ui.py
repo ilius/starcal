@@ -27,7 +27,7 @@ from subprocess import Popen
 
 from scal2.utils import NullObj, toStr, cleanCacheDict, escape
 from scal2.os_utils import makeDir
-from scal2.paths import *
+from scal2.path import *
 
 from scal2.cal_modules import calModulesList, calModuleNames
 

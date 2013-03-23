@@ -31,7 +31,7 @@ except ImportError:
 import httplib2
 from httplib2 import *
 
-from scal2.paths import *
+from scal2.path import *
 
 sys.path.append(join(rootDir, 'google_api_client'))## FIXME
 
