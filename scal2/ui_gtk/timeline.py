@@ -126,6 +126,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         width = self.allocation.width
         self.data = calcTimeLineData(self.timeStart, self.timeWidth, width)
         self.pixelPerSec = float(width) / self.timeWidth ## pixel/second
+        self.borderTm = (boxMoveBorder + boxMoveLineW) / self.pixelPerSec ## second
     def drawTick(self, cr, tick, maxTickHeight):
         tickH = tick.height
         tickW = tick.width
@@ -472,8 +473,14 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             elif editType==-1:
                 if box.t1-t1 > 2*boxMoveBorder/self.pixelPerSec:
                     event.modifyStart(t1)
-            box.t0 = max(event.getStartEpoch(), self.timeStart - epsTm)
-            box.t1 = min(event.getEndEpoch(), self.timeStart + self.timeWidth + epsTm)
+            box.t0 = max(
+                event.getStartEpoch(),
+                self.timeStart - self.borderTm,
+            )
+            box.t1 = min(
+                event.getEndEpoch(),
+                self.timeStart + self.timeWidth + self.borderTm,
+            )
             self.queue_draw()
     def buttonRelease(self, obj, gevent):
         if self.boxEditing:
