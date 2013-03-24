@@ -489,10 +489,10 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             event.save()
             self.boxEditing = None
         self.window.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
-        self.queue_draw()## needed?
-    #def onConfigChange(self, *a, **kw):
-    #    ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
-    #    self.onDateChange()
+        self.queue_draw()
+    def onConfigChange(self, *a, **kw):
+        ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
+        self.queue_draw()
     def editEventClicked(self, menu, winTitle, event, gid):
         event = EventEditorDialog(
             event,
