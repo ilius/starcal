@@ -1538,6 +1538,10 @@ msgid "Events Icon"
 msgstr ""
 "آیکون رویدادها"
 
+msgid "Events Box"
+msgstr ""
+"جعبهٔ رویدادها"
+
 msgid "Days of Month"
 msgstr ""
 "روزهای ماه"

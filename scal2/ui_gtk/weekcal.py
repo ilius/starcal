@@ -27,7 +27,7 @@ from scal2 import core
 
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl, rtlSgn
-
+from scal2.time_utils import getEpochFromJd
 from scal2.core import myRaise, getMonthName, getMonthLen, getNextMonth, getPrevMonth, pixDir
 
 from scal2 import ui
@@ -49,7 +49,7 @@ from scal2.ui_gtk.cal_base import CalBase
 from scal2.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox
 from scal2.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
 
-
+from scal2.ui_gtk import timeline_box as tbox
 
 
 def show_event(widget, event):
@@ -385,6 +385,68 @@ class EventsTextColumn(Column):
         )
 
 
+class EventsBoxColumn(Column):
+    _name = 'eventsBox'
+    desc = _('Events Box')
+    expand = True ## FIXME
+    customizeFont = True
+    #params = (
+    #)
+    def __init__(self, wcal):
+        self.boxes = None
+        self.padding = 2
+        self.timeWidth = 7*24*3600
+        self.boxEditing = None
+        #####
+        Column.__init__(self, wcal)
+        #####
+        self.connect('realize', lambda w: self.updateData())
+        self.connect('expose-event', self.onExposeEvent)
+    def updateData(self):
+        self.timeStart = getEpochFromJd(self.wcal.status[0].jd)
+        self.pixelPerSec = float(self.allocation.height) / self.timeWidth ## pixel/second
+        self.borderTm = 0 ## tbox.boxMoveBorder / self.pixelPerSec ## second
+        self.boxes = tbox.calcEventBoxes(
+            self.timeStart,
+            self.timeStart + self.timeWidth,
+            self.pixelPerSec,
+            self.borderTm,
+        )
+    def onDateChange(self, *a, **kw):
+        CustomizableCalObj.onDateChange(self, *a, **kw)
+        self.updateData()
+        self.queue_draw()
+    def onConfigChange(self, *a, **kw):
+        CustomizableCalObj.onConfigChange(self, *a, **kw)
+        self.updateData()
+        self.queue_draw()
+    def drawBox(self, cr, box):
+        x = box.y
+        y = box.x
+        w = box.h
+        h = box.w
+        ###
+        tbox.drawBoxBG(cr, box, x, y, w, h)
+        tbox.drawBoxText(cr, box, x, y, w, h, self)
+    def onExposeEvent(self, widget=None, event=None):
+        cr = self.window.cairo_create()
+        self.drawBg(cr)
+        if not self.boxes:
+            return
+        ###
+        w = self.allocation.width
+        h = self.allocation.height
+        ###
+        for box in self.boxes:
+            box.setPixelValues(
+                self.timeStart,
+                self.pixelPerSec,
+                self.padding,
+                w - 2*self.padding,
+            )
+            self.drawBox(cr, box)
+
+
 class WcalTypeParamBox(gtk.HBox):
     def __init__(self, wcal, index, mode, params, sgroupLabel, sgroupFont):
         gtk.HBox.__init__(self)
@@ -582,9 +644,11 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
             PluginsTextColumn(self),
             EventsIconColumn(self),
             EventsTextColumn(self),
+            EventsBoxColumn(self),
             DaysOfMonthColumnGroup(self),
         ]
         defaultItemsDict = dict([(item._name, item) for item in defaultItems])
+        itemNames = defaultItemsDict.keys()
         for name, enable in ui.wcalItems:
             try:
                 item = defaultItemsDict[name]
@@ -593,6 +657,11 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
             else:
                 item.enable = enable
                 self.appendItem(item)
+                itemNames.remove(name)
+        for name in itemNames:
+            item = defaultItemsDict[name]
+            item.enable = False
+            self.appendItem(item)
         #####
         hbox = gtk.HBox()
         spin = IntSpinButton(1, 9999)
@@ -630,7 +699,6 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         self.optionsWidget.pack_start(hbox, 0, 0)
         ###
         self.optionsWidget.show_all()
-        #####
     def heightSpinChanged(self, spin):
         v = spin.get_value()
         self.set_property('height-request', v)
@@ -643,9 +711,13 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         ui.wcalItems = self.getItemsData()
     def updateStatus(self):
         self.status = getCurrentWeekStatus()
-    def onDateChange(self, *a, **kw):
-        CustomizableCalBox.onDateChange(self, *a, **kw)
+    def onConfigChange(self, *a, **kw):
         self.updateStatus()
+        CustomizableCalBox.onConfigChange(self, *a, **kw)        
+        self.queue_draw()
+    def onDateChange(self, *a, **kw):
+        self.updateStatus()
+        CustomizableCalBox.onDateChange(self, *a, **kw)        
         self.queue_draw()
         #for item in self.items:
         #    item.queue_draw()
