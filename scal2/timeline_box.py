@@ -112,12 +112,10 @@ class Box:
 
 def calcEventBoxes(
     timeStart,
-    timeWidth,
+    timeEnd,
     pixelPerSec,
+    borderTm,
 ):
-    timeEnd = timeStart + timeWidth
-    borderTm = (boxMoveBorder + boxMoveLineW) / pixelPerSec
-    ####
     boxesDict = {}
     for groupIndex in range(len(ui.eventGroups)):
         group = ui.eventGroups.byIndex(groupIndex)

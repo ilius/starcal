@@ -124,9 +124,14 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
                 self.queue_draw()
     def updateData(self):
         width = self.allocation.width
-        self.data = calcTimeLineData(self.timeStart, self.timeWidth, width)
         self.pixelPerSec = float(width) / self.timeWidth ## pixel/second
         self.borderTm = (boxMoveBorder + boxMoveLineW) / self.pixelPerSec ## second
+        self.data = calcTimeLineData(
+            self.timeStart,
+            self.timeWidth,
+            self.pixelPerSec,
+            self.borderTm,
+        )
     def drawTick(self, cr, tick, maxTickHeight):
         tickH = tick.height
         tickW = tick.width

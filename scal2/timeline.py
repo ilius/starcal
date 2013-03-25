@@ -206,12 +206,11 @@ def formatYear(y, prettyPower=False):
 #        event.color = hslToRgb(hue, boxColorSaturation, boxColorLightness)
 #        hue += dh
 
-def calcTimeLineData(timeStart, timeWidth, width):
+def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
     timeEnd = timeStart + timeWidth
     jd0 = getJdFromEpoch(timeStart)
     jd1 = getJdFromEpoch(timeEnd)
     widthDays = float(timeWidth) / dayLen
-    pixelPerSec = float(width) / timeWidth ## px / sec
     dayPixel = dayLen * pixelPerSec ## px
     #print 'dayPixel = %s px'%dayPixel
     getEPos = lambda epoch: (epoch-timeStart)*pixelPerSec
@@ -357,8 +356,9 @@ def calcTimeLineData(timeStart, timeWidth, width):
         'ticks': ticks,
         'boxes': calcEventBoxes(
             timeStart,
-            timeWidth,
+            timeEnd,
             pixelPerSec,
+            borderTm,
         ),
     }
 
