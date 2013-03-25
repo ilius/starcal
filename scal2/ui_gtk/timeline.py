@@ -50,6 +50,7 @@ import gtk
 from gtk import gdk
 
 from scal2.ui_gtk import gtk_ud as ud
+from scal2.ui_gtk.timeline_box import *
 
 def show_event(widget, event):
     print type(widget), event.type.value_name, event.get_value()#, event.send_event
@@ -125,7 +126,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
     def updateData(self):
         width = self.allocation.width
         self.pixelPerSec = float(width) / self.timeWidth ## pixel/second
-        self.borderTm = (boxMoveBorder + boxMoveLineW) / self.pixelPerSec ## second
+        self.borderTm = boxMoveBorder / self.pixelPerSec ## second
         self.data = calcTimeLineData(
             self.timeStart,
             self.timeWidth,
@@ -177,128 +178,9 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         y = box.y
         h = box.h
         ###
-        cr.rectangle(x, y, w, h)
-        if d == 0:
-            fillColor(cr, box.color)
-            return
-        try:
-            alpha = box.color[3]
-        except IndexError:
-            alpha = 255
-        try:
-            fillColor(cr, (
-                box.color[0],
-                box.color[1],
-                box.color[2],
-                int(alpha*boxInnerAlpha),
-            ))
-        except cairo.Error:
-            return
-        ###
-        cr.set_line_width(0)
-        cr.move_to(x, y)
-        cr.line_to(x+w, y)
-        cr.line_to(x+w, y+h)
-        cr.line_to(x, y+h)
-        cr.line_to(x, y)
-        cr.line_to(x+d, y)
-        cr.line_to(x+d, y+h-d)
-        cr.line_to(x+w-d, y+h-d)
-        cr.line_to(x+w-d, y+d)
-        cr.line_to(x+d, y+d)
-        cr.close_path()
-        fillColor(cr, box.color)
-        ######## Draw Move/Resize Border
-        if box.hasBorder:
-            if w > 2*boxMoveBorder and h > boxMoveBorder:
-                b = boxMoveBorder
-                bd = boxMoveLineW
-                #cr.set_line_width(bd)
-                cr.move_to(x+b, y+h)
-                cr.line_to(x+b, y+b)
-                cr.line_to(x+w-b, y+b)
-                cr.line_to(x+w-b, y+h)
-                cr.line_to(x+w-b-bd, y+h)
-                cr.line_to(x+w-b-bd, y+b+bd)
-                cr.line_to(x+b+bd, y+b+bd)
-                cr.line_to(x+b+bd, y+h)
-                cr.close_path()
-                fillColor(cr, box.color)
-                ###
-                bds = 0.7 * bd
-                cr.move_to(x, y)
-                cr.line_to(x+bds, y)
-                cr.line_to(x+b+bds, y+b)
-                cr.line_to(x+b, y+b+bds)
-                cr.line_to(x, y+bds)
-                cr.close_path()
-                fillColor(cr, box.color)
-                ##
-                cr.move_to(x+w, y)
-                cr.line_to(x+w-bds, y)
-                cr.line_to(x+w-b-bds, y+b)
-                cr.line_to(x+w-b, y+b+bds)
-                cr.line_to(x+w, y+bds)
-                cr.close_path()
-                fillColor(cr, box.color)
-            else:
-                box.hasBorder = False
-        ########
-        ## now draw the text
-        ## how to find the best font size based in the box's width and height,
-        ## and font family? FIXME
-        ## possibly write in many lines? or just in one line and wrap if needed?
-        if box.text:
-            #print box.text
-            textW = 0.9 * w
-            textH = 0.9 * h
-            textLen = len(toUnicode(box.text))
-            #print 'textLen=%s'%textLen
-            avgCharW = float(textW if rotateBoxLabel == 0 else max(textW, textH)) / textLen
-            if avgCharW > 3:## FIXME
-                font = list(ui.getFont())
-                layout = self.create_pango_layout(box.text) ## a pango.Layout object
-                layout.set_font_description(pfontEncode(font))
-                layoutW, layoutH = layout.get_pixel_size()
-                #print 'orig font size: %s'%font[3]
-                normRatio = min(
-                    float(textW)/layoutW,
-                    float(textH)/layoutH,
-                )
-                rotateRatio = min(
-                    float(textW)/layoutH,
-                    float(textH)/layoutW,
-                )
-                if rotateBoxLabel != 0 and rotateRatio > normRatio:
-                    font[3] *= max(normRatio, rotateRatio)
-                    layout.set_font_description(pfontEncode(font))
-                    layoutW, layoutH = layout.get_pixel_size()
-                    fillColor(cr, fgColor)## before cr.move_to
-                    #print 'x=%s, y=%s, w=%s, h=%s, layoutW=%s, layoutH=%s'\
-                    #   %(x,y,w,h,layoutW,layoutH)
-                    cr.move_to(
-                        x + (w - rotateBoxLabel*layoutH)/2.0,
-                        y + (h + rotateBoxLabel*layoutW)/2.0,
-                    )
-                    cr.rotate(-rotateBoxLabel*pi/2)
-                    cr.show_layout(layout)
-                    try:
-                        cr.rotate(rotateBoxLabel*pi/2)
-                    except:
-                        print 'counld not rotate by %s*pi/2 = %s'%(
-                            rotateBoxLabel,
-                            rotateBoxLabel*pi/2,
-                        )
-                else:
-                    font[3] *= normRatio
-                    layout.set_font_description(pfontEncode(font))
-                    layoutW, layoutH = layout.get_pixel_size()
-                    fillColor(cr, fgColor)## before cr.move_to
-                    cr.move_to(
-                        x + (w-layoutW)/2.0,
-                        y + (h-layoutH)/2.0,
-                    )
-                    cr.show_layout(layout)
+        drawBoxBG(cr, box, x, y, w, h)
+        drawBoxBorder(cr, box, x, y, w, h)
+        drawBoxText(cr, box, x, y, w, h, self)
     def drawBoxEditingHelperLines(self, cr):
         if not self.boxEditing:
             return

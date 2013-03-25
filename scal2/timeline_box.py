@@ -28,6 +28,8 @@ boxMaxHeightFactor = 0.8 ## < 1.0
 
 boxSkipPixelLimit = 0.1 ## pixels
 
+rotateBoxLabel = -1
+
 #########################################
 
 def realRangeListsDiff(r1, r2):
@@ -149,7 +151,7 @@ def calcEventBoxes(
                 order = (groupIndex, eventIndex),
                 lineW = lineW,
             )
-            box.hasBorder = (event.name in movableEventTypes)
+            box.hasBorder = (borderTm > 0 and event.name in movableEventTypes)
             boxValue = (group.id, t0, t1)
             try:
                 boxesDict[boxValue].append(box)

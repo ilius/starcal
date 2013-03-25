@@ -98,7 +98,6 @@ movingKeyTimeout = 0.1 ## seconds ## continiouse keyPress delay is about 0.05 se
 #############################################
 truncateTickLabel = False
 
-rotateBoxLabel = -1
 ## 0: no rotation
 ## 1: 90 deg CCW (if needed)
 ## -1: 90 deg CW (if needed)
