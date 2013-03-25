@@ -20,7 +20,7 @@
 import sys, os
 from time import time, localtime
 
-from scal2.utils import toUnicode, toStr, strFindNth, iceil, ifloor
+from scal2.utils import toUnicode, toStr, strFindNth, iceil, ifloor, printError
 from scal2.time_utils import getEpochFromJhms
 
 from scal2 import locale_man
