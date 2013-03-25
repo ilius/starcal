@@ -268,6 +268,72 @@ class PluginsTextColumn(Column):
         self.drawTextList(cr, [self.wcal.status[i].pluginsText for i in range(7)])
 
 
+class EventsIconColumn(Column):
+    _name = 'eventsIcon'
+    desc = _('Events Icon')
+    maxPixH = 26.0
+    maxPixW = 26.0
+    params = ('ui.wcalEventsIconColWidth',)
+    def __init__(self, wcal):
+        Column.__init__(self, wcal)
+        self.set_property('width-request', ui.wcalEventsIconColWidth)
+        self.connect('expose-event', self.onExposeEvent)
+        #####
+        hbox = gtk.HBox()
+        hbox.pack_start(gtk.Label(_('Width')), 0, 0)
+        spin = IntSpinButton(0, 999)
+        hbox.pack_start(spin, 0, 0)
+        spin.set_value(ui.wcalEventsIconColWidth)
+        spin.connect('changed', self.widthSpinChanged)
+        self.optionsWidget.pack_start(hbox, 0, 0)
+        ##
+        self.optionsWidget.show_all()
+    def widthSpinChanged(self, spin):
+        value = spin.get_value()
+        ui.wcalEventsIconColWidth = value
+        self.set_property('width-request', value)
+    def onExposeEvent(self, widget=None, event=None):
+        cr = self.window.cairo_create()
+        self.drawBg(cr)
+        ###
+        w = self.allocation.width
+        h = self.allocation.height
+        ###
+        rowH = h/7.0
+        itemW = w - ui.wcalPadding
+        for i in range(7):
+            c = self.wcal.status[i]
+            iconList = c.getEventIcons()
+            if not iconList:
+                continue
+            n = len(iconList)
+            scaleFact = min(
+                1.0,
+                h / self.maxPixH,
+                w / (n * self.maxPixW),
+            )
+            x0 = (w/scaleFact - (n-1)*self.maxPixW) / 2.0
+            y0 = (2*i + 1) * h / (14.0*scaleFact)
+            if rtl:
+                iconList.reverse()## FIXME
+            for iconIndex, icon in enumerate(iconList):
+                try:
+                    pix = gdk.pixbuf_new_from_file(icon)
+                except:
+                    myRaise(__file__)
+                    continue
+                pix_w = pix.get_width()
+                pix_h = pix.get_height()
+                x1 = x0 + iconIndex*self.maxPixW - pix_w/2.0
+                y1 = y0 - pix_h/2.0
+                cr.scale(scaleFact, scaleFact)
+                cr.set_source_pixbuf(pix, x1, y1)
+                cr.rectangle(x1, y1, pix_w, pix_h)
+                cr.fill()
+                cr.scale(1.0/scaleFact, 1.0/scaleFact)
+
+
+
 class EventsTextColumn(Column):
     _name = 'eventsText'
     desc = _('Events Text')
@@ -318,69 +384,6 @@ class EventsTextColumn(Column):
             [self.getDayText(i) for i in range(7)],
         )
 
-class EventsIconColumn(Column):
-    _name = 'eventsIcon'
-    desc = _('Events Icon')
-    maxPixH = 26.0
-    maxPixW = 26.0
-    params = ('ui.wcalEventsIconColWidth',)
-    def __init__(self, wcal):
-        Column.__init__(self, wcal)
-        self.set_property('width-request', ui.wcalEventsIconColWidth)
-        self.connect('expose-event', self.onExposeEvent)
-        #####
-        hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Width')), 0, 0)
-        spin = IntSpinButton(0, 999)
-        hbox.pack_start(spin, 0, 0)
-        spin.set_value(ui.wcalEventsIconColWidth)
-        spin.connect('changed', self.widthSpinChanged)
-        self.optionsWidget.pack_start(hbox, 0, 0)
-        ##
-        self.optionsWidget.show_all()
-    def widthSpinChanged(self, spin):
-        value = spin.get_value()
-        ui.wcalEventsIconColWidth = value
-        self.set_property('width-request', value)
-    def onExposeEvent(self, widget=None, event=None):
-        cr = self.window.cairo_create()
-        self.drawBg(cr)
-        ###
-        w = self.allocation.width
-        h = self.allocation.height
-        ###
-        rowH = h/7.0
-        itemW = w - ui.wcalPadding
-        for i in range(7):
-            c = self.wcal.status[i]
-            iconList = c.getEventIcons()
-            if iconList:
-                n = len(iconList)
-                scaleFact = min(
-                    1.0,
-                    h/self.maxPixH,
-                    w/(n*self.maxPixW),
-                )
-                x0 = (w/scaleFact - (n-1)*self.maxPixW)/2.0
-                y0 = (2*i+1) * h / (14.0*scaleFact)
-                if rtl:
-                    iconList.reverse()## FIXME
-                for iconIndex, icon in enumerate(iconList):
-                    try:
-                        pix = gdk.pixbuf_new_from_file(icon)
-                    except:
-                        myRaise(__file__)
-                        continue
-                    pix_w = pix.get_width()
-                    pix_h = pix.get_height()
-                    x1 = x0 + iconIndex*self.maxPixW - pix_w/2.0
-                    y1 = y0 - pix_h/2.0
-                    cr.scale(scaleFact, scaleFact)
-                    cr.set_source_pixbuf(pix, x1, y1)
-                    cr.rectangle(x1, y1, pix_w, pix_h)
-                    cr.fill()
-                    cr.scale(1.0/scaleFact, 1.0/scaleFact)
-        
 
 class WcalTypeParamBox(gtk.HBox):
     def __init__(self, wcal, index, mode, params, sgroupLabel, sgroupFont):
