@@ -1564,10 +1564,14 @@ class TaskEvent(SingleStartEndEvent):
         Event.copyFrom(self, other, *a, **kw)
         myStart = self['start']
         ##
-        try:
-            myStart.time = other['dayTime'].dayTime
-        except KeyError:
-            pass
+        if other.name == self.name:
+            endType, values = other.getEnd()
+            self.setEnd(endType, *values)
+        else:
+            try:
+                myStart.time = other['dayTime'].dayTime
+            except KeyError:
+                pass
     def getIcsData(self, prettyDateTime=False):
         jd = self.getJd()
         return [
@@ -1630,7 +1634,7 @@ class AllDayTaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from Single
         except KeyError:
             pass
         else:
-            return ('duration', (duration.value, duration.unit//dayLen))
+            return ('duration', duration.value)
         raise ValueError('no end date neither duration specified for task')
     def getEndJd(self):
         try:
@@ -1676,7 +1680,10 @@ class AllDayTaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from Single
         self.setJd(getJdByIcsDate(data['DTSTART']))
         self.setEndJd(getJdByIcsDate(data['DTEND']))## FIXME
         return True
-
+    def copyFrom(self, other):
+        SingleStartEndEvent.copyFrom(self, other)
+        if other.name == self.name:
+            self.setEnd(*other.getEnd())
 
 
 @classes.event.register
