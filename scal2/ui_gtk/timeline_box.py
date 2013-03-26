@@ -46,14 +46,14 @@ def drawBoxBorder(cr, box, x, y, w, h):
             b = boxMoveBorder
             bd = boxMoveLineW
             #cr.set_line_width(bd)
-            cr.move_to(x+b, y+h)
-            cr.line_to(x+b, y+b)
-            cr.line_to(x+w-b, y+b)
+            cr.move_to(x+b-bd, y+h)
+            cr.line_to(x+b-bd, y+b-bd)
+            cr.line_to(x+w-b+bd, y+b-bd)
+            cr.line_to(x+w-b+bd, y+h)
             cr.line_to(x+w-b, y+h)
-            cr.line_to(x+w-b-bd, y+h)
-            cr.line_to(x+w-b-bd, y+b+bd)
-            cr.line_to(x+b+bd, y+b+bd)
-            cr.line_to(x+b+bd, y+h)
+            cr.line_to(x+w-b, y+b)
+            cr.line_to(x+b, y+b)
+            cr.line_to(x+b, y+h)
             cr.close_path()
             fillColor(cr, box.color)
             ###
