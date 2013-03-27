@@ -371,9 +371,12 @@ class AllDayEventRule(EventRule):
         return JdSetOccurrence(jds)
 
 ## Should not be registered, or instantiate directly
-class MultiValueEventRule(AllDayEventRule):
+class MultiValueAllDayEventRule(AllDayEventRule):
+    conflict = (
+        'date',
+    )
     #params = ('values',)
-    expand = True## FIXME
+    expand = True ## FIXME
     def __init__(self, parent):
         EventRule.__init__(self, parent)
         self.values = []
@@ -389,9 +392,8 @@ class MultiValueEventRule(AllDayEventRule):
             if isinstance(item, (tuple, list)):
                 if item[0] <= value <= item[1]:
                     return True
-            else:
-                if item == value:
-                    return True
+            elif item == value:
+                return True
         return False
     def getValuesPlain(self):
         ls = []
@@ -403,14 +405,15 @@ class MultiValueEventRule(AllDayEventRule):
         return ls
     def setValuesPlain(self, values):
         self.values = simplifyNumList(values)
+    def changeMode(self, mode):
+        return False
 
 @classes.rule.register
-class YearEventRule(MultiValueEventRule):
+class YearEventRule(MultiValueAllDayEventRule):
     name = 'year'
     desc = _('Year')
-    conflict = ('date',)
     def __init__(self, parent):
-        MultiValueEventRule.__init__(self, parent)
+        MultiValueAllDayEventRule.__init__(self, parent)
         self.values = [core.getSysDate(self.getMode())[0]]
     jdMatches = lambda self, jd: self.hasValue(jd_to(jd, self.getMode())[0])
     def newModeValues(self, newMode):
@@ -426,44 +429,46 @@ class YearEventRule(MultiValueEventRule):
             else:
                 values2.append(yearConv(item))
         return values
-    def changeMode(self, mode):
+    def changeMode(self, mode):## FIXME
         self.values = self.newModeValues(mode)
         return True
 
 @classes.rule.register
-class MonthEventRule(MultiValueEventRule):
+class MonthEventRule(MultiValueAllDayEventRule):
     name = 'month'
     desc = _('Month')
-    conflict = ('date',)
     def __init__(self, parent):
-        MultiValueEventRule.__init__(self, parent)
+        MultiValueAllDayEventRule.__init__(self, parent)
         self.values = [1]
     jdMatches = lambda self, jd: self.hasValue(jd_to(jd, self.getMode())[1])
     ## overwrite __str__? FIXME
-    def changeMode(self, mode):
-        return False
+
 
 @classes.rule.register
-class DayOfMonthEventRule(MultiValueEventRule):
+class DayOfMonthEventRule(MultiValueAllDayEventRule):
     name = 'day'
     desc = _('Day of Month')
-    conflict = ('date',)
     def __init__(self, parent):
-        MultiValueEventRule.__init__(self, parent)
+        MultiValueAllDayEventRule.__init__(self, parent)
         self.values = [1]
     jdMatches = lambda self, jd: self.hasValue(jd_to(jd, self.getMode())[2])
-    def changeMode(self, mode):
-        return False
+
 
 @classes.rule.register
 class WeekNumberModeEventRule(EventRule):
     name = 'weekNumMode'
     desc = _('Week Number')
-    need = ('start',)## FIXME
-    conflict = ('date',)
-    params = ('weekNumMode',)
+    need = (
+        'start',## FIXME
+    )
+    conflict = (
+        'date',
+    )
+    params = (
+        'weekNumMode',
+    )
     (EVERY_WEEK, ODD_WEEKS, EVEN_WEEKS) = range(3) ## remove EVERY_WEEK? FIXME
-    weekNumModeNames = ('any', 'odd', 'even')## remove 'any'? FIXME
+    weekNumModeNames = ('any', 'odd', 'even')
     def __init__(self, parent):
         EventRule.__init__(self, parent)
         self.weekNumMode = self.EVERY_WEEK
@@ -480,13 +485,13 @@ class WeekNumberModeEventRule(EventRule):
         elif self.weekNumMode==self.ODD_WEEKS:
             jds = set()
             for jd in range(startJd, endJd):
-                if (getAbsWeekNumberFromJd(jd)-startAbsWeekNum)%2==1:
+                if (getAbsWeekNumberFromJd(jd)-startAbsWeekNum)%2 == 1:
                     jds.add(jd)
             return JdSetOccurrence(jds)
         elif self.weekNumMode==self.EVEN_WEEKS:
             jds = set()
             for jd in range(startJd, endJd):
-                if (getAbsWeekNumberFromJd(jd)-startAbsWeekNum)%2==0:
+                if (getAbsWeekNumberFromJd(jd)-startAbsWeekNum)%2 == 0:
                     jds.add(jd)
             return JdSetOccurrence(jds)
     def getInfo(self):
@@ -501,8 +506,12 @@ class WeekNumberModeEventRule(EventRule):
 class WeekDayEventRule(AllDayEventRule):
     name = 'weekDay'
     desc = _('Day of Week')
-    conflict = ('date',)
-    params = ('weekDayList',)
+    conflict = (
+        'date',
+    )
+    params = (
+        'weekDayList',
+    )
     def __init__(self, parent):
         EventRule.__init__(self, parent)
         self.weekDayList = range(7) ## or [] ## FIXME
@@ -614,7 +623,10 @@ class DateEventRule(EventRule):
 
 class DateAndTimeEventRule(DateEventRule):
     sgroup = 1
-    params = ('date', 'time')
+    params = (
+        'date',
+        'time',
+    )
     def __init__(self, parent):
         DateEventRule.__init__(self, parent)
         self.time = localtime()[3:6]
@@ -651,9 +663,16 @@ class DateAndTimeEventRule(DateEventRule):
 class DayTimeEventRule(EventRule):## Moment Event
     name = 'dayTime'
     desc = _('Time in Day')
-    provide = ('time',)
-    conflict = ('dayTimeRange', 'cycleLen',)
-    params = ('dayTime',)
+    provide = (
+        'time',
+    )
+    conflict = (
+        'dayTimeRange',
+        'cycleLen',
+    )
+    params = (
+        'dayTime',
+    )
     def __init__(self, parent):
         EventRule.__init__(self, parent)
         self.dayTime = localtime()[3:6]
@@ -673,8 +692,14 @@ class DayTimeEventRule(EventRule):## Moment Event
 class DayTimeRangeEventRule(EventRule):
     name = 'dayTimeRange'
     desc = _('Day Time Range')
-    conflict = ('dayTime', 'cycleLen',)
-    params = ('dayTimeStart', 'dayTimeEnd')
+    conflict = (
+        'dayTime',
+        'cycleLen',
+    )
+    params = (
+        'dayTimeStart', 
+        'dayTimeEnd',
+    )
     def __init__(self, parent):
         EventRule.__init__(self, parent)
         self.dayTimeStart = (0, 0, 0)
@@ -706,7 +731,9 @@ class DayTimeRangeEventRule(EventRule):
 class StartEventRule(DateAndTimeEventRule):
     name = 'start'
     desc = _('Start')
-    conflict = ('date',)
+    conflict = (
+        'date',
+    )
     def calcOccurrence(self, startJd, endJd, event):
         myEpoch = self.getEpoch()
         startEpoch = getEpochFromJd(startJd)
@@ -721,7 +748,10 @@ class StartEventRule(DateAndTimeEventRule):
 class EndEventRule(DateAndTimeEventRule):
     name = 'end'
     desc = _('End')
-    conflict = ('date', 'duration',)
+    conflict = (
+        'date',
+        'duration',
+    )
     def calcOccurrence(self, startJd, endJd, event):
         startEpoch = getEpochFromJd(startJd)
         endEpoch = min(getEpochFromJd(endJd), self.getEpoch())
@@ -734,8 +764,13 @@ class EndEventRule(DateAndTimeEventRule):
 class DurationEventRule(EventRule):
     name = 'duration'
     desc = _('Duration')
-    need = ('start',)
-    conflict = ('date', 'end',)
+    need = (
+        'start',
+    )
+    conflict = (
+        'date',
+        'end',
+    )
     sgroup = 1
     units = (1, 60, 3600, dayLen, 7*dayLen)
     def __init__(self, parent):
@@ -781,9 +816,16 @@ def cycleDaysCalcOccurrence(days, startJd, endJd, event):
 class CycleDaysEventRule(EventRule):
     name = 'cycleDays'
     desc = _('Cycle (Days)')
-    need = ('start',)
-    conflict = ('date', 'cycleLen')
-    params = ('days',)
+    need = (
+        'start',
+    )
+    conflict = (
+        'date',
+        'cycleLen',
+    )
+    params = (
+        'days',
+    )
     def __init__(self, parent):
         EventRule.__init__(self, parent)
         self.days = 7
@@ -797,9 +839,17 @@ class CycleDaysEventRule(EventRule):
 class CycleWeeksEventRule(EventRule):
     name = 'cycleWeeks'
     desc = _('Cycle (Weeks)')
-    need = ('start',)
-    conflict = ('date', 'cycleDays', 'cycleLen')
-    params = ('weeks',)
+    need = (
+        'start',
+    )
+    conflict = (
+        'date',
+        'cycleDays',
+        'cycleLen',
+    )
+    params = (
+        'weeks',
+    )
     def __init__(self, parent):
         EventRule.__init__(self, parent)
         self.weeks = 1
@@ -814,10 +864,22 @@ class CycleWeeksEventRule(EventRule):
 class CycleLenEventRule(EventRule):
     name = 'cycleLen' ## or 'cycle' FIXME
     desc = _('Cycle (Days & Time)')
-    provide = ('time',)
-    need = ('start',)
-    conflict = ('date', 'dayTime', 'dayTimeRange', 'cycleDays',)
-    params = ('days', 'extraTime',)
+    provide = (
+        'time',
+    )
+    need = (
+        'start',
+    )
+    conflict = (
+        'date',
+        'dayTime',
+        'dayTimeRange',
+        'cycleDays',
+    )
+    params = (
+        'days',
+        'extraTime',
+    )
     def __init__(self, parent):
         EventRule.__init__(self, parent)
         self.days = 7
@@ -852,21 +914,18 @@ class CycleLenEventRule(EventRule):
 class ExYearEventRule(YearEventRule):
     name = 'ex_year'
     desc = '[%s] %s'%(_('Exception'), _('Year'))
-    conflict = ('date',)
     jdMatches = lambda self, jd: not YearEventRule.jdMatches(self, jd)
 
 @classes.rule.register
 class ExMonthEventRule(MonthEventRule):
     name = 'ex_month'
     desc = '[%s] %s'%(_('Exception'), _('Month'))
-    conflict = ('date',)
     jdMatches = lambda self, jd: not MonthEventRule.jdMatches(self, jd)
 
 @classes.rule.register
 class ExDayOfMonthEventRule(DayOfMonthEventRule):
     name = 'ex_day'
     desc = '[%s] %s'%(_('Exception'), _('Day of Month'))
-    conflict = ('date',)
     jdMatches = lambda self, jd: not DayOfMonthEventRule.jdMatches(self, jd)
 
 @classes.rule.register
@@ -874,7 +933,9 @@ class ExDatesEventRule(EventRule):
     name = 'ex_dates'
     desc = '[%s] %s'%(_('Exception'), _('Date'))
     #conflict = ('date',)## FIXME
-    params = ('dates',)
+    params = (
+        'dates',
+    )
     def __init__(self, parent):
         EventRule.__init__(self, parent)
         self.setDates([])
@@ -1455,8 +1516,14 @@ class TaskEvent(SingleStartEndEvent):
     name = 'task'
     desc = _('Task')
     iconName = 'task'
-    requiredRules = ('start',)
-    supportedRules = ('start', 'end', 'duration')
+    requiredRules = (
+        'start',
+    )
+    supportedRules = (
+        'start',
+        'end',
+        'duration',
+    )
     def setDefaults(self):
         self.setStart(
             core.getSysDate(self.mode),
@@ -1591,8 +1658,14 @@ class AllDayTaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from Single
     name = 'allDayTask'
     desc = _('All-Day Task')
     iconName = 'task'
-    requiredRules = ('start',)
-    supportedRules = ('start', 'end', 'duration')
+    requiredRules = (
+        'start',
+    )
+    supportedRules = (
+        'start',
+        'end',
+        'duration',
+    )
     def setJd(self, jd):
         self.getAddRule('start').setJdExact(jd)
     def setStartDate(self, date):
@@ -1691,8 +1764,12 @@ class DailyNoteEvent(Event):
     name = 'dailyNote'
     desc = _('Daily Note')
     iconName = 'note'
-    requiredRules = ('date',)
-    supportedRules = ('date',)
+    requiredRules = (
+        'date',
+    )
+    supportedRules = (
+        'date',
+    )
     getDate = lambda self: self['date'].date
     def setDate(self, year, month, day):
         self['date'].date = (year, month, day)
@@ -1720,7 +1797,10 @@ class YearlyEvent(Event):
     name = 'yearly'
     desc = _('Yearly Event')
     iconName = 'birthday'
-    requiredRules = ('month', 'day')
+    requiredRules = (
+        'month',
+        'day',
+    )
     supportedRules = requiredRules + ('start',)
     jsonParams = Event.jsonParams + ('startYear', 'month', 'day')
     getMonth = lambda self: self['month'].values[0]
@@ -1865,7 +1945,12 @@ class WeeklyEvent(Event):
     name = 'weekly'
     desc = _('Weekly Event')
     iconName = ''
-    requiredRules = ('start', 'end', 'cycleWeeks', 'dayTimeRange')
+    requiredRules = (
+        'start',
+        'end',
+        'cycleWeeks',
+        'dayTimeRange',
+    )
     supportedRules = requiredRules
 
 
@@ -1877,8 +1962,16 @@ class UniversityClassEvent(Event):
     name = 'universityClass'
     desc = _('Class')
     iconName = 'university'
-    requiredRules  = ('weekNumMode', 'weekDay', 'dayTimeRange',)
-    supportedRules = ('weekNumMode', 'weekDay', 'dayTimeRange',)
+    requiredRules  = (
+        'weekNumMode',
+        'weekDay',
+        'dayTimeRange',
+    )
+    supportedRules = (
+        'weekNumMode',
+        'weekDay',
+        'dayTimeRange',
+    )
     params = Event.params + (
         'courseId',
     )
@@ -1937,8 +2030,14 @@ class UniversityExamEvent(DailyNoteEvent):
     name = 'universityExam'
     desc = _('Exam')
     iconName = 'university'
-    requiredRules  = ('date', 'dayTimeRange',)
-    supportedRules = ('date', 'dayTimeRange',)
+    requiredRules  = (
+        'date',
+        'dayTimeRange',
+    )
+    supportedRules = (
+        'date', 
+        'dayTimeRange',
+    )
     params = DailyNoteEvent.params + (
         'courseId',
     )
@@ -1986,8 +2085,14 @@ class UniversityExamEvent(DailyNoteEvent):
 class LifeTimeEvent(SingleStartEndEvent):
     name = 'lifeTime'
     desc = _('Life Time Event')
-    requiredRules  = ('start', 'end',)
-    supportedRules = ('start', 'end',)
+    requiredRules  = (
+        'start',
+        'end',
+    )
+    supportedRules = (
+        'start',
+        'end',
+    )
     #def setDefaults(self):
     #    self['start'].date = ...
     def setJd(self, jd):
@@ -2685,7 +2790,10 @@ class EventGroup(EventContainer):
 class TaskList(EventGroup):
     name = 'taskList'
     desc = _('Task List')
-    acceptsEventTypes = ('task', 'allDayTask')
+    acceptsEventTypes = (
+        'task',
+        'allDayTask',
+    )
     #actions = EventGroup.actions + []
     sortBys = EventGroup.sortBys + (
         ('start', _('Start'), True),
@@ -2720,7 +2828,9 @@ class TaskList(EventGroup):
 class NoteBook(EventGroup):
     name = 'noteBook'
     desc = _('Note Book')
-    acceptsEventTypes = ('dailyNote',)
+    acceptsEventTypes = (
+        'dailyNote',
+    )
     canConvertTo = (
         'yearly',
         'taskList',
@@ -2741,15 +2851,22 @@ class NoteBook(EventGroup):
 class YearlyGroup(EventGroup):
     name = 'yearly'
     desc = _('Yearly Events Group')
-    acceptsEventTypes = ('yearly',)
-    canConvertTo = ('noteBook',)
+    acceptsEventTypes = (
+        'yearly',
+    )
+    canConvertTo = (
+        'noteBook',
+    )
                 
 
 @classes.group.register
 class UniversityTerm(EventGroup):
     name = 'universityTerm'
     desc = _('University Term')
-    acceptsEventTypes = ('universityClass', 'universityExam')
+    acceptsEventTypes = (
+        'universityClass',
+        'universityExam',
+    )
     actions = EventGroup.actions + [
         ('View Weekly Schedule', 'viewWeeklySchedule'),
     ]
@@ -2923,7 +3040,9 @@ class UniversityTerm(EventGroup):
 class LifeTimeGroup(EventGroup):
     name = 'lifeTime'
     desc = _('Life Time Events Group')
-    acceptsEventTypes = ('lifeTime',)
+    acceptsEventTypes = (
+        'lifeTime',
+    )
     sortBys = EventGroup.sortBys + (
         ('start', _('Start'), True),
     )
@@ -2947,7 +3066,9 @@ class LifeTimeGroup(EventGroup):
 class LargeScaleGroup(EventGroup):
     name = 'largeScale'
     desc = _('Large Scale Events Group')
-    acceptsEventTypes = ('largeScale',)
+    acceptsEventTypes = (
+        'largeScale',
+    )
     sortBys = EventGroup.sortBys + (
         ('start', _('Start'), True),
         ('end', _('End'), True),

@@ -207,7 +207,9 @@ class ToolbarColumn(CustomizableToolbar, ColumnBase):
         ToolbarItem('forward4', 'goto_bottom', 'goForward4', 'Forward 4 Weeks'),
     ]
     defaultItemsDict = dict([(item._name, item) for item in defaultItems])
-    params = ('ud.wcalToolbarData',)
+    params = (
+        'ud.wcalToolbarData',
+    )
     def __init__(self, wcal):
         CustomizableToolbar.__init__(self, wcal, True, True)
         if not ud.wcalToolbarData['items']:
@@ -224,7 +226,9 @@ class WeekDaysColumn(Column):
     desc = _('Week Days')
     colorizeHolidayText = True
     showCursor = True
-    params = ('ui.wcalWeekDaysWidth',)
+    params = (
+        'ui.wcalWeekDaysWidth',
+    )
     customizeFont = True
     def __init__(self, wcal):
         Column.__init__(self, wcal)
@@ -273,7 +277,9 @@ class EventsIconColumn(Column):
     desc = _('Events Icon')
     maxPixH = 26.0
     maxPixW = 26.0
-    params = ('ui.wcalEventsIconColWidth',)
+    params = (
+        'ui.wcalEventsIconColWidth',
+    )
     def __init__(self, wcal):
         Column.__init__(self, wcal)
         self.set_property('width-request', ui.wcalEventsIconColWidth)
@@ -515,7 +521,10 @@ class DaysOfMonthColumn(Column):
 class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
     _name = 'daysOfMonth'
     desc = _('Days of Month')
-    params = ('ui.wcalDaysOfMonthColWidth', 'ui.wcalDaysOfMonthColDir')
+    params = (
+        'ui.wcalDaysOfMonthColWidth',
+        'ui.wcalDaysOfMonthColDir',
+    )
     updateDir = lambda self: self.set_direction(ud.textDirDict[ui.wcalDaysOfMonthColDir])
     def __init__(self, wcal):
         gtk.HBox.__init__(self)

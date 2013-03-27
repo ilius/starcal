@@ -248,7 +248,9 @@ class WinConButtonSep(WinConButton):
 class MainWinController(gtk.HBox, CustomizableCalBox):
     _name = 'winContronller'
     desc = _('Window Controller')
-    params = ('ui.winControllerButtons',)
+    params = (
+        'ui.winControllerButtons',
+    )
     buttonClassList = (WinConButtonMin, WinConButtonMax, WinConButtonClose, WinConButtonSep)
     buttonClassDict = dict([(cls._name, cls) for cls in buttonClassList])
     def __init__(self):
@@ -282,7 +284,9 @@ class MainWinController(gtk.HBox, CustomizableCalBox):
 
 
 class MainWinToolbar(CustomizableToolbar):
-    params = ('ud.mainToolbarData',)
+    params = (
+        'ud.mainToolbarData',
+    )
     defaultItems = [
         ToolbarItem('today', 'home', 'goToday', 'Select Today'),
         ToolbarItem('date', 'index', 'selectDateShow', 'Select Date...', 'Date...'),
@@ -348,7 +352,9 @@ class StatusBox(gtk.HBox, CustomizableCalObj):
 class PluginsTextBox(gtk.VBox, CustomizableCalObj):
     _name = 'pluginsText'
     desc = _('Plugins Text')
-    params = ('ui.pluginsTextInsideExpander',)
+    params = (
+        'ui.pluginsTextInsideExpander',
+    )
     def __init__(self):
         gtk.VBox.__init__(self)
         self.initVars()
