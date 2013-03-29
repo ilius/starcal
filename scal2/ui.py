@@ -35,7 +35,7 @@ from scal2 import locale_man
 from scal2.locale_man import tr as _
 
 from scal2 import core
-from scal2.core import APP_NAME, myRaise, myRaiseTback, getMonthLen, getNextMonth, getPrevMonth, osName
+from scal2.core import APP_NAME, myRaise, myRaiseTback, getMonthLen, osName
 
 from scal2 import event_man
 
@@ -335,12 +335,7 @@ def jdPlus(plus=1):
 
 def monthPlus(plus=1):
     global cell
-    if plus==1:
-        (year, month) = getNextMonth(cell.year, cell.month)
-    elif plus==-1:
-        (year, month) = getPrevMonth(cell.year, cell.month)
-    else:
-        raise ValueError('monthPlus: bad argument %s'%plus)
+    year, month = core.monthPlus(cell.year, cell.month, plus)
     day = min(cell.day, getMonthLen(year, month, core.primaryMode))
     cell = cellCache.getCellByDate(year, month, day)
 

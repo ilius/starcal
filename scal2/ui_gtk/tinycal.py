@@ -31,8 +31,8 @@ from scal2.locale_man import rtl, rtlSgn
 
 
 from scal2 import core
-from scal2.core import myRaise, getMonthName, getMonthLen, getNextMonth, getPrevMonth,\
-                          rootDir, pixDir, plugDir, plugDirUser, homeDir, confDir, sysConfDir, modDir
+from scal2.core import myRaise, getMonthName, getMonthLen,\
+                       rootDir, pixDir, plugDir, plugDirUser, homeDir, confDir, sysConfDir, modDir
 
 from scal2 import ui
 

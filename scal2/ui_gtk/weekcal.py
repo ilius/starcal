@@ -28,7 +28,7 @@ from scal2 import core
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl, rtlSgn
 from scal2.time_utils import getEpochFromJd
-from scal2.core import myRaise, getMonthName, getMonthLen, getNextMonth, getPrevMonth, pixDir
+from scal2.core import myRaise, getMonthName, getMonthLen, pixDir
 
 from scal2 import ui
 from scal2.weekcal import getCurrentWeekStatus

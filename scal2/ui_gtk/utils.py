@@ -56,7 +56,7 @@ def set_tooltip(widget, text):
 buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter())
 
 def imageFromFile(path):## the file must exist
-    if not os.sep in path:
+    if not isabs(path):
         path = join(pixDir, path)
     im = gtk.Image()
     try:
@@ -145,41 +145,6 @@ def getTreeviewPathStr(path):
 
 rectangleContainsPoint = lambda r, x, y: r.x <= x < r.x + r.width and r.y <= y < r.y + r.height
 
-def confirm(msg, parent=None):
-    win = gtk.MessageDialog(
-        parent=parent,
-        flags=0,
-        type=gtk.MESSAGE_INFO,
-        buttons=gtk.BUTTONS_NONE,
-        message_format=msg,
-    )
-    cancelB = win.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-    okB = win.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-    if ui.autoLocale:
-        cancelB.set_label(_('_Cancel'))
-        cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
-        okB.set_label(_('_OK'))
-        okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
-    ok = win.run() == gtk.RESPONSE_OK
-    win.destroy()
-    return ok
-
-def showError(msg, parent=None):
-    win = gtk.MessageDialog(
-        parent=parent,
-        flags=0,
-        type=gtk.MESSAGE_ERROR,
-        buttons=gtk.BUTTONS_NONE,
-        message_format=msg,
-    )
-    closeB = win.add_button(gtk.STOCK_CLOSE, gtk.RESPONSE_OK)
-    if ui.autoLocale:
-        closeB.set_label(_('_Close'))
-        closeB.set_image(gtk.image_new_from_stock(gtk.STOCK_CLOSE, gtk.ICON_SIZE_BUTTON))
-    win.run()
-    win.destroy()
-
-
 def dialog_add_button(dialog, stock, label, resId, onClicked=None, tooltip=''):
     b = dialog.add_button(stock, resId)
     if ui.autoLocale:
@@ -192,43 +157,70 @@ def dialog_add_button(dialog, stock, label, resId, onClicked=None, tooltip=''):
         set_tooltip(b, tooltip)
     return b
 
+def confirm(msg, parent=None):
+    win = gtk.MessageDialog(
+        parent=parent,
+        flags=0,
+        type=gtk.MESSAGE_INFO,
+        buttons=gtk.BUTTONS_NONE,
+        message_format=msg,
+    )
+    dialog_add_button(win, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
+    dialog_add_button(win, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+    ok = win.run() == gtk.RESPONSE_OK
+    win.destroy()
+    return ok
+
+def showError(msg, parent=None):
+    win = gtk.MessageDialog(
+        parent=parent,
+        flags=0,
+        type=gtk.MESSAGE_ERROR,
+        buttons=gtk.BUTTONS_NONE,
+        message_format=msg,
+    )
+    dialog_add_button(win, gtk.STOCK_CLOSE, _('_Close'), gtk.RESPONSE_OK)
+    win.run()
+    win.destroy()
+
+
 def processDroppedDate(text, dtype):
-        ## data_type: "UTF8_STRING", "application/x-color", "text/uri-list",
-        if dtype=='UTF8_STRING':
-            if text.startswith('file://'):
-                path = core.urlToPath(text)
-                try:
-                    t = os.stat(path).st_mtime ## modification time
-                except OSError:
-                    print 'Dropped invalid file "%s"'%path
-                else:
-                    (y, m, d) = localtime(t)[:3]
-                    #print 'Dropped file "%s", modification time: %s/%s/%s'%(path, y, m, d)
-                    self.changeDate(y, m, d, core.DATE_GREG)
-            else:
-                date = ui.parseDroppedDate(text)
-                if date:
-                    return date + (ui.dragRecMode,)
-                else:
-                    ## Hot to deny dragged object (to return to it's first location)
-                    ## FIXME
-                    print 'Dropped unknown text "%s"'%text
-                    #print etime
-                    #context.drag_status(gdk.ACTION_DEFAULT, etime)
-                    #context.drop_reply(False, etime)
-                    #context.drag_abort(etime)##Segmentation fault
-                    #context.drop_finish(False, etime)
-                    #context.finish(False, True, etime)
-                    #return True
-        elif dtype=='text/uri-list':
-            path = core.urlToPath(selection.data)
+    ## data_type: "UTF8_STRING", "application/x-color", "text/uri-list",
+    if dtype=='UTF8_STRING':
+        if text.startswith('file://'):
+            path = core.urlToPath(text)
             try:
                 t = os.stat(path).st_mtime ## modification time
             except OSError:
-                print 'Dropped invalid uri "%s"'%path
-                return True
+                print 'Dropped invalid file "%s"'%path
             else:
-                return localtime(t)[:3] + (core.DATE_GREG,)
+                (y, m, d) = localtime(t)[:3]
+                #print 'Dropped file "%s", modification time: %s/%s/%s'%(path, y, m, d)
+                return (y, m, d, core.DATE_GREG)
+        else:
+            date = ui.parseDroppedDate(text)
+            if date:
+                return date + (ui.dragRecMode,)
+            else:
+                ## Hot to deny dragged object (to return to it's first location)
+                ## FIXME
+                print 'Dropped unknown text "%s"'%text
+                #print etime
+                #context.drag_status(gdk.ACTION_DEFAULT, etime)
+                #context.drop_reply(False, etime)
+                #context.drag_abort(etime)##Segmentation fault
+                #context.drop_finish(False, etime)
+                #context.finish(False, True, etime)
+                #return True
+    elif dtype=='text/uri-list':
+        path = core.urlToPath(selection.data)
+        try:
+            t = os.stat(path).st_mtime ## modification time
+        except OSError:
+            print 'Dropped invalid uri "%s"'%path
+            return True
+        else:
+            return localtime(t)[:3] + (core.DATE_GREG,)
 
 
 
@@ -236,7 +228,16 @@ def processDroppedDate(text, dtype):
 
 
 class AboutDialog(gtk.AboutDialog):
-    def __init__(self, name='', version='', title='', authors=[], comments='', license='', website=''):
+    def __init__(
+        self,
+        name='',
+        version='',
+        title='',
+        authors=[],
+        comments='',
+        license='',
+        website='',
+    ):
         gtk.AboutDialog.__init__(self)
         self.set_name(name)## or set_program_name FIXME
         self.set_version(version)
@@ -247,7 +248,7 @@ class AboutDialog(gtk.AboutDialog):
             self.set_license(license)
             self.set_wrap_license(True)
         if website:
-            self.set_website(website) ## A palin label (not link)
+            self.set_website(website) ## A plain label (not link)
         if ui.autoLocale:
             buttonbox = self.vbox.get_children()[1]
             buttons = buttonbox.get_children()## List of buttons of about dialogs

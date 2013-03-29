@@ -82,20 +82,24 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
     def onLabelPopupPopulate(self, label, menu, ids):
         menu = gtk.Menu()
         ####
-        itemCopyAll = gtk.ImageMenuItem(_('Copy _All'))
-        itemCopyAll.set_image(gtk.image_new_from_stock(gtk.STOCK_COPY, gtk.ICON_SIZE_MENU))
-        itemCopyAll.connect('activate', self.copyAll, label)
-        menu.add(itemCopyAll)
+        menu.add(labelStockMenuItem(
+            'Copy _All',
+            gtk.STOCK_COPY,
+            self.copyAll,
+            label
+        ))
         ####
-        itemCopy = gtk.ImageMenuItem(_('_Copy'))
-        itemCopy.set_image(gtk.image_new_from_stock(gtk.STOCK_COPY, gtk.ICON_SIZE_MENU))
-        if label.get_property('cursor-position') != label.get_property('selection-bound'):
-            itemCopy.connect('activate', self.copy, label)
-        else:
+        itemCopy = labelStockMenuItem(
+            '_Copy',
+            gtk.STOCK_COPY,
+            self.copy,
+            label,
+        )
+        if label.get_property('cursor-position') == label.get_property('selection-bound'):
             itemCopy.set_sensitive(False)
         menu.add(itemCopy)
         ####
-        (groupId, eventId) = ids
+        groupId, eventId = ids
         event = ui.getEvent(groupId, eventId)
         if not event.readOnly:
             menu.add(gtk.SeparatorMenuItem())
@@ -113,7 +117,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
             menu.add(gtk.SeparatorMenuItem())
             ###
             menu.add(labelImageMenuItem(
-                _('Move to %s')%ui.eventTrash.title,
+                _('Move to %s') % ui.eventTrash.title,
                 ui.eventTrash.icon,
                 self.moveEventToTrash,
                 event,
@@ -184,7 +188,7 @@ class WeekOccurrenceView(gtk.TreeView):
         for item in wEventData:
             self.ls.append(
                 pixbufFromFile(item['icon']),
-                core.weekDayNameAb(item['weekDay']) if self.abrivateWeekDays else core.weekDayName(item['weekDay']),
+                core.weekDayNameAuto(self.abrivateWeekDays)[item['weekDay']],
                 item['time'],
                 item['text'],
             )

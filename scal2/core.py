@@ -30,6 +30,7 @@ from scal2.locale_man import getMonthName, lang, langSh
 from scal2.locale_man import tr as _
 from scal2.plugin_man import *
 from scal2.time_utils import *
+from scal2.date_utils import *
 from scal2.os_utils import *
 from scal2.json_utils import *
 from scal2.utils import *
@@ -183,7 +184,10 @@ class CalModulesHolder:
         if isinstance(key, int):
             return calModulesList[key]
         else:
-            raise TypeError('invalid key %r give to CalModuleHolder.__getitem__'%key)
+            raise TypeError('invalid key %r given to %s.__getitem__'%(
+                key,
+                self.__class__.__name__,
+            ))
 
 
 popen_output = lambda cmd: subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
@@ -194,8 +198,6 @@ jd_to_primary = lambda jd: calModulesList[primaryMode].jd_to(jd)
 def getCurrentJd():## time() and mktime(localtime()) both return GMT, not local
     (y, m, d) = localtime()[:3]
     return to_jd(y, m, d, DATE_GREG)
-
-getEpochFromDate = lambda y, m, d, mode: getEpochFromJd(to_jd(y, m, d, mode))
 
 def getWeekDateHmsFromEpoch(epoch):
    (jd, hour, minute, sec) = getJhmsFromEpoch(epoch)
@@ -209,27 +211,6 @@ def getMonthWeekNth(jd, mode):
     dayDiv, dayMode = divmod(day-1, 7)
     return month, dayDiv, weekDay
 
-def getJdRangeForMonth(year, month, mode):
-    day = getMonthLen(year, month, mode)
-    return (to_jd(year, month, 1, mode),
-            to_jd(year, month, day, mode) + 1)
-
-def getFloatYearFromEpoch(epoch, mode):
-    module = calModulesList[mode]
-    return float(epoch - module.epoch)/module.avgYearLen + 1
-
-def getEpochFromFloatYear(year, mode):
-    module = calModulesList[mode]
-    return module.epoch + (year-1)*module.avgYearLen
-
-getFloatYearFromJd = lambda jd, mode: getFloatYearFromEpoch(getEpochFromJd(jd), mode)
-
-getJdFromFloatYear = lambda year, mode: getJdFromEpoch(getEpochFromFloatYear(year, mode))
-
-## jwday: Calculate day of week from Julian day
-## 0 = Sunday
-## 1 = Monday
-jwday = lambda jd: (jd + 1) % 7
 
 getWeekDay = lambda y, m, d: jwday(primary_to_jd(y, m, d)-firstWeekDay)
 
@@ -241,10 +222,7 @@ def getWeekDayAuto(i, abr=False):
     else:
         return weekDayName[(i+firstWeekDay)%7]
 
-
-datesDiff = lambda y1, m1, d1, y2, m2, d2: primary_to_jd(y2, m2, d2) - primary_to_jd(y1, m1, d1)
-
-dayOfYear = lambda y, m, d: datesDiff(y, 1, 1, y, m, d) + 1
+weekDayNameAuto = lambda abr: weekDayNameAb if abr else weekDayName
 
 def getLocaleFirstWeekDay():
     #log.debug('first_weekday', popen_output(['locale', 'first_weekday']))
@@ -293,23 +271,6 @@ def getJdRangeOfAbsWeekNumber(absWeekNumber):
     return (jd, jd+7)
 
 
-getMonthLen = lambda year, month, mode: calModulesList[mode].getMonthLen(year, month)
-
-def getNextMonth(year, month):
-    assert month <= 12
-    if month==12:
-        return (year+1, 1)
-    else:
-        return (year, month+1)
-
-def getPrevMonth(year, month):
-    assert month >= 1
-    if month==1:
-        return (year-1, 12)
-    else:
-        return (year, month-1)
-
-
 def getLocaleWeekNumberMode():##????????????
     return (int(popen_output(['locale', 'week-1stweek']))-1)%8
     ## will be 7 for farsi (OK)
@@ -319,7 +280,6 @@ def getLocaleWeekNumberMode():##????????????
     ##    en_US.UTF-8             7
     ##    en_GB.UTF-8             4
     ##    fa_IR.UTF-8             0
-
 
 
 
@@ -399,7 +359,8 @@ def updatePlugins():
             plug.clear()
 
 
-def getPluginsTable():## returns a list of (i, enable, show_date, description)
+def getPluginsTable():
+    ## returns a list of [i, enable, show_date, description]
     table = []
     for i in plugIndex:
         plug = allPlugList[i]
@@ -409,7 +370,7 @@ def getPluginsTable():## returns a list of (i, enable, show_date, description)
 
 def getDeletedPluginsTable():## returns a list of (i, description)
     table = []
-    for (i, plug) in enumerate(allPlugList):
+    for i, plug in enumerate(allPlugList):
         try:
             plugIndex.index(i)
         except ValueError:
@@ -442,7 +403,7 @@ def ymdRange((y1, m1, d1), (y2, m2, d2), mode=None):
     if y1==y2 and m1==m2:
         return [(y1, m1, d) for d in range(d1, d2)]
     if mode==None:
-        mode=DATE_GREG
+        mode = DATE_GREG
     j1 = int(to_jd(y1, m1, d1, mode))
     j2 = int(to_jd(y2, m2, d2, mode))
     l = []
@@ -467,14 +428,7 @@ def mylocaltime(sec=None, mode=None):
     return t
 
 
-def validDate(mode, y, m, d):## move to cal-modules
-    if y<0:
-        return False
-    if m<1 or m>12:
-        return False
-    if d > getMonthLen(y, m, mode):
-        return False
-    return True
+
 
 compressLongInt = lambda num: struct.pack('L', num).rstrip('\x00').encode('base64')[:-3].replace('/', '_')
 getCompactTime = lambda maxDays=1000, minSec=0.1: compressLongInt(long(time()%(maxDays*24*3600) / minSec))
@@ -484,7 +438,12 @@ def floatJdEncode(jd, mode):
     return dateEncode(jd_to(jd, mode)) + ' ' + timeEncode((hour, minute, second))
     
 
-showInfo = lambda: log.debug('%s %s, OS: %s, Python %s'%(APP_DESC, VERSION, getOsFullDesc(), sys.version.replace('\n', ' ')))
+showInfo = lambda: log.debug('%s %s, OS: %s, Python %s'%(
+    APP_DESC,
+    VERSION,
+    getOsFullDesc(),
+    str(sys.version).replace('\n', ' '),
+))
 
 def fixStrForFileName(fname):
     fname = fname.replace('/', '_').replace('\\', '_')
@@ -522,6 +481,8 @@ def openUrl(url):
             pass
         else:
             return
+
+dataToJson =  lambda data: dataToCompactJson(data) if useCompactJson else dataToPrettyJson(data)
 
 def init():
     loadAllPlugins()
@@ -577,7 +538,7 @@ weekNumberMode = 7
 ################################################################################
 ################################################################################
 debugMode = False
-useCompactJson = False## FIXME
+useCompactJson = False ## FIXME
 eventTextSep = ': ' ## use to seperate summary from description for display
 eventTrashLastTop = True
 
@@ -624,8 +585,24 @@ if aboutText in ('aboutText', ''):
     aboutText = open('%s/about'%rootDir).read()
 
 
-weekDayName = (_('Sunday'), _('Monday'), _('Tuesday'), _('Wednesday'), _('Thursday'), _('Friday'), _('Saturday'))
-weekDayNameAb = (_('Sun'), _('Mon'), _('Tue'), _('Wed'), _('Thu'), _('Fri'), _('Sat'))
+weekDayName = (
+    _('Sunday'),
+    _('Monday'),
+    _('Tuesday'),
+    _('Wednesday'),
+    _('Thursday'),
+    _('Friday'),
+    _('Saturday'),
+)
+weekDayNameAb = (
+    _('Sun'),
+    _('Mon'),
+    _('Tue'),
+    _('Wed'),
+    _('Thu'),
+    _('Fri'),
+    _('Sat'),
+)
 
 
 
@@ -634,7 +611,4 @@ weekDayNameAb = (_('Sun'), _('Mon'), _('Tue'), _('Wed'), _('Thu'), _('Fri'), _('
 
 #if weekNumberModeAuto and os.sep=='/':## FIXME
 #    weekNumberMode = getLocaleWeekNumberMode()
-
-
-dataToJson =  lambda data: dataToCompactJson(data) if useCompactJson else dataToPrettyJson(data)
 

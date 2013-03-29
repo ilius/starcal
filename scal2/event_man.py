@@ -35,6 +35,7 @@ from scal2.utils import printError, toStr, arange, ifloor, iceil, findNearestInd
 from scal2.os_utils import makeDir
 from scal2.interval_utils import *
 from scal2.time_utils import *
+from scal2.date_utils import *
 from scal2.json_utils import *
 from scal2.color_utils import hslToRgb
 from scal2.ics import *
