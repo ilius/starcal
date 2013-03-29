@@ -399,17 +399,17 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                 else:
                     for eventType in eventTypes:
                         #if eventType == 'custom':## FIXME
-                        #    desc = _('Event')
+                        #    desc = _('Add ') + _('Event')
                         #else:
-                        desc = event_man.classes.event.byName[eventType].desc
+                        label = _('Add ') + event_man.classes.event.byName[eventType].desc
                         menu.add(labelStockMenuItem(
-                            _('Add ') + desc,
+                            label,
                             gtk.STOCK_ADD,
                             self.addEventToGroupFromMenu,
                             path,
                             group,
                             eventType,
-                            _('Add') + ' ' + desc,
+                            label,
                         ))
                 pasteItem = labelStockMenuItem(
                     'Paste Event',
@@ -417,8 +417,8 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                     self.pasteEventFromMenu,
                     path,
                 )
-                pasteItem.set_sensitive(self.canPasteToGroup(group))
                 menu.add(pasteItem)
+                pasteItem.set_sensitive(self.canPasteToGroup(group))
                 ##
                 menu.add(gtk.SeparatorMenuItem())
                 #menu.add(labelStockMenuItem(
@@ -499,15 +499,14 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                 #    path,
                 #))
                 ###
-                if group.canConvertTo:
-                    for newGroupType in group.canConvertTo:
-                        menu.add(labelStockMenuItem(
-                            _('Convert to %s')%event_man.classes.group.byName[newGroupType].desc,
-                            None,
-                            self.groupConvertTo,
-                            group,
-                            newGroupType,
-                        ))
+                for newGroupType in group.canConvertTo:
+                    menu.add(labelStockMenuItem(
+                        _('Convert to %s')%event_man.classes.group.byName[newGroupType].desc,
+                        None,
+                        self.groupConvertTo,
+                        group,
+                        newGroupType,
+                    ))
                 ###
                 bulkItem = labelStockMenuItem(
                     _('Bulk Edit Events'),
@@ -566,8 +565,8 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                     self.pasteEventFromMenu,
                     path,
                 )
-                pasteItem.set_sensitive(self.canPasteToGroup(group))
                 menu.add(pasteItem)
+                pasteItem.set_sensitive(self.canPasteToGroup(group))
                 ##
                 menu.add(gtk.SeparatorMenuItem())
                 menu.add(labelImageMenuItem(
