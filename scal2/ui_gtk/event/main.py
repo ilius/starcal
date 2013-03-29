@@ -389,13 +389,16 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                 menu.add(gtk.SeparatorMenuItem())
                 #menu.add(labelStockMenuItem('Add New Group', gtk.STOCK_NEW, self.addGroupBeforeGroup, path))## FIXME
                 menu.add(labelStockMenuItem('Duplicate', gtk.STOCK_COPY, self.duplicateGroupFromMenu, path))
-                if group.idList:
-                    menu.add(labelStockMenuItem(
-                        'Duplicate with All Events',
-                        gtk.STOCK_COPY,
-                        self.duplicateGroupWithEventsFromMenu,
-                        path,
-                    ))
+                ###
+                dupAll = labelStockMenuItem(
+                    'Duplicate with All Events',
+                    gtk.STOCK_COPY,
+                    self.duplicateGroupWithEventsFromMenu,
+                    path,
+                )
+                menu.add(dupAll)
+                dupAll.set_sensitive(bool(group.idList))
+                ###
                 menu.add(gtk.SeparatorMenuItem())
                 menu.add(labelStockMenuItem('Delete Group', gtk.STOCK_DELETE, self.deleteGroupFromMenu, path))
                 menu.add(gtk.SeparatorMenuItem())
