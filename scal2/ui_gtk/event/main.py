@@ -471,18 +471,25 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                     self.groupExportFromMenu,
                     group,
                 ))
-                menu.add(labelStockMenuItem(
+                ###
+                sortItem = labelStockMenuItem(
                     _('Sort Events'),
                     gtk.STOCK_SORT_ASCENDING,
                     self.groupSortFromMenu,
                     path,
-                ))
-                menu.add(labelStockMenuItem(
+                )
+                menu.add(sortItem)
+                sortItem.set_sensitive(bool(group.idList))
+                ###
+                convertItem = labelStockMenuItem(
                     _('Convert Calendar Type'),
                     gtk.STOCK_CONVERT,
                     self.groupConvertModeFromMenu,
                     group,
-                ))
+                )
+                menu.add(convertItem)
+                convertItem.set_sensitive(bool(group.idList))
+                ###
                 #if group.remoteIds:
                 #    account = ui.eventAccounts[group.remoteIds[0]]
                 #    menu.add(labelImageMenuItem(
@@ -502,13 +509,15 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                             newGroupType,
                         ))
                 ###
-                menu.add(labelStockMenuItem(
+                bulkItem = labelStockMenuItem(
                     _('Bulk Edit Events'),
                     gtk.STOCK_EDIT,
                     self.groupBulkEditFromMenu,
                     group,
                     path,
-                ))
+                )
+                menu.add(bulkItem)
+                bulkItem.set_sensitive(bool(group.idList))
                 ###
                 for actionName, actionFuncName in group.actions:
                     menu.add(labelStockMenuItem(
