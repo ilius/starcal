@@ -2394,10 +2394,8 @@ class EventGroup(EventContainer):
     def checkEventToAdd(self, event):
         return event.name in self.acceptsEventTypes
     __repr__ = lambda self: '%s(_id=%s, title=%s)'%(self.__class__.__name__, self.id, toStr(self.title))
-    def __init__(self, _id=None, title=None):
-        if title is None:
-            title = self.desc
-        EventContainer.__init__(self, title=title)
+    def __init__(self, _id=None):
+        EventContainer.__init__(self, title=self.desc)
         if _id is None:
             self.id = None
         else:
@@ -2808,8 +2806,8 @@ class TaskList(EventGroup):
             elif attr=='end':
                 return event.getEndEpoch()
         return EventGroup.getSortByValue(self, event, attr)
-    def __init__(self, *args, **kwargs):
-        EventGroup.__init__(self, *args, **kwargs)
+    def __init__(self, _id=None):
+        EventGroup.__init__(self, _id)
         self.defaultDuration = (0, 1) ## (value, unit)
         ## if defaultDuration[0] is set to zero, the checkbox for task's end, will be unchecked for new tasks
     def copyFrom(self, other):
@@ -2896,8 +2894,8 @@ class UniversityTerm(EventGroup):
                 elif event.name == 'universityExam':
                     return event['date'].getJd(), event['dayTimeRange'].getHourRange()
         return EventGroup.getSortByValue(self, event, attr)
-    def __init__(self, *args, **kwargs):
-        EventGroup.__init__(self, *args, **kwargs)
+    def __init__(self, _id=None):
+        EventGroup.__init__(self, _id)
         self.classesEndDate = core.getSysDate(self.mode)## FIXME
         self.setCourses([]) ## list of (courseId, courseName, courseUnits)
         self.classTimeBounds = [
@@ -3057,9 +3055,9 @@ class LifeTimeGroup(EventGroup):
             elif attr=='end':
                 return event.getEndJd()
         return EventGroup.getSortByValue(self, event, attr)
-    def __init__(self, *args, **kwargs):
+    def __init__(self, _id=None):
         self.showSeperatedYmdInputs = False
-        EventGroup.__init__(self, *args, **kwargs)
+        EventGroup.__init__(self, _id)
 
 
 
@@ -3082,9 +3080,9 @@ class LargeScaleGroup(EventGroup):
             elif attr=='end':
                 return event.getEnd() * event.scale
         return EventGroup.getSortByValue(self, event, attr)
-    def __init__(self, *args, **kwargs):
+    def __init__(self, _id=None):
         self.scale = 1 ## 1, 1000, 1000**2, 1000**3
-        EventGroup.__init__(self, *args, **kwargs)
+        EventGroup.__init__(self, _id)
     def setDefaults(self):
         self.startJd = 0
         self.endJd = self.startJd + self.scale * 9999
@@ -3170,12 +3168,12 @@ class VcsBaseEventGroup(EventGroup):
         'vcsType',
         'vcsDir',
     )
-    def __init__(self, vcsType='git', vcsDir='', *args, **kw):
-        self.vcsType = vcsType
-        self.vcsDir = vcsDir
+    def __init__(self, _id=None):
+        self.vcsType = 'git'
+        self.vcsDir = ''
         #self.branch = 'master'
-        EventGroup.__init__(self, *args, **kw)
-    __repr__ = lambda self: '%s(vcsType=%r, vcsDir=%r)'%(self.__class__.__name__, self.vcsType, self.vcsDir)
+        EventGroup.__init__(self, _id)
+    #__repr__ = lambda self: '%s(vcsType=%r, vcsDir=%r)'%(self.__class__.__name__, self.vcsType, self.vcsDir)## FIXME
     def setDefaults(self):
         self.eventTextSep = '\n'
         self.showInTimeLine = False
@@ -3216,8 +3214,8 @@ class VcsCommitEventGroup(VcsBaseEventGroup):
     )
     params = EventGroup.params + myParams
     jsonParams = EventGroup.jsonParams + myParams
-    def __init__(self, *args, **kw):
-        VcsBaseEventGroup.__init__(self, *args, **kw)
+    def __init__(self, _id=None):
+        VcsBaseEventGroup.__init__(self, _id)
         self.showAuthor = True
         self.showShortHash = True
         self.showStat = True
@@ -3281,8 +3279,8 @@ class VcsTagEventGroup(VcsBaseEventGroup):
     )
     params = EventGroup.params + myParams
     jsonParams = EventGroup.jsonParams + myParams
-    def __init__(self, *args, **kw):
-        VcsBaseEventGroup.__init__(self, *args, **kw)
+    def __init__(self, _id=None):
+        VcsBaseEventGroup.__init__(self, _id)
         self.tags = []
         self.showStat = True
     def clear(self):
@@ -3549,8 +3547,8 @@ class EventTrash(EventContainer):
     name = 'trash'
     desc = _('Trash')
     file = join(confDir, 'event', 'trash.json')## FIXME
-    def __init__(self, title=_('Trash')):
-        EventContainer.__init__(self, title=title)
+    def __init__(self):
+        EventContainer.__init__(self, title=_('Trash'))
         self.icon = join(pixDir, 'trash.png')
         self.enable = False
     def delete(self, eid):
