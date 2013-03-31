@@ -134,7 +134,6 @@ class BadEventFile(Exception):## FIXME
 
 class EventBaseClass:
     params = ()## used in getData and setData and copyFrom
-    __str__ = lambda self: self.__repr__()
     def copyFrom(self, other):
         for attr in self.params:
             try:
@@ -1205,7 +1204,12 @@ class Event(JsonEventBaseClass, RuleContainer):
     def getDefaultIcon(cls):
         return join(pixDir, 'event', cls.iconName+'.png') if cls.iconName else ''
     __nonzero__ = lambda self: bool(self.rulesOd) ## FIXME
-    __repr__ = lambda self: 'Event(id=%s, summary=%s)'%(self.id, toStr(self.summary))
+    __repr__ = lambda self: '%s(id=%s)'%(self.__class__.__name__, self.id)
+    __str__ = lambda self: '%s(id=%s, summary=%s)'%(
+        self.__class__.__name__,
+        self.id,
+        toStr(self.summary),
+    )
     def __init__(self, _id=None, parent=None):
         if _id is None:
             self.id = None
@@ -2201,7 +2205,7 @@ class EventContainer(JsonEventBaseClass):
             return self.getEvent(key)
         else:
             raise TypeError('invalid key type %r give to EventContainer.__getitem__'%key)
-    __repr__ = lambda self: '%s(title=%s)'%(self.__class__.__name__, toStr(self.title))
+    __str__ = lambda self: '%s(title=%s)'%(self.__class__.__name__, toStr(self.title))
     def __init__(self, title='Untitled'):
         self.mode = core.primaryMode
         self.idList = []
@@ -2393,7 +2397,12 @@ class EventGroup(EventContainer):
             raise TypeError('invalid key %r give to EventGroup.__delitem__'%key)
     def checkEventToAdd(self, event):
         return event.name in self.acceptsEventTypes
-    __repr__ = lambda self: '%s(_id=%s, title=%s)'%(self.__class__.__name__, self.id, toStr(self.title))
+    __repr__ = lambda self: '%s(_id=%s)'%(self.__class__.__name__, self.id)
+    __str__ = lambda self: '%s(_id=%s, title=%s)'%(
+        self.__class__.__name__,
+        self.id,
+        self.title,
+    )
     def __init__(self, _id=None):
         EventContainer.__init__(self, title=self.desc)
         if _id is None:
@@ -3173,7 +3182,13 @@ class VcsBaseEventGroup(EventGroup):
         self.vcsDir = ''
         #self.branch = 'master'
         EventGroup.__init__(self, _id)
-    #__repr__ = lambda self: '%s(vcsType=%r, vcsDir=%r)'%(self.__class__.__name__, self.vcsType, self.vcsDir)## FIXME
+    __str__ = lambda self: '%s(_id=%s, title=%s, vcsType=%s, vcsDir=%s)'%(
+        self.__class__.__name__,
+        self.id,
+        self.title,
+        self.vcsType,
+        self.vcsDir,
+    )
     def setDefaults(self):
         self.eventTextSep = '\n'
         self.showInTimeLine = False
