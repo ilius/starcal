@@ -40,7 +40,7 @@ from scal2.json_utils import *
 from scal2.color_utils import hslToRgb
 from scal2.ics import *
 
-from scal2.binary_time_line import BtlRootNode
+#from scal2.time_line_tree import TimeLineTree
 from scal2.event_search_tree import EventSearchTree
 
 from scal2.cal_modules import calModuleNames, jd_to, to_jd, convert, DATE_GREG
@@ -2637,7 +2637,7 @@ class EventGroup(EventContainer):
             node.add(t0, t1, eid)## debug=True
             self.occurCount += 1
     def initOccurrence(self):
-        #self.occur = BtlRootNode(offset=getEpochFromJd(self.endJd), base=4)
+        #self.occur = TimeLineTree(offset=getEpochFromJd(self.endJd))
         self.occur = EventSearchTree()
         #self.occurLoaded = False
         self.occurCount = 0

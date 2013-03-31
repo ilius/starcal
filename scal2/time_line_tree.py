@@ -28,7 +28,7 @@ from scal2.time_utils import *
 #maxLevel = 1
 #minLevel = 1
 
-class BtlNode:
+class Node:
     def __init__(self, base, level, offset, rightOri):
         #global maxLevel, minLevel
         self.base = base ## 8 or 16 is better
@@ -77,7 +77,7 @@ class BtlNode:
         return events
     def getChild(self, tm):
         if not self.s0 <= tm <= self.s1:
-            raise RuntimeError('BtlNode.getChild: Out of scope (level=%s, offset=%s, rightOri=%s'%
+            raise RuntimeError('Node.getChild: Out of scope (level=%s, offset=%s, rightOri=%s'%
                 (self.level, self.offset, self.rightOri))
         dt = self.base ** (self.level - 1)
         index = int((tm-self.offset) // dt)
@@ -107,15 +107,15 @@ class BtlNode:
             return 0
 
 
-class BtlRootNode:
+class TimeLineTree:
     def __init__(self, offset=0, base=4):
         ## base 4 and 8 are the best (about speed of both add and search)
         self.base = base
         self.offset = offset
         self.clear()
     def clear(self):
-        self.right = BtlNode(self.base, 1, self.offset, True)
-        self.left = BtlNode(self.base, 1, self.offset, False)
+        self.right = Node(self.base, 1, self.offset, True)
+        self.left = Node(self.base, 1, self.offset, False)
         self.byEvent = {}
     def search(self, t0, t1):
         if self.offset <= t0:
@@ -130,7 +130,8 @@ class BtlRootNode:
         if debug:
             from time import strftime, localtime
             f = '%F, %T'
-            print 'BtlRootNode.add: %s\t%s'%(
+            print '%s.add: %s\t%s'%(
+                self.__class__.__name__,
                 strftime(f, localtime(t0)),
                 strftime(f, localtime(t1)),
             )
