@@ -1,4 +1,5 @@
-from scal2.cal_modules import calModulesList
+from scal2.cal_modules import calModulesList, to_jd
+from scal2.time_utils import getEpochFromJd
 
 getMonthLen = lambda year, month, mode: calModulesList[mode].getMonthLen(year, month)
 
