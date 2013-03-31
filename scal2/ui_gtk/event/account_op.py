@@ -1,5 +1,5 @@
 from scal2.locale_man import tr as _
-from scal2 import event_man
+from scal2 import event_lib
 from scal2 import ui
 
 import gtk
@@ -21,7 +21,7 @@ class AccountEditorDialog(gtk.Dialog):
         #######
         hbox = gtk.HBox()
         combo = gtk.combo_box_new_text()
-        for cls in event_man.classes.account:
+        for cls in event_lib.classes.account:
             combo.append_text(cls.desc)
         hbox.pack_start(gtk.Label(_('Account Type')), 0, 0)
         hbox.pack_start(combo, 0, 0)
@@ -30,12 +30,12 @@ class AccountEditorDialog(gtk.Dialog):
         ####
         if self.account:
             self.isNew = False
-            combo.set_active(event_man.classes.account.names.index(self.account.name))
+            combo.set_active(event_lib.classes.account.names.index(self.account.name))
         else:
             self.isNew = True
             defaultAccountTypeIndex = 0
             combo.set_active(defaultAccountTypeIndex)
-            self.account = event_man.classes.account[defaultAccountTypeIndex]()
+            self.account = event_lib.classes.account[defaultAccountTypeIndex]()
         self.activeWidget = None
         combo.connect('changed', self.typeChanged)
         self.comboType = combo
@@ -47,7 +47,7 @@ class AccountEditorDialog(gtk.Dialog):
         if self.activeWidget:
             self.activeWidget.updateVars()
             self.activeWidget.destroy()
-        cls = event_man.classes.account[self.comboType.get_active()]
+        cls = event_lib.classes.account[self.comboType.get_active()]
         account = cls()
         if self.account:
             account.copyFrom(self.account)
@@ -66,7 +66,7 @@ class AccountEditorDialog(gtk.Dialog):
         self.activeWidget.updateVars()
         self.account.save()
         if self.isNew:
-            event_man.saveLastIds()
+            event_lib.saveLastIds()
         else:
             ui.eventAccounts[self.account.id] = self.account
         self.destroy()

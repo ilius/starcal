@@ -5,7 +5,7 @@ import thread
 from scal2 import core
 from scal2.locale_man import tr as _
 
-from scal2 import event_man
+from scal2 import event_lib
 import gtk
 from gtk import gdk
 
@@ -42,6 +42,6 @@ def notify(notifier, finishFunc):
     finishFunc()
     Popen([notifier.playerCmd, notifier.alarmSound], stdout=PIPE, stderr=PIPE)
 
-## event_man.AlarmNotifier.WidgetClass = AlarmNotifierWidget
-## event_man.AlarmNotifier.notify = notify
+## event_lib.AlarmNotifier.WidgetClass = AlarmNotifierWidget
+## event_lib.AlarmNotifier.notify = notify
 

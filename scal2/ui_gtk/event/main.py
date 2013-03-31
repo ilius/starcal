@@ -31,7 +31,7 @@ from scal2.core import myRaise
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl
 
-from scal2 import event_man
+from scal2 import event_lib
 from scal2 import ui
 
 import gtk
@@ -68,7 +68,7 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
     def onResponse(self, dialog, response_id):
         self.hide()
         self.emit('config-change')
-        #thread.start_new_thread(event_man.restartDaemon, ())
+        #thread.start_new_thread(event_lib.restartDaemon, ())
     def showNewGroupAtIndex(self, group, groupIndex):
         groupIter = self.trees.insert(
             None,
@@ -387,7 +387,7 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                 ))
                 eventTypes = group.acceptsEventTypes
                 if eventTypes is None:
-                    eventTypes = event_man.classes.event.names
+                    eventTypes = event_lib.classes.event.names
                 if len(eventTypes) > 3:
                     menu.add(labelStockMenuItem(
                         _('Add Event'),
@@ -401,7 +401,7 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                         #if eventType == 'custom':## FIXME
                         #    desc = _('Add ') + _('Event')
                         #else:
-                        label = _('Add ') + event_man.classes.event.byName[eventType].desc
+                        label = _('Add ') + event_lib.classes.event.byName[eventType].desc
                         menu.add(labelStockMenuItem(
                             label,
                             gtk.STOCK_ADD,
@@ -501,7 +501,7 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                 ###
                 for newGroupType in group.canConvertTo:
                     menu.add(labelStockMenuItem(
-                        _('Convert to %s')%event_man.classes.group.byName[newGroupType].desc,
+                        _('Convert to %s')%event_lib.classes.group.byName[newGroupType].desc,
                         None,
                         self.groupConvertTo,
                         group,
@@ -1250,14 +1250,14 @@ EventManagerDialog.registerSignals()
 
 modPrefix = 'scal2.ui_gtk.event.'
 
-for cls in event_man.classes.event:
+for cls in event_lib.classes.event:
     try:
         module = __import__(modPrefix + cls.name, fromlist=['EventWidget'])
         cls.WidgetClass = module.EventWidget
     except:
         myRaise()
 
-for cls in event_man.classes.rule:
+for cls in event_lib.classes.rule:
     try:
         module = __import__(modPrefix + 'rules.' + cls.name, fromlist=['RuleWidget'])
     except:
@@ -1269,7 +1269,7 @@ for cls in event_man.classes.rule:
     except AttributeError:
         print 'no class RuleWidget defined in module "%s"'%cls.name
 
-for cls in event_man.classes.notifier:
+for cls in event_lib.classes.notifier:
     try:
         module = __import__(modPrefix + 'notifiers.' + cls.name, fromlist=['NotifierWidget', 'notify'])
         cls.WidgetClass = module.NotifierWidget
@@ -1277,7 +1277,7 @@ for cls in event_man.classes.notifier:
     except:
         myRaise()
 
-for cls in event_man.classes.group:
+for cls in event_lib.classes.group:
     try:
         module = __import__(modPrefix + 'groups.' + cls.name, fromlist=['GroupWidget'])
     except:
@@ -1297,7 +1297,7 @@ for cls in event_man.classes.group:
             setattr(cls, actionName, func)
 
 
-for cls in event_man.classes.account:
+for cls in event_lib.classes.account:
     try:
         module = __import__(modPrefix + 'accounts.' + cls.name, fromlist=['AccountWidget'])
     except:
@@ -1309,11 +1309,11 @@ for cls in event_man.classes.account:
         print 'no class AccountWidget defined in module "%s"'%cls.name
 
 
-event_man.EventRule.makeWidget = makeWidget
-event_man.EventNotifier.makeWidget = makeWidget
-event_man.Event.makeWidget = makeWidget
-event_man.EventGroup.makeWidget = makeWidget
-event_man.Account.makeWidget = makeWidget
+event_lib.EventRule.makeWidget = makeWidget
+event_lib.EventNotifier.makeWidget = makeWidget
+event_lib.Event.makeWidget = makeWidget
+event_lib.EventGroup.makeWidget = makeWidget
+event_lib.Account.makeWidget = makeWidget
 
 
 ### Load accounts, groups and trash? FIXME

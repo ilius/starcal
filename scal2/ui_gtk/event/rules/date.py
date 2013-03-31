@@ -3,7 +3,7 @@
 from scal2 import core
 from scal2.locale_man import tr as _
 
-from scal2 import event_man
+from scal2 import event_lib
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
 import gtk
 from gtk import gdk

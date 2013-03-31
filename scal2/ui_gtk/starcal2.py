@@ -54,7 +54,7 @@ from scal2.core import rootDir, pixDir, deskDir, myRaise, getMonthName, APP_DESC
 
 #core.showInfo()
 
-from scal2 import event_man
+from scal2 import event_lib
 from scal2 import ui
 
 import gobject ##?????
@@ -794,7 +794,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             else:
                 menu3 = gtk.Menu()
                 for eventType in eventTypes:
-                    eventClass = event_man.classes.event.byName[eventType]
+                    eventClass = event_lib.classes.event.byName[eventType]
                     item3 = gtk.ImageMenuItem()
                     item3.set_label(eventClass.desc)
                     icon = eventClass.getDefaultIcon()
@@ -868,7 +868,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ui.updateFocusTime()
     def addToGroupFromMenu(self, menu, group, eventType):
         #print 'addToGroupFromMenu', group.title, eventType
-        title = _('Add ') + event_man.classes.event.byName[eventType].desc
+        title = _('Add ') + event_lib.classes.event.byName[eventType].desc
         event = addNewEvent(group, eventType, title, parent=self, useSelectedDate=True)
         if event is None:
             return

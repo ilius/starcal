@@ -49,8 +49,8 @@ from scal2.locale_man import tr as _
 from scal2 import core
 from scal2.core import to_jd, jd_to, DATE_GREG, compressLongInt
 
-from scal2 import event_man
-from scal2.event_man import Account
+from scal2 import event_lib
+from scal2.event_lib import Account
 
 
 auth_local_webserver = True
@@ -207,7 +207,7 @@ def dumpRequest(request):
     ))
 
 
-@event_man.classes.account.register
+@event_lib.classes.account.register
 class GoogleAccount(Account):
     name = 'google'
     desc = _('Google')

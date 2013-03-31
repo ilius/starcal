@@ -42,7 +42,7 @@ from scal2.locale_man import tr as _
 from scal2.plugin_man import BasePlugin
 from scal2.cal_modules.gregorian import to_jd as gregorian_to_jd
 from scal2.time_utils import getTimeZoneByJd
-#from scal2 import event_man## needs core!! FIXME
+#from scal2 import event_lib## needs core!! FIXME
 
 #if 'gtk' in sys.modules:
 from pray_times_gtk import *
@@ -90,8 +90,8 @@ def earthDistance(lat1, lng1, lat2, lng2):
     #return ang*180/pi
 
 '''
-event_classes = api.get('event_man', 'classes')
-EventRule = api.get('event_man', 'EventRule')
+event_classes = api.get('event_lib', 'classes')
+EventRule = api.get('event_lib', 'EventRule')
 
 @event_classes.rule.register
 class PrayTimeEventRule(EventRule):

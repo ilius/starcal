@@ -37,7 +37,7 @@ from scal2.locale_man import tr as _
 from scal2 import core
 from scal2.core import APP_NAME, myRaise, myRaiseTback, getMonthLen, osName
 
-from scal2 import event_man
+from scal2 import event_lib
 
 uiName = ''
 null = NullObj()
@@ -234,7 +234,7 @@ class Cell:## status and information of a cell
                 except:
                     myRaiseTback()
         ###################
-        self.eventsData = event_man.getDayOccurrenceData(jd, eventGroups)
+        self.eventsData = event_lib.getDayOccurrenceData(jd, eventGroups)
     def format(self, binFmt, mode=None, tm=null):## FIXME
         if mode is None:
             mode = core.primaryMode
@@ -312,7 +312,7 @@ class CellCache:
         try:
             wEventData = self.weekEvents[absWeekNumber]
         except KeyError:
-            wEventData = event_man.getWeekOccurrenceData(absWeekNumber, eventGroups)
+            wEventData = event_lib.getWeekOccurrenceData(absWeekNumber, eventGroups)
             cleanCacheDict(self.weekEvents, maxWeekCacheSize, absWeekNumber)
             self.weekEvents[absWeekNumber] = wEventData
         return (cells, wEventData)
@@ -449,7 +449,7 @@ def init():
     eventGroups.load()
     eventTrash.load()
     ####
-    event_man.saveLastIds()
+    event_lib.saveLastIds()
 
 
 ######################################################################
@@ -532,16 +532,16 @@ for fname in os.listdir(join(srcDir, 'accounts')):
             __import__('scal2.accounts.%s'%name)
         except:
             core.myRaiseTback()
-#print 'accounts', event_man.classes.account.names
+#print 'accounts', event_lib.classes.account.names
 ###########
-eventAccounts = event_man.EventAccountsHolder()
-eventGroups = event_man.EventGroupsHolder()
-eventTrash = event_man.EventTrash()
+eventAccounts = event_lib.EventAccountsHolder()
+eventGroups = event_lib.EventGroupsHolder()
+eventTrash = event_lib.EventTrash()
 
 
 
 #try:
-#    event_man.checkAndStartDaemon()## FIXME here or in ui_*/event/main.py
+#    event_lib.checkAndStartDaemon()## FIXME here or in ui_*/event/main.py
 #except:
 #    print 'Error while starting daemon'
 #    myRaise()

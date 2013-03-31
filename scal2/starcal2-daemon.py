@@ -35,8 +35,8 @@ from scal2.path import *
 from scal2.os_utils import getUsersData
 from scal2.time_utils import getCurrentTime, getEpochFromJd
 from scal2.cal_modules import to_jd, DATE_GREG
-from scal2 import event_man
-from scal2.event_man import eventsDir
+from scal2 import event_lib
+from scal2.event_lib import eventsDir
 
 try:
     import logging
@@ -67,7 +67,7 @@ def onDaemonExit():
 open(pidFile, 'w').write(str(pid))
 atexit.register(onDaemonExit)
 
-eventGroups = event_man.EventGroupsHolder()
+eventGroups = event_lib.EventGroupsHolder()
 
 ########################## Functions #################################
 

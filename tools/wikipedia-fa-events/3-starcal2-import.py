@@ -6,7 +6,7 @@ sys.path.append('/starcal2')
 
 from scal2.time_utils import dateDecode
 from scal2.core import to_jd, jd_to, convert, moduleNames
-from scal2 import event_man
+from scal2 import event_lib
 from scal2 import ui
 
 dataToPrettyJson = lambda data: json.dumps(data, sort_keys=True, indent=2)
@@ -24,7 +24,7 @@ def getGroupByTitle(title):
     try:
         return newGroupsDict[title]
     except KeyError:
-        group = event_man.NoteBook()
+        group = event_lib.NoteBook()
         group.setData({
             'calType': 'jalali',
             'color': [255, 255, 0],

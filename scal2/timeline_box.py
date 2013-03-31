@@ -1,6 +1,6 @@
 from scal2.interval_utils import overlaps
 from scal2.event_search_tree import EventSearchTree
-from scal2.event_man import epsTm
+from scal2.event_lib import epsTm
 from scal2 import ui
 
 movableEventTypes = (

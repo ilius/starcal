@@ -3,7 +3,7 @@
 from scal2 import core
 from scal2.locale_man import tr as _
 
-from scal2 import event_man
+from scal2 import event_lib
 
 from scal2 import ui
 from scal2.ui_gtk.event import common

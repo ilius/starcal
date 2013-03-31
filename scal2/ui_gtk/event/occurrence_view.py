@@ -20,7 +20,7 @@
 from scal2.utils import toStr, toUnicode
 from scal2.locale_man import tr as _
 
-from scal2 import event_man
+from scal2 import event_lib
 from scal2 import ui
 
 import gtk
@@ -195,10 +195,10 @@ class WeekOccurrenceView(gtk.TreeView):
 
 
 '''
-class MonthOccurrenceView(event_man.MonthOccurrenceView, gtk.TreeView):
+class MonthOccurrenceView(event_lib.MonthOccurrenceView, gtk.TreeView):
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
     def __init__(self):
-        event_man.MonthOccurrenceView.__init__(self, ui.cell.jd)
+        event_lib.MonthOccurrenceView.__init__(self, ui.cell.jd)
         gtk.TreeView.__init__(self)
         self.set_headers_visible(False)
         self.ls = gtk.ListStore(gdk.Pixbuf, str, str, str)## icon, day, time, text

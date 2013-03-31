@@ -31,7 +31,7 @@ from scal2.core import myRaise, jd_to
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl
 
-from scal2 import event_man
+from scal2 import event_lib
 from scal2 import ui
 
 import gtk
@@ -131,7 +131,7 @@ class EventSearchWindow(gtk.Window, ud.IntegratedCalObj):
         hbox.pack_start(gtk.Label('  '), 0, 0)
         ##
         combo = gtk.combo_box_new_text()
-        for cls in event_man.classes.event:
+        for cls in event_lib.classes.event:
             combo.append_text(cls.desc)
         combo.set_active(0)
         hbox.pack_start(combo, 0, 0)
@@ -286,7 +286,7 @@ class EventSearchWindow(gtk.Window, ud.IntegratedCalObj):
             conds['modified_from'] = self.modifiedFromInput.get_epoch(core.primaryMode)
         if self.typeCheck.get_active():
             index = self.typeCombo.get_active()
-            cls = event_man.classes.event[index]
+            cls = event_lib.classes.event[index]
             conds['type'] = cls.name
         ###
         self.trees.clear()

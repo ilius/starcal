@@ -28,7 +28,7 @@ from scal2.locale_man import tr as _
 
 from scal2.core import pixDir, myRaise
 
-from scal2 import event_man
+from scal2 import event_lib
 from scal2 import ui
 
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, labelStockMenuItem
@@ -278,7 +278,7 @@ class NotificationBox(gtk.Expander):## or NotificationBox FIXME
         hbox.pack_start(self.notifyBeforeInput, 1, 1)
         totalVbox.pack_start(hbox, 0, 0)
         ###
-        for cls in event_man.classes.notifier:
+        for cls in event_lib.classes.notifier:
             notifier = cls(self.event)
             inputWidget = notifier.makeWidget()
             hbox = gtk.HBox()
@@ -468,7 +468,7 @@ class EventEditorDialog(gtk.Dialog):
         if typeChangable and len(self._group.acceptsEventTypes)>1:## FIXME
             combo = gtk.combo_box_new_text()
             for eventType in self._group.acceptsEventTypes:
-                combo.append_text(event_man.classes.event.byName[eventType].desc)
+                combo.append_text(event_lib.classes.event.byName[eventType].desc)
             hbox.pack_start(combo, 0, 0)
             ####
             combo.set_active(self._group.acceptsEventTypes.index(event.name))
@@ -517,7 +517,7 @@ class EventEditorDialog(gtk.Dialog):
         self.activeWidget.updateVars()
         self.event.afterModify()
         self.event.save()
-        event_man.saveLastIds()
+        event_lib.saveLastIds()
         self.destroy()
         return self.event
 
@@ -554,7 +554,7 @@ class GroupEditorDialog(gtk.Dialog):
         #######
         hbox = gtk.HBox()
         combo = gtk.combo_box_new_text()
-        for cls in event_man.classes.group:
+        for cls in event_lib.classes.group:
             combo.append_text(cls.desc)
         hbox.pack_start(gtk.Label(_('Group Type')), 0, 0)
         hbox.pack_start(combo, 0, 0)
@@ -562,11 +562,11 @@ class GroupEditorDialog(gtk.Dialog):
         self.vbox.pack_start(hbox, 0, 0)
         ####
         if self.isNew:
-            self._group = event_man.classes.group[event_man.defaultGroupTypeIndex]()
-            combo.set_active(event_man.defaultGroupTypeIndex)
+            self._group = event_lib.classes.group[event_lib.defaultGroupTypeIndex]()
+            combo.set_active(event_lib.defaultGroupTypeIndex)
         else:
             self._group = group
-            combo.set_active(event_man.classes.group.names.index(group.name))
+            combo.set_active(event_lib.classes.group.names.index(group.name))
         self.activeWidget = None
         combo.connect('changed', self.typeChanged)
         self.comboType = combo
@@ -589,7 +589,7 @@ class GroupEditorDialog(gtk.Dialog):
         if self.activeWidget:
             self.activeWidget.updateVars()
             self.activeWidget.destroy()
-        cls = event_man.classes.group[self.comboType.get_active()]
+        cls = event_lib.classes.group[self.comboType.get_active()]
         group = cls()
         if self.isNew:
             if group.icon:
@@ -610,7 +610,7 @@ class GroupEditorDialog(gtk.Dialog):
         self.activeWidget.updateVars()
         self._group.save()
         if self.isNew:
-            event_man.saveLastIds()
+            event_lib.saveLastIds()
         else:
             ui.eventGroups[self._group.id] = self._group ## FIXME
         self.destroy()

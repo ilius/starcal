@@ -24,7 +24,7 @@ from scal2 import core
 from scal2.locale_man import tr as _
 from scal2.core import pixDir
 
-from scal2 import event_man
+from scal2 import event_lib
 from scal2 import ui
 
 from scal2.ui_gtk.event import common
@@ -106,7 +106,7 @@ class EventWidget(common.EventWidget):
     def updateRulesWidget(self):
         for hbox in self.rulesBox.get_children():
             hbox.destroy()
-        comboItems = [ruleClass.name for ruleClass in event_man.classes.rule]
+        comboItems = [ruleClass.name for ruleClass in event_lib.classes.rule]
         for rule in self.event:
             hbox = self.makeRuleHbox(rule)
             self.rulesBox.pack_start(hbox, 0, 0)
@@ -114,7 +114,7 @@ class EventWidget(common.EventWidget):
             comboItems.remove(rule.name)
         self.rulesBox.show_all()
         for ruleName in comboItems:
-            self.addRuleModel.append((ruleName, event_man.classes.rule.byName[ruleName].desc))
+            self.addRuleModel.append((ruleName, event_lib.classes.rule.byName[ruleName].desc))
         self.addRuleComboChanged()
     def updateRules(self):
         self.event.clearRules()
@@ -155,7 +155,7 @@ class EventWidget(common.EventWidget):
         if ci==None or ci<0:
             return
         newRuleName = self.addRuleModel[ci][0]
-        newRule = event_man.classes.rule.byName[newRuleName](self.event)
+        newRule = event_lib.classes.rule.byName[newRuleName](self.event)
         (ok, msg) = self.event.checkRulesDependencies(newRule=newRule)
         self.warnLabel.set_label(msg)
     def addClicked(self, button):
@@ -163,7 +163,7 @@ class EventWidget(common.EventWidget):
         if ci==None or ci<0:
             return
         ruleName = self.addRuleModel[ci][0]
-        rule = event_man.classes.rule.byName[ruleName](self.event)
+        rule = event_lib.classes.rule.byName[ruleName](self.event)
         (ok, msg) = self.event.checkAndAddRule(rule)
         if not ok:
             return

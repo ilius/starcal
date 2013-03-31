@@ -3,7 +3,7 @@ from os.path import isfile, join
 
 from scal2.path import pixDir, confDir
 from scal2.locale_man import tr as _
-from scal2 import event_man
+from scal2 import event_lib
 from scal2 import ui
 
 customFile = join(confDir, 'customday.xml')
@@ -52,7 +52,7 @@ def loadCustomDB():
 def importAndDeleteCustomDB(mode, groupTitle):
     customDB = loadCustomDB()
     if customDB:
-        group = event_man.EventGroup()
+        group = event_lib.EventGroup()
         group.mode = mode
         group.title = groupTitle
         for item in customDB:

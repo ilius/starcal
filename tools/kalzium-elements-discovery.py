@@ -3,7 +3,7 @@ from xml.etree.ElementTree import XML, tostring
 
 sys.path.append('/starcal2')
 
-from scal2 import event_man
+from scal2 import event_lib
 from scal2 import ui
 
 
@@ -51,7 +51,7 @@ def createDiscoveryEvent(group, atom):
 
 if __name__=='__main__':
     ui.eventGroups.load()
-    group = event_man.LargeScaleGroup()
+    group = event_lib.LargeScaleGroup()
     group.setData({
         'calType': 'gregorian',
         'color': [255, 0, 0],
