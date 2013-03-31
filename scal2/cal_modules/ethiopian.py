@@ -56,7 +56,6 @@ def to_jd(year, month, day):
 
 
 def jd_to(jd) :
-    assert isinstance(jd, int)
     (quad, dquad) = divmod(jd - epoch, 1461)
     yindex = min(3, dquad//365)
     year = quad*4 + yindex + 1

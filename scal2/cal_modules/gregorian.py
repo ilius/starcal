@@ -67,7 +67,6 @@ def to_jd(year, month, day):
 
 
 def jd_to(jd) :
-    assert isinstance(jd, int)
     ##wjd = floor(jd - 0.5) + 0.5
     (qc, dqc) = divmod(jd - epoch, 146097) ## qc ~~ quadricent
     (cent, dcent) = divmod(dqc, 36524)

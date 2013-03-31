@@ -109,7 +109,6 @@ def getMonthDesc(status=None):
                 dm = m2 - m1
             elif dy==1:
                 dm = m2 + 12 - m1
-                assert dm > 0
             else:
                 raise RuntimeError('y1=%d, m1=%d, y2=%d, m2=%d'%(y1, m1, y2, m2))
             if dm==0:

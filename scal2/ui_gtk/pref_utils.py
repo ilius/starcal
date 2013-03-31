@@ -238,7 +238,6 @@ class SpinPrefItem(PrefItem):
 class RadioListPrefItem(PrefItem):
     def __init__(self, vertical, module, varName, texts, label=None):
         self.num = len(texts)
-        assert self.num>0
         self.module = module
         self.varName = varName
         if vertical:
@@ -282,18 +281,15 @@ class ListPrefItem(PrefItem):
         else:
             box = gtk.HBox()
         for item in items:
-            assert isinstance(item, PrefItem)
             box.pack_start(item.widget, 0, 0)
         self.num = len(items)
         self.items = items
         self.widget = box
     get = lambda self: [item.get() for item in self.items]
     def set(self, valueL):
-        assert len(valueL)==self.num
         for i in range(self.num):
             self.items[i].set(valueL[i])
     def append(self, item):
-        assert isinstance(item, PrefItem)
         self.widget.pack_start(item.widget, 0, 0)
         self.items.append(item)
 
@@ -401,7 +397,6 @@ class LangPrefItem(PrefItem):
         else:
             return langDict.keyList[i-1]
     def set(self, value):
-        assert isinstance(value, str)
         if value=='':
             self.widget.set_active(0)
         else:

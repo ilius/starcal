@@ -66,7 +66,6 @@ def to_jd(y, m, d):
     return ifloor(d + kal_s(m, int(p2==0)) + 1461*p1 + 365*p2 + epoch)
 
 def jd_to(jd):
-    #assert isinstance(jd, (int, long))
     ##wjd = ifloor(jd - 0.5) + 1
     (p1, q1) = divmod(jd-epoch, 1461)
     #if q1==0:## ??????????????????

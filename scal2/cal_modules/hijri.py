@@ -106,7 +106,6 @@ class MonthDbHolder:
             for m in xrange(len(lst)):
                 ml = lst[m]
                 if ml:## positive integer
-                    assert ml in (29, 30)
                     self.monthLenByYm[y*12+m] = ml
                     self.endJd += ml
     def setData(self, data):

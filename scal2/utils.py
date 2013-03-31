@@ -79,7 +79,6 @@ toUnicode = lambda s: s if isinstance(s, unicode) else str(s).decode('utf8')
 
 
 def cmpVersion(v0, v1):
-    assert type(v0)==type(v1)==str
     if v0=='':
         if v1=='':
             return 0

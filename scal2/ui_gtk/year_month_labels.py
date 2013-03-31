@@ -47,7 +47,6 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
     getActiveStr = lambda self, s: '<span color="%s">%s</span>'%(ui.menuActiveLabelColor, s)
     #getActiveStr = lambda self, s: '<b>%s</b>'%s
     def __init__(self, mode, active=0):
-        ##assert 0<=active<12##??????????
         gtk.EventBox.__init__(self)
         #self.set_border_width(1)#???????????
         self.initVars()
@@ -97,7 +96,6 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
             menu.hide()
     def setActive(self, active):
     ## (Performance) update menu here, or make menu entirly before popup ????????????????
-        #assert 0<=active<12
         s = getMonthName(self.mode, active+1)
         s2 = getMonthName(self.mode, self.active+1)
         if ui.monthRMenuNum:
