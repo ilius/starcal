@@ -1976,9 +1976,9 @@ class UniversityClassEvent(Event):
     params = Event.params + (
         'courseId',
     )
-    def __init__(self, *args, **kw):
+    def __init__(self, _id=None, parent=None):
         ## assert group is not None ## FIXME
-        Event.__init__(self, *args, **kw)
+        Event.__init__(self, _id, parent)
         self.courseId = None ## FIXME
     #def setDefaults(self):
     #    pass
@@ -2042,9 +2042,9 @@ class UniversityExamEvent(DailyNoteEvent):
     params = DailyNoteEvent.params + (
         'courseId',
     )
-    def __init__(self, *args, **kw):
+    def __init__(self, _id=None, parent=None):
         ## assert group is not None ## FIXME
-        DailyNoteEvent.__init__(self, *args, **kw)
+        DailyNoteEvent.__init__(self, _id, parent)
         self.courseId = None ## FIXME
     def setDefaults(self):
         self['dayTimeRange'].setRange((9, 0), (11, 0))## FIXME
@@ -2132,12 +2132,12 @@ class LargeScaleEvent(Event):## or MegaEvent? FIXME
     params = Event.params + _myParams
     jsonParams = Event.jsonParams + _myParams
     __nonzero__ = lambda self: True
-    def __init__(self, *args, **kw):
+    def __init__(self, _id=None, parent=None):
         self.scale = 1 ## 1, 1000, 1000**2, 1000**3
         self.start = 0
         self.end = 1
         self.endRel = True
-        Event.__init__(self, *args, **kw)
+        Event.__init__(self, _id, parent)
     def setData(self, data):
         if 'duration' in data:
             data['end'] = data['duration']
