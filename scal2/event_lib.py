@@ -197,8 +197,8 @@ class Occurrence(EventBaseClass):
         raise NotImplementedError
     def intersection(self):
         raise NotImplementedError
-    getDaysJdList = lambda self: []
-    getTimeRangeList = lambda self: []
+    getDaysJdList = lambda self: [] ## make generator FIXME
+    getTimeRangeList = lambda self: [] ## make generator FIXME
     def getFloatJdRangeList(self):
         ls = []
         for ep0, ep1 in self.getTimeRangeList():

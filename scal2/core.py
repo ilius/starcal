@@ -401,15 +401,14 @@ def restart():## will not return from function
 
 def ymdRange((y1, m1, d1), (y2, m2, d2), mode=None):
     if y1==y2 and m1==m2:
-        return [(y1, m1, d) for d in range(d1, d2)]
+        for d in range(d1, d2):
+            yield y1, m1, d
     if mode==None:
         mode = DATE_GREG
     j1 = int(to_jd(y1, m1, d1, mode))
     j2 = int(to_jd(y2, m2, d2, mode))
-    l = []
     for j in range(j1, j2):
-        l.append(jd_to(j, mode))
-    return l
+        yield jd_to(j, mode)
 
 def getSysDate(mode=None):
     if mode is None:

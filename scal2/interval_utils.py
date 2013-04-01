@@ -42,13 +42,13 @@ def simplifyNumList(nums, minCount=3):## nums must be sorted, minCount >= 2
             ranges += tmp
     return ranges
 
-def cleanTimeRangeList(timeRangeList):
-    num = len(timeRangeList)
+def cleanTimeRangeList(lst):
+    num = len(lst)
     i = 0
-    while i<num-1:
-        if timeRangeList[i][1] == timeRangeList[i+1][0]:
-            timeRangeList[i] = (timeRangeList[i][0], timeRangeList[i+1][1])
-            timeRangeList.pop(i+1)
+    while i < num-1:
+        if lst[i][1] == lst[i+1][0]:
+            lst[i] = (lst[i][0], lst[i+1][1])
+            lst.pop(i+1)
             num -= 1
         else:
             i += 1
@@ -65,12 +65,12 @@ def intersectionOfTwoIntervalList(lst1, lst2):
     boundaries = intervalListBoundaries(lst1 + lst2)
     segmentsNum = len(boundaries) - 1
     segmentsContained = [[False, False] for i in range(segmentsNum)]
-    for (start, end) in lst1:
+    for start, end in lst1:
         startIndex = boundaries.index(start)
         endIndex = boundaries.index(end)
         for i in range(startIndex, endIndex):
             segmentsContained[i][0] = True
-    for (start, end) in lst2:
+    for start, end in lst2:
         startIndex = boundaries.index(start)
         endIndex = boundaries.index(end)
         for i in range(startIndex, endIndex):
