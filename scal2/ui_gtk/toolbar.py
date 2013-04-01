@@ -25,6 +25,8 @@ iconSizeList = [
 ] ## in size order
 iconSizeDict = dict(iconSizeList)
 
+
+@ud.registerSignals
 class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
     def __init__(self, name, stockName, method, tooltip='', text=''):
         #print 'ToolbarItem', name, stockName, method, tooltip, text
@@ -53,8 +55,8 @@ class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
         self.set_is_important(True)## FIXME
     show = lambda self: self.show_all()
 
-ToolbarItem.registerSignals()
 
+#@ud.registerSignals
 class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
     _name = 'toolbar'
     desc = _('Toolbar')

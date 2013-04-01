@@ -149,6 +149,7 @@ class DateLabel(gtk.Label):
 
 
 
+@ud.registerSignals
 class WinConButton(gtk.EventBox, CustomizableCalObj):
     expand = False
     imageName = ''
@@ -245,6 +246,7 @@ class WinConButtonSep(WinConButton):
 ## Below
 
 ## What is "GTK Window Decorator" ??????????
+@ud.registerSignals
 class MainWinController(gtk.HBox, CustomizableCalBox):
     _name = 'winContronller'
     desc = _('Window Controller')
@@ -282,7 +284,7 @@ class MainWinController(gtk.HBox, CustomizableCalBox):
 
 
 
-
+@ud.registerSignals
 class MainWinToolbar(CustomizableToolbar):
     params = (
         'ud.mainToolbarData',
@@ -310,6 +312,7 @@ class MainWinToolbar(CustomizableToolbar):
 
 
 
+@ud.registerSignals
 class StatusBox(gtk.HBox, CustomizableCalObj):
     _name = 'statusBar'
     desc = _('Status Bar')
@@ -349,6 +352,8 @@ class StatusBox(gtk.HBox, CustomizableCalObj):
                 text = '<b>%s</b>'%text
             label.set_label(text)
 
+
+@ud.registerSignals
 class PluginsTextBox(gtk.VBox, CustomizableCalObj):
     _name = 'pluginsText'
     desc = _('Plugins Text')
@@ -418,6 +423,7 @@ class PluginsTextBox(gtk.VBox, CustomizableCalObj):
         self.setText(ui.cell.pluginsText)
 
 
+#@ud.registerSignals
 class EventViewMainWinItem(DayOccurrenceView, CustomizableCalObj):## FIXME
     def __init__(self):
         DayOccurrenceView.__init__(self)
@@ -440,6 +446,7 @@ class EventViewMainWinItem(DayOccurrenceView, CustomizableCalObj):## FIXME
 
 
 
+@ud.registerSignals
 class MainWinVbox(gtk.VBox, CustomizableCalBox):
     _name = 'mainWin'
     desc = _('Main Window')
@@ -463,6 +470,8 @@ class MainWinVbox(gtk.VBox, CustomizableCalBox):
                 break ## FIXME
         return True ## FIXME
 
+
+@ud.registerSignals
 class MainWin(gtk.Window, ud.IntegratedCalObj):
     _name = 'mainWin'
     desc = _('Main Window')
@@ -1124,21 +1133,6 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
 
 
 ###########################################################################3
-
-
-
-for cls in (
-    WinConButton,
-    MainWinController,
-    CustomizableToolbar,
-    StatusBox,
-    PluginsTextBox,
-    #EventViewMainWinItem,
-    MainWinVbox,
-    MainWin,
-):
-    cls.registerSignals()
-
 
 
 #core.COMMAND = sys.argv[0] ## OR __file__ ## ????????

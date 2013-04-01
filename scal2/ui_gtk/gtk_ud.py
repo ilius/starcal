@@ -37,6 +37,17 @@ from gtk import gdk
 
 from scal2.ui_gtk.font_utils import gfontDecode, pfontEncode
 
+def registerType(cls):
+    gobject.type_register(cls)
+    return cls
+
+def registerSignals(cls):
+    gobject.type_register(cls)
+    for name, args in cls.signals:
+        gobject.signal_new(name, cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, args)
+    return cls
+
+@registerSignals
 class IntegratedCalObj(gtk.Object):
     _name = ''
     desc = ''
@@ -72,11 +83,7 @@ class IntegratedCalObj(gtk.Object):
     def appendItem(self, item):
         self.items.append(item)
         self.connectItem(item)
-    @classmethod
-    def registerSignals(cls):
-        gobject.type_register(cls)
-        for name, args in cls.signals:
-            gobject.signal_new(name, cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, args)
+
 
 
 class IntegatedWindowList(IntegratedCalObj):
@@ -96,8 +103,6 @@ class IntegatedWindowList(IntegratedCalObj):
         self.onDateChange()
 
 ####################################################
-
-IntegratedCalObj.registerSignals()
 
 windowList = IntegatedWindowList()
 

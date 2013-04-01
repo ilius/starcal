@@ -58,6 +58,7 @@ from scal2.ui_gtk.event.search_events import EventSearchWindow
 #print 'Testing translator', __file__, _('About')
 
 
+@ud.registerSignals
 class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
     _name = 'eventMan'
     desc = _('Event Manager')
@@ -1245,8 +1246,6 @@ def makeWidget(obj):## obj is an instance of Event, EventRule, EventNotifier or 
 
 
 ##############################################################################
-
-EventManagerDialog.registerSignals()
 
 modPrefix = 'scal2.ui_gtk.event.'
 

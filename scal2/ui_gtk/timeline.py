@@ -56,6 +56,7 @@ def show_event(widget, event):
     print type(widget), event.type.value_name, event.get_value()#, event.send_event
 
 
+@ud.registerSignals
 class TimeLine(gtk.Widget, ud.IntegratedCalObj):
     _name = 'timeLine'
     desc = _('Time Line')
@@ -510,6 +511,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         self.movingV = 0
 
 
+@ud.registerSignals
 class TimeLineWindow(gtk.Window, ud.IntegratedCalObj):
     _name = 'timeLineWin'
     desc = _('Time Line')
@@ -543,10 +545,6 @@ class TimeLineWindow(gtk.Window, ud.IntegratedCalObj):
             return True
         return False
 
-
-gobject.type_register(TimeLine)
-TimeLine.registerSignals()
-TimeLineWindow.registerSignals()
 
 if __name__=='__main__':
     win = TimeLineWindow()

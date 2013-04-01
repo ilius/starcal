@@ -29,6 +29,7 @@ from scal2.ui_gtk.utils import imageFromFile, labelStockMenuItem, labelImageMenu
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.event.common import EventEditorDialog
 
+@ud.registerSignals
 class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
     _name = 'eventDayView'
     desc = _('Events of Day')
@@ -238,8 +239,6 @@ class MonthOccurrenceView(event_lib.MonthOccurrenceView, gtk.TreeView):
             )
 '''
 
-
-DayOccurrenceView.registerSignals()
 
 
 

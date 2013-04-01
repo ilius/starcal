@@ -88,6 +88,7 @@ class ColumnBase(CustomizableCalObj):
             self.optionsWidget.pack_start(hbox, 0, 0)
 
 
+@ud.registerSignals
 class Column(gtk.Widget, ColumnBase):
     colorizeHolidayText = False
     showCursor = False
@@ -196,6 +197,7 @@ class WeekNumToolbarItem(ToolbarItem):
         self.label.set_label(_(ui.cell.weekNum))
 
 
+@ud.registerSignals
 class ToolbarColumn(CustomizableToolbar, ColumnBase):
     autoButtonPressHandler = False
     defaultItems = [
@@ -518,6 +520,7 @@ class DaysOfMonthColumn(Column):
         )
         self.drawCursorFg(cr)
 
+@ud.registerSignals
 class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
     _name = 'daysOfMonth'
     desc = _('Days of Month')
@@ -616,6 +619,7 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
 
 
 
+@ud.registerSignals
 class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
     _name = 'weekCal'
     desc = _('Week Calendar')
@@ -801,17 +805,6 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
 
 
     
-
-
-for cls in (
-    Column,
-    DaysOfMonthColumnGroup,
-    WeekCal,
-):
-    cls.registerSignals()
-    
-
-
 
 
 

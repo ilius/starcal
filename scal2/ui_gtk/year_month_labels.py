@@ -41,6 +41,7 @@ from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.customize import CustomizableCalObj
 
 
+@ud.registerSignals
 class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
     highlightColor = gdk.Color(45000, 45000, 45000)
     getItemStr = lambda self, i: _(i+1, fillZero=2)
@@ -180,11 +181,14 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
 
 
 
-
+@ud.registerSignals
 class IntLabel(gtk.EventBox):
     highlightColor = gdk.Color(45000, 45000, 45000)
     #getActiveStr = lambda self, s: '<b>%s</b>'%s
     getActiveStr = lambda self, s: '<span color="%s">%s</span>'%(ui.menuActiveLabelColor, s)
+    signals = [
+        ('changed', [int]),
+    ]
     def __init__(self, height=9, active=0):
         gtk.EventBox.__init__(self)
         #self.set_border_width(1)#???????????
@@ -339,7 +343,10 @@ class IntLabel(gtk.EventBox):
         self.window.clear_area(0, 0, 1, h)
         self.window.clear_area(w-1, 0, 1, h)
 
+
+@ud.registerSignals
 class YearLabel(IntLabel, ud.IntegratedCalObj):
+    signals = ud.IntegratedCalObj.signals
     def __init__(self, mode, **kwargs):
         IntLabel.__init__(self, **kwargs)
         self.initVars()
@@ -421,6 +428,7 @@ class MonthLabelButtonBox(gtk.HBox):
     changeMode = lambda self, mode: self.label.changeMode(mode)
 
 
+@ud.registerSignals
 class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
     _name = 'labelBox'
     desc = _('Year & Month Labels')
@@ -481,18 +489,6 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
         self.show_all()
         #####
         self.onDateChange()
-
-
-gobject.type_register(IntLabel)
-gobject.signal_new('changed', IntLabel, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [int])
-
-
-for cls in (YearLabel, MonthLabel, YearMonthLabelBox):
-    gobject.type_register(cls)
-    cls.registerSignals()
-
-
-
 
 
 

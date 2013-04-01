@@ -104,6 +104,7 @@ class McalTypeParamBox(gtk.HBox):
         ui.mcalTypeParams[self.index] = self.get()
         self.mcal.queue_draw()
 
+@ud.registerSignals
 class MonthCal(gtk.Widget, CalBase):
     _name = 'monthCal'
     desc = _('Month Calendar')
@@ -593,7 +594,6 @@ class MonthCal(gtk.Widget, CalBase):
         self.updateTypeParamsWidget()
 
 
-MonthCal.registerSignals()
 
 
 if __name__=='__main__':

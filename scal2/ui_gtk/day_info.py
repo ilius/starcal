@@ -33,6 +33,7 @@ from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.event.occurrence_view import DayOccurrenceView
 
 
+@ud.registerSignals
 class AllDateLabelsVBox(gtk.VBox, ud.IntegratedCalObj):
     _name = 'allDateLabels'
     desc = _('Dates')
@@ -66,6 +67,7 @@ class AllDateLabelsVBox(gtk.VBox, ud.IntegratedCalObj):
         self.show_all()
 
 
+@ud.registerSignals
 class PluginsTextView(gtk.TextView, ud.IntegratedCalObj):
     _name = 'pluginsText'
     desc = _('Plugins Text')
@@ -82,6 +84,7 @@ class PluginsTextView(gtk.TextView, ud.IntegratedCalObj):
         self.get_buffer().set_text(ui.cell.pluginsText)
 
 
+@ud.registerSignals
 class DayInfoDialog(gtk.Dialog, ud.IntegratedCalObj):
     _name = 'dayInfo'
     desc = _('Day Info')
@@ -126,15 +129,6 @@ class DayInfoDialog(gtk.Dialog, ud.IntegratedCalObj):
         self.onDateChange()
 
 
-
-
-for cls in (
-    AllDateLabelsVBox,
-    PluginsTextView,
-    DayInfoDialog,
-
-):
-    cls.registerSignals()
 
 
 

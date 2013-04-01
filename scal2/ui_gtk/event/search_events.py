@@ -46,6 +46,7 @@ from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.event.common import SingleGroupComboBox, EventEditorDialog
 
 
+@ud.registerSignals
 class EventSearchWindow(gtk.Window, ud.IntegratedCalObj):
     def __init__(self):
         gtk.Window.__init__(self)
@@ -339,8 +340,6 @@ class EventSearchWindow(gtk.Window, ud.IntegratedCalObj):
             self.closed()
             return True
         return False
-
-EventSearchWindow.registerSignals()
 
 
 
