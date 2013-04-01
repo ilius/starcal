@@ -4,7 +4,7 @@ import os, sys
 
 sys.path.append('/starcal2')
 
-from scal2.time_utils import dateDecode
+from scal2.date_utils import dateDecode
 from scal2.core import to_jd, jd_to, convert, moduleNames
 from scal2 import event_lib
 from scal2 import ui
