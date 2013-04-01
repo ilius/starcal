@@ -44,6 +44,7 @@ def getattribute(obj, atrib):
         print 'getattribute', obj.__class__.__name__, atrib
     return object.__getattribute__(obj, atrib)
 
+#@registerType
 class StarCalApplet(MainWin):
     #__getattribute__ = getattribute
     def __init__(self, applet, iid):
@@ -163,8 +164,6 @@ def starcalAppletFactory(applet, iid):
     scal = StarCalApplet(applet, iid)
     return True
 
-#import gobject
-#gobject.type_register(StarCalApplet)
 
 if len(sys.argv)>1 and sys.argv[1] in ('-w', '--window'):
     main_window = gtk.Window(gtk.WINDOW_TOPLEVEL)

@@ -19,7 +19,6 @@
 
 import sys, os
 from time import time, localtime
-from gobject import timeout_add, type_register, signal_new, SIGNAL_RUN_LAST, TYPE_NONE
 
 import gtk
 from gtk import gdk

@@ -19,17 +19,19 @@
 
 import time
 
+import gtk
+from gtk import gdk
+
+from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.drawing import *
 from scal2.ui_gtk.mywidgets import MyColorButton
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
-
-import gtk
-from gtk import gdk
 
 
 rootWin = gtk.gdk.get_default_root_window()
 screenWidth = rootWin.get_size()[0]
 
+@registerType
 class FloatingMsg(gtk.Widget):
     def on_realize(self, widget):
         self.animateStart()
@@ -146,6 +148,8 @@ class FloatingMsg(gtk.Widget):
         gtk.Widget.show(self)
         self.win.show()
 
+
+@registerType
 class MyLabel(gtk.Widget):
     def __init__(self, bgColor, textColor):
         gtk.Widget.__init__(self)
@@ -193,7 +197,7 @@ class MyLabel(gtk.Widget):
         return False
 
 
-
+@registerType
 class NoFillFloatingMsgWindow(gtk.Window):
     def __init__(self, text,
                        speed=100,
@@ -258,10 +262,6 @@ class NoFillFloatingMsgWindow(gtk.Window):
                 self.updateLine()
 
 
-
-gobject.type_register(FloatingMsg)
-gobject.type_register(MyLabel)
-gobject.type_register(NoFillFloatingMsgWindow)
 
 
 if __name__=='__main__':

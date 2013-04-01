@@ -28,14 +28,22 @@ from scal2 import core
 from scal2.core import convert, getMonthName
 
 from scal2 import ui
-from scal2.ui_gtk.mywidgets.multi_spin_button import DateButtonOption
-from scal2.ui_gtk.mywidgets.ymd import YearMonthDayBox
-from scal2.ui_gtk.utils import openWindow, dialog_add_button, DateTypeCombo
 
 import gtk, gobject
 from gtk import gdk
 
+from scal2.ui_gtk.decorators import *
+from scal2.ui_gtk.mywidgets.multi_spin_button import DateButtonOption
+from scal2.ui_gtk.mywidgets.ymd import YearMonthDayBox
+from scal2.ui_gtk.utils import openWindow, dialog_add_button, DateTypeCombo
+
+
+
+@registerSignals
 class SelectDateDialog(gtk.Dialog):
+    signals = [
+        ('response-date', [int, int, int]),
+    ]
     def __init__(self):
         gtk.Dialog.__init__(self, title=_('Select Date...'))
         self.set_has_separator(False)
@@ -174,11 +182,6 @@ class SelectDateDialog(gtk.Dialog):
             self.ymdBox.set_sensitive(False)
             self.hbox2.set_sensitive(True)
 
-
-
-
-gobject.type_register(SelectDateDialog)
-gobject.signal_new('response-date', SelectDateDialog, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [int, int, int])
 
 
 

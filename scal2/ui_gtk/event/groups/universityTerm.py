@@ -18,28 +18,33 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 import sys
+import time
 
 from scal2.path import deskDir
 from scal2.time_utils import hmEncode, hmDecode
 from scal2.locale_man import tr as _
 from scal2.locale_man import numDecode
-
 from scal2 import core
-
-from scal2.ui_gtk.drawing import *
-from scal2.ui_gtk.event.groups.group import GroupWidget as NormalGroupWidget
-
-from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip
-
-import time
 
 import gobject
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.decorators import *
+from scal2.ui_gtk.drawing import *
+from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip
+from scal2.ui_gtk.event.groups.group import GroupWidget as NormalGroupWidget
+
+
 
 class CourseListEditor(gtk.HBox):
-    def __init__(self, term, defaultCourseName=_('New Course'), defaultCourseUnits=3, enableScrollbars=False):
+    def __init__(
+        self,
+        term,
+        defaultCourseName=_('New Course'),
+        defaultCourseUnits=3,
+        enableScrollbars=False,
+    ):
         self.term = term ## UniversityTerm obj
         self.defaultCourseName = defaultCourseName
         self.defaultCourseUnits = defaultCourseUnits
@@ -299,6 +304,7 @@ class GroupWidget(NormalGroupWidget):
         self.group.classTimeBounds = self.classTimeBoundsEditor.getData()
 
 
+@registerType
 class WeeklyScheduleWidget(gtk.Widget):
     def __init__(self, term):
         self.term = term
@@ -425,7 +431,6 @@ class WeeklyScheduleWidget(gtk.Widget):
                 cr.move_to(x, y)
                 cr.show_layout(layout)
 
-gobject.type_register(WeeklyScheduleWidget)
 
 class WeeklyScheduleWindow(gtk.Dialog):
     def __init__(self, term, **kwargs):

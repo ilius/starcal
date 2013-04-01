@@ -32,14 +32,19 @@ from scal2.mywidgets.multi_spin import *
 
 from scal2 import ui
 
-from gobject import timeout_add, type_register, signal_new, SIGNAL_RUN_LAST, TYPE_NONE
+from gobject import timeout_add
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk import gtk_ud as ud
 
-
+@registerSignals
 class MultiSpinButton(gtk.SpinButton):
+    signals = [
+        ('first-min', []),
+        ('first-max', []),
+    ]
     def __init__(self, sep, fields, arrow_select=True, page_inc=10):
         gtk.SpinButton.__init__(self)
         ####
@@ -412,7 +417,11 @@ class DateTimeButton(MultiSpinButton):
         )
 
 
+@registerSignals
 class TimerButton(TimeButton):
+    signals = [
+        ('time-elapse', []),
+    ]
     def __init__(self, **kwargs):
         TimeButton.__init__(self, **kwargs)
         #self.timer = False
@@ -460,7 +469,12 @@ class TimerButton(TimeButton):
 
 ##########################################################################
 ##########################################################################
+
+@registerSignals
 class MultiSpinOptionBox(gtk.HBox):
+    signals = [
+        ('activate', [])
+    ]
     def _entry_activate(self, widget):
         #self.spin.update() #?????
         #self.add_history()
@@ -560,17 +574,8 @@ class HourMinuteButtonOption(MultiSpinOptionBox):
 #####################################################################################
 #####################################################################################
 
-type_register(MultiSpinButton)
-#type_register(DateButton)
-#type_register(YearMonthButton)
-type_register(TimeButton)
-type_register(TimerButton)
-type_register(MultiSpinOptionBox)
-###############
-signal_new('first-max', MultiSpinButton, SIGNAL_RUN_LAST, TYPE_NONE, [])
-signal_new('first-min', MultiSpinButton, SIGNAL_RUN_LAST, TYPE_NONE, [])
-signal_new('time-elapse', TimerButton, SIGNAL_RUN_LAST, TYPE_NONE, [])
-signal_new('activate', MultiSpinOptionBox, SIGNAL_RUN_LAST, TYPE_NONE, [])
+
+
 
 def getDateTimeWidget():
     btn = DateTimeButton()

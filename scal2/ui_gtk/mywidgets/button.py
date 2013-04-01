@@ -9,6 +9,7 @@ from gobject import timeout_add
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk import gtk_ud as ud
 
 
@@ -33,15 +34,16 @@ class ConButtonBase:
         self.remain = False
 
 
+@registerSignals
 class ConButton(gtk.Button, ConButtonBase):
+    signals =[ 
+        ('con-clicked', []),
+    ]
     def __init__(self, *args, **kwargs):
         gtk.Button.__init__(self, *args, **kwargs)
         ConButtonBase.__init__(self)
 
 
-
-gobject.type_register(ConButton)
-gobject.signal_new('con-clicked', ConButton, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, [])
 
 
 if __name__=='__main__':

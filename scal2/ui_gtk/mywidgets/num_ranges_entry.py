@@ -18,15 +18,17 @@
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 import sys, os, time
-from gobject import type_register
-import gtk
-from gtk import gdk
 
 from scal2.utils import toUnicode, toStr, numRangesEncode, numRangesDecode
 
 from scal2 import locale_man
 from scal2.locale_man import tr as _
 from scal2.locale_man import numDecode, textNumEncode, textNumDecode
+
+import gtk
+from gtk import gdk
+
+from scal2.ui_gtk.decorators import *
 
 def myRaise():
     i = sys.exc_info()
@@ -35,6 +37,7 @@ def myRaise():
     except:
         print i
 
+@registerType
 class NumRangesEntry(gtk.Entry):
     def __init__(self, _min, _max, page_inc=10):
         self._min = _min
@@ -166,7 +169,6 @@ class NumRangesEntry(gtk.Entry):
     validate = lambda self: self.setValues(self.getValues())
 
 
-type_register(NumRangesEntry)
 
 if __name__=='__main__':
     from scal2 import core
