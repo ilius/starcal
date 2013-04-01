@@ -55,26 +55,24 @@ class Node:
     overlapScope = lambda self, t0, t1: overlaps(t0, t1, self.s0, self.s1)
     def search(self, t0, t1):## t0 < t1
         '''
-            returns a list of (ev_t0, ev_t1, eid) s
+            returns a generator to iterate over (ev_t0, ev_t1, eid, ev_dt) s
         '''
         ## t0 and t1 are absolute. not relative to the self.offset
         if not self.overlapScope(t0, t1):
-            return []
-        events = []
+            raise StopIteration
         for ev_rt0, ev_rt1, eid in self.events:
             ev_t0 = ev_rt0 + self.offset
             ev_t1 = ev_rt1 + self.offset
             if overlaps(t0, t1, ev_t0, ev_t1):
-                ## events.append((ev_t0, ev_t1, eid))
-                events.append((
+                yield (
                     max(t0, ev_t0),
                     min(t1, ev_t1),
                     eid,
                     ev_rt1 - ev_rt0,
-                ))
+                )
         for child in self.children.values():
-            events += child.search(t0, t1)
-        return events
+            for item in child.search(t0, t1):
+                yield item
     def getChild(self, tm):
         if not self.s0 <= tm <= self.s1:
             raise RuntimeError('Node.getChild: Out of scope (level=%s, offset=%s, rightOri=%s'%
@@ -118,14 +116,12 @@ class TimeLineTree:
         self.left = Node(self.base, 1, self.offset, False)
         self.byEvent = {}
     def search(self, t0, t1):
-        if self.offset <= t0:
-            return self.right.search(t0, t1)
-        elif t0 < self.offset < t1:
-            return self.left.search(t0, self.offset) + self.right.search(self.offset, t1)
-        elif t1 <= self.offset:
-            return self.left.search(t0, t1)
-        else:
-            raise RuntimeError
+        if self.offset < t1:
+            for item in self.right.search(t0, t1):
+                yield item
+        if t0 < self.offset:
+            for item in self.left.search(t0, t1):
+                yield item
     def add(self, t0, t1, eid, debug=False):
         if debug:
             from time import strftime, localtime
