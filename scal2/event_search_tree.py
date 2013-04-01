@@ -154,8 +154,8 @@ class EventSearchTree:
         if t0 >= t1:
             raise StopIteration
         ###
-        for mt, dt, eid in self.searchStep(node.left, t0, t1):
-            yield mt, dt, eid
+        for item in self.searchStep(node.left, t0, t1):
+            yield item
         ###
         min_dt = abs((t0 + t1)/2.0 - node.mt) - (t1 - t0)/2.0
         if min_dt <= 0:
@@ -165,8 +165,8 @@ class EventSearchTree:
             for dt, eid in node.events.moreThan(min_dt):
                 yield node.mt, dt, eid
         ###
-        for mt, dt, eid in self.searchStep(node.right, t0, t1):
-            yield mt, dt, eid
+        for item in self.searchStep(node.right, t0, t1):
+            yield item
     def search(self, t0, t1):
         for mt, dt, eid in self.searchStep(self.root, t0, t1):
             yield (
