@@ -20,7 +20,7 @@
 from scal2 import core
 from scal2.locale_man import tr as _
 from scal2.locale_man import textNumEncode, textNumDecode
-from scal2.time_utils import dateEncode, dateDecode
+from scal2.date_utils import dateEncode, dateDecode
 
 from scal2 import event_lib
 from scal2 import ui
