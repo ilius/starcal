@@ -38,6 +38,7 @@ import gtk
 from gtk import gdk
 
 
+from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import set_tooltip, dialog_add_button, confirm, showError
 from scal2.ui_gtk.utils import toolButtonFromStock, labelImageMenuItem, labelStockMenuItem
 from scal2.ui_gtk.utils import pixbufFromFile, rectangleContainsPoint
@@ -58,7 +59,7 @@ from scal2.ui_gtk.event.search_events import EventSearchWindow
 #print 'Testing translator', __file__, _('About')
 
 
-@ud.registerSignals
+@registerSignals
 class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
     _name = 'eventMan'
     desc = _('Event Manager')

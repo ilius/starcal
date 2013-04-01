@@ -37,6 +37,7 @@ import gtk
 from gtk import gdk
 
 
+from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.drawing import *
 from scal2.ui_gtk.utils import pixbufFromFile, DirectionComboBox
 from scal2.ui_gtk.color_utils import colorize
@@ -88,7 +89,7 @@ class ColumnBase(CustomizableCalObj):
             self.optionsWidget.pack_start(hbox, 0, 0)
 
 
-@ud.registerSignals
+@registerSignals
 class Column(gtk.Widget, ColumnBase):
     colorizeHolidayText = False
     showCursor = False
@@ -197,7 +198,7 @@ class WeekNumToolbarItem(ToolbarItem):
         self.label.set_label(_(ui.cell.weekNum))
 
 
-@ud.registerSignals
+@registerSignals
 class ToolbarColumn(CustomizableToolbar, ColumnBase):
     autoButtonPressHandler = False
     defaultItems = [
@@ -520,7 +521,7 @@ class DaysOfMonthColumn(Column):
         )
         self.drawCursorFg(cr)
 
-@ud.registerSignals
+@registerSignals
 class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
     _name = 'daysOfMonth'
     desc = _('Days of Month')
@@ -619,7 +620,7 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
 
 
 
-@ud.registerSignals
+@registerSignals
 class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
     _name = 'weekCal'
     desc = _('Week Calendar')

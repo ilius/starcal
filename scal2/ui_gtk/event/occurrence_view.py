@@ -25,11 +25,12 @@ from scal2 import ui
 
 import gtk
 
+from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import imageFromFile, labelStockMenuItem, labelImageMenuItem
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.event.common import EventEditorDialog
 
-@ud.registerSignals
+@registerSignals
 class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
     _name = 'eventDayView'
     desc = _('Events of Day')

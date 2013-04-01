@@ -49,6 +49,7 @@ import cairo
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.timeline_box import *
 
@@ -56,7 +57,7 @@ def show_event(widget, event):
     print type(widget), event.type.value_name, event.get_value()#, event.send_event
 
 
-@ud.registerSignals
+@registerSignals
 class TimeLine(gtk.Widget, ud.IntegratedCalObj):
     _name = 'timeLine'
     desc = _('Time Line')
@@ -511,7 +512,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         self.movingV = 0
 
 
-@ud.registerSignals
+@registerSignals
 class TimeLineWindow(gtk.Window, ud.IntegratedCalObj):
     _name = 'timeLineWin'
     desc = _('Time Line')

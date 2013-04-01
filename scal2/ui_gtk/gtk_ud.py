@@ -30,22 +30,12 @@ from scal2 import core
 from scal2 import ui
 from scal2.format_time import compileTmFormat
 
-import gobject
-
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.font_utils import gfontDecode, pfontEncode
 
-def registerType(cls):
-    gobject.type_register(cls)
-    return cls
-
-def registerSignals(cls):
-    gobject.type_register(cls)
-    for name, args in cls.signals:
-        gobject.signal_new(name, cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, args)
-    return cls
 
 @registerSignals
 class IntegratedCalObj(gtk.Object):

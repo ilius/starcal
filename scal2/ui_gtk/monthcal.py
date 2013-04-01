@@ -37,6 +37,7 @@ from gtk import gdk
 
 from scal2.ui_gtk.drawing import *
 
+from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.mywidgets import MyFontButton, MyColorButton
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
 from scal2.ui_gtk import gtk_ud as ud
@@ -104,7 +105,7 @@ class McalTypeParamBox(gtk.HBox):
         ui.mcalTypeParams[self.index] = self.get()
         self.mcal.queue_draw()
 
-@ud.registerSignals
+@registerSignals
 class MonthCal(gtk.Widget, CalBase):
     _name = 'monthCal'
     desc = _('Month Calendar')

@@ -34,6 +34,7 @@ from gobject import timeout_add
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import set_tooltip
 from scal2.ui_gtk.drawing import newTextLayout
 from scal2.ui_gtk.mywidgets.button import ConButton
@@ -41,7 +42,7 @@ from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.customize import CustomizableCalObj
 
 
-@ud.registerSignals
+@registerSignals
 class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
     highlightColor = gdk.Color(45000, 45000, 45000)
     getItemStr = lambda self, i: _(i+1, fillZero=2)
@@ -181,7 +182,7 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
 
 
 
-@ud.registerSignals
+@registerSignals
 class IntLabel(gtk.EventBox):
     highlightColor = gdk.Color(45000, 45000, 45000)
     #getActiveStr = lambda self, s: '<b>%s</b>'%s
@@ -344,7 +345,7 @@ class IntLabel(gtk.EventBox):
         self.window.clear_area(w-1, 0, 1, h)
 
 
-@ud.registerSignals
+@registerSignals
 class YearLabel(IntLabel, ud.IntegratedCalObj):
     signals = ud.IntegratedCalObj.signals
     def __init__(self, mode, **kwargs):
@@ -428,7 +429,7 @@ class MonthLabelButtonBox(gtk.HBox):
     changeMode = lambda self, mode: self.label.changeMode(mode)
 
 
-@ud.registerSignals
+@registerSignals
 class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
     _name = 'labelBox'
     desc = _('Year & Month Labels')

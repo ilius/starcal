@@ -9,6 +9,7 @@ from gobject import timeout_add
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.utils import set_tooltip, myRaise
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
@@ -26,7 +27,7 @@ iconSizeList = [
 iconSizeDict = dict(iconSizeList)
 
 
-@ud.registerSignals
+@registerSignals
 class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
     def __init__(self, name, stockName, method, tooltip='', text=''):
         #print 'ToolbarItem', name, stockName, method, tooltip, text
@@ -56,7 +57,7 @@ class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
     show = lambda self: self.show_all()
 
 
-#@ud.registerSignals
+#@registerSignals
 class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
     _name = 'toolbar'
     desc = _('Toolbar')

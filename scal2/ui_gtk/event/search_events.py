@@ -37,6 +37,7 @@ from scal2 import ui
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import pixbufFromFile
 from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateTimeButton
@@ -46,7 +47,7 @@ from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.event.common import SingleGroupComboBox, EventEditorDialog
 
 
-@ud.registerSignals
+@registerSignals
 class EventSearchWindow(gtk.Window, ud.IntegratedCalObj):
     def __init__(self):
         gtk.Window.__init__(self)

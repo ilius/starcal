@@ -63,6 +63,7 @@ from gobject import timeout_add, timeout_add_seconds
 import gtk
 from gtk import gdk
 
+from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import *
 from scal2.ui_gtk.color_utils import rgbToGdkColor
 from scal2.ui_gtk import listener
@@ -149,7 +150,7 @@ class DateLabel(gtk.Label):
 
 
 
-@ud.registerSignals
+@registerSignals
 class WinConButton(gtk.EventBox, CustomizableCalObj):
     expand = False
     imageName = ''
@@ -246,7 +247,7 @@ class WinConButtonSep(WinConButton):
 ## Below
 
 ## What is "GTK Window Decorator" ??????????
-@ud.registerSignals
+@registerSignals
 class MainWinController(gtk.HBox, CustomizableCalBox):
     _name = 'winContronller'
     desc = _('Window Controller')
@@ -284,7 +285,7 @@ class MainWinController(gtk.HBox, CustomizableCalBox):
 
 
 
-@ud.registerSignals
+@registerSignals
 class MainWinToolbar(CustomizableToolbar):
     params = (
         'ud.mainToolbarData',
@@ -312,7 +313,7 @@ class MainWinToolbar(CustomizableToolbar):
 
 
 
-@ud.registerSignals
+@registerSignals
 class StatusBox(gtk.HBox, CustomizableCalObj):
     _name = 'statusBar'
     desc = _('Status Bar')
@@ -353,7 +354,7 @@ class StatusBox(gtk.HBox, CustomizableCalObj):
             label.set_label(text)
 
 
-@ud.registerSignals
+@registerSignals
 class PluginsTextBox(gtk.VBox, CustomizableCalObj):
     _name = 'pluginsText'
     desc = _('Plugins Text')
@@ -423,7 +424,7 @@ class PluginsTextBox(gtk.VBox, CustomizableCalObj):
         self.setText(ui.cell.pluginsText)
 
 
-#@ud.registerSignals
+#@registerSignals
 class EventViewMainWinItem(DayOccurrenceView, CustomizableCalObj):## FIXME
     def __init__(self):
         DayOccurrenceView.__init__(self)
@@ -446,7 +447,7 @@ class EventViewMainWinItem(DayOccurrenceView, CustomizableCalObj):## FIXME
 
 
 
-@ud.registerSignals
+@registerSignals
 class MainWinVbox(gtk.VBox, CustomizableCalBox):
     _name = 'mainWin'
     desc = _('Main Window')
@@ -471,7 +472,7 @@ class MainWinVbox(gtk.VBox, CustomizableCalBox):
         return True ## FIXME
 
 
-@ud.registerSignals
+@registerSignals
 class MainWin(gtk.Window, ud.IntegratedCalObj):
     _name = 'mainWin'
     desc = _('Main Window')
