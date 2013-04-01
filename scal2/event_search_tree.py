@@ -148,32 +148,33 @@ class EventSearchTree:
     #    return node.count
     def searchStep(self, node, t0, t1):
         if node is None:
-            return []
+            raise StopIteration
         t0 = max(t0, node.min_t)
         t1 = min(t1, node.max_t)
         if t0 >= t1:
-            return []
+            raise StopIteration
+        ###
+        for mt, dt, eid in self.searchStep(node.left, t0, t1):
+            yield mt, dt, eid
+        ###
         min_dt = abs((t0 + t1)/2.0 - node.mt) - (t1 - t0)/2.0
         if min_dt <= 0:
-            dt_list = node.events.getAll()
+            for dt, eid in node.events.getAll():
+                yield node.mt, dt, eid
         else:
-            dt_list = node.events.moreThan(min_dt)
-        return self.searchStep(node.left, t0, t1) + \
-               [(node.mt, e_dt, eid) for e_dt, eid in dt_list] + \
-               self.searchStep(node.right, t0, t1)
-    search = lambda self, t0, t1: [
-        (
-            max(t0, mt-dt),
-            min(t1, mt+dt),
-            eid,
-            2*dt,
-        ) \
-        for mt, dt, eid in self.searchStep(
-            self.root,
-            t0,
-            t1,
-        )
-    ]
+            for dt, eid in node.events.moreThan(min_dt):
+                yield node.mt, dt, eid
+        ###
+        for mt, dt, eid in self.searchStep(node.right, t0, t1):
+            yield mt, dt, eid
+    def search(self, t0, t1):
+        for mt, dt, eid in self.searchStep(self.root, t0, t1):
+            yield (
+                max(t0, mt-dt),
+                min(t1, mt+dt),
+                eid,
+                2*dt,
+            )
     def getDepthNone(self, node):
         if node is None:
             return 0

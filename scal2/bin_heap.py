@@ -32,18 +32,18 @@ class MaxHeap(list):
     moreThan = lambda self, key: self.moreThanStep(key, 0)
     def moreThanStep(self, key, index):
         if index < 0:
-            return []
+            raise StopIteration
         try:
             item = self[index]
         except IndexError:
-            return []
+            raise StopIteration
         if -item[0] <= key:
-            return []
-        return [
-                (-item[0], item[1])
-            ] + \
-            self.moreThanStep(key, 2*index+1) + \
-            self.moreThanStep(key, 2*index+2)
+            raise StopIteration
+        yield -item[0], item[1]
+        for k, v in self.moreThanStep(key, 2*index+1):
+            yield k, v
+        for k, v in self.moreThanStep(key, 2*index+2):
+            yield k, v
     __str__ = lambda self: ' '.join(['%s'%(-k) for k, v in self])
     def delete(self, key, value):
         try:
@@ -83,7 +83,9 @@ class MaxHeap(list):
         except IndexError:
             return True
         return self.verifyIndex(2*i + 1) and self.verifyIndex(2*i + 2)
-    getAll = lambda self: [(-key, value) for key, value in self]
+    def getAll(self):
+        for key, value in self:
+            yield -key, value
     def getMax(self):
         if not self:
             raise ValueError('heap empty')
