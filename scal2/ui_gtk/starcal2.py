@@ -976,6 +976,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
                 ## Warning: g_object_notify: object class `GtkStatusIcon' has no property named `name'
                 self.sicon.set_title(core.APP_DESC)
                 self.sicon.set_visible(True)## is needed ????????
+                self.sicon.connect('button-press-event', self.trayButtonPress)
                 self.sicon.connect('activate', self.trayClicked)
                 self.sicon.connect('popup-menu', self.trayPopup)
         else:
@@ -1078,6 +1079,11 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ######################################
         set_tooltip(self.sicon, self.getTrayTooltip())
         return True
+    def trayButtonPress(self, obj, gevent):
+        if gevent.button == 2:
+            ## middle button press
+            self.copyDate()
+            return True
     def trayClicked(self, obj=None):
         if self.get_property('visible'):
             (ui.winX, ui.winY) = self.get_position()
