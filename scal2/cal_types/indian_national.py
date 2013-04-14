@@ -64,7 +64,7 @@ def save():
 
 
 try:
-    from scal2.cal_modules import gregorian
+    from scal2.cal_types import gregorian
 except ImportError:
     import gregorian
 

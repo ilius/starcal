@@ -21,7 +21,7 @@ from os.path import join
 from subprocess import Popen, PIPE
 from scal2.time_utils import getEpochFromJd
 from scal2.date_utils import dateEncode
-from scal2.cal_modules import jd_to, to_jd, DATE_GREG
+from scal2.cal_types import jd_to, to_jd, DATE_GREG
 
 def prepareObj(obj):
     pass

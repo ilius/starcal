@@ -1,7 +1,7 @@
 import sys
 from os.path import join
 
-from scal2.cal_modules import gregorian
+from scal2.cal_types import gregorian
 from scal2.path import *
 
 DATE_GREG = 0 ## Gregorian (common calendar)
@@ -19,7 +19,7 @@ for name in open(join(modDir, 'modules.list')).read().split('\n'):
     if name.startswith('#'):
         continue
     #try:
-    mod = __import__('scal2.cal_modules.%s'%name, fromlist=[name])
+    mod = __import__('scal2.cal_types.%s'%name, fromlist=[name])
         #mod = __import__(name) ## Need to "sys.path.insert(0, modDir)" before
     #except:
     #    myRaise()

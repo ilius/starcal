@@ -26,7 +26,7 @@ from scal2.time_utils import getEpochFromJhms
 from scal2 import locale_man
 from scal2.locale_man import tr as _
 
-from scal2.cal_modules import to_jd, jd_to, convert
+from scal2.cal_types import to_jd, jd_to, convert
 
 from scal2.mywidgets.multi_spin import *
 

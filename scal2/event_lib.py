@@ -43,7 +43,7 @@ from scal2.ics import *
 #from scal2.time_line_tree import TimeLineTree
 from scal2.event_search_tree import EventSearchTree
 
-from scal2.cal_modules import calModuleNames, jd_to, to_jd, convert, DATE_GREG
+from scal2.cal_types import calModuleNames, jd_to, to_jd, convert, DATE_GREG
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName, textNumEncode
 from scal2 import core

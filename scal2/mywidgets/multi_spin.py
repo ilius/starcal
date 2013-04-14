@@ -22,7 +22,7 @@ from scal2.utils import toUnicode, toStr, myRaise
 from scal2 import locale_man
 from scal2.locale_man import numEncode, numDecode
 
-from scal2.cal_modules import to_jd, jd_to, convert
+from scal2.cal_types import to_jd, jd_to, convert
 
 
 

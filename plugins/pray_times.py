@@ -40,7 +40,7 @@ from pray_times_backend import PrayTimes
 from scal2.time_utils import floatHourToTime
 from scal2.locale_man import tr as _
 from scal2.plugin_man import BasePlugin
-from scal2.cal_modules.gregorian import to_jd as gregorian_to_jd
+from scal2.cal_types.gregorian import to_jd as gregorian_to_jd
 from scal2.time_utils import getTimeZoneByJd
 #from scal2 import event_lib## needs core!! FIXME
 

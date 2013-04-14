@@ -22,7 +22,7 @@ from time import time, localtime
 import datetime
 import struct
 
-from scal2.cal_modules.gregorian import J1970
+from scal2.cal_types.gregorian import J1970
 from scal2.utils import ifloor, iceil
 
 ## time() ~~ epoch

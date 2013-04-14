@@ -119,7 +119,7 @@ def myRaiseTback(f=None):
     (typ, value, tback) = sys.exc_info()
     log.error("".join(traceback.format_exception(typ, value, tback)))
 
-from scal2.cal_modules import calModulesList, jd_to, to_jd, convert, DATE_GREG
+from scal2.cal_types import calModulesList, jd_to, to_jd, convert, DATE_GREG
 
 
 ################################################################################

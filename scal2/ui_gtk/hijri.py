@@ -22,8 +22,8 @@
 import os
 from os.path import isfile
 
-from scal2.cal_modules.hijri import monthDb, monthName
-from scal2.cal_modules import calModuleNames
+from scal2.cal_types.hijri import monthDb, monthName
+from scal2.cal_types import calModuleNames
 
 from scal2 import core
 from scal2.core import jd_to, to_jd
