@@ -25,6 +25,7 @@ editingBoxHelperLineWidth = 0.3 ## px
 
 
 boxReverseGravity = False
+boxSortByWidth = False ## wider boxes are lower (with normal gravity)
 boxMaxHeightFactor = 0.8 ## < 1.0
 
 boxSkipPixelLimit = 0.1 ## pixels
@@ -102,8 +103,10 @@ class Box:
     dt = lambda self: self.t1 - self.t0
     du = lambda self: self.u1 - self.u0
     def __cmp__(self, other):## FIXME
-        c = -cmp(self.odt, other.odt)
-        if c != 0: return c
+        if boxSortByWidth:
+            c = -cmp(self.odt, other.odt)
+            if c != 0:
+                return c
         return cmp(self.order, other.order)
     def setPixelValues(self, timeStart, pixelPerSec, beforeBoxH, maxBoxH):
         self.x = (self.t0 - timeStart) * pixelPerSec
