@@ -767,21 +767,19 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
             self.emit('popup-menu-cell', event.time, x, y)
         return True
     def keyPress(self, arg, event):
+        if CalBase.keyPress(self, arg, event):
+            return True
         kname = gdk.keyval_name(event.keyval).lower()
         if kname=='up':
             self.jdPlus(-1)
         elif kname=='down':
             self.jdPlus(1)
-        elif kname in ('space', 'home', 't'):
-            self.goToday()
         elif kname=='end':
             self.gotoJd(self.status[-1].jd)
         elif kname in ('page_up', 'k', 'p'):
             self.jdPlus(-7)
         elif kname in ('page_down', 'j', 'n'):
             self.jdPlus(7)
-        elif kname=='menu':
-            self.emit('popup-menu-cell', event.time, *self.getCellPos())
         #elif kname in ('f10', 'm'):
         #    if event.state & gdk.SHIFT_MASK:
         #        # Simulate right click (key beside Right-Ctrl)

@@ -170,6 +170,17 @@ class CalBase(CustomizableCalObj):
             -10,## x offset FIXME - not to be hidden behind mouse cursor
         )
         return True
+    def getCellPos(self):
+        raise NotImplementedError
+    def keyPress(self, arg, event):
+        kname = gdk.keyval_name(event.keyval).lower()
+        if kname in ('space', 'home', 't'):
+            self.goToday()
+        elif kname=='menu':
+            self.emit('popup-menu-cell', event.time, *self.getCellPos())
+        else:
+            return False
+        return True
 
 
 
