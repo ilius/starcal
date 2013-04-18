@@ -150,10 +150,12 @@ class MultiSpinButton(gtk.SpinButton):
         elif 'kp_0' <= kname <= 'kp_9':
             self.insertText(self.digs[int(kname[-1])])
             return True
-        elif kname in ('period', 'kp_decimal'):
-            self.insertText(_('.'))
+        elif kname in (
+            'period', 'kp_decimal',
+            'slash', 'kp_divide',## FIXME
+        ):
+            self.insertText(locale_man.getNumSep())
             return True
-        ## ('slash', 'kp_divide') ## FIXME
         else:
             #print kname, kval
             return False
@@ -278,9 +280,11 @@ class FloatSpinButton(MultiSpinButton):
             **kwargs
         )
     def get_value(self):
-        s = locale_man.textNumDecode(self.get_text())
+        text = self.get_text()
+        #text = text.replace('/', '.')## FIXME
+        text_en = locale_man.textNumDecode(text)
         try:
-            v = float(s)
+            v = float(text_en)
         except ValueError:
             printError('could not convert number string %s to float'%s)
             return self._min
