@@ -688,8 +688,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         #self.event = event
     def childSizeRequest(self, cal, req):
         self.setMinHeight()
-    selectDateShow = lambda self, widget: self.selectDateDialog.show()
-    dayInfoShow = lambda self, widget: self.dayInfoDialog.show()
+    selectDateShow = lambda self, widget=None: self.selectDateDialog.show()
+    dayInfoShow = lambda self, widget=None: self.dayInfoDialog.show()
     def selectDateResponse(self, widget, y, m, d):
         ui.changeDate(y, m, d)
         self.onDateChange()

@@ -39,7 +39,13 @@ class CalBase(CustomizableCalObj):
         ('popup-menu-main', [int, int, int]),
         ('2button-press', []),
         ('pref-update-bg-color', []),
+        ('day-info', []),
     ]
+    myKeys = (
+        'space', 'home', 't',
+        'menu',
+        'i',
+    )
     def __init__(self):
         self.initVars()
         listener.dateChange.add(self)
@@ -51,6 +57,7 @@ class CalBase(CustomizableCalObj):
             self.connect('popup-menu-cell', ui.mainWin.popupMenuCell)
             self.connect('popup-menu-main', ui.mainWin.popupMenuMain)
             self.connect('pref-update-bg-color', ui.mainWin.prefUpdateBgColor)
+            self.connect('day-info', ui.mainWin.dayInfoShow)
     def gotoJd(self, jd):
         ui.gotoJd(jd)
         self.onDateChange()
@@ -178,6 +185,8 @@ class CalBase(CustomizableCalObj):
             self.goToday()
         elif kname=='menu':
             self.emit('popup-menu-cell', event.time, *self.getCellPos())
+        elif kname=='i':
+            self.emit('day-info')
         else:
             return False
         return True

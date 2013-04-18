@@ -118,6 +118,16 @@ class MonthCal(gtk.Widget, CalBase):
         'ui.mcalGrid',
         'ui.mcalGridColor',
     )
+    myKeys = CalBase.myKeys + (
+        'up', 'down',
+        'right', 'left',
+        'page_up',
+        'k', 'p',
+        'page_down',
+        'j', 'n',
+        'end',
+        'f10', 'm',
+    )
     def heightSpinChanged(self, spin):
         v = spin.get_value()
         self.set_property('height-request', v)
@@ -216,18 +226,6 @@ class MonthCal(gtk.Widget, CalBase):
         self.connect('expose-event', self.drawAll)
         self.connect('button-press-event', self.buttonPress)
         #self.connect('screen-changed', self.screenChanged)
-        self.myKeys = (
-            'up', 'down',
-            'right', 'left',
-            'page_up',
-            'k', 'p',
-            'page_down',
-            'j', 'n',
-            'space', 'home', 't',
-            'end',
-            'menu',
-            'f10', 'm',
-        )
         self.connect('key-press-event', self.keyPress)
         self.connect('scroll-event', self.scroll)
         ######################

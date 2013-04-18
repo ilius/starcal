@@ -631,21 +631,19 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         'ui.wcalGrid',
         'ui.wcalGridColor',
     )
+    myKeys = CalBase.myKeys + (
+        'up', 'down',
+        'page_up',
+        'k', 'p',
+        'page_down',
+        'j', 'n',
+        'end',
+        #'f10', 'm',
+    )
     def __init__(self):
         gtk.HBox.__init__(self)
         CalBase.__init__(self)
         self.set_property('height-request', ui.wcalHeight)
-        self.myKeys = (
-            'up', 'down',
-            'page_up',
-            'k', 'p',
-            'page_down',
-            'j', 'n',
-            'space', 'home', 't',
-            'end',
-            'menu',
-            #'f10', 'm',
-        )
         ######################
         self.connect('key-press-event', self.keyPress)
         self.connect('scroll-event', self.scroll)
