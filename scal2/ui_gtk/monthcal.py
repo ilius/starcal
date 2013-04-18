@@ -226,7 +226,6 @@ class MonthCal(gtk.Widget, CalBase):
         self.connect('expose-event', self.drawAll)
         self.connect('button-press-event', self.buttonPress)
         #self.connect('screen-changed', self.screenChanged)
-        self.connect('key-press-event', self.keyPress)
         self.connect('scroll-event', self.scroll)
         ######################
         self.updateTextWidth()

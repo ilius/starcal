@@ -180,6 +180,7 @@ class CalBase(CustomizableCalObj):
     def getCellPos(self):
         raise NotImplementedError
     def keyPress(self, arg, event):
+        CustomizableCalObj.keyPress(self, arg, event)
         kname = gdk.keyval_name(event.keyval).lower()
         if kname in ('space', 'home', 't'):
             self.goToday()

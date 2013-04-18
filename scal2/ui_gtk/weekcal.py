@@ -645,7 +645,6 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         CalBase.__init__(self)
         self.set_property('height-request', ui.wcalHeight)
         ######################
-        self.connect('key-press-event', self.keyPress)
         self.connect('scroll-event', self.scroll)
         ###
         self.connect('button-press-event', self.buttonPress)
