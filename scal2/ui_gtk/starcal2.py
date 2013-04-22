@@ -462,13 +462,7 @@ class MainWinVbox(gtk.VBox, CustomizableCalBox):
         text += 'ui.mainWinItems=%s\n'%repr(ui.mainWinItems)
         return text
     def keyPress(self, arg, event):
-        kname = gdk.keyval_name(event.keyval).lower()
-        #print kname
-        for item in self.items:
-            if item.enable and kname in item.myKeys:
-                #print kname, 'sending to', item._name
-                item.keyPress(arg, event)
-                break ## FIXME
+        CustomizableCalBox.keyPress(self, arg, event)
         return True ## FIXME
 
 
