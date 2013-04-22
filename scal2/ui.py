@@ -829,6 +829,7 @@ if menuTextColor is None:
 
 ##################################
 
+## move to gtk_ud ? FIXME
 mainWin = None
 prefDialog = None
 eventManDialog = None
