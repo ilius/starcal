@@ -451,16 +451,15 @@ class EventViewMainWinItem(DayOccurrenceView, CustomizableCalObj):## FIXME
 class MainWinVbox(gtk.VBox, CustomizableCalBox):
     _name = 'mainWin'
     desc = _('Main Window')
+    params = (
+        'ui.mainWinItems',
+    )
     def __init__(self):
         gtk.VBox.__init__(self)
         self.initVars()
     def updateVars(self):
         CustomizableCalBox.updateVars(self)
         ui.mainWinItems = self.getItemsData()
-    def confStr(self):
-        text = CustomizableCalBox.confStr(self)
-        text += 'ui.mainWinItems=%s\n'%repr(ui.mainWinItems)
-        return text
     def keyPress(self, arg, event):
         CustomizableCalBox.keyPress(self, arg, event)
         return True ## FIXME
