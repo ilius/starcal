@@ -666,7 +666,7 @@ dragRecMode = core.DATE_GREG  ## apply in Pref FIXME
 ####################
 monthRMenuNum = True
 #monthRMenu
-prefPagesOrder = (0, 1, 2, 3)
+prefPagesOrder = tuple(range(5))
 winControllerButtons = (
     ('sep', True),
     ('min', True),
