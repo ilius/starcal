@@ -463,7 +463,7 @@ class WcalTypeParamBox(gtk.HBox):
         self.index = index
         self.mode = mode
         ######
-        label = gtk.Label(_(core.calModules[mode].desc)+'  ')
+        label = gtk.Label(_(core.calTypes[mode].desc)+'  ')
         label.set_alignment(0, 0.5)
         self.pack_start(label, 0, 0)
         sgroupLabel.add_widget(label)
@@ -575,7 +575,7 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
         ########
         children = self.get_children()
         n = len(children)
-        n2 = len(core.calModules.active)
+        n2 = len(core.calTypes.active)
         if n > n2:
             for i in range(n2, n):
                 children[i].destroy()
@@ -584,7 +584,7 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
                 col = DaysOfMonthColumn(self.wcal, self, 0, i)
                 self.pack_start(col, 0, 0)
                 children.append(col)
-        for i, mode in enumerate(core.calModules.active):
+        for i, mode in enumerate(core.calTypes.active):
             children[i].mode = mode
             children[i].show()
     def confStr(self):
@@ -596,14 +596,14 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
         for child in vbox.get_children():
             child.destroy()
         ###
-        n = len(core.calModules.active)
+        n = len(core.calTypes.active)
         while len(ui.wcalTypeParams) < n:
             ui.wcalTypeParams.append({
                 'font': None,
             })
         sgroupLabel = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
         sgroupFont = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
-        for i, mode in enumerate(core.calModules.active):
+        for i, mode in enumerate(core.calTypes.active):
             #try:
             params = ui.wcalTypeParams[i]
             #except IndexError:

@@ -338,7 +338,7 @@ class StatusBox(gtk.HBox, CustomizableCalObj):
         for label in self.labelBox.get_children():
             label.destroy()
         ###
-        for mode in core.calModules.active:
+        for mode in core.calTypes.active:
             label = DateLabel(None)
             label.mode = mode
             self.labelBox.pack_start(label, 1, 0, 0)
@@ -1019,7 +1019,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         #    sep = _(',')+' '
         #else:
         sep = '\n'
-        for mode in core.calModules.active:
+        for mode in core.calTypes.active:
             (y, m, d) = ui.todayCell.dates[mode]
             tt += '%s%s %s %s'%(sep, _(d), getMonthName(mode, m, y), _(y))
         if ui.pluginsTextTray:

@@ -329,7 +329,7 @@ class DateTypeCombo(gtk.ComboBox):
         self.pack_start(cell, True)
         self.add_attribute(cell, 'text', 1)
         ###
-        for i, mod in core.calModules.iterIndexModule():
+        for i, mod in core.calTypes.iterIndexModule():
             ls.append([i, _(mod.desc)])
     def set_active(self, mode):
         ls = self.get_model()

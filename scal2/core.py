@@ -119,81 +119,18 @@ def myRaiseTback(f=None):
     (typ, value, tback) = sys.exc_info()
     log.error("".join(traceback.format_exception(typ, value, tback)))
 
-from scal2.cal_types import calModulesList, jd_to, to_jd, convert, DATE_GREG
+from scal2.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG
 
 
 ################################################################################
 ####################### class and function defenitions #########################
 ################################################################################
 
-activeCalNames = ['gregorian']
-inactiveCalNames = []
-
-class CalModulesHolder:
-    def __init__(self):
-        self.update()
-    def update(self):
-        global activeCalNames, inactiveCalNames, primaryMode
-        self.active = []
-        self.inactive = [] ## range(len(calModulesList))
-        remainingNames = calModuleNames[:]
-        for name in activeCalNames:
-            try:
-                i = calModuleNames.index(name)
-            except ValueError:
-                pass
-            else:
-                self.active.append(i)
-                remainingNames.remove(name)
-        ####
-        primaryMode = self.active[0]
-        ####
-        inactiveToRemove = []
-        for name in inactiveCalNames:
-            try:
-                i = calModuleNames.index(name)
-            except ValueError:
-                pass
-            else:
-                if i in self.active:
-                    inactiveToRemove.append(name)
-                else:
-                    self.inactive.append(i)
-                    remainingNames.remove(name)
-        for name in inactiveToRemove:
-            inactiveCalNames.remove(name)
-        ####
-        for name in remainingNames:
-            try:
-                i = calModuleNames.index(name)
-            except ValueError:
-                pass
-            else:
-                self.inactive.append(i)
-                inactiveCalNames.append(name)
-    def __iter__(self):
-        for i in self.active + self.inactive:
-            yield calModulesList[i]
-    def iterIndexModule(self):
-        for i in self.active + self.inactive:
-            yield i, calModulesList[i]
-    allIndexes = lambda self: self.active + self.inactive
-    def __getitem__(self, key):
-        if isinstance(key, basestring):
-            return calModulesDict[key]
-        if isinstance(key, int):
-            return calModulesList[key]
-        else:
-            raise TypeError('invalid key %r given to %s.__getitem__'%(
-                key,
-                self.__class__.__name__,
-            ))
-
 
 popen_output = lambda cmd: subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
 
-primary_to_jd = lambda y, m, d: calModulesList[primaryMode].to_jd(y, m, d)
-jd_to_primary = lambda jd: calModulesList[primaryMode].jd_to(jd)
+primary_to_jd = lambda y, m, d: calTypes[primaryMode].to_jd(y, m, d)
+jd_to_primary = lambda jd: calTypes[primaryMode].jd_to(jd)
 
 def getCurrentJd():## time() and mktime(localtime()) both return GMT, not local
     (y, m, d) = localtime()[:3]
@@ -554,8 +491,6 @@ eventTrashLastTop = True
 #################### Loading user core configuration ###########################
 
 
-
-
 sysConfPath = join(sysConfDir, 'core.conf')
 if isfile(sysConfPath):
     try:
@@ -573,7 +508,14 @@ if isfile(confPath):
 
 ################################################################################
 
-calModules = CalModulesHolder()
+try:## just for compatibility
+    calTypes.activeNames = activeCalNames
+except NameError:
+    pass
+
+primaryMode = calTypes.update()
+
+#########################################
 
 licenseText = _('licenseText')
 if licenseText in ('licenseText', ''):

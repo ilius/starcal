@@ -130,7 +130,7 @@ class SelectDateDialog(gtk.Dialog):
         self.dateInput.add_history()
     def set_mode(self, mode):
         self.mode = mode
-        module = core.calModules[mode]
+        module = core.calTypes[mode]
         self.comboMode.set_active(mode)
         self.ymdBox.set_mode(mode)
         self.dateInput.setMaxDay(module.maxMonthLen)
@@ -138,7 +138,7 @@ class SelectDateDialog(gtk.Dialog):
         pMode = self.mode
         pDate = self.get()
         mode = self.comboMode.get_active()
-        module = core.calModules[mode]
+        module = core.calTypes[mode]
         if pDate==None:
             (y, m, d) = ui.cell.dates[mode]
         else:

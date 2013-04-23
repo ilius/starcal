@@ -25,6 +25,7 @@ from scal2.locale_man import langDict, langSh, rtl
 from scal2.locale_man import tr as _
 from scal2.path import *
 
+from scal2.cal_types import calTypes
 from scal2 import core
 
 from scal2 import ui
@@ -639,24 +640,24 @@ class AICalsPrefItem():
     def inactiveTreevRActivate(self, treev, path, col):
         self.activateIndex(path[0])
     def updateVar(self):
-        core.activeCalNames = [row[0] for row in self.activeTrees]
-        core.inactiveCalNames = [row[0] for row in self.inactiveTrees]
-        core.calModules.update()
+        calTypes.activeNames = [row[0] for row in self.activeTrees]
+        calTypes.inactiveNames = [row[0] for row in self.inactiveTrees]
+        core.primaryMode = calTypes.update()
     def updateWidget(self):
         self.activeTrees.clear()
         self.inactiveTrees.clear()
         ##
-        for mode in core.calModules.active:
-            module = core.calModules[mode]
+        for mode in calTypes.active:
+            module = calTypes[mode]
             self.activeTrees.append([module.name, _(module.desc)])
         ##
-        for mode in core.calModules.inactive:
-            module = core.calModules[mode]
+        for mode in calTypes.inactive:
+            module = calTypes[mode]
             self.inactiveTrees.append([module.name, _(module.desc)])
     def confStr(self):
         text = ''
-        text += 'activeCalNames=%r\n'%core.activeCalNames
-        text += 'inactiveCalNames=%r\n'%core.inactiveCalNames
+        text += 'calTypes.activeNames=%r\n'%calTypes.activeNames
+        text += 'calTypes.inactiveNames=%r\n'%calTypes.inactiveNames
         return text
 
 

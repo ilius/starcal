@@ -43,7 +43,7 @@ from scal2.ics import *
 #from scal2.time_line_tree import TimeLineTree
 from scal2.event_search_tree import EventSearchTree
 
-from scal2.cal_types import calModuleNames, jd_to, to_jd, convert, DATE_GREG
+from scal2.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName, textNumEncode
 from scal2 import core
@@ -1361,7 +1361,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         data = JsonEventBaseClass.getData(self)
         data.update({
             'type': self.name,
-            'calType': calModuleNames[self.mode],
+            'calType': calTypes.names[self.mode],
             'rules': self.getRulesData(),
             'notifiers': self.getNotifiersData(),
             'notifyBefore': durationEncode(*self.notifyBefore),
@@ -1377,7 +1377,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         if 'calType' in data:
             calType = data['calType']
             try:
-                self.mode = calModuleNames.index(calType)
+                self.mode = calTypes.names.index(calType)
             except ValueError:
                 raise ValueError('Invalid calType: %r'%calType)
         self.clearRules()
@@ -2271,7 +2271,7 @@ class EventContainer(JsonEventBaseClass):
         self.mode = other.mode
     def getData(self):
         data = JsonEventBaseClass.getData(self)
-        data['calType'] = calModuleNames[self.mode]
+        data['calType'] = calTypes.names[self.mode]
         fixIconInData(data)
         return data
     def setData(self, data):
@@ -2279,7 +2279,7 @@ class EventContainer(JsonEventBaseClass):
         if 'calType' in data:
             calType = data['calType']
             try:
-                self.mode = calModuleNames.index(calType)
+                self.mode = calTypes.names.index(calType)
             except ValueError:
                 raise ValueError('Invalid calType: %r'%calType)
         ###
@@ -2990,7 +2990,7 @@ class UniversityTerm(EventGroup):
                 return course[1]
         return _('Deleted Course')
     def setDefaults(self):
-        calType = core.calModuleNames[self.mode]
+        calType = calTypes.names[self.mode]
         ## FIXME
         ## odd term or even term?
         jd = core.getCurrentJd()

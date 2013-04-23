@@ -29,7 +29,7 @@ from scal2.utils import NullObj, toStr, cleanCacheDict, escape
 from scal2.os_utils import makeDir
 from scal2.path import *
 
-from scal2.cal_types import calModulesList, calModuleNames
+from scal2.cal_types import calTypes
 
 from scal2 import locale_man
 from scal2.locale_man import tr as _
@@ -220,7 +220,7 @@ class Cell:## status and information of a cell
         self.holiday = (self.weekDay in core.holidayWeekDays)
         ###################
         self.dates = []
-        for mode in range(len(calModulesList)):
+        for mode in range(len(calTypes)):
             if mode==core.primaryMode:
                 self.dates.append((self.year, self.month, self.day))
             else:
@@ -470,7 +470,7 @@ wcalTypeParams = [
 
 def getMcalMinorTypeParams():
     ls = []
-    for i, mode in enumerate(core.calModules.active):
+    for i, mode in enumerate(calTypes.active):
         try:
             params = mcalTypeParams[i]
         except IndexError:
@@ -788,10 +788,10 @@ else:
     del version
 
 
-if shownCals:
+if shownCals:## just for compatibility
     mcalTypeParams = []
     wcalTypeParams = []
-    core.activeCalNames = []
+    calTypes.activeNames = []
     for item in shownCals:
         mcalTypeParams.append({
             'pos': (item['x'], item['y']),
@@ -801,8 +801,8 @@ if shownCals:
         wcalTypeParams.append({
             'font': list(item['font']),
         })
-        core.activeCalNames.append(calModuleNames[item['mode']])
-    core.calModules.update()
+        calTypes.activeNames.append(calTypes.names[item['mode']])
+    core.primaryMode = calTypes.update()
 
 ## FIXME
 #newPrimaryMode = shownCals[0]['mode']

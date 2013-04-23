@@ -1,7 +1,7 @@
-from scal2.cal_types import calModulesList, to_jd
+from scal2.cal_types import calTypes, to_jd
 from scal2.time_utils import getEpochFromJd
 
-getMonthLen = lambda year, month, mode: calModulesList[mode].getMonthLen(year, month)
+getMonthLen = lambda year, month, mode: calTypes[mode].getMonthLen(year, month)
 
 def monthPlus(y, m, p):
     y, m = divmod(y * 12 + m-1 + p, 12)
@@ -65,11 +65,11 @@ def getJdRangeForMonth(year, month, mode):
     )
 
 def getFloatYearFromEpoch(epoch, mode):
-    module = calModulesList[mode]
+    module = calTypes[mode]
     return float(epoch - module.epoch)/module.avgYearLen + 1
 
 def getEpochFromFloatYear(year, mode):
-    module = calModulesList[mode]
+    module = calTypes[mode]
     return module.epoch + (year-1)*module.avgYearLen
 
 getFloatYearFromJd = lambda jd, mode: getFloatYearFromEpoch(getEpochFromJd(jd), mode)

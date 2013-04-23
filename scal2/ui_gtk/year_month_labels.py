@@ -457,7 +457,7 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
         self.appendItem(box.label)
         monthLabels.append(box.label)
         ####
-        for i, mode in list(enumerate(core.calModules.active))[1:]:
+        for i, mode in list(enumerate(core.calTypes.active))[1:]:
             self.pack_start(gtk.VSeparator(), 1, 1)
             label = YearLabel(mode)
             self.pack_start(label, 0, 0)

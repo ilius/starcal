@@ -95,7 +95,7 @@ def getMonthDesc(status=None):
                 else:
                     continue
     text = ''
-    for mode in core.calModules.active:
+    for mode in core.calTypes.active:
         if text != '':
             text += '\n'
         if mode==core.primaryMode:

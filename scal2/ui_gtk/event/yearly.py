@@ -91,7 +91,7 @@ class EventWidget(common.EventWidget):
                 pass
     def modeComboChanged(self, obj=None):## overwrite method from common.EventWidget
         newMode = self.modeCombo.get_active()
-        module = core.calModules[newMode]
+        module = core.calTypes[newMode]
         monthCombo = self.monthCombo
         month = monthCombo.getValue()
         monthCombo.build(newMode)

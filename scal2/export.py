@@ -119,7 +119,7 @@ CELLPADDING=4 CELLSPACING=0>
                 text += '            <TD WIDTH=13%>\n                <P DIR="LTR" ALIGN=CENTER>\n'
                 for (ind, tag) in format:
                     try:
-                        mode = core.calModules.active[ind]
+                        mode = core.calTypes.active[ind]
                     except IndexError:
                         continue
                     try:

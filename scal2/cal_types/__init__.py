@@ -5,7 +5,7 @@ from scal2.cal_types import gregorian
 from scal2.path import *
 
 DATE_GREG = 0 ## Gregorian (common calendar)
-calModulesList = [gregorian]
+modules = [gregorian]
 
 def myRaise():
     i = sys.exc_info()
@@ -41,16 +41,82 @@ for name in open(join(modDir, 'modules.list')).read().split('\n'):
     ):
         if not hasattr(mod, attr):
             sys.stdout.write('Invalid calendar module: module "%s" has no attribute "%s"\n'%(name, attr))
-    calModulesList.append(mod)
+    modules.append(mod)
 
-calModulesDict = dict([(mod.name, mod) for mod in calModulesList])
-calModuleNames = [mod.name for mod in calModulesList]
-## calOrigLang = [m.origLang for m in calModulesList]
 
-jd_to = lambda jd, target: calModulesList[target].jd_to(jd)
-to_jd = lambda y, m, d, source: calModulesList[source].to_jd(y, m, d)
+
+class CalTypesHolder:
+    byName = dict([(mod.name, mod) for mod in modules])
+    names = [mod.name for mod in modules]
+    ## calOrigLang = [m.origLang for m in modules]
+    __len__ = lambda self: len(self.names)
+    def __init__(self):
+        self.activeNames = ['gregorian']
+        self.inactiveNames = []
+        self.update()
+    def update(self):
+        self.active = []
+        self.inactive = [] ## range(len(modules))
+        remainingNames = self.names[:]
+        for name in self.activeNames:
+            try:
+                i = self.names.index(name)
+            except ValueError:
+                pass
+            else:
+                self.active.append(i)
+                remainingNames.remove(name)
+        ####
+        inactiveToRemove = []
+        for name in self.inactiveNames:
+            try:
+                i = self.names.index(name)
+            except ValueError:
+                pass
+            else:
+                if i in self.active:
+                    inactiveToRemove.append(name)
+                else:
+                    self.inactive.append(i)
+                    remainingNames.remove(name)
+        for name in inactiveToRemove:
+            self.inactiveNames.remove(name)
+        ####
+        for name in remainingNames:
+            try:
+                i = self.names.index(name)
+            except ValueError:
+                pass
+            else:
+                self.inactive.append(i)
+                self.inactiveNames.append(name)
+        ####
+        return self.active[0]
+    def __iter__(self):
+        for i in self.active + self.inactive:
+            yield modules[i]
+    def iterIndexModule(self):
+        for i in self.active + self.inactive:
+            yield i, modules[i]
+    allIndexes = lambda self: self.active + self.inactive
+    def __getitem__(self, key):
+        if isinstance(key, basestring):
+            return self.byName[key]
+        if isinstance(key, int):
+            return modules[key]
+        else:
+            raise TypeError('invalid key %r given to %s.__getitem__'%(
+                key,
+                self.__class__.__name__,
+            ))
+
+
+calTypes = CalTypesHolder()
+
+jd_to = lambda jd, target: modules[target].jd_to(jd)
+to_jd = lambda y, m, d, source: modules[source].to_jd(y, m, d)
 convert = lambda y, m, d, source, target:\
-    (y, m, d) if source==target else calModulesList[target].jd_to(calModulesList[source].to_jd(y, m, d))
+    (y, m, d) if source==target else modules[target].jd_to(modules[source].to_jd(y, m, d))
 
 
 

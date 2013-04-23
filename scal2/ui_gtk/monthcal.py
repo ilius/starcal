@@ -57,7 +57,7 @@ class McalTypeParamBox(gtk.HBox):
         self.index = index
         self.mode = mode
         ######
-        label = gtk.Label(_(core.calModules[mode].desc)+'  ')
+        label = gtk.Label(_(core.calTypes[mode].desc)+'  ')
         label.set_alignment(0, 0.5)
         self.pack_start(label, 0, 0)
         sgroupLabel.add_widget(label)
@@ -146,7 +146,7 @@ class MonthCal(gtk.Widget, CalBase):
         for child in vbox.get_children():
             child.destroy()
         ###
-        n = len(core.calModules.active)
+        n = len(core.calTypes.active)
         while len(ui.mcalTypeParams) < n:
             ui.mcalTypeParams.append({
                 'pos': (0, 0),
@@ -155,7 +155,7 @@ class MonthCal(gtk.Widget, CalBase):
             })
         sgroupLabel = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
         sgroupFont = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
-        for i, mode in enumerate(core.calModules.active):
+        for i, mode in enumerate(core.calTypes.active):
             #try:
             params = ui.mcalTypeParams[i]
             #except IndexError:

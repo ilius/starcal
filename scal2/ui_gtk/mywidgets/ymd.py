@@ -17,7 +17,7 @@ class YearMonthDayBox(gtk.HBox):
         ####
         self.pack_start(gtk.Label(_('Month')), 0, 0)
         comboMonth = gtk.combo_box_new_text()
-        module = core.calModules[self.mode]
+        module = core.calTypes[self.mode]
         for i in xrange(12):
             comboMonth.append_text(_(module.getMonthName(i+1, None)))## year=None means all months
         comboMonth.set_active(0)
@@ -32,7 +32,7 @@ class YearMonthDayBox(gtk.HBox):
     def set_mode(self, mode):
         self.comboMonth.disconnect(self.comboMonthConn)
         self.mode = mode
-        module = core.calModules[mode]
+        module = core.calTypes[mode]
         combo = self.comboMonth
         for i in xrange(len(combo.get_model())):
             combo.remove_text(0)

@@ -25,7 +25,7 @@ from os.path import isfile, dirname, join, split, splitext, isabs
 
 
 from scal2.path import *
-from scal2.cal_types import calModulesList, calModuleNames, jd_to, to_jd, convert, DATE_GREG
+from scal2.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName
 from scal2.ics import icsTmFormat, icsHeader
@@ -70,7 +70,7 @@ class BasePlugin:
         self.path = path
         if isinstance(mode, basestring):
             try:
-                mode = calModuleNames.index(mode)
+                mode = calTypes.names.index(mode)
             except ValueError:
                 log.error('Plugin "%s" needs calendar module "%s" that is not loaded!\n'%(path, mode))
                 mode = None
@@ -103,8 +103,8 @@ class BasePlugin:
         t = self.get_text(y, m, d)
         if t:
             text += t
-        if self.last_day_merge and d>=calModulesList[self.mode].minMonthLen:
-        ## and d<=calModulesList[self.mode].maxMonthLen:
+        if self.last_day_merge and d>=calTypes[self.mode].minMonthLen:
+        ## and d<=calTypes[self.mode].maxMonthLen:
             ny, nm, nd = jd_to(c.jd + 1, self.mode)
             if nm > m or ny > y:
                 nt = self.get_text(y, m, d+1)
@@ -213,7 +213,7 @@ class HolidayPlugin(BasePlugin):
         self.holidays = {}
         for modeName in holidays.keys():## .keys() in not neccesery
             try:
-                mode = calModuleNames.index(modeName)
+                mode = calTypes.names.index(modeName)
             except ValueError:
                 continue
             self.holidays[mode] = holidays[modeName]
@@ -226,7 +226,7 @@ class HolidayPlugin(BasePlugin):
                         if d==hd:
                             c.holiday = True
                             break
-                        elif self.last_day_merge and d==hd-1 and hd>=calModulesList[mode].minMonthLen:
+                        elif self.last_day_merge and d==hd-1 and hd>=calTypes[mode].minMonthLen:
                             ny, nm, nd = jd_to(c.jd+1, mode)
                             if (ny, nm) > (y, m):
                                 c.holiday = True
@@ -287,7 +287,7 @@ class BuiltinTextPlugin(BasePlugin):
         db = []
         for j in range(12):
             monthDb = []
-            for k in range(calModulesList[self.mode].maxMonthLen):
+            for k in range(calTypes[self.mode].maxMonthLen):
                 monthDb.append('')
             db.append(monthDb)
         ## last item is a dict of dates (y, m, d) and the description of day:

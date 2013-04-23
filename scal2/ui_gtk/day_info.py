@@ -48,7 +48,7 @@ class AllDateLabelsVBox(gtk.VBox, ud.IntegratedCalObj):
         for child in self.get_children():
             child.destroy()
         sgroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
-        for i, module in core.calModules.iterIndexModule():
+        for i, module in core.calTypes.iterIndexModule():
             hbox = gtk.HBox()
             label = gtk.Label(_(module.desc))
             label.set_alignment(0, 0.5)

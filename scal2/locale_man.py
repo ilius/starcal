@@ -22,7 +22,7 @@ from os.path import join, isfile, isdir, isabs
 import locale, gettext
 from path import *
 from scal2.utils import StrOrderedDict, toStr, toUnicode
-from scal2.cal_types import calModulesList
+from scal2.cal_types import calTypes
 
 
 APP_NAME = 'starcal2'
@@ -200,7 +200,7 @@ def loadTranslator(ui_is_qt=False):
 
 rtlSgn = lambda: 1 if rtl else -1
 
-getMonthName = lambda mode, month, year=None: tr(calModulesList[mode].getMonthName(month, year))
+getMonthName = lambda mode, month, year=None: tr(calTypes[mode].getMonthName(month, year))
 
 getNumSep = lambda: tr(u'.') if enableNumLocale else u'.'
 
@@ -231,7 +231,7 @@ def numEncode(num, mode=None, fillZero=0, negEnd=False):
     elif isinstance(mode, int):
         if langSh != 'en':
             try:
-                mode = calModulesList[mode].origLang
+                mode = calTypes[mode].origLang
             except AttributeError:
                 mode = langSh
     if mode=='en' or not mode in digits.keys():
@@ -264,7 +264,7 @@ def textNumEncode(st, mode=None, changeSpecialChars=True, changeDot=False):
     elif isinstance(mode, int):
         if langSh != 'en':
             try:
-                mode = calModulesList[mode].origLang
+                mode = calTypes[mode].origLang
             except AttributeError:
                 mode = langSh
     dig = getLangDigits(mode)

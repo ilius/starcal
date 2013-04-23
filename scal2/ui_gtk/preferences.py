@@ -360,7 +360,7 @@ class PrefDialog(gtk.Dialog):
         ##################################################
         ################################
         options = []
-        for mod in core.calModules:
+        for mod in core.calTypes:
             for opt in mod.options:
                 if opt[0]=='button':
                     try:
@@ -741,7 +741,7 @@ class PrefDialog(gtk.Dialog):
         ######
         ud.updateFormatsBin()
         #################################################### Saving Preferences
-        for mod in core.calModules:
+        for mod in core.calTypes:
             mod.save()
         ##################### Saving locale config
         text = ''
