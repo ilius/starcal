@@ -21,6 +21,7 @@ from scal2.utils import toStr
 
 from scal2.locale_man import rtl
 from scal2.locale_man import tr as _
+from scal2.cal_types import calTypes
 from scal2 import core
 
 from scal2 import ui
@@ -119,7 +120,7 @@ CELLPADDING=4 CELLSPACING=0>
                 text += '            <TD WIDTH=13%>\n                <P DIR="LTR" ALIGN=CENTER>\n'
                 for (ind, tag) in format:
                     try:
-                        mode = core.calTypes.active[ind]
+                        mode = calTypes.active[ind]
                     except IndexError:
                         continue
                     try:

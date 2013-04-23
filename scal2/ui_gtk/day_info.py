@@ -23,6 +23,7 @@ import sys
 
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl, rtlSgn
+from scal2.cal_types import calTypes
 from scal2 import core
 from scal2 import ui
 
@@ -48,7 +49,7 @@ class AllDateLabelsVBox(gtk.VBox, ud.IntegratedCalObj):
         for child in self.get_children():
             child.destroy()
         sgroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
-        for i, module in core.calTypes.iterIndexModule():
+        for i, module in calTypes.iterIndexModule():
             hbox = gtk.HBox()
             label = gtk.Label(_(module.desc))
             label.set_alignment(0, 0.5)

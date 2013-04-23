@@ -20,7 +20,7 @@
 
 import time
 from scal2.locale_man import tr as _
-from scal2.cal_types import gregorian, to_jd
+from scal2.cal_types import calTypes, gregorian, to_jd
 
 from scal2 import core
 
@@ -106,7 +106,7 @@ def compileTmFormat(format, hasTime=True):
             i += 2
             continue
         elif c1=='Q':## calendar name (gregorian, jalali, ...)
-            funcs.append(lambda cell, mode, tm: _(core.calTypes[mode].name))
+            funcs.append(lambda cell, mode, tm: _(calTypes[mode].name))
             pyFmt += '%s'
             i += 2
             continue
@@ -121,12 +121,12 @@ def compileTmFormat(format, hasTime=True):
             i += 2
             continue
         elif c1=='b' or c1=='h':## ??????????
-            funcs.append(lambda cell, mode, tm: _(core.calTypes[mode].getMonthNameAb(cell.dates[mode][1])))
+            funcs.append(lambda cell, mode, tm: _(calTypes[mode].getMonthNameAb(cell.dates[mode][1])))
             pyFmt += '%s'
             i += 2
             continue
         elif c1=='B':
-            funcs.append(lambda cell, mode, tm: _(core.calTypes[mode].getMonthName(cell.dates[mode][1])))
+            funcs.append(lambda cell, mode, tm: _(calTypes[mode].getMonthName(cell.dates[mode][1])))
             pyFmt += '%s'
             i += 2
             continue

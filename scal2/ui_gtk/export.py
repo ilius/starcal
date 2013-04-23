@@ -24,6 +24,7 @@ import os, sys
 
 from scal2.locale_man import tr as _
 
+from scal2.cal_types import calTypes
 from scal2 import core
 
 from scal2 import ui
@@ -107,7 +108,7 @@ class ExportDialog(gtk.Dialog):
         print 'Exporting to html file "%s"'%path
         i = self.combo.get_active()
         months = []
-        module = core.calTypes[core.primaryMode]
+        module = calTypes[core.primaryMode]
         if i==0:
             s = getCurrentMonthStatus()
             months = [s]

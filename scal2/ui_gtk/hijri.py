@@ -123,10 +123,10 @@ class EditDbDialog(gtk.Dialog):
         self.updateWidget()
         return True
     def updateWidget(self):
-        #for index, module in core.calTypes.iterIndexModule():
+        #for index, module in calTypes.iterIndexModule():
         #    if module.name != 'hijri':
-        for mode in core.calTypes.active:
-            modeDesc = core.calTypes[mode].desc
+        for mode in calTypes.active:
+            modeDesc = calTypes[mode].desc
             if not 'hijri' in modeDesc.lower():
                 self.altMode = mode
                 self.altModeDesc = modeDesc

@@ -21,6 +21,7 @@ from scal2.locale_man import tr as _
 from scal2.utils import myRaise
 from scal2.path import pixDir
 
+from scal2.cal_types import calTypes
 from scal2 import core
 from scal2 import ui
 
@@ -329,7 +330,7 @@ class DateTypeCombo(gtk.ComboBox):
         self.pack_start(cell, True)
         self.add_attribute(cell, 'text', 1)
         ###
-        for i, mod in core.calTypes.iterIndexModule():
+        for i, mod in calTypes.iterIndexModule():
             ls.append([i, _(mod.desc)])
     def set_active(self, mode):
         ls = self.get_model()

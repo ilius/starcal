@@ -20,6 +20,7 @@
 from scal2.locale_man import rtl, rtlSgn
 from scal2.locale_man import tr as _
 
+from scal2.cal_types import calTypes
 from scal2 import core
 from scal2.core import myRaise, getMonthName, getMonthLen
 
@@ -95,7 +96,7 @@ def getMonthDesc(status=None):
                 else:
                     continue
     text = ''
-    for mode in core.calTypes.active:
+    for mode in calTypes.active:
         if text != '':
             text += '\n'
         if mode==core.primaryMode:

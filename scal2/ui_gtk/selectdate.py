@@ -24,6 +24,7 @@ import os, sys
 
 from scal2.locale_man import tr as _
 
+from scal2.cal_types import calTypes
 from scal2 import core
 from scal2.core import convert, getMonthName
 
@@ -130,7 +131,7 @@ class SelectDateDialog(gtk.Dialog):
         self.dateInput.add_history()
     def set_mode(self, mode):
         self.mode = mode
-        module = core.calTypes[mode]
+        module = calTypes[mode]
         self.comboMode.set_active(mode)
         self.ymdBox.set_mode(mode)
         self.dateInput.setMaxDay(module.maxMonthLen)
@@ -138,7 +139,7 @@ class SelectDateDialog(gtk.Dialog):
         pMode = self.mode
         pDate = self.get()
         mode = self.comboMode.get_active()
-        module = core.calTypes[mode]
+        module = calTypes[mode]
         if pDate==None:
             (y, m, d) = ui.cell.dates[mode]
         else:

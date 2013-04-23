@@ -27,6 +27,7 @@ from scal2.locale_man import langSh
 from scal2.locale_man import tr as _
 from scal2.path import *
 
+from scal2.cal_types import calTypes
 from scal2 import core
 from scal2.core import myRaise, convert, APP_DESC
 
@@ -360,7 +361,7 @@ class PrefDialog(gtk.Dialog):
         ##################################################
         ################################
         options = []
-        for mod in core.calTypes:
+        for mod in calTypes:
             for opt in mod.options:
                 if opt[0]=='button':
                     try:
@@ -741,7 +742,7 @@ class PrefDialog(gtk.Dialog):
         ######
         ud.updateFormatsBin()
         #################################################### Saving Preferences
-        for mod in core.calTypes:
+        for mod in calTypes:
             mod.save()
         ##################### Saving locale config
         text = ''

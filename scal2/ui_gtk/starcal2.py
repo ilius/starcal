@@ -43,6 +43,7 @@ if not isdir(confDir):
     restartLow()
 
 from scal2.utils import toStr, toUnicode
+from scal2.cal_types import calTypes
 from scal2 import core
 
 from scal2 import locale_man
@@ -338,7 +339,7 @@ class StatusBox(gtk.HBox, CustomizableCalObj):
         for label in self.labelBox.get_children():
             label.destroy()
         ###
-        for mode in core.calTypes.active:
+        for mode in calTypes.active:
             label = DateLabel(None)
             label.mode = mode
             self.labelBox.pack_start(label, 1, 0, 0)
@@ -1019,7 +1020,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         #    sep = _(',')+' '
         #else:
         sep = '\n'
-        for mode in core.calTypes.active:
+        for mode in calTypes.active:
             (y, m, d) = ui.todayCell.dates[mode]
             tt += '%s%s %s %s'%(sep, _(d), getMonthName(mode, m, y), _(y))
         if ui.pluginsTextTray:

@@ -1,4 +1,5 @@
 from scal2.locale_man import tr as _
+from scal2.cal_types import calTypes
 from scal2 import core
 from scal2.core import getMonthLen
 
@@ -17,7 +18,7 @@ class YearMonthDayBox(gtk.HBox):
         ####
         self.pack_start(gtk.Label(_('Month')), 0, 0)
         comboMonth = gtk.combo_box_new_text()
-        module = core.calTypes[self.mode]
+        module = calTypes[self.mode]
         for i in xrange(12):
             comboMonth.append_text(_(module.getMonthName(i+1, None)))## year=None means all months
         comboMonth.set_active(0)
@@ -32,7 +33,7 @@ class YearMonthDayBox(gtk.HBox):
     def set_mode(self, mode):
         self.comboMonth.disconnect(self.comboMonthConn)
         self.mode = mode
-        module = core.calTypes[mode]
+        module = calTypes[mode]
         combo = self.comboMonth
         for i in xrange(len(combo.get_model())):
             combo.remove_text(0)

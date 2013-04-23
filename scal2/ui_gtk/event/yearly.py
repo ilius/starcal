@@ -17,6 +17,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal2.cal_types import calTypes
 from scal2 import core
 from scal2.core import convert
 from scal2.locale_man import tr as _
@@ -91,7 +92,7 @@ class EventWidget(common.EventWidget):
                 pass
     def modeComboChanged(self, obj=None):## overwrite method from common.EventWidget
         newMode = self.modeCombo.get_active()
-        module = core.calTypes[newMode]
+        module = calTypes[newMode]
         monthCombo = self.monthCombo
         month = monthCombo.getValue()
         monthCombo.build(newMode)
