@@ -188,6 +188,8 @@ class ExportToIcsDialog(gtk.Dialog):
         dialog_add_button(self, gtk.STOCK_SAVE, _('_Save'), 2, self.save)
         ##
         self.connect('delete-event', self.onDelete)
+        self.fcw.connect('file-activated', self.save)## not working FIXME
+        ##
         try:
             self.fcw.set_current_folder(core.deskDir)
         except AttributeError:## PyGTK < 2.4
