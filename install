@@ -8,6 +8,12 @@ function printUsage {
     echo -e "Usage: $0 [${U}TERGET_DIR${E}] [--for-pkg|--portable] [--prefix=${U}/usr/local${E}]"
 }
 
+function clean {
+    for EXP in '.hidden' '*~' '*.pyc' '*.pyo' '*.tar.xz' '*.deb' '*.rpm' '*.spec'; do
+        find . -name "$EXP" -exec rm '{}' \;
+    done
+}
+
 myPath="$0"
 if [ "${myPath:0:2}" == "./" ] ; then
     myPath=$PWD${myPath:1}
@@ -217,9 +223,11 @@ mv "${shareDir}/$pkgName/scal2/ui_gtk/GNOME_Starcal2Applet.server" "$targetPrefi
 ## Cleaning useless files from targetDir
 cd "${shareDir}/$pkgName"
 rm -Rf .git .Trash* 2>/dev/null
-for EXP in '.hidden' '*~' '*.pyc' '*.pyo' '*.tar.xz' '*.deb' '*.rpm' '*.spec'; do
-    find . -name "$EXP" -exec rm '{}' \;
-done
+clean
+cd - > /dev/null
+
+cd "$targetDir"
+clean
 cd - > /dev/null
 
 ## lib/        -->    starcal2-platform-spec
