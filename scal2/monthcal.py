@@ -22,7 +22,7 @@ from scal2.locale_man import tr as _
 
 from scal2.cal_types import calTypes
 from scal2 import core
-from scal2.core import myRaise, getMonthName, getMonthLen, getWeekDay,
+from scal2.core import myRaise, getMonthName, getMonthLen, getWeekDay,\
                        getWeekNumber
 
 from scal2 import ui
