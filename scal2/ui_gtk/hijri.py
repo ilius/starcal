@@ -43,7 +43,7 @@ from scal2.ui_gtk import gtk_ud as ud
 hijriMode = calTypes.names.index('hijri')
 
 def getCurrentYm():
-    (y, m, d) = ui.todayCell.dates[hijriMode]
+    y, m, d = ui.todayCell.dates[hijriMode]
     return y*12 + m-1
 
 class EditDbDialog(gtk.Dialog):
@@ -140,7 +140,7 @@ class EditDbDialog(gtk.Dialog):
         for index, ym, mLen in monthDb.getMonthLenList():
             if ym == selectYm:
                 selectIndex = index
-            (year, month0) = divmod(ym, 12)
+            year, month0 = divmod(ym, 12)
             self.trees.append([
                 ym,
                 _(year),
@@ -154,7 +154,7 @@ class EditDbDialog(gtk.Dialog):
             self.treev.scroll_to_cell(str(selectIndex))
             self.treev.set_cursor(str(selectIndex))
     def updateEndDates(self):
-        (y, m, d) = self.startDateInput.get_value()
+        y, m, d = self.startDateInput.get_value()
         jd0 = to_jd(y, m, d, self.altMode) - 1
         for row in self.trees:
             mLen = row[3]
@@ -183,7 +183,7 @@ class EditDbDialog(gtk.Dialog):
                     break
         self.updateEndDates()
     def updateVars(self):
-        (y, m, d) = self.startDateInput.get_value()
+        y, m, d = self.startDateInput.get_value()
         monthDb.endJd = monthDb.startJd = to_jd(y, m, d, self.altMode)
         monthDb.monthLenByYm = {}
         for row in self.trees:

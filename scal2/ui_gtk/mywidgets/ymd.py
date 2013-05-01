@@ -44,7 +44,7 @@ class YearMonthDayBox(gtk.HBox):
     def changeMode(self, mode, newMode):## FIXME naming standard?
         self.set_mode(newMode)
     def set_value(self, date):
-        (y, m, d) = date
+        y, m, d = date
         self.spinY.set_value(y)
         self.comboMonth.set_active(m-1)
         self.spinD.set_value(d)

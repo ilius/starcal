@@ -29,5 +29,5 @@ class RuleWidget(gtk.HBox):
     def changeMode(self, mode):
         curMode = self.rule.getMode()
         if mode!=curMode:
-            (y, m, d) = self.dateInput.get_value()
+            y, m, d = self.dateInput.get_value()
             self.dateInput.set_value(core.convert(y, m, d, curMode, mode))

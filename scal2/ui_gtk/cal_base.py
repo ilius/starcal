@@ -144,7 +144,7 @@ class CalBase(CustomizableCalObj):
         #############################################
         text = '%.2d/%.2d/%.2d'%ui.cell.dates[ui.dragGetMode]
         textLay = newTextLayout(self, text)
-        (w, h) = textLay.get_pixel_size()
+        w, h = textLay.get_pixel_size()
         pmap = gdk.Pixmap(None, w, h, 24)
         #pmap.set_colormap(colormap)
         gc = pmap.new_gc()

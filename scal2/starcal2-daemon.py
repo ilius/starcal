@@ -85,7 +85,7 @@ def notify(eid):
 
 def prepareToday():
     tm = getCurrentTime()
-    (y, m, d) = localtime(tm)[:3]
+    y, m, d = localtime(tm)[:3]
     #log.debug('Date: %s/%s/%s   Epoch: %s'%(y, m, d, tm))
     todayJd = to_jd(y, m, d, DATE_GREG)
     dayRemainSecondsCeil = int(-(tm - 1)%(24*3600))

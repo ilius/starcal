@@ -251,7 +251,7 @@ class MonthCal(gtk.Widget, CalBase):
         #?????? Must enhance (only draw few cells, not all cells)
         #print time(), 'drawAll'#, tuple(event.area), tuple(self.allocation)
         if event:
-            (xu, yu, wu, hu) = tuple(event.area)
+            xu, yu, wu, hu = tuple(event.area)
             #print 'expose-event area:', xu, yu, wu, hu
         self.calcCoord()
         x, y, w, h = self.allocation
@@ -266,7 +266,7 @@ class MonthCal(gtk.Widget, CalBase):
             coord = self.translate_coordinates(self, wx, wy)
             if len(coord)==2:
                 from scal2.ui_gtk import desktop
-                (x0, y0) = coord
+                x0, y0 = coord
                 try:
                     bg = desktop.get_wallpaper(x0, y0, w, h)
                 except:
@@ -296,10 +296,10 @@ class MonthCal(gtk.Widget, CalBase):
             for i in xrange(7):
                 wday = newTextLayout(self, core.getWeekDayAuto(i, wdayAb))
                 try:
-                    (fontw, fonth) = wday.get_pixel_size()
+                    fontw, fonth = wday.get_pixel_size()
                 except:
                     myRaise(__file__)
-                    (fontw, fonth) = wday.get_pixel_size()
+                    fontw, fonth = wday.get_pixel_size()
                 cr.move_to(
                     self.cx[i]-fontw/2.0,
                     (ui.mcalTopMargin-fonth)/2.0-1,
@@ -308,7 +308,7 @@ class MonthCal(gtk.Widget, CalBase):
             ######## Drawing "Menu" label
             setColor(cr, ui.menuTextColor)
             text = newTextLayout(self, _('Menu'))
-            (fontw, fonth) = text.get_pixel_size()
+            fontw, fonth = text.get_pixel_size()
             if rtl:
                 cr.move_to(
                     w-(ui.mcalLeftMargin+fontw)/2.0 - 3,
@@ -355,7 +355,7 @@ class MonthCal(gtk.Widget, CalBase):
                 cr.show_layout(lay)
         selectedCellPos = ui.cell.monthPos
         if ui.todayCell.inSameMonth(ui.cell):
-            (tx, ty) = ui.todayCell.monthPos ## today x and y
+            tx, ty = ui.todayCell.monthPos ## today x and y
             x0 = self.cx[tx] - self.dx/2.0
             y0 = self.cy[ty] - self.dy/2.0
             cr.rectangle(x0, y0, self.dx, self.dy)
@@ -411,7 +411,7 @@ class MonthCal(gtk.Widget, CalBase):
                 mode = core.primaryMode
                 params = ui.mcalTypeParams[0]
                 daynum = newTextLayout(self, _(c.dates[mode][2], mode), params['font'])
-                (fontw, fonth) = daynum.get_pixel_size()
+                fontw, fonth = daynum.get_pixel_size()
                 if cellInactive:
                     setColor(cr, ui.inactiveColor)
                 elif c.holiday:
@@ -426,7 +426,7 @@ class MonthCal(gtk.Widget, CalBase):
                 if not cellInactive:
                     for mode, params in ui.getMcalMinorTypeParams()[1:]:
                         daynum = newTextLayout(self, _(c.dates[mode][2], mode), params['font'])
-                        (fontw, fonth) = daynum.get_pixel_size()
+                        fontw, fonth = daynum.get_pixel_size()
                         setColor(cr, params['color'])
                         cr.move_to(
                             x0 - fontw/2.0 + params['pos'][0],
@@ -471,7 +471,7 @@ class MonthCal(gtk.Widget, CalBase):
     def buttonPress(self, obj, event):
         ## self.winActivate() #?????????
         b = event.button
-        (x, y, mask) = event.window.get_pointer() # or self.get_pointer()
+        x, y, mask = event.window.get_pointer() # or self.get_pointer()
         self.pointer = (x, y)
         if b==2:
             return False

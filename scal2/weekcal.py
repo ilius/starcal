@@ -30,7 +30,7 @@ class WeekStatus(list):
     ## list (of 7 cells)
     def __init__(self, cellCache, absWeekNumber):
         self.absWeekNumber = absWeekNumber
-        (startJd, endJd) = core.getJdRangeOfAbsWeekNumber(absWeekNumber)
+        startJd, endJd = core.getJdRangeOfAbsWeekNumber(absWeekNumber)
         #self.startJd = startJd
         #self.startDate = core.jd_to(self.startJd, core.primaryMode)
         #self.weekNumberOfYear = core.getWeekNumber(*self.startDate)
@@ -43,7 +43,7 @@ class WeekStatus(list):
     allCells = lambda self: self
 
 def setParamsFunc(cell):
-    (cell.absWeekNumber, cell.weekDayIndex) = core.getWeekDateFromJd(cell.jd)
+    cell.absWeekNumber, cell.weekDayIndex = core.getWeekDateFromJd(cell.jd)
 
 
 getWeekStatus = lambda absWeekNumber: ui.cellCache.getCellGroup(pluginName, absWeekNumber)

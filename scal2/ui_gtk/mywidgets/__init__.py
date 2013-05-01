@@ -77,7 +77,7 @@ class MyFontButton(gtk.FontButton):
     def dragBegin(self, fontb, context, parent):
         #print 'fontBottonDragBegin'## caled before dragCalDataGet
         textLay = newTextLayout(self, gtk.FontButton.get_font_name(self))
-        (w, h) = textLay.get_pixel_size()
+        w, h = textLay.get_pixel_size()
         pmap = gdk.Pixmap(None, w, h, 24)
         pmap.draw_layout(
             pmap.new_gc(),
@@ -116,7 +116,7 @@ class MyColorButton(gtk.ColorButton): ## for tooltip text
         self.connect('color-set', self.update_tooltip)
     def update_tooltip(self, colorb=None):
         try:
-            (r, g, b) = self.get_color()
+            r, g, b = self.get_color()
             a = self.get_alpha()
             if self.get_use_alpha():
                 text = '%s\n%s\n%s\n%s'%(r, g, b, a)
@@ -132,7 +132,7 @@ class MyColorButton(gtk.ColorButton): ## for tooltip text
             #myRaise(__file__)
     def set_color(self, color):## color is a tuple of (r, g, b)
         if len(color)==3:
-            (r, g, b) = color
+            r, g, b = color
             gtk.ColorButton.set_color(self, rgbToGdkColor(*color))
             self.set_alpha(255)
         elif len(color)==4:

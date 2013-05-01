@@ -16,5 +16,5 @@ class RuleWidget(common.DurationInputBox):
     def updateWidget(self):
         self.setDuration(self.rule.value, self.rule.unit)
     def updateVars(self):
-        (self.rule.value, self.rule.unit) = self.getDuration()
+        self.rule.value, self.rule.unit = self.getDuration()
 

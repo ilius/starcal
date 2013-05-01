@@ -130,7 +130,7 @@ class MonthDbHolder:
     def getMonthLenByYear(self):
         monthLenByYear = {}
         for ym, mLen in self.monthLenByYm.iteritems():
-            (year, month0) = divmod(ym, 12)
+            year, month0 = divmod(ym, 12)
             if not year in monthLenByYear:
                 monthLenByYear[year] = [0,] * month0
             monthLenByYear[year].append(mLen)
@@ -154,9 +154,9 @@ class MonthDbHolder:
     def getDateFromJd(self, jd):
         if not self.endJd >= jd >= self.startJd:
             return
-        #(yi, mi, di) = self.startDate
+        #yi, mi, di = self.startDate
         #ymi = yi*12 + mi
-        (y, m, d) = self.startDate
+        y, m, d = self.startDate
         ym = y*12 + m-1
         while jd > self.startJd:
             monthLen = self.monthLenByYm[ym]
@@ -170,12 +170,12 @@ class MonthDbHolder:
             else:
                 d = d + jd - self.startJd
                 jd = self.startJd
-        (y, m) = divmod(ym, 12)
+        y, m = divmod(ym, 12)
         m += 1
         return (y, m, d)
     def getJdFromDate(self, year, month, day):
         ym = year*12 + month-1
-        (y0, m0, d0) = monthDb.startDate
+        y0, m0, d0 = monthDb.startDate
         ym0 = y0*12 + m0-1
         if not ym in monthDb.monthLenByYm:
             return
@@ -237,7 +237,7 @@ def getMonthLen(y, m):
 
 if __name__=='__main__':
     for ym in monthDb.monthLenByYm:
-        (y, m) = divmod(ym, 12)
+        y, m = divmod(ym, 12)
         m += 1
         print to_jd(y, m, 1) - to_jd_c(y, m, 1)
 

@@ -278,11 +278,11 @@ class Button:
             y = h - self.height + y
         return (x, y)
     def draw(self, cr, w, h):
-        (x, y) = self.getAbsPos(w, h)
+        x, y = self.getAbsPos(w, h)
         cr.set_source_pixbuf(self.pixbuf, x, y)
         cr.rectangle(x, y, self.width, self.height)
         cr.fill()
     def contains(self, px, py, w, h):
-        (x, y) = self.getAbsPos(w, h)
+        x, y = self.getAbsPos(w, h)
         return (x <= px < x+self.width and y <= py < y+self.height)
 

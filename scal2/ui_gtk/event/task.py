@@ -88,11 +88,11 @@ class EventWidget(common.EventWidget):
     def updateWidget(self):## FIXME
         common.EventWidget.updateWidget(self)
         ###
-        (startDate, startTime) = self.event.getStart()
+        startDate, startTime = self.event.getStart()
         self.startDateInput.set_value(startDate)
         self.startTimeInput.set_value(startTime)
         ###
-        (endType, values) = self.event.getEnd()
+        endType, values = self.event.getEnd()
         if endType=='duration':
             self.endTypeCombo.set_active(0)
             self.durationBox.setDuration(*values)

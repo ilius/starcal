@@ -117,9 +117,9 @@ class StarCalApplet(MainWin):
     def trayClicked(self, toggle):
         ##print tuple(self.menu.allocation)
         if toggle.get_active():
-            if (ui.winX, ui.winY) == (-1, -1):
+            if ui.winX, ui.winY == (-1, -1):
                 try:
-                    (x0, y0) = self.applet.window.get_origin()
+                    x0, y0 = self.applet.window.get_origin()
                     ui.winX = x0 + (self.applet.allocation.width-ui.winWidth)/2
                     ui.winY = y0 + self.applet.allocation.height - 3
                 except:
@@ -133,7 +133,7 @@ class StarCalApplet(MainWin):
             self.deiconify()
             self.present()
         else:
-            (ui.winX, ui.winY) = self.get_position()
+            ui.winX, ui.winY = self.get_position()
             self.hide()
     def appletButtonPress(self, widget, event):
         if event.button != 1:

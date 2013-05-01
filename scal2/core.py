@@ -112,14 +112,14 @@ except:
 
 def myRaise(File=None):
     i = sys.exc_info()
-    (typ, value, tback) = sys.exc_info()
+    typ, value, tback = sys.exc_info()
     text = 'line %s: %s: %s\n'%(tback.tb_lineno, typ.__name__, value)
     if File:
         text = 'File "%s", '%File + text
     log.error(text)
 
 def myRaiseTback(f=None):
-    (typ, value, tback) = sys.exc_info()
+    typ, value, tback = sys.exc_info()
     log.error("".join(traceback.format_exception(typ, value, tback)))
 
 
@@ -135,12 +135,12 @@ primary_to_jd = lambda y, m, d: calTypes[primaryMode].to_jd(y, m, d)
 jd_to_primary = lambda jd: calTypes[primaryMode].jd_to(jd)
 
 def getCurrentJd():## time() and mktime(localtime()) both return GMT, not local
-    (y, m, d) = localtime()[:3]
+    y, m, d = localtime()[:3]
     return to_jd(y, m, d, DATE_GREG)
 
 def getWeekDateHmsFromEpoch(epoch):
-   (jd, hour, minute, sec) = getJhmsFromEpoch(epoch)
-   (absWeekNumber, weekDay) = getWeekDateFromJd(jd)
+   jd, hour, minute, sec = getJhmsFromEpoch(epoch)
+   absWeekNumber, weekDay = getWeekDateFromJd(jd)
    return (absWeekNumber, weekDay, hour, minute, sec)
 
 def getMonthWeekNth(jd, mode):
@@ -356,7 +356,7 @@ def getSysDate(mode=None):
     if mode==DATE_GREG:
         return localtime()[:3]
     else:
-        (gy, gm, gd) = localtime()[:3]
+        gy, gm, gd = localtime()[:3]
         return convert(gy, gm, gd, DATE_GREG, mode)
 
 def mylocaltime(sec=None, mode=None):

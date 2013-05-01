@@ -224,8 +224,8 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
     tickEpochList = []
     minStep = minorStepMin / pixelPerSec ## second
     #################
-    (year0, month0, day0) = jd_to(jd0, core.primaryMode)
-    (year1, month1, day1) = jd_to(jd1, core.primaryMode)
+    year0, month0, day0 = jd_to(jd0, core.primaryMode)
+    year1, month1, day1 = jd_to(jd1, core.primaryMode)
     ############ Year
     minStepYear = minStep // minYearLenSec ## years ## int or iceil?
     yearPixel = minYearLenSec * pixelPerSec ## pixels
@@ -253,7 +253,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
                 monthUnit = 1
             if monthUnit < minMonthUnit:
                 continue
-            (y, m) = divmod(ym, 12) ; m+=1
+            y, m = divmod(ym, 12) ; m+=1
             tmEpoch = getEpochFromDate(y, m, 1, core.primaryMode)
             if tmEpoch in tickEpochList:
                 continue
@@ -292,7 +292,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
             tmEpoch = getEpochFromJd(jd)
             if tmEpoch in tickEpochList:
                 continue
-            (year, month, day) = jd_to(jd, core.primaryMode)
+            year, month, day = jd_to(jd, core.primaryMode)
             if day==16:
                 dayUnit = 15
             elif day in (6, 11, 21, 26):
@@ -328,7 +328,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
             if unitSize < majorStepMin:
                 label = ''
             else:
-                (jd, h, m, s) = getJhmsFromEpoch(tmEpoch)
+                jd, h, m, s = getJhmsFromEpoch(tmEpoch)
                 if s==0:
                     label = '%s:%s'%(
                         _(h),

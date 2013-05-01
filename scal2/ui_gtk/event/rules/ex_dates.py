@@ -110,7 +110,7 @@ class RuleWidget(gtk.HBox):
     def getSelectedIndex(self):
         cur = self.treev.get_cursor()
         try:
-            (path, col) = cur
+            path, col = cur
             index = path[0]
             return index
         except:

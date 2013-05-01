@@ -582,11 +582,11 @@ class AICalsPrefItem():
         tb = self.leftRightButton
         if tb.action == 'inactivate':
             if len(self.activeTrees) > 1:
-                (path, col) = self.activeTreev.get_cursor()
+                path, col = self.activeTreev.get_cursor()
                 if path:
                     self.inactivateIndex(path[0])
         elif tb.action == 'activate':
-            (path, col) = self.inactiveTreev.get_cursor()
+            path, col = self.inactiveTreev.get_cursor()
             if path:
                 self.activateIndex(path[0])
     def upClicked(self, obj=None):
@@ -596,7 +596,7 @@ class AICalsPrefItem():
             treev = self.inactiveTreev
         else:
             return
-        (path, col) = treev.get_cursor()
+        path, col = treev.get_cursor()
         if path:
             i = path[0]
             s = treev.get_model()
@@ -610,7 +610,7 @@ class AICalsPrefItem():
             treev = self.inactiveTreev
         else:
             return
-        (path, col) = treev.get_cursor()
+        path, col = treev.get_cursor()
         if path:
             i = path[0]
             s = treev.get_model()

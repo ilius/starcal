@@ -138,7 +138,7 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
         self.onDateChange()
     def buttonPress(self, widget, event):
         if event.button==3:
-            (x, y) = self.window.get_origin()
+            x, y = self.window.get_origin()
             y += self.allocation.height
             if rtl:
                 mw = self.menu.allocation.width
@@ -158,7 +158,7 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
         cr = self.window.cairo_create()
         cr.set_source_color(self.highlightColor)
         #print tuple(self.allocation), tuple(self.label.allocation)
-        (x, y, w, h) = self.allocation
+        x, y, w, h = self.allocation
         cr.rectangle(0, 0, w, 1)
         cr.fill()
         cr.rectangle(0, h-1, w, 1)
@@ -172,7 +172,7 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
         #self.drag_unhighlight()
         if self.window==None:
             return
-        (x, y, w, h) = self.allocation
+        x, y, w, h = self.allocation
         self.window.clear_area(0, 0, w, 1)
         self.window.clear_area(0, h-1, w, 1)
         self.window.clear_area(0, 0, 1, h)
@@ -280,7 +280,7 @@ class IntLabel(gtk.EventBox):
     def buttonPress(self, widget, event):
         if event.button==3:
             self.updateMenu()
-            (x, y) = self.window.get_origin()
+            x, y = self.window.get_origin()
             y += self.allocation.height
             x -= 7 ## ????????? because of menu padding
             self.menu.popup(None, None, lambda widget: (x, y, True), event.button, event.time)
@@ -325,7 +325,7 @@ class IntLabel(gtk.EventBox):
             return
         cr = self.window.cairo_create()
         cr.set_source_color(self.highlightColor)
-        (x, y, w, h) = self.allocation
+        x, y, w, h = self.allocation
         cr.rectangle(0, 0, w, 1)
         cr.fill()
         cr.rectangle(0, h-1, w, 1)
@@ -339,7 +339,7 @@ class IntLabel(gtk.EventBox):
         #self.drag_unhighlight()
         if self.window==None:
             return
-        (x, y, w, h) = self.allocation
+        x, y, w, h = self.allocation
         self.window.clear_area(0, 0, w, 1)
         self.window.clear_area(0, h-1, w, 1)
         self.window.clear_area(0, 0, 1, h)
@@ -356,7 +356,7 @@ class YearLabel(IntLabel, ud.IntegratedCalObj):
         self.connect('changed', self.onChanged)
     def onChanged(self, label, item):
         mode = self.mode
-        (y, m, d) = ui.cell.dates[mode]
+        y, m, d = ui.cell.dates[mode]
         ui.changeDate(item, m, d, mode)
         self.onDateChange()
     def changeMode(self, mode):

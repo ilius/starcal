@@ -41,14 +41,14 @@ def getJdListFromEpochRange(startEpoch, endEpoch):
     return range(startJd, endJd)
 
 def getHmsFromSeconds(second):
-    (minute, second) = divmod(int(second), 60)
-    (hour, minute) = divmod(minute, 60)
+    minute, second = divmod(int(second), 60)
+    hour, minute = divmod(minute, 60)
     return hour, minute, second
 
 def getJhmsFromEpoch(epoch, local=False):## return a tuple (julain_day, hour, minute, second) from epoch
     #if local:
     #    epoch -= getCurrentTimeZone()
-    (days, second) = divmod(ifloor(epoch), 24*3600)
+    days, second = divmod(ifloor(epoch), 24*3600)
     return (days+J1970,) + getHmsFromSeconds(second)
 
 def getSecondsFromHms(hour, minute, second=0):
@@ -57,7 +57,7 @@ def getSecondsFromHms(hour, minute, second=0):
 getEpochFromJhms = lambda jd, hour, minute, second: getEpochFromJd(jd) + getSecondsFromHms(hour, minute, second)
 
 def getJdAndSecondsFromEpoch(epoch):## return a tuple (julain_day, extra_seconds) from epoch
-    (days, second) = divmod(epoch, 24*3600)
+    days, second = divmod(epoch, 24*3600)
     return (days + J1970, second)
 
 def getTimeZoneByEpoch(epoch):
@@ -158,7 +158,7 @@ def durationEncode(value, unit):
 def durationDecode(durStr):
     durStr = durStr.strip()
     if ' ' in durStr:
-        (value, unit) = durStr.split(' ')
+        value, unit = durStr.split(' ')
         value = float(value)
         unit = unit.lower()
         if not unit:

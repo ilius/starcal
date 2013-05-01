@@ -175,7 +175,7 @@ class LocationDialog(gtk.Dialog):
                 continue
             if p[0]=='':
                 if p[1]=='':
-                    (city, lat, lng) = p[2:5]
+                    city, lat, lng = p[2:5]
                     #if country=='Iran':
                     #    print city
                     if len(p)>4:
@@ -208,7 +208,7 @@ class LocationDialog(gtk.Dialog):
         c = treev.get_cursor()[0]
         if c!=None:
             i = c[0]
-            (j, s) = self.trees[i]
+            j, s = self.trees[i]
             self.entry_edit_name.set_text(s)
             self.spin_lat.set_value(self.cityData[j][2])
             self.spin_lng.set_value(self.cityData[j][3])
@@ -226,7 +226,7 @@ class LocationDialog(gtk.Dialog):
             else:
                 i = cur[0]
                 j = self.trees[i][0]
-                (name, lname, lat, lng) = self.cityData[j]
+                name, lname, lat, lng = self.cityData[j]
             self.entry_edit_name.set_text(lname)
             self.spin_lat.set_value(lat)
             self.spin_lng.set_value(lng)
@@ -277,7 +277,7 @@ class LocationButton(gtk.Button):
     def onClicked(self, widget):
         res = self.dialog.run()
         if res:
-            (self.locName, self.lat, self.lng) = res
+            self.locName, self.lat, self.lng = res
             self.set_label(self.locName)
 
 

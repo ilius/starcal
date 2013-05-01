@@ -115,17 +115,17 @@ class FClockWidget(gtk.DrawingArea): ## Time is in Local
         cr.set_source_color(gdk.Color(0,0,0))
         lay = self.create_pango_layout(text)
         cr.show_layout(lay)
-        (w, h) = lay.get_pixel_size()
+        w, h = lay.get_pixel_size()
         cr.clip()
         self.set_size_request(w, h)
         """
         textLay = self.create_pango_layout('') ## markup
         textLay.set_markup(text)
         textLay.set_font_description(pango.FontDescription(ui.getFont()))
-        (w, h) = textLay.get_pixel_size()
+        w, h = textLay.get_pixel_size()
         pixbuf = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, w, h)
         pixbuf = pixbuf.add_alpha(True, '0','0','0')
-        (pmap, mask) = pixbuf.render_pixmap_and_mask(alpha_threshold=127) ## pixmap is also a drawable
+        pmap, mask = pixbuf.render_pixmap_and_mask(alpha_threshold=127) ## pixmap is also a drawable
         pmap.draw_layout(pmap.new_gc(), 0, 0, textLay, trayTextColor)#, trayBgColor)
         self.clear()
         #self.set_from_image(pmap.get_image(0, 0, w, h), mask)

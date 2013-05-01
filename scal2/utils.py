@@ -104,14 +104,14 @@ class FallbackLogger:
 
 def myRaise(File=None):
     i = sys.exc_info()
-    (typ, value, tback) = sys.exc_info()
+    typ, value, tback = sys.exc_info()
     text = 'line %s: %s: %s\n'%(tback.tb_lineno, typ.__name__, value)
     if File:
         text = 'File "%s", '%File + text
     sys.stderr.write(text)
 
 def myRaiseTback():
-    (typ, value, tback) = sys.exc_info()
+    typ, value, tback = sys.exc_info()
     sys.stderr.write("".join(traceback.format_exception(typ, value, tback)))
 
 restartLow = lambda: os.execl(
@@ -330,7 +330,7 @@ def inputDate(msg):
 def inputDateJd(msg):
     date = inputDate(msg)
     if date:
-        (y, m, d) = date
+        y, m, d = date
         return to_jd(y, m, d, DATE_GREG)
 
 

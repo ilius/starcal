@@ -195,7 +195,7 @@ def processDroppedDate(text, dtype):
             except OSError:
                 print 'Dropped invalid file "%s"'%path
             else:
-                (y, m, d) = localtime(t)[:3]
+                y, m, d = localtime(t)[:3]
                 #print 'Dropped file "%s", modification time: %s/%s/%s'%(path, y, m, d)
                 return (y, m, d, core.DATE_GREG)
         else:

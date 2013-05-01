@@ -467,7 +467,7 @@ class WeekNumberModeEventRule(EventRule):
     params = (
         'weekNumMode',
     )
-    (EVERY_WEEK, ODD_WEEKS, EVEN_WEEKS) = range(3) ## remove EVERY_WEEK? FIXME
+    EVERY_WEEK, ODD_WEEKS, EVEN_WEEKS = range(3) ## remove EVERY_WEEK? FIXME
     weekNumModeNames = ('any', 'odd', 'even')
     def __init__(self, parent):
         EventRule.__init__(self, parent)
@@ -606,7 +606,7 @@ class DateEventRule(EventRule):
     def setData(self, data):
         self.date = dateDecode(data)
     def getJd(self):
-        (year, month, day) = self.date
+        year, month, day = self.date
         return to_jd(year, month, day, self.getMode())
     getEpoch = lambda self: getEpochFromJd(self.getJd())
     def setJd(self, jd):
@@ -786,7 +786,7 @@ class DurationEventRule(EventRule):
         self.unit, self.value = int(s), 1
     def setData(self, data):
         try:
-            (self.value, self.unit) = durationDecode(data)
+            self.value, self.unit = durationDecode(data)
         except Exception, e:
             log.error('Error while loading event rule "%s": %s'%(self.name, e))
     getData = lambda self: durationEncode(self.value, self.unit)
@@ -1101,7 +1101,7 @@ class RuleContainer:
             if not name in self.rulesOd:
                 self.addNewRule(name)
     def checkAndAddRule(self, rule):
-        (ok, msg) = self.checkRulesDependencies(newRule=rule)
+        ok, msg = self.checkRulesDependencies(newRule=rule)
         if ok:
             self.addRule(rule)
         return (ok, msg)
@@ -1112,7 +1112,7 @@ class RuleContainer:
             except KeyError:
                 pass
     def checkAndRemoveRule(self, rule):
-        (ok, msg) = self.checkRulesDependencies(disabledRule=rule)
+        ok, msg = self.checkRulesDependencies(disabledRule=rule)
         if ok:
             self.removeRule(rule)
         return (ok, msg)
@@ -1549,10 +1549,10 @@ class TaskEvent(SingleStartEndEvent):
         self.removeSomeRuleTypes('end', 'duration')
         if endType=='date':
             rule = EndEventRule(self)
-            (rule.date, rule.time) = values
+            rule.date, rule.time = values
         elif endType=='duration':
             rule = DurationEventRule(self)
-            (rule.value, rule.unit) = values
+            rule.value, rule.unit = values
         else:
             raise ValueError('invalid endType=%r'%endType)
         self.addRule(rule)
@@ -1813,7 +1813,7 @@ class YearlyEvent(Event):
     getDay = lambda self: self['day'].values[0]
     setDay = lambda self, day: self.getAddRule('day').setData(day)
     def setDefaults(self):
-        (y, m, d) = core.getSysDate(self.mode)
+        y, m, d = core.getSysDate(self.mode)
         self.setMonth(m)
         self.setDay(d)
     def getJd(self):## used only for copyFrom
@@ -1827,7 +1827,7 @@ class YearlyEvent(Event):
         d = self.getDay()
         return to_jd(y, m, d, self.mode)
     def setJd(self, jd):## used only for copyFrom
-        (y, m, d) = jd_to(jd, self.mode)
+        y, m, d = jd_to(jd, self.mode)
         self.setMonth(m)
         self.setDay(d)
         self.getAddRule('start').date = (y, 1, 1)
@@ -1990,7 +1990,7 @@ class UniversityClassEvent(Event):
         Event.setDefaultsFromGroup(self, group)
         if group.name=='universityTerm':
             try:
-                (tm0, tm1) = group.classTimeBounds[:2]
+                tm0, tm1 = group.classTimeBounds[:2]
             except:
                 myRaise()
             else:
@@ -2069,7 +2069,7 @@ class UniversityExamEvent(DailyNoteEvent):
         )
     def getIcsData(self, prettyDateTime=False):
         dayStart = self['date'].getEpoch()
-        (startSec, endSec) = self['dayTimeRange'].getSecondsRange()
+        startSec, endSec = self['dayTimeRange'].getSecondsRange()
         return [
             ('DTSTART', getIcsTimeByEpoch(
                 dayStart + startSec,
@@ -2426,7 +2426,7 @@ class EventGroup(EventContainer):
         ###
         self.eventCache = {} ## from eid to event object
         ###
-        (year, month, day) = core.getSysDate(self.mode)
+        year, month, day = core.getSysDate(self.mode)
         self.startJd = to_jd(year-10, 1, 1, self.mode)
         self.endJd = to_jd(year+5, 1, 1, self.mode)
         ##
@@ -2925,7 +2925,7 @@ class UniversityTerm(EventGroup):
         lastTm = timeToFloatHour(*self.classTimeBounds[-1])
         deltaTm = lastTm - firstTm
         for i in range(count-1):
-            (tm0, tm1) = self.classTimeBounds[i:i+2]
+            tm0, tm1 = self.classTimeBounds[i:i+2]
             titles.append(
                 textNumEncode(simpleTimeEncode(tm0)) + ' ' + _('to') + ' ' + textNumEncode(simpleTimeEncode(tm1))
             )
@@ -2968,7 +2968,7 @@ class UniversityTerm(EventGroup):
                     weekNumMode = ''
             ###
             weekDay = event['weekDay'].weekDayList[0]
-            (h0, h1) = event['dayTimeRange'].getHourRange()
+            h0, h1 = event['dayTimeRange'].getHourRange()
             startIndex = findNearestIndex(boundsHour, h0)
             endIndex = findNearestIndex(boundsHour, h1)
             ###
@@ -2994,7 +2994,7 @@ class UniversityTerm(EventGroup):
         ## FIXME
         ## odd term or even term?
         jd = core.getCurrentJd()
-        (year, month, day) = jd_to(jd, self.mode)
+        year, month, day = jd_to(jd, self.mode)
         md = (month, day)
         if calType=='jalali':
             ## 0/07/01 to 0/11/01
@@ -3692,7 +3692,7 @@ def getDayOccurrenceData(curJd, groups):
 
 
 def getWeekOccurrenceData(curAbsWeekNumber, groups):
-    (startJd, endJd) = core.getJdRangeOfAbsWeekNumber(absWeekNumber)
+    startJd, endJd = core.getJdRangeOfAbsWeekNumber(absWeekNumber)
     data = []
     for group in groups:
         if not group.enable:
@@ -3708,7 +3708,7 @@ def getWeekOccurrenceData(curAbsWeekNumber, groups):
             ids = (group.id, event.id)
             if isinstance(occur, JdSetOccurrence):
                 for jd in occur.getDaysJdList():
-                    (wnum, weekDay) = core.getWeekDateFromJd(jd)
+                    wnum, weekDay = core.getWeekDateFromJd(jd)
                     if wnum==curAbsWeekNumber:
                         data.append({
                             'weekDay':weekDay,
@@ -3719,9 +3719,9 @@ def getWeekOccurrenceData(curAbsWeekNumber, groups):
                         })
             elif isinstance(occur, TimeRangeListOccurrence):
                 for startEpoch, endEpoch in occur.getTimeRangeList():
-                    (jd1, h1, min1, s1) = core.getJhmsFromEpoch(startEpoch)
-                    (jd2, h2, min2, s2) = core.getJhmsFromEpoch(endEpoch)
-                    (wnum, weekDay) = core.getWeekDateFromJd(jd1)
+                    jd1, h1, min1, s1 = core.getJhmsFromEpoch(startEpoch)
+                    jd2, h2, min2, s2 = core.getJhmsFromEpoch(endEpoch)
+                    wnum, weekDay = core.getWeekDateFromJd(jd1)
                     if wnum==curAbsWeekNumber:
                         if jd1==jd2:
                             data.append({
@@ -3740,7 +3740,7 @@ def getWeekOccurrenceData(curAbsWeekNumber, groups):
                                 'ids': ids,
                             })
                             for jd in range(jd1+1, jd2):
-                                (wnum, weekDay) = core.getWeekDateFromJd(jd)
+                                wnum, weekDay = core.getWeekDateFromJd(jd)
                                 if wnum==curAbsWeekNumber:
                                     data.append({
                                         'weekDay':weekDay,
@@ -3751,7 +3751,7 @@ def getWeekOccurrenceData(curAbsWeekNumber, groups):
                                     })
                                 else:
                                     break
-                            (wnum, weekDay) = core.getWeekDateFromJd(jd2)
+                            wnum, weekDay = core.getWeekDateFromJd(jd2)
                             if wnum==curAbsWeekNumber:
                                 data.append({
                                     'weekDay':weekDay,
@@ -3762,8 +3762,8 @@ def getWeekOccurrenceData(curAbsWeekNumber, groups):
                                 })
             elif isinstance(occur, TimeListOccurrence):
                 for epoch in occur.epochList:
-                    (jd, hour, minute, sec) = core.getJhmsFromEpoch(epoch)
-                    (wnum, weekDay) = core.getWeekDateFromJd(jd)
+                    jd, hour, minute, sec = core.getJhmsFromEpoch(epoch)
+                    wnum, weekDay = core.getWeekDateFromJd(jd)
                     if wnum==curAbsWeekNumber:
                         data.append({
                             'weekDay':weekDay,
@@ -3778,7 +3778,7 @@ def getWeekOccurrenceData(curAbsWeekNumber, groups):
 
 
 def getMonthOccurrenceData(curYear, curMonth, groups):
-    (startJd, endJd) = core.getJdRangeForMonth(curYear, curMonth, core.primaryMode)
+    startJd, endJd = core.getJdRangeForMonth(curYear, curMonth, core.primaryMode)
     data = []
     for group in groups:
         if not group.enable:
@@ -3794,7 +3794,7 @@ def getMonthOccurrenceData(curYear, curMonth, groups):
             ids = (group.id, event.id)
             if isinstance(occur, JdSetOccurrence):
                 for jd in occur.getDaysJdList():
-                    (y, m, d) = jd_to(jd, core.primaryMode)
+                    y, m, d = jd_to(jd, core.primaryMode)
                     if y==curYear and m==curMonth:
                         data.append({
                             'day':d,
@@ -3805,9 +3805,9 @@ def getMonthOccurrenceData(curYear, curMonth, groups):
                         })
             elif isinstance(occur, TimeRangeListOccurrence):
                 for startEpoch, endEpoch in occur.getTimeRangeList():
-                    (jd1, h1, min1, s1) = core.getJhmsFromEpoch(startEpoch)
-                    (jd2, h2, min2, s2) = core.getJhmsFromEpoch(endEpoch)
-                    (y, m, d) = jd_to(jd1, core.primaryMode)
+                    jd1, h1, min1, s1 = core.getJhmsFromEpoch(startEpoch)
+                    jd2, h2, min2, s2 = core.getJhmsFromEpoch(endEpoch)
+                    y, m, d = jd_to(jd1, core.primaryMode)
                     if y==curYear and m==curMonth:
                         if jd1==jd2:
                             data.append({
@@ -3826,7 +3826,7 @@ def getMonthOccurrenceData(curYear, curMonth, groups):
                                 'ids': ids,
                             })
                             for jd in range(jd1+1, jd2):
-                                (y, m, d) = jd_to(jd, core.primaryMode)
+                                y, m, d = jd_to(jd, core.primaryMode)
                                 if y==curYear and m==curMonth:
                                     data.append({
                                         'day':d,
@@ -3837,7 +3837,7 @@ def getMonthOccurrenceData(curYear, curMonth, groups):
                                     })
                                 else:
                                     break
-                            (y, m, d) = jd_to(jd2, core.primaryMode)
+                            y, m, d = jd_to(jd2, core.primaryMode)
                             if y==curYear and m==curMonth:
                                 data.append({
                                     'day':d,
@@ -3848,8 +3848,8 @@ def getMonthOccurrenceData(curYear, curMonth, groups):
                                 })
             elif isinstance(occur, TimeListOccurrence):
                 for epoch in occur.epochList:
-                    (jd, hour, minute, sec) = core.getJhmsFromEpoch(epoch)
-                    (y, m, d) = jd_to(jd1, core.primaryMode)
+                    jd, hour, minute, sec = core.getJhmsFromEpoch(epoch)
+                    y, m, d = jd_to(jd1, core.primaryMode)
                     if y==curYear and m==curMonth:
                         data.append({
                             'day':d,

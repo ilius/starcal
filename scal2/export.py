@@ -31,18 +31,18 @@ rgbToHtml = lambda r, g, b, a=None: '#%.2x%.2x%.2x'%(r, g, b) ## What to do with
 
 def colorComposite(front, back):
     if len(back)==3:
-        (r0, g0, b0) = back
+        r0, g0, b0 = back
         a0 = 1.0
     elif len(back)==4:
-        (r0, g0, b0) = back[:3]
+        r0, g0, b0 = back[:3]
         a0 = back[3]/255.0
     else:
         raise ValueError
     if len(front)==3:
-        (r1, g1, b1) = front
+        r1, g1, b1 = front
         a1 = 1.0
     elif len(front)==4:
-        (r1, g1, b1) = front[:3]
+        r1, g1, b1 = front[:3]
         a1 = front[3]/255.0
     else:
         raise ValueError

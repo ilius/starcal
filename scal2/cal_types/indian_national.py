@@ -112,7 +112,7 @@ def jd_to(jd):
     ## what day in the Gregorian year the Julian Day number is, converting this to the day in the
     ## Indian year and subtracting off the required number of months and days to get the final date
 
-    (gregorianYear, gregorianMonth, gregorianDay) = gregorian.jd_to(jd)
+    gregorianYear, gregorianMonth, gregorianDay = gregorian.jd_to(jd)
     jdGregorianFirstDayOfYear = gregorian.to_jd(gregorianYear, 1, 1)
     gregorianDayOfYear = jd - jdGregorianFirstDayOfYear + 1
 

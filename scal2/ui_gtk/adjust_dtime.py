@@ -183,17 +183,17 @@ class AdjusterDialog(gtk.Dialog):
     def setSysTimeClicked(self, widget=None):
         if self.radioMan.get_active():
             if self.editTime:
-                (h, m, s) = self.timeInput.get_value()
+                h, m, s = self.timeInput.get_value()
                 if self.editDate:
-                    (Y, M, D) = self.dateInput.get_value()
+                    Y, M, D = self.dateInput.get_value()
                     cmd = ['/bin/date', '-s', '%.4d/%.2d/%.2d %.2d:%.2d:%.2d'%(Y,M,D,h,m,s)]
                 else:
                     cmd = ['/bin/date', '-s', '%.2d:%.2d:%.2d'%(h, m, s)]
             else:
                 if self.editDate:
-                    (Y, M, D) = self.dateInput.get_value()
-                    ##(h, m, s) = self.timeInput.get_value()
-                    (h, m, s) = time.localtime()[3:6]
+                    Y, M, D = self.dateInput.get_value()
+                    ##h, m, s = self.timeInput.get_value()
+                    h, m, s = time.localtime()[3:6]
                     cmd = ['/bin/date', '-s', '%.4d/%.2d/%.2d %.2d:%.2d:%.2d'%(Y,M,D,h,m,s)]
                 else:
                     error_exit('No change!', self)#??????????
@@ -205,7 +205,7 @@ class AdjusterDialog(gtk.Dialog):
             #    error_exit('Could not find command /usr/sbin/ntpdate: no such file!', self)#??????????
         else:
             error_exit('Not valid option!', self)
-        (inp, out, err) = os.popen3(cmd)
+        inp, out, err = os.popen3(cmd)
         err_text = err.read()
         if err_text=='':
             sys.exit(0)

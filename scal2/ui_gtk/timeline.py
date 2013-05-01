@@ -186,7 +186,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
     def drawBoxEditingHelperLines(self, cr):
         if not self.boxEditing:
             return
-        (editType, event, box, x0, t0) = self.boxEditing
+        editType, event, box, x0, t0 = self.boxEditing
         setColor(cr, fgColor)
         d = editingBoxHelperLineWidth
         cr.rectangle(
@@ -281,7 +281,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
                     continue
                 if not box.contains(x, y):
                     continue
-                (gid, eid) = box.ids
+                gid, eid = box.ids
                 group = ui.eventGroups[gid]
                 event = group[eid]
                 ####
@@ -311,7 +311,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
                     continue
                 if not box.contains(x, y):
                     continue
-                (gid, eid) = box.ids
+                gid, eid = box.ids
                 group = ui.eventGroups[gid]
                 event = group[eid]
                 ####
@@ -541,7 +541,7 @@ class TimeLineWindow(gtk.Window, ud.IntegratedCalObj):
         return True
     def buttonPress(self, obj, event):
         if event.button==1:
-            (px, py, mask) = ud.rootWindow.get_pointer()
+            px, py, mask = ud.rootWindow.get_pointer()
             self.begin_move_drag(event.button, px, py, event.time)
             return True
         return False

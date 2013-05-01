@@ -58,8 +58,8 @@ def timezoneHM(year, month, day):
 
 def timezoneHMS(year, month, day):
     s = timezoneSec(year, month, day)
-    (m, s) = divmod(s, 60)
-    (h, m) = divmod(m, 60)
+    m, s = divmod(s, 60)
+    h, m = divmod(m, 60)
     return (h, m, s)
 
 

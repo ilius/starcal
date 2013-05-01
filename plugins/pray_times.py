@@ -175,7 +175,7 @@ class TextPlug(BasePlugin, TextPlugUI):
         return [(name, times[name]) for name in self.shownTimeNames]
     def getFormattedTime(self, tm):## tm is float hour
         try:
-            (h, m, s) = floatHourToTime(float(tm))
+            h, m, s = floatHourToTime(float(tm))
         except ValueError:
             return tm
         else:

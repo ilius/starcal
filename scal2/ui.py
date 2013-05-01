@@ -187,8 +187,8 @@ def checkStartup():
     return False
 
 def dayOpenEvolution(arg=None):
-    ##(y, m, d) = core.jd_to(cell.jd-1, core.DATE_GREG) ## in gnome-cal opens prev day! why??
-    (y, m, d) = cell.dates[core.DATE_GREG]
+    ##y, m, d = core.jd_to(cell.jd-1, core.DATE_GREG) ## in gnome-cal opens prev day! why??
+    y, m, d = cell.dates[core.DATE_GREG]
     Popen('LANG=en_US.UTF-8 evolution calendar:///?startdate=%.4d%.2d%.2d'%(y, m, d), shell=True)## FIXME
     ## 'calendar:///?startdate=%.4d%.2d%.2dT120000Z'%(y, m, d)
     ## What "Time" pass to evolution? like gnome-clock: T193000Z (19:30:00) / Or ignore "Time"
@@ -198,7 +198,7 @@ def dayOpenSunbird(arg=None):
     ## does not work on latest version of Sunbird ## FIXME
     ## and Sunbird seems to be a dead project
     ## Opens previous day in older version
-    (y, m, d) = cell.dates[core.DATE_GREG]
+    y, m, d = cell.dates[core.DATE_GREG]
     Popen('LANG=en_US.UTF-8 sunbird -showdate %.4d/%.2d/%.2d'%(y, m, d), shell=True)
 
 ## How do this with KOrginizer? FIXME
@@ -214,7 +214,7 @@ class Cell:## status and information of a cell
         ###
         self.jd = jd
         date = core.jd_to(jd, core.primaryMode)
-        (self.year, self.month, self.day) = date
+        self.year, self.month, self.day = date
         self.weekDay = core.jwday(jd)
         self.weekNum = core.getWeekNumber(self.year, self.month, self.day)
         self.holiday = (self.weekDay in core.holidayWeekDays)
@@ -238,7 +238,7 @@ class Cell:## status and information of a cell
     def format(self, binFmt, mode=None, tm=null):## FIXME
         if mode is None:
             mode = core.primaryMode
-        (pyFmt, funcs) = binFmt
+        pyFmt, funcs = binFmt
         return pyFmt%tuple(f(self, mode, tm) for f in funcs)
     def inSameMonth(self, other):
         return self.dates[core.primaryMode][:2] == other.dates[core.primaryMode][:2]
@@ -349,7 +349,7 @@ def yearPlus(plus=1):
 getFont = lambda: list(fontCustom if fontCustomEnable else fontDefault)
 
 def getFontSmall():
-    (name, bold, underline, size) = getFont()
+    name, bold, underline, size = getFont()
     return (name, bold, underline, int(size*0.6))
 
 def initFonts(fontDefaultNew):

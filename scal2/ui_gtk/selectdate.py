@@ -118,7 +118,7 @@ class SelectDateDialog(gtk.Dialog):
     def show(self):
         ## Show a window that ask the date and set on the calendar
         mode = core.primaryMode
-        (y, m, d) = ui.cell.dates[mode]
+        y, m, d = ui.cell.dates[mode]
         self.set_mode(mode)
         self.set(y, m, d)
         openWindow(self)
@@ -141,10 +141,10 @@ class SelectDateDialog(gtk.Dialog):
         mode = self.comboMode.get_active()
         module = calTypes[mode]
         if pDate==None:
-            (y, m, d) = ui.cell.dates[mode]
+            y, m, d = ui.cell.dates[mode]
         else:
-            (y0, m0, d0) = pDate
-            (y, m, d) = convert(y0, m0, d0, pMode, mode)
+            y0, m0, d0 = pDate
+            y, m, d = convert(y0, m0, d0, pMode, mode)
         self.ymdBox.set_mode(mode)
         self.dateInput.setMaxDay(module.maxMonthLen)
         self.set(y, m, d)
@@ -154,7 +154,7 @@ class SelectDateDialog(gtk.Dialog):
         if self.radio1.get_active():
             y0, m0, d0 = self.ymdBox.get_value()
         elif self.radio2.get_active():
-            (y0, m0, d0) = self.dateInput.get_value()
+            y0, m0, d0 = self.dateInput.get_value()
         return (y0, m0, d0)
     def ok(self, widget):
         mode = self.comboMode.get_active()
@@ -163,11 +163,11 @@ class SelectDateDialog(gtk.Dialog):
         get = self.get()
         if get==None:
             return
-        (y0, m0, d0) = get
+        y0, m0, d0 = get
         if mode==core.primaryMode:
-            (y, m, d) = (y0, m0, d0)
+            y, m, d = (y0, m0, d0)
         else:
-            (y, m, d) = convert(y0, m0, d0, mode, core.primaryMode)
+            y, m, d = convert(y0, m0, d0, mode, core.primaryMode)
         if not core.validDate(mode, y, m, d):
             print 'bad date: %s'%dateStr(mode, y, m, d)
             return

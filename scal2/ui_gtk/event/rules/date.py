@@ -19,5 +19,5 @@ class RuleWidget(DateButton):
     def changeMode(self, mode):
         curMode = self.rule.getMode()
         if mode!=curMode:
-            (y, m, d) = self.get_value()
+            y, m, d = self.get_value()
             self.set_value(core.convert(y, m, d, curMode, mode))

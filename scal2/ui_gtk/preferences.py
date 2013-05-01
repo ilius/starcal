@@ -912,7 +912,7 @@ class PrefDialog(gtk.Dialog):
         ## ???????????????????????????
         ## Reize window to show all texts
         #self.plugAddTreeview.columns_autosize()#??????????
-        (r, x, y, w, h) = self.plugAddTreeview.get_column(0).cell_get_size()
+        r, x, y, w, h = self.plugAddTreeview.get_column(0).cell_get_size()
         #print r[2], r[3], x, y, w, h
         self.plugAddDialog.resize(w+30, 75 + 30*len(self.plugAddTreestore))
         ###############

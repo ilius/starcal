@@ -114,7 +114,7 @@ class CourseListEditor(gtk.HBox):
     def getSelectedIndex(self):
         cur = self.treev.get_cursor()
         try:
-            (path, col) = cur
+            path, col = cur
             index = path[0]
             return index
         except:
@@ -215,7 +215,7 @@ class ClassTimeBoundsEditor(gtk.HBox):
     def getSelectedIndex(self):
         cur = self.treev.get_cursor()
         try:
-            (path, col) = cur
+            path, col = cur
             index = path[0]
             return index
         except:
@@ -346,7 +346,7 @@ class WeeklyScheduleWidget(gtk.Widget):
         gridColor = ui.gridColor
         ###
         #classBounds = self.term.classTimeBounds
-        (titles, tmfactors) = self.term.getClassBoundsFormatted()
+        titles, tmfactors = self.term.getClassBoundsFormatted()
         ###
         weekDayLayouts = []
         weekDayLayoutsWidth = []
@@ -381,7 +381,7 @@ class WeeklyScheduleWidget(gtk.Widget):
         setColor(cr, textColor)
         for i,title in enumerate(titles):
             layout = newTextLayout(self, title)
-            (layoutW, layoutH) = layout.get_pixel_size()
+            layoutW, layoutH = layout.get_pixel_size()
             ##
             dx = (w - leftMargin) * (tmfactors[i+1] - tmfactors[i])
             if dx < layoutW:
@@ -399,7 +399,7 @@ class WeeklyScheduleWidget(gtk.Widget):
         ###
         for j in range(7):
             layout = weekDayLayouts[j]
-            (layoutW, layoutH) = layout.get_pixel_size()
+            layoutW, layoutH = layout.get_pixel_size()
             x = leftMargin/2.0
             if rtl: x = w - x
             x -= layoutW/2.0
@@ -419,7 +419,7 @@ class WeeklyScheduleWidget(gtk.Widget):
                     textList.append(text)
                 dx = (w - leftMargin) * (tmfactors[i+1] - tmfactors[i])
                 layout = newTextLayout(self, '\n'.join(textList), maxSize=(dx, dy))
-                (layoutW, layoutH) = layout.get_pixel_size()
+                layoutW, layoutH = layout.get_pixel_size()
                 ##
                 factor = (tmfactors[i] + tmfactors[i+1])/2.0
                 x = factor*(w-leftMargin) + leftMargin
@@ -465,7 +465,7 @@ class WeeklyScheduleWindow(gtk.Dialog):
         self.widget.data = self.term.getWeeklyScheduleData(self.currentWOnlyCheck.get_active())
         self.widget.queue_draw()
     def exportToSvg(self, fpath):
-        (x, y, w, h) = self.widget.allocation
+        x, y, w, h = self.widget.allocation
         fo = open(fpath, 'w')
         surface = cairo.SVGSurface(fo, w, h)
         cr0 = cairo.Context(surface)

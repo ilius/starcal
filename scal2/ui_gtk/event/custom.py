@@ -139,7 +139,7 @@ class EventWidget(common.EventWidget):
         self.event.mode = newMode
     def removeButtonClicked(self, button, hbox):
         rule = hbox.inputWidget.rule
-        (ok, msg) = self.event.checkRulesDependencies(disabledRule=rule)
+        ok, msg = self.event.checkRulesDependencies(disabledRule=rule)
         self.warnLabel.set_label(msg)
         if not ok:
             return
@@ -156,7 +156,7 @@ class EventWidget(common.EventWidget):
             return
         newRuleName = self.addRuleModel[ci][0]
         newRule = event_lib.classes.rule.byName[newRuleName](self.event)
-        (ok, msg) = self.event.checkRulesDependencies(newRule=newRule)
+        ok, msg = self.event.checkRulesDependencies(newRule=newRule)
         self.warnLabel.set_label(msg)
     def addClicked(self, button):
         ci = self.addRuleCombo.get_active()
@@ -164,7 +164,7 @@ class EventWidget(common.EventWidget):
             return
         ruleName = self.addRuleModel[ci][0]
         rule = event_lib.classes.rule.byName[ruleName](self.event)
-        (ok, msg) = self.event.checkAndAddRule(rule)
+        ok, msg = self.event.checkAndAddRule(rule)
         if not ok:
             return
         hbox = self.makeRuleHbox(rule)

@@ -730,12 +730,12 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
     def configureEvent(self, widget, event):
         liveConfChanged()
         ###
-        (wx, wy) = self.get_position()
-        (ww, wh) = self.get_size()
+        wx, wy = self.get_position()
+        ww, wh = self.get_size()
         if ui.bgUseDesk and max(abs(ui.winX-wx), abs(ui.winY-wy))>1:## FIXME
             self.queue_draw()
         if self.get_property('visible'):
-            (ui.winX, ui.winY) = (wx, wy)## FIXME
+            ui.winX, ui.winY = (wx, wy)## FIXME
         ui.winWidth = ww
         return False
     def buttonPress(self, obj, event):
@@ -745,12 +745,12 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             self.menuMain.popup(None, None, None, 3, event.time)
             ui.updateFocusTime()
         elif b==1:
-            (x, y, mask) = ud.rootWindow.get_pointer()
+            x, y, mask = ud.rootWindow.get_pointer()
             self.begin_move_drag(event.button, x, y, event.time)
         return False
     def startResize(self, widget, event):
         self.menuMain.hide()
-        (x, y, mask) = ud.rootWindow.get_pointer()
+        x, y, mask = ud.rootWindow.get_pointer()
         self.begin_resize_drag(gdk.WINDOW_EDGE_SOUTH_EAST, event.button, x, y, event.time)
         return True
     def changeDate(self, year, month, day):
@@ -844,8 +844,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         menu.add(moreItem)
         ####
         menu.show_all()
-        (dx, dy) = widget.translate_coordinates(self, x, y)
-        (wx, wy) = self.window.get_origin()
+        dx, dy = widget.translate_coordinates(self, x, y)
+        wx, wy = self.window.get_origin()
         x = wx+dx
         y = wy+dy
         if rtl:
@@ -858,8 +858,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ui.updateFocusTime()
     def popupMenuMain(self, widget, etime, x, y):
         menu = self.menuMain
-        (dx, dy) = widget.translate_coordinates(self, x, y)
-        (wx, wy) = self.window.get_origin()
+        dx, dy = widget.translate_coordinates(self, x, y)
+        wx, wy = self.window.get_origin()
         x = wx+dx
         y = wy+dy
         if rtl:
@@ -1021,7 +1021,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         #else:
         sep = '\n'
         for mode in calTypes.active:
-            (y, m, d) = ui.todayCell.dates[mode]
+            y, m, d = ui.todayCell.dates[mode]
             tt += '%s%s %s %s'%(sep, _(d), getMonthName(mode, m, y), _(y))
         if ui.pluginsTextTray:
             text = ui.todayCell.pluginsText
@@ -1042,11 +1042,11 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         '''
         import Image, ImageDraw, ImageFont
         im = Image.open(imagePath)
-        (w, h) = im.size
+        w, h = im.size
         draw = ImageDraw.Draw(im)
         text = _(ddate[2]).decode('utf8')
         font = ImageFont.truetype('/usr/share/fonts/TTF/DejaVuSans.ttf', 15)
-        (fw, fh) = font.getsize(text)
+        fw, fh = font.getsize(text)
         draw.text(
             ((w-fw)/2, (h-fh)/2),
             text,
@@ -1060,7 +1060,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ###################### PUTTING A TEXT ON A PIXBUF
         pmap = pixbuf.render_pixmap_and_mask(alpha_threshold=127)[0] ## pixmap is also a drawable
         textLay = newTextLayout(self, _(ddate[2]), ui.trayFont)
-        (w, h) = textLay.get_pixel_size()
+        w, h = textLay.get_pixel_size()
         s = ui.traySize
         if ui.trayY0 == None:
             y = s/4+int((0.9*s-h)/2)
@@ -1080,7 +1080,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             return True
     def trayClicked(self, obj=None):
         if self.get_property('visible'):
-            (ui.winX, ui.winY) = self.get_position()
+            ui.winX, ui.winY = self.get_position()
             self.hide()
         else:
             self.move(ui.winX, ui.winY)
@@ -1093,7 +1093,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             self.deiconify()
             self.present()
     def dialogClose(self, widget=None, event=None):
-        (ui.winX, ui.winY) = self.get_position()
+        ui.winX, ui.winY = self.get_position()
         if self.trayMode==0 or not self.sicon:
             self.quit()
         elif self.trayMode>1:
@@ -1103,7 +1103,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
                 self.quit()
         return True
     def dialogEsc(self):
-        (ui.winX, ui.winY) = self.get_position()
+        ui.winX, ui.winY = self.get_position()
         if self.trayMode==0:
             self.quit()
         elif self.trayMode>1:
@@ -1121,7 +1121,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         Popen(ud.adjustTimeCmd)
     exportClicked = lambda self, widget=None: self.exportDialog.showDialog(ui.cell.year, ui.cell.month)
     def exportClickedTray(self, widget=None, event=None):
-        (y, m) = core.getSysDate()[:2]
+        y, m = core.getSysDate()[:2]
         self.exportDialog.showDialog(y, m)
     def onConfigChange(self, *a, **kw):
         ud.IntegratedCalObj.onConfigChange(self, *a, **kw)

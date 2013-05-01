@@ -52,7 +52,7 @@ class NumRangesEntry(gtk.Entry):
     def insertText(self, s, clearSeceltion=True):
         selection = self.get_selection_bounds()
         if selection and clearSeceltion:
-            (start, end) = selection
+            start, end = selection
             text = toUnicode(self.get_text())
             text = text[:start] + s + text[end:]
             self.set_text(text)

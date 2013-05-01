@@ -70,7 +70,7 @@ class TextObject():
         #self.yAlign = 0.5
     def draw(self, cr):
         if self.center:
-            (w, h) = self.layout.get_pixel_size()
+            w, h = self.layout.get_pixel_size()
             cr.move_to(self.x - w/2.0, self.y - h/2.0)
         else:
             cr.move_to(self.x, self.y)
@@ -81,7 +81,7 @@ class TextObject():
     def getText(self):
         raise NotImplementedError
     def contains(self, px, py):
-        (w, h) = self.layout.get_pixel_size()
+        w, h = self.layout.get_pixel_size()
         if self.center:
             return -w/2.0 <= px-self.x < w/2.0 \
                  and -h/2.0 <= py-self.y < h/2.0

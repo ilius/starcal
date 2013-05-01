@@ -85,7 +85,7 @@ class EventWidget(common.EventWidget):
         startJd = self.event.getJd()
         self.startDateInput.set_value(jd_to(startJd, mode))
         ###
-        (endType, endValue) = self.event.getEnd()
+        endType, endValue = self.event.getEnd()
         if endType=='duration':
             self.endTypeCombo.set_active(0)
             self.durationSpin.set_value(endValue)

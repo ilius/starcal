@@ -752,8 +752,8 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
                 return False
         ###
         b = event.button
-        #(x, y, mask) = event.window.get_pointer()
-        (x, y) = self.get_pointer()
+        #x, y, mask = event.window.get_pointer()
+        x, y = self.get_pointer()
         #y += 10
         ###
         i = int(event.y * 7.0 / self.allocation.height)

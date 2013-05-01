@@ -118,10 +118,10 @@ class ExportDialog(gtk.Dialog):
                 months.append(getMonthStatus(ui.cell.year, i))
             title = '%s %s'%(_('Calendar'), _(ui.cell.year))
         elif i==2:
-            (y0, m0) = self.ymBox0.get_value()
-            (y1, m1) = self.ymBox1.get_value()
+            y0, m0 = self.ymBox0.get_value()
+            y1, m1 = self.ymBox1.get_value()
             for ym in xrange(y0*12+m0-1, y1*12+m1):
-                (y, m) = divmod(ym, 12)
+                y, m = divmod(ym, 12)
                 m += 1
                 months.append(getMonthStatus(y, m))
             title = _('Calendar')
@@ -139,7 +139,7 @@ class ExportDialog(gtk.Dialog):
         import cairo
         hspace = 20
         mcal = ui.mainWin.mcal
-        (x, y, w, h0) = mcal.allocation
+        x, y, w, h0 = mcal.allocation
         n = len(monthList)
         h = n*h0 + (n-1)*hspace
         fo = open(path+'.svg', 'w')
@@ -176,7 +176,7 @@ class ExportToIcsDialog(gtk.Dialog):
         hbox.pack_start(self.endDateInput, 0, 0)
         self.vbox.pack_start(hbox, 0, 0)
         ####
-        (year, month, day) = ui.todayCell.dates[core.primaryMode]
+        year, month, day = ui.todayCell.dates[core.primaryMode]
         self.startDateInput.set_value((year, 1, 1))
         self.endDateInput.set_value((year+1, 1, 1))
         ########

@@ -91,7 +91,7 @@ class MultiSpinButton(gtk.SpinButton):
     def insertText(self, s, clearSeceltion=True):
         selection = self.get_selection_bounds()
         if selection and clearSeceltion:
-            (start, end) = selection
+            start, end = selection
             text = toUnicode(self.get_text())
             text = text[:start] + s + text[end:]
             self.set_text(text)
@@ -357,12 +357,12 @@ class TimeButton(MultiSpinButton):
             hms = localtime()[3:6]
         self.set_value(hms)
     def get_seconds(self):
-        (h, m, s) = self.get_value()
+        h, m, s = self.get_value()
         return h*3600 + m*60 + s
     def set_seconds(self, seconds):
-        (day, s) = divmod(seconds, 86400) ## do what with "day" ?????
-        (h, s) = divmod(s, 3600)
-        (m, s) = divmod(s, 60)
+        day, s = divmod(seconds, 86400) ## do what with "day" ?????
+        h, s = divmod(s, 3600)
+        m, s = divmod(s, 60)
         self.set_value((h, m, s))
         ##return day
 
@@ -503,7 +503,7 @@ class MultiSpinOptionBox(gtk.HBox):
         self.get_value = self.spin.get_value
         self.set_value = self.spin.set_value
     def option_pressed(self, widget, event):
-        #(x, y, w, h) = self.option.
+        #x, y, w, h = self.option.
         self.menu.popup(None, None, None, event.button, event.time)
     def add_history(self):
         self.spin.update()

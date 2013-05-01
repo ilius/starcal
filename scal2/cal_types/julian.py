@@ -62,17 +62,17 @@ def kal_s(m, p):
      return b
 
 def to_jd(y, m, d):
-    (p1, p2) = divmod(y, 4)
+    p1, p2 = divmod(y, 4)
     return ifloor(d + kal_s(m, int(p2==0)) + 1461*p1 + 365*p2 + epoch)
 
 def jd_to(jd):
     ##wjd = ifloor(jd - 0.5) + 1
-    (p1, q1) = divmod(jd-epoch, 1461)
+    p1, q1 = divmod(jd-epoch, 1461)
     #if q1==0:## ??????????????????
     #    return (4*p1, 1, 1)
     #else:
     if True:
-        (p2, q2) = divmod(q1-1, 365)
+        p2, q2 = divmod(q1-1, 365)
         y = 4*p1 + p2;
         q = int(y%4==0)
         m = 1;

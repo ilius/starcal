@@ -185,11 +185,11 @@ def to_jd(year, month, day):
 def jd_to(jd):
     "JD_TO_JALALI: Calculate Jalali date from Julian day"
     if jalaliAlg==1:## 2820
-        (cycle, cyear) = divmod(jd - to_jd(475, 1, 1), 1029983)
+        cycle, cyear = divmod(jd - to_jd(475, 1, 1), 1029983)
         if cyear == 1029982 :
             ycycle = 2820
         else :
-            (aux1, aux2) = divmod(cyear, 366)
+            aux1, aux2 = divmod(cyear, 366)
             ycycle = floor(((2134 * aux1) + (2816 * aux2) + 2815) / 1028522) + aux1 + 1
         year = ifloor(2820*cycle + ycycle + 474)
         if year <= 0 :

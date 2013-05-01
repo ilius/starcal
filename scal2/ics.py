@@ -46,15 +46,15 @@ getIcsTimeByEpoch = lambda epoch, pretty=False: strftime(
     gmtime(epoch)
 )
     #format = icsTmFormatPretty if pretty else icsTmFormat
-    #(jd, hour, minute, second) = getJhmsFromEpoch(epoch)
-    #(year, month, day) = jd_to(jd, DATE_GREG)
+    #jd, hour, minute, second = getJhmsFromEpoch(epoch)
+    #year, month, day = jd_to(jd, DATE_GREG)
     #return strftime(format, (year, month, day, hour, minute, second, 0, 0, 0))
 
 getIcsDate = lambda y, m, d, pretty=False: ('%.4d-%.2d-%.2d' if pretty else '%.4d%.2d%.2d') % (y, m, d)
 
 
 def getIcsDateByJd(jd, pretty=False):
-    (y, m, d) = jd_to(jd, DATE_GREG)
+    y, m, d = jd_to(jd, DATE_GREG)
     return getIcsDate(y, m, d, pretty)
 
 def getJdByIcsDate(dateStr):
@@ -86,7 +86,7 @@ def convertHolidayPlugToIcs(plug, startJd, endJd, namePostfix=''):
     for jd in range(startJd, endJd):
         isHoliday = False
         for mode in plug.holidays.keys():
-            (myear, mmonth, mday) = jd_to(jd, mode)
+            myear, mmonth, mday = jd_to(jd, mode)
             if (mmonth, mday) in plug.holidays[mode]:
                 isHoliday = True
                 break
@@ -116,11 +116,11 @@ def convertBuiltinTextPlugToIcs(plug, startJd, endJd, namePostfix=''):
     icsText = icsHeader
     currentTimeStamp = strftime(icsTmFormat)
     for jd in range(startJd, endJd):
-        (myear, mmonth, mday) = jd_to(jd, mode)
+        myear, mmonth, mday = jd_to(jd, mode)
         dayText = plug.get_text(myear, mmonth, mday)
         if dayText:
-            (gyear, gmonth, gday) = jd_to(jd, DATE_GREG)
-            (gyear_next, gmonth_next, gday_next) = jd_to(jd+1, DATE_GREG)
+            gyear, gmonth, gday = jd_to(jd, DATE_GREG)
+            gyear_next, gmonth_next, gday_next = jd_to(jd+1, DATE_GREG)
             #######
             icsText += 'BEGIN:VEVENT\n'
             icsText += 'CREATED:%s\n'%currentTimeStamp

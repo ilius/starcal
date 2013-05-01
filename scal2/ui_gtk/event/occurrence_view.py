@@ -185,7 +185,7 @@ class WeekOccurrenceView(gtk.TreeView):
         col.set_resizable(True)
         self.append_column(col)
     def updateWidget(self):
-        (cells, wEventData) = ui.cellCache.getWeekData(self.absWeekNumber)
+        cells, wEventData = ui.cellCache.getWeekData(self.absWeekNumber)
         self.ls.clear()
         for item in wEventData:
             self.ls.append(
