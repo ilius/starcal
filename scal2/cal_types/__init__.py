@@ -3,6 +3,7 @@ from os.path import join
 
 from scal2.cal_types import gregorian
 from scal2.path import *
+from scal2.utils import printError
 
 DATE_GREG = 0 ## Gregorian (common calendar)
 modules = [gregorian]
@@ -40,7 +41,10 @@ for name in open(join(modDir, 'modules.list')).read().split('\n'):
         'save',
     ):
         if not hasattr(mod, attr):
-            sys.stdout.write('Invalid calendar module: module "%s" has no attribute "%s"\n'%(name, attr))
+            printError(
+                'Invalid calendar module: module "%s" has no attribute "%s"\n'\
+                %(name, attr)
+            )
     modules.append(mod)
 
 

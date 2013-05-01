@@ -22,7 +22,8 @@ from scal2.locale_man import tr as _
 
 from scal2.cal_types import calTypes
 from scal2 import core
-from scal2.core import myRaise, getMonthName, getMonthLen
+from scal2.core import myRaise, getMonthName, getMonthLen, getWeekDay,
+                       getWeekNumber
 
 from scal2 import ui
 
@@ -35,18 +36,21 @@ class MonthStatus(list): ## FIXME
         self.year = year
         self.month = month
         self.monthLen = getMonthLen(year, month, core.primaryMode)
-        self.offset = core.getWeekDay(year, month, 1)## month start offset
-        self.weekNum = [core.getWeekNumber(year, month, 1+7*i) for i in range(6)]
+        self.offset = getWeekDay(year, month, 1)## month start offset
+        self.weekNum = [getWeekNumber(year, month, 1+7*i) for i in range(6)]
         #########
-        (startJd, endJd) = core.getJdRangeForMonth(year, month, core.primaryMode)
+        startJd, endJd = core.getJdRangeForMonth(year, month, core.primaryMode)
         tableStartJd = startJd - self.offset
         #####
         list.__init__(self, [
-            [cellCache.getCell(tableStartJd + yPos*7 + xPos) for xPos in range(7)] \
-            for yPos in range(6)
+            [
+                cellCache.getCell(
+                    tableStartJd + yPos*7 + xPos
+                ) for xPos in range(7)
+            ] for yPos in range(6)
         ])
     #def getDayCell(self, day):## needed? FIXME
-    #    (yPos, xPos) = divmod(day + self.offset - 1, 7)
+    #    yPos, xPos = divmod(day + self.offset - 1, 7)
     #    return self[yPos][xPos]
     def allCells(self):
         l = []
@@ -55,8 +59,8 @@ class MonthStatus(list): ## FIXME
         return l
 
 def setParamsFunc(cell):
-    offset = core.getWeekDay(cell.year, cell.month, 1)## month start offset
-    (yPos, xPos) = divmod(offset + cell.day - 1, 7)
+    offset = getWeekDay(cell.year, cell.month, 1)## month start offset
+    yPos, xPos = divmod(offset + cell.day - 1, 7)
     cell.monthPos = (xPos, yPos)
     ###
     """
@@ -100,11 +104,11 @@ def getMonthDesc(status=None):
         if text != '':
             text += '\n'
         if mode==core.primaryMode:
-            (y, m) = first.dates[mode][:2] ## = (status.year, status.month)
+            y, m = first.dates[mode][:2] ## = (status.year, status.month)
             text += '%s %s'%(getMonthName(mode, m), _(y))
         else:
-            (y1, m1) = first.dates[mode][:2]
-            (y2, m2) = last.dates[mode][:2]
+            y1, m1 = first.dates[mode][:2]
+            y2, m2 = last.dates[mode][:2]
             dy = y2 - y1
             if dy==0:
                 dm = m2 - m1

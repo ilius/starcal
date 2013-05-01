@@ -25,15 +25,18 @@ from os.path import isfile, isdir, exists, dirname, join, split, splitext
 from pprint import pprint
 
 from scal2.path import *
-from scal2 import locale_man
-from scal2.locale_man import getMonthName, lang, langSh
-from scal2.locale_man import tr as _
-from scal2.plugin_man import *
 from scal2.time_utils import *
 from scal2.date_utils import *
 from scal2.os_utils import *
 from scal2.json_utils import *
 from scal2.utils import *
+
+from scal2.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG
+from scal2 import locale_man
+from scal2.locale_man import getMonthName, lang, langSh
+from scal2.locale_man import tr as _
+from scal2.plugin_man import *
+
 
 
 try:
@@ -119,7 +122,6 @@ def myRaiseTback(f=None):
     (typ, value, tback) = sys.exc_info()
     log.error("".join(traceback.format_exception(typ, value, tback)))
 
-from scal2.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG
 
 
 ################################################################################
@@ -219,6 +221,7 @@ def getLocaleWeekNumberMode():##????????????
     ##    fa_IR.UTF-8             0
 
 
+######################################################
 
 def validatePlugList():
     global allPlugList, plugIndex
@@ -364,10 +367,18 @@ def mylocaltime(sec=None, mode=None):
     return t
 
 
+compressLongInt = lambda num:\
+    struct.pack('L', num).\
+    rstrip('\x00').\
+    encode('base64')[:-3].\
+    replace('/', '_')
 
-
-compressLongInt = lambda num: struct.pack('L', num).rstrip('\x00').encode('base64')[:-3].replace('/', '_')
-getCompactTime = lambda maxDays=1000, minSec=0.1: compressLongInt(long(time()%(maxDays*24*3600) / minSec))
+getCompactTime = lambda maxDays=1000, minSec=0.1:\
+    compressLongInt(
+        long(
+            time()%(maxDays*24*3600) / minSec
+        )
+    )
 
 def floatJdEncode(jd, mode):
     jd, hour, minute, second = getJhmsFromEpoch(getEpochFromJd(jd))
