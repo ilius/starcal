@@ -270,8 +270,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         self.typeCombo.set_sensitive(self.typeCheck.get_active())
     def updateGroupSensitive(self, obj=None):
         self.groupCombo.set_sensitive(self.groupCheck.get_active())
-    def searchClicked(self, obj=None):
-        self.startWaiting()
+    def _doSearch(self):
         if self.groupCheck.get_active():
             groupIds = [
                 self.groupCombo.get_active()
@@ -305,7 +304,8 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
                     evData['description'],
                 ))
         self.resultLabel.set_label(_('Found %s events')%_(len(self.trees)))
-        self.endWaiting()
+    def searchClicked(self, obj=None):
+        self.waitingDo(self._do_search)
     def rowActivated(self, treev, path, col):
         try:
             gid = self.trees[path][0]
