@@ -117,7 +117,7 @@ weekNumberMode=%r'''%(holidayWeekDays, firstWeekDayAuto, firstWeekDay, weekNumbe
 
             fontCustom = gfontDecode(fontCustom)
 
-            gridColor = gdkColorToRgb(gridColor) + (gridAlpha/257,)
+            mcalGridColor = wcalGridColor = gdkColorToRgb(gridColor) + (gridAlpha/257,)
             bgColor = gdkColorToRgb(bgColor) + (bgColorAlpha/257,)
             borderColor = gdkColorToRgb(borderColor) + (borderColorAlpha/257,)
             borderTextColor = gdkColorToRgb(borderTextColor)
@@ -136,7 +136,8 @@ weekNumberMode=%r'''%(holidayWeekDays, firstWeekDayAuto, firstWeekDay, weekNumbe
                 'winTaskbar',
                 'showDigClockTr',
                 'mcalGrid',
-                'gridColor',
+                'mcalGridColor',
+                'wcalGridColor',
                 'fontCustom',
                 'fontCustomEnable',
                 'bgUseDesk',

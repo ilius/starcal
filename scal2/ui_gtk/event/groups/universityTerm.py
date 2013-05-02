@@ -343,7 +343,7 @@ class WeeklyScheduleWidget(gtk.Widget):
         cr.rectangle(0, 0, w, h)
         fillColor(cr, ui.bgColor)
         textColor = ui.textColor
-        gridColor = ui.gridColor
+        gridColor = ui.mcalGridColor ## FIXME
         ###
         #classBounds = self.term.classTimeBounds
         titles, tmfactors = self.term.getClassBoundsFormatted()
@@ -366,7 +366,7 @@ class WeeklyScheduleWidget(gtk.Widget):
         dy = (h-topMargin)/7.0 ## delta y
         ### Draw grid
         ## tmfactors includes 0 at the first, and 1 at the end
-        setColor(cr, ui.gridColor)
+        setColor(cr, gridColor)
         ##
         for i in xrange(7):
             cr.rectangle(0, ycenters[i]-dy/2.0, w, 1)
