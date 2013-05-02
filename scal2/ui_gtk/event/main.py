@@ -739,7 +739,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         self.pasteEventToPath(path)
     collapseAllClicked = lambda self, obj: self.treev.collapse_all()
     expandAllClicked = lambda self, obj: self.treev.expand_all()
-    def showDescItemToggled(self, obj):
+    def _do_showDescItemToggled(self):
         active = self.showDescItem.get_active()
         #self.showDescItem.set_active(active)
         ui.eventManShowDescription = active
@@ -748,6 +748,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
             self.treev.append_column(self.colDesc)
         else:
             self.treev.remove_column(self.colDesc)
+    def showDescItemToggled(self, obj=None):
+        self.waitingDo(self._do_showDescItemToggled)
     def treeviewCursorChanged(self, treev=None):
         path = self.treev.get_cursor()[0]
         ## update eventInfoBox
