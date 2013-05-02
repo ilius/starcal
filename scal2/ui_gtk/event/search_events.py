@@ -41,14 +41,14 @@ from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import pixbufFromFile
 from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateTimeButton
-
+from scal2.ui_gtk.mywidgets.dialog import MyDialog
 from scal2.ui_gtk import gtk_ud as ud
 
 from scal2.ui_gtk.event.common import SingleGroupComboBox, EventEditorDialog
 
 
 @registerSignals
-class EventSearchWindow(gtk.Window, ud.IntegratedCalObj):
+class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
     def __init__(self):
         gtk.Window.__init__(self)
         self.initVars()
@@ -271,6 +271,7 @@ class EventSearchWindow(gtk.Window, ud.IntegratedCalObj):
     def updateGroupSensitive(self, obj=None):
         self.groupCombo.set_sensitive(self.groupCheck.get_active())
     def searchClicked(self, obj=None):
+        self.startWaiting()
         if self.groupCheck.get_active():
             groupIds = [
                 self.groupCombo.get_active()
@@ -304,6 +305,7 @@ class EventSearchWindow(gtk.Window, ud.IntegratedCalObj):
                     evData['description'],
                 ))
         self.resultLabel.set_label(_('Found %s events')%_(len(self.trees)))
+        self.endWaiting()
     def rowActivated(self, treev, path, col):
         try:
             gid = self.trees[path][0]

@@ -46,7 +46,7 @@ from scal2.ui_gtk.utils import pixbufFromFile, rectangleContainsPoint
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk import gtk_ud as ud
-
+from scal2.ui_gtk.mywidgets.dialog import MyDialog
 from scal2.ui_gtk.event import common
 from scal2.ui_gtk.event.common import EventEditorDialog, addNewEvent, GroupEditorDialog
 from scal2.ui_gtk.event.trash import TrashEditorDialog
@@ -60,7 +60,7 @@ from scal2.ui_gtk.event.search_events import EventSearchWindow
 
 
 @registerSignals
-class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
+class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
     _name = 'eventMan'
     desc = _('Event Manager')
     def checkEventToAdd(self, group, event):
@@ -1150,15 +1150,6 @@ class EventManagerDialog(gtk.Dialog, ud.IntegratedCalObj):## FIXME
                 self.treev.expand_row(path, False)
     def groupConvertModeFromMenu(self, menu, group):
         GroupConvertModeDialog(group).run()
-    def startWaiting(self):
-        self.queue_draw()
-        self.vbox.set_sensitive(False)
-        self.window.set_cursor(gdk.Cursor(gdk.WATCH))
-        while gtk.events_pending():
-            gtk.main_iteration_do(False)
-    def endWaiting(self):
-        self.window.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
-        self.vbox.set_sensitive(True)
     def groupConvertTo(self, menu, group, newGroupType):
         self.startWaiting()
         newGroup = ui.eventGroups.convertGroupTo(group, newGroupType)
