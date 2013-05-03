@@ -942,6 +942,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
             self.trees.get_iter(path),## parent
             self.getEventRow(event), ## row
         )
+        self.treeviewCursorChanged()
     def addGenericEventToGroupFromMenu(self, menu, path, group):
         event = addNewEvent(
             group,
@@ -956,6 +957,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
             self.trees.get_iter(path),## parent
             self.getEventRow(event), ## row
         )
+        self.treeviewCursorChanged()
     def editEventByPath(self, path):
         group, event = self.getObjsByPath(path)
         if group.name == 'trash':## FIXME
