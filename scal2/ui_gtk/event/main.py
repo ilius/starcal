@@ -1158,7 +1158,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         ## summary and description haven't changed!
     def groupConvertTo(self, menu, group, newGroupType):
         self.waitingDo(self._do_groupConvertTo, group, newGroupType)
-    def _do_groupBulkEdit(self, group, path):
+    def _do_groupBulkEdit(self, dialog, group, path):
         expanded = self.treev.row_expanded(path)
         dialog.doAction()
         dialog.destroy()
@@ -1169,7 +1169,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
     def groupBulkEditFromMenu(self, menu, group, path):
         dialog = GroupBulkEditDialog(group)
         if dialog.run()==gtk.RESPONSE_OK:
-            self.waitingDo(self._do_groupBulkEdit, group, path)
+            self.waitingDo(self._do_groupBulkEdit, dialog, group, path)
     def groupActionClicked(self, menu, group, actionFuncName):
         func = getattr(group, actionFuncName)
         self.waitingDo(func, parentWin=self)
