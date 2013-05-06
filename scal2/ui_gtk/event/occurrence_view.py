@@ -68,22 +68,22 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
             if item['time']:
                 label = gtk.Label(item['time'])
                 label.set_direction(gtk.TEXT_DIR_LTR)
+                label.set_selectable(True)
+                label.connect('populate-popup', self.onLabelPopup)## FIXME
                 hbox.pack_start(label, 0, 0)
                 hbox.pack_start(gtk.Label('  '), 0, 0)
             label = gtk.Label(text)
             label.set_selectable(True)
             label.set_line_wrap(True)
             label.set_use_markup(True)
-            label.connect('populate-popup', self.onLabelPopupPopulate, item['ids'])
+            label.connect('populate-popup', self.onEventLabelPopup, item['ids'])
             hbox.pack_start(label, 0, 0)## or 1, 1 (center) FIXME
             self.vbox.pack_start(hbox, 0, 0)
             self.vbox.pack_start(gtk.HSeparator(), 0, 0)
         self.show_all()
         self.vbox.show_all()
         self.set_visible(bool(cell.eventsData))
-    def onLabelPopupPopulate(self, label, menu, ids):
-        menu = gtk.Menu()
-        ####
+    def labelMenuAddCopyItems(self, label, menu):
         menu.add(labelStockMenuItem(
             'Copy _All',
             gtk.STOCK_COPY,
@@ -100,6 +100,16 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         if label.get_property('cursor-position') == label.get_property('selection-bound'):
             itemCopy.set_sensitive(False)
         menu.add(itemCopy)
+    def onLabelPopup(self, label, menu):
+        menu = gtk.Menu()
+        self.labelMenuAddCopyItems(label, menu)
+        ####
+        menu.show_all()
+        menu.popup(None, None, None, 3, 0)
+        ui.updateFocusTime()
+    def onEventLabelPopup(self, label, menu, ids):
+        menu = gtk.Menu()
+        self.labelMenuAddCopyItems(label, menu)
         ####
         groupId, eventId = ids
         event = ui.getEvent(groupId, eventId)
