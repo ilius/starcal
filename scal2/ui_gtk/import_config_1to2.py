@@ -24,7 +24,7 @@ from os.path import dirname
 from os.path import join, isfile, isdir
 
 from scal2.path import *
-from scal2.config_importer import importConfigFrom15, getOldVersion, langDir, langConfDir
+from scal2.import_config_1to2 import importConfigFrom15, getOldVersion, langDir, langConfDir
 
 import gtk
 

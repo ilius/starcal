@@ -37,7 +37,7 @@ from scal2.utils import myRaise, restartLow
 
 if not isdir(confDir):
     try:
-        __import__('scal2.ui_gtk.config_importer')
+        __import__('scal2.ui_gtk.import_config_1to2')
     except:
         myRaise()
     restartLow()
