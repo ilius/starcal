@@ -2060,13 +2060,20 @@ class UniversityExamEvent(DailyNoteEvent):
     def updateSummary(self):
         self.summary = _('%s Exam')%self.getCourseName()
     def calcOccurrence(self, startJd, endJd):
-        return DailyNoteEvent.calcOccurrence(self, startJd, endJd).intersection(
-            self['dayTimeRange'].calcOccurrence(
-                getEpochFromJd(startJd),
-                getEpochFromJd(endJd),
-                self,
+        jd = self.getJd()
+        if startJd <= jd < endJd:
+            epoch = getEpochFromJd(jd)
+            startSec, endSec = self['dayTimeRange'].getSecondsRange()
+            return TimeRangeListOccurrence(
+                [
+                    (
+                        epoch + startSec, 
+                        epoch + endSec,
+                    )
+                ]
             )
-        )
+        else:
+            return TimeRangeListOccurrence()
     def getIcsData(self, prettyDateTime=False):
         dayStart = self['date'].getEpoch()
         startSec, endSec = self['dayTimeRange'].getSecondsRange()
