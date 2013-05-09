@@ -2982,7 +2982,8 @@ class UniversityTerm(EventGroup):
         return data
     def setCourses(self, courses):
         self.courses = courses
-        self.lastCourseId = max([1]+[course[0] for course in self.courses])
+        #self.lastCourseId = max([1]+[course[0] for course in self.courses])
+        #print 'setCourses: lastCourseId=%s'%self.lastCourseId
     #getCourseNamesDictById = lambda self: dict([c[:2] for c in self.courses])
     def getCourseNameById(self, courseId):
         for course in self.courses:
@@ -3013,9 +3014,10 @@ class UniversityTerm(EventGroup):
                 self.endJd = to_jd(year+1, 3, 20, self.mode)
         #elif calType=='gregorian':
         #    pass
-    def getNewCourseID(self):
-        self.lastCourseId += 1
-        return self.lastCourseId
+    #def getNewCourseID(self):
+    #    self.lastCourseId += 1
+    #    print 'getNewCourseID: lastCourseId=%s'%self.lastCourseId
+    #    return self.lastCourseId
     def copyFrom(self, other):
         EventGroup.copyFrom(self, other)
         if other.name == self.name:
@@ -3030,6 +3032,7 @@ class UniversityTerm(EventGroup):
         return data
     def setData(self, data):
         EventGroup.setData(self, data)
+        #self.setCourses(data['courses'])
         if 'classesEndDate' in data:
             self.classesEndDate = dateDecode(data['classesEndDate'])
         if 'classTimeBounds' in data:

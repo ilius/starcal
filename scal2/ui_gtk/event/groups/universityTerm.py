@@ -121,7 +121,8 @@ class CourseListEditor(gtk.HBox):
             return None
     def addClicked(self, button):
         index = self.getSelectedIndex()
-        row = [self.term.getNewCourseID(), self.defaultCourseName, self.defaultCourseUnits]
+        lastCourseId = max([1]+[row[0] for row in self.trees])
+        row = [lastCourseId+1, self.defaultCourseName, self.defaultCourseUnits]
         if index is None:
             newIter = self.trees.append(row)
         else:
