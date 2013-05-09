@@ -2946,7 +2946,7 @@ class UniversityTerm(EventGroup):
             currentJd = core.getCurrentJd()
             if (
                 getAbsWeekNumberFromJd(currentJd) - \
-                getAbsWeekNumberFromJd(self['start'].getJd())
+                getAbsWeekNumberFromJd(self.startJd)
             ) % 2 == 1:
                 currentWeekNumMode = 'odd'
             else:
