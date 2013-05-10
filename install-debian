@@ -57,7 +57,7 @@ Description: A full-featured international calendar writen in Python
 " > "$tmpDir/DEBIAN/control"
 
 echo "/usr/share/starcal2/scripts/assert_python2" > "$tmpDir/DEBIAN/postinst"
-chmod 775 "$tmpDir/DEBIAN/postinst"
+chmod 755 "$tmpDir/DEBIAN/postinst"
 
 pkgFile=${pkgName}_${version}-1_all.deb
 dpkg-deb -b "$tmpDir" "$pkgFile"
