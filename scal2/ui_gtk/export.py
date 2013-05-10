@@ -70,6 +70,7 @@ class ExportDialog(gtk.Dialog):
         ########
         self.fcw = gtk.FileChooserWidget(action=gtk.FILE_CHOOSER_ACTION_SAVE)
         self.vbox.pack_start(self.fcw, 1, 1)
+        self.vbox.set_focus_child(self.fcw)## FIXME
         self.vbox.show_all()
         combo.connect('changed', self.comboChanged)
         ##
@@ -182,6 +183,7 @@ class ExportToIcsDialog(gtk.Dialog):
         ########
         self.fcw = gtk.FileChooserWidget(action=gtk.FILE_CHOOSER_ACTION_SAVE)
         self.vbox.pack_start(self.fcw, 1, 1)
+        self.vbox.set_focus_child(self.fcw)## FIXME
         self.vbox.show_all()
         ##
         dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), 1, self.onDelete)
