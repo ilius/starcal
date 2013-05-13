@@ -583,22 +583,23 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
         #self.foreach(gtk.Widget.destroy)## Couses crash tray icon in gnome3
         #self.foreach(lambda child: self.remove(child))## Couses crash tray icon in gnome3
         ########
-        children = self.get_children()
-        n = len(children)
+        columns = self.get_children()
+        n = len(columns)
         n2 = len(calTypes.active)
         width = self.getWidthValue()
         if n > n2:
             for i in range(n2, n):
-                children[i].destroy()
+                columns[i].destroy()
         elif n < n2:
             for i in range(n, n2):
                 col = DaysOfMonthColumn(self.wcal, self, 0, i)
                 self.pack_start(col, 0, 0)
-                children.append(col)
+                columns.append(col)
                 col.set_property('width-request', width)
         for i, mode in enumerate(calTypes.active):
-            children[i].mode = mode
-            children[i].show()
+            col = columns[i]
+            col.mode = mode
+            col.show()
     def confStr(self):
         text = ColumnBase.confStr(self)
         text += 'ui.wcalTypeParams=%r\n'%ui.wcalTypeParams
