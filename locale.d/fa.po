@@ -1496,6 +1496,10 @@ msgid "Group type \"%s\" can not contain event type \"%s\""
 msgstr ""
 "نوع گروه «%s» نمی‌تواند شامل نوع رویداد «%s» باشد"
 
+msgid "Events Count"
+msgstr ""
+"تعداد رویدادها"
+
 msgid "%s events"
 msgstr "%s رویداد"
 

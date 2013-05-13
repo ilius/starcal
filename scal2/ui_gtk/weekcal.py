@@ -340,6 +340,30 @@ class EventsIconColumn(Column):
                 cr.scale(1.0/scaleFact, 1.0/scaleFact)
 
 
+class EventsCountColumn(Column):
+    _name = 'eventsCount'
+    desc = _('Events Count')
+    customizeWidth = True
+    def __init__(self, wcal):
+        Column.__init__(self, wcal)
+        self.connect('expose-event', self.onExposeEvent)
+    def getDayText(self, i):
+        n = len(self.wcal.status[i].eventsData)
+        if n > 0:
+            return _('%s events')%_(n)
+        else:
+            return ''
+    def onExposeEvent(self, widget=None, event=None):
+        cr = self.window.cairo_create()
+        self.drawBg(cr)
+        ###
+        w = self.allocation.width
+        h = self.allocation.height
+        ###
+        self.drawTextList(
+            cr,
+            [self.getDayText(i) for i in range(7)],
+        )
 
 class EventsTextColumn(Column):
     _name = 'eventsText'
@@ -642,6 +666,7 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
             WeekDaysColumn(self),
             PluginsTextColumn(self),
             EventsIconColumn(self),
+            EventsCountColumn(self),
             EventsTextColumn(self),
             EventsBoxColumn(self),
             DaysOfMonthColumnGroup(self),

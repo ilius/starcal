@@ -626,6 +626,7 @@ wcalWeekDaysWidth = 60
 
 wcalWidth_weekDays = 50
 wcalWidth_eventsIcon = 50
+wcalWidth_eventsCount = 100
 wcalWidth_daysOfMonth = 30
 
 ## just for compatibility
