@@ -623,10 +623,28 @@ wcalPadding = 10
 wcalButtonsWidth = 30
 wcalButtonsSpacing = 10
 wcalWeekDaysWidth = 60
-wcalEventsIconColWidth = 50
+
+wcalWidth_weekDays = 50
+wcalWidth_eventsIcon = 50
+wcalWidth_daysOfMonth = 30
+
+## just for compatibility
+try:
+    wcalWidth_weekDays = wcalEventsIconColWidth
+except NameError:
+    pass
+try:
+    wcalWidth_eventsIcon = wcalEventsCountColWidth
+except NameError:
+    pass
+try:
+    wcalWidth_daysOfMonth = wcalDaysOfMonthColWidth
+except NameError:
+    pass
+
 wcalEventsTextShowDesc = True
 wcalEventsTextColorize = True
-wcalDaysOfMonthColWidth = 30
+
 wcalDaysOfMonthColDir = 'ltr' ## ltr/rtl/auto
 wcalGrid = False
 wcalGridColor = (255, 252, 0, 82)
