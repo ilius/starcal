@@ -595,11 +595,11 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
                 col = DaysOfMonthColumn(self.wcal, self, 0, i)
                 self.pack_start(col, 0, 0)
                 columns.append(col)
-                col.set_property('width-request', width)
         for i, mode in enumerate(calTypes.active):
             col = columns[i]
             col.mode = mode
             col.show()
+            col.set_property('width-request', width)
     def confStr(self):
         text = ColumnBase.confStr(self)
         text += 'ui.wcalTypeParams=%r\n'%ui.wcalTypeParams
