@@ -99,7 +99,7 @@ class ColumnBase(CustomizableCalObj):
         ####
         if self.customizeWidth:
             value = self.getWidthValue()
-            self.set_property('width-request', value)
+            self.setWidthWidget(value)
             ###
             hbox = gtk.HBox()
             hbox.pack_start(gtk.Label(_('Width')), 0, 0)
