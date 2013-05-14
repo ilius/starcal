@@ -63,7 +63,7 @@ class ColumnBase(CustomizableCalObj):
     customizeFont = False
     autoButtonPressHandler = True
     ##
-    getWidthAttr = lambda self: 'wcalWidth_%s'%self._name
+    getWidthAttr = lambda self: 'wcal_%s_width'%self._name
     getWidthValue = lambda self: getattr(ui, self.getWidthAttr(), None)
     setWidthValue = lambda self, value: setattr(ui, self.getWidthAttr(), value)
     setWidthWidget = lambda self, value: self.set_property('width-request', value)
@@ -345,15 +345,15 @@ class EventsCountColumn(Column):
     desc = _('Events Count')
     customizeWidth = True
     params = (
-        'ui.wcalEventsCountExpand',
+        'ui.wcal_eventsCount_expand',
     )
     def __init__(self, wcal):
         Column.__init__(self, wcal)
-        self.expand = ui.wcalEventsCountExpand
+        self.expand = ui.wcal_eventsCount_expand
         ##
         hbox = gtk.HBox()
         check = gtk.CheckButton(_('Expand'))
-        check.set_active(ui.wcalEventsCountExpand)
+        check.set_active(ui.wcal_eventsCount_expand)
         check.connect('clicked', self.expandCheckClicked)
         hbox.pack_start(check, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
@@ -363,7 +363,7 @@ class EventsCountColumn(Column):
         self.connect('expose-event', self.onExposeEvent)
     def expandCheckClicked(self, check):
         active = check.get_active()
-        self.expand = ui.wcalEventsCountExpand = active
+        self.expand = ui.wcal_eventsCount_expand = active
         self.wcal.set_child_packing(self, active, active, 0, gtk.PACK_START)
         self.queue_draw()
     def getDayText(self, i):
@@ -390,8 +390,8 @@ class EventsTextColumn(Column):
     expand = True
     customizeFont = True
     params = (
-        'ui.wcalEventsTextShowDesc',
-        'ui.wcalEventsTextColorize',
+        'ui.wcal_eventsText_showDesc',
+        'ui.wcal_eventsText_colorize',
     )
     def __init__(self, wcal):
         Column.__init__(self, wcal)
@@ -399,7 +399,7 @@ class EventsTextColumn(Column):
         #####
         hbox = gtk.HBox()
         check = gtk.CheckButton(_('Show Description'))
-        check.set_active(ui.wcalEventsTextShowDesc)
+        check.set_active(ui.wcal_eventsText_showDesc)
         hbox.pack_start(check, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         check.connect('clicked', self.descCheckClicked)
@@ -407,7 +407,7 @@ class EventsTextColumn(Column):
         ##
         hbox = gtk.HBox()
         check = gtk.CheckButton(_('Colorize'))
-        check.set_active(ui.wcalEventsTextColorize)
+        check.set_active(ui.wcal_eventsText_colorize)
         hbox.pack_start(check, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         check.connect('clicked', self.colorizeCheckClicked)
@@ -415,15 +415,15 @@ class EventsTextColumn(Column):
         ##
         self.optionsWidget.show_all()
     def descCheckClicked(self, check):
-        ui.wcalEventsTextShowDesc = check.get_active()
+        ui.wcal_eventsText_showDesc = check.get_active()
         self.queue_draw()
     def colorizeCheckClicked(self, check):
-        ui.wcalEventsTextColorize = check.get_active()
+        ui.wcal_eventsText_colorize = check.get_active()
         self.queue_draw()
     def getDayText(self, i):
         return self.wcal.status[i].getEventText(
-            showDesc=ui.wcalEventsTextShowDesc,
-            colorizeFunc=colorize if ui.wcalEventsTextColorize else None,
+            showDesc=ui.wcal_eventsText_showDesc,
+            colorizeFunc=colorize if ui.wcal_eventsText_colorize else None,
             xmlEscape=True,
         )
     def onExposeEvent(self, widget=None, event=None):
@@ -565,9 +565,9 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
     desc = _('Days of Month')
     customizeWidth = True
     params = (
-        'ui.wcalDaysOfMonthColDir',
+        'ui.wcal_daysOfMonth_dir',
     )
-    updateDir = lambda self: self.set_direction(ud.textDirDict[ui.wcalDaysOfMonthColDir])
+    updateDir = lambda self: self.set_direction(ud.textDirDict[ui.wcal_daysOfMonth_dir])
     def __init__(self, wcal):
         gtk.HBox.__init__(self)
         self.initVars()
@@ -580,7 +580,7 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
         hbox.pack_start(gtk.Label(_('Direction')), 0, 0)
         combo = DirectionComboBox()
         hbox.pack_start(combo, 0, 0)
-        combo.setValue(ui.wcalDaysOfMonthColDir)
+        combo.setValue(ui.wcal_daysOfMonth_dir)
         combo.connect('changed', self.dirComboChanged)
         self.optionsWidget.pack_start(hbox, 0, 0)
         ####
@@ -596,7 +596,7 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
         for child in self.get_children():
             child.set_property('width-request', value)
     def dirComboChanged(self, combo):
-        ui.wcalDaysOfMonthColDir = combo.getValue()
+        ui.wcal_daysOfMonth_dir = combo.getValue()
         self.updateDir()
     def updateCols(self):
         #self.foreach(gtk.Widget.destroy)## Couses crash tray icon in gnome3

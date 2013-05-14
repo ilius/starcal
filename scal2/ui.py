@@ -620,36 +620,54 @@ wcalHeight = 200
 wcalTextSizeScale = 0.6 ## between 0 and 1
 #wcalTextColor = (255, 255, 255) ## FIXME
 wcalPadding = 10
-wcalButtonsWidth = 30
-wcalButtonsSpacing = 10
-wcalWeekDaysWidth = 60
-
-wcalWidth_weekDays = 50
-wcalWidth_eventsIcon = 50
-wcalWidth_eventsCount = 100
-wcalWidth_daysOfMonth = 30
-
-## just for compatibility
-try:
-    wcalWidth_weekDays = wcalEventsIconColWidth
-except NameError:
-    pass
-try:
-    wcalWidth_eventsIcon = wcalEventsCountColWidth
-except NameError:
-    pass
-try:
-    wcalWidth_daysOfMonth = wcalDaysOfMonthColWidth
-except NameError:
-    pass
-
-wcalEventsTextShowDesc = True
-wcalEventsTextColorize = True
-
-wcalDaysOfMonthColDir = 'ltr' ## ltr/rtl/auto
 wcalGrid = False
 wcalGridColor = (255, 252, 0, 82)
-wcalEventsCountExpand = False
+
+wcal_weekDays_width = 80
+wcal_eventsCount_width = 80
+wcal_eventsCount_expand = False
+wcal_eventsIcon_width = 50
+wcal_eventsText_showDesc = True
+wcal_eventsText_colorize = True
+wcal_daysOfMonth_width = 30
+wcal_daysOfMonth_dir = 'ltr' ## ltr/rtl/auto
+
+
+
+##### just for compatibility
+try:
+    wcal_weekDays_width = wcalWeekDaysWidth
+except NameError:
+    pass
+try:
+    wcal_eventsCount_width = wcalEventsCountColWidth
+except NameError:
+    pass
+try:
+    wcal_eventsCount_expand = wcalEventsCountExpand
+except NameError:
+    pass
+try:
+    wcal_eventsIcon_width = wcalEventsIconColWidth
+except NameError:
+    pass
+try:
+    wcal_eventsText_showDesc = wcalEventsTextShowDesc
+except NameError:
+    pass
+try:
+    wcal_eventsText_colorize = wcalEventsTextColorize
+except NameError:
+    pass
+try:
+    wcal_daysOfMonth_width = wcalDaysOfMonthColWidth
+except NameError:
+    pass
+try:
+    wcal_daysOfMonth_dir = wcalDaysOfMonthColDir
+except NameError:
+    pass
+
 ####################
 boldYmLabel = True ## apply in Pref FIXME
 showYmArrows = True ## apply in Pref FIXME
