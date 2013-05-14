@@ -344,9 +344,28 @@ class EventsCountColumn(Column):
     _name = 'eventsCount'
     desc = _('Events Count')
     customizeWidth = True
+    params = (
+        'ui.wcalEventsCountExpand',
+    )
     def __init__(self, wcal):
         Column.__init__(self, wcal)
+        self.expand = ui.wcalEventsCountExpand
+        ##
+        hbox = gtk.HBox()
+        check = gtk.CheckButton(_('Expand'))
+        check.set_active(ui.wcalEventsCountExpand)
+        check.connect('clicked', self.expandCheckClicked)
+        hbox.pack_start(check, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.optionsWidget.pack_start(hbox, 0, 0)
+        self.optionsWidget.show_all()
+        ##
         self.connect('expose-event', self.onExposeEvent)
+    def expandCheckClicked(self, check):
+        active = check.get_active()
+        self.expand = ui.wcalEventsCountExpand = active
+        self.wcal.set_child_packing(self, active, active, 0, gtk.PACK_START)
+        self.queue_draw()
     def getDayText(self, i):
         n = len(self.wcal.status[i].eventsData)
         if n > 0:

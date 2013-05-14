@@ -649,6 +649,7 @@ wcalEventsTextColorize = True
 wcalDaysOfMonthColDir = 'ltr' ## ltr/rtl/auto
 wcalGrid = False
 wcalGridColor = (255, 252, 0, 82)
+wcalEventsCountExpand = False
 ####################
 boldYmLabel = True ## apply in Pref FIXME
 showYmArrows = True ## apply in Pref FIXME

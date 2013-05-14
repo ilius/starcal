@@ -1226,6 +1226,10 @@ msgid "Group"
 msgstr ""
 "گروه"
 
+msgid "Expand"
+msgstr ""
+"گستردن"
+
 msgid "Expand All"
 msgstr ""
 "گستردن همه"
