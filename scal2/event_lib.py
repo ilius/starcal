@@ -2503,9 +2503,13 @@ class EventGroup(EventContainer):
         for attr in ('remoteSyncData', 'eventIdByRemoteIds'):
             value = getattr(self, attr)
             if isinstance(value, list):
-                value = dict([
-                    (tuple(k), v) for k, v in value
-                ])
+                valueDict = {}
+                for item in value:
+                    if len(item) != 2:
+                        continue
+                    if not isinstance(item[0], (tuple, list)):
+                        continue
+                    valueDict[tuple(item[0])] = item[1]
                 setattr(self, attr, value)
         '''
         if 'remoteSyncData' in data:
