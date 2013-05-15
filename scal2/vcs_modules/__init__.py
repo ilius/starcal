@@ -6,8 +6,14 @@ vcsModuleNames = [
     'bzr',
 ]
 
-vcsModuleDict = dict([
-    (name, getattr(__import__('scal2.vcs_modules', fromlist=[name]), name))
-    for name in vcsModuleNames
-])
+vcsModuleDict = {}
+
+for name in vcsModuleNames:
+    try:
+        mod = __import__('scal2.vcs_modules', fromlist=[name])
+    except ImportError:
+        vcsModuleNames.remove(name)
+        continue
+    vcsModuleDict[name] = getattr(mod, name)
+
 
