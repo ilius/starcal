@@ -2496,7 +2496,8 @@ class EventGroup(EventContainer):
         data = EventContainer.getData(self)
         data['type'] = self.name
         for attr in ('remoteSyncData', 'eventIdByRemoteIds'):
-            data[attr] = sorted(data[attr].items())
+            if isinstance(data[attr], dict):
+                data[attr] = sorted(data[attr].items())
         return data
     def setData(self, data):
         EventContainer.setData(self, data)
