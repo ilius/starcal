@@ -270,7 +270,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         self.typeCombo.set_sensitive(self.typeCheck.get_active())
     def updateGroupSensitive(self, obj=None):
         self.groupCombo.set_sensitive(self.groupCheck.get_active())
-    def _doSearch(self):
+    def _do_search(self):
         if self.groupCheck.get_active():
             groupIds = [
                 self.groupCombo.get_active()
