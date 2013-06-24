@@ -33,7 +33,7 @@ iceil = lambda f: int(ceil(f))
 _ = str ## FIXME
 
 from scal2 import ui
-from scal2.ui_gtk.mywidgets.multi_spin_button import dateInput, timeInput
+from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, TimeButton
 
 
 def error_exit(text, parent=None):
@@ -80,7 +80,7 @@ class AdjusterDialog(gtk.Dialog):
         self.ckeckbEditTime.connect('clicked', self.ckeckbEditTimeClicked)
         hbox.pack_start(self.ckeckbEditTime, 0, 0)
         sg.add_widget(self.ckeckbEditTime)
-        self.timeInput = timeInput() ## ??????? options
+        self.timeInput = TimeButton() ## ??????? options
         hbox.pack_start(self.timeInput, 0, 0)
         vb.pack_start(hbox, 0, 0)
         ###
@@ -95,7 +95,7 @@ class AdjusterDialog(gtk.Dialog):
         self.ckeckbEditDate.connect('clicked', self.ckeckbEditDateClicked)
         hbox.pack_start(self.ckeckbEditDate, 0, 0)
         sg.add_widget(self.ckeckbEditDate)
-        self.dateInput = dateInput() ## ??????? options
+        self.dateInput = DateButton() ## ??????? options
         hbox.pack_start(self.dateInput, 0, 0)
         vb.pack_start(hbox, 0, 0)
         ###
