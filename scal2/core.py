@@ -383,7 +383,10 @@ getCompactTime = lambda maxDays=1000, minSec=0.1:\
 def floatJdEncode(jd, mode):
     jd, hour, minute, second = getJhmsFromEpoch(getEpochFromJd(jd))
     return dateEncode(jd_to(jd, mode)) + ' ' + timeEncode((hour, minute, second))
-    
+
+def epochDateTimeEncode(epoch):
+    jd, hour, minute, sec = getJhmsFromEpoch(epoch, True)
+    return dateEncode(jd_to_primary(jd)) + ', ' + timeEncode((hour, minute, sec))
 
 showInfo = lambda: log.debug('%s %s, OS: %s, Python %s'%(
     APP_DESC,

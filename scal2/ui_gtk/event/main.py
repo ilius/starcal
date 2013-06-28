@@ -28,6 +28,7 @@ from scal2.path import *
 from scal2 import core
 from scal2.core import myRaise
 
+from scal2 import locale_man
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl
 
@@ -765,10 +766,17 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
                         text = _('contains %s events and %s occurences')%(
                             _(len(group)),
                             _(group.occurCount),
-                        ) + '. ' + _('Group ID: %s')%_(group.id)
+                        ) + _(',') + ' ' + _('Group ID: %s')%_(group.id)
+                    modified = group.modified
                 elif len(path)==2:
                     group, event = self.getObjsByPath(path)
                     text = _('Event ID: %s')%_(event.id)
+                    modified = event.modified
+                text += '%s %s: %s'%(
+                    _(','),
+                    _('Last Modified'),
+                    locale_man.textNumEncode(core.epochDateTimeEncode(modified)),
+                )
             message_id = self.sbar.push(0, text)
         return True
     def _do_onGroupModify(self, group, groupIter):

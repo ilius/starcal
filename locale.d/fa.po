@@ -2131,6 +2131,10 @@ msgid "Modified From"
 msgstr ""
 "تغییر کرده از"
 
+msgid "Last Modified"
+msgstr ""
+"آخرین تغییرات"
+
 msgid "Search Results"
 msgstr ""
 "نتایج جستجو"

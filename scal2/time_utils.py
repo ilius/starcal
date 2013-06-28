@@ -45,9 +45,9 @@ def getHmsFromSeconds(second):
     hour, minute = divmod(minute, 60)
     return hour, minute, second
 
-def getJhmsFromEpoch(epoch, local=False):## return a tuple (julain_day, hour, minute, second) from epoch
-    #if local:
-    #    epoch -= getCurrentTimeZone()
+def getJhmsFromEpoch(epoch, return_local=False):## return a tuple (julain_day, hour, minute, second) from epoch
+    if return_local:
+        epoch += getCurrentTimeZone()
     days, second = divmod(ifloor(epoch), 24*3600)
     return (days+J1970,) + getHmsFromSeconds(second)
 
