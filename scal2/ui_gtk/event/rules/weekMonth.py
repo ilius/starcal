@@ -29,7 +29,7 @@ class RuleWidget(gtk.HBox):
         ###
         self.pack_start(gtk.Label(_(' of ')), 0, 0)
         ###
-        combo = MonthComboBox()
+        combo = MonthComboBox(True)
         combo.build(rule.getMode())
         self.pack_start(combo, 0, 0)
         self.monthCombo = combo

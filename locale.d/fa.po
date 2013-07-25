@@ -978,6 +978,10 @@ msgid "Week-Month"
 msgstr ""
 "هفته-ماه"
 
+msgid "Every Month"
+msgstr ""
+"هر ماه"
+
 
 msgid "First"
 msgstr ""

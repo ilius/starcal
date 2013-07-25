@@ -278,7 +278,9 @@ class WeekDayComboBox(gtk.ComboBox):
 
 
 class MonthComboBox(gtk.ComboBox):
-    def __init__(self):
+    def __init__(self, includeEvery=False):
+        self.includeEvery = includeEvery
+        ###
         ls = gtk.ListStore(str)
         gtk.ComboBox.__init__(self, ls)
         ###
@@ -289,14 +291,23 @@ class MonthComboBox(gtk.ComboBox):
         active = self.get_active()
         ls = self.get_model()
         ls.clear()
+        if self.includeEvery:
+            ls.append([_('Every Month')])
         for m in range(1, 13):
             ls.append([core.getMonthName(mode, m)])
         if active is not None:
             self.set_active(active)
     def getValue(self):
-        return self.get_active() + 1
+        a = self.get_active()
+        if self.includeEvery:
+            return a
+        else:
+            return a + 1
     def setValue(self, value):
-        self.set_active(value - 1)
+        if self.includeEvery:
+            self.set_active(value)
+        else:
+            self.set_active(value - 1)
 
 class DirectionComboBox(gtk.ComboBox):
     keys = ['ltr', 'rtl', 'auto']

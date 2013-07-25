@@ -584,14 +584,16 @@ class WeekMonthEventRule(EventRule):
         startYear, startMonth, startDay = jd_to(startJd, mode)
         endYear, endMonth, endDay = jd_to(endJd, mode)
         jds = set()
+        monthList = range(1, 13) if self.month==0 else [self.month]
         for year in range(startYear, endYear):
-            jd = to_jd(year, self.month, 7*self.wmIndex+1, mode)
-            jd += (self.weekDay-jwday(jd))%7
-            if self.wmIndex == 4:## Last (Fouth or Fifth)
-                if jd_to(jd, mode)[1] != self.month:
-                    jd -= 7
-            if startJd <= jd < endJd:
-                jds.add(jd)
+            for month in monthList:
+                jd = to_jd(year, month, 7*self.wmIndex+1, mode)
+                jd += (self.weekDay-jwday(jd))%7
+                if self.wmIndex == 4:## Last (Fouth or Fifth)
+                    if jd_to(jd, mode)[1] != month:
+                        jd -= 7
+                if startJd <= jd < endJd:
+                    jds.add(jd)
         return JdSetOccurrence(jds)
         
 
