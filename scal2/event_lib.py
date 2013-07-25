@@ -560,10 +560,17 @@ class WeekMonthEventRule(EventRule):
         'cycleLen',
     )
     params = (
-        'month',## 1..12
+        'month',## 0..12 ## 0 means every month
         'wmIndex',## 0..4
         'weekDay',## 0..7
     )
+    '''
+    paramsValidators = {
+        'month': lambda m: 0 <= m <= 12,
+        'wmIndex': lambda m: 0 <= m <= 4,
+        'weekDay': lambda m: 0 <= m <= 7,
+    }
+    '''
     wmIndexNames = (
         _('First'),## 0
         _('Second'),## 1
