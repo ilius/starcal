@@ -2,7 +2,7 @@
 ## StarCal Holidays Plugin
 ## Iranian Official Holidays
 desc = 'تعطیلات رسمی ایران'
-about = '''Iranian Official Holidays
+about = '''Official Holidays of Iran, Islamic Republic of
 تعطیلات رسمی جمهوری اسلامی ایران (آخرین تغییرات: ۱۳۸۸)
 
 برای روزهای تعطیل، رنگ شماره‌ ماه را تغییر می‌دهد
@@ -48,6 +48,6 @@ holidays = {
     )
 }
 
-default_enable = True
+default_enable = False
 default_show_date = False
 
