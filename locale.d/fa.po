@@ -1659,6 +1659,10 @@ msgid "Show Date"
 msgstr ""
 "نمایش تاریخ"
 
+msgid "Show Date in Event Summary"
+msgstr ""
+"نمایش تاریخ در خلاصهٔ رویداد"
+
 msgid "Move up"
 msgstr ""
 "جابجایی به بالا"

@@ -1899,17 +1899,23 @@ class YearlyEvent(Event):
         return jd_to(startJd, self.mode)[0]
     def getSummary(self):
         summary = Event.getSummary(self)
-        newParts = [
-            _(self.getDay()),
-            getMonthName(self.mode, self.getMonth()),
-        ]
         try:
-            startRule = self['start']
-        except KeyError:
-            pass
-        else:
-            newParts.append(_(startRule.date[0]))
-        return ' '.join(newParts) + ': ' + summary
+            showDate = self.parent.showDate
+        except AttributeError:
+            showDate = True
+        if showDate:
+            newParts = [
+                _(self.getDay()),
+                getMonthName(self.mode, self.getMonth()),
+            ]
+            try:
+                startRule = self['start']
+            except KeyError:
+                pass
+            else:
+                newParts.append(_(startRule.date[0]))
+            summary = ' '.join(newParts) + ': ' + summary
+        return summary
     def getIcsData(self, prettyDateTime=False):
         if self.mode != DATE_GREG:
             return None
@@ -2885,7 +2891,12 @@ class YearlyGroup(EventGroup):
     canConvertTo = (
         'noteBook',
     )
-                
+    params = EventGroup.params + (
+        'showDate',
+    )           
+    def __init__(self, _id=None):
+        EventGroup.__init__(self, _id)
+        self.showDate = True
 
 @classes.group.register
 class UniversityTerm(EventGroup):
