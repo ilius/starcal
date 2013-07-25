@@ -1,0 +1,54 @@
+#!/bin/bash
+
+cd "`dirname \"$0\"`"
+
+chmod -R 755 .
+
+find . -type f -exec chmod 644 '{}' \;
+
+
+chmod 755 'starcal2'
+chmod 755 'starcal2-qt'
+
+chmod 755 'scal2/ui_gtk/starcal2.py'
+chmod 755 'scal2/ui_qt/starcal2.py'
+
+chmod 755 'install'
+chmod 755 'install-archlinux'
+chmod 755 'install-debian'
+chmod 755 'install-fedora'
+chmod 755 'install-plasma-applet'
+chmod 755 'install-suse'
+chmod 755 'uninstall'
+chmod 755 'update-perm'
+
+chmod 755 'scripts/assert_python2'
+chmod 755 'scripts/compact_json_all'
+chmod 755 'scripts/compact_json.py'
+chmod 755 'scripts/post_install.py'
+chmod 755 'scripts/pre_remove.py'
+chmod 755 'scripts/pretty_json_all'
+chmod 755 'scripts/pretty_json.py'
+chmod 755 'scripts/run'
+chmod 755 'scripts/run_abs'
+chmod 755 'scripts/starcal2d'
+
+chmod 755 'locale.d/compile'
+chmod 755 'locale.d/install'
+chmod 755 'locale.d/make-template'
+
+chmod 755 'scal2/get_version.py'
+chmod 755 'scal2/import_config_1to2.py'
+chmod 755 'scal2/starcal2-daemon.py'
+
+chmod 755 'scal2/ui_gtk/adjust_dtime.py'
+chmod 755 'scal2/ui_gtk/arch-enable-locale.py'
+chmod 755 'scal2/ui_gtk/import_config_1to2.py'
+chmod 755 'scal2/ui_qt/import_config_1to2.py'
+chmod 755 'scal2/ui_gtk/screenlet/StarCalendarScreenlet.py'
+chmod 755 'scal2/ui_gtk/starcal-gnome2-applet.py'
+
+chmod 755 'debian/rules'
+
+
+
