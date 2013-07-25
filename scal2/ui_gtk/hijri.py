@@ -24,6 +24,7 @@ from os.path import isfile
 
 from scal2.cal_types import calTypes
 from scal2.cal_types.hijri import monthDb, monthName
+from scal2.date_utils import monthPlus
 
 from scal2 import core
 from scal2.core import jd_to, to_jd
@@ -36,7 +37,7 @@ import gtk
 from gtk import gdk
 
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
-from scal2.ui_gtk.utils import dialog_add_button
+from scal2.ui_gtk.utils import dialog_add_button, toolButtonFromStock, set_tooltip
 
 from scal2.ui_gtk import gtk_ud as ud
 
@@ -99,9 +100,27 @@ class EditDbDialog(gtk.Dialog):
         col = gtk.TreeViewColumn(_('End Date'), cell, text=4)
         treev.append_column(col)
         ######
+        toolbar = gtk.Toolbar()
+        toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
+        size = gtk.ICON_SIZE_SMALL_TOOLBAR
+        ###
+        tb = toolButtonFromStock(gtk.STOCK_ADD, size)
+        set_tooltip(tb, _('Add'))
+        tb.connect('clicked', self.addClicked)
+        toolbar.insert(tb, -1)
+        ###
+        tb = toolButtonFromStock(gtk.STOCK_DELETE, size)
+        set_tooltip(tb, _('Delete'))
+        tb.connect('clicked', self.delClicked)
+        toolbar.insert(tb, -1)
+        ######
         self.treev = treev
         self.trees = trees
-        self.vbox.pack_start(swin, 1, 1)
+        #####
+        mainHbox = gtk.HBox()
+        mainHbox.pack_start(swin, 1, 1)
+        mainHbox.pack_start(toolbar, 0, 0)
+        self.vbox.pack_start(mainHbox, 1, 1)
         ######
         dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
         dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
@@ -122,6 +141,33 @@ class EditDbDialog(gtk.Dialog):
         monthDb.load()
         self.updateWidget()
         return True
+    def addClicked(self, obj=None):
+        last = self.trees[-1]
+        ## 0 ym
+        ## 1 yearLocale
+        ## 2 monthLocale
+        ## 3 mLen
+        ## 4 endDate = ''
+        ym = last[0] + 1
+        mLen = 59 - last[3]
+        year, month0 = divmod(ym, 12)
+        self.trees.append((
+            ym,
+            _(year),
+            _(monthName[month0]),
+            mLen,
+            '',
+        ))
+        self.updateEndDates()
+        self.selectLastRow()
+    def selectLastRow(self):
+        lastPath = (len(self.trees)-1,)
+        self.treev.scroll_to_cell(lastPath)
+        self.treev.set_cursor(lastPath)
+    def delClicked(self, obj=None):
+        if len(self.trees) > 1:
+            del self.trees[-1]
+        self.selectLastRow()
     def updateWidget(self):
         #for index, module in calTypes.iterIndexModule():
         #    if module.name != 'hijri':
