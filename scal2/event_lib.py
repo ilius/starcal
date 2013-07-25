@@ -185,10 +185,18 @@ class JsonEventBaseClass(EventBaseClass):
     def load(self):
         if not isfile(self.file):
             raise IOError('error while loading json file %r: no such file'%self.file)
+            if hasattr(self, 'modified'):
+                self.setModifiedFromFile()
+        else:
+            'no modified param'
         jstr = open(self.file).read()
         if jstr:
             self.setJson(jstr)## FIXME
-
+    def setModifiedFromFile(self):
+        try:
+            self.modified = int(os.stat(self.file).st_mtime)
+        except OSError:
+            pass
 
 class Occurrence(EventBaseClass):
     def __init__(self):
@@ -2206,6 +2214,7 @@ class EventContainer(JsonEventBaseClass):
         'title',
         'showFullEventDesc',
         'idList',
+        'modified',
     )
     def __getitem__(self, key):
         if isinstance(key, int):## eventId
@@ -2317,6 +2326,21 @@ class EventGroup(EventContainer):
         ('description', _('Description'), False),
         ('icon', _('Icon'), False),
     )
+    sortByDefault = 'summary'
+    params = EventContainer.params + (
+        'enable',
+        'showInCal',
+        'showInTimeLine',
+        'color',
+        'eventCacheSize',
+        'eventTextSep',
+        'startJd',
+        'endJd',
+        'remoteIds',
+        'remoteSyncData',
+        'eventIdByRemoteIds',
+        ## 'defaultEventType'
+    )
     jsonParams = (
         'enable',
         'type',
@@ -2336,7 +2360,6 @@ class EventGroup(EventContainer):
         'eventIdByRemoteIds',
         'idList',
     )
-    sortByDefault = 'summary'
     def getSortBys(self):
         l = list(self.sortBys)
         if self.enable:
@@ -2477,21 +2500,6 @@ class EventGroup(EventContainer):
             lastEventGroupId = _id
         self.id = _id
         self.file = join(groupsDir, '%d.json'%self.id)
-    _myParams = (
-        'enable',
-        'showInCal',
-        'showInTimeLine',
-        'color',
-        'eventCacheSize',
-        'eventTextSep',
-        'startJd',
-        'endJd',
-        'remoteIds',
-        'remoteSyncData',
-        'eventIdByRemoteIds',
-        ## 'defaultEventType'
-    )
-    params = EventContainer.params + _myParams
     def getData(self):
         data = EventContainer.getData(self)
         data['type'] = self.name
@@ -3449,6 +3457,7 @@ class EventGroupsHolder(JsonObjectsHolder):
                 obj = self.appendNew(data)
                 if obj.enable:
                     obj.updateOccurrence()
+                obj.setModifiedFromFile()
                 ## here check that non of obj.idList are in eventIdList ## FIXME
                 #eventIdList += obj.idList
         else:
@@ -3607,9 +3616,7 @@ class EventTrash(EventContainer):
         self.save()
     def load(self):
         if isfile(self.file):
-            jsonStr = open(self.file).read()
-            if jsonStr:
-                self.setJson(jsonStr)## FIXME
+            EventContainer.load(self)
         else:
             self.save()
 
