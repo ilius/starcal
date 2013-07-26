@@ -3292,9 +3292,9 @@ class VcsCommitEventGroup(VcsBaseEventGroup):
             ))
             myRaise()
             return
-        tz = getUtcOffsetCurrent()
+        uof = getUtcOffsetCurrent()
         for epoch, commit_id in commitsData:
-            epoch += tz
+            epoch += uof
             self.addOccur(epoch, epoch+epsTm, commit_id)
         ###
         self.updateOccurrenceLog(stm0)
@@ -3363,9 +3363,9 @@ class VcsTagEventGroup(VcsBaseEventGroup):
             myRaise()
             return
         #self.updateOccurrenceLog(stm0)
-        tz = getUtcOffsetCurrent()
+        uof = getUtcOffsetCurrent()
         for epoch, tag in tagsData:
-            epoch += tz
+            epoch += uof
             self.addOccur(epoch, epoch+epsTm, tag)
         ###
         self.updateOccurrenceLog(stm0)
