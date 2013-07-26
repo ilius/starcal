@@ -126,10 +126,10 @@ class PrayTimes:
         self.timeFormat = timeFormat
 
     # return prayer times for a given julian day
-    def getTimesByJd(self, jd, timeZone):
+    def getTimesByJd(self, jd, utcOffset):
         #if time.daylight and time.gmtime(core.getEpochFromJd(jd)):
         #print time.gmtime((jd-2440588)*(24*3600)).tm_isdst
-        self.timeZone = timeZone
+        self.utcOffset = utcOffset
         self.jDate = jd - 0.5 - self.lng/(15*24)
         return self.computeTimes()
 
@@ -254,7 +254,7 @@ class PrayTimes:
 
         ## adjustTimes
         for key in times:
-            times[key] += self.timeZone - self.lng/15.0
+            times[key] += self.utcOffset - self.lng/15.0
         if self.highLats != 'None':
             ## adjustHighLats
             nightTime = timeDiff(times['sunset'], times['sunrise'])
@@ -280,7 +280,7 @@ class PrayTimes:
         #for key in times:
         #    times[key] = self.getFormattedTime(times[key], format)
 
-        times['timezone'] = 'GMT%+.1f'%self.timeZone
+        times['timezone'] = 'GMT%+.1f'%self.utcOffset ## utcOffset is not timeZone FIXME
 
         return times
 
