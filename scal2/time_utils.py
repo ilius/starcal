@@ -17,39 +17,79 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from time import time, localtime
+import time
+from time import localtime, mktime
 #from time import timezone, altzone, daylight
 import datetime
 import struct
 
-from scal2.cal_types.gregorian import J1970
+from scal2.cal_types.gregorian import J0001, J1970
+from scal2.cal_types.gregorian import jd_to as jd_to_g
 from scal2.utils import ifloor, iceil
 
-## time() ~~ epoch
+## getTime() ~~ epoch
 ## jd == epoch/(24*3600.0) + J1970
 ## epoch == (jd-J1970)*24*3600
 ## jd is the integer value of Chronological Julian Day, wich is specific to time zone
 ## but epoch time is based on UTC, and not location-dependent FIXME
 
+#def getUtcOffsetByEpoch(epoch):
+#    try:
+#        return (datetime.datetime.fromtimestamp(epoch) - datetime.datetime.utcfromtimestamp(epoch)).seconds
+#    except ValueError:## year is out of range
+#        return 0
+
 def getUtcOffsetByEpoch(epoch):
+    if time.daylight and time.localtime(epoch).tm_isdst:
+        return -time.altzone
+    else:
+        return -time.timezone
+
+def getUtcOffsetByDateSec(year, month, day):
     try:
-        return (datetime.datetime.fromtimestamp(epoch) - datetime.datetime.utcfromtimestamp(epoch)).seconds
-    except ValueError:## year is out of range
-        return 0
+        isdst = time.localtime(time.mktime((year, month, day, 0, 0, 0, 0, 0, -1))).tm_isdst
+    except ValueError:
+        isdst = False
+    if time.daylight and isdst:
+        return -time.altzone
+    else:
+        return -time.timezone
+
+
+def getUtcOffsetByDateHM(year, month, day):
+    s = getUtcOffsetByDateSec(year, month, day)
+    return divmod(s/60, 60)
+
+def getUtcOffsetByDateHMS(year, month, day):
+    s = getUtcOffsetByDateSec(year, month, day)
+    m, s = divmod(s, 60)
+    h, m = divmod(m, 60)
+    return (h, m, s)
 
 getUtcOffsetByJd = lambda jd: getUtcOffsetByEpoch(getEpochFromJd(jd))
 
-getUtcOffsetCurrent = lambda: getUtcOffsetByEpoch(time())
-#getUtcOffsetCurrent = lambda: -altzone if daylight and localtime().tm_isdst else -timezone
-getCurrentTime = lambda: time() + getUtcOffsetCurrent()
+getTime = lambda: time.time() #+ getUtcOffsetCurrent()
+
+getUtcOffsetCurrent = lambda: getUtcOffsetByEpoch(getTime())
+#getUtcOffsetCurrent = lambda: -time.altzone if time.daylight and localtime().tm_isdst else -timezone
+
 getGtkTimeFromEpoch = lambda epoch: (epoch-1.32171528839e+9)*1000 // 1
 
 
-getFloatJdFromEpoch = lambda epoch: epoch/(24.0*3600) + J1970
+getFloatJdFromEpoch = lambda epoch: (epoch + getUtcOffsetByEpoch(epoch))/(24.0*3600) + J1970
+#getFloatJdFromEpoch = lambda epoch: datetime.datetime.fromtimestamp(epoch).toordinal() - 1 + J0001
+
 getJdFromEpoch = lambda epoch: ifloor(getFloatJdFromEpoch(epoch))
 
 
-getEpochFromJd = lambda jd: (jd-J1970)*(24*3600)
+#getEpochFromJd = lambda jd: (jd-J1970) * 24*3600
+
+def getEpochFromJd(jd):
+    localEpoch = (jd-J1970) * 24*3600
+    year, month, day = jd_to_g(jd-1) ## FIXME
+    return localEpoch - getUtcOffsetByDateSec(year, month, day)
+
+#getEpochFromJd = lambda jd: int(mktime(datetime.datetime.fromordinal(int(jd)-J0001+1).timetuple()))
 
 roundEpochToDay = lambda epoch: getEpochFromJd(round(getFloatJdFromEpoch(epoch)))
 
@@ -63,10 +103,9 @@ def getHmsFromSeconds(second):
     hour, minute = divmod(minute, 60)
     return hour, minute, second
 
-def getJhmsFromEpoch(epoch, return_local=False):## return a tuple (julain_day, hour, minute, second) from epoch
-    if return_local:
-        epoch += getUtcOffsetCurrent()
-    days, second = divmod(ifloor(epoch), 24*3600)
+def getJhmsFromEpoch(epoch, currentOffset=False):## return a tuple (julain_day, hour, minute, second) from epoch
+    offset = getUtcOffsetCurrent() if currentOffset else getUtcOffsetByEpoch(epoch) ## FIXME
+    days, second = divmod(ifloor(epoch + offset), 24*3600)
     return (days+J1970,) + getHmsFromSeconds(second)
 
 def getSecondsFromHms(hour, minute, second=0):

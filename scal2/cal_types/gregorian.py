@@ -85,7 +85,7 @@ def jd_to(jd) :
     #leapadj = 0 if jd < to_jd(year, 3, 1) else (1 if isLeap(year) else 2)
     month = ((yearday+leapadj) * 12 + 373) // 367
     day = jd - to_jd(year, month, 1) + 1
-    return (year, month, day)
+    return int(year), int(month), int(day)
 
 def getMonthLen(y, m):
     if m==12:
@@ -93,5 +93,6 @@ def getMonthLen(y, m):
     else:
         return to_jd(y, m+1, 1) - to_jd(y, m, 1)
 
+J0001 = to_jd(1, 1, 1)
 J1970 = to_jd(1970, 1, 1)
 

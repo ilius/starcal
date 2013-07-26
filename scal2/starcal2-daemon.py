@@ -33,7 +33,7 @@ sys.path.append(dirname(dirname(__file__))) ## FIXME
 
 from scal2.path import *
 from scal2.os_utils import getUsersData
-from scal2.time_utils import getCurrentTime, getEpochFromJd
+from scal2.time_utils import getEpochFromJd
 from scal2.cal_types import to_jd, DATE_GREG
 from scal2 import event_lib
 from scal2.event_lib import eventsDir
@@ -84,7 +84,7 @@ def notify(eid):
         Popen(notifyCmd+[str(eid), str(uid)], stdout=PIPE)
 
 def prepareToday():
-    tm = getCurrentTime()
+    tm = time()
     y, m, d = localtime(tm)[:3]
     #log.debug('Date: %s/%s/%s   Epoch: %s'%(y, m, d, tm))
     todayJd = to_jd(y, m, d, DATE_GREG)

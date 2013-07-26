@@ -29,7 +29,7 @@ from scal2.locale_man import tr as _
 from scal2.locale_man import rtl
 
 from scal2.utils import toUnicode
-from scal2.core import myRaise, getCurrentTime
+from scal2.core import myRaise
 
 from scal2 import ui
 from scal2.timeline import *
@@ -63,7 +63,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
     desc = _('Time Line')
     def centerToNow(self):
         self.stopMovingAnim()
-        self.timeStart = getCurrentTime() - self.timeWidth/2.0
+        self.timeStart = time.time() - self.timeWidth/2.0
     def centerToNowClicked(self, arg=None):
         self.centerToNow()
         self.queue_draw()
@@ -79,7 +79,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         self.connect('button-release-event', self.buttonRelease)
         self.connect('key-press-event', self.keyPress)
         #self.connect('event', show_event)
-        self.currentTime = getCurrentTime()
+        self.currentTime = time.time()
         self.timeWidth = dayLen
         self.timeStart = self.currentTime - self.timeWidth/2.0
         self.buttons = [
@@ -118,7 +118,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         self.window.move_resize(*self.allocation)
         self.currentTimeUpdate()
     def currentTimeUpdate(self):
-        tm = getCurrentTime()
+        tm = time.time()
         timeout_add(int(1000*(1.01-tm%1)), self.currentTimeUpdate)
         self.currentTime = int(tm)
         if self.parent:

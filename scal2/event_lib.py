@@ -17,8 +17,6 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from time import time, localtime
-#print time(), __file__ ## FIXME
 
 import json, random, os, shutil
 from os.path import join, split, isdir, isfile, dirname, splitext
@@ -1251,7 +1249,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         if parent is not None:
             self.setDefaultsFromGroup(parent)
         ######
-        self.modified = time()
+        self.modified = getTime()
         self.remoteIds = None## (accountId, groupId, eventId)
         ## remote groupId and eventId both can be integer or string or unicode (depending on remote account type)
     def getShownDescription(self):
@@ -1268,7 +1266,7 @@ class Event(JsonEventBaseClass, RuleContainer):
     def afterModify(self):
         if self.id is None:
             self.setId()
-        self.modified = time()
+        self.modified = getTime()
         #self.parent.eventsModified = self.modified
         ###
         if self.parent and self.id in self.parent.idList:
@@ -2244,10 +2242,10 @@ class EventContainer(JsonEventBaseClass):
         self.icon = ''
         self.showFullEventDesc = False
         ######
-        self.modified = time()
+        self.modified = getTime()
         #self.eventsModified = self.modified
     def afterModify(self):
-        self.modified = time()
+        self.modified = getTime()
     def getEvent(self, eid):
         if not eid in self.idList:
             raise ValueError('%s does not contain %s'%(self, eid))
@@ -2493,7 +2491,7 @@ class EventGroup(EventContainer):
     #    EventContainer.load(self)
     #    self.addRequirements()
     def afterSync(self):
-        self.remoteSyncData[self.remoteIds] = time()
+        self.remoteSyncData[self.remoteIds] = getTime()
     def getLastSync(self):
         if self.remoteIds:
             try:
@@ -2688,10 +2686,10 @@ class EventGroup(EventContainer):
                 self.id,
                 self.title,
                 self.occurCount,
-                time()-stm0,
+                getTime()-stm0,
             )
     def updateOccurrence(self):
-        stm0 = time()
+        stm0 = getTime()
         self.occur.clear()
         self.occurCount = 0
         occurList = []
@@ -2708,13 +2706,13 @@ class EventGroup(EventContainer):
                 self.id,
                 self.title,
                 self.occurCount,
-                time()-stm0,
+                getTime()-stm0,
             )
         #print 'depth=%s, N=%s'%(self.occur.getDepth(), len(occurList))
         #print '2*lg(N)=%.1f'%(2*math.log(len(occurList), 2))
         #print
     def exportToIcsFp(self, fp):
-        currentTimeStamp = getIcsTimeByEpoch(time())
+        currentTimeStamp = getIcsTimeByEpoch(getTime())
         for event in self:
             print 'exportToIcsFp', event.id
             icsData = event.getIcsData()
@@ -3278,7 +3276,7 @@ class VcsCommitEventGroup(VcsBaseEventGroup):
         self.showShortHash = True
         self.showStat = True
     def updateOccurrence(self):
-        stm0 = time()
+        stm0 = getTime()
         self.clear()
         if not self.vcsDir:
             return
@@ -3292,9 +3290,9 @@ class VcsCommitEventGroup(VcsBaseEventGroup):
             ))
             myRaise()
             return
-        uof = getUtcOffsetCurrent()
+        #uof = getUtcOffsetCurrent()
         for epoch, commit_id in commitsData:
-            epoch += uof
+            #epoch += uof
             self.addOccur(epoch, epoch+epsTm, commit_id)
         ###
         self.updateOccurrenceLog(stm0)
@@ -3348,7 +3346,7 @@ class VcsTagEventGroup(VcsBaseEventGroup):
         EventGroup.addOccur(self, t0, t1, eid)
         self.tags.append(eid)
     def updateOccurrence(self):
-        stm0 = time()
+        stm0 = getTime()
         self.clear()
         if not self.vcsDir:
             return
@@ -3363,9 +3361,9 @@ class VcsTagEventGroup(VcsBaseEventGroup):
             myRaise()
             return
         #self.updateOccurrenceLog(stm0)
-        uof = getUtcOffsetCurrent()
+        #uof = getUtcOffsetCurrent()
         for epoch, tag in tagsData:
-            epoch += uof
+            #epoch += uof
             self.addOccur(epoch, epoch+epsTm, tag)
         ###
         self.updateOccurrenceLog(stm0)
@@ -3712,11 +3710,15 @@ def getDayOccurrenceData(curJd, groups):
             ###
             timeStr = ''
             if epoch1-epoch0 < dayLen:
-                h0, m0, s0 = getHmsFromSeconds(epoch0 % dayLen)
+                jd0, h0, m0, s0 = getJhmsFromEpoch(epoch0)
+                if jd0 < curJd:
+                    h0, m0, s0 = 0, 0, 0
                 if epoch1 - epoch0 < 1:
                     timeStr = timeEncode((h0, m0, s0), True)
                 else:
-                    h1, m1, s1 = getHmsFromSeconds(epoch1 % dayLen)
+                    jd1, h1, m1, s1 = getJhmsFromEpoch(epoch1)
+                    if jd1 > curJd:
+                        h1, m1, s1 = 24, 0, 0
                     timeStr = hmsRangeToStr(h0, m0, s0, h1, m1, s1)
             ###
             data.append((

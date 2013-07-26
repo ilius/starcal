@@ -21,6 +21,7 @@
 import time
 from scal2.locale_man import tr as _
 from scal2.cal_types import calTypes, gregorian, to_jd
+from scal2.time_utils import getUtcOffsetByDateSec
 
 from scal2 import core
 
@@ -43,24 +44,6 @@ def isow(jd):## iso week number
         year += 1
     return (jd - iso_to_jd(year, 1, 1)) // 7 + 1
 
-
-
-def getUtcOffsetByDateSec(year, month, day):
-    if time.daylight and time.localtime(time.mktime((year, month, day, 0, 0, 0, 0, 0, -1))).tm_isdst:
-        return -time.altzone
-    else:
-        return -time.timezone
-
-
-def getUtcOffsetByDateHM(year, month, day):
-    s = getUtcOffsetByDateSec(year, month, day)
-    return divmod(s/60, 60)
-
-def getUtcOffsetByDateHMS(year, month, day):
-    s = getUtcOffsetByDateSec(year, month, day)
-    m, s = divmod(s, 60)
-    h, m = divmod(m, 60)
-    return (h, m, s)
 
 
 def compileTmFormat(format, hasTime=True):

@@ -385,7 +385,7 @@ def floatJdEncode(jd, mode):
     return dateEncode(jd_to(jd, mode)) + ' ' + timeEncode((hour, minute, second))
 
 def epochDateTimeEncode(epoch):
-    jd, hour, minute, sec = getJhmsFromEpoch(epoch, True)
+    jd, hour, minute, sec = getJhmsFromEpoch(epoch)
     return dateEncode(jd_to_primary(jd)) + ', ' + timeEncode((hour, minute, sec))
 
 showInfo = lambda: log.debug('%s %s, OS: %s, Python %s'%(
