@@ -28,8 +28,26 @@ from scal2.utils import ifloor, iceil
 ## time() ~~ epoch
 ## jd == epoch/(24*3600.0) + J1970
 ## epoch == (jd-J1970)*24*3600
-getJdFromEpoch = lambda epoch: ifloor(epoch//(24*3600) + J1970)
+## jd is the integer value of Chronological Julian Day, wich is specific to time zone
+## but epoch time is based on UTC, and not location-dependent FIXME
+
+def getUtcOffsetByEpoch(epoch):
+    try:
+        return (datetime.datetime.fromtimestamp(epoch) - datetime.datetime.utcfromtimestamp(epoch)).seconds
+    except ValueError:## year is out of range
+        return 0
+
+getUtcOffsetByJd = lambda jd: getUtcOffsetByEpoch(getEpochFromJd(jd))
+
+getUtcOffsetCurrent = lambda: getUtcOffsetByEpoch(time())
+#getUtcOffsetCurrent = lambda: -altzone if daylight and localtime().tm_isdst else -timezone
+getCurrentTime = lambda: time() + getUtcOffsetCurrent()
+getGtkTimeFromEpoch = lambda epoch: (epoch-1.32171528839e+9)*1000 // 1
+
+
 getFloatJdFromEpoch = lambda epoch: epoch/(24.0*3600) + J1970
+getJdFromEpoch = lambda epoch: ifloor(getFloatJdFromEpoch(epoch))
+
 
 getEpochFromJd = lambda jd: (jd-J1970)*(24*3600)
 
@@ -60,18 +78,7 @@ def getJdAndSecondsFromEpoch(epoch):## return a tuple (julain_day, extra_seconds
     days, second = divmod(epoch, 24*3600)
     return (days + J1970, second)
 
-def getUtcOffsetByEpoch(epoch):
-    try:
-        return (datetime.datetime.fromtimestamp(epoch) - datetime.datetime.utcfromtimestamp(epoch)).seconds
-    except ValueError:## year is out of range
-        return 0
 
-getUtcOffsetByJd = lambda jd: getUtcOffsetByEpoch(getEpochFromJd(jd))
-
-getUtcOffsetCurrent = lambda: getUtcOffsetByEpoch(time())
-#getUtcOffsetCurrent = lambda: -altzone if daylight and localtime().tm_isdst else -timezone
-getCurrentTime = lambda: time() + getUtcOffsetCurrent()
-getGtkTimeFromEpoch = lambda epoch: (epoch-1.32171528839e+9)*1000 // 1
 
 durationUnitsRel = (
     (1, 'second'),
