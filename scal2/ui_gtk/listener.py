@@ -1,7 +1,7 @@
 import time
 from time import localtime
 
-from scal2.time_utils import getCurrentTimeZone
+from scal2.time_utils import getUtcOffsetCurrent
 from scal2 import core
 from scal2 import ui
 
@@ -26,7 +26,7 @@ class DateChangeListener:
             ui.todayCell = ui.cellCache.getTodayCell()
             for obj in self.receivers:
                 obj.onCurrentDateChange(gdate)
-        #timeout_add_seconds(int(dayLen-(tm+getCurrentTimeZone())%dayLen)+1, self.check)
+        #timeout_add_seconds(int(dayLen-(tm+getUtcOffsetCurrent())%dayLen)+1, self.check)
         timeout_add_seconds(self.timeout, self.check)
 
 #class TimeChangeListener:

@@ -47,7 +47,7 @@ def getHmsFromSeconds(second):
 
 def getJhmsFromEpoch(epoch, return_local=False):## return a tuple (julain_day, hour, minute, second) from epoch
     if return_local:
-        epoch += getCurrentTimeZone()
+        epoch += getUtcOffsetCurrent()
     days, second = divmod(ifloor(epoch), 24*3600)
     return (days+J1970,) + getHmsFromSeconds(second)
 
@@ -68,9 +68,9 @@ def getUtcOffsetByEpoch(epoch):
 
 getTimeZoneByJd = lambda jd: getUtcOffsetByEpoch(getEpochFromJd(jd))
 
-getCurrentTimeZone = lambda: getUtcOffsetByEpoch(time())
-#getCurrentTimeZone = lambda: -altzone if daylight and localtime().tm_isdst else -timezone
-getCurrentTime = lambda: time() + getCurrentTimeZone()
+getUtcOffsetCurrent = lambda: getUtcOffsetByEpoch(time())
+#getUtcOffsetCurrent = lambda: -altzone if daylight and localtime().tm_isdst else -timezone
+getCurrentTime = lambda: time() + getUtcOffsetCurrent()
 getGtkTimeFromEpoch = lambda epoch: (epoch-1.32171528839e+9)*1000 // 1
 
 durationUnitsRel = (
