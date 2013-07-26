@@ -45,19 +45,19 @@ def isow(jd):## iso week number
 
 
 
-def timezoneSec(year, month, day):
+def getUtcOffsetByDateSec(year, month, day):
     if time.daylight and time.localtime(time.mktime((year, month, day, 0, 0, 0, 0, 0, -1))).tm_isdst:
         return -time.altzone
     else:
         return -time.timezone
 
 
-def timezoneHM(year, month, day):
-    s = timezoneSec(year, month, day)
+def getUtcOffsetByDateHM(year, month, day):
+    s = getUtcOffsetByDateSec(year, month, day)
     return divmod(s/60, 60)
 
-def timezoneHMS(year, month, day):
-    s = timezoneSec(year, month, day)
+def getUtcOffsetByDateHMS(year, month, day):
+    s = getUtcOffsetByDateSec(year, month, day)
     m, s = divmod(s, 60)
     h, m = divmod(m, 60)
     return (h, m, s)
@@ -216,7 +216,7 @@ def compileTmFormat(format, hasTime=True):
             continue
         elif c1=='z':
             def tz(a):
-                m = int(timezoneSec(cell.dates[mode][0], cell.dates[mode][1], cell.dates[mode][2])/60)
+                m = int(getUtcOffsetByDateSec(cell.dates[mode][0], cell.dates[mode][1], cell.dates[mode][2])/60)
                 return _(m//60, fillZero=2) + _(m%60, fillZero=2)
             funcs.append(tz)
             pyFmt += '%s'
@@ -227,7 +227,7 @@ def compileTmFormat(format, hasTime=True):
             c2 = format[i+2]
             if c2=='z':## %:z
                 def tz(a):
-                    s = int(timezoneSec(cell.dates[mode][0], cell.dates[mode][1], cell.dates[mode][2]))
+                    s = int(getUtcOffsetByDateSec(cell.dates[mode][0], cell.dates[mode][1], cell.dates[mode][2]))
                     return _(m//60, fillZero=2) + ':' + _(m%60, fillZero=2)
                 funcs.append(tz)
                 pyFmt += '%s'
