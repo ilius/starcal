@@ -60,15 +60,15 @@ def getJdAndSecondsFromEpoch(epoch):## return a tuple (julain_day, extra_seconds
     days, second = divmod(epoch, 24*3600)
     return (days + J1970, second)
 
-def getTimeZoneByEpoch(epoch):
+def getUtcOffsetByEpoch(epoch):
     try:
         return (datetime.datetime.fromtimestamp(epoch) - datetime.datetime.utcfromtimestamp(epoch)).seconds
     except ValueError:## year is out of range
         return 0
 
-getTimeZoneByJd = lambda jd: getTimeZoneByEpoch(getEpochFromJd(jd))
+getTimeZoneByJd = lambda jd: getUtcOffsetByEpoch(getEpochFromJd(jd))
 
-getCurrentTimeZone = lambda: getTimeZoneByEpoch(time())
+getCurrentTimeZone = lambda: getUtcOffsetByEpoch(time())
 #getCurrentTimeZone = lambda: -altzone if daylight and localtime().tm_isdst else -timezone
 getCurrentTime = lambda: time() + getCurrentTimeZone()
 getGtkTimeFromEpoch = lambda epoch: (epoch-1.32171528839e+9)*1000 // 1
