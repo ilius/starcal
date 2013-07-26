@@ -66,7 +66,7 @@ def getUtcOffsetByEpoch(epoch):
     except ValueError:## year is out of range
         return 0
 
-getTimeZoneByJd = lambda jd: getUtcOffsetByEpoch(getEpochFromJd(jd))
+getUtcOffsetByJd = lambda jd: getUtcOffsetByEpoch(getEpochFromJd(jd))
 
 getUtcOffsetCurrent = lambda: getUtcOffsetByEpoch(time())
 #getUtcOffsetCurrent = lambda: -altzone if daylight and localtime().tm_isdst else -timezone

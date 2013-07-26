@@ -41,7 +41,7 @@ from scal2.time_utils import floatHourToTime
 from scal2.locale_man import tr as _
 from scal2.plugin_man import BasePlugin
 from scal2.cal_types.gregorian import to_jd as gregorian_to_jd
-from scal2.time_utils import getTimeZoneByJd
+from scal2.time_utils import getUtcOffsetByJd
 #from scal2 import event_lib## needs core!! FIXME
 
 #if 'gtk' in sys.modules:
@@ -170,7 +170,7 @@ class TextPlug(BasePlugin, TextPlugUI):
     def get_times_jd(self, jd):
         times = self.ptObj.getTimesByJd(
             jd,
-            getTimeZoneByJd(jd)/3600.0,
+            getUtcOffsetByJd(jd)/3600.0,
         )
         return [(name, times[name]) for name in self.shownTimeNames]
     def getFormattedTime(self, tm):## tm is float hour
