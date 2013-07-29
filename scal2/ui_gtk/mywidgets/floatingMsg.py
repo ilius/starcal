@@ -18,6 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 import time
+from time import time as now
 
 import gtk
 from gtk import gdk
@@ -129,13 +130,13 @@ class FloatingMsg(gtk.Widget):
         self.cr.show_layout(self.layout)
     def animateStart(self):
         self.updateLine()
-        self.startTime = time.time()
+        self.startTime = now()
         self.animateUpdate()
     def animateUpdate(self):
         if self.isFinished:
             return
         gobject.timeout_add(self.refreshTime, self.animateUpdate)
-        self.xpos = self.startXpos + (time.time()-self.startTime)*self.speed*self.rtlSign
+        self.xpos = self.startXpos + (now()-self.startTime)*self.speed*self.rtlSign
         if self.xpos>screenWidth or self.xpos<-self.textWidth:
             if self.index >= self.linesNum-1:
                 self.finish()
@@ -237,7 +238,7 @@ class NoFillFloatingMsgWindow(gtk.Window):
     def updateLine(self):
         self.label.set_label(self.lines[self.index])
         self.startXpos = -self.label.width if self.label.rtl else screenWidth
-        self.startTime = time.time()
+        self.startTime = now()
     def finish(self, w=None, e=None):
         self.isFinished = True
         self.destroy()
@@ -250,7 +251,7 @@ class NoFillFloatingMsgWindow(gtk.Window):
         if self.isFinished:
             return
         gobject.timeout_add(self.refreshTime, self.animateUpdate)
-        xpos = int(self.startXpos + (time.time()-self.startTime)*self.speed*self.label.rtlSign)
+        xpos = int(self.startXpos + (now()-self.startTime)*self.speed*self.label.rtlSign)
         self.move(xpos, 0)
         self.resize(1, 1)
         if xpos>screenWidth or xpos<-self.label.width:

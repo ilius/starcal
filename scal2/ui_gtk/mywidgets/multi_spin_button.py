@@ -18,7 +18,9 @@
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 import sys, os
-from time import time, localtime
+from time import localtime
+from time import time as now
+
 
 from scal2.utils import toUnicode, toStr, strFindNth, iceil, ifloor, printError
 from scal2.time_utils import getEpochFromJhms
@@ -202,12 +204,12 @@ class MultiSpinButton(gtk.SpinButton):
         ## force_select
         #print'_entry_move_cursor', count, extend_selection
     def _arrow_press(self, plus):
-        self.pressTm = time()
+        self.pressTm = now()
         self._remain = True
         timeout_add(ui.timeout_initial, self._arrow_remain, plus)
         self.entry_plus(plus)
     def _arrow_remain(self, plus):
-        if self.get_editable() and self._remain and time()-self.pressTm>=ui.timeout_repeat/1000.0:
+        if self.get_editable() and self._remain and now()-self.pressTm>=ui.timeout_repeat/1000.0:
             self.entry_plus(plus)
             timeout_add(ui.timeout_repeat, self._arrow_remain, plus)
     def _button_release(self, widget, event):
@@ -410,7 +412,7 @@ class TimerButton(TimeButton):
         #self.tPlus = -1 # timer plus (step)
         #self.elapse = 0
         #########
-        self.tOff = time()*self.tPlus - self.get_seconds()
+        self.tOff = now()*self.tPlus - self.get_seconds()
         self.set_editable(False)
         self.timer_update()
     def timer_stop(self):
@@ -419,7 +421,7 @@ class TimerButton(TimeButton):
     def timer_update(self):
         if not self.timer:
             return
-        sec = int(time()*self.tPlus - self.tOff)
+        sec = int(now()*self.tPlus - self.tOff)
         self.set_seconds(sec)
         if self.tPlus*(sec-self.elapse) >= 0:
             self.emit('time-elapse')

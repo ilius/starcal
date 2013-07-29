@@ -18,7 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 import sys
-import time
+from time import time as now
 
 from scal2.path import deskDir
 from scal2.time_utils import hmEncode, hmDecode
@@ -338,7 +338,7 @@ class WeeklyScheduleWidget(gtk.Widget):
     def drawCairo(self, cr):
         if not self.data:
             return
-        t0 = time.time()
+        t0 = now()
         w = self.allocation.width
         h = self.allocation.height
         cr.rectangle(0, 0, w, h)

@@ -17,9 +17,6 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-import time
-#print time.time(), __file__
-
 import sys, os
 
 from math import pi

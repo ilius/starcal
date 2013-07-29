@@ -16,8 +16,8 @@
 # with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
-from time import time
-#print time(), __file__ ## FIXME
+
+from time import time as now
 
 import sys, os, os.path, shutil
 from os import listdir
@@ -115,7 +115,7 @@ def saveLiveConf():
     open(confPathLive, 'w').write(text)
 
 def saveLiveConfLoop():
-    tm = time()
+    tm = now()
     if tm-lastLiveConfChangeTime > saveLiveConfDelay:
         saveLiveConf()
         return False ## Finish loop
@@ -779,7 +779,7 @@ timeout_repeat = 50
 
 def updateFocusTime(*args):
     global focusTime
-    focusTime = time()
+    focusTime = now()
 
 
 sysConfPath = join(sysConfDir, 'ui.conf') ## also includes LIVE config

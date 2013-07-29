@@ -21,7 +21,10 @@
 import sys, os
 from os import listdir, makedirs
 from os.path import join, isfile, isdir, exists, dirname
-from time import time, localtime, sleep
+
+from time import localtime, sleep
+from time import time as now
+
 from subprocess import Popen, PIPE
 
 
@@ -84,7 +87,7 @@ def notify(eid):
         Popen(notifyCmd+[str(eid), str(uid)], stdout=PIPE)
 
 def prepareToday():
-    tm = time()
+    tm = now()
     y, m, d = localtime(tm)[:3]
     #log.debug('Date: %s/%s/%s   Epoch: %s'%(y, m, d, tm))
     todayJd = to_jd(y, m, d, DATE_GREG)

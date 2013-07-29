@@ -17,9 +17,6 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from time import time
-#print time(), __file__ ## FIXME
-
 import os, sys
 
 from scal2.locale_man import tr as _

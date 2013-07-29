@@ -16,8 +16,8 @@
 # with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
-from time import time, localtime
-#print time(), __file__ ## FIXME
+from time import localtime
+from time import time as now
 
 import sys, os, subprocess, traceback
 from StringIO import StringIO
@@ -134,7 +134,7 @@ popen_output = lambda cmd: subprocess.Popen(cmd, stdout=subprocess.PIPE).communi
 primary_to_jd = lambda y, m, d: calTypes[primaryMode].to_jd(y, m, d)
 jd_to_primary = lambda jd: calTypes[primaryMode].jd_to(jd)
 
-def getCurrentJd():## time() and mktime(localtime()) both return GMT, not local
+def getCurrentJd():## time.time() and mktime(localtime()) both return GMT, not local
     y, m, d = localtime()[:3]
     return to_jd(y, m, d, DATE_GREG)
 
@@ -376,7 +376,7 @@ compressLongInt = lambda num:\
 getCompactTime = lambda maxDays=1000, minSec=0.1:\
     compressLongInt(
         long(
-            time()%(maxDays*24*3600) / minSec
+            now()%(maxDays*24*3600) / minSec
         )
     )
 

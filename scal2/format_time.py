@@ -19,6 +19,8 @@
 
 
 import time
+from time import time as now
+
 from scal2.locale_man import tr as _
 from scal2.cal_types import calTypes, gregorian, to_jd
 from scal2.time_utils import getUtcOffsetByDateSec
@@ -328,24 +330,24 @@ def testSpeed():
     tm = list(time.localtime())
     jd = to_jd(tm[0], tm[1], tm[2], mode)
     ########
-    t0 = time.time()
+    t0 = now()
     for i in range(n):
         strftime(format, tm)
-    t1 = time.time()
+    t1 = now()
     print 'Python strftime: %s sec'%(t1-t0)
     ########
     jd = to_jd(tm[0], tm[1], tm[2], mode)
-    t0 = time.time()
+    t0 = now()
     for i in range(n):
         formatTime(binFmt, mode, jd, tm)
-    t1 = time.time()
+    t1 = now()
     print 'My strftime:     %s sec'%(t1-t0)
     ########
     from scal2.ui_gtk.preferences import strftime
-    t0 = time.time()
+    t0 = now()
     for i in range(n):
         strftime(format2, tm)
-    t1 = time.time()
+    t1 = now()
     print 'My old strftime: %s sec'%(t1-t0)
 
 

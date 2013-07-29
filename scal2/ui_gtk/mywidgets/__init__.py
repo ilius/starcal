@@ -18,7 +18,8 @@
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 import sys, os
-from time import time, localtime
+from time import time as now
+from time import localtime
 
 import gtk
 from gtk import gdk
@@ -38,7 +39,7 @@ def myRaise():
 def show_event(widget, event):
     print type(widget), event.type.value_name#, event.send_event
 
-time_rem = lambda: int(1000*(1.01-time.time()%1))
+time_rem = lambda: int(1000*(1.01-now()%1))
 
 
 class MyFontButton(gtk.FontButton):

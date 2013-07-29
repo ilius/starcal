@@ -17,8 +17,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from time import time
-#print time(), __file__ ## FIXME
+from time import time as now
 
 import os, sys, shlex, thread
 from os.path import join, dirname, split, splitext
@@ -600,8 +599,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
             self.editEventByPath(path)
     def keyPress(self, treev, g_event):
         #from scal2.time_utils import getGtkTimeFromEpoch
-        #print g_event.time-getGtkTimeFromEpoch(time())## FIXME
-        #print time.time()-gdk.CURRENT_TIME/1000.0
+        #print g_event.time-getGtkTimeFromEpoch(now())## FIXME
+        #print now()-gdk.CURRENT_TIME/1000.0
         ## gdk.CURRENT_TIME == 0## FIXME
         ## g_event.time == gtk.get_current_event_time() ## OK
         kname = gdk.keyval_name(g_event.keyval).lower()

@@ -28,7 +28,8 @@ from scal2 import ui
 import os
 from os.path import join, isabs
 from subprocess import Popen
-from time import time
+
+from time import time as now
 
 from gobject import timeout_add
 
@@ -81,7 +82,7 @@ toolButtonFromStock = lambda stock, size: gtk.ToolButton(gtk.image_new_from_stoc
 
 def setupMenuHideOnLeave(menu):
     def menuLeaveNotify(m, e):
-        t0 = time()
+        t0 = now()
         if t0-m.lastLeaveNotify < 0.001:
             timeout_add(500, m.hide)
         m.lastLeaveNotify = t0

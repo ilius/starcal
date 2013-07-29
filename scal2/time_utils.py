@@ -19,6 +19,7 @@
 
 import time
 from time import localtime, mktime
+from time import time as now
 #from datetime import datetime
 import struct
 
@@ -35,7 +36,7 @@ from scal2.utils import ifloor, iceil
 ## Using datetime module is not preferred because of year limitation (1 to 9999) in TimeLine
 ## Just use for testing and comparing the result
 
-## getTime() ~~ epoch
+## now() ~~ epoch
 ## function time.time() having the same name as its module is problematic
 ## don't use time.time() directly again (other than once)
 
@@ -74,9 +75,7 @@ def getUtcOffsetByDateHMS(year, month, day):
 
 getUtcOffsetByJd = lambda jd: getUtcOffsetByEpoch(getEpochFromJd(jd))
 
-getTime = lambda: time.time() #+ getUtcOffsetCurrent()
-
-getUtcOffsetCurrent = lambda: getUtcOffsetByEpoch(getTime())
+getUtcOffsetCurrent = lambda: getUtcOffsetByEpoch(now())
 #getUtcOffsetCurrent = lambda: -time.altzone if time.daylight and localtime().tm_isdst else -time.timezone
 
 getGtkTimeFromEpoch = lambda epoch: (epoch-1.32171528839e+9)*1000 // 1

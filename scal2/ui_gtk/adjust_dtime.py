@@ -21,7 +21,10 @@
 import os
 os.environ['LANG']='en_US.UTF-8' #?????????
 
-import time, sys
+from time import localtime
+from time import time as now
+
+import sys
 from gobject import timeout_add
 import gtk
 
@@ -165,10 +168,10 @@ class AdjusterDialog(gtk.Dialog):
         else:
             pass"""
     def updateTimes(self):
-        dt = time.time()%1
+        dt = now()%1
         timeout_add(iceil(1000*(1-dt)), self.updateTimes)
         #print 'updateTimes', dt
-        lt = time.localtime()
+        lt = localtime()
         self.label_cur.set_label(_('Current:')+' %.4d/%.2d/%.2d - %.2d:%.2d:%.2d'%lt[:6])
         if not self.editTime:
             self.timeInput.set_value(lt[3:6])
@@ -193,7 +196,7 @@ class AdjusterDialog(gtk.Dialog):
                 if self.editDate:
                     Y, M, D = self.dateInput.get_value()
                     ##h, m, s = self.timeInput.get_value()
-                    h, m, s = time.localtime()[3:6]
+                    h, m, s = localtime()[3:6]
                     cmd = ['/bin/date', '-s', '%.4d/%.2d/%.2d %.2d:%.2d:%.2d'%(Y,M,D,h,m,s)]
                 else:
                     error_exit('No change!', self)#??????????

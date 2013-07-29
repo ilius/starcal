@@ -17,8 +17,9 @@
 # with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
-from time import time, localtime
-#print time(), __file__ ## FIXME
+
+from time import time as now
+from time import localtime
 
 import sys
 
@@ -103,7 +104,7 @@ def show_event(widget, event):
 
 
 def liveConfChanged():
-    tm = time()
+    tm = now()
     if tm-ui.lastLiveConfChangeTime > ui.saveLiveConfDelay:
         timeout_add(int(ui.saveLiveConfDelay*1000), ui.saveLiveConfLoop)
     ui.lastLiveConfChangeTime = tm
@@ -689,7 +690,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.onDateChange()
     def keyPress(self, arg, event):
         kname = gdk.keyval_name(event.keyval).lower()
-        #print time(), 'MainWin.keyPress', kname
+        #print now(), 'MainWin.keyPress', kname
         if kname=='escape':
             self.dialogEsc()
         elif kname=='f1':
@@ -707,7 +708,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             self.winCon.windowFocusIn()
     def focusOut(self, widegt, event, data=None):
         ## called 0.0004 sec (max) after focusIn (if switched between two windows)
-        dt = time()-ui.focusTime
+        dt = now()-ui.focusTime
         #print 'focusOut', dt
         if dt > 0.05: ## FIXME
             self.focus = False

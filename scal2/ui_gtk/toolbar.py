@@ -1,4 +1,4 @@
-from time import time
+from time import time as now
 
 from scal2 import core
 from scal2.locale_man import tr as _
@@ -178,12 +178,12 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
         self.setButtonsBorder(bb)
         ###
     def itemPress(self, func):
-        self.lastPressTime = time()
+        self.lastPressTime = now()
         self.remain = True
         func()
         timeout_add(ui.timeout_initial, self.itemPressRemain, func)
     def itemPressRemain(self, func):
-        if self.remain and time()-self.lastPressTime>=ui.timeout_repeat/1000.0:
+        if self.remain and now()-self.lastPressTime>=ui.timeout_repeat/1000.0:
             func()
             timeout_add(ui.timeout_repeat, self.itemPressRemain, func)
     def itemRelease(self, widget, event=None):

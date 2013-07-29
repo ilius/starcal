@@ -17,13 +17,16 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 import time
+from time import localtime, strftime
+from time import time as now
+
 from gobject import timeout_add
 import gtk
 from gtk import gdk
 
 from scal2.ui_gtk.font_utils import *
 
-time_rem = lambda: int(1000*(1.01-time.time()%1))
+time_rem = lambda: int(1000*(1.01-now()%1))
 
 class ClockLabel(gtk.Label):
     #from gtk import Label
@@ -43,9 +46,9 @@ class ClockLabel(gtk.Label):
         if self.running:
             timeout_add(time_rem(), self.update)
             if self.seconds:
-                l = '%.2d:%.2d:%.2d'%tuple(time.localtime()[3:6])
+                l = '%.2d:%.2d:%.2d'%tuple(localtime()[3:6])
             else:
-                l = '%.2d:%.2d'%tuple(time.localtime()[3:5])
+                l = '%.2d:%.2d'%tuple(localtime()[3:5])
             if self.bold:
                 l = '<b>%s</b>'%l
             self.set_label(l)
@@ -78,9 +81,9 @@ class FClockLabel(gtk.Label):
         if self.running:
             timeout_add(time_rem(), self.update)
             if self.local:
-                self.set_label(time.strftime(self.format))
+                self.set_label(strftime(self.format))
             else:
-                self.set_label(time.strftime(self.format, time.gmtime()))
+                self.set_label(strftime(self.format, time.gmtime()))
     def stop(self):
         self.running = False
 

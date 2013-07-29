@@ -19,6 +19,8 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 import time
+from time import time as now
+
 import math
 from math import pi
 
@@ -63,7 +65,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
     desc = _('Time Line')
     def centerToNow(self):
         self.stopMovingAnim()
-        self.timeStart = time.time() - self.timeWidth/2.0
+        self.timeStart = now() - self.timeWidth/2.0
     def centerToNowClicked(self, arg=None):
         self.centerToNow()
         self.queue_draw()
@@ -79,7 +81,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         self.connect('button-release-event', self.buttonRelease)
         self.connect('key-press-event', self.keyPress)
         #self.connect('event', show_event)
-        self.currentTime = time.time()
+        self.currentTime = now()
         self.timeWidth = dayLen
         self.timeStart = self.currentTime - self.timeWidth/2.0
         self.buttons = [
@@ -118,7 +120,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         self.window.move_resize(*self.allocation)
         self.currentTimeUpdate()
     def currentTimeUpdate(self):
-        tm = time.time()
+        tm = now()
         timeout_add(int(1000*(1.01-tm%1)), self.currentTimeUpdate)
         self.currentTime = int(tm)
         if self.parent:
@@ -242,12 +244,12 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         for button in self.buttons:
             button.draw(cr, width, height)
     def onExposeEvent(self, widget=None, event=None):
-        #t0 = time.time()
+        #t0 = now()
         if not self.boxEditing:
             self.updateData()
-        #t1 = time.time()
+        #t1 = now()
         self.drawAll(self.window.cairo_create())
-        #t2 = time.time()
+        #t2 = now()
         #print 'drawing time / data calc time: %.2f'%((t2-t1)/(t1-t0))
     def onScroll(self, widget, event):
         isUp = event.direction.value_nick=='up'
@@ -420,7 +422,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
     keyboardZoom = lambda self, zoomIn: self.zoom(zoomIn, keyboardZoomStep, 0.5)
     def keyPress(self, arg, event):
         k = gdk.keyval_name(event.keyval).lower()
-        #print '%.3f'%time.time()
+        #print '%.3f'%now()
         if k in ('space', 'home'):
             self.centerToNow()
         elif k=='right':
@@ -462,7 +464,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         return True
     def movingUserEvent(self, direction=1, smallForce=False):
         if enableAnimation:
-            tm = time.time()
+            tm = now()
             #dtEvent = tm - self.movingLastPress
             self.movingLastPress = tm
             '''
@@ -481,7 +483,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             self.timeStart += direction * movingStaticStep * \
                 self.timeWidth/float(self.allocation.width)
     def updateMovingAnim(self, f1, t0, t1, v0, a1):
-        t2 = time.time()
+        t2 = now()
         f = self.movingF
         if f!=f1:
             return
@@ -554,7 +556,7 @@ class TimeLineWindow(gtk.Window, ud.IntegratedCalObj):
 if __name__=='__main__':
     win = TimeLineWindow()
     #win.tline.timeWidth = 100 * minYearLenSec # 2 * 10**17
-    #win.tline.timeStart = time.time() - win.tline.timeWidth # -10**17
+    #win.tline.timeStart = now() - win.tline.timeWidth # -10**17
     win.show()
     gtk.main()
 

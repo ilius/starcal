@@ -16,8 +16,7 @@
 # with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
-from time import time, localtime
-#print time(), __file__ ## FIXME
+from time import localtime
 
 import sys
 

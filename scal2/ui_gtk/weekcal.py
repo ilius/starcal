@@ -18,7 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 import time
-#print time.time(), __file__
+from time import time as now
 
 import sys, os
 from math import pi

@@ -1,5 +1,7 @@
 #!/usr/bin/env python2
-import sys, os, time, subprocess
+import sys, os, subprocess
+from time import time as now
+
 import gtk
 
 localeGen = '/etc/locale.gen'
@@ -28,7 +30,7 @@ if __name__=='__main__':
             break
         if line.lower().startswith('#'+localeName):
             lines[i] = line[1:]
-            os.rename(localeGen, '%s.%s'%(localeGen, time.time()))
+            os.rename(localeGen, '%s.%s'%(localeGen, now()))
             open(localeGen, 'w').write('\n'.join(lines))
             exit_code = subprocess.call('/usr/sbin/locale-gen')
             print 'enabling locale "%s" done'%localeName

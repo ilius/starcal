@@ -1,5 +1,6 @@
 import time
 from time import localtime
+from time import time as now
 
 from scal2.time_utils import getUtcOffsetCurrent
 from scal2 import core
@@ -19,7 +20,7 @@ class DateChangeListener:
     def add(self, receiver):
         self.receivers.append(receiver)
     def check(self):
-        tm = time.time()
+        tm = now()
         gdate = localtime(tm)[:3]
         if gdate!=self.gdate:
             self.gdate = gdate

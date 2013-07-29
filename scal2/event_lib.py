@@ -24,6 +24,7 @@ from os import listdir
 from copy import deepcopy
 from random import shuffle
 import math
+from time import time as now
 
 from scal2.lib import OrderedDict
 
@@ -1249,7 +1250,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         if parent is not None:
             self.setDefaultsFromGroup(parent)
         ######
-        self.modified = getTime()
+        self.modified = now()
         self.remoteIds = None## (accountId, groupId, eventId)
         ## remote groupId and eventId both can be integer or string or unicode (depending on remote account type)
     def getShownDescription(self):
@@ -1266,7 +1267,7 @@ class Event(JsonEventBaseClass, RuleContainer):
     def afterModify(self):
         if self.id is None:
             self.setId()
-        self.modified = getTime()
+        self.modified = now()
         #self.parent.eventsModified = self.modified
         ###
         if self.parent and self.id in self.parent.idList:
@@ -2242,10 +2243,10 @@ class EventContainer(JsonEventBaseClass):
         self.icon = ''
         self.showFullEventDesc = False
         ######
-        self.modified = getTime()
+        self.modified = now()
         #self.eventsModified = self.modified
     def afterModify(self):
-        self.modified = getTime()
+        self.modified = now()
     def getEvent(self, eid):
         if not eid in self.idList:
             raise ValueError('%s does not contain %s'%(self, eid))
@@ -2491,7 +2492,7 @@ class EventGroup(EventContainer):
     #    EventContainer.load(self)
     #    self.addRequirements()
     def afterSync(self):
-        self.remoteSyncData[self.remoteIds] = getTime()
+        self.remoteSyncData[self.remoteIds] = now()
     def getLastSync(self):
         if self.remoteIds:
             try:
@@ -2686,10 +2687,10 @@ class EventGroup(EventContainer):
                 self.id,
                 self.title,
                 self.occurCount,
-                getTime()-stm0,
+                now()-stm0,
             )
     def updateOccurrence(self):
-        stm0 = getTime()
+        stm0 = now()
         self.occur.clear()
         self.occurCount = 0
         occurList = []
@@ -2706,13 +2707,13 @@ class EventGroup(EventContainer):
                 self.id,
                 self.title,
                 self.occurCount,
-                getTime()-stm0,
+                now()-stm0,
             )
         #print 'depth=%s, N=%s'%(self.occur.getDepth(), len(occurList))
         #print '2*lg(N)=%.1f'%(2*math.log(len(occurList), 2))
         #print
     def exportToIcsFp(self, fp):
-        currentTimeStamp = getIcsTimeByEpoch(getTime())
+        currentTimeStamp = getIcsTimeByEpoch(now())
         for event in self:
             print 'exportToIcsFp', event.id
             icsData = event.getIcsData()
@@ -3276,7 +3277,7 @@ class VcsCommitEventGroup(VcsBaseEventGroup):
         self.showShortHash = True
         self.showStat = True
     def updateOccurrence(self):
-        stm0 = getTime()
+        stm0 = now()
         self.clear()
         if not self.vcsDir:
             return
@@ -3346,7 +3347,7 @@ class VcsTagEventGroup(VcsBaseEventGroup):
         EventGroup.addOccur(self, t0, t1, eid)
         self.tags.append(eid)
     def updateOccurrence(self):
-        stm0 = getTime()
+        stm0 = now()
         self.clear()
         if not self.vcsDir:
             return

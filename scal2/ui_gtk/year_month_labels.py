@@ -17,7 +17,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from time import time
+from time import time as now
 
 from scal2.cal_types import calTypes
 from scal2 import core
@@ -294,7 +294,7 @@ class IntLabel(gtk.EventBox):
     def arrowDeselect(self, item):
         self.remain = 0
     def arrowRemain(self, plus):
-        t = time()
+        t = now()
         #print t-self.etime
         if self.remain==plus:
             if t-self.etime<ui.labelMenuDelay-0.02:

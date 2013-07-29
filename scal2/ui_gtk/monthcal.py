@@ -17,7 +17,8 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from time import time, localtime
+from time import localtime
+from time import time as now
 
 import sys, os
 from os.path import join, isfile
@@ -249,7 +250,7 @@ class MonthCal(gtk.Widget, CalBase):
         self.window.move_resize(*self.allocation)
     def drawAll(self, widget=None, event=None, cr=None, cursor=True):
         #?????? Must enhance (only draw few cells, not all cells)
-        #print time(), 'drawAll'#, tuple(event.area), tuple(self.allocation)
+        #print now(), 'drawAll'#, tuple(event.area), tuple(self.allocation)
         if event:
             xu, yu, wu, hu = tuple(event.area)
             #print 'expose-event area:', xu, yu, wu, hu
