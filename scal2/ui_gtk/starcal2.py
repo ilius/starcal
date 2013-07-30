@@ -51,6 +51,7 @@ from scal2 import locale_man
 from scal2.locale_man import rtl, lang ## import scal2.locale_man after core
 #_ = locale_man.loadTranslator(False)## FIXME
 from scal2.locale_man import tr as _
+from scal2.season import getSeasonNamePercentFromJd
 
 from scal2.core import rootDir, pixDir, deskDir, myRaise, getMonthName, APP_DESC
 
@@ -355,6 +356,30 @@ class StatusBox(gtk.HBox, CustomizableCalObj):
                 text = '<b>%s</b>'%text
             label.set_label(text)
 
+@registerSignals
+class SeasonProgressBarMainWinItem(gtk.ProgressBar, CustomizableCalObj):
+    _name = 'seasonPBar'
+    desc = _('Season Progress Bar')
+    def __init__(self):
+        gtk.ProgressBar.__init__(self)
+        self.initVars()
+    def onDateChange(self, *a, **kw):
+        CustomizableCalObj.onDateChange(self, *a, **kw)
+        name, frac = getSeasonNamePercentFromJd(ui.cell.jd)
+        if rtl:
+            percent = '%d%%'%(frac*100)
+        else:
+            percent = '%%%d'%(frac*100)
+        self.set_text(
+            _(name) +
+            ' - ' +
+            locale_man.textNumEncode(
+                percent,
+                changeDot=True,
+            )
+        )
+        self.set_fraction(frac)
+        
 
 @registerSignals
 class PluginsTextBox(gtk.VBox, CustomizableCalObj):
@@ -575,6 +600,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             MonthCal(),
             WeekCal(),
             StatusBox(),
+            SeasonProgressBarMainWinItem(),
             PluginsTextBox(),
             EventViewMainWinItem(),
         ]

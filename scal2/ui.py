@@ -734,6 +734,7 @@ mainWinItems = (
     ('monthCal', False),
     ('weekCal', True),
     ('statusBar', True),
+    ('seasonPBar', True),
     ('pluginsText', True),
     ('eventDayView', True),
 )

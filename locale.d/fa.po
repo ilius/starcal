@@ -185,6 +185,8 @@ msgstr "ـ"
 msgid "."
 msgstr "٫"
 
+msgid "%"
+msgstr "٪"
 
 msgid "Gregorian"
 msgstr ""
@@ -2344,6 +2346,28 @@ msgstr ""
 msgid "Plugins Text"
 msgstr ""
 "متن افزونه‌ها"
+
+msgid "Season Progress Bar"
+msgstr ""
+"نوار پیشروی فصل‌ها"
+
+msgid "Spring"
+msgstr ""
+"بهار"
+
+msgid "Summer"
+msgstr ""
+"تابستان"
+
+msgid "Autumn"
+msgstr ""
+"پاییز"
+
+msgid "Winter"
+msgstr ""
+"زمستان"
+
+
 
 msgid "Icon Size"
 msgstr ""

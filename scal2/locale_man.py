@@ -273,7 +273,7 @@ def textNumEncode(st, mode=None, changeSpecialChars=True, changeDot=False):
         try:
             i = int(c)
         except:
-            if c in (',', '_'):## FIXME
+            if c in (',', '_', '%'):## FIXME
                 if changeSpecialChars:
                     c = tr(c)
             elif c=='.':## FIXME
