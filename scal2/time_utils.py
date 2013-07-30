@@ -42,7 +42,7 @@ from scal2.utils import ifloor, iceil
 
 #def getUtcOffsetByEpoch(epoch):
 #    try:
-#        return (datetime.fromtimestamp(epoch) - datetime.utcfromtimestamp(epoch)).seconds
+#        return (datetime.fromtimestamp(epoch) - datetime.utcfromtimestamp(epoch)).total_seconds()
 #    except ValueError:## year is out of range
 #        return 0
 
