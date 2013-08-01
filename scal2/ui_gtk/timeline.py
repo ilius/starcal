@@ -150,17 +150,25 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         except:
             print 'error in fill, x=%.2f, y=%.2f, w=%.2f, h=%.2f'%(tickX, tickY, tickW, tickH)
         ###
-        font = (
+        font = [
             fontFamily,
             False,
             False,
             tick.fontSize,
-        )
-        layout = newLimitedWidthTextLayout(
+        ]
+        #layout = newLimitedWidthTextLayout(
+        #    self,
+        #    tick.label,
+        #    tick.maxLabelWidth,
+        #    font=font,
+        #    truncate=truncateTickLabel,
+        #)## FIXME
+        layout = newTextLayout(
             self,
-            tick.label,
-            tick.maxLabelWidth,
+            text=tick.label,
             font=font,
+            maxSize=(tick.maxLabelWidth, 0),
+            maximizeScale=1.0,
             truncate=truncateTickLabel,
         )## FIXME
         if layout:

@@ -76,15 +76,17 @@ def newTextLayout(
     if text:
         layout.set_markup(text)
         if maxSize:
+            layoutW, layoutH = layout.get_pixel_size()
+            ##
             maxW, maxH = maxSize
             maxW = float(maxW)
             maxH = float(maxH)
-            if maxW <= 0 or maxH <= 0:
+            if maxW <= 0:
                 return
-            ##
-            layoutW, layoutH = layout.get_pixel_size()
-            ##
-            minRat = 1.01 * layoutH/maxH
+            if maxH <= 0:
+                minRat = 1.0
+            else:
+                minRat = 1.01 * layoutH/maxH ## FIXME
             if truncate:
                 if minRat > 1:
                     font[3] = int(font[3]/minRat)
@@ -114,6 +116,7 @@ def newTextLayout(
                 layout.set_font_description(pfontEncode(font))
     return layout
 
+'''
 def newLimitedWidthTextLayout(widget, text, width, font=None, truncate=True, markup=True):
     if not font:
         font = ui.getFont()
@@ -148,6 +151,7 @@ def newLimitedWidthTextLayout(widget, text, width, font=None, truncate=True, mar
                 #print layoutW, width
             #print
     return layout
+'''
 
 def newOutlineSquarePixbuf(color, size, innerSize=0, bgColor=None):
     pmap = gdk.Pixmap(None, size, size, depth=24)

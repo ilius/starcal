@@ -96,7 +96,7 @@ movingKeyTimeoutFirst = 0.5
 movingKeyTimeout = 0.1 ## seconds ## continiouse keyPress delay is about 0.05 sec
 
 #############################################
-truncateTickLabel = False
+truncateTickLabel = True
 
 ## 0: no rotation
 ## 1: 90 deg CCW (if needed)
