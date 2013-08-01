@@ -25,7 +25,7 @@ from os.path import dirname, join, isfile, isdir, splitext, isabs
 from xml.dom.minidom import parse## remove FIXME
 from subprocess import Popen
 
-from scal2.utils import NullObj, toStr, cleanCacheDict, escape
+from scal2.utils import NullObj, toStr, cleanCacheDict
 from scal2.os_utils import makeDir
 from scal2.path import *
 
@@ -249,18 +249,9 @@ class Cell:## status and information of a cell
             if icon and not icon in iconList:
                 iconList.append(icon)
         return iconList
-    def getEventText(self, showDesc=True, colorizeFunc=None, xmlEscape=False):
-        lines = []
-        for item in self.eventsData:
-            line = ''.join(item['text']) if showDesc else item['text'][0]
-            if xmlEscape:
-               line = escape(line)
-            if item['time']:
-                line = item['time'] + ' ' + line
-            if colorizeFunc:
-                line = colorizeFunc(line, item['color'])
-            lines.append(line)
-        return '\n'.join(lines)
+
+        
+
 
 
 class CellCache:

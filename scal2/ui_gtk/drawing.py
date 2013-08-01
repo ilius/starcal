@@ -58,7 +58,14 @@ def fillColor(cr, color):
     cr.fill()
 
 
-def newTextLayout(widget, text='', font=None, maxSize=None, maximizeScale=0.6):
+def newTextLayout(
+    widget,
+    text='',
+    font=None,
+    maxSize=None,
+    maximizeScale=0.6,
+    truncate=False,
+):
     '''
         None return value should be expected and handled, only if maxSize is given
     '''
@@ -77,14 +84,34 @@ def newTextLayout(widget, text='', font=None, maxSize=None, maximizeScale=0.6):
             ##
             layoutW, layoutH = layout.get_pixel_size()
             ##
-            minRat = 1.01 * max(layoutW/maxW, layoutH/maxH)
-            if minRat > 1:
-                font[3] = int(font[3]/minRat)
-            else:
-                minRat /= maximizeScale
-                if minRat < 1:
+            minRat = 1.01 * layoutH/maxH
+            if truncate:
+                if minRat > 1:
                     font[3] = int(font[3]/minRat)
-            layout.set_font_description(pfontEncode(font))
+                layout.set_font_description(pfontEncode(font))
+                layoutW, layoutH = layout.get_pixel_size()
+                if layoutW > 0:
+                    char_w = float(layoutW)/len(text)
+                    char_num = int(maxW//char_w)
+                    while layoutW > maxW:
+                        text = cutText(text, char_num)
+                        if not text:
+                            break
+                        layout = widget.create_pango_layout(text)
+                        layout.set_font_description(pfontEncode(font))
+                        layoutW, layoutH = layout.get_pixel_size()
+                        char_num -= max(int((layoutW-maxW)//char_w), 1)
+                        if char_num<0:
+                            layout = None
+                            break
+            else:
+                if maximizeScale > 0:
+                    minRat = minRat/maximizeScale
+                if minRat < layoutW/maxW:
+                    minRat = layoutW/maxW
+                if minRat > 1:
+                    font[3] = int(font[3]/minRat)
+                layout.set_font_description(pfontEncode(font))
     return layout
 
 def newLimitedWidthTextLayout(widget, text, width, font=None, truncate=True, markup=True):

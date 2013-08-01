@@ -23,6 +23,7 @@ from time import time as now
 import sys, os
 from math import pi
 
+from scal2.utils import escape
 from scal2 import core
 
 from scal2.locale_man import tr as _
@@ -125,6 +126,7 @@ class ColumnBase(CustomizableCalObj):
 class Column(gtk.Widget, ColumnBase):
     colorizeHolidayText = False
     showCursor = False
+    truncateText = False
     def __init__(self, wcal):
         gtk.Widget.__init__(self)
         self.initVars()
@@ -183,7 +185,7 @@ class Column(gtk.Widget, ColumnBase):
             if self.showCursor and c.jd == ui.cell.jd:
                 drawCursorOutline(cr, 0, y0, w, rowH)
                 fillColor(cr, ui.cursorOutColor)
-    def drawTextList(self, cr, textList, font=None):
+    def drawTextList(self, cr, textData, font=None):
         w = self.allocation.width
         h = self.allocation.height
         ###
@@ -194,24 +196,35 @@ class Column(gtk.Widget, ColumnBase):
             fontSize = ui.getFont()[-1] ## FIXME
             font = [fontName, False, False, fontSize] if fontName else None
         for i in range(7):
-            text = textList[i]
-            layout = newTextLayout(
-                self,
-                text=text,
-                font=font,
-                maxSize=(itemW, rowH),
-                maximizeScale=ui.wcalTextSizeScale,
-            )
-            if layout:
-                layoutW, layoutH = layout.get_pixel_size()
-                layoutX = (w-layoutW)/2.0
-                layoutY = (i+0.5)*rowH - layoutH/2.0
-                cr.move_to(layoutX, layoutY)
-                if self.colorizeHolidayText and self.wcal.status[i].holiday:
-                    setColor(cr, ui.holidayColor)
-                else:
-                    setColor(cr, ui.textColor)
-                cr.show_layout(layout)
+            data = textData[i]
+            if data:
+                linesN = len(data)
+                lineH = rowH/linesN
+                lineI = 0
+                if len(data[0]) < 2:
+                    print self._name
+                for line, color in data:
+                    layout = newTextLayout(
+                        self,
+                        text=line,
+                        font=font,
+                        maxSize=(itemW, lineH),
+                        maximizeScale=ui.wcalTextSizeScale,
+                        truncate=self.truncateText,
+                    )
+                    if not layout:
+                        continue
+                    layoutW, layoutH = layout.get_pixel_size()
+                    layoutX = (w-layoutW)/2.0
+                    layoutY = i*rowH + (lineI+0.5)*lineH - layoutH/2.0 
+                    cr.move_to(layoutX, layoutY)
+                    if self.colorizeHolidayText and self.wcal.status[i].holiday:
+                        color = ui.holidayColor                
+                    if not color:
+                        color = ui.textColor
+                    setColor(cr, color)
+                    cr.show_layout(layout)
+                    lineI += 1
     def buttonPress(self, widget, event):
         return False
     def onDateChange(self, *a, **kw):
@@ -271,7 +284,12 @@ class WeekDaysColumn(Column):
         self.drawBg(cr)
         self.drawTextList(
             cr,
-            [core.getWeekDayN(i) for i in range(7)],
+            [
+                [
+                    (core.getWeekDayN(i), ''),
+                ]
+                for i in range(7)
+            ],
         )
         self.drawCursorFg(cr)
         
@@ -281,13 +299,22 @@ class PluginsTextColumn(Column):
     desc = _('Plugins Text')
     expand = True
     customizeFont = True
+    truncateText = True
     def __init__(self, wcal):
         Column.__init__(self, wcal)
         self.connect('expose-event', self.onExposeEvent)
     def onExposeEvent(self, widget=None, event=None):
         cr = self.window.cairo_create()
         self.drawBg(cr)
-        self.drawTextList(cr, [self.wcal.status[i].pluginsText for i in range(7)])
+        self.drawTextList(
+            cr,
+            [
+                [
+                    (self.wcal.status[i].pluginsText, ''),
+                ]
+                for i in range(7)
+            ]
+        )
 
 
 class EventsIconColumn(Column):
@@ -366,12 +393,15 @@ class EventsCountColumn(Column):
         self.expand = ui.wcal_eventsCount_expand = active
         self.wcal.set_child_packing(self, active, active, 0, gtk.PACK_START)
         self.queue_draw()
-    def getDayText(self, i):
+    def getDayTextData(self, i):
         n = len(self.wcal.status[i].eventsData)
         if n > 0:
-            return _('%s events')%_(n)
+            line = _('%s events')%_(n)
         else:
-            return ''
+            line = ''
+        return [
+            (line, None),
+        ]
     def onExposeEvent(self, widget=None, event=None):
         cr = self.window.cairo_create()
         self.drawBg(cr)
@@ -381,7 +411,10 @@ class EventsCountColumn(Column):
         ###
         self.drawTextList(
             cr,
-            [self.getDayText(i) for i in range(7)],
+            [
+                self.getDayTextData(i)
+                for i in range(7)
+            ],
         )
 
 class EventsTextColumn(Column):
@@ -393,6 +426,7 @@ class EventsTextColumn(Column):
         'ui.wcal_eventsText_showDesc',
         'ui.wcal_eventsText_colorize',
     )
+    truncateText = True
     def __init__(self, wcal):
         Column.__init__(self, wcal)
         self.connect('expose-event', self.onExposeEvent)
@@ -420,18 +454,25 @@ class EventsTextColumn(Column):
     def colorizeCheckClicked(self, check):
         ui.wcal_eventsText_colorize = check.get_active()
         self.queue_draw()
-    def getDayText(self, i):
-        return self.wcal.status[i].getEventText(
-            showDesc=ui.wcal_eventsText_showDesc,
-            colorizeFunc=colorize if ui.wcal_eventsText_colorize else None,
-            xmlEscape=True,
-        )
+    def getDayTextData(self, i):
+        data = []
+        for item in self.wcal.status[i].eventsData:
+            line = ''.join(item['text']) if ui.wcal_eventsText_showDesc else item['text'][0]
+            line = escape(line)
+            if item['time']:
+                line = item['time'] + ' ' + line
+            color = item['color'] if ui.wcal_eventsText_colorize else ''
+            data.append((line, color))
+        return data
     def onExposeEvent(self, widget=None, event=None):
         cr = self.window.cairo_create()
         self.drawBg(cr)
         self.drawTextList(
             cr,
-            [self.getDayText(i) for i in range(7)],
+            [
+                self.getDayTextData(i)
+                for i in range(7)
+            ],
         )
 
 
@@ -554,7 +595,15 @@ class DaysOfMonthColumn(Column):
             font = None
         self.drawTextList(
             cr,
-            [_(self.wcal.status[i].dates[self.mode][2], self.mode) for i in range(7)],
+            [
+                [
+                    (
+                        _(self.wcal.status[i].dates[self.mode][2], self.mode),
+                        '',
+                    )
+                ]
+                for i in range(7)
+            ],
             font=font,
         )
         self.drawCursorFg(cr)
@@ -716,7 +765,7 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         self.optionsWidget.pack_start(hbox, 0, 0)
         ###
         hbox = gtk.HBox()
-        spin = FloatSpinButton(0, 1, 2)
+        spin = FloatSpinButton(0.01, 1, 2)
         spin.set_value(ui.wcalTextSizeScale)
         spin.connect('changed', self.textSizeScaleSpinChanged)
         hbox.pack_start(gtk.Label(_('Text Size Scale')), 0, 0)
