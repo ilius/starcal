@@ -38,7 +38,7 @@ from scal2.timeline import *
 
 from scal2.ui_gtk.font_utils import pfontEncode
 from scal2.ui_gtk.utils import labelStockMenuItem, labelImageMenuItem
-from scal2.ui_gtk.drawing import setColor, fillColor, newLimitedWidthTextLayout, Button
+from scal2.ui_gtk.drawing import setColor, fillColor, newTextLayout, Button
 from scal2.ui_gtk import gtk_ud as ud
 #from scal2.ui_gtk import preferences
 import scal2.ui_gtk.event.main
