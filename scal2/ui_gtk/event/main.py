@@ -780,7 +780,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         return True
     def _do_onGroupModify(self, group, groupIter):
         group.afterModify()
-        group.save()
+        group.save()## FIXME
         try:
             if group.name == 'universityTerm':## FIXME
                 n = self.trees.iter_n_children(groupIter)

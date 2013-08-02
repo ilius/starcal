@@ -610,7 +610,7 @@ class GroupEditorDialog(gtk.Dialog):
         if gtk.Dialog.run(self) != gtk.RESPONSE_OK:
             return None
         self.activeWidget.updateVars()
-        self._group.save()
+        self._group.save()## FIXME
         if self.isNew:
             event_lib.saveLastIds()
         else:
