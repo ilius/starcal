@@ -393,9 +393,13 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         ui.changedEvents.append((gid, event.id))
         self.onConfigChange()
     def editGroupClicked(self, menu, winTitle, group):
-        if GroupEditorDialog(group).run() is not None:
+        group = GroupEditorDialog(group).run()
+        if group is not None:
+            group.afterModify()
+            group.save()## FIXME
             ui.changedGroups.append(group.id)
             ud.windowList.onConfigChange()
+            self.queue_draw()
     def moveEventToTrash(self, menu, group, event):
         eventIndex = group.index(event.id)
         ui.moveEventToTrash(group, event)
