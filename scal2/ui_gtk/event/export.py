@@ -4,6 +4,7 @@ from scal2.path import deskDir
 from scal2.json_utils import *
 from scal2.locale_man import tr as _
 from scal2 import core
+from scal2.core import DATE_GREG
 from scal2 import ui
 
 import gtk
@@ -119,7 +120,7 @@ class MultiGroupExportDialog(gtk.Dialog):
         hbox = gtk.HBox(spacing=2)
         hbox.pack_start(gtk.Label(_('File')+':'), 0, 0)
         self.fpathEntry = gtk.Entry()
-        self.fpathEntry.set_text(join(deskDir, 'events-%.4d-%.2d-%.2d'%core.getSysDate()))
+        self.fpathEntry.set_text(join(deskDir, 'events-%.4d-%.2d-%.2d'%core.getSysDate(DATE_GREG)))
         hbox.pack_start(self.fpathEntry, 1, 1)
         self.vbox.pack_start(hbox, 0, 0)
         ####
