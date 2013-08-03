@@ -2343,7 +2343,9 @@ class EventGroup(EventContainer):
     sortByDefault = 'summary'
     params = EventContainer.params + (
         'enable',
-        'showInCal',
+        'showInDCal',
+        'showInWCal',
+        'showInMCal',
         'showInTimeLine',
         'color',
         'eventCacheSize',
@@ -2360,7 +2362,9 @@ class EventGroup(EventContainer):
         'type',
         'title',
         'calType',
-        'showInCal',
+        'showInDCal',
+        'showInWCal',
+        'showInMCal',
         'showInTimeLine',
         'showFullEventDesc',
         'color',
@@ -2374,6 +2378,7 @@ class EventGroup(EventContainer):
         'eventIdByRemoteIds',
         'idList',
     )
+    showInCal = lambda self: self.showInDCal or self.showInWCal or self.showInMCal
     def getSortBys(self):
         l = list(self.sortBys)
         if self.enable:
@@ -2454,7 +2459,9 @@ class EventGroup(EventContainer):
         else:
             self.setId(_id)
         self.enable = True
-        self.showInCal = True
+        self.showInDCal = True
+        self.showInWCal = True
+        self.showInMCal = True
         self.showInTimeLine = True
         self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)## FIXME
         #self.defaultNotifyBefore = (10, 60) ## FIXME
@@ -2522,6 +2529,9 @@ class EventGroup(EventContainer):
                 data[attr] = sorted(data[attr].items())
         return data
     def setData(self, data):
+        if 'showInCal' in data:## for compatibility
+            data['showInDCal'] = data['showInWCal'] = data['showInMCal'] = data['showInCal']
+            del data['showInCal']
         EventContainer.setData(self, data)
         for attr in ('remoteSyncData', 'eventIdByRemoteIds'):
             value = getattr(self, attr)
@@ -3137,7 +3147,10 @@ class LargeScaleGroup(EventGroup):
     def setDefaults(self):
         self.startJd = 0
         self.endJd = self.startJd + self.scale * 9999
-        self.showInCal = False ## only in time line ## or in init? FIXME
+        ## only in time line ## or in init? FIXME
+        self.showInDCal = False
+        self.showInWCal = False
+        self.showInMCal = False
     def copyFrom(self, other):
         EventGroup.copyFrom(self, other)
         if other.name == self.name:
@@ -3699,7 +3712,7 @@ def getDayOccurrenceData(curJd, groups):
     for groupIndex, group in enumerate(groups):
         if not group.enable:
             continue
-        if not group.showInCal:
+        if not group.showInCal():
             continue
         #print '\nupdateData: checking event', event.summary
         gid = group.id
@@ -3730,6 +3743,7 @@ def getDayOccurrenceData(curJd, groups):
                     'icon': event.icon,
                     'color': color,
                     'ids': (gid, eid),
+                    'show': (group.showInDCal, group.showInWCal, group.showInMCal),
                 }
             ))
     data.sort()

@@ -379,7 +379,7 @@ class MonthCal(gtk.Widget, CalBase):
                     fillColor(cr, ui.cursorBgColor)
                 ######## end of Drawing Cursor
                 if not cellInactive:
-                    iconList = c.getEventIcons()
+                    iconList = c.getMonthEventIcons()
                     if iconList:
                         iconsN = len(iconList)
                         scaleFact = 1.0 / sqrt(iconsN)

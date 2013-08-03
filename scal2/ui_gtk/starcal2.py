@@ -805,7 +805,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         for group in ui.eventGroups:
             if not group.enable:
                 continue
-            if not group.showInCal:## FIXME
+            if not group.showInCal():## FIXME
                 continue
             eventTypes = group.acceptsEventTypes
             if not eventTypes:

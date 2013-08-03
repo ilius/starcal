@@ -1631,6 +1631,16 @@ msgid "Show in"
 msgstr ""
 "نمایش در"
 
+msgid "Show in Time Line"
+msgstr ""
+"نمایش در خط زمان"
+
+
+msgid "Show in Calendar"
+msgstr ""
+"نمایش در تقویم"
+
+
 msgid "Show below calendar"
 msgstr ""
 "نمایش زیر تقویم"

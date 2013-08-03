@@ -242,15 +242,17 @@ class Cell:## status and information of a cell
         return pyFmt%tuple(f(self, mode, tm) for f in funcs)
     def inSameMonth(self, other):
         return self.dates[core.primaryMode][:2] == other.dates[core.primaryMode][:2]
-    def getEventIcons(self):
+    def getEventIcons(self, showIndex):
         iconList = []
         for item in self.eventsData:
+            if not item['show'][showIndex]:
+                continue
             icon = item['icon']
             if icon and not icon in iconList:
                 iconList.append(icon)
         return iconList
-
-        
+    getWeekEventIcons = lambda self: self.getEventIcons(1)
+    getMonthEventIcons = lambda self: self.getEventIcons(2)
 
 
 

@@ -337,7 +337,7 @@ class EventsIconColumn(Column):
         itemW = w - ui.wcalPadding
         for i in range(7):
             c = self.wcal.status[i]
-            iconList = c.getEventIcons()
+            iconList = c.getWeekEventIcons()
             if not iconList:
                 continue
             n = len(iconList)
@@ -395,6 +395,7 @@ class EventsCountColumn(Column):
         self.queue_draw()
     def getDayTextData(self, i):
         n = len(self.wcal.status[i].eventsData)
+        ## item['show'][1] FIXME
         if n > 0:
             line = _('%s events')%_(n)
         else:
@@ -457,6 +458,8 @@ class EventsTextColumn(Column):
     def getDayTextData(self, i):
         data = []
         for item in self.wcal.status[i].eventsData:
+            if not item['show'][1]:
+                continue
             line = ''.join(item['text']) if ui.wcal_eventsText_showDesc else item['text'][0]
             line = escape(line)
             if item['time']:

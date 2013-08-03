@@ -59,6 +59,8 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         for hbox in self.vbox.get_children():
             hbox.destroy()
         for item in cell.eventsData:
+            if not item['show'][0]:
+                continue
             ## item['time'], item['text'], item['icon']
             text = ''.join(item['text']) if self.showDesc else item['text'][0]
             ###
@@ -198,6 +200,8 @@ class WeekOccurrenceView(gtk.TreeView):
         cells, wEventData = ui.cellCache.getWeekData(self.absWeekNumber)
         self.ls.clear()
         for item in wEventData:
+            if not item['show'][1]:
+                continue
             self.ls.append(
                 pixbufFromFile(item['icon']),
                 core.weekDayNameAuto(self.abrivateWeekDays)[item['weekDay']],
@@ -242,6 +246,8 @@ class MonthOccurrenceView(event_lib.MonthOccurrenceView, gtk.TreeView):
         self.updateData()
         self.ls.clear()## FIXME
         for item in self.data:
+            if not item['show'][2]:
+                continue
             self.ls.append(
                 pixbufFromFile(item['icon']),
                 _(item['day']),
