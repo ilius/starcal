@@ -51,6 +51,10 @@ msgid "Edit"
 msgstr ""
 "ویرایش"
 
+msgid "Edit "
+msgstr ""
+"ویرایش "
+
 msgid "_View"
 msgstr ""
 "_نما"
@@ -161,6 +165,11 @@ msgid "Add"
 msgstr ""
 "افزودن"
 
+msgid "Add "
+msgstr ""
+"افزودن "
+
+
 msgid "Name"
 msgstr "نام"
 
@@ -220,29 +229,15 @@ msgid "Hebrew(Jewish)"
 msgstr ""
 "عبری(یهودی)"
 
-msgid "Julian Day"
+msgid "Ethiopian"
 msgstr ""
-"روز جولی"
+"اتیوپیایی"
+
 
 msgid "Language"
 msgstr ""
 "زبان"
 
-#msgid "System Default"
-#msgstr ""
-#"پیش‌فرض سیستم"
-
-#msgid "English (USA)"
-#msgstr ""
-#"انگلیسی(USA)"
-
-#msgid "Persian"
-#msgstr ""
-#"فارسی"
-
-#msgid "Arabic"
-#msgstr ""
-#"العربية"
 
 msgid "Numbers Localization"
 msgstr ""
@@ -265,10 +260,6 @@ msgstr ""
 msgid "Day"
 msgstr ""
 "روز"
-
-msgid "Day Type"
-msgstr ""
-"نوع روز"
 
 
 msgid "Years"
@@ -619,9 +610,6 @@ msgstr ""
 "ذو‌الحجه"
 
 
-msgid "Ethiopian"
-msgstr "اتیوپیایی"
-
 msgid "Meskerem"
 msgstr "مسکرم"
 
@@ -841,9 +829,6 @@ msgid "time"
 msgstr ""
 "زمان"
 
-msgid "Remind Window"
-msgstr ""
-"پنجرهٔ یادآوری"
 
 msgid "Alarm"
 msgstr ""
@@ -1054,34 +1039,8 @@ msgid "Notify"
 msgstr ""
 "یادآوری متنی"
 
-msgid "Reminder Alarm"
-msgstr ""
-"زنگ یادآوری"
-
-msgid "Reminder Window"
-msgstr ""
-"پنجرهٔ یادآوری"
-
-msgid "Repeat Remind"
-msgstr ""
-"تکرار یادآوری"
 ##########
 
-msgid "Needs"
-msgstr ""
-"نیاز به"
-
-msgid "Conflicts with"
-msgstr ""
-"تضاد با"
-
-msgid "Not found a Provider"
-msgstr ""
-"فراهم‌کننده‌ای پیدا نشد"
-
-msgid "Provided by"
-msgstr ""
-"تأمین شده توسط"
 
 msgid "Repeat: Every %s Days"
 msgstr ""
@@ -1127,14 +1086,6 @@ msgstr ""
 "افزودن رویداد"
 
 
-msgid "Add "
-msgstr ""
-"افزودن "
-
-msgid "Edit "
-msgstr ""
-"ویرایش "
-
 msgid "Trash"
 msgstr ""
 "زباله‌دان"
@@ -1142,10 +1093,6 @@ msgstr ""
 msgid "Empty Trash"
 msgstr ""
 "خالی کردن زباله‌دان"
-
-msgid "Move to Trash"
-msgstr ""
-"انتقال به زباله‌دان"
 
 msgid "Edit Trash"
 msgstr ""
@@ -1637,10 +1584,6 @@ msgstr ""
 "نمایش در تقویم"
 
 
-msgid "Show below calendar"
-msgstr ""
-"نمایش زیر تقویم"
-
 msgid "Show in tray (for today)"
 msgstr ""
 "نمایش در tray (برای امروز)"
@@ -1716,14 +1659,6 @@ msgid "Calendar height"
 msgstr ""
 "ارتفاع تقویم"
 
-msgid "Save window width and position"
-msgstr ""
-"عرض و موقعیت پنجره را ذخیره کن"
-
-#msgid "Window Border (from next running)"
-#msgstr ""
-#"حاشیهٔ پنجره (از اجرای بعدی)"
-
 msgid "Window in Taskbar"
 msgstr ""
 "پنجره در نواروظیفه"
@@ -1768,13 +1703,7 @@ msgid "Digital Clock Format"
 msgstr ""
 "فرمت ساعت رقمی"
 
-msgid "Previous year/month button"
-msgstr ""
-"دکمهٔ سال/ماه قبل"
 
-msgid "Next year/month button"
-msgstr ""
-"دکمهٔ سال/ماه بعد"
 
 msgid "Previous"
 msgstr ""
@@ -1923,18 +1852,11 @@ msgid "Show main window on start"
 msgstr ""
 "در هنگام شروع، پنجرهٔ اصلی را نمایش بده"
 
-#msgid "Run on GNOME startup"
-#msgstr ""
-#"در شروع گنوم اجرا شو"
 
 msgid "Run on session startup"
 msgstr ""
 "در شروعِ نشست اجرا شو"
 
-
-msgid "Run on KDE startup"
-msgstr ""
-"در شروع کی‌دی‌ای اجرا شو"
 
 msgid "First day of week"
 msgstr ""
@@ -2055,7 +1977,7 @@ msgid "Font"
 msgstr ""
 "فونت"
 
-msgid "Application font"
+msgid "Application Font"
 msgstr ""
 "فونت برنامه"
 
@@ -2070,23 +1992,6 @@ msgstr ""
 msgid "Text Size Scale"
 msgstr ""
 "مقیاس اندازهٔ متن"
-
-msgid "Change color of non-weekly holidays"
-msgstr ""
-"تغییر رنگ تعطیلات غیر هفتگی"
-
-msgid "Drag & Drop Icon"
-msgstr ""
-"شمایلِ کشیدن و رها کردن"
-
-msgid "Date String"
-msgstr ""
-"رشتهٔ تاریخ"
-
-msgid "Cell Image"
-msgstr ""
-"تصویر سلول"
-
 
 msgid "Export"
 msgstr ""
@@ -2291,30 +2196,11 @@ msgstr ""
 "به نظر می‌رسد که شما از یک میزکار Unity استفاده می‌کنید و StarCalendar اجازهٔ استفاده از Tray Icon را ندارد. دکمهٔ تائید را فشار دهید تا StarCalendar به لیست سفید Unity اضافه شده و سپس Unity دوباره راه‌اندازی شود"
 
 
-msgid "_Details"
-msgstr ""
-"_جزئیات"
-
-msgid "Information"
-msgstr "اطلاعات"
-
 
 msgid "Error"
 msgstr "خطا"
 
-msgid "_Bug Report"
-msgstr ""
-"_گزارش اِشکال"
 
-msgid "Forced _Quit"
-msgstr ""
-"_خروج اجباری" #??????????????????
-
-#msgid "Stack trace (innermost last)"
-#msgstr ""
-#""
-
-#msgid "Local variables in selected frame:"
 
 
 msgid "Minimize Window"
@@ -2499,10 +2385,6 @@ msgid "Tags"
 msgstr ""
 "برچسب‌ها"
 
-msgid "Seperate tags using character |"
-msgstr ""
-"برچسب‌ها را با کاراکتر | از هم جدا کنید"
-
 
 msgid "Category"
 msgstr ""
@@ -2602,8 +2484,6 @@ msgstr "شورای مرکز تقویم مؤسسهٔ ژئوفیزیک دانشگ�
 msgid "Shown Times"
 msgstr "اوقات نمایش‌داده شده"
 
-#msgid ""
-#msgstr ""
 
 msgid "Imsak"
 msgstr "امساک"
@@ -2682,9 +2562,6 @@ msgid "%s kilometers from %s"
 msgstr "%s کیلومتر تا %s"
 
 ###############################
-
-msgid "Show Translations"
-msgstr "نمایش ترجمه‌ها"
 
 msgid "Time Zone"
 msgstr "منطقهٔ زمانی"

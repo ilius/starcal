@@ -146,7 +146,7 @@ class PrefDialog(gtk.Dialog):
         ########
         hbox = gtk.HBox(spacing=2)
         ###
-        customCheckItem = CheckPrefItem(ui, 'fontCustomEnable', _('Application font'))
+        customCheckItem = CheckPrefItem(ui, 'fontCustomEnable', _('Application Font'))
         self.uiPrefItems.append(customCheckItem)
         hbox.pack_start(customCheckItem.widget, 0, 0)
         ###
