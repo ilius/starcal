@@ -1631,10 +1631,6 @@ msgid "Show in"
 msgstr ""
 "نمایش در"
 
-msgid "Show in Time Line"
-msgstr ""
-"نمایش در خط زمان"
-
 
 msgid "Show in Calendar"
 msgstr ""
@@ -1754,6 +1750,10 @@ msgstr ""
 msgid "On Toolbar"
 msgstr ""
 "روی نوارابزار"
+
+msgid "Tray"
+msgstr ""
+"Tray"
 
 msgid "On Tray"
 msgstr ""

@@ -1054,6 +1054,14 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             text = ui.todayCell.pluginsText
             if text!='':
                 tt += '\n\n%s'%text ## .replace('\t', '\n') ## FIXME
+        for item in ui.todayCell.eventsData:
+            if not item['showInTray']:
+                continue
+            itemS = ''
+            if item['time']:
+                itemS += item['time'] + ' - '
+            itemS += item['text'][0]
+            tt += '\n\n%s'%itemS
         return tt
     def trayUpdate(self, gdate=None, checkTrayMode=True):
         if checkTrayMode and self.trayMode < 1:
