@@ -447,16 +447,29 @@ def init():
 
 ######################################################################
 shownCals = [] ## FIXME
+
 mcalTypeParams = [
-    {'pos':(0, -2), 'font':None, 'color':(220, 220, 220)},
-    {'pos':(18, 5), 'font':None, 'color':(165, 255, 114)},
-    {'pos':(-18, 4), 'font':None, 'color':(0, 200, 205)},
+    {
+        'pos': (0, -2),
+        'font': None,
+        'color': (220, 220, 220),
+    },
+    {
+        'pos': (18, 5),
+        'font': None,
+        'color': (165, 255, 114),
+    },
+    {
+        'pos': (-18, 4),
+        'font': None,
+        'color': (0, 200, 205),
+    },
 ]
 
 wcalTypeParams = [
-    {'font':None},
-    {'font':None},
-    {'font':None},
+    {'font': None},
+    {'font': None},
+    {'font': None},
 ]
 
 
@@ -491,12 +504,17 @@ class TagIconItem:
         self.icon = icon
         self.eventTypes = eventTypes
         self.usage = 0
-    __repr__ = lambda self: 'TagIconItem(%r, desc=%r, icon=%r, eventTypes=%r)'%(self.name, self.desc, self.icon, self.eventTypes)
+    __repr__ = lambda self: 'TagIconItem(%r, desc=%r, icon=%r, eventTypes=%r)'%(
+        self.name,
+        self.desc,
+        self.icon,
+        self.eventTypes,
+    )
 
 
 eventTags = (
     TagIconItem('birthday', eventTypes=('yearly',)),
-    TagIconItem('marriage', desc=_('Marriage'), eventTypes=('yearly',)),
+    TagIconItem('marriage', eventTypes=('yearly',)),
     TagIconItem('obituary', eventTypes=('yearly',)),
     TagIconItem('note', eventTypes=('dailyNote',)),
     TagIconItem('task', eventTypes=('task',)),

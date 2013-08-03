@@ -9,12 +9,12 @@ from scal2 import ui
 customFile = join(confDir, 'customday.xml')
 
 customdayModes = (
-    (_('Birthday'),         'event/birthday.png'),
-    (_('Marriage Jubilee'), 'event/marriage.png'),
-    (_('Obituary'),         'event/obituary.png'),
-    (_('Note'),             'event/note.png'),
-    (_('Task'),             'event/task.png'),
-    (_('Alarm'),            'event/alarm.png'),
+    (_('Birthday'), 'event/birthday.png'),
+    (_('Marriage'), 'event/marriage.png'),
+    (_('Obituary'), 'event/obituary.png'),
+    (_('Note'), 'event/note.png'),
+    (_('Task'), 'event/task.png'),
+    (_('Alarm'), 'event/alarm.png'),
 )
 
 def getElementText(el):
