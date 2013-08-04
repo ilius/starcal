@@ -361,6 +361,36 @@ class TextPlugUI:
         hbox.pack_start(frame, 1, 1)
         self.confDialog.vbox.pack_start(hbox, 0, 0)
         ######
+        hbox = gtk.HBox()
+        frame = gtk.Frame()
+        frame.set_border_width(4)
+        frame.set_label(_('Azan'))
+        vboxFrame = gtk.VBox()
+        ##
+        hbox1 = gtk.HBox()
+        self.playAzanCheck = gtk.CheckButton(_('Play Azan'))
+        hbox1.pack_start(self.playAzanCheck, 0, 0)
+        hbox1.pack_start(gtk.Label(''), 1, 1)
+        vboxFrame.pack_start(hbox1, 0, 0)
+        ##
+        hbox2 = gtk.HBox()
+        self.azanFileButton = gtk.FileChooserButton(_('Select File'))
+        hbox2.pack_start(gtk.Label(_('Azan File')), 0, 0)
+        hbox2.pack_start(self.azanFileButton, 0, 0)
+        hbox2.pack_start(gtk.Label(''), 1, 1)
+        vboxFrame.pack_start(hbox2, 0, 0)
+        ##
+        hbox3 = gtk.HBox()
+        self.playerCombo = gtk.combo_box_entry_new_text()        
+        hbox3.pack_start(gtk.Label(_('Player')), 0, 0)
+        hbox3.pack_start(self.playerCombo, 0, 0)
+        hbox3.pack_start(gtk.Label(''), 1, 1)
+        vboxFrame.pack_start(hbox3, 0, 0)
+        ##
+        frame.add(vboxFrame)
+        hbox.pack_start(frame, 0, 0)
+        self.confDialog.vbox.pack_start(hbox, 0, 0)
+        ######
         self.updateConfWidget()
         ###
         cancelB = self.confDialog.add_button(gtk.STOCK_CANCEL, 1)
@@ -395,6 +425,13 @@ class TextPlugUI:
         self.imsakSpin.set_value(self.imsak)
         self.sepBuff.set_text(self.sep)
         buffer_select_all(self.sepBuff)
+        ###
+        self.playAzanCheck.set_active(self.playAzan)
+        if self.azanFile:
+            self.azanFileButton.set_filename(self.azanFile)
+        for pname in self.playerList:
+            self.playerCombo.append_text(pname)
+        self.playerCombo.child.set_text(self.playerName)
     def updateConfVars(self):
         self.locName = self.locButton.locName
         self.ptObj.lat = self.locButton.lat
@@ -404,6 +441,10 @@ class TextPlugUI:
         self.imsak = int(self.imsakSpin.get_value())
         self.sep = buffer_get_text(self.sepBuff)
         self.ptObj.imsak = '%d min'%self.imsak
+        ###
+        self.playAzan = self.playAzanCheck.get_active()
+        self.azanFile = self.azanFileButton.get_filename()
+        self.playerName = self.playerCombo.child.get_text()
     def confDialogCancel(self, widget):
         self.confDialog.hide()
         self.updateConfWidget()

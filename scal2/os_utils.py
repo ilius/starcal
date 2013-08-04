@@ -21,6 +21,7 @@ import os
 from os.path import isdir, isfile
 import platform
 
+
 def getOsName():## 'linux', 'win', 'mac', 'unix'
     psys = platform.system().lower()## 'linux', 'windows', 'darwin', ...
     if psys=='linux':
@@ -161,5 +162,42 @@ def goodkill(pid, interval=1, hung=20):
         if dead(pid):
             return
         sleep(interval)
+
+
+def getSoundPlayerList():
+    osName = getOsName()
+    ls = []
+    if osName == 'win':
+        ls.append('wmplayer')
+        ls.append('smplayer')
+    elif  osName == 'mac':
+        pass
+    elif osName in ('linux', 'unix'):
+        for pname in (
+            'vlc',
+            'audacious',
+            'smplayer',
+            'gmplayer',
+            'rhythmbox',
+            'kplayer',
+        ):
+            if isfile('/usr/bin/%s'%pname):
+                ls.append(pname)
+    return ls
+
+    
+def playSound(playerName, soundFile):
+    #import subprocess
+    osName = getOsName()
+    if osName in ('win', 'mac'):
+        cmd = 'start %s "%s"'%(playerName, soundFile)
+        #cmd = ['start', playerName, soundFile]
+    else:
+        #cmd = [playerName, soundFile]
+        cmd = '%s "%s"'%(playerName, soundFile)
+    os.system(cmd)
+    #subprocess.Popen(cmd)
+
+
 
 

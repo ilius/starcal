@@ -55,7 +55,7 @@ def getUtcOffsetByEpoch(epoch):
 def getUtcOffsetByDateSec(year, month, day):
     try:
         isdst = localtime(mktime((year, month, day, 0, 0, 0, 0, 0, -1))).tm_isdst
-    except ValueError:
+    except (ValueError, OverflowError):
         isdst = False
     if time.daylight and isdst:
         return -time.altzone

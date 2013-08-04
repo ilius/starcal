@@ -18,9 +18,15 @@
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 
-import sys, os, time, gettext
+import sys, os, gettext
+
+import time
+from time import localtime
+from time import time as now
+
 from os.path import join, isfile, dirname
 from math import pi, floor, ceil, sqrt, sin, cos, tan, asin, acos, atan, atan2
+
 
 _mypath = __file__
 if _mypath.endswith('.pyc'):
@@ -41,8 +47,11 @@ from scal2.time_utils import floatHourToTime
 from scal2.locale_man import tr as _
 from scal2.plugin_man import BasePlugin
 from scal2.cal_types.gregorian import to_jd as gregorian_to_jd
-from scal2.time_utils import getUtcOffsetByJd
+from scal2.time_utils import getUtcOffsetByJd, getUtcOffsetCurrent, getEpochFromJd
+from scal2.os_utils import getSoundPlayerList, playSound
 #from scal2 import event_lib## needs core!! FIXME
+
+from gobject import timeout_add_seconds
 
 #if 'gtk' in sys.modules:
 from pray_times_gtk import *
@@ -110,6 +119,13 @@ class PrayTimeEventRule(EventRule):
 
 class TextPlug(BasePlugin, TextPlugUI):
     ## all options (except for "enable" and "show_date") will be saved in file confPath
+    playAzanTimeNames = (
+        'fajr',
+        'dhuhr',
+        #'asr',
+        'maghrib',
+        #'isha',
+    )
     def __init__(self, enable=True, show_date=False):
         #print '----------- praytime TextPlug.__init__'
         #print 'From plugin: core.VERSION=%s'%api.get('core', 'VERSION')
@@ -139,6 +155,14 @@ class TextPlug(BasePlugin, TextPlugUI):
         #timeFormat='24h'
         shownTimeNames = ('fajr', 'sunrise', 'dhuhr', 'maghrib', 'midnight')
         sep = '     '
+        ##
+        playAzan = False
+        azanFile = None
+        self.playerList = getSoundPlayerList()
+        try:
+            playerName = self.playerList[0]
+        except IndexError:
+            playerName = ''
         ####
         if isfile(confPath):
             exec(open(confPath).read())
@@ -148,10 +172,16 @@ class TextPlug(BasePlugin, TextPlugUI):
         self.ptObj = PrayTimes(lat, lng, methodName=method, imsak='%d min'%imsak)
         self.shownTimeNames = shownTimeNames
         self.sep = sep
+        ####
+        self.playAzan = playAzan
+        self.azanFile = azanFile
+        self.playerName = playerName
         #######
         #PrayTimeEventRule.plug = self
         #######
         self.makeWidget()## FIXME
+        self.onCurrentDateChange(localtime()[:3])
+        ## self.doPlayAzan() ## for testing ## FIXME
     def saveConfig(self):
         text = 'locName=%r\n'%self.locName
         text += 'lat=%r\n'%self.ptObj.lat
@@ -160,6 +190,9 @@ class TextPlug(BasePlugin, TextPlugUI):
         text += 'shownTimeNames=%r\n'%self.shownTimeNames
         text += 'imsak=%r\n'%self.imsak
         text += 'sep=%r\n'%self.sep
+        text += 'playAzan=%r\n'%self.playAzan
+        text += 'azanFile=%r\n'%self.azanFile
+        text += 'playerName=%r\n'%self.playerName
         open(confPath, 'w').write(text)
     #def date_change_after(self, widget, year, month, day):
     #    self.dialog.menuCell.add(self.menuitem)
@@ -193,7 +226,43 @@ class TextPlug(BasePlugin, TextPlugUI):
             if c.pluginsText!='':
                 c.pluginsText += '\n'
             c.pluginsText += text
-
+    def doPlayAzan(self):
+        if not self.playAzan:
+            return
+        playSound(self.playerName, self.azanFile)
+    def onCurrentDateChange(self, gdate):
+        if not self.enable:
+            return
+        jd = gregorian_to_jd(*tuple(gdate))
+        #print getUtcOffsetByJd(jd)/3600.0, getUtcOffsetCurrent()/3600.0
+        #utcOffset = getUtcOffsetCurrent()
+        utcOffset = getUtcOffsetByJd(jd)
+        epochLocal = now() + utcOffset
+        secondsFromMidnight = epochLocal % (24*3600)
+        #print '------- hours from midnight', secondsFromMidnight/3600.0
+        for timeName, floatHour in self.ptObj.getTimesByJd(
+            jd,
+            utcOffset/3600.0,
+        ).items():
+            if timeName == 'timezone':
+                continue
+            if timeName not in self.playAzanTimeNames:
+                continue
+            secondsFromMidToAzan = floatHour * 3600.0
+            #print timeName, repr(floatHour)
+            secondsToAzan = int(secondsFromMidToAzan  - secondsFromMidnight)
+            #print '------- hours from midnight to azan', timeName, secondsFromMidToAzan/3600.0
+            if secondsToAzan < 0:
+                continue
+            #print '------- %s hours (%s seconds) remaining to azan %s'%(
+            #    secondsToAzan/3600.0,
+            #    secondsToAzan,
+            #    timeName,
+            #)
+            timeout_add_seconds(
+                secondsToAzan,
+                self.doPlayAzan,
+            )
 
 if __name__=='__main__':
     #sys.path.insert(0, '/usr/share/starcal2')

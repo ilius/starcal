@@ -1187,6 +1187,10 @@ try:
 except:## old PyGTK (older than 2.10)
     pass
 
+for plug in core.allPlugList:
+    if hasattr(plug, 'onCurrentDateChange'):
+        listener.dateChange.add(plug)
+
 
 """
 themeDir = join(rootDir, 'themes')

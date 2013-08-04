@@ -2013,6 +2013,9 @@ msgid "Export Group"
 msgstr ""
 "صادر کردن گروه"
 
+msgid "Select File"
+msgstr "انتخاب فایل"
+
 msgid "Export: Select File"
 msgstr ""
 "صادر کردن: انتخاب فایل"
@@ -2536,6 +2539,20 @@ msgstr "نیمه‌شب"
 
 msgid "minutes before fajr"
 msgstr "دقیقه قبل از اذان صبح"
+
+msgid "Azan"
+msgstr "اذان"
+
+msgid "Play Azan"
+msgstr "پخش اذان"
+
+msgid "Azan File"
+msgstr "فایل اذان"
+
+msgid "Player"
+msgstr "پخش‌کننده"
+
+
 
 msgid "Search Cities:"
 msgstr "جستجوی شهرها:"
