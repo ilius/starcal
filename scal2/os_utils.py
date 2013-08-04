@@ -180,6 +180,7 @@ def getSoundPlayerList():
             'gmplayer',
             'rhythmbox',
             'kplayer',
+            'clementine',
         ):
             if isfile('/usr/bin/%s'%pname):
                 ls.append(pname)
