@@ -26,6 +26,7 @@ from pray_times_backend import timeNames, methodsList
 
 import gtk
 
+
 buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter())
 buffer_select_all = lambda b: b.select_range(b.get_start_iter(), b.get_end_iter())
 
@@ -363,29 +364,51 @@ class TextPlugUI:
         ######
         hbox = gtk.HBox()
         frame = gtk.Frame()
-        frame.set_border_width(4)
+        #frame.set_border_width(5)
         frame.set_label(_('Azan'))
+        hbox.set_border_width(5)
         vboxFrame = gtk.VBox()
+        vboxFrame.set_border_width(10)
         ##
         hbox1 = gtk.HBox()
-        self.playAzanCheck = gtk.CheckButton(_('Play Azan'))
+        self.playAzanCheck = gtk.CheckButton(_('Play'))
         hbox1.pack_start(self.playAzanCheck, 0, 0)
+        hbox1.pack_start(gtk.Label('  '), 0, 0)
+        self.azanFileButton = gtk.FileChooserButton(_('File...'))
+        hbox1.pack_start(self.azanFileButton, 0, 0)
+        hbox1.pack_start(gtk.Label('  '), 0, 0)
+        hbox1.pack_start(gtk.Label(_('on azan')), 0, 0)
         hbox1.pack_start(gtk.Label(''), 1, 1)
         vboxFrame.pack_start(hbox1, 0, 0)
         ##
-        hbox2 = gtk.HBox()
-        self.azanFileButton = gtk.FileChooserButton(_('Select File'))
-        hbox2.pack_start(gtk.Label(_('Azan File')), 0, 0)
-        hbox2.pack_start(self.azanFileButton, 0, 0)
-        hbox2.pack_start(gtk.Label(''), 1, 1)
-        vboxFrame.pack_start(hbox2, 0, 0)
+        hbox1 = gtk.HBox()
+        self.playBeforeAzanCheck = gtk.CheckButton(_('Play'))
+        hbox1.pack_start(self.playBeforeAzanCheck, 0, 0)
+        hbox1.pack_start(gtk.Label('  '), 0, 0)
+        self.beforeAzanFileButton = gtk.FileChooserButton(_('File...'))
+        hbox1.pack_start(self.beforeAzanFileButton, 0, 0)
+        hbox1.pack_start(gtk.Label('  '), 0, 0)
         ##
-        hbox3 = gtk.HBox()
+        spin = gtk.SpinButton()
+        spin.set_increments(1, 5)
+        spin.set_range(0, 60)
+        spin.set_digits(2)
+        spin.set_direction(gtk.TEXT_DIR_LTR)
+        self.beforeAzanMinutesSpin = spin
+        hbox1.pack_start(spin, 0, 0)
+        ##
+        hbox1.pack_start(gtk.Label('  '), 0, 0)
+        hbox1.pack_start(gtk.Label(_('minutes before azan')), 0, 0)
+        hbox1.pack_start(gtk.Label(''), 1, 1)
+        vboxFrame.pack_start(hbox1, 0, 0)
+        ##
+        hbox1 = gtk.HBox()
         self.playerCombo = gtk.combo_box_entry_new_text()        
-        hbox3.pack_start(gtk.Label(_('Player')), 0, 0)
-        hbox3.pack_start(self.playerCombo, 0, 0)
-        hbox3.pack_start(gtk.Label(''), 1, 1)
-        vboxFrame.pack_start(hbox3, 0, 0)
+        hbox1.pack_start(gtk.Label(_('Player')), 0, 0)
+        hbox1.pack_start(gtk.Label('  '), 0, 0)
+        hbox1.pack_start(self.playerCombo, 0, 0)
+        hbox1.pack_start(gtk.Label(''), 1, 1)
+        vboxFrame.pack_start(hbox1, 0, 0)
         ##
         frame.add(vboxFrame)
         hbox.pack_start(frame, 0, 0)
@@ -429,6 +452,12 @@ class TextPlugUI:
         self.playAzanCheck.set_active(self.playAzan)
         if self.azanFile:
             self.azanFileButton.set_filename(self.azanFile)
+        ##
+        self.playBeforeAzanCheck.set_active(self.playBeforeAzan)
+        if self.beforeAzanFile:
+            self.beforeAzanFileButton.set_filename(self.beforeAzanFile)
+        self.beforeAzanMinutesSpin.set_value(self.beforeAzanMinutes)
+        ##
         for pname in self.playerList:
             self.playerCombo.append_text(pname)
         self.playerCombo.child.set_text(self.playerName)
@@ -444,6 +473,11 @@ class TextPlugUI:
         ###
         self.playAzan = self.playAzanCheck.get_active()
         self.azanFile = self.azanFileButton.get_filename()
+        ##        
+        self.playBeforeAzan = self.playBeforeAzanCheck.get_active()
+        self.beforeAzanFile = self.beforeAzanFileButton.get_filename()
+        self.beforeAzanMinutes = self.beforeAzanMinutesSpin.get_value()
+        ##
         self.playerName = self.playerCombo.child.get_text()
     def confDialogCancel(self, widget):
         self.confDialog.hide()

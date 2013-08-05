@@ -196,7 +196,7 @@ def playSound(playerName, soundFile):
     else:
         #cmd = [playerName, soundFile]
         cmd = '%s "%s"'%(playerName, soundFile)
-    os.system(cmd)
+    os.popen2(cmd)
     #subprocess.Popen(cmd)
 
 

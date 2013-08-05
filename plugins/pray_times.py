@@ -158,6 +158,11 @@ class TextPlug(BasePlugin, TextPlugUI):
         ##
         playAzan = False
         azanFile = None
+        ##
+        playBeforeAzan = False
+        beforeAzanFile = None
+        beforeAzanMinutes = 2.0
+        ##
         self.playerList = getSoundPlayerList()
         try:
             playerName = self.playerList[0]
@@ -175,6 +180,12 @@ class TextPlug(BasePlugin, TextPlugUI):
         ####
         self.playAzan = playAzan
         self.azanFile = azanFile
+        ##
+        self.playBeforeAzan = playBeforeAzan
+        self.beforeAzanFile = beforeAzanFile
+        self.beforeAzanMinutes = beforeAzanMinutes
+        ##
+        self.beforeAzanMinutes = beforeAzanMinutes
         self.playerName = playerName
         #######
         #PrayTimeEventRule.plug = self
@@ -183,16 +194,26 @@ class TextPlug(BasePlugin, TextPlugUI):
         self.onCurrentDateChange(localtime()[:3])
         ## self.doPlayAzan() ## for testing ## FIXME
     def saveConfig(self):
-        text = 'locName=%r\n'%self.locName
+        text = ''
         text += 'lat=%r\n'%self.ptObj.lat
         text += 'lng=%r\n'%self.ptObj.lng
         text += 'method=%r\n'%self.ptObj.method.name
-        text += 'shownTimeNames=%r\n'%self.shownTimeNames
-        text += 'imsak=%r\n'%self.imsak
-        text += 'sep=%r\n'%self.sep
-        text += 'playAzan=%r\n'%self.playAzan
-        text += 'azanFile=%r\n'%self.azanFile
-        text += 'playerName=%r\n'%self.playerName
+        for attr in (
+            'locName',
+            'shownTimeNames',
+            'imsak',
+            'sep',
+            'playAzan',
+            'azanFile',
+            'playBeforeAzan',
+            'beforeAzanFile',
+            'beforeAzanMinutes',
+            'playerName',
+        ):
+            text += '%s=%r\n'%(
+                attr,
+                getattr(self, attr),
+            )
         open(confPath, 'w').write(text)
     #def date_change_after(self, widget, year, month, day):
     #    self.dialog.menuCell.add(self.menuitem)
@@ -230,6 +251,10 @@ class TextPlug(BasePlugin, TextPlugUI):
         if not self.playAzan:
             return
         playSound(self.playerName, self.azanFile)
+    def doPlayBeforeAzan(self):
+        if not self.playBeforeAzan:
+            return
+        playSound(self.playerName, self.beforeAzanFile)
     def onCurrentDateChange(self, gdate):
         if not self.enable:
             return
@@ -240,7 +265,7 @@ class TextPlug(BasePlugin, TextPlugUI):
         epochLocal = now() + utcOffset
         secondsFromMidnight = epochLocal % (24*3600)
         #print '------- hours from midnight', secondsFromMidnight/3600.0
-        for timeName, floatHour in self.ptObj.getTimesByJd(
+        for timeName, azanHour in self.ptObj.getTimesByJd(
             jd,
             utcOffset/3600.0,
         ).items():
@@ -248,21 +273,19 @@ class TextPlug(BasePlugin, TextPlugUI):
                 continue
             if timeName not in self.playAzanTimeNames:
                 continue
-            secondsFromMidToAzan = floatHour * 3600.0
-            #print timeName, repr(floatHour)
-            secondsToAzan = int(secondsFromMidToAzan  - secondsFromMidnight)
-            #print '------- hours from midnight to azan', timeName, secondsFromMidToAzan/3600.0
-            if secondsToAzan < 0:
-                continue
-            #print '------- %s hours (%s seconds) remaining to azan %s'%(
-            #    secondsToAzan/3600.0,
-            #    secondsToAzan,
-            #    timeName,
-            #)
-            timeout_add_seconds(
-                secondsToAzan,
-                self.doPlayAzan,
-            )
+            azanSec = azanHour * 3600.0
+            #####
+            toAzanSecs = int(azanSec - secondsFromMidnight)
+            if toAzanSecs >= 0:
+                timeout_add_seconds(
+                    toAzanSecs,
+                    self.doPlayAzan,
+                )
+                timeout_add_seconds(
+                    toAzanSecs - int(self.beforeAzanMinutes * 60),
+                    self.doPlayBeforeAzan,
+                )
+
 
 if __name__=='__main__':
     #sys.path.insert(0, '/usr/share/starcal2')
