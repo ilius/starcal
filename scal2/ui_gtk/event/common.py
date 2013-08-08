@@ -145,11 +145,16 @@ class EventWidget(gtk.VBox):
         hbox.pack_start(self.summaryEntry, 1, 1)
         self.pack_start(hbox, 0, 0)
         ###########
-        hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Description')), 0, 0)
         self.descriptionInput = TextFrame()
-        hbox.pack_start(self.descriptionInput, 1, 1)
-        self.pack_start(hbox, 0, 0)
+        swin = gtk.ScrolledWindow()
+        swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        swin.add_with_viewport(self.descriptionInput)
+        ###
+        exp = gtk.Expander()
+        exp.set_expanded(True)
+        exp.set_label(_('Description'))
+        exp.add(swin)
+        self.pack_start(exp, 1, 1)
         ###########
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Icon')+':'), 0, 0)
@@ -488,7 +493,7 @@ class EventEditorDialog(gtk.Dialog):
         self.activeWidget = event.makeWidget()
         if self.isNew:
             self.activeWidget.focusSummary()
-        self.vbox.pack_start(self.activeWidget, 0, 0)
+        self.vbox.pack_start(self.activeWidget, 1, 1)
         self.vbox.show()
     def typeChanged(self, combo):
         if self.activeWidget:
