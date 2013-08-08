@@ -114,6 +114,8 @@ class IconSelectButton(gtk.Button):
         self.dialog.hide()
     get_filename = lambda self: self.filename
     def set_filename(self, filename):
+        if filename is None:
+            filename = ''
         self.dialog.set_filename(filename)
         self.filename = filename
         if not filename:
