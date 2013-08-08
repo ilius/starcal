@@ -2543,14 +2543,21 @@ msgstr "دقیقه قبل از اذان صبح"
 msgid "Azan"
 msgstr "اذان"
 
-msgid "Play"
-msgstr "پخش"
+msgid "Azan Sound"
+msgstr "صوت اذان"
+
+msgid "Play Azan Sound"
+msgstr "پخش صوت اذان"
+
+msgid "Play Pre-Azan Sound"
+msgstr "پخش صوت پیش-اذان"
+
+msgid "Pre-Azan Sound"
+msgstr "صوت پیش-اذان"
+
 
 msgid "File..."
 msgstr "فایل..."
-
-msgid "on azan"
-msgstr "هنگام اذان"
 
 msgid "minutes before azan"
 msgstr "دقیقه قبل از اذان"

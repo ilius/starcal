@@ -188,16 +188,14 @@ def getSoundPlayerList():
 
     
 def playSound(playerName, soundFile):
-    #import subprocess
+    import subprocess
     osName = getOsName()
     if osName in ('win', 'mac'):
         cmd = 'start %s "%s"'%(playerName, soundFile)
-        #cmd = ['start', playerName, soundFile]
     else:
-        #cmd = [playerName, soundFile]
         cmd = '%s "%s"'%(playerName, soundFile)
-    os.popen2(cmd)
-    #subprocess.Popen(cmd)
+    return subprocess.Popen(cmd, shell=True)
+    
 
 
 

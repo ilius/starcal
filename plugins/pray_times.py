@@ -48,7 +48,8 @@ from scal2.locale_man import tr as _
 from scal2.plugin_man import BasePlugin
 from scal2.cal_types.gregorian import to_jd as gregorian_to_jd
 from scal2.time_utils import getUtcOffsetByJd, getUtcOffsetCurrent, getEpochFromJd
-from scal2.os_utils import getSoundPlayerList, playSound
+from scal2.os_utils import getSoundPlayerList, playSound, kill
+from scal2.utils import myRaise
 #from scal2 import event_lib## needs core!! FIXME
 
 from gobject import timeout_add_seconds
@@ -119,12 +120,12 @@ class PrayTimeEventRule(EventRule):
 
 class TextPlug(BasePlugin, TextPlugUI):
     ## all options (except for "enable" and "show_date") will be saved in file confPath
-    playAzanTimeNames = (
+    azanTimeNamesAll = (
         'fajr',
         'dhuhr',
-        #'asr',
+        'asr',
         'maghrib',
-        #'isha',
+        'isha',
     )
     def __init__(self, enable=True, show_date=False):
         #print '----------- praytime TextPlug.__init__'
@@ -156,12 +157,12 @@ class TextPlug(BasePlugin, TextPlugUI):
         shownTimeNames = ('fajr', 'sunrise', 'dhuhr', 'maghrib', 'midnight')
         sep = '     '
         ##
-        playAzan = False
+        azanEnable = False
         azanFile = None
         ##
-        playBeforeAzan = False
-        beforeAzanFile = None
-        beforeAzanMinutes = 2.0
+        preAzanEnable = False
+        preAzanFile = None
+        preAzanMinutes = 2.0
         ##
         self.playerList = getSoundPlayerList()
         try:
@@ -178,21 +179,24 @@ class TextPlug(BasePlugin, TextPlugUI):
         self.shownTimeNames = shownTimeNames
         self.sep = sep
         ####
-        self.playAzan = playAzan
+        self.azanEnable = azanEnable
         self.azanFile = azanFile
         ##
-        self.playBeforeAzan = playBeforeAzan
-        self.beforeAzanFile = beforeAzanFile
-        self.beforeAzanMinutes = beforeAzanMinutes
+        self.preAzanEnable = preAzanEnable
+        self.preAzanFile = preAzanFile
+        self.preAzanMinutes = preAzanMinutes
         ##
-        self.beforeAzanMinutes = beforeAzanMinutes
+        self.preAzanMinutes = preAzanMinutes
         self.playerName = playerName
         #######
         #PrayTimeEventRule.plug = self
         #######
         self.makeWidget()## FIXME
         self.onCurrentDateChange(localtime()[:3])
-        ## self.doPlayAzan() ## for testing ## FIXME
+        ###
+        #self.doPlayBeforeAzan()
+        #time.sleep(2)
+        #self.doPlayAzan() ## for testing ## FIXME
     def saveConfig(self):
         text = ''
         text += 'lat=%r\n'%self.ptObj.lat
@@ -203,11 +207,11 @@ class TextPlug(BasePlugin, TextPlugUI):
             'shownTimeNames',
             'imsak',
             'sep',
-            'playAzan',
+            'azanEnable',
             'azanFile',
-            'playBeforeAzan',
-            'beforeAzanFile',
-            'beforeAzanMinutes',
+            'preAzanEnable',
+            'preAzanFile',
+            'preAzanMinutes',
             'playerName',
         ):
             text += '%s=%r\n'%(
@@ -247,14 +251,25 @@ class TextPlug(BasePlugin, TextPlugUI):
             if c.pluginsText!='':
                 c.pluginsText += '\n'
             c.pluginsText += text
+    def killPrevSound(self):
+        try:
+            p = self.proc
+        except AttributeError:
+            pass
+        else:
+            print 'killing %s'%p.pid
+            #p.terminate()
+            kill(p.pid, 15)
     def doPlayAzan(self):
-        if not self.playAzan:
+        if not self.azanEnable:
             return
-        playSound(self.playerName, self.azanFile)
+        self.killPrevSound()
+        self.proc = playSound(self.playerName, self.azanFile)
     def doPlayBeforeAzan(self):
-        if not self.playBeforeAzan:
+        if not self.preAzanEnable:
             return
-        playSound(self.playerName, self.beforeAzanFile)
+        self.killPrevSound()
+        self.proc = playSound(self.playerName, self.preAzanFile)
     def onCurrentDateChange(self, gdate):
         if not self.enable:
             return
@@ -269,9 +284,7 @@ class TextPlug(BasePlugin, TextPlugUI):
             jd,
             utcOffset/3600.0,
         ).items():
-            if timeName == 'timezone':
-                continue
-            if timeName not in self.playAzanTimeNames:
+            if timeName not in self.azanTimeNamesAll:
                 continue
             azanSec = azanHour * 3600.0
             #####
@@ -282,7 +295,7 @@ class TextPlug(BasePlugin, TextPlugUI):
                     self.doPlayAzan,
                 )
                 timeout_add_seconds(
-                    toAzanSecs - int(self.beforeAzanMinutes * 60),
+                    toAzanSecs - int(self.preAzanMinutes * 60),
                     self.doPlayBeforeAzan,
                 )
 

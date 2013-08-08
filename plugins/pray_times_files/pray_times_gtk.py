@@ -369,39 +369,52 @@ class TextPlugUI:
         hbox.set_border_width(5)
         vboxFrame = gtk.VBox()
         vboxFrame.set_border_width(10)
-        ##
+        #####
+        sgroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        #sgroupFcb = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        ####
         hbox1 = gtk.HBox()
-        self.playAzanCheck = gtk.CheckButton(_('Play'))
-        hbox1.pack_start(self.playAzanCheck, 0, 0)
-        hbox1.pack_start(gtk.Label('  '), 0, 0)
-        self.azanFileButton = gtk.FileChooserButton(_('File...'))
-        hbox1.pack_start(self.azanFileButton, 0, 0)
-        hbox1.pack_start(gtk.Label('  '), 0, 0)
-        hbox1.pack_start(gtk.Label(_('on azan')), 0, 0)
-        hbox1.pack_start(gtk.Label(''), 1, 1)
-        vboxFrame.pack_start(hbox1, 0, 0)
-        ##
-        hbox1 = gtk.HBox()
-        self.playBeforeAzanCheck = gtk.CheckButton(_('Play'))
-        hbox1.pack_start(self.playBeforeAzanCheck, 0, 0)
-        hbox1.pack_start(gtk.Label('  '), 0, 0)
-        self.beforeAzanFileButton = gtk.FileChooserButton(_('File...'))
-        hbox1.pack_start(self.beforeAzanFileButton, 0, 0)
-        hbox1.pack_start(gtk.Label('  '), 0, 0)
+        self.preAzanEnableCheck = gtk.CheckButton(_('Play Pre-Azan Sound'))
+        sgroup.add_widget(self.preAzanEnableCheck)
+        hbox2 = gtk.HBox()
+        self.preAzanEnableCheck.box = hbox2
+        self.preAzanEnableCheck.connect('clicked', lambda w: w.box.set_sensitive(w.get_active()))
+        hbox1.pack_start(self.preAzanEnableCheck, 0, 0)
+        hbox2.pack_start(gtk.Label('  '), 0, 0)
+        self.preAzanFileButton = gtk.FileChooserButton(_('Pre-Azan Sound'))
+        #sgroupFcb.add_widget(self.preAzanFileButton)
+        hbox2.pack_start(self.preAzanFileButton, 1, 1)
+        hbox2.pack_start(gtk.Label('  '), 0, 0)
         ##
         spin = gtk.SpinButton()
         spin.set_increments(1, 5)
         spin.set_range(0, 60)
         spin.set_digits(2)
         spin.set_direction(gtk.TEXT_DIR_LTR)
-        self.beforeAzanMinutesSpin = spin
-        hbox1.pack_start(spin, 0, 0)
+        self.preAzanMinutesSpin = spin
+        hbox2.pack_start(spin, 0, 0)
         ##
-        hbox1.pack_start(gtk.Label('  '), 0, 0)
-        hbox1.pack_start(gtk.Label(_('minutes before azan')), 0, 0)
-        hbox1.pack_start(gtk.Label(''), 1, 1)
+        hbox2.pack_start(gtk.Label('  '), 0, 0)
+        hbox2.pack_start(gtk.Label(_('minutes before azan')), 0, 0)
+        hbox1.pack_start(hbox2, 1, 1)
         vboxFrame.pack_start(hbox1, 0, 0)
+        #####
+        hbox1 = gtk.HBox()
+        self.azanEnableCheck = gtk.CheckButton(_('Play Azan Sound'))
+        sgroup.add_widget(self.azanEnableCheck)
+        hbox2 = gtk.HBox()
+        self.azanEnableCheck.box = hbox2
+        self.azanEnableCheck.connect('clicked', lambda w: w.box.set_sensitive(w.get_active()))
+        hbox1.pack_start(self.azanEnableCheck, 0, 0)
+        hbox2.pack_start(gtk.Label('  '), 0, 0)
+        self.azanFileButton = gtk.FileChooserButton(_('Azan Sound'))
+        #sgroupFcb.add_widget(self.azanFileButton)
+        hbox2.pack_start(self.azanFileButton, 1, 1)
+        #hbox2.pack_start(gtk.Label(''), 1, 1)
         ##
+        hbox1.pack_start(hbox2, 1, 1)
+        vboxFrame.pack_start(hbox1, 0, 0)
+        #####
         hbox1 = gtk.HBox()
         self.playerCombo = gtk.combo_box_entry_new_text()        
         hbox1.pack_start(gtk.Label(_('Player')), 0, 0)
@@ -409,9 +422,9 @@ class TextPlugUI:
         hbox1.pack_start(self.playerCombo, 0, 0)
         hbox1.pack_start(gtk.Label(''), 1, 1)
         vboxFrame.pack_start(hbox1, 0, 0)
-        ##
+        #####
         frame.add(vboxFrame)
-        hbox.pack_start(frame, 0, 0)
+        hbox.pack_start(frame, 1, 1)
         self.confDialog.vbox.pack_start(hbox, 0, 0)
         ######
         self.updateConfWidget()
@@ -449,14 +462,16 @@ class TextPlugUI:
         self.sepBuff.set_text(self.sep)
         buffer_select_all(self.sepBuff)
         ###
-        self.playAzanCheck.set_active(self.playAzan)
+        self.preAzanEnableCheck.set_active(self.preAzanEnable)
+        self.preAzanEnableCheck.box.set_sensitive(self.preAzanEnable)
+        if self.preAzanFile:
+            self.preAzanFileButton.set_filename(self.preAzanFile)
+        self.preAzanMinutesSpin.set_value(self.preAzanMinutes)
+        ##
+        self.azanEnableCheck.set_active(self.azanEnable)
+        self.azanEnableCheck.box.set_sensitive(self.azanEnable)
         if self.azanFile:
             self.azanFileButton.set_filename(self.azanFile)
-        ##
-        self.playBeforeAzanCheck.set_active(self.playBeforeAzan)
-        if self.beforeAzanFile:
-            self.beforeAzanFileButton.set_filename(self.beforeAzanFile)
-        self.beforeAzanMinutesSpin.set_value(self.beforeAzanMinutes)
         ##
         for pname in self.playerList:
             self.playerCombo.append_text(pname)
@@ -471,12 +486,12 @@ class TextPlugUI:
         self.sep = buffer_get_text(self.sepBuff)
         self.ptObj.imsak = '%d min'%self.imsak
         ###
-        self.playAzan = self.playAzanCheck.get_active()
+        self.preAzanEnable = self.preAzanEnableCheck.get_active()
+        self.preAzanFile = self.preAzanFileButton.get_filename()
+        self.preAzanMinutes = self.preAzanMinutesSpin.get_value()
+        ##
+        self.azanEnable = self.azanEnableCheck.get_active()
         self.azanFile = self.azanFileButton.get_filename()
-        ##        
-        self.playBeforeAzan = self.playBeforeAzanCheck.get_active()
-        self.beforeAzanFile = self.beforeAzanFileButton.get_filename()
-        self.beforeAzanMinutes = self.beforeAzanMinutesSpin.get_value()
         ##
         self.playerName = self.playerCombo.child.get_text()
     def confDialogCancel(self, widget):
