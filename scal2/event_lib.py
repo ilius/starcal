@@ -1199,6 +1199,7 @@ class Event(JsonEventBaseClass, RuleContainer):
     #requiredNotifiers = ()## needed? FIXME
     readOnly = False
     params = (
+        'timeZone',
         'icon',
         'summary',
         'description',
@@ -1208,6 +1209,7 @@ class Event(JsonEventBaseClass, RuleContainer):
     jsonParams = (
         'type',
         'calType',
+        'timeZone',
         'summary',
         'description',
         'rules',
@@ -1236,6 +1238,7 @@ class Event(JsonEventBaseClass, RuleContainer):
             self.mode = parent.mode
         except:
             self.mode = core.primaryMode
+        self.timeZone = str(core.localTz)
         self.icon = self.__class__.getDefaultIcon()
         self.summary = self.desc ## + ' (' + _(self.id) + ')' ## FIXME
         self.description = ''

@@ -24,6 +24,8 @@ from StringIO import StringIO
 from os.path import isfile, isdir, exists, dirname, join, split, splitext
 from pprint import pprint
 
+from scal2.lib.tzlocal import get_localzone
+
 from scal2.path import *
 from scal2.time_utils import *
 from scal2.date_utils import *
@@ -55,6 +57,8 @@ primaryMode = 0 ## suitable place ???????????
 osName = getOsName()
 userDisplayName = getUserDisplayName()
 #print '--------- Hello %s'%userDisplayName
+
+localTz = get_localzone()
 
 #print '__file__ = %r'%__file__
 #print '__name__ = %r'%__name__

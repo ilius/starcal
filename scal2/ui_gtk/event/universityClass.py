@@ -33,6 +33,7 @@ import gtk
 from gtk import gdk
 
 class EventWidget(gtk.VBox):
+    showTimeZone = True
     def __init__(self, event):## FIXME
         gtk.VBox.__init__(self)
         self.event = event

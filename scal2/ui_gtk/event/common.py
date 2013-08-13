@@ -31,7 +31,7 @@ from scal2.core import pixDir, myRaise
 from scal2 import event_lib
 from scal2 import ui
 
-from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, labelStockMenuItem
+from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, labelStockMenuItem, TimeZoneComboBoxEntry
 from scal2.ui_gtk.utils import dialog_add_button, DateTypeCombo
 
 from scal2.ui_gtk.color_utils import gdkColorToRgb
@@ -124,13 +124,14 @@ class IconSelectButton(gtk.Button):
             self.image.set_from_file(filename)
 
 class EventWidget(gtk.VBox):
+    showTimeZone = False
     def __init__(self, event):
         gtk.VBox.__init__(self)
         self.event = event
         ###########
         hbox = gtk.HBox()
         ###
-        hbox.pack_start(gtk.Label(_('Calendar Type')+':'), 0, 0)
+        hbox.pack_start(gtk.Label(_('Calendar Type')), 0, 0)
         combo = DateTypeCombo()
         combo.set_active(core.primaryMode)## overwritten in updateWidget()
         hbox.pack_start(combo, 0, 0)
@@ -138,6 +139,17 @@ class EventWidget(gtk.VBox):
         self.modeCombo = combo
         ###
         self.pack_start(hbox, 0, 0)
+        ###########
+        if self.showTimeZone:
+            hbox = gtk.HBox()
+            hbox.pack_start(gtk.Label(_('Time Zone')), 0, 0)
+            combo = TimeZoneComboBoxEntry()
+            hbox.pack_start(combo, 0, 0)
+            hbox.pack_start(gtk.Label(''), 1, 1)
+            self.tzCombo = combo
+            self.pack_start(hbox, 0, 0)
+        else:
+            self.tzCombo = None
         ###########
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Summary')), 0, 0)
@@ -171,6 +183,8 @@ class EventWidget(gtk.VBox):
     def updateWidget(self):
         #print 'updateWidget', self.event.files
         self.modeCombo.set_active(self.event.mode)
+        if self.tzCombo:
+            self.tzCombo.set_text(self.event.timeZone)
         self.summaryEntry.set_text(self.event.summary)
         self.descriptionInput.set_text(self.event.description)
         self.iconSelect.set_filename(self.event.icon)
@@ -184,6 +198,8 @@ class EventWidget(gtk.VBox):
         self.modeComboChanged()
     def updateVars(self):
         self.event.mode = self.modeCombo.get_active()
+        if self.tzCombo:
+            self.event.timeZone = self.tzCombo.get_text()
         self.event.summary = self.summaryEntry.get_text()
         self.event.description = self.descriptionInput.get_text()
         self.event.icon = self.iconSelect.get_filename()

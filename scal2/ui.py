@@ -110,6 +110,7 @@ def saveLiveConf():
         'winKeepAbove', 'winSticky',
         'pluginsTextIsExpanded', 'eventViewMaxHeight', 'bgColor',
         'eventManShowDescription',## FIXME
+        'localTzHist',
     ):
         text += '%s=%r\n'%(key, eval(key))
     open(confPathLive, 'w').write(text)
@@ -446,6 +447,11 @@ def init():
 
 
 ######################################################################
+
+localTzHist = [
+    str(core.localTz),
+]
+
 shownCals = [] ## FIXME
 
 mcalTypeParams = [
@@ -836,6 +842,14 @@ except NameError:
 else:
     prefVersion = version
     del version
+
+
+try:
+    localTzHist.remove(str(core.localTz))
+except ValueError:
+    pass
+localTzHist.insert(0, str(core.localTz))
+saveLiveConf()
 
 
 if shownCals:## just for compatibility

@@ -769,9 +769,17 @@ class PrefDialog(gtk.Dialog):
         text = ''
         for item in self.uiPrefItems:
             text += item.confStr()
-        text += 'showYmArrows=%r\n'%ui.showYmArrows
-        text += 'prefPagesOrder=%s'%repr(tuple(
-            [self.notebook.page_num(page) for page in self.prefPages]))
+        for key in (
+            #'localTzHist',## FIXME
+            'showYmArrows',
+        ):
+            value = eval('ui.'+key)
+            text += '%s=%r\n'%(key, value)
+        text += 'prefPagesOrder=%s\n'%repr(
+            tuple(
+                [self.notebook.page_num(page) for page in self.prefPages]
+            )
+        )
         open(ui.confPath, 'w').write(text)
         ##################### Saving here config
         text = ''
