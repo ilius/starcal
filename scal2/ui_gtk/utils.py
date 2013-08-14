@@ -19,7 +19,7 @@
 
 from scal2.locale_man import tr as _
 from scal2.utils import myRaise
-from scal2.json_utils import jsonToData
+from scal2.json_utils import *
 from scal2.path import pixDir, rootDir
 
 from scal2.cal_types import calTypes
@@ -375,18 +375,18 @@ class TimeZoneComboBoxEntry(gtk.ComboBoxEntry):
         for tz_name in ui.localTzHist:
             model.append(recentIter, [tz_name, True])
         ###
-        self.appendDict(
+        self.appendOrderedDict(
             None,
-            jsonToData(
+            jsonToOrderedData(
                 open(join(rootDir, 'zoneinfo-tree.json')).read()
             ),
         )
-    def appendDict(self, parentIter, dct):
+    def appendOrderedDict(self, parentIter, dct):
         model = self.get_model()
-        for key, value in sorted(dct.items()):
+        for key, value in dct.items():
             if isinstance(value, dict):
                 itr = model.append(parentIter, [key, False])
-                self.appendDict(itr, value)
+                self.appendOrderedDict(itr, value)
             else:
                 itr = model.append(parentIter, [key, True])
     def onChanged(self, widget):

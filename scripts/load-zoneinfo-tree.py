@@ -20,6 +20,7 @@ endObj = '' ## '' or None
 infoDir = ['usr', 'share', 'zoneinfo']
 
 groups = [
+    'Etc',
     'Africa',
     'America',
     'Antarctica',
@@ -54,7 +55,7 @@ def addZoneNode(parentDict, zone):
         print 'invalid path =', path
 
 
-for group in sorted(groups):
+for group in groups:
     addZoneNode(zoneTree, [group])
 
 zoneNamesList = []
