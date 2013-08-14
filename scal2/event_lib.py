@@ -25,6 +25,7 @@ from copy import deepcopy
 from random import shuffle
 import math
 from time import time as now
+import pytz
 
 from scal2.lib import OrderedDict
 
@@ -1199,6 +1200,7 @@ class Event(JsonEventBaseClass, RuleContainer):
     #requiredNotifiers = ()## needed? FIXME
     readOnly = False
     params = (
+        'timeZoneEnable',
         'timeZone',
         'icon',
         'summary',
@@ -1209,6 +1211,7 @@ class Event(JsonEventBaseClass, RuleContainer):
     jsonParams = (
         'type',
         'calType',
+        'timeZoneEnable',
         'timeZone',
         'summary',
         'description',
@@ -1238,6 +1241,7 @@ class Event(JsonEventBaseClass, RuleContainer):
             self.mode = parent.mode
         except:
             self.mode = core.primaryMode
+        self.timeZoneEnable = False
         self.timeZone = str(core.localTz)
         self.icon = self.__class__.getDefaultIcon()
         self.summary = self.desc ## + ' (' + _(self.id) + ')' ## FIXME
@@ -1256,6 +1260,13 @@ class Event(JsonEventBaseClass, RuleContainer):
         self.modified = now()
         self.remoteIds = None## (accountId, groupId, eventId)
         ## remote groupId and eventId both can be integer or string or unicode (depending on remote account type)
+    def getTimeZoneObj(self):
+        if self.timeZoneEnable:
+            try:
+                return pytz.timezone(self.timeZone)
+            except:
+                myRaise()
+        return core.localTz
     def getShownDescription(self):
         if not self.description:
             return ''
@@ -1549,6 +1560,7 @@ class TaskEvent(SingleStartEndEvent):
         'duration',
     )
     def setDefaults(self):
+        self.timeZoneEnable = True
         self.setStart(
             core.getSysDate(self.mode),
             tuple(localtime()[3:6]),
@@ -1982,6 +1994,8 @@ class WeeklyEvent(Event):
         'dayTimeRange',
     )
     supportedRules = requiredRules
+    def setDefaults(self):
+        self.timeZoneEnable = True
 
 
 #@classes.event.register
@@ -2009,8 +2023,8 @@ class UniversityClassEvent(Event):
         ## assert group is not None ## FIXME
         Event.__init__(self, _id, parent)
         self.courseId = None ## FIXME
-    #def setDefaults(self):
-    #    pass
+    def setDefaults(self):
+        self.timeZoneEnable = True
     def setDefaultsFromGroup(self, group):
         Event.setDefaultsFromGroup(self, group)
         if group.name=='universityTerm':
@@ -2076,6 +2090,7 @@ class UniversityExamEvent(DailyNoteEvent):
         DailyNoteEvent.__init__(self, _id, parent)
         self.courseId = None ## FIXME
     def setDefaults(self):
+        self.timeZoneEnable = True
         self['dayTimeRange'].setRange((9, 0), (11, 0))## FIXME
     def setDefaultsFromGroup(self, group):
         DailyNoteEvent.setDefaultsFromGroup(self, group)
