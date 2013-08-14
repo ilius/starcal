@@ -3801,8 +3801,8 @@ def getWeekOccurrenceData(curAbsWeekNumber, groups):
                         })
             elif isinstance(occur, TimeRangeListOccurrence):
                 for startEpoch, endEpoch in occur.getTimeRangeList():
-                    jd1, h1, min1, s1 = core.getJhmsFromEpoch(startEpoch)
-                    jd2, h2, min2, s2 = core.getJhmsFromEpoch(endEpoch)
+                    jd1, h1, min1, s1 = getJhmsFromEpoch(startEpoch)
+                    jd2, h2, min2, s2 = getJhmsFromEpoch(endEpoch)
                     wnum, weekDay = core.getWeekDateFromJd(jd1)
                     if wnum==curAbsWeekNumber:
                         if jd1==jd2:
@@ -3844,7 +3844,7 @@ def getWeekOccurrenceData(curAbsWeekNumber, groups):
                                 })
             elif isinstance(occur, TimeListOccurrence):
                 for epoch in occur.epochList:
-                    jd, hour, minute, sec = core.getJhmsFromEpoch(epoch)
+                    jd, hour, minute, sec = getJhmsFromEpoch(epoch)
                     wnum, weekDay = core.getWeekDateFromJd(jd)
                     if wnum==curAbsWeekNumber:
                         data.append({
@@ -3887,8 +3887,8 @@ def getMonthOccurrenceData(curYear, curMonth, groups):
                         })
             elif isinstance(occur, TimeRangeListOccurrence):
                 for startEpoch, endEpoch in occur.getTimeRangeList():
-                    jd1, h1, min1, s1 = core.getJhmsFromEpoch(startEpoch)
-                    jd2, h2, min2, s2 = core.getJhmsFromEpoch(endEpoch)
+                    jd1, h1, min1, s1 = getJhmsFromEpoch(startEpoch)
+                    jd2, h2, min2, s2 = getJhmsFromEpoch(endEpoch)
                     y, m, d = jd_to(jd1, core.primaryMode)
                     if y==curYear and m==curMonth:
                         if jd1==jd2:
@@ -3930,7 +3930,7 @@ def getMonthOccurrenceData(curYear, curMonth, groups):
                                 })
             elif isinstance(occur, TimeListOccurrence):
                 for epoch in occur.epochList:
-                    jd, hour, minute, sec = core.getJhmsFromEpoch(epoch)
+                    jd, hour, minute, sec = getJhmsFromEpoch(epoch)
                     y, m, d = jd_to(jd1, core.primaryMode)
                     if y==curYear and m==curMonth:
                         data.append({
