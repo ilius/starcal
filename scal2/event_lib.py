@@ -1082,7 +1082,18 @@ class CommandNotifier(EventNotifier):
 class RuleContainer:
     requiredRules = ()
     supportedRules = None
+    params = (
+        'timeZoneEnable',
+        'timeZone',
+    )
+    jsonParams = (
+        'timeZoneEnable',
+        'timeZone',
+    )
     def __init__(self):
+        self.timeZoneEnable = False
+        self.timeZone = str(core.localTz)
+        ###
         self.clearRules()
         self.rulesHash = None
     def clearRules(self):
@@ -1174,6 +1185,13 @@ class RuleContainer:
                         self.rulesOd[ruleName].copyFrom(rule)
                     except KeyError:
                         self.addRule(rule)
+    def getTimeZoneObj(self):
+        if self.timeZoneEnable:
+            try:
+                return pytz.timezone(self.timeZone)
+            except:
+                myRaise()
+        return core.localTz
 
 
 def fixIconInData(data):
@@ -1199,20 +1217,16 @@ class Event(JsonEventBaseClass, RuleContainer):
     iconName = ''
     #requiredNotifiers = ()## needed? FIXME
     readOnly = False
-    params = (
-        'timeZoneEnable',
-        'timeZone',
+    params = RuleContainer.params + (
         'icon',
         'summary',
         'description',
         'remoteIds',
         'modified',
     )
-    jsonParams = (
+    jsonParams = RuleContainer.jsonParams + (
         'type',
         'calType',
-        'timeZoneEnable',
-        'timeZone',
         'summary',
         'description',
         'rules',
@@ -1241,8 +1255,6 @@ class Event(JsonEventBaseClass, RuleContainer):
             self.mode = parent.mode
         except:
             self.mode = core.primaryMode
-        self.timeZoneEnable = False
-        self.timeZone = str(core.localTz)
         self.icon = self.__class__.getDefaultIcon()
         self.summary = self.desc ## + ' (' + _(self.id) + ')' ## FIXME
         self.description = ''
@@ -1260,13 +1272,6 @@ class Event(JsonEventBaseClass, RuleContainer):
         self.modified = now()
         self.remoteIds = None## (accountId, groupId, eventId)
         ## remote groupId and eventId both can be integer or string or unicode (depending on remote account type)
-    def getTimeZoneObj(self):
-        if self.timeZoneEnable:
-            try:
-                return pytz.timezone(self.timeZone)
-            except:
-                myRaise()
-        return core.localTz
     def getShownDescription(self):
         if not self.description:
             return ''
