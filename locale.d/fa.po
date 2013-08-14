@@ -2602,7 +2602,8 @@ msgstr "منطقهٔ زمانی"
 msgid "Daylight Saving"
 msgstr "صرفه‌جویی نور روز"
 
-
+msgid "Recent..."
+msgstr "اخیر..."
 
 
 

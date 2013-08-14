@@ -124,7 +124,6 @@ class IconSelectButton(gtk.Button):
             self.image.set_from_file(filename)
 
 class EventWidget(gtk.VBox):
-    showTimeZone = False
     def __init__(self, event):
         gtk.VBox.__init__(self)
         self.event = event
@@ -140,16 +139,18 @@ class EventWidget(gtk.VBox):
         ###
         self.pack_start(hbox, 0, 0)
         ###########
-        if self.showTimeZone:
+        if event.isAllDay:
+            self.tzCheck = None
+        else:
             hbox = gtk.HBox()
-            hbox.pack_start(gtk.Label(_('Time Zone')), 0, 0)
+            self.tzCheck = gtk.CheckButton(_('Time Zone'))
+            hbox.pack_start(self.tzCheck, 0, 0)
             combo = TimeZoneComboBoxEntry()
             hbox.pack_start(combo, 0, 0)
             hbox.pack_start(gtk.Label(''), 1, 1)
             self.tzCombo = combo
             self.pack_start(hbox, 0, 0)
-        else:
-            self.tzCombo = None
+            self.tzCheck.connect('clicked', lambda check: self.tzCombo.set_sensitive(check.get_active()))
         ###########
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Summary')), 0, 0)
@@ -183,7 +184,9 @@ class EventWidget(gtk.VBox):
     def updateWidget(self):
         #print 'updateWidget', self.event.files
         self.modeCombo.set_active(self.event.mode)
-        if self.tzCombo:
+        if self.tzCheck:
+            self.tzCheck.set_active(self.event.timeZoneEnable)
+            self.tzCombo.set_sensitive(self.event.timeZoneEnable)
             self.tzCombo.set_text(self.event.timeZone)
         self.summaryEntry.set_text(self.event.summary)
         self.descriptionInput.set_text(self.event.description)
@@ -198,8 +201,11 @@ class EventWidget(gtk.VBox):
         self.modeComboChanged()
     def updateVars(self):
         self.event.mode = self.modeCombo.get_active()
-        if self.tzCombo:
+        if self.tzCheck:
+            self.event.timeZoneEnable = self.tzCheck.get_active()
             self.event.timeZone = self.tzCombo.get_text()
+        else:
+            self.event.timeZoneEnable = False ## FIXME
         self.event.summary = self.summaryEntry.get_text()
         self.event.description = self.descriptionInput.get_text()
         self.event.icon = self.iconSelect.get_filename()

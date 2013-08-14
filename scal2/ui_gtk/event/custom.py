@@ -34,7 +34,6 @@ from gtk import gdk
 
 
 class EventWidget(common.EventWidget):
-    showTimeZone = True
     groups = [gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL), gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)]
     def __init__(self, event, autoCheck=True):
         common.EventWidget.__init__(self, event)

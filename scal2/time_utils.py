@@ -20,8 +20,11 @@
 import time
 from time import localtime, mktime
 from time import time as now
-#from datetime import datetime
+from datetime import datetime
 import struct
+import pytz
+
+from scal2.lib.tzlocal import get_localzone
 
 from scal2.cal_types.gregorian import J0001, J1970
 from scal2.cal_types.gregorian import jd_to as jd_to_g
@@ -35,6 +38,7 @@ from scal2.utils import ifloor, iceil
 
 ## Using datetime module is not preferred because of year limitation (1 to 9999) in TimeLine
 ## Just use for testing and comparing the result
+## Or put in try...except block
 
 ## now() ~~ epoch
 ## function time.time() having the same name as its module is problematic
@@ -46,36 +50,43 @@ from scal2.utils import ifloor, iceil
 #    except ValueError:## year is out of range
 #        return 0
 
-def getUtcOffsetByEpoch(epoch):
-    if time.daylight and localtime(epoch).tm_isdst:
-        return -time.altzone
-    else:
-        return -time.timezone
-
-def getUtcOffsetByDateSec(year, month, day):
+def getUtcOffsetByEpoch(epoch, tz=None):
+    if not tz:
+        tz = get_localzone()
     try:
-        isdst = localtime(mktime((year, month, day, 0, 0, 0, 0, 0, -1))).tm_isdst
+        return tz.utcoffset(datetime.fromtimestamp(epoch)).seconds
     except (ValueError, OverflowError):
-        isdst = False
-    if time.daylight and isdst:
-        return -time.altzone
-    else:
-        return -time.timezone
+        return tz._utcoffset.seconds
+
+def getUtcOffsetByDateSec(year, month, day, tz=None):
+    if not tz:
+        tz = get_localzone()
+    try:
+        return tz.utcoffset(datetime(year, month, day)).seconds
+    except (ValueError, OverflowError):
+        return tz._utcoffset.seconds
+    except pytz.exceptions.NonExistentTimeError:
+        return tz.utcoffset(datetime(year, month, day, 1, 0, 0)).seconds
 
 
-def getUtcOffsetByDateHM(year, month, day):
-    s = getUtcOffsetByDateSec(year, month, day)
+def getUtcOffsetByDateHM(year, month, day, tz=None):
+    s = getUtcOffsetByDateSec(year, month, day, tz)
     return divmod(s/60, 60)
 
-def getUtcOffsetByDateHMS(year, month, day):
-    s = getUtcOffsetByDateSec(year, month, day)
+def getUtcOffsetByDateHMS(year, month, day, tz=None):
+    s = getUtcOffsetByDateSec(year, month, day, tz)
     m, s = divmod(s, 60)
     h, m = divmod(m, 60)
     return (h, m, s)
 
-getUtcOffsetByJd = lambda jd: getUtcOffsetByEpoch(getEpochFromJd(jd))
+#getUtcOffsetByJd = lambda jd, tz=None: getUtcOffsetByEpoch(getEpochFromJd(jd), tz)
 
-getUtcOffsetCurrent = lambda: getUtcOffsetByEpoch(now())
+def getUtcOffsetByJd(jd, tz=None):
+    y, m, d = jd_to_g(jd)
+    return getUtcOffsetByDateSec(y, m, d, tz)
+
+
+getUtcOffsetCurrent = lambda tz=None: getUtcOffsetByEpoch(now(), tz)
 #getUtcOffsetCurrent = lambda: -time.altzone if time.daylight and localtime().tm_isdst else -time.timezone
 
 getGtkTimeFromEpoch = lambda epoch: (epoch-1.32171528839e+9)*1000 // 1
@@ -88,10 +99,10 @@ getFloatJdFromEpoch = lambda epoch: (epoch + getUtcOffsetByEpoch(epoch))/(24.0*3
 getJdFromEpoch = lambda epoch: ifloor(getFloatJdFromEpoch(epoch))
 
 
-def getEpochFromJd(jd):
+def getEpochFromJd(jd, tz=None):
     localEpoch = (jd-J1970) * 24*3600
     year, month, day = jd_to_g(jd-1) ## FIXME
-    return localEpoch - getUtcOffsetByDateSec(year, month, day)
+    return localEpoch - getUtcOffsetByDateSec(year, month, day, tz)
 
 #getEpochFromJd = lambda jd: int(mktime(datetime.fromordinal(int(jd)-J0001+1).timetuple()))
 
@@ -107,15 +118,17 @@ def getHmsFromSeconds(second):
     hour, minute = divmod(minute, 60)
     return hour, minute, second
 
-def getJhmsFromEpoch(epoch, currentOffset=False):## return a tuple (julain_day, hour, minute, second) from epoch
-    offset = getUtcOffsetCurrent() if currentOffset else getUtcOffsetByEpoch(epoch) ## FIXME
+def getJhmsFromEpoch(epoch, currentOffset=False, tz=None):
+    ## return a tuple (julain_day, hour, minute, second) from epoch
+    offset = getUtcOffsetCurrent(tz) if currentOffset else getUtcOffsetByEpoch(epoch, tz) ## FIXME
     days, second = divmod(ifloor(epoch + offset), 24*3600)
     return (days+J1970,) + getHmsFromSeconds(second)
 
 def getSecondsFromHms(hour, minute, second=0):
     return hour*3600 + minute*60 + second
 
-getEpochFromJhms = lambda jd, hour, minute, second: getEpochFromJd(jd) + getSecondsFromHms(hour, minute, second)
+getEpochFromJhms = lambda jd, hour, minute, second, tz=None: \
+    getEpochFromJd(jd, tz) + getSecondsFromHms(hour, minute, second)
 
 def getJdAndSecondsFromEpoch(epoch):## return a tuple (julain_day, extra_seconds) from epoch
     days, second = divmod(epoch, 24*3600)

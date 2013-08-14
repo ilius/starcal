@@ -29,7 +29,6 @@ from scal2.ui_gtk.event import common
 import gtk
 
 class EventWidget(common.EventWidget):
-    showTimeZone = True
     def __init__(self, event):## FIXME
         common.EventWidget.__init__(self, event)
         ######

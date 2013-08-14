@@ -47,7 +47,7 @@ from scal2.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName, textNumEncode
 from scal2 import core
-from scal2.core import myRaise, getJdFromEpoch, getEpochFromJd, getEpochFromJhms, log, getAbsWeekNumberFromJd, dataToJson, jwday
+from scal2.core import myRaise, log, getAbsWeekNumberFromJd, dataToJson, jwday
 
 from scal2.ics import icsHeader, getIcsTimeByEpoch, getIcsDateByJd, getJdByIcsDate, getEpochByIcsTime
 from scal2.vcs_modules import vcsModuleDict
@@ -247,7 +247,12 @@ class JdSetOccurrence(Occurrence):
         else:
             raise TypeError
     getDaysJdList = lambda self: sorted(self.jdSet)
-    getTimeRangeList = lambda self: [(getEpochFromJd(jd), getEpochFromJd(jd+1)) for jd in self.jdSet]
+    getTimeRangeList = lambda self: [
+        (
+            getEpochFromJd(jd),
+            getEpochFromJd(jd+1),
+        ) for jd in self.jdSet
+    ]
     def calcJdRanges(self):
         jdList = list(self.jdSet) ## jdList is sorted
         if not jdList:
@@ -625,7 +630,7 @@ class DateEventRule(EventRule):
     def getJd(self):
         year, month, day = self.date
         return to_jd(year, month, day, self.getMode())
-    getEpoch = lambda self: getEpochFromJd(self.getJd())
+    getEpoch = lambda self: self.parent.getEpochFromJd(self.getJd())
     def setJd(self, jd):
         self.date = jd_to(jd, self.getMode())
     def calcOccurrence(self, startJd, endJd, event):
@@ -647,9 +652,14 @@ class DateAndTimeEventRule(DateEventRule):
     def __init__(self, parent):
         DateEventRule.__init__(self, parent)
         self.time = localtime()[3:6]
-    getEpoch = lambda self: getEpochFromJhms(self.getJd(), *tuple(self.time))
+    getEpoch = lambda self: self.parent.getEpochFromJhms(
+        self.getJd(),
+        self.time[0],
+        self.time[1],
+        self.time[2],
+    )
     def setEpoch(self, epoch):
-        jd, h, m, s = getJhmsFromEpoch(epoch)
+        jd, h, m, s = self.parent.getJhmsFromEpoch(epoch)
         self.setJd(jd)
         self.time = (h, m, s)
     def setJdExact(self, jd):
@@ -699,8 +709,8 @@ class DayTimeEventRule(EventRule):## Moment Event
     def calcOccurrence(self, startJd, endJd, event):
         mySec = getSecondsFromHms(*self.dayTime)
         return TimeListOccurrence(## FIXME
-            getEpochFromJd(startJd) + mySec,
-            getEpochFromJd(endJd) + mySec + 1,
+            self.parent.getEpochFromJd(startJd) + mySec,
+            self.parent.getEpochFromJd(endJd) + mySec + 1,
             dayLen,
         )
     getInfo = lambda self: _('Time in Day') + ': ' + timeEncode(self.dayTime)
@@ -739,7 +749,7 @@ class DayTimeRangeEventRule(EventRule):
         daySecEnd = getSecondsFromHms(*self.dayTimeEnd)
         tmList = []
         for jd in range(startJd, endJd):
-            epoch = getEpochFromJd(jd)
+            epoch = self.parent.getEpochFromJd(jd)
             tmList.append((epoch+daySecStart, epoch+daySecEnd))
         return TimeRangeListOccurrence(tmList)
 
@@ -753,8 +763,8 @@ class StartEventRule(DateAndTimeEventRule):
     )
     def calcOccurrence(self, startJd, endJd, event):
         myEpoch = self.getEpoch()
-        startEpoch = getEpochFromJd(startJd)
-        endEpoch = getEpochFromJd(endJd)
+        startEpoch = self.parent.getEpochFromJd(startJd)
+        endEpoch = self.parent.getEpochFromJd(endJd)
         if endEpoch <= myEpoch:
             return TimeRangeListOccurrence([])
         if startEpoch < myEpoch:
@@ -770,8 +780,8 @@ class EndEventRule(DateAndTimeEventRule):
         'duration',
     )
     def calcOccurrence(self, startJd, endJd, event):
-        startEpoch = getEpochFromJd(startJd)
-        endEpoch = min(getEpochFromJd(endJd), self.getEpoch())
+        startEpoch = self.parent.getEpochFromJd(startJd)
+        endEpoch = min(self.parent.getEpochFromJd(endJd), self.getEpoch())
         if startEpoch >= endEpoch:## how about startEpoch==endEpoch FIXME
             return TimeRangeListOccurrence([])
         else:
@@ -808,8 +818,8 @@ class DurationEventRule(EventRule):
             log.error('Error while loading event rule "%s": %s'%(self.name, e))
     getData = lambda self: durationEncode(self.value, self.unit)
     def calcOccurrence(self, startJd, endJd, event):
-        startEpoch = getEpochFromJd(startJd)
-        endEpoch = min(getEpochFromJd(endJd), self.parent['start'].getEpoch() + self.getSeconds())
+        startEpoch = self.parent.getEpochFromJd(startJd)
+        endEpoch = min(self.parent.getEpochFromJd(endJd), self.parent['start'].getEpoch() + self.getSeconds())
         if startEpoch >= endEpoch:## how about startEpoch==endEpoch FIXME
             return TimeRangeListOccurrence([])
         else:
@@ -910,7 +920,7 @@ class CycleLenEventRule(EventRule):
         self.days = arg['days']
         self.extraTime = timeDecode(arg['extraTime'])
     def calcOccurrence(self, startJd, endJd, event):
-        startEpoch = getEpochFromJd(startJd)
+        startEpoch = self.parent.getEpochFromJd(startJd)
         eventStartEpoch = event.getStartEpoch()
         ##
         cycleSec = self.days*dayLen + getSecondsFromHms(*self.extraTime)
@@ -922,7 +932,7 @@ class CycleLenEventRule(EventRule):
         ##
         return TimeListOccurrence(
             startEpoch,
-            getEpochFromJd(endJd),
+            self.parent.getEpochFromJd(endJd),
             cycleSec,
         )
     getInfo = lambda self: _('Repeat: Every %s Days and %s')%(_(self.days), timeEncode(self.extraTime))
@@ -1101,7 +1111,12 @@ class RuleContainer:
     getRule = lambda self, key: self.rulesOd.__getitem__(key)
     setRule = lambda self, key, value: self.rulesOd.__setitem__(key, value)
     getRulesData = lambda self: [(rule.name, rule.getData()) for rule in self.rulesOd.values()]
-    getRulesHash = lambda self: hash(str(sorted(self.getRulesData())))
+    getRulesHash = lambda self: hash(str(
+        (
+            self.getTimeZoneStr(),
+            sorted(self.getRulesData()),
+        )
+    ))
     getRuleNames = lambda self: self.rulesOd.keys()
     addRule = lambda self, rule: self.rulesOd.__setitem__(rule.name, rule)
     def addNewRule(self, ruleType):
@@ -1192,6 +1207,10 @@ class RuleContainer:
             except:
                 myRaise()
         return core.localTz
+    getTimeZoneStr = lambda self: str(self.getTimeZoneObj())
+    getEpochFromJd = lambda self, jd: getEpochFromJd(jd, tz=self.getTimeZoneObj())
+    getJhmsFromEpoch = lambda self, epoch: getJhmsFromEpoch(epoch, tz=self.getTimeZoneObj())
+    getEpochFromJhms = lambda self, jd, h, m , s: getEpochFromJhms(jd, h, m , s, tz=self.getTimeZoneObj())
 
 
 def fixIconInData(data):
@@ -1217,6 +1236,7 @@ class Event(JsonEventBaseClass, RuleContainer):
     iconName = ''
     #requiredNotifiers = ()## needed? FIXME
     readOnly = False
+    isAllDay = False
     params = RuleContainer.params + (
         'icon',
         'summary',
@@ -1261,6 +1281,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         self.files = []
         ######
         RuleContainer.__init__(self)
+        self.timeZoneEnable = not self.isAllDay
         self.notifiers = []
         self.notifyBefore = (0, 1) ## (value, unit) like DurationEventRule
         ## self.snoozeTime = (5, 60) ## (value, unit) like DurationEventRule ## FIXME
@@ -1513,7 +1534,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         try:
             return self['end'].getEpoch()
         except KeyError:
-            return getEpochFromJd(self.parent.endJd)
+            return self.getEpochFromJd(self.parent.endJd)
     getJd = lambda self: self.getStartJd()
     setJd = lambda self, jd: None
     setJdExact = lambda self, jd: self.setJd(jd)
@@ -1534,8 +1555,8 @@ class SingleStartEndEvent(Event):
             ('CATEGORIES', self.name),## FIXME
         ]
     def calcOccurrence(self, startJd, endJd):
-        startEpoch = max(getEpochFromJd(startJd), self.getStartEpoch())
-        endEpoch = min(getEpochFromJd(endJd), self.getEndEpoch())
+        startEpoch = max(self.getEpochFromJd(startJd), self.getStartEpoch())
+        endEpoch = min(self.getEpochFromJd(endJd), self.getEndEpoch())
         if endEpoch > startEpoch:
             return TimeRangeListOccurrence(
                 [
@@ -1564,8 +1585,8 @@ class TaskEvent(SingleStartEndEvent):
         'end',
         'duration',
     )
+    isAllDay = False
     def setDefaults(self):
-        self.timeZoneEnable = True
         self.setStart(
             core.getSysDate(self.mode),
             tuple(localtime()[3:6]),
@@ -1707,6 +1728,7 @@ class AllDayTaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from Single
         'end',
         'duration',
     )
+    isAllDay = True
     def setJd(self, jd):
         self.getAddRule('start').setJdExact(jd)
     def setStartDate(self, date):
@@ -1764,7 +1786,7 @@ class AllDayTaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from Single
         else:
             return self['start'].getJd() + duration.getSeconds()//dayLen
         raise ValueError('no end date neither duration specified for task')
-    getEndEpoch = lambda self: getEpochFromJd(self.getEndJd())
+    getEndEpoch = lambda self: self.getEpochFromJd(self.getEndJd())
     #def setEndJd(self, jd):
     #    self.getAddRule('end').setJdExact(jd)
     def setEndJd(self, jd):
@@ -1811,6 +1833,7 @@ class DailyNoteEvent(Event):
     supportedRules = (
         'date',
     )
+    isAllDay = True
     getDate = lambda self: self['date'].date
     def setDate(self, year, month, day):
         self['date'].date = (year, month, day)
@@ -1844,6 +1867,7 @@ class YearlyEvent(Event):
     )
     supportedRules = requiredRules + ('start',)
     jsonParams = Event.jsonParams + ('startYear', 'month', 'day')
+    isAllDay = True
     getMonth = lambda self: self['month'].values[0]
     setMonth = lambda self, month: self.getAddRule('month').setData(month)
     getDay = lambda self: self['day'].values[0]
@@ -1999,8 +2023,7 @@ class WeeklyEvent(Event):
         'dayTimeRange',
     )
     supportedRules = requiredRules
-    def setDefaults(self):
-        self.timeZoneEnable = True
+    isAllDay = False
 
 
 #@classes.event.register
@@ -2024,12 +2047,11 @@ class UniversityClassEvent(Event):
     params = Event.params + (
         'courseId',
     )
+    isAllDay = False
     def __init__(self, _id=None, parent=None):
         ## assert group is not None ## FIXME
         Event.__init__(self, _id, parent)
         self.courseId = None ## FIXME
-    def setDefaults(self):
-        self.timeZoneEnable = True
     def setDefaultsFromGroup(self, group):
         Event.setDefaultsFromGroup(self, group)
         if group.name=='universityTerm':
@@ -2090,12 +2112,12 @@ class UniversityExamEvent(DailyNoteEvent):
     params = DailyNoteEvent.params + (
         'courseId',
     )
+    isAllDay = False
     def __init__(self, _id=None, parent=None):
         ## assert group is not None ## FIXME
         DailyNoteEvent.__init__(self, _id, parent)
         self.courseId = None ## FIXME
     def setDefaults(self):
-        self.timeZoneEnable = True
         self['dayTimeRange'].setRange((9, 0), (11, 0))## FIXME
     def setDefaultsFromGroup(self, group):
         DailyNoteEvent.setDefaultsFromGroup(self, group)
@@ -2107,7 +2129,7 @@ class UniversityExamEvent(DailyNoteEvent):
     def calcOccurrence(self, startJd, endJd):
         jd = self.getJd()
         if startJd <= jd < endJd:
-            epoch = getEpochFromJd(jd)
+            epoch = self.getEpochFromJd(jd)
             startSec, endSec = self['dayTimeRange'].getSecondsRange()
             return TimeRangeListOccurrence(
                 [
@@ -2150,6 +2172,7 @@ class LifeTimeEvent(SingleStartEndEvent):
         'start',
         'end',
     )
+    isAllDay = True
     #def setDefaults(self):
     #    self['start'].date = ...
     def setJd(self, jd):
@@ -2188,6 +2211,7 @@ class LargeScaleEvent(Event):## or MegaEvent? FIXME
     params = Event.params + _myParams
     jsonParams = Event.jsonParams + _myParams
     __nonzero__ = lambda self: True
+    isAllDay = True
     def __init__(self, _id=None, parent=None):
         self.scale = 1 ## 1, 1000, 1000**2, 1000**3
         self.start = 0
@@ -2200,6 +2224,7 @@ class LargeScaleEvent(Event):## or MegaEvent? FIXME
             data['endRel'] = True
         Event.setData(self, data)
     getRulesHash = lambda self: hash(str((
+        self.getTimeZoneStr(),
         'largeScale',
         self.scale,
         self.start,
@@ -2221,10 +2246,10 @@ class LargeScaleEvent(Event):## or MegaEvent? FIXME
         return TimeRangeListOccurrence(
             intersectionOfTwoIntervalList(
                 [
-                    (getEpochFromJd(startJd), getEpochFromJd(endJd))
+                    (self.getEpochFromJd(startJd), self.getEpochFromJd(endJd))
                 ],
                 [
-                    (getEpochFromJd(myStartJd), getEpochFromJd(myEndJd))
+                    (self.getEpochFromJd(myStartJd), self.getEpochFromJd(myEndJd))
                 ],
             )
         )
@@ -2237,6 +2262,7 @@ class LargeScaleEvent(Event):## or MegaEvent? FIXME
 class CustomEvent(Event):
     name = 'custom'
     desc = _('Custom Event')
+    isAllDay = False
 
 
 ###########################################################################
@@ -2707,7 +2733,7 @@ class EventGroup(EventContainer):
             node.add(t0, t1, eid)## debug=True
             self.occurCount += 1
     def initOccurrence(self):
-        #self.occur = TimeLineTree(offset=getEpochFromJd(self.endJd))
+        #self.occur = TimeLineTree(offset=self.getEpochFromJd(self.endJd))
         self.occur = EventSearchTree()
         #self.occurLoaded = False
         self.occurCount = 0
@@ -2826,13 +2852,13 @@ class EventGroup(EventContainer):
             try:
                 time_from = conds['time_from']
             except KeyError:
-                time_from = getEpochFromJd(self.startJd)
+                time_from = self.getEpochFromJd(self.startJd)
             else:
                 del conds['time_from']
             try:
                 time_to = conds['time_to']
             except KeyError:
-                time_to = getEpochFromJd(self.endJd)
+                time_to = self.getEpochFromJd(self.endJd)
             else:
                 del conds['time_to']
             idList = set()
@@ -3218,7 +3244,7 @@ class VcsBaseEvent(Event):
     getInfo = lambda self: self.getText()## FIXME
     def calcOccurrence(self, startJd, endJd):
         if self.epoch is not None:
-            if getEpochFromJd(startJd) <= self.epoch < getEpochFromJd(endJd):
+            if self.getEpochFromJd(startJd) <= self.epoch < self.getEpochFromJd(endJd):
                 return TimeListOccurrence(self.epoch)
         return TimeListOccurrence()
 
