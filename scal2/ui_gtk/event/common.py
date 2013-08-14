@@ -144,6 +144,7 @@ class EventWidget(gtk.VBox):
         else:
             hbox = gtk.HBox()
             self.tzCheck = gtk.CheckButton(_('Time Zone'))
+            set_tooltip(self.tzCheck, _('For input times of event'))
             hbox.pack_start(self.tzCheck, 0, 0)
             combo = TimeZoneComboBoxEntry()
             hbox.pack_start(combo, 0, 0)

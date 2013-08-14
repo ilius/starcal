@@ -2605,6 +2605,9 @@ msgstr "صرفه‌جویی نور روز"
 msgid "Recent..."
 msgstr "اخیر..."
 
+msgid "For input times of event"
+msgstr ""
+"برای زمان‌های ورودی رویداد"
 
 
 
