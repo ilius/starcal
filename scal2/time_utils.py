@@ -54,19 +54,19 @@ def getUtcOffsetByEpoch(epoch, tz=None):
     if not tz:
         tz = get_localzone()
     try:
-        return tz.utcoffset(datetime.fromtimestamp(epoch)).seconds
+        return tz.utcoffset(datetime.fromtimestamp(epoch)).total_seconds()
     except (ValueError, OverflowError):
-        return tz._utcoffset.seconds
+        return tz._utcoffset.total_seconds()
 
 def getUtcOffsetByDateSec(year, month, day, tz=None):
     if not tz:
         tz = get_localzone()
     try:
-        return tz.utcoffset(datetime(year, month, day)).seconds
+        return tz.utcoffset(datetime(year, month, day)).total_seconds()
     except (ValueError, OverflowError):
-        return tz._utcoffset.seconds
+        return tz._utcoffset.total_seconds()
     except pytz.exceptions.NonExistentTimeError:
-        return tz.utcoffset(datetime(year, month, day, 1, 0, 0)).seconds
+        return tz.utcoffset(datetime(year, month, day, 1, 0, 0)).total_seconds()
 
 
 def getUtcOffsetByDateHM(year, month, day, tz=None):
