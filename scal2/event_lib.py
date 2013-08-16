@@ -3324,9 +3324,7 @@ class VcsCommitEventGroup(VcsBaseEventGroup):
             ))
             myRaise()
             return
-        #uof = getUtcOffsetCurrent()
         for epoch, commit_id in commitsData:
-            #epoch += uof
             if not self.showSeconds:
                 epoch -= (epoch % 60)
             self.addOccur(epoch, epoch+epsTm, commit_id)
@@ -3397,9 +3395,7 @@ class VcsTagEventGroup(VcsBaseEventGroup):
             myRaise()
             return
         #self.updateOccurrenceLog(stm0)
-        #uof = getUtcOffsetCurrent()
         for epoch, tag in tagsData:
-            #epoch += uof
             if not self.showSeconds:
                 epoch -= (epoch % 60)
             self.addOccur(epoch, epoch+epsTm, tag)
