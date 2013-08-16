@@ -1433,6 +1433,10 @@ msgid " Seconds"
 msgstr ""
 " ثانیه"
 
+msgid "Show Seconds"
+msgstr ""
+"نمایش ثانیه"
+
 msgid " Minutes"
 msgstr ""
 " دقیقه"

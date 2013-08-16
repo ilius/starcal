@@ -3203,9 +3203,13 @@ class VcsBaseEvent(Event):
         pass
     getInfo = lambda self: self.getText()## FIXME
     def calcOccurrence(self, startJd, endJd):
-        if self.epoch is not None:
-            if self.getEpochFromJd(startJd) <= self.epoch < self.getEpochFromJd(endJd):
-                return TimeListOccurrence(self.epoch)
+        epoch = self.epoch
+        if epoch is not None:
+            if self.getEpochFromJd(startJd) <= epoch < self.getEpochFromJd(endJd):
+                if not self.parent.showSeconds:
+                    print '-------- showSeconds = False'
+                    epoch -= (epoch % 60)
+                return TimeListOccurrence(epoch)
         return TimeListOccurrence()
 
 #@classes.event.register ## FIXME
@@ -3244,11 +3248,13 @@ class VcsBaseEventGroup(EventGroup):
     myParams = (
         'vcsType',
         'vcsDir',
+        'showSeconds',
     )
     def __init__(self, _id=None):
         self.vcsType = 'git'
-        self.vcsDir = ''
+        self.vcsDir = ''\
         #self.branch = 'master'
+        self.showSeconds = True
         EventGroup.__init__(self, _id)
     __str__ = lambda self: '%s(_id=%s, title=%s, vcsType=%s, vcsDir=%s)'%(
         self.__class__.__name__,
@@ -3264,6 +3270,7 @@ class VcsBaseEventGroup(EventGroup):
         self.name,
         self.vcsType,
         self.vcsDir,
+        self.showSeconds,
     )))
     def __getitem__(self, key):
         if key in classes.rule.names:
@@ -3320,6 +3327,8 @@ class VcsCommitEventGroup(VcsBaseEventGroup):
         #uof = getUtcOffsetCurrent()
         for epoch, commit_id in commitsData:
             #epoch += uof
+            if not self.showSeconds:
+                epoch -= (epoch % 60)
             self.addOccur(epoch, epoch+epsTm, commit_id)
         ###
         self.updateOccurrenceLog(stm0)
@@ -3391,6 +3400,8 @@ class VcsTagEventGroup(VcsBaseEventGroup):
         #uof = getUtcOffsetCurrent()
         for epoch, tag in tagsData:
             #epoch += uof
+            if not self.showSeconds:
+                epoch -= (epoch % 60)
             self.addOccur(epoch, epoch+epsTm, tag)
         ###
         self.updateOccurrenceLog(stm0)
