@@ -1,7 +1,7 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2009-2011 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
+# Copyright (C) 2009-2011 Saeed Rasooli <saeed.gnu@gmail.com>
 # Based on program "pygme-0.0.6", writen by Vinay Reddy <vinayvinay@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify

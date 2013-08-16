@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2012 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
+# Copyright (C) 2012 Saeed Rasooli <saeed.gnu@gmail.com>
 # Used code from http://code.google.com/p/ethiocalendar/
 #                Copyright (C) 2008-2009 Yuji DOI <yuji5296@gmail.com>
 #

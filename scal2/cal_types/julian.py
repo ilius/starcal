@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2009-2010 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
+# Copyright (C) 2009-2010 Saeed Rasooli <saeed.gnu@gmail.com>
 #
 # Using libkal code
 #        The 'libkal' library for date conversion:

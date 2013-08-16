@@ -3,7 +3,7 @@
 # Copyright (C) 2003 Martin Grimme <martin@pycage.de>
 #                and Sebastien Bacher <seb128@debian.org>
 #                as part of package gdeskcal http://www.pycage.de/software_gdeskcal.html
-# Copyright (C) 2009-2011 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
+# Copyright (C) 2009-2011 Saeed Rasooli <saeed.gnu@gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by

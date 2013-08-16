@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2010 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
+# Copyright (C) 2010 Saeed Rasooli <saeed.gnu@gmail.com>
 #
 # Using kdelibs-4.4.0/kdecore/date/kcalendarsystemgregorianproleptic.cpp
 #         Copyright (C) 2009 John Layt <john@layt.net>
