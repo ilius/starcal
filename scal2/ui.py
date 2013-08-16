@@ -836,15 +836,6 @@ else:
     del fontUseDefault
 
 try:
-    version
-except NameError:
-    prefVersion = ''
-else:
-    prefVersion = version
-    del version
-
-
-try:
     localTzHist.remove(str(core.localTz))
 except ValueError:
     pass

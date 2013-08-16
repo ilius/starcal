@@ -526,6 +526,16 @@ if isfile(confPath):
 
 ################################################################################
 
+try:
+    version
+except NameError:
+    prefVersion = ''
+else:
+    prefVersion = version
+    del version
+
+prefIsOlderThan = lambda v: cmpVersion(prefVersion, v) < 0
+
 try:## just for compatibility
     calTypes.activeNames = activeCalNames
 except NameError:

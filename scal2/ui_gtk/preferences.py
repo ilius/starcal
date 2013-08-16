@@ -751,6 +751,7 @@ class PrefDialog(gtk.Dialog):
         open(locale_man.localeConfPath, 'w').write(text)
         ##################### Saving core config
         text = ''
+        text += 'version=%r\n\n'%core.VERSION
         text += 'allPlugList=%s\n\n'%core.getAllPlugListRepr()
         text += 'plugIndex=%r\n'%core.plugIndex
         for item in self.corePrefItems:
