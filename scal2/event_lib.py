@@ -63,40 +63,39 @@ eventsDir = join(confDir, 'event', 'events')
 groupsDir = join(confDir, 'event', 'groups')
 accountsDir = join(confDir, 'event', 'accounts')
 
-lastEventId = 0
-lastEventGroupId = 0
-lastEventAccountId = 0
-
-###########################################################################
-
-
-lastIdsFile = join(confDir, 'event', 'last_ids.json')
-
-
-def loadLastIds():
-    global lastEventId, lastEventGroupId, lastEventAccountId
-    if not isfile(lastIdsFile):
-        return
-    data = jsonToData(open(lastIdsFile).read())
-    lastEventId = data['event']
-    lastEventGroupId = data['group']
-    lastEventAccountId = data['account']
-
-def saveLastIds():
-    open(lastIdsFile, 'w').write(dataToJson(OrderedDict([
-        ('event', lastEventId),
-        ('group', lastEventGroupId),
-        ('account', lastEventAccountId),
-    ])))
-
-
-###########################################################################
+##################################
 
 makeDir(eventsDir)
 makeDir(groupsDir)
 makeDir(accountsDir)
 
-loadLastIds()
+###########################################################################
+
+class LastIdsWrapper(JsonSObjBase):
+    file = join(confDir, 'event', 'last_ids.json')
+    params = (
+        'event',
+        'group',
+        'account',
+    )
+    jsonParams = (
+        'event',
+        'group',
+        'account',
+    )
+    def __init__(self):
+        self.event = 0
+        self.group = 0
+        self.account = 0
+    def load(self):
+        if isfile(self.file):
+            jstr = open(self.file).read()
+            if jstr:
+                self.setJson(jstr)## FIXME
+
+
+lastIds = LastIdsWrapper()
+lastIds.load()
 
 ###########################################################################
 
@@ -1318,12 +1317,11 @@ class Event(JsonSObjBase, RuleContainer):
             return (summary,)
     getText = lambda self, showDesc=True: ''.join(self.getTextParts()) if showDesc else self.summary
     def setId(self, _id=None):
-        global lastEventId
         if _id is None or _id<0:
-            _id = lastEventId + 1 ## FIXME
-            lastEventId = _id
-        elif _id > lastEventId:
-            lastEventId = _id
+            _id = lastIds.event + 1 ## FIXME
+            lastIds.event = _id
+        elif _id > lastIds.event:
+            lastIds.event = _id
         self.id = _id
         self.dir = join(eventsDir, str(self.id))
         self.file = join(self.dir, 'event.json')
@@ -2503,12 +2501,11 @@ class EventGroup(EventContainer):
         '''
     __nonzero__ = lambda self: self.enable ## FIXME
     def setId(self, _id=None):
-        global lastEventGroupId
         if _id is None or _id<0:
-            _id = lastEventGroupId + 1 ## FIXME
-            lastEventGroupId = _id
-        elif _id > lastEventGroupId:
-            lastEventGroupId = _id
+            _id = lastIds.group + 1 ## FIXME
+            lastIds.group = _id
+        elif _id > lastIds.group:
+            lastIds.group = _id
         self.id = _id
         self.file = join(groupsDir, '%d.json'%self.id)
     def getData(self):
@@ -3674,12 +3671,11 @@ class Account(JsonSObjBase):
             self.setId()
         JsonSObjBase.save(self)
     def setId(self, _id=None):
-        global lastEventAccountId
         if _id is None or _id<0:
-            _id = lastEventAccountId + 1 ## FIXME
-            lastEventAccountId = _id
-        elif _id > lastEventAccountId:
-            lastEventAccountId = _id
+            _id = lastIds.account + 1 ## FIXME
+            lastIds.account = _id
+        elif _id > lastIds.account:
+            lastIds.account = _id
         self.id = _id
         self.file = join(accountsDir, '%d.json'%self.id)
     def stop(self):

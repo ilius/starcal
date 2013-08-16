@@ -443,7 +443,7 @@ def init():
     eventGroups.load()
     eventTrash.load()
     ####
-    event_lib.saveLastIds()
+    event_lib.lastIds.save()
 
 
 ######################################################################
