@@ -21,7 +21,6 @@
 import json, random, os, shutil
 from os.path import join, split, isdir, isfile, dirname, splitext
 from os import listdir
-from copy import deepcopy
 from random import shuffle
 import math
 from time import time as now
@@ -39,6 +38,8 @@ from scal2.date_utils import *
 from scal2.json_utils import *
 from scal2.color_utils import hslToRgb
 from scal2.ics import *
+
+from scal2.s_object import *
 
 #from scal2.time_line_tree import TimeLineTree
 from scal2.event_search_tree import EventSearchTree
@@ -67,6 +68,7 @@ lastEventGroupId = 0
 lastEventAccountId = 0
 
 ###########################################################################
+
 
 lastIdsFile = join(confDir, 'event', 'last_ids.json')
 
@@ -134,73 +136,7 @@ class BadEventFile(Exception):## FIXME
     pass
 
 
-class EventBaseClass:
-    params = ()## used in getData and setData and copyFrom
-    def copyFrom(self, other):
-        for attr in self.params:
-            try:
-                value = getattr(other, attr)
-            except AttributeError:
-                continue
-            setattr(
-                self,
-                attr,
-                deepcopy(value),
-            )
-    def copy(self):
-        newObj = self.__class__()
-        newObj.copyFrom(self)
-        return newObj
-    def getData(self):
-        return dict([(param, getattr(self, param)) for param in self.params])
-    def setData(self, data):
-        #if isinstance(data, dict):## FIXME
-        for key, value in data.items():
-            if key in self.params:
-                setattr(self, key, value)
-
-
-
-def makeOrderedData(data, params):
-    if isinstance(data, dict):
-        if params:
-            data = data.items()
-            def paramIndex(key):
-                try:
-                    return params.index(key)
-                except ValueError:
-                    return len(params)
-            data.sort(cmp=lambda x, y: cmp(paramIndex(x[0]), paramIndex(y[0])))
-            data = OrderedDict(data)
-    return data
-
-
-class JsonEventBaseClass(EventBaseClass):
-    file = ''
-    jsonParams = ()
-    getDataOrdered = lambda self: makeOrderedData(self.getData(), self.jsonParams)
-    getJson = lambda self: dataToJson(self.getDataOrdered())
-    setJson = lambda self, jsonStr: self.setData(jsonToData(jsonStr))
-    def save(self):
-        jstr = self.getJson()
-        open(self.file, 'w').write(jstr)
-    def load(self):
-        if not isfile(self.file):
-            raise IOError('error while loading json file %r: no such file'%self.file)
-            if hasattr(self, 'modified'):
-                self.setModifiedFromFile()
-        else:
-            'no modified param'
-        jstr = open(self.file).read()
-        if jstr:
-            self.setJson(jstr)## FIXME
-    def setModifiedFromFile(self):
-        try:
-            self.modified = int(os.stat(self.file).st_mtime)
-        except OSError:
-            pass
-
-class Occurrence(EventBaseClass):
+class Occurrence(SObjBase):
     def __init__(self):
         self.event = None
     def __nonzero__(self):
@@ -358,7 +294,7 @@ class TimeListOccurrence(Occurrence):
 
 
 ## Should not be registered, or instantiate directly
-class EventRule(EventBaseClass):
+class EventRule(SObjBase):
     name = ''
     desc = ''
     provide = ()
@@ -1022,7 +958,7 @@ class ExDatesEventRule(EventRule):
 ###########################################################################
 
 ## Should not be registered, or instantiate directly
-class EventNotifier(EventBaseClass):
+class EventNotifier(SObjBase):
     name = ''
     desc = ''
     params = ()
@@ -1232,7 +1168,7 @@ def fixIconInObj(self):
 ###########################################################################
 
 ## Should not be registered, or instantiate directly
-class Event(JsonEventBaseClass, RuleContainer):
+class Event(JsonSObjBase, RuleContainer):
     name = 'custom'## or 'event' or '' FIXME
     desc = _('Custom Event')
     iconName = ''
@@ -1347,7 +1283,7 @@ class Event(JsonEventBaseClass, RuleContainer):
     #        if not name in notifierNames:
     #            self.notifiers.append(classes.notifier.byName[name](self))
     #def load(self):
-    #    JsonEventBaseClass.load(self)
+    #    JsonSObjBase.load(self)
     #    self.addRequirements()
     def loadFiles(self):
         self.files = []
@@ -1398,9 +1334,9 @@ class Event(JsonEventBaseClass, RuleContainer):
         if self.id is None:
             self.setId()
         makeDir(self.dir)
-        JsonEventBaseClass.save(self)
+        JsonSObjBase.save(self)
     def copyFrom(self, other, exact=False):## FIXME
-        JsonEventBaseClass.copyFrom(self, other)
+        JsonSObjBase.copyFrom(self, other)
         self.mode = other.mode
         self.notifyBefore = other.notifyBefore[:]
         #self.files = other.files[:]
@@ -1416,7 +1352,7 @@ class Event(JsonEventBaseClass, RuleContainer):
             else:
                 self.setJd(jd)
     def getData(self):
-        data = JsonEventBaseClass.getData(self)
+        data = JsonSObjBase.getData(self)
         data.update({
             'type': self.name,
             'calType': calTypes.names[self.mode],
@@ -1427,7 +1363,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         fixIconInData(data)
         return data
     def setData(self, data):
-        JsonEventBaseClass.setData(self, data)
+        JsonSObjBase.setData(self, data)
         if self.remoteIds:
             self.remoteIds = tuple(self.remoteIds)
         if 'id' in data:
@@ -2271,10 +2207,10 @@ class CustomEvent(Event):
 ###########################################################################
 
 
-class EventContainer(JsonEventBaseClass):
+class EventContainer(JsonSObjBase):
     name = ''
     desc = ''
-    params = JsonEventBaseClass.params + (
+    params = JsonSObjBase.params + (
         'icon',
         'title',
         'showFullEventDesc',
@@ -2348,15 +2284,15 @@ class EventContainer(JsonEventBaseClass):
         event.parent = None
         return index
     def copyFrom(self, other):
-        JsonEventBaseClass.copyFrom(self, other)
+        JsonSObjBase.copyFrom(self, other)
         self.mode = other.mode
     def getData(self):
-        data = JsonEventBaseClass.getData(self)
+        data = JsonSObjBase.getData(self)
         data['calType'] = calTypes.names[self.mode]
         fixIconInData(data)
         return data
     def setData(self, data):
-        JsonEventBaseClass.setData(self, data)
+        JsonSObjBase.setData(self, data)
         if 'calType' in data:
             calType = data['calType']
             try:
@@ -2682,7 +2618,7 @@ class EventGroup(EventContainer):
         self.occurCount -= self.occur.delete(event.id)
         event.afterModify()
     def copy(self):
-        newGroup = EventBaseClass.copy(self)
+        newGroup = SObjBase.copy(self)
         newGroup.removeAll()
         return newGroup
     def copyAs(self, newGroupType):
@@ -3468,7 +3404,7 @@ class VcsTagEventGroup(VcsBaseEventGroup):
 ###########################################################################
 ###########################################################################
 
-class JsonObjectsHolder(JsonEventBaseClass):
+class JsonObjectsHolder(JsonSObjBase):
     ## keeps all objects in memory
     ## Only use to keep groups and accounts, but not events
     def __init__(self):
@@ -3709,7 +3645,7 @@ class EventTrash(EventContainer):
 
 
 ## Should not be registered, or instantiate directly
-class Account(JsonEventBaseClass):
+class Account(JsonSObjBase):
     name = ''
     desc = ''
     params = (
@@ -3736,7 +3672,7 @@ class Account(JsonEventBaseClass):
     def save(self):
         if self.id is None:
             self.setId()
-        JsonEventBaseClass.save(self)
+        JsonSObjBase.save(self)
     def setId(self, _id=None):
         global lastEventAccountId
         if _id is None or _id<0:
@@ -3755,7 +3691,7 @@ class Account(JsonEventBaseClass):
     def sync(self, group, remoteGroupId):
         raise NotImplementedError
     def getData(self):
-        data = JsonEventBaseClass.getData(self)
+        data = JsonSObjBase.getData(self)
         data['type'] = self.name
         return data
 
