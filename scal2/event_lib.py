@@ -63,13 +63,38 @@ eventsDir = join(confDir, 'event', 'events')
 groupsDir = join(confDir, 'event', 'groups')
 accountsDir = join(confDir, 'event', 'accounts')
 
-##################################
+##########################
 
 makeDir(eventsDir)
 makeDir(groupsDir)
 makeDir(accountsDir)
 
-###########################################################################
+###################################################
+
+class InfoWrapper(JsonSObjBase):
+    file = join(confDir, 'event', 'info.json')
+    params = (
+        'version',
+        'last_run',
+    )
+    jsonParams = (
+        'version',
+        'last_run',
+    )
+    def __init__(self):
+        self.version = ''
+        self.last_run = 0
+    def update(self):
+        self.version = core.VERSION
+        self.last_run = int(now())
+    def updateAndSave(self):
+        self.update()
+        self.save()
+
+info = InfoWrapper()
+info.load()
+
+###################################################
 
 class LastIdsWrapper(JsonSObjBase):
     file = join(confDir, 'event', 'last_ids.json')

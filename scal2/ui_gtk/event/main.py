@@ -23,6 +23,7 @@ import os, sys, shlex, thread
 from os.path import join, dirname, split, splitext
 
 from scal2.path import *
+from scal2.utils import cmpVersion
 
 from scal2 import core
 from scal2.core import myRaise
@@ -1325,6 +1326,10 @@ event_lib.Account.makeWidget = makeWidget
 
 import scal2.ui_gtk.event.import_customday ## opens a dialog if neccessery
 
+###############################
+
+
+event_lib.info.updateAndSave()
 
 ##############################################################################
 
