@@ -94,6 +94,8 @@ makeDir(eventsDir)
 makeDir(groupsDir)
 makeDir(accountsDir)
 
+loadLastIds()
+
 ###########################################################################
 
 class ClassGroup(list):
