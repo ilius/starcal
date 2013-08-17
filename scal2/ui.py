@@ -442,8 +442,7 @@ def init():
     eventAccounts.load()
     eventGroups.load()
     eventTrash.load()
-    ####
-    event_lib.lastIds.save()
+    
 
 
 ######################################################################
@@ -555,7 +554,12 @@ eventAccounts = event_lib.EventAccountsHolder()
 eventGroups = event_lib.EventGroupsHolder()
 eventTrash = event_lib.EventTrash()
 
-
+def iterAllEvents():## dosen't include orphan events
+    for group in eventGroups:
+        for event in group:
+            yield event
+    for event in eventTrash:
+        yield event
 
 #try:
 #    event_lib.checkAndStartDaemon()## FIXME here or in ui_*/event/main.py

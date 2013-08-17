@@ -2613,10 +2613,31 @@ msgid "For input times of event"
 msgstr ""
 "برای زمان‌های ورودی رویداد"
 
+msgid "\"Time Zone\" property is newly added to events"
+msgstr ""
+"ویژگی «منطقهٔ زمانی» به‌تازگی به رویدادها اضافه شده است"
 
 
+msgid "But this property needs to be saved for current events"
+msgstr ""
+"اما این ویژگی باید برای رویدادهای فعلی ذخیره شود"
+
+msgid "Select the time zone for your current location"
+msgstr ""
+"منطقهٔ زمانی موقعیت فعلی خود را انتخاب کنید"
+
+msgid "If you have been in a different time zone while adding some of your event, you need to edit those events manually and change the time zone"
+msgstr ""
+"اگر هنگام اضافه کردن بعضی از رویدادهای خود، در منطقهٔ زمانی دیگری بوده‌اید، باید آن رویدادها را بصورت دستی ویرایش کنید و منطقهٔ زمانی را تغییر دهید"
+
+msgid "Time zone for All-Day events will be disabled by default"
+msgstr ""
+"منطقهٔ زمانی برای رویدادهای تمام-روز غیرفعال خواهد بود"
 
 
+msgid "Time zone is invalid"
+msgstr ""
+"منطقهٔ زمانی نامعتبر است"
 
 
 

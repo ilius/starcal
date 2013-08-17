@@ -43,7 +43,7 @@ if not isdir(confDir):
         myRaise()
     restartLow()
 
-from scal2.utils import toStr, toUnicode
+from scal2.utils import toStr, toUnicode, cmpVersion
 from scal2.cal_types import calTypes
 from scal2 import core
 
@@ -1237,7 +1237,14 @@ def main():
         #    action = 'html'
         #elif sys.argv[1]=='--svg':#????????????
         #    action = 'svg'
+    ###############################
     ui.init()
+    ###############################
+    if cmpVersion(event_lib.info.version, '2.2.2') < 0:## right place? FIXME
+        from scal2.ui_gtk.event.bulk_save_timezone import BulkSaveTimeZoneDialog
+        BulkSaveTimeZoneDialog().run()
+    event_lib.info.updateAndSave()
+    ###############################
     mainWin = MainWin(trayMode=trayMode)
     #if action=='html':
     #    mainWin.exportHtml('calendar.html') ## exportHtml(path, months, title)
