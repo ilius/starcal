@@ -318,7 +318,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         ).run()
         if event is None:
             return
-        ui.changedEvents.append((gid, eid))
+        ui.reloadGroups.append(gid)
         eventIter = self.trees.get_iter(path)
         self.trees.set_value(eventIter, 3, pixbufFromFile(event.icon))
         self.trees.set_value(eventIter, 4, event.summary)

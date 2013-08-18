@@ -94,10 +94,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
                 self.waitingDo(self.reloadEvents)## FIXME
             return
         ###
-        for gid in ui.newGroups:
-            self.showNewGroup(ui.eventGroups[gid])
-        ui.newGroups = []
-        ###
         for gid in ui.changedGroups:
             groupIndex = ui.eventGroups.index(gid)
             group = ui.eventGroups[gid]
@@ -110,41 +106,15 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
                     self.trees.set_value(groupIter, i, value)
         ui.changedGroups = []
         ###
-        for gid, eid in ui.newEvents:
-            groupIndex = ui.eventGroups.index(gid)
-            self.trees.append(
-                self.trees.get_iter((groupIndex,)),
-                self.getEventRow(ui.getEvent(gid, eid)),
-            )
-        ui.newEvents = []
+        for gid in ui.reloadGroups:
+            self.reloadGroupEvents(gid)
+        ui.reloadGroups = []
         ###
-        for gid, eid in ui.changedEvents:
-            groupIndex = ui.eventGroups.index(gid)
-            group = ui.eventGroups[gid]
-            eventIndex = group.index(eid)
-            try:
-                eventIter = self.trees.get_iter((groupIndex, eventIndex))
-            except:
-                print 'changed event: invalid tree path: (%s, %s)'%(groupIndex, eventIndex)
-            else:
-                for i, value in enumerate(self.getEventRow(group[eid])):
-                    self.trees.set_value(eventIter, i, value)
-        ui.changedEvents = []
-        ###
-        for gid, eid, eventIndex in ui.trashedEvents:
-            groupIndex = ui.eventGroups.index(gid)
-            try:
-                eventIter = self.trees.get_iter((groupIndex, eventIndex))
-            except:
-                print 'trashed event: invalid tree path: (%s, %s)'%(groupIndex, eventIndex)
-            else:
-                self.trees.remove(eventIter)
-                self.trees.insert(
-                    self.trashIter,
-                    0,
-                    self.getEventRow(ui.eventTrash[eid]),
-                )
-        ui.trashedEvents = []
+        if ui.reloadTrash:
+            if self.trashIter:
+                self.trees.remove(self.trashIter)
+            self.appendTrash()
+        ui.reloadTrash = False
     def onShow(self, widget):
         self.onConfigChange()
     def __init__(self):
@@ -342,6 +312,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         self.vbox.pack_start(self.sbar, 0, 0)
         #####
         self.syncing = None ## or a tuple of (groupId, statusText)
+        self.trashIter = None
         #####
         self.vbox.show_all()
     def canPasteToGroup(self, group):
@@ -650,25 +621,35 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         )
         for event in group:
             self.trees.append(groupIter, self.getEventRow(event))
-    def reloadEvents(self):
-        self.trees.clear()
+    def reloadGroupEvents(self, gid):
+        groupIndex = ui.eventGroups.index(gid)
+        groupIter = self.trees.get_iter((groupIndex,))
+        assert self.trees.get_value(groupIter, 0) == gid
+        ##
+        self.removeIterChildren(groupIter)
+        ##
+        group = ui.eventGroups[gid]
+        for event in group:
+            self.trees.append(groupIter, self.getEventRow(event))
+    def appendTrash(self):
         self.trashIter = self.trees.append(None, (
             -1,
             pixbufFromFile(ui.eventTrash.icon),
             ui.eventTrash.title,
             '',
         ))
-        for group in ui.eventGroups:
-            self.appendGroupTree(group)
         for event in ui.eventTrash:
             self.trees.append(self.trashIter, self.getEventRow(event))
+    def reloadEvents(self):
+        self.trees.clear()
+        for group in ui.eventGroups:
+            self.appendGroupTree(group)
+        self.appendTrash()
         self.treeviewCursorChanged()
         ####
-        ui.newGroups = []
         ui.changedGroups = []
-        ui.newEvents = []
-        ui.changedEvents = []
-        ui.trashedEvents = []
+        ui.reloadGroups = []
+        ui.reloadTrash = False
         ####
         self.isLoaded = True
     def onDeleteEvent(self, obj, event):

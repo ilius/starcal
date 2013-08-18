@@ -412,9 +412,10 @@ def moveEventToTrash(group, event):
     return eventIndex
 
 def moveEventToTrashFromOutside(group, event):
-    global trashedEvents
-    eventIndex = moveEventToTrash(group, event)
-    trashedEvents.append((group.id, event.id, eventIndex))
+    global reloadGroups, reloadTrash
+    moveEventToTrash(group, event)
+    reloadGroups.append(group.id)
+    reloadTrash = True
 
 getEvent = lambda groupId, eventId: eventGroups[groupId][eventId]
 
@@ -568,11 +569,9 @@ def iterAllEvents():## dosen't include orphan events
 #    myRaise()
 
 
-newGroups = []## list of groupId's
 changedGroups = []## list of groupId's
-newEvents = []## a list of (groupId, eventId) 's
-changedEvents = []## a list of (groupId, eventId) 's
-trashedEvents = []## a list of (groupId, eventId) 's
+reloadGroups = [] ## a list of groupId's that their contents are changed
+reloadTrash = False
 
 
 

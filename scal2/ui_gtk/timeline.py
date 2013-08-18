@@ -400,7 +400,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         ).run()
         if event is None:
             return
-        ui.changedEvents.append((gid, event.id))
+        ui.reloadGroups.append(gid)
         self.onConfigChange()
     def editGroupClicked(self, menu, winTitle, group):
         group = GroupEditorDialog(group).run()
@@ -412,8 +412,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             self.queue_draw()
     def moveEventToTrash(self, menu, group, event):
         eventIndex = group.index(event.id)
-        ui.moveEventToTrash(group, event)
-        ui.trashedEvents.append((group.id, event.id, eventIndex))
+        ui.moveEventToTrashFromOutside(group, event)
         self.onConfigChange()
     def startResize(self, event):
         self.parent.begin_resize_drag(

@@ -27,6 +27,7 @@ import gtk
 
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import imageFromFile, labelStockMenuItem, labelImageMenuItem
+from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.event.common import EventEditorDialog
 
@@ -109,12 +110,23 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         menu.show_all()
         menu.popup(None, None, None, 3, 0)
         ui.updateFocusTime()
+    def moveEventToGroupFromMenu(self, item, event, prev_group, new_group):
+        prev_group.remove(event)
+        prev_group.save()
+        ui.reloadGroups.append(prev_group.id)
+        ###
+        new_group.append(event)
+        new_group.save()
+        ui.reloadGroups.append(new_group.id)
+        ###
+        self.onConfigChange()
     def onEventLabelPopup(self, label, menu, ids):
         menu = gtk.Menu()
         self.labelMenuAddCopyItems(label, menu)
         ####
         groupId, eventId = ids
         event = ui.getEvent(groupId, eventId)
+        group = ui.eventGroups[groupId]
         if not event.readOnly:
             menu.add(gtk.SeparatorMenuItem())
             ###
@@ -127,6 +139,28 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
                 event,
                 groupId,
             ))
+            ###
+            moveToItem = labelStockMenuItem(
+                _('Move to %s')%'...',
+                None,## FIXME
+            )
+            moveToMenu = gtk.Menu()
+            for new_group in ui.eventGroups:
+                if not new_group.enable:
+                    continue
+                if event.name in new_group.acceptsEventTypes:
+                    new_groupItem = gtk.ImageMenuItem()
+                    new_groupItem.set_label(new_group.title)
+                    ##
+                    image = gtk.Image()
+                    image.set_from_pixbuf(newOutlineSquarePixbuf(new_group.color, 20))
+                    new_groupItem.set_image(image)
+                    ##
+                    new_groupItem.connect('activate', self.moveEventToGroupFromMenu, event, group, new_group)
+                    ##
+                    moveToMenu.add(new_groupItem)
+            moveToItem.set_submenu(moveToMenu)
+            menu.add(moveToItem)
             ###
             menu.add(gtk.SeparatorMenuItem())
             ###
@@ -149,7 +183,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         ).run()
         if event is None:
             return
-        ui.changedEvents.append((groupId, event.id))
+        ui.reloadGroups.append(groupId)
         self.onConfigChange()
     def moveEventToTrash(self, item, event, groupId):
         #if not confirm(_('Press OK if you are sure to move event "%s" to trash')%event.summary):

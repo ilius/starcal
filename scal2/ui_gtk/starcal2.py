@@ -903,7 +903,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         event = addNewEvent(group, eventType, title, parent=self, useSelectedDate=True)
         if event is None:
             return
-        ui.newEvents.append((group.id, event.id))
+        ui.reloadGroups.append(group.id)
         self.onConfigChange()
     def prefUpdateBgColor(self, cal):
         ui.prefDialog.colorbBg.set_color(ui.bgColor)
