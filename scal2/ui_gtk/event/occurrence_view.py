@@ -146,6 +146,8 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
             )
             moveToMenu = gtk.Menu()
             for new_group in ui.eventGroups:
+                if new_group.id == group.id:
+                    continue
                 if not new_group.enable:
                     continue
                 if event.name in new_group.acceptsEventTypes:
