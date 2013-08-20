@@ -1,8 +1,10 @@
+import pytz
+
 from scal2.locale_man import tr as _
 
 import gtk
 
-from scal2.ui_gtk.utils import DateTypeCombo, dialog_add_button
+from scal2.ui_gtk.utils import DateTypeCombo, dialog_add_button, TimeZoneComboBoxEntry
 from scal2.ui_gtk.event.common import IconSelectButton
 from scal2.ui_gtk.mywidgets import TextFrame
 
@@ -114,11 +116,14 @@ class GroupBulkEditDialog(gtk.Dialog):
         hbox.pack_start(self.summaryRadio, 1, 1)
         self.descriptionRadio = gtk.RadioButton(label=_('Description'), group=self.iconRadio)
         hbox.pack_start(self.descriptionRadio, 1, 1)
+        self.timeZoneRadio = gtk.RadioButton(label=_('Time Zone'), group=self.iconRadio)
+        hbox.pack_start(self.timeZoneRadio, 1, 1)
         self.vbox.pack_start(hbox, 0, 0)
         ###
         self.iconRadio.connect('clicked', self.firstRadioChanged)
         self.summaryRadio.connect('clicked', self.firstRadioChanged)
         self.descriptionRadio.connect('clicked', self.firstRadioChanged)
+        self.timeZoneRadio.connect('clicked', self.firstRadioChanged)
         ####
         hbox = gtk.HBox()
         self.iconChangeCombo = gtk.combo_box_new_text()
@@ -161,6 +166,19 @@ class GroupBulkEditDialog(gtk.Dialog):
         self.textVbox.pack_start(self.textInput2, 1, 1)
         ####
         self.vbox.pack_start(self.textVbox, 1, 1)
+        ####
+        hbox = gtk.HBox()
+        self.timeZoneChangeCombo = gtk.combo_box_new_text()
+        self.timeZoneChangeCombo.append_text('----')
+        self.timeZoneChangeCombo.append_text(_('Change'))
+        hbox.pack_start(self.timeZoneChangeCombo, 0, 0)
+        hbox.pack_start(gtk.Label('  '), 0, 0)
+        self.timeZoneInput = TimeZoneComboBoxEntry()
+        hbox.pack_start(self.timeZoneInput, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.vbox.pack_start(hbox, 1, 1)
+        self.timeZoneHbox = hbox
+        ####
         self.vbox.show_all()
         self.iconRadio.set_active(True)
         self.iconChangeCombo.set_active(0)
@@ -170,9 +188,15 @@ class GroupBulkEditDialog(gtk.Dialog):
         if self.iconRadio.get_active():
             self.iconHbox.show()
             self.textVbox.hide()
-        else:
+            self.timeZoneHbox.hide()
+        elif self.timeZoneRadio.get_active():
+            self.iconHbox.hide()
+            self.textVbox.hide()
+            self.timeZoneHbox.show()
+        elif self.summaryRadio.get_active() or self.descriptionRadio.get_active():
             self.iconHbox.hide()
             self.textChangeComboChanged()
+            self.timeZoneHbox.hide()
     def textChangeComboChanged(self, w=None):
         self.textVbox.show_all()
         chType = self.textChangeCombo.get_active()
@@ -194,6 +218,19 @@ class GroupBulkEditDialog(gtk.Dialog):
                         event.icon = icon
                         event.afterModify()
                         event.save()
+        elif self.timeZoneRadio.get_active():
+            chType = self.timeZoneChangeCombo.get_active()
+            timeZone = self.timeZoneInput.get_text()
+            if chType!=0:
+                try:
+                    pytz.timezone(timeZone)
+                except:
+                    myRaise('Invalid Time Zone "%s"'%timeZone)
+                else:
+                    for event in group:
+                        if chType==1:
+                            event.timeZone = timeZone
+                            event.save()
         else:
             chType = self.textChangeCombo.get_active()
             if chType!=0:
@@ -219,4 +256,6 @@ class GroupBulkEditDialog(gtk.Dialog):
                             event.description = event.description.replace(text1, text2)
                         event.afterModify()
                         event.save()
+
+                            
 
