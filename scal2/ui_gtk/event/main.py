@@ -507,7 +507,39 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
                     self.editEventFromMenu,
                     path,
                 ))
-                menu.add(gtk.SeparatorMenuItem())
+            ####
+            moveToItem = labelStockMenuItem(
+                _('Move to %s')%'...',
+                None,## FIXME
+            )
+            moveToMenu = gtk.Menu()
+            for new_group in ui.eventGroups:
+                if new_group.id == group.id:
+                    continue
+                #if not new_group.enable:## FIXME
+                #    continue
+                new_groupIndex = ui.eventGroups.index(new_group.id) ## FIXME
+                if event.name in new_group.acceptsEventTypes:
+                    new_groupItem = gtk.ImageMenuItem()
+                    new_groupItem.set_label(new_group.title)
+                    ##
+                    image = gtk.Image()
+                    image.set_from_pixbuf(newOutlineSquarePixbuf(new_group.color, 20))
+                    new_groupItem.set_image(image)
+                    ##
+                    new_groupItem.connect(
+                        'activate',
+                        self.moveEventToPathFromMenu,
+                        path,
+                        (new_groupIndex,)
+                    )
+                    ##
+                    moveToMenu.add(new_groupItem)
+            moveToItem.set_submenu(moveToMenu)
+            menu.add(moveToItem)
+            ####
+            menu.add(gtk.SeparatorMenuItem())
+            ####
             menu.add(labelStockMenuItem(
                 'Cut',
                 gtk.STOCK_CUT,
@@ -961,6 +993,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         for i, value in enumerate(self.getEventRow(event)):
             self.trees.set_value(eventIter, i, value)
     editEventFromMenu = lambda self, menu, path: self.editEventByPath(path)
+    def moveEventToPathFromMenu(self, menu, path, tarPath):
+        self.toPasteEvent = (path, True)
+        self.pasteEventToPath(tarPath, False)
     def moveEventToTrash(self, path):
         group, event = self.getObjsByPath(path)
         ui.moveEventToTrash(group, event)
@@ -1166,7 +1201,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
     def copyEvent(self, menu, path):
         self.toPasteEvent = (path, False)
     pasteEventFromMenu = lambda self, menu, tarPath: self.pasteEventToPath(tarPath)
-    def pasteEventToPath(self, tarPath):
+    def pasteEventToPath(self, tarPath, doScroll=True):
         if not self.toPasteEvent:
             return
         srcPath, move = self.toPasteEvent
@@ -1206,7 +1241,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
                 tarGroupIter,## parent
                 self.getEventRow(newEvent), ## row
             )
-        self.treev.set_cursor(self.trees.get_path(newEventIter))
+        if doScroll:
+            self.treev.set_cursor(self.trees.get_path(newEventIter))
         self.toPasteEvent = None
     #def selectAllEventInGroup(self, menu):## FIXME
     #    pass
