@@ -78,7 +78,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
             label = gtk.Label(text)
             label.set_selectable(True)
             label.set_line_wrap(True)
-            label.set_use_markup(True)
+            label.set_use_markup(False)## should escape text if using markup FIXME
             label.connect('populate-popup', self.onEventLabelPopup, item['ids'])
             hbox.pack_start(label, 0, 0)## or 1, 1 (center) FIXME
             self.vbox.pack_start(hbox, 0, 0)
