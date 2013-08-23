@@ -211,6 +211,11 @@ def hmDecode(st):
 
 hmsRangeToStr = lambda h1, m1, s1, h2, m2, s2: timeEncode((h1, m1, s1), True) + ' - ' + timeEncode((h2, m2, s2), True)
 
+def epochGregDateTimeEncode(epoch, tz=None):
+    jd, hour, minute, second = getJhmsFromEpoch(epoch, tz)
+    year, month, day = jd_to_g(jd)
+    return '%.4d/%.2d/%.2d %.2d:%.2d:%.2d'%(year, month, day, hour, minute, second)
+
 
 def durationEncode(value, unit):
     iValue = int(value)

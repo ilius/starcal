@@ -3243,18 +3243,17 @@ class VcsTagEvent(VcsEpochBaseEvent):
         self.author = ''
 
 
-class VcsEpochBaseEventGroup(EventGroup):
+
+class VcsBaseEventGroup(EventGroup):
     acceptsEventTypes = ()
     myParams = (
         'vcsType',
         'vcsDir',
-        'showSeconds',
     )
     def __init__(self, _id=None):
         self.vcsType = 'git'
         self.vcsDir = ''\
         #self.branch = 'master'
-        self.showSeconds = True
         EventGroup.__init__(self, _id)
     __str__ = lambda self: '%s(_id=%s, title=%s, vcsType=%s, vcsDir=%s)'%(
         self.__class__.__name__,
@@ -3270,8 +3269,7 @@ class VcsEpochBaseEventGroup(EventGroup):
         self.name,
         self.vcsType,
         self.vcsDir,
-        self.showSeconds,
-    )))
+    )))## FIXME
     def __getitem__(self, key):
         if key in classes.rule.names:
             return EventGroup.__getitem__(self, key)
@@ -3291,6 +3289,23 @@ class VcsEpochBaseEventGroup(EventGroup):
     def setData(self, data):
         EventGroup.setData(self, data)
         self.updateVcsModuleObj()
+
+
+
+class VcsEpochBaseEventGroup(VcsBaseEventGroup):
+    myParams = VcsBaseEventGroup.myParams + (
+        'showSeconds',
+    )
+    def __init__(self, _id=None):
+        self.showSeconds = True
+        VcsBaseEventGroup.__init__(self, _id)
+    getRulesHash = lambda self: hash(str((
+        self.name,
+        self.vcsType,
+        self.vcsDir,
+        self.showSeconds,
+    )))
+
 
 
 @classes.group.register
@@ -3428,6 +3443,88 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 
 
 
+class VcsDailyStatEvent(Event):
+    name = 'vcsDailyStat'
+    desc = _('VCS Daily Stat')
+    readOnly = True
+    params = Event.params + (
+        'jd',
+    )
+    __nonzero__ = lambda self: True
+    def __init__(self, parent, jd):
+        Event.__init__(self, parent=parent)
+        self.id = jd ## ID is Julian Day
+    def save(self):
+        pass
+    def load(self):## FIXME
+        pass
+    def afterModify(self):
+        pass
+    getInfo = lambda self: self.getText()## FIXME
+    def calcOccurrence(self, startJd, endJd):
+        jd = self.jd
+        if jd is not None:
+            if startJd <= jd < endJd:
+                JdSetOccurrence(jd)
+        return JdSetOccurrence()
+
+
+@classes.group.register
+class VcsDailyStatEventGroup(VcsBaseEventGroup):
+    name = 'vcsDailyStat'
+    desc = _('VCS Repository (Daily Stat)')
+    myParams = VcsBaseEventGroup.myParams + (
+    )
+    params = EventGroup.params + myParams
+    jsonParams = EventGroup.jsonParams + myParams
+    def __init__(self, _id=None):
+        EventGroup.__init__(self, _id)
+        self.commitsCountByJd = {}
+    def clear(self):
+        EventGroup.clear(self)
+        self.commitsCountByJd = {}
+    def updateOccurrence(self):
+        stm0 = now()
+        self.clear()
+        if not self.vcsDir:
+            return
+        mod = vcsModuleDict[self.vcsType]
+        ####
+        self.vcsMinJd = getJdFromEpoch(mod.getFirstCommitEpoch(self))
+        self.vcsMaxJd = getJdFromEpoch(mod.getLastCommitEpoch(self)) + 1
+        ###
+        startJd = max(self.startJd, self.vcsMinJd)
+        endJd = min(self.endJd, self.vcsMaxJd)
+        ###
+        for jd in xrange(startJd, endJd):
+            commitsCount = len(mod.getCommitList(self, startJd=jd, endJd=jd+1))
+            if commitsCount == 0:
+                continue
+            self.commitsCountByJd[jd] = commitsCount
+            self.addOccur(
+                getEpochFromJd(jd),
+                getEpochFromJd(jd+1),
+                jd,
+            )
+        ###
+        self.updateOccurrenceLog(stm0)
+    def getEvent(self, jd):## cache commit data FIXME
+        try:
+            commitsCount = self.commitsCountByJd[jd]
+        except KeyError:
+            raise ValueError('No commit for jd %s'%jd)
+        mod = vcsModuleDict[self.vcsType]
+        event = VcsDailyStatEvent(self, jd)
+        ###
+        event.icon = self.icon
+        ##
+        statLine = mod.getDailyStatLine(self, jd)
+        event.summary = self.title + ': ' + _('%d commits')%commitsCount ## FIXME
+        event.summary += ', ' + statLine
+        #event.description = statLine
+        ## FIXME
+        ###
+        return event
 
 
 ###########################################################################

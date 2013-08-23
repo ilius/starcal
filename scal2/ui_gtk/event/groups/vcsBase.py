@@ -31,26 +31,14 @@ class VcsBaseGroupWidget(NormalGroupWidget):
         hbox.pack_start(self.dirEntry, 0, 0)
         ##
         #self.dirBrowse = gtk.Button(_('Browse'))
-        ######
-        hbox = gtk.HBox()
-        label = gtk.Label(_('Show Seconds'))
-        label.set_alignment(0, 0.5)
-        self.sizeGroup.add_widget(label)
-        hbox.pack_start(label, 0, 0)
-        hbox.pack_start(label, 0, 0)
-        self.showSecondsCheck = gtk.CheckButton('')
-        hbox.pack_start(self.showSecondsCheck, 0, 0)
-        ######
         self.pack_start(hbox, 0, 0)
     def updateWidget(self):
         NormalGroupWidget.updateWidget(self)
         self.vcsTypeCombo.set_active(vcsModuleNames.index(self.group.vcsType))
         self.dirEntry.set_text(self.group.vcsDir)
-        self.showSecondsCheck.set_active(self.group.showSeconds)
     def updateVars(self):
         NormalGroupWidget.updateVars(self)
         self.group.vcsType = vcsModuleNames[self.vcsTypeCombo.get_active()]
         self.group.vcsDir = self.dirEntry.get_text()
-        self.group.showSeconds = self.showSecondsCheck.get_active()
 
 

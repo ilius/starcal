@@ -19,16 +19,15 @@
 
 from os.path import join
 from subprocess import Popen, PIPE
-from scal2.time_utils import getEpochFromJd
-from scal2.date_utils import dateEncode
-from scal2.cal_types.gregorian import jd_to as jd_to_grep
-from scal2.cal_types.gregorian import to_jd as grep_to_jd
+from scal2.time_utils import getEpochFromJd, epochGregDateTimeEncode
 
 def prepareObj(obj):
     pass
 
 def clearObj(obj):
     pass
+
+encodeJd = lambda jd: epochGregDateTimeEncode(getEpochFromJd(jd))
 
 def getCommitList(obj, startJd=None, endJd=None):
     '''
@@ -43,12 +42,12 @@ def getCommitList(obj, startJd=None, endJd=None):
     if startJd is not None:
         cmd += [
             '--since',
-            dateEncode(jd_to_grep(startJd)),
+            encodeJd(startJd),
         ]
     if endJd is not None:
         cmd += [
             '--until',
-            dateEncode(jd_to_grep(endJd)),
+            encodeJd(endJd),
         ]
     p = Popen(cmd, stdout=PIPE)
     p.wait()
@@ -180,5 +179,53 @@ def getTagShortStatLine(obj, prevTag, tag):
     p.wait()
     return p.stdout.read().strip()
 
+def getFirstCommitEpoch(obj):
+    cmd = [
+        'git',
+        '--git-dir', join(obj.vcsDir, '.git'),
+        'rev-list',
+        '--max-parents=0',
+        'HEAD',
+        '--format=%ct',
+    ]
+    p = Popen(cmd, stdout=PIPE)
+    p.wait()
+    lines = p.stdout.read().split('\n')
+    return int(lines[1].strip())
+
+
+def getLastCommitEpoch(obj):
+    cmd = [
+        'git',
+        '--git-dir', join(obj.vcsDir, '.git'),
+        'log',
+        '-1',
+        '--format=%ct',
+    ]
+    return int(Popen(cmd, stdout=PIPE).stdout.read().strip())
+
+
+def getLastCommitIdUntil(obj, jd):
+    return Popen([
+        'git',
+        '--git-dir', join(obj.vcsDir, '.git'),
+        'log',
+        '--until', encodeJd(jd),
+        '-1',
+        '--format=%H',
+    ], stdout=PIPE).stdout.read().strip()
+
+def getDailyStatLine(obj, jd):
+    '''
+        returns str
+    '''
+    return Popen([
+        'git',
+        '--git-dir', join(obj.vcsDir, '.git'),
+        'diff',
+        '--shortstat',
+        getLastCommitIdUntil(obj, jd),
+        getLastCommitIdUntil(obj, jd+1),
+    ], stdout=PIPE).stdout.read().strip()
 
 
