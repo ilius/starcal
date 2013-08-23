@@ -21,7 +21,8 @@ from os.path import join
 from subprocess import Popen, PIPE
 from scal2.time_utils import getEpochFromJd
 from scal2.date_utils import dateEncode
-from scal2.cal_types import jd_to, to_jd, DATE_GREG
+from scal2.cal_types.gregorian import jd_to as jd_to_grep
+from scal2.cal_types.gregorian import to_jd as grep_to_jd
 
 def prepareObj(obj):
     pass
@@ -37,17 +38,17 @@ def getCommitList(obj, startJd=None, endJd=None):
         'git',
         '--git-dir', join(obj.vcsDir, '.git'),
         'log',
-        '--pretty=format:%ct %H',
+        '--format=%ct %H',## or '--format=%ct %H'
     ]
     if startJd is not None:
         cmd += [
             '--since',
-            dateEncode(jd_to(startJd, DATE_GREG)),
+            dateEncode(jd_to_grep(startJd)),
         ]
     if endJd is not None:
         cmd += [
             '--until',
-            dateEncode(jd_to(endJd, DATE_GREG)),
+            dateEncode(jd_to_grep(endJd)),
         ]
     p = Popen(cmd, stdout=PIPE)
     p.wait()
@@ -178,5 +179,6 @@ def getTagShortStatLine(obj, prevTag, tag):
     p = Popen(cmd, stdout=PIPE)
     p.wait()
     return p.stdout.read().strip()
+
 
 
