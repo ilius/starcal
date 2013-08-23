@@ -3189,7 +3189,7 @@ class LargeScaleGroup(EventGroup):
 ###########################################################################
 ###########################################################################
 
-class VcsBaseEvent(Event):
+class VcsEpochBaseEvent(Event):
     readOnly = True
     params = Event.params + (
         'epoch',
@@ -3213,10 +3213,10 @@ class VcsBaseEvent(Event):
         return TimeListOccurrence()
 
 #@classes.event.register ## FIXME
-class VcsCommitEvent(VcsBaseEvent):
+class VcsCommitEvent(VcsEpochBaseEvent):
     name = 'vcs'
     desc = _('VCS Commit')
-    params = VcsBaseEvent.params + (
+    params = VcsEpochBaseEvent.params + (
         'author',
         'shortHash',
     )
@@ -3231,10 +3231,10 @@ class VcsCommitEvent(VcsBaseEvent):
 
 
 
-class VcsTagEvent(VcsBaseEvent):
+class VcsTagEvent(VcsEpochBaseEvent):
     name = 'vcsTag'
     desc = _('VCS Tag')
-    params = VcsBaseEvent.params + (
+    params = VcsEpochBaseEvent.params + (
     )
     def __init__(self, parent, _id):
         Event.__init__(self, parent=parent)
@@ -3243,7 +3243,7 @@ class VcsTagEvent(VcsBaseEvent):
         self.author = ''
 
 
-class VcsBaseEventGroup(EventGroup):
+class VcsEpochBaseEventGroup(EventGroup):
     acceptsEventTypes = ()
     myParams = (
         'vcsType',
@@ -3294,10 +3294,10 @@ class VcsBaseEventGroup(EventGroup):
 
 
 @classes.group.register
-class VcsCommitEventGroup(VcsBaseEventGroup):
+class VcsCommitEventGroup(VcsEpochBaseEventGroup):
     name = 'vcs'
     desc = _('VCS Repository (Commits)')
-    myParams = VcsBaseEventGroup.myParams + (
+    myParams = VcsEpochBaseEventGroup.myParams + (
         'showAuthor',
         'showShortHash',
         'showStat',
@@ -3305,7 +3305,7 @@ class VcsCommitEventGroup(VcsBaseEventGroup):
     params = EventGroup.params + myParams
     jsonParams = EventGroup.jsonParams + myParams
     def __init__(self, _id=None):
-        VcsBaseEventGroup.__init__(self, _id)
+        VcsEpochBaseEventGroup.__init__(self, _id)
         self.showAuthor = True
         self.showShortHash = True
         self.showStat = True
@@ -3361,16 +3361,16 @@ class VcsCommitEventGroup(VcsBaseEventGroup):
 
 
 @classes.group.register
-class VcsTagEventGroup(VcsBaseEventGroup):
+class VcsTagEventGroup(VcsEpochBaseEventGroup):
     name = 'vcsTag'
     desc = _('VCS Repository (Tags)')
-    myParams = VcsBaseEventGroup.myParams + (
+    myParams = VcsEpochBaseEventGroup.myParams + (
         'showStat',
     )
     params = EventGroup.params + myParams
     jsonParams = EventGroup.jsonParams + myParams
     def __init__(self, _id=None):
-        VcsBaseEventGroup.__init__(self, _id)
+        VcsEpochBaseEventGroup.__init__(self, _id)
         self.tags = []
         self.showStat = True
     def clear(self):
