@@ -2,7 +2,9 @@ Download latest codes via git:
     $ git clone git://github.com/ilius/starcal2.git
 
 Download latest snapshot (without git):
-    Goto http://github.com/ilius/starcal2 with your browser and click on Download button
+    Open one of these links with your browser:
+        http://sourceforge.net/p/pyglossary/code/ci/master/tarball
+        http://github.com/ilius/starcal2/tarball/master
 
 Installation/uninstallation on Ubuntu, Debian or other Debian-based distributions:
     $ sudo bash ./starcal2/install-debian
