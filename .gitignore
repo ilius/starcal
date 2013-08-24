@@ -9,3 +9,10 @@
 .settings
 build
 dist
+debian
+.hidden
+*.deb
+*.rpm
+*.spec
+*.pkg.tar.xz
+PKGBUILD
