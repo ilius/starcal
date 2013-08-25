@@ -175,15 +175,15 @@ class EventSearchTree:
                 eid,
                 2*dt,
             )
-    def getDepthNone(self, node):
+    def getDepthNode(self, node):
         if node is None:
             return 0
         return 1 + max(
-            self.getDepthNone(node.left),
-            self.getDepthNone(node.right),
+            self.getDepthNode(node.left),
+            self.getDepthNode(node.right),
         )
     def getDepth(self):
-        return self.getDepthNone(self.root)
+        return self.getDepthNode(self.root)
     def getMinNode(self, node):
         if node is None:
             return
