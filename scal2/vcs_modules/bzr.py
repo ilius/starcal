@@ -22,7 +22,8 @@ from difflib import SequenceMatcher
 
 from scal2.utils import NullObj
 from scal2.time_utils import getEpochFromJd
-from scal2.vcs_modules.common import encodeShortStat
+from scal2.vcs_modules import encodeShortStat, getCommitListFromEst
+from scal2.event_search_tree import EventSearchTree
 
 from bzrlib.bzrdir import BzrDir
 from bzrlib.diff import DiffText
@@ -30,38 +31,39 @@ from bzrlib import revision as _mod_revision
 from bzrlib.osutils import split_lines
 
 def prepareObj(obj):
-    tree, branch, repository, relpath = \
+    tree, branch, repo, relpath = \
         BzrDir.open_containing_tree_branch_or_repository(obj.vcsDir)
     obj.branch = branch
-    obj.repo = repository
+    obj.repo = repo
+    ###
+    epsTm = 0.01
+    obj.est = EventSearchTree()
+    obj.firstRev = None
+    obj.lastRev = None
+    for rev_id, depth, revno, end_of_merge in \
+    branch.iter_merge_sorted_revisions(direction='forward'):
+        rev = obj.repo.get_revision(rev_id)
+        epoch = rev.timestamp
+        obj.est.add(epoch, epoch+epsTm, rev_id)
+        if not obj.firstRev:
+            obj.firstRev = rev
+        obj.lastRev = rev
 
 
 def clearObj(obj):
     obj.branch = None
     obj.repo = None
+    obj.est = EventSearchTree()
 
 def getCommitList(obj, startJd, endJd):
     '''
         returns a list of (epoch, rev_id) tuples
     '''
-    branch = obj.branch
-    if not branch:
-        return []
-    startEpoch = getEpochFromJd(startJd)
-    endEpoch = getEpochFromJd(endJd)
-    ###
-    data = []
-    ## obj.repo.revisions
-    for rev_id, depth, revno, end_of_merge in \
-    branch.iter_merge_sorted_revisions(direction='forward'):
-        rev = obj.repo.get_revision(rev_id)
-        epoch = rev.timestamp
-        if epoch < startEpoch:
-            continue
-        if epoch >= endEpoch:
-            break
-        data.append((epoch, rev_id))
-    return data
+    return getCommitListFromEst(
+        obj,
+        startJd,
+        endJd,
+    )
 
 
 def getCommitInfo(obj, rev_id):
@@ -76,7 +78,15 @@ def getCommitInfo(obj, rev_id):
     }
 
 
-def getShortStat(repo, old_tree, tree):
+def getShortStat(obj, old_rev_id, rev_id):
+    repo = obj.repo
+    return getShortStatByTrees(
+        repo,
+        repo.revision_tree(old_rev_id),
+        repo.revision_tree(rev_id),
+    )
+
+def getShortStatByTrees(repo, old_tree, tree):
     files_changed = 0
     insertions = 0
     deletions = 0
@@ -128,7 +138,7 @@ def getCommitShortStat(obj, rev_id):
         old_rev_id = rev.parent_ids[0]
     except IndexError:
         old_rev_id = _mod_revision.NULL_REVISION
-    return getShortStat(
+    return getShortStatByTrees(
         repo,
         repo.revision_tree(old_rev_id),
         tree,
@@ -168,7 +178,7 @@ def getTagShortStat(obj, prevTag, tag):
     '''
     repo = obj.repo
     td = obj.branch.tags.get_tag_dict()
-    return getShortStat(
+    return getShortStatByTrees(
         repo,
         repo.revision_tree(td[prevTag] if prevTag else None),
         repo.revision_tree(td[tag]),
@@ -181,6 +191,21 @@ def getTagShortStatLine(obj, prevTag, tag):
     '''
     return encodeShortStat(*getTagShortStat(obj, prevTag, tag))
 
+def getFirstCommitEpoch(obj):
+    return obj.firstRev.timestamp
+
+
+def getLastCommitEpoch(obj):
+    return obj.lastRev.timestamp
+
+def getLastCommitIdUntilJd(obj, jd):
+    untilEpoch = getEpochFromJd(jd)
+    last = obj.est.getLastBefore(untilEpoch)
+    if not last:
+        return
+    t0, t1, rev_id = last
+    return str(obj.repo.get_revision(rev_id))
+    
 
 
 

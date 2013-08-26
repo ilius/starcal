@@ -51,7 +51,8 @@ from scal2 import core
 from scal2.core import myRaise, log, getAbsWeekNumberFromJd, dataToJson, jwday
 
 from scal2.ics import icsHeader, getIcsTimeByEpoch, getIcsDateByJd, getJdByIcsDate, getEpochByIcsTime
-from scal2.vcs_modules import vcsModuleDict
+from scal2.vcs_modules import encodeShortStat, vcsModuleDict
+
 
 epsTm = 0.01## seconds ## configure somewhere? FIXME
 dayLen = 24*3600
@@ -3478,11 +3479,11 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
     params = EventGroup.params + myParams
     jsonParams = EventGroup.jsonParams + myParams
     def __init__(self, _id=None):
-        EventGroup.__init__(self, _id)
-        self.commitsCountByJd = {}
+        VcsBaseEventGroup.__init__(self, _id)
+        self.statByJd = {}
     def clear(self):
-        EventGroup.clear(self)
-        self.commitsCountByJd = {}
+        VcsBaseEventGroup.clear(self)
+        self.statByJd = {} ## a dict of (commintsCount, lastCommitId)s
     def updateOccurrence(self):
         stm0 = now()
         self.clear()
@@ -3490,17 +3491,26 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
             return
         mod = vcsModuleDict[self.vcsType]
         ####
-        self.vcsMinJd = getJdFromEpoch(mod.getFirstCommitEpoch(self))
-        self.vcsMaxJd = getJdFromEpoch(mod.getLastCommitEpoch(self)) + 1
+        try:
+            self.vcsMinJd = getJdFromEpoch(mod.getFirstCommitEpoch(self))
+            self.vcsMaxJd = getJdFromEpoch(mod.getLastCommitEpoch(self)) + 1
+        except:
+            myRaise()
+            return
         ###
         startJd = max(self.startJd, self.vcsMinJd)
         endJd = min(self.endJd, self.vcsMaxJd)
         ###
+        lastCommitId = mod.getLastCommitIdUntilJd(self, startJd)
         for jd in xrange(startJd, endJd):
-            commitsCount = len(mod.getCommitList(self, startJd=jd, endJd=jd+1))
-            if commitsCount == 0:
+            commits = mod.getCommitList(self, startJd=jd, endJd=jd+1)
+            if not commits:
                 continue
-            self.commitsCountByJd[jd] = commitsCount
+            lastCommitIdPrev, lastCommitId = lastCommitId, commits[0][1]
+            if not lastCommitIdPrev:
+                continue
+            stat = mod.getShortStat(self, lastCommitIdPrev, lastCommitId)
+            self.statByJd[jd] = (len(commits), stat)
             self.addOccur(
                 getEpochFromJd(jd),
                 getEpochFromJd(jd+1),
@@ -3510,7 +3520,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
         self.updateOccurrenceLog(stm0)
     def getEvent(self, jd):## cache commit data FIXME
         try:
-            commitsCount = self.commitsCountByJd[jd]
+            commitsCount, stat = self.statByJd[jd]
         except KeyError:
             raise ValueError('No commit for jd %s'%jd)
         mod = vcsModuleDict[self.vcsType]
@@ -3518,7 +3528,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
         ###
         event.icon = self.icon
         ##
-        statLine = mod.getDailyStatLine(self, jd)
+        statLine = encodeShortStat(*stat)
         event.summary = self.title + ': ' + _('%d commits')%commitsCount ## FIXME
         event.summary += ', ' + statLine
         #event.description = statLine

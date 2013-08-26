@@ -216,6 +216,7 @@ def epochGregDateTimeEncode(epoch, tz=None):
     year, month, day = jd_to_g(jd)
     return '%.4d/%.2d/%.2d %.2d:%.2d:%.2d'%(year, month, day, hour, minute, second)
 
+encodeJd = lambda jd: epochGregDateTimeEncode(getEpochFromJd(jd))
 
 def durationEncode(value, unit):
     iValue = int(value)

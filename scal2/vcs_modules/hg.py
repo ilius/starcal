@@ -18,7 +18,8 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 from scal2.time_utils import getEpochFromJd
-from scal2.vcs_modules.common import encodeShortStat
+from scal2.vcs_modules import encodeShortStat, getCommitListFromEst
+from scal2.event_search_tree import EventSearchTree
 
 import mercurial.ui
 from mercurial.localrepo import localrepository
@@ -27,29 +28,28 @@ from mercurial.util import iterlines
 
 def prepareObj(obj):
     obj.repo = localrepository(mercurial.ui.ui(), obj.vcsDir)
+    ###
+    epsTm = 0.01
+    obj.est = EventSearchTree()
+    for rev_id in obj.repo.changelog:
+        epoch = obj.repo[rev_id].date()[0]
+        obj.est.add(epoch, epoch+epsTm, rev_id)
 
 def clearObj(obj):
     obj.repo = None
+    obj.est = EventSearchTree()
+
 
 def getCommitList(obj, startJd, endJd):
     '''
         returns a list of (epoch, commit_id) tuples
     '''
-    if not obj.repo:
-        return []
-    startEpoch = getEpochFromJd(startJd)
-    endEpoch = getEpochFromJd(endJd)
-    ###
-    data = []
-    for rev in obj.repo.changelog:
-        ctx = obj.repo[rev]
-        epoch = ctx.date()[0]
-        if epoch < startEpoch:
-            continue
-        if epoch >= endEpoch:
-            break
-        data.append((epoch, str(ctx)))
-    return data
+    return getCommitListFromEst(
+        obj,
+        startJd,
+        endJd,
+        lambda repo, rev_id: str(repo[rev_id])
+    )
 
 
 def getCommitInfo(obj, commid_id):
@@ -64,7 +64,9 @@ def getCommitInfo(obj, commid_id):
     }
 
 
-def getShortStat(repo, node1, node2):## SLOW FIXME
+def getShortStat(obj, node1, node2):## SLOW FIXME
+    repo = obj.repo
+    ## if not node1 ## FIXME
     stats = diffstatdata(
         iterlines(
             diff(
@@ -84,7 +86,7 @@ def getCommitShortStat(obj, commit_id):
     '''
     ctx = obj.repo[commit_id]
     return getShortStat(
-        obj.repo,
+        obj,
         ctx.p1(),
         ctx,
     )
@@ -122,7 +124,7 @@ def getTagList(obj, startJd, endJd):
 def getTagShortStat(obj, prevTag, tag):
     repo = obj.repo
     return getShortStat(
-        repo,
+        obj,
         repo[prevTag if prevTag else 0],
         repo[tag],
     )
@@ -135,5 +137,20 @@ def getTagShortStatLine(obj, prevTag, tag):
     return encodeShortStat(*getTagShortStat(obj, prevTag, tag))
 
 
+def getFirstCommitEpoch(obj):
+    return obj.repo[0].date()[0]
+
+
+def getLastCommitEpoch(obj):
+    return obj.repo[len(obj.repo)-1].date()[0]
+
+def getLastCommitIdUntilJd(obj, jd):
+    untilEpoch = getEpochFromJd(jd)
+    last = obj.est.getLastBefore(untilEpoch)
+    if not last:
+        return
+    t0, t1, rev_id = last
+    return str(obj.repo[rev_id])
+    
 
 

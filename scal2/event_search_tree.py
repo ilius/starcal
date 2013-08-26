@@ -175,6 +175,27 @@ class EventSearchTree:
                 eid,
                 2*dt,
             )
+    def getLastBefore(self, t1):
+        res = self.getLastBeforeStep(self.root, t1)
+        if res:
+            mt, dt, eid = res
+            return mt-dt, mt+dt, eid
+    def getLastBeforeStep(self, node, t1):
+        if node is None:
+            return
+        t1 = min(t1, node.max_t)
+        if t1 <= node.min_t:
+            return
+        ###
+        right_res = self.getLastBeforeStep(node.right, t1)
+        if right_res:
+            return right_res
+        ###
+        if node.mt < t1:
+            dt, eid = node.events.getMax()
+            return node.mt, dt, eid
+        ###
+        return self.getLastBeforeStep(node.left, t1)
     def getDepthNode(self, node):
         if node is None:
             return 0
@@ -265,6 +286,16 @@ class EventSearchTree:
     def deleteMoreThan(self, t0):
         self.root = self.deleteMoreThanStep(self.root, t0)
     '''
+
+if __name__=='__main__':
+    from random import shuffle
+    n = 100
+    ls = range(n)
+    shuffle(ls)
+    tree = EventSearchTree()
+    for x in ls:
+        tree.add(x, x+4, x)
+    print tree.getLastBefore(15.5)
 
 
 
