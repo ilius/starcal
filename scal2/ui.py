@@ -33,6 +33,7 @@ from scal2.cal_types import calTypes
 
 from scal2 import locale_man
 from scal2.locale_man import tr as _
+from scal2.locale_man import numDecode
 
 from scal2 import core
 from scal2.core import APP_NAME, myRaise, myRaiseTback, getMonthLen, osName
@@ -46,31 +47,39 @@ def parseDroppedDate(text):
     part = text.split('/')
     if len(part)==3:
         try:
-            part[0] = int(part[0])
-            part[1] = int(part[1])
-            part[2] = int(part[2])
+            part[0] = numDecode(part[0])
+            part[1] = numDecode(part[1])
+            part[2] = numDecode(part[2])
         except:
             myRaise(__file__)
             return None
-        minMax = ((1300, 2100), (1, 12), (1, 31))
-        formats=(
-                [0, 1, 2],
-                [1, 2, 0],
-                [2, 1, 0],
-        )
-        for format in formats:
-            for i in range(3):
-                valid = True
-                f = format[i]
-                if not (minMax[f][0] <= part[i] <= minMax[f][1]):
-                    valid = False
-                    #print 'format %s was not valid, part[%s]=%s'%(format, i, part[i])
+        maxPart = max(part)
+        if maxPart > 999:
+            minMax = ((1000, 2100), (1, 12), (1, 31))
+            formats=(
+                    [0, 1, 2],
+                    [1, 2, 0],
+                    [2, 1, 0],
+            )
+            for format in formats:
+                for i in range(3):
+                    valid = True
+                    f = format[i]
+                    if not (minMax[f][0] <= part[i] <= minMax[f][1]):
+                        valid = False
+                        #print 'format %s was not valid, part[%s]=%s'%(format, i, part[i])
+                        break
+                if valid:
+                    year = part[format.index(0)] ## "format" must be list because of method "index"
+                    month = part[format.index(1)]
+                    day = part[format.index(2)]
                     break
-            if valid:
-                year = part[format.index(0)] ## "format" must be list because of method "index"
-                month = part[format.index(1)]
-                day = part[format.index(2)]
-                break
+        else:
+            valid = 0 <= part[0] <= 99 and 1 <= part[1] <= 12 and 1 <= part[2] <= 31
+            ###
+            year = 2000 + part[0] ## FIXME
+            month = part[1]
+            day = part[2]
         if not valid:
             return None
     else:
