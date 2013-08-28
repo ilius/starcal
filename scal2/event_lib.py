@@ -3448,6 +3448,7 @@ class VcsDailyStatEvent(Event):
     name = 'vcsDailyStat'
     desc = _('VCS Daily Stat')
     readOnly = True
+    isAllDay = True
     params = Event.params + (
         'jd',
     )
