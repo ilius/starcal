@@ -584,7 +584,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
                     continue
                 #if not new_group.enable:## FIXME
                 #    continue
-                new_groupPath = self.trees.get_iter(self.groupIterById[new_group.id])
+                new_groupPath = self.trees.get_path(self.groupIterById[new_group.id])
                 if event.name in new_group.acceptsEventTypes:
                     new_groupItem = gtk.ImageMenuItem()
                     new_groupItem.set_label(new_group.title)
