@@ -329,7 +329,7 @@ class TimeListOccurrence(Occurrence):
         if isinstance(occur, (JdSetOccurrence, TimeRangeListOccurrence)):
             epochBetween = []
             for epoch in self.epochList:
-                for startEpoch, endEpoch in timeRangeList:
+                for startEpoch, endEpoch in occur.getTimeRangeList():
                     if startEpoch <= epoch < endEpoch:
                         epochBetween.append(epoch)
                         break
