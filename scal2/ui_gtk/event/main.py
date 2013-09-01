@@ -48,7 +48,7 @@ from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.mywidgets.dialog import MyDialog
 from scal2.ui_gtk.event import common
-from scal2.ui_gtk.event.common import EventEditorDialog, addNewEvent, GroupEditorDialog
+from scal2.ui_gtk.event.common import EventEditorDialog, addNewEvent, GroupEditorDialog, confirmEventTrash
 from scal2.ui_gtk.event.trash import TrashEditorDialog
 from scal2.ui_gtk.event.export import SingleGroupExportDialog, MultiGroupExportDialog
 from scal2.ui_gtk.event.import_event import EventsImportWindow
@@ -999,6 +999,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         self.pasteEventToPath(tarPath, False)
     def moveEventToTrash(self, path):
         group, event = self.getObjsByPath(path)
+        if not confirmEventTrash(event):
+            return
         ui.moveEventToTrash(group, event)
         self.trees.remove(self.trees.get_iter(path))
         if core.eventTrashLastTop:
@@ -1021,8 +1023,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         if len(path)==1:
             self.deleteGroup(path)
         elif len(path)==2:
-            if confirm(_('Press OK if you want to move event "%s" to trash')%objs[1].summary):
-                self.moveEventToTrash(path)
+            self.moveEventToTrash(path)
     def deleteEventFromTrash(self, menu, path):
         trash, event = self.getObjsByPath(path)
         trash.delete(event.id)## trash == ui.eventTrash

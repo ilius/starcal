@@ -32,7 +32,7 @@ from scal2 import event_lib
 from scal2 import ui
 
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, labelStockMenuItem, TimeZoneComboBoxEntry
-from scal2.ui_gtk.utils import dialog_add_button, DateTypeCombo
+from scal2.ui_gtk.utils import dialog_add_button, DateTypeCombo, confirm
 
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
@@ -45,6 +45,9 @@ from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinBut
 
 #print 'Testing translator', __file__, _('_About')## OK
 
+
+confirmEventTrash = lambda event:\
+    confirm(_('Press OK if you want to move event "%s" to trash')%event.summary)
 
 getGroupRow = lambda group, rowBgColor: (
     group.id,

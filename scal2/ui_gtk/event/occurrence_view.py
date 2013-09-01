@@ -29,7 +29,7 @@ from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import imageFromFile, labelStockMenuItem, labelImageMenuItem
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk import gtk_ud as ud
-from scal2.ui_gtk.event.common import EventEditorDialog
+from scal2.ui_gtk.event.common import EventEditorDialog, confirmEventTrash
 
 @registerSignals
 class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
@@ -190,6 +190,8 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
     def moveEventToTrash(self, item, event, groupId):
         #if not confirm(_('Press OK if you are sure to move event "%s" to trash')%event.summary):
         #    return
+        if not confirmEventTrash(event):
+            return
         ui.moveEventToTrashFromOutside(ui.eventGroups[groupId], event)
         self.onConfigChange()
     def copy(self, item, label):

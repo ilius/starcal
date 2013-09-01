@@ -42,7 +42,7 @@ from scal2.ui_gtk.drawing import setColor, fillColor, newTextLayout, Button
 from scal2.ui_gtk import gtk_ud as ud
 #from scal2.ui_gtk import preferences
 import scal2.ui_gtk.event.main
-from scal2.ui_gtk.event.common import EventEditorDialog, GroupEditorDialog
+from scal2.ui_gtk.event.common import EventEditorDialog, GroupEditorDialog, confirmEventTrash
 
 import gobject
 from gobject import timeout_add
@@ -411,6 +411,8 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             ud.windowList.onConfigChange()
             self.queue_draw()
     def moveEventToTrash(self, menu, group, event):
+        if not confirmEventTrash(event):
+            return
         eventIndex = group.index(event.id)
         ui.moveEventToTrashFromOutside(group, event)
         self.onConfigChange()
