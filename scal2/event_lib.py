@@ -3746,6 +3746,7 @@ class EventTrash(EventContainer):
     name = 'trash'
     desc = _('Trash')
     file = join(confDir, 'event', 'trash.json')## FIXME
+    id = -1 ## FIXME
     def __init__(self):
         EventContainer.__init__(self, title=_('Trash'))
         self.icon = join(pixDir, 'trash.png')
