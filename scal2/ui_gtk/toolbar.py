@@ -29,7 +29,7 @@ iconSizeDict = dict(iconSizeList)
 
 @registerSignals
 class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
-    def __init__(self, name, stockName, method, tooltip='', text=''):
+    def __init__(self, name, stockName, method, tooltip='', text='', desc=''):
         #print 'ToolbarItem', name, stockName, method, tooltip, text
         self.method = method
         ######
@@ -50,7 +50,9 @@ class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
             text,
         )
         self._name = name
-        self.desc = tooltip
+        if not desc and tooltip:
+            desc = tooltip
+        self.desc = desc
         self.initVars()
         set_tooltip(self, tooltip)
         self.set_is_important(True)## FIXME

@@ -89,7 +89,7 @@ def getUtcOffsetByJd(jd, tz=None):
 getUtcOffsetCurrent = lambda tz=None: getUtcOffsetByEpoch(now(), tz)
 #getUtcOffsetCurrent = lambda: -time.altzone if time.daylight and localtime().tm_isdst else -time.timezone
 
-getGtkTimeFromEpoch = lambda epoch: (epoch-1.32171528839e+9)*1000 // 1
+getGtkTimeFromEpoch = lambda epoch: int((epoch-1.32171528839e+9)*1000 // 1)
 
 
 getFloatJdFromEpoch = lambda epoch: (epoch + getUtcOffsetByEpoch(epoch))/(24.0*3600) + J1970

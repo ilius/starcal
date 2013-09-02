@@ -41,6 +41,9 @@ if os.path.isfile(confPath):
     except:
         myRaise(__file__)
 
+if 'mainMenu' not in dict(ud.wcalToolbarData['items']):
+    ud.wcalToolbarData['items'].insert(0, ('mainMenu', True))
+
 
 class CustomizableCalObj(ud.IntegratedCalObj):
     expand = False

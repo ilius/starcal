@@ -884,6 +884,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         menu.popup(None, None, lambda m: (x, y, True), 3, etime)
         ui.updateFocusTime()
     def popupMenuMain(self, widget, etime, x, y):
+        if etime == 0:
+            etime = gtk.get_current_event_time()
         menu = self.menuMain
         dx, dy = widget.translate_coordinates(self, x, y)
         wx, wy = self.window.get_origin()

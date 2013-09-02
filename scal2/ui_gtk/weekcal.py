@@ -41,7 +41,7 @@ from gtk import gdk
 
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.drawing import *
-from scal2.ui_gtk.utils import pixbufFromFile, DirectionComboBox
+from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile, DirectionComboBox
 from scal2.ui_gtk.color_utils import colorize
 from scal2.ui_gtk.mywidgets import MyFontButton
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
@@ -232,6 +232,24 @@ class Column(gtk.Widget, ColumnBase):
         self.queue_draw()
 
 
+class MainMenuToolbarItem(ToolbarItem):
+    def __init__(self):
+        ToolbarItem.__init__(self, 'mainMenu', None, '', desc=_('Main Menu'))
+        self.connect('clicked', self.onClicked)
+        self.icon = 'starcal2-24.png'
+        self.updateImage()
+    def updateImage(self):
+        self.set_property('label-widget', imageFromFile(self.icon))
+    def onClicked(self, widget=None):
+        wcal = self.parent.parent
+        x, y, w, h = self.allocation
+        x0, y0 = self.translate_coordinates(wcal, 0, 0)
+        wcal.emit(
+            'popup-menu-main',
+            0,
+            x0 if rtl else x0+w,
+            y0+h
+        )
 
 class WeekNumToolbarItem(ToolbarItem):
     def __init__(self):
@@ -242,11 +260,11 @@ class WeekNumToolbarItem(ToolbarItem):
         ToolbarItem.onDateChange(self, *a, **ka)
         self.label.set_label(_(ui.cell.weekNum))
 
-
 @registerSignals
 class ToolbarColumn(CustomizableToolbar, ColumnBase):
     autoButtonPressHandler = False
     defaultItems = [
+        MainMenuToolbarItem(),
         WeekNumToolbarItem(),
         ToolbarItem('backward4', 'goto_top', 'goBackward4', 'Backward 4 Weeks'),
         ToolbarItem('backward', 'go_up', 'goBackward', 'Previous Week'),

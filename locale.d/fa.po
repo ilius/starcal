@@ -1566,6 +1566,10 @@ msgid "Menu"
 msgstr ""
 "منو"
 
+msgid "Main Menu"
+msgstr ""
+"منوی اصلی"
+
 msgid "More"
 msgstr ""
 "بیشتر"

@@ -146,6 +146,7 @@ mainToolbarData = {
 
 wcalToolbarData = {
     'items': [
+        ('mainMenu', True),
         ('backward4', False),
         ('backward', True),
         ('today', True),
@@ -184,7 +185,6 @@ for cmd in ('gksudo', 'kdesudo', 'gksu', 'gnomesu', 'kdesu'):
             'scal2/ui_gtk/adjust_dtime.py'
         ]
         break
-
 
 ############################################################
 
