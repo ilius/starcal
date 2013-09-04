@@ -46,6 +46,7 @@ from scal2.ui_gtk.color_utils import colorize
 from scal2.ui_gtk.mywidgets import MyFontButton
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
 from scal2.ui_gtk.mywidgets.font_family_combo import FontFamilyCombo
+from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
 from scal2.ui_gtk.cal_base import CalBase
@@ -53,7 +54,6 @@ from scal2.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox
 from scal2.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
 
 from scal2.ui_gtk import timeline_box as tbox
-from scal2.ui_gtk.event.common import IconSelectButton
 
 def show_event(widget, event):
     print type(widget), event.type.value_name#, event.get_value()#, event.send_event

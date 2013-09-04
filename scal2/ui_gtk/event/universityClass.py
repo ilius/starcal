@@ -25,6 +25,7 @@ from scal2 import event_lib
 from scal2 import ui
 from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin_button import HourMinuteButtonOption
+from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 from scal2.ui_gtk.event import common
 from scal2.ui_gtk.event.rules.weekNumMode import RuleWidget as WeekNumModeRuleWidget
 from scal2.ui_gtk.utils import showError, WeekDayComboBox
@@ -120,7 +121,7 @@ class EventWidget(gtk.VBox):
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
-        self.iconSelect = common.IconSelectButton()
+        self.iconSelect = IconSelectButton()
         #print join(pixDir, self.icon)
         hbox.pack_start(self.iconSelect, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)

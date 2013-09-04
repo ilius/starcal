@@ -20,13 +20,14 @@
 from scal2 import core
 from scal2.locale_man import tr as _
 
-from scal2.ui_gtk.event import common
-from scal2.ui_gtk.utils import set_tooltip, DateTypeCombo
-
 import gtk
 
 from scal2.ui_gtk.mywidgets import MyColorButton, TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
+from scal2.ui_gtk.mywidgets.icon import IconSelectButton
+
+from scal2.ui_gtk.utils import set_tooltip, DateTypeCombo
+from scal2.ui_gtk.event import common
 
 
 class BaseGroupWidget(gtk.VBox):
@@ -60,7 +61,7 @@ class BaseGroupWidget(gtk.VBox):
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
         self.sizeGroup.add_widget(label)
-        self.iconSelect = common.IconSelectButton()
+        self.iconSelect = IconSelectButton()
         hbox.pack_start(self.iconSelect, 0, 0)
         self.pack_start(hbox, 0, 0)
         #####

@@ -24,6 +24,7 @@ from scal2.core import pixDir, myRaise
 from scal2 import event_lib
 from scal2 import ui
 from scal2.ui_gtk.utils import openWindow, dialog_add_button
+from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 
 import gtk
 from gtk import gdk

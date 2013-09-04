@@ -4,7 +4,7 @@ from scal2 import ui
 import gtk
 
 from scal2.ui_gtk.utils import dialog_add_button
-from scal2.ui_gtk.event.common import IconSelectButton
+from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 
 
 class TrashEditorDialog(gtk.Dialog):

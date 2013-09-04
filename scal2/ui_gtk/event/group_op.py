@@ -5,8 +5,8 @@ from scal2.locale_man import tr as _
 import gtk
 
 from scal2.ui_gtk.utils import DateTypeCombo, dialog_add_button, TimeZoneComboBoxEntry
-from scal2.ui_gtk.event.common import IconSelectButton
 from scal2.ui_gtk.mywidgets import TextFrame
+from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 
 class GroupSortDialog(gtk.Dialog):
     def __init__(self, group):
