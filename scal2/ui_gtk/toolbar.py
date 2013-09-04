@@ -33,9 +33,11 @@ class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
         #print 'ToolbarItem', name, stockName, method, tooltip, text
         self.method = method
         ######
-        if not tooltip:
+        if not desc and tooltip:
+            desc = tooltip
+        ###
+        if tooltip is '':
             tooltip = name.capitalize()
-        tooltip = _(tooltip)
         ###
         if not text:
             text = name.capitalize()
@@ -50,11 +52,10 @@ class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
             text,
         )
         self._name = name
-        if not desc and tooltip:
-            desc = tooltip
         self.desc = desc
         self.initVars()
-        set_tooltip(self, tooltip)
+        if tooltip is not None:
+            set_tooltip(self, _(tooltip))
         self.set_is_important(True)## FIXME
     show = lambda self: self.show_all()
 

@@ -53,7 +53,7 @@ from scal2.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox
 from scal2.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
 
 from scal2.ui_gtk import timeline_box as tbox
-
+from scal2.ui_gtk.event.common import IconSelectButton
 
 def show_event(widget, event):
     print type(widget), event.type.value_name#, event.get_value()#, event.send_event
@@ -233,13 +233,28 @@ class Column(gtk.Widget, ColumnBase):
 
 
 class MainMenuToolbarItem(ToolbarItem):
+    params = (
+        'ui.wcal_toolbar_mainMenu_icon',
+    )
     def __init__(self):
-        ToolbarItem.__init__(self, 'mainMenu', None, '', desc=_('Main Menu'))
+        ToolbarItem.__init__(self, 'mainMenu', None, '', tooltip=None, desc=_('Main Menu'))
         self.connect('clicked', self.onClicked)
-        self.icon = 'starcal2-24.png'
         self.updateImage()
+        ####
+        self.optionsWidget = gtk.VBox()
+        ###
+        hbox = gtk.HBox()
+        hbox.pack_start(gtk.Label(_('Icon')+'  '), 0, 0)
+        self.iconInput = IconSelectButton()
+        self.iconInput.set_filename(ui.wcal_toolbar_mainMenu_icon)
+        self.iconInput.connect('changed', self.onIconChanged)
+        hbox.pack_start(self.iconInput, 0, 0)
+        hbox.pack_start(gtk.Label(''), 1, 1)
+        self.optionsWidget.pack_start(hbox, 0, 0)
+        self.optionsWidget.show_all()
     def updateImage(self):
-        self.set_property('label-widget', imageFromFile(self.icon))
+        self.set_property('label-widget', imageFromFile(ui.wcal_toolbar_mainMenu_icon))
+        self.show_all()
     def onClicked(self, widget=None):
         wcal = self.parent.parent
         x, y, w, h = self.allocation
@@ -250,6 +265,9 @@ class MainMenuToolbarItem(ToolbarItem):
             x0 if rtl else x0+w,
             y0+h
         )
+    def onIconChanged(self, widget, icon):
+        ui.wcal_toolbar_mainMenu_icon = icon
+        self.updateImage()
 
 class WeekNumToolbarItem(ToolbarItem):
     def __init__(self):
