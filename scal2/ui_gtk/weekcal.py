@@ -266,6 +266,9 @@ class MainMenuToolbarItem(ToolbarItem):
             y0+h
         )
     def onIconChanged(self, widget, icon):
+        if not icon:
+            icon = ui.wcal_toolbar_mainMenu_icon_default
+            self.iconSelect.set_filename(icon)
         ui.wcal_toolbar_mainMenu_icon = icon
         self.updateImage()
 

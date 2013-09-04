@@ -61,13 +61,15 @@ class IconSelectButton(gtk.Button):
             self.menu.popup(None, None, None, b, event.time)
     menuItemActivate = lambda self, widget, icon: self.set_filename(icon)
     def dialogResponse(self, dialog, response=0):
+        dialog.hide()
         if response == gtk.RESPONSE_OK:
             fname = dialog.get_filename()
         elif response == gtk.RESPONSE_REJECT:
             fname = ''
+        else:
+            return
         self.set_filename(fname)
         self.emit('changed', fname)
-        dialog.hide()
     def fileActivated(self, dialog):
         fname = dialog.get_filename()
         self.filename = fname
