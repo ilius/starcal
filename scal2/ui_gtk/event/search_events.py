@@ -63,6 +63,12 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         frame.set_border_width(5)
         self.vbox.pack_start(frame, 0, 0)
         self.textInput = frame
+        ##
+        hbox = gtk.HBox()
+        self.textCSensCheck = gtk.CheckButton(_('Case Sensitive'))
+        self.textCSensCheck.set_active(False) ## FIXME
+        hbox.pack_start(self.textCSensCheck, 0, 0)
+        self.vbox.pack_start(hbox, 0, 0)
         ######
         jd = core.getCurrentJd()
         year, month, day = jd_to(jd, core.primaryMode)
@@ -276,7 +282,10 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
             groupIds = ui.eventGroups.getEnableIds()
         ###
         conds = {}
-        conds['text'] = self.textInput.get_text()
+        if self.textCSensCheck.get_active():
+            conds['text'] = self.textInput.get_text()
+        else:
+            conds['text_lower'] = self.textInput.get_text().lower()
         if self.timeFromCheck.get_active():
             conds['time_from'] = self.timeFromInput.get_epoch(core.primaryMode)
         if self.timeToCheck.get_active():

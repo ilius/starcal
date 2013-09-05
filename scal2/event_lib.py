@@ -2805,6 +2805,7 @@ class EventGroup(EventContainer):
         self.save()
     simpleFilters = {
         'text': lambda event, text: not text or text in event.getText(),
+        'text_lower': lambda event, text: not text or text in event.getText().lower(),
         'modified_from': lambda event, epoch: event.modified >= epoch,
         'type': lambda event, _type: event.name == _type,
     }

@@ -2063,6 +2063,10 @@ msgid "_Search Events"
 msgstr ""
 "_جستجوی رویدادها"
 
+msgid "Case Sensitive"
+msgstr ""
+"حساس به حروف بزرگ و کوچک"
+
 msgid "Modified From"
 msgstr ""
 "تغییر کرده از"
