@@ -66,7 +66,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
     def onResponse(self, dialog, response_id):
         self.hide()
         self.emit('config-change')
-        #thread.start_new_thread(event_lib.restartDaemon, ())
     def onConfigChange(self, *a, **kw):
         ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
         ###

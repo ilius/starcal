@@ -571,11 +571,6 @@ def iterAllEvents():## dosen't include orphan events
     for event in eventTrash:
         yield event
 
-#try:
-#    event_lib.checkAndStartDaemon()## FIXME here or in ui_*/event/main.py
-#except:
-#    print 'Error while starting daemon'
-#    myRaise()
 
 
 changedGroups = []## list of groupId's

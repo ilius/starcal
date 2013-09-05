@@ -39,7 +39,6 @@ chmod 755 'locale.d/make-template'
 
 chmod 755 'scal2/get_version.py'
 chmod 755 'scal2/import_config_1to2.py'
-chmod 755 'scal2/starcal2-daemon.py'
 
 chmod 755 'scal2/ui_gtk/adjust_dtime.py'
 chmod 755 'scal2/ui_gtk/arch-enable-locale.py'

@@ -136,20 +136,6 @@ cp -f "${shareDir}/$pkgName/donate" "${shareDir}/doc/$pkgName/"
 #fi
 #cp -Rf "$sourceDir/config" "${targetDir}/etc/$pkgName"
 
-daemonName=${pkgName}d
-if [ -d /etc/init.d ] ; then ## Debian FIXME
-    mkdir -p "${targetDir}/etc/init.d"
-    targetDaemonPath="${targetDir}/etc/init.d/$daemonName"
-elif [ -d /etc/rc.d ] ; then ## ArchLinux
-    mkdir -p "${targetDir}/etc/rc.d"
-    targetDaemonPath="${targetDir}/etc/rc.d/$daemonName"
-fi
-if [ -n "$targetDaemonPath" ] ; then
-    if [ -e "$targetDaemonPath" ] ; then
-        rm "$targetDaemonPath"
-    fi
-    cp -f "$sourceDir/scripts/$daemonName" "$targetDaemonPath"
-fi
 
 mkdir -p "${shareDir}/icons/hicolor"
 for SZ in 16 22 24 32 48 ; do

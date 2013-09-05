@@ -4075,41 +4075,6 @@ def loadEventTrash(groups=[]):
     ###
     return trash
 
-def startDaemon():
-    from subprocess import Popen
-    Popen([daemonFile])
 
-def checkAndStartDaemon():
-    from scal2.os_utils import dead
-    pidFile = join(confDir, 'event', 'daemon.pid')
-    if isfile(pidFile):
-        pid = int(open(pidFile).read())
-        if not dead(pid):
-            return
-    startDaemon()
-
-def stopDaemon():
-    from scal2.os_utils import goodkill
-    pidFile = join(confDir, 'event', 'daemon.pid')
-    if not isfile(pidFile):
-        return
-    pid = int(open(pidFile).read())
-    try:
-        goodkill(pid)
-    except Exception, e:
-        log.error('Error while killing daemon process: %s'%e)
-        raise e
-    else:
-        try:
-            os.remove(pidFile)## FIXME, it should have done in daemon's source itself, using atexit! But it doesn't work
-        except:
-            pass
-
-def restartDaemon():
-    print 'stopping event daemon...'
-    stopDaemon()
-    print 'event daemon stopped, starting again...'
-    startDaemon()
-    print 'event daemon started'
 
 

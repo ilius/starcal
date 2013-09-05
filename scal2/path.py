@@ -43,7 +43,6 @@ elif os.sep=='\\':
 rootDir = dirname(srcDir)
 pixDir = join(rootDir, 'pixmaps')
 plugDir = join(rootDir, 'plugins')
-daemonFile = join(rootDir, 'scal2', 'starcal2-daemon.py')
 
 if osName in ('linux', 'unix'):
     homeDir = os.getenv('HOME')
