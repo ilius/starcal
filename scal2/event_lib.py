@@ -3864,8 +3864,12 @@ def getDayOccurrenceData(curJd, groups):
                         h1, m1, s1 = 24, 0, 0
                     timeStr = hmsRangeToStr(h0, m0, s0, h1, m1, s1)
             ###
+            try:
+                eventIndex = group.index(eid)
+            except ValueError:
+                eventIndex = event.modified ## FIXME
             data.append((
-                (epoch0, epoch1, groupIndex, eid),## FIXME for sorting
+                (epoch0, epoch1, groupIndex, eventIndex),## FIXME for sorting
                 {
                     'time': timeStr,
                     'text': text,
