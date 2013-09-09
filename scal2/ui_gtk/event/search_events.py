@@ -325,7 +325,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         eventIter = self.trees.get_iter(path)
         self.trees.set_value(eventIter, 3, pixbufFromFile(event.icon))
         self.trees.set_value(eventIter, 4, event.summary)
-        self.trees.set_value(eventIter, 5, event.description)
+        self.trees.set_value(eventIter, 5, event.getShownDescription())
     def clearResults(self):
         self.trees.clear()
         self.resultLabel.set_label('')
