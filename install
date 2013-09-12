@@ -29,7 +29,7 @@ version=`$sourceDir/scal2/get_version.py`
 PY=python2
 "$sourceDir/scripts/assert_python2"
 
-
+"$sourceDir/update-perm" ## FIXME
 
 
 options=`getopt -o 'h' --long 'help,for-pkg,portable,prefix:' -n "$0" -- "$@"`
@@ -121,6 +121,8 @@ elif [ -d "${shareDir}/$pkgName" ] ; then
 fi
 
 cp -Rf "$sourceDir/" "${shareDir}/$pkgName" ### PUT SLASH after $sourceDir to copy whole folder, not just a link (if was a link)
+
+"${shareDir}/$pkgName/update-perm" ## FIXME
 
 for docFile in copyright authors ChangeLog ; do
     mv -f "${shareDir}/$pkgName/$docFile" "${shareDir}/doc/$pkgName/"
