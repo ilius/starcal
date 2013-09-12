@@ -31,7 +31,6 @@ chmod 755 'scripts/pretty_json_all'
 chmod 755 'scripts/pretty_json.py'
 chmod 755 'scripts/run'
 chmod 755 'scripts/run_abs'
-chmod 755 'scripts/starcal2d'
 
 chmod 755 'locale.d/compile'
 chmod 755 'locale.d/install'
