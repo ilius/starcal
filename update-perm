@@ -6,6 +6,7 @@ chmod -R 755 .
 
 find . -type f -exec chmod 644 '{}' \;
 
+chmod 755 scripts/*
 
 chmod 755 'starcal2'
 chmod 755 'starcal2-qt'
@@ -21,17 +22,6 @@ chmod 755 'install-plasma-applet'
 chmod 755 'install-suse'
 chmod 755 'uninstall'
 chmod 755 'update-perm'
-
-chmod 755 'scripts/assert_python2'
-chmod 755 'scripts/compact_json_all'
-chmod 755 'scripts/compact_json.py'
-chmod 755 'scripts/post_install.py'
-chmod 755 'scripts/pre_remove.py'
-chmod 755 'scripts/pretty_json_all'
-chmod 755 'scripts/pretty_json.py'
-chmod 755 'scripts/run'
-chmod 755 'scripts/run_abs'
-chmod 755 'scripts/load-zoneinfo-tree.py'
 
 chmod 755 'locale.d/compile'
 chmod 755 'locale.d/install'
