@@ -260,7 +260,7 @@ class CustomizeDialog(gtk.Dialog):
         item.enable = active
         if active:
             item.show()
-            item.onDateChange()
+            item.onConfigChange()
         else:
             item.hide()
         if ui.mainWin:
