@@ -493,4 +493,18 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
         self.onDateChange()
 
 
+if __name__=='__main__':
+    win = gtk.Dialog()
+    box = YearMonthLabelBox()
+    win.add_events(
+        gdk.POINTER_MOTION_MASK | gdk.FOCUS_CHANGE_MASK | gdk.BUTTON_MOTION_MASK |
+        gdk.BUTTON_PRESS_MASK | gdk.BUTTON_RELEASE_MASK | gdk.SCROLL_MASK |
+        gdk.KEY_PRESS_MASK | gdk.VISIBILITY_NOTIFY_MASK | gdk.EXPOSURE_MASK
+    )
+    win.vbox.pack_start(box, 1, 1)
+    win.vbox.show_all()
+    win.resize(600, 400)
+    box.onConfigChange()
+    win.run()
+
 
