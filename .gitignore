@@ -1,5 +1,6 @@
 *~
 *.py[oc]
+*.pywc
 .cache
 .cdtproject
 .cproject
