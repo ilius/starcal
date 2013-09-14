@@ -940,8 +940,9 @@ if __name__=='__main__':
         gdk.KEY_PRESS_MASK | gdk.VISIBILITY_NOTIFY_MASK | gdk.EXPOSURE_MASK
     )
     win.vbox.pack_start(cal, 1, 1)
-    win.vbox.show()
+    win.vbox.show_all()
     win.resize(600, 400)
+    cal.onConfigChange()
     win.run()
 
 
