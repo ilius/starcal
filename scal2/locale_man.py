@@ -54,10 +54,10 @@ def getLangDigits(langSh0):
 ## Urdu digits is a combination of Arabic and Persian digits, except for Zero that is
 ## named ARABIC-INDIC DIGIT ZERO in unicode database
 
-LRM = '\xe2\x80\x8e'
+LRM = '\xe2\x80\x8e' ## u'\u200e' ## left to right mark
 RLM = '\xe2\x80\x8f' ## u'\u200f' ## right to left mark
-ZWNJ = '\xe2\x80\x8c'
-ZWJ = '\xe2\x80\x8d'
+ZWNJ = u'\u200c' ## zero width non-joiner
+ZWJ = u'\u200d' ## zero width joiner
 
 sysLangDefault = os.environ.get('LANG', '')
 
@@ -333,10 +333,14 @@ dateLocale = lambda year, month, day:\
     numEncode(day, fillZero=2)
 
 def cutText(text, n):
+    text = toUnicode(text)
     newText = text[:n]
     if len(text) > n:
         if text[n] not in list(string.printable)+[ZWNJ]:
-            newText += ZWJ
+            try:
+                newText += ZWJ
+            except UnicodeDecodeError:
+                pass
     return newText
 
 ##############################################
