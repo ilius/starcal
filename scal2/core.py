@@ -176,9 +176,7 @@ def getLocaleFirstWeekDay():
 
 
 ## week number in year
-def getWeekNumber(year, month, day):
-    jd = primary_to_jd(year, month, day)
-    ###
+def getWeekNumberByJdAndDate(jd, year, month, day):
     if primary_to_jd(year+1, 1, 1) - jd < 7:## FIXME
         if getWeekNumber(*jd_to_primary(jd+14)) == 3:
             return 1
@@ -194,6 +192,17 @@ def getWeekNumber(year, month, day):
                 weekNum = getWeekNumber(*jd_to_primary(jd-7)) + 1
     ###
     return weekNum
+
+def getWeekNumber(year, month, day):
+    jd = primary_to_jd(year, month, day)
+    return getWeekNumberByJdAndDate(jd, year, month, day)
+
+def getWeekNumberByJd(jd):
+    year, month, day = jd_to_primary(jd)
+    return getWeekNumberByJdAndDate(jd, year, month, day)
+
+#getYearWeeksCount = lambda year: getWeekNumberByJd(primary_to_jd(year+1, 1, 1)-7)
+## FIXME
 
 def getJdFromWeek(year, weekNumber):## FIXME
     ## weekDay == 0
