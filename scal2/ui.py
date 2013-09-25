@@ -120,6 +120,7 @@ def saveLiveConf():
         'pluginsTextIsExpanded', 'eventViewMaxHeight', 'bgColor',
         'eventManShowDescription',## FIXME
         'localTzHist',
+        'wcal_toolbar_weekNum_negative',
     ):
         text += '%s=%r\n'%(key, eval(key))
     open(confPathLive, 'w').write(text)
@@ -227,6 +228,8 @@ class Cell:## status and information of a cell
         self.year, self.month, self.day = date
         self.weekDay = core.jwday(jd)
         self.weekNum = core.getWeekNumber(self.year, self.month, self.day)
+        #self.weekNumNeg = self.weekNum + 1 - core.getYearWeeksCount(self.year)
+        self.weekNumNeg = self.weekNum - int(core.calTypes[core.primaryMode].avgYearLen / 7)
         self.holiday = (self.weekDay in core.holidayWeekDays)
         ###################
         self.dates = []
@@ -649,6 +652,7 @@ wcalGridColor = (255, 252, 0, 82)
 
 wcal_toolbar_mainMenu_icon = join(pixDir, 'starcal2-24.png')
 wcal_toolbar_mainMenu_icon_default = wcal_toolbar_mainMenu_icon
+wcal_toolbar_weekNum_negative = False
 wcal_weekDays_width = 80
 wcal_eventsCount_width = 80
 wcal_eventsCount_expand = False

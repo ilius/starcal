@@ -274,12 +274,23 @@ class MainMenuToolbarItem(ToolbarItem):
 
 class WeekNumToolbarItem(ToolbarItem):
     def __init__(self):
-        ToolbarItem.__init__(self, 'weekNum', None, '', tooltip=_('Week Number'), text='')
+        ToolbarItem.__init__(self, 'weekNum', None, self.onClicked, tooltip=_('Week Number'), text='')
         self.label = gtk.Label()
+        self.label.set_direction(gtk.TEXT_DIR_LTR)
         self.set_property('label-widget', self.label)
+    def updateLabel(self):
+        if ui.wcal_toolbar_weekNum_negative:
+            n = ui.cell.weekNumNeg
+        else:
+            n = ui.cell.weekNum
+        self.label.set_label(_(n))
     def onDateChange(self, *a, **ka):
         ToolbarItem.onDateChange(self, *a, **ka)
-        self.label.set_label(_(ui.cell.weekNum))
+        self.updateLabel()
+    def onClicked(self, *a):
+        ui.wcal_toolbar_weekNum_negative = not ui.wcal_toolbar_weekNum_negative
+        self.updateLabel()
+        ui.saveLiveConf()
 
 @registerSignals
 class ToolbarColumn(CustomizableToolbar, ColumnBase):
