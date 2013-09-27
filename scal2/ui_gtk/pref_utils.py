@@ -523,7 +523,8 @@ class AICalsPrefItem():
         ########
         treev = ActiveCalsTreeView()
         treev.connect('row-activated', self.activeTreevRActivate)
-        treev.connect('focus-in-event', self.activeTreevFocus)
+        #treev.connect('focus-in-event', self.activeTreevFocus)
+        treev.get_selection().connect('changed', self.activeTreevSelectionChanged)
         ###
         self.widget.pack_start(treev.makeSwin(), 0, 0)
         ####
@@ -555,7 +556,8 @@ class AICalsPrefItem():
         ########
         treev = InactiveCalsTreeView()
         treev.connect('row-activated', self.inactiveTreevRActivate)
-        treev.connect('focus-in-event', self.inactiveTreevFocus)
+        #treev.connect('focus-in-event', self.inactiveTreevFocus)
+        treev.get_selection().connect('changed', self.inactiveTreevSelectionChanged)
         ###
         self.widget.pack_start(treev.makeSwin(), 0, 0)
         ####
@@ -564,13 +566,17 @@ class AICalsPrefItem():
         ########
     def setLeftRight(self, isRight):
         tb = self.leftRightButton
-        tb.set_label_widget(
-            gtk.image_new_from_stock(
-                gtk.STOCK_GO_FORWARD if isRight ^ rtl else gtk.STOCK_GO_BACK,
-                gtk.ICON_SIZE_SMALL_TOOLBAR,
+        if isRight is None:
+            tb.set_label_widget(None)
+            tb.action = ''
+        else:
+            tb.set_label_widget(
+                gtk.image_new_from_stock(
+                    gtk.STOCK_GO_FORWARD if isRight ^ rtl else gtk.STOCK_GO_BACK,
+                    gtk.ICON_SIZE_SMALL_TOOLBAR,
+                )
             )
-        )
-        tb.action = 'inactivate' if isRight else 'activate'
+            tb.action = 'inactivate' if isRight else 'activate'
         tb.show_all()
     def activeTreevFocus(self, treev, gevent=None):
         self.setLeftRight(True)
@@ -580,21 +586,28 @@ class AICalsPrefItem():
         #self.activeTreev.set_cursor(None)## FIXME
     def leftRightClicked(self, obj=None):
         tb = self.leftRightButton
-        if tb.action == 'inactivate':
+        if tb.action == 'activate':
+            path, col = self.inactiveTreev.get_cursor()
+            if path:
+                self.activateIndex(path[0])
+        elif tb.action == 'inactivate':
             if len(self.activeTrees) > 1:
                 path, col = self.activeTreev.get_cursor()
                 if path:
                     self.inactivateIndex(path[0])
-        elif tb.action == 'activate':
-            path, col = self.inactiveTreev.get_cursor()
-            if path:
-                self.activateIndex(path[0])
-    def upClicked(self, obj=None):
-        if self.activeTreev.has_focus():
-            treev = self.activeTreev
-        elif self.inactiveTreev.has_focus():
-            treev = self.inactiveTreev
+    def getCurrentTreeview(self):
+        tb = self.leftRightButton
+        if tb.action == 'activate':
+        #if self.activeTreev.has_focus():
+            return self.activeTreev
+        elif tb.action == 'inactivate':
+        #elif self.inactiveTreev.has_focus():
+            return self.inactiveTreev
         else:
+            return
+    def upClicked(self, obj=None):
+        treev = self.getCurrentTreeview()
+        if not treev:
             return
         path, col = treev.get_cursor()
         if path:
@@ -604,11 +617,8 @@ class AICalsPrefItem():
                 s.swap(s.get_iter(i-1), s.get_iter(i))
                 treev.set_cursor(i-1)
     def downClicked(self, obj=None):
-        if self.activeTreev.has_focus():
-            treev = self.activeTreev
-        elif self.inactiveTreev.has_focus():
-            treev = self.inactiveTreev
-        else:
+        treev = self.getCurrentTreeview()
+        if not treev:
             return
         path, col = treev.get_cursor()
         if path:
@@ -635,6 +645,16 @@ class AICalsPrefItem():
         except:
             pass
         self.activeTreev.grab_focus()## FIXME
+    def activeTreevSelectionChanged(self, selection):
+        if selection.count_selected_rows() > 0:
+            self.setLeftRight(False)
+        else:
+            self.setLeftRight(None)
+    def inactiveTreevSelectionChanged(self, selection):
+        if selection.count_selected_rows() > 0:
+            self.setLeftRight(True)
+        else:
+            self.setLeftRight(None)
     def activeTreevRActivate(self, treev, path, col):
         self.inactivateIndex(path[0])
     def inactiveTreevRActivate(self, treev, path, col):
