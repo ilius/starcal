@@ -262,46 +262,16 @@ class DaySpinButton(SingleSpinButton):
             **kwargs
         )
 
-class FloatSpinButton(MultiSpinButton):
-    def __init__(self, _min, _max, digNum, **kwargs):
-        if digNum < 1:
-            raise ValueError('FloatSpinButton: invalid digNum=%r'%digNum)
-        self.digNum = digNum
-        self.digDec = 10**digNum
-        self._min = _min
-        self._max = _max
-        MultiSpinButton.__init__(
+class FloatSpinButton(SingleSpinButton):
+    def __init__(self, _min, _max, digits, **kwargs):
+        if digits < 1:
+            raise ValueError('FloatSpinButton: invalid digits=%r'%digits)
+        SingleSpinButton.__init__(
             self,
-            locale_man.getNumSep(),
-            (
-                IntField(int(_min), int(_max)),
-                IntField(0, self.digDec-1, digNum),
-            ),
+            FloatField(_min, _max, digits),
             **kwargs
         )
-    def get_value(self):
-        text = self.get_text()
-        #text = text.replace('/', '.')## FIXME
-        text_en = locale_man.textNumDecode(text)
-        try:
-            v = float(text_en)
-        except ValueError:
-            printError('could not convert number string %s to float'%s)
-            return self._min
-        else:
-            return v
-    def set_value(self, value):
-        if value < self._min:
-            value = self._min
-        elif value > self._max:
-            value = self._max
-        s1, s2 = ('%.*f'%(self.digNum, value)).split('.')
-        v1 = int(s1)
-        v2 = int(s2[:self.digNum])
-        #print value, v1, v2
-        MultiSpinButton.set_value(self, (v1, v2))
-    def entry_plus(self, p):
-        self.set_value(self.get_value()+float(p)/self.digDec)
+
 
 class DateButton(MultiSpinButton):
     def __init__(self, date=None, **kwargs):

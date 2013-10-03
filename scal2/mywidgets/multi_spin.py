@@ -20,7 +20,7 @@
 from scal2.utils import toUnicode, toStr, myRaise
 
 from scal2 import locale_man
-from scal2.locale_man import numEncode, numDecode
+from scal2.locale_man import numEncode, floatEncode, numDecode, textNumEncode, textNumDecode
 
 from scal2.cal_types import to_jd, jd_to, convert
 
@@ -46,14 +46,7 @@ class Field:
     def getFieldAt(self, text, pos):
         return self
 
-
-class IntField(Field):
-    def __init__(self, _min, _max, fill=0):
-        self._min = _min
-        self._max = _max
-        self.fill = fill
-        self.myKeys = locale_man.getAvailableDigitKeys()
-        self.setDefault()
+class NumField(Field):
     def setRange(self, _min, _max):
         self._min = _min
         self._max = _max
@@ -61,14 +54,22 @@ class IntField(Field):
     def setDefault(self):
         self.value = self._min
     def setValue(self, v):
-        v = int(v)
         if v < self._min:
             v = self._min
         elif v > self._max:
             v = self._max
         self.value = v
     getValue = lambda self: self.value
-    plus = lambda self, p: self.setValue(self.value + p)
+
+
+
+class IntField(NumField):
+    def __init__(self, _min, _max, fill=0):
+        self._min = _min
+        self._max = _max
+        self.fill = fill
+        self.myKeys = locale_man.getAvailableDigitKeys()
+        self.setDefault()
     def setText(self, text):
         try:
             num = numDecode(text)
@@ -82,6 +83,31 @@ class IntField(Field):
         len(str(self._min)),
         len(str(self._max)),
     )
+    plus = lambda self, p: self.setValue(self.value + p)
+
+
+class FloatField(NumField):
+    def __init__(self, _min, _max, digits):
+        self._min = _min
+        self._max = _max
+        self.digits = digits
+        self.digDec = 10**digits
+        self.myKeys = locale_man.getAvailableDigitKeys()
+        self.setDefault()
+    def setText(self, text):
+        try:
+            num = float(textNumDecode(text))
+        except:
+            myRaise()
+            self.setDefault()
+        else:
+            self.setValue(num)
+    getText = lambda self: floatEncode('%.*f'%(self.digits, self.value))
+    getMaxWidth = lambda self: max(
+        len('%.*f'%(self.digits, self._min)),
+        len('%.*f'%(self.digits, self._max)),
+    )
+    plus = lambda self, p: self.setValue(self.value + float(p)/self.digDec)
 
 
 class YearField(IntField):
