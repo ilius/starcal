@@ -169,7 +169,7 @@ class CustomizeDialog(gtk.Dialog):
         elif isinstance(path, (int, long)):
             path = [path]
         elif not isinstance(path, (tuple, list)):
-            raise TypeError('argument %s given to getItemByPath has bad type'%path)
+            raise TypeError('argument %s given to getItemByPath has bad type %s'%path)
         item = self.widget.items[path[0]]
         for i in path[1:]:
             item = item.items[i]
