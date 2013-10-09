@@ -244,7 +244,7 @@ def numEncode(num, mode=None, fillZero=0, negEnd=False):
     res = u''
     for c in unicode(abs(num)):
         if c==u'.':
-            res += dig[10]
+            res += tr('.')
         else:
             res += dig[int(c)]
     if fillZero>0:
