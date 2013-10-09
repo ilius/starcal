@@ -34,6 +34,9 @@ def rgbToHsl(r, g, b):
 
 
 def hslToRgb(h, s, l):
+    ## 0.0 <= h <= 360.0
+    ## 0.0 <= s <= 1.0
+    ## 0.0 <= l <= 1.0
     if l < 0.5:
         q = l * (1.0+s)
     else:
