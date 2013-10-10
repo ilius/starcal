@@ -1262,7 +1262,7 @@ class Event(JsonEventBaseClass, RuleContainer):
         self.modified = time()
         #self.parent.eventsModified = self.modified
         ###
-        if self.parent:
+        if self.parent and self.id in self.parent.idList:
             rulesHash = self.getRulesHash()
             if rulesHash != self.rulesHash:
                 self.parent.updateOccurrenceEvent(self)
