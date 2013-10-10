@@ -18,11 +18,8 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 
-overlaps = lambda a0, a1, b0, b1: \
-    a0 <= b0 <  a1 or \
-    a0 <  b1 <= a1 or \
-    b0 <= a0 <  b1 or \
-    b0 <  a1 <= b1
+overlaps = lambda a0, a1, b0, b1: abs(a0+a1-b0-b1) < a1-a0+b1-b0
+
 
 def simplifyNumList(nums, minCount=3):## nums must be sorted, minCount >= 2
     ranges = []
@@ -98,10 +95,30 @@ def testJdRanges():
 def testSimplifyNumList():
     pprint.pprint(simplifyNumList([1, 2, 3, 4, 5, 7, 9, 10, 14, 16, 17, 18, 19, 21, 22, 23, 24]))
 
+def testOverlapsSpeed():
+    from random import normalvariate
+    from time import time
+    N = 2000000
+    a0, a1 = -1, 1
+    b_mean = 0
+    b_sigma = 2
+    ###
+    getRandomPair = lambda: sorted([normalvariate(b_mean, b_sigma) for i in (0, 1)])
+    ###
+    data = []
+    for i in range(N):
+        b0, b1 = getRandomPair()
+        data.append((b0, b1))
+    t0 = time()
+    for b0, b1 in data:
+        overlaps(a0, a1, b0, b1)
+    print '%.2f'%(time()-t0)
+
 if __name__=='__main__':
     import pprint
     #testIntersection()
     #testJdRanges()
-    testSimplifyNumList()
+    #testSimplifyNumList()
+    testOverlapsSpeed()
 
 
