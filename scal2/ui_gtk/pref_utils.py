@@ -523,7 +523,7 @@ class AICalsPrefItem():
         ########
         treev = ActiveCalsTreeView()
         treev.connect('row-activated', self.activeTreevRActivate)
-        #treev.connect('focus-in-event', self.activeTreevFocus)
+        treev.connect('focus-in-event', self.activeTreevFocus)
         treev.get_selection().connect('changed', self.activeTreevSelectionChanged)
         ###
         self.widget.pack_start(treev.makeSwin(), 0, 0)
@@ -556,7 +556,7 @@ class AICalsPrefItem():
         ########
         treev = InactiveCalsTreeView()
         treev.connect('row-activated', self.inactiveTreevRActivate)
-        #treev.connect('focus-in-event', self.inactiveTreevFocus)
+        treev.connect('focus-in-event', self.inactiveTreevFocus)
         treev.get_selection().connect('changed', self.inactiveTreevSelectionChanged)
         ###
         self.widget.pack_start(treev.makeSwin(), 0, 0)
@@ -580,10 +580,8 @@ class AICalsPrefItem():
         tb.show_all()
     def activeTreevFocus(self, treev, gevent=None):
         self.setLeftRight(True)
-        #self.inactiveTreev.set_cursor(None)## FIXME
     def inactiveTreevFocus(self, treev, gevent=None):
         self.setLeftRight(False)
-        #self.activeTreev.set_cursor(None)## FIXME
     def leftRightClicked(self, obj=None):
         tb = self.leftRightButton
         if tb.action == 'activate':
@@ -597,11 +595,9 @@ class AICalsPrefItem():
                     self.inactivateIndex(path[0])
     def getCurrentTreeview(self):
         tb = self.leftRightButton
-        if tb.action == 'activate':
-        #if self.activeTreev.has_focus():
+        if tb.action == 'inactivate':
             return self.activeTreev
-        elif tb.action == 'inactivate':
-        #elif self.inactiveTreev.has_focus():
+        elif tb.action == 'activate':
             return self.inactiveTreev
         else:
             return
@@ -647,12 +643,12 @@ class AICalsPrefItem():
         self.activeTreev.grab_focus()## FIXME
     def activeTreevSelectionChanged(self, selection):
         if selection.count_selected_rows() > 0:
-            self.setLeftRight(False)
+            self.setLeftRight(True)
         else:
             self.setLeftRight(None)
     def inactiveTreevSelectionChanged(self, selection):
         if selection.count_selected_rows() > 0:
-            self.setLeftRight(True)
+            self.setLeftRight(False)
         else:
             self.setLeftRight(None)
     def activeTreevRActivate(self, treev, path, col):
