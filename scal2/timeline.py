@@ -71,7 +71,7 @@ keyboardZoomStep = 1.4 ## > 1
 
 #############################################
 
-enableAnimation = True
+enableAnimation = False
 movingStaticStep = 20
 movingUpdateTime = 10 ## milisecons
 
