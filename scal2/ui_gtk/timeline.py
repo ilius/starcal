@@ -30,7 +30,7 @@ from scal2 import core
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl
 
-from scal2.utils import toUnicode
+from scal2.utils import toUnicode, iceil
 from scal2.core import myRaise
 
 from scal2 import ui
@@ -119,13 +119,28 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         self.style.set_background(self.window, gtk.STATE_NORMAL)
         self.window.move_resize(*self.allocation)
         self.currentTimeUpdate()
-    def currentTimeUpdate(self):
+    def currentTimeUpdate(self, restart=False, draw=True):
+        if restart:
+            try:
+                gobject.source_remove(self.timeUpdateSourceId)
+            except AttributeError:
+                pass
+        try:
+            pixelPerSec = self.pixelPerSec
+        except AttributeError:
+            pixelPerSec = 1
+        seconds = iceil(0.4/pixelPerSec)
         tm = now()
-        timeout_add(int(1000*(1.01-tm%1)), self.currentTimeUpdate)
+        #print 'time=%.2f'%(tm%100), 'pixelPerSec=%.1f'%pixelPerSec, 'seconds=%d'%seconds
+        self.timeUpdateSourceId = timeout_add(
+            int(1000*(seconds + 0.01 - tm%1)),
+            self.currentTimeUpdate,
+        )
         self.currentTime = int(tm)
-        if self.parent:
+        if draw and self.parent:
             if self.parent.get_visible() and \
             self.timeStart <= tm <= self.timeStart + self.timeWidth + 1:
+                #print '%.2f'%(tm%100), 'currentTimeUpdate: DRAW'
                 self.queue_draw()
     def updateData(self):
         width = self.allocation.width
@@ -255,6 +270,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         #t0 = now()
         if not self.boxEditing:
             self.updateData()
+            self.currentTimeUpdate(restart=True, draw=False)
         #t1 = now()
         self.drawAll(self.window.cairo_create())
         #t2 = now()
