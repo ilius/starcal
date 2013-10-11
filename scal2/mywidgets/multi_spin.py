@@ -83,7 +83,7 @@ class IntField(NumField):
         len(str(self._min)),
         len(str(self._max)),
     )
-    plus = lambda self, p: self.setValue(self.value + p)
+    plus = lambda self, p: self.setValue(int(self.value + p))
 
 
 class FloatField(NumField):
