@@ -1,4 +1,5 @@
 from scal2.interval_utils import overlaps
+from scal2.graph_utils import *
 from scal2.event_search_tree import EventSearchTree
 from scal2.locale_man import tr as _
 from scal2.event_lib import epsTm
@@ -25,7 +26,7 @@ editingBoxHelperLineWidth = 0.3 ## px
 
 
 boxReverseGravity = False
-boxSortByWidth = False ## wider boxes are lower (with normal gravity)
+boxSortByWidth = True ## wider boxes are lower (with normal gravity)
 boxMaxHeightFactor = 0.8 ## < 1.0
 
 boxSkipPixelLimit = 0.1 ## pixels
@@ -116,6 +117,28 @@ class Box:
     contains = lambda self, px, py: 0 <= px-self.x < self.w and 0 <= py-self.y < self.h
 
 
+def updateBoxesForGraph(boxes, graph, minColor, minU):
+    colorCount = max(graph.vs['color']) - minColor + 1
+    if colorCount < 1:
+        return
+    du = (1.0-minU) / colorCount
+    min_vertices = graph.vs.select(color_eq=minColor) ## a VertexSeq
+    for v in min_vertices:
+        box = boxes[v['name']]
+        if boxReverseGravity:
+            box.u0, box.u1 = minU, minU + du
+        else:
+            box.u0, box.u1 = 1 - minU - du, 1 - minU
+    graph.delete_vertices(min_vertices)
+    for sgraph in graph.decompose():
+        updateBoxesForGraph(
+            boxes,
+            sgraph,
+            minColor + 1,
+            minU + du,
+        )
+
+
 def calcEventBoxes(
     timeStart,
     timeEnd,
@@ -175,75 +198,14 @@ def calcEventBoxes(
             boxes.append(box)
     del boxesDict
     #####
-    boxes.sort() ## FIXME
-    ##
-    boundaries = set()
-    for box in boxes:
-        boundaries.add(box.t0)
-        boundaries.add(box.t1)
-    boundaries = sorted(boundaries)
-    ##
-    segNum = len(boundaries) - 1
-    segCountList = [0] * segNum
-    boxesIndex = []
-    for boxI, box in enumerate(boxes):
-        segI0 = boundaries.index(box.t0)
-        segI1 = boundaries.index(box.t1)
-        boxesIndex.append((box, boxI, segI0, segI1))
-        for i in range(segI0, segI1):
-            segCountList[i] += 1
-    placedBoxes = EventSearchTree()
-    for box, boxI, segI0, segI1 in boxesIndex:
-        conflictRanges = []
-        for c_t0, c_t1, c_boxI, c_dt in placedBoxes.search(
-            box.t0 + epsTm,
-            box.t1 - epsTm,
-        ):## FIXME
-            c_box = boxes[c_boxI]
-            '''
-            if not box.tOverlaps(c_box):
-                min4 = min(box.t0, c_box.t0)
-                max4 = max(box.t1, c_box.t1)
-                dmm = max4 - min4
-                tran = lambda t: (t-min4)/dmm
-                print 'no overlap (%s, %s) and (%s, %s)'%(
-                    tran(box.t0),
-                    tran(box.t1),
-                    tran(c_box.t0),
-                    tran(c_box.t1),
-                )
-                ## box.t1 == c_box.t0   OR   c_box.t1 == box.t0
-                ## this should not be returned in EventSearchTree.search()
-                ## FIXME
-                continue
-            '''
-            conflictRanges.append((c_box.u0, c_box.u1))
-        freeSpaces = realRangeListsDiff([(0, 1)], conflictRanges)
-        if not freeSpaces:
-            print 'unable to find a free space for box, box.ids=%s'%(box.ids,)
-            box.u0 = box.u1 = 0
-            continue
-        if boxReverseGravity:
-            freeSpaces.reverse()
-        height = min(
-            max([sp[1] - sp[0] for sp in freeSpaces]),
-            boxMaxHeightFactor / max(segCountList[segI0:segI1]),
-        )
-        freeSp = None
-        for sp in freeSpaces:
-            if sp[1] - sp[0] >= height:
-                freeSp = sp
-                break
-        freeSpH = freeSp[1] - freeSp[0]
-        if 0.5*freeSpH < height < 0.75*freeSpH:## for better height balancing FIXME
-            height = 0.5*freeSpH
-        if boxReverseGravity:
-            box.u0 = freeSp[0]
-            box.u1 = box.u0 + height
-        else:
-            box.u1 = freeSp[1]
-            box.u0 = box.u1 - height
-        placedBoxes.add(box.t0, box.t1, boxI)
+    if not boxes:
+        return []
+    ###
+    boxes.sort(reverse=boxReverseGravity) ## FIXME
+    ###
+    graph = makeIntervalGraph(boxes, Box.tOverlaps)
+    colorGraph(graph)
+    updateBoxesForGraph(boxes, graph, 0, 0)
     return boxes
 
 
