@@ -48,7 +48,3 @@ chmod 755 'scal2/ui_qt/import_config_1to2.py'
 chmod 755 'scal2/ui_gtk/screenlet/StarCalendarScreenlet.py'
 chmod 755 'scal2/ui_gtk/starcal-gnome2-applet.py'
 
-chmod 755 'debian/rules'
-
-
-
