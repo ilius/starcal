@@ -15,16 +15,6 @@ def makeIntervalGraph(intervals, overlaps):
     return g
 
 
-def assignComponents(g):
-    g.vs['component'] = [None]*g.vcount()
-    subgraphs = g.decompose()
-    for compI, sg in enumerate(subgraphs):
-        for v in sg.vs:
-            origV = g.vs[v['name']]
-            origV['component'] = compI
-    return len(subgraphs)
-
-
 def colorGraph(g):
     ## Using 'SL' (Smalest Last) algorithm
     n = g.vcount()
