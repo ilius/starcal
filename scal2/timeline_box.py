@@ -210,7 +210,7 @@ def calcEventBoxes(
     if not boxes:
         return []
     ###
-    boxes.sort(reverse=boxReverseGravity) ## FIXME
+    boxes.sort()## FIXME
     ###
     if debugMode:
         t1 = now()
