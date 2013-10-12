@@ -22,7 +22,7 @@ from math import log
 
 sys.path.append('/starcal2')
 
-from scal2.interval_utils import overlaps
+from scal2.interval_utils import ab_overlaps
 from scal2.time_utils import *
 
 #maxLevel = 1
@@ -52,7 +52,7 @@ class Node:
     def clear(self):
         self.children = {} ## possible keys are 0 to base-1 for right node, or -(base-1) to 0 for left node
         self.events = [] ## list of tuples (rel_start, rel_end, event_id)
-    overlapScope = lambda self, t0, t1: overlaps(t0, t1, self.s0, self.s1)
+    overlapScope = lambda self, t0, t1: ab_overlaps(t0, t1, self.s0, self.s1)
     def search(self, t0, t1):## t0 < t1
         '''
             returns a generator to iterate over (ev_t0, ev_t1, eid, ev_dt) s
@@ -63,7 +63,7 @@ class Node:
         for ev_rt0, ev_rt1, eid in self.events:
             ev_t0 = ev_rt0 + self.offset
             ev_t1 = ev_rt1 + self.offset
-            if overlaps(t0, t1, ev_t0, ev_t1):
+            if ab_overlaps(t0, t1, ev_t0, ev_t1):
                 yield (
                     max(t0, ev_t0),
                     min(t1, ev_t1),

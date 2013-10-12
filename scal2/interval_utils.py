@@ -18,7 +18,8 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 
-overlaps = lambda a0, a1, b0, b1: abs(a0+a1-b0-b1) < a1-a0+b1-b0
+ab_overlaps = lambda a0, b0, a1, b1: abs(a0+b1-a1-b1) < b0-a0+b1-a1
+md_overlaps = lambda m0, d0, m1, d1: abs(m0-m1) < d0+d1
 
 
 def simplifyNumList(nums, minCount=3):## nums must be sorted, minCount >= 2
@@ -99,7 +100,7 @@ def testOverlapsSpeed():
     from random import normalvariate
     from time import time
     N = 2000000
-    a0, a1 = -1, 1
+    a0, b0 = -1, 1
     b_mean = 0
     b_sigma = 2
     ###
@@ -107,11 +108,11 @@ def testOverlapsSpeed():
     ###
     data = []
     for i in range(N):
-        b0, b1 = getRandomPair()
-        data.append((b0, b1))
+        a, b = getRandomPair()
+        data.append((a, b))
     t0 = time()
-    for b0, b1 in data:
-        overlaps(a0, a1, b0, b1)
+    for a, b in data:
+        ab_overlaps(a0, b0, a, b)
     print '%.2f'%(time()-t0)
 
 if __name__=='__main__':

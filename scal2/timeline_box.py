@@ -1,4 +1,4 @@
-from scal2.interval_utils import overlaps
+from scal2.interval_utils import ab_overlaps, md_overlaps
 from scal2.graph_utils import *
 from scal2.event_search_tree import EventSearchTree
 from scal2.locale_man import tr as _
@@ -79,6 +79,8 @@ class Box:
         self.t0 = t0
         self.t1 = t1
         self.odt = odt ## original delta t
+        self.tm = (t0+t1)/2.0
+        self.td = (t1-t0)/2.0
         #if t1-t0 != odt:
         #    print 'Box, dt=%s, odt=%s'%(t1-t0, odt)
         self.u0 = u0
@@ -99,8 +101,9 @@ class Box:
         ####
         self.hasBorder = False
         self.tConflictBefore = []
-    tOverlaps = lambda self, other: overlaps(self.t0, self.t1, other.t0, other.t1)
-    yOverlaps = lambda self, other: overlaps(self.u0, self.u1, other.u0, other.u1)
+    #tOverlaps = lambda self, other: ab_overlaps(self.t0, self.t1, other.t0, other.t1)
+    tOverlaps = lambda self, other: md_overlaps(self.tm, self.td, other.tm, other.td)
+    yOverlaps = lambda self, other: ab_overlaps(self.u0, self.u1, other.u0, other.u1)
     dt = lambda self: self.t1 - self.t0
     du = lambda self: self.u1 - self.u0
     def __cmp__(self, other):## FIXME
