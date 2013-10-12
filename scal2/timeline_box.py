@@ -73,7 +73,12 @@ def realRangeListsDiff(r1, r2):
 
 class Box:
     def __init__(
-        self, t0, t1, odt, u0, u1,
+        self,
+        t0,
+        t1,
+        odt,
+        u0,
+        u1,
         text='',
         color=None,
         ids=None,
@@ -83,8 +88,8 @@ class Box:
         self.t0 = t0
         self.t1 = t1
         self.odt = odt ## original delta t
-        self.tm = (t0+t1)/2.0
-        self.td = (t1-t0)/2.0
+        self.mt = (t0+t1)/2.0 ## - timeMiddle ## FIXME
+        self.dt = (t1-t0)/2.0
         #if t1-t0 != odt:
         #    print 'Box, dt=%s, odt=%s'%(t1-t0, odt)
         self.u0 = u0
@@ -105,8 +110,9 @@ class Box:
         ####
         self.hasBorder = False
         self.tConflictBefore = []
+    mt_cmp = lambda self, other: cmp(self.mt, other.mt)
     #tOverlaps = lambda self, other: ab_overlaps(self.t0, self.t1, other.t0, other.t1)
-    tOverlaps = lambda self, other: md_overlaps(self.tm, self.td, other.tm, other.td)
+    tOverlaps = lambda self, other: md_overlaps(self.mt, self.dt, other.mt, other.dt)
     yOverlaps = lambda self, other: ab_overlaps(self.u0, self.u1, other.u0, other.u1)
     dt = lambda self: self.t1 - self.t0
     du = lambda self: self.u1 - self.u0
@@ -122,6 +128,21 @@ class Box:
         self.y = beforeBoxH + maxBoxH * self.u0
         self.h = maxBoxH * (self.u1 - self.u0)
     contains = lambda self, px, py: 0 <= px-self.x < self.w and 0 <= py-self.y < self.h
+
+
+def makeIntervalGraph(boxes):
+    g = Graph()
+    n = len(boxes)
+    g.add_vertices(n-1)
+    g.vs['name'] = range(n)
+    for i in range(1, n):
+        xi = boxes[i]
+        for j in range(i):
+            if xi.tOverlaps(boxes[j]):
+                g.add_edges([
+                    (i, j),
+                ])
+    return g
 
 
 def updateBoxesForGraph(boxes, graph, minColor, minU):
@@ -153,6 +174,7 @@ def calcEventBoxes(
     borderTm,
 ):
     boxesDict = {}
+    #timeMiddle = (timeStart + timeEnd) / 2.0
     for groupIndex in range(len(ui.eventGroups)):
         group = ui.eventGroups.byIndex(groupIndex)
         if not group.enable:
@@ -214,7 +236,7 @@ def calcEventBoxes(
     ###
     if debugMode:
         t1 = now()
-    graph = makeIntervalGraph(boxes, Box.tOverlaps) ## the bottleneck ## FIXME
+    graph = makeIntervalGraph(boxes) ## the bottleneck ## FIXME
     if debugMode:
         print 'makeIntervalGraph %e'%(now()-t1)
     ###

@@ -1,19 +1,5 @@
 from igraph import Graph
 
-def makeIntervalGraph(intervals, overlaps):
-    g = Graph()
-    n = len(intervals)
-    g.add_vertices(n-1)
-    g.vs['name'] = range(n)
-    for i in range(1, n):
-        xi = intervals[i]
-        for j in range(i):
-            if overlaps(xi, intervals[j]):
-                g.add_edges([
-                    (i, j),
-                ])
-    return g
-
 
 def colorGraph(g):
     ## Using 'SL' (Smalest Last) algorithm
