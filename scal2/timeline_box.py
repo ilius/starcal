@@ -131,6 +131,8 @@ class Box:
 
 
 def makeIntervalGraph(boxes):
+    boxes.sort(cmp=Box.mt_cmp)
+    ###
     g = Graph()
     n = len(boxes)
     g.add_vertices(n-1)
@@ -138,7 +140,9 @@ def makeIntervalGraph(boxes):
     for i in range(1, n):
         xi = boxes[i]
         for j in range(i):
-            if xi.tOverlaps(boxes[j]):
+            xj = boxes[j]
+            #if xi.tOverlaps(boxes[j]):
+            if xi.mt - xj.mt < xi.dt + xj.dt:## j < i ==> xj.mt < xi.mt
                 g.add_edges([
                     (i, j),
                 ])
@@ -232,7 +236,7 @@ def calcEventBoxes(
     if not boxes:
         return []
     ###
-    boxes.sort()## FIXME
+    #boxes.sort()## FIXME
     ###
     if debugMode:
         t1 = now()
