@@ -1,9 +1,13 @@
+from time import time as now
+
 from scal2.interval_utils import ab_overlaps, md_overlaps
 from scal2.graph_utils import *
 from scal2.event_search_tree import EventSearchTree
 from scal2.locale_man import tr as _
+from scal2.core import debugMode
 from scal2.event_lib import epsTm
 from scal2 import ui
+
 
 movableEventTypes = (
     'task',
@@ -188,6 +192,8 @@ def calcEventBoxes(
             except KeyError:
                 boxesDict[boxValue] = [box]
     ###
+    if debugMode:
+        t0 = now()
     boxes = []
     for bvalue, blist in boxesDict.iteritems():
         if len(blist) < 4:
@@ -209,6 +215,8 @@ def calcEventBoxes(
     graph = makeIntervalGraph(boxes, Box.tOverlaps)
     colorGraph(graph)
     updateBoxesForGraph(boxes, graph, 0, 0)
+    if debugMode:
+        print 'box placing time: %e'%(now()-t0)
     return boxes
 
 
