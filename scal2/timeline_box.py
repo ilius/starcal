@@ -212,11 +212,17 @@ def calcEventBoxes(
     ###
     boxes.sort(reverse=boxReverseGravity) ## FIXME
     ###
-    graph = makeIntervalGraph(boxes, Box.tOverlaps)
+    if debugMode:
+        t1 = now()
+    graph = makeIntervalGraph(boxes, Box.tOverlaps) ## the bottleneck ## FIXME
+    if debugMode:
+        print 'makeIntervalGraph %e'%(now()-t1)
+    ###
     colorGraph(graph)
     updateBoxesForGraph(boxes, graph, 0, 0)
     if debugMode:
         print 'box placing time: %e'%(now()-t0)
+        print
     return boxes
 
 
