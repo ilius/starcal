@@ -111,6 +111,7 @@ class Box:
         self.hasBorder = False
         self.tConflictBefore = []
     mt_cmp = lambda self, other: cmp(self.mt, other.mt)
+    dt_cmp = lambda self, other: -cmp(self.dt, other.dt)
     #tOverlaps = lambda self, other: ab_overlaps(self.t0, self.t1, other.t0, other.t1)
     tOverlaps = lambda self, other: md_overlaps(self.mt, self.dt, other.mt, other.dt)
     yOverlaps = lambda self, other: ab_overlaps(self.u0, self.u1, other.u0, other.u1)
@@ -130,7 +131,7 @@ class Box:
     contains = lambda self, px, py: 0 <= px-self.x < self.w and 0 <= py-self.y < self.h
 
 
-def makeIntervalGraph(boxes):
+def makeIntervalGraph_0(boxes):
     boxes.sort(cmp=Box.mt_cmp)
     ###
     g = Graph()
@@ -147,6 +148,33 @@ def makeIntervalGraph(boxes):
                     (i, j),
                 ])
     return g
+
+def makeIntervalGraph(boxes):
+    #boxes.sort(cmp=Box.dt_cmp)## FIXME
+    g = Graph()
+    n = len(boxes)
+    g.add_vertices(n-1)
+    g.vs['name'] = range(n)
+    ####
+    points = [] ## (time, isStart, boxIndex)
+    for boxI, box in enumerate(boxes):
+        points += [
+            (box.t0, True, boxI),
+            (box.t1, False, boxI),
+        ]
+    points.sort()
+    openBoxes = set()
+    for t, isStart, boxI in points:
+        if isStart:
+            g.add_edges([
+                (boxI, oboxI) for oboxI in openBoxes
+            ])
+            openBoxes.add(boxI)
+        else:
+            openBoxes.remove(boxI)
+    return g
+
+
 
 
 def updateBoxesForGraph(boxes, graph, minColor, minU):
@@ -235,19 +263,33 @@ def calcEventBoxes(
     #####
     if not boxes:
         return []
-    ###
+    #####
     #boxes.sort()## FIXME
     ###
     if debugMode:
         t1 = now()
+    ###
     graph = makeIntervalGraph(boxes) ## the bottleneck ## FIXME
     if debugMode:
-        print 'makeIntervalGraph %e'%(now()-t1)
+        #cdt_0 = now()-t1
+        print 'makeIntervalGraph: %e'%(now()-t1)
+        #t1 = now()
+    #graph = makeIntervalGraph_0(boxes) ## the bottleneck ## FIXME
+    #if debugMode:
+    #    cdt_1 = now()-t1
+    #    print 'makeIntervalGraph ratio: %.2f'%(cdt_1/cdt_0)
     ###
+    #print graph0.get_adjacency()
+    #print graph.get_adjacency()
+    #ve0 = (graph0.vcount(), graph0.ecount())
+    #ve = (graph.vcount(), graph.ecount())
+    #if ve0 != ve:
+    #    print '\n----------- not equal (vcount, ecount): %s != %s\n'%(str(ve0), str(ve))
+    #####
     colorGraph(graph)
     updateBoxesForGraph(boxes, graph, 0, 0)
     if debugMode:
-        print 'box placing time: %e'%(now()-t0)
+        print 'box placing time:  %e'%(now()-t0)
         print
     return boxes
 
