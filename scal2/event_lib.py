@@ -85,6 +85,11 @@ class InfoWrapper(JsonSObjBase):
     def __init__(self):
         self.version = ''
         self.last_run = 0
+    def load(self):
+        if isfile(self.file):
+            jstr = open(self.file).read()
+            if jstr:
+                self.setJson(jstr)
     def update(self):
         self.version = core.VERSION
         self.last_run = int(now())
