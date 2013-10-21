@@ -131,24 +131,6 @@ class Box:
     contains = lambda self, px, py: 0 <= px-self.x < self.w and 0 <= py-self.y < self.h
 
 
-def makeIntervalGraph_0(boxes):
-    boxes.sort(cmp=Box.mt_cmp)
-    ###
-    g = Graph()
-    n = len(boxes)
-    g.add_vertices(n-1)
-    g.vs['name'] = range(n)
-    for i in range(1, n):
-        xi = boxes[i]
-        for j in range(i):
-            xj = boxes[j]
-            #if xi.tOverlaps(boxes[j]):
-            if xi.mt - xj.mt < xi.dt + xj.dt:## j < i ==> xj.mt < xi.mt
-                g.add_edges([
-                    (i, j),
-                ])
-    return g
-
 def makeIntervalGraph(boxes):
     #boxes.sort(cmp=Box.dt_cmp)## FIXME
     g = Graph()
@@ -172,7 +154,7 @@ def makeIntervalGraph(boxes):
             openBoxes.add(boxI)
         else:
             openBoxes.remove(boxI)
-    return g
+    return g, points
 
 
 
@@ -269,22 +251,10 @@ def calcEventBoxes(
     if debugMode:
         t1 = now()
     ###
-    graph = makeIntervalGraph(boxes) ## the bottleneck ## FIXME
+    graph, points = makeIntervalGraph(boxes)
     if debugMode:
-        #cdt_0 = now()-t1
         print 'makeIntervalGraph: %e'%(now()-t1)
-        #t1 = now()
-    #graph = makeIntervalGraph_0(boxes) ## the bottleneck ## FIXME
-    #if debugMode:
-    #    cdt_1 = now()-t1
-    #    print 'makeIntervalGraph ratio: %.2f'%(cdt_1/cdt_0)
     ###
-    #print graph0.get_adjacency()
-    #print graph.get_adjacency()
-    #ve0 = (graph0.vcount(), graph0.ecount())
-    #ve = (graph.vcount(), graph.ecount())
-    #if ve0 != ve:
-    #    print '\n----------- not equal (vcount, ecount): %s != %s\n'%(str(ve0), str(ve))
     #####
     colorGraph(graph)
     updateBoxesForGraph(boxes, graph, 0, 0)
