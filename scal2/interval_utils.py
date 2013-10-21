@@ -18,8 +18,10 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 
-ab_overlaps = lambda a0, b0, a1, b1: abs(a0+b1-a1-b1) < b0-a0+b1-a1
-md_overlaps = lambda m0, d0, m1, d1: abs(m0-m1) < d0+d1
+epsTm = 0.01 ## seconds ## configure somewhere? FIXME
+
+ab_overlaps = lambda a0, b0, a1, b1: b0-a0+b1-a1 - abs(a0+b1-a1-b1) > 0.01
+md_overlaps = lambda m0, d0, m1, d1: d0+d1 - abs(m0-m1) > 0.01
 
 
 def simplifyNumList(nums, minCount=3):## nums must be sorted, minCount >= 2

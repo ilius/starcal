@@ -32,7 +32,7 @@ from path import *
 
 from scal2.utils import printError, toStr, arange, ifloor, iceil, findNearestIndex
 from scal2.os_utils import makeDir
-from scal2.interval_utils import *
+from scal2.interval_utils import * ## including epsTm
 from scal2.time_utils import *
 from scal2.date_utils import *
 from scal2.json_utils import *
@@ -54,7 +54,6 @@ from scal2.ics import icsHeader, getIcsTimeByEpoch, getIcsDateByJd, getJdByIcsDa
 from scal2.vcs_modules import encodeShortStat, vcsModuleDict
 
 
-epsTm = 0.01## seconds ## configure somewhere? FIXME
 dayLen = 24*3600
 
 icsMinStartYear = 1970
