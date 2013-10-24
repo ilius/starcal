@@ -1,6 +1,5 @@
 from time import time as now
 
-from scal2.interval_utils import ab_overlaps, md_overlaps
 from scal2.graph_utils import *
 from scal2.event_search_tree import EventSearchTree
 from scal2.locale_man import tr as _
