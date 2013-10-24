@@ -39,38 +39,6 @@ rotateBoxLabel = -1
 
 #########################################
 
-def realRangeListsDiff(r1, r2):
-    boundary = set()
-    for (a, b) in r1+r2:
-        boundary.add(a)
-        boundary.add(b)
-    boundaryList = sorted(boundary)
-    ###
-    ri1 = [] ## range1 indexes
-    for (a, b) in r1:
-        ri1 += range(boundaryList.index(a), boundaryList.index(b))
-    ###
-    ri2 = [] ## range2 indexes
-    for (a, b) in r2:
-        ri2 += range(boundaryList.index(a), boundaryList.index(b))
-    ###
-    ri3 = sorted(set(ri1).difference(set(ri2)))
-    r3 = []
-    pending = []
-    for i in ri3:
-        if pending:
-            i2 = pending[-1] + 1
-            if i2 < i:
-                i1 = pending[0]
-                r3.append((boundaryList[i1], boundaryList[i2]))
-                pending = []
-        pending.append(i)
-    if pending:
-        i1 = pending[0]
-        i2 = pending[-1] + 1
-        r3.append((boundaryList[i1], boundaryList[i2]))
-    return r3
-
 class Box:
     def __init__(
         self,
