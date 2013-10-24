@@ -75,12 +75,13 @@ class Box:
         self.tConflictBefore = []
     mt_cmp = lambda self, other: cmp(self.mt, other.mt)
     dt_cmp = lambda self, other: -cmp(self.dt, other.dt)
+    #########
     def setPixelValues(self, timeStart, pixelPerSec, beforeBoxH, maxBoxH):
         self.x = (self.t0 - timeStart) * pixelPerSec
         self.w = (self.t1 - self.t0) * pixelPerSec
         self.y = beforeBoxH + maxBoxH * self.u0
         self.h = maxBoxH * (self.u1 - self.u0)
-
+    contains = lambda self, px, py: 0 <= px-self.x < self.w and 0 <= py-self.y < self.h
 
 def makeIntervalGraph(boxes):
     g = Graph()
