@@ -112,10 +112,6 @@ class Box:
         self.tConflictBefore = []
     mt_cmp = lambda self, other: cmp(self.mt, other.mt)
     dt_cmp = lambda self, other: -cmp(self.dt, other.dt)
-    #tOverlaps = lambda self, other: ab_overlaps(self.t0, self.t1, other.t0, other.t1)
-    tOverlaps = lambda self, other: md_overlaps(self.mt, self.dt, other.mt, other.dt)
-    yOverlaps = lambda self, other: ab_overlaps(self.u0, self.u1, other.u0, other.u1)
-    du = lambda self: self.u1 - self.u0
     def __cmp__(self, other):## FIXME
         if boxSortByWidth:
             c = -cmp(self.odt, other.odt)
@@ -127,7 +123,6 @@ class Box:
         self.w = (self.t1 - self.t0) * pixelPerSec
         self.y = beforeBoxH + maxBoxH * self.u0
         self.h = maxBoxH * (self.u1 - self.u0)
-    contains = lambda self, px, py: 0 <= px-self.x < self.w and 0 <= py-self.y < self.h
 
 
 def makeIntervalGraph(boxes):
