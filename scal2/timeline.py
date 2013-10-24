@@ -67,7 +67,7 @@ holidayBgBolor = (60, 35, 35)
 
 
 scrollZoomStep = 1.2 ## > 1
-keyboardZoomStep = 1.4 ## > 1
+keyboardZoomStep = 1.2 ## > 1
 
 #############################################
 

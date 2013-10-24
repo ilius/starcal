@@ -30,7 +30,6 @@ editingBoxHelperLineWidth = 0.3 ## px
 
 
 boxReverseGravity = False
-boxSortByWidth = True ## wider boxes are lower (with normal gravity)
 boxMaxHeightFactor = 0.8 ## < 1.0
 
 boxSkipPixelLimit = 0.1 ## pixels
@@ -50,7 +49,6 @@ class Box:
         text='',
         color=None,
         ids=None,
-        order=None,
         lineW=2,
     ):
         self.t0 = t0
@@ -73,19 +71,12 @@ class Box:
             color = ui.textColor ## FIXME
         self.color = color
         self.ids = ids ## (groupId, eventId)
-        self.order = order ## (groupIndex, eventIndex)
         self.lineW = lineW
         ####
         self.hasBorder = False
         self.tConflictBefore = []
     mt_cmp = lambda self, other: cmp(self.mt, other.mt)
     dt_cmp = lambda self, other: -cmp(self.dt, other.dt)
-    def __cmp__(self, other):## FIXME
-        if boxSortByWidth:
-            c = -cmp(self.odt, other.odt)
-            if c != 0:
-                return c
-        return cmp(self.order, other.order)
     def setPixelValues(self, timeStart, pixelPerSec, beforeBoxH, maxBoxH):
         self.x = (self.t0 - timeStart) * pixelPerSec
         self.w = (self.t1 - self.t0) * pixelPerSec
@@ -94,7 +85,6 @@ class Box:
 
 
 def makeIntervalGraph(boxes):
-    #boxes.sort(cmp=Box.dt_cmp)## FIXME
     g = Graph()
     n = len(boxes)
     g.add_vertices(n-1)
@@ -177,7 +167,6 @@ def calcEventBoxes(
                 text = event.getSummary(),
                 color = group.color,## or event.color FIXME
                 ids = (group.id, event.id) if pixBoxW > 0.5 else None,
-                order = (groupIndex, eventIndex),
                 lineW = lineW,
             )
             box.hasBorder = (borderTm > 0 and event.name in movableEventTypes)
@@ -205,8 +194,6 @@ def calcEventBoxes(
     if not boxes:
         return []
     #####
-    #boxes.sort()## FIXME
-    ###
     if debugMode:
         t1 = now()
     ###
