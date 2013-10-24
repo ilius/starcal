@@ -52,8 +52,8 @@ class Box:
         self.t0 = t0
         self.t1 = t1
         self.odt = odt ## original delta t
-        self.mt = (t0+t1)/2.0 ## - timeMiddle ## FIXME
-        self.dt = (t1-t0)/2.0
+        #self.mt = (t0+t1)/2.0 ## - timeMiddle ## FIXME
+        #self.dt = (t1-t0)/2.0
         #if t1-t0 != odt:
         #    print 'Box, dt=%s, odt=%s'%(t1-t0, odt)
         self.u0 = u0
