@@ -104,7 +104,7 @@ def makeIntervalGraph(boxes):
             openBoxes.add(boxI)
         else:
             openBoxes.remove(boxI)
-    return g, points
+    return g
 
 
 
@@ -195,7 +195,7 @@ def calcEventBoxes(
     if debugMode:
         t1 = now()
     ###
-    graph, points = makeIntervalGraph(boxes)
+    graph = makeIntervalGraph(boxes)
     if debugMode:
         print 'makeIntervalGraph: %e'%(now()-t1)
     ###
