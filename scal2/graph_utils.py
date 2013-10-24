@@ -5,22 +5,22 @@ def colorGraph(g):
     ## Using 'SL' (Smalest Last) algorithm
     n = g.vcount()
     adjlist = g.get_adjlist()
-    g.vs['color'] = [None]*n
-    for row in sorted(
+    colors = [None]*n
+    for d, i in sorted(
         [
             (-g.degree(i), i) for i in range(n)
         ],
     ):
-        i = row[1]
-        colors = set()
+        adjColors = set()
         for j in adjlist[i]:
-            c = g.vs[j]['color']
+            c = colors[j]
             if c is not None:
-                colors.add(c)
+                adjColors.add(c)
         c = 0
-        while c in colors:
+        while c in adjColors:
             c += 1
-        g.vs[i]['color'] = c
+        colors[i] = c
+    g.vs['color'] = colors
 
 
 
