@@ -30,7 +30,6 @@ editingBoxHelperLineWidth = 0.3 ## px
 
 
 boxReverseGravity = False
-boxMaxHeightFactor = 0.8 ## < 1.0
 
 boxSkipPixelLimit = 0.1 ## pixels
 
