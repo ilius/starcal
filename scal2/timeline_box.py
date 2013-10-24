@@ -167,10 +167,7 @@ def renderBoxesByGraph(boxes, graph, minColor, minU):
     min_vertices = graph.vs.select(color_eq=minColor) ## a VertexSeq
     for v in min_vertices:
         box = boxes[v['name']]
-        if boxReverseGravity:
-            box.u0, box.u1 = minU, minU + du
-        else:
-            box.u0, box.u1 = 1 - minU - du, 1 - minU
+        box.u0, box.u1 = (minU, minU + du) if boxReverseGravity else (1 - minU - du, 1 - minU)
     graph.delete_vertices(min_vertices)
     for sgraph in graph.decompose():
         renderBoxesByGraph(
