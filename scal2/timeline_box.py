@@ -115,7 +115,6 @@ class Box:
     #tOverlaps = lambda self, other: ab_overlaps(self.t0, self.t1, other.t0, other.t1)
     tOverlaps = lambda self, other: md_overlaps(self.mt, self.dt, other.mt, other.dt)
     yOverlaps = lambda self, other: ab_overlaps(self.u0, self.u1, other.u0, other.u1)
-    dt = lambda self: self.t1 - self.t0
     du = lambda self: self.u1 - self.u0
     def __cmp__(self, other):## FIXME
         if boxSortByWidth:
