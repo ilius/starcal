@@ -159,7 +159,7 @@ def makeIntervalGraph(boxes):
 
 
 
-def updateBoxesForGraph(boxes, graph, minColor, minU):
+def renderBoxesByGraph(boxes, graph, minColor, minU):
     colorCount = max(graph.vs['color']) - minColor + 1
     if colorCount < 1:
         return
@@ -173,7 +173,7 @@ def updateBoxesForGraph(boxes, graph, minColor, minU):
             box.u0, box.u1 = 1 - minU - du, 1 - minU
     graph.delete_vertices(min_vertices)
     for sgraph in graph.decompose():
-        updateBoxesForGraph(
+        renderBoxesByGraph(
             boxes,
             sgraph,
             minColor + 1,
@@ -257,7 +257,7 @@ def calcEventBoxes(
     ###
     #####
     colorGraph(graph)
-    updateBoxesForGraph(boxes, graph, 0, 0)
+    renderBoxesByGraph(boxes, graph, 0, 0)
     if debugMode:
         print 'box placing time:  %e'%(now()-t0)
         print
