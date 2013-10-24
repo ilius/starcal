@@ -43,7 +43,7 @@ class Box:
         t1,
         odt,
         u0,
-        u1,
+        du,
         text='',
         color=None,
         ids=None,
@@ -57,7 +57,7 @@ class Box:
         #if t1-t0 != odt:
         #    print 'Box, dt=%s, odt=%s'%(t1-t0, odt)
         self.u0 = u0
-        self.u1 = u1
+        self.du = du
         ####
         self.x = None
         self.w = None
@@ -80,7 +80,7 @@ class Box:
         self.x = (self.t0 - timeStart) * pixelPerSec
         self.w = (self.t1 - self.t0) * pixelPerSec
         self.y = beforeBoxH + maxBoxH * self.u0
-        self.h = maxBoxH * (self.u1 - self.u0)
+        self.h = maxBoxH * self.du
     contains = lambda self, px, py: 0 <= px-self.x < self.w and 0 <= py-self.y < self.h
 
 def makeIntervalGraph(boxes):
@@ -118,7 +118,8 @@ def renderBoxesByGraph(boxes, graph, minColor, minU):
     min_vertices = graph.vs.select(color_eq=minColor) ## a VertexSeq
     for v in min_vertices:
         box = boxes[v['name']]
-        box.u0, box.u1 = (minU, minU + du) if boxReverseGravity else (1 - minU - du, 1 - minU)
+        box.u0 = minU if boxReverseGravity else 1 - minU - du
+        box.du = du
     graph.delete_vertices(min_vertices)
     for sgraph in graph.decompose():
         renderBoxesByGraph(
