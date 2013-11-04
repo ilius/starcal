@@ -11,8 +11,8 @@ function printUsage {
 function clean {
     for EXP in '.hidden' '*~' '*.pyc' '*.pyo' '*.tar.xz' '*.deb' '*.rpm' '*.spec'; do
         find . -name "$EXP" -exec rm '{}' \;
-    done
-    find . -name '__pycache__' -exec rm -R '{}' \;
+    done 2>/dev/null
+    find . -name '__pycache__' -exec rm -R '{}' \; 2>/dev/null
 }
 
 myPath="$0"
