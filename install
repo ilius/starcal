@@ -12,6 +12,7 @@ function clean {
     for EXP in '.hidden' '*~' '*.pyc' '*.pyo' '*.tar.xz' '*.deb' '*.rpm' '*.spec'; do
         find . -name "$EXP" -exec rm '{}' \;
     done
+    find . -name '__pycache__' -exec rm -R '{}' \;
 }
 
 myPath="$0"

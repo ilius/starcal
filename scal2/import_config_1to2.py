@@ -1,3 +1,4 @@
+#!/usr/bin/env python2
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) 2009-2012 Saeed Rasooli <saeed.gnu@gmail.com> (ilius)
