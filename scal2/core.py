@@ -24,7 +24,7 @@ from StringIO import StringIO
 from os.path import isfile, isdir, exists, dirname, join, split, splitext
 from pprint import pprint
 
-from scal2.lib.tzlocal import get_localzone
+from tzlocal import get_localzone
 
 from scal2.path import *
 from scal2.time_utils import *

@@ -24,7 +24,7 @@ from datetime import datetime
 import struct
 import pytz
 
-from scal2.lib.tzlocal import get_localzone
+from tzlocal import get_localzone
 
 from scal2.cal_types.gregorian import J0001, J1970
 from scal2.cal_types.gregorian import jd_to as jd_to_g
