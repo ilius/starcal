@@ -265,12 +265,17 @@ class CustomizeDialog(gtk.Dialog):
             item.hide()
         if ui.mainWin:
             ui.mainWin.setMinHeight()
-    def close(self, button=None, event=None):
+    def updateTreeEnableChecks(self):
+        for i, item in enumerate(self.widget.items):
+            self.model.set_value(self.model.get_iter((i,)), 0, item.enable)
+    def save(self):
         text = ''
         itemsData = []
         self.widget.updateVars()
         text = self.widget.confStr()
         open(confPath, 'w').write(text) # FIXME
+    def close(self, button=None, event=None):
+        self.save()
         self.hide()
         return True
 

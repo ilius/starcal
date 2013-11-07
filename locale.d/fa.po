@@ -1491,6 +1491,15 @@ msgid "Week Calendar"
 msgstr ""
 "تقویم هفتگی"
 
+msgid "Switch to Week Calendar"
+msgstr ""
+"تغییر به تقویم هفتگی"
+
+msgid "Switch to Month Calendar"
+msgstr ""
+"تغییر به تقویم ماه"
+
+
 msgid "Week Days"
 msgstr ""
 "روزهای هفته"

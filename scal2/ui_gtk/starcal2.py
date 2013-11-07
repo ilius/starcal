@@ -490,6 +490,22 @@ class MainWinVbox(gtk.VBox, CustomizableCalBox):
     def keyPress(self, arg, event):
         CustomizableCalBox.keyPress(self, arg, event)
         return True ## FIXME
+    def switchWcalMcal(self):
+        wi = None
+        mi = None
+        for i, item in enumerate(self.items):
+            if item._name == 'weekCal':
+                wi = i
+            elif item._name == 'monthCal':
+                mi = i
+        wcal, mcal = self.items[wi], self.items[mi]
+        wcal.enable, mcal.enable = mcal.enable, wcal.enable
+        ## FIXME
+        #self.reorder_child(wcal, mi)
+        #self.reorder_child(mcal, wi)
+        #self.items[wi], self.items[mi] = mcal, wcal
+        self.showHideWidgets()
+        self.onDateChange()
 
 
 @registerSignals
@@ -798,6 +814,10 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
                 core.allPlugList[core.plugIndex[j]].date_change_after(*date)
             except AttributeError:
                 pass
+    def switchWcalMcal(self, widget=None):
+        self.vbox.switchWcalMcal()
+        self.customizeDialog.updateTreeEnableChecks()
+        self.customizeDialog.save()
     def getEventAddToMenuItem(self):
         addToItem = labelStockMenuItem('_Add to', gtk.STOCK_ADD)
         menu2 = gtk.Menu()
@@ -841,6 +861,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         addToItem.set_submenu(menu2)
         return addToItem
     def popupMenuCell(self, widget, etime, x, y):
+        #print 'popupMenuCell', widget._name
         menu = gtk.Menu()
         ####
         menu.add(labelStockMenuItem('_Copy Date', gtk.STOCK_COPY, self.copyDate))
@@ -849,6 +870,12 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         menu.add(gtk.SeparatorMenuItem())
         menu.add(labelStockMenuItem('Select _Today', gtk.STOCK_HOME, self.goToday))
         menu.add(labelStockMenuItem('Select _Date...', gtk.STOCK_INDEX, self.selectDateShow))
+        if widget._name in ('weekCal', 'monthCal'):
+            menu.add(labelStockMenuItem(
+                'Switch to ' + ('Month Calendar' if widget._name=='weekCal' else 'Week Calendar'),
+                gtk.STOCK_REDO,
+                self.switchWcalMcal,
+            ))
         if isfile('/usr/bin/evolution'):##??????????????????
             menu.add(labelImageMenuItem('In E_volution', 'evolution-18.png', ui.dayOpenEvolution))
         #if isfile('/usr/bin/sunbird'):##??????????????????
