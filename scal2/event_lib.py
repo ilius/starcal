@@ -270,6 +270,15 @@ class TimeRangeListOccurrence(Occurrence):
                 jds.add(jd)
         return sorted(jds)
     getTimeRangeList = lambda self: self.rangeList
+    @staticmethod
+    def newFromStartEnd(startEpoch, endEpoch):
+        if startEpoch > endEpoch:
+            return TimeRangeListOccurrence([])
+        elif startEpoch == endEpoch:## FIXME
+            return TimeRangeListOccurrence([(startEpoch, startEpoch+epsTm)])
+        else:
+            return TimeRangeListOccurrence([(startEpoch, endEpoch)])
+
 
 
 class TimeListOccurrence(Occurrence):
@@ -749,14 +758,11 @@ class EndEventRule(DateAndTimeEventRule):
         'duration',
     )
     def calcOccurrence(self, startJd, endJd, event):
-        startEpoch = self.parent.getEpochFromJd(startJd)
-        endEpoch = min(self.parent.getEpochFromJd(endJd), self.getEpoch())
-        if startEpoch > endEpoch:
-            return TimeRangeListOccurrence([])
-        elif startEpoch == endEpoch:## FIXME
-            return TimeRangeListOccurrence([(startEpoch, startEpoch+epsTm)])
-        else:
-            return TimeRangeListOccurrence([(startEpoch, endEpoch)])
+        return TimeRangeListOccurrence.newFromStartEnd(
+            self.parent.getEpochFromJd(startJd),
+            min(self.parent.getEpochFromJd(endJd), self.getEpoch()),
+        )
+        
 
 @classes.rule.register
 class DurationEventRule(EventRule):
@@ -789,14 +795,18 @@ class DurationEventRule(EventRule):
             log.error('Error while loading event rule "%s": %s'%(self.name, e))
     getData = lambda self: durationEncode(self.value, self.unit)
     def calcOccurrence(self, startJd, endJd, event):
-        startEpoch = self.parent.getEpochFromJd(startJd)
-        endEpoch = min(self.parent.getEpochFromJd(endJd), self.parent['start'].getEpoch() + self.getSeconds())
-        if startEpoch > endEpoch:
-            return TimeRangeListOccurrence([])
-        elif startEpoch == endEpoch: ## FIXME
-            return TimeRangeListOccurrence([(startEpoch, startEpoch+empTm)])
-        else:
-            return TimeRangeListOccurrence([(startEpoch, endEpoch)])
+        startEpoch = max(
+            self.parent['start'].getEpoch(),
+            self.parent.getEpochFromJd(startJd),
+        )
+        endEpoch = min(
+            startEpoch + self.getSeconds(),
+            self.parent.getEpochFromJd(endJd),
+        )
+        return TimeRangeListOccurrence.newFromStartEnd(
+            startEpoch,
+            endEpoch,
+        )
 
 
 
@@ -1527,16 +1537,11 @@ class SingleStartEndEvent(Event):
             ('CATEGORIES', self.name),## FIXME
         ]
     def calcOccurrence(self, startJd, endJd):
-        startEpoch = max(self.getEpochFromJd(startJd), self.getStartEpoch())
-        endEpoch = min(self.getEpochFromJd(endJd), self.getEndEpoch())
-        if endEpoch > startEpoch:
-            return TimeRangeListOccurrence(
-                [
-                    (startEpoch, endEpoch),
-                ]
-            )
-        else:
-            return TimeRangeListOccurrence()
+        return TimeRangeListOccurrence.newFromStartEnd(
+            max(self.getEpochFromJd(startJd), self.getStartEpoch()),
+            min(self.getEpochFromJd(endJd), self.getEndEpoch()),
+        )
+
 
 
 @classes.event.register
@@ -1544,7 +1549,7 @@ class TaskEvent(SingleStartEndEvent):
     ## overwrites getEndEpoch from Event
     ## overwrites setEndEpoch from SingleStartEndEvent
     ## overwrites setJdExact from SingleStartEndEvent
-    ## Method neccessery for hand edniting event in timeline:
+    ## Methods neccessery for modifying event by hand in timeline:
     ##   getStartEpoch, getEndEpoch, modifyStart, modifyEnd, modifyPos
     name = 'task'
     desc = _('Task')
