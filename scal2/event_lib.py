@@ -751,8 +751,10 @@ class EndEventRule(DateAndTimeEventRule):
     def calcOccurrence(self, startJd, endJd, event):
         startEpoch = self.parent.getEpochFromJd(startJd)
         endEpoch = min(self.parent.getEpochFromJd(endJd), self.getEpoch())
-        if startEpoch >= endEpoch:## how about startEpoch==endEpoch FIXME
+        if startEpoch > endEpoch:
             return TimeRangeListOccurrence([])
+        elif startEpoch == endEpoch:## FIXME
+            return TimeRangeListOccurrence([(startEpoch, startEpoch+epsTm)])
         else:
             return TimeRangeListOccurrence([(startEpoch, endEpoch)])
 
@@ -789,8 +791,10 @@ class DurationEventRule(EventRule):
     def calcOccurrence(self, startJd, endJd, event):
         startEpoch = self.parent.getEpochFromJd(startJd)
         endEpoch = min(self.parent.getEpochFromJd(endJd), self.parent['start'].getEpoch() + self.getSeconds())
-        if startEpoch >= endEpoch:## how about startEpoch==endEpoch FIXME
+        if startEpoch > endEpoch:
             return TimeRangeListOccurrence([])
+        elif startEpoch == endEpoch: ## FIXME
+            return TimeRangeListOccurrence([(startEpoch, startEpoch+empTm)])
         else:
             return TimeRangeListOccurrence([(startEpoch, endEpoch)])
 
