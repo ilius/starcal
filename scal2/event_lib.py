@@ -714,6 +714,8 @@ class DayTimeRangeEventRule(EventRule):
     def calcOccurrence(self, startJd, endJd, event):
         daySecStart = getSecondsFromHms(*self.dayTimeStart)
         daySecEnd = getSecondsFromHms(*self.dayTimeEnd)
+        if daySecEnd <= daySecStart:
+            daySecEnd = daySecStart + epsTm
         tmList = []
         for jd in range(startJd, endJd):
             epoch = self.parent.getEpochFromJd(jd)
