@@ -17,6 +17,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal2.utils import s_join
 
 epsTm = 0.01 ## seconds ## configure somewhere? FIXME
 
@@ -54,33 +55,30 @@ def cleanTimeRangeList(lst):
             i += 1
 
 def intervalListBoundaries(lst):
-    boundaries = set()
+    points = set()
     for start, end in lst:
-        boundaries.add(start)
-        boundaries.add(end)
-    return sorted(boundaries)
+        points.add(start)
+        points.add(end)
+    return sorted(points)
 
 
 def intersectionOfTwoIntervalList(lst1, lst2):
-    boundaries = intervalListBoundaries(lst1 + lst2)
-    segmentsNum = len(boundaries) - 1
+    points = intervalListBoundaries(lst1 + lst2)
+    segmentsNum = len(points) - 1
     segmentsContained = [[False, False] for i in range(segmentsNum)]
     for start, end in lst1:
-        startIndex = boundaries.index(start)
-        endIndex = boundaries.index(end)
-        for i in range(startIndex, endIndex):
+        for i in range(points.index(start), points.index(end)):
             segmentsContained[i][0] = True
     for start, end in lst2:
-        startIndex = boundaries.index(start)
-        endIndex = boundaries.index(end)
-        for i in range(startIndex, endIndex):
+        for i in range(points.index(start), points.index(end)):
             segmentsContained[i][1] = True
     result = []
     for i in range(segmentsNum):
         if segmentsContained[i][0] and segmentsContained[i][1]:
-            result.append((boundaries[i], boundaries[i+1]))
+            result.append((points[i], points[i+1]))
     #cleanTimeRangeList(result)## not needed when both timeRangeList are clean!
     return result
+
 
 
 ########################################################################
