@@ -2220,14 +2220,14 @@ class LargeScaleEvent(Event):## or MegaEvent? FIXME
     def calcOccurrence(self, startJd, endJd):
         myStartJd = iceil(to_jd(self.scale*self.start, 1, 1, self.mode))
         myEndJd = ifloor(to_jd(self.scale*self.getEnd(), 1, 1, self.mode))
-        return TimeRangeListOccurrence(
-            intersectionOfTwoIntervalList(
-                [
-                    (self.getEpochFromJd(startJd), self.getEpochFromJd(endJd))
-                ],
-                [
-                    (self.getEpochFromJd(myStartJd), self.getEpochFromJd(myEndJd))
-                ],
+        TimeRangeListOccurrence.newFromStartEnd(
+            max(
+                self.getEpochFromJd(myStartJd),
+                self.getEpochFromJd(startJd),
+            ),
+            min(
+                self.getEpochFromJd(myEndJd),
+                self.getEpochFromJd(endJd),
             )
         )
     #def getIcsData(self, prettyDateTime=False):
