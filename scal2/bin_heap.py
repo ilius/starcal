@@ -28,7 +28,7 @@ class MaxHeap(list):
                 break
             self.exch(k, j)
             k = j
-    add = lambda self, key, value: heappush(self, (-key, value))
+    push = lambda self, key, value: heappush(self, (-key, value))
     moreThan = lambda self, key: self.moreThanStep(key, 0)
     def moreThanStep(self, key, index):
         if index < 0:
@@ -120,7 +120,7 @@ def getMinTest(N):
     h = MaxHeap()
     for i in range(N):
         x = randint(1, 10*N)
-        h.add(x, 0)
+        h.push(x, 0)
     t0 = now()
     k1 = -max(h)[0]
     t1 = now()
@@ -136,7 +136,7 @@ def testDeleteStep(N, maxKey):
     ###
     h = MaxHeap()
     for i in range(N):
-        h.add(randint(0, maxKey), 0)
+        h.push(randint(0, maxKey), 0)
     h0 = h.copy()
     rmIndex = randint(0, N-1)
     rmKey = -h[rmIndex][0]

@@ -37,7 +37,7 @@ class Node:
         self.right = None
         #self.count = 0
     def add(self, t0, t1, dt, eid):
-        self.events.add(dt, eid)
+        self.events.push(dt, eid)
         if t0 < self.min_t:
             self.min_t = t0
         if t1 > self.max_t:
@@ -137,7 +137,7 @@ class EventSearchTree:
                 hp = self.byId[eid]
             except KeyError:
                 hp = self.byId[eid] = MaxHeap()
-            hp.add(mt, dt)## FIXME
+            hp.push(mt, dt)## FIXME
         except:
             myRaise()
     #def size(self, node='root'):
