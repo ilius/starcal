@@ -18,6 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 from scal2.utils import s_join
+from scal2.bin_heap import MaxHeap
 
 epsTm = 0.01 ## seconds ## configure somewhere? FIXME
 
@@ -45,44 +46,77 @@ def simplifyNumList(nums, minCount=3):## nums must be sorted, minCount >= 2
 
 def cleanTimeRangeList(lst):
     num = len(lst)
-    i = 0
-    while i < num-1:
-        if lst[i][1] == lst[i+1][0]:
-            lst[i] = (lst[i][0], lst[i+1][1])
-            lst.pop(i+1)
-            num -= 1
-        else:
-            i += 1
-
-def intervalListBoundaries(lst):
-    points = set()
+    points = []
     for start, end in lst:
-        points.add(start)
-        points.add(end)
-    return sorted(points)
+        points += [
+            (start, False),
+            (end, True),
+        ]
+    lst = []
+    points.sort()
+    started_pq = MaxHeap()
+    for cursor, isEnd in points:
+        if isEnd:
+            if not started_pq:
+                raise RuntimeError('cursor=%s, lastStart=None'%cursor)
+            start, tmp = started_pq.pop()
+            #print 'pop %s'%start
+            if not started_pq:
+                lst.append((start, cursor))
+        else:
+            #print 'push %s'%cursor
+            started_pq.push(cursor, None)
+    return lst
 
-
-def intersectionOfTwoIntervalList(lst1, lst2):
-    points = intervalListBoundaries(lst1 + lst2)
-    segmentsNum = len(points) - 1
-    segmentsContained = [[False, False] for i in range(segmentsNum)]
-    for start, end in lst1:
-        for i in range(points.index(start), points.index(end)):
-            segmentsContained[i][0] = True
-    for start, end in lst2:
-        for i in range(points.index(start), points.index(end)):
-            segmentsContained[i][1] = True
+def intersectionOfTwoIntervalList(*lists):
+    listsN = len(lists)
+    assert listsN == 2
+    points = []
+    for lst_index, lst in enumerate(lists):
+        lst = cleanTimeRangeList(lst)
+        for start, end in lst:
+            startObj = (start, False, lst_index)
+            endObj = (end, True, lst_index)
+            points += [startObj, endObj]
+    points.sort()
+    openStartList = [None for i in range(listsN)]
     result = []
-    for i in range(segmentsNum):
-        if segmentsContained[i][0] and segmentsContained[i][1]:
-            result.append((points[i], points[i+1]))
-    #cleanTimeRangeList(result)## not needed when both timeRangeList are clean!
+    for cursor, isEnd, lst_index in points:
+        if isEnd:
+            ## end == cursor
+            if None not in openStartList:
+                start = max(openStartList)
+                if start == cursor:
+                    print 'start == cursor'
+                    result.append((start, start + epsTm))
+                elif start < cursor:
+                    result.append((start, cursor))
+            openStartList[lst_index] = None
+        else:
+            ## start == cursor
+            if openStartList[lst_index] is None:
+                openStartList[lst_index] = cursor
+            else:
+                raise RuntimeError('cursor=%s, openStartList[%s]=%s'%(
+                    cursor,
+                    lst_index,
+                    openStartList[lst_index],
+                ))
     return result
-
 
 
 ########################################################################
 
+def testCleanTimeRangeList():
+    pprint.pprint(cleanTimeRangeList([
+        (6, 7),
+        (0, 4),
+        (1, 5),
+        (2, 3),
+        (8, 9),
+        (7, 8),
+        (8.5, 10),
+    ]))
 
 def testIntersection():
     pprint.pprint(intersectionOfTwoIntervalList(
@@ -117,9 +151,6 @@ def testOverlapsSpeed():
 
 if __name__=='__main__':
     import pprint
-    #testIntersection()
-    #testJdRanges()
-    #testSimplifyNumList()
-    testOverlapsSpeed()
+    testCleanTimeRangeList()
 
 
