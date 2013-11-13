@@ -1,7 +1,7 @@
 from math import log
 from scal2.utils import s_join
 
-from heapq import heappush
+from heapq import heappush, heappop
 
 class MaxHeap(list):
     def copy(self):
@@ -29,6 +29,21 @@ class MaxHeap(list):
             self.exch(k, j)
             k = j
     push = lambda self, key, value: heappush(self, (-key, value))
+    def pop(self, index=None):
+        if index is None:
+            mkey, value = heappop(self)
+            return -mkey, value
+        else:
+            N = len(self)
+            if index < 0 or index > N-1:
+                raise ValueError('invalid index to pop()')
+            if index == N-1:
+                return list.pop(self, index)
+            self.exch(index, N-1)
+            key = -list.pop(self, N-1)[0]
+            self.sink(index)
+            self.swim(index)
+            return key
     moreThan = lambda self, key: self.moreThanStep(key, 0)
     def moreThanStep(self, key, index):
         if index < 0:
@@ -51,18 +66,7 @@ class MaxHeap(list):
         except ValueError:
             pass
         else:
-            self.deleteIndex(index)
-    def deleteIndex(self, index):
-        N = len(self)
-        if index < 0 or index > N-1:
-            raise ValueError('invalid index to deleteIndex()')
-        if index == N-1:
-            return self.pop(index)
-        self.exch(index, N-1)
-        key = -self.pop(N-1)[0]
-        self.sink(index)
-        self.swim(index)
-        return key
+            self.pop(index)
     verify = lambda self: self.verifyIndex(0)
     def verifyIndex(self, i):
         assert i >= 0
@@ -140,7 +144,7 @@ def testDeleteStep(N, maxKey):
     h0 = h.copy()
     rmIndex = randint(0, N-1)
     rmKey = -h[rmIndex][0]
-    rmKey2 = h.deleteIndex(rmIndex)
+    rmKey2 = h.pop(rmIndex)
     if not h.verify():
         print 'not verified, N=%s, I=%s'%(N, rmIndex)
         print h0
