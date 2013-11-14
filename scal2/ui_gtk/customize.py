@@ -75,7 +75,8 @@ class CustomizableCalObj(ud.IntegratedCalObj):
         kname = gdk.keyval_name(event.keyval).lower()
         for item in self.items:
             if item.enable and kname in item.myKeys:
-                item.keyPress(arg, event)
+                if item.keyPress(arg, event):
+                    break
     def showHideWidgets(self):
         for item in self.items:
             item.set_visible(item.enable)
