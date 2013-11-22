@@ -86,7 +86,7 @@ class Box:
 def makeIntervalGraph(boxes):
     g = Graph()
     n = len(boxes)
-    g.add_vertices(n-1)
+    g.add_vertices(n - g.vcount())
     g.vs['name'] = range(n)
     ####
     points = [] ## (time, isStart, boxIndex)
