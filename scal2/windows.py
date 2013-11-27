@@ -1,4 +1,6 @@
-
+import os
+from os.path import join
+from scal2.core import APP_NAME
 
 winStartupRelPath = r'\Microsoft\Windows\Start Menu\Programs\Startup'
 winStartupDir = os.getenv('APPDATA') + winStartupRelPath
