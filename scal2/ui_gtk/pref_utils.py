@@ -28,6 +28,7 @@ from scal2.path import *
 from scal2.cal_types import calTypes
 from scal2 import core
 
+from scal2 import startup
 from scal2 import ui
 
 import gtk
@@ -414,7 +415,7 @@ class LangPrefItem(PrefItem):
 class CheckStartupPrefItem():## FIXME
     def __init__(self):
         w = gtk.CheckButton(_('Run on session startup'))
-        set_tooltip(w, 'Run on startup of Gnome, KDE, Xfce, LXDE, ...\nFile: %s'%ui.comDesk)
+        set_tooltip(w, 'Run on startup of Gnome, KDE, Xfce, LXDE, ...\nFile: %s'%startup.comDesk)
         self.widget = w
         self.get = w.get_active
         self.set = w.set_active

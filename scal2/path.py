@@ -63,11 +63,6 @@ elif osName=='win':
     sysConfDir = join(rootDir, 'config')
     tmpDir = os.getenv('TEMP')
     #user = os.getenv('USERNAME')
-    ####
-    winStartupRelPath = r'\Microsoft\Windows\Start Menu\Programs\Startup'
-    winStartupDir = os.getenv('APPDATA') + winStartupRelPath
-    #winStartupDirSys = os.getenv('ALLUSERSPROFILE') + winStartupRelPath
-    winStartupFile = join(winStartupDir, APP_NAME+'.lnk')
 else:
     raise OSError('Unkown operating system!')
 

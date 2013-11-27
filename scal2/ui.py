@@ -21,12 +21,11 @@ from time import time as now
 
 import sys, os, os.path, shutil
 from os import listdir
-from os.path import dirname, join, isfile, isdir, splitext, isabs
+from os.path import dirname, join, isfile, splitext, isabs
 from xml.dom.minidom import parse## remove FIXME
 from subprocess import Popen
 
 from scal2.utils import NullObj, toStr, cleanCacheDict
-from scal2.os_utils import makeDir
 from scal2.path import *
 
 from scal2.cal_types import calTypes
@@ -36,8 +35,9 @@ from scal2.locale_man import tr as _
 from scal2.locale_man import numDecode
 
 from scal2 import core
-from scal2.core import APP_NAME, myRaise, myRaiseTback, getMonthLen, osName
+from scal2.core import APP_NAME, myRaise, myRaiseTback, getMonthLen
 
+from scal2.startup import addStartup, removeStartup, checkStartup
 from scal2 import event_lib
 
 uiName = ''
@@ -141,61 +141,6 @@ def checkNeedRestart():
 
 getPywPath = lambda: join(rootDir, APP_NAME + ('-qt' if uiName=='qt' else '') + '.pyw')
 
-def winMakeShortcut(srcPath, dstPath, iconPath=None):
-    from win32com.client import Dispatch
-    shell = Dispatch('WScript.Shell')
-    shortcut = shell.CreateShortCut(dstPath)
-    shortcut.Targetpath = srcPath
-    #shortcut.WorkingDirectory = ...
-    shortcut.save()
-
-
-
-def addStartup():
-    if osName=='win':
-        makeDir(winStartupDir)
-        #fname = APP_NAME + ('-qt' if uiName=='qt' else '') + '.pyw'
-        fname = core.COMMAND + '.pyw'
-        fpath = join(rootDir, fname)
-        #open(winStartupFile, 'w').write('execfile(%r, {"__file__":%r})'%(fpath, fpath))
-        try:
-            winMakeShortcut(fpath, winStartupFile)
-        except:
-            return False
-        else:
-            return True
-    elif isdir('%s/.config'%homeDir):## osName in ('linux', 'mac') ## maybe Gnome/KDE on Solaris, *BSD, ...
-        text = '''[Desktop Entry]
-Type=Application
-Name=%s %s
-Icon=%s
-Exec=%s'''%(core.APP_DESC, core.VERSION, APP_NAME, core.COMMAND)## double quotes needed when the exec path has space
-        makeDir(comDeskDir)
-        try:
-            fp = open(comDesk, 'w')
-        except:
-            core.myRaise(__file__)
-            return False
-        else:
-            fp.write(text)
-            return True
-    elif osName=='mac':## FIXME
-        pass
-    return False
-
-def removeStartup():
-    if osName=='win':## FIXME
-        if isfile(winStartupFile):
-            os.remove(winStartupFile)
-    elif isfile(comDesk):
-        os.remove(comDesk)
-
-def checkStartup():
-    if osName=='win':
-        return isfile(winStartupFile)
-    elif isfile(comDesk):
-        return True
-    return False
 
 def dayOpenEvolution(arg=None):
     ##y, m, d = core.jd_to(cell.jd-1, core.DATE_GREG) ## in gnome-cal opens prev day! why??
@@ -606,9 +551,6 @@ todayCell = cell = cellCache.getTodayCell() ## FIXME
 ###########################
 autoLocale = True
 logo = '%s/starcal2.png'%pixDir
-comDeskDir = '%s/.config/autostart'%homeDir
-comDesk = '%s/%s.desktop'%(comDeskDir, APP_NAME)
-#kdeDesk='%s/.kde/Autostart/%s.desktop'%(homeDir, APP_NAME)
 ###########################
 #themeDir = join(rootDir, 'themes')
 #theme = None
