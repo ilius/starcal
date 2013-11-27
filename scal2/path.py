@@ -18,7 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 import os
-from os.path import dirname, join
+from os.path import dirname, join, abspath
 
 from scal2.os_utils import getOsName
 
@@ -40,7 +40,7 @@ elif os.sep=='\\':
         srcDir = cwd + srcDir[1:]
 #print 'srcDir=%r'%srcDir
 
-rootDir = dirname(srcDir)
+rootDir = abspath(dirname(srcDir))
 pixDir = join(rootDir, 'pixmaps')
 plugDir = join(rootDir, 'plugins')
 
