@@ -48,7 +48,7 @@ from scal2.locale_man import tr as _
 from scal2.plugin_man import BasePlugin
 from scal2.cal_types.gregorian import to_jd as gregorian_to_jd
 from scal2.time_utils import getUtcOffsetByJd, getUtcOffsetCurrent, getEpochFromJd
-from scal2.os_utils import getSoundPlayerList, playSound, kill
+from scal2.os_utils import kill, goodkill
 from scal2.utils import myRaise
 #from scal2 import event_lib## needs core!! FIXME
 
@@ -163,12 +163,6 @@ class TextPlug(BasePlugin, TextPlugUI):
         preAzanEnable = False
         preAzanFile = None
         preAzanMinutes = 2.0
-        ##
-        self.playerList = getSoundPlayerList()
-        try:
-            playerName = self.playerList[0]
-        except IndexError:
-            playerName = ''
         ####
         if isfile(confPath):
             exec(open(confPath).read())
@@ -187,7 +181,6 @@ class TextPlug(BasePlugin, TextPlugUI):
         self.preAzanMinutes = preAzanMinutes
         ##
         self.preAzanMinutes = preAzanMinutes
-        self.playerName = playerName
         #######
         #PrayTimeEventRule.plug = self
         #######
@@ -212,7 +205,6 @@ class TextPlug(BasePlugin, TextPlugUI):
             'preAzanEnable',
             'preAzanFile',
             'preAzanMinutes',
-            'playerName',
         ):
             text += '%s=%r\n'%(
                 attr,
@@ -258,18 +250,19 @@ class TextPlug(BasePlugin, TextPlugUI):
             pass
         else:
             print 'killing %s'%p.pid
+            goodkill(p.pid, interval=0.01)
+            #kill(p.pid, 15)
             #p.terminate()
-            kill(p.pid, 15)
     def doPlayAzan(self):
         if not self.azanEnable:
             return
         self.killPrevSound()
-        self.proc = playSound(self.playerName, self.azanFile)
+        self.proc = popenFile(self.azanFile)
     def doPlayBeforeAzan(self):
         if not self.preAzanEnable:
             return
         self.killPrevSound()
-        self.proc = playSound(self.playerName, self.preAzanFile)
+        self.proc = popenFile(self.preAzanFile)
     def onCurrentDateChange(self, gdate):
         if not self.enable:
             return

@@ -20,6 +20,7 @@
 import os
 from os.path import isdir, isfile
 import platform
+from subprocess import Popen, PIPE
 
 
 def getOsName():## 'linux', 'win', 'mac', 'unix'
@@ -106,9 +107,8 @@ def kill(pid, signal=0):
         with no signal argument, sends no signal
     '''
     #if 'ps --no-headers' returns no lines, the pid is dead
-    from os import kill
     try:
-        return kill(pid, signal)
+        return os.kill(pid, signal)
     except OSError, e:
         #process is dead
         if e.errno == 3:
@@ -162,41 +162,5 @@ def goodkill(pid, interval=1, hung=20):
         if dead(pid):
             return
         sleep(interval)
-
-
-def getSoundPlayerList():
-    osName = getOsName()
-    ls = []
-    if osName == 'win':
-        ls.append('wmplayer')
-        ls.append('smplayer')
-    elif  osName == 'mac':
-        pass
-    elif osName in ('linux', 'unix'):
-        for pname in (
-            'vlc',
-            'audacious',
-            'smplayer',
-            'gmplayer',
-            'rhythmbox',
-            'kplayer',
-            'clementine',
-        ):
-            if isfile('/usr/bin/%s'%pname):
-                ls.append(pname)
-    return ls
-
-    
-def playSound(playerName, soundFile):
-    import subprocess
-    osName = getOsName()
-    if osName in ('win', 'mac'):
-        cmd = 'start %s "%s"'%(playerName, soundFile)
-    else:
-        cmd = '%s "%s"'%(playerName, soundFile)
-    return subprocess.Popen(cmd, shell=True)
-    
-
-
 
 

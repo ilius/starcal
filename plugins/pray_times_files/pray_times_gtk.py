@@ -26,6 +26,7 @@ from pray_times_backend import timeNames, methodsList
 
 import gtk
 
+from scal2.ui_gtk.app_info import popenFile
 
 buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter())
 buffer_select_all = lambda b: b.select_range(b.get_start_iter(), b.get_end_iter())
@@ -415,14 +416,6 @@ class TextPlugUI:
         hbox1.pack_start(hbox2, 1, 1)
         vboxFrame.pack_start(hbox1, 0, 0)
         #####
-        hbox1 = gtk.HBox()
-        self.playerCombo = gtk.combo_box_entry_new_text()        
-        hbox1.pack_start(gtk.Label(_('Player')), 0, 0)
-        hbox1.pack_start(gtk.Label('  '), 0, 0)
-        hbox1.pack_start(self.playerCombo, 0, 0)
-        hbox1.pack_start(gtk.Label(''), 1, 1)
-        vboxFrame.pack_start(hbox1, 0, 0)
-        #####
         frame.add(vboxFrame)
         hbox.pack_start(frame, 1, 1)
         self.confDialog.vbox.pack_start(hbox, 0, 0)
@@ -472,10 +465,6 @@ class TextPlugUI:
         self.azanEnableCheck.box.set_sensitive(self.azanEnable)
         if self.azanFile:
             self.azanFileButton.set_filename(self.azanFile)
-        ##
-        for pname in self.playerList:
-            self.playerCombo.append_text(pname)
-        self.playerCombo.child.set_text(self.playerName)
     def updateConfVars(self):
         self.locName = self.locButton.locName
         self.ptObj.lat = self.locButton.lat
@@ -492,8 +481,6 @@ class TextPlugUI:
         ##
         self.azanEnable = self.azanEnableCheck.get_active()
         self.azanFile = self.azanFileButton.get_filename()
-        ##
-        self.playerName = self.playerCombo.child.get_text()
     def confDialogCancel(self, widget):
         self.confDialog.hide()
         self.updateConfWidget()
