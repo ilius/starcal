@@ -288,7 +288,7 @@ class TextPlug(BasePlugin, TextPlugUI):
                     self.doPlayAzan,
                 )
                 timeout_add_seconds(
-                    toAzanSecs - int(self.preAzanMinutes * 60),
+                    max(0, toAzanSecs - int(self.preAzanMinutes * 60)),
                     self.doPlayBeforeAzan,
                 )
 
