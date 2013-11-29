@@ -221,7 +221,7 @@ class JdSetOccurrence(Occurrence):
         ) for jd in self.jdSet
     ]
     def calcJdRanges(self):
-        jdList = list(self.jdSet) ## jdList is sorted
+        jdList = sorted(self.jdSet) ## jdList is sorted
         if not jdList:
             return []
         startJd = jdList[0]
@@ -2841,7 +2841,7 @@ class EventGroup(EventContainer):
             idList = set()
             for epoch0, epoch1, eid, odt in self.occur.search(time_from, time_to):
                 idList.add(eid)
-            idList = list(idList)
+            idList = sorted(idList)
         else:
             idList = self.idList
         #####
