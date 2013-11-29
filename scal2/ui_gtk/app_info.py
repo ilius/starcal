@@ -1,5 +1,6 @@
 import sys
-from subprocess import Popen
+
+from scal2.locale_man import popenDefaultLang
 
 import gio
 import gtk
@@ -18,7 +19,7 @@ def popenFile(fpath):
     command = getDefaultAppCommand(fpath)
     if not command:
         return
-    return Popen([
+    return popenDefaultLang([
         command,
         fpath,
     ])

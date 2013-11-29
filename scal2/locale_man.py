@@ -20,6 +20,8 @@
 import os, string
 from os.path import join, isfile, isdir, isabs
 import locale, gettext
+from subprocess import Popen
+
 from path import *
 from scal2.utils import StrOrderedDict, toStr, toUnicode
 from scal2.cal_types import calTypes
@@ -345,6 +347,13 @@ def cutText(text, n):
             except UnicodeDecodeError:
                 pass
     return newText
+
+def popenDefaultLang(*args, **kwargs):
+    global sysLangDefault, lang
+    os.environ['LANG'] = sysLangDefault
+    p = Popen(*args, **kwargs)
+    os.environ['LANG'] = lang
+    return p
 
 ##############################################
 
