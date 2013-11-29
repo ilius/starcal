@@ -26,6 +26,7 @@ class NotifierWidget(gtk.FileChooserButton):
     def __init__(self, notifier):
         self.notifier = notifier
         gtk.FileChooserButton.__init__(self, _('Select Sound'))
+        self.set_local_only(True)
     def updateWidget(self):
         if self.notifier.alarmSound:
             self.set_filename(self.notifier.alarmSound)

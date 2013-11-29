@@ -24,6 +24,7 @@ class IconSelectButton(gtk.Button):
             title=_('Select Icon File'),
             action=gtk.FILE_CHOOSER_ACTION_OPEN,
         )
+        self.dialog.set_local_only(True)
         okB = self.dialog.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
         cancelB = self.dialog.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
         clearB = self.dialog.add_button(gtk.STOCK_CLEAR, gtk.RESPONSE_REJECT)

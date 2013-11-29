@@ -53,6 +53,7 @@ class EventsImportWindow(WizardWindow):
             hbox = gtk.HBox()
             hbox.pack_start(gtk.Label(_('File')+':'), 0, 0)
             self.fcb = gtk.FileChooserButton(_('Import: Select File'))
+            self.fcb.set_local_only(True)
             self.fcb.set_current_folder(deskDir)
             hbox.pack_start(self.fcb, 1, 1)
             self.pack_start(hbox, 0, 0)

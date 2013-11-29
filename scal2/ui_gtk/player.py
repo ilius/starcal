@@ -238,6 +238,7 @@ class PlayerBox(gtk.HBox):
     def __init__(self, hasVol=False):
         gtk.HBox.__init__(self)
         self.fcb = gtk.FileChooserButton(title='Select Sound')
+        self.fcb.set_local_only(True)
         self.fcb.set_property('width-request', 150)
         self.pack_start(self.fcb, 0, 0)
         self.mplayer = MPlayer(self)
