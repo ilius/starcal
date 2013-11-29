@@ -32,7 +32,6 @@ class MaxHeap(list):
     def pop(self, index=None):
         if index is None:
             mkey, value = heappop(self)
-            return -mkey, value
         else:
             N = len(self)
             if index < 0 or index > N-1:
@@ -40,10 +39,10 @@ class MaxHeap(list):
             if index == N-1:
                 return list.pop(self, index)
             self.exch(index, N-1)
-            key = -list.pop(self, N-1)[0]
+            mkey, value = list.pop(self, N-1)
             self.sink(index)
             self.swim(index)
-            return key
+        return -mkey, value
     moreThan = lambda self, key: self.moreThanStep(key, 0)
     def moreThanStep(self, key, index):
         if index < 0:
