@@ -27,6 +27,7 @@ from time import time as now
 from os.path import join, isfile, dirname
 from math import pi, floor, ceil, sqrt, sin, cos, tan, asin, acos, atan, atan2
 
+from tzlocal import get_localzone
 
 _mypath = __file__
 if _mypath.endswith('.pyc'):
@@ -63,6 +64,7 @@ from pray_times_gtk import *
 
 confPath = join(plugConfDir, 'pray_times')
 earthR = 6370
+localTz = get_localzone()
 
 ####################################################
 
@@ -98,6 +100,40 @@ def earthDistance(lat1, lng1, lat2, lng2):
         deg = 2*pi-deg
     return deg*earthR
     #return ang*180/pi
+
+def readLocationData():
+    lines = file(dataDir+'/locations.txt').read().split('\n')
+    cityData = []
+    country = ''
+    for l in lines:
+        p = l.split('\t')
+        if len(p)<2:
+            #print p
+            continue
+        if p[0]=='':
+            if p[1]=='':
+                city, lat, lng = p[2:5]
+                #if country=='Iran':
+                #    print city
+                if len(p)>4:
+                    cityData.append((
+                        country + '/' + city,
+                        _(country) + '/' + _(city),
+                        float(lat),
+                        float(lng)
+                    ))
+                else:
+                    print country, p
+            else:
+                country = p[1]
+    return cityData
+
+def guessLocation(cityData):
+    tzname = str(localTz)
+    ## FIXME
+    #for countryCity, countryCityLocale, lat, lng in cityData:
+    return 'Tehran', 35.705, 51.4216
+    
 
 '''
 event_classes = api.get('event_lib', 'classes')
@@ -144,12 +180,13 @@ class TextPlug(BasePlugin, TextPlugUI):
         self.name = _('Islamic Pray Times')
         self.about = _('Islamic Pray Times') ## FIXME
         self.has_config = True
+        self.cityData = readLocationData()
         ##############
-        ## here load config ## FIXME
-        locName = 'Tehran'
-        lat = 35.705
-        lng = 51.4216
-        method = 'Tehran'
+        confNeedsSave = False
+        ######
+        locName, lat, lng = '', 0, 0
+        method = ''
+        #######
         imsak = 10 ## minutes before Fajr (Morning Azan)
         #asrMode=ASR_STANDARD
         #highLats='NightMiddle'
@@ -166,6 +203,14 @@ class TextPlug(BasePlugin, TextPlugUI):
         ####
         if isfile(confPath):
             exec(open(confPath).read())
+        else:
+            confNeedsSave = True
+        ####
+        if not locName:
+            confNeedsSave = True
+            locName, lat, lng = guessLocation(cityData)
+            method = 'Tehran'
+            ## guess method from location FIXME
         #######
         self.locName = locName
         self.imsak = imsak
@@ -183,6 +228,9 @@ class TextPlug(BasePlugin, TextPlugUI):
         self.preAzanMinutes = preAzanMinutes
         #######
         #PrayTimeEventRule.plug = self
+        #######
+        if confNeedsSave:
+            self.saveConfig()
         #######
         self.makeWidget()## FIXME
         self.onCurrentDateChange(localtime()[:3])
@@ -299,7 +347,7 @@ if __name__=='__main__':
     #from scal2.locale_man import rtl
     #if rtl:
     #    gtk.widget_set_default_direction(gtk.TEXT_DIR_RTL)
-    dialog = LocationDialog()
+    dialog = LocationDialog(readLocationData())
     dialog.connect('delete-event', gtk.main_quit)
     #dialog.connect('response', gtk.main_quit)
     dialog.resize(600, 600)

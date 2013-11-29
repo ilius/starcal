@@ -59,7 +59,7 @@ class AboutDialog(gtk.AboutDialog):## I had to duplicate!!
 class LocationDialog(gtk.Dialog):
     EXIT_OK     = 0
     EXIT_CANCEL = 1
-    def __init__(self, maxResults=200):
+    def __init__(self, cityData, maxResults=200):
         gtk.Dialog.__init__(self)
         self.set_title(_('Location'))
         self.maxResults = maxResults
@@ -167,31 +167,6 @@ class LocationDialog(gtk.Dialog):
         ###
         self.vbox.show_all()
         #########
-        lines = file(dataDir+'/locations.txt').read().split('\n')
-        cityData = []
-        country = ''
-        for l in lines:
-            p = l.split('\t')
-            if len(p)<2:
-                #print p
-                continue
-            if p[0]=='':
-                if p[1]=='':
-                    city, lat, lng = p[2:5]
-                    #if country=='Iran':
-                    #    print city
-                    if len(p)>4:
-                        cityData.append((
-                            country + '/' + city,
-                            _(country) + '/' + _(city),
-                            float(lat),
-                            float(lng)
-                        ))
-                    else:
-                        print country, p
-                else:
-                    country = p[1]
-
         self.cityData = cityData
         self.update_list()
     def calc_clicked(self, button):
@@ -266,10 +241,10 @@ class LocationDialog(gtk.Dialog):
 
 
 class LocationButton(gtk.Button):
-    def __init__(self, locName, lat, lng):
+    def __init__(self, cityData, locName, lat, lng):
         gtk.Button.__init__(self, locName)
         self.setLocation(locName, lat, lng)
-        self.dialog = LocationDialog()
+        self.dialog = LocationDialog(cityData)
         ####
         self.connect('clicked', self.onClicked)
     def setLocation(self, locName, lat, lng):
@@ -296,7 +271,7 @@ class TextPlugUI:
         group.add_widget(label)
         label.set_alignment(0, 0.5)
         hbox.pack_start(label, 0, 0)
-        self.locButton = LocationButton(self.locName, self.ptObj.lat, self.ptObj.lng)
+        self.locButton = LocationButton(self.cityData, self.locName, self.ptObj.lat, self.ptObj.lng)
         hbox.pack_start(self.locButton, 0, 0)
         self.confDialog.vbox.pack_start(hbox, 0, 0)
         ###
