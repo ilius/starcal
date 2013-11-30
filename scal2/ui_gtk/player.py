@@ -81,7 +81,7 @@ class MPlayer:
         try: # get the last line of output
             for status in self.mplayerOut:
                 if not status: break
-        except StandardError:
+        except:
             pass
         if not status or not status.startswith('ANS_LENGTH='):
             return True
@@ -126,7 +126,7 @@ class MPlayer:
 
         try:
             os.popen(command)
-        except StandardError as message:
+        except Exception as message:
             print('Cannot set volume: %s'%message)
 
     # Change volume by the amount specified
@@ -155,7 +155,7 @@ class MPlayer:
         try:
             self.mplayerIn.close()
             self.mplayerOut.close()
-        except StandardError:
+        except:
             pass
         self.mplayerIn, self.mplayerOut = None, None
         self.playTime = None
@@ -168,7 +168,7 @@ class MPlayer:
         try:
             self.mplayerIn.write(command + '\n')
             self.mplayerIn.flush()
-        except StandardError:
+        except:
             return False
         return True
 
@@ -183,7 +183,7 @@ class MPlayer:
         try: # get the last line of output
             for status in self.mplayerOut:
                 if not status: break
-        except StandardError:
+        except:
             pass
 
         if not status or not status.startswith('ANS_PERCENT_POSITION='):

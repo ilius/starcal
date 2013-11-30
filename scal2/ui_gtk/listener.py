@@ -37,8 +37,8 @@ dateChange = DateChangeListener()
 
 if __name__=='__main__':
     class TestRec:
-        def onCurrentDateChange(self, y, m, d):
-            print('current date changed to %s/%s/%s'%(y, m, d))
+        def onCurrentDateChange(self, date):
+            print('current date changed to %s/%s/%s'%date)
     dateChange.add(TestRec())
     glib.MainLoop().run()
 
