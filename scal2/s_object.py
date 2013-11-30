@@ -41,7 +41,7 @@ def makeOrderedData(data, params):
                     return params.index(key)
                 except ValueError:
                     return len(params)
-            data.sort(cmp=lambda x, y: cmp(paramIndex(x[0]), paramIndex(y[0])))
+            data.sort(key=lambda x: paramIndex(x[0]))
             data = OrderedDict(data)
     return data
 

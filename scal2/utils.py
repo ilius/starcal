@@ -194,11 +194,7 @@ class StrOrderedDict(dict):
         if attr==None:
             self.keyList.sort()
         else:
-            myCmp = lambda k1, k2: cmp(
-                getattr(dict.__getitem__(self, k1), attr),
-                getattr(dict.__getitem__(self, k2), attr),
-            )
-            self.keyList.sort(myCmp)
+            self.keyList.sort(key=lambda k: getattr(dict.__getitem__(self, k), attr))
     __iter__ = lambda self: self.keyList.__iter__()
     def iteritems(self):## OR lambda self: self.items().__iter__()
         for key in self.keyList:## OR self.keyList.__iter__()

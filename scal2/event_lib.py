@@ -2429,20 +2429,14 @@ class EventGroup(EventContainer):
                 isTypeDep = dep
                 break
         if isTypeDep:
-            event_cmp = lambda event1, event2: cmp(
-                (event1.name, self.getSortByValue(event1, attr)),
-                (event2.name, self.getSortByValue(event2, attr)),
-            )
+            event_key = lambda event: (event.name, self.getSortByValue(event, attr))
         else:
-            event_cmp = lambda event1, event2: cmp(
-                self.getSortByValue(event1, attr),
-                self.getSortByValue(event2, attr),
-            )
-        eid_cmp = lambda eid1, eid2: event_cmp(
-            self.getEvent(eid1),
-            self.getEvent(eid2),
+            event_key = lambda event: self.getSortByValue(event, attr)
+        self.idList = sorted(
+            self.idList,
+            key=lambda eid: event_key(self.getEvent(eid)),
+            reverse=reverse,
         )
-        self.idList = sorted(self.idList, cmp=eid_cmp, reverse=reverse)
     def __getitem__(self, key):
         #if isinstance(key, basestring):## ruleName
         #    return self.getRule(key)
