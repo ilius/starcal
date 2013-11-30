@@ -199,18 +199,18 @@ class MonthCal(gtk.Widget, CalBase):
         ####
         item = CheckPrefItem(ui, 'mcalGrid', _('Grid'))
         item.updateWidget()
-        gridCheck = item.widget
+        gridCheck = item._widget
         hbox.pack_start(gridCheck, 0, 0)
         gridCheck.item = item
         ####
         colorItem = ColorPrefItem(ui, 'mcalGridColor', True)
         colorItem.updateWidget()
-        hbox.pack_start(colorItem.widget, 0, 0)
-        gridCheck.colorb = colorItem.widget
+        hbox.pack_start(colorItem._widget, 0, 0)
+        gridCheck.colorb = colorItem._widget
         gridCheck.connect('clicked', self.gridCheckClicked)
-        colorItem.widget.item = colorItem
-        colorItem.widget.connect('color-set', self.gridColorChanged)
-        colorItem.widget.set_sensitive(ui.mcalGrid)
+        colorItem._widget.item = colorItem
+        colorItem._widget.connect('color-set', self.gridColorChanged)
+        colorItem._widget.set_sensitive(ui.mcalGrid)
         ####
         self.optionsWidget.pack_start(hbox, 0, 0)
         ########

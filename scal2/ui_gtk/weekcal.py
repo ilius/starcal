@@ -700,7 +700,7 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
         ui.wcal_daysOfMonth_dir = combo.getValue()
         self.updateDir()
     def updateCols(self):
-        #self.foreach(gtk.Widget.destroy)## Couses crash tray icon in gnome3
+        #self.foreach(gtk._widget.destroy)## Couses crash tray icon in gnome3
         #self.foreach(lambda child: self.remove(child))## Couses crash tray icon in gnome3
         ########
         columns = self.get_children()
@@ -828,18 +828,18 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         ####
         item = CheckPrefItem(ui, 'wcalGrid', _('Grid'))
         item.updateWidget()
-        gridCheck = item.widget
+        gridCheck = item._widget
         hbox.pack_start(gridCheck, 0, 0)
         gridCheck.item = item
         ####
         colorItem = ColorPrefItem(ui, 'wcalGridColor', True)
         colorItem.updateWidget()
-        hbox.pack_start(colorItem.widget, 0, 0)
-        gridCheck.colorb = colorItem.widget
+        hbox.pack_start(colorItem._widget, 0, 0)
+        gridCheck.colorb = colorItem._widget
         gridCheck.connect('clicked', self.gridCheckClicked)
-        colorItem.widget.item = colorItem
-        colorItem.widget.connect('color-set', self.gridColorChanged)
-        colorItem.widget.set_sensitive(ui.wcalGrid)
+        colorItem._widget.item = colorItem
+        colorItem._widget.connect('color-set', self.gridColorChanged)
+        colorItem._widget.set_sensitive(ui.wcalGrid)
         ####
         self.optionsWidget.pack_start(hbox, 0, 0)
         ###

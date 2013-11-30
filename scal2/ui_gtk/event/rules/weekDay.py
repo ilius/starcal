@@ -20,8 +20,8 @@ class RuleWidget(gtk.HBox):
             self.pack_start(ls[(s+i)%7], 1, 1)
         self.cbList = ls
         self.start = s
-    def setStart(self, s):
-        b = self.widget
+    def setStart(self, s):## not used, FIXME
+        b = self
         ls = self.cbList
         for j in range(7):## or range(6)
             b.reorder_child(ls[(s+j)%7], j)

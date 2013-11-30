@@ -454,8 +454,8 @@ class WeeklyScheduleWindow(gtk.Dialog):
         ##
         self.vbox.pack_start(hbox, 0, 0)
         #####
-        self.widget = WeeklyScheduleWidget(term)
-        self.vbox.pack_start(self.widget, 1, 1)
+        self._widget = WeeklyScheduleWidget(term)
+        self.vbox.pack_start(self._widget, 1, 1)
         #####
         self.vbox.show_all()
         self.updateWidget()
@@ -463,16 +463,16 @@ class WeeklyScheduleWindow(gtk.Dialog):
         self.destroy()
         return True
     def updateWidget(self):
-        self.widget.data = self.term.getWeeklyScheduleData(self.currentWOnlyCheck.get_active())
-        self.widget.queue_draw()
+        self._widget.data = self.term.getWeeklyScheduleData(self.currentWOnlyCheck.get_active())
+        self._widget.queue_draw()
     def exportToSvg(self, fpath):
-        x, y, w, h = self.widget.allocation
+        x, y, w, h = self._widget.allocation
         fo = open(fpath, 'w')
         surface = cairo.SVGSurface(fo, w, h)
         cr0 = cairo.Context(surface)
         cr = gtk.gdk.CairoContext(cr0)
         #surface.set_device_offset(0, 0)
-        self.widget.drawCairo(cr)
+        self._widget.drawCairo(cr)
         surface.finish()
     def exportToSvgClicked(self, obj=None):
         fcd = gtk.FileChooserDialog(parent=self, action=gtk.FILE_CHOOSER_ACTION_SAVE)

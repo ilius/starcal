@@ -81,7 +81,7 @@ class ModuleOptionItem:
         else:
             raise RuntimeError('bad option type "%s"'%t)
         hbox.pack_start(w, 0, 0)
-        self.widget = hbox
+        self._widget = hbox
         ####
         self.updateVar = lambda: setattr(self.module, self.var_name, self.get_value())
         self.updateWidget = lambda: self.set_value(getattr(self.module, self.var_name))
@@ -96,7 +96,7 @@ class ModuleOptionButton:
         button = gtk.Button(_(opt[0]))
         button.connect('clicked', clickedFunc)
         hbox.pack_start(button, 0, 0)
-        self.widget = hbox
+        self._widget = hbox
     def updateVar(self):
         pass
     def updateWidget(self):
@@ -105,7 +105,7 @@ class ModuleOptionButton:
 
 
 class PrefItem():
-    ## self.__init__, self.module, self.varName, self.widget
+    ## self.__init__, self.module, self.varName, self._widget
     ## self.varName an string containing the name of variable
     ## set self.module=None if varName is name of a global variable in this module
     def get(self):
@@ -124,21 +124,21 @@ class ComboTextPrefItem(PrefItem):
         self.module = module
         self.varName = varName
         w = gtk.combo_box_new_text()
-        self.widget = w
+        self._widget = w
         for s in items:
             w.append_text(s)
         self.get = w.get_active
         self.set = w.set_active
     #def set(self, value):
     #    print 'ComboTextPrefItem.set', value
-    #    self.widget.set_active(int(value))
+    #    self._widget.set_active(int(value))
 
 class ComboEntryTextPrefItem(PrefItem):
     def __init__(self, module, varName, items=[]):## items is a list of strings
         self.module = module
         self.varName = varName
         w = gtk.combo_box_entry_new_text()
-        self.widget = w
+        self._widget = w
         for s in items:
             w.append_text(s)
         self.get = w.child.get_text
@@ -160,7 +160,7 @@ class ComboImageTextPrefItem(PrefItem):
         combo.pack_start(cell, True)
         combo.add_attribute(cell, 'text', 1)
         ###
-        self.widget = combo
+        self._widget = combo
         self.ls = ls
         for (imPath, label) in items:
             self.append(imPath, label)
@@ -181,7 +181,7 @@ class FontPrefItem(PrefItem):##????????????
         self.module = module
         self.varName = varName
         w = MyFontButton(parent)
-        self.widget = w
+        self._widget = w
         self.get = w.get_font_name## FIXME
         self.set = w.set_font_name## FIXME
 
@@ -192,7 +192,7 @@ class CheckPrefItem(PrefItem):
         w = gtk.CheckButton(label)
         if tooltip!=None:
             set_tooltip(w, tooltip)
-        self.widget = w
+        self._widget = w
         self.get = w.get_active
         self.set = w.set_active
 
@@ -203,27 +203,27 @@ class ColorPrefItem(PrefItem):
         w = MyColorButton()
         w.set_use_alpha(useAlpha)
         self.useAlpha = useAlpha
-        self.widget = w
+        self._widget = w
         self.set = w.set_color
     def get(self):
         #if self.useAlpha:
-        alpha = self.widget.get_alpha()
+        alpha = self._widget.get_alpha()
         if alpha==None:
-            return self.widget.get_color()
+            return self._widget.get_color()
         else:
-            return self.widget.get_color() + (alpha,)
+            return self._widget.get_color() + (alpha,)
     def set(self, color):
         if self.useAlpha:
             if len(color)==3:
-                self.widget.set_color(color)
-                self.widget.set_alpha(255)
+                self._widget.set_color(color)
+                self._widget.set_alpha(255)
             elif len(color)==4:
-                self.widget.set_color(color[:3])
-                self.widget.set_alpha(color[3])
+                self._widget.set_color(color[:3])
+                self._widget.set_alpha(color[3])
             else:
                 raise ValueError
         else:
-            self.widget.set_color(color)
+            self._widget.set_color(color)
 
 class SpinPrefItem(PrefItem):
     def __init__(self, module, varName, _min, _max, digits=1):
@@ -233,7 +233,7 @@ class SpinPrefItem(PrefItem):
             w = IntSpinButton(_min, _max)
         else:
             w = FloatSpinButton(_min, _max, digits)
-        self.widget = w
+        self._widget = w
         self.get = w.get_value
         self.set = w.set_value
 
@@ -246,7 +246,7 @@ class RadioListPrefItem(PrefItem):
             box = gtk.VBox()
         else:
             box = gtk.HBox()
-        self.widget = box
+        self._widget = box
         self.radios = [gtk.RadioButton(label=_(s)) for s in texts]
         first = self.radios[0]
         if label!=None:
@@ -283,16 +283,16 @@ class ListPrefItem(PrefItem):
         else:
             box = gtk.HBox()
         for item in items:
-            box.pack_start(item.widget, 0, 0)
+            box.pack_start(item._widget, 0, 0)
         self.num = len(items)
         self.items = items
-        self.widget = box
+        self._widget = box
     get = lambda self: [item.get() for item in self.items]
     def set(self, valueL):
         for i in range(self.num):
             self.items[i].set(valueL[i])
     def append(self, item):
-        self.widget.pack_start(item.widget, 0, 0)
+        self._widget.pack_start(item._widget, 0, 0)
         self.items.append(item)
 
 
@@ -320,10 +320,10 @@ class WeekDayCheckListPrefItem(PrefItem):
         for i in range(7):
             box.pack_start(ls[(s+i)%7], 1, 1)
         self.cbList = ls
-        self.widget = box
+        self._widget = box
         self.start = s
     def setStart(self, s):
-        b = self.widget
+        b = self._widget
         ls = self.cbList
         for j in range(7):## or range(6)
             b.reorder_child(ls[(s+j)%7], j)
@@ -349,14 +349,14 @@ class ToolbarIconSizePrefItem(PrefItem):
         self.module = module
         self.varName = varName
         ####
-        self.widget = gtk.combo_box_new_text()
+        self._widget = gtk.combo_box_new_text()
         for item in iconSizeList:
-            self.widget.append_text(item[0])
-    get = lambda self: iconSizeList[self.widget.get_active()][0]
+            self._widget.append_text(item[0])
+    get = lambda self: iconSizeList[self._widget.get_active()][0]
     def set(self, value):
         for (i, item) in enumerate(iconSizeList):
             if item[0]==value:
-                self.widget.set_active(i)
+                self._widget.set_active(i)
                 return
 '''
 
@@ -378,7 +378,7 @@ class LangPrefItem(PrefItem):
         combo.pack_start(cell, True)
         combo.add_attribute(cell, 'text', 1)
         ###
-        self.widget = combo
+        self._widget = combo
         self.ls = ls
         self.append(join(pixDir, 'computer.png'), _('System Setting'))
         for (key, data) in langDict.items():
@@ -392,22 +392,22 @@ class LangPrefItem(PrefItem):
             pix = gdk.pixbuf_new_from_file(imPath)
         self.ls.append([pix, label])
     def get(self):
-        i = self.widget.get_active()
+        i = self._widget.get_active()
         if i==0:
             return ''
         else:
             return langDict.keyList[i-1]
     def set(self, value):
         if value=='':
-            self.widget.set_active(0)
+            self._widget.set_active(0)
         else:
             try:
                 i = langDict.keyList.index(value)
             except ValueError:
                 print('language %s in not in list!'%value)
-                self.widget.set_active(0)
+                self._widget.set_active(0)
             else:
-                self.widget.set_active(i+1)
+                self._widget.set_active(i+1)
     #def updateVar(self):
     #    lang =
 
@@ -415,7 +415,7 @@ class CheckStartupPrefItem():## FIXME
     def __init__(self):
         w = gtk.CheckButton(_('Run on session startup'))
         set_tooltip(w, 'Run on startup of Gnome, KDE, Xfce, LXDE, ...\nFile: %s'%startup.comDesk)
-        self.widget = w
+        self._widget = w
         self.get = w.get_active
         self.set = w.set_active
     def updateVar(self):
@@ -515,7 +515,7 @@ class InactiveCalsTreeView(AICalsTreeview):
 
 class AICalsPrefItem():
     def __init__(self):
-        self.widget = gtk.HBox()
+        self._widget = gtk.HBox()
         size = gtk.ICON_SIZE_SMALL_TOOLBAR
         ######
         toolbar = gtk.Toolbar()
@@ -526,7 +526,7 @@ class AICalsPrefItem():
         treev.connect('focus-in-event', self.activeTreevFocus)
         treev.get_selection().connect('changed', self.activeTreevSelectionChanged)
         ###
-        self.widget.pack_start(treev.makeSwin(), 0, 0)
+        self._widget.pack_start(treev.makeSwin(), 0, 0)
         ####
         self.activeTreev = treev
         self.activeTrees = treev.get_model()
@@ -552,14 +552,14 @@ class AICalsPrefItem():
         tb.connect('clicked', self.downClicked)
         toolbar.insert(tb, -1)
         ##
-        self.widget.pack_start(toolbar, 0, 0)
+        self._widget.pack_start(toolbar, 0, 0)
         ########
         treev = InactiveCalsTreeView()
         treev.connect('row-activated', self.inactiveTreevRActivate)
         treev.connect('focus-in-event', self.inactiveTreevFocus)
         treev.get_selection().connect('changed', self.inactiveTreevSelectionChanged)
         ###
-        self.widget.pack_start(treev.makeSwin(), 0, 0)
+        self._widget.pack_start(treev.makeSwin(), 0, 0)
         ####
         self.inactiveTreev = treev
         self.inactiveTrees = treev.get_model()

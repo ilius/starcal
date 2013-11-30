@@ -107,7 +107,7 @@ class CustomizeDialog(gtk.Dialog):
         self.connect('delete-event', self.close)
         dialog_add_button(self, gtk.STOCK_CLOSE, _('_Close'), 0, self.close)
         ###
-        self.widget = widget
+        self._widget = widget
         self.activeOptionsWidget = None
         ###
         self.model = gtk.TreeStore(bool, str) ## (gdk.Pixbuf, str)
@@ -174,7 +174,7 @@ class CustomizeDialog(gtk.Dialog):
             path = [path]
         elif not isinstance(path, (tuple, list)):
             raise TypeError('argument %s given to getItemByPath has bad type %s'%path)
-        item = self.widget.items[path[0]]
+        item = self._widget.items[path[0]]
         for i in path[1:]:
             item = item.items[i]
         return item
@@ -204,7 +204,7 @@ class CustomizeDialog(gtk.Dialog):
                 gdk.beep()
                 return
             ###
-            self.widget.moveItemUp(i)
+            self._widget.moveItemUp(i)
             model.swap(model.get_iter(i-1), model.get_iter(i))
             self.treev.set_cursor(i-1)
         else:
@@ -232,7 +232,7 @@ class CustomizeDialog(gtk.Dialog):
                 gdk.beep()
                 return
             ###
-            self.widget.moveItemUp(i+1)
+            self._widget.moveItemUp(i+1)
             model.swap(model.get_iter(i), model.get_iter(i+1))
             self.treev.set_cursor(i+1)
         else:
@@ -267,13 +267,13 @@ class CustomizeDialog(gtk.Dialog):
         if ui.mainWin:
             ui.mainWin.setMinHeight()
     def updateTreeEnableChecks(self):
-        for i, item in enumerate(self.widget.items):
+        for i, item in enumerate(self._widget.items):
             self.model.set_value(self.model.get_iter((i,)), 0, item.enable)
     def save(self):
         text = ''
         itemsData = []
-        self.widget.updateVars()
-        text = self.widget.confStr()
+        self._widget.updateVars()
+        text = self._widget.confStr()
         open(confPath, 'w').write(text) # FIXME
     def close(self, button=None, event=None):
         self.save()
