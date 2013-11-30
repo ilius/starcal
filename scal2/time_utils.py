@@ -258,7 +258,7 @@ if __name__=='__main__':
         (8, 30, 55),
         (8, 0, 10),
     ):
-        print '%r, %r'%(tm, simpleTimeEncode(tm))
+        print('%r, %r'%(tm, simpleTimeEncode(tm)))
 
 
 

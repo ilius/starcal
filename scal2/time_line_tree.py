@@ -126,11 +126,11 @@ class TimeLineTree:
         if debug:
             from time import strftime, localtime
             f = '%F, %T'
-            print '%s.add: %s\t%s'%(
+            print('%s.add: %s\t%s'%(
                 self.__class__.__name__,
                 strftime(f, localtime(t0)),
                 strftime(f, localtime(t1)),
-            )
+            ))
         if self.offset <= t0:
             isRight = True
             node = self.right

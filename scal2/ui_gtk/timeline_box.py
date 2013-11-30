@@ -119,10 +119,10 @@ def drawBoxText(cr, box, x, y, w, h, widget):
                 try:
                     cr.rotate(rotateBoxLabel*pi/2)
                 except:
-                    print 'counld not rotate by %s*pi/2 = %s'%(
+                    print('counld not rotate by %s*pi/2 = %s'%(
                         rotateBoxLabel,
                         rotateBoxLabel*pi/2,
-                    )
+                    ))
             else:
                 font[3] *= normRatio
                 layout.set_font_description(pfontEncode(font))

@@ -44,7 +44,7 @@ if __name__=='__main__':
     d.vbox.pack_start(combo, 1, 1)
     d.vbox.show_all()
     d.run()
-    print combo.get_value()
+    print(combo.get_value())
 
 
 

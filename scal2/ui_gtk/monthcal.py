@@ -270,7 +270,7 @@ class MonthCal(gtk.Widget, CalBase):
                 try:
                     bg = desktop.get_wallpaper(x0, y0, w, h)
                 except:
-                    print 'Could not get wallpaper!'
+                    print('Could not get wallpaper!')
                     myRaise(__file__)
                     #os.popen('gnome-settings-daemon')
                     ui.bgUseDesk = False ##??????????????????

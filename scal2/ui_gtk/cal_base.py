@@ -136,7 +136,7 @@ class CalBase(CustomizableCalObj):
             self.emit('pref-update-bg-color')
             self.queue_draw()
         else:
-            print 'Unknown dropped data type "%s", text="%s", data="%s"'%(dtype, text, selection.data)
+            print('Unknown dropped data type "%s", text="%s", data="%s"'%(dtype, text, selection.data))
             return True
         return False
     def dragBegin(self, obj, context):

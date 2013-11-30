@@ -686,7 +686,7 @@ if __name__ == '__main__':
     #dialog.run()
     dialog.show_all()
     gtk.main()
-    print pformat(widget.getData())
+    print(pformat(widget.getData()))
 
 
 

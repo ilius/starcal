@@ -113,7 +113,7 @@ def labelMenuItem(label, func=None, *args):
     return item
 
 def modify_bg_all(widget, state, gcolor):
-    print widget.__class__.__name__
+    print(widget.__class__.__name__)
     widget.modify_bg(state, gcolor)
     try:
         children = widget.get_children()
@@ -130,12 +130,12 @@ def combo_model_delete_text(model, path, itr, text_to_del):
         return
 
 def cellToggled(cell, path=None):
-    print 'cellToggled', path
+    print('cellToggled', path)
     cell.set_active(not cell.get_active())##????????????????????????
     return True
 
 def comboToggleActivate(combo, *args):
-    print combo.get_property('popup-shown')
+    print(combo.get_property('popup-shown'))
     if not combo.get_property('popup-shown'):
         combo.popup()
         return True
@@ -195,7 +195,7 @@ def processDroppedDate(text, dtype):
             try:
                 t = os.stat(path).st_mtime ## modification time
             except OSError:
-                print 'Dropped invalid file "%s"'%path
+                print('Dropped invalid file "%s"'%path)
             else:
                 y, m, d = localtime(t)[:3]
                 #print 'Dropped file "%s", modification time: %s/%s/%s'%(path, y, m, d)
@@ -207,7 +207,7 @@ def processDroppedDate(text, dtype):
             else:
                 ## Hot to deny dragged object (to return to it's first location)
                 ## FIXME
-                print 'Dropped unknown text "%s"'%text
+                print('Dropped unknown text "%s"'%text)
                 #print etime
                 #context.drag_status(gdk.ACTION_DEFAULT, etime)
                 #context.drop_reply(False, etime)
@@ -220,7 +220,7 @@ def processDroppedDate(text, dtype):
         try:
             t = os.stat(path).st_mtime ## modification time
         except OSError:
-            print 'Dropped invalid uri "%s"'%path
+            print('Dropped invalid uri "%s"'%path)
             return True
         else:
             return localtime(t)[:3] + (core.DATE_GREG,)

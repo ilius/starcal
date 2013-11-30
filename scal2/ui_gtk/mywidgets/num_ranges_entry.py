@@ -33,9 +33,9 @@ from scal2.ui_gtk.decorators import *
 def myRaise():
     i = sys.exc_info()
     try:
-        print('line %s: %s: %s'%(i[2].tb_lineno, i[0].__name__, i[1]))
+        print(('line %s: %s: %s'%(i[2].tb_lineno, i[0].__name__, i[1])))
     except:
-        print i
+        print(i)
 
 @registerType
 class NumRangesEntry(gtk.Entry):
@@ -160,7 +160,7 @@ class NumRangesEntry(gtk.Entry):
                 if gevent.state & gdk.CONTROL_MASK:## Shortcuts like Ctrl + [A, C, X, V]
                     return False
             else:
-                print kval, kname
+                print(kval, kname)
         return True
     getValues = lambda self: numRangesDecode(textNumDecode(self.get_text()))
     setValues = lambda self, values: self.set_text(

@@ -74,13 +74,13 @@ class MaxHeap(list):
             return True
         try:
             if self[2*i + 1] < k:
-                print '[%s] > [%s]'%(2*i + 1, i)
+                print('[%s] > [%s]'%(2*i + 1, i))
                 return False
         except IndexError:
             return True
         try:
             if self[2*i + 2] < k:
-                print '[%s] > [%s]'%(2*i + 2, i)
+                print('[%s] > [%s]'%(2*i + 2, i))
                 return False
         except IndexError:
             return True
@@ -144,10 +144,10 @@ def testDeleteStep(N, maxKey):
     rmKey = -h[rmIndex][0]
     rmKey2 = h.pop(rmIndex)
     if not h.verify():
-        print 'not verified, N=%s, I=%s'%(N, rmIndex)
-        print h0
-        print h
-        print '------------------------'
+        print('not verified, N=%s, I=%s'%(N, rmIndex))
+        print(h0)
+        print(h)
+        print('------------------------')
         return False
     return True
 

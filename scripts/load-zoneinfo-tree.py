@@ -52,7 +52,7 @@ def addZoneNode(parentDict, zone):
         for chName in sorted(listdir(path)):
             addZoneNode(parentDict[name], zone + [chName])
     else:
-        print 'invalid path =', path
+        print('invalid path =', path)
 
 
 for group in groups:

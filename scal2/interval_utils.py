@@ -87,7 +87,7 @@ def intersectionOfTwoIntervalList(*lists):
             if None not in openStartList:
                 start = max(openStartList)
                 if start == cursor:
-                    print 'start == cursor'
+                    print('start == cursor')
                     result.append((start, start + epsTm))
                 elif start < cursor:
                     result.append((start, cursor))
@@ -147,7 +147,7 @@ def testOverlapsSpeed():
     t0 = time()
     for a, b in data:
         ab_overlaps(a0, b0, a, b)
-    print '%.2f'%(time()-t0)
+    print('%.2f'%(time()-t0))
 
 if __name__=='__main__':
     import pprint

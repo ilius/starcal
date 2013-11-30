@@ -20,7 +20,7 @@
 
 import sys, os, shutil
 from os.path import join, isdir, isfile, dirname
-print dirname(dirname(__file__))
+print(dirname(dirname(__file__)))
 sys.path.insert(0, dirname(dirname(__file__)))
 
 from scal2.path import *
@@ -60,7 +60,7 @@ def getOldVersion():## return version of starcal 1.*
 
 def importConfigFrom15(overwrite=True):
     if not isdir(confDirOld):
-        print 'directory "%s" does not exist'%confDirOld
+        print('directory "%s" does not exist'%confDirOld)
         return
 
     if not isdir(confDir):

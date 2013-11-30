@@ -342,7 +342,7 @@ def convertAllPluginsToIcs(startYear, endYear):
         elif isinstance(plug, BuiltinTextPlugin):
             convertBuiltinTextPlugToIcs(plug, startJd, endJd, namePostfix)
         else:
-            print 'Ignoring unsupported plugin %s'%plug.path
+            print('Ignoring unsupported plugin %s'%plug.path)
 
 #########################################################
 

@@ -103,7 +103,7 @@ class ExportDialog(gtk.Dialog):
         path = self.fcw.get_filename()
         if path in (None, ''):
             return
-        print 'Exporting to html file "%s"'%path
+        print('Exporting to html file "%s"'%path)
         i = self.combo.get_active()
         months = []
         module = calTypes[core.primaryMode]
@@ -206,7 +206,7 @@ class ExportToIcsDialog(gtk.Dialog):
         path = self.fcw.get_filename()
         if path in (None, ''):
             return
-        print 'Exporting to ics file "%s"'%path
+        print('Exporting to ics file "%s"'%path)
         self.saveIcsFunc(
             path,
             core.primary_to_jd(*self.startDateInput.get_value()),

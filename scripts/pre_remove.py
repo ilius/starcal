@@ -17,5 +17,5 @@ for line in lines:
     os.remove('%s/Desktop/%s.desktop'%(home, pkgName))
   except:
     continue
-  print 'Removing x-desktop file from %s\'s Desktop'%parts[0]
+  print('Removing x-desktop file from %s\'s Desktop'%parts[0])
 

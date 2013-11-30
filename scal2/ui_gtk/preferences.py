@@ -716,7 +716,7 @@ class PrefDialog(gtk.Dialog):
                 plug.show_date = row[2]
             except:
                 core.myRaise(__file__)
-                print i, core.plugIndex
+                print(i, core.plugIndex)
         core.plugIndex = index
         ######
         first = self.comboFirstWD.get_active()
@@ -1022,7 +1022,7 @@ class PrefDialog(gtk.Dialog):
         self.plugAddItems.append(j)
         desc = core.allPlugList[j].desc
         self.plugAddTreestore.append([desc])
-        print 'deleting', desc
+        print('deleting', desc)
         self.plugButtonAdd.set_sensitive(True)
         if n>1:
             self.plugTreeview.set_cursor(min(n-2, i))

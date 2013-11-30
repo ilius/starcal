@@ -123,7 +123,7 @@ def readLocationData():
                         float(lng)
                     ))
                 else:
-                    print country, p
+                    print(country, p)
             else:
                 country = p[1]
     return cityData
@@ -297,7 +297,7 @@ class TextPlug(BasePlugin, TextPlugUI):
         except AttributeError:
             pass
         else:
-            print 'killing %s'%p.pid
+            print('killing %s'%p.pid)
             goodkill(p.pid, interval=0.01)
             #kill(p.pid, 15)
             #p.terminate()
@@ -351,7 +351,7 @@ if __name__=='__main__':
     dialog.connect('delete-event', gtk.main_quit)
     #dialog.connect('response', gtk.main_quit)
     dialog.resize(600, 600)
-    print dialog.run()
+    print(dialog.run())
     #gtk.main()
 
 

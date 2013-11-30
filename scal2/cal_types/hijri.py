@@ -125,7 +125,7 @@ class MonthDbHolder:
             if userData['origVersion'] >= self.origVersion:
                 data = userData
             else:
-                print '---- ignoring user\'s old db', self.userDbPath
+                print('---- ignoring user\'s old db', self.userDbPath)
         self.setData(data)
     def getMonthLenByYear(self):
         monthLenByYear = {}
@@ -238,6 +238,6 @@ if __name__=='__main__':
     for ym in monthDb.monthLenByYm:
         y, m = divmod(ym, 12)
         m += 1
-        print to_jd(y, m, 1) - to_jd_c(y, m, 1)
+        print(to_jd(y, m, 1) - to_jd_c(y, m, 1))
 
 

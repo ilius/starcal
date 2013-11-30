@@ -24,7 +24,7 @@ from time import localtime
 import sys
 
 if sys.version_info[0] != 2:
-    print 'Run this script with Python 2.x'
+    print('Run this script with Python 2.x')
     sys.exit(1)
 
 import os
@@ -101,7 +101,7 @@ ui.uiName = 'gtk'
 
 
 def show_event(widget, event):
-    print type(widget), event.type.value_name, event.get_value()#, event.send_event
+    print(type(widget), event.type.value_name, event.get_value())#, event.send_event
 
 
 def liveConfChanged():

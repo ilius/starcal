@@ -39,7 +39,7 @@ def decodeStatLine(line):
         try:
             num = int(parts[0])
         except:
-            print 'bad section: %r, stat line=%r'%(section, line)
+            print('bad section: %r, stat line=%r'%(section, line))
         else:
             action = parts[-1].strip()
             if 'changed' in action:

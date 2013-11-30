@@ -1895,7 +1895,7 @@ class YearlyEvent(Event):
         except KeyError:
             pass
         except Exception, e:
-            print str(e)
+            print(str(e))
         else:
             self.getAddRule('start').date = (startYear, 1, 1)
         try:
@@ -2412,7 +2412,7 @@ class EventGroup(EventContainer):
                 if last:
                     return last[0]
                 else:
-                    print 'no time_last returned for event %s'%event.id
+                    print('no time_last returned for event %s'%event.id)
                     return None
         elif attr=='time_first':
             if self.enable:
@@ -2710,12 +2710,12 @@ class EventGroup(EventContainer):
         self.occurCount += 1
     def updateOccurrenceLog(self, stm0):
         if core.debugMode:
-            print 'updateOccurrence, id=%s, title=%s, count=%s, time=%s'%(
+            print('updateOccurrence, id=%s, title=%s, count=%s, time=%s'%(
                 self.id,
                 self.title,
                 self.occurCount,
                 now()-stm0,
-            )
+            ))
     def updateOccurrence(self):
         stm0 = now()
         self.occur.clear()
@@ -2730,19 +2730,19 @@ class EventGroup(EventContainer):
         self.occurCount += len(occurList)
         #self.occurLoaded = True
         if core.debugMode:
-            print 'updateOccurrence, id=%s, title=%s, count=%s, time=%s'%(
+            print('updateOccurrence, id=%s, title=%s, count=%s, time=%s'%(
                 self.id,
                 self.title,
                 self.occurCount,
                 now()-stm0,
-            )
+            ))
         #print 'depth=%s, N=%s'%(self.occur.getDepth(), len(occurList))
         #print '2*lg(N)=%.1f'%(2*math.log(len(occurList), 2))
         #print
     def exportToIcsFp(self, fp):
         currentTimeStamp = getIcsTimeByEpoch(now())
         for event in self:
-            print 'exportToIcsFp', event.id
+            print('exportToIcsFp', event.id)
             icsData = event.getIcsData()
             ###
             commonText = 'BEGIN:VEVENT\n'
@@ -3213,7 +3213,7 @@ class VcsEpochBaseEvent(Event):
         if epoch is not None:
             if self.getEpochFromJd(startJd) <= epoch < self.getEpochFromJd(endJd):
                 if not self.parent.showSeconds:
-                    print '-------- showSeconds = False'
+                    print('-------- showSeconds = False')
                     epoch -= (epoch % 60)
                 return TimeListOccurrence(epoch)
         return TimeListOccurrence()

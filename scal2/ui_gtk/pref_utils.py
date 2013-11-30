@@ -404,7 +404,7 @@ class LangPrefItem(PrefItem):
             try:
                 i = langDict.keyList.index(value)
             except ValueError:
-                print 'language %s in not in list!'%value
+                print('language %s in not in list!'%value)
                 self.widget.set_active(0)
             else:
                 self.widget.set_active(i+1)

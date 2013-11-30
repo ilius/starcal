@@ -583,5 +583,5 @@ if __name__=='__main__':
     d.vbox.pack_start(btn, 1, 1)
     d.vbox.show_all()
     d.run()
-    print btn.get_value()
+    print(btn.get_value())
 

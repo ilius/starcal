@@ -9,5 +9,5 @@ while True:
     if line.startswith('VERSION'):
         exec(line)
         break
-print VERSION
+print(VERSION)
 

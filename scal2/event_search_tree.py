@@ -125,10 +125,10 @@ class EventSearchTree:
         if debug:
             from time import strftime, localtime
             f = '%F, %T'
-            print 'EventSearchTree.add: %s\t%s'%(
+            print('EventSearchTree.add: %s\t%s'%(
                 strftime(f, localtime(t0)),
                 strftime(f, localtime(t1)),
-            )
+            ))
         try:
             mt = (t0 + t1)/2.0
             dt = (t1 - t0)/2.0
@@ -294,7 +294,7 @@ if __name__=='__main__':
     tree = EventSearchTree()
     for x in ls:
         tree.add(x, x+4, x)
-    print tree.getLastBefore(15.5)
+    print(tree.getLastBefore(15.5))
 
 
 

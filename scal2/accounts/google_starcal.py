@@ -361,7 +361,7 @@ class GoogleAccount(Account):
         for gevent in gevents:
             event = importEvent(gevent, group)
             if not event:
-                print '---------- event %s can not be pulled'%event
+                print('---------- event %s can not be pulled'%event)
                 continue
             remoteIds = (self.id, remoteGroupId, gevent['id'])
             eventId = group.eventIdByRemoteIds.get(remoteIds, None)
@@ -370,7 +370,7 @@ class GoogleAccount(Account):
                 group.append(event)
                 event.save()
                 group.save()
-                print '---------- event %s added in starcal'%event.summary
+                print('---------- event %s added in starcal'%event.summary)
             else:
                 try:
                     event = group[eventId]
@@ -390,7 +390,7 @@ class GoogleAccount(Account):
                 continue
             gevent = exportEvent(event)
             if gevent is None:
-                print '---------- event %s can not be pushed'%event.summary
+                print('---------- event %s can not be pushed'%event.summary)
                 continue
             setEtag(gevent)
             #print 'etag = %r'%gevent['etag']
@@ -411,7 +411,7 @@ class GoogleAccount(Account):
                     body=gevent,
                     calendarId=remoteGroupId
                 ).execute()
-                print '---------- event %s updated on server'%event.summary
+                print('---------- event %s updated on server'%event.summary)
             else:## FIXME
                 request = service.events().insert(
                     body=gevent,
@@ -422,7 +422,7 @@ class GoogleAccount(Account):
                 response = request.execute()
                 #print 'response = %s'%pformat(response)
                 remoteEventId = response['id']
-                print '----------- event %s added on server'%event.summary
+                print('----------- event %s added on server'%event.summary)
             event.remoteIds = [self.id, remoteGroupId, remoteEventId]
             event.save()
             group.eventIdByRemoteIds[tuple(event.remoteIds)] = event.id## TypeError: unhashable type: 'list'
@@ -433,7 +433,7 @@ class GoogleAccount(Account):
 
 def printAllEvent(account, remoteGroupId):
     for gevent in account.fetchAllEventsInGroup(remoteGroupId):
-        print gevent['summary'], gevent['updated']
+        print(gevent['summary'], gevent['updated'])
 
 
 if __name__=='__main__':

@@ -26,14 +26,14 @@ if __name__=='__main__':
     lines = open(localeGen).read().split('\n')
     for (i, line) in enumerate(lines):
         if line.lower().startswith(localeName):
-            print 'locale "%s" is already enabled'%localeName
+            print('locale "%s" is already enabled'%localeName)
             break
         if line.lower().startswith('#'+localeName):
             lines[i] = line[1:]
             os.rename(localeGen, '%s.%s'%(localeGen, now()))
             open(localeGen, 'w').write('\n'.join(lines))
             exit_code = subprocess.call('/usr/sbin/locale-gen')
-            print 'enabling locale "%s" done'%localeName
+            print('enabling locale "%s" done'%localeName)
             break
     else:
         errorExit('locale "%s" not found!'%localeName)

@@ -56,7 +56,7 @@ from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.timeline_box import *
 
 def show_event(widget, event):
-    print type(widget), event.type.value_name, event.get_value()#, event.send_event
+    print(type(widget), event.type.value_name, event.get_value())#, event.send_event
 
 
 @registerSignals
@@ -163,7 +163,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         try:
             fillColor(cr, tick.color)
         except:
-            print 'error in fill, x=%.2f, y=%.2f, w=%.2f, h=%.2f'%(tickX, tickY, tickW, tickH)
+            print('error in fill, x=%.2f, y=%.2f, w=%.2f, h=%.2f'%(tickX, tickY, tickW, tickH))
         ###
         font = [
             fontFamily,
@@ -195,7 +195,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             try:
                 cr.move_to(layoutX, layoutY)
             except:
-                print 'error in move_to, x=%.2f, y=%.2f'%(layoutX, layoutY)
+                print('error in move_to, x=%.2f, y=%.2f'%(layoutX, layoutY))
             else:
                 cr.show_layout(layout)## with the same tick.color
     def drawBox(self, cr, box):

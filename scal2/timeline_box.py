@@ -199,14 +199,14 @@ def calcEventBoxes(
     ###
     graph = makeIntervalGraph(boxes)
     if debugMode:
-        print 'makeIntervalGraph: %e'%(now()-t1)
+        print('makeIntervalGraph: %e'%(now()-t1))
     ###
     #####
     colorGraph(graph)
     renderBoxesByGraph(boxes, graph, 0, 0)
     if debugMode:
-        print 'box placing time:  %e'%(now()-t0)
-        print
+        print('box placing time:  %e'%(now()-t0))
+        print()
     return boxes
 
 

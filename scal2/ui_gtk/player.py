@@ -50,7 +50,7 @@ class MPlayer:
 
     # Play the specified file
     def play(self, path):
-        print 'File path: ', path
+        print('File path: ', path)
         mplayerOptions = self.pbox.mplayerOptions
 
         if self.pbox.isvidontop:
@@ -94,7 +94,7 @@ class MPlayer:
             self.playTime = '%d:%.2d:%.2d' % (h, m, s)
         else:
             self.playTime = '%d:%.2d' % (m, s)
-        print self.playTime
+        print(self.playTime)
 
     # Toggle between play and pause
     def pause(self):
@@ -127,7 +127,7 @@ class MPlayer:
         try:
             os.popen(command)
         except StandardError, message:
-            print 'Cannot set volume: %s'%message
+            print('Cannot set volume: %s'%message)
 
     # Change volume by the amount specified
     # Changing the adjustment automatically updates
@@ -209,7 +209,7 @@ class MPlayer:
 
     # Call a function periodically to fetch status
     def startStatusQuery(self):
-        print 'start'
+        print('start')
         self.statusQuery = gobject.timeout_add(STATUS_UPDATE_TIMEOUT, self.queryStatus)
 
     # Stop calling the function that fetches status periodically
@@ -309,7 +309,7 @@ class PlayerBox(gtk.HBox):
     def seek(self, widget, event):# Seek on changing the seekBar
         #print 'seek', self.seekAdj.value, self.mplayer.mplayerIn
         if not self.mplayer.mplayerIn:
-            print 'abc'
+            print('abc')
             sleep(0.05)
             self.seekAdj.value = 100
             #self.playPauseBut.set_image(gtk.image_new_from_stock(gtk.STOCK_MEDIA_PLAY,gtk.ICON_SIZE_SMALL_TOOLBAR))

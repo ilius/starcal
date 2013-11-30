@@ -123,7 +123,7 @@ class EventsImportWindow(WizardWindow):
                             else:
                                 for group in newGroups:
                                     self.win.manager.appendGroupTree(group)
-                                print _('%s groups imported successfully')%_(len(newGroups))
+                                print(_('%s groups imported successfully')%_(len(newGroups)))
                 else:
                     raise ValueError('invalid format %r'%format)
             finally:

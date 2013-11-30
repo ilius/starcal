@@ -27,11 +27,11 @@ def decodeAtomElement(atom):
 
 def createDiscoveryEvent(group, atom):
     if not 'discoveryDate' in atom:
-        print 'no discoveryDate for %s'%atom['id']
+        print('no discoveryDate for %s'%atom['id'])
         return
     discoveryDate = int(atom['discoveryDate'])
     if discoveryDate < 1:
-        print 'empty discoveryDate (%r) for %s'%(atom['discoveryDate'], atom['id'])
+        print('empty discoveryDate (%r) for %s'%(atom['discoveryDate'], atom['id']))
         return
     description = atom['name']
     if 'discoverers' in atom:

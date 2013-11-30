@@ -32,12 +32,12 @@ from scal2.ui_gtk.utils import buffer_get_text
 def myRaise():
     i = sys.exc_info()
     try:
-        print('line %s: %s: %s'%(i[2].tb_lineno, i[0].__name__, i[1]))
+        print(('line %s: %s: %s'%(i[2].tb_lineno, i[0].__name__, i[1])))
     except:
-        print i
+        print(i)
 
 def show_event(widget, event):
-    print type(widget), event.type.value_name#, event.send_event
+    print(type(widget), event.type.value_name)#, event.send_event
 
 time_rem = lambda: int(1000*(1.01-now()%1))
 

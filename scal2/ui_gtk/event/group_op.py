@@ -90,7 +90,7 @@ class GroupConvertModeDialog(gtk.Dialog):
                 else:
                     failedSummaryList.append(event.summary)
             if failedSummaryList:## FIXME
-                print failedSummaryList
+                print(failedSummaryList)
         self.destroy()
 
 

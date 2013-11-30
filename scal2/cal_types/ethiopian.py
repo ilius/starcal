@@ -91,7 +91,7 @@ if __name__=='__main__':
         ey, em, ed = jd_to(jd)
         #if ed==22:
         #    print gy
-        print '%.4d/%.2d/%.2d\t%.4d/%.2d/%.2d'%(gy, 1, 1, ey, em, ed)
+        print('%.4d/%.2d/%.2d\t%.4d/%.2d/%.2d'%(gy, 1, 1, ey, em, ed))
 
 
 

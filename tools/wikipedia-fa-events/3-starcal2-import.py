@@ -49,7 +49,7 @@ for line in open('wikipedia-fa.tab'):
         date_str, category, summary = parts
         description = ''
     else:
-        print 'BAD LINE', line
+        print('BAD LINE', line)
         continue
     year, month, day = dateDecode(date_str)
     group = getGroupByTitle(groupTitlePrefix + category)

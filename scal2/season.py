@@ -39,7 +39,7 @@ def test():
         #for month in (1, 4, 7, 10):
         for month in (1,):
             s = getSeasonFromJd(jalali_to_jd(year, month, 1))
-            print '%.4d/%.2d/01\t%.5f'%(year, month, s)
+            print('%.4d/%.2d/01\t%.5f'%(year, month, s))
         #print
     
 

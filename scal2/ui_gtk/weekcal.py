@@ -56,7 +56,7 @@ from scal2.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
 from scal2.ui_gtk import timeline_box as tbox
 
 def show_event(widget, event):
-    print type(widget), event.type.value_name#, event.get_value()#, event.send_event
+    print(type(widget), event.type.value_name)#, event.get_value()#, event.send_event
 
 
 class ColumnBase(CustomizableCalObj):
@@ -202,7 +202,7 @@ class Column(gtk.Widget, ColumnBase):
                 lineH = rowH/linesN
                 lineI = 0
                 if len(data[0]) < 2:
-                    print self._name
+                    print(self._name)
                 for line, color in data:
                     layout = newTextLayout(
                         self,
@@ -798,7 +798,7 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
             try:
                 item = defaultItemsDict[name]
             except KeyError:
-                print 'weekCal item %s does not exist'%name
+                print('weekCal item %s does not exist'%name)
             else:
                 item.enable = enable
                 self.appendItem(item)

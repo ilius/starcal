@@ -135,7 +135,7 @@ def saveLiveConfLoop():
 def checkNeedRestart():
     for key in needRestartPref.keys():
         if needRestartPref[key] != eval(key):
-            print '"%s", "%s", "%s"'%(key, needRestartPref[key], eval(key))
+            print('"%s", "%s", "%s"'%(key, needRestartPref[key], eval(key)))
             return True
     return False
 

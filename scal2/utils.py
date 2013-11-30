@@ -97,9 +97,9 @@ class FallbackLogger:
     def error(self, text):
         sys.stderr.write('ERROR: %s\n'%text)
     def warning(self, text):
-        print 'WARNING: %s'%text
+        print('WARNING: %s'%text)
     def debug(self, text):
-        print text
+        print(text)
 
 def myRaise(File=None):
     i = sys.exc_info()
@@ -322,7 +322,7 @@ def inputDate(msg):
         try:
             return dateDecode(date)
         except Exception, e:
-            print str(e)
+            print(str(e))
 
 def inputDateJd(msg):
     date = inputDate(msg)

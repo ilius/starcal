@@ -46,7 +46,7 @@ for line in lines:
       shutil.copy('/usr/share/applications/%s.desktop'%pkgName, target)
     except:
       continue
-    print 'Copying x-desktop file to %s\'s Desktop'%username
+    print('Copying x-desktop file to %s\'s Desktop'%username)
     os.chown(target, uid, gid)
 
 

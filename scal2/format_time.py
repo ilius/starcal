@@ -334,21 +334,21 @@ def testSpeed():
     for i in range(n):
         strftime(format, tm)
     t1 = now()
-    print 'Python strftime: %s sec'%(t1-t0)
+    print('Python strftime: %s sec'%(t1-t0))
     ########
     jd = to_jd(tm[0], tm[1], tm[2], mode)
     t0 = now()
     for i in range(n):
         formatTime(binFmt, mode, jd, tm)
     t1 = now()
-    print 'My strftime:     %s sec'%(t1-t0)
+    print('My strftime:     %s sec'%(t1-t0))
     ########
     from scal2.ui_gtk.preferences import strftime
     t0 = now()
     for i in range(n):
         strftime(format2, tm)
     t1 = now()
-    print 'My old strftime: %s sec'%(t1-t0)
+    print('My old strftime: %s sec'%(t1-t0))
 
 
 def testOutput():
@@ -359,8 +359,8 @@ def testOutput():
     day = 4
     jd = to_jd(year, month, day, core.DATE_GREG)
     tm = (year, month, day, 12, 10, 0, 15, 1, 1)
-    print formatTime(binFmt, core.DATE_GREG, jd, tm)
-    print strftime('%OY/%Om/%Od', tm)
+    print(formatTime(binFmt, core.DATE_GREG, jd, tm))
+    print(strftime('%OY/%Om/%Od', tm))
 
 
 

@@ -88,7 +88,7 @@ if __name__=='__main__':
     win.vbox.pack_start(combo)
     win.vbox.show_all()
     win.run()
-    print combo.get_value()
+    print(combo.get_value())
 
 
 
