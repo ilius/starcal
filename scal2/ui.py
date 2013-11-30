@@ -97,11 +97,11 @@ def dictsTupleConfStr(data):
         st += '\n{'
         for k in d.keys():
             v = d[k]
-            if type(k)==str:
+            if isinstance(k, str):
                 ks = '\'%s\''%k
             else:
                 ks = str(k)
-            if type(v)==str:
+            if isinstance(v, str):
                 vs = '\'%s\''%v
             else:
                 vs = str(v)
