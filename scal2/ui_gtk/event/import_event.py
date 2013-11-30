@@ -108,17 +108,17 @@ class EventsImportWindow(WizardWindow):
                 if format=='json':
                     try:
                         text = open(fpath, 'rb').read()
-                    except Exception, e:
+                    except Exception as e:
                         sys.stderr.write(_('Error in reading file')+'\n%s\n'%e)
                     else:
                         try:
                             data = jsonToData(text)
-                        except Exception, e:
+                        except Exception as e:
                             sys.stderr.write(_('Error in loading JSON data')+'\n%s\n'%e)
                         else:
                             try:
                                 newGroups = ui.eventGroups.importData(data)
-                            except Exception, e:
+                            except Exception as e:
                                 sys.stderr.write(_('Error in importing events')+'\n%s\n'%e)
                             else:
                                 for group in newGroups:

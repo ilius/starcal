@@ -309,7 +309,7 @@ def numDecode(numSt):
             else:
                 try:
                     numEn += str(tryLangDigits.index(dig))
-                except ValueError, e:
+                except ValueError as e:
                     print('error in decoding num char %s'%dig)
                     #raise e
                     break

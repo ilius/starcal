@@ -15,7 +15,7 @@ class MyDialog:
         self.startWaiting()
         try:
             func(*args, **kwargs)
-        except Exception, e:
+        except Exception as e:
             raise e
         finally:
             self.endWaiting()

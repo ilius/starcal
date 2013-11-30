@@ -788,7 +788,7 @@ class DurationEventRule(EventRule):
     def setData(self, data):
         try:
             self.value, self.unit = durationDecode(data)
-        except Exception, e:
+        except Exception as e:
             log.error('Error while loading event rule "%s": %s'%(self.name, e))
     getData = lambda self: durationEncode(self.value, self.unit)
     def calcOccurrence(self, startJd, endJd, event):
@@ -1894,7 +1894,7 @@ class YearlyEvent(Event):
             startYear = int(data['startYear'])
         except KeyError:
             pass
-        except Exception, e:
+        except Exception as e:
             print(str(e))
         else:
             self.getAddRule('start').date = (startYear, 1, 1)
@@ -2280,7 +2280,7 @@ class EventContainer(JsonSObjBase):
         for eid in self.idList:
             try:
                 event = self.getEvent(eid)
-            except Exception, e:
+            except Exception as e:
                 myRaise(e)
             else:
                 yield event

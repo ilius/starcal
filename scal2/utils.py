@@ -317,7 +317,7 @@ def inputDate(msg):
             return
         try:
             return dateDecode(date)
-        except Exception, e:
+        except Exception as e:
             print(str(e))
 
 def inputDateJd(msg):

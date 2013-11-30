@@ -70,7 +70,7 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
             timeZone = self.timeZoneInput.get_text()
             try:
                 pytz.timezone(timeZone)
-            except Exception, e:
+            except Exception as e:
                 self.errorLabel.set_text(
                     _('Time zone is invalid') + '\n' + str(e)
                 )
@@ -80,7 +80,7 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
                         event.timeZone = timeZone
                         event.afterModify()
                         event.save()
-                except Exception, e:
+                except Exception as e:
                     self.errorLabel.set_text(
                         str(e)
                     )

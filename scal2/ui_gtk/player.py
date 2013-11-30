@@ -126,7 +126,7 @@ class MPlayer:
 
         try:
             os.popen(command)
-        except StandardError, message:
+        except StandardError as message:
             print('Cannot set volume: %s'%message)
 
     # Change volume by the amount specified

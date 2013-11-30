@@ -109,7 +109,7 @@ def kill(pid, signal=0):
     #if 'ps --no-headers' returns no lines, the pid is dead
     try:
         return os.kill(pid, signal)
-    except OSError, e:
+    except OSError as e:
         #process is dead
         if e.errno == 3:
             return True
@@ -127,7 +127,7 @@ def dead(pid):
     from os import waitpid, WNOHANG
     try:
         dead = waitpid(pid, WNOHANG)[0]
-    except OSError, e:
+    except OSError as e:
         #pid is not a child
         if e.errno == 10:
             return False

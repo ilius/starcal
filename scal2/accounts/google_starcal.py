@@ -258,7 +258,7 @@ class GoogleAccount(Account):
                         (auth_host_name, port),
                         ClientRedirectHandler,
                     )
-                except socket.error, e:
+                except socket.error as e:
                     pass
                 else:
                     success = True
@@ -286,7 +286,7 @@ class GoogleAccount(Account):
             code = self.askVerificationCode()
         try:
             credential = self.flow.step2_exchange(code)
-        except Exception, e:
+        except Exception as e:
             self.showError('Authentication has failed: %s'%e)
             return
         storage.put(credential)
@@ -374,7 +374,7 @@ class GoogleAccount(Account):
             else:
                 try:
                     event = group[eventId]
-                except Exception, e:
+                except Exception as e:
                     pass
         ########################### Push
         ## if remoteGroupId=='tasks':## FIXME
