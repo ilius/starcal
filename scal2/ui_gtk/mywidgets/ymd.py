@@ -19,7 +19,7 @@ class YearMonthDayBox(gtk.HBox):
         self.pack_start(gtk.Label(_('Month')), 0, 0)
         comboMonth = gtk.combo_box_new_text()
         module = calTypes[self.mode]
-        for i in xrange(12):
+        for i in range(12):
             comboMonth.append_text(_(module.getMonthName(i+1, None)))## year=None means all months
         comboMonth.set_active(0)
         self.pack_start(comboMonth, 0, 0)
@@ -35,9 +35,9 @@ class YearMonthDayBox(gtk.HBox):
         self.mode = mode
         module = calTypes[mode]
         combo = self.comboMonth
-        for i in xrange(len(combo.get_model())):
+        for i in range(len(combo.get_model())):
             combo.remove_text(0)
-        for i in xrange(12):
+        for i in range(12):
             combo.append_text(_(module.getMonthName(i+1)))
         self.spinD.set_range(1, module.maxMonthLen)
         self.comboMonthConn = self.comboMonth.connect('changed', self.comboMonthChanged)

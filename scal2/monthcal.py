@@ -86,8 +86,8 @@ def getMonthDesc(status=None):
         status = getCurrentMonthStatus()
     first = None
     last = None
-    for i in xrange(6):
-        for j in xrange(7):
+    for i in range(6):
+        for j in range(7):
             c = status[i][j]
             if first:
                 if c.month == status.month:

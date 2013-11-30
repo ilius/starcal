@@ -112,13 +112,13 @@ class ExportDialog(gtk.Dialog):
             months = [s]
             title = '%s %s'%(core.getMonthName(core.primaryMode, s.month, s.year), _(s.year))
         elif i==1:
-            for i in xrange(1, 13):
+            for i in range(1, 13):
                 months.append(getMonthStatus(ui.cell.year, i))
             title = '%s %s'%(_('Calendar'), _(ui.cell.year))
         elif i==2:
             y0, m0 = self.ymBox0.get_value()
             y1, m1 = self.ymBox1.get_value()
-            for ym in xrange(y0*12+m0-1, y1*12+m1):
+            for ym in range(y0*12+m0-1, y1*12+m1):
                 y, m = divmod(ym, 12)
                 m += 1
                 months.append(getMonthStatus(y, m))

@@ -92,8 +92,8 @@ def get_wallpaper(x, y, width, height):
     # tile wallpaper over pixbuf
     sx = -(x % pwidth)
     sy = -(y % pheight)
-    for x in xrange(sx, width, pwidth):
-        for y in xrange(sy, height, pheight):
+    for x in range(sx, width, pwidth):
+        for y in range(sy, height, pheight):
             dstx = max(0, x)
             dsty = max(0, y)
             srcx = dstx - x

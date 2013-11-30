@@ -100,7 +100,7 @@ CELLPADDING=4 CELLSPACING=0>
         text += '''            <TD WIDTH=9%% BGCOLOR="%s">
             <P ALIGN=CENTER></P>
         </TD>\n'''%borderColor## what text????????
-        for j in xrange(7):
+        for j in range(7):
             text += '''            <TD WIDTH=13%% BGCOLOR="%s">
             <P ALIGN=CENTER>
                 <FONT COLOR="%s"><B>%s</B></FONT>
@@ -108,14 +108,14 @@ CELLPADDING=4 CELLSPACING=0>
         </TD>\n'''%(borderColor, borderTextColor, core.getWeekDayN(j))
         pluginsText = '<P><FONT COLOR="%s">\n'%colors[0]
         text += '        </TR>\n'
-        for i in xrange(6):
+        for i in range(6):
             text += '''        <TR VALIGN=TOP>
         <TD WIDTH=9%% BGCOLOR="%s">
             <P ALIGN=CENTER>
                 <FONT COLOR="%s"><B>%s</B></FONT>
             </P>
         </TD>\n'''%(borderColor, borderTextColor, _(status.weekNum[i]))
-            for j in xrange(7):
+            for j in range(7):
                 cell = status[i][j]
                 text += '            <TD WIDTH=13%>\n                <P DIR="LTR" ALIGN=CENTER>\n'
                 for (ind, tag) in format:

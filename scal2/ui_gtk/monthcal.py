@@ -293,7 +293,7 @@ class MonthCal(gtk.Widget, CalBase):
             setColor(cr, ui.borderTextColor)
             dx = 0
             wdayAb = (self.wdaysWidth > w)
-            for i in xrange(7):
+            for i in range(7):
                 wday = newTextLayout(self, core.getWeekDayAuto(i, wdayAb))
                 try:
                     fontw, fonth = wday.get_pixel_size()
@@ -339,7 +339,7 @@ class MonthCal(gtk.Widget, CalBase):
             fillColor(cr, ui.borderColor)
             ##### Drawing week numbers
             setColor(cr, ui.borderTextColor)
-            for i in xrange(6):
+            for i in range(6):
                 lay = newTextLayout(self, _(status.weekNum[i]))
                 fontw, fonth = lay.get_pixel_size()
                 if rtl:
@@ -360,8 +360,8 @@ class MonthCal(gtk.Widget, CalBase):
             y0 = self.cy[ty] - self.dy/2.0
             cr.rectangle(x0, y0, self.dx, self.dy)
             fillColor(cr, ui.todayCellColor)
-        for yPos in xrange(6):
-            for xPos in xrange(7):
+        for yPos in range(6):
+            for xPos in range(7):
                 c = status[yPos][xPos]
                 x0 = self.cx[xPos]
                 y0 = self.cy[yPos]
@@ -447,10 +447,10 @@ class MonthCal(gtk.Widget, CalBase):
         ##### drawGrid
         if ui.mcalGrid:
             setColor(cr, ui.mcalGridColor)
-            for i in xrange(7):
+            for i in range(7):
                 cr.rectangle(self.cx[i]+rtlSgn()*self.dx/2.0, 0, 1, h)
                 cr.fill()
-            for i in xrange(6):
+            for i in range(6):
                 cr.rectangle(0, self.cy[i]-self.dy/2.0, w, 1)
                 cr.fill()
         return False
@@ -458,7 +458,7 @@ class MonthCal(gtk.Widget, CalBase):
         ### update width of week days names to understand that should be synopsis or no
         lay = newTextLayout(self)
         wm = 0 ## max width
-        for i in xrange(7):
+        for i in range(7):
             lay.set_text(core.weekDayName[i])
             w = lay.get_pixel_size()[0] ## ????????
             #w = lay.get_pixel_extents()[0] ## ????????
@@ -477,11 +477,11 @@ class MonthCal(gtk.Widget, CalBase):
             return False
         xPos = -1
         yPos = -1
-        for i in xrange(7):
+        for i in range(7):
             if abs(x-self.cx[i]) <= self.dx/2.0:
                 xPos = i
                 break
-        for i in xrange(6):
+        for i in range(6):
             if abs(y-self.cy[i]) <= self.dy/2.0:
                 yPos = i
                 break
@@ -503,16 +503,16 @@ class MonthCal(gtk.Widget, CalBase):
         if rtl:
             self.cx = [
                 (w - ui.mcalLeftMargin) * (13.0 - 2*i) / 14.0
-                for i in xrange(7)
+                for i in range(7)
             ] ## centers x
         else:
             self.cx = [
                 ui.mcalLeftMargin + (w-ui.mcalLeftMargin) * (1.0 + 2*i) / 14.0
-                for i in xrange(7)
+                for i in range(7)
             ] ## centers x
         self.cy = [
             ui.mcalTopMargin + (h - ui.mcalTopMargin) * (1.0 + 2*i) / 12.0
-            for i in xrange(6)
+            for i in range(6)
         ] ## centers y
         self.dx = (w - ui.mcalLeftMargin) / 7.0 ## delta x
         self.dy = (h - ui.mcalTopMargin) / 6.0 ## delta y

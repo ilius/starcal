@@ -175,7 +175,7 @@ def to_jd(year, month, day):
         ## and Mohammad Toossi <mohammad@bamdad.org> at 2001
         y2 = year-979
         jdays = 365*y2 + (y2/33)*8 + (y2%33+3)/4
-        for i in xrange(month-1):
+        for i in range(month-1):
             jdays += monthLen[i]
         jdays += (day-1)
         return jdays + 584101 + GREGORIAN_EPOCH
@@ -221,7 +221,7 @@ def jd_to(jd):
             year += (jdays-1)/365
             jdays = (jdays-1)%365
         month = 12
-        for i in xrange(11):
+        for i in range(11):
             if jdays >= monthLen[i]:
                 jdays -= monthLen[i]
             else:

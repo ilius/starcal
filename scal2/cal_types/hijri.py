@@ -103,7 +103,7 @@ class MonthDbHolder:
         self.monthLenByYm = {}
         for y in monthLenByYear:
             lst = monthLenByYear[y]
-            for m in xrange(len(lst)):
+            for m in range(len(lst)):
                 ml = lst[m]
                 if ml:## positive integer
                     self.monthLenByYm[y*12+m] = ml

@@ -44,7 +44,7 @@ ASR_STANDARD, ASR_HANAFI = (1, 2)
 ##   hanafi => Hanafi
 ## used in which method? FIXME
 
-MIDNIGHT_STANDARD, MIDNIGHT_JAFARI = range(2)
+MIDNIGHT_STANDARD, MIDNIGHT_JAFARI = list(range(2))
 ## midnight methods
 ##   standard => Mid Sunset to Sunrise
 ##   jafari => Mid Maghrib to Fajr

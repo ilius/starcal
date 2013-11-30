@@ -289,7 +289,7 @@ class EventSearchTree:
 if __name__=='__main__':
     from random import shuffle
     n = 100
-    ls = range(n)
+    ls = list(range(n))
     shuffle(ls)
     tree = EventSearchTree()
     for x in ls:

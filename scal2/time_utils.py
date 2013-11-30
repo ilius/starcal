@@ -111,7 +111,7 @@ roundEpochToDay = lambda epoch: getEpochFromJd(round(getFloatJdFromEpoch(epoch))
 def getJdListFromEpochRange(startEpoch, endEpoch):
     startJd = getJdFromEpoch(startEpoch)
     endJd = getJdFromEpoch(endEpoch-0.01) + 1
-    return range(startJd, endJd)
+    return list(range(startJd, endJd))
 
 def getHmsFromSeconds(second):
     minute, second = divmod(int(second), 60)

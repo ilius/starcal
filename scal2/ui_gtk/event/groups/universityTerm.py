@@ -362,14 +362,14 @@ class WeeklyScheduleWidget(gtk.Widget):
         ### Calc Coordinates: ycenters(list), dy(float)
         ycenters = [
             topMargin + (h-topMargin)*(1.0+2*i)/14.0
-            for i in xrange(7)
+            for i in range(7)
         ] ## centers y
         dy = (h-topMargin)/7.0 ## delta y
         ### Draw grid
         ## tmfactors includes 0 at the first, and 1 at the end
         setColor(cr, gridColor)
         ##
-        for i in xrange(7):
+        for i in range(7):
             cr.rectangle(0, ycenters[i]-dy/2.0, w, 1)
             cr.fill()
         ##

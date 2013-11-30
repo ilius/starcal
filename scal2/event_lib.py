@@ -387,7 +387,7 @@ class MultiValueAllDayEventRule(AllDayEventRule):
         ls = []
         for item in self.values:
             if isinstance(item, (tuple, list)):
-                ls += range(item[0], item[1]+1)
+                ls += list(range(item[0], item[1]+1))
             else:
                 ls.append(item)
         return ls
@@ -454,7 +454,7 @@ class WeekNumberModeEventRule(EventRule):
     params = (
         'weekNumMode',
     )
-    EVERY_WEEK, ODD_WEEKS, EVEN_WEEKS = range(3) ## remove EVERY_WEEK? FIXME
+    EVERY_WEEK, ODD_WEEKS, EVEN_WEEKS = list(range(3)) ## remove EVERY_WEEK? FIXME
     weekNumModeNames = ('any', 'odd', 'even')
     def __init__(self, parent):
         EventRule.__init__(self, parent)
@@ -468,7 +468,7 @@ class WeekNumberModeEventRule(EventRule):
     def calcOccurrence(self, startJd, endJd, event):## improve performance ## FIXME
         startAbsWeekNum = getAbsWeekNumberFromJd(event.getStartJd()) - 1 ## 1st week ## FIXME
         if self.weekNumMode==self.EVERY_WEEK:
-            return JdSetOccurrence(range(startJd, endJd))
+            return JdSetOccurrence(list(range(startJd, endJd)))
         elif self.weekNumMode==self.ODD_WEEKS:
             jds = set()
             for jd in range(startJd, endJd):
@@ -501,7 +501,7 @@ class WeekDayEventRule(AllDayEventRule):
     )
     def __init__(self, parent):
         EventRule.__init__(self, parent)
-        self.weekDayList = range(7) ## or [] ## FIXME
+        self.weekDayList = list(range(7)) ## or [] ## FIXME
     getData = lambda self: self.weekDayList
     def setData(self, data):
         if isinstance(data, int):
@@ -512,7 +512,7 @@ class WeekDayEventRule(AllDayEventRule):
             raise BadEventFile('bad rule weekDayList=%s, value for weekDayList must be a list of integers (0 for sunday)'%data)
     jdMatches = lambda self, jd: jwday(jd) in self.weekDayList
     def getInfo(self):
-        if self.weekDayList == range(7):
+        if self.weekDayList == list(range(7)):
             return ''
         sep = _(',') + ' '
         sep2 = ' ' + _('or') + ' '
@@ -569,7 +569,7 @@ class WeekMonthEventRule(EventRule):
         startYear, startMonth, startDay = jd_to(startJd, mode)
         endYear, endMonth, endDay = jd_to(endJd, mode)
         jds = set()
-        monthList = range(1, 13) if self.month==0 else [self.month]
+        monthList = list(range(1, 13)) if self.month==0 else [self.month]
         for year in range(startYear, endYear):
             for month in monthList:
                 jd = to_jd(year, month, 7*self.wmIndex+1, mode)
@@ -813,11 +813,10 @@ def cycleDaysCalcOccurrence(days, startJd, endJd, event):
         startJd = eStartJd
     else:
         startJd = eStartJd + ((startJd - eStartJd - 1) // days + 1) * days
-    return JdSetOccurrence(range(
+    return JdSetOccurrence(list(range(
         startJd,
         endJd,
-        days,
-    ))
+        days,)))
 
 @classes.rule.register
 class CycleDaysEventRule(EventRule):
@@ -3502,7 +3501,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
         endJd = min(self.endJd, self.vcsMaxJd)
         ###
         lastCommitId = mod.getLastCommitIdUntilJd(self, startJd)
-        for jd in xrange(startJd, endJd):
+        for jd in range(startJd, endJd):
             commits = mod.getCommitList(self, startJd=jd, endJd=jd+1)
             if not commits:
                 continue
