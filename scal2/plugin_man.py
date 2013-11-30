@@ -315,7 +315,7 @@ class BuiltinTextPlugin(BasePlugin):
                     d = int(date[1])
                     db[m-1][d-1] = text
                 else:
-                    raise IOError, 'Bad line in database %s:\n%s'%(self.db_path, line)
+                    raise IOError('Bad line in database %s:\n%s'%(self.db_path, line))
         self.data = db
     def get_text(self, year, month, day):
         db = self.data
