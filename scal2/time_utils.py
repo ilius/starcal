@@ -124,11 +124,10 @@ def getJhmsFromEpoch(epoch, currentOffset=False, tz=None):
     days, second = divmod(ifloor(epoch + offset), 24*3600)
     return (days+J1970,) + getHmsFromSeconds(second)
 
-def getSecondsFromHms(hour, minute, second=0):
-    return hour*3600 + minute*60 + second
+getSecondsFromHms = lambda hour, minute, second=0: hour*3600 + minute*60 + second
 
 getEpochFromJhms = lambda jd, hour, minute, second, tz=None: \
-    getEpochFromJd(jd, tz) + getSecondsFromHms(hour, minute, second)
+    getEpochFromJd(jd, tz) + hour*3600 + minute*60 + second
 
 def getJdAndSecondsFromEpoch(epoch):## return a tuple (julain_day, extra_seconds) from epoch
     days, second = divmod(epoch, 24*3600)

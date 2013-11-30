@@ -40,16 +40,13 @@ def clearObj(obj):
     obj.est = EventSearchTree()
 
 
-def getCommitList(obj, startJd, endJd):
-    '''
-        returns a list of (epoch, commit_id) tuples
-    '''
-    return getCommitListFromEst(
-        obj,
-        startJd,
-        endJd,
-        lambda repo, rev_id: str(repo[rev_id])
-    )
+## returns a list of (epoch, commit_id) tuples
+getCommitList = lambda obj, startJd, endJd: getCommitListFromEst(
+    obj,
+    startJd,
+    endJd,
+    lambda repo, rev_id: str(repo[rev_id])
+)
 
 
 def getCommitInfo(obj, commid_id):
@@ -92,11 +89,9 @@ def getCommitShortStat(obj, commit_id):
     )
 
 
-def getCommitShortStatLine(obj, commit_id):
-    '''
-        returns str
-    '''
-    return encodeShortStat(*getCommitShortStat(obj, commit_id))
+## returns str
+getCommitShortStatLine = lambda obj, commit_id:\
+    encodeShortStat(*getCommitShortStat(obj, commit_id))
 
 
 def getTagList(obj, startJd, endJd):
@@ -130,19 +125,12 @@ def getTagShortStat(obj, prevTag, tag):
     )
 
 
-def getTagShortStatLine(obj, prevTag, tag):
-    '''
-        returns str
-    '''
-    return encodeShortStat(*getTagShortStat(obj, prevTag, tag))
+## returns str
+getTagShortStatLine = lambda obj, prevTag, tag: encodeShortStat(*getTagShortStat(obj, prevTag, tag))
 
+getFirstCommitEpoch = lambda obj: obj.repo[0].date()[0]
 
-def getFirstCommitEpoch(obj):
-    return obj.repo[0].date()[0]
-
-
-def getLastCommitEpoch(obj):
-    return obj.repo[len(obj.repo)-1].date()[0]
+getLastCommitEpoch = lambda obj: obj.repo[len(obj.repo)-1].date()[0]
 
 def getLastCommitIdUntilJd(obj, jd):
     untilEpoch = getEpochFromJd(jd)
@@ -152,5 +140,4 @@ def getLastCommitIdUntilJd(obj, jd):
     t0, t1, rev_id = last
     return str(obj.repo[rev_id])
     
-
 

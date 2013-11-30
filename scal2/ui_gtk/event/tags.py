@@ -264,7 +264,6 @@ class ViewEditTagsHbox(gtk.HBox):
         self.dialog.setData(tags)
         sep = _(',') + ' '
         self.tagsLabel.set_label(sep.join([ui.eventTagsDesc[tag] for tag in tags]))
-    def getData(self):
-        return self.tags
+    getData = lambda self: self.tags
 
 

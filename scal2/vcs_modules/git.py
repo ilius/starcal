@@ -121,7 +121,7 @@ def getCommitShortStatLine(obj, commit_id):
     '''
         returns str
     '''
-    cmd = [
+    lines = Popen([
         'git',
         '--git-dir', join(obj.vcsDir, '.git'),
         'log',
@@ -129,18 +129,14 @@ def getCommitShortStatLine(obj, commit_id):
         '-1',
         '--pretty=format:',
         commit_id,
-    ]
-    lines = Popen(cmd, stdout=PIPE).stdout.readlines()
+    ], stdout=PIPE).stdout.readlines()
     if lines:
         return lines[-1].strip()
     return ''
 
 
-def getCommitShortStat(obj, commit_id):
-    '''
-        returns (files_changed, insertions, deletions)
-    '''
-    return decodeStatLine(getCommitShortStatLine(obj.vcsDir, commit_id))
+## returns (files_changed, insertions, deletions)
+getCommitShortStat = lambda obj, commit_id: decodeStatLine(getCommitShortStatLine(obj.vcsDir, commit_id))
 
 def getTagList(obj, startJd, endJd):
     '''
@@ -179,39 +175,35 @@ def getTagList(obj, startJd, endJd):
 
 getTagShortStatLine = lambda obj, prevTag, tag: getShortStatLine(obj, prevTag, tag)
 
-def getFirstCommitEpoch(obj):
-    cmd = [
+getFirstCommitEpoch = lambda obj: int(
+    Popen([
         'git',
         '--git-dir', join(obj.vcsDir, '.git'),
         'rev-list',
         '--max-parents=0',
         'HEAD',
         '--format=%ct',
-    ]
-    lines = Popen(cmd, stdout=PIPE).stdout.readlines()
-    return int(lines[1].strip())
+    ], stdout=PIPE).stdout.readlines()[1].strip()
+)
 
 
-def getLastCommitEpoch(obj):
-    cmd = [
-        'git',
-        '--git-dir', join(obj.vcsDir, '.git'),
-        'log',
-        '-1',
-        '--format=%ct',
-    ]
-    return int(Popen(cmd, stdout=PIPE).stdout.read().strip())
+getLastCommitEpoch = lambda obj: int(Popen([
+    'git',
+    '--git-dir', join(obj.vcsDir, '.git'),
+    'log',
+    '-1',
+    '--format=%ct',
+], stdout=PIPE).stdout.read().strip())
 
 
-def getLastCommitIdUntilJd(obj, jd):
-    return Popen([
-        'git',
-        '--git-dir', join(obj.vcsDir, '.git'),
-        'log',
-        '--until', encodeJd(jd),
-        '-1',
-        '--format=%H',
-    ], stdout=PIPE).stdout.read().strip()
+getLastCommitIdUntilJd = lambda obj, jd: Popen([
+    'git',
+    '--git-dir', join(obj.vcsDir, '.git'),
+    'log',
+    '--until', encodeJd(jd),
+    '-1',
+    '--format=%H',
+], stdout=PIPE).stdout.read().strip()
 
 
 

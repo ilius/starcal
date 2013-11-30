@@ -192,13 +192,12 @@ monthDb.load()
 
 is_leap = lambda year: (((year * 11) + 14) % 30) < 11
 
-def to_jd_c(year, month, day):
-    return ifloor(
-        day + ceil(29.5 * (month - 1)) + \
-        (year - 1) * 354               + \
-        floor((3 + (11 * year)) / 30)  + \
-        epoch
-    )
+to_jd_c = lambda year, month, day: ifloor(
+    day + ceil(29.5 * (month - 1)) + \
+    (year - 1) * 354               + \
+    floor((3 + (11 * year)) / 30)  + \
+    epoch
+)
 
 def to_jd(year, month, day):
     if hijriUseDB:## and hijriAlg==0

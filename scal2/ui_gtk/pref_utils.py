@@ -352,8 +352,7 @@ class ToolbarIconSizePrefItem(PrefItem):
         self.widget = gtk.combo_box_new_text()
         for item in iconSizeList:
             self.widget.append_text(item[0])
-    def get(self):
-        return iconSizeList[self.widget.get_active()][0]
+    get = lambda self: iconSizeList[self.widget.get_active()][0]
     def set(self, value):
         for (i, item) in enumerate(iconSizeList):
             if item[0]==value:

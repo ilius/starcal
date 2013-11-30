@@ -286,8 +286,8 @@ def textNumEncode(st, mode=None, changeSpecialChars=True, changeDot=False):
             res += dig[i]
     return res ## .encode('utf8')
 
-def floatEncode(st, mode=None):
-    return textNumEncode(st, mode, changeSpecialChars=False, changeDot=True)
+floatEncode = lambda st, mode=None:\
+    textNumEncode(st, mode, changeSpecialChars=False, changeDot=True)
 
 def numDecode(numSt):
     numSt = numSt.strip()

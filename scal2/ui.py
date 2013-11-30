@@ -198,8 +198,8 @@ class Cell:## status and information of a cell
             mode = core.primaryMode
         pyFmt, funcs = binFmt
         return pyFmt%tuple(f(self, mode, tm) for f in funcs)
-    def inSameMonth(self, other):
-        return self.dates[core.primaryMode][:2] == other.dates[core.primaryMode][:2]
+    inSameMonth = lambda self, other:\
+        self.dates[core.primaryMode][:2] == other.dates[core.primaryMode][:2]
     def getEventIcons(self, showIndex):
         iconList = []
         for item in self.eventsData:

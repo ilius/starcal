@@ -144,11 +144,8 @@ def getCommitShortStat(obj, rev_id):
         tree,
     )
 
-def getCommitShortStatLine(obj, rev_id):
-    '''
-        returns str
-    '''
-    return encodeShortStat(*getCommitShortStat(obj, rev_id))
+## returns str
+getCommitShortStatLine = lambda obj, rev_id: encodeShortStat(*getCommitShortStat(obj, rev_id))
 
 
 def getTagList(obj, startJd, endJd):
@@ -185,18 +182,13 @@ def getTagShortStat(obj, prevTag, tag):
     )
 
 
-def getTagShortStatLine(obj, prevTag, tag):
-    '''
-        returns str
-    '''
-    return encodeShortStat(*getTagShortStat(obj, prevTag, tag))
+## returns str
+getTagShortStatLine = lambda obj, prevTag, tag:\
+    encodeShortStat(*getTagShortStat(obj, prevTag, tag))    
 
-def getFirstCommitEpoch(obj):
-    return obj.firstRev.timestamp
+getFirstCommitEpoch = lambda obj: obj.firstRev.timestamp
 
-
-def getLastCommitEpoch(obj):
-    return obj.lastRev.timestamp
+getLastCommitEpoch = lambda obj: obj.lastRev.timestamp
 
 def getLastCommitIdUntilJd(obj, jd):
     untilEpoch = getEpochFromJd(jd)

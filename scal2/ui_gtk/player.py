@@ -315,8 +315,8 @@ class PlayerBox(gtk.HBox):
             #self.playPauseBut.set_image(gtk.image_new_from_stock(gtk.STOCK_MEDIA_PLAY,gtk.ICON_SIZE_SMALL_TOOLBAR))
         else:
             self.mplayer.seek(int(self.seekAdj.value), 1)
-    def displayVolString(self, scale, value):# Return formatted volume string
-        return 'Volume: ' + str(int(value)) + '%'
+    ## Return formatted volume string
+    displayVolString = lambda self, scale, value: 'Volume: ' + str(int(value)) + '%'
     def setVolume(self, adj):# Set volume when the volume range widget is changed
         self.mplayer.setVolume(int(adj.value))
         if self.adjustvol:
@@ -366,8 +366,7 @@ class PlayerBox(gtk.HBox):
         #self.playPauseBut.set_image(gtk.image_new_from_stock(gtk.STOCK_MEDIA_PAUSE,gtk.ICON_SIZE_SMALL_TOOLBAR))
         #self.fcb.set_sensitive(self.mplayer.mplayerIn==None)
         #self.seekBar.set_sensitive(self.mplayer.mplayerIn!=None)
-    def getFile(self):
-        return self.fcb.get_filename()
+    getFile = lambda self: self.fcb.get_filename()
 
 
 

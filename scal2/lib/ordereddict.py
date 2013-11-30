@@ -248,8 +248,7 @@ class OrderedDict(dict):
             return len(self)==len(other) and self.items() == other.items()
         return dict.__eq__(self, other)
 
-    def __ne__(self, other):
-        return not self == other
+    __ne__ = lambda self, other: not self == other
 
     # -- the following methods are only used in Python 2.7 --
 

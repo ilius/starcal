@@ -149,9 +149,12 @@ class MyColorButton(gtk.ColorButton): ## for tooltip text
         self.update_tooltip()
     def get_color(self):
         color = gtk.ColorButton.get_color(self)
-        return (int(color.red/257), int(color.green/257), int(color.blue/257))
-    def get_alpha(self):
-        return int(gtk.ColorButton.get_alpha(self)/257)
+        return (
+            int(color.red/257),
+            int(color.green/257),
+            int(color.blue/257),
+        )
+    get_alpha = lambda self: int(gtk.ColorButton.get_alpha(self)/257)
 
 
 class TextFrame(gtk.Frame):

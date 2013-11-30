@@ -22,8 +22,8 @@ class SObjBase:
         newObj = self.__class__()
         newObj.copyFrom(self)
         return newObj
-    def getData(self):
-        return dict([(param, getattr(self, param)) for param in self.params])
+    getData = lambda self:\
+        dict([(param, getattr(self, param)) for param in self.params])
     def setData(self, data):
         #if isinstance(data, dict):## FIXME
         for key, value in data.items():

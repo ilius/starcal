@@ -193,11 +193,10 @@ class TimeLineTree:
         except KeyError, IndexError:
             return None
         return ev_tuple[0], ev_tuple[1]
-    def getDepth(self):
-        return 1 + max(
-            self.left.getDepth(),
-            self.right.getDepth(),
-        )
+    getDepth = lambda self: 1 + max(
+        self.left.getDepth(),
+        self.right.getDepth(),
+    )
 
 #if __name__=='__main__':
 #    from scal2 import ui

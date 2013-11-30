@@ -168,8 +168,7 @@ class CourseListEditor(gtk.HBox):
         self.trees.clear()
         for row in rows:
             self.trees.append(row)
-    def getData(self):
-        return [tuple(row) for row in self.trees]
+    getData = lambda self: [tuple(row) for row in self.trees]
 
 
 class ClassTimeBoundsEditor(gtk.HBox):
@@ -266,8 +265,9 @@ class ClassTimeBoundsEditor(gtk.HBox):
         self.trees.clear()
         for hm in hmList:
             self.trees.append([hmEncode(hm)])
-    def getData(self):
-        return sorted([hmDecode(row[0]) for row in self.trees])
+    getData = lambda self: sorted(
+        [hmDecode(row[0]) for row in self.trees]
+    )
 
 class GroupWidget(NormalGroupWidget):
     def __init__(self, group):

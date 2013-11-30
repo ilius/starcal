@@ -45,8 +45,7 @@ except ImportError:
         def __next__(self):
             raise StopIteration
     
-        def __iter__(self):
-            return self
+        __iter__ = lambda self: self
     
         @classmethod
         def __subclasshook__(cls, C):
@@ -204,11 +203,9 @@ class StrOrderedDict(dict):
     def iteritems(self):## OR lambda self: self.items().__iter__()
         for key in self.keyList:## OR self.keyList.__iter__()
             yield (key, dict.__getitem__(self, key))
-    def __str__(self):
-        #return 'StrOrderedDict{' + ', '.join([repr(k)+':'+repr(self[k]) for k in self.keyList]) + '}'
-        return 'StrOrderedDict(%r)'%self.items()
-    def __repr__(self):
-        return 'StrOrderedDict(%r)'%self.items()
+    __str__ = lambda self: 'StrOrderedDict(%r)'%self.items()
+    #'StrOrderedDict{' + ', '.join([repr(k)+':'+repr(self[k]) for k in self.keyList]) + '}'
+    __repr__ = lambda self: 'StrOrderedDict(%r)'%self.items()
 
 
 class NullObj:## a fully transparent object

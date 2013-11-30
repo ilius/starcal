@@ -384,8 +384,7 @@ class StrListEditor(gtk.HBox):
         self.trees.clear()
         for st in strList:
             self.trees.append([st])
-    def getData(self):
-        return [row[0] for row in self.trees]
+    getData = lambda self: [row[0] for row in self.trees]
 
 
 class Scale10PowerComboBox(gtk.ComboBox):
@@ -615,8 +614,7 @@ class GroupsTreeCheckList(gtk.TreeView):
         active = not cell.get_active()
         self.trees[i][1] = active
         cell.set_active(active)
-    def getValue(self):
-        return [row[0] for row in self.trees if row[1]]
+    getValue = lambda self: [row[0] for row in self.trees if row[1]]
     def setValue(self, gids):
         for row in self.trees:
             row[1] = (row[0] in gids)

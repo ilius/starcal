@@ -273,8 +273,7 @@ class WeekDayComboBox(gtk.ComboBox):
         for i in range(7):
             ls.append([core.weekDayName[(i+self.firstWeekDay)%7]])
         self.set_active(0)
-    def getValue(self):
-        return (self.firstWeekDay + self.get_active())%7
+    getValue = lambda self: (self.firstWeekDay + self.get_active()) % 7
     def setValue(self, value):
         self.set_active((value-self.firstWeekDay)%7)
 
@@ -329,8 +328,7 @@ class DirectionComboBox(gtk.ComboBox):
         for d in self.descs:
             ls.append([d])
         self.set_active(0)
-    def getValue(self):
-        return self.keys[self.get_active()]
+    getValue = lambda self: self.keys[self.get_active()]
     def setValue(self, value):
         self.set_active(self.keys.index(value))
 

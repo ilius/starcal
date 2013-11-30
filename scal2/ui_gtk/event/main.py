@@ -305,8 +305,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
     getRowBgColor = lambda self: \
         gdkColorToRgb(self.treev.style.base[gtk.STATE_NORMAL])
         ## bg color of non-selected rows
-    def getGroupRow(self, group):
-        return common.getGroupRow(group, self.getRowBgColor()) + ('',)
+    getGroupRow = lambda self, group:\
+        common.getGroupRow(group, self.getRowBgColor()) + ('',)
     getEventRow = lambda self, event: (
         event.id,
         pixbufFromFile(event.icon),

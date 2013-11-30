@@ -258,11 +258,11 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         self.trees = trees
         self.vbox.show_all()
         #self.maximize()## FIXME
-    def sort_func_group(self, model, iter1, iter2):
-        return cmp(## FIXME
-            ui.eventGroups.index(model.get(iter1, 0)[0]),
-            ui.eventGroups.index(model.get(iter2, 0)[0]),
-        )
+    ## FIXME
+    sort_func_group = lambda self, model, iter1, iter2: cmp(
+        ui.eventGroups.index(model.get(iter1, 0)[0]),
+        ui.eventGroups.index(model.get(iter2, 0)[0]),
+    )
     def updateTimeFromSensitive(self, obj=None):
         self.timeFromInput.set_sensitive(self.timeFromCheck.get_active())
     def updateTimeToSensitive(self, obj=None):

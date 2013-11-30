@@ -86,8 +86,7 @@ class IndicatorStatusIconWrapper(appindicator.Indicator):
         self.create_menu()
     #def __del__(self):
     #    os.remove(self.imPath)
-    def is_embedded(self):## FIXME
-        return True
+    is_embedded = lambda self: True ## FIXME
     def set_visible(self, visible):## FIXME
         pass
     def set_tooltip_text(self, text):

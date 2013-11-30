@@ -203,8 +203,7 @@ class EventSearchTree:
             self.getDepthNode(node.left),
             self.getDepthNode(node.right),
         )
-    def getDepth(self):
-        return self.getDepthNode(self.root)
+    getDepth = lambda self: self.getDepthNode(self.root)
     def getMinNode(self, node):
         if node is None:
             return

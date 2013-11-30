@@ -95,8 +95,7 @@ class BasePlugin:
         pass
     def load(self):
         pass
-    def get_text(self, year, month, day):
-        return ''
+    get_text = lambda self, year, month, day: ''
     def update_cell(self, c):
         y, m, d = c.dates[self.mode]
         text = ''

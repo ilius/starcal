@@ -140,13 +140,12 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
         gtk.Toolbar.insert(self, item, -1)
         if item.enable:
             item.show()
-    def getData(self):
-        return {
-            'items': self.getItemsData(),
-            'iconSize': self.getIconSizeName(),
-            'style': self.styleList[self.styleCombo.get_active()],
-            'buttonsBorder': self.buttonsBorderSpin.get_value(),
-        }
+    getData = lambda self: {
+        'items': self.getItemsData(),
+        'iconSize': self.getIconSizeName(),
+        'style': self.styleList[self.styleCombo.get_active()],
+        'buttonsBorder': self.buttonsBorderSpin.get_value(),
+    }
     def setupItemSignals(self, item):
         if item.method:
             if isinstance(item.method, str):

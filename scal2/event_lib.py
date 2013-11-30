@@ -326,8 +326,8 @@ class TimeListOccurrence(Occurrence):
         for epoch in self.epochList:
             jds.add(getJdFromEpoch(epoch))
         return sorted(jds)
-    def getTimeRangeList(self):
-        return [(epoch, epoch + epsTm) for epoch in self.epochList]## or end=None ## FIXME
+    getTimeRangeList = lambda self:\
+        [(epoch, epoch + epsTm) for epoch in self.epochList]## or end=None ## FIXME
 
 
 
@@ -344,8 +344,7 @@ class EventRule(SObjBase):
     def __init__(self, parent):## parent can be an event or group
         self.parent = parent
     getMode = lambda self: self.parent.mode
-    def changeMode(self, mode):
-        return True
+    changeMode = lambda self, mode: True
     def calcOccurrence(self, startJd, endJd, event):
         raise NotImplementedError
     getInfo = lambda self: self.desc + ': %s'%self
@@ -394,8 +393,7 @@ class MultiValueAllDayEventRule(AllDayEventRule):
         return ls
     def setValuesPlain(self, values):
         self.values = simplifyNumList(values)
-    def changeMode(self, mode):
-        return False
+    changeMode = lambda self, mode: False
 
 @classes.rule.register
 class YearEventRule(MultiValueAllDayEventRule):
@@ -504,8 +502,7 @@ class WeekDayEventRule(AllDayEventRule):
     def __init__(self, parent):
         EventRule.__init__(self, parent)
         self.weekDayList = range(7) ## or [] ## FIXME
-    def getData(self):
-        return self.weekDayList
+    getData = lambda self: self.weekDayList
     def setData(self, data):
         if isinstance(data, int):
             self.weekDayList = [data]
@@ -894,11 +891,10 @@ class CycleLenEventRule(EventRule):
         EventRule.__init__(self, parent)
         self.days = 7
         self.extraTime = (0, 0, 0)
-    def getData(self):
-        return {
-            'days': self.days,
-            'extraTime': timeEncode(self.extraTime),
-        }
+    getData = lambda self: {
+        'days': self.days,
+        'extraTime': timeEncode(self.extraTime),
+    }
     def setData(self, arg):
         self.days = arg['days']
         self.extraTime = timeDecode(arg['extraTime'])
@@ -1346,10 +1342,8 @@ class Event(JsonSObjBase, RuleContainer):
                 _('File') + ': ' + fname,
             ))
         return data
-    def getSummary(self):
-        return self.summary
-    def getDescription(self):
-        return self.description
+    getSummary = lambda self: self.summary
+    getDescription = lambda self: self.description
     def getTextParts(self):
         summary = self.getSummary()
         description = self.getDescription()
@@ -1529,13 +1523,12 @@ class SingleStartEndEvent(Event):
     def setJdExact(self, jd):
         self.getAddRule('start').setJdExact(jd)
         self.getAddRule('end').setJdExact(jd+1)
-    def getIcsData(self, prettyDateTime=False):
-        return [
-            ('DTSTART', getIcsTimeByEpoch(self.getStartEpoch(), prettyDateTime)),
-            ('DTEND', getIcsTimeByEpoch(self.getEndEpoch(), prettyDateTime)),
-            ('TRANSP', 'OPAQUE'),
-            ('CATEGORIES', self.name),## FIXME
-        ]
+    getIcsData = lambda self, prettyDateTime=False: [
+        ('DTSTART', getIcsTimeByEpoch(self.getStartEpoch(), prettyDateTime)),
+        ('DTEND', getIcsTimeByEpoch(self.getEndEpoch(), prettyDateTime)),
+        ('TRANSP', 'OPAQUE'),
+        ('CATEGORIES', self.name),## FIXME
+    ]
     def calcOccurrence(self, startJd, endJd):
         return TimeRangeListOccurrence.newFromStartEnd(
             max(self.getEpochFromJd(startJd), self.getStartEpoch()),
@@ -1678,14 +1671,12 @@ class TaskEvent(SingleStartEndEvent):
                 myStart.time = other['dayTime'].dayTime
             except KeyError:
                 pass
-    def getIcsData(self, prettyDateTime=False):
-        jd = self.getJd()
-        return [
-            ('DTSTART', getIcsTimeByEpoch(self.getStartEpoch(), prettyDateTime)),
-            ('DTEND', getIcsTimeByEpoch(self.getEndEpoch(), prettyDateTime)),
-            ('TRANSP', 'OPAQUE'),
-            ('CATEGORIES', self.name),## FIXME
-        ]
+    getIcsData = lambda self, prettyDateTime=False: [
+        ('DTSTART', getIcsTimeByEpoch(self.getStartEpoch(), prettyDateTime)),
+        ('DTEND', getIcsTimeByEpoch(self.getEndEpoch(), prettyDateTime)),
+        ('TRANSP', 'OPAQUE'),
+        ('CATEGORIES', self.name),## FIXME
+    ]
     def setIcsDict(self, data):
         self.setStartEpoch(getEpochByIcsTime(data['DTSTART']))
         self.setEndEpoch(getEpochByIcsTime(data['DTEND']))## FIXME
@@ -1782,13 +1773,12 @@ class AllDayTaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from Single
             duration.setSeconds(dayLen*(jd-self['start'].getJd()))
             return
         raise ValueError('no end date neither duration specified for task')
-    def getIcsData(self, prettyDateTime=False):
-        return [
-            ('DTSTART', getIcsDateByJd(self.getJd(), prettyDateTime)),
-            ('DTEND', getIcsDateByJd(self.getEndJd(), prettyDateTime)),
-            ('TRANSP', 'OPAQUE'),
-            ('CATEGORIES', self.name),## FIXME
-        ]
+    getIcsData = lambda self, prettyDateTime=False: [
+        ('DTSTART', getIcsDateByJd(self.getJd(), prettyDateTime)),
+        ('DTEND', getIcsDateByJd(self.getEndJd(), prettyDateTime)),
+        ('TRANSP', 'OPAQUE'),
+        ('CATEGORIES', self.name),## FIXME
+    ]
     def setIcsDict(self, data):
         self.setJd(getJdByIcsDate(data['DTSTART']))
         self.setEndJd(getJdByIcsDate(data['DTEND']))## FIXME
@@ -2472,8 +2462,7 @@ class EventGroup(EventContainer):
             self.remove(self.getEvent(key))
         else:
             raise TypeError('invalid key %r give to EventGroup.__delitem__'%key)
-    def checkEventToAdd(self, event):
-        return event.name in self.acceptsEventTypes
+    checkEventToAdd = lambda self, event: event.name in self.acceptsEventTypes
     __repr__ = lambda self: '%s(_id=%s)'%(self.__class__.__name__, self.id)
     __str__ = lambda self: '%s(_id=%s, title=%s)'%(
         self.__class__.__name__,
@@ -3597,14 +3586,12 @@ class JsonObjectsHolder(JsonSObjBase):
             self.idList.remove(obj.id)
         except:
             myRaise()
-    def pop(self, index):
-        return self.byId.pop(self.idList.pop(index))
+    pop = lambda self, index: self.byId.pop(self.idList.pop(index))
     moveUp = lambda self, index: self.idList.insert(index-1, self.idList.pop(index))
     moveDown = lambda self, index: self.idList.insert(index+1, self.idList.pop(index))
     def setData(self, data):
         self.idList = data
-    def getData(self):
-        return self.idList
+    getData = lambda self: self.idList
 
 
 

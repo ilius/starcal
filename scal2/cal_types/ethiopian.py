@@ -47,12 +47,10 @@ def save():
     pass
 
 
-def isLeap(y):
-    return (y + 1) % 4 == 0
+isLeap = lambda y: (y + 1) % 4 == 0
 
 
-def to_jd(year, month, day):
-    return epoch + 365*(year-1) + year/4 + (month-1)*30 + day - 15
+to_jd = lambda year, month, day: epoch + 365*(year-1) + year/4 + (month-1)*30 + day - 15
 
 
 def jd_to(jd) :

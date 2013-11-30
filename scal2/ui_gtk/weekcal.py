@@ -615,10 +615,9 @@ class WcalTypeParamBox(gtk.HBox):
         ####
         self.fontCheck.connect('clicked', self.onChange)
         self.fontb.connect('font-set', self.onChange)
-    def get(self):
-        return {
-            'font': self.fontb.get_font_name() if self.fontCheck.get_active() else None,
-        }
+    get = lambda self: {
+        'font': self.fontb.get_font_name() if self.fontCheck.get_active() else None,
+    }
     def set(self, data):
         font = data['font']
         self.fontCheck.set_active(bool(font))

@@ -4,8 +4,7 @@ from scal2.utils import s_join
 from heapq import heappush, heappop
 
 class MaxHeap(list):
-    def copy(self):
-        return MaxHeap(self[:])
+    copy = lambda self: MaxHeap(self[:])
     def exch(self, i, j):
         self[i], self[j] = self[j], self[i]
     less = lambda self, i, j: self[i][0] > self[j][0]

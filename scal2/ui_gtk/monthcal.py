@@ -92,12 +92,11 @@ class McalTypeParamBox(gtk.HBox):
         self.spinY.connect('changed', self.onChange)
         fontb.connect('font-set', self.onChange)
         colorb.connect('color-set', self.onChange)
-    def get(self):
-        return {
-            'pos': (self.spinX.get_value(), self.spinY.get_value()),
-            'font': self.fontb.get_font_name(),
-            'color': self.colorb.get_color()
-        }
+    get = lambda self: {
+        'pos': (self.spinX.get_value(), self.spinY.get_value()),
+        'font': self.fontb.get_font_name(),
+        'color': self.colorb.get_color()
+    }
     def set(self, data):
         self.spinX.set_value(data['pos'][0])
         self.spinY.set_value(data['pos'][1])

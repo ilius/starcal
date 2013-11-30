@@ -58,11 +58,10 @@ auth_host_name = 'localhost'
 auth_host_port = [8080, 8090]
 
 
-def decodeIcsStartEnd(value):
-    return {
-        ('dateTime' if 'T' in value else 'date'): value,
-        'timeZone': 'GMT',
-    }
+decodeIcsStartEnd = lambda value: {
+    ('dateTime' if 'T' in value else 'date'): value,
+    'timeZone': 'GMT',
+}
 
 def encodeIcsStartEnd(value):
     timeZone = value.get('timeZone', 'GMT')## FIXME
@@ -239,8 +238,7 @@ class GoogleAccount(Account):
                 setattr(self, attr, data[attr])
             except KeyError:
                 pass
-    def askVerificationCode(self):
-        return raw_input('Enter verification code: ').strip()
+    askVerificationCode = lambda self: raw_input('Enter verification code: ').strip()
     def showError(self, error):
         sys.stderr.write(error+'\n')
     def authenticate(self):
@@ -299,25 +297,24 @@ class GoogleAccount(Account):
         if not credentials:
             return False
         return credentials.authorize(httplib2.Http())
-    def getCalendarService(self):
-        return build(
-            serviceName='calendar',
-            version='v3',
-            http=self.getHttp(),
-            developerKey=developerKey,
-        )
-    def getTasksService(self):
-        return build(
-            serviceName='tasks',
-            version='v1',
-            http=self.getHttp(),
-            developerKey=developerKey,
-        )
-    def addNewGroup(self, title):
-        return self.getCalendarService().calendars().insert(body={
+    getCalendarService = lambda self: build(
+        serviceName='calendar',
+        version='v3',
+        http=self.getHttp(),
+        developerKey=developerKey,
+    )
+    getTasksService = lambda self: build(
+        serviceName='tasks',
+        version='v1',
+        http=self.getHttp(),
+        developerKey=developerKey,
+    )
+    addNewGroup = lambda self, title: self.getCalendarService().calendars().insert(
+        body={
             'kind': 'calendar#calendar',
             'summary': title,
-        }).execute()['id']
+        }
+    ).execute()['id']
     def deleteGroup(self, remoteGroupId):
         self.getCalendarService().calendars().delete(calendarId=remoteGroupId).execute()
     def fetchGroups(self):

@@ -33,8 +33,7 @@ class Field:
         pass
     def setValue(self, v):
         pass
-    def getValue(self):
-        return None
+    getValue = lambda self: None
     def plus(self, p):## p is usually 1, -1, 10, -10
         pass
     def setText(self):
@@ -43,8 +42,7 @@ class Field:
         pass
     def getMaxWidth(self):
         raise NotImplementedError
-    def getFieldAt(self, text, pos):
-        return self
+    getFieldAt = lambda self, text, pos: self
 
 class NumField(Field):
     def setRange(self, _min, _max):
