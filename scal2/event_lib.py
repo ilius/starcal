@@ -649,7 +649,7 @@ class DateAndTimeEventRule(DateEventRule):
     def setData(self, arg):
         if isinstance(arg, dict):
             self.date = dateDecode(arg['date'])
-            if arg.has_key('time'):
+            if 'time' in arg:
                 self.time = timeDecode(arg['time'])
         elif isinstance(arg, basestring):
             self.date = dateDecode(arg)
