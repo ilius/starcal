@@ -117,7 +117,7 @@ class StarCalApplet(MainWin):
     def trayClicked(self, toggle):
         ##print tuple(self.menu.allocation)
         if toggle.get_active():
-            if ui.winX, ui.winY == (-1, -1):
+            if (ui.winX, ui.winY) == (-1, -1):
                 try:
                     x0, y0 = self.applet.window.get_origin()
                     ui.winX = x0 + (self.applet.allocation.width-ui.winWidth)/2
