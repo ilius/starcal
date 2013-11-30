@@ -28,7 +28,7 @@ import pytz
 
 from scal2.lib import OrderedDict
 
-from path import *
+from .path import *
 
 from scal2.utils import printError, toStr, arange, ifloor, iceil, findNearestIndex
 from scal2.os_utils import makeDir

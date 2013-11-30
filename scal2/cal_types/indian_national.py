@@ -66,7 +66,7 @@ def save():
 try:
     from scal2.cal_types import gregorian
 except ImportError:
-    import gregorian
+    from . import gregorian
 
 isLeap = lambda y: gregorian.isLeap(y+78)
 

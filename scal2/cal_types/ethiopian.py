@@ -84,7 +84,7 @@ def getMonthLen(year, month):
 
 if __name__=='__main__':
     import sys
-    import gregorian
+    from . import gregorian
     ###
     for gy in range(2012, 1990, -1):
         jd = gregorian.to_jd(gy, 1, 1)
