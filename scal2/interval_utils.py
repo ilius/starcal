@@ -60,11 +60,11 @@ def cleanTimeRangeList(lst):
             if not started_pq:
                 raise RuntimeError('cursor=%s, lastStart=None'%cursor)
             start, tmp = started_pq.pop()
-            #print 'pop %s'%start
+            #print('pop %s'%start)
             if not started_pq:
                 lst.append((start, cursor))
         else:
-            #print 'push %s'%cursor
+            #print('push %s'%cursor)
             started_pq.push(cursor, None)
     return lst
 

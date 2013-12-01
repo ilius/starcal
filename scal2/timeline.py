@@ -211,7 +211,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
     jd1 = getJdFromEpoch(timeEnd)
     widthDays = float(timeWidth) / dayLen
     dayPixel = dayLen * pixelPerSec ## px
-    #print 'dayPixel = %s px'%dayPixel
+    #print('dayPixel = %s px'%dayPixel)
     getEPos = lambda epoch: (epoch-timeStart)*pixelPerSec
     getJPos = lambda jd: (getEpochFromJd(jd)-timeStart)*pixelPerSec
     ######################## Holidays

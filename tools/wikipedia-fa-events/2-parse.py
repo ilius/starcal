@@ -30,7 +30,7 @@ def cleanRawText(text):
                
 
 def parseFile(fpath, month, day):
-    #print fpath, month, day
+    #print(fpath, month, day)
     category = ''
     data = []
     for line in open(fpath).read().split('\n'):
@@ -46,11 +46,11 @@ def parseFile(fpath, month, day):
             except:
                 continue
             textStart = line.find('-')
-            #print textStart
+            #print(textStart)
             if textStart<0:
                 continue
             text = cleanRawText(line[textStart+1:])
-            #print 'text=%s'%text
+            #print('text=%s'%text)
             data.append({
                 'date': (year, month, day),
                 'category': category,
@@ -96,7 +96,7 @@ if __name__=='__main__':
     from pprint import pprint
     data = parseAllFiles('wikipedia-fa-events')
     writeToTabfile(data, 'wikipedia-fa.tab')
-    #print getPrettyJson(data)
+    #print(getPrettyJson(data))
     #pprint(data)
 
 

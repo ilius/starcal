@@ -38,7 +38,7 @@ elif os.sep=='/':
 elif os.sep=='\\':
     if srcDir.startswith('.\\'):
         srcDir = cwd + srcDir[1:]
-#print 'srcDir=%r'%srcDir
+#print('srcDir=%r'%srcDir)
 
 rootDir = abspath(dirname(srcDir))
 pixDir = join(rootDir, 'pixmaps')

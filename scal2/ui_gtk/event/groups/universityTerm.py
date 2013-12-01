@@ -157,7 +157,7 @@ class CourseListEditor(gtk.HBox):
         t.swap(t.get_iter(index), t.get_iter(index+1))
         self.treev.set_cursor(index+1)
     def courseNameEdited(self, cell, path, newText):
-        #print 'courseNameEdited', newText
+        #print('courseNameEdited', newText)
         index = int(path)
         self.trees[index][1] = newText
     def courseUnitsEdited(self, cell, path, newText):

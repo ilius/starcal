@@ -360,7 +360,7 @@ def unescape(data, entities={}):
 
 
 #if __name__=='__main__':
-#    print findNearestNum([1, 2, 4, 6, 3, 7], 3.6)
+#    print(findNearestNum([1, 2, 4, 6, 3, 7], 3.6))
 
 
 

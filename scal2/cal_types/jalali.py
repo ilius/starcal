@@ -212,7 +212,7 @@ def jd_to(jd):
         ##taken from farsiweb code writen by Roozbeh Pournader <roozbeh@sharif.edu> and Mohammad Toossi <mohammad@bamdad.org> at 2001
         jdays = int(jd - GREGORIAN_EPOCH - 584101)
         # -(1600*365 + 1600/4 - 1600/100 + 1600/400) + 365    -79 +1== -584101
-        #print 'jdays =',jdays
+        #print('jdays =',jdays)
         j_np = jdays / 12053
         jdays %= 12053
         year = 979+33*j_np+4*(jdays/1461)

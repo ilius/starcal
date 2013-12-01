@@ -2567,7 +2567,7 @@ class EventGroup(EventContainer):
             self.eventIdByRemoteIds = {}
             for remoteIds, eventId in data['eventIdByRemoteIds']:
                 self.eventIdByRemoteIds[tuple(remoteIds)] = eventId
-            #print self.eventIdByRemoteIds
+            #print(self.eventIdByRemoteIds)
         '''
         if 'id' in data:
             self.setId(data['id'])
@@ -2683,7 +2683,7 @@ class EventGroup(EventContainer):
         else:
             self.eventCache = {}
     def updateOccurrenceEvent(self, event):
-        #print 'updateOccurrenceEvent', self.id, self.title, event.id
+        #print('updateOccurrenceEvent', self.id, self.title, event.id)
         node = self.occur
         eid = event.id
         node.delete(eid)
@@ -2729,8 +2729,8 @@ class EventGroup(EventContainer):
                 self.occurCount,
                 now()-stm0,
             ))
-        #print 'depth=%s, N=%s'%(self.occur.getDepth(), len(occurList))
-        #print '2*lg(N)=%.1f'%(2*math.log(len(occurList), 2))
+        #print('depth=%s, N=%s'%(self.occur.getDepth(), len(occurList)))
+        #print('2*lg(N)=%.1f'%(2*math.log(len(occurList), 2)))
         #print
     def exportToIcsFp(self, fp):
         currentTimeStamp = getIcsTimeByEpoch(now())
@@ -3011,7 +3011,7 @@ class UniversityTerm(EventGroup):
                 currentWeekNumMode = 'odd'
             else:
                 currentWeekNumMode = 'even'
-            #print 'currentWeekNumMode = %r'%currentWeekNumMode
+            #print('currentWeekNumMode = %r'%currentWeekNumMode)
         else:
             currentWeekNumMode = ''
         ###
@@ -3043,7 +3043,7 @@ class UniversityTerm(EventGroup):
     def setCourses(self, courses):
         self.courses = courses
         #self.lastCourseId = max([1]+[course[0] for course in self.courses])
-        #print 'setCourses: lastCourseId=%s'%self.lastCourseId
+        #print('setCourses: lastCourseId=%s'%self.lastCourseId)
     #getCourseNamesDictById = lambda self: dict([c[:2] for c in self.courses])
     def getCourseNameById(self, courseId):
         for course in self.courses:
@@ -3076,7 +3076,7 @@ class UniversityTerm(EventGroup):
         #    pass
     #def getNewCourseID(self):
     #    self.lastCourseId += 1
-    #    print 'getNewCourseID: lastCourseId=%s'%self.lastCourseId
+    #    print('getNewCourseID: lastCourseId=%s'%self.lastCourseId)
     #    return self.lastCourseId
     def copyFrom(self, other):
         EventGroup.copyFrom(self, other)
@@ -3599,7 +3599,7 @@ class EventGroupsHolder(JsonObjectsHolder):
         self.append(obj)
         return obj
     def load(self):
-        #print '------------ EventGroupsHolder.load'
+        #print('------------ EventGroupsHolder.load')
         self.clear()
         #eventIdList = []
         if isfile(self.file):
@@ -3723,7 +3723,7 @@ class EventGroupsHolder(JsonObjectsHolder):
 class EventAccountsHolder(JsonObjectsHolder):
     file = join(confDir, 'event', 'account_list.json')
     def load(self):
-        #print '------------ EventAccountsHolder.load'
+        #print('------------ EventAccountsHolder.load')
         self.clear()
         if isfile(self.file):
             for _id in jsonToData(open(self.file).read()):
@@ -3838,7 +3838,7 @@ def getDayOccurrenceData(curJd, groups):
             continue
         if not group.showInCal():
             continue
-        #print '\nupdateData: checking event', event.summary
+        #print('\nupdateData: checking event', event.summary)
         gid = group.id
         color = group.color
         for epoch0, epoch1, eid, odt in group.occur.search(getEpochFromJd(curJd), getEpochFromJd(curJd+1)):

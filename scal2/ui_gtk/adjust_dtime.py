@@ -170,7 +170,7 @@ class AdjusterDialog(gtk.Dialog):
     def updateTimes(self):
         dt = now()%1
         timeout_add(iceil(1000*(1-dt)), self.updateTimes)
-        #print 'updateTimes', dt
+        #print('updateTimes', dt)
         lt = localtime()
         self.label_cur.set_label(_('Current:')+' %.4d/%.2d/%.2d - %.2d:%.2d:%.2d'%lt[:6])
         if not self.editTime:

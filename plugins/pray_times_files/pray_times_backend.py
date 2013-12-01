@@ -128,7 +128,7 @@ class PrayTimes:
     # return prayer times for a given julian day
     def getTimesByJd(self, jd, utcOffset):
         #if time.daylight and time.gmtime(core.getEpochFromJd(jd)):
-        #print time.gmtime((jd-2440588)*(24*3600)).tm_isdst
+        #print(time.gmtime((jd-2440588)*(24*3600)).tm_isdst)
         self.utcOffset = utcOffset
         self.jDate = jd - 0.5 - self.lng/(15*24)
         return self.computeTimes()
@@ -173,7 +173,7 @@ class PrayTimes:
         #try:
         t = arccos(ratio) / 15.0
         #except:
-        #    print 'sunAngleTime: angle=%s, tm=%s, direction=%s ==> ratio=%s'%(angle, tm, direction, ratio)
+        #    print('sunAngleTime: angle=%s, tm=%s, direction=%s ==> ratio=%s'%(angle, tm, direction, ratio))
         #    return 0
         return noon + dirSign(direction)*t
 

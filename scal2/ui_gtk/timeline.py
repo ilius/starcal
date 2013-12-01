@@ -131,7 +131,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             pixelPerSec = 1
         seconds = iceil(0.4/pixelPerSec)
         tm = now()
-        #print 'time=%.2f'%(tm%100), 'pixelPerSec=%.1f'%pixelPerSec, 'seconds=%d'%seconds
+        #print('time=%.2f'%(tm%100), 'pixelPerSec=%.1f'%pixelPerSec, 'seconds=%d'%seconds)
         self.timeUpdateSourceId = timeout_add(
             int(1000*(seconds + 0.01 - tm%1)),
             self.currentTimeUpdate,
@@ -140,7 +140,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         if draw and self.parent:
             if self.parent.get_visible() and \
             self.timeStart <= tm <= self.timeStart + self.timeWidth + 1:
-                #print '%.2f'%(tm%100), 'currentTimeUpdate: DRAW'
+                #print('%.2f'%(tm%100), 'currentTimeUpdate: DRAW')
                 self.queue_draw()
     def updateData(self):
         width = self.allocation.width
@@ -188,7 +188,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         )## FIXME
         if layout:
             #layout.set_auto_dir(0)## FIXME
-            #print 'layout.get_auto_dir() = %s'%layout.get_auto_dir()
+            #print('layout.get_auto_dir() = %s'%layout.get_auto_dir())
             layoutW, layoutH = layout.get_pixel_size()
             layoutX = tick.pos - layoutW/2.0
             layoutY = tickH*labelYRatio
@@ -274,7 +274,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         #t1 = now()
         self.drawAll(self.window.cairo_create())
         #t2 = now()
-        #print 'drawing time / data calc time: %.2f'%((t2-t1)/(t1-t0))
+        #print('drawing time / data calc time: %.2f'%((t2-t1)/(t1-t0)))
     def onScroll(self, widget, event):
         isUp = event.direction.value_nick=='up'
         if event.state & gdk.CONTROL_MASK:
@@ -447,7 +447,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
     keyboardZoom = lambda self, zoomIn: self.zoom(zoomIn, keyboardZoomStep, 0.5)
     def keyPress(self, arg, event):
         k = gdk.keyval_name(event.keyval).lower()
-        #print '%.3f'%now()
+        #print('%.3f'%now())
         if k in ('space', 'home'):
             self.centerToNow()
         elif k=='right':
@@ -483,7 +483,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         elif k in ('minus', 'kp_subtract'):
             self.keyboardZoom(False)
         else:
-            #print k
+            #print(k)
             return False
         self.queue_draw()
         return True

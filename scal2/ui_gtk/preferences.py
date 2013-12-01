@@ -700,9 +700,9 @@ class PrefDialog(gtk.Dialog):
                                    self.uiPrefItems + self.gtkPrefItems
     def apply(self, widget=None):
         ####### ?????????????????
-        #print 'fontDefault =', ui.fontDefault
+        #print('fontDefault =', ui.fontDefault)
         ui.fontDefault = gfontDecode(ud.settings.get_property('gtk-font-name'))
-        #print 'fontDefault =', ui.fontDefault
+        #print('fontDefault =', ui.fontDefault)
         ############################################## Updating pref variables
         for opt in self.getAllPrefItems():
             opt.updateVar()
@@ -891,10 +891,10 @@ class PrefDialog(gtk.Dialog):
     def plugTreevRActivate(self, treev, path, col):
         if col.get_title()==_('Description'):##??????????
             self.plugAboutClicked(None) #??????
-        #print 'row-activate', path
+        #print('row-activate', path)
     def plugTreevButtonPress(self, widget, event):
         b = event.button
-        #print 'plugTreevButtonPress', b
+        #print('plugTreevButtonPress', b)
         if b==3:
             cur = self.plugTreeview.get_cursor()[0]
             if cur:
@@ -922,7 +922,7 @@ class PrefDialog(gtk.Dialog):
         ## Reize window to show all texts
         #self.plugAddTreeview.columns_autosize()#??????????
         r, x, y, w, h = self.plugAddTreeview.get_column(0).cell_get_size()
-        #print r[2], r[3], x, y, w, h
+        #print(r[2], r[3], x, y, w, h)
         self.plugAddDialog.resize(w+30, 75 + 30*len(self.plugAddTreestore))
         ###############
         self.plugAddDialog.run()

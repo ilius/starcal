@@ -35,10 +35,10 @@ class Node:
         self.level = level ## base ** level is the mathematical scope of the node (with its children)
         #if level > maxLevel:
         #    maxLevel = level
-        #    print 'maxLevel =', level
+        #    print('maxLevel =', level)
         #if level < minLevel:
         #    minLevel = level
-        #    print 'minLevel =', level
+        #    print('minLevel =', level)
         self.offset = offset ## in days
         self.rightOri = rightOri ## FIXME
         ###
@@ -205,7 +205,7 @@ class TimeLineTree:
 #    for group in ui.eventGroups:
 #        t0 = now()
 #        group.updateOccurrenceNode()
-#        print now()-t0, group.title
+#        print(now()-t0, group.title)
     
 
 

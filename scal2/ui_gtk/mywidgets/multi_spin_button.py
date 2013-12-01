@@ -73,9 +73,9 @@ class MultiSpinButton(gtk.SpinButton):
         ####
         #self.select_region(0, 0)
     def _entry_activate(self, widget):
-        #print '_entry_activate', self.get_text()
+        #print('_entry_activate', self.get_text())
         self.update()
-        #print self.get_text()
+        #print(self.get_text())
         return True
     def get_value(self):
         self.field.setText(self.get_text())
@@ -159,12 +159,12 @@ class MultiSpinButton(gtk.SpinButton):
             self.insertText(locale_man.getNumSep())
             return True
         else:
-            #print kname, kval
+            #print(kname, kval)
             return False
     def _button_press(self, widget, gevent):
         gwin = gevent.window
-        #print gwin.get_data('name')
-        #r = self.allocation ; print 'allocation', r[0], r[2]
+        #print(gwin.get_data('name'))
+        #r = self.allocation ; print('allocation', r[0], r[2])
         if not self.has_focus():
             self.grab_focus()
         if self.get_editable():
@@ -217,12 +217,12 @@ class MultiSpinButton(gtk.SpinButton):
     """## ????????????????????????????????
     def _arrow_enter_notify(self, gtkWin):
         if gtkWin!=None:
-            print '_arrow_enter_notify'
+            print('_arrow_enter_notify')
             gtkWin.set_background(gdk.Color(-1, 0, 0))
             gtkWin.show()
     def _arrow_leave_notify(self, gtkWin):
         if gtkWin!=None:
-            print '_arrow_leave_notify'
+            print('_arrow_leave_notify')
             gtkWin.set_background(gdk.Color(-1, -1, -1))
     #"""
 

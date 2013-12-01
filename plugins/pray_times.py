@@ -108,13 +108,13 @@ def readLocationData():
     for l in lines:
         p = l.split('\t')
         if len(p)<2:
-            #print p
+            #print(p)
             continue
         if p[0]=='':
             if p[1]=='':
                 city, lat, lng = p[2:5]
                 #if country=='Iran':
-                #    print city
+                #    print(city)
                 if len(p)>4:
                     cityData.append((
                         country + '/' + city,
@@ -164,9 +164,9 @@ class TextPlug(BasePlugin, TextPlugUI):
         'isha',
     )
     def __init__(self, enable=True, show_date=False):
-        #print '----------- praytime TextPlug.__init__'
-        #print 'From plugin: core.VERSION=%s'%api.get('core', 'VERSION')
-        #print 'From plugin: core.aaa=%s'%api.get('core', 'aaa')
+        #print('----------- praytime TextPlug.__init__')
+        #print('From plugin: core.VERSION=%s'%api.get('core', 'VERSION'))
+        #print('From plugin: core.aaa=%s'%api.get('core', 'aaa'))
         BasePlugin.__init__(
             self,
             path=_mypath,
@@ -315,12 +315,12 @@ class TextPlug(BasePlugin, TextPlugUI):
         if not self.enable:
             return
         jd = gregorian_to_jd(*tuple(gdate))
-        #print getUtcOffsetByJd(jd)/3600.0, getUtcOffsetCurrent()/3600.0
+        #print(getUtcOffsetByJd(jd)/3600.0, getUtcOffsetCurrent()/3600.0)
         #utcOffset = getUtcOffsetCurrent()
         utcOffset = getUtcOffsetByJd(jd)
         epochLocal = now() + utcOffset
         secondsFromMidnight = epochLocal % (24*3600)
-        #print '------- hours from midnight', secondsFromMidnight/3600.0
+        #print('------- hours from midnight', secondsFromMidnight/3600.0)
         for timeName, azanHour in self.ptObj.getTimesByJd(
             jd,
             utcOffset/3600.0,

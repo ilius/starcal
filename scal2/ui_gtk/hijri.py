@@ -131,7 +131,7 @@ class EditDbDialog(gtk.Dialog):
         resetB.connect('clicked', self.resetToDefaults)
         ##
         self.connect('response', self.onResponse)
-        #print dir(self.get_action_area())
+        #print(dir(self.get_action_area()))
         #self.get_action_area().set_homogeneous(False)
         ######
         self.vbox.show_all()

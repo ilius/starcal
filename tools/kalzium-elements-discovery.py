@@ -45,7 +45,7 @@ def createDiscoveryEvent(group, atom):
         'start': discoveryDate,
         'duration': 1,
     })
-    #print event.id
+    #print(event.id)
     return event
    
 

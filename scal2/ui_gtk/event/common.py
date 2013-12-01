@@ -44,7 +44,7 @@ from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
 
-#print 'Testing translator', __file__, _('_About')## OK
+#print('Testing translator', __file__, _('_About')## OK)
 
 
 confirmEventTrash = lambda event:\
@@ -113,7 +113,7 @@ class EventWidget(gtk.VBox):
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Icon')+':'), 0, 0)
         self.iconSelect = IconSelectButton()
-        #print join(pixDir, self.icon)
+        #print(join(pixDir, self.icon))
         hbox.pack_start(self.iconSelect, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         self.pack_start(hbox, 0, 0)
@@ -123,7 +123,7 @@ class EventWidget(gtk.VBox):
         self.summaryEntry.select_region(0, -1)
         self.summaryEntry.grab_focus()
     def updateWidget(self):
-        #print 'updateWidget', self.event.files
+        #print('updateWidget', self.event.files)
         self.modeCombo.set_active(self.event.mode)
         if self.tzCheck:
             self.tzCheck.set_active(self.event.timeZoneEnable)

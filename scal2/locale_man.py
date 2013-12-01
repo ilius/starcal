@@ -93,17 +93,17 @@ class LangData:
         #self.fileName = fileName## FIXME
         transPath = ''
         path = join(rootDir, 'locale.d', fileName+'.mo')
-        #print 'path=%s'%path
+        #print('path=%s'%path)
         if isfile(path):
             transPath = path
         else:
-            #print '-------- File %r does not exists'%path
+            #print('-------- File %r does not exists'%path)
             for prefix in ('/usr', '/usr/local'):
                 path = join(prefix, 'share', 'locale', fileName, 'LC_MESSAGES', '%s.mo'%APP_NAME)
                 if isfile(path):
                     transPath = path
                     break
-        #print code, transPath
+        #print(code, transPath)
         self.transPath = transPath
         ###
         if not isabs(flag):

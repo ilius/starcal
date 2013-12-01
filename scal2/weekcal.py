@@ -38,7 +38,7 @@ class WeekStatus(list):
         #list.__init__(self, [cellCache.getCell(jd) for jd in range(startJd, endJd)])
         list.__init__(self, [])
         for jd in range(startJd, endJd):
-            #print 'WeekStatus', jd
+            #print('WeekStatus', jd)
             self.append(cellCache.getCell(jd))
     allCells = lambda self: self
 

@@ -47,7 +47,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         self.maxHeight = 200
         self.showDesc = True
     def onSizeRequest(self, widget, requisition):
-        #print 'onSizeRequest', requisition.width, requisition.height
+        #print('onSizeRequest', requisition.width, requisition.height)
         requisition.height = min(
             self.maxHeight,## FIXME
             self.vbox.size_request()[1] + 2,## >=2 FIXME

@@ -255,7 +255,7 @@ class ViewEditTagsHbox(gtk.HBox):
     def editButtonClicked(self, widget):
         openWindow(self.dialog)
     def dialogResponse(self, dialog, resp):
-        #print 'dialogResponse', dialog, resp
+        #print('dialogResponse', dialog, resp)
         if resp==gtk.RESPONSE_OK:
             self.setData(dialog.getData())
         dialog.hide()

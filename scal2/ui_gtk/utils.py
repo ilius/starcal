@@ -198,7 +198,7 @@ def processDroppedDate(text, dtype):
                 print('Dropped invalid file "%s"'%path)
             else:
                 y, m, d = localtime(t)[:3]
-                #print 'Dropped file "%s", modification time: %s/%s/%s'%(path, y, m, d)
+                #print('Dropped file "%s", modification time: %s/%s/%s'%(path, y, m, d))
                 return (y, m, d, core.DATE_GREG)
         else:
             date = ui.parseDroppedDate(text)
@@ -208,7 +208,7 @@ def processDroppedDate(text, dtype):
                 ## Hot to deny dragged object (to return to it's first location)
                 ## FIXME
                 print('Dropped unknown text "%s"'%text)
-                #print etime
+                #print(etime)
                 #context.drag_status(gdk.ACTION_DEFAULT, etime)
                 #context.drop_reply(False, etime)
                 #context.drag_abort(etime)##Segmentation fault
@@ -463,7 +463,7 @@ class WizardWindow(gtk.Window):
         self.showStep(0)
         self.vbox.show()
         #self.vbox.pack_end(
-        #print id(self.get_action_area())
+        #print(id(self.get_action_area()))
     def keyPress(self, arg, event):
         kname = gdk.keyval_name(event.keyval).lower()
         if kname=='escape':
@@ -480,7 +480,7 @@ class WizardWindow(gtk.Window):
         for child in bbox.get_children():
             child.destroy()
         for label, func in step.buttons:
-            #print label, func
+            #print(label, func)
             button = gtk.Button(label)
             button.connect('clicked', func)
             bbox.add(button)

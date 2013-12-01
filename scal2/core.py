@@ -56,20 +56,20 @@ homePage = 'http://starcal.sourceforge.net/'
 primaryMode = 0 ## suitable place ???????????
 osName = getOsName()
 userDisplayName = getUserDisplayName()
-#print '--------- Hello %s'%userDisplayName
+#print('--------- Hello %s'%userDisplayName)
 
 localTz = get_localzone()
 
-#print '__file__ = %r'%__file__
-#print '__name__ = %r'%__name__
-#print '__package__ = %r'%__package__
-#print '__builtins__',
+#print('__file__ = %r'%__file__)
+#print('__name__ = %r'%__name__)
+#print('__package__ = %r'%__package__)
+#print('__builtins__',)
 #pprint(__builtins__)
 #print
-#print 'core.dir:'
+#print('core.dir:')
 #pprint(dir())
 
-#print 'sys.modules =',
+#print('sys.modules =',)
 #pprint(sys.modules)
 
 __plugin_api_get__ = [

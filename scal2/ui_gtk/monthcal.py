@@ -249,10 +249,10 @@ class MonthCal(gtk.Widget, CalBase):
         self.window.move_resize(*self.allocation)
     def drawAll(self, widget=None, event=None, cr=None, cursor=True):
         #?????? Must enhance (only draw few cells, not all cells)
-        #print now(), 'drawAll'#, tuple(event.area), tuple(self.allocation)
+        #print(now(), 'drawAll'#, tuple(event.area), tuple(self.allocation))
         if event:
             xu, yu, wu, hu = tuple(event.area)
-            #print 'expose-event area:', xu, yu, wu, hu
+            #print('expose-event area:', xu, yu, wu, hu)
         self.calcCoord()
         x, y, w, h = self.allocation
         if not cr:
@@ -279,7 +279,7 @@ class MonthCal(gtk.Widget, CalBase):
                     cr.set_source_pixbuf(bg, 0, 0)
                     cr.paint()
             #else:
-            #    print coord
+            #    print(coord)
         cr.rectangle(0, 0, w, h)
         fillColor(cr, ui.bgColor)
         status = getCurrentMonthStatus()
@@ -462,12 +462,12 @@ class MonthCal(gtk.Widget, CalBase):
             lay.set_text(core.weekDayName[i])
             w = lay.get_pixel_size()[0] ## ????????
             #w = lay.get_pixel_extents()[0] ## ????????
-            #print w,
+            #print(w,)
             if w > wm:
                 wm = w
         self.wdaysWidth = wm*7 + ui.mcalLeftMargin ## ????????
         #self.wdaysWidth = wm*7*0.7 + ui.mcalLeftMargin ## ????????
-        #print 'max =', wm, '     wdaysWidth =', self.wdaysWidth
+        #print('max =', wm, '     wdaysWidth =', self.wdaysWidth)
     def buttonPress(self, obj, event):
         ## self.winActivate() #?????????
         b = event.button

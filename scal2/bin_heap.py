@@ -129,8 +129,8 @@ def getMinTest(N):
     k2 = h.getMin()[0]
     t2 = now()
     assert k1 == k2
-    #print 'time getMin(h)/min(h) = %.5f'%((t2-t1)/(t1-t0))
-    #print 'min key = %s'%k1
+    #print('time getMin(h)/min(h) = %.5f'%((t2-t1)/(t1-t0)))
+    #print('min key = %s'%k1)
 
 def testDeleteStep(N, maxKey):
     from random import randint

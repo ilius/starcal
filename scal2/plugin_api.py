@@ -30,7 +30,7 @@ def get(moduleName, attr, default=None, absolute=False):
     if not absolute:
         moduleName = 'scal2.' + moduleName
     #module = __import__(moduleName, fromlist=['__plugin_api_get__', attr])
-    #print sorted(sys.modules.keys())
+    #print(sorted(sys.modules.keys()))
     module = sys.modules[moduleName]
     allowed = getattr(module, '__plugin_api_get__', [])
     if not attr in allowed:

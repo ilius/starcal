@@ -56,7 +56,7 @@ from scal2.ui_gtk.event.group_op import GroupSortDialog, GroupConvertModeDialog,
 from scal2.ui_gtk.event.account_op import FetchRemoteGroupsDialog
 from scal2.ui_gtk.event.search_events import EventSearchWindow
 
-#print 'Testing translator', __file__, _('About')
+#print('Testing translator', __file__, _('About'))
 
 
 @registerSignals
@@ -391,12 +391,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         ## how about multi-selection? FIXME
         ## and Select _All menu item
         obj_list = self.getObjsByPath(path)
-        #print len(obj_list)
+        #print(len(obj_list))
         menu = gtk.Menu()
         if len(obj_list)==1:
             group = obj_list[0]
             if group.name == 'trash':
-                #print 'right click on trash', group.title
+                #print('right click on trash', group.title)
                 menu.add(labelStockMenuItem(
                     'Edit',
                     gtk.STOCK_EDIT,
@@ -414,7 +414,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
                 #    self.addGroupBeforeSelection,
                 #))## FIXME
             else:
-                #print 'right click on group', group.title
+                #print('right click on group', group.title)
                 menu.add(labelStockMenuItem(
                     'Edit',
                     gtk.STOCK_EDIT,
@@ -564,7 +564,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
                     ))
         elif len(obj_list) == 2:
             group, event = obj_list
-            #print 'right click on event', event.summary
+            #print('right click on event', event.summary)
             if group.name != 'trash':
                 menu.add(labelStockMenuItem(
                     'Edit',
@@ -667,8 +667,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
             self.editEventByPath(path)
     def keyPress(self, treev, g_event):
         #from scal2.time_utils import getGtkTimeFromEpoch
-        #print g_event.time-getGtkTimeFromEpoch(now())## FIXME
-        #print now()-gdk.CURRENT_TIME/1000.0
+        #print(g_event.time-getGtkTimeFromEpoch(now())## FIXME)
+        #print(now()-gdk.CURRENT_TIME/1000.0)
         ## gdk.CURRENT_TIME == 0## FIXME
         ## g_event.time == gtk.get_current_event_time() ## OK
         kname = gdk.keyval_name(g_event.keyval).lower()
@@ -696,7 +696,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         elif kname=='delete':
             self.moveSelectionToTrash()
         else:
-            #print kname
+            #print(kname)
             return False
         return True
     def mbarExportClicked(self, obj):
@@ -765,7 +765,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
     def treeviewCursorChanged(self, treev=None):
         path = self.treev.get_cursor()[0]
         ## update eventInfoBox
-        #print 'treeviewCursorChanged', path
+        #print('treeviewCursorChanged', path)
         if not self.syncing:
             text = ''
             if path:
@@ -1065,7 +1065,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
             parentObj, event = self.getObjsByPath(path)
             parentLen = len(parentObj)
             parentIndex, eventIndex = path
-            #print eventIndex, parentLen
+            #print(eventIndex, parentLen)
             if eventIndex > 0:
                 tarIter = self.trees.get_iter((parentIndex, eventIndex-1))
                 self.trees.move_before(srcIter, tarIter)## or use self.trees.swap FIXME
@@ -1115,7 +1115,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
             parentObj, event = self.getObjsByPath(path)
             parentLen = len(parentObj)
             parentIndex, eventIndex = path
-            #print eventIndex, parentLen
+            #print(eventIndex, parentLen)
             if eventIndex < parentLen-1:
                 tarIter = self.trees.get_iter((parentIndex, eventIndex+1))
                 self.trees.move_after(srcIter, tarIter)

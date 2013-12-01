@@ -80,13 +80,13 @@ class NumRangesEntry(gtk.Entry):
             endI = nextCommaI
         dashI = text.find(u'-', startI, endI)
         if dashI != -1:
-            #print 'dashI=%r'%dashI
+            #print('dashI=%r'%dashI)
             if pos < dashI:
                 endI = dashI
             else:
                 startI = dashI + 1
         thisNumStr = text[startI:endI]
-        #print startI, endI, thisNumStr
+        #print(startI, endI, thisNumStr)
         if thisNumStr:
             thisNum = numDecode(thisNumStr)
             newNum = thisNum + plus
@@ -100,7 +100,7 @@ class NumRangesEntry(gtk.Entry):
         newNumStr = _(newNum)
         newText = text[:startI] + newNumStr + text[endI:]
         self.set_text(newText)
-        #print 'new end index', endI - len(thisNumStr) + len(newNumStr)
+        #print('new end index', endI - len(thisNumStr) + len(newNumStr))
         self.set_position(pos)
         self.select_region(
             startI,
@@ -109,7 +109,7 @@ class NumRangesEntry(gtk.Entry):
     def keyPress(self, obj, gevent):
         kval = gevent.keyval
         kname = gdk.keyval_name(gevent.keyval).lower()
-        #print kval, kname
+        #print(kval, kname)
         if kname in (
             'tab', 'escape', 'backspace', 'delete', 'insert',
             'home', 'end',
@@ -151,10 +151,10 @@ class NumRangesEntry(gtk.Entry):
             self.insertText(self.digs[kval-ord('0')])
         else:
             uniVal = gtk.gdk.keyval_to_unicode(kval)
-            #print 'uniVal=%r'%uniVal
+            #print('uniVal=%r'%uniVal)
             if uniVal!=0:
                 ch = unichr(uniVal)
-                #print 'ch=%r'%ch
+                #print('ch=%r'%ch)
                 if ch in self.digs:
                     self.insertText(ch)
                 if gevent.state & gdk.CONTROL_MASK:## Shortcuts like Ctrl + [A, C, X, V]

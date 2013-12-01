@@ -161,7 +161,7 @@ def loadExternalPlugin(path, enable=True, show_date=True):
         return mod.TextPlug(enable=enable, show_date=show_date)
     except:
         myRaiseTback()
-        #print dir(mod)
+        #print(dir(mod))
         return None
 
 class ExternalPlugin(BasePlugin):

@@ -130,7 +130,7 @@ class ComboTextPrefItem(PrefItem):
         self.get = w.get_active
         self.set = w.set_active
     #def set(self, value):
-    #    print 'ComboTextPrefItem.set', value
+    #    print('ComboTextPrefItem.set', value)
     #    self._widget.set_active(int(value))
 
 class ComboEntryTextPrefItem(PrefItem):

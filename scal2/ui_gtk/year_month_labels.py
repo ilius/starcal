@@ -142,7 +142,7 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
             y += self.allocation.height
             if rtl:
                 mw = self.menu.allocation.width
-                #print 'menu.allocation.width', mw
+                #print('menu.allocation.width', mw)
                 if mw>1:
                     x -= (mw - self.allocation.width)
             #x -= 7 ## ????????? because of menu padding
@@ -157,7 +157,7 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
             return
         cr = self.window.cairo_create()
         cr.set_source_color(self.highlightColor)
-        #print tuple(self.allocation), tuple(self.label.allocation)
+        #print(tuple(self.allocation), tuple(self.label.allocation))
         x, y, w, h = self.allocation
         cr.rectangle(0, 0, w, 1)
         cr.fill()
@@ -211,7 +211,7 @@ class IntLabel(gtk.EventBox):
         arrow.set_property('height-request', 10)
         #item.set_border_width(0)
         #item.set_property('height-request', 10)
-        #print item.style_get_property('horizontal-padding') ## OK
+        #print(item.style_get_property('horizontal-padding') ## OK)
         ###???????????????????????????????????
         #item.config('horizontal-padding'=0)
         #style = item.get_style()
@@ -295,7 +295,7 @@ class IntLabel(gtk.EventBox):
         self.remain = 0
     def arrowRemain(self, plus):
         t = now()
-        #print t-self.etime
+        #print(t-self.etime)
         if self.remain==plus:
             if t-self.etime<ui.labelMenuDelay-0.02:
                 if self.step>1:

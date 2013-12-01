@@ -62,21 +62,21 @@ class MyFontButton(gtk.FontButton):
         self.drag_dest_add_text_targets()
         self.connect('drag-data-received', self.dragDataRec)
     def dragDataGet(self, fontb, context, selection, target_id, etime):
-        #print 'fontButtonDragDataGet'
+        #print('fontButtonDragDataGet')
         selection.set_text(gfontEncode(fontb.get_font_name()))
         return True
     def dragDataRec(self, fontb, context, x, y, selection, target_id, etime):
         #dtype = selection.get_data_type()
-        #print dtype ## UTF8_STRING
+        #print(dtype ## UTF8_STRING)
         text = selection.get_text()
-        #\print 'fontButtonDragDataRec    text=', text
+        #\print('fontButtonDragDataRec    text=', text)
         if text:
             pfont = pango.FontDescription(text)
             if pfont.get_family() and pfont.get_size() > 0:
                 gtk.FontButton.set_font_name(fontb, text)
         return True
     def dragBegin(self, fontb, context, parent):
-        #print 'fontBottonDragBegin'## caled before dragCalDataGet
+        #print('fontBottonDragBegin'## caled before dragCalDataGet)
         textLay = newTextLayout(self, gtk.FontButton.get_font_name(self))
         w, h = textLay.get_pixel_size()
         pmap = gdk.Pixmap(None, w, h, 24)
@@ -124,7 +124,7 @@ class MyColorButton(gtk.ColorButton): ## for tooltip text
             else:
                 text = '%s\n%s\n%s'%(r, g, b)
             ##self.get_tooltip_window().set_direction(gtk.TEXT_DIR_LTR)
-            ##print self.get_tooltip_window()
+            ##print(self.get_tooltip_window())
             self.set_tooltip_text(text) ##???????????????? Right to left
             #self.tt_label.set_label(text)##???????????? Dosent work
             ##self.set_tooltip_window(self.tt_win)

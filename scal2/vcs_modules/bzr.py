@@ -97,7 +97,7 @@ def getShortStatByTrees(repo, old_tree, tree):
         if changed_content:
             #for kind in (old_kind, new_kind):
             #    if not kind in (None, 'file', 'symlink', 'directory'):
-            #        print 'kind', old_kind, new_kind
+            #        print('kind', old_kind, new_kind)
             if new_kind in ('file', 'symlink'):
                 files_changed += 1
                 text = tree.get_file_text(file_id)
@@ -115,7 +115,7 @@ def getShortStatByTrees(repo, old_tree, tree):
                             if op == 'equal':
                                 continue
                             #if not op in ('insert', 'delete', 'replace'):
-                            #    print 'op', op
+                            #    print('op', op)
                             insertions += (j2 - j1)
                             deletions += (i2 - i1)
             elif new_kind == None:

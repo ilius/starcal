@@ -67,7 +67,7 @@ def parseDroppedDate(text):
                     f = format[i]
                     if not (minMax[f][0] <= part[i] <= minMax[f][1]):
                         valid = False
-                        #print 'format %s was not valid, part[%s]=%s'%(format, i, part[i])
+                        #print('format %s was not valid, part[%s]=%s'%(format, i, part[i]))
                         break
                 if valid:
                     year = part[format.index(0)] ## "format" must be list because of method "index"
@@ -331,13 +331,13 @@ def getHolidaysJdList(startJd, endJd):
 
 def checkMainWinItems():
     global mainWinItems
-    #print mainWinItems
+    #print(mainWinItems)
     ## cleaning and updating mainWinItems
     names = set([name for (name, i) in mainWinItems])
     defaultNames = set([name for (name, i) in mainWinItemsDefault])
-    #print mainWinItems
-    #print sorted(list(names))
-    #print sorted(list(defaultNames))
+    #print(mainWinItems)
+    #print(sorted(list(names)))
+    #print(sorted(list(defaultNames)))
     #####
     ## removing items that are no longer supported
     mainWinItems, mainWinItemsTmp = [], mainWinItems
@@ -347,7 +347,7 @@ def checkMainWinItems():
     #####
     ## adding items newly added in this version, this is for user's convenience
     newNames = defaultNames.difference(names)
-    #print 'mainWinItems: newNames =', newNames
+    #print('mainWinItems: newNames =', newNames)
     ##
     name = 'winContronller'
     if name in newNames:
@@ -506,7 +506,7 @@ for fname in os.listdir(join(srcDir, 'accounts')):
             __import__('scal2.accounts.%s'%name)
         except:
             core.myRaiseTback()
-#print 'accounts', event_lib.classes.account.names
+#print('accounts', event_lib.classes.account.names)
 ###########
 eventAccounts = event_lib.EventAccountsHolder()
 eventGroups = event_lib.EventGroupsHolder()

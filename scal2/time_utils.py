@@ -249,7 +249,7 @@ def floatHourToTime(fh):
     )
 
 if __name__=='__main__':
-    #print floatHourToTime(3.6)
+    #print(floatHourToTime(3.6))
     for tm in (
         (8, 0, 0),
         (8, 0),

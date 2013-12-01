@@ -321,7 +321,7 @@ class GoogleAccount(Account):
         service = self.getCalendarService()
         groups = []
         for group in service.calendarList().list().execute()['items']:
-            #print 'group =', group
+            #print('group =', group)
             groups.append({
                 'id': group['id'],
                 'title': group['summary'],
@@ -379,21 +379,21 @@ class GoogleAccount(Account):
         ########################### Push
         ## if remoteGroupId=='tasks':## FIXME
         for event in group:
-            #print '---------- event %s'%event.summary
+            #print('---------- event %s'%event.summary)
             remoteEventId = None
             if event.remoteIds:
                 if event.remoteIds[0]==self.id and event.remoteIds[1]==remoteGroupId:
                     remoteEventId = event.remoteIds[2]
-            #print '---------- remoteEventId = %s'%remoteEventId
+            #print('---------- remoteEventId = %s'%remoteEventId)
             if remoteEventId and lastSync and event.modified < lastSync:
-                #print '---------- skipping event %s (modified = %s < %s = lastPush)'%(event.summary, event.modified, lastPush)
+                #print('---------- skipping event %s (modified = %s < %s = lastPush)'%(event.summary, event.modified, lastPush))
                 continue
             gevent = exportEvent(event)
             if gevent is None:
                 print('---------- event %s can not be pushed'%event.summary)
                 continue
             setEtag(gevent)
-            #print 'etag = %r'%gevent['etag']
+            #print('etag = %r'%gevent['etag'])
             gevent.update({
                 'calendarId': remoteGroupId,
                 'sequence': group.index(event.id),
@@ -420,7 +420,7 @@ class GoogleAccount(Account):
                 )
                 #dumpRequest(request)
                 response = request.execute()
-                #print 'response = %s'%pformat(response)
+                #print('response = %s'%pformat(response))
                 remoteEventId = response['id']
                 print('----------- event %s added on server'%event.summary)
             event.remoteIds = [self.id, remoteGroupId, remoteEventId]
@@ -444,7 +444,7 @@ if __name__=='__main__':
     groupId = 66
     ui.eventGroups.load()
     group = ui.eventGroups[groupId]
-    #print 'group.remoteIds', group.remoteIds
+    #print('group.remoteIds', group.remoteIds)
     group.remoteIds = (account.id, remoteGroupId)
     account.sync(group, remoteGroupId)
     group.save()

@@ -74,21 +74,21 @@ win.vbox.pack_start(langHbox)
 win.vbox.show_all()
 
 if win.run()==gtk.RESPONSE_OK:
-    #print 'RESPONSE_OK'
+    #print('RESPONSE_OK')
     if importCheckb and importCheckb.get_active():
         importConfigFrom15()
     else:
         i = langCombo.get_active()
         langCode = langCodeList[i]
         thisLangConfDir = join(langConfDir, langCode)
-        #print 'Setting language', langCode
+        #print('Setting language', langCode)
         if not os.path.isdir(confDir):
             os.mkdir(confDir, 0755)
         if os.path.isdir(thisLangConfDir):
             for fname in os.listdir(thisLangConfDir):
                 src_path = join(thisLangConfDir, fname)
                 dst_path = join(confDir, fname)
-                #print src_path
+                #print(src_path)
                 if isdir(src_path):
                     shutil.copytree(src_path, dst_path)
                 else:

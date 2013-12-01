@@ -41,7 +41,7 @@ import gnomeapplet
 
 def getattribute(obj, atrib):
     if atrib not in ('lastGDate', '__class__'):
-        print 'getattribute', obj.__class__.__name__, atrib
+        print('getattribute', obj.__class__.__name__, atrib)
     return object.__getattribute__(obj, atrib)
 
 #@registerType
@@ -98,7 +98,7 @@ class StarCalApplet(MainWin):
         self.applet.setup_menu(xml, funcList, None)
         ###################################
         #popup = self.applet.get_popup_component()
-        #print type(popup)
+        #print(type(popup))
         ###################################
         hbox = gtk.HBox()
         hbox.set_direction(gtk.TEXT_DIR_LTR)
@@ -115,7 +115,7 @@ class StarCalApplet(MainWin):
         #self.applet.set_background_widget(self.applet)#????????
         self.trayPix = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, ui.traySize, ui.traySize)
     def trayClicked(self, toggle):
-        ##print tuple(self.menu.allocation)
+        ##print(tuple(self.menu.allocation))
         if toggle.get_active():
             if (ui.winX, ui.winY) == (-1, -1):
                 try:

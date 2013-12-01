@@ -307,7 +307,7 @@ class PlayerBox(gtk.HBox):
         else:
             return str(int(value)) + '%'
     def seek(self, widget, event):# Seek on changing the seekBar
-        #print 'seek', self.seekAdj.value, self.mplayer.mplayerIn
+        #print('seek', self.seekAdj.value, self.mplayer.mplayerIn)
         if not self.mplayer.mplayerIn:
             print('abc')
             sleep(0.05)

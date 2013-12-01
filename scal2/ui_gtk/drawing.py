@@ -148,7 +148,7 @@ def newLimitedWidthTextLayout(widget, text, width, font=None, truncate=True, mar
                 font2[3] = 0.9*font2[3]*width/layoutW
                 layout.set_font_description(pfontEncode(font2))
                 layoutW, layoutH = layout.get_pixel_size()
-                #print layoutW, width
+                #print(layoutW, width)
             #print
     return layout
 '''
@@ -248,7 +248,7 @@ def drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ro, d):
     ro = min(ro, cw/2.0, ch/2.0)
     #a = min(cw, ch); ri = ro*(a-2*d)/a
     ri = max(0, ro-d)
-    #print ro, ri
+    #print(ro, ri)
     ######### Outline:
     cr.move_to(cx0+ro, cy0)
     cr.line_to(cx0+cw-ro, cy0)

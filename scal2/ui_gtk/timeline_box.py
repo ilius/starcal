@@ -83,18 +83,18 @@ def drawBoxText(cr, box, x, y, w, h, widget):
     ## and font family? FIXME
     ## possibly write in many lines? or just in one line and wrap if needed?
     if box.text:
-        #print box.text
+        #print(box.text)
         textW = 0.9 * w
         textH = 0.9 * h
         textLen = len(toUnicode(box.text))
-        #print 'textLen=%s'%textLen
+        #print('textLen=%s'%textLen)
         avgCharW = float(textW if rotateBoxLabel == 0 else max(textW, textH)) / textLen
         if avgCharW > 3:## FIXME
             font = list(ui.getFont())
             layout = widget.create_pango_layout(box.text) ## a pango.Layout object
             layout.set_font_description(pfontEncode(font))
             layoutW, layoutH = layout.get_pixel_size()
-            #print 'orig font size: %s'%font[3]
+            #print('orig font size: %s'%font[3])
             normRatio = min(
                 float(textW)/layoutW,
                 float(textH)/layoutH,
@@ -108,7 +108,7 @@ def drawBoxText(cr, box, x, y, w, h, widget):
                 layout.set_font_description(pfontEncode(font))
                 layoutW, layoutH = layout.get_pixel_size()
                 fillColor(cr, fgColor)## before cr.move_to
-                #print 'x=%s, y=%s, w=%s, h=%s, layoutW=%s, layoutH=%s'\
+                #print('x=%s, y=%s, w=%s, h=%s, layoutW=%s, layoutH=%s'\)
                 #   %(x,y,w,h,layoutW,layoutH)
                 cr.move_to(
                     x + (w - rotateBoxLabel*layoutH)/2.0,

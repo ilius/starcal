@@ -122,7 +122,7 @@ class EventWidget(gtk.VBox):
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
         self.iconSelect = IconSelectButton()
-        #print join(pixDir, self.icon)
+        #print(join(pixDir, self.icon))
         hbox.pack_start(self.iconSelect, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         self.pack_start(hbox, 0, 0)

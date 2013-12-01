@@ -30,7 +30,7 @@ iconSizeDict = dict(iconSizeList)
 @registerSignals
 class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
     def __init__(self, name, stockName, method, tooltip='', text='', desc=''):
-        #print 'ToolbarItem', name, stockName, method, tooltip, text
+        #print('ToolbarItem', name, stockName, method, tooltip, text)
         self.method = method
         ######
         if not desc and tooltip:
@@ -105,7 +105,7 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
         self.buttonsBorderSpin.connect('changed', self.buttonsBorderSpinChanged)
         #self.styleComboChanged()
         ##
-        #print 'toolbar state', self.get_state()## STATE_NORMAL
+        #print('toolbar state', self.get_state()## STATE_NORMAL)
         #self.set_state(gtk.STATE_ACTIVE)## FIXME
         #self.set_property('border-width', 0)
         #style = self.get_style()

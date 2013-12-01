@@ -431,7 +431,7 @@ class PluginsTextBox(gtk.VBox, CustomizableCalObj):
             self.textbuff.set_text('')## forethought
             self.getWidget().hide()
     def setEnableExpander(self, enable):
-        #print 'setEnableExpander', enable
+        #print('setEnableExpander', enable)
         if enable:
             if not ui.pluginsTextInsideExpander:
                 self.remove(self.textview)
@@ -561,7 +561,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         #ud.windowList.appendItem(ui.weekCalWin)
         ###
         self.dayInfoDialog = DayInfoDialog()
-        #print 'windowList.items', [item._name for item in ud.windowList.items]
+        #print('windowList.items', [item._name for item in ud.windowList.items])
         ###########
         ##self.connect('window-state-event', selfStateEvent)
         self.set_title('%s %s'%(core.APP_DESC, core.VERSION))
@@ -624,7 +624,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ui.checkMainWinItems()
         self.vbox = MainWinVbox()
         for (name, enable) in ui.mainWinItems:
-            #print name, enable
+            #print(name, enable)
             try:
                 item = defaultItemsDict[name]
             except:
@@ -720,8 +720,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.onConfigChange()
         #ud.rootWindow.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
     #def mainWinStateEvent(self, obj, event):
-        #print dir(event)
-        #print event.new_window_state
+        #print(dir(event))
+        #print(event.new_window_state)
         #self.event = event
     def childSizeRequest(self, cal, req):
         self.setMinHeight()
@@ -732,7 +732,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.onDateChange()
     def keyPress(self, arg, event):
         kname = gdk.keyval_name(event.keyval).lower()
-        #print now(), 'MainWin.keyPress', kname
+        #print(now(), 'MainWin.keyPress', kname)
         if kname=='escape':
             self.dialogEsc()
         elif kname=='f1':
@@ -751,7 +751,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
     def focusOut(self, widegt, event, data=None):
         ## called 0.0004 sec (max) after focusIn (if switched between two windows)
         dt = now()-ui.focusTime
-        #print 'focusOut', dt
+        #print('focusOut', dt)
         if dt > 0.05: ## FIXME
             self.focus = False
             timeout_add(2, self.focusOutDo)
@@ -783,7 +783,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         return False
     def buttonPress(self, obj, event):
         b = event.button
-        #print 'buttonPress', b
+        #print('buttonPress', b)
         if b==3:
             self.menuMain.popup(None, None, None, 3, event.time)
             ui.updateFocusTime()
@@ -801,7 +801,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.onDateChange()
     goToday = lambda self, obj=None: self.changeDate(*core.getSysDate())
     def onDateChange(self, *a, **kw):
-        #print 'MainWin.onDateChange'
+        #print('MainWin.onDateChange')
         ud.IntegratedCalObj.onDateChange(self, *a, **kw)
         #for j in range(len(core.plugIndex)):##????????????????????
         #    try:
@@ -861,7 +861,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         addToItem.set_submenu(menu2)
         return addToItem
     def popupMenuCell(self, widget, etime, x, y):
-        #print 'popupMenuCell', widget._name
+        #print('popupMenuCell', widget._name)
         menu = gtk.Menu()
         ####
         menu.add(labelStockMenuItem('_Copy Date', gtk.STOCK_COPY, self.copyDate))
@@ -927,7 +927,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         #self.menuMainWidth = menu.allocation.width
         ui.updateFocusTime()
     def addToGroupFromMenu(self, menu, group, eventType):
-        #print 'addToGroupFromMenu', group.title, eventType
+        #print('addToGroupFromMenu', group.title, eventType)
         title = _('Add ') + event_lib.classes.event.byName[eventType].desc
         event = addNewEvent(group, eventType, title, parent=self, useSelectedDate=True)
         if event is None:

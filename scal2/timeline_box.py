@@ -55,7 +55,7 @@ class Box:
         #self.mt = (t0+t1)/2.0 ## - timeMiddle ## FIXME
         #self.dt = (t1-t0)/2.0
         #if t1-t0 != odt:
-        #    print 'Box, dt=%s, odt=%s'%(t1-t0, odt)
+        #    print('Box, dt=%s, odt=%s'%(t1-t0, odt))
         self.u0 = u0
         self.du = du
         ####
@@ -149,7 +149,7 @@ def calcEventBoxes(
             if pixBoxW < boxSkipPixelLimit:
                 continue
             #if not isinstance(eid, int):
-            #    print '----- bad eid from search: %r'%eid
+            #    print('----- bad eid from search: %r'%eid)
             #    continue
             event = group[eid]
             eventIndex = group.index(eid)
@@ -186,8 +186,8 @@ def calcEventBoxes(
             box = blist[0]
             box.text = _('%s events')%_(len(blist))
             box.ids = None
-            #print 'len(blist)', len(blist)
-            #print (box.t1 - box.t0), 'secs'
+            #print('len(blist)', len(blist))
+            #print((box.t1 - box.t0), 'secs')
             boxes.append(box)
     del boxesDict
     #####
