@@ -119,7 +119,7 @@ class StarCalApplet(MainWin):
         if toggle.get_active():
             if (ui.winX, ui.winY) == (-1, -1):
                 try:
-                    x0, y0 = self.applet.window.get_origin()
+                    x0, y0 = self.applet.get_window().get_origin()
                     ui.winX = x0 + (self.applet.allocation.width-ui.winWidth)/2
                     ui.winY = y0 + self.applet.allocation.height - 3
                 except:

@@ -113,8 +113,8 @@ class FClockWidget(gtk.DrawingArea): ## Time is in Local
     def set_label(self, text):
         if self.window==None:
             return
-        self.window.clear()
-        cr = self.window.cairo_create()
+        self.get_window().clear()
+        cr = self.get_window().cairo_create()
         cr.set_source_color(gdk.Color(0,0,0))
         lay = self.create_pango_layout(text)
         cr.show_layout(lay)
@@ -145,10 +145,10 @@ class FClockWidget(gtk.DrawingArea): ## Time is in Local
                                                          event_mask=self.get_events() | gdk.EXPOSURE_MASK
                                                          | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK
                                                          | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK)
-        self.window.set_user_data(self)
+        self.get_window().set_user_data(self)
         self.style.attach(self.window)
         self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.window.move_resize(*self.allocation)
+        self.get_window().move_resize(*self.allocation)
         """
 
 

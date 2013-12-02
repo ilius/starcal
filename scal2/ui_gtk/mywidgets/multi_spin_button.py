@@ -172,7 +172,7 @@ class MultiSpinButton(gtk.SpinButton):
         width, height = self.size_request()
         step_inc, page_inc = self.get_increments()
         if gwin.get_position()[1] == 0:## the panel window (containing up and down arrows)
-            ## gwin.xid == self.window.get_children()[0].xid ## the same as _gtk_spin_button_get_panel
+            ## gwin.xid == self.get_window().get_children()[0].xid ## the same as _gtk_spin_button_get_panel
             if gevent.y*2 < height:
                 if gevent.button==1:
                     self._arrow_press(step_inc)

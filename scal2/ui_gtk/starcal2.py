@@ -527,12 +527,12 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
                 | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK
                 | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK
         )
-        self.window.set_user_data(self)
+        self.get_window().set_user_data(self)
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.window.move_resize(*self.allocation)
-        self.window.set_decorations(gdk.DECORE_CLOSE)
-        self.window.set_functions(gdk.FUNC_CLOSE)
+        self.get_window().move_resize(*self.allocation)
+        self.get_window().set_decorations(gdk.DECORE_CLOSE)
+        self.get_window().set_functions(gdk.FUNC_CLOSE)
     '''
     #def maximize(self):
     #    pass
@@ -899,7 +899,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ####
         menu.show_all()
         dx, dy = widget.translate_coordinates(self, x, y)
-        wx, wy = self.window.get_origin()
+        wx, wy = self.get_window().get_origin()
         x = wx+dx
         y = wy+dy
         if rtl:
@@ -915,7 +915,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             etime = gtk.get_current_event_time()
         menu = self.menuMain
         dx, dy = widget.translate_coordinates(self, x, y)
-        wx, wy = self.window.get_origin()
+        wx, wy = self.get_window().get_origin()
         x = wx+dx
         y = wy+dy
         if rtl:

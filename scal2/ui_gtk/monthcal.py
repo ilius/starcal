@@ -243,10 +243,10 @@ class MonthCal(gtk.Widget, CalBase):
                 | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK
                 | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK,
         )
-        self.window.set_user_data(self)
+        self.get_window().set_user_data(self)
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.window.move_resize(*self.allocation)
+        self.get_window().move_resize(*self.allocation)
     def drawAll(self, widget=None, event=None, cr=None, cursor=True):
         #?????? Must enhance (only draw few cells, not all cells)
         #print(now(), 'drawAll'#, tuple(event.area), tuple(self.allocation))
@@ -256,7 +256,7 @@ class MonthCal(gtk.Widget, CalBase):
         self.calcCoord()
         x, y, w, h = self.allocation
         if not cr:
-            cr = self.window.cairo_create()
+            cr = self.get_window().cairo_create()
             #cr.set_line_width(0)#??????????????
             #cr.scale(0.5, 0.5)
         wx = ui.winX
@@ -471,7 +471,7 @@ class MonthCal(gtk.Widget, CalBase):
     def buttonPress(self, obj, event):
         ## self.winActivate() #?????????
         b = event.button
-        x, y, mask = event.window.get_pointer() # or self.get_pointer()
+        x, y, mask = event.get_window().get_pointer() # or self.get_pointer()
         self.pointer = (x, y)
         if b==2:
             return False

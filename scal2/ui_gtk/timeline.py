@@ -113,11 +113,11 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK | gdk.BUTTON_RELEASE_MASK
             | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK)
             #colormap=self.get_screen().get_rgba_colormap())
-        #self.window.set_composited(True)
-        self.window.set_user_data(self)
+        #self.get_window().set_composited(True)
+        self.get_window().set_user_data(self)
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.window.move_resize(*self.allocation)
+        self.get_window().move_resize(*self.allocation)
         self.currentTimeUpdate()
     def currentTimeUpdate(self, restart=False, draw=True):
         if restart:
@@ -272,7 +272,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             self.updateData()
             self.currentTimeUpdate(restart=True, draw=False)
         #t1 = now()
-        self.drawAll(self.window.cairo_create())
+        self.drawAll(self.get_window().cairo_create())
         #t2 = now()
         #print('drawing time / data calc time: %.2f'%((t2-t1)/(t1-t0)))
     def onScroll(self, widget, event):
@@ -319,15 +319,15 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
                 if top == minA:
                     editType = 0
                     t0 = event.getStartEpoch()
-                    self.window.set_cursor(gdk.Cursor(gdk.FLEUR))
+                    self.get_window().set_cursor(gdk.Cursor(gdk.FLEUR))
                 elif right == minA:
                     editType = 1
                     t0 = event.getEndEpoch()
-                    self.window.set_cursor(gdk.Cursor(gdk.RIGHT_SIDE))
+                    self.get_window().set_cursor(gdk.Cursor(gdk.RIGHT_SIDE))
                 elif left == minA:
                     editType = -1
                     t0 = event.getStartEpoch()
-                    self.window.set_cursor(gdk.Cursor(gdk.LEFT_SIDE))
+                    self.get_window().set_cursor(gdk.Cursor(gdk.LEFT_SIDE))
                 if editType is not None:
                     self.boxEditing = (editType, event, box, x, t0)
                     return True
@@ -403,7 +403,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             event.afterModify()
             event.save()
             self.boxEditing = None
-        self.window.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
+        self.get_window().set_cursor(gdk.Cursor(gdk.LEFT_PTR))
         self.queue_draw()
     def onConfigChange(self, *a, **kw):
         ud.IntegratedCalObj.onConfigChange(self, *a, **kw)

@@ -97,7 +97,7 @@ class ExportDialog(gtk.Dialog):
         self.hide()
         return True
     def save(self, widget=None):
-        self.window.set_cursor(gdk.Cursor(gdk.WATCH))
+        self.get_window().set_cursor(gdk.Cursor(gdk.WATCH))
         while gtk.events_pending():
             gtk.main_iteration_do(False)
         path = self.fcw.get_filename()
@@ -124,7 +124,7 @@ class ExportDialog(gtk.Dialog):
                 months.append(getMonthStatus(y, m))
             title = _('Calendar')
         exportToHtml(path, months, title)
-        self.window.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
+        self.get_window().set_cursor(gdk.Cursor(gdk.LEFT_PTR))
         self.hide()
     def showDialog(self, year, month):
         self.comboChanged(ym=(year, month))
@@ -200,7 +200,7 @@ class ExportToIcsDialog(gtk.Dialog):
         self.destroy()
         return True
     def save(self, widget=None):
-        self.window.set_cursor(gdk.Cursor(gdk.WATCH))
+        self.get_window().set_cursor(gdk.Cursor(gdk.WATCH))
         while gtk.events_pending():
             gtk.main_iteration_do(False)
         path = self.fcw.get_filename()
@@ -212,7 +212,7 @@ class ExportToIcsDialog(gtk.Dialog):
             core.primary_to_jd(*self.startDateInput.get_value()),
             core.primary_to_jd(*self.endDateInput.get_value()),
         )
-        self.window.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
+        self.get_window().set_cursor(gdk.Cursor(gdk.LEFT_PTR))
         self.destroy()
 
 

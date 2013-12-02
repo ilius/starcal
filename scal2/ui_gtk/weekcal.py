@@ -145,10 +145,10 @@ class Column(gtk.Widget, ColumnBase):
                 | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK
                 | gdk.BUTTON_PRESS_MASK | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK,
         )
-        self.window.set_user_data(self)
+        self.get_window().set_user_data(self)
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.window.move_resize(*self.allocation)
+        self.get_window().move_resize(*self.allocation)
     def drawBg(self, cr):
         w = self.allocation.width
         h = self.allocation.height
@@ -330,7 +330,7 @@ class WeekDaysColumn(Column):
         Column.__init__(self, wcal)
         self.connect('expose-event', self.onExposeEvent)
     def onExposeEvent(self, widget=None, event=None):
-        cr = self.window.cairo_create()
+        cr = self.get_window().cairo_create()
         self.drawBg(cr)
         self.drawTextList(
             cr,
@@ -354,7 +354,7 @@ class PluginsTextColumn(Column):
         Column.__init__(self, wcal)
         self.connect('expose-event', self.onExposeEvent)
     def onExposeEvent(self, widget=None, event=None):
-        cr = self.window.cairo_create()
+        cr = self.get_window().cairo_create()
         self.drawBg(cr)
         self.drawTextList(
             cr,
@@ -377,7 +377,7 @@ class EventsIconColumn(Column):
         Column.__init__(self, wcal)
         self.connect('expose-event', self.onExposeEvent)
     def onExposeEvent(self, widget=None, event=None):
-        cr = self.window.cairo_create()
+        cr = self.get_window().cairo_create()
         self.drawBg(cr)
         ###
         w = self.allocation.width
@@ -454,7 +454,7 @@ class EventsCountColumn(Column):
             (line, None),
         ]
     def onExposeEvent(self, widget=None, event=None):
-        cr = self.window.cairo_create()
+        cr = self.get_window().cairo_create()
         self.drawBg(cr)
         ###
         w = self.allocation.width
@@ -518,7 +518,7 @@ class EventsTextColumn(Column):
             data.append((line, color))
         return data
     def onExposeEvent(self, widget=None, event=None):
-        cr = self.window.cairo_create()
+        cr = self.get_window().cairo_create()
         self.drawBg(cr)
         self.drawTextList(
             cr,
@@ -573,7 +573,7 @@ class EventsBoxColumn(Column):
         tbox.drawBoxBG(cr, box, x, y, w, h)
         tbox.drawBoxText(cr, box, x, y, w, h, self)
     def onExposeEvent(self, widget=None, event=None):
-        cr = self.window.cairo_create()
+        cr = self.get_window().cairo_create()
         self.drawBg(cr)
         if not self.boxes:
             return
@@ -639,7 +639,7 @@ class DaysOfMonthColumn(Column):
         ###
         self.connect('expose-event', self.onExposeEvent)
     def onExposeEvent(self, widget=None, event=None):
-        cr = self.window.cairo_create()
+        cr = self.get_window().cairo_create()
         self.drawBg(cr)
         try:
             font = ui.wcalTypeParams[self.index]['font']
@@ -875,7 +875,7 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
     def goForward4(self, obj=None):
         self.jdPlus(28)
     def buttonPress(self, widget, event):
-        col = event.window.get_user_data()
+        col = event.get_window().get_user_data()
         while not isinstance(col, ColumnBase):
             col = col.get_parent()
             if col is None:
@@ -885,7 +885,7 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
                 return False
         ###
         b = event.button
-        #x, y, mask = event.window.get_pointer()
+        #x, y, mask = event.get_window().get_pointer()
         x, y = self.get_pointer()
         #y += 10
         ###

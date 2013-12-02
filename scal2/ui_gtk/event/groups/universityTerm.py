@@ -327,14 +327,14 @@ class WeeklyScheduleWidget(gtk.Widget):
                 | gdk.BUTTON_PRESS_MASK | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK,
             #colormap=self.get_screen().get_rgba_colormap(),
         )
-        #self.window.set_composited(True)
-        self.window.set_user_data(self)
+        #self.get_window().set_composited(True)
+        self.get_window().set_user_data(self)
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.window.move_resize(*self.allocation)
+        self.get_window().move_resize(*self.allocation)
         #self.onExposeEvent()
     def onExposeEvent(self, widget=None, event=None):
-        self.drawCairo(self.window.cairo_create())
+        self.drawCairo(self.get_window().cairo_create())
     def drawCairo(self, cr):
         if not self.data:
             return

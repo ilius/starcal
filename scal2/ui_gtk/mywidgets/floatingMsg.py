@@ -114,12 +114,12 @@ class FloatingMsg(gtk.Widget):
             event_mask=self.get_events() | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK
                                          | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK
         )
-        self.window.set_user_data(self)
+        self.get_window().set_user_data(self)
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.window.move_resize(*self.allocation)
+        self.get_window().move_resize(*self.allocation)
     def onExposeEvent(self, widget, event):
-        self.cr = self.window.cairo_create()
+        self.cr = self.get_window().cairo_create()
         #######
         self.cr.rectangle(0, 0, screenWidth, self.height)
         setColor(self.cr, self.bgColor)
@@ -177,12 +177,12 @@ class MyLabel(gtk.Widget):
             event_mask=self.get_events() | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK
                                          | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK
         )
-        self.window.set_user_data(self)
+        self.get_window().set_user_data(self)
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.window.move_resize(*self.allocation)
+        self.get_window().move_resize(*self.allocation)
     def onExposeEvent(self, widget, event):
-        self.cr = self.window.cairo_create()
+        self.cr = self.get_window().cairo_create()
         #######
         self.cr.rectangle(0, 0, self.width, self.height)
         setColor(self.cr, self.bgColor)

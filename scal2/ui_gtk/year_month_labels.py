@@ -138,7 +138,7 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
         self.onDateChange()
     def buttonPress(self, widget, event):
         if event.button==3:
-            x, y = self.window.get_origin()
+            x, y = self.get_window().get_origin()
             y += self.allocation.height
             if rtl:
                 mw = self.menu.allocation.width
@@ -155,7 +155,7 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
         #self.drag_highlight()
         if self.window==None:
             return
-        cr = self.window.cairo_create()
+        cr = self.get_window().cairo_create()
         cr.set_source_color(self.highlightColor)
         #print(tuple(self.allocation), tuple(self.label.allocation))
         x, y, w, h = self.allocation
@@ -173,10 +173,10 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
         if self.window==None:
             return
         x, y, w, h = self.allocation
-        self.window.clear_area(0, 0, w, 1)
-        self.window.clear_area(0, h-1, w, 1)
-        self.window.clear_area(0, 0, 1, h)
-        self.window.clear_area(w-1, 0, 1, h)
+        self.get_window().clear_area(0, 0, w, 1)
+        self.get_window().clear_area(0, h-1, w, 1)
+        self.get_window().clear_area(0, 0, 1, h)
+        self.get_window().clear_area(w-1, 0, 1, h)
     def onDateChange(self, *a, **ka):
         ud.IntegratedCalObj.onDateChange(self, *a, **ka)
         self.setActive(ui.cell.dates[self.mode][1]-1)
@@ -280,7 +280,7 @@ class IntLabel(gtk.EventBox):
     def buttonPress(self, widget, event):
         if event.button==3:
             self.updateMenu()
-            x, y = self.window.get_origin()
+            x, y = self.get_window().get_origin()
             y += self.allocation.height
             x -= 7 ## ????????? because of menu padding
             self.menu.popup(None, None, lambda widget: (x, y, True), event.button, event.time)
@@ -323,7 +323,7 @@ class IntLabel(gtk.EventBox):
         #self.drag_highlight()
         if self.window==None:
             return
-        cr = self.window.cairo_create()
+        cr = self.get_window().cairo_create()
         cr.set_source_color(self.highlightColor)
         x, y, w, h = self.allocation
         cr.rectangle(0, 0, w, 1)
@@ -340,10 +340,10 @@ class IntLabel(gtk.EventBox):
         if self.window==None:
             return
         x, y, w, h = self.allocation
-        self.window.clear_area(0, 0, w, 1)
-        self.window.clear_area(0, h-1, w, 1)
-        self.window.clear_area(0, 0, 1, h)
-        self.window.clear_area(w-1, 0, 1, h)
+        self.get_window().clear_area(0, 0, w, 1)
+        self.get_window().clear_area(0, h-1, w, 1)
+        self.get_window().clear_area(0, 0, 1, h)
+        self.get_window().clear_area(w-1, 0, 1, h)
 
 
 @registerSignals
