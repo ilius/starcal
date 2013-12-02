@@ -97,12 +97,15 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         self.initVars()
         ud.windowList.appendItem(self)
         ####
+        self.syncing = None ## or a tuple of (groupId, statusText)
+        self.groupIterById = {}
+        self.trashIter = None
         self.isLoaded = False
         self.set_title(_('Event Manager'))
         self.resize(600, 300)
         self.connect('delete-event', self.onDeleteEvent)
         self.set_transient_for(None)
-        self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_NORMAL)
+        self.set_type_hint(gdk.WINDOW_TYPE_HINT_NORMAL)
         ##
         dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
         #self.connect('response', lambda w, e: self.hide())
@@ -277,7 +280,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         ###
         #self.treev.set_search_column(2)## or 3
         ###
-        #self.clipboard = gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD)
+        #self.clipboard = gtk.clipboard_get(gdk.SELECTION_CLIPBOARD)
         #self.clipboard = gtk.clipboard_get()
         self.toPasteEvent = None ## (path, bool move)
         #####
@@ -285,10 +288,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         self.sbar.set_direction(gtk.TEXT_DIR_LTR)
         #self.sbar.set_has_resize_grip(False)
         self.vbox.pack_start(self.sbar, 0, 0)
-        #####
-        self.syncing = None ## or a tuple of (groupId, statusText)
-        self.groupIterById = {}
-        self.trashIter = None
         #####
         self.vbox.show_all()
     def canPasteToGroup(self, group):
