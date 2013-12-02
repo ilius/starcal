@@ -788,7 +788,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
                     _('Last Modified'),
                     locale_man.textNumEncode(core.epochDateTimeEncode(modified)),
                 )
-            message_id = self.sbar.push(0, text)
+            try:
+                sbar = self.sbar
+            except AttributeError:
+                pass
+            else:
+                message_id = self.sbar.push(0, text)
         return True
     def _do_onGroupModify(self, group):
         group.afterModify()
