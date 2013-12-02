@@ -112,6 +112,10 @@ def labelMenuItem(label, func=None, *args):
         item.connect('activate', func, *args)
     return item
 
+getStyleColor = lambda widget, state=gtk.STATE_NORMAL:\
+    widget.treev.style.base[state]
+
+
 def modify_bg_all(widget, state, gcolor):
     print(widget.__class__.__name__)
     widget.modify_bg(state, gcolor)

@@ -41,7 +41,7 @@ from gtk import gdk
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import set_tooltip, dialog_add_button, confirm, showError
 from scal2.ui_gtk.utils import toolButtonFromStock, labelImageMenuItem, labelStockMenuItem
-from scal2.ui_gtk.utils import pixbufFromFile, rectangleContainsPoint
+from scal2.ui_gtk.utils import pixbufFromFile, rectangleContainsPoint, getStyleColor
 
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
@@ -248,7 +248,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         ###
         treeBox.pack_start(toolbar, 0, 0)
         #####
-        self.vbox.pack_start(treeBox)
+        self.vbox.pack_start(treeBox, 1, 1)
         #######
         self.trees = gtk.TreeStore(int, gdk.Pixbuf, str, str)
         ## event: eid,  event_icon,   event_summary, event_description
@@ -302,7 +302,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
             showError(_('Group type "%s" can not contain event type "%s"')%(group.desc, event.desc), self)
             raise RuntimeError('Invalid event type for this group')
     getRowBgColor = lambda self: \
-        gdkColorToRgb(self.treev.style.base[gtk.STATE_NORMAL])
+        gdkColorToRgb(getStyleColor(self.treev))
         ## bg color of non-selected rows
     getGroupRow = lambda self, group:\
         common.getGroupRow(group, self.getRowBgColor()) + ('',)
