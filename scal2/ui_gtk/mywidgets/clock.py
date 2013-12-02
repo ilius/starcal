@@ -111,7 +111,7 @@ class FClockWidget(gtk.DrawingArea): ## Time is in Local
     def stop(self):
         self.running = False
     def set_label(self, text):
-        if self.window==None:
+        if self.get_window()==None:
             return
         self.get_window().clear()
         cr = self.get_window().cairo_create()

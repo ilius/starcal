@@ -153,7 +153,7 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
             return False
     def highlight(self, widget=None, event=None):
         #self.drag_highlight()
-        if self.window==None:
+        if self.get_window()==None:
             return
         cr = self.get_window().cairo_create()
         cr.set_source_color(self.highlightColor)
@@ -170,7 +170,7 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
         cr.clip()
     def unhighlight(self, widget=None, event=None):
         #self.drag_unhighlight()
-        if self.window==None:
+        if self.get_window()==None:
             return
         x, y, w, h = self.allocation
         self.get_window().clear_area(0, 0, w, 1)
@@ -321,7 +321,7 @@ class IntLabel(gtk.EventBox):
             return False
     def highlight(self, widget=None, event=None):
         #self.drag_highlight()
-        if self.window==None:
+        if self.get_window()==None:
             return
         cr = self.get_window().cairo_create()
         cr.set_source_color(self.highlightColor)
@@ -337,7 +337,7 @@ class IntLabel(gtk.EventBox):
         cr.clip()
     def unhighlight(self, widget=None, event=None):
         #self.drag_unhighlight()
-        if self.window==None:
+        if self.get_window()==None:
             return
         x, y, w, h = self.allocation
         self.get_window().clear_area(0, 0, w, 1)
