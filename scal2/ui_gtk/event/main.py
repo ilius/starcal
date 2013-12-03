@@ -101,6 +101,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         self.groupIterById = {}
         self.trashIter = None
         self.isLoaded = False
+        ####
         self.set_title(_('Event Manager'))
         self.resize(600, 300)
         self.connect('delete-event', self.onDeleteEvent)
