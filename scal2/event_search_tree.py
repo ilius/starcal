@@ -20,8 +20,6 @@
 import sys
 from math import log
 
-sys.path.append('/starcal2')
-
 from scal2.utils import myRaise
 from scal2.time_utils import *
 from scal2.bin_heap import MaxHeap
