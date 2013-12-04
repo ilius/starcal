@@ -24,8 +24,9 @@ from scal2.utils import myRaise
 from scal2.time_utils import *
 from scal2.bin_heap import MaxHeap
 
-getCount = lambda x: 0 if x is None else x.count
-isRed = lambda x: False if x is None else x.red
+getCount = lambda x: x.count if x else 0
+isRed = lambda x: x.red if x else False
+
 
 class Node:
     def __init__(self, mt, red=True):
@@ -113,7 +114,7 @@ class EventSearchTree:
     def addStep(self, node, t0, t1, mt, dt, eid):
         if t0 >= t1:
             return node
-        if node is None:
+        if not node:
             node = Node(mt)
             node.add(t0, t1, dt, eid)
             return node
@@ -156,7 +157,7 @@ class EventSearchTree:
         except:
             myRaise()
     def searchStep(self, node, t0, t1):
-        if node is None:
+        if not node:
             raise StopIteration
         t0 = max(t0, node.min_t)
         t1 = min(t1, node.max_t)
@@ -190,7 +191,7 @@ class EventSearchTree:
             mt, dt, eid = res
             return mt-dt, mt+dt, eid
     def getLastBeforeStep(self, node, t1):
-        if node is None:
+        if not node:
             return
         t1 = min(t1, node.max_t)
         if t1 <= node.min_t:
@@ -206,7 +207,7 @@ class EventSearchTree:
         ###
         return self.getLastBeforeStep(node.left, t1)
     def getDepthNode(self, node):
-        if node is None:
+        if not node:
             return 0
         return 1 + max(
             self.getDepthNode(node.left),
@@ -214,19 +215,19 @@ class EventSearchTree:
         )
     getDepth = lambda self: self.getDepthNode(self.root)
     def getMinNode(self, node):
-        if node is None:
+        if not node:
             return
-        while node.left is not None:
+        while node.left:
             node = node.left
         return node
     def deleteMinNode(self, node):
-        if node.left is None:
+        if not node.left:
             return node.right
         node.left = self.deleteMinNode(node.left)
         return node
     def deleteStep(self, node, mt, dt, eid):
-        if node is None:
-            return None
+        if not node:
+            return
         cm = cmp(mt, node.mt)
         if cm < 0:
             node.left = self.deleteStep(node.left, mt, dt, eid)
@@ -235,9 +236,9 @@ class EventSearchTree:
         else:## cm == 0
             node.events.delete(dt, eid)
             if not node.events:## Cleaning tree, not essential
-                if node.right is None:
+                if not node.right:
                     return node.left
-                if node.left is None:
+                if not node.left:
                     return node.right
                 node2 = node
                 node = self.getMinNode(node2.right)
@@ -282,8 +283,8 @@ class EventSearchTree:
         return mt-dt, mt+dt
     '''
     def deleteMoreThanStep(self, node, t0):
-        if node is None:
-            return None
+        if not node:
+            return
         if node.max_t <= t0:
             return node
         max_dt = node.mt - t0
@@ -299,7 +300,7 @@ class EventSearchTree:
         if n > 0:
             return float(s) / n
     def calcAvgDepthStep(self, node, depth):
-        if node is None:
+        if not node:
             return 0, 0
         left_s, left_n = self.calcAvgDepthStep(node.left, depth+1)
         right_s, right_n = self.calcAvgDepthStep(node.right, depth+1)
