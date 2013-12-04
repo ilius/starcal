@@ -471,7 +471,7 @@ class MonthCal(gtk.Widget, CalBase):
     def buttonPress(self, obj, event):
         ## self.winActivate() #?????????
         b = event.button
-        x, y, mask = event.get_window().get_pointer() # or self.get_pointer()
+        x, y, mask = event.window.get_pointer() # or self.get_pointer()
         self.pointer = (x, y)
         if b==2:
             return False

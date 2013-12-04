@@ -875,7 +875,7 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
     def goForward4(self, obj=None):
         self.jdPlus(28)
     def buttonPress(self, widget, event):
-        col = event.get_window().get_user_data()
+        col = event.window.get_user_data()
         while not isinstance(col, ColumnBase):
             col = col.get_parent()
             if col is None:
@@ -885,7 +885,7 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
                 return False
         ###
         b = event.button
-        #x, y, mask = event.get_window().get_pointer()
+        #x, y, mask = event.window.get_pointer()
         x, y = self.get_pointer()
         #y += 10
         ###
