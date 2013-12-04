@@ -24,6 +24,9 @@ from scal2.utils import myRaise
 from scal2.time_utils import *
 from scal2.bin_heap import MaxHeap
 
+getCount = lambda x: 0 if x is None else x.count
+isRed = lambda x: False if x is None else x.red
+
 class Node:
     def __init__(self, mt, red=True):
         self.mt = mt
@@ -33,7 +36,7 @@ class Node:
         self.events = MaxHeap()
         self.left = None
         self.right = None
-        #self.count = 0
+        self.count = 0
     def add(self, t0, t1, dt, eid):
         self.events.push(dt, eid)
         if t0 < self.min_t:
@@ -49,21 +52,12 @@ class Node:
                 self.max_t = child.max_t 
             if child.min_t < self.min_t:
                 self.min_t = child.min_t
-    #def updateCount(self):
-    #    self.count = len(self.events)
-    #    if self.left:
-    #        self.count += self.left.count
-    #    if self.right:
-    #        self.count += self.right.count
-
-
-def isRed(x):
-    if x is None:
-        return False
-    return x.red
+        
+        
 
 def rotateLeft(h):
-    #assert isRed(h.right)
+    #if not isRed(h.right):
+    #    raise RuntimeError('rotateLeft: h.right is not red')
     x = h.right
     h.right = x.left
     x.left = h
@@ -72,7 +66,8 @@ def rotateLeft(h):
     return x
 
 def rotateRight(h):
-    #assert isRed(h.left)
+    #if not isRed(h.left):
+    #    raise RuntimeError('rotateRight: h.left is not red')
     x = h.left
     h.left = x.right
     x.right = h
@@ -81,9 +76,12 @@ def rotateRight(h):
     return x
 
 def flipColors(h):
-    #assert not isRed(h)
-    #assert isRed(h.left)
-    #assert isRed(h.right)
+    #if isRed(h):
+    #    raise RuntimeError('flipColors: h is red')
+    #if not isRed(h.left):
+    #    raise RuntimeError('flipColors: h.left is not red')
+    #if not isRed(h.right):
+    #    raise RuntimeError('flipColors: h.right is not red')
     h.red = True
     h.left.red = False
     h.right.red = False
@@ -94,6 +92,24 @@ class EventSearchTree:
     def clear(self):
         self.root = None
         self.byId = {}
+    def doCountBalancing(self, node):
+        if node.left and not node.left.right and \
+            node.left.count - getCount(node.right) > len(node.events):
+            #print('moving up from left')
+            ## `mup` is the node that is moving up and taking place of `node`
+            mup, node.left = node.left, None
+            #node.red, mup.red = mup.red, node.red
+            mup.right, node = node, mup
+
+        if node.right and not node.right.left and \
+            node.right.count - getCount(node.left) > len(node.events):
+            #print('moving up from right')
+            ## `mup` is the node that is moving up and taking place of `node`
+            mup, node.right = node.right, None
+            #node.red, mup.red = mup.red, node.red
+            mup.left, node = node, mup
+
+        return node
     def addStep(self, node, t0, t1, mt, dt, eid):
         if t0 >= t1:
             return node
@@ -108,6 +124,8 @@ class EventSearchTree:
             node.right = self.addStep(node.right, t0, t1, mt, dt, eid)
         else:## cm == 0
             node.add(t0, t1, dt, eid)
+        
+        ## node = self.doCountBalancing(node)
 
         if isRed(node.right) and not isRed(node.left):
             node = rotateLeft(node)
@@ -115,9 +133,8 @@ class EventSearchTree:
             node = rotateRight(node)
         if isRed(node.left) and isRed(node.right):
             flipColors(node)
-
+        #node.count = len(node.events) + getCount(node.left) + getCount(node.right)
         node.updateMinMax()
-        #node.updateCount()
         return node
     def add(self, t0, t1, eid, debug=False):
         if debug:
@@ -283,6 +300,21 @@ class EventSearchTree:
     def deleteMoreThan(self, t0):
         self.root = self.deleteMoreThanStep(self.root, t0)
     '''
+    def calcAvgDepth(self):
+        s, n = self.calcAvgDepthStep(self.root, 0)
+        if n > 0:
+            return float(s) / n
+    def calcAvgDepthStep(self, node, depth):
+        if node is None:
+            return 0, 0
+        left_s, left_n = self.calcAvgDepthStep(node.left, depth+1)
+        right_s, right_n = self.calcAvgDepthStep(node.right, depth+1)
+        return (
+            len(node.events) * depth + left_s + right_s,
+            len(node.events) + left_n + right_n,
+        )
+            
+
 
 if __name__=='__main__':
     from random import shuffle

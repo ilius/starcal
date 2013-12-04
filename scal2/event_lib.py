@@ -2722,13 +2722,16 @@ class EventGroup(EventContainer):
             self.occur.add(t0, t1, eid)
         self.occurCount += len(occurList)
         #self.occurLoaded = True
+        
         if core.debugMode:
-            print('updateOccurrence, id=%s, title=%s, count=%s, time=%s'%(
-                self.id,
-                self.title,
-                self.occurCount,
-                now()-stm0,
-            ))
+            print('time = %d ms'%((now()-stm0)*1000))
+            #print('updateOccurrence, id=%s, title=%s, count=%s, time=%s'%(
+            #    self.id,
+            #    self.title,
+            #    self.occurCount,
+            #    now()-stm0,
+            #))
+        #print('%s %d %.1f'%(self.id, 1000*(now()-stm0), self.occur.calcAvgDepth()))
         #print('depth=%s, N=%s'%(self.occur.getDepth(), len(occurList)))
         #print('2*lg(N)=%.1f'%(2*math.log(len(occurList), 2)))
         #print
