@@ -52,7 +52,7 @@ class Node:
             if child.min_t < self.min_t:
                 self.min_t = child.min_t
     #def updateCount(self):
-    #    self.count = 1
+    #    self.count = len(self.events)
     #    if self.left:
     #        self.count += self.left.count
     #    if self.right:
@@ -234,7 +234,7 @@ class EventSearchTree:
                 node = self.getMinNode(node2.right)
                 node.right = self.deleteMinNode(node2.right)
                 node.left = node2.left
-        #node.count = self.size(node.left) + self.size(node.right) + 1
+        #node.updateCount()
         return node
     def delete(self, eid):
         try:
