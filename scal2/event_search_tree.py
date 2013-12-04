@@ -155,12 +155,6 @@ class EventSearchTree:
             hp.push(mt, dt)## FIXME
         except:
             myRaise()
-    #def size(self, node='root'):
-    #    if node == 'root':
-    #        node = self.root
-    #    if node is None:
-    #        return 0
-    #    return node.count
     def searchStep(self, node, t0, t1):
         if node is None:
             raise StopIteration
