@@ -2,17 +2,15 @@
 
 cd "`dirname \"$0\"`"
 
-chmod -R 755 .
+#chmod -R 755 .
 
-find . -type f -exec chmod 644 '{}' \;
+#find . -type f -exec chmod 644 '{}' \;
 
 chmod 755 scripts/*
 
 chmod 755 'starcal2'
-chmod 755 'starcal2-qt'
 
 chmod 755 'scal2/ui_gtk/starcal2.py'
-chmod 755 'scal2/ui_qt/starcal2.py'
 
 chmod 755 'install'
 chmod 755 'install-archlinux'
@@ -33,7 +31,6 @@ chmod 755 'scal2/import_config_1to2.py'
 chmod 755 'scal2/ui_gtk/adjust_dtime.py'
 chmod 755 'scal2/ui_gtk/arch-enable-locale.py'
 chmod 755 'scal2/ui_gtk/import_config_1to2.py'
-chmod 755 'scal2/ui_qt/import_config_1to2.py'
 chmod 755 'scal2/ui_gtk/screenlet/StarCalendarScreenlet.py'
 chmod 755 'scal2/ui_gtk/starcal-gnome2-applet.py'
 
