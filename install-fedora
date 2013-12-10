@@ -63,7 +63,6 @@ english(Gregorian) calendar
 %{_prefix}/share/pixmaps/starcal2.png
 %{_prefix}/share/icons/hicolor/*/apps/starcal2.png
 %{_prefix}/share/locale/*/LC_MESSAGES/starcal2.mo
-/etc/init.d/starcal2d
 " > $pkgName.spec
 
 pkgPath=`rpmbuild -bb $pkgName.spec | grep -o /usr/src/packages/RPMS/.*rpm`
