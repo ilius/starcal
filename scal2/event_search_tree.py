@@ -49,11 +49,12 @@ class Node:
         self.updateMinMaxChild(self.right)
     def updateMinMaxChild(self, child):
         if child:
-            if child.max_t > self.max_t:
-                self.max_t = child.max_t 
             if child.min_t < self.min_t:
                 self.min_t = child.min_t
-        
+            if child.max_t > self.max_t:
+                self.max_t = child.max_t 
+    #def updateCount(self):
+    #    self.count = len(self.events) + getCount(self.left) + getCount(self.right)
         
 
 def rotateLeft(h):
@@ -101,7 +102,6 @@ class EventSearchTree:
             mup, node.left = node.left, None
             #node.red, mup.red = mup.red, node.red
             mup.right, node = node, mup
-
         if node.right and not node.right.left and \
             node.right.count - getCount(node.left) > len(node.events):
             #print('moving up from right')
@@ -109,7 +109,6 @@ class EventSearchTree:
             mup, node.right = node.right, None
             #node.red, mup.red = mup.red, node.red
             mup.left, node = node, mup
-
         return node
     def addStep(self, node, t0, t1, mt, dt, eid):
         if t0 >= t1:
@@ -125,16 +124,14 @@ class EventSearchTree:
             node.right = self.addStep(node.right, t0, t1, mt, dt, eid)
         else:## cm == 0
             node.add(t0, t1, dt, eid)
-        
         ## node = self.doCountBalancing(node)
-
         if isRed(node.right) and not isRed(node.left):
             node = rotateLeft(node)
         if isRed(node.left) and isRed(node.left.left):
             node = rotateRight(node)
         if isRed(node.left) and isRed(node.right):
             flipColors(node)
-        #node.count = len(node.events) + getCount(node.left) + getCount(node.right)
+        ## node.updateCount()
         node.updateMinMax()
         return node
     def add(self, t0, t1, eid, debug=False):
@@ -206,14 +203,6 @@ class EventSearchTree:
             return node.mt, dt, eid
         ###
         return self.getLastBeforeStep(node.left, t1)
-    def getDepthNode(self, node):
-        if not node:
-            return 0
-        return 1 + max(
-            self.getDepthNode(node.left),
-            self.getDepthNode(node.right),
-        )
-    getDepth = lambda self: self.getDepthNode(self.root)
     def getMinNode(self, node):
         if not node:
             return
@@ -244,7 +233,7 @@ class EventSearchTree:
                 node = self.getMinNode(node2.right)
                 node.right = self.deleteMinNode(node2.right)
                 node.left = node2.left
-        #node.updateCount()
+        ## node.updateCount()
         return node
     def delete(self, eid):
         try:
@@ -277,28 +266,28 @@ class EventSearchTree:
         except KeyError:
             return
         try:
-            mt, dt = hp.getMin()
+            mt, dt = hp.getMin()## slower than getMax, but twice faster than max() and 
         except ValueError:
             return
         return mt-dt, mt+dt
-    '''
-    def deleteMoreThanStep(self, node, t0):
-        if not node:
-            return
-        if node.max_t <= t0:
-            return node
-        max_dt = node.mt - t0
-        if max_dt > 0:
-            node.events.deleteLessThan(max_dt) ## FIXME
-        self.deleteMoreThanStep(self, node.left, t0)
-        self.deleteMoreThanStep(self, node.right, t0)
-    def deleteMoreThan(self, t0):
-        self.root = self.deleteMoreThanStep(self.root, t0)
-    '''
-    def calcAvgDepth(self):
-        s, n = self.calcAvgDepthStep(self.root, 0)
-        if n > 0:
-            return float(s) / n
+    #def deleteMoreThanStep(self, node, t0):
+    #    if not node:
+    #        return
+    #    if node.max_t <= t0:
+    #        return node
+    #    max_dt = node.mt - t0
+    #    if max_dt > 0:
+    #        node.events.deleteLessThan(max_dt) ## FIXME
+    #    self.deleteMoreThanStep(self, node.left, t0)
+    #    self.deleteMoreThanStep(self, node.right, t0)
+    #def deleteMoreThan(self, t0):
+    #    self.root = self.deleteMoreThanStep(self.root, t0)
+    getDepthNode = lambda self, node:\
+        1 + max(
+            self.getDepthNode(node.left),
+            self.getDepthNode(node.right),
+        ) if node else 0
+    getDepth = lambda self: self.getDepthNode(self.root)
     def calcAvgDepthStep(self, node, depth):
         if not node:
             return 0, 0
@@ -308,6 +297,10 @@ class EventSearchTree:
             len(node.events) * depth + left_s + right_s,
             len(node.events) + left_n + right_n,
         )
+    def calcAvgDepth(self):
+        s, n = self.calcAvgDepthStep(self.root, 0)
+        if n > 0:
+            return float(s) / n
             
 
 
@@ -320,7 +313,6 @@ if __name__=='__main__':
     for x in ls:
         tree.add(x, x+4, x)
     print(tree.getLastBefore(15.5))
-
 
 
 
