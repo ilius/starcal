@@ -327,7 +327,9 @@ class TextPlug(BasePlugin, TextPlugUI):
             jd,
             utcOffset/3600.0,
         ).items():
-            if timeName not in self.shownTimeNames: ## self.azanTimeNamesAll
+            if timeName not in self.azanTimeNamesAll:
+                continue
+            if timeName not in self.shownTimeNames:
                 continue
             azanSec = azanHour * 3600.0
             #####
