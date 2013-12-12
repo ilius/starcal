@@ -192,6 +192,8 @@ class TextPlug(BasePlugin, TextPlugUI):
         #highLats='NightMiddle'
         #timeFormat='24h'
         shownTimeNames = ('fajr', 'sunrise', 'dhuhr', 'maghrib', 'midnight')
+        ## FIXME rename shownTimeNames to activeTimeNames
+        ## or add another list azanSoundTimeNames
         sep = '     '
         ##
         azanEnable = False
@@ -325,7 +327,7 @@ class TextPlug(BasePlugin, TextPlugUI):
             jd,
             utcOffset/3600.0,
         ).items():
-            if timeName not in self.azanTimeNamesAll:
+            if timeName not in self.shownTimeNames: ## self.azanTimeNamesAll
                 continue
             azanSec = azanHour * 3600.0
             #####
