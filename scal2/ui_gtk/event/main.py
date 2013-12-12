@@ -63,9 +63,20 @@ from scal2.ui_gtk.event.search_events import EventSearchWindow
 class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
     _name = 'eventMan'
     desc = _('Event Manager')
-    def onResponse(self, dialog, response_id):
+    def onShow(self, widget):
+        self.move(*ui.eventManPos)
+        self.onConfigChange()
+    def _close(self):
+        ui.eventManPos = self.get_position()
+        ui.saveLiveConf()
+        ###
         self.hide()
-        self.emit('config-change')
+        self.emit('config-change')        
+    def onResponse(self, dialog, response_id):
+        self._close()
+    def onDeleteEvent(self, obj, event):
+        self._close()
+        return True
     def onConfigChange(self, *a, **kw):
         ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
         ###
@@ -90,8 +101,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
                 self.trees.remove(self.trashIter)
             self.appendTrash()
         ui.reloadTrash = False
-    def onShow(self, widget):
-        self.onConfigChange()
     def __init__(self):
         gtk.Dialog.__init__(self)
         self.initVars()
@@ -1254,9 +1263,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
     #    pass
     #def selectAllEventInTrash(self, menu):## FIXME
     #    pass
-    def onDeleteEvent(self, obj, event):
-        self.hide()
-        return True
+
 
 
 

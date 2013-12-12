@@ -118,6 +118,7 @@ def saveLiveConf():
         'winX', 'winY', 'winWidth',
         'winKeepAbove', 'winSticky',
         'pluginsTextIsExpanded', 'eventViewMaxHeight', 'bgColor',
+        'eventManPos',## FIXME
         'eventManShowDescription',## FIXME
         'localTzHist',
         'wcal_toolbar_weekNum_negative',
@@ -739,6 +740,7 @@ ntpServers = (
 
 #####################
 #dailyNoteChDateOnEdit = True ## change date of a dailyNoteEvent when editing it
+eventManPos = (0, 0)
 eventManShowDescription = True
 #####################
 focusTime = 0
