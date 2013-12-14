@@ -1549,8 +1549,7 @@ class TaskEvent(SingleStartEndEvent):
         Event.setDefaultsFromGroup(self, group)
         if group.name == 'taskList':
             value, unit = group.defaultDuration
-            if value > 0:
-                self.setEnd('duration', value, unit)
+            self.setEnd('duration', value, unit)
     def setStart(self, date, dayTime):
         start = self['start']
         start.date = date
