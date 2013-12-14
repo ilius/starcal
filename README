@@ -3,7 +3,6 @@ Download latest codes via git:
 
 Download latest snapshot (without git):
     Open one of these links with your browser:
-        http://sourceforge.net/p/starcal/code/ci/master/tarball
         http://github.com/ilius/starcal/tarball/master
 
 Installation/uninstallation on Ubuntu, Debian or other Debian-based distributions:
