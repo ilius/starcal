@@ -44,7 +44,7 @@ from scal2.s_object import *
 #from scal2.time_line_tree import TimeLineTree
 from scal2.event_search_tree import EventSearchTree
 
-from scal2.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG
+from scal2.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG, getSysDate
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName, textNumEncode
 from scal2 import core
@@ -401,7 +401,7 @@ class YearEventRule(MultiValueAllDayEventRule):
     desc = _('Year')
     def __init__(self, parent):
         MultiValueAllDayEventRule.__init__(self, parent)
-        self.values = [core.getSysDate(self.getMode())[0]]
+        self.values = [getSysDate(self.getMode())[0]]
     jdMatches = lambda self, jd: self.hasValue(jd_to(jd, self.getMode())[0])
     def newModeValues(self, newMode):
         curMode = self.getMode()
@@ -596,7 +596,7 @@ class DateEventRule(EventRule):
     __str__ = lambda self: dateEncode(self.date)
     def __init__(self, parent):
         EventRule.__init__(self, parent)
-        self.date = core.getSysDate(self.getMode())
+        self.date = getSysDate(self.getMode())
     getData = lambda self: str(self)
     def setData(self, data):
         self.date = dateDecode(data)
@@ -1557,7 +1557,7 @@ class TaskEvent(SingleStartEndEvent):
     isAllDay = False
     def setDefaults(self):
         self.setStart(
-            core.getSysDate(self.mode),
+            getSysDate(self.mode),
             tuple(localtime()[3:6]),
         )
         self.setEnd('duration', 1, 3600)
@@ -1805,7 +1805,7 @@ class DailyNoteEvent(Event):
     getJd = lambda self: self['date'].getJd()
     setJd = lambda self, jd: self['date'].setJd(jd)
     def setDefaults(self):
-        self.setDate(*core.getSysDate(self.mode))
+        self.setDate(*getSysDate(self.mode))
     def calcOccurrence(self, startJd, endJd):## float jd
         jd = self.getJd()
         return JdSetOccurrence([jd] if startJd <= jd < endJd else [])
@@ -1838,14 +1838,14 @@ class YearlyEvent(Event):
     getDay = lambda self: self['day'].values[0]
     setDay = lambda self, day: self.getAddRule('day').setData(day)
     def setDefaults(self):
-        y, m, d = core.getSysDate(self.mode)
+        y, m, d = getSysDate(self.mode)
         self.setMonth(m)
         self.setDay(d)
     def getJd(self):## used only for copyFrom
         try:
             startRule = self['start']
         except:
-            y = core.getSysDate(self.mode)[0]
+            y = getSysDate(self.mode)[0]
         else:
             y = startRule.getDate(self.mode)[0]
         m = self.getMonth()
@@ -2487,7 +2487,7 @@ class EventGroup(EventContainer):
         ###
         self.eventCache = {} ## from eid to event object
         ###
-        year, month, day = core.getSysDate(self.mode)
+        year, month, day = getSysDate(self.mode)
         self.startJd = to_jd(year-10, 1, 1, self.mode)
         self.endJd = to_jd(year+5, 1, 1, self.mode)
         ##
@@ -2967,7 +2967,7 @@ class UniversityTerm(EventGroup):
         return EventGroup.getSortByValue(self, event, attr)
     def __init__(self, _id=None):
         EventGroup.__init__(self, _id)
-        self.classesEndDate = core.getSysDate(self.mode)## FIXME
+        self.classesEndDate = getSysDate(self.mode)## FIXME
         self.setCourses([]) ## list of (courseId, courseName, courseUnits)
         self.classTimeBounds = [
             (8, 0),
