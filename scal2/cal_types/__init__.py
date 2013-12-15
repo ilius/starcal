@@ -59,6 +59,8 @@ class CalTypesHolder:
         self.activeNames = ['gregorian']
         self.inactiveNames = []
         self.update()
+    primary = lambda self: self.active[0]
+    primaryModule = lambda self: modules[self.active[0]]
     def update(self):
         self.active = []
         self.inactive = [] ## range(len(modules))

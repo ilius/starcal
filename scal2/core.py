@@ -135,8 +135,8 @@ def myRaiseTback(f=None):
 
 popen_output = lambda cmd: subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
 
-primary_to_jd = lambda y, m, d: calTypes[primaryMode].to_jd(y, m, d)
-jd_to_primary = lambda jd: calTypes[primaryMode].jd_to(jd)
+primary_to_jd = lambda y, m, d: calTypes.primaryModule().to_jd(y, m, d)
+jd_to_primary = lambda jd: calTypes.primaryModule().jd_to(jd)
 
 def getCurrentJd():## time.time() and mktime(localtime()) both return GMT, not local
     y, m, d = localtime()[:3]

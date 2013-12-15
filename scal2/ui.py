@@ -175,7 +175,7 @@ class Cell:## status and information of a cell
         self.weekDay = core.jwday(jd)
         self.weekNum = core.getWeekNumber(self.year, self.month, self.day)
         #self.weekNumNeg = self.weekNum + 1 - core.getYearWeeksCount(self.year)
-        self.weekNumNeg = self.weekNum - int(core.calTypes[core.primaryMode].avgYearLen / 7)
+        self.weekNumNeg = self.weekNum - int(core.calTypes.primaryModule().avgYearLen / 7)
         self.holiday = (self.weekDay in core.holidayWeekDays)
         ###################
         self.dates = []
