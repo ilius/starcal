@@ -1,5 +1,6 @@
 import sys
 from os.path import join
+from time import localtime
 
 from scal2.cal_types import gregorian
 from scal2.path import *
@@ -122,7 +123,12 @@ to_jd = lambda y, m, d, source: modules[source].to_jd(y, m, d)
 convert = lambda y, m, d, source, target:\
     (y, m, d) if source==target else modules[target].jd_to(modules[source].to_jd(y, m, d))
 
-
+def getSysDate(mode):
+    if mode==DATE_GREG:
+        return localtime()[:3]
+    else:
+        gy, gm, gd = localtime()[:3]
+        return convert(gy, gm, gd, DATE_GREG, mode)
 
 
 

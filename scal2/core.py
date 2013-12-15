@@ -33,7 +33,7 @@ from scal2.os_utils import *
 from scal2.json_utils import *
 from scal2.utils import *
 
-from scal2.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG
+from scal2.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG, getSysDate
 from scal2 import locale_man
 from scal2.locale_man import getMonthName, lang, langSh
 from scal2.locale_man import tr as _
@@ -362,13 +362,6 @@ def ymdRange((y1, m1, d1), (y2, m2, d2), mode=None):
     j2 = int(to_jd(y2, m2, d2, mode))
     for j in range(j1, j2):
         yield jd_to(j, mode)
-
-def getSysDate(mode):
-    if mode==DATE_GREG:
-        return localtime()[:3]
-    else:
-        gy, gm, gd = localtime()[:3]
-        return convert(gy, gm, gd, DATE_GREG, mode)
 
 def mylocaltime(sec=None, mode=None):
     if mode==None:##DATE_GREG
