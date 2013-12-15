@@ -408,7 +408,7 @@ class MonthCal(gtk.Widget, CalBase):
                 #    self.dx-1,
                 #    self.dy-1,
                 #)
-                mode = core.primaryMode
+                mode = calTypes.primary
                 params = ui.mcalTypeParams[0]
                 daynum = newTextLayout(self, _(c.dates[mode][2], mode), params['font'])
                 fontw, fonth = daynum.get_pixel_size()
@@ -491,7 +491,7 @@ class MonthCal(gtk.Widget, CalBase):
             #self.menuMainWidth = self.menuMain.allocation.width ## menu.allocation[3]
         elif yPos >= 0 and xPos >= 0:
             cell = status[yPos][xPos]
-            self.changeDate(*cell.dates[core.primaryMode])
+            self.changeDate(*cell.dates[calTypes.primary])
             if event.type==gdk._2BUTTON_PRESS:
                 self.emit('2button-press')
             if b == 3 and cell.month == ui.cell.month:## right click on a normal cell
@@ -544,7 +544,7 @@ class MonthCal(gtk.Widget, CalBase):
             self.changeDate(
                 ui.cell.year,
                 ui.cell.month,
-                getMonthLen(ui.cell.year, ui.cell.month, core.primaryMode),
+                getMonthLen(ui.cell.year, ui.cell.month, calTypes.primary),
             )
         elif kname in ('page_up', 'k', 'p'):
             self.monthPlus(-1)

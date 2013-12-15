@@ -53,7 +53,6 @@ APP_NAME = 'starcal2'
 APP_DESC = 'StarCalendar'
 COMMAND = 'starcal2'
 homePage = 'http://starcal.sourceforge.net/'
-primaryMode = 0 ## suitable place ???????????
 osName = getOsName()
 userDisplayName = getUserDisplayName()
 #print('--------- Hello %s'%userDisplayName)
@@ -73,7 +72,7 @@ localTz = get_localzone()
 #pprint(sys.modules)
 
 __plugin_api_get__ = [
-    'VERSION', 'APP_NAME', 'APP_DESC', 'COMMAND', 'homePage', 'primaryMode', 'osName', 'userDisplayName'
+    'VERSION', 'APP_NAME', 'APP_DESC', 'COMMAND', 'homePage', 'osName', 'userDisplayName'
     'to_jd', 'jd_to', 'convert', 'jd_to_primary', 'primary_to_jd',
 ]
 __plugin_api_set__ = []
@@ -541,7 +540,7 @@ try:## just for compatibility
 except NameError:
     pass
 
-primaryMode = calTypes.update()
+calTypes.update()
 
 #########################################
 

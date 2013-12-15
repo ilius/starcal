@@ -20,13 +20,14 @@
 from math import sqrt, floor, ceil, log10
 #import random
 
+from scal2.cal_types import calTypes
 from scal2.timeline_box import *
-from scal2 import core
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl, numEncode, textNumEncode, LRM
 
+from scal2 import core
 from scal2.core import myRaise, getMonthName, getJdFromEpoch, getFloatJdFromEpoch, getEpochFromJd, jd_to, to_jd, \
-                       getJhmsFromEpoch, getEpochFromDate, jwday
+                       getJhmsFromEpoch, getEpochFromDate, jwday, jd_to_primary
 
 from scal2.color_utils import hslToRgb
 from scal2.utils import ifloor, iceil
@@ -224,13 +225,13 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
     tickEpochList = []
     minStep = minorStepMin / pixelPerSec ## second
     #################
-    year0, month0, day0 = jd_to(jd0, core.primaryMode)
-    year1, month1, day1 = jd_to(jd1, core.primaryMode)
+    year0, month0, day0 = jd_to_primary(jd0)
+    year1, month1, day1 = jd_to_primary(jd1)
     ############ Year
     minStepYear = minStep // minYearLenSec ## years ## int or iceil?
     yearPixel = minYearLenSec * pixelPerSec ## pixels
     for (year, size) in getYearRangeTickValues(year0, year1+1, minStepYear):
-        tmEpoch = getEpochFromDate(year, 1, 1, core.primaryMode)
+        tmEpoch = getEpochFromDate(year, 1, 1, calTypes.primary)
         if tmEpoch in tickEpochList:
             continue
         unitSize = size * yearPixel
@@ -254,7 +255,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
             if monthUnit < minMonthUnit:
                 continue
             y, m = divmod(ym, 12) ; m+=1
-            tmEpoch = getEpochFromDate(y, m, 1, core.primaryMode)
+            tmEpoch = getEpochFromDate(y, m, 1, calTypes.primary)
             if tmEpoch in tickEpochList:
                 continue
             unitSize = monthPixel * monthUnit
@@ -262,7 +263,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
                 tmEpoch,
                 getEPos(tmEpoch),
                 unitSize,
-                getMonthName(core.primaryMode, m) if unitSize >= majorStepMin else '',
+                getMonthName(calTypes.primary, m) if unitSize >= majorStepMin else '',
             ))
             tickEpochList.append(tmEpoch)
     ################
@@ -292,7 +293,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
             tmEpoch = getEpochFromJd(jd)
             if tmEpoch in tickEpochList:
                 continue
-            year, month, day = jd_to(jd, core.primaryMode)
+            year, month, day = jd_to_primary(jd)
             if day==16:
                 dayUnit = 15
             elif day in (6, 11, 21, 26):
@@ -305,7 +306,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
             if unitSize < majorStepMin:
                 label = ''
             elif hasMonthName:
-                label = _(day) + ' ' + getMonthName(core.primaryMode, month)
+                label = _(day) + ' ' + getMonthName(calTypes.primary, month)
             else:
                 label = _(day)
             ticks.append(Tick(

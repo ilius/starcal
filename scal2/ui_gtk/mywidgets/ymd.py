@@ -10,7 +10,7 @@ from scal2.ui_gtk.mywidgets.multi_spin_button import YearSpinButton, DaySpinButt
 class YearMonthDayBox(gtk.HBox):
     def __init__(self):
         gtk.HBox.__init__(self, spacing=4)
-        self.mode = core.primaryMode
+        self.mode = calTypes.primary
         ####
         self.pack_start(gtk.Label(_('Year')), 0, 0)
         self.spinY = YearSpinButton()

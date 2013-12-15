@@ -799,7 +799,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
     def changeDate(self, year, month, day):
         ui.changeDate(year, month, day)
         self.onDateChange()
-    goToday = lambda self, obj=None: self.changeDate(*core.getSysDate(core.primaryMode))
+    goToday = lambda self, obj=None: self.changeDate(*core.getSysDate(calTypes.primary))
     def onDateChange(self, *a, **kw):
         #print('MainWin.onDateChange')
         ud.IntegratedCalObj.onDateChange(self, *a, **kw)
@@ -1097,10 +1097,10 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             return
         if gdate is None:
             gdate = localtime()[:3]
-        if core.primaryMode==core.DATE_GREG:
+        if calTypes.primary==core.DATE_GREG:
             ddate = gdate
         else:
-            ddate = core.convert(gdate[0], gdate[1], gdate[2], core.DATE_GREG, core.primaryMode)
+            ddate = core.convert(gdate[0], gdate[1], gdate[2], core.DATE_GREG, calTypes.primary)
         imagePath = ui.trayImageHoli if ui.todayCell.holiday else ui.trayImage
         ######################################
         '''
@@ -1185,7 +1185,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         Popen(ud.adjustTimeCmd)
     exportClicked = lambda self, widget=None: self.exportDialog.showDialog(ui.cell.year, ui.cell.month)
     def exportClickedTray(self, widget=None, event=None):
-        y, m = core.getSysDate(core.primaryMode)[:2]
+        y, m = core.getSysDate(calTypes.primary)[:2]
         self.exportDialog.showDialog(y, m)
     def onConfigChange(self, *a, **kw):
         ud.IntegratedCalObj.onConfigChange(self, *a, **kw)

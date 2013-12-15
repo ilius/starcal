@@ -32,7 +32,7 @@ class WeekStatus(list):
         self.absWeekNumber = absWeekNumber
         startJd, endJd = core.getJdRangeOfAbsWeekNumber(absWeekNumber)
         #self.startJd = startJd
-        #self.startDate = core.jd_to(self.startJd, core.primaryMode)
+        #self.startDate = core.jd_to_primary(self.startJd)
         #self.weekNumberOfYear = core.getWeekNumber(*self.startDate)
         #########
         #list.__init__(self, [cellCache.getCell(jd) for jd in range(startJd, endJd)])

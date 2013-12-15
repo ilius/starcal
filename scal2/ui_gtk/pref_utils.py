@@ -658,7 +658,7 @@ class AICalsPrefItem():
     def updateVar(self):
         calTypes.activeNames = [row[0] for row in self.activeTrees]
         calTypes.inactiveNames = [row[0] for row in self.inactiveTrees]
-        core.primaryMode = calTypes.update()
+        calTypes.update()
     def updateWidget(self):
         self.activeTrees.clear()
         self.inactiveTrees.clear()

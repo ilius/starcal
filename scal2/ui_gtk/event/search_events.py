@@ -22,8 +22,9 @@ from os.path import join, dirname, split, splitext
 
 from scal2.path import *
 
+from scal2.cal_types import calTypes
 from scal2 import core
-from scal2.core import myRaise, jd_to
+from scal2.core import myRaise, jd_to_primary
 
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl
@@ -71,7 +72,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         self.vbox.pack_start(hbox, 0, 0)
         ######
         jd = core.getCurrentJd()
-        year, month, day = jd_to(jd, core.primaryMode)
+        year, month, day = jd_to_primary(jd)
         ######
         hbox = gtk.HBox()
         frame = gtk.Frame(_('Time'))
@@ -287,11 +288,11 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         else:
             conds['text_lower'] = self.textInput.get_text().lower()
         if self.timeFromCheck.get_active():
-            conds['time_from'] = self.timeFromInput.get_epoch(core.primaryMode)
+            conds['time_from'] = self.timeFromInput.get_epoch(calTypes.primary)
         if self.timeToCheck.get_active():
-            conds['time_to'] = self.timeToInput.get_epoch(core.primaryMode)
+            conds['time_to'] = self.timeToInput.get_epoch(calTypes.primary)
         if self.modifiedFromCheck.get_active():
-            conds['modified_from'] = self.modifiedFromInput.get_epoch(core.primaryMode)
+            conds['modified_from'] = self.modifiedFromInput.get_epoch(calTypes.primary)
         if self.typeCheck.get_active():
             index = self.typeCombo.get_active()
             cls = event_lib.classes.event[index]

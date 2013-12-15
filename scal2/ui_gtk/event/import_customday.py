@@ -1,5 +1,6 @@
 from os.path import isfile
 
+from scal2.cal_types import calTypes
 from scal2.import_customday import customFile, importAndDeleteCustomDB
 from scal2.locale_man import tr as _
 from scal2 import core
@@ -32,7 +33,7 @@ class CustomDayImporterDialog(gtk.Dialog):
         sizeGroup.add_widget(label)
         hbox.pack_start(label, 0, 0)
         combo = DateTypeCombo()
-        combo.set_active(core.primaryMode)
+        combo.set_active(calTypes.primary)
         hbox.pack_start(combo, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         self.vbox.pack_start(hbox, 0, 0)

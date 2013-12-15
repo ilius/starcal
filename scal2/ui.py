@@ -170,17 +170,17 @@ class Cell:## status and information of a cell
         self.pluginsText = ''
         ###
         self.jd = jd
-        date = core.jd_to(jd, core.primaryMode)
+        date = core.jd_to_primary(jd)
         self.year, self.month, self.day = date
         self.weekDay = core.jwday(jd)
         self.weekNum = core.getWeekNumber(self.year, self.month, self.day)
         #self.weekNumNeg = self.weekNum + 1 - core.getYearWeeksCount(self.year)
-        self.weekNumNeg = self.weekNum - int(core.calTypes.primaryModule().avgYearLen / 7)
+        self.weekNumNeg = self.weekNum - int(calTypes.primaryModule().avgYearLen / 7)
         self.holiday = (self.weekDay in core.holidayWeekDays)
         ###################
         self.dates = []
         for mode in range(len(calTypes)):
-            if mode==core.primaryMode:
+            if mode==calTypes.primary:
                 self.dates.append((self.year, self.month, self.day))
             else:
                 self.dates.append(core.jd_to(jd, mode))
@@ -196,11 +196,11 @@ class Cell:## status and information of a cell
         self.eventsData = event_lib.getDayOccurrenceData(jd, eventGroups)
     def format(self, binFmt, mode=None, tm=null):## FIXME
         if mode is None:
-            mode = core.primaryMode
+            mode = calTypes.primary
         pyFmt, funcs = binFmt
         return pyFmt%tuple(f(self, mode, tm) for f in funcs)
     inSameMonth = lambda self, other:\
-        self.dates[core.primaryMode][:2] == other.dates[core.primaryMode][:2]
+        self.dates[calTypes.primary][:2] == other.dates[calTypes.primary][:2]
     def getEventIcons(self, showIndex):
         iconList = []
         for item in self.eventsData:
@@ -248,7 +248,7 @@ class CellCache:
             return self.jdCells[jd]
         except KeyError:
             return Cell(jd)
-    getCellByDate = lambda self, y, m, d: self.getCell(core.to_jd(y, m, d, core.primaryMode))
+    getCellByDate = lambda self, y, m, d: self.getCell(core.primary_to_jd(y, m, d))
     getTodayCell = lambda self: self.getCell(core.getCurrentJd())
     def buildCell(self, jd):
         localCell = Cell(jd)
@@ -274,7 +274,7 @@ class CellCache:
 def changeDate(year, month, day, mode=None):
     global cell
     if mode is None:
-        mode = core.primaryMode
+        mode = calTypes.primary
     cell = cellCache.getCell(core.to_jd(year, month, day, mode))
 
 def gotoJd(jd):
@@ -288,14 +288,14 @@ def jdPlus(plus=1):
 def monthPlus(plus=1):
     global cell
     year, month = core.monthPlus(cell.year, cell.month, plus)
-    day = min(cell.day, getMonthLen(year, month, core.primaryMode))
+    day = min(cell.day, getMonthLen(year, month, calTypes.primary))
     cell = cellCache.getCellByDate(year, month, day)
 
 def yearPlus(plus=1):
     global cell
     year = cell.year + plus
     month = cell.month
-    day = min(cell.day, getMonthLen(year, month, core.primaryMode))
+    day = min(cell.day, getMonthLen(year, month, calTypes.primary))
     cell = cellCache.getCellByDate(year, month, day)
 
 getFont = lambda: list(fontCustom if fontCustomEnable else fontDefault)
@@ -543,7 +543,7 @@ reloadTrash = False
 ###################
 core.loadAllPlugins()## FIXME
 ###################
-## BUILD CACHE AFTER SETTING core.primaryMode
+## BUILD CACHE AFTER SETTING calTypes.primary
 maxDayCacheSize = 100 ## maximum size of cellCache (days number)
 maxWeekCacheSize = 12
 
@@ -814,16 +814,8 @@ if shownCals:## just for compatibility
             'font': list(item['font']),
         })
         calTypes.activeNames.append(calTypes.names[item['mode']])
-    core.primaryMode = calTypes.update()
+    calTypes.update()
 
-## FIXME
-#newPrimaryMode = shownCals[0]['mode']
-#if newPrimaryMode!= core.primaryMode:
-#    core.primaryMode = newPrimaryMode
-#    cellCache.clear()
-#del newPrimaryMode
-
-## monthcal:
 
 
 needRestartPref = {} ### Right place ????????

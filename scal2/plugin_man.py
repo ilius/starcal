@@ -323,8 +323,8 @@ class BuiltinTextPlugin(BasePlugin):
             return ''
         mode = self.mode
         text = ''
-        #if mode!=primaryMode:
-        #    year, month, day = convert(year, month, day, primaryMode, mode)
+        #if mode!=calTypes.primary:
+        #    year, month, day = convert(year, month, day, calTypes.primary, mode)
         try:
             text = db[month-1][day-1]
         except:## KeyError or IndexError

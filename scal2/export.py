@@ -18,10 +18,10 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 from scal2.utils import toStr
-
+from scal2.cal_types import calTypes
 from scal2.locale_man import rtl
 from scal2.locale_man import tr as _
-from scal2.cal_types import calTypes
+
 from scal2 import core
 
 from scal2 import ui
@@ -174,7 +174,7 @@ CELLPADDING=4 CELLSPACING=0>
                     if t:
                         pluginsText += '<B><FONT COLOR="%s">%s</FONT>:</B>    <SMALL>%s</SMALL>'%(
                             color,
-                            _(cell.dates[core.primaryMode][2]),
+                            _(cell.dates[calTypes.primary][2]),
                             t,
                         )
                         if pluginsTextPerLine:

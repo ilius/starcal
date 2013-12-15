@@ -48,7 +48,7 @@ from scal2.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG, getSysDa
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName, textNumEncode
 from scal2 import core
-from scal2.core import myRaise, log, getAbsWeekNumberFromJd, dataToJson, jwday
+from scal2.core import myRaise, log, getAbsWeekNumberFromJd, dataToJson, jwday, jd_to_primary
 
 from scal2.ics import icsHeader, getIcsTimeByEpoch, getIcsDateByJd, getJdByIcsDate, getEpochByIcsTime
 from scal2.vcs_modules import encodeShortStat, vcsModuleDict
@@ -1252,7 +1252,7 @@ class Event(JsonSObjBase, RuleContainer):
         try:
             self.mode = parent.mode
         except:
-            self.mode = core.primaryMode
+            self.mode = calTypes.primary
         self.icon = self.__class__.getDefaultIcon()
         self.summary = self.desc ## + ' (' + _(self.id) + ')' ## FIXME
         self.description = ''
@@ -2251,7 +2251,7 @@ class EventContainer(JsonSObjBase):
             raise TypeError('invalid key type %r give to EventContainer.__getitem__'%key)
     __str__ = lambda self: '%s(title=%s)'%(self.__class__.__name__, toStr(self.title))
     def __init__(self, title='Untitled'):
-        self.mode = core.primaryMode
+        self.mode = calTypes.primary
         self.idList = []
         self.title = title
         self.icon = ''
@@ -3968,7 +3968,7 @@ def getWeekOccurrenceData(curAbsWeekNumber, groups):
 
 
 def getMonthOccurrenceData(curYear, curMonth, groups):
-    startJd, endJd = core.getJdRangeForMonth(curYear, curMonth, core.primaryMode)
+    startJd, endJd = core.getJdRangeForMonth(curYear, curMonth, calTypes.primary)
     data = []
     for group in groups:
         if not group.enable:
@@ -3984,7 +3984,7 @@ def getMonthOccurrenceData(curYear, curMonth, groups):
             ids = (group.id, event.id)
             if isinstance(occur, JdSetOccurrence):
                 for jd in occur.getDaysJdList():
-                    y, m, d = jd_to(jd, core.primaryMode)
+                    y, m, d = jd_to_primary(jd)
                     if y==curYear and m==curMonth:
                         data.append({
                             'day':d,
@@ -3997,7 +3997,7 @@ def getMonthOccurrenceData(curYear, curMonth, groups):
                 for startEpoch, endEpoch in occur.getTimeRangeList():
                     jd1, h1, min1, s1 = getJhmsFromEpoch(startEpoch)
                     jd2, h2, min2, s2 = getJhmsFromEpoch(endEpoch)
-                    y, m, d = jd_to(jd1, core.primaryMode)
+                    y, m, d = jd_to_primary(jd1)
                     if y==curYear and m==curMonth:
                         if jd1==jd2:
                             data.append({
@@ -4016,7 +4016,7 @@ def getMonthOccurrenceData(curYear, curMonth, groups):
                                 'ids': ids,
                             })
                             for jd in range(jd1+1, jd2):
-                                y, m, d = jd_to(jd, core.primaryMode)
+                                y, m, d = jd_to_primary(jd)
                                 if y==curYear and m==curMonth:
                                     data.append({
                                         'day':d,
@@ -4027,7 +4027,7 @@ def getMonthOccurrenceData(curYear, curMonth, groups):
                                     })
                                 else:
                                     break
-                            y, m, d = jd_to(jd2, core.primaryMode)
+                            y, m, d = jd_to_primary(jd2)
                             if y==curYear and m==curMonth:
                                 data.append({
                                     'day':d,
@@ -4039,7 +4039,7 @@ def getMonthOccurrenceData(curYear, curMonth, groups):
             elif isinstance(occur, TimeListOccurrence):
                 for epoch in occur.epochList:
                     jd, hour, minute, sec = getJhmsFromEpoch(epoch)
-                    y, m, d = jd_to(jd1, core.primaryMode)
+                    y, m, d = jd_to_primary(jd1)
                     if y==curYear and m==curMonth:
                         data.append({
                             'day':d,

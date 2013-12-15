@@ -35,11 +35,11 @@ class MonthStatus(list): ## FIXME
     def __init__(self, cellCache, year, month):
         self.year = year
         self.month = month
-        self.monthLen = getMonthLen(year, month, core.primaryMode)
+        self.monthLen = getMonthLen(year, month, calTypes.primary)
         self.offset = getWeekDay(year, month, 1)## month start offset
         self.weekNum = [getWeekNumber(year, month, 1+7*i) for i in range(6)]
         #########
-        startJd, endJd = core.getJdRangeForMonth(year, month, core.primaryMode)
+        startJd, endJd = core.getJdRangeForMonth(year, month, calTypes.primary)
         tableStartJd = startJd - self.offset
         #####
         list.__init__(self, [
@@ -103,7 +103,7 @@ def getMonthDesc(status=None):
     for mode in calTypes.active:
         if text != '':
             text += '\n'
-        if mode==core.primaryMode:
+        if mode==calTypes.primary:
             y, m = first.dates[mode][:2] ## = (status.year, status.month)
             text += '%s %s'%(getMonthName(mode, m), _(y))
         else:

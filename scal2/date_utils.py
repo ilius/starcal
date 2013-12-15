@@ -48,7 +48,7 @@ def validDate(mode, y, m, d):## move to cal-modules
         return False
     return True
 
-datesDiff = lambda y1, m1, d1, y2, m2, d2: primary_to_jd(y2, m2, d2) - primary_to_jd(y1, m1, d1)
+datesDiff = lambda y1, m1, d1, y2, m2, d2: to_jd(calType.primary, y2, m2, d2) - to_jd(calType.primary, y1, m1, d1)
 
 dayOfYear = lambda y, m, d: datesDiff(y, 1, 1, y, m, d) + 1
 

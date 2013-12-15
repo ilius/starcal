@@ -47,7 +47,7 @@ class SelectDateDialog(gtk.Dialog):
         self.set_has_separator(False)
         #self.set_skip_taskbar_hint(True)
         self.connect('delete-event', self.hideMe)
-        self.mode = core.primaryMode
+        self.mode = calTypes.primary
         ###### Reciving dropped day!
         self.drag_dest_set(gdk.MODIFIER_MASK,\
             (('a', 0, 0),), gdk.ACTION_COPY)
@@ -114,7 +114,7 @@ class SelectDateDialog(gtk.Dialog):
         return True
     def show(self):
         ## Show a window that ask the date and set on the calendar
-        mode = core.primaryMode
+        mode = calTypes.primary
         y, m, d = ui.cell.dates[mode]
         self.set_mode(mode)
         self.set(y, m, d)
@@ -161,10 +161,10 @@ class SelectDateDialog(gtk.Dialog):
         if get==None:
             return
         y0, m0, d0 = get
-        if mode==core.primaryMode:
+        if mode==calTypes.primary:
             y, m, d = (y0, m0, d0)
         else:
-            y, m, d = convert(y0, m0, d0, mode, core.primaryMode)
+            y, m, d = convert(y0, m0, d0, mode, calTypes.primary)
         if not core.validDate(mode, y, m, d):
             print('bad date: %s'%dateStr(mode, y, m, d))
             return

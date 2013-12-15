@@ -738,7 +738,7 @@ class PrefDialog(gtk.Dialog):
             core.weekNumberModeAuto = False
             core.weekNumberMode = mode
         ######
-        ui.cellCache.clear() ## Very important, specially when core.primaryMode will be changed
+        ui.cellCache.clear() ## Very important, specially when calTypes.primary will be changed
         ######
         ud.updateFormatsBin()
         #################################################### Saving Preferences

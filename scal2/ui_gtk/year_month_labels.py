@@ -445,7 +445,7 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
             child.destroy()
         ###
         monthLabels = []
-        mode = core.primaryMode
+        mode = calTypes.primary
         ##
         box = YearLabelButtonBox(mode)
         self.pack_start(box, 0, 0)

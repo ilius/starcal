@@ -59,8 +59,9 @@ class CalTypesHolder:
         self.activeNames = ['gregorian']
         self.inactiveNames = []
         self.update()
-    primary = lambda self: self.active[0]
-    primaryModule = lambda self: modules[self.active[0]]
+    ##attributemethod ## FIXME
+    ##primary = lambda self: self.active[0]
+    primaryModule = lambda self: modules[self.primary]
     def update(self):
         self.active = []
         self.inactive = [] ## range(len(modules))
@@ -98,7 +99,7 @@ class CalTypesHolder:
                 self.inactive.append(i)
                 self.inactiveNames.append(name)
         ####
-        return self.active[0]
+        self.primary = self.active[0]
     def __iter__(self):
         for i in self.active + self.inactive:
             yield modules[i]

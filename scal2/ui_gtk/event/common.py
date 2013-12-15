@@ -23,9 +23,10 @@ from os.path import join, split
 
 from scal2.utils import toStr
 from scal2.time_utils import durationUnitsAbs, durationUnitValues
-from scal2 import core
+from scal2.cal_types import calTypes
 from scal2.locale_man import tr as _
 
+from scal2 import core
 from scal2.core import pixDir, myRaise
 
 from scal2 import event_lib
@@ -72,7 +73,7 @@ class EventWidget(gtk.VBox):
         ###
         hbox.pack_start(gtk.Label(_('Calendar Type')), 0, 0)
         combo = DateTypeCombo()
-        combo.set_active(core.primaryMode)## overwritten in updateWidget()
+        combo.set_active(calTypes.primary)## overwritten in updateWidget()
         hbox.pack_start(combo, 0, 0)
         hbox.pack_start(gtk.Label(''), 1, 1)
         self.modeCombo = combo

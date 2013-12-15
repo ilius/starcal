@@ -110,7 +110,7 @@ class ExportDialog(gtk.Dialog):
         if i==0:
             s = getCurrentMonthStatus()
             months = [s]
-            title = '%s %s'%(core.getMonthName(core.primaryMode, s.month, s.year), _(s.year))
+            title = '%s %s'%(core.getMonthName(calTypes.primary, s.month, s.year), _(s.year))
         elif i==1:
             for i in range(1, 13):
                 months.append(getMonthStatus(ui.cell.year, i))
@@ -174,7 +174,7 @@ class ExportToIcsDialog(gtk.Dialog):
         hbox.pack_start(self.endDateInput, 0, 0)
         self.vbox.pack_start(hbox, 0, 0)
         ####
-        year, month, day = ui.todayCell.dates[core.primaryMode]
+        year, month, day = ui.todayCell.dates[calTypes.primary]
         self.startDateInput.set_value((year, 1, 1))
         self.endDateInput.set_value((year+1, 1, 1))
         ########
