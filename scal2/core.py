@@ -363,9 +363,7 @@ def ymdRange((y1, m1, d1), (y2, m2, d2), mode=None):
     for j in range(j1, j2):
         yield jd_to(j, mode)
 
-def getSysDate(mode=None):
-    if mode is None:
-        mode = primaryMode
+def getSysDate(mode):
     if mode==DATE_GREG:
         return localtime()[:3]
     else:

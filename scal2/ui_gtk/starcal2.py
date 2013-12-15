@@ -799,7 +799,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
     def changeDate(self, year, month, day):
         ui.changeDate(year, month, day)
         self.onDateChange()
-    goToday = lambda self, obj=None: self.changeDate(*core.getSysDate())
+    goToday = lambda self, obj=None: self.changeDate(*core.getSysDate(core.primaryMode))
     def onDateChange(self, *a, **kw):
         #print('MainWin.onDateChange')
         ud.IntegratedCalObj.onDateChange(self, *a, **kw)
@@ -1185,7 +1185,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         Popen(ud.adjustTimeCmd)
     exportClicked = lambda self, widget=None: self.exportDialog.showDialog(ui.cell.year, ui.cell.month)
     def exportClickedTray(self, widget=None, event=None):
-        y, m = core.getSysDate()[:2]
+        y, m = core.getSysDate(core.primaryMode)[:2]
         self.exportDialog.showDialog(y, m)
     def onConfigChange(self, *a, **kw):
         ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
