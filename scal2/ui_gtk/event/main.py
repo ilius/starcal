@@ -66,17 +66,16 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
     def onShow(self, widget):
         self.move(*ui.eventManPos)
         self.onConfigChange()
-    def _close(self):
+    def onDeleteEvent(self, obj, gevent):
+        ## onResponse is going to be called after onDeleteEvent
+        ## just return True, no need to do anything else
+        return True
+    def onResponse(self, dialog, response_id):
         ui.eventManPos = self.get_position()
         ui.saveLiveConf()
         ###
         self.hide()
         self.emit('config-change')        
-    def onResponse(self, dialog, response_id):
-        self._close()
-    def onDeleteEvent(self, obj, event):
-        self._close()
-        return True
     def onConfigChange(self, *a, **kw):
         ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
         ###
@@ -663,7 +662,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         if etime is None:
             etime = gtk.get_current_event_time()
         menu.popup(None, None, None, 3, etime)
-    #def onTreeviewRealize(self, event):
+    #def onTreeviewRealize(self, gevent):
     #    #self.reloadEvents()## FIXME
     #    pass
     def rowActivated(self, treev, path, col):
