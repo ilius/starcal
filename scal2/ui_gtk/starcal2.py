@@ -108,7 +108,7 @@ def liveConfChanged():
     tm = now()
     if tm-ui.lastLiveConfChangeTime > ui.saveLiveConfDelay:
         timeout_add(int(ui.saveLiveConfDelay*1000), ui.saveLiveConfLoop)
-    ui.lastLiveConfChangeTime = tm
+        ui.lastLiveConfChangeTime = tm
 
 
 # How to define icon of custom stock????????????
@@ -773,12 +773,12 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
     def configureEvent(self, widget, event):
         wx, wy = self.get_position()
         maxPosDelta = max(abs(ui.winX-wx), abs(ui.winY-wy))
-        #print(wx, wy, maxPosDelta)
+        #print(wx, wy)
         ww, wh = self.get_size()
-        if ui.bgUseDesk and maxPosDelta > 0:## FIXME
-            self.queue_draw()
-        if self.get_property('visible') and maxPosDelta < 10:## FIXME
-            ui.winX, ui.winY = (wx, wy)## FIXME
+        #if ui.bgUseDesk and maxPosDelta > 1:## FIXME
+        #    self.queue_draw()
+        if self.get_property('visible'):
+            ui.winX, ui.winY = (wx, wy)
         ui.winWidth = ww
         liveConfChanged()
         return False

@@ -113,6 +113,8 @@ def dictsTupleConfStr(data):
     return st
 
 def saveLiveConf():
+    if core.debugMode:
+        print('saveLiveConf', winX, winY, winWidth)
     text = ''
     for key in (
         'winX', 'winY', 'winWidth',
