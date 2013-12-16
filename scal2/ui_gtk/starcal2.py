@@ -771,8 +771,6 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             ui.mcalHeight = req.height
     """
     def configureEvent(self, widget, event):
-        liveConfChanged()
-        ###
         wx, wy = self.get_position()
         ww, wh = self.get_size()
         if ui.bgUseDesk and max(abs(ui.winX-wx), abs(ui.winY-wy))>1:## FIXME
@@ -780,6 +778,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         if self.get_property('visible'):
             ui.winX, ui.winY = (wx, wy)## FIXME
         ui.winWidth = ww
+        liveConfChanged()
         return False
     def buttonPress(self, obj, event):
         b = event.button
