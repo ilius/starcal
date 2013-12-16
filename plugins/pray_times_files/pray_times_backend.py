@@ -3,7 +3,7 @@
 #--------------------- Copyright Block ----------------------
 # Prayer Times Calculator
 # Copyright (C) 2007-2010 Hamid Zarrabi-Zadeh
-# Copyright (C) 2011 Saeed Rasooli
+# Copyright (C) 2011-2013 Saeed Rasooli
 #
 # Source: http://praytimes.org
 # License: GNU General Public License, version 3
