@@ -772,10 +772,12 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
     """
     def configureEvent(self, widget, event):
         wx, wy = self.get_position()
+        maxPosDelta = max(abs(ui.winX-wx), abs(ui.winY-wy))
+        #print(wx, wy, maxPosDelta)
         ww, wh = self.get_size()
-        if ui.bgUseDesk and max(abs(ui.winX-wx), abs(ui.winY-wy))>1:## FIXME
+        if ui.bgUseDesk and maxPosDelta > 0:## FIXME
             self.queue_draw()
-        if self.get_property('visible'):
+        if self.get_property('visible') and maxPosDelta < 10:## FIXME
             ui.winX, ui.winY = (wx, wy)## FIXME
         ui.winWidth = ww
         liveConfChanged()
@@ -1143,7 +1145,9 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             return True
     def trayClicked(self, obj=None):
         if self.get_property('visible'):
-            ui.winX, ui.winY = self.get_position()
+            #ui.winX, ui.winY = self.get_position()## FIXME gives bad position sometimes
+            #liveConfChanged()
+            #print(ui.winX, ui.winY)
             self.hide()
         else:
             self.move(ui.winX, ui.winY)
@@ -1156,7 +1160,9 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             self.deiconify()
             self.present()
     def onDeleteEvent(self, widget=None, event=None):
-        ui.winX, ui.winY = self.get_position()
+        #ui.winX, ui.winY = self.get_position()## FIXME gives bad position sometimes
+        #liveConfChanged()
+        #print(ui.winX, ui.winY)
         if self.trayMode==0 or not self.sicon:
             self.quit()
         elif self.trayMode>1:
@@ -1166,7 +1172,9 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
                 self.quit()
         return True
     def onEscape(self):
-        ui.winX, ui.winY = self.get_position()
+        #ui.winX, ui.winY = self.get_position()## FIXME gives bad position sometimes
+        #liveConfChanged()
+        #print(ui.winX, ui.winY)
         if self.trayMode==0:
             self.quit()
         elif self.trayMode>1:
