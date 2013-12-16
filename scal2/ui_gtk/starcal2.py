@@ -707,7 +707,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         #if self.trayMode!=1:
         #    timeout_add_seconds(self.timeout, self.trayUpdate)
         #########
-        self.connect('delete-event', self.dialogClose)
+        self.connect('delete-event', self.onDeleteEvent)
         ######################
         self.updateMenuSize()
         ui.prefDialog.updatePrefGui()
@@ -734,7 +734,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         kname = gdk.keyval_name(event.keyval).lower()
         #print(now(), 'MainWin.keyPress', kname)
         if kname=='escape':
-            self.dialogEsc()
+            self.onEscape()
         elif kname=='f1':
             self.aboutShow()
         elif kname in ('insert', 'plus', 'kp_add'):
@@ -1156,7 +1156,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
                 self.stick()
             self.deiconify()
             self.present()
-    def dialogClose(self, widget=None, event=None):
+    def onDeleteEvent(self, widget=None, event=None):
         ui.winX, ui.winY = self.get_position()
         if self.trayMode==0 or not self.sicon:
             self.quit()
@@ -1166,7 +1166,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             else:
                 self.quit()
         return True
-    def dialogEsc(self):
+    def onEscape(self):
         ui.winX, ui.winY = self.get_position()
         if self.trayMode==0:
             self.quit()
