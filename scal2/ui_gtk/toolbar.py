@@ -29,19 +29,18 @@ iconSizeDict = dict(iconSizeList)
 
 @registerSignals
 class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
-    def __init__(self, name, stockName, method, tooltip='', text='', desc=''):
-        #print('ToolbarItem', name, stockName, method, tooltip, text)
+    def __init__(self, name, stockName, method, desc='', shortDesc='', enableToolip=True):
+        #print('ToolbarItem', name, stockName, method, desc, text)
         self.method = method
         ######
-        if not desc and tooltip:
-            desc = tooltip
-        ###
-        if tooltip is '':
-            tooltip = name.capitalize()
-        ###
-        if not text:
-            text = name.capitalize()
-        text = _(text)
+        if not desc:
+            desc = name.capitalize()
+        ##
+        if not shortDesc:
+            shortDesc = desc
+        ##
+        desc = _(desc)
+        shortDesc = _(shortDesc)
         ######
         gtk.ToolButton.__init__(
             self,
@@ -49,13 +48,14 @@ class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
                 getattr(gtk, 'STOCK_%s'%(stockName.upper())),
                 gtk.ICON_SIZE_DIALOG,
             ) if stockName else None,
-            text,
+            shortDesc,
         )
         self._name = name
         self.desc = desc
+        #self.shortDesc = shortDesc## FIXME
         self.initVars()
-        if tooltip is not None:
-            set_tooltip(self, _(tooltip))
+        if enableToolip:
+            set_tooltip(self, desc)## FIXME
         self.set_is_important(True)## FIXME
     show = lambda self: self.show_all()
 

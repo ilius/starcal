@@ -237,7 +237,7 @@ class MainMenuToolbarItem(ToolbarItem):
         'ui.wcal_toolbar_mainMenu_icon',
     )
     def __init__(self):
-        ToolbarItem.__init__(self, 'mainMenu', None, '', tooltip=None, desc=_('Main Menu'))
+        ToolbarItem.__init__(self, 'mainMenu', None, '', _('Main Menu'), enableToolip=False)
         self.connect('clicked', self.onClicked)
         self.updateImage()
         ####
@@ -274,7 +274,7 @@ class MainMenuToolbarItem(ToolbarItem):
 
 class WeekNumToolbarItem(ToolbarItem):
     def __init__(self):
-        ToolbarItem.__init__(self, 'weekNum', None, self.onClicked, tooltip=_('Week Number'), text='')
+        ToolbarItem.__init__(self, 'weekNum', None, self.onClicked, ('Week Number'))
         self.label = gtk.Label()
         self.label.set_direction(gtk.TEXT_DIR_LTR)
         self.set_property('label-widget', self.label)

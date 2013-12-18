@@ -294,13 +294,13 @@ class MainWinToolbar(CustomizableToolbar):
         'ud.mainToolbarData',
     )
     defaultItems = [
-        ToolbarItem('today', 'home', 'goToday', 'Select Today'),
-        ToolbarItem('date', 'index', 'selectDateShow', 'Select Date...', 'Date...'),
+        ToolbarItem('today', 'home', 'goToday', 'Select Today', 'Today'),
+        ToolbarItem('date', 'index', 'selectDateShow', 'Select Date...', 'Date'),
         ToolbarItem('customize', 'edit', 'customizeShow'),
         ToolbarItem('preferences', 'preferences', 'prefShow'),
-        ToolbarItem('add', 'add', 'eventManShow', 'Event Manager'),
-        ToolbarItem('export', 'convert', 'exportClicked', _('Export to %s')%'HTML'),
-        ToolbarItem('about', 'about', 'aboutShow', _('About ')+APP_DESC),
+        ToolbarItem('add', 'add', 'eventManShow', 'Event Manager', 'Event'),
+        ToolbarItem('export', 'convert', 'exportClicked', _('Export to %s')%'HTML', 'Export'),
+        ToolbarItem('about', 'about', 'aboutShow', _('About ')+APP_DESC, 'About'),
         ToolbarItem('quit', 'quit', 'quit'),
     ]
     defaultItemsDict = dict([(item._name, item) for item in defaultItems])

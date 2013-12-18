@@ -1106,12 +1106,6 @@ msgid "Day Info"
 msgstr ""
 "اطلاعات روز"
 
-msgid "Dates"
-msgstr ""
-"تاریخ‌ها"
-
-
-
 msgid "Copy"
 msgstr ""
 "کپی"
@@ -1587,6 +1581,15 @@ msgid "Date"
 msgstr ""
 "تاریخ"
 
+msgid "Date..."
+msgstr ""
+"تاریخ..."
+
+msgid "Dates"
+msgstr ""
+"تاریخ‌ها"
+
+
 msgid "Comment"
 msgstr ""
 "توضیح"
@@ -1775,10 +1778,6 @@ msgid "Select Date..."
 msgstr ""
 "انتخاب تاریخ..."
 
-
-msgid "Date..."
-msgstr ""
-"تاریخ..."
 
 msgid "Style"
 msgstr ""
