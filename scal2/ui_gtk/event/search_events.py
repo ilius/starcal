@@ -49,7 +49,7 @@ from scal2.ui_gtk.event.common import SingleGroupComboBox, EventEditorDialog
 
 @registerSignals
 class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
-    def __init__(self):
+    def __init__(self, showDesc=False):
         gtk.Window.__init__(self)
         self.initVars()
         ud.windowList.appendItem(self)
@@ -191,6 +191,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         ###
         self.colDesc = gtk.TreeViewColumn(_('Description'), gtk.CellRendererText(), text=5)
         self.colDesc.set_sort_column_id(5)
+        self.colDesc.set_visible(showDesc)
         treev.append_column(self.colDesc)
         ###
         trees.set_sort_func(2, self.sort_func_group)
@@ -227,7 +228,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         columnBox.pack_start(check, 0, 0)
         ##
         check = gtk.CheckButton(_('Description'))
-        check.set_active(True)
+        check.set_active(showDesc)
         check.connect('clicked', lambda w: self.colDesc.set_visible(w.get_active()))
         columnBox.pack_start(check, 0, 0)
         ##
