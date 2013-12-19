@@ -23,19 +23,15 @@ def colorGraph(g, add_height=True):
     g.vs['color'] = colors
     if add_height:
         colorCount = max(colors) + 1
-        byColor = [ [] for c in range(colorCount) ]
-        for i, c in enumerate(colors):
-            byColor[c].append(i)
         height = [1 for i in range(n)]
-        for c, sameColor in enumerate(byColor):
-            for i in sameColor:
-                adjColors = set()
-                for j in adjlist[i]:
-                    adjColors.add(colors[j])
-                for c_end in range(c+1, colorCount+1):
-                    if c_end in adjColors:
-                        height[i] = c_end - c
-                        break
+        for i, c in enumerate(colors):
+            adjColors = set()
+            for j in adjlist[i]:
+                adjColors.add(colors[j])
+            for c_end in range(c+1, colorCount+1):
+                if c_end in adjColors:
+                    height[i] = c_end - c
+                    break
         g.vs['color_h'] = height
         
 
