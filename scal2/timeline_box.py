@@ -207,7 +207,7 @@ def calcEventBoxes(
     renderBoxesByGraph(boxes, graph, 0, 0)
     if debugMode:
         print('box placing time:  %e'%(now()-t0))
-        print()
+        print('')
     return boxes
 
 
