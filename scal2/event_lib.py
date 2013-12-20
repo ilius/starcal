@@ -3253,7 +3253,7 @@ class VcsBaseEventGroup(EventGroup):
     )
     def __init__(self, _id=None):
         self.vcsType = 'git'
-        self.vcsDir = ''\
+        self.vcsDir = ''
         #self.branch = 'master'
         EventGroup.__init__(self, _id)
     __str__ = lambda self: '%s(_id=%s, title=%s, vcsType=%s, vcsDir=%s)'%(
@@ -3297,15 +3297,41 @@ class VcsEpochBaseEventGroup(VcsBaseEventGroup):
     myParams = VcsBaseEventGroup.myParams + (
         'showSeconds',
     )
+    canConvertTo = VcsBaseEventGroup.canConvertTo + (
+        'taskList',
+    )
     def __init__(self, _id=None):
         self.showSeconds = True
+        self.vcsIds = []
         VcsBaseEventGroup.__init__(self, _id)
+    def clear(self):
+        EventGroup.clear(self)
+        self.vcsIds = []
+    def addOccur(self, t0, t1, eid):
+        EventGroup.addOccur(self, t0, t1, eid)
+        self.vcsIds.append(eid)
     getRulesHash = lambda self: hash(str((
         self.name,
         self.vcsType,
         self.vcsDir,
         self.showSeconds,
     )))
+    def deepConvertTo(self, newGroupType):
+        newGroup = self.copyAs(newGroupType)
+        if newGroupType == 'taskList':
+            newEventType = 'task'
+            newGroup.enable = False ## to prevent per-event node update
+            for vcsId in self.vcsIds:
+                event = self.getEvent(vcsId)
+                newEvent = newGroup.createEvent(newEventType)
+                newEvent.changeMode(event.mode)## FIXME needed?
+                newEvent.copyFrom(event, True)
+                newEvent.setStartEpoch(event.epoch)
+                newEvent.setEnd('duration', 0, 1)
+                newEvent.save()
+                newGroup.append(newEvent)
+            newGroup.enable = self.enable
+        return newGroup
 
 
 
@@ -3387,14 +3413,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
     jsonParams = EventGroup.jsonParams + myParams
     def __init__(self, _id=None):
         VcsEpochBaseEventGroup.__init__(self, _id)
-        self.tags = []
         self.showStat = True
-    def clear(self):
-        EventGroup.clear(self)
-        self.tags = []
-    def addOccur(self, t0, t1, eid):
-        EventGroup.addOccur(self, t0, t1, eid)
-        self.tags.append(eid)
     def updateOccurrence(self):
         stm0 = now()
         self.clear()
@@ -3422,9 +3441,9 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
         tag = event.id
         lines = []
         if self.showStat:
-            tagIndex = self.tags.index(tag)
+            tagIndex = self.vcsIds.index(tag)
             if tagIndex > 0:
-                prevTag = self.tags[tagIndex-1]
+                prevTag = self.vcsIds[tagIndex-1]
             else:
                 prevTag = None
             statLine = mod.getTagShortStatLine(self, prevTag, tag)
@@ -3432,7 +3451,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
                 lines.append(statLine)## translation FIXME
         event.description = '\n'.join(lines)
     def getEvent(self, tag):## cache commit data FIXME
-        if not tag in self.tags:
+        if not tag in self.vcsIds:
             raise ValueError('No tag %r'%tag)
         data = {}
         data['summary'] = self.title + ' ' + tag ## FIXME

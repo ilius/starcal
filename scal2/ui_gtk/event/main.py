@@ -890,6 +890,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         group, = self.getObjsByPath(path)
         newGroup = group.copy()
         ui.duplicateGroupTitle(newGroup)
+        newGroup.afterModify()
         newGroup.save()
         ui.eventGroups.insert(index+1, newGroup)
         ui.eventGroups.save()
@@ -1190,9 +1191,14 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
     def groupConvertModeFromMenu(self, menu, group):
         GroupConvertModeDialog(group).run()
     def _do_groupConvertTo(self, group, newGroupType):
+        idsCount = len(group.idList)
         newGroup = ui.eventGroups.convertGroupTo(group, newGroupType)
         ## reload it's events in tree? FIXME
         ## summary and description haven't changed!
+        idsCount2 = len(newGroup.idList)
+        if idsCount2 != idsCount:
+            self.reloadGroupEvents(newGroup.id)
+        self.treeviewCursorChanged()
     def groupConvertTo(self, menu, group, newGroupType):
         self.waitingDo(self._do_groupConvertTo, group, newGroupType)
     def _do_groupBulkEdit(self, dialog, group, path):
