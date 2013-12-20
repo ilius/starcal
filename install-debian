@@ -43,6 +43,8 @@ depends=('python(>=2.6)' 'python(<<3.0)')
 depends+=('python-gtk2(>=2.8)')
 depends+=('python-gflags')
 depends+=('python-httplib2')
+depends+=('python-tz')
+depends+=('python-igraph')
 
 if [ -f "/usr/lib/$HOSTTYPE-$OSTYPE/libappindicator.so.1" ] ; then
     depends+=('python-appindicator')
