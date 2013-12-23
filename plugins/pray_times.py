@@ -237,7 +237,7 @@ class TextPlug(BasePlugin, TextPlugUI):
         self.makeWidget()## FIXME
         self.onCurrentDateChange(localtime()[:3])
         ###
-        #self.doPlayBeforeAzan()
+        #self.doPlayPreAzan()
         #time.sleep(2)
         #self.doPlayAzan() ## for testing ## FIXME
     def saveConfig(self):
@@ -303,13 +303,31 @@ class TextPlug(BasePlugin, TextPlugUI):
             goodkill(p.pid, interval=0.01)
             #kill(p.pid, 15)
             #p.terminate()
-    def doPlayAzan(self):
+    def doPlayAzan(self, tm):
         if not self.azanEnable:
+            return
+        dt = tm - now()
+        #print('---------------------------- doPlayAzan, dt=%.1f'%dt)
+        if dt > 1:
+            timeout_add_seconds(
+                int(dt),
+                self.doPlayAzan,
+                tm,
+            )
             return
         self.killPrevSound()
         self.proc = popenFile(self.azanFile)
-    def doPlayBeforeAzan(self):
+    def doPlayPreAzan(self, tm):
         if not self.preAzanEnable:
+            return
+        dt = tm - now()
+        #print('---------------------------- doPlayPreAzan, dt=%.1f'%dt)
+        if dt > 1:
+            timeout_add_seconds(
+                int(dt),
+                self.doPlayPreAzan,
+                tm,
+            )
             return
         self.killPrevSound()
         self.proc = popenFile(self.preAzanFile)
@@ -320,8 +338,10 @@ class TextPlug(BasePlugin, TextPlugUI):
         #print(getUtcOffsetByJd(jd)/3600.0, getUtcOffsetCurrent()/3600.0)
         #utcOffset = getUtcOffsetCurrent()
         utcOffset = getUtcOffsetByJd(jd)
-        epochLocal = now() + utcOffset
+        tmUtc = now()
+        epochLocal = tmUtc + utcOffset
         secondsFromMidnight = epochLocal % (24*3600)
+        midnightUtc = tmUtc - secondsFromMidnight
         #print('------- hours from midnight', secondsFromMidnight/3600.0)
         for timeName, azanHour in self.ptObj.getTimesByJd(
             jd,
@@ -335,14 +355,22 @@ class TextPlug(BasePlugin, TextPlugUI):
             #####
             toAzanSecs = int(azanSec - secondsFromMidnight)
             if toAzanSecs >= 0:
+                preAzanSec = azanSec - self.preAzanMinutes * 60
+                timeout_add_seconds(
+                    max(0, 
+                        int(preAzanSec - secondsFromMidnight)
+                    ),
+                    self.doPlayPreAzan,
+                    midnightUtc + preAzanSec,
+                )
+                ###
+                #print('toAzanSecs=%.1f'%toAzanSecs)
                 timeout_add_seconds(
                     toAzanSecs,
                     self.doPlayAzan,
+                    midnightUtc + azanSec,
                 )
-                timeout_add_seconds(
-                    max(0, toAzanSecs - int(self.preAzanMinutes * 60)),
-                    self.doPlayBeforeAzan,
-                )
+
 
 
 if __name__=='__main__':
