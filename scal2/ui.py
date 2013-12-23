@@ -28,7 +28,7 @@ from subprocess import Popen
 from scal2.utils import NullObj, toStr, cleanCacheDict
 from scal2.path import *
 
-from scal2.cal_types import calTypes
+from scal2.cal_types import calTypes, jd_to
 
 from scal2 import locale_man
 from scal2.locale_man import tr as _
@@ -146,7 +146,7 @@ getPywPath = lambda: join(rootDir, APP_NAME + ('-qt' if uiName=='qt' else '') + 
 
 
 def dayOpenEvolution(arg=None):
-    ##y, m, d = core.jd_to(cell.jd-1, core.DATE_GREG) ## in gnome-cal opens prev day! why??
+    ##y, m, d = jd_to(cell.jd-1, core.DATE_GREG) ## in gnome-cal opens prev day! why??
     y, m, d = cell.dates[core.DATE_GREG]
     Popen('LANG=en_US.UTF-8 evolution calendar:///?startdate=%.4d%.2d%.2d'%(y, m, d), shell=True)## FIXME
     ## 'calendar:///?startdate=%.4d%.2d%.2dT120000Z'%(y, m, d)
@@ -168,7 +168,7 @@ def dayOpenSunbird(arg=None):
 class Cell:## status and information of a cell
     def __init__(self, jd):
         self.eventsData = []
-        self.eventsDataIsSet = False
+        #self.eventsDataIsSet = False ## not used
         self.pluginsText = ''
         ###
         self.jd = jd
@@ -180,12 +180,18 @@ class Cell:## status and information of a cell
         self.weekNumNeg = self.weekNum - int(calTypes.primaryModule().avgYearLen / 7)
         self.holiday = (self.weekDay in core.holidayWeekDays)
         ###################
-        self.dates = []
-        for mode in range(len(calTypes)):
-            if mode==calTypes.primary:
-                self.dates.append((self.year, self.month, self.day))
-            else:
-                self.dates.append(core.jd_to(jd, mode))
+        self.dates = [
+            date if mode==calTypes.primary else jd_to(jd, mode)
+            for mode in range(len(calTypes))
+        ]
+        '''
+        self.dates = dict([
+            (
+                mode, date if mode==calTypes.primary else jd_to(jd, mode)
+            )
+            for mode in calTypes.active
+        ])
+        '''
         ###################
         for k in core.plugIndex:
             plug = core.allPlugList[k]
@@ -195,7 +201,7 @@ class Cell:## status and information of a cell
                 except:
                     myRaiseTback()
         ###################
-        self.eventsData = event_lib.getDayOccurrenceData(jd, eventGroups)
+        self.eventsData = event_lib.getDayOccurrenceData(jd, eventGroups)## here? FIXME
     def format(self, binFmt, mode=None, tm=null):## FIXME
         if mode is None:
             mode = calTypes.primary
@@ -269,7 +275,7 @@ class CellCache:
             wEventData = event_lib.getWeekOccurrenceData(absWeekNumber, eventGroups)
             cleanCacheDict(self.weekEvents, maxWeekCacheSize, absWeekNumber)
             self.weekEvents[absWeekNumber] = wEventData
-        return (cells, wEventData)
+        return cells, wEventData
     #def getMonthData(self, year, month):## needed? FIXME
 
 
@@ -304,7 +310,7 @@ getFont = lambda: list(fontCustom if fontCustomEnable else fontDefault)
 
 def getFontSmall():
     name, bold, underline, size = getFont()
-    return (name, bold, underline, int(size*0.6))
+    return [name, bold, underline, int(size*0.6)]
 
 def initFonts(fontDefaultNew):
     global fontDefault, fontCustom, mcalTypeParams
@@ -464,7 +470,7 @@ class TagIconItem:
             if not isabs(icon):
                 icon = join(tagsDir, icon)
         else:
-            iconTmp = join(tagsDir, name)+'.png'
+            iconTmp = join(tagsDir, name) + '.png'
             if isfile(iconTmp):
                 icon = iconTmp
         self.icon = icon
