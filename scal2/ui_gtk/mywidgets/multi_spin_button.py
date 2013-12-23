@@ -154,7 +154,6 @@ class MultiSpinButton(gtk.SpinButton):
             return True
         elif kname in (
             'period', 'kp_decimal',
-            'slash', 'kp_divide',## FIXME
         ):
             self.insertText(locale_man.getNumSep())
             return True
