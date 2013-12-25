@@ -177,8 +177,6 @@ class Occurrence(SObjBase):
     def getFloatJdRangeList(self):
         ls = []
         for ep0, ep1 in self.getTimeRangeList():
-            if ep1 is None:## FIXME
-                ep1 = ep0 + epsTm
             ls.append((getFloatJdFromEpoch(ep0), getFloatJdFromEpoch(ep1)))
         return ls
     def getStartJd(self):
@@ -274,8 +272,6 @@ class TimeRangeListOccurrence(Occurrence):
     def newFromStartEnd(startEpoch, endEpoch):
         if startEpoch > endEpoch:
             return TimeRangeListOccurrence([])
-        elif startEpoch == endEpoch:## FIXME
-            return TimeRangeListOccurrence([(startEpoch, startEpoch+epsTm)])
         else:
             return TimeRangeListOccurrence([(startEpoch, endEpoch)])
 
@@ -327,7 +323,13 @@ class TimeListOccurrence(Occurrence):
             jds.add(getJdFromEpoch(epoch))
         return sorted(jds)
     getTimeRangeList = lambda self:\
-        [(epoch, epoch + epsTm) for epoch in self.epochList]## or end=None ## FIXME
+        [
+            (
+                epoch,
+                epoch,
+            )
+            for epoch in self.epochList
+        ]## or end=None ## FIXME
 
 
 
@@ -721,7 +723,7 @@ class DayTimeRangeEventRule(EventRule):
         daySecStart = getSecondsFromHms(*self.dayTimeStart)
         daySecEnd = getSecondsFromHms(*self.dayTimeEnd)
         if daySecEnd <= daySecStart:
-            daySecEnd = daySecStart + epsTm
+            daySecEnd = daySecStart
         tmList = []
         for jd in range(startJd, endJd):
             epoch = self.parent.getEpochFromJd(jd)
@@ -2699,6 +2701,8 @@ class EventGroup(EventContainer):
        self.occur.clear()
        self.occurCount = 0
     def addOccur(self, t0, t1, eid):
+        if t0 == t1:
+            t1 += epsTm
         self.occur.add(t0, t1, eid)
         self.occurCount += 1
     def updateOccurrenceLog(self, stm0):
@@ -2719,6 +2723,8 @@ class EventGroup(EventContainer):
                 occurList.append((t0, t1, event.id))
         #shuffle(occurList)
         for t0, t1, eid in occurList:
+            if t0 == t1:
+                t1 += epsTm
             self.occur.add(t0, t1, eid)
         self.occurCount += len(occurList)
         #self.occurLoaded = True
@@ -3370,7 +3376,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
         for epoch, commit_id in commitsData:
             if not self.showSeconds:
                 epoch -= (epoch % 60)
-            self.addOccur(epoch, epoch+epsTm, commit_id)
+            self.addOccur(epoch, epoch, commit_id)
         ###
         self.updateOccurrenceLog(stm0)
     def updateEventDesc(self, event):
@@ -3434,7 +3440,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
         for epoch, tag in tagsData:
             if not self.showSeconds:
                 epoch -= (epoch % 60)
-            self.addOccur(epoch, epoch+epsTm, tag)
+            self.addOccur(epoch, epoch, tag)
         ###
         self.updateOccurrenceLog(stm0)
     def updateEventDesc(self, event):

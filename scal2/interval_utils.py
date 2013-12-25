@@ -75,24 +75,21 @@ def intersectionOfTwoIntervalList(*lists):
     for lst_index, lst in enumerate(lists):
         lst = cleanTimeRangeList(lst)
         for start, end in lst:
-            startObj = (start, False, lst_index)
-            endObj = (end, True, lst_index)
-            points += [startObj, endObj]
+            if end == start:
+                points += [
+                    (start, 0, lst_index),
+                    (end, 1, lst_index),
+                ]
+            else:
+                points += [
+                    (start, 0, lst_index),
+                    (end, -1, lst_index),
+                ]
     points.sort()
     openStartList = [None for i in range(listsN)]
     result = []
-    for cursor, isEnd, lst_index in points:
-        if isEnd:
-            ## end == cursor
-            if None not in openStartList:
-                start = max(openStartList)
-                if start == cursor:
-                    print('start == cursor')
-                    result.append((start, start + epsTm))
-                elif start < cursor:
-                    result.append((start, cursor))
-            openStartList[lst_index] = None
-        else:
+    for cursor, ptype, lst_index in points:
+        if ptype == 0: ## start
             ## start == cursor
             if openStartList[lst_index] is None:
                 openStartList[lst_index] = cursor
@@ -102,6 +99,16 @@ def intersectionOfTwoIntervalList(*lists):
                     lst_index,
                     openStartList[lst_index],
                 ))
+        else:## end (closed or open)
+            ## end == cursor
+            if None not in openStartList:
+                start = max(openStartList)
+                if start > cursor:
+                    raise RuntimeError('start - cursor = %s'%(start-cursor))
+                result.append((start, cursor))
+                #if start == cursor:## FIXME
+                #    print('start = cursor = %s, ptype=%s'%(start%(24*3600)/3600.0, ptype))
+            openStartList[lst_index] = None
     return result
 
 
@@ -116,6 +123,8 @@ def testCleanTimeRangeList():
         (8, 9),
         (7, 8),
         (8.5, 10),
+        (11, 11),
+        (5.5, 5.5),
     ]))
 
 def testIntersection():
