@@ -20,7 +20,6 @@
 from scal2.utils import s_join
 from scal2.bin_heap import MaxHeap
 
-epsTm = 0.01 ## seconds ## configure somewhere? FIXME
 
 ab_overlaps = lambda a0, b0, a1, b1: b0-a0+b1-a1 - abs(a0+b1-a1-b1) > 0.01
 md_overlaps = lambda m0, d0, m1, d1: d0+d1 - abs(m0-m1) > 0.01

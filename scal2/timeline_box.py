@@ -4,7 +4,6 @@ from scal2.graph_utils import *
 from scal2.event_search_tree import EventSearchTree
 from scal2.locale_man import tr as _
 from scal2.core import debugMode
-from scal2.event_lib import epsTm
 from scal2 import ui
 
 
