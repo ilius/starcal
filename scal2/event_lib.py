@@ -1991,7 +1991,10 @@ class WeeklyEvent(Event):
     )
     supportedRules = requiredRules
     isAllDay = False
-
+    def setDefaults(self):
+        currentJd = core.getCurrentJd()
+        self['start'].setJd(currentJd)
+        self['end'].setJd(currentJd+8)
 
 #@classes.event.register
 #class UniversityCourseOwner(Event):## FIXME
