@@ -128,7 +128,7 @@ class DayField(IntField):
 
 class HourField(IntField):
     def __init__(self):
-        IntField.__init__(self, 0, 23, 2)
+        IntField.__init__(self, 0, 24, 2)
 
 class Z60Field(IntField):
     def __init__(self):
