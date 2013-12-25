@@ -21,7 +21,6 @@
 import json, random, os, shutil
 from os.path import join, split, isdir, isfile, dirname, splitext
 from os import listdir
-from random import shuffle
 import math
 from time import time as now
 import pytz
@@ -2717,18 +2716,10 @@ class EventGroup(EventContainer):
         stm0 = now()
         self.occur.clear()
         self.occurCount = 0
-        occurList = []
         for event, occur in self.calcOccurrenceAll():
             for t0, t1 in occur.getTimeRangeList():
-                occurList.append((t0, t1, event.id))
-        #shuffle(occurList)
-        for t0, t1, eid in occurList:
-            if t0 == t1:
-                t1 += epsTm
-            self.occur.add(t0, t1, eid)
-        self.occurCount += len(occurList)
+                self.addOccur(t0, t1, event.id)
         #self.occurLoaded = True
-        
         if core.debugMode:
             print('time = %d ms'%((now()-stm0)*1000))
             #print('updateOccurrence, id=%s, title=%s, count=%s, time=%s'%(
@@ -2738,9 +2729,6 @@ class EventGroup(EventContainer):
             #    now()-stm0,
             #))
         #print('%s %d %.1f'%(self.id, 1000*(now()-stm0), self.occur.calcAvgDepth()))
-        #print('depth=%s, N=%s'%(self.occur.getDepth(), len(occurList)))
-        #print('2*lg(N)=%.1f'%(2*math.log(len(occurList), 2)))
-        #print
     def exportToIcsFp(self, fp):
         currentTimeStamp = getIcsTimeByEpoch(now())
         for event in self:
