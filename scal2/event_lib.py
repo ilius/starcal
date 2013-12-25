@@ -816,7 +816,8 @@ def cycleDaysCalcOccurrence(days, startJd, endJd, event):
     return JdSetOccurrence(list(range(
         startJd,
         endJd,
-        days,)))
+        days,
+    )))
 
 @classes.rule.register
 class CycleDaysEventRule(EventRule):
