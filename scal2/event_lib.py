@@ -789,12 +789,13 @@ class DurationEventRule(EventRule):
             log.error('Error while loading event rule "%s": %s'%(self.name, e))
     getData = lambda self: durationEncode(self.value, self.unit)
     def calcOccurrence(self, startJd, endJd, event):
+        myStartEpoch = self.parent['start'].getEpoch()
         startEpoch = max(
-            self.parent['start'].getEpoch(),
+            myStartEpoch,
             self.parent.getEpochFromJd(startJd),
         )
         endEpoch = min(
-            startEpoch + self.getSeconds(),
+            myStartEpoch + self.getSeconds(),
             self.parent.getEpochFromJd(endJd),
         )
         return TimeRangeListOccurrence.newFromStartEnd(
