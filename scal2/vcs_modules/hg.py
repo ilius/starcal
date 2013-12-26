@@ -29,11 +29,10 @@ from mercurial.util import iterlines
 def prepareObj(obj):
     obj.repo = localrepository(mercurial.ui.ui(), obj.vcsDir)
     ###
-    epsTm = 0.01
     obj.est = EventSearchTree()
     for rev_id in obj.repo.changelog:
         epoch = obj.repo[rev_id].date()[0]
-        obj.est.add(epoch, epoch+epsTm, rev_id)
+        obj.est.add(epoch, epoch, rev_id)
 
 def clearObj(obj):
     obj.repo = None

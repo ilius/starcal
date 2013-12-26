@@ -36,7 +36,6 @@ def prepareObj(obj):
     obj.branch = branch
     obj.repo = repo
     ###
-    epsTm = 0.01
     obj.est = EventSearchTree()
     obj.firstRev = None
     obj.lastRev = None
@@ -44,7 +43,7 @@ def prepareObj(obj):
     branch.iter_merge_sorted_revisions(direction='forward'):
         rev = obj.repo.get_revision(rev_id)
         epoch = rev.timestamp
-        obj.est.add(epoch, epoch+epsTm, rev_id)
+        obj.est.add(epoch, epoch, rev_id)
         if not obj.firstRev:
             obj.firstRev = rev
         obj.lastRev = rev

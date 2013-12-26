@@ -52,7 +52,6 @@ from scal2.core import myRaise, log, getAbsWeekNumberFromJd, dataToJson, jwday, 
 from scal2.ics import icsHeader, getIcsTimeByEpoch, getIcsDateByJd, getJdByIcsDate, getEpochByIcsTime
 from scal2.vcs_modules import encodeShortStat, vcsModuleDict
 
-epsTm = 0.01 ## seconds ## configure somewhere? FIXME
 dayLen = 24*3600
 
 icsMinStartYear = 1970
@@ -2703,8 +2702,6 @@ class EventGroup(EventContainer):
        self.occur.clear()
        self.occurCount = 0
     def addOccur(self, t0, t1, eid):
-        if t0 == t1:
-            t1 += epsTm
         self.occur.add(t0, t1, eid)
         self.occurCount += 1
     def updateOccurrenceLog(self, stm0):
