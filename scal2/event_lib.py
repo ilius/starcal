@@ -737,14 +737,11 @@ class StartEventRule(DateAndTimeEventRule):
         'date',
     )
     def calcOccurrence(self, startJd, endJd, event):
-        myEpoch = self.getEpoch()
-        startEpoch = self.parent.getEpochFromJd(startJd)
-        endEpoch = self.parent.getEpochFromJd(endJd)
-        if endEpoch <= myEpoch:
-            return TimeRangeListOccurrence([])
-        if startEpoch < myEpoch:
-            startEpoch = myEpoch
-        return TimeRangeListOccurrence([(startEpoch, endEpoch)])
+        return TimeRangeListOccurrence.newFromStartEnd(
+            max(self.parent.getEpochFromJd(startJd), self.getEpoch()),
+            self.parent.getEpochFromJd(endJd),
+        )
+
 
 @classes.rule.register
 class EndEventRule(DateAndTimeEventRule):
