@@ -348,6 +348,7 @@ class EventRule(SObjBase):
     def calcOccurrence(self, startJd, endJd, event):
         raise NotImplementedError
     getInfo = lambda self: self.desc + ': %s'%self
+    getEpochFromJd = lambda self, jd: getEpochFromJd(jd, tz=self.parent.getTimeZoneObj())
 
 class AllDayEventRule(EventRule):
     jdMatches = lambda self, jd: True
@@ -603,7 +604,7 @@ class DateEventRule(EventRule):
     def getJd(self):
         year, month, day = self.date
         return to_jd(year, month, day, self.getMode())
-    getEpoch = lambda self: self.parent.getEpochFromJd(self.getJd())
+    getEpoch = lambda self: self.getEpochFromJd(self.getJd())
     def setJd(self, jd):
         self.date = jd_to(jd, self.getMode())
     def calcOccurrence(self, startJd, endJd, event):
@@ -682,8 +683,8 @@ class DayTimeEventRule(EventRule):## Moment Event
     def calcOccurrence(self, startJd, endJd, event):
         mySec = getSecondsFromHms(*self.dayTime)
         return TimeListOccurrence(## FIXME
-            self.parent.getEpochFromJd(startJd) + mySec,
-            self.parent.getEpochFromJd(endJd) + mySec + 1,
+            self.getEpochFromJd(startJd) + mySec,
+            self.getEpochFromJd(endJd) + mySec + 1,
             dayLen,
         )
     getInfo = lambda self: _('Time in Day') + ': ' + timeEncode(self.dayTime)
@@ -724,7 +725,7 @@ class DayTimeRangeEventRule(EventRule):
             daySecEnd = daySecStart
         tmList = []
         for jd in range(startJd, endJd):
-            epoch = self.parent.getEpochFromJd(jd)
+            epoch = self.getEpochFromJd(jd)
             tmList.append((epoch+daySecStart, epoch+daySecEnd))
         return TimeRangeListOccurrence(tmList)
 
@@ -738,8 +739,8 @@ class StartEventRule(DateAndTimeEventRule):
     )
     def calcOccurrence(self, startJd, endJd, event):
         return TimeRangeListOccurrence.newFromStartEnd(
-            max(self.parent.getEpochFromJd(startJd), self.getEpoch()),
-            self.parent.getEpochFromJd(endJd),
+            max(self.getEpochFromJd(startJd), self.getEpoch()),
+            self.getEpochFromJd(endJd),
         )
 
 
@@ -753,8 +754,8 @@ class EndEventRule(DateAndTimeEventRule):
     )
     def calcOccurrence(self, startJd, endJd, event):
         return TimeRangeListOccurrence.newFromStartEnd(
-            self.parent.getEpochFromJd(startJd),
-            min(self.parent.getEpochFromJd(endJd), self.getEpoch()),
+            self.getEpochFromJd(startJd),
+            min(self.getEpochFromJd(endJd), self.getEpoch()),
         )
         
 
@@ -792,11 +793,11 @@ class DurationEventRule(EventRule):
         myStartEpoch = self.parent['start'].getEpoch()
         startEpoch = max(
             myStartEpoch,
-            self.parent.getEpochFromJd(startJd),
+            self.getEpochFromJd(startJd),
         )
         endEpoch = min(
             myStartEpoch + self.getSeconds(),
-            self.parent.getEpochFromJd(endJd),
+            self.getEpochFromJd(endJd),
         )
         return TimeRangeListOccurrence.newFromStartEnd(
             startEpoch,
@@ -897,7 +898,7 @@ class CycleLenEventRule(EventRule):
         self.days = arg['days']
         self.extraTime = timeDecode(arg['extraTime'])
     def calcOccurrence(self, startJd, endJd, event):
-        startEpoch = self.parent.getEpochFromJd(startJd)
+        startEpoch = self.getEpochFromJd(startJd)
         eventStartEpoch = event.getStartEpoch()
         ##
         cycleSec = self.days*dayLen + getSecondsFromHms(*self.extraTime)
@@ -909,7 +910,7 @@ class CycleLenEventRule(EventRule):
         ##
         return TimeListOccurrence(
             startEpoch,
-            self.parent.getEpochFromJd(endJd),
+            self.getEpochFromJd(endJd),
             cycleSec,
         )
     getInfo = lambda self: _('Repeat: Every %s Days and %s')%(_(self.days), timeEncode(self.extraTime))
@@ -1512,7 +1513,6 @@ class Event(JsonSObjBase, RuleContainer):
     getJd = lambda self: self.getStartJd()
     setJd = lambda self, jd: None
     setJdExact = lambda self, jd: self.setJd(jd)
-
 
 class SingleStartEndEvent(Event):
     setStartEpoch = lambda self, epoch: self.getAddRule('start').setEpoch(epoch)
