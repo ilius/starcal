@@ -254,6 +254,7 @@ class EventSearchTree:
                     myRaise()
                 else:
                     n += 1
+            self.byId[eid] = MaxHeap()
             return n
     def getLastOfEvent(self, eid):
         try:
