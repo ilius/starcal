@@ -2684,13 +2684,12 @@ class EventGroup(EventContainer):
         else:
             self.eventCache = {}
     def updateOccurrenceEvent(self, event):
-        #print('updateOccurrenceEvent', self.id, self.title, event.id)
-        node = self.occur
+        if core.debugMode:
+            print('updateOccurrenceEvent', self.id, self.title, event.id)
         eid = event.id
-        node.delete(eid)
+        self.occurCount -= self.occur.delete(eid)
         for t0, t1 in event.calcOccurrenceAll().getTimeRangeList():
-            node.add(t0, t1, eid)## debug=True
-            self.occurCount += 1
+            self.addOccur(t0, t1, eid)
     def initOccurrence(self):
         #self.occur = TimeLineTree(offset=self.getEpochFromJd(self.endJd))
         self.occur = EventSearchTree()
