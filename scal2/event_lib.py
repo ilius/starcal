@@ -2710,8 +2710,7 @@ class EventGroup(EventContainer):
             ))
     def updateOccurrence(self):
         stm0 = now()
-        self.occur.clear()
-        self.occurCount = 0
+        self.clear()
         for event, occur in self.calcOccurrenceAll():
             for t0, t1 in occur.getTimeRangeList():
                 self.addOccur(t0, t1, event.id)
