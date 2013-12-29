@@ -2636,7 +2636,6 @@ class EventGroup(EventContainer):
     def updateCache(self, event):
         if event.id in self.eventCache:
             self.eventCache[event.id] = event
-        self.occurCount -= self.occur.delete(event.id)
         event.afterModify()
     def copy(self):
         newGroup = SObjBase.copy(self)
