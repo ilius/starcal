@@ -3744,7 +3744,12 @@ class EventAccountsHolder(JsonObjectsHolder):
                     continue
                 data = jsonToData(open(objFile).read())
                 data['id'] = _id ## FIXME
-                obj = classes.account.byName[data['type']](_id)
+                try:
+                    cls = classes.account.byName[data['type']]
+                except KeyError:## FIXME
+                    log.error('error while loading account file %r: no account type "%s"'%(objFile, data['type']))
+                    return
+                obj = cls(_id)
                 obj.setData(data)
                 self.append(obj)
 
