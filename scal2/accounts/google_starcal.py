@@ -33,7 +33,7 @@ from httplib2 import *
 
 from scal2.path import *
 
-sys.path.append(join(rootDir, 'google_api_client'))## FIXME
+sys.path.append(join(rootDir, 'google-api-python-client'))## FIXME
 
 
 from apiclient.discovery import build
