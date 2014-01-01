@@ -55,7 +55,14 @@ class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
 class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
     _name = 'toolbar'
     desc = _('Toolbar')
-    styleList = ('Icon', 'Text', 'Text below Icon', 'Text beside Icon')
+    styleList = (
+        ## Gnome's naming is not exactly the best here
+        ## And Gnome's order of options is also different from Gtk's enum
+        'Icon',## 'icons', 'Icons only'
+        'Text',## 'text', 'Text only'
+        'Text below Icon',## 'both', 'Text below items'
+        'Text beside Icon',## 'both-horiz', 'Text beside items'
+    )
     defaultItems = []
     defaultItemsDict = {}
     def __init__(self, funcOwner, vertical=False, onPressContinue=False):
