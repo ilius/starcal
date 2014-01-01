@@ -16,15 +16,6 @@ from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.customize import CustomizableCalObj
 
-iconSizeList = [
-    ('Menu', gtk.ICON_SIZE_MENU),
-    ('Small Toolbar', gtk.ICON_SIZE_SMALL_TOOLBAR),
-    ('Button', gtk.ICON_SIZE_BUTTON),
-    ('Large Toolbar', gtk.ICON_SIZE_LARGE_TOOLBAR),
-    ('DND', gtk.ICON_SIZE_DND),
-    ('Dialog', gtk.ICON_SIZE_DIALOG),
-] ## in size order
-iconSizeDict = dict(iconSizeList)
 
 
 @registerSignals
@@ -87,7 +78,7 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
         hbox = gtk.HBox()
         hbox.pack_start(gtk.Label(_('Icon Size')), 0, 0)
         self.iconSizeCombo = gtk.combo_box_new_text()
-        for (i, item) in enumerate(iconSizeList):
+        for (i, item) in enumerate(ud.iconSizeList):
             self.iconSizeCombo.append_text(_(item[0]))
         hbox.pack_start(self.iconSizeCombo, 0, 0)
         optionsWidget.pack_start(hbox, 0, 0)
@@ -111,8 +102,8 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
         #style = self.get_style()
         #style.border_width = 10
         #self.set_style(style)
-    getIconSizeName = lambda self: iconSizeList[self.iconSizeCombo.get_active()][0]
-    setIconSizeName = lambda self, size_name: self.set_icon_size(iconSizeDict[size_name])
+    getIconSizeName = lambda self: ud.iconSizeList[self.iconSizeCombo.get_active()][0]
+    setIconSizeName = lambda self, size_name: self.set_icon_size(ud.iconSizeDict[size_name])
     ## gtk.Toolbar.set_icon_size was previously Deprecated, but it's not Deprecated now!!
     def setButtonsBorder(self, bb):
         for item in self.items:
@@ -169,7 +160,7 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
                 self.appendItem(item)
         ###
         iconSize = data['iconSize']
-        for (i, item) in enumerate(iconSizeList):
+        for (i, item) in enumerate(ud.iconSizeList):
             if item[0]==iconSize:
                 self.iconSizeCombo.set_active(i)
         self.setIconSizeName(iconSize)

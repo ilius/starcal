@@ -118,6 +118,16 @@ textDirDict = {
     'auto': gtk.TEXT_DIR_NONE,
 }
 
+iconSizeList = [
+    ('Menu', gtk.ICON_SIZE_MENU),
+    ('Small Toolbar', gtk.ICON_SIZE_SMALL_TOOLBAR),
+    ('Button', gtk.ICON_SIZE_BUTTON),
+    ('Large Toolbar', gtk.ICON_SIZE_LARGE_TOOLBAR),
+    ('DND', gtk.ICON_SIZE_DND),
+    ('Dialog', gtk.ICON_SIZE_DIALOG),
+] ## in size order
+iconSizeDict = dict(iconSizeList)
+
 ##############################
 
 #if ui.fontCustomEnable:## FIXME
