@@ -351,7 +351,9 @@ def restart():## will not return from function
 
 #########################################################
 
-def ymdRange((y1, m1, d1), (y2, m2, d2), mode=None):
+def ymdRange(date1, date2, mode=None):
+    y1, m1, d1 = date1
+    y2, m2, d2 = date2
     if y1==y2 and m1==m2:
         for d in range(d1, d2):
             yield y1, m1, d
