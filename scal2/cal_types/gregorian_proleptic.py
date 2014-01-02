@@ -76,10 +76,10 @@ def to_jd(year, month, day):
         y = year + 1
     else:
         y = year;
-    a = (14-month)/12
+    a = (14-month)//12
     y = y + 4800 - a
     m = month + 12*a - 3;
-    return day + (153*m+2)/5 + 365*y + y/4 - y/100 + y/400 - 32045
+    return day + (153*m+2)//5 + 365*y + y//4 - y//100 + y//400 - 32045
 
 def jd_to(jd):
     ## Formula from The Calendar FAQ by Claus Tondering
@@ -87,14 +87,14 @@ def jd_to(jd):
     ## NOTE: Coded from scratch from mathematical formulas, not copied from
     ## the Boost licensed source code
     a = jd + 32044
-    b = (4*a + 3) / 146097
-    c = a - 146097*b/4
-    d = (4*c + 3) / 1461
-    e = c - 1461*d/4
-    m = (5*e + 2) / 153
-    day = e - (153*m+2)/5 + 1
-    month = m + 3 - 12*(m/10)
-    year = 100*b + d - 4800 + (m/10)
+    b = (4*a + 3) // 146097
+    c = a - 146097*b // 4
+    d = (4*c + 3) // 1461
+    e = c - 1461*d // 4
+    m = (5*e + 2) // 153
+    day = e - (153*m+2)//5 + 1
+    month = m + 3 - 12*(m//10)
+    year = 100*b + d - 4800 + (m//10)
     ## If year is -ve then is BC.    In Gregorian there is no year 0, but the maths
     ## is easier if we pretend there is, so internally year of 0 = 1BC = -1 outside
     if year < 1:

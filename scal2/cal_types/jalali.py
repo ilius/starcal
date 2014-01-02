@@ -82,8 +82,6 @@ def getMonthNameAb(m, y=None):
 
 getMonthsInYear = lambda y: 12
 
-from math import floor, ceil
-ifloor = lambda x: int(floor(x))
 
 epoch = 1948321
 minMonthLen = 29
@@ -96,6 +94,7 @@ monthLen = (31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29)
 
 import os
 from scal2.path import sysConfDir, confDir
+from scal2.utils import iceil
 
 ## Here load user options(jalaliAlg) from file
 sysConfPath = '%s/%s.conf'%(sysConfDir, name)
@@ -131,9 +130,9 @@ def isLeap(year):
         ## taken from farsiweb code writen by Roozbeh Pournader <roozbeh@sharif.edu>
         ## and Mohammad Toossi <mohammad@bamdad.org> at 2001
         jy = year - 979
-        gdays = ( 365*jy + (jy/33)*8 + (jy%33+3)/4    +    79 ) % 146097
+        gdays = ( 365*jy + (jy//33)*8 + (jy%33+3)//4    +    79 ) % 146097
         leap = True
-        if gdays >= 36525: # 36525 = 365*100 + 100/4
+        if gdays >= 36525: # 36525 = 365*100 + 100//4
             gdays -= 1
             gdays = gdays % 36524
             if gdays >= 365:
@@ -162,19 +161,17 @@ def to_jd(year, month, day):
             mm = (month - 1) * 31
         else:
             mm = ((month - 1) * 30) + 6
-        return ifloor(
-            day + mm + \
-            ifloor(((epyear * 682) - 110) / 2816) + \
+        return day + mm + \
+            ((epyear * 682) - 110) // 2816 + \
             (epyear - 1) * 365 + \
-            ifloor(epbase / 2820) * 1029983 + \
+            epbase // 2820 * 1029983 + \
             epoch - 1
-        )
     elif jalaliAlg==0:
         ## Use 33 year algorithm
         ##taken from farsiweb code writen by Roozbeh Pournader <roozbeh@sharif.edu>
         ## and Mohammad Toossi <mohammad@bamdad.org> at 2001
         y2 = year-979
-        jdays = 365*y2 + (y2/33)*8 + (y2%33+3)/4
+        jdays = 365*y2 + (y2//33)*8 + (y2%33+3)//4
         for i in range(month-1):
             jdays += monthLen[i]
         jdays += (day-1)
@@ -190,15 +187,15 @@ def jd_to(jd):
             ycycle = 2820
         else :
             aux1, aux2 = divmod(cyear, 366)
-            ycycle = floor(((2134 * aux1) + (2816 * aux2) + 2815) / 1028522) + aux1 + 1
-        year = ifloor(2820*cycle + ycycle + 474)
+            ycycle = ((2134 * aux1) + (2816 * aux2) + 2815) // 1028522 + aux1 + 1
+        year = 2820*cycle + ycycle + 474
         if year <= 0 :
             year -= 1
         yday = jd - to_jd(year, 1, 1) + 1
         if yday <= 186:
-            month = int(ceil(yday / 31))
+            month = iceil(yday // 31)
         else:
-            month = int(ceil((yday - 6) / 30))
+            month = iceil((yday - 6) // 30)
         day = int(jd - to_jd(year, month, 1)) + 1
         if day > 31:
             day -= 31
@@ -211,14 +208,14 @@ def jd_to(jd):
         ## Use 33 year algorithm
         ##taken from farsiweb code writen by Roozbeh Pournader <roozbeh@sharif.edu> and Mohammad Toossi <mohammad@bamdad.org> at 2001
         jdays = int(jd - GREGORIAN_EPOCH - 584101)
-        # -(1600*365 + 1600/4 - 1600/100 + 1600/400) + 365    -79 +1== -584101
+        # -(1600*365 + 1600//4 - 1600//100 + 1600//400) + 365    -79 +1== -584101
         #print('jdays =',jdays)
-        j_np = jdays / 12053
+        j_np = jdays // 12053
         jdays %= 12053
         year = 979+33*j_np+4*(jdays/1461)
         jdays %= 1461
         if jdays >= 366:
-            year += (jdays-1)/365
+            year += (jdays-1)//365
             jdays = (jdays-1)%365
         month = 12
         for i in range(11):

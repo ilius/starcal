@@ -35,9 +35,6 @@ getMonthNameAb = lambda m, y=None: monthNameAb.__getitem__(m-1)
 
 getMonthsInYear = lambda y: 12
 
-from math import floor, ceil
-ifloor = lambda x: int(floor(x))
-
 
 epoch = 1948439.5
 minMonthLen = 29
@@ -64,6 +61,7 @@ from os.path import join, isfile
 from scal2.path import sysConfDir, confDir, modDir
 from scal2.json_utils import jsonToData, dataToPrettyJson
 from scal2.lib import OrderedDict
+from scal2.utils import iceil, ifloor
 
 
 oldDbPath = '%s/hijri.db'%confDir
@@ -192,12 +190,11 @@ monthDb.load()
 
 is_leap = lambda year: (((year * 11) + 14) % 30) < 11
 
-to_jd_c = lambda year, month, day: ifloor(
-    day + ceil(29.5 * (month - 1)) + \
+to_jd_c = lambda year, month, day:\
+    day + iceil(29.5 * (month - 1)) + \
     (year - 1) * 354               + \
-    floor((3 + (11 * year)) / 30)  + \
+    (11*year + 3) // 30  + \
     epoch
-)
 
 def to_jd(year, month, day):
     if hijriUseDB:## and hijriAlg==0
@@ -213,10 +210,15 @@ def jd_to(jd):
         date = monthDb.getDateFromJd(jd)
         if date:
             return date
-    ##jd = floor(jd) + 0.5
-    year = ifloor(((30 * (jd - epoch)) + 10646) / 10631)
-    month = int(min(12, ceil((jd - (29 + to_jd(year, 1, 1))) / 29.5) + 1))
-    day = int(jd - to_jd(year, month, 1)) + 1
+    ##jd = ifloor(jd) + 0.5
+    year = ((30 * (jd - epoch)) + 10646) // 10631
+    month = min(
+        12,
+        iceil(
+            (jd - (29 + to_jd(year, 1, 1))) / 29.5
+        ) + 1
+    )
+    day = jd - to_jd(year, month, 1) + 1
     return year, month, day
 
 
