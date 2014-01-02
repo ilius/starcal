@@ -102,7 +102,7 @@ def earthDistance(lat1, lng1, lat2, lng2):
     #return ang*180/pi
 
 def readLocationData():
-    lines = file(dataDir+'/locations.txt').read().split('\n')
+    lines = open(dataDir+'/locations.txt').read().split('\n')
     cityData = []
     country = ''
     for l in lines:

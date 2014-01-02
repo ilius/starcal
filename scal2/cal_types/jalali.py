@@ -101,14 +101,14 @@ from scal2.path import sysConfDir, confDir
 sysConfPath = '%s/%s.conf'%(sysConfDir, name)
 if os.path.isfile(sysConfPath):
     try:
-        exec(file(sysConfPath).read())
+        exec(open(sysConfPath).read())
     except:
         myRaise(__file__)
 
 confPath = '%s/%s.conf'%(confDir, name)
 if os.path.isfile(confPath):
     try:
-        exec(file(confPath).read())
+        exec(open(confPath).read())
     except:
         myRaise(__file__)
 
@@ -118,7 +118,7 @@ def save():## Here save user options to file
     text = ''
     text += 'monthNameMode=%s\n'%monthNameMode
     text += 'jalaliAlg=%s\n'%jalaliAlg
-    file(confPath, 'w').write(text)
+    open(confPath, 'w').write(text)
 
 
 
