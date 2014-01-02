@@ -77,7 +77,7 @@ toStr = lambda s: s.encode('utf8') if isinstance(s, unicode) else str(s)
 toUnicode = lambda s: s if isinstance(s, unicode) else str(s).decode('utf8')
 
 
-def cmpVersion(v0, v1):
+def versionLessThan(v0, v1):
     if v0=='':
         if v1=='':
             return 0
@@ -85,8 +85,7 @@ def cmpVersion(v0, v1):
             return -1
     elif v1=='':
         return 1
-    return cmp([ int(p) for p in v0.split('.') ], [ int(p) for p in v1.split('.') ])
-
+    return [ int(p) for p in v0.split('.') ] < [ int(p) for p in v1.split('.') ]
 
 def printError(text):
     sys.stderr.write('%s\n'%text)

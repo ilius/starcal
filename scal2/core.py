@@ -533,7 +533,7 @@ else:
     prefVersion = version
     del version
 
-prefIsOlderThan = lambda v: cmpVersion(prefVersion, v) < 0
+prefIsOlderThan = lambda v: versionLessThan(prefVersion, v)
 
 try:## just for compatibility
     calTypes.activeNames = activeCalNames

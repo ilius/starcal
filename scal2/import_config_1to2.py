@@ -24,7 +24,6 @@ print(dirname(dirname(__file__)))
 sys.path.insert(0, dirname(dirname(__file__)))
 
 from scal2.path import *
-from scal2.utils import cmpVersion
 from scal2.locale_man import langDir
 from scal2.plugin_man import loadPlugin
 

@@ -43,7 +43,7 @@ if not isdir(confDir):
         myRaise()
     restartLow()
 
-from scal2.utils import toStr, toUnicode, cmpVersion
+from scal2.utils import toStr, toUnicode, versionLessThan
 from scal2.cal_types import calTypes
 from scal2 import core
 
@@ -1276,7 +1276,7 @@ def main():
     ###############################
     ui.init()
     ###############################
-    if cmpVersion(event_lib.info.version, '2.2.2') < 0:## right place? FIXME
+    if versionLessThan(event_lib.info.version, '2.2.2'):## right place? FIXME
         from scal2.ui_gtk.event.bulk_save_timezone import BulkSaveTimeZoneDialog
         BulkSaveTimeZoneDialog().run()
     event_lib.info.updateAndSave()
