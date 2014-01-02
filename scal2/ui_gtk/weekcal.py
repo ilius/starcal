@@ -255,15 +255,21 @@ class MainMenuToolbarItem(ToolbarItem):
     def updateImage(self):
         self.set_property('label-widget', imageFromFile(ui.wcal_toolbar_mainMenu_icon))
         self.show_all()
-    def onClicked(self, widget=None):
+    def getMenuPos(self):
         wcal = self.parent.parent
         x, y, w, h = self.allocation
         x0, y0 = self.translate_coordinates(wcal, 0, 0)
-        wcal.emit(
+        return (
+            x0 if rtl else x0+w,
+            y0+h,
+        )
+    def onClicked(self, widget=None):
+        x, y = self.getMenuPos()
+        self.parent.parent.emit(
             'popup-menu-main',
             0,
-            x0 if rtl else x0+w,
-            y0+h
+            x,
+            y,
         )
     def onIconChanged(self, widget, icon):
         if not icon:
@@ -771,7 +777,7 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         'page_down',
         'j', 'n',
         'end',
-        #'f10', 'm',
+        'f10', 'm',
     )
     def __init__(self):
         gtk.HBox.__init__(self)
@@ -911,12 +917,12 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
             self.jdPlus(-7)
         elif kname in ('page_down', 'j', 'n'):
             self.jdPlus(7)
-        #elif kname in ('f10', 'm'):
-        #    if event.state & gdk.SHIFT_MASK:
-        #        # Simulate right click (key beside Right-Ctrl)
-        #        self.emit('popup-menu-cell', event.time, *self.getCellPos())
-        #    else:
-        #        self.emit('popup-menu-main', event.time, *self.getMainMenuPos())
+        elif kname in ('f10', 'm'):
+            if event.state & gdk.SHIFT_MASK:
+                # Simulate right click (key beside Right-Ctrl)
+                self.emit('popup-menu-cell', event.time, *self.getCellPos())
+            else:
+                self.emit('popup-menu-main', event.time, *self.getMainMenuPos())
         else:
             return False
         return True
@@ -932,6 +938,20 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         int(self.allocation.width / 2.0),
         (ui.cell.weekDayIndex+1) * self.allocation.height / 7.0,
     )
+    def getToolbar(self):
+        for item in self.items:
+            if item.enable and item._name == 'toolbar':
+                return item
+    def getMainMenuPos(self):
+        toolbar = self.getToolbar()
+        if toolbar:
+            for item in toolbar.items:
+                if item.enable and item._name == 'mainMenu':
+                    return item.getMenuPos()
+        if rtl:
+            return self.get_allocation().width, 0
+        else:
+            return 0, 0
 
 
     
