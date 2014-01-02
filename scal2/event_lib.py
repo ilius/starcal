@@ -29,7 +29,8 @@ from scal2.lib import OrderedDict
 
 from .path import *
 
-from scal2.utils import printError, toStr, arange, ifloor, iceil, findNearestIndex
+from scal2.utils import printError, arange, ifloor, iceil, findNearestIndex
+from scal2.utils import toStr
 from scal2.os_utils import makeDir
 from scal2.interval_utils import *
 from scal2.time_utils import *
