@@ -210,7 +210,7 @@ class TextPlug(BasePlugin, TextPlugUI):
         ####
         if not locName:
             confNeedsSave = True
-            locName, lat, lng = guessLocation(cityData)
+            locName, lat, lng = guessLocation(self.cityData)
             method = 'Tehran'
             ## guess method from location FIXME
         #######
