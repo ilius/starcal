@@ -33,7 +33,7 @@ from scal2 import event_lib
 from scal2 import ui
 
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, labelStockMenuItem, TimeZoneComboBoxEntry
-from scal2.ui_gtk.utils import dialog_add_button, DateTypeCombo, confirm
+from scal2.ui_gtk.utils import dialog_add_button, DateTypeCombo, confirm, getStyleColor
 
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
@@ -641,7 +641,7 @@ class SingleGroupComboBox(gtk.ComboBox):
         activeGid = self.get_active()
         ls.clear()
         ###
-        rowBgColor = gdkColorToRgb(self.style.base[gtk.STATE_NORMAL])## bg color of non-selected rows FIXME
+        rowBgColor = gdkColorToRgb(getStyleColor(self))## bg color of non-selected rows FIXME
         for group in ui.eventGroups:
             if not group.enable:## FIXME
                 continue
