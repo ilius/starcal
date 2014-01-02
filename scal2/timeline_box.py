@@ -72,8 +72,8 @@ class Box:
         ####
         self.hasBorder = False
         self.tConflictBefore = []
-    mt_cmp = lambda self, other: cmp(self.mt, other.mt)
-    dt_cmp = lambda self, other: -cmp(self.dt, other.dt)
+    mt_key = lambda self: self.mt
+    dt_key = lambda self: -self.dt
     #########
     def setPixelValues(self, timeStart, pixelPerSec, beforeBoxH, maxBoxH):
         self.x = (self.t0 - timeStart) * pixelPerSec
