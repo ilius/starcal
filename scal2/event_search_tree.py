@@ -120,12 +120,11 @@ class EventSearchTree:
             node = Node(mt)
             node.add(t0, t1, dt, eid)
             return node
-        cm = cmp(mt, node.mt)
-        if cm < 0:
+        if mt < node.mt:
             node.left  = self.addStep(node.left , t0, t1, mt, dt, eid)
-        elif cm > 0:
+        elif mt > node.mt:
             node.right = self.addStep(node.right, t0, t1, mt, dt, eid)
-        else:## cm == 0
+        else:## mt == node.mt
             node.add(t0, t1, dt, eid)
         ## node = self.doCountBalancing(node)
         if isRed(node.right) and not isRed(node.left):
@@ -222,12 +221,11 @@ class EventSearchTree:
     def deleteStep(self, node, mt, dt, eid):
         if not node:
             return
-        cm = cmp(mt, node.mt)
-        if cm < 0:
+        if mt < node.mt:
             node.left = self.deleteStep(node.left, mt, dt, eid)
-        elif cm > 0:
+        elif mt > node.mt:
             node.right = self.deleteStep(node.right, mt, dt, eid)
-        else:## cm == 0
+        else:## mt == node.mt
             node.events.delete(dt, eid)
             if not node.events:## Cleaning tree, not essential
                 if not node.right:
