@@ -213,7 +213,7 @@ def jd_to(jd):
         #print('jdays =',jdays)
         j_np = jdays // 12053
         jdays %= 12053
-        year = 979+33*j_np+4*(jdays/1461)
+        year = 979+33*j_np+4*(jdays//1461)
         jdays %= 1461
         if jdays >= 366:
             year += (jdays-1)//365
