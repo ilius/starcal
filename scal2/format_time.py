@@ -355,7 +355,7 @@ def testOutput():
     from time import strftime
     binFmt = compileTmFormat('%Y/%m/%d')
     year = 2010
-    month = 01
+    month = 1
     day = 4
     jd = to_jd(year, month, day, core.DATE_GREG)
     tm = (year, month, day, 12, 10, 0, 15, 1, 1)
