@@ -133,6 +133,8 @@ class Column(gtk.Widget, ColumnBase):
         #self.connect('button-press-event', self.buttonPress)
         #self.connect('event', show_event)
         self.wcal = wcal
+    def getContext(self):
+        return self.get_window().cairo_create()
     def do_realize(self):
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(
@@ -336,7 +338,7 @@ class WeekDaysColumn(Column):
         Column.__init__(self, wcal)
         self.connect('expose-event', self.onExposeEvent)
     def onExposeEvent(self, widget=None, event=None):
-        cr = self.get_window().cairo_create()
+        cr = self.getContext()
         self.drawBg(cr)
         self.drawTextList(
             cr,
@@ -360,7 +362,7 @@ class PluginsTextColumn(Column):
         Column.__init__(self, wcal)
         self.connect('expose-event', self.onExposeEvent)
     def onExposeEvent(self, widget=None, event=None):
-        cr = self.get_window().cairo_create()
+        cr = self.getContext()
         self.drawBg(cr)
         self.drawTextList(
             cr,
@@ -383,7 +385,7 @@ class EventsIconColumn(Column):
         Column.__init__(self, wcal)
         self.connect('expose-event', self.onExposeEvent)
     def onExposeEvent(self, widget=None, event=None):
-        cr = self.get_window().cairo_create()
+        cr = self.getContext()
         self.drawBg(cr)
         ###
         w = self.get_allocation().width
@@ -460,7 +462,7 @@ class EventsCountColumn(Column):
             (line, None),
         ]
     def onExposeEvent(self, widget=None, event=None):
-        cr = self.get_window().cairo_create()
+        cr = self.getContext()
         self.drawBg(cr)
         ###
         w = self.get_allocation().width
@@ -524,7 +526,7 @@ class EventsTextColumn(Column):
             data.append((line, color))
         return data
     def onExposeEvent(self, widget=None, event=None):
-        cr = self.get_window().cairo_create()
+        cr = self.getContext()
         self.drawBg(cr)
         self.drawTextList(
             cr,
@@ -579,7 +581,7 @@ class EventsBoxColumn(Column):
         tbox.drawBoxBG(cr, box, x, y, w, h)
         tbox.drawBoxText(cr, box, x, y, w, h, self)
     def onExposeEvent(self, widget=None, event=None):
-        cr = self.get_window().cairo_create()
+        cr = self.getContext()
         self.drawBg(cr)
         if not self.boxes:
             return
@@ -645,7 +647,7 @@ class DaysOfMonthColumn(Column):
         ###
         self.connect('expose-event', self.onExposeEvent)
     def onExposeEvent(self, widget=None, event=None):
-        cr = self.get_window().cairo_create()
+        cr = self.getContext()
         self.drawBg(cr)
         try:
             font = ui.wcalTypeParams[self.index]['font']
