@@ -519,8 +519,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(
             self.get_parent_window(),
-            width=self.allocation.width,
-            height=self.allocation.height,
+            width=self.get_allocation().width,
+            height=self.get_allocation().height,
             window_type=gdk.WINDOW_TOPLEVEL,
             wclass=gdk.INPUT_OUTPUT,
             event_mask=self.get_events() \
@@ -530,7 +530,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.get_window().set_user_data(self)
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.get_window().move_resize(*self.allocation)
+        self.get_window().move_resize(*self.get_allocation())
         self.get_window().set_decorations(gdk.DECORE_CLOSE)
         self.get_window().set_functions(gdk.FUNC_CLOSE)
     '''
@@ -904,7 +904,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         x = wx+dx
         y = wy+dy
         if rtl:
-            #mw = menu.allocation.width
+            #mw = menu.get_allocation().width
             #if mw < 2:# menu width
             mw = 145 ## FIXME
             x -= mw
@@ -920,12 +920,12 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         x = wx+dx
         y = wy+dy
         if rtl:
-            mw = menu.allocation.width
+            mw = menu.get_allocation().width
             if mw < 2:# menu width
                 mw = 145
             x -= mw
         menu.popup(None, None, lambda m: (x, y, True), 3, etime)
-        #self.menuMainWidth = menu.allocation.width
+        #self.menuMainWidth = menu.get_allocation().width
         ui.updateFocusTime()
     def addToGroupFromMenu(self, menu, group, eventType):
         #print('addToGroupFromMenu', group.title, eventType)

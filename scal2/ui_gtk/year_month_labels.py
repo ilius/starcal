@@ -139,12 +139,12 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
     def buttonPress(self, widget, event):
         if event.button==3:
             x, y = self.get_window().get_origin()
-            y += self.allocation.height
+            y += self.get_allocation().height
             if rtl:
-                mw = self.menu.allocation.width
-                #print('menu.allocation.width', mw)
+                mw = self.menu.get_allocation().width
+                #print('menu.get_allocation().width', mw)
                 if mw>1:
-                    x -= (mw - self.allocation.width)
+                    x -= (mw - self.get_allocation().width)
             #x -= 7 ## ????????? because of menu padding
             self.menu.popup(None, None, lambda widget: (x, y, True), event.button, event.time)
             ui.updateFocusTime()
@@ -157,8 +157,8 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
             return
         cr = self.get_window().cairo_create()
         cr.set_source_color(self.highlightColor)
-        #print(tuple(self.allocation), tuple(self.label.allocation))
-        x, y, w, h = self.allocation
+        #print(tuple(self.get_allocation()), tuple(self.label.get_allocation()))
+        x, y, w, h = self.get_allocation()
         cr.rectangle(0, 0, w, 1)
         cr.fill()
         cr.rectangle(0, h-1, w, 1)
@@ -172,7 +172,7 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
         #self.drag_unhighlight()
         if self.get_window()==None:
             return
-        x, y, w, h = self.allocation
+        x, y, w, h = self.get_allocation()
         self.get_window().clear_area(0, 0, w, 1)
         self.get_window().clear_area(0, h-1, w, 1)
         self.get_window().clear_area(0, 0, 1, h)
@@ -281,7 +281,7 @@ class IntLabel(gtk.EventBox):
         if event.button==3:
             self.updateMenu()
             x, y = self.get_window().get_origin()
-            y += self.allocation.height
+            y += self.get_allocation().height
             x -= 7 ## ????????? because of menu padding
             self.menu.popup(None, None, lambda widget: (x, y, True), event.button, event.time)
             ui.updateFocusTime()
@@ -325,7 +325,7 @@ class IntLabel(gtk.EventBox):
             return
         cr = self.get_window().cairo_create()
         cr.set_source_color(self.highlightColor)
-        x, y, w, h = self.allocation
+        x, y, w, h = self.get_allocation()
         cr.rectangle(0, 0, w, 1)
         cr.fill()
         cr.rectangle(0, h-1, w, 1)
@@ -339,7 +339,7 @@ class IntLabel(gtk.EventBox):
         #self.drag_unhighlight()
         if self.get_window()==None:
             return
-        x, y, w, h = self.allocation
+        x, y, w, h = self.get_allocation()
         self.get_window().clear_area(0, 0, w, 1)
         self.get_window().clear_area(0, h-1, w, 1)
         self.get_window().clear_area(0, 0, 1, h)

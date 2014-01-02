@@ -319,8 +319,8 @@ class WeeklyScheduleWidget(gtk.Widget):
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(
             self.get_parent_window(),
-            width=self.allocation.width,
-            height=self.allocation.height,
+            width=self.get_allocation().width,
+            height=self.get_allocation().height,
             window_type=gdk.WINDOW_CHILD,
             wclass=gdk.INPUT_OUTPUT,
             event_mask=self.get_events() | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK
@@ -331,7 +331,7 @@ class WeeklyScheduleWidget(gtk.Widget):
         self.get_window().set_user_data(self)
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.get_window().move_resize(*self.allocation)
+        self.get_window().move_resize(*self.get_allocation())
         #self.onExposeEvent()
     def onExposeEvent(self, widget=None, event=None):
         self.drawCairo(self.get_window().cairo_create())
@@ -339,8 +339,8 @@ class WeeklyScheduleWidget(gtk.Widget):
         if not self.data:
             return
         t0 = now()
-        w = self.allocation.width
-        h = self.allocation.height
+        w = self.get_allocation().width
+        h = self.get_allocation().height
         cr.rectangle(0, 0, w, h)
         fillColor(cr, ui.bgColor)
         textColor = ui.textColor
@@ -466,7 +466,7 @@ class WeeklyScheduleWindow(gtk.Dialog):
         self._widget.data = self.term.getWeeklyScheduleData(self.currentWOnlyCheck.get_active())
         self._widget.queue_draw()
     def exportToSvg(self, fpath):
-        x, y, w, h = self._widget.allocation
+        x, y, w, h = self._widget.get_allocation()
         fo = open(fpath, 'w')
         surface = cairo.SVGSurface(fo, w, h)
         cr0 = cairo.Context(surface)

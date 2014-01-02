@@ -137,8 +137,8 @@ class Column(gtk.Widget, ColumnBase):
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(
             self.get_parent_window(),
-            width=self.allocation.width,
-            height=self.allocation.height,
+            width=self.get_allocation().width,
+            height=self.get_allocation().height,
             window_type=gdk.WINDOW_CHILD,
             wclass=gdk.INPUT_OUTPUT,
             event_mask=self.get_events() \
@@ -148,10 +148,10 @@ class Column(gtk.Widget, ColumnBase):
         self.get_window().set_user_data(self)
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.get_window().move_resize(*self.allocation)
+        self.get_window().move_resize(*self.get_allocation())
     def drawBg(self, cr):
-        w = self.allocation.width
-        h = self.allocation.height
+        w = self.get_allocation().width
+        h = self.get_allocation().height
         cr.rectangle(0, 0, w, h)
         fillColor(cr, ui.bgColor)
         rowH = h/7.0
@@ -165,8 +165,8 @@ class Column(gtk.Widget, ColumnBase):
                 drawCursorBg(cr, 0, y0, w, rowH)
                 fillColor(cr, ui.cursorBgColor)
         if ui.wcalGrid:
-            w = self.allocation.width
-            h = self.allocation.height
+            w = self.get_allocation().width
+            h = self.get_allocation().height
             setColor(cr, ui.wcalGridColor)
             ###
             cr.rectangle(w-1, 0, 1, h)
@@ -176,8 +176,8 @@ class Column(gtk.Widget, ColumnBase):
                 cr.rectangle(0, i*rowH, w, 1)
                 cr.fill()
     def drawCursorFg(self, cr):
-        w = self.allocation.width
-        h = self.allocation.height
+        w = self.get_allocation().width
+        h = self.get_allocation().height
         rowH = h/7.0
         for i in range(7):
             c = self.wcal.status[i]
@@ -186,8 +186,8 @@ class Column(gtk.Widget, ColumnBase):
                 drawCursorOutline(cr, 0, y0, w, rowH)
                 fillColor(cr, ui.cursorOutColor)
     def drawTextList(self, cr, textData, font=None):
-        w = self.allocation.width
-        h = self.allocation.height
+        w = self.get_allocation().width
+        h = self.get_allocation().height
         ###
         rowH = h/7.0
         itemW = w - ui.wcalPadding
@@ -257,7 +257,7 @@ class MainMenuToolbarItem(ToolbarItem):
         self.show_all()
     def getMenuPos(self):
         wcal = self.get_parent().get_parent()
-        x, y, w, h = self.allocation
+        x, y, w, h = self.get_allocation()
         x0, y0 = self.translate_coordinates(wcal, 0, 0)
         return (
             x0 if rtl else x0+w,
@@ -386,8 +386,8 @@ class EventsIconColumn(Column):
         cr = self.get_window().cairo_create()
         self.drawBg(cr)
         ###
-        w = self.allocation.width
-        h = self.allocation.height
+        w = self.get_allocation().width
+        h = self.get_allocation().height
         ###
         rowH = h/7.0
         itemW = w - ui.wcalPadding
@@ -463,8 +463,8 @@ class EventsCountColumn(Column):
         cr = self.get_window().cairo_create()
         self.drawBg(cr)
         ###
-        w = self.allocation.width
-        h = self.allocation.height
+        w = self.get_allocation().width
+        h = self.get_allocation().height
         ###
         self.drawTextList(
             cr,
@@ -554,7 +554,7 @@ class EventsBoxColumn(Column):
         self.connect('expose-event', self.onExposeEvent)
     def updateData(self):
         self.timeStart = getEpochFromJd(self.wcal.status[0].jd)
-        self.pixelPerSec = float(self.allocation.height) / self.timeWidth ## pixel/second
+        self.pixelPerSec = float(self.get_allocation().height) / self.timeWidth ## pixel/second
         self.borderTm = 0 ## tbox.boxMoveBorder / self.pixelPerSec ## second
         self.boxes = tbox.calcEventBoxes(
             self.timeStart,
@@ -584,8 +584,8 @@ class EventsBoxColumn(Column):
         if not self.boxes:
             return
         ###
-        w = self.allocation.width
-        h = self.allocation.height
+        w = self.get_allocation().width
+        h = self.get_allocation().height
         ###
         for box in self.boxes:
             box.setPixelValues(
@@ -895,7 +895,7 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         x, y = self.get_pointer()
         #y += 10
         ###
-        i = int(event.y * 7.0 / self.allocation.height)
+        i = int(event.y * 7.0 / self.get_allocation().height)
         cell = self.status[i]
         self.gotoJd(cell.jd)
         if event.type==gdk._2BUTTON_PRESS:
@@ -935,8 +935,8 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         else:
             return False
     getCellPos = lambda self: (
-        int(self.allocation.width / 2.0),
-        (ui.cell.weekDayIndex+1) * self.allocation.height / 7.0,
+        int(self.get_allocation().width / 2.0),
+        (ui.cell.weekDayIndex+1) * self.get_allocation().height / 7.0,
     )
     def getToolbar(self):
         for item in self.items:

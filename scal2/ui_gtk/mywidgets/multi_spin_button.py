@@ -163,7 +163,7 @@ class MultiSpinButton(gtk.SpinButton):
     def _button_press(self, widget, gevent):
         gwin = gevent.window
         #print(gwin.get_data('name'))
-        #r = self.allocation ; print('allocation', r[0], r[2])
+        #r = self.get_allocation() ; print('allocation', r[0], r[2])
         if not self.has_focus():
             self.grab_focus()
         if self.get_editable():

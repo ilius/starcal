@@ -137,7 +137,7 @@ class ExportDialog(gtk.Dialog):
         import cairo
         hspace = 20
         mcal = ui.mainWin.mcal
-        x, y, w, h0 = mcal.allocation
+        x, y, w, h0 = mcal.get_allocation()
         n = len(monthList)
         h = n*h0 + (n-1)*hspace
         fo = open(path+'.svg', 'w')

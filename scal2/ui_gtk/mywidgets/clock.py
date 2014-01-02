@@ -138,8 +138,8 @@ class FClockWidget(gtk.DrawingArea): ## Time is in Local
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(
                                                          self.get_parent_window(),
-                                                         width=self.allocation.width,
-                                                         height=self.allocation.height,
+                                                         width=self.get_allocation().width,
+                                                         height=self.get_allocation().height,
                                                          window_type=gdk.WINDOW_CHILD,
                                                          wclass=gdk.INPUT_OUTPUT,
                                                          event_mask=self.get_events() | gdk.EXPOSURE_MASK
@@ -148,7 +148,7 @@ class FClockWidget(gtk.DrawingArea): ## Time is in Local
         self.get_window().set_user_data(self)
         self.style.attach(self.window)
         self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.get_window().move_resize(*self.allocation)
+        self.get_window().move_resize(*self.get_allocation())
         """
 
 

@@ -235,8 +235,8 @@ class MonthCal(gtk.Widget, CalBase):
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(
             self.get_parent_window(),
-            width=self.allocation.width,
-            height=self.allocation.height,
+            width=self.get_allocation().width,
+            height=self.get_allocation().height,
             window_type=gdk.WINDOW_CHILD,
             wclass=gdk.INPUT_OUTPUT,
             event_mask=self.get_events() \
@@ -246,15 +246,15 @@ class MonthCal(gtk.Widget, CalBase):
         self.get_window().set_user_data(self)
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.get_window().move_resize(*self.allocation)
+        self.get_window().move_resize(*self.get_allocation())
     def drawAll(self, widget=None, event=None, cr=None, cursor=True):
         #?????? Must enhance (only draw few cells, not all cells)
-        #print(now(), 'drawAll'#, tuple(event.area), tuple(self.allocation))
+        #print(now(), 'drawAll'#, tuple(event.area), tuple(self.get_allocation()))
         if event:
             xu, yu, wu, hu = tuple(event.area)
             #print('expose-event area:', xu, yu, wu, hu)
         self.calcCoord()
-        x, y, w, h = self.allocation
+        x, y, w, h = self.get_allocation()
         if not cr:
             cr = self.get_window().cairo_create()
             #cr.set_line_width(0)#??????????????
@@ -488,7 +488,7 @@ class MonthCal(gtk.Widget, CalBase):
         status = getCurrentMonthStatus()
         if yPos == -1 or xPos == -1:
             self.emit('popup-menu-main', event.time, event.x, event.y)
-            #self.menuMainWidth = self.menuMain.allocation.width ## menu.allocation[3]
+            #self.menuMainWidth = self.menuMain.get_allocation().width ## menu.get_allocation()[3]
         elif yPos >= 0 and xPos >= 0:
             cell = status[yPos][xPos]
             self.changeDate(*cell.dates[calTypes.primary])
@@ -499,7 +499,7 @@ class MonthCal(gtk.Widget, CalBase):
                 self.emit('popup-menu-cell', event.time, event.x, event.y)
         return True
     def calcCoord(self):## calculates coordidates (x and y of cells centers)
-        x, y, w, h = self.allocation
+        x, y, w, h = self.get_allocation()
         if rtl:
             self.cx = [
                 (w - ui.mcalLeftMargin) * (13.0 - 2*i) / 14.0
@@ -574,7 +574,7 @@ class MonthCal(gtk.Widget, CalBase):
     def getMainMenuPos(self):## FIXME
         if rtl:
             return (
-                int(self.allocation.width - ui.mcalLeftMargin/2.0),
+                int(self.get_allocation().width - ui.mcalLeftMargin/2.0),
                 int(ui.mcalTopMargin/2.0),
             )
         else:

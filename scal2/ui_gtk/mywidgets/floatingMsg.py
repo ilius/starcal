@@ -107,8 +107,8 @@ class FloatingMsg(gtk.Widget):
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(
             self.get_parent_window(),
-            width=self.allocation.width,
-            height=self.allocation.height,
+            width=self.get_allocation().width,
+            height=self.get_allocation().height,
             window_type=gdk.WINDOW_CHILD,
             wclass=gdk.INPUT_OUTPUT,
             event_mask=self.get_events() | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK
@@ -117,7 +117,7 @@ class FloatingMsg(gtk.Widget):
         self.get_window().set_user_data(self)
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.get_window().move_resize(*self.allocation)
+        self.get_window().move_resize(*self.get_allocation())
     def onExposeEvent(self, widget, event):
         self.cr = self.get_window().cairo_create()
         #######
@@ -170,8 +170,8 @@ class MyLabel(gtk.Widget):
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(
             self.get_parent_window(),
-            width=self.allocation.width,
-            height=self.allocation.height,
+            width=self.get_allocation().width,
+            height=self.get_allocation().height,
             window_type=gdk.WINDOW_CHILD,
             wclass=gdk.INPUT_OUTPUT,
             event_mask=self.get_events() | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK
@@ -180,7 +180,7 @@ class MyLabel(gtk.Widget):
         self.get_window().set_user_data(self)
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.get_window().move_resize(*self.allocation)
+        self.get_window().move_resize(*self.get_allocation())
     def onExposeEvent(self, widget, event):
         self.cr = self.get_window().cairo_create()
         #######

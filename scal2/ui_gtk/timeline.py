@@ -105,8 +105,8 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(
             self.get_parent_window(),
-            width=self.allocation.width,
-            height=self.allocation.height,
+            width=self.get_allocation().width,
+            height=self.get_allocation().height,
             window_type=gdk.WINDOW_CHILD,
             wclass=gdk.INPUT_OUTPUT,
             event_mask=self.get_events() | gdk.EXPOSURE_MASK
@@ -117,7 +117,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         self.get_window().set_user_data(self)
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.get_window().move_resize(*self.allocation)
+        self.get_window().move_resize(*self.get_allocation())
         self.currentTimeUpdate()
     def currentTimeUpdate(self, restart=False, draw=True):
         if restart:
@@ -143,7 +143,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
                 #print('%.2f'%(tm%100), 'currentTimeUpdate: DRAW')
                 self.queue_draw()
     def updateData(self):
-        width = self.allocation.width
+        width = self.get_allocation().width
         self.pixelPerSec = float(width) / self.timeWidth ## pixel/second
         self.borderTm = boxMoveBorder / self.pixelPerSec ## second
         self.data = calcTimeLineData(
@@ -229,8 +229,8 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         )
         cr.fill()
     def drawAll(self, cr):
-        width = self.allocation.width
-        height = self.allocation.height
+        width = self.get_allocation().width
+        height = self.get_allocation().height
         pixelPerSec = self.pixelPerSec
         dayPixel = dayLen * pixelPerSec ## pixel
         maxTickHeight = maxTickHeightRatio * height
@@ -260,7 +260,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
                 dt*pixelPerSec - currentTimeMarkerWidth/2.0,
                 0,
                 currentTimeMarkerWidth,
-                currentTimeMarkerHeightRatio * self.allocation.height
+                currentTimeMarkerHeightRatio * self.get_allocation().height
             )
             cr.fill()
         ######
@@ -281,7 +281,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             self.zoom(
                 isUp,
                 scrollZoomStep, 
-                float(event.x) / self.allocation.width,
+                float(event.x) / self.get_allocation().width,
             )
         else:
             self.movingUserEvent(
@@ -292,8 +292,8 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
     def buttonPress(self, obj, gevent):
         x = gevent.x
         y = gevent.y
-        w = self.allocation.width
-        h = self.allocation.height
+        w = self.get_allocation().width
+        h = self.get_allocation().height
         if gevent.button==1:
             for button in self.buttons:
                 if button.contains(x, y, w, h):
@@ -506,7 +506,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
                 self.updateMovingAnim(self.movingF, tm, tm, self.movingV, self.movingF)
         else:
             self.timeStart += direction * movingStaticStep * \
-                self.timeWidth/float(self.allocation.width)
+                self.timeWidth/float(self.get_allocation().width)
     def updateMovingAnim(self, f1, t0, t1, v0, a1):
         t2 = now()
         f = self.movingF
@@ -536,7 +536,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             return
         timeout_add(movingUpdateTime, self.updateMovingAnim, f, t0, t2, v0, a2)
         self.movingV = v2
-        self.timeStart += v2 * (t2-t1) * self.timeWidth/float(self.allocation.width)
+        self.timeStart += v2 * (t2-t1) * self.timeWidth/float(self.get_allocation().width)
         self.queue_draw()
     def stopMovingAnim(self):## stop moving immudiatly
         self.movingF = 0
