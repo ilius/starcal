@@ -256,7 +256,7 @@ class MainMenuToolbarItem(ToolbarItem):
         self.set_property('label-widget', imageFromFile(ui.wcal_toolbar_mainMenu_icon))
         self.show_all()
     def getMenuPos(self):
-        wcal = self.parent.parent
+        wcal = self.get_parent().get_parent()
         x, y, w, h = self.allocation
         x0, y0 = self.translate_coordinates(wcal, 0, 0)
         return (
@@ -265,7 +265,7 @@ class MainMenuToolbarItem(ToolbarItem):
         )
     def onClicked(self, widget=None):
         x, y = self.getMenuPos()
-        self.parent.parent.emit(
+        self.get_parent().get_parent().emit(
             'popup-menu-main',
             0,
             x,

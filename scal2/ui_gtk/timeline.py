@@ -137,8 +137,8 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             self.currentTimeUpdate,
         )
         self.currentTime = int(tm)
-        if draw and self.parent:
-            if self.parent.get_visible() and \
+        if draw and self.get_parent():
+            if self.get_parent().get_visible() and \
             self.timeStart <= tm <= self.timeStart + self.timeWidth + 1:
                 #print('%.2f'%(tm%100), 'currentTimeUpdate: DRAW')
                 self.queue_draw()
@@ -433,7 +433,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         ui.moveEventToTrashFromOutside(group, event)
         self.onConfigChange()
     def startResize(self, event):
-        self.parent.begin_resize_drag(
+        self.get_parent().begin_resize_drag(
             gdk.WINDOW_EDGE_SOUTH_EAST,
             event.button,
             int(event.x_root),
