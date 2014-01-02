@@ -95,6 +95,7 @@ monthLen = (31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29)
 import os
 from scal2.path import sysConfDir, confDir
 from scal2.utils import iceil
+from scal2.utils import myRaise
 
 ## Here load user options(jalaliAlg) from file
 sysConfPath = '%s/%s.conf'%(sysConfDir, name)

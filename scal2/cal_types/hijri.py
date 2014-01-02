@@ -62,6 +62,7 @@ from scal2.path import sysConfDir, confDir, modDir
 from scal2.json_utils import jsonToData, dataToPrettyJson
 from scal2.lib import OrderedDict
 from scal2.utils import iceil, ifloor
+from scal2.utils import myRaise
 
 
 oldDbPath = '%s/hijri.db'%confDir
