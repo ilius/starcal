@@ -25,7 +25,8 @@ from os.path import dirname, join, isfile, splitext, isabs
 from xml.dom.minidom import parse## remove FIXME
 from subprocess import Popen
 
-from scal2.utils import NullObj, toStr, cleanCacheDict
+from scal2.utils import NullObj, cleanCacheDict
+from scal2.utils import toStr
 from scal2.path import *
 
 from scal2.cal_types import calTypes, jd_to
