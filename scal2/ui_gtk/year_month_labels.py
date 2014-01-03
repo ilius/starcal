@@ -37,20 +37,56 @@ from gtk import gdk
 
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import set_tooltip, setClipboard
-from scal2.ui_gtk.drawing import newTextLayout
+from scal2.ui_gtk.drawing import newTextLayout, setColor
 from scal2.ui_gtk.mywidgets.button import ConButton
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.customize import CustomizableCalObj
 
+class BaseLabel(gtk.EventBox):
+    highlightColor = (176, 176, 176)
+    def __init__(self):
+        gtk.EventBox.__init__(self)
+        ##########
+        #self.menu.connect('map', lambda obj: self.drag_highlight())
+        #self.menu.connect('unmap', lambda obj: self.drag_unhighlight())
+        #########
+        self.connect('enter-notify-event', self.highlight)
+        self.connect('leave-notify-event', self.unhighlight)## FIXME
+    def highlight(self, widget=None, event=None):
+        #self.drag_highlight()
+        if self.get_window()==None:
+            return
+        cr = self.get_window().cairo_create()
+        setColor(cr, self.highlightColor)
+        #print(tuple(self.get_allocation()), tuple(self.label.get_allocation()))
+        x, y, w, h = self.get_allocation()
+        cr.rectangle(0, 0, w, 1)
+        cr.fill()
+        cr.rectangle(0, h-1, w, 1)
+        cr.fill()
+        cr.rectangle(0, 0, 1, h)
+        cr.fill()
+        cr.rectangle(w-1, 0, 1, h)
+        cr.fill()
+        cr.clip()
+    def unhighlight(self, widget=None, event=None):
+        #self.drag_unhighlight()
+        if self.get_window()==None:
+            return
+        x, y, w, h = self.get_allocation()
+        self.get_window().clear_area(0, 0, w, 1)
+        self.get_window().clear_area(0, h-1, w, 1)
+        self.get_window().clear_area(0, 0, 1, h)
+        self.get_window().clear_area(w-1, 0, 1, h)
+
 
 @registerSignals
-class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
-    highlightColor = gdk.Color(45000, 45000, 45000)
+class MonthLabel(BaseLabel, ud.IntegratedCalObj):
     getItemStr = lambda self, i: _(i+1, fillZero=2)
     getActiveStr = lambda self, s: '<span color="%s">%s</span>'%(ui.menuActiveLabelColor, s)
     #getActiveStr = lambda self, s: '<b>%s</b>'%s
     def __init__(self, mode, active=0):
-        gtk.EventBox.__init__(self)
+        BaseLabel.__init__(self)
         #self.set_border_width(1)#???????????
         self.initVars()
         self.mode = mode
@@ -86,12 +122,6 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
         self.connect('button-press-event', self.buttonPress)
         self.active = active
         self.setActive(active)
-        ##########
-        #self.menu.connect('map', lambda obj: self.drag_highlight())
-        #self.menu.connect('unmap', lambda obj: self.drag_unhighlight())
-        #########
-        self.connect('enter-notify-event', self.highlight)
-        self.connect('leave-notify-event', self.unhighlight)
         ####### update menu width
         if rtl:
             get_menu_pos = lambda widget: (ud.screenW, 0, True)
@@ -151,32 +181,6 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
             return True
         else:
             return False
-    def highlight(self, widget=None, event=None):
-        #self.drag_highlight()
-        if self.get_window()==None:
-            return
-        cr = self.get_window().cairo_create()
-        cr.set_source_color(self.highlightColor)
-        #print(tuple(self.get_allocation()), tuple(self.label.get_allocation()))
-        x, y, w, h = self.get_allocation()
-        cr.rectangle(0, 0, w, 1)
-        cr.fill()
-        cr.rectangle(0, h-1, w, 1)
-        cr.fill()
-        cr.rectangle(0, 0, 1, h)
-        cr.fill()
-        cr.rectangle(w-1, 0, 1, h)
-        cr.fill()
-        cr.clip()
-    def unhighlight(self, widget=None, event=None):
-        #self.drag_unhighlight()
-        if self.get_window()==None:
-            return
-        x, y, w, h = self.get_allocation()
-        self.get_window().clear_area(0, 0, w, 1)
-        self.get_window().clear_area(0, h-1, w, 1)
-        self.get_window().clear_area(0, 0, 1, h)
-        self.get_window().clear_area(w-1, 0, 1, h)
     def onDateChange(self, *a, **ka):
         ud.IntegratedCalObj.onDateChange(self, *a, **ka)
         self.setActive(ui.cell.dates[self.mode][1]-1)
@@ -184,15 +188,14 @@ class MonthLabel(gtk.EventBox, ud.IntegratedCalObj):
 
 
 @registerSignals
-class IntLabel(gtk.EventBox):
-    highlightColor = gdk.Color(45000, 45000, 45000)
+class IntLabel(BaseLabel):
     #getActiveStr = lambda self, s: '<b>%s</b>'%s
     getActiveStr = lambda self, s: '<span color="%s">%s</span>'%(ui.menuActiveLabelColor, s)
     signals = [
         ('changed', [int]),
     ]
     def __init__(self, height=9, active=0):
-        gtk.EventBox.__init__(self)
+        BaseLabel.__init__(self)
         #self.set_border_width(1)#???????????
         self.height = height
         #self.delay = delay
@@ -252,13 +255,6 @@ class IntLabel(gtk.EventBox):
         self.ymPressTime = 0
         self.etime = 0
         self.step = 0
-        ##########
-        #self.menu.connect('map', lambda obj: self.drag_highlight())
-        #self.menu.connect('unmap', lambda obj: self.drag_unhighlight())
-        #########
-        #self.modify_base(gtk.STATE_NORMAL, gdk.Color(-1, 0, 0))#??????????
-        self.connect('enter-notify-event', self.highlight)
-        self.connect('leave-notify-event', self.unhighlight)
     def setActive(self, active):
         if ui.boldYmLabel:
             self.label.set_label('<b>%s</b>'%_(active))
@@ -319,31 +315,6 @@ class IntLabel(gtk.EventBox):
             self.updateMenu(self.start+1)
         else:
             return False
-    def highlight(self, widget=None, event=None):
-        #self.drag_highlight()
-        if self.get_window()==None:
-            return
-        cr = self.get_window().cairo_create()
-        cr.set_source_color(self.highlightColor)
-        x, y, w, h = self.get_allocation()
-        cr.rectangle(0, 0, w, 1)
-        cr.fill()
-        cr.rectangle(0, h-1, w, 1)
-        cr.fill()
-        cr.rectangle(0, 0, 1, h)
-        cr.fill()
-        cr.rectangle(w-1, 0, 1, h)
-        cr.fill()
-        cr.clip()
-    def unhighlight(self, widget=None, event=None):
-        #self.drag_unhighlight()
-        if self.get_window()==None:
-            return
-        x, y, w, h = self.get_allocation()
-        self.get_window().clear_area(0, 0, w, 1)
-        self.get_window().clear_area(0, h-1, w, 1)
-        self.get_window().clear_area(0, 0, 1, h)
-        self.get_window().clear_area(w-1, 0, 1, h)
 
 
 @registerSignals
