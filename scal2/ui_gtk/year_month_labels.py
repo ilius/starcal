@@ -36,7 +36,7 @@ import gtk
 from gtk import gdk
 
 from scal2.ui_gtk.decorators import *
-from scal2.ui_gtk.utils import set_tooltip
+from scal2.ui_gtk.utils import set_tooltip, setClipboard
 from scal2.ui_gtk.drawing import newTextLayout
 from scal2.ui_gtk.mywidgets.button import ConButton
 from scal2.ui_gtk import gtk_ud as ud

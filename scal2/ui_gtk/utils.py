@@ -18,7 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 from scal2.locale_man import tr as _
-from scal2.utils import myRaise
+from scal2.utils import myRaise, toStr
 from scal2.json_utils import *
 from scal2.path import pixDir, rootDir
 
@@ -57,6 +57,13 @@ def set_tooltip(widget, text):
             myRaise(__file__)
 
 buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter())
+
+def setClipboard(text, clipboard=None):
+    if not clipboard:
+        clipboard = gtk.clipboard_get(gdk.SELECTION_CLIPBOARD)
+    text = toStr(text)
+    clipboard.set_text(text)
+    #clipboard.store() ## ?????? No need!
 
 def imageFromFile(path):## the file must exist
     if not isabs(path):
@@ -436,10 +443,9 @@ def openWindow(win):
 class CopyLabelMenuItem(gtk.MenuItem):
     def __init__(self, label):
         gtk.MenuItem.__init__(self, label=label, use_underline=False)
-        self.clipboard = gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD)
         self.connect('activate', self.on_activate)
     def on_activate(self, item):
-        self.clipboard.set_text(self.get_property('label'))
+        setClipboard(self.get_property('label'))
 
 class WizardWindow(gtk.Window):
     stepClasses = []

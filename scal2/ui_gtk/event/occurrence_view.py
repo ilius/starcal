@@ -26,7 +26,7 @@ from scal2 import ui
 import gtk
 
 from scal2.ui_gtk.decorators import *
-from scal2.ui_gtk.utils import imageFromFile, labelStockMenuItem, labelImageMenuItem
+from scal2.ui_gtk.utils import imageFromFile, labelStockMenuItem, labelImageMenuItem, setClipboard
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.event.common import EventEditorDialog, confirmEventTrash
@@ -43,7 +43,6 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         self.vbox = gtk.VBox(spacing=5)
         self.add_with_viewport(self.vbox)
         self.initVars()
-        self.clipboard = gtk.clipboard_get()
         self.maxHeight = 200
         self.showDesc = True
     def onSizeRequest(self, widget, requisition):
@@ -199,8 +198,8 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         cursor = label.get_property('cursor-position')
         start = min(bound, cursor)
         end = max(bound, cursor)
-        self.clipboard.set_text(toStr(toUnicode(label.get_text())[start:end]))
-    copyAll = lambda self, item, label: self.clipboard.set_text(label.get_label())
+        setClipboard(toStr(toUnicode(label.get_text())[start:end]))
+    copyAll = lambda self, item, label: setClipboard(label.get_label())
 
 class WeekOccurrenceView(gtk.TreeView):
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)

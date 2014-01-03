@@ -289,8 +289,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         ###
         #self.treev.set_search_column(2)## or 3
         ###
-        #self.clipboard = gtk.clipboard_get(gdk.SELECTION_CLIPBOARD)
-        #self.clipboard = gtk.clipboard_get()
         self.toPasteEvent = None ## (path, bool move)
         #####
         self.sbar = gtk.Statusbar()

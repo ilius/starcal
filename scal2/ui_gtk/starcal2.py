@@ -125,7 +125,6 @@ class DateLabel(gtk.Label):
         self.set_can_focus(False)
         self.set_use_markup(True)
         self.connect('populate-popup', self.popupPopulate)
-        self.clipboard = gtk.clipboard_get(gtk.gdk.SELECTION_CLIPBOARD)
         ####
         self.menu = gtk.Menu()
         ##
@@ -148,8 +147,8 @@ class DateLabel(gtk.Label):
     def copy(self, item):
         start = self.get_property('selection-bound')
         end = self.get_property('cursor-position')
-        self.clipboard.set_text(toStr(toUnicode(self.get_text())[start:end]))
-    copyAll = lambda self, label: self.clipboard.set_text(self.get_text())
+        setClipboard(toUnicode(self.get_text())[start:end])
+    copyAll = lambda self, label: setClipboard(self.get_text())
 
 
 
@@ -711,7 +710,6 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ######################
         self.updateMenuSize()
         ui.prefDialog.updatePrefGui()
-        self.clipboard = gtk.clipboard_get(gdk.SELECTION_CLIPBOARD)
         #########################################
         for plug in core.allPlugList:
             if plug.external and hasattr(plug, 'set_dialog'):
@@ -957,14 +955,11 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.menuMain.popup(None, None, getMenuPos, 3, 0)
         self.menuMain.hide()
     def copyDate(self, obj=None, event=None):
-        self.clipboard.set_text(ui.cell.format(ud.dateFormatBin))
-        #self.clipboard.store() ## ?????? No need!
+        setClipboard(ui.cell.format(ud.dateFormatBin))
     def copyDateToday(self, obj=None, event=None):
-        self.clipboard.set_text(ui.todayCell.format(ud.dateFormatBin))
-        #self.clipboard.store() ## ?????? No need!
+        setClipboard(ui.todayCell.format(ud.dateFormatBin))
     def copyTime(self, obj=None, event=None):
-        self.clipboard.set_text(ui.todayCell.format(ud.clockFormatBin, tm=localtime()[3:6]))
-        #self.clipboard.store() ## ?????? No need!
+        setClipboard(ui.todayCell.format(ud.clockFormatBin, tm=localtime()[3:6]))
     """
     def updateToolbarClock(self):
         if ui.showDigClockTb:
