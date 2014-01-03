@@ -25,7 +25,7 @@ from scal2.time_utils import *
 from scal2.bin_heap import MaxHeap
 
 
-#epsTm = 0.01 ## seconds ## configure somewhere? FIXME
+epsTm = 0.01 ## seconds ## configure somewhere? FIXME
 
 getCount = lambda x: x.count if x else 0
 isRed = lambda x: x.red if x else False
@@ -145,8 +145,8 @@ class EventSearchTree:
                 strftime(f, localtime(t1)),
             ))
         try:
-            #if t0 == t1:
-            #    t1 += epsTm
+            if t0 == t1:
+                t1 += epsTm
             mt = (t0 + t1)/2.0
             dt = (t1 - t0)/2.0
             self.root = self.addStep(self.root, t0, t1, mt, dt, eid)
