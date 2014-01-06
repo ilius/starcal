@@ -68,7 +68,7 @@ class EditDbDialog(gtk.Dialog):
         ###
         swin = gtk.ScrolledWindow()
         swin.add(treev)
-        swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
         ######
         cell = gtk.CellRendererText()
         col = gtk.TreeViewColumn(_('Year'), cell, text=1)
@@ -95,8 +95,8 @@ class EditDbDialog(gtk.Dialog):
         treev.append_column(col)
         ######
         toolbar = gtk.Toolbar()
-        toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
-        size = gtk.ICON_SIZE_SMALL_TOOLBAR
+        toolbar.set_orientation(gtk.Orientation.VERTICAL)
+        size = gtk.IconSize.SMALL_TOOLBAR
         ###
         tb = toolButtonFromStock(gtk.STOCK_ADD, size)
         set_tooltip(tb, _('Add'))
@@ -116,12 +116,12 @@ class EditDbDialog(gtk.Dialog):
         pack(mainHbox, toolbar)
         pack(self.vbox, mainHbox, 1, 1)
         ######
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
         ##
-        resetB = self.add_button(gtk.STOCK_UNDO, gtk.RESPONSE_NONE)
+        resetB = self.add_button(gtk.STOCK_UNDO, gtk.ResponseType.NONE)
         resetB.set_label(_('_Reset to Defaults'))
-        resetB.set_image(gtk.image_new_from_stock(gtk.STOCK_UNDO, gtk.ICON_SIZE_BUTTON))
+        resetB.set_image(gtk.Image.new_from_stock(gtk.STOCK_UNDO, gtk.IconSize.BUTTON))
         resetB.connect('clicked', self.resetToDefaults)
         ##
         self.connect('response', self.onResponse)
@@ -238,10 +238,10 @@ class EditDbDialog(gtk.Dialog):
         self.treev.grab_focus()
         gtk.Dialog.run(self)
     def onResponse(self, dialog, response_id):
-        if response_id==gtk.RESPONSE_OK:
+        if response_id==gtk.ResponseType.OK:
             self.updateVars()
             self.destroy()
-        elif response_id==gtk.RESPONSE_CANCEL:
+        elif response_id==gtk.ResponseType.CANCEL:
             self.destroy()
         return True
     def onDeleteEvent(self, dialog, event):

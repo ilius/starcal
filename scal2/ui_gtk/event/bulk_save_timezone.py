@@ -31,8 +31,8 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
         gtk.Dialog.__init__(self)
         self.set_title(_('Time Zone'))
         ####
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
         ###
         self.connect('response', self.onResponse)
         ####
@@ -64,7 +64,7 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
         ####
         self.vbox.show_all()
     def onResponse(self, dialog, responseId):
-        if responseId == gtk.RESPONSE_OK:
+        if responseId == gtk.ResponseType.OK:
             timeZone = self.timeZoneInput.get_text()
             try:
                 pytz.timezone(timeZone)

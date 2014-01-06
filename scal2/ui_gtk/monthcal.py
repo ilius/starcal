@@ -32,6 +32,8 @@ from scal2.locale_man import tr as _
 from scal2 import ui
 from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
 
+from gi.repository import GdkPixbuf
+
 from scal2.ui_gtk import *
 from scal2.ui_gtk.drawing import *
 from scal2.ui_gtk.decorators import *
@@ -101,7 +103,7 @@ class McalTypeParamBox(gtk.HBox):
         self.mcal.queue_draw()
 
 @registerSignals
-class MonthCal(gtk.Widget, CalBase):
+class MonthCal(gtk.DrawingArea, CalBase):
     _name = 'monthCal'
     desc = _('Month Calendar')
     cx = [0, 0, 0, 0, 0, 0, 0]
@@ -148,8 +150,8 @@ class MonthCal(gtk.Widget, CalBase):
                 'font': ui.getFontSmall(),
                 'color': ui.textColor,
             })
-        sgroupLabel = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
-        sgroupFont = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        sgroupLabel = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
+        sgroupFont = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
         for i, mode in enumerate(calTypes.active):
             #try:
             params = ui.mcalTypeParams[i]
@@ -160,8 +162,9 @@ class MonthCal(gtk.Widget, CalBase):
         ###
         vbox.show_all()
     def __init__(self):
-        gtk.Widget.__init__(self)
-        CalBase.__init__(self)
+        gtk.DrawingArea.__init__(self)
+        self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
+        self.initCal()
         self.set_property('height-request', ui.mcalHeight)
         ######
         hbox = gtk.HBox()
@@ -208,7 +211,8 @@ class MonthCal(gtk.Widget, CalBase):
         ####
         pack(self.optionsWidget, hbox)
         ########
-        frame = gtk.Frame(_('Calendars'))
+        frame = gtk.Frame()
+        frame.set_label(_('Calendars'))
         self.typeParamsVbox = gtk.VBox()
         frame.add(self.typeParamsVbox)
         frame.show_all()
@@ -218,35 +222,16 @@ class MonthCal(gtk.Widget, CalBase):
         ######################
         #self.kTime = 0
         ######################
-        self.connect('expose-event', self.drawAll)
+        self.connect('draw', self.drawAll)
         self.connect('button-press-event', self.buttonPress)
         #self.connect('screen-changed', self.screenChanged)
         self.connect('scroll-event', self.scroll)
         ######################
         self.updateTextWidth()
         ######################
-    def do_realize(self):
-        self.set_flags(self.flags() | gtk.REALIZED)
-        self.window = gdk.Window(
-            self.get_parent_window(),
-            width=self.get_allocation().width,
-            height=self.get_allocation().height,
-            window_type=gdk.WINDOW_CHILD,
-            wclass=gdk.INPUT_OUTPUT,
-            event_mask=self.get_events() \
-                | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK
-                | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK,
-        )
-        self.get_window().set_user_data(self)
-        self.style.attach(self.window)#?????? Needed??
-        self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.get_window().move_resize(*self.get_allocation())
-    def drawAll(self, widget=None, event=None, cr=None, cursor=True):
+    def drawAll(self, widget=None, cr=None, cursor=True):
+        #event = gtk.get_current_event()
         #?????? Must enhance (only draw few cells, not all cells)
-        #print(now(), 'drawAll'#, tuple(event.area), tuple(self.get_allocation()))
-        if event:
-            xu, yu, wu, hu = tuple(event.area)
-            #print('expose-event area:', xu, yu, wu, hu)
         self.calcCoord()
         x, y, w, h = self.get_allocation()
         if not cr:
@@ -270,7 +255,7 @@ class MonthCal(gtk.Widget, CalBase):
                     ui.bgUseDesk = False ##??????????????????
                     #self.prefDialog.checkDeskBg.set_active(False)##??????????????????
                 else:
-                    cr.set_source_pixbuf(bg, 0, 0)
+                    gdk.cairo_set_source_pixbuf(cr, bg, 0, 0, 0)
                     cr.paint()
             #else:
             #    print(coord)
@@ -298,7 +283,7 @@ class MonthCal(gtk.Widget, CalBase):
                     self.cx[i]-fontw/2.0,
                     (ui.mcalTopMargin-fonth)/2.0-1,
                 )
-                cr.show_layout(wday)
+                show_layout(cr, wday)
             ######## Drawing "Menu" label
             setColor(cr, ui.menuTextColor)
             text = newTextLayout(self, _('Menu'))
@@ -313,7 +298,7 @@ class MonthCal(gtk.Widget, CalBase):
                     (ui.mcalLeftMargin-fontw)/2.0,
                     (ui.mcalTopMargin-fonth)/2.0 - 1,
                 )
-            cr.show_layout(text)
+            show_layout(cr, text)
         if ui.mcalLeftMargin>0:
             ##### Drawing border left background
             if rtl:
@@ -346,7 +331,7 @@ class MonthCal(gtk.Widget, CalBase):
                         (ui.mcalLeftMargin-fontw)/2.0,
                         self.cy[i]-fonth/2.0 + 2,
                     )
-                cr.show_layout(lay)
+                show_layout(cr, lay)
         selectedCellPos = ui.cell.monthPos
         if ui.todayCell.inSameMonth(ui.cell):
             tx, ty = ui.todayCell.monthPos ## today x and y
@@ -380,7 +365,7 @@ class MonthCal(gtk.Widget, CalBase):
                         for index, icon in enumerate(iconList):
                             ## if len(iconList) > 1 ## FIXME
                             try:
-                                pix = gdk.pixbuf_new_from_file(icon)
+                                pix = GdkPixbuf.Pixbuf.new_from_file(icon)
                             except:
                                 myRaise(__file__)
                                 continue
@@ -390,7 +375,7 @@ class MonthCal(gtk.Widget, CalBase):
                             x1 = (self.cx[xPos] + self.dx/2.0)/scaleFact - fromRight - pix_w # right side
                             y1 = (self.cy[yPos] + self.dy/2.0)/scaleFact - pix_h # buttom side
                             cr.scale(scaleFact, scaleFact)
-                            cr.set_source_pixbuf(pix, x1, y1)
+                            gdk.cairo_set_source_pixbuf(cr, pix, x1, y1)
                             cr.rectangle(x1, y1, pix_w, pix_h)
                             cr.fill()
                             cr.scale(1.0/scaleFact, 1.0/scaleFact)
@@ -416,7 +401,7 @@ class MonthCal(gtk.Widget, CalBase):
                     x0 - fontw/2.0 + params['pos'][0],
                     y0 - fonth/2.0 + params['pos'][1],
                 )
-                cr.show_layout(daynum)
+                show_layout(cr, daynum)
                 if not cellInactive:
                     for mode, params in ui.getMcalMinorTypeParams()[1:]:
                         daynum = newTextLayout(self, _(c.dates[mode][2], mode), params['font'])
@@ -426,7 +411,7 @@ class MonthCal(gtk.Widget, CalBase):
                             x0 - fontw/2.0 + params['pos'][0],
                             y0 - fonth/2.0 + params['pos'][1],
                         )
-                        cr.show_layout(daynum)                        
+                        show_layout(cr, daynum)                        
                     if cellHasCursor:
                         ##### Drawing Cursor Outline
                         cx0 = x0-self.dx/2.0+1
@@ -453,7 +438,7 @@ class MonthCal(gtk.Widget, CalBase):
         lay = newTextLayout(self)
         wm = 0 ## max width
         for i in range(7):
-            lay.set_text(core.weekDayName[i])
+            lay.set_markup(core.weekDayName[i])
             w = lay.get_pixel_size()[0] ## ????????
             #w = lay.get_pixel_extents()[0] ## ????????
             #print(w,)
@@ -465,7 +450,8 @@ class MonthCal(gtk.Widget, CalBase):
     def buttonPress(self, obj, event):
         ## self.winActivate() #?????????
         b = event.button
-        x, y, mask = event.window.get_pointer() # or self.get_pointer()
+        x, y, = self.get_pointer()
+        # foo, x, y, flags = self.get_window().get_pointer()
         self.pointer = (x, y)
         if b==2:
             return False
@@ -486,7 +472,7 @@ class MonthCal(gtk.Widget, CalBase):
         elif yPos >= 0 and xPos >= 0:
             cell = status[yPos][xPos]
             self.changeDate(*cell.dates[calTypes.primary])
-            if event.type==gdk._2BUTTON_PRESS:
+            if event.type==getattr(gdk.EventType, '2BUTTON_PRESS'):
                 self.emit('2button-press')
             if b == 3 and cell.month == ui.cell.month:## right click on a normal cell
                 #self.emit('popup-menu-cell', event.time, *self.getCellPos())
@@ -514,9 +500,11 @@ class MonthCal(gtk.Widget, CalBase):
         ui.monthPlus(p)
         self.onDateChange()
     def keyPress(self, arg, event):
+        print('keyPress')
         if CalBase.keyPress(self, arg, event):
             return True
         kname = gdk.keyval_name(event.keyval).lower()
+        print('keyPress', kname)
         #if kname.startswith('alt'):
         #    return True
         ## How to disable Alt+Space of metacity ?????????????????????
@@ -545,7 +533,7 @@ class MonthCal(gtk.Widget, CalBase):
         elif kname in ('page_down', 'j', 'n'):
             self.monthPlus(1)
         elif kname in ('f10', 'm'):
-            if event.state & gdk.SHIFT_MASK:
+            if event.get_state() & gdk.ModifierType.SHIFT_MASK:
                 # Simulate right click (key beside Right-Ctrl)
                 self.emit('popup-menu-cell', event.time, *self.getCellPos())
             else:
@@ -590,13 +578,10 @@ class MonthCal(gtk.Widget, CalBase):
 if __name__=='__main__':
     win = gtk.Dialog()
     cal = MonthCal()
-    win.add_events(
-        gdk.POINTER_MOTION_MASK | gdk.FOCUS_CHANGE_MASK | gdk.BUTTON_MOTION_MASK |
-        gdk.BUTTON_PRESS_MASK | gdk.BUTTON_RELEASE_MASK | gdk.SCROLL_MASK |
-        gdk.KEY_PRESS_MASK | gdk.VISIBILITY_NOTIFY_MASK | gdk.EXPOSURE_MASK
-    )
+    win.add_events(gdk.EventMask.ALL_EVENTS_MASK)
     pack(win.vbox, cal, 1, 1)
     win.vbox.show_all()
     win.resize(600, 400)
+    win.set_title(cal.desc)
     win.run()
 

@@ -21,7 +21,7 @@ import sys, os
 from time import localtime
 from time import time as now
 
-from scal2.utils import toStr, toUnicode
+from scal2.utils import toBytes, toStr
 from scal2.utils import strFindNth, iceil, ifloor, printError
 from scal2.time_utils import getEpochFromJhms
 from scal2.cal_types import to_jd, jd_to, convert
@@ -30,7 +30,7 @@ from scal2.locale_man import tr as _
 from scal2.mywidgets.multi_spin import *
 from scal2 import ui
 
-from gobject import timeout_add
+from gi.repository.GObject import timeout_add
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
@@ -52,12 +52,14 @@ class MultiSpinButton(gtk.SpinButton):
         self.digs = locale_man.getDigits()
         ###
         ####
-        self.set_direction(gtk.TEXT_DIR_LTR) ## self is a gtk.Entry
+        self.set_direction(gtk.TextDirection.LTR) ## self is a gtk.Entry
         self.set_width_chars(self.field.getMaxWidth())
         self.set_value(0)
         self.set_digits(0)
         gtk.SpinButton.set_range(self, -2, 2)
         self.set_increments(1, page_inc)
+        ###
+        self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
         #self.connect('activate', lambda obj: self.update())
         self.connect('activate', self._entry_activate)
         self.connect('key-press-event', self._key_press)
@@ -82,14 +84,14 @@ class MultiSpinButton(gtk.SpinButton):
         self.set_position(pos)
     def update(self):
         pos = self.get_position()
-        self.field.setText(toUnicode(self.get_text()))
+        self.field.setText(toStr(self.get_text()))
         self.set_text(self.field.getText())
         self.set_position(pos)
     def insertText(self, s, clearSeceltion=True):
-        selection = self.get_selection_bounds()
-        if selection and clearSeceltion:
-            start, end = selection
-            text = toUnicode(self.get_text())
+        start, end = self.get_property('selection-bound'), self.get_property('cursor-position')
+        start, end = min(start, end), max(start, end)
+        if start < end and clearSeceltion:
+            text = toStr(self.get_text())
             text = text[:start] + s + text[end:]
             self.set_text(text)
             self.set_position(start+len(s))
@@ -100,7 +102,7 @@ class MultiSpinButton(gtk.SpinButton):
     def entry_plus(self, p):
         self.update()
         pos = self.get_position()
-        self.field.getFieldAt(toUnicode(self.get_text()), self.get_position()).plus(p)
+        self.field.getFieldAt(toStr(self.get_text()), self.get_position()).plus(p)
         self.set_text(self.field.getText())
         self.set_position(pos)
     def _key_press(self, widget, gevent):
@@ -155,7 +157,7 @@ class MultiSpinButton(gtk.SpinButton):
         else:
             #print(kname, kval)
             return False
-    def _button_press(self, widget, gevent):
+    def _button_press(self, widget, gevent):## FIXME not working on gtk3
         gwin = gevent.window
         #print(gwin.get_data('name'))
         #r = self.get_allocation() ; print('allocation', r[0], r[2])
@@ -163,26 +165,36 @@ class MultiSpinButton(gtk.SpinButton):
             self.grab_focus()
         if self.get_editable():
             self.update()
-        width, height = self.size_request()
+        size = self.size_request()
+        width = size.width
+        height = size.height
         step_inc, page_inc = self.get_increments()
-        if gwin.get_position()[1] == 0:## the panel window (containing up and down arrows)
-            ## gwin.xid == self.get_window().get_children()[0].xid ## the same as _gtk_spin_button_get_panel
-            if gevent.y*2 < height:
-                if gevent.button==1:
-                    self._arrow_press(step_inc)
-                elif gevent.button==2:
-                    self._arrow_press(page_inc)
+        ######
+        index = gwin.get_toplevel().get_children().index(gwin)
+        ## index = 1    PLUS
+        ## index = 2    MINUS
+        ## index = 3    TEXT
+        if index == 1:
+            if gevent.button==1:
+                self._arrow_press(step_inc)
+            elif gevent.button==2:
+                self._arrow_press(page_inc)
+        elif index == 2:
+            if gevent.button==1:
+                self._arrow_press(-step_inc)
             else:
-                if gevent.button==1:
-                    self._arrow_press(-step_inc)
-                else:
-                    self._arrow_press(-page_inc)
-            return True
-        else:
-            if gevent.type==gdk._2BUTTON_PRESS:
+                self._arrow_press(-page_inc)
+        elif index == 3:
+            if gevent.type==getattr(gdk.EventType, '2BUTTON_PRESS'):
                 pass ## FIXME
                 ## select the numeric part containing cursor
                 #return True
+        '''
+        #print(dir(gwin))
+        #print(self.get_allocation().width-gwin.get_origin()[1]+gwin.get_toplevel().get_origin()[1]## 15, 31, BIGER)
+        #print(gwin.get_toplevel().get_width()-gwin.get_origin()[1]+gwin.get_toplevel().get_origin()[1]## 19, 35, BIGER)
+        #print(gwin.get_parent().get_width()-gwin.get_origin()[1]+gwin.get_parent().get_origin()[1]## 19, 35, BIGER)
+        '''
         return False
     def _scroll(self, widget, event):
         d = event.direction.value_nick
@@ -273,7 +285,7 @@ class DateButton(MultiSpinButton):
     def __init__(self, date=None, **kwargs):
         MultiSpinButton.__init__(
             self,
-            u'/',
+            '/',
             (
                 YearField(),
                 MonthField(),
@@ -296,7 +308,7 @@ class YearMonthButton(MultiSpinButton):
     def __init__(self, date=None, **kwargs):
         MultiSpinButton.__init__(
             self,
-            u'/',
+            '/',
             (
                 YearField(),
                 MonthField(),
@@ -311,7 +323,7 @@ class TimeButton(MultiSpinButton):
     def __init__(self, hms=None, **kwargs):
         MultiSpinButton.__init__(
             self,
-            u':',
+            ':',
             (
                 HourField(),
                 Z60Field(),
@@ -336,7 +348,7 @@ class HourMinuteButton(MultiSpinButton):
     def __init__(self, hm=None, **kwargs):
         MultiSpinButton.__init__(
             self,
-            u':',
+            ':',
             (
                 HourField(),
                 Z60Field(),
@@ -358,16 +370,16 @@ class DateTimeButton(MultiSpinButton):
     def __init__(self, date_time=None, **kwargs):
         MultiSpinButton.__init__(
             self,
-            u' ',
+            ' ',
             (
                 ContainerField(
-                    u'/',
+                    '/',
                     YearField(),
                     MonthField(),
                     DayField(),
                 ),
                 ContainerField(
-                    u':',
+                    ':',
                     HourField(),
                     Z60Field(),
                     Z60Field(),
@@ -452,12 +464,13 @@ class MultiSpinOptionBox(gtk.HBox):
         return False
     def __init__(self, sep, fields, spacing=0, is_hbox=False, hist_size=10, **kwargs):
         if not is_hbox:
-            gtk.HBox.__init__(self, spacing=spacing)
+            gtk.HBox.__init__(self)
+            self.set_spacing(spacing)
         self.spin = MultiSpinButton(sep, fields, **kwargs)
         pack(self, self.spin, 1, 1)
         self.hist_size = hist_size
         self.option = gtk.Button()
-        self.option.add(gtk.Arrow(gtk.ARROW_DOWN, gtk.SHADOW_IN))
+        self.option.add(gtk.Arrow(gtk.ArrowType.DOWN, gtk.ShadowType.IN))
         pack(self, self.option, 1, 1)
         self.menu = gtk.Menu()
         #self.menu.show()
@@ -502,7 +515,7 @@ class DateButtonOption(MultiSpinOptionBox):
     def __init__(self, date=None, **kwargs):
         MultiSpinOptionBox.__init__(
             self,
-            u'/',
+            '/',
             (
                 YearField(),
                 MonthField(),
@@ -522,7 +535,7 @@ class HourMinuteButtonOption(MultiSpinOptionBox):
     def __init__(self, hm=None, **kwargs):
         MultiSpinOptionBox.__init__(
             self,
-            u':',
+            ':',
             (
                 HourField(),
                 Z60Field(),
@@ -549,7 +562,7 @@ class HourMinuteButtonOption(MultiSpinOptionBox):
 
 def getDateTimeWidget():
     btn = DateTimeButton()
-    btn.set_value((2011, 1, 1))
+    btn.set_value((2011, 1, 1, 0))
     return btn
 
 def getIntWidget():

@@ -30,7 +30,6 @@ from scal2.lib import OrderedDict
 from .path import *
 
 from scal2.utils import printError, arange, ifloor, iceil, findNearestIndex
-from scal2.utils import toStr
 from scal2.os_utils import makeDir
 from scal2.interval_utils import *
 from scal2.time_utils import *
@@ -170,8 +169,6 @@ class BadEventFile(Exception):## FIXME
 class Occurrence(SObjBase):
     def __init__(self):
         self.event = None
-    def __nonzero__(self):
-        raise NotImplementedError
     def intersection(self):
         raise NotImplementedError
     getDaysJdList = lambda self: [] ## make generator FIXME
@@ -195,7 +192,7 @@ class JdSetOccurrence(Occurrence):
             jdSet = []
         self.jdSet = set(jdSet)
     __repr__ = lambda self: 'JdSetOccurrence(%r)'%list(self.jdSet)
-    __nonzero__ = lambda self: bool(self.jdSet)
+    __bool__ = lambda self: bool(self.jdSet)
     __len__ = lambda self: len(self.jdSet)
     getStartJd = lambda self: min(self.jdSet)
     getEndJd = lambda self: max(self.jdSet)+1
@@ -246,7 +243,7 @@ class TimeRangeListOccurrence(Occurrence):
             rangeList = []
         self.rangeList = rangeList
     __repr__ = lambda self: 'TimeRangeListOccurrence(%r)'%self.rangeList
-    __nonzero__ = lambda self: bool(self.rangeList)
+    __bool__ = lambda self: bool(self.rangeList)
     __len__ = lambda self: len(self.rangeList)
     #__getitem__ = lambda i: self.rangeList.__getitem__(i)## FIXME
     getStartJd = lambda self: getJdFromEpoch(min([r[0] for r in self.rangeList]))
@@ -295,8 +292,8 @@ class TimeListOccurrence(Occurrence):
         else:
             raise ValueError
     __repr__ = lambda self: 'TimeListOccurrence(%r)'%self.epochList
-    #__nonzero__ = lambda self: self.startEpoch == self.endEpoch
-    __nonzero__ = lambda self: bool(self.epochList)
+    #__bool__ = lambda self: self.startEpoch == self.endEpoch
+    __bool__ = lambda self: bool(self.epochList)
     getStartJd = lambda self: getJdFromEpoch(min(self.epochList))
     getEndJd = lambda self: getJdFromEpoch(max(self.epochList)+1)
     def setRange(self, startEpoch, endEpoch, stepSeconds):
@@ -656,7 +653,7 @@ class DateAndTimeEventRule(DateEventRule):
             self.date = dateDecode(arg['date'])
             if 'time' in arg:
                 self.time = timeDecode(arg['time'])
-        elif isinstance(arg, basestring):
+        elif isinstance(arg, str):
             self.date = dateDecode(arg)
         else:
             raise BadEventFile('bad rule %s=%r'%(self.name, arg))
@@ -962,12 +959,12 @@ class ExDatesEventRule(EventRule):
         return datesConf
     def setData(self, datesConf):
         dates = []
-        if isinstance(datesConf, basestring):
+        if isinstance(datesConf, str):
             for date in datesConf.split(','):
                 dates.append(dateDecode(date.strip()))
         else:
             for date in datesConf:
-                if isinstance(date, basestring):
+                if isinstance(date, str):
                     date = dateDecode(date)
                 elif isinstance(date, (tuple, list)):
                     checkDate(date)
@@ -1114,7 +1111,7 @@ class RuleContainer:
     __delitem__ = lambda self, key: self.rulesOd.__delitem__(key)
     __getitem__ = lambda self, key: self.getRule(key)
     __setitem__ = lambda self, key, value: self.setRule(key, value)
-    __iter__ = lambda self: self.rulesOd.itervalues()
+    __iter__ = lambda self: iter(self.rulesOd.values())
     def setRulesData(self, rulesData):
         self.clearRules()
         for ruleName, ruleData in rulesData:
@@ -1240,12 +1237,12 @@ class Event(JsonSObjBase, RuleContainer):
     @classmethod
     def getDefaultIcon(cls):
         return join(pixDir, 'event', cls.iconName+'.png') if cls.iconName else ''
-    __nonzero__ = lambda self: bool(self.rulesOd) ## FIXME
+    __bool__ = lambda self: bool(self.rulesOd) ## FIXME
     __repr__ = lambda self: '%s(id=%s)'%(self.__class__.__name__, self.id)
     __str__ = lambda self: '%s(id=%s, summary=%s)'%(
         self.__class__.__name__,
         self.id,
-        toStr(self.summary),
+        self.summary,
     )
     def __init__(self, _id=None, parent=None):
         if _id is None:
@@ -1431,7 +1428,7 @@ class Event(JsonSObjBase, RuleContainer):
     getNotifiersData = lambda self: [(notifier.name, notifier.getData()) for notifier in self.notifiers]
     getNotifiersDict = lambda self: dict(self.getNotifiersData())
     def calcOccurrence(self, startJd, endJd):## float jd ## cache Occurrences ## FIXME
-        rules = self.rulesOd.values()
+        rules = list(self.rulesOd.values())
         if not rules:
             return JdSetOccurrence()
         occur = rules[0].calcOccurrence(startJd, endJd, self)
@@ -2181,7 +2178,7 @@ class LargeScaleEvent(Event):## or MegaEvent? FIXME
     )
     params = Event.params + _myParams
     jsonParams = Event.jsonParams + _myParams
-    __nonzero__ = lambda self: True
+    __bool__ = lambda self: True
     isAllDay = True
     def __init__(self, _id=None, parent=None):
         self.scale = 1 ## 1, 1000, 1000**2, 1000**3
@@ -2255,7 +2252,7 @@ class EventContainer(JsonSObjBase):
             return self.getEvent(key)
         else:
             raise TypeError('invalid key type %r give to EventContainer.__getitem__'%key)
-    __str__ = lambda self: '%s(title=%s)'%(self.__class__.__name__, toStr(self.title))
+    __str__ = lambda self: '%s(title=%s)'%(self.__class__.__name__, self.title)
     def __init__(self, title='Untitled'):
         self.mode = calTypes.primary
         self.idList = []
@@ -2527,7 +2524,7 @@ class EventGroup(EventContainer):
             sets default values that depends on group type
             not common parameters, like those are set in __init__
         '''
-    __nonzero__ = lambda self: self.enable ## FIXME
+    __bool__ = lambda self: self.enable ## FIXME
     def setId(self, _id=None):
         if _id is None or _id<0:
             _id = lastIds.group + 1 ## FIXME
@@ -3189,7 +3186,7 @@ class VcsEpochBaseEvent(Event):
     params = Event.params + (
         'epoch',
     )
-    __nonzero__ = lambda self: True
+    __bool__ = lambda self: True
     def save(self):
         pass
     def load(self):## FIXME
@@ -3465,7 +3462,7 @@ class VcsDailyStatEvent(Event):
     params = Event.params + (
         'jd',
     )
-    __nonzero__ = lambda self: True
+    __bool__ = lambda self: True
     def __init__(self, parent, jd):
         Event.__init__(self, parent=parent)
         self.id = jd ## ID is Julian Day
@@ -3566,7 +3563,7 @@ class JsonObjectsHolder(JsonSObjBase):
         for _id in self.idList:
             yield self.byId[_id]
     __len__ = lambda self: len(self.idList)
-    __nonzero__ = lambda self: bool(self.idList)
+    __bool__ = lambda self: bool(self.idList)
     index = lambda self, _id: self.idList.index(_id) ## or get object instead of obj_id? FIXME
     __getitem__ = lambda self, _id: self.byId.__getitem__(_id)
     byIndex = lambda self, index: self.byId[self.idList[index]]

@@ -1,4 +1,3 @@
-from __future__ import with_statement
 import os
 import re
 import pytz
@@ -110,4 +109,4 @@ def reload_localzone():
     global _cache_tz
     _cache_tz = _get_localzone()
     return _cache_tz
-    
+

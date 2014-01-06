@@ -18,7 +18,7 @@ customdayModes = (
 )
 
 def getElementText(el):
-    rc = u''
+    rc = ''
     name = el.nodeName
     for node in el.childNodes:
         if node.nodeType == node.TEXT_NODE:

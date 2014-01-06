@@ -25,8 +25,7 @@ from scal2.locale_man import getMonthName, rtl
 from scal2.locale_man import tr as _
 from scal2 import ui
 
-import gobject
-from gobject import timeout_add
+from gi.repository.GObject import timeout_add
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
@@ -44,8 +43,8 @@ class BaseLabel(gtk.EventBox):
         #self.menu.connect('map', lambda obj: self.drag_highlight())
         #self.menu.connect('unmap', lambda obj: self.drag_unhighlight())
         #########
-        self.connect('enter-notify-event', self.highlight)
-        self.connect('leave-notify-event', self.unhighlight)## FIXME
+        #self.connect('enter-notify-event', self.highlight)
+        #self.connect('leave-notify-event', self.unhighlight)## FIXME
     def highlight(self, widget=None, event=None):
         #self.drag_highlight()
         if self.get_window()==None:
@@ -101,7 +100,7 @@ class MonthLabel(BaseLabel, ud.IntegratedCalObj):
             if i==active:
                 text = self.getActiveStr(text)
             label = gtk.Label(text)
-            #label.set_justify(gtk.JUSTIFY_LEFT)
+            #label.set_justify(gtk.Justification.LEFT)
             label.set_alignment(0, 0.5)
             label.set_use_markup(True)
             item = gtk.MenuItem()
@@ -118,8 +117,8 @@ class MonthLabel(BaseLabel, ud.IntegratedCalObj):
         self.setActive(active)
         ####### update menu width
         if rtl:
-            get_menu_pos = lambda widget: (ud.screenW, 0, True)
-            menu.popup(None, None, get_menu_pos, 3, 0)
+            get_menu_pos = lambda widget, menu: (ud.screenW, 0, True)
+            menu.popup(None, None, get_menu_pos, None, 3, 0)
             menu.hide()
     def setActive(self, active):
     ## (Performance) update menu here, or make menu entirly before popup ????????????????
@@ -162,7 +161,8 @@ class MonthLabel(BaseLabel, ud.IntegratedCalObj):
         self.onDateChange()
     def buttonPress(self, widget, event):
         if event.button==3:
-            x, y = self.get_window().get_origin()
+            foo, x, y = self.get_window().get_origin()
+            ## foo == 1 FIXME
             y += self.get_allocation().height
             if rtl:
                 mw = self.menu.get_allocation().width
@@ -170,7 +170,7 @@ class MonthLabel(BaseLabel, ud.IntegratedCalObj):
                 if mw>1:
                     x -= (mw - self.get_allocation().width)
             #x -= 7 ## ????????? because of menu padding
-            self.menu.popup(None, None, lambda widget: (x, y, True), event.button, event.time)
+            self.menu.popup(None, None, lambda widget, menu: (x, y, True), None, event.button, event.time)
             ui.updateFocusTime()
             return True
         else:
@@ -203,7 +203,7 @@ class IntLabel(BaseLabel):
         menu = gtk.Menu()
         ##########
         item = gtk.MenuItem()
-        arrow = gtk.Arrow(gtk.ARROW_UP, gtk.SHADOW_IN)
+        arrow = gtk.Arrow(gtk.ArrowType.UP, gtk.ShadowType.IN)
         item.add(arrow)
         arrow.set_property('height-request', 10)
         #item.set_border_width(0)
@@ -231,7 +231,7 @@ class IntLabel(BaseLabel):
         menu.connect('scroll-event', self.menuScroll)
         ##########
         item = gtk.MenuItem()
-        arrow = gtk.Arrow(gtk.ARROW_DOWN, gtk.SHADOW_IN)
+        arrow = gtk.Arrow(gtk.ArrowType.DOWN, gtk.ShadowType.IN)
         arrow.set_property('height-request', 10)
         item.add(arrow)
         menu.append(item)
@@ -270,10 +270,10 @@ class IntLabel(BaseLabel):
     def buttonPress(self, widget, event):
         if event.button==3:
             self.updateMenu()
-            x, y = self.get_window().get_origin()
+            foo, x, y = self.get_window().get_origin()
             y += self.get_allocation().height
             x -= 7 ## ????????? because of menu padding
-            self.menu.popup(None, None, lambda widget: (x, y, True), event.button, event.time)
+            self.menu.popup(None, None, lambda widget, menu: (x, y, True), None, event.button, event.time)
             ui.updateFocusTime()
             return True
         else:
@@ -336,7 +336,7 @@ def newSmallNoFocusButton(stock, func, tooltip=''):
     arrow = ConButton()
     arrow.set_relief(2)
     arrow.set_can_focus(False)
-    arrow.set_image(gtk.image_new_from_stock(stock, gtk.ICON_SIZE_SMALL_TOOLBAR))
+    arrow.set_image(gtk.Image.new_from_stock(stock, gtk.IconSize.SMALL_TOOLBAR))
     arrow.connect('con-clicked', func)
     if tooltip:
         set_tooltip(arrow, tooltip)
@@ -350,6 +350,7 @@ class YearLabelButtonBox(gtk.HBox):
             newSmallNoFocusButton(gtk.STOCK_REMOVE, self.prevClicked, _('Previous Year')),
             0,
             0,
+            0,
         )
         ###
         self.label = YearLabel(mode, **kwargs)
@@ -357,6 +358,7 @@ class YearLabelButtonBox(gtk.HBox):
         ###
         pack(self, 
             newSmallNoFocusButton(gtk.STOCK_ADD, self.nextClicked, _('Next Year')),
+            0,
             0,
             0,
         )
@@ -376,6 +378,7 @@ class MonthLabelButtonBox(gtk.HBox):
             newSmallNoFocusButton(gtk.STOCK_REMOVE, self.prevClicked, _('Previous Month')),
             0,
             0,
+            0,
         )
         ###
         self.label = MonthLabel(mode, **kwargs)
@@ -383,6 +386,7 @@ class MonthLabelButtonBox(gtk.HBox):
         ###
         pack(self, 
             newSmallNoFocusButton(gtk.STOCK_ADD, self.nextClicked, _('Next Month')),
+            0,
             0,
             0,
         )
@@ -462,13 +466,14 @@ if __name__=='__main__':
     win = gtk.Dialog()
     box = YearMonthLabelBox()
     win.add_events(
-        gdk.POINTER_MOTION_MASK | gdk.FOCUS_CHANGE_MASK | gdk.BUTTON_MOTION_MASK |
-        gdk.BUTTON_PRESS_MASK | gdk.BUTTON_RELEASE_MASK | gdk.SCROLL_MASK |
-        gdk.KEY_PRESS_MASK | gdk.VISIBILITY_NOTIFY_MASK | gdk.EXPOSURE_MASK
+        gdk.EventMask.POINTER_MOTION_MASK | gdk.EventMask.FOCUS_CHANGE_MASK | gdk.EventMask.BUTTON_MOTION_MASK |
+        gdk.EventMask.BUTTON_PRESS_MASK | gdk.EventMask.BUTTON_RELEASE_MASK | gdk.EventMask.SCROLL_MASK |
+        gdk.EventMask.KEY_PRESS_MASK | gdk.EventMask.VISIBILITY_NOTIFY_MASK | gdk.EventMask.EXPOSURE_MASK
     )
     pack(win.vbox, box, 1, 1)
     win.vbox.show_all()
-    win.resize(600, 400)
+    win.resize(600, 50)
+    win.set_title(box.desc)
     box.onConfigChange()
     win.run()
 

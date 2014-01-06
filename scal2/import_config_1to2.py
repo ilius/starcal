@@ -28,10 +28,10 @@ from scal2.locale_man import langDir
 from scal2.plugin_man import loadPlugin
 
 
-import pango
+from gi.repository import Pango
 
-import gtk
-from gtk import gdk
+from gi.repository import Gtk
+from gi.repository import Gdk
 
 from scal2.ui_gtk.font_utils import gfontDecode
 from scal2.ui_gtk.color_utils import gdkColorToRgb

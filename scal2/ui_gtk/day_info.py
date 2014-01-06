@@ -46,7 +46,7 @@ class AllDateLabelsVBox(gtk.VBox, ud.IntegratedCalObj):
         ud.IntegratedCalObj.onDateChange(self, *a, **ka)
         for child in self.get_children():
             child.destroy()
-        sgroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        sgroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
         for i, module in calTypes.iterIndexModule():
             hbox = gtk.HBox()
             label = gtk.Label(_(module.desc))
@@ -59,6 +59,7 @@ class AllDateLabelsVBox(gtk.VBox, ud.IntegratedCalObj):
                 gtk.Label(
                     ui.cell.format(ud.dateFormatBin, i)
                 ),
+                0,
                 0,
                 0,
             )
@@ -75,10 +76,10 @@ class PluginsTextView(gtk.TextView, ud.IntegratedCalObj):
         gtk.TextView.__init__(self)
         self.initVars()
         ###
-        self.set_wrap_mode(gtk.WRAP_WORD)
+        self.set_wrap_mode(gtk.WrapMode.WORD)
         self.set_editable(False)
         self.set_cursor_visible(False)
-        self.set_justification(gtk.JUSTIFY_CENTER)
+        self.set_justification(gtk.Justification.CENTER)
     def onDateChange(self, *a, **ka):
         ud.IntegratedCalObj.onDateChange(self, *a, **ka)
         self.get_buffer().set_text(ui.cell.pluginsText)
@@ -109,7 +110,8 @@ class DayInfoDialog(gtk.Dialog, ud.IntegratedCalObj):
         for item in (self.allDateLabels, self.pluginsTextView, self.eventsView):
             self.appendItem(item)
             ###
-            exp = gtk.Expander(item.desc)
+            exp = gtk.Expander()
+            exp.set_label(item.desc)
             exp.add(item)
             exp.set_expanded(True)
             pack(self.vbox, exp)

@@ -41,7 +41,7 @@ class RuleWidget(gtk.HBox):
         pack(self, self.countLabel)
         ###
         self.editButton = gtk.Button(_('Edit'))
-        self.editButton.set_image(gtk.image_new_from_stock(gtk.STOCK_EDIT, gtk.ICON_SIZE_BUTTON))
+        self.editButton.set_image(gtk.Image.new_from_stock(gtk.STOCK_EDIT, gtk.IconSize.BUTTON))
         self.editButton.connect('clicked', self.showDialog)
         pack(self, self.editButton)
         ###
@@ -59,8 +59,8 @@ class RuleWidget(gtk.HBox):
         self.treev.append_column(col)
         ##
         toolbar = gtk.Toolbar()
-        toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
-        size = gtk.ICON_SIZE_SMALL_TOOLBAR
+        toolbar.set_orientation(gtk.Orientation.VERTICAL)
+        size = gtk.IconSize.SMALL_TOOLBAR
         ##
         tb = toolButtonFromStock(gtk.STOCK_ADD, size)
         set_tooltip(tb, _('Add'))
@@ -92,10 +92,10 @@ class RuleWidget(gtk.HBox):
         self.dialog.resize(200, 300)
         self.dialog.connect('response', lambda w, e: self.dialog.hide())
         ##
-        okButton = self.dialog.add_button(gtk.STOCK_OK, gtk.RESPONSE_CANCEL)
+        okButton = self.dialog.add_button(gtk.STOCK_OK, gtk.ResponseType.CANCEL)
         if ui.autoLocale:
             okButton.set_label(_('_OK'))
-            okButton.set_image(gtk.image_new_from_stock(gtk.STOCK_OK, gtk.ICON_SIZE_BUTTON))
+            okButton.set_image(gtk.Image.new_from_stock(gtk.STOCK_OK, gtk.IconSize.BUTTON))
     def updateCountLabel(self):
         self.countLabel.set_label(' '*2 + _('%s items')%_(len(self.trees)) + ' '*2)
     def showDialog(self, w=None):

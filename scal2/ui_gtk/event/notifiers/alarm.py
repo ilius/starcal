@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import thread
+import _thread
 from subprocess import Popen, PIPE
 
 from scal2 import core

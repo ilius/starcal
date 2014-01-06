@@ -80,8 +80,8 @@ methodsDict = dict([(m.name, m) for m in methodsList])
 
 ########################### Functions ####################################
 
-isMin = lambda tm: isinstance(tm, basestring) and tm.endswith('min')
-minEval = lambda tm: float(tm.split(' ')[0]) if isinstance(tm, basestring) else tm
+isMin = lambda tm: isinstance(tm, str) and tm.endswith('min')
+minEval = lambda tm: float(tm.split(' ')[0]) if isinstance(tm, str) else tm
 dirSign = lambda direction: -1 if direction=='ccw' else 1
 
 dtr = lambda d: (d * math.pi) / 180.0

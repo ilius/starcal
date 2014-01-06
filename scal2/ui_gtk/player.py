@@ -22,7 +22,7 @@
 from time import sleep
 import sys, os, re
 
-import gobject
+from gi.repository import GObject as gobject
 
 from scal2.ui_gtk import *
 
@@ -249,19 +249,19 @@ class PlayerBox(gtk.HBox):
         ##self.toolbar.connect('key-press-event', self.toolbarKey)#??????????
         ##############
         self.playPauseBut = gtk.Button()
-        self.playPauseBut.set_image(gtk.image_new_from_stock(gtk.STOCK_MEDIA_PLAY,gtk.ICON_SIZE_SMALL_TOOLBAR))
+        self.playPauseBut.set_image(gtk.Image.new_from_stock(gtk.STOCK_MEDIA_PLAY,gtk.IconSize.SMALL_TOOLBAR))
         self.playPauseBut.connect('clicked', self.playPause)
         pack(self, self.playPauseBut)
         #######
         stopBut = gtk.Button()
-        stopBut.set_image(gtk.image_new_from_stock(gtk.STOCK_MEDIA_STOP,gtk.ICON_SIZE_SMALL_TOOLBAR))
+        stopBut.set_image(gtk.Image.new_from_stock(gtk.STOCK_MEDIA_STOP,gtk.IconSize.SMALL_TOOLBAR))
         stopBut.connect('clicked', self.stop)
         pack(self, stopBut)
         ##############
         self.seekAdj = gtk.Adjustment(0, 0, 100, 1, 10, 0)
         #self.seekAdj.connect('value_changed', self.seekAdjChanged)#??????????????????
         self.seekBar = gtk.HScale(self.seekAdj)
-        self.seekBar.set_value_pos(gtk.POS_TOP)
+        self.seekBar.set_value_pos(gtk.PositionType.TOP)
         self.seekBar.set_sensitive(False)
         self.seekBar.connect('key-press-event', self.divert)
         self.seekBar.set_draw_value(False)
@@ -280,7 +280,7 @@ class PlayerBox(gtk.HBox):
             self.volAdj.connect('value_changed', self.setVolume)
             scale = gtk.HScale(self.volAdj)
             scale.set_size_request(50, -1)
-            scale.set_value_pos(gtk.POS_TOP)
+            scale.set_value_pos(gtk.PositionType.TOP)
             scale.connect('format-value', self.displayVolString)
             scale.connect('key-press-event', self.divert)
             pack(self, scale, False, False, 5)
@@ -313,7 +313,7 @@ class PlayerBox(gtk.HBox):
             print('abc')
             sleep(0.05)
             self.seekAdj.value = 100
-            #self.playPauseBut.set_image(gtk.image_new_from_stock(gtk.STOCK_MEDIA_PLAY,gtk.ICON_SIZE_SMALL_TOOLBAR))
+            #self.playPauseBut.set_image(gtk.Image.new_from_stock(gtk.STOCK_MEDIA_PLAY,gtk.IconSize.SMALL_TOOLBAR))
         else:
             self.mplayer.seek(int(self.seekAdj.value), 1)
     ## Return formatted volume string
@@ -338,13 +338,13 @@ class PlayerBox(gtk.HBox):
             if path==None:
                 return
             self.mplayer.play(path)
-        self.playPauseBut.set_image(gtk.image_new_from_stock(icon, gtk.ICON_SIZE_SMALL_TOOLBAR))
+        self.playPauseBut.set_image(gtk.Image.new_from_stock(icon, gtk.IconSize.SMALL_TOOLBAR))
         playing = bool(self.mplayer.mplayerIn)
         self.fcb.set_sensitive(not playing)
         self.seekBar.set_sensitive(playing)
     def stop(self, button):# Stop mplayer if it's running
         self.mplayer.close()
-        self.playPauseBut.set_image(gtk.image_new_from_stock(gtk.STOCK_MEDIA_PLAY,gtk.ICON_SIZE_SMALL_TOOLBAR))
+        self.playPauseBut.set_image(gtk.Image.new_from_stock(gtk.STOCK_MEDIA_PLAY,gtk.IconSize.SMALL_TOOLBAR))
         self.fcb.set_sensitive(self.mplayer.mplayerIn==None)
         self.seekBar.set_sensitive(self.mplayer.mplayerIn!=None)
     def decVol(self, widget):
@@ -364,7 +364,7 @@ class PlayerBox(gtk.HBox):
         if startPlaying:
             self.playPause()
         #self.mplayer.play(path)
-        #self.playPauseBut.set_image(gtk.image_new_from_stock(gtk.STOCK_MEDIA_PAUSE,gtk.ICON_SIZE_SMALL_TOOLBAR))
+        #self.playPauseBut.set_image(gtk.Image.new_from_stock(gtk.STOCK_MEDIA_PAUSE,gtk.IconSize.SMALL_TOOLBAR))
         #self.fcb.set_sensitive(self.mplayer.mplayerIn==None)
         #self.seekBar.set_sensitive(self.mplayer.mplayerIn!=None)
     getFile = lambda self: self.fcb.get_filename()
@@ -372,7 +372,7 @@ class PlayerBox(gtk.HBox):
 
 
 if __name__=='__main__':
-    window = gtk.Window(gtk.WINDOW_TOPLEVEL)
+    window = gtk.Window(gtk.WindowType.TOPLEVEL)
     window.set_title('Simple PyGTK Interface for MPlayer')
     mainVbox = gtk.VBox(False, 0)
     pbox = PlayerBox()

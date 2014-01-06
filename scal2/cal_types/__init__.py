@@ -108,7 +108,7 @@ class CalTypesHolder:
             yield i, modules[i]
     allIndexes = lambda self: self.active + self.inactive
     def __getitem__(self, key):
-        if isinstance(key, basestring):
+        if isinstance(key, str):
             return self.byName[key]
         if isinstance(key, int):
             return modules[key]

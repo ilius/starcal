@@ -26,7 +26,7 @@ from scal2 import core
 from scal2.locale_man import tr as _
 from scal2.locale_man import numDecode
 
-import gobject
+from gi.repository import GObject
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
@@ -72,21 +72,21 @@ class CourseListEditor(gtk.HBox):
         if enableScrollbars:## FIXME
             swin = gtk.ScrolledWindow()
             swin.add(self.treev)
-            swin.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
+            swin.set_policy(gtk.PolicyType.NEVER, gtk.PolicyType.AUTOMATIC)
             pack(self, swin, 1, 1)
         else:
             pack(self, self.treev, 1, 1)
         ##########
         toolbar = gtk.Toolbar()
-        toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
+        toolbar.set_orientation(gtk.Orientation.VERTICAL)
         #try:## DeprecationWarning #?????????????
-            #toolbar.set_icon_size(gtk.ICON_SIZE_SMALL_TOOLBAR)
+            #toolbar.set_icon_size(gtk.IconSize.SMALL_TOOLBAR)
             ### no different (argument to set_icon_size does not affect) ?????????
         #except:
         #    pass
-        size = gtk.ICON_SIZE_SMALL_TOOLBAR
+        size = gtk.IconSize.SMALL_TOOLBAR
         ##no different(argument2 to image_new_from_stock does not affect) ?????????
-        #### gtk.ICON_SIZE_SMALL_TOOLBAR or gtk.ICON_SIZE_MENU
+        #### gtk.IconSize.SMALL_TOOLBAR or gtk.IconSize.MENU
         tb = toolButtonFromStock(gtk.STOCK_ADD, size)
         set_tooltip(tb, _('Add'))
         tb.connect('clicked', self.addClicked)
@@ -189,15 +189,15 @@ class ClassTimeBoundsEditor(gtk.HBox):
         pack(self, self.treev, 1, 1)
         ##########
         toolbar = gtk.Toolbar()
-        toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
+        toolbar.set_orientation(gtk.Orientation.VERTICAL)
         #try:## DeprecationWarning #?????????????
-            #toolbar.set_icon_size(gtk.ICON_SIZE_SMALL_TOOLBAR)
+            #toolbar.set_icon_size(gtk.IconSize.SMALL_TOOLBAR)
             ### no different (argument to set_icon_size does not affect) ?????????
         #except:
         #    pass
-        size = gtk.ICON_SIZE_SMALL_TOOLBAR
+        size = gtk.IconSize.SMALL_TOOLBAR
         ##no different(argument2 to image_new_from_stock does not affect) ?????????
-        #### gtk.ICON_SIZE_SMALL_TOOLBAR or gtk.ICON_SIZE_MENU
+        #### gtk.IconSize.SMALL_TOOLBAR or gtk.IconSize.MENU
         tb = toolButtonFromStock(gtk.STOCK_ADD, size)
         set_tooltip(tb, _('Add'))
         tb.connect('clicked', self.addClicked)
@@ -272,18 +272,21 @@ class GroupWidget(NormalGroupWidget):
     def __init__(self, group):
         NormalGroupWidget.__init__(self, group)
         #####
-        totalFrame = gtk.Frame(group.desc)
+        totalFrame = gtk.Frame()
+        totalFrame.set_label(group.desc)
         totalVbox = gtk.VBox()
         ###
         expandHbox = gtk.HBox()## for courseList and classTimeBounds
         ##
-        frame = gtk.Frame(_('Course List'))
+        frame = gtk.Frame()
+        frame.set_label(_('Course List'))
         self.courseListEditor = CourseListEditor(self.group)
         self.courseListEditor.set_size_request(100, 150)
         frame.add(self.courseListEditor)
         pack(expandHbox, frame, 1, 1)
         ##
-        frame = gtk.Frame(_('Class Time Bounds'))## FIXME
+        frame = gtk.Frame()## FIXME
+        frame.set_label(_('Class Time Bounds'))
         self.classTimeBoundsEditor = ClassTimeBoundsEditor(self.group)
         self.classTimeBoundsEditor.set_size_request(50, 150)
         frame.add(self.classTimeBoundsEditor)
@@ -305,33 +308,15 @@ class GroupWidget(NormalGroupWidget):
 
 
 @registerType
-class WeeklyScheduleWidget(gtk.Widget):
+class WeeklyScheduleWidget(gtk.DrawingArea):
     def __init__(self, term):
         self.term = term
         self.data = []
         ####
-        gtk.Widget.__init__(self)
+        gtk.DrawingArea.__init__(self)
         #self.connect('button-press-event', self.buttonPress)
-        self.connect('expose-event', self.onExposeEvent)
+        self.connect('draw', self.onExposeEvent)
         #self.connect('event', show_event)
-    def do_realize(self):
-        self.set_flags(self.flags() | gtk.REALIZED)
-        self.window = gdk.Window(
-            self.get_parent_window(),
-            width=self.get_allocation().width,
-            height=self.get_allocation().height,
-            window_type=gdk.WINDOW_CHILD,
-            wclass=gdk.INPUT_OUTPUT,
-            event_mask=self.get_events() | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK
-                | gdk.BUTTON_PRESS_MASK | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK,
-            #colormap=self.get_screen().get_rgba_colormap(),
-        )
-        #self.get_window().set_composited(True)
-        self.get_window().set_user_data(self)
-        self.style.attach(self.window)#?????? Needed??
-        self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.get_window().move_resize(*self.get_allocation())
-        #self.onExposeEvent()
     def onExposeEvent(self, widget=None, event=None):
         self.drawCairo(self.get_window().cairo_create())
     def drawCairo(self, cr):
@@ -395,7 +380,7 @@ class WeeklyScheduleWidget(gtk.Widget):
             y = (topMargin-layoutH)/2.0 - 1
             ##
             cr.move_to(x, y)
-            cr.show_layout(layout)
+            show_layout(cr, layout)
         ###
         for j in range(7):
             layout = weekDayLayouts[j]
@@ -407,7 +392,7 @@ class WeeklyScheduleWidget(gtk.Widget):
             y = topMargin + (h-topMargin)*(j+0.5)/7.0 - layoutH/2.0
             ##
             cr.move_to(x, y)
-            cr.show_layout(layout)
+            show_layout(cr, layout)
         for j in range(7):
             wd = (j+core.firstWeekDay)%7
             for i,dayData in enumerate(self.data[wd]):
@@ -429,7 +414,7 @@ class WeeklyScheduleWidget(gtk.Widget):
                 y = topMargin + (h-topMargin)*(j+0.5)/7.0 - layoutH/2.0
                 ##
                 cr.move_to(x, y)
-                cr.show_layout(layout)
+                show_layout(cr, layout)
 
 
 class WeeklyScheduleWindow(gtk.Dialog):
@@ -469,22 +454,22 @@ class WeeklyScheduleWindow(gtk.Dialog):
         fo = open(fpath, 'w')
         surface = cairo.SVGSurface(fo, w, h)
         cr0 = cairo.Context(surface)
-        cr = gtk.gdk.CairoContext(cr0)
+        cr = gdk.CairoContext(cr0)
         #surface.set_device_offset(0, 0)
         self._widget.drawCairo(cr)
         surface.finish()
     def exportToSvgClicked(self, obj=None):
-        fcd = gtk.FileChooserDialog(parent=self, action=gtk.FILE_CHOOSER_ACTION_SAVE)
+        fcd = gtk.FileChooserDialog(parent=self, action=gtk.FileChooserAction.SAVE)
         fcd.set_current_folder(deskDir)
         fcd.set_current_name(self.term.title + '.svg')
-        canB = fcd.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        saveB = fcd.add_button(gtk.STOCK_SAVE, gtk.RESPONSE_OK)
+        canB = fcd.add_button(gtk.STOCK_CANCEL, gtk.ResponseType.CANCEL)
+        saveB = fcd.add_button(gtk.STOCK_SAVE, gtk.ResponseType.OK)
         if ui.autoLocale:
             canB.set_label(_('_Cancel'))
-            canB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
+            canB.set_image(gtk.Image.new_from_stock(gtk.STOCK_CANCEL,gtk.IconSize.BUTTON))
             saveB.set_label(_('_Save'))
-            saveB.set_image(gtk.image_new_from_stock(gtk.STOCK_SAVE,gtk.ICON_SIZE_BUTTON))
-        if fcd.run()==gtk.RESPONSE_OK:
+            saveB.set_image(gtk.Image.new_from_stock(gtk.STOCK_SAVE,gtk.IconSize.BUTTON))
+        if fcd.run()==gtk.ResponseType.OK:
             self.exportToSvg(fcd.get_filename())
         fcd.destroy()
 

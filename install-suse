@@ -20,13 +20,15 @@ fi
 
 pkgName=starcal2
 sourceDir="`dirname \"$myPath\"`"
-"$sourceDir/scripts/assert_python2"
+#"$sourceDir/scripts/assert_python3"
 version=`$sourceDir/scal2/get_version.py`
 
 #echo "myPath=$myPath"
 #echo "sourceDir=$sourceDir"
 #echo version=$version
 
+#%post
+#/usr/share/starcal2/scripts/assert_python3
 
 
 echo "Name:     $pkgName
@@ -37,7 +39,7 @@ Summary:        A full-featured international calendar writen in Python
 Group:          User Interface/Desktops
 License:        GPLv3+
 URL:            http://starcal.sourceforge.net/
-Requires:       python >= 2.6, python-gtk, python-gflags, python-httplib2, python-pytz, python-igraph
+Requires:       python3 >= 3.2, python3-gobject, python3-gflags, python3-httplib2, python3-pytz, python3-igraph
 Provides:       /usr
 BuildArch:      noarch
 
@@ -49,9 +51,6 @@ english(Gregorian) calendar
 
 %install
 \"$sourceDir/install\" \"%{buildroot}\" --for-pkg --prefix=%{_prefix}
-
-%post
-/usr/share/starcal2/scripts/assert_python2
 
 %files
 %defattr(-,root,root,-)

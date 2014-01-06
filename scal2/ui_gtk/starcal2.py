@@ -20,8 +20,8 @@
 
 import sys
 
-if sys.version_info[0] != 2:
-    print('Run this script with Python 2.x')
+if sys.version_info[0] != 3:
+    print('Run this script with Python 3.x')
     sys.exit(1)
 
 from time import time as now
@@ -42,7 +42,7 @@ if not isdir(confDir):
         myRaise()
     restartLow()
 
-from scal2.utils import toStr, toUnicode
+from scal2.utils import toBytes, toStr
 from scal2.utils import versionLessThan
 from scal2.cal_types import calTypes
 from scal2 import core
@@ -58,7 +58,9 @@ from scal2.season import getSeasonNamePercentFromJd
 from scal2 import event_lib
 from scal2 import ui
 
-from gobject import timeout_add, timeout_add_seconds
+from gi.repository.GObject import timeout_add, timeout_add_seconds
+from gi.repository import GdkPixbuf
+from gi.repository import Gio
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
@@ -104,7 +106,7 @@ def liveConfChanged():
 
 # How to define icon of custom stock????????????
 #gtk.stock_add((
-#('gtk-evolution', 'E_volution', gdk.BUTTON1_MASK, 0, 'gtk20')
+#('gtk-evolution', 'E_volution', gdk.ModifierType.BUTTON1_MASK, 0, 'gtk20')
 
 
 
@@ -120,12 +122,12 @@ class DateLabel(gtk.Label):
         self.menu = gtk.Menu()
         ##
         itemCopyAll = gtk.ImageMenuItem(_('Copy _All'))
-        itemCopyAll.set_image(gtk.image_new_from_stock(gtk.STOCK_COPY, gtk.ICON_SIZE_MENU))
+        itemCopyAll.set_image(gtk.Image.new_from_stock(gtk.STOCK_COPY, gtk.IconSize.MENU))
         itemCopyAll.connect('activate', self.copyAll)
         self.menu.add(itemCopyAll)
         ##
         itemCopy = gtk.ImageMenuItem(_('_Copy'))
-        itemCopy.set_image(gtk.image_new_from_stock(gtk.STOCK_COPY, gtk.ICON_SIZE_MENU))
+        itemCopy.set_image(gtk.Image.new_from_stock(gtk.STOCK_COPY, gtk.IconSize.MENU))
         itemCopy.connect('activate', self.copy)
         self.itemCopy = itemCopy
         self.menu.add(itemCopy)
@@ -133,12 +135,12 @@ class DateLabel(gtk.Label):
         self.menu.show_all()
     def popupPopulate(self, label, menu):
         self.itemCopy.set_sensitive(self.get_property('cursor-position') > self.get_property('selection-bound'))## FIXME
-        self.menu.popup(None, None, None, 3, 0)
+        self.menu.popup(None, None, None, None, 3, 0)
         ui.updateFocusTime()
     def copy(self, item):
         start = self.get_property('selection-bound')
         end = self.get_property('cursor-position')
-        setClipboard(toUnicode(self.get_text())[start:end])
+        setClipboard(toStr(self.get_text())[start:end])
     copyAll = lambda self, label: setClipboard(self.get_text())
 
 
@@ -201,7 +203,7 @@ class WinConButtonMin(WinConButton):
         if ui.winTaskbar:
             gWin.iconify()
         else:
-            gWin.emit('delete-event', event)
+            gWin.emit('delete-event', gdk.Event(event))
 
 class WinConButtonMax(WinConButton):
     _name = 'max'
@@ -222,7 +224,7 @@ class WinConButtonClose(WinConButton):
     imageName = 'button-close.png'
     imageNameFocus = 'button-close-focus.png'
     def onClicked(self, gWin, event):
-        gWin.emit('delete-event', event)
+        gWin.emit('delete-event', gdk.Event(event))
 
 class WinConButtonSep(WinConButton):
     _name = 'sep'
@@ -252,7 +254,7 @@ class MainWinController(gtk.HBox, CustomizableCalBox):
     def __init__(self):
         gtk.HBox.__init__(self, spacing=ui.winControllerSpacing)
         self.set_property('height-request', 15)
-        self.set_direction(gtk.TEXT_DIR_LTR)## FIXME
+        self.set_direction(gtk.TextDirection.LTR)## FIXME
         self.initVars()
         ###########
         for bname, enable in ui.winControllerButtons:
@@ -317,9 +319,9 @@ class StatusBox(gtk.HBox, CustomizableCalObj):
         pack(self, self.labelBox, 1, 1)
         sbar = gtk.Statusbar()
         if rtl:
-            self.set_direction(gtk.TEXT_DIR_LTR)
-            sbar.set_direction(gtk.TEXT_DIR_LTR)
-            self.labelBox.set_direction(gtk.TEXT_DIR_LTR)
+            self.set_direction(gtk.TextDirection.LTR)
+            sbar.set_direction(gtk.TextDirection.LTR)
+            self.labelBox.set_direction(gtk.TextDirection.LTR)
         sbar.set_property('width-request', 18)
         sbar.connect('button-press-event', self.sbarButtonPress)
         sbar.show()
@@ -383,10 +385,10 @@ class PluginsTextBox(gtk.VBox, CustomizableCalObj):
         self.initVars()
         ####
         self.textview = gtk.TextView()
-        self.textview.set_wrap_mode(gtk.WRAP_WORD)
+        self.textview.set_wrap_mode(gtk.WrapMode.WORD)
         self.textview.set_editable(False)
         self.textview.set_cursor_visible(False)
-        self.textview.set_justification(gtk.JUSTIFY_CENTER)
+        self.textview.set_justification(gtk.Justification.CENTER)
         self.textbuff = self.textview.get_buffer()
         self.textview.connect('populate-popup', ui.updateFocusTime)
         ##
@@ -499,35 +501,20 @@ class MainWinVbox(gtk.VBox, CustomizableCalBox):
 
 
 @registerSignals
+#class MainWin(gtk.ApplicationWindow, ud.IntegratedCalObj):
 class MainWin(gtk.Window, ud.IntegratedCalObj):
     _name = 'mainWin'
     desc = _('Main Window')
     timeout = 1 ## second
     setMinHeight = lambda self: self.resize(ui.winWidth, 2)
-    '''
-    def do_realize(self):
-        self.set_flags(self.flags() | gtk.REALIZED)
-        self.window = gdk.Window(
-            self.get_parent_window(),
-            width=self.get_allocation().width,
-            height=self.get_allocation().height,
-            window_type=gdk.WINDOW_TOPLEVEL,
-            wclass=gdk.INPUT_OUTPUT,
-            event_mask=self.get_events() \
-                | gdk.EXPOSURE_MASK | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK
-                | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK
-        )
-        self.get_window().set_user_data(self)
-        self.style.attach(self.window)#?????? Needed??
-        self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.get_window().move_resize(*self.get_allocation())
-        self.get_window().set_decorations(gdk.DECORE_CLOSE)
-        self.get_window().set_functions(gdk.FUNC_CLOSE)
-    '''
     #def maximize(self):
     #    pass
     def __init__(self, trayMode=2):
-        gtk.Window.__init__(self)##, gtk.WINDOW_POPUP) ## ????????????
+        #self.app = gtk.Application(application_id="apps.starcal")
+        #self.app.register(Gio.Cancellable.new())
+        #gtk.ApplicationWindow.__init__(self, application=self.app)
+        gtk.Window.__init__(self)
+        self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
         self.initVars()
         ud.windowList.appendItem(self)
         ui.mainWin = self
@@ -561,7 +548,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.set_property('skip-taskbar-hint', not ui.winTaskbar) ## self.set_skip_taskbar_hint  ## FIXME
         self.set_role('starcal2')
         #self.set_focus_on_map(True)#????????
-        #self.set_type_hint(gdk.WINDOW_TYPE_HINT_NORMAL)
+        #self.set_type_hint(gdk.WindowTypeHint.NORMAL)
         #self.connect('realize', self.onRealize)
         self.set_default_size(ui.winWidth, 1)
         try:
@@ -569,15 +556,15 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         except:
             pass
         #############################################################
-        self.connect('focus-in-event', self.focusIn, 'Main')
-        self.connect('focus-out-event', self.focusOut, 'Main')
-        self.connect('button-press-event', self.buttonPress)
-        self.connect('key-press-event', self.keyPress)
-        self.connect('configure-event', self.configureEvent)
+        #self.connect('focus-in-event', self.focusIn, 'Main')
+        #self.connect('focus-out-event', self.focusOut, 'Main')
+        #self.connect('button-press-event', self.buttonPress)
+        #self.connect('key-press-event', self.keyPress)
+        #self.connect('configure-event', self.configureEvent)
         self.connect('destroy', self.quit)
         #############################################################
         """
-        #self.add_events(gdk.VISIBILITY_NOTIFY_MASK)
+        #self.add_events(gdk.EventMask.VISIBILITY_NOTIFY_MASK)
         #self.connect('frame-event', show_event)
         ## Compiz does not send configure-event(or any event) when MOVING window(sends in last point,
         ## when moving completed)
@@ -621,8 +608,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
                 myRaise()
                 continue
             item.enable = enable
-            item.connect('size-request', self.childSizeRequest) ## or item.connect
-            #modify_bg_all(item, gtk.STATE_NORMAL, rgbToGdkColor(*ui.bgColor))
+            item.connect('size-allocate', self.childSizeRequest) ## or item.connect
+            #modify_bg_all(item, gtk.StateType.NORMAL, rgbToGdkColor(*ui.bgColor))
             self.vbox.appendItem(item)
         self.appendItem(self.vbox)
         self.vbox.show()
@@ -650,7 +637,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ## add Donate button ## FIXME
         about.connect('delete-event', self.aboutHide)
         about.connect('response', self.aboutHide)
-        #about.set_logo(gdk.pixbuf_new_from_file(ui.logo))
+        #about.set_logo(GdkPixbuf.Pixbuf.new_from_file(ui.logo))
         #about.set_skip_taskbar_hint(True)
         self.about = about
         ########################################### Building main menu
@@ -707,7 +694,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
                 plug.set_dialog(self)
         ###########################
         self.onConfigChange()
-        #ud.rootWindow.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
+        #ud.rootWindow.set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
     #def mainWinStateEvent(self, obj, event):
         #print(dir(event))
         #print(event.new_window_state)
@@ -772,19 +759,20 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         liveConfChanged()
         return False
     def buttonPress(self, obj, event):
+        print('buttonPress')
         b = event.button
         #print('buttonPress', b)
         if b==3:
-            self.menuMain.popup(None, None, None, 3, event.time)
+            self.menuMain.popup(None, None, None, None, 3, event.time)
             ui.updateFocusTime()
         elif b==1:
-            x, y, mask = ud.rootWindow.get_pointer()
+            foo, x, y, mask = ud.rootWindow.get_pointer()
             self.begin_move_drag(event.button, x, y, event.time)
         return False
     def startResize(self, widget, event):
         self.menuMain.hide()
-        x, y, mask = ud.rootWindow.get_pointer()
-        self.begin_resize_drag(gdk.WINDOW_EDGE_SOUTH_EAST, event.button, x, y, event.time)
+        foo, x, y, mask = ud.rootWindow.get_pointer()
+        self.begin_resize_drag(gdk.WindowEdge.SOUTH_EAST, event.button, x, y, event.time)
         return True
     def changeDate(self, year, month, day):
         ui.changeDate(year, month, day)
@@ -898,7 +886,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             mw = 145 ## FIXME
             x -= mw
         ####
-        menu.popup(None, None, lambda m: (x, y, True), 3, etime)
+        menu.popup(None, None, lambda m, e: (x, y, True), None, 3, etime)
         ui.updateFocusTime()
     def popupMenuMain(self, widget, etime, x, y):
         if etime == 0:
@@ -913,7 +901,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             if mw < 2:# menu width
                 mw = 145
             x -= mw
-        menu.popup(None, None, lambda m: (x, y, True), 3, etime)
+        menu.popup(None, None, lambda m, e: (x, y, True), None, 3, etime)
         #self.menuMainWidth = menu.get_allocation().width
         ui.updateFocusTime()
     def addToGroupFromMenu(self, menu, group, eventType):
@@ -942,8 +930,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ui.saveLiveConf()
     def updateMenuSize(self):## DIRTY FIXME
         ## To calc/update menus size (width is used)
-        getMenuPos = lambda widget: (ud.screenW, 0, True)
-        self.menuMain.popup(None, None, getMenuPos, 3, 0)
+        getMenuPos = lambda w, e: (ud.screenW, 0, True)
+        self.menuMain.popup(None, None, getMenuPos, None, 3, 0)
         self.menuMain.hide()
     def copyDate(self, obj=None, event=None):
         setClipboard(ui.cell.format(ud.dateFormatBin))
@@ -995,17 +983,19 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
     #weekCalShow = lambda self, obj=None, data=None: openWindow(ui.weekCalWin)
     def trayInit(self):
         if self.trayMode==2:
-            self.trayPix = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, ui.traySize, ui.traySize)
+            self.trayPix = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, ui.traySize, ui.traySize)
             ####
             useAppIndicator = ui.useAppIndicator
+            #if useAppIndicator:
+            #    try:
+            #        import appindicator
+            #    except ImportError:
+            #        useAppIndicator = False
             if useAppIndicator:
-                try:
-                    import appindicator
-                except ImportError:
-                    useAppIndicator = False
-            if useAppIndicator:
-                from scal2.ui_gtk.starcal2_appindicator import IndicatorStatusIconWrapper
-                self.sicon = IndicatorStatusIconWrapper(self)
+                #from scal2.ui_gtk.starcal2_appindicator import IndicatorStatusIconWrapper
+                #self.sicon = IndicatorStatusIconWrapper(self)
+                self.sicon = None
+                ## FIXME
             else:
                 self.sicon = gtk.StatusIcon()
                 ##self.sicon.set_blinking(True) ## for Alarms ## some problem with gnome-shell
@@ -1016,6 +1006,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
                 self.sicon.connect('button-press-event', self.trayButtonPress)
                 self.sicon.connect('activate', self.trayClicked)
                 self.sicon.connect('popup-menu', self.trayPopup)
+                self.sicon.set_from_file(join(pixDir, 'starcal2-24.png'))
+                #self.sicon.set_from_stock(gtk.STOCK_HOME)
         else:
             self.sicon = None
     getMainWinMenuItem = lambda self: labelMenuItem('Main Window', self.trayClicked)
@@ -1044,16 +1036,19 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             items.reverse()
             get_pos_func = None
         else:
-            y1 = geo[1][1]
-            y = gtk.status_icon_position_menu(menu, self.sicon)[1]
+            #print(dir(geo))
+            y1 = geo.index(1)
+            y = gtk.StatusIcon.position_menu(menu, self.sicon)[1]
             if y<y1:## taskbar is on bottom
                 items.reverse()
-            get_pos_func = gtk.status_icon_position_menu
+            get_pos_func = gtk.StatusIcon.position_menu
         for item in items:
             menu.add(item)
         menu.show_all()
-        menu.popup(None, None, get_pos_func, button, etime, self.sicon)
+        menu.popup(None, None, get_pos_func, self.sicon, button, etime)
+        #self.sicon.do_popup_menu(self.sicon, button, etime)
         ui.updateFocusTime()
+        self.sicon.menu = menu ## to prevent gurbage collected
     def onCurrentDateChange(self, gdate):
         self.trayUpdate(gdate=gdate)
     def getTrayTooltip(self):
@@ -1079,19 +1074,10 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             itemS += item['text'][0]
             tt += '\n\n%s'%itemS
         return tt
-    def trayUpdate(self, gdate=None, checkTrayMode=True):
-        if checkTrayMode and self.trayMode < 1:
-            return
-        if gdate is None:
-            gdate = localtime()[:3]
-        if calTypes.primary==core.DATE_GREG:
-            ddate = gdate
-        else:
-            ddate = core.convert(gdate[0], gdate[1], gdate[2], core.DATE_GREG, calTypes.primary)
+    def trayUpdateIcon(self, ddate):## FIXME
         imagePath = ui.trayImageHoli if ui.todayCell.holiday else ui.trayImage
         ######################################
-        '''
-        import Image, ImageDraw, ImageFont
+        from PIL import Image, ImageDraw, ImageFont
         im = Image.open(imagePath)
         w, h = im.size
         draw = ImageDraw.Draw(im)
@@ -1104,9 +1090,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             font=font,
             fill=ui.trayTextColor,
         )
-        self.sicon.set_from_pixbuf(gdk.pixbuf_new_from_data(im.tostring(), gdk.COLORSPACE_RGB, True, 8, w, h, 4*w))
-        '''
-        pixbuf = gdk.pixbuf_new_from_file(imagePath)
+        self.sicon.set_from_pixbuf(GdkPixbuf.Pixbuf.new_from_data(im.tostring(), GdkPixbuf.Colorspace.RGB, True, 8, w, h, 4*w))
+        pixbuf = GdkPixbuf.Pixbuf.new_from_file(imagePath)
         ##pixbuf.scale() #????????????
         ###################### PUTTING A TEXT ON A PIXBUF
         pmap = pixbuf.render_pixmap_and_mask(alpha_threshold=127)[0] ## pixmap is also a drawable
@@ -1119,9 +1104,22 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             y = ui.trayY0
         pmap.draw_layout(pmap.new_gc(), (s-w)/2, y, textLay, gdk.Color(*ui.trayTextColor))## , foreground, background)
         self.trayPix.get_from_drawable(pmap, self.get_screen().get_system_colormap(), 0, 0, 0, 0, s, s)
+        
         ######################################
-        self.sicon.set_from_pixbuf(self.trayPix)
+        #self.sicon.set_from_pixbuf(self.trayPix)
         ######################################
+    def trayUpdate(self, gdate=None, checkTrayMode=True):
+        if checkTrayMode and self.trayMode < 1:
+            return
+        #######
+        if gdate is None:
+            gdate = localtime()[:3]
+        if calTypes.primary==core.DATE_GREG:
+            ddate = gdate
+        else:
+            ddate = core.convert(gdate[0], gdate[1], gdate[2], core.DATE_GREG, calTypes.primary)
+        #self.trayUpdateIcon(ddate)
+        #######
         set_tooltip(self.sicon, self.getTrayTooltip())
         return True
     def trayButtonPress(self, obj, gevent):
@@ -1173,6 +1171,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             myRaise()
         if self.trayMode>1 and self.sicon:
             self.sicon.set_visible(False) ## needed for windows ## before or after main_quit ?
+        self.destroy()
         return gtk.main_quit()
     def adjustTime(self, widget=None, event=None):
         Popen(ud.adjustTimeCmd)
@@ -1196,7 +1195,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
 #core.COMMAND = sys.argv[0] ## OR __file__ ## ????????
 
 
-gtk.init_check()
+gtk.init_check(sys.argv)
 
 clickWebsite = lambda widget, url: core.openUrl(url)
 try:
@@ -1276,8 +1275,9 @@ def main():
     #    sys.exit(0)
     if action=='show' or not mainWin.sicon:
         mainWin.present()
-    ##ud.rootWindow.set_cursor(gdk.Cursor(gdk.LEFT_PTR))#???????????
-    return gtk.main()
+    ##ud.rootWindow.set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))#???????????
+    #mainWin.app.run(None)
+    gtk.main()
 
 
 if __name__ == '__main__':## this file may be called from starcal-gnome2-applet

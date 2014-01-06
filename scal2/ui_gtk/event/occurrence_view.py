@@ -17,7 +17,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from scal2.utils import toStr, toUnicode
+from scal2.utils import toBytes, toStr
 from scal2 import core
 from scal2.locale_man import tr as _
 from scal2 import event_lib
@@ -37,8 +37,8 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
     def __init__(self):
         gtk.ScrolledWindow.__init__(self)
-        self.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
-        self.connect('size-request', self.onSizeRequest)
+        self.set_policy(gtk.PolicyType.NEVER, gtk.PolicyType.AUTOMATIC)
+        self.connect('size-allocate', self.onSizeRequest)
         self.vbox = gtk.VBox(spacing=5)
         self.add_with_viewport(self.vbox)
         self.initVars()
@@ -48,7 +48,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         #print('onSizeRequest', requisition.width, requisition.height)
         requisition.height = min(
             self.maxHeight,## FIXME
-            self.vbox.size_request()[1] + 2,## >=2 FIXME
+            self.vbox.size_request().height + 2,## >=2 FIXME
         )
         return True
     def onDateChange(self, *a, **kw):
@@ -68,7 +68,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
                 pack(hbox, imageFromFile(item['icon']))
             if item['time']:
                 label = gtk.Label(item['time'])
-                label.set_direction(gtk.TEXT_DIR_LTR)
+                label.set_direction(gtk.TextDirection.LTR)
                 label.set_selectable(True)
                 label.connect('populate-popup', self.onLabelPopup)## FIXME
                 pack(hbox, label)
@@ -197,7 +197,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         cursor = label.get_property('cursor-position')
         start = min(bound, cursor)
         end = max(bound, cursor)
-        setClipboard(toStr(toUnicode(label.get_text())[start:end]))
+        setClipboard(toStr(label.get_text())[start:end])
     copyAll = lambda self, item, label: setClipboard(label.get_label())
 
 class WeekOccurrenceView(gtk.TreeView):
@@ -207,7 +207,7 @@ class WeekOccurrenceView(gtk.TreeView):
         self.absWeekNumber = core.getAbsWeekNumberFromJd(ui.cell.jd)## FIXME
         gtk.TreeView.__init__(self)
         self.set_headers_visible(False)
-        self.ls = gtk.ListStore(gdk.Pixbuf, str, str, str)## icon, weekDay, time, text
+        self.ls = gtk.ListStore(GdkPixbuf.Pixbuf, str, str, str)## icon, weekDay, time, text
         self.set_model(self.ls)
         ###
         cell = gtk.CellRendererPixbuf()
@@ -247,13 +247,13 @@ class WeekOccurrenceView(gtk.TreeView):
 
 
 '''
-class MonthOccurrenceView(event_lib.MonthOccurrenceView, gtk.TreeView):
+class MonthOccurrenceView(gtk.TreeView, event_lib.MonthOccurrenceView):
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
     def __init__(self):
         event_lib.MonthOccurrenceView.__init__(self, ui.cell.jd)
         gtk.TreeView.__init__(self)
         self.set_headers_visible(False)
-        self.ls = gtk.ListStore(gdk.Pixbuf, str, str, str)## icon, day, time, text
+        self.ls = gtk.ListStore(GdkPixbuf.Pixbuf, str, str, str)## icon, day, time, text
         self.set_model(self.ls)
         ###
         cell = gtk.CellRendererPixbuf()

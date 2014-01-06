@@ -17,7 +17,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from StringIO import StringIO
+from io import StringIO
 from difflib import SequenceMatcher
 
 from scal2.utils import NullObj
@@ -157,7 +157,7 @@ def getTagList(obj, startJd, endJd):
     endEpoch = getEpochFromJd(endJd)
     ###
     data = []
-    for tag, rev_id in obj.branch.tags.get_tag_dict().iteritems():
+    for tag, rev_id in obj.branch.tags.get_tag_dict().items():
         rev = obj.repo.get_revision(rev_id)
         epoch = rev.timestamp
         if startEpoch <= epoch < endEpoch:

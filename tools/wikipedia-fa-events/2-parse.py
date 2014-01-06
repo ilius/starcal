@@ -4,7 +4,7 @@
 import sys, os, re, json
 from os.path import join
 
-faDigs = (u'۰', u'۱', u'۲', u'۳', u'۴', u'۵', u'۶', u'۷', u'۸', u'۹', u'٫')
+faDigs = ('۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹', '٫')
 
 ignoreCategories = ('تعطیلات', 'جستارهای وابسته', 'منابع')
 

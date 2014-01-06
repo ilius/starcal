@@ -19,7 +19,7 @@
 
 from time import time as now
 
-import os, sys, shlex, thread
+import os, sys, shlex, _thread
 from os.path import join, dirname, split, splitext
 
 from scal2.path import *
@@ -30,6 +30,8 @@ from scal2.locale_man import tr as _
 from scal2.locale_man import rtl
 from scal2 import event_lib
 from scal2 import ui
+
+from gi.repository import GdkPixbuf
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
@@ -69,7 +71,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         ui.saveLiveConf()
         ###
         self.hide()
-        self.emit('config-change')        
+        self.emit('config-change')
     def onConfigChange(self, *a, **kw):
         ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
         ###
@@ -108,9 +110,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         self.resize(600, 300)
         self.connect('delete-event', self.onDeleteEvent)
         self.set_transient_for(None)
-        self.set_type_hint(gdk.WINDOW_TYPE_HINT_NORMAL)
+        self.set_type_hint(gdk.WindowTypeHint.NORMAL)
         ##
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
         #self.connect('response', lambda w, e: self.hide())
         self.connect('response', self.onResponse)
         self.connect('show', self.onShow)
@@ -217,8 +219,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         self.treev = gtk.TreeView()
         self.treev.set_search_column(2)
         #self.treev.set_headers_visible(False)## FIXME
-        #self.treev.get_selection().set_mode(gtk.SELECTION_MULTIPLE)## FIXME
-        #self.treev.set_rubber_banding(gtk.SELECTION_MULTIPLE)## FIXME
+        #self.treev.get_selection().set_mode(gtk.SelectionMode.MULTIPLE)## FIXME
+        #self.treev.set_rubber_banding(gtk.SelectionMode.MULTIPLE)## FIXME
         #self.treev.connect('realize', self.onTreeviewRealize)
         self.treev.connect('cursor-changed', self.treeviewCursorChanged)## FIXME
         self.treev.connect('button-press-event', self.treeviewButtonPress)
@@ -227,12 +229,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         #####
         swin = gtk.ScrolledWindow()
         swin.add(self.treev)
-        swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
         pack(treeBox, swin, 1, 1)
         ###
         toolbar = gtk.Toolbar()
-        toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
-        size = gtk.ICON_SIZE_SMALL_TOOLBAR
+        toolbar.set_orientation(gtk.Orientation.VERTICAL)
+        size = gtk.IconSize.SMALL_TOOLBAR
         ###
         tb = toolButtonFromStock(gtk.STOCK_GO_UP, size)
         set_tooltip(tb, _('Move up'))
@@ -253,7 +255,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         #####
         pack(self.vbox, treeBox, 1, 1)
         #######
-        self.trees = gtk.TreeStore(int, gdk.Pixbuf, str, str)
+        self.trees = gtk.TreeStore(int, GdkPixbuf.Pixbuf, str, str)
         ## event: eid,  event_icon,   event_summary, event_description
         ## group: gid,  group_pixbuf, group_title,   ?description
         ## trash: -1,        trash_icon,   _('Trash'),    ''
@@ -286,7 +288,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         self.toPasteEvent = None ## (path, bool move)
         #####
         self.sbar = gtk.Statusbar()
-        self.sbar.set_direction(gtk.TEXT_DIR_LTR)
+        self.sbar.set_direction(gtk.TextDirection.LTR)
         #self.sbar.set_has_resize_grip(False)
         pack(self.vbox, self.sbar)
         #####
@@ -1203,7 +1205,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
             self.treev.expand_row(path, False)
     def groupBulkEditFromMenu(self, menu, group, path):
         dialog = GroupBulkEditDialog(group)
-        if dialog.run()==gtk.RESPONSE_OK:
+        if dialog.run()==gtk.ResponseType.OK:
             self.waitingDo(self._do_groupBulkEdit, dialog, group, path)
     def groupActionClicked(self, menu, group, actionFuncName):
         func = getattr(group, actionFuncName)
@@ -1260,7 +1262,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
     #    pass
     #def selectAllEventInTrash(self, menu):## FIXME
     #    pass
-
+    def onDeleteEvent(self, obj, event):
+        self.hide()
+        return True
 
 
 

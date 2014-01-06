@@ -7,6 +7,9 @@ from scal2.core import myRaise, dataToJson
 
 class SObjBase:
     params = ()## used in getData and setData and copyFrom
+    __nonzero__ = lambda self: self.__bool__()
+    def __bool__(self):
+        raise NotImplementedError
     def copyFrom(self, other):
         for attr in self.params:
             try:
@@ -26,7 +29,7 @@ class SObjBase:
         dict([(param, getattr(self, param)) for param in self.params])
     def setData(self, data):
         #if isinstance(data, dict):## FIXME
-        for key, value in data.items():
+        for key, value in list(data.items()):
             if key in self.params:
                 setattr(self, key, value)
 
@@ -35,7 +38,7 @@ class SObjBase:
 def makeOrderedData(data, params):
     if isinstance(data, dict):
         if params:
-            data = data.items()
+            data = list(data.items())
             def paramIndex(key):
                 try:
                     return params.index(key)

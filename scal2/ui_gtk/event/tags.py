@@ -36,7 +36,7 @@ class EventTagsAndIconSelect(gtk.HBox):
         hbox = gtk.HBox()
         pack(hbox, gtk.Label(_('Category')+':'))
         #####
-        ls = gtk.ListStore(gdk.Pixbuf, str)
+        ls = gtk.ListStore(GdkPixbuf.Pixbuf, str)
         combo = gtk.ComboBox(ls)
         ###
         cell = gtk.CellRendererPixbuf()
@@ -50,7 +50,7 @@ class EventTagsAndIconSelect(gtk.HBox):
         ls.append([None, _('Custom')])## first or last FIXME
         for item in ui.eventTags:
             ls.append([
-                gdk.pixbuf_new_from_file(item.icon) if item.icon else None,
+                GdkPixbuf.Pixbuf.new_from_file(item.icon) if item.icon else None,
                 item.desc
             ])
         ###
@@ -78,7 +78,7 @@ class EventTagsAndIconSelect(gtk.HBox):
             self.tagButtons.append(button)
             pack(hbox3, button)
         self.swin = gtk.ScrolledWindow()
-        self.swin.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_NEVER)## horizontal AUTOMATIC or ALWAYS FIXME
+        self.swin.set_policy(gtk.PolicyType.ALWAYS, gtk.PolicyType.NEVER)## horizontal AUTOMATIC or ALWAYS FIXME
         self.swin.add_with_viewport(hbox3)
         pack(self, self.swin, 1, 1)
         self.customTypeWidgets = (iconLabel, self.iconSelect, tagsLabel, self.swin)
@@ -175,7 +175,7 @@ class TagsListBox(gtk.VBox):
         ###
         swin = gtk.ScrolledWindow()
         swin.add(treev)
-        swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
         pack(self, swin, 1, 1)
         ####
         self.treeview = treev
@@ -225,8 +225,8 @@ class TagEditorDialog(gtk.Dialog):
         self.tagsBox = TagsListBox(eventType)
         pack(self.vbox, self.tagsBox, 1, 1)
         ####
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
         ####
         self.vbox.show_all()
         self.getData = self.tagsBox.getData
@@ -246,7 +246,7 @@ class ViewEditTagsHbox(gtk.HBox):
         self.dialog.connect('response', self.dialogResponse)
         self.editButton = gtk.Button()
         self.editButton.set_label(_('_Edit'))
-        self.editButton.set_image(gtk.image_new_from_stock(gtk.STOCK_EDIT, gtk.ICON_SIZE_BUTTON))
+        self.editButton.set_image(gtk.Image.new_from_stock(gtk.STOCK_EDIT, gtk.IconSize.BUTTON))
         self.editButton.connect('clicked', self.editButtonClicked)
         pack(self, self.editButton)
         self.show_all()
@@ -254,7 +254,7 @@ class ViewEditTagsHbox(gtk.HBox):
         openWindow(self.dialog)
     def dialogResponse(self, dialog, resp):
         #print('dialogResponse', dialog, resp)
-        if resp==gtk.RESPONSE_OK:
+        if resp==gtk.ResponseType.OK:
             self.setData(dialog.getData())
         dialog.hide()
     def setData(self, tags):

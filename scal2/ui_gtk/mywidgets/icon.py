@@ -21,19 +21,18 @@ class IconSelectButton(gtk.Button):
         self.add(self.image)
         self.dialog = gtk.FileChooserDialog(
             title=_('Select Icon File'),
-            action=gtk.FILE_CHOOSER_ACTION_OPEN,
+            action=gtk.FileChooserAction.OPEN,
         )
-        self.dialog.set_local_only(True)
-        okB = self.dialog.add_button(gtk.STOCK_OK, gtk.RESPONSE_OK)
-        cancelB = self.dialog.add_button(gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL)
-        clearB = self.dialog.add_button(gtk.STOCK_CLEAR, gtk.RESPONSE_REJECT)
+        okB = self.dialog.add_button(gtk.STOCK_OK, gtk.ResponseType.OK)
+        cancelB = self.dialog.add_button(gtk.STOCK_CANCEL, gtk.ResponseType.CANCEL)
+        clearB = self.dialog.add_button(gtk.STOCK_CLEAR, gtk.ResponseType.REJECT)
         if ui.autoLocale:
             cancelB.set_label(_('_Cancel'))
-            cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL,gtk.ICON_SIZE_BUTTON))
+            cancelB.set_image(gtk.Image.new_from_stock(gtk.STOCK_CANCEL,gtk.IconSize.BUTTON))
             okB.set_label(_('_OK'))
-            okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK,gtk.ICON_SIZE_BUTTON))
+            okB.set_image(gtk.Image.new_from_stock(gtk.STOCK_OK,gtk.IconSize.BUTTON))
             clearB.set_label(_('Clear'))
-            clearB.set_image(gtk.image_new_from_stock(gtk.STOCK_CLEAR,gtk.ICON_SIZE_BUTTON))
+            clearB.set_image(gtk.Image.new_from_stock(gtk.STOCK_CLEAR,gtk.IconSize.BUTTON))
         ###
         menu = gtk.Menu()
         self.menu = menu
@@ -42,7 +41,7 @@ class IconSelectButton(gtk.Button):
             icon = item.icon
             if icon:
                 menuItem = gtk.ImageMenuItem(item.desc)
-                menuItem.set_image(gtk.image_new_from_file(icon))
+                menuItem.set_image(gtk.Image.new_from_file(icon))
                 menuItem.connect('activate', self.menuItemActivate, icon)
                 menu.add(menuItem)
         menu.show_all()
@@ -62,9 +61,9 @@ class IconSelectButton(gtk.Button):
     menuItemActivate = lambda self, widget, icon: self.set_filename(icon)
     def dialogResponse(self, dialog, response=0):
         dialog.hide()
-        if response == gtk.RESPONSE_OK:
+        if response == gtk.ResponseType.OK:
             fname = dialog.get_filename()
-        elif response == gtk.RESPONSE_REJECT:
+        elif response == gtk.ResponseType.REJECT:
             fname = ''
         else:
             return

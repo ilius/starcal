@@ -21,6 +21,9 @@ import sys, os
 from time import time as now
 from time import localtime
 
+from gi.repository import GObject
+from gi.repository import GdkPixbuf
+
 from scal2.ui_gtk import *
 from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
@@ -45,17 +48,17 @@ class MyFontButton(gtk.FontButton):
         gtk.FontButton.__init__(self)
         ##########
         self.drag_source_set(
-            gdk.MODIFIER_MASK,
-            (('text/plain', 0, 0),),
-            gdk.ACTION_COPY,
+            gdk.ModifierType.MODIFIER_MASK,
+            (),
+            gdk.DragAction.COPY,
         )
         self.drag_source_add_text_targets()
         self.connect('drag-data-get', self.dragDataGet)
         self.connect('drag-begin', self.dragBegin, parent)
         self.drag_dest_set(
-            gdk.MODIFIER_MASK,
-            (('text/plain', 0, 1),),
-            gdk.ACTION_COPY,
+            gtk.DestDefaults.ALL,
+            (),
+            gdk.DragAction.COPY,
         )
         self.drag_dest_add_text_targets()
         self.connect('drag-data-received', self.dragDataRec)
@@ -69,7 +72,7 @@ class MyFontButton(gtk.FontButton):
         text = selection.get_text()
         #\print('fontButtonDragDataRec    text=', text)
         if text:
-            pfont = pango.FontDescription(text)
+            pfont = Pango.FontDescription(text)
             if pfont.get_family() and pfont.get_size() > 0:
                 gtk.FontButton.set_font_name(fontb, text)
         return True
@@ -77,6 +80,7 @@ class MyFontButton(gtk.FontButton):
         #print('fontBottonDragBegin'## caled before dragCalDataGet)
         textLay = newTextLayout(self, gtk.FontButton.get_font_name(self))
         w, h = textLay.get_pixel_size()
+        '''
         pmap = gdk.Pixmap(None, w, h, 24)
         pmap.draw_layout(
             pmap.new_gc(),
@@ -86,7 +90,7 @@ class MyFontButton(gtk.FontButton):
             gdk.Color(0, 0, 0),# foreground
             gdk.Color(-1, -1, -1),# background
         )
-        pbuf = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, w, h)
+        pbuf = GdkPixbuf.Pixbuf(GdkPixbuf.Colorspace.RGB, True, 8, w, h)
         pbuf.get_from_drawable(
             pmap,
             parent.get_screen().get_system_colormap(),
@@ -98,11 +102,12 @@ class MyFontButton(gtk.FontButton):
             -1,
         )
         #fontb.drag_source_set_icon_pixbuf(pbuf)
+        '''
         context.set_icon_pixbuf(pbuf, -16, -10)
         return True
     get_font_name = lambda self: gfontDecode(gtk.FontButton.get_font_name(self))
     def set_font_name(self, font):
-        if isinstance(font, basestring):## For compatibility
+        if isinstance(font, str):## For compatibility
             gtk.FontButton.set_font_name(self, font)
         else:
             gtk.FontButton.set_font_name(self, gfontEncode(font))
@@ -121,7 +126,7 @@ class MyColorButton(gtk.ColorButton): ## for tooltip text
                 text = '%s\n%s\n%s\n%s'%(r, g, b, a)
             else:
                 text = '%s\n%s\n%s'%(r, g, b)
-            ##self.get_tooltip_window().set_direction(gtk.TEXT_DIR_LTR)
+            ##self.get_tooltip_window().set_direction(gtk.TextDirection.LTR)
             ##print(self.get_tooltip_window())
             self.set_tooltip_text(text) ##???????????????? Right to left
             #self.tt_label.set_label(text)##???????????? Dosent work
@@ -161,7 +166,7 @@ class TextFrame(gtk.Frame):
         self.set_border_width(4)
         ####
         self.textview = gtk.TextView()
-        self.textview.set_wrap_mode(gtk.WRAP_WORD)
+        self.textview.set_wrap_mode(gtk.WrapMode.WORD)
         self.add(self.textview)
         ####
         self.buff = self.textview.get_buffer()

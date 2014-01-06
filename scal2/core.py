@@ -20,7 +20,7 @@ from time import localtime
 from time import time as now
 
 import sys, os, subprocess, traceback
-from StringIO import StringIO
+from io import StringIO
 from os.path import isfile, isdir, exists, dirname, join, split, splitext
 from pprint import pprint
 
@@ -380,7 +380,7 @@ compressLongInt = lambda num:\
 
 getCompactTime = lambda maxDays=1000, minSec=0.1:\
     compressLongInt(
-        long(
+        int(
             now()%(maxDays*24*3600) / minSec
         )
     )

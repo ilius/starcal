@@ -128,7 +128,7 @@ class MonthDbHolder:
         self.setData(data)
     def getMonthLenByYear(self):
         monthLenByYear = {}
-        for ym, mLen in self.monthLenByYm.iteritems():
+        for ym, mLen in self.monthLenByYm.items():
             year, month0 = divmod(ym, 12)
             if not year in monthLenByYear:
                 monthLenByYear[year] = [0,] * month0
@@ -136,7 +136,7 @@ class MonthDbHolder:
         return monthLenByYear
     def save(self):
         mLenData = []
-        for year, mLenList in self.getMonthLenByYear().iteritems():
+        for year, mLenList in self.getMonthLenByYear().items():
             mLenData.append([year]+mLenList)
         text = dataToPrettyJson(OrderedDict([
             ('origVersion', self.origVersion),

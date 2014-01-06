@@ -10,7 +10,7 @@ class AccountWidget(gtk.VBox):
         gtk.VBox.__init__(self)
         self.account = account
         ########
-        self.sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        self.sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
         #####
         hbox = gtk.HBox()
         label = gtk.Label(_('Title'))

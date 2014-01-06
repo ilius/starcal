@@ -12,7 +12,7 @@ from scal2.ui_gtk.utils import dialog_add_button, DateTypeCombo
 
 class CustomDayImporterDialog(gtk.Dialog):
     def onResponse(self, dialog, response_id):
-        if response_id==gtk.RESPONSE_OK:
+        if response_id==gtk.ResponseType.OK:
             importAndDeleteCustomDB(
                 self.modeCombo.get_active(),
                 self.groupTitleEntry.get_text(),
@@ -21,10 +21,10 @@ class CustomDayImporterDialog(gtk.Dialog):
     def __init__(self):
         gtk.Dialog.__init__(self)
         ####
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
         self.connect('response', self.onResponse)
         ####
-        sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
         ####
         hbox = gtk.HBox()
         label = gtk.Label(_('Calendar Type'))

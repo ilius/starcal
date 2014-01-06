@@ -179,15 +179,15 @@ def calcEventBoxes(
     if debugMode:
         t0 = now()
     boxes = []
-    for bvalue, blist in boxesDict.iteritems():
+    for bvalue, blist in boxesDict.items():
         if len(blist) < 4:
             boxes += blist
         else:
             box = blist[0]
             box.text = _('%s events')%_(len(blist))
             box.ids = None
-            #print('len(blist)', len(blist))
-            #print((box.t1 - box.t0), 'secs')
+            #print('len(blist) = %s'%len(blist))
+            #print('%s secs'%(box.t1 - box.t0))
             boxes.append(box)
     del boxesDict
     #####

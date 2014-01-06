@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from scal2.color_utils import rgbToHtmlColor
-from gtk import gdk
+from gi.repository import Gdk as gdk
 
 ## r, g, b in range(256)
 rgbToGdkColor = lambda r, g, b, a=None: gdk.Color(int(r*257), int(g*257), int(b*257))

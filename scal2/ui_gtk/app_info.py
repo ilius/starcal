@@ -2,7 +2,7 @@ import sys
 
 from scal2.locale_man import popenDefaultLang
 
-import gio
+from gi.repository import Gio as gio
 
 from scal2.ui_gtk import *
 

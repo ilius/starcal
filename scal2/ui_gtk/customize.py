@@ -24,6 +24,9 @@ from scal2.core import myRaise
 from scal2.locale_man import tr as _
 from scal2 import ui
 
+from gi.repository import GObject
+from gi.repository import GdkPixbuf
+
 from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, dialog_add_button
 from scal2.ui_gtk import gtk_ud as ud
@@ -98,14 +101,14 @@ class CustomizeDialog(gtk.Dialog):
     def __init__(self, widget):
         gtk.Dialog.__init__(self)
         self.set_title(_('Customize'))
-        self.set_has_separator(False)
+        #self.set_has_separator(False)## not in gtk3
         self.connect('delete-event', self.close)
         dialog_add_button(self, gtk.STOCK_CLOSE, _('_Close'), 0, self.close)
         ###
         self._widget = widget
         self.activeOptionsWidget = None
         ###
-        self.model = gtk.TreeStore(bool, str) ## (gdk.Pixbuf, str)
+        self.model = gtk.TreeStore(bool, str) ## (GdkPixbuf.Pixbuf, str)
         treev = self.treev = gtk.TreeView(self.model)
         ##
         treev.set_enable_tree_lines(True)
@@ -116,14 +119,14 @@ class CustomizeDialog(gtk.Dialog):
         ##
         cell = gtk.CellRendererToggle()
         cell.connect('toggled', self.enableCellToggled)
-        pack(col, cell, expand=False)
+        pack(col, cell)
         col.add_attribute(cell, 'active', 0)
         ##
         treev.append_column(col)
         col = gtk.TreeViewColumn('Widget')
         ##
         cell = gtk.CellRendererText()
-        pack(col, cell, expand=False)
+        pack(col, cell)
         col.add_attribute(cell, 'text', 1)
         ##
         treev.append_column(col)
@@ -138,8 +141,8 @@ class CustomizeDialog(gtk.Dialog):
         pack(hbox, vbox_l, 1, 1)
         ###
         toolbar = gtk.Toolbar()
-        toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
-        size = gtk.ICON_SIZE_SMALL_TOOLBAR
+        toolbar.set_orientation(gtk.Orientation.VERTICAL)
+        size = gtk.IconSize.SMALL_TOOLBAR
         toolbar.set_icon_size(size)
         ## argument2 to image_new_from_stock does not affect
         ###
@@ -157,15 +160,15 @@ class CustomizeDialog(gtk.Dialog):
         pack(self.vbox, hbox, 1, 1)
         self.vbox_l = vbox_l
         ###
-        self.vbox.connect('size-request', self.vboxSizeRequest)
+        self.vbox.connect('size-allocate', self.vboxSizeRequest)
         self.vbox.show_all()
         treev.connect('cursor-changed', self.treevCursorChanged)
     def vboxSizeRequest(self, widget, req):
         self.resize(self.get_size()[0], 1)
     def getItemByPath(self, path):
-        if isinstance(path, basestring):
+        if isinstance(path, str):
             path = [int(p) for p in path.split(':')]
-        elif isinstance(path, (int, long)):
+        elif isinstance(path, int):
             path = [path]
         elif not isinstance(path, (tuple, list)):
             raise TypeError('argument %s given to getItemByPath has bad type %s'%path)

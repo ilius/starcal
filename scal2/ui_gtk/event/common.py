@@ -21,7 +21,7 @@
 import os, shutil
 from os.path import join, split
 
-from scal2.utils import toStr
+from scal2.utils import toBytes
 from scal2.time_utils import durationUnitsAbs, durationUnitValues
 from scal2.cal_types import calTypes
 from scal2 import core
@@ -29,6 +29,9 @@ from scal2.core import myRaise
 from scal2.locale_man import tr as _
 from scal2 import event_lib
 from scal2 import ui
+
+from gi.repository import GObject
+from gi.repository import GdkPixbuf
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, labelStockMenuItem, TimeZoneComboBoxEntry
@@ -94,7 +97,7 @@ class EventWidget(gtk.VBox):
         ###########
         self.descriptionInput = TextFrame()
         swin = gtk.ScrolledWindow()
-        swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
         swin.add_with_viewport(self.descriptionInput)
         ###
         exp = gtk.Expander()
@@ -163,7 +166,7 @@ class FilesBox(gtk.VBox):
         pack(hbox, gtk.Label(''), 1, 1)
         addButton = gtk.Button()
         addButton.set_label(_('_Add File'))
-        addButton.set_image(gtk.image_new_from_stock(gtk.STOCK_ADD, gtk.ICON_SIZE_BUTTON))
+        addButton.set_image(gtk.Image.new_from_stock(gtk.STOCK_ADD, gtk.IconSize.BUTTON))
         addButton.connect('clicked', self.addClicked)
         pack(hbox, addButton)
         pack(self, hbox)
@@ -171,14 +174,15 @@ class FilesBox(gtk.VBox):
         self.newFiles = []
     def showFile(self, fname):
         hbox = gtk.HBox()
-        pack(hbox, gtk.LinkButton(
+        link = gtk.LinkButton(
             self.event.getUrlForFile(fname),
             _('File') + ': ' + fname,
-        ), 0, 0)
+        )
+        pack(hbox, link)
         pack(hbox, gtk.Label(''), 1, 1)
         delButton = gtk.Button()
         delButton.set_label(_('_Delete'))
-        delButton.set_image(gtk.image_new_from_stock(gtk.STOCK_DELETE, gtk.ICON_SIZE_BUTTON))
+        delButton.set_image(gtk.Image.new_from_stock(gtk.STOCK_DELETE, gtk.IconSize.BUTTON))
         delButton.fname = fname
         delButton.hbox = hbox
         delButton.connect('clicked', self.delClicked)
@@ -188,14 +192,14 @@ class FilesBox(gtk.VBox):
     def addClicked(self, button):
         fcd = gtk.FileChooserDialog(
             buttons=(
-                toStr(_('_OK')), gtk.RESPONSE_OK,
-                toStr(_('_Cancel')), gtk.RESPONSE_CANCEL,
+                toBytes(_('_OK')), gtk.ResponseType.OK,
+                toBytes(_('_Cancel')), gtk.ResponseType.CANCEL,
             ),
             title=_('Add File'),
         )
         fcd.set_local_only(True)
         fcd.connect('response', lambda w, e: fcd.hide())
-        if fcd.run() == gtk.RESPONSE_OK:
+        if fcd.run() == gtk.ResponseType.OK:
             fpath = fcd.get_filename()
             fname = split(fpath)[-1]
             dstDir = self.event.filesDir
@@ -230,7 +234,8 @@ class FilesBox(gtk.VBox):
 
 class NotificationBox(gtk.Expander):## or NotificationBox FIXME
     def __init__(self, event):
-        gtk.Expander.__init__(self, _('Notification'))
+        gtk.Expander.__init__(self)
+        self.set_label(_('Notification'))
         self.event = event
         self.hboxDict = {}
         totalVbox = gtk.VBox()
@@ -287,7 +292,7 @@ class DurationInputBox(gtk.HBox):
         self.valueSpin = FloatSpinButton(0, 999, 1)
         pack(self, self.valueSpin)
         ##
-        combo = gtk.combo_box_new_text()
+        combo = gtk.ComboBoxText()
         for unitValue, unitName in durationUnitsAbs:
             combo.append_text(_(' '+unitName.capitalize()+'s'))
         combo.set_active(2) ## hour FIXME
@@ -318,15 +323,15 @@ class StrListEditor(gtk.HBox):
         pack(self, self.treev, 1, 1)
         ##########
         toolbar = gtk.Toolbar()
-        toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
+        toolbar.set_orientation(gtk.Orientation.VERTICAL)
         #try:## DeprecationWarning #?????????????
-            #toolbar.set_icon_size(gtk.ICON_SIZE_SMALL_TOOLBAR)
+            #toolbar.set_icon_size(gtk.IconSize.SMALL_TOOLBAR)
             ### no different (argument to set_icon_size does not affect) ?????????
         #except:
         #    pass
-        size = gtk.ICON_SIZE_SMALL_TOOLBAR
+        size = gtk.IconSize.SMALL_TOOLBAR
         ##no different(argument2 to image_new_from_stock does not affect) ?????????
-        #### gtk.ICON_SIZE_SMALL_TOOLBAR or gtk.ICON_SIZE_MENU
+        #### gtk.IconSize.SMALL_TOOLBAR or gtk.IconSize.MENU
         tb = toolButtonFromStock(gtk.STOCK_ADD, size)
         set_tooltip(tb, _('Add'))
         tb.connect('clicked', self.addClicked)
@@ -407,17 +412,18 @@ class Scale10PowerComboBox(gtk.ComboBox):
 
 class EventEditorDialog(gtk.Dialog):
     def __init__(self, event, typeChangable=True, title=None, isNew=False, parent=None, useSelectedDate=False):
-        gtk.Dialog.__init__(self, parent=parent)
+        gtk.Dialog.__init__(self)
+        self.set_parent(parent)
         #self.set_transient_for(None)
-        #self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_NORMAL)
+        #self.set_type_hint(gdk.WindowTypeHint.NORMAL)
         if title:
             self.set_title(title)
         self.isNew = isNew
         #self.connect('delete-event', lambda obj, e: self.destroy())
         #self.resize(800, 600)
         ###
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
         ###
         self.connect('response', lambda w, e: self.hide())
         #######
@@ -428,7 +434,7 @@ class EventEditorDialog(gtk.Dialog):
         hbox = gtk.HBox()
         pack(hbox, gtk.Label(_('Event Type')))
         if typeChangable and len(self._group.acceptsEventTypes)>1:## FIXME
-            combo = gtk.combo_box_new_text()
+            combo = gtk.ComboBoxText()
             for eventType in self._group.acceptsEventTypes:
                 combo.append_text(event_lib.classes.event.byName[eventType].desc)
             pack(hbox, combo)
@@ -468,7 +474,7 @@ class EventEditorDialog(gtk.Dialog):
     def run(self):
         #if not self.activeWidget:
         #    return None
-        if gtk.Dialog.run(self) != gtk.RESPONSE_OK:
+        if gtk.Dialog.run(self) != gtk.ResponseType.OK:
             try:
                 filesBox = self.activeWidget.filesBox
             except AttributeError:
@@ -508,14 +514,14 @@ class GroupEditorDialog(gtk.Dialog):
         #self.connect('delete-event', lambda obj, e: self.destroy())
         #self.resize(800, 600)
         ###
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
         self.connect('response', lambda w, e: self.hide())
         #######
         self.activeWidget = None
         #######
         hbox = gtk.HBox()
-        combo = gtk.combo_box_new_text()
+        combo = gtk.ComboBoxText()
         for cls in event_lib.classes.group:
             combo.append_text(cls.desc)
         pack(hbox, gtk.Label(_('Group Type')))
@@ -567,7 +573,7 @@ class GroupEditorDialog(gtk.Dialog):
     def run(self):
         if self.activeWidget is None:
             return None
-        if gtk.Dialog.run(self) != gtk.RESPONSE_OK:
+        if gtk.Dialog.run(self) != gtk.ResponseType.OK:
             return None
         self.activeWidget.updateVars()
         self._group.save()## FIXME
@@ -616,8 +622,8 @@ class GroupsTreeCheckList(gtk.TreeView):
 
 class SingleGroupComboBox(gtk.ComboBox):
     def __init__(self):
-        ls = gtk.ListStore(int, gdk.Pixbuf, str)
-        gtk.ComboBox.__init__(self, ls)
+        gtk.ComboBox.__init__(self)
+        self.set_model(gtk.ListStore(int, GdkPixbuf.Pixbuf, str))
         #####
         cell = gtk.CellRendererPixbuf()
         pack(self, cell)

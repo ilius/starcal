@@ -13,7 +13,7 @@ class RuleWidget(gtk.HBox):
         #####
         gtk.HBox.__init__(self)
         ###
-        combo = gtk.combo_box_new_text()
+        combo = gtk.ComboBoxText()
         for item in rule.wmIndexNames:
             combo.append_text(item)
         pack(self, combo)

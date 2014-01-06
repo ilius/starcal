@@ -31,7 +31,7 @@ class EventWidget(common.EventWidget):
     def __init__(self, event):## FIXME
         common.EventWidget.__init__(self, event)
         ######
-        sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
         ######
         try:
             seperated = event.parent.showSeperatedYmdInputs

@@ -12,7 +12,7 @@ class RuleWidget(gtk.HBox):
     def __init__(self, rule):
         self.rule = rule
         ###
-        gtk.HBox.__init__(self)
+        gtk.ComboBox.__init__(self)
         ###
         self.dateInput = DateButton()
         pack(self, self.dateInput)

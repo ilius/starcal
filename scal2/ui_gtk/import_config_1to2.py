@@ -35,7 +35,7 @@ langCodeList = []
 
 langDefaultCode = ''
 
-win = gtk.Dialog(title=APP_DESC+' - First Run', buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
+win = gtk.Dialog(title=APP_DESC+' - First Run', buttons=(gtk.STOCK_OK, gtk.ResponseType.OK, gtk.STOCK_CANCEL, gtk.ResponseType.CANCEL))
 langHbox = gtk.HBox()
 pack(langHbox, gtk.Label('Select Language:'))
 
@@ -49,7 +49,7 @@ if oldVersion and '1.5.0' < oldVersion < '1.6.0':## FIXME
     pack(win.vbox, importCheckb)
 
 
-langCombo = gtk.combo_box_new_text()
+langCombo = gtk.ComboBoxText()
 for fname in os.listdir(langDir):
     fpath = join(langDir, fname)
     if not os.path.isfile(fpath):
@@ -73,7 +73,7 @@ pack(langHbox, langCombo, 1, 1)
 pack(win.vbox, langHbox)
 win.vbox.show_all()
 
-if win.run()==gtk.RESPONSE_OK:
+if win.run()==gtk.ResponseType.OK:
     #print('RESPONSE_OK')
     if importCheckb and importCheckb.get_active():
         importConfigFrom15()
@@ -83,7 +83,7 @@ if win.run()==gtk.RESPONSE_OK:
         thisLangConfDir = join(langConfDir, langCode)
         #print('Setting language', langCode)
         if not os.path.isdir(confDir):
-            os.mkdir(confDir, 0755)
+            os.mkdir(confDir, 0o755)
         if os.path.isdir(thisLangConfDir):
             for fname in os.listdir(thisLangConfDir):
                 src_path = join(thisLangConfDir, fname)
@@ -99,6 +99,6 @@ if win.run()==gtk.RESPONSE_OK:
 win.destroy()
 
 if not os.path.isdir(confDir):
-    os.mkdir(confDir, 0755)
+    os.mkdir(confDir, 0o755)
 
 

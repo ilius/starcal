@@ -37,14 +37,14 @@ class EventWidget(gtk.VBox):
         gtk.VBox.__init__(self)
         self.event = event
         assert event.parent.name == 'universityTerm' ## FIXME
-        sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
         #####
         if not event.parent.courses:
             showError(event.parent.noCourseError)
             raise RuntimeError('No courses added')
         self.courseIds = []
         self.courseNames = []
-        combo = gtk.combo_box_new_text()
+        combo = gtk.ComboBoxText()
         for course in event.parent.courses:
             self.courseIds.append(course[0])
             self.courseNames.append(course[1])
@@ -89,8 +89,8 @@ class EventWidget(gtk.VBox):
         self.dayTimeStartCombo = HourMinuteButtonOption()
         self.dayTimeEndCombo = HourMinuteButtonOption()
         ##
-        #self.dayTimeStartCombo.child.set_direction(gtk.TEXT_DIR_LTR)
-        #self.dayTimeEndCombo.child.set_direction(gtk.TEXT_DIR_LTR)
+        #self.dayTimeStartCombo.get_child().set_direction(gtk.TextDirection.LTR)
+        #self.dayTimeEndCombo.get_child().set_direction(gtk.TextDirection.LTR)
         ##
         pack(hbox, self.dayTimeStartCombo)
         pack(hbox, gtk.Label(' ' + _('to') + ' '))

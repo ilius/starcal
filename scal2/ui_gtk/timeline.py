@@ -24,7 +24,6 @@ from time import time as now
 import math
 from math import pi
 
-from scal2.utils import toUnicode
 from scal2.utils import iceil
 from scal2 import core
 from scal2.core import myRaise
@@ -33,7 +32,8 @@ from scal2.locale_man import rtl
 from scal2 import ui
 from scal2.timeline import *
 
-from gobject import timeout_add, source_remove
+from gi.repository.GObject import timeout_add
+from gi.repository.GLib import source_remove
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
@@ -53,7 +53,7 @@ def show_event(widget, event):
 
 
 @registerSignals
-class TimeLine(gtk.Widget, ud.IntegratedCalObj):
+class TimeLine(gtk.DrawingArea, ud.IntegratedCalObj):
     _name = 'timeLine'
     desc = _('Time Line')
     def centerToNow(self):
@@ -63,11 +63,12 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         self.centerToNow()
         self.queue_draw()
     def __init__(self, closeFunc):
-        gtk.Widget.__init__(self)
+        gtk.DrawingArea.__init__(self)
+        self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
         self.initVars()
         ###
         self.closeFunc = closeFunc
-        self.connect('expose-event', self.onExposeEvent)
+        self.connect('draw', self.onExposeEvent)
         self.connect('scroll-event', self.onScroll)
         self.connect('button-press-event', self.buttonPress)
         self.connect('motion-notify-event', self.motionNotify)
@@ -94,24 +95,6 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         ## editType=0   moving
         ## editType=-1  resizing to left
         ## editType=+1  resizing to right
-    def do_realize(self):
-        self.set_flags(self.flags() | gtk.REALIZED)
-        self.window = gdk.Window(
-            self.get_parent_window(),
-            width=self.get_allocation().width,
-            height=self.get_allocation().height,
-            window_type=gdk.WINDOW_CHILD,
-            wclass=gdk.INPUT_OUTPUT,
-            event_mask=self.get_events() | gdk.EXPOSURE_MASK
-            | gdk.BUTTON1_MOTION_MASK | gdk.BUTTON_PRESS_MASK | gdk.BUTTON_RELEASE_MASK
-            | gdk.POINTER_MOTION_MASK | gdk.POINTER_MOTION_HINT_MASK)
-            #colormap=self.get_screen().get_rgba_colormap())
-        #self.get_window().set_composited(True)
-        self.get_window().set_user_data(self)
-        self.style.attach(self.window)#?????? Needed??
-        self.style.set_background(self.window, gtk.STATE_NORMAL)
-        self.get_window().move_resize(*self.get_allocation())
-        self.currentTimeUpdate()
     def currentTimeUpdate(self, restart=False, draw=True):
         if restart:
             try:
@@ -190,7 +173,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             except:
                 print('error in move_to, x=%.2f, y=%.2f'%(layoutX, layoutY))
             else:
-                cr.show_layout(layout)## with the same tick.color
+                show_layout(cr, layout)## with the same tick.color
     def drawBox(self, cr, box):
         d = box.lineW
         x = box.x
@@ -269,8 +252,9 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         #t2 = now()
         #print('drawing time / data calc time: %.2f'%((t2-t1)/(t1-t0)))
     def onScroll(self, widget, event):
+        #print('onScroll', event.direction.value_nick)
         isUp = event.direction.value_nick=='up'
-        if event.state & gdk.CONTROL_MASK:
+        if event.get_state() & gdk.ModifierType.CONTROL_MASK:
             self.zoom(
                 isUp,
                 scrollZoomStep, 
@@ -312,15 +296,15 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
                 if top == minA:
                     editType = 0
                     t0 = event.getStartEpoch()
-                    self.get_window().set_cursor(gdk.Cursor(gdk.FLEUR))
+                    self.get_window().set_cursor(gdk.Cursor.new(gdk.FLEUR))
                 elif right == minA:
                     editType = 1
                     t0 = event.getEndEpoch()
-                    self.get_window().set_cursor(gdk.Cursor(gdk.RIGHT_SIDE))
+                    self.get_window().set_cursor(gdk.Cursor.new(gdk.RIGHT_SIDE))
                 elif left == minA:
                     editType = -1
                     t0 = event.getStartEpoch()
-                    self.get_window().set_cursor(gdk.Cursor(gdk.LEFT_SIDE))
+                    self.get_window().set_cursor(gdk.Cursor.new(gdk.LEFT_SIDE))
                 if editType is not None:
                     self.boxEditing = (editType, event, box, x, t0)
                     return True
@@ -396,7 +380,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
             event.afterModify()
             event.save()
             self.boxEditing = None
-        self.get_window().set_cursor(gdk.Cursor(gdk.LEFT_PTR))
+        self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
         self.queue_draw()
     def onConfigChange(self, *a, **kw):
         ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
@@ -446,12 +430,12 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         elif k=='right':
             self.movingUserEvent(
                 direction=1,
-                smallForce=(event.state & gdk.SHIFT_MASK),
+                smallForce=(event.get_state() & gdk.ModifierType.SHIFT_MASK),
             )
         elif k=='left':
             self.movingUserEvent(
                 direction=-1,
-                smallForce=(event.state & gdk.SHIFT_MASK),
+                smallForce=(event.get_state() & gdk.ModifierType.SHIFT_MASK),
             )
         elif k=='down':
             self.stopMovingAnim()
@@ -466,7 +450,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         #elif k=='menu':# Simulate right click (key beside Right-Ctrl)
         #    #self.emit('popup-menu-cell', event.time, *self.getCellPos())
         #elif k in ('f10','m'): # F10 or m or M
-        #    if event.state & gdk.SHIFT_MASK:
+        #    if event.get_state() & gdk.ModifierType.SHIFT_MASK:
         #        # Simulate right click (key beside Right-Ctrl)
         #        self.emit('popup-menu-cell', event.time, *self.getCellPos())
         #    else:
@@ -565,7 +549,7 @@ class TimeLineWindow(gtk.Window, ud.IntegratedCalObj):
         return True
     def buttonPress(self, obj, event):
         if event.button==1:
-            px, py, mask = ud.rootWindow.get_pointer()
+            foo, px, py, mask = ud.rootWindow.get_pointer()
             self.begin_move_drag(event.button, px, py, event.time)
             return True
         return False

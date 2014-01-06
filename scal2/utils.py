@@ -73,9 +73,10 @@ except ImportError:
             x += step
         return l
 
-toStr = lambda s: s.encode('utf8') if isinstance(s, unicode) else str(s)
-toUnicode = lambda s: s if isinstance(s, unicode) else str(s).decode('utf8')
+toBytes = lambda s: s.encode('utf8') if isinstance(s, str) else bytes(s)
+toStr = lambda s: str(s, 'utf8') if isinstance(s, bytes) else str(s)
 
+cmp = lambda a, b: 0 if a==b else (1 if a>b else -1)
 
 def versionLessThan(v0, v1):
     if v0=='':
@@ -136,7 +137,7 @@ class StrOrderedDict(dict):
     def __getitem__(self, arg):
         if isinstance(arg, int):
             return dict.__getitem__(self, self.keyList[arg])
-        elif isinstance(arg, basestring):
+        elif isinstance(arg, str):
             return dict.__getitem__(self, arg)
         elif isinstance(arg, slice):## not tested FIXME
             return StrOrderedDict([
@@ -148,7 +149,7 @@ class StrOrderedDict(dict):
     def __setitem__(self, arg, value):
         if isinstance(arg, int):
             dict.__setitem__(self, self.keyList[arg], value)
-        elif isinstance(arg, basestring):
+        elif isinstance(arg, str):
             if arg in self.keyList:## Modifying value for an existing key
                 if reorderOnModify:
                     self.keyList.remove(arg)
@@ -167,7 +168,7 @@ class StrOrderedDict(dict):
         if isinstance(arg, int):
             self.keyList.__delitem__(arg)
             dict.__delitem__(self, self.keyList[arg])
-        elif isinstance(arg, basestring):
+        elif isinstance(arg, str):
             self.keyList.remove(arg)
             dict.__delitem__(self, arg)
         elif isinstance(arg, slice):## ???????????? is not tested
@@ -181,14 +182,13 @@ class StrOrderedDict(dict):
         self.keyList = []
         dict.clear(self)
     def append(self, key, value):
-        assert isinstance(key, basestring) and not key in self.keyList
+        assert isinstance(key, str) and not key in self.keyList
         self.keyList.append(key)
         dict.__setitem__(self, key, value)
     def insert(self, index, key, value):
-        assert isinstance(key, basestring) and not key in self.keyList
+        assert isinstance(key, str) and not key in self.keyList
         self.keyList.insert(index, key)
         dict.__setitem__(self, key, value)
-    #def __cmp__(self, other):#?????
     def sort(self, attr=None):
         if attr==None:
             self.keyList.sort()
@@ -284,7 +284,7 @@ def strFindNth(st, sub, n):
 def numRangesEncode(values):
     parts = []
     for value in values:
-        if isinstance(value, (int, long)):
+        if isinstance(value, int):
             parts.append(str(value))
         elif isinstance(value, (tuple, list)):
             parts.append('%d-%d'%(value[0], value[1]))
@@ -309,7 +309,7 @@ def numRangesDecode(text):
 def inputDate(msg):
     while True:
         try:
-            date = raw_input(msg)
+            date = input(msg)
         except KeyboardInterrupt:
             return
         if date.lower() == 'q':

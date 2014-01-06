@@ -37,12 +37,14 @@ from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, TimeButton, Yea
 
 class ExportDialog(gtk.Dialog):
     def __init__(self):
-        gtk.Dialog.__init__(self, title=_('Export to %s')%'HTML', parent=None)
-        self.set_has_separator(False)
+        gtk.Dialog.__init__(self)
+        self.set_title(_('Export to %s')%'HTML')
+        ## parent=None FIXME
+        #self.set_has_separator(False)
         ########
         hbox = gtk.HBox(spacing=2)
         pack(hbox, gtk.Label(_('Month Range')))
-        combo = gtk.combo_box_new_text()
+        combo = gtk.ComboBoxText()
         for t in ('Current Month', 'Whole Current Year', 'Custom'):
             combo.append_text(_(t))
         pack(hbox, combo)
@@ -62,7 +64,7 @@ class ExportDialog(gtk.Dialog):
         combo.set_active(0)
         pack(self.vbox, hbox)
         ########
-        self.fcw = gtk.FileChooserWidget(action=gtk.FILE_CHOOSER_ACTION_SAVE)
+        self.fcw = gtk.FileChooserWidget(action=gtk.FileChooserAction.SAVE)
         pack(self.vbox, self.fcw, 1, 1)
         self.vbox.set_focus_child(self.fcw)## FIXME
         self.vbox.show_all()
@@ -94,7 +96,7 @@ class ExportDialog(gtk.Dialog):
         self.hide()
         return True
     def save(self, widget=None):
-        self.get_window().set_cursor(gdk.Cursor(gdk.WATCH))
+        self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.WATCH))
         while gtk.events_pending():
             gtk.main_iteration_do(False)
         path = self.fcw.get_filename()
@@ -121,7 +123,7 @@ class ExportDialog(gtk.Dialog):
                 months.append(getMonthStatus(y, m))
             title = _('Calendar')
         exportToHtml(path, months, title)
-        self.get_window().set_cursor(gdk.Cursor(gdk.LEFT_PTR))
+        self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
         self.hide()
     def showDialog(self, year, month):
         self.comboChanged(ym=(year, month))
@@ -129,9 +131,10 @@ class ExportDialog(gtk.Dialog):
         self.ymBox1.set_value((year, month))
         self.resize(1, 1)
         openWindow(self)
+    '''
     def exportSvg(self, path, monthList):## FIXME
         ## monthList is a list of tuples (year, month)
-        import cairo
+        #import cairo
         hspace = 20
         mcal = ui.mainWin.mcal
         x, y, w, h0 = mcal.get_allocation()
@@ -140,7 +143,7 @@ class ExportDialog(gtk.Dialog):
         fo = open(path+'.svg', 'w')
         surface = cairo.SVGSurface(fo, w, h)
         cr0 = cairo.Context(surface)
-        cr = gtk.gdk.CairoContext(cr0)
+        cr = gdk.CairoContext(cr0)
         year = ui.cell.year
         month = ui.cell.month
         day = self.mcal.day
@@ -152,15 +155,17 @@ class ExportDialog(gtk.Dialog):
             mcal.queue_draw()
         ui.mainWin.dateChange((year, month, day))
         surface.finish()
-
+    '''
 
 
 
 class ExportToIcsDialog(gtk.Dialog):
     def __init__(self, saveIcsFunc, defaultFileName):
         self.saveIcsFunc = saveIcsFunc
-        gtk.Dialog.__init__(self, title=_('Export to %s')%'iCalendar', parent=None)
-        self.set_has_separator(False)
+        gtk.Dialog.__init__(self)
+        self.set_title(_('Export to %s')%'iCalendar')
+        ## parent=None FIXME
+        #self.set_has_separator(False)
         ########
         hbox = gtk.HBox(spacing=2)
         pack(hbox, gtk.Label(_('From')+' '))
@@ -172,10 +177,10 @@ class ExportToIcsDialog(gtk.Dialog):
         pack(self.vbox, hbox)
         ####
         year, month, day = ui.todayCell.dates[calTypes.primary]
-        self.startDateInput.set_value((year, 1, 1))
-        self.endDateInput.set_value((year+1, 1, 1))
+        self.startDateInput.set_value((year, 1, 1, 0))
+        self.endDateInput.set_value((year+1, 1, 1, 0))
         ########
-        self.fcw = gtk.FileChooserWidget(action=gtk.FILE_CHOOSER_ACTION_SAVE)
+        self.fcw = gtk.FileChooserWidget(action=gtk.FileChooserAction.SAVE)
         pack(self.vbox, self.fcw, 1, 1)
         self.vbox.set_focus_child(self.fcw)## FIXME
         self.vbox.show_all()
@@ -197,7 +202,7 @@ class ExportToIcsDialog(gtk.Dialog):
         self.destroy()
         return True
     def save(self, widget=None):
-        self.get_window().set_cursor(gdk.Cursor(gdk.WATCH))
+        self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.WATCH))
         while gtk.events_pending():
             gtk.main_iteration_do(False)
         path = self.fcw.get_filename()
@@ -209,7 +214,7 @@ class ExportToIcsDialog(gtk.Dialog):
             core.primary_to_jd(*self.startDateInput.get_value()),
             core.primary_to_jd(*self.endDateInput.get_value()),
         )
-        self.get_window().set_cursor(gdk.Cursor(gdk.LEFT_PTR))
+        self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
         self.destroy()
 
 

@@ -46,7 +46,7 @@ def notify(notifier, finishFunc):## FIXME
     okB.connect('clicked', hideWindow, dialog)
     if ui.autoLocale:
         okB.set_label(_('_OK'))
-        okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK, gtk.ICON_SIZE_BUTTON))
+        okB.set_image(gtk.Image.new_from_stock(gtk.STOCK_OK, gtk.IconSize.BUTTON))
     ####
     dialog.vbox.show_all()
     dialog.connect('response', lambda w, e: finishFunc())

@@ -14,7 +14,7 @@ class EventsImportWindow(WizardWindow):
     def __init__(self, manager):
         self.manager = manager
         WizardWindow.__init__(self, _('Import Events'))
-        self.set_type_hint(gdk.WINDOW_TYPE_HINT_DIALOG)
+        self.set_type_hint(gdk.WindowTypeHint.DIALOG)
         #self.set_property('skip-taskbar-hint', True)
         #self.set_modal(True)
         #self.set_transient_for(manager)
@@ -22,7 +22,8 @@ class EventsImportWindow(WizardWindow):
         self.resize(400, 200)
     class FirstStep(gtk.VBox):
         def __init__(self, win):
-            gtk.VBox.__init__(self, spacing=20)
+            gtk.VBox.__init__(self)
+            self.set_spacing(20)
             self.win = win
             self.buttons = (
                 (_('Cancel'), self.cancelClicked),
@@ -30,7 +31,8 @@ class EventsImportWindow(WizardWindow):
             )
             ####
             hbox = gtk.HBox(spacing=10)
-            frame = gtk.Frame(_('Format'))
+            frame = gtk.Frame()
+            frame.set_label(_('Format'))
             #frame.set_border_width(10)
             radioBox = gtk.VBox(spacing=10)
             radioBox.set_border_width(10)
@@ -76,7 +78,8 @@ class EventsImportWindow(WizardWindow):
             self.win.showStep(1, format, fpath)
     class SecondStep(gtk.VBox):
         def __init__(self, win):
-            gtk.VBox.__init__(self, spacing=20)
+            gtk.VBox.__init__(self)
+            self.set_spacing(20)
             self.win = win
             self.buttons = (
                 (_('Back'), self.backClicked),

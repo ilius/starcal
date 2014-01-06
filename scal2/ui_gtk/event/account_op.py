@@ -10,8 +10,8 @@ class AccountEditorDialog(gtk.Dialog):
         gtk.Dialog.__init__(self)
         self.set_title(_('Edit Account') if account else _('Add New Account'))
         ###
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
         ##
         self.connect('response', lambda w, e: self.hide())
         #######
@@ -19,7 +19,7 @@ class AccountEditorDialog(gtk.Dialog):
         self.activeWidget = None
         #######
         hbox = gtk.HBox()
-        combo = gtk.combo_box_new_text()
+        combo = gtk.ComboBoxText()
         for cls in event_lib.classes.account:
             combo.append_text(cls.desc)
         pack(hbox, gtk.Label(_('Account Type')))
@@ -60,7 +60,7 @@ class AccountEditorDialog(gtk.Dialog):
     def run(self):
         if self.activeWidget is None or self.account is None:
             return None
-        if gtk.Dialog.run(self) != gtk.RESPONSE_OK:
+        if gtk.Dialog.run(self) != gtk.ResponseType.OK:
             return None
         self.activeWidget.updateVars()
         self.account.save()

@@ -13,8 +13,8 @@ class GroupSortDialog(gtk.Dialog):
         gtk.Dialog.__init__(self)
         self.set_title(_('Sort Events'))
         ####
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
         ##
         self.connect('response', lambda w, e: self.hide())
         ####
@@ -26,7 +26,7 @@ class GroupSortDialog(gtk.Dialog):
         hbox = gtk.HBox()
         pack(hbox, gtk.Label(_('Based on')+' '))
         self.sortByNames = []
-        self.sortByCombo = gtk.combo_box_new_text()
+        self.sortByCombo = gtk.ComboBoxText()
         sortByDefault, sortBys = group.getSortBys()
         for item in sortBys:
             self.sortByNames.append(item[0])
@@ -40,7 +40,7 @@ class GroupSortDialog(gtk.Dialog):
         ####
         self.vbox.show_all()
     def run(self):
-        if gtk.Dialog.run(self)==gtk.RESPONSE_OK:
+        if gtk.Dialog.run(self)==gtk.ResponseType.OK:
             self._group.sort(
                 self.sortByNames[self.sortByCombo.get_active()],
                 self.reverseCheck.get_active(),
@@ -57,8 +57,8 @@ class GroupConvertModeDialog(gtk.Dialog):
         gtk.Dialog.__init__(self)
         self.set_title(_('Convert Calendar Type'))
         ####
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
         ##
         self.connect('response', lambda w, e: self.hide())
         ####
@@ -80,7 +80,7 @@ class GroupConvertModeDialog(gtk.Dialog):
         ####
         self.vbox.show_all()
     def run(self):
-        if gtk.Dialog.run(self)==gtk.RESPONSE_OK:
+        if gtk.Dialog.run(self)==gtk.ResponseType.OK:
             mode = self.modeCombo.get_active()
             failedSummaryList = []
             for event in self._group:
@@ -99,8 +99,8 @@ class GroupBulkEditDialog(gtk.Dialog):
         gtk.Dialog.__init__(self)
         self.set_title(_('Bulk Edit Events'))
         ####
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
         ##
         self.connect('response', lambda w, e: self.hide())
         ####
@@ -125,7 +125,7 @@ class GroupBulkEditDialog(gtk.Dialog):
         self.timeZoneRadio.connect('clicked', self.firstRadioChanged)
         ####
         hbox = gtk.HBox()
-        self.iconChangeCombo = gtk.combo_box_new_text()
+        self.iconChangeCombo = gtk.ComboBoxText()
         self.iconChangeCombo.append_text('----')
         self.iconChangeCombo.append_text(_('Change'))
         self.iconChangeCombo.append_text(_('Change if empty'))
@@ -141,7 +141,7 @@ class GroupBulkEditDialog(gtk.Dialog):
         self.textVbox = gtk.VBox()
         ###
         hbox = gtk.HBox()
-        self.textChangeCombo = gtk.combo_box_new_text()
+        self.textChangeCombo = gtk.ComboBoxText()
         self.textChangeCombo.append_text('----')
         self.textChangeCombo.append_text(_('Add to beginning'))
         self.textChangeCombo.append_text(_('Add to end'))
@@ -167,7 +167,7 @@ class GroupBulkEditDialog(gtk.Dialog):
         pack(self.vbox, self.textVbox, 1, 1)
         ####
         hbox = gtk.HBox()
-        self.timeZoneChangeCombo = gtk.combo_box_new_text()
+        self.timeZoneChangeCombo = gtk.ComboBoxText()
         self.timeZoneChangeCombo.append_text('----')
         self.timeZoneChangeCombo.append_text(_('Change'))
         pack(hbox, self.timeZoneChangeCombo)

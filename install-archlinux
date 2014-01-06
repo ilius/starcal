@@ -13,7 +13,7 @@ fi
 
 pkgName=starcal2
 sourceDir="`dirname \"$myPath\"`"
-"$sourceDir/scripts/assert_python2"
+#"$sourceDir/scripts/assert_python3"
 version=`$sourceDir/scal2/get_version.py`
 
 tmpDir=/tmp/starcal2-install-arch
@@ -30,8 +30,8 @@ pkgdesc='A full-featured international calendar writen in Python'
 arch=('any')
 url=(http://starcal.sourceforge.net)
 license=('GPLv3')
-depends=('python2>=2.6' 'pygtk>=2.8' 'pygobject' 'python2-gflags' 'python2-httplib2' 'python2-pytz' 'python2-igraph')
-optdepends=('python-gnomeapplet' 'python2-gnomevfs')
+depends=('python>=3.2' 'python-gobject' 'python-gflags' 'python-httplib2' 'python-pytz' 'python-igraph')
+optdepends=()
 makedepends=()
 conflicts=('starcal-git')
 source=()

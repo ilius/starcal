@@ -6,7 +6,7 @@ from scal2.time_utils import getUtcOffsetCurrent
 from scal2 import core
 from scal2 import ui
 
-from gobject import timeout_add, timeout_add_seconds
+from gi.repository.GObject import timeout_add, timeout_add_seconds
 
 dayLen = 24*3600
 
@@ -35,7 +35,7 @@ dateChange = DateChangeListener()
 #timeChange = TimeChangeListener()
 
 if __name__=='__main__':
-    import glib
+    from gi.repository import GLib as glib
     class TestRec:
         def onCurrentDateChange(self, date):
             print('current date changed to %s/%s/%s'%date)

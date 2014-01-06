@@ -16,7 +16,7 @@ class YearMonthDayBox(gtk.HBox):
         pack(self, self.spinY)
         ####
         pack(self, gtk.Label(_('Month')))
-        comboMonth = gtk.combo_box_new_text()
+        comboMonth = gtk.ComboBoxText()
         module = calTypes[self.mode]
         for i in range(12):
             comboMonth.append_text(_(module.getMonthName(i+1, None)))## year=None means all months

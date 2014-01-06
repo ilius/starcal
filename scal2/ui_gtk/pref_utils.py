@@ -29,6 +29,8 @@ from scal2.locale_man import tr as _
 from scal2 import startup
 from scal2 import ui
 
+from gi.repository import GdkPixbuf
+
 from scal2.ui_gtk import *
 from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
@@ -57,7 +59,7 @@ class ModuleOptionItem:
             self.set_value = w.set_active
         elif t==list:
             pack(hbox, gtk.Label(_(opt[2])))
-            w = gtk.combo_box_new_text() ### or RadioButton
+            w = gtk.ComboBoxText() ### or RadioButton
             for s in opt[3]:
                 w.append_text(_(s))
             self.get_value = w.get_active
@@ -117,7 +119,7 @@ class ComboTextPrefItem(PrefItem):
     def __init__(self, module, varName, items=[]):## items is a list of strings
         self.module = module
         self.varName = varName
-        w = gtk.combo_box_new_text()
+        w = gtk.ComboBoxText()
         self._widget = w
         for s in items:
             w.append_text(s)
@@ -131,19 +133,19 @@ class ComboEntryTextPrefItem(PrefItem):
     def __init__(self, module, varName, items=[]):## items is a list of strings
         self.module = module
         self.varName = varName
-        w = gtk.combo_box_entry_new_text()
+        w = gtk.ComboBoxText.new_with_entry()
         self._widget = w
         for s in items:
             w.append_text(s)
-        self.get = w.child.get_text
-        self.set = w.child.set_text
+        self.get = w.get_child().get_text
+        self.set = w.get_child().set_text
 
 class ComboImageTextPrefItem(PrefItem):
     def __init__(self, module, varName, items=[]):## items is a list of pairs (imagePath, text)
         self.module = module
         self.varName = varName
         ###
-        ls = gtk.ListStore(gdk.Pixbuf, str)
+        ls = gtk.ListStore(GdkPixbuf.Pixbuf, str)
         combo = gtk.ComboBox(ls)
         ###
         cell = gtk.CellRendererPixbuf()
@@ -164,7 +166,7 @@ class ComboImageTextPrefItem(PrefItem):
         if imPath:
             if not isabs(imPath):
                 imPath = join(pixDir, imPath)
-            pix = gdk.pixbuf_new_from_file(imPath)
+            pix = GdkPixbuf.Pixbuf.new_from_file(imPath)
         else:
             pix = None
         self.ls.append([pix, label])
@@ -343,7 +345,7 @@ class ToolbarIconSizePrefItem(PrefItem):
         self.module = module
         self.varName = varName
         ####
-        self._widget = gtk.combo_box_new_text()
+        self._widget = gtk.ComboBoxText()
         for item in ud.iconSizeList:
             self._widget.append_text(item[0])
     get = lambda self: ud.iconSizeList[self._widget.get_active()][0]
@@ -361,8 +363,9 @@ class LangPrefItem(PrefItem):
         self.module = locale_man
         self.varName = 'lang'
         ###
-        ls = gtk.ListStore(gdk.Pixbuf, str)
-        combo = gtk.ComboBox(ls)
+        ls = gtk.ListStore(GdkPixbuf.Pixbuf, str)
+        combo = gtk.ComboBox()
+        combo.set_model(ls)
         ###
         cell = gtk.CellRendererPixbuf()
         pack(combo, cell, False)
@@ -375,7 +378,7 @@ class LangPrefItem(PrefItem):
         self._widget = combo
         self.ls = ls
         self.append(join(pixDir, 'computer.png'), _('System Setting'))
-        for (key, data) in langDict.items():
+        for (key, data) in list(langDict.items()):
             self.append(data.flag, data.name)
     def append(self, imPath, label):
         if imPath=='':
@@ -383,7 +386,7 @@ class LangPrefItem(PrefItem):
         else:
             if not isabs(imPath):
                 imPath = join(pixDir, imPath)
-            pix = gdk.pixbuf_new_from_file(imPath)
+            pix = GdkPixbuf.Pixbuf.new_from_file(imPath)
         self.ls.append([pix, label])
     def get(self):
         i = self._widget.get_active()
@@ -432,17 +435,17 @@ class AICalsTreeview(gtk.TreeView):
         self.set_model(gtk.ListStore(str, str))
         ###
         self.enable_model_drag_source(
-            gdk.BUTTON1_MASK,
+            gdk.ModifierType.BUTTON1_MASK,
             [
-                ('row', gtk.TARGET_SAME_APP, self.dragId),
+                ('row', gtk.TargetFlags.SAME_APP, self.dragId),
             ],
-            gdk.ACTION_MOVE,
+            gdk.DragAction.MOVE,
         )
         self.enable_model_drag_dest(
             [
-                ('row', gtk.TARGET_SAME_APP, self.dragId),
+                ('row', gtk.TargetFlags.SAME_APP, self.dragId),
             ],
-            gdk.ACTION_MOVE,
+            gdk.DragAction.MOVE,
         )
         self.connect('drag-data-get', self.dragDataGet)
         self.connect('drag_data_received', self.dragDataReceived)
@@ -472,7 +475,7 @@ class AICalsTreeview(gtk.TreeView):
             i = path[0]
             if dest is None:
                 model.move_after(model.get_iter(i), model.get_iter(len(model)-1))
-            elif dest[1] in (gtk.TREE_VIEW_DROP_BEFORE, gtk.TREE_VIEW_DROP_INTO_OR_BEFORE):
+            elif dest[1] in (gtk.TreeViewDropPosition.BEFORE, gtk.TreeViewDropPosition.INTO_OR_BEFORE):
                 model.move_before(model.get_iter(i), model.get_iter(dest[0][0]))
             else:
                 model.move_after(model.get_iter(i), model.get_iter(dest[0][0]))
@@ -483,14 +486,14 @@ class AICalsTreeview(gtk.TreeView):
             smodel.remove(sIter)
             if dest is None:
                 model.append(row)
-            elif dest[1] in (gtk.TREE_VIEW_DROP_BEFORE, gtk.TREE_VIEW_DROP_INTO_OR_BEFORE):
+            elif dest[1] in (gtk.TreeViewDropPosition.BEFORE, gtk.TreeViewDropPosition.INTO_OR_BEFORE):
                 model.insert_before(model.get_iter(dest[0]), row)
             else:
                 model.insert_after(model.get_iter(dest[0]), row)
     def makeSwin(self):
         swin = gtk.ScrolledWindow()
         swin.add(self)
-        swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
         swin.set_property('width-request', 200)
         return swin
 
@@ -510,10 +513,10 @@ class InactiveCalsTreeView(AICalsTreeview):
 class AICalsPrefItem():
     def __init__(self):
         self._widget = gtk.HBox()
-        size = gtk.ICON_SIZE_SMALL_TOOLBAR
+        size = gtk.IconSize.SMALL_TOOLBAR
         ######
         toolbar = gtk.Toolbar()
-        toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
+        toolbar.set_orientation(gtk.Orientation.VERTICAL)
         ########
         treev = ActiveCalsTreeView()
         treev.connect('row-activated', self.activeTreevRActivate)
@@ -526,10 +529,10 @@ class AICalsPrefItem():
         self.activeTrees = treev.get_model()
         ########
         toolbar = gtk.Toolbar()
-        toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
+        toolbar.set_orientation(gtk.Orientation.VERTICAL)
         ####
         tb = gtk.ToolButton()
-        tb.set_direction(gtk.TEXT_DIR_LTR)
+        tb.set_direction(gtk.TextDirection.LTR)
         tb.action = ''
         self.leftRightButton = tb
         set_tooltip(tb, _('Activate/Inactivate'))
@@ -565,9 +568,9 @@ class AICalsPrefItem():
             tb.action = ''
         else:
             tb.set_label_widget(
-                gtk.image_new_from_stock(
+                gtk.Image.new_from_stock(
                     gtk.STOCK_GO_FORWARD if isRight ^ rtl else gtk.STOCK_GO_BACK,
-                    gtk.ICON_SIZE_SMALL_TOOLBAR,
+                    gtk.IconSize.SMALL_TOOLBAR,
                 )
             )
             tb.action = 'inactivate' if isRight else 'activate'

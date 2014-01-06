@@ -39,8 +39,8 @@ iceil = lambda f: int(ceil(f))
 
 
 def error_exit(text, parent=None):
-    d = gtk.MessageDialog(parent, gtk.DIALOG_DESTROY_WITH_PARENT,\
-        gtk.MESSAGE_ERROR, gtk.BUTTONS_OK, text.strip())
+    d = gtk.MessageDialog(parent, gtk.DialogFlags.DESTROY_WITH_PARENT,\
+        gtk.MessageType.ERROR, gtk.ButtonsType.OK, text.strip())
     d.set_title('Error')
     d.run()
     sys.exit(1)
@@ -50,7 +50,7 @@ class AdjusterDialog(gtk.Dialog):
     def __init__(self):
         gtk.Dialog.__init__(self)
         self.set_title(_('Adjust System Date & Time'))##????????
-        self.set_icon(self.render_icon(gtk.STOCK_PREFERENCES, gtk.ICON_SIZE_BUTTON))
+        self.set_icon(self.render_icon(gtk.STOCK_PREFERENCES, gtk.IconSize.BUTTON))
         #########
         self.buttonCancel = self.add_button(gtk.STOCK_CANCEL, 0)
         #self.buttonCancel.connect('clicked', lambda w: sys.exit(0))
@@ -69,7 +69,7 @@ class AdjusterDialog(gtk.Dialog):
         pack(self.vbox, hbox)
         ######
         vb = gtk.VBox()
-        sg = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        sg = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
         ###
         hbox = gtk.HBox()
         ##
@@ -117,10 +117,10 @@ class AdjusterDialog(gtk.Dialog):
         pack(hbox, l)
         ##
         pack(hbox, gtk.Label(_('Server:')+' '))
-        combo = gtk.combo_box_entry_new_text()
-        combo.child.connect('changed', self.updateSetButtonSensitive)
+        combo = gtk.ComboBoxText.new_with_entry()
+        combo.get_child().connect('changed', self.updateSetButtonSensitive)
         pack(hbox, combo, 1, 1)
-        self.ntpServerEntry = combo.child
+        self.ntpServerEntry = combo.get_child()
         for s in ui.ntpServers:
             combo.append_text(s)
         combo.set_active(0)

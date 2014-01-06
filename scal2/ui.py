@@ -26,7 +26,7 @@ from xml.dom.minidom import parse## remove FIXME
 from subprocess import Popen
 
 from scal2.utils import NullObj, cleanCacheDict
-from scal2.utils import toStr
+from scal2.utils import toBytes
 from scal2.path import *
 
 from scal2.cal_types import calTypes, jd_to
@@ -387,8 +387,8 @@ def moveEventToTrashFromOutside(group, event):
 getEvent = lambda groupId, eventId: eventGroups[groupId][eventId]
 
 def duplicateGroupTitle(group):
-    title = toStr(group.title)
-    titleList = [toStr(g.title) for g in eventGroups]
+    title = toBytes(group.title)
+    titleList = [toBytes(g.title) for g in eventGroups]
     parts = title.split('#')
     try:
         index = int(parts[-1])
@@ -666,7 +666,7 @@ trayY0 = None
 '''
 trayImage = join(pixDir, 'tray-dark.png')
 trayImageHoli = join(pixDir, 'tray-dark.png')
-trayBgColor = (0, 0, 0, 0) ## how to get bg color of gnome panel ????????????
+trayBgColor = (0, 0, 0) ## how to get bg color of gnome panel ????????????
 trayTextColor = (255, 255, 255)
 traySize = 21
 trayFont = None

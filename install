@@ -26,8 +26,8 @@ pkgName=starcal2
 sourceDir="`dirname \"$myPath\"`"
 version=`$sourceDir/scal2/get_version.py`
 
-PY=python2
-"$sourceDir/scripts/assert_python2"
+PY=python3
+#"$sourceDir/scripts/assert_python3"
 
 "$sourceDir/update-perm" ## FIXME
 

@@ -18,12 +18,13 @@ class SingleGroupExportDialog(gtk.Dialog):
         gtk.Dialog.__init__(self)
         self.set_title(_('Export Group'))
         ####
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
         self.connect('response', lambda w, e: self.hide())
         ####
         hbox = gtk.HBox()
-        frame = gtk.Frame(_('Format'))
+        frame = gtk.Frame()
+        frame.set_label(_('Format'))
         radioBox = gtk.VBox()
         ##
         self.radioIcs = gtk.RadioButton(label='iCalendar')
@@ -44,7 +45,7 @@ class SingleGroupExportDialog(gtk.Dialog):
         pack(hbox, gtk.Label(''), 1, 1)
         pack(self.vbox, hbox)
         ########
-        self.fcw = gtk.FileChooserWidget(action=gtk.FILE_CHOOSER_ACTION_SAVE)
+        self.fcw = gtk.FileChooserWidget(action=gtk.FileChooserAction.SAVE)
         try:
             self.fcw.set_current_folder(deskDir)
         except AttributeError:## PyGTK < 2.4
@@ -79,7 +80,7 @@ class SingleGroupExportDialog(gtk.Dialog):
         elif self.radioIcs.get_active():
             ui.eventGroups.exportToIcs(fpath, [self._group.id])
     def run(self):
-        if gtk.Dialog.run(self)==gtk.RESPONSE_OK:
+        if gtk.Dialog.run(self)==gtk.ResponseType.OK:
             self.save()
         self.destroy()
 
@@ -90,12 +91,13 @@ class MultiGroupExportDialog(gtk.Dialog):
         self.set_title(_('Export'))
         self.vbox.set_spacing(10)
         ####
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
+        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
+        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
         self.connect('response', lambda w, e: self.hide())
         ####
         hbox = gtk.HBox()
-        frame = gtk.Frame(_('Format'))
+        frame = gtk.Frame()
+        frame.set_label(_('Format'))
         radioBox = gtk.VBox()
         ##
         self.radioIcs = gtk.RadioButton(label='iCalendar')
@@ -126,7 +128,7 @@ class MultiGroupExportDialog(gtk.Dialog):
         self.groupSelect = GroupsTreeCheckList()
         swin = gtk.ScrolledWindow()
         swin.add(self.groupSelect)
-        swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
         pack(self.vbox, swin, 1, 1)
         ####
         self.vbox.show_all()
@@ -162,7 +164,7 @@ class MultiGroupExportDialog(gtk.Dialog):
                 raise RuntimeError
             open(fpath, 'w').write(text)
     def run(self):
-        if gtk.Dialog.run(self)==gtk.RESPONSE_OK:
+        if gtk.Dialog.run(self)==gtk.ResponseType.OK:
             self.save()
         self.destroy()
 

@@ -13,7 +13,7 @@ class GroupWidget(BaseGroupWidget):
     def __init__(self, group):
         BaseGroupWidget.__init__(self, group)
         ######
-        sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
         ######
         hbox = gtk.HBox()
         label = gtk.Label(_('Scale'))

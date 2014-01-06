@@ -4,7 +4,7 @@ from scal2 import core
 from scal2.locale_man import tr as _
 from scal2 import ui
 
-from gobject import timeout_add
+from gi.repository.GObject import timeout_add
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
@@ -30,14 +30,15 @@ class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
         desc = _(desc)
         shortDesc = _(shortDesc)
         ######
-        gtk.ToolButton.__init__(
-            self,
-            gtk.image_new_from_stock(
+        gtk.ToolButton.__init__(self)
+        self.set_icon_widget(
+            gtk.Image.new_from_stock(
                 getattr(gtk, 'STOCK_%s'%(stockName.upper())),
-                gtk.ICON_SIZE_DIALOG,
+                gtk.IconSize.DIALOG,
             ) if stockName else None,
-            shortDesc,
+            #shortDesc,
         )
+        self.set_label(shortDesc)
         self._name = name
         self.desc = desc
         #self.shortDesc = shortDesc## FIXME
@@ -65,15 +66,15 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
     def __init__(self, funcOwner, vertical=False, onPressContinue=False):
         gtk.Toolbar.__init__(self)
         self.funcOwner = funcOwner
-        self.set_orientation(gtk.ORIENTATION_VERTICAL if vertical else gtk.ORIENTATION_HORIZONTAL)
-        self.add_events(gdk.POINTER_MOTION_MASK)
+        self.set_orientation(gtk.Orientation.VERTICAL if vertical else gtk.Orientation.HORIZONTAL)
+        self.add_events(gdk.EventMask.POINTER_MOTION_MASK)
         self.onPressContinue = onPressContinue
         ###
         optionsWidget = gtk.VBox()
         ##
         hbox = gtk.HBox()
         pack(hbox, gtk.Label(_('Style')))
-        self.styleCombo = gtk.combo_box_new_text()
+        self.styleCombo = gtk.ComboBoxText()
         for item in self.styleList:
             self.styleCombo.append_text(_(item))
         pack(hbox, self.styleCombo)
@@ -81,7 +82,7 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
         ##
         hbox = gtk.HBox()
         pack(hbox, gtk.Label(_('Icon Size')))
-        self.iconSizeCombo = gtk.combo_box_new_text()
+        self.iconSizeCombo = gtk.ComboBoxText()
         for (i, item) in enumerate(ud.iconSizeList):
             self.iconSizeCombo.append_text(_(item[0]))
         pack(hbox, self.iconSizeCombo)
@@ -101,7 +102,7 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
         #self.styleComboChanged()
         ##
         #print('toolbar state', self.get_state()## STATE_NORMAL)
-        #self.set_state(gtk.STATE_ACTIVE)## FIXME
+        #self.set_state(gtk.StateType.ACTIVE)## FIXME
         #self.set_property('border-width', 0)
         #style = self.get_style()
         #style.border_width = 10
@@ -148,8 +149,8 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
             else:
                 func = item.method
             if self.onPressContinue:
-                item.child.connect('button-press-event', lambda obj, ev: self.itemPress(func))
-                item.child.connect('button-release-event', self.itemRelease)
+                item.get_child().connect('button-press-event', lambda obj, ev: self.itemPress(func))
+                item.get_child().connect('button-release-event', self.itemRelease)
             else:
                 item.connect('clicked', func)
     def setData(self, data):

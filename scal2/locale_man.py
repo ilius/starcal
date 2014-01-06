@@ -24,7 +24,7 @@ from subprocess import Popen
 
 from .path import *
 from scal2.utils import StrOrderedDict
-from scal2.utils import toStr, toUnicode
+from scal2.utils import toBytes, toStr
 from scal2.cal_types import calTypes
 
 
@@ -34,12 +34,12 @@ localeDir = '/usr/share/locale'
 
 ## point FIXME
 digits = {
-    'en':(u'0', u'1', u'2', u'3', u'4', u'5', u'6', u'7', u'8', u'9'),
-    'ar':(u'٠', u'١', u'٢', u'٣', u'٤', u'٥', u'٦', u'٧', u'٨', u'٩'),
-    'fa':(u'۰', u'۱', u'۲', u'۳', u'۴', u'۵', u'۶', u'۷', u'۸', u'۹'),
-    'ur':(u'۔', u'١', u'٢', u'٣', u'۴', u'۵', u'٦', u'٧', u'٨', u'٩'),
-    'hi':(u'०', u'१', u'२', u'३', u'४', u'५', u'६', u'७', u'८', u'९'),
-    'th':(u'๐', u'๑', u'๒', u'๓', u'๔', u'๕', u'๖', u'๗', u'๘', u'๙'),
+    'en':('0', '1', '2', '3', '4', '5', '6', '7', '8', '9'),
+    'ar':('٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'),
+    'fa':('۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'),
+    'ur':('۔', '١', '٢', '٣', '۴', '۵', '٦', '٧', '٨', '٩'),
+    'hi':('०', '१', '२', '३', '४', '५', '६', '७', '८', '९'),
+    'th':('๐', '๑', '๒', '๓', '๔', '๕', '๖', '๗', '๘', '๙'),
 }
 
 def getLangDigits(langSh0):
@@ -57,10 +57,10 @@ def getLangDigits(langSh0):
 ## Urdu digits is a combination of Arabic and Persian digits, except for Zero that is
 ## named ARABIC-INDIC DIGIT ZERO in unicode database
 
-LRM = '\xe2\x80\x8e' ## u'\u200e' ## left to right mark
-RLM = '\xe2\x80\x8f' ## u'\u200f' ## right to left mark
-ZWNJ = u'\u200c' ## zero width non-joiner
-ZWJ = u'\u200d' ## zero width joiner
+LRM = '\u200e' ## left to right mark
+RLM = '\u200f' ## right to left mark
+ZWNJ = '\u200c' ## zero width non-joiner
+ZWJ = '\u200d' ## zero width joiner
 
 sysLangDefault = os.environ.get('LANG', '')
 
@@ -83,7 +83,7 @@ if isfile(localeConfPath):
         myRaise(__file__)
 
 ## translator
-tr = lambda s, *a, **ka: numEncode(s, *a, **ka) if isinstance(s, (int, long)) else str(s)
+tr = lambda s, *a, **ka: numEncode(s, *a, **ka) if isinstance(s, int) else str(s)
 
 class LangData:
     def __init__(self, code, name, nativeName, fileName, flag, rtl):
@@ -178,12 +178,12 @@ def loadTranslator(ui_is_qt=False):
         transObj = gettext.GNUTranslations(fd)
     if transObj:
         def tr(s, *a, **ka):
-            if isinstance(s, (int, long)):
+            if isinstance(s, int):
                 s = numEncode(s, *a, **ka)
             else:
-                s = transObj.gettext(toStr(s)).decode('utf-8')
+                s = toStr(transObj.gettext(s))
                 if ui_is_qt:
-                    s = s.replace(u'_', u'&')
+                    s = s.replace('_', '&')
                 if a:
                     s = s % a
                 if ka:
@@ -193,11 +193,11 @@ def loadTranslator(ui_is_qt=False):
         if ui_is_qt:## qt takes "&" instead of "_" as trigger
             tr = lambda s, *a, **ka: numEncode(s, *a, **ka) \
                 if isinstance(s, int) \
-                else transObj.gettext(toStr(s)).replace('_', '&').decode('utf-8')
+                else transObj.gettext(toBytes(s)).replace('_', '&').decode('utf-8')
         else:
             tr = lambda s, *a, **ka: numEncode(s, *a, **ka) \
                 if isinstance(s, int) \
-                else transObj.gettext(toStr(s)).decode('utf-8')
+                else transObj.gettext(toBytes(s)).decode('utf-8')
         '''
     return tr
 
@@ -205,7 +205,7 @@ rtlSgn = lambda: 1 if rtl else -1
 
 getMonthName = lambda mode, month, year=None: tr(calTypes[mode].getMonthName(month, year))
 
-getNumSep = lambda: tr(u'.') if enableNumLocale else u'.'
+getNumSep = lambda: tr('.') if enableNumLocale else '.'
 
 def getDigits():
     if enableNumLocale:
@@ -237,16 +237,16 @@ def numEncode(num, mode=None, fillZero=0, negEnd=False):
                 mode = calTypes[mode].origLang
             except AttributeError:
                 mode = langSh
-    if mode=='en' or not mode in digits.keys():
+    if mode=='en' or not mode in list(digits.keys()):
         if fillZero:
-            return u'%.*d'%(fillZero, num)
+            return '%.*d'%(fillZero, num)
         else:
-            return u'%d'%num
+            return '%d'%num
     neg = (num<0)
     dig = getLangDigits(mode)
-    res = u''
-    for c in unicode(abs(num)):
-        if c==u'.':
+    res = ''
+    for c in str(abs(num)):
+        if c=='.':
             res += tr('.')
         else:
             res += dig[int(c)]
@@ -254,9 +254,9 @@ def numEncode(num, mode=None, fillZero=0, negEnd=False):
         res = res.rjust(fillZero, dig[0])
     if neg:
         if negEnd:
-            res = res + u'-'
+            res = res + '-'
         else:
-            res = u'-' + res
+            res = '-' + res
     return res
 
 def textNumEncode(st, mode=None, changeSpecialChars=True, changeDot=False):
@@ -271,8 +271,8 @@ def textNumEncode(st, mode=None, changeSpecialChars=True, changeDot=False):
             except AttributeError:
                 mode = langSh
     dig = getLangDigits(mode)
-    res = u''
-    for c in toUnicode(st):
+    res = ''
+    for c in toStr(st):
         try:
             i = int(c)
         except:
@@ -296,8 +296,8 @@ def numDecode(numSt):
         return int(numSt)
     except ValueError:
         pass
-    numSt = toUnicode(numSt)
-    tryLangs = digits.keys()
+    numSt = toStr(numSt)
+    tryLangs = list(digits.keys())
     if langSh in digits:
         tryLangs.remove(langSh)
         tryLangs.insert(0, langSh)
@@ -319,14 +319,14 @@ def numDecode(numSt):
     raise ValueError('invalid locale number %s'%numSt)
 
 def textNumDecode(text):## converts '۱۲:۰۰, ۱۳' to '12:00, 13'
-    text = toUnicode(text)
-    textEn = u''
+    text = toStr(text)
+    textEn = ''
     langDigits = getLangDigits(langSh)
     for ch in text:
         try:
-            textEn += unicode(langDigits.index(ch))
+            textEn += str(langDigits.index(ch))
         except ValueError:
-            for sch in (u',', u'_', u'.'):
+            for sch in (',', '_', '.'):
                 if ch == tr(sch):
                     ch = sch
                     break
@@ -339,7 +339,7 @@ dateLocale = lambda year, month, day:\
     numEncode(day, fillZero=2)
 
 def cutText(text, n):
-    text = toUnicode(text)
+    text = toStr(text)
     newText = text[:n]
     if len(text) > n:
         if text[n] not in list(string.printable)+[ZWNJ]:
@@ -349,6 +349,8 @@ def cutText(text, n):
                 pass
     return newText
 
+addLRM = lambda text: LRM + toStr(text)
+    
 def popenDefaultLang(*args, **kwargs):
     global sysLangDefault, lang
     os.environ['LANG'] = sysLangDefault

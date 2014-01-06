@@ -68,7 +68,7 @@ class BasePlugin:
     ):
         self.external = False
         self.path = path
-        if isinstance(mode, basestring):
+        if isinstance(mode, str):
             try:
                 mode = calTypes.names.index(mode)
             except ValueError:
@@ -80,7 +80,7 @@ class BasePlugin:
             raise TypeError('invalid mode %r'%mode)
         ######
         kwargs.update(locals())
-        for k, v in self.prepareParams(kwargs).items():
+        for k, v in list(self.prepareParams(kwargs).items()):
             setattr(self, k, v)
         #########
         self.text = ''
@@ -88,7 +88,7 @@ class BasePlugin:
         self.load()
     def prepareParams(self, d):
         d2 = {}
-        for k, v in self.params.items():
+        for k, v in list(self.params.items()):
             d2[k] = d.get(k, v)
         return d2
     def clear(self):
@@ -196,8 +196,11 @@ class HolidayPlugin(BasePlugin):
     def __init__(self, path, enable=None, show_date=None):
         default_enable = True
         default_show_date = False
+        holidays = {}
         exec(open(path).read())
         #execfile(path)
+        if not holidays:
+            print(('no holidays set, path=%s'%holidays))
         if enable==None:
             enable = default_enable
         if show_date==None:
@@ -268,8 +271,11 @@ class BuiltinTextPlugin(BasePlugin):
     def __init__(self, path, enable=None, show_date=None):
         default_enable = True
         default_show_date = False
+        db_name = ''
         exec(open(path).read())
         #execfile(path)
+        if not db_name:
+            print('no db_name set, path: %s'%path)
         if enable==None:
             enable = default_enable
         if show_date==None:

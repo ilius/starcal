@@ -18,12 +18,15 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 from scal2.path import *
+from scal2.utils import cmp
 from scal2.cal_types import calTypes
 from scal2 import core
 from scal2.core import jd_to_primary
 from scal2.locale_man import tr as _
 from scal2 import event_lib
 from scal2 import ui
+
+from gi.repository import GdkPixbuf
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
@@ -65,10 +68,11 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         year, month, day = jd_to_primary(jd)
         ######
         hbox = gtk.HBox()
-        frame = gtk.Frame(_('Time'))
+        frame = gtk.Frame()
+        frame.set_label(_('Time'))
         frame.set_border_width(5)
         vboxIn = gtk.VBox()
-        sgroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        sgroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
         ####
         hboxIn = gtk.HBox()
         ##
@@ -126,7 +130,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         pack(hbox, self.typeCheck)
         pack(hbox, gtk.Label('  '))
         ##
-        combo = gtk.combo_box_new_text()
+        combo = gtk.ComboBoxText()
         for cls in event_lib.classes.event:
             combo.append_text(cls.desc)
         combo.set_active(0)
@@ -150,17 +154,17 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         pack(self.vbox, hbox)
         ######
         bbox = gtk.HButtonBox()
-        bbox.set_layout(gtk.BUTTONBOX_START)
+        bbox.set_layout(gtk.ButtonBoxStyle.START)
         bbox.set_border_width(5)
         searchButton = gtk.Button()
         searchButton.set_label(_('_Search'))
-        searchButton.set_image(gtk.image_new_from_stock(gtk.STOCK_FIND, gtk.ICON_SIZE_BUTTON))
+        searchButton.set_image(gtk.Image.new_from_stock(gtk.STOCK_FIND, gtk.IconSize.BUTTON))
         searchButton.connect('clicked', self.searchClicked)
         bbox.add(searchButton)
         pack(self.vbox, bbox)
         ######
         treev = gtk.TreeView()
-        trees = gtk.TreeStore(int, int, str, gdk.Pixbuf, str, str)
+        trees = gtk.TreeStore(int, int, str, GdkPixbuf.Pixbuf, str, str)
         ## gid, eid, group_name, icon, summary, description
         treev.set_model(trees)
         treev.connect('row-activated', self.rowActivated)
@@ -191,7 +195,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         trees.set_sort_func(2, self.sort_func_group)
         ######
         swin = gtk.ScrolledWindow()
-        swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
         swin.add(treev)
         ####
         vbox = gtk.VBox(spacing=5)
@@ -230,18 +234,19 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         ####
         pack(vbox, swin, 1, 1)
         ##
-        frame = gtk.Frame(_('Search Results'))
+        frame = gtk.Frame()
+        frame.set_label(_('Search Results'))
         frame.set_border_width(10)
         frame.add(vbox)
         ##
         pack(self.vbox, frame, 1, 1)
         ###
         bbox2 = gtk.HButtonBox()
-        bbox2.set_layout(gtk.BUTTONBOX_END)
+        bbox2.set_layout(gtk.ButtonBoxStyle.END)
         bbox2.set_border_width(10)
         closeButton = gtk.Button()
         closeButton.set_label(_('_Close'))
-        closeButton.set_image(gtk.image_new_from_stock(gtk.STOCK_CLOSE, gtk.ICON_SIZE_BUTTON))
+        closeButton.set_image(gtk.Image.new_from_stock(gtk.STOCK_CLOSE, gtk.IconSize.BUTTON))
         closeButton.connect('clicked', self.closed)
         bbox2.add(closeButton)
         pack(self.vbox, bbox2)

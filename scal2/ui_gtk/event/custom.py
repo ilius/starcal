@@ -28,7 +28,7 @@ from scal2.ui_gtk.event import common
 
 
 class EventWidget(common.EventWidget):
-    groups = [gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL), gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)]
+    groups = [gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL), gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)]
     def __init__(self, event, autoCheck=True):
         common.EventWidget.__init__(self, event)
         ################
@@ -36,11 +36,12 @@ class EventWidget(common.EventWidget):
         ######
         self.ruleAddBox = gtk.HBox()
         self.warnLabel = gtk.Label()
-        self.warnLabel.modify_fg(gtk.STATE_NORMAL, gtk.gdk.Color(-1, 0, 0))
+        self.warnLabel.modify_fg(gtk.StateType.NORMAL, gdk.Color(-1, 0, 0))
         self.warnLabel.set_alignment(0, 0.5)
         #self.warnLabel.set_visible(False)## FIXME
         ###########
-        self.rulesExp = gtk.Expander(_('Rules'))
+        self.rulesExp = gtk.Expander()
+        self.rulesExp.set_label(_('Rules'))
         self.rulesExp.set_expanded(True)
         self.rulesBox = gtk.VBox()
         self.rulesExp.add(self.rulesBox)
@@ -65,7 +66,7 @@ class EventWidget(common.EventWidget):
         self.ruleAddButton = gtk.Button(stock=gtk.STOCK_ADD)
         if ui.autoLocale:
             self.ruleAddButton.set_label(_('_Add'))
-            self.ruleAddButton.set_image(gtk.image_new_from_stock(gtk.STOCK_ADD, gtk.ICON_SIZE_BUTTON))
+            self.ruleAddButton.set_image(gtk.Image.new_from_stock(gtk.STOCK_ADD, gtk.IconSize.BUTTON))
         pack(self.ruleAddBox, self.ruleAddButton)
         #############
         #self.filesBox = common.FilesBox(self.event)
@@ -90,7 +91,7 @@ class EventWidget(common.EventWidget):
         removeButton = gtk.Button(stock=gtk.STOCK_REMOVE)
         if ui.autoLocale:
             removeButton.set_label(_('_Remove'))
-            removeButton.set_image(gtk.image_new_from_stock(gtk.STOCK_REMOVE, gtk.ICON_SIZE_BUTTON))
+            removeButton.set_image(gtk.Image.new_from_stock(gtk.STOCK_REMOVE, gtk.IconSize.BUTTON))
         removeButton.connect('clicked', self.removeButtonClicked, hbox)## FIXME
         pack(hbox, removeButton)
         ####

@@ -8,5 +8,5 @@ fi
 myDir=`dirname "$myPath"`
 rootDir=`dirname "$myDir"`
 cd "$rootDir"
-PYTHONPATH=$PYTHONPATH:$rootDir python2 "$@"
+PYTHONPATH=$PYTHONPATH:$rootDir python3 "$@"
 cd - > /dev/null

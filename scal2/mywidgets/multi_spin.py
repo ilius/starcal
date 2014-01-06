@@ -17,7 +17,7 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
-from scal2.utils import toStr, toUnicode
+from scal2.utils import toBytes, toStr
 from scal2.utils import myRaise
 
 from scal2 import locale_man

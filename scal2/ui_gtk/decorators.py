@@ -1,12 +1,12 @@
-import gobject
+from gi.repository import GObject
 
 def registerType(cls):
-    gobject.type_register(cls)
+    GObject.type_register(cls)
     return cls
 
 def registerSignals(cls):
-    gobject.type_register(cls)
+    GObject.type_register(cls)
     for name, args in cls.signals:
-        gobject.signal_new(name, cls, gobject.SIGNAL_RUN_LAST, gobject.TYPE_NONE, args)
+        GObject.signal_new(name, cls, GObject.SignalFlags.RUN_LAST, None, args)
     return cls
 

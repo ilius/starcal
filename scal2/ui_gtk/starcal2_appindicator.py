@@ -56,7 +56,7 @@ class IndicatorStatusIconWrapper(appindicator.Indicator):
             menu.add(item)
         ###
         #if locale_man.rtl:
-            #menu.set_direction(gtk.TEXT_DIR_RTL)
+            #menu.set_direction(gtk.TextDirection.RTL)
         self.set_menu(menu)
     '''
     def create_menu(self):

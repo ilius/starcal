@@ -39,14 +39,18 @@ class SelectDateDialog(gtk.Dialog):
         ('response-date', [int, int, int]),
     ]
     def __init__(self):
-        gtk.Dialog.__init__(self, title=_('Select Date...'))
-        self.set_has_separator(False)
+        gtk.Dialog.__init__(self)
+        self.set_title(_('Select Date...'))
+        #self.set_has_separator(False)
         #self.set_skip_taskbar_hint(True)
         self.connect('delete-event', self.hideMe)
         self.mode = calTypes.primary
         ###### Reciving dropped day!
-        self.drag_dest_set(gdk.MODIFIER_MASK,\
-            (('a', 0, 0),), gdk.ACTION_COPY)
+        self.drag_dest_set(
+            gtk.DestDefaults.ALL,
+            (),
+            gdk.DragAction.COPY,
+        )
         self.drag_dest_add_text_targets()
         self.connect('drag-data-received', self.dragRec)
         ######
@@ -71,7 +75,7 @@ class SelectDateDialog(gtk.Dialog):
         pack(hb2, dateInput)
         rb2 = gtk.RadioButton()
         rb2.num = 2
-        rb2.set_group(rb1)
+        rb2.set_group([rb1])
         hb2i = gtk.HBox(spacing=5)
         pack(hb2i, rb2)
         pack(hb2i, hb2)

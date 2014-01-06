@@ -19,12 +19,12 @@ developerKey = 'AI39si4QJ0bmdZJd7nVz0j3zuo1JYS3WUJX8y0f2mvGteDtiKY8TUSzTsY4oAcGl
 import sys
 from os.path import splitext
 import socket
-import BaseHTTPServer
+import http.server
 
 from pprint import pprint, pformat
 
 try:
-    from urlparse import parse_qsl
+    from urllib.parse import parse_qsl
 except ImportError:
     from cgi import parse_qsl
 
@@ -43,7 +43,7 @@ from oauth2client.file import Storage
 from oauth2client.client import OAuth2WebServerFlow
 
 
-from scal2.utils import toStr, toUnicode
+from scal2.utils import toBytes, toStr
 from scal2.ics import *
 from scal2.locale_man import tr as _
 from scal2 import core
@@ -82,8 +82,8 @@ def exportEvent(event):
         return
     gevent = {
         'kind': 'calendar#event',
-        'summary': toUnicode(event.summary),
-        'description': toUnicode(event.description),
+        'summary': toStr(event.summary),
+        'description': toStr(event.description),
         'attendees': [],
         'status': 'confirmed',
         'visibility': 'default',
@@ -144,8 +144,8 @@ def importEvent(gevent, group):
     event.mode = DATE_GREG ## FIXME
     if not event.setIcsDict(dict(icsData)):
         return
-    event.summary = toStr(gevent['summary'])
-    event.description = toStr(gevent.get('description', ''))
+    event.summary = toBytes(gevent['summary'])
+    event.description = toBytes(gevent.get('description', ''))
     if 'reminders' in gevent:
         try:
             minutes = gevent['reminders']['overrides']['minutes']
@@ -159,7 +159,7 @@ def importEvent(gevent, group):
 def setEtag(gevent):
     gevent['etag'] = compressLongInt(abs(hash(repr(gevent))))
 
-class ClientRedirectServer(BaseHTTPServer.HTTPServer):
+class ClientRedirectServer(http.server.HTTPServer):
   """A server to handle OAuth 2.0 redirects back to localhost.
 
   Waits for a single request and parses the query parameters
@@ -168,7 +168,7 @@ class ClientRedirectServer(BaseHTTPServer.HTTPServer):
   query_params = {}
 
 
-class ClientRedirectHandler(BaseHTTPServer.BaseHTTPRequestHandler):
+class ClientRedirectHandler(http.server.BaseHTTPRequestHandler):
   """A handler for OAuth 2.0 redirects back to localhost.
 
   Waits for a single request and parses the query parameters
@@ -238,7 +238,7 @@ class GoogleAccount(Account):
                 setattr(self, attr, data[attr])
             except KeyError:
                 pass
-    askVerificationCode = lambda self: raw_input('Enter verification code: ').strip()
+    askVerificationCode = lambda self: input('Enter verification code: ').strip()
     def showError(self, error):
         sys.stderr.write(error+'\n')
     def authenticate(self):

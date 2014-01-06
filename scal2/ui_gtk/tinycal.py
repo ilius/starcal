@@ -64,7 +64,7 @@ class TextObject():
         else:
             cr.move_to(self.x, self.y)
         fillColor(cr, self.color)
-        cr.show_layout(self.layout)
+        show_layout(cr, self.layout)
     def setFont(self, font):
         self.layout.set_font_description(pfontEncode(font))
     def getText(self):
@@ -104,7 +104,7 @@ class PlainStrObject(TextObject):
 
 
 
-class TinyCal(gtk.Window):## (gtk.DrawingArea OR gtk.Widget)
+class TinyCal(gtk.Window):
     def __init__(self):
         gtk.Window.__init__(self)
         self.set_title(core.APP_DESC+' Tiny')

@@ -19,7 +19,7 @@
 
 import sys, os, time
 
-from scal2.utils import toStr, toUnicode
+from scal2.utils import toBytes, toStr
 from scal2.utils import numRangesEncode, numRangesDecode
 from scal2 import core
 from scal2 import locale_man
@@ -46,13 +46,13 @@ class NumRangesEntry(gtk.Entry):
         ####
         gtk.Entry.__init__(self)
         self.connect('key-press-event', self.keyPress)
-        self.set_direction(gtk.TEXT_DIR_LTR)
+        self.set_direction(gtk.TextDirection.LTR)
         self.set_alignment(0.5)
     def insertText(self, s, clearSeceltion=True):
         selection = self.get_selection_bounds()
         if selection and clearSeceltion:
             start, end = selection
-            text = toUnicode(self.get_text())
+            text = toStr(self.get_text())
             text = text[:start] + s + text[end:]
             self.set_text(text)
             self.set_position(start+len(s))
@@ -62,9 +62,9 @@ class NumRangesEntry(gtk.Entry):
             self.set_position(pos + len(s))
     def numPlus(self, plus):
         pos = self.get_position()
-        text = toUnicode(self.get_text())
+        text = toStr(self.get_text())
         n = len(text)
-        commaI = text.rfind(u',', 0, pos)
+        commaI = text.rfind(',', 0, pos)
         if commaI == -1:
             startI = 0
         else:
@@ -72,12 +72,12 @@ class NumRangesEntry(gtk.Entry):
                 startI = commaI + 2
             else:
                 startI = commaI + 1
-        nextCommaI = text.find(u',', pos)
+        nextCommaI = text.find(',', pos)
         if nextCommaI == -1:
             endI = n
         else:
             endI = nextCommaI
-        dashI = text.find(u'-', startI, endI)
+        dashI = text.find('-', startI, endI)
         if dashI != -1:
             #print('dashI=%r'%dashI)
             if pos < dashI:
@@ -136,27 +136,27 @@ class NumRangesEntry(gtk.Entry):
         #elif kname in ('braceright', 'bracketright'):
         #    self.insertText(u']')
         elif kname in ('comma', 'arabic_comma'):
-            self.insertText(u', ', False)
+            self.insertText(', ', False)
         elif kname=='minus':
             pos = self.get_position()
-            text = toUnicode(self.get_text())
+            text = toStr(self.get_text())
             n = len(text)
             if pos==n:
                 start = numDecode(text.split(',')[-1].strip())
-                self.insertText(u'-' + _(start + 2), False)
+                self.insertText('-' + _(start + 2), False)
             else:
-                self.insertText(u'-', False)
+                self.insertText('-', False)
         elif ord('0') <= kval <= ord('9'):
             self.insertText(self.digs[kval-ord('0')])
         else:
-            uniVal = gtk.gdk.keyval_to_unicode(kval)
+            uniVal = gdk.keyval_to_unicode(kval)
             #print('uniVal=%r'%uniVal)
             if uniVal!=0:
-                ch = unichr(uniVal)
+                ch = chr(uniVal)
                 #print('ch=%r'%ch)
                 if ch in self.digs:
                     self.insertText(ch)
-                if gevent.state & gdk.CONTROL_MASK:## Shortcuts like Ctrl + [A, C, X, V]
+                if gevent.get_state() & gdk.ModifierType.CONTROL_MASK:## Shortcuts like Ctrl + [A, C, X, V]
                     return False
             else:
                 print(kval, kname)

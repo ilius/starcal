@@ -29,7 +29,7 @@ class EventWidget(common.EventWidget):
     def __init__(self, event):## FIXME
         common.EventWidget.__init__(self, event)
         ######
-        sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
         ######
         hbox = gtk.HBox()
         label = gtk.Label(_('Start'))
@@ -46,7 +46,7 @@ class EventWidget(common.EventWidget):
         pack(self, hbox)
         ######
         hbox = gtk.HBox()
-        self.endTypeCombo = gtk.combo_box_new_text()
+        self.endTypeCombo = gtk.ComboBoxText()
         for item in ('Duration', 'End'):
             self.endTypeCombo.append_text(_(item))
         self.endTypeCombo.connect('changed', self.endTypeComboChanged)

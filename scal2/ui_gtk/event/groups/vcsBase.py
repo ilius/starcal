@@ -16,7 +16,7 @@ class VcsBaseGroupWidget(NormalGroupWidget):
         label.set_alignment(0, 0.5)
         self.sizeGroup.add_widget(label)
         pack(hbox, label)
-        self.vcsTypeCombo = gtk.combo_box_new_text()
+        self.vcsTypeCombo = gtk.ComboBoxText()
         for name in vcsModuleNames:
             self.vcsTypeCombo.append_text(name)## descriptive name FIXME
         pack(hbox, self.vcsTypeCombo)
