@@ -383,12 +383,13 @@ class TimeZoneComboBoxEntry(gtk.HBox):
         self.c.set_entry_text_column(0)
         self.c.add_attribute(self.c.get_cells()[0], 'sensitive', 1)
         self.c.connect('changed', self.onChanged)
+        child = self.c.get_child()
+        child.set_text(str(core.localTz))
+        #self.set_text(str(core.localTz)) ## FIXME
         ###
-        self.get_text = self.c.get_active_text
-        self.set_text = self.c.get_child().set_text
-        ###
-        self.set_text(str(core.localTz))
-        ###
+        self.get_text = child.get_text
+        #self.get_text = self.c.get_active_text ## FIXME
+        self.set_text = child.set_text
         #####
         recentIter = model.append(None, [
             _('Recent...'),

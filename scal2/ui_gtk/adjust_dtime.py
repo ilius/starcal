@@ -117,7 +117,7 @@ class AdjusterDialog(gtk.Dialog):
         pack(hbox, l)
         ##
         pack(hbox, gtk.Label(_('Server:')+' '))
-        combo = gtk.ComboBoxText.new_with_entry()
+        combo = gtk.combo_box_entry_new_text()
         combo.get_child().connect('changed', self.updateSetButtonSensitive)
         pack(hbox, combo, 1, 1)
         self.ntpServerEntry = combo.get_child()

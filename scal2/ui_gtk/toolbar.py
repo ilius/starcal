@@ -149,8 +149,9 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
             else:
                 func = item.method
             if self.onPressContinue:
-                item.get_child().connect('button-press-event', lambda obj, ev: self.itemPress(func))
-                item.get_child().connect('button-release-event', self.itemRelease)
+                child = item.get_child()
+                child.connect('button-press-event', lambda obj, ev: self.itemPress(func))
+                child.connect('button-release-event', self.itemRelease)
             else:
                 item.connect('clicked', func)
     def setData(self, data):

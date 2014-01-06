@@ -137,8 +137,9 @@ class ComboEntryTextPrefItem(PrefItem):
         self._widget = w
         for s in items:
             w.append_text(s)
-        self.get = w.get_child().get_text
-        self.set = w.get_child().set_text
+        child = w.get_child()
+        self.get = child.get_text
+        self.set = child.set_text
 
 class ComboImageTextPrefItem(PrefItem):
     def __init__(self, module, varName, items=[]):## items is a list of pairs (imagePath, text)
