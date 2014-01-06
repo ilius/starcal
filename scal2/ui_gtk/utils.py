@@ -349,7 +349,7 @@ class DirectionComboBox(gtk.ComboBox):
     def setValue(self, value):
         self.set_active(self.keys.index(value))
 
-class DateTypeCombo(gtk.ComboBox):
+class CalTypeCombo(gtk.ComboBox):
     def __init__(self):## , showInactive=True FIXME
         ls = gtk.ListStore(int, str)
         gtk.ComboBox.__init__(self)

@@ -27,7 +27,7 @@ from scal2 import ui
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
-from scal2.ui_gtk.utils import openWindow, dialog_add_button, DateTypeCombo
+from scal2.ui_gtk.utils import openWindow, dialog_add_button, CalTypeCombo
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButtonOption
 from scal2.ui_gtk.mywidgets.ymd import YearMonthDayBox
 
@@ -56,7 +56,7 @@ class SelectDateDialog(gtk.Dialog):
         ######
         hb0 = gtk.HBox(spacing=4)
         pack(hb0, gtk.Label(_('Date Mode')))
-        combo = DateTypeCombo()
+        combo = CalTypeCombo()
         combo.set_active(self.mode)
         pack(hb0, combo)
         pack(self.vbox, hb0)

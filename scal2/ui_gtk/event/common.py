@@ -35,7 +35,7 @@ from gi.repository import GdkPixbuf
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, labelStockMenuItem, TimeZoneComboBoxEntry
-from scal2.ui_gtk.utils import dialog_add_button, DateTypeCombo, confirm, getStyleColor
+from scal2.ui_gtk.utils import dialog_add_button, CalTypeCombo, confirm, getStyleColor
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets import TextFrame
@@ -67,7 +67,7 @@ class EventWidget(gtk.VBox):
         hbox = gtk.HBox()
         ###
         pack(hbox, gtk.Label(_('Calendar Type')))
-        combo = DateTypeCombo()
+        combo = CalTypeCombo()
         combo.set_active(calTypes.primary)## overwritten in updateWidget()
         pack(hbox, combo)
         pack(hbox, gtk.Label(''), 1, 1)
