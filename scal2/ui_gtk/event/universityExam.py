@@ -76,8 +76,8 @@ class EventWidget(gtk.VBox):
         self.dayTimeStartCombo = HourMinuteButton()
         self.dayTimeEndCombo = HourMinuteButton()
         ##
-        #self.dayTimeStartCombo.child.set_direction(gtk.TEXT_DIR_LTR)
-        #self.dayTimeEndCombo.child.set_direction(gtk.TEXT_DIR_LTR)
+        #self.dayTimeStartCombo.get_child().set_direction(gtk.TEXT_DIR_LTR)
+        #self.dayTimeEndCombo.get_child().set_direction(gtk.TEXT_DIR_LTR)
         ##
         pack(hbox, self.dayTimeStartCombo)
         pack(hbox, gtk.Label(' ' + _('to') + ' '))

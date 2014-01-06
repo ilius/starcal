@@ -118,9 +118,9 @@ class AdjusterDialog(gtk.Dialog):
         ##
         pack(hbox, gtk.Label(_('Server:')+' '))
         combo = gtk.combo_box_entry_new_text()
-        combo.child.connect('changed', self.updateSetButtonSensitive)
+        combo.get_child().connect('changed', self.updateSetButtonSensitive)
         pack(hbox, combo, 1, 1)
-        self.ntpServerEntry = combo.child
+        self.ntpServerEntry = combo.get_child()
         for s in ui.ntpServers:
             combo.append_text(s)
         combo.set_active(0)

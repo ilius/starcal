@@ -371,10 +371,11 @@ class TimeZoneComboBoxEntry(gtk.ComboBoxEntry):
         gtk.ComboBoxEntry.__init__(self, model, 0)
         self.add_attribute(self.get_cells()[0], 'sensitive', 1)
         self.connect('changed', self.onChanged)
-        self.child.set_text(str(core.localTz))
+        child = self.get_child()
+        child.set_text(str(core.localTz))
         ###
-        self.get_text = self.child.get_text
-        self.set_text = self.child.set_text
+        self.get_text = child.get_text
+        self.set_text = child.set_text
         #####
         recentIter = model.append(None, [
             _('Recent...'),
