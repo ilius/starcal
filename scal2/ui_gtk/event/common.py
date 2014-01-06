@@ -171,10 +171,11 @@ class FilesBox(gtk.VBox):
         self.newFiles = []
     def showFile(self, fname):
         hbox = gtk.HBox()
-        pack(hbox, gtk.LinkButton(
+        link = gtk.LinkButton(
             self.event.getUrlForFile(fname),
             _('File') + ': ' + fname,
-        ), 0, 0)
+        )
+        pack(hbox, link)
         pack(hbox, gtk.Label(''), 1, 1)
         delButton = gtk.Button()
         delButton.set_label(_('_Delete'))
