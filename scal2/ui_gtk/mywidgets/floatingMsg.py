@@ -20,9 +20,7 @@
 import time
 from time import time as now
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.drawing import *
 from scal2.ui_gtk.mywidgets import MyColorButton

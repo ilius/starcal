@@ -20,13 +20,11 @@
 from scal2.cal_types import jd_to
 from scal2 import core
 from scal2.locale_man import tr as _
-
-
 from scal2 import ui
+
+from scal2.ui_gtk import *
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, DateButton, HourMinuteButton
 from scal2.ui_gtk.event import common
-
-import gtk
 
 class EventWidget(common.EventWidget):
     def __init__(self, event):## FIXME
@@ -38,55 +36,55 @@ class EventWidget(common.EventWidget):
         label = gtk.Label(_('Start'))
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.startDateInput = DateButton()
-        hbox.pack_start(self.startDateInput, 0, 0)
+        pack(hbox, self.startDateInput)
         ###
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(self, hbox)
         ######
         hbox = gtk.HBox()
         label = gtk.Label(_('Repeat Every '))
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.weeksSpin = IntSpinButton(1, 99999)
-        hbox.pack_start(self.weeksSpin, 0, 0)
-        hbox.pack_start(gtk.Label('  '+_(' Weeks')), 0, 0)
+        pack(hbox, self.weeksSpin)
+        pack(hbox, gtk.Label('  '+_(' Weeks')))
         ###
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(self, hbox)
         ######
         hbox = gtk.HBox()
         label = gtk.Label(_('End'))
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.endDateInput = DateButton()
-        hbox.pack_start(self.endDateInput, 0, 0)
+        pack(hbox, self.endDateInput)
         ###
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(self, hbox)
         #########
         hbox = gtk.HBox()
         label = gtk.Label(_('Time'))
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         ##
         self.dayTimeStartInput = HourMinuteButton()
         self.dayTimeEndInput = HourMinuteButton()
         ##
-        hbox.pack_start(self.dayTimeStartInput, 0, 0)
-        hbox.pack_start(gtk.Label(' ' + _('to') + ' '), 0, 0)
-        hbox.pack_start(self.dayTimeEndInput, 0, 0)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, self.dayTimeStartInput)
+        pack(hbox, gtk.Label(' ' + _('to') + ' '))
+        pack(hbox, self.dayTimeEndInput)
+        pack(self, hbox)
         #############
         #self.notificationBox = common.NotificationBox(event)
-        #self.pack_start(self.notificationBox, 0, 0)
+        #pack(self, self.notificationBox)
         #############
         #self.filesBox = common.FilesBox(self.event)
-        #self.pack_start(self.filesBox, 0, 0)
+        #pack(self, self.filesBox)
     def updateWidget(self):## FIXME
         common.EventWidget.updateWidget(self)
         mode = self.event.mode

@@ -2,11 +2,11 @@
 # -*- coding: utf-8 -*-
 from scal2 import core
 from scal2.locale_man import tr as _
-
 from scal2 import event_lib
+
+from scal2.ui_gtk import *
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, TimeButton
-import gtk
-from gtk import gdk
+
 
 class RuleWidget(gtk.HBox):
     def __init__(self, rule):
@@ -15,11 +15,11 @@ class RuleWidget(gtk.HBox):
         gtk.HBox.__init__(self)
         ###
         self.dateInput = DateButton()
-        self.pack_start(self.dateInput, 0, 0)
+        pack(self, self.dateInput)
         ###
-        self.pack_start(gtk.Label('   '+_('Time')), 0, 0)
+        pack(self, gtk.Label('   '+_('Time')))
         self.timeInput = TimeButton()
-        self.pack_start(self.timeInput, 0, 0)
+        pack(self, self.timeInput)
     def updateWidget(self):
         self.dateInput.set_value(self.rule.date)
         self.timeInput.set_value(self.rule.time)

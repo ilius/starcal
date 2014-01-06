@@ -17,17 +17,18 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from math import sqrt, floor, ceil, log10
+from math import log10
 #import random
 
-from scal2.cal_types import calTypes
+from scal2.time_utils import getEpochFromJd, getJdFromEpoch, getFloatJdFromEpoch, getJhmsFromEpoch
+from scal2.date_utils import jwday, getEpochFromDate
+from scal2.cal_types import calTypes, jd_to, to_jd
 from scal2.timeline_box import *
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl, numEncode, textNumEncode, LRM
 
 from scal2 import core
-from scal2.core import myRaise, getMonthName, getJdFromEpoch, getFloatJdFromEpoch, getEpochFromJd, jd_to, to_jd, \
-                       getJhmsFromEpoch, getEpochFromDate, jwday, jd_to_primary
+from scal2.core import myRaise, getMonthName, jd_to_primary
 
 from scal2.color_utils import hslToRgb
 from scal2.utils import ifloor, iceil

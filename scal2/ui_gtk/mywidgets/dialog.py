@@ -1,5 +1,4 @@
-import gtk
-from gtk import gdk
+from scal2.ui_gtk import *
 
 class MyDialog:
     def startWaiting(self):

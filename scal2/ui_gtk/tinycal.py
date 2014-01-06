@@ -21,27 +21,19 @@ import sys, os
 
 from math import pi
 import struct
-import os.path, cairo
+import os.path
 
+from scal2.path import *
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl, rtlSgn
-
-
 from scal2 import core
-from scal2.core import myRaise, getMonthName, getMonthLen,\
-                       rootDir, pixDir, plugDir, plugDirUser, homeDir, confDir, sysConfDir, modDir
-
+from scal2.core import myRaise, getMonthName, getMonthLen
 from scal2 import ui
 
-import gobject, pango
-import gtk
-from gtk import gdk
-
-from scal2.ui_gtk import preferences
-from scal2.ui_gtk.preferences import pfontEncode
-
-
-from scal2.ui_gtk.monthcal import rgbToGdkColor, fillColor, newTextLayout
+from scal2.ui_gtk import *
+from scal2.ui_gtk.font_utils import pfontEncode
+from scal2.ui_gtk.color_utils import rgbToGdkColor
+from scal2.ui_gtk.drawing import fillColor, newTextLayout
 
 
 class WeekStatus(list):

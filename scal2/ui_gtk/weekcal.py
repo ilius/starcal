@@ -25,20 +25,16 @@ from math import pi
 
 from scal2.utils import escape
 from scal2 import core
-
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl, rtlSgn
 from scal2.time_utils import getEpochFromJd
 from scal2.cal_types import calTypes
 from scal2.core import myRaise, getMonthName, getMonthLen, pixDir
-
 from scal2 import ui
 from scal2.weekcal import getCurrentWeekStatus
 
-import gtk
-from gtk import gdk
-
-
+from scal2.ui_gtk import *
+from scal2.ui_gtk import pack
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.drawing import *
 from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile, DirectionComboBox
@@ -52,7 +48,6 @@ from scal2.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
 from scal2.ui_gtk.cal_base import CalBase
 from scal2.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox
 from scal2.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
-
 from scal2.ui_gtk import timeline_box as tbox
 
 def show_event(widget, event):
@@ -103,21 +98,21 @@ class ColumnBase(CustomizableCalObj):
             self.setWidthWidget(value)
             ###
             hbox = gtk.HBox()
-            hbox.pack_start(gtk.Label(_('Width')), 0, 0)
+            pack(hbox, gtk.Label(_('Width')))
             spin = IntSpinButton(0, 999)
-            hbox.pack_start(spin, 0, 0)
+            pack(hbox, spin)
             spin.set_value(value)
             spin.connect('changed', self.widthSpinChanged)
-            self.optionsWidget.pack_start(hbox, 0, 0)
+            pack(self.optionsWidget, hbox)
         ####
         if self.customizeFont:
             hbox = gtk.HBox()
-            hbox.pack_start(gtk.Label(_('Font Family')), 0, 0)
+            pack(hbox, gtk.Label(_('Font Family')))
             combo = FontFamilyCombo(hasAuto=True)
             combo.set_value(self.getFontValue())
-            hbox.pack_start(combo, 0, 0)
+            pack(hbox, combo)
             combo.connect('changed', self.fontFamilyComboChanged)
-            self.optionsWidget.pack_start(hbox, 0, 0)
+            pack(self.optionsWidget, hbox)
         ####
         self.optionsWidget.show_all()
 
@@ -246,13 +241,13 @@ class MainMenuToolbarItem(ToolbarItem):
         self.optionsWidget = gtk.VBox()
         ###
         hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Icon')+'  '), 0, 0)
+        pack(hbox, gtk.Label(_('Icon')+'  '))
         self.iconSelect = IconSelectButton()
         self.iconSelect.set_filename(ui.wcal_toolbar_mainMenu_icon)
         self.iconSelect.connect('changed', self.onIconChanged)
-        hbox.pack_start(self.iconSelect, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.optionsWidget.pack_start(hbox, 0, 0)
+        pack(hbox, self.iconSelect)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(self.optionsWidget, hbox)
         self.optionsWidget.show_all()
     def updateImage(self):
         self.set_property('label-widget', imageFromFile(ui.wcal_toolbar_mainMenu_icon))
@@ -440,9 +435,9 @@ class EventsCountColumn(Column):
         check = gtk.CheckButton(_('Expand'))
         check.set_active(ui.wcal_eventsCount_expand)
         check.connect('clicked', self.expandCheckClicked)
-        hbox.pack_start(check, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.optionsWidget.pack_start(hbox, 0, 0)
+        pack(hbox, check)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(self.optionsWidget, hbox)
         self.optionsWidget.show_all()
         ##
         self.connect('expose-event', self.onExposeEvent)
@@ -493,18 +488,18 @@ class EventsTextColumn(Column):
         hbox = gtk.HBox()
         check = gtk.CheckButton(_('Show Description'))
         check.set_active(ui.wcal_eventsText_showDesc)
-        hbox.pack_start(check, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, check)
+        pack(hbox, gtk.Label(''), 1, 1)
         check.connect('clicked', self.descCheckClicked)
-        self.optionsWidget.pack_start(hbox, 0, 0)
+        pack(self.optionsWidget, hbox)
         ##
         hbox = gtk.HBox()
         check = gtk.CheckButton(_('Colorize'))
         check.set_active(ui.wcal_eventsText_colorize)
-        hbox.pack_start(check, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, check)
+        pack(hbox, gtk.Label(''), 1, 1)
         check.connect('clicked', self.colorizeCheckClicked)
-        self.optionsWidget.pack_start(hbox, 0, 0)
+        pack(self.optionsWidget, hbox)
         ##
         self.optionsWidget.show_all()
     def descCheckClicked(self, check):
@@ -608,15 +603,15 @@ class WcalTypeParamBox(gtk.HBox):
         ######
         label = gtk.Label(_(calTypes[mode].desc)+'  ')
         label.set_alignment(0, 0.5)
-        self.pack_start(label, 0, 0)
+        pack(self, label)
         sgroupLabel.add_widget(label)
         ###
         self.fontCheck = gtk.CheckButton(_('Font'))
-        self.pack_start(gtk.Label(''), 1, 1)
-        self.pack_start(self.fontCheck, 0, 0)
+        pack(self, gtk.Label(''), 1, 1)
+        pack(self, self.fontCheck)
         ###
         self.fontb = MyFontButton(wcal)
-        self.pack_start(self.fontb, 0, 0)
+        pack(self, self.fontb)
         sgroupFont.add_widget(self.fontb)
         ####
         self.set(params)
@@ -686,18 +681,18 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
         self.show()
         #####
         hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Direction')), 0, 0)
+        pack(hbox, gtk.Label(_('Direction')))
         combo = DirectionComboBox()
-        hbox.pack_start(combo, 0, 0)
+        pack(hbox, combo)
         combo.setValue(ui.wcal_daysOfMonth_dir)
         combo.connect('changed', self.dirComboChanged)
-        self.optionsWidget.pack_start(hbox, 0, 0)
+        pack(self.optionsWidget, hbox)
         ####
         frame = gtk.Frame(_('Calendars'))
         self.typeParamsVbox = gtk.VBox()
         frame.add(self.typeParamsVbox)
         frame.show_all()
-        self.optionsWidget.pack_start(frame, 0, 0)
+        pack(self.optionsWidget, frame)
         self.updateTypeParamsWidget()## FIXME
         ####
         self.optionsWidget.show_all()
@@ -721,7 +716,7 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
         elif n < n2:
             for i in range(n, n2):
                 col = DaysOfMonthColumn(self.wcal, self, 0, i)
-                self.pack_start(col, 0, 0)
+                pack(self, col)
                 columns.append(col)
         for i, mode in enumerate(calTypes.active):
             col = columns[i]
@@ -750,7 +745,7 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
             #except IndexError:
             ##
             hbox = WcalTypeParamBox(self.wcal, i, mode, params, sgroupLabel, sgroupFont)
-            vbox.pack_start(hbox, 0, 0)
+            pack(vbox, hbox)
         ###
         vbox.show_all()
     def onConfigChange(self, *a, **ka):
@@ -820,36 +815,36 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         spin = IntSpinButton(1, 9999)
         spin.set_value(ui.wcalHeight)
         spin.connect('changed', self.heightSpinChanged)
-        hbox.pack_start(gtk.Label(_('Height')), 0, 0)
-        hbox.pack_start(spin, 0, 0)
-        self.optionsWidget.pack_start(hbox, 0, 0)
+        pack(hbox, gtk.Label(_('Height')))
+        pack(hbox, spin)
+        pack(self.optionsWidget, hbox)
         ###
         hbox = gtk.HBox()
         spin = FloatSpinButton(0.01, 1, 2)
         spin.set_value(ui.wcalTextSizeScale)
         spin.connect('changed', self.textSizeScaleSpinChanged)
-        hbox.pack_start(gtk.Label(_('Text Size Scale')), 0, 0)
-        hbox.pack_start(spin, 0, 0)
-        self.optionsWidget.pack_start(hbox, 0, 0)
+        pack(hbox, gtk.Label(_('Text Size Scale')))
+        pack(hbox, spin)
+        pack(self.optionsWidget, hbox)
         ########
         hbox = gtk.HBox(spacing=3)
         ####
         item = CheckPrefItem(ui, 'wcalGrid', _('Grid'))
         item.updateWidget()
         gridCheck = item._widget
-        hbox.pack_start(gridCheck, 0, 0)
+        pack(hbox, gridCheck)
         gridCheck.item = item
         ####
         colorItem = ColorPrefItem(ui, 'wcalGridColor', True)
         colorItem.updateWidget()
-        hbox.pack_start(colorItem._widget, 0, 0)
+        pack(hbox, colorItem._widget)
         gridCheck.colorb = colorItem._widget
         gridCheck.connect('clicked', self.gridCheckClicked)
         colorItem._widget.item = colorItem
         colorItem._widget.connect('color-set', self.gridColorChanged)
         colorItem._widget.set_sensitive(ui.wcalGrid)
         ####
-        self.optionsWidget.pack_start(hbox, 0, 0)
+        pack(self.optionsWidget, hbox)
         ###
         self.optionsWidget.show_all()
     def heightSpinChanged(self, spin):
@@ -971,7 +966,7 @@ if __name__=='__main__':
         gdk.BUTTON_PRESS_MASK | gdk.BUTTON_RELEASE_MASK | gdk.SCROLL_MASK |
         gdk.KEY_PRESS_MASK | gdk.VISIBILITY_NOTIFY_MASK | gdk.EXPOSURE_MASK
     )
-    win.vbox.pack_start(cal, 1, 1)
+    pack(win.vbox, cal, 1, 1)
     win.vbox.show_all()
     win.resize(600, 400)
     cal.onConfigChange()

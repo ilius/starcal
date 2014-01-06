@@ -19,20 +19,17 @@
 
 import os, sys
 
-from scal2.locale_man import tr as _
-
 from scal2.cal_types import calTypes
 from scal2 import core
-
+from scal2.locale_man import tr as _
 from scal2 import ui
 from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
 from scal2.export import exportToHtml
 
-from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, TimeButton, YearMonthButton
+from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import openWindow, dialog_add_button
+from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, TimeButton, YearMonthButton
 
-import gtk
-from gtk import gdk
 
 #gdkColorToHtml = lambda color: '#%.2x%.2x%.2x'%(color.red/256, color.green/256, color.blue/256)
 
@@ -44,29 +41,29 @@ class ExportDialog(gtk.Dialog):
         self.set_has_separator(False)
         ########
         hbox = gtk.HBox(spacing=2)
-        hbox.pack_start(gtk.Label(_('Month Range')), 0, 0)
+        pack(hbox, gtk.Label(_('Month Range')))
         combo = gtk.combo_box_new_text()
         for t in ('Current Month', 'Whole Current Year', 'Custom'):
             combo.append_text(_(t))
-        hbox.pack_start(combo, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, combo)
+        pack(hbox, gtk.Label(''), 1, 1)
         self.combo = combo
         ###
         hbox2 = gtk.HBox(spacing=2)
-        hbox2.pack_start(gtk.Label(_('from month')), 0, 0)
+        pack(hbox2, gtk.Label(_('from month')))
         self.ymBox0 = YearMonthButton()
-        hbox2.pack_start(self.ymBox0, 0, 0)
-        hbox2.pack_start(gtk.Label(''), 1, 1)
-        hbox2.pack_start(gtk.Label(_('to month')), 0, 0)
+        pack(hbox2, self.ymBox0)
+        pack(hbox2, gtk.Label(''), 1, 1)
+        pack(hbox2, gtk.Label(_('to month')))
         self.ymBox1 = YearMonthButton()
-        hbox2.pack_start(self.ymBox1, 0, 0)
-        hbox.pack_start(hbox2, 1, 1)
+        pack(hbox2, self.ymBox1)
+        pack(hbox, hbox2, 1, 1)
         self.hbox2 = hbox2
         combo.set_active(0)
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(self.vbox, hbox)
         ########
         self.fcw = gtk.FileChooserWidget(action=gtk.FILE_CHOOSER_ACTION_SAVE)
-        self.vbox.pack_start(self.fcw, 1, 1)
+        pack(self.vbox, self.fcw, 1, 1)
         self.vbox.set_focus_child(self.fcw)## FIXME
         self.vbox.show_all()
         combo.connect('changed', self.comboChanged)
@@ -166,20 +163,20 @@ class ExportToIcsDialog(gtk.Dialog):
         self.set_has_separator(False)
         ########
         hbox = gtk.HBox(spacing=2)
-        hbox.pack_start(gtk.Label(_('From')+' '), 0, 0)
+        pack(hbox, gtk.Label(_('From')+' '))
         self.startDateInput = DateButton()
-        hbox.pack_start(self.startDateInput, 0, 0)
-        hbox.pack_start(gtk.Label(' '+_('To')+' '), 0, 0)
+        pack(hbox, self.startDateInput)
+        pack(hbox, gtk.Label(' '+_('To')+' '))
         self.endDateInput = DateButton()
-        hbox.pack_start(self.endDateInput, 0, 0)
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(hbox, self.endDateInput)
+        pack(self.vbox, hbox)
         ####
         year, month, day = ui.todayCell.dates[calTypes.primary]
         self.startDateInput.set_value((year, 1, 1))
         self.endDateInput.set_value((year+1, 1, 1))
         ########
         self.fcw = gtk.FileChooserWidget(action=gtk.FILE_CHOOSER_ACTION_SAVE)
-        self.vbox.pack_start(self.fcw, 1, 1)
+        pack(self.vbox, self.fcw, 1, 1)
         self.vbox.set_focus_child(self.fcw)## FIXME
         self.vbox.show_all()
         ##

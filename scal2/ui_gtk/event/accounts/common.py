@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
 
+from scal2 import core
 from scal2.locale_man import tr as _
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 
 class AccountWidget(gtk.VBox):
     def __init__(self, account):
@@ -16,11 +15,11 @@ class AccountWidget(gtk.VBox):
         hbox = gtk.HBox()
         label = gtk.Label(_('Title'))
         label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.sizeGroup.add_widget(label)
         self.titleEntry = gtk.Entry()
-        hbox.pack_start(self.titleEntry, 1, 1)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, self.titleEntry, 1, 1)
+        pack(self, hbox)
     def updateWidget(self):
         self.titleEntry.set_text(self.account.title)
     def updateVars(self):

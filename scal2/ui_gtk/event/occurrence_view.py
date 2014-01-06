@@ -18,13 +18,12 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 from scal2.utils import toStr, toUnicode
+from scal2 import core
 from scal2.locale_man import tr as _
-
 from scal2 import event_lib
 from scal2 import ui
 
-import gtk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import imageFromFile, labelStockMenuItem, labelImageMenuItem, setClipboard
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
@@ -66,22 +65,22 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
             ###
             hbox = gtk.HBox(spacing=5)
             if item['icon']:
-                hbox.pack_start(imageFromFile(item['icon']), 0, 0)
+                pack(hbox, imageFromFile(item['icon']))
             if item['time']:
                 label = gtk.Label(item['time'])
                 label.set_direction(gtk.TEXT_DIR_LTR)
                 label.set_selectable(True)
                 label.connect('populate-popup', self.onLabelPopup)## FIXME
-                hbox.pack_start(label, 0, 0)
-                hbox.pack_start(gtk.Label('  '), 0, 0)
+                pack(hbox, label)
+                pack(hbox, gtk.Label('  '))
             label = gtk.Label(text)
             label.set_selectable(True)
             label.set_line_wrap(True)
             label.set_use_markup(False)## should escape text if using markup FIXME
             label.connect('populate-popup', self.onEventLabelPopup, item['ids'])
-            hbox.pack_start(label, 0, 0)## or 1, 1 (center) FIXME
-            self.vbox.pack_start(hbox, 0, 0)
-            self.vbox.pack_start(gtk.HSeparator(), 0, 0)
+            pack(hbox, label)## or 1, 1 (center) FIXME
+            pack(self.vbox, hbox)
+            pack(self.vbox, gtk.HSeparator())
         self.show_all()
         self.vbox.show_all()
         self.set_visible(bool(cell.eventsData))

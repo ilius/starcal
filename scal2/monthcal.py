@@ -17,14 +17,11 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from scal2.locale_man import rtl, rtlSgn
-from scal2.locale_man import tr as _
-
 from scal2.cal_types import calTypes
 from scal2 import core
-from scal2.core import myRaise, getMonthName, getMonthLen, getWeekDay,\
-                       getWeekNumber
-
+from scal2.core import myRaise, getMonthName, getMonthLen, getWeekDay, getWeekNumber
+from scal2.locale_man import rtl, rtlSgn
+from scal2.locale_man import tr as _
 from scal2 import ui
 
 pluginName = 'MonthCal'

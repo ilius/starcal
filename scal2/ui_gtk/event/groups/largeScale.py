@@ -1,11 +1,11 @@
+from scal2 import core
 from scal2.locale_man import tr as _
 
+from scal2.ui_gtk import *
+from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 from scal2.ui_gtk.event.groups.base import BaseGroupWidget
 from scal2.ui_gtk.event import common
 
-import gtk
-
-from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 
 maxStartEnd = 999999
 
@@ -19,28 +19,28 @@ class GroupWidget(BaseGroupWidget):
         label = gtk.Label(_('Scale'))
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.scaleCombo = common.Scale10PowerComboBox()
-        hbox.pack_start(self.scaleCombo, 0, 0)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, self.scaleCombo)
+        pack(self, hbox)
         ####
         hbox = gtk.HBox()
         label = gtk.Label(_('Start'))
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.startSpin = IntSpinButton(-maxStartEnd, maxStartEnd)
-        hbox.pack_start(self.startSpin, 0, 0)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, self.startSpin)
+        pack(self, hbox)
         ####
         hbox = gtk.HBox()
         label = gtk.Label(_('End'))
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.endSpin = IntSpinButton(-maxStartEnd, maxStartEnd)
-        hbox.pack_start(self.endSpin, 0, 0)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, self.endSpin)
+        pack(self, hbox)
     def updateWidget(self):
         BaseGroupWidget.updateWidget(self)
         self.scaleCombo.set_value(self.group.scale)

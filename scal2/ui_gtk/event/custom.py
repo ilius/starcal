@@ -18,19 +18,13 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 
-from os.path import join, dirname
-
 from scal2 import core
 from scal2.locale_man import tr as _
-from scal2.core import pixDir
-
 from scal2 import event_lib
 from scal2 import ui
 
+from scal2.ui_gtk import *
 from scal2.ui_gtk.event import common
-
-import gtk
-from gtk import gdk
 
 
 class EventWidget(common.EventWidget):
@@ -50,32 +44,32 @@ class EventWidget(common.EventWidget):
         self.rulesExp.set_expanded(True)
         self.rulesBox = gtk.VBox()
         self.rulesExp.add(self.rulesBox)
-        self.pack_start(self.rulesExp, 0, 0)
+        pack(self, self.rulesExp)
         ###
-        self.pack_start(self.ruleAddBox, 0, 0)
-        self.pack_start(self.warnLabel, 0, 0)
+        pack(self, self.ruleAddBox)
+        pack(self, self.warnLabel)
         ###
         self.notificationBox = common.NotificationBox(event)
-        self.pack_start(self.notificationBox, 0, 0)
+        pack(self, self.notificationBox)
         ###########
         self.addRuleModel = gtk.ListStore(str, str)
         self.addRuleCombo = gtk.ComboBox(self.addRuleModel)
         ###
         cell = gtk.CellRendererText()
-        self.addRuleCombo.pack_start(cell, True)
+        pack(self.addRuleCombo, cell, True)
         self.addRuleCombo.add_attribute(cell, 'text', 1)
         ###
-        self.ruleAddBox.pack_start(gtk.Label(_('Add Rule')+':'), 0, 0)
-        self.ruleAddBox.pack_start(self.addRuleCombo, 0, 0)
-        self.ruleAddBox.pack_start(gtk.Label(''), 1, 1)
+        pack(self.ruleAddBox, gtk.Label(_('Add Rule')+':'))
+        pack(self.ruleAddBox, self.addRuleCombo)
+        pack(self.ruleAddBox, gtk.Label(''), 1, 1)
         self.ruleAddButton = gtk.Button(stock=gtk.STOCK_ADD)
         if ui.autoLocale:
             self.ruleAddButton.set_label(_('_Add'))
             self.ruleAddButton.set_image(gtk.image_new_from_stock(gtk.STOCK_ADD, gtk.ICON_SIZE_BUTTON))
-        self.ruleAddBox.pack_start(self.ruleAddButton, 0, 0)
+        pack(self.ruleAddBox, self.ruleAddButton)
         #############
         #self.filesBox = common.FilesBox(self.event)
-        #self.pack_start(self.filesBox, 0, 0)
+        #pack(self, self.filesBox)
         #############
         self.addRuleCombo.connect('changed', self.addRuleComboChanged)
         self.ruleAddButton.connect('clicked', self.addClicked)
@@ -83,22 +77,22 @@ class EventWidget(common.EventWidget):
         hbox = gtk.HBox(spacing=5)
         lab = gtk.Label(rule.desc)
         lab.set_alignment(0, 0.5)
-        hbox.pack_start(lab, 0, 0)
+        pack(hbox, lab)
         self.groups[rule.sgroup].add_widget(lab)
-        #hbox.pack_start(gtk.Label(''), 1, 1)
+        #pack(hbox, gtk.Label(''), 1, 1)
         inputWidget = rule.makeWidget()
         if rule.expand:
-            hbox.pack_start(inputWidget, 1, 1)
+            pack(hbox, inputWidget, 1, 1)
         else:
-            hbox.pack_start(inputWidget, 0, 0)
-            hbox.pack_start(gtk.Label(''), 1, 1)
+            pack(hbox, inputWidget)
+            pack(hbox, gtk.Label(''), 1, 1)
         ####
         removeButton = gtk.Button(stock=gtk.STOCK_REMOVE)
         if ui.autoLocale:
             removeButton.set_label(_('_Remove'))
             removeButton.set_image(gtk.image_new_from_stock(gtk.STOCK_REMOVE, gtk.ICON_SIZE_BUTTON))
         removeButton.connect('clicked', self.removeButtonClicked, hbox)## FIXME
-        hbox.pack_start(removeButton, 0, 0)
+        pack(hbox, removeButton)
         ####
         hbox.inputWidget = inputWidget
         hbox.removeButton = removeButton
@@ -109,7 +103,7 @@ class EventWidget(common.EventWidget):
         comboItems = [ruleClass.name for ruleClass in event_lib.classes.rule]
         for rule in self.event:
             hbox = self.makeRuleHbox(rule)
-            self.rulesBox.pack_start(hbox, 0, 0)
+            pack(self.rulesBox, hbox)
             #hbox.show_all()
             comboItems.remove(rule.name)
         self.rulesBox.show_all()
@@ -168,7 +162,7 @@ class EventWidget(common.EventWidget):
         if not ok:
             return
         hbox = self.makeRuleHbox(rule)
-        self.rulesBox.pack_start(hbox, 0, 0)
+        pack(self.rulesBox, hbox)
         del self.addRuleModel[ci]
         n = len(self.addRuleModel)
         if ci==n:

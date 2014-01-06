@@ -26,7 +26,7 @@ from os.path import join, isfile, isdir
 from scal2.path import *
 from scal2.import_config_1to2 import importConfigFrom15, getOldVersion, langDir, langConfDir
 
-import gtk
+from scal2.ui_gtk import *
 
 gtk.window_set_default_icon_from_file('%s/starcal2.png'%pixDir)
 
@@ -37,7 +37,7 @@ langDefaultCode = ''
 
 win = gtk.Dialog(title=APP_DESC+' - First Run', buttons=(gtk.STOCK_OK, gtk.RESPONSE_OK, gtk.STOCK_CANCEL, gtk.RESPONSE_CANCEL))
 langHbox = gtk.HBox()
-langHbox.pack_start(gtk.Label('Select Language:'), 0, 0)
+pack(langHbox, gtk.Label('Select Language:'))
 
 
 importCheckb = None
@@ -46,7 +46,7 @@ if oldVersion and '1.5.0' < oldVersion < '1.6.0':## FIXME
     importCheckb = gtk.CheckButton('Import configurations from %s %s'%(APP_DESC, oldVersion))
     importCheckb.connect('clicked', lambda cb: langHbox.set_sensitive(not cb.get_active()))
     importCheckb.set_active(True)
-    win.vbox.pack_start(importCheckb)
+    pack(win.vbox, importCheckb)
 
 
 langCombo = gtk.combo_box_new_text()
@@ -69,8 +69,8 @@ if langDefaultCode and (langDefaultCode in langCodeList):
 else:
     langCombo.set_active(0)
 
-langHbox.pack_start(langCombo, 1, 1)
-win.vbox.pack_start(langHbox)
+pack(langHbox, langCombo, 1, 1)
+pack(win.vbox, langHbox)
 win.vbox.show_all()
 
 if win.run()==gtk.RESPONSE_OK:

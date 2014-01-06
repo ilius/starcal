@@ -1,16 +1,15 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 import thread
+from subprocess import Popen, PIPE
 
 from scal2 import core
 from scal2.locale_man import tr as _
-
 from scal2 import event_lib
-import gtk
-from gtk import gdk
 
-from scal2.ui_gtk import player
-from subprocess import Popen, PIPE
+from scal2.ui_gtk import *
+#from scal2.ui_gtk import player
+
 
 #class NotifierWidget(player.PlayerBox):
 #    def __init__(self, notifier):

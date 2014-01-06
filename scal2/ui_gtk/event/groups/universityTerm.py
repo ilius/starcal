@@ -22,17 +22,16 @@ from time import time as now
 
 from scal2.path import deskDir
 from scal2.time_utils import hmEncode, hmDecode
+from scal2 import core
 from scal2.locale_man import tr as _
 from scal2.locale_man import numDecode
-from scal2 import core
 
 import gobject
-import gtk
-from gtk import gdk
 
+from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
-from scal2.ui_gtk.drawing import *
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip
+from scal2.ui_gtk.drawing import *
 from scal2.ui_gtk.event.groups.group import GroupWidget as NormalGroupWidget
 
 
@@ -74,9 +73,9 @@ class CourseListEditor(gtk.HBox):
             swin = gtk.ScrolledWindow()
             swin.add(self.treev)
             swin.set_policy(gtk.POLICY_NEVER, gtk.POLICY_AUTOMATIC)
-            self.pack_start(swin, 1, 1)
+            pack(self, swin, 1, 1)
         else:
-            self.pack_start(self.treev, 1, 1)
+            pack(self, self.treev, 1, 1)
         ##########
         toolbar = gtk.Toolbar()
         toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
@@ -110,7 +109,7 @@ class CourseListEditor(gtk.HBox):
         tb.connect('clicked', self.moveDownClicked)
         toolbar.insert(tb, -1)
         #######
-        self.pack_start(toolbar, 0, 0)
+        pack(self, toolbar)
     def getSelectedIndex(self):
         cur = self.treev.get_cursor()
         try:
@@ -187,7 +186,7 @@ class ClassTimeBoundsEditor(gtk.HBox):
         col = gtk.TreeViewColumn(_('Time'), cell, text=0)
         self.treev.append_column(col)
         ####
-        self.pack_start(self.treev, 1, 1)
+        pack(self, self.treev, 1, 1)
         ##########
         toolbar = gtk.Toolbar()
         toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
@@ -211,7 +210,7 @@ class ClassTimeBoundsEditor(gtk.HBox):
         toolbar.insert(tb, -1)
         #self.buttonDel = tb
         #######
-        self.pack_start(toolbar, 0, 0)
+        pack(self, toolbar)
     def getSelectedIndex(self):
         cur = self.treev.get_cursor()
         try:
@@ -282,18 +281,18 @@ class GroupWidget(NormalGroupWidget):
         self.courseListEditor = CourseListEditor(self.group)
         self.courseListEditor.set_size_request(100, 150)
         frame.add(self.courseListEditor)
-        expandHbox.pack_start(frame, 1, 1)
+        pack(expandHbox, frame, 1, 1)
         ##
         frame = gtk.Frame(_('Class Time Bounds'))## FIXME
         self.classTimeBoundsEditor = ClassTimeBoundsEditor(self.group)
         self.classTimeBoundsEditor.set_size_request(50, 150)
         frame.add(self.classTimeBoundsEditor)
-        expandHbox.pack_start(frame, 0, 0)
+        pack(expandHbox, frame)
         ##
-        totalVbox.pack_start(expandHbox, 1, 1)
+        pack(totalVbox, expandHbox, 1, 1)
         #####
         totalFrame.add(totalVbox)
-        self.pack_start(totalFrame, 1, 1)## expand? FIXME
+        pack(self, totalFrame, 1, 1)## expand? FIXME
     def updateWidget(self):## FIXME
         NormalGroupWidget.updateWidget(self)
         self.courseListEditor.setData(self.group.courses)
@@ -444,18 +443,18 @@ class WeeklyScheduleWindow(gtk.Dialog):
         hbox = gtk.HBox()
         self.currentWOnlyCheck = gtk.CheckButton(_('Current Week Only'))
         self.currentWOnlyCheck.connect('clicked', lambda obj: self.updateWidget())
-        hbox.pack_start(self.currentWOnlyCheck, 0, 0)
+        pack(hbox, self.currentWOnlyCheck)
         ##
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, gtk.Label(''), 1, 1)
         ##
         button = gtk.Button(_('Export to ')+'SVG')
         button.connect('clicked', self.exportToSvgClicked)
-        hbox.pack_start(button, 0, 0)
+        pack(hbox, button)
         ##
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(self.vbox, hbox)
         #####
         self._widget = WeeklyScheduleWidget(term)
-        self.vbox.pack_start(self._widget, 1, 1)
+        pack(self.vbox, self._widget, 1, 1)
         #####
         self.vbox.show_all()
         self.updateWidget()

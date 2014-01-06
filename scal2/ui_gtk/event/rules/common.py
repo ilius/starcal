@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 from scal2 import core
 from scal2.locale_man import tr as _
-
 from scal2 import event_lib
-import gtk
-from gtk import gdk
+
+from scal2.ui_gtk import *
 
 '''
 class MultiValueRule(gtk.HBox):
@@ -15,7 +14,7 @@ class MultiValueRule(gtk.HBox):
         ##
         gtk.HBox.__init__(self)
         self.widgetsBox = gtk.HBox()
-        self.pack_start(self.widgetsBox, 0, 0)
+        pack(self, self.widgetsBox)
         ##
         self.removeButton = gtk.Button()
         self.removeButton.set_image(gtk.image_new_from_stock(gtk.STOCK_REMOVE, gtk.ICON_SIZE_MENU))

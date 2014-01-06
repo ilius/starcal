@@ -19,14 +19,13 @@
 
 from scal2 import core
 from scal2.locale_man import tr as _
-
 from scal2 import ui
+
+from scal2.ui_gtk import *
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
 from scal2.ui_gtk.mywidgets.ymd import YearMonthDayBox
-
 from scal2.ui_gtk.event import common
 
-import gtk
 
 class EventWidget(common.EventWidget):
     def __init__(self, event):## FIXME
@@ -49,20 +48,20 @@ class EventWidget(common.EventWidget):
         label = gtk.Label(_('Start')+': ')
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
-        hbox.pack_start(label, 0, 0)
-        hbox.pack_start(self.startDateInput, 0, 0)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, label)
+        pack(hbox, self.startDateInput)
+        pack(self, hbox)
         ######
         hbox = gtk.HBox()
         label = gtk.Label(_('End')+': ')
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
-        hbox.pack_start(label, 0, 0)
-        hbox.pack_start(self.endDateInput, 0, 0)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, label)
+        pack(hbox, self.endDateInput)
+        pack(self, hbox)
         #############
         #self.filesBox = common.FilesBox(self.event)
-        #self.pack_start(self.filesBox, 0, 0)
+        #pack(self, self.filesBox)
     def updateWidget(self):
         common.EventWidget.updateWidget(self)
         self.startDateInput.set_value(self.event['start'].date)

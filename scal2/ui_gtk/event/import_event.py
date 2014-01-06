@@ -1,14 +1,14 @@
 import sys
 
 from scal2.path import deskDir
+from scal2.json_utils import *
+from scal2 import core
 from scal2.locale_man import tr as _
 from scal2 import ui
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import WizardWindow, GtkBufferFile
-from scal2.json_utils import *
+
 
 class EventsImportWindow(WizardWindow):
     def __init__(self, manager):
@@ -38,25 +38,25 @@ class EventsImportWindow(WizardWindow):
             self.radioJson = gtk.RadioButton(label=_('JSON (StarCalendar)'))
             #self.radioIcs = gtk.RadioButton(label='iCalendar', group=self.radioJson)
             ##
-            radioBox.pack_start(self.radioJson, 0, 0)
-            #radioBox.pack_start(self.radioIcs, 0, 0)
+            pack(radioBox, self.radioJson)
+            #pack(radioBox, self.radioIcs)
             ##
             self.radioJson.set_active(True)
             #self.radioJson.connect('clicked', self.formatRadioChanged)
             ##self.radioIcs.connect('clicked', self.formatRadioChanged)
             ##
             frame.add(radioBox)
-            hbox.pack_start(frame, 0, 0, 10)
-            hbox.pack_start(gtk.Label(''), 1, 1)
-            self.pack_start(hbox, 0, 0)
+            pack(hbox, frame, 0, 0, 10)
+            pack(hbox, gtk.Label(''), 1, 1)
+            pack(self, hbox)
             ####
             hbox = gtk.HBox()
-            hbox.pack_start(gtk.Label(_('File')+':'), 0, 0)
+            pack(hbox, gtk.Label(_('File')+':'))
             self.fcb = gtk.FileChooserButton(_('Import: Select File'))
             self.fcb.set_local_only(True)
             self.fcb.set_current_folder(deskDir)
-            hbox.pack_start(self.fcb, 1, 1)
-            self.pack_start(hbox, 0, 0)
+            pack(hbox, self.fcb, 1, 1)
+            pack(self, hbox)
             ####
             self.show_all()
         def run(self):
@@ -84,7 +84,7 @@ class EventsImportWindow(WizardWindow):
             )
             ####
             self.textview = gtk.TextView()
-            self.pack_start(self.textview, 1, 1)
+            pack(self, self.textview, 1, 1)
             ####
             self.show_all()
         def redirectStdOutErr(self):

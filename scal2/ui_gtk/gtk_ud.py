@@ -30,9 +30,7 @@ from scal2 import core
 from scal2 import ui
 from scal2.format_time import compileTmFormat
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.font_utils import gfontDecode, pfontEncode
 

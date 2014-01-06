@@ -25,14 +25,11 @@ sys.path.insert(0, dirname(dirname(dirname(__file__))))
 from scal2 import core
 from scal2.locale_man import tr as _
 
+from scal2.ui_gtk import *
 from scal2.ui_gtk.starcal2 import *
-
-import gtk
-from gtk import gdk
 
 import gnomeapplet
 ## import gnomeapplet module AFTRE scal2.* modules, to prevent crash on first run (after boot up)
-
 
 #class MyApplet(gnomeapplet.Applet):
 #    def __init__(self, applet):
@@ -102,11 +99,11 @@ class StarCalApplet(MainWin):
         ###################################
         hbox = gtk.HBox()
         hbox.set_direction(gtk.TEXT_DIR_LTR)
-        hbox.pack_start(self.image, 0, 0)
+        pack(hbox, self.image)
         if ui.showDigClockTr:
             #if self.is_composited
             self.clockTr = FClockLabel(preferences.clockFormat)##?????????????
-            hbox.pack_start(self.clockTr, 0, 0)
+            pack(hbox, self.clockTr)
         self.sicon.add(hbox)
         self.applet.add(self.sicon)
         self.trayHbox = hbox

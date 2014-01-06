@@ -21,13 +21,11 @@ import sys, os
 from time import time as now
 from time import localtime
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
-from scal2.ui_gtk.drawing import newTextLayout
 from scal2.ui_gtk.utils import buffer_get_text
+from scal2.ui_gtk.drawing import newTextLayout
 
 def myRaise():
     i = sys.exc_info()
@@ -175,7 +173,7 @@ if __name__=='__main__':
     d = gtk.Dialog()
     clock = FClockLabel()
     clock.start()
-    d.vbox.pack_start(clock, 1, 1)
+    pack(d.vbox, clock, 1, 1)
     d.connect('delete-event', lambda widget, event: gtk.main_quit())
     d.show_all()
     gtk.main()

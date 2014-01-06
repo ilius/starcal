@@ -18,16 +18,14 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 from scal2 import core
-from scal2.locale_man import tr as _
 from scal2.core import pixDir, myRaise
-
+from scal2.locale_man import tr as _
 from scal2 import event_lib
 from scal2 import ui
+
+from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import openWindow, dialog_add_button
 from scal2.ui_gtk.mywidgets.icon import IconSelectButton
-
-import gtk
-from gtk import gdk
 
 #class EventCategorySelect(gtk.HBox):
 
@@ -36,17 +34,17 @@ class EventTagsAndIconSelect(gtk.HBox):
         gtk.HBox.__init__(self)
         #########
         hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Category')+':'), 0, 0)
+        pack(hbox, gtk.Label(_('Category')+':'))
         #####
         ls = gtk.ListStore(gdk.Pixbuf, str)
         combo = gtk.ComboBox(ls)
         ###
         cell = gtk.CellRendererPixbuf()
-        combo.pack_start(cell, False)
+        pack(combo, cell, False)
         combo.add_attribute(cell, 'pixbuf', 0)
         ###
         cell = gtk.CellRendererText()
-        combo.pack_start(cell, True)
+        pack(combo, cell, True)
         combo.add_attribute(cell, 'text', 1)
         ###
         ls.append([None, _('Custom')])## first or last FIXME
@@ -57,32 +55,32 @@ class EventTagsAndIconSelect(gtk.HBox):
             ])
         ###
         self.customItemIndex = 0 ## len(ls)-1
-        hbox.pack_start(combo, 0, 0)
+        pack(hbox, combo)
         self.typeCombo = combo
         self.typeStore = ls
 
         ###
         vbox = gtk.VBox()
-        vbox.pack_start(hbox, 0, 0)
-        self.pack_start(vbox, 0, 0)
+        pack(vbox, hbox)
+        pack(self, vbox)
         #########
         iconLabel = gtk.Label(_('Icon'))
-        hbox.pack_start(iconLabel, 0, 0)
+        pack(hbox, iconLabel)
         self.iconSelect = IconSelectButton()
-        hbox.pack_start(self.iconSelect, 0, 0)
+        pack(hbox, self.iconSelect)
         tagsLabel = gtk.Label(_('Tags'))
-        hbox.pack_start(tagsLabel, 0, 0)
+        pack(hbox, tagsLabel)
         hbox3 = gtk.HBox()
         self.tagButtons = []
         for item in ui.eventTags:
             button = gtk.ToggleButton(item.desc)
             button.tagName = item.name
             self.tagButtons.append(button)
-            hbox3.pack_start(button, 0, 0)
+            pack(hbox3, button)
         self.swin = gtk.ScrolledWindow()
         self.swin.set_policy(gtk.POLICY_ALWAYS, gtk.POLICY_NEVER)## horizontal AUTOMATIC or ALWAYS FIXME
         self.swin.add_with_viewport(hbox3)
-        self.pack_start(self.swin, 1, 1)
+        pack(self, self.swin, 1, 1)
         self.customTypeWidgets = (iconLabel, self.iconSelect, tagsLabel, self.swin)
         #########
         self.typeCombo.connect('changed', self.typeComboChanged)
@@ -142,9 +140,9 @@ class TagsListBox(gtk.VBox):
             set_tooltip(self.relatedCheck, _('Show only tags related to this event type'))
             self.relatedCheck.set_active(True)
             self.relatedCheck.connect('clicked', self.optionsChanged)
-            hbox.pack_start(self.relatedCheck, 0, 0)
-            hbox.pack_start(gtk.Label(''), 1, 1)
-            self.pack_start(hbox, 0, 0)
+            pack(hbox, self.relatedCheck)
+            pack(hbox, gtk.Label(''), 1, 1)
+            pack(self, hbox)
         ########
         treev = gtk.TreeView()
         trees = gtk.ListStore(str, bool, str, int, str)## name(hidden), enable, desc, usage(hidden), usage(locale)
@@ -178,7 +176,7 @@ class TagsListBox(gtk.VBox):
         swin = gtk.ScrolledWindow()
         swin.add(treev)
         swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.pack_start(swin, 1, 1)
+        pack(self, swin, 1, 1)
         ####
         self.treeview = treev
         self.treestore = trees
@@ -225,7 +223,7 @@ class TagEditorDialog(gtk.Dialog):
         self.set_transient_for(None)
         self.tags = []
         self.tagsBox = TagsListBox(eventType)
-        self.vbox.pack_start(self.tagsBox, 1, 1)
+        pack(self.vbox, self.tagsBox, 1, 1)
         ####
         dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
         dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
@@ -241,16 +239,16 @@ class ViewEditTagsHbox(gtk.HBox):
     def __init__(self, eventType=''):
         gtk.HBox.__init__(self)
         self.tags = []
-        self.pack_start(gtk.Label(_('Tags')+':  '), 0, 0)
+        pack(self, gtk.Label(_('Tags')+':  '))
         self.tagsLabel = gtk.Label('')
-        self.pack_start(self.tagsLabel, 1, 1)
+        pack(self, self.tagsLabel, 1, 1)
         self.dialog = TagEditorDialog(eventType, parent=self)
         self.dialog.connect('response', self.dialogResponse)
         self.editButton = gtk.Button()
         self.editButton.set_label(_('_Edit'))
         self.editButton.set_image(gtk.image_new_from_stock(gtk.STOCK_EDIT, gtk.ICON_SIZE_BUTTON))
         self.editButton.connect('clicked', self.editButtonClicked)
-        self.pack_start(self.editButton, 0, 0)
+        pack(self, self.editButton)
         self.show_all()
     def editButtonClicked(self, widget):
         openWindow(self.dialog)

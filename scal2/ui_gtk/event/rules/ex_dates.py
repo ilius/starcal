@@ -18,16 +18,13 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 from scal2 import core
+from scal2.date_utils import dateEncode, dateDecode
 from scal2.locale_man import tr as _
 from scal2.locale_man import textNumEncode, textNumDecode
-from scal2.date_utils import dateEncode, dateDecode
-
 from scal2 import event_lib
 from scal2 import ui
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip
 
 ## FIXME
@@ -41,12 +38,12 @@ class RuleWidget(gtk.HBox):
         gtk.HBox.__init__(self)
         ###
         self.countLabel = gtk.Label('')
-        self.pack_start(self.countLabel, 0, 0)
+        pack(self, self.countLabel)
         ###
         self.editButton = gtk.Button(_('Edit'))
         self.editButton.set_image(gtk.image_new_from_stock(gtk.STOCK_EDIT, gtk.ICON_SIZE_BUTTON))
         self.editButton.connect('clicked', self.showDialog)
-        self.pack_start(self.editButton, 0, 0)
+        pack(self, self.editButton)
         ###
         self.dialog = gtk.Dialog(title=rule.desc)
         ##
@@ -88,9 +85,9 @@ class RuleWidget(gtk.HBox):
         toolbar.insert(tb, -1)
         ##
         dialogHbox = gtk.HBox()
-        dialogHbox.pack_start(self.treev, 1, 1)
-        dialogHbox.pack_start(toolbar, 0, 0)
-        self.dialog.vbox.pack_start(dialogHbox, 1, 1)
+        pack(dialogHbox, self.treev, 1, 1)
+        pack(dialogHbox, toolbar)
+        pack(self.dialog.vbox, dialogHbox, 1, 1)
         self.dialog.vbox.show_all()
         self.dialog.resize(200, 300)
         self.dialog.connect('response', lambda w, e: self.dialog.hide())

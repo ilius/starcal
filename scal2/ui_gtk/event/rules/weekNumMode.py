@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 from scal2 import core
 from scal2.locale_man import tr as _
-
 from scal2 import event_lib
-import gtk
-from gtk import gdk
+
+from scal2.ui_gtk import *
 
 class RuleWidget(gtk.ComboBox):
     def __init__(self, rule):
@@ -15,7 +14,7 @@ class RuleWidget(gtk.ComboBox):
         gtk.ComboBox.__init__(self, ls)
         ###
         cell = gtk.CellRendererText()
-        self.pack_start(cell, True)
+        pack(self, cell, True)
         self.add_attribute(cell, 'text', 0)
         ###
         self.append_text(_('Every Week'))

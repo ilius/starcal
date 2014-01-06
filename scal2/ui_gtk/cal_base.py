@@ -22,9 +22,7 @@ from time import time
 from scal2 import core
 from scal2 import ui
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk import listener
 from scal2.ui_gtk.drawing import newTextLayout
 from scal2.ui_gtk.color_utils import rgbToGdkColor

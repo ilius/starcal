@@ -24,8 +24,7 @@ from scal2 import locale_man
 from scal2.locale_man import tr as _
 from pray_times_backend import timeNames, methodsList
 
-import gtk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.app_info import popenFile
 
 buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter())
@@ -74,11 +73,11 @@ class LocationDialog(gtk.Dialog):
         self.okB = okB
         ###############
         hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Search Cities:')), 0, 0)
+        pack(hbox, gtk.Label(_('Search Cities:')))
         entry = gtk.Entry()
-        hbox.pack_start(entry, 1, 1)
+        pack(hbox, entry, 1, 1)
         entry.connect('changed', self.entry_changed)
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(self.vbox, hbox)
         ######################
         treev = gtk.TreeView()
         treev.set_headers_clickable(False)
@@ -88,7 +87,7 @@ class LocationDialog(gtk.Dialog):
         swin = gtk.ScrolledWindow()
         swin.add(treev)
         swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.vbox.pack_start(swin, 1, 1)
+        pack(self.vbox, swin, 1, 1)
         self.treev = treev
         self.trees = trees
         treev.connect('cursor-changed', self.treev_cursor_changed)
@@ -115,17 +114,17 @@ class LocationDialog(gtk.Dialog):
         #####
         hbox = gtk.HBox()
         label = gtk.Label(_('Name:'))
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         group.add_widget(label)
         label.set_alignment(0, 0.5)
         entry = gtk.Entry()
-        hbox.pack_start(entry, 1, 1)
-        vbox.pack_start(hbox, 0, 0)
+        pack(hbox, entry, 1, 1)
+        pack(vbox, hbox)
         self.entry_edit_name = entry
         ####
         hbox = gtk.HBox()
         label = gtk.Label(_('Latitude:'))
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         group.add_widget(label)
         label.set_alignment(0, 0.5)
         spin = gtk.SpinButton()
@@ -133,13 +132,13 @@ class LocationDialog(gtk.Dialog):
         spin.set_range(-180, 180)
         spin.set_digits(3)
         spin.set_direction(gtk.TEXT_DIR_LTR)
-        hbox.pack_start(spin, 0, 0)
-        vbox.pack_start(hbox, 0, 0)
+        pack(hbox, spin)
+        pack(vbox, hbox)
         self.spin_lat = spin
         ####
         hbox = gtk.HBox()
         label = gtk.Label(_('Longitude:'))
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         group.add_widget(label)
         label.set_alignment(0, 0.5)
         spin = gtk.SpinButton()
@@ -147,23 +146,23 @@ class LocationDialog(gtk.Dialog):
         spin.set_range(-180, 180)
         spin.set_digits(3)
         spin.set_direction(gtk.TEXT_DIR_LTR)
-        hbox.pack_start(spin, 0, 0)
-        vbox.pack_start(hbox, 0, 0)
+        pack(hbox, spin)
+        pack(vbox, hbox)
         self.spin_lng = spin
         ####
         hbox = gtk.HBox()
         self.lowerLabel = gtk.Label('')
-        hbox.pack_start(self.lowerLabel, 1, 1)
+        pack(hbox, self.lowerLabel, 1, 1)
         self.lowerLabel.set_alignment(0, 0.5)
         button = gtk.Button(_('Calculate Nearest City'))
         button.connect('clicked', self.calc_clicked)
-        hbox.pack_start(button, 0, 0)
-        vbox.pack_start(hbox, 0, 0)
+        pack(hbox, button)
+        pack(vbox, hbox)
         ####
         vbox.set_sensitive(False)
         frame.add(vbox)
         self.vbox_edit = vbox
-        self.vbox.pack_start(frame, 0, 0)
+        pack(self.vbox, frame)
         ###
         self.vbox.show_all()
         #########
@@ -270,21 +269,21 @@ class TextPlugUI:
         label = gtk.Label(_('Location'))
         group.add_widget(label)
         label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.locButton = LocationButton(self.cityData, self.locName, self.ptObj.lat, self.ptObj.lng)
-        hbox.pack_start(self.locButton, 0, 0)
-        self.confDialog.vbox.pack_start(hbox, 0, 0)
+        pack(hbox, self.locButton)
+        pack(self.confDialog.vbox, hbox)
         ###
         hbox = gtk.HBox()
         label = gtk.Label(_('Calculation Method'))
         group.add_widget(label)
         label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.methodCombo = gtk.combo_box_new_text()
         for methodObj in methodsList:
             self.methodCombo.append_text(_(methodObj.desc))
-        hbox.pack_start(self.methodCombo, 0, 0)
-        self.confDialog.vbox.pack_start(hbox, 0, 0)
+        pack(hbox, self.methodCombo)
+        pack(self.confDialog.vbox, hbox)
         #######
         treev = gtk.TreeView()
         treev.set_headers_clickable(False)
@@ -310,22 +309,22 @@ class TextPlugUI:
             trees.append([True, _(name.capitalize()), name])
         frame = gtk.Frame(_('Shown Times'))
         frame.add(treev)
-        self.confDialog.vbox.pack_start(frame, 0, 0)
+        pack(self.confDialog.vbox, frame)
         ######
         hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Imsak')), 0, 0)
+        pack(hbox, gtk.Label(_('Imsak')))
         spin = gtk.SpinButton()
         spin.set_increments(1, 5)
         spin.set_range(0, 99)
         spin.set_digits(0)
         spin.set_direction(gtk.TEXT_DIR_LTR)
         self.imsakSpin = spin
-        hbox.pack_start(spin, 0, 0)
-        hbox.pack_start(gtk.Label(' '+_('minutes before fajr')), 0, 0)
-        self.confDialog.vbox.pack_start(hbox, 0, 0)
+        pack(hbox, spin)
+        pack(hbox, gtk.Label(' '+_('minutes before fajr')))
+        pack(self.confDialog.vbox, hbox)
         ######
         hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Seperator')), 0, 0)
+        pack(hbox, gtk.Label(_('Seperator')))
         textview = gtk.TextView()
         textview.set_wrap_mode(gtk.WRAP_CHAR)
         if locale_man.rtl:
@@ -335,8 +334,8 @@ class TextPlugUI:
         frame = gtk.Frame()
         frame.set_border_width(4)
         frame.add(textview)
-        hbox.pack_start(frame, 1, 1)
-        self.confDialog.vbox.pack_start(hbox, 0, 0)
+        pack(hbox, frame, 1, 1)
+        pack(self.confDialog.vbox, hbox)
         ######
         hbox = gtk.HBox()
         frame = gtk.Frame()
@@ -355,13 +354,13 @@ class TextPlugUI:
         hbox2 = gtk.HBox()
         self.preAzanEnableCheck.box = hbox2
         self.preAzanEnableCheck.connect('clicked', lambda w: w.box.set_sensitive(w.get_active()))
-        hbox1.pack_start(self.preAzanEnableCheck, 0, 0)
-        hbox2.pack_start(gtk.Label('  '), 0, 0)
+        pack(hbox1, self.preAzanEnableCheck)
+        pack(hbox2, gtk.Label('  '))
         self.preAzanFileButton = gtk.FileChooserButton(_('Pre-Azan Sound'))
         self.preAzanFileButton.set_local_only(True)
         #sgroupFcb.add_widget(self.preAzanFileButton)
-        hbox2.pack_start(self.preAzanFileButton, 1, 1)
-        hbox2.pack_start(gtk.Label('  '), 0, 0)
+        pack(hbox2, self.preAzanFileButton, 1, 1)
+        pack(hbox2, gtk.Label('  '))
         ##
         spin = gtk.SpinButton()
         spin.set_increments(1, 5)
@@ -369,12 +368,12 @@ class TextPlugUI:
         spin.set_digits(2)
         spin.set_direction(gtk.TEXT_DIR_LTR)
         self.preAzanMinutesSpin = spin
-        hbox2.pack_start(spin, 0, 0)
+        pack(hbox2, spin)
         ##
-        hbox2.pack_start(gtk.Label('  '), 0, 0)
-        hbox2.pack_start(gtk.Label(_('minutes before azan')), 0, 0)
-        hbox1.pack_start(hbox2, 1, 1)
-        vboxFrame.pack_start(hbox1, 0, 0)
+        pack(hbox2, gtk.Label('  '))
+        pack(hbox2, gtk.Label(_('minutes before azan')))
+        pack(hbox1, hbox2, 1, 1)
+        pack(vboxFrame, hbox1)
         #####
         hbox1 = gtk.HBox()
         self.azanEnableCheck = gtk.CheckButton(_('Play Azan Sound'))
@@ -382,20 +381,20 @@ class TextPlugUI:
         hbox2 = gtk.HBox()
         self.azanEnableCheck.box = hbox2
         self.azanEnableCheck.connect('clicked', lambda w: w.box.set_sensitive(w.get_active()))
-        hbox1.pack_start(self.azanEnableCheck, 0, 0)
-        hbox2.pack_start(gtk.Label('  '), 0, 0)
+        pack(hbox1, self.azanEnableCheck)
+        pack(hbox2, gtk.Label('  '))
         self.azanFileButton = gtk.FileChooserButton(_('Azan Sound'))
         self.azanFileButton.set_local_only(True)
         #sgroupFcb.add_widget(self.azanFileButton)
-        hbox2.pack_start(self.azanFileButton, 1, 1)
-        #hbox2.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox2, self.azanFileButton, 1, 1)
+        #pack(hbox2, gtk.Label(''), 1, 1)
         ##
-        hbox1.pack_start(hbox2, 1, 1)
-        vboxFrame.pack_start(hbox1, 0, 0)
+        pack(hbox1, hbox2, 1, 1)
+        pack(vboxFrame, hbox1)
         #####
         frame.add(vboxFrame)
-        hbox.pack_start(frame, 1, 1)
-        self.confDialog.vbox.pack_start(hbox, 0, 0)
+        pack(hbox, frame, 1, 1)
+        pack(self.confDialog.vbox, hbox)
         ######
         self.updateConfWidget()
         ###

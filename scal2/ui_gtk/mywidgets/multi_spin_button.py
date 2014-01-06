@@ -21,23 +21,17 @@ import sys, os
 from time import localtime
 from time import time as now
 
-
 from scal2.utils import toUnicode, toStr, strFindNth, iceil, ifloor, printError
 from scal2.time_utils import getEpochFromJhms
-
+from scal2.cal_types import to_jd, jd_to, convert
 from scal2 import locale_man
 from scal2.locale_man import tr as _
-
-from scal2.cal_types import to_jd, jd_to, convert
-
 from scal2.mywidgets.multi_spin import *
-
 from scal2 import ui
 
 from gobject import timeout_add
-import gtk
-from gtk import gdk
 
+from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk import gtk_ud as ud
 
@@ -459,11 +453,11 @@ class MultiSpinOptionBox(gtk.HBox):
         if not is_hbox:
             gtk.HBox.__init__(self, spacing=spacing)
         self.spin = MultiSpinButton(sep, fields, **kwargs)
-        self.pack_start(self.spin, 1, 1)
+        pack(self, self.spin, 1, 1)
         self.hist_size = hist_size
         self.option = gtk.Button()
         self.option.add(gtk.Arrow(gtk.ARROW_DOWN, gtk.SHADOW_IN))
-        self.pack_start(self.option, 1, 1)
+        pack(self, self.option, 1, 1)
         self.menu = gtk.Menu()
         #self.menu.show()
         self.option.connect('button-press-event', self.option_pressed)
@@ -579,7 +573,7 @@ if __name__=='__main__':
     d = gtk.Dialog()
     btn = getFloatWidget()
     btn.set_editable(True)
-    d.vbox.pack_start(btn, 1, 1)
+    pack(d.vbox, btn, 1, 1)
     d.vbox.show_all()
     d.run()
     print(btn.get_value())

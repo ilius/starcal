@@ -3,12 +3,11 @@
 
 from scal2 import core
 from scal2.locale_man import tr as _
-
 from scal2 import event_lib
-import gtk
-from gtk import gdk
 
+from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import set_tooltip
+
 
 class RuleWidget(gtk.HBox):
     def __init__(self, rule):
@@ -21,7 +20,7 @@ class RuleWidget(gtk.HBox):
         for i in range(12):
             b = gtk.ToggleButton(_(i+1))
             set_tooltip(b, core.getMonthName(mode, i+1))
-            self.pack_start(b, 0, 0)
+            pack(self, b)
             self.buttons.append(b)
     def updateWidget(self):
         monthList = self.rule.getValuesPlain()

@@ -1,7 +1,7 @@
+from scal2 import core
 from scal2.locale_man import tr as _
 
-import gtk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.event.groups.vcsEpochBase import VcsEpochBaseGroupWidget as BaseGroupWidget
 
 
@@ -13,22 +13,22 @@ class GroupWidget(BaseGroupWidget):
         label = gtk.Label(_('Commit Description'))
         label.set_alignment(0, 0.5)
         self.sizeGroup.add_widget(label)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         ##
         self.statCheck = gtk.CheckButton(_('Stat'))
-        hbox.pack_start(self.statCheck, 0, 0)
+        pack(hbox, self.statCheck)
         ##
-        hbox.pack_start(gtk.Label('   '), 0, 0)
+        pack(hbox, gtk.Label('   '))
         ##
         self.authorCheck = gtk.CheckButton(_('Author'))
-        hbox.pack_start(self.authorCheck, 0, 0)
+        pack(hbox, self.authorCheck)
         ##
-        hbox.pack_start(gtk.Label('   '), 0, 0)
+        pack(hbox, gtk.Label('   '))
         ##
         self.shortHashCheck = gtk.CheckButton(_('Short Hash'))
-        hbox.pack_start(self.shortHashCheck, 0, 0)
+        pack(hbox, self.shortHashCheck)
         ##
-        self.pack_start(hbox, 0, 0)
+        pack(self, hbox)
     def updateWidget(self):
         BaseGroupWidget.updateWidget(self)
         self.authorCheck.set_active(self.group.showAuthor)

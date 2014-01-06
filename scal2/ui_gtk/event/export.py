@@ -2,13 +2,12 @@ from os.path import join, split, splitext
 
 from scal2.path import deskDir
 from scal2.json_utils import *
-from scal2.locale_man import tr as _
 from scal2 import core
 from scal2.core import DATE_GREG
+from scal2.locale_man import tr as _
 from scal2 import ui
 
-import gtk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import dialog_add_button
 from scal2.ui_gtk.event.common import GroupsTreeCheckList
 
@@ -31,9 +30,9 @@ class SingleGroupExportDialog(gtk.Dialog):
         self.radioJsonCompact = gtk.RadioButton(label=_('Compact JSON (StarCalendar)'), group=self.radioIcs)
         self.radioJsonPretty = gtk.RadioButton(label=_('Pretty JSON (StarCalendar)'), group=self.radioIcs)
         ##
-        radioBox.pack_start(self.radioJsonCompact, 0, 0)
-        radioBox.pack_start(self.radioJsonPretty, 0, 0)
-        radioBox.pack_start(self.radioIcs, 0, 0)
+        pack(radioBox, self.radioJsonCompact)
+        pack(radioBox, self.radioJsonPretty)
+        pack(radioBox, self.radioIcs)
         ##
         self.radioJsonCompact.set_active(True)
         self.radioIcs.connect('clicked', self.formatRadioChanged)
@@ -41,16 +40,16 @@ class SingleGroupExportDialog(gtk.Dialog):
         self.radioJsonPretty.connect('clicked', self.formatRadioChanged)
         ##
         frame.add(radioBox)
-        hbox.pack_start(frame, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(hbox, frame)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(self.vbox, hbox)
         ########
         self.fcw = gtk.FileChooserWidget(action=gtk.FILE_CHOOSER_ACTION_SAVE)
         try:
             self.fcw.set_current_folder(deskDir)
         except AttributeError:## PyGTK < 2.4
             pass
-        self.vbox.pack_start(self.fcw, 1, 1)
+        pack(self.vbox, self.fcw, 1, 1)
         ####
         self.vbox.show_all()
         self.formatRadioChanged()
@@ -103,9 +102,9 @@ class MultiGroupExportDialog(gtk.Dialog):
         self.radioJsonCompact = gtk.RadioButton(label=_('Compact JSON (StarCalendar)'), group=self.radioIcs)
         self.radioJsonPretty = gtk.RadioButton(label=_('Pretty JSON (StarCalendar)'), group=self.radioIcs)
         ##
-        radioBox.pack_start(self.radioJsonCompact, 0, 0)
-        radioBox.pack_start(self.radioJsonPretty, 0, 0)
-        radioBox.pack_start(self.radioIcs, 0, 0)
+        pack(radioBox, self.radioJsonCompact)
+        pack(radioBox, self.radioJsonPretty)
+        pack(radioBox, self.radioIcs)
         ##
         self.radioJsonCompact.set_active(True)
         self.radioIcs.connect('clicked', self.formatRadioChanged)
@@ -113,22 +112,22 @@ class MultiGroupExportDialog(gtk.Dialog):
         self.radioJsonPretty.connect('clicked', self.formatRadioChanged)
         ##
         frame.add(radioBox)
-        hbox.pack_start(frame, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(hbox, frame)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(self.vbox, hbox)
         ########
         hbox = gtk.HBox(spacing=2)
-        hbox.pack_start(gtk.Label(_('File')+':'), 0, 0)
+        pack(hbox, gtk.Label(_('File')+':'))
         self.fpathEntry = gtk.Entry()
         self.fpathEntry.set_text(join(deskDir, 'events-%.4d-%.2d-%.2d'%core.getSysDate(DATE_GREG)))
-        hbox.pack_start(self.fpathEntry, 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(hbox, self.fpathEntry, 1, 1)
+        pack(self.vbox, hbox)
         ####
         self.groupSelect = GroupsTreeCheckList()
         swin = gtk.ScrolledWindow()
         swin.add(self.groupSelect)
         swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        self.vbox.pack_start(swin, 1, 1)
+        pack(self.vbox, swin, 1, 1)
         ####
         self.vbox.show_all()
         self.formatRadioChanged()

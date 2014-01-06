@@ -6,11 +6,8 @@ from scal2 import ui
 
 from gobject import timeout_add
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
-from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.utils import set_tooltip, myRaise
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 from scal2.ui_gtk import gtk_ud as ud
@@ -75,27 +72,27 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
         optionsWidget = gtk.VBox()
         ##
         hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Style')), 0, 0)
+        pack(hbox, gtk.Label(_('Style')))
         self.styleCombo = gtk.combo_box_new_text()
         for item in self.styleList:
             self.styleCombo.append_text(_(item))
-        hbox.pack_start(self.styleCombo, 0, 0)
-        optionsWidget.pack_start(hbox, 0, 0)
+        pack(hbox, self.styleCombo)
+        pack(optionsWidget, hbox)
         ##
         hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Icon Size')), 0, 0)
+        pack(hbox, gtk.Label(_('Icon Size')))
         self.iconSizeCombo = gtk.combo_box_new_text()
         for (i, item) in enumerate(ud.iconSizeList):
             self.iconSizeCombo.append_text(_(item[0]))
-        hbox.pack_start(self.iconSizeCombo, 0, 0)
-        optionsWidget.pack_start(hbox, 0, 0)
+        pack(hbox, self.iconSizeCombo)
+        pack(optionsWidget, hbox)
         self.iconSizeHbox = hbox
         ##
         hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Buttons Border')), 0, 0)
+        pack(hbox, gtk.Label(_('Buttons Border')))
         self.buttonsBorderSpin = IntSpinButton(0, 99)
-        hbox.pack_start(self.buttonsBorderSpin, 0, 0)
-        optionsWidget.pack_start(hbox, 0, 0)
+        pack(hbox, self.buttonsBorderSpin)
+        pack(optionsWidget, hbox)
         ##
         self.initVars(optionsWidget=optionsWidget)
         self.iconSizeCombo.connect('changed', self.iconSizeComboChanged)

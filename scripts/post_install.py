@@ -13,13 +13,13 @@ import gtk
 d = gtk.Dialog()
 okB = d.add_button(gtk.STOCK_OK, 1)
 okB.connect('clicked', lambda obj: d.hide())
-d.vbox.pack_start(gtk.Label('StarCalendar post-install configuration'), 0, 0)
+pack(d.vbox, gtk.Label('StarCalendar post-install configuration'))
 d.set_title('%s postinst'%pkgName)
 
 
 check3 = gtk.CheckButton('Copy shortcut(x-desktop) file to Desktop')
 check3.set_active(True)
-d.vbox.pack_start(check3, 0, 0)
+pack(d.vbox, check3)
 
 d.vbox.show_all()
 d.set_keep_above(True)

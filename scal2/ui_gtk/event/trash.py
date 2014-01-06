@@ -1,8 +1,8 @@
+from scal2 import core
 from scal2.locale_man import tr as _
 from scal2 import ui
 
-import gtk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import dialog_add_button
 from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 
@@ -26,21 +26,21 @@ class TrashEditorDialog(gtk.Dialog):
         hbox = gtk.HBox()
         label = gtk.Label(_('Title'))
         label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         sizeGroup.add_widget(label)
         self.titleEntry = gtk.Entry()
-        hbox.pack_start(self.titleEntry, 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(hbox, self.titleEntry, 1, 1)
+        pack(self.vbox, hbox)
         ####
         hbox = gtk.HBox()
         label = gtk.Label(_('Icon'))
         label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         sizeGroup.add_widget(label)
         self.iconSelect = IconSelectButton()
-        hbox.pack_start(self.iconSelect, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(hbox, self.iconSelect)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(self.vbox, hbox)
         ####
         self.vbox.show_all()
         self.updateWidget()

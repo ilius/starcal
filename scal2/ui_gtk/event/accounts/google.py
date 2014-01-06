@@ -2,9 +2,7 @@
 
 from scal2.locale_man import tr as _
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.event.accounts import common
 
 class AccountWidget(common.AccountWidget):
@@ -14,11 +12,11 @@ class AccountWidget(common.AccountWidget):
         hbox = gtk.HBox()
         label = gtk.Label(_('Email'))
         label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.sizeGroup.add_widget(label)
         self.emailEntry = gtk.Entry()
-        hbox.pack_start(self.emailEntry, 1, 1)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, self.emailEntry, 1, 1)
+        pack(self, hbox)
     def updateWidget(self):
         common.AccountWidget.updateWidget(self)
         self.emailEntry.set_text(self.account.email)

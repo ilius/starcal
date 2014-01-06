@@ -19,21 +19,17 @@
 
 import os, sys
 
-from scal2.locale_man import tr as _
-
-from scal2.cal_types import calTypes
+from scal2.cal_types import calTypes, convert
 from scal2 import core
-from scal2.core import convert, getMonthName
-
+from scal2.core import getMonthName
+from scal2.locale_man import tr as _
 from scal2 import ui
 
-import gtk, gobject
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
+from scal2.ui_gtk.utils import openWindow, dialog_add_button, DateTypeCombo
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButtonOption
 from scal2.ui_gtk.mywidgets.ymd import YearMonthDayBox
-from scal2.ui_gtk.utils import openWindow, dialog_add_button, DateTypeCombo
 
 
 
@@ -55,31 +51,31 @@ class SelectDateDialog(gtk.Dialog):
         self.connect('drag-data-received', self.dragRec)
         ######
         hb0 = gtk.HBox(spacing=4)
-        hb0.pack_start(gtk.Label(_('Date Mode')), 0, 0)
+        pack(hb0, gtk.Label(_('Date Mode')))
         combo = DateTypeCombo()
         combo.set_active(self.mode)
-        hb0.pack_start(combo, 0, 0)
-        self.vbox.pack_start(hb0, 0, 0)
+        pack(hb0, combo)
+        pack(self.vbox, hb0)
         #######################
         hbox = gtk.HBox(spacing=5)
         rb1 = gtk.RadioButton()
         rb1.num = 1
-        hbox.pack_start(rb1, 0, 0)
+        pack(hbox, rb1)
         self.ymdBox = YearMonthDayBox()
-        hbox.pack_start(self.ymdBox, 0, 0)
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(hbox, self.ymdBox)
+        pack(self.vbox, hbox)
         ########
         hb2 = gtk.HBox(spacing=4)
-        hb2.pack_start(gtk.Label('yyyy/mm/dd'), 0, 0)
+        pack(hb2, gtk.Label('yyyy/mm/dd'))
         dateInput = DateButtonOption(hist_size=16)
-        hb2.pack_start(dateInput, 0, 0)
+        pack(hb2, dateInput)
         rb2 = gtk.RadioButton()
         rb2.num = 2
         rb2.set_group(rb1)
         hb2i = gtk.HBox(spacing=5)
-        hb2i.pack_start(rb2, 0, 0)
-        hb2i.pack_start(hb2, 0, 0)
-        self.vbox.pack_start(hb2i, 0, 0)
+        pack(hb2i, rb2)
+        pack(hb2i, hb2)
+        pack(self.vbox, hb2i)
         #######
         dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), 2, self.hideMe)
         dialog_add_button(self, gtk.STOCK_OK, _('_OK'), 1, self.ok)

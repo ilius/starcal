@@ -23,32 +23,26 @@ import os, sys, shlex, thread
 from os.path import join, dirname, split, splitext
 
 from scal2.path import *
-
 from scal2 import core
 from scal2.core import myRaise
-
 from scal2 import locale_man
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl
-
 from scal2 import event_lib
 from scal2 import ui
 
-import gtk
-from gtk import gdk
-
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import set_tooltip, dialog_add_button, confirm, showError
 from scal2.ui_gtk.utils import toolButtonFromStock, labelImageMenuItem, labelStockMenuItem
 from scal2.ui_gtk.utils import pixbufFromFile, rectangleContainsPoint, getStyleColor
-
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.mywidgets.dialog import MyDialog
 from scal2.ui_gtk.event import common
-from scal2.ui_gtk.event.common import EventEditorDialog, addNewEvent, GroupEditorDialog, confirmEventTrash
+from scal2.ui_gtk.event.common import EventEditorDialog, GroupEditorDialog
+from scal2.ui_gtk.event.common import addNewEvent, confirmEventTrash
 from scal2.ui_gtk.event.trash import TrashEditorDialog
 from scal2.ui_gtk.event.export import SingleGroupExportDialog, MultiGroupExportDialog
 from scal2.ui_gtk.event.import_event import EventsImportWindow
@@ -216,7 +210,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         #testMenu.append(item)
         ####
         menubar.show_all()
-        self.vbox.pack_start(menubar, 0, 0)
+        pack(self.vbox, menubar)
         #######
         treeBox = gtk.HBox()
         #####
@@ -234,7 +228,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         swin = gtk.ScrolledWindow()
         swin.add(self.treev)
         swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        treeBox.pack_start(swin, 1, 1)
+        pack(treeBox, swin, 1, 1)
         ###
         toolbar = gtk.Toolbar()
         toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
@@ -255,9 +249,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         tb.connect('clicked', self.duplicateSelectedObj)
         toolbar.insert(tb, -1)
         ###
-        treeBox.pack_start(toolbar, 0, 0)
+        pack(treeBox, toolbar)
         #####
-        self.vbox.pack_start(treeBox, 1, 1)
+        pack(self.vbox, treeBox, 1, 1)
         #######
         self.trees = gtk.TreeStore(int, gdk.Pixbuf, str, str)
         ## event: eid,  event_icon,   event_summary, event_description
@@ -267,7 +261,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         ###
         col = gtk.TreeViewColumn()
         cell = gtk.CellRendererPixbuf()
-        col.pack_start(cell)
+        pack(col, cell)
         col.add_attribute(cell, 'pixbuf', 1)
         self.treev.append_column(col)
         ###
@@ -294,7 +288,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         self.sbar = gtk.Statusbar()
         self.sbar.set_direction(gtk.TEXT_DIR_LTR)
         #self.sbar.set_has_resize_grip(False)
-        self.vbox.pack_start(self.sbar, 0, 0)
+        pack(self.vbox, self.sbar)
         #####
         self.vbox.show_all()
     def canPasteToGroup(self, group):

@@ -20,19 +20,17 @@ from os.path import join
 from math import pi
 
 from scal2.path import *
-
+from scal2 import core
 from scal2.locale_man import cutText, rtl
 from scal2 import ui
+
+from scal2.ui_gtk import *
 from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
 
 
-import gobject, pango, cairo
-import gtk
-from gtk import gdk
-
 if not ui.fontCustom:
-    ui.fontCustom = ui.fontDefault
+    ui.fontCustom = ui.fontDefault[:]
 
 def setColor(cr, color):
     ## arguments to set_source_rgb and set_source_rgba must be between 0 and 1

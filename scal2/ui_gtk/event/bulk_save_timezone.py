@@ -19,13 +19,11 @@
 
 import pytz
 
+from scal2 import core
 from scal2.locale_man import tr as _
-
 from scal2 import ui
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import dialog_add_button, TimeZoneComboBoxEntry
 
 class BulkSaveTimeZoneDialog(gtk.Dialog):
@@ -49,20 +47,20 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
             '</small>',
         ]))
         label.set_line_wrap(True)
-        self.vbox.pack_start(label, 1, 1)
+        pack(self.vbox, label, 1, 1)
         ####
         hbox = gtk.HBox()
         self.timeZoneInput = TimeZoneComboBoxEntry()
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        hbox.pack_start(self.timeZoneInput, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(hbox, self.timeZoneInput)
+        pack(hbox, gtk.Label(''), 1, 1)
         hbox.set_border_width(20)
-        self.vbox.pack_start(hbox, 1, 1)
+        pack(self.vbox, hbox, 1, 1)
         ####
         self.errorLabel = gtk.Label()
-        self.vbox.pack_start(self.errorLabel, 1, 1)
+        pack(self.vbox, self.errorLabel, 1, 1)
         ####
-        self.vbox.pack_start(gtk.Label(''), 1, 1)
+        pack(self.vbox, gtk.Label(''), 1, 1)
         ####
         self.vbox.show_all()
     def onResponse(self, dialog, responseId):

@@ -17,31 +17,21 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-import os, sys
-from os.path import join, dirname, split, splitext
-
 from scal2.path import *
-
 from scal2.cal_types import calTypes
 from scal2 import core
-from scal2.core import myRaise, jd_to_primary
-
+from scal2.core import jd_to_primary
 from scal2.locale_man import tr as _
-from scal2.locale_man import rtl
-
 from scal2 import event_lib
 from scal2 import ui
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import pixbufFromFile
 from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateTimeButton
 from scal2.ui_gtk.mywidgets.dialog import MyDialog
 from scal2.ui_gtk import gtk_ud as ud
-
 from scal2.ui_gtk.event.common import SingleGroupComboBox, EventEditorDialog
 
 
@@ -62,14 +52,14 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         frame = TextFrame()
         frame.set_label(_('Text'))
         frame.set_border_width(5)
-        self.vbox.pack_start(frame, 0, 0)
+        pack(self.vbox, frame)
         self.textInput = frame
         ##
         hbox = gtk.HBox()
         self.textCSensCheck = gtk.CheckButton(_('Case Sensitive'))
         self.textCSensCheck.set_active(False) ## FIXME
-        hbox.pack_start(self.textCSensCheck, 0, 0)
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(hbox, self.textCSensCheck)
+        pack(self.vbox, hbox)
         ######
         jd = core.getCurrentJd()
         year, month, day = jd_to_primary(jd)
@@ -84,27 +74,27 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         ##
         self.timeFromCheck = gtk.CheckButton(_('From'))
         sgroup.add_widget(self.timeFromCheck)
-        hboxIn.pack_start(self.timeFromCheck, 0, 0)
-        hboxIn.pack_start(gtk.Label('  '), 0, 0)
+        pack(hboxIn, self.timeFromCheck)
+        pack(hboxIn, gtk.Label('  '))
         ##
         self.timeFromInput = DateTimeButton()
         self.timeFromInput.set_value(((year, 1, 1), (0, 0, 0)))
-        hboxIn.pack_start(self.timeFromInput, 0, 0)
+        pack(hboxIn, self.timeFromInput)
         ##
-        vboxIn.pack_start(hboxIn, 0, 0)
+        pack(vboxIn, hboxIn)
         ####
         hboxIn = gtk.HBox()
         ##
         self.timeToCheck = gtk.CheckButton(_('To'))
         sgroup.add_widget(self.timeToCheck)
-        hboxIn.pack_start(self.timeToCheck, 0, 0)
-        hboxIn.pack_start(gtk.Label('  '), 0, 0)
+        pack(hboxIn, self.timeToCheck)
+        pack(hboxIn, gtk.Label('  '))
         ##
         self.timeToInput = DateTimeButton()
         self.timeToInput.set_value(((year+1, 1, 1), (0, 0, 0)))
-        hboxIn.pack_start(self.timeToInput, 0, 0)
+        pack(hboxIn, self.timeToInput)
         ##
-        vboxIn.pack_start(hboxIn, 0, 0)
+        pack(vboxIn, hboxIn)
         ##
         self.timeFromCheck.connect('clicked', self.updateTimeFromSensitive)
         self.timeToCheck.connect('clicked', self.updateTimeToSensitive)
@@ -113,51 +103,51 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         ####
         vboxIn.set_border_width(5)
         frame.add(vboxIn)
-        hbox.pack_start(frame, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(hbox, frame)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(self.vbox, hbox)
         ######
         hbox = gtk.HBox()
         hbox.set_border_width(5)
         self.modifiedFromCheck = gtk.CheckButton(_('Modified From'))
-        hbox.pack_start(self.modifiedFromCheck, 0, 0)
-        hbox.pack_start(gtk.Label('  '), 0, 0)
+        pack(hbox, self.modifiedFromCheck)
+        pack(hbox, gtk.Label('  '))
         self.modifiedFromInput = DateTimeButton()
         self.modifiedFromInput.set_value(((year, 1, 1), (0, 0, 0)))
-        hbox.pack_start(self.modifiedFromInput, 0, 0)
+        pack(hbox, self.modifiedFromInput)
         ##
         self.modifiedFromCheck.connect('clicked', self.updateModifiedFromSensitive)
         self.updateModifiedFromSensitive()
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(self.vbox, hbox)
         ######
         hbox = gtk.HBox()
         hbox.set_border_width(5)
         self.typeCheck = gtk.CheckButton(_('Event Type'))
-        hbox.pack_start(self.typeCheck, 0, 0)
-        hbox.pack_start(gtk.Label('  '), 0, 0)
+        pack(hbox, self.typeCheck)
+        pack(hbox, gtk.Label('  '))
         ##
         combo = gtk.combo_box_new_text()
         for cls in event_lib.classes.event:
             combo.append_text(cls.desc)
         combo.set_active(0)
-        hbox.pack_start(combo, 0, 0)
+        pack(hbox, combo)
         self.typeCombo = combo
         ##
         self.typeCheck.connect('clicked', self.updateTypeSensitive)
         self.updateTypeSensitive()
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(self.vbox, hbox)
         ######
         hbox = gtk.HBox()
         hbox.set_border_width(5)
         self.groupCheck = gtk.CheckButton(_('Group'))
-        hbox.pack_start(self.groupCheck, 0, 0)
-        hbox.pack_start(gtk.Label('  '), 0, 0)
+        pack(hbox, self.groupCheck)
+        pack(hbox, gtk.Label('  '))
         self.groupCombo = SingleGroupComboBox()
-        hbox.pack_start(self.groupCombo, 0, 0)
+        pack(hbox, self.groupCombo)
         ##
         self.groupCheck.connect('clicked', self.updateGroupSensitive)
         self.updateGroupSensitive()
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(self.vbox, hbox)
         ######
         bbox = gtk.HButtonBox()
         bbox.set_layout(gtk.BUTTONBOX_START)
@@ -167,7 +157,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         searchButton.set_image(gtk.image_new_from_stock(gtk.STOCK_FIND, gtk.ICON_SIZE_BUTTON))
         searchButton.connect('clicked', self.searchClicked)
         bbox.add(searchButton)
-        self.vbox.pack_start(bbox, 0, 0)
+        pack(self.vbox, bbox)
         ######
         treev = gtk.TreeView()
         trees = gtk.TreeStore(int, int, str, gdk.Pixbuf, str, str)
@@ -183,7 +173,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         ###
         self.colIcon = gtk.TreeViewColumn()
         cell = gtk.CellRendererPixbuf()
-        self.colIcon.pack_start(cell)
+        pack(self.colIcon, cell)
         self.colIcon.add_attribute(cell, 'pixbuf', 3)
         #self.colIcon.set_sort_column_id(3)## FIXME
         treev.append_column(self.colIcon)
@@ -209,42 +199,42 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         ###
         topHbox = gtk.HBox()
         self.resultLabel = gtk.Label('')
-        topHbox.pack_start(self.resultLabel, 0, 0)
-        topHbox.pack_start(gtk.Label(''), 1, 1)
-        vbox.pack_start(topHbox, 0, 0)
+        pack(topHbox, self.resultLabel)
+        pack(topHbox, gtk.Label(''), 1, 1)
+        pack(vbox, topHbox)
         ####
         columnBox = gtk.HBox(spacing=5)
-        columnBox.pack_start(gtk.Label(_('Columns')+':    '), 0, 0)
+        pack(columnBox, gtk.Label(_('Columns')+':    '))
         ##
         check = gtk.CheckButton(_('Group'))
         check.set_active(True)
         check.connect('clicked', lambda w: self.colGroup.set_visible(w.get_active()))
-        columnBox.pack_start(check, 0, 0)
+        pack(columnBox, check)
         ##
         check = gtk.CheckButton(_('Icon'))
         check.set_active(True)
         check.connect('clicked', lambda w: self.colIcon.set_visible(w.get_active()))
-        columnBox.pack_start(check, 0, 0)
+        pack(columnBox, check)
         ##
         check = gtk.CheckButton(_('Summary'))
         check.set_active(True)
         check.connect('clicked', lambda w: self.colSummary.set_visible(w.get_active()))
-        columnBox.pack_start(check, 0, 0)
+        pack(columnBox, check)
         ##
         check = gtk.CheckButton(_('Description'))
         check.set_active(showDesc)
         check.connect('clicked', lambda w: self.colDesc.set_visible(w.get_active()))
-        columnBox.pack_start(check, 0, 0)
+        pack(columnBox, check)
         ##
-        vbox.pack_start(columnBox, 0, 0)
+        pack(vbox, columnBox)
         ####
-        vbox.pack_start(swin, 1, 1)
+        pack(vbox, swin, 1, 1)
         ##
         frame = gtk.Frame(_('Search Results'))
         frame.set_border_width(10)
         frame.add(vbox)
         ##
-        self.vbox.pack_start(frame, 1, 1)
+        pack(self.vbox, frame, 1, 1)
         ###
         bbox2 = gtk.HButtonBox()
         bbox2.set_layout(gtk.BUTTONBOX_END)
@@ -254,7 +244,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.IntegratedCalObj):
         closeButton.set_image(gtk.image_new_from_stock(gtk.STOCK_CLOSE, gtk.ICON_SIZE_BUTTON))
         closeButton.connect('clicked', self.closed)
         bbox2.add(closeButton)
-        self.vbox.pack_start(bbox2, 0, 0)
+        pack(self.vbox, bbox2)
         ######
         self.treev = treev
         self.trees = trees

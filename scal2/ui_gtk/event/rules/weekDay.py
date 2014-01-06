@@ -2,10 +2,9 @@
 # -*- coding: utf-8 -*-
 from scal2 import core
 from scal2.locale_man import tr as _
-
 from scal2 import event_lib
-import gtk
-from gtk import gdk
+
+from scal2.ui_gtk import *
 
 
 class RuleWidget(gtk.HBox):
@@ -17,7 +16,7 @@ class RuleWidget(gtk.HBox):
         ls = [gtk.ToggleButton(item) for item in core.weekDayNameAb]
         s = core.firstWeekDay
         for i in range(7):
-            self.pack_start(ls[(s+i)%7], 1, 1)
+            pack(self, ls[(s+i)%7], 1, 1)
         self.cbList = ls
         self.start = s
     def setStart(self, s):## not used, FIXME

@@ -2,8 +2,7 @@ from scal2.locale_man import tr as _
 from scal2 import event_lib
 from scal2 import ui
 
-import gtk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import dialog_add_button
 
 class AccountEditorDialog(gtk.Dialog):
@@ -23,10 +22,10 @@ class AccountEditorDialog(gtk.Dialog):
         combo = gtk.combo_box_new_text()
         for cls in event_lib.classes.account:
             combo.append_text(cls.desc)
-        hbox.pack_start(gtk.Label(_('Account Type')), 0, 0)
-        hbox.pack_start(combo, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(hbox, gtk.Label(_('Account Type')))
+        pack(hbox, combo)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(self.vbox, hbox)
         ####
         if self.account:
             self.isNew = False
@@ -57,7 +56,7 @@ class AccountEditorDialog(gtk.Dialog):
             account.title = cls.desc ## FIXME
         self.account = account
         self.activeWidget = account.makeWidget()
-        self.vbox.pack_start(self.activeWidget, 0, 0)
+        pack(self.vbox, self.activeWidget)
     def run(self):
         if self.activeWidget is None or self.account is None:
             return None

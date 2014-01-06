@@ -1,7 +1,9 @@
+from scal2 import core
+from scal2.locale_man import tr as _
+
+from scal2.ui_gtk import *
 from scal2.ui_gtk.event.groups.group import GroupWidget as NormalGroupWidget
 
-from scal2.locale_man import tr as _
-import gtk
 
 class GroupWidget(NormalGroupWidget):
     def __init__(self, group):
@@ -9,9 +11,9 @@ class GroupWidget(NormalGroupWidget):
         ####
         hbox = gtk.HBox()
         self.showSeperatedYmdInputsCheck = gtk.CheckButton(_('Show Seperated Inputs for Year, Month and Day'))
-        hbox.pack_start(self.showSeperatedYmdInputsCheck, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, self.showSeperatedYmdInputsCheck)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(self, hbox)
     def updateWidget(self):
         NormalGroupWidget.updateWidget(self)
         self.showSeperatedYmdInputsCheck.set_active(self.group.showSeperatedYmdInputs)

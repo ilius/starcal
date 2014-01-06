@@ -3,7 +3,8 @@ import sys
 from scal2.locale_man import popenDefaultLang
 
 import gio
-import gtk
+
+from scal2.ui_gtk import *
 
 
 def getDefaultAppCommand(fpath):

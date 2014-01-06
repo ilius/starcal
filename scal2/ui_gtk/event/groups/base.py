@@ -20,13 +20,11 @@
 from scal2 import core
 from scal2.locale_man import tr as _
 
-import gtk
-
+from scal2.ui_gtk import *
+from scal2.ui_gtk.utils import set_tooltip, DateTypeCombo
 from scal2.ui_gtk.mywidgets import MyColorButton, TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 from scal2.ui_gtk.mywidgets.icon import IconSelectButton
-
-from scal2.ui_gtk.utils import set_tooltip, DateTypeCombo
 from scal2.ui_gtk.event import common
 
 
@@ -40,98 +38,98 @@ class BaseGroupWidget(gtk.VBox):
         hbox = gtk.HBox()
         label = gtk.Label(_('Title'))
         label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.sizeGroup.add_widget(label)
         self.titleEntry = gtk.Entry()
-        hbox.pack_start(self.titleEntry, 1, 1)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, self.titleEntry, 1, 1)
+        pack(self, hbox)
         #####
         hbox = gtk.HBox()
         label = gtk.Label(_('Color'))
         label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.sizeGroup.add_widget(label)
         self.colorButton = MyColorButton()
         self.colorButton.set_use_alpha(True) ## FIXME
-        hbox.pack_start(self.colorButton, 0, 0)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, self.colorButton)
+        pack(self, hbox)
         #####
         hbox = gtk.HBox()
         label = gtk.Label(_('Default Icon'))## FIXME
         label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.sizeGroup.add_widget(label)
         self.iconSelect = IconSelectButton()
-        hbox.pack_start(self.iconSelect, 0, 0)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, self.iconSelect)
+        pack(self, hbox)
         #####
         hbox = gtk.HBox()
         label = gtk.Label(_('Default Calendar Type'))
         label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.sizeGroup.add_widget(label)
         combo = DateTypeCombo()
-        hbox.pack_start(combo, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, combo)
+        pack(hbox, gtk.Label(''), 1, 1)
         self.modeCombo = combo
-        self.pack_start(hbox, 0, 0)
+        pack(self, hbox)
         #####
         hbox = gtk.HBox()
         label = gtk.Label(_('Show in Calendar'))
         label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.sizeGroup.add_widget(label)
         self.showInDCalCheck = gtk.CheckButton(_('Day'))
         self.showInWCalCheck = gtk.CheckButton(_('Week'))
         self.showInMCalCheck = gtk.CheckButton(_('Month'))
-        hbox.pack_start(self.showInDCalCheck, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        hbox.pack_start(self.showInWCalCheck, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        hbox.pack_start(self.showInMCalCheck, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, self.showInDCalCheck)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(hbox, self.showInWCalCheck)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(hbox, self.showInMCalCheck)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(self, hbox)
         #####
         hbox = gtk.HBox()
         label = gtk.Label(_('Show in'))
         label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.sizeGroup.add_widget(label)
         self.showInTimeLineCheck = gtk.CheckButton(_('Time Line'))
         self.showInTrayCheck = gtk.CheckButton(_('Tray'))
-        hbox.pack_start(self.showInTimeLineCheck, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        hbox.pack_start(self.showInTrayCheck, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, self.showInTimeLineCheck)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(hbox, self.showInTrayCheck)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(self, hbox)
         #####
         hbox = gtk.HBox()
         label = gtk.Label(_('Event Cache Size'))
         label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.sizeGroup.add_widget(label)
         self.cacheSizeSpin = IntSpinButton(0, 9999)
-        hbox.pack_start(self.cacheSizeSpin, 0, 0)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, self.cacheSizeSpin)
+        pack(self, hbox)
         #####
         hbox = gtk.HBox()
         label = gtk.Label(_('Event Text Seperator'))
         label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.sizeGroup.add_widget(label)
         self.sepInput = TextFrame()
-        hbox.pack_start(self.sepInput, 1, 1)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, self.sepInput, 1, 1)
+        pack(self, hbox)
         set_tooltip(hbox, _('Using to seperate Summary and Description when displaying event'))
         #####
         #hbox = gtk.HBox()
         #label = gtk.Label(_('Show Full Event Description'))
         #label.set_alignment(0, 0.5)
-        #hbox.pack_start(label, 0, 0)
+        #pack(hbox, label)
         #self.sizeGroup.add_widget(label)
         #self.showFullEventDescCheck = gtk.CheckButton('')
-        #hbox.pack_start(self.showFullEventDescCheck, 1, 1)
-        #self.pack_start(hbox, 0, 0)
+        #pack(hbox, self.showFullEventDescCheck, 1, 1)
+        #pack(self, hbox)
         ###
         self.modeCombo.connect('changed', self.modeComboChanged)## right place? before updateWidget? FIXME
     def updateWidget(self):

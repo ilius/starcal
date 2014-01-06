@@ -1,8 +1,8 @@
+from scal2 import core
 from scal2.locale_man import tr as _
 from scal2.vcs_modules import vcsModuleNames
 
-import gtk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.event.groups.group import GroupWidget as NormalGroupWidget
 
 
@@ -15,23 +15,23 @@ class VcsBaseGroupWidget(NormalGroupWidget):
         label = gtk.Label(_('VCS Type'))
         label.set_alignment(0, 0.5)
         self.sizeGroup.add_widget(label)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.vcsTypeCombo = gtk.combo_box_new_text()
         for name in vcsModuleNames:
             self.vcsTypeCombo.append_text(name)## descriptive name FIXME
-        hbox.pack_start(self.vcsTypeCombo, 0, 0)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, self.vcsTypeCombo)
+        pack(self, hbox)
         ######
         hbox = gtk.HBox()
         label = gtk.Label(_('Directory'))
         label.set_alignment(0, 0.5)
         self.sizeGroup.add_widget(label)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.dirEntry = gtk.Entry()
-        hbox.pack_start(self.dirEntry, 0, 0)
+        pack(hbox, self.dirEntry)
         ##
         #self.dirBrowse = gtk.Button(_('Browse'))
-        self.pack_start(hbox, 0, 0)
+        pack(self, hbox)
     def updateWidget(self):
         NormalGroupWidget.updateWidget(self)
         self.vcsTypeCombo.set_active(vcsModuleNames.index(self.group.vcsType))

@@ -17,15 +17,12 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from scal2.cal_types import calTypes
+from scal2.cal_types import calTypes, convert
 from scal2 import core
-from scal2.core import convert
 from scal2.locale_man import tr as _
-
 from scal2 import event_lib
-import gtk
-from gtk import gdk
 
+from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import MonthComboBox
 from scal2.ui_gtk.mywidgets.multi_spin_button import YearSpinButton, DaySpinButton
 from scal2.ui_gtk.event import common
@@ -36,34 +33,34 @@ class EventWidget(common.EventWidget):
         common.EventWidget.__init__(self, event)
         ################
         hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Month')), 0, 0)
+        pack(hbox, gtk.Label(_('Month')))
         self.monthCombo = MonthComboBox()
         self.monthCombo.build(event.mode)
-        hbox.pack_start(self.monthCombo, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        #self.pack_start(hbox, 0, 0)
+        pack(hbox, self.monthCombo)
+        pack(hbox, gtk.Label(''), 1, 1)
+        #pack(self, hbox)
         ###
         #hbox = gtk.HBox()
-        hbox.pack_start(gtk.Label(_('Day')), 0, 0)
+        pack(hbox, gtk.Label(_('Day')))
         self.daySpin = DaySpinButton()
-        hbox.pack_start(self.daySpin, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, self.daySpin)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(self, hbox)
         ###
         hbox = gtk.HBox()
         self.startYearCheck = gtk.CheckButton(_('Start Year'))
-        hbox.pack_start(self.startYearCheck, 0, 0)
+        pack(hbox, self.startYearCheck)
         self.startYearSpin = YearSpinButton()
-        hbox.pack_start(self.startYearSpin, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.pack_start(hbox, 0, 0)
+        pack(hbox, self.startYearSpin)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(self, hbox)
         self.startYearCheck.connect('clicked', self.startYearCheckClicked)
         ####
         self.notificationBox = common.NotificationBox(event)
-        self.pack_start(self.notificationBox, 0, 0)
+        pack(self, self.notificationBox)
         ####
         #self.filesBox = common.FilesBox(self.event)
-        #self.pack_start(self.filesBox, 0, 0)
+        #pack(self, self.filesBox)
     startYearCheckClicked = lambda self, obj=None: self.startYearSpin.set_sensitive(self.startYearCheck.get_active())
     def updateWidget(self):## FIXME
         common.EventWidget.updateWidget(self)

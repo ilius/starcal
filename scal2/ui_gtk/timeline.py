@@ -24,36 +24,28 @@ from time import time as now
 import math
 from math import pi
 
-
+from scal2.utils import toUnicode, iceil
 from scal2 import core
-
+from scal2.core import myRaise
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl
-
-from scal2.utils import toUnicode, iceil
-from scal2.core import myRaise
-
 from scal2 import ui
 from scal2.timeline import *
 
+from gobject import timeout_add, source_remove
+
+from scal2.ui_gtk import *
+from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.font_utils import pfontEncode
 from scal2.ui_gtk.utils import labelStockMenuItem, labelImageMenuItem
 from scal2.ui_gtk.drawing import setColor, fillColor, newTextLayout, Button
 from scal2.ui_gtk import gtk_ud as ud
 #from scal2.ui_gtk import preferences
-import scal2.ui_gtk.event.main
-from scal2.ui_gtk.event.common import EventEditorDialog, GroupEditorDialog, confirmEventTrash
-
-import gobject
-from gobject import timeout_add
-
-import cairo
-import gtk
-from gtk import gdk
-
-from scal2.ui_gtk.decorators import *
-from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.timeline_box import *
+from scal2.ui_gtk.event.common import EventEditorDialog, GroupEditorDialog, confirmEventTrash
+import scal2.ui_gtk.event.main
+
+
 
 def show_event(widget, event):
     print(type(widget), event.type.value_name, event.get_value())#, event.send_event
@@ -122,7 +114,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
     def currentTimeUpdate(self, restart=False, draw=True):
         if restart:
             try:
-                gobject.source_remove(self.timeUpdateSourceId)
+                source_remove(self.timeUpdateSourceId)
             except AttributeError:
                 pass
         try:

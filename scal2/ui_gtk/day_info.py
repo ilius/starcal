@@ -20,14 +20,13 @@ from time import localtime
 
 import sys
 
-from scal2.locale_man import tr as _
-from scal2.locale_man import rtl, rtlSgn
 from scal2.cal_types import calTypes
 from scal2 import core
+from scal2.locale_man import tr as _
+from scal2.locale_man import rtl, rtlSgn
 from scal2 import ui
 
-import gtk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import dialog_add_button
 from scal2.ui_gtk import gtk_ud as ud
@@ -52,11 +51,11 @@ class AllDateLabelsVBox(gtk.VBox, ud.IntegratedCalObj):
             hbox = gtk.HBox()
             label = gtk.Label(_(module.desc))
             label.set_alignment(0, 0.5)
-            hbox.pack_start(label, 0, 0)
+            pack(hbox, label)
             sgroup.add_widget(label)
-            hbox.pack_start(gtk.Label('  '), 0, 0)
+            pack(hbox, gtk.Label('  '))
             ###
-            hbox.pack_start(
+            pack(hbox, 
                 gtk.Label(
                     ui.cell.format(ud.dateFormatBin, i)
                 ),
@@ -64,7 +63,7 @@ class AllDateLabelsVBox(gtk.VBox, ud.IntegratedCalObj):
                 0,
             )
             ###
-            self.pack_start(hbox, 0, 0)
+            pack(self, hbox)
         self.show_all()
 
 
@@ -113,7 +112,7 @@ class DayInfoDialog(gtk.Dialog, ud.IntegratedCalObj):
             exp = gtk.Expander(item.desc)
             exp.add(item)
             exp.set_expanded(True)
-            self.vbox.pack_start(exp, 0, 0)
+            pack(self.vbox, exp)
         self.vbox.show_all()
         ###
     def onClose(self, obj=None, event=None):

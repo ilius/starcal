@@ -22,23 +22,17 @@
 import os
 from os.path import isfile
 
-from scal2.cal_types import calTypes
+from scal2.cal_types import calTypes, jd_to, to_jd
 from scal2.cal_types.hijri import monthDb, monthName
 from scal2.date_utils import monthPlus
-
 from scal2 import core
-from scal2.core import jd_to, to_jd
 from scal2.locale_man import rtl, dateLocale
 from scal2.locale_man import tr as _
-
 from scal2 import ui
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
 from scal2.ui_gtk.utils import dialog_add_button, toolButtonFromStock, set_tooltip
-
 from scal2.ui_gtk import gtk_ud as ud
 
 hijriMode = calTypes.names.index('hijri')
@@ -58,12 +52,12 @@ class EditDbDialog(gtk.Dialog):
         ############
         hbox = gtk.HBox()
         self.topLabel = gtk.Label()
-        hbox.pack_start(self.topLabel, 0, 0)
+        pack(hbox, self.topLabel)
         self.startDateInput = DateButton()
         self.startDateInput.set_editable(False)## FIXME
         self.startDateInput.connect('changed', lambda widget: self.updateEndDates())
-        hbox.pack_start(self.startDateInput, 0, 0)
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(hbox, self.startDateInput)
+        pack(self.vbox, hbox)
         ############################
         treev = gtk.TreeView()
         trees = gtk.ListStore(int, str, str, int, str)## ym, yearShown, monthShown, monthLenCombo, endDateShown
@@ -118,9 +112,9 @@ class EditDbDialog(gtk.Dialog):
         self.trees = trees
         #####
         mainHbox = gtk.HBox()
-        mainHbox.pack_start(swin, 1, 1)
-        mainHbox.pack_start(toolbar, 0, 0)
-        self.vbox.pack_start(mainHbox, 1, 1)
+        pack(mainHbox, swin, 1, 1)
+        pack(mainHbox, toolbar)
+        pack(self.vbox, mainHbox, 1, 1)
         ######
         dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
         dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)

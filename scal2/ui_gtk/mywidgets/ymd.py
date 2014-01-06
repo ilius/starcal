@@ -1,10 +1,9 @@
-from scal2.locale_man import tr as _
 from scal2.cal_types import calTypes
 from scal2 import core
 from scal2.core import getMonthLen
+from scal2.locale_man import tr as _
 
-import gtk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.mywidgets.multi_spin_button import YearSpinButton, DaySpinButton
 
 class YearMonthDayBox(gtk.HBox):
@@ -12,22 +11,22 @@ class YearMonthDayBox(gtk.HBox):
         gtk.HBox.__init__(self, spacing=4)
         self.mode = calTypes.primary
         ####
-        self.pack_start(gtk.Label(_('Year')), 0, 0)
+        pack(self, gtk.Label(_('Year')))
         self.spinY = YearSpinButton()
-        self.pack_start(self.spinY, 0, 0)
+        pack(self, self.spinY)
         ####
-        self.pack_start(gtk.Label(_('Month')), 0, 0)
+        pack(self, gtk.Label(_('Month')))
         comboMonth = gtk.combo_box_new_text()
         module = calTypes[self.mode]
         for i in range(12):
             comboMonth.append_text(_(module.getMonthName(i+1, None)))## year=None means all months
         comboMonth.set_active(0)
-        self.pack_start(comboMonth, 0, 0)
+        pack(self, comboMonth)
         self.comboMonth = comboMonth
         ####
-        self.pack_start(gtk.Label(_('Day')), 0, 0)
+        pack(self, gtk.Label(_('Day')))
         self.spinD = DaySpinButton()
-        self.pack_start(self.spinD, 0, 0)
+        pack(self, self.spinD)
         self.comboMonthConn = comboMonth.connect('changed', self.comboMonthChanged)
         self.spinY.connect('changed', self.comboMonthChanged) 
     def set_mode(self, mode):

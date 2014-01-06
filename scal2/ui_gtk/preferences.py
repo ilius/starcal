@@ -22,24 +22,19 @@ from time import localtime
 import sys, os
 from os.path import join
 
-from scal2 import locale_man
-from scal2.locale_man import langSh
-from scal2.locale_man import tr as _
 from scal2.path import *
-
 from scal2.cal_types import calTypes
 from scal2 import core
 from scal2.core import myRaise, convert, APP_DESC
-
+from scal2 import locale_man
+from scal2.locale_man import langSh
+from scal2.locale_man import tr as _
 from scal2 import ui
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
 from scal2.ui_gtk.utils import *
-
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.pref_utils import *
 from scal2.ui_gtk.export import ExportToIcsDialog
@@ -72,44 +67,44 @@ class PrefDialog(gtk.Dialog):
         vbox.icon = 'preferences-other.png'
         self.prefPages.append(vbox)
         hbox = gtk.HBox(spacing=3)
-        hbox.pack_start(gtk.Label(_('Language')), 0, 0)
+        pack(hbox, gtk.Label(_('Language')))
         itemLang = LangPrefItem()
         self.localePrefItems.append(itemLang)
         ###
-        hbox.pack_start(itemLang._widget, 0, 0)
+        pack(hbox, itemLang._widget)
         if langSh!='en':
-            hbox.pack_start(gtk.Label('Language'), 0, 0)
-        vbox.pack_start(hbox, 0, 0)
+            pack(hbox, gtk.Label('Language'))
+        pack(vbox, hbox)
         ##########################
         hbox = gtk.HBox()
         frame = gtk.Frame(_('Calendar Types'))
         itemCals = AICalsPrefItem()
         self.corePrefItems.append(itemCals)
         frame.add(itemCals._widget)
-        hbox.pack_start(frame, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, frame)
+        pack(hbox, gtk.Label(''), 1, 1)
         hbox.set_border_width(5)
         #frame.set_border_width(5)
-        vbox.pack_start(hbox, 1, 1)
+        pack(vbox, hbox, 1, 1)
         ##########################
         if trayMode!=1:
             hbox = gtk.HBox(spacing=3)
             item = CheckStartupPrefItem()
             self.uiPrefItems.append(item)
-            hbox.pack_start(item._widget, 1, 1)
-            vbox.pack_start(hbox, 0, 0)
+            pack(hbox, item._widget, 1, 1)
+            pack(vbox, hbox)
             ########################
             item = CheckPrefItem(ui, 'showMain', _('Show main window on start'))
             self.uiPrefItems.append(item)
-            vbox.pack_start(item._widget, 0, 0)
+            pack(vbox, item._widget)
         ##########################
         item = CheckPrefItem(ui, 'winTaskbar', _('Window in Taskbar'))
         self.uiPrefItems.append(item)
         hbox = gtk.HBox(spacing=3)
-        hbox.pack_start(item._widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, item._widget)
+        pack(hbox, gtk.Label(''), 1, 1)
         ###########
-        vbox.pack_start(hbox, 0, 0)
+        pack(vbox, hbox)
         ##########################
         try:
             import appindicator
@@ -119,25 +114,25 @@ class PrefDialog(gtk.Dialog):
             item = CheckPrefItem(ui, 'useAppIndicator', _('Use AppIndicator'))
             self.uiPrefItems.append(item)
             hbox = gtk.HBox(spacing=3)
-            hbox.pack_start(item._widget, 0, 0)
-            hbox.pack_start(gtk.Label(''), 1, 1)
-            vbox.pack_start(hbox, 0, 0)
+            pack(hbox, item._widget)
+            pack(hbox, gtk.Label(''), 1, 1)
+            pack(vbox, hbox)
         ##########################
         hbox = gtk.HBox(spacing=3)
-        hbox.pack_start(gtk.Label(_('Show Digital Clock:')), 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, gtk.Label(_('Show Digital Clock:')))
+        pack(hbox, gtk.Label(''), 1, 1)
         #item = CheckPrefItem(ui, 'showDigClockTb', _('On Toolbar'))## FIXME
         #self.uiPrefItems.append(item)
-        #hbox.pack_start(item._widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        #pack(hbox, item._widget)
+        pack(hbox, gtk.Label(''), 1, 1)
         if trayMode==1:
             item = CheckPrefItem(ui, 'showDigClockTr', _('On Applet'), 'Panel Applet')
         else:
             item = CheckPrefItem(ui, 'showDigClockTr', _('On Tray'), 'Notification Area')
         self.uiPrefItems.append(item)
-        hbox.pack_start(item._widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        vbox.pack_start(hbox, 0, 0)
+        pack(hbox, item._widget)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(vbox, hbox)
         ################################ Tab 2 (Appearance) ###########################################
         vbox = gtk.VBox()
         vbox.label = _('A_ppearance')
@@ -148,113 +143,113 @@ class PrefDialog(gtk.Dialog):
         ###
         customCheckItem = CheckPrefItem(ui, 'fontCustomEnable', _('Application Font'))
         self.uiPrefItems.append(customCheckItem)
-        hbox.pack_start(customCheckItem._widget, 0, 0)
+        pack(hbox, customCheckItem._widget)
         ###
         customItem = FontPrefItem(ui, 'fontCustom', self)
         self.uiPrefItems.append(customItem)
-        hbox.pack_start(customItem._widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, customItem._widget)
+        pack(hbox, gtk.Label(''), 1, 1)
         customItem._widget.set_sensitive(ui.fontCustomEnable)
         #customItem._widget.connect('clicked', self.checkbFontClicked)
         customCheckItem._widget.connect('clicked', lambda w: customItem._widget.set_sensitive(w.get_active()))## FIXME
-        vbox.pack_start(hbox, 0, 0)
+        pack(vbox, hbox)
         ########################### Theme #####################
         hbox = gtk.HBox(spacing=3)
         item = CheckPrefItem(ui, 'bgUseDesk', _('Use Desktop Background'))
         self.uiPrefItems.append(item)
-        hbox.pack_start(item._widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        vbox.pack_start(hbox, 0, 0)
+        pack(hbox, item._widget)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(vbox, hbox)
         #####################
         hbox = gtk.HBox(spacing=3)
         lab = gtk.Label('<b>%s:</b> '%_('Colors'))
         lab.set_use_markup(True)
-        hbox.pack_start(lab, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, lab)
+        pack(hbox, gtk.Label(''), 1, 1)
         ###
-        hbox.pack_start(gtk.Label(_('Background')), 0, 0)
+        pack(hbox, gtk.Label(_('Background')))
         item = ColorPrefItem(ui, 'bgColor', True)
         self.uiPrefItems.append(item)
         self.colorbBg = item._widget ## FIXME
-        hbox.pack_start(item._widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, item._widget)
+        pack(hbox, gtk.Label(''), 1, 1)
         ###
-        hbox.pack_start(gtk.Label(_('Border')), 0, 0)
+        pack(hbox, gtk.Label(_('Border')))
         item = ColorPrefItem(ui, 'borderColor', True)
         self.uiPrefItems.append(item)
-        hbox.pack_start(item._widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, item._widget)
+        pack(hbox, gtk.Label(''), 1, 1)
         ###
-        hbox.pack_start(gtk.Label(_('Cursor')), 0, 0)
+        pack(hbox, gtk.Label(_('Cursor')))
         item = ColorPrefItem(ui, 'cursorOutColor', False)
         self.uiPrefItems.append(item)
-        hbox.pack_start(item._widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, item._widget)
+        pack(hbox, gtk.Label(''), 1, 1)
         ###
-        hbox.pack_start(gtk.Label(_('Cursor BG')), 0, 0)
+        pack(hbox, gtk.Label(_('Cursor BG')))
         item = ColorPrefItem(ui, 'cursorBgColor', True)
         self.uiPrefItems.append(item)
-        hbox.pack_start(item._widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, item._widget)
+        pack(hbox, gtk.Label(''), 1, 1)
         ###
-        hbox.pack_start(gtk.Label(_('Today')), 0, 0)
+        pack(hbox, gtk.Label(_('Today')))
         item = ColorPrefItem(ui, 'todayCellColor', True)
         self.uiPrefItems.append(item)
-        hbox.pack_start(item._widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, item._widget)
+        pack(hbox, gtk.Label(''), 1, 1)
         ###
-        vbox.pack_start(hbox, 0, 0)
+        pack(vbox, hbox)
         ####################
         hbox = gtk.HBox(spacing=3)
         lab = gtk.Label('<b>%s:</b> '%_('Font Colors'))
         lab.set_use_markup(True)
-        hbox.pack_start(lab, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, lab)
+        pack(hbox, gtk.Label(''), 1, 1)
         ####
-        hbox.pack_start(gtk.Label(_('Normal')), 0, 0)
+        pack(hbox, gtk.Label(_('Normal')))
         item = ColorPrefItem(ui, 'textColor', False)
         self.uiPrefItems.append(item)
-        hbox.pack_start(item._widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, item._widget)
+        pack(hbox, gtk.Label(''), 1, 1)
         ###
-        hbox.pack_start(gtk.Label(_('Holiday')), 0, 0)
+        pack(hbox, gtk.Label(_('Holiday')))
         item = ColorPrefItem(ui, 'holidayColor', False)
         self.uiPrefItems.append(item)
-        hbox.pack_start(item._widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, item._widget)
+        pack(hbox, gtk.Label(''), 1, 1)
         ###
-        hbox.pack_start(gtk.Label(_('Inactive Day')), 0, 0)
+        pack(hbox, gtk.Label(_('Inactive Day')))
         item = ColorPrefItem(ui, 'inactiveColor', True)
         self.uiPrefItems.append(item)
-        hbox.pack_start(item._widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, item._widget)
+        pack(hbox, gtk.Label(''), 1, 1)
         ####
-        hbox.pack_start(gtk.Label(_('Border')), 0, 0)
+        pack(hbox, gtk.Label(_('Border')))
         item = ColorPrefItem(ui, 'borderTextColor', False)
         self.uiPrefItems.append(item)
-        hbox.pack_start(item._widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, item._widget)
+        pack(hbox, gtk.Label(''), 1, 1)
         ####
-        vbox.pack_start(hbox, 0, 0)
+        pack(vbox, hbox)
         ###################
         hbox = gtk.HBox(spacing=1)
         label = gtk.Label('<b>%s</b>:'%_('Cursor'))
         label.set_use_markup(True)
-        hbox.pack_start(label, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        hbox.pack_start(gtk.Label(_('Diameter Factor')), 0, 0)
+        pack(hbox, label)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(hbox, gtk.Label(_('Diameter Factor')))
         item = SpinPrefItem(ui, 'cursorDiaFactor', 0, 1, 2)
         self.uiPrefItems.append(item)
-        hbox.pack_start(item._widget, 0, 0)
+        pack(hbox, item._widget)
         ###
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        hbox.pack_start(gtk.Label(_('Rounding Factor')), 0, 0)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(hbox, gtk.Label(_('Rounding Factor')))
         item = SpinPrefItem(ui, 'cursorRoundingFactor', 0, 1, 2)
         self.uiPrefItems.append(item)
-        hbox.pack_start(item._widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
+        pack(hbox, item._widget)
+        pack(hbox, gtk.Label(''), 1, 1)
         ###
-        vbox.pack_start(hbox, 0, 0)
+        pack(vbox, hbox)
         ################################ Tab 3 (Advanced) ###########################################
         vbox = gtk.VBox()
         vbox.label = _('A_dvanced')
@@ -266,9 +261,9 @@ class PrefDialog(gtk.Dialog):
         hbox = gtk.HBox(spacing=5)
         label = gtk.Label(_('Date Format'))
         label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         sgroup.add_widget(label)
-        #hbox.pack_start(gtk.Label(''), 1, 1)
+        #pack(hbox, gtk.Label(''), 1, 1)
         item = ComboEntryTextPrefItem(ud, 'dateFormat', (
             '%Y/%m/%d',
             '%Y-%m-%d',
@@ -280,14 +275,14 @@ class PrefDialog(gtk.Dialog):
             '%m/%d/%Y',
         ))
         self.gtkPrefItems.append(item)
-        hbox.pack_start(item._widget, 1, 1)
-        vbox.pack_start(hbox, 0, 0)
+        pack(hbox, item._widget, 1, 1)
+        pack(vbox, hbox)
         ###
         hbox = gtk.HBox(spacing=5)
-        #hbox.pack_start(gtk.Label(''), 1, 1)
+        #pack(hbox, gtk.Label(''), 1, 1)
         label = gtk.Label(_('Digital Clock Format'))
         label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         sgroup.add_widget(label)
         item = ComboEntryTextPrefItem(ud, 'clockFormat', (
             '%T',
@@ -306,58 +301,58 @@ class PrefDialog(gtk.Dialog):
             '<b>%OH:%OM</b>',
         ))
         self.gtkPrefItems.append(item)
-        hbox.pack_start(item._widget, 1, 1)
-        vbox.pack_start(hbox, 0, 0)
+        pack(hbox, item._widget, 1, 1)
+        pack(vbox, hbox)
         ######
         hbox = gtk.HBox(spacing=5)
         label = gtk.Label(_('Days maximum cache size'))
         label.set_alignment(0, 0.5)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         ##sgroup.add_widget(label)
         item = SpinPrefItem(ui, 'maxDayCacheSize', 100, 9999, 0)
         self.uiPrefItems.append(item)
-        hbox.pack_start(item._widget, 0, 0)
-        vbox.pack_start(hbox, 0, 0)
+        pack(hbox, item._widget)
+        pack(vbox, hbox)
         vbox4 = vbox
         ########
         hbox = gtk.HBox(spacing=3)
-        hbox.pack_start(gtk.Label(_('First day of week')), 0, 0)
+        pack(hbox, gtk.Label(_('First day of week')))
         ##item = ComboTextPrefItem( ##?????????
         self.comboFirstWD = gtk.combo_box_new_text()
         for item in core.weekDayName:
             self.comboFirstWD.append_text(item)
         self.comboFirstWD.append_text(_('Automatic'))
         self.comboFirstWD.connect('changed', self.comboFirstWDChanged)
-        hbox.pack_start(self.comboFirstWD, 0, 0)
-        vbox.pack_start(hbox, 0, 0)
+        pack(hbox, self.comboFirstWD)
+        pack(vbox, hbox)
         #########
         hbox0 = gtk.HBox(spacing=0)
-        hbox0.pack_start(gtk.Label(_('Holidays')+'    '), 0, 0)
+        pack(hbox0, gtk.Label(_('Holidays')+'    '))
         item = WeekDayCheckListPrefItem(core, 'holidayWeekDays')
         self.corePrefItems.append(item)
         self.holiWDItem = item ## Holiday Week Days Item
-        hbox0.pack_start(item._widget, 1, 1)
-        vbox.pack_start(hbox0, 0, 0)
+        pack(hbox0, item._widget, 1, 1)
+        pack(vbox, hbox0)
         #########
         hbox = gtk.HBox(spacing=3)
-        hbox.pack_start(gtk.Label(_('First week of year containts')), 0, 0)
+        pack(hbox, gtk.Label(_('First week of year containts')))
         combo = gtk.combo_box_new_text()
         texts = [_('First %s of year')%name for name in core.weekDayName]+[_('First day of year')]
         texts[4] += ' (ISO 8601)' ##??????
         for text in texts:
             combo.append_text(text)
         #combo.append_text(_('Automatic'))## (as Locale)#?????????????????
-        hbox.pack_start(combo, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        vbox.pack_start(hbox, 0, 0)
+        pack(hbox, combo)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(vbox, hbox)
         self.comboWeekYear = combo
         #########
         hbox = gtk.HBox(spacing=3)
         item = CheckPrefItem(locale_man, 'enableNumLocale', _('Numbers Localization'))
         self.localePrefItems.append(item)
-        hbox.pack_start(item._widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        vbox.pack_start(hbox, 0, 0)
+        pack(hbox, item._widget)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(vbox, hbox)
         ##################################################
         ################################
         options = []
@@ -372,7 +367,7 @@ class PrefDialog(gtk.Dialog):
                 else:
                     optl = ModuleOptionItem(mod, opt)
                 options.append(optl)
-                vbox.pack_start(optl._widget, 0, 0)
+                pack(vbox, optl._widget)
         self.moduleOptions = options
         ################################ Tab 4 (Plugins) ############################################
         vbox = gtk.VBox()
@@ -387,9 +382,9 @@ class PrefDialog(gtk.Dialog):
         else:
             item = CheckPrefItem(ui, 'pluginsTextTray', _('Show in tray (for today)'))
         self.uiPrefItems.append(item)
-        hbox.pack_start(item._widget, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        vbox.pack_start(hbox, 0, 0)
+        pack(hbox, item._widget)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(vbox, hbox)
         #####
         treev = gtk.TreeView()
         treev.set_headers_clickable(True)
@@ -455,8 +450,8 @@ class PrefDialog(gtk.Dialog):
         #######################
         hbox = gtk.HBox()
         vboxPlug = gtk.VBox()
-        vboxPlug.pack_start(swin, 1, 1)
-        hbox.pack_start(vboxPlug, 1, 1)
+        pack(vboxPlug, swin, 1, 1)
+        pack(hbox, vboxPlug, 1, 1)
         ###
         hboxBut = gtk.HBox()
         ###
@@ -465,18 +460,18 @@ class PrefDialog(gtk.Dialog):
         button.set_sensitive(False)
         button.connect('clicked', self.plugAboutClicked)
         self.plugButtonAbout = button
-        hboxBut.pack_start(button, 0, 0)
-        hboxBut.pack_start(gtk.Label(''), 1, 1)
+        pack(hboxBut, button)
+        pack(hboxBut, gtk.Label(''), 1, 1)
         ###
         button = gtk.Button(_('C_onfigure Plugin'))
         button.set_image(gtk.image_new_from_stock(gtk.STOCK_PREFERENCES, gtk.ICON_SIZE_BUTTON))
         button.set_sensitive(False)
         button.connect('clicked', self.plugConfClicked)
         self.plugButtonConf = button
-        hboxBut.pack_start(button, 0, 0)
-        hboxBut.pack_start(gtk.Label(''), 1, 1)
+        pack(hboxBut, button)
+        pack(hboxBut, gtk.Label(''), 1, 1)
         ###
-        vboxPlug.pack_start(hboxBut, 0, 0)
+        pack(vboxPlug, hboxBut)
         ###
         toolbar = gtk.Toolbar()
         toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
@@ -522,18 +517,18 @@ class PrefDialog(gtk.Dialog):
         tb.connect('clicked', self.plugTreeviewDel)
         toolbar.insert(tb, -1)
         ###########
-        hbox.pack_start(toolbar, 0, 0)
+        pack(hbox, toolbar)
         #####
         '''
         vpan = gtk.VPaned()
         vpan.add1(hbox)
         vbox2 = gtk.VBox()
-        vbox2.pack_start(gtk.Label('Test Label'))
+        pack(vbox2, gtk.Label('Test Label'))
         vpan.add2(vbox2)
         vpan.set_position(100)
-        vbox.pack_start(vpan)
+        pack(vbox, vpan)
         '''
-        vbox.pack_start(hbox, 1, 1)
+        pack(vbox, hbox, 1, 1)
         ##########################
         d = gtk.Dialog()
         d.set_transient_for(self)
@@ -563,7 +558,7 @@ class PrefDialog(gtk.Dialog):
         swin = gtk.ScrolledWindow()
         swin.add(treev)
         swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        d.vbox.pack_start(swin)
+        pack(d.vbox, swin)
         d.vbox.show_all()
         self.plugAddDialog = d
         self.plugAddTreeview = treev
@@ -609,8 +604,8 @@ class PrefDialog(gtk.Dialog):
         #######################
         hbox = gtk.HBox()
         vboxPlug = gtk.VBox()
-        vboxPlug.pack_start(swin, 1, 1)
-        hbox.pack_start(vboxPlug, 1, 1)
+        pack(vboxPlug, swin, 1, 1)
+        pack(hbox, vboxPlug, 1, 1)
         ###
         toolbar = gtk.Toolbar()
         toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
@@ -647,8 +642,8 @@ class PrefDialog(gtk.Dialog):
         tb.connect('clicked', self.accountsDownClicked)
         toolbar.insert(tb, -1)
         ###########
-        hbox.pack_start(toolbar, 0, 0)
-        vbox.pack_start(hbox, 1, 1)
+        pack(hbox, toolbar)
+        pack(vbox, hbox, 1, 1)
         ###################################################################################################
         notebook = gtk.Notebook()
         self.notebook = notebook
@@ -657,8 +652,8 @@ class PrefDialog(gtk.Dialog):
             l = gtk.Label(vbox.label)
             l.set_use_underline(True)
             vb = gtk.VBox(spacing=3)
-            vb.pack_start(imageFromFile(vbox.icon))
-            vb.pack_start(l)
+            pack(vb, imageFromFile(vbox.icon))
+            pack(vb, l)
             vb.show_all()
             notebook.append_page(vbox, vb)
             try:
@@ -669,7 +664,7 @@ class PrefDialog(gtk.Dialog):
         notebook.set_property('homogeneous', True)
         notebook.set_property('tab-border', 5)
         notebook.set_property('tab-hborder', 15)
-        self.vbox.pack_start(notebook)
+        pack(self.vbox, notebook)
         self.vbox.show_all()
         for i in ui.prefPagesOrder:
             try:
@@ -807,7 +802,7 @@ class PrefDialog(gtk.Dialog):
                 d.set_keep_above(True)
                 label = gtk.Label(_('Some preferences need for restart %s to apply.'%APP_DESC))
                 label.set_line_wrap(True)
-                d.vbox.pack_start(label)
+                pack(d.vbox, label)
                 resBut = d.add_button(_('_Restart'), 1)
                 resBut.set_image(gtk.image_new_from_stock(gtk.STOCK_REFRESH,gtk.ICON_SIZE_BUTTON))
                 resBut.grab_default()

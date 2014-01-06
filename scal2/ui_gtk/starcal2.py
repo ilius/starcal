@@ -18,15 +18,14 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from time import time as now
-from time import localtime
-
 import sys
 
 if sys.version_info[0] != 2:
     print('Run this script with Python 2.x')
     sys.exit(1)
 
+from time import time as now
+from time import localtime
 import os
 from os.path import join, dirname, isfile, isdir
 from subprocess import Popen
@@ -46,54 +45,45 @@ if not isdir(confDir):
 from scal2.utils import toStr, toUnicode, versionLessThan
 from scal2.cal_types import calTypes
 from scal2 import core
+from scal2.core import rootDir, pixDir, deskDir, myRaise, getMonthName, APP_DESC
+
+#core.showInfo()
 
 from scal2 import locale_man
 from scal2.locale_man import rtl, lang ## import scal2.locale_man after core
 #_ = locale_man.loadTranslator(False)## FIXME
 from scal2.locale_man import tr as _
 from scal2.season import getSeasonNamePercentFromJd
-
-from scal2.core import rootDir, pixDir, deskDir, myRaise, getMonthName, APP_DESC
-
-#core.showInfo()
-
 from scal2 import event_lib
 from scal2 import ui
 
-import gobject ##?????
 from gobject import timeout_add, timeout_add_seconds
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import *
 from scal2.ui_gtk.color_utils import rgbToGdkColor
-from scal2.ui_gtk import listener
-import scal2.ui_gtk.export
-import scal2.ui_gtk.selectdate
-
 from scal2.ui_gtk.drawing import newTextLayout, newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets.clock import FClockLabel
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 #from ui_gtk.mywidgets2.multi_spin_button import DateButtonOption
-
+from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
+import scal2.ui_gtk.export
+import scal2.ui_gtk.selectdate
 from scal2.ui_gtk import preferences
 from scal2.ui_gtk.preferences import PrefItem, gdkColorToRgb
 from scal2.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox, CustomizeDialog
 from scal2.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
 from scal2.ui_gtk.year_month_labels import YearMonthLabelBox
+from scal2.ui_gtk.day_info import DayInfoDialog
+from scal2.ui_gtk.weekcal import WeekCal
 from scal2.ui_gtk.monthcal import MonthCal
-
+from scal2.ui_gtk.timeline import TimeLineWindow
 from scal2.ui_gtk.event.common import addNewEvent
 from scal2.ui_gtk.event.occurrence_view import DayOccurrenceView
 from scal2.ui_gtk.event.main import EventManagerDialog
 
-from scal2.ui_gtk.timeline import TimeLineWindow
-#from scal2.ui_gtk.weekcal_old import WeekCalWindow
-from scal2.ui_gtk.weekcal import WeekCal
-from scal2.ui_gtk.day_info import DayInfoDialog
 
 
 
@@ -323,7 +313,7 @@ class StatusBox(gtk.HBox, CustomizableCalObj):
         gtk.HBox.__init__(self)
         self.initVars()
         self.labelBox = gtk.HBox()
-        self.pack_start(self.labelBox, 1, 1)
+        pack(self, self.labelBox, 1, 1)
         sbar = gtk.Statusbar()
         if rtl:
             self.set_direction(gtk.TEXT_DIR_LTR)
@@ -332,7 +322,7 @@ class StatusBox(gtk.HBox, CustomizableCalObj):
         sbar.set_property('width-request', 18)
         sbar.connect('button-press-event', self.sbarButtonPress)
         sbar.show()
-        self.pack_start(sbar, 0, 0)
+        pack(self, sbar)
     sbarButtonPress = lambda self, widget, event: ui.mainWin.startResize(widget, event)
     def onConfigChange(self, *a, **kw):
         CustomizableCalObj.onConfigChange(self, *a, **kw)
@@ -343,7 +333,7 @@ class StatusBox(gtk.HBox, CustomizableCalObj):
         for mode in calTypes.active:
             label = DateLabel(None)
             label.mode = mode
-            self.labelBox.pack_start(label, 1, 0, 0)
+            pack(self.labelBox, label, 1)
         self.show_all()
         ###
         self.onDateChange()
@@ -403,18 +393,18 @@ class PluginsTextBox(gtk.VBox, CustomizableCalObj):
         self.expander.connect('activate', self.expanderExpanded)
         if ui.pluginsTextInsideExpander:
             self.expander.add(self.textview)
-            self.pack_start(self.expander, 0, 0)
+            pack(self, self.expander)
             self.expander.set_expanded(ui.pluginsTextIsExpanded)
             self.textview.show()
         else:
-            self.pack_start(self.textview, 0, 0)
+            pack(self, self.textview)
         #####
         optionsWidget = gtk.HBox()
         self.enableExpanderCheckb = gtk.CheckButton(_('Inside Expander'))
         self.enableExpanderCheckb.set_active(ui.pluginsTextInsideExpander)
         self.enableExpanderCheckb.connect('clicked', lambda check: self.setEnableExpander(check.get_active()))
         self.setEnableExpander(ui.pluginsTextInsideExpander)
-        optionsWidget.pack_start(self.enableExpanderCheckb, 0, 0)
+        pack(optionsWidget, self.enableExpanderCheckb)
         ####
         optionsWidget.show_all()
         self.optionsWidget = optionsWidget
@@ -435,13 +425,13 @@ class PluginsTextBox(gtk.VBox, CustomizableCalObj):
             if not ui.pluginsTextInsideExpander:
                 self.remove(self.textview)
                 self.expander.add(self.textview)
-                self.pack_start(self.expander, 0, 0)
+                pack(self, self.expander)
                 self.expander.show_all()
         else:
             if ui.pluginsTextInsideExpander:
                 self.expander.remove(self.textview)
                 self.remove(self.expander)
-                self.pack_start(self.textview, 0, 0)
+                pack(self, self.textview)
                 self.textview.show()
         ui.pluginsTextInsideExpander = enable
         self.onDateChange()
@@ -461,9 +451,9 @@ class EventViewMainWinItem(DayOccurrenceView, CustomizableCalObj):## FIXME
         spin = IntSpinButton(1, 9999)
         spin.set_value(ui.eventViewMaxHeight)
         spin.connect('changed', self.heightSpinChanged)
-        hbox.pack_start(gtk.Label(_('Maximum Height')), 0, 0)
-        hbox.pack_start(spin, 0, 0)
-        self.optionsWidget.pack_start(hbox, 0, 0)
+        pack(hbox, gtk.Label(_('Maximum Height')))
+        pack(hbox, spin)
+        pack(self.optionsWidget, hbox)
         ###
         self.optionsWidget.show_all()
     def heightSpinChanged(self, spin):
@@ -965,7 +955,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         if ui.showDigClockTb:
             if self.clock==None:
                 self.clock = FClockLabel(ud.clockFormat)
-                self.toolbBox.pack_start(self.clock, 0, 0)
+                pack(self.toolbBox, self.clock)
                 self.clock.show()
             else:
                 self.clock.format = ud.clockFormat
@@ -980,7 +970,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             if self.clockTr==None:
                 self.clockTr = FClockLabel(ud.clockFormat)
                 try:
-                    self.trayHbox.pack_start(self.clockTr, 0, 0)
+                    pack(self.trayHbox, self.clockTr)
                 except AttributeError:
                     self.clockTr.destroy()
                     self.clockTr = None

@@ -1,12 +1,11 @@
 from os.path import join
 
 from scal2.path import *
+from scal2 import core
 from scal2.locale_man import tr as _
 from scal2 import ui
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import labelStockMenuItem
 

@@ -3,12 +3,9 @@ import sys
 
 from scal2 import ui
 
-import gobject
 from gobject import timeout_add
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk import gtk_ud as ud
 
@@ -50,7 +47,7 @@ if __name__=='__main__':
     win = gtk.Dialog()
     button = ConButton('Press')
     button.connect('con-clicked', lambda obj: sys.stdout.write('%.4f\n'%now()))
-    win.vbox.pack_start(button, 1, 1)
+    pack(win.vbox, button, 1, 1)
     win.vbox.show_all()
     win.resize(100, 100)
     win.run()

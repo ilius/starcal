@@ -17,25 +17,22 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from scal2.locale_man import tr as _
-from scal2.utils import myRaise, toStr
-from scal2.json_utils import *
-from scal2.path import pixDir, rootDir
-
-from scal2.cal_types import calTypes
-from scal2 import core
-from scal2 import ui
-
+from time import time as now
 import os
 from os.path import join, isabs
 from subprocess import Popen
 
-from time import time as now
+from scal2.utils import myRaise, toStr
+from scal2.json_utils import *
+from scal2.path import pixDir, rootDir
+from scal2.cal_types import calTypes
+from scal2 import core
+from scal2.locale_man import tr as _
+from scal2 import ui
 
 from gobject import timeout_add
 
-import gtk
-from gtk import gdk
+from scal2.ui_gtk import *
 
 
 def hideList(widgets):
@@ -278,7 +275,7 @@ class WeekDayComboBox(gtk.ComboBox):
         self.firstWeekDay = core.firstWeekDay
         ###
         cell = gtk.CellRendererText()
-        self.pack_start(cell, True)
+        pack(self, cell, True)
         self.add_attribute(cell, 'text', 0)
         ###
         for i in range(7):
@@ -297,7 +294,7 @@ class MonthComboBox(gtk.ComboBox):
         gtk.ComboBox.__init__(self, ls)
         ###
         cell = gtk.CellRendererText()
-        self.pack_start(cell, True)
+        pack(self, cell, True)
         self.add_attribute(cell, 'text', 0)
     def build(self, mode):
         active = self.get_active()
@@ -333,7 +330,7 @@ class DirectionComboBox(gtk.ComboBox):
         gtk.ComboBox.__init__(self, ls)
         ###
         cell = gtk.CellRendererText()
-        self.pack_start(cell, True)
+        pack(self, cell, True)
         self.add_attribute(cell, 'text', 0)
         ###
         for d in self.descs:
@@ -349,7 +346,7 @@ class DateTypeCombo(gtk.ComboBox):
         gtk.ComboBox.__init__(self, ls)
         ###
         cell = gtk.CellRendererText()
-        self.pack_start(cell, True)
+        pack(self, cell, True)
         self.add_attribute(cell, 'text', 1)
         ###
         for i, mod in calTypes.iterIndexModule():
@@ -461,14 +458,14 @@ class WizardWindow(gtk.Window):
         for cls in self.stepClasses:
             step = cls(self)
             self.steps.append(step)
-            self.vbox.pack_start(step, 1, 1)
+            pack(self.vbox, step, 1, 1)
         self.stepIndex = 0
         ####
         self.buttonBox = gtk.HButtonBox()
         self.buttonBox.set_layout(gtk.BUTTONBOX_END)
         self.buttonBox.set_spacing(15)
         self.buttonBox.set_border_width(15)
-        self.vbox.pack_start(self.buttonBox, 0, 0)
+        pack(self.vbox, self.buttonBox)
         ####
         self.showStep(0)
         self.vbox.show()
@@ -494,13 +491,13 @@ class WizardWindow(gtk.Window):
             button = gtk.Button(label)
             button.connect('clicked', func)
             bbox.add(button)
-            #bbox.pack_start(button, 0, 0)
+            #pack(bbox, button)
         bbox.show_all()
 
 if __name__=='__main__':
     diolog = gtk.Dialog()
     w = TimeZoneComboBoxEntry()
-    diolog.vbox.pack_start(w, 0, 0)
+    pack(diolog.vbox, w)
     diolog.vbox.show_all()
     diolog.run()
 

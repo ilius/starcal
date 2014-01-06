@@ -20,27 +20,21 @@
 import sys, os
 from os.path import join, isabs
 
+from scal2.path import *
+from scal2.cal_types import calTypes
+from scal2 import core
 from scal2 import locale_man
 from scal2.locale_man import langDict, langSh, rtl
 from scal2.locale_man import tr as _
-from scal2.path import *
-
-from scal2.cal_types import calTypes
-from scal2 import core
-
 from scal2 import startup
 from scal2 import ui
 
-import gtk
-from gtk import gdk
-
-from scal2.ui_gtk.mywidgets import MyFontButton, MyColorButton
-from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
 from scal2.ui_gtk.utils import *
-
+from scal2.ui_gtk.mywidgets import MyFontButton, MyColorButton
+from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
 from scal2.ui_gtk.pref_utils import *
 
 
@@ -62,25 +56,25 @@ class ModuleOptionItem:
             self.get_value = w.get_active
             self.set_value = w.set_active
         elif t==list:
-            hbox.pack_start(gtk.Label(_(opt[2])), 0, 0)
+            pack(hbox, gtk.Label(_(opt[2])))
             w = gtk.combo_box_new_text() ### or RadioButton
             for s in opt[3]:
                 w.append_text(_(s))
             self.get_value = w.get_active
             self.set_value = w.set_active
         elif t==int:
-            hbox.pack_start(gtk.Label(_(opt[2])), 0, 0)
+            pack(hbox, gtk.Label(_(opt[2])))
             w = IntSpinButton(opt[3], opt[4])
             self.get_value = w.get_value
             self.set_value = w.set_value
         elif t==float:
-            hbox.pack_start(gtk.Label(_(opt[2])), 0, 0)
+            pack(hbox, gtk.Label(_(opt[2])))
             w = FloatSpinButton(opt[3], opt[4], opt[5])
             self.get_value = w.get_value
             self.set_value = w.set_value
         else:
             raise RuntimeError('bad option type "%s"'%t)
-        hbox.pack_start(w, 0, 0)
+        pack(hbox, w)
         self._widget = hbox
         ####
         self.updateVar = lambda: setattr(self.module, self.var_name, self.get_value())
@@ -95,7 +89,7 @@ class ModuleOptionButton:
         hbox = gtk.HBox()
         button = gtk.Button(_(opt[0]))
         button.connect('clicked', clickedFunc)
-        hbox.pack_start(button, 0, 0)
+        pack(hbox, button)
         self._widget = hbox
     def updateVar(self):
         pass
@@ -153,11 +147,11 @@ class ComboImageTextPrefItem(PrefItem):
         combo = gtk.ComboBox(ls)
         ###
         cell = gtk.CellRendererPixbuf()
-        combo.pack_start(cell, False)
+        pack(combo, cell, False)
         combo.add_attribute(cell, 'pixbuf', 0)
         ###
         cell = gtk.CellRendererText()
-        combo.pack_start(cell, True)
+        pack(combo, cell, True)
         combo.add_attribute(cell, 'text', 1)
         ###
         self._widget = combo
@@ -250,14 +244,14 @@ class RadioListPrefItem(PrefItem):
         self.radios = [gtk.RadioButton(label=_(s)) for s in texts]
         first = self.radios[0]
         if label!=None:
-            box.pack_start(gtk.Label(label), 0, 0)
-            box.pack_start(gtk.Label(''), 1, 1)
-        box.pack_start(first, 0, 0)
+            pack(box, gtk.Label(label))
+            pack(box, gtk.Label(''), 1, 1)
+        pack(box, first)
         for r in self.radios[1:]:
-            box.pack_start(gtk.Label(''), 1, 1)
-            box.pack_start(r, 0, 0)
+            pack(box, gtk.Label(''), 1, 1)
+            pack(box, r)
             r.set_group(first)
-        box.pack_start(gtk.Label(''), 1, 1) ## FIXME
+        pack(box, gtk.Label(''), 1, 1) ## FIXME
     def get(self):
         for i in range(self.num):
             if self.radios[i].get_active():
@@ -283,7 +277,7 @@ class ListPrefItem(PrefItem):
         else:
             box = gtk.HBox()
         for item in items:
-            box.pack_start(item._widget, 0, 0)
+            pack(box, item._widget)
         self.num = len(items)
         self.items = items
         self._widget = box
@@ -292,7 +286,7 @@ class ListPrefItem(PrefItem):
         for i in range(self.num):
             self.items[i].set(valueL[i])
     def append(self, item):
-        self._widget.pack_start(item._widget, 0, 0)
+        pack(self._widget, item._widget)
         self.items.append(item)
 
 
@@ -318,7 +312,7 @@ class WeekDayCheckListPrefItem(PrefItem):
         ls = [gtk.ToggleButton(item) for item in nameList]
         s = core.firstWeekDay
         for i in range(7):
-            box.pack_start(ls[(s+i)%7], 1, 1)
+            pack(box, ls[(s+i)%7], 1, 1)
         self.cbList = ls
         self._widget = box
         self.start = s
@@ -371,11 +365,11 @@ class LangPrefItem(PrefItem):
         combo = gtk.ComboBox(ls)
         ###
         cell = gtk.CellRendererPixbuf()
-        combo.pack_start(cell, False)
+        pack(combo, cell, False)
         combo.add_attribute(cell, 'pixbuf', 0)
         ###
         cell = gtk.CellRendererText()
-        combo.pack_start(cell, True)
+        pack(combo, cell, True)
         combo.add_attribute(cell, 'text', 1)
         ###
         self._widget = combo
@@ -526,7 +520,7 @@ class AICalsPrefItem():
         treev.connect('focus-in-event', self.activeTreevFocus)
         treev.get_selection().connect('changed', self.activeTreevSelectionChanged)
         ###
-        self._widget.pack_start(treev.makeSwin(), 0, 0)
+        pack(self._widget, treev.makeSwin())
         ####
         self.activeTreev = treev
         self.activeTrees = treev.get_model()
@@ -552,14 +546,14 @@ class AICalsPrefItem():
         tb.connect('clicked', self.downClicked)
         toolbar.insert(tb, -1)
         ##
-        self._widget.pack_start(toolbar, 0, 0)
+        pack(self._widget, toolbar)
         ########
         treev = InactiveCalsTreeView()
         treev.connect('row-activated', self.inactiveTreevRActivate)
         treev.connect('focus-in-event', self.inactiveTreevFocus)
         treev.get_selection().connect('changed', self.inactiveTreevSelectionChanged)
         ###
-        self._widget.pack_start(treev.makeSwin(), 0, 0)
+        pack(self._widget, treev.makeSwin())
         ####
         self.inactiveTreev = treev
         self.inactiveTrees = treev.get_model()

@@ -19,17 +19,12 @@
 
 from scal2.path import *
 from scal2.utils import StrOrderedDict
-from scal2.locale_man import tr as _
-
 from scal2 import core
 from scal2.core import myRaise
+from scal2.locale_man import tr as _
 from scal2 import ui
 
-import gobject
-
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, dialog_add_button
 from scal2.ui_gtk import gtk_ud as ud
 
@@ -88,7 +83,7 @@ class CustomizableCalObj(ud.IntegratedCalObj):
 class CustomizableCalBox(CustomizableCalObj):
     def appendItem(self, item):
         CustomizableCalObj.appendItem(self, item)
-        self.pack_start(item, item.expand, item.expand)
+        pack(self, item, item.expand, item.expand)
         if item.enable:
             item.show()
 
@@ -121,14 +116,14 @@ class CustomizeDialog(gtk.Dialog):
         ##
         cell = gtk.CellRendererToggle()
         cell.connect('toggled', self.enableCellToggled)
-        col.pack_start(cell, expand=False)
+        pack(col, cell, expand=False)
         col.add_attribute(cell, 'active', 0)
         ##
         treev.append_column(col)
         col = gtk.TreeViewColumn('Widget')
         ##
         cell = gtk.CellRendererText()
-        col.pack_start(cell, expand=False)
+        pack(col, cell, expand=False)
         col.add_attribute(cell, 'text', 1)
         ##
         treev.append_column(col)
@@ -139,8 +134,8 @@ class CustomizeDialog(gtk.Dialog):
         ###
         hbox = gtk.HBox()
         vbox_l = gtk.VBox()
-        vbox_l.pack_start(treev, 1, 1)
-        hbox.pack_start(vbox_l, 1, 1)
+        pack(vbox_l, treev, 1, 1)
+        pack(hbox, vbox_l, 1, 1)
         ###
         toolbar = gtk.Toolbar()
         toolbar.set_orientation(gtk.ORIENTATION_VERTICAL)
@@ -158,8 +153,8 @@ class CustomizeDialog(gtk.Dialog):
         tb.connect('clicked', self.downClicked)
         toolbar.insert(tb, -1)
         ###
-        hbox.pack_start(toolbar, 0, 0)
-        self.vbox.pack_start(hbox, 1, 1)
+        pack(hbox, toolbar)
+        pack(self.vbox, hbox, 1, 1)
         self.vbox_l = vbox_l
         ###
         self.vbox.connect('size-request', self.vboxSizeRequest)
@@ -191,7 +186,7 @@ class CustomizeDialog(gtk.Dialog):
         item = self.getItemByPath(index_list)
         if item.optionsWidget:
             self.activeOptionsWidget = item.optionsWidget
-            self.vbox_l.pack_start(item.optionsWidget, 0, 0)
+            pack(self.vbox_l, item.optionsWidget)
             item.optionsWidget.show()
     def upClicked(self, button):
         model = self.model

@@ -1,12 +1,10 @@
 # -*- coding: utf-8 -*-
 from scal2 import core
 from scal2.locale_man import tr as _
-
 from scal2 import event_lib
 from scal2 import ui
 
-import gtk
-from gtk import gdk
+from scal2.ui_gtk import *
 
 class NotifierWidget(gtk.Entry):
     def __init__(self, notifier):
@@ -37,12 +35,12 @@ def notify(notifier, finishFunc):## FIXME
     hbox.set_spacing(15)
     hbox.set_border_width(10)
     if event.icon:
-        hbox.pack_start(gtk.image_new_from_file(event.icon), 0, 0)
+        pack(hbox, gtk.image_new_from_file(event.icon))
         dialog.set_icon_from_file(event.icon)
     label = gtk.Label(text)
     label.set_selectable(True)
-    hbox.pack_start(label, 1, 1)
-    dialog.vbox.pack_start(hbox)
+    pack(hbox, label, 1, 1)
+    pack(dialog.vbox, hbox)
     ####
     okB = dialog.add_button(gtk.STOCK_OK, 3)
     okB.connect('clicked', hideWindow, dialog)

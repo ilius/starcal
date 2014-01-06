@@ -1,15 +1,14 @@
 from os.path import isfile
 
 from scal2.cal_types import calTypes
-from scal2.import_customday import customFile, importAndDeleteCustomDB
-from scal2.locale_man import tr as _
 from scal2 import core
+from scal2.locale_man import tr as _
 from scal2 import ui
+from scal2.import_customday import customFile, importAndDeleteCustomDB
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import dialog_add_button, DateTypeCombo
+
 
 class CustomDayImporterDialog(gtk.Dialog):
     def onResponse(self, dialog, response_id):
@@ -31,12 +30,12 @@ class CustomDayImporterDialog(gtk.Dialog):
         label = gtk.Label(_('Calendar Type'))
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         combo = DateTypeCombo()
         combo.set_active(calTypes.primary)
-        hbox.pack_start(combo, 0, 0)
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(hbox, combo)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(self.vbox, hbox)
         self.modeCombo = combo
         ####
         hbox = gtk.HBox()
@@ -44,11 +43,11 @@ class CustomDayImporterDialog(gtk.Dialog):
         label = gtk.Label(_('Group Title'))
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
-        hbox.pack_start(label, 0, 0)
+        pack(hbox, label)
         self.groupTitleEntry = gtk.Entry()
         self.groupTitleEntry.set_text(_('Imported Events'))
-        hbox.pack_start(self.groupTitleEntry, 0, 0)
-        self.vbox.pack_start(hbox, 0, 0)
+        pack(hbox, self.groupTitleEntry)
+        pack(self.vbox, hbox)
         ####
         self.vbox.show_all()
 

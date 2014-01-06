@@ -21,9 +21,8 @@ from time import localtime, strftime
 from time import time as now
 
 from gobject import timeout_add
-import gtk
-from gtk import gdk
 
+from scal2.ui_gtk import *
 from scal2.ui_gtk.font_utils import *
 
 time_rem = lambda: int(1000*(1.01-now()%1))

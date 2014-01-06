@@ -21,11 +21,11 @@
 import time
 from time import time as now
 
-from scal2.locale_man import tr as _
-from scal2.cal_types import calTypes, gregorian, to_jd
 from scal2.time_utils import getUtcOffsetByDateSec
-
+from scal2.cal_types import calTypes, gregorian, to_jd
 from scal2 import core
+from scal2.locale_man import tr as _
+
 
 
 ## Return Julian day of given ISO year, week, and day

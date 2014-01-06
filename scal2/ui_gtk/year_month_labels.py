@@ -21,20 +21,14 @@ from time import time as now
 
 from scal2.cal_types import calTypes
 from scal2 import core
-
-from scal2 import locale_man
 from scal2.locale_man import getMonthName, rtl
 from scal2.locale_man import tr as _
-
-
 from scal2 import ui
 
 import gobject
 from gobject import timeout_add
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import set_tooltip, setClipboard
 from scal2.ui_gtk.drawing import newTextLayout, setColor
@@ -352,16 +346,16 @@ class YearLabelButtonBox(gtk.HBox):
     def __init__(self, mode, **kwargs):
         gtk.HBox.__init__(self)
         ###
-        self.pack_start(
+        pack(self, 
             newSmallNoFocusButton(gtk.STOCK_REMOVE, self.prevClicked, _('Previous Year')),
             0,
             0,
         )
         ###
         self.label = YearLabel(mode, **kwargs)
-        self.pack_start(self.label, 0, 0)
+        pack(self, self.label)
         ###
-        self.pack_start(
+        pack(self, 
             newSmallNoFocusButton(gtk.STOCK_ADD, self.nextClicked, _('Next Year')),
             0,
             0,
@@ -378,16 +372,16 @@ class MonthLabelButtonBox(gtk.HBox):
     def __init__(self, mode, **kwargs):
         gtk.HBox.__init__(self)
         ###
-        self.pack_start(
+        pack(self, 
             newSmallNoFocusButton(gtk.STOCK_REMOVE, self.prevClicked, _('Previous Month')),
             0,
             0,
         )
         ###
         self.label = MonthLabel(mode, **kwargs)
-        self.pack_start(self.label, 0, 0)
+        pack(self, self.label)
         ###
-        self.pack_start(
+        pack(self, 
             newSmallNoFocusButton(gtk.STOCK_ADD, self.nextClicked, _('Next Month')),
             0,
             0,
@@ -419,28 +413,28 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
         mode = calTypes.primary
         ##
         box = YearLabelButtonBox(mode)
-        self.pack_start(box, 0, 0)
+        pack(self, box)
         self.appendItem(box.label)
         ##
-        self.pack_start(gtk.VSeparator(), 1, 1)
+        pack(self, gtk.VSeparator(), 1, 1)
         ##
         box = MonthLabelButtonBox(mode)
-        self.pack_start(box, 0, 0)
+        pack(self, box)
         self.appendItem(box.label)
         monthLabels.append(box.label)
         ####
         for i, mode in list(enumerate(calTypes.active))[1:]:
-            self.pack_start(gtk.VSeparator(), 1, 1)
+            pack(self, gtk.VSeparator(), 1, 1)
             label = YearLabel(mode)
-            self.pack_start(label, 0, 0)
+            pack(self, label)
             self.appendItem(label)
             ###############
             label = gtk.Label('')
             label.set_property('width-request', 5)
-            self.pack_start(label, 0, 0)
+            pack(self, label)
             ###############
             label = MonthLabel(mode)
-            self.pack_start(label, 0, 0)
+            pack(self, label)
             monthLabels.append(label)
             self.appendItem(label)
         ####
@@ -472,7 +466,7 @@ if __name__=='__main__':
         gdk.BUTTON_PRESS_MASK | gdk.BUTTON_RELEASE_MASK | gdk.SCROLL_MASK |
         gdk.KEY_PRESS_MASK | gdk.VISIBILITY_NOTIFY_MASK | gdk.EXPOSURE_MASK
     )
-    win.vbox.pack_start(box, 1, 1)
+    pack(win.vbox, box, 1, 1)
     win.vbox.show_all()
     win.resize(600, 400)
     box.onConfigChange()

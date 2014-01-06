@@ -24,30 +24,24 @@ import sys, os
 from os.path import join, isfile
 from math import pi, sqrt
 
-from scal2.locale_man import rtl, rtlSgn
-from scal2.locale_man import tr as _
-
 from scal2.cal_types import calTypes
 from scal2 import core
 from scal2.core import log, myRaise, getMonthName, getMonthLen, pixDir
-
+from scal2.locale_man import rtl, rtlSgn
+from scal2.locale_man import tr as _
 from scal2 import ui
 from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.drawing import *
-
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.mywidgets import MyFontButton, MyColorButton
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
+from scal2.ui_gtk.customize import CustomizableCalObj
 from scal2.ui_gtk.cal_base import CalBase
 from scal2.ui_gtk import preferences
-from scal2.ui_gtk.customize import CustomizableCalObj
-
 #from scal2.ui_gtk import desktop
 #from scal2.ui_gtk import wallpaper
 
@@ -61,30 +55,30 @@ class McalTypeParamBox(gtk.HBox):
         ######
         label = gtk.Label(_(calTypes[mode].desc)+'  ')
         label.set_alignment(0, 0.5)
-        self.pack_start(label, 0, 0)
+        pack(self, label)
         sgroupLabel.add_widget(label)
         ###
-        self.pack_start(gtk.Label(''), 1, 1)
-        self.pack_start(gtk.Label(_('position')), 0, 0)
+        pack(self, gtk.Label(''), 1, 1)
+        pack(self, gtk.Label(_('position')))
         ###
         spin = FloatSpinButton(-99, 99, 1)
         self.spinX = spin
-        self.pack_start(spin, 0, 0)
+        pack(self, spin)
         ###
         spin = FloatSpinButton(-99, 99, 1)
         self.spinY = spin
-        self.pack_start(spin, 0, 0)
+        pack(self, spin)
         ####
-        self.pack_start(gtk.Label(''), 1, 1)
+        pack(self, gtk.Label(''), 1, 1)
         ###
         fontb = MyFontButton(mcal)
         self.fontb = fontb
-        self.pack_start(fontb, 0, 0)
+        pack(self, fontb)
         sgroupFont.add_widget(fontb)
         ####
         colorb = MyColorButton()
         self.colorb = colorb
-        self.pack_start(colorb, 0, 0)
+        pack(self, colorb)
         ####
         self.set(params)
         ####
@@ -162,7 +156,7 @@ class MonthCal(gtk.Widget, CalBase):
             #except IndexError:
             ##
             hbox = McalTypeParamBox(self, i, mode, params, sgroupLabel, sgroupFont)
-            vbox.pack_start(hbox, 0, 0)
+            pack(vbox, hbox)
         ###
         vbox.show_all()
     def __init__(self):
@@ -174,51 +168,51 @@ class MonthCal(gtk.Widget, CalBase):
         spin = IntSpinButton(1, 9999)
         spin.set_value(ui.mcalHeight)
         spin.connect('changed', self.heightSpinChanged)
-        hbox.pack_start(gtk.Label(_('Height')), 0, 0)
-        hbox.pack_start(spin, 0, 0)
-        self.optionsWidget.pack_start(hbox, 0, 0)
+        pack(hbox, gtk.Label(_('Height')))
+        pack(hbox, spin)
+        pack(self.optionsWidget, hbox)
         ####
         hbox = gtk.HBox(spacing=3)
         ##
-        hbox.pack_start(gtk.Label(_('Left Margin')), 0, 0)
+        pack(hbox, gtk.Label(_('Left Margin')))
         spin = IntSpinButton(0, 99)
         spin.set_value(ui.mcalLeftMargin)
         spin.connect('changed', self.leftMarginSpinChanged)
-        hbox.pack_start(spin, 0, 0)
+        pack(hbox, spin)
         ##
-        hbox.pack_start(gtk.Label(_('Top')), 0, 0)
+        pack(hbox, gtk.Label(_('Top')))
         spin = IntSpinButton(0, 99)
         spin.set_value(ui.mcalTopMargin)
         spin.connect('changed', self.topMarginSpinChanged)
-        hbox.pack_start(spin, 0, 0)
+        pack(hbox, spin)
         ##
-        hbox.pack_start(gtk.Label(''), 1, 1)
-        self.optionsWidget.pack_start(hbox, 0, 0)
+        pack(hbox, gtk.Label(''), 1, 1)
+        pack(self.optionsWidget, hbox)
         ########
         hbox = gtk.HBox(spacing=3)
         ####
         item = CheckPrefItem(ui, 'mcalGrid', _('Grid'))
         item.updateWidget()
         gridCheck = item._widget
-        hbox.pack_start(gridCheck, 0, 0)
+        pack(hbox, gridCheck)
         gridCheck.item = item
         ####
         colorItem = ColorPrefItem(ui, 'mcalGridColor', True)
         colorItem.updateWidget()
-        hbox.pack_start(colorItem._widget, 0, 0)
+        pack(hbox, colorItem._widget)
         gridCheck.colorb = colorItem._widget
         gridCheck.connect('clicked', self.gridCheckClicked)
         colorItem._widget.item = colorItem
         colorItem._widget.connect('color-set', self.gridColorChanged)
         colorItem._widget.set_sensitive(ui.mcalGrid)
         ####
-        self.optionsWidget.pack_start(hbox, 0, 0)
+        pack(self.optionsWidget, hbox)
         ########
         frame = gtk.Frame(_('Calendars'))
         self.typeParamsVbox = gtk.VBox()
         frame.add(self.typeParamsVbox)
         frame.show_all()
-        self.optionsWidget.pack_start(frame, 0, 0)
+        pack(self.optionsWidget, frame)
         self.optionsWidget.show_all()
         self.updateTypeParamsWidget()## FIXME
         ######################
@@ -601,7 +595,7 @@ if __name__=='__main__':
         gdk.BUTTON_PRESS_MASK | gdk.BUTTON_RELEASE_MASK | gdk.SCROLL_MASK |
         gdk.KEY_PRESS_MASK | gdk.VISIBILITY_NOTIFY_MASK | gdk.EXPOSURE_MASK
     )
-    win.vbox.pack_start(cal, 1, 1)
+    pack(win.vbox, cal, 1, 1)
     win.vbox.show_all()
     win.resize(600, 400)
     win.run()

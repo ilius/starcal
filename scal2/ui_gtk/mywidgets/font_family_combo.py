@@ -1,8 +1,8 @@
+from scal2 import core
 from scal2.locale_man import tr as _
 from scal2 import ui
 
-import gtk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.font_utils import getFontFamilyList
 
 
@@ -12,7 +12,7 @@ class FontFamilyCombo(gtk.ComboBox):
         gtk.ComboBox.__init__(self, ls)
         ###
         cell = gtk.CellRendererText()
-        self.pack_start(cell, True)
+        pack(self, cell, True)
         self.add_attribute(cell, 'text', 1)
         ###
         if hasAuto:
@@ -41,7 +41,7 @@ class FontFamilyCombo(gtk.ComboBox):
 if __name__=='__main__':
     d = gtk.Dialog()
     combo = FontFamilyCombo(1)
-    d.vbox.pack_start(combo, 1, 1)
+    pack(d.vbox, combo, 1, 1)
     d.vbox.show_all()
     d.run()
     print(combo.get_value())

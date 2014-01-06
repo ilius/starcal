@@ -20,14 +20,12 @@
 import sys, os, time
 
 from scal2.utils import toUnicode, toStr, numRangesEncode, numRangesDecode
-
+from scal2 import core
 from scal2 import locale_man
 from scal2.locale_man import tr as _
 from scal2.locale_man import numDecode, textNumEncode, textNumDecode
 
-import gtk
-from gtk import gdk
-
+from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 
 def myRaise():

@@ -17,7 +17,10 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal2 import core
 from scal2.locale_man import tr as _
+
+from scal2.ui_gtk import *
 from scal2.ui_gtk.mywidgets.floatingMsg import *
 
 class NotifierWidget(gtk.HBox):
@@ -28,23 +31,23 @@ class NotifierWidget(gtk.HBox):
         ## [_] Fill Screen Width       Speed [__]      BG Color [__]     Text Color [__]
         ##
         self.fillWidthCb = gtk.CheckButton(_('Fill Width'))
-        self.pack_start(self.fillWidthCb, 0, 0)
-        self.pack_start(gtk.Label(''), 1, 1)
+        pack(self, self.fillWidthCb)
+        pack(self, gtk.Label(''), 1, 1)
         ##
         self.speedSpin = IntSpinButton(1, 999)
-        self.pack_start(gtk.Label(_('Speed')), 0, 0)
-        self.pack_start(self.speedSpin, 0, 0)
-        self.pack_start(gtk.Label(''), 1, 1)
+        pack(self, gtk.Label(_('Speed')))
+        pack(self, self.speedSpin)
+        pack(self, gtk.Label(''), 1, 1)
         ##
         self.bgColorButton = MyColorButton()
-        self.pack_start(gtk.Label(_('BG Color')), 0, 0)
-        self.pack_start(self.bgColorButton, 0, 0)
-        self.pack_start(gtk.Label(''), 1, 1)
+        pack(self, gtk.Label(_('BG Color')))
+        pack(self, self.bgColorButton)
+        pack(self, gtk.Label(''), 1, 1)
         ##
         self.textColorButton = MyColorButton()
-        self.pack_start(gtk.Label(_('Text Color')), 0, 0)
-        self.pack_start(self.textColorButton, 0, 0)
-        self.pack_start(gtk.Label(''), 1, 1)
+        pack(self, gtk.Label(_('Text Color')))
+        pack(self, self.textColorButton)
+        pack(self, gtk.Label(''), 1, 1)
     def updateWidget(self):
         self.fillWidthCb.set_active(self.notifier.fillWidth)
         self.speedSpin.set_value(self.notifier.speed)

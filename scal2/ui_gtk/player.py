@@ -23,7 +23,8 @@ from time import sleep
 import sys, os, re
 
 import gobject
-import gtk
+
+from scal2.ui_gtk import *
 
 try:
     import fcntl
@@ -240,7 +241,7 @@ class PlayerBox(gtk.HBox):
         self.fcb = gtk.FileChooserButton(title='Select Sound')
         self.fcb.set_local_only(True)
         self.fcb.set_property('width-request', 150)
-        self.pack_start(self.fcb, 0, 0)
+        pack(self, self.fcb)
         self.mplayer = MPlayer(self)
         self.connect('key-press-event', self.divert)
         self.connect('destroy', lambda self, *args: self.mplayer.close()) ## FIXME
@@ -250,12 +251,12 @@ class PlayerBox(gtk.HBox):
         self.playPauseBut = gtk.Button()
         self.playPauseBut.set_image(gtk.image_new_from_stock(gtk.STOCK_MEDIA_PLAY,gtk.ICON_SIZE_SMALL_TOOLBAR))
         self.playPauseBut.connect('clicked', self.playPause)
-        self.pack_start(self.playPauseBut, 0, 0)
+        pack(self, self.playPauseBut)
         #######
         stopBut = gtk.Button()
         stopBut.set_image(gtk.image_new_from_stock(gtk.STOCK_MEDIA_STOP,gtk.ICON_SIZE_SMALL_TOOLBAR))
         stopBut.connect('clicked', self.stop)
-        self.pack_start(stopBut, 0, 0)
+        pack(self, stopBut)
         ##############
         self.seekAdj = gtk.Adjustment(0, 0, 100, 1, 10, 0)
         #self.seekAdj.connect('value_changed', self.seekAdjChanged)#??????????????????
@@ -266,7 +267,7 @@ class PlayerBox(gtk.HBox):
         self.seekBar.set_draw_value(False)
         #self.seekBar.connect('format-value', self.displaySongString)
         self.seekBar.connect('button-release-event', self.seek)
-        self.pack_start(self.seekBar, 1, 1, 5)
+        pack(self, self.seekBar, 1, 1, 5)
         ################
         self.hasVol = hasVol
         if hasVol:
@@ -282,7 +283,7 @@ class PlayerBox(gtk.HBox):
             scale.set_value_pos(gtk.POS_TOP)
             scale.connect('format-value', self.displayVolString)
             scale.connect('key-press-event', self.divert)
-            self.pack_start(scale, False, False, 5)
+            pack(self, scale, False, False, 5)
     def divert(self, widget, event):
         key = event.hardware_keycode
         if key == self.key_seekback: # left arrow, seek
@@ -375,7 +376,7 @@ if __name__=='__main__':
     window.set_title('Simple PyGTK Interface for MPlayer')
     mainVbox = gtk.VBox(False, 0)
     pbox = PlayerBox()
-    mainVbox.pack_start(pbox, 0, 0)
+    pack(mainVbox, pbox)
     window.connect('destroy', pbox.quit)
     window.add(mainVbox)
     mainVbox.show_all()
