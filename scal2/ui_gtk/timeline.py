@@ -24,7 +24,8 @@ from time import time as now
 import math
 from math import pi
 
-from scal2.utils import toUnicode, iceil
+from scal2.utils import toUnicode
+from scal2.utils import iceil
 from scal2 import core
 from scal2.core import myRaise
 from scal2.locale_man import tr as _

@@ -42,7 +42,8 @@ if not isdir(confDir):
         myRaise()
     restartLow()
 
-from scal2.utils import toStr, toUnicode, versionLessThan
+from scal2.utils import toStr, toUnicode
+from scal2.utils import versionLessThan
 from scal2.cal_types import calTypes
 from scal2 import core
 from scal2.core import rootDir, pixDir, deskDir, myRaise, getMonthName, APP_DESC

@@ -23,7 +23,8 @@ import locale, gettext
 from subprocess import Popen
 
 from .path import *
-from scal2.utils import StrOrderedDict, toStr, toUnicode
+from scal2.utils import StrOrderedDict
+from scal2.utils import toStr, toUnicode
 from scal2.cal_types import calTypes
 
 

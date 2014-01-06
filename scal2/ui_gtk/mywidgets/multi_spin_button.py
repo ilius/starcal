@@ -21,7 +21,8 @@ import sys, os
 from time import localtime
 from time import time as now
 
-from scal2.utils import toUnicode, toStr, strFindNth, iceil, ifloor, printError
+from scal2.utils import toStr, toUnicode
+from scal2.utils import strFindNth, iceil, ifloor, printError
 from scal2.time_utils import getEpochFromJhms
 from scal2.cal_types import to_jd, jd_to, convert
 from scal2 import locale_man

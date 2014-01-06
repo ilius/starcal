@@ -43,7 +43,7 @@ from oauth2client.file import Storage
 from oauth2client.client import OAuth2WebServerFlow
 
 
-from scal2.utils import toUnicode, toStr
+from scal2.utils import toStr, toUnicode
 from scal2.ics import *
 from scal2.locale_man import tr as _
 from scal2 import core
