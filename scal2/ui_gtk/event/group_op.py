@@ -3,7 +3,7 @@ import pytz
 from scal2.locale_man import tr as _
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.utils import DateTypeCombo, dialog_add_button, TimeZoneComboBoxEntry
+from scal2.ui_gtk.utils import CalTypeCombo, dialog_add_button, TimeZoneComboBoxEntry
 from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 
@@ -71,7 +71,7 @@ class GroupConvertModeDialog(gtk.Dialog):
         ###
         hbox = gtk.HBox()
         pack(hbox, gtk.Label(_('Calendar Type')+':'))
-        combo = DateTypeCombo()
+        combo = CalTypeCombo()
         combo.set_active(group.mode)
         pack(hbox, combo)
         pack(hbox, gtk.Label(''), 1, 1)

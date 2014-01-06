@@ -7,7 +7,7 @@ from scal2 import ui
 from scal2.import_customday import customFile, importAndDeleteCustomDB
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.utils import dialog_add_button, DateTypeCombo
+from scal2.ui_gtk.utils import dialog_add_button, CalTypeCombo
 
 
 class CustomDayImporterDialog(gtk.Dialog):
@@ -31,7 +31,7 @@ class CustomDayImporterDialog(gtk.Dialog):
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
         pack(hbox, label)
-        combo = DateTypeCombo()
+        combo = CalTypeCombo()
         combo.set_active(calTypes.primary)
         pack(hbox, combo)
         pack(hbox, gtk.Label(''), 1, 1)

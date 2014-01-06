@@ -21,7 +21,7 @@ from scal2 import core
 from scal2.locale_man import tr as _
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.utils import set_tooltip, DateTypeCombo
+from scal2.ui_gtk.utils import set_tooltip, CalTypeCombo
 from scal2.ui_gtk.mywidgets import MyColorButton, TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 from scal2.ui_gtk.mywidgets.icon import IconSelectButton
@@ -68,7 +68,7 @@ class BaseGroupWidget(gtk.VBox):
         label.set_alignment(0, 0.5)
         pack(hbox, label)
         self.sizeGroup.add_widget(label)
-        combo = DateTypeCombo()
+        combo = CalTypeCombo()
         pack(hbox, combo)
         pack(hbox, gtk.Label(''), 1, 1)
         self.modeCombo = combo
