@@ -42,6 +42,5 @@ chmod 755 'scal2/starcal2-daemon.py'
 chmod 755 'scal2/ui_gtk/adjust_dtime.py'
 chmod 755 'scal2/ui_gtk/arch-enable-locale.py'
 chmod 755 'scal2/ui_gtk/import_config_1to2.py'
-chmod 755 'scal2/ui_gtk/screenlet/StarCalendarScreenlet.py'
 chmod 755 'scal2/ui_gtk/starcal-gnome2-applet.py'
 
