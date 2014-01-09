@@ -27,7 +27,7 @@ def cleanRawText(text):
                .replace('٬ ', '، ')\
                .replace('ي', 'ی')\
                .replace('ك', 'ک')
-               
+
 
 def parseFile(fpath, month, day):
     #print(fpath, month, day)

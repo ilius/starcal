@@ -80,7 +80,7 @@ def getMonthLen(year, month):
         return 35 + isLeap(year)
     else:
         return monthLen[month-1]
-        
+
 
 if __name__=='__main__':
     import sys

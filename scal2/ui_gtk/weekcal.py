@@ -213,10 +213,10 @@ class Column(gtk.Widget, ColumnBase):
                         continue
                     layoutW, layoutH = layout.get_pixel_size()
                     layoutX = (w-layoutW)/2.0
-                    layoutY = i*rowH + (lineI+0.5)*lineH - layoutH/2.0 
+                    layoutY = i*rowH + (lineI+0.5)*lineH - layoutH/2.0
                     cr.move_to(layoutX, layoutY)
                     if self.colorizeHolidayText and self.wcal.status[i].holiday:
-                        color = ui.holidayColor                
+                        color = ui.holidayColor
                     if not color:
                         color = ui.textColor
                     setColor(cr, color)
@@ -345,8 +345,8 @@ class WeekDaysColumn(Column):
             ],
         )
         self.drawCursorFg(cr)
-        
-        
+
+
 class PluginsTextColumn(Column):
     _name = 'pluginsText'
     desc = _('Plugins Text')
@@ -861,11 +861,11 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         self.status = getCurrentWeekStatus()
     def onConfigChange(self, *a, **kw):
         self.updateStatus()
-        CustomizableCalBox.onConfigChange(self, *a, **kw)        
+        CustomizableCalBox.onConfigChange(self, *a, **kw)
         self.queue_draw()
     def onDateChange(self, *a, **kw):
         self.updateStatus()
-        CustomizableCalBox.onDateChange(self, *a, **kw)        
+        CustomizableCalBox.onDateChange(self, *a, **kw)
         self.queue_draw()
         #for item in self.items:
         #    item.queue_draw()
@@ -951,7 +951,7 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
             return 0, 0
 
 
-    
+
 
 
 

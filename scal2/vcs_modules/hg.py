@@ -138,5 +138,5 @@ def getLastCommitIdUntilJd(obj, jd):
         return
     t0, t1, rev_id = last
     return str(obj.repo[rev_id])
-    
+
 

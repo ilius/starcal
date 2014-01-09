@@ -346,7 +346,7 @@ class YearLabelButtonBox(gtk.HBox):
     def __init__(self, mode, **kwargs):
         gtk.HBox.__init__(self)
         ###
-        pack(self, 
+        pack(self,
             newSmallNoFocusButton(gtk.STOCK_REMOVE, self.prevClicked, _('Previous Year')),
             0,
             0,
@@ -355,7 +355,7 @@ class YearLabelButtonBox(gtk.HBox):
         self.label = YearLabel(mode, **kwargs)
         pack(self, self.label)
         ###
-        pack(self, 
+        pack(self,
             newSmallNoFocusButton(gtk.STOCK_ADD, self.nextClicked, _('Next Year')),
             0,
             0,
@@ -372,7 +372,7 @@ class MonthLabelButtonBox(gtk.HBox):
     def __init__(self, mode, **kwargs):
         gtk.HBox.__init__(self)
         ###
-        pack(self, 
+        pack(self,
             newSmallNoFocusButton(gtk.STOCK_REMOVE, self.prevClicked, _('Previous Month')),
             0,
             0,
@@ -381,7 +381,7 @@ class MonthLabelButtonBox(gtk.HBox):
         self.label = MonthLabel(mode, **kwargs)
         pack(self, self.label)
         ###
-        pack(self, 
+        pack(self,
             newSmallNoFocusButton(gtk.STOCK_ADD, self.nextClicked, _('Next Month')),
             0,
             0,

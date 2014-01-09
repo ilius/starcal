@@ -273,7 +273,7 @@ class TimeLine(gtk.Widget, ud.IntegratedCalObj):
         if event.state & gdk.CONTROL_MASK:
             self.zoom(
                 isUp,
-                scrollZoomStep, 
+                scrollZoomStep,
                 float(event.x) / self.get_allocation().width,
             )
         else:

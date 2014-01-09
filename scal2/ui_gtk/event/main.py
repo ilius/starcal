@@ -69,7 +69,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         ui.saveLiveConf()
         ###
         self.hide()
-        self.emit('config-change')        
+        self.emit('config-change')
     def onConfigChange(self, *a, **kw):
         ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
         ###

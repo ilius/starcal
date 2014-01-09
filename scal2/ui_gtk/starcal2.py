@@ -369,7 +369,7 @@ class SeasonProgressBarMainWinItem(gtk.ProgressBar, CustomizableCalObj):
             )
         )
         self.set_fraction(frac)
-        
+
 
 @registerSignals
 class PluginsTextBox(gtk.VBox, CustomizableCalObj):

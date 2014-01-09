@@ -585,7 +585,7 @@ class WeekMonthEventRule(EventRule):
                 if startJd <= jd < endJd:
                     jds.add(jd)
         return JdSetOccurrence(jds)
-        
+
 
 
 @classes.rule.register
@@ -702,7 +702,7 @@ class DayTimeRangeEventRule(EventRule):
         'cycleLen',
     )
     params = (
-        'dayTimeStart', 
+        'dayTimeStart',
         'dayTimeEnd',
     )
     def __init__(self, parent):
@@ -761,7 +761,7 @@ class EndEventRule(DateAndTimeEventRule):
             self.getEpochFromJd(startJd),
             min(self.getEpochFromJd(endJd), self.getEpoch()),
         )
-        
+
 
 @classes.rule.register
 class DurationEventRule(EventRule):
@@ -1479,7 +1479,7 @@ class Event(JsonSObjBase, RuleContainer):
                     return False
                 yr = self.getAddRule('year')
                 interval = int(rrule.get('INTERVAL', 1))
-                
+
             elif rrule['FREQ'] == 'MONTHLY':
                 pass
             elif rrule['FREQ'] == 'WEEKLY':
@@ -2077,7 +2077,7 @@ class UniversityExamEvent(DailyNoteEvent):
         'dayTimeRange',
     )
     supportedRules = (
-        'date', 
+        'date',
         'dayTimeRange',
     )
     params = DailyNoteEvent.params + (
@@ -2105,7 +2105,7 @@ class UniversityExamEvent(DailyNoteEvent):
             return TimeRangeListOccurrence(
                 [
                     (
-                        epoch + startSec, 
+                        epoch + startSec,
                         epoch + endSec,
                     )
                 ]
@@ -2918,7 +2918,7 @@ class YearlyGroup(EventGroup):
     )
     params = EventGroup.params + (
         'showDate',
-    )           
+    )
     def __init__(self, _id=None):
         EventGroup.__init__(self, _id)
         self.showDate = True

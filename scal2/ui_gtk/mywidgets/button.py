@@ -33,7 +33,7 @@ class ConButtonBase:
 
 @registerSignals
 class ConButton(gtk.Button, ConButtonBase):
-    signals =[ 
+    signals =[
         ('con-clicked', []),
     ]
     def __init__(self, *args, **kwargs):
