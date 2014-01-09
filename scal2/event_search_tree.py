@@ -146,7 +146,7 @@ class EventSearchTree:
             ))
         try:
             if t0 == t1:
-                t1 += epsTm
+                t1 += epsTm ## needed? FIXME
             mt = (t0 + t1)/2.0
             dt = (t1 - t0)/2.0
             self.root = self.addStep(self.root, t0, t1, mt, dt, eid)
