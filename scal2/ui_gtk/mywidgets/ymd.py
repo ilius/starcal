@@ -28,7 +28,7 @@ class YearMonthDayBox(gtk.HBox):
         self.spinD = DaySpinButton()
         pack(self, self.spinD)
         self.comboMonthConn = comboMonth.connect('changed', self.comboMonthChanged)
-        self.spinY.connect('changed', self.comboMonthChanged) 
+        self.spinY.connect('changed', self.comboMonthChanged)
     def set_mode(self, mode):
         self.comboMonth.disconnect(self.comboMonthConn)
         self.mode = mode

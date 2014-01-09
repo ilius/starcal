@@ -104,6 +104,6 @@ class EventWidget(common.EventWidget):
         monthCombo.setValue(m2)
         self.daySpin.set_value(d2)
         self.event.mode = newMode
-        
+
 
 

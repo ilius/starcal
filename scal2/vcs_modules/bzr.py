@@ -183,7 +183,7 @@ def getTagShortStat(obj, prevTag, tag):
 
 ## returns str
 getTagShortStatLine = lambda obj, prevTag, tag:\
-    encodeShortStat(*getTagShortStat(obj, prevTag, tag))    
+    encodeShortStat(*getTagShortStat(obj, prevTag, tag))
 
 getFirstCommitEpoch = lambda obj: obj.firstRev.timestamp
 
@@ -196,7 +196,7 @@ def getLastCommitIdUntilJd(obj, jd):
         return
     t0, t1, rev_id = last
     return str(obj.repo.get_revision(rev_id))
-    
+
 
 
 

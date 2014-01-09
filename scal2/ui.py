@@ -410,7 +410,7 @@ def init():
     eventAccounts.load()
     eventGroups.load()
     eventTrash.load()
-    
+
 
 
 ######################################################################

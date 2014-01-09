@@ -371,7 +371,7 @@ class SeasonProgressBarMainWinItem(gtk.ProgressBar, CustomizableCalObj):
             )
         )
         self.set_fraction(frac)
-        
+
 
 @registerSignals
 class PluginsTextBox(gtk.VBox, CustomizableCalObj):
@@ -1104,7 +1104,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             y = ui.trayY0
         pmap.draw_layout(pmap.new_gc(), (s-w)/2, y, textLay, gdk.Color(*ui.trayTextColor))## , foreground, background)
         self.trayPix.get_from_drawable(pmap, self.get_screen().get_system_colormap(), 0, 0, 0, 0, s, s)
-        
+
         ######################################
         #self.sicon.set_from_pixbuf(self.trayPix)
         ######################################

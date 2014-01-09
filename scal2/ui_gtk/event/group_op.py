@@ -256,5 +256,5 @@ class GroupBulkEditDialog(gtk.Dialog):
                         event.afterModify()
                         event.save()
 
-                            
+
 

@@ -203,7 +203,7 @@ def newOutlineSquarePixbuf(color, size, innerSize=0, bgColor=None):
     #colormap = pmap.get_colormap()
     #pbuf.get_from_drawable(pmap, colormap, 0, 0, 0, 0, size, size)
     #pbuf.get_from_surface(surface)
-    
+
     #pbuf = GdkPixbuf.Pixbuf.get_from_surface(surface)
     data = surface.get_data()
     '''

@@ -148,9 +148,9 @@ class CalBase(CustomizableCalObj):
         cr.fill(rgbToGdkColor(ui.bgColor))
         cr.setColor(rgbToGdkColor(*ui.textColor))
         cr.draw_layout(textLay, 0, 0)
-        
-        
-        
+
+
+
         '''
         pmap = gdk.Pixmap(None, w, h, 24)
         #pmap.set_colormap(colormap)

@@ -47,7 +47,7 @@ def createDiscoveryEvent(group, atom):
     })
     #print(event.id)
     return event
-   
+
 
 if __name__=='__main__':
     ui.eventGroups.load()

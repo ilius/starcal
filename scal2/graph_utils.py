@@ -33,7 +33,7 @@ def colorGraph(g, add_height=True):
                     height[i] = c_end - c
                     break
         g.vs['color_h'] = height
-        
+
 
 
 

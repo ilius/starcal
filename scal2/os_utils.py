@@ -164,6 +164,6 @@ def goodkill(pid, interval=1, hung=20):
         sleep(interval)
 
 
-    
+
 
 

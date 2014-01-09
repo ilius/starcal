@@ -55,10 +55,10 @@ class Node:
             if child.min_t < self.min_t:
                 self.min_t = child.min_t
             if child.max_t > self.max_t:
-                self.max_t = child.max_t 
+                self.max_t = child.max_t
     #def updateCount(self):
     #    self.count = len(self.events) + getCount(self.left) + getCount(self.right)
-        
+
 
 def rotateLeft(h):
     #if not isRed(h.right):
@@ -270,7 +270,7 @@ class EventSearchTree:
         except KeyError:
             return
         try:
-            mt, dt = hp.getMin()## slower than getMax, but twice faster than max() and 
+            mt, dt = hp.getMin()## slower than getMax, but twice faster than max() and
         except ValueError:
             return
         return mt-dt, mt+dt
@@ -305,7 +305,7 @@ class EventSearchTree:
         s, n = self.calcAvgDepthStep(self.root, 0)
         if n > 0:
             return float(s) / n
-            
+
 
 
 if __name__=='__main__':

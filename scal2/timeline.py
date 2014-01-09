@@ -142,7 +142,7 @@ class Tick:
         self.color = color
 
 
-        
+
 
 #class Range:
 #    def __init__(self, start, end):

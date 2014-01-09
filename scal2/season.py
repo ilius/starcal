@@ -41,7 +41,7 @@ def test():
             s = getSeasonFromJd(jalali_to_jd(year, month, 1))
             print('%.4d/%.2d/01\t%.5f'%(year, month, s))
         #print
-    
+
 
 if __name__=='__main__':
     test()

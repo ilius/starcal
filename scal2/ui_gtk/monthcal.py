@@ -411,7 +411,7 @@ class MonthCal(gtk.DrawingArea, CalBase):
                             x0 - fontw/2.0 + params['pos'][0],
                             y0 - fonth/2.0 + params['pos'][1],
                         )
-                        show_layout(cr, daynum)                        
+                        show_layout(cr, daynum)
                     if cellHasCursor:
                         ##### Drawing Cursor Outline
                         cx0 = x0-self.dx/2.0+1

@@ -23,13 +23,13 @@ from math import floor, ceil
 from scal2.lib import OrderedDict
 
 try:
-    from collections import Iterable 
+    from collections import Iterable
 except ImportError:
     class Iterable:
-    
+
         def __iter__(self):
             raise NotImplementedError
-    
+
         @classmethod
         def __subclasshook__(cls, C):
             if cls is Iterable:
@@ -38,15 +38,15 @@ except ImportError:
             return NotImplemented
 
 try:
-    from collections import Iterator 
+    from collections import Iterator
 except ImportError:
     class Iterator(Iterable):
-    
+
         def __next__(self):
             raise StopIteration
-    
+
         __iter__ = lambda self: self
-    
+
         @classmethod
         def __subclasshook__(cls, C):
             if cls is Iterator:

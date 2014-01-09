@@ -350,7 +350,7 @@ def cutText(text, n):
     return newText
 
 addLRM = lambda text: LRM + toStr(text)
-    
+
 def popenDefaultLang(*args, **kwargs):
     global sysLangDefault, lang
     os.environ['LANG'] = sysLangDefault

@@ -55,7 +55,7 @@ class AllDateLabelsVBox(gtk.VBox, ud.IntegratedCalObj):
             sgroup.add_widget(label)
             pack(hbox, gtk.Label('  '))
             ###
-            pack(hbox, 
+            pack(hbox,
                 gtk.Label(
                     ui.cell.format(ud.dateFormatBin, i)
                 ),

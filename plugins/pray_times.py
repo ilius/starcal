@@ -133,7 +133,7 @@ def guessLocation(cityData):
     ## FIXME
     #for countryCity, countryCityLocale, lat, lng in cityData:
     return 'Tehran', 35.705, 51.4216
-    
+
 
 '''
 event_classes = api.get('event_lib', 'classes')
@@ -357,7 +357,7 @@ class TextPlug(BasePlugin, TextPlugUI):
             if toAzanSecs >= 0:
                 preAzanSec = azanSec - self.preAzanMinutes * 60
                 timeout_add_seconds(
-                    max(0, 
+                    max(0,
                         int(preAzanSec - secondsFromMidnight)
                     ),
                     self.doPlayPreAzan,

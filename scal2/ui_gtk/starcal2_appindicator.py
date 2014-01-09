@@ -93,6 +93,6 @@ class IndicatorStatusIconWrapper(appindicator.Indicator):
     def set_tooltip_text(self, text):
         #self.set_label_guide(text)
         pass
-        
+
 
 

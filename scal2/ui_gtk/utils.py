@@ -124,7 +124,7 @@ def labelMenuItem(label, func=None, *args):
 
 getStyleColor = lambda widget, state=gtk.StateType.NORMAL:\
     widget.get_style_context().get_color(state)
-    
+
 
 def modify_bg_all(widget, state, gcolor):
     print(widget.__class__.__name__)

@@ -88,7 +88,7 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
             self.hide()
         while gtk.events_pending():
             gtk.main_iteration_do(False)
-            
+
 
 if __name__=='__main__':
     BulkSaveTimeZoneDialog().run()
