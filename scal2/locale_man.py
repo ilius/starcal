@@ -237,7 +237,7 @@ def numEncode(num, mode=None, fillZero=0, negEnd=False):
                 mode = calTypes[mode].origLang
             except AttributeError:
                 mode = langSh
-    if mode=='en' or not mode in list(digits.keys()):
+    if mode=='en' or not mode in digits:
         if fillZero:
             return '%.*d'%(fillZero, num)
         else:

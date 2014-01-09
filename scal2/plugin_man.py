@@ -80,7 +80,7 @@ class BasePlugin:
             raise TypeError('invalid mode %r'%mode)
         ######
         kwargs.update(locals())
-        for k, v in list(self.prepareParams(kwargs).items()):
+        for k, v in self.prepareParams(kwargs).items():
             setattr(self, k, v)
         #########
         self.text = ''
@@ -88,7 +88,7 @@ class BasePlugin:
         self.load()
     def prepareParams(self, d):
         d2 = {}
-        for k, v in list(self.params.items()):
+        for k, v in self.params.items():
             d2[k] = d.get(k, v)
         return d2
     def clear(self):

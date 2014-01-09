@@ -406,7 +406,7 @@ class TimeZoneComboBoxEntry(gtk.HBox):
         )
     def appendOrderedDict(self, parentIter, dct):
         model = self.c.get_model()
-        for key, value in list(dct.items()):
+        for key, value in dct.items():
             if isinstance(value, dict):
                 itr = model.append(parentIter, [key, False])
                 self.appendOrderedDict(itr, value)

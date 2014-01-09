@@ -29,7 +29,7 @@ class SObjBase:
         dict([(param, getattr(self, param)) for param in self.params])
     def setData(self, data):
         #if isinstance(data, dict):## FIXME
-        for key, value in list(data.items()):
+        for key, value in data.items():
             if key in self.params:
                 setattr(self, key, value)
 

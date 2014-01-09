@@ -379,7 +379,7 @@ class LangPrefItem(PrefItem):
         self._widget = combo
         self.ls = ls
         self.append(join(pixDir, 'computer.png'), _('System Setting'))
-        for (key, data) in list(langDict.items()):
+        for (key, data) in langDict.items():
             self.append(data.flag, data.name)
     def append(self, imPath, label):
         if imPath=='':
