@@ -55,10 +55,13 @@ def getUtcOffsetByEpoch(epoch, tz=None):
         tz = get_localzone()
     try:
         return tz.utcoffset(datetime.fromtimestamp(epoch)).total_seconds()
+    except pytz.exceptions.AmbiguousTimeError:## FIXME
+        #d = datetime.fromtimestamp(epoch+3600)
+        #print('AmbiguousTimeError', d.year, d.month, d.day, d.hour, d.minute, d.second)
+        return tz.utcoffset(datetime.fromtimestamp(epoch+3600)).total_seconds()
     except (
         ValueError,
         OverflowError,
-        pytz.exceptions.AmbiguousTimeError,## FIXME
     ):
         return tz._utcoffset.total_seconds()
 
