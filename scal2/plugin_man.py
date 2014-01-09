@@ -210,7 +210,7 @@ class HolidayPlugin(BasePlugin):
             **self.prepareParams(locals())
         )
         self.holidays = {}
-        for modeName in holidays.keys():## .keys() in not neccesery
+        for modeName in holidays:
             try:
                 mode = calTypes.names.index(modeName)
             except ValueError:
