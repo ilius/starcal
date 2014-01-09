@@ -107,17 +107,17 @@ class PrefDialog(gtk.Dialog):
         ###########
         pack(vbox, hbox)
         ##########################
-        #try:
-        #    import appindicator
-        #except ImportError:
-        #    pass
-        #else:
-        item = CheckPrefItem(ui, 'useAppIndicator', _('Use AppIndicator'))
-        self.uiPrefItems.append(item)
-        hbox = gtk.HBox(spacing=3)
-        pack(hbox, item._widget)
-        pack(hbox, gtk.Label(''), 1, 1)
-        pack(vbox, hbox)
+        try:
+            from gi.repository import AppIndicator3 as appIndicator
+        except ImportError:
+            pass
+        else:
+            item = CheckPrefItem(ui, 'useAppIndicator', _('Use AppIndicator'))
+            self.uiPrefItems.append(item)
+            hbox = gtk.HBox(spacing=3)
+            pack(hbox, item._widget)
+            pack(hbox, gtk.Label(''), 1, 1)
+            pack(vbox, hbox)
         ##########################
         hbox = gtk.HBox(spacing=3)
         pack(hbox, gtk.Label(_('Show Digital Clock:')))

@@ -986,14 +986,14 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             self.trayPix = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, ui.traySize, ui.traySize)
             ####
             useAppIndicator = ui.useAppIndicator
-            #if useAppIndicator:
-            #    try:
-            #        import appindicator
-            #    except ImportError:
-            #        useAppIndicator = False
             if useAppIndicator:
-                #from scal2.ui_gtk.starcal2_appindicator import IndicatorStatusIconWrapper
-                #self.sicon = IndicatorStatusIconWrapper(self)
+                try:
+                    from gi.repository import AppIndicator3 as appIndicator
+                except ImportError:
+                    useAppIndicator = False
+            if useAppIndicator:
+                from scal2.ui_gtk.starcal2_appindicator import IndicatorStatusIconWrapper
+                self.sicon = IndicatorStatusIconWrapper(self)
                 self.sicon = None
                 ## FIXME
             else:

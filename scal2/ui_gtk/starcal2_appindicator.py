@@ -31,7 +31,7 @@ from scal2.locale_man import tr as _
 from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import CopyLabelMenuItem
 
-import appindicator
+from gi.repository import AppIndicator3 as appIndicator
 
 class IndicatorStatusIconWrapper(appindicator.Indicator):
     imPath = join(tmpDir, 'starcal2-indicator-%s.png'%os.getuid())## FIXME
