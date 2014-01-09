@@ -378,10 +378,10 @@ if __name__=='__main__':
     #from scal2 import core
     #from scal2.locale_man import rtl
     #if rtl:
-    #    Gtk.widget_set_default_direction(Gtk.TextDirection.RTL)
+    #    gtk.widget_set_default_direction(gtk.TextDirection.RTL)
     dialog = LocationDialog(readLocationData())
-    dialog.connect('delete-event', Gtk.main_quit)
-    #dialog.connect('response', Gtk.main_quit)
+    dialog.connect('delete-event', gtk.main_quit)
+    #dialog.connect('response', gtk.main_quit)
     dialog.resize(600, 600)
     print(dialog.run())
     #gtk.main()
