@@ -66,6 +66,7 @@ from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import *
 from scal2.ui_gtk.color_utils import rgbToGdkColor
+from scal2.ui_gtk.font_utils import pfontEncode
 from scal2.ui_gtk.drawing import newTextLayout, newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets.clock import FClockLabel
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
@@ -994,8 +995,6 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             if useAppIndicator:
                 from scal2.ui_gtk.starcal2_appindicator import IndicatorStatusIconWrapper
                 self.sicon = IndicatorStatusIconWrapper(self)
-                self.sicon = None
-                ## FIXME
             else:
                 self.sicon = gtk.StatusIcon()
                 ##self.sicon.set_blinking(True) ## for Alarms ## some problem with gnome-shell
@@ -1006,7 +1005,6 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
                 self.sicon.connect('button-press-event', self.trayButtonPress)
                 self.sicon.connect('activate', self.trayClicked)
                 self.sicon.connect('popup-menu', self.trayPopup)
-                self.sicon.set_from_file(join(pixDir, 'starcal2-24.png'))
                 #self.sicon.set_from_stock(gtk.STOCK_HOME)
         else:
             self.sicon = None
@@ -1081,8 +1079,11 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         im = Image.open(imagePath)
         w, h = im.size
         draw = ImageDraw.Draw(im)
-        text = _(ddate[2]).decode('utf8')
-        font = ImageFont.truetype('/usr/share/fonts/TTF/DejaVuSans.ttf', 15)
+        text = _(ddate[2])
+        #fontPath = pfontEncode(ui.getFont()).to_filename()
+        #print('-----------------', fontPath)
+        #font = ImageFont.truetype(fontPath, 15)
+        font = ImageFont.load_default()
         fw, fh = font.getsize(text)
         draw.text(
             ((w-fw)/2, (h-fh)/2),
@@ -1090,9 +1091,20 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             font=font,
             fill=ui.trayTextColor,
         )
-        self.sicon.set_from_pixbuf(GdkPixbuf.Pixbuf.new_from_data(im.tostring(), GdkPixbuf.Colorspace.RGB, True, 8, w, h, 4*w))
+        self.sicon.set_from_pixbuf(GdkPixbuf.Pixbuf.new_from_data(
+            im.tostring(),
+            GdkPixbuf.Colorspace.RGB,
+            True,## has_alpha
+            8,## bits_per_sample
+            w,## width
+            h,## height
+            4*w,## rowstride
+            None,## destroy_fn
+            None,## destroy_fn_data
+        ))
         pixbuf = GdkPixbuf.Pixbuf.new_from_file(imagePath)
         ##pixbuf.scale() #????????????
+        '''
         ###################### PUTTING A TEXT ON A PIXBUF
         pmap = pixbuf.render_pixmap_and_mask(alpha_threshold=127)[0] ## pixmap is also a drawable
         textLay = newTextLayout(self, _(ddate[2]), ui.trayFont)
@@ -1108,6 +1120,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ######################################
         #self.sicon.set_from_pixbuf(self.trayPix)
         ######################################
+        '''
     def trayUpdate(self, gdate=None, checkTrayMode=True):
         if checkTrayMode and self.trayMode < 1:
             return
@@ -1118,6 +1131,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             ddate = gdate
         else:
             ddate = core.convert(gdate[0], gdate[1], gdate[2], core.DATE_GREG, calTypes.primary)
+        #######
+        self.sicon.set_from_file(join(pixDir, 'starcal2-24.png'))
         #self.trayUpdateIcon(ddate)
         #######
         set_tooltip(self.sicon, self.getTrayTooltip())

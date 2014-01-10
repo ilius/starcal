@@ -23,7 +23,7 @@ from os.path import join, isabs
 from subprocess import Popen
 
 from scal2.utils import myRaise
-from scal2.utils import toBytes
+from scal2.utils import toBytes, toStr
 from scal2.json_utils import *
 from scal2.path import pixDir, rootDir
 from scal2.cal_types import calTypes
@@ -61,8 +61,10 @@ buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter())
 def setClipboard(text, clipboard=None):
     if not clipboard:
         clipboard = gtk.Clipboard.get(gdk.SELECTION_CLIPBOARD)
-    text = toBytes(text)
-    clipboard.set_text(text, len(text))
+    clipboard.set_text(
+        toStr(text),
+        len(toBytes(text)),
+    )
     #clipboard.store() ## ?????? No need!
 
 def imageFromFile(path):## the file must exist

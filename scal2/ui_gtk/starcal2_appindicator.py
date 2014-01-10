@@ -31,20 +31,19 @@ from scal2.locale_man import tr as _
 from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import CopyLabelMenuItem
 
-from gi.repository import AppIndicator3 as appIndicator
+from gi.repository import AppIndicator3 as appindicator
 
-class IndicatorStatusIconWrapper(appindicator.Indicator):
+class IndicatorStatusIconWrapper:
     imPath = join(tmpDir, 'starcal2-indicator-%s.png'%os.getuid())## FIXME
     def __init__(self, mainWin):
         self.mainWin = mainWin
-        appindicator.Indicator.__init__(
-            self,
+        self.c = appindicator.Indicator.new(
             'starcal2',## app id
-            'starcal2',## icon
-            appindicator.CATEGORY_APPLICATION_STATUS,
+            '',## icon
+            appindicator.IndicatorCategory.APPLICATION_STATUS,
         )
-        self.set_status(appindicator.STATUS_ACTIVE)
-        #self.set_attention_icon("new-messages-red")
+        self.c.set_status(appindicator.IndicatorStatus.ACTIVE)
+        #self.c.set_attention_icon("new-messages-red")
         ######
         self.create_menu()
     '''
@@ -57,7 +56,7 @@ class IndicatorStatusIconWrapper(appindicator.Indicator):
         ###
         #if locale_man.rtl:
             #menu.set_direction(gtk.TextDirection.RTL)
-        self.set_menu(menu)
+        self.c.set_menu(menu)
     '''
     def create_menu(self):
         menu = gtk.Menu()
@@ -79,19 +78,21 @@ class IndicatorStatusIconWrapper(appindicator.Indicator):
         sitem.set_submenu(submenu)
         sitem.show()
         menu.append(sitem)
-        self.set_menu(menu)
-    def set_from_pixbuf(self, pbuf):
-        pbuf.save(self.imPath, 'png')
-        self.set_icon('')
-        self.set_icon(self.imPath)
+        self.c.set_menu(menu)
+    def set_from_file(self, fpath):
+        self.c.set_icon('')
+        self.c.set_icon(fpath)
         self.create_menu()
+    def set_from_pixbuf(self, pbuf):
+        pbuf.savev(self.imPath, 'png', [], [])
+        self.set_from_file(self.imPath)
     #def __del__(self):
     #    os.remove(self.imPath)
     is_embedded = lambda self: True ## FIXME
     def set_visible(self, visible):## FIXME
         pass
     def set_tooltip_text(self, text):
-        #self.set_label_guide(text)
+        #self.c.set_label_guide(text)
         pass
 
 
