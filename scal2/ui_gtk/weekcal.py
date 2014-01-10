@@ -240,7 +240,8 @@ class MainMenuToolbarItem(ToolbarItem):
         self.show_all()
     def getMenuPos(self):
         wcal = self.get_parent().get_parent()
-        x, y, w, h = self.get_allocation()
+        w = self.get_allocation().width
+        h = self.get_allocation().height
         x0, y0 = self.translate_coordinates(wcal, 0, 0)
         return (
             x0 if rtl else x0+w,

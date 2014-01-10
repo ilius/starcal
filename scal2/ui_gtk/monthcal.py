@@ -233,7 +233,8 @@ class MonthCal(gtk.DrawingArea, CalBase):
         #event = gtk.get_current_event()
         #?????? Must enhance (only draw few cells, not all cells)
         self.calcCoord()
-        x, y, w, h = self.get_allocation()
+        w = self.get_allocation().width
+        h = self.get_allocation().height
         if not cr:
             cr = self.get_window().cairo_create()
             #cr.set_line_width(0)#??????????????
@@ -479,7 +480,8 @@ class MonthCal(gtk.DrawingArea, CalBase):
                 self.emit('popup-menu-cell', event.time, event.x, event.y)
         return True
     def calcCoord(self):## calculates coordidates (x and y of cells centers)
-        x, y, w, h = self.get_allocation()
+        w = self.get_allocation().width
+        h = self.get_allocation().height
         if rtl:
             self.cx = [
                 (w - ui.mcalLeftMargin) * (13.0 - 2*i) / 14.0
