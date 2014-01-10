@@ -53,7 +53,8 @@ class BaseLabel(gtk.EventBox):
         cr = self.get_window().cairo_create()
         setColor(cr, self.highlightColor)
         #print(tuple(self.get_allocation()), tuple(self.label.get_allocation()))
-        x, y, w, h = self.get_allocation()
+        w = self.get_allocation().width
+        h = self.get_allocation().height
         cr.rectangle(0, 0, w, 1)
         cr.fill()
         cr.rectangle(0, h-1, w, 1)
@@ -67,7 +68,8 @@ class BaseLabel(gtk.EventBox):
         #self.drag_unhighlight()
         if self.get_window()==None:
             return
-        x, y, w, h = self.get_allocation()
+        w = self.get_allocation().width
+        h = self.get_allocation().height
         self.get_window().clear_area(0, 0, w, 1)
         self.get_window().clear_area(0, h-1, w, 1)
         self.get_window().clear_area(0, 0, 1, h)
