@@ -655,24 +655,9 @@ boldYmLabel = True ## apply in Pref FIXME
 showYmArrows = True ## apply in Pref FIXME
 labelMenuDelay = 0.1 ## delay for shift up/down items of menu for right click on YearLabel
 ####################
-trayImage = join(pixDir, 'tray-green.png')
-trayImageHoli = join(pixDir, 'tray-red.png')
-trayBgColor = (-1, -1, -1, 0) ## how to get bg color of gnome panel ????????????
-trayTextColor = (0, 0, 0)
-traySize = 22
-trayFont = None
-trayY0 = None
-
-'''
-trayImage = join(pixDir, 'tray-dark.png')
-trayImageHoli = join(pixDir, 'tray-dark.png')
-trayBgColor = (0, 0, 0) ## how to get bg color of gnome panel ????????????
-trayTextColor = (255, 255, 255)
-traySize = 21
-trayFont = None
-trayY0 = 4
-'''
-
+trayImage = join(pixDir, 'tray-green.svg')
+trayImageHoli = join(pixDir, 'tray-red.svg')
+#trayFont = None
 ####################
 menuActiveLabelColor = "#ff0000"
 pluginsTextTray = False
