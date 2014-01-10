@@ -995,8 +995,6 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
     #weekCalShow = lambda self, obj=None, data=None: openWindow(ui.weekCalWin)
     def trayInit(self):
         if self.trayMode==2:
-            self.trayPix = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, ui.traySize, ui.traySize)
-            ####
             useAppIndicator = ui.useAppIndicator
             if useAppIndicator:
                 try:
@@ -1079,6 +1077,18 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             itemS += item['text'][0]
             tt += '\n\n%s'%itemS
         return tt
+    def trayUpdateIcon(self, ddate):## FIXME
+        imagePath = ui.trayImageHoli if ui.todayCell.holiday else ui.trayImage
+        loader = gdk.pixbuf_loader_new_with_mime_type('image/svg')
+        svgText = open(imagePath).read().replace(
+            'TX',
+            _(ddate[2]),
+        )
+        ## replace font with ui.trayFont FIXME
+        loader.write(svgText)
+        loader.close()
+        pixbuf = loader.get_pixbuf()
+        self.sicon.set_from_pixbuf(pixbuf)
     def trayUpdate(self, gdate=None, checkTrayMode=True):
         if checkTrayMode and self.trayMode < 1:
             return
@@ -1088,40 +1098,10 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             ddate = gdate
         else:
             ddate = core.convert(gdate[0], gdate[1], gdate[2], core.DATE_GREG, calTypes.primary)
-        imagePath = ui.trayImageHoli if ui.todayCell.holiday else ui.trayImage
-        ######################################
-        '''
-        import Image, ImageDraw, ImageFont
-        im = Image.open(imagePath)
-        w, h = im.size
-        draw = ImageDraw.Draw(im)
-        text = _(ddate[2]).decode('utf8')
-        font = ImageFont.truetype('/usr/share/fonts/TTF/DejaVuSans.ttf', 15)
-        fw, fh = font.getsize(text)
-        draw.text(
-            ((w-fw)/2, (h-fh)/2),
-            text,
-            font=font,
-            fill=ui.trayTextColor,
-        )
-        self.sicon.set_from_pixbuf(gdk.pixbuf_new_from_data(im.tostring(), gdk.COLORSPACE_RGB, True, 8, w, h, 4*w))
-        '''
-        pixbuf = gdk.pixbuf_new_from_file(imagePath)
-        ##pixbuf.scale() #????????????
-        ###################### PUTTING A TEXT ON A PIXBUF
-        pmap = pixbuf.render_pixmap_and_mask(alpha_threshold=127)[0] ## pixmap is also a drawable
-        textLay = newTextLayout(self, _(ddate[2]), ui.trayFont)
-        w, h = textLay.get_pixel_size()
-        s = ui.traySize
-        if ui.trayY0 == None:
-            y = s/4+int((0.9*s-h)/2)
-        else:
-            y = ui.trayY0
-        pmap.draw_layout(pmap.new_gc(), (s-w)/2, y, textLay, gdk.Color(*ui.trayTextColor))## , foreground, background)
-        self.trayPix.get_from_drawable(pmap, self.get_screen().get_system_colormap(), 0, 0, 0, 0, s, s)
-        ######################################
-        self.sicon.set_from_pixbuf(self.trayPix)
-        ######################################
+        #######
+        self.sicon.set_from_file(join(pixDir, 'starcal2-24.png'))
+        self.trayUpdateIcon(ddate)
+        #######
         set_tooltip(self.sicon, self.getTrayTooltip())
         return True
     def trayButtonPress(self, obj, gevent):
