@@ -250,6 +250,45 @@ class PrefDialog(gtk.Dialog):
         pack(hbox, gtk.Label(''), 1, 1)
         ###
         pack(vbox, hbox)
+        ###################
+        exp = gtk.Expander()
+        label = gtk.Label('<b>%s</b>'%_('Tray Icon'))
+        label.set_use_markup(True)
+        exp.set_label_widget(label)
+        expVbox = gtk.VBox(spacing=1)
+        exp.add(expVbox)
+        exp.set_expanded(True)
+        sgroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        ####
+        hbox = gtk.HBox(spacing=1)
+        label = gtk.Label(_('Normal Days'))
+        sgroup.add_widget(label)
+        pack(hbox, label)
+        item = FileChooserPrefItem(
+            ui,
+            'trayImage',
+            _('Select Icon'),
+            pixDir,
+        )
+        self.uiPrefItems.append(item)
+        pack(hbox, item._widget, 1, 1)
+        pack(expVbox, hbox)
+        ####
+        hbox = gtk.HBox(spacing=1)
+        label = gtk.Label(_('Holidays'))
+        sgroup.add_widget(label)
+        pack(hbox, label)
+        item = FileChooserPrefItem(
+            ui,
+            'trayImageHoli',
+            _('Select Icon'),
+            pixDir,
+        )
+        self.uiPrefItems.append(item)
+        pack(hbox, item._widget, 1, 1)
+        pack(expVbox, hbox)        
+        ####
+        pack(vbox, exp)
         ################################ Tab 3 (Advanced) ###########################################
         vbox = gtk.VBox()
         vbox.label = _('A_dvanced')
