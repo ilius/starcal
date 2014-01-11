@@ -18,7 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 import sys, os
-from os.path import join, isabs
+from os.path import join, split, isabs
 
 from scal2.path import *
 from scal2.cal_types import calTypes
@@ -231,6 +231,19 @@ class SpinPrefItem(PrefItem):
         self._widget = w
         self.get = w.get_value
         self.set = w.set_value
+
+class FileChooserPrefItem(PrefItem):
+    def __init__(self, module, varName, title='Select File', currentFolder=''):
+        self.module = module
+        self.varName = varName
+        w = gtk.FileChooserButton(title)
+        w.set_local_only(True)
+        if currentFolder:
+            w.set_current_folder(currentFolder)
+        self._widget = w
+        self.get = w.get_filename
+        self.set = w.set_filename
+
 
 class RadioListPrefItem(PrefItem):
     def __init__(self, vertical, module, varName, texts, label=None):
