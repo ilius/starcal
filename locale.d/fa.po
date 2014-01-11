@@ -1976,6 +1976,12 @@ msgid "Rounding Factor"
 msgstr ""
 "ضریب گردی"
 
+msgid "Tray Icon"
+msgstr ""
+"شمایل Tray"
+msgid "Normal Days"
+msgstr ""
+"روزهای عادی"
 
 msgid "Width"
 msgstr ""
