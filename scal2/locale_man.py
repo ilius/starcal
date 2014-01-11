@@ -244,7 +244,9 @@ def numEncode(num, mode=None, fillZero=0, negEnd=False):
     res = u''
     for c in unicode(abs(num)):
         if c==u'.':
-            res += tr('.')
+            if enableNumLocale:
+                c = tr('.')
+            res += c
         else:
             res += dig[int(c)]
     if fillZero>0:
@@ -273,12 +275,13 @@ def textNumEncode(st, mode=None, changeSpecialChars=True, changeDot=False):
         try:
             i = int(c)
         except:
-            if c in (',', '_'):## FIXME
-                if changeSpecialChars:
-                    c = tr(c)
-            elif c=='.':## FIXME
-                if changeDot:
-                    c = tr(c)
+            if enableNumLocale:
+                if c in (',', '_', '%'):## FIXME
+                    if changeSpecialChars:
+                        c = tr(c)
+                elif c=='.':## FIXME
+                    if changeDot:
+                        c = tr(c)
             res += c
         else:
             res += dig[i]
