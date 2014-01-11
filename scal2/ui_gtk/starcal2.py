@@ -27,7 +27,7 @@ if sys.version_info[0] != 2:
 from time import time as now
 from time import localtime
 import os
-from os.path import join, dirname, isfile, isdir
+from os.path import join, dirname, isfile, isdir, splitext
 from subprocess import Popen
 from pprint import pprint, pformat
 
@@ -1079,13 +1079,16 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         return tt
     def trayUpdateIcon(self, ddate):## FIXME
         imagePath = ui.trayImageHoli if ui.todayCell.holiday else ui.trayImage
-        loader = gdk.pixbuf_loader_new_with_mime_type('image/svg')
-        svgText = open(imagePath).read().replace(
-            'TX',
-            _(ddate[2]),
-        )
-        ## replace font with ui.trayFont FIXME
-        loader.write(svgText)
+        ext = splitext(imagePath)[1][1:].lower()
+        loader = gdk.pixbuf_loader_new_with_mime_type('image/%s'%ext)
+        data = open(imagePath).read()
+        if ext == 'svg':
+            data = data.replace(
+                'TX',
+                _(ddate[2]),
+            )
+            ## replace font with ui.trayFont FIXME
+        loader.write(data)
         loader.close()
         pixbuf = loader.get_pixbuf()
         self.sicon.set_from_pixbuf(pixbuf)
