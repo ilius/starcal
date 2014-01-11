@@ -80,11 +80,13 @@ class IndicatorStatusIconWrapper(appindicator.Indicator):
         sitem.show()
         menu.append(sitem)
         self.set_menu(menu)
+    def set_from_file(self, fpath):
+        self.set_icon('')
+        self.set_icon(fpath)
+        self.create_menu()
     def set_from_pixbuf(self, pbuf):
         pbuf.save(self.imPath, 'png')
-        self.set_icon('')
-        self.set_icon(self.imPath)
-        self.create_menu()
+        self.set_from_file(self.imPath)
     #def __del__(self):
     #    os.remove(self.imPath)
     is_embedded = lambda self: True ## FIXME
