@@ -111,7 +111,15 @@ class PrefItem():
     updateWidget = lambda self: self.set(getattr(self.module, self.varName))
     ## confStr(): gets the value from variable (not from GUI) and returns a string to save to file
     ## the string will has a NEWLINE at the END
-    confStr = lambda self: '%s=%r\n'%(self.varName, getattr(self.module, self.varName))
+    def confStr(self):
+        value = getattr(self.module, self.varName)
+        valueStr = repr(value)
+        ## repr of a utf8 string (by Python 2) is not utf8 and not readable correctly from Python 3
+        ## yet another reason to switch to JSON for config files
+        #if isinstance(value, basestring):
+        #    valueStr = "'" + toStr(value) + "'" ## THIS IS NOT SAFE EITHER
+        ## FIXME
+        return '%s=%s\n'%(self.varName, valueStr)
 
 
 class ComboTextPrefItem(PrefItem):
