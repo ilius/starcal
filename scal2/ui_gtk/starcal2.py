@@ -1083,11 +1083,17 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         loader = gdk.pixbuf_loader_new_with_mime_type('image/%s'%ext)
         data = open(imagePath).read()
         if ext == 'svg':
+            dayNum = _(ddate[2])
+            if ui.trayFontFamilyEnable:
+                if ui.trayFontFamily:
+                    family = ui.trayFontFamily
+                else:
+                    family = ui.getFont()[0]
+                dayNum = '<tspan style="font-family:%s">%s</tspan>'%(family, dayNum)
             data = data.replace(
                 'TX',
-                _(ddate[2]),
+                dayNum,
             )
-            ## replace font with ui.trayFont FIXME
         loader.write(data)
         loader.close()
         pixbuf = loader.get_pixbuf()
