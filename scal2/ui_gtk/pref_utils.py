@@ -35,6 +35,7 @@ from scal2.ui_gtk.color_utils import *
 from scal2.ui_gtk.utils import *
 from scal2.ui_gtk.mywidgets import MyFontButton, MyColorButton
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
+from scal2.ui_gtk.mywidgets.font_family_combo import FontFamilyCombo
 from scal2.ui_gtk.pref_utils import *
 
 
@@ -114,18 +115,26 @@ class PrefItem():
 
 
 class ComboTextPrefItem(PrefItem):
+    def makeWidget(self):
+        return gtk.combo_box_new_text()
     def __init__(self, module, varName, items=[]):## items is a list of strings
         self.module = module
         self.varName = varName
-        w = gtk.combo_box_new_text()
+        w = self.makeWidget()
         self._widget = w
         for s in items:
             w.append_text(s)
-        self.get = w.get_active
-        self.set = w.set_active
+    get = lambda self: self._widget.get_active()
+    set = lambda value: self._widget.set_active(value)    
     #def set(self, value):
     #    print('ComboTextPrefItem.set', value)
     #    self._widget.set_active(int(value))
+
+class FontFamilyPrefItem(ComboTextPrefItem):
+    def makeWidget(self):
+        return FontFamilyCombo(True)
+    get = lambda self: self._widget.get_value()
+    set = lambda self, value: self._widget.set_value(value)
 
 class ComboEntryTextPrefItem(PrefItem):
     def __init__(self, module, varName, items=[]):## items is a list of strings
@@ -190,6 +199,18 @@ class CheckPrefItem(PrefItem):
         self._widget = w
         self.get = w.get_active
         self.set = w.set_active
+    def syncSensitive(self, widget, reverse=False):
+        self._sensitiveWidget = widget
+        self._sensitiveReverse = reverse
+        self._widget.connect('show', self.syncSensitiveUpdate)
+        self._widget.connect('clicked', self.syncSensitiveUpdate)
+    def syncSensitiveUpdate(self, myWidget):
+        active = myWidget.get_active()
+        if self._sensitiveReverse:
+            active = not active
+        self._sensitiveWidget.set_sensitive(active)
+        
+
 
 class ColorPrefItem(PrefItem):
     def __init__(self, module, varName, useAlpha=False):
