@@ -3,7 +3,7 @@ import pytz
 from scal2.locale_man import tr as _
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.utils import CalTypeCombo, dialog_add_button, TimeZoneComboBoxEntry
+from scal2.ui_gtk.utils import myRaise, CalTypeCombo, dialog_add_button, TimeZoneComboBoxEntry
 from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 

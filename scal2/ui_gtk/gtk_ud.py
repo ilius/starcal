@@ -25,6 +25,7 @@ import time
 from os.path import join
 
 from scal2.path import *
+from scal2.utils import myRaise
 from scal2.locale_man import rtl
 from scal2 import core
 from scal2 import ui
