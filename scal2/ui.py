@@ -655,8 +655,8 @@ boldYmLabel = True ## apply in Pref FIXME
 showYmArrows = True ## apply in Pref FIXME
 labelMenuDelay = 0.1 ## delay for shift up/down items of menu for right click on YearLabel
 ####################
-trayImage = join(pixDir, 'tray-green-dark.svg')
-trayImageHoli = join(pixDir, 'tray-red-dark.svg')
+trayImage = join(pixDir, 'tray-dark-green.svg')
+trayImageHoli = join(pixDir, 'tray-dark-red.svg')
 trayFontFamilyEnable = False
 trayFontFamily = None
 ####################
