@@ -1983,6 +1983,10 @@ msgid "Normal Days"
 msgstr ""
 "روزهای عادی"
 
+msgid "Change font family to"
+msgstr ""
+"تغییر خانوادهٔ فونت به"
+
 msgid "Width"
 msgstr ""
 "عرض"

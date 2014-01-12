@@ -657,7 +657,8 @@ labelMenuDelay = 0.1 ## delay for shift up/down items of menu for right click on
 ####################
 trayImage = join(pixDir, 'tray-green-dark.svg')
 trayImageHoli = join(pixDir, 'tray-red-dark.svg')
-#trayFont = None
+trayFontFamilyEnable = False
+trayFontFamily = None
 ####################
 menuActiveLabelColor = "#ff0000"
 pluginsTextTray = False

@@ -150,9 +150,7 @@ class PrefDialog(gtk.Dialog):
         self.uiPrefItems.append(customItem)
         pack(hbox, customItem._widget)
         pack(hbox, gtk.Label(''), 1, 1)
-        customItem._widget.set_sensitive(ui.fontCustomEnable)
-        #customItem._widget.connect('clicked', self.checkbFontClicked)
-        customCheckItem._widget.connect('clicked', lambda w: customItem._widget.set_sensitive(w.get_active()))## FIXME
+        customCheckItem.syncSensitive(customItem._widget)
         pack(vbox, hbox)
         ########################### Theme #####################
         hbox = gtk.HBox(spacing=3)
@@ -262,6 +260,7 @@ class PrefDialog(gtk.Dialog):
         sgroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
         ####
         hbox = gtk.HBox(spacing=1)
+        pack(hbox, gtk.Label('   '))
         label = gtk.Label(_('Normal Days'))
         sgroup.add_widget(label)
         pack(hbox, label)
@@ -276,6 +275,7 @@ class PrefDialog(gtk.Dialog):
         pack(expVbox, hbox)
         ####
         hbox = gtk.HBox(spacing=1)
+        pack(hbox, gtk.Label('   '))
         label = gtk.Label(_('Holidays'))
         sgroup.add_widget(label)
         pack(hbox, label)
@@ -287,7 +287,28 @@ class PrefDialog(gtk.Dialog):
         )
         self.uiPrefItems.append(item)
         pack(hbox, item._widget, 1, 1)
-        pack(expVbox, hbox)        
+        pack(expVbox, hbox)
+        ####
+        hbox = gtk.HBox(spacing=1)
+        pack(hbox, gtk.Label('   '))
+        checkItem = CheckPrefItem(
+            ui,
+            'trayFontFamilyEnable',
+            label=_('Change font family to'),
+            #tooltip=_('In SVG files'),
+        )
+        self.uiPrefItems.append(checkItem)
+        #sgroup.add_widget(checkItem._widget)
+        pack(hbox, checkItem._widget)
+        item = FontFamilyPrefItem(
+            ui,
+            'trayFontFamily',
+        )
+        self.uiPrefItems.append(item)
+        pack(hbox, item._widget, 1, 1)
+        pack(expVbox, hbox)
+        ###
+        checkItem.syncSensitive(item._widget, reverse=False)
         ####
         pack(vbox, exp)
         ################################ Tab 3 (Advanced) ###########################################
