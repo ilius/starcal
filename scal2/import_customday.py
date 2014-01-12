@@ -2,6 +2,7 @@ import os
 from os.path import isfile, join
 
 from scal2.path import pixDir, confDir
+from scal2.utils import myRaise
 from scal2.locale_man import tr as _
 from scal2 import event_lib
 from scal2 import ui
