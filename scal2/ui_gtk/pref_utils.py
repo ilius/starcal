@@ -21,6 +21,7 @@ import sys, os
 from os.path import join, split, isabs
 
 from scal2.path import *
+from scal2.utils import toStr, toUnicode
 from scal2.cal_types import calTypes
 from scal2 import core
 from scal2 import locale_man
@@ -115,11 +116,12 @@ class PrefItem():
     ## the string will has a NEWLINE at the END
     def confStr(self):
         value = getattr(self.module, self.varName)
+        if isinstance(value, str):
+            value = toUnicode(value)
         valueStr = repr(value)
         ## repr of a utf8 string (by Python 2) is not utf8 and not readable correctly from Python 3
+        ## no simple way you can fix that for strings nested inside other structures
         ## yet another reason to switch to JSON for config files
-        #if isinstance(value, basestring):
-        #    valueStr = "'" + toStr(value) + "'" ## THIS IS NOT SAFE EITHER
         ## FIXME
         return '%s=%s\n'%(self.varName, valueStr)
 
