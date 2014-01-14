@@ -378,7 +378,7 @@ class PrefDialog(gtk.Dialog):
         ########
         hbox = gtk.HBox(spacing=3)
         pack(hbox, gtk.Label(_('First day of week')))
-        ##item = ComboTextPrefItem( ##?????????
+        ##item = ComboTextPrefItem( ## FIXME
         self.comboFirstWD = gtk.ComboBoxText()
         for item in core.weekDayName:
             self.comboFirstWD.append_text(item)
@@ -399,10 +399,10 @@ class PrefDialog(gtk.Dialog):
         pack(hbox, gtk.Label(_('First week of year containts')))
         combo = gtk.ComboBoxText()
         texts = [_('First %s of year')%name for name in core.weekDayName]+[_('First day of year')]
-        texts[4] += ' (ISO 8601)' ##??????
+        texts[4] += ' (ISO 8601)' ## FIXME
         for text in texts:
             combo.append_text(text)
-        #combo.append_text(_('Automatic'))## (as Locale)#?????????????????
+        #combo.append_text(_('Automatic'))## (as Locale)## FIXME
         pack(hbox, combo)
         pack(hbox, gtk.Label(''), 1, 1)
         pack(vbox, hbox)
@@ -536,13 +536,13 @@ class PrefDialog(gtk.Dialog):
         ###
         toolbar = gtk.Toolbar()
         toolbar.set_orientation(gtk.Orientation.VERTICAL)
-        #try:## DeprecationWarning #?????????????
+        #try:## DeprecationWarning ## FIXME
             #toolbar.set_icon_size(gtk.IconSize.SMALL_TOOLBAR)
-            ### no different (argument to set_icon_size does not affect) ?????????
+            ### no different (argument to set_icon_size does not affect) FIXME
         #except:
         #    pass
         size = gtk.IconSize.SMALL_TOOLBAR
-        ##no different(argument2 to image_new_from_stock does not affect) ?????????
+        ##no different(argument2 to image_new_from_stock does not affect) FIXME
         ######## gtk.IconSize.SMALL_TOOLBAR or gtk.IconSize.MENU
         tb = toolButtonFromStock(gtk.STOCK_GOTO_TOP, size)
         set_tooltip(tb, _('Move to top'))
@@ -606,8 +606,8 @@ class PrefDialog(gtk.Dialog):
         treev = gtk.TreeView()
         trees = gtk.ListStore(str)
         treev.set_model(trees)
-        #treev.enable_model_drag_source(gdk.ModifierType.BUTTON1_MASK, [('', 0, 0, 0)], gdk.DragAction.MOVE)#?????
-        #treev.enable_model_drag_dest([('', 0, 0, 0)], gdk.DragAction.MOVE)#?????
+        #treev.enable_model_drag_source(gdk.ModifierType.BUTTON1_MASK, [('', 0, 0, 0)], gdk.DragAction.MOVE)## FIXME
+        #treev.enable_model_drag_dest([('', 0, 0, 0)], gdk.DragAction.MOVE)## FIXME
         treev.connect('drag_data_received', self.plugTreevDragReceived)
         treev.connect('row-activated', self.plugAddTreevRActivate)
         ####
@@ -619,7 +619,7 @@ class PrefDialog(gtk.Dialog):
         swin = gtk.ScrolledWindow()
         swin.add(treev)
         swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
-        pack(d.vbox, swin)
+        pack(d.vbox, swin, 1, 1)
         d.vbox.show_all()
         self.plugAddDialog = d
         self.plugAddTreeview = treev
@@ -670,13 +670,13 @@ class PrefDialog(gtk.Dialog):
         ###
         toolbar = gtk.Toolbar()
         toolbar.set_orientation(gtk.Orientation.VERTICAL)
-        #try:## DeprecationWarning #?????????????
+        #try:## DeprecationWarning ## FIXME
             #toolbar.set_icon_size(gtk.IconSize.SMALL_TOOLBAR)
-            ### no different (argument to set_icon_size does not affect) ?????????
+            ### no different (argument to set_icon_size does not affect) FIXME
         #except:
         #    pass
         size = gtk.IconSize.SMALL_TOOLBAR
-        ##no different(argument2 to image_new_from_stock does not affect) ?????????
+        ##no different(argument2 to image_new_from_stock does not affect) FIXME
         ######## gtk.IconSize.SMALL_TOOLBAR or gtk.IconSize.MENU
         tb = toolButtonFromStock(gtk.STOCK_EDIT, size)
         set_tooltip(tb, _('Edit'))
@@ -755,10 +755,10 @@ class PrefDialog(gtk.Dialog):
     getAllPrefItems = lambda self: self.moduleOptions + self.localePrefItems + self.corePrefItems +\
                                    self.uiPrefItems + self.gtkPrefItems
     def apply(self, widget=None):
-        ####### ?????????????????
-        #print('fontDefault =', ui.fontDefault)
+        ####### FIXME
+        #print('fontDefault = %s'%ui.fontDefault)
         ui.fontDefault = gfontDecode(ud.settings.get_property('gtk-font-name'))
-        #print('fontDefault =', ui.fontDefault)
+        #print('fontDefault = %s'%ui.fontDefault)
         ############################################## Updating pref variables
         for opt in self.getAllPrefItems():
             opt.updateVar()
@@ -945,12 +945,10 @@ class PrefDialog(gtk.Dialog):
     def plugExportToIcsClicked(self, menu, plug):
         ExportToIcsDialog(plug.exportToIcs, plug.desc).run()
     def plugTreevRActivate(self, treev, path, col):
-        if col.get_title()==_('Description'):##??????????
-            self.plugAboutClicked(None) #??????
-        #print('row-activate', path)
+        if col.get_title()==_('Description'):## FIXME
+            self.plugAboutClicked(None)
     def plugTreevButtonPress(self, widget, event):
         b = event.button
-        #print('plugTreevButtonPress', b)
         if b==3:
             cur = self.plugTreeview.get_cursor()[0]
             if cur:
@@ -974,9 +972,9 @@ class PrefDialog(gtk.Dialog):
             return True
         return False
     def plugAddClicked(self, button):
-        ## ???????????????????????????
+        ## FIXME
         ## Reize window to show all texts
-        #self.plugAddTreeview.columns_autosize()#??????????
+        #self.plugAddTreeview.columns_autosize() ## FIXME
         r, x, y, w, h = self.plugAddTreeview.get_column(0).cell_get_size()
         #print(r[2], r[3], x, y, w, h)
         self.plugAddDialog.resize(w+30, 75 + 30*len(self.plugAddTreestore))
@@ -990,7 +988,7 @@ class PrefDialog(gtk.Dialog):
     def plugTreeviewCellToggled(self, cell, path):
         i = int(path)
         #cur = self.plugTreeview.get_cursor()[0]
-        #if cur==None or i!=cur[0]:#?????????
+        #if cur==None or i!=cur[0]:## FIXME
         #    return
         active = not cell.get_active()
         self.plugTreestore[i][1] = active
@@ -998,7 +996,7 @@ class PrefDialog(gtk.Dialog):
     def plugTreeviewCellToggled2(self, cell, path):
         i = int(path)
         #cur = self.plugTreeview.get_cursor()[0]
-        #if cur==None or i!=cur[0]:#?????????
+        #if cur==None or i!=cur[0]:## FIXME
         #    return
         active = not cell.get_active()
         self.plugTreestore[i][2] = active
@@ -1078,7 +1076,8 @@ class PrefDialog(gtk.Dialog):
         self.plugAddItems.append(j)
         desc = core.allPlugList[j].desc
         self.plugAddTreestore.append([desc])
-        print('deleting', desc)
+        if core.debugMode:
+            print('deleting %s'%desc)
         self.plugButtonAdd.set_sensitive(True)
         if n>1:
             self.plugTreeview.set_cursor(min(n-2, i))
@@ -1098,9 +1097,9 @@ class PrefDialog(gtk.Dialog):
         self.plugAddTreestore.remove(self.plugAddTreestore.get_iter(i))
         self.plugAddItems.pop(i)
         self.plugAddDialog.hide()
-        self.plugTreeview.set_cursor(pos)### pos==1- #????????
+        self.plugTreeview.set_cursor(pos)### pos==1- ## FIXME
     def plugAddTreevRActivate(self, treev, path, col):
-        self.plugAddDialogOK(None)#???????
+        self.plugAddDialogOK(None)## FIXME
     def editAccount(self, index):
         accountId = self.accountsTreestore[index][0]
         account = ui.eventAccounts[accountId]
