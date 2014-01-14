@@ -618,7 +618,7 @@ class PrefDialog(gtk.Dialog):
         swin = gtk.ScrolledWindow()
         swin.add(treev)
         swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
-        pack(d.vbox, swin)
+        pack(d.vbox, swin, 1, 1)
         d.vbox.show_all()
         self.plugAddDialog = d
         self.plugAddTreeview = treev
