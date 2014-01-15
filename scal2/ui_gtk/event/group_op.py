@@ -170,6 +170,7 @@ class GroupBulkEditDialog(gtk.Dialog):
         self.timeZoneChangeCombo = gtk.combo_box_new_text()
         self.timeZoneChangeCombo.append_text('----')
         self.timeZoneChangeCombo.append_text(_('Change'))
+        self.timeZoneChangeCombo.append_text(_('Change if empty'))
         pack(hbox, self.timeZoneChangeCombo)
         pack(hbox, gtk.Label('  '))
         self.timeZoneInput = TimeZoneComboBoxEntry()
@@ -227,7 +228,7 @@ class GroupBulkEditDialog(gtk.Dialog):
                     myRaise('Invalid Time Zone "%s"'%timeZone)
                 else:
                     for event in group:
-                        if chType==1:
+                        if not (chType==2 and event.timeZone):
                             event.timeZone = timeZone
                             event.save()
         else:
