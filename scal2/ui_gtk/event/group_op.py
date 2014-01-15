@@ -230,6 +230,7 @@ class GroupBulkEditDialog(gtk.Dialog):
                     for event in group:
                         if not (chType==2 and event.timeZone):
                             event.timeZone = timeZone
+                            event.afterModify()
                             event.save()
         else:
             chType = self.textChangeCombo.get_active()
