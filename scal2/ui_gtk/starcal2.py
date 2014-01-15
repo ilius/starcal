@@ -1251,7 +1251,8 @@ def main():
     ###############################
     ui.init()
     ###############################
-    if versionLessThan(event_lib.info.version, '2.2.2'):## right place? FIXME
+    ## right place? FIXME
+    if core.BRANCH == 'master' and versionLessThan(event_lib.info.version, '2.3.0'):
         from scal2.ui_gtk.event.bulk_save_timezone import BulkSaveTimeZoneDialog
         BulkSaveTimeZoneDialog().run()
     event_lib.info.updateAndSave()
