@@ -49,6 +49,7 @@ except NameError:
 
 
 VERSION = '2.2.6'
+BRANCH = 'next'
 APP_NAME = 'starcal2'
 APP_DESC = 'StarCalendar'
 COMMAND = 'starcal2'
