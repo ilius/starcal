@@ -1055,7 +1055,10 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         )
         self.sicon.set_from_pixbuf(gdk.pixbuf_new_from_data(im.tostring(), gdk.COLORSPACE_RGB, True, 8, w, h, 4*w))
         '''
-        pixbuf = gdk.pixbuf_new_from_file(imagePath)
+        try:
+            pixbuf = gdk.pixbuf_new_from_file(imagePath)
+        except:
+            pixbuf = gdk.pixbuf_new_from_file(join(pixDir, 'tray-blue.png'))
         ##pixbuf.scale() #????????????
         ###################### PUTTING A TEXT ON A PIXBUF
         pmap = pixbuf.render_pixmap_and_mask(alpha_threshold=127)[0] ## pixmap is also a drawable
