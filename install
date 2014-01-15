@@ -212,6 +212,7 @@ mv "${shareDir}/$pkgName/scal2/ui_gtk/GNOME_Starcal2Applet.server" "$targetPrefi
 ## Cleaning useless files from targetDir
 cd "${shareDir}/$pkgName"
 rm -Rf .git .gitignore .Trash* 2>/dev/null
+rm -Rf google-api-python-client/.git google-api-python-client/.hg* 2>/dev/null
 clean
 cd - > /dev/null
 
