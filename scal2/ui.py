@@ -657,6 +657,7 @@ labelMenuDelay = 0.1 ## delay for shift up/down items of menu for right click on
 ####################
 trayImage = join(pixDir, 'tray-dark-green.svg')
 trayImageHoli = join(pixDir, 'tray-dark-red.svg')
+trayImageDefault, trayImageHoliDefault = trayImage, trayImageHoli
 trayFontFamilyEnable = False
 trayFontFamily = None
 ####################
@@ -773,6 +774,11 @@ if os.path.isfile(confPathLive):
     except:
         myRaise(__file__)
 ################################
+
+if not isfile(trayImage):
+    trayImage = trayImageDefault
+if not isfile(trayImageHoli):
+    trayImageHoli = trayImageHoliDefault
 
 try:
     mcalGridColor = wcalGridColor = gridColor
