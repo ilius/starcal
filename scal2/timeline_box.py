@@ -1,7 +1,10 @@
 from time import time as now
 
-from scal2.graph_utils import *
-from scal2.event_search_tree import EventSearchTree
+try:
+    from scal2.graph_utils import Graph, colorGraph
+except ImportError:
+    pass
+
 from scal2.locale_man import tr as _
 from scal2.core import debugMode
 from scal2 import ui
@@ -136,6 +139,10 @@ def calcEventBoxes(
     pixelPerSec,
     borderTm,
 ):
+    try:
+        Graph
+    except NameError:
+        return []
     boxesDict = {}
     #timeMiddle = (timeStart + timeEnd) / 2.0
     for groupIndex in range(len(ui.eventGroups)):

@@ -1081,7 +1081,7 @@ class RuleContainer:
     )
     def __init__(self):
         self.timeZoneEnable = False
-        self.timeZone = str(core.localTz)
+        self.timeZone = ''
         ###
         self.clearRules()
         self.rulesHash = None
@@ -1180,7 +1180,7 @@ class RuleContainer:
                     except KeyError:
                         self.addRule(rule)
     def getTimeZoneObj(self):
-        if self.timeZoneEnable:
+        if self.timeZoneEnable and self.timeZone:
             try:
                 return pytz.timezone(self.timeZone)
             except:
