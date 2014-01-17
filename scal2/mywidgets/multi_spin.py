@@ -71,18 +71,19 @@ class IntField(NumField):
         self.setDefault()
     def setText(self, text):
         try:
-            num = numDecode(text)
+            num = int(float(textNumDecode(text)))
         except:
             myRaise()
             self.setDefault()
         else:
             self.setValue(num)
+    setValue = lambda self, v: NumField.setValue(self, int(v))
     getText = lambda self: numEncode(self.value, fillZero=self.fill)
     getMaxWidth = lambda self: max(
         len(str(self._min)),
         len(str(self._max)),
     )
-    plus = lambda self, p: self.setValue(int(self.value + p))
+    plus = lambda self, p: self.setValue(self.value + p)
 
 
 class FloatField(NumField):
