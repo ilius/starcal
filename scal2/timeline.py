@@ -352,16 +352,23 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
             ))
             tickEpochList.append(tmEpoch)
     ######################## Event Boxes
-    return {
+    data = {
         'holidays': holidays,
         'ticks': ticks,
-        'boxes': calcEventBoxes(
+    }
+    ###
+    try:
+        boxes = calcEventBoxes(
             timeStart,
             timeEnd,
             pixelPerSec,
             borderTm,
-        ),
-    }
+        )
+    except:
+        boxes = []
+    data['boxes'] = boxes
+    ###
+    return data
 
 
 
