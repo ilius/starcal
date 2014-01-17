@@ -355,18 +355,15 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
     data = {
         'holidays': holidays,
         'ticks': ticks,
+        'boxes': [],
     }
     ###
-    try:
-        boxes = calcEventBoxes(
-            timeStart,
-            timeEnd,
-            pixelPerSec,
-            borderTm,
-        )
-    except:
-        boxes = []
-    data['boxes'] = boxes
+    data['boxes'] = calcEventBoxes(
+        timeStart,
+        timeEnd,
+        pixelPerSec,
+        borderTm,
+    )
     ###
     return data
 
