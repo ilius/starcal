@@ -426,6 +426,9 @@ class EventEditorDialog(gtk.Dialog):
         self._group = event.parent
         self.activeWidget = None
         #######
+        if isNew:
+            event.timeZone = str(core.localTz)
+        #######
         hbox = gtk.HBox()
         pack(hbox, gtk.Label(_('Event Type')))
         if typeChangable and len(self._group.acceptsEventTypes)>1:## FIXME
