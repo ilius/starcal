@@ -55,6 +55,15 @@ getGroupRow = lambda group, rowBgColor: (
     group.title
 )
 
+def menuItemFromEventGroup(group):
+    item = gtk.ImageMenuItem()
+    item.set_label(group.title)
+    ##
+    image = gtk.Image()
+    image.set_from_pixbuf(newOutlineSquarePixbuf(group.color, 20))
+    item.set_image(image)
+    return item
+
 
 class EventWidget(gtk.VBox):
     def __init__(self, event):
