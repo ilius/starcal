@@ -28,7 +28,7 @@ from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import imageFromFile, labelStockMenuItem, labelImageMenuItem, setClipboard
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk import gtk_ud as ud
-from scal2.ui_gtk.event.common import EventEditorDialog, confirmEventTrash
+from scal2.ui_gtk.event.common import EventEditorDialog, confirmEventTrash, menuItemFromEventGroup
 
 @registerSignals
 class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
@@ -108,14 +108,14 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         menu.show_all()
         menu.popup(None, None, None, 3, 0)
         ui.updateFocusTime()
-    def moveEventToGroupFromMenu(self, item, event, prev_group, new_group):
+    def moveEventToGroupFromMenu(self, item, event, prev_group, newGroup):
         prev_group.remove(event)
         prev_group.save()
         ui.reloadGroups.append(prev_group.id)
         ###
-        new_group.append(event)
-        new_group.save()
-        ui.reloadGroups.append(new_group.id)
+        newGroup.append(event)
+        newGroup.save()
+        ui.reloadGroups.append(newGroup.id)
         ###
         self.onConfigChange()
     def onEventLabelPopup(self, label, menu, occurData):
@@ -143,22 +143,21 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
                 None,## FIXME
             )
             moveToMenu = gtk.Menu()
-            for new_group in ui.eventGroups:
-                if new_group.id == group.id:
+            for newGroup in ui.eventGroups:
+                if newGroup.id == group.id:
                     continue
-                if not new_group.enable:
+                if not newGroup.enable:
                     continue
-                if event.name in new_group.acceptsEventTypes:
-                    new_groupItem = gtk.ImageMenuItem()
-                    new_groupItem.set_label(new_group.title)
-                    ##
-                    image = gtk.Image()
-                    image.set_from_pixbuf(newOutlineSquarePixbuf(new_group.color, 20))
-                    new_groupItem.set_image(image)
-                    ##
-                    new_groupItem.connect('activate', self.moveEventToGroupFromMenu, event, group, new_group)
-                    ##
-                    moveToMenu.add(new_groupItem)
+                if event.name in newGroup.acceptsEventTypes:
+                    newGroupItem = menuItemFromEventGroup(newGroup)
+                    newGroupItem.connect(
+                        'activate',
+                        self.moveEventToGroupFromMenu,
+                        event,
+                        group,
+                        newGroup,
+                    )
+                    moveToMenu.add(newGroupItem)
             moveToItem.set_submenu(moveToMenu)
             menu.add(moveToItem)
             ###
