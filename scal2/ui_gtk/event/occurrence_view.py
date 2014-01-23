@@ -77,7 +77,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
             label.set_selectable(True)
             label.set_line_wrap(True)
             label.set_use_markup(False)## should escape text if using markup FIXME
-            label.connect('populate-popup', self.onEventLabelPopup, occurData['ids'])
+            label.connect('populate-popup', self.onEventLabelPopup, occurData)
             pack(hbox, label)## or 1, 1 (center) FIXME
             pack(self.vbox, hbox)
             pack(self.vbox, gtk.HSeparator())
@@ -118,11 +118,11 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         ui.reloadGroups.append(new_group.id)
         ###
         self.onConfigChange()
-    def onEventLabelPopup(self, label, menu, ids):
+    def onEventLabelPopup(self, label, menu, occurData):
         menu = gtk.Menu()
         self.labelMenuAddCopyItems(label, menu)
         ####
-        groupId, eventId = ids
+        groupId, eventId = occurData['ids']
         event = ui.getEvent(groupId, eventId)
         group = ui.eventGroups[groupId]
         if not event.readOnly:
