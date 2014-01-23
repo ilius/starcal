@@ -3887,6 +3887,7 @@ def getDayOccurrenceData(curJd, groups):
                 (epoch0, epoch1, groupIndex, eventIndex),## FIXME for sorting
                 {
                     'time': timeStr,
+                    'time_epoch': (epoch0, epoch1),
                     'text': text,
                     'icon': event.icon,
                     'color': color,
