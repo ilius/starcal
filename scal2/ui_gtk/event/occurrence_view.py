@@ -57,17 +57,17 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         ## destroy all VBox contents and add again
         for hbox in self.vbox.get_children():
             hbox.destroy()
-        for item in cell.eventsData:
-            if not item['show'][0]:
+        for occurData in cell.eventsData:
+            if not occurData['show'][0]:
                 continue
-            ## item['time'], item['text'], item['icon']
-            text = ''.join(item['text']) if self.showDesc else item['text'][0]
+            ## occurData['time'], occurData['text'], occurData['icon']
+            text = ''.join(occurData['text']) if self.showDesc else occurData['text'][0]
             ###
             hbox = gtk.HBox(spacing=5)
-            if item['icon']:
-                pack(hbox, imageFromFile(item['icon']))
-            if item['time']:
-                label = gtk.Label(item['time'])
+            if occurData['icon']:
+                pack(hbox, imageFromFile(occurData['icon']))
+            if occurData['time']:
+                label = gtk.Label(occurData['time'])
                 label.set_direction(gtk.TEXT_DIR_LTR)
                 label.set_selectable(True)
                 label.connect('populate-popup', self.onLabelPopup)## FIXME
@@ -77,7 +77,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
             label.set_selectable(True)
             label.set_line_wrap(True)
             label.set_use_markup(False)## should escape text if using markup FIXME
-            label.connect('populate-popup', self.onEventLabelPopup, item['ids'])
+            label.connect('populate-popup', self.onEventLabelPopup, occurData['ids'])
             pack(hbox, label)## or 1, 1 (center) FIXME
             pack(self.vbox, hbox)
             pack(self.vbox, gtk.HSeparator())
