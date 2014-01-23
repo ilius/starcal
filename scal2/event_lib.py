@@ -3888,6 +3888,7 @@ def getDayOccurrenceData(curJd, groups):
                 {
                     'time': timeStr,
                     'time_epoch': (epoch0, epoch1),
+                    'is_allday': epoch0 % dayLen == 0 and epoch1 % dayLen == 0,
                     'text': text,
                     'icon': event.icon,
                     'color': color,
