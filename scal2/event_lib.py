@@ -1581,6 +1581,9 @@ class TaskEvent(SingleStartEndEvent):
         if endType=='date':
             rule = EndEventRule(self)
             rule.date, rule.time = values
+        elif endType=='epoch':
+            rule = EndEventRule(self)
+            rule.setEpoch(values[0])
         elif endType=='duration':
             rule = DurationEventRule(self)
             rule.value, rule.unit = values
@@ -1723,6 +1726,12 @@ class AllDayTaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from Single
         if endType=='date':
             rule = EndEventRule(self)
             rule.setDate(value)
+        elif endType=='jd':
+            rule = EndEventRule(self)
+            rule.setJd(value)
+        elif endType=='epoch':
+            rule = EndEventRule(self)
+            rule.setJd(self.getJdFromEpoch(values[0]))
         elif endType=='duration':
             rule = DurationEventRule(self)
             rule.value = value
