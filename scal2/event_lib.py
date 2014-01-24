@@ -1191,6 +1191,7 @@ class RuleContainer:
         return core.localTz
     getTimeZoneStr = lambda self: str(self.getTimeZoneObj())
     getEpochFromJd = lambda self, jd: getEpochFromJd(jd, tz=self.getTimeZoneObj())
+    getJdFromEpoch = lambda self, jd: getJdFromEpoch(jd, tz=self.getTimeZoneObj())
     getJhmsFromEpoch = lambda self, epoch: getJhmsFromEpoch(epoch, tz=self.getTimeZoneObj())
     getEpochFromJhms = lambda self, jd, h, m , s: getEpochFromJhms(jd, h, m , s, tz=self.getTimeZoneObj())
 
