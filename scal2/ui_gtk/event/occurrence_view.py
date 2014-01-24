@@ -118,6 +118,20 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         ui.reloadGroups.append(newGroup.id)
         ###
         self.onConfigChange()
+    def copyOccurToGroupFromMenu(self, item, newGroup, newEventType, event, occurData):
+        newEvent = newGroup.createEvent(newEventType)
+        newEvent.copyFrom(event)
+        startEpoch, endEpoch = occurData['time_epoch']
+        newEvent.setStartEpoch(startEpoch)
+        newEvent.setEnd('epoch', endEpoch)
+        newEvent.afterModify()
+        newEvent.save()
+        ###
+        newGroup.append(newEvent)
+        newGroup.save()
+        ui.reloadGroups.append(newGroup.id)
+        ###
+        self.onConfigChange()
     def onEventLabelPopup(self, label, menu, occurData):
         menu = gtk.Menu()
         self.labelMenuAddCopyItems(label, menu)
@@ -161,15 +175,39 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
             moveToItem.set_submenu(moveToMenu)
             menu.add(moveToItem)
             ###
-            menu.add(gtk.SeparatorMenuItem())
-            ###
-            menu.add(labelImageMenuItem(
-                _('Move to %s') % ui.eventTrash.title,
-                ui.eventTrash.icon,
-                self.moveEventToTrash,
-                event,
-                groupId,
-            ))
+            if not event.isSingleOccur:
+                newEventType = 'allDayTask' if occurData['is_allday'] else 'task'
+                copyOccurItem = labelStockMenuItem(
+                    _('Copy as %s to...') % event_lib.classes.event.byName[newEventType].desc,## FIXME
+                    None,
+                )
+                copyOccurMenu = gtk.Menu()
+                for newGroup in ui.eventGroups:
+                    if not newGroup.enable:
+                        continue
+                    if newEventType in newGroup.acceptsEventTypes:
+                        newGroupItem = menuItemFromEventGroup(newGroup)
+                        newGroupItem.connect(
+                            'activate',
+                            self.copyOccurToGroupFromMenu,
+                            newGroup,
+                            newEventType,
+                            event,
+                            occurData,
+                        )
+                        copyOccurMenu.add(newGroupItem)
+                copyOccurItem.set_submenu(copyOccurMenu)
+                menu.add(copyOccurItem)
+                ###
+                menu.add(gtk.SeparatorMenuItem())
+                ###
+                menu.add(labelImageMenuItem(
+                    _('Move to %s') % ui.eventTrash.title,
+                    ui.eventTrash.icon,
+                    self.moveEventToTrash,
+                    event,
+                    groupId,
+                ))
         ####
         menu.show_all()
         menu.popup(None, None, None, 3, 0)
