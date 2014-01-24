@@ -1219,6 +1219,7 @@ class Event(JsonSObjBase, RuleContainer):
     #requiredNotifiers = ()## needed? FIXME
     readOnly = False
     isAllDay = False
+    isSingleOccur = False
     params = RuleContainer.params + (
         'icon',
         'summary',
@@ -1519,6 +1520,7 @@ class Event(JsonSObjBase, RuleContainer):
     setJdExact = lambda self, jd: self.setJd(jd)
 
 class SingleStartEndEvent(Event):
+    isSingleOccur = True
     setStartEpoch = lambda self, epoch: self.getAddRule('start').setEpoch(epoch)
     setEndEpoch = lambda self, epoch: self.getAddRule('end').setEpoch(epoch)
     setJd = lambda self, jd: self.getAddRule('start').setJd(jd)
@@ -1794,6 +1796,7 @@ class AllDayTaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from Single
 class DailyNoteEvent(Event):
     name = 'dailyNote'
     desc = _('Daily Note')
+    isSingleOccur = True
     iconName = 'note'
     requiredRules = (
         'date',
@@ -2173,6 +2176,7 @@ class LifeTimeEvent(SingleStartEndEvent):
 class LargeScaleEvent(Event):## or MegaEvent? FIXME
     name = 'largeScale'
     desc = _('Large Scale Event')
+    isSingleOccur = True
     _myParams = (
         'scale',
         'start',
