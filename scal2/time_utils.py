@@ -99,11 +99,12 @@ getUtcOffsetCurrent = lambda tz=None: getUtcOffsetByEpoch(now(), tz)
 getGtkTimeFromEpoch = lambda epoch: int((epoch-1.32171528839e+9)*1000 // 1)
 
 
-getFloatJdFromEpoch = lambda epoch: (epoch + getUtcOffsetByEpoch(epoch))/(24.0*3600) + J1970
+getFloatJdFromEpoch = lambda epoch, tz=None: \
+    (epoch + getUtcOffsetByEpoch(epoch, tz)) / (24.0*3600) + J1970
 #getFloatJdFromEpoch = lambda epoch: datetime.fromtimestamp(epoch).toordinal() - 1 + J0001
 
 
-getJdFromEpoch = lambda epoch: ifloor(getFloatJdFromEpoch(epoch))
+getJdFromEpoch = lambda epoch, tz=None: ifloor(getFloatJdFromEpoch(epoch, tz))
 
 
 def getEpochFromJd(jd, tz=None):
