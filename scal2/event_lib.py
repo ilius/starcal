@@ -3506,8 +3506,9 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
         mod = vcsModuleDict[self.vcsType]
         ####
         try:
-            self.vcsMinJd = getJdFromEpoch(mod.getFirstCommitEpoch(self))
-            self.vcsMaxJd = getJdFromEpoch(mod.getLastCommitEpoch(self)) + 1
+            utc = pytz.timezone('UTC')
+            self.vcsMinJd = getJdFromEpoch(mod.getFirstCommitEpoch(self), tz=utc)
+            self.vcsMaxJd = getJdFromEpoch(mod.getLastCommitEpoch(self), tz=utc) + 1
         except:
             myRaise()
             return
