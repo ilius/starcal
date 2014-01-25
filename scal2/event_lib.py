@@ -1464,7 +1464,7 @@ class Event(JsonSObjBase, RuleContainer):
             notifier.notify(notifierFinishFunc)
     def getIcsData(self, prettyDateTime=False):## FIXME
         return None
-    def setIcsDict(self, data):
+    def setIcsData(self, data):
         '''
         if 'T' in data['DTSTART']:
             return False
@@ -1678,7 +1678,7 @@ class TaskEvent(SingleStartEndEvent):
                 myStart.time = other['dayTime'].dayTime
             except KeyError:
                 pass
-    def setIcsDict(self, data):
+    def setIcsData(self, data):
         self.setStartEpoch(getEpochByIcsTime(data['DTSTART']))
         self.setEndEpoch(getEpochByIcsTime(data['DTEND']))## FIXME
         return True
@@ -1786,7 +1786,7 @@ class AllDayTaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from Single
         ('TRANSP', 'OPAQUE'),
         ('CATEGORIES', self.name),## FIXME
     ]
-    def setIcsDict(self, data):
+    def setIcsData(self, data):
         self.setJd(getJdByIcsDate(data['DTSTART']))
         self.setEndJd(getJdByIcsDate(data['DTEND']))## FIXME
         return True
@@ -1827,7 +1827,7 @@ class DailyNoteEvent(Event):
             ('TRANSP', 'TRANSPARENT'),
             ('CATEGORIES', self.name),## FIXME
         ]
-    def setIcsDict(self, data):
+    def setIcsData(self, data):
         self.setJd(getJdByIcsDate(data['DTSTART']))
         return True
 
@@ -1971,7 +1971,7 @@ class YearlyEvent(Event):
             ('TRANSP', 'TRANSPARENT'),
             ('CATEGORIES', self.name),## FIXME
         ]
-    def setIcsDict(self, data):
+    def setIcsData(self, data):
         rrule = dict(splitIcsValue(data['RRULE']))
         try:
             month = int(rrule['BYMONTH'])## multiple values are not supported
