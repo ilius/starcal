@@ -1678,12 +1678,6 @@ class TaskEvent(SingleStartEndEvent):
                 myStart.time = other['dayTime'].dayTime
             except KeyError:
                 pass
-    getIcsData = lambda self, prettyDateTime=False: [
-        ('DTSTART', getIcsTimeByEpoch(self.getStartEpoch(), prettyDateTime)),
-        ('DTEND', getIcsTimeByEpoch(self.getEndEpoch(), prettyDateTime)),
-        ('TRANSP', 'OPAQUE'),
-        ('CATEGORIES', self.name),## FIXME
-    ]
     def setIcsDict(self, data):
         self.setStartEpoch(getEpochByIcsTime(data['DTSTART']))
         self.setEndEpoch(getEpochByIcsTime(data['DTEND']))## FIXME
