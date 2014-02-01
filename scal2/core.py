@@ -49,7 +49,7 @@ except NameError:
 
 
 VERSION = '2.3.1'
-BRANCH = 'next'
+BRANCH = join(rootDir, 'branch')
 APP_NAME = 'starcal2'
 APP_DESC = 'StarCalendar'
 COMMAND = 'starcal2'
