@@ -142,7 +142,7 @@ def importEvent(gevent, group):
     ##
     event = group.createEvent(eventType)
     event.mode = DATE_GREG ## FIXME
-    if not event.setIcsDict(dict(icsData)):
+    if not event.setIcsData(dict(icsData)):
         return
     event.summary = toBytes(gevent['summary'])
     event.description = toBytes(gevent.get('description', ''))

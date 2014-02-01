@@ -58,6 +58,15 @@ getGroupRow = lambda group, rowBgColor: (
     group.title
 )
 
+def menuItemFromEventGroup(group):
+    item = gtk.ImageMenuItem()
+    item.set_label(group.title)
+    ##
+    image = gtk.Image()
+    image.set_from_pixbuf(newOutlineSquarePixbuf(group.color, 20))
+    item.set_image(image)
+    return item
+
 
 class EventWidget(gtk.VBox):
     def __init__(self, event):
@@ -430,6 +439,9 @@ class EventEditorDialog(gtk.Dialog):
         self.event = event
         self._group = event.parent
         self.activeWidget = None
+        #######
+        if isNew:
+            event.timeZone = str(core.localTz)
         #######
         hbox = gtk.HBox()
         pack(hbox, gtk.Label(_('Event Type')))

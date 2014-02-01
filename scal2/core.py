@@ -48,8 +48,8 @@ except NameError:
     __file__ = join(dirname(inspect.getfile(scal2)), 'core.py')
 
 
-VERSION = '2.2.7'
-BRANCH = 'py3'
+VERSION = '2.3.1'
+BRANCH = join(rootDir, 'branch')
 APP_NAME = 'starcal2'
 APP_DESC = 'StarCalendar'
 COMMAND = 'starcal2'

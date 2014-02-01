@@ -20,6 +20,20 @@ tmpDir=/tmp/starcal2-install-arch
 mkdir -p $tmpDir
 cd $tmpDir
 
+depends=('python>=3.2')
+depends+=('python-gobject')
+depends+=('python-gflags')
+depends+=('python-httplib2')
+depends+=('python-pytz')
+
+optdepends=()
+optdepends+=('python-igraph')
+#optdepends+=('python-gnomevfs')
+
+
+depends_str=$(printf " '%s'" "${depends[@]}") ; depends_str=${depends_str:1}
+optdepends_str=$(printf " '%s'" "${optdepends[@]}") ; optdepends_str=${optdepends_str:1}
+
 echo "# Contributor: Saeed Rasooli <saeed.gnu@gmail.com>
 # This is a local PKGBUILD
 sourceDir='$sourceDir'
@@ -30,8 +44,8 @@ pkgdesc='A full-featured international calendar writen in Python'
 arch=('any')
 url=(http://starcal.sourceforge.net)
 license=('GPLv3')
-depends=('python>=3.2' 'python-gobject' 'python-gflags' 'python-httplib2' 'python-pytz' 'python-igraph')
-optdepends=()
+depends=($depends_str)
+optdepends=($optdepends_str)
 makedepends=()
 conflicts=('starcal-git')
 source=()

@@ -1188,6 +1188,7 @@ class RuleContainer:
         return core.localTz
     getTimeZoneStr = lambda self: str(self.getTimeZoneObj())
     getEpochFromJd = lambda self, jd: getEpochFromJd(jd, tz=self.getTimeZoneObj())
+    getJdFromEpoch = lambda self, jd: getJdFromEpoch(jd, tz=self.getTimeZoneObj())
     getJhmsFromEpoch = lambda self, epoch: getJhmsFromEpoch(epoch, tz=self.getTimeZoneObj())
     getEpochFromJhms = lambda self, jd, h, m , s: getEpochFromJhms(jd, h, m , s, tz=self.getTimeZoneObj())
 
@@ -1216,6 +1217,7 @@ class Event(JsonSObjBase, RuleContainer):
     #requiredNotifiers = ()## needed? FIXME
     readOnly = False
     isAllDay = False
+    isSingleOccur = False
     params = RuleContainer.params + (
         'icon',
         'summary',
@@ -1459,7 +1461,7 @@ class Event(JsonSObjBase, RuleContainer):
             notifier.notify(notifierFinishFunc)
     def getIcsData(self, prettyDateTime=False):## FIXME
         return None
-    def setIcsDict(self, data):
+    def setIcsData(self, data):
         '''
         if 'T' in data['DTSTART']:
             return False
@@ -1516,6 +1518,7 @@ class Event(JsonSObjBase, RuleContainer):
     setJdExact = lambda self, jd: self.setJd(jd)
 
 class SingleStartEndEvent(Event):
+    isSingleOccur = True
     setStartEpoch = lambda self, epoch: self.getAddRule('start').setEpoch(epoch)
     setEndEpoch = lambda self, epoch: self.getAddRule('end').setEpoch(epoch)
     setJd = lambda self, jd: self.getAddRule('start').setJd(jd)
@@ -1575,6 +1578,9 @@ class TaskEvent(SingleStartEndEvent):
         if endType=='date':
             rule = EndEventRule(self)
             rule.date, rule.time = values
+        elif endType=='epoch':
+            rule = EndEventRule(self)
+            rule.setEpoch(values[0])
         elif endType=='duration':
             rule = DurationEventRule(self)
             rule.value, rule.unit = values
@@ -1669,13 +1675,7 @@ class TaskEvent(SingleStartEndEvent):
                 myStart.time = other['dayTime'].dayTime
             except KeyError:
                 pass
-    getIcsData = lambda self, prettyDateTime=False: [
-        ('DTSTART', getIcsTimeByEpoch(self.getStartEpoch(), prettyDateTime)),
-        ('DTEND', getIcsTimeByEpoch(self.getEndEpoch(), prettyDateTime)),
-        ('TRANSP', 'OPAQUE'),
-        ('CATEGORIES', self.name),## FIXME
-    ]
-    def setIcsDict(self, data):
+    def setIcsData(self, data):
         self.setStartEpoch(getEpochByIcsTime(data['DTSTART']))
         self.setEndEpoch(getEpochByIcsTime(data['DTEND']))## FIXME
         return True
@@ -1717,6 +1717,12 @@ class AllDayTaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from Single
         if endType=='date':
             rule = EndEventRule(self)
             rule.setDate(value)
+        elif endType=='jd':
+            rule = EndEventRule(self)
+            rule.setJd(value)
+        elif endType=='epoch':
+            rule = EndEventRule(self)
+            rule.setJd(self.getJdFromEpoch(values[0]))
         elif endType=='duration':
             rule = DurationEventRule(self)
             rule.value = value
@@ -1777,7 +1783,7 @@ class AllDayTaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from Single
         ('TRANSP', 'OPAQUE'),
         ('CATEGORIES', self.name),## FIXME
     ]
-    def setIcsDict(self, data):
+    def setIcsData(self, data):
         self.setJd(getJdByIcsDate(data['DTSTART']))
         self.setEndJd(getJdByIcsDate(data['DTEND']))## FIXME
         return True
@@ -1791,6 +1797,7 @@ class AllDayTaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from Single
 class DailyNoteEvent(Event):
     name = 'dailyNote'
     desc = _('Daily Note')
+    isSingleOccur = True
     iconName = 'note'
     requiredRules = (
         'date',
@@ -1817,7 +1824,7 @@ class DailyNoteEvent(Event):
             ('TRANSP', 'TRANSPARENT'),
             ('CATEGORIES', self.name),## FIXME
         ]
-    def setIcsDict(self, data):
+    def setIcsData(self, data):
         self.setJd(getJdByIcsDate(data['DTSTART']))
         return True
 
@@ -1961,7 +1968,7 @@ class YearlyEvent(Event):
             ('TRANSP', 'TRANSPARENT'),
             ('CATEGORIES', self.name),## FIXME
         ]
-    def setIcsDict(self, data):
+    def setIcsData(self, data):
         rrule = dict(splitIcsValue(data['RRULE']))
         try:
             month = int(rrule['BYMONTH'])## multiple values are not supported
@@ -2170,6 +2177,7 @@ class LifeTimeEvent(SingleStartEndEvent):
 class LargeScaleEvent(Event):## or MegaEvent? FIXME
     name = 'largeScale'
     desc = _('Large Scale Event')
+    isSingleOccur = True
     _myParams = (
         'scale',
         'start',
@@ -3503,8 +3511,9 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
         mod = vcsModuleDict[self.vcsType]
         ####
         try:
-            self.vcsMinJd = getJdFromEpoch(mod.getFirstCommitEpoch(self))
-            self.vcsMaxJd = getJdFromEpoch(mod.getLastCommitEpoch(self)) + 1
+            utc = pytz.timezone('UTC')
+            self.vcsMinJd = getJdFromEpoch(mod.getFirstCommitEpoch(self), tz=utc)
+            self.vcsMaxJd = getJdFromEpoch(mod.getLastCommitEpoch(self), tz=utc) + 1
         except:
             myRaise()
             return
@@ -3884,6 +3893,8 @@ def getDayOccurrenceData(curJd, groups):
                 (epoch0, epoch1, groupIndex, eventIndex),## FIXME for sorting
                 {
                     'time': timeStr,
+                    'time_epoch': (epoch0, epoch1),
+                    'is_allday': epoch0 % dayLen == 0 and epoch1 % dayLen == 0,
                     'text': text,
                     'icon': event.icon,
                     'color': color,
