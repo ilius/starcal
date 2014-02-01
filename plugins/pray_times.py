@@ -216,7 +216,7 @@ class TextPlug(BasePlugin, TextPlugUI):
         #######
         self.locName = locName
         self.imsak = imsak
-        self.ptObj = PrayTimes(lat, lng, methodName=method, imsak='%d min'%imsak)
+        self.backend = PrayTimes(lat, lng, methodName=method, imsak='%d min'%imsak)
         self.shownTimeNames = shownTimeNames
         self.sep = sep
         ####
@@ -242,9 +242,9 @@ class TextPlug(BasePlugin, TextPlugUI):
         #self.doPlayAzan() ## for testing ## FIXME
     def saveConfig(self):
         text = ''
-        text += 'lat=%r\n'%self.ptObj.lat
-        text += 'lng=%r\n'%self.ptObj.lng
-        text += 'method=%r\n'%self.ptObj.method.name
+        text += 'lat=%r\n'%self.backend.lat
+        text += 'lng=%r\n'%self.backend.lng
+        text += 'method=%r\n'%self.backend.method.name
         for attr in (
             'locName',
             'shownTimeNames',
@@ -268,7 +268,7 @@ class TextPlug(BasePlugin, TextPlugUI):
     #    menu.remove(self.menuitem)
     #    menu.disconnect(self.menu_unmap_id)
     def get_times_jd(self, jd):
-        times = self.ptObj.getTimesByJd(
+        times = self.backend.getTimesByJd(
             jd,
             getUtcOffsetByJd(jd)/3600.0,
         )
@@ -343,7 +343,7 @@ class TextPlug(BasePlugin, TextPlugUI):
         secondsFromMidnight = epochLocal % (24*3600)
         midnightUtc = tmUtc - secondsFromMidnight
         #print('------- hours from midnight', secondsFromMidnight/3600.0)
-        for timeName, azanHour in self.ptObj.getTimesByJd(
+        for timeName, azanHour in self.backend.getTimesByJd(
             jd,
             utcOffset/3600.0,
         ).items():
