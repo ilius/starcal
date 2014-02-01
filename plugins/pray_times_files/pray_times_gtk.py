@@ -270,7 +270,7 @@ class TextPlugUI:
         group.add_widget(label)
         label.set_alignment(0, 0.5)
         pack(hbox, label)
-        self.locButton = LocationButton(self.cityData, self.locName, self.ptObj.lat, self.ptObj.lng)
+        self.locButton = LocationButton(self.cityData, self.locName, self.backend.lat, self.backend.lng)
         pack(hbox, self.locButton)
         pack(self.confDialog.vbox, hbox)
         ###
@@ -421,8 +421,8 @@ class TextPlugUI:
         '''
         self.dialog = None
     def updateConfWidget(self):
-        self.locButton.setLocation(self.locName, self.ptObj.lat, self.ptObj.lng)
-        self.methodCombo.set_active(methodsList.index(self.ptObj.method))
+        self.locButton.setLocation(self.locName, self.backend.lat, self.backend.lng)
+        self.methodCombo.set_active(methodsList.index(self.backend.method))
         ###
         for row in self.shownTimesTreestore:
             row[0] = (row[2] in self.shownTimeNames)
@@ -443,13 +443,13 @@ class TextPlugUI:
             self.azanFileButton.set_filename(self.azanFile)
     def updateConfVars(self):
         self.locName = self.locButton.locName
-        self.ptObj.lat = self.locButton.lat
-        self.ptObj.lng = self.locButton.lng
-        self.ptObj.method = methodsList[self.methodCombo.get_active()]
+        self.backend.lat = self.locButton.lat
+        self.backend.lng = self.locButton.lng
+        self.backend.method = methodsList[self.methodCombo.get_active()]
         self.shownTimeNames = [row[2] for row in self.shownTimesTreestore if row[0]]
         self.imsak = int(self.imsakSpin.get_value())
         self.sep = buffer_get_text(self.sepBuff)
-        self.ptObj.imsak = '%d min'%self.imsak
+        self.backend.imsak = '%d min'%self.imsak
         ###
         self.preAzanEnable = self.preAzanEnableCheck.get_active()
         self.preAzanFile = self.preAzanFileButton.get_filename()
