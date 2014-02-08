@@ -67,8 +67,9 @@ sysLangDefault = os.environ.get('LANG', '')
 langDefault = ''
 lang = ''
 langActive = ''
-## langActive==lang except when lang=='' (that langActive will taken from system)
-## langActive will not changed via program (because need for restart program to apply new language)
+## langActive==lang except when lang=='' (in that case, langActive will be taken from system)
+## langActive will not get changed while the program is running
+## (because it needs to restart program to apply new language)
 langSh = '' ## short language name, for example 'en', 'fa', 'fr', ...
 rtl = False ## right to left
 
