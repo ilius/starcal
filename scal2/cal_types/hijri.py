@@ -212,7 +212,7 @@ def jd_to(jd):
         if date:
             return date
     ##jd = ifloor(jd) + 0.5
-    year = ((30 * (jd - epoch)) + 10646) // 10631
+    year = ifloor(((30 * (jd - epoch)) + 10646) // 10631)
     month = min(
         12,
         iceil(
