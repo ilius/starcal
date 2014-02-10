@@ -44,7 +44,7 @@ requires+=('python-igraph')
 #requires+=('python-gnomevfs')
 
 
-requires_str=$(printf ", %s" "${requires[@]}") ; requires_str=${requires_str:2}
+requires_str=$(printf " %s" "${requires[@]}") ; requires_str=${requires_str:2}
 #recommends_str=$(printf ", %s" "${recommends[@]}") ; recommends_str=${recommends_str:2}
 
 

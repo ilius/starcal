@@ -27,8 +27,8 @@ version=`$sourceDir/scal2/get_version.py`
 #echo "sourceDir=$sourceDir"
 #echo version=$version
 
-requires=('python >= 2.6' 'python << 3.0')
-requires+=('python-gtk >= 2.8')
+requires=('python>=2.6' 'python<<3.0')
+requires+=('python-gtk>=2.8')
 requires+=('python-gflags')
 requires+=('python-httplib2')
 requires+=('python-pytz')
@@ -43,7 +43,7 @@ requires+=('python-igraph')
 #requires+=('python-gnomevfs')
 
 
-requires_str=$(printf ", %s" "${requires[@]}") ; requires_str=${requires_str:2}
+requires_str=$(printf " %s" "${requires[@]}") ; requires_str=${requires_str:2}
 #recommends_str=$(printf ", %s" "${recommends[@]}") ; recommends_str=${recommends_str:2}
 
 
