@@ -27,38 +27,39 @@ version=`$sourceDir/scal2/get_version.py`
 #echo "sourceDir=$sourceDir"
 #echo version=$version
 
-requires=('python>=2.6' 'python<<3.0')
-requires+=('python-gtk>=2.8')
-requires+=('python-gflags')
-requires+=('python-httplib2')
-requires+=('python-pytz')
 
-if [ -f "/usr/lib/$HOSTTYPE-$OSTYPE/libappindicator.so.1" ] ; then
-    requires+=('python-appindicator')
-fi
+requires_str=""
 
-#recommends=()
-requires+=('python-igraph')
-#requires+=('python-gnomeapplet')
-#requires+=('python-gnomevfs')
+for pkg in \
+"python >= 2.6" \
+"python < 3.0" \
+"python-gtk >= 2.8" \
+"python-gflags" \
+"python-httplib2" \
+"python-pytz" \
+; do
+    requires_str+="Requires: $pkg
+"
+done
+
+requires_str+="
+"
+
+requires_str+="Recommends: python-igraph"
 
 
-requires_str=$(printf " %s" "${requires[@]}") ; requires_str=${requires_str:2}
-#recommends_str=$(printf ", %s" "${recommends[@]}") ; recommends_str=${recommends_str:2}
+echo "Name: $pkgName
+Version: $version
+Release: 1
+Summary: A full-featured international calendar writen in Python
 
+Group: User Interface/Desktops
+License: GPLv3+
+URL: http://starcal.sourceforge.net/
 
+$requires_str
 
-echo "Name:     $pkgName
-Version:        $version
-Release:        1
-Summary:        A full-featured international calendar writen in Python
-
-Group:          User Interface/Desktops
-License:        GPLv3+
-URL:            http://starcal.sourceforge.net/
-Requires:       $requires_str
-Provides:       /usr
-BuildArch:      noarch
+BuildArch: noarch
 
 %description
 StarCalendar is a full-featured international calendar writen in Python,
@@ -84,7 +85,9 @@ english(Gregorian) calendar
 %{_prefix}/share/locale/*/LC_MESSAGES/starcal2.mo
 " > $pkgName.spec
 
-pkgPath=`rpmbuild -bb $pkgName.spec | grep -o /usr/src/packages/RPMS/.*rpm`
+#less $pkgName.spec ; exit 0
+
+pkgPath=`rpmbuild -bb $pkgName.spec | grep -o /usr/src/packages/RPMS/noarch/$pkgName.*\.rpm`
 echo "pkgPath=$pkgPath"
 
 if [ -z "$pkgPath" ] ; then
