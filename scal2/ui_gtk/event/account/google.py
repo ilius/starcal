@@ -3,7 +3,7 @@
 from scal2.locale_man import tr as _
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.event.accounts import common
+from scal2.ui_gtk.event.account import common
 
 class AccountWidget(common.AccountWidget):
     def __init__(self, account):
