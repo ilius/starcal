@@ -1303,7 +1303,7 @@ for cls in event_lib.classes.rule:
 
 for cls in event_lib.classes.notifier:
     try:
-        module = __import__(modPrefix + 'notifiers.' + cls.name, fromlist=['NotifierWidget', 'notify'])
+        module = __import__(modPrefix + 'notifier.' + cls.name, fromlist=['NotifierWidget', 'notify'])
         cls.WidgetClass = module.NotifierWidget
         cls.notify = module.notify
     except:
