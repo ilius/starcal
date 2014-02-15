@@ -132,13 +132,15 @@ lastIds.load()
 ###########################################################################
 
 class ClassGroup(list):
-    def __init__(self):
+    def __init__(self, tname):
         list.__init__(self)
+        self.tname = tname
         self.names = []
         self.byName = {}
         self.byDesc = {}
     def register(self, cls):
         assert cls.name != ''
+        cls.tname = self.tname
         self.append(cls)
         self.names.append(cls.name)
         self.byName[cls.name] = cls
@@ -146,11 +148,11 @@ class ClassGroup(list):
         return cls
 
 class classes:
-    rule = ClassGroup()
-    notifier = ClassGroup()
-    event = ClassGroup()
-    group = ClassGroup()
-    account = ClassGroup()
+    rule = ClassGroup('rule')
+    notifier = ClassGroup('notifier')
+    event = ClassGroup('event')
+    group = ClassGroup('group')
+    account = ClassGroup('account')
 
 defaultEventTypeIndex = 0 ## FIXME
 defaultGroupTypeIndex = 0 ## FIXME
