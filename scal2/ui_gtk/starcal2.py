@@ -54,7 +54,6 @@ from scal2 import locale_man
 from scal2.locale_man import rtl, lang ## import scal2.locale_man after core
 #_ = locale_man.loadTranslator(False)## FIXME
 from scal2.locale_man import tr as _
-from scal2.season import getSeasonNamePercentFromJd
 from scal2 import event_lib
 from scal2 import ui
 
@@ -65,25 +64,17 @@ from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import *
 from scal2.ui_gtk.color_utils import rgbToGdkColor
 from scal2.ui_gtk.drawing import newTextLayout, newOutlineSquarePixbuf
-from scal2.ui_gtk.mywidgets.clock import FClockLabel
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 #from ui_gtk.mywidgets2.multi_spin_button import DateButtonOption
 from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
-from scal2.ui_gtk.export import ExportDialog
-from scal2.ui_gtk.selectdate import SelectDateDialog
-from scal2.ui_gtk import preferences
-from scal2.ui_gtk.preferences import PrefItem, gdkColorToRgb
 from scal2.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox, CustomizeDialog
 from scal2.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
 from scal2.ui_gtk.year_month_labels import YearMonthLabelBox
-from scal2.ui_gtk.day_info import DayInfoDialog
 from scal2.ui_gtk.weekcal import WeekCal
 from scal2.ui_gtk.monthcal import MonthCal
-from scal2.ui_gtk.timeline import TimeLineWindow
 from scal2.ui_gtk.event.common import addNewEvent
 from scal2.ui_gtk.event.occurrence_view import DayOccurrenceView
-from scal2.ui_gtk.event.main import EventManagerDialog
 
 
 
@@ -354,6 +345,7 @@ class SeasonProgressBarMainWinItem(gtk.ProgressBar, CustomizableCalObj):
         gtk.ProgressBar.__init__(self)
         self.initVars()
     def onDateChange(self, *a, **kw):
+        from scal2.season import getSeasonNamePercentFromJd
         CustomizableCalObj.onDateChange(self, *a, **kw)
         name, frac = getSeasonNamePercentFromJd(ui.cell.jd)
         if rtl:
@@ -698,11 +690,13 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.setMinHeight()
     def selectDateShow(self, widget=None):
         if not self.selectDateDialog:
+            from scal2.ui_gtk.selectdate import SelectDateDialog
             self.selectDateDialog = SelectDateDialog()
             self.selectDateDialog.connect('response-date', self.selectDateResponse)
         openWindow(self.selectDateDialog)
     def dayInfoShow(self, widget=None):
         if not self.dayInfoDialog:
+            from scal2.ui_gtk.day_info import DayInfoDialog
             self.dayInfoDialog = DayInfoDialog()
         openWindow(self.dayInfoDialog)
     def selectDateResponse(self, widget, y, m, d):
@@ -946,6 +940,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
     def updateToolbarClock(self):
         if ui.showDigClockTb:
             if self.clock==None:
+                from scal2.ui_gtk.mywidgets.clock import FClockLabel
                 self.clock = FClockLabel(ud.clockFormat)
                 pack(self.toolbBox, self.clock)
                 self.clock.show()
@@ -960,6 +955,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             return
         if ui.showDigClockTr:
             if self.clockTr==None:
+                from scal2.ui_gtk.mywidgets.clock import FClockLabel
                 self.clockTr = FClockLabel(ud.clockFormat)
                 try:
                     pack(self.trayHbox, self.clockTr)
@@ -998,7 +994,8 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         return True
     def prefShow(self, obj=None, data=None):
         if not ui.prefDialog:
-            ui.prefDialog = preferences.PrefDialog(self.trayMode)
+            from scal2.ui_gtk.preferences import PrefDialog
+            ui.prefDialog = PrefDialog(self.trayMode)
             ui.prefDialog.updatePrefGui()
         openWindow(ui.prefDialog)
     def customizeShow(self, obj=None, data=None):
@@ -1006,6 +1003,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         openWindow(self.customizeDialog)
     def eventManCreate(self):
         if not ui.eventManDialog:
+            from scal2.ui_gtk.event.main import EventManagerDialog
             ui.eventManDialog = EventManagerDialog()
     def eventManShow(self, obj=None, data=None):
         self.eventManCreate()
@@ -1015,6 +1013,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ui.eventManDialog.addCustomEvent()
     def timeLineShow(self, obj=None, data=None):
         if not ui.timeLineWin:
+            from scal2.ui_gtk.timeline import TimeLineWindow
             ui.timeLineWin = TimeLineWindow()
         openWindow(ui.timeLineWin)
     #weekCalShow = lambda self, obj=None, data=None: openWindow(ui.weekCalWin)
@@ -1192,6 +1191,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         Popen(ud.adjustTimeCmd)
     def exportShow(self, year, month):
         if not self.exportDialog:
+            from scal2.ui_gtk.export import ExportDialog
             self.exportDialog = ExportDialog()
         self.exportDialog.showDialog(year, month)
     def exportClicked(self, widget=None):
