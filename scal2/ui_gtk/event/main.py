@@ -1331,7 +1331,7 @@ for cls in event_lib.classes.group:
 
 for cls in event_lib.classes.account:
     try:
-        module = __import__(modPrefix + 'accounts.' + cls.name, fromlist=['AccountWidget'])
+        module = __import__(modPrefix + 'account.' + cls.name, fromlist=['AccountWidget'])
     except:
         myRaise()
         continue
