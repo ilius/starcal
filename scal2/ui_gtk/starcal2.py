@@ -617,7 +617,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             self.vbox.appendItem(item)
         self.appendItem(self.vbox)
         self.vbox.show()
-        self.customizeDialog = CustomizeDialog(self.vbox)
+        self.customizeDialog = None
         #######
         self.add(self.vbox)
         ####################
@@ -787,10 +787,17 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
                 core.allPlugList[core.plugIndex[j]].date_change_after(*date)
             except AttributeError:
                 pass
+    def customizeDialogCreate(self):
+        if not self.customizeDialog:
+            self.customizeDialog = CustomizeDialog(self.vbox)
     def switchWcalMcal(self, widget=None):
+        self.customizeDialogCreate()
         self.vbox.switchWcalMcal()
         self.customizeDialog.updateTreeEnableChecks()
         self.customizeDialog.save()
+    def customizeShow(self, obj=None, data=None):
+        self.customizeDialogCreate()
+        openWindow(self.customizeDialog)
     def getEventAddToMenuItem(self):
         addToItem = labelStockMenuItem('_Add to', gtk.STOCK_ADD)
         menu2 = gtk.Menu()
@@ -998,9 +1005,6 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             ui.prefDialog = PrefDialog(self.trayMode)
             ui.prefDialog.updatePrefGui()
         openWindow(ui.prefDialog)
-    def customizeShow(self, obj=None, data=None):
-        ## lazy loading? FIXME
-        openWindow(self.customizeDialog)
     def eventManCreate(self):
         if not ui.eventManDialog:
             from scal2.ui_gtk.event.main import EventManagerDialog
