@@ -28,7 +28,7 @@ from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin_button import HourMinuteButtonOption
 from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 from scal2.ui_gtk.event import common
-from scal2.ui_gtk.event.rules.weekNumMode import RuleWidget as WeekNumModeRuleWidget
+from scal2.ui_gtk.event.rule.weekNumMode import RuleWidget as WeekNumModeRuleWidget
 
 
 

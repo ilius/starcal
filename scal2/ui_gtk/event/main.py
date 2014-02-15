@@ -1291,7 +1291,7 @@ for cls in event_lib.classes.event:
 
 for cls in event_lib.classes.rule:
     try:
-        module = __import__(modPrefix + 'rules.' + cls.name, fromlist=['RuleWidget'])
+        module = __import__(modPrefix + 'rule.' + cls.name, fromlist=['RuleWidget'])
     except:
         #if not cls.name.startswith('ex_'):
         myRaise()
