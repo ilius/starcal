@@ -688,17 +688,6 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         #self.event = event
     def childSizeRequest(self, cal, req):
         self.setMinHeight()
-    def selectDateShow(self, widget=None):
-        if not self.selectDateDialog:
-            from scal2.ui_gtk.selectdate import SelectDateDialog
-            self.selectDateDialog = SelectDateDialog()
-            self.selectDateDialog.connect('response-date', self.selectDateResponse)
-        openWindow(self.selectDateDialog)
-    def dayInfoShow(self, widget=None):
-        if not self.dayInfoDialog:
-            from scal2.ui_gtk.day_info import DayInfoDialog
-            self.dayInfoDialog = DayInfoDialog()
-        openWindow(self.dayInfoDialog)
     def selectDateResponse(self, widget, y, m, d):
         ui.changeDate(y, m, d)
         self.onDateChange()
@@ -787,17 +776,6 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
                 core.allPlugList[core.plugIndex[j]].date_change_after(*date)
             except AttributeError:
                 pass
-    def customizeDialogCreate(self):
-        if not self.customizeDialog:
-            self.customizeDialog = CustomizeDialog(self.vbox)
-    def switchWcalMcal(self, widget=None):
-        self.customizeDialogCreate()
-        self.vbox.switchWcalMcal()
-        self.customizeDialog.updateTreeEnableChecks()
-        self.customizeDialog.save()
-    def customizeShow(self, obj=None, data=None):
-        self.customizeDialogCreate()
-        openWindow(self.customizeDialog)
     def getEventAddToMenuItem(self):
         addToItem = labelStockMenuItem('_Add to', gtk.STOCK_ADD)
         menu2 = gtk.Menu()
@@ -978,48 +956,6 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
                 self.clockTr.destroy()
                 self.clockTr = None
     """
-    def aboutShow(self, obj=None, data=None):
-        if not self.aboutDialog:
-            dialog = AboutDialog(
-                name=core.APP_DESC,
-                version=core.VERSION,
-                title=_('About ')+core.APP_DESC,
-                authors=[_(line) for line in open(join(rootDir, 'authors-dialog')).read().splitlines()],
-                comments=core.aboutText,
-                license=core.licenseText,
-                website=core.homePage,
-            )
-            ## add Donate button ## FIXME
-            dialog.connect('delete-event', self.aboutHide)
-            dialog.connect('response', self.aboutHide)
-            #dialog.set_logo(gdk.pixbuf_new_from_file(ui.logo))
-            #dialog.set_skip_taskbar_hint(True)
-            self.aboutDialog = dialog
-        openWindow(self.aboutDialog)
-    def aboutHide(self, widget, arg=None):## arg maybe an event, or response id
-        self.aboutDialog.hide()
-        return True
-    def prefShow(self, obj=None, data=None):
-        if not ui.prefDialog:
-            from scal2.ui_gtk.preferences import PrefDialog
-            ui.prefDialog = PrefDialog(self.trayMode)
-            ui.prefDialog.updatePrefGui()
-        openWindow(ui.prefDialog)
-    def eventManCreate(self):
-        if not ui.eventManDialog:
-            from scal2.ui_gtk.event.main import EventManagerDialog
-            ui.eventManDialog = EventManagerDialog()
-    def eventManShow(self, obj=None, data=None):
-        self.eventManCreate()
-        openWindow(ui.eventManDialog)
-    def addCustomEvent(self, obj=None):
-        self.eventManCreate()
-        ui.eventManDialog.addCustomEvent()
-    def timeLineShow(self, obj=None, data=None):
-        if not ui.timeLineWin:
-            from scal2.ui_gtk.timeline import TimeLineWindow
-            ui.timeLineWin = TimeLineWindow()
-        openWindow(ui.timeLineWin)
     #weekCalShow = lambda self, obj=None, data=None: openWindow(ui.weekCalWin)
     def trayInit(self):
         if self.trayMode==2:
@@ -1193,6 +1129,70 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         return gtk.main_quit()
     def adjustTime(self, widget=None, event=None):
         Popen(ud.adjustTimeCmd)
+    def aboutShow(self, obj=None, data=None):
+        if not self.aboutDialog:
+            dialog = AboutDialog(
+                name=core.APP_DESC,
+                version=core.VERSION,
+                title=_('About ')+core.APP_DESC,
+                authors=[_(line) for line in open(join(rootDir, 'authors-dialog')).read().splitlines()],
+                comments=core.aboutText,
+                license=core.licenseText,
+                website=core.homePage,
+            )
+            ## add Donate button ## FIXME
+            dialog.connect('delete-event', self.aboutHide)
+            dialog.connect('response', self.aboutHide)
+            #dialog.set_logo(gdk.pixbuf_new_from_file(ui.logo))
+            #dialog.set_skip_taskbar_hint(True)
+            self.aboutDialog = dialog
+        openWindow(self.aboutDialog)
+    def aboutHide(self, widget, arg=None):## arg maybe an event, or response id
+        self.aboutDialog.hide()
+        return True
+    def prefShow(self, obj=None, data=None):
+        if not ui.prefDialog:
+            from scal2.ui_gtk.preferences import PrefDialog
+            ui.prefDialog = PrefDialog(self.trayMode)
+            ui.prefDialog.updatePrefGui()
+        openWindow(ui.prefDialog)
+    def eventManCreate(self):
+        if not ui.eventManDialog:
+            from scal2.ui_gtk.event.main import EventManagerDialog
+            ui.eventManDialog = EventManagerDialog()
+    def eventManShow(self, obj=None, data=None):
+        self.eventManCreate()
+        openWindow(ui.eventManDialog)
+    def addCustomEvent(self, obj=None):
+        self.eventManCreate()
+        ui.eventManDialog.addCustomEvent()
+    def timeLineShow(self, obj=None, data=None):
+        if not ui.timeLineWin:
+            from scal2.ui_gtk.timeline import TimeLineWindow
+            ui.timeLineWin = TimeLineWindow()
+        openWindow(ui.timeLineWin)
+    def selectDateShow(self, widget=None):
+        if not self.selectDateDialog:
+            from scal2.ui_gtk.selectdate import SelectDateDialog
+            self.selectDateDialog = SelectDateDialog()
+            self.selectDateDialog.connect('response-date', self.selectDateResponse)
+        openWindow(self.selectDateDialog)
+    def dayInfoShow(self, widget=None):
+        if not self.dayInfoDialog:
+            from scal2.ui_gtk.day_info import DayInfoDialog
+            self.dayInfoDialog = DayInfoDialog()
+        openWindow(self.dayInfoDialog)
+    def customizeDialogCreate(self):
+        if not self.customizeDialog:
+            self.customizeDialog = CustomizeDialog(self.vbox)
+    def switchWcalMcal(self, widget=None):
+        self.customizeDialogCreate()
+        self.vbox.switchWcalMcal()
+        self.customizeDialog.updateTreeEnableChecks()
+        self.customizeDialog.save()
+    def customizeShow(self, obj=None, data=None):
+        self.customizeDialogCreate()
+        openWindow(self.customizeDialog)
     def exportShow(self, year, month):
         if not self.exportDialog:
             from scal2.ui_gtk.export import ExportDialog
