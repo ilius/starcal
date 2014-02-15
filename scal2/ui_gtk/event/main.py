@@ -1284,7 +1284,7 @@ modPrefix = 'scal2.ui_gtk.event.'
 
 for cls in event_lib.classes.event:
     try:
-        module = __import__(modPrefix + cls.name, fromlist=['EventWidget'])
+        module = __import__(modPrefix + 'event.' + cls.name, fromlist=['EventWidget'])
         cls.WidgetClass = module.EventWidget
     except:
         myRaise()
