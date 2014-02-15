@@ -70,8 +70,8 @@ from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 #from ui_gtk.mywidgets2.multi_spin_button import DateButtonOption
 from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
-import scal2.ui_gtk.export
-import scal2.ui_gtk.selectdate
+from scal2.ui_gtk.export import ExportDialog
+from scal2.ui_gtk.selectdate import SelectDateDialog
 from scal2.ui_gtk import preferences
 from scal2.ui_gtk.preferences import PrefItem, gdkColorToRgb
 from scal2.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox, CustomizeDialog
@@ -543,14 +543,13 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
             ## 2: standard tray icon
         self.trayMode = trayMode
         ###
-        ui.eventManDialog = EventManagerDialog()
-        ###
-        ui.timeLineWin = TimeLineWindow()
+        #ui.eventManDialog = None
+        #ui.timeLineWin = None
         ###
         #ui.weekCalWin = WeekCalWindow()
         #ud.windowList.appendItem(ui.weekCalWin)
         ###
-        self.dayInfoDialog = DayInfoDialog()
+        self.dayInfoDialog = None
         #print('windowList.items', [item._name for item in ud.windowList.items])
         ###########
         ##self.connect('window-state-event', selfStateEvent)
@@ -632,27 +631,11 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ####################
         self.isMaximized = False
         ####################
-        ui.prefDialog = preferences.PrefDialog(self.trayMode)
-        self.exportDialog = scal2.ui_gtk.export.ExportDialog()
-        self.selectDateDialog = scal2.ui_gtk.selectdate.SelectDateDialog()
-        self.selectDateDialog.connect('response-date', self.selectDateResponse)
-        selectDateShow = self.selectDateShow
+        #ui.prefDialog = None
+        self.exportDialog = None
+        self.selectDateDialog = None
         ############### Building About Dialog
-        about = AboutDialog(
-            name=core.APP_DESC,
-            version=core.VERSION,
-            title=_('About ')+core.APP_DESC,
-            authors=[_(line) for line in open(join(rootDir, 'authors-dialog')).read().splitlines()],
-            comments=core.aboutText,
-            license=core.licenseText,
-            website=core.homePage,
-        )
-        ## add Donate button ## FIXME
-        about.connect('delete-event', self.aboutHide)
-        about.connect('response', self.aboutHide)
-        #about.set_logo(gdk.pixbuf_new_from_file(ui.logo))
-        #about.set_skip_taskbar_hint(True)
-        self.about = about
+        self.aboutDialog = None
         ########################################### Building main menu
         menu = gtk.Menu()
         ####
@@ -677,11 +660,11 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.checkSticky = check
         #####
         menu.add(labelStockMenuItem('Select _Today', gtk.STOCK_HOME, self.goToday))
-        menu.add(labelStockMenuItem('Select _Date...', gtk.STOCK_INDEX, selectDateShow))
+        menu.add(labelStockMenuItem('Select _Date...', gtk.STOCK_INDEX, self.selectDateShow))
         menu.add(labelStockMenuItem('Day Info', gtk.STOCK_INFO, self.dayInfoShow))
         menu.add(labelStockMenuItem('_Customize', gtk.STOCK_EDIT, self.customizeShow))
         menu.add(labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
-        #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, ui.eventManDialog.addCustomEvent))
+        #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, ui.addCustomEvent))
         menu.add(labelStockMenuItem('_Event Manager', gtk.STOCK_ADD, self.eventManShow))
         menu.add(labelImageMenuItem('Time Line', 'timeline-18.png', self.timeLineShow))
         #menu.add(labelImageMenuItem('Week Calendar', 'weekcal-18.png', self.weekCalShow))
@@ -700,7 +683,6 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         self.connect('delete-event', self.onDeleteEvent)
         ######################
         self.updateMenuSize()
-        ui.prefDialog.updatePrefGui()
         #########################################
         for plug in core.allPlugList:
             if plug.external and hasattr(plug, 'set_dialog'):
@@ -714,8 +696,15 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         #self.event = event
     def childSizeRequest(self, cal, req):
         self.setMinHeight()
-    selectDateShow = lambda self, widget=None: self.selectDateDialog.show()
-    dayInfoShow = lambda self, widget=None: self.dayInfoDialog.show()
+    def selectDateShow(self, widget=None):
+        if not self.selectDateDialog:
+            self.selectDateDialog = SelectDateDialog()
+            self.selectDateDialog.connect('response-date', self.selectDateResponse)
+        openWindow(self.selectDateDialog)
+    def dayInfoShow(self, widget=None):
+        if not self.dayInfoDialog:
+            self.dayInfoDialog = DayInfoDialog()
+        openWindow(self.dayInfoDialog)
     def selectDateResponse(self, widget, y, m, d):
         ui.changeDate(y, m, d)
         self.onDateChange()
@@ -925,7 +914,9 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         ui.reloadGroups.append(group.id)
         self.onConfigChange()
     def prefUpdateBgColor(self, cal):
-        ui.prefDialog.colorbBg.set_color(ui.bgColor)
+        if ui.prefDialog:
+            ui.prefDialog.colorbBg.set_color(ui.bgColor)
+        #else:## FIXME
         ui.saveLiveConf()
     def keepAboveClicked(self, check):
         act = check.get_active()
@@ -984,14 +975,48 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
                 self.clockTr.destroy()
                 self.clockTr = None
     """
-    aboutShow = lambda self, obj=None, data=None: openWindow(self.about)
+    def aboutShow(self, obj=None, data=None):
+        if not self.aboutDialog:
+            dialog = AboutDialog(
+                name=core.APP_DESC,
+                version=core.VERSION,
+                title=_('About ')+core.APP_DESC,
+                authors=[_(line) for line in open(join(rootDir, 'authors-dialog')).read().splitlines()],
+                comments=core.aboutText,
+                license=core.licenseText,
+                website=core.homePage,
+            )
+            ## add Donate button ## FIXME
+            dialog.connect('delete-event', self.aboutHide)
+            dialog.connect('response', self.aboutHide)
+            #dialog.set_logo(gdk.pixbuf_new_from_file(ui.logo))
+            #dialog.set_skip_taskbar_hint(True)
+            self.aboutDialog = dialog
+        openWindow(self.aboutDialog)
     def aboutHide(self, widget, arg=None):## arg maybe an event, or response id
-        self.about.hide()
+        self.aboutDialog.hide()
         return True
-    prefShow = lambda self, obj=None, data=None: openWindow(ui.prefDialog)
-    customizeShow = lambda self, obj=None, data=None: openWindow(self.customizeDialog)
-    eventManShow = lambda self, obj=None, data=None: openWindow(ui.eventManDialog)
-    timeLineShow = lambda self, obj=None, data=None: openWindow(ui.timeLineWin)
+    def prefShow(self, obj=None, data=None):
+        if not ui.prefDialog:
+            ui.prefDialog = preferences.PrefDialog(self.trayMode)
+            ui.prefDialog.updatePrefGui()
+        openWindow(ui.prefDialog)
+    def customizeShow(self, obj=None, data=None):
+        ## lazy loading? FIXME
+        openWindow(self.customizeDialog)
+    def eventManCreate(self):
+        if not ui.eventManDialog:
+            ui.eventManDialog = EventManagerDialog()
+    def eventManShow(self, obj=None, data=None):
+        self.eventManCreate()
+        openWindow(ui.eventManDialog)
+    def addCustomEvent(self, obj=None):
+        self.eventManCreate()
+        ui.eventManDialog.addCustomEvent()
+    def timeLineShow(self, obj=None, data=None):
+        if not ui.timeLineWin:
+            ui.timeLineWin = TimeLineWindow()
+        openWindow(ui.timeLineWin)
     #weekCalShow = lambda self, obj=None, data=None: openWindow(ui.weekCalWin)
     def trayInit(self):
         if self.trayMode==2:
@@ -1021,7 +1046,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         labelStockMenuItem('Copy _Time', gtk.STOCK_COPY, self.copyTime),
         labelStockMenuItem('Copy _Date', gtk.STOCK_COPY, self.copyDateToday),
         labelStockMenuItem('Ad_just System Time', gtk.STOCK_PREFERENCES, self.adjustTime),
-        #labelStockMenuItem('_Add Event', gtk.STOCK_ADD, ui.eventManDialog.addCustomEvent),## FIXME
+        #labelStockMenuItem('_Add Event', gtk.STOCK_ADD, ui.addCustomEvent),## FIXME
         labelStockMenuItem(_('Export to %s')%'HTML', gtk.STOCK_CONVERT, self.exportClickedTray),
         labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow),
         labelStockMenuItem('_Customize', gtk.STOCK_EDIT, self.customizeShow),
@@ -1165,10 +1190,15 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         return gtk.main_quit()
     def adjustTime(self, widget=None, event=None):
         Popen(ud.adjustTimeCmd)
-    exportClicked = lambda self, widget=None: self.exportDialog.showDialog(ui.cell.year, ui.cell.month)
+    def exportShow(self, year, month):
+        if not self.exportDialog:
+            self.exportDialog = ExportDialog()
+        self.exportDialog.showDialog(year, month)
+    def exportClicked(self, widget=None):
+        self.exportShow(ui.cell.year, ui.cell.month)
     def exportClickedTray(self, widget=None, event=None):
-        y, m = core.getSysDate(calTypes.primary)[:2]
-        self.exportDialog.showDialog(y, m)
+        year, month, day = core.getSysDate(calTypes.primary)
+        self.exportShow(year, month)
     def onConfigChange(self, *a, **kw):
         ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
         #self.set_property('skip-taskbar-hint', not ui.winTaskbar) ## self.set_skip_taskbar_hint ## FIXME
