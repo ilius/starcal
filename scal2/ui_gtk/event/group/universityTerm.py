@@ -32,7 +32,7 @@ from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip
 from scal2.ui_gtk.drawing import *
-from scal2.ui_gtk.event.groups.group import GroupWidget as NormalGroupWidget
+from scal2.ui_gtk.event.group.group import GroupWidget as NormalGroupWidget
 
 
 

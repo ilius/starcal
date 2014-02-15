@@ -2,7 +2,7 @@ from scal2 import core
 from scal2.locale_man import tr as _
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.event.groups.vcsBase import VcsBaseGroupWidget
+from scal2.ui_gtk.event.group.vcsBase import VcsBaseGroupWidget
 
 
 class VcsEpochBaseGroupWidget(VcsBaseGroupWidget):

@@ -3,7 +3,7 @@ from scal2.locale_man import tr as _
 from scal2.vcs_modules import vcsModuleNames
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.event.groups.group import GroupWidget as NormalGroupWidget
+from scal2.ui_gtk.event.group.group import GroupWidget as NormalGroupWidget
 
 
 
