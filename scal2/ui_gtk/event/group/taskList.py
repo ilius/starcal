@@ -6,7 +6,7 @@ from scal2.locale_man import tr as _
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.event import common
-from scal2.ui_gtk.event.groups.group import GroupWidget as NormalGroupWidget
+from scal2.ui_gtk.event.group.group import GroupWidget as NormalGroupWidget
 
 
 class GroupWidget(NormalGroupWidget):
@@ -14,18 +14,18 @@ class GroupWidget(NormalGroupWidget):
         NormalGroupWidget.__init__(self, group)
         ###
         hbox = gtk.HBox()
-        label = gtk.Label(_('Show Date in Event Summary'))
+        label = gtk.Label(_('Default Task Duration'))
         label.set_alignment(0, 0.5)
         pack(hbox, label)
         self.sizeGroup.add_widget(label)
-        self.showDateCheck = gtk.CheckButton()
-        pack(hbox, self.showDateCheck)
+        self.defaultDurationBox = common.DurationInputBox()
+        pack(hbox, self.defaultDurationBox)
         pack(self, hbox)
     def updateWidget(self):## FIXME
         NormalGroupWidget.updateWidget(self)
-        self.showDateCheck.set_active(self.group.showDate)
+        self.defaultDurationBox.setDuration(*self.group.defaultDuration)
     def updateVars(self):
         NormalGroupWidget.updateVars(self)
-        self.group.showDate = self.showDateCheck.get_active()
+        self.group.defaultDuration = self.defaultDurationBox.getDuration()
 
 

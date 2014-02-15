@@ -1311,7 +1311,7 @@ for cls in event_lib.classes.notifier:
 
 for cls in event_lib.classes.group:
     try:
-        module = __import__(modPrefix + 'groups.' + cls.name, fromlist=['GroupWidget'])
+        module = __import__(modPrefix + 'group.' + cls.name, fromlist=['GroupWidget'])
     except:
         myRaise()
         continue

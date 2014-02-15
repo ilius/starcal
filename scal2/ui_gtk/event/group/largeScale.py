@@ -3,7 +3,7 @@ from scal2.locale_man import tr as _
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
-from scal2.ui_gtk.event.groups.base import BaseGroupWidget
+from scal2.ui_gtk.event.group.base import BaseGroupWidget
 from scal2.ui_gtk.event import common
 
 
