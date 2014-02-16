@@ -1181,6 +1181,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         if not self.dayInfoDialog:
             from scal2.ui_gtk.day_info import DayInfoDialog
             self.dayInfoDialog = DayInfoDialog()
+            self.dayInfoDialog.onDateChange()
         openWindow(self.dayInfoDialog)
     def customizeDialogCreate(self):
         if not self.customizeDialog:
