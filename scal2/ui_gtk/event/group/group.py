@@ -6,12 +6,12 @@ from scal2.locale_man import tr as _
 from scal2.ui_gtk import *
 from scal2.ui_gtk.mywidgets import MyColorButton
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
-from scal2.ui_gtk.event.group.base import BaseGroupWidget
+from scal2.ui_gtk.event.group.base import BaseWidgetClass
 
 
-class GroupWidget(BaseGroupWidget):
+class WidgetClass(BaseWidgetClass):
     def __init__(self, group):
-        BaseGroupWidget.__init__(self, group)
+        BaseWidgetClass.__init__(self, group)
         ####
         hbox = gtk.HBox()
         label = gtk.Label(_('Start'))
@@ -31,11 +31,11 @@ class GroupWidget(BaseGroupWidget):
         pack(hbox, self.endDateInput)
         pack(self, hbox)
     def updateWidget(self):
-        BaseGroupWidget.updateWidget(self)
+        BaseWidgetClass.updateWidget(self)
         self.startDateInput.set_value(jd_to(self.group.startJd, self.group.mode))
         self.endDateInput.set_value(jd_to(self.group.endJd, self.group.mode))
     def updateVars(self):
-        BaseGroupWidget.updateVars(self)
+        BaseWidgetClass.updateVars(self)
         self.group.startJd = self.startDateInput.get_jd(self.group.mode)
         self.group.endJd = self.endDateInput.get_jd(self.group.mode)
     def modeComboChanged(self, obj=None):

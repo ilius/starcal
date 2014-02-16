@@ -6,12 +6,12 @@ from scal2.locale_man import tr as _
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.event import common
-from scal2.ui_gtk.event.group.group import GroupWidget as NormalGroupWidget
+from scal2.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 
 
-class GroupWidget(NormalGroupWidget):
+class WidgetClass(NormalWidgetClass):
     def __init__(self, group):
-        NormalGroupWidget.__init__(self, group)
+        NormalWidgetClass.__init__(self, group)
         ###
         hbox = gtk.HBox()
         label = gtk.Label(_('Show Date in Event Summary'))
@@ -22,10 +22,10 @@ class GroupWidget(NormalGroupWidget):
         pack(hbox, self.showDateCheck)
         pack(self, hbox)
     def updateWidget(self):## FIXME
-        NormalGroupWidget.updateWidget(self)
+        NormalWidgetClass.updateWidget(self)
         self.showDateCheck.set_active(self.group.showDate)
     def updateVars(self):
-        NormalGroupWidget.updateVars(self)
+        NormalWidgetClass.updateVars(self)
         self.group.showDate = self.showDateCheck.get_active()
 
 

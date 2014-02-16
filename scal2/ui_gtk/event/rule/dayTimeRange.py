@@ -8,7 +8,7 @@ from scal2.ui_gtk import *
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, TimeButton
 
 
-class RuleWidget(gtk.HBox):
+class WidgetClass(gtk.HBox):
     def __init__(self, rule):
         self.rule = rule
         ###

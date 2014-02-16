@@ -1,8 +1,8 @@
-from scal2.ui_gtk.event.group.group import GroupWidget as NormalGroupWidget
+from scal2.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 
 
 
-class GroupWidget(NormalGroupWidget):
+class WidgetClass(NormalWidgetClass):
     pass
 
 

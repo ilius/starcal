@@ -2,12 +2,12 @@ from scal2 import core
 from scal2.locale_man import tr as _
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.event.group.vcsBase import VcsBaseGroupWidget
+from scal2.ui_gtk.event.group.vcsBase import VcsBaseWidgetClass
 
 
-class VcsEpochBaseGroupWidget(VcsBaseGroupWidget):
+class VcsEpochBaseWidgetClass(VcsBaseWidgetClass):
     def __init__(self, group):
-        VcsBaseGroupWidget.__init__(self, group)
+        VcsBaseWidgetClass.__init__(self, group)
         ######
         hbox = gtk.HBox()
         label = gtk.Label(_('Show Seconds'))
@@ -19,9 +19,9 @@ class VcsEpochBaseGroupWidget(VcsBaseGroupWidget):
         pack(hbox, self.showSecondsCheck)
         pack(self, hbox)
     def updateWidget(self):
-        VcsBaseGroupWidget.updateWidget(self)
+        VcsBaseWidgetClass.updateWidget(self)
         self.showSecondsCheck.set_active(self.group.showSeconds)
     def updateVars(self):
-        VcsBaseGroupWidget.updateVars(self)
+        VcsBaseWidgetClass.updateVars(self)
         self.group.showSeconds = self.showSecondsCheck.get_active()
 

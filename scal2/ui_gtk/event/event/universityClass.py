@@ -28,11 +28,11 @@ from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin_button import HourMinuteButtonOption
 from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 from scal2.ui_gtk.event import common
-from scal2.ui_gtk.event.rule.weekNumMode import RuleWidget as WeekNumModeRuleWidget
+from scal2.ui_gtk.event.rule.weekNumMode import WidgetClass as WeekNumModeWidgetClass
 
 
 
-class EventWidget(gtk.VBox):
+class WidgetClass(gtk.VBox):
     def __init__(self, event):## FIXME
         gtk.VBox.__init__(self)
         self.event = event
@@ -66,7 +66,7 @@ class EventWidget(gtk.VBox):
         label.set_alignment(0, 0.5)
         sizeGroup.add_widget(label)
         pack(hbox, label)
-        self.weekNumModeCombo = WeekNumModeRuleWidget(event['weekNumMode'])
+        self.weekNumModeCombo = WeekNumModeWidgetClass(event['weekNumMode'])
         pack(hbox, self.weekNumModeCombo)
         pack(self, hbox)
         #####

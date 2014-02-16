@@ -12,9 +12,9 @@ from scal2.ui_gtk.event import common
 maxStart = 999999
 maxDur = 99999
 
-class EventWidget(common.EventWidget):
+class WidgetClass(common.WidgetClass):
     def __init__(self, event):## FIXME
-        common.EventWidget.__init__(self, event)
+        common.WidgetClass.__init__(self, event)
         ######
         sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
         ######
@@ -63,13 +63,13 @@ class EventWidget(common.EventWidget):
         if self.endRelCombo.get_active() == 1:## absolute(end)
             self.endSpin.set_range(self.startSpin.get_value()+1, maxStart)
     def updateWidget(self):
-        common.EventWidget.updateWidget(self)
+        common.WidgetClass.updateWidget(self)
         self.scaleCombo.set_value(self.event.scale)
         self.startSpin.set_value(self.event.start)
         self.endRelCombo.set_active(0 if self.event.endRel else 1)
         self.endSpin.set_value(self.event.end)
     def updateVars(self):## FIXME
-        common.EventWidget.updateVars(self)
+        common.WidgetClass.updateVars(self)
         self.event.scale = self.scaleCombo.get_value()
         self.event.start = self.startSpin.get_value()
         self.event.endRel = (self.endRelCombo.get_active()==0)

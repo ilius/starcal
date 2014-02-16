@@ -4,6 +4,7 @@ from scal2 import ui
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import dialog_add_button
+from scal2.ui_gtk.event import makeWidget
 
 class AccountEditorDialog(gtk.Dialog):
     def __init__(self, account=None):
@@ -55,7 +56,7 @@ class AccountEditorDialog(gtk.Dialog):
         if self.isNew:
             account.title = cls.desc ## FIXME
         self.account = account
-        self.activeWidget = account.makeWidget()
+        self.activeWidget = makeWidget(account)
         pack(self.vbox, self.activeWidget)
     def run(self):
         if self.activeWidget is None or self.account is None:

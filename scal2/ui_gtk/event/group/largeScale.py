@@ -3,15 +3,15 @@ from scal2.locale_man import tr as _
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
-from scal2.ui_gtk.event.group.base import BaseGroupWidget
+from scal2.ui_gtk.event.group.base import BaseWidgetClass
 from scal2.ui_gtk.event import common
 
 
 maxStartEnd = 999999
 
-class GroupWidget(BaseGroupWidget):
+class WidgetClass(BaseWidgetClass):
     def __init__(self, group):
-        BaseGroupWidget.__init__(self, group)
+        BaseWidgetClass.__init__(self, group)
         ######
         sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
         ######
@@ -42,12 +42,12 @@ class GroupWidget(BaseGroupWidget):
         pack(hbox, self.endSpin)
         pack(self, hbox)
     def updateWidget(self):
-        BaseGroupWidget.updateWidget(self)
+        BaseWidgetClass.updateWidget(self)
         self.scaleCombo.set_value(self.group.scale)
         self.startSpin.set_value(self.group.getStartValue())
         self.endSpin.set_value(self.group.getEndValue())
     def updateVars(self):
-        BaseGroupWidget.updateVars(self)
+        BaseWidgetClass.updateVars(self)
         self.group.scale = self.scaleCombo.get_value()
         self.group.setStartValue(self.startSpin.get_value())
         self.group.setEndValue(self.endSpin.get_value())

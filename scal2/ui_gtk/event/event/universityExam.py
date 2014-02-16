@@ -29,7 +29,7 @@ from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, HourMinuteButto
 from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 from scal2.ui_gtk.event import common
 
-class EventWidget(gtk.VBox):
+class WidgetClass(gtk.VBox):
     def __init__(self, event):## FIXME
         gtk.VBox.__init__(self)
         self.event = event
@@ -168,7 +168,7 @@ class EventWidget(gtk.VBox):
         ####
         self.notificationBox.updateVars()
         self.event.updateSummary()
-    def modeComboChanged(self, obj=None):## overwrite method from common.EventWidget
+    def modeComboChanged(self, obj=None):## overwrite method from common.WidgetClass
         newMode = self.modeCombo.get_active()
         self.dateInput.changeMode(self.event.mode, newMode)
         self.event.mode = newMode

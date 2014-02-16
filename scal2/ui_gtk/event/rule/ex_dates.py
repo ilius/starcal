@@ -32,7 +32,7 @@ encode = lambda d: textNumEncode(dateEncode(d))
 decode = lambda s: dateDecode(textNumDecode(s))
 validate = lambda s: encode(decode(s))
 
-class RuleWidget(gtk.HBox):
+class WidgetClass(gtk.HBox):
     def __init__(self, rule):
         self.rule = rule
         gtk.HBox.__init__(self)

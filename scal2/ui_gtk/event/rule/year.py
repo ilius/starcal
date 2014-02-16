@@ -7,7 +7,7 @@ from scal2 import event_lib
 from scal2.ui_gtk import *
 from scal2.ui_gtk.mywidgets.num_ranges_entry import NumRangesEntry
 
-class RuleWidget(NumRangesEntry):
+class WidgetClass(NumRangesEntry):
     def __init__(self, rule):
         self.rule = rule
         NumRangesEntry.__init__(self, 0, 9999, 10)

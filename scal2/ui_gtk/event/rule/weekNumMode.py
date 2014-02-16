@@ -6,7 +6,7 @@ from scal2 import event_lib
 
 from scal2.ui_gtk import *
 
-class RuleWidget(gtk.ComboBox):
+class WidgetClass(gtk.ComboBox):
     def __init__(self, rule):
         self.rule = rule
         ###
