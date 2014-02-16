@@ -7,7 +7,7 @@ from scal2 import event_lib
 from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import WeekDayComboBox, MonthComboBox
 
-class RuleWidget(gtk.HBox):
+class WidgetClass(gtk.HBox):
     def __init__(self, rule):
         self.rule = rule
         #####

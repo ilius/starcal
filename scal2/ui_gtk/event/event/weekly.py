@@ -26,9 +26,9 @@ from scal2.ui_gtk import *
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, DateButton, HourMinuteButton
 from scal2.ui_gtk.event import common
 
-class EventWidget(common.EventWidget):
+class WidgetClass(common.WidgetClass):
     def __init__(self, event):## FIXME
-        common.EventWidget.__init__(self, event)
+        common.WidgetClass.__init__(self, event)
         ######
         sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
         ######
@@ -86,7 +86,7 @@ class EventWidget(common.EventWidget):
         #self.filesBox = common.FilesBox(self.event)
         #pack(self, self.filesBox)
     def updateWidget(self):## FIXME
-        common.EventWidget.updateWidget(self)
+        common.WidgetClass.updateWidget(self)
         mode = self.event.mode
         ###
         self.startDateInput.set_value(jd_to(self.event.getStartJd(), mode))
@@ -97,7 +97,7 @@ class EventWidget(common.EventWidget):
         self.dayTimeStartInput.set_value(timeRangeRule.dayTimeStart)
         self.dayTimeEndInput.set_value(timeRangeRule.dayTimeEnd)
     def updateVars(self):## FIXME
-        common.EventWidget.updateVars(self)
+        common.WidgetClass.updateVars(self)
         self.event['start'].setDate(self.startDateInput.get_value())
         self.event['end'].setDate(self.endDateInput.get_value())
         self.event['cycleWeeks'].setData(self.weeksSpin.get_value())
@@ -106,7 +106,7 @@ class EventWidget(common.EventWidget):
             self.dayTimeStartInput.get_value(),
             self.dayTimeEndInput.get_value(),
         )
-    def modeComboChanged(self, obj=None):## overwrite method from common.EventWidget
+    def modeComboChanged(self, obj=None):## overwrite method from common.WidgetClass
         newMode = self.modeCombo.get_active()
         self.startDateInput.changeMode(self.event.mode, newMode)
         self.endDateInput.changeMode(self.event.mode, newMode)

@@ -3,13 +3,13 @@ from scal2.locale_man import tr as _
 from scal2.vcs_modules import vcsModuleNames
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.event.group.group import GroupWidget as NormalGroupWidget
+from scal2.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 
 
 
-class VcsBaseGroupWidget(NormalGroupWidget):
+class VcsBaseWidgetClass(NormalWidgetClass):
     def __init__(self, group):
-        NormalGroupWidget.__init__(self, group)
+        NormalWidgetClass.__init__(self, group)
         ######
         hbox = gtk.HBox()
         label = gtk.Label(_('VCS Type'))
@@ -33,11 +33,11 @@ class VcsBaseGroupWidget(NormalGroupWidget):
         #self.dirBrowse = gtk.Button(_('Browse'))
         pack(self, hbox)
     def updateWidget(self):
-        NormalGroupWidget.updateWidget(self)
+        NormalWidgetClass.updateWidget(self)
         self.vcsTypeCombo.set_active(vcsModuleNames.index(self.group.vcsType))
         self.dirEntry.set_text(self.group.vcsDir)
     def updateVars(self):
-        NormalGroupWidget.updateVars(self)
+        NormalWidgetClass.updateVars(self)
         self.group.vcsType = vcsModuleNames[self.vcsTypeCombo.get_active()]
         self.group.vcsDir = self.dirEntry.get_text()
 

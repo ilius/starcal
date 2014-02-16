@@ -8,7 +8,7 @@ from scal2.ui_gtk import *
 from scal2.ui_gtk.event import common
 
 
-class RuleWidget(common.DurationInputBox):
+class WidgetClass(common.DurationInputBox):
     def __init__(self, rule):
         self.rule = rule
         common.DurationInputBox.__init__(self)

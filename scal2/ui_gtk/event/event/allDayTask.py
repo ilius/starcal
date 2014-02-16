@@ -27,9 +27,9 @@ from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, IntSpinButton
 from scal2.ui_gtk.event import common
 
 
-class EventWidget(common.EventWidget):
+class WidgetClass(common.WidgetClass):
     def __init__(self, event):## FIXME
-        common.EventWidget.__init__(self, event)
+        common.WidgetClass.__init__(self, event)
         ######
         sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
         ######
@@ -79,7 +79,7 @@ class EventWidget(common.EventWidget):
         else:
             raise RuntimeError
     def updateWidget(self):## FIXME
-        common.EventWidget.updateWidget(self)
+        common.WidgetClass.updateWidget(self)
         mode = self.event.mode
         ###
         startJd = self.event.getJd()
@@ -97,7 +97,7 @@ class EventWidget(common.EventWidget):
             raise RuntimeError
         self.endTypeComboChanged()
     def updateVars(self):## FIXME
-        common.EventWidget.updateVars(self)
+        common.WidgetClass.updateVars(self)
         self.event.setStartDate(self.startDateInput.get_value())
         ###
         active = self.endTypeCombo.get_active()
@@ -108,7 +108,7 @@ class EventWidget(common.EventWidget):
                 'date',
                 self.endDateInput.get_value(),
             )
-    def modeComboChanged(self, obj=None):## overwrite method from common.EventWidget
+    def modeComboChanged(self, obj=None):## overwrite method from common.WidgetClass
         newMode = self.modeCombo.get_active()
         self.startDateInput.changeMode(self.event.mode, newMode)
         self.endDateInput.changeMode(self.event.mode, newMode)

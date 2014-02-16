@@ -28,9 +28,9 @@ from scal2.ui_gtk.mywidgets.multi_spin_button import YearSpinButton, DaySpinButt
 from scal2.ui_gtk.event import common
 
 
-class EventWidget(common.EventWidget):
+class WidgetClass(common.WidgetClass):
     def __init__(self, event):## FIXME
-        common.EventWidget.__init__(self, event)
+        common.WidgetClass.__init__(self, event)
         ################
         hbox = gtk.HBox()
         pack(hbox, gtk.Label(_('Month')))
@@ -63,7 +63,7 @@ class EventWidget(common.EventWidget):
         #pack(self, self.filesBox)
     startYearCheckClicked = lambda self, obj=None: self.startYearSpin.set_sensitive(self.startYearCheck.get_active())
     def updateWidget(self):## FIXME
-        common.EventWidget.updateWidget(self)
+        common.WidgetClass.updateWidget(self)
         self.monthCombo.setValue(self.event.getMonth())
         self.daySpin.set_value(self.event.getDay())
         try:
@@ -76,7 +76,7 @@ class EventWidget(common.EventWidget):
             self.startYearSpin.set_value(startRule.date[0])
         self.startYearCheckClicked()
     def updateVars(self):## FIXME
-        common.EventWidget.updateVars(self)
+        common.WidgetClass.updateVars(self)
         self.event.setMonth(self.monthCombo.getValue())
         self.event.setDay(int(self.daySpin.get_value()))
         if self.startYearCheck.get_active():
@@ -87,7 +87,7 @@ class EventWidget(common.EventWidget):
                 del self.event['start']
             except KeyError:
                 pass
-    def modeComboChanged(self, obj=None):## overwrite method from common.EventWidget
+    def modeComboChanged(self, obj=None):## overwrite method from common.WidgetClass
         newMode = self.modeCombo.get_active()
         module = calTypes[newMode]
         monthCombo = self.monthCombo

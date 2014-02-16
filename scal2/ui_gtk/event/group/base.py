@@ -28,7 +28,7 @@ from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 from scal2.ui_gtk.event import common
 
 
-class BaseGroupWidget(gtk.VBox):
+class BaseWidgetClass(gtk.VBox):
     def __init__(self, group):
         gtk.VBox.__init__(self)
         self.group = group

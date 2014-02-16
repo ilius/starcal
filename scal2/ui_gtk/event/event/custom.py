@@ -24,13 +24,14 @@ from scal2 import event_lib
 from scal2 import ui
 
 from scal2.ui_gtk import *
+from scal2.ui_gtk.event import makeWidget
 from scal2.ui_gtk.event import common
 
 
-class EventWidget(common.EventWidget):
+class WidgetClass(common.WidgetClass):
     groups = [gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL), gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)]
     def __init__(self, event, autoCheck=True):
-        common.EventWidget.__init__(self, event)
+        common.WidgetClass.__init__(self, event)
         ################
         self.autoCheck = autoCheck
         ######
@@ -80,7 +81,7 @@ class EventWidget(common.EventWidget):
         pack(hbox, lab)
         self.groups[rule.sgroup].add_widget(lab)
         #pack(hbox, gtk.Label(''), 1, 1)
-        inputWidget = rule.makeWidget()
+        inputWidget = makeWidget(rule)
         if rule.expand:
             pack(hbox, inputWidget, 1, 1)
         else:
@@ -116,15 +117,15 @@ class EventWidget(common.EventWidget):
             hbox.inputWidget.updateVars()
             self.event.addRule(hbox.inputWidget.rule)
     def updateWidget(self):
-        common.EventWidget.updateWidget(self)
+        common.WidgetClass.updateWidget(self)
         self.addRuleModel.clear()
         self.updateRulesWidget()
         self.notificationBox.updateWidget()
     def updateVars(self):
-        common.EventWidget.updateVars(self)
+        common.WidgetClass.updateVars(self)
         self.updateRules()
         self.notificationBox.updateVars()
-    def modeComboChanged(self, obj=None):## overwrite method from common.EventWidget
+    def modeComboChanged(self, obj=None):## overwrite method from common.WidgetClass
         newMode = self.modeCombo.get_active()
         for hbox in self.rulesBox.get_children():
             widget = hbox.inputWidget

@@ -2,12 +2,12 @@ from scal2 import core
 from scal2.locale_man import tr as _
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.event.group.vcsEpochBase import VcsEpochBaseGroupWidget as BaseGroupWidget
+from scal2.ui_gtk.event.group.vcsEpochBase import VcsEpochBaseWidgetClass as BaseWidgetClass
 
 
-class GroupWidget(BaseGroupWidget):
+class WidgetClass(BaseWidgetClass):
     def __init__(self, group):
-        BaseGroupWidget.__init__(self, group)
+        BaseWidgetClass.__init__(self, group)
         ####
         hbox = gtk.HBox()
         label = gtk.Label(_('Tag Description'))
@@ -20,10 +20,10 @@ class GroupWidget(BaseGroupWidget):
         ##
         pack(self, hbox)
     def updateWidget(self):
-        BaseGroupWidget.updateWidget(self)
+        BaseWidgetClass.updateWidget(self)
         self.statCheck.set_active(self.group.showStat)
     def updateVars(self):
-        BaseGroupWidget.updateVars(self)
+        BaseWidgetClass.updateVars(self)
         self.group.showStat = self.statCheck.get_active()
 
 

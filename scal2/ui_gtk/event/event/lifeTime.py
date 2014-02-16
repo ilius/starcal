@@ -27,9 +27,9 @@ from scal2.ui_gtk.mywidgets.ymd import YearMonthDayBox
 from scal2.ui_gtk.event import common
 
 
-class EventWidget(common.EventWidget):
+class WidgetClass(common.WidgetClass):
     def __init__(self, event):## FIXME
-        common.EventWidget.__init__(self, event)
+        common.WidgetClass.__init__(self, event)
         ######
         sizeGroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
         ######
@@ -63,14 +63,14 @@ class EventWidget(common.EventWidget):
         #self.filesBox = common.FilesBox(self.event)
         #pack(self, self.filesBox)
     def updateWidget(self):
-        common.EventWidget.updateWidget(self)
+        common.WidgetClass.updateWidget(self)
         self.startDateInput.set_value(self.event['start'].date)
         self.endDateInput.set_value(self.event['end'].date)
     def updateVars(self):## FIXME
-        common.EventWidget.updateVars(self)
+        common.WidgetClass.updateVars(self)
         self.event['start'].setDate(self.startDateInput.get_value())
         self.event['end'].setDate(self.endDateInput.get_value())
-    def modeComboChanged(self, obj=None):## overwrite method from common.EventWidget
+    def modeComboChanged(self, obj=None):## overwrite method from common.WidgetClass
         newMode = self.modeCombo.get_active()
         self.startDateInput.changeMode(self.event.mode, newMode)
         self.endDateInput.changeMode(self.event.mode, newMode)
