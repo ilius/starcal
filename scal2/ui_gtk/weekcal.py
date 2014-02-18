@@ -48,7 +48,6 @@ from scal2.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
 from scal2.ui_gtk.cal_base import CalBase
 from scal2.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox
 from scal2.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
-from scal2.ui_gtk import timeline_box as tbox
 
 def show_event(widget, event):
     print(type(widget), event.type.value_name)#, event.get_value()#, event.send_event
@@ -551,6 +550,7 @@ class EventsBoxColumn(Column):
         self.connect('realize', lambda w: self.updateData())
         self.connect('expose-event', self.onExposeEvent)
     def updateData(self):
+        from scal2.ui_gtk import timeline_box as tbox
         self.timeStart = getEpochFromJd(self.wcal.status[0].jd)
         self.pixelPerSec = float(self.get_allocation().height) / self.timeWidth ## pixel/second
         self.borderTm = 0 ## tbox.boxMoveBorder / self.pixelPerSec ## second
@@ -569,6 +569,8 @@ class EventsBoxColumn(Column):
         self.updateData()
         self.queue_draw()
     def drawBox(self, cr, box):
+        from scal2.ui_gtk import timeline_box as tbox
+        ###
         x = box.y
         y = box.x
         w = box.h
