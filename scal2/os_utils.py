@@ -17,6 +17,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+import sys
 import os
 from os.path import isdir, isfile
 #import platform
