@@ -61,17 +61,14 @@ except ImportError:
 ifloor = lambda x: int(floor(x))
 iceil = lambda x: int(ceil(x))
 
-try:
-    from numpy import arange
-except ImportError:
-    def arange(start, stop, step):
-        l = []
-        x = start
-        stop -= 0.000001
-        while x < stop:
-            l.append(x)
-            x += step
-        return l
+def arange(start, stop, step):
+    l = []
+    x = start
+    stop -= 0.000001
+    while x < stop:
+        l.append(x)
+        x += step
+    return l
 
 toStr = lambda s: s.encode('utf8') if isinstance(s, unicode) else str(s)
 toUnicode = lambda s: s if isinstance(s, unicode) else str(s).decode('utf8')

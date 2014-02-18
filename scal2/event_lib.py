@@ -29,7 +29,7 @@ from scal2.lib import OrderedDict
 
 from .path import *
 
-from scal2.utils import printError, arange, ifloor, iceil, findNearestIndex
+from scal2.utils import printError, ifloor, iceil, findNearestIndex
 from scal2.utils import toStr
 from scal2.os_utils import makeDir
 from scal2.interval_utils import *
@@ -302,6 +302,11 @@ class TimeListOccurrence(Occurrence):
     getStartJd = lambda self: getJdFromEpoch(min(self.epochList))
     getEndJd = lambda self: getJdFromEpoch(max(self.epochList)+1)
     def setRange(self, startEpoch, endEpoch, stepSeconds):
+        try:
+            from numpy.core.multiarray import arange
+        except ImportError:
+            from scal2.utils import arange
+        ######
         self.startEpoch = startEpoch
         self.endEpoch = endEpoch
         self.stepSeconds = stepSeconds
