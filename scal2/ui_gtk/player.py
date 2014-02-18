@@ -26,11 +26,6 @@ import gobject
 
 from scal2.ui_gtk import *
 
-try:
-    import fcntl
-except:
-    pass
-
 
 ## Control
 SEEK_TIME_SMALL = 10 # in seconds
@@ -61,10 +56,12 @@ class MPlayer:
         self.mplayerIn, self.mplayerOut = os.popen2(cmd) #open pipes
 
         try:
+            import fcntl
+        except ImportError:
+            pass
+        else:
             #set mplayerOut to non-blocking mode
             fcntl.fcntl(self.mplayerOut, fcntl.F_SETFL, os.O_NONBLOCK)
-        except NameError:
-            return
 
         self.startHandleEof()
         self.startStatusQuery()
