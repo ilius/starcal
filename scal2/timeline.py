@@ -18,7 +18,6 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 from math import log10
-#import random
 
 from scal2.time_utils import getEpochFromJd, getJdFromEpoch, getFloatJdFromEpoch, getJhmsFromEpoch
 from scal2.date_utils import jwday, getEpochFromDate
@@ -199,6 +198,7 @@ def formatYear(y, prettyPower=False):
     return LRM + y_st
 
 #def setRandomColorsToEvents():
+#    import random
 #    events = ui.events[:]
 #    random.shuffle(events)
 #    dh = 360.0/len(events)

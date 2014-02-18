@@ -1,4 +1,3 @@
-import random
 
 invertColor = lambda r, g, b: (255-r, 255-g, 255-b)
 
@@ -59,9 +58,10 @@ def hslToRgb(h, s, l):
         rgb.append(int(c*255))
     return tuple(rgb) + (255,)
 
-def getRandomHueColor(s, l):
-    h = random.uniform(0, 360)
-    return hslToRgb(h, s, l)
+#def getRandomHueColor(s, l):
+#    import random
+#    h = random.uniform(0, 360)
+#    return hslToRgb(h, s, l)
 
 htmlColorToRgb = lambda hc: (int(hc[1:3], 16), int(hc[3:5], 16), int(hc[5:7], 16))
 
