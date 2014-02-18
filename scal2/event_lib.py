@@ -18,7 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 
-import json, random, os, shutil
+import json, os, shutil
 from os.path import join, split, isdir, isfile, dirname, splitext
 from os import listdir
 import math
@@ -2494,7 +2494,7 @@ class EventGroup(EventContainer):
         self.showInMCal = True
         self.showInTray = False
         self.showInTimeLine = True
-        self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)## FIXME
+        self.color = (0, 0, 0) ## FIXME
         #self.defaultNotifyBefore = (10, 60) ## FIXME
         if len(self.acceptsEventTypes)==1:
             self.defaultEventType = self.acceptsEventTypes[0]
@@ -2517,6 +2517,9 @@ class EventGroup(EventContainer):
         self.setDefaults()
         ###########
         self.clearRemoteAttrs()
+    def setRandomColor(self):
+        import random
+        self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)## FIXME
     def clearRemoteAttrs(self):
         self.remoteIds = None## (accountId, groupId)
         ## remote groupId can be an integer or string or unicode (depending on remote account type)
