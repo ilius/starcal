@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import thread
 from subprocess import Popen, PIPE
 
 from scal2 import core
@@ -38,6 +37,7 @@ def notifyWait(notifier, finishFunc):
     #finishFunc()
 
 def notify(notifier, finishFunc):
+    #import thread
     #thread.start_new_thread(notifyWait, (notifier, finishFunc))
     finishFunc()
     Popen([notifier.playerCmd, notifier.alarmSound], stdout=PIPE, stderr=PIPE)
