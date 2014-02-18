@@ -368,8 +368,9 @@ def mylocaltime(sec=None, mode=None):
     return t
 
 
-compressLongInt = lambda num:\
-    struct.pack('L', num).\
+def compressLongInt(num):
+    from struct import pack
+    return pack('L', num).\
     rstrip('\x00').\
     encode('base64')[:-3].\
     replace('/', '_')
