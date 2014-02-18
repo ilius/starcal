@@ -17,7 +17,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-import sys, traceback, os
+import sys, os
 from math import floor, ceil
 
 from scal2.lib import OrderedDict
@@ -106,6 +106,7 @@ def myRaise(File=None):
     sys.stderr.write(text)
 
 def myRaiseTback():
+    import traceback
     typ, value, tback = sys.exc_info()
     sys.stderr.write("".join(traceback.format_exception(typ, value, tback)))
 

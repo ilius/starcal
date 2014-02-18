@@ -19,7 +19,7 @@
 
 APP_NAME = 'starcal2'
 
-import sys, traceback
+import sys
 from time import strftime
 from os.path import isfile, dirname, join, split, splitext, isabs
 
@@ -40,11 +40,6 @@ except:
 def myRaise(File=__file__):
     i = sys.exc_info()
     log.error('File "%s", line %s: %s: %s\n'%(File, i[2].tb_lineno, i[0].__name__, i[1]))
-
-def myRaiseTback(f=None):
-    typ, value, tback = sys.exc_info()
-    log.error("".join(traceback.format_exception(typ, value, tback)))
-
 
 
 class BasePlugin:
