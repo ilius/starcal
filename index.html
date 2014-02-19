@@ -63,10 +63,12 @@
                 <dd>
                     <form action="https://www.zarinpal.com/webservice/Simplepay"
                         method="post" id="TransactionAddForm">
+                        Donation Amount:
+	                    <input type="text" id="TransactionAmount" value="1000"
+	                        name="data[Transaction][amount]">
+                        Tomans
 	                    <input type="hidden" id="TransactionAccountID" value="zp.91323.1"
 	                        name="data[Transaction][account_id]">
-	                    <input type="hidden" id="TransactionAmount" value="1000"
-	                        name="data[Transaction][amount]">
 	                    <input type="hidden" id="TransactionDesc" value="Donate to StarCalendar"
 	                        name="data[Transaction][desc]">
 	                    <input type="hidden" id="TransactionRedirectUrl"
