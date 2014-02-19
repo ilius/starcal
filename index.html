@@ -63,10 +63,6 @@
                 <dd>
                     <form action="https://www.zarinpal.com/webservice/Simplepay"
                         method="post" id="TransactionAddForm">
-                        Donation Amount:
-	                    <input type="text" id="TransactionAmount" value="1000"
-	                        name="data[Transaction][amount]">
-                        Tomans
 	                    <input type="hidden" id="TransactionAccountID" value="zp.91323.1"
 	                        name="data[Transaction][account_id]">
 	                    <input type="hidden" id="TransactionDesc" value="Donate to StarCalendar"
@@ -74,9 +70,22 @@
 	                    <input type="hidden" id="TransactionRedirectUrl"
 	                        value="http://ilius.github.io/starcal"
 	                        name="data[Transaction][redirect_url]">
-	                    <span class="submit">
-	                        <input type="image" src="http://www.zarinpal.com/img/merchant/merchant-6.png">
-                        </span>
+
+                        <table><tr>
+                            <td>
+                                Donation Amount:
+                            </td>
+                            <td>
+	                            <input type="text" id="TransactionAmount" value="1000"
+	                                name="data[Transaction][amount]">
+                            </td>
+                            <td>
+                                Tomans
+                            </td>
+                            <td class="submit">
+                                <input type="image" src="http://www.zarinpal.com/img/merchant/merchant-6.png">
+                            </td>
+                        </tr></table>
                     </form>
                 </dd>
 
