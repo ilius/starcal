@@ -101,7 +101,7 @@ class McalTypeParamBox(gtk.HBox):
         self.mcal.queue_draw()
 
 @registerSignals
-class MonthCal(gtk.Widget, CalBase):
+class CalObj(gtk.Widget, CalBase):
     _name = 'monthCal'
     desc = _('Month Calendar')
     cx = [0, 0, 0, 0, 0, 0, 0]
@@ -592,7 +592,7 @@ class MonthCal(gtk.Widget, CalBase):
 
 if __name__=='__main__':
     win = gtk.Dialog()
-    cal = MonthCal()
+    cal = CalObj()
     win.add_events(
         gdk.POINTER_MOTION_MASK | gdk.FOCUS_CHANGE_MASK | gdk.BUTTON_MOTION_MASK |
         gdk.BUTTON_PRESS_MASK | gdk.BUTTON_RELEASE_MASK | gdk.SCROLL_MASK |
