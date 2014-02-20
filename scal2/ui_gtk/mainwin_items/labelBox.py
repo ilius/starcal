@@ -398,7 +398,7 @@ class MonthLabelButtonBox(gtk.HBox):
 
 
 @registerSignals
-class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
+class CalObj(gtk.HBox, CustomizableCalObj):
     _name = 'labelBox'
     desc = _('Year & Month Labels')
     def __init__(self):
@@ -462,7 +462,7 @@ class YearMonthLabelBox(gtk.HBox, CustomizableCalObj):
 
 if __name__=='__main__':
     win = gtk.Dialog()
-    box = YearMonthLabelBox()
+    box = CalObj()
     win.add_events(
         gdk.POINTER_MOTION_MASK | gdk.FOCUS_CHANGE_MASK | gdk.BUTTON_MOTION_MASK |
         gdk.BUTTON_PRESS_MASK | gdk.BUTTON_RELEASE_MASK | gdk.SCROLL_MASK |

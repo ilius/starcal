@@ -760,7 +760,7 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
 
 
 @registerSignals
-class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
+class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
     _name = 'weekCal'
     desc = _('Week Calendar')
     params = (
@@ -963,7 +963,7 @@ class WeekCal(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
 
 if __name__=='__main__':
     win = gtk.Dialog()
-    cal = WeekCal()
+    cal = CalObj()
     win.add_events(
         gdk.POINTER_MOTION_MASK | gdk.FOCUS_CHANGE_MASK | gdk.BUTTON_MOTION_MASK |
         gdk.BUTTON_PRESS_MASK | gdk.BUTTON_RELEASE_MASK | gdk.SCROLL_MASK |

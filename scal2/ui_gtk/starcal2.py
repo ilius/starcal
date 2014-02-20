@@ -64,17 +64,11 @@ from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import *
 from scal2.ui_gtk.color_utils import rgbToGdkColor
 from scal2.ui_gtk.drawing import newTextLayout, newOutlineSquarePixbuf
-from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 #from ui_gtk.mywidgets2.multi_spin_button import DateButtonOption
 from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
-from scal2.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox, CustomizeDialog
-from scal2.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
-from scal2.ui_gtk.year_month_labels import YearMonthLabelBox
-from scal2.ui_gtk.weekcal import WeekCal
-from scal2.ui_gtk.monthcal import MonthCal
+from scal2.ui_gtk.customize import CustomizableCalBox, CustomizeDialog
 from scal2.ui_gtk.event.common import addNewEvent
-from scal2.ui_gtk.event.occurrence_view import DayOccurrenceView
 
 
 
@@ -99,360 +93,8 @@ def liveConfChanged():
 
 
 
-class DateLabel(gtk.Label):
-    def __init__(self, text=None):
-        gtk.Label.__init__(self, text)
-        self.set_selectable(True)
-        #self.set_cursor_visible(False)## FIXME
-        self.set_can_focus(False)
-        self.set_use_markup(True)
-        self.connect('populate-popup', self.popupPopulate)
-        ####
-        self.menu = gtk.Menu()
-        ##
-        itemCopyAll = gtk.ImageMenuItem(_('Copy _All'))
-        itemCopyAll.set_image(gtk.image_new_from_stock(gtk.STOCK_COPY, gtk.ICON_SIZE_MENU))
-        itemCopyAll.connect('activate', self.copyAll)
-        self.menu.add(itemCopyAll)
-        ##
-        itemCopy = gtk.ImageMenuItem(_('_Copy'))
-        itemCopy.set_image(gtk.image_new_from_stock(gtk.STOCK_COPY, gtk.ICON_SIZE_MENU))
-        itemCopy.connect('activate', self.copy)
-        self.itemCopy = itemCopy
-        self.menu.add(itemCopy)
-        ##
-        self.menu.show_all()
-    def popupPopulate(self, label, menu):
-        self.itemCopy.set_sensitive(self.get_property('cursor-position') > self.get_property('selection-bound'))## FIXME
-        self.menu.popup(None, None, None, 3, 0)
-        ui.updateFocusTime()
-    def copy(self, item):
-        start = self.get_property('selection-bound')
-        end = self.get_property('cursor-position')
-        setClipboard(toUnicode(self.get_text())[start:end])
-    copyAll = lambda self, label: setClipboard(self.get_text())
 
 
-
-@registerSignals
-class WinConButton(gtk.EventBox, CustomizableCalObj):
-    expand = False
-    imageName = ''
-    imageNameFocus = ''
-    imageNameInactive = 'button-inactive.png'
-    def __init__(self, controller, size=23):
-        gtk.EventBox.__init__(self)
-        self.initVars()
-        ###
-        self.size = size
-        self.controller = controller
-        CustomizableCalObj.initVars(self)
-        self.build()
-    def onClicked(self, gWin, event):
-        raise NotImplementedError
-    setImage = lambda self, imName: self.im.set_from_file('%s/wm/%s'%(pixDir, imName))
-    setFocus = lambda self, focus:\
-        self.setImage(self.imageNameFocus if focus else self.imageName)
-    setInactive = lambda self: self.setImage(self.imageNameInactive)
-    def build(self):
-        self.im = gtk.Image()
-        self.setFocus(False)
-        self.im.set_size_request(self.size, self.size)
-        self.add(self.im)
-        self.connect('enter-notify-event', self.enterNotify)
-        self.connect('leave-notify-event', self.leaveNotify)
-        self.connect('button-press-event', self.buttonPress)
-        self.connect('button-release-event', self.buttonRelease)
-        set_tooltip(self, self.desc)## FIXME
-    def enterNotify(self, widget, event):
-        self.setFocus(True)
-    def leaveNotify(self, widget, event):
-        if self.controller.winFocused:
-            self.setFocus(False)
-        else:
-            self.setInactive()
-        return False
-    def buttonPress(self, widget, event):
-        self.setFocus(False)
-        return True
-    def onClicked(self, gWin, event):
-        pass
-    def buttonRelease(self, button, event):
-        if event.button==1:
-            self.onClicked(self.controller.gWin, event)
-        return False
-    show = lambda self: self.show_all()
-
-class WinConButtonMin(WinConButton):
-    _name = 'min'
-    desc = _('Minimize Window')
-    imageName = 'button-min.png'
-    imageNameFocus = 'button-min-focus.png'
-    def onClicked(self, gWin, event):
-        if ui.winTaskbar:
-            gWin.iconify()
-        else:
-            gWin.emit('delete-event', event)
-
-class WinConButtonMax(WinConButton):
-    _name = 'max'
-    desc = _('Maximize Window')
-    imageName = 'button-max.png'
-    imageNameFocus = 'button-max-focus.png'
-    def onClicked(self, gWin, event):
-        if gWin.isMaximized:
-            gWin.unmaximize()
-            gWin.isMaximized = False
-        else:
-            gWin.maximize()
-            gWin.isMaximized = True
-
-class WinConButtonClose(WinConButton):
-    _name = 'close'
-    desc = _('Close Window')
-    imageName = 'button-close.png'
-    imageNameFocus = 'button-close-focus.png'
-    def onClicked(self, gWin, event):
-        gWin.emit('delete-event', event)
-
-class WinConButtonSep(WinConButton):
-    _name = 'sep'
-    desc = _('Seperator')
-    expand = True
-    def build(self):
-        pass
-    def setFocus(self, focus):
-        pass
-    def setInactive(self):
-        pass
-
-## Stick
-## Above
-## Below
-
-## What is "GTK Window Decorator" ??????????
-@registerSignals
-class MainWinController(gtk.HBox, CustomizableCalBox):
-    _name = 'winContronller'
-    desc = _('Window Controller')
-    params = (
-        'ui.winControllerButtons',
-    )
-    buttonClassList = (WinConButtonMin, WinConButtonMax, WinConButtonClose, WinConButtonSep)
-    buttonClassDict = dict([(cls._name, cls) for cls in buttonClassList])
-    def __init__(self):
-        gtk.HBox.__init__(self, spacing=ui.winControllerSpacing)
-        self.set_property('height-request', 15)
-        self.set_direction(gtk.TEXT_DIR_LTR)## FIXME
-        self.initVars()
-        ###########
-        for bname, enable in ui.winControllerButtons:
-            button = self.buttonClassDict[bname](self)
-            button.enable = enable
-            self.appendItem(button)
-        self.set_property('can-focus', True)
-        ##################
-        self.gWin = ui.mainWin
-        ##gWin.connect('focus-in-event', self.windowFocusIn)
-        ##gWin.connect('focus-out-event', self.windowFocusOut)
-        self.winFocused = True
-    def windowFocusIn(self, widget=None, event=None):
-        for b in self.items:
-            b.setFocus(False)
-        self.winFocused = True
-        return False
-    def windowFocusOut(self, widget=None, event=None):
-        for b in self.items:
-            b.setInactive()
-        self.winFocused = False
-        return False
-
-
-
-@registerSignals
-class MainWinToolbar(CustomizableToolbar):
-    params = (
-        'ud.mainToolbarData',
-    )
-    defaultItems = [
-        ToolbarItem('today', 'home', 'goToday', 'Select Today', 'Today'),
-        ToolbarItem('date', 'index', 'selectDateShow', 'Select Date...', 'Date'),
-        ToolbarItem('customize', 'edit', 'customizeShow'),
-        ToolbarItem('preferences', 'preferences', 'prefShow'),
-        ToolbarItem('add', 'add', 'eventManShow', 'Event Manager', 'Event'),
-        ToolbarItem('export', 'convert', 'exportClicked', _('Export to %s')%'HTML', 'Export'),
-        ToolbarItem('about', 'about', 'aboutShow', _('About ')+APP_DESC, 'About'),
-        ToolbarItem('quit', 'quit', 'quit'),
-    ]
-    defaultItemsDict = dict([(item._name, item) for item in defaultItems])
-    def __init__(self):
-        CustomizableToolbar.__init__(self, ui.mainWin, vertical=False)
-        if not ud.mainToolbarData['items']:
-            ud.mainToolbarData['items'] = [(item._name, True) for item in self.defaultItems]
-        self.setData(ud.mainToolbarData)
-    def updateVars(self):
-        CustomizableToolbar.updateVars(self)
-        ud.mainToolbarData = self.getData()
-
-
-
-
-@registerSignals
-class StatusBox(gtk.HBox, CustomizableCalObj):
-    _name = 'statusBar'
-    desc = _('Status Bar')
-    def __init__(self):
-        gtk.HBox.__init__(self)
-        self.initVars()
-        self.labelBox = gtk.HBox()
-        pack(self, self.labelBox, 1, 1)
-        sbar = gtk.Statusbar()
-        if rtl:
-            self.set_direction(gtk.TEXT_DIR_LTR)
-            sbar.set_direction(gtk.TEXT_DIR_LTR)
-            self.labelBox.set_direction(gtk.TEXT_DIR_LTR)
-        sbar.set_property('width-request', 18)
-        sbar.connect('button-press-event', self.sbarButtonPress)
-        sbar.show()
-        pack(self, sbar)
-    sbarButtonPress = lambda self, widget, event: ui.mainWin.startResize(widget, event)
-    def onConfigChange(self, *a, **kw):
-        CustomizableCalObj.onConfigChange(self, *a, **kw)
-        ###
-        for label in self.labelBox.get_children():
-            label.destroy()
-        ###
-        for mode in calTypes.active:
-            label = DateLabel(None)
-            label.mode = mode
-            pack(self.labelBox, label, 1)
-        self.show_all()
-        ###
-        self.onDateChange()
-    def onDateChange(self, *a, **kw):
-        CustomizableCalObj.onDateChange(self, *a, **kw)
-        for i, label in enumerate(self.labelBox.get_children()):
-            text = ui.cell.format(ud.dateFormatBin, label.mode)
-            if i==0:
-                text = '<b>%s</b>'%text
-            label.set_label(text)
-
-@registerSignals
-class SeasonProgressBarMainWinItem(gtk.ProgressBar, CustomizableCalObj):
-    _name = 'seasonPBar'
-    desc = _('Season Progress Bar')
-    def __init__(self):
-        gtk.ProgressBar.__init__(self)
-        self.initVars()
-    def onDateChange(self, *a, **kw):
-        from scal2.season import getSeasonNamePercentFromJd
-        CustomizableCalObj.onDateChange(self, *a, **kw)
-        name, frac = getSeasonNamePercentFromJd(ui.cell.jd)
-        if rtl:
-            percent = '%d%%'%(frac*100)
-        else:
-            percent = '%%%d'%(frac*100)
-        self.set_text(
-            _(name) +
-            ' - ' +
-            locale_man.textNumEncode(
-                percent,
-                changeDot=True,
-            )
-        )
-        self.set_fraction(frac)
-
-
-@registerSignals
-class PluginsTextBox(gtk.VBox, CustomizableCalObj):
-    _name = 'pluginsText'
-    desc = _('Plugins Text')
-    params = (
-        'ui.pluginsTextInsideExpander',
-    )
-    def __init__(self):
-        gtk.VBox.__init__(self)
-        self.initVars()
-        ####
-        self.textview = gtk.TextView()
-        self.textview.set_wrap_mode(gtk.WRAP_WORD)
-        self.textview.set_editable(False)
-        self.textview.set_cursor_visible(False)
-        self.textview.set_justification(gtk.JUSTIFY_CENTER)
-        self.textbuff = self.textview.get_buffer()
-        self.textview.connect('populate-popup', ui.updateFocusTime)
-        ##
-        self.expander = gtk.Expander()
-        self.expander.connect('activate', self.expanderExpanded)
-        if ui.pluginsTextInsideExpander:
-            self.expander.add(self.textview)
-            pack(self, self.expander)
-            self.expander.set_expanded(ui.pluginsTextIsExpanded)
-            self.textview.show()
-        else:
-            pack(self, self.textview)
-        #####
-        optionsWidget = gtk.HBox()
-        self.enableExpanderCheckb = gtk.CheckButton(_('Inside Expander'))
-        self.enableExpanderCheckb.set_active(ui.pluginsTextInsideExpander)
-        self.enableExpanderCheckb.connect('clicked', lambda check: self.setEnableExpander(check.get_active()))
-        self.setEnableExpander(ui.pluginsTextInsideExpander)
-        pack(optionsWidget, self.enableExpanderCheckb)
-        ####
-        optionsWidget.show_all()
-        self.optionsWidget = optionsWidget
-    def expanderExpanded(self, exp):
-        ui.pluginsTextIsExpanded = not exp.get_expanded()
-        ui.saveLiveConf()
-    getWidget = lambda self: self.expander if ui.pluginsTextInsideExpander else self.textview
-    def setText(self, text):
-        if text:
-            self.textbuff.set_text(text)
-            self.getWidget().show()
-        else:## elif self.get_property('visible')
-            self.textbuff.set_text('')## forethought
-            self.getWidget().hide()
-    def setEnableExpander(self, enable):
-        #print('setEnableExpander', enable)
-        if enable:
-            if not ui.pluginsTextInsideExpander:
-                self.remove(self.textview)
-                self.expander.add(self.textview)
-                pack(self, self.expander)
-                self.expander.show_all()
-        else:
-            if ui.pluginsTextInsideExpander:
-                self.expander.remove(self.textview)
-                self.remove(self.expander)
-                pack(self, self.textview)
-                self.textview.show()
-        ui.pluginsTextInsideExpander = enable
-        self.onDateChange()
-    def onDateChange(self, *a, **kw):
-        CustomizableCalObj.onDateChange(self, *a, **kw)
-        self.setText(ui.cell.pluginsText)
-
-
-#@registerSignals
-class EventViewMainWinItem(DayOccurrenceView, CustomizableCalObj):## FIXME
-    def __init__(self):
-        DayOccurrenceView.__init__(self)
-        self.maxHeight = ui.eventViewMaxHeight
-        self.optionsWidget = gtk.HBox()
-        ###
-        hbox = gtk.HBox()
-        spin = IntSpinButton(1, 9999)
-        spin.set_value(ui.eventViewMaxHeight)
-        spin.connect('changed', self.heightSpinChanged)
-        pack(hbox, gtk.Label(_('Maximum Height')))
-        pack(hbox, spin)
-        pack(self.optionsWidget, hbox)
-        ###
-        self.optionsWidget.show_all()
-    def heightSpinChanged(self, spin):
-        v = spin.get_value()
-        self.maxHeight = ui.eventViewMaxHeight = v
-        self.queue_resize()
 
 
 
@@ -588,29 +230,27 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         #self.focusOutTime = 0
         #self.clockTr = None
         ############################################################################
-        self.winCon = MainWinController()
+        self.winCon = None
         ############
-        defaultItems = [
-            self.winCon,
-            MainWinToolbar(),
-            YearMonthLabelBox(),
-            MonthCal(),
-            WeekCal(),
-            StatusBox(),
-            SeasonProgressBarMainWinItem(),
-            PluginsTextBox(),
-            EventViewMainWinItem(),
-        ]
-        defaultItemsDict = dict([(obj._name, obj) for obj in defaultItems])
-        ui.checkMainWinItems()
         self.vbox = MainWinVbox()
+        ui.checkMainWinItems()
         for (name, enable) in ui.mainWinItems:
             #print(name, enable)
             try:
-                item = defaultItemsDict[name]
+                module = __import__(
+                    '.'.join([
+                        'scal2',
+                        'ui_gtk',
+                        'mainwin_items',
+                        name,
+                    ]),
+                    fromlist=['CalObj'],
+                )
+                CalObj = module.CalObj
             except:
                 myRaise()
                 continue
+            item = CalObj()
             item.enable = enable
             item.connect('size-request', self.childSizeRequest) ## or item.connect
             #modify_bg_all(item, gtk.STATE_NORMAL, rgbToGdkColor(*ui.bgColor))
@@ -707,7 +347,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         return True ## FIXME
     def focusIn(self, widegt, event, data=None):
         self.focus = True
-        if self.winCon.enable:
+        if self.winCon and self.winCon.enable:
             self.winCon.windowFocusIn()
     def focusOut(self, widegt, event, data=None):
         ## called 0.0004 sec (max) after focusIn (if switched between two windows)
@@ -720,7 +360,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         if not self.focus:# and t-self.focusOutTime>0.002:
             ab = self.checkAbove.get_active()
             self.set_keep_above(ab)
-            if self.winCon.enable:
+            if self.winCon and self.winCon.enable:
                 self.winCon.windowFocusOut()
         return False
 

@@ -46,6 +46,7 @@ class CustomizableCalObj(ud.IntegratedCalObj):
     myKeys = ()
     def initVars(self, optionsWidget=None):
         ud.IntegratedCalObj.initVars(self)
+        self.itemWidgets = {} ## for lazy construction of widgets
         self.optionsWidget = optionsWidget
         if self.optionsWidget:
             self.optionsWidget.show_all()
