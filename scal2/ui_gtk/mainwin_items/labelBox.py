@@ -77,7 +77,7 @@ class BaseLabel(gtk.EventBox):
 
 
 @registerSignals
-class MonthLabel(BaseLabel, ud.IntegratedCalObj):
+class MonthLabel(BaseLabel, ud.BaseCalObj):
     getItemStr = lambda self, i: _(i+1, fillZero=2)
     getActiveStr = lambda self, s: '<span color="%s">%s</span>'%(ui.menuActiveLabelColor, s)
     #getActiveStr = lambda self, s: '<b>%s</b>'%s
@@ -178,7 +178,7 @@ class MonthLabel(BaseLabel, ud.IntegratedCalObj):
         else:
             return False
     def onDateChange(self, *a, **ka):
-        ud.IntegratedCalObj.onDateChange(self, *a, **ka)
+        ud.BaseCalObj.onDateChange(self, *a, **ka)
         self.setActive(ui.cell.dates[self.mode][1]-1)
 
 
@@ -314,8 +314,8 @@ class IntLabel(BaseLabel):
 
 
 @registerSignals
-class YearLabel(IntLabel, ud.IntegratedCalObj):
-    signals = ud.IntegratedCalObj.signals
+class YearLabel(IntLabel, ud.BaseCalObj):
+    signals = ud.BaseCalObj.signals
     def __init__(self, mode, **kwargs):
         IntLabel.__init__(self, **kwargs)
         self.initVars()
@@ -330,7 +330,7 @@ class YearLabel(IntLabel, ud.IntegratedCalObj):
         self.mode = mode
         #self.onDateChange()
     def onDateChange(self, *a, **ka):
-        ud.IntegratedCalObj.onDateChange(self, *a, **ka)
+        ud.BaseCalObj.onDateChange(self, *a, **ka)
         self.setActive(ui.cell.dates[self.mode][0])
 
 

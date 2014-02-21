@@ -40,12 +40,12 @@ if 'mainMenu' not in dict(ud.wcalToolbarData['items']):
     ud.wcalToolbarData['items'].insert(0, ('mainMenu', True))
 
 
-class CustomizableCalObj(ud.IntegratedCalObj):
+class CustomizableCalObj(ud.BaseCalObj):
     expand = False
     params = ()
     myKeys = ()
     def initVars(self, optionsWidget=None):
-        ud.IntegratedCalObj.initVars(self)
+        ud.BaseCalObj.initVars(self)
         self.itemWidgets = {} ## for lazy construction of widgets
         self.optionsWidget = optionsWidget
         if self.optionsWidget:
