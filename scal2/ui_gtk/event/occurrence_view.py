@@ -31,7 +31,7 @@ from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.event.common import EventEditorDialog, confirmEventTrash, menuItemFromEventGroup
 
 @registerSignals
-class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
+class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
     _name = 'eventDayView'
     desc = _('Events of Day')
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
@@ -52,7 +52,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         )
         return True
     def onDateChange(self, *a, **kw):
-        ud.IntegratedCalObj.onDateChange(self, *a, **kw)
+        ud.BaseCalObj.onDateChange(self, *a, **kw)
         cell = ui.cell
         ## destroy all VBox contents and add again
         for hbox in self.vbox.get_children():

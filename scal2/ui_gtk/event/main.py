@@ -54,7 +54,7 @@ from scal2.ui_gtk.event.search_events import EventSearchWindow
 
 
 @registerSignals
-class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
+class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
     _name = 'eventMan'
     desc = _('Event Manager')
     def onShow(self, widget):
@@ -71,7 +71,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.IntegratedCalObj):## FIXME
         self.hide()
         self.emit('config-change')
     def onConfigChange(self, *a, **kw):
-        ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
+        ud.BaseCalObj.onConfigChange(self, *a, **kw)
         ###
         if not self.isLoaded:
             if self.get_property('visible'):

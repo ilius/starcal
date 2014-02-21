@@ -133,7 +133,7 @@ class MainWinVbox(gtk.VBox, CustomizableCalBox):
 
 
 @registerSignals
-class MainWin(gtk.Window, ud.IntegratedCalObj):
+class MainWin(gtk.Window, ud.BaseCalObj):
     _name = 'mainWin'
     desc = _('Main Window')
     timeout = 1 ## second
@@ -404,7 +404,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
     goToday = lambda self, obj=None: self.changeDate(*core.getSysDate(calTypes.primary))
     def onDateChange(self, *a, **kw):
         #print('MainWin.onDateChange')
-        ud.IntegratedCalObj.onDateChange(self, *a, **kw)
+        ud.BaseCalObj.onDateChange(self, *a, **kw)
         #for j in range(len(core.plugIndex)):##????????????????????
         #    try:
         #        core.allPlugList[core.plugIndex[j]].date_change(*date)
@@ -845,7 +845,7 @@ class MainWin(gtk.Window, ud.IntegratedCalObj):
         year, month, day = core.getSysDate(calTypes.primary)
         self.exportShow(year, month)
     def onConfigChange(self, *a, **kw):
-        ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
+        ud.BaseCalObj.onConfigChange(self, *a, **kw)
         #self.set_property('skip-taskbar-hint', not ui.winTaskbar) ## self.set_skip_taskbar_hint ## FIXME
         ## skip-taskbar-hint  need to restart ro be applied
         self.updateMenuSize()
