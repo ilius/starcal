@@ -25,6 +25,7 @@ from scal2.locale_man import tr as _
 from scal2 import ui
 
 from scal2.ui_gtk import *
+from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, dialog_add_button
 from scal2.ui_gtk import gtk_ud as ud
 
@@ -40,7 +41,44 @@ if 'mainMenu' not in dict(ud.wcalToolbarData['items']):
     ud.wcalToolbarData['items'].insert(0, ('mainMenu', True))
 
 
+
+@registerSignals
+class DummyCalObj(gtk.Object):
+    loaded = False
+    signals = [
+        ('config-change', []),
+        ('date-change', []),
+    ]
+    def __init__(self, name, desc, pkg, customizable):
+        gtk.Object.__init__(self)
+        self.enable = False
+        self._name = name
+        self.desc = desc
+        self.moduleName = '.'.join([pkg, name])
+        self.customizable = customizable
+        self.optionsWidget = None
+        self.items = []
+    def getLoadedObj(self):
+        try:
+            module = __import__(
+                self.moduleName,
+                fromlist=['CalObj'],
+            )
+            CalObj = module.CalObj
+        except:
+            myRaise()
+            return
+        obj = CalObj()
+        return obj
+    def updateVars(self):
+        pass
+    def confStr(self):## FIXME a real problem
+        return ''
+
+
+
 class CustomizableCalObj(ud.BaseCalObj):
+    customizable = True
     expand = False
     params = ()
     myKeys = ()
@@ -57,14 +95,14 @@ class CustomizableCalObj(ud.BaseCalObj):
     getItemsData = lambda self: [(item._name, item.enable) for item in self.items]
     def updateVars(self):
         for item in self.items:
-            if isinstance(item, CustomizableCalObj):
+            if item.customizable:
                 item.updateVars()
     def confStr(self):
         text = ''
         for mod_attr in self.params:
             text += '%s=%s\n'%(mod_attr, repr(eval(mod_attr)))
         for item in self.items:
-            if isinstance(item, CustomizableCalObj):
+            if item.customizable:
                 text += item.confStr()
         return text
     def keyPress(self, arg, event):
@@ -79,21 +117,34 @@ class CustomizableCalObj(ud.BaseCalObj):
 
 
 class CustomizableCalBox(CustomizableCalObj):
+    ## for GtkBox (HBox and VBox)
     def appendItem(self, item):
         CustomizableCalObj.appendItem(self, item)
-        pack(self, item, item.expand, item.expand)
         if item.enable:
+            pack(self, item, item.expand, item.expand)
             item.show()
     def moveItemUp(self, i):
-        self.reorder_child(self.items[i], i-1)## for GtkBox (HBox and VBox)
+        if i > 0:
+            if self.items[i].enable and self.items[i-1].enable:
+                self.reorder_child(self.items[i], i-1)
         CustomizableCalObj.moveItemUp(self, i)
+    def insertItemWidget(self, i):
+        item = self.items[i]
+        if not item.enable:
+            return
+        pack(self, item, item.expand, item.expand)
+        self.reorder_child(item, i)
+
+
+
+
 
 class CustomizeDialog(gtk.Dialog):
     def appendItemTree(self, item, parentIter):
         itemIter = self.model.append(parentIter)
         self.model.set(itemIter, 0, item.enable, 1, item.desc)
         for child in item.items:
-            if isinstance(item, CustomizableCalObj):
+            if item.customizable:
                 self.appendItemTree(child, itemIter)
     def __init__(self, widget):
         gtk.Dialog.__init__(self)
@@ -129,7 +180,7 @@ class CustomizeDialog(gtk.Dialog):
         treev.append_column(col)
         ###
         for item in widget.items:
-            if isinstance(item, CustomizableCalObj):
+            if item.customizable:
                 self.appendItemTree(item, None)
         ###
         hbox = gtk.HBox()
@@ -249,15 +300,34 @@ class CustomizeDialog(gtk.Dialog):
             treev.collapse_row(path)
         else:
             treev.expand_row(path, False)
-    def enableCellToggled(self, cell, path):
+    def enableCellToggled(self, cell, path):## FIXME
         active = not cell.get_active()
         self.model.set_value(self.model.get_iter(path), 0, active) ## or set(...)
-        item = self.getItemByPath(path)
-        item.enable = active
+        itemIter = self.model.get_iter(path)
+        ###
+        parentItem = self._widget
+        item = parentItem.items[int(path[0])]
+        for i in path[1:]:
+            parentItem, item = item, item.items[int(i)]
+        itemIndex = int(path[-1])
+        assert parentItem.items[itemIndex] == item
+        ###
         if active:
-            item.show()
+            if item.loaded:
+                item.enable = True
+                item.show()
+            else:
+                item = item.getLoadedObj()
+                parentItem.items[itemIndex] = item
+                parentItem.insertItemWidget(itemIndex)
+                item.show_all()
+                item.showHideWidgets()
+                for child in item.items:
+                    if item.customizable:
+                        self.appendItemTree(child, itemIter)
             item.onConfigChange()
         else:
+            item.enable = False
             item.hide()
         if ui.mainWin:
             ui.mainWin.setMinHeight()

@@ -40,6 +40,8 @@ from scal2.ui_gtk.font_utils import gfontDecode, pfontEncode
 class BaseCalObj(gtk.Object):
     _name = ''
     desc = ''
+    loaded = True
+    customizable = False
     signals = [
         ('config-change', []),
         ('date-change', []),
@@ -74,7 +76,8 @@ class BaseCalObj(gtk.Object):
         self.connectItem(item)
     def moveItemUp(self, i):
         self.items.insert(i-1, self.items.pop(i))
-
+    def addItemWidget(self, i):
+        pass
 
 class IntegatedWindowList(BaseCalObj):
     _name = 'windowList'
