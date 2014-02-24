@@ -67,7 +67,7 @@ from scal2.ui_gtk.drawing import newTextLayout, newOutlineSquarePixbuf
 #from ui_gtk.mywidgets2.multi_spin_button import DateButtonOption
 from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
-from scal2.ui_gtk.customize import CustomizableCalBox, CustomizeDialog
+from scal2.ui_gtk.customize import DummyCalObj, CustomizableCalBox, CustomizeDialog
 from scal2.ui_gtk.event.common import addNewEvent
 
 
@@ -234,26 +234,31 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         ############
         self.vbox = MainWinVbox()
         ui.checkMainWinItems()
+        itemsPkg = 'scal2.ui_gtk.mainwin_items'
+        from scal2.ui_gtk.mainwin_items import mainWinItemsDesc
         for (name, enable) in ui.mainWinItems:
             #print(name, enable)
-            try:
-                module = __import__(
-                    '.'.join([
-                        'scal2',
-                        'ui_gtk',
-                        'mainwin_items',
-                        name,
-                    ]),
-                    fromlist=['CalObj'],
-                )
-                CalObj = module.CalObj
-            except:
-                myRaise()
-                continue
-            item = CalObj()
-            item.enable = enable
-            item.connect('size-request', self.childSizeRequest) ## or item.connect
-            #modify_bg_all(item, gtk.STATE_NORMAL, rgbToGdkColor(*ui.bgColor))
+            if enable:
+                try:
+                    module = __import__(
+                        '.'.join([
+                            itemsPkg,
+                            name,
+                        ]),
+                        fromlist=['CalObj'],
+                    )
+                    CalObj = module.CalObj
+                except:
+                    myRaise()
+                    continue
+                item = CalObj()
+                item.enable = enable
+                item.connect('size-request', self.childSizeRequest) ## or item.connect
+                #modify_bg_all(item, gtk.STATE_NORMAL, rgbToGdkColor(*ui.bgColor))
+            else:
+                desc = mainWinItemsDesc[name]
+                item = DummyCalObj(name, desc, itemsPkg, True)
+                ## what about size-request FIXME
             self.vbox.appendItem(item)
         self.appendItem(self.vbox)
         self.vbox.show()
