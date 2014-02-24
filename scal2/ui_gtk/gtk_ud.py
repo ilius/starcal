@@ -74,7 +74,8 @@ class IntegratedCalObj(Object):
     def appendItem(self, item):
         self.items.append(item)
         self.connectItem(item)
-
+    def moveItemUp(self, i):
+        self.items.insert(i-1, self.items.pop(i))
 
 
 class IntegatedWindowList(IntegratedCalObj):

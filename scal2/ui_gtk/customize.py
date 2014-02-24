@@ -69,9 +69,6 @@ class CustomizableCalObj(ud.IntegratedCalObj):
             if isinstance(item, CustomizableCalObj):
                 text += item.confStr()
         return text
-    def moveItemUp(self, i):## override this method for non-GtkBox containers
-        self.reorder_child(self.items[i], i-1)## for GtkBox (HBox and VBox)
-        self.items.insert(i-1, self.items.pop(i))
     def keyPress(self, arg, event):
         kname = gdk.keyval_name(event.keyval).lower()
         for item in self.items:
@@ -89,7 +86,9 @@ class CustomizableCalBox(CustomizableCalObj):
         pack(self, item, item.expand, item.expand)
         if item.enable:
             item.show()
-
+    def moveItemUp(self, i):
+        self.reorder_child(self.items[i], i-1)## for GtkBox (HBox and VBox)
+        CustomizableCalObj.moveItemUp(self, i)
 
 class CustomizeDialog(gtk.Dialog):
     def appendItemTree(self, item, parentIter):
