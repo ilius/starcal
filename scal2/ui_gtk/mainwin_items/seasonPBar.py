@@ -1,5 +1,6 @@
 from scal2 import core
 from scal2.locale_man import tr as _
+from scal2.locale_man import rtl, textNumEncode
 from scal2 import ui
 
 from scal2.ui_gtk import *
@@ -24,7 +25,7 @@ class CalObj(gtk.ProgressBar, CustomizableCalObj):
         self.set_text(
             _(name) +
             ' - ' +
-            locale_man.textNumEncode(
+            textNumEncode(
                 percent,
                 changeDot=True,
             )
