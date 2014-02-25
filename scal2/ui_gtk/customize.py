@@ -130,7 +130,7 @@ class CustomizableCalBox(CustomizableCalObj):
         CustomizableCalObj.moveItemUp(self, i)
     def insertItemWidget(self, i):
         item = self.items[i]
-        if not item.enable:
+        if not item.enable:## or item.loaded FIXME
             return
         pack(self, item, item.expand, item.expand)
         self.reorder_child(item, i)
