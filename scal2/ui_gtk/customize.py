@@ -125,7 +125,7 @@ class CustomizableCalBox(CustomizableCalObj):
             item.show()
     def moveItemUp(self, i):
         if i > 0:
-            if self.items[i].enable and self.items[i-1].enable:
+            if self.items[i].loaded and self.items[i-1].loaded:
                 self.reorder_child(self.items[i], i-1)
         CustomizableCalObj.moveItemUp(self, i)
     def insertItemWidget(self, i):
