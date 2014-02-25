@@ -43,6 +43,7 @@ def myRaise(File=__file__):
 
 
 class BasePlugin:
+    external = False
     __repr__ = lambda self: 'loadPlugin(%r, enable=%r, show_date=%r)'%(self.path, self.enable, self.show_date)
     params = {
         'mode': DATE_GREG,
@@ -61,7 +62,6 @@ class BasePlugin:
         mode=0,
         **kwargs
     ):
-        self.external = False
         self.path = path
         if isinstance(mode, basestring):
             try:
@@ -160,12 +160,11 @@ def loadExternalPlugin(path, enable=True, show_date=True):
         return None
 
 class ExternalPlugin(BasePlugin):
+    external = True
     def __init__(self, path, enable=True, show_date=False, **params):
         BasePlugin.__init__(self, path, enable=enable, show_date=show_date)
         self.params = params
-        self.external = True
         self.module = None
-        self.extender = None
         self.isLoaded = False
     def lateLoad(self):
         if not isfile(self.path):
