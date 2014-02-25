@@ -120,7 +120,7 @@ class CustomizableCalBox(CustomizableCalObj):
     ## for GtkBox (HBox and VBox)
     def appendItem(self, item):
         CustomizableCalObj.appendItem(self, item)
-        if item.enable:
+        if item.enable:## or item.loaded FIXME
             pack(self, item, item.expand, item.expand)
             item.show()
     def moveItemUp(self, i):
