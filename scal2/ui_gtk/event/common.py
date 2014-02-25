@@ -533,7 +533,6 @@ class GroupEditorDialog(gtk.Dialog):
         pack(hbox, gtk.Label(''), 1, 1)
         pack(self.vbox, hbox)
         ####
-        print 'group: isNew=%s'%self.isNew
         if self.isNew:
             self._group = event_lib.classes.group[event_lib.defaultGroupTypeIndex]()
             combo.set_active(event_lib.defaultGroupTypeIndex)
