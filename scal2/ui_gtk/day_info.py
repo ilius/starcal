@@ -34,7 +34,7 @@ from scal2.ui_gtk.event.occurrence_view import DayOccurrenceView
 
 
 @registerSignals
-class AllDateLabelsVBox(gtk.VBox, ud.IntegratedCalObj):
+class AllDateLabelsVBox(gtk.VBox, ud.BaseCalObj):
     _name = 'allDateLabels'
     desc = _('Dates')
     def __init__(self):
@@ -43,7 +43,7 @@ class AllDateLabelsVBox(gtk.VBox, ud.IntegratedCalObj):
         ##
         self.set_spacing(5)
     def onDateChange(self, *a, **ka):
-        ud.IntegratedCalObj.onDateChange(self, *a, **ka)
+        ud.BaseCalObj.onDateChange(self, *a, **ka)
         for child in self.get_children():
             child.destroy()
         sgroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
@@ -69,7 +69,7 @@ class AllDateLabelsVBox(gtk.VBox, ud.IntegratedCalObj):
 
 
 @registerSignals
-class PluginsTextView(gtk.TextView, ud.IntegratedCalObj):
+class PluginsTextView(gtk.TextView, ud.BaseCalObj):
     _name = 'pluginsText'
     desc = _('Plugins Text')
     def __init__(self):
@@ -81,12 +81,12 @@ class PluginsTextView(gtk.TextView, ud.IntegratedCalObj):
         self.set_cursor_visible(False)
         self.set_justification(gtk.Justification.CENTER)
     def onDateChange(self, *a, **ka):
-        ud.IntegratedCalObj.onDateChange(self, *a, **ka)
+        ud.BaseCalObj.onDateChange(self, *a, **ka)
         self.get_buffer().set_text(ui.cell.pluginsText)
 
 
 @registerSignals
-class DayInfoDialog(gtk.Dialog, ud.IntegratedCalObj):
+class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
     _name = 'dayInfo'
     desc = _('Day Info')
     def __init__(self):

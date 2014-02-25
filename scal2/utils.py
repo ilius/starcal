@@ -17,7 +17,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-import sys, traceback, os
+import sys, os
 from math import floor, ceil
 
 from scal2.lib import OrderedDict
@@ -61,17 +61,14 @@ except ImportError:
 ifloor = lambda x: int(floor(x))
 iceil = lambda x: int(ceil(x))
 
-try:
-    from numpy import arange
-except ImportError:
-    def arange(start, stop, step):
-        l = []
-        x = start
-        stop -= 0.000001
-        while x < stop:
-            l.append(x)
-            x += step
-        return l
+def arange(start, stop, step):
+    l = []
+    x = start
+    stop -= 0.000001
+    while x < stop:
+        l.append(x)
+        x += step
+    return l
 
 toBytes = lambda s: s.encode('utf8') if isinstance(s, str) else bytes(s)
 toStr = lambda s: str(s, 'utf8') if isinstance(s, bytes) else str(s)
@@ -110,6 +107,7 @@ def myRaise(File=None):
     sys.stderr.write(text)
 
 def myRaiseTback():
+    import traceback
     typ, value, tback = sys.exc_info()
     sys.stderr.write("".join(traceback.format_exception(typ, value, tback)))
 

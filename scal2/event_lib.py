@@ -18,7 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 
-import json, random, os, shutil
+import json, os, shutil
 from os.path import join, split, isdir, isfile, dirname, splitext
 from os import listdir
 import math
@@ -29,7 +29,7 @@ from scal2.lib import OrderedDict
 
 from .path import *
 
-from scal2.utils import printError, arange, ifloor, iceil, findNearestIndex
+from scal2.utils import printError, ifloor, iceil, findNearestIndex
 from scal2.os_utils import makeDir
 from scal2.interval_utils import *
 from scal2.time_utils import *
@@ -50,7 +50,7 @@ from scal2 import core
 from scal2.core import myRaise, log, getAbsWeekNumberFromJd, dataToJson, jwday, jd_to_primary
 
 from scal2.ics import icsHeader, getIcsTimeByEpoch, getIcsDateByJd, getJdByIcsDate, getEpochByIcsTime
-from scal2.vcs_modules import encodeShortStat, vcsModuleDict
+from scal2.vcs_modules import encodeShortStat, getVcsModule
 
 dayLen = 24*3600
 
@@ -131,13 +131,15 @@ lastIds.load()
 ###########################################################################
 
 class ClassGroup(list):
-    def __init__(self):
+    def __init__(self, tname):
         list.__init__(self)
+        self.tname = tname
         self.names = []
         self.byName = {}
         self.byDesc = {}
     def register(self, cls):
         assert cls.name != ''
+        cls.tname = self.tname
         self.append(cls)
         self.names.append(cls.name)
         self.byName[cls.name] = cls
@@ -145,11 +147,11 @@ class ClassGroup(list):
         return cls
 
 class classes:
-    rule = ClassGroup()
-    notifier = ClassGroup()
-    event = ClassGroup()
-    group = ClassGroup()
-    account = ClassGroup()
+    rule = ClassGroup('rule')
+    notifier = ClassGroup('notifier')
+    event = ClassGroup('event')
+    group = ClassGroup('group')
+    account = ClassGroup('account')
 
 defaultEventTypeIndex = 0 ## FIXME
 defaultGroupTypeIndex = 0 ## FIXME
@@ -297,6 +299,11 @@ class TimeListOccurrence(Occurrence):
     getStartJd = lambda self: getJdFromEpoch(min(self.epochList))
     getEndJd = lambda self: getJdFromEpoch(max(self.epochList)+1)
     def setRange(self, startEpoch, endEpoch, stepSeconds):
+        try:
+            from numpy.core.multiarray import arange
+        except ImportError:
+            from scal2.utils import arange
+        ######
         self.startEpoch = startEpoch
         self.endEpoch = endEpoch
         self.stepSeconds = stepSeconds
@@ -2484,7 +2491,7 @@ class EventGroup(EventContainer):
         self.showInMCal = True
         self.showInTray = False
         self.showInTimeLine = True
-        self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)## FIXME
+        self.color = (0, 0, 0) ## FIXME
         #self.defaultNotifyBefore = (10, 60) ## FIXME
         if len(self.acceptsEventTypes)==1:
             self.defaultEventType = self.acceptsEventTypes[0]
@@ -2507,6 +2514,9 @@ class EventGroup(EventContainer):
         self.setDefaults()
         ###########
         self.clearRemoteAttrs()
+    def setRandomColor(self):
+        import random
+        self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)## FIXME
     def clearRemoteAttrs(self):
         self.remoteIds = None## (accountId, groupId)
         ## remote groupId can be an integer or string or unicode (depending on remote account type)
@@ -3276,7 +3286,7 @@ class VcsBaseEventGroup(EventGroup):
         else:## len(commit_id)==40 for git
             return self.getEvent(key)
     def updateVcsModuleObj(self):
-        mod = vcsModuleDict[self.vcsType]
+        mod = getVcsModule(self.vcsType)
         mod.clearObj(self)
         if self.enable and self.vcsDir:
             try:
@@ -3355,7 +3365,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
         self.clear()
         if not self.vcsDir:
             return
-        mod = vcsModuleDict[self.vcsType]
+        mod = getVcsModule(self.vcsType)
         try:
             commitsData = mod.getCommitList(self, startJd=self.startJd, endJd=self.endJd)
         except:
@@ -3372,7 +3382,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
         ###
         self.updateOccurrenceLog(stm0)
     def updateEventDesc(self, event):
-        mod = vcsModuleDict[self.vcsType]
+        mod = getVcsModule(self.vcsType)
         lines = []
         if event.description:
             lines.append(event.description)
@@ -3386,7 +3396,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
             lines.append(_('Hash')+': '+event.shortHash)
         event.description = '\n'.join(lines)
     def getEvent(self, commit_id):## cache commit data FIXME
-        mod = vcsModuleDict[self.vcsType]
+        mod = getVcsModule(self.vcsType)
         data = mod.getCommitInfo(self, commit_id)
         if not data:
             raise ValueError('No commit with id=%r'%commit_id)
@@ -3418,7 +3428,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
         self.clear()
         if not self.vcsDir:
             return
-        mod = vcsModuleDict[self.vcsType]
+        mod = getVcsModule(self.vcsType)
         try:
             tagsData = mod.getTagList(self, self.startJd, self.endJd)## TOO SLOW
         except:
@@ -3436,7 +3446,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
         ###
         self.updateOccurrenceLog(stm0)
     def updateEventDesc(self, event):
-        mod = vcsModuleDict[self.vcsType]
+        mod = getVcsModule(self.vcsType)
         tag = event.id
         lines = []
         if self.showStat:
@@ -3508,7 +3518,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
         self.clear()
         if not self.vcsDir:
             return
-        mod = vcsModuleDict[self.vcsType]
+        mod = getVcsModule(self.vcsType)
         ####
         try:
             utc = pytz.timezone('UTC')
@@ -3543,7 +3553,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
             commitsCount, stat = self.statByJd[jd]
         except KeyError:
             raise ValueError('No commit for jd %s'%jd)
-        mod = vcsModuleDict[self.vcsType]
+        mod = getVcsModule(self.vcsType)
         event = VcsDailyStatEvent(self, jd)
         ###
         event.icon = self.icon

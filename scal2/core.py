@@ -19,7 +19,7 @@
 from time import localtime
 from time import time as now
 
-import sys, os, subprocess, traceback
+import sys, os, subprocess
 from io import StringIO
 from os.path import isfile, isdir, exists, dirname, join, split, splitext
 from pprint import pprint
@@ -121,11 +121,6 @@ def myRaise(File=None):
     if File:
         text = 'File "%s", '%File + text
     log.error(text)
-
-def myRaiseTback(f=None):
-    typ, value, tback = sys.exc_info()
-    log.error("".join(traceback.format_exception(typ, value, tback)))
-
 
 
 ################################################################################
@@ -373,8 +368,9 @@ def mylocaltime(sec=None, mode=None):
     return t
 
 
-compressLongInt = lambda num:\
-    struct.pack('L', num).\
+def compressLongInt(num):
+    from struct import pack
+    return pack('L', num).\
     rstrip('\x00').\
     encode('base64')[:-3].\
     replace('/', '_')

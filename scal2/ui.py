@@ -25,7 +25,7 @@ from os.path import dirname, join, isfile, splitext, isabs
 from xml.dom.minidom import parse## remove FIXME
 from subprocess import Popen
 
-from scal2.utils import NullObj, cleanCacheDict
+from scal2.utils import NullObj, cleanCacheDict, myRaiseTback
 from scal2.utils import toBytes
 from scal2.path import *
 
@@ -36,7 +36,7 @@ from scal2.locale_man import tr as _
 from scal2.locale_man import numDecode
 
 from scal2 import core
-from scal2.core import APP_NAME, myRaise, myRaiseTback, getMonthLen
+from scal2.core import APP_NAME, myRaise, getMonthLen
 
 from scal2.startup import addStartup, removeStartup, checkStartup
 from scal2 import event_lib
@@ -509,13 +509,13 @@ getEventTagsDict = lambda: dict([(tagObj.name, tagObj) for tagObj in eventTags])
 eventTagsDesc = dict([(t.name, t.desc) for t in eventTags])
 
 ###################
-for fname in os.listdir(join(srcDir, 'accounts')):
+for fname in os.listdir(join(srcDir, 'account')):
     name, ext = splitext(fname)
     if ext == '.py' and name != '__init__':
         try:
-            __import__('scal2.accounts.%s'%name)
+            __import__('scal2.account.%s'%name)
         except:
-            core.myRaiseTback()
+            myRaiseTback()
 #print('accounts', event_lib.classes.account.names)
 ###########
 eventAccounts = event_lib.EventAccountsHolder()
@@ -709,6 +709,7 @@ mainWinItems = (
 )
 
 mainWinItemsDefault = mainWinItems[:]
+
 
 wcalItems = (
     ('toolbar', True),

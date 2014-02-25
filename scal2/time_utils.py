@@ -21,7 +21,6 @@ import time
 from time import localtime, mktime
 from time import time as now
 from datetime import datetime
-import struct
 import pytz
 
 from tzlocal import get_localzone

@@ -19,7 +19,7 @@
 
 APP_NAME = 'starcal2'
 
-import sys, traceback
+import sys
 from time import strftime
 from os.path import isfile, dirname, join, split, splitext, isabs
 
@@ -41,13 +41,9 @@ def myRaise(File=__file__):
     i = sys.exc_info()
     log.error('File "%s", line %s: %s: %s\n'%(File, i[2].tb_lineno, i[0].__name__, i[1]))
 
-def myRaiseTback(f=None):
-    typ, value, tback = sys.exc_info()
-    log.error("".join(traceback.format_exception(typ, value, tback)))
-
-
 
 class BasePlugin:
+    external = False
     __repr__ = lambda self: 'loadPlugin(%r, enable=%r, show_date=%r)'%(self.path, self.enable, self.show_date)
     params = {
         'mode': DATE_GREG,
@@ -66,7 +62,6 @@ class BasePlugin:
         mode=0,
         **kwargs
     ):
-        self.external = False
         self.path = path
         if isinstance(mode, str):
             try:
@@ -165,12 +160,11 @@ def loadExternalPlugin(path, enable=True, show_date=True):
         return None
 
 class ExternalPlugin(BasePlugin):
+    external = True
     def __init__(self, path, enable=True, show_date=False, **params):
         BasePlugin.__init__(self, path, enable=enable, show_date=show_date)
         self.params = params
-        self.external = True
         self.module = None
-        self.extender = None
         self.isLoaded = False
     def lateLoad(self):
         if not isfile(self.path):

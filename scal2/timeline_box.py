@@ -1,10 +1,5 @@
 from time import time as now
 
-try:
-    from scal2.graph_utils import Graph, colorGraph
-except ImportError:
-    pass
-
 from scal2.locale_man import tr as _
 from scal2.core import debugMode
 from scal2 import ui
@@ -86,6 +81,10 @@ class Box:
     contains = lambda self, px, py: 0 <= px-self.x < self.w and 0 <= py-self.y < self.h
 
 def makeIntervalGraph(boxes):
+    try:
+        from scal2.graph_utils import Graph
+    except ImportError:
+        return
     g = Graph()
     n = len(boxes)
     g.add_vertices(n - g.vcount())
@@ -140,8 +139,8 @@ def calcEventBoxes(
     borderTm,
 ):
     try:
-        Graph
-    except NameError:
+        from scal2.graph_utils import Graph, colorGraph
+    except ImportError:
         errorBoxH = 0.8 ## FIXME
         return [
             Box(

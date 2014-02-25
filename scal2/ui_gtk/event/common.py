@@ -41,7 +41,7 @@ from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
-
+from scal2.ui_gtk.event import makeWidget
 
 
 confirmEventTrash = lambda event:\
@@ -68,7 +68,7 @@ def menuItemFromEventGroup(group):
     return item
 
 
-class EventWidget(gtk.VBox):
+class WidgetClass(gtk.VBox):
     def __init__(self, event):
         gtk.VBox.__init__(self)
         self.event = event
@@ -257,7 +257,7 @@ class NotificationBox(gtk.Expander):## or NotificationBox FIXME
         ###
         for cls in event_lib.classes.notifier:
             notifier = cls(self.event)
-            inputWidget = notifier.makeWidget()
+            inputWidget = makeWidget(notifier)
             hbox = gtk.HBox()
             cb = gtk.CheckButton(notifier.desc)
             cb.inputWidget = inputWidget
@@ -452,7 +452,7 @@ class EventEditorDialog(gtk.Dialog):
             pack(hbox, combo)
             ####
             combo.set_active(self._group.acceptsEventTypes.index(event.name))
-            #self.activeWidget = event.makeWidget()
+            #self.activeWidget = makeWidget(event)
             combo.connect('changed', self.typeChanged)
             self.comboEventType = combo
         else:
@@ -463,7 +463,7 @@ class EventEditorDialog(gtk.Dialog):
         #####
         if useSelectedDate:
             self.event.setJd(ui.cell.jd)
-        self.activeWidget = event.makeWidget()
+        self.activeWidget = makeWidget(event)
         if self.isNew:
             self.activeWidget.focusSummary()
         pack(self.vbox, self.activeWidget, 1, 1)
@@ -478,7 +478,7 @@ class EventEditorDialog(gtk.Dialog):
         else:
             self.event = self._group.copyEventWithType(self.event, eventType)
         self._group.updateCache(self.event)## needed? FIXME
-        self.activeWidget = self.event.makeWidget()
+        self.activeWidget = makeWidget(self.event)
         if self.isNew:
             self.activeWidget.focusSummary()
         pack(self.vbox, self.activeWidget)
@@ -572,6 +572,7 @@ class GroupEditorDialog(gtk.Dialog):
         cls = event_lib.classes.group[self.comboType.get_active()]
         group = cls()
         if self.isNew:
+            group.setRandomColor()
             if group.icon:
                 self._group.icon = group.icon
         if not self.isNew:
@@ -580,7 +581,7 @@ class GroupEditorDialog(gtk.Dialog):
         if self.isNew:
             group.title = self.getNewGroupTitle(cls.desc)
         self._group = group
-        self.activeWidget = group.makeWidget()
+        self.activeWidget = makeWidget(group)
         pack(self.vbox, self.activeWidget)
     def run(self):
         if self.activeWidget is None:

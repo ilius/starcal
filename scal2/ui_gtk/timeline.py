@@ -53,7 +53,7 @@ def show_event(widget, event):
 
 
 @registerSignals
-class TimeLine(gtk.DrawingArea, ud.IntegratedCalObj):
+class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
     _name = 'timeLine'
     desc = _('Time Line')
     def centerToNow(self):
@@ -383,7 +383,7 @@ class TimeLine(gtk.DrawingArea, ud.IntegratedCalObj):
         self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
         self.queue_draw()
     def onConfigChange(self, *a, **kw):
-        ud.IntegratedCalObj.onConfigChange(self, *a, **kw)
+        ud.BaseCalObj.onConfigChange(self, *a, **kw)
         self.queue_draw()
     def editEventClicked(self, menu, winTitle, event, gid):
         event = EventEditorDialog(
@@ -521,7 +521,7 @@ class TimeLine(gtk.DrawingArea, ud.IntegratedCalObj):
 
 
 @registerSignals
-class TimeLineWindow(gtk.Window, ud.IntegratedCalObj):
+class TimeLineWindow(gtk.Window, ud.BaseCalObj):
     _name = 'timeLineWin'
     desc = _('Time Line')
     def __init__(self):

@@ -17,7 +17,6 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from io import StringIO
 from difflib import SequenceMatcher
 
 from scal2.utils import NullObj
