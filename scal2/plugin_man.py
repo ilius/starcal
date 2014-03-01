@@ -37,6 +37,13 @@ except:
     from scal2.utils import FallbackLogger
     log = FallbackLogger()
 
+## FIXME
+pluginsDescByName = {
+    'pray_times': _('Islamic Pray Times'),
+}
+
+
+
 def myRaise(File=__file__):
     i = sys.exc_info()
     log.error('File "%s", line %s: %s: %s\n'%(File, i[2].tb_lineno, i[0].__name__, i[1]))
@@ -44,6 +51,7 @@ def myRaise(File=__file__):
 
 class BasePlugin:
     external = False
+    loaded = True
     __repr__ = lambda self: 'loadPlugin(%r, enable=%r, show_date=%r)'%(self.path, self.enable, self.show_date)
     params = {
         'mode': DATE_GREG,
@@ -129,6 +137,21 @@ class BasePlugin:
         open(fileName, 'w').write(icsText)
 
 
+class DummyPlugin(BasePlugin):
+    loaded = False
+    enable = False
+    show_date = False
+    about = ''
+    authors = []
+    has_config = False
+    has_image = False
+    __repr__ = lambda self: 'loadPlugin(%r, enable=False, show_date=False)'%self.path
+    def __init__(self, path, desc):
+        self.path = path
+        self.desc = desc
+
+
+
 def loadExternalPlugin(path, enable=True, show_date=True):
     if not isfile(path):
         log.error('plugin file "%s" not found! maybe removed?'%path)
@@ -138,9 +161,17 @@ def loadExternalPlugin(path, enable=True, show_date=True):
         ##plug = BasePlugin(path, mode=0, desc='Failed to load plugin', enable=enable, show_date=show_date)
         ##plug.external = True
         ##return plug
+    ###
     fname = split(path)[1]
     direc = dirname(path)
     name = splitext(fname)[0]
+    ###
+    if not enable:
+        return DummyPlugin(
+            path,
+            pluginsDescByName.get(name, ''),
+        )
+    ###
     sys.path.insert(0, direc)
     try:
         mod = __import__(name)

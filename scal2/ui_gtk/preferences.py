@@ -29,6 +29,7 @@ from scal2.core import myRaise, convert, APP_DESC
 from scal2 import locale_man
 from scal2.locale_man import langSh
 from scal2.locale_man import tr as _
+from scal2 import plugin_man
 from scal2 import ui
 
 from scal2.ui_gtk import *
@@ -764,14 +765,23 @@ class PrefDialog(gtk.Dialog):
         ###### DB Manager (Plugin Manager)
         index = []
         for row in self.plugTreestore:
-            index.append(row[0])
-            plug = core.allPlugList[row[0]]
-            try:
-                plug.enable = row[1]
-                plug.show_date = row[2]
-            except:
-                core.myRaise(__file__)
-                print(i, core.plugIndex)
+            plugI = row[0]
+            enable = row[1]
+            show_date = row[2]
+            index.append(plugI)
+            plug = core.allPlugList[plugI]
+            if plug.loaded:
+                try:
+                    plug.enable = enable
+                    plug.show_date = show_date
+                except:
+                    core.myRaise(__file__)
+                    print(i, core.plugIndex)
+            else:
+                if enable:
+                    plug = plugin_man.loadPlugin(plug.path)
+                    assert plug.loaded
+                    core.allPlugList[plugI] = plug
         core.plugIndex = index
         ######
         first = self.comboFirstWD.get_active()
