@@ -159,32 +159,6 @@ def loadExternalPlugin(path, enable=True, show_date=True):
         #print(dir(mod))
         return None
 
-class ExternalPlugin(BasePlugin):
-    external = True
-    def __init__(self, path, enable=True, show_date=False, **params):
-        BasePlugin.__init__(self, path, enable=enable, show_date=show_date)
-        self.params = params
-        self.module = None
-        self.isLoaded = False
-    def lateLoad(self):
-        if not isfile(self.path):
-            return False
-        fname = split(self.path)[1]
-        direc = dirname(self.path)
-        name = splitext(fname)[0]
-        sys.path.insert(0, direc)
-        self.module = __import__(name)
-        sys.path.pop(0)
-        ###
-        params = self.params
-        params['rootDir'] = rootDir
-        self.module.module_init(self, params) ## FIXME
-        self.isLoaded = True
-        return True
-    def open_configure(self):
-        pass
-    def open_about(self):
-        pass
 
 class HolidayPlugin(BasePlugin):
     def __init__(self, path, enable=None, show_date=None):
