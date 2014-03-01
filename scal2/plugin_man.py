@@ -78,8 +78,6 @@ class BasePlugin:
         for k, v in self.prepareParams(kwargs).items():
             setattr(self, k, v)
         #########
-        self.text = ''
-        self.holiday = False
         self.load()
     def prepareParams(self, d):
         d2 = {}
