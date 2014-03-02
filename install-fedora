@@ -28,6 +28,25 @@ version=`$sourceDir/scal2/get_version.py`
 #echo "sourceDir=$sourceDir"
 #echo version=$version
 
+requires=('python(>=2.6)' 'python(<<3.0)')
+requires+=('pygtk2(>=2.8)')
+requires+=('python-gflags')
+requires+=('python-httplib2')
+requires+=('pytz')
+
+if [ -f "/usr/lib/$HOSTTYPE-$OSTYPE/libappindicator.so.1" ] ; then
+    requires+=('python-appindicator')
+fi
+
+#recommends=()
+requires+=('python-igraph')
+##requires+=('python-gnomeapplet')
+#requires+=('python-gnomevfs')
+
+
+requires_str=$(printf " %s" "${requires[@]}") ; requires_str=${requires_str:2}
+#recommends_str=$(printf ", %s" "${recommends[@]}") ; recommends_str=${recommends_str:2}
+
 
 
 echo "Name:     $pkgName
@@ -38,7 +57,7 @@ Summary:        A full-featured international calendar writen in Python
 Group:          User Interface/Desktops
 License:        GPLv3+
 URL:            http://starcal.sourceforge.net/
-Requires:       python(>=2.6), python(<<3.0), pygtk2(>=2.8), python-gflags, python-httplib2, pytz, python-igraph
+Requires:       $requires_str
 BuildArch:      noarch
 
 %description

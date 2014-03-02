@@ -25,6 +25,7 @@ from os.path import isfile, dirname, join, split, splitext, isabs
 
 
 from scal2.path import *
+from scal2.utils import printError
 from scal2.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName
@@ -293,12 +294,14 @@ class BuiltinTextPlugin(BasePlugin):
             sep = '\t'
             lines = open(self.db_path).read().split('\n')
             for line in lines[1:]:
-                if line=='':
+                line = line.strip()
+                if not line:
                     continue
                 if line[0]=='#':
                     continue
                 parts = line.split('\t')
                 if len(parts)<2:
+                    printError('bad plugin db line: %s'%line)
                     continue
                 date = parts[0].split('/')
                 text = '\t'.join(parts[1:])

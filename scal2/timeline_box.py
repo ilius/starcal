@@ -142,7 +142,19 @@ def calcEventBoxes(
     try:
         Graph
     except NameError:
-        return []
+        errorBoxH = 0.8 ## FIXME
+        return [
+            Box(
+                timeStart,
+                timeEnd,
+                timeEnd - timeStart,
+                1-errorBoxH, ## u0
+                errorBoxH, ## du
+                text = 'Install "python-igraph" to see events',
+                color = (128, 0, 0),## FIXME
+                lineW = 2*boxLineWidth,
+            )
+        ]
     boxesDict = {}
     #timeMiddle = (timeStart + timeEnd) / 2.0
     for groupIndex in range(len(ui.eventGroups)):

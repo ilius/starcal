@@ -28,18 +28,38 @@ version=`$sourceDir/scal2/get_version.py`
 #echo version=$version
 
 
+requires_str=""
 
-echo "Name:     $pkgName
-Version:        $version
-Release:        1
-Summary:        A full-featured international calendar writen in Python
+for pkg in \
+"python >= 2.6" \
+"python < 3.0" \
+"python-gtk >= 2.8" \
+"python-gflags" \
+"python-httplib2" \
+"python-pytz" \
+; do
+    requires_str+="Requires: $pkg
+"
+done
 
-Group:          User Interface/Desktops
-License:        GPLv3+
-URL:            http://starcal.sourceforge.net/
-Requires:       python >= 2.6, python-gtk, python-gflags, python-httplib2, python-pytz, python-igraph
-Provides:       /usr
-BuildArch:      noarch
+requires_str+="
+"
+
+requires_str+="Recommends: python-igraph"
+
+
+echo "Name: $pkgName
+Version: $version
+Release: 1
+Summary: A full-featured international calendar writen in Python
+
+Group: User Interface/Desktops
+License: GPLv3+
+URL: http://starcal.sourceforge.net/
+
+$requires_str
+
+BuildArch: noarch
 
 %description
 StarCalendar is a full-featured international calendar writen in Python,
@@ -65,7 +85,9 @@ english(Gregorian) calendar
 %{_prefix}/share/locale/*/LC_MESSAGES/starcal2.mo
 " > $pkgName.spec
 
-pkgPath=`rpmbuild -bb $pkgName.spec | grep -o /usr/src/packages/RPMS/.*rpm`
+#less $pkgName.spec ; exit 0
+
+pkgPath=`rpmbuild -bb $pkgName.spec | grep -o /usr/src/packages/RPMS/noarch/$pkgName.*\.rpm`
 echo "pkgPath=$pkgPath"
 
 if [ -z "$pkgPath" ] ; then

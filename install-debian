@@ -44,14 +44,19 @@ depends+=('python-gtk2(>=2.8)')
 depends+=('python-gflags')
 depends+=('python-httplib2')
 depends+=('python-tz')
-depends+=('python-igraph')
 
 if [ -f "/usr/lib/$HOSTTYPE-$OSTYPE/libappindicator.so.1" ] ; then
     depends+=('python-appindicator')
 fi
 
+recommends=()
+recommends+=('python-igraph')
+#recommends+=('python-gnomeapplet')
+recommends+=('python-gnomevfs')
+
+
 depends_str=$(printf ", %s" "${depends[@]}") ; depends_str=${depends_str:2}
-#echo $depends_str
+recommends_str=$(printf ", %s" "${recommends[@]}") ; recommends_str=${recommends_str:2}
 
 echo "Package: $pkgName
 Version: $version
@@ -59,7 +64,7 @@ Architecture: all
 Maintainer: Saeed Rasooli <saeed.gnu@gmail.com>
 Installed-Size: $installedSize
 Depends: $depends_str
-Recommends: 
+Recommends: $recommends_str
 Section: Utilities
 Priority: optional
 Homepage: http://starcal.sourceforge.net/
