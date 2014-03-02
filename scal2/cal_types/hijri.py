@@ -195,7 +195,7 @@ to_jd_c = lambda year, month, day:\
     day + iceil(29.5 * (month - 1)) + \
     (year - 1) * 354               + \
     (11*year + 3) // 30  + \
-    epoch
+    int(epoch) + 1
 
 def to_jd(year, month, day):
     if hijriUseDB:## and hijriAlg==0
