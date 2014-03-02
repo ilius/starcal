@@ -176,7 +176,7 @@ class MonthDbHolder:
         ym = year*12 + month-1
         y0, m0, d0 = monthDb.startDate
         ym0 = y0*12 + m0-1
-        if not ym in monthDb.monthLenByYm:
+        if not ym-1 in monthDb.monthLenByYm:
             return
         jd = monthDb.startJd
         for ymi in range(ym0, ym):
