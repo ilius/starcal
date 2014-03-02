@@ -178,7 +178,7 @@ def loadTranslator(ui_is_qt=False):
         transObj = gettext.GNUTranslations(fd)
     if transObj:
         def tr(s, *a, **ka):
-            if isinstance(s, (int, long)):
+            if isinstance(s, (int, long, float)):
                 s = numEncode(s, *a, **ka)
             else:
                 s = transObj.gettext(toStr(s)).decode('utf-8')
