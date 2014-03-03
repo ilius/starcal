@@ -139,6 +139,8 @@ def combo_model_delete_text(model, path, itr, text_to_del):
         del model[path[0]]
         return
 
+tree_path_split = lambda p: [int(x) for x in p.split(':')]
+
 def cellToggled(cell, path=None):
     print('cellToggled', path)
     cell.set_active(not cell.get_active())##????????????????????????

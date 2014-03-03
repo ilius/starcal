@@ -128,7 +128,7 @@ class MainWinVbox(gtk.VBox, CustomizableCalBox):
         #self.reorder_child(wcal, mi)
         #self.reorder_child(mcal, wi)
         #self.items[wi], self.items[mi] = mcal, wcal
-        self.showHideWidgets()
+        self.showHide()
         self.onDateChange()
 
 

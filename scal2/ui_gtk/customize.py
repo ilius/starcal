@@ -26,7 +26,7 @@ from scal2 import ui
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
-from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, dialog_add_button
+from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, dialog_add_button, tree_path_split
 from scal2.ui_gtk import gtk_ud as ud
 
 
@@ -111,18 +111,15 @@ class CustomizableCalObj(ud.BaseCalObj):
             if item.enable and kname in item.myKeys:
                 if item.keyPress(arg, event):
                     break
-    def showHideWidgets(self):
-        for item in self.items:
-            item.set_visible(item.enable)
 
 
 class CustomizableCalBox(CustomizableCalObj):
     ## for GtkBox (HBox and VBox)
     def appendItem(self, item):
         CustomizableCalObj.appendItem(self, item)
-        if item.enable:## or item.loaded FIXME
+        if item.loaded:
             pack(self, item, item.expand, item.expand)
-            item.show()
+            item.showHide()
     def moveItemUp(self, i):
         if i > 0:
             if self.items[i].loaded and self.items[i-1].loaded:
@@ -130,7 +127,7 @@ class CustomizableCalBox(CustomizableCalObj):
         CustomizableCalObj.moveItemUp(self, i)
     def insertItemWidget(self, i):
         item = self.items[i]
-        if not item.enable:## or item.loaded FIXME
+        if not item.loaded:
             return
         pack(self, item, item.expand, item.expand)
         self.reorder_child(item, i)
@@ -144,7 +141,7 @@ class CustomizeDialog(gtk.Dialog):
         itemIter = self.model.append(parentIter)
         self.model.set(itemIter, 0, item.enable, 1, item.desc)
         for child in item.items:
-            if item.customizable:
+            if child.customizable:
                 self.appendItemTree(child, itemIter)
     def __init__(self, widget):
         gtk.Dialog.__init__(self)
@@ -215,7 +212,7 @@ class CustomizeDialog(gtk.Dialog):
         self.resize(self.get_size()[0], 1)
     def getItemByPath(self, path):
         if isinstance(path, basestring):
-            path = [int(p) for p in path.split(':')]
+            path = tree_path_split(path)
         elif isinstance(path, (int, long)):
             path = [path]
         elif not isinstance(path, (tuple, list)):
@@ -306,26 +303,27 @@ class CustomizeDialog(gtk.Dialog):
         itemIter = self.model.get_iter(path)
         ###
         parentItem = self._widget
-        item = parentItem.items[int(path[0])]
-        for i in path[1:]:
-            parentItem, item = item, item.items[int(i)]
-        itemIndex = int(path[-1])
+        pp = tree_path_split(path)
+        item = parentItem.items[pp[0]]
+        for i in pp[1:]:
+            parentItem, item = item, item.items[i]
+        itemIndex = int(pp[-1])
         assert parentItem.items[itemIndex] == item
         ###
         if active:
             if item.loaded:
                 item.enable = True
-                item.show()
+                item.showHide()
             else:
                 item = item.getLoadedObj()
                 parentItem.items[itemIndex] = item
                 parentItem.insertItemWidget(itemIndex)
-                item.show_all()
-                item.showHideWidgets()
                 for child in item.items:
                     if item.customizable:
                         self.appendItemTree(child, itemIter)
+                item.showHide()
             item.onConfigChange()
+            item.onDateChange()
         else:
             item.enable = False
             item.hide()

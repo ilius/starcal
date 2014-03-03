@@ -78,6 +78,14 @@ class BaseCalObj(gtk.Object):
         self.items.insert(i-1, self.items.pop(i))
     def addItemWidget(self, i):
         pass
+    def showHide(self):
+        try:
+            self.set_visible(self.enable)
+        except AttributeError:
+            pass
+        for item in self.items:
+            item.showHide()
+
 
 class IntegatedWindowList(BaseCalObj):
     _name = 'windowList'

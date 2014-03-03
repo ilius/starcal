@@ -117,7 +117,7 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
     def styleComboChanged(self, combo=None):
         style = self.styleCombo.get_active()
         self.set_style(style)
-        #self.showHideWidgets()## FIXME
+        #self.showHide()## FIXME
         self.iconSizeHbox.set_sensitive(style!=1)
     def buttonsBorderSpinChanged(self, spin=None):
         self.setButtonsBorder(self.buttonsBorderSpin.get_value())
