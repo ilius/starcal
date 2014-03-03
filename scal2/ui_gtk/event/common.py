@@ -22,6 +22,7 @@ import os
 from os.path import join, split
 
 from scal2.utils import toStr
+from scal2.utils import printError
 from scal2.time_utils import durationUnitsAbs, durationUnitValues
 from scal2.cal_types import calTypes
 from scal2 import core
@@ -255,6 +256,9 @@ class NotificationBox(gtk.Expander):## or NotificationBox FIXME
         for cls in event_lib.classes.notifier:
             notifier = cls(self.event)
             inputWidget = makeWidget(notifier)
+            if not inputWidget:
+                printError('notifier %s, inputWidget = %r'%(cls.name, inputWidget))
+                continue
             hbox = gtk.HBox()
             cb = gtk.CheckButton(notifier.desc)
             cb.inputWidget = inputWidget
