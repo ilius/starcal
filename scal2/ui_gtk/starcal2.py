@@ -28,14 +28,14 @@ from time import time as now
 from time import localtime
 import os
 from os.path import join, dirname, isfile, isdir, splitext
-from subprocess import Popen
-from pprint import pprint, pformat
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
+
 from scal2.path import *
-from scal2.utils import myRaise, restartLow
+from scal2.utils import myRaise
 
 if not isdir(confDir):
+    from scal2.utils import restartLow
     try:
         __import__('scal2.ui_gtk.import_config_1to2')
     except:
@@ -46,7 +46,6 @@ from scal2.utils import toStr, toUnicode
 from scal2.utils import versionLessThan
 from scal2.cal_types import calTypes
 from scal2 import core
-from scal2.core import rootDir, pixDir, deskDir, myRaise, getMonthName, APP_DESC
 
 #core.showInfo()
 
@@ -57,23 +56,35 @@ from scal2.locale_man import tr as _
 from scal2 import event_lib
 from scal2 import ui
 
-from gobject import timeout_add, timeout_add_seconds
+import gobject
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import *
-from scal2.ui_gtk.color_utils import rgbToGdkColor
-from scal2.ui_gtk.drawing import newTextLayout, newOutlineSquarePixbuf
+#from scal2.ui_gtk.color_utils import rgbToGdkColor
+from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 #from ui_gtk.mywidgets2.multi_spin_button import DateButtonOption
 from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.customize import DummyCalObj, CustomizableCalBox, CustomizeDialog
-from scal2.ui_gtk.event.common import addNewEvent
-
-
 
 
 ui.uiName = 'gtk'
+
+
+mainWinItemsDesc = {
+    'eventDayView': _('Events of Day'),
+    'labelBox': _('Year & Month Labels'),
+    'monthCal': _('Month Calendar'),
+    'pluginsText': _('Plugins Text'),
+    'seasonPBar': _('Season Progress Bar'),
+    'statusBar': _('Status Bar'),
+    'toolbar': _('Toolbar'),
+    'weekCal': _('Week Calendar'),
+    'winContronller': _('Window Controller'),
+}
+
+
 
 
 def show_event(widget, event):
@@ -83,7 +94,7 @@ def show_event(widget, event):
 def liveConfChanged():
     tm = now()
     if tm-ui.lastLiveConfChangeTime > ui.saveLiveConfDelay:
-        timeout_add(int(ui.saveLiveConfDelay*1000), ui.saveLiveConfLoop)
+        gobject.timeout_add(int(ui.saveLiveConfDelay*1000), ui.saveLiveConfLoop)
         ui.lastLiveConfChangeTime = tm
 
 
@@ -235,7 +246,6 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         self.vbox = MainWinVbox()
         ui.checkMainWinItems()
         itemsPkg = 'scal2.ui_gtk.mainwin_items'
-        from scal2.ui_gtk.mainwin_items import mainWinItemsDesc
         for (name, enable) in ui.mainWinItems:
             #print(name, enable)
             if enable:
@@ -315,7 +325,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         self.trayInit()
         listener.dateChange.add(self)
         #if self.trayMode!=1:
-        #    timeout_add_seconds(self.timeout, self.trayUpdate)
+        #    gobject.timeout_add_seconds(self.timeout, self.trayUpdate)
         #########
         self.connect('delete-event', self.onDeleteEvent)
         ######################
@@ -360,7 +370,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         #print('focusOut', dt)
         if dt > 0.05: ## FIXME
             self.focus = False
-            timeout_add(2, self.focusOutDo)
+            gobject.timeout_add(2, self.focusOutDo)
     def focusOutDo(self):
         if not self.focus:# and t-self.focusOutTime>0.002:
             ab = self.checkAbove.get_active()
@@ -530,6 +540,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         #self.menuMainWidth = menu.get_allocation().width
         ui.updateFocusTime()
     def addToGroupFromMenu(self, menu, group, eventType):
+        from scal2.ui_gtk.event.common import addNewEvent
         #print('addToGroupFromMenu', group.title, eventType)
         title = _('Add ') + event_lib.classes.event.byName[eventType].desc
         event = addNewEvent(group, eventType, title, parent=self, useSelectedDate=True)
@@ -672,7 +683,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         sep = '\n'
         for mode in calTypes.active:
             y, m, d = ui.todayCell.dates[mode]
-            tt += '%s%s %s %s'%(sep, _(d), getMonthName(mode, m, y), _(y))
+            tt += '%s%s %s %s'%(sep, _(d), core.getMonthName(mode, m, y), _(y))
         if ui.pluginsTextTray:
             text = ui.todayCell.pluginsText
             if text!='':
@@ -773,6 +784,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             self.sicon.set_visible(False) ## needed for windows ## before or after main_quit ?
         return gtk.main_quit()
     def adjustTime(self, widget=None, event=None):
+        from subprocess import Popen
         Popen(ud.adjustTimeCmd)
     def aboutShow(self, obj=None, data=None):
         if not self.aboutDialog:
@@ -942,7 +954,7 @@ def main():
     #    mainWin.exportHtml('calendar.html') ## exportHtml(path, months, title)
     #    sys.exit(0)
     #elif action=='svg':
-    #    mainWin.export.exportSvg('%s/2010-01.svg'%deskDir, [(2010, 1)])
+    #    mainWin.export.exportSvg('%s/2010-01.svg'%core.deskDir, [(2010, 1)])
     #    sys.exit(0)
     if action=='show' or not mainWin.sicon:
         mainWin.present()

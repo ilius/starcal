@@ -18,7 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 
-import os, shutil
+import os
 from os.path import join, split
 
 from scal2.utils import toStr
@@ -206,6 +206,7 @@ class FilesBox(gtk.VBox):
         fcd.set_local_only(True)
         fcd.connect('response', lambda w, e: fcd.hide())
         if fcd.run() == gtk.RESPONSE_OK:
+            from shutil import copy
             fpath = fcd.get_filename()
             fname = split(fpath)[-1]
             dstDir = self.event.filesDir
@@ -214,7 +215,7 @@ class FilesBox(gtk.VBox):
                 os.makedirs(dstDir)
             except:
                 myRaise()
-            shutil.copy(fpath, join(dstDir, fname))
+            copy(fpath, join(dstDir, fname))
             self.event.files.append(fname)
             self.newFiles.append(fname)
             self.showFile(fname)

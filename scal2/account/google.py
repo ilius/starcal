@@ -18,7 +18,6 @@ developerKey = 'AI39si4QJ0bmdZJd7nVz0j3zuo1JYS3WUJX8y0f2mvGteDtiKY8TUSzTsY4oAcGl
 
 import sys
 from os.path import splitext
-import socket
 import BaseHTTPServer
 
 from pprint import pprint, pformat
@@ -35,19 +34,11 @@ from scal2.path import *
 
 sys.path.append(join(rootDir, 'google-api-python-client'))## FIXME
 
-
-from apiclient.discovery import build
-from apiclient.http import HttpRequest
-
-from oauth2client.file import Storage
-from oauth2client.client import OAuth2WebServerFlow
-
-
 from scal2.utils import toStr, toUnicode
 from scal2.ics import *
+from scal2.cal_types import to_jd, jd_to, DATE_GREG
 from scal2.locale_man import tr as _
 from scal2 import core
-from scal2.core import to_jd, jd_to, DATE_GREG, compressLongInt
 
 from scal2 import event_lib
 from scal2.event_lib import Account
@@ -157,7 +148,7 @@ def importEvent(gevent, group):
 
 
 def setEtag(gevent):
-    gevent['etag'] = compressLongInt(abs(hash(repr(gevent))))
+    gevent['etag'] = core.compressLongInt(abs(hash(repr(gevent))))
 
 class ClientRedirectServer(BaseHTTPServer.HTTPServer):
   """A server to handle OAuth 2.0 redirects back to localhost.
@@ -213,6 +204,7 @@ class GoogleAccount(Account):
     jsonParams = Account.jsonParams + ('email',)
     params = Account.params + ('email',)
     def __init__(self, aid=None, email=''):
+        from oauth2client.client import OAuth2WebServerFlow
         Account.__init__(self, aid)
         self.authFile = splitext(self.file)[0] + '.oauth2'
         self.email = email
@@ -243,6 +235,8 @@ class GoogleAccount(Account):
         sys.stderr.write(error+'\n')
     def authenticate(self):
         global auth_local_webserver
+        import socket
+        from oauth2client.file import Storage
         storage = Storage(self.authFile)
         credentials = storage.get()
         if credentials and not credentials.invalid:
@@ -297,18 +291,22 @@ class GoogleAccount(Account):
         if not credentials:
             return False
         return credentials.authorize(httplib2.Http())
-    getCalendarService = lambda self: build(
-        serviceName='calendar',
-        version='v3',
-        http=self.getHttp(),
-        developerKey=developerKey,
-    )
-    getTasksService = lambda self: build(
-        serviceName='tasks',
-        version='v1',
-        http=self.getHttp(),
-        developerKey=developerKey,
-    )
+    def getCalendarService(self):
+        from apiclient.discovery import build
+        return build(
+            serviceName='calendar',
+            version='v3',
+            http=self.getHttp(),
+            developerKey=developerKey,
+        )
+    def getTasksService(self):
+        from apiclient.discovery import build
+        return build(
+            serviceName='tasks',
+            version='v1',
+            http=self.getHttp(),
+            developerKey=developerKey,
+        )
     addNewGroup = lambda self, title: self.getCalendarService().calendars().insert(
         body={
             'kind': 'calendar#calendar',

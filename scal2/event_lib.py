@@ -18,7 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 
-import json, os, shutil
+import json, os
 from os.path import join, split, isdir, isfile, dirname, splitext
 from os import listdir
 import math
@@ -29,7 +29,7 @@ from scal2.lib import OrderedDict
 
 from .path import *
 
-from scal2.utils import printError, ifloor, iceil, findNearestIndex
+from scal2.utils import printError, ifloor, iceil, findNearestIndex, myRaiseTback
 from scal2.utils import toStr
 from scal2.os_utils import makeDir
 from scal2.interval_utils import *
@@ -3766,13 +3766,22 @@ class EventAccountsHolder(JsonObjectsHolder):
                     log.error('error while loading account file %r: no such file'%objFile)## FIXME
                     continue
                 data = jsonToData(open(objFile).read())
-                data['id'] = _id ## FIXME
+                name = data['type']
                 try:
-                    cls = classes.account.byName[data['type']]
+                    cls = classes.account.byName[name]
                 except KeyError:## FIXME
-                    log.error('error while loading account file %r: no account type "%s"'%(objFile, data['type']))
+                    try:
+                        __import__('scal2.account.%s'%name)
+                    except ImportError:
+                        myRaiseTback()
+                        return
+                try:
+                    cls = classes.account.byName[name]
+                except KeyError:## FIXME
+                    log.error('error while loading account file %r: no account type "%s"'%(objFile, name))
                     return
                 obj = cls(_id)
+                data['id'] = _id ## FIXME
                 obj.setData(data)
                 self.append(obj)
 
@@ -3787,6 +3796,7 @@ class EventTrash(EventContainer):
         self.icon = join(pixDir, 'trash.png')
         self.enable = False
     def delete(self, eid):
+        from shutil import rmtree
         ## different from EventContainer.remove
         ## remove() only removes event from this group, but event file and data still available
         ## and probably will be added to another event container
@@ -3795,16 +3805,17 @@ class EventTrash(EventContainer):
             raise TypeError("delete takes event ID that is integer")
         assert eid in self.idList
         try:
-            shutil.rmtree(join(eventsDir, str(eid)))
+            rmtree(join(eventsDir, str(eid)))
         except:
             myRaise()
         else:
             self.idList.remove(eid)
     def empty(self):
+        from shutil import rmtree
         idList2 = self.idList[:]
         for eid in self.idList:
             try:
-                shutil.rmtree(join(eventsDir, str(eid)))
+                rmtree(join(eventsDir, str(eid)))
             except:
                 myRaise()
             idList2.remove(eid)

@@ -459,15 +459,15 @@ class CheckStartupPrefItem():## FIXME
         self.set = w.set_active
     def updateVar(self):
         if self.get():
-            if not ui.addStartup():
+            if not startup.addStartup():
                 self.set(False)
         else:
             try:
-                ui.removeStartup()
+                startup.removeStartup()
             except:
                 pass
     def updateWidget(self):
-        self.set(ui.checkStartup())
+        self.set(startup.checkStartup())
     confStr = lambda self: ''
 
 class AICalsTreeview(gtk.TreeView):

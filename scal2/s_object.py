@@ -1,6 +1,5 @@
 import os
 from os.path import isfile
-from copy import deepcopy
 
 from scal2.json_utils import *
 from scal2.core import myRaise, dataToJson
@@ -8,6 +7,7 @@ from scal2.core import myRaise, dataToJson
 class SObjBase:
     params = ()## used in getData and setData and copyFrom
     def copyFrom(self, other):
+        from copy import deepcopy
         for attr in self.params:
             try:
                 value = getattr(other, attr)
