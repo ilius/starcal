@@ -20,7 +20,6 @@
 import os, string
 from os.path import join, isfile, isdir, isabs
 import locale, gettext
-from subprocess import Popen
 
 from .path import *
 from scal2.utils import StrOrderedDict, myRaise
@@ -355,6 +354,7 @@ def cutText(text, n):
 
 def popenDefaultLang(*args, **kwargs):
     global sysLangDefault, lang
+    from subprocess import Popen
     os.environ['LANG'] = sysLangDefault
     p = Popen(*args, **kwargs)
     os.environ['LANG'] = lang

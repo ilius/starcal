@@ -19,7 +19,7 @@
 
 from time import time as now
 
-import sys, os, os.path, shutil
+import sys, os, os.path
 from os import listdir
 from os.path import dirname, join, isfile, splitext, isabs
 

@@ -21,7 +21,6 @@ import sys
 import os
 from os.path import isdir, isfile
 #import platform
-from subprocess import Popen, PIPE
 
 
 def getOsName():## 'linux', 'win', 'mac', 'unix'

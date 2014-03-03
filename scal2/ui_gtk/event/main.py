@@ -19,7 +19,7 @@
 
 from time import time as now
 
-import os, sys, shlex, thread
+import os, sys
 from os.path import join, dirname, split, splitext
 
 from scal2.path import *
