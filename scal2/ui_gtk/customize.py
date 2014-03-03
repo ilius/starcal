@@ -18,7 +18,6 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 from scal2.path import *
-from scal2.utils import StrOrderedDict
 from scal2 import core
 from scal2.core import myRaise
 from scal2.locale_man import tr as _
