@@ -186,17 +186,23 @@ def confirm(msg, parent=None):
     win.destroy()
     return ok
 
-def showError(msg, parent=None):
+def showMsg(msg, parent, msg_type):
     win = gtk.MessageDialog(
         parent=parent,
         flags=0,
-        type=gtk.MESSAGE_ERROR,
+        type=msg_type,
         buttons=gtk.BUTTONS_NONE,
         message_format=msg,
     )
     dialog_add_button(win, gtk.STOCK_CLOSE, _('_Close'), gtk.RESPONSE_OK)
     win.run()
     win.destroy()
+
+def showError(msg, parent=None):
+    showMsg(msg, parent, gtk.MESSAGE_ERROR)
+
+def showInfo(msg, parent=None):
+    showMsg(msg, parent, gtk.MESSAGE_INFO)
 
 
 def processDroppedDate(text, dtype):
@@ -344,7 +350,24 @@ class DirectionComboBox(gtk.ComboBox):
     def setValue(self, value):
         self.set_active(self.keys.index(value))
 
-class CalTypeCombo(gtk.ComboBox):
+class IdComboBox(gtk.ComboBox):
+    def set_active(self, _id):
+        ls = self.get_model()
+        for i in range(len(ls)):
+            if ls[i][0]==_id:
+                gtk.ComboBox.set_active(self, i)
+                return
+    def get_active(self):
+        i = gtk.ComboBox.get_active(self)
+        if i is None:
+            return
+        try:
+            return self.get_model()[i][0]
+        except IndexError:
+            return
+
+
+class CalTypeCombo(IdComboBox):
     def __init__(self):## , showInactive=True FIXME
         ls = gtk.ListStore(int, str)
         gtk.ComboBox.__init__(self, ls)
@@ -355,17 +378,6 @@ class CalTypeCombo(gtk.ComboBox):
         ###
         for i, mod in calTypes.iterIndexModule():
             ls.append([i, _(mod.desc)])
-    def set_active(self, mode):
-        ls = self.get_model()
-        for i in range(len(ls)):
-            if ls[i][0]==mode:
-                gtk.ComboBox.set_active(self, i)
-                return
-    def get_active(self):
-        i = gtk.ComboBox.get_active(self)
-        if i is None:
-            return
-        return self.get_model()[i][0]
 
 class TimeZoneComboBoxEntry(gtk.ComboBoxEntry):
     def __init__(self):

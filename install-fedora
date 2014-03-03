@@ -33,6 +33,7 @@ requires+=('pygtk2(>=2.8)')
 requires+=('python-gflags')
 requires+=('python-httplib2')
 requires+=('pytz')
+depends+=('python-dateutil')
 
 if [ -f "/usr/lib/$HOSTTYPE-$OSTYPE/libappindicator.so.1" ] ; then
     requires+=('python-appindicator')

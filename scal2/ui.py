@@ -406,6 +406,7 @@ def duplicateGroupTitle(group):
             return
         index += 1
 
+
 def init():
     core.init()
     #### Load accounts, groups and trash? FIXME

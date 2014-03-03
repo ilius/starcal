@@ -1853,6 +1853,11 @@ msgid "A_dvanced"
 msgstr ""
 "_پیشرفته"
 
+msgid "Account"
+msgstr ""
+"حساب"
+
+
 msgid "Accounts"
 msgstr ""
 "حساب‌ها"
@@ -1878,6 +1883,72 @@ msgid "Email"
 msgstr ""
 "ایمیل"
 
+msgid "Online Service"
+msgstr ""
+"سرویس برخط"
+
+
+msgid "Remote Group"
+msgstr ""
+"گروه راه‌دور"
+
+msgid "Fetch"
+msgstr ""
+"واکشی"
+
+
+msgid "No account selected"
+msgstr ""
+"هیچ حسابی انتخاب نشده"
+
+msgid "Fatching"
+msgstr ""
+"در حال واکشی"
+
+msgid "Error in fetching remote groups"
+msgstr ""
+"خطا در واکشی گروه‌های راه‌دور"
+
+msgid "Synchronize"
+msgstr ""
+"همگام‌سازی"
+
+msgid "Error in synchronizing group \"%(group)s\" with account \"%(account)s\""
+msgstr ""
+"خطا در همگام‌سازی گروه «%(group)s» با حساب «%(account)s»"
+
+msgid "Successful synchronizing of group \"%(group)s\" with account \"%(account)s\""
+msgstr ""
+"همگام‌سازی موفق گروه «%(group)s» با حساب «%(account)s»"
+
+msgid "HTTP Error"
+msgstr ""
+"خطای HTTP"
+
+msgid "Error Code"
+msgstr ""
+"کد خطا"
+
+msgid "Error Message"
+msgstr ""
+"پیام خطا"
+
+msgid "Forbidden"
+msgstr ""
+"ممنوع"
+msgid "Authentication request was rejected."
+msgstr ""
+"درخواست احراز هویت، رد شده است."
+
+msgid "Authentication has failed"
+msgstr ""
+"احراز هویت ناموفق بوده است"
+
+msgid "This service is not available from your country"
+msgstr ""
+"این سرویس در کشور شما قابل دسترسی نیست"
+
+#msgid "Failed to find \"code\" in the query parameters of the redirect."
 
 
 msgid "Show main window on start"

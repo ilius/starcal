@@ -44,6 +44,7 @@ depends+=('python-gtk2(>=2.8)')
 depends+=('python-gflags')
 depends+=('python-httplib2')
 depends+=('python-tz')
+depends+=('python-dateutil')
 
 if [ -f "/usr/lib/$HOSTTYPE-$OSTYPE/libappindicator.so.1" ] ; then
     depends+=('python-appindicator')
