@@ -74,6 +74,9 @@ class BaseCalObj(gtk.Object):
     def appendItem(self, item):
         self.items.append(item)
         self.connectItem(item)
+    def replaceItem(self, itemIndex, item):
+        self.items[itemIndex] = item
+        self.connectItem(item)
     def moveItemUp(self, i):
         self.items.insert(i-1, self.items.pop(i))
     def addItemWidget(self, i):

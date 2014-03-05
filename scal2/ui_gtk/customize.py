@@ -315,7 +315,7 @@ class CustomizeDialog(gtk.Dialog):
                 item.showHide()
             else:
                 item = item.getLoadedObj()
-                parentItem.items[itemIndex] = item
+                parentItem.replaceItem(itemIndex, item)
                 parentItem.insertItemWidget(itemIndex)
                 for child in item.items:
                     if item.customizable:
