@@ -783,6 +783,7 @@ class PrefDialog(gtk.Dialog):
                     assert plug.loaded
                     core.allPlugList[plugI] = plug
         core.plugIndex = index
+        core.updatePlugins()
         ######
         first = self.comboFirstWD.get_active()
         if first==7:

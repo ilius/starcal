@@ -87,7 +87,7 @@ class BasePlugin:
         for k, v in self.prepareParams(kwargs).items():
             setattr(self, k, v)
         #########
-        self.load()
+        ## self.load() ## FIXME
     def prepareParams(self, d):
         d2 = {}
         for k, v in self.params.items():
@@ -281,6 +281,7 @@ class BuiltinTextPlugin(BasePlugin):
     def clear(self):
         self.data = []
     def load(self):
+        #print('BuiltinTextPlugin(%s).load()'%self.path)
         db = []
         for j in range(12):
             monthDb = []
@@ -375,7 +376,6 @@ class IcsTextPlugin(BasePlugin):
             enable=enable,
             show_date=show_date,
         )
-        #self.load()
     def clear(self):
         self.ymd = None
         self.md = None
