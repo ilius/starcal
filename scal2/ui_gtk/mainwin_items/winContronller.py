@@ -22,6 +22,8 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
         self.controller = controller
         CustomizableCalObj.initVars(self)
         self.build()
+        ###
+        self.show_all()
     def onClicked(self, gWin, event):
         raise NotImplementedError
     setImage = lambda self, imName: self.im.set_from_file('%s/wm/%s'%(pixDir, imName))
@@ -55,7 +57,6 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
         if event.button==1:
             self.onClicked(self.controller.gWin, event)
         return False
-    show = lambda self: self.show_all()
 
 class WinConButtonMin(WinConButton):
     _name = 'min'
