@@ -22,7 +22,7 @@ from time import time as now
 import sys, os, subprocess
 from StringIO import StringIO
 from os.path import isfile, isdir, exists, dirname, join, split, splitext
-from pprint import pprint
+#from pprint import pprint
 
 from tzlocal import get_localzone
 
