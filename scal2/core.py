@@ -256,8 +256,8 @@ def validatePlugList():
             plugIndex.pop(i)
             m -= 1
 
-def loadAllPlugins():
-    #log.debug('----------------------- loadAllPlugins')
+def initPlugins():
+    #log.debug('----------------------- initPlugins')
     global allPlugList, plugIndex
     #exec(open(userPlugConf).read())## FIXME
     ## Assert that user configuarion for plugins is OK
@@ -288,6 +288,7 @@ def loadAllPlugins():
             #    myRaise(__file__)
     ## Assert again that final plugins are OK
     validatePlugList()
+    updatePlugins()
 
 def getHolidayPlugins():
     hPlugs = []
@@ -437,7 +438,7 @@ def openUrl(url):
 dataToJson =  lambda data: dataToCompactJson(data) if useCompactJson else dataToPrettyJson(data)
 
 def init():
-    loadAllPlugins()
+    initPlugins()
 
 ################################################################################
 #################### End of class and function defenitions #####################
