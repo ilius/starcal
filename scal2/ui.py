@@ -408,11 +408,14 @@ def duplicateGroupTitle(group):
 
 
 def init():
+    global todayCell, cell
     core.init()
     #### Load accounts, groups and trash? FIXME
     eventAccounts.load()
     eventGroups.load()
     eventTrash.load()
+    ####
+    todayCell = cell = cellCache.getTodayCell() ## FIXME
 
 
 
@@ -544,14 +547,12 @@ reloadTrash = False
 
 
 ###################
-core.loadAllPlugins()## FIXME
-###################
 ## BUILD CACHE AFTER SETTING calTypes.primary
 maxDayCacheSize = 100 ## maximum size of cellCache (days number)
 maxWeekCacheSize = 12
 
 cellCache = CellCache()
-todayCell = cell = cellCache.getTodayCell() ## FIXME
+todayCell = cell = None
 ###########################
 autoLocale = True
 logo = '%s/starcal2.png'%pixDir
