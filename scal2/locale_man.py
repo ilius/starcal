@@ -20,7 +20,6 @@
 import os, string
 from os.path import join, isfile, isdir, isabs
 import locale, gettext
-from subprocess import Popen
 
 from .path import *
 from scal2.utils import StrOrderedDict, myRaise
@@ -179,7 +178,7 @@ def loadTranslator(ui_is_qt=False):
         transObj = gettext.GNUTranslations(fd)
     if transObj:
         def tr(s, *a, **ka):
-            if isinstance(s, int):
+            if isinstance(s, (int, float)):
                 s = numEncode(s, *a, **ka)
             else:
                 s = toStr(transObj.gettext(s))
@@ -357,6 +356,7 @@ addLRM = lambda text: LRM + toStr(text)
 
 def popenDefaultLang(*args, **kwargs):
     global sysLangDefault, lang
+    from subprocess import Popen
     os.environ['LANG'] = sysLangDefault
     p = Popen(*args, **kwargs)
     os.environ['LANG'] = lang

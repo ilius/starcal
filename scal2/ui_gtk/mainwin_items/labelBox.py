@@ -344,9 +344,10 @@ def newSmallNoFocusButton(stock, func, tooltip=''):
         set_tooltip(arrow, tooltip)
     return arrow
 
-class YearLabelButtonBox(gtk.HBox):
+class YearLabelButtonBox(gtk.HBox, ud.BaseCalObj):
     def __init__(self, mode, **kwargs):
         gtk.HBox.__init__(self)
+        self.initVars()
         ###
         pack(self,
             newSmallNoFocusButton(gtk.STOCK_REMOVE, self.prevClicked, _('Previous Year')),
@@ -372,9 +373,10 @@ class YearLabelButtonBox(gtk.HBox):
         self.label.onDateChange()
     changeMode = lambda self, mode: self.label.changeMode(mode)
 
-class MonthLabelButtonBox(gtk.HBox):
+class MonthLabelButtonBox(gtk.HBox, ud.BaseCalObj):
     def __init__(self, mode, **kwargs):
         gtk.HBox.__init__(self)
+        self.initVars()
         ###
         pack(self,
             newSmallNoFocusButton(gtk.STOCK_REMOVE, self.prevClicked, _('Previous Month')),

@@ -176,7 +176,7 @@ class MonthDbHolder:
         ym = year*12 + month-1
         y0, m0, d0 = monthDb.startDate
         ym0 = y0*12 + m0-1
-        if not ym in monthDb.monthLenByYm:
+        if not ym-1 in monthDb.monthLenByYm:
             return
         jd = monthDb.startJd
         for ymi in range(ym0, ym):
@@ -195,7 +195,7 @@ to_jd_c = lambda year, month, day:\
     day + iceil(29.5 * (month - 1)) + \
     (year - 1) * 354               + \
     (11*year + 3) // 30  + \
-    epoch
+    int(epoch) + 1
 
 def to_jd(year, month, day):
     if hijriUseDB:## and hijriAlg==0

@@ -19,13 +19,11 @@
 
 from time import time as now
 
-import sys, os, os.path, shutil
+import sys, os, os.path
 from os import listdir
 from os.path import dirname, join, isfile, splitext, isabs
-from xml.dom.minidom import parse## remove FIXME
-from subprocess import Popen
 
-from scal2.utils import NullObj, cleanCacheDict, myRaiseTback
+from scal2.utils import NullObj, cleanCacheDict, myRaise, myRaiseTback
 from scal2.utils import toBytes
 from scal2.path import *
 
@@ -36,9 +34,7 @@ from scal2.locale_man import tr as _
 from scal2.locale_man import numDecode
 
 from scal2 import core
-from scal2.core import APP_NAME, myRaise, getMonthLen
 
-from scal2.startup import addStartup, removeStartup, checkStartup
 from scal2 import event_lib
 
 uiName = ''
@@ -56,11 +52,15 @@ def parseDroppedDate(text):
             return None
         maxPart = max(part)
         if maxPart > 999:
-            minMax = ((1000, 2100), (1, 12), (1, 31))
-            formats=(
-                    [0, 1, 2],
-                    [1, 2, 0],
-                    [2, 1, 0],
+            minMax = (
+                (1000, 2100),
+                (1, 12),
+                (1, 31),
+            )
+            formats = (
+                [0, 1, 2],
+                [1, 2, 0],
+                [2, 1, 0],
             )
             for format in formats:
                 for i in range(3):
@@ -143,10 +143,11 @@ def checkNeedRestart():
             return True
     return False
 
-getPywPath = lambda: join(rootDir, APP_NAME + ('-qt' if uiName=='qt' else '') + '.pyw')
+getPywPath = lambda: join(rootDir, core.APP_NAME + ('-qt' if uiName=='qt' else '') + '.pyw')
 
 
 def dayOpenEvolution(arg=None):
+    from subprocess import Popen
     ##y, m, d = jd_to(cell.jd-1, core.DATE_GREG) ## in gnome-cal opens prev day! why??
     y, m, d = cell.dates[core.DATE_GREG]
     Popen('LANG=en_US.UTF-8 evolution calendar:///?startdate=%.4d%.2d%.2d'%(y, m, d), shell=True)## FIXME
@@ -155,6 +156,7 @@ def dayOpenEvolution(arg=None):
     ## evolution calendar:///?startdate=$(date +"%Y%m%dT%H%M%SZ")
 
 def dayOpenSunbird(arg=None):
+    from subprocess import Popen
     ## does not work on latest version of Sunbird ## FIXME
     ## and Sunbird seems to be a dead project
     ## Opens previous day in older version
@@ -297,14 +299,14 @@ def jdPlus(plus=1):
 def monthPlus(plus=1):
     global cell
     year, month = core.monthPlus(cell.year, cell.month, plus)
-    day = min(cell.day, getMonthLen(year, month, calTypes.primary))
+    day = min(cell.day, core.getMonthLen(year, month, calTypes.primary))
     cell = cellCache.getCellByDate(year, month, day)
 
 def yearPlus(plus=1):
     global cell
     year = cell.year + plus
     month = cell.month
-    day = min(cell.day, getMonthLen(year, month, calTypes.primary))
+    day = min(cell.day, core.getMonthLen(year, month, calTypes.primary))
     cell = cellCache.getCellByDate(year, month, day)
 
 getFont = lambda: list(fontCustom if fontCustomEnable else fontDefault)
@@ -404,12 +406,16 @@ def duplicateGroupTitle(group):
             return
         index += 1
 
+
 def init():
+    global todayCell, cell
     core.init()
     #### Load accounts, groups and trash? FIXME
     eventAccounts.load()
     eventGroups.load()
     eventTrash.load()
+    ####
+    todayCell = cell = cellCache.getTodayCell() ## FIXME
 
 
 
@@ -509,15 +515,6 @@ getEventTagsDict = lambda: dict([(tagObj.name, tagObj) for tagObj in eventTags])
 eventTagsDesc = dict([(t.name, t.desc) for t in eventTags])
 
 ###################
-for fname in os.listdir(join(srcDir, 'account')):
-    name, ext = splitext(fname)
-    if ext == '.py' and name != '__init__':
-        try:
-            __import__('scal2.account.%s'%name)
-        except:
-            myRaiseTback()
-#print('accounts', event_lib.classes.account.names)
-###########
 eventAccounts = event_lib.EventAccountsHolder()
 eventGroups = event_lib.EventGroupsHolder()
 eventTrash = event_lib.EventTrash()
@@ -550,14 +547,12 @@ reloadTrash = False
 
 
 ###################
-core.loadAllPlugins()## FIXME
-###################
 ## BUILD CACHE AFTER SETTING calTypes.primary
 maxDayCacheSize = 100 ## maximum size of cellCache (days number)
 maxWeekCacheSize = 12
 
 cellCache = CellCache()
-todayCell = cell = cellCache.getTodayCell() ## FIXME
+todayCell = cell = None
 ###########################
 autoLocale = True
 logo = '%s/starcal2.png'%pixDir

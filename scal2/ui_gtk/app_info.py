@@ -8,6 +8,7 @@ from scal2.ui_gtk import *
 
 
 def getDefaultAppCommand(fpath):
+    import gio
     mime_type = gio.content_type_guess(fpath)
     try:
         app = gio.app_info_get_all_for_type(mime_type)[0]

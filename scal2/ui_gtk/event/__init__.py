@@ -41,8 +41,9 @@ def makeWidget(obj):## obj is an instance of Event, EventRule, EventNotifier or 
 
 
 ### Load accounts, groups and trash? FIXME
-
-
-import scal2.ui_gtk.event.import_customday ## opens a dialog if neccessery
+from os.path import join, isfile
+from scal2.path import confDir
+if isfile(join(confDir, 'customday.xml')):
+    import scal2.ui_gtk.event.import_customday ## opens a dialog if neccessery
 
 

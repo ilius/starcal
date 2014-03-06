@@ -22,7 +22,7 @@ from time import time as now
 import sys, os, subprocess
 from io import StringIO
 from os.path import isfile, isdir, exists, dirname, join, split, splitext
-from pprint import pprint
+#from pprint import pprint
 
 from tzlocal import get_localzone
 
@@ -48,7 +48,7 @@ except NameError:
     __file__ = join(dirname(inspect.getfile(scal2)), 'core.py')
 
 
-VERSION = '2.3.2'
+VERSION = '2.3.3'
 BRANCH = join(rootDir, 'branch')
 APP_NAME = 'starcal2'
 APP_DESC = 'StarCalendar'
@@ -256,8 +256,8 @@ def validatePlugList():
             plugIndex.pop(i)
             m -= 1
 
-def loadAllPlugins():
-    #log.debug('----------------------- loadAllPlugins')
+def initPlugins():
+    #log.debug('----------------------- initPlugins')
     global allPlugList, plugIndex
     #exec(open(userPlugConf).read())## FIXME
     ## Assert that user configuarion for plugins is OK
@@ -288,6 +288,7 @@ def loadAllPlugins():
             #    myRaise(__file__)
     ## Assert again that final plugins are OK
     validatePlugList()
+    updatePlugins()
 
 def getHolidayPlugins():
     hPlugs = []
@@ -437,7 +438,7 @@ def openUrl(url):
 dataToJson =  lambda data: dataToCompactJson(data) if useCompactJson else dataToPrettyJson(data)
 
 def init():
-    loadAllPlugins()
+    initPlugins()
 
 ################################################################################
 #################### End of class and function defenitions #####################

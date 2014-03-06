@@ -25,6 +25,7 @@ depends+=('python-gobject')
 depends+=('python-gflags')
 depends+=('python-httplib2')
 depends+=('python-pytz')
+depends+=('python-dateutil')
 
 optdepends=()
 optdepends+=('python-igraph')

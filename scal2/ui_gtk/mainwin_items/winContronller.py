@@ -22,6 +22,8 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
         self.controller = controller
         CustomizableCalObj.initVars(self)
         self.build()
+        ###
+        self.show_all()
     def onClicked(self, gWin, event):
         raise NotImplementedError
     setImage = lambda self, imName: self.im.set_from_file('%s/wm/%s'%(pixDir, imName))
@@ -55,7 +57,6 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
         if event.button==1:
             self.onClicked(self.controller.gWin, event)
         return False
-    show = lambda self: self.show_all()
 
 class WinConButtonMin(WinConButton):
     _name = 'min'
@@ -127,6 +128,8 @@ class CalObj(gtk.HBox, CustomizableCalBox):
         self.set_property('can-focus', True)
         ##################
         self.gWin = ui.mainWin
+        if self.gWin:
+            self.gWin.winCon = self ## dirty FIXME
         ##gWin.connect('focus-in-event', self.windowFocusIn)
         ##gWin.connect('focus-out-event', self.windowFocusOut)
         self.winFocused = True

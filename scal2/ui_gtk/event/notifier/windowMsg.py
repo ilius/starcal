@@ -6,7 +6,7 @@ from scal2 import ui
 
 from scal2.ui_gtk import *
 
-class NotifierWidget(gtk.Entry):
+class WidgetClass(gtk.Entry):
     def __init__(self, notifier):
         self.notifier = notifier
         gtk.Entry.__init__(self)

@@ -18,7 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 
-import json, os, shutil
+import json, os
 from os.path import join, split, isdir, isfile, dirname, splitext
 from os import listdir
 import math
@@ -29,7 +29,7 @@ from scal2.lib import OrderedDict
 
 from .path import *
 
-from scal2.utils import printError, ifloor, iceil, findNearestIndex
+from scal2.utils import printError, ifloor, iceil, findNearestIndex, myRaiseTback
 from scal2.os_utils import makeDir
 from scal2.interval_utils import *
 from scal2.time_utils import *
@@ -2387,7 +2387,8 @@ class EventGroup(EventContainer):
         'endJd',
         'remoteIds',
         'remoteSyncData',
-        'eventIdByRemoteIds',
+        #'eventIdByRemoteIds',
+        'deletedRemoteEvents',
         ## 'defaultEventType'
     )
     jsonParams = (
@@ -2409,7 +2410,8 @@ class EventGroup(EventContainer):
         'endJd',
         'remoteIds',
         'remoteSyncData',
-        'eventIdByRemoteIds',
+        #'eventIdByRemoteIds',
+        'deletedRemoteEvents',
         'idList',
     )
     showInCal = lambda self: self.showInDCal or self.showInWCal or self.showInMCal
@@ -2521,7 +2523,8 @@ class EventGroup(EventContainer):
         self.remoteIds = None## (accountId, groupId)
         ## remote groupId can be an integer or string or unicode (depending on remote account type)
         self.remoteSyncData = {}
-        self.eventIdByRemoteIds = {}
+        #self.eventIdByRemoteIds = {}
+        self.deletedRemoteEvents = {}
     def save(self):
         if self.id is None:
             self.setId()
@@ -2554,7 +2557,11 @@ class EventGroup(EventContainer):
     def getData(self):
         data = EventContainer.getData(self)
         data['type'] = self.name
-        for attr in ('remoteSyncData', 'eventIdByRemoteIds'):
+        for attr in (
+            'remoteSyncData',
+            #'eventIdByRemoteIds',
+            'deletedRemoteEvents',
+        ):
             if isinstance(data[attr], dict):
                 data[attr] = sorted(data[attr].items())
         return data
@@ -2563,7 +2570,13 @@ class EventGroup(EventContainer):
             data['showInDCal'] = data['showInWCal'] = data['showInMCal'] = data['showInCal']
             del data['showInCal']
         EventContainer.setData(self, data)
-        for attr in ('remoteSyncData', 'eventIdByRemoteIds'):
+        if isinstance(self.remoteIds, list):
+            self.remoteIds = tuple(self.remoteIds)
+        for attr in (
+            'remoteSyncData',
+            #'eventIdByRemoteIds',
+            'deletedRemoteEvents',
+        ):
             value = getattr(self, attr)
             if isinstance(value, list):
                 valueDict = {}
@@ -2573,22 +2586,7 @@ class EventGroup(EventContainer):
                     if not isinstance(item[0], (tuple, list)):
                         continue
                     valueDict[tuple(item[0])] = item[1]
-                setattr(self, attr, value)
-        '''
-        if 'remoteSyncData' in data:
-            self.remoteSyncData = {}
-            for remoteIds, syncData in data['remoteSyncData']:
-                if remoteIds is None:
-                    continue
-                if isinstance(syncData, (list, tuple)):
-                    syncData = syncData[1]
-                self.remoteSyncData[tuple(remoteIds)] = syncData
-        if 'eventIdByRemoteIds' in data:
-            self.eventIdByRemoteIds = {}
-            for remoteIds, eventId in data['eventIdByRemoteIds']:
-                self.eventIdByRemoteIds[tuple(remoteIds)] = eventId
-            #print(self.eventIdByRemoteIds)
-        '''
+                setattr(self, attr, valueDict)
         if 'id' in data:
             self.setId(data['id'])
         self.startJd = int(self.startJd)
@@ -2628,10 +2626,12 @@ class EventGroup(EventContainer):
             del self.eventCache[event.id]
         except:
             pass
-        try:
-            del self.eventIdByRemoteIds[event.remoteIds]
-        except:
-            pass
+        if event.remoteIds:
+            self.deletedRemoteEvents[event.id] = (now(),) + event.remoteIds
+        #try:
+        #    del self.eventIdByRemoteIds[event.remoteIds]
+        #except:
+        #    pass
         self.occurCount -= self.occur.delete(event.id)
         return index
     def removeAll(self):## clearEvents or excludeAll or removeAll FIXME
@@ -2646,8 +2646,8 @@ class EventGroup(EventContainer):
         EventContainer.postAdd(self, event)
         if len(self.eventCache) < self.eventCacheSize:
             self.eventCache[event.id] = event
-        if event.remoteIds:
-            self.eventIdByRemoteIds[event.remoteIds] = event.id
+        #if event.remoteIds:
+        #    self.eventIdByRemoteIds[event.remoteIds] = event.id
         ## need to update self.occur?
         ## its done in event.afterModify() right? not when moving event from another group
         if self.enable:
@@ -2786,7 +2786,12 @@ class EventGroup(EventContainer):
                     vevent += '%s:%s\n'%(key, value)
                 vevent += 'END:VEVENT\n'
                 fp.write(vevent)
-    importExportExclude = 'remoteIds', 'remoteSyncData', 'eventIdByRemoteIds'
+    importExportExclude = (
+        'remoteIds',
+        'remoteSyncData',
+        #'eventIdByRemoteIds',
+        'deletedRemoteEvents',
+    )
     def exportData(self):
         data = self.getData()
         for attr in self.importExportExclude:
@@ -3763,13 +3768,26 @@ class EventAccountsHolder(JsonObjectsHolder):
                     log.error('error while loading account file %r: no such file'%objFile)## FIXME
                     continue
                 data = jsonToData(open(objFile).read())
-                data['id'] = _id ## FIXME
+                name = data['type']
                 try:
-                    cls = classes.account.byName[data['type']]
+                    cls = classes.account.byName[name]
                 except KeyError:## FIXME
-                    log.error('error while loading account file %r: no account type "%s"'%(objFile, data['type']))
+                    try:
+                        __import__('scal2.account.%s'%name)
+                    except ImportError:
+                        myRaiseTback()
+                        return
+                try:
+                    cls = classes.account.byName[name]
+                except KeyError:## FIXME
+                    log.error('error while loading account file %r: no account type "%s"'%(objFile, name))
                     return
-                obj = cls(_id)
+                try:
+                    obj = cls(_id)
+                except Exception as e:
+                    log.error('error while creating account object (id=%s): %s'%(_id, e))
+                    return
+                data['id'] = _id ## FIXME
                 obj.setData(data)
                 self.append(obj)
 
@@ -3784,6 +3802,7 @@ class EventTrash(EventContainer):
         self.icon = join(pixDir, 'trash.png')
         self.enable = False
     def delete(self, eid):
+        from shutil import rmtree
         ## different from EventContainer.remove
         ## remove() only removes event from this group, but event file and data still available
         ## and probably will be added to another event container
@@ -3792,16 +3811,17 @@ class EventTrash(EventContainer):
             raise TypeError("delete takes event ID that is integer")
         assert eid in self.idList
         try:
-            shutil.rmtree(join(eventsDir, str(eid)))
+            rmtree(join(eventsDir, str(eid)))
         except:
             myRaise()
         else:
             self.idList.remove(eid)
     def empty(self):
+        from shutil import rmtree
         idList2 = self.idList[:]
         for eid in self.idList:
             try:
-                shutil.rmtree(join(eventsDir, str(eid)))
+                rmtree(join(eventsDir, str(eid)))
             except:
                 myRaise()
             idList2.remove(eid)

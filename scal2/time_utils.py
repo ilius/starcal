@@ -52,17 +52,21 @@ from scal2.utils import ifloor, iceil
 def getUtcOffsetByEpoch(epoch, tz=None):
     if not tz:
         tz = get_localzone()
-    try:
-        return tz.utcoffset(datetime.fromtimestamp(epoch)).total_seconds()
-    except pytz.exceptions.AmbiguousTimeError:## FIXME
-        #d = datetime.fromtimestamp(epoch+3600)
-        #print('AmbiguousTimeError', d.year, d.month, d.day, d.hour, d.minute, d.second)
-        return tz.utcoffset(datetime.fromtimestamp(epoch+3600)).total_seconds()
-    except (
-        ValueError,
-        OverflowError,
-    ):
-        return tz._utcoffset.total_seconds()
+    delta = 0
+    while True:
+        try:
+            return tz.utcoffset(datetime.fromtimestamp(epoch + delta)).total_seconds()
+        except pytz.exceptions.AmbiguousTimeError:## FIXME
+            #d = datetime.fromtimestamp(epoch+3600)
+            #print('AmbiguousTimeError', d.year, d.month, d.day, d.hour, d.minute, d.second)
+            delta += 3600
+            print('delta = %s'%delta)
+        except (
+            ValueError,
+            OverflowError,
+        ):
+            return tz._utcoffset.total_seconds()
+
 
 def getUtcOffsetByDateSec(year, month, day, tz=None):
     if not tz:

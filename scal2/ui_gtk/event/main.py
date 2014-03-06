@@ -19,7 +19,7 @@
 
 from time import time as now
 
-import os, sys, shlex, _thread
+import os, sys
 from os.path import join, dirname, split, splitext
 
 from scal2.path import *
@@ -38,6 +38,7 @@ from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import set_tooltip, dialog_add_button, confirm, showError
 from scal2.ui_gtk.utils import toolButtonFromStock, labelImageMenuItem, labelStockMenuItem
 from scal2.ui_gtk.utils import pixbufFromFile, rectangleContainsPoint, getStyleColor
+from scal2.ui_gtk.utils import showError, showInfo
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk import gtk_ud as ud
@@ -458,6 +459,20 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                 menu.add(pasteItem)
                 pasteItem.set_sensitive(self.canPasteToGroup(group))
                 ##
+                if group.remoteIds:
+                    aid, remoteGid = group.remoteIds
+                    account = ui.eventAccounts[aid]
+                    if account.enable:
+                        menu.add(gtk.SeparatorMenuItem())
+                        menu.add(labelStockMenuItem(
+                            'Synchronize',
+                            gtk.STOCK_CONNECT,## or gtk.STOCK_REFRESH FIXME
+                            self.syncGroupFromMenu,
+                            path,
+                            account,
+                        ))
+                    #else:## FIXME
+                ##
                 menu.add(gtk.SeparatorMenuItem())
                 #menu.add(labelStockMenuItem(
                 #    'Add New Group',
@@ -527,15 +542,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                 )
                 menu.add(convertItem)
                 convertItem.set_sensitive(bool(group.idList))
-                ###
-                #if group.remoteIds:
-                #    account = ui.eventAccounts[group.remoteIds[0]]
-                #    menu.add(labelImageMenuItem(
-                #    _('Synchronize with %s') % account.title,
-                #    gtk.STOCK_REFRESH,
-                #    self.syncGroup,
-                #    path,
-                #))
                 ###
                 for newGroupType in group.canConvertTo:
                     menu.add(labelStockMenuItem(
@@ -908,6 +914,35 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         )
         for event in newGroup:
             self.trees.append(newGroupIter, self.getEventRow(event))
+    def syncGroupFromMenu(self, menu, path, account):
+        index, = path
+        group, = self.getObjsByPath(path)
+        if not group.remoteIds:
+            return
+        aid, remoteGid = group.remoteIds
+        info = {
+            'group': group.title,
+            'account': account.title,
+        }
+        account.showError = showError
+        while gtk.events_pending():
+            gtk.main_iteration_do(False)
+        #try:
+        self.waitingDo(account.sync, group, remoteGid)
+        '''
+        except Exception as e:
+            showError(
+                _('Error in synchronizing group \"%(group)s\" with account \"%(account)s\"')%info
+                    + '\n' + str(e),
+                self,
+            )
+        else:
+            showInfo(
+                _('Successful synchronizing of group \"%(group)s\" with account \"%(account)s\"')%info,
+                self,
+            )
+        '''
+        self.reloadGroupEvents(group.id)
     duplicateGroupFromMenu = lambda self, menu, path: self.duplicateGroup(path)
     duplicateGroupWithEventsFromMenu = lambda self, menu, path: \
         self.duplicateGroupWithEvents(path)

@@ -15,6 +15,7 @@ class CalObj(gtk.ProgressBar, CustomizableCalObj):
         gtk.ProgressBar.__init__(self)
         self.initVars()
     def onDateChange(self, *a, **kw):
+        from scal2.season import getSeasonNamePercentFromJd
         CustomizableCalObj.onDateChange(self, *a, **kw)
         name, frac = getSeasonNamePercentFromJd(ui.cell.jd)
         if rtl:
@@ -24,7 +25,7 @@ class CalObj(gtk.ProgressBar, CustomizableCalObj):
         self.set_text(
             _(name) +
             ' - ' +
-            locale_man.textNumEncode(
+            textNumEncode(
                 percent,
                 changeDot=True,
             )

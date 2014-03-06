@@ -62,11 +62,31 @@ def getJdByIcsDate(dateStr):
     return to_jd(tm.tm_year, tm.tm_mon, tm.tm_mday, DATE_GREG)
 
 def getEpochByIcsTime(tmStr):
+    ## python-dateutil
+    from dateutil.parser import parse
+    return int(
+        mktime(
+            parse(tmStr).timetuple()
+        )
+    )
+    
+
+'''
+def getEpochByIcsTime(tmStr):
+    utcOffset = 0
+    if 'T' in tmStr:
+        if '+' in tmStr or '-' in tmStr:
+            format = '%Y%m%dT%H%M%S%z' ## not working FIXME
+        else:
+            format = '%Y%m%dT%H%M%S'
+    else:
+        format = '%Y%m%d'
     try:
-        tm = strptime(tmStr, icsTmFormat)
-    except:
-        tm = strptime(tmStr, '%Y%m%d')
+        tm = strptime(tmStr, format)
+    except ValueError as e:
+        raise ValueError('getEpochByIcsTime: Bad ics time format "%s"'%tmStr)
     return int(mktime(tm))
+'''
 
 def splitIcsValue(value):
     data = []

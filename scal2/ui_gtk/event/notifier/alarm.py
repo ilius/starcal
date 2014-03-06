@@ -10,7 +10,7 @@ from scal2.ui_gtk import *
 #from scal2.ui_gtk import player
 
 
-#class NotifierWidget(player.PlayerBox):
+#class WidgetClass(player.PlayerBox):
 #    def __init__(self, notifier):
 #        self.notifier = notifier
 #        player.PlayerBox.__init__(self)
@@ -20,7 +20,7 @@ from scal2.ui_gtk import *
 #    def updateVars(self):
 #        self.notifier.alarmSound = self.getFile()
 
-class NotifierWidget(gtk.FileChooserButton):
+class WidgetClass(gtk.FileChooserButton):
     def __init__(self, notifier):
         self.notifier = notifier
         gtk.FileChooserButton.__init__(self, _('Select Sound'))
@@ -42,6 +42,6 @@ def notify(notifier, finishFunc):
     finishFunc()
     Popen([notifier.playerCmd, notifier.alarmSound], stdout=PIPE, stderr=PIPE)
 
-## event_lib.AlarmNotifier.WidgetClass = AlarmNotifierWidget
+## event_lib.AlarmNotifier.WidgetClass = AlarmWidgetClass
 ## event_lib.AlarmNotifier.notify = notify
 

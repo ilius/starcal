@@ -76,10 +76,21 @@ class BaseCalObj(Object):
     def appendItem(self, item):
         self.items.append(item)
         self.connectItem(item)
+    def replaceItem(self, itemIndex, item):
+        self.items[itemIndex] = item
+        self.connectItem(item)
     def moveItemUp(self, i):
         self.items.insert(i-1, self.items.pop(i))
     def addItemWidget(self, i):
         pass
+    def showHide(self):
+        try:
+            self.set_visible(self.enable)
+        except AttributeError:
+            pass
+        for item in self.items:
+            item.showHide()
+
 
 class IntegatedWindowList(BaseCalObj):
     _name = 'windowList'
