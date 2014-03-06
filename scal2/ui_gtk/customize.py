@@ -23,9 +23,7 @@ from scal2.core import myRaise
 from scal2.locale_man import tr as _
 from scal2 import ui
 
-from gi.repository import GObject
 from gi.overrides.GObject import Object
-from gi.repository import GdkPixbuf
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
