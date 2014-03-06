@@ -3785,7 +3785,11 @@ class EventAccountsHolder(JsonObjectsHolder):
                 except KeyError:## FIXME
                     log.error('error while loading account file %r: no account type "%s"'%(objFile, name))
                     return
-                obj = cls(_id)
+                try:
+                    obj = cls(_id)
+                except Exception as e:
+                    log.error('error while creating account object (id=%s): %s'%(_id, e))
+                    return
                 data['id'] = _id ## FIXME
                 obj.setData(data)
                 self.append(obj)
