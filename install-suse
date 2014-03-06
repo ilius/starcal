@@ -37,6 +37,7 @@ for pkg in \
 "python-gflags" \
 "python-httplib2" \
 "python-pytz" \
+"python-dateutil" \
 ; do
     requires_str+="Requires: $pkg
 "
