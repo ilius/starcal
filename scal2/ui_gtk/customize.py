@@ -23,6 +23,8 @@ from scal2.core import myRaise
 from scal2.locale_man import tr as _
 from scal2 import ui
 
+from gtk import Object
+
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, dialog_add_button, tree_path_split
@@ -42,14 +44,14 @@ if 'mainMenu' not in dict(ud.wcalToolbarData['items']):
 
 
 @registerSignals
-class DummyCalObj(gtk.Object):
+class DummyCalObj(Object):
     loaded = False
     signals = [
         ('config-change', []),
         ('date-change', []),
     ]
     def __init__(self, name, desc, pkg, customizable):
-        gtk.Object.__init__(self)
+        Object.__init__(self)
         self.enable = False
         self._name = name
         self.desc = desc

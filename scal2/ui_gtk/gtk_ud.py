@@ -31,13 +31,15 @@ from scal2 import core
 from scal2 import ui
 from scal2.format_time import compileTmFormat
 
+from gtk import Object
+
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.font_utils import gfontDecode, pfontEncode
 
 
 @registerSignals
-class BaseCalObj(gtk.Object):
+class BaseCalObj(Object):
     _name = ''
     desc = ''
     loaded = True
@@ -94,7 +96,7 @@ class IntegatedWindowList(BaseCalObj):
     _name = 'windowList'
     desc = 'Window List'
     def __init__(self):
-        gtk.Object.__init__(self)
+        Object.__init__(self)
         self.initVars()
     def onConfigChange(self, *a, **ka):
         ui.cellCache.clear()
