@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
 
+from scal2 import core
+from scal2.locale_man import tr as _
+
 from scal2.ui_gtk.event.account import *
 
 class WidgetClass(BaseWidgetClass):
