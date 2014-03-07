@@ -3648,7 +3648,7 @@ class EventGroupsHolder(JsonObjectsHolder):
                     log.error('error while loading group file %r: no such file'%objFile)## FIXME
                     continue
                 data = jsonToData(open(objFile).read())
-                data['id'] = _id ## FIXME
+                data['id'] = _id
                 obj = self.appendNew(data)
                 if obj.enable:
                     obj.updateOccurrence()
@@ -3761,38 +3761,70 @@ class EventGroupsHolder(JsonObjectsHolder):
 
 class EventAccountsHolder(JsonObjectsHolder):
     file = join(confDir, 'event', 'account_list.json')
+    def loadClass(self, name):
+        try:
+            return classes.account.byName[name]
+        except KeyError:## FIXME
+            try:
+                __import__('scal2.account.%s'%name)
+            except ImportError:
+                myRaiseTback()
+            else:
+                try:
+                    return classes.account.byName[name]
+                except KeyError:## FIXME
+                    pass
+        log.error('error while loading account: no account type "%s"'%name)
+    def loadData(self, _id):
+        objFile = join(accountsDir, '%s.json'%_id)
+        if not isfile(objFile):
+            log.error('error while loading account file %r: no such file'%objFile)## FIXME
+        data = jsonToData(open(objFile).read())
+        #if data['id'] != _id:
+        #    log.error('attribute "id" in json file does not match the file name: %s'%objFile)
+        #del data['id']
+        return data
     def load(self):
         #print('------------ EventAccountsHolder.load')
         self.clear()
         if isfile(self.file):
             for _id in jsonToData(open(self.file).read()):
-                objFile = join(accountsDir, '%s.json'%_id)
-                if not isfile(objFile):
-                    log.error('error while loading account file %r: no such file'%objFile)## FIXME
+                data = self.loadData(_id)
+                if not data:
                     continue
-                data = jsonToData(open(objFile).read())
                 name = data['type']
-                try:
-                    cls = classes.account.byName[name]
-                except KeyError:## FIXME
-                    try:
-                        __import__('scal2.account.%s'%name)
-                    except ImportError:
-                        myRaiseTback()
-                        return
-                try:
-                    cls = classes.account.byName[name]
-                except KeyError:## FIXME
-                    log.error('error while loading account file %r: no account type "%s"'%(objFile, name))
-                    return
-                try:
+                if data['enable']:
+                    cls = self.loadClass(name)
+                    if cls is None:
+                        continue
                     obj = cls(_id)
-                except Exception as e:
-                    log.error('error while creating account object (id=%s): %s'%(_id, e))
-                    return
-                data['id'] = _id ## FIXME
-                obj.setData(data)
+                    #data['id'] = _id ## FIXME
+                    obj.setData(data)
+                else:
+                    obj = DummyAccount(
+                        name,
+                        _id,
+                        data['title'],
+                    )
                 self.append(obj)
+    def getLoadedObj(self, obj):
+        _id = obj.id
+        data = self.loadData(_id)
+        name = data['type']
+        cls = self.loadClass(name)
+        if cls is None:
+            return
+        obj = cls(_id)
+        data = self.loadData(_id)
+        obj.setData(data)
+        return obj
+    def replaceDummyObj(self, obj):
+        _id = obj.id
+        index = self.idList.index(_id)
+        obj = self.getLoadedObj(obj)
+        self.byId[_id] = obj
+        return obj
+
 
 
 class EventTrash(EventContainer):
@@ -3837,8 +3869,29 @@ class EventTrash(EventContainer):
             self.save()
 
 
+class DummyAccount:
+    loaded = False
+    enable = False
+    params = ()
+    jsonParams = ()
+    accountsDesc = {
+        'google': _('Google'),
+    }
+    def __init__(self, _type, _id, title):
+        self.name = _type
+        self.desc = self.accountsDesc[_type]
+        self.id = _id
+        self.title = title 
+    def save():
+        pass
+    def load():
+        pass
+    def getLoadedObj(self):
+        pass
+
 ## Should not be registered, or instantiate directly
 class Account(JsonSObjBase):
+    loaded = True
     name = ''
     desc = ''
     params = (
