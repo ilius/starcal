@@ -1114,6 +1114,9 @@ class PrefDialog(gtk.Dialog):
     def editAccount(self, index):
         accountId = self.accountsTreestore[index][0]
         account = ui.eventAccounts[accountId]
+        if not account.loaded:
+            showError(_('Account must be enabled before editing'))
+            return
         account = AccountEditorDialog(account).run()
         if account is None:
             return
@@ -1196,6 +1199,11 @@ class PrefDialog(gtk.Dialog):
         ###
         accountId = self.accountsTreestore[index][0]
         account = ui.eventAccounts[accountId]
+        if not account.loaded:## it's a dummy account
+            if active:
+                account = ui.eventAccounts.replaceDummyObj(account)
+                if account is None:
+                    return
         account.enable = active
         account.save()
         ###

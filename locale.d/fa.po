@@ -1866,6 +1866,10 @@ msgid "Edit Account"
 msgstr ""
 "ویرایش حساب"
 
+msgid "Account must be enabled before editing"
+msgstr ""
+"برای ویرایش حساب، ابتدا باید آن را فعال کنید"
+
 msgid "Add New Account"
 msgstr ""
 "افزودن حساب جدید"
