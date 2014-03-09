@@ -3794,7 +3794,11 @@ class EventAccountsHolder(JsonObjectsHolder):
                     cls = self.loadClass(name)
                     if cls is None:
                         continue
-                    obj = cls(_id)
+                    try:
+                        obj = cls(_id)
+                    except:
+                        myRaise()
+                        continue
                     #data['id'] = _id ## FIXME
                     obj.setData(data)
                 else:
