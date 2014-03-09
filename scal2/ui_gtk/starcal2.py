@@ -61,14 +61,14 @@ from gi.repository import GdkPixbuf
 from gi.repository import Gio
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.decorators import *
+from scal2.ui_gtk.decorators import registerSignals
 from scal2.ui_gtk.utils import *
 #from scal2.ui_gtk.color_utils import rgbToGdkColor
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 #from ui_gtk.mywidgets2.multi_spin_button import DateButtonOption
 from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
-from scal2.ui_gtk.customize import DummyCalObj, CustomizableCalBox, CustomizeDialog
+from scal2.ui_gtk.customize import DummyCalObj, CustomizableCalBox
 
 
 ui.uiName = 'gtk'
@@ -836,6 +836,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         openWindow(self.dayInfoDialog)
     def customizeDialogCreate(self):
         if not self.customizeDialog:
+            from scal2.ui_gtk.customize_dialog import CustomizeDialog
             self.customizeDialog = CustomizeDialog(self.vbox)
     def switchWcalMcal(self, widget=None):
         self.customizeDialogCreate()
