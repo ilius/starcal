@@ -118,11 +118,6 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
         self.connect('button-press-event', self.buttonPress)
         self.active = active
         self.setActive(active)
-        ####### update menu width
-        if rtl:
-            get_menu_pos = lambda widget: (ud.screenW, 0, True)
-            menu.popup(None, None, get_menu_pos, 3, 0)
-            menu.hide()
     def setActive(self, active):
     ## (Performance) update menu here, or make menu entirly before popup ????????????????
         s = getMonthName(self.mode, active+1)
