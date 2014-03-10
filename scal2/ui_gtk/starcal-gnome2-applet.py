@@ -112,13 +112,13 @@ class StarCalApplet(MainWin):
         #self.applet.set_background_widget(self.applet)#????????
         self.trayPix = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, ui.traySize, ui.traySize)
     def trayClicked(self, toggle):
-        ##print(tuple(self.menu.get_allocation()))
         if toggle.get_active():
             if (ui.winX, ui.winY) == (-1, -1):
                 try:
                     x0, y0 = self.applet.get_window().get_origin()
-                    ui.winX = x0 + (self.applet.get_allocation().width-ui.winWidth)/2
-                    ui.winY = y0 + self.applet.get_allocation().height - 3
+                    width, height = self.applet.size_request()
+                    ui.winX = x0 + (width-ui.winWidth)/2
+                    ui.winY = y0 + height - 3
                 except:
                     core.myRaise(__file__)
             self.move(ui.winX, ui.winY)

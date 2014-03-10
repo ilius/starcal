@@ -166,12 +166,11 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
         if event.button==3:
             x, y = self.get_window().get_origin()
             y += self.get_allocation().height
-            if rtl:
-                mw = self.menu.get_allocation().width
-                #print('menu.get_allocation().width', mw)
-                if mw>1:
-                    x -= (mw - self.get_allocation().width)
+            #if rtl:
+            #    x = x - self.menu.size_request()[0] + self.size_request()[0]
             #x -= 7 ## ????????? because of menu padding
+            ## align menu to center:
+            x -= int((self.menu.size_request()[0] - self.size_request()[0])//2)
             self.menu.popup(None, None, lambda widget: (x, y, True), event.button, event.time)
             ui.updateFocusTime()
             return True
@@ -274,7 +273,9 @@ class IntLabel(BaseLabel):
             self.updateMenu()
             x, y = self.get_window().get_origin()
             y += self.get_allocation().height
-            x -= 7 ## ????????? because of menu padding
+            #x -= 7 ## ????????? because of menu padding
+            ## align menu to center:
+            x -= int((self.menu.size_request()[0] - self.size_request()[0])//2)
             self.menu.popup(None, None, lambda widget: (x, y, True), event.button, event.time)
             ui.updateFocusTime()
             return True

@@ -484,7 +484,6 @@ class CalObj(gtk.Widget, CalBase):
         status = getCurrentMonthStatus()
         if yPos == -1 or xPos == -1:
             self.emit('popup-main-menu', event.time, event.x, event.y)
-            #self.menuMainWidth = self.menuMain.get_allocation().width ## menu.get_allocation()[3]
         elif yPos >= 0 and xPos >= 0:
             cell = status[yPos][xPos]
             self.changeDate(*cell.dates[calTypes.primary])
