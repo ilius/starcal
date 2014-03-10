@@ -87,8 +87,8 @@ mainWinItemsDesc = {
 
 
 
-def show_event(widget, event):
-    print(type(widget), event.type.value_name, event.get_value())#, event.send_event
+#def show_event(widget, event):
+#    print(type(widget), event.type.value_name, event.get_value())#, event.send_event
 
 
 def liveConfChanged():
