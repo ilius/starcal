@@ -307,8 +307,11 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         self.connect('delete-event', self.onDeleteEvent)
         #########################################
         for plug in core.allPlugList:
-            if plug.external and hasattr(plug, 'set_dialog'):
-                plug.set_dialog(self)
+            if plug.external:
+                try:
+                    plug.set_dialog(self)
+                except AttributeError:
+                    pass
         ###########################
         self.onConfigChange()
         #ud.rootWindow.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
@@ -492,8 +495,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         x = wx+dx
         y = wy+dy
         if rtl:
-            mw = menu.size_request()[0]
-            x -= mw
+            x -= menu.size_request()[0]
         ####
         menu.popup(None, None, lambda m: (x, y, True), 3, etime)
         ui.updateFocusTime()
@@ -535,8 +537,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         x = wx+dx
         y = wy+dy
         if rtl:
-            mw = menu.size_request()[0]
-            x -= mw
+            x -= menu.size_request()[0]
         menu.popup(None, None, lambda m: (x, y, True), 3, etime)
         ui.updateFocusTime()
     def addToGroupFromMenu(self, menu, group, eventType):
