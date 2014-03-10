@@ -283,44 +283,21 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         self.selectDateDialog = None
         ############### Building About Dialog
         self.aboutDialog = None
-        ########################################### Building main menu
-        menu = gtk.Menu()
-        ####
-        item = gtk.ImageMenuItem(_('Resize'))
-        item.set_image(imageFromFile('resize.png'))
-        item.connect('button-press-event', self.startResize)
-        menu.add(item)
-        ####
+        ###############
+        self.menuMain = None
+        #####
         check = gtk.CheckMenuItem(label=_('_On Top'))
         check.connect('activate', self.keepAboveClicked)
-        menu.add(check)
         check.set_active(ui.winKeepAbove)
         self.set_keep_above(ui.winKeepAbove)
         self.checkAbove = check
         #####
         check = gtk.CheckMenuItem(label=_('_Sticky'))
         check.connect('activate', self.stickyClicked)
-        menu.add(check)
         check.set_active(ui.winSticky)
         if ui.winSticky:
             self.stick()
         self.checkSticky = check
-        #####
-        menu.add(labelStockMenuItem('Select _Today', gtk.STOCK_HOME, self.goToday))
-        menu.add(labelStockMenuItem('Select _Date...', gtk.STOCK_INDEX, self.selectDateShow))
-        menu.add(labelStockMenuItem('Day Info', gtk.STOCK_INFO, self.dayInfoShow))
-        menu.add(labelStockMenuItem('_Customize', gtk.STOCK_EDIT, self.customizeShow))
-        menu.add(labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
-        #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, ui.addCustomEvent))
-        menu.add(labelStockMenuItem('_Event Manager', gtk.STOCK_ADD, self.eventManShow))
-        menu.add(labelImageMenuItem('Time Line', 'timeline-18.png', self.timeLineShow))
-        #menu.add(labelImageMenuItem('Week Calendar', 'weekcal-18.png', self.weekCalShow))
-        menu.add(labelStockMenuItem(_('Export to %s')%'HTML', gtk.STOCK_CONVERT, self.exportClicked))
-        menu.add(labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
-        if self.trayMode!=1:
-            menu.add(labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit))
-        menu.show_all()
-        self.menuMain = menu
         ############################################################
         self.trayInit()
         listener.dateChange.add(self)
@@ -400,6 +377,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         b = event.button
         #print('buttonPress', b)
         if b==3:
+            self.menuMainCreate()
             self.menuMain.popup(None, None, None, 3, event.time)
             ui.updateFocusTime()
         elif b==1:
@@ -407,7 +385,8 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             self.begin_move_drag(event.button, x, y, event.time)
         return False
     def startResize(self, widget, event):
-        self.menuMain.hide()
+        if self.menuMain:
+            self.menuMain.hide()
         x, y, mask = ud.rootWindow.get_pointer()
         self.begin_resize_drag(gdk.WINDOW_EDGE_SOUTH_EAST, event.button, x, y, event.time)
         return True
@@ -519,7 +498,36 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         ####
         menu.popup(None, None, lambda m: (x, y, True), 3, etime)
         ui.updateFocusTime()
+    def menuMainCreate(self):
+        if self.menuMain:
+            return
+        menu = gtk.Menu()
+        ####
+        item = gtk.ImageMenuItem(_('Resize'))
+        item.set_image(imageFromFile('resize.png'))
+        item.connect('button-press-event', self.startResize)
+        menu.add(item)
+        #######
+        menu.add(self.checkAbove)
+        menu.add(self.checkSticky)
+        #######
+        menu.add(labelStockMenuItem('Select _Today', gtk.STOCK_HOME, self.goToday))
+        menu.add(labelStockMenuItem('Select _Date...', gtk.STOCK_INDEX, self.selectDateShow))
+        menu.add(labelStockMenuItem('Day Info', gtk.STOCK_INFO, self.dayInfoShow))
+        menu.add(labelStockMenuItem('_Customize', gtk.STOCK_EDIT, self.customizeShow))
+        menu.add(labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
+        #menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, ui.addCustomEvent))
+        menu.add(labelStockMenuItem('_Event Manager', gtk.STOCK_ADD, self.eventManShow))
+        menu.add(labelImageMenuItem('Time Line', 'timeline-18.png', self.timeLineShow))
+        #menu.add(labelImageMenuItem('Week Calendar', 'weekcal-18.png', self.weekCalShow))
+        menu.add(labelStockMenuItem(_('Export to %s')%'HTML', gtk.STOCK_CONVERT, self.exportClicked))
+        menu.add(labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
+        if self.trayMode!=1:
+            menu.add(labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit))
+        menu.show_all()
+        self.menuMain = menu
     def popupMenuMain(self, widget, etime, x, y):
+        self.menuMainCreate()
         if etime == 0:
             etime = gtk.get_current_event_time()
         menu = self.menuMain
