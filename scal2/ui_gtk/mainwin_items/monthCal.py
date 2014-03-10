@@ -483,7 +483,7 @@ class CalObj(gtk.Widget, CalBase):
                 break
         status = getCurrentMonthStatus()
         if yPos == -1 or xPos == -1:
-            self.emit('popup-menu-main', event.time, event.x, event.y)
+            self.emit('popup-main-menu', event.time, event.x, event.y)
             #self.menuMainWidth = self.menuMain.get_allocation().width ## menu.get_allocation()[3]
         elif yPos >= 0 and xPos >= 0:
             cell = status[yPos][xPos]
@@ -491,8 +491,8 @@ class CalObj(gtk.Widget, CalBase):
             if event.type==gdk._2BUTTON_PRESS:
                 self.emit('2button-press')
             if b == 3 and cell.month == ui.cell.month:## right click on a normal cell
-                #self.emit('popup-menu-cell', event.time, *self.getCellPos())
-                self.emit('popup-menu-cell', event.time, event.x, event.y)
+                #self.emit('popup-cell-menu', event.time, *self.getCellPos())
+                self.emit('popup-cell-menu', event.time, event.x, event.y)
         return True
     def calcCoord(self):## calculates coordidates (x and y of cells centers)
         w = self.get_allocation().width
@@ -550,9 +550,9 @@ class CalObj(gtk.Widget, CalBase):
         elif kname in ('f10', 'm'):
             if event.state & gdk.SHIFT_MASK:
                 # Simulate right click (key beside Right-Ctrl)
-                self.emit('popup-menu-cell', event.time, *self.getCellPos())
+                self.emit('popup-cell-menu', event.time, *self.getCellPos())
             else:
-                self.emit('popup-menu-main', event.time, *self.getMainMenuPos())
+                self.emit('popup-main-menu', event.time, *self.getMainMenuPos())
         else:
             return False
         return True

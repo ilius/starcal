@@ -450,8 +450,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         menu2.show_all()
         addToItem.set_submenu(menu2)
         return addToItem
-    def popupMenuCell(self, widget, etime, x, y):
-        #print('popupMenuCell', widget._name)
+    def menuCellPopup(self, widget, etime, x, y):
         menu = gtk.Menu()
         ####
         menu.add(labelStockMenuItem('_Copy Date', gtk.STOCK_COPY, self.copyDate))
@@ -526,7 +525,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             menu.add(labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit))
         menu.show_all()
         self.menuMain = menu
-    def popupMenuMain(self, widget, etime, x, y):
+    def menuMainPopup(self, widget, etime, x, y):
         self.menuMainCreate()
         if etime == 0:
             etime = gtk.get_current_event_time()

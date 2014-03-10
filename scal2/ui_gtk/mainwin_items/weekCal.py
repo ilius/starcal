@@ -263,7 +263,7 @@ class MainMenuToolbarItem(ToolbarItem):
     def onClicked(self, widget=None):
         x, y = self.getMenuPos()
         self.get_parent().get_parent().emit(
-            'popup-menu-main',
+            'popup-main-menu',
             0,
             x,
             y,
@@ -901,7 +901,7 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         if event.type==gdk._2BUTTON_PRESS:
             self.emit('2button-press')
         if b == 3:
-            self.emit('popup-menu-cell', event.time, x, y)
+            self.emit('popup-cell-menu', event.time, x, y)
         return True
     def keyPress(self, arg, event):
         if CalBase.keyPress(self, arg, event):
@@ -920,9 +920,9 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         elif kname in ('f10', 'm'):
             if event.state & gdk.SHIFT_MASK:
                 # Simulate right click (key beside Right-Ctrl)
-                self.emit('popup-menu-cell', event.time, *self.getCellPos())
+                self.emit('popup-cell-menu', event.time, *self.getCellPos())
             else:
-                self.emit('popup-menu-main', event.time, *self.getMainMenuPos())
+                self.emit('popup-main-menu', event.time, *self.getMainMenuPos())
         else:
             return False
         return True
