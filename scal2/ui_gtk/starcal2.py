@@ -328,8 +328,6 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         #    gobject.timeout_add_seconds(self.timeout, self.trayUpdate)
         #########
         self.connect('delete-event', self.onDeleteEvent)
-        ######################
-        self.updateMenuSize()
         #########################################
         for plug in core.allPlugList:
             if plug.external and hasattr(plug, 'set_dialog'):
@@ -516,9 +514,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         x = wx+dx
         y = wy+dy
         if rtl:
-            #mw = menu.get_allocation().width
-            #if mw < 2:# menu width
-            mw = 145 ## FIXME
+            mw = menu.size_request()[0]
             x -= mw
         ####
         menu.popup(None, None, lambda m: (x, y, True), 3, etime)
@@ -532,12 +528,9 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         x = wx+dx
         y = wy+dy
         if rtl:
-            mw = menu.get_allocation().width
-            if mw < 2:# menu width
-                mw = 145
+            mw = menu.size_request()[0]
             x -= mw
         menu.popup(None, None, lambda m: (x, y, True), 3, etime)
-        #self.menuMainWidth = menu.get_allocation().width
         ui.updateFocusTime()
     def addToGroupFromMenu(self, menu, group, eventType):
         from scal2.ui_gtk.event.common import addNewEvent
@@ -566,11 +559,6 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             self.unstick()
             ui.winSticky = False
         ui.saveLiveConf()
-    def updateMenuSize(self):## DIRTY FIXME
-        ## To calc/update menus size (width is used)
-        getMenuPos = lambda widget: (ud.screenW, 0, True)
-        self.menuMain.popup(None, None, getMenuPos, 3, 0)
-        self.menuMain.hide()
     def copyDate(self, obj=None, event=None):
         setClipboard(ui.cell.format(ud.dateFormatBin))
     def copyDateToday(self, obj=None, event=None):
@@ -866,7 +854,6 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         ud.BaseCalObj.onConfigChange(self, *a, **kw)
         #self.set_property('skip-taskbar-hint', not ui.winTaskbar) ## self.set_skip_taskbar_hint ## FIXME
         ## skip-taskbar-hint  need to restart ro be applied
-        self.updateMenuSize()
         #self.updateToolbarClock()## FIXME
         #self.updateTrayClock()
         self.trayUpdate()
