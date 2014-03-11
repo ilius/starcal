@@ -10,9 +10,6 @@ from scal2.ui_gtk.customize import CustomizableCalObj
 class CalObj(gtk.VBox, CustomizableCalObj):
     _name = 'pluginsText'
     desc = _('Plugins Text')
-    params = (
-        'ui.pluginsTextInsideExpander',
-    )
     def __init__(self):
         gtk.VBox.__init__(self)
         self.initVars()
@@ -34,16 +31,17 @@ class CalObj(gtk.VBox, CustomizableCalObj):
             self.textview.show()
         else:
             pack(self, self.textview)
-        #####
-        optionsWidget = gtk.HBox()
+    def optionsWidgetCreate(self):
+        if self.optionsWidget:
+            return
+        self.optionsWidget = gtk.HBox()
         self.enableExpanderCheckb = gtk.CheckButton(_('Inside Expander'))
         self.enableExpanderCheckb.set_active(ui.pluginsTextInsideExpander)
         self.enableExpanderCheckb.connect('clicked', lambda check: self.setEnableExpander(check.get_active()))
         self.setEnableExpander(ui.pluginsTextInsideExpander)
-        pack(optionsWidget, self.enableExpanderCheckb)
+        pack(self.optionsWidget, self.enableExpanderCheckb)
         ####
-        optionsWidget.show_all()
-        self.optionsWidget = optionsWidget
+        self.optionsWidget.show_all()
     def expanderExpanded(self, exp):
         ui.pluginsTextIsExpanded = not exp.get_expanded()
         ui.saveLiveConf()

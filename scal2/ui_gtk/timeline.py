@@ -448,13 +448,13 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
         #elif k=='page_down':
         #    pass
         #elif k=='menu':# Simulate right click (key beside Right-Ctrl)
-        #    #self.emit('popup-menu-cell', event.time, *self.getCellPos())
+        #    #self.emit('popup-cell-menu', event.time, *self.getCellPos())
         #elif k in ('f10','m'): # F10 or m or M
         #    if event.get_state() & gdk.ModifierType.SHIFT_MASK:
         #        # Simulate right click (key beside Right-Ctrl)
-        #        self.emit('popup-menu-cell', event.time, *self.getCellPos())
+        #        self.emit('popup-cell-menu', event.time, *self.getCellPos())
         #    else:
-        #        self.emit('popup-menu-main', event.time, *self.getMainMenuPos())
+        #        self.emit('popup-main-menu', event.time, *self.getMainMenuPos())
         elif k in ('plus', 'equal', 'kp_add'):
             self.keyboardZoom(True)
         elif k in ('minus', 'kp_subtract'):

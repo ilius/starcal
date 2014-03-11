@@ -14,6 +14,9 @@ class CalObj(DayOccurrenceView, CustomizableCalObj):## FIXME
     def __init__(self):
         DayOccurrenceView.__init__(self)
         self.maxHeight = ui.eventViewMaxHeight
+    def optionsWidgetCreate(self):
+        if self.optionsWidget:
+            return
         self.optionsWidget = gtk.HBox()
         ###
         hbox = gtk.HBox()

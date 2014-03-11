@@ -75,7 +75,8 @@ class DummyCalObj(Object):
         pass
     def confStr(self):## FIXME a real problem
         return ''
-
+    def optionsWidgetCreate(self):
+        pass
 
 
 class CustomizableCalObj(ud.BaseCalObj):
@@ -112,7 +113,8 @@ class CustomizableCalObj(ud.BaseCalObj):
             if item.enable and kname in item.myKeys:
                 if item.keyPress(arg, event):
                     break
-
+    def optionsWidgetCreate(self):
+        pass
 
 class CustomizableCalBox(CustomizableCalObj):
     ## for GtkBox (HBox and VBox)

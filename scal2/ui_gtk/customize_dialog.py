@@ -123,6 +123,7 @@ class CustomizeDialog(gtk.Dialog):
         if not index_list:
             return
         item = self.getItemByPath(index_list)
+        item.optionsWidgetCreate()
         if item.optionsWidget:
             self.activeOptionsWidget = item.optionsWidget
             pack(self.vbox_l, item.optionsWidget)

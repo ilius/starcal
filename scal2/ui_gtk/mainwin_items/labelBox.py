@@ -117,11 +117,6 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
         self.connect('button-press-event', self.buttonPress)
         self.active = active
         self.setActive(active)
-        ####### update menu width
-        if rtl:
-            get_menu_pos = lambda widget, menu: (ud.screenW, 0, True)
-            menu.popup(None, None, get_menu_pos, None, 3, 0)
-            menu.hide()
     def setActive(self, active):
     ## (Performance) update menu here, or make menu entirly before popup ????????????????
         s = getMonthName(self.mode, active+1)
@@ -166,12 +161,11 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
             foo, x, y = self.get_window().get_origin()
             ## foo == 1 FIXME
             y += self.get_allocation().height
-            if rtl:
-                mw = self.menu.get_allocation().width
-                #print('menu.get_allocation().width', mw)
-                if mw>1:
-                    x -= (mw - self.get_allocation().width)
+            #if rtl:
+            #    x = x - self.menu.size_request()[0] + self.size_request()[0]
             #x -= 7 ## ????????? because of menu padding
+            ## align menu to center:
+            x -= int((self.menu.size_request()[0] - self.size_request()[0])//2)
             self.menu.popup(None, None, lambda widget, menu: (x, y, True), None, event.button, event.time)
             ui.updateFocusTime()
             return True
@@ -275,6 +269,8 @@ class IntLabel(BaseLabel):
             foo, x, y = self.get_window().get_origin()
             y += self.get_allocation().height
             x -= 7 ## ????????? because of menu padding
+            ## align menu to center:
+            x -= int((self.menu.size_request()[0] - self.size_request()[0])//2)
             self.menu.popup(None, None, lambda widget, menu: (x, y, True), None, event.button, event.time)
             ui.updateFocusTime()
             return True

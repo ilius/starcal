@@ -107,14 +107,6 @@ class CalObj(gtk.DrawingArea, CalBase):
     _name = 'monthCal'
     desc = _('Month Calendar')
     cx = [0, 0, 0, 0, 0, 0, 0]
-    params = (
-        'ui.mcalHeight',
-        'ui.mcalLeftMargin',
-        'ui.mcalTopMargin',
-        'ui.mcalTypeParams',
-        'ui.mcalGrid',
-        'ui.mcalGridColor',
-    )
     myKeys = CalBase.myKeys + (
         'up', 'down',
         'right', 'left',
@@ -135,11 +127,11 @@ class CalObj(gtk.DrawingArea, CalBase):
     def topMarginSpinChanged(self, spin):
         ui.mcalTopMargin = spin.get_value()
         self.queue_draw()
-    #def confStr(self):
-    #    text = CustomizableCalObj.confStr(self)
-    #    return text
     def updateTypeParamsWidget(self):
-        vbox = self.typeParamsVbox
+        try:
+            vbox = self.typeParamsVbox
+        except AttributeError:
+            return
         for child in vbox.get_children():
             child.destroy()
         ###
@@ -166,7 +158,20 @@ class CalObj(gtk.DrawingArea, CalBase):
         self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
         self.initCal()
         self.set_property('height-request', ui.mcalHeight)
-        ######
+        ######################
+        #self.kTime = 0
+        ######################
+        self.connect('draw', self.drawAll)
+        self.connect('button-press-event', self.buttonPress)
+        #self.connect('screen-changed', self.screenChanged)
+        self.connect('scroll-event', self.scroll)
+        ######################
+        #self.updateTextWidth()
+    def optionsWidgetCreate(self):
+        if self.optionsWidget:
+            return
+        self.optionsWidget = gtk.VBox()
+        ####
         hbox = gtk.HBox()
         spin = IntSpinButton(1, 9999)
         spin.set_value(ui.mcalHeight)
@@ -219,16 +224,6 @@ class CalObj(gtk.DrawingArea, CalBase):
         pack(self.optionsWidget, frame)
         self.optionsWidget.show_all()
         self.updateTypeParamsWidget()## FIXME
-        ######################
-        #self.kTime = 0
-        ######################
-        self.connect('draw', self.drawAll)
-        self.connect('button-press-event', self.buttonPress)
-        #self.connect('screen-changed', self.screenChanged)
-        self.connect('scroll-event', self.scroll)
-        ######################
-        self.updateTextWidth()
-        ######################
     def drawAll(self, widget=None, cr=None, cursor=True):
         #event = gtk.get_current_event()
         #?????? Must enhance (only draw few cells, not all cells)
@@ -469,16 +464,15 @@ class CalObj(gtk.DrawingArea, CalBase):
                 break
         status = getCurrentMonthStatus()
         if yPos == -1 or xPos == -1:
-            self.emit('popup-menu-main', event.time, event.x, event.y)
-            #self.menuMainWidth = self.menuMain.get_allocation().width ## menu.get_allocation()[3]
+            self.emit('popup-main-menu', event.time, event.x, event.y)
         elif yPos >= 0 and xPos >= 0:
             cell = status[yPos][xPos]
             self.changeDate(*cell.dates[calTypes.primary])
             if event.type==getattr(gdk.EventType, '2BUTTON_PRESS'):
                 self.emit('2button-press')
             if b == 3 and cell.month == ui.cell.month:## right click on a normal cell
-                #self.emit('popup-menu-cell', event.time, *self.getCellPos())
-                self.emit('popup-menu-cell', event.time, event.x, event.y)
+                #self.emit('popup-cell-menu', event.time, *self.getCellPos())
+                self.emit('popup-cell-menu', event.time, event.x, event.y)
         return True
     def calcCoord(self):## calculates coordidates (x and y of cells centers)
         w = self.get_allocation().width
@@ -538,9 +532,9 @@ class CalObj(gtk.DrawingArea, CalBase):
         elif kname in ('f10', 'm'):
             if event.get_state() & gdk.ModifierType.SHIFT_MASK:
                 # Simulate right click (key beside Right-Ctrl)
-                self.emit('popup-menu-cell', event.time, *self.getCellPos())
+                self.emit('popup-cell-menu', event.time, *self.getCellPos())
             else:
-                self.emit('popup-menu-main', event.time, *self.getMainMenuPos())
+                self.emit('popup-main-menu', event.time, *self.getMainMenuPos())
         else:
             return False
         return True
