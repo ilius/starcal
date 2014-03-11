@@ -137,7 +137,10 @@ class CalObj(gtk.Widget, CalBase):
     #    text = CustomizableCalObj.confStr(self)
     #    return text
     def updateTypeParamsWidget(self):
-        vbox = self.typeParamsVbox
+        try:
+            vbox = self.typeParamsVbox
+        except AttributeError:
+            return
         for child in vbox.get_children():
             child.destroy()
         ###
@@ -163,7 +166,20 @@ class CalObj(gtk.Widget, CalBase):
         gtk.Widget.__init__(self)
         CalBase.__init__(self)
         self.set_property('height-request', ui.mcalHeight)
-        ######
+        ######################
+        #self.kTime = 0
+        ######################
+        self.connect('expose-event', self.drawAll)
+        self.connect('button-press-event', self.buttonPress)
+        #self.connect('screen-changed', self.screenChanged)
+        self.connect('scroll-event', self.scroll)
+        ######################
+        #self.updateTextWidth()
+    def optionsWidgetCreate(self):
+        if self.optionsWidget:
+            return
+        self.optionsWidget = gtk.VBox()
+        ####
         hbox = gtk.HBox()
         spin = IntSpinButton(1, 9999)
         spin.set_value(ui.mcalHeight)
@@ -215,16 +231,6 @@ class CalObj(gtk.Widget, CalBase):
         pack(self.optionsWidget, frame)
         self.optionsWidget.show_all()
         self.updateTypeParamsWidget()## FIXME
-        ######################
-        #self.kTime = 0
-        ######################
-        self.connect('expose-event', self.drawAll)
-        self.connect('button-press-event', self.buttonPress)
-        #self.connect('screen-changed', self.screenChanged)
-        self.connect('scroll-event', self.scroll)
-        ######################
-        self.updateTextWidth()
-        ######################
     def do_realize(self):
         self.set_flags(self.flags() | gtk.REALIZED)
         self.window = gdk.Window(

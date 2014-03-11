@@ -47,7 +47,6 @@ class CalBase(CustomizableCalObj):
     def __init__(self):
         self.initVars()
         listener.dateChange.add(self)
-        self.optionsWidget = gtk.VBox()
         ####
         self.defineDragAndDrop()
         self.connect('2button-press', ui.dayOpenEvolution)
