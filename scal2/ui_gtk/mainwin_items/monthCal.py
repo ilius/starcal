@@ -105,14 +105,6 @@ class CalObj(gtk.Widget, CalBase):
     _name = 'monthCal'
     desc = _('Month Calendar')
     cx = [0, 0, 0, 0, 0, 0, 0]
-    params = (
-        'ui.mcalHeight',
-        'ui.mcalLeftMargin',
-        'ui.mcalTopMargin',
-        'ui.mcalTypeParams',
-        'ui.mcalGrid',
-        'ui.mcalGridColor',
-    )
     myKeys = CalBase.myKeys + (
         'up', 'down',
         'right', 'left',
@@ -133,9 +125,6 @@ class CalObj(gtk.Widget, CalBase):
     def topMarginSpinChanged(self, spin):
         ui.mcalTopMargin = spin.get_value()
         self.queue_draw()
-    #def confStr(self):
-    #    text = CustomizableCalObj.confStr(self)
-    #    return text
     def updateTypeParamsWidget(self):
         try:
             vbox = self.typeParamsVbox

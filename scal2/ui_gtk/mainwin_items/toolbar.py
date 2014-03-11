@@ -9,9 +9,6 @@ from scal2.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
 
 @registerSignals
 class CalObj(CustomizableToolbar):
-    params = (
-        'ud.mainToolbarData',
-    )
     defaultItems = [
         ToolbarItem('today', 'home', 'goToday', 'Select Today', 'Today'),
         ToolbarItem('date', 'index', 'selectDateShow', 'Select Date...', 'Date'),

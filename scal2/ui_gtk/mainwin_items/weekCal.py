@@ -78,19 +78,6 @@ class ColumnBase(CustomizableCalObj):
         if self._name:
             setattr(ui, self.getFontAttr(), combo.get_value())
             self.onDateChange()
-    def confStr(self):
-        text = CustomizableCalObj.confStr(self)
-        if self.customizeWidth:
-            text += 'ui.%s = %r\n'%(
-                self.getWidthAttr(),
-                self.getWidthValue(),
-            )
-        if self.customizeFont:
-            text += 'ui.%s = %r\n'%(
-                self.getFontAttr(),
-                self.getFontValue(),
-            )
-        return text
     def optionsWidgetCreate(self):
         if self.optionsWidget:
             return
@@ -232,9 +219,6 @@ class Column(gtk.Widget, ColumnBase):
 
 
 class MainMenuToolbarItem(ToolbarItem):
-    params = (
-        'ui.wcal_toolbar_mainMenu_icon',
-    )
     def __init__(self):
         ToolbarItem.__init__(self, 'mainMenu', None, '', _('Main Menu'), enableToolip=False)
         self.connect('clicked', self.onClicked)
@@ -315,9 +299,6 @@ class ToolbarColumn(CustomizableToolbar, ColumnBase):
         ToolbarItem('forward4', 'goto_bottom', 'goForward4', 'Forward 4 Weeks'),
     ]
     defaultItemsDict = dict([(item._name, item) for item in defaultItems])
-    params = (
-        'ud.wcalToolbarData',
-    )
     def __init__(self, wcal):
         CustomizableToolbar.__init__(self, wcal, True, True)
         if not ud.wcalToolbarData['items']:
@@ -434,9 +415,6 @@ class EventsCountColumn(Column):
     _name = 'eventsCount'
     desc = _('Events Count')
     customizeWidth = True
-    params = (
-        'ui.wcal_eventsCount_expand',
-    )
     def __init__(self, wcal):
         Column.__init__(self, wcal)
         self.expand = ui.wcal_eventsCount_expand
@@ -492,10 +470,6 @@ class EventsTextColumn(Column):
     desc = _('Events Text')
     expand = True
     customizeFont = True
-    params = (
-        'ui.wcal_eventsText_showDesc',
-        'ui.wcal_eventsText_colorize',
-    )
     truncateText = True
     def __init__(self, wcal):
         Column.__init__(self, wcal)
@@ -558,8 +532,6 @@ class EventsBoxColumn(Column):
     desc = _('Events Box')
     expand = True ## FIXME
     customizeFont = True
-    #params = (
-    #)
     def __init__(self, wcal):
         self.boxes = None
         self.padding = 2
@@ -693,9 +665,6 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
     _name = 'daysOfMonth'
     desc = _('Days of Month')
     customizeWidth = True
-    params = (
-        'ui.wcal_daysOfMonth_dir',
-    )
     updateDir = lambda self: self.set_direction(ud.textDirDict[ui.wcal_daysOfMonth_dir])
     def __init__(self, wcal):
         gtk.HBox.__init__(self)
@@ -752,10 +721,6 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
             col.mode = mode
             col.show()
             col.set_property('width-request', width)
-    def confStr(self):
-        text = ColumnBase.confStr(self)
-        text += 'ui.wcalTypeParams=%r\n'%ui.wcalTypeParams
-        return text
     def updateTypeParamsWidget(self):
         try:
             vbox = self.typeParamsVbox
@@ -791,13 +756,6 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
 class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
     _name = 'weekCal'
     desc = _('Week Calendar')
-    params = (
-        'ui.wcalHeight',
-        'ui.wcalTextSizeScale',
-        'ui.wcalItems',
-        'ui.wcalGrid',
-        'ui.wcalGridColor',
-    )
     myKeys = CalBase.myKeys + (
         'up', 'down',
         'page_up',

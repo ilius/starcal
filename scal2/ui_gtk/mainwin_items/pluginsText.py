@@ -10,9 +10,6 @@ from scal2.ui_gtk.customize import CustomizableCalObj
 class CalObj(gtk.VBox, CustomizableCalObj):
     _name = 'pluginsText'
     desc = _('Plugins Text')
-    params = (
-        'ui.pluginsTextInsideExpander',
-    )
     def __init__(self):
         gtk.VBox.__init__(self)
         self.initVars()

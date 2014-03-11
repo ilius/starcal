@@ -110,9 +110,6 @@ class WinConButtonSep(WinConButton):
 class CalObj(gtk.HBox, CustomizableCalBox):
     _name = 'winContronller'
     desc = _('Window Controller')
-    params = (
-        'ui.winControllerButtons',
-    )
     buttonClassList = (WinConButtonMin, WinConButtonMax, WinConButtonClose, WinConButtonSep)
     buttonClassDict = dict([(cls._name, cls) for cls in buttonClassList])
     def __init__(self):
