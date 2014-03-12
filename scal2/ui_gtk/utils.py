@@ -506,7 +506,6 @@ def get_menu_width(menu):
         return mw + 56 ## FIXME
     return 0
 
-
 class WizardWindow(gtk.Window):
     stepClasses = []
     def __init__(self, title):
