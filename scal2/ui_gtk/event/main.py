@@ -693,7 +693,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                 else:
                     x += 50
                 dx, dy = treev.translate_coordinates(self, x, rect.y + rect.height)
-                wx, wy = self.get_window().get_origin()
+                foo, wx, wy = self.get_window().get_origin()
                 menu.popup(
                     None,
                     None,

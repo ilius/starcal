@@ -508,7 +508,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         ####
         menu.show_all()
         dx, dy = widget.translate_coordinates(self, x, y)
-        wx, wy = self.get_window().get_origin()
+        foo, wx, wy = self.get_window().get_origin()
         x = wx+dx
         y = wy+dy
         if rtl:
@@ -550,7 +550,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             etime = gtk.get_current_event_time()
         menu = self.menuMain
         dx, dy = widget.translate_coordinates(self, x, y)
-        wx, wy = self.get_window().get_origin()
+        foo, wx, wy = self.get_window().get_origin()
         x = wx+dx
         y = wy+dy
         if rtl:
