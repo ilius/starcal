@@ -253,7 +253,7 @@ class IntLabel(BaseLabel):
         self.active = active
     def updateMenu(self, start=None):
         if start==None:
-            start = self.active - self.height/2
+            start = self.active - self.height//2
         self.start = start
         for i in range(self.height):
             if start+i==self.active:
