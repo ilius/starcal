@@ -29,7 +29,7 @@ from gi.repository.GObject import timeout_add
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
-from scal2.ui_gtk.utils import set_tooltip, setClipboard
+from scal2.ui_gtk.utils import set_tooltip, setClipboard, get_menu_width
 from scal2.ui_gtk.drawing import newTextLayout, setColor
 from scal2.ui_gtk.mywidgets.button import ConButton
 from scal2.ui_gtk import gtk_ud as ud
@@ -162,10 +162,10 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
             ## foo == 1 FIXME
             y += self.get_allocation().height
             #if rtl:
-            #    x = x - self.menu.size_request()[0] + self.size_request()[0]
+            #    x = x - get_menu_width(self.menu) + self.get_allocation().width
             #x -= 7 ## ????????? because of menu padding
             ## align menu to center:
-            x -= int((self.menu.size_request()[0] - self.size_request()[0])//2)
+            x -= int((get_menu_width(self.menu) - self.get_allocation().width)//2)
             self.menu.popup(None, None, lambda widget, menu: (x, y, True), None, event.button, event.time)
             ui.updateFocusTime()
             return True
@@ -270,7 +270,7 @@ class IntLabel(BaseLabel):
             y += self.get_allocation().height
             x -= 7 ## ????????? because of menu padding
             ## align menu to center:
-            x -= int((self.menu.size_request()[0] - self.size_request()[0])//2)
+            x -= int((get_menu_width(self.menu) - self.get_allocation().width)//2)
             self.menu.popup(None, None, lambda widget, menu: (x, y, True), None, event.button, event.time)
             ui.updateFocusTime()
             return True

@@ -479,6 +479,34 @@ class CopyLabelMenuItem(gtk.MenuItem):
     def on_activate(self, item):
         setClipboard(self.get_property('label'))
 
+def get_menu_width(menu):
+    '''
+    #print(menu.has_screen())
+    #menu.show_all()
+    #menu.realize()
+    print(
+        menu.get_border_width(),
+        max_item_width,
+        menu.get_allocation().width,
+        menu.size_request().width,
+        menu.get_size_request()[0],
+        menu.get_preferred_width(),
+        #menu.do_get_preferred_width(),
+        menu.get_preferred_size()[0].width,
+        menu.get_preferred_size()[1].width,
+        )
+    '''
+    w = menu.get_allocation().width
+    if w > 1:
+        #print(w-max(item.size_request().width for item in menu.get_children()))
+        return w
+    items = menu.get_children()
+    if items:
+        mw = max(item.size_request().width for item in items)
+        return mw + 56 ## FIXME
+    return 0
+
+
 class WizardWindow(gtk.Window):
     stepClasses = []
     def __init__(self, title):

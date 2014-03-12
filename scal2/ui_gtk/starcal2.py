@@ -512,7 +512,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         x = wx+dx
         y = wy+dy
         if rtl:
-            x -= menu.size_request()[0]
+            x -= get_menu_width(menu)
         ####
         menu.popup(None, None, lambda m, e: (x, y, True), None, 3, etime)
         ui.updateFocusTime()
@@ -554,7 +554,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         x = wx+dx
         y = wy+dy
         if rtl:
-            x -= menu.size_request()[0]
+            x -= get_menu_width(menu)
         menu.popup(None, None, lambda m, e: (x, y, True), None, 3, etime)
         ui.updateFocusTime()
     def addToGroupFromMenu(self, menu, group, eventType):
