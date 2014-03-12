@@ -461,6 +461,9 @@ class CopyLabelMenuItem(gtk.MenuItem):
     def on_activate(self, item):
         setClipboard(self.get_property('label'))
 
+def get_menu_width(menu):
+    return menu.size_request()[0]
+
 class WizardWindow(gtk.Window):
     stepClasses = []
     def __init__(self, title):
