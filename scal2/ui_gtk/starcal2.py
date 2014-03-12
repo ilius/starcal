@@ -404,6 +404,23 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             foo, x, y, mask = ud.rootWindow.get_pointer()
             self.begin_move_drag(event.button, x, y, event.time)
         return False
+    def childButtonPress(self, widget, event):
+        b = event.button
+        #print(dir(event))
+        #foo, x, y, mask = event.get_window().get_pointer()
+        #x, y = self.get_pointer()
+        x, y = event.x_root, event.y_root
+        if b == 1:
+            self.begin_move_drag(event.button, x, y, event.time)
+            return True
+        elif b == 3:
+            self.menuMainCreate()
+            if rtl:
+                x -= get_menu_width(self.menuMain)
+            self.menuMain.popup(None, None, lambda m, e: (x, y, True), None, 3, event.time)
+            ui.updateFocusTime()
+            return True
+        return False
     def startResize(self, widget, event):
         if self.menuMain:
             self.menuMain.hide()

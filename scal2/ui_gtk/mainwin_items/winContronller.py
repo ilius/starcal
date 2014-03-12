@@ -23,6 +23,9 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
         CustomizableCalObj.initVars(self)
         self.build()
         ###
+        if ui.mainWin:
+            self.connect('button-press-event', ui.mainWin.childButtonPress)
+        ###
         self.show_all()
     def onClicked(self, gWin, event):
         raise NotImplementedError

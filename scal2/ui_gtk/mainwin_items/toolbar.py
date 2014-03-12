@@ -25,7 +25,10 @@ class CalObj(CustomizableToolbar):
         if not ud.mainToolbarData['items']:
             ud.mainToolbarData['items'] = [(item._name, True) for item in self.defaultItems]
         self.setData(ud.mainToolbarData)
+        if ui.mainWin:
+            self.connect('button-press-event', ui.mainWin.childButtonPress)
     def updateVars(self):
         CustomizableToolbar.updateVars(self)
         ud.mainToolbarData = self.getData()
+
 
