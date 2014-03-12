@@ -102,7 +102,9 @@ class CustomizeDialog(gtk.Dialog):
     def vboxSizeRequest(self, widget, req):
         self.resize(self.get_size()[0], 1)
     def getItemByPath(self, path):
-        if isinstance(path, str):
+        if isinstance(path, gtk.TreePath):
+            path = path.get_indices()
+        elif isinstance(path, str):
             path = tree_path_split(path)
         elif isinstance(path, int):
             path = [path]
