@@ -7,7 +7,7 @@ from scal2.ui_gtk import *
 from scal2.ui_gtk.mywidgets import MyColorButton
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
 from scal2.ui_gtk.event.group.base import BaseWidgetClass
-from scal2.ui_gtk.event.accounts.common import AccountCombo, AccountGroupBox
+from scal2.ui_gtk.event.account import AccountCombo, AccountGroupBox
 
 
 class WidgetClass(BaseWidgetClass):
