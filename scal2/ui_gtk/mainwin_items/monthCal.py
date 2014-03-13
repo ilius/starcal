@@ -35,19 +35,17 @@ from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
 from scal2.ui_gtk import *
 from scal2.ui_gtk.drawing import *
 from scal2.ui_gtk.decorators import *
-from scal2.ui_gtk.mywidgets import MyFontButton, MyColorButton
-from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
 from scal2.ui_gtk import gtk_ud as ud
-from scal2.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
 from scal2.ui_gtk.customize import CustomizableCalObj
 from scal2.ui_gtk.cal_base import CalBase
-from scal2.ui_gtk import preferences
 #from scal2.ui_gtk import desktop
 #from scal2.ui_gtk import wallpaper
 
 
 class McalTypeParamBox(gtk.HBox):
     def __init__(self, mcal, index, mode, params, sgroupLabel, sgroupFont):
+        from scal2.ui_gtk.mywidgets.multi_spin_button import FloatSpinButton
+        from scal2.ui_gtk.mywidgets import MyFontButton, MyColorButton
         gtk.HBox.__init__(self)
         self.mcal = mcal
         self.index = index
@@ -165,6 +163,8 @@ class CalObj(gtk.Widget, CalBase):
         ######################
         #self.updateTextWidth()
     def optionsWidgetCreate(self):
+        from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
+        from scal2.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
         if self.optionsWidget:
             return
         self.optionsWidget = gtk.VBox()
