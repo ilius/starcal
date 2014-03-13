@@ -43,7 +43,7 @@ from scal2.ui_gtk.drawing import setColor, fillColor, newTextLayout, Button
 from scal2.ui_gtk import gtk_ud as ud
 #from scal2.ui_gtk import preferences
 from scal2.ui_gtk.timeline_box import *
-from scal2.ui_gtk.event.common import EventEditorDialog, GroupEditorDialog, confirmEventTrash
+
 import scal2.ui_gtk.event.main
 
 
@@ -402,6 +402,7 @@ class TimeLine(gtk.Widget, ud.BaseCalObj):
         ud.BaseCalObj.onConfigChange(self, *a, **kw)
         self.queue_draw()
     def editEventClicked(self, menu, winTitle, event, gid):
+        from scal2.ui_gtk.event.editor import EventEditorDialog
         event = EventEditorDialog(
             event,
             title=winTitle,
@@ -412,6 +413,7 @@ class TimeLine(gtk.Widget, ud.BaseCalObj):
         ui.reloadGroups.append(gid)
         self.onConfigChange()
     def editGroupClicked(self, menu, winTitle, group):
+        from scal2.ui_gtk.event.group.editor import GroupEditorDialog
         group = GroupEditorDialog(group).run()
         if group is not None:
             group.afterModify()
@@ -420,6 +422,7 @@ class TimeLine(gtk.Widget, ud.BaseCalObj):
             ud.windowList.onConfigChange()
             self.queue_draw()
     def moveEventToTrash(self, menu, group, event):
+        from scal2.ui_gtk.event.utils import confirmEventTrash
         if not confirmEventTrash(event):
             return
         eventIndex = group.index(event.id)

@@ -570,7 +570,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         menu.popup(None, None, lambda m: (x, y, True), 3, etime)
         ui.updateFocusTime()
     def addToGroupFromMenu(self, menu, group, eventType):
-        from scal2.ui_gtk.event.common import addNewEvent
+        from scal2.ui_gtk.event.editor import addNewEvent
         #print('addToGroupFromMenu', group.title, eventType)
         title = _('Add ') + event_lib.classes.event.byName[eventType].desc
         event = addNewEvent(group, eventType, title, parent=self, useSelectedDate=True)

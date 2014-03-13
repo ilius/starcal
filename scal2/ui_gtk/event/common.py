@@ -33,17 +33,15 @@ from scal2 import ui
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, labelStockMenuItem, TimeZoneComboBoxEntry
-from scal2.ui_gtk.utils import dialog_add_button, CalTypeCombo, confirm, getStyleColor
+from scal2.ui_gtk.utils import dialog_add_button, CalTypeCombo, getStyleColor
 from scal2.ui_gtk.color_utils import gdkColorToRgb
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
 from scal2.ui_gtk.event import makeWidget
+from scal2.ui_gtk.event.utils import *
 
-
-confirmEventTrash = lambda event:\
-    confirm(_('Press OK if you want to move event "%s" to trash')%event.summary)
 
 getGroupRow = lambda group, rowBgColor: (
     group.id,
@@ -55,15 +53,6 @@ getGroupRow = lambda group, rowBgColor: (
     ),
     group.title
 )
-
-def menuItemFromEventGroup(group):
-    item = gtk.ImageMenuItem()
-    item.set_label(group.title)
-    ##
-    image = gtk.Image()
-    image.set_from_pixbuf(newOutlineSquarePixbuf(group.color, 20))
-    item.set_image(image)
-    return item
 
 
 class WidgetClass(gtk.VBox):
@@ -419,183 +408,6 @@ class Scale10PowerComboBox(gtk.ComboBox):
         self.ls.append((value, _('%s Years')%_(value)))
         self.set_active(len(self.ls)-1)
 
-
-class EventEditorDialog(gtk.Dialog):
-    def __init__(self, event, typeChangable=True, title=None, isNew=False, parent=None, useSelectedDate=False):
-        gtk.Dialog.__init__(self, parent=parent)
-        #self.set_transient_for(None)
-        #self.set_type_hint(gtk.gdk.WINDOW_TYPE_HINT_NORMAL)
-        if title:
-            self.set_title(title)
-        self.isNew = isNew
-        #self.connect('delete-event', lambda obj, e: self.destroy())
-        #self.resize(800, 600)
-        ###
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
-        ###
-        self.connect('response', lambda w, e: self.hide())
-        #######
-        self.event = event
-        self._group = event.parent
-        self.activeWidget = None
-        #######
-        if isNew:
-            event.timeZone = str(core.localTz)
-        #######
-        hbox = gtk.HBox()
-        pack(hbox, gtk.Label(_('Event Type')))
-        if typeChangable and len(self._group.acceptsEventTypes)>1:## FIXME
-            combo = gtk.combo_box_new_text()
-            for eventType in self._group.acceptsEventTypes:
-                combo.append_text(event_lib.classes.event.byName[eventType].desc)
-            pack(hbox, combo)
-            ####
-            combo.set_active(self._group.acceptsEventTypes.index(event.name))
-            #self.activeWidget = makeWidget(event)
-            combo.connect('changed', self.typeChanged)
-            self.comboEventType = combo
-        else:
-            pack(hbox, gtk.Label(':  '+event.desc))
-        pack(hbox, gtk.Label(''), 1, 1)
-        hbox.show_all()
-        pack(self.vbox, hbox)
-        #####
-        if useSelectedDate:
-            self.event.setJd(ui.cell.jd)
-        self.activeWidget = makeWidget(event)
-        if self.isNew:
-            self.activeWidget.focusSummary()
-        pack(self.vbox, self.activeWidget, 1, 1)
-        self.vbox.show()
-    def typeChanged(self, combo):
-        if self.activeWidget:
-            self.activeWidget.updateVars()
-            self.activeWidget.destroy()
-        eventType = self._group.acceptsEventTypes[combo.get_active()]
-        if self.isNew:
-            self.event = self._group.createEvent(eventType)
-        else:
-            self.event = self._group.copyEventWithType(self.event, eventType)
-        self._group.updateCache(self.event)## needed? FIXME
-        self.activeWidget = makeWidget(self.event)
-        if self.isNew:
-            self.activeWidget.focusSummary()
-        pack(self.vbox, self.activeWidget)
-        #self.activeWidget.modeComboChanged()## apearantly not needed
-    def run(self):
-        #if not self.activeWidget:
-        #    return None
-        if gtk.Dialog.run(self) != gtk.RESPONSE_OK:
-            try:
-                filesBox = self.activeWidget.filesBox
-            except AttributeError:
-                pass
-            else:
-                filesBox.removeNewFiles()
-            return None
-        self.activeWidget.updateVars()
-        self.event.afterModify()
-        self.event.save()
-        event_lib.lastIds.save()
-        self.destroy()
-        return self.event
-
-def addNewEvent(group, eventType, title, typeChangable=False, **kw):
-    event = group.createEvent(eventType)
-    if eventType=='custom':## FIXME
-        typeChangable = True
-    event = EventEditorDialog(
-        event,
-        typeChangable=typeChangable,
-        title=title,
-        isNew=True,
-        **kw
-    ).run()
-    if event is None:
-        return
-    group.append(event)
-    group.save()
-    return event
-
-class GroupEditorDialog(gtk.Dialog):
-    def __init__(self, group=None):
-        gtk.Dialog.__init__(self)
-        self.isNew = (group is None)
-        self.set_title(_('Add New Group') if self.isNew else _('Edit Group'))
-        #self.connect('delete-event', lambda obj, e: self.destroy())
-        #self.resize(800, 600)
-        ###
-        dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL)
-        dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)
-        self.connect('response', lambda w, e: self.hide())
-        #######
-        self.activeWidget = None
-        #######
-        hbox = gtk.HBox()
-        combo = gtk.combo_box_new_text()
-        for cls in event_lib.classes.group:
-            combo.append_text(cls.desc)
-        pack(hbox, gtk.Label(_('Group Type')))
-        pack(hbox, combo)
-        pack(hbox, gtk.Label(''), 1, 1)
-        pack(self.vbox, hbox)
-        ####
-        if self.isNew:
-            self._group = event_lib.classes.group[event_lib.defaultGroupTypeIndex]()
-            combo.set_active(event_lib.defaultGroupTypeIndex)
-        else:
-            self._group = group
-            combo.set_active(event_lib.classes.group.names.index(group.name))
-        self.activeWidget = None
-        combo.connect('changed', self.typeChanged)
-        self.comboType = combo
-        self.vbox.show_all()
-        self.typeChanged()
-    def dateModeChanged(self, combo):
-        pass
-    def getNewGroupTitle(self, baseTitle):
-        usedTitles = [group.title for group in ui.eventGroups]
-        if not baseTitle in usedTitles:
-            return baseTitle
-        i = 1
-        while True:
-            newTitle = baseTitle + ' ' + _(i)
-            if newTitle in usedTitles:
-                i += 1
-            else:
-                return newTitle
-    def typeChanged(self, combo=None):
-        if self.activeWidget:
-            self.activeWidget.updateVars()
-            self.activeWidget.destroy()
-        cls = event_lib.classes.group[self.comboType.get_active()]
-        group = cls()
-        if self.isNew:
-            group.setRandomColor()
-            if group.icon:
-                self._group.icon = group.icon
-        if not self.isNew:
-            group.copyFrom(self._group)
-        group.setId(self._group.id)
-        if self.isNew:
-            group.title = self.getNewGroupTitle(cls.desc)
-        self._group = group
-        self.activeWidget = makeWidget(group)
-        pack(self.vbox, self.activeWidget)
-    def run(self):
-        if self.activeWidget is None:
-            return None
-        if gtk.Dialog.run(self) != gtk.RESPONSE_OK:
-            return None
-        self.activeWidget.updateVars()
-        self._group.save()## FIXME
-        if self.isNew:
-            event_lib.lastIds.save()
-        else:
-            ui.eventGroups[self._group.id] = self._group ## FIXME
-        self.destroy()
-        return self._group
 
 
 class GroupsTreeCheckList(gtk.TreeView):

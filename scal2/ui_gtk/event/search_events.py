@@ -32,7 +32,7 @@ from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin_button import DateTimeButton
 from scal2.ui_gtk.mywidgets.dialog import MyDialog
 from scal2.ui_gtk import gtk_ud as ud
-from scal2.ui_gtk.event.common import SingleGroupComboBox, EventEditorDialog
+from scal2.ui_gtk.event.common import SingleGroupComboBox
 
 
 @registerSignals
@@ -305,6 +305,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
     def searchClicked(self, obj=None):
         self.waitingDo(self._do_search)
     def rowActivated(self, treev, path, col):
+        from scal2.ui_gtk.event.editor import EventEditorDialog
         try:
             gid = self.trees[path][0]
             eid = self.trees[path][1]
