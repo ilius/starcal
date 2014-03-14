@@ -341,7 +341,7 @@ class PluginsTextColumn(Column):
     desc = _('Plugins Text')
     expand = True
     customizeFont = True
-    truncateText = True
+    truncateText = False
     def __init__(self, wcal):
         Column.__init__(self, wcal)
         self.connect('expose-event', self.onExposeEvent)
@@ -470,7 +470,7 @@ class EventsTextColumn(Column):
     desc = _('Events Text')
     expand = True
     customizeFont = True
-    truncateText = True
+    truncateText = False
     def __init__(self, wcal):
         Column.__init__(self, wcal)
         self.connect('expose-event', self.onExposeEvent)
