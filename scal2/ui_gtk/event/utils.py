@@ -1,3 +1,5 @@
+from scal2.locale_man import tr as _
+
 from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import confirm
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
