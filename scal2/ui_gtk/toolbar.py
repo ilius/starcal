@@ -1,5 +1,6 @@
 from time import time as now
 
+from scal2.utils import myRaise
 from scal2 import core
 from scal2.locale_man import tr as _
 from scal2 import ui
@@ -8,7 +9,7 @@ import gobject
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
-from scal2.ui_gtk.utils import set_tooltip, myRaise
+from scal2.ui_gtk.utils import set_tooltip
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.customize import CustomizableCalObj
 

@@ -23,10 +23,11 @@ from scal2 import event_lib
 from scal2 import ui
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.utils import showError, WeekDayComboBox
+from scal2.ui_gtk.utils import showError
 from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin_button import HourMinuteButtonOption
 from scal2.ui_gtk.mywidgets.icon import IconSelectButton
+from scal2.ui_gtk.mywidgets.weekday_combo import WeekDayComboBox
 from scal2.ui_gtk.event import common
 from scal2.ui_gtk.event.rule.weekNumMode import WidgetClass as WeekNumModeWidgetClass
 

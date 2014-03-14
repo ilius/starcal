@@ -679,6 +679,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
     def trayPopup(self, sicon, button, etime):
         menu = gtk.Menu()
         if os.sep == '\\':
+            from scal2.ui_gtk.windows import setupMenuHideOnLeave
             setupMenuHideOnLeave(menu)
         items = self.getTrayPopupItems()
         # items.insert(0, self.getMainWinMenuItem())## FIXME
@@ -813,6 +814,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         Popen(ud.adjustTimeCmd)
     def aboutShow(self, obj=None, data=None):
         if not self.aboutDialog:
+            from scal2.ui_gtk.about import AboutDialog
             dialog = AboutDialog(
                 name=core.APP_DESC,
                 version=core.VERSION,

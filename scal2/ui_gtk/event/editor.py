@@ -50,9 +50,10 @@ class EventEditorDialog(gtk.Dialog):
         if useSelectedDate:
             self.event.setJd(ui.cell.jd)
         self.activeWidget = makeWidget(event)
-        if self.isNew:
-            self.activeWidget.focusSummary()
-        pack(self.vbox, self.activeWidget, 1, 1)
+        if self.activeWidget:
+            if self.isNew:
+                self.activeWidget.focusSummary()
+            pack(self.vbox, self.activeWidget, 1, 1)
         self.vbox.show()
     def typeChanged(self, combo):
         if self.activeWidget:

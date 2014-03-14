@@ -26,7 +26,6 @@ from scal2.ui_gtk import *
 from scal2.ui_gtk import listener
 from scal2.ui_gtk.drawing import newTextLayout
 from scal2.ui_gtk.color_utils import rgbToGdkColor
-from scal2.ui_gtk.utils import processDroppedDate
 from scal2.ui_gtk.customize import CustomizableCalObj
 
 
@@ -113,6 +112,7 @@ class CalBase(CustomizableCalObj):
         context.drop_reply(False, etime)
         return True
     def dragDataRec(self, obj, context, x, y, selection, target_id, etime):
+        from scal2.ui_gtk.dnd import processDroppedDate
         try:
             dtype = selection.get_data_type()
         except AttributeError:## Old PyGTK

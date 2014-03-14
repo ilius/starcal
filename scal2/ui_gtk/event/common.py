@@ -32,9 +32,8 @@ from scal2 import event_lib
 from scal2 import ui
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, labelStockMenuItem, TimeZoneComboBoxEntry
-from scal2.ui_gtk.utils import dialog_add_button, CalTypeCombo, getStyleColor
-from scal2.ui_gtk.color_utils import gdkColorToRgb
+from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, labelStockMenuItem
+from scal2.ui_gtk.utils import dialog_add_button, getStyleColor
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.icon import IconSelectButton
@@ -57,6 +56,8 @@ getGroupRow = lambda group, rowBgColor: (
 
 class WidgetClass(gtk.VBox):
     def __init__(self, event):
+        from scal2.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
+        from scal2.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
         gtk.VBox.__init__(self)
         self.event = event
         ###########
@@ -460,6 +461,7 @@ class SingleGroupComboBox(gtk.ComboBox):
         #####
         self.updateItems()
     def updateItems(self):
+        from scal2.ui_gtk.color_utils import gdkColorToRgb
         ls = self.get_model()
         activeGid = self.get_active()
         ls.clear()

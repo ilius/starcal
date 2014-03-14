@@ -675,7 +675,7 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
         self.updateDir()
         self.show()
     def optionsWidgetCreate(self):
-        from scal2.ui_gtk.utils import DirectionComboBox
+        from scal2.ui_gtk.mywidgets.direction_combo import DirectionComboBox
         if self.optionsWidget:
             return
         ColumnBase.optionsWidgetCreate(self)
