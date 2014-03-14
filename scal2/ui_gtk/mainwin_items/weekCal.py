@@ -352,7 +352,7 @@ class PluginsTextColumn(Column):
             cr,
             [
                 [
-                    (self.wcal.status[i].pluginsText, ''),
+                    (line, '') for line in self.wcal.status[i].pluginsText.split('\n')
                 ]
                 for i in range(7)
             ]
