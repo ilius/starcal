@@ -200,14 +200,14 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
                 menu.add(copyOccurItem)
                 ###
                 menu.add(gtk.SeparatorMenuItem())
-                ###
-                menu.add(labelImageMenuItem(
-                    _('Move to %s') % ui.eventTrash.title,
-                    ui.eventTrash.icon,
-                    self.moveEventToTrash,
-                    event,
-                    groupId,
-                ))
+            ###
+            menu.add(labelImageMenuItem(
+                _('Move to %s') % ui.eventTrash.title,
+                ui.eventTrash.icon,
+                self.moveEventToTrash,
+                event,
+                groupId,
+            ))
         ####
         menu.show_all()
         menu.popup(None, None, None, 3, 0)
