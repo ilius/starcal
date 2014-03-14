@@ -23,28 +23,26 @@ from time import time as now
 import sys, os
 from math import pi
 
-from scal2.utils import escape
+from scal2.path import pixDir
+from scal2.utils import myRaise, escape
 from scal2 import core
 from scal2.locale_man import tr as _
 from scal2.locale_man import rtl, rtlSgn
 from scal2.time_utils import getEpochFromJd
 from scal2.cal_types import calTypes
-from scal2.core import myRaise, getMonthName, getMonthLen, pixDir
+
+from scal2 import core
 from scal2 import ui
 from scal2.weekcal import getCurrentWeekStatus
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk import pack
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.drawing import *
-from scal2.ui_gtk.utils import imageFromFile, pixbufFromFile, DirectionComboBox
-from scal2.ui_gtk.color_utils import colorize
-from scal2.ui_gtk.mywidgets import MyFontButton
-from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
+from scal2.ui_gtk.utils import imageFromFile
 from scal2.ui_gtk.mywidgets.font_family_combo import FontFamilyCombo
-from scal2.ui_gtk.mywidgets.icon import IconSelectButton
+
 from scal2.ui_gtk import gtk_ud as ud
-from scal2.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
+
 from scal2.ui_gtk.cal_base import CalBase
 from scal2.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox
 from scal2.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
@@ -79,6 +77,7 @@ class ColumnBase(CustomizableCalObj):
             setattr(ui, self.getFontAttr(), combo.get_value())
             self.onDateChange()
     def optionsWidgetCreate(self):
+        from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
         if self.optionsWidget:
             return
         self.optionsWidget = gtk.VBox()
@@ -224,6 +223,7 @@ class MainMenuToolbarItem(ToolbarItem):
         self.connect('clicked', self.onClicked)
         self.updateImage()
     def optionsWidgetCreate(self):
+        from scal2.ui_gtk.mywidgets.icon import IconSelectButton
         if self.optionsWidget:
             return
         self.optionsWidget = gtk.VBox()
@@ -592,6 +592,7 @@ class EventsBoxColumn(Column):
 
 class WcalTypeParamBox(gtk.HBox):
     def __init__(self, wcal, index, mode, params, sgroupLabel, sgroupFont):
+        from scal2.ui_gtk.mywidgets import MyFontButton
         gtk.HBox.__init__(self)
         self.wcal = wcal
         self.index = index
@@ -674,6 +675,7 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
         self.updateDir()
         self.show()
     def optionsWidgetCreate(self):
+        from scal2.ui_gtk.utils import DirectionComboBox
         if self.optionsWidget:
             return
         ColumnBase.optionsWidgetCreate(self)
@@ -801,6 +803,8 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
             item.enable = False
             self.appendItem(item)
     def optionsWidgetCreate(self):
+        from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
+        from scal2.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
         if self.optionsWidget:
             return
         ColumnBase.optionsWidgetCreate(self)

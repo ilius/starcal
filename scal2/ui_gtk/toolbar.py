@@ -4,12 +4,11 @@ from scal2 import core
 from scal2.locale_man import tr as _
 from scal2 import ui
 
-from gobject import timeout_add
+import gobject
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import set_tooltip, myRaise
-from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.customize import CustomizableCalObj
 
@@ -63,6 +62,7 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
     defaultItems = []
     defaultItemsDict = {}
     def __init__(self, funcOwner, vertical=False, onPressContinue=False):
+        from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
         gtk.Toolbar.__init__(self)
         self.funcOwner = funcOwner
         self.set_orientation(gtk.ORIENTATION_VERTICAL if vertical else gtk.ORIENTATION_HORIZONTAL)
@@ -182,11 +182,11 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
         self.lastPressTime = now()
         self.remain = True
         func()
-        timeout_add(ui.timeout_initial, self.itemPressRemain, func)
+        gobject.timeout_add(ui.timeout_initial, self.itemPressRemain, func)
     def itemPressRemain(self, func):
         if self.remain and now()-self.lastPressTime>=ui.timeout_repeat/1000.0:
             func()
-            timeout_add(ui.timeout_repeat, self.itemPressRemain, func)
+            gobject.timeout_add(ui.timeout_repeat, self.itemPressRemain, func)
     def itemRelease(self, widget, event=None):
         self.remain = False
 
