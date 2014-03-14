@@ -219,7 +219,7 @@ class Column(gtk.Widget, ColumnBase):
 
 class MainMenuToolbarItem(ToolbarItem):
     def __init__(self):
-        ToolbarItem.__init__(self, 'mainMenu', None, '', _('Main Menu'), enableToolip=False)
+        ToolbarItem.__init__(self, 'mainMenu', None, '', _('Main Menu'), enableTooltip=False)
         self.connect('clicked', self.onClicked)
         self.updateImage()
     def optionsWidgetCreate(self):

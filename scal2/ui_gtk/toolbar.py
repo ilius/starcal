@@ -16,7 +16,7 @@ from scal2.ui_gtk.customize import CustomizableCalObj
 
 @registerSignals
 class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
-    def __init__(self, name, stockName, method, desc='', shortDesc='', enableToolip=True):
+    def __init__(self, name, stockName, method, desc='', shortDesc='', enableTooltip=True):
         #print('ToolbarItem', name, stockName, method, desc, text)
         self.method = method
         ######
@@ -41,7 +41,7 @@ class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
         self.desc = desc
         #self.shortDesc = shortDesc## FIXME
         self.initVars()
-        if enableToolip:
+        if enableTooltip:
             set_tooltip(self, desc)## FIXME
         self.set_is_important(True)## FIXME
     show = lambda self: self.show_all()
