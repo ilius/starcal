@@ -51,7 +51,6 @@ from scal2 import core
 from scal2.core import myRaise, log, getAbsWeekNumberFromJd, dataToJson, jwday, jd_to_primary
 
 from scal2.ics import icsHeader, getIcsTimeByEpoch, getIcsDateByJd, getJdByIcsDate, getEpochByIcsTime
-from scal2.vcs_modules import encodeShortStat, getVcsModule
 
 dayLen = 24*3600
 
@@ -3293,8 +3292,18 @@ class VcsBaseEventGroup(EventGroup):
             return EventGroup.__getitem__(self, key)
         else:## len(commit_id)==40 for git
             return self.getEvent(key)
+    def getVcsModule(self):
+        name = toStr(self.vcsType)
+        #if not isinstance(name, str):
+        #    raise TypeError('getVcsModule(%r): bad type %s'%(name, type(name)))
+        try:
+            mod = __import__('scal2.vcs_modules', fromlist=[name])
+        except ImportError:
+            myRaise()
+            return
+        return getattr(mod, name)
     def updateVcsModuleObj(self):
-        mod = getVcsModule(self.vcsType)
+        mod = self.getVcsModule()
         mod.clearObj(self)
         if self.enable and self.vcsDir:
             try:
@@ -3373,7 +3382,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
         self.clear()
         if not self.vcsDir:
             return
-        mod = getVcsModule(self.vcsType)
+        mod = self.getVcsModule()
         try:
             commitsData = mod.getCommitList(self, startJd=self.startJd, endJd=self.endJd)
         except:
@@ -3390,7 +3399,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
         ###
         self.updateOccurrenceLog(stm0)
     def updateEventDesc(self, event):
-        mod = getVcsModule(self.vcsType)
+        mod = self.getVcsModule()
         lines = []
         if event.description:
             lines.append(event.description)
@@ -3404,7 +3413,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
             lines.append(_('Hash')+': '+event.shortHash)
         event.description = '\n'.join(lines)
     def getEvent(self, commit_id):## cache commit data FIXME
-        mod = getVcsModule(self.vcsType)
+        mod = self.getVcsModule()
         data = mod.getCommitInfo(self, commit_id)
         if not data:
             raise ValueError('No commit with id=%r'%commit_id)
@@ -3436,7 +3445,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
         self.clear()
         if not self.vcsDir:
             return
-        mod = getVcsModule(self.vcsType)
+        mod = self.getVcsModule()
         try:
             tagsData = mod.getTagList(self, self.startJd, self.endJd)## TOO SLOW
         except:
@@ -3454,7 +3463,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
         ###
         self.updateOccurrenceLog(stm0)
     def updateEventDesc(self, event):
-        mod = getVcsModule(self.vcsType)
+        mod = self.getVcsModule()
         tag = event.id
         lines = []
         if self.showStat:
@@ -3526,7 +3535,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
         self.clear()
         if not self.vcsDir:
             return
-        mod = getVcsModule(self.vcsType)
+        mod = self.getVcsModule()
         ####
         try:
             utc = pytz.timezone('UTC')
@@ -3557,11 +3566,12 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
         ###
         self.updateOccurrenceLog(stm0)
     def getEvent(self, jd):## cache commit data FIXME
+        from scal2.vcs_modules import encodeShortStat
         try:
             commitsCount, stat = self.statByJd[jd]
         except KeyError:
             raise ValueError('No commit for jd %s'%jd)
-        mod = getVcsModule(self.vcsType)
+        mod = self.getVcsModule()
         event = VcsDailyStatEvent(self, jd)
         ###
         event.icon = self.icon

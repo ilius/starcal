@@ -39,17 +39,6 @@ vcsModuleNames = [
 ]
 
 
-def getVcsModule(name):
-    name = toStr(name)
-    #if not isinstance(name, str):
-    #    raise TypeError('getVcsModule(%r): bad type %s'%(name, type(name)))
-    try:
-        mod = __import__('scal2.vcs_modules', fromlist=[name])
-    except ImportError:
-        #vcsModuleNames.remove(name)
-        myRaise()
-        return
-    return getattr(mod, name)
     
 
 
