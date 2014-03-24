@@ -391,12 +391,6 @@ def epochDateTimeEncode(epoch):
     jd, hour, minute, sec = getJhmsFromEpoch(epoch)
     return dateEncode(jd_to_primary(jd)) + ', ' + timeEncode((hour, minute, sec))
 
-showInfo = lambda: log.debug('%s %s, OS: %s, Python %s'%(
-    APP_DESC,
-    VERSION,
-    getOsFullDesc(),
-    str(sys.version).replace('\n', ' '),
-))
 
 def fixStrForFileName(fname):
     fname = fname.replace('/', '_').replace('\\', '_')

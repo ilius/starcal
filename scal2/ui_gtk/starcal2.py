@@ -47,8 +47,6 @@ from scal2.utils import versionLessThan
 from scal2.cal_types import calTypes
 from scal2 import core
 
-#core.showInfo()
-
 from scal2 import locale_man
 from scal2.locale_man import rtl, lang ## import scal2.locale_man after core
 #_ = locale_man.loadTranslator(False)## FIXME
