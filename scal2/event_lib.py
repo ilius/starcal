@@ -1506,22 +1506,42 @@ class Event(JsonSObjBase, RuleContainer):
         try:
             return self['start'].getJd()
         except KeyError:
-            return self.parent.startJd
+            pass
+        try:
+            return self['date'].getJd()
+        except KeyError:
+            pass
+        return self.parent.startJd
     def getEndJd(self):## FIXME
         try:
             return self['end'].getJd()
         except KeyError:
-            return self.parent.endJd
+            pass
+        try:
+            return self['date'].getJd()
+        except KeyError:
+            pass
+        return self.parent.endJd
     def getStartEpoch(self):## FIXME
         try:
             return self['start'].getEpoch()
         except KeyError:
-            return getEpochFromJd(self.parent.startJd)
+            pass
+        try:
+            return self['date'].getEpoch()
+        except KeyError:
+            pass
+        return getEpochFromJd(self.parent.startJd)
     def getEndEpoch(self):## FIXME
         try:
             return self['end'].getEpoch()
         except KeyError:
-            return self.getEpochFromJd(self.parent.endJd)
+            pass
+        try:
+            return self['date'].getEpoch()
+        except KeyError:
+            pass
+        return self.getEpochFromJd(self.parent.endJd)
     getJd = lambda self: self.getStartJd()
     setJd = lambda self, jd: None
     setJdExact = lambda self, jd: self.setJd(jd)
