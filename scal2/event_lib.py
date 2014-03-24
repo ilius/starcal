@@ -29,13 +29,13 @@ from scal2.lib import OrderedDict
 
 from .path import *
 
-from scal2.utils import printError, ifloor, iceil, findNearestIndex, myRaiseTback
+from scal2.utils import printError, ifloor, iceil, findNearestIndex, myRaise, myRaiseTback
 from scal2.utils import toStr
 from scal2.os_utils import makeDir
 from scal2.interval_utils import *
 from scal2.time_utils import *
 from scal2.date_utils import *
-from scal2.json_utils import *
+from scal2.json_utils import jsonToData
 from scal2.color_utils import hslToRgb
 from scal2.ics import *
 
@@ -48,7 +48,7 @@ from scal2.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG, getSysDa
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName, textNumEncode
 from scal2 import core
-from scal2.core import myRaise, log, getAbsWeekNumberFromJd, dataToJson, jwday, jd_to_primary
+from scal2.core import log, getAbsWeekNumberFromJd, jwday, jd_to_primary
 
 from scal2.ics import icsHeader, getIcsTimeByEpoch, getIcsDateByJd, getJdByIcsDate, getEpochByIcsTime
 
