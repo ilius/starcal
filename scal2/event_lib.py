@@ -2446,20 +2446,18 @@ class EventGroup(EventContainer):
         else:
             return self.sortByDefault, l
     def getSortByValue(self, event, attr):
-        if attr=='time_last':
+        if attr in ('time_last', 'time_first'):
+            if event.isSingleOccur:
+                epoch = event.getStartEpoch()
+                if epoch is not None:
+                    return epoch
             if self.enable:
-                last = self.occur.getLastOfEvent(event.id)
+                method = self.occur.getLastOfEvent if 'time_last' else self.occur.getFirstOfEvent
+                last = method(event.id)
                 if last:
                     return last[0]
                 else:
                     print('no time_last returned for event %s'%event.id)
-                    return None
-        elif attr=='time_first':
-            if self.enable:
-                first = self.occur.getFirstOfEvent(event.id)
-                if first:
-                    return first[0]
-                else:
                     return None
         return getattr(event, attr, None)
     def sort(self, attr='summary', reverse=False):
