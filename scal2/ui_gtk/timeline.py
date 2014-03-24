@@ -568,8 +568,7 @@ class TimeLineWindow(gtk.Window, ud.BaseCalObj):
         return True
     def buttonPress(self, obj, event):
         if event.button==1:
-            px, py, mask = ud.rootWindow.get_pointer()
-            self.begin_move_drag(event.button, px, py, event.time)
+            self.begin_move_drag(event.button, int(event.x_root), int(event.y_root), event.time)
             return True
         return False
 

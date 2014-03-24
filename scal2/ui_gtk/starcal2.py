@@ -413,8 +413,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             self.menuMain.popup(None, None, None, 3, event.time)
             ui.updateFocusTime()
         elif b==1:
-            x, y, mask = ud.rootWindow.get_pointer()
-            self.begin_move_drag(event.button, x, y, event.time)
+            self.begin_move_drag(event.button, int(event.x_root), int(event.y_root), event.time)
         return False
     def startResize(self, widget, event):
         if self.menuMain:
