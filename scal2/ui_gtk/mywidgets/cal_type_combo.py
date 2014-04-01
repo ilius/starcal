@@ -7,7 +7,8 @@ from scal2.ui_gtk.utils import IdComboBox
 class CalTypeCombo(IdComboBox):
     def __init__(self):## , showInactive=True FIXME
         ls = gtk.ListStore(int, str)
-        gtk.ComboBox.__init__(self, ls)
+        gtk.ComboBox.__init__(self)
+        self.set_model(ls)
         ###
         cell = gtk.CellRendererText()
         pack(self, cell, True)

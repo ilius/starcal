@@ -5,7 +5,8 @@ from scal2.ui_gtk import *
 class WeekDayComboBox(gtk.ComboBox):
     def __init__(self):
         ls = gtk.ListStore(str)
-        gtk.ComboBox.__init__(self, ls)
+        gtk.ComboBox.__init__(self)
+        self.set_model(ls)
         self.firstWeekDay = core.firstWeekDay
         ###
         cell = gtk.CellRendererText()

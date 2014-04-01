@@ -7,7 +7,8 @@ class MonthComboBox(gtk.ComboBox):
         self.includeEvery = includeEvery
         ###
         ls = gtk.ListStore(str)
-        gtk.ComboBox.__init__(self, ls)
+        gtk.ComboBox.__init__(self)
+        self.set_model(ls)
         ###
         cell = gtk.CellRendererText()
         pack(self, cell, True)

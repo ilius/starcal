@@ -11,7 +11,9 @@ from scal2.ui_gtk import *
 class TimeZoneComboBoxEntry(gtk.ComboBoxEntry):
     def __init__(self):
         model = gtk.TreeStore(str, bool)
-        gtk.ComboBoxEntry.__init__(self, model, 0)
+        gtk.ComboBoxEntry.__init__(self)
+        self.set_model(model)
+        self.set_entry_text_column(0)
         self.add_attribute(self.get_cells()[0], 'sensitive', 1)
         self.connect('changed', self.onChanged)
         child = self.get_child()

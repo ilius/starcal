@@ -33,7 +33,8 @@ class BaseWidgetClass(gtk.VBox):
 class AccountCombo(IdComboBox):
     def __init__(self):
         ls = gtk.ListStore(int, str)
-        gtk.ComboBox.__init__(self, ls)
+        gtk.ComboBox.__init__(self)
+        self.set_model(ls)
         ###
         cell = gtk.CellRendererText()
         pack(self, cell, 1)
@@ -62,7 +63,8 @@ class AccountGroupCombo(IdComboBox):
         self.account = None
         ###
         ls = gtk.ListStore(str, str)
-        gtk.ComboBox.__init__(self, ls)
+        gtk.ComboBox.__init__(self)
+        self.set_model(ls)
         ###
         cell = gtk.CellRendererText()
         pack(self, cell, 1)

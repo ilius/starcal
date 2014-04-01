@@ -9,7 +9,8 @@ class DirectionComboBox(gtk.ComboBox):
     ]
     def __init__(self):
         ls = gtk.ListStore(str)
-        gtk.ComboBox.__init__(self, ls)
+        gtk.ComboBox.__init__(self)
+        self.set_model(ls)
         ###
         cell = gtk.CellRendererText()
         pack(self, cell, True)

@@ -164,7 +164,8 @@ class ComboImageTextPrefItem(PrefItem):
         self.varName = varName
         ###
         ls = gtk.ListStore(gdk.Pixbuf, str)
-        combo = gtk.ComboBox(ls)
+        combo = gtk.ComboBox()
+        combo.set_model(ls)
         ###
         cell = gtk.CellRendererPixbuf()
         pack(combo, cell, False)
@@ -407,7 +408,8 @@ class LangPrefItem(PrefItem):
         self.varName = 'lang'
         ###
         ls = gtk.ListStore(gdk.Pixbuf, str)
-        combo = gtk.ComboBox(ls)
+        combo = gtk.ComboBox()
+        combo.set_model(ls)
         ###
         cell = gtk.CellRendererPixbuf()
         pack(combo, cell, False)
