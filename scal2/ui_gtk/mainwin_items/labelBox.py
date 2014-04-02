@@ -85,21 +85,24 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
         #self.set_border_width(1)#???????????
         self.initVars()
         self.mode = mode
-        s = _(getMonthName(self.mode, active+1))
-        if ui.boldYmLabel:
-            s = '<b>%s</b>'%s
-        self.label = gtk.Label(s)
+        self.label = gtk.Label()
         self.label.set_use_markup(True)
         self.add(self.label)
-        menu = gtk.Menu()
-        menu.set_border_width(0)
-        menuLabels = []
+        self.menu = gtk.Menu()
+        self.menu.set_border_width(0)
+        self.menuLabels = []
+        self.connect('button-press-event', self.buttonPress)
+        self.active = active
+        self.setActive(active)
+    def createMenuLabels(self):
+        if self.menuLabels:
+            return
         for i in range(12):
             if ui.monthRMenuNum:
                 text = '%s: %s'%(self.getItemStr(i), _(getMonthName(self.mode, i+1)))
             else:
                 text = _(getMonthName(self.mode, i+1))
-            if i==active:
+            if i==self.active:
                 text = self.getActiveStr(text)
             label = gtk.Label(text)
             #label.set_justify(gtk.JUSTIFY_LEFT)
@@ -109,29 +112,25 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
             item.set_right_justified(True) ##?????????
             item.add(label)
             item.connect('activate', self.itemActivate, i)
-            menu.append(item)
-            menuLabels.append(label)
-        menu.show_all()
-        self.menu = menu
-        self.menuLabels = menuLabels
-        self.connect('button-press-event', self.buttonPress)
-        self.active = active
-        self.setActive(active)
+            self.menu.append(item)
+            self.menuLabels.append(label)
+        self.menu.show_all()
     def setActive(self, active):
     ## (Performance) update menu here, or make menu entirly before popup ????????????????
         s = getMonthName(self.mode, active+1)
         s2 = getMonthName(self.mode, self.active+1)
-        if ui.monthRMenuNum:
-            self.menuLabels[self.active].set_label(
-                '%s: %s'%(
-                    self.getItemStr(self.active),
-                    s2,
+        if self.menuLabels:
+            if ui.monthRMenuNum:
+                self.menuLabels[self.active].set_label(
+                    '%s: %s'%(
+                        self.getItemStr(self.active),
+                        s2,
+                    )
                 )
-            )
-            self.menuLabels[active].set_label(self.getActiveStr('%s: %s'%(self.getItemStr(active), s)))
-        else:
-            self.menuLabels[self.active].set_label(s2)
-            self.menuLabels[active].set_label(self.getActiveStr(s))
+                self.menuLabels[active].set_label(self.getActiveStr('%s: %s'%(self.getItemStr(active), s)))
+            else:
+                self.menuLabels[self.active].set_label(s2)
+                self.menuLabels[active].set_label(self.getActiveStr(s))
         if ui.boldYmLabel:
             self.label.set_label('<b>%s</b>'%s)
         else:
@@ -158,6 +157,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
         self.onDateChange()
     def buttonPress(self, widget, event):
         if event.button==3:
+            self.createMenuLabels()
             x, y = self.get_window().get_origin()
             y += self.get_allocation().height
             #if rtl:
@@ -195,47 +195,7 @@ class IntLabel(BaseLabel):
         self.label = gtk.Label(s)
         self.label.set_use_markup(True)
         self.add(self.label)
-        menu = gtk.Menu()
-        ##########
-        item = gtk.MenuItem()
-        arrow = gtk.Arrow(gtk.ARROW_UP, gtk.SHADOW_IN)
-        item.add(arrow)
-        arrow.set_property('height-request', 10)
-        #item.set_border_width(0)
-        #item.set_property('height-request', 10)
-        #print(item.style_get_property('horizontal-padding') ## OK)
-        ###???????????????????????????????????
-        #item.config('horizontal-padding'=0)
-        #style = item.get_style()
-        #style.set_property('horizontal-padding', 0)
-        #item.set_style(style)
-        menu.append(item)
-        item.connect('select', self.arrowSelect, -1)
-        item.connect('deselect', self.arrowDeselect)
-        item.connect('activate', lambda wid: False)
-        ##########
-        menuLabels = []
-        for i in range(height):
-            label = gtk.Label()
-            label.set_use_markup(True)
-            item = gtk.MenuItem()
-            item.add(label)
-            item.connect('activate', self.itemActivate, i)
-            menu.append(item)
-            menuLabels.append(label)
-        menu.connect('scroll-event', self.menuScroll)
-        ##########
-        item = gtk.MenuItem()
-        arrow = gtk.Arrow(gtk.ARROW_DOWN, gtk.SHADOW_IN)
-        arrow.set_property('height-request', 10)
-        item.add(arrow)
-        menu.append(item)
-        item.connect('select', self.arrowSelect, 1)
-        item.connect('deselect', self.arrowDeselect)
-        ##########
-        menu.show_all()
-        self.menu = menu
-        self.menuLabels = menuLabels
+        self.menu = None
         self.connect('button-press-event', self.buttonPress)
         self.active = active
         self.setActive(active)
@@ -250,7 +210,50 @@ class IntLabel(BaseLabel):
         else:
             self.label.set_label(_(active))
         self.active = active
+    def createMenu(self):
+        if self.menu:
+            return
+        self.menu = gtk.Menu()
+        self.menuLabels = []
+        self.menu.connect('scroll-event', self.menuScroll)
+        ##########
+        item = gtk.MenuItem()
+        arrow = gtk.Arrow(gtk.ARROW_UP, gtk.SHADOW_IN)
+        item.add(arrow)
+        arrow.set_property('height-request', 10)
+        #item.set_border_width(0)
+        #item.set_property('height-request', 10)
+        #print(item.style_get_property('horizontal-padding') ## OK)
+        ###???????????????????????????????????
+        #item.config('horizontal-padding'=0)
+        #style = item.get_style()
+        #style.set_property('horizontal-padding', 0)
+        #item.set_style(style)
+        self.menu.append(item)
+        item.connect('select', self.arrowSelect, -1)
+        item.connect('deselect', self.arrowDeselect)
+        item.connect('activate', lambda wid: False)
+        ##########
+        for i in range(self.height):
+            label = gtk.Label()
+            label.set_use_markup(True)
+            item = gtk.MenuItem()
+            item.add(label)
+            item.connect('activate', self.itemActivate, i)
+            self.menu.append(item)
+            self.menuLabels.append(label)
+        ##########
+        item = gtk.MenuItem()
+        arrow = gtk.Arrow(gtk.ARROW_DOWN, gtk.SHADOW_IN)
+        arrow.set_property('height-request', 10)
+        item.add(arrow)
+        self.menu.append(item)
+        item.connect('select', self.arrowSelect, 1)
+        item.connect('deselect', self.arrowDeselect)
+        ##########
+        self.menu.show_all()
     def updateMenu(self, start=None):
+        self.createMenu()
         if start==None:
             start = self.active - self.height//2
         self.start = start
