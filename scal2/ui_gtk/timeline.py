@@ -43,7 +43,7 @@ from scal2.ui_gtk.drawing import setColor, fillColor, newTextLayout, Button
 from scal2.ui_gtk import gtk_ud as ud
 #from scal2.ui_gtk import preferences
 from scal2.ui_gtk.timeline_box import *
-from scal2.ui_gtk.event.common import EventEditorDialog, GroupEditorDialog, confirmEventTrash
+
 import scal2.ui_gtk.event.main
 
 
@@ -386,6 +386,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
         ud.BaseCalObj.onConfigChange(self, *a, **kw)
         self.queue_draw()
     def editEventClicked(self, menu, winTitle, event, gid):
+        from scal2.ui_gtk.event.editor import EventEditorDialog
         event = EventEditorDialog(
             event,
             title=winTitle,
@@ -396,6 +397,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
         ui.reloadGroups.append(gid)
         self.onConfigChange()
     def editGroupClicked(self, menu, winTitle, group):
+        from scal2.ui_gtk.event.group.editor import GroupEditorDialog
         group = GroupEditorDialog(group).run()
         if group is not None:
             group.afterModify()
@@ -404,6 +406,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
             ud.windowList.onConfigChange()
             self.queue_draw()
     def moveEventToTrash(self, menu, group, event):
+        from scal2.ui_gtk.event.utils import confirmEventTrash
         if not confirmEventTrash(event):
             return
         eventIndex = group.index(event.id)
@@ -549,8 +552,7 @@ class TimeLineWindow(gtk.Window, ud.BaseCalObj):
         return True
     def buttonPress(self, obj, event):
         if event.button==1:
-            foo, px, py, mask = ud.rootWindow.get_pointer()
-            self.begin_move_drag(event.button, px, py, event.time)
+            self.begin_move_drag(event.button, int(event.x_root), int(event.y_root), event.time)
             return True
         return False
 

@@ -83,6 +83,9 @@ class WidgetClass(common.WidgetClass):
         self.groups[rule.sgroup].add_widget(lab)
         #pack(hbox, gtk.Label(''), 1, 1)
         inputWidget = makeWidget(rule)
+        if not inputWidget:
+            print('failed to create inpout widget for rule %s'%rule.name)
+            return
         if rule.expand:
             pack(hbox, inputWidget, 1, 1)
         else:
@@ -105,6 +108,8 @@ class WidgetClass(common.WidgetClass):
         comboItems = [ruleClass.name for ruleClass in event_lib.classes.rule]
         for rule in self.event:
             hbox = self.makeRuleHbox(rule)
+            if not hbox:
+                continue
             pack(self.rulesBox, hbox)
             #hbox.show_all()
             comboItems.remove(rule.name)
@@ -164,6 +169,8 @@ class WidgetClass(common.WidgetClass):
         if not ok:
             return
         hbox = self.makeRuleHbox(rule)
+        if not hbox:
+            return
         pack(self.rulesBox, hbox)
         del self.addRuleModel[ci]
         n = len(self.addRuleModel)

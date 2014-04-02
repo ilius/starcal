@@ -921,6 +921,7 @@ class PrefDialog(gtk.Dialog):
         self.plugButtonAbout.set_sensitive(plug.about!=None)
         self.plugButtonConf.set_sensitive(plug.has_config)
     def plugAboutClicked(self, obj=None):
+        from scal2.ui_gtk.about import AboutDialog
         cur = self.plugTreeview.get_cursor()[0]
         if cur==None:
             return

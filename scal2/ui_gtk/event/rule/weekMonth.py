@@ -5,7 +5,8 @@ from scal2.locale_man import tr as _
 from scal2 import event_lib
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.utils import WeekDayComboBox, MonthComboBox
+from scal2.ui_gtk.mywidgets.weekday_combo import WeekDayComboBox
+from scal2.ui_gtk.mywidgets.month_combo import MonthComboBox
 
 class WidgetClass(gtk.HBox):
     def __init__(self, rule):

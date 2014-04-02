@@ -26,9 +26,8 @@ from scal2 import ui
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import imageFromFile, labelStockMenuItem, labelImageMenuItem, setClipboard
-from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk import gtk_ud as ud
-from scal2.ui_gtk.event.common import EventEditorDialog, confirmEventTrash, menuItemFromEventGroup
+
 
 @registerSignals
 class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
@@ -133,6 +132,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
         ###
         self.onConfigChange()
     def onEventLabelPopup(self, label, menu, occurData):
+        from scal2.ui_gtk.event.utils import menuItemFromEventGroup
         menu = gtk.Menu()
         self.labelMenuAddCopyItems(label, menu)
         ####
@@ -200,19 +200,20 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
                 menu.add(copyOccurItem)
                 ###
                 menu.add(gtk.SeparatorMenuItem())
-                ###
-                menu.add(labelImageMenuItem(
-                    _('Move to %s') % ui.eventTrash.title,
-                    ui.eventTrash.icon,
-                    self.moveEventToTrash,
-                    event,
-                    groupId,
-                ))
+            ###
+            menu.add(labelImageMenuItem(
+                _('Move to %s') % ui.eventTrash.title,
+                ui.eventTrash.icon,
+                self.moveEventToTrash,
+                event,
+                groupId,
+            ))
         ####
         menu.show_all()
         menu.popup(None, None, None, 3, 0)
         ui.updateFocusTime()
     def editEventClicked(self, item, winTitle, event, groupId):
+        from scal2.ui_gtk.event.editor import EventEditorDialog
         event = EventEditorDialog(
             event,
             title=winTitle,
@@ -223,6 +224,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
         ui.reloadGroups.append(groupId)
         self.onConfigChange()
     def moveEventToTrash(self, item, event, groupId):
+        from scal2.ui_gtk.event.utils import confirmEventTrash
         #if not confirm(_('Press OK if you are sure to move event "%s" to trash')%event.summary):
         #    return
         if not confirmEventTrash(event):

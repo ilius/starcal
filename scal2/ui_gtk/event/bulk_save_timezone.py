@@ -24,10 +24,11 @@ from scal2.locale_man import tr as _
 from scal2 import ui
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.utils import dialog_add_button, TimeZoneComboBoxEntry
+from scal2.ui_gtk.utils import dialog_add_button
 
 class BulkSaveTimeZoneDialog(gtk.Dialog):
     def __init__(self):
+        from scal2.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
         gtk.Dialog.__init__(self)
         self.set_title(_('Time Zone'))
         ####

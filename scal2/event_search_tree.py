@@ -140,23 +140,26 @@ class EventSearchTree:
         if debug:
             from time import strftime, localtime
             f = '%F, %T'
-            print('EventSearchTree.add: %s\t%s'%(
+            print('EventSearchTree.add: %s\t%s\t%s'%(
+                eid,
                 strftime(f, localtime(t0)),
                 strftime(f, localtime(t1)),
             ))
+        ###
+        if t0 == t1:
+            t1 += epsTm ## needed? FIXME
+        mt = (t0 + t1)/2.0
+        dt = (t1 - t0)/2.0
+        ###
         try:
-            if t0 == t1:
-                t1 += epsTm ## needed? FIXME
-            mt = (t0 + t1)/2.0
-            dt = (t1 - t0)/2.0
             self.root = self.addStep(self.root, t0, t1, mt, dt, eid)
-            try:
-                hp = self.byId[eid]
-            except KeyError:
-                hp = self.byId[eid] = MaxHeap()
-            hp.push(mt, dt)## FIXME
         except:
             myRaise()
+        try:
+            hp = self.byId[eid]
+        except KeyError:
+            hp = self.byId[eid] = MaxHeap()
+        hp.push(mt, dt)## FIXME
     def searchStep(self, node, t0, t1):
         if not node:
             raise StopIteration

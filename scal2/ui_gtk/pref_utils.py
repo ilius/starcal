@@ -164,7 +164,8 @@ class ComboImageTextPrefItem(PrefItem):
         self.varName = varName
         ###
         ls = gtk.ListStore(GdkPixbuf.Pixbuf, str)
-        combo = gtk.ComboBox(ls)
+        combo = gtk.ComboBox()
+        combo.set_model(ls)
         ###
         cell = gtk.CellRendererPixbuf()
         pack(combo, cell, False)

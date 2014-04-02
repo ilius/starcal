@@ -24,7 +24,8 @@ from scal2.locale_man import tr as _
 from scal2 import ui
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, dialog_add_button, tree_path_split
+from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, dialog_add_button
+from scal2.ui_gtk.tree_utils import tree_path_split
 from scal2.ui_gtk.customize import confPath
 
 class CustomizeDialog(gtk.Dialog):

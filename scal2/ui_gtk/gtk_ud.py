@@ -85,9 +85,14 @@ class BaseCalObj(Object):
         pass
     def showHide(self):
         try:
-            self.set_visible(self.enable)
+            func = self.show if self.enable else self.hide
         except AttributeError:
-            pass
+            try:      
+                self.set_visible(self.enable)
+            except AttributeError:
+                pass
+        else:
+            func()
         for item in self.items:
             item.showHide()
 

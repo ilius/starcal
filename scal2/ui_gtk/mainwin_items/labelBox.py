@@ -25,7 +25,7 @@ from scal2.locale_man import getMonthName, rtl
 from scal2.locale_man import tr as _
 from scal2 import ui
 
-from gi.repository.GObject import timeout_add
+from gi.repository import GObject as gobject
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
@@ -278,7 +278,7 @@ class IntLabel(BaseLabel):
             return False
     def arrowSelect(self, item, plus):
         self.remain = plus
-        timeout_add(int(ui.labelMenuDelay*1000), self.arrowRemain, plus)
+        gobject.timeout_add(int(ui.labelMenuDelay*1000), self.arrowRemain, plus)
     def arrowDeselect(self, item):
         self.remain = 0
     def arrowRemain(self, plus):

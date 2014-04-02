@@ -1,9 +1,10 @@
 import pytz
 
+from scal2.utils import myRaise
 from scal2.locale_man import tr as _
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.utils import myRaise, CalTypeCombo, dialog_add_button, TimeZoneComboBoxEntry
+from scal2.ui_gtk.utils import dialog_add_button
 from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 
@@ -53,6 +54,7 @@ class GroupSortDialog(gtk.Dialog):
 
 class GroupConvertModeDialog(gtk.Dialog):
     def __init__(self, group):
+        from scal2.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
         self._group = group
         gtk.Dialog.__init__(self)
         self.set_title(_('Convert Calendar Type'))
@@ -95,6 +97,7 @@ class GroupConvertModeDialog(gtk.Dialog):
 
 class GroupBulkEditDialog(gtk.Dialog):
     def __init__(self, group):
+        from scal2.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
         self._group = group
         gtk.Dialog.__init__(self)
         self.set_title(_('Bulk Edit Events'))

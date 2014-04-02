@@ -47,8 +47,6 @@ from scal2.utils import versionLessThan
 from scal2.cal_types import calTypes
 from scal2 import core
 
-#core.showInfo()
-
 from scal2 import locale_man
 from scal2.locale_man import rtl, lang ## import scal2.locale_man after core
 #_ = locale_man.loadTranslator(False)## FIXME
@@ -401,8 +399,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             self.menuMain.popup(None, None, None, None, 3, event.time)
             ui.updateFocusTime()
         elif b==1:
-            foo, x, y, mask = ud.rootWindow.get_pointer()
-            self.begin_move_drag(event.button, x, y, event.time)
+            self.begin_move_drag(event.button, int(event.x_root), int(event.y_root), event.time)
         return False
     def childButtonPress(self, widget, event):
         b = event.button
@@ -575,7 +572,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         menu.popup(None, None, lambda m, e: (x, y, True), None, 3, etime)
         ui.updateFocusTime()
     def addToGroupFromMenu(self, menu, group, eventType):
-        from scal2.ui_gtk.event.common import addNewEvent
+        from scal2.ui_gtk.event.editor import addNewEvent
         #print('addToGroupFromMenu', group.title, eventType)
         title = _('Add ') + event_lib.classes.event.byName[eventType].desc
         event = addNewEvent(group, eventType, title, parent=self, useSelectedDate=True)
@@ -685,6 +682,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
     def trayPopup(self, sicon, button, etime):
         menu = gtk.Menu()
         if os.sep == '\\':
+            from scal2.ui_gtk.windows import setupMenuHideOnLeave
             setupMenuHideOnLeave(menu)
         items = self.getTrayPopupItems()
         # items.insert(0, self.getMainWinMenuItem())## FIXME
@@ -824,6 +822,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         Popen(ud.adjustTimeCmd)
     def aboutShow(self, obj=None, data=None):
         if not self.aboutDialog:
+            from scal2.ui_gtk.about import AboutDialog
             dialog = AboutDialog(
                 name=core.APP_DESC,
                 version=core.VERSION,

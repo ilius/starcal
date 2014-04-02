@@ -29,12 +29,13 @@ from scal2.lib import OrderedDict
 
 from .path import *
 
-from scal2.utils import printError, ifloor, iceil, findNearestIndex, myRaiseTback
+from scal2.utils import printError, ifloor, iceil, findNearestIndex, myRaise, myRaiseTback
+from scal2.utils import toStr
 from scal2.os_utils import makeDir
 from scal2.interval_utils import *
 from scal2.time_utils import *
 from scal2.date_utils import *
-from scal2.json_utils import *
+from scal2.json_utils import jsonToData
 from scal2.color_utils import hslToRgb
 from scal2.ics import *
 
@@ -47,10 +48,9 @@ from scal2.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG, getSysDa
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName, textNumEncode
 from scal2 import core
-from scal2.core import myRaise, log, getAbsWeekNumberFromJd, dataToJson, jwday, jd_to_primary
+from scal2.core import log, getAbsWeekNumberFromJd, jwday, jd_to_primary
 
 from scal2.ics import icsHeader, getIcsTimeByEpoch, getIcsDateByJd, getJdByIcsDate, getEpochByIcsTime
-from scal2.vcs_modules import encodeShortStat, getVcsModule
 
 dayLen = 24*3600
 
@@ -1504,22 +1504,42 @@ class Event(JsonSObjBase, RuleContainer):
         try:
             return self['start'].getJd()
         except KeyError:
-            return self.parent.startJd
+            pass
+        try:
+            return self['date'].getJd()
+        except KeyError:
+            pass
+        return self.parent.startJd
     def getEndJd(self):## FIXME
         try:
             return self['end'].getJd()
         except KeyError:
-            return self.parent.endJd
+            pass
+        try:
+            return self['date'].getJd()
+        except KeyError:
+            pass
+        return self.parent.endJd
     def getStartEpoch(self):## FIXME
         try:
             return self['start'].getEpoch()
         except KeyError:
-            return getEpochFromJd(self.parent.startJd)
+            pass
+        try:
+            return self['date'].getEpoch()
+        except KeyError:
+            pass
+        return getEpochFromJd(self.parent.startJd)
     def getEndEpoch(self):## FIXME
         try:
             return self['end'].getEpoch()
         except KeyError:
-            return self.getEpochFromJd(self.parent.endJd)
+            pass
+        try:
+            return self['date'].getEpoch()
+        except KeyError:
+            pass
+        return self.getEpochFromJd(self.parent.endJd)
     getJd = lambda self: self.getStartJd()
     setJd = lambda self, jd: None
     setJdExact = lambda self, jd: self.setJd(jd)
@@ -2424,20 +2444,18 @@ class EventGroup(EventContainer):
         else:
             return self.sortByDefault, l
     def getSortByValue(self, event, attr):
-        if attr=='time_last':
+        if attr in ('time_last', 'time_first'):
+            if event.isSingleOccur:
+                epoch = event.getStartEpoch()
+                if epoch is not None:
+                    return epoch
             if self.enable:
-                last = self.occur.getLastOfEvent(event.id)
+                method = self.occur.getLastOfEvent if 'time_last' else self.occur.getFirstOfEvent
+                last = method(event.id)
                 if last:
                     return last[0]
                 else:
                     print('no time_last returned for event %s'%event.id)
-                    return None
-        elif attr=='time_first':
-            if self.enable:
-                first = self.occur.getFirstOfEvent(event.id)
-                if first:
-                    return first[0]
-                else:
                     return None
         return getattr(event, attr, None)
     def sort(self, attr='summary', reverse=False):
@@ -3290,8 +3308,18 @@ class VcsBaseEventGroup(EventGroup):
             return EventGroup.__getitem__(self, key)
         else:## len(commit_id)==40 for git
             return self.getEvent(key)
+    def getVcsModule(self):
+        name = toStr(self.vcsType)
+        #if not isinstance(name, str):
+        #    raise TypeError('getVcsModule(%r): bad type %s'%(name, type(name)))
+        try:
+            mod = __import__('scal2.vcs_modules', fromlist=[name])
+        except ImportError:
+            myRaise()
+            return
+        return getattr(mod, name)
     def updateVcsModuleObj(self):
-        mod = getVcsModule(self.vcsType)
+        mod = self.getVcsModule()
         mod.clearObj(self)
         if self.enable and self.vcsDir:
             try:
@@ -3370,7 +3398,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
         self.clear()
         if not self.vcsDir:
             return
-        mod = getVcsModule(self.vcsType)
+        mod = self.getVcsModule()
         try:
             commitsData = mod.getCommitList(self, startJd=self.startJd, endJd=self.endJd)
         except:
@@ -3387,7 +3415,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
         ###
         self.updateOccurrenceLog(stm0)
     def updateEventDesc(self, event):
-        mod = getVcsModule(self.vcsType)
+        mod = self.getVcsModule()
         lines = []
         if event.description:
             lines.append(event.description)
@@ -3401,7 +3429,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
             lines.append(_('Hash')+': '+event.shortHash)
         event.description = '\n'.join(lines)
     def getEvent(self, commit_id):## cache commit data FIXME
-        mod = getVcsModule(self.vcsType)
+        mod = self.getVcsModule()
         data = mod.getCommitInfo(self, commit_id)
         if not data:
             raise ValueError('No commit with id=%r'%commit_id)
@@ -3433,7 +3461,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
         self.clear()
         if not self.vcsDir:
             return
-        mod = getVcsModule(self.vcsType)
+        mod = self.getVcsModule()
         try:
             tagsData = mod.getTagList(self, self.startJd, self.endJd)## TOO SLOW
         except:
@@ -3451,7 +3479,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
         ###
         self.updateOccurrenceLog(stm0)
     def updateEventDesc(self, event):
-        mod = getVcsModule(self.vcsType)
+        mod = self.getVcsModule()
         tag = event.id
         lines = []
         if self.showStat:
@@ -3523,7 +3551,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
         self.clear()
         if not self.vcsDir:
             return
-        mod = getVcsModule(self.vcsType)
+        mod = self.getVcsModule()
         ####
         try:
             utc = pytz.timezone('UTC')
@@ -3554,11 +3582,12 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
         ###
         self.updateOccurrenceLog(stm0)
     def getEvent(self, jd):## cache commit data FIXME
+        from scal2.vcs_modules import encodeShortStat
         try:
             commitsCount, stat = self.statByJd[jd]
         except KeyError:
             raise ValueError('No commit for jd %s'%jd)
-        mod = getVcsModule(self.vcsType)
+        mod = self.getVcsModule()
         event = VcsDailyStatEvent(self, jd)
         ###
         event.icon = self.icon
