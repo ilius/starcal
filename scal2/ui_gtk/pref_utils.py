@@ -34,9 +34,10 @@ from scal2.ui_gtk import *
 from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
 from scal2.ui_gtk.utils import *
-from scal2.ui_gtk.mywidgets import MyFontButton, MyColorButton
+
+
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
-from scal2.ui_gtk.mywidgets.font_family_combo import FontFamilyCombo
+
 from scal2.ui_gtk.pref_utils import *
 
 
@@ -142,6 +143,7 @@ class ComboTextPrefItem(PrefItem):
 
 class FontFamilyPrefItem(ComboTextPrefItem):
     def makeWidget(self):
+        from scal2.ui_gtk.mywidgets.font_family_combo import FontFamilyCombo
         return FontFamilyCombo(True)
     get = lambda self: self._widget.get_value()
     set = lambda self, value: self._widget.set_value(value)
@@ -193,6 +195,7 @@ class ComboImageTextPrefItem(PrefItem):
 
 class FontPrefItem(PrefItem):##????????????
     def __init__(self, module, varName, parent):
+        from scal2.ui_gtk.mywidgets import MyFontButton
         self.module = module
         self.varName = varName
         w = MyFontButton(parent)
@@ -225,6 +228,7 @@ class CheckPrefItem(PrefItem):
 
 class ColorPrefItem(PrefItem):
     def __init__(self, module, varName, useAlpha=False):
+        from scal2.ui_gtk.mywidgets import MyColorButton
         self.module = module
         self.varName = varName
         w = MyColorButton()
