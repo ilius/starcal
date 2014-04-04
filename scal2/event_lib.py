@@ -36,17 +36,12 @@ from scal2.interval_utils import *
 from scal2.time_utils import *
 from scal2.date_utils import *
 from scal2.json_utils import jsonToData
-from scal2.color_utils import hslToRgb
+
 
 from scal2.s_object import *
 
-#from scal2.time_line_tree import TimeLineTree
-from scal2.event_search_tree import EventSearchTree
-
 from scal2.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG, getSysDate
-
 from scal2 import ics
-
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName, textNumEncode
 from scal2 import core
@@ -2540,6 +2535,7 @@ class EventGroup(EventContainer):
         self.clearRemoteAttrs()
     def setRandomColor(self):
         import random
+        from scal2.color_utils import hslToRgb
         self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)## FIXME
     def clearRemoteAttrs(self):
         self.remoteIds = None## (accountId, groupId)
@@ -2731,6 +2727,8 @@ class EventGroup(EventContainer):
         for t0, t1 in event.calcOccurrenceAll().getTimeRangeList():
             self.addOccur(t0, t1, eid)
     def initOccurrence(self):
+        from scal2.event_search_tree import EventSearchTree
+        #from scal2.time_line_tree import TimeLineTree
         #self.occur = TimeLineTree(offset=self.getEpochFromJd(self.endJd))
         self.occur = EventSearchTree()
         #self.occurLoaded = False
