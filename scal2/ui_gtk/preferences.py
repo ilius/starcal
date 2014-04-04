@@ -23,23 +23,18 @@ import sys, os
 from os.path import join
 
 from scal2.path import *
+from scal2.utils import myRaise
 from scal2.cal_types import calTypes
 from scal2 import core
-from scal2.core import myRaise, convert, APP_DESC
 from scal2 import locale_man
 from scal2.locale_man import langSh
 from scal2.locale_man import tr as _
 from scal2 import plugin_man
 from scal2 import ui
-
 from scal2.ui_gtk import *
-from scal2.ui_gtk.font_utils import *
-from scal2.ui_gtk.color_utils import *
 from scal2.ui_gtk.utils import *
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.pref_utils import *
-from scal2.ui_gtk.export import ExportToIcsDialog
-from scal2.ui_gtk.event.account_op import AccountEditorDialog
 
 
 
@@ -755,6 +750,7 @@ class PrefDialog(gtk.Dialog):
     getAllPrefItems = lambda self: self.moduleOptions + self.localePrefItems + self.corePrefItems +\
                                    self.uiPrefItems + self.gtkPrefItems
     def apply(self, widget=None):
+        from scal2.ui_gtk.font_utils import gfontDecode
         ####### FIXME
         #print('fontDefault = %s'%ui.fontDefault)
         ui.fontDefault = gfontDecode(ud.settings.get_property('gtk-font-name'))
@@ -867,11 +863,11 @@ class PrefDialog(gtk.Dialog):
                 msg.destroy()
             """
             if ui.checkNeedRestart():
-                d = gtk.Dialog(_('Need Restart '+APP_DESC), self,
+                d = gtk.Dialog(_('Need Restart '+core.APP_DESC), self,
                     gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT | gtk.DIALOG_NO_SEPARATOR,
                     (gtk.STOCK_CANCEL, 0))
                 d.set_keep_above(True)
-                label = gtk.Label(_('Some preferences need for restart %s to apply.'%APP_DESC))
+                label = gtk.Label(_('Some preferences need for restart %s to apply.'%core.APP_DESC))
                 label.set_line_wrap(True)
                 pack(d.vbox, label)
                 resBut = d.add_button(_('_Restart'), 1)
@@ -954,6 +950,7 @@ class PrefDialog(gtk.Dialog):
             return
         plug.open_configure()
     def plugExportToIcsClicked(self, menu, plug):
+        from scal2.ui_gtk.export import ExportToIcsDialog
         ExportToIcsDialog(plug.exportToIcs, plug.desc).run()
     def plugTreevRActivate(self, treev, path, col):
         if col.get_title()==_('Description'):## FIXME
@@ -1112,6 +1109,7 @@ class PrefDialog(gtk.Dialog):
     def plugAddTreevRActivate(self, treev, path, col):
         self.plugAddDialogOK(None)## FIXME
     def editAccount(self, index):
+        from scal2.ui_gtk.event.account_op import AccountEditorDialog
         accountId = self.accountsTreestore[index][0]
         account = ui.eventAccounts[accountId]
         if not account.loaded:
@@ -1130,6 +1128,7 @@ class PrefDialog(gtk.Dialog):
         index = cur[0]
         self.editAccount(index)
     def accountsAddClicked(self, button):
+        from scal2.ui_gtk.event.account_op import AccountEditorDialog
         account = AccountEditorDialog().run()
         if account is None:
             return
