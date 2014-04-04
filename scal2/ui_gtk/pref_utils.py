@@ -38,8 +38,6 @@ from scal2.ui_gtk.utils import *
 
 from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
 
-from scal2.ui_gtk.pref_utils import *
-
 
 
 ## (VAR_NAME, bool,     CHECKBUTTON_TEXT)                 ## CheckButton
