@@ -500,7 +500,7 @@ class EventsTextColumn(Column):
         ui.wcal_eventsText_colorize = check.get_active()
         self.queue_draw()
     def getDayTextData(self, i):
-        from scal2.utils import escape
+        from scal2.xml_utils import escape
         data = []
         for item in self.wcal.status[i].eventsData:
             if not item['show'][1]:
