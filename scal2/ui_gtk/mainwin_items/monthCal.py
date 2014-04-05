@@ -21,16 +21,16 @@ from time import localtime
 from time import time as now
 
 import sys, os
-from os.path import join, isfile
-from math import pi, sqrt
+from math import sqrt
 
+from scal2.utils import myRaise
 from scal2.cal_types import calTypes
 from scal2 import core
-from scal2.core import log, myRaise, getMonthName, getMonthLen, pixDir
+from scal2.core import log
 from scal2.locale_man import rtl, rtlSgn
 from scal2.locale_man import tr as _
 from scal2 import ui
-from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
+from scal2.monthcal import getCurrentMonthStatus
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.drawing import *
@@ -535,7 +535,7 @@ class CalObj(gtk.Widget, CalBase):
             self.changeDate(
                 ui.cell.year,
                 ui.cell.month,
-                getMonthLen(ui.cell.year, ui.cell.month, calTypes.primary),
+                core.getMonthLen(ui.cell.year, ui.cell.month, calTypes.primary),
             )
         elif kname in ('page_up', 'k', 'p'):
             self.monthPlus(-1)
