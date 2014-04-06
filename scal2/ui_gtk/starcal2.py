@@ -62,7 +62,6 @@ from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import registerSignals
 from scal2.ui_gtk.utils import *
 #from scal2.ui_gtk.color_utils import rgbToGdkColor
-from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 #from ui_gtk.mywidgets2.multi_spin_button import DateButtonOption
 from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
@@ -443,6 +442,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             except AttributeError:
                 pass
     def getEventAddToMenuItem(self):
+        from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
         addToItem = labelStockMenuItem('_Add to', gtk.STOCK_ADD)
         menu2 = gtk.Menu()
         ##

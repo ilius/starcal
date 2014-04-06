@@ -5,7 +5,6 @@ from scal2 import ui
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 
-from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
 from scal2.ui_gtk.customize import CustomizableCalObj
 from scal2.ui_gtk.event.occurrence_view import DayOccurrenceView
 
@@ -15,6 +14,7 @@ class CalObj(DayOccurrenceView, CustomizableCalObj):## FIXME
         DayOccurrenceView.__init__(self)
         self.maxHeight = ui.eventViewMaxHeight
     def optionsWidgetCreate(self):
+        from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
         if self.optionsWidget:
             return
         self.optionsWidget = gtk.HBox()

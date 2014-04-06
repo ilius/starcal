@@ -36,21 +36,18 @@ from scal2.interval_utils import *
 from scal2.time_utils import *
 from scal2.date_utils import *
 from scal2.json_utils import jsonToData
-from scal2.color_utils import hslToRgb
-from scal2.ics import *
+
 
 from scal2.s_object import *
 
-#from scal2.time_line_tree import TimeLineTree
-from scal2.event_search_tree import EventSearchTree
-
 from scal2.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG, getSysDate
+from scal2 import ics
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName, textNumEncode
 from scal2 import core
 from scal2.core import log, getAbsWeekNumberFromJd, jwday, jd_to_primary
 
-from scal2.ics import icsHeader, getIcsTimeByEpoch, getIcsDateByJd, getJdByIcsDate, getEpochByIcsTime
+
 
 dayLen = 24*3600
 
@@ -1474,10 +1471,10 @@ class Event(JsonSObjBase, RuleContainer):
             return False
         if 'T' in data['DTEND']:
             return False
-        startJd = getJdByIcsDate(data['DTSTART'])
-        endJd = getJdByIcsDate(data['DTEND'])
+        startJd = ics.getJdByIcsDate(data['DTSTART'])
+        endJd = ics.getJdByIcsDate(data['DTEND'])
         if 'RRULE' in data:
-            rrule = dict(splitIcsValue(data['RRULE']))
+            rrule = dict(ics.splitIcsValue(data['RRULE']))
             if rrule['FREQ'] == 'YEARLY':
                 y0, m0, d0 = jd_to(startJd, self.mode)
                 y1, m1, d1 = jd_to(endJd, self.mode)
@@ -1553,8 +1550,8 @@ class SingleStartEndEvent(Event):
         self.getAddRule('start').setJdExact(jd)
         self.getAddRule('end').setJdExact(jd+1)
     getIcsData = lambda self, prettyDateTime=False: [
-        ('DTSTART', getIcsTimeByEpoch(self.getStartEpoch(), prettyDateTime)),
-        ('DTEND', getIcsTimeByEpoch(self.getEndEpoch(), prettyDateTime)),
+        ('DTSTART', ics.getIcsTimeByEpoch(self.getStartEpoch(), prettyDateTime)),
+        ('DTEND', ics.getIcsTimeByEpoch(self.getEndEpoch(), prettyDateTime)),
         ('TRANSP', 'OPAQUE'),
         ('CATEGORIES', self.name),## FIXME
     ]
@@ -1703,8 +1700,8 @@ class TaskEvent(SingleStartEndEvent):
             except KeyError:
                 pass
     def setIcsData(self, data):
-        self.setStartEpoch(getEpochByIcsTime(data['DTSTART']))
-        self.setEndEpoch(getEpochByIcsTime(data['DTEND']))## FIXME
+        self.setStartEpoch(ics.getEpochByIcsTime(data['DTSTART']))
+        self.setEndEpoch(ics.getEpochByIcsTime(data['DTEND']))## FIXME
         return True
 
 
@@ -1805,14 +1802,14 @@ class AllDayTaskEvent(SingleStartEndEvent):## overwrites getEndEpoch from Single
             return
         raise ValueError('no end date neither duration specified for task')
     getIcsData = lambda self, prettyDateTime=False: [
-        ('DTSTART', getIcsDateByJd(self.getJd(), prettyDateTime)),
-        ('DTEND', getIcsDateByJd(self.getEndJd(), prettyDateTime)),
+        ('DTSTART', ics.getIcsDateByJd(self.getJd(), prettyDateTime)),
+        ('DTEND', ics.getIcsDateByJd(self.getEndJd(), prettyDateTime)),
         ('TRANSP', 'OPAQUE'),
         ('CATEGORIES', self.name),## FIXME
     ]
     def setIcsData(self, data):
-        self.setJd(getJdByIcsDate(data['DTSTART']))
-        self.setEndJd(getJdByIcsDate(data['DTEND']))## FIXME
+        self.setJd(ics.getJdByIcsDate(data['DTSTART']))
+        self.setEndJd(ics.getJdByIcsDate(data['DTEND']))## FIXME
         return True
     def copyFrom(self, other):
         SingleStartEndEvent.copyFrom(self, other)
@@ -1846,13 +1843,13 @@ class DailyNoteEvent(Event):
     def getIcsData(self, prettyDateTime=False):
         jd = self.getJd()
         return [
-            ('DTSTART', getIcsDateByJd(jd, prettyDateTime)),
-            ('DTEND', getIcsDateByJd(jd+1, prettyDateTime)),
+            ('DTSTART', ics.getIcsDateByJd(jd, prettyDateTime)),
+            ('DTEND', ics.getIcsDateByJd(jd+1, prettyDateTime)),
             ('TRANSP', 'TRANSPARENT'),
             ('CATEGORIES', self.name),## FIXME
         ]
     def setIcsData(self, data):
-        self.setJd(getJdByIcsDate(data['DTSTART']))
+        self.setJd(ics.getJdByIcsDate(data['DTSTART']))
         return True
 
 @classes.event.register
@@ -1989,14 +1986,14 @@ class YearlyEvent(Event):
             DATE_GREG,
         )
         return [
-            ('DTSTART', getIcsDateByJd(jd, prettyDateTime)),
-            ('DTEND', getIcsDateByJd(jd+1, prettyDateTime)),
+            ('DTSTART', ics.getIcsDateByJd(jd, prettyDateTime)),
+            ('DTEND', ics.getIcsDateByJd(jd+1, prettyDateTime)),
             ('RRULE', 'FREQ=YEARLY;BYMONTH=%d;BYMONTHDAY=%d'%(month, day)),
             ('TRANSP', 'TRANSPARENT'),
             ('CATEGORIES', self.name),## FIXME
         ]
     def setIcsData(self, data):
-        rrule = dict(splitIcsValue(data['RRULE']))
+        rrule = dict(ics.splitIcsValue(data['RRULE']))
         try:
             month = int(rrule['BYMONTH'])## multiple values are not supported
         except:
@@ -2081,18 +2078,18 @@ class UniversityClassEvent(Event):
         if not tRangeList:
             return
         return [
-            ('DTSTART', getIcsTimeByEpoch(
+            ('DTSTART', ics.getIcsTimeByEpoch(
                 tRangeList[0][0],
                 prettyDateTime,
             )),
-            ('DTEND', getIcsTimeByEpoch(
+            ('DTEND', ics.getIcsTimeByEpoch(
                 tRangeList[0][1],
                 prettyDateTime,
             )),
             ('RRULE', 'FREQ=WEEKLY;UNTIL=%s;INTERVAL=%s;BYDAY=%s'%(
-                getIcsDateByJd(endJd, prettyDateTime),
+                ics.getIcsDateByJd(endJd, prettyDateTime),
                 1 if event['weekNumMode'].getData()=='any' else 2,
-                encodeIcsWeekDayList(event['weekDay'].weekDayList),
+                ics.encodeIcsWeekDayList(event['weekDay'].weekDayList),
             )),
             ('TRANSP', 'OPAQUE'),
             ('CATEGORIES', self.name),## FIXME
@@ -2147,11 +2144,11 @@ class UniversityExamEvent(DailyNoteEvent):
         dayStart = self['date'].getEpoch()
         startSec, endSec = self['dayTimeRange'].getSecondsRange()
         return [
-            ('DTSTART', getIcsTimeByEpoch(
+            ('DTSTART', ics.getIcsTimeByEpoch(
                 dayStart + startSec,
                 prettyDateTime,
             )),
-            ('DTEND', getIcsTimeByEpoch(
+            ('DTEND', ics.getIcsTimeByEpoch(
                 dayStart + endSec,
                 prettyDateTime
             )),
@@ -2536,6 +2533,7 @@ class EventGroup(EventContainer):
         self.clearRemoteAttrs()
     def setRandomColor(self):
         import random
+        from scal2.color_utils import hslToRgb
         self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)## FIXME
     def clearRemoteAttrs(self):
         self.remoteIds = None## (accountId, groupId)
@@ -2727,6 +2725,8 @@ class EventGroup(EventContainer):
         for t0, t1 in event.calcOccurrenceAll().getTimeRangeList():
             self.addOccur(t0, t1, eid)
     def initOccurrence(self):
+        from scal2.event_search_tree import EventSearchTree
+        #from scal2.time_line_tree import TimeLineTree
         #self.occur = TimeLineTree(offset=self.getEpochFromJd(self.endJd))
         self.occur = EventSearchTree()
         #self.occurLoaded = False
@@ -2762,7 +2762,7 @@ class EventGroup(EventContainer):
             #))
         #print('%s %d %.1f'%(self.id, 1000*(now()-stm0), self.occur.calcAvgDepth()))
     def exportToIcsFp(self, fp):
-        currentTimeStamp = getIcsTimeByEpoch(now())
+        currentTimeStamp = ics.getIcsTimeByEpoch(now())
         for event in self:
             print('exportToIcsFp', event.id)
             icsData = event.getIcsData()
@@ -2790,9 +2790,9 @@ class EventGroup(EventContainer):
                     elif isinstance(occur, (TimeRangeListOccurrence, TimeListOccurrence)):
                         for startEpoch, endEpoch in occur.getTimeRangeList():
                             vevent = commonText
-                            vevent += 'DTSTART:%s\n'%getIcsTimeByEpoch(startEpoch)
+                            vevent += 'DTSTART:%s\n'%ics.getIcsTimeByEpoch(startEpoch)
                             if endEpoch is not None and endEpoch-startEpoch > 1:
-                                vevent += 'DTEND:%s\n'%getIcsTimeByEpoch(int(endEpoch))## why its float? FIXME
+                                vevent += 'DTEND:%s\n'%ics.getIcsTimeByEpoch(int(endEpoch))## why its float? FIXME
                             vevent += 'TRANSP:OPAQUE\n' ## FIXME ## http://www.kanzaki.com/docs/ical/transp.html
                             vevent += 'END:VEVENT\n'
                             fp.write(vevent)
@@ -3741,7 +3741,7 @@ class EventGroupsHolder(JsonObjectsHolder):
     importJsonFile = lambda self, fpath: self.importData(jsonToData(open(fpath, 'rb').read()))
     def exportToIcs(self, fpath, gidList):
         fp = open(fpath, 'w')
-        fp.write(icsHeader)
+        fp.write(ics.icsHeader)
         for gid in gidList:
             self[gid].exportToIcsFp(fp)
         fp.write('END:VCALENDAR\n')

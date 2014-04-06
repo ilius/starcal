@@ -21,26 +21,22 @@ import time
 from time import time as now
 
 import sys, os
-from math import pi
 
-from scal2.path import pixDir
-from scal2.utils import myRaise, escape
+from scal2.utils import myRaise
 from scal2 import core
 from scal2.locale_man import tr as _
-from scal2.locale_man import rtl, rtlSgn
-from scal2.time_utils import getEpochFromJd
+from scal2.locale_man import rtl
+
 from scal2.cal_types import calTypes
 
 from scal2 import core
 from scal2 import ui
-from scal2.weekcal import getCurrentWeekStatus
 
 from gi.repository import GdkPixbuf
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.drawing import *
-from scal2.ui_gtk.utils import imageFromFile
 from scal2.ui_gtk.mywidgets.font_family_combo import FontFamilyCombo
 
 from scal2.ui_gtk import gtk_ud as ud
@@ -225,6 +221,7 @@ class MainMenuToolbarItem(ToolbarItem):
         pack(self.optionsWidget, hbox)
         self.optionsWidget.show_all()
     def updateImage(self):
+        from scal2.ui_gtk.utils import imageFromFile
         self.set_property('label-widget', imageFromFile(ui.wcal_toolbar_mainMenu_icon))
         self.show_all()
     def getMenuPos(self):
@@ -490,6 +487,7 @@ class EventsTextColumn(Column):
         ui.wcal_eventsText_colorize = check.get_active()
         self.queue_draw()
     def getDayTextData(self, i):
+        from scal2.xml_utils import escape
         data = []
         for item in self.wcal.status[i].eventsData:
             if not item['show'][1]:
@@ -530,6 +528,7 @@ class EventsBoxColumn(Column):
         self.connect('realize', lambda w: self.updateData())
         self.connect('draw', self.onExposeEvent)
     def updateData(self):
+        from scal2.time_utils import getEpochFromJd
         from scal2.ui_gtk import timeline_box as tbox
         self.timeStart = getEpochFromJd(self.wcal.status[0].jd)
         self.pixelPerSec = float(self.get_allocation().height) / self.timeWidth ## pixel/second
@@ -845,6 +844,7 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         CustomizableCalBox.updateVars(self)
         ui.wcalItems = self.getItemsData()
     def updateStatus(self):
+        from scal2.weekcal import getCurrentWeekStatus
         self.status = getCurrentWeekStatus()
     def onConfigChange(self, *a, **kw):
         self.updateStatus()
