@@ -22,9 +22,7 @@ from time import localtime
 from time import time as now
 
 from scal2.utils import toStr, toUnicode
-from scal2.utils import strFindNth, iceil, ifloor, printError
-from scal2.time_utils import getEpochFromJhms
-from scal2.cal_types import to_jd, jd_to, convert
+from scal2.cal_types import to_jd, jd_to
 from scal2 import locale_man
 from scal2.locale_man import tr as _
 from scal2.mywidgets.multi_spin import *
@@ -34,7 +32,6 @@ from gobject import timeout_add
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
-from scal2.ui_gtk import gtk_ud as ud
 
 @registerSignals
 class MultiSpinButton(gtk.SpinButton):
@@ -129,6 +126,7 @@ class MultiSpinButton(gtk.SpinButton):
                     'page_down': -page_inc,
                 }[kname]
                 self.entry_plus(p)
+            #from scal2.utils import strFindNth
             #if fieldIndex==0:
             #    i1 = 0
             #else:
@@ -380,6 +378,7 @@ class DateTimeButton(MultiSpinButton):
             date_time = localtime()[:6]
         self.set_value(date_time)
     def get_epoch(self, mode):
+        from scal2.time_utils import getEpochFromJhms
         date, hms = self.get_value()
         return getEpochFromJhms(
             to_jd(date[0], date[1], date[2], mode),
