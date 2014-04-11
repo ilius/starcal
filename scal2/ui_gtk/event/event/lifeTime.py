@@ -22,7 +22,7 @@ from scal2.locale_man import tr as _
 from scal2 import ui
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
+from scal2.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal2.ui_gtk.mywidgets.ymd import YearMonthDayBox
 from scal2.ui_gtk.event import common
 

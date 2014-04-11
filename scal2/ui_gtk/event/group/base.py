@@ -23,7 +23,7 @@ from scal2.locale_man import tr as _
 from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import set_tooltip
 from scal2.ui_gtk.mywidgets import MyColorButton, TextFrame
-from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
+from scal2.ui_gtk.mywidgets.multi_spin.int import IntSpinButton
 from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 from scal2.ui_gtk.event import common
 

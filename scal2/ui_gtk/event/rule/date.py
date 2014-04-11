@@ -5,7 +5,7 @@ from scal2.locale_man import tr as _
 from scal2 import event_lib
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton
+from scal2.ui_gtk.mywidgets.multi_spin.date import DateButton
 
 class WidgetClass(DateButton):
     def __init__(self, rule):

@@ -29,7 +29,7 @@ from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import pixbufFromFile
 from scal2.ui_gtk.mywidgets import TextFrame
-from scal2.ui_gtk.mywidgets.multi_spin_button import DateTimeButton
+from scal2.ui_gtk.mywidgets.multi_spin.date_time import DateTimeButton
 from scal2.ui_gtk.mywidgets.dialog import MyDialog
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.event.common import SingleGroupComboBox

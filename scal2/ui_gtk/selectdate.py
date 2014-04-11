@@ -29,7 +29,7 @@ from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import openWindow, dialog_add_button
 from scal2.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
-from scal2.ui_gtk.mywidgets.multi_spin_button import DateButtonOption
+from scal2.ui_gtk.mywidgets.multi_spin.option_box.date import DateButtonOption
 from scal2.ui_gtk.mywidgets.ymd import YearMonthDayBox
 
 

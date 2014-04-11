@@ -31,7 +31,8 @@ from scal2 import ui
 from gobject import timeout_add
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, TimeButton
+from scal2.ui_gtk.mywidgets.multi_spin.date import DateButton
+from scal2.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 
 
 _ = str ## FIXME

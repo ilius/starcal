@@ -60,7 +60,6 @@ from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import registerSignals
 from scal2.ui_gtk.utils import *
 #from scal2.ui_gtk.color_utils import rgbToGdkColor
-#from ui_gtk.mywidgets2.multi_spin_button import DateButtonOption
 from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.customize import DummyCalObj, CustomizableCalBox
