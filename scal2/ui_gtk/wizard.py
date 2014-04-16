@@ -17,9 +17,8 @@ class WizardWindow(gtk.Window):
             pack(self.vbox, step, 1, 1)
         self.stepIndex = 0
         ####
-        self.buttonBox = gtk.HButtonBox()
+        self.buttonBox = gtk.HButtonBox(spacing=15)
         self.buttonBox.set_layout(gtk.BUTTONBOX_END)
-        self.buttonBox.set_spacing(15)
         self.buttonBox.set_border_width(15)
         pack(self.vbox, self.buttonBox)
         ####
