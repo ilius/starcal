@@ -42,6 +42,7 @@ class MultiSpinButton(gtk.SpinButton):
     def __init__(self, sep, fields, arrow_select=True, page_inc=10):
         gtk.SpinButton.__init__(self)
         ####
+        sep = toUnicode(sep)
         self.field = ContainerField(sep, *fields)
         self.arrow_select = arrow_select
         self.set_editable(True)

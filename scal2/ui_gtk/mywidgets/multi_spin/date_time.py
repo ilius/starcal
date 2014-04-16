@@ -8,16 +8,16 @@ class DateTimeButton(MultiSpinButton):
     def __init__(self, date_time=None, **kwargs):
         MultiSpinButton.__init__(
             self,
-            u' ',
+            ' ',
             (
                 ContainerField(
-                    u'/',
+                    '/',
                     YearField(),
                     MonthField(),
                     DayField(),
                 ),
                 ContainerField(
-                    u':',
+                    ':',
                     HourField(),
                     Z60Field(),
                     Z60Field(),

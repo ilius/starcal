@@ -7,7 +7,7 @@ class YearMonthButton(MultiSpinButton):
     def __init__(self, date=None, **kwargs):
         MultiSpinButton.__init__(
             self,
-            u'/',
+            '/',
             (
                 YearField(),
                 MonthField(),

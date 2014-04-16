@@ -7,7 +7,7 @@ class DateButtonOption(MultiSpinOptionBox):
     def __init__(self, date=None, **kwargs):
         MultiSpinOptionBox.__init__(
             self,
-            u'/',
+            '/',
             (
                 YearField(),
                 MonthField(),
