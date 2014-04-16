@@ -562,7 +562,7 @@ class HourMinuteButtonOption(MultiSpinOptionBox):
 
 def getDateTimeWidget():
     btn = DateTimeButton()
-    btn.set_value((2011, 1, 1, 0))
+    btn.set_value((2011, 1, 1))
     return btn
 
 def getIntWidget():
