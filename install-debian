@@ -86,6 +86,7 @@ if [ "$?" = "0" ] ; then
     if [ -f /usr/bin/gdebi ] ; then
         /usr/bin/gdebi "$pkgFile"
     else
+        apt-get install python-tz python-httplib2
         dpkg -i "$pkgFile"
     fi
 fi
