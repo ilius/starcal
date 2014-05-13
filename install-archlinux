@@ -23,7 +23,7 @@ cd $tmpDir
 depends=('python2>=2.6')
 depends+=('pygtk>=2.8')
 depends+=('pygobject')
-depends+=('python2-gflags')
+#depends+=('python2-gflags')
 depends+=('python2-httplib2')
 depends+=('python2-pytz')
 
