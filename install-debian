@@ -41,14 +41,14 @@ installedSize=`getDirTotalSize "$tmpDir"` ## only /usr ? FIXME
 
 depends=('python(>=2.6)' 'python(<<3.0)')
 depends+=('python-gtk2(>=2.8)')
-depends+=('python-gflags')
+#depends+=('python-gflags')
 depends+=('python-httplib2')
 depends+=('python-tz')
 depends+=('python-dateutil')
 
-if [ -f "/usr/lib/$HOSTTYPE-$OSTYPE/libappindicator.so.1" ] ; then
-    depends+=('python-appindicator')
-fi
+#if [ -f "/usr/lib/$HOSTTYPE-$OSTYPE/libappindicator.so.1" ] ; then
+#    depends+=('python-appindicator')
+#fi
 
 recommends=()
 recommends+=('python-igraph')
@@ -87,6 +87,7 @@ if [ "$?" = "0" ] ; then
     if [ -f /usr/bin/gdebi ] ; then
         /usr/bin/gdebi "$pkgFile"
     else
+        apt-get install python-tz python-httplib2
         dpkg -i "$pkgFile"
     fi
 fi
