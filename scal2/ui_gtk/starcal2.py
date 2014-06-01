@@ -804,6 +804,19 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             myRaise()
         if self.trayMode>1 and self.sicon:
             self.sicon.set_visible(False) ## needed for windows ## before or after main_quit ?
+        ######
+        ## Stopping running timer threads
+        import threading
+        for thread in threading.enumerate():
+            #if thread.__class__.__name__ == '_Timer':
+            try:
+                cancel = thread.cancel
+            except AttributeError:
+                pass
+            else:
+                print 'stopping thread %s'%thread.getName()
+                cancel()
+        #######
         return gtk.main_quit()
     def adjustTime(self, widget=None, event=None):
         from subprocess import Popen
