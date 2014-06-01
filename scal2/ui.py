@@ -721,6 +721,7 @@ wcalItemsDefault = wcalItems[:]
 
 ntpServers = (
     'pool.ntp.org',
+    'ir.pool.ntp.org',
     'asia.pool.ntp.org',
     'europe.pool.ntp.org',
     'north-america.pool.ntp.org',
