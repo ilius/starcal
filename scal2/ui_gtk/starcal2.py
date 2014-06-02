@@ -986,7 +986,16 @@ def main():
     if action=='show' or not mainWin.sicon:
         mainWin.present()
     ##ud.rootWindow.set_cursor(gdk.Cursor(gdk.LEFT_PTR))#???????????
-    return gtk.main()
+    ex = 0
+    try:
+        ex = gtk.main()
+    except KeyboardInterrupt:
+        print('You pressed Control+C, Goodbye')
+        core.stopRunningThreads()
+    except Exception as e:
+        core.stopRunningThreads()
+        raise e
+    return ex
 
 
 if __name__ == '__main__':## this file may be called from starcal-gnome2-applet
