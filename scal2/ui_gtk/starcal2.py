@@ -435,6 +435,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
                 core.allPlugList[core.plugIndex[j]].date_change_after(*date)
             except AttributeError:
                 pass
+        #print 'Occurence Time: max=%e, avg=%e'%(ui.Cell.ocTimeMax, ui.Cell.ocTimeSum/ui.Cell.ocTimeCount)
     def getEventAddToMenuItem(self):
         from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
         addToItem = labelStockMenuItem('_Add to', gtk.STOCK_ADD)
