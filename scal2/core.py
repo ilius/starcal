@@ -430,6 +430,20 @@ def openUrl(url):
         else:
             return
 
+def stopRunningThreads():
+    ## Stopping running timer threads
+    import threading
+    for thread in threading.enumerate():
+        #if thread.__class__.__name__ == '_Timer':
+        try:
+            cancel = thread.cancel
+        except AttributeError:
+            pass
+        else:
+            print 'stopping thread %s'%thread.getName()
+            cancel()
+
+
 dataToJson =  lambda data: dataToCompactJson(data) if useCompactJson else dataToPrettyJson(data)
 
 def init():
