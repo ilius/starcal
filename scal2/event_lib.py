@@ -3683,6 +3683,11 @@ class EventGroupsHolder(JsonObjectsHolder):
                 obj.setModifiedFromFile()
                 ## here check that non of obj.idList are in eventIdList ## FIXME
                 #eventIdList += obj.idList
+            if core.debugMode:
+                totalOcCount = 0
+                for obj in self:
+                    totalOcCount += obj.occurCount
+                print 'Total Occurence Count: %s'%totalOcCount
         else:
             for cls in classes.group:
                 obj = cls()## FIXME
