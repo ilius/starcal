@@ -20,6 +20,7 @@ from time import localtime
 from time import time as now
 
 import sys, os, subprocess
+from subprocess import Popen
 from StringIO import StringIO
 from os.path import isfile, isdir, exists, dirname, join, split, splitext
 #from pprint import pprint
@@ -128,7 +129,7 @@ def myRaise(File=None):
 ################################################################################
 
 
-popen_output = lambda cmd: subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
+popen_output = lambda cmd: Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
 
 primary_to_jd = lambda y, m, d: calTypes.primaryModule().to_jd(y, m, d)
 jd_to_primary = lambda jd: calTypes.primaryModule().jd_to(jd)
