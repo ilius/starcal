@@ -53,7 +53,7 @@ BRANCH = join(rootDir, 'branch')
 APP_NAME = 'starcal2'
 APP_DESC = 'StarCalendar'
 COMMAND = 'starcal2'
-homePage = 'http://starcal.sourceforge.net/'
+homePage = 'http://ilius.github.io/starcal/'
 osName = getOsName()
 userDisplayName = getUserDisplayName()
 #print('--------- Hello %s'%userDisplayName)
