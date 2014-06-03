@@ -46,7 +46,7 @@ from scal2.ui_gtk.cal_base import CalBase
 
 class McalTypeParamBox(gtk.HBox):
     def __init__(self, mcal, index, mode, params, sgroupLabel, sgroupFont):
-        from scal2.ui_gtk.mywidgets.multi_spin_button import FloatSpinButton
+        from scal2.ui_gtk.mywidgets.multi_spin.float import FloatSpinButton
         from scal2.ui_gtk.mywidgets import MyFontButton, MyColorButton
         gtk.HBox.__init__(self)
         self.mcal = mcal
@@ -166,7 +166,7 @@ class CalObj(gtk.DrawingArea, CalBase):
         ######################
         #self.updateTextWidth()
     def optionsWidgetCreate(self):
-        from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
+        from scal2.ui_gtk.mywidgets.multi_spin.int import IntSpinButton
         from scal2.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
         if self.optionsWidget:
             return

@@ -169,6 +169,9 @@ def dayOpenSunbird(arg=None):
 
 
 class Cell:## status and information of a cell
+    #ocTimeMax = 0
+    #ocTimeCount = 0
+    #ocTimeSum = 0
     def __init__(self, jd):
         self.eventsData = []
         #self.eventsDataIsSet = False ## not used
@@ -204,7 +207,12 @@ class Cell:## status and information of a cell
                 except:
                     myRaiseTback()
         ###################
+        #t0 = now()
         self.eventsData = event_lib.getDayOccurrenceData(jd, eventGroups)## here? FIXME
+        #dt = now() - t0
+        #Cell.ocTimeSum += dt
+        #Cell.ocTimeCount += 1
+        #Cell.ocTimeMax = max(Cell.ocTimeMax, dt)
     def format(self, binFmt, mode=None, tm=null):## FIXME
         if mode is None:
             mode = calTypes.primary
@@ -721,6 +729,7 @@ wcalItemsDefault = wcalItems[:]
 
 ntpServers = (
     'pool.ntp.org',
+    'ir.pool.ntp.org',
     'asia.pool.ntp.org',
     'europe.pool.ntp.org',
     'north-america.pool.ntp.org',

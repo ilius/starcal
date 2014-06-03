@@ -28,25 +28,21 @@ version=`$sourceDir/scal2/get_version.py`
 #echo version=$version
 
 
-requires_str=""
+requires=('python >= 2.6' 'python < 3.0')
+requires+=('python-gtk >= 2.8')
+#requires+=('python-gflags')
+requires+=('python-httplib2')
+requires+=('python-pytz')
+requires+=('python-dateutil')
 
-for pkg in \
-"python >= 2.6" \
-"python < 3.0" \
-"python-gtk >= 2.8" \
-"python-gflags" \
-"python-httplib2" \
-"python-pytz" \
-"python-dateutil" \
-; do
-    requires_str+="Requires: $pkg
-"
-done
-
+requires_str=$(printf "Requires: %s\n" "${requires[@]}")
 requires_str+="
 "
 
 requires_str+="Recommends: python-igraph"
+
+#echo "$requires_str"; exit
+
 
 
 echo "Name: $pkgName

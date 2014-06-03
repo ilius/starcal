@@ -20,6 +20,7 @@ from time import localtime
 from time import time as now
 
 import sys, os, subprocess
+from subprocess import Popen
 from io import StringIO
 from os.path import isfile, isdir, exists, dirname, join, split, splitext
 #from pprint import pprint
@@ -53,7 +54,7 @@ BRANCH = join(rootDir, 'branch')
 APP_NAME = 'starcal2'
 APP_DESC = 'StarCalendar'
 COMMAND = 'starcal2'
-homePage = 'http://starcal.sourceforge.net/'
+homePage = 'http://ilius.github.io/starcal/'
 osName = getOsName()
 userDisplayName = getUserDisplayName()
 #print('--------- Hello %s'%userDisplayName)
@@ -128,7 +129,7 @@ def myRaise(File=None):
 ################################################################################
 
 
-popen_output = lambda cmd: subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
+popen_output = lambda cmd: Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
 
 primary_to_jd = lambda y, m, d: calTypes.primaryModule().to_jd(y, m, d)
 jd_to_primary = lambda jd: calTypes.primaryModule().jd_to(jd)
@@ -428,6 +429,20 @@ def openUrl(url):
             pass
         else:
             return
+
+def stopRunningThreads():
+    ## Stopping running timer threads
+    import threading
+    for thread in threading.enumerate():
+        #if thread.__class__.__name__ == '_Timer':
+        try:
+            cancel = thread.cancel
+        except AttributeError:
+            pass
+        else:
+            print('stopping thread %s'%thread.getName())
+            cancel()
+
 
 dataToJson =  lambda data: dataToCompactJson(data) if useCompactJson else dataToPrettyJson(data)
 

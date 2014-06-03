@@ -62,7 +62,6 @@ from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import registerSignals
 from scal2.ui_gtk.utils import *
 #from scal2.ui_gtk.color_utils import rgbToGdkColor
-#from ui_gtk.mywidgets2.multi_spin_button import DateButtonOption
 from scal2.ui_gtk import listener
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.customize import DummyCalObj, CustomizableCalBox
@@ -441,6 +440,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
                 core.allPlugList[core.plugIndex[j]].date_change_after(*date)
             except AttributeError:
                 pass
+        #print 'Occurence Time: max=%e, avg=%e'%(ui.Cell.ocTimeMax, ui.Cell.ocTimeSum/ui.Cell.ocTimeCount)
     def getEventAddToMenuItem(self):
         from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
         addToItem = labelStockMenuItem('_Add to', gtk.STOCK_ADD)
@@ -816,6 +816,9 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         if self.trayMode>1 and self.sicon:
             self.sicon.set_visible(False) ## needed for windows ## before or after main_quit ?
         self.destroy()
+        ######
+        core.stopRunningThreads()
+        ######
         return gtk.main_quit()
     def adjustTime(self, widget=None, event=None):
         from subprocess import Popen
@@ -995,7 +998,16 @@ def main():
         mainWin.present()
     ##ud.rootWindow.set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))#???????????
     #mainWin.app.run(None)
-    gtk.main()
+    ex = 0
+    try:
+        ex = gtk.main()
+    except KeyboardInterrupt:
+        print('You pressed Control+C, Goodbye')
+        core.stopRunningThreads()
+    except Exception as e:
+        core.stopRunningThreads()
+        raise e
+    return ex
 
 
 if __name__ == '__main__':## this file may be called from starcal-gnome2-applet

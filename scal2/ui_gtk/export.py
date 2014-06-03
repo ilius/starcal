@@ -28,7 +28,9 @@ from scal2.export import exportToHtml
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import openWindow, dialog_add_button
-from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, TimeButton, YearMonthButton
+from scal2.ui_gtk.mywidgets.multi_spin.date import DateButton
+from scal2.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
+from scal2.ui_gtk.mywidgets.multi_spin.year_month import YearMonthButton
 
 
 #gdkColorToHtml = lambda color: '#%.2x%.2x%.2x'%(color.red/256, color.green/256, color.blue/256)

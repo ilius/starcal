@@ -29,4 +29,3 @@ def unescape(data, entities={}):
     # must do ampersand last
     return data.replace("&amp;", "&")
 
-

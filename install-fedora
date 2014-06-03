@@ -33,7 +33,7 @@ version=`$sourceDir/scal2/get_version.py`
 
 requires=('python3(>=3.2)')
 requires+=('python3-gobject')
-requires+=('python3-gflags')
+#requires+=('python3-gflags')
 requires+=('python3-httplib2')
 requires+=('python3-pytz')
 requires+=('python3-dateutil')

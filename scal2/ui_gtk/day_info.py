@@ -38,10 +38,8 @@ class AllDateLabelsVBox(gtk.VBox, ud.BaseCalObj):
     _name = 'allDateLabels'
     desc = _('Dates')
     def __init__(self):
-        gtk.VBox.__init__(self)
+        gtk.VBox.__init__(self, spacing=5)
         self.initVars()
-        ##
-        self.set_spacing(5)
     def onDateChange(self, *a, **ka):
         ud.BaseCalObj.onDateChange(self, *a, **ka)
         for child in self.get_children():

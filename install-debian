@@ -48,9 +48,9 @@ depends+=('python3-httplib2')
 depends+=('python3-tz')
 depends+=('python3-dateutil')
 
-if [ -f "/usr/lib/$HOSTTYPE-$OSTYPE/libappindicator.so.1" ] ; then
-    depends+=('python-appindicator')
-fi
+#if [ -f "/usr/lib/$HOSTTYPE-$OSTYPE/libappindicator.so.1" ] ; then
+#    depends+=('python-appindicator')
+#fi
 
 recommends=()
 recommends+=('python3-igraph') ## FIXME
@@ -88,6 +88,7 @@ if [ "$?" = "0" ] ; then
     if [ -f /usr/bin/gdebi ] ; then
         /usr/bin/gdebi "$pkgFile"
     else
+        apt-get install python-tz python-httplib2
         dpkg -i "$pkgFile"
     fi
 fi

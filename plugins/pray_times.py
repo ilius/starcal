@@ -27,7 +27,6 @@ from time import time as now
 from os.path import join, isfile, dirname
 from math import pi, floor, ceil, sqrt, sin, cos, tan, asin, acos, atan, atan2
 
-from tzlocal import get_localzone
 
 _mypath = __file__
 if _mypath.endswith('.pyc'):
@@ -37,6 +36,8 @@ rootDir = '/usr/share/starcal2'
 
 sys.path.insert(0, dataDir)## FIXME
 sys.path.insert(0, rootDir)## FIXME
+
+from tzlocal import get_localzone
 
 from scal2 import plugin_api as api
 
@@ -53,7 +54,7 @@ from scal2.os_utils import kill, goodkill
 from scal2.utils import myRaise
 #from scal2 import event_lib## needs core!! FIXME
 
-from gi.repository.GObject import timeout_add_seconds
+from threading import Timer
 
 #if 'gtk' in sys.modules:
 from pray_times_gtk import *
@@ -303,32 +304,32 @@ class TextPlug(BasePlugin, TextPlugUI):
             goodkill(p.pid, interval=0.01)
             #kill(p.pid, 15)
             #p.terminate()
-    def doPlayAzan(self, tm):
+    def doPlayAzan(self):## , tm
         if not self.azanEnable:
             return
-        dt = tm - now()
+        #dt = tm - now()
         #print('---------------------------- doPlayAzan, dt=%.1f'%dt)
-        if dt > 1:
-            timeout_add_seconds(
-                int(dt),
-                self.doPlayAzan,
-                tm,
-            )
-            return
+        #if dt > 1:
+        #    Timer(
+        #        int(dt),
+        #        self.doPlayAzan,
+        #        #tm,
+        #    ).start()
+        #    return
         self.killPrevSound()
         self.proc = popenFile(self.azanFile)
-    def doPlayPreAzan(self, tm):
+    def doPlayPreAzan(self):## , tm
         if not self.preAzanEnable:
             return
-        dt = tm - now()
+        #dt = tm - now()
         #print('---------------------------- doPlayPreAzan, dt=%.1f'%dt)
-        if dt > 1:
-            timeout_add_seconds(
-                int(dt),
-                self.doPlayPreAzan,
-                tm,
-            )
-            return
+        #if dt > 1:
+        #    Timer(
+        #        int(dt),
+        #        self.doPlayPreAzan,
+        #        #tm,
+        #    ).start()
+        #    return
         self.killPrevSound()
         self.proc = popenFile(self.preAzanFile)
     def onCurrentDateChange(self, gdate):
@@ -356,20 +357,20 @@ class TextPlug(BasePlugin, TextPlugUI):
             toAzanSecs = int(azanSec - secondsFromMidnight)
             if toAzanSecs >= 0:
                 preAzanSec = azanSec - self.preAzanMinutes * 60
-                timeout_add_seconds(
+                Timer(
                     max(0,
                         int(preAzanSec - secondsFromMidnight)
                     ),
                     self.doPlayPreAzan,
-                    midnightUtc + preAzanSec,
-                )
+                    #midnightUtc + preAzanSec,
+                ).start()
                 ###
                 #print('toAzanSecs=%.1f'%toAzanSecs)
-                timeout_add_seconds(
+                Timer(
                     toAzanSecs,
                     self.doPlayAzan,
-                    midnightUtc + azanSec,
-                )
+                    #midnightUtc + azanSec,
+                ).start()
 
 
 
