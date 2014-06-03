@@ -440,7 +440,7 @@ def stopRunningThreads():
         except AttributeError:
             pass
         else:
-            print 'stopping thread %s'%thread.getName()
+            print('stopping thread %s'%thread.getName())
             cancel()
 
 

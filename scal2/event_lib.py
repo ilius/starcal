@@ -3687,7 +3687,7 @@ class EventGroupsHolder(JsonObjectsHolder):
                 totalOcCount = 0
                 for obj in self:
                     totalOcCount += obj.occurCount
-                print 'Total Occurence Count: %s'%totalOcCount
+                print('Total Occurence Count: %s'%totalOcCount)
         else:
             for cls in classes.group:
                 obj = cls()## FIXME
