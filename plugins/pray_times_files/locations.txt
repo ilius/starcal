@@ -1910,7 +1910,7 @@ Middle East
 		Dorud	33.495	49.055	Do Ru,Dorūd
 		Dow Gonbadan	30.365	50.785	Dow Gonbadān,Dow Gonbada
 		Eqlid	31.015	52.715	Eqlīd,Iqli
-		Eşfahan	32.685	51.685	Eşfahān,Isfaha
+		Esfahan	32.685	51.685	Isfahan,Eşfahān
 		Esfarayen	37.105	57.505	Esferaia,Esfarāyen
 		Eslamabad-e Gharb	34.325	47.125	Eslamaba,Eslāmābād-e Gharb
 		Eslamshahr	35.545	51.205	Eslamshah,Eslāmshahr
