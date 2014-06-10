@@ -2877,7 +2877,7 @@ msgstr "دوگنبدان"
 msgid "Eqlid"
 msgstr "اقلید"
 
-msgid "Eşfahan"
+msgid "Esfahan"
 msgstr "اصفهان"
 
 msgid "Esfarayen"
