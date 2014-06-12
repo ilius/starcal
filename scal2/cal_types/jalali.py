@@ -2,6 +2,8 @@
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 # Copyright (C) 2007 Mehdi Bayazee <Bayazee@Gmail.com>
+# Copyright (C) 2001 Roozbeh Pournader <roozbeh@sharif.edu>
+# Copyright (C) 2001 Mohammad Toossi <mohammad@bamdad.org>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -124,55 +126,37 @@ def save():## Here save user options to file
 
 def isLeap(year):
     "isLeap: Is a given year a leap year in the Jalali calendar ?"
-    if jalaliAlg==1:
-        return (( (year - 473 - (year>0)) %2820 + 512) * 682) % 2816 < 682
-    elif jalaliAlg==0:
-        ## Use 33 year algorithm
-        ## taken from farsiweb code writen by Roozbeh Pournader <roozbeh@sharif.edu>
-        ## and Mohammad Toossi <mohammad@bamdad.org> at 2001
+    if jalaliAlg==1:## 2820-years
+        return (( (year - 473 - (year>0)) % 2820) * 682) % 2816 < 682
+    elif jalaliAlg==0:## 33-years
         jy = year - 979
-        gdays = ( 365*jy + (jy//33)*8 + (jy%33+3)//4    +    79 ) % 146097
-        leap = True
-        if gdays >= 36525: # 36525 = 365*100 + 100//4
-            gdays -= 1
-            gdays = gdays % 36524
-            if gdays >= 365:
-                gdays += 1
-            else:
-                leap = False
+        gdays = ( 365*jy + (jy//33)*8 + (jy%33+3)//4 + 79 ) % 146097
+        ## 36525 = 365*100 + 100//4
+        if gdays >= 36525:
+            gdays = (gdays-1) % 36524 + 1
+            if gdays < 366:
+                return False
         if gdays % 1461 >= 366:
-            leap = False
-        return leap
+            return False
+        return True
+
     else:
         raise RuntimeError('bad option jalaliAlg=%s'%jalaliAlg)
 
 def to_jd(year, month, day):
     "TO_JD: Determine Julian day from Jalali date"
-    if jalaliAlg==1:
-        # Python <= 2.5
-        if year >=0 :
-            rm = 474
-        else:
-            rm = 473
-        epbase = year - (rm)
-        # Python 2.5
-        #epbase = year - 474 if year>=0 else 473
-        epyear = 474 + (epbase % 2820)
-        if month <= 7 :
-            mm = (month - 1) * 31
-        else:
-            mm = ((month - 1) * 30) + 6
-        return day + mm + \
-            ((epyear * 682) - 110) // 2816 + \
+    if jalaliAlg==1:## 2820-years
+        epbase = year - 474 if year>=0 else 473
+        epyear = 474 + epbase % 2820
+        return day + \
+            (month-1) * 30 + min(6, month-1) + \
+            (epyear * 682 - 110) // 2816 + \
             (epyear - 1) * 365 + \
             epbase // 2820 * 1029983 + \
             epoch - 1
-    elif jalaliAlg==0:
-        ## Use 33 year algorithm
-        ##taken from farsiweb code writen by Roozbeh Pournader <roozbeh@sharif.edu>
-        ## and Mohammad Toossi <mohammad@bamdad.org> at 2001
-        y2 = year-979
-        jdays = 365*y2 + (y2//33)*8 + (y2%33+3)//4
+    elif jalaliAlg==0:## 33-years
+        y2 = year - 979
+        jdays = 365*y2 + y2//33 * 8 + (y2%33+3)//4
         for i in range(month-1):
             jdays += monthLen[i]
         jdays += (day-1)
@@ -182,13 +166,13 @@ def to_jd(year, month, day):
 
 def jd_to(jd):
     "JD_TO_JALALI: Calculate Jalali date from Julian day"
-    if jalaliAlg==1:## 2820
+    if jalaliAlg==1:## 2820-years
         cycle, cyear = divmod(jd - to_jd(475, 1, 1), 1029983)
         if cyear == 1029982 :
             ycycle = 2820
-        else :
+        else:
             aux1, aux2 = divmod(cyear, 366)
-            ycycle = ((2134 * aux1) + (2816 * aux2) + 2815) // 1028522 + aux1 + 1
+            ycycle = (2134*aux1 + 2816*aux2 + 2815) // 1028522 + aux1 + 1
         year = 2820*cycle + ycycle + 474
         if year <= 0 :
             year -= 1
@@ -196,7 +180,7 @@ def jd_to(jd):
         if yday <= 186:
             month = iceil(yday // 31)
         else:
-            month = iceil((yday - 6) // 30)
+            month = 6 + iceil((yday-186) // 30)
         day = int(jd - to_jd(year, month, 1)) + 1
         if day > 31:
             day -= 31
@@ -205,19 +189,17 @@ def jd_to(jd):
                 year += 1
             else:
                 month += 1
-    elif jalaliAlg==0:
-        ## Use 33 year algorithm
-        ##taken from farsiweb code writen by Roozbeh Pournader <roozbeh@sharif.edu> and Mohammad Toossi <mohammad@bamdad.org> at 2001
+    elif jalaliAlg==0:## 33-years
         jdays = int(jd - GREGORIAN_EPOCH - 584101)
-        # -(1600*365 + 1600//4 - 1600//100 + 1600//400) + 365    -79 +1== -584101
+        ## -(1600*365 + 1600//4 - 1600//100 + 1600//400) + 365    -79 +1== -584101
         #print('jdays =',jdays)
         j_np = jdays // 12053
         jdays %= 12053
-        year = 979+33*j_np+4*(jdays//1461)
+        year = 979 + 33*j_np + 4*(jdays//1461)
         jdays %= 1461
         if jdays >= 366:
-            year += (jdays-1)//365
-            jdays = (jdays-1)%365
+            year += (jdays-1) // 365
+            jdays = (jdays-1) % 365
         month = 12
         for i in range(11):
             if jdays >= monthLen[i]:
