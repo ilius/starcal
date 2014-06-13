@@ -43,6 +43,14 @@ msgid "Close"
 msgstr ""
 "بستن"
 
+msgid "_Open"
+msgstr ""
+"_باز کردن"
+
+msgid "_Revert"
+msgstr ""
+"برگرداندن"
+
 msgid "_Reset to Defaults"
 msgstr ""
 "بازگشت به حالت پیش‌فرض"

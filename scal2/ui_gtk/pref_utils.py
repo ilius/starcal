@@ -268,16 +268,33 @@ class SpinPrefItem(PrefItem):
         self.set = w.set_value
 
 class FileChooserPrefItem(PrefItem):
-    def __init__(self, module, varName, title='Select File', currentFolder=''):
+    def __init__(self, module, varName, title='Select File', currentFolder='', defaultVarName=None):
         self.module = module
         self.varName = varName
-        w = gtk.FileChooserButton(title)
+        ###
+        dialog = gtk.FileChooserDialog(title, action=gtk.FILE_CHOOSER_ACTION_OPEN)
+        dialog_add_button(dialog, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL, None)
+        dialog_add_button(dialog, gtk.STOCK_OPEN, _('_Open'), gtk.RESPONSE_OK, None)
+        w = gtk.FileChooserButton(dialog)
         w.set_local_only(True)
         if currentFolder:
             w.set_current_folder(currentFolder)
+        ###
+        self.defaultVarName = defaultVarName
+        if defaultVarName:
+            dialog_add_button(dialog, gtk.STOCK_UNDO, _('_Revert'), gtk.RESPONSE_NONE, self.revertClicked)
+        ###
         self._widget = w
         self.get = w.get_filename
         self.set = w.set_filename
+    def revertClicked(self, button):
+        defaultValue = getattr(self.module, self.defaultVarName)
+        setattr(
+            self.module,
+            self.varName,
+            defaultValue,
+        )
+        self.set(defaultValue)
 
 
 class RadioListPrefItem(PrefItem):

@@ -264,6 +264,7 @@ class PrefDialog(gtk.Dialog):
             'trayImage',
             _('Select Icon'),
             pixDir,
+            defaultVarName='trayImageDefault',
         )
         self.uiPrefItems.append(item)
         pack(hbox, item._widget, 1, 1)
@@ -279,6 +280,7 @@ class PrefDialog(gtk.Dialog):
             'trayImageHoli',
             _('Select Icon'),
             pixDir,
+            defaultVarName='trayImageHoliDefault',
         )
         self.uiPrefItems.append(item)
         pack(hbox, item._widget, 1, 1)
