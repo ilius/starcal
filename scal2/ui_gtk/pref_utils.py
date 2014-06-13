@@ -274,7 +274,7 @@ class FileChooserPrefItem(PrefItem):
         ###
         dialog = gtk.FileChooserDialog(title, action=gtk.FILE_CHOOSER_ACTION_OPEN)
         dialog_add_button(dialog, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL, None)
-        dialog_add_button(dialog, gtk.STOCK_OPEN, _('_Open'), gtk.RESPONSE_OK, None)
+        dialog_add_button(dialog, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK, None)
         w = gtk.FileChooserButton(dialog)
         w.set_local_only(True)
         if currentFolder:
