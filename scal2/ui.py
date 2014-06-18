@@ -573,7 +573,7 @@ mcalHeight = 250
 winTaskbar = False
 useAppIndicator = True
 showDigClockTb = True ## On Toolbar ## FIXME
-showDigClockTr = True ## On Tray
+showDigClockTr = True ## On Status Icon
 ####
 toolbarIconSizePixel = 24 ## used in pyqt ui
 ####
@@ -658,14 +658,14 @@ boldYmLabel = True ## apply in Pref FIXME
 showYmArrows = True ## apply in Pref FIXME
 labelMenuDelay = 0.1 ## delay for shift up/down items of menu for right click on YearLabel
 ####################
-trayImage = join(pixDir, 'tray-dark-green.svg')
-trayImageHoli = join(pixDir, 'tray-dark-red.svg')
-trayImageDefault, trayImageHoliDefault = trayImage, trayImageHoli
-trayFontFamilyEnable = False
-trayFontFamily = None
+statusIconImage = join(pixDir, 'tray-dark-green.svg')
+statusIconImageHoli = join(pixDir, 'tray-dark-red.svg')
+statusIconImageDefault, statusIconImageHoliDefault = statusIconImage, statusIconImageHoli
+statusIconFontFamilyEnable = False
+statusIconFontFamily = None
 ####################
 menuActiveLabelColor = "#ff0000"
-pluginsTextTray = False
+pluginsTextStatusIcon = False
 pluginsTextInsideExpander = True
 pluginsTextIsExpanded = True ## affect only if pluginsTextInsideExpander
 eventViewMaxHeight = 200
@@ -697,7 +697,7 @@ fontDefault = ['Sans', False, False, 12]
 fontCustom = None
 fontCustomEnable = False
 #####################
-showMain = True ## Show main window on start (or only goto tray)
+showMain = True ## Show main window on start (or only goto statusIcon)
 #####################
 mainWinItems = (
     ('winContronller', True),
@@ -780,10 +780,10 @@ if os.path.isfile(confPathLive):
         myRaise(__file__)
 ################################
 
-if not isfile(trayImage):
-    trayImage = trayImageDefault
-if not isfile(trayImageHoli):
-    trayImageHoli = trayImageHoliDefault
+if not isfile(statusIconImage):
+    statusIconImage = statusIconImageDefault
+if not isfile(statusIconImageHoli):
+    statusIconImageHoli = statusIconImageHoliDefault
 
 try:
     mcalGridColor = wcalGridColor = gridColor

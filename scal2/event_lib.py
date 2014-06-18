@@ -2397,7 +2397,7 @@ class EventGroup(EventContainer):
         'showInDCal',
         'showInWCal',
         'showInMCal',
-        'showInTray',
+        'showInStatusIcon',
         'showInTimeLine',
         'color',
         'eventCacheSize',
@@ -2418,7 +2418,7 @@ class EventGroup(EventContainer):
         'showInDCal',
         'showInWCal',
         'showInMCal',
-        'showInTray',
+        'showInStatusIcon',
         'showInTimeLine',
         'showFullEventDesc',
         'color',
@@ -2508,7 +2508,7 @@ class EventGroup(EventContainer):
         self.showInDCal = True
         self.showInWCal = True
         self.showInMCal = True
-        self.showInTray = False
+        self.showInStatusIcon = False
         self.showInTimeLine = True
         self.color = (0, 0, 0) ## FIXME
         #self.defaultNotifyBefore = (10, 60) ## FIXME
@@ -3198,7 +3198,7 @@ class LargeScaleGroup(EventGroup):
         self.showInDCal = False
         self.showInWCal = False
         self.showInMCal = False
-        self.showInTray = False
+        self.showInStatusIcon = False
     def copyFrom(self, other):
         EventGroup.copyFrom(self, other)
         if other.name == self.name:
@@ -4023,7 +4023,7 @@ def getDayOccurrenceData(curJd, groups):
                     'color': color,
                     'ids': (gid, eid),
                     'show': (group.showInDCal, group.showInWCal, group.showInMCal),
-                    'showInTray': group.showInTray,
+                    'showInStatusIcon': group.showInStatusIcon,
                 }
             ))
     data.sort()

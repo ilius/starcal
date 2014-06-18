@@ -702,8 +702,8 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
         ui.wcal_daysOfMonth_dir = combo.getValue()
         self.updateDir()
     def updateCols(self):
-        #self.foreach(gtk._widget.destroy)## Couses crash tray icon in gnome3
-        #self.foreach(lambda child: self.remove(child))## Couses crash tray icon in gnome3
+        #self.foreach(gtk._widget.destroy)## Couses crash status icon in gnome3
+        #self.foreach(lambda child: self.remove(child))## Couses crash status icon in gnome3
         ########
         columns = self.get_children()
         n = len(columns)

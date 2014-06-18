@@ -39,7 +39,7 @@ from scal2.ui_gtk.pref_utils import *
 
 
 class PrefDialog(gtk.Dialog):
-    def __init__(self, trayMode):
+    def __init__(self, statusIconMode):
         gtk.Dialog.__init__(self, title=_('Preferences'))
         self.connect('delete-event', self.onDelete)
         self.set_has_separator(False)
@@ -83,7 +83,7 @@ class PrefDialog(gtk.Dialog):
         #frame.set_border_width(5)
         pack(vbox, hbox, 1, 1)
         ##########################
-        if trayMode!=1:
+        if statusIconMode!=1:
             hbox = gtk.HBox(spacing=3)
             item = CheckStartupPrefItem()
             self.uiPrefItems.append(item)
@@ -121,10 +121,10 @@ class PrefDialog(gtk.Dialog):
         #self.uiPrefItems.append(item)
         #pack(hbox, item._widget)
         pack(hbox, gtk.Label(''), 1, 1)
-        if trayMode==1:
+        if statusIconMode==1:
             item = CheckPrefItem(ui, 'showDigClockTr', _('On Applet'), 'Panel Applet')
         else:
-            item = CheckPrefItem(ui, 'showDigClockTr', _('On Tray'), 'Notification Area')
+            item = CheckPrefItem(ui, 'showDigClockTr', _('On Status Icon'), 'Notification Area')
         self.uiPrefItems.append(item)
         pack(hbox, item._widget)
         pack(hbox, gtk.Label(''), 1, 1)
@@ -246,7 +246,7 @@ class PrefDialog(gtk.Dialog):
         pack(vbox, hbox)
         ###################
         exp = gtk.Expander()
-        label = gtk.Label('<b>%s</b>'%_('Tray Icon'))
+        label = gtk.Label('<b>%s</b>'%_('Status Icon'))
         label.set_use_markup(True)
         exp.set_label_widget(label)
         expVbox = gtk.VBox(spacing=1)
@@ -261,10 +261,10 @@ class PrefDialog(gtk.Dialog):
         pack(hbox, label)
         item = FileChooserPrefItem(
             ui,
-            'trayImage',
+            'statusIconImage',
             _('Select Icon'),
             pixDir,
-            defaultVarName='trayImageDefault',
+            defaultVarName='statusIconImageDefault',
         )
         self.uiPrefItems.append(item)
         pack(hbox, item._widget, 1, 1)
@@ -277,10 +277,10 @@ class PrefDialog(gtk.Dialog):
         pack(hbox, label)
         item = FileChooserPrefItem(
             ui,
-            'trayImageHoli',
+            'statusIconImageHoli',
             _('Select Icon'),
             pixDir,
-            defaultVarName='trayImageHoliDefault',
+            defaultVarName='statusIconImageHoliDefault',
         )
         self.uiPrefItems.append(item)
         pack(hbox, item._widget, 1, 1)
@@ -290,7 +290,7 @@ class PrefDialog(gtk.Dialog):
         pack(hbox, gtk.Label('   '))
         checkItem = CheckPrefItem(
             ui,
-            'trayFontFamilyEnable',
+            'statusIconFontFamilyEnable',
             label=_('Change font family to'),
             #tooltip=_('In SVG files'),
         )
@@ -299,7 +299,7 @@ class PrefDialog(gtk.Dialog):
         pack(hbox, checkItem._widget)
         item = FontFamilyPrefItem(
             ui,
-            'trayFontFamily',
+            'statusIconFontFamily',
         )
         self.uiPrefItems.append(item)
         pack(hbox, item._widget, 1, 1)
@@ -433,12 +433,12 @@ class PrefDialog(gtk.Dialog):
         vbox.icon = 'preferences-plugin.png'
         self.prefPages.append(vbox)
         #####
-        ##pluginsTextTray:
+        ##pluginsTextStatusIcon:
         hbox = gtk.HBox()
-        if trayMode==1:
-            item = CheckPrefItem(ui, 'pluginsTextTray', _('Show in applet (for today)'))
+        if statusIconMode==1:
+            item = CheckPrefItem(ui, 'pluginsTextStatusIcon', _('Show in applet (for today)'))
         else:
-            item = CheckPrefItem(ui, 'pluginsTextTray', _('Show in tray (for today)'))
+            item = CheckPrefItem(ui, 'pluginsTextStatusIcon', _('Show in Status Icon (for today)'))
         self.uiPrefItems.append(item)
         pack(hbox, item._widget)
         pack(hbox, gtk.Label(''), 1, 1)
