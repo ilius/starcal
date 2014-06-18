@@ -16,7 +16,7 @@
    width="128"
    height="128"
    version="1.0"
-   sodipodi:docname="tray-white-red.svg"
+   sodipodi:docname="white-blue.svg"
    inkscape:output_extension="org.inkscape.output.svg.inkscape">
   <metadata
      id="metadata7">
@@ -111,8 +111,8 @@
      showguides="true"
      inkscape:guide-bbox="true"
      inkscape:zoom="1.8101934"
-     inkscape:cx="105.19169"
-     inkscape:cy="21.931261"
+     inkscape:cx="-29.482357"
+     inkscape:cy="68.725032"
      inkscape:window-x="0"
      inkscape:window-y="71"
      inkscape:current-layer="svg2"
@@ -133,20 +133,20 @@
      inkscape:label="L3"
      transform="translate(0,-352)" />
   <g
-     id="g4104">
+     id="g3001">
     <rect
        y="32.704834"
        x="2.7056646"
        height="93.054291"
        width="123.11159"
        id="rect3224"
-       style="fill:#e6e6e6;fill-opacity:1;stroke:#7f7f7f;stroke-width:0.70444643;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+       style="fill:#e6e6e6;fill-opacity:1;stroke:#7f7f7f;stroke-width:0.70444642999999996;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <path
        transform="matrix(0.25795007,0,0,0.25795007,2.3534415,2.2098526)"
        sodipodi:nodetypes="cscscsc"
        id="path3638"
        d="m 480,341.66523 c 0,0 -15.54108,43.34834 -37.39781,59.32559 -19.69471,14.39682 -44.19159,17.07409 -44.19159,17.07409 0,0 -10.88579,23.21272 -24.61793,36.49139 -17.4126,16.8376 -57.76634,26.60308 -57.76634,26.60308 0,0 68.33044,2.69683 111.28026,-35.45309 C 475.21385,403.15296 482.45924,342.86703 480,341.66523 z"
-       style="opacity:0.48507463;fill:#7d7d7d;fill-opacity:1;fill-rule:evenodd;stroke:none;filter:url(#filter3976)"
+       style="opacity:0.48507463000000001;fill:#7d7d7d;fill-opacity:1;fill-rule:evenodd;stroke:none;filter:url(#filter3976)"
        inkscape:connector-curvature="0" />
     <rect
        y="2.2504869"
@@ -154,7 +154,7 @@
        height="30.657484"
        width="123.30477"
        id="rect2386"
-       style="fill:#eb1515;fill-opacity:1;stroke:#000000;stroke-width:0.51126605000000003;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+       style="fill:#0000ee;fill-opacity:1;stroke:#000000;stroke-width:0.51126605000000003;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
     <path
        transform="matrix(0.98775065,0,0,1,0.78849773,0)"
        sodipodi:nodetypes="ccccsccsc"

@@ -658,8 +658,8 @@ boldYmLabel = True ## apply in Pref FIXME
 showYmArrows = True ## apply in Pref FIXME
 labelMenuDelay = 0.1 ## delay for shift up/down items of menu for right click on YearLabel
 ####################
-statusIconImage = join(pixDir, 'tray-dark-green.svg')
-statusIconImageHoli = join(pixDir, 'tray-dark-red.svg')
+statusIconImage = join(rootDir, 'status-icons', 'dark-green.svg')
+statusIconImageHoli = join(rootDir, 'status-icons', 'dark-red.svg')
 statusIconImageDefault, statusIconImageHoliDefault = statusIconImage, statusIconImageHoli
 statusIconFontFamilyEnable = False
 statusIconFontFamily = None
