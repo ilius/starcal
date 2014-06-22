@@ -4031,7 +4031,8 @@ def getDayOccurrenceData(curJd, groups):
 
 
 def getWeekOccurrenceData(curAbsWeekNumber, groups):
-    startJd, endJd = core.getJdRangeOfAbsWeekNumber(absWeekNumber)
+    startJd = core.getStartJdOfAbsWeekNumber(absWeekNumber)
+    endJd = startJd + 7
     data = []
     for group in groups:
         if not group.enable:

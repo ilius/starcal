@@ -27,14 +27,15 @@ if sys.version_info[0] != 2:
 from time import time as now
 from time import localtime
 import os
-from os.path import join, dirname, isfile, isdir, splitext
+import os.path
+from os.path import join, dirname
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
 from scal2.path import *
 from scal2.utils import myRaise
 
-if not isdir(confDir):
+if not os.path.isdir(confDir):
     from scal2.utils import restartLow
     try:
         __import__('scal2.ui_gtk.import_config_1to2')
@@ -42,7 +43,6 @@ if not isdir(confDir):
         myRaise()
     restartLow()
 
-from scal2.utils import toStr, toUnicode
 from scal2.utils import versionLessThan
 from scal2.cal_types import calTypes
 from scal2 import core
@@ -494,9 +494,9 @@ class MainWin(gtk.Window, ud.BaseCalObj):
                 gtk.STOCK_REDO,
                 self.switchWcalMcal,
             ))
-        if isfile('/usr/bin/evolution'):##??????????????????
+        if os.path.isfile('/usr/bin/evolution'):##??????????????????
             menu.add(labelImageMenuItem('In E_volution', 'evolution-18.png', ui.dayOpenEvolution))
-        #if isfile('/usr/bin/sunbird'):##??????????????????
+        #if os.path.isfile('/usr/bin/sunbird'):##??????????????????
         #    menu.add(labelImageMenuItem('In _Sunbird', 'sunbird-18.png', ui.dayOpenSunbird))
         ####
         moreMenu = gtk.Menu()
@@ -706,7 +706,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         sep = '\n'
         for mode in calTypes.active:
             y, m, d = ui.todayCell.dates[mode]
-            tt += '%s%s %s %s'%(sep, _(d), core.getMonthName(mode, m, y), _(y))
+            tt += '%s%s %s %s'%(sep, _(d), locale_man.getMonthName(mode, m, y), _(y))
         if ui.pluginsTextStatusIcon:
             text = ui.todayCell.pluginsText
             if text!='':
@@ -722,7 +722,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         return tt
     def statusIconUpdateIcon(self, ddate):## FIXME
         imagePath = ui.statusIconImageHoli if ui.todayCell.holiday else ui.statusIconImage
-        ext = splitext(imagePath)[1][1:].lower()
+        ext = os.path.splitext(imagePath)[1][1:].lower()
         loader = gdk.pixbuf_loader_new_with_mime_type('image/%s'%ext)
         data = open(imagePath).read()
         if ext == 'svg':

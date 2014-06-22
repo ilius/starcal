@@ -21,6 +21,7 @@ import os, sys
 
 from scal2.cal_types import calTypes
 from scal2 import core
+from scal2 import locale_man
 from scal2.locale_man import tr as _
 from scal2 import ui
 from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
@@ -109,7 +110,7 @@ class ExportDialog(gtk.Dialog):
         if i==0:
             s = getCurrentMonthStatus()
             months = [s]
-            title = '%s %s'%(core.getMonthName(calTypes.primary, s.month, s.year), _(s.year))
+            title = '%s %s'%(locale_man.getMonthName(calTypes.primary, s.month, s.year), _(s.year))
         elif i==1:
             for i in range(1, 13):
                 months.append(getMonthStatus(ui.cell.year, i))
