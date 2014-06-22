@@ -1332,7 +1332,7 @@ msgstr ""
 
 msgid "Default Icon"
 msgstr ""
-"آیکون پیش‌فرض"
+"نماد پیش‌فرض"
 
 msgid "Default Calendar Type"
 msgstr ""
@@ -1528,7 +1528,7 @@ msgstr ""
 
 msgid "Events Icon"
 msgstr ""
-"آیکون رویدادها"
+"نماد رویدادها"
 
 msgid "Events Box"
 msgstr ""
@@ -1809,7 +1809,7 @@ msgstr ""
 
 msgid "Icon"
 msgstr ""
-"آیکون"
+"نماد"
 
 msgid "Text"
 msgstr ""
@@ -1817,11 +1817,11 @@ msgstr ""
 
 msgid "Text below Icon"
 msgstr ""
-"متن زیر آیکون"
+"متن زیر نماد"
 
 msgid "Text beside Icon"
 msgstr ""
-"متن کنار آیکون"
+"متن کنار نماد"
 
 
 
@@ -2396,7 +2396,7 @@ msgstr ""
 
 msgid "Icon Size"
 msgstr ""
-"اندازهٔ آیکون"
+"اندازهٔ نماد"
 
 msgid "Small Toolbar"
 msgstr ""
