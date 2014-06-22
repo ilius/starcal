@@ -444,7 +444,8 @@ def stopRunningThreads():
             cancel()
 
 
-dataToJson =  lambda data: dataToCompactJson(data) if useCompactJson else dataToPrettyJson(data)
+dataToJson =  lambda data: dataToCompactJson(data, useAsciiJson) if useCompactJson \
+    else dataToPrettyJson(data, useAsciiJson)
 
 def init():
     initPlugins()
@@ -501,6 +502,7 @@ weekNumberMode = 7
 ################################################################################
 debugMode = False
 useCompactJson = False ## FIXME
+useAsciiJson = False
 eventTextSep = ': ' ## use to seperate summary from description for display
 eventTrashLastTop = True
 
