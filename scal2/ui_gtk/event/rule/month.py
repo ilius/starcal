@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from scal2 import core
+from scal2 import locale_man
 from scal2.locale_man import tr as _
 from scal2 import event_lib
 
@@ -19,7 +20,7 @@ class WidgetClass(gtk.HBox):
         mode = self.rule.getMode()
         for i in range(12):
             b = gtk.ToggleButton(_(i+1))
-            set_tooltip(b, core.getMonthName(mode, i+1))
+            set_tooltip(b, locale_man.getMonthName(mode, i+1))
             pack(self, b)
             self.buttons.append(b)
     def updateWidget(self):
@@ -35,6 +36,6 @@ class WidgetClass(gtk.HBox):
     def changeMode(self, mode):
         if mode!=self.rule.getMode():
             for i in range(12):
-                set_tooltip(self.buttons[i], core.getMonthName(mode, i+1))
+                set_tooltip(self.buttons[i], locale_man.getMonthName(mode, i+1))
 
 

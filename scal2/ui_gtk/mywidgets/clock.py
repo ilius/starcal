@@ -127,7 +127,7 @@ class FClockWidget(gtk.DrawingArea): ## Time is in Local
         pixbuf = GdkPixbuf.Pixbuf(GdkPixbuf.Colorspace.RGB, True, 8, w, h)
         pixbuf = pixbuf.add_alpha(True, '0','0','0')
         pmap, mask = pixbuf.render_pixmap_and_mask(alpha_threshold=127) ## pixmap is also a drawable
-        pmap.draw_layout(pmap.new_gc(), 0, 0, textLay, trayTextColor)#, trayBgColor)
+        pmap.draw_layout(pmap.new_gc(), 0, 0, textLay, statusIconTextColor)#, statusIconBgColor)
         self.clear()
         #self.set_from_image(pmap.get_image(0, 0, w, h), mask)
         self.set_from_pixmap(pmap, mask)

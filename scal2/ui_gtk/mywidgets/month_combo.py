@@ -1,4 +1,5 @@
 from scal2 import core
+from scal2 import locale_man
 from scal2.locale_man import tr as _
 from scal2.ui_gtk import *
 
@@ -20,7 +21,7 @@ class MonthComboBox(gtk.ComboBox):
         if self.includeEvery:
             ls.append([_('Every Month')])
         for m in range(1, 13):
-            ls.append([core.getMonthName(mode, m)])
+            ls.append([locale_man.getMonthName(mode, m)])
         if active is not None:
             self.set_active(active)
     def getValue(self):

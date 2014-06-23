@@ -50,7 +50,7 @@ class IndicatorStatusIconWrapper:
     def create_menu_simple(self):
         menu = gtk.Menu()
         ###
-        for item in [self.mainWin.getMainWinMenuItem()] + self.mainWin.getTrayPopupItems():
+        for item in [self.mainWin.getMainWinMenuItem()] + self.mainWin.getStatusIconPopupItems():
             item.show()
             menu.add(item)
         ###
@@ -61,7 +61,7 @@ class IndicatorStatusIconWrapper:
     def create_menu(self):
         menu = gtk.Menu()
         ####
-        for line in self.mainWin.getTrayTooltip().split('\n'):
+        for line in self.mainWin.getStatusIconTooltip().split('\n'):
             item = CopyLabelMenuItem(line)
             item.show()
             menu.append(item)
@@ -71,7 +71,7 @@ class IndicatorStatusIconWrapper:
         menu.append(item)
         ####
         submenu = gtk.Menu()
-        for item in self.mainWin.getTrayPopupItems():
+        for item in self.mainWin.getStatusIconPopupItems():
             item.show()
             submenu.add(item)
         sitem = gtk.MenuItem(label=_('More'))
