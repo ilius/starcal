@@ -2,6 +2,7 @@ __all__ = [
     'gtk',
     'gdk',
     'pack',
+    'TWO_BUTTON_PRESS',
 ]
 
 from gi.repository import Gtk as gtk
@@ -14,4 +15,6 @@ def pack(box, child, expand=False, fill=False, padding=0):
         box.pack_start(child, expand)
     else:
         raise TypeError('pack: unkown type %s'%type(box))
+
+TWO_BUTTON_PRESS = getattr(gdk.EventType, '2BUTTON_PRESS')
 
