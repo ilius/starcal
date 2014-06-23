@@ -894,7 +894,7 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         i = int(event.y * 7.0 / self.get_allocation().height)
         cell = self.status[i]
         self.gotoJd(cell.jd)
-        if event.type==gdk._2BUTTON_PRESS:
+        if event.type==TWO_BUTTON_PRESS:
             self.emit('2button-press')
         if b == 3:
             self.emit('popup-cell-menu', event.time, x, y)

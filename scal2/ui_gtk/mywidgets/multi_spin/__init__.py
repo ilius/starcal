@@ -178,7 +178,7 @@ class MultiSpinButton(gtk.SpinButton):
                     self._arrow_press(-page_inc)
             return True
         else:
-            if gevent.type==gdk._2BUTTON_PRESS:
+            if gevent.type==TWO_BUTTON_PRESS:
                 pass ## FIXME
                 ## select the numeric part containing cursor
                 #return True

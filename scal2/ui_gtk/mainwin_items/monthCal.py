@@ -482,7 +482,7 @@ class CalObj(gtk.Widget, CalBase):
         elif yPos >= 0 and xPos >= 0:
             cell = status[yPos][xPos]
             self.changeDate(*cell.dates[calTypes.primary])
-            if event.type==gdk._2BUTTON_PRESS:
+            if event.type==TWO_BUTTON_PRESS:
                 self.emit('2button-press')
             if b == 3 and cell.month == ui.cell.month:## right click on a normal cell
                 #self.emit('popup-cell-menu', event.time, *self.getCellPos())
