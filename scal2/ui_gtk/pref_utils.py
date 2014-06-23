@@ -272,9 +272,9 @@ class FileChooserPrefItem(PrefItem):
         self.module = module
         self.varName = varName
         ###
-        dialog = gtk.FileChooserDialog(title, action=gtk.FILE_CHOOSER_ACTION_OPEN)
-        dialog_add_button(dialog, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL, None)
-        dialog_add_button(dialog, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK, None)
+        dialog = gtk.FileChooserDialog(title, action=gtk.FileChooserAction.OPEN)
+        dialog_add_button(dialog, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL, None)
+        dialog_add_button(dialog, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK, None)
         w = gtk.FileChooserButton(dialog)
         w.set_local_only(True)
         if currentFolder:
@@ -282,7 +282,7 @@ class FileChooserPrefItem(PrefItem):
         ###
         self.defaultVarName = defaultVarName
         if defaultVarName:
-            dialog_add_button(dialog, gtk.STOCK_UNDO, _('_Revert'), gtk.RESPONSE_NONE, self.revertClicked)
+            dialog_add_button(dialog, gtk.STOCK_UNDO, _('_Revert'), gtk.ResponseType.NONE, self.revertClicked)
         ###
         self._widget = w
         self.get = w.get_filename

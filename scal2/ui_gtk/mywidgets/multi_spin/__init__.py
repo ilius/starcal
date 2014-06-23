@@ -162,7 +162,7 @@ class MultiSpinButton(gtk.SpinButton):
             self.grab_focus()
         if self.get_editable():
             self.update()
-        width, height = self.size_request()
+        height = self.size_request().height
         step_inc, page_inc = self.get_increments()
         if gwin.get_position()[1] == 0:## the panel window (containing up and down arrows)
             ## gwin.xid == self.get_window().get_children()[0].xid ## the same as _gtk_spin_button_get_panel
