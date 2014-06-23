@@ -156,28 +156,32 @@ class MultiSpinButton(gtk.SpinButton):
             return False
     def _button_press(self, widget, gevent):
         gwin = gevent.window
-        #print(gwin.get_data('name'))
-        #r = self.get_allocation() ; print('allocation', r[0], r[2])
+        r = self.get_allocation()
+        ##print(gwin.get_property('name'))## TypeError: object of type `GdkX11Window' does not have property `name'
+        #print('allocation', r.width, r.height)
+        #print(gevent.x, gevent.y)
+        #print(gwin.get_position())
+        #print(dir(gwin))
         if not self.has_focus():
             self.grab_focus()
         if self.get_editable():
             self.update()
         height = self.size_request().height
         step_inc, page_inc = self.get_increments()
-        if gwin.get_position()[1] == 0:## the panel window (containing up and down arrows)
-            ## gwin.xid == self.get_window().get_children()[0].xid ## the same as _gtk_spin_button_get_panel
-            if gevent.y*2 < height:
-                if gevent.button==1:
-                    self._arrow_press(step_inc)
-                elif gevent.button==2:
-                    self._arrow_press(page_inc)
-            else:
-                if gevent.button==1:
-                    self._arrow_press(-step_inc)
-                else:
-                    self._arrow_press(-page_inc)
+        gwin_index = self.get_window().get_children().index(gwin)
+        if gwin_index == 8:## UP
+            if gevent.button==1:
+                self._arrow_press(step_inc)
+            elif gevent.button==2:
+                self._arrow_press(page_inc)
             return True
-        else:
+        elif gwin_index == 9:## DOWN
+            if gevent.button==1:
+                self._arrow_press(-step_inc)
+            else:
+                self._arrow_press(-page_inc)
+            return True
+        elif gwin_index == 10:## TEXT ENTRY
             if gevent.type==TWO_BUTTON_PRESS:
                 pass ## FIXME
                 ## select the numeric part containing cursor
