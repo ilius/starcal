@@ -133,5 +133,5 @@ if __name__ == '__main__':
     tz = build_tzinfo('US/Eastern',
                       open(os.path.join(base,'US','Eastern'), 'rb'))
     pprint(tz._utc_transition_times)
-    #print tz.asPython(4)
-    #print tz.transitions_mapping
+    #print(tz.asPython(4))
+    #print(tz.transitions_mapping)
