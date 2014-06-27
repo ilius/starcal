@@ -15,6 +15,7 @@ class TimeZoneComboBoxEntry(gtk.ComboBoxEntry):
         gtk.ComboBoxEntry.__init__(self)
         self.set_model(model)
         self.set_entry_text_column(0)
+        self.add_attribute(self.get_cells()[0], 'text', 0)
         self.add_attribute(self.get_cells()[0], 'sensitive', 1)
         self.connect('changed', self.onChanged)
         child = self.get_child()
