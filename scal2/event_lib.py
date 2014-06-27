@@ -23,7 +23,8 @@ from os.path import join, split, isdir, isfile, dirname, splitext
 from os import listdir
 import math
 from time import time as now
-import pytz
+
+import natz
 
 from scal2.lib import OrderedDict
 
@@ -1188,7 +1189,7 @@ class RuleContainer:
     def getTimeZoneObj(self):
         if self.timeZoneEnable and self.timeZone:
             try:
-                return pytz.timezone(self.timeZone)
+                return natz.timezone(self.timeZone)
             except:
                 myRaise()
         return core.localTz
@@ -3556,7 +3557,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
         mod = self.getVcsModule()
         ####
         try:
-            utc = pytz.timezone('UTC')
+            utc = natz.timezone('UTC')
             self.vcsMinJd = getJdFromEpoch(mod.getFirstCommitEpoch(self), tz=utc)
             self.vcsMaxJd = getJdFromEpoch(mod.getLastCommitEpoch(self), tz=utc) + 1
         except:

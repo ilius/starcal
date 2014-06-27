@@ -25,7 +25,6 @@ depends+=('pygtk>=2.8')
 depends+=('pygobject')
 #depends+=('python2-gflags')
 depends+=('python2-httplib2')
-depends+=('python2-pytz')
 depends+=('python2-dateutil')
 
 optdepends=()

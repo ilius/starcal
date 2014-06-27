@@ -10,6 +10,7 @@ from scal2.ui_gtk import *
 
 class TimeZoneComboBoxEntry(gtk.ComboBoxEntry):
     def __init__(self):
+        from natz.tree import getZoneInfoTree
         model = gtk.TreeStore(str, bool)
         gtk.ComboBoxEntry.__init__(self)
         self.set_model(model)
@@ -31,9 +32,7 @@ class TimeZoneComboBoxEntry(gtk.ComboBoxEntry):
         ###
         self.appendOrderedDict(
             None,
-            jsonToOrderedData(
-                open(join(rootDir, 'zoneinfo-tree.json')).read()
-            ),
+            getZoneInfoTree(),
         )
     def appendOrderedDict(self, parentIter, dct):
         model = self.get_model()

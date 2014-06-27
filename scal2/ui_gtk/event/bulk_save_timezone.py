@@ -17,7 +17,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-import pytz
+import natz
 
 from scal2 import core
 from scal2.locale_man import tr as _
@@ -68,7 +68,7 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
         if responseId == gtk.RESPONSE_OK:
             timeZone = self.timeZoneInput.get_text()
             try:
-                pytz.timezone(timeZone)
+                natz.timezone(timeZone)
             except Exception as e:
                 self.errorLabel.set_text(
                     _('Time zone is invalid') + '\n' + str(e)

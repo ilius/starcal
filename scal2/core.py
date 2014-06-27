@@ -26,7 +26,7 @@ import os.path
 from os.path import join, isfile, isdir
 #from pprint import pprint
 
-from tzlocal import get_localzone
+from natz.local import get_localzone
 
 from scal2.path import *
 from scal2.time_utils import *
