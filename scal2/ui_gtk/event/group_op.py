@@ -1,4 +1,4 @@
-import pytz
+import natz
 
 from scal2.utils import myRaise
 from scal2.locale_man import tr as _
@@ -226,7 +226,7 @@ class GroupBulkEditDialog(gtk.Dialog):
             timeZone = self.timeZoneInput.get_text()
             if chType!=0:
                 try:
-                    pytz.timezone(timeZone)
+                    natz.timezone(timeZone)
                 except:
                     myRaise('Invalid Time Zone "%s"'%timeZone)
                 else:

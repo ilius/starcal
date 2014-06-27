@@ -37,7 +37,7 @@ rootDir = '/usr/share/starcal2'
 sys.path.insert(0, dataDir)## FIXME
 sys.path.insert(0, rootDir)## FIXME
 
-from tzlocal import get_localzone
+from natz.local import get_localzone
 
 from scal2 import plugin_api as api
 

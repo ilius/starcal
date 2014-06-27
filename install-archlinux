@@ -24,7 +24,6 @@ depends=('python>=3.2')
 depends+=('python-gobject') ## The new gobject introspection
 #depends+=('python-gflags')
 depends+=('python-httplib2')
-depends+=('python-pytz')
 depends+=('python-dateutil')
 
 optdepends=()

@@ -1,38 +1,39 @@
 import os
 import re
-import pytz
+import natz
 
-_cache_tz = None
 
 def _tz_from_env(tzenv):
+    from .tzfile import build_tzinfo
     if tzenv[0] == ':':
         tzenv = tzenv[1:]
 
     # TZ specifies a file
     if os.path.exists(tzenv):
         with open(tzenv, 'rb') as tzfile:
-            return pytz.tzfile.build_tzinfo('local', tzfile)
+            return build_tzinfo('local', tzfile)
 
     # TZ specifies a zoneinfo zone.
     try:
-        tz = pytz.timezone(tzenv)
+        tz = natz.timezone(tzenv)
         # That worked, so we return this:
         return tz
-    except pytz.UnknownTimeZoneError:
-        raise pytz.UnknownTimeZoneError(
-            "tzlocal() does not support non-zoneinfo timezones like %s. \n"
+    except natz.UnknownTimeZoneError:
+        raise natz.UnknownTimeZoneError(
+            "We don't support non-zoneinfo timezones like %s. \n"
             "Please use a timezone in the form of Continent/City")
 
-def _get_localzone(_root='/'):
+def get_localzone(_root='/'):
     """Tries to find the local timezone configuration.
 
-    This method prefers finding the timezone name and passing that to pytz,
+    This method prefers finding the timezone name and passing that to natz,
     over passing in the localtime file, as in the later case the zoneinfo
     name is unknown.
 
     The parameter _root makes the function look for files like /etc/localtime
     beneath the _root directory. This is primarily used by the tests.
     In normal usage you call the function without parameters."""
+    from .exceptions import UnknownTimeZoneError
 
     tzenv = os.environ.get('TZ')
     if tzenv:
@@ -54,7 +55,7 @@ def _get_localzone(_root='/'):
                     etctz, dummy = etctz.split(' ', 1)
                 if '#' in etctz:
                     etctz, dummy = etctz.split('#', 1)
-                return pytz.timezone(etctz.replace(' ', '_'))
+                return natz.timezone(etctz.replace(' ', '_'))
 
     # CentOS has a ZONE setting in /etc/sysconfig/clock,
     # OpenSUSE has a TIMEZONE setting in /etc/sysconfig/clock and
@@ -84,7 +85,7 @@ def _get_localzone(_root='/'):
                 etctz = line[:end_re.search(line).start()]
 
                 # We found a timezone
-                return pytz.timezone(etctz.replace(' ', '_'))
+                return natz.timezone(etctz.replace(' ', '_'))
 
     # No explicit setting existed. Use localtime
     for filename in ('etc/localtime', 'usr/local/etc/localtime'):
@@ -93,20 +94,6 @@ def _get_localzone(_root='/'):
         if not os.path.exists(tzpath):
             continue
         with open(tzpath, 'rb') as tzfile:
-            return pytz.tzfile.build_tzinfo('local', tzfile)
+            return natz.tzfile.build_tzinfo('local', tzfile)
 
-    raise pytz.UnknownTimeZoneError('Can not find any timezone configuration')
-
-def get_localzone():
-    """Get the computers configured local timezone, if any."""
-    global _cache_tz
-    if _cache_tz is None:
-        _cache_tz = _get_localzone()
-    return _cache_tz
-
-def reload_localzone():
-    """Reload the cached localzone. You need to call this if the timezone has changed."""
-    global _cache_tz
-    _cache_tz = _get_localzone()
-    return _cache_tz
-
+    raise natz.UnknownTimeZoneError('Can not find any timezone configuration')

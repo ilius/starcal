@@ -32,7 +32,6 @@ requires=('python >= 2.6' 'python < 3.0')
 requires+=('python3-gobject') ## The new gobject introspection
 #requires+=('python-gflags')
 requires+=('python-httplib2')
-requires+=('python-pytz')
 requires+=('python-dateutil')
 
 requires_str=$(printf "Requires: %s\n" "${requires[@]}")

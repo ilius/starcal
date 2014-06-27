@@ -38,7 +38,7 @@ class EventTagsAndIconSelect(gtk.HBox):
         #####
         ls = gtk.ListStore(GdkPixbuf.Pixbuf, str)
         combo = gtk.ComboBox()
-        self.set_model(ls)
+        combo.set_model(ls)
         ###
         cell = gtk.CellRendererPixbuf()
         pack(combo, cell, False)

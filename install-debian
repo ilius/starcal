@@ -45,7 +45,6 @@ depends+=('python3-gi-cairo(>=3.8)')
 ## it's "python-gobject-cairo" in ubuntu FIXME
 #depends+=('python3-gflags') ## FIXME
 depends+=('python3-httplib2')
-depends+=('python3-tz')
 depends+=('python3-dateutil')
 
 #if [ -f "/usr/lib/$HOSTTYPE-$OSTYPE/libappindicator.so.1" ] ; then
