@@ -30,6 +30,7 @@ version=`$sourceDir/scal2/get_version.py`
 
 requires=('python >= 2.6' 'python < 3.0')
 requires+=('python-gtk >= 2.8')
+requires+=('python-gobject2') ## The old "gobject" module
 #requires+=('python-gflags')
 requires+=('python-httplib2')
 requires+=('python-dateutil')
