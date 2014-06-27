@@ -41,6 +41,7 @@ installedSize=`getDirTotalSize "$tmpDir"` ## only /usr ? FIXME
 
 depends=('python(>=2.6)' 'python(<<3.0)')
 depends+=('python-gtk2(>=2.8)')
+depends+=('python-gobject-2') ## The old "gobject" module
 #depends+=('python-gflags')
 depends+=('python-httplib2')
 depends+=('python-tz')
