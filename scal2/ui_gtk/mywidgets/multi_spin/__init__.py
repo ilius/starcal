@@ -183,8 +183,8 @@ class MultiSpinButton(gtk.SpinButton):
                 ## select the numeric part containing cursor
                 #return True
         return False
-    def _scroll(self, widget, event):
-        d = event.direction.value_nick
+    def _scroll(self, widget, gevent):
+        d = gevent.direction.value_nick
         if d in ('up', 'down'):
             if not self.has_focus():
                 self.grab_focus()
@@ -205,7 +205,7 @@ class MultiSpinButton(gtk.SpinButton):
         if self.get_editable() and self._remain and now()-self.pressTm>=ui.timeout_repeat/1000.0:
             self.entry_plus(plus)
             timeout_add(ui.timeout_repeat, self._arrow_remain, plus)
-    def _button_release(self, widget, event):
+    def _button_release(self, widget, gevent):
         self._remain = False
     """## ????????????????????????????????
     def _arrow_enter_notify(self, gtkWin):

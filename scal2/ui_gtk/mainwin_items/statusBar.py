@@ -28,7 +28,7 @@ class CalObj(gtk.HBox, CustomizableCalObj):
         sbar.connect('button-press-event', self.sbarButtonPress)
         sbar.show()
         pack(self, sbar)
-    sbarButtonPress = lambda self, widget, event: ui.mainWin.startResize(widget, event)
+    sbarButtonPress = lambda self, widget, gevent: ui.mainWin.startResize(widget, gevent)
     def onConfigChange(self, *a, **kw):
         CustomizableCalObj.onConfigChange(self, *a, **kw)
         ###

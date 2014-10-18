@@ -458,7 +458,7 @@ class WeeklyScheduleWindow(gtk.Dialog):
         #####
         self.vbox.show_all()
         self.updateWidget()
-    def onDeleteEvent(self, win, event):
+    def onDeleteEvent(self, win, gevent):
         self.destroy()
         return True
     def updateWidget(self):

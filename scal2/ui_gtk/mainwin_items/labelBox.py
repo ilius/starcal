@@ -155,8 +155,8 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
         m = index + 1
         ui.changeDate(y, m, d, self.mode)
         self.onDateChange()
-    def buttonPress(self, widget, event):
-        if event.button==3:
+    def buttonPress(self, widget, gevent):
+        if gevent.button==3:
             self.createMenuLabels()
             x, y = self.get_window().get_origin()
             y += self.get_allocation().height
@@ -165,7 +165,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
             #x -= 7 ## ????????? because of menu padding
             ## align menu to center:
             x -= int((get_menu_width(self.menu) - self.get_allocation().width)//2)
-            self.menu.popup(None, None, lambda widget: (x, y, True), event.button, event.time)
+            self.menu.popup(None, None, lambda widget: (x, y, True), gevent.button, gevent.time)
             ui.updateFocusTime()
             return True
         else:
@@ -265,15 +265,15 @@ class IntLabel(BaseLabel):
     def itemActivate(self, widget, item):
         self.setActive(self.start+item)
         self.emit('changed', self.start+item)
-    def buttonPress(self, widget, event):
-        if event.button==3:
+    def buttonPress(self, widget, gevent):
+        if gevent.button==3:
             self.updateMenu()
             x, y = self.get_window().get_origin()
             y += self.get_allocation().height
             #x -= 7 ## ????????? because of menu padding
             ## align menu to center:
             x -= int((get_menu_width(self.menu) - self.get_allocation().width)//2)
-            self.menu.popup(None, None, lambda widget: (x, y, True), event.button, event.time)
+            self.menu.popup(None, None, lambda widget: (x, y, True), gevent.button, gevent.time)
             ui.updateFocusTime()
             return True
         else:
@@ -301,8 +301,8 @@ class IntLabel(BaseLabel):
                 return True
         else:
             return False
-    def menuScroll(self, widget, event):
-        d = event.direction.value_nick
+    def menuScroll(self, widget, gevent):
+        d = gevent.direction.value_nick
         if d=='up':
             self.updateMenu(self.start-1)
         elif d=='down':

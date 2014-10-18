@@ -83,8 +83,8 @@ mainWinItemsDesc = {
 
 
 
-#def show_event(widget, event):
-#    print(type(widget), event.type.value_name, event.get_value())#, event.send_event
+#def show_event(widget, gevent):
+#    print(type(widget), gevent.type.value_name, gevent.get_value())#, gevent.send_event
 
 
 def liveConfChanged():
@@ -147,8 +147,8 @@ class MainWinVbox(gtk.VBox, CustomizableCalBox):
     def updateVars(self):
         CustomizableCalBox.updateVars(self)
         ui.mainWinItems = self.getItemsData()
-    def keyPress(self, arg, event):
-        CustomizableCalBox.keyPress(self, arg, event)
+    def keyPress(self, arg, gevent):
+        CustomizableCalBox.keyPress(self, arg, gevent)
         return True ## FIXME
     def switchWcalMcal(self):
         wi = None
@@ -340,17 +340,17 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         ###########################
         self.onConfigChange()
         #ud.rootWindow.set_cursor(gdk.Cursor(gdk.LEFT_PTR))
-    #def mainWinStateEvent(self, obj, event):
+    #def mainWinStateEvent(self, obj, gevent):
         #print(dir(event))
-        #print(event.new_window_state)
+        #print(gevent.new_window_state)
         #self.event = event
     def childSizeRequest(self, cal, req):
         self.setMinHeight()
     def selectDateResponse(self, widget, y, m, d):
         ui.changeDate(y, m, d)
         self.onDateChange()
-    def keyPress(self, arg, event):
-        kname = gdk.keyval_name(event.keyval).lower()
+    def keyPress(self, arg, gevent):
+        kname = gdk.keyval_name(gevent.keyval).lower()
         #print(now(), 'MainWin.keyPress', kname)
         if kname=='escape':
             self.onEscape()
@@ -361,7 +361,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         elif kname in ('q', 'arabic_dad'):## FIXME
             self.quit()
         else:
-            self.vbox.keyPress(arg, event)
+            self.vbox.keyPress(arg, gevent)
         return True ## FIXME
     def focusIn(self, widegt, event, data=None):
         self.focus = True
@@ -389,7 +389,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
                 req.height=1
             ui.mcalHeight = req.height
     """
-    def configureEvent(self, widget, event):
+    def configureEvent(self, widget, gevent):
         wx, wy = self.get_position()
         maxPosDelta = max(abs(ui.winX-wx), abs(ui.winY-wy))
         #print(wx, wy)
@@ -401,21 +401,21 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         ui.winWidth = ww
         liveConfChanged()
         return False
-    def buttonPress(self, obj, event):
-        b = event.button
+    def buttonPress(self, obj, gevent):
+        b = gevent.button
         #print('buttonPress', b)
         if b==3:
             self.menuMainCreate()
-            self.menuMain.popup(None, None, None, 3, event.time)
+            self.menuMain.popup(None, None, None, 3, gevent.time)
             ui.updateFocusTime()
         elif b==1:
-            self.begin_move_drag(event.button, int(event.x_root), int(event.y_root), event.time)
+            self.begin_move_drag(gevent.button, int(gevent.x_root), int(gevent.y_root), gevent.time)
         return False
-    def startResize(self, widget, event):
+    def startResize(self, widget, gevent):
         if self.menuMain:
             self.menuMain.hide()
         x, y, mask = ud.rootWindow.get_pointer()
-        self.begin_resize_drag(gdk.WINDOW_EDGE_SOUTH_EAST, event.button, x, y, event.time)
+        self.begin_resize_drag(gdk.WINDOW_EDGE_SOUTH_EAST, gevent.button, x, y, gevent.time)
         return True
     def changeDate(self, year, month, day):
         ui.changeDate(year, month, day)

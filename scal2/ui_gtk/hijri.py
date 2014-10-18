@@ -244,7 +244,7 @@ class EditDbDialog(gtk.Dialog):
         elif response_id==gtk.RESPONSE_CANCEL:
             self.destroy()
         return True
-    def onDeleteEvent(self, dialog, event):
+    def onDeleteEvent(self, dialog, gevent):
         self.destroy()
         return True
 

@@ -43,8 +43,8 @@ from scal2.ui_gtk.cal_base import CalBase
 from scal2.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox
 from scal2.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
 
-def show_event(widget, event):
-    print(type(widget), event.type.value_name)#, event.get_value()#, event.send_event
+def show_event(widget, gevent):
+    print(type(widget), gevent.type.value_name)#, gevent.get_value()#, gevent.send_event
 
 
 class ColumnBase(CustomizableCalObj):
@@ -206,7 +206,7 @@ class Column(gtk.Widget, ColumnBase):
                     setColor(cr, color)
                     cr.show_layout(layout)
                     lineI += 1
-    def buttonPress(self, widget, event):
+    def buttonPress(self, widget, gevent):
         return False
     def onDateChange(self, *a, **kw):
         CustomizableCalObj.onDateChange(self, *a, **kw)
@@ -876,8 +876,8 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         self.jdPlus(7)
     def goForward4(self, obj=None):
         self.jdPlus(28)
-    def buttonPress(self, widget, event):
-        col = event.window.get_user_data()
+    def buttonPress(self, widget, gevent):
+        col = gevent.window.get_user_data()
         while not isinstance(col, ColumnBase):
             col = col.get_parent()
             if col is None:
@@ -886,23 +886,23 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
             if not col.autoButtonPressHandler:
                 return False
         ###
-        b = event.button
-        #x, y, mask = event.window.get_pointer()
+        b = gevent.button
+        #x, y, mask = gevent.window.get_pointer()
         x, y = self.get_pointer()
         #y += 10
         ###
-        i = int(event.y * 7.0 / self.get_allocation().height)
+        i = int(gevent.y * 7.0 / self.get_allocation().height)
         cell = self.status[i]
         self.gotoJd(cell.jd)
-        if event.type==TWO_BUTTON_PRESS:
+        if gevent.type==TWO_BUTTON_PRESS:
             self.emit('2button-press')
         if b == 3:
-            self.emit('popup-cell-menu', event.time, x, y)
+            self.emit('popup-cell-menu', gevent.time, x, y)
         return True
-    def keyPress(self, arg, event):
-        if CalBase.keyPress(self, arg, event):
+    def keyPress(self, arg, gevent):
+        if CalBase.keyPress(self, arg, gevent):
             return True
-        kname = gdk.keyval_name(event.keyval).lower()
+        kname = gdk.keyval_name(gevent.keyval).lower()
         if kname=='up':
             self.jdPlus(-1)
         elif kname=='down':
@@ -914,16 +914,16 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         elif kname in ('page_down', 'j', 'n'):
             self.jdPlus(7)
         elif kname in ('f10', 'm'):
-            if event.state & gdk.SHIFT_MASK:
+            if gevent.state & gdk.SHIFT_MASK:
                 # Simulate right click (key beside Right-Ctrl)
-                self.emit('popup-cell-menu', event.time, *self.getCellPos())
+                self.emit('popup-cell-menu', gevent.time, *self.getCellPos())
             else:
-                self.emit('popup-main-menu', event.time, *self.getMainMenuPos())
+                self.emit('popup-main-menu', gevent.time, *self.getMainMenuPos())
         else:
             return False
         return True
-    def scroll(self, widget, event):
-        d = event.direction.value_nick
+    def scroll(self, widget, gevent):
+        d = gevent.direction.value_nick
         if d=='up':
             self.jdPlus(-1)
         elif d=='down':

@@ -176,13 +176,13 @@ class CalBase(CustomizableCalObj):
         return True
     def getCellPos(self):
         raise NotImplementedError
-    def keyPress(self, arg, event):
-        CustomizableCalObj.keyPress(self, arg, event)
-        kname = gdk.keyval_name(event.keyval).lower()
+    def keyPress(self, arg, gevent):
+        CustomizableCalObj.keyPress(self, arg, gevent)
+        kname = gdk.keyval_name(gevent.keyval).lower()
         if kname in ('space', 'home', 't'):
             self.goToday()
         elif kname=='menu':
-            self.emit('popup-cell-menu', event.time, *self.getCellPos())
+            self.emit('popup-cell-menu', gevent.time, *self.getCellPos())
         elif kname=='i':
             self.emit('day-info')
         else:

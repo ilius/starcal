@@ -48,8 +48,8 @@ import scal2.ui_gtk.event.main
 
 
 
-def show_event(widget, event):
-    print(type(widget), event.type.value_name, event.get_value())#, event.send_event
+def show_event(widget, gevent):
+    print(type(widget), gevent.type.value_name, gevent.get_value())#, gevent.send_event
 
 
 @registerSignals
@@ -268,13 +268,13 @@ class TimeLine(gtk.Widget, ud.BaseCalObj):
         self.drawAll(self.get_window().cairo_create())
         #t2 = now()
         #print('drawing time / data calc time: %.2f'%((t2-t1)/(t1-t0)))
-    def onScroll(self, widget, event):
-        isUp = event.direction.value_nick=='up'
-        if event.state & gdk.CONTROL_MASK:
+    def onScroll(self, widget, gevent):
+        isUp = gevent.direction.value_nick=='up'
+        if gevent.state & gdk.CONTROL_MASK:
             self.zoom(
                 isUp,
                 scrollZoomStep,
-                float(event.x) / self.get_allocation().width,
+                float(gevent.x) / self.get_allocation().width,
             )
         else:
             self.movingUserEvent(
@@ -428,33 +428,33 @@ class TimeLine(gtk.Widget, ud.BaseCalObj):
         eventIndex = group.index(event.id)
         ui.moveEventToTrashFromOutside(group, event)
         self.onConfigChange()
-    def startResize(self, event):
+    def startResize(self, gevent):
         self.get_parent().begin_resize_drag(
             gdk.WINDOW_EDGE_SOUTH_EAST,
-            event.button,
-            int(event.x_root),
-            int(event.y_root),
-            event.time,
+            gevent.button,
+            int(gevent.x_root),
+            int(gevent.y_root),
+            gevent.time,
         )
     def zoom(self, zoomIn, stepFact, posFact):
         zoomValue = 1.0/stepFact if zoomIn else stepFact
         self.timeStart += self.timeWidth * (1-zoomValue) * posFact
         self.timeWidth *= zoomValue
     keyboardZoom = lambda self, zoomIn: self.zoom(zoomIn, keyboardZoomStep, 0.5)
-    def keyPress(self, arg, event):
-        k = gdk.keyval_name(event.keyval).lower()
+    def keyPress(self, arg, gevent):
+        k = gdk.keyval_name(gevent.keyval).lower()
         #print('%.3f'%now())
         if k in ('space', 'home'):
             self.centerToNow()
         elif k=='right':
             self.movingUserEvent(
                 direction=1,
-                smallForce=(event.state & gdk.SHIFT_MASK),
+                smallForce=(gevent.state & gdk.SHIFT_MASK),
             )
         elif k=='left':
             self.movingUserEvent(
                 direction=-1,
-                smallForce=(event.state & gdk.SHIFT_MASK),
+                smallForce=(gevent.state & gdk.SHIFT_MASK),
             )
         elif k=='down':
             self.stopMovingAnim()
@@ -467,13 +467,13 @@ class TimeLine(gtk.Widget, ud.BaseCalObj):
         #elif k=='page_down':
         #    pass
         #elif k=='menu':# Simulate right click (key beside Right-Ctrl)
-        #    #self.emit('popup-cell-menu', event.time, *self.getCellPos())
+        #    #self.emit('popup-cell-menu', gevent.time, *self.getCellPos())
         #elif k in ('f10','m'): # F10 or m or M
-        #    if event.state & gdk.SHIFT_MASK:
+        #    if gevent.state & gdk.SHIFT_MASK:
         #        # Simulate right click (key beside Right-Ctrl)
-        #        self.emit('popup-cell-menu', event.time, *self.getCellPos())
+        #        self.emit('popup-cell-menu', gevent.time, *self.getCellPos())
         #    else:
-        #        self.emit('popup-main-menu', event.time, *self.getMainMenuPos())
+        #        self.emit('popup-main-menu', gevent.time, *self.getMainMenuPos())
         elif k in ('plus', 'equal', 'kp_add'):
             self.keyboardZoom(True)
         elif k in ('minus', 'kp_subtract'):
@@ -566,9 +566,9 @@ class TimeLineWindow(gtk.Window, ud.BaseCalObj):
         else:
             gtk.main_quit()## FIXME
         return True
-    def buttonPress(self, obj, event):
-        if event.button==1:
-            self.begin_move_drag(event.button, int(event.x_root), int(event.y_root), event.time)
+    def buttonPress(self, obj, gevent):
+        if gevent.button==1:
+            self.begin_move_drag(gevent.button, int(gevent.x_root), int(gevent.y_root), gevent.time)
             return True
         return False
 

@@ -89,8 +89,8 @@ class EventTagsAndIconSelect(gtk.HBox):
         #########
         self.show_all()
         hideList(self.customTypeWidgets)
-    def scrollEvent(self, widget, event):
-        self.swin.get_hscrollbar().emit('scroll-event', event)
+    def scrollEvent(self, widget, gevent):
+        self.swin.get_hscrollbar().emit('scroll-event', gevent)
     def typeComboChanged(self, combo):
         i = combo.get_active()
         if i is None:

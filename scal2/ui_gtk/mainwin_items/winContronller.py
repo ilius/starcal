@@ -24,7 +24,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
         self.build()
         ###
         self.show_all()
-    def onClicked(self, gWin, event):
+    def onClicked(self, gWin, gevent):
         raise NotImplementedError
     setImage = lambda self, imName: self.im.set_from_file('%s/wm/%s'%(pixDir, imName))
     setFocus = lambda self, focus:\
@@ -40,22 +40,22 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
         self.connect('button-press-event', self.buttonPress)
         self.connect('button-release-event', self.buttonRelease)
         set_tooltip(self, self.desc)## FIXME
-    def enterNotify(self, widget, event):
+    def enterNotify(self, widget, gevent):
         self.setFocus(True)
-    def leaveNotify(self, widget, event):
+    def leaveNotify(self, widget, gevent):
         if self.controller.winFocused:
             self.setFocus(False)
         else:
             self.setInactive()
         return False
-    def buttonPress(self, widget, event):
+    def buttonPress(self, widget, gevent):
         self.setFocus(False)
         return True
-    def onClicked(self, gWin, event):
+    def onClicked(self, gWin, gevent):
         pass
-    def buttonRelease(self, button, event):
-        if event.button==1:
-            self.onClicked(self.controller.gWin, event)
+    def buttonRelease(self, button, gevent):
+        if gevent.button==1:
+            self.onClicked(self.controller.gWin, gevent)
         return False
 
 class WinConButtonMin(WinConButton):
@@ -63,18 +63,18 @@ class WinConButtonMin(WinConButton):
     desc = _('Minimize Window')
     imageName = 'button-min.png'
     imageNameFocus = 'button-min-focus.png'
-    def onClicked(self, gWin, event):
+    def onClicked(self, gWin, gevent):
         if ui.winTaskbar:
             gWin.iconify()
         else:
-            gWin.emit('delete-event', event)
+            gWin.emit('delete-event', gevent)
 
 class WinConButtonMax(WinConButton):
     _name = 'max'
     desc = _('Maximize Window')
     imageName = 'button-max.png'
     imageNameFocus = 'button-max-focus.png'
-    def onClicked(self, gWin, event):
+    def onClicked(self, gWin, gevent):
         if gWin.isMaximized:
             gWin.unmaximize()
             gWin.isMaximized = False
@@ -87,8 +87,8 @@ class WinConButtonClose(WinConButton):
     desc = _('Close Window')
     imageName = 'button-close.png'
     imageNameFocus = 'button-close-focus.png'
-    def onClicked(self, gWin, event):
-        gWin.emit('delete-event', event)
+    def onClicked(self, gWin, gevent):
+        gWin.emit('delete-event', gevent)
 
 class WinConButtonSep(WinConButton):
     _name = 'sep'
