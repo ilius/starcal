@@ -27,7 +27,8 @@ from scal2 import ui
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
-from scal2.ui_gtk.utils import pixbufFromFile
+from scal2.ui_gtk.utils import pixbufFromFile, labelStockMenuItem
+from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin.date_time import DateTimeButton
 from scal2.ui_gtk.mywidgets.dialog import MyDialog
@@ -164,6 +165,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
         ## gid, eid, group_name, icon, summary, description
         treev.set_model(trees)
         treev.connect('row-activated', self.rowActivated)
+        treev.connect('button-press-event', self.treevButtonPress)
         treev.set_headers_clickable(True)
         ###
         self.colGroup = gtk.TreeViewColumn(_('Group'), gtk.CellRendererText(), text=2)
@@ -304,7 +306,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
         self.resultLabel.set_label(_('Found %s events')%_(len(self.trees)))
     def searchClicked(self, obj=None):
         self.waitingDo(self._do_search)
-    def rowActivated(self, treev, path, col):
+    def editEventByPath(self, path):
         from scal2.ui_gtk.event.editor import EventEditorDialog
         try:
             gid = self.trees[path][0]
@@ -325,10 +327,82 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
         self.trees.set_value(eventIter, 3, pixbufFromFile(event.icon))
         self.trees.set_value(eventIter, 4, event.summary)
         self.trees.set_value(eventIter, 5, event.getShownDescription())
+    def rowActivated(self, treev, path, col):
+        self.editEventByPath(path)
+    def editEventFromMenu(self, menu, path):
+        self.editEventByPath(path)
+    def moveEventToGroupFromMenu(self, menu, eventPath, event, old_group, new_group):
+        old_group.remove(event)
+        old_group.save()
+        new_group.append(event)
+        new_group.save()
+        ###
+        ui.reloadGroups.append(old_group.id)
+        ui.reloadGroups.append(new_group.id)
+        ## FIXME
+        ###
+        eventIter = self.trees.get_iter(eventPath)
+        self.trees.set_value(eventIter, 0, new_group.id)
+        self.trees.set_value(eventIter, 2, new_group.title)
+    def treevButtonPress(self, widget, gevent):
+        b = gevent.button
+        if b==3:
+            path, col = self.treev.get_cursor()
+            if path:
+                menu = gtk.Menu()
+                ##
+                menu.add(labelStockMenuItem(
+                    'Edit',
+                    gtk.STOCK_EDIT,
+                    self.editEventFromMenu,
+                    path,
+                ))
+                ##
+                moveToItem = labelStockMenuItem(
+                    _('Move to %s')%'...',
+                    None,## FIXME
+                )
+                moveToMenu = gtk.Menu()
+                ###
+                gid = self.trees[path][0]
+                eid = self.trees[path][1]
+                group = ui.eventGroups[gid]
+                event = group[eid]
+                ###
+                for new_group in ui.eventGroups:
+                    if new_group.id == group.id:
+                        continue
+                    #if not new_group.enable:## FIXME
+                    #    continue
+                    if event.name in new_group.acceptsEventTypes:
+                        new_groupItem = gtk.ImageMenuItem()
+                        new_groupItem.set_label(new_group.title)
+                        ##
+                        image = gtk.Image()
+                        image.set_from_pixbuf(newOutlineSquarePixbuf(new_group.color, 20))
+                        new_groupItem.set_image(image)
+                        ##
+                        new_groupItem.connect(
+                            'activate',
+                            self.moveEventToGroupFromMenu,
+                            path,
+                            event,
+                            group,
+                            new_group,
+                        )
+                        ##
+                        moveToMenu.add(new_groupItem)
+                moveToItem.set_submenu(moveToMenu)
+                menu.add(moveToItem)
+                ##
+                menu.show_all()
+                menu.popup(None, None, None, 3, gevent.time)
+            return True
+        return False
     def clearResults(self):
         self.trees.clear()
         self.resultLabel.set_label('')
-    def closed(self, obj=None, event=None):
+    def closed(self, obj=None, gevent=None):
         self.hide()
         self.clearResults()
         self.onConfigChange()
