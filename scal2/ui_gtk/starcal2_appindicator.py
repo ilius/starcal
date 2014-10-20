@@ -85,6 +85,8 @@ class IndicatorStatusIconWrapper(appindicator.Indicator):
         self.set_icon(fpath)
         self.create_menu()
     def set_from_pixbuf(self, pbuf):
+        ## https://bugs.launchpad.net/ubuntu/+source/indicator-application/+bug/533439
+        #pbuf.scale_simple(22, 22, gtk.gdk.INTERP_HYPER)
         pbuf.save(self.imPath, 'png')
         self.set_from_file(self.imPath)
     #def __del__(self):
