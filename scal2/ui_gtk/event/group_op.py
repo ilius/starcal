@@ -95,10 +95,10 @@ class GroupConvertModeDialog(gtk.Dialog):
         self.destroy()
 
 
-class GroupBulkEditDialog(gtk.Dialog):
-    def __init__(self, group):
+class EventsBulkEditDialog(gtk.Dialog):
+    def __init__(self, container):
         from scal2.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
-        self._group = group
+        self._container = container
         gtk.Dialog.__init__(self)
         self.set_title(_('Bulk Edit Events'))
         ####
@@ -107,7 +107,17 @@ class GroupBulkEditDialog(gtk.Dialog):
         ##
         self.connect('response', lambda w, e: self.hide())
         ####
-        label = gtk.Label(_('Here you are going to modify all events inside group "%s" at once. You better make a backup from you events before doing this. Just right click on group and select "Export" (or a full backup: menu File -> Export)')%group.title+'\n\n')
+        try:
+            title = container.title
+        except AttributeError:
+            event_count = len(container)
+            msg = _('Here you are going to modify these %s events at once.'%event_count)
+        else:
+            msg = _('Here you are going to modify all events inside group "%s" at once.'%title)
+        msg += ' '
+        msg += _('You better make a backup from you events before doing this. Just right click on group and select "Export" (or a full backup: menu File -> Export)')
+        msg += '\n\n'
+        label = gtk.Label(msg)
         label.set_line_wrap(True)
         pack(self.vbox, label)
         ####
@@ -135,7 +145,10 @@ class GroupBulkEditDialog(gtk.Dialog):
         pack(hbox, self.iconChangeCombo)
         pack(hbox, gtk.Label('  '))
         self.iconSelect = IconSelectButton()
-        self.iconSelect.set_filename(group.icon)
+        try:
+            self.iconSelect.set_filename(container.icon)
+        except AttributeError:
+            pass
         pack(hbox, self.iconSelect)
         pack(hbox, gtk.Label(''), 1, 1)
         pack(self.vbox, hbox)
@@ -211,12 +224,12 @@ class GroupBulkEditDialog(gtk.Dialog):
             self.withHbox.hide()
             self.textInput2.hide()
     def doAction(self):
-        group = self._group
+        container = self._container
         if self.iconRadio.get_active():
             chType = self.iconChangeCombo.get_active()
             if chType!=0:
                 icon = self.iconSelect.get_filename()
-                for event in group:
+                for event in container:
                     if not (chType==2 and event.icon):
                         event.icon = icon
                         event.afterModify()
@@ -230,7 +243,7 @@ class GroupBulkEditDialog(gtk.Dialog):
                 except:
                     myRaise('Invalid Time Zone "%s"'%timeZone)
                 else:
-                    for event in group:
+                    for event in container:
                         if not (chType==2 and event.timeZone):
                             event.timeZone = timeZone
                             event.afterModify()
@@ -241,7 +254,7 @@ class GroupBulkEditDialog(gtk.Dialog):
                 text1 = self.textInput1.get_text()
                 text2 = self.textInput2.get_text()
                 if self.summaryRadio.get_active():
-                    for event in group:
+                    for event in container:
                         if chType==1:
                             event.summary = text1 + event.summary
                         elif chType==2:
@@ -251,7 +264,7 @@ class GroupBulkEditDialog(gtk.Dialog):
                         event.afterModify()
                         event.save()
                 elif self.descriptionRadio.get_active():
-                    for event in group:
+                    for event in container:
                         if chType==1:
                             event.description = text1 + event.description
                         elif chType==2:

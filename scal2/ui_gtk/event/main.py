@@ -47,7 +47,7 @@ from scal2.ui_gtk.event.editor import *
 from scal2.ui_gtk.event.trash import TrashEditorDialog
 from scal2.ui_gtk.event.export import SingleGroupExportDialog, MultiGroupExportDialog
 from scal2.ui_gtk.event.import_event import EventsImportWindow
-from scal2.ui_gtk.event.group_op import GroupSortDialog, GroupConvertModeDialog, GroupBulkEditDialog
+from scal2.ui_gtk.event.group_op import GroupSortDialog, GroupConvertModeDialog, EventsBulkEditDialog
 from scal2.ui_gtk.event.account_op import FetchRemoteGroupsDialog
 from scal2.ui_gtk.event.search_events import EventSearchWindow
 
@@ -1240,7 +1240,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         if expanded:
             self.treev.expand_row(path, False)
     def groupBulkEditFromMenu(self, menu, group, path):
-        dialog = GroupBulkEditDialog(group)
+        dialog = EventsBulkEditDialog(group)
         if dialog.run()==gtk.RESPONSE_OK:
             self.waitingDo(self._do_groupBulkEdit, dialog, group, path)
     def groupActionClicked(self, menu, group, actionFuncName):
