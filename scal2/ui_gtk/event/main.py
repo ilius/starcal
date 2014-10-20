@@ -671,13 +671,13 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                 treev.expand_row(path, False)
         elif len(path)==2:
             self.editEventByPath(path)
-    def keyPress(self, treev, g_event):
+    def keyPress(self, treev, gevent):
         #from scal2.time_utils import getGtkTimeFromEpoch
-        #print(g_event.time-getGtkTimeFromEpoch(now())## FIXME)
+        #print(gevent.time-getGtkTimeFromEpoch(now())## FIXME)
         #print(now()-gdk.CURRENT_TIME/1000.0)
         ## gdk.CURRENT_TIME == 0## FIXME
-        ## g_event.time == gtk.get_current_event_time() ## OK
-        kname = gdk.keyval_name(g_event.keyval).lower()
+        ## gevent.time == gtk.get_current_event_time() ## OK
+        kname = gdk.keyval_name(gevent.keyval).lower()
         if kname=='menu':## Simulate right click (key beside Right-Ctrl)
             path = treev.get_cursor()[0]
             if path:
@@ -697,7 +697,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                     None,
                     lambda m: (wx+dx, wy+dy+20, True),
                     3,
-                    g_event.time,
+                    gevent.time,
                 )
         elif kname=='delete':
             self.moveSelectionToTrash()
@@ -816,22 +816,22 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             myRaise()
     def onGroupModify(self, group):
         self.waitingDo(self._do_onGroupModify, group)
-    def treeviewButtonPress(self, treev, g_event):
-        pos_t = treev.get_path_at_pos(int(g_event.x), int(g_event.y))
+    def treeviewButtonPress(self, treev, gevent):
+        pos_t = treev.get_path_at_pos(int(gevent.x), int(gevent.y))
         if not pos_t:
             return
         path, col, xRel, yRel = pos_t
         if not path:
             return
-        if g_event.button == 3:
-            self.openRightClickMenu(path, g_event.time)
-        elif g_event.button == 1:
+        if gevent.button == 3:
+            self.openRightClickMenu(path, gevent.time)
+        elif gevent.button == 1:
             if not col:
                 return
             if not rectangleContainsPoint(
                 treev.get_cell_area(path, col),
-                g_event.x,
-                g_event.y,
+                gevent.x,
+                gevent.y,
             ):
                 return
             obj_list = self.getObjsByPath(path)
