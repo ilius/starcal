@@ -367,26 +367,12 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
         if not path:
             return
         self.moveEventToTrash(path)
-    def genRightClickMenu(self, path):
-        menu = gtk.Menu()
-        ##
-        menu.add(labelStockMenuItem(
-            'Edit',
-            gtk.STOCK_EDIT,
-            self.editEventFromMenu,
-            path,
-        ))
-        ##
+    def getMoveToGroupSubMenu(self, path, group, event):
         moveToItem = labelStockMenuItem(
             _('Move to %s')%'...',
             None,## FIXME
         )
         moveToMenu = gtk.Menu()
-        ###
-        gid = self.trees[path][0]
-        eid = self.trees[path][1]
-        group = ui.eventGroups[gid]
-        event = group[eid]
         ###
         for new_group in ui.eventGroups:
             if new_group.id == group.id:
@@ -413,7 +399,23 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
                 moveToMenu.add(new_groupItem)
         ##
         moveToItem.set_submenu(moveToMenu)
-        menu.add(moveToItem)
+        return moveToItem
+    def genRightClickMenu(self, path):
+        gid = self.trees[path][0]
+        eid = self.trees[path][1]
+        group = ui.eventGroups[gid]
+        event = group[eid]
+        ##
+        menu = gtk.Menu()
+        ##
+        menu.add(labelStockMenuItem(
+            'Edit',
+            gtk.STOCK_EDIT,
+            self.editEventFromMenu,
+            path,
+        ))
+        ##
+        menu.add(self.getMoveToGroupSubMenu(path, group, event))
         ##
         menu.add(gtk.SeparatorMenuItem())
         menu.add(labelImageMenuItem(
@@ -422,7 +424,6 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
             self.moveEventToTrashFromMenu,
             path,
         ))
-
         ##
         menu.show_all()
         return menu
