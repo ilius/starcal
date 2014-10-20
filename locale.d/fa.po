@@ -1150,6 +1150,10 @@ msgid "Copy _Time"
 msgstr ""
 "کپی _زمان"
 
+msgid "Copy to %s"
+msgstr ""
+"کپی به %s"
+
 msgid "Copy as %s to..."
 msgstr ""
 "کپی بعنوان %s به..."

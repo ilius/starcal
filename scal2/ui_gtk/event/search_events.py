@@ -347,6 +347,16 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
         eventIter = self.trees.get_iter(eventPath)
         self.trees.set_value(eventIter, 0, new_group.id)
         self.trees.set_value(eventIter, 2, new_group.title)
+    def copyEventToGroupFromMenu(self, menu, eventPath, event, new_group):
+        new_event = event.copy()
+        new_event.save()
+        new_group.append(new_event)
+        new_group.save()
+        ###
+        ui.reloadGroups.append(new_group.id)
+        ## FIXME
+        ###
+        eventIter = self.trees.get_iter(eventPath)
     def moveEventToTrash(self, path):
         try:
             gid = self.trees[path][0]
@@ -368,11 +378,12 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
             return
         self.moveEventToTrash(path)
     def getMoveToGroupSubMenu(self, path, group, event):
-        moveToItem = labelStockMenuItem(
+        ## returns a MenuItem instance
+        item = labelStockMenuItem(
             _('Move to %s')%'...',
             None,## FIXME
         )
-        moveToMenu = gtk.Menu()
+        subMenu = gtk.Menu()
         ###
         for new_group in ui.eventGroups:
             if new_group.id == group.id:
@@ -396,10 +407,41 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
                     new_group,
                 )
                 ##
-                moveToMenu.add(new_groupItem)
+                subMenu.add(new_groupItem)
         ##
-        moveToItem.set_submenu(moveToMenu)
-        return moveToItem
+        item.set_submenu(subMenu)
+        return item
+    def getCopyToGroupSubMenu(self, path, event):
+        ## returns a MenuItem instance
+        item = labelStockMenuItem(
+            _('Copy to %s')%'...',
+            None,## FIXME
+        )
+        subMenu = gtk.Menu()
+        ###
+        for new_group in ui.eventGroups:
+            #if not new_group.enable:## FIXME
+            #    continue
+            if event.name in new_group.acceptsEventTypes:
+                new_groupItem = gtk.ImageMenuItem()
+                new_groupItem.set_label(new_group.title)
+                ##
+                image = gtk.Image()
+                image.set_from_pixbuf(newOutlineSquarePixbuf(new_group.color, 20))
+                new_groupItem.set_image(image)
+                ##
+                new_groupItem.connect(
+                    'activate',
+                    self.copyEventToGroupFromMenu,
+                    path,
+                    event,
+                    new_group,
+                )
+                ##
+                subMenu.add(new_groupItem)
+        ##
+        item.set_submenu(subMenu)
+        return item
     def genRightClickMenu(self, path):
         gid = self.trees[path][0]
         eid = self.trees[path][1]
@@ -416,6 +458,8 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
         ))
         ##
         menu.add(self.getMoveToGroupSubMenu(path, group, event))
+        menu.add(gtk.SeparatorMenuItem())
+        menu.add(self.getCopyToGroupSubMenu(path, event))
         ##
         menu.add(gtk.SeparatorMenuItem())
         menu.add(labelImageMenuItem(
