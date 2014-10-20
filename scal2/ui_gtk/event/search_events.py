@@ -22,17 +22,19 @@ from scal2.cal_types import calTypes
 from scal2 import core
 from scal2.core import jd_to_primary
 from scal2.locale_man import tr as _
+from scal2.locale_man import rtl
 from scal2 import event_lib
 from scal2 import ui
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
-from scal2.ui_gtk.utils import pixbufFromFile, labelStockMenuItem
+from scal2.ui_gtk.utils import pixbufFromFile, labelStockMenuItem, labelImageMenuItem
 from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin.date_time import DateTimeButton
 from scal2.ui_gtk.mywidgets.dialog import MyDialog
 from scal2.ui_gtk import gtk_ud as ud
+from scal2.ui_gtk.event.utils import confirmEventTrash
 from scal2.ui_gtk.event.common import SingleGroupComboBox
 
 
@@ -164,8 +166,9 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
         trees = gtk.TreeStore(int, int, str, gdk.Pixbuf, str, str)
         ## gid, eid, group_name, icon, summary, description
         treev.set_model(trees)
-        treev.connect('row-activated', self.rowActivated)
         treev.connect('button-press-event', self.treevButtonPress)
+        treev.connect('row-activated', self.rowActivated)
+        treev.connect('key-press-event', self.treevKeyPress)
         treev.set_headers_clickable(True)
         ###
         self.colGroup = gtk.TreeViewColumn(_('Group'), gtk.CellRendererText(), text=2)
@@ -344,61 +347,138 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
         eventIter = self.trees.get_iter(eventPath)
         self.trees.set_value(eventIter, 0, new_group.id)
         self.trees.set_value(eventIter, 2, new_group.title)
-    def treevButtonPress(self, widget, gevent):
-        b = gevent.button
-        if b==3:
-            path, col = self.treev.get_cursor()
-            if path:
-                menu = gtk.Menu()
+    def moveEventToTrash(self, path):
+        try:
+            gid = self.trees[path][0]
+            eid = self.trees[path][1]
+        except:
+            return
+        group = ui.eventGroups[gid]
+        event = group[eid]
+        if not confirmEventTrash(event):
+            return
+        ui.moveEventToTrash(group, event)
+        ui.reloadTrash = True
+        ui.reloadGroups.append(gid)
+        self.trees.remove(self.trees.get_iter(path))
+    moveEventToTrashFromMenu = lambda self, menu, path: self.moveEventToTrash(path)
+    def moveSelectionToTrash(self):
+        path = self.treev.get_cursor()[0]
+        if not path:
+            return
+        self.moveEventToTrash(path)
+    def genRightClickMenu(self, path):
+        menu = gtk.Menu()
+        ##
+        menu.add(labelStockMenuItem(
+            'Edit',
+            gtk.STOCK_EDIT,
+            self.editEventFromMenu,
+            path,
+        ))
+        ##
+        moveToItem = labelStockMenuItem(
+            _('Move to %s')%'...',
+            None,## FIXME
+        )
+        moveToMenu = gtk.Menu()
+        ###
+        gid = self.trees[path][0]
+        eid = self.trees[path][1]
+        group = ui.eventGroups[gid]
+        event = group[eid]
+        ###
+        for new_group in ui.eventGroups:
+            if new_group.id == group.id:
+                continue
+            #if not new_group.enable:## FIXME
+            #    continue
+            if event.name in new_group.acceptsEventTypes:
+                new_groupItem = gtk.ImageMenuItem()
+                new_groupItem.set_label(new_group.title)
                 ##
-                menu.add(labelStockMenuItem(
-                    'Edit',
-                    gtk.STOCK_EDIT,
-                    self.editEventFromMenu,
+                image = gtk.Image()
+                image.set_from_pixbuf(newOutlineSquarePixbuf(new_group.color, 20))
+                new_groupItem.set_image(image)
+                ##
+                new_groupItem.connect(
+                    'activate',
+                    self.moveEventToGroupFromMenu,
                     path,
-                ))
-                ##
-                moveToItem = labelStockMenuItem(
-                    _('Move to %s')%'...',
-                    None,## FIXME
+                    event,
+                    group,
+                    new_group,
                 )
-                moveToMenu = gtk.Menu()
-                ###
-                gid = self.trees[path][0]
-                eid = self.trees[path][1]
-                group = ui.eventGroups[gid]
-                event = group[eid]
-                ###
-                for new_group in ui.eventGroups:
-                    if new_group.id == group.id:
-                        continue
-                    #if not new_group.enable:## FIXME
-                    #    continue
-                    if event.name in new_group.acceptsEventTypes:
-                        new_groupItem = gtk.ImageMenuItem()
-                        new_groupItem.set_label(new_group.title)
-                        ##
-                        image = gtk.Image()
-                        image.set_from_pixbuf(newOutlineSquarePixbuf(new_group.color, 20))
-                        new_groupItem.set_image(image)
-                        ##
-                        new_groupItem.connect(
-                            'activate',
-                            self.moveEventToGroupFromMenu,
-                            path,
-                            event,
-                            group,
-                            new_group,
-                        )
-                        ##
-                        moveToMenu.add(new_groupItem)
-                moveToItem.set_submenu(moveToMenu)
-                menu.add(moveToItem)
                 ##
-                menu.show_all()
-                menu.popup(None, None, None, 3, gevent.time)
-            return True
+                moveToMenu.add(new_groupItem)
+        ##
+        moveToItem.set_submenu(moveToMenu)
+        menu.add(moveToItem)
+        ##
+        menu.add(gtk.SeparatorMenuItem())
+        menu.add(labelImageMenuItem(
+            _('Move to %s')%ui.eventTrash.title,
+            ui.eventTrash.icon,
+            self.moveEventToTrashFromMenu,
+            path,
+        ))
+
+        ##
+        menu.show_all()
+        return menu
+    def openRightClickMenu(self, path, etime=None):
+        menu = self.genRightClickMenu(path)
+        if not menu:
+            return
+        if etime is None:
+            etime = gtk.get_current_event_time()
+        menu.popup(None, None, None, 3, etime)
+    def treevButtonPress(self, widget, gevent):
+        pos_t = self.treev.get_path_at_pos(int(gevent.x), int(gevent.y))
+        if not pos_t:
+            return
+        path, col, xRel, yRel = pos_t
+        #path, col = self.treev.get_cursor() ## FIXME
+        if not path:
+            return
+        if gevent.button==3:
+            self.openRightClickMenu(path, gevent.time)
         return False
+    def treevKeyPress(self, treev, gevent):
+        #from scal2.time_utils import getGtkTimeFromEpoch
+        #print(gevent.time-getGtkTimeFromEpoch(now())## FIXME)
+        #print(now()-gdk.CURRENT_TIME/1000.0)
+        ## gdk.CURRENT_TIME == 0## FIXME
+        ## gevent.time == gtk.get_current_event_time() ## OK
+        kname = gdk.keyval_name(gevent.keyval).lower()
+        #print 'treevKeyPress', kname
+        if kname=='menu':## Simulate right click (key beside Right-Ctrl)
+            path = treev.get_cursor()[0]
+            if path:
+                menu = self.genRightClickMenu(path)
+                if not menu:
+                    return
+                rect = treev.get_cell_area(path, treev.get_column(1))
+                x = rect.x
+                if rtl:
+                    x -= 100
+                else:
+                    x += 50
+                dx, dy = treev.translate_coordinates(self, x, rect.y + rect.height)
+                wx, wy = self.get_window().get_origin()
+                menu.popup(
+                    None,
+                    None,
+                    lambda m: (wx+dx, wy+dy+20, True),
+                    3,
+                    gevent.time,
+                )
+        elif kname=='delete':
+            self.moveSelectionToTrash()
+        else:
+            #print(kname)
+            return False
+        return True
     def clearResults(self):
         self.trees.clear()
         self.resultLabel.set_label('')
