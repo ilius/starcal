@@ -19,6 +19,8 @@
 
 from os.path import join
 from subprocess import Popen, PIPE
+
+from scal2.utils import toStr
 from scal2.time_utils import getEpochFromJd, encodeJd
 
 def prepareObj(obj):
@@ -72,6 +74,7 @@ def getCommitList(obj, startJd=None, endJd=None):
         ]
     data = []
     for line in Popen(cmd, stdout=PIPE).stdout:
+        line = toStr(line)
         parts = line.strip().split(' ')
         data.append((
             int(parts[0]),
@@ -112,7 +115,7 @@ def getShortStatLine(obj, prevId, thisId):
         prevId,
         thisId,
     ]
-    return Popen(cmd, stdout=PIPE).stdout.read().strip()
+    return toStr(Popen(cmd, stdout=PIPE).stdout.read().strip())
 
 getShortStat = lambda obj, prevId, thisId: decodeStatLine(getShortStatLine(obj, prevId, thisId))
 
