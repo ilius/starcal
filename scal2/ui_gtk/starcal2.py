@@ -861,7 +861,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             from scal2.ui_gtk.selectdate import SelectDateDialog
             self.selectDateDialog = SelectDateDialog()
             self.selectDateDialog.connect('response-date', self.selectDateResponse)
-        openWindow(self.selectDateDialog)
+        self.selectDateDialog.show()
     def dayInfoShow(self, widget=None):
         if not self.dayInfoDialog:
             from scal2.ui_gtk.day_info import DayInfoDialog
