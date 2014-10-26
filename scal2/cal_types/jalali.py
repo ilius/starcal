@@ -93,8 +93,16 @@ avgYearLen = 365.2425 ## FIXME
 GREGORIAN_EPOCH = 1721426
 monthLen = (31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29)
 
+monthLenSum = [0]
+for i in range(12):
+    monthLenSum.append(monthLenSum[-1] + monthLen[i])
+
+#print monthLenSum
+## monthLenSum[i] == sum(monthLen[:i])
 
 import os
+from bisect import bisect_left
+
 from scal2.path import sysConfDir, confDir
 from scal2.utils import iceil
 from scal2.utils import myRaise
@@ -143,6 +151,11 @@ def isLeap(year):
     else:
         raise RuntimeError('bad option jalaliAlg=%s'%jalaliAlg)
 
+def getMonthDayFromYdays(yday):
+    month = bisect_left(monthLenSum, yday)
+    day = yday - monthLenSum[month - 1]
+    return month, day
+
 def to_jd(year, month, day):
     "TO_JD: Determine Julian day from Jalali date"
     if jalaliAlg==1:## 2820-years
@@ -156,10 +169,7 @@ def to_jd(year, month, day):
             epoch - 1
     elif jalaliAlg==0:## 33-years
         y2 = year - 979
-        jdays = 365*y2 + y2//33 * 8 + (y2%33+3)//4
-        for i in range(month-1):
-            jdays += monthLen[i]
-        jdays += (day-1)
+        jdays = 365*y2 + y2//33 * 8 + (y2%33+3)//4 + monthLenSum[month-1] + (day-1)
         return jdays + 584101 + GREGORIAN_EPOCH
     else:
         raise RuntimeError('bad option jalaliAlg=%s'%jalaliAlg)
@@ -177,18 +187,7 @@ def jd_to(jd):
         if year <= 0 :
             year -= 1
         yday = jd - to_jd(year, 1, 1) + 1
-        if yday <= 186:
-            month = iceil(yday // 31)
-        else:
-            month = 6 + iceil((yday-186) // 30)
-        day = int(jd - to_jd(year, month, 1)) + 1
-        if day > 31:
-            day -= 31
-            if month==12:
-                month = 1
-                year += 1
-            else:
-                month += 1
+        month, day = getMonthDayFromYdays(yday)
     elif jalaliAlg==0:## 33-years
         jdays = int(jd - GREGORIAN_EPOCH - 584101)
         ## -(1600*365 + 1600//4 - 1600//100 + 1600//400) + 365    -79 +1== -584101
@@ -200,14 +199,8 @@ def jd_to(jd):
         if jdays >= 366:
             year += (jdays-1) // 365
             jdays = (jdays-1) % 365
-        month = 12
-        for i in range(11):
-            if jdays >= monthLen[i]:
-                jdays -= monthLen[i]
-            else:
-                month = i+1
-                break
-        day = jdays+1
+        yday = jdays+1
+        month, day = getMonthDayFromYdays(yday)
     else:
         raise RuntimeError('bad option jalaliAlg=%s'%jalaliAlg)
     return year, month, day
