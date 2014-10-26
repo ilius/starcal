@@ -236,10 +236,10 @@ class CalObj(gtk.Widget, CalBase):
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
         self.get_window().move_resize(*self.get_allocation())
-    def drawAll(self, widget=None, event=None, cr=None, cursor=True):
+    def drawAll(self, widget=None, gevent=None, cr=None, cursor=True):
         #?????? Must enhance (only draw few cells, not all cells)
         #print(now(), 'drawAll'#, tuple(gevent.area), tuple(self.get_allocation()))
-        if event:
+        if gevent:
             xu, yu, wu, hu = tuple(gevent.area)
             #print('expose-event area:', xu, yu, wu, hu)
         self.calcCoord()
