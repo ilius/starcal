@@ -926,7 +926,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         )
         for event in newGroup:
             self.trees.append(newGroupIter, self.getEventRow(event))
-        self.loadedGroupIds.append(newGroup.id)
+        self.loadedGroupIds.add(newGroup.id)
     def syncGroupFromMenu(self, menu, path, account):
         index, = path
         group, = self.getObjsByPath(path)
