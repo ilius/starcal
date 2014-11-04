@@ -926,6 +926,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         )
         for event in newGroup:
             self.trees.append(newGroupIter, self.getEventRow(event))
+        self.loadedGroupIds.append(newGroup.id)
     def syncGroupFromMenu(self, menu, path, account):
         index, = path
         group, = self.getObjsByPath(path)
@@ -1014,10 +1015,11 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         )
         if event is None:
             return
-        self.trees.append(
-            self.trees.get_iter(path),## parent
-            self.getEventRow(event), ## row
-        )
+        if group.id in self.loadedGroupIds:
+            self.trees.append(
+                self.trees.get_iter(path),## parent
+                self.getEventRow(event), ## row
+            )
         self.treeviewCursorChanged()
     def addGenericEventToGroupFromMenu(self, menu, path, group):
         event = addNewEvent(
@@ -1029,10 +1031,11 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         )
         if event is None:
             return
-        self.trees.append(
-            self.trees.get_iter(path),## parent
-            self.getEventRow(event), ## row
-        )
+        if group.id in self.loadedGroupIds:
+            self.trees.append(
+                self.trees.get_iter(path),## parent
+                self.getEventRow(event), ## row
+            )
         self.treeviewCursorChanged()
     def editEventByPath(self, path):
         from scal2.ui_gtk.event.editor import EventEditorDialog
