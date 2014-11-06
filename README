@@ -5,8 +5,11 @@ Download latest snapshot (without git):
     Open one of these links with your browser:
         http://github.com/ilius/starcal/tarball/master
 
-Installation/uninstallation on Ubuntu, Debian or other Debian-based distributions:
-    $ cd ~/Desktop/starcal2 ## or wherever the source directory is 
+Installation/uninstallation on Ubuntu:
+    $ sudo bash ./install-ubuntu
+    $ sudo apt-get remove starcal2
+
+Installation/uninstallation on Debian or other Debian-based distributions:
     $ sudo bash ./install-debian
     $ sudo apt-get remove starcal2
 
