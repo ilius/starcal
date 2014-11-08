@@ -325,7 +325,10 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
         ).run()
         if event is None:
             return
+        ###
         ui.reloadGroups.append(gid)
+        #ui.eventDiff.add('e', event.id, path)
+        ###
         eventIter = self.trees.get_iter(path)
         self.trees.set_value(eventIter, 3, pixbufFromFile(event.icon))
         self.trees.set_value(eventIter, 4, event.summary)
@@ -342,6 +345,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
         ###
         ui.reloadGroups.append(old_group.id)
         ui.reloadGroups.append(new_group.id)
+        #ui.eventDiff.add('v', event.id, eventPath, new_eventPath)
         ## FIXME
         ###
         eventIter = self.trees.get_iter(eventPath)
@@ -354,6 +358,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
         new_group.save()
         ###
         ui.reloadGroups.append(new_group.id)
+        #ui.eventDiff.add('+', new_event.id, new_eventPath)
         ## FIXME
         ###
         eventIter = self.trees.get_iter(eventPath)
@@ -370,6 +375,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
         ui.moveEventToTrash(group, event)
         ui.reloadTrash = True
         ui.reloadGroups.append(gid)
+        #ui.eventDiff.add('-', event.id, path)
         self.trees.remove(self.trees.get_iter(path))
     moveEventToTrashFromMenu = lambda self, menu, path: self.moveEventToTrash(path)
     def moveSelectionToTrash(self):

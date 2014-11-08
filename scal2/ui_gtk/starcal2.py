@@ -573,6 +573,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         event = addNewEvent(group, eventType, title, parent=self, useSelectedDate=True)
         if event is None:
             return
+        #ui.eventDiff.add('+', event.id, (groupIndex,))
         ui.reloadGroups.append(group.id)
         self.onConfigChange()
     def prefUpdateBgColor(self, cal):

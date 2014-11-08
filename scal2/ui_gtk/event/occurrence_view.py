@@ -116,6 +116,8 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
         newGroup.save()
         ui.reloadGroups.append(newGroup.id)
         ###
+        #ui.eventDiff.add('v', event.id, prefEventPath, newEventPath)
+        ###
         self.onConfigChange()
     def copyOccurToGroupFromMenu(self, item, newGroup, newEventType, event, occurData):
         newEvent = newGroup.createEvent(newEventType)
@@ -129,6 +131,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
         newGroup.append(newEvent)
         newGroup.save()
         ui.reloadGroups.append(newGroup.id)
+        #ui.eventDiff.add('+', newEvent.id, newEventPath)
         ###
         self.onConfigChange()
     def onEventLabelPopup(self, label, menu, occurData):
@@ -222,6 +225,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
         if event is None:
             return
         ui.reloadGroups.append(groupId)
+        #ui.eventDiff.add('e', event.id, eventPath)
         self.onConfigChange()
     def moveEventToTrash(self, item, event, groupId):
         from scal2.ui_gtk.event.utils import confirmEventTrash

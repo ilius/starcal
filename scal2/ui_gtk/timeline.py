@@ -411,6 +411,7 @@ class TimeLine(gtk.Widget, ud.BaseCalObj):
         if event is None:
             return
         ui.reloadGroups.append(gid)
+        #ui.eventDiff.add('e', event.id, eventPath)
         self.onConfigChange()
     def editGroupClicked(self, menu, winTitle, group):
         from scal2.ui_gtk.event.group.editor import GroupEditorDialog
