@@ -3,31 +3,47 @@ class EventDiff:
     def __init__(self):
         self.clear()    
     def clear(self):
-        self.byEventId = {}## eid -> (order, action, path)
+        self.byEventId = {}
+        '''
+            self.byEventId = {
+                eid -> (order, action, args)
+            }
+            actions:
+                '+'     add
+                '-'     remove
+                'm'     modify (edit)
+                'v'     move to a new path
+        '''
         self.lastOrder = 0
-    def add(self, action, eid, path):
+    def add(self, action, eid, *args):
         try:
-            lastOrder, lastAction, lastPath = self.byEventId[eid]
+            prefOrder, prefAction, prefArgs = self.byEventId[eid]
         except KeyError:
-            self.byEventId[eid] = self.lastOrder, action, path
+            self.byEventId[eid] = (self.lastOrder, action, args)
             self.lastOrder += 1
         else:
-            if lastAction == '-' or action == '+':
-                raise RuntimeError('EventDiff.add: eid=%s, lastAction=%s, action=%s'%(eid, lastAction, action))
-            both = lastAction + action
-            if both in ('+m', 'mm'):## skip the new action
+            if prefAction == '-' or action == '+':
+                raise RuntimeError('EventDiff.add: eid=%s, prefAction=%s, action=%s'%(eid, prefAction, action))
+            both = prefAction + action
+            if both in ('+m', 'mm', 'vm'):## skip the new action
                 pass
             elif both == '+-':## remove the last '+' action 
                 del self.byEventId[eid]
-            elif both == 'm-':## replace the last 'm' action
-                self.byEventId[eid] = self.lastOrder, action, path
+            elif both in ('m-', 'mv'):## replace the last 'm' action
+                self.byEventId[eid] = self.lastOrder, action, args
                 self.lastOrder += 1
+            elif both == 'v-':
+                self.byEventId[eid] = prefOrder, prefAction, args[1:]
     def __iter__(self):
-        for order, action, eid, path in sorted([
-            (order, action, eid, path)
-            for eid, (order, action, path) in self.byEventId.items()
+        for order, action, eid, args in sorted([
+            (order, action, eid, args)
+            for eid, (order, action, args) in self.byEventId.items()
         ]):
-            yield action, eid, path
+            if action == 'v':
+                yield '-', eid, args[:1]
+                yield '+', eid, args[1:]
+            else:
+                yield action, eid, args
             del self.byEventId[eid]
 
 def testEventDiff():
