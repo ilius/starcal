@@ -11,7 +11,7 @@ class EventDiff:
             actions:
                 '+'     add
                 '-'     remove
-                'm'     modify (edit)
+                'e'     edit (modify) in-place
                 'v'     move to a new path
         '''
         self.lastOrder = 0
@@ -25,11 +25,11 @@ class EventDiff:
             if prefAction == '-' or action == '+':
                 raise RuntimeError('EventDiff.add: eid=%s, prefAction=%s, action=%s'%(eid, prefAction, action))
             both = prefAction + action
-            if both in ('+m', 'mm', 'vm'):## skip the new action
+            if both in ('+e', 'ee', 've'):## skip the new action
                 pass
             elif both == '+-':## remove the last '+' action 
                 del self.byEventId[eid]
-            elif both in ('m-', 'mv'):## replace the last 'm' action
+            elif both in ('e-', 'ev'):## replace the last edit action
                 self.byEventId[eid] = self.lastOrder, action, args
                 self.lastOrder += 1
             elif both == 'v-':
@@ -53,11 +53,11 @@ def testEventDiff():
         ('+', 2),    
         ('+', 3),    
         ('-', 4),    
-        ('m', 5),    
+        ('e', 5),    
         ('-', 2),    
-        ('m', 3),    
-        ('m', 6),    
-        ('m', 5),    
+        ('e', 3),    
+        ('e', 6),    
+        ('e', 5),    
     ]:
         d.add(action, eid, None)
     for action, eid, path in d:
