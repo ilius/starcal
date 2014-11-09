@@ -162,6 +162,13 @@ __plugin_api_get__ = [
 
 ###########################################################################
 
+def getEventUID(event):
+    import socket
+    event_st = core.compressLongInt(hash(str(event.getData())))
+    time_st = core.getCompactTime()
+    host = socket.gethostname()
+    return event_st + '_' + time_st + '@' + host
+
 class BadEventFile(Exception):## FIXME
     pass
 
@@ -2772,10 +2779,16 @@ class EventGroup(EventContainer):
             ###
             commonText = 'BEGIN:VEVENT\n'
             commonText += 'CREATED:%s\n'%currentTimeStamp
+            commonText += 'DTSTAMP:%s\n'%currentTimeStamp ## FIXME
             commonText += 'LAST-MODIFIED:%s\n'%currentTimeStamp
             commonText += 'SUMMARY:%s\n'%event.getText()
+            commonText += 'DESCRIPTION:\n'
             #commonText += 'CATEGORIES:%s\n'%self.title## FIXME
             commonText += 'CATEGORIES:%s\n'%event.name## FIXME
+            commonText += 'LOCATION:\n'
+            commonText += 'SEQUENCE:0\n'
+            commonText += 'STATUS:CONFIRMED\n'
+            commonText += 'UID:%s\n'%getEventUID(event)
             ###
             if icsData is None:
                 occur = event.calcOccurrenceAll()
