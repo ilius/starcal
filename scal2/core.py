@@ -371,7 +371,7 @@ def mylocaltime(sec=None, mode=None):
 
 def compressLongInt(num):
     from struct import pack
-    return pack('L', num).\
+    return pack('L', num % 2**64).\
     rstrip('\x00').\
     encode('base64')[:-3].\
     replace('/', '_')
