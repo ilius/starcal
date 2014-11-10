@@ -316,8 +316,16 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         event.summary,
         event.getShownDescription(),
     )
-    def addEventRow(self, event, parentIter):
+    def appendEventRow(self, parentIter, event):
         eventIter = self.trees.append(parentIter, self.getEventRow(event))
+        self.eventsIter[event.id] = eventIter
+        return eventIter
+    def insertEventRow(self, parentIter, position, event):
+        eventIter = self.trees.insert(parentIter, position, self.getEventRow(event))
+        self.eventsIter[event.id] = eventIter
+        return eventIter
+    def insertEventRowAfter(self, parentIter, siblingIter, event):
+        eventIter = self.trees.insert_after(parentIter, siblingIter, self.getEventRow(event))
         self.eventsIter[event.id] = eventIter
         return eventIter
     def insertGroup(self, position, group):
@@ -329,7 +337,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         return groupIter
     def appendGroupEvents(self, group, groupIter):
         for event in group:
-            self.addEventRow(event, groupIter)
+            self.appendEventRow(groupIter, event)
         self.loadedGroupIds.add(group.id)
     def insertGroupTree(self, position, group):
         groupIter = self.insertGroup(position, group)
@@ -354,7 +362,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             '',
         ))
         for event in ui.eventTrash:
-            self.addEventRow(event, self.trashIter)
+            self.appendEventRow(self.trashIter, event)
     def reloadGroupEvents(self, gid):
         groupIter = self.groupIterById[gid]
         assert self.trees.get_value(groupIter, 0) == gid
@@ -365,7 +373,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         if not gid in self.loadedGroupIds:
             return
         for event in group:
-            self.addEventRow(event, groupIter)
+            self.appendEventRow(groupIter, event)
     def reloadEvents(self):
         self.trees.clear()
         self.appendTrash()
@@ -864,7 +872,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                             self.trees.iter_n_children(groupIter) == 0 and \
                             len(group) > 0:
                                 for event in group:
-                                    self.addEventRow(event, groupIter)
+                                    self.appendEventRow(groupIter, event)
                                 self.loadedGroupIds.add(group.id)
                         self.onGroupModify(group)
                         treev.set_cursor(path)
@@ -921,7 +929,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             self.getGroupRow(newGroup),
         )
         for event in newGroup:
-            self.addEventRow(event, newGroupIter)
+            self.appendEventRow(newGroupIter, event)
         self.loadedGroupIds.add(newGroup.id)
     def syncGroupFromMenu(self, menu, path, account):
         index, = path
@@ -982,15 +990,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         trashedIds = group.idList
         if core.eventTrashLastTop:
             for eid in reversed(trashedIds):
-                self.trees.insert(
-                    self.trashIter,
-                    0,
-                    self.getEventRow(group[eid]),
-                )
+                event = group[eid]
+                self.insertEventRow(self.trashIter, 0, event)
         else:
             for eid in trashedIds:
                 event = group[eid]
-                self.addEventRow(event, self.trashIter)
+                self.appendEventRow(self.trashIter, event)
         ui.deleteEventGroup(group)
         self.trees.remove(self.trees.get_iter(path))
     def deleteGroup(self, path):
@@ -1011,7 +1016,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             return
         groupIter = self.trees.get_iter(path)
         if group.id in self.loadedGroupIds:
-            self.addEventRow(event, groupIter)
+            self.appendEventRow(groupIter, event)
         self.treeviewCursorChanged()
     def addGenericEventToGroupFromMenu(self, menu, path, group):
         event = addNewEvent(
@@ -1025,7 +1030,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             return
         groupIter = self.trees.get_iter(path)
         if group.id in self.loadedGroupIds:
-            self.addEventRow(event, groupIter)
+            self.appendEventRow(groupIter, event)
         self.treeviewCursorChanged()
     def editEventByPath(self, path):
         from scal2.ui_gtk.event.editor import EventEditorDialog
@@ -1053,13 +1058,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         ui.moveEventToTrash(group, event)
         self.trees.remove(self.trees.get_iter(path))
         if core.eventTrashLastTop:
-            self.trees.insert(
-                self.trashIter,
-                0,
-                self.getEventRow(event),
-            )
+            self.insertEventRow(self.trashIter, 0, event)
         else:
-            self.addEventRow(event, self.trashIter)
+            self.appendEventRow(self.trashIter, event)
     moveEventToTrashFromMenu = lambda self, menu, path: self.moveEventToTrash(path)
     def moveSelectionToTrash(self):
         path = self.treev.get_cursor()[0]
@@ -1131,7 +1132,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                 newGroup = ui.eventGroups[newParentId]
                 self.checkEventToAdd(newGroup, event)
                 self.trees.remove(srcIter)
-                self.addEventRow(event, newParentIter)
+                self.appendEventRow(newParentIter, event)
                 ###
                 parentObj.remove(event)
                 parentObj.save()
@@ -1176,11 +1177,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                 newGroup = ui.eventGroups[newParentId]
                 self.checkEventToAdd(newGroup, event)
                 self.trees.remove(srcIter)
-                srcIter = self.trees.insert(
-                    newParentIter,## parent
-                    0,## position
-                    self.getEventRow(event), ## row
-                )
+                srcIter = self.insertEventRow(newParentIter, 0, event)
                 ###
                 parentObj.remove(event)
                 parentObj.save()
@@ -1216,7 +1213,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                 expanded = self.treev.row_expanded(path)
                 self.removeIterChildren(groupIter)
                 for event in group:
-                    self.addEventRow(event, groupIter)
+                    self.appendEventRow(groupIter, event)
                 if expanded:
                     self.treev.expand_row(path, False)
     def groupConvertModeFromMenu(self, menu, group):
@@ -1283,13 +1280,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             tarGroup.save()
         ####
         if tarEventIter:
-            newEventIter = self.trees.insert_after(
-                tarGroupIter,## parent
-                tarEventIter,## sibling
-                self.getEventRow(newEvent), ## row
-            )
+            self.insertEventRowAfter(tarGroupIter, tarEventIter, newEvent)
         else:
-            newEventIter = self.addEventRow(newEvent, tarGroupIter)
+            newEventIter = self.appendEventRow(tarGroupIter, newEvent)
         if doScroll:
             self.treev.set_cursor(self.trees.get_path(newEventIter))
         self.toPasteEvent = None
