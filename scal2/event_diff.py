@@ -6,7 +6,7 @@ class EventDiff:
         self.byEventId = {}
         '''
             self.byEventId = {
-                eid -> (order, action, args)
+                eid -> (order, action, path)
             }
             actions:
                 '+'     add
@@ -15,11 +15,13 @@ class EventDiff:
                 'v'     move to a new path
         '''
         self.lastOrder = 0
-    def add(self, action, eid, *args):
+    def add(self, action, event):
+        eid = event.id
+        path = event.getPath()
         try:
-            prefOrder, prefAction, prefArgs = self.byEventId[eid]
+            prefOrder, prefAction, prefPath = self.byEventId[eid]
         except KeyError:
-            self.byEventId[eid] = (self.lastOrder, action, args)
+            self.byEventId[eid] = (self.lastOrder, action, path)
             self.lastOrder += 1
         else:
             if prefAction == '-' or action == '+':
@@ -30,20 +32,20 @@ class EventDiff:
             elif both == '+-':## remove the last '+' action 
                 del self.byEventId[eid]
             elif both in ('e-', 'ev'):## replace the last edit action
-                self.byEventId[eid] = self.lastOrder, action, args
+                self.byEventId[eid] = self.lastOrder, action, path
                 self.lastOrder += 1
             elif both == 'v-':
-                self.byEventId[eid] = prefOrder, prefAction, args[1:]
+                self.byEventId[eid] = prefOrder, prefAction, path
     def __iter__(self):
-        for order, action, eid, args in sorted([
-            (order, action, eid, args)
-            for eid, (order, action, args) in self.byEventId.items()
+        for order, action, eid, path in sorted([
+            (order, action, eid, path)
+            for eid, (order, action, path) in self.byEventId.items()
         ]):
             if action == 'v':
-                yield '-', eid, args[:1]
-                yield '+', eid, args[1:]
+                yield '-', eid, path
+                yield '+', eid, path
             else:
-                yield action, eid, args
+                yield action, eid, path
             del self.byEventId[eid]
 
 def testEventDiff():
