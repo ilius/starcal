@@ -2296,6 +2296,7 @@ class EventContainer(JsonSObjBase):
             raise TypeError('invalid key type %r give to EventContainer.__getitem__'%key)
     __str__ = lambda self: '%s(title=%s)'%(self.__class__.__name__, toStr(self.title))
     def __init__(self, title='Untitled'):
+        self.parent = None
         self.mode = calTypes.primary
         self.idList = []
         self.title = title
@@ -3674,12 +3675,15 @@ class EventGroupsHolder(JsonObjectsHolder):
     def __init__(self):
         JsonObjectsHolder.__init__(self)
         self.id = None
+        self.parent = None
     def delete(self, obj):
         assert not obj.idList ## FIXME
+        obj.parent = None
         JsonObjectsHolder.delete(self, obj)
     def appendNew(self, data):
         obj = classes.group.byName[data['type']](_id=data['id'])
         obj.setData(data)
+        obj.parent = self
         self.append(obj)
         return obj
     def load(self):
