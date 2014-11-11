@@ -32,11 +32,11 @@ class SObjBase:
     def getPath(self):
         try:
             parent = self.parent
-        except KeyError:
+        except AttributeError:
             raise NotImplementedError('%s.getPath: no parent attribute'%self.__class__.__name__)
         try:
             _id = self.id
-        except KeyError:
+        except AttributeError:
             raise NotImplementedError('%s.getPath: no id attribute'%self.__class__.__name__)
         ######
         path = []
