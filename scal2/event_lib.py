@@ -2294,6 +2294,7 @@ class EventContainer(JsonSObjBase):
             return self.getEvent(key)
         else:
             raise TypeError('invalid key type %r give to EventContainer.__getitem__'%key)
+    byIndex = lambda self, index: self.getEvent(self.idList[index])
     __str__ = lambda self: '%s(title=%s)'%(self.__class__.__name__, toStr(self.title))
     def __init__(self, title='Untitled'):
         self.parent = None
