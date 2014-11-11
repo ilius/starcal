@@ -44,7 +44,7 @@ from scal2.ui_gtk import gtk_ud as ud
 #from scal2.ui_gtk import preferences
 from scal2.ui_gtk.timeline_box import *
 
-import scal2.ui_gtk.event.main
+import scal2.ui_gtk.event.manager
 
 
 

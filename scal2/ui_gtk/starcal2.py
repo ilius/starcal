@@ -844,7 +844,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         openWindow(ui.prefDialog)
     def eventManCreate(self):
         if not ui.eventManDialog:
-            from scal2.ui_gtk.event.main import EventManagerDialog
+            from scal2.ui_gtk.event.manager import EventManagerDialog
             ui.eventManDialog = EventManagerDialog()
     def eventManShow(self, obj=None, data=None):
         self.eventManCreate()
