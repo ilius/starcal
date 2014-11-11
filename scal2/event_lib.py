@@ -3671,6 +3671,9 @@ class JsonObjectsHolder(JsonSObjBase):
 
 class EventGroupsHolder(JsonObjectsHolder):
     file = join(confDir, 'event', 'group_list.json')
+    def __init__(self):
+        JsonObjectsHolder.__init__(self)
+        self.id = None
     def delete(self, obj):
         assert not obj.idList ## FIXME
         JsonObjectsHolder.delete(self, obj)

@@ -29,7 +29,23 @@ class SObjBase:
         for key, value in data.items():
             if key in self.params:
                 setattr(self, key, value)
-
+    def getPath(self):
+        try:
+            parent = self.parent
+        except KeyError:
+            raise NotImplementedError('%s.getPath: no parent attribute'%self.__class__.__name__)
+        try:
+            _id = self.id
+        except KeyError:
+            raise NotImplementedError('%s.getPath: no id attribute'%self.__class__.__name__)
+        ######
+        path = []
+        if _id is not None:
+            path.append(_id)
+        if parent is None:
+            return path
+        else:
+            return parent.getPath() + path
 
 
 def makeOrderedData(data, params):
