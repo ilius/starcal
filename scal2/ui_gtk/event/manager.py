@@ -71,6 +71,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         ###
         self.hide()
         self.emit('config-change')
+    #def findEventByPath(self, eid, path):
+    #    groupIndex, eventIndex = path
+    #    
     def onConfigChange(self, *a, **kw):
         ud.BaseCalObj.onConfigChange(self, *a, **kw)
         ###
@@ -78,6 +81,22 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             if self.get_property('visible'):
                 self.waitingDo(self.reloadEvents)## FIXME
             return
+        ###
+        for action, eid, gid, path in ui.eventDiff:
+            if action == '-':
+                try:
+                    eventIter = self.eventsIter[eid]
+                except KeyError:
+                    print('trying to delete non-existing event row, eid=%s, path=%s'%(eid, path))
+                else:
+                    self.trees.remove(eventIter)
+            elif action == '+':
+                parentIndex, eventIndex = path
+                parentIter = self.trees.get_iter((parentIndex,))
+                event = ui.getEvent(gid, eid)
+                self.insertEventRow(parentIter, eventIndex, event)
+            elif action == 'e':
+                self.updateEventRow(event, path)
         ###
         for gid in ui.changedGroups:
             group = ui.eventGroups[gid]
@@ -1032,6 +1051,10 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         if group.id in self.loadedGroupIds:
             self.appendEventRow(groupIter, event)
         self.treeviewCursorChanged()
+    def updateEventRow(self, event, path):
+        eventIter = self.trees.get_iter(path)
+        for i, value in enumerate(self.getEventRow(event)):
+            self.trees.set_value(eventIter, i, value)
     def editEventByPath(self, path):
         from scal2.ui_gtk.event.editor import EventEditorDialog
         group, event = self.getObjsByPath(path)
@@ -1044,9 +1067,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         ).run()
         if event is None:
             return
-        eventIter = self.trees.get_iter(path)
-        for i, value in enumerate(self.getEventRow(event)):
-            self.trees.set_value(eventIter, i, value)
+        self.updateEventRow(event, path)
     editEventFromMenu = lambda self, menu, path: self.editEventByPath(path)
     def moveEventToPathFromMenu(self, menu, path, tarPath):
         self.toPasteEvent = (path, True)
