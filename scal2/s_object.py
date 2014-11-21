@@ -29,15 +29,15 @@ class SObjBase:
         for key, value in data.items():
             if key in self.params:
                 setattr(self, key, value)
-    def getPath(self):
+    def getIdPath(self):
         try:
             parent = self.parent
         except AttributeError:
-            raise NotImplementedError('%s.getPath: no parent attribute'%self.__class__.__name__)
+            raise NotImplementedError('%s.getIdPath: no parent attribute'%self.__class__.__name__)
         try:
             _id = self.id
         except AttributeError:
-            raise NotImplementedError('%s.getPath: no id attribute'%self.__class__.__name__)
+            raise NotImplementedError('%s.getIdPath: no id attribute'%self.__class__.__name__)
         ######
         path = []
         if _id is not None:
@@ -45,7 +45,13 @@ class SObjBase:
         if parent is None:
             return path
         else:
-            return parent.getPath() + path
+            return parent.getIdPath() + path
+    def getPath(self):
+        parent = self.parent
+        if parent is None:
+            return []
+        index = parent.index(self.id)
+        return parent.getPath() + [index]
 
 
 def makeOrderedData(data, params):

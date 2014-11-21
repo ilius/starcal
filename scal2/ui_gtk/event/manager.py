@@ -94,12 +94,19 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             elif action == '+':
                 if gid in self.loadedGroupIds:
                     parentIndex, eventIndex = path
+                    print gid, self.loadedGroupIds, parentIndex
                     parentIter = self.trees.get_iter((parentIndex,))
                     event = ui.getEvent(gid, eid)
                     self.insertEventRow(parentIter, eventIndex, event)
             elif action == 'e':
-                if gid in self.loadedGroupIds:
-                    self.updateEventRow(event, path)
+                try:
+                    eventIter = self.eventsIter[eid]
+                except KeyError:
+                    if gid in self.loadedGroupIds:
+                        print('trying to edit non-existing event row, eid=%s, path=%s'%(eid, path))
+                else:
+                    event = ui.getEvent(gid, eid)
+                    self.updateEventRowByIter(event, eventIter)
         ###
         for gid in ui.changedGroups:
             group = ui.eventGroups[gid]
@@ -1054,10 +1061,15 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         if group.id in self.loadedGroupIds:
             self.appendEventRow(groupIter, event)
         self.treeviewCursorChanged()
-    def updateEventRow(self, event, path):
-        eventIter = self.trees.get_iter(path)
+    def updateEventRow(self, event):
+        self.updateEventRowByIter(
+            event,
+            self.eventsIter[event.id],
+        )
+    def updateEventRowByIter(self, event, eventIter):
         for i, value in enumerate(self.getEventRow(event)):
             self.trees.set_value(eventIter, i, value)
+        self.treeviewCursorChanged()
     def editEventByPath(self, path):
         from scal2.ui_gtk.event.editor import EventEditorDialog
         group, event = self.getObjsByPath(path)
@@ -1070,7 +1082,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         ).run()
         if event is None:
             return
-        self.updateEventRow(event, path)
+        self.updateEventRow(event)
     editEventFromMenu = lambda self, menu, path: self.editEventByPath(path)
     def moveEventToPathFromMenu(self, menu, path, tarPath):
         self.toPasteEvent = (path, True)
