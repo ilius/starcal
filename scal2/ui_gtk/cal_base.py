@@ -137,8 +137,6 @@ class CalBase(CustomizableCalObj):
             return True
         return False
     def dragBegin(self, obj, context):
-        colormap = self.get_screen().get_system_colormap()
-        #############################################
         text = '%.2d/%.2d/%.2d'%ui.cell.dates[ui.dragGetMode]
         textLay = newTextLayout(self, text)
         w, h = textLay.get_pixel_size()
@@ -147,10 +145,8 @@ class CalBase(CustomizableCalObj):
         cr.fill(rgbToGdkColor(ui.bgColor))
         cr.setColor(rgbToGdkColor(*ui.textColor))
         cr.draw_layout(textLay, 0, 0)
-
-
-
         '''
+        colormap = self.get_screen().get_system_colormap()
         pmap = gdk.Pixmap(None, w, h, 24)
         #pmap.set_colormap(colormap)
         gc = pmap.new_gc()
