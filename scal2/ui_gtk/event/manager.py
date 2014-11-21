@@ -94,7 +94,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             elif action == '+':
                 if gid in self.loadedGroupIds:
                     parentIndex, eventIndex = path
-                    print gid, self.loadedGroupIds, parentIndex
+                    #print(gid, self.loadedGroupIds, parentIndex)
                     parentIter = self.trees.get_iter((parentIndex,))
                     event = ui.getEvent(gid, eid)
                     self.insertEventRow(parentIter, eventIndex, event)

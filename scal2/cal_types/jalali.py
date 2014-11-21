@@ -97,7 +97,7 @@ monthLenSum = [0]
 for i in range(12):
     monthLenSum.append(monthLenSum[-1] + monthLen[i])
 
-#print monthLenSum
+#print(monthLenSum)
 ## monthLenSum[i] == sum(monthLen[:i])
 
 import os

@@ -497,7 +497,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
         ## gdk.CURRENT_TIME == 0## FIXME
         ## gevent.time == gtk.get_current_event_time() ## OK
         kname = gdk.keyval_name(gevent.keyval).lower()
-        #print 'treevKeyPress', kname
+        #print('treevKeyPress', kname)
         if kname=='menu':## Simulate right click (key beside Right-Ctrl)
             path = treev.get_cursor()[0]
             if path:

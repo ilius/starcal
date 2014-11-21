@@ -64,7 +64,7 @@ def testEventDiff():
     ]:
         d.add(action, eid, None)
     for action, eid, path in d:
-        print action, eid
+        print(action, eid)
 
 if __name__=='__main__':
     testEventDiff()
