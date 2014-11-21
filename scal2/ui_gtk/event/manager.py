@@ -83,22 +83,23 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             return
         ###
         for action, eid, gid, path in ui.eventDiff:
-            if not gid in self.loadedGroupIds:
-                continue
             if action == '-':
                 try:
                     eventIter = self.eventsIter[eid]
                 except KeyError:
-                    print('trying to delete non-existing event row, eid=%s, path=%s'%(eid, path))
+                    if gid in self.loadedGroupIds:
+                        print('trying to delete non-existing event row, eid=%s, path=%s'%(eid, path))
                 else:
                     self.trees.remove(eventIter)
             elif action == '+':
-                parentIndex, eventIndex = path
-                parentIter = self.trees.get_iter((parentIndex,))
-                event = ui.getEvent(gid, eid)
-                self.insertEventRow(parentIter, eventIndex, event)
+                if gid in self.loadedGroupIds:
+                    parentIndex, eventIndex = path
+                    parentIter = self.trees.get_iter((parentIndex,))
+                    event = ui.getEvent(gid, eid)
+                    self.insertEventRow(parentIter, eventIndex, event)
             elif action == 'e':
-                self.updateEventRow(event, path)
+                if gid in self.loadedGroupIds:
+                    self.updateEventRow(event, path)
         ###
         for gid in ui.changedGroups:
             group = ui.eventGroups[gid]
