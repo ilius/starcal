@@ -83,6 +83,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             return
         ###
         for action, eid, gid, path in ui.eventDiff:
+            if not gid in self.loadedGroupIds:
+                continue
             if action == '-':
                 try:
                     eventIter = self.eventsIter[eid]
