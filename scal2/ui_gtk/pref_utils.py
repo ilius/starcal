@@ -135,7 +135,7 @@ class ComboTextPrefItem(PrefItem):
         for s in items:
             w.append_text(s)
     get = lambda self: self._widget.get_active()
-    set = lambda value: self._widget.set_active(value)    
+    set = lambda value: self._widget.set_active(value)
     #def set(self, value):
     #    print('ComboTextPrefItem.set', value)
     #    self._widget.set_active(int(value))
@@ -222,7 +222,7 @@ class CheckPrefItem(PrefItem):
         if self._sensitiveReverse:
             active = not active
         self._sensitiveWidget.set_sensitive(active)
-        
+
 
 
 class ColorPrefItem(PrefItem):

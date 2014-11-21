@@ -73,7 +73,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         self.emit('config-change')
     #def findEventByPath(self, eid, path):
     #    groupIndex, eventIndex = path
-    #    
+    #
     def onConfigChange(self, *a, **kw):
         ud.BaseCalObj.onConfigChange(self, *a, **kw)
         ###

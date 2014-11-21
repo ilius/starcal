@@ -3940,7 +3940,7 @@ class DummyAccount:
         self.name = _type
         self.desc = self.accountsDesc[_type]
         self.id = _id
-        self.title = title 
+        self.title = title
     def save():
         pass
     def load():

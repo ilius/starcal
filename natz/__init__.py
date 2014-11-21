@@ -14,7 +14,7 @@ __all__ = [
 
 
 def timezone(name):
-    r''' Return a datetime.tzinfo implementation for the given timezone 
+    r''' Return a datetime.tzinfo implementation for the given timezone
 
     >>> from datetime import datetime, timedelta
     >>> utc = timezone('UTC')

@@ -69,7 +69,7 @@ def getEpochByIcsTime(tmStr):
             parse(tmStr).timetuple()
         )
     )
-    
+
 
 '''
 def getEpochByIcsTime(tmStr):

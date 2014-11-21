@@ -1,7 +1,7 @@
 
 class EventDiff:
     def __init__(self):
-        self.clear()    
+        self.clear()
     def clear(self):
         self.byEventId = {}
         '''
@@ -30,7 +30,7 @@ class EventDiff:
             both = prefAction + action
             if both in ('+e', 'ee', 've'):## skip the new action
                 pass
-            elif both == '+-':## remove the last '+' action 
+            elif both == '+-':## remove the last '+' action
                 del self.byEventId[eid]
             elif both in ('e-', 'ev'):## replace the last edit action
                 self.byEventId[eid] = self.lastOrder, action, gid, path
@@ -52,15 +52,15 @@ class EventDiff:
 def testEventDiff():
     d = EventDiff()
     for action, eid in [
-        ('+', 1),    
-        ('+', 2),    
-        ('+', 3),    
-        ('-', 4),    
-        ('e', 5),    
-        ('-', 2),    
-        ('e', 3),    
-        ('e', 6),    
-        ('e', 5),    
+        ('+', 1),
+        ('+', 2),
+        ('+', 3),
+        ('-', 4),
+        ('e', 5),
+        ('-', 2),
+        ('e', 3),
+        ('e', 6),
+        ('e', 5),
     ]:
         d.add(action, eid, None)
     for action, eid, path in d:
