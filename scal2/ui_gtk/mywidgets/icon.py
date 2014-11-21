@@ -52,12 +52,12 @@ class IconSelectButton(gtk.Button):
         self.connect('button-press-event', self.buttonPressEvent)
         ###
         self.set_filename(filename)
-    def buttonPressEvent(self, widget, event):
-        b = event.button
+    def buttonPressEvent(self, widget, gevent):
+        b = gevent.button
         if b==1:
             self.dialog.run()
         elif b==3:
-            self.menu.popup(None, None, None, b, event.time)
+            self.menu.popup(None, None, None, b, gevent.time)
     menuItemActivate = lambda self, widget, icon: self.set_filename(icon)
     def dialogResponse(self, dialog, response=0):
         dialog.hide()

@@ -85,8 +85,8 @@ mainWinItemsDesc = {
 
 
 
-#def show_event(widget, event):
-#    print(type(widget), event.type.value_name, event.get_value())#, event.send_event
+#def show_event(widget, gevent):
+#    print(type(widget), gevent.type.value_name, gevent.get_value())#, gevent.send_event
 
 
 def liveConfChanged():
@@ -149,8 +149,8 @@ class MainWinVbox(gtk.VBox, CustomizableCalBox):
     def updateVars(self):
         CustomizableCalBox.updateVars(self)
         ui.mainWinItems = self.getItemsData()
-    def keyPress(self, arg, event):
-        CustomizableCalBox.keyPress(self, arg, event)
+    def keyPress(self, arg, gevent):
+        CustomizableCalBox.keyPress(self, arg, gevent)
         return True ## FIXME
     def switchWcalMcal(self):
         wi = None
@@ -327,17 +327,17 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         ###########################
         self.onConfigChange()
         #ud.rootWindow.set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
-    #def mainWinStateEvent(self, obj, event):
+    #def mainWinStateEvent(self, obj, gevent):
         #print(dir(event))
-        #print(event.new_window_state)
+        #print(gevent.new_window_state)
         #self.event = event
     def childSizeRequest(self, cal, req):
         self.setMinHeight()
     def selectDateResponse(self, widget, y, m, d):
         ui.changeDate(y, m, d)
         self.onDateChange()
-    def keyPress(self, arg, event):
-        kname = gdk.keyval_name(event.keyval).lower()
+    def keyPress(self, arg, gevent):
+        kname = gdk.keyval_name(gevent.keyval).lower()
         #print(now(), 'MainWin.keyPress', kname)
         if kname=='escape':
             self.onEscape()
@@ -348,7 +348,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         elif kname in ('q', 'arabic_dad'):## FIXME
             self.quit()
         else:
-            self.vbox.keyPress(arg, event)
+            self.vbox.keyPress(arg, gevent)
         return True ## FIXME
     def focusIn(self, widegt, event, data=None):
         self.focus = True
@@ -376,7 +376,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
                 req.height=1
             ui.mcalHeight = req.height
     """
-    def configureEvent(self, widget, event):
+    def configureEvent(self, widget, gevent):
         wx, wy = self.get_position()
         maxPosDelta = max(abs(ui.winX-wx), abs(ui.winY-wy))
         #print(wx, wy)
@@ -388,39 +388,39 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         ui.winWidth = ww
         liveConfChanged()
         return False
-    def buttonPress(self, obj, event):
+    def buttonPress(self, obj, gevent):
         print('buttonPress')
-        b = event.button
+        b = gevent.button
         #print('buttonPress', b)
         if b==3:
             self.menuMainCreate()
-            self.menuMain.popup(None, None, None, None, 3, event.time)
+            self.menuMain.popup(None, None, None, None, 3, gevent.time)
             ui.updateFocusTime()
         elif b==1:
-            self.begin_move_drag(event.button, int(event.x_root), int(event.y_root), event.time)
+            self.begin_move_drag(gevent.button, int(gevent.x_root), int(gevent.y_root), gevent.time)
         return False
-    def childButtonPress(self, widget, event):
-        b = event.button
-        #print(dir(event))
-        #foo, x, y, mask = event.get_window().get_pointer()
+    def childButtonPress(self, widget, gevent):
+        b = gevent.button
+        #print(dir(gevent))
+        #foo, x, y, mask = gevent.get_window().get_pointer()
         #x, y = self.get_pointer()
-        x, y = event.x_root, event.y_root
+        x, y = gevent.x_root, gevent.y_root
         if b == 1:
-            self.begin_move_drag(event.button, x, y, event.time)
+            self.begin_move_drag(gevent.button, x, y, gevent.time)
             return True
         elif b == 3:
             self.menuMainCreate()
             if rtl:
                 x -= get_menu_width(self.menuMain)
-            self.menuMain.popup(None, None, lambda m, e: (x, y, True), None, 3, event.time)
+            self.menuMain.popup(None, None, lambda m, e: (x, y, True), None, 3, gevent.time)
             ui.updateFocusTime()
             return True
         return False
-    def startResize(self, widget, event):
+    def startResize(self, widget, gevent):
         if self.menuMain:
             self.menuMain.hide()
         foo, x, y, mask = ud.rootWindow.get_pointer()
-        self.begin_resize_drag(gdk.WindowEdge.SOUTH_EAST, event.button, x, y, event.time)
+        self.begin_resize_drag(gdk.WindowEdge.SOUTH_EAST, gevent.button, x, y, gevent.time)
         return True
     def changeDate(self, year, month, day):
         ui.changeDate(year, month, day)
@@ -578,7 +578,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         event = addNewEvent(group, eventType, title, parent=self, useSelectedDate=True)
         if event is None:
             return
-        ui.reloadGroups.append(group.id)
+        ui.eventDiff.add('+', event)
         self.onConfigChange()
     def prefUpdateBgColor(self, cal):
         if ui.prefDialog:
@@ -734,6 +734,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         imagePath = ui.statusIconImageHoli if ui.todayCell.holiday else ui.statusIconImage
         ext = os.path.splitext(imagePath)[1][1:].lower()
         loader = GdkPixbuf.PixbufLoader.new_with_type(ext)
+        #loader.set_size(22, 22)
         data = open(imagePath).read()
         if ext == 'svg':
             dayNum = _(ddate[2])
@@ -854,7 +855,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         openWindow(ui.prefDialog)
     def eventManCreate(self):
         if not ui.eventManDialog:
-            from scal2.ui_gtk.event.main import EventManagerDialog
+            from scal2.ui_gtk.event.manager import EventManagerDialog
             ui.eventManDialog = EventManagerDialog()
     def eventManShow(self, obj=None, data=None):
         self.eventManCreate()
@@ -872,7 +873,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             from scal2.ui_gtk.selectdate import SelectDateDialog
             self.selectDateDialog = SelectDateDialog()
             self.selectDateDialog.connect('response-date', self.selectDateResponse)
-        openWindow(self.selectDateDialog)
+        self.selectDateDialog.show()
     def dayInfoShow(self, widget=None):
         if not self.dayInfoDialog:
             from scal2.ui_gtk.day_info import DayInfoDialog

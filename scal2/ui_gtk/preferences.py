@@ -907,7 +907,7 @@ class PrefDialog(gtk.Dialog):
         self.accountsTreestore.clear()
         for account in ui.eventAccounts:
             self.accountsTreestore.append([account.id, account.enable, account.title])
-    #def plugTreevExpose(self, widget, event):
+    #def plugTreevExpose(self, widget, gevent):
         #self.plugDescCell.set_property('wrap-width', self.plugDescCol.get_width()+2)
     def plugTreevCursorChanged(self, treev):
         cur = treev.get_cursor()[0]
@@ -958,8 +958,8 @@ class PrefDialog(gtk.Dialog):
     def plugTreevRActivate(self, treev, path, col):
         if col.get_title()==_('Description'):## FIXME
             self.plugAboutClicked(None)
-    def plugTreevButtonPress(self, widget, event):
-        b = event.button
+    def plugTreevButtonPress(self, widget, gevent):
+        b = gevent.button
         if b==3:
             cur = self.plugTreeview.get_cursor()[0]
             if cur:
@@ -979,7 +979,7 @@ class PrefDialog(gtk.Dialog):
                 menu.add(labelImageMenuItem(_('Export to %s')%'iCalendar', 'ical-32.png', self.plugExportToIcsClicked, plug))
                 ##
                 menu.show_all()
-                menu.popup(None, None, None, 3, event.time)
+                menu.popup(None, None, None, 3, gevent.time)
             return True
         return False
     def plugAddClicked(self, button):
@@ -993,7 +993,7 @@ class PrefDialog(gtk.Dialog):
         self.plugAddDialog.run()
         #self.plugAddDialog.present()
         #self.plugAddDialog.show()
-    def plugAddDialogClose(self, obj, event=None):
+    def plugAddDialogClose(self, obj, gevent=None):
         self.plugAddDialog.hide()
         return True
     def plugTreeviewCellToggled(self, cell, path):
@@ -1179,8 +1179,8 @@ class PrefDialog(gtk.Dialog):
     def accountsTreevRActivate(self, treev, path, col):
         index = path[0]
         self.editAccount(index)
-    def accountsTreevButtonPress(self, widget, event):
-        b = event.button
+    def accountsTreevButtonPress(self, widget, gevent):
+        b = gevent.button
         if b==3:
             cur = self.accountsTreeview.get_cursor()[0]
             if cur:
@@ -1192,7 +1192,7 @@ class PrefDialog(gtk.Dialog):
                 ## FIXME
                 ##
                 #menu.show_all()
-                #menu.popup(None, None, None, 3, event.time)
+                #menu.popup(None, None, None, 3, gevent.time)
             return True
         return False
     def accountsTreeviewCellToggled(self, cell, path):

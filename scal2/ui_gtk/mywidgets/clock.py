@@ -53,8 +53,8 @@ class ClockLabel(gtk.Label):
             self.set_label(l)
     def stop(self):
         self.running = False
-    #def button_press(self, obj, event):
-    #    if event.buuton == 3:
+    #def button_press(self, obj, gevent):
+    #    if gevent.button == 3:
 
 
 class FClockLabel(gtk.Label):

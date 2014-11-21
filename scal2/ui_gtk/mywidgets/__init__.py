@@ -37,8 +37,8 @@ def myRaise():
     except:
         print(i)
 
-def show_event(widget, event):
-    print(type(widget), event.type.value_name)#, event.send_event
+def show_event(widget, gevent):
+    print(type(widget), gevent.type.value_name)#, gevent.send_event
 
 time_rem = lambda: int(1000*(1.01-now()%1))
 

@@ -101,7 +101,7 @@ class FloatingMsg(gtk.DrawingArea):
         self.destroy()
         if self.finishFunc:
             self.finishFunc()
-    def onExposeEvent(self, widget, event):
+    def onExposeEvent(self, widget, gevent):
         cr = self.cr = self.get_window().cairo_create()
         #######
         cr.rectangle(0, 0, screenWidth, self.height)
@@ -149,7 +149,7 @@ class MyLabel(gtk.DrawingArea):
         self.set_size_request(self.width, self.height)
         self.rtl = self.isRtl()
         self.rtlSign = 1 if self.rtl else -1
-    def onExposeEvent(self, widget, event):
+    def onExposeEvent(self, widget, gevent):
         cr = self.cr = self.get_window().cairo_create()
         #######
         cr.rectangle(0, 0, self.width, self.height)

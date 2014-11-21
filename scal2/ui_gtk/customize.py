@@ -107,11 +107,11 @@ class CustomizableCalObj(ud.BaseCalObj):
             if item.customizable:
                 text += item.confStr()
         return text
-    def keyPress(self, arg, event):
-        kname = gdk.keyval_name(event.keyval).lower()
+    def keyPress(self, arg, gevent):
+        kname = gdk.keyval_name(gevent.keyval).lower()
         for item in self.items:
             if item.enable and kname in item.myKeys:
-                if item.keyPress(arg, event):
+                if item.keyPress(arg, gevent):
                     break
     def optionsWidgetCreate(self):
         pass

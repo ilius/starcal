@@ -37,7 +37,7 @@ def makeWidget(obj):## obj is an instance of Event, EventRule, EventNotifier or 
     except AttributeError:
         widget.show()
     widget.updateWidget()## FIXME
-    return widget 
+    return widget
 
 
 ### Load accounts, groups and trash? FIXME

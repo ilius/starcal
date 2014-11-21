@@ -49,7 +49,7 @@ except NameError:
     __file__ = join(os.path.dirname(inspect.getfile(scal2)), 'core.py')
 
 
-VERSION = '2.3.3'
+VERSION = '2.3.4'
 BRANCH = join(rootDir, 'branch')
 APP_NAME = 'starcal2'
 APP_DESC = 'StarCalendar'
@@ -371,7 +371,7 @@ def mylocaltime(sec=None, mode=None):
 
 def compressLongInt(num):
     from struct import pack
-    return pack('L', num).\
+    return pack('L', num % 2**64).\
     rstrip('\x00').\
     encode('base64')[:-3].\
     replace('/', '_')

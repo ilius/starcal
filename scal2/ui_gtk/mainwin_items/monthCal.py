@@ -225,7 +225,7 @@ class CalObj(gtk.DrawingArea, CalBase):
         self.optionsWidget.show_all()
         self.updateTypeParamsWidget()## FIXME
     def drawAll(self, widget=None, cr=None, cursor=True):
-        #event = gtk.get_current_event()
+        #gevent = gtk.get_current_event()
         #?????? Must enhance (only draw few cells, not all cells)
         self.calcCoord()
         w = self.get_allocation().width
@@ -444,9 +444,9 @@ class CalObj(gtk.DrawingArea, CalBase):
         self.wdaysWidth = wm*7 + ui.mcalLeftMargin ## ????????
         #self.wdaysWidth = wm*7*0.7 + ui.mcalLeftMargin ## ????????
         #print('max =', wm, '     wdaysWidth =', self.wdaysWidth)
-    def buttonPress(self, obj, event):
+    def buttonPress(self, obj, gevent):
         ## self.winActivate() #?????????
-        b = event.button
+        b = gevent.button
         x, y, = self.get_pointer()
         # foo, x, y, flags = self.get_window().get_pointer()
         self.pointer = (x, y)
@@ -464,15 +464,15 @@ class CalObj(gtk.DrawingArea, CalBase):
                 break
         status = getCurrentMonthStatus()
         if yPos == -1 or xPos == -1:
-            self.emit('popup-main-menu', event.time, event.x, event.y)
+            self.emit('popup-main-menu', gevent.time, gevent.x, gevent.y)
         elif yPos >= 0 and xPos >= 0:
             cell = status[yPos][xPos]
             self.changeDate(*cell.dates[calTypes.primary])
-            if event.type==TWO_BUTTON_PRESS:
+            if gevent.type==TWO_BUTTON_PRESS:
                 self.emit('2button-press')
             if b == 3 and cell.month == ui.cell.month:## right click on a normal cell
-                #self.emit('popup-cell-menu', event.time, *self.getCellPos())
-                self.emit('popup-cell-menu', event.time, event.x, event.y)
+                #self.emit('popup-cell-menu', gevent.time, *self.getCellPos())
+                self.emit('popup-cell-menu', gevent.time, gevent.x, gevent.y)
         return True
     def calcCoord(self):## calculates coordidates (x and y of cells centers)
         w = self.get_allocation().width
@@ -496,11 +496,11 @@ class CalObj(gtk.DrawingArea, CalBase):
     def monthPlus(self, p):
         ui.monthPlus(p)
         self.onDateChange()
-    def keyPress(self, arg, event):
+    def keyPress(self, arg, gevent):
         print('keyPress')
-        if CalBase.keyPress(self, arg, event):
+        if CalBase.keyPress(self, arg, gevent):
             return True
-        kname = gdk.keyval_name(event.keyval).lower()
+        kname = gdk.keyval_name(gevent.keyval).lower()
         print('keyPress', kname)
         #if kname.startswith('alt'):
         #    return True
@@ -530,16 +530,16 @@ class CalObj(gtk.DrawingArea, CalBase):
         elif kname in ('page_down', 'j', 'n'):
             self.monthPlus(1)
         elif kname in ('f10', 'm'):
-            if event.get_state() & gdk.ModifierType.SHIFT_MASK:
+            if gevent.get_state() & gdk.ModifierType.SHIFT_MASK:
                 # Simulate right click (key beside Right-Ctrl)
-                self.emit('popup-cell-menu', event.time, *self.getCellPos())
+                self.emit('popup-cell-menu', gevent.time, *self.getCellPos())
             else:
-                self.emit('popup-main-menu', event.time, *self.getMainMenuPos())
+                self.emit('popup-main-menu', gevent.time, *self.getMainMenuPos())
         else:
             return False
         return True
-    def scroll(self, widget, event):
-        d = event.direction.value_nick
+    def scroll(self, widget, gevent):
+        d = gevent.direction.value_nick
         if d=='up':
             self.jdPlus(-7)
         elif d=='down':

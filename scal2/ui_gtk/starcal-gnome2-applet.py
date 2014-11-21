@@ -132,8 +132,8 @@ class StarCalApplet(MainWin):
         else:
             ui.winX, ui.winY = self.get_position()
             self.hide()
-    def appletButtonPress(self, widget, event):
-        if event.button != 1:
+    def appletButtonPress(self, widget, gevent):
+        if gevent.button != 1:
             widget.stop_emission('button_press_event')
         return False
     def statusIconUpdate(self, gdate=None):

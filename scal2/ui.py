@@ -36,6 +36,7 @@ from scal2.locale_man import numDecode
 from scal2 import core
 
 from scal2 import event_lib
+from scal2.event_diff import EventDiff
 
 uiName = ''
 null = NullObj()
@@ -539,6 +540,8 @@ def iterAllEvents():## dosen't include orphan events
 changedGroups = []## list of groupId's
 reloadGroups = [] ## a list of groupId's that their contents are changed
 reloadTrash = False
+
+eventDiff = EventDiff()
 
 
 

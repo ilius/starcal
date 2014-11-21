@@ -1,3 +1,4 @@
+from scal2 import core
 from scal2.ui_gtk import *
 
 class MyDialog:
@@ -12,12 +13,15 @@ class MyDialog:
         self.vbox.set_sensitive(True)
     def waitingDo(self, func, *args, **kwargs):
         self.startWaiting()
-        try:
+        if core.debugMode:
             func(*args, **kwargs)
-        except Exception as e:
-            raise e
-        finally:
             self.endWaiting()
-
+        else:
+            try:
+                func(*args, **kwargs)
+            except Exception as e:
+                raise e
+            finally:
+                self.endWaiting()
 
 

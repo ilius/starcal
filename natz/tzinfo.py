@@ -3,7 +3,6 @@
 from datetime import datetime, timedelta, tzinfo
 from bisect import bisect_right
 
-import natz
 from .exceptions import AmbiguousTimeError, NonExistentTimeError
 
 __all__ = []
@@ -138,7 +137,7 @@ class StaticTzInfo(BaseTzInfo):
 
     def __reduce__(self):
         # Special pickle to zone remains a singleton and to cope with
-        # database changes. 
+        # database changes.
         return unpickler, (self.zone,)
 
 
@@ -515,6 +514,7 @@ def unpickler(zone, utcoffset=None, dstoffset=None, tzname=None):
     these two base classes and we can't break pickles on a natz version
     upgrade.
     """
+    import natz
     # Raises a KeyError if zone no longer exists, which should never happen
     # and would be a bug.
     tz = natz.timezone(zone)

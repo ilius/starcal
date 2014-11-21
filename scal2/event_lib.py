@@ -162,6 +162,13 @@ __plugin_api_get__ = [
 
 ###########################################################################
 
+def getEventUID(event):
+    import socket
+    event_st = core.compressLongInt(hash(str(event.getData())))
+    time_st = core.getCompactTime()
+    host = socket.gethostname()
+    return event_st + '_' + time_st + '@' + host
+
 class BadEventFile(Exception):## FIXME
     pass
 
@@ -2285,8 +2292,10 @@ class EventContainer(JsonSObjBase):
             return self.getEvent(key)
         else:
             raise TypeError('invalid key type %r give to EventContainer.__getitem__'%key)
+    byIndex = lambda self, index: self.getEvent(self.idList[index])
     __str__ = lambda self: '%s(title=%s)'%(self.__class__.__name__, self.title)
     def __init__(self, title='Untitled'):
+        self.parent = None
         self.mode = calTypes.primary
         self.idList = []
         self.title = title
@@ -2770,10 +2779,16 @@ class EventGroup(EventContainer):
             ###
             commonText = 'BEGIN:VEVENT\n'
             commonText += 'CREATED:%s\n'%currentTimeStamp
+            commonText += 'DTSTAMP:%s\n'%currentTimeStamp ## FIXME
             commonText += 'LAST-MODIFIED:%s\n'%currentTimeStamp
             commonText += 'SUMMARY:%s\n'%event.getText()
+            commonText += 'DESCRIPTION:\n'
             #commonText += 'CATEGORIES:%s\n'%self.title## FIXME
             commonText += 'CATEGORIES:%s\n'%event.name## FIXME
+            commonText += 'LOCATION:\n'
+            commonText += 'SEQUENCE:0\n'
+            commonText += 'STATUS:CONFIRMED\n'
+            commonText += 'UID:%s\n'%getEventUID(event)
             ###
             if icsData is None:
                 occur = event.calcOccurrenceAll()
@@ -3656,12 +3671,18 @@ class JsonObjectsHolder(JsonSObjBase):
 
 class EventGroupsHolder(JsonObjectsHolder):
     file = join(confDir, 'event', 'group_list.json')
+    def __init__(self):
+        JsonObjectsHolder.__init__(self)
+        self.id = None
+        self.parent = None
     def delete(self, obj):
         assert not obj.idList ## FIXME
+        obj.parent = None
         JsonObjectsHolder.delete(self, obj)
     def appendNew(self, data):
         obj = classes.group.byName[data['type']](_id=data['id'])
         obj.setData(data)
+        obj.parent = self
         self.append(obj)
         return obj
     def load(self):
@@ -3917,7 +3938,7 @@ class DummyAccount:
         self.name = _type
         self.desc = self.accountsDesc[_type]
         self.id = _id
-        self.title = title 
+        self.title = title
     def save():
         pass
     def load():
