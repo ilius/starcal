@@ -28,7 +28,7 @@ from scal2.locale_man import tr as _
 from scal2.mywidgets.multi_spin import * ## FIXME
 from scal2 import ui
 
-from gobject import timeout_add
+from gi.repository.GObject import timeout_add
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
