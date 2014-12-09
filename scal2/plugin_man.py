@@ -25,7 +25,7 @@ from os.path import isfile, dirname, join, split, splitext, isabs
 
 
 from scal2.path import *
-from scal2.utils import printError
+from scal2.utils import printError, myRaiseTback
 from scal2.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG
 from scal2.locale_man import tr as _
 from scal2.locale_man import getMonthName
