@@ -33,13 +33,13 @@ requires+=('pygtk2(>=2.8)')
 requires+=('pygobject2') ## The old "gobject" module
 #requires+=('python-gflags')
 requires+=('python-httplib2')
-requires+=('python-dateutil')
 
 if [ -f "/usr/lib/$HOSTTYPE-$OSTYPE/libappindicator.so.1" ] ; then
     requires+=('python-appindicator')
 fi
 
 #recommends=()
+requires+=('python-dateutil')
 requires+=('python-igraph')
 ##requires+=('python-gnomeapplet')
 #requires+=('python-gnomevfs')

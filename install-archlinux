@@ -25,9 +25,9 @@ depends+=('pygtk>=2.8')
 depends+=('pygobject') ## The old "gobject" module
 #depends+=('python2-gflags')
 depends+=('python2-httplib2')
-depends+=('python2-dateutil')
 
 optdepends=()
+optdepends+=('python2-dateutil')
 optdepends+=('python2-igraph')
 #optdepends+=('python2-gnomeapplet')
 optdepends+=('python2-gnomevfs')
