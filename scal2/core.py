@@ -19,12 +19,14 @@
 from time import localtime
 from time import time as now
 
-import sys, os, subprocess, traceback
+import sys, os, subprocess
+from subprocess import Popen
 from StringIO import StringIO
-from os.path import isfile, isdir, exists, dirname, join, split, splitext
-from pprint import pprint
+import os.path
+from os.path import join, isfile, isdir
+#from pprint import pprint
 
-from tzlocal import get_localzone
+from natz.local import get_localzone
 
 from scal2.path import *
 from scal2.time_utils import *
@@ -33,9 +35,8 @@ from scal2.os_utils import *
 from scal2.json_utils import *
 from scal2.utils import *
 
-from scal2.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG, getSysDate
+from scal2.cal_types import calTypes, DATE_GREG, getSysDate
 from scal2 import locale_man
-from scal2.locale_man import getMonthName, lang, langSh
 from scal2.locale_man import tr as _
 from scal2.plugin_man import *
 
@@ -45,7 +46,7 @@ try:
     __file__
 except NameError:
     import inspect, scal2
-    __file__ = join(dirname(inspect.getfile(scal2)), 'core.py')
+    __file__ = join(os.path.dirname(inspect.getfile(scal2)), 'core.py')
 
 
 VERSION = '2.3.4'
@@ -53,7 +54,7 @@ BRANCH = join(rootDir, 'branch')
 APP_NAME = 'starcal2'
 APP_DESC = 'StarCalendar'
 COMMAND = 'starcal2'
-homePage = 'http://starcal.sourceforge.net/'
+homePage = 'http://ilius.github.io/starcal/'
 osName = getOsName()
 userDisplayName = getUserDisplayName()
 #print('--------- Hello %s'%userDisplayName)
@@ -72,23 +73,23 @@ localTz = get_localzone()
 #print('sys.modules =',)
 #pprint(sys.modules)
 
-__plugin_api_get__ = [
-    'VERSION', 'APP_NAME', 'APP_DESC', 'COMMAND', 'homePage', 'osName', 'userDisplayName'
-    'to_jd', 'jd_to', 'convert', 'jd_to_primary', 'primary_to_jd',
-]
-__plugin_api_set__ = []
+#__plugin_api_get__ = [
+#    'VERSION', 'APP_NAME', 'APP_DESC', 'COMMAND', 'homePage', 'osName', 'userDisplayName'
+#    'jd_to_primary', 'primary_to_jd',
+#]
+#__plugin_api_set__ = []
 
 #def pluginCanGet(funcClass):
 #    global __plugin_api_get__
 #    __plugin_api_get__.append(funcClass.__name__)
 #    return funcClass
 
-def pluginCanSet(funcClass):
-    global __plugin_api_set__
-    __plugin_api_set__.append(funcClass.__name__)
+#def pluginCanSet(funcClass):
+#    global __plugin_api_set__
+#    __plugin_api_set__.append(funcClass.__name__)
 
 ################################################################################
-if exists(confDir):
+if os.path.exists(confDir):
     if not isdir(confDir):
         os.rename(confDir, confDir+'-old')
         os.mkdir(confDir)
@@ -122,25 +123,20 @@ def myRaise(File=None):
         text = 'File "%s", '%File + text
     log.error(text)
 
-def myRaiseTback(f=None):
-    typ, value, tback = sys.exc_info()
-    log.error("".join(traceback.format_exception(typ, value, tback)))
-
-
 
 ################################################################################
 ####################### class and function defenitions #########################
 ################################################################################
 
 
-popen_output = lambda cmd: subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
+popen_output = lambda cmd: Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
 
 primary_to_jd = lambda y, m, d: calTypes.primaryModule().to_jd(y, m, d)
 jd_to_primary = lambda jd: calTypes.primaryModule().jd_to(jd)
 
 def getCurrentJd():## time.time() and mktime(localtime()) both return GMT, not local
     y, m, d = localtime()[:3]
-    return to_jd(y, m, d, DATE_GREG)
+    return calTypes[DATE_GREG].to_jd(y, m, d)
 
 def getWeekDateHmsFromEpoch(epoch):
    jd, hour, minute, sec = getJhmsFromEpoch(epoch)
@@ -148,7 +144,7 @@ def getWeekDateHmsFromEpoch(epoch):
    return (absWeekNumber, weekDay, hour, minute, sec)
 
 def getMonthWeekNth(jd, mode):
-    year, month, day = jd_to(jd, mode)
+    year, month, day = calTypes[mode].jd_to(jd)
     absWeekNumber, weekDay = getWeekDateFromJd(jd)
     ##
     dayDiv, dayMode = divmod(day-1, 7)
@@ -170,7 +166,7 @@ weekDayNameAuto = lambda abr: weekDayNameAb if abr else weekDayName
 def getLocaleFirstWeekDay():
     #log.debug('first_weekday', popen_output(['locale', 'first_weekday']))
     return int(popen_output(['locale', 'first_weekday']))-1
-    #return int(popen_output('LANG=%s locale first_weekday'%lang))-1
+    #return int(popen_output('LANG=%s locale first_weekday'%locale_man.lang))-1
     ##retrun int(trans('calendar:week_start:0').split(':')[-1])
     ## "trans" must read from gtk-2.0.mo !!
 
@@ -218,16 +214,13 @@ getWeekDateFromJd = lambda jd: divmod(jd - firstWeekDay + 1, 7)
 getAbsWeekNumberFromJd = lambda jd: getWeekDateFromJd(jd)[0]
 
 getStartJdOfAbsWeekNumber = lambda absWeekNumber: absWeekNumber*7 + firstWeekDay - 1
-def getJdRangeOfAbsWeekNumber(absWeekNumber):
-    jd = getStartJdOfAbsWeekNumber(absWeekNumber)
-    return (jd, jd+7)
 
 
-def getLocaleWeekNumberMode():##????????????
-    return (int(popen_output(['locale', 'week-1stweek']))-1)%8
+#def getLocaleWeekNumberMode():##????????????
+#    return (int(popen_output(['locale', 'week-1stweek']))-1)%8
     ## will be 7 for farsi (OK)
     ## will be 6 for english (usa) (NOT OK, must be 4)
-    #return int(popen_output('LANG=%s locale first_weekday'%lang))-1
+    #return int(popen_output('LANG=%s locale first_weekday'%locale_man.lang))-1
     ## locale week-1stweek:
     ##    en_US.UTF-8             7
     ##    en_GB.UTF-8             4
@@ -261,14 +254,14 @@ def validatePlugList():
             plugIndex.pop(i)
             m -= 1
 
-def loadAllPlugins():
-    #log.debug('----------------------- loadAllPlugins')
+def initPlugins():
+    #log.debug('----------------------- initPlugins')
     global allPlugList, plugIndex
     #exec(open(userPlugConf).read())## FIXME
     ## Assert that user configuarion for plugins is OK
     validatePlugList()
     ########################
-    names = [split(plug.path)[1] for plug in allPlugList]
+    names = [os.path.split(plug.path)[1] for plug in allPlugList]
     ##newPlugs = []#????????
     for direc in (plugDir, plugDirUser):
         if not isdir(direc):
@@ -277,7 +270,7 @@ def loadAllPlugins():
             if fname=='__init__.py' or fname in names:##??????????
                 continue
             path = '%s/%s'%(direc, fname)
-            name = splitext(fname)[0]
+            name = os.path.splitext(fname)[0]
             #if path in path:# The plugin is not new, currently exists in allPlugList
                 #log.warning('plugin "%s" already exists.'%path)
                 #continue
@@ -293,6 +286,7 @@ def loadAllPlugins():
             #    myRaise(__file__)
     ## Assert again that final plugins are OK
     validatePlugList()
+    updatePlugins()
 
 def getHolidayPlugins():
     hPlugs = []
@@ -333,8 +327,8 @@ def getDeletedPluginsTable():## returns a list of (i, description)
 getAllPlugListRepr = lambda: '[\n' + '\n'.join(['  %r,'%plug for plug in allPlugList]) + '\n]'
 
 def convertAllPluginsToIcs(startYear, endYear):
-    startJd = to_jd(startYear, 1, 1, DATE_GREG)
-    endJd = to_jd(endYear+1, 1, 1, DATE_GREG)
+    startJd = calTypes[DATE_GREG].to_jd(startYear, 1, 1)
+    endJd = calTypes[DATE_GREG].to_jd(endYear+1, 1, 1)
     namePostfix = '-%d-%d'%(startYear, endYear)
     for plug in core.allPlugList:
         if isinstance(plug, HolidayPlugin):
@@ -360,12 +354,14 @@ def ymdRange(date1, date2, mode=None):
             yield y1, m1, d
     if mode==None:
         mode = DATE_GREG
-    j1 = int(to_jd(y1, m1, d1, mode))
-    j2 = int(to_jd(y2, m2, d2, mode))
+    calType = calTypes[mode]
+    j1 = int(calType.to_jd(y1, m1, d1))
+    j2 = int(calType.to_jd(y2, m2, d2))
     for j in range(j1, j2):
-        yield jd_to(j, mode)
+        yield calType.jd_to(j)
 
 def mylocaltime(sec=None, mode=None):
+    from scal2.cal_types import convert
     if mode==None:##DATE_GREG
         return list(localtime(sec))
     t = list(localtime(sec))
@@ -373,8 +369,9 @@ def mylocaltime(sec=None, mode=None):
     return t
 
 
-compressLongInt = lambda num:\
-    struct.pack('L', num).\
+def compressLongInt(num):
+    from struct import pack
+    return pack('L', num % 2**64).\
     rstrip('\x00').\
     encode('base64')[:-3].\
     replace('/', '_')
@@ -388,18 +385,12 @@ getCompactTime = lambda maxDays=1000, minSec=0.1:\
 
 def floatJdEncode(jd, mode):
     jd, hour, minute, second = getJhmsFromEpoch(getEpochFromJd(jd))
-    return dateEncode(jd_to(jd, mode)) + ' ' + timeEncode((hour, minute, second))
+    return dateEncode(calTypes[mode].jd_to(jd)) + ' ' + timeEncode((hour, minute, second))
 
 def epochDateTimeEncode(epoch):
     jd, hour, minute, sec = getJhmsFromEpoch(epoch)
     return dateEncode(jd_to_primary(jd)) + ', ' + timeEncode((hour, minute, sec))
 
-showInfo = lambda: log.debug('%s %s, OS: %s, Python %s'%(
-    APP_DESC,
-    VERSION,
-    getOsFullDesc(),
-    str(sys.version).replace('\n', ' '),
-))
 
 def fixStrForFileName(fname):
     fname = fname.replace('/', '_').replace('\\', '_')
@@ -438,10 +429,25 @@ def openUrl(url):
         else:
             return
 
-dataToJson =  lambda data: dataToCompactJson(data) if useCompactJson else dataToPrettyJson(data)
+def stopRunningThreads():
+    ## Stopping running timer threads
+    import threading
+    for thread in threading.enumerate():
+        #if thread.__class__.__name__ == '_Timer':
+        try:
+            cancel = thread.cancel
+        except AttributeError:
+            pass
+        else:
+            print('stopping thread %s'%thread.getName())
+            cancel()
+
+
+dataToJson =  lambda data: dataToCompactJson(data, useAsciiJson) if useCompactJson \
+    else dataToPrettyJson(data, useAsciiJson)
 
 def init():
-    loadAllPlugins()
+    initPlugins()
 
 ################################################################################
 #################### End of class and function defenitions #####################
@@ -495,6 +501,7 @@ weekNumberMode = 7
 ################################################################################
 debugMode = False
 useCompactJson = False ## FIXME
+useAsciiJson = False
 eventTextSep = ': ' ## use to seperate summary from description for display
 eventTrashLastTop = True
 

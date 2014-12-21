@@ -87,15 +87,6 @@ def pixbufFromFile(path):## the file may not exist
 
 toolButtonFromStock = lambda stock, size: gtk.ToolButton(gtk.image_new_from_stock(stock, size))
 
-def setupMenuHideOnLeave(menu):
-    def menuLeaveNotify(m, e):
-        t0 = now()
-        if t0-m.lastLeaveNotify < 0.001:
-            timeout_add(500, m.hide)
-        m.lastLeaveNotify = t0
-    menu.lastLeaveNotify = 0
-    menu.connect('leave-notify-event', menuLeaveNotify)
-
 
 def labelStockMenuItem(label, stock=None, func=None, *args):
     item = gtk.ImageMenuItem(_(label))
@@ -133,28 +124,6 @@ def modify_bg_all(widget, state, gcolor):
         for child in children:
             modify_bg_all(child, state, gcolor)
 
-def combo_model_delete_text(model, path, itr, text_to_del):
-    ## Usage: combo.get_model().foreach(combo_model_delete_text, 'The Text')
-    if model[path[0]][0]==text_to_del:
-        del model[path[0]]
-        return
-
-def cellToggled(cell, path=None):
-    print('cellToggled', path)
-    cell.set_active(not cell.get_active())##????????????????????????
-    return True
-
-def comboToggleActivate(combo, *args):
-    print(combo.get_property('popup-shown'))
-    if not combo.get_property('popup-shown'):
-        combo.popup()
-        return True
-    return False
-
-def getTreeviewPathStr(path):
-    if not path:
-        return None
-    return '/'.join([str(x) for x in path])
 
 rectangleContainsPoint = lambda r, x, y: r.x <= x < r.x + r.width and r.y <= y < r.y + r.height
 
@@ -184,11 +153,11 @@ def confirm(msg, parent=None):
     win.destroy()
     return ok
 
-def showError(msg, parent=None):
+def showMsg(msg, parent, msg_type):
     win = gtk.MessageDialog(
         parent=parent,
         flags=0,
-        type=gtk.MESSAGE_ERROR,
+        type=msg_type,
         buttons=gtk.BUTTONS_NONE,
         message_format=msg,
     )
@@ -196,249 +165,35 @@ def showError(msg, parent=None):
     win.run()
     win.destroy()
 
+def showError(msg, parent=None):
+    showMsg(msg, parent, gtk.MESSAGE_ERROR)
 
-def processDroppedDate(text, dtype):
-    ## data_type: "UTF8_STRING", "application/x-color", "text/uri-list",
-    if dtype=='UTF8_STRING':
-        if text.startswith('file://'):
-            path = core.urlToPath(text)
-            try:
-                t = os.stat(path).st_mtime ## modification time
-            except OSError:
-                print('Dropped invalid file "%s"'%path)
-            else:
-                y, m, d = localtime(t)[:3]
-                #print('Dropped file "%s", modification time: %s/%s/%s'%(path, y, m, d))
-                return (y, m, d, core.DATE_GREG)
-        else:
-            date = ui.parseDroppedDate(text)
-            if date:
-                return date + (ui.dragRecMode,)
-            else:
-                ## Hot to deny dragged object (to return to it's first location)
-                ## FIXME
-                print('Dropped unknown text "%s"'%text)
-                #print(etime)
-                #context.drag_status(gdk.ACTION_DEFAULT, etime)
-                #context.drop_reply(False, etime)
-                #context.drag_abort(etime)##Segmentation fault
-                #context.drop_finish(False, etime)
-                #context.finish(False, True, etime)
-                #return True
-    elif dtype=='text/uri-list':
-        path = core.urlToPath(selection.data)
-        try:
-            t = os.stat(path).st_mtime ## modification time
-        except OSError:
-            print('Dropped invalid uri "%s"'%path)
-            return True
-        else:
-            return localtime(t)[:3] + (core.DATE_GREG,)
+def showInfo(msg, parent=None):
+    showMsg(msg, parent, gtk.MESSAGE_INFO)
+
+def openWindow(win):
+    win.set_keep_above(ui.winKeepAbove)
+    win.present()
+
+def get_menu_width(menu):
+    return menu.size_request()[0]
 
 
-
-
-
-
-class AboutDialog(gtk.AboutDialog):
-    def __init__(
-        self,
-        name='',
-        version='',
-        title='',
-        authors=[],
-        comments='',
-        license='',
-        website='',
-    ):
-        gtk.AboutDialog.__init__(self)
-        self.set_name(name)## or set_program_name FIXME
-        self.set_version(version)
-        self.set_title(title) ## must call after set_name and set_version !
-        self.set_authors(authors)
-        self.set_comments(comments)
-        if license:
-            self.set_license(license)
-            self.set_wrap_license(True)
-        if website:
-            self.set_website(website) ## A plain label (not link)
-        if ui.autoLocale:
-            buttonbox = self.vbox.get_children()[1]
-            buttons = buttonbox.get_children()## List of buttons of about dialogs
-            buttons[1].set_label(_('C_redits'))
-            buttons[2].set_label(_('_Close'))
-            buttons[2].set_image(gtk.image_new_from_stock(gtk.STOCK_CLOSE,gtk.ICON_SIZE_BUTTON))
-            buttons[0].set_label(_('_License'))
-
-class WeekDayComboBox(gtk.ComboBox):
-    def __init__(self):
-        ls = gtk.ListStore(str)
-        gtk.ComboBox.__init__(self, ls)
-        self.firstWeekDay = core.firstWeekDay
-        ###
-        cell = gtk.CellRendererText()
-        pack(self, cell, True)
-        self.add_attribute(cell, 'text', 0)
-        ###
-        for i in range(7):
-            ls.append([core.weekDayName[(i+self.firstWeekDay)%7]])
-        self.set_active(0)
-    getValue = lambda self: (self.firstWeekDay + self.get_active()) % 7
-    def setValue(self, value):
-        self.set_active((value-self.firstWeekDay)%7)
-
-
-class MonthComboBox(gtk.ComboBox):
-    def __init__(self, includeEvery=False):
-        self.includeEvery = includeEvery
-        ###
-        ls = gtk.ListStore(str)
-        gtk.ComboBox.__init__(self, ls)
-        ###
-        cell = gtk.CellRendererText()
-        pack(self, cell, True)
-        self.add_attribute(cell, 'text', 0)
-    def build(self, mode):
-        active = self.get_active()
-        ls = self.get_model()
-        ls.clear()
-        if self.includeEvery:
-            ls.append([_('Every Month')])
-        for m in range(1, 13):
-            ls.append([core.getMonthName(mode, m)])
-        if active is not None:
-            self.set_active(active)
-    def getValue(self):
-        a = self.get_active()
-        if self.includeEvery:
-            return a
-        else:
-            return a + 1
-    def setValue(self, value):
-        if self.includeEvery:
-            self.set_active(value)
-        else:
-            self.set_active(value - 1)
-
-class DirectionComboBox(gtk.ComboBox):
-    keys = ['ltr', 'rtl', 'auto']
-    descs = [
-        _('Left to Right'),
-        _('Right to Left'),
-        _('Auto'),
-    ]
-    def __init__(self):
-        ls = gtk.ListStore(str)
-        gtk.ComboBox.__init__(self, ls)
-        ###
-        cell = gtk.CellRendererText()
-        pack(self, cell, True)
-        self.add_attribute(cell, 'text', 0)
-        ###
-        for d in self.descs:
-            ls.append([d])
-        self.set_active(0)
-    getValue = lambda self: self.keys[self.get_active()]
-    def setValue(self, value):
-        self.set_active(self.keys.index(value))
-
-class CalTypeCombo(gtk.ComboBox):
-    def __init__(self):## , showInactive=True FIXME
-        ls = gtk.ListStore(int, str)
-        gtk.ComboBox.__init__(self, ls)
-        ###
-        cell = gtk.CellRendererText()
-        pack(self, cell, True)
-        self.add_attribute(cell, 'text', 1)
-        ###
-        for i, mod in calTypes.iterIndexModule():
-            ls.append([i, _(mod.desc)])
-    def set_active(self, mode):
+class IdComboBox(gtk.ComboBox):
+    def set_active(self, _id):
         ls = self.get_model()
         for i in range(len(ls)):
-            if ls[i][0]==mode:
+            if ls[i][0]==_id:
                 gtk.ComboBox.set_active(self, i)
                 return
     def get_active(self):
         i = gtk.ComboBox.get_active(self)
         if i is None:
             return
-        return self.get_model()[i][0]
-
-class TimeZoneComboBoxEntry(gtk.ComboBoxEntry):
-    def __init__(self):
-        model = gtk.TreeStore(str, bool)
-        gtk.ComboBoxEntry.__init__(self, model, 0)
-        self.add_attribute(self.get_cells()[0], 'sensitive', 1)
-        self.connect('changed', self.onChanged)
-        child = self.get_child()
-        child.set_text(str(core.localTz))
-        ###
-        self.get_text = child.get_text
-        self.set_text = child.set_text
-        #####
-        recentIter = model.append(None, [
-            _('Recent...'),
-            False,
-        ])
-        for tz_name in ui.localTzHist:
-            model.append(recentIter, [tz_name, True])
-        ###
-        self.appendOrderedDict(
-            None,
-            jsonToOrderedData(
-                open(join(rootDir, 'zoneinfo-tree.json')).read()
-            ),
-        )
-    def appendOrderedDict(self, parentIter, dct):
-        model = self.get_model()
-        for key, value in dct.items():
-            if isinstance(value, dict):
-                itr = model.append(parentIter, [key, False])
-                self.appendOrderedDict(itr, value)
-            else:
-                itr = model.append(parentIter, [key, True])
-    def onChanged(self, widget):
-        model = self.get_model()
-        itr = self.get_active_iter()
-        if itr is None:
+        try:
+            return self.get_model()[i][0]
+        except IndexError:
             return
-        path = model.get_path(itr)
-        parts = []
-        if path[0] == 0:
-            text = model.get(itr, 0)[0]
-        else:
-            for i in range(len(path)):
-                parts.append(
-                    model.get(
-                        model.get_iter(path[:i+1]),
-                        0,
-                    )[0]
-                )
-            text = '/'.join(parts)
-        self.set_text(text)
-
-
-
-
-## Thanks to 'Pier Carteri' <m3tr0@dei.unipd.it> for program Py_Shell.py
-class GtkBufferFile:
-    ## Implements a file-like object for redirect the stream to the buffer
-    def __init__(self, buff, tag):
-        self.buffer = buff
-        self.tag = tag
-    ## Write text into the buffer and apply self.tag
-    def write(self, text):
-        #text = text.replace('\x00', '')
-        self.buffer.insert_with_tags(self.buffer.get_end_iter(), text, self.tag)
-    writelines = lambda self, l: list(map(self.write, l))
-    flush = lambda self: None
-    isatty = lambda self: False
-
-
-def openWindow(win):
-    win.set_keep_above(ui.winKeepAbove)
-    win.present()
 
 class CopyLabelMenuItem(gtk.MenuItem):
     def __init__(self, label):
@@ -447,55 +202,6 @@ class CopyLabelMenuItem(gtk.MenuItem):
     def on_activate(self, item):
         setClipboard(self.get_property('label'))
 
-class WizardWindow(gtk.Window):
-    stepClasses = []
-    def __init__(self, title):
-        gtk.Window.__init__(self)
-        self.set_title(title)
-        self.connect('delete-event', lambda obj, e: self.destroy())
-        self.connect('key-press-event', self.keyPress)
-        self.vbox = gtk.VBox()
-        self.add(self.vbox)
-        ####
-        self.steps = []
-        for cls in self.stepClasses:
-            step = cls(self)
-            self.steps.append(step)
-            pack(self.vbox, step, 1, 1)
-        self.stepIndex = 0
-        ####
-        self.buttonBox = gtk.HButtonBox()
-        self.buttonBox.set_layout(gtk.BUTTONBOX_END)
-        self.buttonBox.set_spacing(15)
-        self.buttonBox.set_border_width(15)
-        pack(self.vbox, self.buttonBox)
-        ####
-        self.showStep(0)
-        self.vbox.show()
-        #self.vbox.pack_end(
-        #print(id(self.get_action_area()))
-    def keyPress(self, arg, event):
-        kname = gdk.keyval_name(event.keyval).lower()
-        if kname=='escape':
-            self.destroy()
-        return True
-    def showStep(self, stepIndex, *args):
-        step = self.steps[stepIndex]
-        step.run(*args)
-        hideList(self.steps)
-        step.show()
-        self.stepIndex = stepIndex
-        ###
-        bbox = self.buttonBox
-        for child in bbox.get_children():
-            child.destroy()
-        for label, func in step.buttons:
-            #print(label, func)
-            button = gtk.Button(label)
-            button.connect('clicked', func)
-            bbox.add(button)
-            #pack(bbox, button)
-        bbox.show_all()
 
 if __name__=='__main__':
     diolog = gtk.Dialog()
@@ -503,6 +209,5 @@ if __name__=='__main__':
     pack(diolog.vbox, w)
     diolog.vbox.show_all()
     diolog.run()
-
 
 

@@ -21,10 +21,9 @@ import time
 from time import localtime, mktime
 from time import time as now
 from datetime import datetime
-import struct
-import pytz
 
-from tzlocal import get_localzone
+import natz
+import natz.local
 
 from scal2.cal_types.gregorian import J0001, J1970
 from scal2.cal_types.gregorian import jd_to as jd_to_g
@@ -52,27 +51,31 @@ from scal2.utils import ifloor, iceil
 
 def getUtcOffsetByEpoch(epoch, tz=None):
     if not tz:
-        tz = get_localzone()
-    try:
-        return tz.utcoffset(datetime.fromtimestamp(epoch)).total_seconds()
-    except pytz.exceptions.AmbiguousTimeError:## FIXME
-        #d = datetime.fromtimestamp(epoch+3600)
-        #print('AmbiguousTimeError', d.year, d.month, d.day, d.hour, d.minute, d.second)
-        return tz.utcoffset(datetime.fromtimestamp(epoch+3600)).total_seconds()
-    except (
-        ValueError,
-        OverflowError,
-    ):
-        return tz._utcoffset.total_seconds()
+        tz = natz.local.get_localzone()
+    delta = 0
+    while True:
+        try:
+            return tz.utcoffset(datetime.fromtimestamp(epoch + delta)).total_seconds()
+        except natz.AmbiguousTimeError:## FIXME
+            #d = datetime.fromtimestamp(epoch+3600)
+            #print('AmbiguousTimeError', d.year, d.month, d.day, d.hour, d.minute, d.second)
+            delta += 3600
+            print('delta = %s'%delta)
+        except (
+            ValueError,
+            OverflowError,
+        ):
+            return tz._utcoffset.total_seconds()
+
 
 def getUtcOffsetByDateSec(year, month, day, tz=None):
     if not tz:
-        tz = get_localzone()
+        tz = natz.local.get_localzone()
     try:
         return tz.utcoffset(datetime(year, month, day)).total_seconds()
     except (ValueError, OverflowError):
         return tz._utcoffset.total_seconds()
-    except pytz.exceptions.NonExistentTimeError:
+    except natz.NonExistentTimeError:
         return tz.utcoffset(datetime(year, month, day, 1, 0, 0)).total_seconds()
 
 
@@ -99,11 +102,12 @@ getUtcOffsetCurrent = lambda tz=None: getUtcOffsetByEpoch(now(), tz)
 getGtkTimeFromEpoch = lambda epoch: int((epoch-1.32171528839e+9)*1000 // 1)
 
 
-getFloatJdFromEpoch = lambda epoch: (epoch + getUtcOffsetByEpoch(epoch))/(24.0*3600) + J1970
+getFloatJdFromEpoch = lambda epoch, tz=None: \
+    (epoch + getUtcOffsetByEpoch(epoch, tz)) / (24.0*3600) + J1970
 #getFloatJdFromEpoch = lambda epoch: datetime.fromtimestamp(epoch).toordinal() - 1 + J0001
 
 
-getJdFromEpoch = lambda epoch: ifloor(getFloatJdFromEpoch(epoch))
+getJdFromEpoch = lambda epoch, tz=None: ifloor(getFloatJdFromEpoch(epoch, tz))
 
 
 def getEpochFromJd(jd, tz=None):

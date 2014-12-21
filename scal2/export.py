@@ -19,7 +19,7 @@
 
 from scal2.utils import toStr
 from scal2.cal_types import calTypes
-from scal2.locale_man import rtl
+from scal2 import locale_man
 from scal2.locale_man import tr as _
 
 from scal2 import core
@@ -73,7 +73,7 @@ def exportToHtml(fpath, monthsStatus, title=''):
     textColor = rgbToHtml(*ui.textColor)
     holidayColor = rgbToHtml(*ui.holidayColor)
     colors = [rgbToHtml(*x['color']) for x in ui.mcalTypeParams]
-    if rtl:
+    if locale_man.rtl:
         DIR = 'RTL'
     else:
         DIR = 'LRT'
@@ -83,7 +83,7 @@ def exportToHtml(fpath, monthsStatus, title=''):
 <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
 <TITLE>%s</TITLE>
 </HEAD>
-<BODY LANG="%s" DIR="%s" BGCOLOR="%s">\n'''%(title, core.langSh, DIR, bgColor)
+<BODY LANG="%s" DIR="%s" BGCOLOR="%s">\n'''%(title, locale_man.langSh, DIR, bgColor)
     for status in monthsStatus:
         text += '    <P>\n'
         for i, line in enumerate(getMonthDesc(status).split('\n')):

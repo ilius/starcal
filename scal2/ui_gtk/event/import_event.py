@@ -7,7 +7,8 @@ from scal2.locale_man import tr as _
 from scal2 import ui
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.utils import WizardWindow, GtkBufferFile
+from scal2.ui_gtk.wizard import WizardWindow
+
 
 
 class EventsImportWindow(WizardWindow):
@@ -88,6 +89,7 @@ class EventsImportWindow(WizardWindow):
             ####
             self.show_all()
         def redirectStdOutErr(self):
+            from scal2.ui_gtk.buffer import GtkBufferFile
             t_table = gtk.TextTagTable()
             tag_out = gtk.TextTag('output')
             t_table.add(tag_out)

@@ -1,6 +1,5 @@
 import os
 from os.path import isfile
-from copy import deepcopy
 
 from scal2.json_utils import *
 from scal2.core import myRaise, dataToJson
@@ -8,6 +7,7 @@ from scal2.core import myRaise, dataToJson
 class SObjBase:
     params = ()## used in getData and setData and copyFrom
     def copyFrom(self, other):
+        from copy import deepcopy
         for attr in self.params:
             try:
                 value = getattr(other, attr)
@@ -29,7 +29,29 @@ class SObjBase:
         for key, value in data.items():
             if key in self.params:
                 setattr(self, key, value)
-
+    def getIdPath(self):
+        try:
+            parent = self.parent
+        except AttributeError:
+            raise NotImplementedError('%s.getIdPath: no parent attribute'%self.__class__.__name__)
+        try:
+            _id = self.id
+        except AttributeError:
+            raise NotImplementedError('%s.getIdPath: no id attribute'%self.__class__.__name__)
+        ######
+        path = []
+        if _id is not None:
+            path.append(_id)
+        if parent is None:
+            return path
+        else:
+            return parent.getIdPath() + path
+    def getPath(self):
+        parent = self.parent
+        if parent is None:
+            return []
+        index = parent.index(self.id)
+        return parent.getPath() + [index]
 
 
 def makeOrderedData(data, params):

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from scal2.utils import myRaise
+from scal2.utils import toStr
 from scal2.time_utils import getEpochFromJd
 
 def encodeShortStat(files_changed, insertions, deletions):
@@ -37,15 +38,8 @@ vcsModuleNames = [
     'bzr',
 ]
 
-vcsModuleDict = {}
 
-for name in vcsModuleNames:
-    try:
-        mod = __import__('scal2.vcs_modules', fromlist=[name])
-    except ImportError:
-        vcsModuleNames.remove(name)
-        myRaise()
-        continue
-    vcsModuleDict[name] = getattr(mod, name)
+
+
 
 

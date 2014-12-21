@@ -24,7 +24,7 @@ from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.drawing import *
 from scal2.ui_gtk.mywidgets import MyColorButton
-from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton
+from scal2.ui_gtk.mywidgets.multi_spin.int import IntSpinButton
 
 
 rootWin = gtk.gdk.get_default_root_window()
@@ -116,7 +116,7 @@ class FloatingMsg(gtk.Widget):
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
         self.get_window().move_resize(*self.get_allocation())
-    def onExposeEvent(self, widget, event):
+    def onExposeEvent(self, widget, gevent):
         self.cr = self.get_window().cairo_create()
         #######
         self.cr.rectangle(0, 0, screenWidth, self.height)
@@ -179,7 +179,7 @@ class MyLabel(gtk.Widget):
         self.style.attach(self.window)#?????? Needed??
         self.style.set_background(self.window, gtk.STATE_NORMAL)
         self.get_window().move_resize(*self.get_allocation())
-    def onExposeEvent(self, widget, event):
+    def onExposeEvent(self, widget, gevent):
         self.cr = self.get_window().cairo_create()
         #######
         self.cr.rectangle(0, 0, self.width, self.height)

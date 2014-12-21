@@ -17,19 +17,20 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+import sys
 import os
 from os.path import isdir, isfile
-import platform
-from subprocess import Popen, PIPE
+#import platform
 
 
 def getOsName():## 'linux', 'win', 'mac', 'unix'
-    psys = platform.system().lower()## 'linux', 'windows', 'darwin', ...
-    if psys=='linux':
+    #psys = platform.system().lower()## 'linux', 'windows', 'darwin', ...
+    plat = sys.platform ## 'linux2', 'win32', 'darwin'
+    if plat.startswith('linux'):
         return 'linux'
-    elif psys=='windows':
+    elif plat.startswith('win'):
         return 'win'
-    elif psys=='darwin':
+    elif plat=='darwin':
         ## os.environ['OSTYPE'] == 'darwin10.0'
         ## os.environ['MACHTYPE'] == 'x86_64-apple-darwin10.0'
         ## platform.dist() == ('', '', '')
@@ -42,29 +43,6 @@ def getOsName():## 'linux', 'win', 'mac', 'unix'
     else:
         raise OSError('Unkown operating system!')
 
-def getOsFullDesc():## FIXME
-    name = ''
-    if isfile('/etc/lsb-release'):
-        lines = open('/etc/lsb-release').read().split('\n')
-        for line in lines:
-            if line.startswith('DISTRIB_DESCRIPTION='):
-                name = line.split('=')[1]
-                if name[0]=='"' and name[-1]=='"':
-                    return name[1:-1]
-    if isfile('/suse/etc/SuSE-release'):
-        return open('/suse/etc/SuSE-release').read().split('\n')[0]
-    try:
-        import platform
-        return ' '.join(platform.dist()).strip().title()
-        #return platform.platform().replace('-', ' ')
-    except ImportError:
-        pass
-    if os.name=='posix':
-        osType = os.getenv('OSTYPE')
-        if osType!='':
-            return osType
-    ## sys.platform == 'linux2'
-    return os.name
 
 def makeDir(direc):
     if not isdir(direc):

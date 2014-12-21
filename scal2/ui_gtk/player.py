@@ -26,11 +26,6 @@ import gobject
 
 from scal2.ui_gtk import *
 
-try:
-    import fcntl
-except:
-    pass
-
 
 ## Control
 SEEK_TIME_SMALL = 10 # in seconds
@@ -61,10 +56,12 @@ class MPlayer:
         self.mplayerIn, self.mplayerOut = os.popen2(cmd) #open pipes
 
         try:
+            import fcntl
+        except ImportError:
+            pass
+        else:
             #set mplayerOut to non-blocking mode
             fcntl.fcntl(self.mplayerOut, fcntl.F_SETFL, os.O_NONBLOCK)
-        except NameError:
-            return
 
         self.startHandleEof()
         self.startStatusQuery()
@@ -284,8 +281,8 @@ class PlayerBox(gtk.HBox):
             scale.connect('format-value', self.displayVolString)
             scale.connect('key-press-event', self.divert)
             pack(self, scale, False, False, 5)
-    def divert(self, widget, event):
-        key = event.hardware_keycode
+    def divert(self, widget, gevent):
+        key = gevent.hardware_keycode
         if key == self.key_seekback: # left arrow, seek
             self.mplayer.seek(-SEEK_TIME_SMALL)
         elif key == self.key_seekforward: # right arrow, seek forward
@@ -307,7 +304,7 @@ class PlayerBox(gtk.HBox):
             return str(int(value)) + '% of ' #+ self.playlist.getCurrentSongTime()
         else:
             return str(int(value)) + '%'
-    def seek(self, widget, event):# Seek on changing the seekBar
+    def seek(self, widget, gevent):# Seek on changing the seekBar
         #print('seek', self.seekAdj.value, self.mplayer.mplayerIn)
         if not self.mplayer.mplayerIn:
             print('abc')
@@ -351,8 +348,8 @@ class PlayerBox(gtk.HBox):
         self.mplayer.stepVolume(False)
     def incVol(self, widget):
         self.mplayer.stepVolume(True)
-    def toolbarKey(self, widget, event):# Prevent the down and up keys from taking control out of the toolbar
-        keycode = event.hardware_keycode
+    def toolbarKey(self, widget, gevent):# Prevent the down and up keys from taking control out of the toolbar
+        keycode = gevent.hardware_keycode
         if keycode in [98, 104]:
             return True
         return False

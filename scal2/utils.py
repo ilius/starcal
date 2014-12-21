@@ -17,7 +17,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-import sys, traceback, os
+import sys, os
 from math import floor, ceil
 
 from scal2.lib import OrderedDict
@@ -61,17 +61,14 @@ except ImportError:
 ifloor = lambda x: int(floor(x))
 iceil = lambda x: int(ceil(x))
 
-try:
-    from numpy import arange
-except ImportError:
-    def arange(start, stop, step):
-        l = []
-        x = start
-        stop -= 0.000001
-        while x < stop:
-            l.append(x)
-            x += step
-        return l
+def arange(start, stop, step):
+    l = []
+    x = start
+    stop -= 0.000001
+    while x < stop:
+        l.append(x)
+        x += step
+    return l
 
 toStr = lambda s: s.encode('utf8') if isinstance(s, unicode) else str(s)
 toUnicode = lambda s: s if isinstance(s, unicode) else str(s).decode('utf8')
@@ -109,6 +106,7 @@ def myRaise(File=None):
     sys.stderr.write(text)
 
 def myRaiseTback():
+    import traceback
     typ, value, tback = sys.exc_info()
     sys.stderr.write("".join(traceback.format_exception(typ, value, tback)))
 
@@ -324,38 +322,6 @@ def inputDateJd(msg):
     if date:
         y, m, d = date
         return to_jd(y, m, d, DATE_GREG)
-
-
-#from xml.sax.saxutils import escape, unescape
-def escape(data, entities={}):
-    """Escape &, <, and > in a string of data.
-
-    You can escape other strings of data by passing a dictionary as
-    the optional entities parameter.  The keys and values must all be
-    strings; each key will be replaced with its corresponding value.
-    """
-
-    # must do ampersand first
-    data = data.replace("&", "&amp;")
-    data = data.replace(">", "&gt;")
-    data = data.replace("<", "&lt;")
-    if entities:
-        data = __dict_replace(data, entities)
-    return data
-
-def unescape(data, entities={}):
-    """Unescape &amp;, &lt;, and &gt; in a string of data.
-
-    You can unescape other strings of data by passing a dictionary as
-    the optional entities parameter.  The keys and values must all be
-    strings; each key will be replaced with its corresponding value.
-    """
-    data = data.replace("&lt;", "<")
-    data = data.replace("&gt;", ">")
-    if entities:
-        data = __dict_replace(data, entities)
-    # must do ampersand last
-    return data.replace("&amp;", "&")
 
 
 #if __name__=='__main__':

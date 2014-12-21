@@ -50,8 +50,8 @@ class StarCalApplet(MainWin):
         #self.applet = MyApplet(applet)
         #self.applet.get_property('popup')
         applet.connect('change_background', self.onChangeBg)
-        MainWin.__init__(self, trayMode=1)
-        timeout_add_seconds(self.timeout, self.trayUpdate)
+        MainWin.__init__(self, statusIconMode=1)
+        timeout_add_seconds(self.timeout, self.statusIconUpdate)
         ##self.menu = self.menu_get_for_attach_widget()##????????
         self.connect('unmap', lambda w: self.sicon.set_active(False))##???????
         #self.__getattribute__ = getattribute
@@ -63,7 +63,7 @@ class StarCalApplet(MainWin):
         self.sicon.set_active(False)
         self.hide()
         return True
-    def trayInit(self):
+    def statusIconInit(self):
         self.image = gtk.Image()
         self.tooltips = gtk.Tooltips()
         ## self.sicon = gtk.EventBox()
@@ -71,7 +71,7 @@ class StarCalApplet(MainWin):
         #self.sicon.__getattribute__ = getattribute
         self.sicon.set_from_pixbuf = self.image.set_from_pixbuf
         self.sicon.set_relief(gtk.RELIEF_NONE)
-        self.sicon.connect('toggled', self.trayClicked)
+        self.sicon.connect('toggled', self.statusIconClicked)
         self.sicon.connect('button_press_event', self.appletButtonPress)
         menuData = (
             ('copyTime', _('Copy _Time'), 'copy'),
@@ -79,7 +79,7 @@ class StarCalApplet(MainWin):
             ('adjustTime', _('Ad_just System Time'), 'preferences'),
             #('addEvent', _('Add Event'), 'add'),
             ('prefShow', _('_Preferences'), 'preferences'),
-            ('exportClickedTray', _('_Export to %s')%'HTML', 'convert'),
+            ('exportClickedStatusIcon', _('_Export to %s')%'HTML', 'convert'),
             ('aboutShow', _('_About'), 'about'),
         )
         xml = '<popup name="button3">'
@@ -106,19 +106,19 @@ class StarCalApplet(MainWin):
             pack(hbox, self.clockTr)
         self.sicon.add(hbox)
         self.applet.add(self.sicon)
-        self.trayHbox = hbox
+        self.statusIconHbox = hbox
         #######
         self.applet.show_all()
         #self.applet.set_background_widget(self.applet)#????????
-        self.trayPix = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, ui.traySize, ui.traySize)
-    def trayClicked(self, toggle):
-        ##print(tuple(self.menu.get_allocation()))
+        self.statusIconPix = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, ui.statusIconSize, ui.statusIconSize)
+    def statusIconClicked(self, toggle):
         if toggle.get_active():
             if (ui.winX, ui.winY) == (-1, -1):
                 try:
                     x0, y0 = self.applet.get_window().get_origin()
-                    ui.winX = x0 + (self.applet.get_allocation().width-ui.winWidth)/2
-                    ui.winY = y0 + self.applet.get_allocation().height - 3
+                    width, height = self.applet.size_request()
+                    ui.winX = x0 + (width-ui.winWidth)/2
+                    ui.winY = y0 + height - 3
                 except:
                     core.myRaise(__file__)
             self.move(ui.winX, ui.winY)
@@ -132,14 +132,12 @@ class StarCalApplet(MainWin):
         else:
             ui.winX, ui.winY = self.get_position()
             self.hide()
-    def appletButtonPress(self, widget, event):
-        if event.button != 1:
+    def appletButtonPress(self, widget, gevent):
+        if gevent.button != 1:
             widget.stop_emission('button_press_event')
         return False
-    def updateTrayClock(self):
-        MainWin.updateTrayClock(self, False)
-    def trayUpdate(self, gdate=None):
-        return MainWin.trayUpdate(self, gdate=gdate, checkTrayMode=False)
+    def statusIconUpdate(self, gdate=None):
+        return MainWin.statusIconUpdate(self, gdate=gdate, checkStatusIconMode=False)
     def onChangeBg(self, applet, typ, color, pixmap):
         applet.set_style(None)
         rc_style = gtk.RcStyle()

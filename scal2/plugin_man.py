@@ -19,7 +19,7 @@
 
 APP_NAME = 'starcal2'
 
-import sys, traceback
+import sys
 from time import strftime
 from os.path import isfile, dirname, join, split, splitext, isabs
 
@@ -38,17 +38,21 @@ except:
     from scal2.utils import FallbackLogger
     log = FallbackLogger()
 
+## FIXME
+pluginsDescByName = {
+    'pray_times': _('Islamic Pray Times'),
+}
+
+
+
 def myRaise(File=__file__):
     i = sys.exc_info()
     log.error('File "%s", line %s: %s: %s\n'%(File, i[2].tb_lineno, i[0].__name__, i[1]))
 
-def myRaiseTback(f=None):
-    typ, value, tback = sys.exc_info()
-    log.error("".join(traceback.format_exception(typ, value, tback)))
-
-
 
 class BasePlugin:
+    external = False
+    loaded = True
     __repr__ = lambda self: 'loadPlugin(%r, enable=%r, show_date=%r)'%(self.path, self.enable, self.show_date)
     params = {
         'mode': DATE_GREG,
@@ -67,7 +71,6 @@ class BasePlugin:
         mode=0,
         **kwargs
     ):
-        self.external = False
         self.path = path
         if isinstance(mode, basestring):
             try:
@@ -84,9 +87,7 @@ class BasePlugin:
         for k, v in self.prepareParams(kwargs).items():
             setattr(self, k, v)
         #########
-        self.text = ''
-        self.holiday = False
-        self.load()
+        ## self.load() ## FIXME
     def prepareParams(self, d):
         d2 = {}
         for k, v in self.params.items():
@@ -137,6 +138,21 @@ class BasePlugin:
         open(fileName, 'w').write(icsText)
 
 
+class DummyPlugin(BasePlugin):
+    loaded = False
+    enable = False
+    show_date = False
+    about = ''
+    authors = []
+    has_config = False
+    has_image = False
+    __repr__ = lambda self: 'loadPlugin(%r, enable=False, show_date=False)'%self.path
+    def __init__(self, path, desc):
+        self.path = path
+        self.desc = desc
+
+
+
 def loadExternalPlugin(path, enable=True, show_date=True):
     if not isfile(path):
         log.error('plugin file "%s" not found! maybe removed?'%path)
@@ -146,9 +162,17 @@ def loadExternalPlugin(path, enable=True, show_date=True):
         ##plug = BasePlugin(path, mode=0, desc='Failed to load plugin', enable=enable, show_date=show_date)
         ##plug.external = True
         ##return plug
+    ###
     fname = split(path)[1]
     direc = dirname(path)
     name = splitext(fname)[0]
+    ###
+    if not enable:
+        return DummyPlugin(
+            path,
+            pluginsDescByName.get(name, ''),
+        )
+    ###
     sys.path.insert(0, direc)
     try:
         mod = __import__(name)
@@ -165,33 +189,6 @@ def loadExternalPlugin(path, enable=True, show_date=True):
         #print(dir(mod))
         return None
 
-class ExternalPlugin(BasePlugin):
-    def __init__(self, path, enable=True, show_date=False, **params):
-        BasePlugin.__init__(self, path, enable=enable, show_date=show_date)
-        self.params = params
-        self.external = True
-        self.module = None
-        self.extender = None
-        self.isLoaded = False
-    def lateLoad(self):
-        if not isfile(self.path):
-            return False
-        fname = split(self.path)[1]
-        direc = dirname(self.path)
-        name = splitext(fname)[0]
-        sys.path.insert(0, direc)
-        self.module = __import__(name)
-        sys.path.pop(0)
-        ###
-        params = self.params
-        params['rootDir'] = rootDir
-        self.module.module_init(self, params) ## FIXME
-        self.isLoaded = True
-        return True
-    def open_configure(self):
-        pass
-    def open_about(self):
-        pass
 
 class HolidayPlugin(BasePlugin):
     def __init__(self, path, enable=None, show_date=None):
@@ -284,6 +281,7 @@ class BuiltinTextPlugin(BasePlugin):
     def clear(self):
         self.data = []
     def load(self):
+        #print('BuiltinTextPlugin(%s).load()'%self.path)
         db = []
         for j in range(12):
             monthDb = []
@@ -378,7 +376,6 @@ class IcsTextPlugin(BasePlugin):
             enable=enable,
             show_date=show_date,
         )
-        #self.load()
     def clear(self):
         self.ymd = None
         self.md = None

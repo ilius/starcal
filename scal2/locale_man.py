@@ -20,7 +20,6 @@
 import os, string
 from os.path import join, isfile, isdir, isabs
 import locale, gettext
-from subprocess import Popen
 
 from .path import *
 from scal2.utils import StrOrderedDict, myRaise
@@ -67,8 +66,9 @@ sysLangDefault = os.environ.get('LANG', '')
 langDefault = ''
 lang = ''
 langActive = ''
-## langActive==lang except when lang=='' (that langActive will taken from system)
-## langActive will not changed via program (because need for restart program to apply new language)
+## langActive==lang except when lang=='' (in that case, langActive will be taken from system)
+## langActive will not get changed while the program is running
+## (because it needs to restart program to apply new language)
 langSh = '' ## short language name, for example 'en', 'fa', 'fr', ...
 rtl = False ## right to left
 
@@ -354,6 +354,7 @@ def cutText(text, n):
 
 def popenDefaultLang(*args, **kwargs):
     global sysLangDefault, lang
+    from subprocess import Popen
     os.environ['LANG'] = sysLangDefault
     p = Popen(*args, **kwargs)
     os.environ['LANG'] = lang
