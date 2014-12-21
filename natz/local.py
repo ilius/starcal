@@ -2,25 +2,25 @@ from __future__ import with_statement
 import os
 import re
 import natz
-
+from .exceptions import UnknownTimeZoneError
+from .tzfile import build_tzinfo
 
 def _tz_from_env(tzenv):
-    from .tzfile import build_tzinfo
     if tzenv[0] == ':':
         tzenv = tzenv[1:]
 
     # TZ specifies a file
     if os.path.exists(tzenv):
-        with open(tzenv, 'rb') as tzfile:
-            return build_tzinfo('local', tzfile)
+        with open(tzenv, 'rb') as tzFp:
+            return build_tzinfo('local', tzFp)
 
     # TZ specifies a zoneinfo zone.
     try:
         tz = natz.timezone(tzenv)
         # That worked, so we return this:
         return tz
-    except natz.UnknownTimeZoneError:
-        raise natz.UnknownTimeZoneError(
+    except UnknownTimeZoneError:
+        raise UnknownTimeZoneError(
             "We don't support non-zoneinfo timezones like %s. \n"
             "Please use a timezone in the form of Continent/City")
 
@@ -34,7 +34,6 @@ def get_localzone(_root='/'):
     The parameter _root makes the function look for files like /etc/localtime
     beneath the _root directory. This is primarily used by the tests.
     In normal usage you call the function without parameters."""
-    from .exceptions import UnknownTimeZoneError
 
     tzenv = os.environ.get('TZ')
     if tzenv:
@@ -44,8 +43,8 @@ def get_localzone(_root='/'):
     # that contain the timezone name.
     tzpath = os.path.join(_root, 'etc/timezone')
     if os.path.exists(tzpath):
-        with open(tzpath, 'rb') as tzfile:
-            data = tzfile.read()
+        with open(tzpath, 'rb') as tzFp:
+            data = tzFp.read()
 
             # Issue #3 was that /etc/timezone was a zoneinfo file.
             # That's a misconfiguration, but we need to handle it gracefully:
@@ -71,8 +70,8 @@ def get_localzone(_root='/'):
         tzpath = os.path.join(_root, filename)
         if not os.path.exists(tzpath):
             continue
-        with open(tzpath, 'rt') as tzfile:
-            data = tzfile.readlines()
+        with open(tzpath, 'rt') as tzFp:
+            data = tzFp.readlines()
 
         for line in data:
             # Look for the ZONE= setting.
@@ -94,8 +93,8 @@ def get_localzone(_root='/'):
 
         if not os.path.exists(tzpath):
             continue
-        with open(tzpath, 'rb') as tzfile:
-            return natz.tzfile.build_tzinfo('local', tzfile)
+        with open(tzpath, 'rb') as tzFp:
+            return build_tzinfo('local', tzFp)
 
-    raise natz.UnknownTimeZoneError('Can not find any timezone configuration')
+    raise UnknownTimeZoneError('Can not find any timezone configuration')
 
