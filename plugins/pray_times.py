@@ -25,7 +25,6 @@ from time import localtime
 from time import time as now
 
 from os.path import join, isfile, dirname
-from math import pi, floor, ceil, sqrt, sin, cos, tan, asin, acos, atan, atan2
 
 
 _mypath = __file__
@@ -64,43 +63,10 @@ from pray_times_gtk import *
 ####################################################
 
 confPath = join(plugConfDir, 'pray_times')
-earthR = 6370
 localTz = get_localzone()
-
-####################################################
-
-
 
 
 ####################### Methods and Classes ##################
-sind = lambda x: sin(pi/180.0*x)
-cosd = lambda x: cos(pi/180.0*x)
-#tand = lambda x: tan(pi/180.0*x)
-#asind = lambda x: asin(x)*180.0/pi
-#acosd = lambda x: acos(x)*180.0/pi
-#atand = lambda x: atan(x)*180.0/pi
-#loc2hor = lambda z, delta, lat: acosd((cosd(z)-sind(delta)*sind(lat))/cosd(delta)/cosd(lat))/15.0
-
-def earthDistance(lat1, lng1, lat2, lng2):
-    #if lat1==lat2 and lng1==lng2:
-    #    return 0
-    dx = lng2 - lng1
-    if dx<0:
-        dx += 360
-    if dx>180:
-        dx = 360-dx
-    ####
-    dy = lat2 - lat1
-    if dy<0:
-        dy += 360
-    if dy>180:
-        dy = 360-dy
-    ####
-    deg = acos(cosd(dx)*cosd(dy))
-    if deg>pi:
-        deg = 2*pi-deg
-    return deg*earthR
-    #return ang*180/pi
 
 def readLocationData():
     lines = open(dataDir+'/locations.txt').read().split('\n')

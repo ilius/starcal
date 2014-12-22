@@ -24,6 +24,7 @@ import math
 from scal2 import locale_man
 from scal2.locale_man import tr as _
 from pray_times_backend import timeNames, methodsList
+from pray_times_utils import *
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.app_info import popenFile
