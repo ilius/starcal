@@ -26,12 +26,11 @@ from scal2 import ui
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import imageFromFile, labelStockMenuItem, labelImageMenuItem, setClipboard
-from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk import gtk_ud as ud
-from scal2.ui_gtk.event.common import EventEditorDialog, confirmEventTrash
+
 
 @registerSignals
-class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
+class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
     _name = 'eventDayView'
     desc = _('Events of Day')
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)
@@ -52,22 +51,22 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         )
         return True
     def onDateChange(self, *a, **kw):
-        ud.IntegratedCalObj.onDateChange(self, *a, **kw)
+        ud.BaseCalObj.onDateChange(self, *a, **kw)
         cell = ui.cell
         ## destroy all VBox contents and add again
         for hbox in self.vbox.get_children():
             hbox.destroy()
-        for item in cell.eventsData:
-            if not item['show'][0]:
+        for occurData in cell.eventsData:
+            if not occurData['show'][0]:
                 continue
-            ## item['time'], item['text'], item['icon']
-            text = ''.join(item['text']) if self.showDesc else item['text'][0]
+            ## occurData['time'], occurData['text'], occurData['icon']
+            text = ''.join(occurData['text']) if self.showDesc else occurData['text'][0]
             ###
             hbox = gtk.HBox(spacing=5)
-            if item['icon']:
-                pack(hbox, imageFromFile(item['icon']))
-            if item['time']:
-                label = gtk.Label(item['time'])
+            if occurData['icon']:
+                pack(hbox, imageFromFile(occurData['icon']))
+            if occurData['time']:
+                label = gtk.Label(occurData['time'])
                 label.set_direction(gtk.TEXT_DIR_LTR)
                 label.set_selectable(True)
                 label.connect('populate-popup', self.onLabelPopup)## FIXME
@@ -77,7 +76,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
             label.set_selectable(True)
             label.set_line_wrap(True)
             label.set_use_markup(False)## should escape text if using markup FIXME
-            label.connect('populate-popup', self.onEventLabelPopup, item['ids'])
+            label.connect('populate-popup', self.onEventLabelPopup, occurData)
             pack(hbox, label)## or 1, 1 (center) FIXME
             pack(self.vbox, hbox)
             pack(self.vbox, gtk.HSeparator())
@@ -108,21 +107,37 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         menu.show_all()
         menu.popup(None, None, None, 3, 0)
         ui.updateFocusTime()
-    def moveEventToGroupFromMenu(self, item, event, prev_group, new_group):
+    def moveEventToGroupFromMenu(self, item, event, prev_group, newGroup):
         prev_group.remove(event)
         prev_group.save()
         ui.reloadGroups.append(prev_group.id)
         ###
-        new_group.append(event)
-        new_group.save()
-        ui.reloadGroups.append(new_group.id)
+        newGroup.append(event)
+        newGroup.save()
+        ###
+        ui.eventDiff.add('v', event)
         ###
         self.onConfigChange()
-    def onEventLabelPopup(self, label, menu, ids):
+    def copyOccurToGroupFromMenu(self, item, newGroup, newEventType, event, occurData):
+        newEvent = newGroup.createEvent(newEventType)
+        newEvent.copyFrom(event)
+        startEpoch, endEpoch = occurData['time_epoch']
+        newEvent.setStartEpoch(startEpoch)
+        newEvent.setEnd('epoch', endEpoch)
+        newEvent.afterModify()
+        newEvent.save()
+        ###
+        newGroup.append(newEvent)
+        newGroup.save()
+        ui.eventDiff.add('+', newEvent)
+        ###
+        self.onConfigChange()
+    def onEventLabelPopup(self, label, menu, occurData):
+        from scal2.ui_gtk.event.utils import menuItemFromEventGroup
         menu = gtk.Menu()
         self.labelMenuAddCopyItems(label, menu)
         ####
-        groupId, eventId = ids
+        groupId, eventId = occurData['ids']
         event = ui.getEvent(groupId, eventId)
         group = ui.eventGroups[groupId]
         if not event.readOnly:
@@ -143,26 +158,49 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
                 None,## FIXME
             )
             moveToMenu = gtk.Menu()
-            for new_group in ui.eventGroups:
-                if new_group.id == group.id:
+            for newGroup in ui.eventGroups:
+                if newGroup.id == group.id:
                     continue
-                if not new_group.enable:
+                if not newGroup.enable:
                     continue
-                if event.name in new_group.acceptsEventTypes:
-                    new_groupItem = gtk.ImageMenuItem()
-                    new_groupItem.set_label(new_group.title)
-                    ##
-                    image = gtk.Image()
-                    image.set_from_pixbuf(newOutlineSquarePixbuf(new_group.color, 20))
-                    new_groupItem.set_image(image)
-                    ##
-                    new_groupItem.connect('activate', self.moveEventToGroupFromMenu, event, group, new_group)
-                    ##
-                    moveToMenu.add(new_groupItem)
+                if event.name in newGroup.acceptsEventTypes:
+                    newGroupItem = menuItemFromEventGroup(newGroup)
+                    newGroupItem.connect(
+                        'activate',
+                        self.moveEventToGroupFromMenu,
+                        event,
+                        group,
+                        newGroup,
+                    )
+                    moveToMenu.add(newGroupItem)
             moveToItem.set_submenu(moveToMenu)
             menu.add(moveToItem)
             ###
-            menu.add(gtk.SeparatorMenuItem())
+            if not event.isSingleOccur:
+                newEventType = 'allDayTask' if occurData['is_allday'] else 'task'
+                copyOccurItem = labelStockMenuItem(
+                    _('Copy as %s to...') % event_lib.classes.event.byName[newEventType].desc,## FIXME
+                    None,
+                )
+                copyOccurMenu = gtk.Menu()
+                for newGroup in ui.eventGroups:
+                    if not newGroup.enable:
+                        continue
+                    if newEventType in newGroup.acceptsEventTypes:
+                        newGroupItem = menuItemFromEventGroup(newGroup)
+                        newGroupItem.connect(
+                            'activate',
+                            self.copyOccurToGroupFromMenu,
+                            newGroup,
+                            newEventType,
+                            event,
+                            occurData,
+                        )
+                        copyOccurMenu.add(newGroupItem)
+                copyOccurItem.set_submenu(copyOccurMenu)
+                menu.add(copyOccurItem)
+                ###
+                menu.add(gtk.SeparatorMenuItem())
             ###
             menu.add(labelImageMenuItem(
                 _('Move to %s') % ui.eventTrash.title,
@@ -176,6 +214,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         menu.popup(None, None, None, 3, 0)
         ui.updateFocusTime()
     def editEventClicked(self, item, winTitle, event, groupId):
+        from scal2.ui_gtk.event.editor import EventEditorDialog
         event = EventEditorDialog(
             event,
             title=winTitle,
@@ -183,9 +222,10 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.IntegratedCalObj):
         ).run()
         if event is None:
             return
-        ui.reloadGroups.append(groupId)
+        ui.eventDiff.add('e', event)
         self.onConfigChange()
     def moveEventToTrash(self, item, event, groupId):
+        from scal2.ui_gtk.event.utils import confirmEventTrash
         #if not confirm(_('Press OK if you are sure to move event "%s" to trash')%event.summary):
         #    return
         if not confirmEventTrash(event):

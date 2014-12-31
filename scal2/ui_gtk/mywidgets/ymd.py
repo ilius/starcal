@@ -4,7 +4,8 @@ from scal2.core import getMonthLen
 from scal2.locale_man import tr as _
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.mywidgets.multi_spin_button import YearSpinButton, DaySpinButton
+from scal2.ui_gtk.mywidgets.multi_spin.year import YearSpinButton
+from scal2.ui_gtk.mywidgets.multi_spin.day import DaySpinButton
 
 class YearMonthDayBox(gtk.HBox):
     def __init__(self):

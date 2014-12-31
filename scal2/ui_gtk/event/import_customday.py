@@ -7,7 +7,7 @@ from scal2 import ui
 from scal2.import_customday import customFile, importAndDeleteCustomDB
 
 from scal2.ui_gtk import *
-from scal2.ui_gtk.utils import dialog_add_button, CalTypeCombo
+from scal2.ui_gtk.utils import dialog_add_button
 
 
 class CustomDayImporterDialog(gtk.Dialog):
@@ -19,6 +19,7 @@ class CustomDayImporterDialog(gtk.Dialog):
             )
         self.destroy()
     def __init__(self):
+        from scal2.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
         gtk.Dialog.__init__(self)
         ####
         dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK)

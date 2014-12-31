@@ -34,10 +34,10 @@ from scal2.ui_gtk import *
 from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
 from scal2.ui_gtk.utils import *
-from scal2.ui_gtk.mywidgets import MyFontButton, MyColorButton
-from scal2.ui_gtk.mywidgets.multi_spin_button import IntSpinButton, FloatSpinButton
-from scal2.ui_gtk.mywidgets.font_family_combo import FontFamilyCombo
-from scal2.ui_gtk.pref_utils import *
+
+
+from scal2.ui_gtk.mywidgets.multi_spin.int import IntSpinButton
+from scal2.ui_gtk.mywidgets.multi_spin.float import FloatSpinButton
 
 
 
@@ -135,13 +135,14 @@ class ComboTextPrefItem(PrefItem):
         for s in items:
             w.append_text(s)
     get = lambda self: self._widget.get_active()
-    set = lambda value: self._widget.set_active(value)    
+    set = lambda value: self._widget.set_active(value)
     #def set(self, value):
     #    print('ComboTextPrefItem.set', value)
     #    self._widget.set_active(int(value))
 
 class FontFamilyPrefItem(ComboTextPrefItem):
     def makeWidget(self):
+        from scal2.ui_gtk.mywidgets.font_family_combo import FontFamilyCombo
         return FontFamilyCombo(True)
     get = lambda self: self._widget.get_value()
     set = lambda self, value: self._widget.set_value(value)
@@ -164,7 +165,8 @@ class ComboImageTextPrefItem(PrefItem):
         self.varName = varName
         ###
         ls = gtk.ListStore(gdk.Pixbuf, str)
-        combo = gtk.ComboBox(ls)
+        combo = gtk.ComboBox()
+        combo.set_model(ls)
         ###
         cell = gtk.CellRendererPixbuf()
         pack(combo, cell, False)
@@ -192,6 +194,7 @@ class ComboImageTextPrefItem(PrefItem):
 
 class FontPrefItem(PrefItem):##????????????
     def __init__(self, module, varName, parent):
+        from scal2.ui_gtk.mywidgets import MyFontButton
         self.module = module
         self.varName = varName
         w = MyFontButton(parent)
@@ -219,11 +222,12 @@ class CheckPrefItem(PrefItem):
         if self._sensitiveReverse:
             active = not active
         self._sensitiveWidget.set_sensitive(active)
-        
+
 
 
 class ColorPrefItem(PrefItem):
     def __init__(self, module, varName, useAlpha=False):
+        from scal2.ui_gtk.mywidgets import MyColorButton
         self.module = module
         self.varName = varName
         w = MyColorButton()
@@ -264,16 +268,33 @@ class SpinPrefItem(PrefItem):
         self.set = w.set_value
 
 class FileChooserPrefItem(PrefItem):
-    def __init__(self, module, varName, title='Select File', currentFolder=''):
+    def __init__(self, module, varName, title='Select File', currentFolder='', defaultVarName=None):
         self.module = module
         self.varName = varName
-        w = gtk.FileChooserButton(title)
+        ###
+        dialog = gtk.FileChooserDialog(title, action=gtk.FILE_CHOOSER_ACTION_OPEN)
+        dialog_add_button(dialog, gtk.STOCK_CANCEL, _('_Cancel'), gtk.RESPONSE_CANCEL, None)
+        dialog_add_button(dialog, gtk.STOCK_OK, _('_OK'), gtk.RESPONSE_OK, None)
+        w = gtk.FileChooserButton(dialog)
         w.set_local_only(True)
         if currentFolder:
             w.set_current_folder(currentFolder)
+        ###
+        self.defaultVarName = defaultVarName
+        if defaultVarName:
+            dialog_add_button(dialog, gtk.STOCK_UNDO, _('_Revert'), gtk.RESPONSE_NONE, self.revertClicked)
+        ###
         self._widget = w
         self.get = w.get_filename
         self.set = w.set_filename
+    def revertClicked(self, button):
+        defaultValue = getattr(self.module, self.defaultVarName)
+        setattr(
+            self.module,
+            self.varName,
+            defaultValue,
+        )
+        self.set(defaultValue)
 
 
 class RadioListPrefItem(PrefItem):
@@ -407,7 +428,8 @@ class LangPrefItem(PrefItem):
         self.varName = 'lang'
         ###
         ls = gtk.ListStore(gdk.Pixbuf, str)
-        combo = gtk.ComboBox(ls)
+        combo = gtk.ComboBox()
+        combo.set_model(ls)
         ###
         cell = gtk.CellRendererPixbuf()
         pack(combo, cell, False)
@@ -459,15 +481,15 @@ class CheckStartupPrefItem():## FIXME
         self.set = w.set_active
     def updateVar(self):
         if self.get():
-            if not ui.addStartup():
+            if not startup.addStartup():
                 self.set(False)
         else:
             try:
-                ui.removeStartup()
+                startup.removeStartup()
             except:
                 pass
     def updateWidget(self):
-        self.set(ui.checkStartup())
+        self.set(startup.checkStartup())
     confStr = lambda self: ''
 
 class AICalsTreeview(gtk.TreeView):

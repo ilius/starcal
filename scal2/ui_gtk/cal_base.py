@@ -26,15 +26,14 @@ from scal2.ui_gtk import *
 from scal2.ui_gtk import listener
 from scal2.ui_gtk.drawing import newTextLayout
 from scal2.ui_gtk.color_utils import rgbToGdkColor
-from scal2.ui_gtk.utils import processDroppedDate
 from scal2.ui_gtk.customize import CustomizableCalObj
 
 
 
 class CalBase(CustomizableCalObj):
     signals = CustomizableCalObj.signals + [
-        ('popup-menu-cell', [int, int, int]),
-        ('popup-menu-main', [int, int, int]),
+        ('popup-cell-menu', [int, int, int]),
+        ('popup-main-menu', [int, int, int]),
         ('2button-press', []),
         ('pref-update-bg-color', []),
         ('day-info', []),
@@ -47,13 +46,12 @@ class CalBase(CustomizableCalObj):
     def __init__(self):
         self.initVars()
         listener.dateChange.add(self)
-        self.optionsWidget = gtk.VBox()
         ####
         self.defineDragAndDrop()
         self.connect('2button-press', ui.dayOpenEvolution)
         if ui.mainWin:
-            self.connect('popup-menu-cell', ui.mainWin.popupMenuCell)
-            self.connect('popup-menu-main', ui.mainWin.popupMenuMain)
+            self.connect('popup-cell-menu', ui.mainWin.menuCellPopup)
+            self.connect('popup-main-menu', ui.mainWin.menuMainPopup)
             self.connect('pref-update-bg-color', ui.mainWin.prefUpdateBgColor)
             self.connect('day-info', ui.mainWin.dayInfoShow)
     def gotoJd(self, jd):
@@ -114,6 +112,7 @@ class CalBase(CustomizableCalObj):
         context.drop_reply(False, etime)
         return True
     def dragDataRec(self, obj, context, x, y, selection, target_id, etime):
+        from scal2.ui_gtk.dnd import processDroppedDate
         try:
             dtype = selection.get_data_type()
         except AttributeError:## Old PyGTK
@@ -177,13 +176,13 @@ class CalBase(CustomizableCalObj):
         return True
     def getCellPos(self):
         raise NotImplementedError
-    def keyPress(self, arg, event):
-        CustomizableCalObj.keyPress(self, arg, event)
-        kname = gdk.keyval_name(event.keyval).lower()
+    def keyPress(self, arg, gevent):
+        CustomizableCalObj.keyPress(self, arg, gevent)
+        kname = gdk.keyval_name(gevent.keyval).lower()
         if kname in ('space', 'home', 't'):
             self.goToday()
         elif kname=='menu':
-            self.emit('popup-menu-cell', event.time, *self.getCellPos())
+            self.emit('popup-cell-menu', gevent.time, *self.getCellPos())
         elif kname=='i':
             self.emit('day-info')
         else:

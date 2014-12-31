@@ -31,15 +31,19 @@ from scal2 import core
 from scal2 import ui
 from scal2.format_time import compileTmFormat
 
+from gtk import Object
+
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.font_utils import gfontDecode, pfontEncode
 
 
 @registerSignals
-class IntegratedCalObj(gtk.Object):
+class BaseCalObj(Object):
     _name = ''
     desc = ''
+    loaded = True
+    customizable = False
     signals = [
         ('config-change', []),
         ('date-change', []),
@@ -72,14 +76,32 @@ class IntegratedCalObj(gtk.Object):
     def appendItem(self, item):
         self.items.append(item)
         self.connectItem(item)
+    def replaceItem(self, itemIndex, item):
+        self.items[itemIndex] = item
+        self.connectItem(item)
+    def moveItemUp(self, i):
+        self.items.insert(i-1, self.items.pop(i))
+    def addItemWidget(self, i):
+        pass
+    def showHide(self):
+        try:
+            func = self.show if self.enable else self.hide
+        except AttributeError:
+            try:
+                self.set_visible(self.enable)
+            except AttributeError:
+                pass
+        else:
+            func()
+        for item in self.items:
+            item.showHide()
 
 
-
-class IntegatedWindowList(IntegratedCalObj):
+class IntegatedWindowList(BaseCalObj):
     _name = 'windowList'
     desc = 'Window List'
     def __init__(self):
-        gtk.Object.__init__(self)
+        Object.__init__(self)
         self.initVars()
     def onConfigChange(self, *a, **ka):
         ui.cellCache.clear()
@@ -88,7 +110,7 @@ class IntegatedWindowList(IntegratedCalObj):
             pfontEncode(ui.getFont()),
         )
         ####
-        IntegratedCalObj.onConfigChange(self, *a, **ka)
+        BaseCalObj.onConfigChange(self, *a, **ka)
         self.onDateChange()
 
 ####################################################

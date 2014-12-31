@@ -23,27 +23,23 @@ import sys, os
 from os.path import join
 
 from scal2.path import *
+from scal2.utils import myRaise
 from scal2.cal_types import calTypes
 from scal2 import core
-from scal2.core import myRaise, convert, APP_DESC
 from scal2 import locale_man
 from scal2.locale_man import langSh
 from scal2.locale_man import tr as _
+from scal2 import plugin_man
 from scal2 import ui
-
 from scal2.ui_gtk import *
-from scal2.ui_gtk.font_utils import *
-from scal2.ui_gtk.color_utils import *
 from scal2.ui_gtk.utils import *
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.pref_utils import *
-from scal2.ui_gtk.export import ExportToIcsDialog
-from scal2.ui_gtk.event.account_op import AccountEditorDialog
 
 
 
 class PrefDialog(gtk.Dialog):
-    def __init__(self, trayMode):
+    def __init__(self, statusIconMode):
         gtk.Dialog.__init__(self, title=_('Preferences'))
         self.connect('delete-event', self.onDelete)
         self.set_has_separator(False)
@@ -87,7 +83,7 @@ class PrefDialog(gtk.Dialog):
         #frame.set_border_width(5)
         pack(vbox, hbox, 1, 1)
         ##########################
-        if trayMode!=1:
+        if statusIconMode!=1:
             hbox = gtk.HBox(spacing=3)
             item = CheckStartupPrefItem()
             self.uiPrefItems.append(item)
@@ -125,10 +121,10 @@ class PrefDialog(gtk.Dialog):
         #self.uiPrefItems.append(item)
         #pack(hbox, item._widget)
         pack(hbox, gtk.Label(''), 1, 1)
-        if trayMode==1:
+        if statusIconMode==1:
             item = CheckPrefItem(ui, 'showDigClockTr', _('On Applet'), 'Panel Applet')
         else:
-            item = CheckPrefItem(ui, 'showDigClockTr', _('On Tray'), 'Notification Area')
+            item = CheckPrefItem(ui, 'showDigClockTr', _('On Status Icon'), 'Notification Area')
         self.uiPrefItems.append(item)
         pack(hbox, item._widget)
         pack(hbox, gtk.Label(''), 1, 1)
@@ -250,7 +246,7 @@ class PrefDialog(gtk.Dialog):
         pack(vbox, hbox)
         ###################
         exp = gtk.Expander()
-        label = gtk.Label('<b>%s</b>'%_('Tray Icon'))
+        label = gtk.Label('<b>%s</b>'%_('Status Icon'))
         label.set_use_markup(True)
         exp.set_label_widget(label)
         expVbox = gtk.VBox(spacing=1)
@@ -265,9 +261,10 @@ class PrefDialog(gtk.Dialog):
         pack(hbox, label)
         item = FileChooserPrefItem(
             ui,
-            'trayImage',
+            'statusIconImage',
             _('Select Icon'),
             pixDir,
+            defaultVarName='statusIconImageDefault',
         )
         self.uiPrefItems.append(item)
         pack(hbox, item._widget, 1, 1)
@@ -280,9 +277,10 @@ class PrefDialog(gtk.Dialog):
         pack(hbox, label)
         item = FileChooserPrefItem(
             ui,
-            'trayImageHoli',
+            'statusIconImageHoli',
             _('Select Icon'),
             pixDir,
+            defaultVarName='statusIconImageHoliDefault',
         )
         self.uiPrefItems.append(item)
         pack(hbox, item._widget, 1, 1)
@@ -292,7 +290,7 @@ class PrefDialog(gtk.Dialog):
         pack(hbox, gtk.Label('   '))
         checkItem = CheckPrefItem(
             ui,
-            'trayFontFamilyEnable',
+            'statusIconFontFamilyEnable',
             label=_('Change font family to'),
             #tooltip=_('In SVG files'),
         )
@@ -301,7 +299,7 @@ class PrefDialog(gtk.Dialog):
         pack(hbox, checkItem._widget)
         item = FontFamilyPrefItem(
             ui,
-            'trayFontFamily',
+            'statusIconFontFamily',
         )
         self.uiPrefItems.append(item)
         pack(hbox, item._widget, 1, 1)
@@ -435,12 +433,12 @@ class PrefDialog(gtk.Dialog):
         vbox.icon = 'preferences-plugin.png'
         self.prefPages.append(vbox)
         #####
-        ##pluginsTextTray:
+        ##pluginsTextStatusIcon:
         hbox = gtk.HBox()
-        if trayMode==1:
-            item = CheckPrefItem(ui, 'pluginsTextTray', _('Show in applet (for today)'))
+        if statusIconMode==1:
+            item = CheckPrefItem(ui, 'pluginsTextStatusIcon', _('Show in applet (for today)'))
         else:
-            item = CheckPrefItem(ui, 'pluginsTextTray', _('Show in tray (for today)'))
+            item = CheckPrefItem(ui, 'pluginsTextStatusIcon', _('Show in Status Icon (for today)'))
         self.uiPrefItems.append(item)
         pack(hbox, item._widget)
         pack(hbox, gtk.Label(''), 1, 1)
@@ -754,6 +752,7 @@ class PrefDialog(gtk.Dialog):
     getAllPrefItems = lambda self: self.moduleOptions + self.localePrefItems + self.corePrefItems +\
                                    self.uiPrefItems + self.gtkPrefItems
     def apply(self, widget=None):
+        from scal2.ui_gtk.font_utils import gfontDecode
         ####### FIXME
         #print('fontDefault = %s'%ui.fontDefault)
         ui.fontDefault = gfontDecode(ud.settings.get_property('gtk-font-name'))
@@ -764,15 +763,25 @@ class PrefDialog(gtk.Dialog):
         ###### DB Manager (Plugin Manager)
         index = []
         for row in self.plugTreestore:
-            index.append(row[0])
-            plug = core.allPlugList[row[0]]
-            try:
-                plug.enable = row[1]
-                plug.show_date = row[2]
-            except:
-                core.myRaise(__file__)
-                print(i, core.plugIndex)
+            plugI = row[0]
+            enable = row[1]
+            show_date = row[2]
+            index.append(plugI)
+            plug = core.allPlugList[plugI]
+            if plug.loaded:
+                try:
+                    plug.enable = enable
+                    plug.show_date = show_date
+                except:
+                    core.myRaise(__file__)
+                    print(i, core.plugIndex)
+            else:
+                if enable:
+                    plug = plugin_man.loadPlugin(plug.path)
+                    assert plug.loaded
+                    core.allPlugList[plugI] = plug
         core.plugIndex = index
+        core.updatePlugins()
         ######
         first = self.comboFirstWD.get_active()
         if first==7:
@@ -856,11 +865,11 @@ class PrefDialog(gtk.Dialog):
                 msg.destroy()
             """
             if ui.checkNeedRestart():
-                d = gtk.Dialog(_('Need Restart '+APP_DESC), self,
+                d = gtk.Dialog(_('Need Restart '+core.APP_DESC), self,
                     gtk.DIALOG_MODAL | gtk.DIALOG_DESTROY_WITH_PARENT | gtk.DIALOG_NO_SEPARATOR,
                     (gtk.STOCK_CANCEL, 0))
                 d.set_keep_above(True)
-                label = gtk.Label(_('Some preferences need for restart %s to apply.'%APP_DESC))
+                label = gtk.Label(_('Some preferences need for restart %s to apply.'%core.APP_DESC))
                 label.set_line_wrap(True)
                 pack(d.vbox, label)
                 resBut = d.add_button(_('_Restart'), 1)
@@ -897,7 +906,7 @@ class PrefDialog(gtk.Dialog):
         self.accountsTreestore.clear()
         for account in ui.eventAccounts:
             self.accountsTreestore.append([account.id, account.enable, account.title])
-    #def plugTreevExpose(self, widget, event):
+    #def plugTreevExpose(self, widget, gevent):
         #self.plugDescCell.set_property('wrap-width', self.plugDescCol.get_width()+2)
     def plugTreevCursorChanged(self, treev):
         cur = treev.get_cursor()[0]
@@ -909,6 +918,7 @@ class PrefDialog(gtk.Dialog):
         self.plugButtonAbout.set_sensitive(plug.about!=None)
         self.plugButtonConf.set_sensitive(plug.has_config)
     def plugAboutClicked(self, obj=None):
+        from scal2.ui_gtk.about import AboutDialog
         cur = self.plugTreeview.get_cursor()[0]
         if cur==None:
             return
@@ -942,12 +952,13 @@ class PrefDialog(gtk.Dialog):
             return
         plug.open_configure()
     def plugExportToIcsClicked(self, menu, plug):
+        from scal2.ui_gtk.export import ExportToIcsDialog
         ExportToIcsDialog(plug.exportToIcs, plug.desc).run()
     def plugTreevRActivate(self, treev, path, col):
         if col.get_title()==_('Description'):## FIXME
             self.plugAboutClicked(None)
-    def plugTreevButtonPress(self, widget, event):
-        b = event.button
+    def plugTreevButtonPress(self, widget, gevent):
+        b = gevent.button
         if b==3:
             cur = self.plugTreeview.get_cursor()[0]
             if cur:
@@ -967,7 +978,7 @@ class PrefDialog(gtk.Dialog):
                 menu.add(labelImageMenuItem(_('Export to %s')%'iCalendar', 'ical-32.png', self.plugExportToIcsClicked, plug))
                 ##
                 menu.show_all()
-                menu.popup(None, None, None, 3, event.time)
+                menu.popup(None, None, None, 3, gevent.time)
             return True
         return False
     def plugAddClicked(self, button):
@@ -981,7 +992,7 @@ class PrefDialog(gtk.Dialog):
         self.plugAddDialog.run()
         #self.plugAddDialog.present()
         #self.plugAddDialog.show()
-    def plugAddDialogClose(self, obj, event=None):
+    def plugAddDialogClose(self, obj, gevent=None):
         self.plugAddDialog.hide()
         return True
     def plugTreeviewCellToggled(self, cell, path):
@@ -1100,8 +1111,12 @@ class PrefDialog(gtk.Dialog):
     def plugAddTreevRActivate(self, treev, path, col):
         self.plugAddDialogOK(None)## FIXME
     def editAccount(self, index):
+        from scal2.ui_gtk.event.account_op import AccountEditorDialog
         accountId = self.accountsTreestore[index][0]
         account = ui.eventAccounts[accountId]
+        if not account.loaded:
+            showError(_('Account must be enabled before editing'))
+            return
         account = AccountEditorDialog(account).run()
         if account is None:
             return
@@ -1115,6 +1130,7 @@ class PrefDialog(gtk.Dialog):
         index = cur[0]
         self.editAccount(index)
     def accountsAddClicked(self, button):
+        from scal2.ui_gtk.event.account_op import AccountEditorDialog
         account = AccountEditorDialog().run()
         if account is None:
             return
@@ -1162,8 +1178,8 @@ class PrefDialog(gtk.Dialog):
     def accountsTreevRActivate(self, treev, path, col):
         index = path[0]
         self.editAccount(index)
-    def accountsTreevButtonPress(self, widget, event):
-        b = event.button
+    def accountsTreevButtonPress(self, widget, gevent):
+        b = gevent.button
         if b==3:
             cur = self.accountsTreeview.get_cursor()[0]
             if cur:
@@ -1175,7 +1191,7 @@ class PrefDialog(gtk.Dialog):
                 ## FIXME
                 ##
                 #menu.show_all()
-                #menu.popup(None, None, None, 3, event.time)
+                #menu.popup(None, None, None, 3, gevent.time)
             return True
         return False
     def accountsTreeviewCellToggled(self, cell, path):
@@ -1184,6 +1200,11 @@ class PrefDialog(gtk.Dialog):
         ###
         accountId = self.accountsTreestore[index][0]
         account = ui.eventAccounts[accountId]
+        if not account.loaded:## it's a dummy account
+            if active:
+                account = ui.eventAccounts.replaceDummyObj(account)
+                if account is None:
+                    return
         account.enable = active
         account.save()
         ###

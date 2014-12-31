@@ -3,7 +3,7 @@
 ## (like debian, ubuntu, mint, ...) and installs the package
 
 function getDirTotalSize(){
-    du -bs "$1" | python2 -c "import sys;print raw_input().split('\t')[0]"
+    du -bs "$1" | python2 -c "import sys;print(raw_input().split('\t')[0])"
 }
 
 if [ "$UID" != "0" ] ; then
@@ -44,13 +44,13 @@ depends+=('python-gtk2(>=2.8)')
 depends+=('python-gobject-2') ## The old "gobject" module
 #depends+=('python-gflags')
 depends+=('python-httplib2')
-depends+=('python-tz')
 
 #if [ -f "/usr/lib/$HOSTTYPE-$OSTYPE/libappindicator.so.1" ] ; then
 #    depends+=('python-appindicator')
 #fi
 
 recommends=()
+recommends+=('python-dateutil')
 recommends+=('python-igraph')
 #recommends+=('python-gnomeapplet')
 recommends+=('python-gnomevfs')

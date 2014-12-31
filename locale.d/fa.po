@@ -43,6 +43,14 @@ msgid "Close"
 msgstr ""
 "بستن"
 
+msgid "_Open"
+msgstr ""
+"_باز کردن"
+
+msgid "_Revert"
+msgstr ""
+"برگرداندن"
+
 msgid "_Reset to Defaults"
 msgstr ""
 "بازگشت به حالت پیش‌فرض"
@@ -1142,6 +1150,14 @@ msgid "Copy _Time"
 msgstr ""
 "کپی _زمان"
 
+msgid "Copy to %s"
+msgstr ""
+"کپی به %s"
+
+msgid "Copy as %s to..."
+msgstr ""
+"کپی بعنوان %s به..."
+
 msgid "Cut"
 msgstr ""
 "بریدن"
@@ -1320,7 +1336,7 @@ msgstr ""
 
 msgid "Default Icon"
 msgstr ""
-"آیکون پیش‌فرض"
+"نماد پیش‌فرض"
 
 msgid "Default Calendar Type"
 msgstr ""
@@ -1388,9 +1404,18 @@ msgid "Bulk Edit Events"
 msgstr ""
 "ویرایش گروهیِ رویدادها"
 
-msgid "Here you are going to modify all events inside group \"%s\" at once. You better make a backup from you events before doing this. Just right click on group and select \"Export\" (or a full backup: menu File -> Export)"
+msgid "Here you are going to modify all events inside group \"%s\" at once."
 msgstr ""
-"اینجا شما در حال تغییر دادن همهٔ رویدادهای گروه «%s» به یکباره هستید. بهتر است قبل از این کار، یک پشتیبان از رویدادهای خود بگیرید. روی گروه راست کلیک کرده و «صادر کردن» را بزنید (یا یک پشتیبان کامل: منوی فایل -> صادر کردن)"
+"اینجا شما در حال تغییر دادن همهٔ رویدادهای گروه «%s» به یکباره هستید."
+
+msgid "Here you are going to modify these %s events at once."
+msgstr ""
+"اینجا شما در حال تغییر دادن این %s رویداد به یکباره هستید."
+
+
+msgid "You better make a backup from you events before doing this. Just right click on group and select \"Export\" (or a full backup: menu File -> Export)"
+msgstr ""
+"بهتر است قبل از این کار، یک پشتیبان از رویدادهای خود بگیرید. روی گروه راست کلیک کرده و «صادر کردن» را بزنید (یا یک پشتیبان کامل: منوی فایل -> صادر کردن)"
 
 
 msgid "Change"
@@ -1516,7 +1541,7 @@ msgstr ""
 
 msgid "Events Icon"
 msgstr ""
-"آیکون رویدادها"
+"نماد رویدادها"
 
 msgid "Events Box"
 msgstr ""
@@ -1616,9 +1641,9 @@ msgstr ""
 "نمایش در تقویم"
 
 
-msgid "Show in tray (for today)"
+msgid "Show in Status Icon (for today)"
 msgstr ""
-"نمایش در tray (برای امروز)"
+"نمایش در نماد وضعیت (برای امروز)"
 
 
 msgid "Show in applet (for today)"
@@ -1718,13 +1743,13 @@ msgid "On Toolbar"
 msgstr ""
 "روی نوارابزار"
 
-msgid "Tray"
+msgid "Status Icon"
 msgstr ""
-"Tray"
+"نماد وضعیت"
 
-msgid "On Tray"
+msgid "On Status Icon"
 msgstr ""
-"در tray"
+"در نماد وضعیت"
 
 msgid "On Applet"
 msgstr ""
@@ -1797,7 +1822,7 @@ msgstr ""
 
 msgid "Icon"
 msgstr ""
-"آیکون"
+"نماد"
 
 msgid "Text"
 msgstr ""
@@ -1805,11 +1830,11 @@ msgstr ""
 
 msgid "Text below Icon"
 msgstr ""
-"متن زیر آیکون"
+"متن زیر نماد"
 
 msgid "Text beside Icon"
 msgstr ""
-"متن کنار آیکون"
+"متن کنار نماد"
 
 
 
@@ -1849,6 +1874,11 @@ msgid "A_dvanced"
 msgstr ""
 "_پیشرفته"
 
+msgid "Account"
+msgstr ""
+"حساب"
+
+
 msgid "Accounts"
 msgstr ""
 "حساب‌ها"
@@ -1856,6 +1886,10 @@ msgstr ""
 msgid "Edit Account"
 msgstr ""
 "ویرایش حساب"
+
+msgid "Account must be enabled before editing"
+msgstr ""
+"برای ویرایش حساب، ابتدا باید آن را فعال کنید"
 
 msgid "Add New Account"
 msgstr ""
@@ -1874,6 +1908,72 @@ msgid "Email"
 msgstr ""
 "ایمیل"
 
+msgid "Online Service"
+msgstr ""
+"سرویس برخط"
+
+
+msgid "Remote Group"
+msgstr ""
+"گروه راه‌دور"
+
+msgid "Fetch"
+msgstr ""
+"واکشی"
+
+
+msgid "No account selected"
+msgstr ""
+"هیچ حسابی انتخاب نشده"
+
+msgid "Fatching"
+msgstr ""
+"در حال واکشی"
+
+msgid "Error in fetching remote groups"
+msgstr ""
+"خطا در واکشی گروه‌های راه‌دور"
+
+msgid "Synchronize"
+msgstr ""
+"همگام‌سازی"
+
+msgid "Error in synchronizing group \"%(group)s\" with account \"%(account)s\""
+msgstr ""
+"خطا در همگام‌سازی گروه «%(group)s» با حساب «%(account)s»"
+
+msgid "Successful synchronizing of group \"%(group)s\" with account \"%(account)s\""
+msgstr ""
+"همگام‌سازی موفق گروه «%(group)s» با حساب «%(account)s»"
+
+msgid "HTTP Error"
+msgstr ""
+"خطای HTTP"
+
+msgid "Error Code"
+msgstr ""
+"کد خطا"
+
+msgid "Error Message"
+msgstr ""
+"پیام خطا"
+
+msgid "Forbidden"
+msgstr ""
+"ممنوع"
+msgid "Authentication request was rejected."
+msgstr ""
+"درخواست احراز هویت، رد شده است."
+
+msgid "Authentication has failed"
+msgstr ""
+"احراز هویت ناموفق بوده است"
+
+msgid "This service is not available from your country"
+msgstr ""
+"این سرویس در کشور شما قابل دسترسی نیست"
+
+#msgid "Failed to find \"code\" in the query parameters of the redirect."
 
 
 msgid "Show main window on start"
@@ -1976,9 +2076,6 @@ msgid "Rounding Factor"
 msgstr ""
 "ضریب گردی"
 
-msgid "Tray Icon"
-msgstr ""
-"شمایل Tray"
 msgid "Normal Days"
 msgstr ""
 "روزهای عادی"
@@ -2019,9 +2116,9 @@ msgid "Application Font"
 msgstr ""
 "فونت برنامه"
 
-msgid "Tray Font"
+msgid "Status Icon Font"
 msgstr
-"فونت tray"
+"فونت نماد وضعیت"
 
 msgid "Font Family"
 msgstr ""
@@ -2236,9 +2333,9 @@ msgid "_Restart"
 msgstr ""
 "شروع _دوباره"
 
-msgid "Seems that you are using a Unity desktop and StarCalendar is not allowed to use Tray icon. Press OK to add StarCalendar to Unity's white list and then restart Unity"
+msgid "Seems that you are using a Unity desktop and StarCalendar is not allowed to use Status Icon. Press OK to add StarCalendar to Unity's white list and then restart Unity"
 msgstr ""
-"به نظر می‌رسد که شما از یک میزکار Unity استفاده می‌کنید و StarCalendar اجازهٔ استفاده از Tray Icon را ندارد. دکمهٔ تائید را فشار دهید تا StarCalendar به لیست سفید Unity اضافه شده و سپس Unity دوباره راه‌اندازی شود"
+"به نظر می‌رسد که شما از یک میزکار Unity استفاده می‌کنید و StarCalendar اجازهٔ استفاده از نماد وضعیت را ندارد. دکمهٔ تائید را فشار دهید تا StarCalendar به لیست سفید Unity اضافه شده و سپس Unity دوباره راه‌اندازی شود"
 
 
 
@@ -2312,7 +2409,7 @@ msgstr ""
 
 msgid "Icon Size"
 msgstr ""
-"اندازهٔ آیکون"
+"اندازهٔ نماد"
 
 msgid "Small Toolbar"
 msgstr ""

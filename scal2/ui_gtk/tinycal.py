@@ -20,7 +20,6 @@
 import sys, os
 
 from math import pi
-import struct
 import os.path
 
 from scal2.path import *

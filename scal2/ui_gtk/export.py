@@ -21,6 +21,7 @@ import os, sys
 
 from scal2.cal_types import calTypes
 from scal2 import core
+from scal2 import locale_man
 from scal2.locale_man import tr as _
 from scal2 import ui
 from scal2.monthcal import getMonthStatus, getCurrentMonthStatus
@@ -28,7 +29,9 @@ from scal2.export import exportToHtml
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import openWindow, dialog_add_button
-from scal2.ui_gtk.mywidgets.multi_spin_button import DateButton, TimeButton, YearMonthButton
+from scal2.ui_gtk.mywidgets.multi_spin.date import DateButton
+from scal2.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
+from scal2.ui_gtk.mywidgets.multi_spin.year_month import YearMonthButton
 
 
 #gdkColorToHtml = lambda color: '#%.2x%.2x%.2x'%(color.red/256, color.green/256, color.blue/256)
@@ -107,7 +110,7 @@ class ExportDialog(gtk.Dialog):
         if i==0:
             s = getCurrentMonthStatus()
             months = [s]
-            title = '%s %s'%(core.getMonthName(calTypes.primary, s.month, s.year), _(s.year))
+            title = '%s %s'%(locale_man.getMonthName(calTypes.primary, s.month, s.year), _(s.year))
         elif i==1:
             for i in range(1, 13):
                 months.append(getMonthStatus(ui.cell.year, i))
