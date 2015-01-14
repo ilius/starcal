@@ -3,7 +3,7 @@
 ## (like debian, ubuntu, mint, ...) and installs the package
 
 function getDirTotalSize(){
-    du -bs "$1" | python2 -c "import sys;print(raw_input().split('\t')[0])"
+    du -ks "$1" | python2 -c "import sys;print(raw_input().split('\t')[0])"
 }
 
 if [ "$UID" != "0" ] ; then
