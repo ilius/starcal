@@ -299,6 +299,7 @@ class TextPlug(BasePlugin, TextPlugUI):
         self.killPrevSound()
         self.proc = popenFile(self.preAzanFile)
     def onCurrentDateChange(self, gdate):
+        print 'praytimes: onCurrentDateChange', gdate
         if not self.enable:
             return
         jd = gregorian_to_jd(*tuple(gdate))
@@ -323,15 +324,18 @@ class TextPlug(BasePlugin, TextPlugUI):
             toAzanSecs = int(azanSec - secondsFromMidnight)
             if toAzanSecs >= 0:
                 preAzanSec = azanSec - self.preAzanMinutes * 60
+                toPreAzanSec = max(
+                    0,
+                    int(preAzanSec - secondsFromMidnight)
+                )
+                print('toPreAzanSec=%.1f'%toPreAzanSec)
                 Timer(
-                    max(0,
-                        int(preAzanSec - secondsFromMidnight)
-                    ),
+                    toPreAzanSec,
                     self.doPlayPreAzan,
                     #midnightUtc + preAzanSec,
                 ).start()
                 ###
-                #print('toAzanSecs=%.1f'%toAzanSecs)
+                print('toAzanSecs=%.1f'%toAzanSecs)
                 Timer(
                     toAzanSecs,
                     self.doPlayAzan,
