@@ -207,53 +207,6 @@ def newColorCheckPixbuf(color, size, checked):
 
 
 
-
-
-
-
-
-
-
-
-
-
-def newRoundedSquarePixbuf(color, size, roundR=0, bgColor=None):## a rounded square with specified color
-    #color = (255, 0, 0) ## FIXME
-    #bgColor = (
-    #    min(255, color[0]+1),
-    #    min(255, color[1]+1),
-    #    min(255, color[2]+1),
-    #)
-    pmap = gdk.Pixmap(None, size, size, depth=24)
-    cr = pmap.cairo_create()
-    ###
-    if bgColor:
-        cr.rectangle(0, 0, size, size)
-        fillColor(cr, bgColor)
-    ###
-    cr.move_to(roundR, 0)
-    cr.line_to(size-roundR, 0)
-    cr.arc(size-roundR, roundR, roundR, 3*pi/2, 2*pi) ## up right corner
-    cr.line_to(size, size-roundR)
-    cr.arc(size-roundR, size-roundR, roundR, 0, pi/2) ## down right corner
-    cr.line_to(roundR, size)
-    cr.arc(roundR, size-roundR, roundR, pi/2, pi) ## down left corner
-    cr.line_to(0, roundR)
-    cr.arc(roundR, roundR, roundR, pi, 3*pi/2) ## up left corner
-    ###
-    cr.close_path()
-    fillColor(cr, color)
-    ####
-    pbuf = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, size, size)
-    colormap = gtk.gdk.colormap_get_system()
-    #colormap = self.get_screen().get_system_colormap()
-    #colormap = pmap.get_colormap()
-    pbuf.get_from_drawable(pmap, colormap, 0, 0, 0, 0, size, size)
-    if bgColor:
-        pbuf = pbuf.add_alpha(True, *bgColor)
-    return pbuf
-
-
 def drawRoundedRect(cr, cx0, cy0, cw, ch, ro):
     ro = min(ro, cw/2.0, ch/2.0)
     cr.move_to(cx0+ro, cy0)
