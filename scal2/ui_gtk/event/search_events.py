@@ -29,7 +29,7 @@ from scal2 import ui
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.utils import pixbufFromFile, labelStockMenuItem, labelImageMenuItem
-from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
+from scal2.ui_gtk.drawing import newColorCheckPixbuf
 from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.multi_spin.date_time import DateTimeButton
 from scal2.ui_gtk.mywidgets.dialog import MyDialog
@@ -396,7 +396,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
                 new_groupItem.set_label(new_group.title)
                 ##
                 image = gtk.Image()
-                image.set_from_pixbuf(newOutlineSquarePixbuf(new_group.color, 20))
+                image.set_from_pixbuf(newColorCheckPixbuf(new_group.color, 20, True))
                 new_groupItem.set_image(image)
                 ##
                 new_groupItem.connect(
@@ -428,7 +428,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
                 new_groupItem.set_label(new_group.title)
                 ##
                 image = gtk.Image()
-                image.set_from_pixbuf(newOutlineSquarePixbuf(new_group.color, 20))
+                image.set_from_pixbuf(newColorCheckPixbuf(new_group.color, 20, True))
                 new_groupItem.set_image(image)
                 ##
                 new_groupItem.connect(
