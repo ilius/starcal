@@ -184,6 +184,37 @@ def newOutlineSquarePixbuf(color, size, innerSize=0, bgColor=None):
         pbuf = pbuf.add_alpha(True, *bgColor)
     return pbuf
 
+def newColorCheckPixbuf(color, size, checked):
+    import re
+    imagePath = join(pixDir, 'color-check.svg')
+    loader = gdk.pixbuf_loader_new_with_mime_type('image/svg')
+    data = open(imagePath).read()
+    data = data.replace(
+        'fill:#000000;',
+        'fill:%s;'%rgbToHtmlColor(*color),
+    )
+    if not checked:
+        data = re.sub(
+            '<path id="check".*?/>',
+            '',
+            data,
+            flags=re.M | re.S,
+        )
+    loader.write(data)
+    loader.close()
+    pixbuf = loader.get_pixbuf()
+    return pixbuf
+
+
+
+
+
+
+
+
+
+
+
 
 
 def newRoundedSquarePixbuf(color, size, roundR=0, bgColor=None):## a rounded square with specified color
