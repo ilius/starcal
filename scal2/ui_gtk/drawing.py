@@ -189,10 +189,6 @@ def newColorCheckPixbuf(color, size, checked):
     imagePath = join(pixDir, 'color-check.svg')
     loader = gdk.pixbuf_loader_new_with_mime_type('image/svg')
     data = open(imagePath).read()
-    data = data.replace(
-        'fill:#000000;',
-        'fill:%s;'%rgbToHtmlColor(*color),
-    )
     if not checked:
         data = re.sub(
             '<path[^<>]*?id="check".*?/>',
@@ -200,6 +196,10 @@ def newColorCheckPixbuf(color, size, checked):
             data,
             flags=re.M | re.S,
         )
+    data = data.replace(
+        'fill:#000000;',
+        'fill:%s;'%rgbToHtmlColor(*color),
+    )
     loader.write(data)
     loader.close()
     pixbuf = loader.get_pixbuf()
