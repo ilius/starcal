@@ -334,11 +334,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         if not group.checkEventToAdd(event):
             showError(_('Group type "%s" can not contain event type "%s"')%(group.desc, event.desc), self)
             raise RuntimeError('Invalid event type for this group')
-    getRowBgColor = lambda self: \
-        gdkColorToRgb(getStyleColor(self.treev))
-        ## bg color of non-selected rows
     getGroupRow = lambda self, group:\
-        common.getGroupRow(group, self.getRowBgColor()) + ('',)
+        common.getGroupRow(group) + ('',)
     getEventRow = lambda self, event: (
         event.id,
         pixbufFromFile(event.icon),
@@ -889,12 +886,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                         self.trees.set_value(
                             groupIter,
                             1,
-                            newOutlineSquarePixbuf(
-                                group.color,
-                                20,
-                                0 if group.enable else 15,
-                                self.getRowBgColor(),
-                            ),
+                            common.getGroupPixbuf(group),
                         )
                         group.save()
                         if group.enable and \
