@@ -2,7 +2,7 @@ from scal2.locale_man import tr as _
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import confirm
-from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
+from scal2.ui_gtk.drawing import newColorCheckPixbuf
 
 
 confirmEventTrash = lambda event:\
@@ -14,7 +14,7 @@ def menuItemFromEventGroup(group):
     item.set_label(group.title)
     ##
     image = gtk.Image()
-    image.set_from_pixbuf(newOutlineSquarePixbuf(group.color, 20))
+    image.set_from_pixbuf(newColorCheckPixbuf(group.color, 20, True))
     item.set_image(image)
     return item
 

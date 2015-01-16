@@ -151,38 +151,6 @@ def newLimitedWidthTextLayout(widget, text, width, font=None, truncate=True, mar
     return layout
 '''
 
-def newOutlineSquarePixbuf(color, size, innerSize=0, bgColor=None):
-    pmap = gdk.Pixmap(None, size, size, depth=24)
-    cr = pmap.cairo_create()
-    ###
-    if bgColor:
-        cr.rectangle(0, 0, size, size)
-        fillColor(cr, bgColor)
-    ###
-    cr.move_to(0, 0)
-    cr.line_to(size, 0)
-    cr.line_to(size, size)
-    cr.line_to(0, size)
-    cr.line_to(0, 0)
-    if innerSize:
-        d = (size-innerSize)/2.0
-        cr.line_to(d, 0)
-        cr.line_to(d, size-d)
-        cr.line_to(size-d, size-d)
-        cr.line_to(size-d, d)
-        cr.line_to(d, d)
-    ###
-    cr.close_path()
-    fillColor(cr, color)
-    ####
-    pbuf = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, size, size)
-    colormap = gtk.gdk.colormap_get_system()
-    #colormap = self.get_screen().get_system_colormap()
-    #colormap = pmap.get_colormap()
-    pbuf.get_from_drawable(pmap, colormap, 0, 0, 0, 0, size, size)
-    if bgColor:
-        pbuf = pbuf.add_alpha(True, *bgColor)
-    return pbuf
 
 def newColorCheckPixbuf(color, size, checked):
     import re
