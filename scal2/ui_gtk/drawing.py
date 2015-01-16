@@ -195,7 +195,7 @@ def newColorCheckPixbuf(color, size, checked):
     )
     if not checked:
         data = re.sub(
-            '<path id="check".*?/>',
+            '<path[^<>]*?id="check".*?/>',
             '',
             data,
             flags=re.M | re.S,
