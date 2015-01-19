@@ -442,7 +442,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
                 pass
         #print('Occurence Time: max=%e, avg=%e'%(ui.Cell.ocTimeMax, ui.Cell.ocTimeSum/ui.Cell.ocTimeCount))
     def getEventAddToMenuItem(self):
-        from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
+        from scal2.ui_gtk.drawing import newColorCheckPixbuf
         addToItem = labelStockMenuItem('_Add to', gtk.STOCK_ADD)
         menu2 = gtk.Menu()
         ##
@@ -461,7 +461,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             if group.icon:
                 image.set_from_file(group.icon)
             else:
-                image.set_from_pixbuf(newOutlineSquarePixbuf(group.color, 20))
+                image.set_from_pixbuf(newColorCheckPixbuf(group.color, 20, True))
             item2.set_image(image)
             ##
             if len(eventTypes)==1:

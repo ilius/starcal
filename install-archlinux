@@ -27,6 +27,7 @@ depends+=('python-httplib2')
 depends+=('python-dateutil')
 
 optdepends=()
+optdepends+=('python2-dateutil')
 optdepends+=('python-igraph')
 #optdepends+=('python-gnomevfs')
 

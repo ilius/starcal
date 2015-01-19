@@ -20,6 +20,7 @@ from os.path import join
 from math import pi
 
 from scal2.path import *
+from scal2.utils import toBytes
 from scal2 import core
 from scal2.locale_man import cutText, rtl
 from scal2 import ui
@@ -31,7 +32,6 @@ from gi.repository import GdkPixbuf
 from scal2.ui_gtk import *
 from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
-
 
 if not ui.fontCustom:
     ui.fontCustom = ui.fontDefault[:]
@@ -155,123 +155,52 @@ def newLimitedWidthTextLayout(widget, text, width, font=None, truncate=True, mar
     return layout
 '''
 
-def newOutlineSquarePixbuf(color, size, innerSize=0, bgColor=None):
-    from PIL import Image, ImageDraw
-    im = Image.new('RGBA', (size, size))
-    draw = ImageDraw.Draw(im)
-    size = int(size)
-    if innerSize:
-        d = int((size-innerSize)/2.0)
-        draw.rectangle((0, 0, size, d))
-        draw.rectangle((size-d, 0, d, size))
-        draw.rectangle((0, size-d, size, d))
-        draw.rectangle((0, 0, d, size))
-    else:
-        draw.rectangle((0, 0, size, size))
-    data = im.tostring()
-    '''
-    #surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, size, size)
-    #cr = cairo.Context(surface)
-    #widget = gtk.DrawingArea()
-    #cr = widget.cairo_create()
-    surface = cairo.image_surface_create(cairo.FORMAT_RGB24, size, size)## None
-    cr = surface.cairo_create()
-    ###
-    if bgColor:
-        cr.rectangle(0, 0, size, size)
-        fillColor(cr, bgColor)
-    ###
-    cr.move_to(0, 0)
-    cr.line_to(size, 0)
-    cr.line_to(size, size)
-    cr.line_to(0, size)
-    cr.line_to(0, 0)
-    if innerSize:
-        d = (size-innerSize)/2.0
-        cr.line_to(d, 0)
-        cr.line_to(d, size-d)
-        cr.line_to(size-d, size-d)
-        cr.line_to(size-d, d)
-        cr.line_to(d, d)
-    ###
-    cr.close_path()
-    fillColor(cr, color)
-    ####
-    #pbuf = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, True, 8, size, size)
-    #colormap = gdk.colormap_get_system()
-    #colormap = self.get_screen().get_system_colormap()
-    #colormap = pmap.get_colormap()
-    #pbuf.get_from_drawable(pmap, colormap, 0, 0, 0, 0, size, size)
-    #pbuf.get_from_surface(surface)
 
-    #pbuf = GdkPixbuf.Pixbuf.get_from_surface(surface)
-    data = surface.get_data()
-    '''
-    #open('/tmp/image-data', 'w').write(str(data))
-    print(len(data),  4 * size * size)
-    ## len(data) =  4 * size * size
-    pbuf = GdkPixbuf.Pixbuf.new_from_data(
-        data,
-        GdkPixbuf.Colorspace.RGB,
-        True,
-        8,
-        size,
-        size,
-        size * 4,
-        None,
-        None,
+def newColorCheckPixbuf(color, size, checked):
+    import re
+    imagePath = join(rootDir, 'svg', 'color-check.svg')
+    loader = GdkPixbuf.PixbufLoader.new_with_type('svg')
+    data = open(imagePath).read()
+    if not checked:
+        data = re.sub(
+            '<path[^<>]*?id="check"[^<>]*?/>',
+            '',
+            data,
+            flags=re.M | re.S,
+        )
+    data = data.replace(
+        'fill:#000000;',
+        'fill:%s;'%rgbToHtmlColor(*color),
     )
-    if bgColor:
-        pbuf = pbuf.add_alpha(True, *bgColor)
-    return pbuf
+    data = toBytes(data)
+    loader.write(data)
+    loader.close()
+    pixbuf = loader.get_pixbuf()
+    return pixbuf
 
+def newDndDatePixbuf(ymd):
+    imagePath = join(rootDir, 'svg', 'dnd-date.svg')
+    loader = GdkPixbuf.PixbufLoader.new_with_type('svg')
+    data = open(imagePath).read()
+    data = data.replace('YYYY', '%.4d'%ymd[0])
+    data = data.replace('MM', '%.2d'%ymd[1])
+    data = data.replace('DD', '%.2d'%ymd[2])
+    data = toBytes(data)
+    loader.write(data)
+    loader.close()
+    pixbuf = loader.get_pixbuf()
+    return pixbuf
 
-'''
-def newRoundedSquarePixbuf(color, size, roundR=0, bgColor=None):## a rounded square with specified color
-    #color = (255, 0, 0, 0) ## FIXME
-    #bgColor = (
-    #    min(255, color[0]+1),
-    #    min(255, color[1]+1),
-    #    min(255, color[2]+1),
-    #)
-    surface = cairo.ImageSurface(cairo.FORMAT_ARGB32, size, size)
-    cr = cairo.Context(surface)
-    ###
-    if bgColor:
-        cr.rectangle(0, 0, size, size)
-        fillColor(cr, bgColor)
-    ###
-    cr.move_to(roundR, 0)
-    cr.line_to(size-roundR, 0)
-    cr.arc(size-roundR, roundR, roundR, 3*pi/2, 2*pi) ## up right corner
-    cr.line_to(size, size-roundR)
-    cr.arc(size-roundR, size-roundR, roundR, 0, pi/2) ## down right corner
-    cr.line_to(roundR, size)
-    cr.arc(roundR, size-roundR, roundR, pi/2, pi) ## down left corner
-    cr.line_to(0, roundR)
-    cr.arc(roundR, roundR, roundR, pi, 3*pi/2) ## up left corner
-    ###
-    cr.close_path()
-    fillColor(cr, color)
-    ####
-    #colormap = pmap.get_colormap()
-    data = surface.get_data()
-    ## len(data) =  4 * size * size
-    pbuf = GdkPixbuf.Pixbuf.new_from_data(
-        data,
-        GdkPixbuf.Colorspace.RGB,
-        True,
-        8,
-        size,
-        size,
-        size * 4,
-        None,
-        None,
-    )
-    if bgColor:
-        pbuf = pbuf.add_alpha(True, *bgColor)
-    return pbuf
-'''
+def newDndFontNamePixbuf(name):
+    imagePath = join(rootDir, 'svg', 'dnd-font.svg')
+    loader = GdkPixbuf.PixbufLoader.new_with_type('svg')
+    data = open(imagePath).read()
+    data = data.replace('FONTNAME', name)
+    data = toBytes(data)
+    loader.write(data)
+    loader.close()
+    pixbuf = loader.get_pixbuf()
+    return pixbuf
 
 def drawRoundedRect(cr, cx0, cy0, cw, ch, ro):
     ro = min(ro, cw/2.0, ch/2.0)

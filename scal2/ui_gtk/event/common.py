@@ -37,7 +37,7 @@ from gi.repository import GdkPixbuf
 from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, labelStockMenuItem
 from scal2.ui_gtk.utils import dialog_add_button, getStyleColor
-from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
+from scal2.ui_gtk.drawing import newColorCheckPixbuf
 from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 from scal2.ui_gtk.mywidgets.multi_spin.int import IntSpinButton
@@ -46,14 +46,15 @@ from scal2.ui_gtk.event import makeWidget
 from scal2.ui_gtk.event.utils import *
 
 
-getGroupRow = lambda group, rowBgColor: (
+getGroupPixbuf = lambda group: newColorCheckPixbuf(
+    group.color,
+    20,
+    group.enable,
+)
+
+getGroupRow = lambda group: (
     group.id,
-    newOutlineSquarePixbuf(
-        group.color,
-        20,
-        0 if group.enable else 15,
-        rowBgColor,
-    ),
+    getGroupPixbuf(group),
     group.title
 )
 
@@ -473,11 +474,10 @@ class SingleGroupComboBox(gtk.ComboBox):
         activeGid = self.get_active()
         ls.clear()
         ###
-        rowBgColor = gdkColorToRgb(getStyleColor(self))## bg color of non-selected rows FIXME
         for group in ui.eventGroups:
             if not group.enable:## FIXME
                 continue
-            ls.append(getGroupRow(group, rowBgColor))
+            ls.append(getGroupRow(group))
         ###
         #try:
         gtk.ComboBox.set_active(self, 0)

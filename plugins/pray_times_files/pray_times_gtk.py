@@ -19,10 +19,12 @@
 
 import os
 from os.path import dirname
+import math
 
 from scal2 import locale_man
 from scal2.locale_man import tr as _
 from pray_times_backend import timeNames, methodsList
+from pray_times_utils import *
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.app_info import popenFile
@@ -171,7 +173,7 @@ class LocationDialog(gtk.Dialog):
     def calc_clicked(self, button):
         lat = self.spin_lat.get_value()
         lng = self.spin_lng.get_value()
-        md = earthR*2*pi
+        md = earthR*2*math.pi
         city = ''
         for (name, lname, lat2, lng2) in self.cityData:
             d = earthDistance(lat, lng, lat2, lng2)

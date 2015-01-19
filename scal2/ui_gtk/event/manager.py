@@ -40,7 +40,7 @@ from scal2.ui_gtk.utils import toolButtonFromStock, labelImageMenuItem, labelSto
 from scal2.ui_gtk.utils import pixbufFromFile, rectangleContainsPoint, getStyleColor
 from scal2.ui_gtk.utils import showError, showInfo
 from scal2.ui_gtk.color_utils import gdkColorToRgb
-from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
+from scal2.ui_gtk.drawing import newColorCheckPixbuf
 from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk.mywidgets.dialog import MyDialog
 from scal2.ui_gtk.event import common
@@ -336,11 +336,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         if not group.checkEventToAdd(event):
             showError(_('Group type "%s" can not contain event type "%s"')%(group.desc, event.desc), self)
             raise RuntimeError('Invalid event type for this group')
-    getRowBgColor = lambda self: \
-        gdkColorToRgb(getStyleColor(self.treev))
-        ## bg color of non-selected rows
     getGroupRow = lambda self, group:\
-        common.getGroupRow(group, self.getRowBgColor()) + ('',)
+        common.getGroupRow(group) + ('',)
     getEventRow = lambda self, event: (
         event.id,
         pixbufFromFile(event.icon),
@@ -637,7 +634,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                     new_groupItem.set_label(new_group.title)
                     ##
                     image = gtk.Image()
-                    image.set_from_pixbuf(newOutlineSquarePixbuf(new_group.color, 20))
+                    image.set_from_pixbuf(newColorCheckPixbuf(new_group.color, 20, True))
                     new_groupItem.set_image(image)
                     ##
                     new_groupItem.connect(
@@ -891,12 +888,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                         self.trees.set_value(
                             groupIter,
                             1,
-                            newOutlineSquarePixbuf(
-                                group.color,
-                                20,
-                                0 if group.enable else 15,
-                                self.getRowBgColor(),
-                            ),
+                            common.getGroupPixbuf(group),
                         )
                         group.save()
                         if group.enable and \

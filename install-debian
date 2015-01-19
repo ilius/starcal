@@ -3,7 +3,7 @@
 ## (like debian, ubuntu, mint, ...) and installs the package
 
 function getDirTotalSize(){
-    du -bs "$1" | python3 -c "import sys;print(input().split('\t')[0])"
+    du -ks "$1" | python3 -c "import sys;print(input().split('\t')[0])"
 }
 
 if [ "$UID" != "0" ] ; then
@@ -45,13 +45,13 @@ depends+=('python3-gi-cairo(>=3.8)')
 ## it's "python-gobject-cairo" in ubuntu FIXME
 #depends+=('python3-gflags') ## FIXME
 depends+=('python3-httplib2')
-depends+=('python3-dateutil')
 
 #if [ -f "/usr/lib/$HOSTTYPE-$OSTYPE/libappindicator.so.1" ] ; then
 #    depends+=('python-appindicator')
 #fi
 
 recommends=()
+recommends+=('python-dateutil')
 recommends+=('python3-igraph') ## FIXME
 recommends+=('python3-gnomevfs')
 

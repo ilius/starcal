@@ -32,13 +32,14 @@ requires=('python >= 2.6' 'python < 3.0')
 requires+=('python3-gobject') ## The new gobject introspection
 #requires+=('python-gflags')
 requires+=('python-httplib2')
-requires+=('python-dateutil')
+
+
+recommends=()
+recommends+=('python-dateutil')
+recommends+=('python-igraph')
 
 requires_str=$(printf "Requires: %s\n" "${requires[@]}")
-requires_str+="
-"
-
-requires_str+="Recommends: python-igraph"
+recommends_str=$(printf "Recommends: %s\n" "${recommends[@]}")
 
 #echo "$requires_str"; exit
 
@@ -54,6 +55,7 @@ License: GPLv3+
 URL: http://starcal.sourceforge.net/
 
 $requires_str
+$recommends_str
 
 BuildArch: noarch
 
