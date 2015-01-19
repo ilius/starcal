@@ -25,7 +25,7 @@ from scal2.ui_gtk import *
 from scal2.ui_gtk.font_utils import *
 from scal2.ui_gtk.color_utils import *
 from scal2.ui_gtk.utils import buffer_get_text
-from scal2.ui_gtk.drawing import newTextLayout
+from scal2.ui_gtk.drawing import newDndFontNamePixbuf
 
 def myRaise():
     i = sys.exc_info()
@@ -75,30 +75,11 @@ class MyFontButton(gtk.FontButton):
         return True
     def dragBegin(self, fontb, context, parent):
         #print('fontBottonDragBegin'## caled before dragCalDataGet)
-        textLay = newTextLayout(self, gtk.FontButton.get_font_name(self))
-        w, h = textLay.get_pixel_size()
-        pmap = gdk.Pixmap(None, w, h, 24)
-        pmap.draw_layout(
-            pmap.new_gc(),
-            0,
-            0,
-            textLay,
-            gdk.Color(0, 0, 0),# foreground
-            gdk.Color(-1, -1, -1),# background
-        )
-        pbuf = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, w, h)
-        pbuf.get_from_drawable(
-            pmap,
-            parent.get_screen().get_system_colormap(),
-            0,
-            0,
-            0,
-            0,
-            -1,
-            -1,
-        )
-        #fontb.drag_source_set_icon_pixbuf(pbuf)
-        context.set_icon_pixbuf(pbuf, -16, -10)
+        fontName = gtk.FontButton.get_font_name(self)
+        pbuf = newDndFontNamePixbuf(fontName)
+        w = pbuf.get_width()
+        h = pbuf.get_height()
+        context.set_icon_pixbuf(pbuf, w/2, -10)
         return True
     get_font_name = lambda self: gfontDecode(gtk.FontButton.get_font_name(self))
     def set_font_name(self, font):
