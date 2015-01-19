@@ -24,7 +24,7 @@ from scal2 import ui
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk import listener
-from scal2.ui_gtk.drawing import newTextLayout
+from scal2.ui_gtk.drawing import newDndDatePixbuf
 from scal2.ui_gtk.color_utils import rgbToGdkColor
 from scal2.ui_gtk.customize import CustomizableCalObj
 
@@ -139,35 +139,8 @@ class CalBase(CustomizableCalObj):
     def dragBegin(self, obj, context):
         colormap = self.get_screen().get_system_colormap()
         #############################################
-        text = '%.2d/%.2d/%.2d'%ui.cell.dates[ui.dragGetMode]
-        textLay = newTextLayout(self, text)
-        w, h = textLay.get_pixel_size()
-        pmap = gdk.Pixmap(None, w, h, 24)
-        #pmap.set_colormap(colormap)
-        gc = pmap.new_gc()
-        gc.set_foreground(rgbToGdkColor(*ui.bgColor))
-        pmap.draw_rectangle(gc, True, 0, 0, w, h)
-        #gc.set_background(ui.bgColor)
-        ##pmap.set_direction(gtk.DIR_LTR)## FIXME
-        pmap.draw_layout(
-            gc,
-            0,
-            0,
-            textLay,
-            rgbToGdkColor(*ui.textColor),
-            rgbToGdkColor(*ui.bgColor),## rgbToGdkColor(ui.gdkColorInvert(*ui.textColor))
-        )
-        pbuf = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, w , h)
-        pbuf.get_from_drawable(
-            pmap,
-            colormap,
-            0,
-            0,
-            0,
-            0,
-            -1,
-            -1,
-        )
+        pbuf = newDndDatePixbuf(ui.cell.dates[ui.dragGetMode])
+        w = pbuf.get_width()
         context.set_icon_pixbuf(
             pbuf,
             w/2,## y offset
