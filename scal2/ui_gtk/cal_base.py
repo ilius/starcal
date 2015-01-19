@@ -107,6 +107,8 @@ class CalBase(CustomizableCalObj):
         '''
     def dragDataGet(self, obj, context, selection, target_id, etime):
         selection.set_text('%.2d/%.2d/%.2d'%ui.cell.dates[ui.dragGetMode])
+        #pbuf = newDndDatePixbuf(ui.cell.dates[ui.dragGetMode])
+        #selection.set_pixbuf(pbuf)
         return True
     def dragLeave(self, obj, context, etime):
         context.drop_reply(False, etime)
@@ -137,13 +139,14 @@ class CalBase(CustomizableCalObj):
             return True
         return False
     def dragBegin(self, obj, context):
-        pbuf = newDndDatePixbuf(ui.cell.dates[ui.dragGetMode])
-        w = pbuf.get_width()
-        context.set_icon_pixbuf(
-            pbuf,
-            w/2,## y offset
-            -10,## x offset FIXME - not to be hidden behind mouse cursor
-        )
+        #pbuf = newDndDatePixbuf(ui.cell.dates[ui.dragGetMode])
+        #w = pbuf.get_width()
+        #print(dir(context))
+        #context.set_icon_pixbuf(
+        #    pbuf,
+        #    w/2,## y offset
+        #    -10,## x offset FIXME - not to be hidden behind mouse cursor
+        #)
         return True
     def getCellPos(self):
         raise NotImplementedError
