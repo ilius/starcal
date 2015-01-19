@@ -56,7 +56,7 @@ def set_tooltip(widget, text):
         except:
             myRaise(__file__)
 
-buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter())
+buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter(), True)
 
 def setClipboard(text, clipboard=None):
     if not clipboard:
