@@ -162,9 +162,9 @@ class SelectDateDialog(gtk.Dialog):
             y, m, d = (y0, m0, d0)
         else:
             y, m, d = convert(y0, m0, d0, mode, calTypes.primary)
-        if not core.validDate(mode, y, m, d):
-            print('bad date: %s'%dateStr(mode, y, m, d))
-            return
+        #if not core.validDate(mode, y, m, d):
+        #    print('bad date', mode, y, m, d)
+        #    return
         self.emit('response-date', y, m, d)
         self.hide()
         self.dateInput.set_value((y0, m0, d0))
