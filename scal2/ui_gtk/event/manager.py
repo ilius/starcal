@@ -877,7 +877,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             if len(obj_list) == 1:## group, not event
                 group = obj_list[0]
                 if group.name != 'trash':
-                    cell = col.get_cell_renderers()[0]
+                    cell = col.get_cells()[0]
                     try:
                         cell.get_property('pixbuf')
                     except:
