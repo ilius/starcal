@@ -35,8 +35,7 @@ class YearMonthDayBox(gtk.HBox):
         self.mode = mode
         module = calTypes[mode]
         combo = self.comboMonth
-        for i in range(len(combo.get_model())):
-            combo.remove_text(0)
+        combo.remove_all()
         for i in range(12):
             combo.append_text(_(module.getMonthName(i+1)))
         self.spinD.set_range(1, module.maxMonthLen)
