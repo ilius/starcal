@@ -82,7 +82,7 @@ class MyFontButton(gtk.FontButton):
         pbuf = newDndFontNamePixbuf(fontName)
         w = pbuf.get_width()
         h = pbuf.get_height()
-        context.set_icon_pixbuf(pbuf, w/2, -10)
+        gtk.drag_set_icon_pixbuf(context, pbuf, w/2, -10)
         return True
     get_font_name = lambda self: gfontDecode(gtk.FontButton.get_font_name(self))
     def set_font_name(self, font):
