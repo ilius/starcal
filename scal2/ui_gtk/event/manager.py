@@ -297,6 +297,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         cell = gtk.CellRendererPixbuf()
         pack(col, cell)
         col.add_attribute(cell, 'pixbuf', 1)
+        col.set_property('expand', False)
         self.treev.append_column(col)
         ###
         col = gtk.TreeViewColumn(
@@ -305,6 +306,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             text=2,
         )
         col.set_resizable(True)
+        col.set_property('expand', True)
         self.treev.append_column(col)
         ###
         self.colDesc = gtk.TreeViewColumn(
@@ -312,6 +314,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             gtk.CellRendererText(),
             text=3,
         )
+        self.colDesc.set_property('expand', True)
         if ui.eventManShowDescription:
             self.treev.append_column(self.colDesc)
         ###
