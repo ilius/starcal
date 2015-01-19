@@ -173,7 +173,17 @@ def newColorCheckPixbuf(color, size, checked):
     pixbuf = loader.get_pixbuf()
     return pixbuf
 
-
+def newDndDatePixbuf(ymd):
+    imagePath = join(rootDir, 'svg', 'dnd-date.svg')
+    loader = gdk.pixbuf_loader_new_with_mime_type('image/svg')
+    data = open(imagePath).read()
+    data = data.replace('YYYY', '%.4d'%ymd[0])
+    data = data.replace('MM', '%.2d'%ymd[1])
+    data = data.replace('DD', '%.2d'%ymd[2])
+    loader.write(data)
+    loader.close()
+    pixbuf = loader.get_pixbuf()
+    return pixbuf
 
 def drawRoundedRect(cr, cx0, cy0, cw, ch, ro):
     ro = min(ro, cw/2.0, ch/2.0)
