@@ -154,7 +154,7 @@ def newLimitedWidthTextLayout(widget, text, width, font=None, truncate=True, mar
 
 def newColorCheckPixbuf(color, size, checked):
     import re
-    imagePath = join(pixDir, 'color-check.svg')
+    imagePath = join(rootDir, 'svg', 'color-check.svg')
     loader = gdk.pixbuf_loader_new_with_mime_type('image/svg')
     data = open(imagePath).read()
     if not checked:
