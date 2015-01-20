@@ -483,7 +483,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
             return
         if etime is None:
             etime = gtk.get_current_event_time()
-        menu.popup(None, None, None, 3, etime)
+        menu.popup(None, None, None, None, 3, etime)
     def treevButtonPress(self, widget, gevent):
         pos_t = self.treev.get_path_at_pos(int(gevent.x), int(gevent.y))
         if not pos_t:
@@ -521,6 +521,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
                     None,
                     None,
                     lambda m: (wx+dx, wy+dy+20, True),
+                    None,
                     3,
                     gevent.time,
                 )
