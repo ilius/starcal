@@ -5,6 +5,7 @@ from scal2 import event_lib
 from scal2 import ui
 
 from scal2.ui_gtk import *
+from scal2.ui_gtk.utils import imageFromFile
 
 class WidgetClass(gtk.Entry):
     def __init__(self, notifier):
@@ -34,7 +35,7 @@ def notify(notifier, finishFunc):## FIXME
     hbox = gtk.HBox(spacing=15)
     hbox.set_border_width(10)
     if event.icon:
-        pack(hbox, gtk.image_new_from_file(event.icon))
+        pack(hbox, imageFromFile(event.icon))
         dialog.set_icon_from_file(event.icon)
     label = gtk.Label(text)
     label.set_selectable(True)

@@ -474,7 +474,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
                     item3.set_label(eventClass.desc)
                     icon = eventClass.getDefaultIcon()
                     if icon:
-                        item3.set_image(gtk.image_new_from_file(icon))
+                        item3.set_image(imageFromFile(icon))
                     item3.connect('activate', self.addToGroupFromMenu, group, eventType)
                     menu3.add(item3)
                 menu3.show_all()
