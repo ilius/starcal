@@ -63,7 +63,7 @@ class SelectDateDialog(gtk.Dialog):
         pack(self.vbox, hb0)
         #######################
         hbox = gtk.HBox(spacing=5)
-        rb1 = gtk.RadioButton()
+        rb1 = gtk.RadioButton.new_with_label(None, '')
         rb1.num = 1
         pack(hbox, rb1)
         self.ymdBox = YearMonthDayBox()
@@ -74,7 +74,7 @@ class SelectDateDialog(gtk.Dialog):
         pack(hb2, gtk.Label('yyyy/mm/dd'))
         dateInput = DateButtonOption(hist_size=16)
         pack(hb2, dateInput)
-        rb2 = gtk.RadioButton()
+        rb2 = gtk.RadioButton.new_with_label(None, '')
         rb2.num = 2
         rb2.set_group([rb1])
         hb2i = gtk.HBox(spacing=5)
