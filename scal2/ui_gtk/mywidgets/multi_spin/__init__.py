@@ -144,7 +144,6 @@ class MultiSpinButton(gtk.SpinButton):
             self.insertText(self.digs[kval-ord('0')])
             return True
         elif 'kp_0' <= kname <= 'kp_9':
-            print('self.insertText', int, self.insertText)
             self.insertText(self.digs[int(kname[-1])])
             return True
         elif kname in (
