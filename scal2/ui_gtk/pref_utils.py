@@ -36,7 +36,7 @@ from scal2.ui_gtk.color_utils import *
 from scal2.ui_gtk.utils import *
 
 
-from scal2.ui_gtk.mywidgets.multi_spin.int import IntSpinButton
+from scal2.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 from scal2.ui_gtk.mywidgets.multi_spin.float import FloatSpinButton
 
 
