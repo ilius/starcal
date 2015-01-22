@@ -7,7 +7,7 @@ def getDateTimeWidget():
     return btn
 
 def getIntWidget():
-    from scal2.ui_gtk.mywidgets.multi_spin.int import IntSpinButton
+    from scal2.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
     btn = IntSpinButton(0, 99)
     btn.set_value(12)
     return btn
