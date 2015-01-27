@@ -169,19 +169,20 @@ class MultiSpinButton(gtk.SpinButton):
         height = self.size_request().height
         step_inc, page_inc = self.get_increments()
         gwin_index = self.get_window().get_children().index(gwin)
-        if gwin_index == 8:## UP
+        print('_button_press', gwin_index, len(self.get_window().get_children()))
+        if gwin_index in (8, 12):## UP
             if gevent.button==1:
                 self._arrow_press(step_inc)
             elif gevent.button==2:
                 self._arrow_press(page_inc)
             return True
-        elif gwin_index == 9:## DOWN
+        elif gwin_index in (9, 13):## DOWN
             if gevent.button==1:
                 self._arrow_press(-step_inc)
             else:
                 self._arrow_press(-page_inc)
             return True
-        elif gwin_index == 10:## TEXT ENTRY
+        elif gwin_index == (10, 14):## TEXT ENTRY
             if gevent.type==TWO_BUTTON_PRESS:
                 pass ## FIXME
                 ## select the numeric part containing cursor
