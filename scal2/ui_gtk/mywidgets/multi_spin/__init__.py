@@ -25,6 +25,7 @@ from scal2.utils import toStr
 from scal2.cal_types import to_jd, jd_to
 from scal2 import locale_man
 from scal2.locale_man import tr as _
+from scal2.locale_man import rtl
 from scal2.mywidgets.multi_spin import * ## FIXME
 from scal2 import ui
 
@@ -166,27 +167,39 @@ class MultiSpinButton(gtk.SpinButton):
             self.grab_focus()
         if self.get_editable():
             self.update()
-        height = self.size_request().height
+        #height = self.size_request().height
+        get_size = lambda gw: (gw.get_width(), gw.get_height())
         step_inc, page_inc = self.get_increments()
-        gwin_index = self.get_window().get_children().index(gwin)
-        print('_button_press', gwin_index, len(self.get_window().get_children()))
-        if gwin_index in (8, 12):## UP
+        gwin_list = self.get_window().get_children()
+        gwin_index = gwin_list.index(gwin)
+        gwin_size = get_size(gwin)
+        button_type = None ## '+', '-'
+        try:
+            if gwin_size == get_size(gwin_list[gwin_index + 1]):
+                button_type = '+'
+        except IndexError:
+            pass
+        if gwin_index > 0:
+            if gwin_size == get_size(gwin_list[gwin_index - 1]):
+                button_type = '-'
+        #print('_button_press', button_type)
+        if button_type == '+':
             if gevent.button==1:
                 self._arrow_press(step_inc)
             elif gevent.button==2:
                 self._arrow_press(page_inc)
             return True
-        elif gwin_index in (9, 13):## DOWN
+        elif button_type == '-':
             if gevent.button==1:
                 self._arrow_press(-step_inc)
             else:
                 self._arrow_press(-page_inc)
             return True
-        elif gwin_index == (10, 14):## TEXT ENTRY
-            if gevent.type==TWO_BUTTON_PRESS:
-                pass ## FIXME
-                ## select the numeric part containing cursor
-                #return True
+        #elif button_type == 'text':## TEXT ENTRY
+        #    if gevent.type==TWO_BUTTON_PRESS:
+        #        pass ## FIXME
+        #        ## select the numeric part containing cursor
+        #        #return True
         return False
     def _scroll(self, widget, gevent):
         d = gevent.direction.value_nick
