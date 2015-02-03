@@ -53,7 +53,8 @@ class MultiSpinButton(gtk.SpinButton):
         ####
         self.set_direction(gtk.TextDirection.LTR) ## self is a gtk.Entry
         self.set_width_chars(self.field.getMaxWidth())
-        self.set_value(0)
+        #print(self.__class__.__name__, 'value=', value)
+        #self.set_value(value)
         self.set_digits(0)
         gtk.SpinButton.set_range(self, -2, 2)
         self.set_increments(1, page_inc)
@@ -75,6 +76,8 @@ class MultiSpinButton(gtk.SpinButton):
         self.field.setText(self.get_text())
         return self.field.getValue()
     def set_value(self, value):
+        if isinstance(value, int):## , float
+            gtk.SpinButton.set_value(self, value)
         pos = self.get_position()
         self.field.setValue(value)
         self.set_text(self.field.getText())
@@ -246,6 +249,14 @@ class SingleSpinButton(MultiSpinButton):
             (field,),
             **kwargs
         )
+        if isinstance(field, NumField):
+            gtk.SpinButton.set_range(self, field._min, field._max)
+    def set_range(self, _min, _max):
+        gtk.SpinButton.set_range(self, _min, _max)
     get_value = lambda self: MultiSpinButton.get_value(self)[0]
+
+
+
+
 
 

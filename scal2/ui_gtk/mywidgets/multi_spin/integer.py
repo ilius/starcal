@@ -1,3 +1,4 @@
+from scal2.ui_gtk import *
 from scal2.mywidgets.multi_spin import IntField
 from scal2.ui_gtk.mywidgets.multi_spin import SingleSpinButton
 
@@ -9,6 +10,7 @@ class IntSpinButton(SingleSpinButton):
             **kwargs
         )
     def set_range(self, _min, _max):
+        SingleSpinButton.set_range(self, _min, _max)
         self.field.children[0].setRange(_min, _max)
         self.set_text(self.field.getText())
 
