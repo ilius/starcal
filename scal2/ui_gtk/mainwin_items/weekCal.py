@@ -792,7 +792,7 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
             self.appendItem(item)
     def optionsWidgetCreate(self):
         from scal2.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
-        from scal2.ui_gtk.mywidgets.multi_spin.float import FloatSpinButton
+        from scal2.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
         from scal2.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
         if self.optionsWidget:
             return
