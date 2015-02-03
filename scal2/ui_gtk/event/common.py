@@ -38,7 +38,7 @@ from scal2.ui_gtk.drawing import newOutlineSquarePixbuf
 from scal2.ui_gtk.mywidgets import TextFrame
 from scal2.ui_gtk.mywidgets.icon import IconSelectButton
 from scal2.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
-from scal2.ui_gtk.mywidgets.multi_spin.float import FloatSpinButton
+from scal2.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
 from scal2.ui_gtk.event import makeWidget
 from scal2.ui_gtk.event.utils import *
 

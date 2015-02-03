@@ -13,7 +13,7 @@ def getIntWidget():
     return btn
 
 def getFloatWidget():
-    from scal2.ui_gtk.mywidgets.multi_spin.float import FloatSpinButton
+    from scal2.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
     btn = FloatSpinButton(-3.3, 5.5, 1)
     btn.set_value(3.67)
     return btn
