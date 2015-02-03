@@ -76,7 +76,7 @@ class MultiSpinButton(gtk.SpinButton):
         self.field.setText(self.get_text())
         return self.field.getValue()
     def set_value(self, value):
-        if isinstance(value, int):## , float
+        if isinstance(value, (int, float)):
             gtk.SpinButton.set_value(self, value)
         pos = self.get_position()
         self.field.setValue(value)
