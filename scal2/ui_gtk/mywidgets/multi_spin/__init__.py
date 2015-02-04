@@ -54,9 +54,9 @@ class MultiSpinButton(gtk.SpinButton):
         self.set_direction(gtk.TextDirection.LTR) ## self is a gtk.Entry
         self.set_width_chars(self.field.getMaxWidth())
         #print(self.__class__.__name__, 'value=', value)
-        #self.set_value(value)
-        self.set_digits(0)
+        gtk.SpinButton.set_value(self, 0)
         gtk.SpinButton.set_range(self, -2, 2)
+        self.set_digits(0)
         self.set_increments(1, page_inc)
         #self.connect('activate', lambda obj: self.update())
         self.connect('activate', self._entry_activate)
