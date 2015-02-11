@@ -11,7 +11,8 @@ from scal2.ui_gtk.event import makeWidget
 class EventEditorDialog(gtk.Dialog):
     def __init__(self, event, typeChangable=True, title=None, isNew=False, parent=None, useSelectedDate=False):
         gtk.Dialog.__init__(self)
-        self.set_parent(parent)
+        if parent:
+            self.set_parent(parent)
         #self.set_transient_for(None)
         #self.set_type_hint(gdk.WindowTypeHint.NORMAL)
         if title:
