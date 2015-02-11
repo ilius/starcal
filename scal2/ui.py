@@ -619,7 +619,10 @@ wcal_eventsText_showDesc = False
 wcal_eventsText_colorize = True
 wcal_daysOfMonth_width = 30
 wcal_daysOfMonth_dir = 'ltr' ## ltr/rtl/auto
-
+wcalFont_eventsText = None
+wcalFont_weekDays = None
+wcalFont_pluginsText = None
+wcalFont_eventsBox = None
 
 
 ##### just for compatibility
