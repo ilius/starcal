@@ -200,9 +200,12 @@ class HolidayPlugin(BasePlugin):
     def __init__(self, fname, enable=None, show_date=None):
         default_enable = True
         default_show_date = False
+        holidays = {}
         fpath = getPlugPath(fname)
         exec(open(fpath).read())
-        #execfile(fpath)
+        #execfile(path)
+        if not holidays:
+            print(('no holidays set, path=%s'%holidays))
         if enable==None:
             enable = default_enable
         if show_date==None:
@@ -273,9 +276,12 @@ class BuiltinTextPlugin(BasePlugin):
     def __init__(self, fname, enable=None, show_date=None):
         default_enable = True
         default_show_date = False
+        db_name = ''
         fpath = getPlugPath(fname)
         exec(open(fpath).read())
         #execfile(fpath)
+        if not db_name:
+            print('no db_name set, path: %s'%fpath)
         if enable==None:
             enable = default_enable
         if show_date==None:
