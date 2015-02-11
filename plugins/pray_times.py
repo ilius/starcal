@@ -299,7 +299,7 @@ class TextPlug(BasePlugin, TextPlugUI):
         self.killPrevSound()
         self.proc = popenFile(self.preAzanFile)
     def onCurrentDateChange(self, gdate):
-        print 'praytimes: onCurrentDateChange', gdate
+        print('praytimes: onCurrentDateChange', gdate)
         if not self.enable:
             return
         jd = gregorian_to_jd(*tuple(gdate))
