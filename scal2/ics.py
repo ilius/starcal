@@ -126,7 +126,7 @@ def convertHolidayPlugToIcs(plug, startJd, endJd, namePostfix=''):
             icsText += 'SUMMARY:%s\n'%_('Holiday')
             icsText += 'END:VEVENT\n'
     icsText += 'END:VCALENDAR\n'
-    fname = split(plug.path)[-1]
+    fname = split(plug.fpath)[-1]
     fname = splitext(fname)[0] + '%s.ics'%namePostfix
     open(fname, 'w').write(icsText)
 
@@ -150,7 +150,7 @@ def convertBuiltinTextPlugToIcs(plug, startJd, endJd, namePostfix=''):
             icsText += 'SUMMARY:%s\n'%dayText
             icsText += 'END:VEVENT\n'
     icsText += 'END:VCALENDAR\n'
-    fname = split(plug.path)[-1]
+    fname = split(plug.fpath)[-1]
     fname = splitext(fname)[0] + '%s.ics'%namePostfix
     open(fname, 'w').write(icsText)
 

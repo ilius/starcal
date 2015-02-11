@@ -777,7 +777,7 @@ class PrefDialog(gtk.Dialog):
                     print(i, core.plugIndex)
             else:
                 if enable:
-                    plug = plugin_man.loadPlugin(plug.path)
+                    plug = plugin_man.loadPlugin(plug.fpath)
                     assert plug.loaded
                     core.allPlugList[plugI] = plug
         core.plugIndex = index
