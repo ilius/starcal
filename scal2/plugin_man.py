@@ -200,30 +200,29 @@ class HolidayPlugin(BasePlugin):
     def __init__(self, fname, enable=None, show_date=None):
         default_enable = True
         default_show_date = False
-        holidays = {}
         fpath = getPlugPath(fname)
-        exec(open(fpath).read())
-        #execfile(path)
-        if not holidays:
-            print(('no holidays set, path=%s'%holidays))
+        data = {}
+        exec(open(fpath).read(), data)
+        if not 'holidays' in data:
+            print(('no holidays set, path=%s'%fpath))
         if enable==None:
-            enable = default_enable
+            enable = data['default_enable']
         if show_date==None:
-            show_date = default_show_date
-        mode = None ## FIXME
-        last_day_merge = True ## FIXME
+            show_date = data['default_show_date']
+        data['mode'] = None ## FIXME
+        data['last_day_merge'] = True ## FIXME
         BasePlugin.__init__(
             self,
             fname,
-            **self.prepareParams(locals())
+            **self.prepareParams(data)
         )
         self.holidays = {}
-        for modeName in holidays:
+        for modeName in data['holidays']:
             try:
                 mode = calTypes.names.index(modeName)
             except ValueError:
                 continue
-            self.holidays[mode] = holidays[modeName]
+            self.holidays[mode] = data['holidays'][modeName]
     def update_cell(self, c):
         if not c.holiday:
             for mode in self.holidays:
@@ -278,19 +277,20 @@ class BuiltinTextPlugin(BasePlugin):
         default_show_date = False
         db_name = ''
         fpath = getPlugPath(fname)
-        exec(open(fpath).read())
+        data = {}
+        exec(open(fpath).read(), data)
         #execfile(fpath)
-        if not db_name:
+        if not 'db_name' in data:
             print('no db_name set, path: %s'%fpath)
         if enable==None:
-            enable = default_enable
+            enable = data['default_enable']
         if show_date==None:
-            show_date = default_show_date
-        self.db_path = getPlugPath(db_name)
+            show_date = data['default_show_date']
+        self.db_path = getPlugPath(data['db_name'])
         BasePlugin.__init__(
             self,
             fname,
-            **self.prepareParams(locals())
+            **self.prepareParams(data)
         )
     def clear(self):
         self.data = []
