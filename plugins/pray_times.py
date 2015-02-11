@@ -136,7 +136,7 @@ class TextPlug(BasePlugin, TextPlugUI):
         #print('From plugin: core.aaa=%s'%api.get('core', 'aaa'))
         BasePlugin.__init__(
             self,
-            path=_mypath,
+            _mypath,
             mode='gregorian',
             desc=_('Islamic Pray Times'),
             enable=enable,

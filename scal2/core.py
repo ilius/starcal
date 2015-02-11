@@ -261,7 +261,7 @@ def initPlugins():
     ## Assert that user configuarion for plugins is OK
     validatePlugList()
     ########################
-    names = [os.path.split(plug.path)[1] for plug in allPlugList]
+    names = [os.path.split(plug.fpath)[1] for plug in allPlugList]
     ##newPlugs = []#????????
     for direc in (plugDir, plugDirUser):
         if not isdir(direc):
@@ -336,7 +336,7 @@ def convertAllPluginsToIcs(startYear, endYear):
         elif isinstance(plug, BuiltinTextPlugin):
             convertBuiltinTextPlugToIcs(plug, startJd, endJd, namePostfix)
         else:
-            print('Ignoring unsupported plugin %s'%plug.path)
+            print('Ignoring unsupported plugin %s'%plug.fpath)
 
 #########################################################
 
