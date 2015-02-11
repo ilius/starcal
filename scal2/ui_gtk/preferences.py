@@ -472,6 +472,7 @@ class PrefDialog(gtk.Dialog):
         col.add_attribute(cell, 'active', 1)
         #cell.set_active(False)
         col.set_resizable(True)
+        col.set_property('expand', False)
         treev.append_column(col)
         ######
         cell = gtk.CellRendererToggle()
@@ -481,6 +482,7 @@ class PrefDialog(gtk.Dialog):
         col.add_attribute(cell, 'active', 2)
         #cell.set_active(False)
         col.set_resizable(True)
+        col.set_property('expand', False)
         treev.append_column(col)
         ######
         #cell = gtk.CellRendererText()
@@ -498,6 +500,7 @@ class PrefDialog(gtk.Dialog):
         #self.plugDescCell = cell
         #self.plugDescCol = col
         #col.set_resizable(True)## No need!
+        col.set_property('expand', True)
         treev.append_column(col)
         ######
         #for i in xrange(len(core.plugIndex)):
@@ -651,11 +654,13 @@ class PrefDialog(gtk.Dialog):
         col.add_attribute(cell, 'active', 1)
         #cell.set_active(False)
         col.set_resizable(True)
+        col.set_property('expand', False)
         treev.append_column(col)
         ######
         cell = gtk.CellRendererText()
         col = gtk.TreeViewColumn(_('Title'), cell, text=2)
         #col.set_resizable(True)## No need!
+        col.set_property('expand', True)
         treev.append_column(col)
         ######
         self.accountsTreeview = treev
