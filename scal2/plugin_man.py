@@ -152,6 +152,8 @@ class DummyPlugin(BasePlugin):
     has_image = False
     __repr__ = lambda self: 'loadPlugin(%r, enable=False, show_date=False)'%self.fname
     def __init__(self, fname, desc):
+        self.fpath = getPlugPath(fname)
+        fname = split(fname)[-1]
         self.fname = fname
         self.desc = desc
 
