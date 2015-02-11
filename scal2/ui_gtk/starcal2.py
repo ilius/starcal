@@ -530,9 +530,9 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             x -= get_menu_width(menu)
         ####
         etime = gtk.get_current_event_time()
-        print('menuCellPopup', x, y, etime)
+        #print('menuCellPopup', x, y, etime)
+        self.menuCell = menu ## without this line, the menu was not showing up, WTF?!!
         menu.popup(None, None, lambda m, e: (x, y, True), None, 3, etime)
-        #menu.popup(None, None, None, None, 3, etime)
         ui.updateFocusTime()
     def menuMainCreate(self):
         if self.menuMain:
