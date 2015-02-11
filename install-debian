@@ -68,13 +68,13 @@ Depends: $depends_str
 Recommends: $recommends_str
 Section: Utilities
 Priority: optional
-Homepage: http://starcal.sourceforge.net/
+Homepage: http://ilius.github.io/starcal
 Description: A full-featured international calendar writen in Python
  StarCalendar is a full-featured international calendar writen in Python,
  with both PyGTK and PyQt interfaces, that supports Jalai(Iranian),
  Hijri(Islamic), and Indian National calendars, as well as common 
  english(Gregorian) calendar
- Homepage: http://starcal.sourceforge.net
+ Homepage: http://ilius.github.io/starcal
 " > "$tmpDir/DEBIAN/control"
 
 echo "/usr/share/starcal2/scripts/assert_python2" > "$tmpDir/DEBIAN/postinst"
