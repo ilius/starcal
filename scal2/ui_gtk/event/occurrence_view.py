@@ -105,7 +105,8 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
         self.labelMenuAddCopyItems(label, menu)
         ####
         menu.show_all()
-        menu.popup(None, None, None, 3, 0)
+        self.tmpMenu = menu
+        menu.popup(None, None, None, None, 3, 0)
         ui.updateFocusTime()
     def moveEventToGroupFromMenu(self, item, event, prev_group, newGroup):
         prev_group.remove(event)
@@ -211,7 +212,8 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
             ))
         ####
         menu.show_all()
-        menu.popup(None, None, None, 3, 0)
+        self.tmpMenu = menu
+        menu.popup(None, None, None, None, 3, 0)
         ui.updateFocusTime()
     def editEventClicked(self, item, winTitle, event, groupId):
         from scal2.ui_gtk.event.editor import EventEditorDialog

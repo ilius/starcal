@@ -57,7 +57,7 @@ class IconSelectButton(gtk.Button):
         if b==1:
             self.dialog.run()
         elif b==3:
-            self.menu.popup(None, None, None, b, gevent.time)
+            self.menu.popup(None, None, None, None, b, gevent.time)
     menuItemActivate = lambda self, widget, icon: self.set_filename(icon)
     def dialogResponse(self, dialog, response=0):
         dialog.hide()

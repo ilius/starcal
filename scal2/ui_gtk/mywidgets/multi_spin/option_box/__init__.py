@@ -32,7 +32,7 @@ class MultiSpinOptionBox(gtk.HBox):
         self.set_value = self.spin.set_value
     def option_pressed(self, widget, gevent):
         #x, y, w, h = self.option.
-        self.menu.popup(None, None, None, gevent.button, gevent.time)
+        self.menu.popup(None, None, None, None, gevent.button, gevent.time)
     def add_history(self):
         self.spin.update()
         text = self.spin.get_text()

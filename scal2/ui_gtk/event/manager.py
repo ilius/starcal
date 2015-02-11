@@ -701,7 +701,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             return
         if etime is None:
             etime = gtk.get_current_event_time()
-        menu.popup(None, None, None, 3, etime)
+        self.tmpMenu = menu
+        menu.popup(None, None, None, None, 3, etime)
     #def onTreeviewRealize(self, gevent):
     #    #self.reloadEvents()## FIXME
     #    pass
@@ -734,10 +735,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                     x += 50
                 dx, dy = treev.translate_coordinates(self, x, rect.y + rect.height)
                 foo, wx, wy = self.get_window().get_origin()
+                self.tmpMenu = menu
                 menu.popup(
                     None,
                     None,
-                    lambda m: (wx+dx, wy+dy+20, True),
+                    lambda m, e: (wx+dx, wy+dy+20, True),
+                    None,
                     3,
                     gevent.time,
                 )

@@ -984,7 +984,8 @@ class PrefDialog(gtk.Dialog):
                 menu.add(labelImageMenuItem(_('Export to %s')%'iCalendar', 'ical-32.png', self.plugExportToIcsClicked, plug))
                 ##
                 menu.show_all()
-                menu.popup(None, None, None, 3, gevent.time)
+                self.tmpMenu = menu
+                menu.popup(None, None, None, None, 3, gevent.time)
             return True
         return False
     def plugAddClicked(self, button):
@@ -1197,7 +1198,8 @@ class PrefDialog(gtk.Dialog):
                 ## FIXME
                 ##
                 #menu.show_all()
-                #menu.popup(None, None, None, 3, gevent.time)
+                #self.tmpMenu = menu
+                #menu.popup(None, None, None, None, 3, gevent.time)
             return True
         return False
     def accountsTreeviewCellToggled(self, cell, path):

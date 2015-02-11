@@ -573,7 +573,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         y = wy+dy
         if rtl:
             x -= get_menu_width(menu)
-        print('menuMainPopup', x, y, etime)
+        #print('menuMainPopup', x, y, etime)
         menu.popup(None, None, lambda m, e: (x, y, True), None, 3, etime)
         ui.updateFocusTime()
     def addToGroupFromMenu(self, menu, group, eventType):
@@ -705,7 +705,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         for item in items:
             menu.add(item)
         menu.show_all()
-        print('statusIconPopup', button, etime)
+        #print('statusIconPopup', button, etime)
         menu.popup(None, None, get_pos_func, self.sicon, button, etime)
         #self.sicon.do_popup_menu(self.sicon, button, etime)
         ui.updateFocusTime()
