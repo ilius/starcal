@@ -351,7 +351,8 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
                 ))
                 ##
                 menu.show_all()
-                menu.popup(None, None, None, 3, 0)
+                self.tmpMenu = menu
+                menu.popup(None, None, None, None, 3, gevent.time)
         return False
     def motionNotify(self, obj, gevent):
         if self.boxEditing:
