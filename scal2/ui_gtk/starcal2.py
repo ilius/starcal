@@ -299,12 +299,14 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         self.menuMain = None
         #####
         check = gtk.CheckMenuItem(label=_('_On Top'))
+        check.set_use_underline(True)
         check.connect('activate', self.keepAboveClicked)
         check.set_active(ui.winKeepAbove)
         self.set_keep_above(ui.winKeepAbove)
         self.checkAbove = check
         #####
         check = gtk.CheckMenuItem(label=_('_Sticky'))
+        check.set_use_underline(True)
         check.connect('activate', self.stickyClicked)
         check.set_active(ui.winSticky)
         if ui.winSticky:
