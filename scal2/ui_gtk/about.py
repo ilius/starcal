@@ -14,7 +14,8 @@ class AboutDialog(gtk.AboutDialog):
         website='',
     ):
         gtk.AboutDialog.__init__(self)
-        self.set_name(name)## or set_program_name FIXME
+        self.set_name(name)
+        self.set_program_name(name)
         self.set_version(version)
         self.set_title(title) ## must call after set_name and set_version !
         self.set_authors(authors)
