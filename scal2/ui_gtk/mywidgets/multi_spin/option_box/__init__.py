@@ -47,7 +47,7 @@ class MultiSpinOptionBox(gtk.HBox):
         else:
             n += 1
         #m.prepend([text])#self.combo.prepend_text(text)
-        item = gtk.MenuItem(text)
+        item = MenuItem(text)
         item.connect('activate', lambda obj: self.spin.set_text(text))
         item.text = text
         self.menu.add(item)

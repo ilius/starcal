@@ -40,7 +40,7 @@ class IconSelectButton(gtk.Button):
         for item in ui.eventTags:
             icon = item.icon
             if icon:
-                menuItem = gtk.ImageMenuItem(item.desc)
+                menuItem = ImageMenuItem(item.desc)
                 menuItem.set_image(gtk.Image.new_from_file(icon))
                 menuItem.connect('activate', self.menuItemActivate, icon)
                 menu.add(menuItem)

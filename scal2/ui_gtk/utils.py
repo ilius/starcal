@@ -92,7 +92,7 @@ toolButtonFromStock = lambda stock, size: gtk.ToolButton(gtk.Image.new_from_stoc
 
 
 def labelStockMenuItem(label, stock=None, func=None, *args):
-    item = gtk.ImageMenuItem(_(label))
+    item = ImageMenuItem(_(label))
     item.set_use_underline(True)
     if stock:
         item.set_image(gtk.Image.new_from_stock(stock, gtk.IconSize.MENU))
@@ -101,7 +101,7 @@ def labelStockMenuItem(label, stock=None, func=None, *args):
     return item
 
 def labelImageMenuItem(label, image, func=None, *args):
-    item = gtk.ImageMenuItem(_(label))
+    item = ImageMenuItem(_(label))
     item.set_use_underline(True)
     item.set_image(imageFromFile(image))
     if func:
@@ -109,8 +109,7 @@ def labelImageMenuItem(label, image, func=None, *args):
     return item
 
 def labelMenuItem(label, func=None, *args):
-    item = gtk.MenuItem(_(label))
-    item.set_use_underline(True)
+    item = MenuItem(_(label))
     if func:
         item.connect('activate', func, *args)
     return item
@@ -225,11 +224,10 @@ class IdComboBox(gtk.ComboBox):
         except IndexError:
             return
 
-class CopyLabelMenuItem(gtk.MenuItem):
+class CopyLabelMenuItem(MenuItem):
     def __init__(self, label):
-        gtk.MenuItem.__init__(self)
+        MenuItem.__init__(self)
         self.set_label(label)
-        self.set_use_underline(False)
         self.connect('activate', self.on_activate)
     def on_activate(self, item):
         setClipboard(self.get_property('label'))

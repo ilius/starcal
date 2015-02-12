@@ -108,7 +108,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
             #label.set_justify(gtk.Justification.LEFT)
             label.set_alignment(0, 0.5)
             label.set_use_markup(True)
-            item = gtk.MenuItem()
+            item = MenuItem()
             item.set_right_justified(True) ##?????????
             item.add(label)
             item.connect('activate', self.itemActivate, i)
@@ -218,7 +218,7 @@ class IntLabel(BaseLabel):
         self.menuLabels = []
         self.menu.connect('scroll-event', self.menuScroll)
         ##########
-        item = gtk.MenuItem()
+        item = MenuItem()
         arrow = gtk.Arrow(gtk.ArrowType.UP, gtk.ShadowType.IN)
         item.add(arrow)
         arrow.set_property('height-request', 10)
@@ -238,13 +238,13 @@ class IntLabel(BaseLabel):
         for i in range(self.height):
             label = gtk.Label()
             label.set_use_markup(True)
-            item = gtk.MenuItem()
+            item = MenuItem()
             item.add(label)
             item.connect('activate', self.itemActivate, i)
             self.menu.append(item)
             self.menuLabels.append(label)
         ##########
-        item = gtk.MenuItem()
+        item = MenuItem()
         arrow = gtk.Arrow(gtk.ArrowType.DOWN, gtk.ShadowType.IN)
         arrow.set_property('height-request', 10)
         item.add(arrow)

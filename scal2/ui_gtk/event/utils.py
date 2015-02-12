@@ -10,7 +10,7 @@ confirmEventTrash = lambda event:\
 
 
 def menuItemFromEventGroup(group):
-    item = gtk.ImageMenuItem()
+    item = ImageMenuItem()
     item.set_label(group.title)
     ##
     image = gtk.Image()

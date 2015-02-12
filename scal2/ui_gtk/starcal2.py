@@ -456,7 +456,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             eventTypes = group.acceptsEventTypes
             if not eventTypes:
                 continue
-            item2 = gtk.ImageMenuItem()
+            item2 = ImageMenuItem()
             item2.set_label(group.title)
             ##
             image = gtk.Image()
@@ -472,7 +472,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
                 menu3 = gtk.Menu()
                 for eventType in eventTypes:
                     eventClass = event_lib.classes.event.byName[eventType]
-                    item3 = gtk.ImageMenuItem()
+                    item3 = ImageMenuItem()
                     item3.set_label(eventClass.desc)
                     icon = eventClass.getDefaultIcon()
                     if icon:
@@ -518,7 +518,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             moreMenu.add(labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit))
         ##
         moreMenu.show_all()
-        moreItem = gtk.MenuItem(_('More'))
+        moreItem = MenuItem(_('More'))
         moreItem.set_submenu(moreMenu)
         #moreItem.show_all()
         menu.add(moreItem)
@@ -541,7 +541,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             return
         menu = gtk.Menu()
         ####
-        item = gtk.ImageMenuItem(_('Resize'))
+        item = ImageMenuItem(_('Resize'))
         item.set_image(imageFromFile('resize.png'))
         item.connect('button-press-event', self.startResize)
         menu.add(item)

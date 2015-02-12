@@ -74,7 +74,7 @@ class IndicatorStatusIconWrapper:
         for item in self.mainWin.getStatusIconPopupItems():
             item.show()
             submenu.add(item)
-        sitem = gtk.MenuItem(label=_('More'))
+        sitem = MenuItem(label=_('More'))
         sitem.set_submenu(submenu)
         sitem.show()
         menu.append(sitem)

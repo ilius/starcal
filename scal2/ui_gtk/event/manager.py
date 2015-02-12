@@ -153,38 +153,38 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         #######
         menubar = gtk.MenuBar()
         ####
-        fileItem = gtk.MenuItem(_('_File'))
+        fileItem = MenuItem(_('_File'))
         fileMenu = gtk.Menu()
         fileItem.set_submenu(fileMenu)
         menubar.append(fileItem)
         ##
-        addGroupItem = gtk.MenuItem(_('Add New Group'))
+        addGroupItem = MenuItem(_('Add New Group'))
         addGroupItem.connect('activate', self.addGroupBeforeSelection)
         ## or before selected group? FIXME
         fileMenu.append(addGroupItem)
         ##
-        searchItem = gtk.MenuItem(_('_Search Events'))## FIXME right place?
+        searchItem = MenuItem(_('_Search Events'))## FIXME right place?
         searchItem.connect('activate', self.mbarSearchClicked)
         fileMenu.append(searchItem)
         ##
-        exportItem = gtk.MenuItem(_('_Export'))
+        exportItem = MenuItem(_('_Export'))
         exportItem.connect('activate', self.mbarExportClicked)
         fileMenu.append(exportItem)
         ##
-        importItem = gtk.MenuItem(_('_Import'))
+        importItem = MenuItem(_('_Import'))
         importItem.connect('activate', self.mbarImportClicked)
         fileMenu.append(importItem)
         ##
-        orphanItem = gtk.MenuItem(_('Check for Orphan Events'))
+        orphanItem = MenuItem(_('Check for Orphan Events'))
         orphanItem.connect('activate', self.mbarOrphanClicked)
         fileMenu.append(orphanItem)
         ####
-        editItem = gtk.MenuItem(_('_Edit'))
+        editItem = MenuItem(_('_Edit'))
         editMenu = gtk.Menu()
         editItem.set_submenu(editMenu)
         menubar.append(editItem)
         ##
-        editEditItem = gtk.MenuItem(_('Edit'))
+        editEditItem = MenuItem(_('Edit'))
         editEditItem.connect('activate', self.mbarEditClicked)
         editMenu.append(editEditItem)
         editMenu.connect('show', self.mbarEditMenuPopup)
@@ -192,38 +192,38 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         ##
         editMenu.append(gtk.SeparatorMenuItem())
         ##
-        cutItem = gtk.MenuItem(_('Cu_t'))
+        cutItem = MenuItem(_('Cu_t'))
         cutItem.connect('activate', self.mbarCutClicked)
         editMenu.append(cutItem)
         self.mbarCutItem = cutItem
         ##
-        copyItem = gtk.MenuItem(_('_Copy'))
+        copyItem = MenuItem(_('_Copy'))
         copyItem.connect('activate', self.mbarCopyClicked)
         editMenu.append(copyItem)
         self.mbarCopyItem = copyItem
         ##
-        pasteItem = gtk.MenuItem(_('_Paste'))
+        pasteItem = MenuItem(_('_Paste'))
         pasteItem.connect('activate', self.mbarPasteClicked)
         editMenu.append(pasteItem)
         self.mbarPasteItem = pasteItem
         ##
         editMenu.append(gtk.SeparatorMenuItem())
         ##
-        dupItem = gtk.MenuItem(_('_Duplicate'))
+        dupItem = MenuItem(_('_Duplicate'))
         dupItem.connect('activate', self.duplicateSelectedObj)
         editMenu.append(dupItem)
         self.mbarDupItem = dupItem
         ####
-        viewItem = gtk.MenuItem(_('_View'))
+        viewItem = MenuItem(_('_View'))
         viewMenu = gtk.Menu()
         viewItem.set_submenu(viewMenu)
         menubar.append(viewItem)
         ##
-        collapseItem = gtk.MenuItem(_('Collapse All'))
+        collapseItem = MenuItem(_('Collapse All'))
         collapseItem.connect('activate', self.collapseAllClicked)
         viewMenu.append(collapseItem)
         ##
-        expandItem = gtk.MenuItem(_('Expand All'))
+        expandItem = MenuItem(_('Expand All'))
         expandItem.connect('activate', self.expandAllClicked)
         viewMenu.append(expandItem)
         ##
@@ -234,12 +234,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         self.showDescItem.connect('toggled', self.showDescItemToggled)
         viewMenu.append(self.showDescItem)
         ####
-        #testItem = gtk.MenuItem(_('Test'))
+        #testItem = MenuItem(_('Test'))
         #testMenu = gtk.Menu()
         #testItem.set_submenu(testMenu)
         #menubar.append(testItem)
         ###
-        #item = gtk.MenuItem('')
+        #item = MenuItem('')
         #item.connect('activate', )
         #testMenu.append(item)
         ####
@@ -633,7 +633,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                 #    continue
                 new_groupPath = self.trees.get_path(self.groupIterById[new_group.id])
                 if event.name in new_group.acceptsEventTypes:
-                    new_groupItem = gtk.ImageMenuItem()
+                    new_groupItem = ImageMenuItem()
                     new_groupItem.set_label(new_group.title)
                     ##
                     image = gtk.Image()

@@ -17,12 +17,12 @@ class DateLabel(gtk.Label):
         ####
         self.menu = gtk.Menu()
         ##
-        itemCopyAll = gtk.ImageMenuItem(_('Copy _All'))
+        itemCopyAll = ImageMenuItem(_('Copy _All'))
         itemCopyAll.set_image(gtk.Image.new_from_stock(gtk.STOCK_COPY, gtk.IconSize.MENU))
         itemCopyAll.connect('activate', self.copyAll)
         self.menu.add(itemCopyAll)
         ##
-        itemCopy = gtk.ImageMenuItem(_('_Copy'))
+        itemCopy = ImageMenuItem(_('_Copy'))
         itemCopy.set_image(gtk.Image.new_from_stock(gtk.STOCK_COPY, gtk.IconSize.MENU))
         itemCopy.connect('activate', self.copy)
         self.itemCopy = itemCopy

@@ -402,7 +402,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
             #if not new_group.enable:## FIXME
             #    continue
             if event.name in new_group.acceptsEventTypes:
-                new_groupItem = gtk.ImageMenuItem()
+                new_groupItem = ImageMenuItem()
                 new_groupItem.set_label(new_group.title)
                 ##
                 image = gtk.Image()
@@ -434,7 +434,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
             #if not new_group.enable:## FIXME
             #    continue
             if event.name in new_group.acceptsEventTypes:
-                new_groupItem = gtk.ImageMenuItem()
+                new_groupItem = ImageMenuItem()
                 new_groupItem.set_label(new_group.title)
                 ##
                 image = gtk.Image()
