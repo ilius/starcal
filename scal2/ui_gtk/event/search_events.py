@@ -175,6 +175,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
         self.colGroup = gtk.TreeViewColumn(_('Group'), gtk.CellRendererText(), text=2)
         self.colGroup.set_resizable(True)
         self.colGroup.set_sort_column_id(2)
+        self.colGroup.set_property('expand', False)
         treev.append_column(self.colGroup)
         ###
         self.colIcon = gtk.TreeViewColumn()
@@ -182,16 +183,19 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
         pack(self.colIcon, cell)
         self.colIcon.add_attribute(cell, 'pixbuf', 3)
         #self.colIcon.set_sort_column_id(3)## FIXME
+        self.colIcon.set_property('expand', False)
         treev.append_column(self.colIcon)
         ###
         self.colSummary = gtk.TreeViewColumn(_('Summary'), gtk.CellRendererText(), text=4)
         self.colSummary.set_resizable(True)
         self.colSummary.set_sort_column_id(4)
+        self.colSummary.set_property('expand', True)## FIXME
         treev.append_column(self.colSummary)
         ###
         self.colDesc = gtk.TreeViewColumn(_('Description'), gtk.CellRendererText(), text=5)
         self.colDesc.set_sort_column_id(5)
         self.colDesc.set_visible(showDesc)
+        self.colDesc.set_property('expand', True)## FIXME
         treev.append_column(self.colDesc)
         ###
         trees.set_sort_func(2, self.sort_func_group)
