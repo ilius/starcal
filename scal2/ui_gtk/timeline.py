@@ -296,7 +296,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
                 if top == minA:
                     editType = 0
                     t0 = event.getStartEpoch()
-                    self.get_window().set_cursor(gdk.Cursor.new(gdk.FLEUR))
+                    self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.FLEUR))
                 elif right == minA:
                     editType = 1
                     t0 = event.getEndEpoch()
