@@ -25,12 +25,5 @@ class AboutDialog(gtk.AboutDialog):
             self.set_wrap_license(True)
         if website:
             self.set_website(website) ## A plain label (not link)
-        if ui.autoLocale:
-            buttonbox = self.vbox.get_children()[1]
-            buttons = buttonbox.get_children()## List of buttons of about dialogs
-            buttons[1].set_label(_('C_redits'))
-            buttons[2].set_label(_('_Close'))
-            buttons[2].set_image(gtk.Image.new_from_stock(gtk.STOCK_CLOSE,gtk.IconSize.BUTTON))
-            buttons[0].set_label(_('_License'))
 
 
