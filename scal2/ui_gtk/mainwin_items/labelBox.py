@@ -104,13 +104,13 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
                 text = _(getMonthName(self.mode, i+1))
             if i==self.active:
                 text = self.getActiveStr(text)
-            label = gtk.Label(text)
+            item = MenuItem()
+            label = item.get_child()
+            label.set_label(text)
             #label.set_justify(gtk.Justification.LEFT)
             label.set_alignment(0, 0.5)
             label.set_use_markup(True)
-            item = MenuItem()
             item.set_right_justified(True) ##?????????
-            item.add(label)
             item.connect('activate', self.itemActivate, i)
             self.menu.append(item)
             self.menuLabels.append(label)
@@ -218,7 +218,7 @@ class IntLabel(BaseLabel):
         self.menuLabels = []
         self.menu.connect('scroll-event', self.menuScroll)
         ##########
-        item = MenuItem()
+        item = gtk.MenuItem()
         arrow = gtk.Arrow(gtk.ArrowType.UP, gtk.ShadowType.IN)
         item.add(arrow)
         arrow.set_property('height-request', 10)
@@ -236,15 +236,14 @@ class IntLabel(BaseLabel):
         item.connect('activate', lambda wid: False)
         ##########
         for i in range(self.height):
-            label = gtk.Label()
-            label.set_use_markup(True)
             item = MenuItem()
-            item.add(label)
+            label = item.get_child()
+            label.set_use_markup(True)
             item.connect('activate', self.itemActivate, i)
             self.menu.append(item)
             self.menuLabels.append(label)
         ##########
-        item = MenuItem()
+        item = gtk.MenuItem()
         arrow = gtk.Arrow(gtk.ArrowType.DOWN, gtk.ShadowType.IN)
         arrow.set_property('height-request', 10)
         item.add(arrow)
