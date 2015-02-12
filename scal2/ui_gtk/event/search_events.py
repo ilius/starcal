@@ -45,6 +45,7 @@ from scal2.ui_gtk.event.common import SingleGroupComboBox
 class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
     def __init__(self, showDesc=False):
         gtk.Window.__init__(self)
+        self.maximize()
         self.initVars()
         ud.windowList.appendItem(self)
         ###
