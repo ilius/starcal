@@ -300,11 +300,11 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
                 elif right == minA:
                     editType = 1
                     t0 = event.getEndEpoch()
-                    self.get_window().set_cursor(gdk.Cursor.new(gdk.RIGHT_SIDE))
+                    self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.RIGHT_SIDE))
                 elif left == minA:
                     editType = -1
                     t0 = event.getStartEpoch()
-                    self.get_window().set_cursor(gdk.Cursor.new(gdk.LEFT_SIDE))
+                    self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_SIDE))
                 if editType is not None:
                     self.boxEditing = (editType, event, box, x, t0)
                     return True
