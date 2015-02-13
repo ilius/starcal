@@ -760,6 +760,7 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
         self.initCal()
         self.set_property('height-request', ui.wcalHeight)
+        self.windowToItemDict = {}
         ######################
         self.connect('scroll-event', self.scroll)
         ###
@@ -866,17 +867,19 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
     def goForward4(self, obj=None):
         self.jdPlus(28)
     def buttonPress(self, widget, gevent):
-        col = gevent.window
-        while not isinstance(col, ColumnBase):
-            col = col.get_parent()
-            if col is None:
+        col_win = gevent.get_window()
+        col = None
+        for item in self.items:
+            if col_win == item.get_window():
+                col = item
                 break
-        else:
-            if not col.autoButtonPressHandler:
-                return False
+        if not col:
+            return False
+        if not col.autoButtonPressHandler:
+            return False
         ###
         b = gevent.button
-        #x, y, mask = gevent.get_window().get_pointer()
+        #x, y, mask = col_win.get_pointer()
         x, y = self.get_pointer()
         #y += 10
         ###
