@@ -156,7 +156,8 @@ class CustomizeDialog(gtk.Dialog):
                 return
             ###
             root.moveItemUp(i)
-            index_list2 = index_list[:-1] + (i-1,)
+            index_list2 = list(index_list)
+            index_list2[-1] = i - 1
             model.swap(model.get_iter(index_list), model.get_iter(index_list2))
             self.treev.set_cursor(index_list2)
     def downClicked(self, button):
@@ -184,7 +185,8 @@ class CustomizeDialog(gtk.Dialog):
                 return
             ###
             root.moveItemUp(i+1)
-            index_list2 = index_list[:-1] + (i+1,)
+            index_list2 = list(index_list)
+            index_list2[-1] = i + 1
             model.swap(model.get_iter(index_list), model.get_iter(index_list2))
             self.treev.set_cursor(index_list2)
     def rowActivated(self, treev, path, col):
