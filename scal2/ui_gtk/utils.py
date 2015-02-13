@@ -88,8 +88,10 @@ def pixbufFromFile(path):## the file may not exist
         myRaise()
         return None
 
-toolButtonFromStock = lambda stock, size: gtk.ToolButton(gtk.Image.new_from_stock(stock, size))
-
+def toolButtonFromStock(stock, size):
+    tb = gtk.ToolButton()
+    tb.set_icon_widget(gtk.Image.new_from_stock(stock, size))
+    return tb
 
 def labelStockMenuItem(label, stock=None, func=None, *args):
     item = ImageMenuItem(_(label))
