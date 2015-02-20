@@ -539,7 +539,7 @@ class CalObj(gtk.DrawingArea, CalBase):
             return False
         return True
     def scroll(self, widget, gevent):
-        d = gevent.direction.value_nick
+        d = getScrollValue(gevent)
         if d=='up':
             self.jdPlus(-7)
         elif d=='down':

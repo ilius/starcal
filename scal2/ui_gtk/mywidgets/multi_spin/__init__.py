@@ -205,12 +205,13 @@ class MultiSpinButton(gtk.SpinButton):
         #        #return True
         return False
     def _scroll(self, widget, gevent):
-        d = gevent.direction.value_nick
+        d = getScrollValue(gevent)
         if d in ('up', 'down'):
             if not self.has_focus():
                 self.grab_focus()
             if self.get_editable():
-                self.entry_plus((1 if d=='up' else -1)*self.get_increments()[0])
+                plus = (1 if d=='up' else -1) * self.get_increments()[0]
+                self.entry_plus(plus)
         else:
             return False
         return True

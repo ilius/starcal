@@ -302,7 +302,7 @@ class IntLabel(BaseLabel):
         else:
             return False
     def menuScroll(self, widget, gevent):
-        d = gevent.direction.value_nick
+        d = getScrollValue(gevent)
         if d=='up':
             self.updateMenu(self.start-1)
         elif d=='down':

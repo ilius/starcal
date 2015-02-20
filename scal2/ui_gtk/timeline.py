@@ -252,17 +252,17 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
         #t2 = now()
         #print('drawing time / data calc time: %.2f'%((t2-t1)/(t1-t0)))
     def onScroll(self, widget, gevent):
-        #print('onScroll', gevent.direction.value_nick)
-        isUp = gevent.direction.value_nick=='up'
+        d = getScrollValue(gevent)
+        #print('onScroll', d)
         if gevent.get_state() & gdk.ModifierType.CONTROL_MASK:
             self.zoom(
-                isUp,
+                d=='up',
                 scrollZoomStep,
                 float(gevent.x) / self.get_allocation().width,
             )
         else:
             self.movingUserEvent(
-                direction=(-1 if isUp else 1),
+                direction=(-1 if d=='up' else 1),
             )## FIXME
         self.queue_draw()
         return True

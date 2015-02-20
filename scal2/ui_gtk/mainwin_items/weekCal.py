@@ -917,7 +917,7 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
             return False
         return True
     def scroll(self, widget, gevent):
-        d = gevent.direction.value_nick
+        d = getScrollValue(gevent)
         if d=='up':
             self.jdPlus(-1)
         elif d=='down':
