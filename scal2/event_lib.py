@@ -2017,6 +2017,36 @@ class YearlyEvent(Event):
         self.mode = DATE_GREG
         return True
 
+
+@classes.event.register
+class MonthlyEvent(Event):
+    name = 'monthly'
+    desc = _('Monthly Event')
+    iconName = ''
+    requiredRules = (
+        'start',
+        'end',
+        'day',
+        'dayTimeRange',
+    )
+    supportedRules = requiredRules
+    isAllDay = False
+    def setJd(self, jd):
+        year, month, day = jd_to(jd, self.mode)
+        self['start'].setDate((year, month, 1))
+        self['end'].setDate((year+1, month, 1))
+        self.setDay(day)
+    def setDefaults(self):
+        self.setJd(core.getCurrentJd())
+    def getDay(self):
+        try:
+            return self['day'].values[0]
+        except IndexError:
+            return 1
+    def setDay(self, day):
+        self['day'].values = [day]
+
+
 @classes.event.register
 class WeeklyEvent(Event):
     name = 'weekly'
@@ -2387,6 +2417,7 @@ class EventGroup(EventContainer):
         'task',
         'allDayTask',
         'weekly',
+        'monthly',
         'lifeTime',
         'largeScale',
         'custom',
