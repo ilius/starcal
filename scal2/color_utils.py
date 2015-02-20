@@ -56,7 +56,9 @@ def hslToRgb(h, s, l):
         else:
             c = p
         rgb.append(int(c*255))
-    return tuple(rgb) + (255,)
+    rgb = tuple(rgb)
+    #rgb = rgb + (255,)
+    return rgb
 
 #def getRandomHueColor(s, l):
 #    import random
@@ -65,5 +67,8 @@ def hslToRgb(h, s, l):
 
 htmlColorToRgb = lambda hc: (int(hc[1:3], 16), int(hc[3:5], 16), int(hc[5:7], 16))
 
-rgbToHtmlColor = lambda r, g, b: '#%.2x%.2x%.2x'%(r, g, b)
+def rgbToHtmlColor(r, g, b):
+    return '#' + ''.join(['%.2x'%x for x in (r, g, b)])
+
+
 
