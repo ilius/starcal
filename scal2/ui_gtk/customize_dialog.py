@@ -58,13 +58,16 @@ class CustomizeDialog(gtk.Dialog):
         cell.connect('toggled', self.enableCellToggled)
         pack(col, cell)
         col.add_attribute(cell, 'active', 0)
+        col.set_property('expand', False)
         ##
         treev.append_column(col)
         col = gtk.TreeViewColumn('Widget')
+        col.set_property('expand', False)
         ##
         cell = gtk.CellRendererText()
         pack(col, cell)
         col.add_attribute(cell, 'text', 1)
+        col.set_property('expand', True)
         ##
         treev.append_column(col)
         ###
