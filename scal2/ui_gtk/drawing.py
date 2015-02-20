@@ -18,6 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 from os.path import join
 from math import pi
+import re
 
 from scal2.path import *
 from scal2.utils import toBytes
@@ -35,6 +36,14 @@ from scal2.ui_gtk.color_utils import *
 
 if not ui.fontCustom:
     ui.fontCustom = ui.fontDefault[:]
+
+colorCheckSvgTextChecked = open(join(rootDir, 'svg', 'color-check.svg')).read()
+colorCheckSvgTextUnchecked = re.sub(
+    '<path[^<>]*?id="check"[^<>]*?/>',
+    '',
+    colorCheckSvgTextChecked,
+    flags=re.M | re.S,
+)
 
 def setColor(cr, color):
     ## arguments to set_source_rgb and set_source_rgba must be between 0 and 1
@@ -155,19 +164,12 @@ def newLimitedWidthTextLayout(widget, text, width, font=None, truncate=True, mar
     return layout
 '''
 
-
 def newColorCheckPixbuf(color, size, checked):
-    import re
-    imagePath = join(rootDir, 'svg', 'color-check.svg')
     loader = GdkPixbuf.PixbufLoader.new_with_type('svg')
-    data = open(imagePath).read()
-    if not checked:
-        data = re.sub(
-            '<path[^<>]*?id="check"[^<>]*?/>',
-            '',
-            data,
-            flags=re.M | re.S,
-        )
+    if checked:
+        data = colorCheckSvgTextChecked
+    else:
+        data = colorCheckSvgTextUnchecked
     data = data.replace(
         'fill:#000000;',
         'fill:%s;'%rgbToHtmlColor(*color),
