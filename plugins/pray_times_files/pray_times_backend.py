@@ -276,6 +276,9 @@ class PrayTimes:
             times['fajr' if self.method.midnight == MIDNIGHT_JAFARI else 'sunrise'],
         )
 
+        for key in times:
+            times[key] = times[key] % 24.0
+
         #times = self.tuneTimes(times) ## FIXME
         #for key in times:
         #    times[key] = self.getFormattedTime(times[key], format)

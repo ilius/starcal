@@ -3,7 +3,7 @@
 ## (like debian, ubuntu, mint, ...) and installs the package
 
 function getDirTotalSize(){
-    du -bs "$1" | python2 -c "import sys;print(raw_input().split('\t')[0])"
+    du -ks "$1" | python2 -c "import sys;print(raw_input().split('\t')[0])"
 }
 
 if [ "$UID" != "0" ] ; then
@@ -68,13 +68,13 @@ Depends: $depends_str
 Recommends: $recommends_str
 Section: Utilities
 Priority: optional
-Homepage: http://starcal.sourceforge.net/
+Homepage: http://ilius.github.io/starcal
 Description: A full-featured international calendar writen in Python
  StarCalendar is a full-featured international calendar writen in Python,
  with both PyGTK and PyQt interfaces, that supports Jalai(Iranian),
  Hijri(Islamic), and Indian National calendars, as well as common 
  english(Gregorian) calendar
- Homepage: http://starcal.sourceforge.net
+ Homepage: http://ilius.github.io/starcal
 " > "$tmpDir/DEBIAN/control"
 
 echo "/usr/share/starcal2/scripts/assert_python2" > "$tmpDir/DEBIAN/postinst"
@@ -87,7 +87,7 @@ if [ "$?" = "0" ] ; then
     if [ -f /usr/bin/gdebi ] ; then
         /usr/bin/gdebi "$pkgFile"
     else
-        apt-get install python-tz python-httplib2
+        apt-get install python-httplib2
         dpkg -i "$pkgFile"
     fi
 fi

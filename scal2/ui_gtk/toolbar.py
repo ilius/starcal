@@ -63,7 +63,7 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
     defaultItems = []
     defaultItemsDict = {}
     def __init__(self, funcOwner, vertical=False, onPressContinue=False):
-        from scal2.ui_gtk.mywidgets.multi_spin.int import IntSpinButton
+        from scal2.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
         gtk.Toolbar.__init__(self)
         self.funcOwner = funcOwner
         self.set_orientation(gtk.ORIENTATION_VERTICAL if vertical else gtk.ORIENTATION_HORIZONTAL)

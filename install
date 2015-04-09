@@ -179,13 +179,14 @@ fi
 echo "[Desktop Entry]
 Encoding=UTF-8
 Name=StarCalendar $version
+GenericName=StarCalendar
 Comment=A Perfect Calendar Program
 Comment[fa]=یک برنامهٔ کامل تقویم
 Exec=$pkgName
 Icon=$pkgName
 Type=Application
 Terminal=false
-Categories=Application;Utility;
+Categories=GTK;Utility;Accessibility;Office;Calendar;
 StartupNotify=true" > "${shareDir}/applications/$pkgName.desktop"
 
 
@@ -199,7 +200,7 @@ Exec=$pkgName-qt
 Icon=$pkgName
 Type=Application
 Terminal=false
-Categories=Application;Utility;
+Categories=GTK;Utility;Accessibility;Office;Calendar;
 StartupNotify=true" > "${shareDir}/applications/$pkgName-qt.desktop"
 fi
 

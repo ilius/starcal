@@ -53,7 +53,7 @@ Summary: A full-featured international calendar writen in Python
 
 Group: User Interface/Desktops
 License: GPLv3+
-URL: http://starcal.sourceforge.net/
+URL: http://ilius.github.io/starcal
 
 $requires_str
 $recommends_str
@@ -76,7 +76,7 @@ english(Gregorian) calendar
 %defattr(-,root,root,-)
 %{_prefix}/share/starcal2/*
 %{_prefix}/bin/starcal2*
-%{_prefix}/share/applications/starcal2*
+%{_prefix}/share/applications/starcal2.desktop
 %{_prefix}/lib/bonobo/servers/GNOME_Starcal2Applet.server
 %{_prefix}/share/doc/starcal2/*
 %{_prefix}/share/pixmaps/starcal2.png
@@ -86,7 +86,8 @@ english(Gregorian) calendar
 
 #less $pkgName.spec ; exit 0
 
-pkgPath=`rpmbuild -bb $pkgName.spec | grep -o /usr/src/packages/RPMS/noarch/$pkgName.*\.rpm`
+rpmbuild -bb $pkgName.spec
+pkgPath="`ls /usr/src/packages/RPMS/noarch/$pkgName*$version*.rpm`"
 echo "pkgPath=$pkgPath"
 
 if [ -z "$pkgPath" ] ; then

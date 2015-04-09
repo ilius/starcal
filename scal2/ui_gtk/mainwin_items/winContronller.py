@@ -140,4 +140,8 @@ class CalObj(gtk.HBox, CustomizableCalBox):
             b.setInactive()
         self.winFocused = False
         return False
+    def updateVars(self):
+        CustomizableCalBox.updateVars(self)
+        ui.winControllerButtons = self.getItemsData()
+
 

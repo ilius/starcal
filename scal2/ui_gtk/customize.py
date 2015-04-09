@@ -102,7 +102,12 @@ class CustomizableCalObj(ud.BaseCalObj):
     def confStr(self):
         text = ''
         for mod_attr in self.params:
-            text += '%s=%s\n'%(mod_attr, repr(eval(mod_attr)))
+            try:
+                value = eval(mod_attr)
+            except:
+                myRaise()
+            else:
+                text += '%s=%s\n'%(mod_attr, repr(value))
         for item in self.items:
             if item.customizable:
                 text += item.confStr()
