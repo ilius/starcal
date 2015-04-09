@@ -3711,8 +3711,14 @@ class EventGroupsHolder(JsonObjectsHolder):
                     totalOcCount += obj.occurCount
                 print('Total Occurence Count: %s'%totalOcCount)
         else:
-            for cls in classes.group:
+            for name in (
+                'noteBook',
+                'taskList',
+                'group',
+            ):
+                cls = classes.group.byName[name]
                 obj = cls()## FIXME
+                obj.setRandomColor()
                 obj.setData({'title': cls.desc})## FIXME
                 obj.save()
                 self.append(obj)
