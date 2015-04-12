@@ -172,7 +172,7 @@ def newColorCheckPixbuf(color, size, checked):
         data = colorCheckSvgTextUnchecked
     data = data.replace(
         'fill:#000000;',
-        'fill:%s;'%rgbToHtmlColor(*color),
+        'fill:%s;'%rgbToHtmlColor(*color[:3]),
     )
     data = toBytes(data)
     loader.write(data)

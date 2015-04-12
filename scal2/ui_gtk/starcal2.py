@@ -761,6 +761,8 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         loader.close()
         pixbuf = loader.get_pixbuf()
         self.sicon.set_from_pixbuf(pixbuf)
+    def statusIconUpdateTooltip(self):
+        set_tooltip(self.sicon, self.getStatusIconTooltip())
     def statusIconUpdate(self, gdate=None, checkStatusIconMode=True):
         if checkStatusIconMode and self.statusIconMode < 1:
             return
@@ -774,7 +776,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         self.sicon.set_from_file(join(pixDir, 'starcal2-24.png'))
         self.statusIconUpdateIcon(ddate)
         #######
-        set_tooltip(self.sicon, self.getStatusIconTooltip())
+        self.statusIconUpdateTooltip()
         return True
     def statusIconButtonPress(self, obj, gevent):
         if gevent.button == 2:

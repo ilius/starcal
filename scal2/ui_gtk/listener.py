@@ -8,6 +8,8 @@ from scal2 import ui
 
 from gi.repository.GObject import timeout_add, timeout_add_seconds
 
+from scal2.ui_gtk import gtk
+
 dayLen = 24*3600
 
 class DateChangeListener:
@@ -28,6 +30,8 @@ class DateChangeListener:
                 obj.onCurrentDateChange(gdate)
         #timeout_add_seconds(int(dayLen-(tm+getUtcOffsetCurrent())%dayLen)+1, self.check)
         timeout_add_seconds(self.timeout, self.check)
+        if ui.mainWin:
+            ui.mainWin.statusIconUpdateTooltip()
 
 #class TimeChangeListener:
 
