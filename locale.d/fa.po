@@ -2084,6 +2084,10 @@ msgid "Change font family to"
 msgstr ""
 "تغییر خانوادهٔ فونت به"
 
+msgid "Fixed Size"
+msgstr ""
+"اندازهٔ ثابت"
+
 msgid "Width"
 msgstr ""
 "عرض"
