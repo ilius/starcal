@@ -742,7 +742,12 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         imagePath = ui.statusIconImageHoli if ui.todayCell.holiday else ui.statusIconImage
         ext = os.path.splitext(imagePath)[1][1:].lower()
         loader = GdkPixbuf.PixbufLoader.new_with_type(ext)
-        #loader.set_size(22, 22)
+        if ui.statusIconFixedSizeEnable:
+            try:
+                width, height = ui.statusIconFixedSizeWH
+                loader.set_size(width, height)
+            except:
+                myRaise()
         data = open(imagePath).read()
         if ext == 'svg':
             dayNum = _(ddate[2])

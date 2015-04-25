@@ -305,7 +305,28 @@ class PrefDialog(gtk.Dialog):
         self.uiPrefItems.append(item)
         pack(hbox, item._widget, 1, 1)
         pack(expVbox, hbox)
-        ###
+        ####
+        hbox = gtk.HBox(spacing=1)
+        pack(hbox, gtk.Label('   '))
+        checkItem = CheckPrefItem(
+            ui,
+            'statusIconFixedSizeEnable',
+            label=_('Fixed Size'),
+            #tooltip=_(''),
+        )
+        self.uiPrefItems.append(checkItem)
+        #sgroup.add_widget(checkItem._widget)
+        pack(hbox, checkItem._widget)
+        pack(hbox, gtk.Label('  '))
+        item = WidthHeightPrefItem(
+            ui,
+            'statusIconFixedSizeWH',
+            999,
+        )
+        self.uiPrefItems.append(item)
+        pack(hbox, item._widget, 1, 1)      
+        pack(expVbox, hbox)
+        ########
         checkItem.syncSensitive(item._widget, reverse=False)
         ####
         pack(vbox, exp)

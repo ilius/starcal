@@ -267,6 +267,32 @@ class SpinPrefItem(PrefItem):
         self.get = w.get_value
         self.set = w.set_value
 
+class WidthHeightPrefItem(PrefItem):
+    def __init__(self, module, varName, _max):
+        _min = 0
+        self.module = module
+        self.varName = varName
+        ###
+        self.widthItem = IntSpinButton(_min, _max)
+        self.heightItem = IntSpinButton(_min, _max)
+        ###
+        hbox = self._widget = gtk.HBox()
+        pack(hbox, gtk.Label(_('Width')+':'))
+        pack(hbox, self.widthItem)
+        pack(hbox, gtk.Label('  '))
+        pack(hbox, gtk.Label(_('Height')+':'))
+        pack(hbox, self.heightItem)
+    def get(self):
+        return (
+            int(self.widthItem.get_value()),
+            int(self.heightItem.get_value()),
+        )
+    def set(self, value):
+        w, h = value
+        self.widthItem.set_value(w)
+        self.heightItem.set_value(h)
+
+
 class FileChooserPrefItem(PrefItem):
     def __init__(self, module, varName, title='Select File', currentFolder='', defaultVarName=None):
         self.module = module

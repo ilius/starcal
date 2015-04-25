@@ -669,6 +669,8 @@ statusIconImageHoli = join(rootDir, 'status-icons', 'dark-red.svg')
 statusIconImageDefault, statusIconImageHoliDefault = statusIconImage, statusIconImageHoli
 statusIconFontFamilyEnable = False
 statusIconFontFamily = None
+statusIconFixedSizeEnable = False
+statusIconFixedSizeWH = (24, 24)
 ####################
 menuActiveLabelColor = "#ff0000"
 pluginsTextStatusIcon = False
