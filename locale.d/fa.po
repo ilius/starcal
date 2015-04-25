@@ -761,9 +761,9 @@ msgid "Today"
 msgstr ""
 "امروز"
 
-msgid "Use (Iranian) database for Hijri months length"
+msgid "Use Hijri month length data (Iranian official calendar)"
 msgstr ""
-"از دیتابیس طول ماه‌های قمری استفاده‌کن (تقویم رسمی ایران)"
+"استفاده از دادهٔ طول ماه‌های قمری (تقویم رسمی ایران)"
 
 msgid "Tune Hijri Monthes"
 msgstr ""
