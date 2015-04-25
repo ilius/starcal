@@ -126,6 +126,7 @@ class CustomizeDialog(gtk.Dialog):
         item = self.getItemByPath(index_list)
         item.optionsWidgetCreate()
         if item.optionsWidget:
+            item.optionsWidget.set_sensitive(item.enable)
             self.activeOptionsWidget = item.optionsWidget
             pack(self.vbox_l, item.optionsWidget)
             item.optionsWidget.show()
@@ -220,6 +221,9 @@ class CustomizeDialog(gtk.Dialog):
         else:
             item.enable = False
             item.hide()
+        if item.customizable:
+            if item.optionsWidget:
+                item.optionsWidget.set_sensitive(item.enable)
         if ui.mainWin:
             ui.mainWin.setMinHeight()
     def updateTreeEnableChecks(self):
