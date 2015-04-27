@@ -921,6 +921,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             self.getGroupRow(group),
         )
         self.onGroupModify(group)
+        self.loadedGroupIds.add(group.id)
     def addGroupBeforeGroup(self, menu, path):
         self.insertNewGroup(path[0])
     def addGroupBeforeSelection(self, obj=None):
