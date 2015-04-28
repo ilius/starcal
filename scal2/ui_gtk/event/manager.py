@@ -1023,8 +1023,10 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
     def deleteGroup(self, path):
         index, = path
         group, = self.getObjsByPath(path)
-        if not confirm(_('Press OK if you want to delete group "%s" and move all its events to trash')%group.title):
-            return
+        eventCount = len(group)
+        if eventCount > 0:
+            if not confirm(_('Press OK if you want to delete group "%s" and move all its events to trash')%group.title):
+                return
         self.waitingDo(self._do_deleteGroup, path, group)
     deleteGroupFromMenu = lambda self, menu, path: self.deleteGroup(path)
     def addEventToGroupFromMenu(self, menu, path, group, eventType, title):
