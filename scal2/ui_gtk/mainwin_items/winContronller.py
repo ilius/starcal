@@ -91,7 +91,7 @@ class WinConButtonClose(WinConButton):
     imageName = 'button-close.png'
     imageNameFocus = 'button-close-focus.png'
     def onClicked(self, gWin, gevent):
-        gWin.emit('delete-event', gdk.Event(gevent))
+        gWin.emit('delete-event', gdk.Event())
 
 class WinConButtonSep(WinConButton):
     _name = 'sep'
