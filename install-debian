@@ -47,11 +47,11 @@ depends+=('python3-gi-cairo(>=3.8)')
 depends+=('python3-httplib2')
 
 #if [ -f "/usr/lib/$HOSTTYPE-$OSTYPE/libappindicator.so.1" ] ; then
-#    depends+=('python-appindicator')
+#    depends+=('python3-appindicator')
 #fi
 
 recommends=()
-recommends+=('python-dateutil')
+recommends+=('python3-dateutil')
 recommends+=('python3-igraph') ## FIXME
 recommends+=('python3-gnomevfs')
 
@@ -87,7 +87,7 @@ if [ "$?" = "0" ] ; then
     if [ -f /usr/bin/gdebi ] ; then
         /usr/bin/gdebi "$pkgFile"
     else
-        apt-get install python-httplib2
+        apt-get install python3-httplib2
         dpkg -i "$pkgFile"
     fi
 fi

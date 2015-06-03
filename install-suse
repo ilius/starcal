@@ -30,13 +30,13 @@ version=`$sourceDir/scal2/get_version.py`
 
 requires=('python >= 2.6' 'python < 3.0')
 requires+=('python3-gobject') ## The new gobject introspection
-#requires+=('python-gflags')
-requires+=('python-httplib2')
+#requires+=('python3-gflags')
+requires+=('python3-httplib2')
 
 
 recommends=()
-recommends+=('python-dateutil')
-recommends+=('python-igraph')
+recommends+=('python3-dateutil')
+#recommends+=('python3-igraph')
 
 requires_str=$(printf "Requires: %s\n" "${requires[@]}")
 recommends_str=$(printf "Recommends: %s\n" "${recommends[@]}")

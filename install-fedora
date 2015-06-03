@@ -36,13 +36,13 @@ requires+=('python3-gobject') ## The new gobject introspection
 #requires+=('python3-gflags')
 requires+=('python3-httplib2')
 
-if [ -f "/usr/lib/$HOSTTYPE-$OSTYPE/libappindicator.so.1" ] ; then
-    requires+=('python-appindicator')
-fi
+#if [ -f "/usr/lib/$HOSTTYPE-$OSTYPE/libappindicator.so.1" ] ; then
+#    requires+=('python-appindicator')
+#fi
 
 #recommends=()
-requires+=('python-dateutil')
-requires+=('python3-igraph')
+requires+=('python3-dateutil')
+#requires+=('python3-igraph')
 #requires+=('python3-gnomevfs')
 
 
