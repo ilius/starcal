@@ -761,9 +761,9 @@ msgid "Today"
 msgstr ""
 "امروز"
 
-msgid "Use (Iranian) database for Hijri months length"
+msgid "Use Hijri month length data (Iranian official calendar)"
 msgstr ""
-"از دیتابیس طول ماه‌های قمری استفاده‌کن (تقویم رسمی ایران)"
+"استفاده از دادهٔ طول ماه‌های قمری (تقویم رسمی ایران)"
 
 msgid "Tune Hijri Monthes"
 msgstr ""
@@ -1369,9 +1369,9 @@ msgid "Move Down"
 msgstr ""
 "جابجایی به پایین"
 
-msgid "Press OK if you want to delete group \"%s\" and move all its events to trash"
+msgid "Press OK if you want to delete group \"%s\" and move its %s events to trash"
 msgstr ""
-"اگر می‌خواهید گروه «%s» حذف شده و تمام رویدادهایش به زباله‌دان منتقل شود، دکمهٔ تائید را فشار دهید"
+"اگر می‌خواهید گروه «%s» حذف شده و %s رویدادش به زباله‌دان منتقل شوند، دکمهٔ تائید را فشار دهید"
 
 
 msgid "Press OK if you want to move event \"%s\" to trash"

@@ -50,7 +50,7 @@ hijriUseDB = True
 #('hijriAlg', list, 'Hijri Calculation Algorithm',
 #   ('Internal', 'ITL (idate command)', 'ITL (idate command) Umm Alqura')),
 options = (
-('hijriUseDB',bool,'Use (Iranian) database for Hijri months length'),
+('hijriUseDB',bool,'Use Hijri month length data (Iranian official calendar)'),
 ('button', 'Tune Hijri Monthes', 'hijri', 'tuneHijriMonthes'),
 )
 

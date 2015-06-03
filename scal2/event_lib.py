@@ -3211,7 +3211,12 @@ class LifeTimeGroup(EventGroup):
     def __init__(self, _id=None):
         self.showSeperatedYmdInputs = False
         EventGroup.__init__(self, _id)
-
+    def setDefaults(self):
+        ## only in time line ## or in init? FIXME
+        self.showInDCal = False
+        self.showInWCal = False
+        self.showInMCal = False
+        self.showInStatusIcon = False
 
 
 @classes.group.register
