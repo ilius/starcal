@@ -711,7 +711,7 @@ class AICalsPrefItem():
                 s.swap(s.get_iter(i), s.get_iter(i+1))
                 treev.set_cursor(i+1)
     def inactivateIndex(self, index):
-        self.inactiveTrees.prepend(self.activeTrees[index])
+        self.inactiveTrees.prepend(list(self.activeTrees[index]))
         del self.activeTrees[index]
         self.inactiveTreev.set_cursor(0)
         try:
@@ -720,7 +720,7 @@ class AICalsPrefItem():
             pass
         self.inactiveTreev.grab_focus()## FIXME
     def activateIndex(self, index):
-        self.activeTrees.append(self.inactiveTrees[index])
+        self.activeTrees.append(list(self.inactiveTrees[index]))
         del self.inactiveTrees[index]
         self.activeTreev.set_cursor(len(self.activeTrees)-1)## FIXME
         try:
