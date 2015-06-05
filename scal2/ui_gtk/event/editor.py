@@ -34,6 +34,13 @@ class EventEditorDialog(gtk.Dialog):
             event.timeZone = str(core.localTz)
         #######
         hbox = gtk.HBox()
+        pack(hbox, gtk.Label(
+            _('Group') + ': ' + self._group.title
+        ))
+        hbox.show_all()
+        pack(self.vbox, hbox)
+        #######
+        hbox = gtk.HBox()
         pack(hbox, gtk.Label(_('Event Type')))
         if typeChangable and len(self._group.acceptsEventTypes)>1:## FIXME
             combo = gtk.ComboBoxText()
