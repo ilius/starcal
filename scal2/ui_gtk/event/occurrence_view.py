@@ -17,7 +17,6 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from scal2.utils import toBytes, toStr
 from scal2 import core
 from scal2.locale_man import tr as _
 from scal2 import event_lib
@@ -25,7 +24,7 @@ from scal2 import ui
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
-from scal2.ui_gtk.utils import imageFromFile, labelStockMenuItem, labelImageMenuItem, setClipboard
+from scal2.ui_gtk.utils import imageFromFile, labelStockMenuItem, labelImageMenuItem
 from scal2.ui_gtk import gtk_ud as ud
 
 
@@ -51,11 +50,13 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
         )
         return True
     def onDateChange(self, *a, **kw):
+        from scal2.ui_gtk.mywidgets.text_widgets import ReadOnlyLabel
         ud.BaseCalObj.onDateChange(self, *a, **kw)
         cell = ui.cell
         ## destroy all VBox contents and add again
         for hbox in self.vbox.get_children():
             hbox.destroy()
+        self.labels = []## we don't use it, just to prevent garbage collector from removing it
         for occurData in cell.eventsData:
             if not occurData['show'][0]:
                 continue
@@ -66,14 +67,14 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
             if occurData['icon']:
                 pack(hbox, imageFromFile(occurData['icon']))
             if occurData['time']:
-                label = gtk.Label(occurData['time'])
+                label = ReadOnlyLabel(occurData['time'])
+                self.labels.append(label)
                 label.set_direction(gtk.TextDirection.LTR)
-                label.set_selectable(True)
-                label.connect('populate-popup', self.onLabelPopup)## FIXME
+                label.connect('populate-popup', self.onEventLabelPopup, occurData)
                 pack(hbox, label)
                 pack(hbox, gtk.Label('  '))
-            label = gtk.Label(text)
-            label.set_selectable(True)
+            label = ReadOnlyLabel(text)
+            self.labels.append(label)
             label.set_line_wrap(True)
             label.set_use_markup(False)## should escape text if using markup FIXME
             label.connect('populate-popup', self.onEventLabelPopup, occurData)
@@ -83,31 +84,6 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
         self.show_all()
         self.vbox.show_all()
         self.set_visible(bool(cell.eventsData))
-    def labelMenuAddCopyItems(self, label, menu):
-        menu.add(labelStockMenuItem(
-            'Copy _All',
-            gtk.STOCK_COPY,
-            self.copyAll,
-            label
-        ))
-        ####
-        itemCopy = labelStockMenuItem(
-            '_Copy',
-            gtk.STOCK_COPY,
-            self.copy,
-            label,
-        )
-        if label.get_property('cursor-position') == label.get_property('selection-bound'):
-            itemCopy.set_sensitive(False)
-        menu.add(itemCopy)
-    def onLabelPopup(self, label, menu):
-        menu = gtk.Menu()
-        self.labelMenuAddCopyItems(label, menu)
-        ####
-        menu.show_all()
-        self.tmpMenu = menu
-        menu.popup(None, None, None, None, 3, 0)
-        ui.updateFocusTime()
     def moveEventToGroupFromMenu(self, item, event, prev_group, newGroup):
         prev_group.remove(event)
         prev_group.save()
@@ -136,7 +112,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
     def onEventLabelPopup(self, label, menu, occurData):
         from scal2.ui_gtk.event.utils import menuItemFromEventGroup
         menu = gtk.Menu()
-        self.labelMenuAddCopyItems(label, menu)
+        label.labelMenuAddCopyItems(menu)
         ####
         groupId, eventId = occurData['ids']
         event = ui.getEvent(groupId, eventId)
@@ -212,7 +188,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
             ))
         ####
         menu.show_all()
-        self.tmpMenu = menu
+        label.tmpMenu = menu
         menu.popup(None, None, None, None, 3, 0)
         ui.updateFocusTime()
     def editEventClicked(self, item, winTitle, event, groupId):
@@ -234,13 +210,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
             return
         ui.moveEventToTrashFromOutside(ui.eventGroups[groupId], event)
         self.onConfigChange()
-    def copy(self, item, label):
-        bound = label.get_property('selection-bound')
-        cursor = label.get_property('cursor-position')
-        start = min(bound, cursor)
-        end = max(bound, cursor)
-        setClipboard(toStr(label.get_text())[start:end])
-    copyAll = lambda self, item, label: setClipboard(label.get_label())
+
 
 class WeekOccurrenceView(gtk.TreeView):
     updateData = lambda self: self.updateDataByGroups(ui.eventGroups)

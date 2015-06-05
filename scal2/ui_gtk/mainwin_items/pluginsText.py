@@ -11,16 +11,14 @@ class CalObj(gtk.VBox, CustomizableCalObj):
     _name = 'pluginsText'
     desc = _('Plugins Text')
     def __init__(self):
+        from scal2.ui_gtk.mywidgets.text_widgets import ReadOnlyTextView
         gtk.VBox.__init__(self)
         self.initVars()
         ####
-        self.textview = gtk.TextView()
+        self.textview = ReadOnlyTextView()
         self.textview.set_wrap_mode(gtk.WrapMode.WORD)
-        self.textview.set_editable(False)
-        self.textview.set_cursor_visible(False)
         self.textview.set_justification(gtk.Justification.CENTER)
         self.textbuff = self.textview.get_buffer()
-        self.textview.connect('populate-popup', ui.updateFocusTime)
         ##
         self.expander = gtk.Expander()
         self.expander.connect('activate', self.expanderExpanded)
