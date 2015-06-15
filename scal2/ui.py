@@ -230,6 +230,7 @@ class Cell:## status and information of a cell
             if icon and not icon in iconList:
                 iconList.append(icon)
         return iconList
+    getDayEventIcons = lambda self: self.getEventIcons(0)
     getWeekEventIcons = lambda self: self.getEventIcons(1)
     getMonthEventIcons = lambda self: self.getEventIcons(2)
 
@@ -318,26 +319,30 @@ def yearPlus(plus=1):
     day = min(cell.day, core.getMonthLen(year, month, calTypes.primary))
     cell = cellCache.getCellByDate(year, month, day)
 
-getFont = lambda: list(fontCustom if fontCustomEnable else fontDefault)
-
-def getFontSmall():
-    name, bold, underline, size = getFont()
-    return [name, bold, underline, int(size*0.6)]
+def getFont(scale=1.0):
+    (name, bold, underline, size) = fontCustom if fontCustomEnable else fontDefault
+    return (name, bold, underline, size*scale)
 
 def initFonts(fontDefaultNew):
     global fontDefault, fontCustom, mcalTypeParams
     fontDefault = fontDefaultNew
     if not fontCustom:
         fontCustom = fontDefault
+    ########
     ###
     if mcalTypeParams[0]['font']==None:
-        mcalTypeParams[0]['font'] = getFont()
+        mcalTypeParams[0]['font'] = getFont(1.0)
     ###
-    smallFont = getFontSmall()
     for item in mcalTypeParams[1:]:
         if item['font']==None:
-            item['font'] = smallFont[:]
-
+            item['font'] = getFont(0.6)
+    ######
+    if dcalTypeParams[0]['font']==None:
+        dcalTypeParams[0]['font'] = getFont(10.0)
+    ###
+    for item in dcalTypeParams[1:]:
+        if item['font']==None:
+            item['font'] = getFont(3.0)
 
 def getHolidaysJdList(startJd, endJd):
     jdList = []
@@ -460,18 +465,36 @@ wcalTypeParams = [
     {'font': None},
 ]
 
+dcalTypeParams = [## FIXME
+    {
+        'pos': (0, -12),
+        'font': None,
+        'color': (220, 220, 220),
+    },
+    {
+        'pos': (125, 30),
+        'font': None,
+        'color': (165, 255, 114),
+    },
+    {
+        'pos': (-125, 24),
+        'font': None,
+        'color': (0, 200, 205),
+    },
+]
 
 
-def getMcalMinorTypeParams():
-    ls = []
-    for i, mode in enumerate(calTypes.active):
-        try:
-            params = mcalTypeParams[i]
-        except IndexError:
-            break
-        else:
-            ls.append((mode, params))
-    return ls
+getActiveMonthCalParams = lambda: list(zip(
+    calTypes.active,
+    mcalTypeParams,
+))
+
+
+getActiveDayCalParams = lambda: list(zip(
+    calTypes.active,
+    dcalTypeParams,
+))
+
 
 ################################
 tagsDir = join(pixDir, 'event')
@@ -660,6 +683,10 @@ except NameError:
     pass
 
 ####################
+dcalHeight = 250
+
+
+####################
 boldYmLabel = True ## apply in Pref FIXME
 showYmArrows = True ## apply in Pref FIXME
 labelMenuDelay = 0.1 ## delay for shift up/down items of menu for right click on YearLabel
@@ -713,6 +740,7 @@ mainWinItems = (
     ('labelBox', True),
     ('monthCal', False),
     ('weekCal', True),
+    ('dayCal', False),
     ('statusBar', True),
     ('seasonPBar', True),
     ('pluginsText', True),

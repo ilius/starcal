@@ -44,12 +44,12 @@ from scal2.ui_gtk.cal_base import CalBase
 #from scal2.ui_gtk import wallpaper
 
 
-class McalTypeParamBox(gtk.HBox):
-    def __init__(self, mcal, index, mode, params, sgroupLabel, sgroupFont):
+class MonthCalTypeParamBox(gtk.HBox):
+    def __init__(self, cal, index, mode, params, sgroupLabel, sgroupFont):
         from scal2.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
         from scal2.ui_gtk.mywidgets import MyFontButton, MyColorButton
         gtk.HBox.__init__(self)
-        self.mcal = mcal
+        self.cal = cal
         self.index = index
         self.mode = mode
         ######
@@ -71,7 +71,7 @@ class McalTypeParamBox(gtk.HBox):
         ####
         pack(self, gtk.Label(''), 1, 1)
         ###
-        fontb = MyFontButton(mcal)
+        fontb = MyFontButton(cal)
         self.fontb = fontb
         pack(self, fontb)
         sgroupFont.add_widget(fontb)
@@ -98,7 +98,7 @@ class McalTypeParamBox(gtk.HBox):
         self.colorb.set_color(data['color'])
     def onChange(self, obj=None, event=None):
         ui.mcalTypeParams[self.index] = self.get()
-        self.mcal.queue_draw()
+        self.cal.queue_draw()
 
 @registerSignals
 class CalObj(gtk.DrawingArea, CalBase):
@@ -137,7 +137,7 @@ class CalObj(gtk.DrawingArea, CalBase):
         while len(ui.mcalTypeParams) < n:
             ui.mcalTypeParams.append({
                 'pos': (0, 0),
-                'font': ui.getFontSmall(),
+                'font': ui.getFont(0.6),
                 'color': ui.textColor,
             })
         sgroupLabel = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
@@ -147,7 +147,7 @@ class CalObj(gtk.DrawingArea, CalBase):
             params = ui.mcalTypeParams[i]
             #except IndexError:
             ##
-            hbox = McalTypeParamBox(self, i, mode, params, sgroupLabel, sgroupFont)
+            hbox = MonthCalTypeParamBox(self, i, mode, params, sgroupLabel, sgroupFont)
             pack(vbox, hbox)
         ###
         vbox.show_all()
@@ -369,8 +369,8 @@ class CalObj(gtk.DrawingArea, CalBase):
                             pix_w = pix.get_width()
                             pix_h = pix.get_height()
                             ## right buttom corner ?????????????????????
-                            x1 = (self.cx[xPos] + self.dx/2.0)/scaleFact - fromRight - pix_w # right side
-                            y1 = (self.cy[yPos] + self.dy/2.0)/scaleFact - pix_h # buttom side
+                            x1 = (x0 + self.dx/2.0)/scaleFact - fromRight - pix_w # right side
+                            y1 = (y0 + self.dy/2.0)/scaleFact - pix_h # buttom side
                             cr.scale(scaleFact, scaleFact)
                             gdk.cairo_set_source_pixbuf(cr, pix, x1, y1)
                             cr.rectangle(x1, y1, pix_w, pix_h)
@@ -400,7 +400,7 @@ class CalObj(gtk.DrawingArea, CalBase):
                 )
                 show_layout(cr, daynum)
                 if not cellInactive:
-                    for mode, params in ui.getMcalMinorTypeParams()[1:]:
+                    for mode, params in ui.getActiveMonthCalParams()[1:]:
                         daynum = newTextLayout(self, _(c.dates[mode][2], mode), params['font'])
                         fontw, fonth = daynum.get_pixel_size()
                         setColor(cr, params['color'])

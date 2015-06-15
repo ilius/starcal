@@ -71,6 +71,7 @@ ui.uiName = 'gtk'
 
 
 mainWinItemsDesc = {
+    'dayCal': _('Day Calendar'),
     'eventDayView': _('Events of Day'),
     'labelBox': _('Year & Month Labels'),
     'monthCal': _('Month Calendar'),
@@ -140,6 +141,8 @@ class MainWinVbox(gtk.VBox, CustomizableCalBox):
         'ui.wcal_eventsCount_expand',
         'ui.wcal_eventsCount_width',
         'ui.wcalFont_eventsBox',
+        'ui.dcalHeight',
+        'ui.dcalTypeParams',
         'ui.pluginsTextInsideExpander',
         'ud.mainToolbarData',
     )
