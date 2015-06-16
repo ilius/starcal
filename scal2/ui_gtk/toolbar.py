@@ -53,6 +53,9 @@ class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
 class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
     _name = 'toolbar'
     desc = _('Toolbar')
+    #signals = CustomizableCalObj.signals + [
+    #    ('popup-main-menu', [int, int, int]),
+    #]
     styleList = (
         ## Gnome's naming is not exactly the best here
         ## And Gnome's order of options is also different from Gtk's enum
@@ -70,6 +73,8 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
         self.set_orientation(gtk.Orientation.VERTICAL if vertical else gtk.Orientation.HORIZONTAL)
         self.add_events(gdk.EventMask.POINTER_MOTION_MASK)
         self.onPressContinue = onPressContinue
+        ###
+        self.connect('button-press-event', self.buttonPress)
         ###
         optionsWidget = gtk.VBox()
         ##
@@ -191,5 +196,12 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
             gobject.timeout_add(ui.timeout_repeat, self.itemPressRemain, func)
     def itemRelease(self, widget, event=None):
         self.remain = False
-
+    def buttonPress(self, obj, gevent):
+        if ui.mainWin:
+            if gevent.button==1:
+                ui.mainWin.begin_move_drag(gevent.button, int(gevent.x_root), int(gevent.y_root), gevent.time)
+            elif gevent.button==3:
+                ui.mainWin.menuMainPopup(self, gevent.time, gevent.x, gevent.y)
+                #self.emit('popup-main-menu', gevent.time, gevent.x, gevent.y)
+        return False
 
