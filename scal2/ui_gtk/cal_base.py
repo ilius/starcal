@@ -106,6 +106,7 @@ class CalBase(CustomizableCalObj):
         #self.connect('drag-leave', self.dragLeave)
         '''
     def dragDataGet(self, obj, context, selection, target_id, etime):
+        ## context is instance of gi.repository.Gdk.DragContext
         text = '%.2d/%.2d/%.2d'%ui.cell.dates[ui.dragGetMode]
         selection.set_text(text, len(text))
         #pbuf = newDndDatePixbuf(ui.cell.dates[ui.dragGetMode])
@@ -140,6 +141,9 @@ class CalBase(CustomizableCalObj):
             return True
         return False
     def dragBegin(self, obj, context):
+        ## context is instance of gi.repository.Gdk.DragContext
+        #win = context.get_source_window()
+        #print('dragBegin', id(win), win.get_geometry())
         pbuf = newDndDatePixbuf(ui.cell.dates[ui.dragGetMode])
         w = pbuf.get_width()
         #print(dir(context))
