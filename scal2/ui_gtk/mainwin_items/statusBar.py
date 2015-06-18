@@ -15,20 +15,16 @@ class CalObj(gtk.HBox, CustomizableCalObj):
     _name = 'statusBar'
     desc = _('Status Bar')
     def __init__(self):
+        from scal2.ui_gtk.mywidgets.resize_button import ResizeButton
         gtk.HBox.__init__(self)
         self.initVars()
         self.labelBox = gtk.HBox()
         pack(self, self.labelBox, 1, 1)
-        sbar = gtk.Statusbar()
+        resizeB = ResizeButton(ui.mainWin)
+        pack(self, resizeB, 0, 0)
         if rtl:
             self.set_direction(gtk.TextDirection.LTR)
-            sbar.set_direction(gtk.TextDirection.LTR)
             self.labelBox.set_direction(gtk.TextDirection.LTR)
-        sbar.set_property('width-request', 18)
-        sbar.connect('button-press-event', self.sbarButtonPress)
-        sbar.show()
-        pack(self, sbar)
-    sbarButtonPress = lambda self, widget, gevent: ui.mainWin.startResize(widget, gevent)
     def onConfigChange(self, *a, **kw):
         CustomizableCalObj.onConfigChange(self, *a, **kw)
         ###
