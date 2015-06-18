@@ -110,7 +110,7 @@ class StarCalApplet(MainWin):
         #######
         self.applet.show_all()
         #self.applet.set_background_widget(self.applet)#????????
-        self.statusIconPix = gdk.Pixbuf(gdk.COLORSPACE_RGB, True, 8, ui.statusIconSize, ui.statusIconSize)
+        self.statusIconPix = gdk.Pixbuf(GdkPixbuf.Colorspace.RGB, True, 8, ui.statusIconSize, ui.statusIconSize)
     def statusIconClicked(self, toggle):
         if toggle.get_active():
             if (ui.winX, ui.winY) == (-1, -1):

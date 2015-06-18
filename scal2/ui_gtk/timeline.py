@@ -415,7 +415,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
         self.onConfigChange()
     def startResize(self, gevent):
         self.get_parent().begin_resize_drag(
-            gdk.WINDOW_EDGE_SOUTH_EAST,
+            gdk.WindowEdge.SOUTH_EAST,
             gevent.button,
             int(gevent.x_root),
             int(gevent.y_root),

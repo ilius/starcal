@@ -10,6 +10,7 @@ __all__ = [
 
 from gi.repository import Gtk as gtk
 from gi.repository import Gdk as gdk
+from gi.repository import GdkPixbuf
 
 def pack(box, child, expand=False, fill=False, padding=0):
     if isinstance(box, gtk.Box):

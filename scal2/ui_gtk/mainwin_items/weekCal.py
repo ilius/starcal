@@ -908,7 +908,7 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         elif kname in ('page_down', 'j', 'n'):
             self.jdPlus(7)
         elif kname in ('f10', 'm'):
-            if gevent.state & gdk.SHIFT_MASK:
+            if gevent.state & gdk.ModifierType.SHIFT_MASK:
                 # Simulate right click (key beside Right-Ctrl)
                 self.emit('popup-cell-menu', gevent.time, *self.getCellPos())
             else:
