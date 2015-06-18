@@ -424,8 +424,13 @@ class MainWin(gtk.Window, ud.BaseCalObj):
     def startResize(self, widget, gevent):
         if self.menuMain:
             self.menuMain.hide()
-        foo, x, y, mask = ud.rootWindow.get_pointer()
-        self.begin_resize_drag(gdk.WindowEdge.SOUTH_EAST, gevent.button, x, y, gevent.time)
+        self.begin_resize_drag(
+            gdk.WindowEdge.SOUTH_EAST,
+            gevent.button,
+            int(gevent.x_root),
+            int(gevent.y_root),
+            gevent.time,
+        )
         return True
     def changeDate(self, year, month, day):
         ui.changeDate(year, month, day)
