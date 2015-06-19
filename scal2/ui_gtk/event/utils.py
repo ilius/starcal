@@ -5,8 +5,10 @@ from scal2.ui_gtk.utils import confirm
 from scal2.ui_gtk.drawing import newColorCheckPixbuf
 
 
-confirmEventTrash = lambda event:\
-    confirm(_('Press OK if you want to move event "%s" to trash')%event.summary)
+confirmEventTrash = lambda event, parent=None: confirm(
+    _('Press OK if you want to move event "%s" to trash')%event.summary,
+    parent=parent,
+)
 
 
 def menuItemFromEventGroup(group):

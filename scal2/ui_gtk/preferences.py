@@ -1143,7 +1143,7 @@ class PrefDialog(gtk.Dialog):
         accountId = self.accountsTreestore[index][0]
         account = ui.eventAccounts[accountId]
         if not account.loaded:
-            showError(_('Account must be enabled before editing'))
+            showError(_('Account must be enabled before editing'), self)
             return
         account = AccountEditorDialog(account).run()
         if account is None:
@@ -1173,7 +1173,7 @@ class PrefDialog(gtk.Dialog):
         index = cur[0]
         accountId = self.accountsTreestore[index][0]
         account = ui.eventAccounts[accountId]
-        if not confirm(_('Do you want to delete account "%s"')%account.title):
+        if not confirm(_('Do you want to delete account "%s"')%account.title, parent=self):
             return
         ui.eventAccounts.delete(account)
         del self.accountsTreestore[index]

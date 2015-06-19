@@ -35,7 +35,7 @@ from gi.repository import GdkPixbuf
 
 from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
-from scal2.ui_gtk.utils import set_tooltip, dialog_add_button, confirm, showError
+from scal2.ui_gtk.utils import set_tooltip, dialog_add_button, confirm
 from scal2.ui_gtk.utils import toolButtonFromStock, labelImageMenuItem, labelStockMenuItem
 from scal2.ui_gtk.utils import pixbufFromFile, rectangleContainsPoint, getStyleColor
 from scal2.ui_gtk.utils import showError, showInfo
@@ -337,7 +337,10 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         return True
     def checkEventToAdd(self, group, event):
         if not group.checkEventToAdd(event):
-            showError(_('Group type "%s" can not contain event type "%s"')%(group.desc, event.desc), self)
+            showError(
+                _('Group type "%s" can not contain event type "%s"')%(group.desc, event.desc),
+                self,
+            )
             raise RuntimeError('Invalid event type for this group')
     getGroupRow = lambda self, group:\
         common.getGroupRow(group) + ('',)
@@ -1037,7 +1040,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                 _('Press OK if you want to delete group "%s" and move its %s events to trash')%(
                     group.title,
                     _(eventCount),
-                )
+                ),
+                parent=self,
             ):
                 return
         self.waitingDo(self._do_deleteGroup, path, group)
@@ -1097,7 +1101,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         self.pasteEventToPath(tarPath, False)
     def moveEventToTrash(self, path):
         group, event = self.getObjsByPath(path)
-        if not confirmEventTrash(event):
+        if not confirmEventTrash(event, parent=self):
             return
         ui.moveEventToTrash(group, event)
         self.trees.remove(self.trees.get_iter(path))

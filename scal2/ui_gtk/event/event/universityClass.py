@@ -41,7 +41,7 @@ class WidgetClass(gtk.VBox):
         sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
         #####
         if not event.parent.courses:
-            showError(event.parent.noCourseError)
+            showError(event.parent.noCourseError, ui.eventManDialog)
             raise RuntimeError('No courses added')
         self.courseIds = []
         self.courseNames = []
@@ -175,7 +175,7 @@ class WidgetClass(gtk.VBox):
     def updateVars(self):## FIXME
         courseIndex = self.courseCombo.get_active()
         if courseIndex is None:
-            showError(_('No course is selected'), self)
+            showError(_('No course is selected'), ui.eventManDialog)
             raise RuntimeError('No courses is selected')
         else:
             self.event.courseId = self.courseIds[courseIndex]

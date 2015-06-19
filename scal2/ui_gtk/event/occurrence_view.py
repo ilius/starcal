@@ -204,9 +204,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
         self.onConfigChange()
     def moveEventToTrash(self, item, event, groupId):
         from scal2.ui_gtk.event.utils import confirmEventTrash
-        #if not confirm(_('Press OK if you are sure to move event "%s" to trash')%event.summary):
-        #    return
-        if not confirmEventTrash(event):
+        if not confirmEventTrash(event, parent=ui.mainWin):
             return
         ui.moveEventToTrashFromOutside(ui.eventGroups[groupId], event)
         self.onConfigChange()
