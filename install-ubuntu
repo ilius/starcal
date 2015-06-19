@@ -1,5 +1,4 @@
 #!/bin/bash
-apt-get install python-appindicator
 "`dirname \"$0\"`/install-debian"
 
 
