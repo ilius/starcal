@@ -1324,7 +1324,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             tarGroup.save()
         ####
         if tarEventIter:
-            self.insertEventRowAfter(tarGroupIter, tarEventIter, newEvent)
+            newEventIter = self.insertEventRowAfter(tarGroupIter, tarEventIter, newEvent)
         else:
             newEventIter = self.appendEventRow(tarGroupIter, newEvent)
         if doScroll:
