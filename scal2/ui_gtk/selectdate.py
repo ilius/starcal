@@ -98,6 +98,7 @@ class SelectDateDialog(gtk.Dialog):
         self.radioChanged()
         #######
         self.vbox.show_all()
+        self.resize(1, 1)
     def dragRec(self, obj, context, x, y, selection, target_id, etime):
         text = selection.get_text()
         if text==None:
