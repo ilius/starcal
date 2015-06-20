@@ -852,6 +852,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         if not self.aboutDialog:
             from scal2.ui_gtk.about import AboutDialog
             dialog = AboutDialog(
+                parent=self,
                 name=core.APP_DESC,
                 version=core.VERSION,
                 title=_('About ')+core.APP_DESC,

@@ -5,6 +5,7 @@ from scal2.ui_gtk import *
 class AboutDialog(gtk.AboutDialog):
     def __init__(
         self,
+        parent=None,
         name='',
         version='',
         title='',
@@ -13,7 +14,7 @@ class AboutDialog(gtk.AboutDialog):
         license='',
         website='',
     ):
-        gtk.AboutDialog.__init__(self)
+        gtk.AboutDialog.__init__(self, parent=parent)
         self.set_name(name)
         self.set_program_name(name)
         self.set_version(version)
