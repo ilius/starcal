@@ -232,7 +232,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         #self.connect('focus-out-event', self.focusOut, 'Main')
         #self.connect('button-press-event', self.buttonPress)
         #self.connect('key-press-event', self.keyPress)
-        #self.connect('configure-event', self.configureEvent)
+        self.connect('configure-event', self.configureEvent)
         self.connect('destroy', self.quit)
         #############################################################
         """
