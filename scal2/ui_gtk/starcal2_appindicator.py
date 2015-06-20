@@ -60,18 +60,22 @@ class IndicatorStatusIconWrapper:
     '''
     def create_menu(self):
         menu = gtk.Menu()
+        self.menuItems = [] ## just to prevent GC from removing custom objects for items
         ####
         for line in self.mainWin.getStatusIconTooltip().split('\n'):
             item = CopyLabelMenuItem(line)
+            self.menuItems.append(item)
             item.show()
             menu.append(item)
         ####
         item = self.mainWin.getMainWinMenuItem()
+        self.menuItems.append(item)
         item.show()
         menu.append(item)
         ####
         submenu = gtk.Menu()
         for item in self.mainWin.getStatusIconPopupItems():
+            self.menuItems.append(item)
             item.show()
             submenu.add(item)
         sitem = MenuItem(label=_('More'))
