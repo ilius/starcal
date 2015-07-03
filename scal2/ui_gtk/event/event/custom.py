@@ -55,7 +55,8 @@ class WidgetClass(common.WidgetClass):
         pack(self, self.notificationBox)
         ###########
         self.addRuleModel = gtk.ListStore(str, str)
-        self.addRuleCombo = gtk.ComboBox(self.addRuleModel)
+        self.addRuleCombo = gtk.ComboBox()
+        self.addRuleCombo.set_model(self.addRuleModel)
         ###
         cell = gtk.CellRendererText()
         pack(self.addRuleCombo, cell, True)
