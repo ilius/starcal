@@ -783,6 +783,10 @@ class DurationEventRule(EventRule):
         'date',
         'end',
     )
+    params = (
+        'value',
+        'unit',
+    )
     sgroup = 1
     units = (1, 60, 3600, dayLen, 7*dayLen)
     def __init__(self, parent):
