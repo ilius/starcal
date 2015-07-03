@@ -233,12 +233,12 @@ class MultiSpinButton(gtk.SpinButton):
     def _arrow_enter_notify(self, gtkWin):
         if gtkWin!=None:
             print('_arrow_enter_notify')
-            gtkWin.set_background(gdk.Color(-1, 0, 0))
+            gtkWin.set_background(gdk.Color(65535, 0, 0))
             gtkWin.show()
     def _arrow_leave_notify(self, gtkWin):
         if gtkWin!=None:
             print('_arrow_leave_notify')
-            gtkWin.set_background(gdk.Color(-1, -1, -1))
+            gtkWin.set_background(gdk.Color(65535, 65535, 65535))
     #"""
 
 
