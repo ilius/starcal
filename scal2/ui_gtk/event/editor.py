@@ -25,10 +25,16 @@ class EventEditorDialog(gtk.Dialog):
         dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
         ###
         self.connect('response', lambda w, e: self.hide())
-        #######
-        self.event = event
-        self._group = event.parent
+        ###
         self.activeWidget = None
+        self._group = event.parent
+        self.eventTypeOptions = list(self._group.acceptsEventTypes)
+        ####
+        if not event.name in self.eventTypeOptions:
+            self.eventTypeOptions.append(event.name)
+        eventTypeIndex = self.eventTypeOptions.index(event.name)
+        ####
+        self.event = event
         #######
         if isNew:
             event.timeZone = str(core.localTz)
@@ -42,13 +48,14 @@ class EventEditorDialog(gtk.Dialog):
         #######
         hbox = gtk.HBox()
         pack(hbox, gtk.Label(_('Event Type')))
-        if typeChangable and len(self._group.acceptsEventTypes)>1:## FIXME
+        if typeChangable:
             combo = gtk.ComboBoxText()
-            for eventType in self._group.acceptsEventTypes:
-                combo.append_text(event_lib.classes.event.byName[eventType].desc)
+            for tmpEventType in self.eventTypeOptions:
+                combo.append_text(event_lib.classes.event.byName[tmpEventType].desc)
             pack(hbox, combo)
             ####
-            combo.set_active(self._group.acceptsEventTypes.index(event.name))
+            combo.set_active(eventTypeIndex)
+            ####
             #self.activeWidget = makeWidget(event)
             combo.connect('changed', self.typeChanged)
             self.comboEventType = combo
@@ -69,7 +76,7 @@ class EventEditorDialog(gtk.Dialog):
         if self.activeWidget:
             self.activeWidget.updateVars()
             self.activeWidget.destroy()
-        eventType = self._group.acceptsEventTypes[combo.get_active()]
+        eventType = self.eventTypeOptions[combo.get_active()]
         if self.isNew:
             self.event = self._group.createEvent(eventType)
         else:
