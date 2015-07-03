@@ -78,21 +78,24 @@ class JsonSObjBase(SObjBase):
     getJson = lambda self: dataToJson(self.getDataOrdered())
     setJson = lambda self, jsonStr: self.setData(jsonToData(jsonStr))
     def save(self):
-        jstr = self.getJson()
-        open(self.file, 'w').write(jstr)
+        if self.file:
+            jstr = self.getJson()
+            open(self.file, 'w').write(jstr)
+        else:
+            print('save method called for object %r while file is not set'%self)
     def load(self):
         if not isfile(self.file):
             raise IOError('error while loading json file %r: no such file'%self.file)
-            if hasattr(self, 'modified'):
-                self.setModifiedFromFile()
-        else:
-            'no modified param'
         jstr = open(self.file).read()
         if jstr:
             self.setJson(jstr)## FIXME
+        self.setModifiedFromFile()
     def setModifiedFromFile(self):
-        try:
-            self.modified = int(os.stat(self.file).st_mtime)
-        except OSError:
-            pass
+        if hasattr(self, 'modified'):
+            try:
+                self.modified = int(os.stat(self.file).st_mtime)
+            except OSError:
+                pass
+        else:
+            print('no modified param for object %r'%self)
 
