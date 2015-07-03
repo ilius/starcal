@@ -1189,6 +1189,17 @@ class RuleContainer:
         for ruleType, rule in other.rulesOd.items():
             if ruleType in self.supportedRules:
                 self.getAddRule(ruleType).copyFrom(rule)
+    def copySomeRuleTypesFrom(self, other, *ruleTypes):
+        for ruleType in ruleTypes:
+            if not ruleType in self.supportedRules:
+                print('copySomeRuleTypesFrom: unsupported rule %s for container %r'%(ruleType, self))
+                continue
+            try:
+                rule = other.rulesOd[ruleType]
+            except KeyError:
+                pass
+            else:
+                self.getAddRule(ruleType).copyFrom(rule)
     def getTimeZoneObj(self):
         if self.timeZoneEnable and self.timeZone:
             try:
@@ -1708,6 +1719,9 @@ class TaskEvent(SingleStartEndEvent):
             if other.name == 'dailyNote':
                 myStart.time = (0, 0, 0)
                 self.setEnd('duration', 24, 3600)
+            elif other.name == 'allDayTask':
+                self.removeSomeRuleTypes('end', 'duration')
+                self.copySomeRuleTypesFrom(other, 'start', 'end', 'duration')
             else:
                 try:
                     myStart.time = other['dayTime'].dayTime
