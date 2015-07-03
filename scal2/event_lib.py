@@ -1382,6 +1382,10 @@ class Event(JsonSObjBase, RuleContainer):
         self.occurrenceFile = join(self.dir, 'occurrence')## file or directory? ## FIXME
         self.filesDir = join(self.dir, 'files')
         self.loadFiles()
+    def invalidate(self):
+        ## make sure it can't be written to file again, it's about to be deleted
+        self.id = None
+        self.file = ''
     def save(self):
         if self.id is None:
             self.setId()
@@ -2672,9 +2676,13 @@ class EventGroup(EventContainer):
         return event
     def copyEventWithType(self, event, eventType):## FIXME
         newEvent = self.createEvent(eventType)
-        newEvent.setId(event.id)
+        ###
         newEvent.changeMode(event.mode)
         newEvent.copyFrom(event)
+        ###
+        newEvent.setId(event.id)
+        event.invalidate()
+        ###
         return newEvent
     ###############################################
     def remove(self, event):## call when moving to trash
