@@ -1707,10 +1707,14 @@ class TaskEvent(SingleStartEndEvent):
             endType, values = other.getEnd()
             self.setEnd(endType, *values)
         else:
-            try:
-                myStart.time = other['dayTime'].dayTime
-            except KeyError:
-                pass
+            if other.name == 'dailyNote':
+                myStart.time = (0, 0, 0)
+                self.setEnd('duration', 24, 3600)
+            else:
+                try:
+                    myStart.time = other['dayTime'].dayTime
+                except KeyError:
+                    pass
     def setIcsData(self, data):
         self.setStartEpoch(ics.getEpochByIcsTime(data['DTSTART']))
         self.setEndEpoch(ics.getEpochByIcsTime(data['DTEND']))## FIXME
