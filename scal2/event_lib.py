@@ -1182,15 +1182,9 @@ class RuleContainer:
                     ))
         return (True, '')
     def copyRulesFrom(self, other):
-        if self.supportedRules is None:
-            self.rulesOd = other.rulesOd.copy()
-        else:
-            for ruleName, rule in other.rulesOd.items():
-                if ruleName in self.supportedRules:
-                    try:
-                        self.rulesOd[ruleName].copyFrom(rule)
-                    except KeyError:
-                        self.addRule(rule)
+        for ruleType, rule in other.rulesOd.items():
+            if ruleType in self.supportedRules:
+                self.getAddRule(ruleType).copyFrom(rule)
     def getTimeZoneObj(self):
         if self.timeZoneEnable and self.timeZone:
             try:
