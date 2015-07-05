@@ -131,6 +131,7 @@ settings = gtk.Settings.get_default()
 
 
 ui.initFonts(gfontDecode(settings.get_property('gtk-font-name')))
+ui.fontDefaultInit = ui.fontDefault
 
 ###########
 textDirDict = {

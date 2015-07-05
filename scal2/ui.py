@@ -320,7 +320,7 @@ def yearPlus(plus=1):
     cell = cellCache.getCellByDate(year, month, day)
 
 def getFont(scale=1.0):
-    (name, bold, underline, size) = fontCustom if fontCustomEnable else fontDefault
+    (name, bold, underline, size) = fontCustom if fontCustomEnable else fontDefaultInit
     return (name, bold, underline, size*scale)
 
 def initFonts(fontDefaultNew):
@@ -729,6 +729,7 @@ winX = 0
 winY = 0
 ###
 fontDefault = ['Sans', False, False, 12]
+fontDefaultInit = fontDefault
 fontCustom = None
 fontCustomEnable = False
 #####################
