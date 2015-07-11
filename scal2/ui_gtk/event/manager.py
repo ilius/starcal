@@ -254,7 +254,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         #self.treev.get_selection().set_mode(gtk.SelectionMode.MULTIPLE)## FIXME
         #self.treev.set_rubber_banding(gtk.SelectionMode.MULTIPLE)## FIXME
         #self.treev.connect('realize', self.onTreeviewRealize)
-        self.treev.connect('cursor-changed', self.treeviewCursorChanged)## FIXME
+        self.treev.get_selection().connect('changed', self.treeviewCursorChanged)## FIXME
         self.treev.connect('button-press-event', self.treeviewButtonPress)
         self.treev.connect('row-activated', self.rowActivated)
         self.treev.connect('key-press-event', self.keyPress)
