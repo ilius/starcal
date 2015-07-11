@@ -99,7 +99,7 @@ class CustomizeDialog(gtk.Dialog):
         ###
         self.vbox.connect('size-request', self.vboxSizeRequest)
         self.vbox.show_all()
-        treev.connect('cursor-changed', self.treevCursorChanged)
+        treev.get_selection().connect('changed', self.treevCursorChanged)
     def vboxSizeRequest(self, widget, req):
         self.resize(self.get_size()[0], 1)
     def getItemByPath(self, path):
