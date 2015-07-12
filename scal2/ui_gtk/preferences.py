@@ -473,7 +473,7 @@ class PrefDialog(gtk.Dialog):
         treev.enable_model_drag_source(gdk.ModifierType.BUTTON1_MASK, [('row', gtk.TargetFlags.SAME_WIDGET, 0)], gdk.DragAction.MOVE)
         treev.enable_model_drag_dest([('row', gtk.TargetFlags.SAME_WIDGET, 0)], gdk.DragAction.MOVE)
         treev.connect('drag_data_received', self.plugTreevDragReceived)
-        treev.connect('cursor-changed', self.plugTreevCursorChanged)
+        treev.get_selection().connect('changed', self.plugTreevCursorChanged)
         treev.connect('row-activated', self.plugTreevRActivate)
         treev.connect('button-press-event', self.plugTreevButtonPress)
         ###
