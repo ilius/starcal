@@ -25,6 +25,7 @@ from os.path import dirname, join, isfile, splitext, isabs
 
 from scal2.utils import NullObj, cleanCacheDict, myRaise, myRaiseTback
 from scal2.utils import toBytes
+from scal2.json_utils import loadJsonConf
 from scal2.path import *
 
 from scal2.cal_types import calTypes, jd_to
@@ -795,26 +796,17 @@ def updateFocusTime(*args):
     focusTime = now()
 
 
-sysConfPath = join(sysConfDir, 'ui.conf') ## also includes LIVE config
-if os.path.isfile(sysConfPath):
-    try:
-        exec(open(sysConfPath).read())
-    except:
-        myRaise(__file__)
+sysConfPath = join(sysConfDir, 'ui.json') ## also includes LIVE config
+loadJsonConf(__name__, sysConfPath)
 
-confPath = join(confDir, 'ui.conf')
-if os.path.isfile(confPath):
-    try:
-        exec(open(confPath).read())
-    except:
-        myRaise(__file__)
 
-confPathLive = join(confDir, 'ui-live.conf')
-if os.path.isfile(confPathLive):
-    try:
-        exec(open(confPathLive).read())
-    except:
-        myRaise(__file__)
+confPath = join(confDir, 'ui.json')
+loadJsonConf(__name__, confPath)
+
+
+confPathLive = join(confDir, 'ui-live.json')
+loadJsonConf(__name__, confPathLive)
+
 ################################
 
 if not isfile(statusIconImage):

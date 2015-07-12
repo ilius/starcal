@@ -1,16 +1,62 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
+# Also avalable in /usr/share/common-licenses/GPL on Debian systems
+# or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
+
+import sys
+import os
+from os.path import join, split, dirname, isfile. isdir
+
+import shutil
 import re
 
+from scal2.path import confDir as newConfDir
+from scal2.json_utils import dataToPrettyJson
+from scal2.os_utils import makeDir
+
+oldConfDir = newConfDir.replace('starcal3', 'starcal2')
+
+
 def loadConf(confPath):
-    text = open(confPath).read()
+    if not isfile(confPath):
+        return
+    try:
+        text = open(confPath).read()
+    except Exception as e:
+        print('failed to read file %r: %s'%(confPath, e))
+        return
+    #####
     data = {}
     exec(text, {}, data)
     return data
 
-def loadCoreConf(confPath):
+def loadCoreConf():
+    confPath = join(oldConfDir, 'core.conf')
+    #####
     def loadPlugin(fname, **data):
         data['file'] = fname
         return data
-    text = open(confPath).read()
+    try:
+        text = open(confPath).read()
+    except Exception as e:
+        print('failed to read file %r: %s'%(confPath, e))
+        return
+    ######
     text = text.replace('calTypes.activeNames', 'calTypes__activeNames')
     text = text.replace('calTypes.inactiveNames', 'calTypes__inactiveNames')
     ######
@@ -20,14 +66,88 @@ def loadCoreConf(confPath):
     }, data)
     return data
 
-def loadUiCustomizeConf(confPath):
-    text = open(confPath).read()
+def loadUiCustomizeConf():
+    confPath = join(oldConfDir, 'ui-customize.conf')
+    #####
+    if not isfile(confPath):
+        return
+    #####
+    try:
+        text = open(confPath).read()
+    except Exception as e:
+        print('failed to read file %r: %s'%(confPath, e))
+        return
+    #####
     text = re.sub('^ui\.', '', text, flags=re.M)
     text = re.sub('^ud\.', 'ud__', text, flags=re.M)
     ######
     data = {}
     exec(text, {}, data)
     return data
+
+
+def writeJsonConf(name, data):
+    if data is None:
+        return
+    fname = name + '.json'
+    jsonPath = join(newConfDir, fname)
+    text = dataToPrettyJson(data)
+    try:
+        open(jsonPath, 'w').write(data)
+    except Exception as e:
+        print('failed to write file %r: %s'%(jsonPath, e))
+
+
+def importAll():
+    makeDir(newConfDir)
+    ####
+    writeJsonConf('core', loadCoreConf())
+    writeJsonConf('ui-customize', loadUiCustomizeConf())
+    for name in (
+        'hijri',
+        'jalali',
+        'locale',
+        'ui',
+        'ui-gtk',
+        'ui-live',
+    ):
+        confPath = join(oldConfDir, name + '.conf')
+        writeJsonConf(name, loadConf(confPath))
+    ######
+    oldPlugConfDir = join(oldConfDir, 'plugins.conf')
+    ###
+    if isdir(oldPlugConfDir):
+        for plugName in os.listdir(oldPlugConfDir):
+            writeJsonConf(
+                plugName,## move it out of plugins.conf FIXME
+                loadConf(
+                    join(oldPlugConfDir, plugName)
+                ),
+            )
+    #########
+    oldEventDir = join(oldConfDir, 'event')
+    newEventDir = join(newConfDir, 'event')
+    if isdir(oldEventDir) and not isdir(newEventDir):
+        shutil.copytree(oldEventDir, newEventDir)
+    #########
+    
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

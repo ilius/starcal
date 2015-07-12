@@ -106,30 +106,23 @@ from bisect import bisect_left
 from scal2.path import sysConfDir, confDir
 from scal2.utils import iceil
 from scal2.utils import myRaise
+from scal2.json_utils import *
 
 ## Here load user options(jalaliAlg) from file
-sysConfPath = '%s/%s.conf'%(sysConfDir, name)
-if os.path.isfile(sysConfPath):
-    try:
-        exec(open(sysConfPath).read())
-    except:
-        myRaise(__file__)
+sysConfPath = '%s/%s.json'%(sysConfDir, name)
+loadJsonConf(__name__, sysConfPath)
 
-confPath = '%s/%s.conf'%(confDir, name)
-if os.path.isfile(confPath):
-    try:
-        exec(open(confPath).read())
-    except:
-        myRaise(__file__)
+
+confPath = '%s/%s.json'%(confDir, name)
+loadJsonConf(__name__, confPath)
 
 
 
 def save():## Here save user options to file
-    text = ''
-    text += 'monthNameMode=%s\n'%monthNameMode
-    text += 'jalaliAlg=%s\n'%jalaliAlg
-    open(confPath, 'w').write(text)
-
+    saveJsonConf(__name__, confPath, (
+        'monthNameMode',
+        'jalaliAlg',
+    ))
 
 
 def isLeap(year):

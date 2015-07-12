@@ -839,7 +839,7 @@ class PrefDialog(gtk.Dialog):
         text = ''
         for item in self.localePrefItems:
             text += item.confStr()
-        open(locale_man.localeConfPath, 'w').write(text)
+        open(locale_man.confPath, 'w').write(text)
         ##################### Saving core config
         text = ''
         text += 'version=%r\n\n'%core.VERSION

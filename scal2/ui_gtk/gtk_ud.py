@@ -26,6 +26,7 @@ from os.path import join
 
 from scal2.path import *
 from scal2.utils import myRaise
+from scal2.json_utils import loadJsonConf
 from scal2.locale_man import rtl
 from scal2 import core
 from scal2 import ui
@@ -192,19 +193,13 @@ wcalToolbarData = {
 
 ############################################################
 
-sysConfPath = join(sysConfDir, 'ui-gtk.conf')
-if os.path.isfile(sysConfPath):
-    try:
-        exec(open(sysConfPath).read())
-    except:
-        myRaise(__file__)
+sysConfPath = join(sysConfDir, 'ui-gtk.json')
+loadJsonConf(__name__, sysConfPath)
 
-confPath = join(confDir, 'ui-gtk.conf')
-if os.path.isfile(confPath):
-    try:
-        exec(open(confPath).read())
-    except:
-        myRaise(__file__)
+
+confPath = join(confDir, 'ui-gtk.json')
+loadJsonConf(__name__, confPath)
+
 
 updateFormatsBin()
 

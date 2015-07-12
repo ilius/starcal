@@ -24,6 +24,7 @@ import locale, gettext
 from .path import *
 from scal2.utils import StrOrderedDict, myRaise
 from scal2.utils import toBytes, toStr
+from scal2.json_utils import loadJsonConf
 from scal2.cal_types import calTypes
 
 
@@ -75,12 +76,9 @@ rtl = False ## right to left
 enableNumLocale = True
 
 
-localeConfPath = join(confDir, 'locale.conf')
-if isfile(localeConfPath):
-    try:
-        exec(open(localeConfPath).read())
-    except:
-        myRaise(__file__)
+confPath = join(confDir, 'locale.json')
+loadJsonConf(__name__, confPath)
+
 
 ## translator
 tr = lambda s, *a, **ka: numEncode(s, *a, **ka) if isinstance(s, int) else str(s)

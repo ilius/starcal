@@ -257,7 +257,6 @@ def validatePlugList():
 def initPlugins():
     #log.debug('----------------------- initPlugins')
     global allPlugList, plugIndex
-    #exec(open(userPlugConf).read())## FIXME
     ## Assert that user configuarion for plugins is OK
     validatePlugList()
     ########################
@@ -506,31 +505,18 @@ eventTextSep = ': ' ## use to seperate summary from description for display
 eventTrashLastTop = True
 
 
-#confPathDef = '/etc/%s/core.conf'%APP_NAME ## ????????????????????????
-#if isfile(confPathDef):## ????????????????????????
-#    try:
-#        exec(open(confPathDef).read())
-#        #execfile(confPathDef)
-#    except:
-#        myRaise(__file__)
+#confPathDef = '/etc/%s/core.json'%APP_NAME ## ????????????????????????
+#loadJsonConf(__name__, confPathDef)
 
 ################################################################################
 #################### Loading user core configuration ###########################
 
 
-sysConfPath = join(sysConfDir, 'core.conf')
-if isfile(sysConfPath):
-    try:
-        exec(open(sysConfPath).read())
-    except:
-        myRaise(__file__)
+sysConfPath = join(sysConfDir, 'core.json')
+loadJsonConf(__name__, sysConfPath)
 
-confPath = join(confDir, 'core.conf')
-if isfile(confPath):
-    try:
-        exec(open(confPath).read())
-    except:
-        myRaise(__file__)
+confPath = join(confDir, 'core.json')
+loadJsonConf(__name__, confPath)
 
 
 ################################################################################

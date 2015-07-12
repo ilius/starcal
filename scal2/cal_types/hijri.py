@@ -59,7 +59,7 @@ options = (
 import os
 from os.path import join, isfile
 from scal2.path import sysConfDir, confDir, modDir
-from scal2.json_utils import jsonToData, dataToPrettyJson
+from scal2.json_utils import *
 from scal2.lib import OrderedDict
 from scal2.utils import iceil, ifloor
 from scal2.utils import myRaise
@@ -71,22 +71,19 @@ if isfile(oldDbPath):
 
 
 ## Here load user options (hijriUseDB) from file
-sysConfPath = '%s/%s.conf'%(sysConfDir, name)
-if isfile(sysConfPath):
-    try:
-        exec(open(sysConfPath).read())
-    except:
-        myRaise(__file__)
+sysConfPath = '%s/%s.json'%(sysConfDir, name)
+loadJsonConf(__name__, sysConfPath)
 
-confPath = '%s/%s.conf'%(confDir, name)
-if isfile(confPath):
-    try:
-        exec(open(confPath).read())
-    except:
-        myRaise(__file__)
+
+confPath = '%s/%s.json'%(confDir, name)
+loadJsonConf(__name__, confPath)
+
 
 def save():## Here save user options (hijriUseDB) to file
-    open(confPath, 'w').write('hijriAlg=%s\nhijriUseDB=%s'%(hijriAlg, hijriUseDB))
+    saveJsonConf(__name__, confPath, (
+        'hijriAlg',
+        'nhijriUseDB',
+    ))
 
 
 class MonthDbHolder:
