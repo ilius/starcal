@@ -904,8 +904,8 @@ class PrefDialog(gtk.Dialog):
             self.accountsTreestore.append([account.id, account.enable, account.title])
     #def plugTreevExpose(self, widget, gevent):
         #self.plugDescCell.set_property('wrap-width', self.plugDescCol.get_width()+2)
-    def plugTreevCursorChanged(self, treev):
-        cur = treev.get_cursor()[0]
+    def plugTreevCursorChanged(self, selection):
+        cur = self.plugTreeview.get_cursor()[0]
         if cur==None:
             return
         i = cur[0]

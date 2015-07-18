@@ -816,7 +816,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             self.treev.remove_column(self.colDesc)
     def showDescItemToggled(self, obj=None):
         self.waitingDo(self._do_showDescItemToggled)
-    def treeviewCursorChanged(self, treev=None):
+    def treeviewCursorChanged(self, selection=None):
         path = self.treev.get_cursor()[0]
         ## update eventInfoBox
         #print('treeviewCursorChanged', path)
