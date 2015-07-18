@@ -3,8 +3,8 @@ from xml.etree.ElementTree import XML, tostring
 
 sys.path.append('/starcal2')
 
-from scal2 import event_lib
-from scal2 import ui
+from scal3 import event_lib
+from scal3 import ui
 
 
 tree = XML(open('/usr/share/apps/libkdeedu/data/elements.xml').read())

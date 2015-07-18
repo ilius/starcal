@@ -38,21 +38,21 @@ sys.path.insert(0, rootDir)## FIXME
 
 from natz.local import get_localzone
 
-from scal2 import plugin_api as api
+from scal3 import plugin_api as api
 
-from scal2.path import *
+from scal3.path import *
 from pray_times_backend import PrayTimes
 
 ## DO NOT IMPORT core IN PLUGINS
-from scal2.json_utils import *
-from scal2.time_utils import floatHourToTime
-from scal2.locale_man import tr as _
-from scal2.plugin_man import BasePlugin
-from scal2.cal_types.gregorian import to_jd as gregorian_to_jd
-from scal2.time_utils import getUtcOffsetByJd, getUtcOffsetCurrent, getEpochFromJd
-from scal2.os_utils import kill, goodkill
-from scal2.utils import myRaise
-#from scal2 import event_lib## needs core!! FIXME
+from scal3.json_utils import *
+from scal3.time_utils import floatHourToTime
+from scal3.locale_man import tr as _
+from scal3.plugin_man import BasePlugin
+from scal3.cal_types.gregorian import to_jd as gregorian_to_jd
+from scal3.time_utils import getUtcOffsetByJd, getUtcOffsetCurrent, getEpochFromJd
+from scal3.os_utils import kill, goodkill
+from scal3.utils import myRaise
+#from scal3 import event_lib## needs core!! FIXME
 
 from threading import Timer
 
@@ -343,8 +343,8 @@ class TextPlug(BasePlugin, TextPlugUI):
 
 
 if __name__=='__main__':
-    #from scal2 import core
-    #from scal2.locale_man import rtl
+    #from scal3 import core
+    #from scal3.locale_man import rtl
     #if rtl:
     #    gtk.widget_set_default_direction(gtk.TextDirection.RTL)
     dialog = LocationDialog(readLocationData())

@@ -14,7 +14,7 @@ fi
 pkgName=starcal3
 sourceDir="`dirname \"$myPath\"`"
 #"$sourceDir/scripts/assert_python3"
-version=`$sourceDir/scal2/get_version.py`
+version=`$sourceDir/scal3/get_version.py`
 
 tmpDir=/tmp/$pkgName-install-arch
 mkdir -p $tmpDir

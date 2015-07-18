@@ -21,13 +21,13 @@ import os
 from os.path import dirname
 import math
 
-from scal2 import locale_man
-from scal2.locale_man import tr as _
+from scal3 import locale_man
+from scal3.locale_man import tr as _
 from pray_times_backend import timeNames, methodsList
 from pray_times_utils import *
 
-from scal2.ui_gtk import *
-from scal2.ui_gtk.app_info import popenFile
+from scal3.ui_gtk import *
+from scal3.ui_gtk.app_info import popenFile
 
 buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter())
 buffer_select_all = lambda b: b.select_range(b.get_start_iter(), b.get_end_iter())
