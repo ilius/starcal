@@ -34,11 +34,11 @@ from scal2.ui_gtk.utils import CopyLabelMenuItem
 from gi.repository import AppIndicator3 as appindicator
 
 class IndicatorStatusIconWrapper:
-    imPath = join(tmpDir, 'starcal2-indicator-%s.png'%os.getuid())## FIXME
+    imPath = join(tmpDir, APP_NAME+'-indicator-%s.png'%os.getuid())## FIXME
     def __init__(self, mainWin):
         self.mainWin = mainWin
         self.c = appindicator.Indicator.new(
-            'starcal2',## app id
+            APP_NAME,## app id
             '',## icon
             appindicator.IndicatorCategory.APPLICATION_STATUS,
         )

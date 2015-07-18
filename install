@@ -23,7 +23,7 @@ elif [ "${myPath:0:1}" != "/" ] ; then
     myPath=$PWD/$myPath
 fi
 
-pkgName=starcal2
+pkgName=starcal3
 sourceDir="`dirname \"$myPath\"`"
 version=`$sourceDir/scal2/get_version.py`
 
@@ -110,7 +110,7 @@ mkdir -p "${shareDir}/icons"
 mkdir -p "${shareDir}/pixmaps"
 mkdir -p "${shareDir}/doc/$pkgName"
 mkdir -p "${targetPrefix}/bin"
-mkdir -p "${targetDir}/var/log/starcal2"
+mkdir -p "${targetDir}/var/log/$pkgName"
 mkdir -p "${targetDir}/etc"
 
 
@@ -144,12 +144,12 @@ mkdir -p "${shareDir}/icons/hicolor"
 for SZ in 16 22 24 32 48 ; do
     relDir="icons/hicolor/${SZ}x${SZ}/apps"
     mkdir -p "${shareDir}/$relDir"
-    mv -f "${shareDir}/$pkgName/$relDir/$pkgName.png" "${shareDir}/$relDir/$pkgName.png"
+    mv -f "${shareDir}/$pkgName/$relDir/starcal.png" "${shareDir}/$relDir/$pkgName.png"
 done
 rm -R "${shareDir}/$pkgName/icons"
 
 
-cp -f "$sourceDir/pixmaps/$pkgName.png" "${shareDir}/pixmaps/$pkgName.png"
+cp -f "$sourceDir/pixmaps/starcal.png" "${shareDir}/pixmaps/$pkgName.png"
 
 
 if [ "$installType" = "for-pkg" ] ; then
@@ -162,12 +162,12 @@ fi
 
 
 echo "#!/bin/bash
-$PY $runDirStr/scal2/ui_gtk/starcal2.py \"\$@\"" > "${targetPrefix}/bin/$pkgName"
+$PY $runDirStr/scal2/ui_gtk/starcal.py \"\$@\"" > "${targetPrefix}/bin/$pkgName"
 chmod 755 "${targetPrefix}/bin/$pkgName"
 
 if [ $UI_QT_ENABLE ] ; then
     echo "#!/bin/bash
-    $PY $runDirStr/scal2/ui_qt/starcal2.py \"\$@\"" > "${targetPrefix}/bin/$pkgName-qt"
+    $PY $runDirStr/scal2/ui_qt/starcal.py \"\$@\"" > "${targetPrefix}/bin/$pkgName-qt"
     chmod 755 "${targetPrefix}/bin/$pkgName-qt"
 fi
 
@@ -207,9 +207,6 @@ fi
 
 "$sourceDir/locale.d/install" "${targetPrefix}" ## FIXME
 
-mkdir -p "$targetPrefix/lib/bonobo/servers"
-mv "${shareDir}/$pkgName/scal2/ui_gtk/GNOME_Starcal2Applet.server" "$targetPrefix/lib/bonobo/servers/"
-
 
 ## Cleaning useless files from targetDir
 cd "${shareDir}/$pkgName"
@@ -222,7 +219,7 @@ cd "$targetDir"
 clean
 cd - > /dev/null
 
-## lib/        -->    starcal2-platform-spec
-## locale/     -->    starcal2-region-*
+## lib/        -->    starcal3-platform-spec
+## locale/     -->    starcal3-region-*
 
 

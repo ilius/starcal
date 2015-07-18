@@ -17,8 +17,6 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-APP_NAME = 'starcal2'
-
 import sys
 from time import strftime
 from os.path import isfile, dirname, join, split, splitext, isabs
@@ -44,7 +42,7 @@ pluginsDescByName = {
 }
 
 
-getPlugPath = lambda fname: fname if isabs(fname) else join(plugDir, fname)
+getPlugPath = lambda _file: _file if isabs(_file) else join(plugDir, _file)
 
 
 def myRaise(File=__file__):
@@ -55,7 +53,12 @@ def myRaise(File=__file__):
 class BasePlugin:
     external = False
     loaded = True
-    __repr__ = lambda self: 'loadPlugin(%r, enable=%r, show_date=%r)'%(self.fname, self.enable, self.show_date)
+    __repr__ = lambda self: 'loadPlugin(%r, enable=%r, show_date=%r)'%(self.file, self.enable, self.show_date)
+    getArgs = lambda self: {
+        '_file': self.file,
+        'enable': self.enable,
+        'show_date': self.show_date,
+    }
     params = {
         'mode': DATE_GREG,
         'desc': '',
@@ -69,18 +72,18 @@ class BasePlugin:
     }
     def __init__(
         self,
-        fname,
+        _file,
         mode=0,
         **kwargs
     ):
-        self.fpath = getPlugPath(fname)
-        fname = split(fname)[-1]
-        self.fname = fname
+        self.fpath = getPlugPath(_file)
+        _file = split(_file)[-1]
+        self.file = _file
         if isinstance(mode, str):
             try:
                 mode = calTypes.names.index(mode)
             except ValueError:
-                log.error('Plugin "%s" needs calendar module "%s" that is not loaded!\n'%(fname, mode))
+                log.error('Plugin "%s" needs calendar module "%s" that is not loaded!\n'%(_file, mode))
                 mode = None
         elif mode==None or isinstance(mode, int):
             pass
@@ -150,32 +153,32 @@ class DummyPlugin(BasePlugin):
     authors = []
     has_config = False
     has_image = False
-    __repr__ = lambda self: 'loadPlugin(%r, enable=False, show_date=False)'%self.fname
-    def __init__(self, fname, desc):
-        self.fpath = getPlugPath(fname)
-        fname = split(fname)[-1]
-        self.fname = fname
+    __repr__ = lambda self: 'loadPlugin(%r, enable=False, show_date=False)'%self.file
+    def __init__(self, _file, desc):
+        self.fpath = getPlugPath(_file)
+        _file = split(_file)[-1]
+        self.file = _file
         self.desc = desc
 
 
-def loadExternalPlugin(fname, enable=True, show_date=True):
-    fpath = getPlugPath(fname)
-    fname = split(fname)[-1]
+def loadExternalPlugin(_file, enable=True, show_date=True):
+    fpath = getPlugPath(_file)
+    _file = split(_file)[-1]
     if not isfile(fpath):
         log.error('plugin file "%s" not found! maybe removed?'%fpath)
         #try:
         #    plugIndex.remove(
         return None #?????????????????????????
-        ##plug = BasePlugin(fname, mode=0, desc='Failed to load plugin', enable=enable, show_date=show_date)
+        ##plug = BasePlugin(_file, mode=0, desc='Failed to load plugin', enable=enable, show_date=show_date)
         ##plug.external = True
         ##return plug
     ###
     direc = dirname(fpath)
-    name = splitext(fname)[0]
+    name = splitext(_file)[0]
     ###
     if not enable:
         return DummyPlugin(
-            fname,
+            _file,
             pluginsDescByName.get(name, ''),
         )
     ###
@@ -197,10 +200,10 @@ def loadExternalPlugin(fname, enable=True, show_date=True):
 
 
 class HolidayPlugin(BasePlugin):
-    def __init__(self, fname, enable=None, show_date=None):
+    def __init__(self, _file, enable=None, show_date=None):
         default_enable = True
         default_show_date = False
-        fpath = getPlugPath(fname)
+        fpath = getPlugPath(_file)
         data = {}
         exec(open(fpath).read(), data)
         if not 'holidays' in data:
@@ -213,7 +216,7 @@ class HolidayPlugin(BasePlugin):
         data['last_day_merge'] = True ## FIXME
         BasePlugin.__init__(
             self,
-            fname,
+            _file,
             **self.prepareParams(data)
         )
         self.holidays = {}
@@ -272,11 +275,11 @@ class HolidayPlugin(BasePlugin):
 
 
 class BuiltinTextPlugin(BasePlugin):
-    def __init__(self, fname, enable=None, show_date=None):
+    def __init__(self, _file, enable=None, show_date=None):
         default_enable = True
         default_show_date = False
         db_name = ''
-        fpath = getPlugPath(fname)
+        fpath = getPlugPath(_file)
         data = {}
         exec(open(fpath).read(), data)
         #execfile(fpath)
@@ -289,13 +292,13 @@ class BuiltinTextPlugin(BasePlugin):
         self.db_path = getPlugPath(data['db_name'])
         BasePlugin.__init__(
             self,
-            fname,
+            _file,
             **self.prepareParams(data)
         )
     def clear(self):
         self.data = []
     def load(self):
-        #print('BuiltinTextPlugin(%s).load()'%self.fname)
+        #print('BuiltinTextPlugin(%s).load()'%self._file)
         db = []
         for j in range(12):
             monthDb = []
@@ -369,7 +372,7 @@ class BuiltinTextPlugin(BasePlugin):
             text += text2
         return text
     #def pref_str(self):
-        ## (self, fname, mode, desc, show_date=False):
+        ## (self, _file, mode, desc, show_date=False):
         #return '%s("%s", %s, "%s", enable=%s, show_date=%s)'\
         #    %(self.__class__.__name__, self.db_path.replace('"', '\\"'),
         #    self.mode, self.desc.replace('"', '\\"'), self.enable, self.show_date)
@@ -377,14 +380,14 @@ class BuiltinTextPlugin(BasePlugin):
 
 
 class IcsTextPlugin(BasePlugin):
-    def __init__(self, fname, enable=True, show_date=False, all_years=False):
-        desc = splitext(fname)[0]
+    def __init__(self, _file, enable=True, show_date=False, all_years=False):
+        desc = splitext(_file)[0]
         self.ymd = None
         self.md = None
         self.all_years = all_years
         BasePlugin.__init__(
             self,
-            fname,
+            _file,
             mode=DATE_GREG,
             desc=desc,
             enable=enable,
@@ -551,21 +554,24 @@ class IcsTextPlugin(BasePlugin):
 
 
 
-def loadPlugin(fname, **kwargs):
-    fpath = getPlugPath(fname)
+def loadPlugin(_file=None, **kwargs):
+    if not _file:
+        log.error('plugin file is empty!')
+        return None
+    fpath = getPlugPath(_file)
     if not isfile(fpath):
         log.error('error while loading plugin "%s": no such file!\n'%fpath)
         return None
-    ext = splitext(fname)[1]
+    ext = splitext(_file)[1]
     #try:
     if ext=='.spg':
-        return BuiltinTextPlugin(fname, **kwargs)
+        return BuiltinTextPlugin(_file, **kwargs)
     elif ext=='.hol':
-        return HolidayPlugin(fname, **kwargs)
+        return HolidayPlugin(_file, **kwargs)
     elif ext=='.ics':
-        return IcsTextPlugin(fname, **kwargs)
+        return IcsTextPlugin(_file, **kwargs)
     elif ext=='.py' or ext=='.so':
-        return loadExternalPlugin(fname, **kwargs)
+        return loadExternalPlugin(_file, **kwargs)
     else:
         return None
     #except ImportError:## FIXME

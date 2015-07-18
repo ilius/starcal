@@ -21,13 +21,13 @@ fi
 
 
 
-pkgName=starcal2
+pkgName=starcal3
 sourceDir="`dirname \"$myPath\"`"
 #"$sourceDir/scripts/assert_python3"
 version=`$sourceDir/scal2/get_version.py`
 
 
-tmpDir=/tmp/starcal2-install-deb
+tmpDir=/tmp/$pkgName-install-deb
 mkdir -p $tmpDir
 mkdir -p "$tmpDir/DEBIAN"
 
@@ -73,7 +73,7 @@ Description: A full-featured international calendar writen in Python
  Homepage: http://ilius.github.io/starcal
 " > "$tmpDir/DEBIAN/control"
 
-#echo "/usr/share/starcal2/scripts/assert_python3" > "$tmpDir/DEBIAN/postinst"
+#echo "/usr/share/$pkgName/scripts/assert_python3" > "$tmpDir/DEBIAN/postinst"
 chmod 755 "$tmpDir/DEBIAN/postinst"
 
 pkgFile=${pkgName}_${version}-1_all.deb

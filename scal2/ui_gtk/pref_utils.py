@@ -112,16 +112,10 @@ class PrefItem():
         raise NotImplementedError
     updateVar = lambda self: setattr(self.module, self.varName, self.get())
     updateWidget = lambda self: self.set(getattr(self.module, self.varName))
-    ## confStr(): gets the value from variable (not from GUI) and returns a string to save to file
-    ## the string will has a NEWLINE at the END
-    def confStr(self):
-        value = getattr(self.module, self.varName)
-        valueStr = repr(value)
-        ## repr of a utf8 string (by Python 2) is not utf8 and not readable correctly from Python 3
-        ## no simple way you can fix that for strings nested inside other structures
-        ## yet another reason to switch to JSON for config files
-        ## FIXME
-        return '%s=%s\n'%(self.varName, valueStr)
+    ## def confStr(self):## REMOVED
+    ## repr of a utf8 string (by Python 2) is not utf8 and not readable correctly from Python 3
+    ## no simple way you can fix that for strings nested inside other structures
+    ## yet another reason to switch to JSON for config files
 
 
 class ComboTextPrefItem(PrefItem):
@@ -516,7 +510,6 @@ class CheckStartupPrefItem():## FIXME
                 pass
     def updateWidget(self):
         self.set(startup.checkStartup())
-    confStr = lambda self: ''
 
 class AICalsTreeview(gtk.TreeView):
     def __init__(self):
@@ -757,11 +750,6 @@ class AICalsPrefItem():
         for mode in calTypes.inactive:
             module = calTypes[mode]
             self.inactiveTrees.append([module.name, _(module.desc)])
-    def confStr(self):
-        text = ''
-        text += 'calTypes.activeNames=%r\n'%calTypes.activeNames
-        text += 'calTypes.inactiveNames=%r\n'%calTypes.inactiveNames
-        return text
 
 
 

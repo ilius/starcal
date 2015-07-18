@@ -21,7 +21,7 @@ from os.path import join, isfile
 
 from scal2.path import confDir
 from scal2.utils import myRaise
-from scal2.json_utils import loadJsonConf
+from scal2.json_utils import *
 from scal2 import core
 from scal2.locale_man import tr as _
 from scal2 import ui
@@ -33,8 +33,6 @@ from scal2.ui_gtk.decorators import registerSignals
 from scal2.ui_gtk import gtk_ud as ud
 
 
-confPath = join(confDir, 'ui-customize.json')
-loadJsonConf(__name__, confPath)
 
 
 if 'mainMenu' not in dict(ud.wcalToolbarData['items']):
@@ -71,8 +69,8 @@ class DummyCalObj(Object):
         return obj
     def updateVars(self):
         pass
-    def confStr(self):## FIXME a real problem
-        return ''
+    #def getData(self):## FIXME a real problem
+    #    return None
     def optionsWidgetCreate(self):
         pass
 
@@ -97,19 +95,21 @@ class CustomizableCalObj(ud.BaseCalObj):
         for item in self.items:
             if item.customizable:
                 item.updateVars()
-    def confStr(self):
-        text = ''
-        for mod_attr in self.params:
-            try:
-                value = eval(mod_attr)
-            except:
-                myRaise()
-            else:
-                text += '%s=%s\n'%(mod_attr, repr(value))
-        for item in self.items:
-            if item.customizable:
-                text += item.confStr()
-        return text
+    #def getData(self):## remove? FIXME
+    #    data = {}
+    #    for mod_attr in self.params:
+    #        try:
+    #            value = eval(mod_attr)
+    #        except:
+    #            myRaise()
+    #        else:
+    #            data[mod_attr] = value
+    #    for item in self.items:
+    #        if item.customizable:
+    #            itemData = item.getData()
+    #            if itemData:
+    #                data.update(itemData)
+    #    return data
     def keyPress(self, arg, gevent):
         kname = gdk.keyval_name(gevent.keyval).lower()
         for item in self.items:

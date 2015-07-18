@@ -20,7 +20,9 @@
 
 import sys
 import os
-from os.path import join, split, dirname, isfile. isdir
+from os.path import join, split, dirname, isfile, isdir
+
+from collections import OrderedDict
 
 import shutil
 import re
@@ -41,7 +43,7 @@ def loadConf(confPath):
         print('failed to read file %r: %s'%(confPath, e))
         return
     #####
-    data = {}
+    data = OrderedDict()
     exec(text, {}, data)
     return data
 
@@ -49,7 +51,7 @@ def loadCoreConf():
     confPath = join(oldConfDir, 'core.conf')
     #####
     def loadPlugin(fname, **data):
-        data['file'] = fname
+        data['_file'] = fname
         return data
     try:
         text = open(confPath).read()
@@ -57,13 +59,14 @@ def loadCoreConf():
         print('failed to read file %r: %s'%(confPath, e))
         return
     ######
-    text = text.replace('calTypes.activeNames', 'calTypes__activeNames')
-    text = text.replace('calTypes.inactiveNames', 'calTypes__inactiveNames')
+    text = text.replace('calTypes.activeNames', 'activeCalTypes')
+    text = text.replace('calTypes.inactiveNames', 'inactiveCalTypes')
     ######
-    data = {}
+    data = OrderedDict()
     exec(text, {
         'loadPlugin': loadPlugin
     }, data)
+    data['version'] = '3.0.0'
     return data
 
 def loadUiCustomizeConf():
@@ -81,8 +84,9 @@ def loadUiCustomizeConf():
     text = re.sub('^ui\.', '', text, flags=re.M)
     text = re.sub('^ud\.', 'ud__', text, flags=re.M)
     ######
-    data = {}
+    data = OrderedDict()
     exec(text, {}, data)
+    data['wcal_toolbar_mainMenu_icon'] = 'starcal-24.png'
     return data
 
 
@@ -93,7 +97,7 @@ def writeJsonConf(name, data):
     jsonPath = join(newConfDir, fname)
     text = dataToPrettyJson(data)
     try:
-        open(jsonPath, 'w').write(data)
+        open(jsonPath, 'w').write(text)
     except Exception as e:
         print('failed to write file %r: %s'%(jsonPath, e))
 
@@ -103,6 +107,7 @@ def importAll():
     ####
     writeJsonConf('core', loadCoreConf())
     writeJsonConf('ui-customize', loadUiCustomizeConf())
+    ## remove adjustTimeCmd from ui-gtk.conf
     for name in (
         'hijri',
         'jalali',
@@ -133,24 +138,8 @@ def importAll():
     
 
     
+##################################
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+importAll()
 
 

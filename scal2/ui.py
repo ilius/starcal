@@ -25,7 +25,7 @@ from os.path import dirname, join, isfile, splitext, isabs
 
 from scal2.utils import NullObj, cleanCacheDict, myRaise, myRaiseTback
 from scal2.utils import toBytes
-from scal2.json_utils import loadJsonConf
+from scal2.json_utils import *
 from scal2.path import *
 
 from scal2.cal_types import calTypes, jd_to
@@ -41,6 +41,125 @@ from scal2.event_diff import EventDiff
 
 uiName = ''
 null = NullObj()
+
+
+#######################################################
+
+sysConfPath = join(sysConfDir, 'ui.json') ## also includes LIVE config
+
+confPath = join(confDir, 'ui.json')
+
+confPathCustomize = join(confDir, 'ui-customize.json')
+
+confPathLive = join(confDir, 'ui-live.json')
+
+confParams = (
+    'showMain',
+    'winTaskbar',
+    'useAppIndicator',
+    'showDigClockTr',
+    'fontCustomEnable',
+    'fontCustom',
+    'bgUseDesk',
+    'bgColor',
+    'borderColor',
+    'cursorOutColor',
+    'cursorBgColor',
+    'todayCellColor',
+    'textColor',
+    'holidayColor',
+    'inactiveColor',
+    'borderTextColor',
+    'cursorDiaFactor',
+    'cursorRoundingFactor',
+    'statusIconImage',
+    'statusIconImageHoli',
+    'statusIconFontFamilyEnable',
+    'statusIconFontFamily',
+    'statusIconFixedSizeEnable',
+    'statusIconFixedSizeWH',
+    'maxDayCacheSize',
+    'pluginsTextStatusIcon',
+    #'localTzHist',## FIXME
+    'showYmArrows',
+    'prefPagesOrder',
+)
+
+confParamsLive = (
+    'winX',
+    'winY',
+    'winWidth',
+    'winKeepAbove',
+    'winSticky',
+    'pluginsTextIsExpanded',
+    'eventViewMaxHeight',
+    'bgColor',
+    'eventManPos',## FIXME
+    'eventManShowDescription',## FIXME
+    'localTzHist',
+    'wcal_toolbar_weekNum_negative',
+)
+
+confParamsCustomize = (
+    'mainWinItems',
+    'winControllerButtons',
+    'mcalHeight',
+    'mcalLeftMargin',
+    'mcalTopMargin',
+    'mcalTypeParams',
+    'mcalGrid',
+    'mcalGridColor',
+    'wcalHeight',
+    'wcalTextSizeScale',
+    'wcalItems',
+    'wcalGrid',
+    'wcalGridColor',
+    'wcal_toolbar_mainMenu_icon',
+    'wcal_weekDays_width',
+    'wcalFont_weekDays',
+    'wcalFont_pluginsText',
+    'wcal_eventsIcon_width',
+    'wcal_eventsText_showDesc',
+    'wcal_eventsText_colorize',
+    'wcalFont_eventsText',
+    'wcal_daysOfMonth_dir',
+    'wcalTypeParams',
+    'wcal_daysOfMonth_width',
+    'wcal_eventsCount_expand',
+    'wcal_eventsCount_width',
+    'wcalFont_eventsBox',
+    'dcalHeight',
+    'dcalTypeParams',
+    'pluginsTextInsideExpander',
+    'ud__wcalToolbarData',
+    'ud__mainToolbarData',
+)
+
+def loadConf():
+    loadModuleJsonConf(__name__)
+    loadJsonConf(__name__, confPathCustomize)
+    loadJsonConf(__name__, confPathLive)
+
+def saveConf():
+    saveModuleJsonConf(__name__)
+
+def saveConfCustomize():
+    saveJsonConf(__name__, confPathCustomize, confParamsCustomize)
+
+def saveLiveConf():## rename to saveConfLive
+    if core.debugMode:
+        print('saveLiveConf', winX, winY, winWidth)
+    saveJsonConf(__name__, confPathLive, confParamsLive)
+
+def saveLiveConfLoop():## rename to saveConfLiveLoop
+    tm = now()
+    if tm-lastLiveConfChangeTime > saveLiveConfDelay:
+        saveLiveConf()
+        return False ## Finish loop
+    return True ## Continue loop
+
+
+#######################################################
 
 def parseDroppedDate(text):
     part = text.split('/')
@@ -115,28 +234,6 @@ def dictsTupleConfStr(data):
             st = st[:-2] + '},'
     return st
 
-def saveLiveConf():
-    if core.debugMode:
-        print('saveLiveConf', winX, winY, winWidth)
-    text = ''
-    for key in (
-        'winX', 'winY', 'winWidth',
-        'winKeepAbove', 'winSticky',
-        'pluginsTextIsExpanded', 'eventViewMaxHeight', 'bgColor',
-        'eventManPos',## FIXME
-        'eventManShowDescription',## FIXME
-        'localTzHist',
-        'wcal_toolbar_weekNum_negative',
-    ):
-        text += '%s=%r\n'%(key, eval(key))
-    open(confPathLive, 'w').write(text)
-
-def saveLiveConfLoop():
-    tm = now()
-    if tm-lastLiveConfChangeTime > saveLiveConfDelay:
-        saveLiveConf()
-        return False ## Finish loop
-    return True ## Continue loop
 
 def checkNeedRestart():
     for key in needRestartPref.keys():
@@ -322,7 +419,7 @@ def yearPlus(plus=1):
 
 def getFont(scale=1.0):
     (name, bold, underline, size) = fontCustom if fontCustomEnable else fontDefaultInit
-    return (name, bold, underline, size*scale)
+    return [name, bold, underline, size*scale]
 
 def initFonts(fontDefaultNew):
     global fontDefault, fontCustom, mcalTypeParams
@@ -590,7 +687,7 @@ cellCache = CellCache()
 todayCell = cell = None
 ###########################
 autoLocale = True
-logo = '%s/starcal2.png'%pixDir
+logo = '%s/starcal.png'%pixDir
 ###########################
 #themeDir = join(rootDir, 'themes')
 #theme = None
@@ -632,7 +729,7 @@ wcalPadding = 10
 wcalGrid = False
 wcalGridColor = (255, 252, 0, 82)
 
-wcal_toolbar_mainMenu_icon = join(pixDir, 'starcal2-24.png')
+wcal_toolbar_mainMenu_icon = join(pixDir, 'starcal-24.png')
 wcal_toolbar_mainMenu_icon_default = wcal_toolbar_mainMenu_icon
 wcal_toolbar_weekNum_negative = False
 wcal_weekDays_width = 80
@@ -796,18 +893,12 @@ def updateFocusTime(*args):
     focusTime = now()
 
 
-sysConfPath = join(sysConfDir, 'ui.json') ## also includes LIVE config
-loadJsonConf(__name__, sysConfPath)
 
+########################################################
 
-confPath = join(confDir, 'ui.json')
-loadJsonConf(__name__, confPath)
+loadConf()
 
-
-confPathLive = join(confDir, 'ui-live.json')
-loadJsonConf(__name__, confPathLive)
-
-################################
+########################################################
 
 if not isfile(statusIconImage):
     statusIconImage = statusIconImageDefault

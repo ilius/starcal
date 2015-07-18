@@ -38,7 +38,7 @@ from scal2.utils import myRaise
 if not os.path.isdir(confDir):
     from scal2.utils import restartLow
     try:
-        __import__('scal2.ui_gtk.import_config_1to2')
+        __import__('scal2.import_config_2to3') ## .ui_gtk FIXME
     except:
         myRaise()
     restartLow()
@@ -218,7 +218,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         #self.connect('main-hide', lambda arg: self.hide())
         self.set_decorated(False)
         self.set_property('skip-taskbar-hint', not ui.winTaskbar) ## self.set_skip_taskbar_hint  ## FIXME
-        self.set_role('starcal2')
+        self.set_role('starcal')
         #self.set_focus_on_map(True)#????????
         #self.set_type_hint(gdk.WindowTypeHint.NORMAL)
         #self.connect('realize', self.onRealize)
@@ -664,12 +664,12 @@ class MainWin(gtk.Window, ud.BaseCalObj):
                 except ImportError:
                     useAppIndicator = False
             if useAppIndicator:
-                from scal2.ui_gtk.starcal2_appindicator import IndicatorStatusIconWrapper
+                from scal2.ui_gtk.starcal_appindicator import IndicatorStatusIconWrapper
                 self.sicon = IndicatorStatusIconWrapper(self)
             else:
                 self.sicon = gtk.StatusIcon()
                 ##self.sicon.set_blinking(True) ## for Alarms ## some problem with gnome-shell
-                #self.sicon.set_name('starcal2')
+                #self.sicon.set_name('starcal')
                 ## Warning: g_object_notify: object class `GtkStatusIcon' has no property named `name'
                 self.sicon.set_title(core.APP_DESC)
                 self.sicon.set_visible(True)## is needed ????????
@@ -786,7 +786,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         else:
             ddate = core.convert(gdate[0], gdate[1], gdate[2], core.DATE_GREG, calTypes.primary)
         #######
-        self.sicon.set_from_file(join(pixDir, 'starcal2-24.png'))
+        self.sicon.set_from_file(join(pixDir, 'starcal-24.png'))
         self.statusIconUpdateIcon(ddate)
         #######
         self.statusIconUpdateTooltip()

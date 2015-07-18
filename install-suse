@@ -18,7 +18,7 @@ elif [ "${myPath:0:1}" != "/" ] ; then
 fi
 
 
-pkgName=starcal2
+pkgName=starcal3
 sourceDir="`dirname \"$myPath\"`"
 #"$sourceDir/scripts/assert_python3"
 version=`$sourceDir/scal2/get_version.py`
@@ -70,14 +70,13 @@ english(Gregorian) calendar
 
 %files
 %defattr(-,root,root,-)
-%{_prefix}/share/starcal2/*
-%{_prefix}/bin/starcal2*
-%{_prefix}/share/applications/starcal2.desktop
-%{_prefix}/lib/bonobo/servers/GNOME_Starcal2Applet.server
-%{_prefix}/share/doc/starcal2/*
-%{_prefix}/share/pixmaps/starcal2.png
-%{_prefix}/share/icons/hicolor/*/apps/starcal2.png
-%{_prefix}/share/locale/*/LC_MESSAGES/starcal2.mo
+%{_prefix}/share/$pkgName/*
+%{_prefix}/bin/$pkgName*
+%{_prefix}/share/applications/$pkgName.desktop
+%{_prefix}/share/doc/$pkgName/*
+%{_prefix}/share/pixmaps/$pkgName.png
+%{_prefix}/share/icons/hicolor/*/apps/$pkgName.png
+%{_prefix}/share/locale/*/LC_MESSAGES/$pkgName.mo
 " > $pkgName.spec
 
 #less $pkgName.spec ; exit 0
@@ -98,7 +97,7 @@ fi
 echo "Package created in \"$pkgPath\", installing"
 
 zypper install -f "$pkgPath"
-## Problem: nothing provides /usr needed by starcal2-1.9.0-3.noarch
+## Problem: nothing provides /usr needed by $pkgName-1.9.0-3.noarch
 ## Fixed with defining /usr as Provides
 
 #if [ -f /usr/bin/yum ] ; then

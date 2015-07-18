@@ -31,7 +31,7 @@ _mypath = __file__
 if _mypath.endswith('.pyc'):
     _mypath = _mypath[:-1]
 dataDir = dirname(_mypath) + '/pray_times_files/'
-rootDir = '/usr/share/starcal2'
+rootDir = '/usr/share/starcal3'
 
 sys.path.insert(0, dataDir)## FIXME
 sys.path.insert(0, rootDir)## FIXME
@@ -44,6 +44,7 @@ from scal2.path import *
 from pray_times_backend import PrayTimes
 
 ## DO NOT IMPORT core IN PLUGINS
+from scal2.json_utils import *
 from scal2.time_utils import floatHourToTime
 from scal2.locale_man import tr as _
 from scal2.plugin_man import BasePlugin
@@ -62,7 +63,6 @@ from pray_times_gtk import *
 
 ####################################################
 
-confPath = join(plugConfDir, 'pray_times')
 localTz = get_localzone()
 
 
@@ -123,6 +123,21 @@ class PrayTimeEventRule(EventRule):
 
 class TextPlug(BasePlugin, TextPlugUI):
     ## all options (except for "enable" and "show_date") will be saved in file confPath
+    confPath = join(confDir, 'pray_times.json')
+    confParams = (
+        'lat',
+        'lng',
+        'method',
+        'locName',
+        'shownTimeNames',
+        'imsak',
+        'sep',
+        'azanEnable',
+        'azanFile',
+        'preAzanEnable',
+        'preAzanFile',
+        'preAzanMinutes',
+    )
     azanTimeNamesAll = (
         'fajr',
         'dhuhr',
@@ -151,50 +166,49 @@ class TextPlug(BasePlugin, TextPlugUI):
         ##############
         confNeedsSave = False
         ######
-        locName, lat, lng = '', 0, 0
+        self.locName, self.lat, self.lng = '', 0, 0
         method = ''
         #######
-        imsak = 10 ## minutes before Fajr (Morning Azan)
-        #asrMode=ASR_STANDARD
-        #highLats='NightMiddle'
-        #timeFormat='24h'
-        shownTimeNames = ('fajr', 'sunrise', 'dhuhr', 'maghrib', 'midnight')
+        self.imsak = 10 ## minutes before Fajr (Morning Azan)
+        #self.asrMode=ASR_STANDARD
+        #self.highLats='NightMiddle'
+        #self.timeFormat='24h'
+        self.shownTimeNames = (
+            'fajr',
+            'sunrise',
+            'dhuhr',
+            'maghrib',
+            'midnight',
+        )
         ## FIXME rename shownTimeNames to activeTimeNames
         ## or add another list azanSoundTimeNames
-        sep = '     '
+        self.sep = '     '
         ##
-        azanEnable = False
-        azanFile = None
+        self.azanEnable = False
+        self.azanFile = None
         ##
-        preAzanEnable = False
-        preAzanFile = None
-        preAzanMinutes = 2.0
+        self.preAzanEnable = False
+        self.preAzanFile = None
+        self.preAzanMinutes = 2.0
         ####
-        if isfile(confPath):
-            exec(open(confPath).read())
-        else:
+        loadModuleJsonConf(self)
+        ####
+        if not isfile(self.confPath):
             confNeedsSave = True
         ####
-        if not locName:
+        if not self.locName:
             confNeedsSave = True
-            locName, lat, lng = guessLocation(self.cityData)
-            method = 'Tehran'
+            self.locName, self.lat, self.lng = guessLocation(self.cityData)
+            self.method = 'Tehran'
             ## guess method from location FIXME
         #######
-        self.locName = locName
-        self.imsak = imsak
-        self.backend = PrayTimes(lat, lng, methodName=method, imsak='%d min'%imsak)
-        self.shownTimeNames = shownTimeNames
-        self.sep = sep
+        self.backend = PrayTimes(
+            self.lat,
+            self.lng,
+            methodName=self.method,
+            imsak='%d min'%self.imsak,
+        )
         ####
-        self.azanEnable = azanEnable
-        self.azanFile = azanFile
-        ##
-        self.preAzanEnable = preAzanEnable
-        self.preAzanFile = preAzanFile
-        self.preAzanMinutes = preAzanMinutes
-        ##
-        self.preAzanMinutes = preAzanMinutes
         #######
         #PrayTimeEventRule.plug = self
         #######
@@ -208,26 +222,10 @@ class TextPlug(BasePlugin, TextPlugUI):
         #time.sleep(2)
         #self.doPlayAzan() ## for testing ## FIXME
     def saveConfig(self):
-        text = ''
-        text += 'lat=%r\n'%self.backend.lat
-        text += 'lng=%r\n'%self.backend.lng
-        text += 'method=%r\n'%self.backend.method.name
-        for attr in (
-            'locName',
-            'shownTimeNames',
-            'imsak',
-            'sep',
-            'azanEnable',
-            'azanFile',
-            'preAzanEnable',
-            'preAzanFile',
-            'preAzanMinutes',
-        ):
-            text += '%s=%r\n'%(
-                attr,
-                getattr(self, attr),
-            )
-        open(confPath, 'w').write(text)
+        self.lat = self.backend.lat
+        self.lng = self.backend.lng
+        self.method = self.backend.method.name
+        saveModuleJsonConf(self)
     #def date_change_after(self, widget, year, month, day):
     #    self.dialog.menuCell.add(self.menuitem)
     #    self.menu_unmap_id = self.dialog.menuCell.connect('unmap', self.menu_unmap)
@@ -345,7 +343,6 @@ class TextPlug(BasePlugin, TextPlugUI):
 
 
 if __name__=='__main__':
-    #sys.path.insert(0, '/usr/share/starcal2')
     #from scal2 import core
     #from scal2.locale_man import rtl
     #if rtl:

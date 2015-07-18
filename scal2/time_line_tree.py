@@ -20,8 +20,6 @@
 import sys
 from math import log
 
-sys.path.append('/starcal2')
-
 from scal2.interval_utils import ab_overlaps
 from scal2.time_utils import *
 

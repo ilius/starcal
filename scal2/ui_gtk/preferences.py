@@ -836,49 +836,18 @@ class PrefDialog(gtk.Dialog):
         for mod in calTypes:
             mod.save()
         ##################### Saving locale config
-        text = ''
-        for item in self.localePrefItems:
-            text += item.confStr()
-        open(locale_man.confPath, 'w').write(text)
+        locale_man.saveConf()
         ##################### Saving core config
-        text = ''
-        text += 'version=%r\n\n'%core.VERSION
-        text += 'allPlugList=%s\n\n'%core.getAllPlugListRepr()
-        text += 'plugIndex=%r\n'%core.plugIndex
-        for item in self.corePrefItems:
-            text += item.confStr()
-        for key in (
-            'firstWeekDayAuto',
-            'firstWeekDay',
-            'weekNumberModeAuto',
-            'weekNumberMode',
-            'debugMode',
-        ):
-            value = eval('core.'+key)
-            text += '%s=%r\n'%(key, value)
-        open(core.confPath, 'w').write(text)
+        core.version = core.VERSION
+        core.saveConf()
+        del core.version
         ##################### Saving ui config
-        text = ''
-        for item in self.uiPrefItems:
-            text += item.confStr()
-        for key in (
-            #'localTzHist',## FIXME
-            'showYmArrows',
-        ):
-            value = eval('ui.'+key)
-            text += '%s=%r\n'%(key, value)
-        text += 'prefPagesOrder=%s\n'%repr(
-            tuple(
-                [self.notebook.page_num(page) for page in self.prefPages]
-            )
-        )
-        open(ui.confPath, 'w').write(text)
-        ##################### Saving here config
-        text = ''
-        for item in self.gtkPrefItems:
-            text += item.confStr()
-        text += 'adjustTimeCmd=%r\n'%ud.adjustTimeCmd ## FIXME
-        open(ud.confPath, 'w').write(text)
+        ui.prefPagesOrder = tuple([
+            self.notebook.page_num(page) for page in self.prefPages
+        ])
+        ui.saveConf()
+        ##################### Saving gtk_ud config
+        ud.saveConf()
         ################################################### Updating GUI
         ud.windowList.onConfigChange()
         if ui.mainWin:

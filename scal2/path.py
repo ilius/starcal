@@ -22,7 +22,7 @@ from os.path import dirname, join, abspath
 
 from scal2.os_utils import getOsName
 
-APP_NAME = 'starcal2'
+APP_NAME = 'starcal3'
 
 osName = getOsName()
 
@@ -52,7 +52,7 @@ if osName in ('linux', 'unix'):
     #user = os.getenv('USER')
 elif osName=='mac':
     homeDir = os.getenv('HOME')
-    confPath = homeDir + '/Library/Preferences/' + APP_NAME ## OR '/Library/' + APP_NAME
+    confDir = homeDir + '/Library/Preferences/' + APP_NAME ## OR '/Library/' + APP_NAME
     sysConfDir = join(rootDir, 'config')## FIXME
     tmpDir = '/tmp'
     #user = os.getenv('USER')
@@ -71,7 +71,6 @@ deskDir = join(homeDir, 'Desktop')## in all operating systems? FIXME
 userPlugConf = join(confDir, 'plugin.conf')
 modDir = '%s/cal_types'%srcDir
 plugDirUser = join(confDir, 'plugins')
-plugConfDir = join(confDir, 'plugins.conf')
 
 purpleDir = join(homeDir, '.purple')## FIXME
 

@@ -28,7 +28,7 @@ jsonToOrderedData = lambda text: json.JSONDecoder(
 
 ###############################
 
-def loadJsonConf(module, confPath):
+def loadJsonConf(module, confPath, decoders={}):
     from os.path import isfile
     ###
     if not isfile(confPath):
@@ -48,17 +48,30 @@ def loadJsonConf(module, confPath):
     ###
     if isinstance(module, str):
         module = sys.modules[module]
-    for key, value in data.items():
-        setattr(module, key, value)
+    for param, value in data.items():
+        try:
+            decoder = decoders[param]
+        except KeyError:
+            pass
+        else:
+            value = decoder(value)
+        setattr(module, param, value)
 
 
-def saveJsonConf(module, confPath, params):
+def saveJsonConf(module, confPath, params, encoders={}):
     if isinstance(module, str):
         module = sys.modules[module]
     ###
-    data = {}
+    data = OrderedDict()
     for param in params:
-        data[param] = getattr(module, param)
+        value = getattr(module, param)
+        try:
+            encoder = encoders[param]
+        except KeyError:
+            pass
+        else:
+            value = encoder(value)
+        data[param] = value
     ###
     text = dataToPrettyJson(data)
     try:
@@ -66,5 +79,44 @@ def saveJsonConf(module, confPath, params):
     except Exception as e:
         print('failed to save file "%s": %s'%(confPath, e))
         return
+
+
+def loadModuleJsonConf(module):
+    if isinstance(module, str):
+        module = sys.modules[module]
+    ###
+    decoders = getattr(module, 'confDecoders', {})
+    ###
+    try:
+        sysConfPath = module.sysConfPath
+    except AttributeError:
+        pass
+    else:
+        loadJsonConf(
+            module,
+            sysConfPath,
+            decoders,
+        )
+    ####
+    loadJsonConf(
+        module,
+        module.confPath,
+        decoders,
+    )
+    ## should use module.confParams to restrict json keys? FIXME
+
+
+
+def saveModuleJsonConf(module):
+    if isinstance(module, str):
+        module = sys.modules[module]
+    ###
+    saveJsonConf(
+        module,
+        module.confPath,
+        module.confParams,
+        getattr(module, 'confEncoders', {}),
+    )
+
 
 

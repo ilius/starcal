@@ -1,8 +1,8 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-# post remove script for starcal2
+# pre remove script
 
-pkgName = 'starcal2'
+pkgName = 'starcal3'
 import os
 
 

@@ -23,10 +23,10 @@ from scal2 import core
 from scal2.locale_man import tr as _
 from scal2 import ui
 
+from scal2.ui_gtk import gtk_ud as ud
 from scal2.ui_gtk import *
 from scal2.ui_gtk.utils import toolButtonFromStock, set_tooltip, dialog_add_button
 from scal2.ui_gtk.tree_utils import tree_path_split
-from scal2.ui_gtk.customize import confPath
 
 class CustomizeDialog(gtk.Dialog):
     def appendItemTree(self, item, parentIter):
@@ -118,14 +118,14 @@ class CustomizeDialog(gtk.Dialog):
         for i in path[1:]:
             item = item.items[i]
         return item
-    def treevCursorChanged(self, treev):
+    def treevCursorChanged(self, selection):
         if self.activeOptionsWidget:
             try:
                 self.vbox_l.remove(self.activeOptionsWidget)
             except:
                 myRaise(__file__)
             self.activeOptionsWidget = None
-        index_list = treev.get_cursor()[0]
+        index_list = self.treev.get_cursor()[0]
         if not index_list:
             return
         item = self.getItemByPath(index_list)
@@ -237,11 +237,11 @@ class CustomizeDialog(gtk.Dialog):
         for i, item in enumerate(self._widget.items):
             self.model.set_value(self.model.get_iter((i,)), 0, item.enable)
     def save(self):
-        text = ''
-        itemsData = []
         self._widget.updateVars()
-        text = self._widget.confStr()
-        open(confPath, 'w').write(text) # FIXME
+        ui.ud__wcalToolbarData = ud.wcalToolbarData
+        ui.ud__mainToolbarData = ud.mainToolbarData
+        ui.saveConfCustomize()
+        #data = self._widget.getData()## remove? FIXME
     def close(self, button=None, event=None):
         self.save()
         self.hide()

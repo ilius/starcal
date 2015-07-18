@@ -51,9 +51,8 @@ except NameError:
 
 VERSION = '2.4.1'
 BRANCH = join(rootDir, 'branch')
-APP_NAME = 'starcal2'
 APP_DESC = 'StarCalendar'
-COMMAND = 'starcal2'
+COMMAND = APP_NAME
 homePage = 'http://ilius.github.io/starcal/'
 osName = getOsName()
 userDisplayName = getUserDisplayName()
@@ -88,16 +87,76 @@ localTz = get_localzone()
 #    global __plugin_api_set__
 #    __plugin_api_set__.append(funcClass.__name__)
 
+#################### Defining user core configuration ####################
+
+sysConfPath = join(sysConfDir, 'core.json')
+
+confPath = join(confDir, 'core.json')
+
+confParams = (
+    'version',
+    'allPlugList',
+    'plugIndex',
+    'activeCalTypes',
+    'inactiveCalTypes',
+    'holidayWeekDays',
+    'firstWeekDayAuto',
+    'firstWeekDay',
+    'weekNumberModeAuto',
+    'weekNumberMode',
+    'debugMode',
+)
+
+confDecoders = {
+    'allPlugList': lambda pdataList: [
+        loadPlugin(**pdata) for pdata in pdataList
+    ],
+}
+
+confEncoders = {
+    'allPlugList': lambda plugList: [
+        plug.getArgs() for plug in plugList
+    ],
+}
+
+
+def loadConf():
+    global version, prefVersion, activeCalTypes, inactiveCalTypes
+    ###########
+    loadModuleJsonConf(__name__)
+    ###########
+    try:
+        version
+    except NameError:
+        prefVersion = ''
+    else:
+        prefVersion = version
+        del version
+    ###########
+    try:
+        calTypes.activeNames = activeCalTypes ## loaded from json config file
+        calTypes.inactiveNames = inactiveCalTypes ## loaded from json config file
+    except NameError:
+        pass
+    activeCalTypes = inactiveCalTypes = None
+    calTypes.update()
+
+
+def saveConf():
+    global activeCalTypes, inactiveCalTypes
+    activeCalTypes, inactiveCalTypes = calTypes.activeNames, calTypes.inactiveNames
+    saveModuleJsonConf(__name__)
+    activeCalTypes = inactiveCalTypes = None
+
 ################################################################################
+
 if os.path.exists(confDir):
     if not isdir(confDir):
         os.rename(confDir, confDir+'-old')
         os.mkdir(confDir)
-        os.rename(confDir+'-old', confPath)
 else:
     os.mkdir(confDir)
 
-makeDir(plugConfDir)
 makeDir(join(confDir, 'log'))
 ################################################################################
 
@@ -323,8 +382,6 @@ def getDeletedPluginsTable():## returns a list of (i, description)
             table.append((i, plug.desc))
     return table
 
-getAllPlugListRepr = lambda: '[\n' + '\n'.join(['  %r,'%plug for plug in allPlugList]) + '\n]'
-
 def convertAllPluginsToIcs(startYear, endYear):
     startJd = calTypes[DATE_GREG].to_jd(startYear, 1, 1)
     endJd = calTypes[DATE_GREG].to_jd(endYear+1, 1, 1)
@@ -448,6 +505,8 @@ dataToJson =  lambda data: dataToCompactJson(data, useAsciiJson) if useCompactJs
 def init():
     initPlugins()
 
+prefIsOlderThan = lambda v: versionLessThan(prefVersion, v)
+
 ################################################################################
 #################### End of class and function defenitions #####################
 ################################################################################
@@ -505,40 +564,13 @@ eventTextSep = ': ' ## use to seperate summary from description for display
 eventTrashLastTop = True
 
 
-#confPathDef = '/etc/%s/core.json'%APP_NAME ## ????????????????????????
-#loadJsonConf(__name__, confPathDef)
+##########################################################################
 
-################################################################################
-#################### Loading user core configuration ###########################
+loadConf()
 
-
-sysConfPath = join(sysConfDir, 'core.json')
-loadJsonConf(__name__, sysConfPath)
-
-confPath = join(confDir, 'core.json')
-loadJsonConf(__name__, confPath)
+############################################################################
 
 
-################################################################################
-
-try:
-    version
-except NameError:
-    prefVersion = ''
-else:
-    prefVersion = version
-    del version
-
-prefIsOlderThan = lambda v: versionLessThan(prefVersion, v)
-
-try:## just for compatibility
-    calTypes.activeNames = activeCalNames
-except NameError:
-    pass
-
-calTypes.update()
-
-#########################################
 
 licenseText = _('licenseText')
 if licenseText in ('licenseText', ''):

@@ -8,9 +8,9 @@ cd "`dirname \"$0\"`"
 
 chmod 755 scripts/*
 
-chmod 755 'starcal2'
+chmod 755 'starcal'
 
-chmod 755 'scal2/ui_gtk/starcal2.py'
+chmod 755 'scal2/ui_gtk/starcal.py'
 
 chmod 755 'install'
 chmod 755 'install-archlinux'

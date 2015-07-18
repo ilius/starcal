@@ -26,7 +26,7 @@ from os.path import join
 
 from scal2.path import *
 from scal2.utils import myRaise
-from scal2.json_utils import loadJsonConf
+from scal2.json_utils import *
 from scal2.locale_man import rtl
 from scal2 import core
 from scal2 import ui
@@ -38,6 +38,28 @@ from scal2.ui_gtk import *
 from scal2.ui_gtk.decorators import *
 from scal2.ui_gtk.font_utils import gfontDecode, pfontEncode
 
+
+############################################################
+
+sysConfPath = join(sysConfDir, 'ui-gtk.json')
+
+confPath = join(confDir, 'ui-gtk.json')
+
+confParams = (
+    'dateFormat',
+    'clockFormat',
+    #'adjustTimeCmd',
+)
+
+
+def loadConf():
+    loadModuleJsonConf(__name__)
+    updateFormatsBin()
+
+def saveConf():
+    saveModuleJsonConf(__name__)
+
+############################################################
 
 @registerSignals
 class BaseCalObj(Object):
@@ -168,7 +190,24 @@ def updateFormatsBin():
     dateFormatBin = compileTmFormat(dateFormat)
     clockFormatBin = compileTmFormat(clockFormat)
 
+##############################
+
+def setDefault_adjustTimeCmd():
+    global adjustTimeCmd
+    for cmd in ('gksudo', 'kdesudo', 'gksu', 'gnomesu', 'kdesu'):
+        if os.path.isfile('/usr/bin/%s'%cmd):
+            adjustTimeCmd = [
+                cmd,
+                join(rootDir, 'scripts', 'run'),
+                'scal2/ui_gtk/adjust_dtime.py'
+            ]
+            break
+
+## user should be able to configure this in Preferences 
 adjustTimeCmd = ''
+setDefault_adjustTimeCmd()
+
+##############################
 
 mainToolbarData = {
     'items': [],
@@ -191,27 +230,24 @@ wcalToolbarData = {
     'buttonsBorder': 0,
 }
 
-############################################################
-
-sysConfPath = join(sysConfDir, 'ui-gtk.json')
-loadJsonConf(__name__, sysConfPath)
 
 
-confPath = join(confDir, 'ui-gtk.json')
-loadJsonConf(__name__, confPath)
+###########################################################
+
+try:
+    wcalToolbarData = ui.ud__wcalToolbarData ## loaded from jsom
+except AttributeError:
+    pass
+
+try:
+    mainToolbarData = ui.ud__mainToolbarData ## loaded from jsom
+except AttributeError:
+    pass
 
 
-updateFormatsBin()
+loadConf()
 
-#if adjustTimeCmd=='':## FIXME
-for cmd in ('gksudo', 'kdesudo', 'gksu', 'gnomesu', 'kdesu'):
-    if os.path.isfile('/usr/bin/%s'%cmd):
-        adjustTimeCmd = [
-            cmd,
-            join(rootDir, 'scripts', 'run'),
-            'scal2/ui_gtk/adjust_dtime.py'
-        ]
-        break
+setDefault_adjustTimeCmd()## FIXME
 
 ############################################################
 

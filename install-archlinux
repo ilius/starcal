@@ -11,12 +11,12 @@ elif [ "${myPath:0:1}" != "/" ] ; then
 fi
 
 
-pkgName=starcal2
+pkgName=starcal3
 sourceDir="`dirname \"$myPath\"`"
 #"$sourceDir/scripts/assert_python3"
 version=`$sourceDir/scal2/get_version.py`
 
-tmpDir=/tmp/starcal2-install-arch
+tmpDir=/tmp/$pkgName-install-arch
 mkdir -p $tmpDir
 cd $tmpDir
 

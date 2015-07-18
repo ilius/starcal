@@ -28,7 +28,7 @@ from scal2.import_config_1to2 import importConfigFrom15, getOldVersion, langDir,
 
 from scal2.ui_gtk import *
 
-gtk.window_set_default_icon_from_file('%s/starcal2.png'%pixDir)
+gtk.window_set_default_icon_from_file('%s/starcal.png'%pixDir)
 
 langNameList = []
 langCodeList = []

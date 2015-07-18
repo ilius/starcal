@@ -4,7 +4,7 @@ function printUsage {
     echo "Usage: $0 [--prefix=/usr/local]"
 }
 
-pkgName=starcal2
+pkgName=starcal3
 
 options=`getopt -o 'v' --long 'prefix:,verbose' -n "$0" -- "$@"`
 if [ $? != 0 ] ; then
@@ -71,7 +71,7 @@ if [ -d "${shareDir}/doc/$pkgName" ] ; then
     $RM "${shareDir}/doc/$pkgName"
 fi
 
-## what about the /etc/starcal2 and /var/log/starcal2 ## FIXME
+## what about the /etc/$pkgName and /var/log/$pkgName ## FIXME
 
 $RM /etc/init.d/*${pkgName}d* /etc/rc.d/*${pkgName}d* 2>/dev/null ## FIXME
 $RM $shareDir/$pkgName/icons/hicolor/*/apps/$pkgName.png 2>/dev/null

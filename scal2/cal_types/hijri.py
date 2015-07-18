@@ -82,7 +82,7 @@ loadJsonConf(__name__, confPath)
 def save():## Here save user options (hijriUseDB) to file
     saveJsonConf(__name__, confPath, (
         'hijriAlg',
-        'nhijriUseDB',
+        'hijriUseDB',
     ))
 
 

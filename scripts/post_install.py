@@ -1,9 +1,9 @@
 #!/usr/bin/env python2
 # -*- coding: utf-8 -*-
-# post install script for starcal2
+# post install script
 import os, shutil
 
-pkgName = 'starcal2'
+pkgName = 'starcal3'
 
 
 

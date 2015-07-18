@@ -19,7 +19,7 @@ elif [ "${myPath:0:1}" != "/" ] ; then
 fi
 
 
-pkgName=starcal2
+pkgName=starcal3
 sourceDir="`dirname \"$myPath\"`"
 #"$sourceDir/scripts/assert_python3"
 version=`$sourceDir/scal2/get_version.py`
@@ -29,7 +29,7 @@ version=`$sourceDir/scal2/get_version.py`
 #echo version=$version
 
 #%post
-#/usr/share/starcal2/scripts/assert_python3
+#/usr/share/$pkgName/scripts/assert_python3
 
 requires=('python3(>=3.2)')
 requires+=('python3-gobject') ## The new gobject introspection
@@ -69,14 +69,13 @@ english(Gregorian) calendar
 
 %files
 %defattr(-,root,root,-)
-%{_prefix}/share/starcal2/*
-%{_prefix}/bin/starcal2*
-%{_prefix}/share/applications/starcal2*
-%{_prefix}/lib/bonobo/servers/GNOME_Starcal2Applet.server
-%{_prefix}/share/doc/starcal2/*
-%{_prefix}/share/pixmaps/starcal2.png
-%{_prefix}/share/icons/hicolor/*/apps/starcal2.png
-%{_prefix}/share/locale/*/LC_MESSAGES/starcal2.mo
+%{_prefix}/share/$pkgName/*
+%{_prefix}/bin/$pkgName*
+%{_prefix}/share/applications/$pkgName*
+%{_prefix}/share/doc/$pkgName/*
+%{_prefix}/share/pixmaps/$pkgName.png
+%{_prefix}/share/icons/hicolor/*/apps/$pkgName.png
+%{_prefix}/share/locale/*/LC_MESSAGES/$pkgName.mo
 " > $pkgName.spec
 
 pkgPath=`rpmbuild -bb $pkgName.spec | grep -o /usr/src/packages/RPMS/.*rpm`
