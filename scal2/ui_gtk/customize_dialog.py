@@ -113,14 +113,14 @@ class CustomizeDialog(gtk.Dialog):
         for i in path[1:]:
             item = item.items[i]
         return item
-    def treevCursorChanged(self, treev):
+    def treevCursorChanged(self, selection):
         if self.activeOptionsWidget:
             try:
                 self.vbox_l.remove(self.activeOptionsWidget)
             except:
                 myRaise(__file__)
             self.activeOptionsWidget = None
-        index_list = treev.get_cursor()[0]
+        index_list = self.treev.get_cursor()[0]
         if not index_list:
             return
         item = self.getItemByPath(index_list)
