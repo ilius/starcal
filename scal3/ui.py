@@ -687,7 +687,7 @@ cellCache = CellCache()
 todayCell = cell = None
 ###########################
 autoLocale = True
-logo = '%s/starcal.png'%pixDir
+logo = join(pixDir, 'starcal.png')
 ###########################
 #themeDir = join(rootDir, 'themes')
 #theme = None
