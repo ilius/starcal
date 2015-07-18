@@ -1,0 +1,72 @@
+{
+  "allPlugList": [
+    {
+      "enable": true,
+      "show_date": false,
+      "_file": "iran-holidays.hol"
+    },
+    {
+      "enable": true,
+      "show_date": false,
+      "_file": "iran-jalali.spg"
+    },
+    {
+      "enable": true,
+      "show_date": false,
+      "_file": "iran-gregorian.spg"
+    },
+    {
+      "enable": true,
+      "show_date": false,
+      "_file": "iran-hijri.spg"
+    },
+    {
+      "enable": false,
+      "show_date": false,
+      "_file": "iran-ancient.spg"
+    },
+    {
+      "enable": false,
+      "show_date": false,
+      "_file": "iran-jalali-2.spg"
+    },
+    {
+      "enable": false,
+      "show_date": false,
+      "_file": "iran-gregorian-2.spg"
+    },
+    {
+      "enable": false,
+      "show_date": false,
+      "_file": "iran-hijri-2.spg"
+    },
+    {
+      "enable": false,
+      "show_date": false,
+      "_file": "pray_times.py"
+    }
+  ],
+  "plugIndex": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "activeCalTypes": [
+    "jalali",
+    "gregorian"
+  ],
+  "holidayWeekDays": [
+    5
+  ],
+  "firstWeekDayAuto": false,
+  "firstWeekDay": 6,
+  "weekNumberModeAuto": false,
+  "weekNumberMode": 7,
+  "version": "3.0.0"
+}

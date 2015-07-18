@@ -1,0 +1,13 @@
+{
+  "locName": "Iran/Tehran",
+  "lat": 35.705,
+  "lng": 51.4216,
+  "method": "Tehran",
+  "shownTimeNames": [
+    "fajr",
+    "sunrise",
+    "maghrib",
+    "midnight"
+  ],
+  "imsak": 10
+}
