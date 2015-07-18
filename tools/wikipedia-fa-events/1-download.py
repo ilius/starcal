@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/env python3
 
 import sys, os, subprocess
 from os.path import join, isfile
