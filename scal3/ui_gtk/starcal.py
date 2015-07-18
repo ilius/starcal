@@ -28,20 +28,23 @@ from time import time as now
 from time import localtime
 import os
 import os.path
-from os.path import join, dirname
+from os.path import join, dirname, isdir
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
 from scal3.path import *
 from scal3.utils import myRaise
 
-if not os.path.isdir(confDir):
+if not isdir(confDir):
     from scal3.utils import restartLow
     try:
-        __import__('scal3.import_config_2to3') ## .ui_gtk FIXME
+        __import__('scal3.ui_gtk.import_config_2to3')
     except:
         myRaise()
-    restartLow()
+        if not isdir(confDir):
+            os.mkdir(confDir, 0o755)
+    else:
+        restartLow()
 
 from scal3.utils import versionLessThan
 from scal3.cal_types import calTypes
@@ -56,7 +59,6 @@ from scal3 import ui
 
 import gi.repository.GObject as gobject
 from gi.repository import GdkPixbuf
-from gi.repository import Gio
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import registerSignals
@@ -183,6 +185,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
     #def maximize(self):
     #    pass
     def __init__(self, statusIconMode=2):
+        #from gi.repository import Gio
         #self.app = gtk.Application(application_id="apps.starcal")
         #self.app.register(Gio.Cancellable.new())
         #gtk.ApplicationWindow.__init__(self, application=self.app)

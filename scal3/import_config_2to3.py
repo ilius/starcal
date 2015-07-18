@@ -66,7 +66,6 @@ def loadCoreConf():
     exec(text, {
         'loadPlugin': loadPlugin
     }, data)
-    data['version'] = '3.0.0'
     return data
 
 def loadUiCustomizeConf():
@@ -102,10 +101,13 @@ def writeJsonConf(name, data):
         print('failed to write file %r: %s'%(jsonPath, e))
 
 
-def importAll():
+def importConfigFrom24():
     makeDir(newConfDir)
     ####
-    writeJsonConf('core', loadCoreConf())
+    coreData = loadCoreConf()
+    coreData['version'] = '3.0.0' ## FIXME
+    writeJsonConf('core', coreData)
+    ####
     writeJsonConf('ui-customize', loadUiCustomizeConf())
     ## remove adjustTimeCmd from ui-gtk.conf
     for name in (
@@ -137,9 +139,18 @@ def importAll():
     #########
     
 
+def getOldVersion():## return version of starcal 2.*
+    data = loadCoreConf()
+    try:
+        return data['version']
+    except:
+        return ''
+
     
 ##################################
 
-importAll()
+if __name__=='__main__':
+    importConfigFrom24()
+
 
 
