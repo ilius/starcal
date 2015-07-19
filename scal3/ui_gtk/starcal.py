@@ -281,12 +281,11 @@ class MainWin(gtk.Window, ud.BaseCalObj):
                     continue
                 item = CalObj()
                 item.enable = enable
-                item.connect('size-allocate', self.childSizeRequest) ## or item.connect
+                item.connect('size-allocate', self.childSizeAllocate)
                 #modify_bg_all(item, gtk.StateType.NORMAL, rgbToGdkColor(*ui.bgColor))
             else:
                 desc = mainWinItemsDesc[name]
                 item = DummyCalObj(name, desc, itemsPkg, True)
-                ## what about size-request FIXME
             self.vbox.appendItem(item)
         self.appendItem(self.vbox)
         self.vbox.show()
@@ -339,7 +338,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         #print(dir(event))
         #print(gevent.new_window_state)
         #self.event = event
-    def childSizeRequest(self, cal, req):
+    def childSizeAllocate(self, cal, req):
         self.setMinHeight()
     def selectDateResponse(self, widget, y, m, d):
         ui.changeDate(y, m, d)
@@ -1039,6 +1038,6 @@ def main():
     return ex
 
 
-if __name__ == '__main__':## this file may be called from starcal-gnome2-applet
+if __name__ == '__main__':
     sys.exit(main())
 
