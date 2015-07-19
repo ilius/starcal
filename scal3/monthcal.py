@@ -28,7 +28,7 @@ pluginName = 'MonthCal'
 
 class MonthStatus(list): ## FIXME
     ## self[sy<6][sx<7] of cells
-    ## list (of 6 lists, each containt 7 cells)
+    ## list (of 6 lists, each list containing 7 cells)
     def __init__(self, cellCache, year, month):
         self.year = year
         self.month = month
@@ -71,7 +71,6 @@ def setParamsFunc(cell):
     else:
         cell.monthPosNext = None
     """
-    ## instead of checking  drawing_cell.gray == 0  ,   check  drawing_cell.month == ui.cell.month
 
 getMonthStatus = lambda year, month: ui.cellCache.getCellGroup(pluginName, year, month)
 getCurrentMonthStatus = lambda: ui.cellCache.getCellGroup(pluginName, ui.cell.year, ui.cell.month)
