@@ -318,11 +318,12 @@ def yearPlus(plus=1):
     day = min(cell.day, core.getMonthLen(year, month, calTypes.primary))
     cell = cellCache.getCellByDate(year, month, day)
 
-getFont = lambda: list(fontCustom if fontCustomEnable else fontDefault)
+def getFont(scale=1.0):
+    (name, bold, underline, size) = fontCustom if fontCustomEnable else fontDefaultInit
+    return (name, bold, underline, size*scale)
 
 def getFontSmall():
-    name, bold, underline, size = getFont()
-    return [name, bold, underline, int(size*0.6)]
+    return getFont(0.6)
 
 def initFonts(fontDefaultNew):
     global fontDefault, fontCustom, mcalTypeParams
@@ -702,6 +703,7 @@ winX = 0
 winY = 0
 ###
 fontDefault = ['Sans', False, False, 12]
+fontDefaultInit = fontDefault
 fontCustom = None
 fontCustomEnable = False
 #####################

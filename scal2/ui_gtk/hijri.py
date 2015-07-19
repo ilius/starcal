@@ -62,7 +62,7 @@ class EditDbDialog(gtk.Dialog):
         treev = gtk.TreeView()
         trees = gtk.ListStore(int, str, str, int, str)## ym, yearShown, monthShown, monthLenCombo, endDateShown
         treev.set_model(trees)
-        #treev.connect('cursor-changed', self.plugTreevCursorChanged)
+        #treev.get_selection().connect('changed', self.plugTreevCursorChanged)
         #treev.connect('row-activated', self.plugTreevRActivate)
         #treev.connect('button-press-event', self.plugTreevButtonPress)
         ###

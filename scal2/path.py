@@ -52,7 +52,7 @@ if osName in ('linux', 'unix'):
     #user = os.getenv('USER')
 elif osName=='mac':
     homeDir = os.getenv('HOME')
-    confPath = homeDir + '/Library/Preferences/' + APP_NAME ## OR '/Library/' + APP_NAME
+    confDir = homeDir + '/Library/Preferences/' + APP_NAME ## OR '/Library/' + APP_NAME
     sysConfDir = join(rootDir, 'config')## FIXME
     tmpDir = '/tmp'
     #user = os.getenv('USER')
