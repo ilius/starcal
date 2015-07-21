@@ -30,6 +30,7 @@ from scal3.lib import OrderedDict
 
 from .path import *
 
+from scal3.lockfile import checkAndSaveJsonLockFile
 from scal3.utils import printError, ifloor, iceil, findNearestIndex, myRaise, myRaiseTback
 from scal3.utils import toStr
 from scal3.os_utils import makeDir
@@ -61,13 +62,28 @@ accountsDir = join(confDir, 'event', 'accounts')
 
 ##########################
 
+lockPath = join(confDir, 'event', 'lock.json')
+readOnly = checkAndSaveJsonLockFile(lockPath)
+if readOnly:
+    print('Event lock file %s exists, EVENT DATA IS READ-ONLY'%lockPath)
+
+##########################
+
 makeDir(eventsDir)
 makeDir(groupsDir)
 makeDir(accountsDir)
 
 ###################################################
 
-class InfoWrapper(JsonSObjBase):
+class JsonEventObjBase(JsonSObjBase):
+    def save(self):
+        if readOnly:
+            print('events are read-only, ignored file %s'%self.file)
+            return
+        JsonSObjBase.save(self)
+
+
+class InfoWrapper(JsonEventObjBase):
     file = join(confDir, 'event', 'info.json')
     params = (
         'version',
@@ -100,7 +116,7 @@ except IOError:
 
 ###################################################
 
-class LastIdsWrapper(JsonSObjBase):
+class LastIdsWrapper(JsonEventObjBase):
     file = join(confDir, 'event', 'last_ids.json')
     params = (
         'event',
@@ -1231,7 +1247,7 @@ def fixIconInObj(self):
 ###########################################################################
 
 ## Should not be registered, or instantiate directly
-class Event(JsonSObjBase, RuleContainer):
+class Event(JsonEventObjBase, RuleContainer):
     name = 'custom'## or 'event' or '' FIXME
     desc = _('Custom Event')
     iconName = ''
@@ -1347,7 +1363,7 @@ class Event(JsonSObjBase, RuleContainer):
     #        if not name in notifierNames:
     #            self.notifiers.append(classes.notifier.byName[name](self))
     #def load(self):
-    #    JsonSObjBase.load(self)
+    #    JsonEventObjBase.load(self)
     #    self.addRequirements()
     def loadFiles(self):
         self.files = []
@@ -1399,9 +1415,9 @@ class Event(JsonSObjBase, RuleContainer):
         if self.id is None:
             self.setId()
         makeDir(self.dir)
-        JsonSObjBase.save(self)
+        JsonEventObjBase.save(self)
     def copyFrom(self, other, exact=False):## FIXME
-        JsonSObjBase.copyFrom(self, other)
+        JsonEventObjBase.copyFrom(self, other)
         self.mode = other.mode
         self.notifyBefore = other.notifyBefore[:]
         #self.files = other.files[:]
@@ -1417,7 +1433,7 @@ class Event(JsonSObjBase, RuleContainer):
             else:
                 self.setJd(jd)
     def getData(self):
-        data = JsonSObjBase.getData(self)
+        data = JsonEventObjBase.getData(self)
         data.update({
             'type': self.name,
             'calType': calTypes.names[self.mode],
@@ -1428,7 +1444,7 @@ class Event(JsonSObjBase, RuleContainer):
         fixIconInData(data)
         return data
     def setData(self, data):
-        JsonSObjBase.setData(self, data)
+        JsonEventObjBase.setData(self, data)
         if self.remoteIds:
             self.remoteIds = tuple(self.remoteIds)
         if 'id' in data:
@@ -2327,10 +2343,10 @@ class CustomEvent(Event):
 ###########################################################################
 
 
-class EventContainer(JsonSObjBase):
+class EventContainer(JsonEventObjBase):
     name = ''
     desc = ''
-    params = JsonSObjBase.params + (
+    params = JsonEventObjBase.params + (
         'icon',
         'title',
         'showFullEventDesc',
@@ -2406,15 +2422,15 @@ class EventContainer(JsonSObjBase):
         event.parent = None
         return index
     def copyFrom(self, other):
-        JsonSObjBase.copyFrom(self, other)
+        JsonEventObjBase.copyFrom(self, other)
         self.mode = other.mode
     def getData(self):
-        data = JsonSObjBase.getData(self)
+        data = JsonEventObjBase.getData(self)
         data['calType'] = calTypes.names[self.mode]
         fixIconInData(data)
         return data
     def setData(self, data):
-        JsonSObjBase.setData(self, data)
+        JsonEventObjBase.setData(self, data)
         if 'calType' in data:
             calType = data['calType']
             try:
@@ -3680,7 +3696,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 ###########################################################################
 ###########################################################################
 
-class JsonObjectsHolder(JsonSObjBase):
+class JsonObjectsHolder(JsonEventObjBase):
     ## keeps all objects in memory
     ## Only use to keep groups and accounts, but not events
     def __init__(self):
@@ -4013,7 +4029,7 @@ class DummyAccount:
         pass
 
 ## Should not be registered, or instantiate directly
-class Account(JsonSObjBase):
+class Account(JsonEventObjBase):
     loaded = True
     name = ''
     desc = ''
@@ -4041,7 +4057,7 @@ class Account(JsonSObjBase):
     def save(self):
         if self.id is None:
             self.setId()
-        JsonSObjBase.save(self)
+        JsonEventObjBase.save(self)
     def setId(self, _id=None):
         if _id is None or _id<0:
             _id = lastIds.account + 1 ## FIXME
@@ -4059,7 +4075,7 @@ class Account(JsonSObjBase):
     def sync(self, group, remoteGroupId):
         raise NotImplementedError
     def getData(self):
-        data = JsonSObjBase.getData(self)
+        data = JsonEventObjBase.getData(self)
         data['type'] = self.name
         return data
 
