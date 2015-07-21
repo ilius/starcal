@@ -69,6 +69,8 @@ class CalBase(CustomizableCalObj):
         self.onDateChange()
     def onCurrentDateChange(self, gdate):
         self.queue_draw()
+    def getCellPagePlus(self, jd, plus):## use for sliding
+        raise NotImplementedError
     def gridCheckClicked(self, checkb):
         checkb.colorb.set_sensitive(checkb.get_active())
         checkb.item.updateVar()

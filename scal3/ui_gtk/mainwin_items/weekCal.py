@@ -755,6 +755,8 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         'f10', 'm',
     )
     signals = CalBase.signals
+    def getCellPagePlus(self, cell, plus):
+        return ui.cellCache.getCell(cell.jd + 7*plus)
     def __init__(self):
         gtk.HBox.__init__(self)
         self.add_events(gdk.EventMask.ALL_EVENTS_MASK)

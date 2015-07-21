@@ -45,6 +45,8 @@ from scal3.ui_gtk.cal_base import CalBase
 
 
 class MonthCalTypeParamBox(gtk.HBox):
+    def getCellPagePlus(self, cell, plus):
+        return ui.getMonthPlus(cell, plus)
     def __init__(self, cal, index, mode, params, sgroupLabel, sgroupFont):
         from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
         from scal3.ui_gtk.mywidgets import MyFontButton, MyColorButton

@@ -404,11 +404,14 @@ def jdPlus(plus=1):
     global cell
     cell = cellCache.getCell(cell.jd + plus)
 
+def getMonthPlus(tmpCell, plus):
+    year, month = core.monthPlus(tmpCell.year, tmpCell.month, plus)
+    day = min(tmpCell.day, core.getMonthLen(year, month, calTypes.primary))
+    return cellCache.getCellByDate(year, month, day)
+
 def monthPlus(plus=1):
     global cell
-    year, month = core.monthPlus(cell.year, cell.month, plus)
-    day = min(cell.day, core.getMonthLen(year, month, calTypes.primary))
-    cell = cellCache.getCellByDate(year, month, day)
+    cell = getMonthPlus(cell, plus)
 
 def yearPlus(plus=1):
     global cell
