@@ -320,7 +320,7 @@ def yearPlus(plus=1):
 
 def getFont(scale=1.0):
     (name, bold, underline, size) = fontCustom if fontCustomEnable else fontDefaultInit
-    return (name, bold, underline, size*scale)
+    return [name, bold, underline, size*scale]
 
 def getFontSmall():
     return getFont(0.6)
