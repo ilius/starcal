@@ -6,9 +6,11 @@ from scal3 import ui
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import dialog_add_button
 from scal3.ui_gtk.event import makeWidget
+from scal3.ui_gtk.event.utils import checkEventsReadOnly
 
 class GroupEditorDialog(gtk.Dialog):
     def __init__(self, group=None):
+        checkEventsReadOnly()
         gtk.Dialog.__init__(self)
         self.isNew = (group is None)
         self.set_title(_('Add New Group') if self.isNew else _('Edit Group'))

@@ -2786,7 +2786,9 @@ msgstr ""
 "منطقهٔ زمانی نامعتبر است"
 
 
-
+msgid "Events are Read-Only because they are locked by another StarCalendar 3.x process"
+msgstr ""
+"رویدادها قابل تغییر نیستند چون توسط یک پروسهٔ دیگر از StarCalendar 3 قفل شده‌اند"
 
 
 

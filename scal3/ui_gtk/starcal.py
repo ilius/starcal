@@ -67,7 +67,7 @@ from scal3.ui_gtk.utils import *
 from scal3.ui_gtk import listener
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import DummyCalObj, CustomizableCalBox
-
+from scal3.ui_gtk.event.utils import checkEventsReadOnly
 
 ui.uiName = 'gtk'
 
@@ -456,6 +456,9 @@ class MainWin(gtk.Window, ud.BaseCalObj):
     def getEventAddToMenuItem(self):
         from scal3.ui_gtk.drawing import newColorCheckPixbuf
         addToItem = labelStockMenuItem('_Add to', gtk.STOCK_ADD)
+        if event_lib.readOnly:
+            addToItem.set_sensitive(False)
+            return addToItem
         menu2 = gtk.Menu()
         ##
         for group in ui.eventGroups:
@@ -880,6 +883,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             ui.prefDialog.updatePrefGui()
         openWindow(ui.prefDialog)
     def eventManCreate(self):
+        checkEventsReadOnly() ## FIXME
         if not ui.eventManDialog:
             from scal3.ui_gtk.event.manager import EventManagerDialog
             ui.eventManDialog = EventManagerDialog()
@@ -1009,6 +1013,7 @@ def main():
     ###############################
     ui.init()
     ###############################
+    checkEventsReadOnly(False)
     ## right place? FIXME
     if core.BRANCH == 'master' and versionLessThan(event_lib.info.version, '2.3.0'):
         from scal3.ui_gtk.event.bulk_save_timezone import BulkSaveTimeZoneDialog

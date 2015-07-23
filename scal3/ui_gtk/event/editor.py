@@ -7,9 +7,11 @@ from scal3 import ui
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import dialog_add_button
 from scal3.ui_gtk.event import makeWidget
+from scal3.ui_gtk.event.utils import checkEventsReadOnly
 
 class EventEditorDialog(gtk.Dialog):
     def __init__(self, event, typeChangable=True, title=None, isNew=False, parent=None, useSelectedDate=False):
+        checkEventsReadOnly()
         gtk.Dialog.__init__(self)
         if parent:
             self.set_parent(parent)

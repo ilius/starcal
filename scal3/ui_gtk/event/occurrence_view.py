@@ -111,6 +111,8 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
         self.onConfigChange()
     def onEventLabelPopup(self, label, menu, occurData):
         from scal3.ui_gtk.event.utils import menuItemFromEventGroup
+        if event_lib.readOnly:
+            return
         menu = gtk.Menu()
         label.labelMenuAddCopyItems(menu)
         ####

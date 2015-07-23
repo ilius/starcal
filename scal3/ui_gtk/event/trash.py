@@ -5,10 +5,12 @@ from scal3 import ui
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import dialog_add_button
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
+from scal3.ui_gtk.event.utils import checkEventsReadOnly
 
 
 class TrashEditorDialog(gtk.Dialog):
     def __init__(self):
+        checkEventsReadOnly()
         gtk.Dialog.__init__(self)
         self.set_title(_('Edit Trash'))
         #self.connect('delete-event', lambda obj, e: self.destroy())
