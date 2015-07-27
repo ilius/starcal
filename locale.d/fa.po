@@ -2791,7 +2791,9 @@ msgstr ""
 "رویدادها قابل تغییر نیستند چون توسط یک پروسهٔ دیگر از StarCalendar 3 قفل شده‌اند"
 
 
-
+msgid "This event is outside of date range specified in it's group. You probably need to edit group \"%s\" and change \"Start\" or \"End\" values"
+msgstr ""
+"این رویداد خارج از بازهٔ زمانی است که در گروهش مشخص شده. احتمالاً نیاز دارید که گروه «%s» را ویرایش کرده و مقادیر «شروع» یا «پایان» را تغییر دهید"
 
 
 

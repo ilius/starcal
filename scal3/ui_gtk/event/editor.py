@@ -6,6 +6,7 @@ from scal3 import ui
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import dialog_add_button
+from scal3.ui_gtk.utils import showInfo
 from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 
@@ -105,6 +106,12 @@ class EventEditorDialog(gtk.Dialog):
         self.event.save()
         event_lib.lastIds.save()
         self.destroy()
+        #####
+        if self.event.isSingleOccur:
+            occur = self.event.calcOccurrence(self.event.parent.startJd, self.event.parent.endJd)
+            if not occur:
+                showInfo(_('This event is outside of date range specified in it\'s group. You probably need to edit group \"%s\" and change \"Start\" or \"End\" values')%self.event.parent.title)
+        #####
         return self.event
 
 def addNewEvent(group, eventType, title, typeChangable=False, **kw):
