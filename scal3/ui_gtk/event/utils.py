@@ -3,7 +3,7 @@ from scal3 import core
 from scal3 import event_lib
 
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import confirm, showError
+from scal3.ui_gtk.utils import confirm, showError, labelStockMenuItem
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
 
 
