@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ## StarCal Builtin Plugin
-db_name = 'iran-gregorian.db'
+db_name = 'iran-gregorian-data.txt'
 mode = 'gregorian'
 desc = \
 'مناسبت‌های میلادی (تقویم رسمی ایران)'
