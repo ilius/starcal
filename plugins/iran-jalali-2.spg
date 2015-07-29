@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ## StarCal Builtin Plugin
-db_name = 'iran-jalali-2.db'
+db_name = 'iran-jalali-2-data.txt'
 mode = 'jalali'
 desc = \
 'مناسبت‌های هجری شمسی (سایر)'

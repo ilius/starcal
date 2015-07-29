@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 ## StarCal Builtin Plugin
-db_name = 'iran-hijri.db'
+db_name = 'iran-hijri-data.txt'
 mode = 'hijri'
 desc = \
 'مناسبت‌های اسلامی (تقویم رسمی ایران)'

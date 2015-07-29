@@ -308,7 +308,7 @@ class BuiltinTextPlugin(BasePlugin):
         ## last item is a dict of dates (y, m, d) and the description of day:
         db.append({})
         ext = splitext(self.db_path)[1].lower()
-        if ext == '.db':
+        if ext == '.txt':
             sep = '\t'
             lines = open(self.db_path).read().split('\n')
             for line in lines[1:]:
