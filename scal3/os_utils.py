@@ -52,6 +52,8 @@ def getUsersData():
     data = []
     for line in open('/etc/passwd').readlines():
         parts = line.strip().split(':')
+        if len(parts) < 7:
+            continue
         data.append({
             'login': parts[0],
             'uid': parts[2],
