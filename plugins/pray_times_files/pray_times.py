@@ -27,10 +27,11 @@ from time import time as now
 from os.path import join, isfile, dirname
 
 
-_mypath = __file__
-if _mypath.endswith('.pyc'):
-    _mypath = _mypath[:-1]
-dataDir = dirname(_mypath) + '/pray_times_files/'
+#_mypath = __file__
+#if _mypath.endswith('.pyc'):
+#    _mypath = _mypath[:-1]
+#dataDir = dirname(_mypath)
+dataDir = dirname(__file__)
 rootDir = '/usr/share/starcal3'
 
 sys.path.insert(0, dataDir)## FIXME
@@ -47,7 +48,6 @@ from pray_times_backend import PrayTimes
 from scal3.json_utils import *
 from scal3.time_utils import floatHourToTime
 from scal3.locale_man import tr as _
-from scal3.plugin_man import BasePlugin
 from scal3.cal_types.gregorian import to_jd as gregorian_to_jd
 from scal3.time_utils import getUtcOffsetByJd, getUtcOffsetCurrent, getEpochFromJd
 from scal3.os_utils import kill, goodkill
@@ -121,7 +121,7 @@ class PrayTimeEventRule(EventRule):
     getInfo = lambda self: self.desc
 '''
 
-class TextPlug(BasePlugin, TextPlugUI):
+class TextPlugin(BaseJsonPlugin, TextPluginUI):
     ## all options (except for "enable" and "show_date") will be saved in file confPath
     confPath = join(confDir, 'pray_times.json')
     confParams = (
@@ -145,23 +145,15 @@ class TextPlug(BasePlugin, TextPlugUI):
         'maghrib',
         'isha',
     )
-    def __init__(self, enable=True, show_date=False):
-        #print('----------- praytime TextPlug.__init__')
+    def __init__(self, _file):
+        #print('----------- praytime TextPlugin.__init__')
         #print('From plugin: core.VERSION=%s'%api.get('core', 'VERSION'))
         #print('From plugin: core.aaa=%s'%api.get('core', 'aaa'))
         BasePlugin.__init__(
             self,
-            _mypath,
-            mode='gregorian',
-            desc=_('Islamic Pray Times'),
-            enable=enable,
-            show_date=show_date,
-            last_day_merge=False,
+            _file,
         )
-        self.external = True
-        self.name = _('Islamic Pray Times')
-        self.about = _('Islamic Pray Times') ## FIXME
-        self.has_config = True
+        self.lastDayMerge = False
         self.cityData = readLocationData()
         ##############
         confNeedsSave = False

@@ -300,7 +300,7 @@ class Cell:## status and information of a cell
         ###################
         for k in core.plugIndex:
             plug = core.allPlugList[k]
-            if plug.enable:
+            if plug:
                 try:
                     plug.update_cell(self)
                 except:

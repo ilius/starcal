@@ -261,7 +261,7 @@ class LocationButton(gtk.Button):
 
 
 
-class TextPlugUI:
+class TextPluginUI:
     def makeWidget(self):
         self.confDialog = gtk.Dialog()
         self.confDialog.set_title(_('Pray Times') + ' - ' + _('Configuration'))

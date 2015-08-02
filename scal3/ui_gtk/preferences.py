@@ -516,17 +516,17 @@ class PrefDialog(gtk.Dialog):
         #cell.set_property('wrap-mode', gtk.WrapMode.WORD)
         #cell.set_property('editable', True)
         #cell.set_property('wrap-width', 200)
-        col = gtk.TreeViewColumn(_('Description'), cell, text=3)
+        col = gtk.TreeViewColumn(_('Title'), cell, text=3)
         #treev.connect('draw', self.plugTreevExpose)
-        #self.plugDescCell = cell
-        #self.plugDescCol = col
+        #self.plugTitleCell = cell
+        #self.plugTitleCol = col
         #col.set_resizable(True)## No need!
         col.set_property('expand', True)
         treev.append_column(col)
         ######
         #for i in xrange(len(core.plugIndex)):
         #    x = core.plugIndex[i]
-        #    trees.append([x[0], x[1], x[2], core.allPlugList[x[0]].desc])
+        #    trees.append([x[0], x[1], x[2], core.allPlugList[x[0]].title])
         ######
         self.plugTreeview = treev
         self.plugTreestore = trees
@@ -634,7 +634,7 @@ class PrefDialog(gtk.Dialog):
         treev.connect('row-activated', self.plugAddTreevRActivate)
         ####
         cell = gtk.CellRendererText()
-        col = gtk.TreeViewColumn(_('Description'), cell, text=0)
+        col = gtk.TreeViewColumn(_('Title'), cell, text=0)
         #col.set_resizable(True)# no need when have only one column!
         treev.append_column(col)
         ####
@@ -804,8 +804,9 @@ class PrefDialog(gtk.Dialog):
                     print(i, core.plugIndex)
             else:
                 if enable:
-                    plug = plugin_man.loadPlugin(plug.fpath)
-                    assert plug.loaded
+                    plug = plugin_man.loadPlugin(plug.file, enable=True)
+                    if plug:
+                        assert plug.loaded
                     core.allPlugList[plugI] = plug
         core.plugIndex = index
         core.updatePlugins()
@@ -894,16 +895,16 @@ class PrefDialog(gtk.Dialog):
             self.plugTreestore.append(row)
         self.plugAddItems = []
         self.plugAddTreestore.clear()
-        for (i, desc) in core.getDeletedPluginsTable():
+        for (i, title) in core.getDeletedPluginsTable():
             self.plugAddItems.append(i)
-            self.plugAddTreestore.append([desc])
+            self.plugAddTreestore.append([title])
             self.plugButtonAdd.set_sensitive(True)
         ###### Accounts
         self.accountsTreestore.clear()
         for account in ui.eventAccounts:
             self.accountsTreestore.append([account.id, account.enable, account.title])
     #def plugTreevExpose(self, widget, gevent):
-        #self.plugDescCell.set_property('wrap-width', self.plugDescCol.get_width()+2)
+        #self.plugTitleCell.set_property('wrap-width', self.plugTitleCol.get_width()+2)
     def plugTreevCursorChanged(self, selection):
         cur = self.plugTreeview.get_cursor()[0]
         if cur==None:
@@ -912,7 +913,7 @@ class PrefDialog(gtk.Dialog):
         j = self.plugTreestore[i][0]
         plug = core.allPlugList[j]
         self.plugButtonAbout.set_sensitive(plug.about!=None)
-        self.plugButtonConf.set_sensitive(plug.has_config)
+        self.plugButtonConf.set_sensitive(plug.hasConfig)
     def plugAboutClicked(self, obj=None):
         from scal3.ui_gtk.about import AboutDialog
         cur = self.plugTreeview.get_cursor()[0]
@@ -927,7 +928,7 @@ class PrefDialog(gtk.Dialog):
             return
         about = AboutDialog(
             name='',## FIXME
-            title=_('About Plugin'),## _('About ')+plug.desc
+            title=_('About Plugin'),## _('About ')+plug.title
             authors=plug.authors,
             comments=plug.about,
         )
@@ -944,14 +945,14 @@ class PrefDialog(gtk.Dialog):
         i = cur[0]
         j = self.plugTreestore[i][0]
         plug = core.allPlugList[j]
-        if not plug.has_config:
+        if not plug.hasConfig:
             return
         plug.open_configure()
     def plugExportToIcsClicked(self, menu, plug):
         from scal3.ui_gtk.export import ExportToIcsDialog
-        ExportToIcsDialog(plug.exportToIcs, plug.desc).run()
+        ExportToIcsDialog(plug.exportToIcs, plug.title).run()
     def plugTreevRActivate(self, treev, path, col):
-        if col.get_title()==_('Description'):## FIXME
+        if col.get_title()==_('Title'):## FIXME
             self.plugAboutClicked(None)
     def plugTreevButtonPress(self, widget, gevent):
         b = gevent.button
@@ -968,7 +969,7 @@ class PrefDialog(gtk.Dialog):
                 menu.add(item)
                 ##
                 item = labelStockMenuItem('_Configure', gtk.STOCK_PREFERENCES, self.plugConfClicked)
-                item.set_sensitive(plug.has_config)
+                item.set_sensitive(plug.hasConfig)
                 menu.add(item)
                 ##
                 menu.add(labelImageMenuItem(_('Export to %s')%'iCalendar', 'ical-32.png', self.plugExportToIcsClicked, plug))
@@ -1081,10 +1082,10 @@ class PrefDialog(gtk.Dialog):
         t.remove(t.get_iter(i))
         ### j
         self.plugAddItems.append(j)
-        desc = core.allPlugList[j].desc
-        self.plugAddTreestore.append([desc])
+        title = core.allPlugList[j].title
+        self.plugAddTreestore.append([title])
         if core.debugMode:
-            print('deleting %s'%desc)
+            print('deleting %s'%title)
         self.plugButtonAdd.set_sensitive(True)
         if n>1:
             self.plugTreeview.set_cursor(min(n-2, i))
@@ -1100,7 +1101,7 @@ class PrefDialog(gtk.Dialog):
             pos = len(self.plugTreestore)
         else:
             pos = cur2[0]+1
-        self.plugTreestore.insert(pos, [j, True, False, core.allPlugList[j].desc])
+        self.plugTreestore.insert(pos, [j, True, False, core.allPlugList[j].title])
         self.plugAddTreestore.remove(self.plugAddTreestore.get_iter(i))
         self.plugAddItems.pop(i)
         self.plugAddDialog.hide()

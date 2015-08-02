@@ -2,7 +2,11 @@ import os
 from os.path import isfile
 
 from scal3.json_utils import *
-from scal3.core import myRaise, dataToJson
+from scal3.utils import myRaise
+
+dataToJson = dataToPrettyJson
+#from scal3.core import dataToJson## FIXME
+
 
 class SObjBase:
     params = ()## used in getData and setData and copyFrom
