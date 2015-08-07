@@ -445,6 +445,7 @@ def initFonts(fontDefaultNew):
         if item['font']==None:
             item['font'] = getFont(3.0)
 
+
 def getHolidaysJdList(startJd, endJd):
     jdList = []
     for jd in range(startJd, endJd):
