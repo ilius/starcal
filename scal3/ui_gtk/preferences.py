@@ -1018,7 +1018,7 @@ class PrefDialog(gtk.Dialog):
         if i<=0 or i>=len(t):
             gdk.beep()
             return
-        t.prepend(t[i])
+        t.prepend(list(t[i]))
         t.remove(t.get_iter(i+1))
         self.plugTreeview.set_cursor(0)
     def plugTreeviewBottom(self, button):
@@ -1030,7 +1030,7 @@ class PrefDialog(gtk.Dialog):
         if i<0 or i>=len(t)-1:
             gdk.beep()
             return
-        t.append(t[i])
+        t.append(list(t[i]))
         t.remove(t.get_iter(i))
         self.plugTreeview.set_cursor(len(t)-1)
     def plugTreeviewUp(self, button):
