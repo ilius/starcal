@@ -122,6 +122,7 @@ class PrayTimeEventRule(EventRule):
 '''
 
 class TextPlugin(BaseJsonPlugin, TextPluginUI):
+    name = 'pray_times'
     ## all options (except for "enable" and "show_date") will be saved in file confPath
     confPath = join(confDir, 'pray_times.json')
     confParams = (
