@@ -466,12 +466,10 @@ class TextPluginUI:
         self.confDialog.run()
     def open_about(self):
         about = AboutDialog(
-            name=self.name,
-            title=_('About')+' '+self.name,
-            authors=[
-                _('Hamid Zarrabi-Zadeh <zarrabi@scs.carleton.ca>'),
-                _('Saeed Rasooli <saeed.gnu@gmail.com>')
-            ],
+            name=self.title,
+            title=_('About')+' '+self.title,
+            authors=self.authors,
+            comments=self.about,
         )
         about.connect('delete-event', lambda w, e: about.destroy())
         #about.connect('response', lambda w: about.hide())
