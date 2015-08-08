@@ -124,6 +124,13 @@ class BasePlugin(SObjBase):
             data['about'] = _(data['about'])
         except KeyError:
             pass
+        ###
+        try:
+            authors = data['authors']
+        except KeyError:
+            pass
+        else:
+            data['authors'] = [_(author) for author in authors]
         #####
         if 'calType' in data:
             calType = data['calType']
