@@ -29,7 +29,7 @@ from pray_times_utils import *
 from scal3.ui_gtk import *
 from scal3.ui_gtk.app_info import popenFile
 
-buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter())
+buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter(), True)
 buffer_select_all = lambda b: b.select_range(b.get_start_iter(), b.get_end_iter())
 
 
