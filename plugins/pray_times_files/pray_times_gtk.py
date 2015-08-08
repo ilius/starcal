@@ -60,8 +60,8 @@ class AboutDialog(gtk.AboutDialog):## I had to duplicate!!
 class LocationDialog(gtk.Dialog):
     EXIT_OK     = 0
     EXIT_CANCEL = 1
-    def __init__(self, cityData, maxResults=200):
-        gtk.Dialog.__init__(self)
+    def __init__(self, cityData, maxResults=200, parent=None):
+        gtk.Dialog.__init__(self, parent=parent)
         self.set_title(_('Location'))
         self.maxResults = maxResults
         ###############
@@ -242,10 +242,10 @@ class LocationDialog(gtk.Dialog):
 
 
 class LocationButton(gtk.Button):
-    def __init__(self, cityData, locName, lat, lng):
+    def __init__(self, cityData, locName, lat, lng, window=None):
         gtk.Button.__init__(self)
         self.setLocation(locName, lat, lng)
-        self.dialog = LocationDialog(cityData)
+        self.dialog = LocationDialog(cityData, parent=window)
         ####
         self.connect('clicked', self.onClicked)
     def setLocation(self, locName, lat, lng):
@@ -273,7 +273,13 @@ class TextPluginUI:
         group.add_widget(label)
         label.set_alignment(0, 0.5)
         pack(hbox, label)
-        self.locButton = LocationButton(self.cityData, self.locName, self.backend.lat, self.backend.lng)
+        self.locButton = LocationButton(
+            self.cityData,
+            self.locName,
+            self.backend.lat,
+            self.backend.lng,
+            window=self.confDialog,
+        )
         pack(hbox, self.locButton)
         pack(self.confDialog.vbox, hbox)
         ###
