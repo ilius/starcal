@@ -252,11 +252,12 @@ class LocationButton(gtk.Button):
         self.locName = locName
         self.lat = lat
         self.lng = lng
+        self.set_label(self.locName)
     def onClicked(self, widget):
         res = self.dialog.run()
         if res:
-            self.locName, self.lat, self.lng = res
-            self.set_label(self.locName)
+            locName, lat, lng = res
+            self.setLocation(locName, lat, lng)
 
 
 
