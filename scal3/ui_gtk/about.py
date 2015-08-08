@@ -1,5 +1,4 @@
-from scal3.locale_man import tr as _
-from scal3 import ui
+#from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
 
 class AboutDialog(gtk.AboutDialog):
