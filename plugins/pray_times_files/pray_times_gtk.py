@@ -43,10 +43,12 @@ earthR = 6370
 class LocationDialog(gtk.Dialog):
     EXIT_OK     = 0
     EXIT_CANCEL = 1
-    def __init__(self, cityData, maxResults=200, parent=None):
+    def __init__(self, cityData, maxResults=200, parent=None, width=600, height=600):
         gtk.Dialog.__init__(self, parent=parent)
         self.set_title(_('Location'))
         self.maxResults = maxResults
+        self.resize(width, height)
+        ## width is used for CellRendererText as well
         ###############
         cancelB = self.add_button(gtk.STOCK_CANCEL, self.EXIT_CANCEL)
         okB = self.add_button(gtk.STOCK_OK, self.EXIT_OK)
@@ -83,6 +85,7 @@ class LocationDialog(gtk.Dialog):
         #treev.append_column(col)
         ########
         cell = gtk.CellRendererText()
+        cell.set_fixed_size(width-30, -1)
         col = gtk.TreeViewColumn('City', cell, text=1)
         #col.set_resizable(True)## No need!
         treev.append_column(col)
@@ -213,6 +216,7 @@ class LocationDialog(gtk.Dialog):
                     r += 1
                     if r>=mr:
                         break
+        self.treev.scroll_to_cell((0, 0))
         self.okB.set_sensitive(self.checkbEdit.get_active())
     entry_changed = lambda self, entry: self.update_list(entry.get_text())
     def run(self):
