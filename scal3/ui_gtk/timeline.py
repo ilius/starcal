@@ -399,7 +399,10 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
         self.onConfigChange()
     def editGroupClicked(self, menu, winTitle, group):
         from scal3.ui_gtk.event.group.editor import GroupEditorDialog
-        group = GroupEditorDialog(group).run()
+        group = GroupEditorDialog(
+            group,
+            parent=self.get_toplevel(),
+        ).run()
         if group is not None:
             group.afterModify()
             group.save()## FIXME

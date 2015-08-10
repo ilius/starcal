@@ -9,9 +9,9 @@ from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 
 class GroupEditorDialog(gtk.Dialog):
-    def __init__(self, group=None):
+    def __init__(self, group=None, **kwargs):
         checkEventsReadOnly()
-        gtk.Dialog.__init__(self)
+        gtk.Dialog.__init__(self, **kwargs)
         self.isNew = (group is None)
         self.set_title(_('Add New Group') if self.isNew else _('Edit Group'))
         #self.connect('delete-event', lambda obj, e: self.destroy())

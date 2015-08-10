@@ -9,10 +9,10 @@ from scal3.ui_gtk.mywidgets import TextFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 
 class EventsBulkEditDialog(gtk.Dialog):
-    def __init__(self, container):
+    def __init__(self, container, **kwargs):
         from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
         self._container = container
-        gtk.Dialog.__init__(self)
+        gtk.Dialog.__init__(self, **kwargs)
         self.set_title(_('Bulk Edit Events'))
         ####
         dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)

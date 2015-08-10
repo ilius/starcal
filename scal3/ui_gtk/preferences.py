@@ -39,8 +39,9 @@ from scal3.ui_gtk.pref_utils import *
 
 
 class PrefDialog(gtk.Dialog):
-    def __init__(self, statusIconMode):
-        gtk.Dialog.__init__(self, title=_('Preferences'))
+    def __init__(self, statusIconMode, **kwargs):
+        gtk.Dialog.__init__(self, **kwargs)
+        self.set_title(_('Preferences'))
         self.connect('delete-event', self.onDelete)
         #self.set_has_separator(False)
         #self.set_skip_taskbar_hint(True)
@@ -263,8 +264,8 @@ class PrefDialog(gtk.Dialog):
         item = FileChooserPrefItem(
             ui,
             'statusIconImage',
-            _('Select Icon'),
-            pixDir,
+            title=_('Select Icon'),
+            currentFolder=pixDir,
             defaultVarName='statusIconImageDefault',
         )
         self.uiPrefItems.append(item)
@@ -279,8 +280,8 @@ class PrefDialog(gtk.Dialog):
         item = FileChooserPrefItem(
             ui,
             'statusIconImageHoli',
-            _('Select Icon'),
-            pixDir,
+            title=_('Select Icon'),
+            currentFolder=pixDir,
             defaultVarName='statusIconImageHoliDefault',
         )
         self.uiPrefItems.append(item)
@@ -613,7 +614,7 @@ class PrefDialog(gtk.Dialog):
         '''
         pack(vbox, hbox, 1, 1)
         ##########################
-        d = gtk.Dialog()
+        d = gtk.Dialog(parent=self)
         d.set_transient_for(self)
         ## dialog.set_transient_for(parent) makes the window on top of parent and at the center point of parent
         ## but if you call dialog.show() or dialog.present(), the parent is still active(clickabel widgets) before closing child "dialog"
@@ -862,9 +863,12 @@ class PrefDialog(gtk.Dialog):
                 msg.destroy()
             """
             if ui.checkNeedRestart():
-                d = gtk.Dialog(_('Need Restart '+core.APP_DESC), self,
-                    gtk.DialogFlags.MODAL | gtk.DialogFlags.DESTROY_WITH_PARENT,
-                    (gtk.STOCK_CANCEL, 0))
+                d = gtk.Dialog(
+                    title=_('Need Restart '+core.APP_DESC),
+                    parent=self,
+                    flags=gtk.DialogFlags.MODAL | gtk.DialogFlags.DESTROY_WITH_PARENT,
+                    buttons=(gtk.STOCK_CANCEL, 0),
+                )
                 d.set_keep_above(True)
                 label = gtk.Label(_('Some preferences need for restart %s to apply.'%core.APP_DESC))
                 label.set_line_wrap(True)
@@ -1115,7 +1119,7 @@ class PrefDialog(gtk.Dialog):
         if not account.loaded:
             showError(_('Account must be enabled before editing'), self)
             return
-        account = AccountEditorDialog(account).run()
+        account = AccountEditorDialog(account, parent=self).run()
         if account is None:
             return
         account.save()
@@ -1129,7 +1133,7 @@ class PrefDialog(gtk.Dialog):
         self.editAccount(index)
     def accountsAddClicked(self, button):
         from scal3.ui_gtk.event.account_op import AccountEditorDialog
-        account = AccountEditorDialog().run()
+        account = AccountEditorDialog(parent=self).run()
         if account is None:
             return
         account.save()

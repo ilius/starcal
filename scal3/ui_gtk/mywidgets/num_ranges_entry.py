@@ -173,7 +173,7 @@ if __name__=='__main__':
     from scal3 import core
     ###
     entry = NumRangesEntry(0, 9999)
-    win = gtk.Dialog()
+    win = gtk.Dialog(parent=None)
     win.vbox.add(entry)
     win.vbox.show_all()
     win.resize(100, 40)

@@ -11,15 +11,11 @@ from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 
 class EventEditorDialog(gtk.Dialog):
-    def __init__(self, event, typeChangable=True, title=None, isNew=False, parent=None, useSelectedDate=False):
+    def __init__(self, event, typeChangable=True, isNew=False, useSelectedDate=False, **kwargs):
         checkEventsReadOnly()
-        gtk.Dialog.__init__(self)
-        if parent:
-            self.set_parent(parent)
+        gtk.Dialog.__init__(self, **kwargs)
         #self.set_transient_for(None)
         #self.set_type_hint(gdk.WindowTypeHint.NORMAL)
-        if title:
-            self.set_title(title)
         self.isNew = isNew
         #self.connect('delete-event', lambda obj, e: self.destroy())
         #self.resize(800, 600)
@@ -114,16 +110,15 @@ class EventEditorDialog(gtk.Dialog):
         #####
         return self.event
 
-def addNewEvent(group, eventType, title, typeChangable=False, **kw):
+def addNewEvent(group, eventType, typeChangable=False, **kwargs):
     event = group.createEvent(eventType)
     if eventType=='custom':## FIXME
         typeChangable = True
     event = EventEditorDialog(
         event,
         typeChangable=typeChangable,
-        title=title,
         isNew=True,
-        **kw
+        **kwargs
     ).run()
     if event is None:
         return

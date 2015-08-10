@@ -9,9 +9,9 @@ from scal3.ui_gtk.event.utils import checkEventsReadOnly
 
 
 class TrashEditorDialog(gtk.Dialog):
-    def __init__(self):
+    def __init__(self, **kwargs):
         checkEventsReadOnly()
-        gtk.Dialog.__init__(self)
+        gtk.Dialog.__init__(self, **kwargs)
         self.set_title(_('Edit Trash'))
         #self.connect('delete-event', lambda obj, e: self.destroy())
         #self.resize(800, 600)

@@ -27,7 +27,7 @@ def getFloatBuiltinWidget():
 
 
 if __name__=='__main__':
-    d = gtk.Dialog()
+    d = gtk.Dialog(parent=None)
     btn = getFloatWidget()
     btn.set_editable(True)
     pack(d.vbox, btn, 1, 1)

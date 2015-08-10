@@ -595,7 +595,13 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         from scal3.ui_gtk.event.editor import addNewEvent
         #print('addToGroupFromMenu', group.title, eventType)
         title = _('Add ') + event_lib.classes.event.byName[eventType].desc
-        event = addNewEvent(group, eventType, title, parent=self, useSelectedDate=True)
+        event = addNewEvent(
+            group,
+            eventType,
+            useSelectedDate=True,
+            title=title,
+            parent=self,
+        )
         if event is None:
             return
         ui.eventDiff.add('+', event)
@@ -857,7 +863,6 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         if not self.aboutDialog:
             from scal3.ui_gtk.about import AboutDialog
             dialog = AboutDialog(
-                parent=self,
                 name=core.APP_DESC,
                 version=core.VERSION,
                 title=_('About ')+core.APP_DESC,
@@ -865,6 +870,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
                 comments=core.aboutText,
                 license=core.licenseText,
                 website=core.homePage,
+                parent=self,
             )
             ## add Donate button ## FIXME
             dialog.connect('delete-event', self.aboutHide)
@@ -879,14 +885,14 @@ class MainWin(gtk.Window, ud.BaseCalObj):
     def prefShow(self, obj=None, data=None):
         if not ui.prefDialog:
             from scal3.ui_gtk.preferences import PrefDialog
-            ui.prefDialog = PrefDialog(self.statusIconMode)
+            ui.prefDialog = PrefDialog(self.statusIconMode, parent=self)
             ui.prefDialog.updatePrefGui()
         openWindow(ui.prefDialog)
     def eventManCreate(self):
         checkEventsReadOnly() ## FIXME
         if not ui.eventManDialog:
             from scal3.ui_gtk.event.manager import EventManagerDialog
-            ui.eventManDialog = EventManagerDialog()
+            ui.eventManDialog = EventManagerDialog(parent=self)
     def eventManShow(self, obj=None, data=None):
         self.eventManCreate()
         openWindow(ui.eventManDialog)
@@ -901,13 +907,13 @@ class MainWin(gtk.Window, ud.BaseCalObj):
     def selectDateShow(self, widget=None):
         if not self.selectDateDialog:
             from scal3.ui_gtk.selectdate import SelectDateDialog
-            self.selectDateDialog = SelectDateDialog()
+            self.selectDateDialog = SelectDateDialog(parent=self)
             self.selectDateDialog.connect('response-date', self.selectDateResponse)
         self.selectDateDialog.show()
     def dayInfoShow(self, widget=None):
         if not self.dayInfoDialog:
             from scal3.ui_gtk.day_info import DayInfoDialog
-            self.dayInfoDialog = DayInfoDialog()
+            self.dayInfoDialog = DayInfoDialog(parent=self)
             self.dayInfoDialog.onDateChange()
         openWindow(self.dayInfoDialog)
     def customizeDialogCreate(self):
@@ -925,7 +931,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
     def exportShow(self, year, month):
         if not self.exportDialog:
             from scal3.ui_gtk.export import ExportDialog
-            self.exportDialog = ExportDialog()
+            self.exportDialog = ExportDialog(parent=self)
         self.exportDialog.showDialog(year, month)
     def exportClicked(self, widget=None):
         self.exportShow(ui.cell.year, ui.cell.month)
@@ -1017,7 +1023,7 @@ def main():
     ## right place? FIXME
     if core.BRANCH == 'master' and versionLessThan(event_lib.info.version, '2.3.0'):
         from scal3.ui_gtk.event.bulk_save_timezone import BulkSaveTimeZoneDialog
-        BulkSaveTimeZoneDialog().run()
+        BulkSaveTimeZoneDialog(parent=None).run()
     event_lib.info.updateAndSave()
     ###############################
     mainWin = MainWin(statusIconMode=statusIconMode)

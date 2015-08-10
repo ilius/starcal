@@ -35,8 +35,8 @@ class CustomizeDialog(gtk.Dialog):
         for child in item.items:
             if child.customizable:
                 self.appendItemTree(child, itemIter)
-    def __init__(self, widget):
-        gtk.Dialog.__init__(self)
+    def __init__(self, widget, **kwargs):
+        gtk.Dialog.__init__(self, **kwargs)
         self.set_title(_('Customize'))
         #self.set_has_separator(False)## not in gtk3
         self.connect('delete-event', self.close)

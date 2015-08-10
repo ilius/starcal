@@ -7,8 +7,8 @@ from scal3.ui_gtk.utils import dialog_add_button
 from scal3.ui_gtk.event import makeWidget
 
 class AccountEditorDialog(gtk.Dialog):
-    def __init__(self, account=None):
-        gtk.Dialog.__init__(self)
+    def __init__(self, account=None, **kwargs):
+        gtk.Dialog.__init__(self, **kwargs)
         self.set_title(_('Edit Account') if account else _('Add New Account'))
         ###
         dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
@@ -74,8 +74,8 @@ class AccountEditorDialog(gtk.Dialog):
 
 
 class FetchRemoteGroupsDialog(gtk.Dialog):
-    def __init__(self, account):
-        gtk.Dialog.__init__(self)
+    def __init__(self, account, **kwargs):
+        gtk.Dialog.__init__(self, **kwargs)
         self.account = account
 
 

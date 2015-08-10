@@ -13,9 +13,9 @@ from scal3.ui_gtk.event.common import GroupsTreeCheckList
 
 
 class SingleGroupExportDialog(gtk.Dialog):
-    def __init__(self, group):
+    def __init__(self, group, **kwargs):
         self._group = group
-        gtk.Dialog.__init__(self)
+        gtk.Dialog.__init__(self, **kwargs)
         self.set_title(_('Export Group'))
         ####
         dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
@@ -86,8 +86,8 @@ class SingleGroupExportDialog(gtk.Dialog):
 
 
 class MultiGroupExportDialog(gtk.Dialog):
-    def __init__(self):
-        gtk.Dialog.__init__(self)
+    def __init__(self, **kwargs):
+        gtk.Dialog.__init__(self, **kwargs)
         self.set_title(_('Export'))
         self.vbox.set_spacing(10)
         ####

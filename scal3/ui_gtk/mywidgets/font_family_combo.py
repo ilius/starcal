@@ -42,7 +42,7 @@ class FontFamilyCombo(gtk.ComboBox):
                 break
 
 if __name__=='__main__':
-    d = gtk.Dialog()
+    d = gtk.Dialog(parent=None)
     combo = FontFamilyCombo(1)
     pack(d.vbox, combo, 1, 1)
     d.vbox.show_all()

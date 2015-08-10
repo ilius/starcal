@@ -575,7 +575,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 
 
 if __name__=='__main__':
-    win = gtk.Dialog()
+    win = gtk.Dialog(parent=None)
     cal = CalObj()
     win.add_events(gdk.EventMask.ALL_EVENTS_MASK)
     pack(win.vbox, cal, 1, 1)

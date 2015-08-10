@@ -48,8 +48,8 @@ def error_exit(text, parent=None):
 
 class AdjusterDialog(gtk.Dialog):
     xpad = 15
-    def __init__(self):
-        gtk.Dialog.__init__(self)
+    def __init__(self, **kwargs):
+        gtk.Dialog.__init__(self, **kwargs)
         self.set_title(_('Adjust System Date & Time'))##????????
         self.set_icon(self.render_icon(gtk.STOCK_PREFERENCES, gtk.IconSize.BUTTON))
         #########
@@ -221,7 +221,7 @@ if __name__=='__main__':
         error_exit('This program must be run as root')
         #raise OSError('This program must be run as root')
         ###os.setuid(0)#?????????
-    d = AdjusterDialog()
+    d = AdjusterDialog(parent=None)
     #d.set_keap_above(True)
     if d.run()==1:
         d.setSysTimeClicked()

@@ -39,8 +39,8 @@ class SelectDateDialog(gtk.Dialog):
     signals = [
         ('response-date', [int, int, int]),
     ]
-    def __init__(self):
-        gtk.Dialog.__init__(self)
+    def __init__(self, **kwargs):
+        gtk.Dialog.__init__(self, **kwargs)
         self.set_title(_('Select Date...'))
         #self.set_has_separator(False)
         #self.set_skip_taskbar_hint(True)

@@ -7,9 +7,9 @@ from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import dialog_add_button
 
 class GroupSortDialog(gtk.Dialog):
-    def __init__(self, group):
+    def __init__(self, group, **kwargs):
         self._group = group
-        gtk.Dialog.__init__(self)
+        gtk.Dialog.__init__(self, **kwargs)
         self.set_title(_('Sort Events'))
         ####
         dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
@@ -51,10 +51,10 @@ class GroupSortDialog(gtk.Dialog):
 
 
 class GroupConvertModeDialog(gtk.Dialog):
-    def __init__(self, group):
+    def __init__(self, group, **kwargs):
         from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
         self._group = group
-        gtk.Dialog.__init__(self)
+        gtk.Dialog.__init__(self, **kwargs)
         self.set_title(_('Convert Calendar Type'))
         ####
         dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)

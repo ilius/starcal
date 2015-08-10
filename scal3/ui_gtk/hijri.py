@@ -42,8 +42,8 @@ def getCurrentYm():
     return y*12 + m-1
 
 class EditDbDialog(gtk.Dialog):
-    def __init__(self):## parent FIXME
-        gtk.Dialog.__init__(self)
+    def __init__(self, **kwargs):
+        gtk.Dialog.__init__(self, **kwargs)
         self.set_title(_('Tune Hijri Monthes'))
         self.connect('delete-event', self.onDeleteEvent)
         ############
@@ -249,7 +249,7 @@ class EditDbDialog(gtk.Dialog):
         return True
 
 def tuneHijriMonthes(widget=None):
-    dialog = EditDbDialog()
+    dialog = EditDbDialog(parent=ui.prefDialog)
     dialog.resize(400, 400)
     dialog.run()
 

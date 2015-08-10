@@ -128,9 +128,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                 self.trees.remove(self.trashIter)
             self.appendTrash()
         ui.reloadTrash = False
-    def __init__(self):
+    def __init__(self, **kwargs):
         checkEventsReadOnly() ## FIXME
-        gtk.Dialog.__init__(self)
+        gtk.Dialog.__init__(self, **kwargs)
         self.initVars()
         ud.windowList.appendItem(self)
         ####
@@ -763,7 +763,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             return False
         return True
     def mbarExportClicked(self, obj):
-        MultiGroupExportDialog().run()
+        MultiGroupExportDialog(parent=self).run()
     def mbarImportClicked(self, obj):
         EventsImportWindow(self).present()
     def mbarSearchClicked(self, obj):
@@ -920,7 +920,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                         return True
     def insertNewGroup(self, groupIndex):
         from scal3.ui_gtk.event.group.editor import GroupEditorDialog
-        group = GroupEditorDialog().run()
+        group = GroupEditorDialog(parent=self).run()
         if group is None:
             return
         ui.eventGroups.insert(groupIndex, group)
@@ -1020,7 +1020,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         if group.name == 'trash':
             self.editTrash()
         else:
-            group = GroupEditorDialog(group).run()
+            group = GroupEditorDialog(group, parent=self).run()
             if group is None:
                 return
             groupIter = self.trees.get_iter(path)
@@ -1059,7 +1059,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         event = addNewEvent(
             group,
             eventType,
-            title,
+            title=title,
             parent=self,
         )
         if event is None:
@@ -1072,8 +1072,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         event = addNewEvent(
             group,
             group.acceptsEventTypes[0],
-            _('Add Event'),
             typeChangable=True,
+            title=_('Add Event'),
             parent=self,
         )
         if event is None:
@@ -1144,7 +1144,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
         self.removeIterChildren(self.trashIter)
         self.treeviewCursorChanged()
     def editTrash(self, obj=None):
-        TrashEditorDialog().run()
+        TrashEditorDialog(parent=self).run()
         self.trees.set_value(
             self.trashIter,
             1,
@@ -1260,11 +1260,11 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             return
         self.moveDown(path)
     def groupExportFromMenu(self, menu, group):
-        SingleGroupExportDialog(group).run()
+        SingleGroupExportDialog(group, parent=self).run()
     def groupSortFromMenu(self, menu, path):
         index, = path
         group, = self.getObjsByPath(path)
-        if GroupSortDialog(group).run():
+        if GroupSortDialog(group, parent=self).run():
             if group.id in self.loadedGroupIds:
                 groupIter = self.trees.get_iter(path)
                 expanded = self.treev.row_expanded(path)
@@ -1274,7 +1274,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                 if expanded:
                     self.treev.expand_row(path, False)
     def groupConvertModeFromMenu(self, menu, group):
-        GroupConvertModeDialog(group).run()
+        GroupConvertModeDialog(group, parent=self).run()
     def _do_groupConvertTo(self, group, newGroupType):
         idsCount = len(group.idList)
         newGroup = ui.eventGroups.convertGroupTo(group, newGroupType)
@@ -1296,7 +1296,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
             self.treev.expand_row(path, False)
     def groupBulkEditFromMenu(self, menu, group, path):
         from scal3.ui_gtk.event.bulk_edit import EventsBulkEditDialog
-        dialog = EventsBulkEditDialog(group)
+        dialog = EventsBulkEditDialog(group, parent=self)
         if dialog.run()==gtk.ResponseType.OK:
             self.waitingDo(self._do_groupBulkEdit, dialog, group, path)
     def groupActionClicked(self, menu, group, actionFuncName):

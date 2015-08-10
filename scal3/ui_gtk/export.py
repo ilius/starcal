@@ -39,8 +39,8 @@ from scal3.ui_gtk.mywidgets.multi_spin.year_month import YearMonthButton
 
 
 class ExportDialog(gtk.Dialog):
-    def __init__(self):
-        gtk.Dialog.__init__(self)
+    def __init__(self, **kwargs):
+        gtk.Dialog.__init__(self, **kwargs)
         self.set_title(_('Export to %s')%'HTML')
         ## parent=None FIXME
         #self.set_has_separator(False)
@@ -163,9 +163,9 @@ class ExportDialog(gtk.Dialog):
 
 
 class ExportToIcsDialog(gtk.Dialog):
-    def __init__(self, saveIcsFunc, defaultFileName):
+    def __init__(self, saveIcsFunc, defaultFileName, **kwargs):
         self.saveIcsFunc = saveIcsFunc
-        gtk.Dialog.__init__(self)
+        gtk.Dialog.__init__(self, **kwargs)
         self.set_title(_('Export to %s')%'iCalendar')
         ## parent=None FIXME
         #self.set_has_separator(False)

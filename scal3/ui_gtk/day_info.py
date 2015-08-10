@@ -87,8 +87,8 @@ class PluginsTextView(gtk.TextView, ud.BaseCalObj):
 class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
     _name = 'dayInfo'
     desc = _('Day Info')
-    def __init__(self):
-        gtk.Dialog.__init__(self)
+    def __init__(self, **kwargs):
+        gtk.Dialog.__init__(self, **kwargs)
         self.initVars()
         ud.windowList.appendItem(self)
         ###

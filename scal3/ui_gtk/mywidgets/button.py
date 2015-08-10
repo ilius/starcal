@@ -45,7 +45,7 @@ class ConButton(gtk.Button, ConButtonBase):
 
 
 if __name__=='__main__':
-    win = gtk.Dialog()
+    win = gtk.Dialog(parent=None)
     button = ConButton('Press')
     button.connect('con-clicked', lambda obj: sys.stdout.write('%.4f\n'%now()))
     pack(win.vbox, button, 1, 1)

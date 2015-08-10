@@ -236,7 +236,7 @@ class CopyLabelMenuItem(MenuItem):
 
 
 if __name__=='__main__':
-    diolog = gtk.Dialog()
+    diolog = gtk.Dialog(parent=None)
     w = TimeZoneComboBoxEntry()
     pack(diolog.vbox, w)
     diolog.vbox.show_all()

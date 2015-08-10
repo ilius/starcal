@@ -45,7 +45,10 @@ class WidgetClass(gtk.HBox):
         self.editButton.connect('clicked', self.showDialog)
         pack(self, self.editButton)
         ###
-        self.dialog = gtk.Dialog(title=rule.desc)
+        self.dialog = gtk.Dialog(
+            title=rule.desc,
+            parent=self.get_toplevel(),
+        )
         ##
         self.treev = gtk.TreeView()
         self.treev.set_headers_visible(True)

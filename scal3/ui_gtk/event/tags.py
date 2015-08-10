@@ -219,8 +219,9 @@ class TagsListBox(gtk.VBox):
 
 
 class TagEditorDialog(gtk.Dialog):
-    def __init__(self, eventType='', parent=None):
-        gtk.Dialog.__init__(self, title=_('Tags'))
+    def __init__(self, eventType='', **kwargs):
+        gtk.Dialog.__init__(self, **kwargs)
+        self.set_title(_('Tags'))
         self.set_transient_for(None)
         self.tags = []
         self.tagsBox = TagsListBox(eventType)
@@ -243,7 +244,7 @@ class ViewEditTagsHbox(gtk.HBox):
         pack(self, gtk.Label(_('Tags')+':  '))
         self.tagsLabel = gtk.Label('')
         pack(self, self.tagsLabel, 1, 1)
-        self.dialog = TagEditorDialog(eventType, parent=self)
+        self.dialog = TagEditorDialog(eventType, parent=self.get_toplevel())
         self.dialog.connect('response', self.dialogResponse)
         self.editButton = gtk.Button()
         self.editButton.set_label(_('_Edit'))

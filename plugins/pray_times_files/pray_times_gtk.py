@@ -43,8 +43,8 @@ earthR = 6370
 class LocationDialog(gtk.Dialog):
     EXIT_OK     = 0
     EXIT_CANCEL = 1
-    def __init__(self, cityData, maxResults=200, parent=None, width=600, height=600):
-        gtk.Dialog.__init__(self, parent=parent)
+    def __init__(self, cityData, maxResults=200, width=600, height=600, **kwargs):
+        gtk.Dialog.__init__(self, **kwargs)
         self.set_title(_('Location'))
         self.maxResults = maxResults
         self.resize(width, height)
