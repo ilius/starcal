@@ -1055,9 +1055,6 @@ msgid "Cycle (Days & Time)"
 msgstr ""
 "طول دوره (روزها و زمان)"
 
-msgid "Notify"
-msgstr ""
-"یادآوری متنی"
 
 ##########
 
@@ -2481,9 +2478,13 @@ msgid "Notification"
 msgstr ""
 "یادآوری"
 
-msgid "Notify Before"
+msgid "Notify"
 msgstr ""
-"یادآوری کردن قبل از"
+"یادآوری"
+
+msgid "before event"
+msgstr ""
+"قبل از رویداد"
 
 msgid "Floating Message"
 msgstr ""
