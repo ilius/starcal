@@ -73,7 +73,7 @@ class InfoWrapper(JsonSObjBase):
         'version',
         'last_run',
     )
-    jsonParams = (
+    paramsOrder = (
         'version',
         'last_run',
     )
@@ -107,7 +107,7 @@ class LastIdsWrapper(JsonSObjBase):
         'group',
         'account',
     )
-    jsonParams = (
+    paramsOrder = (
         'event',
         'group',
         'account',
@@ -1089,7 +1089,7 @@ class RuleContainer:
         'timeZoneEnable',
         'timeZone',
     )
-    jsonParams = (
+    paramsOrder = (
         'timeZoneEnable',
         'timeZone',
     )
@@ -1239,7 +1239,7 @@ class Event(JsonSObjBase, RuleContainer):
         'remoteIds',
         'modified',
     )
-    jsonParams = RuleContainer.jsonParams + (
+    paramsOrder = RuleContainer.paramsOrder + (
         'type',
         'calType',
         'summary',
@@ -1872,7 +1872,7 @@ class YearlyEvent(Event):
         'day',
     )
     supportedRules = requiredRules + ('start',)
-    jsonParams = Event.jsonParams + ('startYear', 'month', 'day')
+    paramsOrder = Event.paramsOrder + ('startYear', 'month', 'day')
     isAllDay = True
     getMonth = lambda self: self['month'].values[0]
     setMonth = lambda self, month: self.getAddRule('month').setData(month)
@@ -2219,7 +2219,7 @@ class LargeScaleEvent(Event):## or MegaEvent? FIXME
         'endRel',
     )
     params = Event.params + _myParams
-    jsonParams = Event.jsonParams + _myParams
+    paramsOrder = Event.paramsOrder + _myParams
     __nonzero__ = lambda self: True
     isAllDay = True
     def __init__(self, _id=None, parent=None):
@@ -2420,7 +2420,7 @@ class EventGroup(EventContainer):
         'deletedRemoteEvents',
         ## 'defaultEventType'
     )
-    jsonParams = (
+    paramsOrder = (
         'enable',
         'type',
         'title',
@@ -2832,7 +2832,7 @@ class EventGroup(EventContainer):
         data = self.getData()
         for attr in self.importExportExclude:
             del data[attr]
-        data = makeOrderedData(data, self.jsonParams)
+        data = makeOrderedData(data, self.paramsOrder)
         data['events'] = []
         for eventId in self.idList:
             eventData = EventContainer.getEvent(self, eventId).getDataOrdered()
@@ -2998,7 +2998,7 @@ class UniversityTerm(EventGroup):
     params = EventGroup.params + (
         'courses',
     )
-    jsonParams = EventGroup.jsonParams + (
+    paramsOrder = EventGroup.paramsOrder + (
         'classTimeBounds',
         'classesEndDate',
         'courses',
@@ -3405,7 +3405,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
         'showStat',
     )
     params = EventGroup.params + myParams
-    jsonParams = EventGroup.jsonParams + myParams
+    paramsOrder = EventGroup.paramsOrder + myParams
     def __init__(self, _id=None):
         VcsEpochBaseEventGroup.__init__(self, _id)
         self.showAuthor = True
@@ -3470,7 +3470,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
         'showStat',
     )
     params = EventGroup.params + myParams
-    jsonParams = EventGroup.jsonParams + myParams
+    paramsOrder = EventGroup.paramsOrder + myParams
     def __init__(self, _id=None):
         VcsEpochBaseEventGroup.__init__(self, _id)
         self.showStat = True
@@ -3557,7 +3557,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
     myParams = VcsBaseEventGroup.myParams + (
     )
     params = EventGroup.params + myParams
-    jsonParams = EventGroup.jsonParams + myParams
+    paramsOrder = EventGroup.paramsOrder + myParams
     def __init__(self, _id=None):
         VcsBaseEventGroup.__init__(self, _id)
         self.statByJd = {}
@@ -3938,7 +3938,7 @@ class DummyAccount:
     loaded = False
     enable = False
     params = ()
-    jsonParams = ()
+    paramsOrder = ()
     accountsDesc = {
         'google': _('Google'),
     }
@@ -3964,7 +3964,7 @@ class Account(JsonSObjBase):
         'title',
         'remoteGroups',
     )
-    jsonParams = (
+    paramsOrder = (
         'enable',
         'type',
         'title',

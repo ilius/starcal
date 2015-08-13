@@ -70,8 +70,8 @@ def makeOrderedData(data, params):
 
 class JsonSObjBase(SObjBase):
     file = ''
-    jsonParams = ()
-    getDataOrdered = lambda self: makeOrderedData(self.getData(), self.jsonParams)
+    paramsOrder = ()
+    getDataOrdered = lambda self: makeOrderedData(self.getData(), self.paramsOrder)
     getJson = lambda self: dataToJson(self.getDataOrdered())
     setJson = lambda self, jsonStr: self.setData(jsonToData(jsonStr))
     def save(self):
