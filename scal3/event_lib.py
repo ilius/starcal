@@ -83,13 +83,23 @@ class JsonEventObjBase(JsonSObjBase):
         JsonSObjBase.save(self)
 
 
+class BsonHistEventObjBase(BsonHistObjBase):
+    def save(self, *args):
+        if readOnly:
+            print('events are read-only, ignored file %s'%self.file)
+            return
+        return BsonHistObjBase.save(self, *args)
+
+
+
+
 class InfoWrapper(JsonEventObjBase):
     file = join(confDir, 'event', 'info.json')
     params = (
         'version',
         'last_run',
     )
-    jsonParams = (
+    paramsOrder = (
         'version',
         'last_run',
     )
@@ -123,7 +133,7 @@ class LastIdsWrapper(JsonEventObjBase):
         'group',
         'account',
     )
-    jsonParams = (
+    paramsOrder = (
         'event',
         'group',
         'account',
@@ -1107,7 +1117,7 @@ class RuleContainer:
         'timeZoneEnable',
         'timeZone',
     )
-    jsonParams = (
+    paramsOrder = (
         'timeZoneEnable',
         'timeZone',
     )
@@ -1247,7 +1257,7 @@ def fixIconInObj(self):
 ###########################################################################
 
 ## Should not be registered, or instantiate directly
-class Event(JsonEventObjBase, RuleContainer):
+class Event(BsonHistEventObjBase, RuleContainer):
     name = 'custom'## or 'event' or '' FIXME
     desc = _('Custom Event')
     iconName = ''
@@ -1255,14 +1265,17 @@ class Event(JsonEventObjBase, RuleContainer):
     readOnly = False
     isAllDay = False
     isSingleOccur = False
+    basicParams = (
+        #'modified',
+        'remoteIds',
+        'notifiers',## FIXME
+    )
     params = RuleContainer.params + (
         'icon',
         'summary',
         'description',
-        'remoteIds',
-        'modified',
     )
-    jsonParams = RuleContainer.jsonParams + (
+    paramsOrder = RuleContainer.paramsOrder + (
         'type',
         'calType',
         'summary',
@@ -1308,7 +1321,7 @@ class Event(JsonEventObjBase, RuleContainer):
         if parent is not None:
             self.setDefaultsFromGroup(parent)
         ######
-        self.modified = now()
+        self.modified = now()## FIXME
         self.remoteIds = None## (accountId, groupId, eventId)
         ## remote groupId and eventId both can be integer or string or unicode (depending on remote account type)
     def getShownDescription(self):
@@ -1325,11 +1338,12 @@ class Event(JsonEventObjBase, RuleContainer):
     def afterModify(self):
         if self.id is None:
             self.setId()
-        self.modified = now()
+        self.modified = now()## FIXME
         #self.parent.eventsModified = self.modified
         ###
         if self.parent and self.id in self.parent.idList:
             rulesHash = self.getRulesHash()
+            ## what is self.notifyBefore is changed? BUG FIXME
             if rulesHash != self.rulesHash:
                 self.parent.updateOccurrenceEvent(self)
                 self.rulesHash = rulesHash
@@ -1363,15 +1377,15 @@ class Event(JsonEventObjBase, RuleContainer):
     #        if not name in notifierNames:
     #            self.notifiers.append(classes.notifier.byName[name](self))
     #def load(self):
-    #    JsonEventObjBase.load(self)
+    #    BsonHistEventObjBase.load(self)
     #    self.addRequirements()
     def loadFiles(self):
         self.files = []
-        if isdir(self.filesDir):
-            for fname in listdir(self.filesDir):
-                if isfile(join(self.filesDir, fname)) and not fname.endswith('~'):## FIXME
-                    self.files.append(fname)
-    getUrlForFile = lambda self, fname: 'file:' + os.sep*2 + self.filesDir + os.sep + fname
+        #if isdir(self.filesDir):
+        #    for fname in listdir(self.filesDir):
+        #        if isfile(join(self.filesDir, fname)) and not fname.endswith('~'):## FIXME
+        #            self.files.append(fname)
+    #getUrlForFile = lambda self, fname: 'file:' + os.sep*2 + self.filesDir + os.sep + fname
     def getFilesUrls(self):
         data = []
         baseUrl = self.getUrlForFile('')
@@ -1402,10 +1416,8 @@ class Event(JsonEventObjBase, RuleContainer):
         elif _id > lastIds.event:
             lastIds.event = _id
         self.id = _id
-        self.dir = join(eventsDir, str(self.id))
-        self.file = join(self.dir, 'event.json')
-        self.occurrenceFile = join(self.dir, 'occurrence')## file or directory? ## FIXME
-        self.filesDir = join(self.dir, 'files')
+        self.file = join(eventsDir, '%s.json'%self.id)
+        #self.filesDir = join(self.dir, 'files')
         self.loadFiles()
     def invalidate(self):
         ## make sure it can't be written to file again, it's about to be deleted
@@ -1414,10 +1426,10 @@ class Event(JsonEventObjBase, RuleContainer):
     def save(self):
         if self.id is None:
             self.setId()
-        makeDir(self.dir)
-        JsonEventObjBase.save(self)
+        #makeDir(self.dir)
+        BsonHistEventObjBase.save(self)
     def copyFrom(self, other, exact=False):## FIXME
-        JsonEventObjBase.copyFrom(self, other)
+        BsonHistEventObjBase.copyFrom(self, other)
         self.mode = other.mode
         self.notifyBefore = other.notifyBefore[:]
         #self.files = other.files[:]
@@ -1433,7 +1445,7 @@ class Event(JsonEventObjBase, RuleContainer):
             else:
                 self.setJd(jd)
     def getData(self):
-        data = JsonEventObjBase.getData(self)
+        data = BsonHistEventObjBase.getData(self)
         data.update({
             'type': self.name,
             'calType': calTypes.names[self.mode],
@@ -1444,7 +1456,7 @@ class Event(JsonEventObjBase, RuleContainer):
         fixIconInData(data)
         return data
     def setData(self, data):
-        JsonEventObjBase.setData(self, data)
+        BsonHistEventObjBase.setData(self, data)
         if self.remoteIds:
             self.remoteIds = tuple(self.remoteIds)
         if 'id' in data:
@@ -1906,7 +1918,7 @@ class YearlyEvent(Event):
         'day',
     )
     supportedRules = requiredRules + ('start',)
-    jsonParams = Event.jsonParams + ('startYear', 'month', 'day')
+    paramsOrder = Event.paramsOrder + ('startYear', 'month', 'day')
     isAllDay = True
     getMonth = lambda self: self['month'].values[0]
     setMonth = lambda self, month: self.getAddRule('month').setData(month)
@@ -2283,7 +2295,7 @@ class LargeScaleEvent(Event):## or MegaEvent? FIXME
         'endRel',
     )
     params = Event.params + _myParams
-    jsonParams = Event.jsonParams + _myParams
+    paramsOrder = Event.paramsOrder + _myParams
     __bool__ = lambda self: True
     isAllDay = True
     def __init__(self, _id=None, parent=None):
@@ -2375,13 +2387,18 @@ class EventContainer(JsonEventObjBase):
     def getEvent(self, eid):
         if not eid in self.idList:
             raise ValueError('%s does not contain %s'%(self, eid))
-        eventFile = join(eventsDir, str(eid), 'event.json')
+        eventFile = join(eventsDir, '%s.json'%eid)
         if not isfile(eventFile):
             self.idList.remove(eid)
             self.save()## FIXME
             raise IOError('error while loading event file %r: no such file (container: %r)'%(eventFile, self))
         data = jsonToData(open(eventFile).read())
         data['id'] = eid ## FIXME
+        try:
+            lastHash = data['history'][0][1]
+        except (KeyError, IndexError):
+            raise ValueError('invalid event file "%s", no "history"'%eventFile)
+        data.update(loadBsonObject(lastHash))
         event = classes.event.byName[data['type']](eid)
         event.setData(data)
         return event
@@ -2485,7 +2502,7 @@ class EventGroup(EventContainer):
         'deletedRemoteEvents',
         ## 'defaultEventType'
     )
-    jsonParams = (
+    paramsOrder = (
         'enable',
         'type',
         'title',
@@ -2901,7 +2918,7 @@ class EventGroup(EventContainer):
         data = self.getData()
         for attr in self.importExportExclude:
             del data[attr]
-        data = makeOrderedData(data, self.jsonParams)
+        data = makeOrderedData(data, self.paramsOrder)
         data['events'] = []
         for eventId in self.idList:
             eventData = EventContainer.getEvent(self, eventId).getDataOrdered()
@@ -3067,7 +3084,7 @@ class UniversityTerm(EventGroup):
     params = EventGroup.params + (
         'courses',
     )
-    jsonParams = EventGroup.jsonParams + (
+    paramsOrder = EventGroup.paramsOrder + (
         'classTimeBounds',
         'classesEndDate',
         'courses',
@@ -3479,7 +3496,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
         'showStat',
     )
     params = EventGroup.params + myParams
-    jsonParams = EventGroup.jsonParams + myParams
+    paramsOrder = EventGroup.paramsOrder + myParams
     def __init__(self, _id=None):
         VcsEpochBaseEventGroup.__init__(self, _id)
         self.showAuthor = True
@@ -3544,7 +3561,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
         'showStat',
     )
     params = EventGroup.params + myParams
-    jsonParams = EventGroup.jsonParams + myParams
+    paramsOrder = EventGroup.paramsOrder + myParams
     def __init__(self, _id=None):
         VcsEpochBaseEventGroup.__init__(self, _id)
         self.showStat = True
@@ -3631,7 +3648,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
     myParams = VcsBaseEventGroup.myParams + (
     )
     params = EventGroup.params + myParams
-    jsonParams = EventGroup.jsonParams + myParams
+    paramsOrder = EventGroup.paramsOrder + myParams
     def __init__(self, _id=None):
         VcsBaseEventGroup.__init__(self, _id)
         self.statByJd = {}
@@ -4012,7 +4029,7 @@ class DummyAccount:
     loaded = False
     enable = False
     params = ()
-    jsonParams = ()
+    paramsOrder = ()
     accountsDesc = {
         'google': _('Google'),
     }
@@ -4038,7 +4055,7 @@ class Account(JsonEventObjBase):
         'title',
         'remoteGroups',
     )
-    jsonParams = (
+    paramsOrder = (
         'enable',
         'type',
         'title',

@@ -205,7 +205,7 @@ def dumpRequest(request):
 class GoogleAccount(Account):
     name = 'google'
     desc = _('Google')
-    jsonParams = Account.jsonParams + ('email',)
+    paramsOrder = Account.paramsOrder + ('email',)
     params = Account.params + ('email',)
     def __init__(self, aid=None, email=''):
         from oauth2client.client import OAuth2WebServerFlow

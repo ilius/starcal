@@ -1,6 +1,12 @@
 import os
-from os.path import isfile
+from os.path import isfile, join
+from time import time as now
 
+from hashlib import sha1
+from bson import BSON
+
+from scal3.path import objectDir
+from scal3.os_utils import makeDir
 from scal3.json_utils import *
 from scal3.utils import myRaise
 
@@ -77,8 +83,8 @@ def makeOrderedData(data, params):
 
 class JsonSObjBase(SObjBase):
     file = ''
-    jsonParams = ()
-    getDataOrdered = lambda self: makeOrderedData(self.getData(), self.jsonParams)
+    paramsOrder = ()
+    getDataOrdered = lambda self: makeOrderedData(self.getData(), self.paramsOrder)
     getJson = lambda self: dataToJson(self.getDataOrdered())
     setJson = lambda self, jsonStr: self.setData(jsonToData(jsonStr))
     def save(self):
@@ -102,4 +108,82 @@ class JsonSObjBase(SObjBase):
                 pass
         else:
             print('no modified param for object %r'%self)
+
+
+def saveBsonObject(data):
+    bsonBytes = bytes(BSON.encode(data))
+    _hash = sha1(bsonBytes).hexdigest()
+    dpath = join(objectDir, _hash[:2])
+    fpath = join(dpath, _hash[2:])
+    if not isfile(fpath):
+        makeDir(dpath)
+        open(fpath, 'wb').write(bsonBytes)
+    return _hash
+
+def loadBsonObject(_hash):
+    fpath = join(objectDir, _hash[:2], _hash[2:])
+    bsonBytes = open(fpath, 'rb').read()
+    if _hash != sha1(bsonBytes).hexdigest():
+        raise IOError('sha1 diggest does not match for object file "%s"'%fpath)
+    return BSON.decode(bsonBytes)
+    
+
+class BsonHistObjBase(SObjBase):
+    file = ''
+    ## basicParams or noHistParams ? FIXME
+    basicParams = (
+    )
+    def loadBasicData(self):
+        return jsonToData(open(self.file).read())
+    def saveBasicData(self, basicData):
+        jsonStr = dataToJson(basicData)
+        open(self.file, 'w').write(jsonStr)
+    def save(self, *histArgs):
+        '''
+            returns last history record: (lastEpoch, lastHash, **args)
+        '''
+        if not self.file:
+            raise RuntimeError('save method called for object %r while file is not set'%self)
+        data = self.getData() ## includes non-history params? FIXME
+        _hash = saveBsonObject(data)
+        basicData = self.loadBasicData()
+        try:
+            history = basicData['history']
+        except KeyError:
+            print('no "history" in json file "%s"'%self.file)
+            history = []
+        try:
+            lastHash = history[0][1]
+        except IndexError:
+            lastHash = None
+        if _hash != lastHash:## or lastHistArgs != histArgs:## FIXME
+            tm = now()
+            history.insert(0, [tm, _hash] + list(histArgs))
+            self.modified = tm
+        basicData['history'] = history
+        self.saveBasicData(basicData)
+        return history[0]
+    def load(self):
+        '''
+            loads the json (and last bson) file, and sets the params to object
+            returns last history record: (lastEpoch, lastHash, **args)
+        '''
+        if not self.file:
+            raise RuntimeError('load method called for object %r while file is not set'%self)
+        if not isfile(self.file):
+            raise IOError('error while loading json file %r: no such file'%self.file)
+        data = jsonToData(open(self.file).read())
+        ####
+        history = data.pop('history')## we don't keep the history in memory
+        lastHistRecord = history[0]
+        lastEpoch = lastHistRecord[0]
+        lastHash = lastHistRecord[1]
+        ####
+        data.update(loadBsonObject(lastHash))
+        self.setData(data)
+        self.modified = int(lastEpoch)
+        return lastHistRecord
+
+
+
 

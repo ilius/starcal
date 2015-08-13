@@ -71,6 +71,7 @@ deskDir = join(homeDir, 'Desktop')## in all operating systems? FIXME
 userPlugConf = join(confDir, 'plugin.conf')
 modDir = '%s/cal_types'%srcDir
 plugDirUser = join(confDir, 'plugins')
+objectDir = join(confDir, 'objects')
 
 purpleDir = join(homeDir, '.purple')## FIXME
 

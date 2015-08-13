@@ -46,6 +46,7 @@ depends+=('python3-gi-cairo(>=3.8)')
 #depends+=('python3-gflags') ## FIXME
 depends+=('python3-httplib2')
 depends+=('python3-psutil')
+depends+=('python3-bson')
 
 recommends=()
 recommends+=('python3-dateutil')

@@ -21,6 +21,8 @@
 import sys
 import os
 from os.path import join, split, dirname, isfile, isdir
+from time import time as now
+import json
 
 from collections import OrderedDict
 
@@ -28,8 +30,9 @@ import shutil
 import re
 
 from scal3.path import confDir as newConfDir
-from scal3.json_utils import dataToPrettyJson
 from scal3.os_utils import makeDir
+from scal3.json_utils import dataToPrettyJson
+from scal3.s_object import saveBsonObject
 
 oldConfDir = newConfDir.replace('starcal3', 'starcal2')
 
@@ -101,6 +104,53 @@ def writeJsonConf(name, data):
         print('failed to write file %r: %s'%(jsonPath, e))
 
 
+def migrateEventsToBson():
+    eventsDir = join(newConfDir, 'event', 'events')
+    for dname in os.listdir(eventsDir):
+        try:
+            eid = int(dname)
+        except ValueError:
+            continue
+        dpath = join(eventsDir, dname)
+        if not isdir(dpath):
+            print('"%s" must be a directory'%dpath)
+            continue
+        jsonPath = join(dpath, 'event.json')
+        if not isfile(jsonPath):
+            print('"%s": not such file'%jsonPath)
+            continue
+        try:
+            data = json.loads(open(jsonPath).read())
+        except Exception as e:
+            print('error while loading json file "%s"'%jsonPath)
+            continue
+        try:
+            tm = data.pop('modified')
+        except KeyError:
+            tm = now()
+        ###
+        basicData = {}
+        basicData['modified'] = tm
+        ###
+        ## remove extra params from data and add to basicData
+        for param in (
+            'remoteIds',
+            'notifiers',## FIXME
+        ):
+            try:
+                basicData[param] = data.pop(param)
+            except KeyError:
+                pass
+        ###
+        _hash = saveBsonObject(data)
+        basicData['history'] = [
+            (tm, _hash)
+        ]
+        open(dpath + '.json', 'w').write(dataToPrettyJson(basicData))
+        shutil.rmtree(dpath)
+
+
+
 def importConfigFrom24():
     makeDir(newConfDir)
     ####
@@ -137,7 +187,10 @@ def importConfigFrom24():
     if isdir(oldEventDir) and not isdir(newEventDir):
         shutil.copytree(oldEventDir, newEventDir)
     #########
-    
+    migrateEventsToBson()
+
+
+
 
 def getOldVersion():## return version of starcal 2.*
     data = loadCoreConf()
@@ -151,6 +204,7 @@ def getOldVersion():## return version of starcal 2.*
 
 if __name__=='__main__':
     importConfigFrom24()
+    #migrateEventsToBson()# FIXME
 
 
 
