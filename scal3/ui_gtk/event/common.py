@@ -244,9 +244,11 @@ class NotificationBox(gtk.Expander):## or NotificationBox FIXME
         totalVbox = gtk.VBox()
         ###
         hbox = gtk.HBox()
-        pack(hbox, gtk.Label(_('Notify Before')))## or at the end?
+        pack(hbox, gtk.Label(_('Notify')+' '))
         self.notifyBeforeInput = DurationInputBox()
-        pack(hbox, self.notifyBeforeInput, 1, 1)
+        pack(hbox, self.notifyBeforeInput, 0, 0)
+        pack(hbox, gtk.Label(' '+_('before event')))
+        pack(hbox, gtk.Label(), 1, 1)
         pack(totalVbox, hbox)
         ###
         for cls in event_lib.classes.notifier:
