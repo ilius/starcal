@@ -144,7 +144,12 @@ class BsonHistObjBase(SObjBase):
         '''
         if not self.file:
             raise RuntimeError('save method called for object %r while file is not set'%self)
-        data = self.getData() ## includes non-history params? FIXME
+        data = self.getData()
+        for param in self.basicParams:
+            try:
+                del data[param]
+            except KeyError:
+                pass
         _hash = saveBsonObject(data)
         basicData = self.loadBasicData()
         try:
