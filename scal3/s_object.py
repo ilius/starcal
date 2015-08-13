@@ -172,7 +172,7 @@ class BsonHistObjBase(SObjBase):
             raise RuntimeError('load method called for object %r while file is not set'%self)
         if not isfile(self.file):
             raise IOError('error while loading json file %r: no such file'%self.file)
-        data = jsonToData(open(self.file).read())
+        data = self.loadBasicData()
         ####
         history = data.pop('history')## we don't keep the history in memory
         lastHistRecord = history[0]
