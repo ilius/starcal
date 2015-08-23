@@ -380,6 +380,7 @@ class EventRule(SObjBase):
     sgroup = -1
     expand = False
     params = ()
+    __bool__ = lambda self: True
     def __init__(self, parent):## parent can be an event or group
         self.parent = parent
     getMode = lambda self: self.parent.mode
