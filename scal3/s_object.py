@@ -1,6 +1,7 @@
 import os
 from os.path import isfile, join
 from time import time as now
+from collections import OrderedDict
 
 from hashlib import sha1
 from bson import BSON
@@ -80,6 +81,8 @@ def makeOrderedData(data, params):
             data = OrderedDict(data)
     return data
 
+def getSortedDict(data):
+    return OrderedDict(sorted(data.items()))
 
 class JsonSObjBase(SObjBase):
     file = ''
@@ -111,6 +114,7 @@ class JsonSObjBase(SObjBase):
 
 
 def saveBsonObject(data):
+    data = getSortedDict(data)
     bsonBytes = bytes(BSON.encode(data))
     _hash = sha1(bsonBytes).hexdigest()
     dpath = join(objectDir, _hash[:2])
