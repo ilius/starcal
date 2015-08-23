@@ -149,7 +149,7 @@ class BsonHistObjBase(SObjBase):
         if not self.file:
             raise RuntimeError('save method called for object %r while file is not set'%self)
         data = self.getData()
-        for param in self.basicParams:
+        for param in ('modified',) + self.basicParams:
             try:
                 del data[param]
             except KeyError:
