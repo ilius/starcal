@@ -40,19 +40,26 @@ class WidgetClass(gtk.HBox):
         self.countLabel = gtk.Label('')
         pack(self, self.countLabel)
         ###
+        self.trees = gtk.ListStore(str)
+        self.dialog = None
+        ###
         self.editButton = gtk.Button(_('Edit'))
         self.editButton.set_image(gtk.Image.new_from_stock(gtk.STOCK_EDIT, gtk.IconSize.BUTTON))
         self.editButton.connect('clicked', self.showDialog)
         pack(self, self.editButton)
-        ###
+    def updateCountLabel(self):
+        self.countLabel.set_label(' '*2 + _('%s items')%_(len(self.trees)) + ' '*2)
+    def createDialog(self):
+        if self.dialog:
+            return
+        print('----- toplevel', self.get_toplevel())
         self.dialog = gtk.Dialog(
-            title=rule.desc,
+            title=self.rule.desc,
             parent=self.get_toplevel(),
         )
-        ##
+        ###
         self.treev = gtk.TreeView()
         self.treev.set_headers_visible(True)
-        self.trees = gtk.ListStore(str)
         self.treev.set_model(self.trees)
         ##
         cell = gtk.CellRendererText()
@@ -99,9 +106,8 @@ class WidgetClass(gtk.HBox):
         if ui.autoLocale:
             okButton.set_label(_('_OK'))
             okButton.set_image(gtk.Image.new_from_stock(gtk.STOCK_OK, gtk.IconSize.BUTTON))
-    def updateCountLabel(self):
-        self.countLabel.set_label(' '*2 + _('%s items')%_(len(self.trees)) + ' '*2)
     def showDialog(self, w=None):
+        self.createDialog()
         self.dialog.run()
         self.updateCountLabel()
     def dateCellEdited(self, cell, path, newText):
