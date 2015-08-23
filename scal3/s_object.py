@@ -141,6 +141,14 @@ class BsonHistObjBase(SObjBase):
         if not isfile(self.file):
             return {}
         return jsonToData(open(self.file).read())
+    def loadHistory(self):
+        lastBasicData = self.loadBasicData()
+        try:
+            return lastBasicData['history']
+        except KeyError:
+            if lastBasicData:
+                print('no "history" in json file "%s"'%self.file)
+            return []
     def saveBasicData(self, basicData):
         jsonStr = dataToJson(basicData)
         open(self.file, 'w').write(jsonStr)
@@ -151,19 +159,20 @@ class BsonHistObjBase(SObjBase):
         if not self.file:
             raise RuntimeError('save method called for object %r while file is not set'%self)
         data = self.getData()
-        for param in ('modified',) + self.basicParams:
+        basicData = {}
+        for param in self.basicParams:
             try:
-                del data[param]
+                basicData[param] = data.pop(param)
             except KeyError:
                 pass
-        _hash = saveBsonObject(data)
-        basicData = self.loadBasicData()
         try:
-            history = basicData['history']
+            data.pop('modified')
         except KeyError:
-            if basicData:
-                print('no "history" in json file "%s"'%self.file)
-            history = []
+            pass
+        _hash = saveBsonObject(data)
+        ###
+        history = self.loadHistory()
+        ###
         try:
             lastHash = history[0][1]
         except IndexError:
