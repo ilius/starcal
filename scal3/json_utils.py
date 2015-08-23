@@ -6,16 +6,16 @@ except ImportError:
 
 from scal3.lib import OrderedDict
 
-dataToPrettyJson = lambda data, ensure_ascii=False: json.dumps(
+dataToPrettyJson = lambda data, ensure_ascii=False, sort_keys=False: json.dumps(
     data,
-    sort_keys=False,
+    sort_keys=sort_keys,
     indent=2,
     ensure_ascii=ensure_ascii,
 )
 
-dataToCompactJson = lambda data, ensure_ascii=False: json.dumps(
+dataToCompactJson = lambda data, ensure_ascii=False, sort_keys=False: json.dumps(
     data,
-    sort_keys=False,
+    sort_keys=sort_keys,
     separators=(',', ':'),
     ensure_ascii=ensure_ascii,
 )
