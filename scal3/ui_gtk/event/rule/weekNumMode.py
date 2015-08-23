@@ -6,17 +6,11 @@ from scal3 import event_lib
 
 from scal3.ui_gtk import *
 
-class WidgetClass(gtk.ComboBox):
+class WidgetClass(gtk.ComboBoxText):
     def __init__(self, rule):
         self.rule = rule
         ###
-        ls = gtk.ListStore(str)
-        gtk.ComboBox.__init__(self)
-        self.set_model(ls)
-        ###
-        cell = gtk.CellRendererText()
-        pack(self, cell, True)
-        self.add_attribute(cell, 'text', 0)
+        gtk.ComboBoxText.__init__(self)
         ###
         self.append_text(_('Every Week'))
         self.append_text(_('Odd Weeks'))
