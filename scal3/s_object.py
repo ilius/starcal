@@ -138,6 +138,8 @@ class BsonHistObjBase(SObjBase):
     basicParams = (
     )
     def loadBasicData(self):
+        if not isfile(self.file):
+            return {}
         return jsonToData(open(self.file).read())
     def saveBasicData(self, basicData):
         jsonStr = dataToJson(basicData)
