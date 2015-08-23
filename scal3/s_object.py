@@ -194,5 +194,15 @@ class BsonHistObjBase(SObjBase):
         return lastHistRecord
 
 
+def updateBasicDataFromBson(data, filePath, fileType):
+    '''
+        fileType: 'event' | 'group' | 'account'..., display only, does not matter much
+    '''
+    try:
+        lastHash = data['history'][0][1]
+    except (KeyError, IndexError):
+        raise ValueError('invalid %s file "%s", no "history"'%(fileType, filePath))
+    data.update(loadBsonObject(lastHash))
+
 
 

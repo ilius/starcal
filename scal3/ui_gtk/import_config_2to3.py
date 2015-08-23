@@ -24,7 +24,7 @@ from os.path import dirname
 from os.path import join, isfile, isdir
 
 from scal3.path import *
-from scal3.import_config_2to3 import importConfigFrom24, getOldVersion
+from scal3.import_config_2to3 import *
 from scal3.locale_man import langDir
 
 from scal3.ui_gtk import *
@@ -82,12 +82,28 @@ else:
 
 pack(langHbox, langCombo, 1, 1)
 pack(win.vbox, langHbox)
+
+pbarHbox = gtk.HBox()
+pbar = gtk.ProgressBar()
+pack(pbarHbox, pbar, 1, 1)
+pack(win.vbox, pbarHbox)
+
+
 win.vbox.show_all()
 
 if win.run()==gtk.ResponseType.OK:
     #print('RESPONSE OK')
     if importCheckb and importCheckb.get_active():
-        importConfigFrom24()
+        importCheckb.set_sensitive(False)
+        langHbox.set_sensitive(False)
+        win.get_action_area().set_sensitive(False)
+        for frac in importConfigIter():
+            pbar.set_fraction(frac)
+            percent = frac * 100
+            text = '%.1f%%'%percent ## FIXME
+            pbar.set_text(text)
+            while gtk.events_pending():
+                gtk.main_iteration_do(False)
     else:
         i = langCombo.get_active()
         langCode = langCodeList[i]

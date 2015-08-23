@@ -2355,10 +2355,13 @@ class CustomEvent(Event):
 ###########################################################################
 
 
-class EventContainer(JsonEventObjBase):
+class EventContainer(BsonHistEventObjBase):
     name = ''
     desc = ''
-    params = JsonEventObjBase.params + (
+    basicParams = (
+        'idList',## FIXME
+    )
+    params = BsonHistEventObjBase.params + (
         'icon',
         'title',
         'showFullEventDesc',
@@ -2394,11 +2397,7 @@ class EventContainer(JsonEventObjBase):
             raise IOError('error while loading event file %r: no such file (container: %r)'%(eventFile, self))
         data = jsonToData(open(eventFile).read())
         data['id'] = eid ## FIXME
-        try:
-            lastHash = data['history'][0][1]
-        except (KeyError, IndexError):
-            raise ValueError('invalid event file "%s", no "history"'%eventFile)
-        data.update(loadBsonObject(lastHash))
+        updateBasicDataFromBson(data, eventFile, 'event')
         event = classes.event.byName[data['type']](eid)
         event.setData(data)
         return event
@@ -2439,15 +2438,15 @@ class EventContainer(JsonEventObjBase):
         event.parent = None
         return index
     def copyFrom(self, other):
-        JsonEventObjBase.copyFrom(self, other)
+        BsonHistEventObjBase.copyFrom(self, other)
         self.mode = other.mode
     def getData(self):
-        data = JsonEventObjBase.getData(self)
+        data = BsonHistEventObjBase.getData(self)
         data['calType'] = calTypes.names[self.mode]
         fixIconInData(data)
         return data
     def setData(self, data):
-        JsonEventObjBase.setData(self, data)
+        BsonHistEventObjBase.setData(self, data)
         if 'calType' in data:
             calType = data['calType']
             try:
@@ -2484,6 +2483,13 @@ class EventGroup(EventContainer):
         ('icon', _('Icon'), False),
     )
     sortByDefault = 'summary'
+    basicParams = EventContainer.basicParams + (
+        'enable',## FIXME
+        #'remoteIds', user edits the value ## FIXME
+        'remoteSyncData',
+        #'eventIdByRemoteIds',
+        'deletedRemoteEvents',
+    )
     params = EventContainer.params + (
         'enable',
         'showInDCal',
@@ -3790,10 +3796,10 @@ class EventGroupsHolder(JsonObjectsHolder):
                     continue
                 data = jsonToData(open(objFile).read())
                 data['id'] = _id
+                updateBasicDataFromBson(data, objFile, 'group')
                 obj = self.appendNew(data)
                 if obj.enable:
                     obj.updateOccurrence()
-                obj.setModifiedFromFile()
                 ## here check that non of obj.idList are in eventIdList ## FIXME
                 #eventIdList += obj.idList
             if core.debugMode:
@@ -3895,13 +3901,17 @@ class EventGroupsHolder(JsonObjectsHolder):
             myEventIds += group.idList
         myEventIds = set(myEventIds)
         ##
-        for eid_dname in listdir(eventsDir):
+        for fname in listdir(eventsDir):
+            fname_nox, ext = splitext(fname)
+            if ext != '.json':
+                continue
             try:
-                eid = int(eid_dname)
+                eid = int(fname_nox)
             except ValueError:
                 continue
-            if not eid in myEventIds:
-                newGroup.idList.append(eid)
+            if eid in myEventIds:
+                continue
+            newGroup.idList.append(eid)
         if newGroup.idList:
             newGroup.save()
             self.append(newGroup)
@@ -3932,6 +3942,7 @@ class EventAccountsHolder(JsonObjectsHolder):
         if not isfile(objFile):
             log.error('error while loading account file %r: no such file'%objFile)## FIXME
         data = jsonToData(open(objFile).read())
+        updateBasicDataFromBson(data, objFile, 'account')
         #if data['id'] != _id:
         #    log.error('attribute "id" in json file does not match the file name: %s'%objFile)
         #del data['id']
@@ -4046,10 +4057,13 @@ class DummyAccount:
         pass
 
 ## Should not be registered, or instantiate directly
-class Account(JsonEventObjBase):
+class Account(BsonHistObjBase):
     loaded = True
     name = ''
     desc = ''
+    basicParams = (## FIXME
+        'enable',    
+    )
     params = (
         'enable',
         'title',
@@ -4074,7 +4088,7 @@ class Account(JsonEventObjBase):
     def save(self):
         if self.id is None:
             self.setId()
-        JsonEventObjBase.save(self)
+        BsonHistObjBase.save(self)
     def setId(self, _id=None):
         if _id is None or _id<0:
             _id = lastIds.account + 1 ## FIXME
@@ -4092,7 +4106,7 @@ class Account(JsonEventObjBase):
     def sync(self, group, remoteGroupId):
         raise NotImplementedError
     def getData(self):
-        data = JsonEventObjBase.getData(self)
+        data = BsonHistObjBase.getData(self)
         data['type'] = self.name
         return data
 

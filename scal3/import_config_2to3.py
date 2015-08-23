@@ -20,7 +20,7 @@
 
 import sys
 import os
-from os.path import join, split, dirname, isfile, isdir
+from os.path import join, split, splitext, dirname, isfile, isdir
 from time import time as now
 import json
 
@@ -35,6 +35,19 @@ from scal3.json_utils import dataToPrettyJson
 from scal3.s_object import saveBsonObject
 
 oldConfDir = newConfDir.replace('starcal3', 'starcal2')
+
+oldEventDir = join(oldConfDir, 'event')
+newEventDir = join(newConfDir, 'event')
+
+oldEventEventsDir = join(oldEventDir, 'events')
+newEventEventsDir = join(newEventDir, 'events')
+
+oldGroupsDir = join(oldEventDir, 'groups')
+newGroupsDir = join(newEventDir, 'groups')
+
+oldAccountsDir = join(oldEventDir, 'accounts')
+newAccountsDir = join(newEventDir, 'accounts')
+
 
 
 def loadConf(confPath):
@@ -97,21 +110,27 @@ def writeJsonConf(name, data):
         return
     fname = name + '.json'
     jsonPath = join(newConfDir, fname)
-    text = dataToPrettyJson(data)
+    text = dataToPrettyJson(data, sort_keys=True)
     try:
         open(jsonPath, 'w').write(text)
     except Exception as e:
         print('failed to write file %r: %s'%(jsonPath, e))
 
 
-def migrateEventsToBson():
-    eventsDir = join(newConfDir, 'event', 'events')
-    for dname in os.listdir(eventsDir):
+def importEventsIter():
+    makeDir(newEventEventsDir)
+    oldFiles = os.listdir(oldEventEventsDir)
+    yield len(oldFiles)
+    index = 0
+    for dname in oldFiles:
+        yield index ; index += 1
+        ####
         try:
-            eid = int(dname)
+            _id = int(dname)
         except ValueError:
             continue
-        dpath = join(eventsDir, dname)
+        dpath = join(oldEventEventsDir, dname)
+        newDpath = join(newEventEventsDir, dname)
         if not isdir(dpath):
             print('"%s" must be a directory'%dpath)
             continue
@@ -130,7 +149,7 @@ def migrateEventsToBson():
             tm = now()
         ###
         basicData = {}
-        basicData['modified'] = tm
+        #basicData['modified'] = tm
         ###
         ## remove extra params from data and add to basicData
         for param in (
@@ -143,22 +162,168 @@ def migrateEventsToBson():
                 pass
         ###
         _hash = saveBsonObject(data)
-        basicData['history'] = [
-            (tm, _hash)
-        ]
-        open(dpath + '.json', 'w').write(dataToPrettyJson(basicData))
-        shutil.rmtree(dpath)
+        basicData['history'] = [(tm, _hash)]
+        open(newDpath + '.json', 'w').write(dataToPrettyJson(basicData, sort_keys=True))
+
+
+def importGroupsIter():
+    makeDir(newGroupsDir)
+    ###
+    oldFiles = os.listdir(oldGroupsDir)
+    yield len(oldFiles)
+    index = 0
+    ###
+    for fname in oldFiles:
+        yield index ; index += 1
+        jsonPath = join(oldGroupsDir, fname)
+        newJsonPath = join(newGroupsDir, fname)
+        if not isfile(jsonPath):
+            print('"%s": not such file'%jsonPath)
+            continue
+        jsonPathNoX, ext = splitext(fname)
+        if ext != '.json':
+            continue
+        try:
+            _id = int(jsonPathNoX)
+        except ValueError:
+            continue
+        try:
+            data = json.loads(open(jsonPath).read())
+        except Exception as e:
+            print('error while loading json file "%s"'%jsonPath)
+            continue
+        if 'history' in data:
+            print('skipping "%s": history already exists'%jsonPath)
+            continue
+        try:
+            tm = data.pop('modified')
+        except KeyError:
+            tm = now()
+        ###
+        basicData = {}
+        #basicData['modified'] = tm
+        ###
+        ## remove extra params from data and add to basicData
+        for param in (
+            'remoteIds',
+        ):
+            basicData[param] = data.pop(param, None)
+        for param in (
+            'enable',
+            'idList',
+            'remoteSyncData',
+            'deletedRemoteEvents',
+        ):
+            try:
+                basicData[param] = data.pop(param)
+            except KeyError:
+                pass
+        ###
+        _hash = saveBsonObject(data)
+        basicData['history'] = [(tm, _hash)]
+        open(newJsonPath, 'w').write(dataToPrettyJson(basicData, sort_keys=True))
 
 
 
-def importConfigFrom24():
-    makeDir(newConfDir)
+def importAccountsIter():
+    makeDir(newAccountsDir)
+    ###
+    oldFiles = os.listdir(oldAccountsDir)
+    yield len(oldFiles)
+    index = 0
+    ###
+    for fname in oldFiles:
+        yield index ; index += 1
+        jsonPath = join(oldAccountsDir, fname)
+        newJsonPath = join(newAccountsDir, fname)
+        if not isfile(jsonPath):
+            print('"%s": not such file'%jsonPath)
+            continue
+        jsonPathNoX, ext = splitext(fname)
+        if ext != '.json':
+            continue
+        try:
+            _id = int(jsonPathNoX)
+        except ValueError:
+            continue
+        try:
+            data = json.loads(open(jsonPath).read())
+        except Exception as e:
+            print('error while loading json file "%s"'%jsonPath)
+            continue
+        if 'history' in data:
+            print('skipping "%s": history already exists'%jsonPath)
+            continue
+        try:
+            tm = data.pop('modified')
+        except KeyError:
+            tm = now()
+        ###
+        basicData = {}
+        #basicData['modified'] = tm
+        ###
+        ## remove extra params from data and add to basicData
+        for param in (
+            'enable',
+        ):
+            try:
+                basicData[param] = data.pop(param)
+            except KeyError:
+                pass
+        ###
+        _hash = saveBsonObject(data)
+        basicData['history'] = [(tm, _hash)]
+        open(newJsonPath, 'w').write(dataToPrettyJson(basicData, sort_keys=True))
+
+
+
+def importTrashIter():
+    yield 1
+    yield 0
+    jsonPath = join(oldEventDir, 'trash.json')
+    newJsonPath = join(newEventDir, 'trash.json')
+    try:
+        data = json.loads(open(jsonPath).read())
+    except Exception as e:
+        print(e)
+        return
+    if 'history' in data:
+        print('skipping "%s": history already exists'%jsonPath)
+        return
+    try:
+        tm = data.pop('modified')
+    except KeyError:
+        tm = now()
+    ###
+    basicData = {}
+    #basicData['modified'] = tm
+    ###
+    ## remove extra params from data and add to basicData
+    for param in (
+        'idList',
+    ):
+        try:
+            basicData[param] = data.pop(param)
+        except KeyError:
+            pass
+    ###
+    _hash = saveBsonObject(data)
+    basicData['history'] = [(tm, _hash)]
+    open(newJsonPath, 'w').write(dataToPrettyJson(basicData, sort_keys=True))
+
+
+
+def importBasicConfigIter():
+    yield 8 ## number of steps
+    index = 0
     ####
     coreData = loadCoreConf()
     coreData['version'] = '3.0.0' ## FIXME
     writeJsonConf('core', coreData)
+    yield index ; index += 1
     ####
     writeJsonConf('ui-customize', loadUiCustomizeConf())
+    yield index ; index += 1
     ## remove adjustTimeCmd from ui-gtk.conf
     for name in (
         'hijri',
@@ -168,26 +333,81 @@ def importConfigFrom24():
         'ui-gtk',
         'ui-live',
     ):
+        yield index ; index += 1
         confPath = join(oldConfDir, name + '.conf')
         writeJsonConf(name, loadConf(confPath))
-    ######
-    oldPlugConfDir = join(oldConfDir, 'plugins.conf')
-    ###
-    if isdir(oldPlugConfDir):
-        for plugName in os.listdir(oldPlugConfDir):
-            writeJsonConf(
-                plugName,## move it out of plugins.conf FIXME
-                loadConf(
-                    join(oldPlugConfDir, plugName)
-                ),
+
+
+def importEventBasicJsonIter():
+    yield 4 ## number of steps
+    index = 0
+    ####
+    for name in (
+        'account_list',
+        'group_list',
+        'info',
+        'last_ids',
+    ):
+        yield index ; index += 1
+        fname = name + '.json'
+        try:
+            shutil.copy(
+                join(oldEventDir, fname),
+                join(newEventDir, fname),
             )
+        except Exception as e:
+            print(e)
+
+
+def importPluginsIter():
+    oldPlugConfDir = join(oldConfDir, 'plugins.conf')
+    if isdir(oldPlugConfDir):
+        files = os.listdir(oldPlugConfDir)
+    else:
+        files = []
+    ########
+    yield len(files)
+    index = 0
+    ####
+    for plugName in files:
+        writeJsonConf(
+            plugName,## move it out of plugins.conf FIXME
+            loadConf(
+                join(oldPlugConfDir, plugName)
+            ),
+        )
+        yield index ; index += 1
+
+def importConfigIter():
+    makeDir(newConfDir)
+    makeDir(newEventDir)
     #########
-    oldEventDir = join(oldConfDir, 'event')
-    newEventDir = join(newConfDir, 'event')
-    if isdir(oldEventDir) and not isdir(newEventDir):
-        shutil.copytree(oldEventDir, newEventDir)
-    #########
-    migrateEventsToBson()
+    funcs = [
+        importBasicConfigIter,
+        importEventBasicJsonIter,
+        importPluginsIter,
+        importGroupsIter,
+        importGroupsIter,
+        importAccountsIter,
+        importTrashIter,
+        importEventsIter,
+    ]
+    ###
+    iters = [func() for func in funcs]
+    ###
+    counts = [itr.send(None) for itr in iters]
+    totalCount = sum(counts)
+    ###
+    totalRatio = 0.0
+    delta = 1.0 / totalCount
+    for iterIndex, itr in enumerate(iters):
+        iterCount = counts[iterIndex]
+        for stepIndex in itr:
+            yield totalRatio + stepIndex*delta
+        totalRatio += iterCount * delta
+        yield totalRatio
+    ###
+    yield 1.0
 
 
 
@@ -203,8 +423,7 @@ def getOldVersion():## return version of starcal 2.*
 ##################################
 
 if __name__=='__main__':
-    importConfigFrom24()
-    #migrateEventsToBson()# FIXME
+    list(importConfigIter())
 
 
 
