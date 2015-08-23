@@ -161,7 +161,8 @@ class BsonHistObjBase(SObjBase):
         try:
             history = basicData['history']
         except KeyError:
-            print('no "history" in json file "%s"'%self.file)
+            if basicData:
+                print('no "history" in json file "%s"'%self.file)
             history = []
         try:
             lastHash = history[0][1]
