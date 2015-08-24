@@ -2930,7 +2930,10 @@ class EventGroup(EventContainer):
         for eventId in self.idList:
             eventData = EventContainer.getEvent(self, eventId).getDataOrdered()
             data['events'].append(eventData)
-            del eventData['remoteIds'] ## FIXME
+            try:
+                del eventData['remoteIds'] ## FIXME
+            except KeyError:
+                pass
             if not eventData['notifiers']:
                 del eventData['notifiers']
                 del eventData['notifyBefore']
