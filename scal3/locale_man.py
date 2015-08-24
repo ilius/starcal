@@ -132,7 +132,13 @@ class LangData:
 
 langDict = StrOrderedDict()
 for fname in os.listdir(langDir):
-    text = open(join(langDir, fname)).read().strip()
+    fpath = join(langDir, fname)
+    try:
+        text = open(fpath).read()
+    except Exception as e:
+        print('failed to read file %s'%fpath)
+        raise e
+    text = text.strip()
     if fname=='default':
         langDefault = text
         continue
