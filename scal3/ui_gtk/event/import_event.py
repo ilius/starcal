@@ -94,9 +94,9 @@ class EventsImportWindow(WizardWindow):
         def redirectStdOutErr(self):
             from scal3.ui_gtk.buffer import GtkBufferFile
             t_table = gtk.TextTagTable()
-            tag_out = gtk.TextTag('output')
+            tag_out = gtk.TextTag(name='output')
             t_table.add(tag_out)
-            tag_err = gtk.TextTag('error')
+            tag_err = gtk.TextTag(name='error')
             t_table.add(tag_err)
             self.buffer = gtk.TextBuffer(t_table)
             self.textview.set_buffer(self.buffer)
