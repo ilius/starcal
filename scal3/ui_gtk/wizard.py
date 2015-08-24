@@ -1,4 +1,5 @@
 from scal3.ui_gtk import *
+from scal3.ui_gtk.utils import hideList
 
 class WizardWindow(gtk.Window):
     stepClasses = []

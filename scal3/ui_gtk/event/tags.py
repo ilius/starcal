@@ -24,7 +24,7 @@ from scal3 import event_lib
 from scal3 import ui
 
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import openWindow, dialog_add_button
+from scal3.ui_gtk.utils import openWindow, dialog_add_button, hideList
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 
 #class EventCategorySelect(gtk.HBox):
