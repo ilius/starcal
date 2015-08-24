@@ -130,13 +130,14 @@ def loadBsonObject(_hash):
     if _hash != sha1(bsonBytes).hexdigest():
         raise IOError('sha1 diggest does not match for object file "%s"'%fpath)
     return BSON.decode(bsonBytes)
-    
+
 
 class BsonHistObjBase(SObjBase):
     file = ''
     ## basicParams or noHistParams ? FIXME
     basicParams = (
     )
+    getDataOrdered = lambda self: makeOrderedData(self.getData(), self.paramsOrder)
     def loadBasicData(self):
         if not isfile(self.file):
             return {}
