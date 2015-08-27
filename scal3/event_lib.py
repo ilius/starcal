@@ -75,25 +75,25 @@ makeDir(accountsDir)
 
 ###################################################
 
-class JsonEventObjBase(JsonSObjBase):
+class JsonEventObj(JsonSObj):
     def save(self):
         if readOnly:
             print('events are read-only, ignored file %s'%self.file)
             return
-        JsonSObjBase.save(self)
+        JsonSObj.save(self)
 
 
-class BsonHistEventObjBase(BsonHistObjBase):
+class BsonHistEventObj(BsonHistObj):
     def save(self, *args):
         if readOnly:
             print('events are read-only, ignored file %s'%self.file)
             return
-        return BsonHistObjBase.save(self, *args)
+        return BsonHistObj.save(self, *args)
 
 
 
 
-class InfoWrapper(JsonEventObjBase):
+class InfoWrapper(JsonEventObj):
     file = join(confDir, 'event', 'info.json')
     params = (
         'version',
@@ -126,7 +126,7 @@ except IOError:
 
 ###################################################
 
-class LastIdsWrapper(JsonEventObjBase):
+class LastIdsWrapper(JsonEventObj):
     file = join(confDir, 'event', 'last_ids.json')
     params = (
         'event',
@@ -199,7 +199,7 @@ class BadEventFile(Exception):## FIXME
     pass
 
 
-class Occurrence(SObjBase):
+class Occurrence(SObj):
     def __init__(self):
         self.event = None
     def intersection(self):
@@ -371,7 +371,7 @@ class TimeListOccurrence(Occurrence):
 
 
 ## Should not be registered, or instantiate directly
-class EventRule(SObjBase):
+class EventRule(SObj):
     name = ''
     desc = ''
     provide = ()
@@ -1042,7 +1042,7 @@ class ExDatesEventRule(EventRule):
 ###########################################################################
 
 ## Should not be registered, or instantiate directly
-class EventNotifier(SObjBase):
+class EventNotifier(SObj):
     name = ''
     desc = ''
     params = ()
@@ -1258,7 +1258,7 @@ def fixIconInObj(self):
 ###########################################################################
 
 ## Should not be registered, or instantiate directly
-class Event(BsonHistEventObjBase, RuleContainer):
+class Event(BsonHistEventObj, RuleContainer):
     name = 'custom'## or 'event' or '' FIXME
     desc = _('Custom Event')
     iconName = ''
@@ -1287,6 +1287,9 @@ class Event(BsonHistEventObjBase, RuleContainer):
         'remoteIds',
         'modified',
     )
+    @staticmethod
+    def getFile(_id):
+        return join(eventsDir, '%s.json'%_id)
     @classmethod
     def getDefaultIcon(cls):
         return join(pixDir, 'event', cls.iconName+'.png') if cls.iconName else ''
@@ -1378,7 +1381,7 @@ class Event(BsonHistEventObjBase, RuleContainer):
     #        if not name in notifierNames:
     #            self.notifiers.append(classes.notifier.byName[name](self))
     #def load(self):
-    #    BsonHistEventObjBase.load(self)
+    #    BsonHistEventObj.load(self)
     #    self.addRequirements()
     def loadFiles(self):
         self.files = []
@@ -1417,7 +1420,7 @@ class Event(BsonHistEventObjBase, RuleContainer):
         elif _id > lastIds.event:
             lastIds.event = _id
         self.id = _id
-        self.file = join(eventsDir, '%s.json'%self.id)
+        self.file = self.__class__.getFile(self.id)
         #self.filesDir = join(self.dir, 'files')
         self.loadFiles()
     def invalidate(self):
@@ -1428,9 +1431,9 @@ class Event(BsonHistEventObjBase, RuleContainer):
         if self.id is None:
             self.setId()
         #makeDir(self.dir)
-        BsonHistEventObjBase.save(self)
+        BsonHistEventObj.save(self)
     def copyFrom(self, other, exact=False):## FIXME
-        BsonHistEventObjBase.copyFrom(self, other)
+        BsonHistEventObj.copyFrom(self, other)
         self.mode = other.mode
         self.notifyBefore = other.notifyBefore[:]
         #self.files = other.files[:]
@@ -1446,7 +1449,7 @@ class Event(BsonHistEventObjBase, RuleContainer):
             else:
                 self.setJd(jd)
     def getData(self):
-        data = BsonHistEventObjBase.getData(self)
+        data = BsonHistEventObj.getData(self)
         data.update({
             'type': self.name,
             'calType': calTypes.names[self.mode],
@@ -1457,7 +1460,7 @@ class Event(BsonHistEventObjBase, RuleContainer):
         fixIconInData(data)
         return data
     def setData(self, data):
-        BsonHistEventObjBase.setData(self, data)
+        BsonHistEventObj.setData(self, data)
         if self.remoteIds:
             self.remoteIds = tuple(self.remoteIds)
         if 'id' in data:
@@ -2306,10 +2309,10 @@ class LargeScaleEvent(Event):## or MegaEvent? FIXME
         self.endRel = True
         Event.__init__(self, _id, parent)
     def setData(self, data):
+        Event.setData(self, data)
         if 'duration' in data:
             data['end'] = data['duration']
             data['endRel'] = True
-        Event.setData(self, data)
     getRulesHash = lambda self: hash(str((
         self.getTimeZoneStr(),
         'largeScale',
@@ -2356,13 +2359,13 @@ class CustomEvent(Event):
 ###########################################################################
 
 
-class EventContainer(BsonHistEventObjBase):
+class EventContainer(BsonHistEventObj):
     name = ''
     desc = ''
     basicParams = (
         'idList',## FIXME
     )
-    params = BsonHistEventObjBase.params + (
+    params = BsonHistEventObj.params + (
         'icon',
         'title',
         'showFullEventDesc',
@@ -2439,15 +2442,15 @@ class EventContainer(BsonHistEventObjBase):
         event.parent = None
         return index
     def copyFrom(self, other):
-        BsonHistEventObjBase.copyFrom(self, other)
+        BsonHistEventObj.copyFrom(self, other)
         self.mode = other.mode
     def getData(self):
-        data = BsonHistEventObjBase.getData(self)
+        data = BsonHistEventObj.getData(self)
         data['calType'] = calTypes.names[self.mode]
         fixIconInData(data)
         return data
     def setData(self, data):
-        BsonHistEventObjBase.setData(self, data)
+        BsonHistEventObj.setData(self, data)
         if 'calType' in data:
             calType = data['calType']
             try:
@@ -2532,6 +2535,9 @@ class EventGroup(EventContainer):
         'deletedRemoteEvents',
         'idList',
     )
+    @staticmethod
+    def getFile(_id):
+        return join(groupsDir, '%d.json'%_id)
     showInCal = lambda self: self.showInDCal or self.showInWCal or self.showInMCal
     def getSortBys(self):
         l = list(self.sortBys)
@@ -2670,7 +2676,11 @@ class EventGroup(EventContainer):
         elif _id > lastIds.group:
             lastIds.group = _id
         self.id = _id
-        self.file = join(groupsDir, '%d.json'%self.id)
+        self.file = self.__class__.getFile(self.id)
+    def setTitle(self, title):
+        self.title = title
+    def setColor(self, color):
+        self.color = color
     def getData(self):
         data = EventContainer.getData(self)
         data['type'] = self.name
@@ -2778,7 +2788,7 @@ class EventGroup(EventContainer):
             self.eventCache[event.id] = event
         event.afterModify()
     def copy(self):
-        newGroup = SObjBase.copy(self)
+        newGroup = SObj.copy(self)
         newGroup.removeAll()
         return newGroup
     def copyAs(self, newGroupType):
@@ -3723,7 +3733,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 ###########################################################################
 ###########################################################################
 
-class JsonObjectsHolder(JsonEventObjBase):
+class JsonObjectsHolder(JsonEventObj):
     ## keeps all objects in memory
     ## Only use to keep groups and accounts, but not events
     def __init__(self):
@@ -3766,9 +3776,18 @@ class JsonObjectsHolder(JsonEventObjBase):
     pop = lambda self, index: self.byId.pop(self.idList.pop(index))
     moveUp = lambda self, index: self.idList.insert(index-1, self.idList.pop(index))
     moveDown = lambda self, index: self.idList.insert(index+1, self.idList.pop(index))
+    def loadObj(self, _id):
+        pass
     def setData(self, data):
-        self.idList = data
-    getData = lambda self: self.idList
+        self.clear()
+        for signId in data:
+            assert isinstance(signId, int) and signId != 0
+            _id = abs(signId)
+            obj = self.loadObj(_id)
+            obj.enable = (signId > 0)
+            self.idList.append(_id)
+            self.byId[obj.id] = obj
+    getData = lambda self: [_id if self.byId[_id] else -_id for _id in self.idList]
 
 
 
@@ -3820,7 +3839,7 @@ class EventGroupsHolder(JsonObjectsHolder):
                 cls = classes.group.byName[name]
                 obj = cls()## FIXME
                 obj.setRandomColor()
-                obj.setData({'title': cls.desc})## FIXME
+                obj.setTitle(cls.desc)
                 obj.save()
                 self.append(obj)
             ###
@@ -3884,11 +3903,9 @@ class EventGroupsHolder(JsonObjectsHolder):
         fp.close()
     def checkForOrphans(self):
         newGroup = EventGroup()
-        newGroup.setData({
-            'title': _('Orphan Events'),
-            'enable': False,
-            'color': (255, 255, 0),
-        })
+        newGroup.setTitle(_('Orphan Events'))
+        newGroup.setColor((255, 255, 0))
+        newGroup.enable = False
         for gid_fname in listdir(groupsDir):
             try:
                 gid = int(splitext(gid_fname)[0])
@@ -4061,7 +4078,7 @@ class DummyAccount:
         pass
 
 ## Should not be registered, or instantiate directly
-class Account(BsonHistObjBase):
+class Account(BsonHistObj):
     loaded = True
     name = ''
     desc = ''
@@ -4079,6 +4096,9 @@ class Account(BsonHistObjBase):
         'title',
         'remoteGroups',
     )
+    @staticmethod
+    def getFile(_id):
+        return join(accountsDir, '%d.json'%_id)
     def __init__(self, _id=None):
         if _id is None:
             self.id = None
@@ -4092,7 +4112,7 @@ class Account(BsonHistObjBase):
     def save(self):
         if self.id is None:
             self.setId()
-        BsonHistObjBase.save(self)
+        BsonHistObj.save(self)
     def setId(self, _id=None):
         if _id is None or _id<0:
             _id = lastIds.account + 1 ## FIXME
@@ -4100,7 +4120,7 @@ class Account(BsonHistObjBase):
         elif _id > lastIds.account:
             lastIds.account = _id
         self.id = _id
-        self.file = join(accountsDir, '%d.json'%self.id)
+        self.file = self.__class__.getFile(self.id)
     def stop(self):
         self.status = None
     def fetchGroups(self):
@@ -4110,7 +4130,7 @@ class Account(BsonHistObjBase):
     def sync(self, group, remoteGroupId):
         raise NotImplementedError
     def getData(self):
-        data = BsonHistObjBase.getData(self)
+        data = BsonHistObj.getData(self)
         data['type'] = self.name
         return data
 

@@ -58,7 +58,7 @@ def myRaise(File=__file__):
     log.error('File "%s", line %s: %s: %s\n'%(File, i[2].tb_lineno, i[0].__name__, i[1]))
 
 
-class BasePlugin(SObjBase):
+class BasePlugin(SObj):
     name = None
     external = False
     loaded = True
@@ -105,7 +105,7 @@ class BasePlugin(SObjBase):
         self.hasImage = False
         self.lastDayMerge = True
     def getData(self):
-        data = JsonSObjBase.getData(self)
+        data = JsonSObj.getData(self)
         data['calType'] = calTypes.names[self.mode]
         return data
     def setData(self, data):
@@ -143,7 +143,7 @@ class BasePlugin(SObjBase):
             del data['calType']
         
         #####
-        JsonSObjBase.setData(self, data)
+        JsonSObj.setData(self, data)
     def clear(self):
         pass
     def load(self):
@@ -189,7 +189,7 @@ class BasePlugin(SObjBase):
         open(fileName, 'w').write(icsText)
 
 
-class BaseJsonPlugin(BasePlugin, JsonSObjBase):
+class BaseJsonPlugin(BasePlugin, JsonSObj):
     def save(self):## json file self.file is read-only
         pass
 

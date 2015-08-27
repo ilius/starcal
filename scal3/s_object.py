@@ -15,7 +15,7 @@ dataToJson = dataToPrettyJson
 #from scal3.core import dataToJson## FIXME
 
 
-class SObjBase:
+class SObj:
     params = ()## used in getData and setData and copyFrom
     __nonzero__ = lambda self: self.__bool__()
     def __bool__(self):
@@ -84,7 +84,7 @@ def makeOrderedData(data, params):
 def getSortedDict(data):
     return OrderedDict(sorted(data.items()))
 
-class JsonSObjBase(SObjBase):
+class JsonSObj(SObj):
     file = ''
     paramsOrder = ()
     getDataOrdered = lambda self: makeOrderedData(self.getData(), self.paramsOrder)
@@ -132,7 +132,7 @@ def loadBsonObject(_hash):
     return BSON.decode(bsonBytes)
 
 
-class BsonHistObjBase(SObjBase):
+class BsonHistObj(SObj):
     file = ''
     ## basicParams or noHistParams ? FIXME
     basicParams = (
