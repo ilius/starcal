@@ -17,6 +17,7 @@ dataToJson = dataToPrettyJson
 
 class SObj:
     params = ()## used in getData and setData and copyFrom
+    canSetDataMultipleTimes = True
     __nonzero__ = lambda self: self.__bool__()
     def __bool__(self):
         raise NotImplementedError
@@ -39,6 +40,14 @@ class SObj:
     getData = lambda self:\
         dict([(param, getattr(self, param)) for param in self.params])
     def setData(self, data):
+        if not self.__class__.canSetDataMultipleTimes:
+            if getattr(self, 'dataIsSet', False):
+                raise RuntimeError(
+                    'can not run setData multiple times for %s instance'%\
+                    self.__class__.__name__
+                )
+            self.dataIsSet = True
+        ###########
         #if isinstance(data, dict):## FIXME
         for key, value in data.items():
             if key in self.params:
@@ -85,6 +94,7 @@ def getSortedDict(data):
     return OrderedDict(sorted(data.items()))
 
 class JsonSObj(SObj):
+    canSetDataMultipleTimes = False
     file = ''
     paramsOrder = ()
     getDataOrdered = lambda self: makeOrderedData(self.getData(), self.paramsOrder)
@@ -133,6 +143,7 @@ def loadBsonObject(_hash):
 
 
 class BsonHistObj(SObj):
+    canSetDataMultipleTimes = False
     file = ''
     ## basicParams or noHistParams ? FIXME
     basicParams = (
