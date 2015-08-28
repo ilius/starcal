@@ -16,9 +16,14 @@ dataToJson = dataToPrettyJson
 
 
 class SObj:
+    @classmethod
+    def getSubclass(cls, _type):
+        return cls
+    ###
     params = ()## used in getData and setData and copyFrom
     canSetDataMultipleTimes = True
     __nonzero__ = lambda self: self.__bool__()
+    ###
     def __bool__(self):
         raise NotImplementedError
     def copyFrom(self, other):
@@ -95,7 +100,37 @@ def getSortedDict(data):
 
 class JsonSObj(SObj):
     canSetDataMultipleTimes = False
+    skipLoadExceptions = False
+    skipLoadNoFile = False
     file = ''
+    ###
+    @classmethod
+    def getFile(cls, _id=None):
+        return cls.file
+    ###
+    @classmethod
+    def load(cls, *args):
+        _file = cls.getFile(*args)
+        data = {}
+        if not isfile(_file):
+            if not cls.skipLoadNoFile:
+                raise IOError('%s : file not found'%_file)
+        try:
+            jsonStr = open(_file).read()
+            data = jsonToData(jsonStr)
+        except Exception as e:
+            if not cls.skipLoadExceptions:
+                raise e
+        try:
+            _type = data['type']
+        except (KeyError, TypeError):
+            subCls = cls
+        else:
+            subCls = cls.getSubclass(_type)
+        obj = subCls(*args)
+        obj.setData(data)
+        return obj
+    #####
     paramsOrder = ()
     getDataOrdered = lambda self: makeOrderedData(self.getData(), self.paramsOrder)
     getJson = lambda self: dataToJson(self.getDataOrdered())
@@ -106,12 +141,8 @@ class JsonSObj(SObj):
             open(self.file, 'w').write(jstr)
         else:
             print('save method called for object %r while file is not set'%self)
-    def load(self):
-        if not isfile(self.file):
-            raise IOError('error while loading json file %r: no such file'%self.file)
-        jstr = open(self.file).read()
-        if jstr:
-            self.setJson(jstr)## FIXME
+    def setData(self, data):
+        SObj.setData(self, data)
         self.setModifiedFromFile()
     def setModifiedFromFile(self):
         if hasattr(self, 'modified'):
@@ -119,8 +150,8 @@ class JsonSObj(SObj):
                 self.modified = int(os.stat(self.file).st_mtime)
             except OSError:
                 pass
-        else:
-            print('no modified param for object %r'%self)
+        #else:
+        #    print('no modified param for object %r'%self)
 
 
 def saveBsonObject(data):
@@ -144,10 +175,35 @@ def loadBsonObject(_hash):
 
 class BsonHistObj(SObj):
     canSetDataMultipleTimes = False
+    skipLoadExceptions = False
+    skipLoadNoFile = False
     file = ''
     ## basicParams or noHistParams ? FIXME
     basicParams = (
     )
+    @classmethod
+    def load(cls, *args):
+        _file = cls.getFile(*args)
+        data = {}
+        if not isfile(_file):
+            if not cls.skipLoadNoFile:
+                raise IOError('%s : file not found'%_file)
+        try:
+            jsonStr = open(_file).read()
+            data = jsonToData(jsonStr)
+        except Exception as e:
+            if not cls.skipLoadExceptions:
+                raise e
+        try:
+            _type = data['type']
+        except (KeyError, TypeError):
+            subCls = cls
+        else:
+            subCls = cls.getSubclass(_type)
+        obj = subCls(*args)
+        obj.setData(data)
+        return obj
+    #######
     getDataOrdered = lambda self: makeOrderedData(self.getData(), self.paramsOrder)
     def loadBasicData(self):
         if not isfile(self.file):
@@ -196,27 +252,16 @@ class BsonHistObj(SObj):
         basicData['history'] = history
         self.saveBasicData(basicData)
         return history[0]
-    def load(self):
-        '''
-            loads the json (and last bson) file, and sets the params to object
-            returns last history record: (lastEpoch, lastHash, **args)
-        '''
-        if not self.file:
-            raise RuntimeError('load method called for object %r while file is not set'%self)
-        if not isfile(self.file):
-            raise IOError('error while loading json file %r: no such file'%self.file)
-        data = self.loadBasicData()
-        ####
+    def setData(self, data):
         history = data.pop('history')## we don't keep the history in memory
         lastHistRecord = history[0]
         lastEpoch = lastHistRecord[0]
         lastHash = lastHistRecord[1]
         ####
         data.update(loadBsonObject(lastHash))
-        self.setData(data)
+        SObj.setData(self, data)
         self.modified = int(lastEpoch)
         return lastHistRecord
-
 
 def updateBasicDataFromBson(data, filePath, fileType):
     '''

@@ -199,7 +199,7 @@ class TimeLineTree:
 #if __name__=='__main__':
 #    from scal3 import ui
 #    from time import time as now
-#    ui.eventGroups.load()
+#    ui.eventGroups = event_lib.EventGroupsHolder.load()
 #    for group in ui.eventGroups:
 #        t0 = now()
 #        group.updateOccurrenceNode()

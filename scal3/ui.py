@@ -524,12 +524,11 @@ def duplicateGroupTitle(group):
 
 
 def init():
-    global todayCell, cell
+    global todayCell, cell, eventAccounts, eventGroups
     core.init()
     #### Load accounts, groups and trash? FIXME
-    eventAccounts.load()
-    eventGroups.load()
-    eventTrash.load()
+    eventAccounts = event_lib.EventAccountsHolder.load()
+    eventGroups = event_lib.EventGroupsHolder.load()
     ####
     todayCell = cell = cellCache.getTodayCell() ## FIXME
 
@@ -649,9 +648,9 @@ getEventTagsDict = lambda: dict([(tagObj.name, tagObj) for tagObj in eventTags])
 eventTagsDesc = dict([(t.name, t.desc) for t in eventTags])
 
 ###################
-eventAccounts = event_lib.EventAccountsHolder()
-eventGroups = event_lib.EventGroupsHolder()
 eventTrash = event_lib.EventTrash()
+eventAccounts = []
+eventGroups = []
 
 def iterAllEvents():## dosen't include orphan events
     for group in eventGroups:
