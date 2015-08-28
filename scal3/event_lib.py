@@ -2484,14 +2484,14 @@ class EventGroup(EventContainer):
     )
     sortByDefault = 'summary'
     basicParams = EventContainer.basicParams + (
-        'enable',## FIXME
+        #'enable',## FIXME
         #'remoteIds', user edits the value ## FIXME
         'remoteSyncData',
         #'eventIdByRemoteIds',
         'deletedRemoteEvents',
     )
     params = EventContainer.params + (
-        'enable',
+        #'enable',
         'showInDCal',
         'showInWCal',
         'showInMCal',
@@ -3780,11 +3780,11 @@ class JsonObjectsHolder(JsonEventObj):
         for sid in data:
             assert isinstance(sid, int) and sid != 0
             _id = sid
-            #_id = abs(sid)
+            _id = abs(sid)
             cls = getattr(classes, self.childName).main
             obj = cls.load(_id)
             obj.parent = self
-            #obj.enable = (sid > 0)
+            obj.enable = (sid > 0)
             self.idList.append(_id)
             self.byId[obj.id] = obj
     getData = lambda self: [_id if self.byId[_id] else -_id for _id in self.idList]

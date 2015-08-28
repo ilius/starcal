@@ -31,7 +31,7 @@ import re
 
 from scal3.path import confDir as newConfDir
 from scal3.os_utils import makeDir
-from scal3.json_utils import dataToPrettyJson
+from scal3.json_utils import dataToPrettyJson, dataToCompactJson
 from scal3.s_object import saveBsonObject
 
 oldConfDir = newConfDir.replace('starcal3', 'starcal2')
@@ -47,6 +47,8 @@ newGroupsDir = join(newEventDir, 'groups')
 
 oldAccountsDir = join(oldEventDir, 'accounts')
 newAccountsDir = join(newEventDir, 'accounts')
+
+
 
 
 
@@ -167,10 +169,12 @@ def importEventsIter():
 
 
 def importGroupsIter():
+    groupsEnableDict = {} ## {groupId -> enable}
+    ###
     makeDir(newGroupsDir)
     ###
     oldFiles = os.listdir(oldGroupsDir)
-    yield len(oldFiles)
+    yield len(oldFiles) + 1
     index = 0
     ###
     for fname in oldFiles:
@@ -192,6 +196,9 @@ def importGroupsIter():
         except Exception as e:
             print('error while loading json file "%s"'%jsonPath)
             continue
+        ####
+        groupsEnableDict[_id] = data.pop('enable', True)
+        ####
         if 'history' in data:
             print('skipping "%s": history already exists'%jsonPath)
             continue
@@ -222,7 +229,27 @@ def importGroupsIter():
         _hash = saveBsonObject(data)
         basicData['history'] = [(tm, _hash)]
         open(newJsonPath, 'w').write(dataToPrettyJson(basicData, sort_keys=True))
-
+    ####
+    yield index ; index += 1
+    oldGroupListFile = join(oldEventDir, 'group_list.json')
+    newGroupListFile = join(newEventDir, 'group_list.json')
+    try:
+        groupIds = json.loads(open(oldGroupListFile).read())
+    except Exception as e:
+        print('error while loading %s: %s'%(oldGroupListFile, e))
+    else:
+        if isinstance(groupIds, list):
+            signedGroupIds = [
+                (1 if groupsEnableDict.get(gid, True) else -1) * gid \
+                for gid in groupIds
+            ]
+            try:
+                open(newGroupListFile, 'w').write(dataToPrettyJson(signedGroupIds))
+            except Exception as e:
+                print('error while writing %s: %s'%(newGroupListFile, e))
+        else:
+            print('file "%s" contains invalid data, must contain a list'%oldGroupListFile)
+            
 
 
 def importAccountsIter():
@@ -344,7 +371,6 @@ def importEventBasicJsonIter():
     ####
     for name in (
         'account_list',
-        'group_list',
         'info',
         'last_ids',
     ):

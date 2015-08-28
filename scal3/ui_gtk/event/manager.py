@@ -908,7 +908,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                             1,
                             common.getGroupPixbuf(group),
                         )
-                        group.save()
+                        ui.eventGroups.save()
+                        #group.save()
                         if group.enable and \
                             self.trees.iter_n_children(groupIter) == 0 and \
                             len(group) > 0:
