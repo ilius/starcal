@@ -209,7 +209,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
             self.saveConfig()
         #######
         self.makeWidget()## FIXME
-        self.onCurrentDateChange(localtime()[:3])
+        #self.onCurrentDateChange(localtime()[:3])
         ###
         #self.doPlayPreAzan()
         #time.sleep(2)

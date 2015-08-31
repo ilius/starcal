@@ -19,6 +19,7 @@
 
 import sys
 from time import strftime
+from time import localtime
 from os.path import isfile, dirname, join, split, splitext, isabs
 
 
@@ -166,6 +167,8 @@ class BasePlugin(SObj):
             if c.pluginsText:
                 c.pluginsText += '\n'
             c.pluginsText += text
+    def onCurrentDateChange(self, gdate):
+        pass
     def exportToIcs(self, fileName, startJd, endJd):
         currentTimeStamp = strftime(icsTmFormat)
         self.load() ## FIXME
@@ -281,6 +284,7 @@ def loadExternalPlugin(_file, **data):
     #    return
     plugin.external = True
     plugin.setData(data)
+    plugin.onCurrentDateChange(localtime()[:3])
     return plugin
 
 
