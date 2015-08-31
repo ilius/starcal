@@ -2,14 +2,13 @@ import sys
 
 from scal3.locale_man import popenDefaultLang
 
-from gi.repository import Gio as gio
 
 from scal3.ui_gtk import *
 
 
 def getDefaultAppCommand(fpath):
-    import gio
-    mime_type = gio.content_type_guess(fpath)
+    from gi.repository import Gio as gio
+    mime_type = gio.content_type_guess(fpath)[0]
     try:
         app = gio.app_info_get_all_for_type(mime_type)[0]
     except IndexError:
@@ -30,6 +29,6 @@ def popenFile(fpath):
 
 
 if __name__=='__main__':
-    getAppListForFile(sys.argv[1])
+    print(getDefaultAppCommand(sys.argv[1]))
 
 
