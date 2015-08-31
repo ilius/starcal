@@ -150,7 +150,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
         #print('----------- praytime TextPlugin.__init__')
         #print('From plugin: core.VERSION=%s'%api.get('core', 'VERSION'))
         #print('From plugin: core.aaa=%s'%api.get('core', 'aaa'))
-        BasePlugin.__init__(
+        BaseJsonPlugin.__init__(
             self,
             _file,
         )
