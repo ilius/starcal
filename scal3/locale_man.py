@@ -26,8 +26,8 @@ from .path import *
 from scal3.utils import StrOrderedDict, myRaise
 from scal3.utils import toBytes, toStr
 from scal3.json_utils import *
+from scal3.s_object import JsonSObj
 from scal3.cal_types import calTypes
-
 
 ##########################################################
 
@@ -102,32 +102,54 @@ loadConf()
 ## translator
 tr = lambda s, *a, **ka: numEncode(s, *a, **ka) if isinstance(s, int) else str(s)
 
-class LangData:
-    def __init__(self, code, name, nativeName, fileName, flag, rtl):
-        self.code = code
-        self.name = name
-        self.nativeName = nativeName
-        ###
-        #self.fileName = fileName## FIXME
+class LangData(JsonSObj):
+    params = (
+        'code',
+        'name',
+        'nativeName',
+        'fileName',## shortName, ... FIXME
+        'flag',## flagFile
+        'rtl',
+    )
+    def __init__(self, _file):
+        self.file = _file ## json file path
+        ####
+        self.code = ''
+        self.name = ''
+        self.nativeName = ''
+        self.fileName = ''
+        self.flag = ''
+        self.rtl = False
+        self.transPath = ''
+    def setData(self, data):
+        JsonSObj.setData(self, data)
+        #####
+        for param in (
+            'code',
+            'name',
+            'nativeName',
+        ):
+            if not getattr(self, param):
+                raise ValueError('missing or empty parameter "%s" in language file "%s"'%(param, self.file))
+        #####
+        if not isabs(self.flag):
+            self.flag = join(pixDir, 'flags', self.flag)
+        #####
         transPath = ''
-        path = join(rootDir, 'locale.d', fileName+'.mo')
-        #print('path=%s'%path)
-        if isfile(path):
-            transPath = path
-        else:
-            #print('-------- File %r does not exists'%path)
-            for prefix in ('/usr', '/usr/local'):
-                path = join(prefix, 'share', 'locale', fileName, 'LC_MESSAGES', '%s.mo'%APP_NAME)
-                if isfile(path):
-                    transPath = path
-                    break
+        if self.fileName:
+            path = join(rootDir, 'locale.d', self.fileName+'.mo')
+            #print('path=%s'%path)
+            if isfile(path):
+                transPath = path
+            else:
+                #print('-------- File %r does not exists'%path)
+                for prefix in ('/usr', '/usr/local'):
+                    path = join(prefix, 'share', 'locale', self.fileName, 'LC_MESSAGES', '%s.mo'%APP_NAME)
+                    if isfile(path):
+                        transPath = path
+                        break
         #print(code, transPath)
         self.transPath = transPath
-        ###
-        if not isabs(flag):
-            flag = join(pixDir, 'flags', flag)
-        self.flag = flag
-        self.rtl = rtl
 
 
 
@@ -150,18 +172,10 @@ for fname in os.listdir(langDir):
     except Exception as e:
         print('failed to load json file %s'%fpath)
         raise e
-    try:
-        code = data['code']
-        langDict[code] = LangData(
-            code,
-            data['name'],
-            data['nativeName'],
-            data['fileName'],## po file name without .po extention, FIXME
-            data['flag'],## rename FIXME
-            data['rtl'],
-        )
-    except KeyError as e:
-        print('bad language json file "%s", no key %s'%(fpath, e))
+    langObj = LangData(fpath)
+    langObj.setData(data)
+    langDict[langObj.code] = langObj
+
 
 langDict.sort('name') ## OR 'code' or 'nativeName' ????????????
 
