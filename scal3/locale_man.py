@@ -19,6 +19,7 @@
 
 import os, string
 from os.path import join, isfile, isdir, isabs
+from os.path import splitext
 import locale, gettext
 
 from .path import *
@@ -131,28 +132,37 @@ class LangData:
 
 
 langDict = StrOrderedDict()
+
+try:
+    langDefault = open(join(langDir, 'default')).read().strip()
+except Exception as e:
+    print('failed to read default lang file: %s'%e)
+
+
 for fname in os.listdir(langDir):
+    fname_nox, ext = splitext(fname)
+    ext = ext.lower()
+    if ext != '.json':
+        continue
     fpath = join(langDir, fname)
     try:
-        text = open(fpath).read()
+        data = jsonToData(open(fpath).read())
     except Exception as e:
-        print('failed to read file %s'%fpath)
+        print('failed to load json file %s'%fpath)
         raise e
-    text = text.strip()
-    if fname=='default':
-        langDefault = text
-        continue
-    lines = text.split('\n')
-    if len(lines)!=5:
-        log.error('bad language file %s: not exactly 5 lines'%fname)
-    #assert len(lines)==5
-    if lines[4]=='rtl':
-        rtl_tmp = True
-    elif lines[4]=='ltr':
-        rtl_tmp = False
-    else:
-        raise RuntimeError('bad direction "%s" for language "%s"'%(rtl_tmp, fname))
-    langDict[fname] = LangData(fname, lines[0], lines[1], lines[2], lines[3], rtl_tmp)
+    try:
+        code = data['code']
+        langDict[code] = LangData(
+            code,
+            data['name'],
+            data['nativeName'],
+            data['fileName'],## po file name without .po extention, FIXME
+            data['flag'],## rename FIXME
+            data['rtl'],
+        )
+    except KeyError as e:
+        print('bad language json file "%s", no key %s'%(fpath, e))
+
 langDict.sort('name') ## OR 'code' or 'nativeName' ????????????
 
 
