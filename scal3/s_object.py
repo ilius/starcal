@@ -110,7 +110,6 @@ class JsonSObj(SObj):
     ###
     @classmethod
     def load(cls, *args):
-        print('JsonSObj.load', cls.__name__, 'skipLoadNoFile=%s'%cls.skipLoadNoFile)
         _file = cls.getFile(*args)
         data = {}
         if isfile(_file):
