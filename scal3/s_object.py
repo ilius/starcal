@@ -110,17 +110,20 @@ class JsonSObj(SObj):
     ###
     @classmethod
     def load(cls, *args):
+        print('JsonSObj.load', cls.__name__, 'skipLoadNoFile=%s'%cls.skipLoadNoFile)
         _file = cls.getFile(*args)
         data = {}
-        if not isfile(_file):
+        if isfile(_file):
+            try:
+                jsonStr = open(_file).read()
+                data = jsonToData(jsonStr)
+            except Exception as e:
+                if not cls.skipLoadExceptions:
+                    raise e
+        else:
             if not cls.skipLoadNoFile:
                 raise IOError('%s : file not found'%_file)
-        try:
-            jsonStr = open(_file).read()
-            data = jsonToData(jsonStr)
-        except Exception as e:
-            if not cls.skipLoadExceptions:
-                raise e
+                ## use FileNotFoundError in Python 3 FIXME
         try:
             _type = data['type']
         except (KeyError, TypeError):
