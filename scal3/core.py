@@ -26,7 +26,6 @@ import os.path
 from os.path import join, isfile, isdir
 #from pprint import pprint
 
-from natz.local import get_localzone
 
 from scal3.path import *
 from scal3.time_utils import *
@@ -38,6 +37,7 @@ from scal3.utils import *
 from scal3.cal_types import calTypes, DATE_GREG, getSysDate
 from scal3 import locale_man
 from scal3.locale_man import tr as _
+from scal3.locale_man import localTz
 from scal3.plugin_man import *
 
 
@@ -58,7 +58,6 @@ osName = getOsName()
 userDisplayName = getUserDisplayName()
 #print('--------- Hello %s'%userDisplayName)
 
-localTz = get_localzone()
 
 #print('__file__ = %r'%__file__)
 #print('__name__ = %r'%__name__)

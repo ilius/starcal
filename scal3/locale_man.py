@@ -22,12 +22,19 @@ from os.path import join, isfile, isdir, isabs
 from os.path import splitext
 import locale, gettext
 
+from natz.local import get_localzone
+
 from .path import *
 from scal3.utils import StrOrderedDict, myRaise
 from scal3.utils import toBytes, toStr
 from scal3.json_utils import *
 from scal3.s_object import JsonSObj
 from scal3.cal_types import calTypes
+
+##########################################################
+
+localTz = get_localzone()
+localTzStr = str(localTz)
 
 ##########################################################
 
