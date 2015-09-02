@@ -2393,7 +2393,9 @@ class EventContainer(BsonHistEventObj):
         if not isfile(eventFile):
             self.idList.remove(eid)
             self.save()## FIXME
-            raise IOError('error while loading event file %r: no such file (container: %r)'%(eventFile, self))
+            raise FileNotFoundError(
+                'error while loading event file %r: file not found (container: %r)'%(eventFile, self)
+            )
         data = jsonToData(open(eventFile).read())
         data['id'] = eid ## FIXME
         updateBasicDataFromBson(data, eventFile, 'event')
@@ -3933,7 +3935,8 @@ class EventAccountsHolder(JsonObjectsHolder):
     def loadData(self, _id):
         objFile = join(accountsDir, '%s.json'%_id)
         if not isfile(objFile):
-            log.error('error while loading account file %r: no such file'%objFile)## FIXME
+            log.error('error while loading account file %r: file not found'%objFile)## FIXME
+            ## FileNotFoundError
         data = jsonToData(open(objFile).read())
         updateBasicDataFromBson(data, objFile, 'account')
         #if data['id'] != _id:

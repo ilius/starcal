@@ -122,8 +122,7 @@ class JsonSObj(SObj):
                     raise e
         else:
             if not cls.skipLoadNoFile:
-                raise IOError('%s : file not found'%_file)
-                ## use FileNotFoundError in Python 3 FIXME
+                raise FileNotFoundError('%s : file not found'%_file)
         try:
             _type = data['type']
         except (KeyError, TypeError):
@@ -190,7 +189,7 @@ class BsonHistObj(SObj):
         data = {}
         if not isfile(_file):
             if not cls.skipLoadNoFile:
-                raise IOError('%s : file not found'%_file)
+                raise FileNotFoundError('%s : file not found'%_file)
         try:
             jsonStr = open(_file).read()
             data = jsonToData(jsonStr)
