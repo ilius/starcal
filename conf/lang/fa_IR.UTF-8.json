@@ -4,5 +4,8 @@
     "nativeName": "فارسی",
     "fileName": "fa",
     "flag": "flag-ir.png",
+    "timeZoneList": [
+        "Asia/Tehran"
+    ],
     "rtl": true
 }

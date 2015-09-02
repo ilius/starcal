@@ -117,6 +117,7 @@ class LangData(JsonSObj):
         'fileName',## shortName, ... FIXME
         'flag',## flagFile
         'rtl',
+        'timeZoneList',
     )
     def __init__(self, _file):
         self.file = _file ## json file path
@@ -128,6 +129,8 @@ class LangData(JsonSObj):
         self.flag = ''
         self.rtl = False
         self.transPath = ''
+        ##
+        self.timeZoneList = []
     def setData(self, data):
         JsonSObj.setData(self, data)
         #####
@@ -182,6 +185,9 @@ for fname in os.listdir(langDir):
     langObj = LangData(fpath)
     langObj.setData(data)
     langDict[langObj.code] = langObj
+    ###
+    if localTzStr in langObj.timeZoneList:
+        langDefault = langObj.code
 
 
 langDict.sort('name') ## OR 'code' or 'nativeName' ????????????
