@@ -25,7 +25,7 @@ from os.path import join, isfile, isdir
 
 from scal3.path import *
 from scal3.import_config_2to3 import *
-from scal3.locale_man import langDir
+from scal3.locale_man import langDict, langDefault
 
 from scal3.ui_gtk import *
 
@@ -36,7 +36,6 @@ gtk.Window.set_default_icon_from_file(join(pixDir, 'starcal.png'))
 langNameList = []
 langCodeList = []
 
-langDefaultCode = ''
 
 win = gtk.Dialog(
     title=APP_DESC+' 3.x - First Run',
@@ -61,22 +60,15 @@ if oldVersion:## and '2.2.0' <= oldVersion < '2.5.0':## FIXME
 
 
 langCombo = gtk.ComboBoxText()
-for fname in os.listdir(langDir):
-    fpath = join(langDir, fname)
-    if not os.path.isfile(fpath):
-        continue
-    text = open(fpath).read().strip()
-    if fname=='default':
-        langDefaultCode = text
-        continue
-    langName = text.split('\n')[0]
-    langNameList.append(langName)
-    langCodeList.append(fname)
 
-    langCombo.append_text(langName)
+for langObj in langDict.values():
+    langNameList.append(langObj.name)
+    langCodeList.append(langObj.code)
+    langCombo.append_text(langObj.name)
 
-if langDefaultCode and (langDefaultCode in langCodeList):
-    langCombo.set_active(langCodeList.index(langDefaultCode))
+
+if langDefault and (langDefault in langCodeList):
+    langCombo.set_active(langCodeList.index(langDefault))
 else:
     langCombo.set_active(0)
 
