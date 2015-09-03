@@ -149,7 +149,7 @@ def calcEventBoxes(
                 timeEnd - timeStart,
                 1-errorBoxH, ## u0
                 errorBoxH, ## du
-                text = 'Install "python-igraph" to see events',
+                text = 'Install "python3-igraph" to see events',
                 color = (128, 0, 0),## FIXME
                 lineW = 2*boxLineWidth,
             )
