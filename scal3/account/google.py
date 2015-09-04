@@ -301,7 +301,11 @@ class GoogleAccount(Account):
         credentials = self.authenticate()
         if not credentials:
             return False
-        return credentials.authorize(httplib2.Http())
+        http = credentials.authorize(httplib2.Http())
+        http.request = lambda uri, *args, **kwargs:\
+            httplib2.Http.request(http, toStr(uri), *args, **kwargs)
+        #http.request('google.com')
+        return http
     def getCalendarService(self):
         from apiclient.discovery import build
         try:
