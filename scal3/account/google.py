@@ -34,6 +34,7 @@ from httplib2 import *
 from scal3.path import *
 
 sys.path.append(join(rootDir, 'google-api-python-client'))## FIXME
+sys.path.append(join(rootDir, 'oauth2client'))## FIXME
 
 from scal3.utils import toBytes, toStr
 
