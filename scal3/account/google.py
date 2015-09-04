@@ -536,14 +536,15 @@ def printAllEvent(account, remoteGroupId):
 if __name__=='__main__':
     from scal3 import ui
     account = GoogleAccount.load(1)
-    remoteGroupId = 'gi646vjovfrh2u2u2l9hnatvq0@group.calendar.google.com'
-    groupId = 66
-    ui.eventGroups = event_lib.EventGroupsHolder.load()
-    group = ui.eventGroups[groupId]
+    print(account.fetchGroups())
+    #remoteGroupId = 'gi646vjovfrh2u2u2l9hnatvq0@group.calendar.google.com'
+    #groupId = 102
+    #ui.eventGroups = event_lib.EventGroupsHolder.load()
+    #group = ui.eventGroups[groupId]
     #print('group.remoteIds', group.remoteIds)
-    group.remoteIds = (account.id, remoteGroupId)
-    account.sync(group, remoteGroupId)
-    group.save()
+    #group.remoteIds = (account.id, remoteGroupId)
+    #account.sync(group, remoteGroupId)## 400 Bad Request
+    #group.save()
 
 
 
