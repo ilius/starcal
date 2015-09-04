@@ -303,7 +303,7 @@ class GoogleAccount(Account):
             return False
         return credentials.authorize(httplib2.Http())
     def getCalendarService(self):
-        from apiclient.discovery import build
+        from apiclient.discovery import build, HttpError
         try:
             return build(
                 serviceName='calendar',
@@ -315,7 +315,7 @@ class GoogleAccount(Account):
         except HttpError as e:
             self.showHttpException(e)
     def getTasksService(self):
-        from apiclient.discovery import build
+        from apiclient.discovery import build, HttpError
         try:
             return build(
                 serviceName='tasks',
@@ -363,6 +363,7 @@ class GoogleAccount(Account):
         ).execute()
         return eventsRes.get('items', [])
     def sync(self, group, remoteGroupId, resPerPage=1000):
+        from apiclient.discovery import HttpError
         ## if remoteGroupId=='tasks':## FIXME
         ##     service = self.getTasksService()
         service = self.getCalendarService()
