@@ -34,6 +34,7 @@ from httplib2 import *
 from scal2.path import *
 
 sys.path.append(join(rootDir, 'google-api-python-client'))## FIXME
+sys.path.append(join(rootDir, 'oauth2client'))## FIXME
 
 from scal2.utils import toStr, toUnicode
 
