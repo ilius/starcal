@@ -533,14 +533,16 @@ if __name__=='__main__':
     from scal2 import ui
     account = GoogleAccount(aid=1)
     account.load()
-    remoteGroupId = 'gi646vjovfrh2u2u2l9hnatvq0@group.calendar.google.com'
-    groupId = 66
-    ui.eventGroups.load()
-    group = ui.eventGroups[groupId]
+    print(account.fetchGroups())
+    print(account.remoteGroups)
+    #remoteGroupId = 'gi646vjovfrh2u2u2l9hnatvq0@group.calendar.google.com'
+    #groupId = 66
+    #ui.eventGroups.load()
+    #group = ui.eventGroups[groupId]
     #print('group.remoteIds', group.remoteIds)
-    group.remoteIds = (account.id, remoteGroupId)
-    account.sync(group, remoteGroupId)
-    group.save()
+    #group.remoteIds = (account.id, remoteGroupId)
+    #account.sync(group, remoteGroupId)
+    #group.save()
 
 
 
