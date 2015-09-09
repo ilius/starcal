@@ -184,9 +184,9 @@ class ClientRedirectHandler(http.server.BaseHTTPRequestHandler):
     query = s.path.split('?', 1)[-1]
     query = dict(parse_qsl(query))
     s.server.query_params = query
-    s.wfile.write("<html><head><title>Authentication Status</title></head>")
-    s.wfile.write("<body><p>The authentication flow has completed.</p>")
-    s.wfile.write("</body></html>")
+    s.wfile.write(b"<html><head><title>Authentication Status</title></head>")
+    s.wfile.write(b"<body><p>The authentication flow has completed.</p>")
+    s.wfile.write(b"</body></html>")
 
   def log_message(self, format, *args):
     """Do not log messages to stdout while running as command line program."""
@@ -264,6 +264,7 @@ class GoogleAccount(Account):
                         ClientRedirectHandler,
                     )
                 except socket.error as e:
+                    print('-------- counld no use port %s for local web server: %s'%(port, e))
                     pass
                 else:
                     success = True
