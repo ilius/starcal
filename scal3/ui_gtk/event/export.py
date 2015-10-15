@@ -9,10 +9,11 @@ from scal3 import ui
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import dialog_add_button
+from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.event.common import GroupsTreeCheckList
 
 
-class SingleGroupExportDialog(gtk.Dialog):
+class SingleGroupExportDialog(gtk.Dialog, MyDialog):
     def __init__(self, group, **kwargs):
         self._group = group
         gtk.Dialog.__init__(self, **kwargs)
@@ -81,11 +82,11 @@ class SingleGroupExportDialog(gtk.Dialog):
             ui.eventGroups.exportToIcs(fpath, [self._group.id])
     def run(self):
         if gtk.Dialog.run(self)==gtk.ResponseType.OK:
-            self.save()
+            self.waitingDo(self.save)
         self.destroy()
 
 
-class MultiGroupExportDialog(gtk.Dialog):
+class MultiGroupExportDialog(gtk.Dialog, MyDialog):
     def __init__(self, **kwargs):
         gtk.Dialog.__init__(self, **kwargs)
         self.set_title(_('Export'))
@@ -93,7 +94,6 @@ class MultiGroupExportDialog(gtk.Dialog):
         ####
         dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
         dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
-        self.connect('response', lambda w, e: self.hide())
         ####
         hbox = gtk.HBox()
         frame = gtk.Frame()
@@ -165,6 +165,6 @@ class MultiGroupExportDialog(gtk.Dialog):
             open(fpath, 'w').write(text)
     def run(self):
         if gtk.Dialog.run(self)==gtk.ResponseType.OK:
-            self.save()
+            self.waitingDo(self.save)
         self.destroy()
 
