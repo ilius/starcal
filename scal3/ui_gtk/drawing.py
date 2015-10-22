@@ -18,6 +18,7 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 from os.path import join
 from math import pi
+from math import sin, cos
 import re
 
 from scal3.path import *
@@ -261,6 +262,30 @@ def drawCursorOutline(cr, cx0, cy0, cw, ch):
     cursorRadius = ui.cursorRoundingFactor * min(cw, ch) * 0.5
     cursorDia = ui.cursorDiaFactor * min(cw, ch) * 0.5
     drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius, cursorDia)
+
+
+def drawCircle(cr, cx, cy, r):
+    drawRoundedRect(cr, cx-r, cy-r, r*2, r*2, r)
+
+def drawCircleOutline(cr, cx, cy, r, d):
+    drawOutlineRoundedRect(cr, cx-r, cy-r, r*2, r*2, r, d)
+
+def goAngle(x0, y0, angle, length):
+    return x0 + sin(angle)*length, y0 - cos(angle)*length
+
+def drawLineLengthAngle(cr, xs, ys, length, angle, d):
+    xe, ye = goAngle(xs, ys, angle, length)
+    ##
+    x1, y1 = goAngle(xs, ys, angle-pi/2.0, d/2.0)
+    x2, y2 = goAngle(xs, ys, angle+pi/2.0, d/2.0)
+    x3, y3 = goAngle(xe, ye, angle+pi/2.0, d/2.0)
+    x4, y4 = goAngle(xe, ye, angle-pi/2.0, d/2.0)
+    ##
+    cr.move_to(x1, y1)
+    cr.line_to(x2, y2)
+    cr.line_to(x3, y3)
+    cr.line_to(x4, y4)
+    cr.close_path()
 
 
 class Button:
