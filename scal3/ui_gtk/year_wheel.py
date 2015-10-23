@@ -25,6 +25,7 @@ from math import pi, sin, cos
 
 from scal3.cal_types import calTypes, to_jd, jd_to
 from scal3 import core
+from scal3 import locale_man
 from scal3.locale_man import tr as _
 from scal3.locale_man import getMonthName
 
@@ -262,6 +263,8 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 
 
 if __name__=='__main__':
+    #locale_man.langActive = ''
+    #_ = locale_man.loadTranslator()
     ui.init()
     win = YearWheelWindow()
     win.show()
