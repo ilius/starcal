@@ -17,10 +17,16 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+avgYearLen = 365.24219
+springRefJd = 2456372.4597222223
+
+
 def getSeasonValueFromJd(jd):
-    jd0 = 2456372.4597222223
-    yearLen = 365.24219
-    return ((jd-jd0) % yearLen) / yearLen * 4.0
+    return ((jd-springRefJd) % avgYearLen) / avgYearLen * 4.0
+
+def getSpringJdAfter(fromJd):
+    d, m = divmod(fromJd - 1 - springRefJd, avgYearLen)
+    return int(fromJd + (d + 1) * avgYearLen)
 
 def getSeasonNamePercentFromJd(jd):
     d, m = divmod(getSeasonValueFromJd(jd), 1)

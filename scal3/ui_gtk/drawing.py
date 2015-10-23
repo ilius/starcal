@@ -271,7 +271,7 @@ def drawCircleOutline(cr, cx, cy, r, d):
     drawOutlineRoundedRect(cr, cx-r, cy-r, r*2, r*2, r, d)
 
 def goAngle(x0, y0, angle, length):
-    return x0 + sin(angle)*length, y0 - cos(angle)*length
+    return x0 + cos(angle)*length, y0 + sin(angle)*length
 
 def drawLineLengthAngle(cr, xs, ys, length, angle, d):
     xe, ye = goAngle(xs, ys, angle, length)
@@ -286,6 +286,34 @@ def drawLineLengthAngle(cr, xs, ys, length, angle, d):
     cr.line_to(x3, y3)
     cr.line_to(x4, y4)
     cr.close_path()
+
+def drawArcOutline(cr, xc, yc, r, d, a0, a1):
+    '''
+        cr: cairo context
+        xc, yc: coordinates of center
+        r: outer radius
+        d: outline width (r - ri)
+        a0: start angle (radians)
+        a1: end angle (radians)
+    '''
+    x1, y1 = goAngle(xc, yc, a0, r-d)
+    x2, y2 = goAngle(xc, yc, a1, r-d)
+    x3, y3 = goAngle(xc, yc, a1, r)
+    x4, y4 = goAngle(xc, yc, a0, r)
+    ####
+    cr.move_to(x1, y1)
+    cr.arc(xc, yc, r-d, a0, a1)
+    #cr.move_to(x2, y2)
+    cr.line_to(x3, y3)
+    cr.arc_negative(xc, yc, r, a1, a0)
+    #cr.move_to(x4, y4)
+    #cr.line_to(x1, y1)
+
+    cr.close_path()    
+    
+
+
+
 
 
 class Button:

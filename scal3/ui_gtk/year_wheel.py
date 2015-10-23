@@ -28,6 +28,7 @@ from scal3 import core
 from scal3 import locale_man
 from scal3.locale_man import tr as _
 from scal3.locale_man import getMonthName
+from scal3.season import getSpringJdAfter
 
 from scal3 import ui
 
@@ -41,7 +42,9 @@ from scal3.ui_gtk import gtk_ud as ud
 class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
     _name = 'yearWheel'
     desc = _('Year Wheel')
+    ###
     scrollRotateDegree = 1
+    ###
     bgColor = (0, 0, 0, 255)
     wheelBgColor = (255, 255, 255, 30)
     lineColor = (255, 255, 255, 50)
@@ -49,11 +52,19 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
     lineWidth = 2.0
     textColor = (255, 255, 255, 255)
     innerCircleRatio = 0.6
-    todayIndicatorEnable = False
+    ###
+    todayIndicatorEnable = True
     todayIndicatorColor = (255, 0, 0, 255)
     todayIndicatorWidth = 0.5
+    ###
     centerR = 3
     centerColor = (255, 0, 0, 255)
+    ###
+    springColor = (0, 255, 0, 15)
+    summerColor = (255, 0, 0, 15)
+    autumnColor = (255, 255, 0, 15)
+    winterColor = (0, 0, 255, 15)
+    ###
     def __init__(self, closeFunc):
         gtk.DrawingArea.__init__(self)
         self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
@@ -97,7 +108,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
         mode0 = calTypes.active[0]
         jd0 = to_jd(ui.todayCell.year, 1, 1, mode0)
         yearLen = calTypes.primaryModule().avgYearLen
-        angle0 = self.angleOffset * pi / 180.0
+        angle0 = self.angleOffset * pi / 180.0 - pi/2.0
         avgDeltaAngle = 2*pi / 12
         ####
         if self.todayIndicatorEnable:
@@ -116,6 +127,25 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
         ####
         drawCircleOutline(cr, cx, cy, maxR, maxR-minR)
         fillColor(cr, self.wheelBgColor)
+        ####
+        spinngJd = getSpringJdAfter(jd0)
+        springAngle = angle0 + 2.0*pi*(spinngJd - jd0)/yearLen ## radians
+        for index, color in enumerate((
+            self.springColor,
+            self.summerColor,
+            self.autumnColor,
+            self.winterColor,
+        )):
+            drawArcOutline(
+                cr,
+                cx,
+                cy,
+                maxR,
+                maxR-minR,
+                springAngle + index * pi/2.0,
+                springAngle + (index+1) * pi/2.0,
+            )
+            fillColor(cr, color)
         ####
         for index, mode in enumerate(calTypes.active):
             dr = index * deltaR
@@ -189,9 +219,10 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
                     ly,
                 )
                 #cr.save()
-                cr.rotate(centerAngle)
+                rotateAngle = centerAngle + pi/2.0
+                cr.rotate(rotateAngle)
                 setColor(cr, self.textColor) ; show_layout(cr, layout)    
-                cr.rotate(-centerAngle)
+                cr.rotate(-rotateAngle)
                 #cr.restore()
             #####
             drawCircleOutline(cr, cx, cy, minR, self.lineWidth)
