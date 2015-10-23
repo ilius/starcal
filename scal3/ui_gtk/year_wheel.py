@@ -48,6 +48,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
     lineWidth = 2.0
     textColor = (255, 255, 255, 255)
     innerCircleRatio = 0.6
+    todayIndicatorEnable = False
     todayIndicatorColor = (255, 0, 0, 255)
     todayIndicatorWidth = 0.5
     centerR = 3
@@ -98,15 +99,16 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
         angle0 = self.angleOffset * pi / 180.0
         avgDeltaAngle = 2*pi / 12
         ####
-        drawLineLengthAngle(
-            cr,
-            cx,
-            cy,
-            maxR,## FIXME
-            angle0 + 2.0*pi*(ui.todayCell.jd - jd0)/yearLen,
-            self.todayIndicatorWidth,
-        )
-        fillColor(cr, self.todayIndicatorColor)
+        if self.todayIndicatorEnable:
+            drawLineLengthAngle(
+                cr,
+                cx,
+                cy,
+                maxR,## FIXME
+                angle0 + 2.0*pi*(ui.todayCell.jd - jd0)/yearLen,
+                self.todayIndicatorWidth,
+            )
+            fillColor(cr, self.todayIndicatorColor)
         ####
         drawCircle(cr, cx, cy, self.centerR)
         fillColor(cr, self.centerColor)
