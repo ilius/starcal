@@ -31,6 +31,9 @@ from scal3.json_utils import *
 from scal3.s_object import JsonSObj
 from scal3.cal_types import calTypes
 
+#import codecs
+#open = lambda filename, mode='r': codecs.open(filename, mode=mode, encoding='utf-8')
+
 ##########################################################
 
 localTz = get_localzone()
