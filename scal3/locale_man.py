@@ -258,6 +258,9 @@ def loadTranslator(ui_is_qt=False):
                 if isinstance(s, int) \
                 else transObj.gettext(toBytes(s)).decode('utf-8')
         '''
+    else:
+        def tr(s, *a, **ka):
+            return str(s)
     return tr
 
 rtlSgn = lambda: 1 if rtl else -1
