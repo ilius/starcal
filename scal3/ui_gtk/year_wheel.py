@@ -42,13 +42,16 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
     desc = _('Year Wheel')
     scrollRotateDegree = 1
     bgColor = (0, 0, 0, 255)
-    wheelBgColor = (30, 30, 30, 255)
+    wheelBgColor = (255, 255, 255, 30)
     lineColor = (255, 255, 255, 150)
     yearStartLineColor = (255, 255, 0, 255)
     lineWidth = 2.0
     textColor = (255, 255, 255, 255)
     innerCircleRatio = 0.6
     todayIndicatorColor = (255, 0, 0, 255)
+    todayIndicatorWidth = 0.5
+    centerR = 3
+    centerColor = (255, 0, 0, 255)
     def __init__(self, closeFunc):
         gtk.DrawingArea.__init__(self)
         self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
@@ -67,14 +70,15 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 
     def onDraw(self, widget=None, event=None):
         cr = self.get_window().cairo_create()
-        width = self.get_allocation().width
-        height = self.get_allocation().height
+        width = float(self.get_allocation().width)
+        height = float(self.get_allocation().height)
         dia = min(width, height)
-        maxR = dia / 2.0
+        maxR = float(dia) / 2.0
         minR = self.innerCircleRatio * maxR
         x0 = (width - dia) / 2.0
         y0 = (height - dia) / 2.0
-        ####
+        cx = x0 + maxR
+        cy = y0 + maxR
         ####
         #self.angleOffset
         #self.bgColor
@@ -86,25 +90,34 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
         cr.rectangle(0, 0, width, height)
         fillColor(cr, self.bgColor)
         ####
-        drawCircle(cr, x0, y0, maxR)
-        fillColor(cr, self.wheelBgColor)
-        ####
         calsN = len(calTypes.active)
         deltaR = (maxR - minR) / float(calsN)
         mode0 = calTypes.active[0]
         jd0 = to_jd(ui.todayCell.year, 1, 1, mode0)
         yearLen = calTypes.primaryModule().avgYearLen
         angle0 = self.angleOffset * pi / 180.0
-        cx = x0 + maxR
-        cy = y0 + maxR
         avgDeltaAngle = 2*pi / 12
+        ####
+        drawLineLengthAngle(
+            cr,
+            cx,
+            cy,
+            maxR,## FIXME
+            angle0 + 2.0*pi*(ui.todayCell.jd - jd0)/yearLen,
+            self.todayIndicatorWidth,
+        )
+        fillColor(cr, self.todayIndicatorColor)
+        ####
+        drawCircle(cr, cx, cy, self.centerR)
+        fillColor(cr, self.centerColor)
+        ####
         for index, mode in enumerate(calTypes.active):
             dr = index * deltaR
             r = maxR - dr
             cx0 = x0 + dr
             cy0 = y0 + dr
             ###
-            drawCircle(cr, cx, cy, r)
+            drawCircleOutline(cr, cx, cy, r, deltaR)
             fillColor(cr, self.wheelBgColor)
             ###
             drawCircleOutline(cr, cx, cy, r, self.lineWidth)
@@ -116,16 +129,22 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
             for ym in range(ym0, ym0 + 12):
                 year, month = divmod(ym, 12) ; month += 1
                 jd = to_jd(year, month, 1, mode)
-                angle = angle0 + 2*pi*(jd - jd0)/yearLen ## radians
-                angleD = angle * 180 / pi
+                angle = angle0 + 2.0*pi*(jd - jd0)/yearLen ## radians
+                #angleD = angle * 180 / pi
                 #print('mode=%s, year=%s, month=%s, angleD=%.1f'%(mode, year, month, angleD))
                 d = self.lineWidth
-                drawLineLengthAngle(
-                    cr,
+                sepX, sepY = goAngle(
                     cx,
                     cy,
-                    r - d*0.2,## FIXME
                     angle,
+                    r - d*0.2,## FIXME
+                )
+                drawLineLengthAngle(
+                    cr,
+                    sepX,
+                    sepY,
+                    deltaR - d*0.2,## FIXME
+                    angle + pi,
                     d,
                 )
                 fillColor(
@@ -133,7 +152,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
                     self.yearStartLineColor if month==1 else self.lineColor,
                 )
                 ###
-                layoutMaxW = (r - deltaR) * 2 * pi / 12.0
+                layoutMaxW = (r - deltaR) * 2.0 * pi / 12.0
                 layoutMaxH = deltaR
                 layout = newTextLayout(
                     self,
@@ -171,21 +190,9 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
                 setColor(cr, self.textColor) ; show_layout(cr, layout)    
                 cr.restore()
             #####
-            drawCircle(cr, cx, cy, minR)
-            fillColor(cr, self.wheelBgColor)
-            ###
             drawCircleOutline(cr, cx, cy, minR, self.lineWidth)
             fillColor(cr, self.lineColor)
             ###
-            drawLineLengthAngle(
-                cr,
-                cx,
-                cy,
-                minR,
-                angle0 + 2*pi*(ui.todayCell.jd - jd0)/yearLen,
-                self.lineWidth,
-            )
-            fillColor(cr, self.todayIndicatorColor)
 
 
 
