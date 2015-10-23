@@ -231,9 +231,12 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
         ###
         size = min(ud.screenW, ud.screenH) * 0.9
         self.resize(size, size)
-        self.move(0, 0)
+        self.move(
+            (ud.screenW-size)/2.0,
+            (ud.screenH-size)/2.0,
+        )
         self.set_title(self.desc)
-        #self.set_decorated(False)
+        self.set_decorated(False)
         self.connect('delete-event', self.closeClicked)
         self.connect('button-press-event', self.onButtonPress)
         ###
