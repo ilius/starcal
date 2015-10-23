@@ -43,7 +43,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
     scrollRotateDegree = 1
     bgColor = (0, 0, 0, 255)
     wheelBgColor = (255, 255, 255, 30)
-    lineColor = (255, 255, 255, 150)
+    lineColor = (255, 255, 255, 50)
     yearStartLineColor = (255, 255, 0, 255)
     lineWidth = 2.0
     textColor = (255, 255, 255, 255)
@@ -111,14 +111,14 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
         drawCircle(cr, cx, cy, self.centerR)
         fillColor(cr, self.centerColor)
         ####
+        drawCircleOutline(cr, cx, cy, maxR, maxR-minR)
+        fillColor(cr, self.wheelBgColor)
+        ####
         for index, mode in enumerate(calTypes.active):
             dr = index * deltaR
             r = maxR - dr
             cx0 = x0 + dr
             cy0 = y0 + dr
-            ###
-            drawCircleOutline(cr, cx, cy, r, deltaR)
-            fillColor(cr, self.wheelBgColor)
             ###
             drawCircleOutline(cr, cx, cy, r, self.lineWidth)
             fillColor(cr, self.lineColor)
@@ -185,10 +185,11 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
                     lx,
                     ly,
                 )
-                cr.save()
+                #cr.save()
                 cr.rotate(centerAngle)
                 setColor(cr, self.textColor) ; show_layout(cr, layout)    
-                cr.restore()
+                cr.rotate(-centerAngle)
+                #cr.restore()
             #####
             drawCircleOutline(cr, cx, cy, minR, self.lineWidth)
             fillColor(cr, self.lineColor)
