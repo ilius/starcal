@@ -91,7 +91,7 @@ maxMonthLen = 31
 avgYearLen = 365.2425 ## FIXME
 
 GREGORIAN_EPOCH = 1721426
-monthLen = (31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 29)
+monthLen = (31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 30)
 
 monthLenSum = [0]
 for i in range(12):
