@@ -14,7 +14,7 @@ Installation/uninstallation on Debian or other Debian-based distributions:
     $ sudo apt-get remove starcal2
 
 Installation/uninstallation on ArchLinux:
-    $ sudo bash ./install-archlinux
+    $ bash ./install-archlinux
     $ sudo pacman -R starcal2
     OR
     $ yaourt starcal-git
