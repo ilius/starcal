@@ -14,7 +14,7 @@ Installation/uninstallation on Debian or other Debian-based distributions:
     $ sudo apt-get remove starcal3
 
 Installation/uninstallation on ArchLinux:
-    $ sudo bash ./install-archlinux
+    $ bash ./install-archlinux
     $ sudo pacman -R starcal3
     OR
     $ yaourt starcal-git

@@ -53,7 +53,7 @@ makedepends=()
 conflicts=('starcal-git')
 source=()
 md5sums=()
-build() {
+package() {
     \"\$sourceDir/install\" \"\$pkgdir\" --for-pkg
 }" > PKGBUILD
 
