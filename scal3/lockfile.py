@@ -48,9 +48,14 @@ def checkAndSaveJsonLockFile(fpath):
     if not locked:
         my_pid = os.getpid()
         my_proc = psutil.Process(my_pid)
+        if isinstance(my_proc.cmdline, list):## psutil < 2.0
+            cmd = my_proc.cmdline
+        else:## psutil >= 2.0
+            cmd = my_proc.cmdline()
+        #print(psutil.version_info, my_proc.cmdline)
         my_text = dataToPrettyJson(OrderedDict([
             ('pid', my_pid),
-            ('cmd', my_proc.cmdline()),
+            ('cmd', cmd),
             ('time', now()),
         ]))
         try:
