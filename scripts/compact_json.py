@@ -1,4 +1,4 @@
-#!/usr/bin/python2
+#!/usr/bin/env python3
 import sys, json
 
 for fname in sys.argv[1:]:

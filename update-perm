@@ -8,9 +8,9 @@ cd "`dirname \"$0\"`"
 
 chmod 755 scripts/*
 
-chmod 755 'starcal2'
+chmod 755 'starcal'
 
-chmod 755 'scal2/ui_gtk/starcal2.py'
+chmod 755 'scal3/ui_gtk/starcal.py'
 
 chmod 755 'install'
 chmod 755 'install-archlinux'
@@ -25,11 +25,9 @@ chmod 755 'locale.d/compile'
 chmod 755 'locale.d/install'
 chmod 755 'locale.d/make-template'
 
-chmod 755 'scal2/get_version.py'
-chmod 755 'scal2/import_config_1to2.py'
+chmod 755 'scal3/get_version.py'
+chmod 755 'scal3/import_config_2to3.py'
 
-chmod 755 'scal2/ui_gtk/adjust_dtime.py'
-chmod 755 'scal2/ui_gtk/arch-enable-locale.py'
-chmod 755 'scal2/ui_gtk/import_config_1to2.py'
-chmod 755 'scal2/ui_gtk/starcal-gnome2-applet.py'
-
+chmod 755 'scal3/ui_gtk/adjust_dtime.py'
+chmod 755 'scal3/ui_gtk/arch-enable-locale.py'
+chmod 755 'scal3/ui_gtk/import_config_2to3.py'

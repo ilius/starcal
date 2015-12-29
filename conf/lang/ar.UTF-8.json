@@ -1,0 +1,18 @@
+{
+    "code": "ar.UTF-8",
+    "name": "Arabic",
+    "nativeName": "العربيه",
+    "fileName": "",
+    "flag": "ar.png",
+    "timeZoneList": [
+        "Asia/Riyadh",
+        "Asia/Dubai",
+        "Asia/Baghdad",
+        "Asia/Qatar",
+        "Asia/Kuwait",
+        "Asia/Muscat",
+        "Asia/Damascus",
+        "Asia/Beirut"
+    ],
+    "rtl": true
+}

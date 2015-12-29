@@ -1,5 +1,5 @@
 #!/bin/bash
-apt-get install python-appindicator
+apt-get install 'gir1.2-appindicator3*'
 "`dirname \"$0\"`/install-debian"
 
 

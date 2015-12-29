@@ -1,15 +1,15 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# post install script for starcal2
+# post install script
 import os, shutil
 
-pkgName = 'starcal2'
+pkgName = 'starcal3'
 
 
 
 
 """
-import gtk
+from gi.repository import Gtk as gtk
 d = gtk.Dialog()
 okB = d.add_button(gtk.STOCK_OK, 1)
 okB.connect('clicked', lambda obj: d.hide())

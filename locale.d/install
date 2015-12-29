@@ -9,6 +9,6 @@ fi
 for LANG in fa ; do
     msgfmt "$myDir/$LANG.po" -o "$myDir/$LANG.mo"
     mkdir -p "$targetPrefix/share/locale/$LANG/LC_MESSAGES"
-    sudo cp -f "$myDir/$LANG.mo" "$targetPrefix/share/locale/$LANG/LC_MESSAGES/starcal2.mo"
+    sudo cp -f "$myDir/$LANG.mo" "$targetPrefix/share/locale/$LANG/LC_MESSAGES/starcal3.mo"
 done
 

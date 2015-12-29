@@ -7,36 +7,36 @@ Download latest snapshot (without git):
 
 Installation/uninstallation on Ubuntu:
     $ sudo bash ./install-ubuntu
-    $ sudo apt-get remove starcal2
+    $ sudo apt-get remove starcal3
 
 Installation/uninstallation on Debian or other Debian-based distributions:
     $ sudo bash ./install-debian
-    $ sudo apt-get remove starcal2
+    $ sudo apt-get remove starcal3
 
 Installation/uninstallation on ArchLinux:
     $ bash ./install-archlinux
-    $ sudo pacman -R starcal2
+    $ sudo pacman -R starcal3
     OR
     $ yaourt starcal-git
     $ sudo pacman -R starcal-git
 
 Installation/uninstallation on openSUSE:
     $ sudo bash ./install-suse
-    $ sudo zypper remove starcal2
+    $ sudo zypper remove starcal3
 
 Installation/uninstallation on Fedora:
     $ sudo bash ./install-fedora
-    $ sudo yum remove starcal2
+    $ sudo yum remove starcal3
 
 Installation/uninstallation on other distributions:
     $ sudo bash ./install
-    $ sudo /usr/share/starcal2/uninstall
+    $ sudo /usr/share/starcal3/uninstall
 
 Running on Windows:
     1- Install Python 2.6 or 2.7
     2- Install PyGTK
     3- Copy starcal source folder somewhere you want to keep
-    4- Send a shortcut from file starcal2.pyw (inside source folder) to you desktop
+    4- Send a shortcut from file starcal.pyw (inside source folder) to you desktop
 
 
 Home Pages:

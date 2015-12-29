@@ -761,9 +761,9 @@ msgid "Today"
 msgstr ""
 "امروز"
 
-msgid "Use (Iranian) database for Hijri months length"
+msgid "Use Hijri month length data (Iranian official calendar)"
 msgstr ""
-"از دیتابیس طول ماه‌های قمری استفاده‌کن (تقویم رسمی ایران)"
+"استفاده از دادهٔ طول ماه‌های قمری (تقویم رسمی ایران)"
 
 msgid "Tune Hijri Monthes"
 msgstr ""
@@ -894,6 +894,10 @@ msgstr ""
 msgid "Yearly Events Group"
 msgstr ""
 "گروه رویدادهای سالیانه"
+
+msgid "Monthly Event"
+msgstr ""
+"رویداد ماهیانه"
 
 msgid "Weekly Event"
 msgstr ""
@@ -1362,9 +1366,9 @@ msgid "Move Down"
 msgstr ""
 "جابجایی به پایین"
 
-msgid "Press OK if you want to delete group \"%s\" and move all its events to trash"
+msgid "Press OK if you want to delete group \"%s\" and move its %s events to trash"
 msgstr ""
-"اگر می‌خواهید گروه «%s» حذف شده و تمام رویدادهایش به زباله‌دان منتقل شود، دکمهٔ تائید را فشار دهید"
+"اگر می‌خواهید گروه «%s» حذف شده و %s رویدادش به زباله‌دان منتقل شوند، دکمهٔ تائید را فشار دهید"
 
 
 msgid "Press OK if you want to move event \"%s\" to trash"
@@ -2377,6 +2381,9 @@ msgstr ""
 msgid "Month Calendar"
 msgstr ""
 "تقویم ماه"
+msgid "Day Calendar"
+msgstr ""
+"تقویم روز"
 
 msgid "Status Bar"
 msgstr ""
@@ -2780,10 +2787,14 @@ msgstr ""
 "منطقهٔ زمانی نامعتبر است"
 
 
+msgid "Events are Read-Only because they are locked by another StarCalendar 3.x process"
+msgstr ""
+"رویدادها قابل تغییر نیستند چون توسط یک پروسهٔ دیگر از StarCalendar 3 قفل شده‌اند"
 
 
-
-
+msgid "This event is outside of date range specified in it's group. You probably need to edit group \"%s\" and change \"Start\" or \"End\" values"
+msgstr ""
+"این رویداد خارج از بازهٔ زمانی است که در گروهش مشخص شده. احتمالاً نیاز دارید که گروه «%s» را ویرایش کرده و مقادیر «شروع» یا «پایان» را تغییر دهید"
 
 
 
@@ -3982,9 +3993,9 @@ msgid "Hamid Zarrabi-Zadeh <zarrabi@scs.carleton.ca>"
 msgstr ""
 "حمید ضرابی‌زاده <zarrabi@scs.carleton.ca>"
 
-msgid "Reza Moradi Ghiasabadi(http://www.ghiasabadi.com)"
+msgid "Reza Moradi Ghiasabadi (www.ghiasabadi.com)"
 msgstr ""
-"رضا مرادی قیاس آبادی(http://www.ghiasabadi.com)"
+"رضا مرادی قیاس آبادی (www.ghiasabadi.com)"
 
 msgid "translator-credits"
 msgstr "Saeed Rasooli <saeed.gnu@gmail.com>"

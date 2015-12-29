@@ -1,12 +1,12 @@
-#!/usr/bin/python2
+#!/usr/bin/env python3
 
 import sys, os, subprocess
 from os.path import join, isfile
 
 sys.path.append('/usr/share/starcal2')
 
-from scal2 import core
-from scal2.locale_man import tr as _
+from scal3 import core
+from scal3.locale_man import tr as _
 
 rawUrlBase = 'http://fa.wikipedia.org/w/index.php?title=%s_%s&action=raw'
 saveDir = 'wikipedia-fa-events'

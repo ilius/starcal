@@ -21,57 +21,42 @@ import os
 from os.path import dirname
 import math
 
-from scal2 import locale_man
-from scal2.locale_man import tr as _
+from scal3 import locale_man
+from scal3.locale_man import tr as _
 from pray_times_backend import timeNames, methodsList
 from pray_times_utils import *
 
-from scal2.ui_gtk import *
-from scal2.ui_gtk.app_info import popenFile
+from scal3.ui_gtk import *
+from scal3.ui_gtk.app_info import popenFile
+from scal3.ui_gtk.about import AboutDialog
+## do I have to duplicate AboutDialog class code?
 
-buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter())
+buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter(), True)
 buffer_select_all = lambda b: b.select_range(b.get_start_iter(), b.get_end_iter())
 
 
 dataDir = dirname(__file__)
 earthR = 6370
 
-class AboutDialog(gtk.AboutDialog):## I had to duplicate!!
-    def __init__(self, name='', version='', title='', authors=[], comments='', license='', website=''):
-        gtk.AboutDialog.__init__(self)
-        self.set_name(name)## or set_program_name FIXME
-        self.set_version(version)
-        self.set_title(title) ## must call after set_name and set_version !
-        self.set_authors(authors)
-        self.set_comments(comments)
-        if license:
-            self.set_license(license)
-            self.set_wrap_license(True)
-        if website:
-            self.set_website(website) ## A palin label (not link)
-        #if ui.autoLocale:
-        buttonbox = self.vbox.get_children()[1]
-        buttons = buttonbox.get_children()## List of buttons of about dialogs
-        buttons[1].set_label(_('C_redits'))
-        buttons[2].set_label(_('_Close'))
-        buttons[2].set_image(gtk.image_new_from_stock(gtk.STOCK_CLOSE,gtk.ICON_SIZE_BUTTON))
-        buttons[0].set_label(_('_License'))
+
 
 class LocationDialog(gtk.Dialog):
     EXIT_OK     = 0
     EXIT_CANCEL = 1
-    def __init__(self, cityData, maxResults=200):
-        gtk.Dialog.__init__(self)
+    def __init__(self, cityData, maxResults=200, width=600, height=600, **kwargs):
+        gtk.Dialog.__init__(self, **kwargs)
         self.set_title(_('Location'))
         self.maxResults = maxResults
+        self.resize(width, height)
+        ## width is used for CellRendererText as well
         ###############
         cancelB = self.add_button(gtk.STOCK_CANCEL, self.EXIT_CANCEL)
         okB = self.add_button(gtk.STOCK_OK, self.EXIT_OK)
         #if autoLocale:
         cancelB.set_label(_('_Cancel'))
-        cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL, gtk.ICON_SIZE_BUTTON))
+        cancelB.set_image(gtk.Image.new_from_stock(gtk.STOCK_CANCEL, gtk.IconSize.BUTTON))
         okB.set_label(_('_OK'))
-        okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK, gtk.ICON_SIZE_BUTTON))
+        okB.set_image(gtk.Image.new_from_stock(gtk.STOCK_OK, gtk.IconSize.BUTTON))
         self.okB = okB
         ###############
         hbox = gtk.HBox()
@@ -88,7 +73,7 @@ class LocationDialog(gtk.Dialog):
         treev.set_model(trees)
         swin = gtk.ScrolledWindow()
         swin.add(treev)
-        swin.set_policy(gtk.POLICY_AUTOMATIC, gtk.POLICY_AUTOMATIC)
+        swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
         pack(self.vbox, swin, 1, 1)
         self.treev = treev
         self.trees = trees
@@ -100,6 +85,7 @@ class LocationDialog(gtk.Dialog):
         #treev.append_column(col)
         ########
         cell = gtk.CellRendererText()
+        cell.set_fixed_size(width-30, -1)
         col = gtk.TreeViewColumn('City', cell, text=1)
         #col.set_resizable(True)## No need!
         treev.append_column(col)
@@ -112,7 +98,7 @@ class LocationDialog(gtk.Dialog):
         frame.set_label_widget(checkb)
         self.checkbEdit = checkb
         vbox = gtk.VBox()
-        group = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        group = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
         #####
         hbox = gtk.HBox()
         label = gtk.Label(_('Name:'))
@@ -133,7 +119,7 @@ class LocationDialog(gtk.Dialog):
         spin.set_increments(1, 10)
         spin.set_range(-180, 180)
         spin.set_digits(3)
-        spin.set_direction(gtk.TEXT_DIR_LTR)
+        spin.set_direction(gtk.TextDirection.LTR)
         pack(hbox, spin)
         pack(vbox, hbox)
         self.spin_lat = spin
@@ -147,7 +133,7 @@ class LocationDialog(gtk.Dialog):
         spin.set_increments(1, 10)
         spin.set_range(-180, 180)
         spin.set_digits(3)
-        spin.set_direction(gtk.TEXT_DIR_LTR)
+        spin.set_direction(gtk.TextDirection.LTR)
         pack(hbox, spin)
         pack(vbox, hbox)
         self.spin_lng = spin
@@ -230,6 +216,7 @@ class LocationDialog(gtk.Dialog):
                     r += 1
                     if r>=mr:
                         break
+        self.treev.scroll_to_cell((0, 0))
         self.okB.set_sensitive(self.checkbEdit.get_active())
     entry_changed = lambda self, entry: self.update_list(entry.get_text())
     def run(self):
@@ -242,37 +229,44 @@ class LocationDialog(gtk.Dialog):
 
 
 class LocationButton(gtk.Button):
-    def __init__(self, cityData, locName, lat, lng):
-        gtk.Button.__init__(self, locName)
+    def __init__(self, cityData, locName, lat, lng, window=None):
+        gtk.Button.__init__(self)
         self.setLocation(locName, lat, lng)
-        self.dialog = LocationDialog(cityData)
+        self.dialog = LocationDialog(cityData, parent=window)
         ####
         self.connect('clicked', self.onClicked)
     def setLocation(self, locName, lat, lng):
         self.locName = locName
         self.lat = lat
         self.lng = lng
+        self.set_label(self.locName)
     def onClicked(self, widget):
         res = self.dialog.run()
         if res:
-            self.locName, self.lat, self.lng = res
-            self.set_label(self.locName)
+            locName, lat, lng = res
+            self.setLocation(locName, lat, lng)
 
 
 
 
-class TextPlugUI:
+class TextPluginUI:
     def makeWidget(self):
         self.confDialog = gtk.Dialog()
         self.confDialog.set_title(_('Pray Times') + ' - ' + _('Configuration'))
-        group = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        group = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
         ###
         hbox = gtk.HBox()
         label = gtk.Label(_('Location'))
         group.add_widget(label)
         label.set_alignment(0, 0.5)
         pack(hbox, label)
-        self.locButton = LocationButton(self.cityData, self.locName, self.backend.lat, self.backend.lng)
+        self.locButton = LocationButton(
+            self.cityData,
+            self.locName,
+            self.backend.lat,
+            self.backend.lng,
+            window=self.confDialog,
+        )
         pack(hbox, self.locButton)
         pack(self.confDialog.vbox, hbox)
         ###
@@ -281,7 +275,7 @@ class TextPlugUI:
         group.add_widget(label)
         label.set_alignment(0, 0.5)
         pack(hbox, label)
-        self.methodCombo = gtk.combo_box_new_text()
+        self.methodCombo = gtk.ComboBoxText()
         for methodObj in methodsList:
             self.methodCombo.append_text(_(methodObj.desc))
         pack(hbox, self.methodCombo)
@@ -309,7 +303,8 @@ class TextPlugUI:
         self.shownTimesTreestore = trees
         for name in timeNames:
             trees.append([True, _(name.capitalize()), name])
-        frame = gtk.Frame(_('Shown Times'))
+        frame = gtk.Frame()
+        frame.set_label(_('Shown Times'))
         frame.add(treev)
         pack(self.confDialog.vbox, frame)
         ######
@@ -319,7 +314,7 @@ class TextPlugUI:
         spin.set_increments(1, 5)
         spin.set_range(0, 99)
         spin.set_digits(0)
-        spin.set_direction(gtk.TEXT_DIR_LTR)
+        spin.set_direction(gtk.TextDirection.LTR)
         self.imsakSpin = spin
         pack(hbox, spin)
         pack(hbox, gtk.Label(' '+_('minutes before fajr')))
@@ -328,9 +323,9 @@ class TextPlugUI:
         hbox = gtk.HBox()
         pack(hbox, gtk.Label(_('Seperator')))
         textview = gtk.TextView()
-        textview.set_wrap_mode(gtk.WRAP_CHAR)
+        textview.set_wrap_mode(gtk.WrapMode.CHAR)
         if locale_man.rtl:
-            textview.set_direction(gtk.TEXT_DIR_RTL)
+            textview.set_direction(gtk.TextDirection.RTL)
         self.sepView = textview
         self.sepBuff = textview.get_buffer()
         frame = gtk.Frame()
@@ -347,8 +342,8 @@ class TextPlugUI:
         vboxFrame = gtk.VBox()
         vboxFrame.set_border_width(10)
         #####
-        sgroup = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
-        #sgroupFcb = gtk.SizeGroup(gtk.SIZE_GROUP_HORIZONTAL)
+        sgroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
+        #sgroupFcb = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
         ####
         hbox1 = gtk.HBox()
         self.preAzanEnableCheck = gtk.CheckButton(_('Play Pre-Azan Sound'))
@@ -359,7 +354,6 @@ class TextPlugUI:
         pack(hbox1, self.preAzanEnableCheck)
         pack(hbox2, gtk.Label('  '))
         self.preAzanFileButton = gtk.FileChooserButton(_('Pre-Azan Sound'))
-        self.preAzanFileButton.set_local_only(True)
         #sgroupFcb.add_widget(self.preAzanFileButton)
         pack(hbox2, self.preAzanFileButton, 1, 1)
         pack(hbox2, gtk.Label('  '))
@@ -368,7 +362,7 @@ class TextPlugUI:
         spin.set_increments(1, 5)
         spin.set_range(0, 60)
         spin.set_digits(2)
-        spin.set_direction(gtk.TEXT_DIR_LTR)
+        spin.set_direction(gtk.TextDirection.LTR)
         self.preAzanMinutesSpin = spin
         pack(hbox2, spin)
         ##
@@ -386,7 +380,6 @@ class TextPlugUI:
         pack(hbox1, self.azanEnableCheck)
         pack(hbox2, gtk.Label('  '))
         self.azanFileButton = gtk.FileChooserButton(_('Azan Sound'))
-        self.azanFileButton.set_local_only(True)
         #sgroupFcb.add_widget(self.azanFileButton)
         pack(hbox2, self.azanFileButton, 1, 1)
         #pack(hbox2, gtk.Label(''), 1, 1)
@@ -404,9 +397,9 @@ class TextPlugUI:
         okB = self.confDialog.add_button(gtk.STOCK_OK, 3)
         #if autoLocale:
         cancelB.set_label(_('_Cancel'))
-        cancelB.set_image(gtk.image_new_from_stock(gtk.STOCK_CANCEL, gtk.ICON_SIZE_BUTTON))
+        cancelB.set_image(gtk.Image.new_from_stock(gtk.STOCK_CANCEL, gtk.IconSize.BUTTON))
         okB.set_label(_('_OK'))
-        okB.set_image(gtk.image_new_from_stock(gtk.STOCK_OK, gtk.ICON_SIZE_BUTTON))
+        okB.set_image(gtk.Image.new_from_stock(gtk.STOCK_OK, gtk.IconSize.BUTTON))
         cancelB.connect('clicked', self.confDialogCancel)
         okB.connect('clicked', self.confDialogOk)
         ###
@@ -477,12 +470,10 @@ class TextPlugUI:
         self.confDialog.run()
     def open_about(self):
         about = AboutDialog(
-            name=self.name,
-            title=_('About')+' '+self.name,
-            authors=[
-                _('Hamid Zarrabi-Zadeh <zarrabi@scs.carleton.ca>'),
-                _('Saeed Rasooli <saeed.gnu@gmail.com>')
-            ],
+            name=self.title,
+            title=_('About')+' '+self.title,
+            authors=self.authors,
+            comments=self.about,
         )
         about.connect('delete-event', lambda w, e: about.destroy())
         #about.connect('response', lambda w: about.hide())

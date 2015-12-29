@@ -19,30 +19,29 @@ elif [ "${myPath:0:1}" != "/" ] ; then
 fi
 
 
-pkgName=starcal2
+pkgName=starcal3
 sourceDir="`dirname \"$myPath\"`"
-"$sourceDir/scripts/assert_python2"
-version=`$sourceDir/scal2/get_version.py`
+#"$sourceDir/scripts/assert_python3"
+version=`$sourceDir/scal3/get_version.py`
 
 #echo "myPath=$myPath"
 #echo "sourceDir=$sourceDir"
 #echo version=$version
 
-requires=('python(>=2.6)' 'python(<<3.0)')
-requires+=('pygtk2(>=2.8)')
-requires+=('pygobject2') ## The old "gobject" module
-#requires+=('python-gflags')
-requires+=('python-httplib2')
+#%post
+#/usr/share/$pkgName/scripts/assert_python3
 
-if [ -f "/usr/lib/$HOSTTYPE-$OSTYPE/libappindicator.so.1" ] ; then
-    requires+=('python-appindicator')
-fi
+requires=('python3(>=3.2)')
+requires+=('python3-gobject') ## The new gobject introspection
+#requires+=('python3-gflags')
+requires+=('python3-httplib2')
+requires+=('python3-psutil')
+requires+=('python3-bson')
 
 #recommends=()
-requires+=('python-dateutil')
-requires+=('python-igraph')
-##requires+=('python-gnomeapplet')
-#requires+=('python-gnomevfs')
+requires+=('python3-dateutil')
+#requires+=('python3-igraph')
+#requires+=('python3-gnomevfs')
 
 
 requires_str=$(printf " %s" "${requires[@]}") ; requires_str=${requires_str:2}
@@ -70,19 +69,15 @@ english(Gregorian) calendar
 %install
 \"$sourceDir/install\" \"%{buildroot}\" --for-pkg --prefix=%{_prefix}
 
-%post
-/usr/share/starcal2/scripts/assert_python2
-
 %files
 %defattr(-,root,root,-)
-%{_prefix}/share/starcal2/*
-%{_prefix}/bin/starcal2*
-%{_prefix}/share/applications/starcal2*
-%{_prefix}/lib/bonobo/servers/GNOME_Starcal2Applet.server
-%{_prefix}/share/doc/starcal2/*
-%{_prefix}/share/pixmaps/starcal2.png
-%{_prefix}/share/icons/hicolor/*/apps/starcal2.png
-%{_prefix}/share/locale/*/LC_MESSAGES/starcal2.mo
+%{_prefix}/share/$pkgName/*
+%{_prefix}/bin/$pkgName*
+%{_prefix}/share/applications/$pkgName*
+%{_prefix}/share/doc/$pkgName/*
+%{_prefix}/share/pixmaps/$pkgName.png
+%{_prefix}/share/icons/hicolor/*/apps/$pkgName.png
+%{_prefix}/share/locale/*/LC_MESSAGES/$pkgName.mo
 " > $pkgName.spec
 
 pkgPath=`rpmbuild -bb $pkgName.spec | grep -o /usr/src/packages/RPMS/.*rpm`
