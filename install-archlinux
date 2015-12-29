@@ -1,0 +1,66 @@
+#!/bin/bash
+## makes PKGUILD and builds it (without root access), then installs it (prompts for password if necessary)
+
+initPwd=$PWD
+
+myPath="$0"
+if [ "${myPath:0:2}" == "./" ] ; then
+    myPath=$initPwd${myPath:1}
+elif [ "${myPath:0:1}" != "/" ] ; then
+    myPath=$initPwd/$myPath
+fi
+
+
+pkgName=starcal3
+sourceDir="`dirname \"$myPath\"`"
+#"$sourceDir/scripts/assert_python3"
+version=`$sourceDir/scal3/get_version.py`
+
+tmpDir=/tmp/$pkgName-install-arch
+mkdir -p $tmpDir
+cd $tmpDir
+
+depends=('python>=3.2')
+depends+=('python-gobject') ## The new gobject introspection
+#depends+=('python-gflags')
+depends+=('python-httplib2')
+depends+=('python-psutil')
+depends+=('python-dateutil')
+depends+=('python-bson')
+
+optdepends=()
+optdepends+=('python-dateutil')
+optdepends+=('python-igraph')
+#optdepends+=('python-gnomevfs')
+
+
+depends_str=$(printf " '%s'" "${depends[@]}") ; depends_str=${depends_str:1}
+optdepends_str=$(printf " '%s'" "${optdepends[@]}") ; optdepends_str=${optdepends_str:1}
+
+echo "# Contributor: Saeed Rasooli <saeed.gnu@gmail.com>
+# This is a local PKGBUILD
+sourceDir='$sourceDir'
+pkgname=$pkgName
+pkgver=$version
+pkgrel=1
+pkgdesc='A full-featured international calendar writen in Python'
+arch=('any')
+url=(http://ilius.github.io/starcal)
+license=('GPLv3')
+depends=($depends_str)
+optdepends=($optdepends_str)
+makedepends=()
+conflicts=('starcal-git')
+source=()
+md5sums=()
+package() {
+    \"\$sourceDir/install\" \"\$pkgdir\" --for-pkg
+}" > PKGBUILD
+
+makepkg -sif
+
+cp $pkgName*.pkg.tar.?z "$initPwd"
+echo "Package installed and copied into $initPwd directory"
+cd "$initPwd"
+rm -Rf $tmpDir
+

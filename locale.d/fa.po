@@ -1,0 +1,4001 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: 2.2.6\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-11-02 00:00+0330\n"
+"PO-Revision-Date: 2014-01-02 00:00+0330\n"
+"Last-Translator: Saeed Rasooli <saeed.gnu@gmail.com>\n"
+"Language-Team: Saeed Rasooli <saeed.gnu@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+msgid "_About"
+msgstr ""
+"_درباره"
+
+msgid "_Add"
+msgstr ""
+"_افزودن"
+
+msgid "_Add to"
+msgstr ""
+"_افزودن به"
+
+msgid "_Apply"
+msgstr ""
+"_اعمال"
+
+msgid "Cancel"
+msgstr ""
+"انصراف"
+
+
+msgid "_Cancel"
+msgstr ""
+"_انصراف"
+
+msgid "_Close"
+msgstr ""
+"_بستن"
+
+msgid "Close"
+msgstr ""
+"بستن"
+
+msgid "_Open"
+msgstr ""
+"_باز کردن"
+
+msgid "_Revert"
+msgstr ""
+"برگرداندن"
+
+msgid "_Reset to Defaults"
+msgstr ""
+"بازگشت به حالت پیش‌فرض"
+
+msgid "C_redits"
+msgstr ""
+"_دست‌اندرکاران"
+
+msgid "_Delete"
+msgstr ""
+"_حذف"
+
+msgid "_Edit"
+msgstr ""
+"_ویرایش"
+
+msgid "Edit"
+msgstr ""
+"ویرایش"
+
+msgid "Edit "
+msgstr ""
+"ویرایش "
+
+msgid "_View"
+msgstr ""
+"_نما"
+
+msgid "Clear"
+msgstr ""
+"پاک کردن"
+
+
+msgid "_License"
+msgstr ""
+"_مجوز"
+
+msgid "Written by"
+msgstr ""
+"نوشتهٔ"
+
+msgid "Documented by"
+msgstr ""
+"مستندسازی از"
+
+msgid "Translated by"
+msgstr ""
+"ترجمه از"
+
+
+msgid "_OK"
+msgstr ""
+"_تأیید"
+
+msgid "_Preferences"
+msgstr ""
+"تر_جیحات"
+
+msgid "_Quit"
+msgstr ""
+"_خروج"
+
+msgid "_Save"
+msgstr ""
+"ذ_خیره"
+msgid "_File"
+msgstr ""
+"_فایل"
+
+
+
+msgid "From"
+msgstr ""
+"از"
+
+msgid "To"
+msgstr ""
+"تا"
+
+msgid "Main Window"
+msgstr ""
+"پنجرهٔ اصلی"
+
+
+msgid "Preferences"
+msgstr ""
+"ترجیحات"
+
+msgid "Configuration"
+msgstr "تنظیمات"
+
+msgid "Settings"
+msgstr "تنظیمات"
+
+
+msgid "About StarCalendar"
+msgstr ""
+"دربارهٔ StarCalendar"
+
+msgid "About"
+msgstr ""
+"درباره"
+
+
+msgid "About "
+msgstr ""
+"دربارهٔ "
+
+
+msgid "Quit"
+msgstr ""
+"خروج"
+
+msgid "Credits"
+msgstr ""
+"دست‌اندرکاران"
+
+
+msgid "Calendar"
+msgstr ""
+"تقویم"
+
+msgid "Apply and Close"
+msgstr ""
+"اعمال و بستن"
+
+msgid "Delete"
+msgstr ""
+"حذف"
+
+msgid "Add"
+msgstr ""
+"افزودن"
+
+msgid "Add "
+msgstr ""
+"افزودن "
+
+
+msgid "Name"
+msgstr "نام"
+
+msgid "And"
+msgstr "و"
+
+msgid "and"
+msgstr "و"
+
+msgid "or"
+msgstr "یا"
+
+msgid "to"
+msgstr "تا"
+
+msgid ","
+msgstr "،"
+
+msgid "_"
+msgstr "ـ"
+
+msgid "."
+msgstr "٫"
+
+msgid "%"
+msgstr "٪"
+
+msgid "Gregorian"
+msgstr ""
+"گریگوری(میلادی)"
+
+msgid "Jalali(Iranian)"
+msgstr ""
+"جلالی(هجری شمسی)"
+
+msgid "Jalali"
+msgstr ""
+"جلالی"
+
+msgid "Hijri(Islamic)"
+msgstr ""
+"هجری قمری"
+
+msgid "Hijri"
+msgstr ""
+"هجری قمری"
+
+msgid "Julian"
+msgstr ""
+"جولی"
+
+msgid "Indian National"
+msgstr ""
+"ملی هند"
+
+msgid "Hebrew(Jewish)"
+msgstr ""
+"عبری(یهودی)"
+
+msgid "Ethiopian"
+msgstr ""
+"اتیوپیایی"
+
+
+msgid "Language"
+msgstr ""
+"زبان"
+
+
+msgid "Numbers Localization"
+msgstr ""
+"بومی‌سازی اعداد"
+
+msgid "AM"
+msgstr "ق‍.ظ"
+
+msgid "PM"
+msgstr "ب‍.ظ"
+
+msgid "Year"
+msgstr ""
+"سال"
+
+msgid "Month"
+msgstr ""
+"ماه"
+
+msgid "Day"
+msgstr ""
+"روز"
+
+
+msgid "Years"
+msgstr ""
+"سال"
+
+msgid "%s Years"
+msgstr "%s سال"
+
+msgid "Centuries"
+msgstr ""
+"قرن"
+
+msgid "Thousand Years"
+msgstr ""
+"هزار سال"
+
+msgid "Million Years"
+msgstr ""
+"میلیون سال"
+
+msgid "Billion (10^9) Years"
+msgstr ""
+"میلیارد سال"
+
+
+
+msgid "Sunday"
+msgstr ""
+"یک‌شنبه"
+
+msgid "Monday"
+msgstr ""
+"دوشنبه"
+
+msgid "Tuesday"
+msgstr ""
+"سه‌شنبه"
+
+msgid "Wednesday"
+msgstr ""
+"چهارشنبه"
+
+msgid "Thursday"
+msgstr ""
+"پنج‌شنبه"
+
+msgid "Friday"
+msgstr ""
+"جمعه"
+
+msgid "Saturday"
+msgstr ""
+"شنبه"
+
+
+msgid "Sun"
+msgstr ""
+"۱ ش"
+
+msgid "Mon"
+msgstr ""
+"۲ ش"
+
+msgid "Tue"
+msgstr ""
+"۳ ش"
+
+msgid "Wed"
+msgstr ""
+"۴ ش"
+
+msgid "Thu"
+msgstr ""
+"۵ ش"
+
+msgid "Fri"
+msgstr ""
+"ج"
+
+msgid "Sat"
+msgstr ""
+"ش"
+
+
+msgid "January"
+msgstr ""
+"ژانویه"
+
+msgid "February"
+msgstr ""
+"فوریه" # "فبریه"
+
+msgid "March"
+msgstr ""
+"مارس"
+
+msgid "April"
+msgstr ""
+"آوریل" # "آپریل"
+
+
+msgid "May"
+msgstr ""
+"می" # "مه"
+
+msgid "June"
+msgstr ""
+"ژوئن" # "جوئن"
+
+msgid "July"
+msgstr ""
+"جولای" # "ژوئیه"
+
+msgid "August"
+msgstr ""
+"آگوست" # "اوت"
+
+msgid "September"
+msgstr ""
+"سپتامبر"
+
+msgid "October"
+msgstr ""
+"اکتبر"
+
+msgid "November"
+msgstr ""
+"نوامبر"
+
+msgid "December"
+msgstr ""
+"دسامبر"
+
+
+msgid "Farvardin"
+msgstr ""
+"فروردین"
+
+msgid "Ordibehesht"
+msgstr ""
+"اردیبهشت"
+
+msgid "Khordad"
+msgstr ""
+"خرداد"
+
+msgid "Teer"
+msgstr ""
+"تیر"
+
+msgid "Mordad"
+msgstr ""
+"مرداد"
+
+msgid "Shahrivar"
+msgstr ""
+"شهریور"
+
+msgid "Mehr"
+msgstr ""
+"مهر"
+
+msgid "Aban"
+msgstr ""
+"آبان"
+
+msgid "Azar"
+msgstr ""
+"آذر"
+
+msgid "Dey"
+msgstr ""
+"دی"
+
+msgid "Bahman"
+msgstr ""
+"بهمن"
+
+msgid "Esfand"
+msgstr ""
+"اسفند"
+
+
+
+msgid "Xakelêwe"
+msgstr "خاکەلێوە"
+
+msgid "Gullan"
+msgstr "گوڵان"
+
+msgid "Cozerdan"
+msgstr "جۆزەردان"
+
+msgid "Pûşper"
+msgstr "پووشپەڕ"
+
+msgid "Gelawêj"
+msgstr "گەلاوێژ"
+
+msgid "Xermanan"
+msgstr "خەرمانان"
+
+msgid "Rezber"
+msgstr "ڕەزبەر"
+
+msgid "Gelarêzan"
+msgstr "گەڵاڕێزان"
+
+msgid "Sermawez"
+msgstr "سەرماوەز"
+
+msgid "Befranbar"
+msgstr "بەفرانبار"
+
+msgid "Rêbendan"
+msgstr "ڕێبەندان"
+
+msgid "Reşeme"
+msgstr "ڕەشەمە"
+
+         
+         
+
+msgid "Hamal"
+msgstr "حمل"
+
+msgid "Sawr"
+msgstr "ثور"
+
+msgid "Jawzā"
+msgstr "جوزا"
+
+msgid "Saratān"
+msgstr "سرطان"
+
+msgid "Asad"
+msgstr "اسد"
+
+msgid "Sonbola"
+msgstr "سنبله"
+
+msgid "Mizān"
+msgstr "میزان"
+
+msgid "Aqrab"
+msgstr "عقرب"
+
+msgid "Qaws"
+msgstr "قوس"
+
+msgid "Jadi"
+msgstr "جدی"
+
+msgid "Dalvæ"
+msgstr "دلو"
+
+msgid "Hūt"
+msgstr "حوت"
+
+
+
+
+msgid "Wray"
+msgstr "وری"
+
+msgid "Ǧwayay"
+msgstr "غويی"
+
+msgid "Ǧbargolay"
+msgstr "غبرګولی"
+
+msgid "Čungāx̌"
+msgstr "چنګاښ"
+
+msgid "Zmaray"
+msgstr "زمری"
+
+msgid "Waǵay"
+msgstr "وږی"
+
+msgid "Təla"
+msgstr "تله"
+
+msgid "Laṛam"
+msgstr "لړم"
+
+msgid "Līndəi"
+msgstr "ليندۍ"
+
+msgid "Marǧūmay"
+msgstr "مرغومی"
+
+msgid "Salwāǧa"
+msgstr "سلواغه"
+
+msgid "Kab"
+msgstr "كب"
+
+
+
+msgid "Muharram"
+msgstr ""
+"محرم"
+
+msgid "Safar"
+msgstr ""
+"صفر"
+
+msgid "Rabia' 1"
+msgstr ""
+"ربیع‌الاول"
+
+msgid "Rabia' 2"
+msgstr ""
+"ربیع‌الثانی"
+
+msgid "Jumada 1"
+msgstr ""
+"جمادی‌الاول"
+
+msgid "Jumada 2"
+msgstr ""
+"جمادی‌الثانی"
+
+msgid "Rajab"
+msgstr ""
+"رجب"
+
+msgid "Sha'aban"
+msgstr ""
+"شعبان"
+
+msgid "Ramadan"
+msgstr ""
+"رمضان"
+
+msgid "Shawwal"
+msgstr ""
+"شوال"
+
+msgid "Dhu'l Qidah"
+msgstr ""
+"ذو‌القعده"
+
+msgid "Dhu'l Hijjah"
+msgstr ""
+"ذو‌الحجه"
+
+
+msgid "Meskerem"
+msgstr "مسکرم"
+
+msgid "Tekimt"
+msgstr "تکیمت"
+
+msgid "Hidar"
+msgstr "هیدار"
+
+msgid "Tahsas"
+msgstr "طه ساز"
+
+msgid "Ter"
+msgstr "تر"
+
+msgid "Yekoutit"
+msgstr "یکوتیت"
+
+msgid "Meyabit"
+msgstr "مگابیت"
+
+msgid "Meyaziya"
+msgstr "میازیا"
+
+msgid "Genbot"
+msgstr "گین بوت"
+
+msgid "Sene"
+msgstr "سنه"
+
+msgid "Hamle"
+msgstr "حمله"
+
+msgid "Nahse"
+msgstr "نحسه"
+
+msgid "Pagume"
+msgstr "پاگومه"
+
+
+msgid "Tishri"
+msgstr "تیشری"
+
+msgid "Cheshvan"
+msgstr "حشوان"
+
+msgid "Kislev"
+msgstr "كیسلو"
+
+msgid "Tevet"
+msgstr "طوت"
+
+msgid "Shevat"
+msgstr "شواط"
+
+msgid "Adar"
+msgstr "آذار"
+
+msgid "Adar II"
+msgstr "آذار ۲"
+
+msgid "Nisan"
+msgstr "نیسان"
+
+msgid "Iyyar"
+msgstr "ایار"
+
+msgid "Siwan"
+msgstr "سیوان"
+
+msgid "Tamuz"
+msgstr "تموز"
+
+msgid "Av"
+msgstr "آو"
+
+msgid "Elul"
+msgstr "ایلول"
+
+
+
+msgid "Previous Year"
+msgstr ""
+"سال قبل"
+
+msgid "Next Year"
+msgstr ""
+"سال بعد"
+
+msgid "Previous Month"
+msgstr ""
+"ماه قبل"
+
+msgid "Next Month"
+msgstr ""
+"ماه بعد"
+
+msgid "Previous Week"
+msgstr ""
+"هفتهٔ قبل"
+
+msgid "Next Week"
+msgstr ""
+"هفتهٔ بعد"
+
+
+msgid "None"
+msgstr ""
+"هیچ"
+
+msgid "Birthday"
+msgstr ""
+"تولد"
+
+msgid "Marriage"
+msgstr ""
+"ازدواج"
+
+msgid "Obituary"
+msgstr ""
+"وفات"
+
+msgid "Note"
+msgstr ""
+"یادداشت"
+
+
+msgid "Today"
+msgstr ""
+"امروز"
+
+msgid "Use Hijri month length data (Iranian official calendar)"
+msgstr ""
+"استفاده از دادهٔ طول ماه‌های قمری (تقویم رسمی ایران)"
+
+msgid "Tune Hijri Monthes"
+msgstr ""
+"تنظیم ماه‌های قمری"
+
+msgid "Equals to"
+msgstr ""
+"معادل"
+
+msgid "Month Length"
+msgstr ""
+"طول ماه"
+
+msgid "End Date"
+msgstr ""
+"تاریخ پایان"
+
+msgid "Calendars"
+msgstr ""
+"تقویم‌ها"
+
+msgid "Calendar Types"
+msgstr ""
+"نوع تقویم‌ها"
+
+msgid "Active"
+msgstr ""
+"فعال"
+
+msgid "Inactive"
+msgstr ""
+"غیرفعال"
+
+msgid "Activate/Inactivate"
+msgstr ""
+"فعال/غیرفعال کردن"
+
+msgid "Jalali Month Names"
+msgstr ""
+"نام ماه‌های جلالی"
+
+msgid "Iranian"
+msgstr "ایرانی"
+
+msgid "Kurdish"
+msgstr "کردی"
+
+msgid "Dari"
+msgstr "دری"
+
+msgid "Pashto"
+msgstr "پشتو"
+
+msgid "Jalali Calculation Algorithm"
+msgstr ""
+"الگوریتم محاسبهٔ تاریخ جلالی"
+
+msgid "33 year algorithm"
+msgstr ""
+"الگوریتم ۳۳ ساله"
+
+msgid "2820 year algorithm"
+msgstr ""
+"الگوریتم ۲۸۲۰ ساله"
+
+msgid "Hijri Calculation Algorithm"
+msgstr ""
+"الگوریتم محاسبهٔ تاریخ هجری قمری"
+
+msgid "Enable/Disable"
+msgstr ""
+"فعال/غیرفعال کردن"
+
+msgid "position"
+msgstr ""
+"مکان"
+
+msgid "Time"
+msgstr ""
+"زمان"
+
+msgid "time"
+msgstr ""
+"زمان"
+
+
+msgid "Alarm"
+msgstr ""
+"زنگ"
+
+msgid "Event"
+msgstr ""
+"رویداد"
+
+msgid "Event ID: %s"
+msgstr ""
+"شمارهٔ رویداد: %s"
+
+msgid "Group ID: %s"
+msgstr ""
+"شمارهٔ گروه: %s"
+
+
+msgid "Task"
+msgstr ""
+"کار"
+
+msgid "All-Day Task"
+msgstr ""
+"کار تمام‌روز"
+
+msgid "Task List"
+msgstr ""
+"فهرست کارها"
+
+msgid "Daily Note"
+msgstr ""
+"یادداشت روزانه"
+
+msgid "Note Book"
+msgstr ""
+"دفترچهٔ یادداشت"
+
+msgid "Yearly Event"
+msgstr ""
+"رویداد سالیانه"
+
+msgid "Yearly Events Group"
+msgstr ""
+"گروه رویدادهای سالیانه"
+
+msgid "Monthly Event"
+msgstr ""
+"رویداد ماهیانه"
+
+msgid "Weekly Event"
+msgstr ""
+"رویداد هفتگی"
+
+msgid "Repeat Every "
+msgstr ""
+"تکرار هر "
+
+
+msgid "Life Time Event"
+msgstr ""
+"رویداد زیست زمان"
+
+msgid "Life Time Events Group"
+msgstr ""
+"گروه رویدادهای زیست زمان"
+
+msgid "Show Seperated Inputs for Year, Month and Day"
+msgstr ""
+"نمایش ورودی‌های مجزا برای سال، ماه و روز"
+
+msgid "Large Scale Event"
+msgstr ""
+"رویداد مقیاس‌بالا"
+
+msgid "Large Scale Events Group"
+msgstr ""
+"گروه رویدادهای مقیاس‌بالا"
+
+msgid "Custom Event"
+msgstr ""
+"رویداد دلخواه"
+
+msgid "Events"
+msgstr ""
+"رویدادها"
+
+msgid "Events of Day"
+msgstr ""
+"رویدادهای روز"
+msgid "_Event Manager"
+msgstr ""
+
+"مدیریت _رویدادها"
+
+msgid "Event Manager"
+msgstr ""
+"مدیریت رویدادها"
+
+msgid "Day of Month"
+msgstr ""
+"روز در ماه"
+
+msgid "Week Number"
+msgstr ""
+"شمارهٔ هفته"
+
+msgid "Every Week"
+msgstr ""
+"هر هفته"
+
+msgid "Even Weeks"
+msgstr ""
+"هفته‌های زوج"
+
+msgid "Odd Weeks"
+msgstr ""
+"هفته‌های فرد"
+
+msgid "Even"
+msgstr ""
+"زوج"
+
+msgid "Odd"
+msgstr ""
+"فرد"
+
+msgid "Current Week Only"
+msgstr ""
+"فقط هفتهٔ جاری"
+
+msgid "Day of Week"
+msgstr ""
+"روز هفته"
+
+
+msgid "Week-Month"
+msgstr ""
+"هفته-ماه"
+
+msgid "Every Month"
+msgstr ""
+"هر ماه"
+
+
+msgid "First"
+msgstr ""
+"اولین"
+
+msgid "Second"
+msgstr ""
+"دومین"
+
+msgid "Third"
+msgstr ""
+"سومین"
+
+msgid "Fourth"
+msgstr ""
+"چهارمین"
+
+msgid "Last"
+msgstr ""
+"آخرین"
+
+msgid " of "
+msgstr ""
+" از "
+
+msgid "Time in Day"
+msgstr ""
+"زمان در روز"
+
+msgid "Day Time Range"
+msgstr ""
+"بازهٔ زمانی در روز"
+
+msgid "Start"
+msgstr ""
+"شروع"
+
+msgid "start"
+msgstr ""
+"شروع"
+
+msgid "Start Year"
+msgstr ""
+"سال شروع"
+
+msgid "End"
+msgstr ""
+"پایان"
+
+msgid "end"
+msgstr ""
+"پایان"
+
+
+msgid "Cycle (Days)"
+msgstr ""
+"طول دوره (روزها)"
+
+msgid "Cycle (Weeks)"
+msgstr ""
+"طول دوره (هفته‌ها)"
+
+msgid "Cycle (Days & Time)"
+msgstr ""
+"طول دوره (روزها و زمان)"
+
+
+##########
+
+
+msgid "Repeat: Every %s Days"
+msgstr ""
+"تکرار: هر %s روز"
+
+msgid "Repeat: Every %s Weeks"
+msgstr ""
+"تکرار: هر %s هفته"
+
+
+msgid "Repeat: Every %s Days and %s"
+msgstr ""
+"تکرار: هر %s روز و %s"
+
+msgid "Event Type"
+msgstr ""
+"نوع رویداد"
+
+msgid "File"
+msgstr ""
+"فایل"
+
+msgid "Add File"
+msgstr ""
+"افزودن فایل"
+
+msgid "_Add File"
+msgstr ""
+"_افزودن فایل"
+
+
+msgid "Edit Event"
+msgstr ""
+"ویرایش رویداد"
+
+msgid "_Edit Event"
+msgstr ""
+"_ویرایش رویداد"
+
+
+msgid "Add Event"
+msgstr ""
+"افزودن رویداد"
+
+
+msgid "Trash"
+msgstr ""
+"زباله‌دان"
+
+msgid "Empty Trash"
+msgstr ""
+"خالی کردن زباله‌دان"
+
+msgid "Edit Trash"
+msgstr ""
+"ویرایش زباله‌دان"
+
+msgid "Move to %s"
+msgstr ""
+"جابجایی به %s"
+
+msgid "Day Info"
+msgstr ""
+"اطلاعات روز"
+
+msgid "Copy"
+msgstr ""
+"کپی"
+
+msgid "_Copy"
+msgstr ""
+"_کپی"
+
+msgid "Copy _All"
+msgstr ""
+"کپی _همه"
+
+msgid "_Copy Date"
+msgstr ""
+"_کپی تاریخ"
+
+msgid "Copy _Date"
+msgstr ""
+"کپی _تاریخ"
+
+msgid "Copy _Time"
+msgstr ""
+"کپی _زمان"
+
+msgid "Copy to %s"
+msgstr ""
+"کپی به %s"
+
+msgid "Copy as %s to..."
+msgstr ""
+"کپی بعنوان %s به..."
+
+msgid "Cut"
+msgstr ""
+"بریدن"
+
+msgid "Cu_t"
+msgstr ""
+"_بریدن"
+
+msgid "Paste"
+msgstr ""
+"چسباندن"
+
+msgid "_Paste"
+msgstr ""
+"_چسباندن"
+
+msgid "Duplicate"
+msgstr ""
+"دوتا کردن"
+msgid "_Duplicate"
+msgstr ""
+"_دوتا کردن"
+
+msgid "Duplicate with All Events"
+msgstr ""
+"دوتا کردن با تمام رویدادها"
+
+msgid "Convert to %s"
+msgstr ""
+"تبدیل به %s"
+
+msgid "Paste Event"
+msgstr ""
+"چسباندن رویداد"
+
+msgid "Event Group"
+msgstr ""
+"گروه رویدادها"
+
+msgid "Group"
+msgstr ""
+"گروه"
+
+msgid "Expand"
+msgstr ""
+"گستردن"
+
+msgid "Expand All"
+msgstr ""
+"گستردن همه"
+
+msgid "Collapse All"
+msgstr ""
+"جمع کردن همه"
+
+msgid "Show _Description"
+msgstr ""
+"نمایش _توضیح"
+
+
+msgid "Week"
+msgstr ""
+"هفته"
+
+msgid "Week Day"
+msgstr ""
+"روز هفته"
+
+msgid "University Term"
+msgstr ""
+"ترم دانشگاه"
+
+msgid "Edit University Term and define some Courses before you add a Class/Exam"
+msgstr ""
+"قبل از اضافه کردن کلاس/امتحان، ترم دانشگاه را ویرایش کنید و چند درس تعریف کنید"
+
+
+
+msgid "Course"
+msgstr ""
+"درس"
+
+msgid "Deleted Course"
+msgstr ""
+"درس حذف‌شده"
+
+msgid "Course List"
+msgstr ""
+"لیست درس‌ها"
+
+msgid "Course Name"
+msgstr ""
+"نام درس"
+
+msgid "Course Units"
+msgstr ""
+"واحدهای درس"
+
+msgid "Units"
+msgstr ""
+"واحدها"
+
+
+msgid "New Course"
+msgstr ""
+"درس جدید"
+
+#msgid "University Class"
+#msgstr ""
+#"کلاس دانشگاه"
+
+msgid "Class"
+msgstr ""
+"کلاس"
+
+msgid "%s Class"
+msgstr ""
+"کلاس %s"
+
+msgid "Class Time Bounds"
+msgstr ""
+"مرز زمان کلاس‌ها"
+
+msgid "Exam"
+msgstr ""
+"امتحان"
+
+msgid "%s Exam"
+msgstr ""
+"امتحان %s"
+
+msgid "View Weekly Schedule"
+msgstr ""
+"مشاهدهٔ برنامهٔ هفتگی"
+
+
+msgid "Scale"
+msgstr ""
+"مقیاس"
+
+msgid "Add Group"
+msgstr ""
+"افزودن گروه"
+
+msgid "Add New Group"
+msgstr ""
+"افزودن گروه تازه"
+
+msgid "Delete Group"
+msgstr ""
+"حذف گروه"
+
+msgid "Edit Group"
+msgstr ""
+"ویرایش گروه"
+
+msgid "Group Type"
+msgstr ""
+"نوع گروه"
+
+msgid "Title"
+msgstr ""
+"عنوان"
+
+msgid "Group Title"
+msgstr ""
+"عنوان گروه"
+
+msgid "Imported Events"
+msgstr ""
+"رویدادهای وارد شده"
+
+msgid "Color"
+msgstr ""
+"رنگ"
+
+msgid "Default Icon"
+msgstr ""
+"نماد پیش‌فرض"
+
+msgid "Default Calendar Type"
+msgstr ""
+"نوع تقویم پیش‌فرض"
+
+msgid "Event Cache Size"
+msgstr ""
+"اندازهٔ cache رویدادها"
+
+msgid "Event Text Seperator"
+msgstr ""
+"جداکنندهٔ متن رویداد"
+
+msgid "Using to seperate Summary and Description when displaying event"
+msgstr ""
+"برای جدا کردن خلاصه و توضیح رویداد هنگاه نمایش رویداد استفاده می‌شود"
+
+
+
+
+msgid "Move Up"
+msgstr ""
+"جابجایی به بالا"
+
+msgid "Move Down"
+msgstr ""
+"جابجایی به پایین"
+
+msgid "Press OK if you want to delete group \"%s\" and move its %s events to trash"
+msgstr ""
+"اگر می‌خواهید گروه «%s» حذف شده و %s رویدادش به زباله‌دان منتقل شوند، دکمهٔ تائید را فشار دهید"
+
+
+msgid "Press OK if you want to move event \"%s\" to trash"
+msgstr ""
+"اگر می‌خواهید رویداد «%s» به زباله‌دان منتقل شود، دکمهٔ تائید را فشار دهید"
+
+
+msgid "Sort Events"
+msgstr ""
+"مرتب کردن رویدادها"
+
+msgid "Sort events of group \"%s\""
+msgstr ""
+"مرتب کردن رویدادهای گروه «%s»"
+
+msgid "Based on"
+msgstr ""
+"بر اساس"
+
+msgid "Descending"
+msgstr ""
+"نزولی"
+
+msgid "Convert Calendar Type"
+msgstr ""
+"تبدیل نوع تقویم"
+
+
+msgid "This is going to convert calendar types of all events inside group \"%s\" to a specific type. This operation does not work for Yearly events and also some of Custom events. You have to edit those events manually to change calendar type."
+msgstr ""
+"اینجا نوع تقویم تمام رویدادهای داخل گروه «%s» قرار است به یک نوع خاص تبدیل شود. این عملیات برای رویدادهای سالیانه و همینطور برای بعضی از رویدادهای دلخواه کار نمی‌کند. شما برای تغییر نوع تقویم، باید آن رویدادها را دستی ویرایش کنید."
+
+msgid "Bulk Edit Events"
+msgstr ""
+"ویرایش گروهیِ رویدادها"
+
+msgid "Here you are going to modify all events inside group \"%s\" at once."
+msgstr ""
+"اینجا شما در حال تغییر دادن همهٔ رویدادهای گروه «%s» به یکباره هستید."
+
+msgid "Here you are going to modify these %s events at once."
+msgstr ""
+"اینجا شما در حال تغییر دادن این %s رویداد به یکباره هستید."
+
+
+msgid "You better make a backup from you events before doing this. Just right click on group and select \"Export\" (or a full backup: menu File -> Export)"
+msgstr ""
+"بهتر است قبل از این کار، یک پشتیبان از رویدادهای خود بگیرید. روی گروه راست کلیک کرده و «صادر کردن» را بزنید (یا یک پشتیبان کامل: منوی فایل -> صادر کردن)"
+
+
+msgid "Change"
+msgstr ""
+"تغییر"
+
+msgid "Change if empty"
+msgstr ""
+"تغییر در صورت خالی بودن"
+
+msgid "Add to beginning"
+msgstr ""
+"افزودن به ابتدا"
+
+msgid "Add to end"
+msgstr ""
+"افزودن به انتها"
+
+msgid "Replace text"
+msgstr ""
+"جایگزینی متن"
+
+msgid "with"
+msgstr ""
+"با"
+
+
+msgid "For"
+msgstr ""
+"برای"
+
+msgid "Until"
+msgstr ""
+"تا"
+
+msgid "Duration"
+msgstr ""
+"مدت"
+
+msgid "Default Task Duration"
+msgstr ""
+"مدت‌زمان پیش‌فرض کار"
+
+
+msgid " Seconds"
+msgstr ""
+" ثانیه"
+
+msgid "Show Seconds"
+msgstr ""
+"نمایش ثانیه"
+
+msgid " Minutes"
+msgstr ""
+" دقیقه"
+
+msgid " Hours"
+msgstr ""
+" ساعت"
+
+msgid " Days"
+msgstr ""
+" روز"
+
+msgid " Weeks"
+msgstr ""
+" هفته"
+
+msgid "Group type \"%s\" can not contain event type \"%s\""
+msgstr ""
+"نوع گروه «%s» نمی‌تواند شامل نوع رویداد «%s» باشد"
+
+msgid "Events Count"
+msgstr ""
+"تعداد رویدادها"
+
+msgid "%s events"
+msgstr "%s رویداد"
+
+msgid "contains %s events"
+msgstr ""
+"شامل %s رویداد"
+
+
+msgid "contains %s events and %s occurences"
+msgstr ""
+"شامل %s رویداد و %s رخداد"
+
+msgid "Last Occurrence Time"
+msgstr ""
+"زمان آخرین رخداد"
+
+msgid "First Occurrence Time"
+msgstr ""
+"زمان اولین رخداد"
+
+
+
+msgid "Time Line"
+msgstr ""
+"خط زمان"
+
+msgid "Week Calendar"
+msgstr ""
+"تقویم هفتگی"
+
+msgid "Switch to Week Calendar"
+msgstr ""
+"تغییر به تقویم هفتگی"
+
+msgid "Switch to Month Calendar"
+msgstr ""
+"تغییر به تقویم ماه"
+
+
+msgid "Week Days"
+msgstr ""
+"روزهای هفته"
+
+msgid "Events Text"
+msgstr ""
+"متن رویدادها"
+
+msgid "Events Icon"
+msgstr ""
+"نماد رویدادها"
+
+msgid "Events Box"
+msgstr ""
+"جعبهٔ رویدادها"
+
+msgid "Days of Month"
+msgstr ""
+"روزهای ماه"
+
+msgid "Direction"
+msgstr ""
+"جهت"
+
+msgid "Left to Right"
+msgstr ""
+"چپ به راست"
+
+msgid "Right to Left"
+msgstr ""
+"راست به چپ"
+
+msgid "Auto"
+msgstr ""
+"خودکار"
+
+
+
+msgid "aboutText"
+msgstr ""
+
+"یک برنامهٔ کامل تقویم که با زبان پایتون نوشته شده است\n"
+"کپی‌لفت © ۲۰۰۸-۲۰۱۵ سعید رسولی\n"
+"برنامهٔ StarCalendar تحت مجوز همگانی عمومی گنو (GNU GPL) منتشر شده است\n"
+"«من برای کاربران می‌جنگم!» (نقل قول از TRON)"
+
+
+msgid "licenseText"
+msgstr ""
+"‫StarCalendar - یک برنامهٔ کامل تقویم که با زبان پایتون نوشته شده است\n"
+"کپی‌رایت © ۲۰۰۸-۲۰۱۵ سعید رسولی\n"
+"این یک نرم‌افزار آزاد است؛ شما می‌توانید آن را مجدداً توزیع کنید و/یا تغییر دهید، به شرطی که تحت بندهای مجوز همگانی عمومی گنو (GNU GPL) که توسط بنیاد نرم‌افزار آزاد منتشر شده است، باشد؛ چه نسخهٔ ۳ یا (بنا به انتخاب خود) هر نسخهٔ بعدی این مجوز.\n"
+"\n"
+"این برنامه منتشر شده است با این امید که مفید واقع شود، اما بدون هیچ گونه ضمانتی؛ حتی بدون ضمانت قابل ارائهٔ تجاری بودنِ کار و یا مناسب بودن برای یک منظور خاص. برای جزئیّات بیشتر، مجوز همگانی عمومی گنو را ببینید.\n"
+"\n"
+"شما می‌توانید یک کپی از مجوز همگانی عمومی گنو را به همراه این برنامه، یا در سیستم‌های دبیان در فایل\n"
+"‎/usr/share/common-licenses/GPL\n"
+"مشاهده کنید؛ در غیر این‌صورت به آدرس\n"
+"‎http://www.gnu.org/licenses/gpl.txt\n"
+"مراجعه کنید."
+
+
+
+msgid "Select Today"
+msgstr ""
+"انتخاب امروز"
+
+msgid "Resize"
+msgstr ""
+"تغییر اندازه"
+
+msgid "Menu"
+msgstr ""
+"منو"
+
+msgid "Main Menu"
+msgstr ""
+"منوی اصلی"
+
+msgid "More"
+msgstr ""
+"بیشتر"
+
+msgid "Date"
+msgstr ""
+"تاریخ"
+
+msgid "Date..."
+msgstr ""
+"تاریخ..."
+
+msgid "Dates"
+msgstr ""
+"تاریخ‌ها"
+
+
+msgid "Comment"
+msgstr ""
+"توضیح"
+
+msgid "Show in"
+msgstr ""
+"نمایش در"
+
+
+msgid "Show in Calendar"
+msgstr ""
+"نمایش در تقویم"
+
+
+msgid "Show in Status Icon (for today)"
+msgstr ""
+"نمایش در نماد وضعیت (برای امروز)"
+
+
+msgid "Show in applet (for today)"
+msgstr ""
+"نمایش در اپلت (برای امروز)"
+
+
+msgid "Enable"
+msgstr ""
+"فعال"
+
+msgid "Description"
+msgstr ""
+"توضیح"
+
+msgid "Show Description"
+msgstr ""
+"نمایش توضیح"
+
+msgid "Colorize"
+msgstr ""
+"رنگی کردن"
+
+msgid "Show Date"
+msgstr ""
+"نمایش تاریخ"
+
+msgid "Show Date in Event Summary"
+msgstr ""
+"نمایش تاریخ در خلاصهٔ رویداد"
+
+msgid "Move up"
+msgstr ""
+"جابجایی به بالا"
+
+msgid "Move down"
+msgstr ""
+"جابجایی به پایین"
+
+msgid "Move to top"
+msgstr ""
+"جابجایی به ابتدا"
+
+msgid "Move to bottom"
+msgstr ""
+"جابجایی به انتها"
+
+msgid "Add Plugin"
+msgstr ""
+"افزودن افزونه"
+
+msgid "_About Plugin"
+msgstr ""
+"_دربارهٔ افزونه"
+
+msgid "About Plugin"
+msgstr ""
+"دربارهٔ افزونه"
+
+msgid "_Configure"
+msgstr ""
+"_تنظیم"
+
+msgid "C_onfigure Plugin"
+msgstr ""
+"_تنظیم افزونه"
+
+
+msgid "Calendar height"
+msgstr ""
+"ارتفاع تقویم"
+
+msgid "Window in Taskbar"
+msgstr ""
+"پنجره در نواروظیفه"
+
+msgid "Use AppIndicator"
+msgstr ""
+"استفاده از AppIndicator"
+
+
+
+msgid "Window Controller"
+msgstr ""
+"کنترل‌کنندهٔ پنجره"
+
+
+msgid "Seperator"
+msgstr ""
+"جداکننده"
+
+msgid "Show Digital Clock:"
+msgstr ""
+"نمایش ساعت رقمی:"
+
+msgid "On Toolbar"
+msgstr ""
+"روی نوارابزار"
+
+msgid "Status Icon"
+msgstr ""
+"نماد وضعیت"
+
+msgid "On Status Icon"
+msgstr ""
+"در نماد وضعیت"
+
+msgid "On Applet"
+msgstr ""
+"در اپلت"
+
+
+msgid "Digital Clock Format"
+msgstr ""
+"فرمت ساعت رقمی"
+
+
+
+msgid "Previous"
+msgstr ""
+"قبل"
+
+msgid "Next"
+msgstr ""
+"بعد"
+
+msgid "Up"
+msgstr ""
+"بالا"
+
+msgid "Down"
+msgstr ""
+"پایین"
+
+msgid "Back"
+msgstr ""
+"عقب"
+
+msgid "Backward"
+msgstr ""
+"عقب"
+
+msgid "Forward"
+msgstr ""
+"جلو"
+
+msgid "Backward 4 Weeks"
+msgstr ""
+"۴ هفته به عقب"
+
+msgid "Forward 4 Weeks"
+msgstr ""
+"۴ هفته به جلو"
+
+
+msgid "Plus"
+msgstr ""
+"بعلاوه"
+
+msgid "Minus"
+msgstr ""
+"منها"
+
+msgid "Copy Date"
+msgstr ""
+"کپی تاریخ"
+
+msgid "Select Date..."
+msgstr ""
+"انتخاب تاریخ..."
+
+
+msgid "Style"
+msgstr ""
+"سَبک"
+
+msgid "Icon"
+msgstr ""
+"نماد"
+
+msgid "Text"
+msgstr ""
+"متن"
+
+msgid "Text below Icon"
+msgstr ""
+"متن زیر نماد"
+
+msgid "Text beside Icon"
+msgstr ""
+"متن کنار نماد"
+
+
+
+msgid "In E_volution"
+msgstr ""
+"در ا_وولوشن"
+
+msgid "In _Sunbird"
+msgstr ""
+"در _سان‌بِرد"
+
+msgid "Date Mode"
+msgstr ""
+"نوع تاریخ"
+
+msgid "Calendar Type"
+msgstr ""
+"نوع تقویم"
+
+msgid "Type"
+msgstr ""
+"نوع"
+
+msgid "_General"
+msgstr ""
+"ع_مومی"
+
+msgid "A_ppearance"
+msgstr ""
+"_ظاهر"
+
+msgid "_Plugins"
+msgstr ""
+"_افزونه‌ها"
+
+msgid "A_dvanced"
+msgstr ""
+"_پیشرفته"
+
+msgid "Account"
+msgstr ""
+"حساب"
+
+
+msgid "Accounts"
+msgstr ""
+"حساب‌ها"
+
+msgid "Edit Account"
+msgstr ""
+"ویرایش حساب"
+
+msgid "Account must be enabled before editing"
+msgstr ""
+"برای ویرایش حساب، ابتدا باید آن را فعال کنید"
+
+msgid "Add New Account"
+msgstr ""
+"افزودن حساب جدید"
+
+msgid "Account Type"
+msgstr ""
+"نوع حساب"
+
+
+msgid "Google"
+msgstr ""
+"گوگل"
+
+msgid "Email"
+msgstr ""
+"ایمیل"
+
+msgid "Online Service"
+msgstr ""
+"سرویس برخط"
+
+
+msgid "Remote Group"
+msgstr ""
+"گروه راه‌دور"
+
+msgid "Fetch"
+msgstr ""
+"واکشی"
+
+
+msgid "No account selected"
+msgstr ""
+"هیچ حسابی انتخاب نشده"
+
+msgid "Fatching"
+msgstr ""
+"در حال واکشی"
+
+msgid "Error in fetching remote groups"
+msgstr ""
+"خطا در واکشی گروه‌های راه‌دور"
+
+msgid "Synchronize"
+msgstr ""
+"همگام‌سازی"
+
+msgid "Error in synchronizing group \"%(group)s\" with account \"%(account)s\""
+msgstr ""
+"خطا در همگام‌سازی گروه «%(group)s» با حساب «%(account)s»"
+
+msgid "Successful synchronizing of group \"%(group)s\" with account \"%(account)s\""
+msgstr ""
+"همگام‌سازی موفق گروه «%(group)s» با حساب «%(account)s»"
+
+msgid "HTTP Error"
+msgstr ""
+"خطای HTTP"
+
+msgid "Error Code"
+msgstr ""
+"کد خطا"
+
+msgid "Error Message"
+msgstr ""
+"پیام خطا"
+
+msgid "Forbidden"
+msgstr ""
+"ممنوع"
+msgid "Authentication request was rejected."
+msgstr ""
+"درخواست احراز هویت، رد شده است."
+
+msgid "Authentication has failed"
+msgstr ""
+"احراز هویت ناموفق بوده است"
+
+msgid "This service is not available from your country"
+msgstr ""
+"این سرویس در کشور شما قابل دسترسی نیست"
+
+#msgid "Failed to find \"code\" in the query parameters of the redirect."
+
+
+msgid "Show main window on start"
+msgstr ""
+"در هنگام شروع، پنجرهٔ اصلی را نمایش بده"
+
+
+msgid "Run on session startup"
+msgstr ""
+"در شروعِ نشست اجرا شو"
+
+
+msgid "First day of week"
+msgstr ""
+"اولین روز هفته"
+
+msgid "Automatic"
+msgstr ""
+"خودکار"
+
+
+msgid "Holidays"
+msgstr ""
+"روزهای تعطیل"
+
+
+msgid "First week of year containts"
+msgstr ""
+"اولین هفتهٔ سال شامل"
+
+msgid "First %s of year"
+msgstr ""
+"اولین %sٔ سال"
+
+
+msgid "First day of year"
+msgstr ""
+"اولین روز سال"
+
+
+
+msgid "Use Desktop Background"
+msgstr ""
+"استفاده از تصویر زمینهٔ میزکار"
+
+msgid "If you want to have a transparent calendar (and see your desktop), change the opacity of calendar background color!"
+msgstr ""
+"اگر می‌خواهید یک تقویم شفاف داشته باشید (و تصویر میزکار دیده‌شود)، مقدار شفافیت رنگ زمینهٔ تقویم را تغییر دهید!"
+
+msgid "Colors"
+msgstr ""
+"رنگ‌ها"
+
+msgid "Font Colors"
+msgstr ""
+"رنگ نوشته‌ها"
+
+msgid "Background"
+msgstr ""
+"زمینه"
+
+msgid "Border"
+msgstr ""
+"حاشیه"
+
+msgid "Normal"
+msgstr ""
+"عادی"
+
+msgid "Holiday"
+msgstr ""
+"روز‌ تعطیل"
+
+msgid "Inactive Day"
+msgstr ""
+"روز‌ غیرفعال"
+
+msgid "Left Margin"
+msgstr ""
+"حاشیهٔ راست"
+
+msgid "Top"
+msgstr ""
+"بالا"
+
+msgid "Cursor"
+msgstr ""
+"مکان‌نما"
+
+msgid "Cursor BG"
+msgstr ""
+"زمینهٔ مکان‌نما"
+
+msgid "Diameter Factor"
+msgstr ""
+"ضریب ضخامت"
+
+
+msgid "Rounding Factor"
+msgstr ""
+"ضریب گردی"
+
+msgid "Normal Days"
+msgstr ""
+"روزهای عادی"
+
+msgid "Change font family to"
+msgstr ""
+"تغییر خانوادهٔ فونت به"
+
+msgid "Fixed Size"
+msgstr ""
+"اندازهٔ ثابت"
+
+msgid "Width"
+msgstr ""
+"عرض"
+
+msgid "Height"
+msgstr ""
+"ارتفاع"
+msgid "Maximum Height"
+msgstr ""
+"حداکثر ارتفاع"
+
+
+msgid "Days maximum cache size"
+msgstr ""
+"حداکثر اندازهٔ cache روزها"
+
+msgid "Date Format"
+msgstr ""
+"فرمت تاریخ"
+
+msgid "Grid"
+msgstr ""
+"جدول‌بندی"
+
+msgid "Font"
+msgstr ""
+"فونت"
+
+msgid "Application Font"
+msgstr ""
+"فونت برنامه"
+
+msgid "Status Icon Font"
+msgstr
+"فونت نماد وضعیت"
+
+msgid "Font Family"
+msgstr ""
+"خانوادهٔ فونت"
+
+msgid "Text Size Scale"
+msgstr ""
+"مقیاس اندازهٔ متن"
+
+msgid "Export"
+msgstr ""
+"صادر کردن"
+
+msgid "_Export"
+msgstr ""
+"_صادر کردن"
+
+
+msgid "Export to %s"
+msgstr ""
+"صادر کردن به %s"
+
+msgid "_Export to %s"
+msgstr ""
+"_صادر کردن به %s"
+msgid "Export Group"
+msgstr ""
+"صادر کردن گروه"
+
+msgid "Select File"
+msgstr "انتخاب فایل"
+
+msgid "Export: Select File"
+msgstr ""
+"صادر کردن: انتخاب فایل"
+
+
+msgid "Import"
+msgstr ""
+"وارد کردن"
+
+msgid "_Import"
+msgstr ""
+"_وارد کردن"
+
+msgid "Import Events"
+msgstr ""
+"وارد کردن رویدادها"
+
+msgid "Import from %s"
+msgstr ""
+"وارد کردن از %s"
+
+msgid "Import: Select File"
+msgstr ""
+"وارد کردن: انتخاب فایل"
+
+msgid "%s groups imported successfully"
+msgstr "%s گروه با موفقیت وارد شد"
+
+msgid "_Search"
+msgstr "_جستجو"
+
+msgid "Search Events"
+msgstr ""
+"جستجوی رویدادها"
+
+msgid "_Search Events"
+msgstr ""
+"_جستجوی رویدادها"
+
+msgid "Case Sensitive"
+msgstr ""
+"حساس به حروف بزرگ و کوچک"
+
+msgid "Modified From"
+msgstr ""
+"تغییر کرده از"
+
+msgid "Last Modified"
+msgstr ""
+"آخرین تغییرات"
+
+msgid "Search Results"
+msgstr ""
+"نتایج جستجو"
+
+msgid "Found %s events"
+msgstr "%s رویداد پیدا شد"
+
+msgid "Columns"
+msgstr ""
+"ستون‌ها"
+
+msgid "Error in reading file"
+msgstr ""
+"خطا در خواندن فایل"
+
+msgid "Error in loading JSON data"
+msgstr ""
+"خطا در بارگذاری دادهٔ JSON"
+
+msgid "Error in importing events"
+msgstr ""
+"خطا در وارد کردن رویدادها"
+
+msgid "Format"
+msgstr ""
+"فرمت"
+
+#msgid "Compact JSON (StarCalendar)"
+#msgstr "JSON فشرده (StarCalendar)"
+
+#msgid "Pretty JSON (StarCalendar)"
+#msgstr "JSON زیبا (StarCalendar)"
+
+
+msgid "Month Range"
+msgstr ""
+"محدودهٔ ماه‌ها"
+
+msgid "Current Month"
+msgstr ""
+"ماه جاری"
+
+msgid "Whole Current Year"
+msgstr ""
+"کل سال جاری"
+
+msgid "Custom"
+msgstr ""
+"دلخواه"
+
+msgid "from month"
+msgstr ""
+"از ماه"
+
+msgid "to month"
+msgstr ""
+"تا ماه"
+
+
+msgid "Generated by"
+msgstr ""
+"ایجاد شده به وسیلهٔ"
+
+msgid "version"
+msgstr ""
+"نسخهٔ"
+
+
+msgid "Check for Orphan Events"
+msgstr ""
+"بررسی رویدادهای یتیم"
+
+msgid "Orphan Events"
+msgstr ""
+"رویدادهای یتیم"
+
+
+#msgid "_General"
+#msgstr ""
+#"_عمومی"
+
+#msgid "_Appearance"
+#msgstr ""
+#"_ظاهر"
+
+#msgid "_Advanced"
+#msgstr ""
+#"_پیشرفته"
+
+
+
+msgid "Select _Today"
+msgstr ""
+"انتخاب ا_مروز"
+
+msgid "_Resize"
+msgstr ""
+"ت_غییر اندازه"
+
+msgid "_On Top"
+msgstr ""
+"در _بالا"
+
+msgid "_Sticky"
+msgstr ""
+"_چسبناک"
+
+
+msgid "Ad_just System Time"
+msgstr ""
+"تن_ظیم زمان سیستم"
+
+
+
+msgid "Select _Date..."
+msgstr ""
+"انتخاب _تاریخ..."
+
+
+msgid "Need Restart StarCalendar"
+msgstr ""
+"نیاز به شروع دوباره"
+
+msgid "Some preferences need for restart StarCalendar to apply."
+msgstr ""
+"بعضی از تنظیمات برای اعمال شدن نیاز دارند که StarCalendar دوباره راه‌اندازی شود"
+
+msgid "_Restart"
+msgstr ""
+"شروع _دوباره"
+
+msgid "Seems that you are using a Unity desktop and StarCalendar is not allowed to use Status Icon. Press OK to add StarCalendar to Unity's white list and then restart Unity"
+msgstr ""
+"به نظر می‌رسد که شما از یک میزکار Unity استفاده می‌کنید و StarCalendar اجازهٔ استفاده از نماد وضعیت را ندارد. دکمهٔ تائید را فشار دهید تا StarCalendar به لیست سفید Unity اضافه شده و سپس Unity دوباره راه‌اندازی شود"
+
+
+
+msgid "Error"
+msgstr "خطا"
+
+
+
+
+msgid "Minimize Window"
+msgstr ""
+"کوچک کردن پنجره"
+
+msgid "Maximize Window"
+msgstr ""
+"بزرگ‌ترین حالت پنجره"
+
+msgid "Close Window"
+msgstr ""
+"بستن پنجره"
+
+msgid "Customize"
+msgstr ""
+"شخصی‌سازی"
+
+msgid "_Customize"
+msgstr ""
+"_شخصی‌سازی"
+
+msgid "Toolbar"
+msgstr ""
+"نوارابزار"
+
+msgid "Year & Month Labels"
+msgstr ""
+"برچسب‌های سال و ماه"
+
+msgid "Month Calendar"
+msgstr ""
+"تقویم ماه"
+msgid "Day Calendar"
+msgstr ""
+"تقویم روز"
+
+msgid "Status Bar"
+msgstr ""
+"نوار وضعیت"
+
+msgid "Plugins Text"
+msgstr ""
+"متن افزونه‌ها"
+
+msgid "Season Progress Bar"
+msgstr ""
+"نوار پیشروی فصل‌ها"
+
+msgid "Spring"
+msgstr ""
+"بهار"
+
+msgid "Summer"
+msgstr ""
+"تابستان"
+
+msgid "Autumn"
+msgstr ""
+"پاییز"
+
+msgid "Winter"
+msgstr ""
+"زمستان"
+
+
+
+msgid "Icon Size"
+msgstr ""
+"اندازهٔ نماد"
+
+msgid "Small Toolbar"
+msgstr ""
+"نوارابزار کوچک"
+
+msgid "Button"
+msgstr ""
+"دکمه"
+
+msgid "Large Toolbar"
+msgstr ""
+"نوارابزار بزرگ"
+
+msgid "DND"
+msgstr ""
+"DND"
+
+msgid "Dialog"
+msgstr ""
+"دیالوگ"
+
+msgid "Buttons Border"
+msgstr ""
+"حاشیهٔ دکمه‌ها"
+
+
+msgid "Inside Expander"
+msgstr ""
+"درون expander"
+
+
+msgid "Summary"
+msgstr ""
+"خلاصه"
+
+msgid "Rules"
+msgstr ""
+"قواعد"
+
+msgid "Add Rule"
+msgstr ""
+"افزودن قاعده"
+
+
+msgid "Remove"
+msgstr ""
+"حذف"
+
+msgid "_Remove"
+msgstr ""
+"_حذف"
+
+msgid "Exception"
+msgstr ""
+"استثناء"
+
+msgid "%s items"
+msgstr "%s مورد"
+
+msgid "Notifiers"
+msgstr ""
+"یادآورها"
+
+msgid "Notification"
+msgstr ""
+"یادآوری"
+
+msgid "Notify"
+msgstr ""
+"یادآوری"
+
+msgid "before event"
+msgstr ""
+"قبل از رویداد"
+
+msgid "Floating Message"
+msgstr ""
+"پیام شناور"
+
+msgid "Fill Width"
+msgstr ""
+"پرکردن عرض"
+
+msgid "Speed"
+msgstr ""
+"سرعت"
+
+msgid "BG Color"
+msgstr ""
+"رنگ زمینه"
+
+msgid "Text Color"
+msgstr ""
+"رنگ متن"
+
+
+msgid "Message Window"
+msgstr ""
+"پیام پنجره‌ای"
+
+msgid "needs"
+msgstr ""
+"نیاز دارد به"
+
+msgid "Conflict between"
+msgstr ""
+"تضاد بین"
+
+
+msgid " days"
+msgstr ""
+" روز"
+
+msgid "days and"
+msgstr ""
+"روز و"
+
+msgid "Tags"
+msgstr ""
+"برچسب‌ها"
+
+
+msgid "Category"
+msgstr ""
+"دسته"
+
+msgid "Business"
+msgstr ""
+"کسب‌وکار"
+
+msgid "Personal"
+msgstr ""
+"شخصی"
+
+msgid "Favorite"
+msgstr ""
+"مورد علاقه"
+
+msgid "Important"
+msgstr ""
+"مهم"
+
+msgid "Travel"
+msgstr ""
+"مسافرت"
+
+msgid "Appointment"
+msgstr ""
+"قرار ملاقات"
+
+msgid "Meeting"
+msgstr ""
+"جلسه"
+
+msgid "Phone Call"
+msgstr ""
+"تماس تلفنی"
+
+msgid "Education"
+msgstr ""
+"آموزش"
+
+msgid "School"
+msgstr ""
+"مدرسه"
+
+msgid "University"
+msgstr ""
+"دانشگاه"
+
+msgid "College"
+msgstr ""
+"دانشکده"
+
+
+################################################################################
+
+msgid "Islamic Pray Times"
+msgstr "اوقات شرعی"
+
+msgid "Pray Times"
+msgstr "اوقات شرعی"
+
+msgid "Islamic Pray Times Plugin"
+msgstr "افزونهٔ اوقات شرعی"
+
+msgid "Location"
+msgstr "مکان"
+
+msgid "Calculation Method"
+msgstr "روش محاسبه"
+
+msgid "Muslim World League"
+msgstr "اتحادیهٔ جهان اسلام"
+
+msgid "Islamic Society of North America"
+msgstr "انجمن اسلامی امریکای شمالی"
+
+msgid "Egyptian General Authority of Survey"
+msgstr "سازمان نقشه‌برداری جامع مصر"
+
+msgid "Umm Al-Qura University, Makkah"
+msgstr "دانشگاه ام‌القری، مکه"
+
+msgid "University of Islamic Sciences, Karachi"
+msgstr "دانشگاه علوم اسلامی، کراچی"
+
+msgid "Shia Ithna-Ashari, Leva Research Institute, Qum"
+msgstr "شیعهٔ دوازده‌امامی، مؤسسهٔ تحقیقاتی لِوا، قم"
+
+msgid "Institute of Geophysics, University of Tehran"
+msgstr "مؤسسهٔ ژئوفیزیک دانشگاه تهران"
+
+msgid "Calendar Center Council, Institute of Geophysics, University of Tehran"
+msgstr "شورای مرکز تقویم مؤسسهٔ ژئوفیزیک دانشگاه تهران"
+
+
+msgid "Shown Times"
+msgstr "اوقات نمایش‌داده شده"
+
+
+msgid "Imsak"
+msgstr "امساک"
+
+msgid "Fajr"
+msgstr "اذان صبح"
+
+msgid "Azan Subh"
+msgstr "اذان صبح"
+
+msgid "Sun Rise"
+msgstr "طلوع آفتاب"
+
+msgid "Sunrise"
+msgstr "طلوع آفتاب"
+
+msgid "Sun Rise (Shorook)"
+msgstr "طلوع آفتاب"
+
+msgid "Azan Dhuhr"
+msgstr "اذان ظهر"
+
+msgid "Dhuhr"
+msgstr "اذان ظهر"
+
+msgid "Asr"
+msgstr "نماز عصر"
+
+msgid "Sun Set"
+msgstr "غروب آفتاب"
+
+msgid "Sunset"
+msgstr "غروب آفتاب"
+
+
+msgid "Maghrib"
+msgstr "اذان مغرب"
+
+msgid "Maghreb"
+msgstr "اذان مغرب"
+
+msgid "Azan Maghreb"
+msgstr "اذان مغرب"
+
+msgid "Isha"
+msgstr "نماز عشا"
+
+msgid "Midnight"
+msgstr "نیمه‌شب"
+
+msgid "minutes before fajr"
+msgstr "دقیقه قبل از اذان صبح"
+
+msgid "Azan"
+msgstr "اذان"
+
+msgid "Azan Sound"
+msgstr "صوت اذان"
+
+msgid "Play Azan Sound"
+msgstr "پخش صوت اذان"
+
+msgid "Play Pre-Azan Sound"
+msgstr "پخش صوت پیش-اذان"
+
+msgid "Pre-Azan Sound"
+msgstr "صوت پیش-اذان"
+
+
+msgid "File..."
+msgstr "فایل..."
+
+msgid "minutes before azan"
+msgstr "دقیقه قبل از اذان"
+
+msgid "Player"
+msgstr "پخش‌کننده"
+
+
+
+msgid "Search Cities:"
+msgstr "جستجوی شهرها:"
+
+msgid "City"
+msgstr "شهر"
+
+msgid "Edit Manually"
+msgstr "ویرایش دستی"
+
+msgid "Name:"
+msgstr "نام:"
+
+msgid "Latitude:"
+msgstr "عرض جغرافیائی:"
+
+msgid "Longitude:"
+msgstr "طول جغرافیائی:"
+
+msgid "Calculate Nearest City"
+msgstr "محاسبهٔ نزدیک‌ترین شهر"
+
+msgid "%s kilometers from %s"
+msgstr "%s کیلومتر تا %s"
+
+###############################
+
+msgid "Time Zone"
+msgstr "منطقهٔ زمانی"
+
+msgid "Timezone"
+msgstr "منطقهٔ زمانی"
+
+msgid "Daylight Saving"
+msgstr "صرفه‌جویی نور روز"
+
+msgid "Recent..."
+msgstr "اخیر..."
+
+msgid "For input times of event"
+msgstr ""
+"برای زمان‌های ورودی رویداد"
+
+msgid "\"Time Zone\" property is newly added to events"
+msgstr ""
+"ویژگی «منطقهٔ زمانی» به‌تازگی به رویدادها اضافه شده است"
+
+
+msgid "But this property needs to be saved for current events"
+msgstr ""
+"اما این ویژگی باید برای رویدادهای فعلی ذخیره شود"
+
+msgid "Select the time zone for your current location"
+msgstr ""
+"منطقهٔ زمانی موقعیت فعلی خود را انتخاب کنید"
+
+msgid "If you have been in a different time zone while adding some of your event, you need to edit those events manually and change the time zone"
+msgstr ""
+"اگر هنگام اضافه کردن بعضی از رویدادهای خود، در منطقهٔ زمانی دیگری بوده‌اید، باید آن رویدادها را بصورت دستی ویرایش کنید و منطقهٔ زمانی را تغییر دهید"
+
+msgid "Time zone for All-Day events will be disabled by default"
+msgstr ""
+"منطقهٔ زمانی برای رویدادهای تمام-روز غیرفعال خواهد بود"
+
+
+msgid "Time zone is invalid"
+msgstr ""
+"منطقهٔ زمانی نامعتبر است"
+
+
+msgid "Events are Read-Only because they are locked by another StarCalendar 3.x process"
+msgstr ""
+"رویدادها قابل تغییر نیستند چون توسط یک پروسهٔ دیگر از StarCalendar 3 قفل شده‌اند"
+
+
+msgid "This event is outside of date range specified in it's group. You probably need to edit group \"%s\" and change \"Start\" or \"End\" values"
+msgstr ""
+"این رویداد خارج از بازهٔ زمانی است که در گروهش مشخص شده. احتمالاً نیاز دارید که گروه «%s» را ویرایش کرده و مقادیر «شروع» یا «پایان» را تغییر دهید"
+
+
+
+############################################################################
+############################################################################
+############################################################################
+
+
+msgid "Africa"
+msgstr "آفریقا"
+
+msgid "Asia"
+msgstr "آسیا"
+
+msgid "Australasia and Oceania"
+msgstr "استرالیا و اقیانوسیه"
+
+msgid "Central and South America"
+msgstr "امریکای مرکزی و شمالی"
+
+msgid "Europe"
+msgstr "اروپا"
+
+msgid "Middle East"
+msgstr "خاورمیانه"
+
+msgid "North America"
+msgstr "امریکای شمالی"
+
+############################################################################
+############################################################################
+
+
+msgid "Abadan"
+msgstr "آبادان"
+
+msgid "Abadeh"
+msgstr "آباده"
+
+msgid "Abhar"
+msgstr "ابهر"
+
+msgid "Abyek"
+msgstr "آبیک"
+
+msgid "Ahar"
+msgstr "اهر"
+
+msgid "Ahvaz"
+msgstr "اهواز"
+
+msgid "Aliabad"
+msgstr "علی آباد"
+
+msgid "Aligudarz"
+msgstr "الیگودرز"
+
+msgid "Amol"
+msgstr "آمل"
+
+msgid "Andimeshk"
+msgstr "اندیمشک"
+
+msgid "Andisheh"
+msgstr "اندیشه"
+
+msgid "Arak"
+msgstr "اراک"
+
+msgid "Aran va Bid Gol"
+msgstr "آران و بیدگل"
+
+msgid "Ardabil"
+msgstr "اردبیل"
+
+msgid "Ardakan"
+msgstr "اردکان"
+
+msgid "Asadabad"
+msgstr "اسداباد"
+
+msgid "Astara"
+msgstr "آستارا"
+
+msgid "Azadshahr"
+msgstr "آزادشهر"
+
+msgid "Babol"
+msgstr "بابل"
+
+msgid "Babol Sar"
+msgstr "بابلسر"
+
+msgid "Baft"
+msgstr "بافت"
+
+msgid "Baharestan"
+msgstr "بهارستان"
+
+msgid "Bam"
+msgstr "بم"
+
+msgid "Bandar-e Abbas"
+msgstr "بندرعباس"
+
+msgid "Bandar-e Anzali"
+msgstr "بندرانزلی"
+
+msgid "Bandar-e Emam Khomeyni"
+msgstr "بندرامام خمینی"
+
+msgid "Bandar-e-Gonaveh"
+msgstr "بندرگناوه"
+
+msgid "Bandar-e Mahshahr"
+msgstr "بندرماهشهر"
+
+msgid "Bandar-e Torkeman"
+msgstr "بندرترکمن"
+
+msgid "Baneh"
+msgstr "بانه"
+
+msgid "Behbahan"
+msgstr "بهبهان"
+
+msgid "Behshahr"
+msgstr "بهشهر"
+
+msgid "Bijar"
+msgstr "بیجار"
+
+msgid "Birjand"
+msgstr "بیرجند"
+
+msgid "Bojnurd"
+msgstr "بجنورد"
+
+msgid "Bonab"
+msgstr "بناب"
+
+msgid "Borazjan"
+msgstr "برازجان"
+
+msgid "Borujen"
+msgstr "بروجن"
+
+msgid "Borujerd"
+msgstr "بروجرد"
+
+msgid "Bukan"
+msgstr "بوکان"
+
+msgid "Bumahen"
+msgstr "بومهن"
+
+msgid "Bushehr"
+msgstr "بوشهر"
+
+msgid "Chah Bahar"
+msgstr "چاه بهار"
+
+msgid "Chalus"
+msgstr "چالوس"
+
+msgid "Chenaran"
+msgstr "چناران"
+
+msgid "Damavand"
+msgstr "دماوند"
+
+msgid "Damghan"
+msgstr "دامغان"
+
+msgid "Darab"
+msgstr "داراب"
+
+msgid "Darcheh Piaz"
+msgstr "درچه پیاز"
+
+msgid "Deh Dasht"
+msgstr "دهدشت"
+
+msgid "Dezful"
+msgstr "دزفول"
+
+msgid "Dorud"
+msgstr "دورود"
+
+msgid "Dow Gonbadan"
+msgstr "دوگنبدان"
+
+msgid "Eqlid"
+msgstr "اقلید"
+
+msgid "Esfahan"
+msgstr "اصفهان"
+
+msgid "Esfarayen"
+msgstr "اسفراین"
+
+msgid "Eslamabad-e Gharb"
+msgstr "اسلام آباد غرب"
+
+msgid "Eslamshahr"
+msgstr "اسلام شهر"
+
+msgid "Fasa"
+msgstr "فسا"
+
+msgid "Felavarjan"
+msgstr "فلاورجان"
+
+msgid "Firuzabad"
+msgstr "فیروزاباد"
+
+msgid "Fulad Shahr"
+msgstr "فولادشهر"
+
+msgid "Garmsar"
+msgstr "گرمسار"
+
+msgid "Golpayegan"
+msgstr "گلپایگان"
+
+msgid "Gonbad-e Kavus"
+msgstr "گنبدکاووس"
+
+msgid "Gorgan"
+msgstr "گرگان"
+
+msgid "Hamadan"
+msgstr "همدان"
+
+msgid "Harsin"
+msgstr "هرسین"
+
+msgid "Hashtgerd"
+msgstr "هشتگرد"
+
+msgid "Hashtpar"
+msgstr "هشتپر"
+
+msgid "Ilam"
+msgstr "ایلام"
+
+msgid "Iranshahr"
+msgstr "ایرانشهر"
+
+msgid "Izeh"
+msgstr "ایذه"
+
+msgid "Jahrom"
+msgstr "جهرم"
+
+msgid "Javanrud"
+msgstr "جوانرود"
+
+msgid "Jiroft"
+msgstr "جیرفت"
+
+msgid "Kahnuj"
+msgstr "کهنوج"
+
+msgid "Kamal Shahr"
+msgstr "کمال شهر"
+
+msgid "Kamyaran"
+msgstr "کامیاران"
+
+msgid "Kangavar"
+msgstr "کنگاور"
+
+msgid "Karaj"
+msgstr "کرج"
+
+msgid "Kashan"
+msgstr "کاشان"
+
+msgid "Kashmar"
+msgstr "کاشمر"
+
+msgid "Kazerun"
+msgstr "کازرون"
+
+msgid "Kerman"
+msgstr "کرمان"
+
+msgid "Kermanshah"
+msgstr "کرمانشاه"
+
+msgid "Khalkhal"
+msgstr "خلخال"
+
+msgid "Khash"
+msgstr "خاش"
+
+msgid "Khomeynishahr"
+msgstr "خمینی شهر"
+
+msgid "Khorramabad"
+msgstr "خرم آباد"
+
+msgid "Khorramdareh"
+msgstr "خرمدره"
+
+msgid "Khorramshahr"
+msgstr "خرمشهر"
+
+msgid "Khowmeyn"
+msgstr "خمین"
+
+msgid "Khvorasgan"
+msgstr "خوراسگان"
+
+msgid "Khvoy"
+msgstr "خوی"
+
+msgid "Kuhdasht"
+msgstr "کوهدشت"
+
+msgid "Lahijan"
+msgstr "لاهیجان"
+
+msgid "Langerud"
+msgstr "لنگرود"
+
+msgid "Lar"
+msgstr "لار"
+
+msgid "Mahabad"
+msgstr "مهاباد"
+
+msgid "Mahdasht"
+msgstr "ماهدشت"
+
+msgid "Maku"
+msgstr "ماکو"
+
+msgid "Malard"
+msgstr "ملارد"
+
+msgid "Malayer"
+msgstr "ملایر"
+
+msgid "Maragheh"
+msgstr "مراغه"
+
+msgid "Marand"
+msgstr "مرند"
+
+msgid "Marivan"
+msgstr "مریوان"
+
+msgid "Marv Dasht"
+msgstr "مرودشت"
+
+msgid "Mashhad"
+msgstr "مشهد"
+
+msgid "Masjed-e Soleyman"
+msgstr "مسجدسلیمان"
+
+msgid "Meshgin Shahr"
+msgstr "مشگین شهر"
+
+msgid "Meshkin Dasht"
+msgstr "مشکین دشت"
+
+msgid "Meybod"
+msgstr "میبد"
+
+msgid "Mianduab"
+msgstr "میاندواب"
+
+msgid "Mianeh"
+msgstr "میانه"
+
+msgid "Minab"
+msgstr "میناب"
+
+msgid "Mobarakeh"
+msgstr "مبارکه"
+
+msgid "Nahavand"
+msgstr "نهاوند"
+
+msgid "Najafabad"
+msgstr "نجف‌آباد"
+
+msgid "Naqadeh"
+msgstr "نقده"
+
+msgid "Naz̨arabad"
+msgstr "نظراباد"
+
+msgid "Neka"
+msgstr "نکا"
+
+msgid "Neyriz"
+msgstr "نی ریز"
+
+msgid "Neyshabur"
+msgstr "نیشابور"
+
+msgid "Nurabad"
+msgstr "نور آباد"
+
+msgid "Nushahr"
+msgstr "نوشهر"
+
+msgid "Omidiyeh"
+msgstr "امیدیه"
+
+msgid "Orumiyeh"
+msgstr "ارومیه"
+
+msgid "Pakdasht"
+msgstr "پاکدشت"
+
+msgid "Parsabad"
+msgstr "پارس آباد"
+
+msgid "Piranshahr"
+msgstr "پیرانشهر"
+
+msgid "Pishva"
+msgstr "پیشوا"
+
+msgid "Qaemshahr"
+msgstr "قائم شهر"
+
+msgid "Qarchak"
+msgstr "قرچک"
+
+msgid "Qazvin"
+msgstr "قزوین"
+
+msgid "Qods"
+msgstr "قدس"
+
+msgid "Qom"
+msgstr "قم"
+
+msgid "Qorveh"
+msgstr "قروه"
+
+msgid "Quchan"
+msgstr "قوچان"
+
+msgid "Rafsanjan"
+msgstr "رفسنجان"
+
+msgid "Ramhormoz"
+msgstr "رامهرمز"
+
+msgid "Resht"
+msgstr "رشت"
+
+msgid "Robaţ Karim"
+msgstr "رباط کریم"
+
+msgid "Sabzevar"
+msgstr "سبزوار"
+
+msgid "Salmas"
+msgstr "سلماس"
+
+msgid "Sanandaj"
+msgstr "سنندج"
+
+msgid "Saqqez"
+msgstr "سقز"
+
+msgid "Sarab"
+msgstr "سراب"
+
+msgid "Saravan"
+msgstr "سراوان"
+
+msgid "Sar Dasht"
+msgstr "سردشت"
+
+msgid "Sari"
+msgstr "ساری"
+
+msgid "Saveh"
+msgstr "ساوه"
+
+msgid "Semnan"
+msgstr "سمنان"
+
+msgid "Shadegan"
+msgstr "شادگان"
+
+msgid "Shahin Shahr"
+msgstr "شاهین شهر"
+
+msgid "Shahrak-e Golestan"
+msgstr "شهرک گلستان"
+
+msgid "Shahr-e Babak"
+msgstr "شهربابک"
+
+msgid "Shahr-e Kord"
+msgstr "شهرکرد"
+
+msgid "Shahreza"
+msgstr "شهرضا"
+
+msgid "Shahriar"
+msgstr "شهریار"
+
+msgid "Shahrud"
+msgstr "شاهرود"
+
+msgid "Shiravan"
+msgstr "شیروان"
+
+msgid "Shiraz"
+msgstr "شیراز"
+
+msgid "Shush"
+msgstr "شوش"
+
+msgid "Shushtar"
+msgstr "شوشتر"
+
+msgid "Sirjan"
+msgstr "سیرجان"
+
+msgid "Sonqor"
+msgstr "سنقر"
+
+msgid "Sowmaeh Sara"
+msgstr "صومعه سرا"
+
+msgid "Susangerd"
+msgstr "سوسنگرد"
+
+msgid "Tabriz"
+msgstr "تبریز"
+
+msgid "Takab"
+msgstr "تکاب"
+
+msgid "Takestan"
+msgstr "تاکستان"
+
+msgid "Taybad"
+msgstr "تایباد"
+
+msgid "Tehran"
+msgstr "تهران"
+
+msgid "Tonekabon"
+msgstr "تنکابن"
+
+msgid "Torbat-e H̨eydariyeh"
+msgstr "تربت حیدریه"
+
+msgid "Torbat-e Jam"
+msgstr "تربت جام"
+
+msgid "Tuyserkan"
+msgstr "تویسرکان"
+
+msgid "Varamin"
+msgstr "ورامین"
+
+msgid "Yasuj"
+msgstr "یاسوج"
+
+msgid "Yazd"
+msgstr "یزد"
+
+msgid "Zabol"
+msgstr "زابل"
+
+msgid "Zahedan"
+msgstr "زاهدان"
+
+msgid "Zanjan"
+msgstr "زنجان"
+
+msgid "Zarand"
+msgstr "زرند"
+
+msgid "Zarrin Shahr"
+msgstr "زرین شهر"
+
+################################################################################
+################################################################################
+
+msgid "Afghanistan"
+msgstr "افغانستان"
+
+msgid "Albania"
+msgstr "آلبانی"
+
+msgid "Algeria"
+msgstr "الجزایر"
+
+msgid "Andorra"
+msgstr "آندورا"
+
+msgid "Angola"
+msgstr "آنگولا"
+
+msgid "Antigua & Barbuda"
+msgstr "آنتیگوآ و باربودا"
+
+msgid "Argentina"
+msgstr "آرژانتین"
+
+msgid "Armenia"
+msgstr "ارمنستان"
+
+msgid "Australia"
+msgstr "استرالیا"
+
+msgid "Austria"
+msgstr "اتریش"
+
+msgid "Azerbaijan"
+msgstr "آذربایجان"
+
+msgid "Bahamas"
+msgstr "باهاما"
+
+msgid "Bahrain"
+msgstr "بحرین"
+
+msgid "Bangladesh"
+msgstr "بنگلادش"
+
+msgid "Barbados"
+msgstr "باربادوس"
+
+msgid "Belarus"
+msgstr "روسیهٔ سفید (بیلاروس)"
+
+msgid "Belgium"
+msgstr "بلژیک"
+
+msgid "Belize"
+msgstr "بلیز"
+
+msgid "Benin"
+msgstr "بنین"
+
+msgid "Bhutan"
+msgstr "بوتان"
+
+msgid "Bolivia"
+msgstr "بولیوی"
+
+msgid "Bosnia & Herzegovina"
+msgstr "بوسنی و هرزگورین"
+
+msgid "Botswana"
+msgstr "بوتسوانا"
+
+msgid "Brazil"
+msgstr "برزیل"
+
+msgid "Brunei"
+msgstr "برونئی"
+
+msgid "Bulgaria"
+msgstr "بلغارستان"
+
+msgid "Burkina Faso"
+msgstr "بورکینا فاسو"
+
+msgid "Burundi"
+msgstr "بوروندی"
+
+msgid "Cambodia"
+msgstr "کامبوج"
+
+msgid "Cameroon"
+msgstr "کامرون"
+
+msgid "Canada"
+msgstr "کانادا"
+
+msgid "Cape Verde"
+msgstr "کیپ ورد"
+
+msgid "Central African Republic"
+msgstr "افریقای مرکزی"
+
+msgid "Chad"
+msgstr "چاد"
+
+msgid "Chile"
+msgstr "شیلی"
+
+msgid "China"
+msgstr "چین"
+
+msgid "Colombia"
+msgstr "کلمبیا"
+
+msgid "Comoros"
+msgstr "کومور"
+
+msgid "Congo, Democratic Republic of the"
+msgstr "جمهوری دموکرات کنگو (کنشاسا، زئیر)"
+
+msgid "Congo, Republic of the"
+msgstr "جمهوری کنگو (برازاویل)"
+
+msgid "Costa Rica"
+msgstr "کستا ریکا"
+
+msgid "Cote d'Ivoire"
+msgstr "ساحل عاج (کوت دیووآر)"
+
+msgid "Croatia"
+msgstr "کروآسی"
+
+msgid "Cuba"
+msgstr "کوبا"
+
+msgid "Cyprus"
+msgstr "قبرس"
+
+msgid "Czech Republic"
+msgstr "چک"
+
+msgid "Denmark"
+msgstr "دانمارک"
+
+msgid "Djibouti"
+msgstr "جیبوتی"
+
+msgid "Dominica"
+msgstr "دومینیکا"
+
+msgid "Dominican Republic"
+msgstr "دومینیکن"
+
+msgid "East Timor"
+msgstr "تیمور شرقی"
+
+msgid "Ecuador"
+msgstr "اکوادور"
+
+msgid "Egypt"
+msgstr "مصر"
+
+msgid "El Salvador"
+msgstr "السالوادور"
+
+msgid "Equatorial Guinea"
+msgstr "گینهٔ استوایی"
+
+msgid "Eritrea"
+msgstr "اریتره"
+
+msgid "Estonia"
+msgstr "استونی"
+
+msgid "Ethiopia"
+msgstr "اتیوپی"
+
+msgid "Fiji"
+msgstr "فیجی"
+
+msgid "Finland"
+msgstr "فنلاند"
+
+msgid "France"
+msgstr "فرانسه"
+
+msgid "Gabon"
+msgstr "گابون"
+
+msgid "Gambia"
+msgstr "گامبیا"
+
+msgid "Georgia"
+msgstr "گرجستان"
+
+msgid "Germany"
+msgstr "آلمان"
+
+msgid "Ghana"
+msgstr "غنا"
+
+msgid "Greece"
+msgstr "یونان"
+
+msgid "Grenada"
+msgstr "گرنادا"
+
+msgid "Guatemala"
+msgstr "گواتمالا"
+
+msgid "Guinea"
+msgstr "گینه"
+
+msgid "Guinea Bissau"
+msgstr "گینهٔ بیسائو"
+
+msgid "Guyana"
+msgstr "گویان"
+
+msgid "Haiti"
+msgstr "هائیتی | ها ئی تی"
+
+msgid "Honduras"
+msgstr "هندوراس"
+
+msgid "Hungary"
+msgstr "مجارستان"
+
+msgid "Iceland"
+msgstr "ایسلند"
+
+msgid "India"
+msgstr "هند"
+
+msgid "Indonesia"
+msgstr "اندونزی"
+
+msgid "Iran"
+msgstr "ایران"
+
+msgid "Iraq"
+msgstr "عراق"
+
+msgid "Ireland"
+msgstr "ایرلند"
+
+msgid "Israel"
+msgstr "اسرائیل"
+
+msgid "Italy"
+msgstr "ایتالیا"
+
+msgid "Jamaica"
+msgstr "جامائیکا"
+
+msgid "Japan"
+msgstr "ژاپن"
+
+msgid "Jordan"
+msgstr "اردن"
+
+msgid "Kazakhstan"
+msgstr "قزاقستان"
+
+msgid "Kenya"
+msgstr "کنیا"
+
+msgid "Kiribati"
+msgstr "کیریباتی (کیریباس)"
+
+msgid "Kuwait"
+msgstr "کویت"
+
+msgid "Kyrgyzstan"
+msgstr "قرقیزستان"
+
+msgid "Laos"
+msgstr "لائوس"
+
+msgid "Latvia"
+msgstr "لاتویا (لتونی)"
+
+msgid "Lebanon"
+msgstr "لبنان"
+
+msgid "Lesotho"
+msgstr "لسوتو"
+
+msgid "Liberia"
+msgstr "لیبریا"
+
+msgid "Libya"
+msgstr "لیبی"
+
+msgid "Liechtenstein"
+msgstr "لیختن‌اشتاین"
+
+msgid "Lithuania"
+msgstr "لیتوانی"
+
+msgid "Luxembourg"
+msgstr "لوگزامبورگ"
+
+msgid "Macedonia"
+msgstr "مقدونیه"
+
+msgid "Madagascar"
+msgstr "ماداگاسکار"
+
+msgid "Malawi"
+msgstr "مالاوی"
+
+msgid "Malaysia"
+msgstr "مالزیا"
+
+msgid "Maldives"
+msgstr "مالدیو"
+
+msgid "Mali"
+msgstr "مالی"
+
+msgid "Malta"
+msgstr "مالت"
+
+msgid "Marshall Islands"
+msgstr "جزایر مارشال"
+
+msgid "Mauritania"
+msgstr "موریتانی"
+
+msgid "Mauritius"
+msgstr "موریس"
+
+msgid "Mexico"
+msgstr "مکزیک"
+
+msgid "Micronesia"
+msgstr "میکرونزی"
+
+msgid "Moldova"
+msgstr "مولداوی"
+
+msgid "Monaco"
+msgstr "موناکو"
+
+msgid "Mongolia"
+msgstr "مغولستان"
+
+msgid "Morocco"
+msgstr "مغرب (مراکش)"
+
+msgid "Mozambique"
+msgstr "موزامبیک"
+
+msgid "Myanmar"
+msgstr "میانمار (برمه)"
+
+msgid "Namibia"
+msgstr "نامیبیا"
+
+msgid "Nauru"
+msgstr "نائورو"
+
+msgid "Nepal"
+msgstr "نپال"
+
+msgid "Netherlands"
+msgstr "هلند"
+
+msgid "New Zealand"
+msgstr "زلاند نو"
+
+msgid "Nicaragua"
+msgstr "نیکاراگوآ"
+
+msgid "Niger"
+msgstr "نیجر"
+
+msgid "Nigeria"
+msgstr "نیجریه"
+
+msgid "North Korea"
+msgstr "کرهٔ شمالی"
+
+msgid "Norway"
+msgstr "نروژ"
+
+msgid "Oman"
+msgstr "عمان"
+
+msgid "Pakistan"
+msgstr "پاکستان"
+
+msgid "Palau"
+msgstr "پالائو"
+
+msgid "Palestine"
+msgstr "فلسطین"
+
+msgid "Panama"
+msgstr "پاناما"
+
+msgid "Papua New Guinea"
+msgstr "پاپوا گینهٔ نو"
+
+msgid "Paraguay"
+msgstr "پاراگوئه"
+
+msgid "Peru"
+msgstr "پرو"
+
+msgid "Philippines"
+msgstr "فیلیپین"
+
+msgid "Poland"
+msgstr "لهستان"
+
+msgid "Portugal"
+msgstr "پرتغال"
+
+msgid "Qatar"
+msgstr "قطر"
+
+msgid "Romania"
+msgstr "رومانی"
+
+msgid "Russia"
+msgstr "روسیه"
+
+msgid "Rwanda"
+msgstr "روآندا"
+
+msgid "Samoa"
+msgstr "ساموآ"
+
+msgid "San Marino"
+msgstr "سان مازینو"
+
+msgid "Sao Tome & Principe"
+msgstr "سائوتومه و پرنسیپ"
+
+msgid "Saudi Arabia"
+msgstr "عربستان صعودی"
+
+msgid "Senegal"
+msgstr "سنگال"
+
+msgid "Serbia"
+msgstr "صربستان و مونته‌نگرو (یوگوسلاوی)"
+
+msgid "Seychelles"
+msgstr "سیشل"
+
+msgid "Sierra Leone"
+msgstr "سیرالئون"
+
+msgid "Singapore"
+msgstr "سنگاپور"
+
+msgid "Slovakia"
+msgstr "اسلوواکی"
+
+msgid "Slovenia"
+msgstr "اسلوونی"
+
+msgid "Solomon Islands"
+msgstr "جزایر سلیمان"
+
+msgid "Somalia"
+msgstr "سومالی"
+
+msgid "South Africa"
+msgstr "افریقای جنوبی"
+
+msgid "South Korea"
+msgstr "کرهٔ جنوبی"
+
+msgid "Spain"
+msgstr "اسپانیا"
+
+msgid "Sri Lanka"
+msgstr "سری لانکا"
+
+msgid "St Kitts & Nevis"
+msgstr "سنت کیتس و نویس"
+
+msgid "St Lucia"
+msgstr "سنت لوسیا"
+
+msgid "St Vincent"
+msgstr "سنت وینسنت و گرنادین"
+
+msgid "Sudan"
+msgstr "سودان"
+
+msgid "Suriname"
+msgstr "سوینام"
+
+msgid "Swaziland"
+msgstr "سوازیلند"
+
+msgid "Sweden"
+msgstr "سوئد"
+
+msgid "Switzerland"
+msgstr "سوئیس"
+
+msgid "Syria"
+msgstr "سوریه"
+
+msgid "Taiwan"
+msgstr "تایوان"
+
+msgid "Tajikistan"
+msgstr "تاجیکستان"
+
+msgid "Tanzania"
+msgstr "تانزانیا"
+
+msgid "Thailand"
+msgstr "تایلند"
+
+msgid "Togo"
+msgstr "توگو"
+
+msgid "Tonga"
+msgstr "تونگا"
+
+msgid "Trinidad"
+msgstr "ترینیدا و توباگو"
+
+msgid "Tunisia"
+msgstr "تونس"
+
+msgid "Turkey"
+msgstr "ترکیه"
+
+msgid "Turkmenistan"
+msgstr "ترکمنستان"
+
+msgid "Tuvalu"
+msgstr "توولا"
+
+msgid "Uganda"
+msgstr "اوگاندا"
+
+msgid "Ukraine"
+msgstr "اوکراین"
+
+msgid "United Arab Emirates"
+msgstr "امارات متحدهٔ عربی"
+
+msgid "United Kingdom"
+msgstr "انگلستان"
+
+msgid "United States of America"
+msgstr "ایالات متحدهٔ امریکا"
+
+msgid "Uruguay"
+msgstr "اوروگوئه"
+
+msgid "Uzbekistan"
+msgstr "ازبکستان"
+
+msgid "Vanuatu"
+msgstr "وانوآتو"
+
+msgid "Vatican City"
+msgstr "واتیکان"
+
+msgid "Venezuela"
+msgstr "ونزوئلا"
+
+msgid "Vietnam"
+msgstr "ویتنام"
+
+msgid "Western Sahara"
+msgstr "صحرا"
+
+msgid "Yemen"
+msgstr "یمن"
+
+msgid "Zambia"
+msgstr "زامبیا"
+
+msgid "Zimbabwe"
+msgstr "زیمبابوه"
+
+################################################################################
+################################################################################
+
+msgid "Saeed Rasooli <saeed.gnu@gmail.com>"
+msgstr ""
+"سعید رسولی <saeed.gnu@gmail.com>"
+
+msgid "Mola Pahnadayan <mola.mp@gmail.com>"
+msgstr ""
+"مولا پهنادایان <mola.mp@gmail.com>"
+
+msgid "Mehdi Bayazee <bayazee@gmail.com>"
+msgstr ""
+"مهدی بیاضی <bayazee@gmail.com>"
+
+msgid "Hamid Zarrabi-Zadeh <zarrabi@scs.carleton.ca>"
+msgstr ""
+"حمید ضرابی‌زاده <zarrabi@scs.carleton.ca>"
+
+msgid "Reza Moradi Ghiasabadi (www.ghiasabadi.com)"
+msgstr ""
+"رضا مرادی قیاس آبادی (www.ghiasabadi.com)"
+
+msgid "translator-credits"
+msgstr "Saeed Rasooli <saeed.gnu@gmail.com>"

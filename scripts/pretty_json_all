@@ -1,0 +1,5 @@
+#!/bin/bash
+#!/bin/bash
+myDir=`dirname "$0"`
+find ~/.starcal3 -name '*.json' -print -exec "$myDir/pretty_json.py" '{}' \;
+

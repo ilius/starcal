@@ -1,0 +1,15 @@
+#!/usr/bin/env python3
+import sys
+
+ipath = sys.argv[1]
+
+for line in open(ipath):
+    if line.startswith('msgid'):
+        i = line.index('"')
+        st = line[i+1:-2]
+        print('msgid "%s"\nmsgstr "%s"\n\n'%(st, st))
+
+
+
+
+

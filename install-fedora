@@ -1,0 +1,98 @@
+#!/bin/bash
+## makes rpm package and installs it using yum
+
+## yum install @development-tools
+## yum install rpm-build rpmdevtools rpmlint mock
+
+
+if [ "$UID" != "0" ] ; then
+  echo "Run this script as root"
+  exit 1
+fi
+
+
+myPath="$0"
+if [ "${myPath:0:2}" == "./" ] ; then
+    myPath=$PWD${myPath:1}
+elif [ "${myPath:0:1}" != "/" ] ; then
+    myPath=$PWD/$myPath
+fi
+
+
+pkgName=starcal3
+sourceDir="`dirname \"$myPath\"`"
+#"$sourceDir/scripts/assert_python3"
+version=`$sourceDir/scal3/get_version.py`
+
+#echo "myPath=$myPath"
+#echo "sourceDir=$sourceDir"
+#echo version=$version
+
+#%post
+#/usr/share/$pkgName/scripts/assert_python3
+
+requires=('python3(>=3.2)')
+requires+=('python3-gobject') ## The new gobject introspection
+#requires+=('python3-gflags')
+requires+=('python3-httplib2')
+requires+=('python3-psutil')
+requires+=('python3-bson')
+
+#recommends=()
+requires+=('python3-dateutil')
+#requires+=('python3-igraph')
+#requires+=('python3-gnomevfs')
+
+
+requires_str=$(printf " %s" "${requires[@]}") ; requires_str=${requires_str:2}
+#recommends_str=$(printf ", %s" "${recommends[@]}") ; recommends_str=${recommends_str:2}
+
+
+
+echo "Name:     $pkgName
+Version:        $version
+Release:        1
+Summary:        A full-featured international calendar writen in Python
+
+Group:          User Interface/Desktops
+License:        GPLv3+
+URL:            http://ilius.github.io/starcal
+Requires:       $requires_str
+BuildArch:      noarch
+
+%description
+StarCalendar is a full-featured international calendar writen in Python,
+with both PyGTK and PyQt interfaces, that supports Jalai(Iranian),
+Hijri(Islamic), and Indian National calendars, as well as common 
+english(Gregorian) calendar
+
+%install
+\"$sourceDir/install\" \"%{buildroot}\" --for-pkg --prefix=%{_prefix}
+
+%files
+%defattr(-,root,root,-)
+%{_prefix}/share/$pkgName/*
+%{_prefix}/bin/$pkgName*
+%{_prefix}/share/applications/$pkgName*
+%{_prefix}/share/doc/$pkgName/*
+%{_prefix}/share/pixmaps/$pkgName.png
+%{_prefix}/share/icons/hicolor/*/apps/$pkgName.png
+%{_prefix}/share/locale/*/LC_MESSAGES/$pkgName.mo
+" > $pkgName.spec
+
+pkgPath=`rpmbuild -bb $pkgName.spec | grep -o /usr/src/packages/RPMS/.*rpm`
+
+if [ -z $pkgPath ] ; then
+    exit 1
+fi
+
+if [ ! -f $pkgPath ] ; then
+    echo "Package file $pkgPath does not exit"
+    exit 1
+fi
+
+echo "Package created in \"$pkgPath\", installing"
+yum remove -y $pkgName >/dev/null 2>&1
+yum install --nogpgcheck "$pkgPath" ## disable gpgcheck in /etc/yum.conf
+#rpm -U --force "$pkgPath" ## its OK when requiered packages are installed!
+

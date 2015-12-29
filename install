@@ -1,0 +1,225 @@
+#!/bin/bash
+UI_QT_ENABLE=
+
+function printUsage {
+    ## echo "Usage: $0 [TERGET_DIR] [--for-pkg|--portable] [--prefix=/usr/local]"
+    U='\033[4m' ## start Underline
+    E='\033[0;0;0m' ## End formatting
+    echo -e "Usage: $0 [${U}TERGET_DIR${E}] [--for-pkg|--portable] [--prefix=${U}/usr/local${E}]"
+}
+
+function clean {
+    for EXP in '.hidden' '*~' '*.pyc' '*.pyo' '*.tar.xz' '*.deb' '*.rpm' '*.spec'; do
+        find . -name "$EXP" -exec rm '{}' \;
+    done 2>/dev/null
+    find . -name '__pycache__' -exec rm -R '{}' \; 2>/dev/null
+    find scal3 -type d -empty -delete
+}
+
+myPath="$0"
+if [ "${myPath:0:2}" == "./" ] ; then
+    myPath=$PWD${myPath:1}
+elif [ "${myPath:0:1}" != "/" ] ; then
+    myPath=$PWD/$myPath
+fi
+
+pkgName=starcal3
+sourceDir="`dirname \"$myPath\"`"
+version=`$sourceDir/scal3/get_version.py`
+
+PY=python3
+#"$sourceDir/scripts/assert_python3"
+
+"$sourceDir/update-perm" ## FIXME
+
+
+options=`getopt -o 'h' --long 'help,for-pkg,portable,prefix:' -n "$0" -- "$@"`
+if [ $? != 0 ] ; then
+    printUsage
+    exit 1
+fi
+eval set -- "$options" ## Note the quotes around $options are essential!
+options=""
+
+
+prefix=""
+installType=""
+
+while true ; do
+	case "$1" in
+	    --help | -h) printUsage ; exit 0 ;;
+		--for-pkg) installType="for-pkg" ; shift ;;
+		--portable) installType="portable" ; shift ;;
+		--prefix) prefix="$2" ; shift 2 ;;
+		--) shift ; break ;;
+		*) echo "Internal error!" ; exit 1 ;;
+	esac
+done
+
+targetDir="$1" ; shift
+if [ -n "$1" ] ; then ## extra arguments
+    printUsage
+    exit 1
+fi
+
+if [ -n "$targetDir" ] ; then ## non-Root directory
+    n=${#targetDir}
+    if [ ${targetDir:n-1:1} = / ] ; then
+        targetDir=${targetDir::-1}
+    fi
+    mkdir -p "${targetDir}"
+fi
+
+## do not f*** the system if a variable was empty amiss!
+if [ -z $pkgName ] ; then
+    echo "Internal Error! pkgName=''"
+    exit 1
+fi
+if [ -z "$prefix" ] ; then ## prefix is empty (not been set)
+    if [ "$installType" = "for-pkg" ] ; then
+        prefix=/usr
+    elif [ "$installType" = "portable" ] ; then
+        prefix=/usr/local ## FIXME
+    else
+        prefix=/usr/local
+    fi
+else
+    n=${#prefix}
+    if [ ${prefix:n-1:1} = / ] ; then
+        prefix=${prefix::-1}
+    fi
+fi
+
+#echo "prefix: $prefix"
+#echo "installType: $installType"
+#echo "targetDir: $targetDir"
+#exit 0
+
+targetPrefix="${targetDir}${prefix}"
+shareDir="${targetPrefix}/share"
+
+
+
+
+
+
+
+mkdir -p "${shareDir}/doc"
+mkdir -p "${shareDir}/applications"
+mkdir -p "${shareDir}/icons"
+mkdir -p "${shareDir}/pixmaps"
+mkdir -p "${shareDir}/doc/$pkgName"
+mkdir -p "${targetPrefix}/bin"
+mkdir -p "${targetDir}/var/log/$pkgName"
+mkdir -p "${targetDir}/etc"
+
+
+
+if [ -L "${shareDir}/$pkgName" ] ; then ## a symbiloc link
+    rm -f "${shareDir}/$pkgName"
+elif [ -d "${shareDir}/$pkgName" ] ; then
+    rm -Rf "${shareDir}/$pkgName"
+fi
+
+cp -Rf "$sourceDir/" "${shareDir}/$pkgName" ### PUT SLASH after $sourceDir to copy whole folder, not just a link (if was a link)
+
+"${shareDir}/$pkgName/update-perm" ## FIXME
+
+for docFile in copyright authors ChangeLog ; do
+    mv -f "${shareDir}/$pkgName/$docFile" "${shareDir}/doc/$pkgName/"
+done
+
+cp -f "${shareDir}/$pkgName/donate" "${shareDir}/doc/$pkgName/"
+
+
+
+## "$sourceDir/config" is not used yet, and will not created by git yet
+#if [ -e "${targetDir}/etc/$pkgName" ] ; then
+#    rm -Rf "${targetDir}/etc/$pkgName" ## descard old configuration? FIXME
+#fi
+#cp -Rf "$sourceDir/config" "${targetDir}/etc/$pkgName"
+
+
+mkdir -p "${shareDir}/icons/hicolor"
+for SZ in 16 22 24 32 48 ; do
+    relDir="icons/hicolor/${SZ}x${SZ}/apps"
+    mkdir -p "${shareDir}/$relDir"
+    mv -f "${shareDir}/$pkgName/$relDir/starcal.png" "${shareDir}/$relDir/$pkgName.png"
+done
+rm -R "${shareDir}/$pkgName/icons"
+
+
+cp -f "$sourceDir/pixmaps/starcal.png" "${shareDir}/pixmaps/$pkgName.png"
+
+
+if [ "$installType" = "for-pkg" ] ; then
+    runDirStr="/usr/share/$pkgName"
+elif [ "$installType" = "portable" ] ; then
+    runDirStr="\"\`dirname \\\"\$0\\\"\`/../share/$pkgName"
+else
+    runDirStr="${shareDir}/$pkgName"
+fi
+
+
+echo "#!/bin/bash
+$PY $runDirStr/scal3/ui_gtk/starcal.py \"\$@\"" > "${targetPrefix}/bin/$pkgName"
+chmod 755 "${targetPrefix}/bin/$pkgName"
+
+if [ $UI_QT_ENABLE ] ; then
+    echo "#!/bin/bash
+    $PY $runDirStr/scal3/ui_qt/starcal.py \"\$@\"" > "${targetPrefix}/bin/$pkgName-qt"
+    chmod 755 "${targetPrefix}/bin/$pkgName-qt"
+fi
+
+
+
+
+
+
+echo "[Desktop Entry]
+Encoding=UTF-8
+Name=StarCalendar $version
+GenericName=StarCalendar
+Comment=A Perfect Calendar Program
+Comment[fa]=یک برنامهٔ کامل تقویم
+Exec=$pkgName
+Icon=$pkgName
+Type=Application
+Terminal=false
+Categories=GTK;Utility;Accessibility;Office;Calendar;
+StartupNotify=true" > "${shareDir}/applications/$pkgName.desktop"
+
+
+if [ $UI_QT_ENABLE ] ; then
+    echo "[Desktop Entry]
+Encoding=UTF-8
+Name=StarCalendar $version (Qt)
+Comment=A Perfect Calendar Program (Qt Interface)
+Comment[fa]=یک برنامهٔ کامل تقویم
+Exec=$pkgName-qt
+Icon=$pkgName
+Type=Application
+Terminal=false
+Categories=GTK;Utility;Accessibility;Office;Calendar;
+StartupNotify=true" > "${shareDir}/applications/$pkgName-qt.desktop"
+fi
+
+
+"$sourceDir/locale.d/install" "${targetPrefix}" ## FIXME
+
+
+## Cleaning useless files from targetDir
+cd "${shareDir}/$pkgName"
+rm -Rf .git .gitignore .Trash* 2>/dev/null
+rm -Rf google-api-python-client/.git google-api-python-client/.hg* 2>/dev/null
+clean
+cd - > /dev/null
+
+cd "$targetDir"
+clean
+cd - > /dev/null
+
+## lib/        -->    starcal3-platform-spec
+## locale/     -->    starcal3-region-*
+
+
