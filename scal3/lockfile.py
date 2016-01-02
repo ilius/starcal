@@ -10,8 +10,15 @@ import psutil
 from scal3.utils import myRaise
 from scal3.json_utils import jsonToData, dataToPrettyJson
 
-        
-    
+
+def get_cmdline(proc):
+    #print(psutil.version_info, proc.cmdline)
+    if isinstance(proc.cmdline, list):## psutil < 2.0
+        return proc.cmdline
+    else:## psutil >= 2.0
+        return proc.cmdline()
+
+
 def checkAndSaveJsonLockFile(fpath):
     locked = False
     if isfile(fpath):
@@ -37,10 +44,10 @@ def checkAndSaveJsonLockFile(fpath):
                     except psutil.NoSuchProcess:
                         print('lock file %s: pid %s does not exist'%(fpath, pid))
                     else:
-                        if proc.cmdline() == cmd:
+                        if get_cmdline(proc) == cmd:
                             locked = True
                         else:
-                            print('lock file %s: cmd does match: %s != %s'%(fpath, proc.cmdline(), cmd))
+                            print('lock file %s: cmd does match: %s != %s'%(fpath, get_cmdline(proc), cmd))
     elif exists(fpath):
         ## what to do? FIXME
         pass
@@ -48,14 +55,10 @@ def checkAndSaveJsonLockFile(fpath):
     if not locked:
         my_pid = os.getpid()
         my_proc = psutil.Process(my_pid)
-        if isinstance(my_proc.cmdline, list):## psutil < 2.0
-            cmd = my_proc.cmdline
-        else:## psutil >= 2.0
-            cmd = my_proc.cmdline()
-        #print(psutil.version_info, my_proc.cmdline)
+        my_cmd = get_cmdline(my_proc)
         my_text = dataToPrettyJson(OrderedDict([
             ('pid', my_pid),
-            ('cmd', cmd),
+            ('cmd', my_cmd),
             ('time', now()),
         ]))
         try:
