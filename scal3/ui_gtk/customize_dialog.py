@@ -201,8 +201,6 @@ class CustomizeDialog(gtk.Dialog):
     def enableCellToggled(self, cell, path):## FIXME
         active = not cell.get_active()
         self.model.set_value(self.model.get_iter(path), 0, active) ## or set(...)
-        itemIter = self.model.get_iter(path)
-        ###
         parentItem = self._widget
         pp = tree_path_split(path)
         item = parentItem.items[pp[0]]
@@ -212,27 +210,28 @@ class CustomizeDialog(gtk.Dialog):
         assert parentItem.items[itemIndex] == item
         ###
         if active:
-            if item.loaded:
-                item.enable = True
-                item.showHide()
-            else:
-                item = item.getLoadedObj()
-                parentItem.replaceItem(itemIndex, item)
-                parentItem.insertItemWidget(itemIndex)
-                for child in item.items:
-                    if item.customizable:
-                        self.appendItemTree(child, itemIter)
-                item.showHide()
-            item.onConfigChange()
-            item.onDateChange()
-        else:
-            item.enable = False
-            item.hide()
-        if item.customizable:
-            if item.optionsWidget:
-                item.optionsWidget.set_sensitive(item.enable)
+            item = self.loadItem(parentItem, itemIndex, path)
+        item.enable = active
+        item.showHide()
         if ui.mainWin:
             ui.mainWin.setMinHeight()
+    def loadItem(self, parentItem, itemIndex, itemPath):
+        itemIter = self.model.get_iter(itemPath)
+        item = parentItem.items[itemIndex]
+        if item.loaded:
+            return item
+        ###
+        item = item.getLoadedObj()
+        parentItem.replaceItem(itemIndex, item)
+        parentItem.insertItemWidget(itemIndex)
+        for child in item.items:
+            if item.customizable:
+                self.appendItemTree(child, itemIter)
+        item.onConfigChange()
+        item.onDateChange()
+        return item
+    def findItem(self, item):
+        return self._widget.items.index(item)
     def updateTreeEnableChecks(self):
         for i, item in enumerate(self._widget.items):
             self.model.set_value(self.model.get_iter((i,)), 0, item.enable)

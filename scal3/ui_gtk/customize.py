@@ -66,6 +66,7 @@ class DummyCalObj(Object):
             myRaise()
             return
         obj = CalObj()
+        obj.enable = self.enable
         return obj
     def updateVars(self):
         pass
