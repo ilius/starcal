@@ -3,6 +3,16 @@
 
 ## rpmbuild command is provided by package "rpm" that is a base and essential package is SUSE
 
+function check_pkg(){
+    OUT=`zypper info "$1" | grep 'Installed:'`
+    if [ "$OUT" = 'Installed: Yes' ] ; then
+        echo 'installed'
+    elif [ "$OUT" = 'Installed: No' ] ; then
+        echo 'not_installed'
+    else
+        echo "not_found"
+    fi
+}
 
 if [ "$UID" != "0" ] ; then
   echo "Run this script as root"
@@ -108,4 +118,18 @@ zypper install -f "$pkgPath"
 #fi
 
 #rpm -U --force "$pkgPath" ## its OK when requiered packages are installed!
+
+if [ "`check_pkg gnome-shell`" = installed ] ; then
+    case `check_pkg gnome-shell-extension-topicons` in
+        not_installed)
+            zypper install gnome-shell-extension-topicons
+            ;;
+        not_found)
+            zypper ar -f http://download.opensuse.org/repositories/home:/PerryWerneck/openSUSE_13.2/ PerryWerneck && \
+            zypper refresh && \
+            zypper install gnome-shell-extension-topicons
+            ;;
+    esac
+fi
+
 
