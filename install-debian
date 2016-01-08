@@ -80,15 +80,14 @@ Description: A full-featured international calendar written in Python
 #chmod 755 "$tmpDir/DEBIAN/postinst"
 
 pkgFile=${pkgName}_${version}-1_all.deb
-dpkg-deb -b "$tmpDir" "$pkgFile"
-if [ "$?" = "0" ] ; then
-	echo "Package file $pkgFile created, installing..."
-	if [ -f /usr/bin/gdebi ] ; then
-		/usr/bin/gdebi "$pkgFile"
-	else
-		apt-get install python3-httplib2
-		dpkg -i "$pkgFile"
-	fi
+dpkg-deb -b "$tmpDir" "$pkgFile" || exit 1
+
+echo "Package file $pkgFile created, installing..."
+if [ -f /usr/bin/gdebi ] ; then
+	/usr/bin/gdebi "$pkgFile"
+else
+	apt-get install python3-httplib2
+	dpkg -i "$pkgFile"
 fi
 
 rm -Rf "$tmpDir"
