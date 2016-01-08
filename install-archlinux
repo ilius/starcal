@@ -59,7 +59,7 @@ package() {
 	\"\$sourceDir/install\" \"\$pkgdir\" --for-pkg
 }" > PKGBUILD
 
-makepkg -sif
+makepkg -sif || exit 1
 
 cp $pkgName*.pkg.tar* "$initPwd" || sudo cp $pkgName*.pkg.tar* "$initPwd" && echo "Package installed and copied into $initPwd directory"
 cd "$initPwd"
