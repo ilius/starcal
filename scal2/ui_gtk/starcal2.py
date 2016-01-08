@@ -150,7 +150,7 @@ class MainWinVbox(gtk.VBox, CustomizableCalBox):
     def keyPress(self, arg, gevent):
         CustomizableCalBox.keyPress(self, arg, gevent)
         return True ## FIXME
-    def switchWcalMcal(self):
+    def switchWcalMcal(self, customizeDialog):
         wi = None
         mi = None
         for i, item in enumerate(self.items):
@@ -158,6 +158,12 @@ class MainWinVbox(gtk.VBox, CustomizableCalBox):
                 wi = i
             elif item._name == 'monthCal':
                 mi = i
+        for itemIndex in (wi, mi):
+            customizeDialog.loadItem(
+                self,
+                itemIndex,
+                (itemIndex,),
+            )
         wcal, mcal = self.items[wi], self.items[mi]
         wcal.enable, mcal.enable = mcal.enable, wcal.enable
         ## FIXME
@@ -879,7 +885,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             self.customizeDialog = CustomizeDialog(self.vbox)
     def switchWcalMcal(self, widget=None):
         self.customizeDialogCreate()
-        self.vbox.switchWcalMcal()
+        self.vbox.switchWcalMcal(self.customizeDialog)
         self.customizeDialog.updateTreeEnableChecks()
         self.customizeDialog.save()
     def customizeShow(self, obj=None, data=None):
