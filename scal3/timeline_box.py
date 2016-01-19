@@ -188,7 +188,7 @@ def calcEventBoxes(
                 lineW = lineW,
             )
             box.hasBorder = (borderTm > 0 and event.name in movableEventTypes)
-            boxValue = (group.id, t0, t1)
+            boxValue = (groupIndex, t0, t1)
             try:
                 boxesDict[boxValue].append(box)
             except KeyError:
