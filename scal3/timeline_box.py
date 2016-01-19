@@ -197,7 +197,7 @@ def calcEventBoxes(
     if debugMode:
         t0 = now()
     boxes = []
-    for bvalue, blist in boxesDict.items():
+    for bvalue, blist in sorted(boxesDict.items()):
         if len(blist) < 4:
             boxes += blist
         else:
