@@ -17,6 +17,7 @@ debian
 *.spec
 *.pkg.tar.xz
 PKGBUILD
+scal2
 ui_qt
 pixmaps_qt
 starcal2-qt
