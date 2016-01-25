@@ -14,6 +14,7 @@ class TimeZoneComboBoxEntry(gtk.HBox):
         gtk.HBox.__init__(self)
         model = gtk.TreeStore(str, bool)
         self.c = gtk.ComboBoxText.new_with_entry()
+        pack(self, self.c, 1, 1)
         #gtk.ComboBoxText.__init__(self)
         self.c.set_model(model)
         self.c.set_entry_text_column(0)
