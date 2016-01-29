@@ -182,7 +182,7 @@ def calcEventBoxes(
                 odt,
                 0,
                 1,
-                text = event.getSummary(),
+                text = event.getText(False),
                 color = group.color,## or event.color FIXME
                 ids = (group.id, event.id) if pixBoxW > 0.5 else None,
                 lineW = lineW,
