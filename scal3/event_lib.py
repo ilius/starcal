@@ -1395,18 +1395,26 @@ class Event(BsonHistEventObj, RuleContainer):
         return data
     getSummary = lambda self: self.summary
     getDescription = lambda self: self.description
-    def getTextParts(self):
+    def getTextParts(self, showDesc=True):
         summary = self.getSummary()
+        ##
+        if self.timeZoneEnable and self.timeZone:
+            try:
+                natz.timezone(self.timeZone)
+            except natz.exceptions.UnknownTimeZoneError:
+                invalidTZ = _('Invalid Time Zone: %s') % self.timeZone
+                summary = '(%s) '%invalidTZ + summary
+        ####
         description = self.getDescription()
-        try:
-            sep = self.parent.eventTextSep
-        except:
-            sep = core.eventTextSep
-        if description:
+        if showDesc and description:
+            try:
+                sep = self.parent.eventTextSep
+            except:
+                sep = core.eventTextSep
             return (summary, sep, description)
         else:
             return (summary,)
-    getText = lambda self, showDesc=True: ''.join(self.getTextParts()) if showDesc else self.summary
+    getText = lambda self, showDesc=True: ''.join(self.getTextParts(showDesc))
     def setId(self, _id=None):
         if _id is None or _id<0:
             _id = lastIds.event + 1 ## FIXME

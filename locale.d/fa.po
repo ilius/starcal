@@ -2786,6 +2786,9 @@ msgid "Time zone is invalid"
 msgstr ""
 "منطقهٔ زمانی نامعتبر است"
 
+msgid "Invalid Time Zone: %s"
+msgstr ""
+"منطقهٔ زمانی نامعتبر: %s"
 
 msgid "Events are Read-Only because they are locked by another StarCalendar 3.x process"
 msgstr ""
