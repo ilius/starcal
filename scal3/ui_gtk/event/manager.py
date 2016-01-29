@@ -513,17 +513,21 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                 ##
                 if group.remoteIds:
                     aid, remoteGid = group.remoteIds
-                    account = ui.eventAccounts[aid]
-                    if account.enable:
-                        menu.add(gtk.SeparatorMenuItem())
-                        menu.add(eventWriteMenuItem(
-                            'Synchronize',
-                            gtk.STOCK_CONNECT,## or gtk.STOCK_REFRESH FIXME
-                            self.syncGroupFromMenu,
-                            path,
-                            account,
-                        ))
-                    #else:## FIXME
+                    try:
+                        account = ui.eventAccounts[aid]
+                    except KeyError:
+                        myRaise()
+                    else:
+                        if account.enable:
+                            menu.add(gtk.SeparatorMenuItem())
+                            menu.add(eventWriteMenuItem(
+                                'Synchronize',
+                                gtk.STOCK_CONNECT,## or gtk.STOCK_REFRESH FIXME
+                                self.syncGroupFromMenu,
+                                path,
+                                account,
+                            ))
+                        #else:## FIXME
                 ##
                 menu.add(gtk.SeparatorMenuItem())
                 #menu.add(eventWriteMenuItem(
