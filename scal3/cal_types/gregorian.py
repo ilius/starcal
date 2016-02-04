@@ -44,6 +44,8 @@ avgYearLen = 365.2425 ## FIXME
 
 options = ()
 
+from datetime import datetime
+
 def save():
     pass
 
@@ -53,6 +55,9 @@ def isLeap(y):
     return y%4==0 and not ( y%100==0 and y%400!=0 )
 
 def to_jd(year, month, day):
+    if year > 0:## > 1.5x faster
+        return datetime(year, month, day).toordinal() + 1721425
+
     # Python 2.x and 3.x:
     if month <= 2:
         tm = 0
@@ -67,6 +72,11 @@ def to_jd(year, month, day):
 
 
 def jd_to(jd) :
+    ordinal = int(jd) - 1721425
+    if ordinal > 0:## > 4x faster
+        dt = datetime.fromordinal(ordinal)
+        return (dt.year, dt.month, dt.day)
+
     ##wjd = floor(jd - 0.5) + 0.5
     qc, dqc = divmod(jd - epoch, 146097) ## qc ~~ quadricent
     cent, dcent = divmod(dqc, 36524)
