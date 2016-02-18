@@ -197,6 +197,9 @@ class BsonHistObj(SObj):
     basicParams = (
     )
     @classmethod
+    def getFile(cls, _id=None):
+        return cls.file
+    @classmethod
     def load(cls, *args):
         _file = cls.getFile(*args)
         data = {}

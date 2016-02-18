@@ -4000,7 +4000,7 @@ class EventAccountsHolder(JsonObjectsHolder):
 
 
 
-class EventTrash(EventContainer, JsonEventObj):
+class EventTrash(EventContainer):
     name = 'trash'
     desc = _('Trash')
     file = join(confDir, 'event', 'trash.json')## FIXME
