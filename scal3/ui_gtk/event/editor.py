@@ -35,8 +35,8 @@ class EventEditorDialog(gtk.Dialog):
         ####
         self.event = event
         #######
-        if isNew:
-            event.timeZone = str(core.localTz)
+        if isNew and not event.timeZone:
+            event.timeZone = str(core.localTz)## why? FIXME
         #######
         hbox = gtk.HBox()
         pack(hbox, gtk.Label(
