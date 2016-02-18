@@ -2397,7 +2397,7 @@ class EventContainer(BsonHistEventObj):
     def getEvent(self, eid):
         if not eid in self.idList:
             raise ValueError('%s does not contain %s'%(self, eid))
-        eventFile = join(eventsDir, '%s.json'%eid)
+        eventFile = Event.getFile(eid)
         if not isfile(eventFile):
             self.idList.remove(eid)
             self.save()## FIXME
