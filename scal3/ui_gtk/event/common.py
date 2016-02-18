@@ -123,9 +123,14 @@ class WidgetClass(gtk.VBox):
         #print('updateWidget', self.event.files)
         self.modeCombo.set_active(self.event.mode)
         if self.tzCheck:
-            self.tzCheck.set_active(self.event.timeZoneEnable)
-            self.tzCombo.set_sensitive(self.event.timeZoneEnable)
-            self.tzCombo.set_text(self.event.timeZone)
+            if self.event.timeZone:
+                self.tzCheck.set_active(self.event.timeZoneEnable)
+                self.tzCombo.set_sensitive(self.event.timeZoneEnable)
+                self.tzCombo.set_text(self.event.timeZone)
+            else:
+                self.tzCheck.set_active(False)
+                self.tzCombo.set_sensitive(False)
+        ###
         self.summaryEntry.set_text(self.event.summary)
         self.descriptionInput.set_text(self.event.description)
         self.iconSelect.set_filename(self.event.icon)
