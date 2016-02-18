@@ -263,10 +263,12 @@ def updateBasicDataFromBson(data, filePath, fileType):
         fileType: 'event' | 'group' | 'account'..., display only, does not matter much
     '''
     try:
-        lastHash = data['history'][0][1]
+        lastHistRecord = data['history'][0]
+        lastEpoch = lastHistRecord[0]
+        lastHash = lastHistRecord[1]
     except (KeyError, IndexError):
         raise ValueError('invalid %s file "%s", no "history"'%(fileType, filePath))
     data.update(loadBsonObject(lastHash))
-
+    data['modified'] = lastEpoch ## FIXME
 
 
