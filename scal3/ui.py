@@ -648,7 +648,7 @@ getEventTagsDict = lambda: dict([(tagObj.name, tagObj) for tagObj in eventTags])
 eventTagsDesc = dict([(t.name, t.desc) for t in eventTags])
 
 ###################
-eventTrash = event_lib.EventTrash()
+eventTrash = event_lib.EventTrash.load()
 eventAccounts = []
 eventGroups = []
 
