@@ -4019,7 +4019,7 @@ class EventTrash(EventContainer, JsonEventObj):
             raise TypeError("delete takes event ID that is integer")
         assert eid in self.idList
         try:
-            rmtree(join(eventsDir, str(eid)))
+            os.remove(Event.getFile(eid))
         except:
             myRaise()
         else:
@@ -4029,7 +4029,7 @@ class EventTrash(EventContainer, JsonEventObj):
         idList2 = self.idList[:]
         for eid in self.idList:
             try:
-                rmtree(join(eventsDir, str(eid)))
+                os.remove(Event.getFile(eid))
             except:
                 myRaise()
             idList2.remove(eid)
