@@ -195,6 +195,9 @@ class BsonHistObj(SObj):
         except Exception as e:
             if not cls.skipLoadExceptions:
                 raise e
+
+        updateBasicDataFromBson(data, _file, cls.name)
+
         try:
             _type = data['type']
         except (KeyError, TypeError):
@@ -253,16 +256,7 @@ class BsonHistObj(SObj):
         basicData['history'] = history
         self.saveBasicData(basicData)
         return history[0]
-    def setData(self, data):
-        history = data.pop('history')## we don't keep the history in memory
-        lastHistRecord = history[0]
-        lastEpoch = lastHistRecord[0]
-        lastHash = lastHistRecord[1]
-        ####
-        data.update(loadBsonObject(lastHash))
-        SObj.setData(self, data)
-        self.modified = int(lastEpoch)
-        return lastHistRecord
+
 
 def updateBasicDataFromBson(data, filePath, fileType):
     '''
