@@ -2754,6 +2754,9 @@ msgstr "منطقهٔ زمانی"
 msgid "Timezone"
 msgstr "منطقهٔ زمانی"
 
+msgid "Default Time Zone"
+msgstr "منطقهٔ زمانی پیش‌فرض"
+
 msgid "Daylight Saving"
 msgstr "صرفه‌جویی نور روز"
 

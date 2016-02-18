@@ -1363,6 +1363,7 @@ class Event(BsonHistEventObj, RuleContainer):
 		'''
 			Call this method from parent event class
 		'''
+		self.timeZone = group.getTimeZoneStr()
 		if group.icon:## and not self.icon FIXME
 			self.icon = group.icon
 	def getInfo(self):
@@ -2378,7 +2379,10 @@ class EventContainer(BsonHistEventObj):
 	basicParams = (
 		'idList',## FIXME
 	)
-	params = BsonHistEventObj.params + (
+	#BsonHistEventObj.params == ()
+	params = (
+		'timeZoneEnable',
+		'timeZone',
 		'icon',
 		'title',
 		'showFullEventDesc',
@@ -2390,10 +2394,16 @@ class EventContainer(BsonHistEventObj):
 			return self.getEvent(key)
 		else:
 			raise TypeError('invalid key type %r give to EventContainer.__getitem__'%key)
+	def getTimeZoneStr(self):
+		if self.timeZoneEnable and self.timeZone:
+			return self.timeZone
+		return ''
 	byIndex = lambda self, index: self.getEvent(self.idList[index])
 	__str__ = lambda self: '%s(title=%s)'%(self.__class__.__name__, self.title)
 	def __init__(self, title='Untitled'):
 		self.parent = None
+		self.timeZoneEnable = False
+		self.timeZone = ''
 		self.mode = calTypes.primary
 		self.idList = []
 		self.title = title
@@ -2533,6 +2543,8 @@ class EventGroup(EventContainer):
 		'type',
 		'title',
 		'calType',
+		'timeZoneEnable',
+		'timeZone',
 		'showInDCal',
 		'showInWCal',
 		'showInMCal',
