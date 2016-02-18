@@ -31,6 +31,7 @@ from scal3.ui_gtk.event import common
 class BaseWidgetClass(gtk.VBox):
 	def __init__(self, group):
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
+		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
 		gtk.VBox.__init__(self)
 		self.group = group
 		########
@@ -74,6 +75,17 @@ class BaseWidgetClass(gtk.VBox):
 		pack(hbox, gtk.Label(''), 1, 1)
 		self.modeCombo = combo
 		pack(self, hbox)
+		#####
+		hbox = gtk.HBox()
+		self.tzCheck = gtk.CheckButton(_('Default Time Zone'))
+		pack(hbox, self.tzCheck)
+		self.sizeGroup.add_widget(self.tzCheck)
+		combo = TimeZoneComboBoxEntry()
+		pack(hbox, combo)
+		pack(hbox, gtk.Label(''), 1, 1)
+		self.tzCombo = combo
+		pack(self, hbox)
+		self.tzCheck.connect('clicked', lambda check: self.tzCombo.set_sensitive(check.get_active()))
 		#####
 		hbox = gtk.HBox()
 		label = gtk.Label(_('Show in Calendar'))
@@ -138,6 +150,12 @@ class BaseWidgetClass(gtk.VBox):
 		self.colorButton.set_color(self.group.color)
 		self.iconSelect.set_filename(self.group.icon)
 		self.modeCombo.set_active(self.group.mode)
+		##
+		self.tzCheck.set_active(self.group.timeZoneEnable)
+		self.tzCombo.set_sensitive(self.group.timeZoneEnable)
+		if self.group.timeZone:
+			self.tzCombo.set_text(self.group.timeZone)
+		##
 		self.showInDCalCheck.set_active(self.group.showInDCal)
 		self.showInWCalCheck.set_active(self.group.showInWCal)
 		self.showInMCalCheck.set_active(self.group.showInMCal)
@@ -151,6 +169,10 @@ class BaseWidgetClass(gtk.VBox):
 		self.group.color = self.colorButton.get_color()
 		self.group.icon = self.iconSelect.get_filename()
 		self.group.mode = self.modeCombo.get_active()
+		##
+		self.group.timeZoneEnable = self.tzCheck.get_active()
+		self.group.timeZone = self.tzCombo.get_text()
+		##
 		self.group.showInDCal = self.showInDCalCheck.get_active()
 		self.group.showInWCal = self.showInWCalCheck.get_active()
 		self.group.showInMCal = self.showInMCalCheck.get_active()
