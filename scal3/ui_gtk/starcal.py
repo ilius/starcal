@@ -24,6 +24,7 @@ if sys.version_info[0] != 3:
     print('Run this script with Python 3.x')
     sys.exit(1)
 
+import signal
 from time import time as now
 from time import localtime
 import os
@@ -1043,16 +1044,8 @@ def main():
         mainWin.present()
     ##ud.rootWindow.set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))#???????????
     #mainWin.app.run(None)
-    ex = 0
-    try:
-        ex = gtk.main()
-    except KeyboardInterrupt:
-        print('You pressed Control+C, Goodbye')
-        core.stopRunningThreads()
-    except Exception as e:
-        core.stopRunningThreads()
-        raise e
-    return ex
+    signal.signal(signal.SIGINT, mainWin.quit)
+    return gtk.main()
 
 
 if __name__ == '__main__':
