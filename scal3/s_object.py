@@ -203,17 +203,17 @@ class BsonHistObj(SObj):
     def load(cls, *args):
         _file = cls.getFile(*args)
         data = {}
-        if not isfile(_file):
-            if not cls.skipLoadNoFile:
-                raise FileNotFoundError('%s : file not found'%_file)
         try:
             jsonStr = open(_file).read()
             data = jsonToData(jsonStr)
+        except FileNotFoundError:
+            if not cls.skipLoadNoFile:
+                raise FileNotFoundError('%s : file not found'%_file)
         except Exception as e:
             if not cls.skipLoadExceptions:
                 raise e
-
-        updateBasicDataFromBson(data, _file, cls.name)
+        else:
+            updateBasicDataFromBson(data, _file, cls.name)
 
         try:
             _type = data['type']
