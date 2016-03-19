@@ -58,7 +58,9 @@ from scal3.locale_man import tr as _
 from scal3 import event_lib
 from scal3 import ui
 
+import gi
 import gi.repository.GObject as gobject
+gi.require_version('GdkPixbuf', '2.0')
 from gi.repository import GdkPixbuf
 
 from scal3.ui_gtk import *
