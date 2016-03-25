@@ -137,7 +137,7 @@ def convertBuiltinTextPlugToIcs(plug, startJd, endJd, namePostfix=''):
 	currentTimeStamp = strftime(icsTmFormat)
 	for jd in range(startJd, endJd):
 		myear, mmonth, mday = jd_to(jd, mode)
-		dayText = plug.get_text(myear, mmonth, mday)
+		dayText = plug.getText(myear, mmonth, mday)
 		if dayText:
 			gyear, gmonth, gday = jd_to(jd, DATE_GREG)
 			gyear_next, gmonth_next, gday_next = jd_to(jd+1, DATE_GREG)
