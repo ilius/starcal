@@ -238,15 +238,15 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 			return tm
 		else:
 			return '%d:%.2d'%(h, m)
-	def get_text_jd(self, jd):
+	def getTextByJd(self, jd):
 		return self.sep.join([
 			'%s: %s'%(_(name.capitalize()), self.getFormattedTime(tm))
 			for name, tm in self.get_times_jd(jd)
 		])
-	def get_text(self, year, month, day):## just for compatibity (usage by external programs)
-		return self.get_text_jd(gregorian_to_jd(year, month, day))
-	def update_cell(self, c):
-		text = self.get_text_jd(c.jd)
+	def getText(self, year, month, day):## just for compatibity (usage by external programs)
+		return self.getTextByJd(gregorian_to_jd(year, month, day))
+	def updateCell(self, c):
+		text = self.getTextByJd(c.jd)
 		if text!='':
 			if c.pluginsText!='':
 				c.pluginsText += '\n'

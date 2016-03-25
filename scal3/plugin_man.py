@@ -151,18 +151,18 @@ class BasePlugin(SObj):
 		pass
 	def load(self):
 		pass
-	get_text = lambda self, year, month, day: ''
-	def update_cell(self, c):
+	getText = lambda self, year, month, day: ''
+	def updateCell(self, c):
 		y, m, d = c.dates[self.mode]
 		text = ''
-		t = self.get_text(y, m, d)
+		t = self.getText(y, m, d)
 		if t:
 			text += t
 		if self.lastDayMerge and d>=calTypes[self.mode].minMonthLen:
 		## and d<=calTypes[self.mode].maxMonthLen:
 			ny, nm, nd = jd_to(c.jd + 1, self.mode)
 			if nm > m or ny > y:
-				nt = self.get_text(y, m, d+1)
+				nt = self.getText(y, m, d+1)
 				if nt:
 					text += nt
 		if text:
@@ -178,7 +178,7 @@ class BasePlugin(SObj):
 		icsText = icsHeader
 		for jd in range(startJd, endJd):
 			myear, mmonth, mday = jd_to(jd, mode)
-			dayText = self.get_text(myear, mmonth, mday)
+			dayText = self.getText(myear, mmonth, mday)
 			if dayText:
 				gyear, gmonth, gday = jd_to(jd, DATE_GREG)
 				gyear_next, gmonth_next, gday_next = jd_to(jd+1, DATE_GREG)
@@ -319,7 +319,7 @@ class HolidayPlugin(BaseJsonPlugin):
 			log.error('no "holidays" key in holiday plugin "%s"'%self.file)
 		###
 		BaseJsonPlugin.setData(self, data)
-	def update_cell(self, c):
+	def updateCell(self, c):
 		if not c.holiday:
 			for mode in self.holidays:
 				y, m, d = c.dates[mode]
@@ -428,7 +428,7 @@ class YearlyTextPlugin(BaseJsonPlugin):
 		else:
 			raise ValueError('invalid plugin dataFile extention "%s"'%ext)
 		self.yearlyData = yearlyData
-	def get_text(self, year, month, day):
+	def getText(self, year, month, day):
 		yearlyData = self.yearlyData
 		if not yearlyData:
 			return ''
@@ -613,7 +613,7 @@ class IcsTextPlugin(BasePlugin):
 						continue
 			self.ymd = ymd
 			self.md = None
-	def get_text(self, y, m, d):
+	def getText(self, y, m, d):
 		if self.ymd:
 			if (y, m, d) in self.ymd:
 				if self.show_date:

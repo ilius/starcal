@@ -302,7 +302,7 @@ class Cell:## status and information of a cell
 			plug = core.allPlugList[k]
 			if plug:
 				try:
-					plug.update_cell(self)
+					plug.updateCell(self)
 				except:
 					myRaiseTback()
 		###################
