@@ -1523,6 +1523,10 @@ msgid "Time Line"
 msgstr ""
 "خط زمان"
 
+msgid "Year Wheel"
+msgstr ""
+"چرخ سال"
+
 msgid "Week Calendar"
 msgstr ""
 "تقویم هفتگی"

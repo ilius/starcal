@@ -214,6 +214,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		###
 		#ui.eventManDialog = None
 		#ui.timeLineWin = None
+		#ui.yearWheelWin = None
 		###
 		#ui.weekCalWin = WeekCalWindow()
 		#ud.windowList.appendItem(ui.weekCalWin)
@@ -538,6 +539,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		moreMenu.add(labelStockMenuItem('_Preferences', gtk.STOCK_PREFERENCES, self.prefShow))
 		moreMenu.add(labelStockMenuItem('_Event Manager', gtk.STOCK_ADD, self.eventManShow))
 		moreMenu.add(labelImageMenuItem('Time Line', 'timeline-18.png', self.timeLineShow))
+		moreMenu.add(labelImageMenuItem('Year Wheel', 'year-wheel-18.png', self.yearWheelShow))## icon? FIXME
 		#moreMenu.add(labelImageMenuItem('Week Calendar', 'weekcal-18.png', self.weekCalShow))
 		moreMenu.add(labelStockMenuItem(_('Export to %s')%'HTML', gtk.STOCK_CONVERT, self.exportClicked))
 		moreMenu.add(labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
@@ -591,6 +593,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		#menu.add(labelStockMenuItem('_Add Event', gtk.STOCK_ADD, ui.addCustomEvent))
 		menu.add(labelStockMenuItem('_Event Manager', gtk.STOCK_ADD, self.eventManShow))
 		menu.add(labelImageMenuItem('Time Line', 'timeline-18.png', self.timeLineShow))
+		menu.add(labelImageMenuItem('Year Wheel', 'year-wheel-18.png', self.yearWheelShow))## icon? FIXME
 		#menu.add(labelImageMenuItem('Week Calendar', 'weekcal-18.png', self.weekCalShow))
 		menu.add(labelStockMenuItem(_('Export to %s')%'HTML', gtk.STOCK_CONVERT, self.exportClicked))
 		menu.add(labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow))
@@ -729,6 +732,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		labelStockMenuItem('_Customize', gtk.STOCK_EDIT, self.customizeShow),
 		labelStockMenuItem('_Event Manager', gtk.STOCK_ADD, self.eventManShow),
 		labelImageMenuItem('Time Line', 'timeline-18.png', self.timeLineShow),
+		labelImageMenuItem('Year Wheel', 'year-wheel-18.png', self.yearWheelShow),## icon? FIXME
 		labelStockMenuItem('_About', gtk.STOCK_ABOUT, self.aboutShow),
 		gtk.SeparatorMenuItem(),
 		labelStockMenuItem('_Quit', gtk.STOCK_QUIT, self.quit),
@@ -937,6 +941,11 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 			from scal3.ui_gtk.timeline import TimeLineWindow
 			ui.timeLineWin = TimeLineWindow()
 		openWindow(ui.timeLineWin)
+	def yearWheelShow(self, obj=None, data=None):
+		if not ui.yearWheelWin:
+			from scal3.ui_gtk.year_wheel import YearWheelWindow
+			ui.yearWheelWin = YearWheelWindow()
+		openWindow(ui.yearWheelWin)
 	def selectDateShow(self, widget=None):
 		if not self.selectDateDialog:
 			from scal3.ui_gtk.selectdate import SelectDateDialog
