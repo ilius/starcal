@@ -548,11 +548,11 @@ class CalObj(gtk.DrawingArea, CalBase):
             self.jdPlus(7)
         else:
             return False
-    getCellPos = lambda self: (
+    getCellPos = lambda self, *args: (
         int(self.cx[ui.cell.monthPos[0]]),
         int(self.cy[ui.cell.monthPos[1]] + self.dy/2.0),
     )
-    def getMainMenuPos(self):## FIXME
+    def getMainMenuPos(self, *args):## FIXME
         if rtl:
             return (
                 int(self.get_allocation().width - ui.mcalLeftMargin/2.0),

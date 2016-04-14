@@ -926,7 +926,7 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
             self.jdPlus(1)
         else:
             return False
-    getCellPos = lambda self: (
+    getCellPos = lambda self, *args: (
         int(self.get_allocation().width / 2.0),
         (ui.cell.weekDayIndex+1) * self.get_allocation().height / 7.0,
     )
@@ -934,7 +934,7 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
         for item in self.items:
             if item.enable and item._name == 'toolbar':
                 return item
-    def getMainMenuPos(self):
+    def getMainMenuPos(self, *args):
         toolbar = self.getToolbar()
         if toolbar:
             for item in toolbar.items:

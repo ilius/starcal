@@ -527,7 +527,11 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
                 menu.popup(
                     None,
                     None,
-                    lambda m: (wx+dx, wy+dy+20, True),
+                    lambda *args: (
+                        wx+dx,
+                        wy+dy+20,
+                        True,
+                    ),
                     None,
                     3,
                     gevent.time,

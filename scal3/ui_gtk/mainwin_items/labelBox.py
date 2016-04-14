@@ -166,7 +166,14 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
             #x -= 7 ## ????????? because of menu padding
             ## align menu to center:
             x -= int((get_menu_width(self.menu) - self.get_allocation().width)//2)
-            self.menu.popup(None, None, lambda widget, menu: (x, y, True), None, gevent.button, gevent.time)
+            self.menu.popup(
+                None,
+                None,
+                lambda *args: (x, y, True),
+                None,
+                gevent.button,
+                gevent.time,
+            )
             ui.updateFocusTime()
             return True
         else:
@@ -273,7 +280,14 @@ class IntLabel(BaseLabel):
             x -= 7 ## ????????? because of menu padding
             ## align menu to center:
             x -= int((get_menu_width(self.menu) - self.get_allocation().width)//2)
-            self.menu.popup(None, None, lambda widget, menu: (x, y, True), None, gevent.button, gevent.time)
+            self.menu.popup(
+                None,
+                None,
+                lambda *args: (x, y, True),
+                None,
+                gevent.button,
+                gevent.time,
+            )
             ui.updateFocusTime()
             return True
         else:

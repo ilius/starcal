@@ -428,7 +428,14 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             self.menuMainCreate()
             if rtl:
                 x -= get_menu_width(self.menuMain)
-            self.menuMain.popup(None, None, lambda m, e: (x, y, True), None, 3, gevent.time)
+            self.menuMain.popup(
+                None,
+                None,
+                lambda *args: (x, y, True),
+                None,
+                3,
+                gevent.time,
+            )
             ui.updateFocusTime()
             return True
         return False
@@ -556,7 +563,14 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         etime = gtk.get_current_event_time()
         #print('menuCellPopup', x, y, etime)
         self.menuCell = menu ## without this line, the menu was not showing up, WTF?!!
-        menu.popup(None, None, lambda m, e: (x, y, True), None, 3, etime)
+        menu.popup(
+            None,
+            None,
+            lambda *args: (x, y, True),
+            None,
+            3,
+            etime,
+        )
         ui.updateFocusTime()
     def menuMainCreate(self):
         if self.menuMain:
@@ -598,7 +612,14 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         if rtl:
             x -= get_menu_width(menu)
         #print('menuMainPopup', x, y, etime)
-        menu.popup(None, None, lambda m, e: (x, y, True), None, 3, etime)
+        menu.popup(
+            None,
+            None,
+            lambda *args: (x, y, True),
+            None,
+            3,
+            etime,
+        )
         ui.updateFocusTime()
     def addToGroupFromMenu(self, menu, group, eventType):
         from scal3.ui_gtk.event.editor import addNewEvent
