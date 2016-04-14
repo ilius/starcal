@@ -70,6 +70,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initVars()
 		###
+		self.closeFunc = closeFunc
 		self.angleOffset = 0.0
 		###
 		#self.closeFunc = closeFunc
@@ -78,7 +79,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		self.connect('button-press-event', self.onButtonPress)
 		#self.connect('motion-notify-event', self.onMotionNotify)
 		#self.connect('button-release-event', self.onButtonRelease)
-		#self.connect('key-press-event', self.onKeyPress)
+		self.connect('key-press-event', self.keyPress)
 		#self.connect('event', show_event)
 
 		self.buttons = [
@@ -258,8 +259,28 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		self.angleOffset += (-1 if d=='up' else 1) * self.scrollRotateDegree
 		self.queue_draw()
 		return True
-	def onKeyPress(self, arg, gevent):
-		return False
+	def keyPress(self, arg, gevent):
+		k = gdk.keyval_name(gevent.keyval).lower()
+		#print('%.3f'%now())
+		if k in ('space', 'home'):
+			self.homeClicked()
+		#elif k=='right':
+		#	pass
+		#elif k=='left':
+		#	pass
+		#elif k=='down':
+		#	self.stopMovingAnim()
+		elif k in ('q', 'escape'):
+			self.closeFunc()
+		#elif k in ('plus', 'equal', 'kp_add'):
+		#	self.keyboardZoom(True)
+		#elif k in ('minus', 'kp_subtract'):
+		#	self.keyboardZoom(False)
+		else:
+			#print(k)
+			return False
+		self.queue_draw()
+		return True
 	def onButtonPress(self, obj, gevent):
 		x = gevent.x
 		y = gevent.y
@@ -298,7 +319,7 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 		self.connect('button-press-event', self.onButtonPress)
 		###
 		self._widget = YearWheel(self.closeClicked)
-		self.connect('key-press-event', self._widget.onKeyPress)
+		self.connect('key-press-event', self._widget.keyPress)
 		self.add(self._widget)
 		self._widget.show()
 		self.appendItem(self._widget)
