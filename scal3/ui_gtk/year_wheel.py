@@ -81,6 +81,25 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		#self.connect('key-press-event', self.onKeyPress)
 		#self.connect('event', show_event)
 
+		self.buttons = [
+			Button('home.png', self.homeClicked, 1, -1, False),
+			Button('resize-small.png', self.startResize, -1, -1, False),
+			Button('exit.png', closeFunc, -1, 1, False)
+		]
+
+	def homeClicked(self, arg=None):
+		self.angleOffset = 0.0
+		self.queue_draw()
+
+	def startResize(self, gevent):
+		self.get_parent().begin_resize_drag(
+			gdk.WindowEdge.SOUTH_EAST,
+			gevent.button,
+			int(gevent.x_root),
+			int(gevent.y_root),
+			gevent.time,
+		)
+
 	def onDraw(self, widget=None, event=None):
 		cr = self.get_window().cairo_create()
 		width = float(self.get_allocation().width)
@@ -228,7 +247,9 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 			drawCircleOutline(cr, cx, cy, minR, self.lineWidth)
 			fillColor(cr, self.lineColor)
 			###
-
+		######
+		for button in self.buttons:
+			button.draw(cr, width, height)
 
 
 	def onScroll(self, widget, gevent):
@@ -244,9 +265,13 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		y = gevent.y
 		w = self.get_allocation().width
 		h = self.get_allocation().height
-		#if gevent.button==1:
-		#	#self.begin_move_drag(gevent.button, int(gevent.x_root), int(gevent.y_root), gevent.time)
-		#	#return True
+		if gevent.button==1:
+			for button in self.buttons:
+				if button.contains(x, y, w, h):
+					button.func(gevent)
+					return True
+			#self.begin_move_drag(gevent.button, int(gevent.x_root), int(gevent.y_root), gevent.time)
+			#return True
 		#elif gevent.button==3:
 		#	pass
 		return False
