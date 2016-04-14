@@ -755,7 +755,11 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
                 menu.popup(
                     None,
                     None,
-                    lambda m, e: (wx+dx, wy+dy+20, True),
+                    lambda *args: (
+                        wx+dx,
+                        wy+dy+20,
+                        True,
+                    ),
                     None,
                     3,
                     gevent.time,
