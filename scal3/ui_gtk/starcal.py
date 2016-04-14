@@ -728,7 +728,10 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         else:
             #print(dir(geo))
             y1 = geo.index(1)
-            y = gtk.StatusIcon.position_menu(menu, self.sicon)[1]
+            try:
+                y = gtk.StatusIcon.position_menu(menu, self.sicon)[1]
+            except TypeError: ## new gi versions
+                y = gtk.StatusIcon.position_menu(menu, 0, 0, self.sicon)[1]
             if y<y1:## taskbar is on bottom
                 items.reverse()
             get_pos_func = gtk.StatusIcon.position_menu
