@@ -244,6 +244,32 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				setColor(cr, self.textColor) ; show_layout(cr, layout)    
 				cr.rotate(-rotateAngle)
 				#cr.restore()
+
+				if month==1:
+					layout = newTextLayout(
+						self,
+						text=_(year),
+						maxSize=(
+							deltaR * 0.50,
+							deltaR * 0.25,
+						),
+						maximizeScale=1.0,
+						truncate=False,
+					)
+					yearX, yearY = goAngle(
+						cx,
+						cy,
+						angle + 0.02 * pi/12.0,
+						r - deltaR * 0.75,## FIXME
+					)
+					cr.move_to(
+						yearX,
+						yearY,
+					)
+					rotateAngle = centerAngle - pi/12.0
+					cr.rotate(rotateAngle)
+					setColor(cr, self.yearStartLineColor) ; show_layout(cr, layout)
+					cr.rotate(-rotateAngle)
 			#####
 			drawCircleOutline(cr, cx, cy, minR, self.lineWidth)
 			fillColor(cr, self.lineColor)
