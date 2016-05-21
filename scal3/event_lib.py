@@ -2797,6 +2797,9 @@ class EventGroup(EventContainer):
         newGroup = SObj.copy(self)
         newGroup.removeAll()
         return newGroup
+    def copyFrom(self, other):
+        EventContainer.copyFrom(self, other)
+        self.enable = other.enable
     def copyAs(self, newGroupType):
         newGroup = classes.group.byName[newGroupType]()
         newGroup.copyFrom(self)
