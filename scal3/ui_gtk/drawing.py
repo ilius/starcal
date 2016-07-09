@@ -82,7 +82,9 @@ def newTextLayout(
         None return value should be expected and handled, only if maxSize is given
     '''
     layout = widget.create_pango_layout('') ## a Pango.Layout object
-    if not font:
+    if font:
+        font = list(font)
+    else:
         font = ui.getFont()
     layout.set_font_description(pfontEncode(font))
     if text:
