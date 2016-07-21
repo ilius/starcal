@@ -181,7 +181,7 @@ for fname in os.listdir(langDir):
         continue
     fpath = join(langDir, fname)
     try:
-        data = jsonToData(open(fpath).read())
+        data = jsonToData(open(fpath, encoding='utf-8').read())
     except Exception as e:
         print('failed to load json file %s'%fpath)
         raise e
