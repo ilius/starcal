@@ -575,11 +575,11 @@ loadConf()
 
 licenseText = _('licenseText')
 if licenseText in ('licenseText', ''):
-    licenseText = open('%s/license'%rootDir).read()
+    licenseText = open('%s/license'%rootDir, encoding='utf-8').read()
 
 aboutText = _('aboutText')
 if aboutText in ('aboutText', ''):
-    aboutText = open('%s/about'%rootDir).read()
+    aboutText = open('%s/about'%rootDir, encoding='utf-8').read()
 
 
 weekDayName = (
