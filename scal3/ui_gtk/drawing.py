@@ -27,13 +27,12 @@ from scal3 import core
 from scal3.locale_man import cutText, rtl
 from scal3 import ui
 
-from gi.repository import cairo # as n_cairo
-from gi.repository.PangoCairo import show_layout
-from gi.repository import GdkPixbuf
-
 from scal3.ui_gtk import *
 from scal3.ui_gtk.font_utils import *
 from scal3.ui_gtk.color_utils import *
+
+from gi.repository import cairo
+from gi.repository.PangoCairo import show_layout
 
 if not ui.fontCustom:
     ui.fontCustom = ui.fontDefault[:]

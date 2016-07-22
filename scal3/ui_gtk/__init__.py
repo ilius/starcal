@@ -1,6 +1,7 @@
 __all__ = [
     'gtk',
     'gdk',
+    'GdkPixbuf',
     'pack',
     'TWO_BUTTON_PRESS',
     'MenuItem',
@@ -10,6 +11,9 @@ __all__ = [
 
 import gi
 gi.require_version('Gtk', '3.0')
+gi.require_version('GdkPixbuf', '2.0')
+gi.require_version('PangoCairo', '1.0')
+
 from gi.repository import Gtk as gtk
 from gi.repository import Gdk as gdk
 from gi.repository import GdkPixbuf
