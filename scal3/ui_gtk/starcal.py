@@ -58,11 +58,6 @@ from scal3.locale_man import tr as _
 from scal3 import event_lib
 from scal3 import ui
 
-import gi
-import gi.repository.GObject as gobject
-gi.require_version('GdkPixbuf', '2.0')
-from gi.repository import GdkPixbuf
-
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.utils import *
@@ -71,6 +66,8 @@ from scal3.ui_gtk import listener
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import DummyCalObj, CustomizableCalBox
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
+
+import gi.repository.GObject as gobject
 
 ui.uiName = 'gtk'
 
