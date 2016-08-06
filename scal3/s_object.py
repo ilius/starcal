@@ -211,6 +211,7 @@ class BsonHistObj(SObj):
                 raise FileNotFoundError('%s : file not found'%_file)
         except Exception as e:
             if not cls.skipLoadExceptions:
+                print('error while opening json file "%s"' % _file)
                 raise e
         else:
             updateBasicDataFromBson(data, _file, cls.name)
