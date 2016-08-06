@@ -50,7 +50,7 @@ def save():
 isLeap = lambda y: (y + 1) % 4 == 0
 
 
-to_jd = lambda year, month, day: epoch + 365*(year-1) + year/4 + (month-1)*30 + day - 15
+to_jd = lambda year, month, day: epoch + 365*(year-1) + year//4 + (month-1)*30 + day - 15
 
 
 def jd_to(jd) :
