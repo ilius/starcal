@@ -79,16 +79,6 @@ def getUtcOffsetByDateSec(year, month, day, tz=None):
         return tz.utcoffset(datetime(year, month, day, 1, 0, 0)).total_seconds()
 
 
-def getUtcOffsetByDateHM(year, month, day, tz=None):
-    s = getUtcOffsetByDateSec(year, month, day, tz)
-    return divmod(s/60, 60)
-
-def getUtcOffsetByDateHMS(year, month, day, tz=None):
-    s = getUtcOffsetByDateSec(year, month, day, tz)
-    m, s = divmod(s, 60)
-    h, m = divmod(m, 60)
-    return (h, m, s)
-
 #getUtcOffsetByJd = lambda jd, tz=None: getUtcOffsetByEpoch(getEpochFromJd(jd), tz)
 
 def getUtcOffsetByJd(jd, tz=None):
