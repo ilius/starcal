@@ -200,8 +200,8 @@ def compileTmFormat(format, hasTime=True):
             i += 2
             continue
         elif c1=='z':
-            def tz(a):
-                m = int(getUtcOffsetByGDate(cell.dates[mode][0], cell.dates[mode][1], cell.dates[mode][2])/60)
+            def tz(cell, mode, tm):
+                m = int(getUtcOffsetByGDate(*cell.dates[core.DATE_GREG])/60)
                 return _(m//60, fillZero=2) + _(m%60, fillZero=2)
             funcs.append(tz)
             pyFmt += '%s'
@@ -211,8 +211,8 @@ def compileTmFormat(format, hasTime=True):
         elif c1==':':
             c2 = format[i+2]
             if c2=='z':## %:z
-                def tz(a):
-                    s = int(getUtcOffsetByGDate(cell.dates[mode][0], cell.dates[mode][1], cell.dates[mode][2]))
+                def tz(cell, mode, tm):
+                    m = int(getUtcOffsetByGDate(*cell.dates[core.DATE_GREG])/60)
                     return _(m//60, fillZero=2) + ':' + _(m%60, fillZero=2)
                 funcs.append(tz)
                 pyFmt += '%s'
