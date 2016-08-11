@@ -171,9 +171,9 @@ def compileTmFormat(format, hasTime=True):
             i += 2
             continue
         elif c1=='W':
-            def weekNumberMonday(a):
+            def weekNumberMonday(cell, mode, tm):
                 jd0 = to_jd(cell.dates[mode][0], 1, 1, mode)
-                return _((cell.jd - jd0 + jd0%7) / 7, fillZero=2)
+                return _((cell.jd - jd0 + jd0%7) // 7, fillZero=2)
             funcs.append(weekNumberMonday)
             pyFmt += '%s'
             i += 2
