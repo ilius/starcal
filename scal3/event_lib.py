@@ -271,7 +271,7 @@ class TimeRangeListOccurrence(Occurrence):
     __len__ = lambda self: len(self.rangeList)
     #__getitem__ = lambda i: self.rangeList.__getitem__(i)## FIXME
     getStartJd = lambda self: getJdFromEpoch(min([r[0] for r in self.rangeList]))
-    getEndJd = lambda self: getJdFromEpoch(max([r[1] for r in self.rangeList]+[r[1] for r in self.rangeList]))
+    getEndJd = lambda self: getJdFromEpoch(max([r[1] for r in self.rangeList]))
     def intersection(self, occur):
         if isinstance(occur, (JdSetOccurrence, TimeRangeListOccurrence)):
             return TimeRangeListOccurrence(
