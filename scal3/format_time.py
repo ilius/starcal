@@ -21,7 +21,7 @@
 import time
 from time import time as now
 
-from scal3.time_utils import getUtcOffsetByDateSec
+from scal3.time_utils import getUtcOffsetByGDate
 from scal3.cal_types import calTypes, gregorian, to_jd
 from scal3 import core
 from scal3.locale_man import tr as _
@@ -201,7 +201,7 @@ def compileTmFormat(format, hasTime=True):
             continue
         elif c1=='z':
             def tz(a):
-                m = int(getUtcOffsetByDateSec(cell.dates[mode][0], cell.dates[mode][1], cell.dates[mode][2])/60)
+                m = int(getUtcOffsetByGDate(cell.dates[mode][0], cell.dates[mode][1], cell.dates[mode][2])/60)
                 return _(m//60, fillZero=2) + _(m%60, fillZero=2)
             funcs.append(tz)
             pyFmt += '%s'
@@ -212,7 +212,7 @@ def compileTmFormat(format, hasTime=True):
             c2 = format[i+2]
             if c2=='z':## %:z
                 def tz(a):
-                    s = int(getUtcOffsetByDateSec(cell.dates[mode][0], cell.dates[mode][1], cell.dates[mode][2]))
+                    s = int(getUtcOffsetByGDate(cell.dates[mode][0], cell.dates[mode][1], cell.dates[mode][2]))
                     return _(m//60, fillZero=2) + ':' + _(m%60, fillZero=2)
                 funcs.append(tz)
                 pyFmt += '%s'

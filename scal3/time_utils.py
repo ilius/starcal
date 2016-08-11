@@ -68,7 +68,7 @@ def getUtcOffsetByEpoch(epoch, tz=None):
             return tz._utcoffset.total_seconds()
 
 
-def getUtcOffsetByDateSec(year, month, day, tz=None):
+def getUtcOffsetByGDate(year, month, day, tz=None):
     if not tz:
         tz = natz.local.get_localzone()
     try:
@@ -83,7 +83,7 @@ def getUtcOffsetByDateSec(year, month, day, tz=None):
 
 def getUtcOffsetByJd(jd, tz=None):
     y, m, d = jd_to_g(jd)
-    return getUtcOffsetByDateSec(y, m, d, tz)
+    return getUtcOffsetByGDate(y, m, d, tz)
 
 
 getUtcOffsetCurrent = lambda tz=None: getUtcOffsetByEpoch(now(), tz)
@@ -103,7 +103,7 @@ getJdFromEpoch = lambda epoch, tz=None: ifloor(getFloatJdFromEpoch(epoch, tz))
 def getEpochFromJd(jd, tz=None):
     localEpoch = (jd-J1970) * 24*3600
     year, month, day = jd_to_g(jd) ## jd or jd-1? FIXME
-    return localEpoch - getUtcOffsetByDateSec(year, month, day, tz)
+    return localEpoch - getUtcOffsetByGDate(year, month, day, tz)
 
 #getEpochFromJd = lambda jd: int(mktime(datetime.fromordinal(int(jd)-J0001+1).timetuple()))
 
