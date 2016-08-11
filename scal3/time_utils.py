@@ -112,7 +112,7 @@ getJdFromEpoch = lambda epoch, tz=None: ifloor(getFloatJdFromEpoch(epoch, tz))
 
 def getEpochFromJd(jd, tz=None):
     localEpoch = (jd-J1970) * 24*3600
-    year, month, day = jd_to_g(jd-1) ## FIXME
+    year, month, day = jd_to_g(jd) ## jd or jd-1? FIXME
     return localEpoch - getUtcOffsetByDateSec(year, month, day, tz)
 
 #getEpochFromJd = lambda jd: int(mktime(datetime.fromordinal(int(jd)-J0001+1).timetuple()))
