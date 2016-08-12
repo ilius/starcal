@@ -43,6 +43,11 @@ from scal3.utils import ifloor, iceil
 ## function time.time() having the same name as its module is problematic
 ## don't use time.time() directly again (other than once)
 
+utcOffsetByJdCache = {}
+# utcOffsetByJdCache: {tzStr => {jd => utcOffset}}
+#utcOffsetByJdCacheSize # FIXME
+
+
 #def getUtcOffsetByEpoch(epoch):
 #	try:
 #		return (datetime.fromtimestamp(epoch) - datetime.utcfromtimestamp(epoch)).total_seconds()
@@ -82,8 +87,27 @@ def getUtcOffsetByGDate(year, month, day, tz=None):
 #getUtcOffsetByJd = lambda jd, tz=None: getUtcOffsetByEpoch(getEpochFromJd(jd), tz)
 
 def getUtcOffsetByJd(jd, tz=None):
-	y, m, d = jd_to_g(jd)
-	return getUtcOffsetByGDate(y, m, d, tz)
+	if not tz:
+		tz = natz.local.get_localzone()
+	tzStr = str(tz)
+	# utcOffsetByJdCache: {tzStr => {jd => utcOffset}}
+	if jd >= J1970:
+		try:
+			tzDict = utcOffsetByJdCache[tzStr]
+		except KeyError:
+			tzDict = utcOffsetByJdCache[tzStr] = {}
+		try:
+			offset = tzDict[jd]
+		except KeyError:
+			y, m, d = jd_to_g(jd)
+			offset = tzDict[jd] = getUtcOffsetByGDate(y, m, d, tz)
+	else:
+		y, m, d = jd_to_g(jd)
+		offset = getUtcOffsetByGDate(y, m, d, tz)
+
+	return offset
+
+
 
 
 getUtcOffsetCurrent = lambda tz=None: getUtcOffsetByEpoch(now(), tz)
