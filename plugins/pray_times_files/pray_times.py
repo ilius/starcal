@@ -228,7 +228,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 	def get_times_jd(self, jd):
 		times = self.backend.getTimesByJd(
 			jd,
-			getUtcOffsetByJd(jd)/3600.0,
+			getUtcOffsetByJd(jd, localTz)/3600.0,
 		)
 		return [(name, times[name]) for name in self.shownTimeNames]
 	def getFormattedTime(self, tm):## tm is float hour
@@ -294,9 +294,9 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		if not self.enable:
 			return
 		jd = gregorian_to_jd(*tuple(gdate))
-		#print(getUtcOffsetByJd(jd)/3600.0, getUtcOffsetCurrent()/3600.0)
+		#print(getUtcOffsetByJd(jd, localTz)/3600.0, getUtcOffsetCurrent()/3600.0)
 		#utcOffset = getUtcOffsetCurrent()
-		utcOffset = getUtcOffsetByJd(jd)
+		utcOffset = getUtcOffsetByJd(jd, localTz)
 		tmUtc = now()
 		epochLocal = tmUtc + utcOffset
 		secondsFromMidnight = epochLocal % (24*3600)
