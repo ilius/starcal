@@ -20,11 +20,12 @@
 from math import log10
 
 from scal3.time_utils import (
-    getEpochFromJd,
-    getJdFromEpoch,
-    getFloatJdFromEpoch,
-    getJhmsFromEpoch,
-    getUtcOffsetCurrent,
+	getEpochFromJd,
+	getJdFromEpoch,
+	getFloatJdFromEpoch,
+	getJhmsFromEpoch,
+	getUtcOffsetByEpoch,
+	getUtcOffsetCurrent,
 )
 from scal3.date_utils import jwday, getEpochFromDate
 from scal3.cal_types import calTypes, jd_to, to_jd
