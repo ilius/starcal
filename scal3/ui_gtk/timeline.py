@@ -25,10 +25,12 @@ import math
 from math import pi
 
 from scal3.utils import iceil
+from scal3.time_utils import getUtcOffsetByJd
 from scal3 import core
 from scal3.core import myRaise
 from scal3.locale_man import tr as _
 from scal3.locale_man import rtl
+from scal3.locale_man import localTz
 from scal3 import ui
 from scal3.timeline import *
 
@@ -208,6 +210,10 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		)
 		cr.fill()
 	def drawAll(self, cr):
+		timeStart = self.timeStart
+		timeWidth = self.timeWidth
+		timeEnd = timeStart + timeWidth
+		####
 		width = self.get_allocation().width
 		height = self.get_allocation().height
 		pixelPerSec = self.pixelPerSec
@@ -228,12 +234,34 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		beforeBoxH = maxTickHeight ## FIXME
 		maxBoxH = height - beforeBoxH
 		for box in self.data['boxes']:
-			box.setPixelValues(self.timeStart, pixelPerSec, beforeBoxH, maxBoxH)
+			box.setPixelValues(timeStart, pixelPerSec, beforeBoxH, maxBoxH)
 			self.drawBox(cr, box)
 		self.drawBoxEditingHelperLines(cr)
+		###### Show (possible) Daylight Saving change
+		if timeStart > 0 and 2*3600 < timeWidth < 30*dayLen :
+			if getUtcOffsetByEpoch(timeStart) != getUtcOffsetByEpoch(timeEnd):
+				startJd = getJdFromEpoch(timeStart)
+				endJd = getJdFromEpoch(timeEnd)
+				lastOffset = getUtcOffsetByJd(startJd, localTz)
+				dstChangeJd = None
+				deltaSec = 0
+				for jd in range(startJd+1, endJd+1):
+					offset = getUtcOffsetByJd(jd, localTz)
+					deltaSec = offset - lastOffset
+					if deltaSec != 0:
+						dstChangeJd = jd
+						break
+				if dstChangeJd is not None:
+					deltaHour = deltaSec / 3600.0
+					dstChangeEpoch = getEpochFromJd(dstChangeJd)
+					#print('dstChangeEpoch = %s' % dstChangeEpoch)
+				else:
+					print('dstChangeEpoch not found')
+
+
 		###### Draw Current Time Marker
-		dt = self.currentTime - self.timeStart
-		if 0 <= dt <= self.timeWidth:
+		dt = self.currentTime - timeStart
+		if 0 <= dt <= timeWidth:
 			setColor(cr, currentTimeMarkerColor)
 			cr.rectangle(
 				dt*pixelPerSec - currentTimeMarkerWidth/2.0,
