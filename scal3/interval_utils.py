@@ -43,7 +43,7 @@ def simplifyNumList(nums, minCount=3):## nums must be sorted, minCount >= 2
 			ranges += tmp
 	return ranges
 
-def cleanTimeRangeList(lst):
+def normalizeIntervalList(lst):
 	num = len(lst)
 	points = []
 	for start, end in lst:
@@ -72,7 +72,7 @@ def intersectionOfTwoIntervalList(*lists):
 	assert listsN == 2
 	points = []
 	for lst_index, lst in enumerate(lists):
-		lst = cleanTimeRangeList(lst)
+		lst = normalizeIntervalList(lst)
 		for start, end in lst:
 			if end == start:
 				points += [
