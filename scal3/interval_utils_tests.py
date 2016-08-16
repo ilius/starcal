@@ -19,14 +19,14 @@ def parseIntervalList(st, doShuffle=False):
 	#print(l)
 	return l
 
-def testCleanTimeRangeList():
+def testnormalizeIntervalList():
 	p = parseIntervalList
-	assert cleanTimeRangeList(p(
+	assert normalizeIntervalList(p(
 		'60-70 0-40 10-50 20-30 80-90 70-80 85-100 110 55',
 		True,
 	))==p('0-50 55 60-100 110')
 
-	assert cleanTimeRangeList(p(
+	assert normalizeIntervalList(p(
 		'10-20 20',
 		True,
 	))==p('10-20')# '10-20 20' FIXME
@@ -67,7 +67,7 @@ def testOverlapsSpeed():
 
 if __name__=='__main__':
 	import pprint
-	testCleanTimeRangeList()
+	testnormalizeIntervalList()
 	testIntersection()
 
 
