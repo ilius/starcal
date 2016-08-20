@@ -74,10 +74,10 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
         fpath = self.fcw.get_filename()
         if self.radioJsonCompact.get_active():
             text = dataToCompactJson(ui.eventGroups.exportData([self._group.id]))
-            open(fpath, 'wb').write(text)
+            open(fpath, 'w', encoding='utf-8').write(text)
         elif self.radioJsonPretty.get_active():
             text =  dataToPrettyJson(ui.eventGroups.exportData([self._group.id]))
-            open(fpath, 'wb').write(text)
+            open(fpath, 'w', encoding='utf-8').write(text)
         elif self.radioIcs.get_active():
             ui.eventGroups.exportToIcs(fpath, [self._group.id])
     def run(self):
@@ -162,7 +162,7 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
                 text = dataToPrettyJson(data)
             else:
                 raise RuntimeError
-            open(fpath, 'w').write(text)
+            open(fpath, 'w', encoding='utf-8').write(text)
     def run(self):
         if gtk.Dialog.run(self)==gtk.ResponseType.OK:
             self.waitingDo(self.save)
