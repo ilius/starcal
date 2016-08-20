@@ -98,8 +98,7 @@ class EventsImportWindow(WizardWindow):
             t_table.add(tag_out)
             tag_err = gtk.TextTag(name='error')
             t_table.add(tag_err)
-            self.buffer = gtk.TextBuffer(t_table)
-            self.textview.set_buffer(self.buffer)
+            self.buffer = self.textview.get_buffer()
             self.out_fp = GtkBufferFile(self.buffer, tag_out)
             sys.stdout = self.out_fp
             self.err_fp = GtkBufferFile(self.buffer, tag_err)
@@ -112,7 +111,7 @@ class EventsImportWindow(WizardWindow):
             try:
                 if format=='json':
                     try:
-                        text = open(fpath, 'rb').read()
+                        text = open(fpath, 'r', encoding='utf-8').read()
                     except Exception as e:
                         sys.stderr.write(_('Error in reading file')+'\n%s\n'%e)
                     else:
