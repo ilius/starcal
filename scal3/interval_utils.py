@@ -18,7 +18,6 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 from scal3.utils import s_join
-from scal3.bin_heap import MaxHeap
 
 
 ab_overlaps = lambda a0, b0, a1, b1: b0-a0+b1-a1 - abs(a0+b0-a1-b1) > 0.01
@@ -53,18 +52,18 @@ def normalizeIntervalList(lst):
 		]
 	lst = []
 	points.sort()
-	started_pq = MaxHeap()
+	startedStack = []
 	for cursor, isEnd in points:
 		if isEnd:
-			if not started_pq:
+			if not startedStack:
 				raise RuntimeError('cursor=%s, lastStart=None'%cursor)
-			start, tmp = started_pq.pop()
+			start = startedStack.pop()
 			#print('pop %s'%start)
-			if not started_pq:
+			if not startedStack:
 				lst.append((start, cursor))
 		else:
 			#print('push %s'%cursor)
-			started_pq.push(cursor, None)
+			startedStack.append(cursor)
 	return lst
 
 def intersectionOfTwoIntervalList(*lists):
