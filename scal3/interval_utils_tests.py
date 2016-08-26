@@ -20,25 +20,86 @@ def parseIntervalList(st, doShuffle=False):
 	return l
 
 def testnormalizeIntervalList():
-	p = parseIntervalList
-	assert normalizeIntervalList(p(
-		'60-70 0-40 10-50 20-30 80-90 70-80 85-100 110 55',
-		True,
-	))==p('0-50 55 60-100 110')
+	testDict = {
+		"10-20 20": "10-20 20",
+		"10-20 20 20": "10-20 20",
+		"10-20 20-30": "10-30",
+		"10-20 20-30 30-40": "10-40",
+		"10-20 20-30 25-40": "10-40",
+		"1-10 14 2-5 9-13 16-18 17-20 15-16 25-30": "1-13 14 15-20 25-30",
+		"60-70 0-40 10-50 20-30 80-90 70-80 85-100 110 55": "0-50 55 60-100 110",
+	}
 
-	assert normalizeIntervalList(p(
-		'10-20 20',
-		True,
-	))==p('10-20')# '10-20 20' FIXME
+	for inpStr, ansStr in testDict.items():
+		inpList = parseIntervalList(inpStr, True)
+		ansList = parseIntervalList(ansStr, False)
+		resList = normalizeIntervalList(inpList)
+		resList = humanizeIntervalList(resList)
+		if resList == ansList:
+			print("OK")
+		else:
+			print("Failed: %r != %r" % (resList, ansList))
+
+ 
 
 
 
 def testIntersection():
-	p = parseIntervalList
-	assert intersectionOfTwoIntervalList(
-		p('0-15 16 17 30-50 70-90 110-120', True),
-		p('10-35 40-75 80-100 110', True),
-	)==p('10-15 16 17 30-35 40-50 70-75 80-90 110')
+	testDict = {
+		(
+			"0-20",
+			"10-30",
+		):	"10-20",
+
+		(
+			"10-30 40-50 60-80",
+			"25-45",
+		):	"25-30 40-45",
+
+		(
+			"10-30 40-50 60-80",
+			"25-45 50-60",
+		):	"25-30 40-45",
+
+		(
+			"10-30 40-50 60-80",
+			"25-45 50-60 60",
+		):	"25-30 40-45 60",
+
+		(
+			"10-30 40-50 60-80",
+			"25-45 48-70 60",
+		):	"25-30 40-45 48-50 60-70",
+
+		(
+			"10-30 40-50 60-80",
+			"25-45 48-70",
+		):	"25-30 40-45 48-50 60-70",
+
+		(
+			"0-10 20-30 40-50 60-70",
+			"1-2 6-7 11-12 16-17 21-22 26-27 27",
+		):	"1-2 6-7 21-22 26-27 27",
+		(
+			"0-15 16 17 30-50 70-90 110-120",
+			"10-35 40-75 80-100 110",
+		):	"10-15 16 17 30-35 40-50 70-75 80-90 110",
+	}
+
+	for (list1Str, list2Str), answerStr in testDict.items():
+		list1 = parseIntervalList(list1Str, True)
+		list2 = parseIntervalList(list2Str, True)
+		answer = parseIntervalList(answerStr, False)# no shuffle
+		result = intersectionOfTwoIntervalList(list1, list2)
+		if result == answer:
+			print('OK')
+		else:
+			print('Failed')
+			print((list1Str, list2Str))
+			print(result)
+			print()
+
+
 
 def testJdRanges():
 	pprint.pprint(JdListOccurrence([1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 18]).calcJdRanges())

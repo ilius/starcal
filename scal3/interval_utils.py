@@ -19,6 +19,7 @@
 
 from scal3.utils import s_join
 
+CLOSED_START, OPEN_START, OPEN_END, CLOSED_END = range(4)
 
 ab_overlaps = lambda a0, b0, a1, b1: b0-a0+b1-a1 - abs(a0+b0-a1-b1) > 0.01
 md_overlaps = lambda m0, d0, m1, d1: d0+d1 - abs(m0-m1) > 0.01
@@ -42,29 +43,74 @@ def simplifyNumList(nums, minCount=3):## nums must be sorted, minCount >= 2
 			ranges += tmp
 	return ranges
 
-def normalizeIntervalList(lst):
-	num = len(lst)
+
+def getIntervalPoints(lst, lst_index=0):
+	"""
+	lst is a list of (start, end, closedEnd) or (start, end) tuples
+		start (int)
+		end (int)
+		closedEnd (bool)
+	
+	returns a list of (pos, ptype, lst_index) tuples
+		ptype in (CLOSED_START, OPEN_START, OPEN_END, CLOSED_END)
+	"""
 	points = []
-	for start, end in lst:
+	for row in lst:
+		start = row[0]
+		end = row[1]
+		try:
+			closedEnd = row[2]
+		except IndexError:
+			closedEnd = (start==end)
 		points += [
-			(start, False),
-			(end, True),
+			(start, CLOSED_START, lst_index),
+			(end, CLOSED_END if closedEnd else OPEN_END, lst_index),
 		]
+	return points
+
+
+def getIntervalListByPoints(points):
 	lst = []
-	points.sort()
 	startedStack = []
-	for cursor, isEnd in points:
-		if isEnd:
+	for pos, ptype, _ in points:
+		if ptype in (OPEN_END, CLOSED_END):
 			if not startedStack:
-				raise RuntimeError('cursor=%s, lastStart=None'%cursor)
+				raise RuntimeError('pos=%s, start=None'%pos)
 			start = startedStack.pop()
 			#print('pop %s'%start)
 			if not startedStack:
-				lst.append((start, cursor))
+				lst.append((start, pos, ptype==CLOSED_END))
 		else:
-			#print('push %s'%cursor)
-			startedStack.append(cursor)
+			#print('push %s'%pos)
+			startedStack.append(pos)
 	return lst
+
+def normalizeIntervalList(lst):
+	num = len(lst)
+	points = getIntervalPoints(lst)
+	points.sort()
+	return getIntervalListByPoints(points)
+
+
+def humanizeIntervalList(lst):
+	"""
+	replace Closed End intervals with 2 new intervals
+	in math terms: [a, b] ==> [a, b) + [b, b]
+	
+	lst is a list of (start, end, closedEnd) tuples
+		start (int)
+		end (int)
+		closedEnd (bool)
+	
+	returns a list of (start, end) tuples
+	"""
+	newList = []
+	for start, end, closedEnd in lst:
+		newList.append((start, end))
+		if closedEnd and end > start:
+			newList.append((end, end))
+	return newList
+
 
 def intersectionOfTwoIntervalList(*lists):
 	listsN = len(lists)
@@ -72,41 +118,34 @@ def intersectionOfTwoIntervalList(*lists):
 	points = []
 	for lst_index, lst in enumerate(lists):
 		lst = normalizeIntervalList(lst)
-		for start, end in lst:
-			if end == start:
-				points += [
-					(start, 0, lst_index),
-					(end, 1, lst_index),
-				]
-			else:
-				points += [
-					(start, 0, lst_index),
-					(end, -1, lst_index),
-				]
+		points += getIntervalPoints(lst, lst_index)
 	points.sort()
+
 	openStartList = [None for i in range(listsN)]
 	result = []
-	for cursor, ptype, lst_index in points:
-		if ptype == 0: ## start
-			## start == cursor
+	for pos, ptype, lst_index in points:
+		if ptype in (OPEN_END, CLOSED_END):
+			# end == pos
+			if None not in openStartList:
+				start = max(openStartList)
+				if start > pos:
+					raise RuntimeError('start - pos = %s' % (start - pos))
+				if pos > start or ptype==CLOSED_END:
+					result.append((start, pos, ptype==CLOSED_END))
+				#if start == pos:## FIXME
+				#	print('start = pos = %s, ptype=%s'%(start%(24*3600)/3600.0, ptype))
+			openStartList[lst_index] = None
+		else:  # start
+			# start == pos
 			if openStartList[lst_index] is None:
-				openStartList[lst_index] = cursor
+				openStartList[lst_index] = pos
 			else:
-				raise RuntimeError('cursor=%s, openStartList[%s]=%s'%(
-					cursor,
+				raise RuntimeError('pos=%s, openStartList[%s]=%s' % (
+					pos,
 					lst_index,
 					openStartList[lst_index],
 				))
-		else:## end (closed or open)
-			## end == cursor
-			if None not in openStartList:
-				start = max(openStartList)
-				if start > cursor:
-					raise RuntimeError('start - cursor = %s'%(start-cursor))
-				result.append((start, cursor))
-				#if start == cursor:## FIXME
-				#	print('start = cursor = %s, ptype=%s'%(start%(24*3600)/3600.0, ptype))
-			openStartList[lst_index] = None
+	result = humanizeIntervalList(result) # right place? FIXME
 	return result
 
 
