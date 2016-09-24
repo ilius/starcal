@@ -428,10 +428,10 @@ def mylocaltime(sec=None, mode=None):
 
 def compressLongInt(num):
     from struct import pack
-    return pack('L', num % 2**64).\
-    rstrip('\x00').\
-    encode('base64')[:-3].\
-    replace('/', '_')
+    from base64 import b64encode
+    return b64encode(
+        pack('L', num % 2**64).rstrip(b'\x00')
+    )[:-3].decode('ascii').replace('/', '_')
 
 getCompactTime = lambda maxDays=1000, minSec=0.1:\
     compressLongInt(
