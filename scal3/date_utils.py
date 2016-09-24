@@ -1,3 +1,4 @@
+import math
 from scal3.cal_types import calTypes, to_jd
 from scal3.time_utils import getEpochFromJd
 
@@ -64,17 +65,22 @@ def getJdRangeForMonth(year, month, mode):
         to_jd(year, month, day, mode) + 1,
     )
 
-def getFloatYearFromEpoch(epoch, mode):
+
+def getFloatYearFromJd(jd, mode):
     module = calTypes[mode]
-    return float(epoch - module.epoch)/module.avgYearLen + 1
+    year, month, day = module.jd_to(jd)
+    yearStartJd = module.to_jd(year, 1, 1)
+    nextYearStartJd = module.to_jd(year + 1, 1, 1)
+    dayOfYear = jd - yearStartJd
+    return year + float(dayOfYear) / (nextYearStartJd - yearStartJd)
 
-def getEpochFromFloatYear(year, mode):
+def getJdFromFloatYear(fyear, mode):
     module = calTypes[mode]
-    return module.epoch + (year-1)*module.avgYearLen
-
-getFloatYearFromJd = lambda jd, mode: getFloatYearFromEpoch(getEpochFromJd(jd), mode)
-
-getJdFromFloatYear = lambda year, mode: getJdFromEpoch(getEpochFromFloatYear(year, mode))
+    year = int(math.floor(fyear))
+    yearStartJd = module.to_jd(year, 1, 1)
+    nextYearStartJd = module.to_jd(year + 1, 1, 1)
+    dayOfYear = int((fyear - year) * (nextYearStartJd - yearStartJd))
+    return yearStartJd + dayOfYear
 
 getEpochFromDate = lambda y, m, d, mode: getEpochFromJd(to_jd(y, m, d, mode))
 
