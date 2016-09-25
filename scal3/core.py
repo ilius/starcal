@@ -49,7 +49,7 @@ except NameError:
     __file__ = join(os.path.dirname(inspect.getfile(scal3)), 'core.py')
 
 
-VERSION = '3.0.3'
+VERSION = '3.0.4'
 BRANCH = join(rootDir, 'branch')
 APP_DESC = 'StarCalendar'
 COMMAND = APP_NAME
