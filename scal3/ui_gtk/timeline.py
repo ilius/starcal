@@ -108,8 +108,11 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
         seconds = iceil(0.4/pixelPerSec)
         tm = now()
         #print('time=%.2f'%(tm%100), 'pixelPerSec=%.1f'%pixelPerSec, 'seconds=%d'%seconds)
+        miliSeconds = int(1000*(seconds + 0.01 - tm%1))
+        miliSeconds = min(miliSeconds, 4294967295)
+        # to avoid: OverflowError: %d not in range 0 to 4294967295
         self.timeUpdateSourceId = timeout_add(
-            int(1000*(seconds + 0.01 - tm%1)),
+            miliSeconds,
             self.currentTimeUpdate,
         )
         self.currentTime = int(tm)
