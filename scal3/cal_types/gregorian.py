@@ -55,7 +55,7 @@ def isLeap(y):
     return y%4==0 and not ( y%100==0 and y%400!=0 )
 
 def to_jd(year, month, day):
-    if year > 0:## > 1.5x faster
+    if 0 < year < 10000:## > 1.5x faster
         return datetime(year, month, day).toordinal() + 1721425
 
     # Python 2.x and 3.x:
@@ -73,7 +73,8 @@ def to_jd(year, month, day):
 
 def jd_to(jd) :
     ordinal = int(jd) - 1721425
-    if ordinal > 0:## > 4x faster
+    if 0 < ordinal < 3652060:## > 4x faster
+        # datetime(9999, 12, 31).toordinal() == 3652059
         dt = datetime.fromordinal(ordinal)
         return (dt.year, dt.month, dt.day)
 
