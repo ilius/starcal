@@ -575,7 +575,7 @@ loadConf()
 
 licenseText = _('licenseText')
 if licenseText in ('licenseText', ''):
-    licenseText = open('%s/license'%rootDir, encoding='utf-8').read()
+    licenseText = open('%s/license-dialog'%rootDir, encoding='utf-8').read()
 
 aboutText = _('aboutText')
 if aboutText in ('aboutText', ''):
