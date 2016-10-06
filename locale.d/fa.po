@@ -1529,11 +1529,11 @@ msgstr ""
 
 msgid "Week Calendar"
 msgstr ""
-"تقویم هفتگی"
+"تقویم هفته"
 
 msgid "Switch to Week Calendar"
 msgstr ""
-"تغییر به تقویم هفتگی"
+"تغییر به تقویم هفته"
 
 msgid "Switch to Month Calendar"
 msgstr ""
