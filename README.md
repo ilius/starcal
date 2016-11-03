@@ -1,3 +1,7 @@
+Starcal
+=============
+*A full-featured international calendar written in Python* 
+
 #Download latest codes via git:
     $ git clone git://github.com/ilius/starcal.git
 
