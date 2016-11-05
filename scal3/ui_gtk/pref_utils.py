@@ -545,7 +545,7 @@ class AICalsTreeview(gtk.TreeView):
         self.dragPath = path
         return True
     def dragDataReceived(self, treev, context, x, y, selection, dragId, etime):
-        srcTreev = context.get_source_widget()
+        srcTreev = gtk.drag_get_source_widget(context)
         if not isinstance(srcTreev, AICalsTreeview):
             return
         srcDragId = srcTreev.dragId
