@@ -21,6 +21,7 @@
 import os
 os.environ['LANG']='en_US.UTF-8' #?????????
 
+import subprocess
 from time import localtime
 from time import time as now
 import sys
@@ -28,7 +29,7 @@ from math import ceil
 
 from scal3 import ui
 
-from gobject import timeout_add
+from gi.repository.GObject import timeout_add
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
@@ -39,12 +40,17 @@ _ = str ## FIXME
 iceil = lambda f: int(ceil(f))
 
 
-def error_exit(text, parent=None):
-    d = gtk.MessageDialog(parent, gtk.DialogFlags.DESTROY_WITH_PARENT,\
-        gtk.MessageType.ERROR, gtk.ButtonsType.OK, text.strip())
+def error_exit(resCode, text, parent=None):
+    d = gtk.MessageDialog(
+        parent,
+        gtk.DialogFlags.DESTROY_WITH_PARENT,
+        gtk.MessageType.ERROR,
+        gtk.ButtonsType.OK,
+        text.strip(),
+    )
     d.set_title('Error')
     d.run()
-    sys.exit(1)
+    sys.exit(resCode)
 
 class AdjusterDialog(gtk.Dialog):
     xpad = 15
@@ -106,7 +112,7 @@ class AdjusterDialog(gtk.Dialog):
         self.vboxMan = vb
         ######
         hbox = gtk.HBox()
-        self.radioNtp = gtk.RadioButton(self.radioMan, _('Set from _NTP:'), True)
+        self.radioNtp = gtk.RadioButton(group=self.radioMan, label=_('Set from NTP:'))
         self.radioNtp.connect('clicked', self.radioNtpClicked)
         pack(hbox, self.radioNtp)
         pack(self.vbox, hbox)
@@ -118,7 +124,7 @@ class AdjusterDialog(gtk.Dialog):
         pack(hbox, l)
         ##
         pack(hbox, gtk.Label(_('Server:')+' '))
-        combo = gtk.combo_box_entry_new_text()
+        combo = gtk.ComboBoxText.new_with_entry()
         combo.get_child().connect('changed', self.updateSetButtonSensitive)
         pack(hbox, combo, 1, 1)
         self.ntpServerEntry = combo.get_child()
@@ -208,17 +214,33 @@ class AdjusterDialog(gtk.Dialog):
             #    error_exit('Could not find command /usr/sbin/ntpdate: no such file!', self)#??????????
         else:
             error_exit('Not valid option!', self)
-        inp, out, err = os.popen3(cmd)
-        err_text = err.read()
-        if err_text=='':
-            sys.exit(0)
-        else:
-            error_exit(err_text, self)#??????????
+        proc = subprocess.Popen(
+            cmd,
+            stderr=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+        )
+        resCode = proc.wait()
+        error = proc.stderr.read().strip()
+        output = proc.stdout.read().strip()
+        if output:
+            print(output)
+        #print('resCode=%r, error=%r, output=%r' % (resCode, error, output))
+        if error:
+            print(error)
+        if resCode!=0:
+            error_exit(
+                resCode,
+                error,
+                parent=self,
+            )
+        #else:
+        #    sys.exit(0)
+
 
 
 if __name__=='__main__':
     if os.getuid()!=0:
-        error_exit('This program must be run as root')
+        error_exit(1, 'This program must be run as root')
         #raise OSError('This program must be run as root')
         ###os.setuid(0)#?????????
     d = AdjusterDialog(parent=None)
