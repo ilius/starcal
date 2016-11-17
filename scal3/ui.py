@@ -749,40 +749,6 @@ wcalFont_pluginsText = None
 wcalFont_eventsBox = None
 
 
-##### just for compatibility
-try:
-	wcal_weekDays_width = wcalWeekDaysWidth
-except NameError:
-	pass
-try:
-	wcal_eventsCount_width = wcalEventsCountColWidth
-except NameError:
-	pass
-try:
-	wcal_eventsCount_expand = wcalEventsCountExpand
-except NameError:
-	pass
-try:
-	wcal_eventsIcon_width = wcalEventsIconColWidth
-except NameError:
-	pass
-try:
-	wcal_eventsText_showDesc = wcalEventsTextShowDesc
-except NameError:
-	pass
-try:
-	wcal_eventsText_colorize = wcalEventsTextColorize
-except NameError:
-	pass
-try:
-	wcal_daysOfMonth_width = wcalDaysOfMonthColWidth
-except NameError:
-	pass
-try:
-	wcal_daysOfMonth_dir = wcalDaysOfMonthColDir
-except NameError:
-	pass
-
 ####################
 dcalHeight = 250
 
@@ -908,18 +874,6 @@ if not isfile(statusIconImage):
 if not isfile(statusIconImageHoli):
 	statusIconImageHoli = statusIconImageHoliDefault
 
-try:
-	mcalGridColor = wcalGridColor = gridColor
-except NameError:
-	pass
-
-try:
-	fontUseDefault
-except NameError:
-	pass
-else:
-	fontCustomEnable = not fontUseDefault ## for compatibilty
-	del fontUseDefault
 
 try:
 	localTzHist.remove(str(core.localTz))
@@ -927,24 +881,6 @@ except ValueError:
 	pass
 localTzHist.insert(0, str(core.localTz))
 saveLiveConf()
-
-
-if shownCals:## just for compatibility
-	mcalTypeParams = []
-	wcalTypeParams = []
-	calTypes.activeNames = []
-	for item in shownCals:
-		mcalTypeParams.append({
-			'pos': (item['x'], item['y']),
-			'font': list(item['font']),
-			'color': item['color'],
-		})
-		wcalTypeParams.append({
-			'font': list(item['font']),
-		})
-		calTypes.activeNames.append(calTypes.names[item['mode']])
-	calTypes.update()
-
 
 
 needRestartPref = {} ### Right place ????????
