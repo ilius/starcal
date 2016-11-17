@@ -251,7 +251,7 @@ class WeekOccurrenceView(gtk.TreeView):
 				continue
 			self.ls.append(
 				pixbufFromFile(item['icon']),
-				core.weekDayNameAuto(self.abrivateWeekDays)[item['weekDay']],
+				core.getWeekDayAuto(item['weekDay'], self.abrivateWeekDays),
 				item['time'],
 				item['text'],
 			)

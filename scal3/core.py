@@ -219,8 +219,6 @@ def getWeekDayAuto(i, abr=False):
 	else:
 		return weekDayName[(i+firstWeekDay)%7]
 
-weekDayNameAuto = lambda abr: weekDayNameAb if abr else weekDayName
-
 def getLocaleFirstWeekDay():
 	#log.debug('first_weekday', popen_output(['locale', 'first_weekday']))
 	return int(popen_output(['locale', 'first_weekday']))-1
