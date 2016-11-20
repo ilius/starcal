@@ -36,7 +36,7 @@ getMonthNameAb = lambda m, y=None: monthNameAb.__getitem__(m-1)
 getMonthsInYear = lambda y: 12
 
 
-epoch = 1948439.5
+epoch = 1948440
 minMonthLen = 29
 maxMonthLen = 30
 avgYearLen = 354.3666 ## FIXME
@@ -192,7 +192,7 @@ to_jd_c = lambda year, month, day:\
     day + iceil(29.5 * (month - 1)) + \
     (year - 1) * 354               + \
     (11*year + 3) // 30  + \
-    int(epoch) + 1
+    epoch
 
 def to_jd(year, month, day):
     if hijriUseDB:## and hijriAlg==0
@@ -208,8 +208,7 @@ def jd_to(jd):
         date = monthDb.getDateFromJd(jd)
         if date:
             return date
-    ##jd = ifloor(jd) + 0.5
-    year = ifloor(((30 * (jd - epoch)) + 10646) // 10631)
+    year = ifloor(((30 * (jd - 1 - epoch)) + 10646) // 10631)
     month = min(
         12,
         iceil(
