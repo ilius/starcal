@@ -19,7 +19,7 @@
 
 from scal3.cal_types import calTypes
 from scal3 import core
-from scal3.core import myRaise, getMonthName, getMonthLen, getWeekDay, getWeekNumber
+from scal3.core import myRaise, getMonthName, getMonthLen, getWeekDay, getWeekNumberByJd
 from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
 from scal3 import ui
@@ -34,7 +34,8 @@ class MonthStatus(list): ## FIXME
         self.month = month
         self.monthLen = getMonthLen(year, month, calTypes.primary)
         self.offset = getWeekDay(year, month, 1)## month start offset
-        self.weekNum = [getWeekNumber(year, month, 1+7*i) for i in range(6)]
+        initJd = core.primary_to_jd(year, month, 1)
+        self.weekNum = [getWeekNumberByJd(initJd + i*7) for i in range(6)]
         #########
         startJd, endJd = core.getJdRangeForMonth(year, month, calTypes.primary)
         tableStartJd = startJd - self.offset
