@@ -186,7 +186,7 @@ monthDb.load()
 
 ################################################################################
 
-is_leap = lambda year: (((year * 11) + 14) % 30) < 11
+isLeap = lambda year: (((year * 11) + 14) % 30) < 11
 
 to_jd_c = lambda year, month, day:\
     day + iceil(29.5 * (month - 1)) + \
