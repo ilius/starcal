@@ -26,66 +26,115 @@ desc = 'Julian'
 origLang = 'en'
 
 from math import floor
-ifloor = lambda x: int(floor(x))
 
-monthName = ('January','February','March','April','May','June',
-             'July','August','September','October','November','December')
 
-monthNameAb = ('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-               'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec')
+def ifloor(x):
+    return int(floor(x))
 
-getMonthName = lambda m, y=None: monthName.__getitem__(m-1)
-getMonthNameAb = lambda m, y=None: monthNameAb.__getitem__(m-1)
+monthName = (
+    'January', 'February', 'March',
+    'April', 'May', 'June',
+    'July', 'August', 'September',
+    'October', 'November', 'December',
+)
 
-getMonthsInYear = lambda y: 12
+monthNameAb = (
+    'Jan', 'Feb', 'Mar',
+    'Apr', 'May', 'Jun',
+    'Jul', 'Aug', 'Sep',
+    'Oct', 'Nov', 'Dec',
+)
+
+getMonthName = lambda m, y=None: monthName.__getitem__(m - 1)
+getMonthNameAb = lambda m, y=None: monthNameAb.__getitem__(m - 1)
+
+
+def getMonthsInYear(y):
+    return 12
 
 epoch = 1721058
 minMonthLen = 28
 maxMonthLen = 32
-avgYearLen = 365.2425 ## FIXME
+avgYearLen = 365.25
 
 options = ()
+
+monthLenSum = (
+    0, 31, 59,
+    90, 120, 151,
+    181, 212, 243,
+    273, 304, 334,
+    365,
+)
+
 
 def save():
     pass
 
-def kal_s(m, p):
- if m==13:
-     return 365
- else:
-     t = (0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334)
-     ## (31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30)
-     #m = (m-1)%12 + 1 ## for stability reasons
-     b = t[m-1]
-     if m<3:
-         b -= p
-     return b
 
-def to_jd(y, m, d):
-    p1, p2 = divmod(y, 4)
-    return ifloor(d + kal_s(m, int(p2==0)) + 1461*p1 + 365*p2 + epoch)
+def isLeap(year):
+    return year % 4 == 0
+
+
+def getYearDays(month, leap):
+    """
+    month: int, 1..13
+    leap: bool
+    """
+    ydays = monthLenSum[month - 1]
+    if leap and month < 3:
+        ydays -= 1
+    return ydays
+
+
+def getMonthDayFromYdays(yDays, leap):
+    """
+    yDays: int, number of days in year
+    leap: bool
+    """
+    month = 1
+    while month < 12 and yDays > getYearDays(month + 1, leap):
+        month += 1
+    day = yDays - getYearDays(month, leap)
+    return month, day
+
+
+def to_jd(year, month, day):
+    quadCount, yMode = divmod(year, 4)
+    return (
+        epoch +
+        1461 * quadCount +
+        365 * yMode +
+        getYearDays(month, yMode == 0) +
+        day
+    )
+
 
 def jd_to(jd):
-    ##wjd = ifloor(jd - 0.5) + 1
-    p1, q1 = divmod(jd-epoch, 1461)
-    #if q1==0:## ??????????????????
-    #    return (4*p1, 1, 1)
-    #else:
-    if True:
-        p2, q2 = divmod(q1-1, 365)
-        y = 4*p1 + p2;
-        q = int(y%4==0)
-        m = 1;
-        while m<12 and q2+1 > kal_s(m+1, q):
-            m += 1
-        d = q2 + 1 - kal_s(m, q)
-        return (y, m, d)
+    """
+    quad: 4 years
+    quadCount (p1): quad count
+    quadDays (q1): quad remaining days count
+    yMode (p2): year % 4
+    yDays (q2+1): year remaining days count
+    """
 
-def getMonthLen(y, m):
-    if m==12:
-        return to_jd(y+1, 1, 1) - to_jd(y, 12, 1)
+    # wjd = ifloor(jd - 0.5) + 1
+    quadCount, quadDays = divmod(jd - epoch, 1461)
+
+    if quadDays == 0:  # first day of quad (and year)
+        return (4 * quadCount, 1, 1)
+
+    yMode, yDays = divmod(quadDays - 1, 365)
+    yDays += 1
+    year = 4 * quadCount + yMode
+    month, day = getMonthDayFromYdays(yDays, yMode == 0)
+
+    return (year, month, day)
+
+
+def getMonthLen(year, month):
+    if month == 12:
+        return to_jd(year + 1, 1, 1) - to_jd(year, 12, 1)
     else:
-        return to_jd(y, m+1, 1) - to_jd(y, m, 1)
-
-
-
+        return to_jd(year, month + 1, 1) - to_jd(year, month, 1)
