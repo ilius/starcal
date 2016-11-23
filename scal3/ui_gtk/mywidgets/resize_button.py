@@ -20,6 +20,7 @@ class ResizeButton(gtk.EventBox):
             int(gevent.y_root),
             gevent.time,
         )
+        return True
 
 
 
