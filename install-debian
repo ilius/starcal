@@ -58,6 +58,7 @@ recommends+=('python3-gnomevfs')
 depends_str=$(printf ", %s" "${depends[@]}") ; depends_str=${depends_str:2}
 recommends_str=$(printf ", %s" "${recommends[@]}") ; recommends_str=${recommends_str:2}
 
+mkdir -p $tmpDir/DEBIAN
 echo "Package: $pkgName
 Version: $version
 Architecture: all
@@ -76,7 +77,7 @@ Description: A full-featured international calendar writen in Python
 " > "$tmpDir/DEBIAN/control"
 
 #echo "/usr/share/$pkgName/scripts/assert_python3" > "$tmpDir/DEBIAN/postinst"
-chmod 755 "$tmpDir/DEBIAN/postinst"
+#chmod 755 "$tmpDir/DEBIAN/postinst"
 
 pkgFile=${pkgName}_${version}-1_all.deb
 dpkg-deb -b "$tmpDir" "$pkgFile"
