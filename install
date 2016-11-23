@@ -13,7 +13,7 @@ function clean {
         find . -name "$EXP" -exec rm '{}' \;
     done 2>/dev/null
     find . -name '__pycache__' -exec rm -R '{}' \; 2>/dev/null
-    find scal3 -type d -empty -delete
+    find . -type d -empty -delete
 }
 
 myPath="$0"
@@ -125,7 +125,7 @@ cp -Rf "$sourceDir/" "${shareDir}/$pkgName" ### PUT SLASH after $sourceDir to co
 
 "${shareDir}/$pkgName/update-perm" ## FIXME
 
-for docFile in copyright authors ChangeLog ; do
+for docFile in license.txt authors ChangeLog ; do
     mv -f "${shareDir}/$pkgName/$docFile" "${shareDir}/doc/$pkgName/"
 done
 
