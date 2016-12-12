@@ -797,7 +797,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
                 loader.set_size(width, height)
             except:
                 myRaise()
-        data = open(imagePath).read()
+        data = open(imagePath, 'rb').read()
         if ext == 'svg':
             dayNum = _(ddate[2])
             if ui.statusIconFontFamilyEnable:
@@ -807,10 +807,9 @@ class MainWin(gtk.Window, ud.BaseCalObj):
                     family = ui.getFont()[0]
                 dayNum = '<tspan style="font-family:%s">%s</tspan>'%(family, dayNum)
             data = data.replace(
-                'TX',
-                dayNum,
+                b'TX',
+                toBytes(dayNum),
             )
-        data = toBytes(data)
         loader.write(data)
         loader.close()
         pixbuf = loader.get_pixbuf()
