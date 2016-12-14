@@ -1,9 +1,9 @@
 #!/bin/bash
 myPath="$0"
 if [ "${myPath:0:2}" == "./" ] ; then
-    myPath=$PWD${myPath:1}
+	myPath=$PWD${myPath:1}
 elif [ "${myPath:0:1}" != "/" ] ; then
-    myPath=$PWD/$myPath
+	myPath=$PWD/$myPath
 fi
 myDir=`dirname "$myPath"`
 rootDir=`dirname "$myDir"`

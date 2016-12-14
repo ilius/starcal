@@ -5,9 +5,9 @@ initPwd=$PWD
 
 myPath="$0"
 if [ "${myPath:0:2}" == "./" ] ; then
-    myPath=$initPwd${myPath:1}
+	myPath=$initPwd${myPath:1}
 elif [ "${myPath:0:1}" != "/" ] ; then
-    myPath=$initPwd/$myPath
+	myPath=$initPwd/$myPath
 fi
 
 
@@ -56,7 +56,7 @@ conflicts=('starcal-git')
 source=()
 md5sums=()
 package() {
-    \"\$sourceDir/install\" \"\$pkgdir\" --for-pkg
+	\"\$sourceDir/install\" \"\$pkgdir\" --for-pkg
 }" > PKGBUILD
 
 makepkg -sif

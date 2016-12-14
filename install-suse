@@ -4,14 +4,14 @@
 ## rpmbuild command is provided by package "rpm" that is a base and essential package is SUSE
 
 function check_pkg(){
-    OUT=`zypper info "$1" | grep 'Installed:'`
-    if [ "$OUT" = 'Installed: Yes' ] ; then
-        echo 'installed'
-    elif [ "$OUT" = 'Installed: No' ] ; then
-        echo 'not_installed'
-    else
-        echo "not_found"
-    fi
+	OUT=`zypper info "$1" | grep 'Installed:'`
+	if [ "$OUT" = 'Installed: Yes' ] ; then
+		echo 'installed'
+	elif [ "$OUT" = 'Installed: No' ] ; then
+		echo 'not_installed'
+	else
+		echo "not_found"
+	fi
 }
 
 if [ "$UID" != "0" ] ; then
@@ -22,9 +22,9 @@ fi
 
 myPath="$0"
 if [ "${myPath:0:2}" == "./" ] ; then
-    myPath=$PWD${myPath:1}
+	myPath=$PWD${myPath:1}
 elif [ "${myPath:0:1}" != "/" ] ; then
-    myPath=$PWD/$myPath
+	myPath=$PWD/$myPath
 fi
 
 
@@ -106,12 +106,12 @@ pkgPath="`ls /usr/src/packages/RPMS/noarch/$pkgName*$version*.rpm`"
 echo "pkgPath=$pkgPath"
 
 if [ -z "$pkgPath" ] ; then
-    echo "Package build failed"
-    exit 1
+	echo "Package build failed"
+	exit 1
 fi
 if [ ! -f "$pkgPath" ] ; then
-    echo "Package file $pkgPath does not exit"
-    exit 1
+	echo "Package file $pkgPath does not exit"
+	exit 1
 fi
 
 echo "Package created in \"$pkgPath\", installing"
@@ -121,23 +121,23 @@ zypper install -f "$pkgPath"
 ## Fixed with defining /usr as Provides
 
 #if [ -f /usr/bin/yum ] ; then
-#    yum remove -y $pkgName >/dev/null 2>&1
-#    yum install --nogpgcheck "$pkgPath"
+#	 yum remove -y $pkgName >/dev/null 2>&1
+#	 yum install --nogpgcheck "$pkgPath"
 #fi
 
 #rpm -U --force "$pkgPath" ## its OK when required packages are installed!
 
 if [ "`check_pkg gnome-shell`" = installed ] ; then
-    case `check_pkg gnome-shell-extension-topicons` in
-        not_installed)
-            zypper install gnome-shell-extension-topicons
-            ;;
-        not_found)
-            zypper ar -f http://download.opensuse.org/repositories/home:/PerryWerneck/openSUSE_13.2/ PerryWerneck && \
-            zypper refresh && \
-            zypper install gnome-shell-extension-topicons
-            ;;
-    esac
+	case `check_pkg gnome-shell-extension-topicons` in
+		not_installed)
+			zypper install gnome-shell-extension-topicons
+			;;
+		not_found)
+			zypper ar -f http://download.opensuse.org/repositories/home:/PerryWerneck/openSUSE_13.2/ PerryWerneck && \
+			zypper refresh && \
+			zypper install gnome-shell-extension-topicons
+			;;
+	esac
 fi
 
 
