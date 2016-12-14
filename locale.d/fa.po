@@ -837,6 +837,10 @@ msgid "Enable/Disable"
 msgstr ""
 "فعال/غیرفعال کردن"
 
+msgid "Disabled"
+msgstr ""
+"غیرفعال"
+
 msgid "position"
 msgstr ""
 "مکان"
