@@ -308,6 +308,18 @@ class Cell:## status and information of a cell
 		###################
 		#t0 = now()
 		self.eventsData = event_lib.getDayOccurrenceData(jd, eventGroups)## here? FIXME
+		'''
+			self.eventsData is a list, each item is a dictionary with these keys and type: 
+				time: str (time descriptive string)
+				time_epoch: int (epoch time)
+				is_allday: bool
+				text: tuple of text lines
+				icon: str (icon path)
+				color: tuple (r, g, b) or (r, g, b, a)
+				ids: tuple (gid, eid)
+				show: tuple of 3 bools (showInDCal, showInWCal, showInMCal)
+				showInStatusIcon: bool
+		'''
 		#dt = now() - t0
 		#Cell.ocTimeSum += dt
 		#Cell.ocTimeCount += 1
