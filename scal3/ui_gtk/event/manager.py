@@ -458,7 +458,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 					self.editTrash,
 				))
 				menu.add(eventWriteMenuItem(
-					'Empty Trash',
+					'Empty Trash',## or use group.title FIXME
 					gtk.STOCK_CLEAR,
 					self.emptyTrash,
 				))
@@ -1055,9 +1055,10 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		eventCount = len(group)
 		if eventCount > 0:
 			if not confirm(
-				_('Press OK if you want to delete group "%s" and move its %s events to trash')%(
+				_('Press OK if you want to delete group "%s" and move its %s events to %s')%(
 					group.title,
 					_(eventCount),
+					ui.eventTrash.title,
 				),
 				parent=self,
 			):
