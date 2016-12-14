@@ -9,13 +9,13 @@ import os
 lines = open('/etc/passwd').read().split('\n')
 for line in lines:
   if line=='':
-    continue
+	continue
   line = line.replace(',' ,'')
   parts = line.split(':')
   home = parts[5]
   try:
-    os.remove('%s/Desktop/%s.desktop'%(home, pkgName))
+	os.remove('%s/Desktop/%s.desktop'%(home, pkgName))
   except:
-    continue
+	continue
   print('Removing x-desktop file from %s\'s Desktop'%parts[0])
 

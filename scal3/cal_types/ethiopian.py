@@ -2,7 +2,7 @@
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 # Used code from http://code.google.com/p/ethiocalendar/
-#                Copyright (C) 2008-2009 Yuji DOI <yuji5296@gmail.com>
+#				Copyright (C) 2008-2009 Yuji DOI <yuji5296@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -25,7 +25,7 @@ desc = 'Ethiopian'
 origLang = 'en'## FIXME
 
 monthName = ('Meskerem', 'Tekimt', 'Hidar', 'Tahsas', 'Ter', 'Yekoutit',
-             'Meyabit', 'Meyaziya', 'Genbot', 'Sene', 'Hamle', 'Nahse')
+			'Meyabit', 'Meyaziya', 'Genbot', 'Sene', 'Hamle', 'Nahse')
 
 monthNameAb = monthName ## FIXME
 
@@ -44,7 +44,7 @@ avgYearLen = 365.25
 options = ()
 
 def save():
-    pass
+	pass
 
 
 isLeap = lambda y: (y + 1) % 4 == 0
@@ -54,44 +54,44 @@ to_jd = lambda year, month, day: epoch + 365*(year-1) + year//4 + (month-1)*30 +
 
 
 def jd_to(jd) :
-    quad, dquad = divmod(jd - epoch, 1461)
-    yindex = min(3, dquad//365)
-    year = quad*4 + yindex + 1
-    ###
-    yearday = jd - to_jd(year, 1, 1)
-    month, day = divmod(yearday, 30)
-    day += 1
-    month += 1
-    if month == 13:
-        month -= 1
-        day += 30
-    if month == 12:
-        mLen = 35 + isLeap(year)
-        if day > mLen:
-            year += 1
-            month = 1
-            day -= mLen
-    ###
-    return year, month, day
+	quad, dquad = divmod(jd - epoch, 1461)
+	yindex = min(3, dquad//365)
+	year = quad*4 + yindex + 1
+	###
+	yearday = jd - to_jd(year, 1, 1)
+	month, day = divmod(yearday, 30)
+	day += 1
+	month += 1
+	if month == 13:
+		month -= 1
+		day += 30
+	if month == 12:
+		mLen = 35 + isLeap(year)
+		if day > mLen:
+			year += 1
+			month = 1
+			day -= mLen
+	###
+	return year, month, day
 
 
 def getMonthLen(year, month):
-    if month==12:
-        return 35 + isLeap(year)
-    else:
-        return monthLen[month-1]
+	if month==12:
+		return 35 + isLeap(year)
+	else:
+		return monthLen[month-1]
 
 
 if __name__=='__main__':
-    import sys
-    from . import gregorian
-    ###
-    for gy in range(2012, 1990, -1):
-        jd = gregorian.to_jd(gy, 1, 1)
-        ey, em, ed = jd_to(jd)
-        #if ed==22:
-        #    print(gy)
-        print('%.4d/%.2d/%.2d\t%.4d/%.2d/%.2d'%(gy, 1, 1, ey, em, ed))
+	import sys
+	from . import gregorian
+	###
+	for gy in range(2012, 1990, -1):
+		jd = gregorian.to_jd(gy, 1, 1)
+		ey, em, ed = jd_to(jd)
+		#if ed==22:
+		#	print(gy)
+		print('%.4d/%.2d/%.2d\t%.4d/%.2d/%.2d'%(gy, 1, 1, ey, em, ed))
 
 
 

@@ -36,86 +36,86 @@ from scal3.ui_gtk.drawing import fillColor, newTextLayout
 
 
 class WeekStatus(list):
-    ## int year
-    ## int weeknum
-    ## list[list] dates
-    def __init__(self):
-        list.__init__(self)
+	## int year
+	## int weeknum
+	## list[list] dates
+	def __init__(self):
+		list.__init__(self)
 
 class TextObject():
-    def __init__(self, parent, x, y, color, font, center=True):
-        self.parent = parent
-        self.x = x
-        self.y = y
-        self.resizable = False
-        ###############
-        self.color = color
-        self.layout = widget.create_pango_layout('')
-        if font:
-            self.setFont(font)
-        self.center = center ## ???????????????????
-        #self.xAlign = 0.5
-        #self.yAlign = 0.5
-    def draw(self, cr):
-        if self.center:
-            w, h = self.layout.get_pixel_size()
-            cr.move_to(self.x - w/2.0, self.y - h/2.0)
-        else:
-            cr.move_to(self.x, self.y)
-        fillColor(cr, self.color)
-        show_layout(cr, self.layout)
-    def setFont(self, font):
-        self.layout.set_font_description(pfontEncode(font))
-    def getText(self):
-        raise NotImplementedError
-    def contains(self, px, py):
-        w, h = self.layout.get_pixel_size()
-        if self.center:
-            return -w/2.0 <= px-self.x < w/2.0 \
-                 and -h/2.0 <= py-self.y < h/2.0
-        else:
-            return 0 <= px-self.x < w \
-                 and 0 <= py-self.y < h
+	def __init__(self, parent, x, y, color, font, center=True):
+		self.parent = parent
+		self.x = x
+		self.y = y
+		self.resizable = False
+		###############
+		self.color = color
+		self.layout = widget.create_pango_layout('')
+		if font:
+			self.setFont(font)
+		self.center = center ## ???????????????????
+		#self.xAlign = 0.5
+		#self.yAlign = 0.5
+	def draw(self, cr):
+		if self.center:
+			w, h = self.layout.get_pixel_size()
+			cr.move_to(self.x - w/2.0, self.y - h/2.0)
+		else:
+			cr.move_to(self.x, self.y)
+		fillColor(cr, self.color)
+		show_layout(cr, self.layout)
+	def setFont(self, font):
+		self.layout.set_font_description(pfontEncode(font))
+	def getText(self):
+		raise NotImplementedError
+	def contains(self, px, py):
+		w, h = self.layout.get_pixel_size()
+		if self.center:
+			return -w/2.0 <= px-self.x < w/2.0 \
+				 and -h/2.0 <= py-self.y < h/2.0
+		else:
+			return 0 <= px-self.x < w \
+				 and 0 <= py-self.y < h
 
 class YearObject(TextObject):
-    def __init__(self, parent, mode, x=0, y=0, color=(0,0,0), font=None):
-        TextObject.__init__(self, parent, x, y, color, font)
-        self.mode = mode
-    getText = lambda self: _(self.parent.dates[self.mode][2], self.mode)
+	def __init__(self, parent, mode, x=0, y=0, color=(0,0,0), font=None):
+		TextObject.__init__(self, parent, x, y, color, font)
+		self.mode = mode
+	getText = lambda self: _(self.parent.dates[self.mode][2], self.mode)
 
 class MonthObject(TextObject):
-    def __init__(self, parent, mode, x=0, y=0, color=(0,0,0), font=None):
-        TextObject.__init__(self, parent, x, y, color, font)
-        self.mode = mode
-    getText = lambda self: _(self.parent.dates[self.mode][1], self.mode)
+	def __init__(self, parent, mode, x=0, y=0, color=(0,0,0), font=None):
+		TextObject.__init__(self, parent, x, y, color, font)
+		self.mode = mode
+	getText = lambda self: _(self.parent.dates[self.mode][1], self.mode)
 
 class MonthNameObject(TextObject):
-    def __init__(self, parent, mode, x=0, y=0, color=(0,0,0), font=None):
-        TextObject.__init__(self, parent, x, y, color, font)
-        self.mode = mode
-    getText = lambda self: getMonthName(self.mode, self.parent.dates[self.mode][1])
+	def __init__(self, parent, mode, x=0, y=0, color=(0,0,0), font=None):
+		TextObject.__init__(self, parent, x, y, color, font)
+		self.mode = mode
+	getText = lambda self: getMonthName(self.mode, self.parent.dates[self.mode][1])
 
 class PlainStrObject(TextObject):
-    def __init__(self, parent, text='', x=0, y=0, color=(0,0,0), font=None):
-        TextObject.__init__(self, parent, x, y, color, font)
-        self.text = text
-    getText = lambda self: self.text
+	def __init__(self, parent, text='', x=0, y=0, color=(0,0,0), font=None):
+		TextObject.__init__(self, parent, x, y, color, font)
+		self.text = text
+	getText = lambda self: self.text
 
 
 
 class TinyCal(gtk.Window):
-    def __init__(self):
-        gtk.Window.__init__(self)
-        self.set_title(core.APP_DESC+' Tiny')
-        self.set_decorated(False)
-        self.set_property('skip-taskbar-hint', None)
-        self.set_role(core.APP_NAME+'-tiny')
-        ##################
-        self.objects = []
-    def startEditing(self):
-        pass
-    def endEditing(self):
-        pass
+	def __init__(self):
+		gtk.Window.__init__(self)
+		self.set_title(core.APP_DESC+' Tiny')
+		self.set_decorated(False)
+		self.set_property('skip-taskbar-hint', None)
+		self.set_role(core.APP_NAME+'-tiny')
+		##################
+		self.objects = []
+	def startEditing(self):
+		pass
+	def endEditing(self):
+		pass
 
 
 

@@ -35,98 +35,98 @@ from scal3.ui_gtk.event.occurrence_view import DayOccurrenceView
 
 @registerSignals
 class AllDateLabelsVBox(gtk.VBox, ud.BaseCalObj):
-    _name = 'allDateLabels'
-    desc = _('Dates')
-    def __init__(self):
-        gtk.VBox.__init__(self, spacing=5)
-        self.initVars()
-    def onDateChange(self, *a, **ka):
-        ud.BaseCalObj.onDateChange(self, *a, **ka)
-        for child in self.get_children():
-            child.destroy()
-        sgroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
-        for i, module in calTypes.iterIndexModule():
-            hbox = gtk.HBox()
-            label = gtk.Label(_(module.desc))
-            label.set_alignment(0, 0.5)
-            pack(hbox, label)
-            sgroup.add_widget(label)
-            pack(hbox, gtk.Label('  '))
-            ###
-            pack(hbox,
-                gtk.Label(
-                    ui.cell.format(ud.dateFormatBin, i)
-                ),
-                0,
-                0,
-                0,
-            )
-            ###
-            pack(self, hbox)
-        self.show_all()
+	_name = 'allDateLabels'
+	desc = _('Dates')
+	def __init__(self):
+		gtk.VBox.__init__(self, spacing=5)
+		self.initVars()
+	def onDateChange(self, *a, **ka):
+		ud.BaseCalObj.onDateChange(self, *a, **ka)
+		for child in self.get_children():
+			child.destroy()
+		sgroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
+		for i, module in calTypes.iterIndexModule():
+			hbox = gtk.HBox()
+			label = gtk.Label(_(module.desc))
+			label.set_alignment(0, 0.5)
+			pack(hbox, label)
+			sgroup.add_widget(label)
+			pack(hbox, gtk.Label('  '))
+			###
+			pack(hbox,
+				gtk.Label(
+					ui.cell.format(ud.dateFormatBin, i)
+				),
+				0,
+				0,
+				0,
+			)
+			###
+			pack(self, hbox)
+		self.show_all()
 
 
 @registerSignals
 class PluginsTextView(gtk.TextView, ud.BaseCalObj):
-    _name = 'pluginsText'
-    desc = _('Plugins Text')
-    def __init__(self):
-        gtk.TextView.__init__(self)
-        self.initVars()
-        ###
-        self.set_wrap_mode(gtk.WrapMode.WORD)
-        self.set_editable(False)
-        self.set_cursor_visible(False)
-        self.set_justification(gtk.Justification.CENTER)
-    def onDateChange(self, *a, **ka):
-        ud.BaseCalObj.onDateChange(self, *a, **ka)
-        self.get_buffer().set_text(ui.cell.pluginsText)
+	_name = 'pluginsText'
+	desc = _('Plugins Text')
+	def __init__(self):
+		gtk.TextView.__init__(self)
+		self.initVars()
+		###
+		self.set_wrap_mode(gtk.WrapMode.WORD)
+		self.set_editable(False)
+		self.set_cursor_visible(False)
+		self.set_justification(gtk.Justification.CENTER)
+	def onDateChange(self, *a, **ka):
+		ud.BaseCalObj.onDateChange(self, *a, **ka)
+		self.get_buffer().set_text(ui.cell.pluginsText)
 
 
 @registerSignals
 class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
-    _name = 'dayInfo'
-    desc = _('Day Info')
-    def __init__(self, **kwargs):
-        gtk.Dialog.__init__(self, **kwargs)
-        self.initVars()
-        ud.windowList.appendItem(self)
-        ###
-        self.set_title(_('Day Info'))
-        self.connect('delete-event', self.onClose)
-        self.vbox.set_spacing(15)
-        ###
-        dialog_add_button(self, gtk.STOCK_CLOSE, _('Close'), 0, self.onClose)
-        dialog_add_button(self, '', _('Previous'), 1, self.goBack)
-        dialog_add_button(self, '', _('Today'), 2, self.goToday)
-        dialog_add_button(self, '', _('Next'), 3, self.goNext)
-        ###
-        self.allDateLabels = AllDateLabelsVBox()
-        self.pluginsTextView = PluginsTextView()
-        self.eventsView = DayOccurrenceView()
-        ###
-        for item in (self.allDateLabels, self.pluginsTextView, self.eventsView):
-            self.appendItem(item)
-            ###
-            exp = gtk.Expander()
-            exp.set_label(item.desc)
-            exp.add(item)
-            exp.set_expanded(True)
-            pack(self.vbox, exp)
-        self.vbox.show_all()
-        ###
-    def onClose(self, obj=None, event=None):
-        self.hide()
-        return True
-    def goBack(self, obj=None):
-        ui.jdPlus(-1)
-        self.onDateChange()
-    def goToday(self, obj=None):
-        ui.gotoJd(core.getCurrentJd())
-        self.onDateChange()
-    def goNext(self, obj=None):
-        ui.jdPlus(1)
-        self.onDateChange()
+	_name = 'dayInfo'
+	desc = _('Day Info')
+	def __init__(self, **kwargs):
+		gtk.Dialog.__init__(self, **kwargs)
+		self.initVars()
+		ud.windowList.appendItem(self)
+		###
+		self.set_title(_('Day Info'))
+		self.connect('delete-event', self.onClose)
+		self.vbox.set_spacing(15)
+		###
+		dialog_add_button(self, gtk.STOCK_CLOSE, _('Close'), 0, self.onClose)
+		dialog_add_button(self, '', _('Previous'), 1, self.goBack)
+		dialog_add_button(self, '', _('Today'), 2, self.goToday)
+		dialog_add_button(self, '', _('Next'), 3, self.goNext)
+		###
+		self.allDateLabels = AllDateLabelsVBox()
+		self.pluginsTextView = PluginsTextView()
+		self.eventsView = DayOccurrenceView()
+		###
+		for item in (self.allDateLabels, self.pluginsTextView, self.eventsView):
+			self.appendItem(item)
+			###
+			exp = gtk.Expander()
+			exp.set_label(item.desc)
+			exp.add(item)
+			exp.set_expanded(True)
+			pack(self.vbox, exp)
+		self.vbox.show_all()
+		###
+	def onClose(self, obj=None, event=None):
+		self.hide()
+		return True
+	def goBack(self, obj=None):
+		ui.jdPlus(-1)
+		self.onDateChange()
+	def goToday(self, obj=None):
+		ui.gotoJd(core.getCurrentJd())
+		self.onDateChange()
+	def goNext(self, obj=None):
+		ui.jdPlus(1)
+		self.onDateChange()
 
 
 

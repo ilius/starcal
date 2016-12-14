@@ -24,124 +24,124 @@ from os.path import isdir, isfile
 
 
 def getOsName():## 'linux', 'win', 'mac', 'unix'
-    #psys = platform.system().lower()## 'linux', 'windows', 'darwin', ...
-    plat = sys.platform ## 'linux2', 'win32', 'darwin'
-    if plat.startswith('linux'):
-        return 'linux'
-    elif plat.startswith('win'):
-        return 'win'
-    elif plat=='darwin':
-        ## os.environ['OSTYPE'] == 'darwin10.0'
-        ## os.environ['MACHTYPE'] == 'x86_64-apple-darwin10.0'
-        ## platform.dist() == ('', '', '')
-        ## platform.release() == '10.3.0'
-        return 'mac'
-    elif os.sep=='\\':
-        return 'win'
-    elif os.sep=='/':
-        return 'unix'
-    else:
-        raise OSError('Unkown operating system!')
+	#psys = platform.system().lower()## 'linux', 'windows', 'darwin', ...
+	plat = sys.platform ## 'linux2', 'win32', 'darwin'
+	if plat.startswith('linux'):
+		return 'linux'
+	elif plat.startswith('win'):
+		return 'win'
+	elif plat=='darwin':
+		## os.environ['OSTYPE'] == 'darwin10.0'
+		## os.environ['MACHTYPE'] == 'x86_64-apple-darwin10.0'
+		## platform.dist() == ('', '', '')
+		## platform.release() == '10.3.0'
+		return 'mac'
+	elif os.sep=='\\':
+		return 'win'
+	elif os.sep=='/':
+		return 'unix'
+	else:
+		raise OSError('Unkown operating system!')
 
 
 def makeDir(direc):
-    if not isdir(direc):
-        os.makedirs(direc)
+	if not isdir(direc):
+		os.makedirs(direc)
 
 def getUsersData():
-    data = []
-    for line in open('/etc/passwd').readlines():
-        parts = line.strip().split(':')
-        if len(parts) < 7:
-            continue
-        data.append({
-            'login': parts[0],
-            'uid': parts[2],
-            'gid': parts[3],
-            'real_name': parts[4],
-            'home_dir': parts[5],
-            'shell': parts[6],
-        })
-    return data
+	data = []
+	for line in open('/etc/passwd').readlines():
+		parts = line.strip().split(':')
+		if len(parts) < 7:
+			continue
+		data.append({
+			'login': parts[0],
+			'uid': parts[2],
+			'gid': parts[3],
+			'real_name': parts[4],
+			'home_dir': parts[5],
+			'shell': parts[6],
+		})
+	return data
 
 def getUserDisplayName():
-    if os.sep=='/':
-        username = os.getenv('USER')
-        if isfile('/etc/passwd'):
-            for user in getUsersData():
-                if user['login'] == username:
-                    if user['real_name']:
-                        return user['real_name']
-                    else:
-                        return username
-        return username
-    else:## FIXME
-        username = os.getenv('USERNAME')
-        return username
+	if os.sep=='/':
+		username = os.getenv('USER')
+		if isfile('/etc/passwd'):
+			for user in getUsersData():
+				if user['login'] == username:
+					if user['real_name']:
+						return user['real_name']
+					else:
+						return username
+		return username
+	else:## FIXME
+		username = os.getenv('USERNAME')
+		return username
 
 
 def kill(pid, signal=0):
-    '''
-        sends a signal to a process
-        returns True if the pid is dead
-        with no signal argument, sends no signal
-    '''
-    #if 'ps --no-headers' returns no lines, the pid is dead
-    try:
-        return os.kill(pid, signal)
-    except OSError as e:
-        #process is dead
-        if e.errno == 3:
-            return True
-        #no permissions
-        elif e.errno == 1:
-            return False
-        else:
-            raise e
+	'''
+		sends a signal to a process
+		returns True if the pid is dead
+		with no signal argument, sends no signal
+	'''
+	#if 'ps --no-headers' returns no lines, the pid is dead
+	try:
+		return os.kill(pid, signal)
+	except OSError as e:
+		#process is dead
+		if e.errno == 3:
+			return True
+		#no permissions
+		elif e.errno == 1:
+			return False
+		else:
+			raise e
 
 def dead(pid):
-    if kill(pid):
-        return True
+	if kill(pid):
+		return True
 
-    #maybe the pid is a zombie that needs us to wait for it
-    from os import waitpid, WNOHANG
-    try:
-        dead = waitpid(pid, WNOHANG)[0]
-    except OSError as e:
-        #pid is not a child
-        if e.errno == 10:
-            return False
-        else:
-            raise e
-    return dead
+	#maybe the pid is a zombie that needs us to wait for it
+	from os import waitpid, WNOHANG
+	try:
+		dead = waitpid(pid, WNOHANG)[0]
+	except OSError as e:
+		#pid is not a child
+		if e.errno == 10:
+			return False
+		else:
+			raise e
+	return dead
 
 #def kill(pid, sig=0): pass #DEBUG: test hang condition
 
 
 def goodkill(pid, interval=1, hung=20):
-    'let process die gracefully, gradually send harsher signals if necessary'
-    from signal import SIGTERM, SIGINT, SIGHUP, SIGKILL
-    from time import sleep
+	'let process die gracefully, gradually send harsher signals if necessary'
+	from signal import SIGTERM, SIGINT, SIGHUP, SIGKILL
+	from time import sleep
 
-    for signal in (SIGTERM, SIGINT, SIGHUP):
-        if kill(pid, signal):
-            return
-        if dead(pid):
-            return
-        sleep(interval)
+	for signal in (SIGTERM, SIGINT, SIGHUP):
+		if kill(pid, signal):
+			return
+		if dead(pid):
+			return
+		sleep(interval)
 
-    i = 0
-    while True:
-        #infinite-loop protection
-        if i < hung:
-            i += 1
-        else:
-            raise OSError('Process %s is hung. Giving up kill.'%pid)
-        if kill(pid, SIGKILL):
-            return
-        if dead(pid):
-            return
-        sleep(interval)
+	i = 0
+	while True:
+		#infinite-loop protection
+		if i < hung:
+			i += 1
+		else:
+			raise OSError('Process %s is hung. Giving up kill.'%pid)
+		if kill(pid, SIGKILL):
+			return
+		if dead(pid):
+			return
+		sleep(interval)
 
 
 
