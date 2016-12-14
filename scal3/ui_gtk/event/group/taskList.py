@@ -10,22 +10,22 @@ from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 
 
 class WidgetClass(NormalWidgetClass):
-    def __init__(self, group):
-        NormalWidgetClass.__init__(self, group)
-        ###
-        hbox = gtk.HBox()
-        label = gtk.Label(_('Default Task Duration'))
-        label.set_alignment(0, 0.5)
-        pack(hbox, label)
-        self.sizeGroup.add_widget(label)
-        self.defaultDurationBox = common.DurationInputBox()
-        pack(hbox, self.defaultDurationBox)
-        pack(self, hbox)
-    def updateWidget(self):## FIXME
-        NormalWidgetClass.updateWidget(self)
-        self.defaultDurationBox.setDuration(*self.group.defaultDuration)
-    def updateVars(self):
-        NormalWidgetClass.updateVars(self)
-        self.group.defaultDuration = self.defaultDurationBox.getDuration()
+	def __init__(self, group):
+		NormalWidgetClass.__init__(self, group)
+		###
+		hbox = gtk.HBox()
+		label = gtk.Label(_('Default Task Duration'))
+		label.set_alignment(0, 0.5)
+		pack(hbox, label)
+		self.sizeGroup.add_widget(label)
+		self.defaultDurationBox = common.DurationInputBox()
+		pack(hbox, self.defaultDurationBox)
+		pack(self, hbox)
+	def updateWidget(self):## FIXME
+		NormalWidgetClass.updateWidget(self)
+		self.defaultDurationBox.setDuration(*self.group.defaultDuration)
+	def updateVars(self):
+		NormalWidgetClass.updateVars(self)
+		self.group.defaultDuration = self.defaultDurationBox.getDuration()
 
 

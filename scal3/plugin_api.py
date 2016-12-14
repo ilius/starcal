@@ -24,31 +24,31 @@ import sys
 ## how can we register module (with its getList and setList) ?
 
 class PluginError(Exception):
-    pass
+	pass
 
 def get(moduleName, attr, default=None, absolute=False):
-    if not absolute:
-        moduleName = 'scal3.' + moduleName
-    #module = __import__(moduleName, fromlist=['__plugin_api_get__', attr])
-    #print(sorted(sys.modules.keys()))
-    module = sys.modules[moduleName]
-    allowed = getattr(module, '__plugin_api_get__', [])
-    if not attr in allowed:
-        raise PluginError('plugin is not allowed to get attribute %s from module %s'%(attr, moduleName))
-    return getattr(module, attr, default)
+	if not absolute:
+		moduleName = 'scal3.' + moduleName
+	#module = __import__(moduleName, fromlist=['__plugin_api_get__', attr])
+	#print(sorted(sys.modules.keys()))
+	module = sys.modules[moduleName]
+	allowed = getattr(module, '__plugin_api_get__', [])
+	if not attr in allowed:
+		raise PluginError('plugin is not allowed to get attribute %s from module %s'%(attr, moduleName))
+	return getattr(module, attr, default)
 
 def set(moduleName, attr, value, absolute=False):
-    if not absolute:
-        moduleName = 'scal3.' + moduleName
-    #module = __import__(moduleName, fromlist=['__plugin_api_set__', attr])
-    module = sys.modules[moduleName]
-    allowed = getattr(module, '__plugin_api_set__', [])
-    if not attr in allowed:
-        raise PluginError('plugin is not allowed to set attribute %s to module %s'%(attr, moduleName))
-    setattr(module, attr, value)
+	if not absolute:
+		moduleName = 'scal3.' + moduleName
+	#module = __import__(moduleName, fromlist=['__plugin_api_set__', attr])
+	module = sys.modules[moduleName]
+	allowed = getattr(module, '__plugin_api_set__', [])
+	if not attr in allowed:
+		raise PluginError('plugin is not allowed to set attribute %s to module %s'%(attr, moduleName))
+	setattr(module, attr, value)
 
 #def add(moduleName, attr, value):## FIXME
-#    module = __import__(moduleName)
-#    if not module.get('__plugin_api_add__', False)
+#	module = __import__(moduleName)
+#	if not module.get('__plugin_api_add__', False)
 
 

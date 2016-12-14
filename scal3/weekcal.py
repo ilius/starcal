@@ -27,24 +27,24 @@ from scal3 import ui
 pluginName = 'WeekCal'
 
 class WeekStatus(list):
-    ## list (of 7 cells)
-    def __init__(self, cellCache, absWeekNumber):
-        self.absWeekNumber = absWeekNumber
-        startJd = core.getStartJdOfAbsWeekNumber(absWeekNumber)
-        endJd = startJd + 7
-        #self.startJd = startJd
-        #self.startDate = core.jd_to_primary(self.startJd)
-        #self.weekNumberOfYear = core.getWeekNumber(*self.startDate)
-        #########
-        #list.__init__(self, [cellCache.getCell(jd) for jd in range(startJd, endJd)])
-        list.__init__(self, [])
-        for jd in range(startJd, endJd):
-            #print('WeekStatus', jd)
-            self.append(cellCache.getCell(jd))
-    allCells = lambda self: self
+	## list (of 7 cells)
+	def __init__(self, cellCache, absWeekNumber):
+		self.absWeekNumber = absWeekNumber
+		startJd = core.getStartJdOfAbsWeekNumber(absWeekNumber)
+		endJd = startJd + 7
+		#self.startJd = startJd
+		#self.startDate = core.jd_to_primary(self.startJd)
+		#self.weekNumberOfYear = core.getWeekNumber(*self.startDate)
+		#########
+		#list.__init__(self, [cellCache.getCell(jd) for jd in range(startJd, endJd)])
+		list.__init__(self, [])
+		for jd in range(startJd, endJd):
+			#print('WeekStatus', jd)
+			self.append(cellCache.getCell(jd))
+	allCells = lambda self: self
 
 def setParamsFunc(cell):
-    cell.absWeekNumber, cell.weekDayIndex = core.getWeekDateFromJd(cell.jd)
+	cell.absWeekNumber, cell.weekDayIndex = core.getWeekDateFromJd(cell.jd)
 
 
 getWeekStatus = lambda absWeekNumber: ui.cellCache.getCellGroup(pluginName, absWeekNumber)

@@ -8,32 +8,32 @@ from scal3.ui_gtk.drawing import newColorCheckPixbuf
 
 
 confirmEventTrash = lambda event, parent=None: confirm(
-    _('Press OK if you want to move event "%s" to trash')%event.summary,
-    parent=parent,
+	_('Press OK if you want to move event "%s" to trash')%event.summary,
+	parent=parent,
 )
 
 
 def checkEventsReadOnly(doException=True):
-    if event_lib.readOnly:
-        error = 'Events are Read-Only because they are locked by another StarCalendar 3.x process'
-        showError(_(error))
-        if doException:
-            raise RuntimeError(error)
-        return False
-    return True
+	if event_lib.readOnly:
+		error = 'Events are Read-Only because they are locked by another StarCalendar 3.x process'
+		showError(_(error))
+		if doException:
+			raise RuntimeError(error)
+		return False
+	return True
 
 def eventWriteMenuItem(*args, **kwargs):
-    item = labelStockMenuItem(*args, **kwargs)
-    item.set_sensitive(not event_lib.readOnly)
-    return item
+	item = labelStockMenuItem(*args, **kwargs)
+	item.set_sensitive(not event_lib.readOnly)
+	return item
 
 def menuItemFromEventGroup(group):
-    item = ImageMenuItem()
-    item.set_label(group.title)
-    ##
-    image = gtk.Image()
-    image.set_from_pixbuf(newColorCheckPixbuf(group.color, 20, True))
-    item.set_image(image)
-    return item
+	item = ImageMenuItem()
+	item.set_label(group.title)
+	##
+	image = gtk.Image()
+	image.set_from_pixbuf(newColorCheckPixbuf(group.color, 20, True))
+	item.set_image(image)
+	return item
 
 

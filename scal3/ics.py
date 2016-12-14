@@ -42,116 +42,116 @@ encodeIcsWeekDayList = lambda weekDayList: ','.join([icsWeekDays[wd] for wd in w
 
 
 getIcsTimeByEpoch = lambda epoch, pretty=False: strftime(
-    icsTmFormatPretty if pretty else icsTmFormat,
-    gmtime(epoch)
+	icsTmFormatPretty if pretty else icsTmFormat,
+	gmtime(epoch)
 )
-    #format = icsTmFormatPretty if pretty else icsTmFormat
-    #jd, hour, minute, second = getJhmsFromEpoch(epoch)
-    #year, month, day = jd_to(jd, DATE_GREG)
-    #return strftime(format, (year, month, day, hour, minute, second, 0, 0, 0))
+	#format = icsTmFormatPretty if pretty else icsTmFormat
+	#jd, hour, minute, second = getJhmsFromEpoch(epoch)
+	#year, month, day = jd_to(jd, DATE_GREG)
+	#return strftime(format, (year, month, day, hour, minute, second, 0, 0, 0))
 
 getIcsDate = lambda y, m, d, pretty=False: ('%.4d-%.2d-%.2d' if pretty else '%.4d%.2d%.2d') % (y, m, d)
 
 
 def getIcsDateByJd(jd, pretty=False):
-    y, m, d = jd_to(jd, DATE_GREG)
-    return getIcsDate(y, m, d, pretty)
+	y, m, d = jd_to(jd, DATE_GREG)
+	return getIcsDate(y, m, d, pretty)
 
 def getJdByIcsDate(dateStr):
-    tm = strptime(dateStr, '%Y%m%d')
-    return to_jd(tm.tm_year, tm.tm_mon, tm.tm_mday, DATE_GREG)
+	tm = strptime(dateStr, '%Y%m%d')
+	return to_jd(tm.tm_year, tm.tm_mon, tm.tm_mday, DATE_GREG)
 
 def getEpochByIcsTime(tmStr):
-    ## python-dateutil
-    from dateutil.parser import parse
-    return int(
-        mktime(
-            parse(tmStr).timetuple()
-        )
-    )
+	## python-dateutil
+	from dateutil.parser import parse
+	return int(
+		mktime(
+			parse(tmStr).timetuple()
+		)
+	)
 
 
 '''
 def getEpochByIcsTime(tmStr):
-    utcOffset = 0
-    if 'T' in tmStr:
-        if '+' in tmStr or '-' in tmStr:
-            format = '%Y%m%dT%H%M%S%z' ## not working FIXME
-        else:
-            format = '%Y%m%dT%H%M%S'
-    else:
-        format = '%Y%m%d'
-    try:
-        tm = strptime(tmStr, format)
-    except ValueError as e:
-        raise ValueError('getEpochByIcsTime: Bad ics time format "%s"'%tmStr)
-    return int(mktime(tm))
+	utcOffset = 0
+	if 'T' in tmStr:
+		if '+' in tmStr or '-' in tmStr:
+			format = '%Y%m%dT%H%M%S%z' ## not working FIXME
+		else:
+			format = '%Y%m%dT%H%M%S'
+	else:
+		format = '%Y%m%d'
+	try:
+		tm = strptime(tmStr, format)
+	except ValueError as e:
+		raise ValueError('getEpochByIcsTime: Bad ics time format "%s"'%tmStr)
+	return int(mktime(tm))
 '''
 
 def splitIcsValue(value):
-    data = []
-    for p in value.split(';'):
-        pp = p.split('=')
-        if len(pp)==1:
-            data.append([pp[0], ''])
-        elif len(pp)==2:
-            data.append(pp)
-        else:
-            raise ValueError('unkown ics value %r'%value)
-    return data
+	data = []
+	for p in value.split(';'):
+		pp = p.split('=')
+		if len(pp)==1:
+			data.append([pp[0], ''])
+		elif len(pp)==2:
+			data.append(pp)
+		else:
+			raise ValueError('unkown ics value %r'%value)
+	return data
 
 def convertHolidayPlugToIcs(plug, startJd, endJd, namePostfix=''):
-    icsText = icsHeader
-    currentTimeStamp = strftime(icsTmFormat)
-    for jd in range(startJd, endJd):
-        isHoliday = False
-        for mode in plug.holidays.keys():
-            myear, mmonth, mday = jd_to(jd, mode)
-            if (mmonth, mday) in plug.holidays[mode]:
-                isHoliday = True
-                break
-        if isHoliday:
-            gyear, gmonth, gday = jd_to(jd, DATE_GREG)
-            gyear_next, gmonth_next, gday_next = jd_to(jd+1, DATE_GREG)
-            #######
-            icsText += 'BEGIN:VEVENT\n'
-            icsText += 'CREATED:%s\n'%currentTimeStamp
-            icsText += 'LAST-MODIFIED:%s\n'%currentTimeStamp
-            icsText += 'DTSTART;VALUE=DATE:%.4d%.2d%.2d\n'%(gyear, gmonth, gday)
-            icsText += 'DTEND;VALUE=DATE:%.4d%.2d%.2d\n'%(gyear_next, gmonth_next, gday_next)
-            icsText += 'CATEGORIES:Holidays\n'
-            icsText += 'TRANSP:TRANSPARENT\n'
-            ## TRANSPARENT because being in holiday time, does not make you busy!
-            ## see http://www.kanzaki.com/docs/ical/transp.html
-            icsText += 'SUMMARY:%s\n'%_('Holiday')
-            icsText += 'END:VEVENT\n'
-    icsText += 'END:VCALENDAR\n'
-    fname = split(plug.fpath)[-1]
-    fname = splitext(fname)[0] + '%s.ics'%namePostfix
-    open(fname, 'w').write(icsText)
+	icsText = icsHeader
+	currentTimeStamp = strftime(icsTmFormat)
+	for jd in range(startJd, endJd):
+		isHoliday = False
+		for mode in plug.holidays.keys():
+			myear, mmonth, mday = jd_to(jd, mode)
+			if (mmonth, mday) in plug.holidays[mode]:
+				isHoliday = True
+				break
+		if isHoliday:
+			gyear, gmonth, gday = jd_to(jd, DATE_GREG)
+			gyear_next, gmonth_next, gday_next = jd_to(jd+1, DATE_GREG)
+			#######
+			icsText += 'BEGIN:VEVENT\n'
+			icsText += 'CREATED:%s\n'%currentTimeStamp
+			icsText += 'LAST-MODIFIED:%s\n'%currentTimeStamp
+			icsText += 'DTSTART;VALUE=DATE:%.4d%.2d%.2d\n'%(gyear, gmonth, gday)
+			icsText += 'DTEND;VALUE=DATE:%.4d%.2d%.2d\n'%(gyear_next, gmonth_next, gday_next)
+			icsText += 'CATEGORIES:Holidays\n'
+			icsText += 'TRANSP:TRANSPARENT\n'
+			## TRANSPARENT because being in holiday time, does not make you busy!
+			## see http://www.kanzaki.com/docs/ical/transp.html
+			icsText += 'SUMMARY:%s\n'%_('Holiday')
+			icsText += 'END:VEVENT\n'
+	icsText += 'END:VCALENDAR\n'
+	fname = split(plug.fpath)[-1]
+	fname = splitext(fname)[0] + '%s.ics'%namePostfix
+	open(fname, 'w').write(icsText)
 
 def convertBuiltinTextPlugToIcs(plug, startJd, endJd, namePostfix=''):
-    plug.load() ## FIXME
-    mode = plug.mode
-    icsText = icsHeader
-    currentTimeStamp = strftime(icsTmFormat)
-    for jd in range(startJd, endJd):
-        myear, mmonth, mday = jd_to(jd, mode)
-        dayText = plug.get_text(myear, mmonth, mday)
-        if dayText:
-            gyear, gmonth, gday = jd_to(jd, DATE_GREG)
-            gyear_next, gmonth_next, gday_next = jd_to(jd+1, DATE_GREG)
-            #######
-            icsText += 'BEGIN:VEVENT\n'
-            icsText += 'CREATED:%s\n'%currentTimeStamp
-            icsText += 'LAST-MODIFIED:%s\n'%currentTimeStamp
-            icsText += 'DTSTART;VALUE=DATE:%.4d%.2d%.2d\n'%(gyear, gmonth, gday)
-            icsText += 'DTEND;VALUE=DATE:%.4d%.2d%.2d\n'%(gyear_next, gmonth_next, gday_next)
-            icsText += 'SUMMARY:%s\n'%dayText
-            icsText += 'END:VEVENT\n'
-    icsText += 'END:VCALENDAR\n'
-    fname = split(plug.fpath)[-1]
-    fname = splitext(fname)[0] + '%s.ics'%namePostfix
-    open(fname, 'w').write(icsText)
+	plug.load() ## FIXME
+	mode = plug.mode
+	icsText = icsHeader
+	currentTimeStamp = strftime(icsTmFormat)
+	for jd in range(startJd, endJd):
+		myear, mmonth, mday = jd_to(jd, mode)
+		dayText = plug.get_text(myear, mmonth, mday)
+		if dayText:
+			gyear, gmonth, gday = jd_to(jd, DATE_GREG)
+			gyear_next, gmonth_next, gday_next = jd_to(jd+1, DATE_GREG)
+			#######
+			icsText += 'BEGIN:VEVENT\n'
+			icsText += 'CREATED:%s\n'%currentTimeStamp
+			icsText += 'LAST-MODIFIED:%s\n'%currentTimeStamp
+			icsText += 'DTSTART;VALUE=DATE:%.4d%.2d%.2d\n'%(gyear, gmonth, gday)
+			icsText += 'DTEND;VALUE=DATE:%.4d%.2d%.2d\n'%(gyear_next, gmonth_next, gday_next)
+			icsText += 'SUMMARY:%s\n'%dayText
+			icsText += 'END:VEVENT\n'
+	icsText += 'END:VCALENDAR\n'
+	fname = split(plug.fpath)[-1]
+	fname = splitext(fname)[0] + '%s.ics'%namePostfix
+	open(fname, 'w').write(icsText)
 
 

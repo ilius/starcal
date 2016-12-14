@@ -11,7 +11,7 @@ gdkColorToRgb = lambda gc: (gc.red//257, gc.green//257, gc.blue//257)
 #htmlColorToGdk = lambda hc: gdk.color_parse(hc)
 
 colorize = lambda text, color: '<span color="%s">%s</span>'%(
-    rgbToHtmlColor(*color),
-    text,
+	rgbToHtmlColor(*color),
+	text,
 )
 

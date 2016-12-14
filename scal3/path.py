@@ -29,15 +29,15 @@ osName = getOsName()
 srcDir = dirname(__file__)
 cwd = os.getcwd()
 if srcDir in ('.', ''):
-    srcDir = cwd
+	srcDir = cwd
 elif os.sep=='/':
-    if srcDir.startswith('./'):
-        srcDir = cwd + srcDir[1:]
-    elif srcDir[0] != '/':
-        srcDir = join(cwd, srcDir)
+	if srcDir.startswith('./'):
+		srcDir = cwd + srcDir[1:]
+	elif srcDir[0] != '/':
+		srcDir = join(cwd, srcDir)
 elif os.sep=='\\':
-    if srcDir.startswith('.\\'):
-        srcDir = cwd + srcDir[1:]
+	if srcDir.startswith('.\\'):
+		srcDir = cwd + srcDir[1:]
 #print('srcDir=%r'%srcDir)
 
 rootDir = abspath(dirname(srcDir))
@@ -45,26 +45,26 @@ pixDir = join(rootDir, 'pixmaps')
 plugDir = join(rootDir, 'plugins')
 
 if osName in ('linux', 'unix'):
-    homeDir = os.getenv('HOME')
-    confDir = homeDir + '/.' + APP_NAME
-    sysConfDir = '/etc/' + APP_NAME
-    tmpDir = '/tmp'
-    #user = os.getenv('USER')
+	homeDir = os.getenv('HOME')
+	confDir = homeDir + '/.' + APP_NAME
+	sysConfDir = '/etc/' + APP_NAME
+	tmpDir = '/tmp'
+	#user = os.getenv('USER')
 elif osName=='mac':
-    homeDir = os.getenv('HOME')
-    confDir = homeDir + '/Library/Preferences/' + APP_NAME ## OR '/Library/' + APP_NAME
-    sysConfDir = join(rootDir, 'config')## FIXME
-    tmpDir = '/tmp'
-    #user = os.getenv('USER')
+	homeDir = os.getenv('HOME')
+	confDir = homeDir + '/Library/Preferences/' + APP_NAME ## OR '/Library/' + APP_NAME
+	sysConfDir = join(rootDir, 'config')## FIXME
+	tmpDir = '/tmp'
+	#user = os.getenv('USER')
 elif osName=='win':
-    #homeDrive = os.environ['HOMEDRIVE']
-    homeDir = os.getenv('HOMEPATH')
-    confDir = os.getenv('APPDATA') + '\\' + APP_NAME
-    sysConfDir = join(rootDir, 'config')
-    tmpDir = os.getenv('TEMP')
-    #user = os.getenv('USERNAME')
+	#homeDrive = os.environ['HOMEDRIVE']
+	homeDir = os.getenv('HOMEPATH')
+	confDir = os.getenv('APPDATA') + '\\' + APP_NAME
+	sysConfDir = join(rootDir, 'config')
+	tmpDir = os.getenv('TEMP')
+	#user = os.getenv('USERNAME')
 else:
-    raise OSError('Unkown operating system!')
+	raise OSError('Unkown operating system!')
 
 deskDir = join(homeDir, 'Desktop')## in all operating systems? FIXME
 

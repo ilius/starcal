@@ -46,101 +46,101 @@ sysConfPath = join(sysConfDir, 'ui-gtk.json')
 confPath = join(confDir, 'ui-gtk.json')
 
 confParams = (
-    'dateFormat',
-    'clockFormat',
-    #'adjustTimeCmd',
+	'dateFormat',
+	'clockFormat',
+	#'adjustTimeCmd',
 )
 
 
 def loadConf():
-    loadModuleJsonConf(__name__)
-    updateFormatsBin()
+	loadModuleJsonConf(__name__)
+	updateFormatsBin()
 
 def saveConf():
-    saveModuleJsonConf(__name__)
+	saveModuleJsonConf(__name__)
 
 ############################################################
 
 @registerSignals
 class BaseCalObj(Object):
-    _name = ''
-    desc = ''
-    loaded = True
-    customizable = False
-    signals = [
-        ('config-change', []),
-        ('date-change', []),
-    ]
-    def initVars(self):
-        self.items = []
-        self.enable = True
-    def onConfigChange(self, sender=None, emit=True):
-        if emit:
-            self.emit('config-change')
-        for item in self.items:
-            if item.enable and item is not sender:
-                item.onConfigChange(emit=False)
-    def onDateChange(self, sender=None, emit=True):
-        if emit:
-            self.emit('date-change')
-        for item in self.items:
-            if item.enable and item is not sender:
-                item.onDateChange(emit=False)
-    def __getitem__(self, key):
-        for item in self.items:
-            if item._name == key:
-                return item
-    def connectItem(self, item):
-        item.connect('config-change', self.onConfigChange)
-        item.connect('date-change', self.onDateChange)
-    #def insertItem(self, index, item):
-    #    self.items.insert(index, item)
-    #    self.connectItem(item)
-    def appendItem(self, item):
-        self.items.append(item)
-        self.connectItem(item)
-    def replaceItem(self, itemIndex, item):
-        self.items[itemIndex] = item
-        self.connectItem(item)
-    def moveItemUp(self, i):
-        self.items.insert(i-1, self.items.pop(i))
-    def addItemWidget(self, i):
-        pass
-    def showHide(self):
-        try:
-            func = self.show if self.enable else self.hide
-        except AttributeError:
-            try:
-                self.set_visible(self.enable)
-            except AttributeError:
-                pass
-        else:
-            func()
-        for item in self.items:
-            item.showHide()
+	_name = ''
+	desc = ''
+	loaded = True
+	customizable = False
+	signals = [
+		('config-change', []),
+		('date-change', []),
+	]
+	def initVars(self):
+		self.items = []
+		self.enable = True
+	def onConfigChange(self, sender=None, emit=True):
+		if emit:
+			self.emit('config-change')
+		for item in self.items:
+			if item.enable and item is not sender:
+				item.onConfigChange(emit=False)
+	def onDateChange(self, sender=None, emit=True):
+		if emit:
+			self.emit('date-change')
+		for item in self.items:
+			if item.enable and item is not sender:
+				item.onDateChange(emit=False)
+	def __getitem__(self, key):
+		for item in self.items:
+			if item._name == key:
+				return item
+	def connectItem(self, item):
+		item.connect('config-change', self.onConfigChange)
+		item.connect('date-change', self.onDateChange)
+	#def insertItem(self, index, item):
+	#	self.items.insert(index, item)
+	#	self.connectItem(item)
+	def appendItem(self, item):
+		self.items.append(item)
+		self.connectItem(item)
+	def replaceItem(self, itemIndex, item):
+		self.items[itemIndex] = item
+		self.connectItem(item)
+	def moveItemUp(self, i):
+		self.items.insert(i-1, self.items.pop(i))
+	def addItemWidget(self, i):
+		pass
+	def showHide(self):
+		try:
+			func = self.show if self.enable else self.hide
+		except AttributeError:
+			try:
+				self.set_visible(self.enable)
+			except AttributeError:
+				pass
+		else:
+			func()
+		for item in self.items:
+			item.showHide()
 
 
 class IntegatedWindowList(BaseCalObj):
-    _name = 'windowList'
-    desc = 'Window List'
-    def __init__(self):
-        Object.__init__(self)
-        self.initVars()
-    def onConfigChange(self, *a, **ka):
-        ui.cellCache.clear()
-        settings.set_property(
-            'gtk-font-name',
-            pfontEncode(ui.getFont()).to_string(),
-        )
-        ####
-        BaseCalObj.onConfigChange(self, *a, **ka)
-        self.onDateChange()
+	_name = 'windowList'
+	desc = 'Window List'
+	def __init__(self):
+		Object.__init__(self)
+		self.initVars()
+	def onConfigChange(self, *a, **ka):
+		ui.cellCache.clear()
+		settings.set_property(
+			'gtk-font-name',
+			pfontEncode(ui.getFont()).to_string(),
+		)
+		####
+		BaseCalObj.onConfigChange(self, *a, **ka)
+		self.onDateChange()
 
 def getGtkDefaultFont():
-    fontName = settings.get_property('gtk-font-name')
-    font = gfontDecode(fontName)
-    font[3] = max(5, font[3])
-    return font
+	fontName = settings.get_property('gtk-font-name')
+	font = gfontDecode(fontName)
+	font[3] = max(5, font[3])
+	return font
 
 ####################################################
 
@@ -149,7 +149,7 @@ windowList = IntegatedWindowList()
 ###########
 
 if rtl:
-    gtk.Widget.set_default_direction(gtk.TextDirection.RTL)
+	gtk.Widget.set_default_direction(gtk.TextDirection.RTL)
 
 gtk.Window.set_default_icon_from_file(ui.logo)
 
@@ -164,25 +164,25 @@ ui.fontDefaultInit = ui.fontDefault
 
 ###########
 textDirDict = {
-    'ltr': gtk.TextDirection.LTR,
-    'rtl': gtk.TextDirection.RTL,
-    'auto': gtk.TextDirection.NONE,
+	'ltr': gtk.TextDirection.LTR,
+	'rtl': gtk.TextDirection.RTL,
+	'auto': gtk.TextDirection.NONE,
 }
 
 iconSizeList = [
-    ('Menu', gtk.IconSize.MENU),
-    ('Small Toolbar', gtk.IconSize.SMALL_TOOLBAR),
-    ('Button', gtk.IconSize.BUTTON),
-    ('Large Toolbar', gtk.IconSize.LARGE_TOOLBAR),
-    ('DND', gtk.IconSize.DND),
-    ('Dialog', gtk.IconSize.DIALOG),
+	('Menu', gtk.IconSize.MENU),
+	('Small Toolbar', gtk.IconSize.SMALL_TOOLBAR),
+	('Button', gtk.IconSize.BUTTON),
+	('Large Toolbar', gtk.IconSize.LARGE_TOOLBAR),
+	('DND', gtk.IconSize.DND),
+	('Dialog', gtk.IconSize.DIALOG),
 ] ## in size order
 iconSizeDict = dict(iconSizeList)
 
 ##############################
 
 #if ui.fontCustomEnable:## FIXME
-#    settings.set_property('gtk-font-name', fontCustom)
+#	settings.set_property('gtk-font-name', fontCustom)
 
 
 dateFormat = '%Y/%m/%d'
@@ -192,22 +192,22 @@ dateFormatBin = None
 clockFormatBin = None
 
 def updateFormatsBin():
-    global dateFormatBin, clockFormatBin
-    dateFormatBin = compileTmFormat(dateFormat)
-    clockFormatBin = compileTmFormat(clockFormat)
+	global dateFormatBin, clockFormatBin
+	dateFormatBin = compileTmFormat(dateFormat)
+	clockFormatBin = compileTmFormat(clockFormat)
 
 ##############################
 
 def setDefault_adjustTimeCmd():
-    global adjustTimeCmd
-    for cmd in ('gksudo', 'kdesudo', 'gksu', 'gnomesu', 'kdesu'):
-        if os.path.isfile('/usr/bin/%s'%cmd):
-            adjustTimeCmd = [
-                cmd,
-                join(rootDir, 'scripts', 'run'),
-                'scal3/ui_gtk/adjust_dtime.py'
-            ]
-            break
+	global adjustTimeCmd
+	for cmd in ('gksudo', 'kdesudo', 'gksu', 'gnomesu', 'kdesu'):
+		if os.path.isfile('/usr/bin/%s'%cmd):
+			adjustTimeCmd = [
+				cmd,
+				join(rootDir, 'scripts', 'run'),
+				'scal3/ui_gtk/adjust_dtime.py'
+			]
+			break
 
 ## user should be able to configure this in Preferences 
 adjustTimeCmd = ''
@@ -216,24 +216,24 @@ setDefault_adjustTimeCmd()
 ##############################
 
 mainToolbarData = {
-    'items': [],
-    'iconSize': 'Large Toolbar',
-    'style': 'Icon',
-    'buttonsBorder': 0,
+	'items': [],
+	'iconSize': 'Large Toolbar',
+	'style': 'Icon',
+	'buttonsBorder': 0,
 }
 
 wcalToolbarData = {
-    'items': [
-        ('mainMenu', True),
-        ('backward4', False),
-        ('backward', True),
-        ('today', True),
-        ('forward', True),
-        ('forward4', False),
-    ],
-    'iconSize': 'Button',
-    'style': 'Icon',
-    'buttonsBorder': 0,
+	'items': [
+		('mainMenu', True),
+		('backward4', False),
+		('backward', True),
+		('today', True),
+		('forward', True),
+		('forward4', False),
+	],
+	'iconSize': 'Button',
+	'style': 'Icon',
+	'buttonsBorder': 0,
 }
 
 
@@ -241,14 +241,14 @@ wcalToolbarData = {
 ###########################################################
 
 try:
-    wcalToolbarData = ui.ud__wcalToolbarData ## loaded from jsom
+	wcalToolbarData = ui.ud__wcalToolbarData ## loaded from jsom
 except AttributeError:
-    pass
+	pass
 
 try:
-    mainToolbarData = ui.ud__mainToolbarData ## loaded from jsom
+	mainToolbarData = ui.ud__mainToolbarData ## loaded from jsom
 except AttributeError:
-    pass
+	pass
 
 
 loadConf()
