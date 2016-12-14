@@ -1,6 +1,7 @@
 from scal3.locale_man import tr as _
 from scal3 import core
 from scal3 import event_lib
+from scal3 import ui
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import confirm, showError, labelStockMenuItem
@@ -8,7 +9,10 @@ from scal3.ui_gtk.drawing import newColorCheckPixbuf
 
 
 confirmEventTrash = lambda event, parent=None: confirm(
-	_('Press OK if you want to move event "%s" to trash')%event.summary,
+	_('Press OK if you want to move event "%s" to %s')%(
+		event.summary,
+		ui.eventTrash.title,
+	),
 	parent=parent,
 )
 
