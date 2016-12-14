@@ -137,21 +137,31 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
 				None,## FIXME
 			)
 			moveToMenu = gtk.Menu()
+			disabledGroupsMenu = gtk.Menu()
 			for newGroup in ui.eventGroups:
 				if newGroup.id == group.id:
 					continue
-				if not newGroup.enable:
+				if event.name not in newGroup.acceptsEventTypes:
 					continue
-				if event.name in newGroup.acceptsEventTypes:
-					newGroupItem = menuItemFromEventGroup(newGroup)
-					newGroupItem.connect(
-						'activate',
-						self.moveEventToGroupFromMenu,
-						event,
-						group,
-						newGroup,
-					)
+				newGroupItem = menuItemFromEventGroup(newGroup)
+				newGroupItem.connect(
+					'activate',
+					self.moveEventToGroupFromMenu,
+					event,
+					group,
+					newGroup,
+				)
+				if newGroup.enable:
 					moveToMenu.add(newGroupItem)
+				else:
+					disabledGroupsMenu.add(newGroupItem)
+
+			###
+			disabledGroupsItem = gtk.MenuItem()
+			disabledGroupsItem.set_label(_('Disabled'))
+			disabledGroupsItem.set_submenu(disabledGroupsMenu)
+			moveToMenu.add(disabledGroupsItem)
+			###
 			moveToItem.set_submenu(moveToMenu)
 			menu.add(moveToItem)
 			###
