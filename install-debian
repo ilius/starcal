@@ -7,8 +7,8 @@ function getDirTotalSize(){
 }
 
 if [ "$UID" != "0" ] ; then
-  echo "Run this script as root"
-  exit 1
+	echo "Run this script as root"
+	exit 1
 fi
 
 
