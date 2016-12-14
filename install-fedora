@@ -14,9 +14,9 @@ dnf install rpm-build || exit 1
 
 myPath="$0"
 if [ "${myPath:0:2}" == "./" ] ; then
-    myPath=$PWD${myPath:1}
+	myPath=$PWD${myPath:1}
 elif [ "${myPath:0:1}" != "/" ] ; then
-    myPath=$PWD/$myPath
+	myPath=$PWD/$myPath
 fi
 
 
@@ -83,20 +83,20 @@ and Indian National calendars, as well as common English(Gregorian) calendar
 rpmbuild -bb $pkgName.spec
 status=$?
 if [ "$status" != "0" ] ; then
-    echo "rpmbuild exited with failed status '$status'"
-    exit $status
+	echo "rpmbuild exited with failed status '$status'"
+	exit $status
 fi
 
 pkgPath="/root/rpmbuild/RPMS/noarch/$pkgName-$version-1.noarch.rpm"
 
 if [ ! -f $pkgPath ] ; then
-    echo "rpmbuild exited with success status $rpmbuild_status, but no package file was found"
-    exit 1
+	echo "rpmbuild exited with success status $rpmbuild_status, but no package file was found"
+	exit 1
 fi
 
 if [ ! -f $pkgPath ] ; then
-    echo "Package file $pkgPath does not exit"
-    exit 1
+	echo "Package file $pkgPath does not exit"
+	exit 1
 fi
 
 echo "Package created in \"$pkgPath\", installing"

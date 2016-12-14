@@ -1,15 +1,15 @@
 #!/bin/bash
 
 function printUsage {
-    echo "Usage: $0 [--prefix=/usr/local]"
+	echo "Usage: $0 [--prefix=/usr/local]"
 }
 
 pkgName=starcal3
 
 options=`getopt -o 'v' --long 'prefix:,verbose' -n "$0" -- "$@"`
 if [ $? != 0 ] ; then
-    printUsage
-    exit 1
+	printUsage
+	exit 1
 fi
 eval set -- "$options" ## Note the quotes around $options are essential!
 options=""
@@ -28,47 +28,47 @@ while true ; do
 done
 
 if [ -n "$1" ] ; then ## extra arguments
-    printUsage
-    exit 1
+	printUsage
+	exit 1
 fi
 
 if [ -z "$prefix" ] ; then ## prefix is empty (not been set)
-    prefix=/usr/local
-    for p in /usr/local /usr ; do
-        if [ -d $p/share/$pkgName ] ; then
-            prefix=$p
-            break
-        fi
-    done
+	prefix=/usr/local
+	for p in /usr/local /usr ; do
+		if [ -d $p/share/$pkgName ] ; then
+			prefix=$p
+			break
+		fi
+	done
 else
-    n=${#prefix}
-    if [ ${prefix:n-1:1} = / ] ; then
-        prefix=${prefix::-1}
-    fi
+	n=${#prefix}
+	if [ ${prefix:n-1:1} = / ] ; then
+		prefix=${prefix::-1}
+	fi
 fi
 
 shareDir="${prefix}/share"
 
 if [ -z $pkgName ] ; then ## do not f*** the system if pkgName was empty amiss!
-    echo "Internal Error! pkgName=''"
-    exit 1
+	echo "Internal Error! pkgName=''"
+	exit 1
 fi
 
 ##================== Starting to remove files =====================
 
 if [ -n "$verbose" ] ; then ## no output (note that quotation around $verbose is needed)
-    RM="rm -Rfv"
+	RM="rm -Rfv"
 else
-    RM="rm -Rf"
+	RM="rm -Rf"
 fi
 
 
 if [ -d "${shareDir}/$pkgName" ] ; then
-    $RM "${shareDir}/$pkgName"
+	$RM "${shareDir}/$pkgName"
 fi
 
 if [ -d "${shareDir}/doc/$pkgName" ] ; then
-    $RM "${shareDir}/doc/$pkgName"
+	$RM "${shareDir}/doc/$pkgName"
 fi
 
 ## what about the /etc/$pkgName and /var/log/$pkgName ## FIXME
