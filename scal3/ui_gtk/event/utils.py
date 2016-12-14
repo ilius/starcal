@@ -32,7 +32,7 @@ def menuItemFromEventGroup(group):
 	item.set_label(group.title)
 	##
 	image = gtk.Image()
-	image.set_from_pixbuf(newColorCheckPixbuf(group.color, 20, True))
+	image.set_from_pixbuf(newColorCheckPixbuf(group.color, 20, group.enable))
 	item.set_image(image)
 	return item
 
