@@ -573,13 +573,13 @@ class WeekMonthEventRule(EventRule):
 	params = (
 		'month',## 0..12 ## 0 means every month
 		'wmIndex',## 0..4
-		'weekDay',## 0..7
+		'weekDay',## 0..6
 	)
 	'''
 	paramsValidators = {
 		'month': lambda m: 0 <= m <= 12,
 		'wmIndex': lambda m: 0 <= m <= 4,
-		'weekDay': lambda m: 0 <= m <= 7,
+		'weekDay': lambda m: 0 <= m <= 6,
 	}
 	'''
 	wmIndexNames = (
