@@ -212,8 +212,10 @@ def jd_to(jd):
 	month = min(
 		12,
 		iceil(
-			(jd - (29 + to_jd_c(year, 1, 1))) / 29.5
-		) + 1
+			(
+				jd + 0.5 - to_jd_c(year, 1, 1)
+			) / 29.5
+		)
 	)
 	day = jd - to_jd_c(year, month, 1) + 1
 	return year, month, day
