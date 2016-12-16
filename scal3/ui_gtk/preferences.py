@@ -777,8 +777,17 @@ class PrefDialog(gtk.Dialog):
 		self.hide()
 		self.updatePrefGui()
 		return True
-	getAllPrefItems = lambda self: self.moduleOptions + self.localePrefItems + self.corePrefItems +\
-								   self.uiPrefItems + self.gtkPrefItems
+
+	def iterAllPrefItems(self):
+		import itertools
+		return itertools.chain(
+			self.moduleOptions,
+			self.localePrefItems,
+			self.corePrefItems,
+			self.uiPrefItems,
+			self.gtkPrefItems,
+		)
+
 	def apply(self, widget=None):
 		from scal3.ui_gtk.font_utils import gfontDecode
 		####### FIXME
@@ -786,7 +795,7 @@ class PrefDialog(gtk.Dialog):
 		ui.fontDefault = gfontDecode(ud.settings.get_property('gtk-font-name'))
 		#print('fontDefault = %s'%ui.fontDefault)
 		############################################## Updating pref variables
-		for opt in self.getAllPrefItems():
+		for opt in self.iterAllPrefItems():
 			opt.updateVar()
 		###### DB Manager (Plugin Manager)
 		index = []
@@ -882,7 +891,7 @@ class PrefDialog(gtk.Dialog):
 				else:
 					d.destroy()
 	def updatePrefGui(self):############### Updating Pref Gui (NOT MAIN GUI)
-		for opt in self.getAllPrefItems():
+		for opt in self.iterAllPrefItems():
 			opt.updateWidget()
 		###############################
 		if core.firstWeekDayAuto:
