@@ -457,6 +457,11 @@ class YearEventRule(MultiValueAllDayEventRule):
 class MonthEventRule(MultiValueAllDayEventRule):
 	name = 'month'
 	desc = _('Month')
+	conflict = (
+		'date',
+		'weekMonth',
+	)
+
 	def __init__(self, parent):
 		MultiValueAllDayEventRule.__init__(self, parent)
 		self.values = [1]
@@ -483,6 +488,7 @@ class WeekNumberModeEventRule(EventRule):
 	)
 	conflict = (
 		'date',
+		'weekMonth',
 	)
 	params = (
 		'weekNumMode',
@@ -528,6 +534,7 @@ class WeekDayEventRule(AllDayEventRule):
 	desc = _('Day of Week')
 	conflict = (
 		'date',
+		'weekMonth',
 	)
 	params = (
 		'weekDayList',
@@ -561,13 +568,11 @@ class WeekMonthEventRule(EventRule):
 	conflict = (
 		'date',
 		'month',
-		'day',
+		'ex_month',
 		'weekNumMode'
 		'weekday',
-		'start',
-		'end',
 		'cycleDays',
-		'duration',
+		'cycleWeeks',
 		'cycleLen',
 	)
 	params = (
@@ -863,7 +868,9 @@ class CycleDaysEventRule(EventRule):
 	)
 	conflict = (
 		'date',
+		'cycleWeeks',
 		'cycleLen',
+		'weekMonth',
 	)
 	params = (
 		'days',
@@ -888,6 +895,7 @@ class CycleWeeksEventRule(EventRule):
 		'date',
 		'cycleDays',
 		'cycleLen',
+		'weekMonth',
 	)
 	params = (
 		'weeks',
@@ -917,6 +925,8 @@ class CycleLenEventRule(EventRule):
 		'dayTime',
 		'dayTimeRange',
 		'cycleDays',
+		'cycleWeeks',
+		'weekMonth',
 	)
 	params = (
 		'days',
@@ -961,6 +971,11 @@ class ExYearEventRule(YearEventRule):
 class ExMonthEventRule(MonthEventRule):
 	name = 'ex_month'
 	desc = '[%s] %s'%(_('Exception'), _('Month'))
+	conflict = (
+		'date',
+		'month',
+		'weekMonth',
+	)
 	jdMatches = lambda self, jd: not MonthEventRule.jdMatches(self, jd)
 
 @classes.rule.register
