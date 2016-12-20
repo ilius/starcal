@@ -32,13 +32,14 @@ from scal3.ui_gtk.utils import openWindow, dialog_add_button
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 from scal3.ui_gtk.mywidgets.multi_spin.year_month import YearMonthButton
+from scal3.ui_gtk.mywidgets.dialog import MyDialog
 
 
 #gdkColorToHtml = lambda color: '#%.2x%.2x%.2x'%(color.red/256, color.green/256, color.blue/256)
 
 
 
-class ExportDialog(gtk.Dialog):
+class ExportDialog(gtk.Dialog, MyDialog):
     def __init__(self, **kwargs):
         gtk.Dialog.__init__(self, **kwargs)
         self.set_title(_('Export to %s')%'HTML')
@@ -98,26 +99,19 @@ class ExportDialog(gtk.Dialog):
     def onDelete(self, widget=None, event=None):## hide(close) File Chooser Dialog
         self.hide()
         return True
-    def save(self, widget=None):
-        self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.WATCH))
-        while gtk.events_pending():
-            gtk.main_iteration_do(False)
-        path = self.fcw.get_filename()
-        if path in (None, ''):
-            return
-        print('Exporting to html file "%s"'%path)
-        i = self.combo.get_active()
+    def _save(self, path):
+        comboItem = self.combo.get_active()
         months = []
         module = calTypes.primaryModule()
-        if i==0:
+        if comboItem==0:
             s = getCurrentMonthStatus()
             months = [s]
             title = '%s %s'%(locale_man.getMonthName(calTypes.primary, s.month, s.year), _(s.year))
-        elif i==1:
+        elif comboItem==1:
             for i in range(1, 13):
                 months.append(getMonthStatus(ui.cell.year, i))
             title = '%s %s'%(_('Calendar'), _(ui.cell.year))
-        elif i==2:
+        elif comboItem==2:
             y0, m0 = self.ymBox0.get_value()
             y1, m1 = self.ymBox1.get_value()
             for ym in range(y0*12+m0-1, y1*12+m1):
@@ -126,8 +120,18 @@ class ExportDialog(gtk.Dialog):
                 months.append(getMonthStatus(y, m))
             title = _('Calendar')
         exportToHtml(path, months, title)
-        self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
         self.hide()
+    def save(self, widget=None):
+        while gtk.events_pending():
+            gtk.main_iteration_do(False)
+        path = self.fcw.get_filename()
+        if path in (None, ''):
+            return
+        print('Exporting to html file "%s"'%path)
+        self.waitingDo(
+            self._save,
+            path,
+        )
     def showDialog(self, year, month):
         self.comboChanged(ym=(year, month))
         self.ymBox0.set_value((year, month))
@@ -162,7 +166,7 @@ class ExportDialog(gtk.Dialog):
 
 
 
-class ExportToIcsDialog(gtk.Dialog):
+class ExportToIcsDialog(gtk.Dialog, MyDialog):
     def __init__(self, saveIcsFunc, defaultFileName, **kwargs):
         self.saveIcsFunc = saveIcsFunc
         gtk.Dialog.__init__(self, **kwargs)
@@ -204,20 +208,19 @@ class ExportToIcsDialog(gtk.Dialog):
     def onDelete(self, widget=None, event=None):## hide(close) File Chooser Dialog
         self.destroy()
         return True
+    def _save(self, path, startJd, endJd):
+        self.saveIcsFunc(path, startJd, endJd)
+        self.destroy()
     def save(self, widget=None):
-        self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.WATCH))
         while gtk.events_pending():
             gtk.main_iteration_do(False)
         path = self.fcw.get_filename()
         if path in (None, ''):
             return
         print('Exporting to ics file "%s"'%path)
-        self.saveIcsFunc(
+        self.waitingDo(
+            self._save,
             path,
             core.primary_to_jd(*self.startDateInput.get_value()),
             core.primary_to_jd(*self.endDateInput.get_value()),
         )
-        self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
-        self.destroy()
-
-
