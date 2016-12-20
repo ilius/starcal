@@ -53,9 +53,12 @@ class YearMonthDayBox(gtk.HBox):
         self.spinD.get_value(),
     )
     def comboMonthChanged(self, widget=None):
+        monthIndex = self.comboMonth.get_active()
+        if monthIndex == -1:
+            return
         self.spinD.set_range(1, getMonthLen(
             self.spinY.get_value(),
-            self.comboMonth.get_active() + 1,
+            monthIndex + 1,
             self.mode,
         ))
 
