@@ -307,7 +307,10 @@ class HolidayPlugin(BaseJsonPlugin):
                     mode = calTypes.names.index(modeName)
                 except ValueError:
                     continue
-                self.holidays[mode] = data['holidays'][modeName]
+                self.holidays[mode] = [
+                    (m, d)
+                    for m, d in data['holidays'][modeName]
+                ]
             del data['holidays']
         else:
             log.error('no "holidays" key in holiday plugin "%s"'%self.file)
