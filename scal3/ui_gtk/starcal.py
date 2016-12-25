@@ -1050,9 +1050,6 @@ def main():
     ###############################
     checkEventsReadOnly(False)
     ## right place? FIXME
-    if core.BRANCH == 'master' and versionLessThan(event_lib.info.version, '2.3.0'):
-        from scal3.ui_gtk.event.bulk_save_timezone import BulkSaveTimeZoneDialog
-        BulkSaveTimeZoneDialog(parent=None).run()
     event_lib.info.updateAndSave()
     ###############################
     mainWin = MainWin(statusIconMode=statusIconMode)
