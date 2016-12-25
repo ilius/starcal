@@ -28,7 +28,7 @@ class EventsBulkEditDialog(gtk.Dialog):
         else:
             msg = _('Here you are going to modify all events inside group "%s" at once.') % title
         msg += ' '
-        msg += _('You better make a backup from you events before doing this. Just right click on group and select "Export" (or a full backup: menu File -> Export)')
+        msg += _('You better make a backup from your events before doing this. Just right click on group and select "Export" (or a full backup: menu File -> Export)')
         msg += '\n\n'
         label = gtk.Label(msg)
         label.set_line_wrap(True)
