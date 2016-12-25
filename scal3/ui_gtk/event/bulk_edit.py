@@ -24,9 +24,9 @@ class EventsBulkEditDialog(gtk.Dialog):
             title = container.title
         except AttributeError:
             event_count = len(container)
-            msg = _('Here you are going to modify these %s events at once.'%event_count)
+            msg = _('Here you are going to modify these %s events at once.') % event_count
         else:
-            msg = _('Here you are going to modify all events inside group "%s" at once.'%title)
+            msg = _('Here you are going to modify all events inside group "%s" at once.') % title
         msg += ' '
         msg += _('You better make a backup from you events before doing this. Just right click on group and select "Export" (or a full backup: menu File -> Export)')
         msg += '\n\n'
