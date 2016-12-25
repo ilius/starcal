@@ -1414,7 +1414,7 @@ msgstr ""
 "اینجا شما در حال تغییر دادن این %s رویداد به یکباره هستید."
 
 
-msgid "You better make a backup from you events before doing this. Just right click on group and select \"Export\" (or a full backup: menu File -> Export)"
+msgid "You better make a backup from your events before doing this. Just right click on group and select \"Export\" (or a full backup: menu File -> Export)"
 msgstr ""
 "بهتر است قبل از این کار، یک پشتیبان از رویدادهای خود بگیرید. روی گروه راست کلیک کرده و «صادر کردن» را بزنید (یا یک پشتیبان کامل: منوی فایل -> صادر کردن)"
 
