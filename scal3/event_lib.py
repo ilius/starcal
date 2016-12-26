@@ -2988,13 +2988,13 @@ class EventGroup(EventContainer):
             try:
                 time_from = conds['time_from']
             except KeyError:
-                time_from = self.getEpochFromJd(self.startJd)
+                time_from = getEpochFromJd(self.startJd)
             else:
                 del conds['time_from']
             try:
                 time_to = conds['time_to']
             except KeyError:
-                time_to = self.getEpochFromJd(self.endJd)
+                time_to = getEpochFromJd(self.endJd)
             else:
                 del conds['time_to']
             idList = set()
