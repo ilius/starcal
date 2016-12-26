@@ -2984,6 +2984,7 @@ class EventGroup(EventContainer):
         'type': lambda event, _type: event.name == _type,
     }
     def search(self, conds):
+        conds = dict(conds)  # take a copy, we may modify it
         if 'time_from' in conds or 'time_to' in conds:
             try:
                 time_from = conds['time_from']
