@@ -438,7 +438,13 @@ def importConfigIter():
 
 
 
-def getOldVersion():## return version of starcal 2.*
+def getOldVersion():
+    """
+    return version of installed starcal 2.3.x or 2.4.x
+    from user's configuration directory (file ~/.starcal2/core.conf)
+
+    before 2.3.0, version was not stored in configuration directory
+    """
     data = loadCoreConf()
     try:
         return data['version']
