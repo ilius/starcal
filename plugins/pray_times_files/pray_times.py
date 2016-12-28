@@ -18,7 +18,9 @@
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 
-import sys, os, gettext
+import sys
+import os
+import gettext
 
 import time
 from time import localtime
@@ -49,7 +51,11 @@ from scal3.json_utils import *
 from scal3.time_utils import floatHourToTime
 from scal3.locale_man import tr as _
 from scal3.cal_types.gregorian import to_jd as gregorian_to_jd
-from scal3.time_utils import getUtcOffsetByJd, getUtcOffsetCurrent, getEpochFromJd
+from scal3.time_utils import (
+	getUtcOffsetByJd,
+	getUtcOffsetCurrent,
+	getEpochFromJd,
+)
 from scal3.os_utils import kill, goodkill
 from scal3.utils import myRaise
 #from scal3 import event_lib## needs core!! FIXME
@@ -68,21 +74,22 @@ localTz = get_localzone()
 
 ####################### Methods and Classes ##################
 
+
 def readLocationData():
-	lines = open(dataDir+'/locations.txt').read().split('\n')
+	lines = open(dataDir + '/locations.txt').read().split('\n')
 	cityData = []
 	country = ''
 	for l in lines:
 		p = l.split('\t')
-		if len(p)<2:
+		if len(p) < 2:
 			#print(p)
 			continue
-		if p[0]=='':
-			if p[1]=='':
+		if p[0] == '':
+			if p[1] == '':
 				city, lat, lng = p[2:5]
 				#if country=='Iran':
 				#	print(city)
-				if len(p)>4:
+				if len(p) > 4:
 					cityData.append((
 						country + '/' + city,
 						_(country) + '/' + _(city),
@@ -94,6 +101,7 @@ def readLocationData():
 			else:
 				country = p[1]
 	return cityData
+
 
 def guessLocation(cityData):
 	tzname = str(localTz)
@@ -121,9 +129,11 @@ class PrayTimeEventRule(EventRule):
 	getInfo = lambda self: self.desc
 '''
 
+
 class TextPlugin(BaseJsonPlugin, TextPluginUI):
 	name = 'pray_times'
-	## all options (except for "enable" and "show_date") will be saved in file confPath
+	# all options (except for "enable" and "show_date") will be
+	# saved in file confPath
 	confPath = join(confDir, 'pray_times.json')
 	confParams = (
 		'lat',
@@ -146,6 +156,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		'maghrib',
 		'isha',
 	)
+
 	def __init__(self, _file):
 		#print('----------- praytime TextPlugin.__init__')
 		#print('From plugin: core.VERSION=%s'%api.get('core', 'VERSION'))
@@ -199,7 +210,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 			self.lat,
 			self.lng,
 			methodName=self.method,
-			imsak='%d min'%self.imsak,
+			imsak='%d min' % self.imsak,
 		)
 		####
 		#######
@@ -214,53 +225,66 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		#self.doPlayPreAzan()
 		#time.sleep(2)
 		#self.doPlayAzan() ## for testing ## FIXME
+
 	def saveConfig(self):
 		self.lat = self.backend.lat
 		self.lng = self.backend.lng
 		self.method = self.backend.method.name
 		saveModuleJsonConf(self)
+
 	#def date_change_after(self, widget, year, month, day):
 	#	self.dialog.menuCell.add(self.menuitem)
 	#	self.menu_unmap_id = self.dialog.menuCell.connect('unmap', self.menu_unmap)
+
 	#def menu_unmap(self, menu):
 	#	menu.remove(self.menuitem)
 	#	menu.disconnect(self.menu_unmap_id)
+
 	def get_times_jd(self, jd):
 		times = self.backend.getTimesByJd(
 			jd,
-			getUtcOffsetByJd(jd, localTz)/3600.0,
+			getUtcOffsetByJd(jd, localTz) / 3600,
 		)
-		return [(name, times[name]) for name in self.shownTimeNames]
+		return [
+			(name, times[name])
+			for name in self.shownTimeNames
+		]
+
 	def getFormattedTime(self, tm):## tm is float hour
 		try:
 			h, m, s = floatHourToTime(float(tm))
 		except ValueError:
 			return tm
 		else:
-			return '%d:%.2d'%(h, m)
+			return '%d:%.2d' % (h, m)
+
 	def getTextByJd(self, jd):
 		return self.sep.join([
-			'%s: %s'%(_(name.capitalize()), self.getFormattedTime(tm))
+			'%s: %s' % (
+				_(name.capitalize()),
+				self.getFormattedTime(tm),
+			)
 			for name, tm in self.get_times_jd(jd)
 		])
-	def getText(self, year, month, day):## just for compatibity (usage by external programs)
-		return self.getTextByJd(gregorian_to_jd(year, month, day))
+
 	def updateCell(self, c):
 		text = self.getTextByJd(c.jd)
-		if text!='':
-			if c.pluginsText!='':
+		if text != '':
+			if c.pluginsText != '':
 				c.pluginsText += '\n'
 			c.pluginsText += text
+
 	def killPrevSound(self):
 		try:
 			p = self.proc
 		except AttributeError:
 			pass
 		else:
-			print('killing %s'%p.pid)
+			print('killing %s' % p.pid)
 			goodkill(p.pid, interval=0.01)
 			#kill(p.pid, 15)
 			#p.terminate()
+
 	def doPlayAzan(self):## , tm
 		if not self.azanEnable:
 			return
@@ -275,6 +299,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		#	return
 		self.killPrevSound()
 		self.proc = popenFile(self.azanFile)
+
 	def doPlayPreAzan(self):## , tm
 		if not self.preAzanEnable:
 			return
@@ -289,22 +314,26 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		#	return
 		self.killPrevSound()
 		self.proc = popenFile(self.preAzanFile)
+
 	def onCurrentDateChange(self, gdate):
 		print('praytimes: onCurrentDateChange', gdate)
 		if not self.enable:
 			return
 		jd = gregorian_to_jd(*tuple(gdate))
-		#print(getUtcOffsetByJd(jd, localTz)/3600.0, getUtcOffsetCurrent()/3600.0)
+		#print(
+		#	getUtcOffsetByJd(jd, localTz) / 3600,
+		#	getUtcOffsetCurrent() / 3600,
+		#)
 		#utcOffset = getUtcOffsetCurrent()
 		utcOffset = getUtcOffsetByJd(jd, localTz)
 		tmUtc = now()
 		epochLocal = tmUtc + utcOffset
-		secondsFromMidnight = epochLocal % (24*3600)
+		secondsFromMidnight = epochLocal % (24 * 3600)
 		midnightUtc = tmUtc - secondsFromMidnight
 		#print('------- hours from midnight', secondsFromMidnight/3600.0)
 		for timeName, azanHour in self.backend.getTimesByJd(
 			jd,
-			utcOffset/3600.0,
+			utcOffset / 3600,
 		).items():
 			if timeName not in self.azanTimeNamesAll:
 				continue
@@ -319,14 +348,14 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 					0,
 					int(preAzanSec - secondsFromMidnight)
 				)
-				print('toPreAzanSec=%.1f'%toPreAzanSec)
+				print('toPreAzanSec=%.1f' % toPreAzanSec)
 				Timer(
 					toPreAzanSec,
 					self.doPlayPreAzan,
 					#midnightUtc + preAzanSec,
 				).start()
 				###
-				print('toAzanSecs=%.1f'%toAzanSecs)
+				print('toAzanSecs=%.1f' % toAzanSecs)
 				Timer(
 					toAzanSecs,
 					self.doPlayAzan,
@@ -334,8 +363,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 				).start()
 
 
-
-if __name__=='__main__':
+if __name__ == '__main__':
 	#from scal3 import core
 	#from scal3.locale_man import rtl
 	#if rtl:
@@ -346,7 +374,3 @@ if __name__=='__main__':
 	dialog.resize(600, 600)
 	print(dialog.run())
 	#gtk.main()
-
-
-
-
