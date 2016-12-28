@@ -15,6 +15,7 @@ class IconSelectButton(gtk.Button):
 	signals = [
 		('changed', [str]),
 	]
+
 	def __init__(self, filename=''):
 		gtk.Button.__init__(self)
 		self.image = gtk.Image()
@@ -28,11 +29,20 @@ class IconSelectButton(gtk.Button):
 		clearB = self.dialog.add_button(gtk.STOCK_CLEAR, gtk.ResponseType.REJECT)
 		if ui.autoLocale:
 			cancelB.set_label(_('_Cancel'))
-			cancelB.set_image(gtk.Image.new_from_stock(gtk.STOCK_CANCEL,gtk.IconSize.BUTTON))
+			cancelB.set_image(gtk.Image.new_from_stock(
+				gtk.STOCK_CANCEL,
+				gtk.IconSize.BUTTON,
+			))
 			okB.set_label(_('_OK'))
-			okB.set_image(gtk.Image.new_from_stock(gtk.STOCK_OK,gtk.IconSize.BUTTON))
+			okB.set_image(gtk.Image.new_from_stock(
+				gtk.STOCK_OK,
+				gtk.IconSize.BUTTON,
+			))
 			clearB.set_label(_('Clear'))
-			clearB.set_image(gtk.Image.new_from_stock(gtk.STOCK_CLEAR,gtk.IconSize.BUTTON))
+			clearB.set_image(gtk.Image.new_from_stock(
+				gtk.STOCK_CLEAR,
+				gtk.IconSize.BUTTON,
+			))
 		###
 		menu = gtk.Menu()
 		self.menu = menu
@@ -52,13 +62,17 @@ class IconSelectButton(gtk.Button):
 		self.connect('button-press-event', self.buttonPressEvent)
 		###
 		self.set_filename(filename)
+
 	def buttonPressEvent(self, widget, gevent):
 		b = gevent.button
-		if b==1:
+		if b == 1:
 			self.dialog.run()
-		elif b==3:
+		elif b == 3:
 			self.menu.popup(None, None, None, None, b, gevent.time)
-	menuItemActivate = lambda self, widget, icon: self.set_filename(icon)
+
+	def menuItemActivate(self, widget, icon):
+		self.set_filename(icon)
+
 	def dialogResponse(self, dialog, response=0):
 		dialog.hide()
 		if response == gtk.ResponseType.OK:
@@ -69,13 +83,17 @@ class IconSelectButton(gtk.Button):
 			return
 		self.set_filename(fname)
 		self.emit('changed', fname)
+
 	def fileActivated(self, dialog):
 		fname = dialog.get_filename()
 		self.filename = fname
 		self.image.set_from_file(self.filename)
 		self.emit('changed', fname)
 		self.dialog.hide()
-	get_filename = lambda self: self.filename
+
+	def get_filename(self):
+		return self.filename
+
 	def set_filename(self, filename):
 		if filename is None:
 			filename = ''
@@ -85,4 +103,3 @@ class IconSelectButton(gtk.Button):
 			self.image.set_from_file(join(pixDir, 'empty.png'))
 		else:
 			self.image.set_from_file(filename)
-

@@ -60,7 +60,7 @@ currentTimeMarkerHeightRatio = 0.3
 currentTimeMarkerWidth = 2
 currentTimeMarkerColor = (255, 100, 100)
 
-#sunLightH = 10## FIXME
+#sunLightH = 10  # FIXME
 
 
 showWeekStart = True
@@ -74,8 +74,8 @@ changeHolidayBgMaxDays = 60
 holidayBgBolor = (60, 35, 35)
 
 
-scrollZoomStep = 1.2 ## > 1
-keyboardZoomStep = 1.2 ## > 1
+scrollZoomStep = 1.2  # > 1
+keyboardZoomStep = 1.2  # > 1
 
 #############################################
 
@@ -99,16 +99,17 @@ movingMaxSpeed = 1200 ## px / sec
 ## reach to maximum speed in 4 seconds
 
 
-
 movingKeyTimeoutFirst = 0.5
-movingKeyTimeout = 0.1 ## seconds ## continiouse keyPress delay is about 0.05 sec
+
+movingKeyTimeout = 0.1 # seconds
+# ^ continuous keyPress delay is about 0.05 sec
 
 #############################################
 truncateTickLabel = False
 
-## 0: no rotation
-## 1: 90 deg CCW (if needed)
-## -1: 90 deg CW (if needed)
+# 0: no rotation
+# 1: 90 deg CCW (if needed)
+# -1: 90 deg CW (if needed)
 
 ####################################################
 
@@ -137,26 +138,25 @@ unitSteps = (
 class Tick:
 	def __init__(self, epoch, pos, unitSize, label, color=None):
 		self.epoch = epoch
-		self.pos = pos ## pixel position
+		self.pos = pos  # pixel position
 		self.height = unitSize ** 0.5 * baseTickHeight
 		self.width = min(unitSize ** 0.2 * baseTickWidth, maxTickWidth)
 		self.fontSize = unitSize ** 0.1 * baseFontSize
-		self.maxLabelWidth = min(unitSize*0.5, maxLabelWidth) ## FIXME
+		self.maxLabelWidth = min(unitSize * 0.5, maxLabelWidth)  # FIXME
 		self.label = label
 		if color is None:
 			color = fgColor
 		self.color = color
 
 
-
-
 #class Range:
 #	def __init__(self, start, end):
 #		self.start = start
 #		self.end = end
-#	dt = lambda self: self.end - self.start
-#	__cmp__ = lambda self, other: cmp(self.dt(), other.dt())
-
+#	def dt(self):
+#		return self.end - self.start
+#	def __cmp__(self, other):
+#		return cmp(self.dt(), other.dt())
 
 
 def getNum10FactPow(n):
@@ -166,12 +166,15 @@ def getNum10FactPow(n):
 	nozero = n.rstrip('0')
 	return int(nozero), len(n) - len(nozero)
 
-getNum10Pow = lambda n: getNum10FactPow(n)[1]
+
+def getNum10Pow(n):
+	return getNum10FactPow(n)[1]
+
 
 def getYearRangeTickValues(u0, y1, minStepYear):
 	data = {}
 	step = 10 ** max(0, ifloor(log10(y1 - u0)) - 1)
-	u0 = step * (u0//step)
+	u0 = step * (u0 // step)
 	for y in range(u0, y1, step):
 		n = 10 ** getNum10Pow(y)
 		if n >= minStepYear:
@@ -180,6 +183,7 @@ def getYearRangeTickValues(u0, y1, minStepYear):
 		data[0] = max(data.values())
 	return sorted(data.items())
 
+
 def formatYear(y, prettyPower=False):
 	if abs(y) < 10 ** 4:## FIXME
 		y_st = _(y)
@@ -187,7 +191,7 @@ def formatYear(y, prettyPower=False):
 		#y_st = textNumEncode('%.0E'%y, changeDot=True)## FIXME
 		fac, pw = getNum10FactPow(y)
 		if not prettyPower or abs(fac) >= 100:## FIXME
-			y_e = '%E'%y
+			y_e = '%E' % y
 			for i in range(10):
 				y_e = y_e.replace('0E', 'E')
 			y_e = y_e.replace('.E', 'E')
@@ -198,11 +202,13 @@ def formatYear(y, prettyPower=False):
 			if fac == 1:
 				fac_s = ''
 			else:
-				fac_s = '%s×'%_(fac)
+				fac_s = '%s×' % _(fac)
 			pw_s = _(10) + 'ˆ' + _(pw)
-			## pw_s = _(10) + '<span rise="5" size="small">' + _(pw) + '</span>'## Pango Markup Language
+			#pw_s = _(10) + '<span rise="5" size="small">' + \
+			#	_(pw) + '</span>'  # Pango Markup Language
 			y_st = sign + fac_s + pw_s
 	return addLRM(y_st)
+
 
 #def setRandomColorsToEvents():
 #	import random
@@ -214,6 +220,7 @@ def formatYear(y, prettyPower=False):
 #		event.color = hslToRgb(hue, boxColorSaturation, boxColorLightness)
 #		hue += dh
 
+
 def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	timeEnd = timeStart + timeWidth
 	jd0 = getJdFromEpoch(timeStart)
@@ -221,12 +228,15 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	widthDays = float(timeWidth) / dayLen
 	dayPixel = dayLen * pixelPerSec ## px
 	#print('dayPixel = %s px'%dayPixel)
-	getEPos = lambda epoch: (epoch-timeStart)*pixelPerSec
-	getJPos = lambda jd: (getEpochFromJd(jd)-timeStart)*pixelPerSec
+	getEPos = lambda epoch: (epoch - timeStart) * pixelPerSec
+	getJPos = lambda jd: (getEpochFromJd(jd) - timeStart) * pixelPerSec
 	######################## Holidays
 	holidays = []
-	if changeHolidayBg and changeHolidayBgMinDays < widthDays < changeHolidayBgMaxDays:
-		for jd in getHolidaysJdList(jd0, jd1+1):
+	if (
+		changeHolidayBg and
+		changeHolidayBgMinDays < widthDays < changeHolidayBgMaxDays
+	):
+		for jd in getHolidaysJdList(jd0, jd1 + 1):
 			holidays.append(getJPos(jd))
 	######################## Ticks
 	ticks = []
@@ -238,7 +248,11 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	############ Year
 	minStepYear = minStep // minYearLenSec ## years ## int or iceil?
 	yearPixel = minYearLenSec * pixelPerSec ## pixels
-	for (year, size) in getYearRangeTickValues(year0, year1+1, minStepYear):
+	for (year, size) in getYearRangeTickValues(
+		year0,
+		year1 + 1,
+		minStepYear,
+	):
 		tmEpoch = getEpochFromDate(year, 1, 1, calTypes.primary)
 		if tmEpoch in tickEpochList:
 			continue
@@ -255,14 +269,17 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	monthPixel = avgMonthLen * pixelPerSec ## px
 	minMonthUnit = float(minStep) / avgMonthLen ## month
 	if minMonthUnit <= 3:
-		for ym in range(year0*12+month0-1, year1*12+month1-1+1):## +1 FIXME
-			if ym%3==0:
+		for ym in range(
+			year0 * 12 + (month0 - 1),
+			year1 * 12 + (month1 - 1) + 1,  # +1 FIXME
+		):
+			if ym % 3 == 0:
 				monthUnit = 3
 			else:
 				monthUnit = 1
 			if monthUnit < minMonthUnit:
 				continue
-			y, m = divmod(ym, 12) ; m+=1
+			y, m = divmod(ym, 12); m += 1
 			tmEpoch = getEpochFromDate(y, m, 1, calTypes.primary)
 			if tmEpoch in tickEpochList:
 				continue
@@ -283,7 +300,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			label = ''
 		else:
 			label = core.weekDayNameAb[core.firstWeekDay]
-		for jd in range(jdw0, jd1+1, 7):
+		for jd in range(jdw0, jd1 + 1, 7):
 			tmEpoch = getEpochFromJd(jd)
 			ticks.append(Tick(
 				tmEpoch,
@@ -297,12 +314,12 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	hasMonthName = timeWidth < 5 * dayLen
 	minDayUnit = float(minStep) / dayLen ## days
 	if minDayUnit <= 15:
-		for jd in range(jd0, jd1+1):
+		for jd in range(jd0, jd1 + 1):
 			tmEpoch = getEpochFromJd(jd)
 			if tmEpoch in tickEpochList:
 				continue
 			year, month, day = jd_to_primary(jd)
-			if day==16:
+			if day == 16:
 				dayUnit = 15
 			elif day in (6, 11, 21, 26):
 				dayUnit = 5
@@ -310,7 +327,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 				dayUnit = 1
 			if dayUnit < minDayUnit:
 				continue
-			unitSize = dayPixel*dayUnit
+			unitSize = dayPixel * dayUnit
 			if unitSize < majorStepMin:
 				label = ''
 			elif hasMonthName:
@@ -326,12 +343,14 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			tickEpochList.append(tmEpoch)
 	############ Hour, Minute, Second
 	for stepUnit, stepValue in unitSteps:
-		stepSec = stepUnit*stepValue
+		stepSec = stepUnit * stepValue
 		if stepSec < minStep:
 			break
-		unitSize = stepSec*pixelPerSec
+		unitSize = stepSec * pixelPerSec
 		utcOffset = int(getUtcOffsetCurrent())
-		firstEpoch = iceil((timeStart+utcOffset) / stepSec) * stepSec - utcOffset
+		firstEpoch = iceil(
+			(timeStart + utcOffset) / stepSec
+		) * stepSec - utcOffset
 		for tmEpoch in range(firstEpoch, iceil(timeEnd), stepSec):
 			if tmEpoch in tickEpochList:
 				continue
@@ -339,13 +358,13 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 				label = ''
 			else:
 				jd, h, m, s = getJhmsFromEpoch(tmEpoch)
-				if s==0:
-					label = '%s:%s'%(
+				if s == 0:
+					label = '%s:%s' % (
 						_(h),
 						_(m, fillZero=2),
 					)
 				else:# elif timeWidth < 60 or stepSec < 30:
-					label = addLRM('%s"'%_(s, fillZero=2))
+					label = addLRM('%s"' % _(s, fillZero=2))
 				#else:
 				#	label = '%s:%s:%s'%(
 				#		_(h),
@@ -374,6 +393,3 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	)
 	###
 	return data
-
-
-

@@ -8,11 +8,13 @@ from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.event.occurrence_view import DayOccurrenceView
 
+
 #@registerSignals
-class CalObj(DayOccurrenceView, CustomizableCalObj):## FIXME
+class CalObj(DayOccurrenceView, CustomizableCalObj):  # FIXME
 	def __init__(self):
 		DayOccurrenceView.__init__(self)
 		self.maxHeight = ui.eventViewMaxHeight
+
 	def optionsWidgetCreate(self):
 		from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 		if self.optionsWidget:
@@ -28,8 +30,8 @@ class CalObj(DayOccurrenceView, CustomizableCalObj):## FIXME
 		pack(self.optionsWidget, hbox)
 		###
 		self.optionsWidget.show_all()
+
 	def heightSpinChanged(self, spin):
 		v = spin.get_value()
 		self.maxHeight = ui.eventViewMaxHeight = v
 		self.queue_resize()
-

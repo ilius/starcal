@@ -9,6 +9,7 @@ from scal3.ui_gtk.event import common
 
 maxStartEnd = 999999
 
+
 class WidgetClass(BaseWidgetClass):
 	def __init__(self, group):
 		BaseWidgetClass.__init__(self, group)
@@ -41,17 +42,15 @@ class WidgetClass(BaseWidgetClass):
 		self.endSpin = IntSpinButton(-maxStartEnd, maxStartEnd)
 		pack(hbox, self.endSpin)
 		pack(self, hbox)
+
 	def updateWidget(self):
 		BaseWidgetClass.updateWidget(self)
 		self.scaleCombo.set_value(self.group.scale)
 		self.startSpin.set_value(self.group.getStartValue())
 		self.endSpin.set_value(self.group.getEndValue())
+
 	def updateVars(self):
 		BaseWidgetClass.updateVars(self)
 		self.group.scale = self.scaleCombo.get_value()
 		self.group.setStartValue(self.startSpin.get_value())
 		self.group.setEndValue(self.endSpin.get_value())
-
-
-
-

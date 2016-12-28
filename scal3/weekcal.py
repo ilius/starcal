@@ -26,8 +26,9 @@ from scal3 import ui
 
 pluginName = 'WeekCal'
 
+
 class WeekStatus(list):
-	## list (of 7 cells)
+	# list (of 7 cells)
 	def __init__(self, cellCache, absWeekNumber):
 		self.absWeekNumber = absWeekNumber
 		startJd = core.getStartJdOfAbsWeekNumber(absWeekNumber)
@@ -41,18 +42,32 @@ class WeekStatus(list):
 		for jd in range(startJd, endJd):
 			#print('WeekStatus', jd)
 			self.append(cellCache.getCell(jd))
-	allCells = lambda self: self
+
+	def allCells(self):
+		return self
+
 
 def setParamsFunc(cell):
 	cell.absWeekNumber, cell.weekDayIndex = core.getWeekDateFromJd(cell.jd)
 
 
-getWeekStatus = lambda absWeekNumber: ui.cellCache.getCellGroup(pluginName, absWeekNumber)
-getCurrentWeekStatus = lambda: ui.cellCache.getCellGroup(pluginName, ui.cell.absWeekNumber)
+def getWeekStatus(absWeekNumber):
+	return ui.cellCache.getCellGroup(
+		pluginName,
+		absWeekNumber,
+	)
+
+
+def getCurrentWeekStatus():
+	return ui.cellCache.getCellGroup(
+		pluginName,
+		ui.cell.absWeekNumber,
+	)
 
 ########################
-ui.cellCache.registerPlugin(pluginName, setParamsFunc, WeekStatus)
 
-
-
-
+ui.cellCache.registerPlugin(
+	pluginName,
+	setParamsFunc,
+	WeekStatus,
+)

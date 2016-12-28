@@ -13,7 +13,10 @@ from scal3 import event_lib
 modPrefix = 'scal3.ui_gtk.event'
 
 
-def makeWidget(obj):## obj is an instance of Event, EventRule, EventNotifier or EventGroup
+def makeWidget(obj):
+	"""
+	obj is an instance of Event, EventRule, EventNotifier or EventGroup
+	"""
 	cls = obj.__class__
 	try:
 		WidgetClass = cls.WidgetClass
@@ -40,8 +43,6 @@ def makeWidget(obj):## obj is an instance of Event, EventRule, EventNotifier or 
 	return widget
 
 
-### Load accounts, groups and trash? FIXME
+# Load accounts, groups and trash? FIXME
 from os.path import join, isfile
 from scal3.path import confDir
-
-

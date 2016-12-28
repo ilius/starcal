@@ -19,20 +19,25 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+# use subprocess instead of os.popen* FIXME
+
 from time import sleep
-import sys, os, re
+import sys
+import os
+import re
 
 from gi.repository import GObject as gobject
 
 from scal3.ui_gtk import *
 
 
-## Control
+# Control
 SEEK_TIME_SMALL = 10 # in seconds
 
-## Mplayer
+# Mplayer
 STATUS_UPDATE_TIMEOUT = 1000
 VOLUME_STEP = 5
+
 
 class MPlayer:
 	pbox, mplayerIn, mplayerOut = None, None, None
@@ -41,6 +46,7 @@ class MPlayer:
 	isVidOnTop = False
 	mplayerOptions = None
 	playTime = None
+
 	def __init__(self, pbox):
 		self.pbox = pbox
 
@@ -52,8 +58,9 @@ class MPlayer:
 		if self.pbox.isvidontop:
 			mplayerOptions = '-ontop ' + mplayerOptions
 
-		cmd = 'mplayer ' + mplayerOptions + ' -quiet -slave \'' + path + '\''# 2>/dev/null'
-		self.mplayerIn, self.mplayerOut = os.popen2(cmd) #open pipes
+		cmd = 'mplayer ' + mplayerOptions + ' -quiet -slave \'' + path + '\''
+		# 2>/dev/null'
+		self.mplayerIn, self.mplayerOut = os.popen2(cmd)
 
 		try:
 			import fcntl
@@ -69,7 +76,6 @@ class MPlayer:
 		#	self.pbox.seekBar.set_sensitive(True)
 		#	self.pbox.fcb.set_sensitive(False)
 
-
 	# Get the length of file, format it and place it in playtime
 	def getLength(self):
 		self.cmd('get_time_length')
@@ -78,15 +84,16 @@ class MPlayer:
 		status = None
 		try: # get the last line of output
 			for status in self.mplayerOut:
-				if not status: break
+				if not status:
+					break
 		except:
 			pass
 		if not status or not status.startswith('ANS_LENGTH='):
 			return True
 
 		length = int(float(status.replace('ANS_LENGTH=', '').strip()))
-		h = length/3600
-		m = (length % 3600)/60
+		h = length / 3600
+		m = (length % 3600) / 60
 		s = (length % 60)
 		if h:
 			self.playTime = '%d:%.2d:%.2d' % (h, m, s)
@@ -109,23 +116,23 @@ class MPlayer:
 			self.paused = False
 
 	# Seek by the amount specified (in seconds)
-	def seek(self, amount, mode = 0):
+	def seek(self, amount, mode=0):
 		if not self.mplayerIn:
 			return False
-		self.cmd('seek %s %s'%(amount, mode))
+		self.cmd('seek %s %s' % (amount, mode))
 		self.queryStatus()
 
 	# Set volume    using aumix
 	def setVolume(self, value):
 		if self.pbox.adjustvol:
-			command = 'aumix -v %s'%value
+			command = 'aumix -v %s' % value
 		else:
-			command = 'aumix -w %s'%value
+			command = 'aumix -w %s' % value
 
 		try:
 			os.popen(command)
 		except Exception as message:
-			print('Cannot set volume: %s'%message)
+			print('Cannot set volume: %s' % message)
 
 	# Change volume by the amount specified
 	# Changing the adjustment automatically updates
@@ -141,6 +148,7 @@ class MPlayer:
 				self.pbox.volAdj.value = 0
 			else:
 				self.pbox.volAdj.value -= VOLUME_STEP
+
 	# Close mplayer
 	def close(self):
 		if self.paused:
@@ -160,6 +168,7 @@ class MPlayer:
 		self.pbox.seekAdj.value = 0
 		#self.pbox.seekBar.set_sensitive(False)
 		#self.pbox.fcb.set_sensitive(True)
+
 	def cmd(self, command):
 		if not self.mplayerIn:
 			return False
@@ -180,7 +189,8 @@ class MPlayer:
 		status = None
 		try: # get the last line of output
 			for status in self.mplayerOut:
-				if not status: break
+				if not status:
+					break
 		except:
 			pass
 
@@ -199,7 +209,11 @@ class MPlayer:
 
 	# Handle EOF (basically, a connection Hung Up in mplayerOut)
 	def startHandleEof(self):
-		self.eofHandle = gobject.io_add_watch(self.mplayerOut, gobject.IO_HUP, self.handleEof)
+		self.eofHandle = gobject.io_add_watch(
+			self.mplayerOut,
+			gobject.IO_HUP,
+			self.handleEof,
+		)
 
 	# Stop looking for IO_HUP in mplayerOut
 	def stopEofHandler(self):
@@ -208,7 +222,10 @@ class MPlayer:
 	# Call a function periodically to fetch status
 	def startStatusQuery(self):
 		print('start')
-		self.statusQuery = gobject.timeout_add(STATUS_UPDATE_TIMEOUT, self.queryStatus)
+		self.statusQuery = gobject.timeout_add(
+			STATUS_UPDATE_TIMEOUT,
+			self.queryStatus,
+		)
 
 	# Stop calling the function that fetches status periodically
 	def stopStatusQuery(self):
@@ -233,6 +250,7 @@ class PlayerBox(gtk.HBox):
 	#isvidontop = False
 	###############
 	forbid = [102, 100]
+
 	def __init__(self, hasVol=False):
 		gtk.HBox.__init__(self)
 		self.fcb = gtk.FileChooserButton(title='Select Sound')
@@ -241,22 +259,30 @@ class PlayerBox(gtk.HBox):
 		pack(self, self.fcb)
 		self.mplayer = MPlayer(self)
 		self.connect('key-press-event', self.divert)
-		self.connect('destroy', lambda self, *args: self.mplayer.close()) ## FIXME
-		#self.connect('destroy', lambda obj, event=None: self.mplayer.close())#??????????
+		self.connect(
+			'destroy',
+			lambda *args: self.mplayer.close(),
+		)  # FIXME
 		##self.toolbar.connect('key-press-event', self.toolbarKey)#??????????
 		##############
 		self.playPauseBut = gtk.Button()
-		self.playPauseBut.set_image(gtk.Image.new_from_stock(gtk.STOCK_MEDIA_PLAY,gtk.IconSize.SMALL_TOOLBAR))
+		self.playPauseBut.set_image(gtk.Image.new_from_stock(
+			gtk.STOCK_MEDIA_PLAY,
+			gtk.IconSize.SMALL_TOOLBAR,
+		))
 		self.playPauseBut.connect('clicked', self.playPause)
 		pack(self, self.playPauseBut)
 		#######
 		stopBut = gtk.Button()
-		stopBut.set_image(gtk.Image.new_from_stock(gtk.STOCK_MEDIA_STOP,gtk.IconSize.SMALL_TOOLBAR))
+		stopBut.set_image(gtk.Image.new_from_stock(
+			gtk.STOCK_MEDIA_STOP,
+			gtk.IconSize.SMALL_TOOLBAR,
+		))
 		stopBut.connect('clicked', self.stop)
 		pack(self, stopBut)
 		##############
 		self.seekAdj = gtk.Adjustment(0, 0, 100, 1, 10, 0)
-		#self.seekAdj.connect('value_changed', self.seekAdjChanged)#??????????????????
+		#self.seekAdj.connect('value_changed', self.seekAdjChanged)  # FIXME
 		self.seekBar = gtk.HScale(self.seekAdj)
 		self.seekBar.set_value_pos(gtk.PositionType.TOP)
 		self.seekBar.set_sensitive(False)
@@ -281,6 +307,7 @@ class PlayerBox(gtk.HBox):
 			scale.connect('format-value', self.displayVolString)
 			scale.connect('key-press-event', self.divert)
 			pack(self, scale, False, False, 5)
+
 	def divert(self, widget, gevent):
 		key = gevent.hardware_keycode
 		if key == self.key_seekback: # left arrow, seek
@@ -297,24 +324,33 @@ class PlayerBox(gtk.HBox):
 			self.mplayer.pause()
 		else:
 			return False
+
 	def displaySongString(self, seekBar, value):
 		if self.mplayer.playTime:
 			return str(int(value)) + '% of ' + self.mplayer.playTime
 		elif self.mplayer.mplayerIn:
-			return str(int(value)) + '% of ' #+ self.playlist.getCurrentSongTime()
+			return str(int(value)) + '% of '
+			#+ self.playlist.getCurrentSongTime()  # FIXME
 		else:
 			return str(int(value)) + '%'
+
 	def seek(self, widget, gevent):# Seek on changing the seekBar
 		#print('seek', self.seekAdj.value, self.mplayer.mplayerIn)
 		if not self.mplayer.mplayerIn:
 			print('abc')
 			sleep(0.05)
 			self.seekAdj.value = 100
-			#self.playPauseBut.set_image(gtk.Image.new_from_stock(gtk.STOCK_MEDIA_PLAY,gtk.IconSize.SMALL_TOOLBAR))
+			#self.playPauseBut.set_image(gtk.Image.new_from_stock(
+			#	gtk.STOCK_MEDIA_PLAY,
+			#	gtk.IconSize.SMALL_TOOLBAR,
+			#))
 		else:
 			self.mplayer.seek(int(self.seekAdj.value), 1)
-	## Return formatted volume string
-	displayVolString = lambda self, scale, value: 'Volume: ' + str(int(value)) + '%'
+
+	# Return formatted volume string
+	def displayVolString(self, scale, value):
+		return 'Volume: ' + str(int(value)) + '%'
+
 	def setVolume(self, adj):# Set volume when the volume range widget is changed
 		self.mplayer.setVolume(int(adj.value))
 		if self.adjustvol:
@@ -323,6 +359,7 @@ class PlayerBox(gtk.HBox):
 		else:
 			self.vollevel0 = int(adj.value)
 			self.mplayer.setVolume(self.vollevel0)
+
 	def playPause(self, button=None):
 		icon = gtk.STOCK_MEDIA_PLAY
 		if self.mplayer.mplayerIn:
@@ -332,43 +369,60 @@ class PlayerBox(gtk.HBox):
 		else:
 			icon = gtk.STOCK_MEDIA_PAUSE
 			path = self.fcb.get_filename()
-			if path==None:
+			if path is None:
 				return
 			self.mplayer.play(path)
-		self.playPauseBut.set_image(gtk.Image.new_from_stock(icon, gtk.IconSize.SMALL_TOOLBAR))
+		self.playPauseBut.set_image(gtk.Image.new_from_stock(
+			icon,
+			gtk.IconSize.SMALL_TOOLBAR,
+		))
 		playing = bool(self.mplayer.mplayerIn)
 		self.fcb.set_sensitive(not playing)
 		self.seekBar.set_sensitive(playing)
+
 	def stop(self, button):# Stop mplayer if it's running
 		self.mplayer.close()
-		self.playPauseBut.set_image(gtk.Image.new_from_stock(gtk.STOCK_MEDIA_PLAY,gtk.IconSize.SMALL_TOOLBAR))
-		self.fcb.set_sensitive(self.mplayer.mplayerIn==None)
-		self.seekBar.set_sensitive(self.mplayer.mplayerIn!=None)
+		self.playPauseBut.set_image(gtk.Image.new_from_stock(
+			gtk.STOCK_MEDIA_PLAY,
+			gtk.IconSize.SMALL_TOOLBAR,
+		))
+		self.fcb.set_sensitive(self.mplayer.mplayerIn is None)
+		self.seekBar.set_sensitive(self.mplayer.mplayerIn is not None)
+
 	def decVol(self, widget):
 		self.mplayer.stepVolume(False)
+
 	def incVol(self, widget):
 		self.mplayer.stepVolume(True)
-	def toolbarKey(self, widget, gevent):# Prevent the down and up keys from taking control out of the toolbar
+
+	def toolbarKey(self, widget, gevent):
+		# Prevent the down and up keys from taking control out of the toolbar
 		keycode = gevent.hardware_keycode
 		if keycode in [98, 104]:
 			return True
 		return False
-	def quit(self, event = None):
+
+	def quit(self, event=None):
 		self.mplayer.close()
 		gtk.main_quit()
+
 	def openFile(self, path, startPlaying=True):
 		self.fcb.set_filename(path)
 		if startPlaying:
 			self.playPause()
 		#self.mplayer.play(path)
-		#self.playPauseBut.set_image(gtk.Image.new_from_stock(gtk.STOCK_MEDIA_PAUSE,gtk.IconSize.SMALL_TOOLBAR))
+		#self.playPauseBut.set_image(gtk.Image.new_from_stock(
+		#	gtk.STOCK_MEDIA_PAUSE,
+		#	gtk.IconSize.SMALL_TOOLBAR,
+		#))
 		#self.fcb.set_sensitive(self.mplayer.mplayerIn==None)
 		#self.seekBar.set_sensitive(self.mplayer.mplayerIn!=None)
-	getFile = lambda self: self.fcb.get_filename()
+
+	def getFile(self):
+		return self.fcb.get_filename()
 
 
-
-if __name__=='__main__':
+if __name__ == '__main__':
 	window = gtk.Window(gtk.WindowType.TOPLEVEL)
 	window.set_title('Simple PyGTK Interface for MPlayer')
 	mainVbox = gtk.VBox(False, 0)
@@ -378,11 +432,6 @@ if __name__=='__main__':
 	window.add(mainVbox)
 	mainVbox.show_all()
 	window.show()
-	if len(sys.argv)>1:
+	if len(sys.argv) > 1:
 		pbox.openFile(sys.argv[1])
 	gtk.main()
-
-
-
-
-

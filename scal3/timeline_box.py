@@ -33,6 +33,7 @@ rotateBoxLabel = -1
 
 #########################################
 
+
 class Box:
 	def __init__(
 		self,
@@ -70,15 +71,24 @@ class Box:
 		####
 		self.hasBorder = False
 		self.tConflictBefore = []
-	mt_key = lambda self: self.mt
-	dt_key = lambda self: -self.dt
+
+	def mt_key(self):
+		return self.mt
+
+	def dt_key(self):
+		return -self.dt
+
 	#########
+
 	def setPixelValues(self, timeStart, pixelPerSec, beforeBoxH, maxBoxH):
 		self.x = (self.t0 - timeStart) * pixelPerSec
 		self.w = (self.t1 - self.t0) * pixelPerSec
 		self.y = beforeBoxH + maxBoxH * self.u0
 		self.h = maxBoxH * self.du
-	contains = lambda self, px, py: 0 <= px-self.x < self.w and 0 <= py-self.y < self.h
+
+	def contains(self, px, py):
+		return 0 <= px - self.x < self.w and 0 <= py - self.y < self.h
+
 
 def makeIntervalGraph(boxes):
 	try:
@@ -109,13 +119,11 @@ def makeIntervalGraph(boxes):
 	return g
 
 
-
-
 def renderBoxesByGraph(boxes, graph, minColor, minU):
 	colorCount = max(graph.vs['color']) - minColor + 1
 	if colorCount < 1:
 		return
-	du = (1.0-minU) / colorCount
+	du = (1.0 - minU) / colorCount
 	min_vertices = graph.vs.select(color_eq=minColor) ## a VertexSeq
 	for v in min_vertices:
 		box = boxes[v['name']]
@@ -147,11 +155,11 @@ def calcEventBoxes(
 				timeStart,
 				timeEnd,
 				timeEnd - timeStart,
-				1-errorBoxH, ## u0
-				errorBoxH, ## du
-				text = 'Install "python3-igraph" to see events',
-				color = (128, 0, 0),## FIXME
-				lineW = 2*boxLineWidth,
+				1 - errorBoxH,  # u0
+				errorBoxH,  # du
+				text='Install "python3-igraph" to see events',
+				color=(128, 0, 0),## FIXME
+				lineW=2 * boxLineWidth,
 			)
 		]
 	boxesDict = {}
@@ -162,8 +170,11 @@ def calcEventBoxes(
 			continue
 		if not group.showInTimeLine:
 			continue
-		for t0, t1, eid, odt in group.occur.search(timeStart-borderTm, timeEnd+borderTm):
-			pixBoxW = (t1-t0) * pixelPerSec
+		for t0, t1, eid, odt in group.occur.search(
+			timeStart - borderTm,
+			timeEnd + borderTm,
+		):
+			pixBoxW = (t1 - t0) * pixelPerSec
 			if pixBoxW < boxSkipPixelLimit:
 				continue
 			#if not isinstance(eid, int):
@@ -174,7 +185,7 @@ def calcEventBoxes(
 			if t0 <= timeStart and timeEnd <= t1:## Fills Range ## FIXME
 				continue
 			lineW = boxLineWidth
-			if lineW >= 0.5*pixBoxW:
+			if lineW >= 0.5 * pixBoxW:
 				lineW = 0
 			box = Box(
 				t0,
@@ -182,10 +193,10 @@ def calcEventBoxes(
 				odt,
 				0,
 				1,
-				text = event.getText(False),
-				color = group.color,## or event.color FIXME
-				ids = (group.id, event.id) if pixBoxW > 0.5 else None,
-				lineW = lineW,
+				text=event.getText(False),
+				color=group.color,  # or event.color FIXME
+				ids=(group.id, event.id) if pixBoxW > 0.5 else None,
+				lineW=lineW,
 			)
 			box.hasBorder = (borderTm > 0 and event.name in movableEventTypes)
 			boxValue = (groupIndex, t0, t1)
@@ -202,10 +213,10 @@ def calcEventBoxes(
 			boxes += blist
 		else:
 			box = blist[0]
-			box.text = _('%s events')%_(len(blist))
+			box.text = _('%s events') % _(len(blist))
 			box.ids = None
-			#print('len(blist) = %s'%len(blist))
-			#print('%s secs'%(box.t1 - box.t0))
+			#print('len(blist) = %s' % len(blist))
+			#print('%s secs' % (box.t1 - box.t0))
 			boxes.append(box)
 	del boxesDict
 	#####
@@ -217,17 +228,12 @@ def calcEventBoxes(
 	###
 	graph = makeIntervalGraph(boxes)
 	if debugMode:
-		print('makeIntervalGraph: %e'%(now()-t1))
+		print('makeIntervalGraph: %e' % (now() - t1))
 	###
 	#####
 	colorGraph(graph)
 	renderBoxesByGraph(boxes, graph, 0, 0)
 	if debugMode:
-		print('box placing time:  %e'%(now()-t0))
+		print('box placing time:  %e' % (now() - t0))
 		print('')
 	return boxes
-
-
-
-
-

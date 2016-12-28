@@ -58,10 +58,17 @@ class WidgetClass(BaseWidgetClass):
 		self.accountGroupCombo = accountGroupBox.combo
 		##
 		pack(self, exp)
+
 	def updateWidget(self):
 		BaseWidgetClass.updateWidget(self)
-		self.startDateInput.set_value(jd_to(self.group.startJd, self.group.mode))
-		self.endDateInput.set_value(jd_to(self.group.endJd, self.group.mode))
+		self.startDateInput.set_value(jd_to(
+			self.group.startJd,
+			self.group.mode,
+		))
+		self.endDateInput.set_value(jd_to(
+			self.group.endJd,
+			self.group.mode,
+		))
 		###
 		if self.group.remoteIds:
 			aid, gid = self.group.remoteIds
@@ -69,6 +76,7 @@ class WidgetClass(BaseWidgetClass):
 			aid, gid = None, None
 		self.accountCombo.set_active(aid)
 		self.accountGroupCombo.set_active(gid)
+
 	def updateVars(self):
 		BaseWidgetClass.updateVars(self)
 		self.group.startJd = self.startDateInput.get_jd(self.group.mode)
@@ -80,11 +88,9 @@ class WidgetClass(BaseWidgetClass):
 			self.group.remoteIds = aid, gid
 		else:
 			self.group.remoteIds = None
+
 	def modeComboChanged(self, obj=None):
 		newMode = self.modeCombo.get_active()
 		self.startDateInput.changeMode(self.group.mode, newMode)
 		self.endDateInput.changeMode(self.group.mode, newMode)
 		self.group.mode = newMode
-
-
-

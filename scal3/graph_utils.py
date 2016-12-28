@@ -5,11 +5,10 @@ def colorGraph(g, add_height=True):
 	## Using 'SL' (Smalest Last) algorithm
 	n = g.vcount()
 	adjlist = g.get_adjlist()
-	colors = [None]*n
+	colors = [None] * n
 	for d, i in sorted(
-		[
-			(-g.degree(i), i) for i in range(n)
-		],
+		(-g.degree(i), i)
+		for i in range(n)
 	):
 		adjColors = set()
 		for j in adjlist[i]:
@@ -28,16 +27,8 @@ def colorGraph(g, add_height=True):
 			adjColors = set()
 			for j in adjlist[i]:
 				adjColors.add(colors[j])
-			for c_end in range(c+1, colorCount+1):
+			for c_end in range(c + 1, colorCount + 1):
 				if c_end in adjColors:
 					height[i] = c_end - c
 					break
 		g.vs['color_h'] = height
-
-
-
-
-
-
-
-

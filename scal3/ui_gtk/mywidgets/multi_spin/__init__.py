@@ -17,7 +17,8 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
-import sys, os
+import sys
+import os
 from time import localtime
 from time import time as now
 
@@ -34,12 +35,14 @@ from gi.repository.GObject import timeout_add
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
 
+
 @registerSignals
 class MultiSpinButton(gtk.SpinButton):
 	signals = [
 		('first-min', []),
 		('first-max', []),
 	]
+
 	def __init__(self, sep, fields, arrow_select=True, page_inc=10):
 		gtk.SpinButton.__init__(self)
 		####
@@ -64,17 +67,21 @@ class MultiSpinButton(gtk.SpinButton):
 		self.connect('scroll-event', self._scroll)
 		self.connect('button-press-event', self._button_press)
 		self.connect('button-release-event', self._button_release)
-		self.connect('output', lambda obj: True)##Disable auto-numeric-validating(the entry text is not a numebr)
+		self.connect('output', lambda obj: True)
+		# ^^ Disable auto-numeric-validation (the entry text is not a numebr)
 		####
 		#self.select_region(0, 0)
+
 	def _entry_activate(self, widget):
 		#print('_entry_activate', self.get_text())
 		self.update()
 		#print(self.get_text())
 		return True
+
 	def get_value(self):
 		self.field.setText(self.get_text())
 		return self.field.getValue()
+
 	def set_value(self, value):
 		if isinstance(value, (int, float)):
 			gtk.SpinButton.set_value(self, value)
@@ -82,11 +89,13 @@ class MultiSpinButton(gtk.SpinButton):
 		self.field.setValue(value)
 		self.set_text(self.field.getText())
 		self.set_position(pos)
+
 	def update(self):
 		pos = self.get_position()
 		self.field.setText(toStr(self.get_text()))
 		self.set_text(self.field.getText())
 		self.set_position(pos)
+
 	def insertText(self, s, clearSeceltion=True):
 		selection = self.get_selection_bounds()
 		if selection and clearSeceltion:
@@ -94,24 +103,36 @@ class MultiSpinButton(gtk.SpinButton):
 			text = toStr(self.get_text())
 			text = text[:start] + s + text[end:]
 			self.set_text(text)
-			self.set_position(start+len(s))
+			self.set_position(start + len(s))
 		else:
 			pos = self.get_position()
 			self.insert_text(s, pos)
 			self.set_position(pos + len(s))
+
 	def entry_plus(self, p):
 		self.update()
 		pos = self.get_position()
-		self.field.getFieldAt(toStr(self.get_text()), self.get_position()).plus(p)
+		self.field.getFieldAt(
+			toStr(self.get_text()),
+			self.get_position()
+		).plus(p)
 		self.set_text(self.field.getText())
 		self.set_position(pos)
+
 	def _key_press(self, widget, gevent):
 		kval = gevent.keyval
 		kname = gdk.keyval_name(kval).lower()
 		size = len(self.field)
 		sep = self.field.sep
 		step_inc, page_inc = self.get_increments()
-		if kname in ('up', 'down', 'page_up', 'page_down', 'left', 'right'):
+		if kname in (
+			'up',
+			'down',
+			'page_up',
+			'page_down',
+			'left',
+			'right',
+		):
 			if not self.get_editable():
 				return True
 			if kname in ('left', 'right'):
@@ -145,7 +166,7 @@ class MultiSpinButton(gtk.SpinButton):
 		#	##self.emit('activate')
 		#	return True
 		elif ord('0') <= kval <= ord('9'):
-			self.insertText(self.digs[kval-ord('0')])
+			self.insertText(self.digs[kval - ord('0')])
 			return True
 		elif 'kp_0' <= kname <= 'kp_9':
 			self.insertText(self.digs[int(kname[-1])])
@@ -158,10 +179,12 @@ class MultiSpinButton(gtk.SpinButton):
 		else:
 			#print(kname, kval)
 			return False
+
 	def _button_press(self, widget, gevent):
 		gwin = gevent.window
 		r = self.get_allocation()
-		##print(gwin.get_property('name'))## TypeError: object of type `GdkX11Window' does not have property `name'
+		##print(gwin.get_property('name'))
+		# ^TypeError: object of type `GdkX11Window' does not have property `name'
 		#print('allocation', r.width, r.height)
 		#print(gevent.x, gevent.y)
 		#print(gwin.get_position())
@@ -187,13 +210,13 @@ class MultiSpinButton(gtk.SpinButton):
 				button_type = '-'
 		#print('_button_press', button_type)
 		if button_type == '+':
-			if gevent.button==1:
+			if gevent.button == 1:
 				self._arrow_press(step_inc)
-			elif gevent.button==2:
+			elif gevent.button == 2:
 				self._arrow_press(page_inc)
 			return True
 		elif button_type == '-':
-			if gevent.button==1:
+			if gevent.button == 1:
 				self._arrow_press(-step_inc)
 			else:
 				self._arrow_press(-page_inc)
@@ -204,31 +227,47 @@ class MultiSpinButton(gtk.SpinButton):
 		#		## select the numeric part containing cursor
 		#		#return True
 		return False
+
 	def _scroll(self, widget, gevent):
 		d = getScrollValue(gevent)
 		if d in ('up', 'down'):
 			if not self.has_focus():
 				self.grab_focus()
 			if self.get_editable():
-				plus = (1 if d=='up' else -1) * self.get_increments()[0]
+				plus = (1 if d == 'up' else -1) * self.get_increments()[0]
 				self.entry_plus(plus)
 		else:
 			return False
 		return True
+
 	#def _move_cursor(self, obj, step, count, extend_selection):
-		## force_select
-		#print'_entry_move_cursor', count, extend_selection
+	#	# force_select
+	#	#print'_entry_move_cursor', count, extend_selection
+
 	def _arrow_press(self, plus):
 		self.pressTm = now()
 		self._remain = True
 		timeout_add(ui.timeout_initial, self._arrow_remain, plus)
 		self.entry_plus(plus)
+
 	def _arrow_remain(self, plus):
-		if self.get_editable() and self._remain and now()-self.pressTm>=ui.timeout_repeat/1000.0:
+		if (
+			self.get_editable()
+			and
+			self._remain
+			and
+			now() - self.pressTm >= ui.timeout_repeat / 1000
+		):
 			self.entry_plus(plus)
-			timeout_add(ui.timeout_repeat, self._arrow_remain, plus)
+			timeout_add(
+				ui.timeout_repeat,
+				self._arrow_remain,
+				plus,
+			)
+
 	def _button_release(self, widget, gevent):
 		self._remain = False
+
 	"""## ????????????????????????????????
 	def _arrow_enter_notify(self, gtkWin):
 		if gtkWin!=None:
@@ -252,12 +291,9 @@ class SingleSpinButton(MultiSpinButton):
 		)
 		if isinstance(field, NumField):
 			gtk.SpinButton.set_range(self, field._min, field._max)
+
 	def set_range(self, _min, _max):
 		gtk.SpinButton.set_range(self, _min, _max)
-	get_value = lambda self: MultiSpinButton.get_value(self)[0]
 
-
-
-
-
-
+	def get_value(self):
+		return MultiSpinButton.get_value(self)[0]

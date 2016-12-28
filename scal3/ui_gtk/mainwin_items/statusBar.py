@@ -10,10 +10,12 @@ from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 
+
 @registerSignals
 class CalObj(gtk.HBox, CustomizableCalObj):
 	_name = 'statusBar'
 	desc = _('Status Bar')
+
 	def __init__(self):
 		from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
 		gtk.HBox.__init__(self)
@@ -25,6 +27,7 @@ class CalObj(gtk.HBox, CustomizableCalObj):
 		if rtl:
 			self.set_direction(gtk.TextDirection.LTR)
 			self.labelBox.set_direction(gtk.TextDirection.LTR)
+
 	def onConfigChange(self, *a, **kw):
 		CustomizableCalObj.onConfigChange(self, *a, **kw)
 		###
@@ -38,11 +41,11 @@ class CalObj(gtk.HBox, CustomizableCalObj):
 		self.show_all()
 		###
 		self.onDateChange()
+
 	def onDateChange(self, *a, **kw):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		for i, label in enumerate(self.labelBox.get_children()):
 			text = ui.cell.format(ud.dateFormatBin, label.mode)
-			if i==0:
-				text = '<b>%s</b>'%text
+			if i == 0:
+				text = '<b>%s</b>' % text
 			label.set_label(text)
-

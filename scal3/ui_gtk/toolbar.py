@@ -14,10 +14,17 @@ from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 
 
-
 @registerSignals
 class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
-	def __init__(self, name, stockName, method, desc='', shortDesc='', enableTooltip=True):
+	def __init__(
+		self,
+		name,
+		stockName,
+		method,
+		desc='',
+		shortDesc='',
+		enableTooltip=True,
+	):
 		#print('ToolbarItem', name, stockName, method, desc, text)
 		self.method = method
 		######
@@ -33,7 +40,7 @@ class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
 		gtk.ToolButton.__init__(self)
 		self.set_icon_widget(
 			gtk.Image.new_from_stock(
-				getattr(gtk, 'STOCK_%s'%(stockName.upper())),
+				getattr(gtk, 'STOCK_%s' % (stockName.upper())),
 				gtk.IconSize.DIALOG,
 			) if stockName else None,
 			#shortDesc,
@@ -46,7 +53,9 @@ class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
 		if enableTooltip:
 			set_tooltip(self, desc)## FIXME
 		self.set_is_important(True)## FIXME
-	show = lambda self: self.show_all()
+
+	def show(self):
+		self.show_all()
 
 
 #@registerSignals
@@ -66,11 +75,15 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 	)
 	defaultItems = []
 	defaultItemsDict = {}
+
 	def __init__(self, funcOwner, vertical=False, onPressContinue=False):
 		from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 		gtk.Toolbar.__init__(self)
 		self.funcOwner = funcOwner
-		self.set_orientation(gtk.Orientation.VERTICAL if vertical else gtk.Orientation.HORIZONTAL)
+		self.set_orientation(
+			gtk.Orientation.VERTICAL if vertical
+			else gtk.Orientation.HORIZONTAL
+		)
 		self.add_events(gdk.EventMask.POINTER_MOTION_MASK)
 		self.onPressContinue = onPressContinue
 		self.remain = False
@@ -113,41 +126,56 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 		#style = self.get_style()
 		#style.border_width = 10
 		#self.set_style(style)
-	getIconSizeName = lambda self: ud.iconSizeList[self.iconSizeCombo.get_active()][0]
-	setIconSizeName = lambda self, size_name: self.set_icon_size(ud.iconSizeDict[size_name])
-	## gtk.Toolbar.set_icon_size was previously Deprecated, but it's not Deprecated now!!
+
+	def getIconSizeName(self):
+		return ud.iconSizeList[self.iconSizeCombo.get_active()][0]
+
+	def setIconSizeName(self, size_name):
+		self.set_icon_size(ud.iconSizeDict[size_name])
+		# gtk.Toolbar.set_icon_size was previously Deprecated
+		# but it's not Deprecated now? FIXME
+
 	def setButtonsBorder(self, bb):
 		for item in self.items:
 			item.set_border_width(bb)
+
 	def iconSizeComboChanged(self, combo=None):
 		self.setIconSizeName(self.getIconSizeName())
+
 	def styleComboChanged(self, combo=None):
 		style = self.styleCombo.get_active()
 		self.set_style(style)
 		#self.showHide()## FIXME
-		self.iconSizeHbox.set_sensitive(style!=1)
+		self.iconSizeHbox.set_sensitive(style != 1)
+
 	def buttonsBorderSpinChanged(self, spin=None):
 		self.setButtonsBorder(self.buttonsBorderSpin.get_value())
+
 	def moveItemUp(self, i):
 		button = self.items[i]
 		self.remove(button)
-		self.insert(button, i-1)
-		self.items.insert(i-1, self.items.pop(i))
+		self.insert(button, i - 1)
+		self.items.insert(i - 1, self.items.pop(i))
+
 	#def insertItem(self, item, pos):
 	#	CustomizableCalObj.insertItem(self, pos, item)
 	#	gtk.Toolbar.insert(self, item, pos)
 	#	item.show()
+
 	def appendItem(self, item):
 		CustomizableCalObj.appendItem(self, item)
 		gtk.Toolbar.insert(self, item, -1)
 		if item.enable:
 			item.show()
-	getData = lambda self: {
-		'items': self.getItemsData(),
-		'iconSize': self.getIconSizeName(),
-		'style': self.styleList[self.styleCombo.get_active()],
-		'buttonsBorder': self.buttonsBorderSpin.get_value(),
-	}
+
+	def getData(self):
+		return {
+			'items': self.getItemsData(),
+			'iconSize': self.getIconSizeName(),
+			'style': self.styleList[self.styleCombo.get_active()],
+			'buttonsBorder': self.buttonsBorderSpin.get_value(),
+		}
+
 	def setupItemSignals(self, item):
 		if item.method:
 			if isinstance(item.method, str):
@@ -160,6 +188,7 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 				child.connect('button-release-event', self.itemRelease)
 			else:
 				item.connect('clicked', func)
+
 	def setData(self, data):
 		for (name, enable) in data['items']:
 			try:
@@ -173,7 +202,7 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 		###
 		iconSize = data['iconSize']
 		for (i, item) in enumerate(ud.iconSizeList):
-			if item[0]==iconSize:
+			if item[0] == iconSize:
 				self.iconSizeCombo.set_active(i)
 		self.setIconSizeName(iconSize)
 		###
@@ -211,4 +240,3 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 	def itemRelease(self, widget, event=None):
 		# print("------------------------ itemRelease")
 		self.remain = False
-

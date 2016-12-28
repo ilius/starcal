@@ -56,10 +56,12 @@ def loadConf():
 	loadModuleJsonConf(__name__)
 	updateFormatsBin()
 
+
 def saveConf():
 	saveModuleJsonConf(__name__)
 
 ############################################################
+
 
 @registerSignals
 class BaseCalObj(Object):
@@ -71,41 +73,52 @@ class BaseCalObj(Object):
 		('config-change', []),
 		('date-change', []),
 	]
+
 	def initVars(self):
 		self.items = []
 		self.enable = True
+
 	def onConfigChange(self, sender=None, emit=True):
 		if emit:
 			self.emit('config-change')
 		for item in self.items:
 			if item.enable and item is not sender:
 				item.onConfigChange(emit=False)
+
 	def onDateChange(self, sender=None, emit=True):
 		if emit:
 			self.emit('date-change')
 		for item in self.items:
 			if item.enable and item is not sender:
 				item.onDateChange(emit=False)
+
 	def __getitem__(self, key):
 		for item in self.items:
 			if item._name == key:
 				return item
+
 	def connectItem(self, item):
 		item.connect('config-change', self.onConfigChange)
 		item.connect('date-change', self.onDateChange)
+
 	#def insertItem(self, index, item):
 	#	self.items.insert(index, item)
 	#	self.connectItem(item)
+
 	def appendItem(self, item):
 		self.items.append(item)
 		self.connectItem(item)
+
 	def replaceItem(self, itemIndex, item):
 		self.items[itemIndex] = item
 		self.connectItem(item)
+
 	def moveItemUp(self, i):
-		self.items.insert(i-1, self.items.pop(i))
+		self.items.insert(i - 1, self.items.pop(i))
+
 	def addItemWidget(self, i):
 		pass
+
 	def showHide(self):
 		try:
 			func = self.show if self.enable else self.hide
@@ -123,9 +136,11 @@ class BaseCalObj(Object):
 class IntegatedWindowList(BaseCalObj):
 	_name = 'windowList'
 	desc = 'Window List'
+
 	def __init__(self):
 		Object.__init__(self)
 		self.initVars()
+
 	def onConfigChange(self, *a, **ka):
 		ui.cellCache.clear()
 		settings.set_property(
@@ -155,8 +170,9 @@ gtk.Window.set_default_icon_from_file(ui.logo)
 
 settings = gtk.Settings.get_default()
 
-## ui.timeout_initial = settings.get_property('gtk-timeout-initial') ## == 200 FIXME
-## ui.timeout_repeat = settings.get_property('gtk-timeout-repeat') ## == 20 too small!! FIXME
+# ui.timeout_initial = settings.get_property('gtk-timeout-initial') # == 200
+# ui.timeout_repeat = settings.get_property('gtk-timeout-repeat') # == 20
+# timeout_repeat=20 is too small! FIXME
 
 
 ui.initFonts(getGtkDefaultFont())
@@ -191,6 +207,7 @@ clockFormat = '%X' ## '%T', '%X' (local), '<b>%T</b>', '%m:%d'
 dateFormatBin = None
 clockFormatBin = None
 
+
 def updateFormatsBin():
 	global dateFormatBin, clockFormatBin
 	dateFormatBin = compileTmFormat(dateFormat)
@@ -198,10 +215,11 @@ def updateFormatsBin():
 
 ##############################
 
+
 def setDefault_adjustTimeCmd():
 	global adjustTimeCmd
 	for cmd in ('gksudo', 'kdesudo', 'gksu', 'gnomesu', 'kdesu'):
-		if os.path.isfile('/usr/bin/%s'%cmd):
+		if os.path.isfile('/usr/bin/%s' % cmd):
 			adjustTimeCmd = [
 				cmd,
 				join(rootDir, 'scripts', 'run'),
@@ -209,7 +227,7 @@ def setDefault_adjustTimeCmd():
 			]
 			break
 
-## user should be able to configure this in Preferences 
+# user should be able to configure this in Preferences
 adjustTimeCmd = ''
 setDefault_adjustTimeCmd()
 
@@ -236,8 +254,6 @@ wcalToolbarData = {
 	'buttonsBorder': 0,
 }
 
-
-
 ###########################################################
 
 try:
@@ -258,11 +274,13 @@ setDefault_adjustTimeCmd()## FIXME
 ############################################################
 
 rootWindow = gdk.get_default_root_window() ## Good Place?????
-##import atexit
-##atexit.register(rootWindow.set_cursor, gdk.Cursor.new(gdk.CursorType.LEFT_PTR)) ## ?????????????????????
-#rootWindow.set_cursor(cursor=gdk.Cursor.new(gdk.CursorType.WATCH)) ## ???????????????????
+
+#import atexit
+#atexit.register(
+#	rootWindow.set_cursor,
+#	gdk.Cursor.new(gdk.CursorType.LEFT_PTR),
+#)  # FIXME
+#rootWindow.set_cursor(cursor=gdk.Cursor.new(gdk.CursorType.WATCH))  # FIXME
+
 screenW = rootWindow.get_width()
 screenH = rootWindow.get_height()
-
-
-

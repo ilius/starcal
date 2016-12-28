@@ -1,8 +1,10 @@
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import hideList
 
+
 class WizardWindow(gtk.Window):
 	stepClasses = []
+
 	def __init__(self, title):
 		gtk.Window.__init__(self)
 		self.set_title(title)
@@ -28,11 +30,13 @@ class WizardWindow(gtk.Window):
 		self.vbox.show()
 		#self.vbox.pack_end(
 		#print(id(self.get_action_area()))
+
 	def keyPress(self, arg, gevent):
 		kname = gdk.keyval_name(gevent.keyval).lower()
-		if kname=='escape':
+		if kname == 'escape':
 			self.destroy()
 		return True
+
 	def showStep(self, stepIndex, *args):
 		step = self.steps[stepIndex]
 		step.run(*args)
@@ -50,4 +54,3 @@ class WizardWindow(gtk.Window):
 			bbox.add(button)
 			#pack(bbox, button)
 		bbox.show_all()
-

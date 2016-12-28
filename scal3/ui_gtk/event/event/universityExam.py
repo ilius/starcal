@@ -30,6 +30,7 @@ from scal3.ui_gtk.mywidgets.multi_spin.hour_minute import HourMinuteButton
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.event import common
 
+
 class WidgetClass(gtk.VBox):
 	def __init__(self, event):## FIXME
 		gtk.VBox.__init__(self)
@@ -122,13 +123,16 @@ class WidgetClass(gtk.VBox):
 		######
 		self.courseCombo.set_active(0)
 		#self.updateSummary()
+
 	def focusSummary(self):
 		pass
+
 	#def updateSummary(self, widget=None):
 	#	courseIndex = self.courseCombo.get_active()
 	#	summary = _('%s Exam')%self.courseNames[courseIndex]
 	#	self.summaryEntry.set_text(summary)
 	#	self.event.summary = summary
+
 	def updateWidget(self):## FIXME
 		if self.event.courseId is None:
 			pass
@@ -148,6 +152,7 @@ class WidgetClass(gtk.VBox):
 		self.notificationBox.updateWidget()
 		####
 		#self.filesBox.updateWidget()
+
 	def updateVars(self):## FIXME
 		courseIndex = self.courseCombo.get_active()
 		if courseIndex is None:
@@ -169,9 +174,9 @@ class WidgetClass(gtk.VBox):
 		####
 		self.notificationBox.updateVars()
 		self.event.updateSummary()
-	def modeComboChanged(self, obj=None):## overwrite method from common.WidgetClass
+
+	def modeComboChanged(self, obj=None):
+		# overwrite method from common.WidgetClass
 		newMode = self.modeCombo.get_active()
 		self.dateInput.changeMode(self.event.mode, newMode)
 		self.event.mode = newMode
-
-

@@ -22,19 +22,39 @@
 
 name = 'ethiopian'
 desc = 'Ethiopian'
-origLang = 'en'## FIXME
+origLang = 'en' # FIXME
 
-monthName = ('Meskerem', 'Tekimt', 'Hidar', 'Tahsas', 'Ter', 'Yekoutit',
-			'Meyabit', 'Meyaziya', 'Genbot', 'Sene', 'Hamle', 'Nahse')
+monthName = (
+	'Meskerem',
+	'Tekimt',
+	'Hidar',
+	'Tahsas',
+	'Ter',
+	'Yekoutit',
+	'Meyabit',
+	'Meyaziya',
+	'Genbot',
+	'Sene',
+	'Hamle',
+	'Nahse',
+)
 
-monthNameAb = monthName ## FIXME
+monthNameAb = monthName  # FIXME
 
 monthLen = [30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 35]
 
-getMonthName = lambda m, y=None: monthName.__getitem__(m-1)
-getMonthNameAb = lambda m, y=None: monthNameAb.__getitem__(m-1)
 
-getMonthsInYear = lambda y: 12
+def getMonthName(m, y=None):
+	return monthName.__getitem__(m - 1)
+
+
+def getMonthNameAb(m, y=None):
+	return monthNameAb.__getitem__(m - 1)
+
+
+def getMonthsInYear(y):
+	return 12
+
 
 epoch = 1724235
 minMonthLen = 30
@@ -43,21 +63,31 @@ avgYearLen = 365.25
 
 options = ()
 
+
 def save():
 	pass
 
 
-isLeap = lambda y: (y + 1) % 4 == 0
+def isLeap(y):
+	return (y + 1) % 4 == 0
 
 
-to_jd = lambda year, month, day: epoch + 365*(year-1) + year//4 + (month-1)*30 + day - 15
+def to_jd(year, month, day):
+	return (
+		epoch
+		+ 365 * (year - 1)
+		+ year // 4
+		+ (month - 1) * 30
+		+ day
+		- 15
+	)
 
 
-def jd_to(jd) :
+def jd_to(jd):
 	quad, dquad = divmod(jd - epoch, 1461)
-	yindex = min(3, dquad//365)
-	year = quad*4 + yindex + 1
-	###
+	yindex = min(3, dquad // 365)
+	year = quad * 4 + yindex + 1
+
 	yearday = jd - to_jd(year, 1, 1)
 	month, day = divmod(yearday, 30)
 	day += 1
@@ -71,28 +101,23 @@ def jd_to(jd) :
 			year += 1
 			month = 1
 			day -= mLen
-	###
+
 	return year, month, day
 
 
 def getMonthLen(year, month):
-	if month==12:
+	if month == 12:
 		return 35 + isLeap(year)
 	else:
-		return monthLen[month-1]
+		return monthLen[month - 1]
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
 	import sys
 	from . import gregorian
-	###
 	for gy in range(2012, 1990, -1):
 		jd = gregorian.to_jd(gy, 1, 1)
 		ey, em, ed = jd_to(jd)
 		#if ed==22:
 		#	print(gy)
-		print('%.4d/%.2d/%.2d\t%.4d/%.2d/%.2d'%(gy, 1, 1, ey, em, ed))
-
-
-
-
+		print('%.4d/%.2d/%.2d\t%.4d/%.2d/%.2d' % (gy, 1, 1, ey, em, ed))

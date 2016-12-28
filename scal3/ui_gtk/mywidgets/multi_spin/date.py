@@ -17,15 +17,20 @@ class DateButton(MultiSpinButton):
 			),
 			**kwargs
 		)
-		if date==None:
+		if date is None:
 			date = localtime()[:3]
 		self.set_value(date)
+
 	def get_jd(self, mode):
 		y, m, d = self.get_value()
 		return to_jd(y, m, d, mode)
-	changeMode = lambda self, fromMode, toMode: self.set_value(jd_to(self.get_jd(fromMode), toMode))
+
+	def changeMode(self, fromMode, toMode):
+		self.set_value(jd_to(
+			self.get_jd(fromMode),
+			toMode,
+		))
+
 	def setMaxDay(self, _max):
 		self.field.children[2].setMax(_max)
 		self.update()
-
-

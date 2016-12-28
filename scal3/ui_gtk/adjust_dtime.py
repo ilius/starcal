@@ -19,7 +19,8 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 import os
-os.environ['LANG']='en_US.UTF-8' #?????????
+
+os.environ['LANG'] = 'en_US.UTF-8'  # FIXME
 
 import subprocess
 from time import localtime
@@ -52,12 +53,17 @@ def error_exit(resCode, text, parent=None):
 	d.run()
 	sys.exit(resCode)
 
+
 class AdjusterDialog(gtk.Dialog):
 	xpad = 15
+
 	def __init__(self, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
-		self.set_title(_('Adjust System Date & Time'))##????????
-		self.set_icon(self.render_icon(gtk.STOCK_PREFERENCES, gtk.IconSize.BUTTON))
+		self.set_title(_('Adjust System Date & Time'))  # FIXME
+		self.set_icon(self.render_icon(
+			gtk.STOCK_PREFERENCES,
+			gtk.IconSize.BUTTON,
+		))
 		#########
 		self.buttonCancel = self.add_button(gtk.STOCK_CANCEL, 0)
 		#self.buttonCancel.connect('clicked', lambda w: sys.exit(0))
@@ -112,7 +118,10 @@ class AdjusterDialog(gtk.Dialog):
 		self.vboxMan = vb
 		######
 		hbox = gtk.HBox()
-		self.radioNtp = gtk.RadioButton(group=self.radioMan, label=_('Set from NTP:'))
+		self.radioNtp = gtk.RadioButton(
+			group=self.radioMan,
+			label=_('Set from NTP:'),
+		)
 		self.radioNtp.connect('clicked', self.radioNtpClicked)
 		pack(hbox, self.radioNtp)
 		pack(self.vbox, hbox)
@@ -123,7 +132,7 @@ class AdjusterDialog(gtk.Dialog):
 		l.set_property('width-request', self.xpad)
 		pack(hbox, l)
 		##
-		pack(hbox, gtk.Label(_('Server:')+' '))
+		pack(hbox, gtk.Label(_('Server:') + ' '))
 		combo = gtk.ComboBoxText.new_with_entry()
 		combo.get_child().connect('changed', self.updateSetButtonSensitive)
 		pack(hbox, combo, 1, 1)
@@ -141,6 +150,7 @@ class AdjusterDialog(gtk.Dialog):
 		######
 		self.updateTimes()
 		self.vbox.show_all()
+
 	def radioManClicked(self, radio=None):
 		if self.radioMan.get_active():
 			self.vboxMan.set_sensitive(True)
@@ -149,6 +159,7 @@ class AdjusterDialog(gtk.Dialog):
 			self.vboxMan.set_sensitive(False)
 			self.hboxNtp.set_sensitive(True)
 		self.updateSetButtonSensitive()
+
 	def radioNtpClicked(self, radio=None):
 		if self.radioNtp.get_active():
 			self.vboxMan.set_sensitive(False)
@@ -157,61 +168,93 @@ class AdjusterDialog(gtk.Dialog):
 			self.vboxMan.set_sensitive(True)
 			self.hboxNtp.set_sensitive(False)
 		self.updateSetButtonSensitive()
+
 	def ckeckbEditTimeClicked(self, checkb=None):
 		self.editTime = self.ckeckbEditTime.get_active()
 		self.timeInput.set_sensitive(self.editTime)
 		self.updateSetButtonSensitive()
+
 	def ckeckbEditDateClicked(self, checkb=None):
 		self.editDate = self.ckeckbEditDate.get_active()
 		self.dateInput.set_sensitive(self.editDate)
 		self.updateSetButtonSensitive()
-	"""def set_sys_time(self):
-		if os.path.isfile('/bin/date'):
-			pass##????????
-		elif sys.platform == 'win32':
-			import win32api
-			win32api.SetSystemTime()##????????
-		else:
-			pass"""
+
+	#def set_sys_time(self):
+	#	if os.path.isfile('/bin/date'):
+	#		pass  # FIXME
+	#	elif sys.platform == 'win32':
+	#		import win32api
+	#		win32api.SetSystemTime()##????????
+	#	else:
+	#		pass
+
 	def updateTimes(self):
-		dt = now()%1
-		timeout_add(iceil(1000*(1-dt)), self.updateTimes)
+		dt = now() % 1
+		timeout_add(iceil(1000 * (1 - dt)), self.updateTimes)
 		#print('updateTimes', dt)
 		lt = localtime()
-		self.label_cur.set_label(_('Current:')+' %.4d/%.2d/%.2d - %.2d:%.2d:%.2d'%lt[:6])
+		self.label_cur.set_label(
+			_('Current:') +
+			' %.4d/%.2d/%.2d - %.2d:%.2d:%.2d' % lt[:6]
+		)
 		if not self.editTime:
 			self.timeInput.set_value(lt[3:6])
 		if not self.editDate:
 			self.dateInput.set_value(lt[:3])
 		return False
+
 	def updateSetButtonSensitive(self, widget=None):
 		if self.radioMan.get_active():
 			self.buttonSet.set_sensitive(self.editTime or self.editDate)
 		elif self.radioNtp.get_active():
-			self.buttonSet.set_sensitive(self.ntpServerEntry.get_text()!='')
+			self.buttonSet.set_sensitive(
+				self.ntpServerEntry.get_text() != ''
+			)
+
 	def setSysTimeClicked(self, widget=None):
 		if self.radioMan.get_active():
 			if self.editTime:
 				h, m, s = self.timeInput.get_value()
 				if self.editDate:
 					Y, M, D = self.dateInput.get_value()
-					cmd = ['/bin/date', '-s', '%.4d/%.2d/%.2d %.2d:%.2d:%.2d'%(Y,M,D,h,m,s)]
+					cmd = [
+						'/bin/date',
+						'-s',
+						'%.4d/%.2d/%.2d %.2d:%.2d:%.2d' % (
+							Y, M, D,
+							h, m, s,
+						),
+					]
 				else:
-					cmd = ['/bin/date', '-s', '%.2d:%.2d:%.2d'%(h, m, s)]
+					cmd = [
+						'/bin/date',
+						'-s',
+						'%.2d:%.2d:%.2d' % (h, m, s),
+					]
 			else:
 				if self.editDate:
 					Y, M, D = self.dateInput.get_value()
 					##h, m, s = self.timeInput.get_value()
 					h, m, s = localtime()[3:6]
-					cmd = ['/bin/date', '-s', '%.4d/%.2d/%.2d %.2d:%.2d:%.2d'%(Y,M,D,h,m,s)]
+					cmd = [
+						'/bin/date',
+						'-s',
+						'%.4d/%.2d/%.2d %.2d:%.2d:%.2d' % (
+							Y, M, D,
+							h, m, s,
+						),
+					]
 				else:
-					error_exit('No change!', self)#??????????
+					error_exit('No change!', self)  # FIXME
 		elif self.radioNtp.get_active():
 			cmd = ['ntpdate', self.ntpServerEntry.get_text()]
 			#if os.path.isfile('/usr/sbin/ntpdate'):
 			#	cmd = ['/usr/sbin/ntpdate', self.ntpServerEntry.get_text()]
 			#else:
-			#	error_exit('Could not find command /usr/sbin/ntpdate: no such file!', self)#??????????
+			#	error_exit(
+			#	'Could not find command /usr/sbin/ntpdate: no such file!',
+			#	self,
+			#)  # FIXME
 		else:
 			error_exit('Not valid option!', self)
 		proc = subprocess.Popen(
@@ -227,7 +270,7 @@ class AdjusterDialog(gtk.Dialog):
 		#print('resCode=%r, error=%r, output=%r' % (resCode, error, output))
 		if error:
 			print(error)
-		if resCode!=0:
+		if resCode != 0:
 			error_exit(
 				resCode,
 				error,
@@ -237,22 +280,12 @@ class AdjusterDialog(gtk.Dialog):
 		#	sys.exit(0)
 
 
-
-if __name__=='__main__':
-	if os.getuid()!=0:
+if __name__ == '__main__':
+	if os.getuid() != 0:
 		error_exit(1, 'This program must be run as root')
 		#raise OSError('This program must be run as root')
-		###os.setuid(0)#?????????
+		###os.setuid(0)  # FIXME
 	d = AdjusterDialog(parent=None)
 	#d.set_keap_above(True)
-	if d.run()==1:
+	if d.run() == 1:
 		d.setSysTimeClicked()
-
-
-
-
-
-
-
-
-

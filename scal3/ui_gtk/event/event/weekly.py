@@ -28,6 +28,7 @@ from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.hour_minute import HourMinuteButton
 from scal3.ui_gtk.event import common
 
+
 class WidgetClass(common.WidgetClass):
 	def __init__(self, event):## FIXME
 		common.WidgetClass.__init__(self, event)
@@ -52,7 +53,7 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, label)
 		self.weeksSpin = IntSpinButton(1, 99999)
 		pack(hbox, self.weeksSpin)
-		pack(hbox, gtk.Label('  '+_(' Weeks')))
+		pack(hbox, gtk.Label('  ' + _(' Weeks')))
 		###
 		pack(hbox, gtk.Label(''), 1, 1)
 		pack(self, hbox)
@@ -87,6 +88,7 @@ class WidgetClass(common.WidgetClass):
 		#############
 		#self.filesBox = common.FilesBox(self.event)
 		#pack(self, self.filesBox)
+
 	def updateWidget(self):## FIXME
 		common.WidgetClass.updateWidget(self)
 		mode = self.event.mode
@@ -98,6 +100,7 @@ class WidgetClass(common.WidgetClass):
 		timeRangeRule = self.event['dayTimeRange']
 		self.dayTimeStartInput.set_value(timeRangeRule.dayTimeStart)
 		self.dayTimeEndInput.set_value(timeRangeRule.dayTimeEnd)
+
 	def updateVars(self):## FIXME
 		common.WidgetClass.updateVars(self)
 		self.event['start'].setDate(self.startDateInput.get_value())
@@ -108,11 +111,10 @@ class WidgetClass(common.WidgetClass):
 			self.dayTimeStartInput.get_value(),
 			self.dayTimeEndInput.get_value(),
 		)
-	def modeComboChanged(self, obj=None):## overwrite method from common.WidgetClass
+
+	def modeComboChanged(self, obj=None):
+		# overwrite method from common.WidgetClass
 		newMode = self.modeCombo.get_active()
 		self.startDateInput.changeMode(self.event.mode, newMode)
 		self.endDateInput.changeMode(self.event.mode, newMode)
 		self.event.mode = newMode
-
-
-

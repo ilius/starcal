@@ -26,8 +26,9 @@ from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 from scal3.ui_gtk.event import common
 
+
 class WidgetClass(common.WidgetClass):
-	def __init__(self, event):## FIXME
+	def __init__(self, event):  # FIXME
 		common.WidgetClass.__init__(self, event)
 		######
 		sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
@@ -40,7 +41,7 @@ class WidgetClass(common.WidgetClass):
 		self.startDateInput = DateButton()
 		pack(hbox, self.startDateInput)
 		##
-		pack(hbox, gtk.Label(' '+_('Time')))
+		pack(hbox, gtk.Label(' ' + _('Time')))
 		self.startTimeInput = TimeButton()
 		pack(hbox, self.startTimeInput)
 		##
@@ -61,7 +62,7 @@ class WidgetClass(common.WidgetClass):
 		self.endDateInput = DateButton()
 		pack(self.endDateHbox, self.endDateInput)
 		##
-		pack(self.endDateHbox, gtk.Label(' '+_('Time')))
+		pack(self.endDateHbox, gtk.Label(' ' + _('Time')))
 		self.endTimeInput = TimeButton()
 		pack(self.endDateHbox, self.endTimeInput)
 		##
@@ -75,16 +76,18 @@ class WidgetClass(common.WidgetClass):
 		#############
 		#self.filesBox = common.FilesBox(self.event)
 		#pack(self, self.filesBox)
+
 	def endTypeComboChanged(self, combo=None):
 		active = self.endTypeCombo.get_active()
-		if active==0:## duration
+		if active == 0:  # duration
 			self.durationBox.show()
 			self.endDateHbox.hide()
-		elif active==1:## end date
+		elif active == 1:  # end date
 			self.durationBox.hide()
 			self.endDateHbox.show()
 		else:
 			raise RuntimeError
+
 	def updateWidget(self):## FIXME
 		common.WidgetClass.updateWidget(self)
 		###
@@ -93,36 +96,39 @@ class WidgetClass(common.WidgetClass):
 		self.startTimeInput.set_value(startTime)
 		###
 		endType, values = self.event.getEnd()
-		if endType=='duration':
+		if endType == 'duration':
 			self.endTypeCombo.set_active(0)
 			self.durationBox.setDuration(*values)
 			self.endDateInput.set_value(startDate)## FIXME
 			self.endTimeInput.set_value(startTime)## FIXME
-		elif endType=='date':
+		elif endType == 'date':
 			self.endTypeCombo.set_active(1)
 			self.endDateInput.set_value(values[0])
 			self.endTimeInput.set_value(values[1])
 		else:
 			raise RuntimeError
 		self.endTypeComboChanged()
-	def updateVars(self):## FIXME
+
+	def updateVars(self):  # FIXME
 		common.WidgetClass.updateVars(self)
-		self.event.setStart(self.startDateInput.get_value(), self.startTimeInput.get_value())
+		self.event.setStart(
+			self.startDateInput.get_value(),
+			self.startTimeInput.get_value(),
+		)
 		###
 		active = self.endTypeCombo.get_active()
-		if active==0:
+		if active == 0:
 			self.event.setEnd('duration', *self.durationBox.getDuration())
-		elif active==1:
+		elif active == 1:
 			self.event.setEnd(
 				'date',
 				self.endDateInput.get_value(),
 				self.endTimeInput.get_value(),
 			)
-	def modeComboChanged(self, obj=None):## overwrite method from common.WidgetClass
+
+	def modeComboChanged(self, obj=None):
+		# overwrite method from common.WidgetClass
 		newMode = self.modeCombo.get_active()
 		self.startDateInput.changeMode(self.event.mode, newMode)
 		self.endDateInput.changeMode(self.event.mode, newMode)
 		self.event.mode = newMode
-
-
-

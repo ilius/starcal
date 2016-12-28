@@ -33,8 +33,6 @@ from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk import gtk_ud as ud
 
 
-
-
 if 'mainMenu' not in dict(ud.wcalToolbarData['items']):
 	ud.wcalToolbarData['items'].insert(0, ('mainMenu', True))
 
@@ -46,6 +44,7 @@ class DummyCalObj(Object):
 		('config-change', []),
 		('date-change', []),
 	]
+
 	def __init__(self, name, desc, pkg, customizable):
 		Object.__init__(self)
 		self.enable = False
@@ -55,6 +54,7 @@ class DummyCalObj(Object):
 		self.customizable = customizable
 		self.optionsWidget = None
 		self.items = []
+
 	def getLoadedObj(self):
 		try:
 			module = __import__(
@@ -68,20 +68,26 @@ class DummyCalObj(Object):
 		obj = CalObj()
 		obj.enable = self.enable
 		return obj
+
 	def updateVars(self):
 		pass
+
 	#def getData(self):## FIXME a real problem
 	#	return None
+
 	def optionsWidgetCreate(self):
 		pass
+
 	def showHide(self):
 		pass
+
 
 class CustomizableCalObj(ud.BaseCalObj):
 	customizable = True
 	expand = False
 	params = ()
 	myKeys = ()
+
 	def initVars(self, optionsWidget=None):
 		ud.BaseCalObj.initVars(self)
 		self.itemWidgets = {} ## for lazy construction of widgets
@@ -92,11 +98,18 @@ class CustomizableCalObj(ud.BaseCalObj):
 			self.connect('key-press-event', self.keyPress)## FIXME
 		except:
 			pass
-	getItemsData = lambda self: [(item._name, item.enable) for item in self.items]
+
+	def getItemsData(self):
+		return [
+			(item._name, item.enable)
+			for item in self.items
+		]
+
 	def updateVars(self):
 		for item in self.items:
 			if item.customizable:
 				item.updateVars()
+
 	#def getData(self):## remove? FIXME
 	#	data = {}
 	#	for mod_attr in self.params:
@@ -112,35 +125,36 @@ class CustomizableCalObj(ud.BaseCalObj):
 	#			if itemData:
 	#				data.update(itemData)
 	#	return data
+
 	def keyPress(self, arg, gevent):
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		for item in self.items:
 			if item.enable and kname in item.myKeys:
 				if item.keyPress(arg, gevent):
 					break
+
 	def optionsWidgetCreate(self):
 		pass
 
+
 class CustomizableCalBox(CustomizableCalObj):
-	## for GtkBox (HBox and VBox)
+	"""for GtkBox (HBox and VBox)"""
+
 	def appendItem(self, item):
 		CustomizableCalObj.appendItem(self, item)
 		if item.loaded:
 			pack(self, item, item.expand, item.expand)
 			item.showHide()
+
 	def moveItemUp(self, i):
 		if i > 0:
-			if self.items[i].loaded and self.items[i-1].loaded:
-				self.reorder_child(self.items[i], i-1)
+			if self.items[i].loaded and self.items[i - 1].loaded:
+				self.reorder_child(self.items[i], i - 1)
 		CustomizableCalObj.moveItemUp(self, i)
+
 	def insertItemWidget(self, i):
 		item = self.items[i]
 		if not item.loaded:
 			return
 		pack(self, item, item.expand, item.expand)
 		self.reorder_child(item, i)
-
-
-
-
-

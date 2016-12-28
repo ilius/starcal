@@ -8,6 +8,7 @@ from scal3 import ui
 
 from scal3.ui_gtk import *
 
+
 class TimeZoneComboBoxEntry(gtk.HBox):
 	def __init__(self):
 		from natz.tree import getZoneInfoTree
@@ -41,6 +42,7 @@ class TimeZoneComboBoxEntry(gtk.HBox):
 			None,
 			getZoneInfoTree(),
 		)
+
 	def appendOrderedDict(self, parentIter, dct):
 		model = self.c.get_model()
 		for key, value in dct.items():
@@ -49,6 +51,7 @@ class TimeZoneComboBoxEntry(gtk.HBox):
 				self.appendOrderedDict(itr, value)
 			else:
 				itr = model.append(parentIter, [key, True])
+
 	def onChanged(self, widget):
 		model = self.c.get_model()
 		itr = self.c.get_active_iter()
@@ -62,10 +65,9 @@ class TimeZoneComboBoxEntry(gtk.HBox):
 			for i in range(len(path)):
 				parts.append(
 					model.get(
-						model.get_iter(path[:i+1]),
+						model.get_iter(path[:i + 1]),
 						0,
 					)[0]
 				)
 			text = '/'.join(parts)
 		self.set_text(text)
-

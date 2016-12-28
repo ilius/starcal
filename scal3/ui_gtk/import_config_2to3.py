@@ -19,7 +19,8 @@
 
 APP_DESC = 'StarCalendar'
 
-import os, shutil
+import os
+import shutil
 from os.path import dirname
 from os.path import join, isfile, isdir
 
@@ -38,7 +39,7 @@ langCodeList = []
 
 
 win = gtk.Dialog(
-	title=APP_DESC+' 3.x - First Run',
+	title=APP_DESC + ' 3.x - First Run',
 	buttons=(
 		gtk.STOCK_OK,
 		gtk.ResponseType.OK,
@@ -53,8 +54,13 @@ pack(langHbox, gtk.Label('Select Language:'))
 importCheckb = None
 oldVersion = getOldVersion()
 if oldVersion:## and '2.2.0' <= oldVersion < '2.5.0':## FIXME
-	importCheckb = gtk.CheckButton('Import configurations from %s %s'%(APP_DESC, oldVersion))
-	importCheckb.connect('clicked', lambda cb: langHbox.set_sensitive(not cb.get_active()))
+	importCheckb = gtk.CheckButton(
+		'Import configurations from %s %s' % (APP_DESC, oldVersion)
+	)
+	importCheckb.connect(
+		'clicked',
+		lambda cb: langHbox.set_sensitive(not cb.get_active()),
+	)
 	importCheckb.set_active(True)
 	pack(win.vbox, importCheckb)
 
@@ -83,7 +89,7 @@ pack(win.vbox, pbarHbox)
 
 win.vbox.show_all()
 
-if win.run()==gtk.ResponseType.OK:
+if win.run() == gtk.ResponseType.OK:
 	#print('RESPONSE OK')
 	if importCheckb and importCheckb.get_active():
 		importCheckb.set_sensitive(False)
@@ -92,7 +98,7 @@ if win.run()==gtk.ResponseType.OK:
 		for frac in importConfigIter():
 			pbar.set_fraction(frac)
 			percent = frac * 100
-			text = '%.1f%%'%percent ## FIXME
+			text = '%.1f%%' % percent ## FIXME
 			pbar.set_text(text)
 			while gtk.events_pending():
 				gtk.main_iteration_do(False)
@@ -122,5 +128,3 @@ win.destroy()
 
 if not os.path.isdir(confDir):
 	os.mkdir(confDir, 0o755)
-
-

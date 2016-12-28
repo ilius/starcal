@@ -10,8 +10,16 @@ from scal3.ui_gtk.utils import showInfo
 from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 
+
 class EventEditorDialog(gtk.Dialog):
-	def __init__(self, event, typeChangable=True, isNew=False, useSelectedDate=False, **kwargs):
+	def __init__(
+		self,
+		event,
+		typeChangable=True,
+		isNew=False,
+		useSelectedDate=False,
+		**kwargs
+	):
 		checkEventsReadOnly()
 		gtk.Dialog.__init__(self, **kwargs)
 		#self.set_transient_for(None)
@@ -20,8 +28,18 @@ class EventEditorDialog(gtk.Dialog):
 		#self.connect('delete-event', lambda obj, e: self.destroy())
 		#self.resize(800, 600)
 		###
-		dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
-		dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
+		dialog_add_button(
+			self,
+			gtk.STOCK_CANCEL,
+			_('_Cancel'),
+			gtk.ResponseType.CANCEL,
+		)
+		dialog_add_button(
+			self,
+			gtk.STOCK_OK,
+			_('_OK'),
+			gtk.ResponseType.OK,
+		)
 		###
 		self.connect('response', lambda w, e: self.hide())
 		###
@@ -29,7 +47,7 @@ class EventEditorDialog(gtk.Dialog):
 		self._group = event.parent
 		self.eventTypeOptions = list(self._group.acceptsEventTypes)
 		####
-		if not event.name in self.eventTypeOptions:
+		if event.name not in self.eventTypeOptions:
 			self.eventTypeOptions.append(event.name)
 		eventTypeIndex = self.eventTypeOptions.index(event.name)
 		####
@@ -59,7 +77,7 @@ class EventEditorDialog(gtk.Dialog):
 			combo.connect('changed', self.typeChanged)
 			self.comboEventType = combo
 		else:
-			pack(hbox, gtk.Label(':  '+event.desc))
+			pack(hbox, gtk.Label(':  ' + event.desc))
 		pack(hbox, gtk.Label(''), 1, 1)
 		hbox.show_all()
 		pack(self.vbox, hbox)
@@ -71,6 +89,7 @@ class EventEditorDialog(gtk.Dialog):
 			self.activeWidget.focusSummary()
 		pack(self.vbox, self.activeWidget, 1, 1)
 		self.vbox.show()
+
 	def typeChanged(self, combo):
 		if self.activeWidget:
 			self.activeWidget.updateVars()
@@ -86,6 +105,7 @@ class EventEditorDialog(gtk.Dialog):
 			self.activeWidget.focusSummary()
 		pack(self.vbox, self.activeWidget, 1, 1)
 		#self.activeWidget.modeComboChanged()## apearantly not needed
+
 	def run(self):
 		#if not self.activeWidget:
 		#	return None
@@ -104,15 +124,25 @@ class EventEditorDialog(gtk.Dialog):
 		self.destroy()
 		#####
 		if self.event.isSingleOccur:
-			occur = self.event.calcOccurrence(self.event.parent.startJd, self.event.parent.endJd)
+			occur = self.event.calcOccurrence(
+				self.event.parent.startJd,
+				self.event.parent.endJd,
+			)
 			if not occur:
-				showInfo(_('This event is outside of date range specified in it\'s group. You probably need to edit group \"%s\" and change \"Start\" or \"End\" values')%self.event.parent.title)
+				showInfo(
+					_(
+						'This event is outside of date range specified in '
+						'it\'s group. You probably need to edit group '
+						'"%s" and change "Start" or "End" values'
+					) % self.event.parent.title
+				)
 		#####
 		return self.event
 
+
 def addNewEvent(group, eventType, typeChangable=False, **kwargs):
 	event = group.createEvent(eventType)
-	if eventType=='custom':## FIXME
+	if eventType == 'custom':  # FIXME
 		typeChangable = True
 	event = EventEditorDialog(
 		event,
@@ -125,6 +155,3 @@ def addNewEvent(group, eventType, typeChangable=False, **kwargs):
 	group.append(event)
 	group.save()
 	return event
-
-
-

@@ -20,57 +20,57 @@ def drawBoxBG(cr, box, x, y, w, h):
 			box.color[0],
 			box.color[1],
 			box.color[2],
-			int(alpha*boxInnerAlpha),
+			int(alpha * boxInnerAlpha),
 		))
 	except cairo.Error:
 		return
 	###
 	cr.set_line_width(0)
 	cr.move_to(x, y)
-	cr.line_to(x+w, y)
-	cr.line_to(x+w, y+h)
-	cr.line_to(x, y+h)
+	cr.line_to(x + w, y)
+	cr.line_to(x + w, y + h)
+	cr.line_to(x, y + h)
 	cr.line_to(x, y)
-	cr.line_to(x+d, y)
-	cr.line_to(x+d, y+h-d)
-	cr.line_to(x+w-d, y+h-d)
-	cr.line_to(x+w-d, y+d)
-	cr.line_to(x+d, y+d)
+	cr.line_to(x + d, y)
+	cr.line_to(x + d, y + h - d)
+	cr.line_to(x + w - d, y + h - d)
+	cr.line_to(x + w - d, y + d)
+	cr.line_to(x + d, y + d)
 	cr.close_path()
 	fillColor(cr, box.color)
 
 
 def drawBoxBorder(cr, box, x, y, w, h):
 	if box.hasBorder:
-		if w > 2*boxMoveBorder and h > boxMoveBorder:
+		if w > 2 * boxMoveBorder and h > boxMoveBorder:
 			b = boxMoveBorder
 			bd = boxMoveLineW
 			#cr.set_line_width(bd)
-			cr.move_to(x+b-bd, y+h)
-			cr.line_to(x+b-bd, y+b-bd)
-			cr.line_to(x+w-b+bd, y+b-bd)
-			cr.line_to(x+w-b+bd, y+h)
-			cr.line_to(x+w-b, y+h)
-			cr.line_to(x+w-b, y+b)
-			cr.line_to(x+b, y+b)
-			cr.line_to(x+b, y+h)
+			cr.move_to(x + b - bd, y + h)
+			cr.line_to(x + b - bd, y + b - bd)
+			cr.line_to(x + w - b + bd, y + b - bd)
+			cr.line_to(x + w - b + bd, y + h)
+			cr.line_to(x + w - b, y + h)
+			cr.line_to(x + w - b, y + b)
+			cr.line_to(x + b, y + b)
+			cr.line_to(x + b, y + h)
 			cr.close_path()
 			fillColor(cr, box.color)
 			###
 			bds = 0.7 * bd
 			cr.move_to(x, y)
-			cr.line_to(x+bds, y)
-			cr.line_to(x+b+bds, y+b)
-			cr.line_to(x+b, y+b+bds)
-			cr.line_to(x, y+bds)
+			cr.line_to(x + bds, y)
+			cr.line_to(x + b + bds, y + b)
+			cr.line_to(x + b, y + b + bds)
+			cr.line_to(x, y + bds)
 			cr.close_path()
 			fillColor(cr, box.color)
 			##
-			cr.move_to(x+w, y)
-			cr.line_to(x+w-bds, y)
-			cr.line_to(x+w-b-bds, y+b)
-			cr.line_to(x+w-b, y+b+bds)
-			cr.line_to(x+w, y+bds)
+			cr.move_to(x + w, y)
+			cr.line_to(x + w - bds, y)
+			cr.line_to(x + w - b - bds, y + b)
+			cr.line_to(x + w - b, y + b + bds)
+			cr.line_to(x + w, y + bds)
 			cr.close_path()
 			fillColor(cr, box.color)
 		else:
@@ -88,7 +88,10 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 		textH = 0.9 * h
 		textLen = len(toStr(box.text))
 		#print('textLen=%s'%textLen)
-		avgCharW = float(textW if rotateBoxLabel == 0 else max(textW, textH)) / textLen
+		avgCharW = float(
+			textW if rotateBoxLabel == 0
+			else max(textW, textH)
+		) / textLen
 		if avgCharW > 3:## FIXME
 			font = list(ui.getFont())
 			layout = widget.create_pango_layout(box.text) ## a Pango.Layout object
@@ -96,12 +99,12 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 			layoutW, layoutH = layout.get_pixel_size()
 			#print('orig font size: %s'%font[3])
 			normRatio = min(
-				float(textW)/layoutW,
-				float(textH)/layoutH,
+				float(textW) / layoutW,
+				float(textH) / layoutH,
 			)
 			rotateRatio = min(
-				float(textW)/layoutH,
-				float(textH)/layoutW,
+				float(textW) / layoutH,
+				float(textH) / layoutW,
 			)
 			if rotateBoxLabel != 0 and rotateRatio > normRatio:
 				font[3] *= max(normRatio, rotateRatio)
@@ -111,17 +114,17 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 				#print('x=%s, y=%s, w=%s, h=%s, layoutW=%s, layoutH=%s'\)
 				#	%(x,y,w,h,layoutW,layoutH)
 				cr.move_to(
-					x + (w - rotateBoxLabel*layoutH)/2.0,
-					y + (h + rotateBoxLabel*layoutW)/2.0,
+					x + (w - rotateBoxLabel * layoutH) / 2.0,
+					y + (h + rotateBoxLabel * layoutW) / 2.0,
 				)
-				cr.rotate(-rotateBoxLabel*pi/2)
+				cr.rotate(-rotateBoxLabel * pi / 2)
 				show_layout(cr, layout)
 				try:
-					cr.rotate(rotateBoxLabel*pi/2)
+					cr.rotate(rotateBoxLabel * pi / 2)
 				except:
-					print('counld not rotate by %s*pi/2 = %s'%(
+					print('counld not rotate by %s*pi/2 = %s' % (
 						rotateBoxLabel,
-						rotateBoxLabel*pi/2,
+						rotateBoxLabel * pi / 2,
 					))
 			else:
 				font[3] *= normRatio
@@ -129,10 +132,7 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 				layoutW, layoutH = layout.get_pixel_size()
 				fillColor(cr, fgColor)## before cr.move_to
 				cr.move_to(
-					x + (w-layoutW)/2.0,
-					y + (h-layoutH)/2.0,
+					x + (w - layoutW) / 2.0,
+					y + (h - layoutH) / 2.0,
 				)
 				show_layout(cr, layout)
-
-
-

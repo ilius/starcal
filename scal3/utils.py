@@ -17,49 +17,24 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-import sys, os
+import sys
+import os
 from math import floor, ceil
 
-from scal3.lib import OrderedDict
-
-try:
-	from collections import Iterable
-except ImportError:
-	class Iterable:
-
-		def __iter__(self):
-			raise NotImplementedError
-
-		@classmethod
-		def __subclasshook__(cls, C):
-			if cls is Iterable:
-				if any('__iter__' in B.__dict__ for B in C.__mro__):
-					return True
-			return NotImplemented
-
-try:
-	from collections import Iterator
-except ImportError:
-	class Iterator(Iterable):
-
-		def __next__(self):
-			raise StopIteration
-
-		__iter__ = lambda self: self
-
-		@classmethod
-		def __subclasshook__(cls, C):
-			if cls is Iterator:
-				if (any('__next__' in B.__dict__ for B in C.__mro__) and
-					any('__iter__' in B.__dict__ for B in C.__mro__)):
-					return True
-			return NotImplemented
+from collections import (
+	Iterable,
+	Iterator,
+	OrderedDict,
+)
 
 
+def ifloor(x):
+	return int(floor(x))
 
 
-ifloor = lambda x: int(floor(x))
-iceil = lambda x: int(ceil(x))
+def iceil(x):
+	return int(ceil(x))
+
 
 def arange(start, stop, step):
 	l = []
@@ -70,56 +45,80 @@ def arange(start, stop, step):
 		x += step
 	return l
 
-toBytes = lambda s: s.encode('utf8') if isinstance(s, str) else bytes(s)
-toStr = lambda s: str(s, 'utf8') if isinstance(s, bytes) else str(s)
 
-cmp = lambda a, b: 0 if a==b else (1 if a>b else -1)
+def toBytes(s):
+	return s.encode('utf8') if isinstance(s, str) else bytes(s)
+
+
+def toStr(s):
+	return str(s, 'utf8') if isinstance(s, bytes) else str(s)
+
+
+def cmp(a, b):
+	return 0 if a == b else (1 if a > b else -1)
+
 
 def versionLessThan(v0, v1):
-	if v0=='':
-		if v1=='':
+	if v0 == '':
+		if v1 == '':
 			return 0
 		else:
 			return -1
-	elif v1=='':
+	elif v1 == '':
 		return 1
-	return [ int(p) for p in v0.split('.') ] < [ int(p) for p in v1.split('.') ]
+	return [
+		int(p) for p in v0.split('.')
+	] < [
+		int(p) for p in v1.split('.')
+	]
+
 
 def printError(text):
-	sys.stderr.write('%s\n'%text)
+	sys.stderr.write('%s\n' % text)
+
 
 class FallbackLogger:
 	def __init__(self):
 		pass
+
 	def error(self, text):
-		sys.stderr.write('ERROR: %s\n'%text)
+		sys.stderr.write('ERROR: %s\n' % text)
+
 	def warning(self, text):
-		print('WARNING: %s'%text)
+		print('WARNING: %s' % text)
+
 	def debug(self, text):
 		print(text)
+
 
 def myRaise(File=None):
 	i = sys.exc_info()
 	typ, value, tback = sys.exc_info()
-	text = 'line %s: %s: %s\n'%(tback.tb_lineno, typ.__name__, value)
+	text = 'line %s: %s: %s\n' % (tback.tb_lineno, typ.__name__, value)
 	if File:
-		text = 'File "%s", '%File + text
+		text = 'File "%s", ' % File + text
 	sys.stderr.write(text)
+
 
 def myRaiseTback():
 	import traceback
 	typ, value, tback = sys.exc_info()
-	sys.stderr.write("".join(traceback.format_exception(typ, value, tback)))
+	sys.stderr.write(
+		"".join(traceback.format_exception(typ, value, tback))
+	)
 
-restartLow = lambda: os.execl(
-	sys.executable,
-	sys.executable,
-	*sys.argv
-)## will not return from the function
+
+def restartLow():
+	return os.execl(
+		sys.executable,
+		sys.executable,
+		*sys.argv
+	)  # will not return from the function
+
 
 class StrOrderedDict(dict):
-	## A dict from strings to objects, with ordered keys
-	## and some looks like a list
+	# A dict from strings to objects, with ordered keys
+	# and some looks like a list
 	def __init__(self, arg=[], reorderOnModify=True):
 		self.reorderOnModify = reorderOnModify
 		if isinstance(arg, (list, tuple)):
@@ -127,11 +126,26 @@ class StrOrderedDict(dict):
 		elif isinstance(arg, dict):
 			self.keyList = sorted(arg.keys())
 		else:
-			raise TypeError('StrOrderedDict: bad type for first argument: %s'%type(arg))
+			raise TypeError(
+				'StrOrderedDict: bad type for first argument: %s' % type(arg)
+			)
 		dict.__init__(self, arg)
-	keys = lambda self: self.keyList
-	values = lambda self: [dict.__getitem__(self, key) for key in self.keyList]
-	items = lambda self: [(key, dict.__getitem__(self, key)) for key in self.keyList]
+
+	def keys(self):
+		return self.keyList
+
+	def values(self):
+		return [
+			dict.__getitem__(self, key)
+			for key in self.keyList
+		]
+
+	def items(self):
+		return [
+			(key, dict.__getitem__(self, key))
+			for key in self.keyList
+		]
+
 	def __getitem__(self, arg):
 		if isinstance(arg, int):
 			return dict.__getitem__(self, self.keyList[arg])
@@ -139,11 +153,15 @@ class StrOrderedDict(dict):
 			return dict.__getitem__(self, arg)
 		elif isinstance(arg, slice):## not tested FIXME
 			return StrOrderedDict([
-				(key, dict.__getitem__(self, key)) \
+				(key, dict.__getitem__(self, key))
 				for key in self.keyList.__getitem__(arg)
 			])
 		else:
-			raise ValueError('Bad type argument given to StrOrderedDict.__getitem__: %s'%type(arg))
+			raise ValueError(
+				'Bad type argument given to StrOrderedDict.__getitem__' +
+				': %s' % type(arg)
+			)
+
 	def __setitem__(self, arg, value):
 		if isinstance(arg, int):
 			dict.__setitem__(self, self.keyList[arg], value)
@@ -160,8 +178,11 @@ class StrOrderedDict(dict):
 				self.keyList.append(arg)
 			dict.__setitem__(self, arg, value)
 		else:
-			raise ValueError('Bad type argument given to StrOrderedDict.__setitem__: %s'
-				%type(item))
+			raise ValueError(
+				'Bad type argument given to StrOrderedDict.__setitem__' +
+				': %s' % type(item)
+			)
+
 	def __delitem__(self, arg):
 		if isinstance(arg, int):
 			self.keyList.__delitem__(arg)
@@ -169,96 +190,135 @@ class StrOrderedDict(dict):
 		elif isinstance(arg, str):
 			self.keyList.remove(arg)
 			dict.__delitem__(self, arg)
-		elif isinstance(arg, slice):## ???????????? is not tested
+		elif isinstance(arg, slice):  # FIXME is not tested
 			for key in self.keyList.__getitem__(arg):
 				dict.__delitem__(self, key)
 			self.keyList.__delitem__(arg)
 		else:
-			raise ValueError('Bad type argument given to StrOrderedDict.__delitem__: %s'%type(arg))
-	pop = lambda self, key: self.__delitem__(key)
+			raise ValueError(
+				'Bad type argument given to StrOrderedDict.__delitem__' +
+				': %s' % type(arg)
+			)
+
+	#def pop(self, key):  # FIXME
+	#	value = dict.pop(self, key)
+	#	del self.keyList[key]
+	#	return value
+
 	def clear(self):
 		self.keyList = []
 		dict.clear(self)
+
 	def append(self, key, value):
-		assert isinstance(key, str) and not key in self.keyList
+		assert isinstance(key, str) and key not in self.keyList
 		self.keyList.append(key)
 		dict.__setitem__(self, key, value)
+
 	def insert(self, index, key, value):
-		assert isinstance(key, str) and not key in self.keyList
+		assert isinstance(key, str) and key not in self.keyList
 		self.keyList.insert(index, key)
 		dict.__setitem__(self, key, value)
+
 	def sort(self, attr=None):
-		if attr==None:
+		if attr is None:
 			self.keyList.sort()
 		else:
-			self.keyList.sort(key=lambda k: getattr(dict.__getitem__(self, k), attr))
-	__iter__ = lambda self: self.keyList.__iter__()
+			self.keyList.sort(
+				key=lambda k: getattr(dict.__getitem__(self, k), attr)
+			)
+
+	def __iter__(self):
+		return self.keyList.__iter__()
+
 	def iteritems(self):## OR lambda self: self.items().__iter__()
 		for key in self.keyList:## OR self.keyList.__iter__()
 			yield (key, dict.__getitem__(self, key))
-	__str__ = lambda self: 'StrOrderedDict(%r)'%self.items()
-	#'StrOrderedDict{' + ', '.join([repr(k)+':'+repr(self[k]) for k in self.keyList]) + '}'
-	__repr__ = lambda self: 'StrOrderedDict(%r)'%self.items()
+
+	def __str__(self):
+		return 'StrOrderedDict(%r)' % self.items()
+
+	#'StrOrderedDict{' + ', '.join([
+	#	repr(k) + ':' + repr(self[k])
+	#	for k in self.keyList
+	#]) + '}'
+
+	def __repr__(self):
+		return 'StrOrderedDict(%r)' % self.items()
 
 
 class NullObj:## a fully transparent object
 	def __setattr__(self, attr, value):
 		pass
-	__getattr__ = lambda self, attr: self
-	__call__ = lambda self, *args, **kwargs: self
-	__str__ = lambda self: ''
-	__repr__ = lambda self: ''
-	__int__ = lambda self: 0
+
+	def __getattr__(self, attr):
+		return self
+
+	def __call__(self, *args, **kwargs):
+		return self
+
+	def __str__(self):
+		return ''
+
+	def __repr__(self):
+		return ''
+
+	def __int__(self):
+		return 0
 
 
-int_split = lambda s: [int(x) for x in s.split()]
+def int_split(s):
+	return [int(x) for x in s.split()]
 
-s_join = lambda l: ' '.join([str(x) for x in l])
+
+def s_join(l):
+	return ' '.join([str(x) for x in l])
 
 
 def cleanCacheDict(cache, maxSize, currentValue):
 	n = len(cache)
 	if n >= maxSize > 2:
 		keys = sorted(cache.keys())
-		if keys[n//2] < currentValue:
+		if keys[n // 2] < currentValue:
 			rm = keys[0]
 		else:
 			rm = keys[-1]
 		cache.pop(rm)
 
+
 def urlToPath(url):
-	if len(url)<7:
-		return url
-	if url[:7]!='file://':
+	if not url.startswith('file://'):
 		return url
 	path = url[7:]
-	if path[-2:]=='\r\n':
+	if path.startswith('\r\n'):
 		path = path[:-2]
-	elif path[-1]=='\r':
+	elif path.startswith('\r'):
 		path = path[:-1]
-	## here convert html unicode symbols to utf8 string:
-	if not '%' in path:
+	# here convert html unicode symbols to utf8 string:
+	if '%' not in path:
 		return path
 	path2 = ''
 	n = len(path)
 	i = 0
-	while i<n:
-		if path[i]=='%' and i<n-2:
-			path2 += chr(int(path[i+1:i+3], 16)) ## OR chr(eval('0x%s'%path[i+1:i+3]))
+	while i < n:
+		if path[i] == '%' and i < n - 2:
+			path2 += chr(int(path[i + 1:i + 3], 16))
+			# OR: chr(eval('0x%s'%path[i + 1:i + 3]))
 			i += 3
 		else:
 			path2 += path[i]
 			i += 1
 	return path2
 
+
 def findNearestNum(lst, num):
 	if not lst:
 		return
 	best = lst[0]
 	for x in lst[1:]:
-		if abs(x-num) < abs(best-num):
+		if abs(x - num) < abs(best - num):
 			best = x
 	return best
+
 
 def findNearestIndex(lst, num):
 	if not lst:
@@ -266,14 +326,15 @@ def findNearestIndex(lst, num):
 	index = 0
 	count = len(lst)
 	for i in range(1, count):
-		if abs(lst[i]-num) < abs(lst[index]-num):
+		if abs(lst[i] - num) < abs(lst[index] - num):
 			index = i
 	return index
+
 
 def strFindNth(st, sub, n):
 	pos = 0
 	for i in range(n):
-		pos = st.find(sub, pos+1)
+		pos = st.find(sub, pos + 1)
 		if pos == -1:
 			break
 	return pos
@@ -285,15 +346,16 @@ def numRangesEncode(values):
 		if isinstance(value, int):
 			parts.append(str(value))
 		elif isinstance(value, (tuple, list)):
-			parts.append('%d-%d'%(value[0], value[1]))
+			parts.append('%d-%d' % (value[0], value[1]))
 	return ', '.join(parts)
+
 
 def numRangesDecode(text):
 	values = []
 	for part in text.split(','):
 		pparts = part.strip().split('-')
 		try:
-			if len(pparts)==1:
+			if len(pparts) == 1:
 				values.append(int(pparts[0]))
 			elif len(pparts) > 1:
 				values.append((
@@ -303,6 +365,7 @@ def numRangesDecode(text):
 		except:
 			myRaise()
 	return values
+
 
 def inputDate(msg):
 	while True:
@@ -317,6 +380,7 @@ def inputDate(msg):
 		except Exception as e:
 			print(str(e))
 
+
 def inputDateJd(msg):
 	date = inputDate(msg)
 	if date:
@@ -326,6 +390,3 @@ def inputDateJd(msg):
 
 #if __name__=='__main__':
 #	print(findNearestNum([1, 2, 4, 6, 3, 7], 3.6))
-
-
-

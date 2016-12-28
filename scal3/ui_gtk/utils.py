@@ -37,10 +37,10 @@ from gi.repository import GdkPixbuf
 from scal3.ui_gtk import *
 
 
-
 def hideList(widgets):
 	for w in widgets:
 		w.hide()
+
 
 def showList(widgets):
 	for w in widgets:
@@ -48,15 +48,16 @@ def showList(widgets):
 
 
 def set_tooltip(widget, text):
-	try:
-		widget.set_tooltip_text(text)## PyGTK 2.12 or above
-	except AttributeError:
-		try:
-			widget.set_tooltip(gtk.Tooltips(), text)
-		except:
-			myRaise(__file__)
+	widget.set_tooltip_text(text)
 
-buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter(), True)
+
+def buffer_get_text(b):
+	return b.get_text(
+		b.get_start_iter(),
+		b.get_end_iter(),
+		True,
+	)
+
 
 def setClipboard(text, clipboard=None):
 	if not clipboard:
@@ -67,6 +68,7 @@ def setClipboard(text, clipboard=None):
 	)
 	#clipboard.store() ## ?????? No need!
 
+
 def imageFromFile(path):## the file must exist
 	if not isabs(path):
 		path = join(pixDir, path)
@@ -76,6 +78,7 @@ def imageFromFile(path):## the file must exist
 	except:
 		myRaise()
 	return im
+
 
 def pixbufFromFile(path):## the file may not exist
 	if not path:
@@ -88,10 +91,12 @@ def pixbufFromFile(path):## the file may not exist
 		myRaise()
 		return None
 
+
 def toolButtonFromStock(stock, size):
 	tb = gtk.ToolButton()
 	tb.set_icon_widget(gtk.Image.new_from_stock(stock, size))
 	return tb
+
 
 def labelStockMenuItem(label, stock=None, func=None, *args):
 	item = ImageMenuItem(_(label))
@@ -102,6 +107,7 @@ def labelStockMenuItem(label, stock=None, func=None, *args):
 		item.connect('activate', func, *args)
 	return item
 
+
 def labelImageMenuItem(label, image, func=None, *args):
 	item = ImageMenuItem(_(label))
 	item.set_use_underline(True)
@@ -110,14 +116,16 @@ def labelImageMenuItem(label, image, func=None, *args):
 		item.connect('activate', func, *args)
 	return item
 
+
 def labelMenuItem(label, func=None, *args):
 	item = MenuItem(_(label))
 	if func:
 		item.connect('activate', func, *args)
 	return item
 
-getStyleColor = lambda widget, state=gtk.StateType.NORMAL:\
-	widget.get_style_context().get_color(state)
+
+def getStyleColor(widget, state=gtk.StateType.NORMAL):
+	return widget.get_style_context().get_color(state)
 
 
 def modify_bg_all(widget, state, gcolor):
@@ -132,7 +140,12 @@ def modify_bg_all(widget, state, gcolor):
 			modify_bg_all(child, state, gcolor)
 
 
-rectangleContainsPoint = lambda r, x, y: r.x <= x < r.x + r.width and r.y <= y < r.y + r.height
+def rectangleContainsPoint(r, x, y):
+	return (
+		r.x <= x < r.x + r.width and
+		r.y <= y < r.y + r.height
+	)
+
 
 def dialog_add_button(dialog, stock, label, resId, onClicked=None, tooltip=''):
 	b = dialog.add_button(stock, resId)
@@ -146,6 +159,7 @@ def dialog_add_button(dialog, stock, label, resId, onClicked=None, tooltip=''):
 		set_tooltip(b, tooltip)
 	return b
 
+
 def confirm(msg, parent=None):
 	win = gtk.MessageDialog(
 		parent=parent,
@@ -154,11 +168,22 @@ def confirm(msg, parent=None):
 		buttons=gtk.ButtonsType.NONE,
 		message_format=msg,
 	)
-	dialog_add_button(win, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
-	dialog_add_button(win, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
+	dialog_add_button(
+		win,
+		gtk.STOCK_CANCEL,
+		_('_Cancel'),
+		gtk.ResponseType.CANCEL,
+	)
+	dialog_add_button(
+		win,
+		gtk.STOCK_OK,
+		_('_OK'),
+		gtk.ResponseType.OK,
+	)
 	ok = win.run() == gtk.ResponseType.OK
 	win.destroy()
 	return ok
+
 
 def showMsg(msg, parent, msg_type):
 	win = gtk.MessageDialog(
@@ -168,19 +193,28 @@ def showMsg(msg, parent, msg_type):
 		buttons=gtk.ButtonsType.NONE,
 		message_format=msg,
 	)
-	dialog_add_button(win, gtk.STOCK_CLOSE, _('_Close'), gtk.ResponseType.OK)
+	dialog_add_button(
+		win,
+		gtk.STOCK_CLOSE,
+		_('_Close'),
+		gtk.ResponseType.OK,
+	)
 	win.run()
 	win.destroy()
+
 
 def showError(msg, parent=None):
 	showMsg(msg, parent, gtk.MessageType.ERROR)
 
+
 def showInfo(msg, parent=None):
 	showMsg(msg, parent, gtk.MessageType.INFO)
+
 
 def openWindow(win):
 	win.set_keep_above(ui.winKeepAbove)
 	win.present()
+
 
 def get_menu_width(menu):
 	'''
@@ -247,9 +281,10 @@ class IdComboBox(gtk.ComboBox):
 	def set_active(self, _id):
 		ls = self.get_model()
 		for i in range(len(ls)):
-			if ls[i][0]==_id:
+			if ls[i][0] == _id:
 				gtk.ComboBox.set_active(self, i)
 				return
+
 	def get_active(self):
 		i = gtk.ComboBox.get_active(self)
 		if i is None:
@@ -259,20 +294,20 @@ class IdComboBox(gtk.ComboBox):
 		except IndexError:
 			return
 
+
 class CopyLabelMenuItem(MenuItem):
 	def __init__(self, label):
 		MenuItem.__init__(self)
 		self.set_label(label)
 		self.connect('activate', self.on_activate)
+
 	def on_activate(self, item):
 		setClipboard(self.get_property('label'))
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
 	diolog = gtk.Dialog(parent=None)
 	w = TimeZoneComboBoxEntry()
 	pack(diolog.vbox, w)
 	diolog.vbox.show_all()
 	diolog.run()
-
-

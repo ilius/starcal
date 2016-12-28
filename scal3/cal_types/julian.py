@@ -45,8 +45,13 @@ monthNameAb = (
 	'Oct', 'Nov', 'Dec',
 )
 
-getMonthName = lambda m, y=None: monthName.__getitem__(m - 1)
-getMonthNameAb = lambda m, y=None: monthNameAb.__getitem__(m - 1)
+
+def getMonthName(m, y=None):
+	return monthName[m - 1]
+
+
+def getMonthNameAb(m, y=None):
+	return monthNameAb.__getitem__(m - 1)
 
 
 def getMonthsInYear(y):

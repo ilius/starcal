@@ -7,6 +7,7 @@ from scal3 import ui
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import setClipboard
 
+
 class DateLabel(gtk.Label):
 	def __init__(self, text=None):
 		gtk.Label.__init__(self, text)
@@ -17,13 +18,22 @@ class DateLabel(gtk.Label):
 		self.connect('populate-popup', self.popupPopulate)
 	def popupPopulate(self, label, menu):
 		itemCopyAll = ImageMenuItem(_('Copy _All'))
-		itemCopyAll.set_image(gtk.Image.new_from_stock(gtk.STOCK_COPY, gtk.IconSize.MENU))
+		itemCopyAll.set_image(gtk.Image.new_from_stock(
+			gtk.STOCK_COPY,
+			gtk.IconSize.MENU),
+		)
 		itemCopyAll.connect('activate', self.copyAll)
 		##
 		itemCopy = ImageMenuItem(_('_Copy'))
-		itemCopy.set_image(gtk.Image.new_from_stock(gtk.STOCK_COPY, gtk.IconSize.MENU))
+		itemCopy.set_image(gtk.Image.new_from_stock(
+			gtk.STOCK_COPY,
+			gtk.IconSize.MENU,
+		))
 		itemCopy.connect('activate', self.copy)
-		itemCopy.set_sensitive(self.get_property('cursor-position') > self.get_property('selection-bound'))## FIXME
+		itemCopy.set_sensitive(
+			self.get_property('cursor-position') >
+			self.get_property('selection-bound')
+		)  # FIXME
 		##
 		for item in menu.get_children():
 			menu.remove(item)
@@ -33,9 +43,11 @@ class DateLabel(gtk.Label):
 		menu.show_all()
 		##
 		ui.updateFocusTime()
+
 	def copy(self, item):
 		start = self.get_property('selection-bound')
 		end = self.get_property('cursor-position')
 		setClipboard(toStr(self.get_text())[start:end])
-	copyAll = lambda self, label: setClipboard(self.get_text())
 
+	def copyAll(self, label):
+		setClipboard(self.get_text())

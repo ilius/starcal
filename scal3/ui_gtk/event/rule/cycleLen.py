@@ -19,14 +19,15 @@ class WidgetClass(gtk.HBox):
 		pack(self, spin)
 		self.spin = spin
 		##
-		pack(self, gtk.Label(' '+_('days and')+' '))
+		pack(self, gtk.Label(' ' + _('days and') + ' '))
 		tbox = TimeButton()
 		pack(self, tbox)
 		self.tbox = tbox
+
 	def updateWidget(self):
 		self.spin.set_value(self.rule.days)
 		self.tbox.set_value(self.rule.extraTime)
+
 	def updateVars(self):
 		self.rule.days = self.spin.get_value()
 		self.rule.extraTime = self.tbox.get_value()
-

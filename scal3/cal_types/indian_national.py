@@ -22,18 +22,50 @@
 
 name = 'indian_national'
 desc = 'Indian National'
-origLang = 'hi' ## or 'en' ## FIXME
+origLang = 'hi'  # or 'en' FIXME
 
-monthName = ('Chaitra','Vaishākh','Jyaishtha','Āshādha','Shrāvana','Bhādrapad',
-			 'Āshwin','Kārtik','Agrahayana','Paush','Māgh','Phālgun')
+monthName = (
+	'Chaitra',
+	'Vaishākh',
+	'Jyaishtha',
+	'Āshādha',
+	'Shrāvana',
+	'Bhādrapad',
+	'Āshwin',
+	'Kārtik',
+	'Agrahayana',
+	'Paush',
+	'Māgh',
+	'Phālgun',
+)
 
-monthNameAb = ('Cha','Vai','Jya','Āsh','Shr','Bhā',
-			   'Āsw','Kār','Agr','Pau','Māg','Phā')
+monthNameAb = (
+	'Cha',
+	'Vai',
+	'Jya',
+	'Āsh',
+	'Shr',
+	'Bhā',
+	'Āsw',
+	'Kār',
+	'Agr',
+	'Pau',
+	'Māg',
+	'Phā',
+)
 
-getMonthName = lambda m, y=None: monthName.__getitem__(m-1)
-getMonthNameAb = lambda m, y=None: monthNameAb.__getitem__(m-1)
 
-getMonthsInYear = lambda y: 12
+def getMonthName(m, y=None):
+	return monthName[m - 1]
+
+
+def getMonthNameAb(m, y=None):
+	return monthNameAb[m - 1]
+
+
+def getMonthsInYear(y):
+	return 12
+
 
 # Monday	Somavãra
 # Tuesday	Mañgalvã
@@ -54,10 +86,11 @@ getMonthsInYear = lambda y: 12
 epoch = 1749994
 minMonthLen = 30
 maxMonthLen = 31
-avgYearLen = 365.2425 ## FIXME
+avgYearLen = 365.2425  # FIXME
 
 
 options = ()
+
 
 def save():
 	pass
@@ -68,9 +101,16 @@ try:
 except ImportError:
 	from . import gregorian
 
-isLeap = lambda y: gregorian.isLeap(y+78)
 
-"""bool KCalendarSystemIndianNational::isValid( int year, int month, int day ) const
+def isLeap(y):
+	return gregorian.isLeap(y + 78)
+
+
+"""bool KCalendarSystemIndianNational::isValid(
+	int year,
+	int month,
+	int day,
+) const
 {
 	if ( year < 0 || year > 9999 ) {
 		return false
@@ -93,10 +133,12 @@ isLeap = lambda y: gregorian.isLeap(y+78)
 	}
 
 	return ( day >= 1 && day <= 30 )
-}"""
+}
+"""
+
 
 def getMonthLen(y, m):
-	if m==1:
+	if m == 1:
 		if isLeap(y):
 			return 31
 		else:
@@ -107,80 +149,102 @@ def getMonthLen(y, m):
 
 
 def jd_to(jd):
-	## The calendar is closely synchronized to the Gregorian Calendar, always starting on the same day
-	## We can use this and the regular sequence of days in months to do a simple conversion by finding
-	## what day in the Gregorian year the Julian Day number is, converting this to the day in the
-	## Indian year and subtracting off the required number of months and days to get the final date
+	# The calendar is closely synchronized to the Gregorian Calendar, always
+	# starting on the same day. We can use this and the regular sequence of
+	# days in months to do a simple conversion by finding what day in the
+	# Gregorian year the Julian Day number is, converting this to the day in
+	# the Indian year and subtracting off the required number of months and
+	# days to get the final date
 
 	gregorianYear, gregorianMonth, gregorianDay = gregorian.jd_to(jd)
 	jdGregorianFirstDayOfYear = gregorian.to_jd(gregorianYear, 1, 1)
 	gregorianDayOfYear = jd - jdGregorianFirstDayOfYear + 1
 
-	## There is a fixed 78 year difference between year numbers, but the years do not exactly match up,
-	## there is a fixed 80 day difference between the first day of the year, if the Gregorian day of
-	## the year is 80 or less then the equivalent Indian day actually falls in the preceding    year
+	# There is a fixed 78 year difference between year numbers, but the years
+	# do not exactly match up, there is a fixed 80 day difference between the
+	# first day of the year, if the Gregorian day of the year is 80 or less
+	# then the equivalent Indian day actually falls in the preceding year
 	if gregorianDayOfYear > 80:
 		year = gregorianYear - 78
 	else:
 		year = gregorianYear - 79
 
-	## If it is a leap year then the first month has 31 days, otherwise 30.
+	# If it is a leap year then the first month has 31 days, otherwise 30.
 	if isLeap(year):
 		daysInMonth1 = 31
 	else:
 		daysInMonth1 = 30
 
-	## The Indian year always starts 80 days after the Gregorian year, calculate the Indian day of
-	## the year, taking into account if it falls into the previous Gregorian year
-	if gregorianDayOfYear>80:
+	# The Indian year always starts 80 days after the Gregorian year,
+	# calculate the Indian day of the year, taking into account if it falls
+	# into the previous Gregorian year
+	if gregorianDayOfYear > 80:
 		indianDayOfYear = gregorianDayOfYear - 80
 	else:
-		indianDayOfYear = gregorianDayOfYear + daysInMonth1 + 5*31    + 6*30 - 80
+		indianDayOfYear = (
+			gregorianDayOfYear
+			+ daysInMonth1
+			+ 5 * 31
+			+ 6 * 30
+			- 80
+		)
 
-	## Then simply remove the whole months from the day of the year and you are left with the day of month
+	# Then simply remove the whole months from the day of the year and you
+	# are left with the day of month
 	if indianDayOfYear <= daysInMonth1:
 		month = 1
 		day = indianDayOfYear
-	elif indianDayOfYear <= daysInMonth1 + 5*31:
-		month = (indianDayOfYear-daysInMonth1-1) // 31 + 2
-		day = indianDayOfYear - daysInMonth1 - (month-2)*31
+	elif indianDayOfYear <= daysInMonth1 + 5 * 31:
+		month = (indianDayOfYear - daysInMonth1 - 1) // 31 + 2
+		day = indianDayOfYear - daysInMonth1 - (month - 2) * 31
 	else:
-		month = (indianDayOfYear - daysInMonth1 - 5*31 - 1) // 30 + 7
-		day = indianDayOfYear - daysInMonth1 - 5*31 - (month-7)*30
+		month = (indianDayOfYear - daysInMonth1 - 5 * 31 - 1) // 30 + 7
+		day = indianDayOfYear - daysInMonth1 - 5 * 31 - (month - 7) * 30
 	return (year, month, day)
 
 
 def to_jd(year, month, day):
-	## The calendar is closely synchronized to the Gregorian Calendar, always starting on the same day
-	## We can use this and the regular sequence of days in months to do a simple conversion by finding
-	## the Julian Day number of the first day of the year and adding on the required number of months
-	## and days to get the final Julian Day number
-
-	## Calculate the jd of 1 Chaitra for this year and how many days are in Chaitra this year
-	## If a Leap Year, then 1 Chaitra == 21 March of the Gregorian year and Chaitra has 31 days
-	## If not a Leap Year, then 1 Chaitra == 22 March of the Gregorian year and Chaitra has 30 days
-	## Need to use dateToJulianDay() to calculate instead of setDate() to avoid the year 9999 validation
+	# The calendar is closely synchronized to the Gregorian Calendar, always
+	# starting on the same day We can use this and the regular sequence of days
+	# in months to do a simple conversion by finding the Julian Day number of
+	# the first day of the year and adding on the required number of months
+	# and days to get the final Julian Day number
+	# Calculate the jd of 1 Chaitra for this year and how many days are in
+	# Chaitra this year If a Leap Year, then 1 Chaitra == 21 March of the
+	# Gregorian year and Chaitra has 31 days If not a Leap Year, then
+	# 1 Chaitra == 22 March of the Gregorian year and Chaitra has 30 days
+	# Need to use dateToJulianDay() to calculate instead of setDate()
+	# to avoid the year 9999 validation
 	if isLeap(year):
-		jdFirstDayOfYear = gregorian.to_jd(year+78, 3, 21)
+		jdFirstDayOfYear = gregorian.to_jd(year + 78, 3, 21)
 		daysInMonth1 = 31
 	else:
-		jdFirstDayOfYear = gregorian.to_jd(year+78, 3, 22)
+		jdFirstDayOfYear = gregorian.to_jd(year + 78, 3, 22)
 		daysInMonth1 = 30
 
-	## Add onto the jd of the first day of the year the number of days required
-	## Calculate the number of days in the months before the required month
-	## Then add on the required days
-	## The first month has 30 or 31 days depending on if it is a Leap Year (determined above)
-	## The second to sixth months have 31 days each
-	## The seventh to twelth months have 30 days each
-	## Note: could be expressed more efficiently, but I think this is clearer
-	if month==1:
+	# Add onto the jd of the first day of the year the number of days required
+	# Calculate the number of days in the months before the required month
+	# Then add on the required days
+	# The first month has 30 or 31 days depending on if it is a
+	# Leap Year (determined above)
+	# The second to sixth months have 31 days each
+	# The seventh to twelth months have 30 days each
+	# Note: could be expressed more efficiently, but I think this is clearer
+	if month == 1:
 		jd = jdFirstDayOfYear + day - 1
-	elif month<=6:
-		jd = jdFirstDayOfYear + daysInMonth1 + (month-2)*31 + day - 1
-	else: ## month > 6
-		jd = jdFirstDayOfYear + daysInMonth1 + 5*31 + (month-7)*30 + day - 1
+	elif month <= 6:
+		jd = (
+			jdFirstDayOfYear
+			+ daysInMonth1
+			+ (month - 2) * 31
+			+ day - 1
+		)
+	else:  # month > 6
+		jd = (
+			jdFirstDayOfYear
+			+ daysInMonth1
+			+ 5 * 31
+			+ (month - 7) * 30
+			+ day - 1
+		)
 	return jd
-
-
-

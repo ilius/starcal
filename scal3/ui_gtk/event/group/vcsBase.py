@@ -6,7 +6,6 @@ from scal3.ui_gtk import *
 from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 
 
-
 class VcsBaseWidgetClass(NormalWidgetClass):
 	def __init__(self, group):
 		NormalWidgetClass.__init__(self, group)
@@ -32,13 +31,13 @@ class VcsBaseWidgetClass(NormalWidgetClass):
 		##
 		#self.dirBrowse = gtk.Button(_('Browse'))
 		pack(self, hbox)
+
 	def updateWidget(self):
 		NormalWidgetClass.updateWidget(self)
 		self.vcsTypeCombo.set_active(vcsModuleNames.index(self.group.vcsType))
 		self.dirEntry.set_text(self.group.vcsDir)
+
 	def updateVars(self):
 		NormalWidgetClass.updateVars(self)
 		self.group.vcsType = vcsModuleNames[self.vcsTypeCombo.get_active()]
 		self.group.vcsDir = self.dirEntry.get_text()
-
-

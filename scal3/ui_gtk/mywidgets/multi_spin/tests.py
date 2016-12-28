@@ -1,10 +1,12 @@
 from scal3.ui_gtk import *
 
+
 def getDateTimeWidget():
 	from scal3.ui_gtk.mywidgets.multi_spin.date_time import DateTimeButton
 	btn = DateTimeButton()
 	btn.set_value((2011, 1, 1))
 	return btn
+
 
 def getIntWidget():
 	from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
@@ -12,11 +14,13 @@ def getIntWidget():
 	btn.set_value(12)
 	return btn
 
+
 def getFloatWidget():
 	from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
 	btn = FloatSpinButton(-3.3, 5.5, 1)
 	btn.set_value(3.67)
 	return btn
+
 
 def getFloatBuiltinWidget():
 	btn = gtk.SpinButton()
@@ -26,7 +30,7 @@ def getFloatBuiltinWidget():
 	return btn
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
 	d = gtk.Dialog(parent=None)
 	btn = getFloatWidget()
 	btn.set_editable(True)
@@ -34,5 +38,3 @@ if __name__=='__main__':
 	d.vbox.show_all()
 	d.run()
 	print(btn.get_value())
-
-

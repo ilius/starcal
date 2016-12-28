@@ -37,9 +37,11 @@ from scal3.ui_gtk.event.occurrence_view import DayOccurrenceView
 class AllDateLabelsVBox(gtk.VBox, ud.BaseCalObj):
 	_name = 'allDateLabels'
 	desc = _('Dates')
+
 	def __init__(self):
 		gtk.VBox.__init__(self, spacing=5)
 		self.initVars()
+
 	def onDateChange(self, *a, **ka):
 		ud.BaseCalObj.onDateChange(self, *a, **ka)
 		for child in self.get_children():
@@ -53,7 +55,8 @@ class AllDateLabelsVBox(gtk.VBox, ud.BaseCalObj):
 			sgroup.add_widget(label)
 			pack(hbox, gtk.Label('  '))
 			###
-			pack(hbox,
+			pack(
+				hbox,
 				gtk.Label(
 					ui.cell.format(ud.dateFormatBin, i)
 				),
@@ -70,6 +73,7 @@ class AllDateLabelsVBox(gtk.VBox, ud.BaseCalObj):
 class PluginsTextView(gtk.TextView, ud.BaseCalObj):
 	_name = 'pluginsText'
 	desc = _('Plugins Text')
+
 	def __init__(self):
 		gtk.TextView.__init__(self)
 		self.initVars()
@@ -78,6 +82,7 @@ class PluginsTextView(gtk.TextView, ud.BaseCalObj):
 		self.set_editable(False)
 		self.set_cursor_visible(False)
 		self.set_justification(gtk.Justification.CENTER)
+
 	def onDateChange(self, *a, **ka):
 		ud.BaseCalObj.onDateChange(self, *a, **ka)
 		self.get_buffer().set_text(ui.cell.pluginsText)
@@ -87,6 +92,7 @@ class PluginsTextView(gtk.TextView, ud.BaseCalObj):
 class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 	_name = 'dayInfo'
 	desc = _('Day Info')
+
 	def __init__(self, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.initVars()
@@ -115,22 +121,19 @@ class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 			pack(self.vbox, exp)
 		self.vbox.show_all()
 		###
+
 	def onClose(self, obj=None, event=None):
 		self.hide()
 		return True
+
 	def goBack(self, obj=None):
 		ui.jdPlus(-1)
 		self.onDateChange()
+
 	def goToday(self, obj=None):
 		ui.gotoJd(core.getCurrentJd())
 		self.onDateChange()
+
 	def goNext(self, obj=None):
 		ui.jdPlus(1)
 		self.onDateChange()
-
-
-
-
-
-
-

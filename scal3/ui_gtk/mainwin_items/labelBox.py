@@ -35,8 +35,10 @@ from scal3.ui_gtk.mywidgets.button import ConButton
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 
+
 class BaseLabel(gtk.EventBox):
 	highlightColor = (176, 176, 176)
+
 	def __init__(self):
 		gtk.EventBox.__init__(self)
 		##########
@@ -45,9 +47,10 @@ class BaseLabel(gtk.EventBox):
 		#########
 		#self.connect('enter-notify-event', self.highlight)
 		#self.connect('leave-notify-event', self.unhighlight)## FIXME
+
 	def highlight(self, widget=None, event=None):
 		#self.drag_highlight()
-		if self.get_window()==None:
+		if self.get_window() is None:
 			return
 		cr = self.get_window().cairo_create()
 		setColor(cr, self.highlightColor)
@@ -56,30 +59,40 @@ class BaseLabel(gtk.EventBox):
 		h = self.get_allocation().height
 		cr.rectangle(0, 0, w, 1)
 		cr.fill()
-		cr.rectangle(0, h-1, w, 1)
+		cr.rectangle(0, h - 1, w, 1)
 		cr.fill()
 		cr.rectangle(0, 0, 1, h)
 		cr.fill()
-		cr.rectangle(w-1, 0, 1, h)
+		cr.rectangle(w - 1, 0, 1, h)
 		cr.fill()
 		cr.clip()
+
 	def unhighlight(self, widget=None, event=None):
 		#self.drag_unhighlight()
-		if self.get_window()==None:
+		if self.get_window() is None:
 			return
 		w = self.get_allocation().width
 		h = self.get_allocation().height
 		self.get_window().clear_area(0, 0, w, 1)
-		self.get_window().clear_area(0, h-1, w, 1)
+		self.get_window().clear_area(0, h - 1, w, 1)
 		self.get_window().clear_area(0, 0, 1, h)
-		self.get_window().clear_area(w-1, 0, 1, h)
+		self.get_window().clear_area(w - 1, 0, 1, h)
 
 
 @registerSignals
 class MonthLabel(BaseLabel, ud.BaseCalObj):
-	getItemStr = lambda self, i: _(i+1, fillZero=2)
-	getActiveStr = lambda self, s: '<span color="%s">%s</span>'%(ui.menuActiveLabelColor, s)
-	#getActiveStr = lambda self, s: '<b>%s</b>'%s
+	def getItemStr(self, i):
+		return _(i + 1, fillZero=2)
+
+	def getActiveStr(self, s):
+		return '<span color="%s">%s</span>' % (
+			ui.menuActiveLabelColor,
+			s,
+		)
+
+	#def getActiveStr(self, s):
+	#	return '<b>%s</b>'%s
+
 	def __init__(self, mode, active=0):
 		BaseLabel.__init__(self)
 		#self.set_border_width(1)#???????????
@@ -94,15 +107,19 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 		self.connect('button-press-event', self.buttonPress)
 		self.active = active
 		self.setActive(active)
+
 	def createMenuLabels(self):
 		if self.menuLabels:
 			return
 		for i in range(12):
 			if ui.monthRMenuNum:
-				text = '%s: %s'%(self.getItemStr(i), _(getMonthName(self.mode, i+1)))
+				text = '%s: %s' % (
+					self.getItemStr(i),
+					_(getMonthName(self.mode, i + 1)),
+				)
 			else:
-				text = _(getMonthName(self.mode, i+1))
-			if i==self.active:
+				text = _(getMonthName(self.mode, i + 1))
+			if i == self.active:
 				text = self.getActiveStr(text)
 			item = MenuItem()
 			label = item.get_child()
@@ -115,48 +132,71 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 			self.menu.append(item)
 			self.menuLabels.append(label)
 		self.menu.show_all()
+
 	def setActive(self, active):
-	## (Performance) update menu here, or make menu entirly before popup ????????????????
-		s = getMonthName(self.mode, active+1)
-		s2 = getMonthName(self.mode, self.active+1)
+		# (Performance) update menu here, or make menu entirly
+		# before popup?
+		s = getMonthName(self.mode, active + 1)
+		s2 = getMonthName(self.mode, self.active + 1)
 		if self.menuLabels:
 			if ui.monthRMenuNum:
 				self.menuLabels[self.active].set_label(
-					'%s: %s'%(
+					'%s: %s' % (
 						self.getItemStr(self.active),
 						s2,
 					)
 				)
-				self.menuLabels[active].set_label(self.getActiveStr('%s: %s'%(self.getItemStr(active), s)))
+				self.menuLabels[active].set_label(
+					self.getActiveStr('%s: %s' % (
+						self.getItemStr(active),
+						s,
+					)),
+				)
 			else:
 				self.menuLabels[self.active].set_label(s2)
 				self.menuLabels[active].set_label(self.getActiveStr(s))
 		if ui.boldYmLabel:
-			self.label.set_label('<b>%s</b>'%s)
+			self.label.set_label('<b>%s</b>' % s)
 		else:
 			self.label.set_label(s)
 		self.active = active
+
 	def changeMode(self, mode):
 		self.mode = mode
 		if ui.boldYmLabel:
-			self.label.set_label('<b>%s</b>'%getMonthName(self.mode, self.active+1))
+			self.label.set_label(
+				'<b>%s</b>' % getMonthName(
+					self.mode,
+					self.active + 1,
+				)
+			)
 		else:
-			self.label.set_label(getMonthName(self.mode, self.active+1))
+			self.label.set_label(
+				getMonthName(
+					self.mode,
+					self.active + 1,
+				),
+			)
 		for i in range(12):
 			if ui.monthRMenuNum:
-				s = '%s: %s'%(self.getItemStr(i), getMonthName(self.mode, i+1))
+				s = '%s: %s' % (
+					self.getItemStr(i),
+					getMonthName(self.mode, i + 1),
+				)
 			else:
-				s = getMonthName(self.mode, i+1)
-			if i==self.active:
+				s = getMonthName(self.mode, i + 1)
+			if i == self.active:
 				s = self.getActiveStr(s)
 			self.menuLabels[i].set_label(s)
+
 	def itemActivate(self, item, index):
 		y, m, d = ui.cell.dates[self.mode]
 		m = index + 1
 		ui.changeDate(y, m, d, self.mode)
 		self.onDateChange()
+
 	def buttonPress(self, widget, gevent):
-		if gevent.button==3:
+		if gevent.button == 3:
 			self.createMenuLabels()
 			foo, x, y = self.get_window().get_origin()
 			## foo == 1 FIXME
@@ -165,7 +205,12 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 			#	x = x - get_menu_width(self.menu) + self.get_allocation().width
 			#x -= 7 ## ????????? because of menu padding
 			## align menu to center:
-			x -= int((get_menu_width(self.menu) - self.get_allocation().width)//2)
+			x -= int(
+				(
+					get_menu_width(self.menu) -
+					self.get_allocation().width
+				) // 2
+			)
 			self.menu.popup(
 				None,
 				None,
@@ -178,26 +223,29 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 			return True
 		else:
 			return False
+
 	def onDateChange(self, *a, **ka):
 		ud.BaseCalObj.onDateChange(self, *a, **ka)
-		self.setActive(ui.cell.dates[self.mode][1]-1)
-
+		self.setActive(ui.cell.dates[self.mode][1] - 1)
 
 
 @registerSignals
 class IntLabel(BaseLabel):
-	#getActiveStr = lambda self, s: '<b>%s</b>'%s
-	getActiveStr = lambda self, s: '<span color="%s">%s</span>'%(ui.menuActiveLabelColor, s)
 	signals = [
 		('changed', [int]),
 	]
+
+	def getActiveStr(self, s):
+		return '<span color="%s">%s</span>' % (ui.menuActiveLabelColor, s)
+		#return '<b>%s</b>'%s
+
 	def __init__(self, height=9, active=0):
 		BaseLabel.__init__(self)
 		#self.set_border_width(1)#???????????
 		self.height = height
 		#self.delay = delay
 		if ui.boldYmLabel:
-			s = '<b>%s</b>'%_(active)
+			s = '<b>%s</b>' % _(active)
 		else:
 			s = _(active)
 		self.label = gtk.Label(s)
@@ -212,12 +260,14 @@ class IntLabel(BaseLabel):
 		self.ymPressTime = 0
 		self.etime = 0
 		self.step = 0
+
 	def setActive(self, active):
 		if ui.boldYmLabel:
-			self.label.set_label('<b>%s</b>'%_(active))
+			self.label.set_label('<b>%s</b>' % _(active))
 		else:
 			self.label.set_label(_(active))
 		self.active = active
+
 	def createMenu(self):
 		if self.menu:
 			return
@@ -259,27 +309,37 @@ class IntLabel(BaseLabel):
 		item.connect('deselect', self.arrowDeselect)
 		##########
 		self.menu.show_all()
+
 	def updateMenu(self, start=None):
 		self.createMenu()
-		if start==None:
-			start = self.active - self.height//2
+		if start is None:
+			start = self.active - self.height // 2
 		self.start = start
 		for i in range(self.height):
-			if start+i==self.active:
-				self.menuLabels[i].set_label(self.getActiveStr(_(start+i)))
+			if start + i == self.active:
+				self.menuLabels[i].set_label(
+					self.getActiveStr(_(start + i))
+				)
 			else:
-				self.menuLabels[i].set_label(_(start+i))
+				self.menuLabels[i].set_label(_(start + i))
+
 	def itemActivate(self, widget, item):
-		self.setActive(self.start+item)
-		self.emit('changed', self.start+item)
+		self.setActive(self.start + item)
+		self.emit('changed', self.start + item)
+
 	def buttonPress(self, widget, gevent):
-		if gevent.button==3:
+		if gevent.button == 3:
 			self.updateMenu()
 			foo, x, y = self.get_window().get_origin()
 			y += self.get_allocation().height
 			x -= 7 ## ????????? because of menu padding
 			## align menu to center:
-			x -= int((get_menu_width(self.menu) - self.get_allocation().width)//2)
+			x -= int(
+				(
+					get_menu_width(self.menu) -
+					self.get_allocation().width
+				) // 2
+			)
 			self.menu.popup(
 				None,
 				None,
@@ -292,35 +352,43 @@ class IntLabel(BaseLabel):
 			return True
 		else:
 			return False
+
 	def arrowSelect(self, item, plus):
 		self.remain = plus
-		gobject.timeout_add(int(ui.labelMenuDelay*1000), self.arrowRemain, plus)
+		gobject.timeout_add(
+			int(ui.labelMenuDelay * 1000),
+			self.arrowRemain,
+			plus,
+		)
+
 	def arrowDeselect(self, item):
 		self.remain = 0
+
 	def arrowRemain(self, plus):
 		t = now()
-		#print(t-self.etime)
-		if self.remain==plus:
-			if t-self.etime<ui.labelMenuDelay-0.02:
-				if self.step>1:
+		#print(t - self.etime)
+		if self.remain == plus:
+			if t - self.etime < ui.labelMenuDelay - 0.02:
+				if self.step > 1:
 					self.step = 0
 					return False
 				else:
 					self.step += 1
-					self.etime = t #??????????
+					self.etime = t  # FIXME
 					return True
 			else:
-				self.updateMenu(self.start+plus)
+				self.updateMenu(self.start + plus)
 				self.etime = t
 				return True
 		else:
 			return False
+
 	def menuScroll(self, widget, gevent):
 		d = getScrollValue(gevent)
-		if d=='up':
-			self.updateMenu(self.start-1)
-		elif d=='down':
-			self.updateMenu(self.start+1)
+		if d == 'up':
+			self.updateMenu(self.start - 1)
+		elif d == 'down':
+			self.updateMenu(self.start + 1)
 		else:
 			return False
 
@@ -328,19 +396,23 @@ class IntLabel(BaseLabel):
 @registerSignals
 class YearLabel(IntLabel, ud.BaseCalObj):
 	signals = ud.BaseCalObj.signals
+
 	def __init__(self, mode, **kwargs):
 		IntLabel.__init__(self, **kwargs)
 		self.initVars()
 		self.mode = mode
 		self.connect('changed', self.onChanged)
+
 	def onChanged(self, label, item):
 		mode = self.mode
 		y, m, d = ui.cell.dates[mode]
 		ui.changeDate(item, m, d, mode)
 		self.onDateChange()
+
 	def changeMode(self, mode):
 		self.mode = mode
 		#self.onDateChange()
+
 	def onDateChange(self, *a, **ka):
 		ud.BaseCalObj.onDateChange(self, *a, **ka)
 		self.setActive(ui.cell.dates[self.mode][0])
@@ -350,19 +422,28 @@ def newSmallNoFocusButton(stock, func, tooltip=''):
 	arrow = ConButton()
 	arrow.set_relief(2)
 	arrow.set_can_focus(False)
-	arrow.set_image(gtk.Image.new_from_stock(stock, gtk.IconSize.SMALL_TOOLBAR))
+	arrow.set_image(gtk.Image.new_from_stock(
+		stock,
+		gtk.IconSize.SMALL_TOOLBAR,
+	))
 	arrow.connect('con-clicked', func)
 	if tooltip:
 		set_tooltip(arrow, tooltip)
 	return arrow
+
 
 class YearLabelButtonBox(gtk.HBox, ud.BaseCalObj):
 	def __init__(self, mode, **kwargs):
 		gtk.HBox.__init__(self)
 		self.initVars()
 		###
-		pack(self,
-			newSmallNoFocusButton(gtk.STOCK_REMOVE, self.prevClicked, _('Previous Year')),
+		pack(
+			self,
+			newSmallNoFocusButton(
+				gtk.STOCK_REMOVE,
+				self.prevClicked,
+				_('Previous Year'),
+			),
 			0,
 			0,
 			0,
@@ -371,27 +452,42 @@ class YearLabelButtonBox(gtk.HBox, ud.BaseCalObj):
 		self.label = YearLabel(mode, **kwargs)
 		pack(self, self.label)
 		###
-		pack(self,
-			newSmallNoFocusButton(gtk.STOCK_ADD, self.nextClicked, _('Next Year')),
+		pack(
+			self,
+			newSmallNoFocusButton(
+				gtk.STOCK_ADD,
+				self.nextClicked,
+				_('Next Year'),
+			),
 			0,
 			0,
 			0,
 		)
+
 	def prevClicked(self, button):
 		ui.yearPlus(-1)
 		self.label.onDateChange()
+
 	def nextClicked(self, button):
 		ui.yearPlus(1)
 		self.label.onDateChange()
-	changeMode = lambda self, mode: self.label.changeMode(mode)
+
+	def changeMode(self, mode):
+		return self.label.changeMode(mode)
+
 
 class MonthLabelButtonBox(gtk.HBox, ud.BaseCalObj):
 	def __init__(self, mode, **kwargs):
 		gtk.HBox.__init__(self)
 		self.initVars()
 		###
-		pack(self,
-			newSmallNoFocusButton(gtk.STOCK_REMOVE, self.prevClicked, _('Previous Month')),
+		pack(
+			self,
+			newSmallNoFocusButton(
+				gtk.STOCK_REMOVE,
+				self.prevClicked,
+				_('Previous Month'),
+			),
 			0,
 			0,
 			0,
@@ -400,29 +496,40 @@ class MonthLabelButtonBox(gtk.HBox, ud.BaseCalObj):
 		self.label = MonthLabel(mode, **kwargs)
 		pack(self, self.label)
 		###
-		pack(self,
-			newSmallNoFocusButton(gtk.STOCK_ADD, self.nextClicked, _('Next Month')),
+		pack(
+			self,
+			newSmallNoFocusButton(
+				gtk.STOCK_ADD,
+				self.nextClicked,
+				_('Next Month'),
+			),
 			0,
 			0,
 			0,
 		)
+
 	def prevClicked(self, button):
 		ui.monthPlus(-1)
 		self.label.onDateChange()
+
 	def nextClicked(self, button):
 		ui.monthPlus(1)
 		self.label.onDateChange()
-	changeMode = lambda self, mode: self.label.changeMode(mode)
+
+	def changeMode(self, mode):
+		return self.label.changeMode(mode)
 
 
 @registerSignals
 class CalObj(gtk.HBox, CustomizableCalObj):
 	_name = 'labelBox'
 	desc = _('Year & Month Labels')
+
 	def __init__(self):
 		gtk.HBox.__init__(self)
 		self.initVars()
 		#self.set_border_width(2)
+
 	def onConfigChange(self, *a, **kw):
 		CustomizableCalObj.onConfigChange(self, *a, **kw)
 		#####
@@ -465,9 +572,9 @@ class CalObj(gtk.HBox, CustomizableCalObj):
 			for m in range(12):
 				name = getMonthName(label.mode, m)
 				if ui.boldYmLabel:
-					lay.set_markup('<b>%s</b>'%name)
+					lay.set_markup('<b>%s</b>' % name)
 				else:
-					lay.set_text(name) ## OR lay.set_markup
+					lay.set_text(name)  # OR lay.set_markup
 				w = lay.get_pixel_size()[0]
 				if w > wm:
 					wm = w
@@ -478,13 +585,19 @@ class CalObj(gtk.HBox, CustomizableCalObj):
 		self.onDateChange()
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
 	win = gtk.Dialog(parent=None)
 	box = CalObj()
 	win.add_events(
-		gdk.EventMask.POINTER_MOTION_MASK | gdk.EventMask.FOCUS_CHANGE_MASK | gdk.EventMask.BUTTON_MOTION_MASK |
-		gdk.EventMask.BUTTON_PRESS_MASK | gdk.EventMask.BUTTON_RELEASE_MASK | gdk.EventMask.SCROLL_MASK |
-		gdk.EventMask.KEY_PRESS_MASK | gdk.EventMask.VISIBILITY_NOTIFY_MASK | gdk.EventMask.EXPOSURE_MASK
+		gdk.EventMask.POINTER_MOTION_MASK |
+		gdk.EventMask.FOCUS_CHANGE_MASK |
+		gdk.EventMask.BUTTON_MOTION_MASK |
+		gdk.EventMask.BUTTON_PRESS_MASK |
+		gdk.EventMask.BUTTON_RELEASE_MASK |
+		gdk.EventMask.SCROLL_MASK |
+		gdk.EventMask.KEY_PRESS_MASK |
+		gdk.EventMask.VISIBILITY_NOTIFY_MASK |
+		gdk.EventMask.EXPOSURE_MASK
 	)
 	pack(win.vbox, box, 1, 1)
 	win.vbox.show_all()
@@ -492,5 +605,3 @@ if __name__=='__main__':
 	win.set_title(box.desc)
 	box.onConfigChange()
 	win.run()
-
-

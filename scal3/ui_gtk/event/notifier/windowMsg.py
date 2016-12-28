@@ -7,20 +7,25 @@ from scal3 import ui
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import imageFromFile
 
+
 class WidgetClass(gtk.Entry):
 	def __init__(self, notifier):
 		self.notifier = notifier
 		gtk.Entry.__init__(self)
+
 	def updateWidget(self):
 		self.set_text(self.notifier.extraMessage)
+
 	def updateVars(self):
 		self.notifier.extraMessage = self.get_text()
+
 
 def hideWindow(widget, dialog):
 	dialog.hide()
 	return True
 
-def notify(notifier, finishFunc):## FIXME
+
+def notify(notifier, finishFunc):  # FIXME
 	event = notifier.event
 	dialog = gtk.Dialog(parent=None)
 	####
@@ -51,4 +56,3 @@ def notify(notifier, finishFunc):## FIXME
 	dialog.vbox.show_all()
 	dialog.connect('response', lambda w, e: finishFunc())
 	dialog.present()
-

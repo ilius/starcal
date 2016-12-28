@@ -32,14 +32,20 @@ from scal3 import ui
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
-from scal3.ui_gtk.utils import dialog_add_button, toolButtonFromStock, set_tooltip
+from scal3.ui_gtk.utils import (
+	dialog_add_button,
+	toolButtonFromStock,
+	set_tooltip,
+)
 from scal3.ui_gtk import gtk_ud as ud
 
 hijriMode = calTypes.names.index('hijri')
 
+
 def getCurrentYm():
 	y, m, d = ui.todayCell.dates[hijriMode]
-	return y*12 + m-1
+	return y * 12 + m - 1
+
 
 class EditDbDialog(gtk.Dialog):
 	def __init__(self, **kwargs):
@@ -60,7 +66,13 @@ class EditDbDialog(gtk.Dialog):
 		pack(self.vbox, hbox)
 		############################
 		treev = gtk.TreeView()
-		trees = gtk.ListStore(int, str, str, int, str)## ym, yearShown, monthShown, monthLenCombo, endDateShown
+		trees = gtk.ListStore(
+			int,  # ym (hidden)
+			str,  # localized year
+			str,  # localized month
+			int,  # monthLenCombo
+			str,  # localized endDate
+		)
 		treev.set_model(trees)
 		#treev.get_selection().connect('changed', self.plugTreevCursorChanged)
 		#treev.connect('row-activated', self.plugTreevRActivate)
@@ -116,12 +128,28 @@ class EditDbDialog(gtk.Dialog):
 		pack(mainHbox, toolbar)
 		pack(self.vbox, mainHbox, 1, 1)
 		######
-		dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
-		dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
+		dialog_add_button(
+			self,
+			gtk.STOCK_OK,
+			_('_OK'),
+			gtk.ResponseType.OK,
+		)
+		dialog_add_button(
+			self,
+			gtk.STOCK_CANCEL,
+			_('_Cancel'),
+			gtk.ResponseType.CANCEL,
+		)
 		##
-		resetB = self.add_button(gtk.STOCK_UNDO, gtk.ResponseType.NONE)
+		resetB = self.add_button(
+			gtk.STOCK_UNDO,
+			gtk.ResponseType.NONE,
+		)
 		resetB.set_label(_('_Reset to Defaults'))
-		resetB.set_image(gtk.Image.new_from_stock(gtk.STOCK_UNDO, gtk.IconSize.BUTTON))
+		resetB.set_image(gtk.Image.new_from_stock(
+			gtk.STOCK_UNDO,
+			gtk.IconSize.BUTTON,
+		))
 		resetB.connect('clicked', self.resetToDefaults)
 		##
 		self.connect('response', self.onResponse)
@@ -129,19 +157,21 @@ class EditDbDialog(gtk.Dialog):
 		#self.get_action_area().set_homogeneous(False)
 		######
 		self.vbox.show_all()
+
 	def resetToDefaults(self, widget):
 		if isfile(monthDb.userDbPath):
 			os.remove(monthDb.userDbPath)
 		monthDb.load()
 		self.updateWidget()
 		return True
+
 	def addClicked(self, obj=None):
 		last = self.trees[-1]
-		## 0 ym
-		## 1 yearLocale
-		## 2 monthLocale
-		## 3 mLen
-		## 4 endDate = ''
+		# 0 ym
+		# 1 yearLocale
+		# 2 monthLocale
+		# 3 mLen
+		# 4 endDate = ''
 		ym = last[0] + 1
 		mLen = 59 - last[3]
 		year, month0 = divmod(ym, 12)
@@ -154,24 +184,34 @@ class EditDbDialog(gtk.Dialog):
 		))
 		self.updateEndDates()
 		self.selectLastRow()
+
 	def selectLastRow(self):
-		lastPath = (len(self.trees)-1,)
+		lastPath = (len(self.trees) - 1,)
 		self.treev.scroll_to_cell(lastPath)
 		self.treev.set_cursor(lastPath)
+
 	def delClicked(self, obj=None):
 		if len(self.trees) > 1:
 			del self.trees[-1]
 		self.selectLastRow()
+
 	def updateWidget(self):
 		#for index, module in calTypes.iterIndexModule():
 		#	if module.name != 'hijri':
 		for mode in calTypes.active:
 			modeDesc = calTypes[mode].desc
-			if not 'hijri' in modeDesc.lower():
+			if 'hijri' not in modeDesc.lower():
 				self.altMode = mode
 				self.altModeDesc = modeDesc
 				break
-		self.topLabel.set_label(_('Start')+': '+dateLocale(*monthDb.startDate)+' '+_('Equals to')+' %s'%_(self.altModeDesc))
+		self.topLabel.set_label(
+			_('Start') +
+			': ' +
+			dateLocale(*monthDb.startDate) +
+			' ' +
+			_('Equals to') +
+			' %s' % _(self.altModeDesc)
+		)
 		self.startDateInput.set_value(jd_to(monthDb.startJd, self.altMode))
 		###########
 		selectYm = getCurrentYm() - 1 ## previous month
@@ -193,6 +233,7 @@ class EditDbDialog(gtk.Dialog):
 		if selectIndex is not None:
 			self.treev.scroll_to_cell(str(selectIndex))
 			self.treev.set_cursor(str(selectIndex))
+
 	def updateEndDates(self):
 		y, m, d = self.startDateInput.get_value()
 		jd0 = to_jd(y, m, d, self.altMode) - 1
@@ -200,10 +241,11 @@ class EditDbDialog(gtk.Dialog):
 			mLen = row[3]
 			jd0 += mLen
 			row[4] = dateLocale(*jd_to(jd0, self.altMode))
+
 	def monthLenCellEdited(self, combo, path_string, new_text):
 		editIndex = int(path_string)
 		mLen = int(new_text)
-		if not mLen in (29, 30):
+		if mLen not in (29, 30):
 			return
 		mLenPrev = self.trees[editIndex][3]
 		delta = mLen - mLenPrev
@@ -211,17 +253,18 @@ class EditDbDialog(gtk.Dialog):
 			return
 		n = len(self.trees)
 		self.trees[editIndex][3] = mLen
-		if delta==1:
-			for i in range(editIndex+1, n):
+		if delta == 1:
+			for i in range(editIndex + 1, n):
 				if self.trees[i][3] == 30:
 					self.trees[i][3] = 29
 					break
-		elif delta==-1:
-			for i in range(editIndex+1, n):
+		elif delta == -1:
+			for i in range(editIndex + 1, n):
 				if self.trees[i][3] == 29:
 					self.trees[i][3] = 30
 					break
 		self.updateEndDates()
+
 	def updateVars(self):
 		y, m, d = self.startDateInput.get_value()
 		monthDb.endJd = monthDb.startJd = to_jd(y, m, d, self.altMode)
@@ -232,28 +275,31 @@ class EditDbDialog(gtk.Dialog):
 			monthDb.monthLenByYm[ym] = mLen
 			monthDb.endJd += mLen
 		monthDb.save()
+
 	def run(self):
 		monthDb.load()
 		self.updateWidget()
 		self.treev.grab_focus()
 		gtk.Dialog.run(self)
+
 	def onResponse(self, dialog, response_id):
-		if response_id==gtk.ResponseType.OK:
+		if response_id == gtk.ResponseType.OK:
 			self.updateVars()
 			self.destroy()
-		elif response_id==gtk.ResponseType.CANCEL:
+		elif response_id == gtk.ResponseType.CANCEL:
 			self.destroy()
 		return True
+
 	def onDeleteEvent(self, dialog, gevent):
 		self.destroy()
 		return True
+
 
 def tuneHijriMonthes(widget=None):
 	dialog = EditDbDialog(parent=ui.prefDialog)
 	dialog.resize(400, 400)
 	dialog.run()
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
 	tuneHijriMonthes()
-
-

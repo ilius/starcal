@@ -45,7 +45,7 @@ class WidgetClass(common.WidgetClass):
 			self.endDateInput = DateButton()
 		######
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Start')+': ')
+		label = gtk.Label(_('Start') + ': ')
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
@@ -53,7 +53,7 @@ class WidgetClass(common.WidgetClass):
 		pack(self, hbox)
 		######
 		hbox = gtk.HBox()
-		label = gtk.Label(_('End')+': ')
+		label = gtk.Label(_('End') + ': ')
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
@@ -62,28 +62,20 @@ class WidgetClass(common.WidgetClass):
 		#############
 		#self.filesBox = common.FilesBox(self.event)
 		#pack(self, self.filesBox)
+
 	def updateWidget(self):
 		common.WidgetClass.updateWidget(self)
 		self.startDateInput.set_value(self.event['start'].date)
 		self.endDateInput.set_value(self.event['end'].date)
+
 	def updateVars(self):## FIXME
 		common.WidgetClass.updateVars(self)
 		self.event['start'].setDate(self.startDateInput.get_value())
 		self.event['end'].setDate(self.endDateInput.get_value())
-	def modeComboChanged(self, obj=None):## overwrite method from common.WidgetClass
+
+	def modeComboChanged(self, obj=None):
+		# overwrite method from common.WidgetClass
 		newMode = self.modeCombo.get_active()
 		self.startDateInput.changeMode(self.event.mode, newMode)
 		self.endDateInput.changeMode(self.event.mode, newMode)
 		self.event.mode = newMode
-
-
-
-
-
-
-
-
-
-
-
-

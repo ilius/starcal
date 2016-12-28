@@ -24,25 +24,33 @@ from gi.repository import Gtk as gtk
 root = gdk.get_default_root_window()
 wid = 0
 
-#
-# Restricts the given coordinates to visible values.
-#
+
 def _crop_coords(x, y, w, h):
+	"""
+	Restricts the given coordinates to visible values.
+	"""
 	sw = gdk.Screen.width()
 	sh = gdk.Screen.height()
-	x = min(x, sw-1)
-	y = min(y, sh-1)
-	return (x, y, min(sw-x, w), min(sh-y, h))
+	x = min(x, sw - 1)
+	y = min(y, sh - 1)
+	return (
+		x,
+		y,
+		min(sw - x, w),
+		min(sh - y, h),
+	)
 
 
-
-#
-# Captures solid color wallpapers. Requires GNOME.
-#
 def get_wallcolor(width, height):
+	"""
+	Captures solid color wallpapers. Requires GNOME.
+	"""
 	from gi.repository import GConf
 	client = GConf.Client.get_default()
-	client.add_dir("/desktop/gnome/background", GConf.ClientPreloadType.PRELOAD_RECURSIVE)
+	client.add_dir(
+		"/desktop/gnome/background",
+		GConf.ClientPreloadType.PRELOAD_RECURSIVE,
+	)
 	value = client.get("/desktop/gnome/background/primary_color")
 	color = value.get_string()
 
@@ -57,25 +65,30 @@ def get_wallcolor(width, height):
 	return pbuf
 
 
-
-#
-# Captures the wallpaper image by making a screen shot.
-#
 def get_wallpaper_fallback(x, y, width, height):
-
+	"""
+	Captures the wallpaper image by making a screen shot.
+	"""
 	x, y, width, height = _crop_coords(x, y, width, height)
 
 	pbuf = GdkPixbuf.Pixbuf(0, 1, 8, width, height)
-	pbuf.get_from_drawable(root, root.get_colormap(),
-						   x, y, 0, 0, width, height)
+	pbuf.get_from_drawable(
+		root,
+		root.get_colormap(),
+		x,
+		y,
+		0,
+		0,
+		width,
+		height,
+	)
 	return pbuf
 
 
-
-#
-# Captures the wallpaper image by accessing the background pixmap.
-#
 def get_wallpaper(x, y, width, height):
+	"""
+	Captures the wallpaper image by accessing the background pixmap.
+	"""
 	x, y, width, height = _crop_coords(x, y, width, height)
 
 	# get wallpaper
@@ -102,27 +115,30 @@ def get_wallpaper(x, y, width, height):
 			w = min(pwidth - srcx, width - dstx)
 			h = min(pheight - srcy, height - dsty)
 
-			pbuf.get_from_drawable(pmap, root.get_colormap(),
-								   srcx, srcy, dstx, dsty, w, h)
+			pbuf.get_from_drawable(
+				pmap, root.get_colormap(),
+				srcx,
+				srcy,
+				dstx,
+				dsty,
+				w,
+				h,
+			)
 
 	return pbuf
 
 
-
-
-#
-# Returns the ID of the background pixmap.
-#
 def get_wallpaper_id():
+	"""
+	Returns the ID of the background pixmap.
+	"""
 	global wid
 	try:
 		wid = root.property_get("_XROOTPMAP_ID", "PIXMAP")[2][0]
 		return int(wid)
-
 	except:
 		#raise NotImplementedError
 		return int(wid)
-
 
 
 def watch_bg(observer):

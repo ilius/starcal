@@ -30,15 +30,15 @@ def getOsName():## 'linux', 'win', 'mac', 'unix'
 		return 'linux'
 	elif plat.startswith('win'):
 		return 'win'
-	elif plat=='darwin':
-		## os.environ['OSTYPE'] == 'darwin10.0'
-		## os.environ['MACHTYPE'] == 'x86_64-apple-darwin10.0'
-		## platform.dist() == ('', '', '')
-		## platform.release() == '10.3.0'
+	elif plat == 'darwin':
+		# os.environ['OSTYPE'] == 'darwin10.0'
+		# os.environ['MACHTYPE'] == 'x86_64-apple-darwin10.0'
+		# platform.dist() == ('', '', '')
+		# platform.release() == '10.3.0'
 		return 'mac'
-	elif os.sep=='\\':
+	elif os.sep == '\\':
 		return 'win'
-	elif os.sep=='/':
+	elif os.sep == '/':
 		return 'unix'
 	else:
 		raise OSError('Unkown operating system!')
@@ -47,6 +47,7 @@ def getOsName():## 'linux', 'win', 'mac', 'unix'
 def makeDir(direc):
 	if not isdir(direc):
 		os.makedirs(direc)
+
 
 def getUsersData():
 	data = []
@@ -64,8 +65,9 @@ def getUsersData():
 		})
 	return data
 
+
 def getUserDisplayName():
-	if os.sep=='/':
+	if os.sep == '/':
 		username = os.getenv('USER')
 		if isfile('/etc/passwd'):
 			for user in getUsersData():
@@ -75,7 +77,7 @@ def getUserDisplayName():
 					else:
 						return username
 		return username
-	else:## FIXME
+	else:  # FIXME
 		username = os.getenv('USERNAME')
 		return username
 
@@ -99,21 +101,23 @@ def kill(pid, signal=0):
 		else:
 			raise e
 
+
 def dead(pid):
 	if kill(pid):
 		return True
 
-	#maybe the pid is a zombie that needs us to wait for it
+	# maybe the pid is a zombie that needs us to wait for it
 	from os import waitpid, WNOHANG
 	try:
 		dead = waitpid(pid, WNOHANG)[0]
 	except OSError as e:
-		#pid is not a child
+		# pid is not a child
 		if e.errno == 10:
 			return False
 		else:
 			raise e
 	return dead
+
 
 #def kill(pid, sig=0): pass #DEBUG: test hang condition
 
@@ -136,14 +140,9 @@ def goodkill(pid, interval=1, hung=20):
 		if i < hung:
 			i += 1
 		else:
-			raise OSError('Process %s is hung. Giving up kill.'%pid)
+			raise OSError('Process %s is hung. Giving up kill.' % pid)
 		if kill(pid, SIGKILL):
 			return
 		if dead(pid):
 			return
 		sleep(interval)
-
-
-
-
-
