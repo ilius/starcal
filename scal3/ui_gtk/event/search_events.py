@@ -31,7 +31,11 @@ from gi.repository import GdkPixbuf
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.utils import pixbufFromFile, labelStockMenuItem, labelImageMenuItem
+from scal3.ui_gtk.utils import (
+	pixbufFromFile,
+	labelStockMenuItem,
+	labelImageMenuItem,
+)
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
 from scal3.ui_gtk.mywidgets import TextFrame
 from scal3.ui_gtk.mywidgets.multi_spin.date_time import DateTimeButton
@@ -99,7 +103,10 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		pack(hboxIn, gtk.Label('  '))
 		##
 		self.timeToInput = DateTimeButton()
-		self.timeToInput.set_value(((year+1, 1, 1), (0, 0, 0)))
+		self.timeToInput.set_value((
+			(year + 1, 1, 1),
+			(0, 0, 0),
+		))
 		pack(hboxIn, self.timeToInput)
 		##
 		pack(vboxIn, hboxIn)
@@ -162,21 +169,35 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		bbox.set_border_width(5)
 		searchButton = gtk.Button()
 		searchButton.set_label(_('_Search'))
-		searchButton.set_image(gtk.Image.new_from_stock(gtk.STOCK_FIND, gtk.IconSize.BUTTON))
+		searchButton.set_image(gtk.Image.new_from_stock(
+			gtk.STOCK_FIND,
+			gtk.IconSize.BUTTON,
+		))
 		searchButton.connect('clicked', self.searchClicked)
 		bbox.add(searchButton)
 		pack(self.vbox, bbox)
 		######
 		treev = gtk.TreeView()
-		trees = gtk.TreeStore(int, int, str, GdkPixbuf.Pixbuf, str, str)
-		## gid, eid, group_name, icon, summary, description
+		trees = gtk.TreeStore(
+			int,  # gid
+			int,  # eid
+			str,  # group_name
+			GdkPixbuf.Pixbuf,  # icon
+			str,  # summary
+			str,  # description
+		)
+		###
 		treev.set_model(trees)
 		treev.connect('button-press-event', self.treevButtonPress)
 		treev.connect('row-activated', self.rowActivated)
 		treev.connect('key-press-event', self.treevKeyPress)
 		treev.set_headers_clickable(True)
 		###
-		self.colGroup = gtk.TreeViewColumn(_('Group'), gtk.CellRendererText(), text=2)
+		self.colGroup = gtk.TreeViewColumn(
+			_('Group'),
+			gtk.CellRendererText(),
+			text=2,
+		)
 		self.colGroup.set_resizable(True)
 		self.colGroup.set_sort_column_id(2)
 		self.colGroup.set_property('expand', False)
@@ -186,20 +207,28 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		cell = gtk.CellRendererPixbuf()
 		pack(self.colIcon, cell)
 		self.colIcon.add_attribute(cell, 'pixbuf', 3)
-		#self.colIcon.set_sort_column_id(3)## FIXME
+		#self.colIcon.set_sort_column_id(3)  # FIXME
 		self.colIcon.set_property('expand', False)
 		treev.append_column(self.colIcon)
 		###
-		self.colSummary = gtk.TreeViewColumn(_('Summary'), gtk.CellRendererText(), text=4)
+		self.colSummary = gtk.TreeViewColumn(
+			_('Summary'),
+			gtk.CellRendererText(),
+			text=4,
+		)
 		self.colSummary.set_resizable(True)
 		self.colSummary.set_sort_column_id(4)
-		self.colSummary.set_property('expand', True)## FIXME
+		self.colSummary.set_property('expand', True)  # FIXME
 		treev.append_column(self.colSummary)
 		###
-		self.colDesc = gtk.TreeViewColumn(_('Description'), gtk.CellRendererText(), text=5)
+		self.colDesc = gtk.TreeViewColumn(
+			_('Description'),
+			gtk.CellRendererText(),
+			text=5,
+		)
 		self.colDesc.set_sort_column_id(5)
 		self.colDesc.set_visible(showDesc)
-		self.colDesc.set_property('expand', True)## FIXME
+		self.colDesc.set_property('expand', True)  # FIXME
 		treev.append_column(self.colDesc)
 		###
 		trees.set_sort_func(2, self.sort_func_group)
@@ -218,26 +247,38 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		pack(vbox, topHbox)
 		####
 		columnBox = gtk.HBox(spacing=5)
-		pack(columnBox, gtk.Label(_('Columns')+':    '))
+		pack(columnBox, gtk.Label(_('Columns') + ':    '))
 		##
 		check = gtk.CheckButton(_('Group'))
 		check.set_active(True)
-		check.connect('clicked', lambda w: self.colGroup.set_visible(w.get_active()))
+		check.connect(
+			'clicked',
+			lambda w: self.colGroup.set_visible(w.get_active()),
+		)
 		pack(columnBox, check)
 		##
 		check = gtk.CheckButton(_('Icon'))
 		check.set_active(True)
-		check.connect('clicked', lambda w: self.colIcon.set_visible(w.get_active()))
+		check.connect(
+			'clicked',
+			lambda w: self.colIcon.set_visible(w.get_active()),
+		)
 		pack(columnBox, check)
 		##
 		check = gtk.CheckButton(_('Summary'))
 		check.set_active(True)
-		check.connect('clicked', lambda w: self.colSummary.set_visible(w.get_active()))
+		check.connect(
+			'clicked',
+			lambda w: self.colSummary.set_visible(w.get_active()),
+		)
 		pack(columnBox, check)
 		##
 		check = gtk.CheckButton(_('Description'))
 		check.set_active(showDesc)
-		check.connect('clicked', lambda w: self.colDesc.set_visible(w.get_active()))
+		check.connect(
+			'clicked',
+			lambda w: self.colDesc.set_visible(w.get_active()),
+		)
 		pack(columnBox, check)
 		##
 		pack(vbox, columnBox)
@@ -256,7 +297,10 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		bbox2.set_border_width(10)
 		closeButton = gtk.Button()
 		closeButton.set_label(_('_Close'))
-		closeButton.set_image(gtk.Image.new_from_stock(gtk.STOCK_CLOSE, gtk.IconSize.BUTTON))
+		closeButton.set_image(gtk.Image.new_from_stock(
+			gtk.STOCK_CLOSE,
+			gtk.IconSize.BUTTON,
+		))
 		closeButton.connect('clicked', self.closed)
 		bbox2.add(closeButton)
 		pack(self.vbox, bbox2)
@@ -265,21 +309,29 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self.trees = trees
 		self.vbox.show_all()
 		#self.maximize()## FIXME
-	## FIXME
-	sort_func_group = lambda self, model, iter1, iter2: cmp(
-		ui.eventGroups.index(model.get(iter1, 0)[0]),
-		ui.eventGroups.index(model.get(iter2, 0)[0]),
-	)
+
+	# FIXME
+	def sort_func_group(self, model, iter1, iter2):
+		return cmp(
+			ui.eventGroups.index(model.get(iter1, 0)[0]),
+			ui.eventGroups.index(model.get(iter2, 0)[0]),
+		)
+
 	def updateTimeFromSensitive(self, obj=None):
 		self.timeFromInput.set_sensitive(self.timeFromCheck.get_active())
+
 	def updateTimeToSensitive(self, obj=None):
 		self.timeToInput.set_sensitive(self.timeToCheck.get_active())
+
 	def updateModifiedFromSensitive(self, obj=None):
 		self.modifiedFromInput.set_sensitive(self.modifiedFromCheck.get_active())
+
 	def updateTypeSensitive(self, obj=None):
 		self.typeCombo.set_sensitive(self.typeCheck.get_active())
+
 	def updateGroupSensitive(self, obj=None):
 		self.groupCombo.set_sensitive(self.groupCheck.get_active())
+
 	def _do_search(self):
 		if self.groupCheck.get_active():
 			groupIds = [
@@ -316,9 +368,13 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 					evData['summary'],
 					evData['description'],
 				))
-		self.resultLabel.set_label(_('Found %s events')%_(len(self.trees)))
+		self.resultLabel.set_label(
+			_('Found %s events') % _(len(self.trees))
+		)
+
 	def searchClicked(self, obj=None):
 		self.waitingDo(self._do_search)
+
 	def editEventByPath(self, path):
 		from scal3.ui_gtk.event.editor import EventEditorDialog
 		try:
@@ -330,7 +386,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		event = group[eid]
 		event = EventEditorDialog(
 			event,
-			title=_('Edit ')+event.desc,
+			title=_('Edit ') + event.desc,
 			parent=self,
 		).run()
 		if event is None:
@@ -342,11 +398,21 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self.trees.set_value(eventIter, 3, pixbufFromFile(event.icon))
 		self.trees.set_value(eventIter, 4, event.summary)
 		self.trees.set_value(eventIter, 5, event.getShownDescription())
+
 	def rowActivated(self, treev, path, col):
 		self.editEventByPath(path)
+
 	def editEventFromMenu(self, menu, path):
 		self.editEventByPath(path)
-	def moveEventToGroupFromMenu(self, menu, eventPath, event, old_group, new_group):
+
+	def moveEventToGroupFromMenu(
+		self,
+		menu,
+		eventPath,
+		event,
+		old_group,
+		new_group,
+	):
 		old_group.remove(event)
 		old_group.save()
 		new_group.append(event)
@@ -358,6 +424,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		eventIter = self.trees.get_iter(eventPath)
 		self.trees.set_value(eventIter, 0, new_group.id)
 		self.trees.set_value(eventIter, 2, new_group.title)
+
 	def copyEventToGroupFromMenu(self, menu, eventPath, event, new_group):
 		new_event = event.copy()
 		new_event.save()
@@ -368,6 +435,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		## FIXME
 		###
 		eventIter = self.trees.get_iter(eventPath)
+
 	def moveEventToTrash(self, path):
 		try:
 			gid = self.trees[path][0]
@@ -382,16 +450,20 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		ui.reloadTrash = True
 		ui.eventDiff.add('-', event)
 		self.trees.remove(self.trees.get_iter(path))
-	moveEventToTrashFromMenu = lambda self, menu, path: self.moveEventToTrash(path)
+
+	def moveEventToTrashFromMenu(self, menu, path):
+		return self.moveEventToTrash(path)
+
 	def moveSelectionToTrash(self):
 		path = self.treev.get_cursor()[0]
 		if not path:
 			return
 		self.moveEventToTrash(path)
+
 	def getMoveToGroupSubMenu(self, path, group, event):
 		## returns a MenuItem instance
 		item = labelStockMenuItem(
-			_('Move to %s')%'...',
+			_('Move to %s') % '...',
 			None,## FIXME
 		)
 		subMenu = gtk.Menu()
@@ -406,7 +478,11 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 				new_groupItem.set_label(new_group.title)
 				##
 				image = gtk.Image()
-				image.set_from_pixbuf(newColorCheckPixbuf(new_group.color, 20, True))
+				image.set_from_pixbuf(newColorCheckPixbuf(
+					new_group.color,
+					20,
+					True,
+				))
 				new_groupItem.set_image(image)
 				##
 				new_groupItem.connect(
@@ -422,10 +498,11 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		##
 		item.set_submenu(subMenu)
 		return item
+
 	def getCopyToGroupSubMenu(self, path, event):
 		## returns a MenuItem instance
 		item = labelStockMenuItem(
-			_('Copy to %s')%'...',
+			_('Copy to %s') % '...',
 			None,## FIXME
 		)
 		subMenu = gtk.Menu()
@@ -453,6 +530,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		##
 		item.set_submenu(subMenu)
 		return item
+
 	def genRightClickMenu(self, path):
 		gid = self.trees[path][0]
 		eid = self.trees[path][1]
@@ -474,7 +552,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		##
 		menu.add(gtk.SeparatorMenuItem())
 		menu.add(labelImageMenuItem(
-			_('Move to %s')%ui.eventTrash.title,
+			_('Move to %s') % ui.eventTrash.title,
 			ui.eventTrash.icon,
 			self.moveEventToTrashFromMenu,
 			path,
@@ -482,6 +560,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		##
 		menu.show_all()
 		return menu
+
 	def openRightClickMenu(self, path, etime=None):
 		menu = self.genRightClickMenu(path)
 		if not menu:
@@ -490,6 +569,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 			etime = gtk.get_current_event_time()
 		self.tmpMenu = menu
 		menu.popup(None, None, None, None, 3, etime)
+
 	def treevButtonPress(self, widget, gevent):
 		pos_t = self.treev.get_path_at_pos(int(gevent.x), int(gevent.y))
 		if not pos_t:
@@ -498,9 +578,10 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		#path, col = self.treev.get_cursor() ## FIXME
 		if not path:
 			return
-		if gevent.button==3:
+		if gevent.button == 3:
 			self.openRightClickMenu(path, gevent.time)
 		return False
+
 	def treevKeyPress(self, treev, gevent):
 		#from scal3.time_utils import getGtkTimeFromEpoch
 		#print(gevent.time-getGtkTimeFromEpoch(now())## FIXME)
@@ -509,7 +590,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		## gevent.time == gtk.get_current_event_time() ## OK
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		#print('treevKeyPress', kname)
-		if kname=='menu':## Simulate right click (key beside Right-Ctrl)
+		if kname == 'menu':## Simulate right click (key beside Right-Ctrl)
 			path = treev.get_cursor()[0]
 			if path:
 				menu = self.genRightClickMenu(path)
@@ -521,44 +602,49 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 					x -= 100
 				else:
 					x += 50
-				dx, dy = treev.translate_coordinates(self, x, rect.y + rect.height)
+				dx, dy = treev.translate_coordinates(
+					self,
+					x,
+					rect.y + rect.height,
+				)
 				wx, wy = self.get_window().get_origin()
 				self.tmpMenu = menu
 				menu.popup(
 					None,
 					None,
 					lambda *args: (
-						wx+dx,
-						wy+dy+20,
+						wx + dx,
+						wy + dy + 20,
 						True,
 					),
 					None,
 					3,
 					gevent.time,
 				)
-		elif kname=='delete':
+		elif kname == 'delete':
 			self.moveSelectionToTrash()
 		else:
 			#print(kname)
 			return False
 		return True
+
 	def clearResults(self):
 		self.trees.clear()
 		self.resultLabel.set_label('')
+
 	def closed(self, obj=None, gevent=None):
 		self.hide()
 		self.clearResults()
 		self.onConfigChange()
 		return True
+
 	def present(self):
 		self.groupCombo.updateItems()
 		gtk.Window.present(self)
+
 	def keyPress(self, arg, gevent):
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		if kname == 'escape':
 			self.closed()
 			return True
 		return False
-
-
-

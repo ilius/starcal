@@ -29,26 +29,25 @@ class FontFamilyCombo(gtk.ComboBox):
 		###
 		#self.set_property('has-entry', 1)
 		#self.set_property('entry-text-column', 0)
+
 	def get_value(self):
 		i = self.get_active()
 		if i is None:
 			return None
 		return self.get_model()[i][0]
+
 	def set_value(self, fontName):
 		ls = self.get_model()
 		for i in range(len(ls)):
-			if ls[i][0]==fontName:
+			if ls[i][0] == fontName:
 				self.set_active(i)
 				break
 
-if __name__=='__main__':
+
+if __name__ == '__main__':
 	d = gtk.Dialog(parent=None)
 	combo = FontFamilyCombo(1)
 	pack(d.vbox, combo, 1, 1)
 	d.vbox.show_all()
 	d.run()
 	print(combo.get_value())
-
-
-
-

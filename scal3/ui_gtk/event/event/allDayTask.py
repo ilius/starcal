@@ -69,16 +69,18 @@ class WidgetClass(common.WidgetClass):
 		#############
 		#self.filesBox = common.FilesBox(self.event)
 		#pack(self, self.filesBox)
+
 	def endTypeComboChanged(self, combo=None):
 		active = self.endTypeCombo.get_active()
-		if active==0:## duration
+		if active == 0:  # duration
 			self.durationBox.show()
 			self.endDateInput.hide()
-		elif active==1:## end date
+		elif active == 1:  # end date
 			self.durationBox.hide()
 			self.endDateInput.show()
 		else:
 			raise RuntimeError
+
 	def updateWidget(self):## FIXME
 		common.WidgetClass.updateWidget(self)
 		mode = self.event.mode
@@ -87,33 +89,34 @@ class WidgetClass(common.WidgetClass):
 		self.startDateInput.set_value(jd_to(startJd, mode))
 		###
 		endType, endValue = self.event.getEnd()
-		if endType=='duration':
+		if endType == 'duration':
 			self.endTypeCombo.set_active(0)
 			self.durationSpin.set_value(endValue)
-			self.endDateInput.set_value(jd_to(self.event.getEndJd(), mode))## FIXME
-		elif endType=='date':
+			self.endDateInput.set_value(jd_to(self.event.getEndJd(), mode))
+			# ^ FIXME
+		elif endType == 'date':
 			self.endTypeCombo.set_active(1)
 			self.endDateInput.set_value(endValue)
 		else:
 			raise RuntimeError
 		self.endTypeComboChanged()
+
 	def updateVars(self):## FIXME
 		common.WidgetClass.updateVars(self)
 		self.event.setStartDate(self.startDateInput.get_value())
 		###
 		active = self.endTypeCombo.get_active()
-		if active==0:
+		if active == 0:
 			self.event.setEnd('duration', self.durationSpin.get_value())
-		elif active==1:
+		elif active == 1:
 			self.event.setEnd(
 				'date',
 				self.endDateInput.get_value(),
 			)
-	def modeComboChanged(self, obj=None):## overwrite method from common.WidgetClass
+
+	def modeComboChanged(self, obj=None):
+		# overwrite method from common.WidgetClass
 		newMode = self.modeCombo.get_active()
 		self.startDateInput.changeMode(self.event.mode, newMode)
 		self.endDateInput.changeMode(self.event.mode, newMode)
 		self.event.mode = newMode
-
-
-

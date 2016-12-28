@@ -30,12 +30,12 @@ srcDir = dirname(__file__)
 cwd = os.getcwd()
 if srcDir in ('.', ''):
 	srcDir = cwd
-elif os.sep=='/':
+elif os.sep == '/':
 	if srcDir.startswith('./'):
 		srcDir = cwd + srcDir[1:]
 	elif srcDir[0] != '/':
 		srcDir = join(cwd, srcDir)
-elif os.sep=='\\':
+elif os.sep == '\\':
 	if srcDir.startswith('.\\'):
 		srcDir = cwd + srcDir[1:]
 #print('srcDir=%r'%srcDir)
@@ -50,13 +50,14 @@ if osName in ('linux', 'unix'):
 	sysConfDir = '/etc/' + APP_NAME
 	tmpDir = '/tmp'
 	#user = os.getenv('USER')
-elif osName=='mac':
+elif osName == 'mac':
 	homeDir = os.getenv('HOME')
-	confDir = homeDir + '/Library/Preferences/' + APP_NAME ## OR '/Library/' + APP_NAME
-	sysConfDir = join(rootDir, 'config')## FIXME
+	confDir = homeDir + '/Library/Preferences/' + APP_NAME
+	# OR '/Library/' + APP_NAME
+	sysConfDir = join(rootDir, 'config')  # FIXME
 	tmpDir = '/tmp'
 	#user = os.getenv('USER')
-elif osName=='win':
+elif osName == 'win':
 	#homeDrive = os.environ['HOMEDRIVE']
 	homeDir = os.getenv('HOMEPATH')
 	confDir = os.getenv('APPDATA') + '\\' + APP_NAME
@@ -66,12 +67,11 @@ elif osName=='win':
 else:
 	raise OSError('Unkown operating system!')
 
-deskDir = join(homeDir, 'Desktop')## in all operating systems? FIXME
+deskDir = join(homeDir, 'Desktop')  # in all operating systems? FIXME
 
 userPlugConf = join(confDir, 'plugin.conf')
-modDir = '%s/cal_types'%srcDir
+modDir = '%s/cal_types' % srcDir
 plugDirUser = join(confDir, 'plugins')
 objectDir = join(confDir, 'objects')
 
-purpleDir = join(homeDir, '.purple')## FIXME
-
+purpleDir = join(homeDir, '.purple')  # FIXME

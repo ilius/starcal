@@ -22,11 +22,13 @@ springRefJd = 2456372.4597222223
 
 
 def getSeasonValueFromJd(jd):
-	return ((jd-springRefJd) % avgYearLen) / avgYearLen * 4.0
+	return ((jd - springRefJd) % avgYearLen) / avgYearLen * 4.0
+
 
 def getSpringJdAfter(fromJd):
 	d, m = divmod(fromJd - 1 - springRefJd, avgYearLen)
 	return int(fromJd + (d + 1) * avgYearLen)
+
 
 def getSeasonNamePercentFromJd(jd):
 	d, m = divmod(getSeasonValueFromJd(jd), 1)
@@ -45,9 +47,9 @@ def test():
 		#for month in (1, 4, 7, 10):
 		for month in (1,):
 			s = getSeasonFromJd(jalali_to_jd(year, month, 1))
-			print('%.4d/%.2d/01\t%.5f'%(year, month, s))
+			print('%.4d/%.2d/01\t%.5f' % (year, month, s))
 		#print
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
 	test()

@@ -26,6 +26,7 @@ from mercurial.localrepo import localrepository
 from mercurial.patch import diff, diffstatdata, diffstatsum
 from mercurial.util import iterlines
 
+
 def prepareObj(obj):
 	obj.repo = localrepository(mercurial.ui.ui(), obj.vcsDir)
 	###
@@ -34,18 +35,22 @@ def prepareObj(obj):
 		epoch = obj.repo[rev_id].date()[0]
 		obj.est.add(epoch, epoch, rev_id)
 
+
 def clearObj(obj):
 	obj.repo = None
 	obj.est = EventSearchTree()
 
 
-## returns a list of (epoch, commit_id) tuples
-getCommitList = lambda obj, startJd, endJd: getCommitListFromEst(
-	obj,
-	startJd,
-	endJd,
-	lambda repo, rev_id: str(repo[rev_id])
-)
+def getCommitList(obj, startJd, endJd):
+	"""
+	return a list of (epoch, commit_id) tuples
+	"""
+	return getCommitListFromEst(
+		obj,
+		startJd,
+		endJd,
+		lambda repo, rev_id: str(repo[rev_id])
+	)
 
 
 def getCommitInfo(obj, commid_id):
@@ -62,7 +67,7 @@ def getCommitInfo(obj, commid_id):
 
 def getShortStat(obj, node1, node2):## SLOW FIXME
 	repo = obj.repo
-	## if not node1 ## FIXME
+	# if not node1 ## FIXME
 	stats = diffstatdata(
 		iterlines(
 			diff(
@@ -72,14 +77,20 @@ def getShortStat(obj, node1, node2):## SLOW FIXME
 			)
 		)
 	)
-	maxname, maxtotal, insertions, deletions, hasbinary = diffstatsum(stats)
+	(
+		maxname,
+		maxtotal,
+		insertions,
+		deletions,
+		hasbinary,
+	) = diffstatsum(stats)
 	return len(stats), insertions, deletions
 
 
 def getCommitShortStat(obj, commit_id):
-	'''
-		returns (files_changed, insertions, deletions)
-	'''
+	"""
+	returns (files_changed, insertions, deletions)
+	"""
 	ctx = obj.repo[commit_id]
 	return getShortStat(
 		obj,
@@ -88,15 +99,15 @@ def getCommitShortStat(obj, commit_id):
 	)
 
 
-## returns str
-getCommitShortStatLine = lambda obj, commit_id:\
-	encodeShortStat(*getCommitShortStat(obj, commit_id))
+def getCommitShortStatLine(obj, commit_id):
+	"""returns str"""
+	return encodeShortStat(*getCommitShortStat(obj, commit_id))
 
 
 def getTagList(obj, startJd, endJd):
-	'''
-		returns a list of (epoch, tag_name) tuples
-	'''
+	"""
+	returns a list of (epoch, tag_name) tuples
+	"""
 	if not obj.repo:
 		return []
 	startEpoch = getEpochFromJd(startJd)
@@ -115,6 +126,7 @@ def getTagList(obj, startJd, endJd):
 	data.sort()
 	return data
 
+
 def getTagShortStat(obj, prevTag, tag):
 	repo = obj.repo
 	return getShortStat(
@@ -124,12 +136,18 @@ def getTagShortStat(obj, prevTag, tag):
 	)
 
 
-## returns str
-getTagShortStatLine = lambda obj, prevTag, tag: encodeShortStat(*getTagShortStat(obj, prevTag, tag))
+def getTagShortStatLine(obj, prevTag, tag):
+	"""returns str"""
+	return encodeShortStat(*getTagShortStat(obj, prevTag, tag))
 
-getFirstCommitEpoch = lambda obj: obj.repo[0].date()[0]
 
-getLastCommitEpoch = lambda obj: obj.repo[len(obj.repo)-1].date()[0]
+def getFirstCommitEpoch(obj):
+	return obj.repo[0].date()[0]
+
+
+def getLastCommitEpoch(obj):
+	return obj.repo[len(obj.repo) - 1].date()[0]
+
 
 def getLastCommitIdUntilJd(obj, jd):
 	untilEpoch = getEpochFromJd(jd)
@@ -138,5 +156,3 @@ def getLastCommitIdUntilJd(obj, jd):
 		return
 	t0, t1, rev_id = last
 	return str(obj.repo[rev_id])
-
-

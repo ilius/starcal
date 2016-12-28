@@ -20,7 +20,8 @@
 from time import localtime
 from time import time as now
 
-import sys, os
+import sys
+import os
 from math import sqrt
 
 from scal3.utils import myRaise
@@ -41,6 +42,7 @@ from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.cal_base import CalBase
 
+
 class DayCalTypeParamBox(gtk.HBox):
 	def __init__(self, cal, index, mode, params, sgroupLabel, sgroupFont):
 		from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
@@ -50,7 +52,7 @@ class DayCalTypeParamBox(gtk.HBox):
 		self.index = index
 		self.mode = mode
 		######
-		label = gtk.Label(_(calTypes[mode].desc)+'  ')
+		label = gtk.Label(_(calTypes[mode].desc) + '  ')
 		label.set_alignment(0, 0.5)
 		pack(self, label)
 		sgroupLabel.add_widget(label)
@@ -83,22 +85,23 @@ class DayCalTypeParamBox(gtk.HBox):
 		self.spinY.connect('changed', self.onChange)
 		fontb.connect('font-set', self.onChange)
 		colorb.connect('color-set', self.onChange)
-	get = lambda self: {
-		'pos': (self.spinX.get_value(), self.spinY.get_value()),
-		'font': self.fontb.get_font_name(),
-		'color': self.colorb.get_color()
-	}
+
+	def get(self):
+		return {
+			'pos': (self.spinX.get_value(), self.spinY.get_value()),
+			'font': self.fontb.get_font_name(),
+			'color': self.colorb.get_color()
+		}
+
 	def set(self, data):
 		self.spinX.set_value(data['pos'][0])
 		self.spinY.set_value(data['pos'][1])
 		self.fontb.set_font_name(data['font'])
 		self.colorb.set_color(data['color'])
+
 	def onChange(self, obj=None, event=None):
 		ui.dcalTypeParams[self.index] = self.get()
 		self.cal.queue_draw()
-
-
-
 
 
 @registerSignals
@@ -115,10 +118,12 @@ class CalObj(gtk.DrawingArea, CalBase):
 		#'end',
 		'f10', 'm',
 	)
+
 	def heightSpinChanged(self, spin):
 		v = spin.get_value()
 		self.set_property('height-request', v)
 		ui.dcalHeight = v
+
 	def updateTypeParamsWidget(self):
 		try:
 			vbox = self.typeParamsVbox
@@ -145,6 +150,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			pack(vbox, hbox)
 		###
 		vbox.show_all()
+
 	def __init__(self):
 		gtk.DrawingArea.__init__(self)
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
@@ -157,6 +163,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		self.connect('button-press-event', self.buttonPress)
 		#self.connect('screen-changed', self.screenChanged)
 		self.connect('scroll-event', self.scroll)
+
 	def optionsWidgetCreate(self):
 		from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 		from scal3.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
@@ -180,6 +187,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		pack(self.optionsWidget, frame)
 		self.optionsWidget.show_all()
 		self.updateTypeParamsWidget()## FIXME
+
 	def drawAll(self, widget=None, cr=None, cursor=True):
 		#gevent = gtk.get_current_event()
 		w = self.get_allocation().width
@@ -212,13 +220,13 @@ class CalObj(gtk.DrawingArea, CalBase):
 				pix_w = pix.get_width()
 				pix_h = pix.get_height()
 				## right buttom corner ?????????????????????
-				x1 = (x0 + dx)/scaleFact - fromRight - pix_w # right side
-				y1 = (y0 + dy/2.0)/scaleFact - pix_h/2.0 # middle
+				x1 = (x0 + dx) / scaleFact - fromRight - pix_w # right side
+				y1 = (y0 + dy / 2) / scaleFact - pix_h / 2 # middle
 				cr.scale(scaleFact, scaleFact)
 				gdk.cairo_set_source_pixbuf(cr, pix, x1, y1)
 				cr.rectangle(x1, y1, pix_w, pix_h)
 				cr.fill()
-				cr.scale(1.0/scaleFact, 1.0/scaleFact)
+				cr.scale(1 / scaleFact, 1 / scaleFact)
 				fromRight += pix_w
 		#### Drawing numbers inside every cell
 		#cr.rectangle(
@@ -229,15 +237,19 @@ class CalObj(gtk.DrawingArea, CalBase):
 		#)
 		mode = calTypes.primary
 		params = ui.dcalTypeParams[0]
-		daynum = newTextLayout(self, _(c.dates[mode][2], mode), params['font'])
+		daynum = newTextLayout(
+			self,
+			_(c.dates[mode][2], mode),
+			params['font'],
+		)
 		fontw, fonth = daynum.get_pixel_size()
 		if c.holiday:
 			setColor(cr, ui.holidayColor)
 		else:
 			setColor(cr, params['color'])
 		cr.move_to(
-			x0 + dx/2.0 - fontw/2.0 + params['pos'][0],
-			y0 + dy/2.0 - fonth/2.0 + params['pos'][1],
+			x0 + dx / 2 - fontw / 2 + params['pos'][0],
+			y0 + dy / 2 - fonth / 2 + params['pos'][1],
 		)
 		show_layout(cr, daynum)
 		####
@@ -246,44 +258,47 @@ class CalObj(gtk.DrawingArea, CalBase):
 			fontw, fonth = daynum.get_pixel_size()
 			setColor(cr, params['color'])
 			cr.move_to(
-				x0 + dx/2.0 - fontw/2.0 + params['pos'][0],
-				y0 + dy/2.0 - fonth/2.0 + params['pos'][1],
+				x0 + dx / 2 - fontw / 2 + params['pos'][0],
+				y0 + dy / 2 - fonth / 2 + params['pos'][1],
 			)
 			show_layout(cr, daynum)
+
 	def buttonPress(self, obj, gevent):
-		## FIXME
+		# FIXME
 		pass
+
 	def jdPlus(self, p):
 		ui.jdPlus(p)
 		self.onDateChange()
+
 	def keyPress(self, arg, gevent):
-		print('keyPress')
+		#print('keyPress')
 		if CalBase.keyPress(self, arg, gevent):
 			return True
 		kname = gdk.keyval_name(gevent.keyval).lower()
-		print('keyPress', kname)
+		#print('keyPress', kname)
 		#if kname.startswith('alt'):
 		#	return True
 		## How to disable Alt+Space of metacity ?????????????????????
-		if kname=='up':
+		if kname == 'up':
 			self.jdPlus(-1)
-		elif kname=='down':
+		elif kname == 'down':
 			self.jdPlus(1)
-		elif kname=='right':
+		elif kname == 'right':
 			if rtl:
 				self.jdPlus(-1)
 			else:
 				self.jdPlus(1)
-		elif kname=='left':
+		elif kname == 'left':
 			if rtl:
 				self.jdPlus(1)
 			else:
 				self.jdPlus(-1)
 		elif kname in ('page_up', 'k', 'p'):
-			self.jdPlus(-1)## FIXME
+			self.jdPlus(-1)  # FIXME
 		elif kname in ('page_down', 'j', 'n'):
-			self.jdPlus(1)## FIXME
-		#elif kname in ('f10', 'm'):## FIXME
+			self.jdPlus(1)  # FIXME
+		#elif kname in ('f10', 'm'):  # FIXME
 		#	if gevent.get_state() & gdk.ModifierType.SHIFT_MASK:
 		#		# Simulate right click (key beside Right-Ctrl)
 		#		self.emit('popup-cell-menu', gevent.time, *self.getCellPos())
@@ -292,26 +307,20 @@ class CalObj(gtk.DrawingArea, CalBase):
 		else:
 			return False
 		return True
+
 	def scroll(self, widget, gevent):
 		d = getScrollValue(gevent)
-		if d=='up':
+		if d == 'up':
 			self.jdPlus(-1)
-		elif d=='down':
+		elif d == 'down':
 			self.jdPlus(1)
 		else:
 			return False
+
 	def onDateChange(self, *a, **kw):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		self.queue_draw()
+
 	def onConfigChange(self, *a, **kw):
 		CustomizableCalObj.onConfigChange(self, *a, **kw)
 		self.updateTypeParamsWidget()
-
-
-
-
-
-
-
-
-

@@ -85,7 +85,10 @@ class BaseWidgetClass(gtk.VBox):
 		pack(hbox, gtk.Label(''), 1, 1)
 		self.tzCombo = combo
 		pack(self, hbox)
-		self.tzCheck.connect('clicked', lambda check: self.tzCombo.set_sensitive(check.get_active()))
+		self.tzCheck.connect(
+			'clicked',
+			lambda check: self.tzCombo.set_sensitive(check.get_active()),
+		)
 		#####
 		hbox = gtk.HBox()
 		label = gtk.Label(_('Show in Calendar'))
@@ -133,7 +136,9 @@ class BaseWidgetClass(gtk.VBox):
 		self.sepInput = TextFrame()
 		pack(hbox, self.sepInput, 1, 1)
 		pack(self, hbox)
-		set_tooltip(hbox, _('Using to seperate Summary and Description when displaying event'))
+		set_tooltip(hbox, _(
+			'Using to seperate Summary and Description when displaying event'
+		))
 		#####
 		#hbox = gtk.HBox()
 		#label = gtk.Label(_('Show Full Event Description'))
@@ -144,7 +149,11 @@ class BaseWidgetClass(gtk.VBox):
 		#pack(hbox, self.showFullEventDescCheck, 1, 1)
 		#pack(self, hbox)
 		###
-		self.modeCombo.connect('changed', self.modeComboChanged)## right place? before updateWidget? FIXME
+		self.modeCombo.connect(
+			'changed',
+			self.modeComboChanged,
+		)  # right place? before updateWidget? FIXME
+
 	def updateWidget(self):
 		self.titleEntry.set_text(self.group.title)
 		self.colorButton.set_color(self.group.color)
@@ -164,6 +173,7 @@ class BaseWidgetClass(gtk.VBox):
 		self.cacheSizeSpin.set_value(self.group.eventCacheSize)
 		self.sepInput.set_text(self.group.eventTextSep)
 		#self.showFullEventDescCheck.set_active(self.group.showFullEventDesc)
+
 	def updateVars(self):
 		self.group.title = self.titleEntry.get_text()
 		self.group.color = self.colorButton.get_color()
@@ -181,8 +191,6 @@ class BaseWidgetClass(gtk.VBox):
 		self.group.eventCacheSize = int(self.cacheSizeSpin.get_value())
 		self.group.eventTextSep = self.sepInput.get_text()
 		#self.group.showFullEventDesc = self.showFullEventDescCheck.get_active()
+
 	def modeComboChanged(self, obj=None):
 		pass
-
-
-

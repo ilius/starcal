@@ -8,6 +8,7 @@ from scal3.ui_gtk.utils import dialog_add_button
 from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 
+
 class GroupEditorDialog(gtk.Dialog):
 	def __init__(self, group=None, **kwargs):
 		checkEventsReadOnly()
@@ -17,8 +18,18 @@ class GroupEditorDialog(gtk.Dialog):
 		#self.connect('delete-event', lambda obj, e: self.destroy())
 		#self.resize(800, 600)
 		###
-		dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
-		dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
+		dialog_add_button(
+			self,
+			gtk.STOCK_CANCEL,
+			_('_Cancel'),
+			gtk.ResponseType.CANCEL,
+		)
+		dialog_add_button(
+			self,
+			gtk.STOCK_OK,
+			_('_OK'),
+			gtk.ResponseType.OK,
+		)
 		self.connect('response', lambda w, e: self.hide())
 		#######
 		self.activeWidget = None
@@ -43,11 +54,13 @@ class GroupEditorDialog(gtk.Dialog):
 		self.comboType = combo
 		self.vbox.show_all()
 		self.typeChanged()
+
 	def dateModeChanged(self, combo):
 		pass
+
 	def getNewGroupTitle(self, baseTitle):
 		usedTitles = [group.title for group in ui.eventGroups]
-		if not baseTitle in usedTitles:
+		if baseTitle not in usedTitles:
 			return baseTitle
 		i = 1
 		while True:
@@ -56,6 +69,7 @@ class GroupEditorDialog(gtk.Dialog):
 				i += 1
 			else:
 				return newTitle
+
 	def typeChanged(self, combo=None):
 		if self.activeWidget:
 			self.activeWidget.updateVars()
@@ -74,6 +88,7 @@ class GroupEditorDialog(gtk.Dialog):
 		self._group = group
 		self.activeWidget = makeWidget(group)
 		pack(self.vbox, self.activeWidget)
+
 	def run(self):
 		if self.activeWidget is None:
 			return None
@@ -87,4 +102,3 @@ class GroupEditorDialog(gtk.Dialog):
 			ui.eventGroups[self._group.id] = self._group ## FIXME
 		self.destroy()
 		return self._group
-

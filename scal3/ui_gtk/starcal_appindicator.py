@@ -40,8 +40,10 @@ import gi
 gi.require_version('AppIndicator3', '0.1')
 from gi.repository import AppIndicator3 as appindicator
 
+
 class IndicatorStatusIconWrapper:
 	imNamePrefix = APP_NAME + '-indicator-%s-' % os.getuid()
+
 	def __init__(self, mainWin):
 		self.mainWin = mainWin
 		self.c = appindicator.Indicator.new(
@@ -56,11 +58,14 @@ class IndicatorStatusIconWrapper:
 		######
 		self.create_menu()
 		self.imPath = ''
+
 	'''
 	def create_menu_simple(self):
 		menu = gtk.Menu()
 		###
-		for item in [self.mainWin.getMainWinMenuItem()] + self.mainWin.getStatusIconPopupItems():
+		for item in [
+			self.mainWin.getMainWinMenuItem(),
+		] + self.mainWin.getStatusIconPopupItems():
 			item.show()
 			menu.add(item)
 		###
@@ -68,9 +73,11 @@ class IndicatorStatusIconWrapper:
 			#menu.set_direction(gtk.TextDirection.RTL)
 		self.c.set_menu(menu)
 	'''
+
 	def create_menu(self):
 		menu = gtk.Menu()
-		self.menuItems = [] ## just to prevent GC from removing custom objects for items
+		self.menuItems = []
+		# ^ just to prevent GC from removing custom objects for items
 		####
 		for line in self.mainWin.getStatusIconTooltip().split('\n'):
 			item = CopyLabelMenuItem(line)
@@ -93,12 +100,14 @@ class IndicatorStatusIconWrapper:
 		sitem.show()
 		menu.append(sitem)
 		self.c.set_menu(menu)
+
 	def set_from_file(self, fpath):
 		self.c.set_icon('')
 		self.c.set_icon(fpath)
 		self.create_menu()
+
 	def set_from_pixbuf(self, pbuf):
-		## https://bugs.launchpad.net/ubuntu/+source/indicator-application/+bug/533439
+		# https://bugs.launchpad.net/ubuntu/+source/indicator-application/+bug/533439
 		#pbuf.scale_simple(22, 22, GdkPixbuf.InterpType.HYPER)
 		fname = self.imNamePrefix + get_pixbuf_hash(pbuf)
 		# to make the filename unique, otherwise it won't change in KDE Plasma
@@ -106,6 +115,7 @@ class IndicatorStatusIconWrapper:
 		self.imPath = fpath
 		pbuf.savev(fpath, 'png', [], [])
 		self.set_from_file(fpath)
+
 	def cleanup(self):
 		for fname in os.listdir(tmpDir):
 			if not fname.startswith(self.imNamePrefix):
@@ -114,12 +124,13 @@ class IndicatorStatusIconWrapper:
 				os.remove(join(tmpDir, fname))
 			except:
 				myRaise()
-	is_embedded = lambda self: True ## FIXME
-	def set_visible(self, visible):## FIXME
+
+	def is_embedded(self):
+		return True  # FIXME
+
+	def set_visible(self, visible):  # FIXME
 		pass
+
 	def set_tooltip_text(self, text):
 		#self.c.set_label_guide(text)
 		pass
-
-
-

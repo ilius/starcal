@@ -24,16 +24,17 @@ class WidgetClass(common.WidgetClass):
 		#############
 		#self.filesBox = common.FilesBox(self.event)
 		#pack(self, self.filesBox)
+
 	def updateWidget(self):
 		common.WidgetClass.updateWidget(self)
 		self.dateInput.set_value(self.event.getDate())
+
 	def updateVars(self):
 		common.WidgetClass.updateVars(self)
 		self.event.setDate(*self.dateInput.get_value())
-	def modeComboChanged(self, obj=None):## overwrite method from common.WidgetClass
+
+	def modeComboChanged(self, obj=None):
+		# overwrite method from common.WidgetClass
 		newMode = self.modeCombo.get_active()
 		self.dateInput.changeMode(self.event.mode, newMode)
 		self.event.mode = newMode
-
-
-

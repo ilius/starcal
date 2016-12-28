@@ -18,10 +18,11 @@ class VcsEpochBaseWidgetClass(VcsBaseWidgetClass):
 		self.showSecondsCheck = gtk.CheckButton('')
 		pack(hbox, self.showSecondsCheck)
 		pack(self, hbox)
+
 	def updateWidget(self):
 		VcsBaseWidgetClass.updateWidget(self)
 		self.showSecondsCheck.set_active(self.group.showSeconds)
+
 	def updateVars(self):
 		VcsBaseWidgetClass.updateVars(self)
 		self.group.showSeconds = self.showSecondsCheck.get_active()
-

@@ -17,7 +17,8 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-import sys, os
+import sys
+import os
 
 from math import pi
 import os.path
@@ -42,6 +43,7 @@ class WeekStatus(list):
 	def __init__(self):
 		list.__init__(self)
 
+
 class TextObject():
 	def __init__(self, parent, x, y, color, font, center=True):
 		self.parent = parent
@@ -56,83 +58,118 @@ class TextObject():
 		self.center = center ## ???????????????????
 		#self.xAlign = 0.5
 		#self.yAlign = 0.5
+
 	def draw(self, cr):
 		if self.center:
 			w, h = self.layout.get_pixel_size()
-			cr.move_to(self.x - w/2.0, self.y - h/2.0)
+			cr.move_to(self.x - w / 2, self.y - h / 2)
 		else:
 			cr.move_to(self.x, self.y)
 		fillColor(cr, self.color)
 		show_layout(cr, self.layout)
+
 	def setFont(self, font):
 		self.layout.set_font_description(pfontEncode(font))
+
 	def getText(self):
 		raise NotImplementedError
+
 	def contains(self, px, py):
 		w, h = self.layout.get_pixel_size()
 		if self.center:
-			return -w/2.0 <= px-self.x < w/2.0 \
-				 and -h/2.0 <= py-self.y < h/2.0
+			return (
+				-w / 2 <= px - self.x < w / 2
+				and
+				-h / 2 <= py - self.y < h / 2
+			)
 		else:
-			return 0 <= px-self.x < w \
-				 and 0 <= py-self.y < h
+			return (
+				0 <= px - self.x < w
+				and
+				0 <= py - self.y < h
+			)
+
 
 class YearObject(TextObject):
-	def __init__(self, parent, mode, x=0, y=0, color=(0,0,0), font=None):
+	def __init__(
+		self,
+		parent,
+		mode,
+		x=0,
+		y=0,
+		color=(0, 0, 0),
+		font=None,
+	):
 		TextObject.__init__(self, parent, x, y, color, font)
 		self.mode = mode
-	getText = lambda self: _(self.parent.dates[self.mode][2], self.mode)
+
+	def getText(self):
+		return _(self.parent.dates[self.mode][2], self.mode)
+
 
 class MonthObject(TextObject):
-	def __init__(self, parent, mode, x=0, y=0, color=(0,0,0), font=None):
+	def __init__(
+		self,
+		parent,
+		mode,
+		x=0,
+		y=0,
+		color=(0, 0, 0),
+		font=None,
+	):
 		TextObject.__init__(self, parent, x, y, color, font)
 		self.mode = mode
-	getText = lambda self: _(self.parent.dates[self.mode][1], self.mode)
+
+	def getText(self):
+		return _(self.parent.dates[self.mode][1], self.mode)
+
 
 class MonthNameObject(TextObject):
-	def __init__(self, parent, mode, x=0, y=0, color=(0,0,0), font=None):
+	def __init__(
+		self,
+		parent,
+		mode,
+		x=0,
+		y=0,
+		color=(0, 0, 0),
+		font=None,
+	):
 		TextObject.__init__(self, parent, x, y, color, font)
 		self.mode = mode
-	getText = lambda self: getMonthName(self.mode, self.parent.dates[self.mode][1])
+
+	def getText(self):
+		return getMonthName(self.mode, self.parent.dates[self.mode][1])
+
 
 class PlainStrObject(TextObject):
-	def __init__(self, parent, text='', x=0, y=0, color=(0,0,0), font=None):
+	def __init__(
+		self,
+		parent,
+		text='',
+		x=0,
+		y=0,
+		color=(0, 0, 0),
+		font=None,
+	):
 		TextObject.__init__(self, parent, x, y, color, font)
 		self.text = text
-	getText = lambda self: self.text
 
+	def getText(self):
+		return self.text
 
 
 class TinyCal(gtk.Window):
 	def __init__(self):
 		gtk.Window.__init__(self)
-		self.set_title(core.APP_DESC+' Tiny')
+		self.set_title(core.APP_DESC + ' Tiny')
 		self.set_decorated(False)
 		self.set_property('skip-taskbar-hint', None)
-		self.set_role(core.APP_NAME+'-tiny')
+		self.set_role(core.APP_NAME + '-tiny')
 		##################
 		self.objects = []
+
 	def startEditing(self):
 		pass
+
 	def endEditing(self):
 		pass
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

@@ -17,24 +17,40 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
-import sys, os, time
+import sys
+import os
+import time
 
-from scal3.utils import toBytes, toStr
-from scal3.utils import numRangesEncode, numRangesDecode
+from scal3.utils import (
+	toBytes,
+	toStr,
+	numRangesEncode,
+	numRangesDecode,
+)
 from scal3 import core
 from scal3 import locale_man
 from scal3.locale_man import tr as _
-from scal3.locale_man import numDecode, textNumEncode, textNumDecode
+from scal3.locale_man import (
+	numDecode,
+	textNumEncode,
+	textNumDecode,
+)
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
 
+
 def myRaise():
 	i = sys.exc_info()
 	try:
-		print(('line %s: %s: %s'%(i[2].tb_lineno, i[0].__name__, i[1])))
+		print('line %s: %s: %s' % (
+			i[2].tb_lineno,
+			i[0].__name__,
+			i[1],
+		))
 	except:
 		print(i)
+
 
 @registerType
 class NumRangesEntry(gtk.Entry):
@@ -48,6 +64,7 @@ class NumRangesEntry(gtk.Entry):
 		self.connect('key-press-event', self.keyPress)
 		self.set_direction(gtk.TextDirection.LTR)
 		self.set_alignment(0.5)
+
 	def insertText(self, s, clearSeceltion=True):
 		selection = self.get_selection_bounds()
 		if selection and clearSeceltion:
@@ -55,11 +72,12 @@ class NumRangesEntry(gtk.Entry):
 			text = toStr(self.get_text())
 			text = text[:start] + s + text[end:]
 			self.set_text(text)
-			self.set_position(start+len(s))
+			self.set_position(start + len(s))
 		else:
 			pos = self.get_position()
 			self.insert_text(s, pos)
 			self.set_position(pos + len(s))
+
 	def numPlus(self, plus):
 		pos = self.get_position()
 		text = toStr(self.get_text())
@@ -68,7 +86,7 @@ class NumRangesEntry(gtk.Entry):
 		if commaI == -1:
 			startI = 0
 		else:
-			if text[commaI+1]==' ':
+			if text[commaI + 1] == ' ':
 				startI = commaI + 2
 			else:
 				startI = commaI + 1
@@ -105,71 +123,89 @@ class NumRangesEntry(gtk.Entry):
 			startI,
 			endI - len(thisNumStr) + len(newNumStr),
 		)
+
 	def keyPress(self, obj, gevent):
 		kval = gevent.keyval
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		#print(kval, kname)
 		if kname in (
-			'tab', 'escape', 'backspace', 'delete', 'insert',
-			'home', 'end',
-			'control_l', 'control_r',
+			'tab',
+			'escape',
+			'backspace',
+			'delete',
+			'insert',
+			'home',
+			'end',
+			'control_l',
+			'control_r',
 			'iso_next_group',
 		):
 			return False
 		elif kname == 'return':
 			self.validate()
 			return False
-		elif kname=='up':
+		elif kname == 'up':
 			self.numPlus(1)
-		elif kname=='down':
+		elif kname == 'down':
 			self.numPlus(-1)
-		elif kname=='page_up':
+		elif kname == 'page_up':
 			self.numPlus(self.page_inc)
-		elif kname=='page_down':
+		elif kname == 'page_down':
 			self.numPlus(-self.page_inc)
-		elif kname=='left':
-			return False## FIXME
-		elif kname=='right':
-			return False## FIXME
+		elif kname == 'left':
+			return False  # FIXME
+		elif kname == 'right':
+			return False  # FIXME
 		#elif kname in ('braceleft', 'bracketleft'):
 		#	self.insertText(u'[')
 		#elif kname in ('braceright', 'bracketright'):
 		#	self.insertText(u']')
 		elif kname in ('comma', 'arabic_comma'):
 			self.insertText(', ', False)
-		elif kname=='minus':
+		elif kname == 'minus':
 			pos = self.get_position()
 			text = toStr(self.get_text())
 			n = len(text)
-			if pos==n:
+			if pos == n:
 				start = numDecode(text.split(',')[-1].strip())
 				self.insertText('-' + _(start + 2), False)
 			else:
 				self.insertText('-', False)
 		elif ord('0') <= kval <= ord('9'):
-			self.insertText(self.digs[kval-ord('0')])
+			self.insertText(self.digs[kval - ord('0')])
 		else:
 			uniVal = gdk.keyval_to_unicode(kval)
 			#print('uniVal=%r'%uniVal)
-			if uniVal!=0:
+			if uniVal != 0:
 				ch = chr(uniVal)
 				#print('ch=%r'%ch)
 				if ch in self.digs:
 					self.insertText(ch)
-				if gevent.get_state() & gdk.ModifierType.CONTROL_MASK:## Shortcuts like Ctrl + [A, C, X, V]
+				if gevent.get_state() & gdk.ModifierType.CONTROL_MASK:
+					# Shortcuts like Ctrl + [A, C, X, V]
 					return False
 			else:
 				print(kval, kname)
 		return True
-	getValues = lambda self: numRangesDecode(textNumDecode(self.get_text()))
-	setValues = lambda self, values: self.set_text(
-		textNumEncode(numRangesEncode(values), changeSpecialChars=False)
-	)
-	validate = lambda self: self.setValues(self.getValues())
+
+	def getValues(self):
+		return numRangesDecode(
+			textNumDecode(self.get_text())
+		)
+
+	def setValues(self, values):
+		return self.set_text(
+			textNumEncode(
+				numRangesEncode(values),
+				changeSpecialChars=False,
+			)
+		)
+
+	def validate(self):
+		return self.setValues(self.getValues())
 
 
-
-if __name__=='__main__':
+if __name__ == '__main__':
 	from scal3 import core
 	###
 	entry = NumRangesEntry(0, 9999)
@@ -178,6 +214,3 @@ if __name__=='__main__':
 	win.vbox.show_all()
 	win.resize(100, 40)
 	win.run()
-
-
-

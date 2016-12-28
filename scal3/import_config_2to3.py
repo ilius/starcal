@@ -49,32 +49,32 @@ oldAccountsDir = join(oldEventDir, 'accounts')
 newAccountsDir = join(newEventDir, 'accounts')
 
 
-
-
-
 def loadConf(confPath):
 	if not isfile(confPath):
 		return
 	try:
 		text = open(confPath).read()
 	except Exception as e:
-		print('failed to read file %r: %s'%(confPath, e))
+		print('failed to read file %r: %s' % (confPath, e))
 		return
 	#####
 	data = OrderedDict()
 	exec(text, {}, data)
 	return data
 
+
 def loadCoreConf():
 	confPath = join(oldConfDir, 'core.conf')
 	#####
+
 	def loadPlugin(fname, **data):
 		data['_file'] = fname
 		return data
+
 	try:
 		text = open(confPath).read()
 	except Exception as e:
-		print('failed to read file %r: %s'%(confPath, e))
+		print('failed to read file %r: %s' % (confPath, e))
 		return
 	######
 	text = text.replace('calTypes.activeNames', 'activeCalTypes')
@@ -86,6 +86,7 @@ def loadCoreConf():
 	}, data)
 	return data
 
+
 def loadUiCustomizeConf():
 	confPath = join(oldConfDir, 'ui-customize.conf')
 	#####
@@ -95,7 +96,7 @@ def loadUiCustomizeConf():
 	try:
 		text = open(confPath).read()
 	except Exception as e:
-		print('failed to read file %r: %s'%(confPath, e))
+		print('failed to read file %r: %s' % (confPath, e))
 		return
 	#####
 	text = re.sub('^ui\.', '', text, flags=re.M)
@@ -116,7 +117,7 @@ def writeJsonConf(name, data):
 	try:
 		open(jsonPath, 'w').write(text)
 	except Exception as e:
-		print('failed to write file %r: %s'%(jsonPath, e))
+		print('failed to write file %r: %s' % (jsonPath, e))
 
 
 def importEventsIter():
@@ -125,7 +126,7 @@ def importEventsIter():
 	yield len(oldFiles)
 	index = 0
 	for dname in oldFiles:
-		yield index ; index += 1
+		yield index; index += 1
 		####
 		try:
 			_id = int(dname)
@@ -134,16 +135,16 @@ def importEventsIter():
 		dpath = join(oldEventEventsDir, dname)
 		newDpath = join(newEventEventsDir, dname)
 		if not isdir(dpath):
-			print('"%s" must be a directory'%dpath)
+			print('"%s" must be a directory' % dpath)
 			continue
 		jsonPath = join(dpath, 'event.json')
 		if not isfile(jsonPath):
-			print('"%s": not such file'%jsonPath)
+			print('"%s": not such file' % jsonPath)
 			continue
 		try:
 			data = json.loads(open(jsonPath).read())
 		except Exception as e:
-			print('error while loading json file "%s"'%jsonPath)
+			print('error while loading json file "%s"' % jsonPath)
 			continue
 		try:
 			tm = data.pop('modified')
@@ -165,7 +166,9 @@ def importEventsIter():
 		###
 		_hash = saveBsonObject(data)
 		basicData['history'] = [(tm, _hash)]
-		open(newDpath + '.json', 'w').write(dataToPrettyJson(basicData, sort_keys=True))
+		open(newDpath + '.json', 'w').write(
+			dataToPrettyJson(basicData, sort_keys=True)
+		)
 
 
 def importGroupsIter():
@@ -178,11 +181,11 @@ def importGroupsIter():
 	index = 0
 	###
 	for fname in oldFiles:
-		yield index ; index += 1
+		yield index; index += 1
 		jsonPath = join(oldGroupsDir, fname)
 		newJsonPath = join(newGroupsDir, fname)
 		if not isfile(jsonPath):
-			print('"%s": not such file'%jsonPath)
+			print('"%s": not such file' % jsonPath)
 			continue
 		jsonPathNoX, ext = splitext(fname)
 		if ext != '.json':
@@ -194,13 +197,13 @@ def importGroupsIter():
 		try:
 			data = json.loads(open(jsonPath).read())
 		except Exception as e:
-			print('error while loading json file "%s"'%jsonPath)
+			print('error while loading json file "%s"' % jsonPath)
 			continue
 		####
 		groupsEnableDict[_id] = data.pop('enable', True)
 		####
 		if 'history' in data:
-			print('skipping "%s": history already exists'%jsonPath)
+			print('skipping "%s": history already exists' % jsonPath)
 			continue
 		try:
 			tm = data.pop('modified')
@@ -230,26 +233,28 @@ def importGroupsIter():
 		basicData['history'] = [(tm, _hash)]
 		open(newJsonPath, 'w').write(dataToPrettyJson(basicData, sort_keys=True))
 	####
-	yield index ; index += 1
+	yield index; index += 1
 	oldGroupListFile = join(oldEventDir, 'group_list.json')
 	newGroupListFile = join(newEventDir, 'group_list.json')
 	try:
 		groupIds = json.loads(open(oldGroupListFile).read())
 	except Exception as e:
-		print('error while loading %s: %s'%(oldGroupListFile, e))
+		print('error while loading %s: %s' % (oldGroupListFile, e))
 	else:
 		if isinstance(groupIds, list):
 			signedGroupIds = [
-				(1 if groupsEnableDict.get(gid, True) else -1) * gid \
+				(1 if groupsEnableDict.get(gid, True) else -1) * gid
 				for gid in groupIds
 			]
 			try:
 				open(newGroupListFile, 'w').write(dataToPrettyJson(signedGroupIds))
 			except Exception as e:
-				print('error while writing %s: %s'%(newGroupListFile, e))
+				print('error while writing %s: %s' % (newGroupListFile, e))
 		else:
-			print('file "%s" contains invalid data, must contain a list'%oldGroupListFile)
-			
+			print(
+				'file "%s" contains invalid data' % oldGroupListFile +
+				', must contain a list'
+			)
 
 
 def importAccountsIter():
@@ -260,11 +265,11 @@ def importAccountsIter():
 	index = 0
 	###
 	for fname in oldFiles:
-		yield index ; index += 1
+		yield index; index += 1
 		jsonPath = join(oldAccountsDir, fname)
 		newJsonPath = join(newAccountsDir, fname)
 		if not isfile(jsonPath):
-			print('"%s": not such file'%jsonPath)
+			print('"%s": not such file' % jsonPath)
 			continue
 		jsonPathNoX, ext = splitext(fname)
 		if ext != '.json':
@@ -276,10 +281,10 @@ def importAccountsIter():
 		try:
 			data = json.loads(open(jsonPath).read())
 		except Exception as e:
-			print('error while loading json file "%s"'%jsonPath)
+			print('error while loading json file "%s"' % jsonPath)
 			continue
 		if 'history' in data:
-			print('skipping "%s": history already exists'%jsonPath)
+			print('skipping "%s": history already exists' % jsonPath)
 			continue
 		try:
 			tm = data.pop('modified')
@@ -300,8 +305,9 @@ def importAccountsIter():
 		###
 		_hash = saveBsonObject(data)
 		basicData['history'] = [(tm, _hash)]
-		open(newJsonPath, 'w').write(dataToPrettyJson(basicData, sort_keys=True))
-
+		open(newJsonPath, 'w').write(
+			dataToPrettyJson(basicData, sort_keys=True)
+		)
 
 
 def importTrashIter():
@@ -315,7 +321,7 @@ def importTrashIter():
 		print(e)
 		return
 	if 'history' in data:
-		print('skipping "%s": history already exists'%jsonPath)
+		print('skipping "%s": history already exists' % jsonPath)
 		return
 	try:
 		tm = data.pop('modified')
@@ -339,18 +345,17 @@ def importTrashIter():
 	open(newJsonPath, 'w').write(dataToPrettyJson(basicData, sort_keys=True))
 
 
-
 def importBasicConfigIter():
-	yield 8 ## number of steps
+	yield 8  # number of steps
 	index = 0
 	####
 	coreData = loadCoreConf()
 	coreData['version'] = '3.0.0' ## FIXME
 	writeJsonConf('core', coreData)
-	yield index ; index += 1
+	yield index; index += 1
 	####
 	writeJsonConf('ui-customize', loadUiCustomizeConf())
-	yield index ; index += 1
+	yield index; index += 1
 	## remove adjustTimeCmd from ui-gtk.conf
 	for name in (
 		'hijri',
@@ -360,7 +365,7 @@ def importBasicConfigIter():
 		'ui-gtk',
 		'ui-live',
 	):
-		yield index ; index += 1
+		yield index; index += 1
 		confPath = join(oldConfDir, name + '.conf')
 		writeJsonConf(name, loadConf(confPath))
 
@@ -374,7 +379,7 @@ def importEventBasicJsonIter():
 		'info',
 		'last_ids',
 	):
-		yield index ; index += 1
+		yield index; index += 1
 		fname = name + '.json'
 		try:
 			shutil.copy(
@@ -402,7 +407,8 @@ def importPluginsIter():
 				join(oldPlugConfDir, plugName)
 			),
 		)
-		yield index ; index += 1
+		yield index; index += 1
+
 
 def importConfigIter():
 	makeDir(newConfDir)
@@ -429,13 +435,11 @@ def importConfigIter():
 	for iterIndex, itr in enumerate(iters):
 		iterCount = counts[iterIndex]
 		for stepIndex in itr:
-			yield totalRatio + stepIndex*delta
+			yield totalRatio + stepIndex * delta
 		totalRatio += iterCount * delta
 		yield totalRatio
 	###
 	yield 1.0
-
-
 
 
 def getOldVersion():
@@ -451,11 +455,7 @@ def getOldVersion():
 	except:
 		return ''
 
-	
 ##################################
 
-if __name__=='__main__':
+if __name__ == '__main__':
 	list(importConfigIter())
-
-
-

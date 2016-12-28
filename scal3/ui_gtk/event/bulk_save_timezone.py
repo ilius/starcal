@@ -26,24 +26,39 @@ from scal3 import ui
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import dialog_add_button
 
+
 class BulkSaveTimeZoneDialog(gtk.Dialog):
 	def __init__(self, **kwargs):
 		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_('Time Zone'))
 		####
-		dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
-		dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
+		dialog_add_button(
+			self,
+			gtk.STOCK_CANCEL,
+			_('_Cancel'),
+			gtk.ResponseType.CANCEL,
+		)
+		dialog_add_button(
+			self,
+			gtk.STOCK_OK,
+			_('_OK'),
+			gtk.ResponseType.OK,
+		)
 		###
 		self.connect('response', self.onResponse)
 		####
 		label = gtk.Label()
 		label.set_markup(''.join([
-			_('"Time Zone" property is newly added to events')+'\n',
-			_('But this property needs to be saved for current events')+'\n',
-			_('Select the time zone for your current location')+'\n\n',
+			_('"Time Zone" property is newly added to events') + '\n',
+			_('But this property needs to be saved for current events') + '\n',
+			_('Select the time zone for your current location') + '\n\n',
 			'<small>',
-			_('If you have been in a different time zone while adding some of your event, you need to edit those events manually and change the time zone')+'\n',
+			_(
+				'If you have been in a different time zone while adding some'
+				' of your event, you need to edit those events manually and'
+				' change the time zone'
+			) + '\n',
 			_('Time zone for All-Day events will be disabled by default'),
 			'</small>',
 		]))
@@ -64,6 +79,7 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
 		pack(self.vbox, gtk.Label(''), 1, 1)
 		####
 		self.vbox.show_all()
+
 	def onResponse(self, dialog, responseId):
 		if responseId == gtk.ResponseType.OK:
 			timeZone = self.timeZoneInput.get_text()
@@ -91,6 +107,5 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
 			gtk.main_iteration_do(False)
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
 	BulkSaveTimeZoneDialog(parent=None).run()
-

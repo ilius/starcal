@@ -6,13 +6,24 @@ from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import dialog_add_button
 from scal3.ui_gtk.event import makeWidget
 
+
 class AccountEditorDialog(gtk.Dialog):
 	def __init__(self, account=None, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_('Edit Account') if account else _('Add New Account'))
 		###
-		dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
-		dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
+		dialog_add_button(
+			self,
+			gtk.STOCK_CANCEL,
+			_('_Cancel'),
+			gtk.ResponseType.CANCEL,
+		)
+		dialog_add_button(
+			self,
+			gtk.STOCK_OK,
+			_('_OK'),
+			gtk.ResponseType.OK,
+		)
 		##
 		self.connect('response', lambda w, e: self.hide())
 		#######
@@ -30,7 +41,9 @@ class AccountEditorDialog(gtk.Dialog):
 		####
 		if self.account:
 			self.isNew = False
-			combo.set_active(event_lib.classes.account.names.index(self.account.name))
+			combo.set_active(
+				event_lib.classes.account.names.index(self.account.name)
+			)
 		else:
 			self.isNew = True
 			defaultAccountTypeIndex = 0
@@ -41,8 +54,10 @@ class AccountEditorDialog(gtk.Dialog):
 		self.comboType = combo
 		self.vbox.show_all()
 		self.typeChanged()
+
 	def dateModeChanged(self, combo):
 		pass
+
 	def typeChanged(self, combo=None):
 		if self.activeWidget:
 			self.activeWidget.updateVars()
@@ -58,6 +73,7 @@ class AccountEditorDialog(gtk.Dialog):
 		self.account = account
 		self.activeWidget = makeWidget(account)
 		pack(self.vbox, self.activeWidget)
+
 	def run(self):
 		if self.activeWidget is None or self.account is None:
 			return None
@@ -77,5 +93,3 @@ class FetchRemoteGroupsDialog(gtk.Dialog):
 	def __init__(self, account, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.account = account
-
-

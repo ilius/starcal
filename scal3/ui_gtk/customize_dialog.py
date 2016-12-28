@@ -25,22 +25,40 @@ from scal3 import ui
 
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import toolButtonFromStock, set_tooltip, dialog_add_button
+from scal3.ui_gtk.utils import (
+	toolButtonFromStock,
+	set_tooltip,
+	dialog_add_button,
+)
 from scal3.ui_gtk.tree_utils import tree_path_split
+
 
 class CustomizeDialog(gtk.Dialog):
 	def appendItemTree(self, item, parentIter):
 		itemIter = self.model.append(parentIter)
-		self.model.set(itemIter, 0, item.enable, 1, item.desc)
+		self.model.set(
+			itemIter,
+			0,
+			item.enable,
+			1,
+			item.desc,
+		)
 		for child in item.items:
 			if child.customizable:
 				self.appendItemTree(child, itemIter)
+
 	def __init__(self, widget, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_('Customize'))
 		#self.set_has_separator(False)## not in gtk3
 		self.connect('delete-event', self.close)
-		dialog_add_button(self, gtk.STOCK_CLOSE, _('_Close'), 0, self.close)
+		dialog_add_button(
+			self,
+			gtk.STOCK_CLOSE,
+			_('_Close'),
+			0,
+			self.close,
+		)
 		###
 		self._widget = widget
 		self.activeOptionsWidget = None
@@ -103,8 +121,10 @@ class CustomizeDialog(gtk.Dialog):
 		self.vbox.connect('size-allocate', self.vboxSizeRequest)
 		self.vbox.show_all()
 		treev.get_selection().connect('changed', self.treevCursorChanged)
+
 	def vboxSizeRequest(self, widget, req):
 		self.resize(self.get_size()[0], 1)
+
 	def getItemByPath(self, path):
 		if isinstance(path, gtk.TreePath):
 			path = path.get_indices()
@@ -113,11 +133,15 @@ class CustomizeDialog(gtk.Dialog):
 		elif isinstance(path, int):
 			path = [path]
 		elif not isinstance(path, (tuple, list)):
-			raise TypeError('argument %s given to getItemByPath has bad type %s'%(path, type(path)))
+			raise TypeError(
+				'argument %s given to getItemByPath ' % path +
+				'has bad type %s' % type(path)
+			)
 		item = self._widget.items[path[0]]
 		for i in path[1:]:
 			item = item.items[i]
 		return item
+
 	def treevCursorChanged(self, selection):
 		if self.activeOptionsWidget:
 			try:
@@ -135,27 +159,28 @@ class CustomizeDialog(gtk.Dialog):
 			self.activeOptionsWidget = item.optionsWidget
 			pack(self.vbox_l, item.optionsWidget)
 			item.optionsWidget.show()
+
 	def upClicked(self, button):
 		model = self.model
 		index_list = self.treev.get_cursor()[0]
 		if not index_list:
 			return
 		i = index_list[-1]
-		if len(index_list)==1:
-			if i<=0 or i>=len(model):
+		if len(index_list) == 1:
+			if i <= 0 or i >= len(model):
 				gdk.beep()
 				return
 			###
 			self._widget.moveItemUp(i)
-			model.swap(model.get_iter(i-1), model.get_iter(i))
-			self.treev.set_cursor(i-1)
+			model.swap(model.get_iter(i - 1), model.get_iter(i))
+			self.treev.set_cursor(i - 1)
 		else:
-			if i<=0:
+			if i <= 0:
 				gdk.beep()
 				return
 			###
 			root = self.getItemByPath(index_list[:-1])
-			if i>=len(root.items):
+			if i >= len(root.items):
 				gdk.beep()
 				return
 			###
@@ -164,43 +189,50 @@ class CustomizeDialog(gtk.Dialog):
 			index_list2[-1] = i - 1
 			model.swap(model.get_iter(index_list), model.get_iter(index_list2))
 			self.treev.set_cursor(index_list2)
+
 	def downClicked(self, button):
 		model = self.model
 		index_list = self.treev.get_cursor()[0]
 		if not index_list:
 			return
 		i = index_list[-1]
-		if len(index_list)==1:
-			if i<0 or i>=len(model)-1:
+		if len(index_list) == 1:
+			if i < 0 or i >= len(model) - 1:
 				gdk.beep()
 				return
 			###
-			self._widget.moveItemUp(i+1)
-			model.swap(model.get_iter(i), model.get_iter(i+1))
-			self.treev.set_cursor(i+1)
+			self._widget.moveItemUp(i + 1)
+			model.swap(model.get_iter(i), model.get_iter(i + 1))
+			self.treev.set_cursor(i + 1)
 		else:
-			if i<0:
+			if i < 0:
 				gdk.beep()
 				return
 			###
 			root = self.getItemByPath(index_list[:-1])
-			if i>=len(root.items)-1:
+			if i >= len(root.items) - 1:
 				gdk.beep()
 				return
 			###
-			root.moveItemUp(i+1)
+			root.moveItemUp(i + 1)
 			index_list2 = list(index_list)
 			index_list2[-1] = i + 1
 			model.swap(model.get_iter(index_list), model.get_iter(index_list2))
 			self.treev.set_cursor(index_list2)
+
 	def rowActivated(self, treev, path, col):
 		if treev.row_expanded(path):
 			treev.collapse_row(path)
 		else:
 			treev.expand_row(path, False)
-	def enableCellToggled(self, cell, path):## FIXME
+
+	def enableCellToggled(self, cell, path):  # FIXME
 		active = not cell.get_active()
-		self.model.set_value(self.model.get_iter(path), 0, active) ## or set(...)
+		self.model.set_value(
+			self.model.get_iter(path),
+			0,
+			active,
+		)  # or set(...)
 		parentItem = self._widget
 		pp = tree_path_split(path)
 		item = parentItem.items[pp[0]]
@@ -218,6 +250,7 @@ class CustomizeDialog(gtk.Dialog):
 				item.optionsWidget.set_sensitive(item.enable)
 		if ui.mainWin:
 			ui.mainWin.setMinHeight()
+
 	def loadItem(self, parentItem, itemIndex, itemPath):
 		itemIter = self.model.get_iter(itemPath)
 		item = parentItem.items[itemIndex]
@@ -233,21 +266,26 @@ class CustomizeDialog(gtk.Dialog):
 		item.onConfigChange()
 		item.onDateChange()
 		return item
+
 	def findItem(self, item):
 		return self._widget.items.index(item)
+
 	def updateTreeEnableChecks(self):
 		for i, item in enumerate(self._widget.items):
-			self.model.set_value(self.model.get_iter((i,)), 0, item.enable)
+			self.model.set_value(
+				self.model.get_iter((i,)),
+				0,
+				item.enable,
+			)
+
 	def save(self):
 		self._widget.updateVars()
 		ui.ud__wcalToolbarData = ud.wcalToolbarData
 		ui.ud__mainToolbarData = ud.mainToolbarData
 		ui.saveConfCustomize()
 		#data = self._widget.getData()## remove? FIXME
+
 	def close(self, button=None, event=None):
 		self.save()
 		self.hide()
 		return True
-
-
-

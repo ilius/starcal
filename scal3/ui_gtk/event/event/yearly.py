@@ -62,7 +62,12 @@ class WidgetClass(common.WidgetClass):
 		####
 		#self.filesBox = common.FilesBox(self.event)
 		#pack(self, self.filesBox)
-	startYearCheckClicked = lambda self, obj=None: self.startYearSpin.set_sensitive(self.startYearCheck.get_active())
+
+	def startYearCheckClicked(self, obj=None):
+		return self.startYearSpin.set_sensitive(
+			self.startYearCheck.get_active()
+		)
+
 	def updateWidget(self):## FIXME
 		common.WidgetClass.updateWidget(self)
 		self.monthCombo.setValue(self.event.getMonth())
@@ -76,6 +81,7 @@ class WidgetClass(common.WidgetClass):
 			self.startYearCheck.set_active(True)
 			self.startYearSpin.set_value(startRule.date[0])
 		self.startYearCheckClicked()
+
 	def updateVars(self):## FIXME
 		common.WidgetClass.updateVars(self)
 		self.event.setMonth(self.monthCombo.getValue())
@@ -88,7 +94,9 @@ class WidgetClass(common.WidgetClass):
 				del self.event['start']
 			except KeyError:
 				pass
-	def modeComboChanged(self, obj=None):## overwrite method from common.WidgetClass
+
+	def modeComboChanged(self, obj=None):
+		# overwrite method from common.WidgetClass
 		newMode = self.modeCombo.get_active()
 		module = calTypes[newMode]
 		monthCombo = self.monthCombo
@@ -105,6 +113,3 @@ class WidgetClass(common.WidgetClass):
 		monthCombo.setValue(m2)
 		self.daySpin.set_value(d2)
 		self.event.mode = newMode
-
-
-

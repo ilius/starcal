@@ -35,8 +35,15 @@ from gi.repository import GObject
 from gi.repository import GdkPixbuf
 
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import toolButtonFromStock, set_tooltip, labelStockMenuItem
-from scal3.ui_gtk.utils import dialog_add_button, getStyleColor
+from scal3.ui_gtk.utils import (
+	toolButtonFromStock,
+	set_tooltip,
+	labelStockMenuItem,
+)
+from scal3.ui_gtk.utils import (
+	dialog_add_button,
+	getStyleColor,
+)
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
 from scal3.ui_gtk.mywidgets import TextFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
@@ -46,17 +53,20 @@ from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.event.utils import *
 
 
-getGroupPixbuf = lambda group: newColorCheckPixbuf(
-	group.color,
-	20,
-	group.enable,
-)
+def getGroupPixbuf(group):
+	return newColorCheckPixbuf(
+		group.color,
+		20,
+		group.enable,
+	)
 
-getGroupRow = lambda group: (
-	group.id,
-	getGroupPixbuf(group),
-	group.title
-)
+
+def getGroupRow(group):
+	return (
+		group.id,
+		getGroupPixbuf(group),
+		group.title
+	)
 
 
 class WidgetClass(gtk.VBox):
@@ -89,7 +99,12 @@ class WidgetClass(gtk.VBox):
 			pack(hbox, gtk.Label(''), 1, 1)
 			self.tzCombo = combo
 			pack(self, hbox)
-			self.tzCheck.connect('clicked', lambda check: self.tzCombo.set_sensitive(check.get_active()))
+			self.tzCheck.connect(
+				'clicked',
+				lambda check: self.tzCombo.set_sensitive(
+					check.get_active(),
+				),
+			)
 		###########
 		hbox = gtk.HBox()
 		pack(hbox, gtk.Label(_('Summary')))
@@ -109,16 +124,21 @@ class WidgetClass(gtk.VBox):
 		pack(self, exp, 1, 1)
 		###########
 		hbox = gtk.HBox()
-		pack(hbox, gtk.Label(_('Icon')+':'))
+		pack(hbox, gtk.Label(_('Icon') + ':'))
 		self.iconSelect = IconSelectButton()
 		pack(hbox, self.iconSelect)
 		pack(hbox, gtk.Label(''), 1, 1)
 		pack(self, hbox)
 		##########
-		self.modeCombo.connect('changed', self.modeComboChanged)## right place? before updateWidget? FIXME
+		self.modeCombo.connect(
+			'changed',
+			self.modeComboChanged,
+		)  # right place? before updateWidget? FIXME
+
 	def focusSummary(self):
 		self.summaryEntry.select_region(0, -1)
 		self.summaryEntry.grab_focus()
+
 	def updateWidget(self):
 		#print('updateWidget', self.event.files)
 		self.modeCombo.set_active(self.event.mode)
@@ -142,6 +162,7 @@ class WidgetClass(gtk.VBox):
 				pass
 		#####
 		self.modeComboChanged()
+
 	def updateVars(self):
 		self.event.mode = self.modeCombo.get_active()
 		if self.tzCheck:
@@ -159,6 +180,7 @@ class WidgetClass(gtk.VBox):
 			except AttributeError:
 				pass
 		#####
+
 	def modeComboChanged(self, obj=None):## FIXME
 		pass
 
@@ -173,12 +195,16 @@ class FilesBox(gtk.VBox):
 		pack(hbox, gtk.Label(''), 1, 1)
 		addButton = gtk.Button()
 		addButton.set_label(_('_Add File'))
-		addButton.set_image(gtk.Image.new_from_stock(gtk.STOCK_ADD, gtk.IconSize.BUTTON))
+		addButton.set_image(gtk.Image.new_from_stock(
+			gtk.STOCK_ADD,
+			gtk.IconSize.BUTTON,
+		))
 		addButton.connect('clicked', self.addClicked)
 		pack(hbox, addButton)
 		pack(self, hbox)
 		self.show_all()
 		self.newFiles = []
+
 	def showFile(self, fname):
 		hbox = gtk.HBox()
 		link = gtk.LinkButton(
@@ -189,13 +215,17 @@ class FilesBox(gtk.VBox):
 		pack(hbox, gtk.Label(''), 1, 1)
 		delButton = gtk.Button()
 		delButton.set_label(_('_Delete'))
-		delButton.set_image(gtk.Image.new_from_stock(gtk.STOCK_DELETE, gtk.IconSize.BUTTON))
+		delButton.set_image(gtk.Image.new_from_stock(
+			gtk.STOCK_DELETE,
+			gtk.IconSize.BUTTON,
+		))
 		delButton.fname = fname
 		delButton.hbox = hbox
 		delButton.connect('clicked', self.delClicked)
 		pack(hbox, delButton)
 		pack(self.vbox, hbox)
 		hbox.show_all()
+
 	def addClicked(self, button):
 		fcd = gtk.FileChooserDialog(
 			buttons=(
@@ -220,6 +250,7 @@ class FilesBox(gtk.VBox):
 			self.event.files.append(fname)
 			self.newFiles.append(fname)
 			self.showFile(fname)
+
 	def delClicked(self, button):
 		os.remove(join(self.event.filesDir, button.fname))
 		try:
@@ -227,15 +258,18 @@ class FilesBox(gtk.VBox):
 		except:
 			pass
 		button.hbox.destroy()
+
 	def removeNewFiles(self):
 		for fname in self.newFiles:
 			os.remove(join(self.event.filesDir, fname))
 		self.newFiles = []
+
 	def updateWidget(self):
 		for hbox in self.vbox.get_children():
 			hbox.destroy()
 		for fname in self.event.files:
 			self.showFile(fname)
+
 	def updateVars(self):## FIXME
 		pass
 
@@ -249,10 +283,10 @@ class NotificationBox(gtk.Expander):## or NotificationBox FIXME
 		totalVbox = gtk.VBox()
 		###
 		hbox = gtk.HBox()
-		pack(hbox, gtk.Label(_('Notify')+' '))
+		pack(hbox, gtk.Label(_('Notify') + ' '))
 		self.notifyBeforeInput = DurationInputBox()
 		pack(hbox, self.notifyBeforeInput, 0, 0)
-		pack(hbox, gtk.Label(' '+_('before event')))
+		pack(hbox, gtk.Label(' ' + _('before event')))
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(totalVbox, hbox)
 		###
@@ -260,12 +294,20 @@ class NotificationBox(gtk.Expander):## or NotificationBox FIXME
 			notifier = cls(self.event)
 			inputWidget = makeWidget(notifier)
 			if not inputWidget:
-				printError('notifier %s, inputWidget = %r'%(cls.name, inputWidget))
+				printError('notifier %s, inputWidget = %r' % (
+					cls.name,
+					inputWidget,
+				))
 				continue
 			hbox = gtk.HBox()
 			cb = gtk.CheckButton(notifier.desc)
 			cb.inputWidget = inputWidget
-			cb.connect('clicked', lambda check: check.inputWidget.set_sensitive(check.get_active()))
+			cb.connect(
+				'clicked',
+				lambda check: check.inputWidget.set_sensitive(
+					check.get_active(),
+				),
+			)
 			cb.set_active(False)
 			pack(hbox, cb)
 			hbox.cb = cb
@@ -275,6 +317,7 @@ class NotificationBox(gtk.Expander):## or NotificationBox FIXME
 			self.hboxDict[notifier.name] = hbox
 			pack(totalVbox, hbox)
 		self.add(totalVbox)
+
 	def updateWidget(self):
 		self.notifyBeforeInput.setDuration(*self.event.notifyBefore)
 		for hbox in self.hboxDict.values():
@@ -287,6 +330,7 @@ class NotificationBox(gtk.Expander):## or NotificationBox FIXME
 			hbox.inputWidget.notifier = notifier
 			hbox.inputWidget.updateWidget()
 		self.set_expanded(bool(self.event.notifiers))
+
 	def updateVars(self):
 		self.event.notifyBefore = self.notifyBeforeInput.getDuration()
 		###
@@ -307,12 +351,19 @@ class DurationInputBox(gtk.HBox):
 		##
 		combo = gtk.ComboBoxText()
 		for unitValue, unitName in durationUnitsAbs:
-			combo.append_text(_(' '+unitName.capitalize()+'s'))
+			combo.append_text(_(
+				' ' + unitName.capitalize() + 's'
+			))
 		combo.set_active(2) ## hour FIXME
 		pack(self, combo)
 		self.unitCombo = combo
+
 	def getDuration(self):
-		return self.valueSpin.get_value(), durationUnitValues[self.unitCombo.get_active()]
+		return (
+			self.valueSpin.get_value(),
+			durationUnitValues[self.unitCombo.get_active()],
+		)
+
 	def setDuration(self, value, unit):
 		self.valueSpin.set_value(value)
 		self.unitCombo.set_active(durationUnitValues.index(unit))
@@ -338,8 +389,8 @@ class StrListEditor(gtk.HBox):
 		toolbar = gtk.Toolbar()
 		toolbar.set_orientation(gtk.Orientation.VERTICAL)
 		#try:## DeprecationWarning #?????????????
-			#toolbar.set_icon_size(gtk.IconSize.SMALL_TOOLBAR)
-			### no different (argument to set_icon_size does not affect) ?????????
+		#	toolbar.set_icon_size(gtk.IconSize.SMALL_TOOLBAR)
+		#	# no different (argument to set_icon_size does not affect) ?????????
 		#except:
 		#	pass
 		size = gtk.IconSize.SMALL_TOOLBAR
@@ -362,39 +413,51 @@ class StrListEditor(gtk.HBox):
 		toolbar.insert(tb, -1)
 		#######
 		pack(self, toolbar)
+
 	def addClicked(self, button):
 		cur = self.treev.get_cursor()
 		if cur:
 			self.trees.insert(cur[0], [self.defaultValue])
 		else:
 			self.trees.append([self.defaultValue])
+
 	def moveUpClicked(self, button):
 		cur = self.treev.get_cursor()
 		if not cur:
 			return
 		i = cur[0]
 		t = self.trees
-		if i<=0 or i>=len(t):
+		if i <= 0 or i >= len(t):
 			gdk.beep()
 			return
-		t.swap(t.get_iter(i-1), t.get_iter(i))
-		self.treev.set_cursor(i-1)
+		t.swap(
+			t.get_iter(i - 1),
+			t.get_iter(i),
+		)
+		self.treev.set_cursor(i - 1)
+
 	def moveDownClicked(self, button):
 		cur = self.treev.get_cursor()
 		if not cur:
 			return
 		i = cur[0]
 		t = self.trees
-		if i<0 or i>=len(t)-1:
+		if i < 0 or i >= len(t) - 1:
 			gdk.beep()
 			return
-		t.swap(t.get_iter(i), t.get_iter(i+1))
-		self.treev.set_cursor(i+1)
+		t.swap(
+			t.get_iter(i),
+			t.get_iter(i + 1),
+		)
+		self.treev.set_cursor(i + 1)
+
 	def setData(self, strList):
 		self.trees.clear()
 		for st in strList:
 			self.trees.append([st])
-	getData = lambda self: [row[0] for row in self.trees]
+
+	def getData(self):
+		return [row[0] for row in self.trees]
 
 
 class Scale10PowerComboBox(gtk.ComboBox):
@@ -410,19 +473,25 @@ class Scale10PowerComboBox(gtk.ComboBox):
 		ls.append((1, _('Years')))
 		ls.append((100, _('Centuries')))
 		ls.append((1000, _('Thousand Years')))
-		ls.append((1000**2, _('Million Years')))
-		ls.append((1000**3, _('Billion (10^9) Years')))
+		ls.append((1000 ** 2, _('Million Years')))
+		ls.append((1000 ** 3, _('Billion (10^9) Years')))
 		###
 		self.set_active(0)
-	get_value = lambda self: self.get_model()[self.get_active()][0]
+
+	def get_value(self):
+		return self.get_model()[self.get_active()][0]
+
 	def set_value(self, value):
 		ls = self.get_model()
 		for i, row in enumerate(ls):
 			if row[0] == value:
 				self.set_active(i)
 				return
-		ls.append((value, _('%s Years')%_(value)))
-		self.set_active(len(ls)-1)
+		ls.append((
+			value,
+			_('%s Years') % _(value),
+		))
+		self.set_active(len(ls) - 1)
 
 
 class GroupsTreeCheckList(gtk.TreeView):
@@ -447,17 +516,21 @@ class GroupsTreeCheckList(gtk.TreeView):
 		###
 		for group in ui.eventGroups:
 			self.trees.append([group.id, True, group.title])
+
 	def enableCellToggled(self, cell, path):
 		i = int(path)
 		active = not cell.get_active()
 		self.trees[i][1] = active
 		cell.set_active(active)
-	getValue = lambda self: [row[0] for row in self.trees if row[1]]
+
+	def getValue(self):
+		return [
+			row[0] for row in self.trees if row[1]
+		]
+
 	def setValue(self, gids):
 		for row in self.trees:
 			row[1] = (row[0] in gids)
-
-
 
 
 class SingleGroupComboBox(gtk.ComboBox):
@@ -475,6 +548,7 @@ class SingleGroupComboBox(gtk.ComboBox):
 		self.add_attribute(cell, 'text', 2)
 		#####
 		self.updateItems()
+
 	def updateItems(self):
 		from scal3.ui_gtk.color_utils import gdkColorToRgb
 		ls = self.get_model()
@@ -495,12 +569,14 @@ class SingleGroupComboBox(gtk.ComboBox):
 				self.set_active(activeGid)
 			except ValueError:
 				pass
+
 	def get_active(self):
 		index = gtk.ComboBox.get_active(self)
 		if index in (None, -1):
 			return
 		gid = self.get_model()[index][0]
 		return gid
+
 	def set_active(self, gid):
 		ls = self.get_model()
 		for i, row in enumerate(ls):
@@ -508,7 +584,11 @@ class SingleGroupComboBox(gtk.ComboBox):
 				gtk.ComboBox.set_active(self, i)
 				break
 		else:
-			raise ValueError('SingleGroupComboBox.set_active: Group ID %s is not in items'%gid)
+			raise ValueError(
+				'SingleGroupComboBox.set_active: ' +
+				'Group ID %s is not in items' % gid
+			)
+
 
 if __name__ == '__main__':
 	from pprint import pformat
@@ -526,6 +606,3 @@ if __name__ == '__main__':
 	dialog.show_all()
 	gtk.main()
 	print(pformat(widget.getData()))
-
-
-

@@ -31,23 +31,27 @@ def checkAndSaveJsonLockFile(fpath):
 			try:
 				data = jsonToData(text)
 			except:
-				print('lock file %s is not valid'%fpath)
+				print('lock file %s is not valid' % fpath)
 			else:
 				try:
 					pid = data['pid']
 					cmd = data['cmd']
 				except:
-					print('lock file %s is not valid'%fpath)
+					print('lock file %s is not valid' % fpath)
 				else:
 					try:
 						proc = psutil.Process(pid)
 					except psutil.NoSuchProcess:
-						print('lock file %s: pid %s does not exist'%(fpath, pid))
+						print('lock file %s: pid %s does not exist' % (fpath, pid))
 					else:
 						if get_cmdline(proc) == cmd:
 							locked = True
 						else:
-							print('lock file %s: cmd does match: %s != %s'%(fpath, get_cmdline(proc), cmd))
+							print('lock file %s: cmd does match: %s != %s' % (
+								fpath,
+								get_cmdline(proc),
+								cmd,
+							))
 	elif exists(fpath):
 		## what to do? FIXME
 		pass
@@ -64,18 +68,8 @@ def checkAndSaveJsonLockFile(fpath):
 		try:
 			open(fpath, 'w').write(my_text)
 		except Exception as e:
-			print('failed to write lock file %s: %s'%(fpath, e))
+			print('failed to write lock file %s: %s' % (fpath, e))
 		else:
 			atexit.register(os.remove, fpath)
 	######
 	return locked
-
-
-
-
-
-
-
-
-
-

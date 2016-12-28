@@ -8,36 +8,44 @@ from scal3.ui_gtk.utils import confirm, showError, labelStockMenuItem
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
 
 
-confirmEventTrash = lambda event, parent=None: confirm(
-	_('Press OK if you want to move event "%s" to %s')%(
-		event.summary,
-		ui.eventTrash.title,
-	),
-	parent=parent,
-)
+def confirmEventTrash(event, parent=None):
+	return confirm(
+		_('Press OK if you want to move event "%s" to %s') % (
+			event.summary,
+			ui.eventTrash.title,
+		),
+		parent=parent,
+	)
 
 
 def checkEventsReadOnly(doException=True):
 	if event_lib.readOnly:
-		error = 'Events are Read-Only because they are locked by another StarCalendar 3.x process'
+		error = (
+			'Events are Read-Only because they are locked by '
+			'another StarCalendar 3.x process'
+		)
 		showError(_(error))
 		if doException:
 			raise RuntimeError(error)
 		return False
 	return True
 
+
 def eventWriteMenuItem(*args, **kwargs):
 	item = labelStockMenuItem(*args, **kwargs)
 	item.set_sensitive(not event_lib.readOnly)
 	return item
+
 
 def menuItemFromEventGroup(group):
 	item = ImageMenuItem()
 	item.set_label(group.title)
 	##
 	image = gtk.Image()
-	image.set_from_pixbuf(newColorCheckPixbuf(group.color, 20, group.enable))
+	image.set_from_pixbuf(newColorCheckPixbuf(
+		group.color,
+		20,
+		group.enable,
+	))
 	item.set_image(image)
 	return item
-
-

@@ -2,7 +2,9 @@ from scal3 import core
 from scal3.locale_man import tr as _
 
 from scal3.ui_gtk import *
-from scal3.ui_gtk.event.group.vcsEpochBase import VcsEpochBaseWidgetClass as BaseWidgetClass
+
+from scal3.ui_gtk.event.group.vcsEpochBase \
+	import VcsEpochBaseWidgetClass as BaseWidgetClass
 
 
 class WidgetClass(BaseWidgetClass):
@@ -19,15 +21,11 @@ class WidgetClass(BaseWidgetClass):
 		pack(hbox, self.statCheck)
 		##
 		pack(self, hbox)
+
 	def updateWidget(self):
 		BaseWidgetClass.updateWidget(self)
 		self.statCheck.set_active(self.group.showStat)
+
 	def updateVars(self):
 		BaseWidgetClass.updateVars(self)
 		self.group.showStat = self.statCheck.get_active()
-
-
-
-
-
-

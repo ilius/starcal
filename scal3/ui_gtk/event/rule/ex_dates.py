@@ -27,10 +27,18 @@ from scal3 import ui
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import toolButtonFromStock, set_tooltip
 
-## FIXME
-encode = lambda d: textNumEncode(dateEncode(d))
-decode = lambda s: dateDecode(textNumDecode(s))
-validate = lambda s: encode(decode(s))
+
+def encode(d):
+	return textNumEncode(dateEncode(d))
+
+
+def decode(s):
+	return dateDecode(textNumDecode(s))
+
+
+def validate(s):
+	return encode(decode(s))
+
 
 class WidgetClass(gtk.HBox):
 	def __init__(self, rule):
@@ -44,11 +52,20 @@ class WidgetClass(gtk.HBox):
 		self.dialog = None
 		###
 		self.editButton = gtk.Button(_('Edit'))
-		self.editButton.set_image(gtk.Image.new_from_stock(gtk.STOCK_EDIT, gtk.IconSize.BUTTON))
+		self.editButton.set_image(gtk.Image.new_from_stock(
+			gtk.STOCK_EDIT,
+			gtk.IconSize.BUTTON,
+		))
 		self.editButton.connect('clicked', self.showDialog)
 		pack(self, self.editButton)
+
 	def updateCountLabel(self):
-		self.countLabel.set_label(' '*2 + _('%s items')%_(len(self.trees)) + ' '*2)
+		self.countLabel.set_label(
+			' ' * 2 +
+			_('%s items') % _(len(self.trees)) +
+			' ' * 2
+		)
+
 	def createDialog(self):
 		if self.dialog:
 			return
@@ -105,14 +122,20 @@ class WidgetClass(gtk.HBox):
 		okButton = self.dialog.add_button(gtk.STOCK_OK, gtk.ResponseType.CANCEL)
 		if ui.autoLocale:
 			okButton.set_label(_('_OK'))
-			okButton.set_image(gtk.Image.new_from_stock(gtk.STOCK_OK, gtk.IconSize.BUTTON))
+			okButton.set_image(gtk.Image.new_from_stock(
+				gtk.STOCK_OK,
+				gtk.IconSize.BUTTON,
+			))
+
 	def showDialog(self, w=None):
 		self.createDialog()
 		self.dialog.run()
 		self.updateCountLabel()
+
 	def dateCellEdited(self, cell, path, newText):
 		index = int(path)
 		self.trees[index][0] = validate(newText)
+
 	def getSelectedIndex(self):
 		cur = self.treev.get_cursor()
 		try:
@@ -121,6 +144,7 @@ class WidgetClass(gtk.HBox):
 			return index
 		except:
 			return None
+
 	def addClicked(self, button):
 		index = self.getSelectedIndex()
 		mode = self.rule.getMode()## FIXME
@@ -128,44 +152,53 @@ class WidgetClass(gtk.HBox):
 		if index is None:
 			newIter = self.trees.append(row)
 		else:
-			newIter = self.trees.insert(index+1, row)
+			newIter = self.trees.insert(index + 1, row)
 		self.treev.set_cursor(self.trees.get_path(newIter))
 		#col = self.treev.get_column(0)
 		#cell = col.get_cell_renderers()[0]
 		#cell.start_editing(...) ## FIXME
+
 	def deleteClicked(self, button):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
 		del self.trees[index]
+
 	def moveUpClicked(self, button):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
 		t = self.trees
-		if index<=0 or index>=len(t):
+		if index <= 0 or index >= len(t):
 			gdk.beep()
 			return
-		t.swap(t.get_iter(index-1), t.get_iter(index))
-		self.treev.set_cursor(index-1)
+		t.swap(
+			t.get_iter(index - 1),
+			t.get_iter(index),
+		)
+		self.treev.set_cursor(index - 1)
+
 	def moveDownClicked(self, button):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
 		t = self.trees
-		if index<0 or index>=len(t)-1:
+		if index < 0 or index >= len(t) - 1:
 			gdk.beep()
 			return
-		t.swap(t.get_iter(index), t.get_iter(index+1))
-		self.treev.set_cursor(index+1)
+		t.swap(
+			t.get_iter(index),
+			t.get_iter(index + 1),
+		)
+		self.treev.set_cursor(index + 1)
+
 	def updateWidget(self):
 		for date in self.rule.dates:
 			self.trees.append([encode(date)])
 		self.updateCountLabel()
+
 	def updateVars(self):
 		dates = []
 		for row in self.trees:
 			dates.append(decode(row[0]))
 		self.rule.setDates(dates)
-
-

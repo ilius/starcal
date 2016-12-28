@@ -17,10 +17,12 @@ class MultiValueRule(gtk.HBox):
 		pack(self, self.widgetsBox)
 		##
 		self.removeButton = gtk.Button()
-		self.removeButton.set_image(gtk.Image.new_from_stock(gtk.STOCK_REMOVE, gtk.IconSize.MENU))
+		self.removeButton.set_image(gtk.Image.new_from_stock(
+			gtk.STOCK_REMOVE,
+			gtk.IconSize.MENU,
+		))
 		self.removeButton.connect('clicked', self.removeLastWidget)
 		##
-
 
 		##
 		self.removeButton.hide()## FIXME
@@ -30,5 +32,3 @@ class MultiValueRule(gtk.HBox):
 	def addWidget(self, obj=None):
 		widget = self.ValueWidgetClass()
 '''
-
-

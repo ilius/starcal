@@ -16,8 +16,18 @@ class TrashEditorDialog(gtk.Dialog):
 		#self.connect('delete-event', lambda obj, e: self.destroy())
 		#self.resize(800, 600)
 		###
-		dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
-		dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
+		dialog_add_button(
+			self,
+			gtk.STOCK_CANCEL,
+			_('_Cancel'),
+			gtk.ResponseType.CANCEL,
+		)
+		dialog_add_button(
+			self,
+			gtk.STOCK_OK,
+			_('_OK'),
+			gtk.ResponseType.OK,
+		)
 		##
 		self.connect('response', lambda w, e: self.hide())
 		#######
@@ -46,15 +56,17 @@ class TrashEditorDialog(gtk.Dialog):
 		####
 		self.vbox.show_all()
 		self.updateWidget()
+
 	def run(self):
-		if gtk.Dialog.run(self)==gtk.ResponseType.OK:
+		if gtk.Dialog.run(self) == gtk.ResponseType.OK:
 			self.updateVars()
 		self.destroy()
+
 	def updateWidget(self):
 		self.titleEntry.set_text(self.trash.title)
 		self.iconSelect.set_filename(self.trash.icon)
+
 	def updateVars(self):
 		self.trash.title = self.titleEntry.get_text()
 		self.trash.icon = self.iconSelect.filename
 		self.trash.save()
-

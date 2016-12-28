@@ -25,12 +25,15 @@ from scal3 import ui
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import showError
 from scal3.ui_gtk.mywidgets import TextFrame
-from scal3.ui_gtk.mywidgets.multi_spin.option_box.hour_minute import HourMinuteButtonOption
+from scal3.ui_gtk.mywidgets.multi_spin.option_box.hour_minute import (
+	HourMinuteButtonOption,
+)
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.mywidgets.weekday_combo import WeekDayComboBox
 from scal3.ui_gtk.event import common
-from scal3.ui_gtk.event.rule.weekNumMode import WidgetClass as WeekNumModeWidgetClass
 
+from scal3.ui_gtk.event.rule.weekNumMode \
+	import WidgetClass as WeekNumModeWidgetClass
 
 
 class WidgetClass(gtk.VBox):
@@ -135,13 +138,21 @@ class WidgetClass(gtk.VBox):
 		######
 		self.courseCombo.set_active(0)
 		#self.updateSummary()
+
 	def focusSummary(self):
 		pass
+
 	#def updateSummary(self, widget=None):
 	#	courseIndex = self.courseCombo.get_active()
-	#	summary = _('%s Class')%self.courseNames[courseIndex] + ' (' + self.weekDayCombo.get_active_text() + ')'
+	#	summary = (
+	#		_('%s Class')%self.courseNames[courseIndex] +
+	#		' (' +
+	#		self.weekDayCombo.get_active_text() +
+	#		')'
+	#	)
 	#	self.summaryEntry.set_text(summary)
 	#	self.event.summary = summary
+
 	def updateWidget(self):## FIXME
 		if self.event.courseId is None:
 			pass
@@ -150,8 +161,8 @@ class WidgetClass(gtk.VBox):
 		##
 		self.weekNumModeCombo.updateWidget()
 		weekDayList = self.event['weekDay'].weekDayList
-		if len(weekDayList)==1:
-			self.weekDayCombo.setValue(weekDayList[0])## FIXME
+		if len(weekDayList) == 1:
+			self.weekDayCombo.setValue(weekDayList[0])  # FIXME
 		else:
 			self.weekDayCombo.set_active(0)
 		##
@@ -172,6 +183,7 @@ class WidgetClass(gtk.VBox):
 		self.notificationBox.updateWidget()
 		####
 		#self.filesBox.updateWidget()
+
 	def updateVars(self):## FIXME
 		courseIndex = self.courseCombo.get_active()
 		if courseIndex is None:
@@ -194,6 +206,3 @@ class WidgetClass(gtk.VBox):
 		####
 		self.notificationBox.updateVars()
 		self.event.updateSummary()
-
-
-

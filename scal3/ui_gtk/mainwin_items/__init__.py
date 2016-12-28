@@ -12,4 +12,3 @@ mainWinItemsDesc = {
 	'weekCal': _('Week Calendar'),
 	'winContronller': _('Window Controller'),
 }
-

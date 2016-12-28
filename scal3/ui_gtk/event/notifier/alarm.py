@@ -25,16 +25,27 @@ class WidgetClass(gtk.FileChooserButton):
 		self.notifier = notifier
 		gtk.FileChooserButton.__init__(self, _('Select Sound'))
 		self.set_local_only(True)
+
 	def updateWidget(self):
 		if self.notifier.alarmSound:
 			self.set_filename(self.notifier.alarmSound)
+
 	def updateVars(self):
 		self.notifier.alarmSound = self.get_filename()
 
+
 def notifyWait(notifier, finishFunc):
 	if notifier.alarmSound and notifier.playerCmd:
-		Popen([notifier.playerCmd, notifier.alarmSound], stdout=PIPE, stderr=PIPE).communicate()
+		Popen(
+			[
+				notifier.playerCmd,
+				notifier.alarmSound,
+			],
+			stdout=PIPE,
+			stderr=PIPE,
+		).communicate()
 	#finishFunc()
+
 
 def notify(notifier, finishFunc):
 	#import thread
@@ -44,4 +55,3 @@ def notify(notifier, finishFunc):
 
 ## event_lib.AlarmNotifier.WidgetClass = AlarmWidgetClass
 ## event_lib.AlarmNotifier.notify = notify
-

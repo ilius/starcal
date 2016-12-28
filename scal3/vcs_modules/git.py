@@ -23,8 +23,10 @@ from subprocess import Popen, PIPE
 from scal3.utils import toStr
 from scal3.time_utils import getEpochFromJd, encodeJd
 
+
 def prepareObj(obj):
 	pass
+
 
 def clearObj(obj):
 	pass
@@ -41,7 +43,7 @@ def decodeStatLine(line):
 		try:
 			num = int(parts[0])
 		except:
-			print('bad section: %r, stat line=%r'%(section, line))
+			print('bad section: %r, stat line=%r' % (section, line))
 		else:
 			action = parts[-1].strip()
 			if 'changed' in action:
@@ -52,10 +54,11 @@ def decodeStatLine(line):
 				deletions = num
 	return files_changed, insertions, deletions
 
+
 def getCommitList(obj, startJd=None, endJd=None):
-	'''
-		returns a list of (epoch, commit_id) tuples
-	'''
+	"""
+	returns a list of (epoch, commit_id) tuples
+	"""
 	cmd = [
 		'git',
 		'--git-dir', join(obj.vcsDir, '.git'),
@@ -103,10 +106,11 @@ def getCommitInfo(obj, commid_id):
 		'description': '\n'.join(parts[4:]),
 	}
 
+
 def getShortStatLine(obj, prevId, thisId):
-	'''
-		returns str
-	'''
+	"""
+	returns str
+	"""
 	cmd = [
 		'git',
 		'--git-dir', join(obj.vcsDir, '.git'),
@@ -117,13 +121,15 @@ def getShortStatLine(obj, prevId, thisId):
 	]
 	return toStr(Popen(cmd, stdout=PIPE).stdout.read().strip())
 
-getShortStat = lambda obj, prevId, thisId: decodeStatLine(getShortStatLine(obj, prevId, thisId))
+
+def getShortStat(obj, prevId, thisId):
+	return decodeStatLine(getShortStatLine(obj, prevId, thisId))
 
 
 def getCommitShortStatLine(obj, commit_id):
-	'''
-		returns str
-	'''
+	"""
+	returns str
+	"""
 	lines = Popen([
 		'git',
 		'--git-dir', join(obj.vcsDir, '.git'),
@@ -138,13 +144,17 @@ def getCommitShortStatLine(obj, commit_id):
 	return ''
 
 
-## returns (files_changed, insertions, deletions)
-getCommitShortStat = lambda obj, commit_id: decodeStatLine(getCommitShortStatLine(obj.vcsDir, commit_id))
+def getCommitShortStat(obj, commit_id):
+	"""
+	returns (files_changed, insertions, deletions)
+	"""
+	return decodeStatLine(getCommitShortStatLine(obj.vcsDir, commit_id))
+
 
 def getTagList(obj, startJd, endJd):
-	'''
-		returns a list of (epoch, tag_name) tuples
-	'''
+	"""
+	returns a list of (epoch, tag_name) tuples
+	"""
 	startEpoch = getEpochFromJd(startJd)
 	endEpoch = getEpochFromJd(endJd)
 	cmd = [
@@ -176,37 +186,40 @@ def getTagList(obj, startJd, endJd):
 		))
 	return data
 
-getTagShortStatLine = lambda obj, prevTag, tag: getShortStatLine(obj, prevTag, tag)
 
-getFirstCommitEpoch = lambda obj: int(
-	Popen([
+def getTagShortStatLine(obj, prevTag, tag):
+	return getShortStatLine(obj, prevTag, tag)
+
+
+def getFirstCommitEpoch(obj):
+	return int(
+		Popen([
+			'git',
+			'--git-dir', join(obj.vcsDir, '.git'),
+			'rev-list',
+			'--max-parents=0',
+			'HEAD',
+			'--format=%ct',
+		], stdout=PIPE).stdout.readlines()[1].strip()
+	)
+
+
+def getLastCommitEpoch(obj):
+	return int(Popen([
 		'git',
 		'--git-dir', join(obj.vcsDir, '.git'),
-		'rev-list',
-		'--max-parents=0',
-		'HEAD',
+		'log',
+		'-1',
 		'--format=%ct',
-	], stdout=PIPE).stdout.readlines()[1].strip()
-)
+	], stdout=PIPE).stdout.read().strip())
 
 
-getLastCommitEpoch = lambda obj: int(Popen([
-	'git',
-	'--git-dir', join(obj.vcsDir, '.git'),
-	'log',
-	'-1',
-	'--format=%ct',
-], stdout=PIPE).stdout.read().strip())
-
-
-getLastCommitIdUntilJd = lambda obj, jd: Popen([
-	'git',
-	'--git-dir', join(obj.vcsDir, '.git'),
-	'log',
-	'--until', encodeJd(jd),
-	'-1',
-	'--format=%H',
-], stdout=PIPE).stdout.read().strip()
-
-
-
+def getLastCommitIdUntilJd(obj, jd):
+	return Popen([
+		'git',
+		'--git-dir', join(obj.vcsDir, '.git'),
+		'log',
+		'--until', encodeJd(jd),
+		'-1',
+		'--format=%H',
+	], stdout=PIPE).stdout.read().strip()

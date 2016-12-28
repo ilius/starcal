@@ -6,10 +6,12 @@ from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.customize import CustomizableCalObj
 
+
 @registerSignals
 class CalObj(gtk.VBox, CustomizableCalObj):
 	_name = 'pluginsText'
 	desc = _('Plugins Text')
+
 	def __init__(self):
 		from scal3.ui_gtk.mywidgets.text_widgets import ReadOnlyTextView
 		gtk.VBox.__init__(self)
@@ -29,21 +31,32 @@ class CalObj(gtk.VBox, CustomizableCalObj):
 			self.textview.show()
 		else:
 			pack(self, self.textview)
+
 	def optionsWidgetCreate(self):
 		if self.optionsWidget:
 			return
 		self.optionsWidget = gtk.HBox()
 		self.enableExpanderCheckb = gtk.CheckButton(_('Inside Expander'))
 		self.enableExpanderCheckb.set_active(ui.pluginsTextInsideExpander)
-		self.enableExpanderCheckb.connect('clicked', lambda check: self.setEnableExpander(check.get_active()))
+		self.enableExpanderCheckb.connect(
+			'clicked',
+			lambda check: self.setEnableExpander(check.get_active()),
+		)
 		self.setEnableExpander(ui.pluginsTextInsideExpander)
 		pack(self.optionsWidget, self.enableExpanderCheckb)
 		####
 		self.optionsWidget.show_all()
+
 	def expanderExpanded(self, exp):
 		ui.pluginsTextIsExpanded = not exp.get_expanded()
 		ui.saveLiveConf()
-	getWidget = lambda self: self.expander if ui.pluginsTextInsideExpander else self.textview
+
+	def getWidget(self):
+		return (
+			self.expander if ui.pluginsTextInsideExpander
+			else self.textview
+		)
+
 	def setText(self, text):
 		if text:
 			self.textbuff.set_text(text)
@@ -51,6 +64,7 @@ class CalObj(gtk.VBox, CustomizableCalObj):
 		else:## elif self.get_property('visible')
 			self.textbuff.set_text('')## forethought
 			self.getWidget().hide()
+
 	def setEnableExpander(self, enable):
 		#print('setEnableExpander', enable)
 		if enable:
@@ -67,7 +81,7 @@ class CalObj(gtk.VBox, CustomizableCalObj):
 				self.textview.show()
 		ui.pluginsTextInsideExpander = enable
 		self.onDateChange()
+
 	def onDateChange(self, *a, **kw):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		self.setText(ui.cell.pluginsText)
-

@@ -21,11 +21,11 @@ class WidgetClass(NormalWidgetClass):
 		self.showDateCheck = gtk.CheckButton()
 		pack(hbox, self.showDateCheck)
 		pack(self, hbox)
-	def updateWidget(self):## FIXME
+
+	def updateWidget(self):  # FIXME
 		NormalWidgetClass.updateWidget(self)
 		self.showDateCheck.set_active(self.group.showDate)
+
 	def updateVars(self):
 		NormalWidgetClass.updateVars(self)
 		self.group.showDate = self.showDateCheck.get_active()
-
-

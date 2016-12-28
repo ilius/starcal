@@ -11,6 +11,7 @@ from scal3.ui_gtk.utils import (
 from scal3.ui_gtk.mywidgets import TextFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 
+
 class EventsBulkEditDialog(gtk.Dialog):
 	def __init__(self, container, **kwargs):
 		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
@@ -18,8 +19,18 @@ class EventsBulkEditDialog(gtk.Dialog):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_('Bulk Edit Events'))
 		####
-		dialog_add_button(self, gtk.STOCK_CANCEL, _('_Cancel'), gtk.ResponseType.CANCEL)
-		dialog_add_button(self, gtk.STOCK_OK, _('_OK'), gtk.ResponseType.OK)
+		dialog_add_button(
+			self,
+			gtk.STOCK_CANCEL,
+			_('_Cancel'),
+			gtk.ResponseType.CANCEL,
+		)
+		dialog_add_button(
+			self,
+			gtk.STOCK_OK,
+			_('_OK'),
+			gtk.ResponseType.OK,
+		)
 		##
 		self.connect('response', lambda w, e: self.hide())
 		####
@@ -27,11 +38,20 @@ class EventsBulkEditDialog(gtk.Dialog):
 			title = container.title
 		except AttributeError:
 			event_count = len(container)
-			msg = _('Here you are going to modify these %s events at once.') % event_count
+			msg = _(
+				'Here you are going to modify these %s events at once.'
+			) % event_count
 		else:
-			msg = _('Here you are going to modify all events inside group "%s" at once.') % title
+			msg = _(
+				'Here you are going to modify all events '
+				'inside group "%s" at once.'
+			) % title
 		msg += ' '
-		msg += _('You better make a backup from your events before doing this. Just right click on group and select "Export" (or a full backup: menu File -> Export)')
+		msg += _(
+			'You better make a backup from your events before doing this.' +
+			' Just right click on group and select "Export"' +
+			' (or a full backup: menu File -> Export)'
+		)
 		msg += '\n\n'
 		label = gtk.Label(msg)
 		label.set_line_wrap(True)
@@ -40,11 +60,20 @@ class EventsBulkEditDialog(gtk.Dialog):
 		hbox = gtk.HBox()
 		self.iconRadio = gtk.RadioButton(label=_('Icon'))
 		pack(hbox, self.iconRadio, 1, 1)
-		self.summaryRadio = gtk.RadioButton(label=_('Summary'), group=self.iconRadio)
+		self.summaryRadio = gtk.RadioButton(
+			label=_('Summary'),
+			group=self.iconRadio,
+		)
 		pack(hbox, self.summaryRadio, 1, 1)
-		self.descriptionRadio = gtk.RadioButton(label=_('Description'), group=self.iconRadio)
+		self.descriptionRadio = gtk.RadioButton(
+			label=_('Description'),
+			group=self.iconRadio,
+		)
 		pack(hbox, self.descriptionRadio, 1, 1)
-		self.timeZoneRadio = gtk.RadioButton(label=_('Time Zone'), group=self.iconRadio)
+		self.timeZoneRadio = gtk.RadioButton(
+			label=_('Time Zone'),
+			group=self.iconRadio,
+		)
 		pack(hbox, self.timeZoneRadio, 1, 1)
 		pack(self.vbox, hbox)
 		###
@@ -118,6 +147,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 		self.firstRadioChanged()
 		####
 		window_set_size_aspect(self, 1.6)
+
 	def firstRadioChanged(self, w=None):
 		if self.iconRadio.get_active():
 			self.iconHbox.show()
@@ -127,70 +157,72 @@ class EventsBulkEditDialog(gtk.Dialog):
 			self.iconHbox.hide()
 			self.textVbox.hide()
 			self.timeZoneHbox.show()
-		elif self.summaryRadio.get_active() or self.descriptionRadio.get_active():
+		elif (
+			self.summaryRadio.get_active() or
+			self.descriptionRadio.get_active()
+		):
 			self.iconHbox.hide()
 			self.textChangeComboChanged()
 			self.timeZoneHbox.hide()
+
 	def textChangeComboChanged(self, w=None):
 		self.textVbox.show_all()
 		chType = self.textChangeCombo.get_active()
-		if chType==0:
+		if chType == 0:
 			self.textInput1.hide()
 			self.withHbox.hide()
 			self.textInput2.hide()
 		elif chType in (1, 2):
 			self.withHbox.hide()
 			self.textInput2.hide()
+
 	def doAction(self):
 		container = self._container
 		if self.iconRadio.get_active():
 			chType = self.iconChangeCombo.get_active()
-			if chType!=0:
+			if chType != 0:
 				icon = self.iconSelect.get_filename()
 				for event in container:
-					if not (chType==2 and event.icon):
+					if not (chType == 2 and event.icon):
 						event.icon = icon
 						event.afterModify()
 						event.save()
 		elif self.timeZoneRadio.get_active():
 			chType = self.timeZoneChangeCombo.get_active()
 			timeZone = self.timeZoneInput.get_text()
-			if chType!=0:
+			if chType != 0:
 				try:
 					natz.timezone(timeZone)
 				except:
-					myRaise('Invalid Time Zone "%s"'%timeZone)
+					myRaise('Invalid Time Zone "%s"' % timeZone)
 				else:
 					for event in container:
-						if not (chType==2 and event.timeZone):
+						if not (chType == 2 and event.timeZone):
 							event.timeZone = timeZone
 							event.afterModify()
 							event.save()
 		else:
 			chType = self.textChangeCombo.get_active()
-			if chType!=0:
+			if chType != 0:
 				text1 = self.textInput1.get_text()
 				text2 = self.textInput2.get_text()
 				if self.summaryRadio.get_active():
 					for event in container:
-						if chType==1:
+						if chType == 1:
 							event.summary = text1 + event.summary
-						elif chType==2:
+						elif chType == 2:
 							event.summary = event.summary + text1
-						elif chType==3:
+						elif chType == 3:
 							event.summary = event.summary.replace(text1, text2)
 						event.afterModify()
 						event.save()
 				elif self.descriptionRadio.get_active():
 					for event in container:
-						if chType==1:
+						if chType == 1:
 							event.description = text1 + event.description
-						elif chType==2:
+						elif chType == 2:
 							event.description = event.description + text1
-						elif chType==3:
+						elif chType == 3:
 							event.description = event.description.replace(text1, text2)
 						event.afterModify()
 						event.save()
-
-
-

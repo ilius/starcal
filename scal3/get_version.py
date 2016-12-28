@@ -34,4 +34,3 @@ while True:
 		exec(line)
 		break
 print(VERSION)
-
