@@ -26,7 +26,7 @@ import os
 from scal3.utils import myRaise
 from scal3 import core
 from scal3.locale_man import tr as _
-from scal3.locale_man import rtl
+from scal3.locale_man import rtl, rtlSgn
 
 from scal3.cal_types import calTypes
 
@@ -879,6 +879,7 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
 	desc = _('Week Calendar')
 	myKeys = CalBase.myKeys + (
 		'up', 'down',
+		'left', 'right',
 		'page_up',
 		'k', 'p',
 		'page_down',
@@ -1050,6 +1051,10 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
 			self.jdPlus(-1)
 		elif kname == 'down':
 			self.jdPlus(1)
+		elif kname == 'left':
+			self.jdPlus(rtlSgn() * 7)
+		elif kname == 'right':
+			self.jdPlus(rtlSgn() * -7)
 		elif kname == 'end':
 			self.gotoJd(self.status[-1].jd)
 		elif kname in ('page_up', 'k', 'p'):
