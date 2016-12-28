@@ -16,7 +16,13 @@ def decodeAtomElement(atom):
 		ref = el.attrib['dictRef']
 		if ref.startswith('bo:'):
 			ref = ref[3:]
-		if ref in ('name', 'atomicNumber', 'discoveryDate', 'discoveryCountry', 'discoverers'):## 'symbol',
+		if ref in (
+			'name',
+			'atomicNumber',
+			'discoveryDate',
+			'discoveryCountry',
+			'discoverers',
+		):  # 'symbol',
 			try:
 				data[ref] = el.attrib['value']
 			except KeyError:
@@ -26,20 +32,23 @@ def decodeAtomElement(atom):
 
 
 def createDiscoveryEvent(group, atom):
-	if not 'discoveryDate' in atom:
-		print('no discoveryDate for %s'%atom['id'])
+	if 'discoveryDate' not in atom:
+		print('no discoveryDate for %s' % atom['id'])
 		return
 	discoveryDate = int(atom['discoveryDate'])
 	if discoveryDate < 1:
-		print('empty discoveryDate (%r) for %s'%(atom['discoveryDate'], atom['id']))
+		print('empty discoveryDate (%r) for %s' % (
+			atom['discoveryDate'],
+			atom['id'],
+		))
 		return
 	description = atom['name']
 	if 'discoverers' in atom:
-	   description +=  ', by %s'%atom['discoverers'].replace(';', ',')
+		description += ', by %s' % atom['discoverers'].replace(';', ',')
 	event = group.createEvent('largeScale')
 	event.setData({
 		'calType': 'gregorian',
-		'summary': 'Element Discovery: %s'%atom['id'],
+		'summary': 'Element Discovery: %s' % atom['id'],
 		'description': description,
 		'scale': 1,
 		'start': discoveryDate,
@@ -49,7 +58,7 @@ def createDiscoveryEvent(group, atom):
 	return event
 
 
-if __name__=='__main__':
+if __name__ == '__main__':
 	ui.eventGroups.load()
 	group = event_lib.LargeScaleGroup()
 	group.setData({
@@ -69,5 +78,3 @@ if __name__=='__main__':
 	group.save()
 	ui.eventGroups.append(group)
 	ui.eventGroups.save()
-
-
