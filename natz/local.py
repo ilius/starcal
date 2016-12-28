@@ -4,6 +4,7 @@ import natz
 from .exceptions import UnknownTimeZoneError
 from .tzfile import build_tzinfo
 
+
 def _tz_from_env(tzenv):
 	if tzenv[0] == ':':
 		tzenv = tzenv[1:]
@@ -23,8 +24,10 @@ def _tz_from_env(tzenv):
 			"We don't support non-zoneinfo timezones like %s. \n"
 			"Please use a timezone in the form of Continent/City")
 
+
 def get_localzone(_root='/'):
-	"""Tries to find the local timezone configuration.
+	"""
+	Tries to find the local timezone configuration.
 
 	This method prefers finding the timezone name and passing that to natz,
 	over passing in the localtime file, as in the later case the zoneinfo
@@ -32,8 +35,8 @@ def get_localzone(_root='/'):
 
 	The parameter _root makes the function look for files like /etc/localtime
 	beneath the _root directory. This is primarily used by the tests.
-	In normal usage you call the function without parameters."""
-
+	In normal usage you call the function without parameters.
+	"""
 	tzenv = os.environ.get('TZ')
 	if tzenv:
 		return _tz_from_env(tzenv)
@@ -96,4 +99,3 @@ def get_localzone(_root='/'):
 			return build_tzinfo('local', tzFp)
 
 	raise UnknownTimeZoneError('Can not find any timezone configuration')
-

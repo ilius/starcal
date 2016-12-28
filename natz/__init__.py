@@ -73,7 +73,3 @@ def timezone(name):
 			fp.close()
 
 	return _tzinfo_cache[name]
-
-
-
-

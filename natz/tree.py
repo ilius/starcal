@@ -7,6 +7,7 @@ from .directory import infoDir
 
 infoDirL = list(os.path.split(infoDir))
 
+
 def _addZoneNode(parentDict, zone, zoneNamesLevel):
 	path = '/' + os.path.join(*tuple(infoDirL + zone))
 	name = zone[-1]
@@ -56,4 +57,3 @@ def getZoneInfoTree():
 	#	zoneNamesList += sorted(levelNames)
 	#from pprint import pprint ; pprint(zoneTree)
 	return zoneTree
-
