@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-import os, sys
+import os
+import sys
 
 sys.path.append('/starcal2')
 
@@ -19,6 +20,7 @@ ui.eventGroups.load()
 groupTitlePrefix = 'ویکی‌پدیا - '
 newGroupsDict = {}
 
+
 def getGroupByTitle(title):
 	global newGroupsDict
 	try:
@@ -36,16 +38,14 @@ def getGroupByTitle(title):
 		return group
 
 
-
-
 for line in open('wikipedia-fa.tab'):
 	line = line.strip()
 	if not line:
 		continue
 	parts = line.split('\t')
-	if len(parts)==4:
+	if len(parts) == 4:
 		date_str, category, summary, description = parts
-	elif len(parts)==3:
+	elif len(parts) == 3:
 		date_str, category, summary = parts
 		description = ''
 	else:
@@ -64,9 +64,3 @@ for line in open('wikipedia-fa.tab'):
 for group in newGroupsDict.values():
 	group.save()
 ui.eventGroups.save()
-
-
-
-
-
-

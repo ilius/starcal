@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys, os, re, json
+import sys
+import os
+import re
+import json
 from os.path import join
 
 faDigs = ('۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹', '٫')
@@ -9,6 +12,7 @@ faDigs = ('۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹', '٫')
 ignoreCategories = ('تعطیلات', 'جستارهای وابسته', 'منابع')
 
 getPrettyJson = lambda data: json.dumps(data, sort_keys=True, indent=4)
+
 
 def numFaDecode(numFa):
 	if isinstance(numFa, str):
@@ -18,15 +22,16 @@ def numFaDecode(numFa):
 		numStr += str(faDigs.index(c))
 	return int(numStr)
 
+
 def cleanRawText(text):
 	text = text.strip()## .replace(']]', '').replace('[[', '')
 	for part in re.findall('\[\[.*?\]\]', text):
 		part2 = part.split('|')[-1]
 		text = text.replace(part, part2)
 	return text.replace('[[', '').replace(']]', '').replace("'''", '')\
-			   .replace('٬ ', '، ')\
-			   .replace('ي', 'ی')\
-			   .replace('ك', 'ک')
+		.replace('٬ ', '، ')\
+		.replace('ي', 'ی')\
+		.replace('ك', 'ک')
 
 
 def parseFile(fpath, month, day):
@@ -47,9 +52,9 @@ def parseFile(fpath, month, day):
 				continue
 			textStart = line.find('-')
 			#print(textStart)
-			if textStart<0:
+			if textStart < 0:
 				continue
-			text = cleanRawText(line[textStart+1:])
+			text = cleanRawText(line[textStart + 1:])
 			#print('text=%s'%text)
 			data.append({
 				'date': (year, month, day),
@@ -80,25 +85,21 @@ def parseAllFiles(direc):
 	data.sort()
 	return data
 
+
 def writeToTabfile(data, fpath):
 	lines = []
 	for event in data:
-		lines.append('%s\t%s\t%s'%(
-			'%.4d/%.2d/%.2d'%tuple(event['date']),
+		lines.append('%s\t%s\t%s' % (
+			'%.4d/%.2d/%.2d' % tuple(event['date']),
 			event['category'],
 			event['text'],
 		))
 	open(fpath, 'w').write('\n'.join(lines))
 
 
-
-if __name__=='__main__':
+if __name__ == '__main__':
 	from pprint import pprint
 	data = parseAllFiles('wikipedia-fa-events')
 	writeToTabfile(data, 'wikipedia-fa.tab')
 	#print(getPrettyJson(data))
 	#pprint(data)
-
-
-
-
