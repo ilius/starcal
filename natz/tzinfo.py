@@ -6,8 +6,12 @@ from bisect import bisect_right
 from .exceptions import AmbiguousTimeError, NonExistentTimeError
 
 __all__ = []
-
 _timedelta_cache = {}
+_epoch = datetime.utcfromtimestamp(0)
+_datetime_cache = {0: _epoch}
+_ttinfo_cache = {}
+
+
 def memorized_timedelta(seconds):
 	'''Create only one instance of each distinct timedelta'''
 	try:
@@ -17,8 +21,10 @@ def memorized_timedelta(seconds):
 		_timedelta_cache[seconds] = delta
 		return delta
 
-_epoch = datetime.utcfromtimestamp(0)
-_datetime_cache = {0: _epoch}
+
+_notime = memorized_timedelta(0)
+
+
 def memorized_datetime(seconds):
 	'''Create only one instance of each distinct datetime'''
 	try:
@@ -30,21 +36,20 @@ def memorized_datetime(seconds):
 		_datetime_cache[seconds] = dt
 		return dt
 
-_ttinfo_cache = {}
+
 def memorized_ttinfo(*args):
 	'''Create only one instance of each distinct tuple'''
 	try:
 		return _ttinfo_cache[args]
 	except KeyError:
 		ttinfo = (
-				memorized_timedelta(args[0]),
-				memorized_timedelta(args[1]),
-				args[2]
-				)
+			memorized_timedelta(args[0]),
+			memorized_timedelta(args[1]),
+			args[2]
+		)
 		_ttinfo_cache[args] = ttinfo
 		return ttinfo
 
-_notime = memorized_timedelta(0)
 
 def _to_seconds(td):
 	'''Convert a timedelta to seconds'''
@@ -150,8 +155,9 @@ class DstTzInfo(BaseTzInfo):
 	'''
 	# Overridden in subclass
 	_utc_transition_times = None # Sorted list of DST transition times in UTC
-	_transition_info = None # [(utcoffset, dstoffset, tzname)] corresponding
-							# to _utc_transition_times entries
+	_transition_info = None
+	# _transition_info: [(utcoffset, dstoffset, tzname)] corresponding
+	# to _utc_transition_times entries
 	zone = None
 
 	# Set in __init__
@@ -173,8 +179,11 @@ class DstTzInfo(BaseTzInfo):
 
 	def fromutc(self, dt):
 		'''See datetime.tzinfo.fromutc'''
-		if (dt.tzinfo is not None
-			and getattr(dt.tzinfo, '_tzinfos', None) is not self._tzinfos):
+		if (
+			dt.tzinfo is not None
+			and
+			getattr(dt.tzinfo, '_tzinfos', None) is not self._tzinfos
+		):
 			raise ValueError('fromutc: dt.tzinfo is not self')
 		dt = dt.replace(tzinfo=None)
 		idx = max(0, bisect_right(self._utc_transition_times, dt) - 1)
@@ -334,7 +343,6 @@ class DstTzInfo(BaseTzInfo):
 				return self.localize(
 					dt - timedelta(hours=6), is_dst=False) + timedelta(hours=6)
 
-
 		# If we get this far, we have multiple possible timezones - this
 		# is an ambiguous case occuring during the end-of-DST transition.
 
@@ -346,9 +354,10 @@ class DstTzInfo(BaseTzInfo):
 		# Filter out the possiblilities that don't match the requested
 		# is_dst
 		filtered_possible_loc_dt = [
-			p for p in possible_loc_dt
-				if bool(p.tzinfo._dst) == is_dst
-			]
+			p
+			for p in possible_loc_dt
+			if bool(p.tzinfo._dst) == is_dst
+		]
 
 		# Hopefully we only have one possibility left. Return it.
 		if len(filtered_possible_loc_dt) == 1:
@@ -487,12 +496,18 @@ class DstTzInfo(BaseTzInfo):
 			dst = 'STD'
 		if self._utcoffset > _notime:
 			return '<DstTzInfo %r %s+%s %s>' % (
-					self.zone, self._tzname, self._utcoffset, dst
-				)
+				self.zone,
+				self._tzname,
+				self._utcoffset,
+				dst,
+			)
 		else:
 			return '<DstTzInfo %r %s%s %s>' % (
-					self.zone, self._tzname, self._utcoffset, dst
-				)
+				self.zone,
+				self._tzname,
+				self._utcoffset,
+				dst,
+			)
 
 	def __reduce__(self):
 		# Special pickle to zone remains a singleton and to cope with
@@ -501,9 +516,8 @@ class DstTzInfo(BaseTzInfo):
 			self.zone,
 			_to_seconds(self._utcoffset),
 			_to_seconds(self._dst),
-			self._tzname
+			self._tzname,
 		)
-
 
 
 def unpickler(zone, utcoffset=None, dstoffset=None, tzname=None):
@@ -543,8 +557,11 @@ def unpickler(zone, utcoffset=None, dstoffset=None, tzname=None):
 	# get changed from the initial guess by the database maintainers to
 	# match reality when this information is discovered.
 	for localized_tz in tz._tzinfos.values():
-		if (localized_tz._utcoffset == utcoffset
-				and localized_tz._dst == dstoffset):
+		if (
+			localized_tz._utcoffset == utcoffset
+			and
+			localized_tz._dst == dstoffset
+		):
 			return localized_tz
 
 	# This (utcoffset, dstoffset) information has been removed from the
@@ -556,4 +573,3 @@ def unpickler(zone, utcoffset=None, dstoffset=None, tzname=None):
 	inf = (utcoffset, dstoffset, tzname)
 	tz._tzinfos[inf] = tz.__class__(inf, tz._tzinfos)
 	return tz._tzinfos[inf]
-

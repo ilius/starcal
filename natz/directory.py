@@ -9,5 +9,7 @@ if not os.path.isdir(infoDir):
 	if os.path.isdir(pytz_infoDir):
 		infoDir = pytz_infoDir
 	else:
-		raise IOError('zoneinfo directory not found, neither "%s" or "%s"'%(infoDir, infoDir_pytz))
-
+		raise IOError(
+			'zoneinfo directory not found' +
+			', neither "%s" nor "%s"' % (infoDir, infoDir_pytz)
+		)

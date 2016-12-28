@@ -13,29 +13,44 @@ from struct import unpack, calcsize
 from .tzinfo import StaticTzInfo, DstTzInfo, memorized_ttinfo
 from .tzinfo import memorized_datetime, memorized_timedelta
 
+
 def _std_string(s):
 	"""Cast a string or byte string to an ASCII string."""
 	return str(s.decode('US-ASCII'))
 
+
 def build_tzinfo(zone, fp):
 	head_fmt = '>4s c 15x 6l'
 	head_size = calcsize(head_fmt)
-	(magic, format, ttisgmtcnt, ttisstdcnt,leapcnt, timecnt,
-		typecnt, charcnt) =  unpack(head_fmt, fp.read(head_size))
+	(
+		magic,
+		format,
+		ttisgmtcnt,
+		ttisstdcnt,
+		leapcnt,
+		timecnt,
+		typecnt,
+		charcnt,
+	) = unpack(head_fmt, fp.read(head_size))
 
 	# Make sure it is a tzfile(5) file
 	assert magic == b'TZif', 'Got magic %s' % repr(magic)
 
 	# Read out the transition times, localtime indices and ttinfo structures.
-	data_fmt = '>%(timecnt)dl %(timecnt)dB %(ttinfo)s %(charcnt)ds' % dict(
-		timecnt=timecnt, ttinfo='lBB'*typecnt, charcnt=charcnt)
+	data_fmt = '>%(timecnt)dl %(timecnt)dB %(ttinfo)s %(charcnt)ds' % {
+		'timecnt': timecnt,
+		'ttinfo': 'lBB' * typecnt,
+		'charcnt': charcnt,
+	}
 	data_size = calcsize(data_fmt)
 	data = unpack(data_fmt, fp.read(data_size))
 
 	# make sure we unpacked the right number of values
 	assert len(data) == 2 * timecnt + 3 * typecnt + 1
-	transitions = [memorized_datetime(trans)
-				for trans in data[:timecnt]]
+	transitions = [
+		memorized_datetime(trans)
+		for trans in data[:timecnt]
+	]
 	lindexes = list(data[timecnt:2 * timecnt])
 	ttinfo_raw = data[2 * timecnt:-1]
 	tznames_raw = data[-1]
@@ -47,7 +62,7 @@ def build_tzinfo(zone, fp):
 	i = 0
 	while i < len(ttinfo_raw):
 		# have we looked up this timezone name yet?
-		tzname_offset = ttinfo_raw[i+2]
+		tzname_offset = ttinfo_raw[i + 2]
 		if tzname_offset not in tznames:
 			nul = tznames_raw.find(b'\x00', tzname_offset)
 			if nul < 0:
@@ -55,18 +70,25 @@ def build_tzinfo(zone, fp):
 			tznames[tzname_offset] = _std_string(
 				tznames_raw[tzname_offset:nul]
 			)
-		ttinfo.append((ttinfo_raw[i],
-					bool(ttinfo_raw[i+1]),
-					tznames[tzname_offset]))
+		ttinfo.append((
+			ttinfo_raw[i],
+			bool(ttinfo_raw[i + 1]),
+			tznames[tzname_offset],
+		))
 		i += 3
 
 	# Now build the timezone object
 	if len(transitions) == 0:
 		ttinfo[0][0], ttinfo[0][2]
-		cls = type(zone, (StaticTzInfo,), dict(
-			zone=zone,
-			_utcoffset=memorized_timedelta(ttinfo[0][0]),
-			_tzname=ttinfo[0][2]))
+		cls = type(
+			zone,
+			(StaticTzInfo,),
+			{
+				'zone': zone,
+				'_utcoffset': memorized_timedelta(ttinfo[0][0]),
+				'_tzname': ttinfo[0][2]
+			},
+		)
 	else:
 		# Early dates use the first standard time ttinfo
 		i = 0
@@ -86,7 +108,7 @@ def build_tzinfo(zone, fp):
 			if not inf[1]:
 				dst = 0
 			else:
-				for j in range(i-1, -1, -1):
+				for j in range(i - 1, -1, -1):
 					prev_inf = ttinfo[lindexes[j]]
 					if not prev_inf[1]:
 						break
@@ -94,8 +116,8 @@ def build_tzinfo(zone, fp):
 
 				# Bad dst? Look further. DST > 24 hours happens when
 				# a timzone has moved across the international dateline.
-				if dst <= 0 or dst > 3600*3:
-					for j in range(i+1, len(transitions)):
+				if dst <= 0 or dst > 3600 * 3:
+					for j in range(i + 1, len(transitions)):
 						stdinf = ttinfo[lindexes[j]]
 						if not stdinf[1]:
 							dst = inf[0] - stdinf[0]
@@ -134,4 +156,3 @@ if __name__ == '__main__':
 	pprint(tz._utc_transition_times)
 	#print(tz.asPython(4))
 	#print(tz.transitions_mapping)
-

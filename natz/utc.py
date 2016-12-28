@@ -2,9 +2,9 @@ import datetime
 
 ZERO = datetime.timedelta(0)
 
-class UTC(datetime.tzinfo):
-	'''UTC
 
+class UTC(datetime.tzinfo):
+	'''
 	Optimized UTC implementation. It unpickles using the single module global
 	instance defined beneath this class declaration.
 	'''
@@ -44,5 +44,3 @@ class UTC(datetime.tzinfo):
 
 	__repr__ = lambda self: 'natz.timezone(\'UTC\')'
 	__str__ = lambda self: 'UTC'
-
-
