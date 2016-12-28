@@ -31,19 +31,38 @@ from scal3.ui_gtk.app_info import popenFile
 from scal3.ui_gtk.about import AboutDialog
 ## do I have to duplicate AboutDialog class code?
 
-buffer_get_text = lambda b: b.get_text(b.get_start_iter(), b.get_end_iter(), True)
-buffer_select_all = lambda b: b.select_range(b.get_start_iter(), b.get_end_iter())
-
 
 dataDir = dirname(__file__)
 earthR = 6370
 
 
+def buffer_get_text(b):
+	return b.get_text(
+		b.get_start_iter(),
+		b.get_end_iter(),
+		True,
+	)
+
+
+def buffer_select_all(b):
+	return b.select_range(
+		b.get_start_iter(),
+		b.get_end_iter(),
+	)
+
 
 class LocationDialog(gtk.Dialog):
-	EXIT_OK     = 0
+	EXIT_OK = 0
 	EXIT_CANCEL = 1
-	def __init__(self, cityData, maxResults=200, width=600, height=600, **kwargs):
+
+	def __init__(
+		self,
+		cityData,
+		maxResults=200,
+		width=600,
+		height=600,
+		**kwargs
+	):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_('Location'))
 		self.maxResults = maxResults
@@ -54,9 +73,15 @@ class LocationDialog(gtk.Dialog):
 		okB = self.add_button(gtk.STOCK_OK, self.EXIT_OK)
 		#if autoLocale:
 		cancelB.set_label(_('_Cancel'))
-		cancelB.set_image(gtk.Image.new_from_stock(gtk.STOCK_CANCEL, gtk.IconSize.BUTTON))
+		cancelB.set_image(gtk.Image.new_from_stock(
+			gtk.STOCK_CANCEL,
+			gtk.IconSize.BUTTON,
+		))
 		okB.set_label(_('_OK'))
-		okB.set_image(gtk.Image.new_from_stock(gtk.STOCK_OK, gtk.IconSize.BUTTON))
+		okB.set_image(gtk.Image.new_from_stock(
+			gtk.STOCK_OK,
+			gtk.IconSize.BUTTON,
+		))
 		self.okB = okB
 		###############
 		hbox = gtk.HBox()
@@ -85,7 +110,7 @@ class LocationDialog(gtk.Dialog):
 		#treev.append_column(col)
 		########
 		cell = gtk.CellRendererText()
-		cell.set_fixed_size(width-30, -1)
+		cell.set_fixed_size(width - 30, -1)
 		col = gtk.TreeViewColumn('City', cell, text=1)
 		#col.set_resizable(True)## No need!
 		treev.append_column(col)
@@ -156,34 +181,41 @@ class LocationDialog(gtk.Dialog):
 		#########
 		self.cityData = cityData
 		self.update_list()
+
 	def calc_clicked(self, button):
 		lat = self.spin_lat.get_value()
 		lng = self.spin_lng.get_value()
-		md = earthR*2*math.pi
+		md = earthR * 2 * math.pi
 		city = ''
 		for (name, lname, lat2, lng2) in self.cityData:
 			d = earthDistance(lat, lng, lat2, lng2)
-			assert d>=0
-			if d<md:
+			assert d >= 0
+			if d < md:
 				md = d
 				city = lname
-		self.lowerLabel.set_label(_('%s kilometers from %s')%(md, city))
+		self.lowerLabel.set_label(
+			_('%s kilometers from %s') % (md, city)
+		)
+
 	def treev_cursor_changed(self, treev):
 		c = treev.get_cursor()[0]
-		if c!=None:
+		if c is not None:
 			i = c[0]
 			j, s = self.trees[i]
 			self.entry_edit_name.set_text(s)
 			self.spin_lat.set_value(self.cityData[j][2])
 			self.spin_lng.set_value(self.cityData[j][3])
-			self.lowerLabel.set_label(_('%s kilometers from %s')%(0.0, s))
+			self.lowerLabel.set_label(
+				_('%s kilometers from %s') % (0.0, s)
+			)
 		self.okB.set_sensitive(True)
+
 	def edit_checkb_clicked(self, checkb):
 		active = checkb.get_active()
 		self.vbox_edit.set_sensitive(active)
 		if not active:
 			cur = self.treev.get_cursor()[0]
-			if cur==None:
+			if cur is None:
 				lname = ''
 				lat = 0
 				lng = 0
@@ -195,36 +227,49 @@ class LocationDialog(gtk.Dialog):
 			self.spin_lat.set_value(lat)
 			self.spin_lng.set_value(lng)
 		self.updateOkButton()
-	updateOkButton = lambda self: self.okB.set_sensitive(
-		bool(self.treev.get_cursor()[0] or self.checkbEdit.get_active())
-	)
+
+	def updateOkButton(self):
+		return self.okB.set_sensitive(
+			bool(self.treev.get_cursor()[0] or self.checkbEdit.get_active())
+		)
+
 	def update_list(self, s=''):
 		s = s.lower()
 		t = self.trees
 		t.clear()
 		d = self.cityData
 		n = len(d)
-		if s=='':
+		if s == '':
 			for i in range(n):
 				t.append((i, d[i][0]))
-		else:## here check also translations
+		else:  # here check also translations
 			mr = self.maxResults
 			r = 0
 			for i in range(n):
-				if s in (d[i][0]+'\n'+d[i][1]).lower():
+				if s in (d[i][0] + '\n' + d[i][1]).lower():
 					t.append((i, d[i][1]))
 					r += 1
-					if r>=mr:
+					if r >= mr:
 						break
 		self.treev.scroll_to_cell((0, 0))
 		self.okB.set_sensitive(self.checkbEdit.get_active())
-	entry_changed = lambda self, entry: self.update_list(entry.get_text())
+
+	def entry_changed(self, entry):
+		self.update_list(entry.get_text())
+
 	def run(self):
 		ex = gtk.Dialog.run(self)
 		self.hide()
-		if ex==self.EXIT_OK:
-			if self.checkbEdit.get_active() or self.treev.get_cursor()[0]!=None:#?????????????????
-				return (self.entry_edit_name.get_text(), self.spin_lat.get_value(), self.spin_lng.get_value())
+		if ex == self.EXIT_OK:
+			if (
+				self.checkbEdit.get_active() or
+				self.treev.get_cursor()[0] is not None
+			):  # FIXME
+				return (
+					self.entry_edit_name.get_text(),
+					self.spin_lat.get_value(),
+					self.spin_lng.get_value(),
+				)
 		return None
 
 
@@ -235,11 +280,13 @@ class LocationButton(gtk.Button):
 		self.dialog = LocationDialog(cityData, parent=window)
 		####
 		self.connect('clicked', self.onClicked)
+
 	def setLocation(self, locName, lat, lng):
 		self.locName = locName
 		self.lat = lat
 		self.lng = lng
 		self.set_label(self.locName)
+
 	def onClicked(self, widget):
 		res = self.dialog.run()
 		if res:
@@ -247,12 +294,12 @@ class LocationButton(gtk.Button):
 			self.setLocation(locName, lat, lng)
 
 
-
-
 class TextPluginUI:
 	def makeWidget(self):
 		self.confDialog = gtk.Dialog()
-		self.confDialog.set_title(_('Pray Times') + ' - ' + _('Configuration'))
+		self.confDialog.set_title(
+			_('Pray Times') + ' - ' + _('Configuration')
+		)
 		group = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
 		###
 		hbox = gtk.HBox()
@@ -317,7 +364,7 @@ class TextPluginUI:
 		spin.set_direction(gtk.TextDirection.LTR)
 		self.imsakSpin = spin
 		pack(hbox, spin)
-		pack(hbox, gtk.Label(' '+_('minutes before fajr')))
+		pack(hbox, gtk.Label(' ' + _('minutes before fajr')))
 		pack(self.confDialog.vbox, hbox)
 		######
 		hbox = gtk.HBox()
@@ -350,7 +397,10 @@ class TextPluginUI:
 		sgroup.add_widget(self.preAzanEnableCheck)
 		hbox2 = gtk.HBox()
 		self.preAzanEnableCheck.box = hbox2
-		self.preAzanEnableCheck.connect('clicked', lambda w: w.box.set_sensitive(w.get_active()))
+		self.preAzanEnableCheck.connect(
+			'clicked',
+			lambda w: w.box.set_sensitive(w.get_active()),
+		)
 		pack(hbox1, self.preAzanEnableCheck)
 		pack(hbox2, gtk.Label('  '))
 		self.preAzanFileButton = gtk.FileChooserButton(_('Pre-Azan Sound'))
@@ -376,7 +426,10 @@ class TextPluginUI:
 		sgroup.add_widget(self.azanEnableCheck)
 		hbox2 = gtk.HBox()
 		self.azanEnableCheck.box = hbox2
-		self.azanEnableCheck.connect('clicked', lambda w: w.box.set_sensitive(w.get_active()))
+		self.azanEnableCheck.connect(
+			'clicked',
+			lambda w: w.box.set_sensitive(w.get_active()),
+		)
 		pack(hbox1, self.azanEnableCheck)
 		pack(hbox2, gtk.Label('  '))
 		self.azanFileButton = gtk.FileChooserButton(_('Azan Sound'))
@@ -397,9 +450,15 @@ class TextPluginUI:
 		okB = self.confDialog.add_button(gtk.STOCK_OK, 3)
 		#if autoLocale:
 		cancelB.set_label(_('_Cancel'))
-		cancelB.set_image(gtk.Image.new_from_stock(gtk.STOCK_CANCEL, gtk.IconSize.BUTTON))
+		cancelB.set_image(gtk.Image.new_from_stock(
+			gtk.STOCK_CANCEL,
+			gtk.IconSize.BUTTON,
+		))
 		okB.set_label(_('_OK'))
-		okB.set_image(gtk.Image.new_from_stock(gtk.STOCK_OK, gtk.IconSize.BUTTON))
+		okB.set_image(gtk.Image.new_from_stock(
+			gtk.STOCK_OK,
+			gtk.IconSize.BUTTON,
+		))
 		cancelB.connect('clicked', self.confDialogCancel)
 		okB.connect('clicked', self.confDialogOk)
 		###
@@ -415,9 +474,16 @@ class TextPluginUI:
 		self.menuitem.show_all()
 		'''
 		self.dialog = None
+
 	def updateConfWidget(self):
-		self.locButton.setLocation(self.locName, self.backend.lat, self.backend.lng)
-		self.methodCombo.set_active(methodsList.index(self.backend.method))
+		self.locButton.setLocation(
+			self.locName,
+			self.backend.lat,
+			self.backend.lng,
+		)
+		self.methodCombo.set_active(
+			methodsList.index(self.backend.method)
+		)
 		###
 		for row in self.shownTimesTreestore:
 			row[0] = (row[2] in self.shownTimeNames)
@@ -436,15 +502,20 @@ class TextPluginUI:
 		self.azanEnableCheck.box.set_sensitive(self.azanEnable)
 		if self.azanFile:
 			self.azanFileButton.set_filename(self.azanFile)
+
 	def updateConfVars(self):
 		self.locName = self.locButton.locName
 		self.backend.lat = self.locButton.lat
 		self.backend.lng = self.locButton.lng
 		self.backend.method = methodsList[self.methodCombo.get_active()]
-		self.shownTimeNames = [row[2] for row in self.shownTimesTreestore if row[0]]
+		self.shownTimeNames = [
+			row[2]
+			for row in self.shownTimesTreestore
+			if row[0]
+		]
 		self.imsak = int(self.imsakSpin.get_value())
 		self.sep = buffer_get_text(self.sepBuff)
-		self.backend.imsak = '%d min'%self.imsak
+		self.backend.imsak = '%d min' % self.imsak
 		###
 		self.preAzanEnable = self.preAzanEnableCheck.get_active()
 		self.preAzanFile = self.preAzanFileButton.get_filename()
@@ -452,26 +523,32 @@ class TextPluginUI:
 		##
 		self.azanEnable = self.azanEnableCheck.get_active()
 		self.azanFile = self.azanFileButton.get_filename()
+
 	def confDialogCancel(self, widget):
 		self.confDialog.hide()
 		self.updateConfWidget()
+
 	def confDialogOk(self, widget):
 		self.confDialog.hide()
 		self.updateConfVars()
 		self.saveConfig()
+
 	def shownTreeviewCellToggled(self, cell, path):
 		i = int(path)
 		active = not cell.get_active()
 		self.shownTimesTreestore[i][0] = active
 		cell.set_active(active)
+
 	def set_dialog(self, dialog):
 		self.dialog = dialog
+
 	def open_configure(self):
 		self.confDialog.run()
+
 	def open_about(self):
 		about = AboutDialog(
 			name=self.title,
-			title=_('About')+' '+self.title,
+			title=_('About') + ' ' + self.title,
 			authors=self.authors,
 			comments=self.about,
 		)
@@ -480,12 +557,3 @@ class TextPluginUI:
 		#about.set_skip_taskbar_hint(True)
 		about.run()
 		about.destroy()
-
-
-
-
-
-
-
-
-
