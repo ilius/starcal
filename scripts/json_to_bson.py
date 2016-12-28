@@ -11,7 +11,3 @@ for fname_json in sys.argv[1:]:
 	json_s = open(fname_json).read()
 	data = json.loads(json_s)
 	open(fname + '.bson', 'wb').write(bytes(BSON.encode(data)))
-
-
-
-
