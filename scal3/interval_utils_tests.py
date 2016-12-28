@@ -1,7 +1,7 @@
 import random
 
 from scal3.interval_utils import *
-from scal3.event_lib import JdSetOccurrence
+from scal3.event_lib import JdOccurSet
 from scal3 import core
 
 
@@ -102,7 +102,7 @@ def testIntersection():
 
 
 def testJdRanges():
-	pprint.pprint(JdSetOccurrence([
+	pprint.pprint(JdOccurSet([
 		1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 18,
 	]).calcJdRanges())
 
