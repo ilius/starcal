@@ -799,7 +799,10 @@ class MainWin(gtk.Window, ud.BaseCalObj):
                 myRaise()
         data = open(imagePath, 'rb').read()
         if ext == 'svg':
-            dayNum = _(ddate[2])
+            dayNum = locale_man.numEncode(
+                ddate[2],
+                mode=calTypes.primary,  # FIXME
+            )
             if ui.statusIconFontFamilyEnable:
                 if ui.statusIconFontFamily:
                     family = ui.statusIconFontFamily
