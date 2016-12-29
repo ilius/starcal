@@ -25,16 +25,21 @@ from os.path import dirname
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
 from scal3.path import *
+from scal3.utils import myRaise
 from scal3 import core
 from scal3 import locale_man
 from scal3.locale_man import tr as _
 
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import CopyLabelMenuItem
+from scal3.ui_gtk.utils import (
+    CopyLabelMenuItem,
+    get_pixbuf_hash,
+)
 
 from gi.repository import AppIndicator3 as appindicator
 
 class IndicatorStatusIconWrapper:
+    imNamePrefix = APP_NAME + '-indicator-%s-' % os.getuid()
     def __init__(self, mainWin):
         self.mainWin = mainWin
         self.c = appindicator.Indicator.new(
@@ -44,6 +49,8 @@ class IndicatorStatusIconWrapper:
         )
         self.c.set_status(appindicator.IndicatorStatus.ACTIVE)
         #self.c.set_attention_icon("new-messages-red")
+        ######
+        atexit.register(self.cleanup)
         ######
         self.create_menu()
         self.imPath = ''
@@ -91,17 +98,20 @@ class IndicatorStatusIconWrapper:
     def set_from_pixbuf(self, pbuf):
         ## https://bugs.launchpad.net/ubuntu/+source/indicator-application/+bug/533439
         #pbuf.scale_simple(22, 22, GdkPixbuf.InterpType.HYPER)
-        fname = APP_NAME + '-indicator-%s' % os.getuid()
+        fname = self.imNamePrefix + get_pixbuf_hash(pbuf)
         # to make the filename unique, otherwise it won't change in KDE Plasma
-        # fname += '-%s' % now()
-        fname += '-%s' % hash(pbuf)
-        # how to get hash of image data, not object? FIXME
         fpath = join(tmpDir, fname + '.png')
         self.imPath = fpath
         pbuf.savev(fpath, 'png', [], [])
         self.set_from_file(fpath)
-        atexit.register(os.remove, fpath)
-        # or use tempfile? FIXME
+    def cleanup(self):
+        for fname in os.listdir(tmpDir):
+            if not fname.startswith(self.imNamePrefix):
+                continue
+            try:
+                os.remove(join(tmpDir, fname))
+            except:
+                myRaise()
     is_embedded = lambda self: True ## FIXME
     def set_visible(self, visible):## FIXME
         pass
