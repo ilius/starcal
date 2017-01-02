@@ -60,8 +60,7 @@ package() {
 
 makepkg -sif
 
-cp $pkgName*.pkg.tar.?z "$initPwd"
-echo "Package installed and copied into $initPwd directory"
+cp $pkgName*.pkg.tar.?z "$initPwd" || sudo cp $pkgName*.pkg.tar.?z "$initPwd" && echo "Package installed and copied into $initPwd directory"
 cd "$initPwd"
 rm -Rf $tmpDir
 
