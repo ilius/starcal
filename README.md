@@ -45,7 +45,7 @@ Or:
     4- Send a shortcut from file starcal.pyw (inside source folder) to you desktop
 
 
-#Home Pages:
+#Home Page:
     http://ilius.github.io/starcal
 
 ##Follow Us:
