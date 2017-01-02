@@ -15,7 +15,7 @@ debian
 *.deb
 *.rpm
 *.spec
-*.pkg.tar.xz
+*.pkg.tar*
 PKGBUILD
 scal2
 ui_qt
