@@ -99,6 +99,8 @@ class IndicatorStatusIconWrapper:
 		sitem.set_submenu(submenu)
 		sitem.show()
 		menu.append(sitem)
+		if locale_man.rtl:
+			menu.set_direction(gtk.TextDirection.RTL)  # not working
 		self.c.set_menu(menu)
 
 	def set_from_file(self, fpath):
