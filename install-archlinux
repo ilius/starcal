@@ -28,6 +28,7 @@ depends+=('python-psutil')
 depends+=('python-dateutil')
 depends+=('python-pymongo')
 depends+=('python-cairo')
+depends+=('python-requests')
 
 optdepends=()
 optdepends+=('libappindicator-gtk3')
