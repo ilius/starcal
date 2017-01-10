@@ -4,7 +4,10 @@ from scal3.utils import myRaise
 from scal3.locale_man import tr as _
 
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import dialog_add_button
+from scal3.ui_gtk.utils import (
+    window_set_size_aspect,
+    dialog_add_button,
+)
 from scal3.ui_gtk.mywidgets import TextFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 
@@ -114,14 +117,7 @@ class EventsBulkEditDialog(gtk.Dialog):
         self.textChangeCombo.set_active(0)
         self.firstRadioChanged()
         ####
-        geom = gdk.Geometry()
-        geom.min_aspect = geom.max_aspect = 1.6
-        self.set_geometry_hints(
-            None,  # widget, ignored since Gtk 3.20
-            geom,  # geometry
-            gdk.WindowHints.ASPECT,  # geom_mask
-        )
-        self.resize(1, 1)
+        window_set_size_aspect(self, 1.6)
     def firstRadioChanged(self, w=None):
         if self.iconRadio.get_active():
             self.iconHbox.show()
