@@ -4,7 +4,10 @@ from scal3.utils import myRaise
 from scal3.locale_man import tr as _
 
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import dialog_add_button
+from scal3.ui_gtk.utils import (
+    dialog_add_button,
+    window_set_size_aspect,
+)
 
 class GroupSortDialog(gtk.Dialog):
     def __init__(self, group, **kwargs):
@@ -79,6 +82,7 @@ class GroupConvertModeDialog(gtk.Dialog):
         pack(self.vbox, hbox)
         ####
         self.vbox.show_all()
+        window_set_size_aspect(self, 1.6)
     def run(self):
         if gtk.Dialog.run(self)==gtk.ResponseType.OK:
             mode = self.modeCombo.get_active()
