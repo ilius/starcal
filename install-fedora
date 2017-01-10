@@ -38,6 +38,7 @@ requires+=('python3-gobject') ## The new gobject introspection
 requires+=('python3-httplib2')
 requires+=('python3-psutil')
 requires+=('python3-bson')
+requires+=('python3-requests')
 
 #recommends=()
 requires+=('python3-dateutil')

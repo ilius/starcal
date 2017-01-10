@@ -48,6 +48,7 @@ depends+=('python3-gi-cairo(>=3.8)')
 depends+=('python3-httplib2')
 depends+=('python3-psutil')
 depends+=('python3-bson')
+depends+=('python3-requests')
 
 recommends=()
 recommends+=('python3-dateutil')
