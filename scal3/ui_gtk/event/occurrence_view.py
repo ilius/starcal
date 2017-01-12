@@ -143,7 +143,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
 
 	def onEventLabelPopup(self, label, menu, occurData):
 		from scal3.ui_gtk.event.utils import menuItemFromEventGroup
-		if event_lib.readOnly:
+		if event_lib.allReadOnly:
 			return
 		# instead of creating a new menu, we should remove the current items from current menu
 		# but here we will keep the items from ReadOnlyLabel

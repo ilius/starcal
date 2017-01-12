@@ -19,7 +19,7 @@ def confirmEventTrash(event, parent=None):
 
 
 def checkEventsReadOnly(doException=True):
-	if event_lib.readOnly:
+	if event_lib.allReadOnly:
 		error = (
 			'Events are Read-Only because they are locked by '
 			'another StarCalendar 3.x process'
@@ -33,7 +33,7 @@ def checkEventsReadOnly(doException=True):
 
 def eventWriteMenuItem(*args, **kwargs):
 	item = labelStockMenuItem(*args, **kwargs)
-	item.set_sensitive(not event_lib.readOnly)
+	item.set_sensitive(not event_lib.allReadOnly)
 	return item
 
 

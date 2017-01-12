@@ -194,7 +194,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		menubar.append(fileItem)
 		##
 		addGroupItem = MenuItem(_('Add New Group'))
-		addGroupItem.set_sensitive(not event_lib.readOnly)
+		addGroupItem.set_sensitive(not event_lib.allReadOnly)
 		addGroupItem.connect('activate', self.addGroupBeforeSelection)
 		## or before selected group? FIXME
 		fileMenu.append(addGroupItem)
@@ -208,17 +208,17 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		fileMenu.append(exportItem)
 		##
 		importItem = MenuItem(_('_Import'))
-		importItem.set_sensitive(not event_lib.readOnly)
+		importItem.set_sensitive(not event_lib.allReadOnly)
 		importItem.connect('activate', self.mbarImportClicked)
 		fileMenu.append(importItem)
 		##
 		orphanItem = MenuItem(_('Check for Orphan Events'))
-		orphanItem.set_sensitive(not event_lib.readOnly)
+		orphanItem.set_sensitive(not event_lib.allReadOnly)
 		orphanItem.connect('activate', self.mbarOrphanClicked)
 		fileMenu.append(orphanItem)
 		####
 		editItem = MenuItem(_('_Edit'))
-		if event_lib.readOnly:
+		if event_lib.allReadOnly:
 			editItem.set_sensitive(False)
 		else:
 			editMenu = gtk.Menu()
@@ -610,7 +610,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 					path,
 				)
 				menu.add(dupAllItem)
-				dupAllItem.set_sensitive(not event_lib.readOnly and bool(group.idList))
+				dupAllItem.set_sensitive(not event_lib.allReadOnly and bool(group.idList))
 				###
 				menu.add(gtk.SeparatorMenuItem())
 				menu.add(eventWriteMenuItem(
@@ -648,7 +648,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 					path,
 				)
 				menu.add(sortItem)
-				sortItem.set_sensitive(not event_lib.readOnly and bool(group.idList))
+				sortItem.set_sensitive(not event_lib.allReadOnly and bool(group.idList))
 				###
 				convertItem = labelStockMenuItem(
 					_('Convert Calendar Type'),
@@ -657,7 +657,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 					group,
 				)
 				menu.add(convertItem)
-				convertItem.set_sensitive(not event_lib.readOnly and bool(group.idList))
+				convertItem.set_sensitive(not event_lib.allReadOnly and bool(group.idList))
 				###
 				for newGroupType in group.canConvertTo:
 					menu.add(eventWriteMenuItem(
@@ -678,7 +678,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 					path,
 				)
 				menu.add(bulkItem)
-				bulkItem.set_sensitive(not event_lib.readOnly and bool(group.idList))
+				bulkItem.set_sensitive(not event_lib.allReadOnly and bool(group.idList))
 				###
 				for actionName, actionFuncName in group.actions:
 					menu.add(eventWriteMenuItem(
