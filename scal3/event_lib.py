@@ -31,7 +31,6 @@ from collections import OrderedDict
 
 from .path import *
 
-from scal3.lockfile import checkAndSaveJsonLockFile
 from scal3.utils import (
 	printError,
 	ifloor,
@@ -82,9 +81,7 @@ accountsDir = join(confDir, 'event', 'accounts')
 ##########################
 
 lockPath = join(confDir, 'event', 'lock.json')
-readOnly = checkAndSaveJsonLockFile(lockPath)
-if readOnly:
-	print('Event lock file %s exists, EVENT DATA IS READ-ONLY' % lockPath)
+readOnly = False
 
 ##########################
 
@@ -93,6 +90,14 @@ makeDir(groupsDir)
 makeDir(accountsDir)
 
 ###################################################
+
+def init():
+	global readOnly
+	from scal3.lockfile import checkAndSaveJsonLockFile
+	readOnly = checkAndSaveJsonLockFile(lockPath)
+	if readOnly:
+		print('Event lock file %s exists, EVENT DATA IS READ-ONLY' % lockPath)
+
 
 
 class JsonEventObj(JsonSObj):

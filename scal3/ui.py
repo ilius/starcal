@@ -630,6 +630,7 @@ def duplicateGroupTitle(group):
 def init():
 	global todayCell, cell, eventAccounts, eventGroups
 	core.init()
+	event_lib.init()
 	# Load accounts, groups and trash? FIXME
 	eventAccounts = event_lib.EventAccountsHolder.load()
 	eventGroups = event_lib.EventGroupsHolder.load()
