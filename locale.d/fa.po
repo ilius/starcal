@@ -1961,6 +1961,11 @@ msgid "Synchronize"
 msgstr ""
 "همگام‌سازی"
 
+msgid "Synchronization Interval"
+msgstr ""
+"بازهٔ همگام‌سازی"
+
+
 msgid "Error in synchronizing group \"%(group)s\" with account \"%(account)s\""
 msgstr ""
 "خطا در همگام‌سازی گروه «%(group)s» با حساب «%(account)s»"
