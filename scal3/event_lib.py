@@ -64,7 +64,6 @@ from scal3 import core
 from scal3.core import (
 	log,
 	getAbsWeekNumberFromJd,
-	jwday,
 	jd_to_primary,
 )
 
