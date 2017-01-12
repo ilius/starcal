@@ -507,7 +507,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 	def getEventAddToMenuItem(self):
 		from scal3.ui_gtk.drawing import newColorCheckPixbuf
 		addToItem = labelStockMenuItem('_Add to', gtk.STOCK_ADD)
-		if event_lib.readOnly:
+		if event_lib.allReadOnly:
 			addToItem.set_sensitive(False)
 			return addToItem
 		menu2 = gtk.Menu()

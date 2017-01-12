@@ -80,7 +80,7 @@ accountsDir = join(confDir, 'event', 'accounts')
 ##########################
 
 lockPath = join(confDir, 'event', 'lock.json')
-readOnly = False
+allReadOnly = False
 
 ##########################
 
@@ -91,17 +91,17 @@ makeDir(accountsDir)
 ###################################################
 
 def init():
-	global readOnly
+	global allReadOnly
 	from scal3.lockfile import checkAndSaveJsonLockFile
-	readOnly = checkAndSaveJsonLockFile(lockPath)
-	if readOnly:
+	allReadOnly = checkAndSaveJsonLockFile(lockPath)
+	if allReadOnly:
 		print('Event lock file %s exists, EVENT DATA IS READ-ONLY' % lockPath)
 
 
 
 class JsonEventObj(JsonSObj):
 	def save(self):
-		if readOnly:
+		if allReadOnly:
 			print('events are read-only, ignored file %s' % self.file)
 			return
 		JsonSObj.save(self)
@@ -109,7 +109,7 @@ class JsonEventObj(JsonSObj):
 
 class BsonHistEventObj(BsonHistObj):
 	def save(self, *args):
-		if readOnly:
+		if allReadOnly:
 			print('events are read-only, ignored file %s' % self.file)
 			return
 		return BsonHistObj.save(self, *args)

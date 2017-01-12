@@ -370,7 +370,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				####
 				menu = gtk.Menu()
 				##
-				if not event.readOnly:
+				if not event.allReadOnly:
 					winTitle = _('Edit') + ' ' + event.desc
 					menu.add(labelStockMenuItem(
 						winTitle,
