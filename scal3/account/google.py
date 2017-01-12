@@ -55,6 +55,7 @@ auth_local_webserver = True
 auth_host_name = 'localhost'
 auth_host_port = [8080, 8090]
 
+syncResultPerPage = 1000
 
 STATUS_UNCHANCHED, STATUS_ADDED, STATUS_DELETED, STATUS_MODIFIED = range(4)
 
@@ -388,9 +389,12 @@ class GoogleAccount(Account):
 		service.calendars().delete(calendarId=remoteGroupId).execute()
 
 	def fetchGroups(self):
+		"""
+		return None if successful, or error string if failed
+		"""
 		service = self.getCalendarService()
 		if not service:
-			return
+			return 'no service'  # fix msg FIXME
 		groups = []
 		for group in service.calendarList().list().execute()['items']:
 			# print('group =', group)
@@ -399,7 +403,6 @@ class GoogleAccount(Account):
 				'title': group['summary'],
 			})
 		self.remoteGroups = groups
-		return True
 
 	def fetchAllEventsInGroup(self, remoteGroupId):
 		service = self.getCalendarService()
@@ -411,13 +414,16 @@ class GoogleAccount(Account):
 		).execute()
 		return eventsRes.get('items', [])
 
-	def sync(self, group, remoteGroupId, resPerPage=1000):
+	def sync(self, group, remoteGroupId):
+		"""
+		return None if successful, or error string if failed
+		"""
 		from apiclient.discovery import HttpError
 		#if remoteGroupId=='tasks':  # FIXME
 		#	service = self.getTasksService()
 		service = self.getCalendarService()
 		if not service:
-			return
+			return 'no service'  # fix msg FIXME
 		lastSync = group.getLastSync()
 		funcStartTime = now()
 		# _________________ Pull _________________
@@ -426,7 +432,7 @@ class GoogleAccount(Account):
 			'calendarId': remoteGroupId,
 			'orderBy': 'updated',
 			'showDeleted': True,  # with event.status == 'cancelled',
-			'maxResults': resPerPage,
+			'maxResults': syncResultPerPage,
 			'timeZone': "GMT",
 			'pageToken': 0,
 		}
@@ -441,7 +447,7 @@ class GoogleAccount(Account):
 			geventsRes = request.execute()
 		except HttpError as e:
 			self.showHttpException(e)
-			return False
+			return str(e)
 		#pprint(geventsRes)
 		try:
 			gevents = geventsRes['items']
@@ -557,7 +563,7 @@ class GoogleAccount(Account):
 					request.execute()
 				except HttpError as e:
 					self.showHttpException(e)
-					return False  # FIXME
+					return str(e)  # FIXME
 				else:
 					print('------ event %s updated on server'%event.summary)
 			else:  # FIXME
@@ -571,7 +577,7 @@ class GoogleAccount(Account):
 					response = request.execute()
 				except HttpError as e:
 					self.showHttpException(e)
-					return False  # FIXME
+					return str(e)  # FIXME
 				#print('response = %s'%pformat(response))
 				remoteEventId = response['id']
 				print('----------- event %s added on server'%event.summary)
@@ -582,7 +588,6 @@ class GoogleAccount(Account):
 		'''
 		group.afterSync()  # FIXME
 		group.save()  # FIXME
-		return True
 
 
 def printAllEvent(account, remoteGroupId):
