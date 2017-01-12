@@ -6,6 +6,7 @@ from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
 from scal3.ui_gtk.mywidgets import MyColorButton
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
+from scal3.ui_gtk.event import common
 from scal3.ui_gtk.event.group.base import BaseWidgetClass
 from scal3.ui_gtk.event.account import AccountCombo, AccountGroupBox
 
@@ -57,6 +58,19 @@ class WidgetClass(BaseWidgetClass):
 		pack(vbox, hbox)
 		self.accountGroupCombo = accountGroupBox.combo
 		##
+		hbox = gtk.HBox()
+		self.syncCheck = gtk.CheckButton(_("Synchronization Interval"))
+		pack(hbox, self.syncCheck)
+		sizeGroup.add_widget(self.syncCheck)
+		self.syncIntervalInput = common.DurationInputBox()
+		pack(hbox, self.syncIntervalInput)
+		pack(hbox, gtk.Label(""), 1, 1)
+		pack(vbox, hbox)
+		self.syncCheck.connect(
+			"clicked",
+			lambda check: self.syncIntervalInput.set_sensitive(check.get_active()),
+		)
+		##
 		pack(self, exp)
 
 	def updateWidget(self):
@@ -76,6 +90,11 @@ class WidgetClass(BaseWidgetClass):
 			aid, gid = None, None
 		self.accountCombo.set_active(aid)
 		self.accountGroupCombo.set_active(gid)
+		self.syncCheck.set_active(self.group.remoteSyncEnable)
+		self.syncIntervalInput.set_sensitive(self.group.remoteSyncEnable)
+
+		value, unit = self.group.remoteSyncDuration
+		self.syncIntervalInput.setDuration(value, unit)
 
 	def updateVars(self):
 		BaseWidgetClass.updateVars(self)
@@ -88,6 +107,8 @@ class WidgetClass(BaseWidgetClass):
 			self.group.remoteIds = aid, gid
 		else:
 			self.group.remoteIds = None
+		self.group.remoteSyncEnable = self.syncCheck.get_active()
+		self.group.remoteSyncDuration = self.syncIntervalInput.getDuration()
 
 	def modeComboChanged(self, obj=None):
 		newMode = self.modeCombo.get_active()
