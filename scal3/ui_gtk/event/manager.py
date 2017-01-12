@@ -1094,7 +1094,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
 		#try:
-		self.waitingDo(account.sync, group, remoteGid)
+		error = self.waitingDo(account.sync, group, remoteGid)
+		if error:
+			print(error)
 		'''
 		except Exception as e:
 			showError(
