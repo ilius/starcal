@@ -538,6 +538,7 @@ def dataToJson(data):
 
 
 def init():
+	loadConf()
 	initPlugins()
 
 
@@ -606,9 +607,6 @@ eventTrashLastTop = True
 
 # ___________________________________________________________________________ #
 
-loadConf()
-
-# ___________________________________________________________________________ #
 
 
 licenseText = _('licenseText')
