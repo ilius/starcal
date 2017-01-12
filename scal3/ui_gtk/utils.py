@@ -98,6 +98,12 @@ def toolButtonFromStock(stock, size):
 	return tb
 
 
+def toolButtonFromFile(fname):
+	tb = gtk.ToolButton()
+	tb.set_icon_widget(imageFromFile(fname))
+	return tb
+
+
 def labelStockMenuItem(label, stock=None, func=None, *args):
 	item = ImageMenuItem(_(label))
 	item.set_use_underline(True)
