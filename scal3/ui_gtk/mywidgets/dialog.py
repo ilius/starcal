@@ -18,14 +18,16 @@ class MyDialog:
 			self.vbox.set_sensitive(True)
 
 	def waitingDo(self, func, *args, **kwargs):
+		result = None
 		self.startWaiting()
 		if core.debugMode:
-			func(*args, **kwargs)
+			result = func(*args, **kwargs)
 			self.endWaiting()
 		else:
 			try:
-				func(*args, **kwargs)
+				result = func(*args, **kwargs)
 			except Exception as e:
 				raise e
 			finally:
 				self.endWaiting()
+		return result
