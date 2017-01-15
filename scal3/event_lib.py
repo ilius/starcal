@@ -1207,7 +1207,7 @@ class RuleContainer:
         return (True, '')
     def copyRulesFrom(self, other):
         for ruleType, rule in other.rulesOd.items():
-            if ruleType in self.supportedRules:
+            if self.supportedRules and ruleType in self.supportedRules:
                 self.getAddRule(ruleType).copyFrom(rule)
     def copySomeRuleTypesFrom(self, other, *ruleTypes):
         for ruleType in ruleTypes:
