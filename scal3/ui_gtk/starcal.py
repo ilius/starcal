@@ -552,6 +552,8 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		return addToItem
 
 	def menuCellPopup(self, widget, etime, x, y):
+		calObjName = widget._name  # why private? FIXME
+		# calObjName is in ('weekCal', 'monthCal', ...)
 		menu = gtk.Menu()
 		####
 		menu.add(labelStockMenuItem(
@@ -576,10 +578,10 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 			gtk.STOCK_INDEX,
 			self.selectDateShow,
 		))
-		if widget._name in ('weekCal', 'monthCal'):
+		if calObjName in ('weekCal', 'monthCal'):
 			menu.add(labelStockMenuItem(
 				'Switch to ' + (
-					'Month Calendar' if widget._name == 'weekCal'
+					'Month Calendar' if calObjName == 'weekCal'
 					else 'Week Calendar'
 				),
 				gtk.STOCK_REDO,
