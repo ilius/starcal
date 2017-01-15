@@ -15,7 +15,7 @@ class WidgetClass(BaseWidgetClass):
 		BaseWidgetClass.__init__(self, group)
 		####
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Start'))
+		label = gtk.Label(_("Start"))
 		label.set_alignment(0, 0.5)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
@@ -24,7 +24,7 @@ class WidgetClass(BaseWidgetClass):
 		pack(self, hbox)
 		###
 		hbox = gtk.HBox()
-		label = gtk.Label(_('End'))
+		label = gtk.Label(_("End"))
 		label.set_alignment(0, 0.5)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
@@ -33,13 +33,13 @@ class WidgetClass(BaseWidgetClass):
 		pack(self, hbox)
 		######
 		exp = gtk.Expander()
-		exp.set_label(_('Online Service'))
+		exp.set_label(_("Online Service"))
 		vbox = gtk.VBox()
 		exp.add(vbox)
 		sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
 		##
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Account'))
+		label = gtk.Label(_("Account"))
 		label.set_alignment(0, 0.5)
 		pack(hbox, label)
 		sizeGroup.add_widget(label) ## FIXME
@@ -48,7 +48,7 @@ class WidgetClass(BaseWidgetClass):
 		pack(vbox, hbox)
 		##
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Remote Group'))
+		label = gtk.Label(_("Remote Group"))
 		label.set_alignment(0, 0.5)
 		pack(hbox, label)
 		sizeGroup.add_widget(label) ## FIXME

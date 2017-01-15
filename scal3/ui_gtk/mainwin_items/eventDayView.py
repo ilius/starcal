@@ -24,8 +24,8 @@ class CalObj(DayOccurrenceView, CustomizableCalObj):  # FIXME
 		hbox = gtk.HBox()
 		spin = IntSpinButton(1, 9999)
 		spin.set_value(ui.eventViewMaxHeight)
-		spin.connect('changed', self.heightSpinChanged)
-		pack(hbox, gtk.Label(_('Maximum Height')))
+		spin.connect("changed", self.heightSpinChanged)
+		pack(hbox, gtk.Label(_("Maximum Height")))
 		pack(hbox, spin)
 		pack(self.optionsWidget, hbox)
 		###

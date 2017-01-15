@@ -25,23 +25,23 @@ class EventEditorDialog(gtk.Dialog):
 		#self.set_transient_for(None)
 		#self.set_type_hint(gdk.WindowTypeHint.NORMAL)
 		self.isNew = isNew
-		#self.connect('delete-event', lambda obj, e: self.destroy())
+		#self.connect("delete-event", lambda obj, e: self.destroy())
 		#self.resize(800, 600)
 		###
 		dialog_add_button(
 			self,
 			gtk.STOCK_CANCEL,
-			_('_Cancel'),
+			_("_Cancel"),
 			gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
 			gtk.STOCK_OK,
-			_('_OK'),
+			_("_OK"),
 			gtk.ResponseType.OK,
 		)
 		###
-		self.connect('response', lambda w, e: self.hide())
+		self.connect("response", lambda w, e: self.hide())
 		###
 		self.activeWidget = None
 		self._group = event.parent
@@ -58,13 +58,13 @@ class EventEditorDialog(gtk.Dialog):
 		#######
 		hbox = gtk.HBox()
 		pack(hbox, gtk.Label(
-			_('Group') + ': ' + self._group.title
+			_("Group") + ": " + self._group.title
 		))
 		hbox.show_all()
 		pack(self.vbox, hbox)
 		#######
 		hbox = gtk.HBox()
-		pack(hbox, gtk.Label(_('Event Type')))
+		pack(hbox, gtk.Label(_("Event Type")))
 		if typeChangable:
 			combo = gtk.ComboBoxText()
 			for tmpEventType in self.eventTypeOptions:
@@ -74,11 +74,11 @@ class EventEditorDialog(gtk.Dialog):
 			combo.set_active(eventTypeIndex)
 			####
 			#self.activeWidget = makeWidget(event)
-			combo.connect('changed', self.typeChanged)
+			combo.connect("changed", self.typeChanged)
 			self.comboEventType = combo
 		else:
-			pack(hbox, gtk.Label(':  ' + event.desc))
-		pack(hbox, gtk.Label(''), 1, 1)
+			pack(hbox, gtk.Label(":  " + event.desc))
+		pack(hbox, gtk.Label(""), 1, 1)
 		hbox.show_all()
 		pack(self.vbox, hbox)
 		#####
@@ -131,9 +131,9 @@ class EventEditorDialog(gtk.Dialog):
 			if not occur:
 				showInfo(
 					_(
-						'This event is outside of date range specified in '
-						'it\'s group. You probably need to edit group '
-						'"%s" and change "Start" or "End" values'
+						"This event is outside of date range specified in "
+						"it\'s group. You probably need to edit group "
+						"\"%s\" and change \"Start\" or \"End\" values"
 					) % self.event.parent.title
 				)
 		#####
@@ -142,7 +142,7 @@ class EventEditorDialog(gtk.Dialog):
 
 def addNewEvent(group, eventType, typeChangable=False, **kwargs):
 	event = group.createEvent(eventType)
-	if eventType == 'custom':  # FIXME
+	if eventType == "custom":  # FIXME
 		typeChangable = True
 	event = EventEditorDialog(
 		event,

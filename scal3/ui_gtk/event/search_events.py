@@ -53,21 +53,21 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self.initVars()
 		ud.windowList.appendItem(self)
 		###
-		self.set_title(_('Search Events'))
-		self.connect('delete-event', self.closed)
-		self.connect('key-press-event', self.keyPress)
+		self.set_title(_("Search Events"))
+		self.connect("delete-event", self.closed)
+		self.connect("key-press-event", self.keyPress)
 		###
 		self.vbox = gtk.VBox()
 		self.add(self.vbox)
 		######
 		frame = TextFrame()
-		frame.set_label(_('Text'))
+		frame.set_label(_("Text"))
 		frame.set_border_width(5)
 		pack(self.vbox, frame)
 		self.textInput = frame
 		##
 		hbox = gtk.HBox()
-		self.textCSensCheck = gtk.CheckButton(_('Case Sensitive'))
+		self.textCSensCheck = gtk.CheckButton(_("Case Sensitive"))
 		self.textCSensCheck.set_active(False) ## FIXME
 		pack(hbox, self.textCSensCheck)
 		pack(self.vbox, hbox)
@@ -77,17 +77,17 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		######
 		hbox = gtk.HBox()
 		frame = gtk.Frame()
-		frame.set_label(_('Time'))
+		frame.set_label(_("Time"))
 		frame.set_border_width(5)
 		vboxIn = gtk.VBox()
 		sgroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
 		####
 		hboxIn = gtk.HBox()
 		##
-		self.timeFromCheck = gtk.CheckButton(_('From'))
+		self.timeFromCheck = gtk.CheckButton(_("From"))
 		sgroup.add_widget(self.timeFromCheck)
 		pack(hboxIn, self.timeFromCheck)
-		pack(hboxIn, gtk.Label('  '))
+		pack(hboxIn, gtk.Label("  "))
 		##
 		self.timeFromInput = DateTimeButton()
 		self.timeFromInput.set_value(((year, 1, 1), (0, 0, 0)))
@@ -97,10 +97,10 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		####
 		hboxIn = gtk.HBox()
 		##
-		self.timeToCheck = gtk.CheckButton(_('To'))
+		self.timeToCheck = gtk.CheckButton(_("To"))
 		sgroup.add_widget(self.timeToCheck)
 		pack(hboxIn, self.timeToCheck)
-		pack(hboxIn, gtk.Label('  '))
+		pack(hboxIn, gtk.Label("  "))
 		##
 		self.timeToInput = DateTimeButton()
 		self.timeToInput.set_value((
@@ -111,35 +111,35 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		##
 		pack(vboxIn, hboxIn)
 		##
-		self.timeFromCheck.connect('clicked', self.updateTimeFromSensitive)
-		self.timeToCheck.connect('clicked', self.updateTimeToSensitive)
+		self.timeFromCheck.connect("clicked", self.updateTimeFromSensitive)
+		self.timeToCheck.connect("clicked", self.updateTimeToSensitive)
 		self.updateTimeFromSensitive()
 		self.updateTimeToSensitive()
 		####
 		vboxIn.set_border_width(5)
 		frame.add(vboxIn)
 		pack(hbox, frame)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self.vbox, hbox)
 		######
 		hbox = gtk.HBox()
 		hbox.set_border_width(5)
-		self.modifiedFromCheck = gtk.CheckButton(_('Modified From'))
+		self.modifiedFromCheck = gtk.CheckButton(_("Modified From"))
 		pack(hbox, self.modifiedFromCheck)
-		pack(hbox, gtk.Label('  '))
+		pack(hbox, gtk.Label("  "))
 		self.modifiedFromInput = DateTimeButton()
 		self.modifiedFromInput.set_value(((year, 1, 1), (0, 0, 0)))
 		pack(hbox, self.modifiedFromInput)
 		##
-		self.modifiedFromCheck.connect('clicked', self.updateModifiedFromSensitive)
+		self.modifiedFromCheck.connect("clicked", self.updateModifiedFromSensitive)
 		self.updateModifiedFromSensitive()
 		pack(self.vbox, hbox)
 		######
 		hbox = gtk.HBox()
 		hbox.set_border_width(5)
-		self.typeCheck = gtk.CheckButton(_('Event Type'))
+		self.typeCheck = gtk.CheckButton(_("Event Type"))
 		pack(hbox, self.typeCheck)
-		pack(hbox, gtk.Label('  '))
+		pack(hbox, gtk.Label("  "))
 		##
 		combo = gtk.ComboBoxText()
 		for cls in event_lib.classes.event:
@@ -148,19 +148,19 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		pack(hbox, combo)
 		self.typeCombo = combo
 		##
-		self.typeCheck.connect('clicked', self.updateTypeSensitive)
+		self.typeCheck.connect("clicked", self.updateTypeSensitive)
 		self.updateTypeSensitive()
 		pack(self.vbox, hbox)
 		######
 		hbox = gtk.HBox()
 		hbox.set_border_width(5)
-		self.groupCheck = gtk.CheckButton(_('Group'))
+		self.groupCheck = gtk.CheckButton(_("Group"))
 		pack(hbox, self.groupCheck)
-		pack(hbox, gtk.Label('  '))
+		pack(hbox, gtk.Label("  "))
 		self.groupCombo = SingleGroupComboBox()
 		pack(hbox, self.groupCombo)
 		##
-		self.groupCheck.connect('clicked', self.updateGroupSensitive)
+		self.groupCheck.connect("clicked", self.updateGroupSensitive)
 		self.updateGroupSensitive()
 		pack(self.vbox, hbox)
 		######
@@ -168,12 +168,12 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		bbox.set_layout(gtk.ButtonBoxStyle.START)
 		bbox.set_border_width(5)
 		searchButton = gtk.Button()
-		searchButton.set_label(_('_Search'))
+		searchButton.set_label(_("_Search"))
 		searchButton.set_image(gtk.Image.new_from_stock(
 			gtk.STOCK_FIND,
 			gtk.IconSize.BUTTON,
 		))
-		searchButton.connect('clicked', self.searchClicked)
+		searchButton.connect("clicked", self.searchClicked)
 		bbox.add(searchButton)
 		pack(self.vbox, bbox)
 		######
@@ -188,47 +188,47 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		)
 		###
 		treev.set_model(trees)
-		treev.connect('button-press-event', self.treevButtonPress)
-		treev.connect('row-activated', self.rowActivated)
-		treev.connect('key-press-event', self.treevKeyPress)
+		treev.connect("button-press-event", self.treevButtonPress)
+		treev.connect("row-activated", self.rowActivated)
+		treev.connect("key-press-event", self.treevKeyPress)
 		treev.set_headers_clickable(True)
 		###
 		self.colGroup = gtk.TreeViewColumn(
-			_('Group'),
+			_("Group"),
 			gtk.CellRendererText(),
 			text=2,
 		)
 		self.colGroup.set_resizable(True)
 		self.colGroup.set_sort_column_id(2)
-		self.colGroup.set_property('expand', False)
+		self.colGroup.set_property("expand", False)
 		treev.append_column(self.colGroup)
 		###
 		self.colIcon = gtk.TreeViewColumn()
 		cell = gtk.CellRendererPixbuf()
 		pack(self.colIcon, cell)
-		self.colIcon.add_attribute(cell, 'pixbuf', 3)
+		self.colIcon.add_attribute(cell, "pixbuf", 3)
 		#self.colIcon.set_sort_column_id(3)  # FIXME
-		self.colIcon.set_property('expand', False)
+		self.colIcon.set_property("expand", False)
 		treev.append_column(self.colIcon)
 		###
 		self.colSummary = gtk.TreeViewColumn(
-			_('Summary'),
+			_("Summary"),
 			gtk.CellRendererText(),
 			text=4,
 		)
 		self.colSummary.set_resizable(True)
 		self.colSummary.set_sort_column_id(4)
-		self.colSummary.set_property('expand', True)  # FIXME
+		self.colSummary.set_property("expand", True)  # FIXME
 		treev.append_column(self.colSummary)
 		###
 		self.colDesc = gtk.TreeViewColumn(
-			_('Description'),
+			_("Description"),
 			gtk.CellRendererText(),
 			text=5,
 		)
 		self.colDesc.set_sort_column_id(5)
 		self.colDesc.set_visible(showDesc)
-		self.colDesc.set_property('expand', True)  # FIXME
+		self.colDesc.set_property("expand", True)  # FIXME
 		treev.append_column(self.colDesc)
 		###
 		trees.set_sort_func(2, self.sort_func_group)
@@ -241,42 +241,42 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		vbox.set_border_width(5)
 		###
 		topHbox = gtk.HBox()
-		self.resultLabel = gtk.Label('')
+		self.resultLabel = gtk.Label("")
 		pack(topHbox, self.resultLabel)
-		pack(topHbox, gtk.Label(''), 1, 1)
+		pack(topHbox, gtk.Label(""), 1, 1)
 		pack(vbox, topHbox)
 		####
 		columnBox = gtk.HBox(spacing=5)
-		pack(columnBox, gtk.Label(_('Columns') + ':    '))
+		pack(columnBox, gtk.Label(_("Columns") + ":    "))
 		##
-		check = gtk.CheckButton(_('Group'))
+		check = gtk.CheckButton(_("Group"))
 		check.set_active(True)
 		check.connect(
-			'clicked',
+			"clicked",
 			lambda w: self.colGroup.set_visible(w.get_active()),
 		)
 		pack(columnBox, check)
 		##
-		check = gtk.CheckButton(_('Icon'))
+		check = gtk.CheckButton(_("Icon"))
 		check.set_active(True)
 		check.connect(
-			'clicked',
+			"clicked",
 			lambda w: self.colIcon.set_visible(w.get_active()),
 		)
 		pack(columnBox, check)
 		##
-		check = gtk.CheckButton(_('Summary'))
+		check = gtk.CheckButton(_("Summary"))
 		check.set_active(True)
 		check.connect(
-			'clicked',
+			"clicked",
 			lambda w: self.colSummary.set_visible(w.get_active()),
 		)
 		pack(columnBox, check)
 		##
-		check = gtk.CheckButton(_('Description'))
+		check = gtk.CheckButton(_("Description"))
 		check.set_active(showDesc)
 		check.connect(
-			'clicked',
+			"clicked",
 			lambda w: self.colDesc.set_visible(w.get_active()),
 		)
 		pack(columnBox, check)
@@ -286,7 +286,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		pack(vbox, swin, 1, 1)
 		##
 		frame = gtk.Frame()
-		frame.set_label(_('Search Results'))
+		frame.set_label(_("Search Results"))
 		frame.set_border_width(10)
 		frame.add(vbox)
 		##
@@ -296,12 +296,12 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		bbox2.set_layout(gtk.ButtonBoxStyle.END)
 		bbox2.set_border_width(10)
 		closeButton = gtk.Button()
-		closeButton.set_label(_('_Close'))
+		closeButton.set_label(_("_Close"))
 		closeButton.set_image(gtk.Image.new_from_stock(
 			gtk.STOCK_CLOSE,
 			gtk.IconSize.BUTTON,
 		))
-		closeButton.connect('clicked', self.closed)
+		closeButton.connect("clicked", self.closed)
 		bbox2.add(closeButton)
 		pack(self.vbox, bbox2)
 		######
@@ -342,19 +342,19 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		###
 		conds = {}
 		if self.textCSensCheck.get_active():
-			conds['text'] = self.textInput.get_text()
+			conds["text"] = self.textInput.get_text()
 		else:
-			conds['text_lower'] = self.textInput.get_text().lower()
+			conds["text_lower"] = self.textInput.get_text().lower()
 		if self.timeFromCheck.get_active():
-			conds['time_from'] = self.timeFromInput.get_epoch(calTypes.primary)
+			conds["time_from"] = self.timeFromInput.get_epoch(calTypes.primary)
 		if self.timeToCheck.get_active():
-			conds['time_to'] = self.timeToInput.get_epoch(calTypes.primary)
+			conds["time_to"] = self.timeToInput.get_epoch(calTypes.primary)
 		if self.modifiedFromCheck.get_active():
-			conds['modified_from'] = self.modifiedFromInput.get_epoch(calTypes.primary)
+			conds["modified_from"] = self.modifiedFromInput.get_epoch(calTypes.primary)
 		if self.typeCheck.get_active():
 			index = self.typeCombo.get_active()
 			cls = event_lib.classes.event[index]
-			conds['type'] = cls.name
+			conds["type"] = cls.name
 		###
 		self.trees.clear()
 		for gid in groupIds:
@@ -362,14 +362,14 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 			for evData in group.search(conds):
 				self.trees.append(None, (
 					group.id,
-					evData['id'],
+					evData["id"],
 					group.title,
-					pixbufFromFile(evData['icon']),
-					evData['summary'],
-					evData['description'],
+					pixbufFromFile(evData["icon"]),
+					evData["summary"],
+					evData["description"],
 				))
 		self.resultLabel.set_label(
-			_('Found %s events') % _(len(self.trees))
+			_("Found %s events") % _(len(self.trees))
 		)
 
 	def searchClicked(self, obj=None):
@@ -386,13 +386,13 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		event = group[eid]
 		event = EventEditorDialog(
 			event,
-			title=_('Edit ') + event.desc,
+			title=_("Edit ") + event.desc,
 			parent=self,
 		).run()
 		if event is None:
 			return
 		###
-		ui.eventDiff.add('e', event)
+		ui.eventDiff.add("e", event)
 		###
 		eventIter = self.trees.get_iter(path)
 		self.trees.set_value(eventIter, 3, pixbufFromFile(event.icon))
@@ -418,7 +418,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		new_group.append(event)
 		new_group.save()
 		###
-		ui.eventDiff.add('v', event)
+		ui.eventDiff.add("v", event)
 		## FIXME
 		###
 		eventIter = self.trees.get_iter(eventPath)
@@ -431,7 +431,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		new_group.append(new_event)
 		new_group.save()
 		###
-		ui.eventDiff.add('+', new_event)
+		ui.eventDiff.add("+", new_event)
 		## FIXME
 		###
 		eventIter = self.trees.get_iter(eventPath)
@@ -448,7 +448,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 			return
 		ui.moveEventToTrash(group, event)
 		ui.reloadTrash = True
-		ui.eventDiff.add('-', event)
+		ui.eventDiff.add("-", event)
 		self.trees.remove(self.trees.get_iter(path))
 
 	def moveEventToTrashFromMenu(self, menu, path):
@@ -463,7 +463,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 	def getMoveToGroupSubMenu(self, path, group, event):
 		## returns a MenuItem instance
 		item = labelStockMenuItem(
-			_('Move to %s') % '...',
+			_("Move to %s") % "...",
 			None,## FIXME
 		)
 		subMenu = gtk.Menu()
@@ -486,7 +486,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 				new_groupItem.set_image(image)
 				##
 				new_groupItem.connect(
-					'activate',
+					"activate",
 					self.moveEventToGroupFromMenu,
 					path,
 					event,
@@ -502,7 +502,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 	def getCopyToGroupSubMenu(self, path, event):
 		## returns a MenuItem instance
 		item = labelStockMenuItem(
-			_('Copy to %s') % '...',
+			_("Copy to %s") % "...",
 			None,## FIXME
 		)
 		subMenu = gtk.Menu()
@@ -519,7 +519,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 				new_groupItem.set_image(image)
 				##
 				new_groupItem.connect(
-					'activate',
+					"activate",
 					self.copyEventToGroupFromMenu,
 					path,
 					event,
@@ -540,7 +540,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		menu = gtk.Menu()
 		##
 		menu.add(labelStockMenuItem(
-			'Edit',
+			"Edit",
 			gtk.STOCK_EDIT,
 			self.editEventFromMenu,
 			path,
@@ -552,7 +552,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		##
 		menu.add(gtk.SeparatorMenuItem())
 		menu.add(labelImageMenuItem(
-			_('Move to %s') % ui.eventTrash.title,
+			_("Move to %s") % ui.eventTrash.title,
 			ui.eventTrash.icon,
 			self.moveEventToTrashFromMenu,
 			path,
@@ -589,8 +589,8 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		## gdk.CURRENT_TIME == 0## FIXME
 		## gevent.time == gtk.get_current_event_time() ## OK
 		kname = gdk.keyval_name(gevent.keyval).lower()
-		#print('treevKeyPress', kname)
-		if kname == 'menu':## Simulate right click (key beside Right-Ctrl)
+		#print("treevKeyPress", kname)
+		if kname == "menu":## Simulate right click (key beside Right-Ctrl)
 			path = treev.get_cursor()[0]
 			if path:
 				menu = self.genRightClickMenu(path)
@@ -621,7 +621,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 					3,
 					gevent.time,
 				)
-		elif kname == 'delete':
+		elif kname == "delete":
 			self.moveSelectionToTrash()
 		else:
 			#print(kname)
@@ -630,7 +630,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 
 	def clearResults(self):
 		self.trees.clear()
-		self.resultLabel.set_label('')
+		self.resultLabel.set_label("")
 
 	def closed(self, obj=None, gevent=None):
 		self.hide()
@@ -644,7 +644,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 
 	def keyPress(self, arg, gevent):
 		kname = gdk.keyval_name(gevent.keyval).lower()
-		if kname == 'escape':
+		if kname == "escape":
 			self.closed()
 			return True
 		return False

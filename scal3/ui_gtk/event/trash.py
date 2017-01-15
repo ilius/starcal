@@ -12,31 +12,31 @@ class TrashEditorDialog(gtk.Dialog):
 	def __init__(self, **kwargs):
 		checkEventsReadOnly()
 		gtk.Dialog.__init__(self, **kwargs)
-		self.set_title(_('Edit Trash'))
-		#self.connect('delete-event', lambda obj, e: self.destroy())
+		self.set_title(_("Edit Trash"))
+		#self.connect("delete-event", lambda obj, e: self.destroy())
 		#self.resize(800, 600)
 		###
 		dialog_add_button(
 			self,
 			gtk.STOCK_CANCEL,
-			_('_Cancel'),
+			_("_Cancel"),
 			gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
 			gtk.STOCK_OK,
-			_('_OK'),
+			_("_OK"),
 			gtk.ResponseType.OK,
 		)
 		##
-		self.connect('response', lambda w, e: self.hide())
+		self.connect("response", lambda w, e: self.hide())
 		#######
 		self.trash = ui.eventTrash
 		##
 		sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
 		#######
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Title'))
+		label = gtk.Label(_("Title"))
 		label.set_alignment(0, 0.5)
 		pack(hbox, label)
 		sizeGroup.add_widget(label)
@@ -45,13 +45,13 @@ class TrashEditorDialog(gtk.Dialog):
 		pack(self.vbox, hbox)
 		####
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Icon'))
+		label = gtk.Label(_("Icon"))
 		label.set_alignment(0, 0.5)
 		pack(hbox, label)
 		sizeGroup.add_widget(label)
 		self.iconSelect = IconSelectButton()
 		pack(hbox, self.iconSelect)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self.vbox, hbox)
 		####
 		self.vbox.show_all()

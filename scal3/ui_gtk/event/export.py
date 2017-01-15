@@ -17,34 +17,34 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 	def __init__(self, group, **kwargs):
 		self._group = group
 		gtk.Dialog.__init__(self, **kwargs)
-		self.set_title(_('Export Group'))
+		self.set_title(_("Export Group"))
 		####
 		dialog_add_button(
 			self,
 			gtk.STOCK_CANCEL,
-			_('_Cancel'),
+			_("_Cancel"),
 			gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
 			gtk.STOCK_OK,
-			_('_OK'),
+			_("_OK"),
 			gtk.ResponseType.OK,
 		)
-		self.connect('response', lambda w, e: self.hide())
+		self.connect("response", lambda w, e: self.hide())
 		####
 		hbox = gtk.HBox()
 		frame = gtk.Frame()
-		frame.set_label(_('Format'))
+		frame.set_label(_("Format"))
 		radioBox = gtk.VBox()
 		##
-		self.radioIcs = gtk.RadioButton(label='iCalendar')
+		self.radioIcs = gtk.RadioButton(label="iCalendar")
 		self.radioJsonCompact = gtk.RadioButton(
-			label=_('Compact JSON (StarCalendar)'),
+			label=_("Compact JSON (StarCalendar)"),
 			group=self.radioIcs,
 		)
 		self.radioJsonPretty = gtk.RadioButton(
-			label=_('Pretty JSON (StarCalendar)'),
+			label=_("Pretty JSON (StarCalendar)"),
 			group=self.radioIcs,
 		)
 		##
@@ -53,13 +53,13 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 		pack(radioBox, self.radioIcs)
 		##
 		self.radioJsonCompact.set_active(True)
-		self.radioIcs.connect('clicked', self.formatRadioChanged)
-		self.radioJsonCompact.connect('clicked', self.formatRadioChanged)
-		self.radioJsonPretty.connect('clicked', self.formatRadioChanged)
+		self.radioIcs.connect("clicked", self.formatRadioChanged)
+		self.radioJsonCompact.connect("clicked", self.formatRadioChanged)
+		self.radioJsonPretty.connect("clicked", self.formatRadioChanged)
 		##
 		frame.add(radioBox)
 		pack(hbox, frame)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self.vbox, hbox)
 		########
 		self.fcw = gtk.FileChooserWidget(action=gtk.FileChooserAction.SAVE)
@@ -74,15 +74,15 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 		if fpath:
 			fname_nox, ext = splitext(split(fpath)[1])
 		else:
-			fname_nox, ext = '', ''
+			fname_nox, ext = "", ""
 		if not fname_nox:
 			fname_nox = core.fixStrForFileName(self._group.title)
 		if self.radioIcs.get_active():
-			if ext != '.ics':
-				ext = '.ics'
+			if ext != ".ics":
+				ext = ".ics"
 		else:
-			if ext != '.json':
-				ext = '.json'
+			if ext != ".json":
+				ext = ".json"
 		self.fcw.set_current_name(fname_nox + ext)
 
 	def save(self):
@@ -91,12 +91,12 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 			text = dataToCompactJson(
 				ui.eventGroups.exportData([self._group.id]),
 			)
-			open(fpath, 'w', encoding='utf-8').write(text)
+			open(fpath, "w", encoding="utf-8").write(text)
 		elif self.radioJsonPretty.get_active():
 			text = dataToPrettyJson(
 				ui.eventGroups.exportData([self._group.id]),
 			)
-			open(fpath, 'w', encoding='utf-8').write(text)
+			open(fpath, "w", encoding="utf-8").write(text)
 		elif self.radioIcs.get_active():
 			ui.eventGroups.exportToIcs(
 				fpath,
@@ -112,36 +112,36 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 	def __init__(self, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
-		self.set_title(_('Export'))
+		self.set_title(_("Export"))
 		self.vbox.set_spacing(10)
 		####
 		dialog_add_button(
 			self,
 			gtk.STOCK_CANCEL,
-			_('_Cancel'),
+			_("_Cancel"),
 			gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
 			gtk.STOCK_OK,
-			_('_OK'),
+			_("_OK"),
 			gtk.ResponseType.OK,
 		)
 		####
 		hbox = gtk.HBox()
 		frame = gtk.Frame()
-		frame.set_label(_('Format'))
+		frame.set_label(_("Format"))
 		radioBox = gtk.VBox()
 		##
 		self.radioIcs = gtk.RadioButton(
-			label='iCalendar',
+			label="iCalendar",
 		)
 		self.radioJsonCompact = gtk.RadioButton(
-			label=_('Compact JSON (StarCalendar)'),
+			label=_("Compact JSON (StarCalendar)"),
 			group=self.radioIcs,
 		)
 		self.radioJsonPretty = gtk.RadioButton(
-			label=_('Pretty JSON (StarCalendar)'),
+			label=_("Pretty JSON (StarCalendar)"),
 			group=self.radioIcs,
 		)
 		##
@@ -150,21 +150,21 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 		pack(radioBox, self.radioIcs)
 		##
 		self.radioJsonCompact.set_active(True)
-		self.radioIcs.connect('clicked', self.formatRadioChanged)
-		self.radioJsonCompact.connect('clicked', self.formatRadioChanged)
-		self.radioJsonPretty.connect('clicked', self.formatRadioChanged)
+		self.radioIcs.connect("clicked", self.formatRadioChanged)
+		self.radioJsonCompact.connect("clicked", self.formatRadioChanged)
+		self.radioJsonPretty.connect("clicked", self.formatRadioChanged)
 		##
 		frame.add(radioBox)
 		pack(hbox, frame)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self.vbox, hbox)
 		########
 		hbox = gtk.HBox(spacing=2)
-		pack(hbox, gtk.Label(_('File') + ':'))
+		pack(hbox, gtk.Label(_("File") + ":"))
 		self.fpathEntry = gtk.Entry()
 		self.fpathEntry.set_text(join(
 			deskDir,
-			'events-%.4d-%.2d-%.2d' % core.getSysDate(DATE_GREG),
+			"events-%.4d-%.2d-%.2d" % core.getSysDate(DATE_GREG),
 		))
 		pack(hbox, self.fpathEntry, 1, 1)
 		pack(self.vbox, hbox)
@@ -187,11 +187,11 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 			fpath_nox, ext = splitext(fpath)
 			if fpath_nox:
 				if self.radioIcs.get_active():
-					if ext != '.ics':
-						ext = '.ics'
+					if ext != ".ics":
+						ext = ".ics"
 				else:
-					if ext != '.json':
-						ext = '.json'
+					if ext != ".json":
+						ext = ".json"
 				self.fpathEntry.set_text(fpath_nox + ext)
 
 	def save(self):
@@ -201,14 +201,14 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 			ui.eventGroups.exportToIcs(fpath, activeGroupIds)
 		else:
 			data = ui.eventGroups.exportData(activeGroupIds)
-			## what to do with all groupData['info'] s? FIXME
+			## what to do with all groupData["info"] s? FIXME
 			if self.radioJsonCompact.get_active():
 				text = dataToCompactJson(data)
 			elif self.radioJsonPretty.get_active():
 				text = dataToPrettyJson(data)
 			else:
 				raise RuntimeError
-			open(fpath, 'w', encoding='utf-8').write(text)
+			open(fpath, "w", encoding="utf-8").write(text)
 
 	def run(self):
 		if gtk.Dialog.run(self) == gtk.ResponseType.OK:

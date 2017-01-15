@@ -55,13 +55,13 @@ class MonthCalTypeParamBox(gtk.HBox):
 		self.index = index
 		self.mode = mode
 		######
-		label = gtk.Label(_(calTypes[mode].desc) + '  ')
+		label = gtk.Label(_(calTypes[mode].desc) + "  ")
 		label.set_alignment(0, 0.5)
 		pack(self, label)
 		sgroupLabel.add_widget(label)
 		###
-		pack(self, gtk.Label(''), 1, 1)
-		pack(self, gtk.Label(_('position')))
+		pack(self, gtk.Label(""), 1, 1)
+		pack(self, gtk.Label(_("position")))
 		###
 		spin = FloatSpinButton(-99, 99, 1)
 		self.spinX = spin
@@ -71,7 +71,7 @@ class MonthCalTypeParamBox(gtk.HBox):
 		self.spinY = spin
 		pack(self, spin)
 		####
-		pack(self, gtk.Label(''), 1, 1)
+		pack(self, gtk.Label(""), 1, 1)
 		###
 		fontb = MyFontButton(cal)
 		self.fontb = fontb
@@ -84,26 +84,26 @@ class MonthCalTypeParamBox(gtk.HBox):
 		####
 		self.set(params)
 		####
-		self.spinX.connect('changed', self.onChange)
-		self.spinY.connect('changed', self.onChange)
-		fontb.connect('font-set', self.onChange)
-		colorb.connect('color-set', self.onChange)
+		self.spinX.connect("changed", self.onChange)
+		self.spinY.connect("changed", self.onChange)
+		fontb.connect("font-set", self.onChange)
+		colorb.connect("color-set", self.onChange)
 
 	def get(self):
 		return {
-			'pos': (
+			"pos": (
 				self.spinX.get_value(),
 				self.spinY.get_value(),
 			),
-			'font': self.fontb.get_font_name(),
-			'color': self.colorb.get_color(),
+			"font": self.fontb.get_font_name(),
+			"color": self.colorb.get_color(),
 		}
 
 	def set(self, data):
-		self.spinX.set_value(data['pos'][0])
-		self.spinY.set_value(data['pos'][1])
-		self.fontb.set_font_name(data['font'])
-		self.colorb.set_color(data['color'])
+		self.spinX.set_value(data["pos"][0])
+		self.spinY.set_value(data["pos"][1])
+		self.fontb.set_font_name(data["font"])
+		self.colorb.set_color(data["color"])
 
 	def onChange(self, obj=None, event=None):
 		ui.mcalTypeParams[self.index] = self.get()
@@ -112,23 +112,23 @@ class MonthCalTypeParamBox(gtk.HBox):
 
 @registerSignals
 class CalObj(gtk.DrawingArea, CalBase):
-	_name = 'monthCal'
-	desc = _('Month Calendar')
+	_name = "monthCal"
+	desc = _("Month Calendar")
 	cx = [0, 0, 0, 0, 0, 0, 0]
 	myKeys = CalBase.myKeys + (
-		'up', 'down',
-		'right', 'left',
-		'page_up',
-		'k', 'p',
-		'page_down',
-		'j', 'n',
-		'end',
-		'f10', 'm',
+		"up", "down",
+		"right", "left",
+		"page_up",
+		"k", "p",
+		"page_down",
+		"j", "n",
+		"end",
+		"f10", "m",
 	)
 
 	def heightSpinChanged(self, spin):
 		v = spin.get_value()
-		self.set_property('height-request', v)
+		self.set_property("height-request", v)
 		ui.mcalHeight = v
 
 	def leftMarginSpinChanged(self, spin):
@@ -150,9 +150,9 @@ class CalObj(gtk.DrawingArea, CalBase):
 		n = len(calTypes.active)
 		while len(ui.mcalTypeParams) < n:
 			ui.mcalTypeParams.append({
-				'pos': (0, 0),
-				'font': ui.getFont(0.6),
-				'color': ui.textColor,
+				"pos": (0, 0),
+				"font": ui.getFont(0.6),
+				"color": ui.textColor,
 			})
 		sgroupLabel = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
 		sgroupFont = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
@@ -177,14 +177,14 @@ class CalObj(gtk.DrawingArea, CalBase):
 		gtk.DrawingArea.__init__(self)
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initCal()
-		self.set_property('height-request', ui.mcalHeight)
+		self.set_property("height-request", ui.mcalHeight)
 		######################
 		#self.kTime = 0
 		######################
-		self.connect('draw', self.drawAll)
-		self.connect('button-press-event', self.buttonPress)
-		#self.connect('screen-changed', self.screenChanged)
-		self.connect('scroll-event', self.scroll)
+		self.connect("draw", self.drawAll)
+		self.connect("button-press-event", self.buttonPress)
+		#self.connect("screen-changed", self.screenChanged)
+		self.connect("scroll-event", self.scroll)
 		######################
 		#self.updateTextWidth()
 
@@ -198,49 +198,49 @@ class CalObj(gtk.DrawingArea, CalBase):
 		hbox = gtk.HBox()
 		spin = IntSpinButton(1, 9999)
 		spin.set_value(ui.mcalHeight)
-		spin.connect('changed', self.heightSpinChanged)
-		pack(hbox, gtk.Label(_('Height')))
+		spin.connect("changed", self.heightSpinChanged)
+		pack(hbox, gtk.Label(_("Height")))
 		pack(hbox, spin)
 		pack(self.optionsWidget, hbox)
 		####
 		hbox = gtk.HBox(spacing=3)
 		##
-		pack(hbox, gtk.Label(_('Left Margin')))
+		pack(hbox, gtk.Label(_("Left Margin")))
 		spin = IntSpinButton(0, 99)
 		spin.set_value(ui.mcalLeftMargin)
-		spin.connect('changed', self.leftMarginSpinChanged)
+		spin.connect("changed", self.leftMarginSpinChanged)
 		pack(hbox, spin)
 		##
-		pack(hbox, gtk.Label(_('Top')))
+		pack(hbox, gtk.Label(_("Top")))
 		spin = IntSpinButton(0, 99)
 		spin.set_value(ui.mcalTopMargin)
-		spin.connect('changed', self.topMarginSpinChanged)
+		spin.connect("changed", self.topMarginSpinChanged)
 		pack(hbox, spin)
 		##
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self.optionsWidget, hbox)
 		########
 		hbox = gtk.HBox(spacing=3)
 		####
-		item = CheckPrefItem(ui, 'mcalGrid', _('Grid'))
+		item = CheckPrefItem(ui, "mcalGrid", _("Grid"))
 		item.updateWidget()
 		gridCheck = item._widget
 		pack(hbox, gridCheck)
 		gridCheck.item = item
 		####
-		colorItem = ColorPrefItem(ui, 'mcalGridColor', True)
+		colorItem = ColorPrefItem(ui, "mcalGridColor", True)
 		colorItem.updateWidget()
 		pack(hbox, colorItem._widget)
 		gridCheck.colorb = colorItem._widget
-		gridCheck.connect('clicked', self.gridCheckClicked)
+		gridCheck.connect("clicked", self.gridCheckClicked)
 		colorItem._widget.item = colorItem
-		colorItem._widget.connect('color-set', self.gridColorChanged)
+		colorItem._widget.connect("color-set", self.gridColorChanged)
 		colorItem._widget.set_sensitive(ui.mcalGrid)
 		####
 		pack(self.optionsWidget, hbox)
 		########
 		frame = gtk.Frame()
-		frame.set_label(_('Calendars'))
+		frame.set_label(_("Calendars"))
 		self.typeParamsVbox = gtk.VBox()
 		frame.add(self.typeParamsVbox)
 		frame.show_all()
@@ -290,7 +290,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 				show_layout(cr, wday)
 			######## Drawing "Menu" label
 			setColor(cr, ui.menuTextColor)
-			text = newTextLayout(self, _('Menu'))
+			text = newTextLayout(self, _("Menu"))
 			fontw, fonth = text.get_pixel_size()
 			if rtl:
 				cr.move_to(
@@ -400,7 +400,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 				daynum = newTextLayout(
 					self,
 					_(c.dates[mode][2], mode),
-					params['font'],
+					params["font"],
 				)
 				fontw, fonth = daynum.get_pixel_size()
 				if cellInactive:
@@ -408,10 +408,10 @@ class CalObj(gtk.DrawingArea, CalBase):
 				elif c.holiday:
 					setColor(cr, ui.holidayColor)
 				else:
-					setColor(cr, params['color'])
+					setColor(cr, params["color"])
 				cr.move_to(
-					x0 - fontw / 2 + params['pos'][0],
-					y0 - fonth / 2 + params['pos'][1],
+					x0 - fontw / 2 + params["pos"][0],
+					y0 - fonth / 2 + params["pos"][1],
 				)
 				show_layout(cr, daynum)
 				if not cellInactive:
@@ -419,13 +419,13 @@ class CalObj(gtk.DrawingArea, CalBase):
 						daynum = newTextLayout(
 							self,
 							_(c.dates[mode][2], mode),
-							params['font'],
+							params["font"],
 						)
 						fontw, fonth = daynum.get_pixel_size()
-						setColor(cr, params['color'])
+						setColor(cr, params["color"])
 						cr.move_to(
-							x0 - fontw / 2 + params['pos'][0],
-							y0 - fonth / 2 + params['pos'][1],
+							x0 - fontw / 2 + params["pos"][0],
+							y0 - fonth / 2 + params["pos"][1],
 						)
 						show_layout(cr, daynum)
 					if cellHasCursor:
@@ -474,7 +474,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 				wm = w
 		self.wdaysWidth = wm * 7 + ui.mcalLeftMargin
 		#self.wdaysWidth = wm * 7 * 0.7 + ui.mcalLeftMargin
-		#print('max =', wm, '     wdaysWidth =', self.wdaysWidth)
+		#print("max =", wm, "     wdaysWidth =", self.wdaysWidth)
 
 	def buttonPress(self, obj, gevent):
 		## self.winActivate() #?????????
@@ -496,15 +496,15 @@ class CalObj(gtk.DrawingArea, CalBase):
 				break
 		status = getCurrentMonthStatus()
 		if yPos == -1 or xPos == -1:
-			self.emit('popup-main-menu', gevent.time, gevent.x, gevent.y)
+			self.emit("popup-main-menu", gevent.time, gevent.x, gevent.y)
 		elif yPos >= 0 and xPos >= 0:
 			cell = status[yPos][xPos]
 			self.changeDate(*cell.dates[calTypes.primary])
 			if gevent.type == TWO_BUTTON_PRESS:
-				self.emit('2button-press')
+				self.emit("2button-press")
 			if b == 3 and cell.month == ui.cell.month:## right click on a normal cell
-				#self.emit('popup-cell-menu', gevent.time, *self.getCellPos())
-				self.emit('popup-cell-menu', gevent.time, gevent.x, gevent.y)
+				#self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
+				self.emit("popup-cell-menu", gevent.time, gevent.x, gevent.y)
 		return True
 
 	def calcCoord(self):## calculates coordidates (x and y of cells centers)
@@ -536,53 +536,53 @@ class CalObj(gtk.DrawingArea, CalBase):
 		self.onDateChange()
 
 	def keyPress(self, arg, gevent):
-		#print('keyPress')
+		#print("keyPress")
 		if CalBase.keyPress(self, arg, gevent):
 			return True
 		kname = gdk.keyval_name(gevent.keyval).lower()
-		#print('keyPress', kname)
-		#if kname.startswith('alt'):
+		#print("keyPress", kname)
+		#if kname.startswith("alt"):
 		#	return True
 		## How to disable Alt+Space of metacity ?????????????????????
-		if kname == 'up':
+		if kname == "up":
 			self.jdPlus(-7)
-		elif kname == 'down':
+		elif kname == "down":
 			self.jdPlus(7)
-		elif kname == 'right':
+		elif kname == "right":
 			if rtl:
 				self.jdPlus(-1)
 			else:
 				self.jdPlus(1)
-		elif kname == 'left':
+		elif kname == "left":
 			if rtl:
 				self.jdPlus(1)
 			else:
 				self.jdPlus(-1)
-		elif kname == 'end':
+		elif kname == "end":
 			self.changeDate(
 				ui.cell.year,
 				ui.cell.month,
 				core.getMonthLen(ui.cell.year, ui.cell.month, calTypes.primary),
 			)
-		elif kname in ('page_up', 'k', 'p'):
+		elif kname in ("page_up", "k", "p"):
 			self.monthPlus(-1)
-		elif kname in ('page_down', 'j', 'n'):
+		elif kname in ("page_down", "j", "n"):
 			self.monthPlus(1)
-		elif kname in ('f10', 'm'):
+		elif kname in ("f10", "m"):
 			if gevent.get_state() & gdk.ModifierType.SHIFT_MASK:
 				# Simulate right click (key beside Right-Ctrl)
-				self.emit('popup-cell-menu', gevent.time, *self.getCellPos())
+				self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
 			else:
-				self.emit('popup-main-menu', gevent.time, *self.getMainMenuPos())
+				self.emit("popup-main-menu", gevent.time, *self.getMainMenuPos())
 		else:
 			return False
 		return True
 
 	def scroll(self, widget, gevent):
 		d = getScrollValue(gevent)
-		if d == 'up':
+		if d == "up":
 			self.jdPlus(-7)
-		elif d == 'down':
+		elif d == "down":
 			self.jdPlus(7)
 		else:
 			return False
@@ -615,7 +615,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		self.updateTypeParamsWidget()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	win = gtk.Dialog(parent=None)
 	cal = CalObj()
 	win.add_events(gdk.EventMask.ALL_EVENTS_MASK)

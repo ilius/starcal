@@ -13,9 +13,9 @@ class WidgetClass(gtk.ComboBoxText):
 		###
 		gtk.ComboBoxText.__init__(self)
 		###
-		self.append_text(_('Every Week'))
-		self.append_text(_('Odd Weeks'))
-		self.append_text(_('Even Weeks'))
+		self.append_text(_("Every Week"))
+		self.append_text(_("Odd Weeks"))
+		self.append_text(_("Even Weeks"))
 		self.set_active(0)
 
 	def updateWidget(self):

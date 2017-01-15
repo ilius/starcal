@@ -27,20 +27,20 @@ from scal3.time_utils import getJhmsFromEpoch
 from scal3.cal_types import jd_to, to_jd, DATE_GREG
 
 
-icsTmFormat = '%Y%m%dT%H%M%S'
-icsTmFormatPretty = '%Y-%m-%dT%H:%M:%SZ'
+icsTmFormat = "%Y%m%dT%H%M%S"
+icsTmFormatPretty = "%Y-%m-%dT%H:%M:%SZ"
 ## timezone? (Z%Z or Z%z)
 
-icsHeader = '''BEGIN:VCALENDAR
+icsHeader = """BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.1//EN
-'''
+"""
 
-icsWeekDays = ('SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA')
+icsWeekDays = ("SU", "MO", "TU", "WE", "TH", "FR", "SA")
 
 
 def encodeIcsWeekDayList(weekDayList):
-	return ','.join([
+	return ",".join([
 		icsWeekDays[wd]
 		for wd in weekDayList
 	])
@@ -58,7 +58,7 @@ def getIcsTimeByEpoch(epoch, pretty=False):
 
 
 def getIcsDate(y, m, d, pretty=False):
-	return ('%.4d-%.2d-%.2d' if pretty else '%.4d%.2d%.2d') % (y, m, d)
+	return ("%.4d-%.2d-%.2d" if pretty else "%.4d%.2d%.2d") % (y, m, d)
 
 
 def getIcsDateByJd(jd, pretty=False):
@@ -67,7 +67,7 @@ def getIcsDateByJd(jd, pretty=False):
 
 
 def getJdByIcsDate(dateStr):
-	tm = strptime(dateStr, '%Y%m%d')
+	tm = strptime(dateStr, "%Y%m%d")
 	return to_jd(tm.tm_year, tm.tm_mon, tm.tm_mday, DATE_GREG)
 
 
@@ -83,40 +83,40 @@ def getEpochByIcsTime(tmStr):
 
 #def getEpochByIcsTime(tmStr):
 #	utcOffset = 0
-#	if 'T' in tmStr:
-#		if '+' in tmStr or '-' in tmStr:
-#			format = '%Y%m%dT%H%M%S%z' ## not working FIXME
+#	if "T" in tmStr:
+#		if "+" in tmStr or "-" in tmStr:
+#			format = "%Y%m%dT%H%M%S%z" ## not working FIXME
 #		else:
-#			format = '%Y%m%dT%H%M%S'
+#			format = "%Y%m%dT%H%M%S"
 #	else:
-#		format = '%Y%m%d'
+#		format = "%Y%m%d"
 #	try:
 #		tm = strptime(tmStr, format)
 #	except ValueError as e:
-#		raise ValueError('getEpochByIcsTime: Bad ics time format "%s"'%tmStr)
+#		raise ValueError("getEpochByIcsTime: Bad ics time format "%s""%tmStr)
 #	return int(mktime(tm))
 
 
 def splitIcsValue(value):
 	data = []
-	for p in value.split(';'):
-		pp = p.split('=')
+	for p in value.split(";"):
+		pp = p.split("=")
 		if len(pp) == 1:
-			data.append([pp[0], ''])
+			data.append([pp[0], ""])
 		elif len(pp) == 2:
 			data.append(pp)
 		else:
-			raise ValueError('unkown ics value %r' % value)
+			raise ValueError("unkown ics value %r" % value)
 	return data
 
 
-def convertHolidayPlugToIcs(plug, startJd, endJd, namePostfix=''):
+def convertHolidayPlugToIcs(plug, startJd, endJd, namePostfix=""):
 	fname = split(plug.fpath)[-1]
-	fname = splitext(fname)[0] + '%s.ics' % namePostfix
+	fname = splitext(fname)[0] + "%s.ics" % namePostfix
 	plug.exportToIcs(fname, startJd, endJd)
 
 
-def convertBuiltinTextPlugToIcs(plug, startJd, endJd, namePostfix=''):
+def convertBuiltinTextPlugToIcs(plug, startJd, endJd, namePostfix=""):
 	plug.load() ## FIXME
 	mode = plug.mode
 	icsText = icsHeader
@@ -128,24 +128,24 @@ def convertBuiltinTextPlugToIcs(plug, startJd, endJd, namePostfix=''):
 			gyear, gmonth, gday = jd_to(jd, DATE_GREG)
 			gyear_next, gmonth_next, gday_next = jd_to(jd + 1, DATE_GREG)
 			#######
-			icsText += '\n'.join([
-				'BEGIN:VEVEN',
-				'CREATED:%s' % currentTimeStamp,
-				'LAST-MODIFIED:%s' % currentTimeStamp,
-				'DTSTART;VALUE=DATE:%.4d%.2d%.2d' % (
+			icsText += "\n".join([
+				"BEGIN:VEVEN",
+				"CREATED:%s" % currentTimeStamp,
+				"LAST-MODIFIED:%s" % currentTimeStamp,
+				"DTSTART;VALUE=DATE:%.4d%.2d%.2d" % (
 					gyear,
 					gmonth,
 					gday,
 				),
-				'DTEND;VALUE=DATE:%.4d%.2d%.2d' % (
+				"DTEND;VALUE=DATE:%.4d%.2d%.2d" % (
 					gyear_next,
 					gmonth_next,
 					gday_next,
 				),
-				'SUMMARY:%s' % dayText,
-				'END:VEVENT',
-			]) + '\n'
-	icsText += 'END:VCALENDAR\n'
+				"SUMMARY:%s" % dayText,
+				"END:VEVENT",
+			]) + "\n"
+	icsText += "END:VCALENDAR\n"
 	fname = split(plug.fpath)[-1]
-	fname = splitext(fname)[0] + '%s.ics' % namePostfix
-	open(fname, 'w').write(icsText)
+	fname = splitext(fname)[0] + "%s.ics" % namePostfix
+	open(fname, "w").write(icsText)

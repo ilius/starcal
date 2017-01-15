@@ -43,7 +43,7 @@ from scal3.ui_gtk.decorators import *
 def myRaise():
 	i = sys.exc_info()
 	try:
-		print('line %s: %s: %s' % (
+		print("line %s: %s: %s" % (
 			i[2].tb_lineno,
 			i[0].__name__,
 			i[1],
@@ -61,7 +61,7 @@ class NumRangesEntry(gtk.Entry):
 		self.page_inc = page_inc
 		####
 		gtk.Entry.__init__(self)
-		self.connect('key-press-event', self.keyPress)
+		self.connect("key-press-event", self.keyPress)
 		self.set_direction(gtk.TextDirection.LTR)
 		self.set_alignment(0.5)
 
@@ -82,22 +82,22 @@ class NumRangesEntry(gtk.Entry):
 		pos = self.get_position()
 		text = toStr(self.get_text())
 		n = len(text)
-		commaI = text.rfind(',', 0, pos)
+		commaI = text.rfind(",", 0, pos)
 		if commaI == -1:
 			startI = 0
 		else:
-			if text[commaI + 1] == ' ':
+			if text[commaI + 1] == " ":
 				startI = commaI + 2
 			else:
 				startI = commaI + 1
-		nextCommaI = text.find(',', pos)
+		nextCommaI = text.find(",", pos)
 		if nextCommaI == -1:
 			endI = n
 		else:
 			endI = nextCommaI
-		dashI = text.find('-', startI, endI)
+		dashI = text.find("-", startI, endI)
 		if dashI != -1:
-			#print('dashI=%r'%dashI)
+			#print("dashI=%r"%dashI)
 			if pos < dashI:
 				endI = dashI
 			else:
@@ -117,7 +117,7 @@ class NumRangesEntry(gtk.Entry):
 		newNumStr = _(newNum)
 		newText = text[:startI] + newNumStr + text[endI:]
 		self.set_text(newText)
-		#print('new end index', endI - len(thisNumStr) + len(newNumStr))
+		#print("new end index", endI - len(thisNumStr) + len(newNumStr))
 		self.set_position(pos)
 		self.select_region(
 			startI,
@@ -129,56 +129,56 @@ class NumRangesEntry(gtk.Entry):
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		#print(kval, kname)
 		if kname in (
-			'tab',
-			'escape',
-			'backspace',
-			'delete',
-			'insert',
-			'home',
-			'end',
-			'control_l',
-			'control_r',
-			'iso_next_group',
+			"tab",
+			"escape",
+			"backspace",
+			"delete",
+			"insert",
+			"home",
+			"end",
+			"control_l",
+			"control_r",
+			"iso_next_group",
 		):
 			return False
-		elif kname == 'return':
+		elif kname == "return":
 			self.validate()
 			return False
-		elif kname == 'up':
+		elif kname == "up":
 			self.numPlus(1)
-		elif kname == 'down':
+		elif kname == "down":
 			self.numPlus(-1)
-		elif kname == 'page_up':
+		elif kname == "page_up":
 			self.numPlus(self.page_inc)
-		elif kname == 'page_down':
+		elif kname == "page_down":
 			self.numPlus(-self.page_inc)
-		elif kname == 'left':
+		elif kname == "left":
 			return False  # FIXME
-		elif kname == 'right':
+		elif kname == "right":
 			return False  # FIXME
-		#elif kname in ('braceleft', 'bracketleft'):
-		#	self.insertText(u'[')
-		#elif kname in ('braceright', 'bracketright'):
-		#	self.insertText(u']')
-		elif kname in ('comma', 'arabic_comma'):
-			self.insertText(', ', False)
-		elif kname == 'minus':
+		#elif kname in ("braceleft", "bracketleft"):
+		#	self.insertText(u"[")
+		#elif kname in ("braceright", "bracketright"):
+		#	self.insertText(u"]")
+		elif kname in ("comma", "arabic_comma"):
+			self.insertText(", ", False)
+		elif kname == "minus":
 			pos = self.get_position()
 			text = toStr(self.get_text())
 			n = len(text)
 			if pos == n:
-				start = numDecode(text.split(',')[-1].strip())
-				self.insertText('-' + _(start + 2), False)
+				start = numDecode(text.split(",")[-1].strip())
+				self.insertText("-" + _(start + 2), False)
 			else:
-				self.insertText('-', False)
-		elif ord('0') <= kval <= ord('9'):
-			self.insertText(self.digs[kval - ord('0')])
+				self.insertText("-", False)
+		elif ord("0") <= kval <= ord("9"):
+			self.insertText(self.digs[kval - ord("0")])
 		else:
 			uniVal = gdk.keyval_to_unicode(kval)
-			#print('uniVal=%r'%uniVal)
+			#print("uniVal=%r"%uniVal)
 			if uniVal != 0:
 				ch = chr(uniVal)
-				#print('ch=%r'%ch)
+				#print("ch=%r"%ch)
 				if ch in self.digs:
 					self.insertText(ch)
 				if gevent.get_state() & gdk.ModifierType.CONTROL_MASK:
@@ -205,7 +205,7 @@ class NumRangesEntry(gtk.Entry):
 		return self.setValues(self.getValues())
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	from scal3 import core
 	###
 	entry = NumRangesEntry(0, 9999)

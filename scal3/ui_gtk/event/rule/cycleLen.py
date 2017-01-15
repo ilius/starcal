@@ -19,7 +19,7 @@ class WidgetClass(gtk.HBox):
 		pack(self, spin)
 		self.spin = spin
 		##
-		pack(self, gtk.Label(' ' + _('days and') + ' '))
+		pack(self, gtk.Label(" " + _("days and") + " "))
 		tbox = TimeButton()
 		pack(self, tbox)
 		self.tbox = tbox

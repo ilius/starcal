@@ -46,22 +46,22 @@ try:
 	__file__
 except NameError:
 	import inspect
-	__file__ = join(os.path.dirname(inspect.getfile(scal3)), 'core.py')
+	__file__ = join(os.path.dirname(inspect.getfile(scal3)), "core.py")
 
 
-VERSION = '3.0.7'
-BRANCH = join(rootDir, 'branch')
-APP_DESC = 'StarCalendar'
+VERSION = "3.0.7"
+BRANCH = join(rootDir, "branch")
+APP_DESC = "StarCalendar"
 COMMAND = APP_NAME
-homePage = 'http://ilius.github.io/starcal/'
+homePage = "http://ilius.github.io/starcal/"
 osName = getOsName()
 userDisplayName = getUserDisplayName()
 
 
 #__plugin_api_get__ = [
-#	'VERSION', 'APP_NAME', 'APP_DESC', 'COMMAND',
-#	'homePage', 'osName', 'userDisplayName'
-#	'jd_to_primary', 'primary_to_jd',
+#	"VERSION", "APP_NAME", "APP_DESC", "COMMAND",
+#	"homePage", "osName", "userDisplayName"
+#	"jd_to_primary", "primary_to_jd",
 #]
 #__plugin_api_set__ = []
 
@@ -76,32 +76,32 @@ userDisplayName = getUserDisplayName()
 
 # ________________ Defining user core configuration ________________ #
 
-sysConfPath = join(sysConfDir, 'core.json')
+sysConfPath = join(sysConfDir, "core.json")
 
-confPath = join(confDir, 'core.json')
+confPath = join(confDir, "core.json")
 
 confParams = (
-	'version',
-	'allPlugList',
-	'plugIndex',
-	'activeCalTypes',
-	'inactiveCalTypes',
-	'holidayWeekDays',
-	'firstWeekDayAuto',
-	'firstWeekDay',
-	'weekNumberModeAuto',
-	'weekNumberMode',
-	'debugMode',
+	"version",
+	"allPlugList",
+	"plugIndex",
+	"activeCalTypes",
+	"inactiveCalTypes",
+	"holidayWeekDays",
+	"firstWeekDayAuto",
+	"firstWeekDay",
+	"weekNumberModeAuto",
+	"weekNumberMode",
+	"debugMode",
 )
 
 confDecoders = {
-	'allPlugList': lambda pdataList: [
+	"allPlugList": lambda pdataList: [
 		loadPlugin(**pdata) for pdata in pdataList
 	],
 }
 
 confEncoders = {
-	'allPlugList': lambda plugList: [
+	"allPlugList": lambda plugList: [
 		plug.getArgs() for plug in plugList if plug is not None
 	],
 }
@@ -115,7 +115,7 @@ def loadConf():
 	try:
 		version
 	except NameError:
-		prefVersion = ''
+		prefVersion = ""
 	else:
 		prefVersion = version
 		del version
@@ -144,12 +144,12 @@ def saveConf():
 
 if os.path.exists(confDir):
 	if not isdir(confDir):
-		os.rename(confDir, confDir + '-old')
+		os.rename(confDir, confDir + "-old")
 		os.mkdir(confDir)
 else:
 	os.mkdir(confDir)
 
-makeDir(join(confDir, 'log'))
+makeDir(join(confDir, "log"))
 
 # _____________________________________________________________________ #
 
@@ -157,8 +157,8 @@ try:
 	import logging
 	import logging.config
 
-	logConfText = open(join(rootDir, 'conf', 'logging-user.conf')).read()
-	for varName in ('confDir',):
+	logConfText = open(join(rootDir, "conf", "logging-user.conf")).read()
+	for varName in ("confDir",):
 		logConfText = logConfText.replace(varName, eval(varName))
 
 	logging.config.fileConfig(StringIO(logConfText))
@@ -170,13 +170,13 @@ except:
 
 def myRaise(File=None):
 	typ, value, tback = sys.exc_info()
-	text = 'line %s: %s: %s\n' % (
+	text = "line %s: %s: %s\n" % (
 		tback.tb_lineno,
 		typ.__name__,
 		value,
 	)
 	if File:
-		text = 'File "%s", ' % File + text
+		text = "File \"%s\", " % File + text
 	log.error(text)
 
 
@@ -233,7 +233,7 @@ def getWeekDayAuto(i, abr=False):
 
 
 def getLocaleFirstWeekDay():
-	return int(popen_output(['locale', 'first_weekday'])) - 1
+	return int(popen_output(["locale", "first_weekday"])) - 1
 
 
 # week number in year
@@ -296,10 +296,10 @@ def getStartJdOfAbsWeekNumber(absWeekNumber):
 
 
 #def getLocaleWeekNumberMode():##????????????
-#	return (int(popen_output(['locale', 'week-1stweek']))-1)%8
+#	return (int(popen_output(["locale", "week-1stweek"]))-1)%8
 	## will be 7 for farsi (OK)
 	## will be 6 for english (usa) (NOT OK, must be 4)
-	#return int(popen_output('LANG=%s locale first_weekday'%locale_man.lang))-1
+	#return int(popen_output("LANG=%s locale first_weekday"%locale_man.lang))-1
 	## locale week-1stweek:
 	##	en_US.UTF-8             7
 	##	en_GB.UTF-8             4
@@ -335,7 +335,7 @@ def validatePlugList():
 
 
 def initPlugins():
-	# log.debug('----------------------- initPlugins')
+	# log.debug("----------------------- initPlugins")
 	global allPlugList, plugIndex
 	# Assert that user configuarion for plugins is OK
 	validatePlugList()
@@ -346,13 +346,13 @@ def initPlugins():
 		if not isdir(direc):
 			continue
 		for fname in os.listdir(direc):
-			if fname == '__init__.py' or fname in names:  # FIXME
+			if fname == "__init__.py" or fname in names:  # FIXME
 				continue
-			path = '%s/%s' % (direc, fname)
+			path = "%s/%s" % (direc, fname)
 			name = os.path.splitext(fname)[0]
 			# if path in path:
 			#	# The plugin is not new, currently exists in allPlugList
-			#	log.warning('plugin "%s" already exists.'%path)
+			#	log.warning("plugin "%s" already exists."%path)
 			#	continue
 			if not isfile(path):
 				continue
@@ -373,7 +373,7 @@ def getHolidayPlugins():
 	hPlugs = []
 	for i in plugIndex:
 		plug = allPlugList[i]
-		if hasattr(plug, 'holidays'):
+		if hasattr(plug, "holidays"):
 			hPlugs.append(plug)
 	return hPlugs
 
@@ -414,14 +414,14 @@ def getDeletedPluginsTable():
 def convertAllPluginsToIcs(startYear, endYear):
 	startJd = calTypes[DATE_GREG].to_jd(startYear, 1, 1)
 	endJd = calTypes[DATE_GREG].to_jd(endYear + 1, 1, 1)
-	namePostfix = '-%d-%d' % (startYear, endYear)
+	namePostfix = "-%d-%d" % (startYear, endYear)
 	for plug in core.allPlugList:
 		if isinstance(plug, HolidayPlugin):
 			convertHolidayPlugToIcs(plug, startJd, endJd, namePostfix)
 		elif isinstance(plug, BuiltinTextPlugin):
 			convertBuiltinTextPlugToIcs(plug, startJd, endJd, namePostfix)
 		else:
-			print('Ignoring unsupported plugin %s' % plug.file)
+			print("Ignoring unsupported plugin %s" % plug.file)
 
 # _____________________________________________________ #
 
@@ -430,7 +430,7 @@ def restart():
 	"""
 	will not return from function
 	"""
-	os.environ['LANG'] = locale_man.sysLangDefault
+	os.environ["LANG"] = locale_man.sysLangDefault
 	restartLow()
 
 # _____________________________________________________ #
@@ -450,8 +450,8 @@ def compressLongInt(num):
 	from struct import pack
 	from base64 import b64encode
 	return b64encode(
-		pack('L', num % 2 ** 64).rstrip(b'\x00')
-	)[:-3].decode('ascii').replace('/', '_')
+		pack("L", num % 2 ** 64).rstrip(b"\x00")
+	)[:-3].decode("ascii").replace("/", "_")
 
 
 def getCompactTime(maxDays=1000, minSec=0.1):
@@ -464,7 +464,7 @@ def getCompactTime(maxDays=1000, minSec=0.1):
 
 def floatJdEncode(jd, mode):
 	jd, hour, minute, second = getJhmsFromEpoch(getEpochFromJd(jd))
-	return '%s %s' % (
+	return "%s %s" % (
 		dateEncode(calTypes[mode].jd_to(jd)),
 		timeEncode((hour, minute, second)),
 	)
@@ -472,30 +472,30 @@ def floatJdEncode(jd, mode):
 
 def epochDateTimeEncode(epoch):
 	jd, hour, minute, sec = getJhmsFromEpoch(epoch)
-	return '%s, %s' % (
+	return "%s, %s" % (
 		dateEncode(jd_to_primary(jd)),
 		timeEncode((hour, minute, sec)),
 	)
 
 
 def fixStrForFileName(fname):
-	fname = fname.replace('/', '_').replace('\\', '_')
-	#if osName=='win':  # FIXME
+	fname = fname.replace("/", "_").replace("\\", "_")
+	#if osName=="win":  # FIXME
 	return fname
 
 
 def openUrl(url):
-	if osName == 'win':
+	if osName == "win":
 		return Popen([url])
-	if osName == 'mac':
-		return Popen(['open', url])
+	if osName == "mac":
+		return Popen(["open", url])
 	try:
-		Popen(['xdg-open', url])
+		Popen(["xdg-open", url])
 	except:
 		myRaise()
 	else:
 		return
-	#if not url.startswith('http'):  # FIXME
+	#if not url.startswith("http"):  # FIXME
 	#	return
 	try:
 		import webbrowser
@@ -507,7 +507,7 @@ def openUrl(url):
 		return gnomevfs.url_show(url)
 	except ImportError:
 		pass
-	for command in ('gnome-www-browser', 'firefox', 'iceweasel', 'konqueror'):
+	for command in ("gnome-www-browser", "firefox", "iceweasel", "konqueror"):
 		try:
 			Popen([command, url])
 		except:
@@ -522,13 +522,13 @@ def stopRunningThreads():
 	"""
 	import threading
 	for thread in threading.enumerate():
-		# if thread.__class__.__name__ == '_Timer':
+		# if thread.__class__.__name__ == "_Timer":
 		try:
 			cancel = thread.cancel
 		except AttributeError:
 			pass
 		else:
-			print('stopping thread %s' % thread.getName())
+			print("stopping thread %s" % thread.getName())
 			cancel()
 
 
@@ -551,23 +551,23 @@ def prefIsOlderThan(v):
 
 
 if len(sys.argv) > 1:
-	if sys.argv[1] in ('--help', '-h'):
-		print('No help implemented yet!')
+	if sys.argv[1] in ("--help", "-h"):
+		print("No help implemented yet!")
 		sys.exit(0)
-	elif sys.argv[1] == '--version':
+	elif sys.argv[1] == "--version":
 		print(VERSION)
 		sys.exit(0)
 
 
 #holidayWeekDay=6  # 6 means last day of week ( 0 means first day of week)
-#thDay = (tr('First day'), tr('2nd day'), tr('3rd day'), tr('4th day'),\
-#	tr('5th day'), tr('6th day'), tr('Last day'))
+#thDay = (tr("First day"), tr("2nd day"), tr("3rd day"), tr("4th day"),\
+#	tr("5th day"), tr("6th day"), tr("Last day"))
 #holidayWeekEnable = True
 
-libDir = join(rootDir, 'lib')
+libDir = join(rootDir, "lib")
 if isdir(libDir):
 	sys.path.insert(libDir)
-	pyVersion = '%d.%d' % tuple(sys.version_info[:2])
+	pyVersion = "%d.%d" % tuple(sys.version_info[:2])
 	pyLibDir = join(libDir, pyVersion)
 	if isdir(pyLibDir):
 		sys.path.insert(0, pyLibDir)
@@ -601,7 +601,7 @@ weekNumberMode = 7
 debugMode = False
 useCompactJson = False	# FIXME
 useAsciiJson = False
-eventTextSep = ': '  # use to seperate summary from description for display
+eventTextSep = ": "  # use to seperate summary from description for display
 eventTrashLastTop = True
 
 
@@ -609,40 +609,40 @@ eventTrashLastTop = True
 
 
 
-licenseText = _('licenseText')
-if licenseText in ('licenseText', ''):
+licenseText = _("licenseText")
+if licenseText in ("licenseText", ""):
 	licenseText = open(
-		'%s/license-dialog' % rootDir,
-		encoding='utf-8',
+		"%s/license-dialog" % rootDir,
+		encoding="utf-8",
 	).read()
 
-aboutText = _('aboutText')
-if aboutText in ('aboutText', ''):
-	aboutText = open('%s/about' % rootDir, encoding='utf-8').read()
+aboutText = _("aboutText")
+if aboutText in ("aboutText", ""):
+	aboutText = open("%s/about" % rootDir, encoding="utf-8").read()
 
 
 weekDayName = (
-	_('Sunday'),
-	_('Monday'),
-	_('Tuesday'),
-	_('Wednesday'),
-	_('Thursday'),
-	_('Friday'),
-	_('Saturday'),
+	_("Sunday"),
+	_("Monday"),
+	_("Tuesday"),
+	_("Wednesday"),
+	_("Thursday"),
+	_("Friday"),
+	_("Saturday"),
 )
 weekDayNameAb = (
-	_('Sun'),
-	_('Mon'),
-	_('Tue'),
-	_('Wed'),
-	_('Thu'),
-	_('Fri'),
-	_('Sat'),
+	_("Sun"),
+	_("Mon"),
+	_("Tue"),
+	_("Wed"),
+	_("Thu"),
+	_("Fri"),
+	_("Sat"),
 )
 
 
-#if firstWeekDayAuto and os.sep=='/':	# only if unix
+#if firstWeekDayAuto and os.sep=="/":	# only if unix
 #	firstWeekDay = getLocaleFirstWeekDay()
 
-#if weekNumberModeAuto and os.sep=='/':  # FIXME
+#if weekNumberModeAuto and os.sep=="/":  # FIXME
 #	weekNumberMode = getLocaleWeekNumberMode()

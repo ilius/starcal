@@ -20,7 +20,7 @@ class WidgetClass(common.WidgetClass):
 		sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
 		######
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Scale'))
+		label = gtk.Label(_("Scale"))
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
@@ -29,20 +29,20 @@ class WidgetClass(common.WidgetClass):
 		pack(self, hbox)
 		####
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Start'))
+		label = gtk.Label(_("Start"))
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.startSpin = IntSpinButton(-maxStart, maxStart)
-		self.startSpin.connect('changed', self.startSpinChanged)
+		self.startSpin.connect("changed", self.startSpinChanged)
 		pack(hbox, self.startSpin)
 		pack(self, hbox)
 		####
 		hbox = gtk.HBox()
 		self.endRelCombo = gtk.ComboBoxText()
-		for item in ('Duration', 'End'):
+		for item in ("Duration", "End"):
 			self.endRelCombo.append_text(_(item))
-		self.endRelCombo.connect('changed', self.endRelComboChanged)
+		self.endRelCombo.connect("changed", self.endRelComboChanged)
 		sizeGroup.add_widget(self.endRelCombo)
 		pack(hbox, self.endRelCombo)
 		self.endSpin = IntSpinButton(-maxDur, maxDur)
@@ -84,7 +84,7 @@ class WidgetClass(common.WidgetClass):
 		self.event.end = self.endSpin.get_value()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	combo = Scale10PowerComboBox()
 	combo.set_value(200)
 	win = gtk.Dialog(parent=None)

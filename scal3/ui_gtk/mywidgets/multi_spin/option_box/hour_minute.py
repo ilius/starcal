@@ -8,7 +8,7 @@ class HourMinuteButtonOption(MultiSpinOptionBox):
 	def __init__(self, hm=None, **kwargs):
 		MultiSpinOptionBox.__init__(
 			self,
-			':',
+			":",
 			(
 				HourField(),
 				Z60Field(),

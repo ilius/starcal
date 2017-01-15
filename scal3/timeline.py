@@ -163,7 +163,7 @@ def getNum10FactPow(n):
 	if n == 0:
 		return 0, 1
 	n = str(int(n))
-	nozero = n.rstrip('0')
+	nozero = n.rstrip("0")
 	return int(nozero), len(n) - len(nozero)
 
 
@@ -188,24 +188,24 @@ def formatYear(y, prettyPower=False):
 	if abs(y) < 10 ** 4:## FIXME
 		y_st = _(y)
 	else:
-		#y_st = textNumEncode('%.0E'%y, changeDot=True)## FIXME
+		#y_st = textNumEncode("%.0E"%y, changeDot=True)## FIXME
 		fac, pw = getNum10FactPow(y)
 		if not prettyPower or abs(fac) >= 100:## FIXME
-			y_e = '%E' % y
+			y_e = "%E" % y
 			for i in range(10):
-				y_e = y_e.replace('0E', 'E')
-			y_e = y_e.replace('.E', 'E')
+				y_e = y_e.replace("0E", "E")
+			y_e = y_e.replace(".E", "E")
 			y_st = textNumEncode(y_e, changeDot=True)
 		else:
-			sign = ('-' if fac < 0 else '')
+			sign = ("-" if fac < 0 else "")
 			fac = abs(fac)
 			if fac == 1:
-				fac_s = ''
+				fac_s = ""
 			else:
-				fac_s = '%s×' % _(fac)
-			pw_s = _(10) + 'ˆ' + _(pw)
-			#pw_s = _(10) + '<span rise="5" size="small">' + \
-			#	_(pw) + '</span>'  # Pango Markup Language
+				fac_s = "%s×" % _(fac)
+			pw_s = _(10) + "ˆ" + _(pw)
+			#pw_s = _(10) + "<span rise="5" size="small">" + \
+			#	_(pw) + "</span>"  # Pango Markup Language
 			y_st = sign + fac_s + pw_s
 	return addLRM(y_st)
 
@@ -227,7 +227,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	jd1 = getJdFromEpoch(timeEnd)
 	widthDays = float(timeWidth) / dayLen
 	dayPixel = dayLen * pixelPerSec ## px
-	#print('dayPixel = %s px'%dayPixel)
+	#print("dayPixel = %s px"%dayPixel)
 	getEPos = lambda epoch: (epoch - timeStart) * pixelPerSec
 	getJPos = lambda jd: (getEpochFromJd(jd) - timeStart) * pixelPerSec
 	######################## Holidays
@@ -257,7 +257,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 		if tmEpoch in tickEpochList:
 			continue
 		unitSize = size * yearPixel
-		label = formatYear(year) if unitSize >= majorStepMin else ''
+		label = formatYear(year) if unitSize >= majorStepMin else ""
 		ticks.append(Tick(
 			tmEpoch,
 			getEPos(tmEpoch),
@@ -288,7 +288,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 				tmEpoch,
 				getEPos(tmEpoch),
 				unitSize,
-				getMonthName(calTypes.primary, m) if unitSize >= majorStepMin else '',
+				getMonthName(calTypes.primary, m) if unitSize >= majorStepMin else "",
 			))
 			tickEpochList.append(tmEpoch)
 	################
@@ -297,7 +297,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 		jdw0 = jd0 + (core.firstWeekDay - wd0) % 7
 		unitSize = dayPixel * 7
 		if unitSize < majorStepMin:
-			label = ''
+			label = ""
 		else:
 			label = core.weekDayNameAb[core.firstWeekDay]
 		for jd in range(jdw0, jd1 + 1, 7):
@@ -329,9 +329,9 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 				continue
 			unitSize = dayPixel * dayUnit
 			if unitSize < majorStepMin:
-				label = ''
+				label = ""
 			elif hasMonthName:
-				label = _(day) + ' ' + getMonthName(calTypes.primary, month)
+				label = _(day) + " " + getMonthName(calTypes.primary, month)
 			else:
 				label = _(day)
 			ticks.append(Tick(
@@ -355,18 +355,18 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			if tmEpoch in tickEpochList:
 				continue
 			if unitSize < majorStepMin:
-				label = ''
+				label = ""
 			else:
 				jd, h, m, s = getJhmsFromEpoch(tmEpoch)
 				if s == 0:
-					label = '%s:%s' % (
+					label = "%s:%s" % (
 						_(h),
 						_(m, fillZero=2),
 					)
 				else:# elif timeWidth < 60 or stepSec < 30:
-					label = addLRM('%s"' % _(s, fillZero=2))
+					label = addLRM("%s\"" % _(s, fillZero=2))
 				#else:
-				#	label = '%s:%s:%s'%(
+				#	label = "%s:%s:%s"%(
 				#		_(h),
 				#		_(m, fillZero=2),
 				#		_(s, fillZero=2),
@@ -380,12 +380,12 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			tickEpochList.append(tmEpoch)
 	######################## Event Boxes
 	data = {
-		'holidays': holidays,
-		'ticks': ticks,
-		'boxes': [],
+		"holidays": holidays,
+		"ticks": ticks,
+		"boxes": [],
 	}
 	###
-	data['boxes'] = calcEventBoxes(
+	data["boxes"] = calcEventBoxes(
 		timeStart,
 		timeEnd,
 		pixelPerSec,

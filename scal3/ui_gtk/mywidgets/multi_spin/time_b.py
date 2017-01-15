@@ -8,7 +8,7 @@ class TimeButton(MultiSpinButton):
 	def __init__(self, hms=None, **kwargs):
 		MultiSpinButton.__init__(
 			self,
-			':',
+			":",
 			(
 				HourField(),
 				Z60Field(),

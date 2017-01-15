@@ -41,100 +41,100 @@ from scal3 import core
 from scal3 import event_lib
 from scal3.event_diff import EventDiff
 
-uiName = ''
+uiName = ""
 null = NullObj()
 
 
 #######################################################
 
-sysConfPath = join(sysConfDir, 'ui.json')  # also includes LIVE config
+sysConfPath = join(sysConfDir, "ui.json")  # also includes LIVE config
 
-confPath = join(confDir, 'ui.json')
+confPath = join(confDir, "ui.json")
 
-confPathCustomize = join(confDir, 'ui-customize.json')
+confPathCustomize = join(confDir, "ui-customize.json")
 
-confPathLive = join(confDir, 'ui-live.json')
+confPathLive = join(confDir, "ui-live.json")
 
 confParams = (
-	'showMain',
-	'winTaskbar',
-	'useAppIndicator',
-	'showDigClockTr',
-	'fontCustomEnable',
-	'fontCustom',
-	'bgUseDesk',
-	'bgColor',
-	'borderColor',
-	'cursorOutColor',
-	'cursorBgColor',
-	'todayCellColor',
-	'textColor',
-	'holidayColor',
-	'inactiveColor',
-	'borderTextColor',
-	'cursorDiaFactor',
-	'cursorRoundingFactor',
-	'statusIconImage',
-	'statusIconImageHoli',
-	'statusIconFontFamilyEnable',
-	'statusIconFontFamily',
-	'statusIconFixedSizeEnable',
-	'statusIconFixedSizeWH',
-	'maxDayCacheSize',
-	'pluginsTextStatusIcon',
-	# 'localTzHist',  # FIXME
-	'showYmArrows',
-	'prefPagesOrder',
+	"showMain",
+	"winTaskbar",
+	"useAppIndicator",
+	"showDigClockTr",
+	"fontCustomEnable",
+	"fontCustom",
+	"bgUseDesk",
+	"bgColor",
+	"borderColor",
+	"cursorOutColor",
+	"cursorBgColor",
+	"todayCellColor",
+	"textColor",
+	"holidayColor",
+	"inactiveColor",
+	"borderTextColor",
+	"cursorDiaFactor",
+	"cursorRoundingFactor",
+	"statusIconImage",
+	"statusIconImageHoli",
+	"statusIconFontFamilyEnable",
+	"statusIconFontFamily",
+	"statusIconFixedSizeEnable",
+	"statusIconFixedSizeWH",
+	"maxDayCacheSize",
+	"pluginsTextStatusIcon",
+	# "localTzHist",  # FIXME
+	"showYmArrows",
+	"prefPagesOrder",
 )
 
 confParamsLive = (
-	'winX',
-	'winY',
-	'winWidth',
-	'winKeepAbove',
-	'winSticky',
-	'pluginsTextIsExpanded',
-	'eventViewMaxHeight',
-	'bgColor',
-	'eventManPos',  # FIXME
-	'eventManShowDescription',  # FIXME
-	'localTzHist',
-	'wcal_toolbar_weekNum_negative',
+	"winX",
+	"winY",
+	"winWidth",
+	"winKeepAbove",
+	"winSticky",
+	"pluginsTextIsExpanded",
+	"eventViewMaxHeight",
+	"bgColor",
+	"eventManPos",  # FIXME
+	"eventManShowDescription",  # FIXME
+	"localTzHist",
+	"wcal_toolbar_weekNum_negative",
 )
 
 confParamsCustomize = (
-	'mainWinItems',
-	'winControllerButtons',
-	'mcalHeight',
-	'mcalLeftMargin',
-	'mcalTopMargin',
-	'mcalTypeParams',
-	'mcalGrid',
-	'mcalGridColor',
-	'wcalHeight',
-	'wcalTextSizeScale',
-	'wcalItems',
-	'wcalGrid',
-	'wcalGridColor',
-	'wcal_toolbar_mainMenu_icon',
-	'wcal_weekDays_width',
-	'wcalFont_weekDays',
-	'wcalFont_pluginsText',
-	'wcal_eventsIcon_width',
-	'wcal_eventsText_showDesc',
-	'wcal_eventsText_colorize',
-	'wcalFont_eventsText',
-	'wcal_daysOfMonth_dir',
-	'wcalTypeParams',
-	'wcal_daysOfMonth_width',
-	'wcal_eventsCount_expand',
-	'wcal_eventsCount_width',
-	'wcalFont_eventsBox',
-	'dcalHeight',
-	'dcalTypeParams',
-	'pluginsTextInsideExpander',
-	'ud__wcalToolbarData',
-	'ud__mainToolbarData',
+	"mainWinItems",
+	"winControllerButtons",
+	"mcalHeight",
+	"mcalLeftMargin",
+	"mcalTopMargin",
+	"mcalTypeParams",
+	"mcalGrid",
+	"mcalGridColor",
+	"wcalHeight",
+	"wcalTextSizeScale",
+	"wcalItems",
+	"wcalGrid",
+	"wcalGridColor",
+	"wcal_toolbar_mainMenu_icon",
+	"wcal_weekDays_width",
+	"wcalFont_weekDays",
+	"wcalFont_pluginsText",
+	"wcal_eventsIcon_width",
+	"wcal_eventsText_showDesc",
+	"wcal_eventsText_colorize",
+	"wcalFont_eventsText",
+	"wcal_daysOfMonth_dir",
+	"wcalTypeParams",
+	"wcal_daysOfMonth_width",
+	"wcal_eventsCount_expand",
+	"wcal_eventsCount_width",
+	"wcalFont_eventsBox",
+	"dcalHeight",
+	"dcalTypeParams",
+	"pluginsTextInsideExpander",
+	"ud__wcalToolbarData",
+	"ud__mainToolbarData",
 )
 
 
@@ -154,7 +154,7 @@ def saveConfCustomize():
 
 def saveLiveConf():  # rename to saveConfLive FIXME
 	if core.debugMode:
-		print('saveLiveConf', winX, winY, winWidth)
+		print("saveLiveConf", winX, winY, winWidth)
 	saveJsonConf(__name__, confPathLive, confParamsLive)
 
 
@@ -169,7 +169,7 @@ def saveLiveConfLoop():  # rename to saveConfLiveLoop FIXME
 #######################################################
 
 def parseDroppedDate(text):
-	part = text.split('/')
+	part = text.split("/")
 	if len(part) == 3:
 		try:
 			part[0] = numDecode(part[0])
@@ -223,32 +223,32 @@ def parseDroppedDate(text):
 
 def dictsTupleConfStr(data):
 	n = len(data)
-	st = '('
+	st = "("
 	for i in range(n):
 		d = data[i].copy()
-		st += '\n{'
+		st += "\n{"
 		for k in d.keys():
 			v = d[k]
 			if isinstance(k, str):
-				ks = '\'%s\'' % k
+				ks = "\'%s\'" % k
 			else:
 				ks = str(k)
 			if isinstance(v, str):
-				vs = '\'%s\'' % v
+				vs = "\'%s\'" % v
 			else:
 				vs = str(v)
-			st += '%s:%s, ' % (ks, vs)
+			st += "%s:%s, " % (ks, vs)
 		if i == n - 1:
-			st = st[:-2] + '})'
+			st = st[:-2] + "})"
 		else:
-			st = st[:-2] + '},'
+			st = st[:-2] + "},"
 	return st
 
 
 def checkNeedRestart():
 	for key in needRestartPref.keys():
 		if needRestartPref[key] != eval(key):
-			print('"%s", "%s", "%s"' % (
+			print("\"%s\", \"%s\", \"%s\"" % (
 				key,
 				needRestartPref[key],
 				eval(key)
@@ -260,7 +260,7 @@ def checkNeedRestart():
 def getPywPath():  # remove FIXME
 	return join(
 		rootDir,
-		core.APP_NAME + ('-qt' if uiName == 'qt' else '') + '.pyw'
+		core.APP_NAME + ("-qt" if uiName == "qt" else "") + ".pyw"
 	)
 
 
@@ -270,11 +270,11 @@ def dayOpenEvolution(arg=None):
 	# in gnome-cal opens prev day! why??
 	y, m, d = cell.dates[core.DATE_GREG]
 	Popen(
-		'LANG=en_US.UTF-8 evolution calendar:///?startdate=%.4d%.2d%.2d'
+		"LANG=en_US.UTF-8 evolution calendar:///?startdate=%.4d%.2d%.2d"
 		% (y, m, d),
 		shell=True,
 	)  # FIXME
-	# 'calendar:///?startdate=%.4d%.2d%.2dT120000Z'%(y, m, d)
+	# "calendar:///?startdate=%.4d%.2d%.2dT120000Z"%(y, m, d)
 	# What "Time" pass to evolution?
 	# like gnome-clock: T193000Z (19:30:00) / Or ignore "Time"
 	# evolution calendar:///?startdate=$(date +"%Y%m%dT%H%M%SZ")
@@ -287,7 +287,7 @@ def dayOpenSunbird(arg=None):
 	# Opens previous day in older version
 	y, m, d = cell.dates[core.DATE_GREG]
 	Popen(
-		'LANG=en_US.UTF-8 sunbird -showdate %.4d/%.2d/%.2d'
+		"LANG=en_US.UTF-8 sunbird -showdate %.4d/%.2d/%.2d"
 		% (y, m, d),
 		shell=True,
 	)
@@ -307,7 +307,7 @@ class Cell:
 	def __init__(self, jd):
 		self.eventsData = []
 		# self.eventsDataIsSet = False  # not used
-		self.pluginsText = ''
+		self.pluginsText = ""
 		###
 		self.jd = jd
 		date = core.jd_to_primary(jd)
@@ -324,14 +324,14 @@ class Cell:
 			date if mode == calTypes.primary else jd_to(jd, mode)
 			for mode in range(len(calTypes))
 		]
-		'''
+		"""
 		self.dates = dict([
 			(
 				mode, date if mode==calTypes.primary else jd_to(jd, mode)
 			)
 			for mode in calTypes.active
 		])
-		'''
+		"""
 		###################
 		for k in core.plugIndex:
 			plug = core.allPlugList[k]
@@ -377,9 +377,9 @@ class Cell:
 	def getEventIcons(self, showIndex):
 		iconList = []
 		for item in self.eventsData:
-			if not item['show'][showIndex]:
+			if not item["show"][showIndex]:
 				continue
-			icon = item['icon']
+			icon = item["icon"]
 			if icon and icon not in iconList:
 				iconList.append(icon)
 		return iconList
@@ -451,7 +451,7 @@ class CellCache:
 		return self.plugins[pluginName][1](self, *args)
 
 	def getWeekData(self, absWeekNumber):
-		cells = self.getCellGroup('WeekCal', absWeekNumber)
+		cells = self.getCellGroup("WeekCal", absWeekNumber)
 		try:
 			wEventData = self.weekEvents[absWeekNumber]
 		except KeyError:
@@ -524,19 +524,19 @@ def initFonts(fontDefaultNew):
 		fontCustom = fontDefault
 	########
 	###
-	if mcalTypeParams[0]['font'] is None:
-		mcalTypeParams[0]['font'] = getFont(1.0)
+	if mcalTypeParams[0]["font"] is None:
+		mcalTypeParams[0]["font"] = getFont(1.0)
 	###
 	for item in mcalTypeParams[1:]:
-		if item['font'] is None:
-			item['font'] = getFont(0.6)
+		if item["font"] is None:
+			item["font"] = getFont(0.6)
 	######
-	if dcalTypeParams[0]['font'] is None:
-		dcalTypeParams[0]['font'] = getFont(10.0)
+	if dcalTypeParams[0]["font"] is None:
+		dcalTypeParams[0]["font"] = getFont(10.0)
 	###
 	for item in dcalTypeParams[1:]:
-		if item['font'] is None:
-			item['font'] = getFont(3.0)
+		if item["font"] is None:
+			item["font"] = getFont(3.0)
 
 
 def getHolidaysJdList(startJd, endJd):
@@ -572,11 +572,11 @@ def checkMainWinItems():
 		if name in defaultNames:
 			mainWinItems.append((name, enable))
 	#####
-	# adding items newly added in this version, this is for user's convenience
+	# adding items newly added in this version, this is for user"s convenience
 	newNames = defaultNames.difference(names)
-	# print('mainWinItems: newNames =', newNames)
+	# print("mainWinItems: newNames =", newNames)
 	##
-	name = 'winContronller'
+	name = "winContronller"
 	if name in newNames:
 		mainWinItems.insert(0, (name, True))
 		newNames.remove(name)
@@ -611,16 +611,16 @@ def getEvent(groupId, eventId):
 def duplicateGroupTitle(group):
 	title = group.title
 	titleList = [g.title for g in eventGroups]
-	parts = title.split('#')
+	parts = title.split("#")
 	try:
 		index = int(parts[-1])
-		title = '#'.join(parts[:-1])
+		title = "#".join(parts[:-1])
 	except:
 		# myRaise()
 		index = 1
 	index += 1
 	while True:
-		newTitle = title + '#%d' % index
+		newTitle = title + "#%d" % index
 		if newTitle not in titleList:
 			group.title = newTitle
 			return
@@ -648,43 +648,43 @@ shownCals = []	# FIXME
 
 mcalTypeParams = [
 	{
-		'pos': (0, -2),
-		'font': None,
-		'color': (220, 220, 220),
+		"pos": (0, -2),
+		"font": None,
+		"color": (220, 220, 220),
 	},
 	{
-		'pos': (18, 5),
-		'font': None,
-		'color': (165, 255, 114),
+		"pos": (18, 5),
+		"font": None,
+		"color": (165, 255, 114),
 	},
 	{
-		'pos': (-18, 4),
-		'font': None,
-		'color': (0, 200, 205),
+		"pos": (-18, 4),
+		"font": None,
+		"color": (0, 200, 205),
 	},
 ]
 
 wcalTypeParams = [
-	{'font': None},
-	{'font': None},
-	{'font': None},
+	{"font": None},
+	{"font": None},
+	{"font": None},
 ]
 
 dcalTypeParams = [  # FIXME
 	{
-		'pos': (0, -12),
-		'font': None,
-		'color': (220, 220, 220),
+		"pos": (0, -12),
+		"font": None,
+		"color": (220, 220, 220),
 	},
 	{
-		'pos': (125, 30),
-		'font': None,
-		'color': (165, 255, 114),
+		"pos": (125, 30),
+		"font": None,
+		"color": (165, 255, 114),
 	},
 	{
-		'pos': (-125, 24),
-		'font': None,
-		'color': (0, 200, 205),
+		"pos": (-125, 24),
+		"font": None,
+		"color": (0, 200, 205),
 	},
 ]
 
@@ -705,11 +705,11 @@ def getActiveDayCalParams():
 
 ################################
 
-tagsDir = join(pixDir, 'event')
+tagsDir = join(pixDir, "event")
 
 
 class TagIconItem:
-	def __init__(self, name, desc='', icon='', eventTypes=()):
+	def __init__(self, name, desc="", icon="", eventTypes=()):
 		self.name = name
 		if not desc:
 			desc = name.capitalize()
@@ -718,7 +718,7 @@ class TagIconItem:
 			if not isabs(icon):
 				icon = join(tagsDir, icon)
 		else:
-			iconTmp = join(tagsDir, name) + '.png'
+			iconTmp = join(tagsDir, name) + ".png"
 			if isfile(iconTmp):
 				icon = iconTmp
 		self.icon = icon
@@ -726,7 +726,7 @@ class TagIconItem:
 		self.usage = 0
 
 	def __repr__(self):
-		return 'TagIconItem(%r, desc=%r, icon=%r, eventTypes=%r)' % (
+		return "TagIconItem(%r, desc=%r, icon=%r, eventTypes=%r)" % (
 			self.name,
 			self.desc,
 			self.icon,
@@ -735,23 +735,23 @@ class TagIconItem:
 
 
 eventTags = (
-	TagIconItem('birthday', eventTypes=('yearly',)),
-	TagIconItem('marriage', eventTypes=('yearly',)),
-	TagIconItem('obituary', eventTypes=('yearly',)),
-	TagIconItem('note', eventTypes=('dailyNote',)),
-	TagIconItem('task', eventTypes=('task',)),
-	TagIconItem('alarm'),
-	TagIconItem('business'),
-	TagIconItem('personal'),
-	TagIconItem('favorite'),
-	TagIconItem('important'),
-	TagIconItem('appointment', eventTypes=('task',)),
-	TagIconItem('meeting', eventTypes=('task',)),
-	TagIconItem('phone_call', desc='Phone Call', eventTypes=('task',)),
-	TagIconItem('university', eventTypes=('task',)),  # FIXME
-	TagIconItem('education'),
-	TagIconItem('holiday'),
-	TagIconItem('travel'),
+	TagIconItem("birthday", eventTypes=("yearly",)),
+	TagIconItem("marriage", eventTypes=("yearly",)),
+	TagIconItem("obituary", eventTypes=("yearly",)),
+	TagIconItem("note", eventTypes=("dailyNote",)),
+	TagIconItem("task", eventTypes=("task",)),
+	TagIconItem("alarm"),
+	TagIconItem("business"),
+	TagIconItem("personal"),
+	TagIconItem("favorite"),
+	TagIconItem("important"),
+	TagIconItem("appointment", eventTypes=("task",)),
+	TagIconItem("meeting", eventTypes=("task",)),
+	TagIconItem("phone_call", desc="Phone Call", eventTypes=("task",)),
+	TagIconItem("university", eventTypes=("task",)),  # FIXME
+	TagIconItem("education"),
+	TagIconItem("holiday"),
+	TagIconItem("travel"),
 )
 
 
@@ -771,7 +771,7 @@ eventAccounts = []
 eventGroups = []
 
 
-def iterAllEvents():  # dosen't include orphan events
+def iterAllEvents():  # dosen"t include orphan events
 	for group in eventGroups:
 		for event in group:
 			yield event
@@ -779,8 +779,8 @@ def iterAllEvents():  # dosen't include orphan events
 		yield event
 
 
-changedGroups = []  # list of groupId's
-reloadGroups = []  # a list of groupId's that their contents are changed
+changedGroups = []  # list of groupId"s
+reloadGroups = []  # a list of groupId"s that their contents are changed
 reloadTrash = False
 
 eventDiff = EventDiff()
@@ -807,9 +807,9 @@ cellCache = CellCache()
 todayCell = cell = None
 ###########################
 autoLocale = True
-logo = join(pixDir, 'starcal.png')
+logo = join(pixDir, "starcal.png")
 ###########################
-# themeDir = join(rootDir, 'themes')
+# themeDir = join(rootDir, "themes")
 # theme = None
 
 # _________________________ Options _________________________ #
@@ -851,7 +851,7 @@ wcalPadding = 10
 wcalGrid = False
 wcalGridColor = (255, 252, 0, 82)
 
-wcal_toolbar_mainMenu_icon = join(pixDir, 'starcal-24.png')
+wcal_toolbar_mainMenu_icon = join(pixDir, "starcal-24.png")
 wcal_toolbar_mainMenu_icon_default = wcal_toolbar_mainMenu_icon
 wcal_toolbar_weekNum_negative = False
 wcal_weekDays_width = 80
@@ -861,7 +861,7 @@ wcal_eventsIcon_width = 50
 wcal_eventsText_showDesc = False
 wcal_eventsText_colorize = True
 wcal_daysOfMonth_width = 30
-wcal_daysOfMonth_dir = 'ltr'  # ltr/rtl/auto
+wcal_daysOfMonth_dir = "ltr"  # ltr/rtl/auto
 wcalFont_eventsText = None
 wcalFont_weekDays = None
 wcalFont_pluginsText = None
@@ -882,8 +882,8 @@ labelMenuDelay = 0.1
 
 ####################
 
-statusIconImage = join(rootDir, 'status-icons', 'dark-green.svg')
-statusIconImageHoli = join(rootDir, 'status-icons', 'dark-red.svg')
+statusIconImage = join(rootDir, "status-icons", "dark-green.svg")
+statusIconImageHoli = join(rootDir, "status-icons", "dark-red.svg")
 (
 	statusIconImageDefault,
 	statusIconImageHoliDefault,
@@ -900,20 +900,20 @@ pluginsTextIsExpanded = True  # effects only if pluginsTextInsideExpander
 eventViewMaxHeight = 200
 ####################
 dragGetMode = core.DATE_GREG   # apply in Pref FIXME
-# dragGetDateFormat = '%Y/%m/%d'
+# dragGetDateFormat = "%Y/%m/%d"
 dragRecMode = core.DATE_GREG   # apply in Pref FIXME
 ####################
 monthRMenuNum = True
 # monthRMenu
 prefPagesOrder = tuple(range(5))
 winControllerButtons = (
-	('sep', True),
-	('min', True),
-	('max', False),
-	('close', True),
-	('sep', False),
-	('sep', False),
-	('sep', False),
+	("sep", True),
+	("min", True),
+	("max", False),
+	("close", True),
+	("sep", False),
+	("sep", False),
+	("sep", False),
 )
 winControllerSpacing = 0
 ####################
@@ -922,7 +922,7 @@ winSticky = True
 winX = 0
 winY = 0
 ###
-fontDefault = ['Sans', False, False, 12]
+fontDefault = ["Sans", False, False, 12]
 fontDefaultInit = fontDefault
 fontCustom = None
 fontCustomEnable = False
@@ -930,28 +930,28 @@ fontCustomEnable = False
 showMain = True  # Show main window on start (or only goto statusIcon)
 #####################
 mainWinItems = (
-	('winContronller', True),
-	('toolbar', True),
-	('labelBox', True),
-	('monthCal', False),
-	('weekCal', True),
-	('dayCal', False),
-	('statusBar', True),
-	('seasonPBar', True),
-	('pluginsText', True),
-	('eventDayView', True),
+	("winContronller", True),
+	("toolbar", True),
+	("labelBox", True),
+	("monthCal", False),
+	("weekCal", True),
+	("dayCal", False),
+	("statusBar", True),
+	("seasonPBar", True),
+	("pluginsText", True),
+	("eventDayView", True),
 )
 
 mainWinItemsDefault = mainWinItems[:]
 
 
 wcalItems = (
-	('toolbar', True),
-	('weekDays', True),
-	('pluginsText', True),
-	('eventsIcon', True),
-	('eventsText', True),
-	('daysOfMonth', True),
+	("toolbar", True),
+	("weekDays", True),
+	("pluginsText", True),
+	("eventsIcon", True),
+	("eventsText", True),
+	("daysOfMonth", True),
 )
 
 wcalItemsDefault = wcalItems[:]
@@ -959,14 +959,14 @@ wcalItemsDefault = wcalItems[:]
 ####################
 
 ntpServers = (
-	'pool.ntp.org',
-	'ir.pool.ntp.org',
-	'asia.pool.ntp.org',
-	'europe.pool.ntp.org',
-	'north-america.pool.ntp.org',
-	'oceania.pool.ntp.org',
-	'south-america.pool.ntp.org',
-	'ntp.ubuntu.com',
+	"pool.ntp.org",
+	"ir.pool.ntp.org",
+	"asia.pool.ntp.org",
+	"europe.pool.ntp.org",
+	"north-america.pool.ntp.org",
+	"oceania.pool.ntp.org",
+	"south-america.pool.ntp.org",
+	"ntp.ubuntu.com",
 )
 
 
@@ -1016,11 +1016,11 @@ saveLiveConf()
 
 needRestartPref = {}  # Right place? FIXME
 for key in (
-	'locale_man.lang',
-	'locale_man.enableNumLocale',
-	'winTaskbar',
-	'showYmArrows',
-	'useAppIndicator',
+	"locale_man.lang",
+	"locale_man.enableNumLocale",
+	"winTaskbar",
+	"showYmArrows",
+	"useAppIndicator",
 ):
 	needRestartPref[key] = eval(key)
 

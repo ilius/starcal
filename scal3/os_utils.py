@@ -23,25 +23,25 @@ from os.path import isdir, isfile
 #import platform
 
 
-def getOsName():## 'linux', 'win', 'mac', 'unix'
-	#psys = platform.system().lower()## 'linux', 'windows', 'darwin', ...
-	plat = sys.platform ## 'linux2', 'win32', 'darwin'
-	if plat.startswith('linux'):
-		return 'linux'
-	elif plat.startswith('win'):
-		return 'win'
-	elif plat == 'darwin':
-		# os.environ['OSTYPE'] == 'darwin10.0'
-		# os.environ['MACHTYPE'] == 'x86_64-apple-darwin10.0'
-		# platform.dist() == ('', '', '')
-		# platform.release() == '10.3.0'
-		return 'mac'
-	elif os.sep == '\\':
-		return 'win'
-	elif os.sep == '/':
-		return 'unix'
+def getOsName():## "linux", "win", "mac", "unix"
+	#psys = platform.system().lower()## "linux", "windows", "darwin", ...
+	plat = sys.platform ## "linux2", "win32", "darwin"
+	if plat.startswith("linux"):
+		return "linux"
+	elif plat.startswith("win"):
+		return "win"
+	elif plat == "darwin":
+		# os.environ["OSTYPE"] == "darwin10.0"
+		# os.environ["MACHTYPE"] == "x86_64-apple-darwin10.0"
+		# platform.dist() == ("", "", "")
+		# platform.release() == "10.3.0"
+		return "mac"
+	elif os.sep == "\\":
+		return "win"
+	elif os.sep == "/":
+		return "unix"
 	else:
-		raise OSError('Unkown operating system!')
+		raise OSError("Unkown operating system!")
 
 
 def makeDir(direc):
@@ -51,44 +51,44 @@ def makeDir(direc):
 
 def getUsersData():
 	data = []
-	for line in open('/etc/passwd').readlines():
-		parts = line.strip().split(':')
+	for line in open("/etc/passwd").readlines():
+		parts = line.strip().split(":")
 		if len(parts) < 7:
 			continue
 		data.append({
-			'login': parts[0],
-			'uid': parts[2],
-			'gid': parts[3],
-			'real_name': parts[4],
-			'home_dir': parts[5],
-			'shell': parts[6],
+			"login": parts[0],
+			"uid": parts[2],
+			"gid": parts[3],
+			"real_name": parts[4],
+			"home_dir": parts[5],
+			"shell": parts[6],
 		})
 	return data
 
 
 def getUserDisplayName():
-	if os.sep == '/':
-		username = os.getenv('USER')
-		if isfile('/etc/passwd'):
+	if os.sep == "/":
+		username = os.getenv("USER")
+		if isfile("/etc/passwd"):
 			for user in getUsersData():
-				if user['login'] == username:
-					if user['real_name']:
-						return user['real_name']
+				if user["login"] == username:
+					if user["real_name"]:
+						return user["real_name"]
 					else:
 						return username
 		return username
 	else:  # FIXME
-		username = os.getenv('USERNAME')
+		username = os.getenv("USERNAME")
 		return username
 
 
 def kill(pid, signal=0):
-	'''
+	"""
 		sends a signal to a process
 		returns True if the pid is dead
 		with no signal argument, sends no signal
-	'''
-	#if 'ps --no-headers' returns no lines, the pid is dead
+	"""
+	#if "ps --no-headers" returns no lines, the pid is dead
 	try:
 		return os.kill(pid, signal)
 	except OSError as e:
@@ -123,7 +123,7 @@ def dead(pid):
 
 
 def goodkill(pid, interval=1, hung=20):
-	'let process die gracefully, gradually send harsher signals if necessary'
+	"let process die gracefully, gradually send harsher signals if necessary"
 	from signal import SIGTERM, SIGINT, SIGHUP, SIGKILL
 	from time import sleep
 
@@ -140,7 +140,7 @@ def goodkill(pid, interval=1, hung=20):
 		if i < hung:
 			i += 1
 		else:
-			raise OSError('Process %s is hung. Giving up kill.' % pid)
+			raise OSError("Process %s is hung. Giving up kill." % pid)
 		if kill(pid, SIGKILL):
 			return
 		if dead(pid):

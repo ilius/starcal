@@ -6,8 +6,8 @@ from scal3 import ui
 
 
 movableEventTypes = (
-	'task',
-	'lifeTime',
+	"task",
+	"lifeTime",
 )
 
 #########################################
@@ -42,7 +42,7 @@ class Box:
 		odt,
 		u0,
 		du,
-		text='',
+		text="",
 		color=None,
 		ids=None,
 		lineW=2,
@@ -53,7 +53,7 @@ class Box:
 		#self.mt = (t0+t1)/2.0 ## - timeMiddle ## FIXME
 		#self.dt = (t1-t0)/2.0
 		#if t1-t0 != odt:
-		#	print('Box, dt=%s, odt=%s'%(t1-t0, odt))
+		#	print("Box, dt=%s, odt=%s"%(t1-t0, odt))
 		self.u0 = u0
 		self.du = du
 		####
@@ -98,7 +98,7 @@ def makeIntervalGraph(boxes):
 	g = Graph()
 	n = len(boxes)
 	g.add_vertices(n - g.vcount())
-	g.vs['name'] = list(range(n))
+	g.vs["name"] = list(range(n))
 	####
 	points = [] ## (time, isStart, boxIndex)
 	for boxI, box in enumerate(boxes):
@@ -120,14 +120,14 @@ def makeIntervalGraph(boxes):
 
 
 def renderBoxesByGraph(boxes, graph, minColor, minU):
-	colorCount = max(graph.vs['color']) - minColor + 1
+	colorCount = max(graph.vs["color"]) - minColor + 1
 	if colorCount < 1:
 		return
 	du = (1.0 - minU) / colorCount
 	min_vertices = graph.vs.select(color_eq=minColor) ## a VertexSeq
 	for v in min_vertices:
-		box = boxes[v['name']]
-		box_du = du * v['color_h']
+		box = boxes[v["name"]]
+		box_du = du * v["color_h"]
 		box.u0 = minU if boxReverseGravity else 1 - minU - box_du
 		box.du = box_du
 	graph.delete_vertices(min_vertices)
@@ -157,7 +157,7 @@ def calcEventBoxes(
 				timeEnd - timeStart,
 				1 - errorBoxH,  # u0
 				errorBoxH,  # du
-				text='Install "python3-igraph" to see events',
+				text="Install \"python3-igraph\" to see events",
 				color=(128, 0, 0),## FIXME
 				lineW=2 * boxLineWidth,
 			)
@@ -178,7 +178,7 @@ def calcEventBoxes(
 			if pixBoxW < boxSkipPixelLimit:
 				continue
 			#if not isinstance(eid, int):
-			#	print('----- bad eid from search: %r'%eid)
+			#	print("----- bad eid from search: %r"%eid)
 			#	continue
 			event = group[eid]
 			eventIndex = group.index(eid)
@@ -213,10 +213,10 @@ def calcEventBoxes(
 			boxes += blist
 		else:
 			box = blist[0]
-			box.text = _('%s events') % _(len(blist))
+			box.text = _("%s events") % _(len(blist))
 			box.ids = None
-			#print('len(blist) = %s' % len(blist))
-			#print('%s secs' % (box.t1 - box.t0))
+			#print("len(blist) = %s" % len(blist))
+			#print("%s secs" % (box.t1 - box.t0))
 			boxes.append(box)
 	del boxesDict
 	#####
@@ -228,12 +228,12 @@ def calcEventBoxes(
 	###
 	graph = makeIntervalGraph(boxes)
 	if debugMode:
-		print('makeIntervalGraph: %e' % (now() - t1))
+		print("makeIntervalGraph: %e" % (now() - t1))
 	###
 	#####
 	colorGraph(graph)
 	renderBoxesByGraph(boxes, graph, 0, 0)
 	if debugMode:
-		print('box placing time:  %e' % (now() - t0))
-		print('')
+		print("box placing time:  %e" % (now() - t0))
+		print("")
 	return boxes

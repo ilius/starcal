@@ -10,12 +10,12 @@ class VcsEpochBaseWidgetClass(VcsBaseWidgetClass):
 		VcsBaseWidgetClass.__init__(self, group)
 		######
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Show Seconds'))
+		label = gtk.Label(_("Show Seconds"))
 		label.set_alignment(0, 0.5)
 		self.sizeGroup.add_widget(label)
 		pack(hbox, label)
 		pack(hbox, label)
-		self.showSecondsCheck = gtk.CheckButton('')
+		self.showSecondsCheck = gtk.CheckButton("")
 		pack(hbox, self.showSecondsCheck)
 		pack(self, hbox)
 

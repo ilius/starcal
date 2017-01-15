@@ -31,23 +31,23 @@ def checkAndSaveJsonLockFile(fpath):
 			try:
 				data = jsonToData(text)
 			except:
-				print('lock file %s is not valid' % fpath)
+				print("lock file %s is not valid" % fpath)
 			else:
 				try:
-					pid = data['pid']
-					cmd = data['cmd']
+					pid = data["pid"]
+					cmd = data["cmd"]
 				except:
-					print('lock file %s is not valid' % fpath)
+					print("lock file %s is not valid" % fpath)
 				else:
 					try:
 						proc = psutil.Process(pid)
 					except psutil.NoSuchProcess:
-						print('lock file %s: pid %s does not exist' % (fpath, pid))
+						print("lock file %s: pid %s does not exist" % (fpath, pid))
 					else:
 						if get_cmdline(proc) == cmd:
 							locked = True
 						else:
-							print('lock file %s: cmd does match: %s != %s' % (
+							print("lock file %s: cmd does match: %s != %s" % (
 								fpath,
 								get_cmdline(proc),
 								cmd,
@@ -61,14 +61,14 @@ def checkAndSaveJsonLockFile(fpath):
 		my_proc = psutil.Process(my_pid)
 		my_cmd = get_cmdline(my_proc)
 		my_text = dataToPrettyJson(OrderedDict([
-			('pid', my_pid),
-			('cmd', my_cmd),
-			('time', now()),
+			("pid", my_pid),
+			("cmd", my_cmd),
+			("time", now()),
 		]))
 		try:
-			open(fpath, 'w').write(my_text)
+			open(fpath, "w").write(my_text)
 		except Exception as e:
-			print('failed to write lock file %s: %s' % (fpath, e))
+			print("failed to write lock file %s: %s" % (fpath, e))
 		else:
 			atexit.register(os.remove, fpath)
 	######

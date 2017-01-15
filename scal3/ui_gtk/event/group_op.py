@@ -14,30 +14,30 @@ class GroupSortDialog(gtk.Dialog):
 	def __init__(self, group, **kwargs):
 		self._group = group
 		gtk.Dialog.__init__(self, **kwargs)
-		self.set_title(_('Sort Events'))
+		self.set_title(_("Sort Events"))
 		####
 		dialog_add_button(
 			self,
 			gtk.STOCK_CANCEL,
-			_('_Cancel'),
+			_("_Cancel"),
 			gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
 			gtk.STOCK_OK,
-			_('_OK'),
+			_("_OK"),
 			gtk.ResponseType.OK,
 		)
 		##
-		self.connect('response', lambda w, e: self.hide())
+		self.connect("response", lambda w, e: self.hide())
 		####
 		hbox = gtk.HBox()
-		pack(hbox, gtk.Label(_('Sort events of group "%s"') % group.title))
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(_("Sort events of group \"%s\"") % group.title))
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self.vbox, hbox)
 		###
 		hbox = gtk.HBox()
-		pack(hbox, gtk.Label(_('Based on') + ' '))
+		pack(hbox, gtk.Label(_("Based on") + " "))
 		self.sortByNames = []
 		self.sortByCombo = gtk.ComboBoxText()
 		sortByDefault, sortBys = group.getSortBys()
@@ -48,9 +48,9 @@ class GroupSortDialog(gtk.Dialog):
 			self.sortByNames.index(sortByDefault),
 		)  # FIXME
 		pack(hbox, self.sortByCombo)
-		self.reverseCheck = gtk.CheckButton(_('Descending'))
+		self.reverseCheck = gtk.CheckButton(_("Descending"))
 		pack(hbox, self.reverseCheck)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self.vbox, hbox)
 		####
 		self.vbox.show_all()
@@ -71,41 +71,41 @@ class GroupConvertModeDialog(gtk.Dialog):
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 		self._group = group
 		gtk.Dialog.__init__(self, **kwargs)
-		self.set_title(_('Convert Calendar Type'))
+		self.set_title(_("Convert Calendar Type"))
 		####
 		dialog_add_button(
 			self,
 			gtk.STOCK_CANCEL,
-			_('_Cancel'),
+			_("_Cancel"),
 			gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
 			gtk.STOCK_OK,
-			_('_OK'),
+			_("_OK"),
 			gtk.ResponseType.OK,
 		)
 		##
-		self.connect('response', lambda w, e: self.hide())
+		self.connect("response", lambda w, e: self.hide())
 		####
 		hbox = gtk.HBox()
 		label = gtk.Label(_(
-			'This is going to convert calendar types of all events inside '
-			'group \"%s\" to a specific type. This operation does not work '
-			'for Yearly events and also some of Custom events. You have to '
-			'edit those events manually to change calendar type.'
+			"This is going to convert calendar types of all events inside "
+			"group \"%s\" to a specific type. This operation does not work "
+			"for Yearly events and also some of Custom events. You have to "
+			"edit those events manually to change calendar type."
 		) % group.title)
 		label.set_line_wrap(True)
 		pack(hbox, label)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self.vbox, hbox)
 		###
 		hbox = gtk.HBox()
-		pack(hbox, gtk.Label(_('Calendar Type') + ':'))
+		pack(hbox, gtk.Label(_("Calendar Type") + ":"))
 		combo = CalTypeCombo()
 		combo.set_active(group.mode)
 		pack(hbox, combo)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		self.modeCombo = combo
 		pack(self.vbox, hbox)
 		####

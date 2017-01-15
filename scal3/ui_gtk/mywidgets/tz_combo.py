@@ -20,9 +20,9 @@ class TimeZoneComboBoxEntry(gtk.HBox):
 		self.c.set_model(model)
 		self.c.set_entry_text_column(0)
 		first_cell = self.c.get_cells()[0]
-		self.c.add_attribute(first_cell, 'text', 0)
-		self.c.add_attribute(first_cell, 'sensitive', 1)
-		self.c.connect('changed', self.onChanged)
+		self.c.add_attribute(first_cell, "text", 0)
+		self.c.add_attribute(first_cell, "sensitive", 1)
+		self.c.connect("changed", self.onChanged)
 		child = self.c.get_child()
 		child.set_text(str(core.localTz))
 		#self.set_text(str(core.localTz)) ## FIXME
@@ -32,7 +32,7 @@ class TimeZoneComboBoxEntry(gtk.HBox):
 		self.set_text = child.set_text
 		#####
 		recentIter = model.append(None, [
-			_('Recent...'),
+			_("Recent..."),
 			False,
 		])
 		for tz_name in ui.localTzHist:
@@ -69,5 +69,5 @@ class TimeZoneComboBoxEntry(gtk.HBox):
 						0,
 					)[0]
 				)
-			text = '/'.join(parts)
+			text = "/".join(parts)
 		self.set_text(text)

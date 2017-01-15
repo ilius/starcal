@@ -48,7 +48,7 @@ def prepareObj(obj):
 		depth,
 		revno,
 		end_of_merge,
-	) in branch.iter_merge_sorted_revisions(direction='forward'):
+	) in branch.iter_merge_sorted_revisions(direction="forward"):
 		rev = obj.repo.get_revision(rev_id)
 		epoch = rev.timestamp
 		obj.est.add(epoch, epoch, rev_id)
@@ -64,9 +64,9 @@ def clearObj(obj):
 
 
 def getCommitList(obj, startJd, endJd):
-	'''
+	"""
 		returns a list of (epoch, rev_id) tuples
-	'''
+	"""
 	return getCommitListFromEst(
 		obj,
 		startJd,
@@ -76,13 +76,13 @@ def getCommitList(obj, startJd, endJd):
 
 def getCommitInfo(obj, rev_id):
 	rev = obj.repo.get_revision(rev_id)
-	lines = rev.message.split('\n')
+	lines = rev.message.split("\n")
 	return {
-		'epoch': rev.timestamp,
-		'author': rev.committer,
-		'shortHash': rev_id,
-		'summary': lines[0],
-		'description': '\n'.join(lines[1:]),
+		"epoch": rev.timestamp,
+		"author": rev.committer,
+		"shortHash": rev_id,
+		"summary": lines[0],
+		"description": "\n".join(lines[1:]),
 	}
 
 
@@ -113,15 +113,15 @@ def getShortStatByTrees(repo, old_tree, tree):
 	) in tree.iter_changes(old_tree):
 		if changed_content:
 			#for kind in (old_kind, new_kind):
-			#	if not kind in (None, 'file', 'symlink', 'directory'):
-			#		print('kind', old_kind, new_kind)
-			if new_kind in ('file', 'symlink'):
+			#	if not kind in (None, "file", "symlink", "directory"):
+			#		print("kind", old_kind, new_kind)
+			if new_kind in ("file", "symlink"):
 				files_changed += 1
 				text = tree.get_file_text(file_id)
-				if '\x00' not in text[:1024]:## FIXME
+				if "\x00" not in text[:1024]:## FIXME
 					if old_kind is None:
 						insertions += len(split_lines(text))
-					elif old_kind in ('file', 'symlink'):
+					elif old_kind in ("file", "symlink"):
 						old_text = old_tree.get_file_text(file_id)
 						seq = SequenceMatcher(
 							None,
@@ -129,25 +129,25 @@ def getShortStatByTrees(repo, old_tree, tree):
 							split_lines(text),
 						)
 						for op, i1, i2, j1, j2 in seq.get_opcodes():
-							if op == 'equal':
+							if op == "equal":
 								continue
-							#if not op in ('insert', 'delete', 'replace'):
-							#	print('op', op)
+							#if not op in ("insert", "delete", "replace"):
+							#	print("op", op)
 							insertions += (j2 - j1)
 							deletions += (i2 - i1)
 			elif new_kind is None:
-				if old_kind in ('file', 'symlink'):
+				if old_kind in ("file", "symlink"):
 					files_changed += 1
 					old_text = old_tree.get_file_text(file_id)
-					if '\x00' not in old_text[:1024]:## FIXME
+					if "\x00" not in old_text[:1024]:## FIXME
 						deletions += len(split_lines(old_text))
 	return files_changed, insertions, deletions
 
 
 def getCommitShortStat(obj, rev_id):
-	'''
+	"""
 		returns (files_changed, insertions, deletions)
-	'''
+	"""
 	repo = obj.repo
 	rev = repo.get_revision(rev_id)
 	tree = repo.revision_tree(rev_id)
@@ -168,9 +168,9 @@ def getCommitShortStatLine(obj, rev_id):
 
 
 def getTagList(obj, startJd, endJd):
-	'''
+	"""
 		returns a list of (epoch, tag_name) tuples
-	'''
+	"""
 	if not obj.repo:
 		return []
 	startEpoch = getEpochFromJd(startJd)

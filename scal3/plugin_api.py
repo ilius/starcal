@@ -30,33 +30,33 @@ class PluginError(Exception):
 
 def get(moduleName, attr, default=None, absolute=False):
 	if not absolute:
-		moduleName = 'scal3.' + moduleName
-	#module = __import__(moduleName, fromlist=['__plugin_api_get__', attr])
+		moduleName = "scal3." + moduleName
+	#module = __import__(moduleName, fromlist=["__plugin_api_get__", attr])
 	#print(sorted(sys.modules.keys()))
 	module = sys.modules[moduleName]
-	allowed = getattr(module, '__plugin_api_get__', [])
+	allowed = getattr(module, "__plugin_api_get__", [])
 	if attr not in allowed:
 		raise PluginError(
-			'plugin is not allowed to get attribute %s' % attr +
-			' from module %s' % moduleName,
+			"plugin is not allowed to get attribute %s" % attr +
+			" from module %s" % moduleName,
 		)
 	return getattr(module, attr, default)
 
 
 def set(moduleName, attr, value, absolute=False):
 	if not absolute:
-		moduleName = 'scal3.' + moduleName
-	#module = __import__(moduleName, fromlist=['__plugin_api_set__', attr])
+		moduleName = "scal3." + moduleName
+	#module = __import__(moduleName, fromlist=["__plugin_api_set__", attr])
 	module = sys.modules[moduleName]
-	allowed = getattr(module, '__plugin_api_set__', [])
+	allowed = getattr(module, "__plugin_api_set__", [])
 	if attr not in allowed:
 		raise PluginError(
-			'plugin is not allowed to set attribute %s' % attr +
-			' to module %s' % moduleName,
+			"plugin is not allowed to set attribute %s" % attr +
+			" to module %s" % moduleName,
 		)
 	setattr(module, attr, value)
 
 
 #def add(moduleName, attr, value):  # FIXME
 #	module = __import__(moduleName)
-#	if not module.get('__plugin_api_add__', False)
+#	if not module.get("__plugin_api_add__", False)

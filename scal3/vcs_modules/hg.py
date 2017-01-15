@@ -55,13 +55,13 @@ def getCommitList(obj, startJd, endJd):
 
 def getCommitInfo(obj, commid_id):
 	ctx = obj.repo[commid_id]
-	lines = ctx.description().split('\n')
+	lines = ctx.description().split("\n")
 	return {
-		'epoch': ctx.date()[0],
-		'author': ctx.user(),
-		'shortHash': str(ctx),
-		'summary': lines[0],
-		'description': '\n'.join(lines[1:]),
+		"epoch": ctx.date()[0],
+		"author": ctx.user(),
+		"shortHash": str(ctx),
+		"summary": lines[0],
+		"description": "\n".join(lines[1:]),
 	}
 
 
@@ -115,7 +115,7 @@ def getTagList(obj, startJd, endJd):
 	###
 	data = []
 	for tag, unkown in obj.repo.tagslist():
-		if tag == 'tip':
+		if tag == "tip":
 			continue
 		epoch = obj.repo[tag].date()[0]
 		if startEpoch <= epoch < endEpoch:

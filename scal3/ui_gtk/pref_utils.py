@@ -77,7 +77,7 @@ class ModuleOptionItem:
 			self.get_value = w.get_value
 			self.set_value = w.set_value
 		else:
-			raise RuntimeError('bad option type "%s"' % t)
+			raise RuntimeError("bad option type \"%s\"" % t)
 		pack(hbox, w)
 		self._widget = hbox
 		####
@@ -95,20 +95,20 @@ class ModuleOptionItem:
 		)
 
 
-# ('button', LABEL, CLICKED_MODULE_NAME, CLICKED_FUNCTION_NAME)
+# ("button", LABEL, CLICKED_MODULE_NAME, CLICKED_FUNCTION_NAME)
 class ModuleOptionButton:
 	def __init__(self, opt):
 		funcName = opt[2]
 		clickedFunc = getattr(
 			__import__(
-				'scal3.ui_gtk.%s' % opt[1],
+				"scal3.ui_gtk.%s" % opt[1],
 				fromlist=[funcName],
 			),
 			funcName,
 		)
 		hbox = gtk.HBox()
 		button = gtk.Button(_(opt[0]))
-		button.connect('clicked', clickedFunc)
+		button.connect("clicked", clickedFunc)
 		pack(hbox, button)
 		self._widget = hbox
 
@@ -205,11 +205,11 @@ class ComboImageTextPrefItem(PrefItem):
 		###
 		cell = gtk.CellRendererPixbuf()
 		pack(combo, cell, False)
-		combo.add_attribute(cell, 'pixbuf', 0)
+		combo.add_attribute(cell, "pixbuf", 0)
 		###
 		cell = gtk.CellRendererText()
 		pack(combo, cell, True)
-		combo.add_attribute(cell, 'text', 1)
+		combo.add_attribute(cell, "text", 1)
 		###
 		self._widget = combo
 		self.ls = ls
@@ -248,7 +248,7 @@ class FontPrefItem(PrefItem):  # FIXME
 
 
 class CheckPrefItem(PrefItem):
-	def __init__(self, module, varName, label='', tooltip=None):
+	def __init__(self, module, varName, label="", tooltip=None):
 		self.module = module
 		self.varName = varName
 		w = gtk.CheckButton(label)
@@ -265,8 +265,8 @@ class CheckPrefItem(PrefItem):
 	def syncSensitive(self, widget, reverse=False):
 		self._sensitiveWidget = widget
 		self._sensitiveReverse = reverse
-		self._widget.connect('show', self.syncSensitiveUpdate)
-		self._widget.connect('clicked', self.syncSensitiveUpdate)
+		self._widget.connect("show", self.syncSensitiveUpdate)
+		self._widget.connect("clicked", self.syncSensitiveUpdate)
 
 	def syncSensitiveUpdate(self, myWidget):
 		active = myWidget.get_active()
@@ -334,10 +334,10 @@ class WidthHeightPrefItem(PrefItem):
 		self.heightItem = IntSpinButton(_min, _max)
 		###
 		hbox = self._widget = gtk.HBox()
-		pack(hbox, gtk.Label(_('Width') + ':'))
+		pack(hbox, gtk.Label(_("Width") + ":"))
 		pack(hbox, self.widthItem)
-		pack(hbox, gtk.Label('  '))
-		pack(hbox, gtk.Label(_('Height') + ':'))
+		pack(hbox, gtk.Label("  "))
+		pack(hbox, gtk.Label(_("Height") + ":"))
 		pack(hbox, self.heightItem)
 
 	def get(self):
@@ -357,8 +357,8 @@ class FileChooserPrefItem(PrefItem):
 		self,
 		module,
 		varName,
-		title='Select File',
-		currentFolder='',
+		title="Select File",
+		currentFolder="",
 		defaultVarName=None,
 	):
 		self.module = module
@@ -371,14 +371,14 @@ class FileChooserPrefItem(PrefItem):
 		dialog_add_button(
 			dialog,
 			gtk.STOCK_CANCEL,
-			_('_Cancel'),
+			_("_Cancel"),
 			gtk.ResponseType.CANCEL,
 			None,
 		)
 		dialog_add_button(
 			dialog,
 			gtk.STOCK_OK,
-			_('_OK'),
+			_("_OK"),
 			gtk.ResponseType.OK,
 			None,
 		)
@@ -392,7 +392,7 @@ class FileChooserPrefItem(PrefItem):
 			dialog_add_button(
 				dialog,
 				gtk.STOCK_UNDO,
-				_('_Revert'),
+				_("_Revert"),
 				gtk.ResponseType.NONE,
 				self.revertClicked,
 			)
@@ -432,13 +432,13 @@ class RadioListPrefItem(PrefItem):
 		first = self.radios[0]
 		if label is not None:
 			pack(box, gtk.Label(label))
-			pack(box, gtk.Label(''), 1, 1)
+			pack(box, gtk.Label(""), 1, 1)
 		pack(box, first)
 		for r in self.radios[1:]:
-			pack(box, gtk.Label(''), 1, 1)
+			pack(box, gtk.Label(""), 1, 1)
 			pack(box, r)
 			r.set_group(first)
-		pack(box, gtk.Label(''), 1, 1) ## FIXME
+		pack(box, gtk.Label(""), 1, 1) ## FIXME
 
 	def get(self):
 		for i in range(self.num):
@@ -547,7 +547,7 @@ class WeekDayCheckListPrefItem(PrefItem):
 			cbl[j].set_active(True)
 
 
-'''
+"""
 class ToolbarIconSizePrefItem(PrefItem):
 	def __init__(self, module, varName):
 		self.module = module
@@ -565,7 +565,7 @@ class ToolbarIconSizePrefItem(PrefItem):
 			if item[0] == value:
 				self._widget.set_active(i)
 				return
-'''
+"""
 
 ############################################################
 
@@ -573,7 +573,7 @@ class ToolbarIconSizePrefItem(PrefItem):
 class LangPrefItem(PrefItem):
 	def __init__(self):
 		self.module = locale_man
-		self.varName = 'lang'
+		self.varName = "lang"
 		###
 		ls = gtk.ListStore(GdkPixbuf.Pixbuf, str)
 		combo = gtk.ComboBox()
@@ -581,20 +581,20 @@ class LangPrefItem(PrefItem):
 		###
 		cell = gtk.CellRendererPixbuf()
 		pack(combo, cell, False)
-		combo.add_attribute(cell, 'pixbuf', 0)
+		combo.add_attribute(cell, "pixbuf", 0)
 		###
 		cell = gtk.CellRendererText()
 		pack(combo, cell, True)
-		combo.add_attribute(cell, 'text', 1)
+		combo.add_attribute(cell, "text", 1)
 		###
 		self._widget = combo
 		self.ls = ls
-		self.append(join(pixDir, 'computer.png'), _('System Setting'))
+		self.append(join(pixDir, "computer.png"), _("System Setting"))
 		for (key, data) in langDict.items():
 			self.append(data.flag, data.name)
 
 	def append(self, imPath, label):
-		if imPath == '':
+		if imPath == "":
 			pix = None
 		else:
 			if not isabs(imPath):
@@ -605,18 +605,18 @@ class LangPrefItem(PrefItem):
 	def get(self):
 		i = self._widget.get_active()
 		if i == 0:
-			return ''
+			return ""
 		else:
 			return langDict.keyList[i - 1]
 
 	def set(self, value):
-		if value == '':
+		if value == "":
 			self._widget.set_active(0)
 		else:
 			try:
 				i = langDict.keyList.index(value)
 			except ValueError:
-				print('language %s in not in list!' % value)
+				print("language %s in not in list!" % value)
 				self._widget.set_active(0)
 			else:
 				self._widget.set_active(i + 1)
@@ -627,10 +627,10 @@ class LangPrefItem(PrefItem):
 
 class CheckStartupPrefItem():  # FIXME
 	def __init__(self):
-		w = gtk.CheckButton(_('Run on session startup'))
+		w = gtk.CheckButton(_("Run on session startup"))
 		set_tooltip(
 			w,
-			'Run on startup of Gnome, KDE, Xfce, LXDE, ...\nFile: %s'
+			"Run on startup of Gnome, KDE, Xfce, LXDE, ...\nFile: %s"
 			% startup.comDesk
 		)
 		self._widget = w
@@ -666,18 +666,18 @@ class AICalsTreeview(gtk.TreeView):
 		self.enable_model_drag_source(
 			gdk.ModifierType.BUTTON1_MASK,
 			[
-				('row', gtk.TargetFlags.SAME_APP, self.dragId),
+				("row", gtk.TargetFlags.SAME_APP, self.dragId),
 			],
 			gdk.DragAction.MOVE,
 		)
 		self.enable_model_drag_dest(
 			[
-				('row', gtk.TargetFlags.SAME_APP, self.dragId),
+				("row", gtk.TargetFlags.SAME_APP, self.dragId),
 			],
 			gdk.DragAction.MOVE,
 		)
-		self.connect('drag-data-get', self.dragDataGet)
-		self.connect('drag_data_received', self.dragDataReceived)
+		self.connect("drag-data-get", self.dragDataGet)
+		self.connect("drag_data_received", self.dragDataReceived)
 		####
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(self.title, cell, text=1)
@@ -750,19 +750,19 @@ class AICalsTreeview(gtk.TreeView):
 		swin = gtk.ScrolledWindow()
 		swin.add(self)
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
-		swin.set_property('width-request', 200)
+		swin.set_property("width-request", 200)
 		return swin
 
 
 class ActiveCalsTreeView(AICalsTreeview):
 	isActive = True
-	title = _('Active')
+	title = _("Active")
 	dragId = 100
 
 
 class InactiveCalsTreeView(AICalsTreeview):
 	isActive = False
-	title = _('Inactive')
+	title = _("Inactive")
 	dragId = 101
 
 
@@ -775,10 +775,10 @@ class AICalsPrefItem():
 		toolbar.set_orientation(gtk.Orientation.VERTICAL)
 		########
 		treev = ActiveCalsTreeView()
-		treev.connect('row-activated', self.activeTreevRActivate)
-		treev.connect('focus-in-event', self.activeTreevFocus)
+		treev.connect("row-activated", self.activeTreevRActivate)
+		treev.connect("focus-in-event", self.activeTreevFocus)
 		treev.get_selection().connect(
-			'changed',
+			"changed",
 			self.activeTreevSelectionChanged,
 		)
 		###
@@ -792,29 +792,29 @@ class AICalsPrefItem():
 		####
 		tb = gtk.ToolButton()
 		tb.set_direction(gtk.TextDirection.LTR)
-		tb.action = ''
+		tb.action = ""
 		self.leftRightButton = tb
-		set_tooltip(tb, _('Activate/Inactivate'))
-		tb.connect('clicked', self.leftRightClicked)
+		set_tooltip(tb, _("Activate/Inactivate"))
+		tb.connect("clicked", self.leftRightClicked)
 		toolbar.insert(tb, -1)
 		####
 		tb = toolButtonFromStock(gtk.STOCK_GO_UP, size)
-		set_tooltip(tb, _('Move up'))
-		tb.connect('clicked', self.upClicked)
+		set_tooltip(tb, _("Move up"))
+		tb.connect("clicked", self.upClicked)
 		toolbar.insert(tb, -1)
 		##
 		tb = toolButtonFromStock(gtk.STOCK_GO_DOWN, size)
-		set_tooltip(tb, _('Move down'))
-		tb.connect('clicked', self.downClicked)
+		set_tooltip(tb, _("Move down"))
+		tb.connect("clicked", self.downClicked)
 		toolbar.insert(tb, -1)
 		##
 		pack(self._widget, toolbar)
 		########
 		treev = InactiveCalsTreeView()
-		treev.connect('row-activated', self.inactiveTreevRActivate)
-		treev.connect('focus-in-event', self.inactiveTreevFocus)
+		treev.connect("row-activated", self.inactiveTreevRActivate)
+		treev.connect("focus-in-event", self.inactiveTreevFocus)
 		treev.get_selection().connect(
-			'changed',
+			"changed",
 			self.inactiveTreevSelectionChanged,
 		)
 		###
@@ -828,7 +828,7 @@ class AICalsPrefItem():
 		tb = self.leftRightButton
 		if isRight is None:
 			tb.set_label_widget(None)
-			tb.action = ''
+			tb.action = ""
 		else:
 			tb.set_label_widget(
 				gtk.Image.new_from_stock(
@@ -839,7 +839,7 @@ class AICalsPrefItem():
 					gtk.IconSize.SMALL_TOOLBAR,
 				)
 			)
-			tb.action = 'inactivate' if isRight else 'activate'
+			tb.action = "inactivate" if isRight else "activate"
 		tb.show_all()
 
 	def activeTreevFocus(self, treev, gevent=None):
@@ -850,11 +850,11 @@ class AICalsPrefItem():
 
 	def leftRightClicked(self, obj=None):
 		tb = self.leftRightButton
-		if tb.action == 'activate':
+		if tb.action == "activate":
 			path, col = self.inactiveTreev.get_cursor()
 			if path:
 				self.activateIndex(path[0])
-		elif tb.action == 'inactivate':
+		elif tb.action == "inactivate":
 			if len(self.activeTrees) > 1:
 				path, col = self.activeTreev.get_cursor()
 				if path:
@@ -862,9 +862,9 @@ class AICalsPrefItem():
 
 	def getCurrentTreeview(self):
 		tb = self.leftRightButton
-		if tb.action == 'inactivate':
+		if tb.action == "inactivate":
 			return self.activeTreev
-		elif tb.action == 'activate':
+		elif tb.action == "activate":
 			return self.inactiveTreev
 		else:
 			return

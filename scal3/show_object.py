@@ -14,9 +14,9 @@ def dataToPrettyJson(data):
 		ensure_ascii=False,
 	)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	for arg in sys.argv[1:]:
 		data = loadBsonObject(arg)
 		#pprint(data, indent=4, width=80)
 		print(dataToPrettyJson(data))
-		print('-------------------')
+		print("-------------------")

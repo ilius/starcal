@@ -16,22 +16,22 @@ class DateTimeButton(MultiSpinButton):
 	def __init__(self, date_time=None, **kwargs):
 		MultiSpinButton.__init__(
 			self,
-			' ',
+			" ",
 			(
 				ContainerField(
-					'/',
+					"/",
 					YearField(),
 					MonthField(),
 					DayField(),
 				),
 				ContainerField(
-					':',
+					":",
 					HourField(),
 					Z60Field(),
 					Z60Field(),
 				),
 			),
-			#StrConField('seconds'),
+			#StrConField("seconds"),
 			**kwargs
 		)
 		if date_time is None:

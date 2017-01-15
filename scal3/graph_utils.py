@@ -2,7 +2,7 @@ from igraph import Graph
 
 
 def colorGraph(g, add_height=True):
-	## Using 'SL' (Smalest Last) algorithm
+	## Using "SL" (Smalest Last) algorithm
 	n = g.vcount()
 	adjlist = g.get_adjlist()
 	colors = [None] * n
@@ -19,7 +19,7 @@ def colorGraph(g, add_height=True):
 		while c in adjColors:
 			c += 1
 		colors[i] = c
-	g.vs['color'] = colors
+	g.vs["color"] = colors
 	if add_height:
 		colorCount = max(colors) + 1
 		height = [1 for i in range(n)]
@@ -31,4 +31,4 @@ def colorGraph(g, add_height=True):
 				if c_end in adjColors:
 					height[i] = c_end - c
 					break
-		g.vs['color_h'] = height
+		g.vs["color_h"] = height

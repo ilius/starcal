@@ -23,24 +23,24 @@
 # Iranian (Jalali) calendar:
 # http://en.wikipedia.org/wiki/Iranian_calendar
 
-name = 'jalali'
-desc = 'Jalali'
-origLang = 'fa'
+name = "jalali"
+desc = "Jalali"
+origLang = "fa"
 
 monthNameMode = 0
 jalaliAlg = 0
 options = (
 	(
-		'monthNameMode',
+		"monthNameMode",
 		list,
-		'Jalali Month Names',
-		('Iranian', 'Kurdish', 'Dari', 'Pashto'),
+		"Jalali Month Names",
+		("Iranian", "Kurdish", "Dari", "Pashto"),
 	),
 	(
-		'jalaliAlg',
+		"jalaliAlg",
 		list,
-		'Jalali Calculation Algorithm',
-		('33 year algorithm', '2820 year algorithm'),
+		"Jalali Calculation Algorithm",
+		("33 year algorithm", "2820 year algorithm"),
 	),
 )
 
@@ -48,40 +48,40 @@ options = (
 monthNameVars = (
 	(
 		(
-			'Farvardin', 'Ordibehesht', 'Khordad',
-			'Teer', 'Mordad', 'Shahrivar',
-			'Mehr', 'Aban', 'Azar',
-			'Dey', 'Bahman', 'Esfand',
+			"Farvardin", "Ordibehesht", "Khordad",
+			"Teer", "Mordad", "Shahrivar",
+			"Mehr", "Aban", "Azar",
+			"Dey", "Bahman", "Esfand",
 		),
 		(
-			'Far', 'Ord', 'Khr',
-			'Tir', 'Mor', 'Shr',
-			'Meh', 'Abn', 'Azr',
-			'Dey', 'Bah', 'Esf',
-		),
-	),
-	(
-		(
-			'Xakelêwe', 'Gullan', 'Cozerdan',
-			'Pûşper', 'Gelawêj', 'Xermanan',
-			'Rezber', 'Gelarêzan', 'Sermawez',
-			'Befranbar', 'Rêbendan', 'Reşeme',
+			"Far", "Ord", "Khr",
+			"Tir", "Mor", "Shr",
+			"Meh", "Abn", "Azr",
+			"Dey", "Bah", "Esf",
 		),
 	),
 	(
 		(
-			'Hamal', 'Sawr', 'Jawzā',
-			'Saratān', 'Asad', 'Sonbola',
-			'Mizān', 'Aqrab', 'Qaws',
-			'Jadi', 'Dalvæ', 'Hūt',
+			"Xakelêwe", "Gullan", "Cozerdan",
+			"Pûşper", "Gelawêj", "Xermanan",
+			"Rezber", "Gelarêzan", "Sermawez",
+			"Befranbar", "Rêbendan", "Reşeme",
 		),
 	),
 	(
 		(
-			'Wray', 'Ǧwayay', 'Ǧbargolay',
-			'Čungāx̌', 'Zmaray', 'Waǵay',
-			'Təla', 'Laṛam', 'Līndəi',
-			'Marǧūmay', 'Salwāǧa', 'Kab',
+			"Hamal", "Sawr", "Jawzā",
+			"Saratān", "Asad", "Sonbola",
+			"Mizān", "Aqrab", "Qaws",
+			"Jadi", "Dalvæ", "Hūt",
+		),
+	),
+	(
+		(
+			"Wray", "Ǧwayay", "Ǧbargolay",
+			"Čungāx̌", "Zmaray", "Waǵay",
+			"Təla", "Laṛam", "Līndəi",
+			"Marǧūmay", "Salwāǧa", "Kab",
 		),
 	),
 )
@@ -128,11 +128,11 @@ from scal3.utils import myRaise
 from scal3.json_utils import *
 
 # Here load user options(jalaliAlg) from file
-sysConfPath = '%s/%s.json' % (sysConfDir, name)
+sysConfPath = "%s/%s.json" % (sysConfDir, name)
 loadJsonConf(__name__, sysConfPath)
 
 
-confPath = '%s/%s.json' % (confDir, name)
+confPath = "%s/%s.json" % (confDir, name)
 loadJsonConf(__name__, confPath)
 
 
@@ -141,8 +141,8 @@ def save():
 	save user options to file
 	"""
 	saveJsonConf(__name__, confPath, (
-		'monthNameMode',
-		'jalaliAlg',
+		"monthNameMode",
+		"jalaliAlg",
 	))
 
 
@@ -170,7 +170,7 @@ def isLeap(year):
 		return True
 
 	else:
-		raise RuntimeError('bad option jalaliAlg=%s' % jalaliAlg)
+		raise RuntimeError("bad option jalaliAlg=%s" % jalaliAlg)
 
 
 def getMonthDayFromYdays(yday):
@@ -207,7 +207,7 @@ def to_jd(year, month, day):
 		)
 		return jdays + 584101 + GREGORIAN_EPOCH
 	else:
-		raise RuntimeError('bad option jalaliAlg=%s' % jalaliAlg)
+		raise RuntimeError("bad option jalaliAlg=%s" % jalaliAlg)
 
 
 def jd_to(jd):
@@ -233,7 +233,7 @@ def jd_to(jd):
 	elif jalaliAlg == 0:  # 33-years
 		jdays = int(jd - GREGORIAN_EPOCH - 584101)
 		# -(1600*365 + 1600//4 - 1600//100 + 1600//400) + 365-79+1 == -584101
-		# print('jdays =', jdays)
+		# print("jdays =", jdays)
 		j_np = jdays // 12053
 		jdays %= 12053
 		year = 979 + 33 * j_np + 4 * (jdays // 1461)
@@ -244,7 +244,7 @@ def jd_to(jd):
 		yday = jdays + 1
 		month, day = getMonthDayFromYdays(yday)
 	else:
-		raise RuntimeError('bad option jalaliAlg=%s' % jalaliAlg)
+		raise RuntimeError("bad option jalaliAlg=%s" % jalaliAlg)
 	return year, month, day
 
 

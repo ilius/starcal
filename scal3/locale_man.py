@@ -39,8 +39,8 @@ from scal3.s_object import JsonSObj
 from scal3.cal_types import calTypes
 
 #import codecs
-#def open (filename, mode='r'):
-#	return codecs.open(filename, mode=mode, encoding='utf-8')
+#def open (filename, mode="r"):
+#	return codecs.open(filename, mode=mode, encoding="utf-8")
 
 ##########################################################
 
@@ -49,11 +49,11 @@ localTzStr = str(localTz)
 
 ##########################################################
 
-confPath = join(confDir, 'locale.json')
+confPath = join(confDir, "locale.json")
 
 confParams = (
-	'lang',
-	'enableNumLocale',
+	"lang",
+	"enableNumLocale",
 )
 
 
@@ -67,17 +67,17 @@ def saveConf():
 
 ##########################################################
 
-langDir = join(rootDir, 'conf', 'lang')
-localeDir = '/usr/share/locale'
+langDir = join(rootDir, "conf", "lang")
+localeDir = "/usr/share/locale"
 
 ## point FIXME
 digits = {
-	'en': ('0', '1', '2', '3', '4', '5', '6', '7', '8', '9'),
-	'ar': ('٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'),
-	'fa': ('۰', '۱', '۲', '۳', '۴', '۵', '۶', '۷', '۸', '۹'),
-	'ur': ('۔', '١', '٢', '٣', '۴', '۵', '٦', '٧', '٨', '٩'),
-	'hi': ('०', '१', '२', '३', '४', '५', '६', '७', '८', '९'),
-	'th': ('๐', '๑', '๒', '๓', '๔', '๕', '๖', '๗', '๘', '๙'),
+	"en": ("0", "1", "2", "3", "4", "5", "6", "7", "8", "9"),
+	"ar": ("٠", "١", "٢", "٣", "٤", "٥", "٦", "٧", "٨", "٩"),
+	"fa": ("۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹"),
+	"ur": ("۔", "١", "٢", "٣", "۴", "۵", "٦", "٧", "٨", "٩"),
+	"hi": ("०", "१", "२", "३", "४", "५", "६", "७", "८", "९"),
+	"th": ("๐", "๑", "๒", "๓", "๔", "๕", "๖", "๗", "๘", "๙"),
 }
 
 
@@ -85,7 +85,7 @@ def getLangDigits(langSh0):
 	try:
 		return digits[langSh0]
 	except KeyError:
-		return digits['en']
+		return digits["en"]
 
 # ar: Aarbic   ar_* 	Arabic-indic				Arabic Contries
 # fa: Persian  fa_IR	Eastern (Extended) Arabic-indic    Iran & Afghanintan
@@ -96,21 +96,21 @@ def getLangDigits(langSh0):
 # Urdu digits is a combination of Arabic and Persian digits,
 # except for Zero that is named ARABIC-INDIC DIGIT ZERO in unicode database
 
-LRM = '\u200e' ## left to right mark
-RLM = '\u200f' ## right to left mark
-ZWNJ = '\u200c' ## zero width non-joiner
-ZWJ = '\u200d' ## zero width joiner
+LRM = "\u200e" ## left to right mark
+RLM = "\u200f" ## right to left mark
+ZWNJ = "\u200c" ## zero width non-joiner
+ZWJ = "\u200d" ## zero width joiner
 
-sysLangDefault = os.environ.get('LANG', '')
+sysLangDefault = os.environ.get("LANG", "")
 
-langDefault = ''
-lang = ''
-langActive = ''
-# langActive==lang except when lang==''
+langDefault = ""
+lang = ""
+langActive = ""
+# langActive==lang except when lang==""
 # (in that case, langActive will be taken from system)
 # langActive will not get changed while the program is running
 # (because it needs to restart program to apply new language)
-langSh = '' ## short language name, for example 'en', 'fa', 'fr', ...
+langSh = "" ## short language name, for example "en", "fa", "fr", ...
 rtl = False ## right to left
 
 enableNumLocale = True
@@ -131,25 +131,25 @@ def tr(s, *a, **ka):
 
 class LangData(JsonSObj):
 	params = (
-		'code',
-		'name',
-		'nativeName',
-		'fileName',## shortName, ... FIXME
-		'flag',## flagFile
-		'rtl',
-		'timeZoneList',
+		"code",
+		"name",
+		"nativeName",
+		"fileName",## shortName, ... FIXME
+		"flag",## flagFile
+		"rtl",
+		"timeZoneList",
 	)
 
 	def __init__(self, _file):
 		self.file = _file ## json file path
 		####
-		self.code = ''
-		self.name = ''
-		self.nativeName = ''
-		self.fileName = ''
-		self.flag = ''
+		self.code = ""
+		self.name = ""
+		self.nativeName = ""
+		self.fileName = ""
+		self.flag = ""
 		self.rtl = False
-		self.transPath = ''
+		self.transPath = ""
 		##
 		self.timeZoneList = []
 
@@ -157,35 +157,35 @@ class LangData(JsonSObj):
 		JsonSObj.setData(self, data)
 		#####
 		for param in (
-			'code',
-			'name',
-			'nativeName',
+			"code",
+			"name",
+			"nativeName",
 		):
 			if not getattr(self, param):
 				raise ValueError(
-					'missing or empty parameter "%s"' % param +
-					' in language file "%s"' % self.file
+					"missing or empty parameter \"%s\"" % param +
+					" in language file \"%s\"" % self.file
 				)
 		#####
 		if not isabs(self.flag):
-			self.flag = join(pixDir, 'flags', self.flag)
+			self.flag = join(pixDir, "flags", self.flag)
 		#####
-		transPath = ''
+		transPath = ""
 		if self.fileName:
-			path = join(rootDir, 'locale.d', self.fileName + '.mo')
-			#print('path=%s'%path)
+			path = join(rootDir, "locale.d", self.fileName + ".mo")
+			#print("path=%s"%path)
 			if isfile(path):
 				transPath = path
 			else:
-				#print('-------- File %r does not exists'%path)
-				for prefix in ('/usr', '/usr/local'):
+				#print("-------- File %r does not exists"%path)
+				for prefix in ("/usr", "/usr/local"):
 					path = join(
 						prefix,
-						'share',
-						'locale',
+						"share",
+						"locale",
 						self.fileName,
-						'LC_MESSAGES',
-						'%s.mo' % APP_NAME,
+						"LC_MESSAGES",
+						"%s.mo" % APP_NAME,
 					)
 					if isfile(path):
 						transPath = path
@@ -199,21 +199,21 @@ class LangData(JsonSObj):
 langDict = StrOrderedDict()
 
 try:
-	langDefault = open(join(langDir, 'default')).read().strip()
+	langDefault = open(join(langDir, "default")).read().strip()
 except Exception as e:
-	print('failed to read default lang file: %s' % e)
+	print("failed to read default lang file: %s" % e)
 
 
 for fname in os.listdir(langDir):
 	fname_nox, ext = splitext(fname)
 	ext = ext.lower()
-	if ext != '.json':
+	if ext != ".json":
 		continue
 	fpath = join(langDir, fname)
 	try:
-		data = jsonToData(open(fpath, encoding='utf-8').read())
+		data = jsonToData(open(fpath, encoding="utf-8").read())
 	except Exception as e:
-		print('failed to load json file %s' % fpath)
+		print("failed to load json file %s" % fpath)
 		raise e
 	langObj = LangData(fpath)
 	langObj.setData(data)
@@ -223,35 +223,35 @@ for fname in os.listdir(langDir):
 		langDefault = langObj.code
 
 
-langDict.sort('name') ## OR 'code' or 'nativeName' ????????????
+langDict.sort("name") ## OR "code" or "nativeName" ????????????
 
 
 def prepareLanguage():
 	global lang, langActive, langSh, rtl
-	if lang == '':
-		#langActive = locale.setlocale(locale.LC_ALL, '')
+	if lang == "":
+		#langActive = locale.setlocale(locale.LC_ALL, "")
 		langActive = sysLangDefault
 		if langActive not in langDict.keyList:
 			langActive = langDefault
-		#os.environ['LANG'] = langActive
+		#os.environ["LANG"] = langActive
 	elif lang in langDict.keyList:
 		#try:
 		#	lang = locale.setlocale(locale.LC_ALL, locale.normalize(lang))
 		#except locale.Error:
 		#lang = lang.lower()
-		#lines = popen_output('locale -a').split('\n') ## FIXME
+		#lines = popen_output("locale -a").split("\n") ## FIXME
 		#for line in lines:
 		#	if line.lower().starts(lang)
 		#locale.setlocale(locale.LC_ALL, lang) ## lang = locale.setlocale(...
 		langActive = lang
-		os.environ['LANG'] = lang
+		os.environ["LANG"] = lang
 	else:## not lang in langDict.keyList
 		#locale.setlocale(locale.LC_ALL, langDefault) ## lang = locale.setlocale(...
 		lang = langDefault
 		langActive = langDefault
-		os.environ['LANG'] = langDefault
-	langSh = langActive.split('_')[0]
-	#sysRtl = (popen_output(['locale', 'cal_direction'])=='3\n')## FIXME
+		os.environ["LANG"] = langDefault
+	langSh = langActive.split("_")[0]
+	#sysRtl = (popen_output(["locale", "cal_direction"])=="3\n")## FIXME
 	rtl = langDict[langActive].rtl
 	return langSh
 
@@ -269,7 +269,7 @@ def loadTranslator(ui_is_qt=False):
 	#)
 	#else:  # for example on windows (what about mac?)
 	try:
-		fd = open(langDict[langActive].transPath, 'rb')
+		fd = open(langDict[langActive].transPath, "rb")
 	except:
 		transObj = None
 	else:
@@ -281,22 +281,22 @@ def loadTranslator(ui_is_qt=False):
 			else:
 				s = toStr(transObj.gettext(s))
 				if ui_is_qt:
-					s = s.replace('_', '&')
+					s = s.replace("_", "&")
 				if a:
 					s = s % a
 				if ka:
 					s = s % ka
 			return s
-		'''
+		"""
 		if ui_is_qt:## qt takes "&" instead of "_" as trigger
 			tr = lambda s, *a, **ka: numEncode(s, *a, **ka) \
 				if isinstance(s, int) \
-				else transObj.gettext(toBytes(s)).replace('_', '&').decode('utf-8')
+				else transObj.gettext(toBytes(s)).replace("_", "&").decode("utf-8")
 		else:
 			tr = lambda s, *a, **ka: numEncode(s, *a, **ka) \
 				if isinstance(s, int) \
-				else transObj.gettext(toBytes(s)).decode('utf-8')
-		'''
+				else transObj.gettext(toBytes(s)).decode("utf-8")
+		"""
 	else:
 		def tr(s, *a, **ka):
 			return str(s)
@@ -312,7 +312,7 @@ def getMonthName(mode, month, year=None):
 
 
 def getNumSep():
-	return tr('.') if enableNumLocale else '.'
+	return tr(".") if enableNumLocale else "."
 
 
 def getDigits():
@@ -321,12 +321,12 @@ def getDigits():
 			return digits[langSh]
 		except KeyError:
 			pass
-	return digits['en']
+	return digits["en"]
 
 
 def getAvailableDigitKeys():
-	keys = set(digits['en'])
-	if langSh != 'en':
+	keys = set(digits["en"])
+	if langSh != "en":
 		try:
 			locDigits = digits[langSh]
 		except KeyError:
@@ -338,27 +338,27 @@ def getAvailableDigitKeys():
 
 def numEncode(num, mode=None, fillZero=0, negEnd=False):
 	if not enableNumLocale:
-		mode = 'en'
+		mode = "en"
 	if mode is None:
 		mode = langSh
 	elif isinstance(mode, int):
-		if langSh != 'en':
+		if langSh != "en":
 			try:
 				mode = calTypes[mode].origLang
 			except AttributeError:
 				mode = langSh
-	if mode == 'en' or mode not in digits:
+	if mode == "en" or mode not in digits:
 		if fillZero:
-			return '%.*d' % (fillZero, num)
+			return "%.*d" % (fillZero, num)
 		else:
-			return '%d' % num
+			return "%d" % num
 	neg = (num < 0)
 	dig = getLangDigits(mode)
-	res = ''
+	res = ""
 	for c in str(abs(num)):
-		if c == '.':
+		if c == ".":
 			if enableNumLocale:
-				c = tr('.')
+				c = tr(".")
 			res += c
 		else:
 			res += dig[int(c)]
@@ -366,40 +366,40 @@ def numEncode(num, mode=None, fillZero=0, negEnd=False):
 		res = res.rjust(fillZero, dig[0])
 	if neg:
 		if negEnd:
-			res = res + '-'
+			res = res + "-"
 		else:
-			res = '-' + res
+			res = "-" + res
 	return res
 
 
 def textNumEncode(st, mode=None, changeSpecialChars=True, changeDot=False):
 	if not enableNumLocale:
-		mode = 'en'
+		mode = "en"
 	if mode is None:
 		mode = langSh
 	elif isinstance(mode, int):
-		if langSh != 'en':
+		if langSh != "en":
 			try:
 				mode = calTypes[mode].origLang
 			except AttributeError:
 				mode = langSh
 	dig = getLangDigits(mode)
-	res = ''
+	res = ""
 	for c in toStr(st):
 		try:
 			i = int(c)
 		except:
 			if enableNumLocale:
-				if c in (',', '_', '%'):## FIXME
+				if c in (",", "_", "%"):## FIXME
 					if changeSpecialChars:
 						c = tr(c)
-				elif c == '.':## FIXME
+				elif c == ".":## FIXME
 					if changeDot:
 						c = tr(c)
 			res += c
 		else:
 			res += dig[i]
-	return res ## .encode('utf8')
+	return res ## .encode("utf8")
 
 
 def floatEncode(st, mode=None):
@@ -419,31 +419,31 @@ def numDecode(numSt):
 		tryLangs.insert(0, langSh)
 	for tryLang in tryLangs:
 		tryLangDigits = digits[tryLang]
-		numEn = ''
+		numEn = ""
 		for dig in numSt:
-			if dig == '-':
+			if dig == "-":
 				numEn += dig
 			else:
 				try:
 					numEn += str(tryLangDigits.index(dig))
 				except ValueError as e:
-					print('error in decoding num char %s' % dig)
+					print("error in decoding num char %s" % dig)
 					#raise e
 					break
 		else:
 			return int(numEn)
-	raise ValueError('invalid locale number %s' % numSt)
+	raise ValueError("invalid locale number %s" % numSt)
 
 
-def textNumDecode(text):## converts '۱۲:۰۰, ۱۳' to '12:00, 13'
+def textNumDecode(text):## converts "۱۲:۰۰, ۱۳" to "12:00, 13"
 	text = toStr(text)
-	textEn = ''
+	textEn = ""
 	langDigits = getLangDigits(langSh)
 	for ch in text:
 		try:
 			textEn += str(langDigits.index(ch))
 		except ValueError:
-			for sch in (',', '_', '.'):
+			for sch in (",", "_", "."):
 				if ch == tr(sch):
 					ch = sch
 					break
@@ -454,9 +454,9 @@ def textNumDecode(text):## converts '۱۲:۰۰, ۱۳' to '12:00, 13'
 def dateLocale(year, month, day):
 	return (
 		numEncode(year, fillZero=4) +
-		'/' +
+		"/" +
 		numEncode(month, fillZero=2) +
-		'/' +
+		"/" +
 		numEncode(day, fillZero=2)
 	)
 
@@ -480,9 +480,9 @@ def addLRM(text):
 def popenDefaultLang(*args, **kwargs):
 	global sysLangDefault, lang
 	from subprocess import Popen
-	os.environ['LANG'] = sysLangDefault
+	os.environ["LANG"] = sysLangDefault
 	p = Popen(*args, **kwargs)
-	os.environ['LANG'] = lang
+	os.environ["LANG"] = lang
 	return p
 
 ##############################################

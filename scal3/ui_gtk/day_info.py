@@ -35,8 +35,8 @@ from scal3.ui_gtk.event.occurrence_view import DayOccurrenceView
 
 @registerSignals
 class AllDateLabelsVBox(gtk.VBox, ud.BaseCalObj):
-	_name = 'allDateLabels'
-	desc = _('Dates')
+	_name = "allDateLabels"
+	desc = _("Dates")
 
 	def __init__(self):
 		gtk.VBox.__init__(self, spacing=5)
@@ -53,7 +53,7 @@ class AllDateLabelsVBox(gtk.VBox, ud.BaseCalObj):
 			label.set_alignment(0, 0.5)
 			pack(hbox, label)
 			sgroup.add_widget(label)
-			pack(hbox, gtk.Label('  '))
+			pack(hbox, gtk.Label("  "))
 			###
 			pack(
 				hbox,
@@ -71,8 +71,8 @@ class AllDateLabelsVBox(gtk.VBox, ud.BaseCalObj):
 
 @registerSignals
 class PluginsTextView(gtk.TextView, ud.BaseCalObj):
-	_name = 'pluginsText'
-	desc = _('Plugins Text')
+	_name = "pluginsText"
+	desc = _("Plugins Text")
 
 	def __init__(self):
 		gtk.TextView.__init__(self)
@@ -90,22 +90,22 @@ class PluginsTextView(gtk.TextView, ud.BaseCalObj):
 
 @registerSignals
 class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
-	_name = 'dayInfo'
-	desc = _('Day Info')
+	_name = "dayInfo"
+	desc = _("Day Info")
 
 	def __init__(self, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.initVars()
 		ud.windowList.appendItem(self)
 		###
-		self.set_title(_('Day Info'))
-		self.connect('delete-event', self.onClose)
+		self.set_title(_("Day Info"))
+		self.connect("delete-event", self.onClose)
 		self.vbox.set_spacing(15)
 		###
-		dialog_add_button(self, gtk.STOCK_CLOSE, _('Close'), 0, self.onClose)
-		dialog_add_button(self, '', _('Previous'), 1, self.goBack)
-		dialog_add_button(self, '', _('Today'), 2, self.goToday)
-		dialog_add_button(self, '', _('Next'), 3, self.goNext)
+		dialog_add_button(self, gtk.STOCK_CLOSE, _("Close"), 0, self.onClose)
+		dialog_add_button(self, "", _("Previous"), 1, self.goBack)
+		dialog_add_button(self, "", _("Today"), 2, self.goToday)
+		dialog_add_button(self, "", _("Next"), 3, self.goNext)
 		###
 		self.allDateLabels = AllDateLabelsVBox()
 		self.pluginsTextView = PluginsTextView()

@@ -38,7 +38,7 @@ class BaseWidgetClass(gtk.VBox):
 		self.sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
 		#####
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Title'))
+		label = gtk.Label(_("Title"))
 		label.set_alignment(0, 0.5)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
@@ -47,7 +47,7 @@ class BaseWidgetClass(gtk.VBox):
 		pack(self, hbox)
 		#####
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Color'))
+		label = gtk.Label(_("Color"))
 		label.set_alignment(0, 0.5)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
@@ -57,7 +57,7 @@ class BaseWidgetClass(gtk.VBox):
 		pack(self, hbox)
 		#####
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Default Icon'))## FIXME
+		label = gtk.Label(_("Default Icon"))## FIXME
 		label.set_alignment(0, 0.5)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
@@ -66,61 +66,61 @@ class BaseWidgetClass(gtk.VBox):
 		pack(self, hbox)
 		#####
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Default Calendar Type'))
+		label = gtk.Label(_("Default Calendar Type"))
 		label.set_alignment(0, 0.5)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
 		combo = CalTypeCombo()
 		pack(hbox, combo)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		self.modeCombo = combo
 		pack(self, hbox)
 		#####
 		hbox = gtk.HBox()
-		self.tzCheck = gtk.CheckButton(_('Default Time Zone'))
+		self.tzCheck = gtk.CheckButton(_("Default Time Zone"))
 		pack(hbox, self.tzCheck)
 		self.sizeGroup.add_widget(self.tzCheck)
 		combo = TimeZoneComboBoxEntry()
 		pack(hbox, combo)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		self.tzCombo = combo
 		pack(self, hbox)
 		self.tzCheck.connect(
-			'clicked',
+			"clicked",
 			lambda check: self.tzCombo.set_sensitive(check.get_active()),
 		)
 		#####
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Show in Calendar'))
+		label = gtk.Label(_("Show in Calendar"))
 		label.set_alignment(0, 0.5)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
-		self.showInDCalCheck = gtk.CheckButton(_('Day'))
-		self.showInWCalCheck = gtk.CheckButton(_('Week'))
-		self.showInMCalCheck = gtk.CheckButton(_('Month'))
+		self.showInDCalCheck = gtk.CheckButton(_("Day"))
+		self.showInWCalCheck = gtk.CheckButton(_("Week"))
+		self.showInMCalCheck = gtk.CheckButton(_("Month"))
 		pack(hbox, self.showInDCalCheck)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(hbox, self.showInWCalCheck)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(hbox, self.showInMCalCheck)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self, hbox)
 		#####
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Show in'))
+		label = gtk.Label(_("Show in"))
 		label.set_alignment(0, 0.5)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
-		self.showInTimeLineCheck = gtk.CheckButton(_('Time Line'))
-		self.showInStatusIconCheck = gtk.CheckButton(_('Status Icon'))
+		self.showInTimeLineCheck = gtk.CheckButton(_("Time Line"))
+		self.showInStatusIconCheck = gtk.CheckButton(_("Status Icon"))
 		pack(hbox, self.showInTimeLineCheck)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(hbox, self.showInStatusIconCheck)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self, hbox)
 		#####
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Event Cache Size'))
+		label = gtk.Label(_("Event Cache Size"))
 		label.set_alignment(0, 0.5)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
@@ -129,7 +129,7 @@ class BaseWidgetClass(gtk.VBox):
 		pack(self, hbox)
 		#####
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Event Text Seperator'))
+		label = gtk.Label(_("Event Text Seperator"))
 		label.set_alignment(0, 0.5)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
@@ -137,20 +137,20 @@ class BaseWidgetClass(gtk.VBox):
 		pack(hbox, self.sepInput, 1, 1)
 		pack(self, hbox)
 		set_tooltip(hbox, _(
-			'Using to seperate Summary and Description when displaying event'
+			"Using to seperate Summary and Description when displaying event"
 		))
 		#####
 		#hbox = gtk.HBox()
-		#label = gtk.Label(_('Show Full Event Description'))
+		#label = gtk.Label(_("Show Full Event Description"))
 		#label.set_alignment(0, 0.5)
 		#pack(hbox, label)
 		#self.sizeGroup.add_widget(label)
-		#self.showFullEventDescCheck = gtk.CheckButton('')
+		#self.showFullEventDescCheck = gtk.CheckButton("")
 		#pack(hbox, self.showFullEventDescCheck, 1, 1)
 		#pack(self, hbox)
 		###
 		self.modeCombo.connect(
-			'changed',
+			"changed",
 			self.modeComboChanged,
 		)  # right place? before updateWidget? FIXME
 

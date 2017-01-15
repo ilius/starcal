@@ -37,10 +37,10 @@ from gi.repository.PangoCairo import show_layout
 if not ui.fontCustom:
 	ui.fontCustom = ui.fontDefault[:]
 
-colorCheckSvgTextChecked = open(join(rootDir, 'svg', 'color-check.svg')).read()
+colorCheckSvgTextChecked = open(join(rootDir, "svg", "color-check.svg")).read()
 colorCheckSvgTextUnchecked = re.sub(
-	'<path[^<>]*?id="check"[^<>]*?/>',
-	'',
+	"<path[^<>]*?id=\"check\"[^<>]*?/>",
+	"",
 	colorCheckSvgTextChecked,
 	flags=re.M | re.S,
 )
@@ -62,7 +62,7 @@ def setColor(cr, color):
 			color[3] / 255.0,
 		)
 	else:
-		raise ValueError('bad color %s' % color)
+		raise ValueError("bad color %s" % color)
 
 
 def fillColor(cr, color):
@@ -72,7 +72,7 @@ def fillColor(cr, color):
 
 def newTextLayout(
 	widget,
-	text='',
+	text="",
 	font=None,
 	maxSize=None,
 	maximizeScale=0.6,
@@ -81,7 +81,7 @@ def newTextLayout(
 	"""
 	None return value should be expected and handled, only if maxSize is given
 	"""
-	layout = widget.create_pango_layout('')  # a Pango.Layout object
+	layout = widget.create_pango_layout("")  # a Pango.Layout object
 	if font:
 		font = list(font)
 	else:
@@ -134,7 +134,7 @@ def newTextLayout(
 	return layout
 
 
-'''
+"""
 def newLimitedWidthTextLayout(
 	widget,
 	text,
@@ -145,7 +145,7 @@ def newLimitedWidthTextLayout(
 ):
 	if not font:
 		font = ui.getFont()
-	layout = widget.create_pango_layout('')
+	layout = widget.create_pango_layout("")
 	if markup:
 		layout.set_markup(text)
 	else:
@@ -176,18 +176,18 @@ def newLimitedWidthTextLayout(
 				#print(layoutW, width)
 			#print
 	return layout
-'''
+"""
 
 
 def newColorCheckPixbuf(color, size, checked):
-	loader = GdkPixbuf.PixbufLoader.new_with_type('svg')
+	loader = GdkPixbuf.PixbufLoader.new_with_type("svg")
 	if checked:
 		data = colorCheckSvgTextChecked
 	else:
 		data = colorCheckSvgTextUnchecked
 	data = data.replace(
-		'fill:#000000;',
-		'fill:%s;' % rgbToHtmlColor(*color[:3]),
+		"fill:#000000;",
+		"fill:%s;" % rgbToHtmlColor(*color[:3]),
 	)
 	data = toBytes(data)
 	loader.write(data)
@@ -197,12 +197,12 @@ def newColorCheckPixbuf(color, size, checked):
 
 
 def newDndDatePixbuf(ymd):
-	imagePath = join(rootDir, 'svg', 'dnd-date.svg')
-	loader = GdkPixbuf.PixbufLoader.new_with_type('svg')
+	imagePath = join(rootDir, "svg", "dnd-date.svg")
+	loader = GdkPixbuf.PixbufLoader.new_with_type("svg")
 	data = open(imagePath).read()
-	data = data.replace('YYYY', '%.4d' % ymd[0])
-	data = data.replace('MM', '%.2d' % ymd[1])
-	data = data.replace('DD', '%.2d' % ymd[2])
+	data = data.replace("YYYY", "%.4d" % ymd[0])
+	data = data.replace("MM", "%.2d" % ymd[1])
+	data = data.replace("DD", "%.2d" % ymd[2])
 	data = toBytes(data)
 	loader.write(data)
 	loader.close()
@@ -211,10 +211,10 @@ def newDndDatePixbuf(ymd):
 
 
 def newDndFontNamePixbuf(name):
-	imagePath = join(rootDir, 'svg', 'dnd-font.svg')
-	loader = GdkPixbuf.PixbufLoader.new_with_type('svg')
+	imagePath = join(rootDir, "svg", "dnd-font.svg")
+	loader = GdkPixbuf.PixbufLoader.new_with_type("svg")
 	data = open(imagePath).read()
-	data = data.replace('FONTNAME', name)
+	data = data.replace("FONTNAME", name)
 	data = toBytes(data)
 	loader.write(data)
 	loader.close()
@@ -500,7 +500,7 @@ def drawArcOutline(cr, xc, yc, r, d, a0, a1):
 class Button:
 	def __init__(self, imageName, func, x, y, autoDir=True):
 		self.imageName = imageName
-		if imageName.startswith('gtk-'):
+		if imageName.startswith("gtk-"):
 			self.pixbuf = GdkPixbuf.Pixbuf.new_from_stock(imageName)
 		else:
 			self.pixbuf = GdkPixbuf.Pixbuf.new_from_file(join(pixDir, imageName))
@@ -512,7 +512,7 @@ class Button:
 		self.autoDir = autoDir
 
 	def __repr__(self):
-		return 'Button(%r, %r, %r, %r, %r)' % (
+		return "Button(%r, %r, %r, %r, %r)" % (
 			self.imageName,
 			self.func.__name__,
 			self.x,

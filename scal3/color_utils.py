@@ -82,6 +82,6 @@ def htmlColorToRgb(hc):
 
 
 def rgbToHtmlColor(r, g, b):
-	return '#' + ''.join([
-		'%.2x' % x for x in (r, g, b)
+	return "#" + "".join([
+		"%.2x" % x for x in (r, g, b)
 	])

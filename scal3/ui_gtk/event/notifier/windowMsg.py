@@ -33,7 +33,7 @@ def notify(notifier, finishFunc):  # FIXME
 	lines.append(event.getText())
 	if notifier.extraMessage:
 		lines.append(notifier.extraMessage)
-	text = '\n'.join(lines)
+	text = "\n".join(lines)
 	####
 	dialog.set_title(event.getText())
 	####
@@ -48,11 +48,11 @@ def notify(notifier, finishFunc):  # FIXME
 	pack(dialog.vbox, hbox)
 	####
 	okB = dialog.add_button(gtk.STOCK_OK, 3)
-	okB.connect('clicked', hideWindow, dialog)
+	okB.connect("clicked", hideWindow, dialog)
 	if ui.autoLocale:
-		okB.set_label(_('_OK'))
+		okB.set_label(_("_OK"))
 		okB.set_image(gtk.Image.new_from_stock(gtk.STOCK_OK, gtk.IconSize.BUTTON))
 	####
 	dialog.vbox.show_all()
-	dialog.connect('response', lambda w, e: finishFunc())
+	dialog.connect("response", lambda w, e: finishFunc())
 	dialog.present()

@@ -110,7 +110,7 @@ def labelStockMenuItem(label, stock=None, func=None, *args):
 	if stock:
 		item.set_image(gtk.Image.new_from_stock(stock, gtk.IconSize.MENU))
 	if func:
-		item.connect('activate', func, *args)
+		item.connect("activate", func, *args)
 	return item
 
 
@@ -120,14 +120,14 @@ def labelImageMenuItem(label, imageName, func=None, *args):
 	if imageName:
 		item.set_image(imageFromFile(imageName))
 	if func:
-		item.connect('activate', func, *args)
+		item.connect("activate", func, *args)
 	return item
 
 
 def labelMenuItem(label, func=None, *args):
 	item = MenuItem(_(label))
 	if func:
-		item.connect('activate', func, *args)
+		item.connect("activate", func, *args)
 	return item
 
 
@@ -154,14 +154,14 @@ def rectangleContainsPoint(r, x, y):
 	)
 
 
-def dialog_add_button(dialog, stock, label, resId, onClicked=None, tooltip=''):
+def dialog_add_button(dialog, stock, label, resId, onClicked=None, tooltip=""):
 	b = dialog.add_button(stock, resId)
 	if ui.autoLocale:
 		if label:
 			b.set_label(label)
 		b.set_image(gtk.Image.new_from_stock(stock, gtk.IconSize.BUTTON))
 	if onClicked:
-		b.connect('clicked', onClicked)
+		b.connect("clicked", onClicked)
 	if tooltip:
 		set_tooltip(b, tooltip)
 	return b
@@ -178,13 +178,13 @@ def confirm(msg, parent=None):
 	dialog_add_button(
 		win,
 		gtk.STOCK_CANCEL,
-		_('_Cancel'),
+		_("_Cancel"),
 		gtk.ResponseType.CANCEL,
 	)
 	dialog_add_button(
 		win,
 		gtk.STOCK_OK,
-		_('_OK'),
+		_("_OK"),
 		gtk.ResponseType.OK,
 	)
 	ok = win.run() == gtk.ResponseType.OK
@@ -203,7 +203,7 @@ def showMsg(msg, parent, msg_type):
 	dialog_add_button(
 		win,
 		gtk.STOCK_CLOSE,
-		_('_Close'),
+		_("_Close"),
 		gtk.ResponseType.OK,
 	)
 	win.run()
@@ -224,7 +224,7 @@ def openWindow(win):
 
 
 def get_menu_width(menu):
-	'''
+	"""
 	#print(menu.has_screen())
 	#menu.show_all()
 	#menu.realize()
@@ -239,7 +239,7 @@ def get_menu_width(menu):
 		menu.get_preferred_size()[0].width,
 		menu.get_preferred_size()[1].width,
 		)
-	'''
+	"""
 	w = menu.get_allocation().width
 	if w > 1:
 		#print(w-max(item.size_request().width for item in menu.get_children()))
@@ -263,7 +263,7 @@ def get_pixbuf_hash(pbuf):
     pbuf.save_to_callbackv(
         save_func,
         None,  # user_data
-        'bmp',  # type, name of file format
+        "bmp",  # type, name of file format
         [],  # option_keys
         [],  # option_values
     )
@@ -306,13 +306,13 @@ class CopyLabelMenuItem(MenuItem):
 	def __init__(self, label):
 		MenuItem.__init__(self)
 		self.set_label(label)
-		self.connect('activate', self.on_activate)
+		self.connect("activate", self.on_activate)
 
 	def on_activate(self, item):
-		setClipboard(self.get_property('label'))
+		setClipboard(self.get_property("label"))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	diolog = gtk.Dialog(parent=None)
 	w = TimeZoneComboBoxEntry()
 	pack(diolog.vbox, w)

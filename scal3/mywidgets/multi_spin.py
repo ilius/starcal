@@ -137,12 +137,12 @@ class FloatField(NumField):
 			self.setValue(num)
 
 	def getText(self):
-		return floatEncode('%.*f' % (self.digits, self.value))
+		return floatEncode("%.*f" % (self.digits, self.value))
 
 	def getMaxWidth(self):
 		return max(
-			len('%.*f' % (self.digits, self._min)),
-			len('%.*f' % (self.digits, self._max)),
+			len("%.*f" % (self.digits, self._min)),
+			len("%.*f" % (self.digits, self._max)),
 		)
 
 	def plus(self, p):
@@ -193,7 +193,7 @@ class SingleCharField(Field):
 	def setValue(self, v):
 		if v not in self.values:
 			raise ValueError(
-				'SingleCharField.setValue: %r is not a valid value' % v
+				"SingleCharField.setValue: %r is not a valid value" % v
 			)
 		self.value = v
 

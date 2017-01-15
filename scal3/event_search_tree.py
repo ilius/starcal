@@ -71,7 +71,7 @@ class Node:
 
 def rotateLeft(h):
 	#if not isRed(h.right):
-	#	raise RuntimeError('rotateLeft: h.right is not red')
+	#	raise RuntimeError("rotateLeft: h.right is not red")
 	x = h.right
 	h.right = x.left
 	x.left = h
@@ -82,7 +82,7 @@ def rotateLeft(h):
 
 def rotateRight(h):
 	#if not isRed(h.left):
-	#	raise RuntimeError('rotateRight: h.left is not red')
+	#	raise RuntimeError("rotateRight: h.left is not red")
 	x = h.left
 	h.left = x.right
 	x.right = h
@@ -93,11 +93,11 @@ def rotateRight(h):
 
 def flipColors(h):
 	#if isRed(h):
-	#	raise RuntimeError('flipColors: h is red')
+	#	raise RuntimeError("flipColors: h is red")
 	#if not isRed(h.left):
-	#	raise RuntimeError('flipColors: h.left is not red')
+	#	raise RuntimeError("flipColors: h.left is not red")
 	#if not isRed(h.right):
-	#	raise RuntimeError('flipColors: h.right is not red')
+	#	raise RuntimeError("flipColors: h.right is not red")
 	h.red = True
 	h.left.red = False
 	h.right.red = False
@@ -114,14 +114,14 @@ class EventSearchTree:
 	def doCountBalancing(self, node):
 		if node.left and not node.left.right and \
 			node.left.count - getCount(node.right) > len(node.events):
-			#print('moving up from left')
+			#print("moving up from left")
 			## `mup` is the node that is moving up and taking place of `node`
 			mup, node.left = node.left, None
 			#node.red, mup.red = mup.red, node.red
 			mup.right, node = node, mup
 		if node.right and not node.right.left and \
 			node.right.count - getCount(node.left) > len(node.events):
-			#print('moving up from right')
+			#print("moving up from right")
 			## `mup` is the node that is moving up and taking place of `node`
 			mup, node.right = node.right, None
 			#node.red, mup.red = mup.red, node.red
@@ -170,8 +170,8 @@ class EventSearchTree:
 	def add(self, t0, t1, eid, debug=False):
 		if debug:
 			from time import strftime, localtime
-			f = '%F, %T'
-			print('EventSearchTree.add: %s\t%s\t%s' % (
+			f = "%F, %T"
+			print("EventSearchTree.add: %s\t%s\t%s" % (
 				eid,
 				strftime(f, localtime(t0)),
 				strftime(f, localtime(t1)),
@@ -383,7 +383,7 @@ class EventSearchTree:
 			return float(s) / n
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	from random import shuffle
 	n = 100
 	ls = list(range(n))

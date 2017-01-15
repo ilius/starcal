@@ -39,7 +39,7 @@ class CourseListEditor(gtk.HBox):
 	def __init__(
 		self,
 		term,
-		defaultCourseName=_('New Course'),
+		defaultCourseName=_("New Course"),
 		defaultCourseUnits=3,
 		enableScrollbars=False,
 	):
@@ -54,17 +54,17 @@ class CourseListEditor(gtk.HBox):
 		self.treev.set_model(self.trees)
 		##########
 		cell = gtk.CellRendererText()
-		cell.set_property('editable', True)
-		cell.connect('edited', self.courseNameEdited)
-		# cell.connect('editing-started', ....)
-		# cell.connect('editing-canceled', ...)
-		col = gtk.TreeViewColumn(_('Course Name'), cell, text=1)
+		cell.set_property("editable", True)
+		cell.connect("edited", self.courseNameEdited)
+		# cell.connect("editing-started", ....)
+		# cell.connect("editing-canceled", ...)
+		col = gtk.TreeViewColumn(_("Course Name"), cell, text=1)
 		self.treev.append_column(col)
 		###
 		cell = gtk.CellRendererText()
-		cell.set_property('editable', True)
-		cell.connect('edited', self.courseUnitsEdited)
-		col = gtk.TreeViewColumn(_('Units'), cell, text=2)
+		cell.set_property("editable", True)
+		cell.connect("edited", self.courseUnitsEdited)
+		col = gtk.TreeViewColumn(_("Units"), cell, text=2)
 		self.treev.append_column(col)
 		####
 		if enableScrollbars:## FIXME
@@ -86,25 +86,25 @@ class CourseListEditor(gtk.HBox):
 		# no different(argument2 to image_new_from_stock has no effect)
 		# gtk.IconSize.SMALL_TOOLBAR or gtk.IconSize.MENU
 		tb = toolButtonFromStock(gtk.STOCK_ADD, size)
-		set_tooltip(tb, _('Add'))
-		tb.connect('clicked', self.addClicked)
+		set_tooltip(tb, _("Add"))
+		tb.connect("clicked", self.addClicked)
 		toolbar.insert(tb, -1)
 		#self.buttonAdd = tb
 		####
 		tb = toolButtonFromStock(gtk.STOCK_DELETE, size)
-		set_tooltip(tb, _('Delete'))
-		tb.connect('clicked', self.deleteClicked)
+		set_tooltip(tb, _("Delete"))
+		tb.connect("clicked", self.deleteClicked)
 		toolbar.insert(tb, -1)
 		#self.buttonDel = tb
 		####
 		tb = toolButtonFromStock(gtk.STOCK_GO_UP, size)
-		set_tooltip(tb, _('Move up'))
-		tb.connect('clicked', self.moveUpClicked)
+		set_tooltip(tb, _("Move up"))
+		tb.connect("clicked", self.moveUpClicked)
 		toolbar.insert(tb, -1)
 		####
 		tb = toolButtonFromStock(gtk.STOCK_GO_DOWN, size)
-		set_tooltip(tb, _('Move down'))
-		tb.connect('clicked', self.moveDownClicked)
+		set_tooltip(tb, _("Move down"))
+		tb.connect("clicked", self.moveDownClicked)
 		toolbar.insert(tb, -1)
 		#######
 		pack(self, toolbar)
@@ -172,7 +172,7 @@ class CourseListEditor(gtk.HBox):
 		self.treev.set_cursor(index + 1)
 
 	def courseNameEdited(self, cell, path, newText):
-		#print('courseNameEdited', newText)
+		#print("courseNameEdited", newText)
 		index = int(path)
 		self.trees[index][1] = newText
 
@@ -201,9 +201,9 @@ class ClassTimeBoundsEditor(gtk.HBox):
 		self.treev.set_model(self.trees)
 		##########
 		cell = gtk.CellRendererText()
-		cell.set_property('editable', True)
-		cell.connect('edited', self.timeEdited)
-		col = gtk.TreeViewColumn(_('Time'), cell, text=0)
+		cell.set_property("editable", True)
+		cell.connect("edited", self.timeEdited)
+		col = gtk.TreeViewColumn(_("Time"), cell, text=0)
 		self.treev.append_column(col)
 		####
 		pack(self, self.treev, 1, 1)
@@ -219,14 +219,14 @@ class ClassTimeBoundsEditor(gtk.HBox):
 		##no different(argument2 to image_new_from_stock has no effect) ?????????
 		#### gtk.IconSize.SMALL_TOOLBAR or gtk.IconSize.MENU
 		tb = toolButtonFromStock(gtk.STOCK_ADD, size)
-		set_tooltip(tb, _('Add'))
-		tb.connect('clicked', self.addClicked)
+		set_tooltip(tb, _("Add"))
+		tb.connect("clicked", self.addClicked)
 		toolbar.insert(tb, -1)
 		#self.buttonAdd = tb
 		####
 		tb = toolButtonFromStock(gtk.STOCK_DELETE, size)
-		set_tooltip(tb, _('Delete'))
-		tb.connect('clicked', self.deleteClicked)
+		set_tooltip(tb, _("Delete"))
+		tb.connect("clicked", self.deleteClicked)
 		toolbar.insert(tb, -1)
 		#self.buttonDel = tb
 		#######
@@ -243,7 +243,7 @@ class ClassTimeBoundsEditor(gtk.HBox):
 
 	def addClicked(self, button):
 		index = self.getSelectedIndex()
-		row = ['00:00']
+		row = ["00:00"]
 		if index is None:
 			newIter = self.trees.append(row)
 		else:
@@ -286,7 +286,7 @@ class ClassTimeBoundsEditor(gtk.HBox):
 
 	def timeEdited(self, cell, path, newText):
 		index = int(path)
-		parts = newText.split(':')
+		parts = newText.split(":")
 		h = numDecode(parts[0])
 		m = numDecode(parts[1])
 		hm = hmEncode((h, m))
@@ -316,14 +316,14 @@ class WidgetClass(NormalWidgetClass):
 		expandHbox = gtk.HBox()## for courseList and classTimeBounds
 		##
 		frame = gtk.Frame()
-		frame.set_label(_('Course List'))
+		frame.set_label(_("Course List"))
 		self.courseListEditor = CourseListEditor(self.group)
 		self.courseListEditor.set_size_request(100, 150)
 		frame.add(self.courseListEditor)
 		pack(expandHbox, frame, 1, 1)
 		##
 		frame = gtk.Frame()## FIXME
-		frame.set_label(_('Class Time Bounds'))
+		frame.set_label(_("Class Time Bounds"))
 		self.classTimeBoundsEditor = ClassTimeBoundsEditor(self.group)
 		self.classTimeBoundsEditor.set_size_request(50, 150)
 		frame.add(self.classTimeBoundsEditor)
@@ -353,9 +353,9 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 		self.data = []
 		####
 		gtk.DrawingArea.__init__(self)
-		#self.connect('button-press-event', self.buttonPress)
-		self.connect('draw', self.onExposeEvent)
-		#self.connect('event', show_event)
+		#self.connect("button-press-event", self.buttonPress)
+		self.connect("draw", self.onExposeEvent)
+		#self.connect("event", show_event)
 
 	def onExposeEvent(self, widget=None, event=None):
 		self.drawCairo(self.get_window().cairo_create())
@@ -447,18 +447,18 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 			for i, dayData in enumerate(self.data[wd]):
 				textList = []
 				for classData in dayData:
-					text = classData['name']
-					if classData['weekNumMode']:
+					text = classData["name"]
+					if classData["weekNumMode"]:
 						text += (
-							'(<span color="#f00">' +
-							_(classData['weekNumMode'].capitalize()) +
-							'</span>)'
+							"(<span color=\"#f00\">" +
+							_(classData["weekNumMode"].capitalize()) +
+							"</span>)"
 						)
 					textList.append(text)
 				dx = (w - leftMargin) * (tmfactors[i + 1] - tmfactors[i])
 				layout = newTextLayout(
 					self,
-					'\n'.join(textList),
+					"\n".join(textList),
 					maxSize=(dx, dy),
 				)
 				layoutW, layoutH = layout.get_pixel_size()
@@ -480,18 +480,18 @@ class WeeklyScheduleWindow(gtk.Dialog):
 		self.term = term
 		gtk.Dialog.__init__(self, **kwargs)
 		self.resize(800, 500)
-		self.set_title(_('View Weekly Schedule'))
-		self.connect('delete-event', self.onDeleteEvent)
+		self.set_title(_("View Weekly Schedule"))
+		self.connect("delete-event", self.onDeleteEvent)
 		#####
 		hbox = gtk.HBox()
-		self.currentWOnlyCheck = gtk.CheckButton(_('Current Week Only'))
-		self.currentWOnlyCheck.connect('clicked', lambda obj: self.updateWidget())
+		self.currentWOnlyCheck = gtk.CheckButton(_("Current Week Only"))
+		self.currentWOnlyCheck.connect("clicked", lambda obj: self.updateWidget())
 		pack(hbox, self.currentWOnlyCheck)
 		##
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		##
-		button = gtk.Button(_('Export to ') + 'SVG')
-		button.connect('clicked', self.exportToSvgClicked)
+		button = gtk.Button(_("Export to ") + "SVG")
+		button.connect("clicked", self.exportToSvgClicked)
 		pack(hbox, button)
 		##
 		pack(self.vbox, hbox)
@@ -514,7 +514,7 @@ class WeeklyScheduleWindow(gtk.Dialog):
 
 	def exportToSvg(self, fpath):
 		x, y, w, h = self._widget.get_allocation()
-		fo = open(fpath, 'w')
+		fo = open(fpath, "w")
 		surface = cairo.SVGSurface(fo, w, h)
 		cr0 = cairo.Context(surface)
 		cr = gdk.CairoContext(cr0)
@@ -525,16 +525,16 @@ class WeeklyScheduleWindow(gtk.Dialog):
 	def exportToSvgClicked(self, obj=None):
 		fcd = gtk.FileChooserDialog(parent=self, action=gtk.FileChooserAction.SAVE)
 		fcd.set_current_folder(deskDir)
-		fcd.set_current_name(self.term.title + '.svg')
+		fcd.set_current_name(self.term.title + ".svg")
 		canB = fcd.add_button(gtk.STOCK_CANCEL, gtk.ResponseType.CANCEL)
 		saveB = fcd.add_button(gtk.STOCK_SAVE, gtk.ResponseType.OK)
 		if ui.autoLocale:
-			canB.set_label(_('_Cancel'))
+			canB.set_label(_("_Cancel"))
 			canB.set_image(gtk.Image.new_from_stock(
 				gtk.STOCK_CANCEL,
 				gtk.IconSize.BUTTON,
 			))
-			saveB.set_label(_('_Save'))
+			saveB.set_label(_("_Save"))
 			saveB.set_image(gtk.Image.new_from_stock(
 				gtk.STOCK_SAVE,
 				gtk.IconSize.BUTTON,

@@ -49,13 +49,13 @@ class CustomizeDialog(gtk.Dialog):
 
 	def __init__(self, widget, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
-		self.set_title(_('Customize'))
+		self.set_title(_("Customize"))
 		#self.set_has_separator(False)## not in gtk3
-		self.connect('delete-event', self.close)
+		self.connect("delete-event", self.close)
 		dialog_add_button(
 			self,
 			gtk.STOCK_CLOSE,
-			_('_Close'),
+			_("_Close"),
 			0,
 			self.close,
 		)
@@ -68,24 +68,24 @@ class CustomizeDialog(gtk.Dialog):
 		##
 		treev.set_enable_tree_lines(True)
 		treev.set_headers_visible(False)
-		treev.connect('row-activated', self.rowActivated)
+		treev.connect("row-activated", self.rowActivated)
 		##
-		col = gtk.TreeViewColumn('Widget')
+		col = gtk.TreeViewColumn("Widget")
 		##
 		cell = gtk.CellRendererToggle()
-		cell.connect('toggled', self.enableCellToggled)
+		cell.connect("toggled", self.enableCellToggled)
 		pack(col, cell)
-		col.add_attribute(cell, 'active', 0)
-		col.set_property('expand', False)
+		col.add_attribute(cell, "active", 0)
+		col.set_property("expand", False)
 		##
 		treev.append_column(col)
-		col = gtk.TreeViewColumn('Widget')
-		col.set_property('expand', False)
+		col = gtk.TreeViewColumn("Widget")
+		col.set_property("expand", False)
 		##
 		cell = gtk.CellRendererText()
 		pack(col, cell)
-		col.add_attribute(cell, 'text', 1)
-		col.set_property('expand', True)
+		col.add_attribute(cell, "text", 1)
+		col.set_property("expand", True)
 		##
 		treev.append_column(col)
 		###
@@ -105,22 +105,22 @@ class CustomizeDialog(gtk.Dialog):
 		## argument2 to image_new_from_stock does not affect
 		###
 		tb = toolButtonFromStock(gtk.STOCK_GO_UP, size)
-		set_tooltip(tb, _('Move up'))
-		tb.connect('clicked', self.upClicked)
+		set_tooltip(tb, _("Move up"))
+		tb.connect("clicked", self.upClicked)
 		toolbar.insert(tb, -1)
 		###
 		tb = toolButtonFromStock(gtk.STOCK_GO_DOWN, size)
-		set_tooltip(tb, _('Move down'))
-		tb.connect('clicked', self.downClicked)
+		set_tooltip(tb, _("Move down"))
+		tb.connect("clicked", self.downClicked)
 		toolbar.insert(tb, -1)
 		###
 		pack(hbox, toolbar)
 		pack(self.vbox, hbox, 1, 1)
 		self.vbox_l = vbox_l
 		###
-		self.vbox.connect('size-allocate', self.vboxSizeRequest)
+		self.vbox.connect("size-allocate", self.vboxSizeRequest)
 		self.vbox.show_all()
-		treev.get_selection().connect('changed', self.treevCursorChanged)
+		treev.get_selection().connect("changed", self.treevCursorChanged)
 
 	def vboxSizeRequest(self, widget, req):
 		self.resize(self.get_size()[0], 1)
@@ -134,8 +134,8 @@ class CustomizeDialog(gtk.Dialog):
 			path = [path]
 		elif not isinstance(path, (tuple, list)):
 			raise TypeError(
-				'argument %s given to getItemByPath ' % path +
-				'has bad type %s' % type(path)
+				"argument %s given to getItemByPath " % path +
+				"has bad type %s" % type(path)
 			)
 		item = self._widget.items[path[0]]
 		for i in path[1:]:

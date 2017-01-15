@@ -46,7 +46,7 @@ class WidgetClass(common.WidgetClass):
 		#self.warnLabel.set_visible(False)## FIXME
 		###########
 		self.rulesExp = gtk.Expander()
-		self.rulesExp.set_label(_('Rules'))
+		self.rulesExp.set_label(_("Rules"))
 		self.rulesExp.set_expanded(True)
 		self.rulesBox = gtk.VBox()
 		self.rulesExp.add(self.rulesBox)
@@ -64,14 +64,14 @@ class WidgetClass(common.WidgetClass):
 		###
 		cell = gtk.CellRendererText()
 		pack(self.addRuleCombo, cell, True)
-		self.addRuleCombo.add_attribute(cell, 'text', 1)
+		self.addRuleCombo.add_attribute(cell, "text", 1)
 		###
-		pack(self.ruleAddBox, gtk.Label(_('Add Rule') + ':'))
+		pack(self.ruleAddBox, gtk.Label(_("Add Rule") + ":"))
 		pack(self.ruleAddBox, self.addRuleCombo)
-		pack(self.ruleAddBox, gtk.Label(''), 1, 1)
+		pack(self.ruleAddBox, gtk.Label(""), 1, 1)
 		self.ruleAddButton = gtk.Button(stock=gtk.STOCK_ADD)
 		if ui.autoLocale:
-			self.ruleAddButton.set_label(_('_Add'))
+			self.ruleAddButton.set_label(_("_Add"))
 			self.ruleAddButton.set_image(gtk.Image.new_from_stock(
 				gtk.STOCK_ADD,
 				gtk.IconSize.BUTTON,
@@ -81,8 +81,8 @@ class WidgetClass(common.WidgetClass):
 		#self.filesBox = common.FilesBox(self.event)
 		#pack(self, self.filesBox)
 		#############
-		self.addRuleCombo.connect('changed', self.addRuleComboChanged)
-		self.ruleAddButton.connect('clicked', self.addClicked)
+		self.addRuleCombo.connect("changed", self.addRuleComboChanged)
+		self.ruleAddButton.connect("clicked", self.addClicked)
 
 	def makeRuleHbox(self, rule):
 		hbox = gtk.HBox(spacing=5)
@@ -90,25 +90,25 @@ class WidgetClass(common.WidgetClass):
 		lab.set_alignment(0, 0.5)
 		pack(hbox, lab)
 		self.groups[rule.sgroup].add_widget(lab)
-		#pack(hbox, gtk.Label(''), 1, 1)
+		#pack(hbox, gtk.Label(""), 1, 1)
 		inputWidget = makeWidget(rule)
 		if not inputWidget:
-			print('failed to create inpout widget for rule %s' % rule.name)
+			print("failed to create inpout widget for rule %s" % rule.name)
 			return
 		if rule.expand:
 			pack(hbox, inputWidget, 1, 1)
 		else:
 			pack(hbox, inputWidget)
-			pack(hbox, gtk.Label(''), 1, 1)
+			pack(hbox, gtk.Label(""), 1, 1)
 		####
 		removeButton = gtk.Button(stock=gtk.STOCK_REMOVE)
 		if ui.autoLocale:
-			removeButton.set_label(_('_Remove'))
+			removeButton.set_label(_("_Remove"))
 			removeButton.set_image(gtk.Image.new_from_stock(
 				gtk.STOCK_REMOVE,
 				gtk.IconSize.BUTTON,
 			))
-		removeButton.connect('clicked', self.removeButtonClicked, hbox)## FIXME
+		removeButton.connect("clicked", self.removeButtonClicked, hbox)## FIXME
 		pack(hbox, removeButton)
 		####
 		hbox.inputWidget = inputWidget
@@ -156,7 +156,7 @@ class WidgetClass(common.WidgetClass):
 		newMode = self.modeCombo.get_active()
 		for hbox in self.rulesBox.get_children():
 			widget = hbox.inputWidget
-			if hasattr(widget, 'changeMode'):
+			if hasattr(widget, "changeMode"):
 				widget.changeMode(newMode)
 		self.event.mode = newMode
 

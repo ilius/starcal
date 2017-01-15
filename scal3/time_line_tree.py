@@ -36,10 +36,10 @@ class Node:
 		# (with its children)
 		#if level > maxLevel:
 		#	maxLevel = level
-		#	print('maxLevel =', level)
+		#	print("maxLevel =", level)
 		#if level < minLevel:
 		#	minLevel = level
-		#	print('minLevel =', level)
+		#	print("minLevel =", level)
 		self.offset = offset ## in days
 		self.rightOri = rightOri ## FIXME
 		###
@@ -84,8 +84,8 @@ class Node:
 	def getChild(self, tm):
 		if not self.s0 <= tm <= self.s1:
 			raise RuntimeError(
-				'Node.getChild: Out of scope' +
-				'level=%s, offset=%s, rightOri=%s' % (
+				"Node.getChild: Out of scope" +
+				"level=%s, offset=%s, rightOri=%s" % (
 					self.level,
 					self.offset,
 					self.rightOri,
@@ -146,8 +146,8 @@ class TimeLineTree:
 	def add(self, t0, t1, eid, debug=False):
 		if debug:
 			from time import strftime, localtime
-			f = '%F, %T'
-			print('%s.add: %s\t%s' % (
+			f = "%F, %T"
+			print("%s.add: %s\t%s" % (
 				self.__class__.__name__,
 				strftime(f, localtime(t0)),
 				strftime(f, localtime(t1)),
@@ -228,7 +228,7 @@ class TimeLineTree:
 			self.right.getDepth(),
 		)
 
-#if __name__=='__main__':
+#if __name__=="__main__":
 #	from scal3 import ui
 #	from time import time as now
 #	ui.eventGroups = event_lib.EventGroupsHolder.load()

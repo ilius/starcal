@@ -96,9 +96,9 @@ def getIntervalListByPoints(points):
 	for pos, ptype, _ in points:
 		if ptype in (OPEN_END, CLOSED_END):
 			if not startedStack:
-				raise RuntimeError('pos=%s, start=None' % pos)
+				raise RuntimeError("pos=%s, start=None" % pos)
 			start = startedStack.pop()
-			#print('pop %s'%start)
+			#print("pop %s"%start)
 			if not startedStack:
 				lst.append((
 					start,
@@ -106,7 +106,7 @@ def getIntervalListByPoints(points):
 					ptype == CLOSED_END,
 				))
 		else:
-			#print('push %s'%pos)
+			#print("push %s"%pos)
 			startedStack.append(pos)
 	return lst
 
@@ -155,7 +155,7 @@ def intersectionOfTwoIntervalList(*lists):
 			if None not in openStartList:
 				start = max(openStartList)
 				if start > pos:
-					raise RuntimeError('start - pos = %s' % (start - pos))
+					raise RuntimeError("start - pos = %s" % (start - pos))
 				if pos > start or ptype == CLOSED_END:
 					result.append((
 						start,
@@ -163,14 +163,14 @@ def intersectionOfTwoIntervalList(*lists):
 						ptype == CLOSED_END,
 					))
 				#if start == pos:  # FIXME
-				#	print('start = pos = %s, ptype=%s'%(start%(24*3600)/3600.0, ptype))
+				#	print("start = pos = %s, ptype=%s"%(start%(24*3600)/3600.0, ptype))
 			openStartList[lst_index] = None
 		else:  # start
 			# start == pos
 			if openStartList[lst_index] is None:
 				openStartList[lst_index] = pos
 			else:
-				raise RuntimeError('pos=%s, openStartList[%s]=%s' % (
+				raise RuntimeError("pos=%s, openStartList[%s]=%s" % (
 					pos,
 					lst_index,
 					openStartList[lst_index],

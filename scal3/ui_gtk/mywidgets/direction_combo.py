@@ -4,11 +4,11 @@ from scal3.ui_gtk import *
 
 
 class DirectionComboBox(gtk.ComboBox):
-	keys = ['ltr', 'rtl', 'auto']
+	keys = ["ltr", "rtl", "auto"]
 	descs = [
-		_('Left to Right'),
-		_('Right to Left'),
-		_('Auto'),
+		_("Left to Right"),
+		_("Right to Left"),
+		_("Auto"),
 	]
 
 	def __init__(self):
@@ -18,7 +18,7 @@ class DirectionComboBox(gtk.ComboBox):
 		###
 		cell = gtk.CellRendererText()
 		pack(self, cell, True)
-		self.add_attribute(cell, 'text', 0)
+		self.add_attribute(cell, "text", 0)
 		###
 		for d in self.descs:
 			ls.append([d])

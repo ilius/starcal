@@ -52,7 +52,7 @@ class ConButtonBase:
 @registerSignals
 class ConButton(gtk.Button, ConButtonBase):
 	signals = [
-		('con-clicked', []),
+		("con-clicked", []),
 	]
 
 	def __init__(self, *args, **kwargs):
@@ -60,10 +60,13 @@ class ConButton(gtk.Button, ConButtonBase):
 		ConButtonBase.__init__(self)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	win = gtk.Dialog(parent=None)
-	button = ConButton('Press')
-	button.connect('con-clicked', lambda obj: print('%.4f\n' % now()))
+	button = ConButton("Press")
+	button.connect(
+		"con-clicked",
+		lambda obj: print("%.4f\tcon-clicked" % now())
+	)
 	pack(win.vbox, button, 1, 1)
 	win.vbox.show_all()
 	win.resize(100, 100)

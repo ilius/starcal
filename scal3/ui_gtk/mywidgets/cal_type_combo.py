@@ -13,7 +13,7 @@ class CalTypeCombo(IdComboBox):
 		###
 		cell = gtk.CellRendererText()
 		pack(self, cell, True)
-		self.add_attribute(cell, 'text', 1)
+		self.add_attribute(cell, "text", 1)
 		###
 		for i, mod in calTypes.iterIndexModule():
 			ls.append([i, _(mod.desc)])

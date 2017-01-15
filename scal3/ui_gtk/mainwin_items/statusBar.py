@@ -13,8 +13,8 @@ from scal3.ui_gtk.customize import CustomizableCalObj
 
 @registerSignals
 class CalObj(gtk.HBox, CustomizableCalObj):
-	_name = 'statusBar'
-	desc = _('Status Bar')
+	_name = "statusBar"
+	desc = _("Status Bar")
 
 	def __init__(self):
 		from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
@@ -47,5 +47,5 @@ class CalObj(gtk.HBox, CustomizableCalObj):
 		for i, label in enumerate(self.labelBox.get_children()):
 			text = ui.cell.format(ud.dateFormatBin, label.mode)
 			if i == 0:
-				text = '<b>%s</b>' % text
+				text = "<b>%s</b>" % text
 			label.set_label(text)

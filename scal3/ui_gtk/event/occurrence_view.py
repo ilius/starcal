@@ -34,8 +34,8 @@ from scal3.ui_gtk import gtk_ud as ud
 
 @registerSignals
 class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
-	_name = 'eventDayView'
-	desc = _('Events of Day')
+	_name = "eventDayView"
+	desc = _("Events of Day")
 
 	def updateData(self):
 		return self.updateDataByGroups(ui.eventGroups)
@@ -43,7 +43,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
 	def __init__(self):
 		gtk.ScrolledWindow.__init__(self)
 		self.set_policy(gtk.PolicyType.NEVER, gtk.PolicyType.AUTOMATIC)
-		self.connect('size-allocate', self.onSizeRequest)
+		self.connect("size-allocate", self.onSizeRequest)
 		self.vbox = gtk.VBox(spacing=5)
 		self.add_with_viewport(self.vbox)
 		self.initVars()
@@ -51,7 +51,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
 		self.showDesc = True
 
 	def onSizeRequest(self, widget, requisition):
-		#print('onSizeRequest', requisition.width, requisition.height)
+		#print("onSizeRequest", requisition.width, requisition.height)
 		requisition.height = min(
 			self.maxHeight,## FIXME
 			self.vbox.size_request().height + 2,## >=2 FIXME
@@ -68,35 +68,35 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
 		self.labels = []
 		# ^ we don't use it, just to prevent garbage collector from removing it
 		for occurData in cell.eventsData:
-			if not occurData['show'][0]:
+			if not occurData["show"][0]:
 				continue
-			## occurData['time'], occurData['text'], occurData['icon']
+			## occurData["time"], occurData["text"], occurData["icon"]
 			text = (
-				''.join(occurData['text']) if self.showDesc
-				else occurData['text'][0]
+				"".join(occurData["text"]) if self.showDesc
+				else occurData["text"][0]
 			)
 			###
 			hbox = gtk.HBox(spacing=5)
-			if occurData['icon']:
-				pack(hbox, imageFromFile(occurData['icon']))
-			if occurData['time']:
-				label = ReadOnlyLabel(occurData['time'])
+			if occurData["icon"]:
+				pack(hbox, imageFromFile(occurData["icon"]))
+			if occurData["time"]:
+				label = ReadOnlyLabel(occurData["time"])
 				self.labels.append(label)
 				label.set_direction(gtk.TextDirection.LTR)
 				label.connect(
-					'populate-popup',
+					"populate-popup",
 					self.onEventLabelPopup,
 					occurData,
 				)
 				pack(hbox, label)
-				pack(hbox, gtk.Label('  '))
+				pack(hbox, gtk.Label("  "))
 			label = ReadOnlyLabel(text)
 			self.labels.append(label)
 			label.set_line_wrap(True)
 			label.set_use_markup(False)
 			# ^ should escape text if using markup FIXME
 			label.connect(
-				'populate-popup',
+				"populate-popup",
 				self.onEventLabelPopup,
 				occurData,
 			)
@@ -115,7 +115,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
 		newGroup.append(event)
 		newGroup.save()
 		###
-		ui.eventDiff.add('v', event)
+		ui.eventDiff.add("v", event)
 		###
 		self.onConfigChange()
 
@@ -129,15 +129,15 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
 	):
 		newEvent = newGroup.createEvent(newEventType)
 		newEvent.copyFrom(event)
-		startEpoch, endEpoch = occurData['time_epoch']
+		startEpoch, endEpoch = occurData["time_epoch"]
 		newEvent.setStartEpoch(startEpoch)
-		newEvent.setEnd('epoch', endEpoch)
+		newEvent.setEnd("epoch", endEpoch)
 		newEvent.afterModify()
 		newEvent.save()
 		###
 		newGroup.append(newEvent)
 		newGroup.save()
-		ui.eventDiff.add('+', newEvent)
+		ui.eventDiff.add("+", newEvent)
 		###
 		self.onConfigChange()
 
@@ -148,13 +148,13 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
 		# instead of creating a new menu, we should remove the current items from current menu
 		# but here we will keep the items from ReadOnlyLabel
 		####
-		groupId, eventId = occurData['ids']
+		groupId, eventId = occurData["ids"]
 		event = ui.getEvent(groupId, eventId)
 		group = ui.eventGroups[groupId]
 		if not event.readOnly:
 			menu.add(gtk.SeparatorMenuItem())
 			###
-			winTitle = _('Edit ') + event.desc
+			winTitle = _("Edit ") + event.desc
 			menu.add(labelStockMenuItem(
 				winTitle,
 				gtk.STOCK_EDIT,
@@ -165,7 +165,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
 			))
 			###
 			moveToItem = labelStockMenuItem(
-				_('Move to %s') % '...',
+				_("Move to %s") % "...",
 				None,  # FIXME
 			)
 			moveToMenu = gtk.Menu()
@@ -177,7 +177,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
 					continue
 				newGroupItem = menuItemFromEventGroup(newGroup)
 				newGroupItem.connect(
-					'activate',
+					"activate",
 					self.moveEventToGroupFromMenu,
 					event,
 					group,
@@ -190,7 +190,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
 
 			###
 			disabledGroupsItem = gtk.MenuItem()
-			disabledGroupsItem.set_label(_('Disabled'))
+			disabledGroupsItem.set_label(_("Disabled"))
 			disabledGroupsItem.set_submenu(disabledGroupsMenu)
 			moveToMenu.add(disabledGroupsItem)
 			###
@@ -198,10 +198,10 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
 			menu.add(moveToItem)
 			###
 			if not event.isSingleOccur:
-				newEventType = 'allDayTask' if occurData['is_allday'] else 'task'
+				newEventType = "allDayTask" if occurData["is_allday"] else "task"
 				copyOccurItem = labelStockMenuItem(
 					_(  # FIXME
-						'Copy as %s to...'
+						"Copy as %s to..."
 					) % event_lib.classes.event.byName[newEventType].desc,
 					None,
 				)
@@ -212,7 +212,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
 					if newEventType in newGroup.acceptsEventTypes:
 						newGroupItem = menuItemFromEventGroup(newGroup)
 						newGroupItem.connect(
-							'activate',
+							"activate",
 							self.copyOccurToGroupFromMenu,
 							newGroup,
 							newEventType,
@@ -226,7 +226,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
 				menu.add(gtk.SeparatorMenuItem())
 			###
 			menu.add(labelImageMenuItem(
-				_('Move to %s') % ui.eventTrash.title,
+				_("Move to %s") % ui.eventTrash.title,
 				ui.eventTrash.icon,
 				self.moveEventToTrash,
 				event,
@@ -246,7 +246,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
 		).run()
 		if event is None:
 			return
-		ui.eventDiff.add('e', event)
+		ui.eventDiff.add("e", event)
 		self.onConfigChange()
 
 	def moveEventToTrash(self, item, event, groupId):
@@ -275,25 +275,25 @@ class WeekOccurrenceView(gtk.TreeView):
 		self.set_model(self.ls)
 		###
 		cell = gtk.CellRendererPixbuf()
-		col = gtk.TreeViewColumn(_('Icon'), cell)
-		col.add_attribute(cell, 'pixbuf', 0)
+		col = gtk.TreeViewColumn(_("Icon"), cell)
+		col.add_attribute(cell, "pixbuf", 0)
 		self.append_column(col)
 		###
 		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn(_('Week Day'), cell)
-		col.add_attribute(cell, 'text', 1)
+		col = gtk.TreeViewColumn(_("Week Day"), cell)
+		col.add_attribute(cell, "text", 1)
 		col.set_resizable(True)
 		self.append_column(col)
 		###
 		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn(_('Time'), cell)
-		col.add_attribute(cell, 'text', 2)
+		col = gtk.TreeViewColumn(_("Time"), cell)
+		col.add_attribute(cell, "text", 2)
 		col.set_resizable(True)## FIXME
 		self.append_column(col)
 		###
 		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn(_('Description'), cell)
-		col.add_attribute(cell, 'text', 3)
+		col = gtk.TreeViewColumn(_("Description"), cell)
+		col.add_attribute(cell, "text", 3)
 		col.set_resizable(True)
 		self.append_column(col)
 
@@ -301,17 +301,17 @@ class WeekOccurrenceView(gtk.TreeView):
 		cells, wEventData = ui.cellCache.getWeekData(self.absWeekNumber)
 		self.ls.clear()
 		for item in wEventData:
-			if not item['show'][1]:
+			if not item["show"][1]:
 				continue
 			self.ls.append(
-				pixbufFromFile(item['icon']),
-				core.getWeekDayAuto(item['weekDay'], self.abrivateWeekDays),
-				item['time'],
-				item['text'],
+				pixbufFromFile(item["icon"]),
+				core.getWeekDayAuto(item["weekDay"], self.abrivateWeekDays),
+				item["time"],
+				item["text"],
 			)
 
 
-'''
+"""
 class MonthOccurrenceView(gtk.TreeView, event_lib.MonthOccurrenceView):
 	def updateData(self):
 		return self.updateDataByGroups(ui.eventGroups)
@@ -329,37 +329,37 @@ class MonthOccurrenceView(gtk.TreeView, event_lib.MonthOccurrenceView):
 		self.set_model(self.ls)
 		###
 		cell = gtk.CellRendererPixbuf()
-		col = gtk.TreeViewColumn('', cell)
-		col.add_attribute(cell, 'pixbuf', 0)
+		col = gtk.TreeViewColumn("", cell)
+		col.add_attribute(cell, "pixbuf", 0)
 		self.append_column(col)
 		###
 		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn(_('Day'), cell)
-		col.add_attribute(cell, 'text', 1)
+		col = gtk.TreeViewColumn(_("Day"), cell)
+		col.add_attribute(cell, "text", 1)
 		col.set_resizable(True)
 		self.append_column(col)
 		###
 		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn(_('Time'), cell)
-		col.add_attribute(cell, 'text', 2)
+		col = gtk.TreeViewColumn(_("Time"), cell)
+		col.add_attribute(cell, "text", 2)
 		col.set_resizable(True)## FIXME
 		self.append_column(col)
 		###
 		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn(_('Description'), cell)
-		col.add_attribute(cell, 'text', 3)
+		col = gtk.TreeViewColumn(_("Description"), cell)
+		col.add_attribute(cell, "text", 3)
 		col.set_resizable(True)
 		self.append_column(col)
 	def updateWidget(self):
 		self.updateData()
 		self.ls.clear()## FIXME
 		for item in self.data:
-			if not item['show'][2]:
+			if not item["show"][2]:
 				continue
 			self.ls.append(
-				pixbufFromFile(item['icon']),
-				_(item['day']),
-				item['time'],
-				item['text'],
+				pixbufFromFile(item["icon"]),
+				_(item["day"]),
+				item["time"],
+				item["text"],
 			)
-'''
+"""

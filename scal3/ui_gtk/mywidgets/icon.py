@@ -13,32 +13,32 @@ from scal3.ui_gtk.utils import labelStockMenuItem
 @registerSignals
 class IconSelectButton(gtk.Button):
 	signals = [
-		('changed', [str]),
+		("changed", [str]),
 	]
 
-	def __init__(self, filename=''):
+	def __init__(self, filename=""):
 		gtk.Button.__init__(self)
 		self.image = gtk.Image()
 		self.add(self.image)
 		self.dialog = gtk.FileChooserDialog(
-			title=_('Select Icon File'),
+			title=_("Select Icon File"),
 			action=gtk.FileChooserAction.OPEN,
 		)
 		okB = self.dialog.add_button(gtk.STOCK_OK, gtk.ResponseType.OK)
 		cancelB = self.dialog.add_button(gtk.STOCK_CANCEL, gtk.ResponseType.CANCEL)
 		clearB = self.dialog.add_button(gtk.STOCK_CLEAR, gtk.ResponseType.REJECT)
 		if ui.autoLocale:
-			cancelB.set_label(_('_Cancel'))
+			cancelB.set_label(_("_Cancel"))
 			cancelB.set_image(gtk.Image.new_from_stock(
 				gtk.STOCK_CANCEL,
 				gtk.IconSize.BUTTON,
 			))
-			okB.set_label(_('_OK'))
+			okB.set_label(_("_OK"))
 			okB.set_image(gtk.Image.new_from_stock(
 				gtk.STOCK_OK,
 				gtk.IconSize.BUTTON,
 			))
-			clearB.set_label(_('Clear'))
+			clearB.set_label(_("Clear"))
 			clearB.set_image(gtk.Image.new_from_stock(
 				gtk.STOCK_CLEAR,
 				gtk.IconSize.BUTTON,
@@ -46,20 +46,20 @@ class IconSelectButton(gtk.Button):
 		###
 		menu = gtk.Menu()
 		self.menu = menu
-		menu.add(labelStockMenuItem(_('None'), None, self.menuItemActivate, ''))
+		menu.add(labelStockMenuItem(_("None"), None, self.menuItemActivate, ""))
 		for item in ui.eventTags:
 			icon = item.icon
 			if icon:
 				menuItem = ImageMenuItem(item.desc)
 				menuItem.set_image(gtk.Image.new_from_file(icon))
-				menuItem.connect('activate', self.menuItemActivate, icon)
+				menuItem.connect("activate", self.menuItemActivate, icon)
 				menu.add(menuItem)
 		menu.show_all()
 		###
-		self.dialog.connect('file-activated', self.fileActivated)
-		self.dialog.connect('response', self.dialogResponse)
-		#self.connect('clicked', lambda button: button.dialog.run())
-		self.connect('button-press-event', self.buttonPressEvent)
+		self.dialog.connect("file-activated", self.fileActivated)
+		self.dialog.connect("response", self.dialogResponse)
+		#self.connect("clicked", lambda button: button.dialog.run())
+		self.connect("button-press-event", self.buttonPressEvent)
 		###
 		self.set_filename(filename)
 
@@ -78,17 +78,17 @@ class IconSelectButton(gtk.Button):
 		if response == gtk.ResponseType.OK:
 			fname = dialog.get_filename()
 		elif response == gtk.ResponseType.REJECT:
-			fname = ''
+			fname = ""
 		else:
 			return
 		self.set_filename(fname)
-		self.emit('changed', fname)
+		self.emit("changed", fname)
 
 	def fileActivated(self, dialog):
 		fname = dialog.get_filename()
 		self.filename = fname
 		self.image.set_from_file(self.filename)
-		self.emit('changed', fname)
+		self.emit("changed", fname)
 		self.dialog.hide()
 
 	def get_filename(self):
@@ -96,10 +96,10 @@ class IconSelectButton(gtk.Button):
 
 	def set_filename(self, filename):
 		if filename is None:
-			filename = ''
+			filename = ""
 		self.dialog.set_filename(filename)
 		self.filename = filename
 		if not filename:
-			self.image.set_from_file(join(pixDir, 'empty.png'))
+			self.image.set_from_file(join(pixDir, "empty.png"))
 		else:
 			self.image.set_from_file(filename)

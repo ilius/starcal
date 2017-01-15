@@ -9,7 +9,7 @@ from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 @registerSignals
 class TimerButton(TimeButton):
 	signals = [
-		('time-elapse', []),
+		("time-elapse", []),
 	]
 
 	def __init__(self, **kwargs):
@@ -41,7 +41,7 @@ class TimerButton(TimeButton):
 		sec = int(now() * self.tPlus - self.tOff)
 		self.set_seconds(sec)
 		if self.tPlus * (sec - self.elapse) >= 0:
-			self.emit('time-elapse')
+			self.emit("time-elapse")
 			self.timer_stop()
 		else:
 			timeout_add(

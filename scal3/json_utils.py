@@ -20,7 +20,7 @@ def dataToCompactJson(data, ensure_ascii=False, sort_keys=False):
 	return json.dumps(
 		data,
 		sort_keys=sort_keys,
-		separators=(',', ':'),
+		separators=(",", ":"),
 		ensure_ascii=ensure_ascii,
 	)
 
@@ -46,13 +46,13 @@ def loadJsonConf(module, confPath, decoders={}):
 	try:
 		text = open(confPath).read()
 	except Exception as e:
-		print('failed to read file "%s": %s' % (confPath, e))
+		print("failed to read file \"%s\": %s" % (confPath, e))
 		return
 	###
 	try:
 		data = json.loads(text)
 	except Exception as e:
-		print('invalid json file "%s": %s' % (confPath, e))
+		print("invalid json file \"%s\": %s" % (confPath, e))
 		return
 	###
 	if isinstance(module, str):
@@ -84,9 +84,9 @@ def saveJsonConf(module, confPath, params, encoders={}):
 	###
 	text = dataToPrettyJson(data)
 	try:
-		open(confPath, 'w').write(text)
+		open(confPath, "w").write(text)
 	except Exception as e:
-		print('failed to save file "%s": %s' % (confPath, e))
+		print("failed to save file \"%s\": %s" % (confPath, e))
 		return
 
 
@@ -94,7 +94,7 @@ def loadModuleJsonConf(module):
 	if isinstance(module, str):
 		module = sys.modules[module]
 	###
-	decoders = getattr(module, 'confDecoders', {})
+	decoders = getattr(module, "confDecoders", {})
 	###
 	try:
 		sysConfPath = module.sysConfPath
@@ -123,5 +123,5 @@ def saveModuleJsonConf(module):
 		module,
 		module.confPath,
 		module.confParams,
-		getattr(module, 'confEncoders', {}),
+		getattr(module, "confEncoders", {}),
 	)

@@ -36,21 +36,21 @@ def decodeStatLine(line):
 	if not line:
 		return 0, 0, 0
 	files_changed, insertions, deletions = 0, 0, 0
-	for section in line.split(','):
-		parts = section.strip().split(' ')
+	for section in line.split(","):
+		parts = section.strip().split(" ")
 		if len(parts) < 2:
 			continue
 		try:
 			num = int(parts[0])
 		except:
-			print('bad section: %r, stat line=%r' % (section, line))
+			print("bad section: %r, stat line=%r" % (section, line))
 		else:
 			action = parts[-1].strip()
-			if 'changed' in action:
+			if "changed" in action:
 				files_changed = num
-			elif 'insertions' in action:
+			elif "insertions" in action:
 				insertions = num
-			elif 'deletions' in action:
+			elif "deletions" in action:
 				deletions = num
 	return files_changed, insertions, deletions
 
@@ -60,25 +60,25 @@ def getCommitList(obj, startJd=None, endJd=None):
 	returns a list of (epoch, commit_id) tuples
 	"""
 	cmd = [
-		'git',
-		'--git-dir', join(obj.vcsDir, '.git'),
-		'log',
-		'--format=%ct %H',## or '--format=%ct %H'
+		"git",
+		"--git-dir", join(obj.vcsDir, ".git"),
+		"log",
+		"--format=%ct %H",## or "--format=%ct %H"
 	]
 	if startJd is not None:
 		cmd += [
-			'--since',
+			"--since",
 			encodeJd(startJd),
 		]
 	if endJd is not None:
 		cmd += [
-			'--until',
+			"--until",
 			encodeJd(endJd),
 		]
 	data = []
 	for line in Popen(cmd, stdout=PIPE).stdout:
 		line = toStr(line)
-		parts = line.strip().split(' ')
+		parts = line.strip().split(" ")
 		data.append((
 			int(parts[0]),
 			parts[1],
@@ -88,22 +88,22 @@ def getCommitList(obj, startJd=None, endJd=None):
 
 def getCommitInfo(obj, commid_id):
 	cmd = [
-		'git',
-		'--git-dir', join(obj.vcsDir, '.git'),
-		'log',
-		'-1',
-		'--format=%at\n%cn <%ce>\n%h\n%s',
+		"git",
+		"--git-dir", join(obj.vcsDir, ".git"),
+		"log",
+		"-1",
+		"--format=%at\n%cn <%ce>\n%h\n%s",
 		commid_id,
 	]
-	parts = Popen(cmd, stdout=PIPE).stdout.read().strip().split('\n')
+	parts = Popen(cmd, stdout=PIPE).stdout.read().strip().split("\n")
 	if not parts:
 		return
 	return {
-		'epoch': int(parts[0]),
-		'author': parts[1],
-		'shortHash': parts[2],
-		'summary': parts[3],
-		'description': '\n'.join(parts[4:]),
+		"epoch": int(parts[0]),
+		"author": parts[1],
+		"shortHash": parts[2],
+		"summary": parts[3],
+		"description": "\n".join(parts[4:]),
 	}
 
 
@@ -112,10 +112,10 @@ def getShortStatLine(obj, prevId, thisId):
 	returns str
 	"""
 	cmd = [
-		'git',
-		'--git-dir', join(obj.vcsDir, '.git'),
-		'diff',
-		'--shortstat',
+		"git",
+		"--git-dir", join(obj.vcsDir, ".git"),
+		"diff",
+		"--shortstat",
 		prevId,
 		thisId,
 	]
@@ -131,17 +131,17 @@ def getCommitShortStatLine(obj, commit_id):
 	returns str
 	"""
 	lines = Popen([
-		'git',
-		'--git-dir', join(obj.vcsDir, '.git'),
-		'log',
-		'--shortstat',
-		'-1',
-		'--pretty=format:',
+		"git",
+		"--git-dir", join(obj.vcsDir, ".git"),
+		"log",
+		"--shortstat",
+		"-1",
+		"--pretty=format:",
 		commit_id,
 	], stdout=PIPE).stdout.readlines()
 	if lines:
 		return lines[-1].strip()
-	return ''
+	return ""
 
 
 def getCommitShortStat(obj, commit_id):
@@ -158,9 +158,9 @@ def getTagList(obj, startJd, endJd):
 	startEpoch = getEpochFromJd(startJd)
 	endEpoch = getEpochFromJd(endJd)
 	cmd = [
-		'git',
-		'--git-dir', join(obj.vcsDir, '.git'),
-		'tag',
+		"git",
+		"--git-dir", join(obj.vcsDir, ".git"),
+		"tag",
 	]
 	data = []
 	for line in Popen(cmd, stdout=PIPE).stdout:
@@ -168,12 +168,12 @@ def getTagList(obj, startJd, endJd):
 		if not tag:
 			continue
 		line = Popen([
-			'git',
-			'--git-dir', join(obj.vcsDir, '.git'),
-			'log',
-			'-1',
+			"git",
+			"--git-dir", join(obj.vcsDir, ".git"),
+			"log",
+			"-1",
 			tag,
-			'--pretty=%ct',
+			"--pretty=%ct",
 		], stdout=PIPE).stdout.read().strip()
 		epoch = int(line)
 		if epoch < startEpoch:
@@ -194,32 +194,32 @@ def getTagShortStatLine(obj, prevTag, tag):
 def getFirstCommitEpoch(obj):
 	return int(
 		Popen([
-			'git',
-			'--git-dir', join(obj.vcsDir, '.git'),
-			'rev-list',
-			'--max-parents=0',
-			'HEAD',
-			'--format=%ct',
+			"git",
+			"--git-dir", join(obj.vcsDir, ".git"),
+			"rev-list",
+			"--max-parents=0",
+			"HEAD",
+			"--format=%ct",
 		], stdout=PIPE).stdout.readlines()[1].strip()
 	)
 
 
 def getLastCommitEpoch(obj):
 	return int(Popen([
-		'git',
-		'--git-dir', join(obj.vcsDir, '.git'),
-		'log',
-		'-1',
-		'--format=%ct',
+		"git",
+		"--git-dir", join(obj.vcsDir, ".git"),
+		"log",
+		"-1",
+		"--format=%ct",
 	], stdout=PIPE).stdout.read().strip())
 
 
 def getLastCommitIdUntilJd(obj, jd):
 	return Popen([
-		'git',
-		'--git-dir', join(obj.vcsDir, '.git'),
-		'log',
-		'--until', encodeJd(jd),
-		'-1',
-		'--format=%H',
+		"git",
+		"--git-dir", join(obj.vcsDir, ".git"),
+		"log",
+		"--until", encodeJd(jd),
+		"-1",
+		"--format=%H",
 	], stdout=PIPE).stdout.read().strip()
