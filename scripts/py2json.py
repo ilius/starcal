@@ -25,5 +25,5 @@ for fpath_py in sys.argv[1:]:
 	exec(text_py, {}, data)
 	text_json = dataToPrettyJson(data)
 	fpath_nox = splitext(fpath_py)[0]
-	fpath_json = fpath_nox + '.json'
-	open(fpath_json, 'w').write(text_json)
+	fpath_json = fpath_nox + ".json"
+	open(fpath_json, "w").write(text_json)
