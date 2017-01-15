@@ -5,30 +5,30 @@ import os
 import subprocess
 from os.path import join, isfile
 
-sys.path.append('/usr/share/starcal2')
+sys.path.append("/usr/share/starcal2")
 
 from scal3 import core
 from scal3.locale_man import tr as _
 
-rawUrlBase = 'http://fa.wikipedia.org/w/index.php?title=%s_%s&action=raw'
-saveDir = 'wikipedia-fa-events'
+rawUrlBase = "http://fa.wikipedia.org/w/index.php?title=%s_%s&action=raw"
+saveDir = "wikipedia-fa-events"
 
 #skipExisingFiles = True
 
 jalaliMonthLen = (31, 31, 31, 31, 31, 31, 30, 30, 30, 30, 30, 30)
 jalaliMonthName = (
-	'Farvardin',
-	'Ordibehesht',
-	'Khordad',
-	'Teer',
-	'Mordad',
-	'Shahrivar',
-	'Mehr',
-	'Aban',
-	'Azar',
-	'Dey',
-	'Bahman',
-	'Esfand',
+	"Farvardin",
+	"Ordibehesht",
+	"Khordad",
+	"Teer",
+	"Mordad",
+	"Shahrivar",
+	"Mehr",
+	"Aban",
+	"Azar",
+	"Dey",
+	"Bahman",
+	"Esfand",
 )
 
 
@@ -46,4 +46,4 @@ for month in range(1, 13):
 			_(day),
 			_(jalaliMonthName[month - 1]),
 		)
-		subprocess.call(['wget', '-c', url, '-O', fpath])
+		subprocess.call(["wget", "-c", url, "-O", fpath])
