@@ -7,15 +7,15 @@ from scal3 import core
 
 def parseIntervalList(st, doShuffle=False):
 	l = []
-	for part in st.split(' '):
-		pp = part.split('-')
+	for part in st.split(" "):
+		pp = part.split("-")
 		if len(pp) == 1:
 			start = end = int(pp[0])
 		elif len(pp) == 2:
 			start = int(pp[0])
 			end = int(pp[1])
 		else:
-			raise ValueError('bad IntervalList string %r' % st)
+			raise ValueError("bad IntervalList string %r" % st)
 		l.append((start, end))
 	if doShuffle:
 		random.shuffle(l)  # in-place
@@ -93,9 +93,9 @@ def testIntersection():
 		answer = parseIntervalList(answerStr, False)# no shuffle
 		result = intersectionOfTwoIntervalList(list1, list2)
 		if result == answer:
-			print('OK')
+			print("OK")
 		else:
-			print('Failed')
+			print("Failed")
 			print((list1Str, list2Str))
 			print(result)
 			print()
@@ -133,10 +133,10 @@ def testOverlapsSpeed():
 	t0 = time()
 	for a, b in data:
 		ab_overlaps(a0, b0, a, b)
-	print('%.2f' % (time() - t0))
+	print("%.2f" % (time() - t0))
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	import pprint
 	testnormalizeIntervalList()
 	testIntersection()

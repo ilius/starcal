@@ -10,7 +10,7 @@ from scal3.ui_gtk.drawing import newColorCheckPixbuf
 
 def confirmEventTrash(event, parent=None):
 	return confirm(
-		_('Press OK if you want to move event "%s" to %s') % (
+		_("Press OK if you want to move event \"%s\" to %s") % (
 			event.summary,
 			ui.eventTrash.title,
 		),
@@ -21,8 +21,8 @@ def confirmEventTrash(event, parent=None):
 def checkEventsReadOnly(doException=True):
 	if event_lib.allReadOnly:
 		error = (
-			'Events are Read-Only because they are locked by '
-			'another StarCalendar 3.x process'
+			"Events are Read-Only because they are locked by "
+			"another StarCalendar 3.x process"
 		)
 		showError(_(error))
 		if doException:

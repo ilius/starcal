@@ -1,5 +1,5 @@
 """
-Thanks to 'Pier Carteri' <m3tr0@dei.unipd.it> for program Py_Shell.py
+Thanks to "Pier Carteri" <m3tr0@dei.unipd.it> for program Py_Shell.py
 """
 
 
@@ -16,7 +16,7 @@ class GtkBufferFile:
 		"""
 		Write text into the buffer and apply self.tag
 		"""
-		#text = text.replace('\x00', '')
+		#text = text.replace("\x00", "")
 		self.buffer.insert_with_tags(
 			self.buffer.get_end_iter(),
 			text,

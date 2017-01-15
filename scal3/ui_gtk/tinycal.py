@@ -52,7 +52,7 @@ class TextObject():
 		self.resizable = False
 		###############
 		self.color = color
-		self.layout = widget.create_pango_layout('')
+		self.layout = widget.create_pango_layout("")
 		if font:
 			self.setFont(font)
 		self.center = center ## ???????????????????
@@ -145,7 +145,7 @@ class PlainStrObject(TextObject):
 	def __init__(
 		self,
 		parent,
-		text='',
+		text="",
 		x=0,
 		y=0,
 		color=(0, 0, 0),
@@ -161,10 +161,10 @@ class PlainStrObject(TextObject):
 class TinyCal(gtk.Window):
 	def __init__(self):
 		gtk.Window.__init__(self)
-		self.set_title(core.APP_DESC + ' Tiny')
+		self.set_title(core.APP_DESC + " Tiny")
 		self.set_decorated(False)
-		self.set_property('skip-taskbar-hint', None)
-		self.set_role(core.APP_NAME + '-tiny')
+		self.set_property("skip-taskbar-hint", None)
+		self.set_role(core.APP_NAME + "-tiny")
 		##################
 		self.objects = []
 

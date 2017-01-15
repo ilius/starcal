@@ -30,7 +30,7 @@ def getFloatBuiltinWidget():
 	return btn
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	d = gtk.Dialog(parent=None)
 	btn = getFloatWidget()
 	btn.set_editable(True)

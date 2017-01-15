@@ -40,7 +40,7 @@ class ClockLabel(gtk.Label):
 		self.bold = bold
 		self.seconds = seconds
 		self.running = False
-		#self.connect('button-press-event', self.button_press)
+		#self.connect("button-press-event", self.button_press)
 		self.start()#???
 
 	def start(self):
@@ -51,11 +51,11 @@ class ClockLabel(gtk.Label):
 		if self.running:
 			timeout_add(time_rem(), self.update)
 			if self.seconds:
-				l = '%.2d:%.2d:%.2d' % tuple(localtime()[3:6])
+				l = "%.2d:%.2d:%.2d" % tuple(localtime()[3:6])
 			else:
-				l = '%.2d:%.2d' % tuple(localtime()[3:5])
+				l = "%.2d:%.2d" % tuple(localtime()[3:5])
 			if self.bold:
-				l = '<b>%s</b>' % l
+				l = "<b>%s</b>" % l
 			self.set_label(l)
 
 	def stop(self):
@@ -66,7 +66,7 @@ class ClockLabel(gtk.Label):
 
 
 class FClockLabel(gtk.Label):
-	def __init__(self, format='%T', local=True, selectable=False):
+	def __init__(self, format="%T", local=True, selectable=False):
 		"""
 		format is a string that used in strftime(), it can contains markup
 		that apears in GtkLabel for example format can be "<b>%T</b>"
@@ -80,7 +80,7 @@ class FClockLabel(gtk.Label):
 		self.format = format
 		self.local = local
 		self.running = False
-		#self.connect('button-press-event', self.button_press)
+		#self.connect("button-press-event", self.button_press)
 		self.start()#???
 
 	def start(self):
@@ -100,7 +100,7 @@ class FClockLabel(gtk.Label):
 
 
 class FClockWidget(gtk.DrawingArea): ## Time is in Local
-	def __init__(self, format='%T', selectable=False):
+	def __init__(self, format="%T", selectable=False):
 		"""
 		format is a string that used in strftime(), it can contains markup
 		that apears in GtkLabel for example format can be "<b>%T</b>"
@@ -111,7 +111,7 @@ class FClockWidget(gtk.DrawingArea): ## Time is in Local
 		self.set_direction(gtk.TextDirection.LTR)
 		self.format = format
 		self.running = False
-		#self.connect('button-press-event', self.button_press)
+		#self.connect("button-press-event", self.button_press)
 		self.start()#???
 
 	def start(self):
@@ -138,12 +138,12 @@ class FClockWidget(gtk.DrawingArea): ## Time is in Local
 		cr.clip()
 		self.set_size_request(w, h)
 		"""
-		textLay = self.create_pango_layout('') ## markup
+		textLay = self.create_pango_layout("") ## markup
 		textLay.set_markup(text)
 		textLay.set_font_description(Pango.FontDescription(ui.getFont()))
 		w, h = textLay.get_pixel_size()
 		pixbuf = GdkPixbuf.Pixbuf(GdkPixbuf.Colorspace.RGB, True, 8, w, h)
-		pixbuf = pixbuf.add_alpha(True, '0','0','0')
+		pixbuf = pixbuf.add_alpha(True, "0","0","0")
 		pmap, mask = pixbuf.render_pixmap_and_mask(alpha_threshold=127)
 		# pixmap is also a drawable
 		pmap.draw_layout(

@@ -40,8 +40,8 @@ from scal3.ui_gtk import gtk_ud as ud
 
 @registerSignals
 class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
-	_name = 'yearWheel'
-	desc = _('Year Wheel')
+	_name = "yearWheel"
+	desc = _("Year Wheel")
 	###
 	scrollRotateDegree = 1
 	###
@@ -75,18 +75,18 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		self.angleOffset = 0.0
 		###
 		#self.closeFunc = closeFunc
-		self.connect('draw', self.onDraw)
-		self.connect('scroll-event', self.onScroll)
-		self.connect('button-press-event', self.onButtonPress)
-		#self.connect('motion-notify-event', self.onMotionNotify)
-		#self.connect('button-release-event', self.onButtonRelease)
-		self.connect('key-press-event', self.keyPress)
-		#self.connect('event', show_event)
+		self.connect("draw", self.onDraw)
+		self.connect("scroll-event", self.onScroll)
+		self.connect("button-press-event", self.onButtonPress)
+		#self.connect("motion-notify-event", self.onMotionNotify)
+		#self.connect("button-release-event", self.onButtonRelease)
+		self.connect("key-press-event", self.keyPress)
+		#self.connect("event", show_event)
 
 		self.buttons = [
-			Button('home.png', self.homeClicked, 1, -1, False),
-			Button('resize-small.png', self.startResize, -1, -1, False),
-			Button('exit.png', closeFunc, -1, 1, False)
+			Button("home.png", self.homeClicked, 1, -1, False),
+			Button("resize-small.png", self.startResize, -1, -1, False),
+			Button("exit.png", closeFunc, -1, 1, False)
 		]
 
 	def homeClicked(self, arg=None):
@@ -286,27 +286,27 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 
 	def onScroll(self, widget, gevent):
 		d = getScrollValue(gevent)
-		#print('onScroll', d)
-		self.angleOffset += (-1 if d == 'up' else 1) * self.scrollRotateDegree
+		#print("onScroll", d)
+		self.angleOffset += (-1 if d == "up" else 1) * self.scrollRotateDegree
 		self.queue_draw()
 		return True
 
 	def keyPress(self, arg, gevent):
 		k = gdk.keyval_name(gevent.keyval).lower()
-		#print('%.3f'%now())
-		if k in ('space', 'home'):
+		#print("%.3f"%now())
+		if k in ("space", "home"):
 			self.homeClicked()
-		#elif k=='right':
+		#elif k=="right":
 		#	pass
-		#elif k=='left':
+		#elif k=="left":
 		#	pass
-		#elif k=='down':
+		#elif k=="down":
 		#	self.stopMovingAnim()
-		elif k in ('q', 'escape'):
+		elif k in ("q", "escape"):
 			self.closeFunc()
-		#elif k in ('plus', 'equal', 'kp_add'):
+		#elif k in ("plus", "equal", "kp_add"):
 		#	self.keyboardZoom(True)
-		#elif k in ('minus', 'kp_subtract'):
+		#elif k in ("minus", "kp_subtract"):
 		#	self.keyboardZoom(False)
 		else:
 			#print(k)
@@ -338,8 +338,8 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 
 @registerSignals
 class YearWheelWindow(gtk.Window, ud.BaseCalObj):
-	_name = 'yearWheelWin'
-	desc = _('Year Wheel')
+	_name = "yearWheelWin"
+	desc = _("Year Wheel")
 
 	def __init__(self):
 		gtk.Window.__init__(self)
@@ -354,11 +354,11 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 		)
 		self.set_title(self.desc)
 		self.set_decorated(False)
-		self.connect('delete-event', self.closeClicked)
-		self.connect('button-press-event', self.onButtonPress)
+		self.connect("delete-event", self.closeClicked)
+		self.connect("button-press-event", self.onButtonPress)
 		###
 		self._widget = YearWheel(self.closeClicked)
-		self.connect('key-press-event', self._widget.keyPress)
+		self.connect("key-press-event", self._widget.keyPress)
 		self.add(self._widget)
 		self._widget.show()
 		self.appendItem(self._widget)
@@ -384,8 +384,8 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 		return False
 
 
-if __name__ == '__main__':
-	#locale_man.langActive = ''
+if __name__ == "__main__":
+	#locale_man.langActive = ""
 	#_ = locale_man.loadTranslator()
 	ui.init()
 	win = YearWheelWindow()

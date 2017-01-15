@@ -18,7 +18,7 @@ class WidgetClass(gtk.HBox):
 		self.dateInput = DateButton()
 		pack(self, self.dateInput)
 		###
-		pack(self, gtk.Label('   ' + _('Time')))
+		pack(self, gtk.Label("   " + _("Time")))
 		self.timeInput = TimeButton()
 		pack(self, self.timeInput)
 

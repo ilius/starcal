@@ -30,7 +30,7 @@ from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
 from scal3 import ui
 
-pluginName = 'MonthCal'
+pluginName = "MonthCal"
 
 
 class MonthStatus(list): ## FIXME
@@ -123,13 +123,13 @@ def getMonthDesc(status=None):
 					first = c
 				else:
 					continue
-	text = ''
+	text = ""
 	for mode in calTypes.active:
-		if text != '':
-			text += '\n'
+		if text != "":
+			text += "\n"
 		if mode == calTypes.primary:
 			y, m = first.dates[mode][:2]  # = (status.year, status.month)
-			text += '%s %s' % (getMonthName(mode, m), _(y))
+			text += "%s %s" % (getMonthName(mode, m), _(y))
 		else:
 			y1, m1 = first.dates[mode][:2]
 			y2, m2 = last.dates[mode][:2]
@@ -139,56 +139,56 @@ def getMonthDesc(status=None):
 			elif dy == 1:
 				dm = m2 + 12 - m1
 			else:
-				raise RuntimeError('y1=%d, m1=%d, y2=%d, m2=%d' % (
+				raise RuntimeError("y1=%d, m1=%d, y2=%d, m2=%d" % (
 					y1, m1,
 					y2, m2,
 				))
 			if dm == 0:
-				text += '%s %s' % (getMonthName(mode, m1), _(y1))
+				text += "%s %s" % (getMonthName(mode, m1), _(y1))
 			elif dm == 1:
 				if dy == 0:
-					text += '%s %s %s %s' % (
+					text += "%s %s %s %s" % (
 						getMonthName(mode, m1),
-						_('and'),
+						_("and"),
 						getMonthName(mode, m2),
 						_(y1),
 					)
 				else:
-					text += '%s %s %s %s %s' % (
+					text += "%s %s %s %s %s" % (
 						getMonthName(mode, m1),
 						_(y1),
-						_('and'),
+						_("and"),
 						getMonthName(mode, m2),
 						_(y2),
 					)
 			elif dm == 2:
 				if dy == 0:
-					text += '%s%s %s %s %s %s' % (
+					text += "%s%s %s %s %s %s" % (
 						getMonthName(mode, m1),
-						_(','),
+						_(","),
 						getMonthName(mode, m1 + 1),
-						_('and'),
+						_("and"),
 						getMonthName(mode, m2),
 						_(y1),
 					)
 				else:
 					if m1 == 11:
-						text += '%s %s %s %s %s %s %s' % (
+						text += "%s %s %s %s %s %s %s" % (
 							getMonthName(mode, m1),
-							_('and'),
+							_("and"),
 							getMonthName(mode, m1 + 1),
 							_(y1),
-							_('and'),
+							_("and"),
 							getMonthName(mode, 1),
 							_(y2),
 						)
 					elif m1 == 12:
-						text += '%s %s %s %s %s %s %s' % (
+						text += "%s %s %s %s %s %s %s" % (
 							getMonthName(mode, m1),
 							_(y1),
-							_('and'),
+							_("and"),
 							getMonthName(mode, 1),
-							_('and'),
+							_("and"),
 							getMonthName(mode, 2),
 							_(y2),
 						)

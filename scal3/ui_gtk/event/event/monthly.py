@@ -37,40 +37,40 @@ class WidgetClass(common.WidgetClass):
 		sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
 		######
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Start'))
+		label = gtk.Label(_("Start"))
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.startDateInput = DateButton()
 		pack(hbox, self.startDateInput)
 		###
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self, hbox)
 		######
 		hbox = gtk.HBox()
-		label = gtk.Label(_('End'))
+		label = gtk.Label(_("End"))
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.endDateInput = DateButton()
 		pack(hbox, self.endDateInput)
 		###
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self, hbox)
 		######
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Day of Month'))
+		label = gtk.Label(_("Day of Month"))
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.daySpin = DaySpinButton()
 		pack(hbox, self.daySpin)
 		###
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self, hbox)
 		#########
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Time'))
+		label = gtk.Label(_("Time"))
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
@@ -79,7 +79,7 @@ class WidgetClass(common.WidgetClass):
 		self.dayTimeEndInput = HourMinuteButton()
 		##
 		pack(hbox, self.dayTimeStartInput)
-		pack(hbox, gtk.Label(' ' + _('to') + ' '))
+		pack(hbox, gtk.Label(" " + _("to") + " "))
 		pack(hbox, self.dayTimeEndInput)
 		pack(self, hbox)
 		#############
@@ -98,17 +98,17 @@ class WidgetClass(common.WidgetClass):
 		###
 		self.daySpin.set_value(self.event.getDay())
 		###
-		timeRangeRule = self.event['dayTimeRange']
+		timeRangeRule = self.event["dayTimeRange"]
 		self.dayTimeStartInput.set_value(timeRangeRule.dayTimeStart)
 		self.dayTimeEndInput.set_value(timeRangeRule.dayTimeEnd)
 
 	def updateVars(self):## FIXME
 		common.WidgetClass.updateVars(self)
-		self.event['start'].setDate(self.startDateInput.get_value())
-		self.event['end'].setDate(self.endDateInput.get_value())
+		self.event["start"].setDate(self.startDateInput.get_value())
+		self.event["end"].setDate(self.endDateInput.get_value())
 		self.event.setDay(self.daySpin.get_value())
 		###
-		self.event['dayTimeRange'].setRange(
+		self.event["dayTimeRange"].setRange(
 			self.dayTimeStartInput.get_value(),
 			self.dayTimeEndInput.get_value(),
 		)

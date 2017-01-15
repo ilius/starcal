@@ -11,7 +11,7 @@ class WidgetClass(BaseWidgetClass):
 		BaseWidgetClass.__init__(self, account)
 		#####
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Email'))
+		label = gtk.Label(_("Email"))
 		label.set_alignment(0, 0.5)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)

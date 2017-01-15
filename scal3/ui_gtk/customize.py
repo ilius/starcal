@@ -33,16 +33,16 @@ from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk import gtk_ud as ud
 
 
-if 'mainMenu' not in dict(ud.wcalToolbarData['items']):
-	ud.wcalToolbarData['items'].insert(0, ('mainMenu', True))
+if "mainMenu" not in dict(ud.wcalToolbarData["items"]):
+	ud.wcalToolbarData["items"].insert(0, ("mainMenu", True))
 
 
 @registerSignals
 class DummyCalObj(Object):
 	loaded = False
 	signals = [
-		('config-change', []),
-		('date-change', []),
+		("config-change", []),
+		("date-change", []),
 	]
 
 	def __init__(self, name, desc, pkg, customizable):
@@ -50,7 +50,7 @@ class DummyCalObj(Object):
 		self.enable = False
 		self._name = name
 		self.desc = desc
-		self.moduleName = '.'.join([pkg, name])
+		self.moduleName = ".".join([pkg, name])
 		self.customizable = customizable
 		self.optionsWidget = None
 		self.items = []
@@ -59,7 +59,7 @@ class DummyCalObj(Object):
 		try:
 			module = __import__(
 				self.moduleName,
-				fromlist=['CalObj'],
+				fromlist=["CalObj"],
 			)
 			CalObj = module.CalObj
 		except:
@@ -95,7 +95,7 @@ class CustomizableCalObj(ud.BaseCalObj):
 		if self.optionsWidget:
 			self.optionsWidget.show_all()
 		try:
-			self.connect('key-press-event', self.keyPress)## FIXME
+			self.connect("key-press-event", self.keyPress)## FIXME
 		except:
 			pass
 

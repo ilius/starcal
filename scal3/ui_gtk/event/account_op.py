@@ -10,22 +10,22 @@ from scal3.ui_gtk.event import makeWidget
 class AccountEditorDialog(gtk.Dialog):
 	def __init__(self, account=None, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
-		self.set_title(_('Edit Account') if account else _('Add New Account'))
+		self.set_title(_("Edit Account") if account else _("Add New Account"))
 		###
 		dialog_add_button(
 			self,
 			gtk.STOCK_CANCEL,
-			_('_Cancel'),
+			_("_Cancel"),
 			gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
 			gtk.STOCK_OK,
-			_('_OK'),
+			_("_OK"),
 			gtk.ResponseType.OK,
 		)
 		##
-		self.connect('response', lambda w, e: self.hide())
+		self.connect("response", lambda w, e: self.hide())
 		#######
 		self.account = account
 		self.activeWidget = None
@@ -34,9 +34,9 @@ class AccountEditorDialog(gtk.Dialog):
 		combo = gtk.ComboBoxText()
 		for cls in event_lib.classes.account:
 			combo.append_text(cls.desc)
-		pack(hbox, gtk.Label(_('Account Type')))
+		pack(hbox, gtk.Label(_("Account Type")))
 		pack(hbox, combo)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self.vbox, hbox)
 		####
 		if self.account:
@@ -50,7 +50,7 @@ class AccountEditorDialog(gtk.Dialog):
 			combo.set_active(defaultAccountTypeIndex)
 			self.account = event_lib.classes.account[defaultAccountTypeIndex]()
 		self.activeWidget = None
-		combo.connect('changed', self.typeChanged)
+		combo.connect("changed", self.typeChanged)
 		self.comboType = combo
 		self.vbox.show_all()
 		self.typeChanged()

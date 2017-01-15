@@ -5,13 +5,13 @@ from scal3.ui_gtk import *
 class AboutDialog(gtk.AboutDialog):
 	def __init__(
 		self,
-		name='',
-		version='',
-		title='',
+		name="",
+		version="",
+		title="",
 		authors=[],
-		comments='',
-		license='',
-		website='',
+		comments="",
+		license="",
+		website="",
 		**kwargs
 	):
 		gtk.AboutDialog.__init__(self, **kwargs)

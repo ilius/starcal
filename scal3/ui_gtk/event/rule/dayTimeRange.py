@@ -18,7 +18,7 @@ class WidgetClass(gtk.HBox):
 		self.startTbox = TimeButton()
 		self.endTbox = TimeButton()
 		pack(self, self.startTbox)
-		pack(self, gtk.Label(' ' + _('to') + ' '))
+		pack(self, gtk.Label(" " + _("to") + " "))
 		pack(self, self.endTbox)
 
 	def updateWidget(self):

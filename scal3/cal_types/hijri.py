@@ -20,38 +20,38 @@
 
 ## Islamic (Hijri) calendar: http://en.wikipedia.org/wiki/Islamic_calendar
 
-name = 'hijri'
-desc = 'Hijri(Islamic)'
-origLang = 'ar'
+name = "hijri"
+desc = "Hijri(Islamic)"
+origLang = "ar"
 
 monthName = (
-	'Muharram',
-	'Safar',
-	'Rabia\' 1',
-	'Rabia\' 2',
-	'Jumada 1',
-	'Jumada 2',
-	'Rajab',
-	'Sha\'aban',
-	'Ramadan',
-	'Shawwal',
-	'Dhu\'l Qidah',
-	'Dhu\'l Hijjah',
+	"Muharram",
+	"Safar",
+	"Rabia\' 1",
+	"Rabia\' 2",
+	"Jumada 1",
+	"Jumada 2",
+	"Rajab",
+	"Sha\'aban",
+	"Ramadan",
+	"Shawwal",
+	"Dhu\'l Qidah",
+	"Dhu\'l Hijjah",
 )
 
 monthNameAb = (
-	'Moh',
-	'Saf',
-	'Rb1',
-	'Rb2',
-	'Jm1',
-	'Jm2',
-	'Raj',
-	'Shb',
-	'Ram',
-	'Shw',
-	'DhQ',
-	'DhH',
+	"Moh",
+	"Saf",
+	"Rb1",
+	"Rb2",
+	"Jm1",
+	"Jm2",
+	"Raj",
+	"Shb",
+	"Ram",
+	"Shw",
+	"DhQ",
+	"DhH",
 )
 
 
@@ -77,19 +77,19 @@ hijriAlg = 0
 hijriUseDB = True
 
 
-#('hijriAlg', list, 'Hijri Calculation Algorithm',
-#   ('Internal', 'ITL (idate command)', 'ITL (idate command) Umm Alqura')),
+#("hijriAlg", list, "Hijri Calculation Algorithm",
+#	("Internal", "ITL (idate command)", "ITL (idate command) Umm Alqura")),
 options = (
 	(
-		'hijriUseDB',
+		"hijriUseDB",
 		bool,
-		'Use Hijri month length data (Iranian official calendar)',
+		"Use Hijri month length data (Iranian official calendar)",
 	),
 	(
-		'button',
-		'Tune Hijri Monthes',
-		'hijri',
-		'tuneHijriMonthes',
+		"button",
+		"Tune Hijri Monthes",
+		"hijri",
+		"tuneHijriMonthes",
 	),
 )
 
@@ -104,17 +104,17 @@ from scal3.utils import iceil, ifloor
 from scal3.utils import myRaise
 
 
-oldDbPath = '%s/hijri.db' % confDir
+oldDbPath = "%s/hijri.db" % confDir
 if isfile(oldDbPath):
 	os.remove(oldDbPath)
 
 
 ## Here load user options (hijriUseDB) from file
-sysConfPath = '%s/%s.json' % (sysConfDir, name)
+sysConfPath = "%s/%s.json" % (sysConfDir, name)
 loadJsonConf(__name__, sysConfPath)
 
 
-confPath = '%s/%s.json' % (confDir, name)
+confPath = "%s/%s.json" % (confDir, name)
 loadJsonConf(__name__, confPath)
 
 
@@ -123,8 +123,8 @@ def save():
 	save user options to file
 	"""
 	saveJsonConf(__name__, confPath, (
-		'hijriAlg',
-		'hijriUseDB',
+		"hijriAlg",
+		"hijriUseDB",
 	))
 
 
@@ -134,8 +134,8 @@ class MonthDbHolder:
 		self.startJd = 2453441  # hijriDbInitJD
 		self.endJd = self.startJd  # hijriDbEndJD
 		self.monthLenByYm = {}  # hijriMonthLen
-		self.userDbPath = join(confDir, 'hijri-monthes.json')
-		self.sysDbPath = '%s/hijri-monthes.json' % modDir
+		self.userDbPath = join(confDir, "hijri-monthes.json")
+		self.sysDbPath = "%s/hijri-monthes.json" % modDir
 
 	def setMonthLenByYear(self, monthLenByYear):
 		self.endJd = self.startJd
@@ -149,24 +149,24 @@ class MonthDbHolder:
 					self.endJd += ml
 
 	def setData(self, data):
-		self.startDate = tuple(data['startDate'])
-		self.startJd = data['startJd']
+		self.startDate = tuple(data["startDate"])
+		self.startJd = data["startJd"]
 		###
 		monthLenByYear = {}
-		for row in data['monthLen']:
+		for row in data["monthLen"]:
 			monthLenByYear[row[0]] = row[1:]
 		self.setMonthLenByYear(monthLenByYear)
 
 	def load(self):
 		data = jsonToData(open(self.sysDbPath).read())
-		self.origVersion = data['version']
+		self.origVersion = data["version"]
 		##
 		if isfile(self.userDbPath):
 			userData = jsonToData(open(self.userDbPath).read())
-			if userData['origVersion'] >= self.origVersion:
+			if userData["origVersion"] >= self.origVersion:
 				data = userData
 			else:
-				print('---- ignoring user\'s old db', self.userDbPath)
+				print("---- ignoring user\'s old db", self.userDbPath)
 		self.setData(data)
 
 	def getMonthLenByYear(self):
@@ -183,12 +183,12 @@ class MonthDbHolder:
 		for year, mLenList in self.getMonthLenByYear().items():
 			mLenData.append([year] + mLenList)
 		text = dataToPrettyJson(OrderedDict([
-			('origVersion', self.origVersion),
-			('startDate', self.startDate),
-			('startJd', self.startJd),
-			('monthLen', mLenData),
+			("origVersion", self.origVersion),
+			("startDate", self.startDate),
+			("startJd", self.startJd),
+			("monthLen", mLenData),
 		]))
-		open(self.userDbPath, 'w').write(text)
+		open(self.userDbPath, "w").write(text)
 
 	def getMonthLenList(self):
 		"""
@@ -305,7 +305,7 @@ def getMonthLen(y, m):
 		return to_jd(y, m + 1, 1) - to_jd(y, m, 1)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	for ym in monthDb.monthLenByYm:
 		y, m = divmod(ym, 12)
 		m += 1

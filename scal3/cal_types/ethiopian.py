@@ -20,23 +20,23 @@
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 
-name = 'ethiopian'
-desc = 'Ethiopian'
-origLang = 'en' # FIXME
+name = "ethiopian"
+desc = "Ethiopian"
+origLang = "en" # FIXME
 
 monthName = (
-	'Meskerem',
-	'Tekimt',
-	'Hidar',
-	'Tahsas',
-	'Ter',
-	'Yekoutit',
-	'Meyabit',
-	'Meyaziya',
-	'Genbot',
-	'Sene',
-	'Hamle',
-	'Nahse',
+	"Meskerem",
+	"Tekimt",
+	"Hidar",
+	"Tahsas",
+	"Ter",
+	"Yekoutit",
+	"Meyabit",
+	"Meyaziya",
+	"Genbot",
+	"Sene",
+	"Hamle",
+	"Nahse",
 )
 
 monthNameAb = monthName  # FIXME
@@ -112,7 +112,7 @@ def getMonthLen(year, month):
 		return monthLen[month - 1]
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	import sys
 	from . import gregorian
 	for gy in range(2012, 1990, -1):
@@ -120,4 +120,4 @@ if __name__ == '__main__':
 		ey, em, ed = jd_to(jd)
 		#if ed==22:
 		#	print(gy)
-		print('%.4d/%.2d/%.2d\t%.4d/%.2d/%.2d' % (gy, 1, 1, ey, em, ed))
+		print("%.4d/%.2d/%.2d\t%.4d/%.2d/%.2d" % (gy, 1, 1, ey, em, ed))

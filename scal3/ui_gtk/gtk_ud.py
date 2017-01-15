@@ -41,14 +41,14 @@ from scal3.ui_gtk.font_utils import gfontDecode, pfontEncode
 
 ############################################################
 
-sysConfPath = join(sysConfDir, 'ui-gtk.json')
+sysConfPath = join(sysConfDir, "ui-gtk.json")
 
-confPath = join(confDir, 'ui-gtk.json')
+confPath = join(confDir, "ui-gtk.json")
 
 confParams = (
-	'dateFormat',
-	'clockFormat',
-	#'adjustTimeCmd',
+	"dateFormat",
+	"clockFormat",
+	#"adjustTimeCmd",
 )
 
 
@@ -65,13 +65,13 @@ def saveConf():
 
 @registerSignals
 class BaseCalObj(Object):
-	_name = ''
-	desc = ''
+	_name = ""
+	desc = ""
 	loaded = True
 	customizable = False
 	signals = [
-		('config-change', []),
-		('date-change', []),
+		("config-change", []),
+		("date-change", []),
 	]
 
 	def initVars(self):
@@ -80,14 +80,14 @@ class BaseCalObj(Object):
 
 	def onConfigChange(self, sender=None, emit=True):
 		if emit:
-			self.emit('config-change')
+			self.emit("config-change")
 		for item in self.items:
 			if item.enable and item is not sender:
 				item.onConfigChange(emit=False)
 
 	def onDateChange(self, sender=None, emit=True):
 		if emit:
-			self.emit('date-change')
+			self.emit("date-change")
 		for item in self.items:
 			if item.enable and item is not sender:
 				item.onDateChange(emit=False)
@@ -98,8 +98,8 @@ class BaseCalObj(Object):
 				return item
 
 	def connectItem(self, item):
-		item.connect('config-change', self.onConfigChange)
-		item.connect('date-change', self.onDateChange)
+		item.connect("config-change", self.onConfigChange)
+		item.connect("date-change", self.onDateChange)
 
 	#def insertItem(self, index, item):
 	#	self.items.insert(index, item)
@@ -134,8 +134,8 @@ class BaseCalObj(Object):
 
 
 class IntegatedWindowList(BaseCalObj):
-	_name = 'windowList'
-	desc = 'Window List'
+	_name = "windowList"
+	desc = "Window List"
 
 	def __init__(self):
 		Object.__init__(self)
@@ -144,7 +144,7 @@ class IntegatedWindowList(BaseCalObj):
 	def onConfigChange(self, *a, **ka):
 		ui.cellCache.clear()
 		settings.set_property(
-			'gtk-font-name',
+			"gtk-font-name",
 			pfontEncode(ui.getFont()).to_string(),
 		)
 		####
@@ -152,7 +152,7 @@ class IntegatedWindowList(BaseCalObj):
 		self.onDateChange()
 
 def getGtkDefaultFont():
-	fontName = settings.get_property('gtk-font-name')
+	fontName = settings.get_property("gtk-font-name")
 	font = gfontDecode(fontName)
 	font[3] = max(5, font[3])
 	return font
@@ -170,8 +170,8 @@ gtk.Window.set_default_icon_from_file(ui.logo)
 
 settings = gtk.Settings.get_default()
 
-# ui.timeout_initial = settings.get_property('gtk-timeout-initial') # == 200
-# ui.timeout_repeat = settings.get_property('gtk-timeout-repeat') # == 20
+# ui.timeout_initial = settings.get_property("gtk-timeout-initial") # == 200
+# ui.timeout_repeat = settings.get_property("gtk-timeout-repeat") # == 20
 # timeout_repeat=20 is too small! FIXME
 
 
@@ -180,29 +180,29 @@ ui.fontDefaultInit = ui.fontDefault
 
 ###########
 textDirDict = {
-	'ltr': gtk.TextDirection.LTR,
-	'rtl': gtk.TextDirection.RTL,
-	'auto': gtk.TextDirection.NONE,
+	"ltr": gtk.TextDirection.LTR,
+	"rtl": gtk.TextDirection.RTL,
+	"auto": gtk.TextDirection.NONE,
 }
 
 iconSizeList = [
-	('Menu', gtk.IconSize.MENU),
-	('Small Toolbar', gtk.IconSize.SMALL_TOOLBAR),
-	('Button', gtk.IconSize.BUTTON),
-	('Large Toolbar', gtk.IconSize.LARGE_TOOLBAR),
-	('DND', gtk.IconSize.DND),
-	('Dialog', gtk.IconSize.DIALOG),
+	("Menu", gtk.IconSize.MENU),
+	("Small Toolbar", gtk.IconSize.SMALL_TOOLBAR),
+	("Button", gtk.IconSize.BUTTON),
+	("Large Toolbar", gtk.IconSize.LARGE_TOOLBAR),
+	("DND", gtk.IconSize.DND),
+	("Dialog", gtk.IconSize.DIALOG),
 ] ## in size order
 iconSizeDict = dict(iconSizeList)
 
 ##############################
 
 #if ui.fontCustomEnable:## FIXME
-#	settings.set_property('gtk-font-name', fontCustom)
+#	settings.set_property("gtk-font-name", fontCustom)
 
 
-dateFormat = '%Y/%m/%d'
-clockFormat = '%X' ## '%T', '%X' (local), '<b>%T</b>', '%m:%d'
+dateFormat = "%Y/%m/%d"
+clockFormat = "%X" ## "%T", "%X" (local), "<b>%T</b>", "%m:%d"
 
 dateFormatBin = None
 clockFormatBin = None
@@ -218,40 +218,40 @@ def updateFormatsBin():
 
 def setDefault_adjustTimeCmd():
 	global adjustTimeCmd
-	for cmd in ('gksudo', 'kdesudo', 'gksu', 'gnomesu', 'kdesu'):
-		if os.path.isfile('/usr/bin/%s' % cmd):
+	for cmd in ("gksudo", "kdesudo", "gksu", "gnomesu", "kdesu"):
+		if os.path.isfile("/usr/bin/%s" % cmd):
 			adjustTimeCmd = [
 				cmd,
-				join(rootDir, 'scripts', 'run'),
-				'scal3/ui_gtk/adjust_dtime.py'
+				join(rootDir, "scripts", "run"),
+				"scal3/ui_gtk/adjust_dtime.py"
 			]
 			break
 
 # user should be able to configure this in Preferences
-adjustTimeCmd = ''
+adjustTimeCmd = ""
 setDefault_adjustTimeCmd()
 
 ##############################
 
 mainToolbarData = {
-	'items': [],
-	'iconSize': 'Large Toolbar',
-	'style': 'Icon',
-	'buttonsBorder': 0,
+	"items": [],
+	"iconSize": "Large Toolbar",
+	"style": "Icon",
+	"buttonsBorder": 0,
 }
 
 wcalToolbarData = {
-	'items': [
-		('mainMenu', True),
-		('backward4', False),
-		('backward', True),
-		('today', True),
-		('forward', True),
-		('forward4', False),
+	"items": [
+		("mainMenu", True),
+		("backward4", False),
+		("backward", True),
+		("today", True),
+		("forward", True),
+		("forward4", False),
 	],
-	'iconSize': 'Button',
-	'style': 'Icon',
-	'buttonsBorder': 0,
+	"iconSize": "Button",
+	"style": "Icon",
+	"buttonsBorder": 0,
 }
 
 ###########################################################

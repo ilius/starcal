@@ -8,8 +8,8 @@ class WizardWindow(gtk.Window):
 	def __init__(self, title):
 		gtk.Window.__init__(self)
 		self.set_title(title)
-		self.connect('delete-event', lambda obj, e: self.destroy())
-		self.connect('key-press-event', self.keyPress)
+		self.connect("delete-event", lambda obj, e: self.destroy())
+		self.connect("key-press-event", self.keyPress)
 		self.vbox = gtk.VBox()
 		self.add(self.vbox)
 		####
@@ -33,7 +33,7 @@ class WizardWindow(gtk.Window):
 
 	def keyPress(self, arg, gevent):
 		kname = gdk.keyval_name(gevent.keyval).lower()
-		if kname == 'escape':
+		if kname == "escape":
 			self.destroy()
 		return True
 
@@ -50,7 +50,7 @@ class WizardWindow(gtk.Window):
 		for label, func in step.buttons:
 			#print(label, func)
 			button = gtk.Button(label)
-			button.connect('clicked', func)
+			button.connect("clicked", func)
 			bbox.add(button)
 			#pack(bbox, button)
 		bbox.show_all()

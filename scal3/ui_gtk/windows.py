@@ -5,4 +5,4 @@ def setupMenuHideOnLeave(menu):
 			timeout_add(500, m.hide)
 		m.lastLeaveNotify = t0
 	menu.lastLeaveNotify = 0
-	menu.connect('leave-notify-event', menuLeaveNotify)
+	menu.connect("leave-notify-event", menuLeaveNotify)

@@ -6,7 +6,7 @@ from scal3 import event_lib
 
 from scal3.ui_gtk import *
 
-'''
+"""
 class MultiValueRule(gtk.HBox):
 	def __init__(self, rule, ValueWidgetClass):
 		self.rule = rule
@@ -21,7 +21,7 @@ class MultiValueRule(gtk.HBox):
 			gtk.STOCK_REMOVE,
 			gtk.IconSize.MENU,
 		))
-		self.removeButton.connect('clicked', self.removeLastWidget)
+		self.removeButton.connect("clicked", self.removeLastWidget)
 		##
 
 		##
@@ -31,4 +31,4 @@ class MultiValueRule(gtk.HBox):
 
 	def addWidget(self, obj=None):
 		widget = self.ValueWidgetClass()
-'''
+"""

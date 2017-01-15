@@ -16,10 +16,10 @@ class FontFamilyCombo(gtk.ComboBox):
 		###
 		cell = gtk.CellRendererText()
 		pack(self, cell, True)
-		self.add_attribute(cell, 'text', 1)
+		self.add_attribute(cell, "text", 1)
 		###
 		if hasAuto:
-			ls.append((None, _('Auto')))
+			ls.append((None, _("Auto")))
 		for fontName in getFontFamilyList(self):
 			ls.append((fontName, _(fontName)))## translate font name in GUI? FIXME
 		###
@@ -27,8 +27,8 @@ class FontFamilyCombo(gtk.ComboBox):
 		if not hasAuto:
 			self.set_value(ui.fontDefault[0])
 		###
-		#self.set_property('has-entry', 1)
-		#self.set_property('entry-text-column', 0)
+		#self.set_property("has-entry", 1)
+		#self.set_property("entry-text-column", 0)
 
 	def get_value(self):
 		i = self.get_active()
@@ -44,7 +44,7 @@ class FontFamilyCombo(gtk.ComboBox):
 				break
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	d = gtk.Dialog(parent=None)
 	combo = FontFamilyCombo(1)
 	pack(d.vbox, combo, 1, 1)

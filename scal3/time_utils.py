@@ -69,12 +69,12 @@ def getUtcOffsetByEpoch(epoch, tz=None):
 		except natz.AmbiguousTimeError:## FIXME
 			#d = datetime.fromtimestamp(epoch + 3600)
 			#print(
-			#	'AmbiguousTimeError',
+			#	"AmbiguousTimeError",
 			#	d.year, d.month, d.day,
 			#	d.hour, d.minute, d.second,
 			#)
 			delta += 3600
-			print('delta = %s' % delta)
+			print("delta = %s" % delta)
 		except (
 			ValueError,
 			OverflowError,
@@ -194,11 +194,11 @@ def getJdAndSecondsFromEpoch(epoch):
 
 
 durationUnitsRel = (
-	(1, 'second'),
-	(60, 'minute'),
-	(60, 'hour'),
-	(24, 'day'),
-	(7, 'week'),
+	(1, "second"),
+	(60, "minute"),
+	(60, "hour"),
+	(24, "day"),
+	(7, "week"),
 )
 
 durationUnitsAbs = []
@@ -217,65 +217,65 @@ def timeEncode(tm, checkSec=False):
 		tm = tm + (0,)
 	if checkSec:
 		if len(tm) == 3 and tm[2] > 0:
-			return '%.2d:%.2d:%.2d' % tuple(tm)
+			return "%.2d:%.2d:%.2d" % tuple(tm)
 		else:
-			return '%.2d:%.2d' % tuple(tm[:2])
+			return "%.2d:%.2d" % tuple(tm[:2])
 	else:
-		return '%.2d:%.2d:%.2d' % tuple(tm)
+		return "%.2d:%.2d:%.2d" % tuple(tm)
 
 
 def simpleTimeEncode(tm):
 	if len(tm) == 1:
-		return '%d' % tm
+		return "%d" % tm
 	elif len(tm) == 2:
 		if tm[1] == 0:
-			return '%d' % tm[0]
+			return "%d" % tm[0]
 		else:
-			return '%d:%.2d' % tm
+			return "%d:%.2d" % tm
 	elif len(tm) == 3:
 		if tm[1] == 0:
 			if tm[2] == 0:
-				return '%d' % tm[0]
+				return "%d" % tm[0]
 			else:
-				return '%d:%.2d:%.2d' % tm
+				return "%d:%.2d:%.2d" % tm
 		else:
-			return '%d:%.2d:%.2d' % tm
+			return "%d:%.2d:%.2d" % tm
 
 
 def timeDecode(st):
-	parts = st.split(':')
+	parts = st.split(":")
 	try:
 		tm = tuple([int(p) for p in parts])
 	except ValueError:
-		raise ValueError('bad time %s' % st)
+		raise ValueError("bad time %s" % st)
 	if len(tm) == 1:
 		tm += (0, 0)
 	elif len(tm) == 2:
 		tm += (0,)
 	elif len(tm) != 3:
-		raise ValueError('bad time %s' % st)
+		raise ValueError("bad time %s" % st)
 	return tm
 
 
 def hmEncode(hm):
-	return '%.2d:%.2d' % tuple(hm)
+	return "%.2d:%.2d" % tuple(hm)
 
 
 def hmDecode(st):
-	parts = st.split(':')
+	parts = st.split(":")
 	if len(parts) == 1:
 		return (int(parts[0]), 0)
 	elif len(parts) == 2:
 		return (int(parts[0]), int(parts[1]))
 	else:
-		raise ValueError('bad hour:minute time %s' % st)
+		raise ValueError("bad hour:minute time %s" % st)
 
 
 def hmsRangeToStr(h1, m1, s1, h2, m2, s2):
 	return timeEncode(
 		(h1, m1, s1),
 		True,
-	) + ' - ' + timeEncode(
+	) + " - " + timeEncode(
 		(h2, m2, s2),
 		True,
 	)
@@ -284,7 +284,7 @@ def hmsRangeToStr(h1, m1, s1, h2, m2, s2):
 def epochGregDateTimeEncode(epoch, tz=None):
 	jd, hour, minute, second = getJhmsFromEpoch(epoch, tz)
 	year, month, day = jd_to_g(jd)
-	return '%.4d/%.2d/%.2d %.2d:%.2d:%.2d' % (
+	return "%.4d/%.2d/%.2d %.2d:%.2d:%.2d" % (
 		year,
 		month,
 		day,
@@ -302,21 +302,21 @@ def durationEncode(value, unit):
 	iValue = int(value)
 	if iValue == value:
 		value = iValue
-	return '%s %s' % (value, durationUnitValueToName[unit])
+	return "%s %s" % (value, durationUnitValueToName[unit])
 
 
 def durationDecode(durStr):
 	durStr = durStr.strip()
-	if ' ' in durStr:
-		value, unit = durStr.split(' ')
+	if " " in durStr:
+		value, unit = durStr.split(" ")
 		value = float(value)
 		unit = unit.lower()
 		if not unit:
 			return (value, 1)
 		for unitValue, unitName in durationUnitsAbs:
-			if unit in (unitName, unitName + 's'):  # ,unitName[0]
+			if unit in (unitName, unitName + "s"):  # ,unitName[0]
 				return (value, unitValue)
-	raise ValueError('invalid duration %r' % durStr)
+	raise ValueError("invalid duration %r" % durStr)
 
 
 def timeToFloatHour(h, m, s=0):
@@ -333,7 +333,7 @@ def floatHourToTime(fh):
 	)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	#print(floatHourToTime(3.6))
 	for tm in (
 		(8, 0, 0),
@@ -343,4 +343,4 @@ if __name__ == '__main__':
 		(8, 30, 55),
 		(8, 0, 10),
 	):
-		print('%r, %r' % (tm, simpleTimeEncode(tm)))
+		print("%r, %r" % (tm, simpleTimeEncode(tm)))

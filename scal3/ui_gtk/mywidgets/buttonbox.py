@@ -37,21 +37,21 @@ class MyHButtonBox(gtk.HButtonBox):
 				gtk.IconSize.BUTTON,
 			))
 		if onClick:
-			b.connect('clicked', onClick)
+			b.connect("clicked", onClick)
 		self.add(b)
 		return b
 
 	def add_ok(self, onClick=None):
 		return self.add_button(
 			gtk.STOCK_OK,
-			_('_OK'),
+			_("_OK"),
 			onClick=onClick,
 		)
 
 	def add_cancel(self, onClick=None):
 		return self.add_button(
 			gtk.STOCK_CANCEL,
-			_('_Cancel'),
+			_("_Cancel"),
 			onClick=onClick,
 		)
 

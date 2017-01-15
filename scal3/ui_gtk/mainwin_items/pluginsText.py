@@ -9,8 +9,8 @@ from scal3.ui_gtk.customize import CustomizableCalObj
 
 @registerSignals
 class CalObj(gtk.VBox, CustomizableCalObj):
-	_name = 'pluginsText'
-	desc = _('Plugins Text')
+	_name = "pluginsText"
+	desc = _("Plugins Text")
 
 	def __init__(self):
 		from scal3.ui_gtk.mywidgets.text_widgets import ReadOnlyTextView
@@ -23,7 +23,7 @@ class CalObj(gtk.VBox, CustomizableCalObj):
 		self.textbuff = self.textview.get_buffer()
 		##
 		self.expander = gtk.Expander()
-		self.expander.connect('activate', self.expanderExpanded)
+		self.expander.connect("activate", self.expanderExpanded)
 		if ui.pluginsTextInsideExpander:
 			self.expander.add(self.textview)
 			pack(self, self.expander)
@@ -36,10 +36,10 @@ class CalObj(gtk.VBox, CustomizableCalObj):
 		if self.optionsWidget:
 			return
 		self.optionsWidget = gtk.HBox()
-		self.enableExpanderCheckb = gtk.CheckButton(_('Inside Expander'))
+		self.enableExpanderCheckb = gtk.CheckButton(_("Inside Expander"))
 		self.enableExpanderCheckb.set_active(ui.pluginsTextInsideExpander)
 		self.enableExpanderCheckb.connect(
-			'clicked',
+			"clicked",
 			lambda check: self.setEnableExpander(check.get_active()),
 		)
 		self.setEnableExpander(ui.pluginsTextInsideExpander)
@@ -61,12 +61,12 @@ class CalObj(gtk.VBox, CustomizableCalObj):
 		if text:
 			self.textbuff.set_text(text)
 			self.getWidget().show()
-		else:## elif self.get_property('visible')
-			self.textbuff.set_text('')## forethought
+		else:## elif self.get_property("visible")
+			self.textbuff.set_text("")## forethought
 			self.getWidget().hide()
 
 	def setEnableExpander(self, enable):
-		#print('setEnableExpander', enable)
+		#print("setEnableExpander", enable)
 		if enable:
 			if not ui.pluginsTextInsideExpander:
 				self.remove(self.textview)

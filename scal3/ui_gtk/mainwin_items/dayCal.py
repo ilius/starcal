@@ -52,13 +52,13 @@ class DayCalTypeParamBox(gtk.HBox):
 		self.index = index
 		self.mode = mode
 		######
-		label = gtk.Label(_(calTypes[mode].desc) + '  ')
+		label = gtk.Label(_(calTypes[mode].desc) + "  ")
 		label.set_alignment(0, 0.5)
 		pack(self, label)
 		sgroupLabel.add_widget(label)
 		###
-		pack(self, gtk.Label(''), 1, 1)
-		pack(self, gtk.Label(_('position')))
+		pack(self, gtk.Label(""), 1, 1)
+		pack(self, gtk.Label(_("position")))
 		###
 		spin = FloatSpinButton(-999, 999, 1)
 		self.spinX = spin
@@ -68,7 +68,7 @@ class DayCalTypeParamBox(gtk.HBox):
 		self.spinY = spin
 		pack(self, spin)
 		####
-		pack(self, gtk.Label(''), 1, 1)
+		pack(self, gtk.Label(""), 1, 1)
 		###
 		fontb = MyFontButton(cal)
 		self.fontb = fontb
@@ -81,23 +81,23 @@ class DayCalTypeParamBox(gtk.HBox):
 		####
 		self.set(params)
 		####
-		self.spinX.connect('changed', self.onChange)
-		self.spinY.connect('changed', self.onChange)
-		fontb.connect('font-set', self.onChange)
-		colorb.connect('color-set', self.onChange)
+		self.spinX.connect("changed", self.onChange)
+		self.spinY.connect("changed", self.onChange)
+		fontb.connect("font-set", self.onChange)
+		colorb.connect("color-set", self.onChange)
 
 	def get(self):
 		return {
-			'pos': (self.spinX.get_value(), self.spinY.get_value()),
-			'font': self.fontb.get_font_name(),
-			'color': self.colorb.get_color()
+			"pos": (self.spinX.get_value(), self.spinY.get_value()),
+			"font": self.fontb.get_font_name(),
+			"color": self.colorb.get_color()
 		}
 
 	def set(self, data):
-		self.spinX.set_value(data['pos'][0])
-		self.spinY.set_value(data['pos'][1])
-		self.fontb.set_font_name(data['font'])
-		self.colorb.set_color(data['color'])
+		self.spinX.set_value(data["pos"][0])
+		self.spinY.set_value(data["pos"][1])
+		self.fontb.set_font_name(data["font"])
+		self.colorb.set_color(data["color"])
 
 	def onChange(self, obj=None, event=None):
 		ui.dcalTypeParams[self.index] = self.get()
@@ -106,22 +106,22 @@ class DayCalTypeParamBox(gtk.HBox):
 
 @registerSignals
 class CalObj(gtk.DrawingArea, CalBase):
-	_name = 'dayCal'
-	desc = _('Day Calendar')
+	_name = "dayCal"
+	desc = _("Day Calendar")
 	myKeys = CalBase.myKeys + (
-		'up', 'down',
-		'right', 'left',
-		'page_up',
-		'k', 'p',
-		'page_down',
-		'j', 'n',
-		#'end',
-		'f10', 'm',
+		"up", "down",
+		"right", "left",
+		"page_up",
+		"k", "p",
+		"page_down",
+		"j", "n",
+		#"end",
+		"f10", "m",
 	)
 
 	def heightSpinChanged(self, spin):
 		v = spin.get_value()
-		self.set_property('height-request', v)
+		self.set_property("height-request", v)
 		ui.dcalHeight = v
 
 	def updateTypeParamsWidget(self):
@@ -135,9 +135,9 @@ class CalObj(gtk.DrawingArea, CalBase):
 		n = len(calTypes.active)
 		while len(ui.dcalTypeParams) < n:
 			ui.dcalTypeParams.append({
-				'pos': (0, 0),
-				'font': ui.getFont(3.0),
-				'color': ui.textColor,
+				"pos": (0, 0),
+				"font": ui.getFont(3.0),
+				"color": ui.textColor,
 			})
 		sgroupLabel = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
 		sgroupFont = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
@@ -155,14 +155,14 @@ class CalObj(gtk.DrawingArea, CalBase):
 		gtk.DrawingArea.__init__(self)
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initCal()
-		self.set_property('height-request', ui.dcalHeight)
+		self.set_property("height-request", ui.dcalHeight)
 		######################
 		#self.kTime = 0
 		######################
-		self.connect('draw', self.drawAll)
-		self.connect('button-press-event', self.buttonPress)
-		#self.connect('screen-changed', self.screenChanged)
-		self.connect('scroll-event', self.scroll)
+		self.connect("draw", self.drawAll)
+		self.connect("button-press-event", self.buttonPress)
+		#self.connect("screen-changed", self.screenChanged)
+		self.connect("scroll-event", self.scroll)
 
 	def optionsWidgetCreate(self):
 		from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
@@ -174,13 +174,13 @@ class CalObj(gtk.DrawingArea, CalBase):
 		hbox = gtk.HBox()
 		spin = IntSpinButton(1, 9999)
 		spin.set_value(ui.dcalHeight)
-		spin.connect('changed', self.heightSpinChanged)
-		pack(hbox, gtk.Label(_('Height')))
+		spin.connect("changed", self.heightSpinChanged)
+		pack(hbox, gtk.Label(_("Height")))
 		pack(hbox, spin)
 		pack(self.optionsWidget, hbox)
 		########
 		frame = gtk.Frame()
-		frame.set_label(_('Calendars'))
+		frame.set_label(_("Calendars"))
 		self.typeParamsVbox = gtk.VBox()
 		frame.add(self.typeParamsVbox)
 		frame.show_all()
@@ -240,26 +240,26 @@ class CalObj(gtk.DrawingArea, CalBase):
 		daynum = newTextLayout(
 			self,
 			_(c.dates[mode][2], mode),
-			params['font'],
+			params["font"],
 		)
 		fontw, fonth = daynum.get_pixel_size()
 		if c.holiday:
 			setColor(cr, ui.holidayColor)
 		else:
-			setColor(cr, params['color'])
+			setColor(cr, params["color"])
 		cr.move_to(
-			x0 + dx / 2 - fontw / 2 + params['pos'][0],
-			y0 + dy / 2 - fonth / 2 + params['pos'][1],
+			x0 + dx / 2 - fontw / 2 + params["pos"][0],
+			y0 + dy / 2 - fonth / 2 + params["pos"][1],
 		)
 		show_layout(cr, daynum)
 		####
 		for mode, params in ui.getActiveDayCalParams()[1:]:
-			daynum = newTextLayout(self, _(c.dates[mode][2], mode), params['font'])
+			daynum = newTextLayout(self, _(c.dates[mode][2], mode), params["font"])
 			fontw, fonth = daynum.get_pixel_size()
-			setColor(cr, params['color'])
+			setColor(cr, params["color"])
 			cr.move_to(
-				x0 + dx / 2 - fontw / 2 + params['pos'][0],
-				y0 + dy / 2 - fonth / 2 + params['pos'][1],
+				x0 + dx / 2 - fontw / 2 + params["pos"][0],
+				y0 + dy / 2 - fonth / 2 + params["pos"][1],
 			)
 			show_layout(cr, daynum)
 
@@ -272,47 +272,47 @@ class CalObj(gtk.DrawingArea, CalBase):
 		self.onDateChange()
 
 	def keyPress(self, arg, gevent):
-		#print('keyPress')
+		#print("keyPress")
 		if CalBase.keyPress(self, arg, gevent):
 			return True
 		kname = gdk.keyval_name(gevent.keyval).lower()
-		#print('keyPress', kname)
-		#if kname.startswith('alt'):
+		#print("keyPress", kname)
+		#if kname.startswith("alt"):
 		#	return True
 		## How to disable Alt+Space of metacity ?????????????????????
-		if kname == 'up':
+		if kname == "up":
 			self.jdPlus(-1)
-		elif kname == 'down':
+		elif kname == "down":
 			self.jdPlus(1)
-		elif kname == 'right':
+		elif kname == "right":
 			if rtl:
 				self.jdPlus(-1)
 			else:
 				self.jdPlus(1)
-		elif kname == 'left':
+		elif kname == "left":
 			if rtl:
 				self.jdPlus(1)
 			else:
 				self.jdPlus(-1)
-		elif kname in ('page_up', 'k', 'p'):
+		elif kname in ("page_up", "k", "p"):
 			self.jdPlus(-1)  # FIXME
-		elif kname in ('page_down', 'j', 'n'):
+		elif kname in ("page_down", "j", "n"):
 			self.jdPlus(1)  # FIXME
-		#elif kname in ('f10', 'm'):  # FIXME
+		#elif kname in ("f10", "m"):  # FIXME
 		#	if gevent.get_state() & gdk.ModifierType.SHIFT_MASK:
 		#		# Simulate right click (key beside Right-Ctrl)
-		#		self.emit('popup-cell-menu', gevent.time, *self.getCellPos())
+		#		self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
 		#	else:
-		#		self.emit('popup-main-menu', gevent.time, *self.getMainMenuPos())
+		#		self.emit("popup-main-menu", gevent.time, *self.getMainMenuPos())
 		else:
 			return False
 		return True
 
 	def scroll(self, widget, gevent):
 		d = getScrollValue(gevent)
-		if d == 'up':
+		if d == "up":
 			self.jdPlus(-1)
-		elif d == 'down':
+		elif d == "down":
 			self.jdPlus(1)
 		else:
 			return False

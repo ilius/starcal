@@ -13,39 +13,39 @@ def monthPlus(y, m, p):
 
 
 def dateEncode(date):
-	return '%.4d/%.2d/%.2d' % tuple(date)
+	return "%.4d/%.2d/%.2d" % tuple(date)
 
 
 def dateEncodeDash(date):
-	return '%.4d-%.2d-%.2d' % tuple(date)
+	return "%.4d-%.2d-%.2d" % tuple(date)
 
 
 def checkDate(date):
 	if not 1 <= date[1] <= 12:
-		raise ValueError('bad date %s (invalid month)' % date)
+		raise ValueError("bad date %s (invalid month)" % date)
 	if not 1 <= date[2] <= 31:
-		raise ValueError('bad date %s (invalid day)' % date)
+		raise ValueError("bad date %s (invalid day)" % date)
 
 
 def dateDecode(st):
 	neg = False
-	if st.startswith('-'):
+	if st.startswith("-"):
 		neg = True
 		st = st[1:]
-	if '-' in st:
-		parts = st.split('-')
-	elif '/' in st:
-		parts = st.split('/')
+	if "-" in st:
+		parts = st.split("-")
+	elif "/" in st:
+		parts = st.split("/")
 	else:
-		raise ValueError('bad date %s (invalid seperator)' % st)
+		raise ValueError("bad date %s (invalid seperator)" % st)
 	if len(parts) != 3:
 		raise ValueError(
-			'bad date %s (invalid numbers count %s)' % (st, len(parts))
+			"bad date %s (invalid numbers count %s)" % (st, len(parts))
 		)
 	try:
 		date = [int(p) for p in parts]
 	except ValueError:
-		raise ValueError('bad date %s (omitting non-numeric)' % st)
+		raise ValueError("bad date %s (omitting non-numeric)" % st)
 	if neg:
 		date[0] *= -1
 	checkDate(date)

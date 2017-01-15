@@ -47,11 +47,11 @@ def arange(start, stop, step):
 
 
 def toBytes(s):
-	return s.encode('utf8') if isinstance(s, str) else bytes(s)
+	return s.encode("utf8") if isinstance(s, str) else bytes(s)
 
 
 def toStr(s):
-	return str(s, 'utf8') if isinstance(s, bytes) else str(s)
+	return str(s, "utf8") if isinstance(s, bytes) else str(s)
 
 
 def cmp(a, b):
@@ -59,22 +59,22 @@ def cmp(a, b):
 
 
 def versionLessThan(v0, v1):
-	if v0 == '':
-		if v1 == '':
+	if v0 == "":
+		if v1 == "":
 			return 0
 		else:
 			return -1
-	elif v1 == '':
+	elif v1 == "":
 		return 1
 	return [
-		int(p) for p in v0.split('.')
+		int(p) for p in v0.split(".")
 	] < [
-		int(p) for p in v1.split('.')
+		int(p) for p in v1.split(".")
 	]
 
 
 def printError(text):
-	sys.stderr.write('%s\n' % text)
+	sys.stderr.write("%s\n" % text)
 
 
 class FallbackLogger:
@@ -82,10 +82,10 @@ class FallbackLogger:
 		pass
 
 	def error(self, text):
-		sys.stderr.write('ERROR: %s\n' % text)
+		sys.stderr.write("ERROR: %s\n" % text)
 
 	def warning(self, text):
-		print('WARNING: %s' % text)
+		print("WARNING: %s" % text)
 
 	def debug(self, text):
 		print(text)
@@ -94,9 +94,9 @@ class FallbackLogger:
 def myRaise(File=None):
 	i = sys.exc_info()
 	typ, value, tback = sys.exc_info()
-	text = 'line %s: %s: %s\n' % (tback.tb_lineno, typ.__name__, value)
+	text = "line %s: %s: %s\n" % (tback.tb_lineno, typ.__name__, value)
 	if File:
-		text = 'File "%s", ' % File + text
+		text = "File \"%s\", " % File + text
 	sys.stderr.write(text)
 
 
@@ -127,7 +127,7 @@ class StrOrderedDict(dict):
 			self.keyList = sorted(arg.keys())
 		else:
 			raise TypeError(
-				'StrOrderedDict: bad type for first argument: %s' % type(arg)
+				"StrOrderedDict: bad type for first argument: %s" % type(arg)
 			)
 		dict.__init__(self, arg)
 
@@ -158,8 +158,8 @@ class StrOrderedDict(dict):
 			])
 		else:
 			raise ValueError(
-				'Bad type argument given to StrOrderedDict.__getitem__' +
-				': %s' % type(arg)
+				"Bad type argument given to StrOrderedDict.__getitem__" +
+				": %s" % type(arg)
 			)
 
 	def __setitem__(self, arg, value):
@@ -179,8 +179,8 @@ class StrOrderedDict(dict):
 			dict.__setitem__(self, arg, value)
 		else:
 			raise ValueError(
-				'Bad type argument given to StrOrderedDict.__setitem__' +
-				': %s' % type(item)
+				"Bad type argument given to StrOrderedDict.__setitem__" +
+				": %s" % type(item)
 			)
 
 	def __delitem__(self, arg):
@@ -196,8 +196,8 @@ class StrOrderedDict(dict):
 			self.keyList.__delitem__(arg)
 		else:
 			raise ValueError(
-				'Bad type argument given to StrOrderedDict.__delitem__' +
-				': %s' % type(arg)
+				"Bad type argument given to StrOrderedDict.__delitem__" +
+				": %s" % type(arg)
 			)
 
 	#def pop(self, key):  # FIXME
@@ -235,15 +235,15 @@ class StrOrderedDict(dict):
 			yield (key, dict.__getitem__(self, key))
 
 	def __str__(self):
-		return 'StrOrderedDict(%r)' % self.items()
+		return "StrOrderedDict(%r)" % self.items()
 
-	#'StrOrderedDict{' + ', '.join([
-	#	repr(k) + ':' + repr(self[k])
+	#"StrOrderedDict{" + ", ".join([
+	#	repr(k) + ":" + repr(self[k])
 	#	for k in self.keyList
-	#]) + '}'
+	#]) + "}"
 
 	def __repr__(self):
-		return 'StrOrderedDict(%r)' % self.items()
+		return "StrOrderedDict(%r)" % self.items()
 
 
 class NullObj:## a fully transparent object
@@ -257,10 +257,10 @@ class NullObj:## a fully transparent object
 		return self
 
 	def __str__(self):
-		return ''
+		return ""
 
 	def __repr__(self):
-		return ''
+		return ""
 
 	def __int__(self):
 		return 0
@@ -271,7 +271,7 @@ def int_split(s):
 
 
 def s_join(l):
-	return ' '.join([str(x) for x in l])
+	return " ".join([str(x) for x in l])
 
 
 def cleanCacheDict(cache, maxSize, currentValue):
@@ -286,23 +286,23 @@ def cleanCacheDict(cache, maxSize, currentValue):
 
 
 def urlToPath(url):
-	if not url.startswith('file://'):
+	if not url.startswith("file://"):
 		return url
 	path = url[7:]
-	if path.startswith('\r\n'):
+	if path.startswith("\r\n"):
 		path = path[:-2]
-	elif path.startswith('\r'):
+	elif path.startswith("\r"):
 		path = path[:-1]
 	# here convert html unicode symbols to utf8 string:
-	if '%' not in path:
+	if "%" not in path:
 		return path
-	path2 = ''
+	path2 = ""
 	n = len(path)
 	i = 0
 	while i < n:
-		if path[i] == '%' and i < n - 2:
+		if path[i] == "%" and i < n - 2:
 			path2 += chr(int(path[i + 1:i + 3], 16))
-			# OR: chr(eval('0x%s'%path[i + 1:i + 3]))
+			# OR: chr(eval("0x%s"%path[i + 1:i + 3]))
 			i += 3
 		else:
 			path2 += path[i]
@@ -346,14 +346,14 @@ def numRangesEncode(values):
 		if isinstance(value, int):
 			parts.append(str(value))
 		elif isinstance(value, (tuple, list)):
-			parts.append('%d-%d' % (value[0], value[1]))
-	return ', '.join(parts)
+			parts.append("%d-%d" % (value[0], value[1]))
+	return ", ".join(parts)
 
 
 def numRangesDecode(text):
 	values = []
-	for part in text.split(','):
-		pparts = part.strip().split('-')
+	for part in text.split(","):
+		pparts = part.strip().split("-")
 		try:
 			if len(pparts) == 1:
 				values.append(int(pparts[0]))
@@ -373,7 +373,7 @@ def inputDate(msg):
 			date = input(msg)
 		except KeyboardInterrupt:
 			return
-		if date.lower() == 'q':
+		if date.lower() == "q":
 			return
 		try:
 			return dateDecode(date)
@@ -388,5 +388,5 @@ def inputDateJd(msg):
 		return to_jd(y, m, d, DATE_GREG)
 
 
-#if __name__=='__main__':
+#if __name__=="__main__":
 #	print(findNearestNum([1, 2, 4, 6, 3, 7], 3.6))

@@ -13,11 +13,11 @@ class YearMonthDayBox(gtk.HBox):
 		gtk.HBox.__init__(self, spacing=4)
 		self.mode = calTypes.primary
 		####
-		pack(self, gtk.Label(_('Year')))
+		pack(self, gtk.Label(_("Year")))
 		self.spinY = YearSpinButton()
 		pack(self, self.spinY)
 		####
-		pack(self, gtk.Label(_('Month')))
+		pack(self, gtk.Label(_("Month")))
 		comboMonth = gtk.ComboBoxText()
 		module = calTypes[self.mode]
 		for i in range(12):
@@ -29,14 +29,14 @@ class YearMonthDayBox(gtk.HBox):
 		pack(self, comboMonth)
 		self.comboMonth = comboMonth
 		####
-		pack(self, gtk.Label(_('Day')))
+		pack(self, gtk.Label(_("Day")))
 		self.spinD = DaySpinButton()
 		pack(self, self.spinD)
 		self.comboMonthConn = comboMonth.connect(
-			'changed',
+			"changed",
 			self.comboMonthChanged,
 		)
-		self.spinY.connect('changed', self.comboMonthChanged)
+		self.spinY.connect("changed", self.comboMonthChanged)
 
 	def set_mode(self, mode):
 		self.comboMonth.disconnect(self.comboMonthConn)
@@ -48,7 +48,7 @@ class YearMonthDayBox(gtk.HBox):
 			combo.append_text(_(module.getMonthName(i + 1)))
 		self.spinD.set_range(1, module.maxMonthLen)
 		self.comboMonthConn = self.comboMonth.connect(
-			'changed',
+			"changed",
 			self.comboMonthChanged,
 		)
 

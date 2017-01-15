@@ -3,7 +3,7 @@
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 #
 # Using libkal code
-#		The 'libkal' library for date conversion:
+#		The "libkal" library for date conversion:
 #		Copyright (C) 1996-1998 Petr Tomasek <tomasek@etf.cuni.cz>
 #
 # This program is free software; you can redistribute it and/or modify
@@ -21,9 +21,9 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-name = 'julian'
-desc = 'Julian'
-origLang = 'en'
+name = "julian"
+desc = "Julian"
+origLang = "en"
 
 from math import floor
 
@@ -32,17 +32,17 @@ def ifloor(x):
 	return int(floor(x))
 
 monthName = (
-	'January', 'February', 'March',
-	'April', 'May', 'June',
-	'July', 'August', 'September',
-	'October', 'November', 'December',
+	"January", "February", "March",
+	"April", "May", "June",
+	"July", "August", "September",
+	"October", "November", "December",
 )
 
 monthNameAb = (
-	'Jan', 'Feb', 'Mar',
-	'Apr', 'May', 'Jun',
-	'Jul', 'Aug', 'Sep',
-	'Oct', 'Nov', 'Dec',
+	"Jan", "Feb", "Mar",
+	"Apr", "May", "Jun",
+	"Jul", "Aug", "Sep",
+	"Oct", "Nov", "Dec",
 )
 
 

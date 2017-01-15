@@ -12,7 +12,7 @@ modules = [gregorian]
 
 def myRaise():
 	i = sys.exc_info()
-	sys.stdout.write('File "%s", line %s: %s: %s\n' % (
+	sys.stdout.write("File \"%s\", line %s: %s: %s\n" % (
 		__file__,
 		i[2].tb_lineno,
 		i[0].__name__,
@@ -20,37 +20,37 @@ def myRaise():
 	))
 
 
-for name in open(join(modDir, 'modules.list')).read().split('\n'):
+for name in open(join(modDir, "modules.list")).read().split("\n"):
 	name = name.strip()
 	if not name:
 		continue
-	if name.startswith('#'):
+	if name.startswith("#"):
 		continue
 	#try:
-	mod = __import__('scal3.cal_types.%s' % name, fromlist=[name])
+	mod = __import__("scal3.cal_types.%s" % name, fromlist=[name])
 	#mod = __import__(name) # Need to "sys.path.insert(0, modDir)" before
 	#except:
 	#	myRaise()
-	#	print('Could not load calendar modules "%s"' % name)
+	#	print("Could not load calendar modules "%s"" % name)
 	#	continue
 	for attr in (
-		'name',
-		'desc',
-		'origLang',
-		'getMonthName',
-		'getMonthNameAb',
-		'minMonthLen',
-		'maxMonthLen',
-		'getMonthLen',
-		'to_jd',
-		'jd_to',
-		'options',
-		'save',
+		"name",
+		"desc",
+		"origLang",
+		"getMonthName",
+		"getMonthNameAb",
+		"minMonthLen",
+		"maxMonthLen",
+		"getMonthLen",
+		"to_jd",
+		"jd_to",
+		"options",
+		"save",
 	):
 		if not hasattr(mod, attr):
 			printError(
-				'Invalid calendar module: ' +
-				'module "%s" has no attribute "%s"\n' % (name, attr)
+				"Invalid calendar module: " +
+				"module \"%s\" has no attribute \"%s\"\n" % (name, attr)
 			)
 	modules.append(mod)
 
@@ -68,7 +68,7 @@ class CalTypesHolder:
 		return len(self.names)
 
 	def __init__(self):
-		self.activeNames = ['gregorian']
+		self.activeNames = ["gregorian"]
 		self.inactiveNames = []
 		self.update()
 
@@ -135,7 +135,7 @@ class CalTypesHolder:
 		if isinstance(key, int):
 			return modules[key]
 		else:
-			raise TypeError('invalid key %r given to %s.__getitem__' % (
+			raise TypeError("invalid key %r given to %s.__getitem__" % (
 				key,
 				self.__class__.__name__,
 			))

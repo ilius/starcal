@@ -35,7 +35,7 @@ class WidgetClass(common.WidgetClass):
 		sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
 		######
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Start'))
+		label = gtk.Label(_("Start"))
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
@@ -46,22 +46,22 @@ class WidgetClass(common.WidgetClass):
 		######
 		hbox = gtk.HBox()
 		self.endTypeCombo = gtk.ComboBoxText()
-		for item in ('Duration', 'End'):
+		for item in ("Duration", "End"):
 			self.endTypeCombo.append_text(_(item))
-		self.endTypeCombo.connect('changed', self.endTypeComboChanged)
+		self.endTypeCombo.connect("changed", self.endTypeComboChanged)
 		sizeGroup.add_widget(self.endTypeCombo)
 		pack(hbox, self.endTypeCombo)
 		####
 		self.durationBox = gtk.HBox()
 		self.durationSpin = IntSpinButton(1, 999)
 		pack(self.durationBox, self.durationSpin)
-		pack(self.durationBox, gtk.Label(_(' days')))
+		pack(self.durationBox, gtk.Label(_(" days")))
 		pack(hbox, self.durationBox)
 		####
 		self.endDateInput = DateButton()
 		pack(hbox, self.endDateInput)
 		####
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self, hbox)
 		#############
 		self.notificationBox = common.NotificationBox(event)
@@ -89,12 +89,12 @@ class WidgetClass(common.WidgetClass):
 		self.startDateInput.set_value(jd_to(startJd, mode))
 		###
 		endType, endValue = self.event.getEnd()
-		if endType == 'duration':
+		if endType == "duration":
 			self.endTypeCombo.set_active(0)
 			self.durationSpin.set_value(endValue)
 			self.endDateInput.set_value(jd_to(self.event.getEndJd(), mode))
 			# ^ FIXME
-		elif endType == 'date':
+		elif endType == "date":
 			self.endTypeCombo.set_active(1)
 			self.endDateInput.set_value(endValue)
 		else:
@@ -107,10 +107,10 @@ class WidgetClass(common.WidgetClass):
 		###
 		active = self.endTypeCombo.get_active()
 		if active == 0:
-			self.event.setEnd('duration', self.durationSpin.get_value())
+			self.event.setEnd("duration", self.durationSpin.get_value())
 		elif active == 1:
 			self.event.setEnd(
-				'date',
+				"date",
 				self.endDateInput.get_value(),
 			)
 

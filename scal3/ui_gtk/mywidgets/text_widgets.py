@@ -24,13 +24,13 @@ class ReadOnlyTextWidget:
 			menu.remove(item)
 		####
 		menu.add(labelStockMenuItem(
-			'Copy _All',
+			"Copy _All",
 			gtk.STOCK_COPY,
 			self.copyAll,
 		))
 		####
 		itemCopy = labelStockMenuItem(
-			'_Copy',
+			"_Copy",
 			gtk.STOCK_COPY,
 			self.copy,
 		)
@@ -45,10 +45,10 @@ class ReadOnlyTextWidget:
 
 class ReadOnlyLabel(gtk.Label, ReadOnlyTextWidget):
 	def get_cursor_position(self):
-		return self.get_property('cursor-position')
+		return self.get_property("cursor-position")
 
 	def get_selection_bound(self):
-		return self.get_property('selection-bound')
+		return self.get_property("selection-bound")
 
 	def has_selection(self):
 		return self.get_cursor_position() != self.get_selection_bound()
@@ -63,7 +63,7 @@ class ReadOnlyLabel(gtk.Label, ReadOnlyTextWidget):
 	def __init__(self, *args, **kwargs):
 		gtk.Label.__init__(self, *args, **kwargs)
 		self.set_selectable(True)## to be selectable, with visible cursor
-		self.connect('populate-popup', self.onPopup)
+		self.connect("populate-popup", self.onPopup)
 
 
 class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
@@ -71,7 +71,7 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 		return buffer_get_text(self.get_buffer())
 
 	def get_cursor_position(self):
-		return self.get_buffer().get_property('cursor-position')
+		return self.get_buffer().get_property("cursor-position")
 
 	def has_selection(self):
 		buf = self.get_buffer()
@@ -91,4 +91,4 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 		gtk.TextView.__init__(self, *args, **kwargs)
 		self.set_editable(False)
 		self.set_cursor_visible(False)
-		self.connect('populate-popup', self.onPopup)
+		self.connect("populate-popup", self.onPopup)

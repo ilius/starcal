@@ -17,7 +17,7 @@
 ##	with this program. Or on Debian systems, from /usr/share/common-licenses/GPL
 ##	If not, see <http://www.gnu.org/licenses/gpl.txt>.
 
-APP_DESC = 'StarCalendar'
+APP_DESC = "StarCalendar"
 
 import os
 import shutil
@@ -30,16 +30,16 @@ from scal3.locale_man import langDict, langDefault
 
 from scal3.ui_gtk import *
 
-langConfDir = join(rootDir, 'conf', 'defaults')
+langConfDir = join(rootDir, "conf", "defaults")
 
-gtk.Window.set_default_icon_from_file(join(pixDir, 'starcal.png'))
+gtk.Window.set_default_icon_from_file(join(pixDir, "starcal.png"))
 
 langNameList = []
 langCodeList = []
 
 
 win = gtk.Dialog(
-	title=APP_DESC + ' 3.x - First Run',
+	title=APP_DESC + " 3.x - First Run",
 	buttons=(
 		gtk.STOCK_OK,
 		gtk.ResponseType.OK,
@@ -48,17 +48,17 @@ win = gtk.Dialog(
 	)
 )
 langHbox = gtk.HBox()
-pack(langHbox, gtk.Label('Select Language:'))
+pack(langHbox, gtk.Label("Select Language:"))
 
 
 importCheckb = None
 oldVersion = getOldVersion()
-if oldVersion:## and '2.2.0' <= oldVersion < '2.5.0':## FIXME
+if oldVersion:## and "2.2.0" <= oldVersion < "2.5.0":## FIXME
 	importCheckb = gtk.CheckButton(
-		'Import configurations from %s %s' % (APP_DESC, oldVersion)
+		"Import configurations from %s %s" % (APP_DESC, oldVersion)
 	)
 	importCheckb.connect(
-		'clicked',
+		"clicked",
 		lambda cb: langHbox.set_sensitive(not cb.get_active()),
 	)
 	importCheckb.set_active(True)
@@ -90,7 +90,7 @@ pack(win.vbox, pbarHbox)
 win.vbox.show_all()
 
 if win.run() == gtk.ResponseType.OK:
-	#print('RESPONSE OK')
+	#print("RESPONSE OK")
 	if importCheckb and importCheckb.get_active():
 		importCheckb.set_sensitive(False)
 		langHbox.set_sensitive(False)
@@ -98,7 +98,7 @@ if win.run() == gtk.ResponseType.OK:
 		for frac in importConfigIter():
 			pbar.set_fraction(frac)
 			percent = frac * 100
-			text = '%.1f%%' % percent ## FIXME
+			text = "%.1f%%" % percent ## FIXME
 			pbar.set_text(text)
 			while gtk.events_pending():
 				gtk.main_iteration_do(False)
@@ -106,7 +106,7 @@ if win.run() == gtk.ResponseType.OK:
 		i = langCombo.get_active()
 		langCode = langCodeList[i]
 		thisLangConfDir = join(langConfDir, langCode)
-		#print('Setting language', langCode)
+		#print("Setting language", langCode)
 		if not os.path.isdir(confDir):
 			os.mkdir(confDir, 0o755)
 		if os.path.isdir(thisLangConfDir):
@@ -118,9 +118,9 @@ if win.run() == gtk.ResponseType.OK:
 				#print(src_path)
 				shutil.copy(src_path, dst_path)
 		else:
-			open(join(confDir, 'locale.json'), 'w').write(
+			open(join(confDir, "locale.json"), "w").write(
 				dataToPrettyJson({
-					'lang': langCode,
+					"lang": langCode,
 				})
 			)
 

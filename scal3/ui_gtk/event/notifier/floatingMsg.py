@@ -31,24 +31,24 @@ class WidgetClass(gtk.HBox):
 		gtk.HBox.__init__(self)
 		# [_] Fill Screen Width   Speed [__]   BG Color [__]  Text Color [__]
 		##
-		self.fillWidthCb = gtk.CheckButton(_('Fill Width'))
+		self.fillWidthCb = gtk.CheckButton(_("Fill Width"))
 		pack(self, self.fillWidthCb)
-		pack(self, gtk.Label(''), 1, 1)
+		pack(self, gtk.Label(""), 1, 1)
 		##
 		self.speedSpin = IntSpinButton(1, 999)
-		pack(self, gtk.Label(_('Speed')))
+		pack(self, gtk.Label(_("Speed")))
 		pack(self, self.speedSpin)
-		pack(self, gtk.Label(''), 1, 1)
+		pack(self, gtk.Label(""), 1, 1)
 		##
 		self.bgColorButton = MyColorButton()
-		pack(self, gtk.Label(_('BG Color')))
+		pack(self, gtk.Label(_("BG Color")))
 		pack(self, self.bgColorButton)
-		pack(self, gtk.Label(''), 1, 1)
+		pack(self, gtk.Label(""), 1, 1)
 		##
 		self.textColorButton = MyColorButton()
-		pack(self, gtk.Label(_('Text Color')))
+		pack(self, gtk.Label(_("Text Color")))
 		pack(self, self.textColorButton)
-		pack(self, gtk.Label(''), 1, 1)
+		pack(self, gtk.Label(""), 1, 1)
 
 	def updateWidget(self):
 		self.fillWidthCb.set_active(self.notifier.fillWidth)

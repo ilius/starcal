@@ -45,31 +45,31 @@ class WidgetClass(gtk.HBox):
 		self.rule = rule
 		gtk.HBox.__init__(self)
 		###
-		self.countLabel = gtk.Label('')
+		self.countLabel = gtk.Label("")
 		pack(self, self.countLabel)
 		###
 		self.trees = gtk.ListStore(str)
 		self.dialog = None
 		###
-		self.editButton = gtk.Button(_('Edit'))
+		self.editButton = gtk.Button(_("Edit"))
 		self.editButton.set_image(gtk.Image.new_from_stock(
 			gtk.STOCK_EDIT,
 			gtk.IconSize.BUTTON,
 		))
-		self.editButton.connect('clicked', self.showDialog)
+		self.editButton.connect("clicked", self.showDialog)
 		pack(self, self.editButton)
 
 	def updateCountLabel(self):
 		self.countLabel.set_label(
-			' ' * 2 +
-			_('%s items') % _(len(self.trees)) +
-			' ' * 2
+			" " * 2 +
+			_("%s items") % _(len(self.trees)) +
+			" " * 2
 		)
 
 	def createDialog(self):
 		if self.dialog:
 			return
-		print('----- toplevel', self.get_toplevel())
+		print("----- toplevel", self.get_toplevel())
 		self.dialog = gtk.Dialog(
 			title=self.rule.desc,
 			parent=self.get_toplevel(),
@@ -80,9 +80,9 @@ class WidgetClass(gtk.HBox):
 		self.treev.set_model(self.trees)
 		##
 		cell = gtk.CellRendererText()
-		cell.set_property('editable', True)
-		cell.connect('edited', self.dateCellEdited)
-		col = gtk.TreeViewColumn(_('Date'), cell, text=0)
+		cell.set_property("editable", True)
+		cell.connect("edited", self.dateCellEdited)
+		col = gtk.TreeViewColumn(_("Date"), cell, text=0)
 		self.treev.append_column(col)
 		##
 		toolbar = gtk.Toolbar()
@@ -90,25 +90,25 @@ class WidgetClass(gtk.HBox):
 		size = gtk.IconSize.SMALL_TOOLBAR
 		##
 		tb = toolButtonFromStock(gtk.STOCK_ADD, size)
-		set_tooltip(tb, _('Add'))
-		tb.connect('clicked', self.addClicked)
+		set_tooltip(tb, _("Add"))
+		tb.connect("clicked", self.addClicked)
 		toolbar.insert(tb, -1)
 		#self.buttonAdd = tb
 		##
 		tb = toolButtonFromStock(gtk.STOCK_DELETE, size)
-		set_tooltip(tb, _('Delete'))
-		tb.connect('clicked', self.deleteClicked)
+		set_tooltip(tb, _("Delete"))
+		tb.connect("clicked", self.deleteClicked)
 		toolbar.insert(tb, -1)
 		#self.buttonDel = tb
 		##
 		tb = toolButtonFromStock(gtk.STOCK_GO_UP, size)
-		set_tooltip(tb, _('Move up'))
-		tb.connect('clicked', self.moveUpClicked)
+		set_tooltip(tb, _("Move up"))
+		tb.connect("clicked", self.moveUpClicked)
 		toolbar.insert(tb, -1)
 		##
 		tb = toolButtonFromStock(gtk.STOCK_GO_DOWN, size)
-		set_tooltip(tb, _('Move down'))
-		tb.connect('clicked', self.moveDownClicked)
+		set_tooltip(tb, _("Move down"))
+		tb.connect("clicked", self.moveDownClicked)
 		toolbar.insert(tb, -1)
 		##
 		dialogHbox = gtk.HBox()
@@ -117,11 +117,11 @@ class WidgetClass(gtk.HBox):
 		pack(self.dialog.vbox, dialogHbox, 1, 1)
 		self.dialog.vbox.show_all()
 		self.dialog.resize(200, 300)
-		self.dialog.connect('response', lambda w, e: self.dialog.hide())
+		self.dialog.connect("response", lambda w, e: self.dialog.hide())
 		##
 		okButton = self.dialog.add_button(gtk.STOCK_OK, gtk.ResponseType.CANCEL)
 		if ui.autoLocale:
-			okButton.set_label(_('_OK'))
+			okButton.set_label(_("_OK"))
 			okButton.set_image(gtk.Image.new_from_stock(
 				gtk.STOCK_OK,
 				gtk.IconSize.BUTTON,

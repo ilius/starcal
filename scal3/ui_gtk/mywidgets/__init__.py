@@ -35,7 +35,7 @@ from scal3.ui_gtk.drawing import newDndFontNamePixbuf
 def myRaise():
 	i = sys.exc_info()
 	try:
-		print('line %s: %s: %s' % (
+		print("line %s: %s: %s" % (
 			i[2].tb_lineno,
 			i[0].__name__, i[1],
 		))
@@ -61,18 +61,18 @@ class MyFontButton(gtk.FontButton):
 			gdk.DragAction.COPY,
 		)
 		self.drag_source_add_text_targets()
-		self.connect('drag-data-get', self.dragDataGet)
-		self.connect('drag-begin', self.dragBegin, parent)
+		self.connect("drag-data-get", self.dragDataGet)
+		self.connect("drag-begin", self.dragBegin, parent)
 		self.drag_dest_set(
 			gtk.DestDefaults.ALL,
 			(),
 			gdk.DragAction.COPY,
 		)
 		self.drag_dest_add_text_targets()
-		self.connect('drag-data-received', self.dragDataRec)
+		self.connect("drag-data-received", self.dragDataRec)
 
 	def dragDataGet(self, fontb, context, selection, target_id, etime):
-		#print('fontButtonDragDataGet')
+		#print("fontButtonDragDataGet")
 		selection.set_text(gfontEncode(fontb.get_font_name()))
 		return True
 
@@ -80,7 +80,7 @@ class MyFontButton(gtk.FontButton):
 		#dtype = selection.get_data_type()
 		#print(dtype ## UTF8_STRING)
 		text = selection.get_text()
-		#\print('fontButtonDragDataRec    text=', text)
+		#\print("fontButtonDragDataRec    text=", text)
 		if text:
 			pfont = Pango.FontDescription(text)
 			if pfont.get_family() and pfont.get_size() > 0:
@@ -88,7 +88,7 @@ class MyFontButton(gtk.FontButton):
 		return True
 
 	def dragBegin(self, fontb, context, parent):
-		#print('fontBottonDragBegin'## caled before dragCalDataGet)
+		#print("fontBottonDragBegin"## caled before dragCalDataGet)
 		fontName = gtk.FontButton.get_font_name(self)
 		pbuf = newDndFontNamePixbuf(fontName)
 		w = pbuf.get_width()
@@ -115,15 +115,15 @@ class MyColorButton(gtk.ColorButton):
 	# for tooltip text
 	def __init__(self):
 		gtk.ColorButton.__init__(self)
-		self.connect('color-set', self.update_tooltip)
+		self.connect("color-set", self.update_tooltip)
 
 	def update_tooltip(self, colorb=None):
 		r, g, b = self.get_color()
 		a = self.get_alpha()
 		if self.get_use_alpha():
-			text = '%s\n%s\n%s\n%s' % (r, g, b, a)
+			text = "%s\n%s\n%s\n%s" % (r, g, b, a)
 		else:
-			text = '%s\n%s\n%s' % (r, g, b)
+			text = "%s\n%s\n%s" % (r, g, b)
 		##self.get_tooltip_window().set_direction(gtk.TextDirection.LTR)
 		##print(self.get_tooltip_window())
 		self.set_tooltip_text(text) ##???????????????? Right to left
@@ -178,11 +178,11 @@ class TextFrame(gtk.Frame):
 		return buffer_get_text(self.buff)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	d = gtk.Dialog(parent=None)
 	clock = FClockLabel()
 	clock.start()
 	pack(d.vbox, clock, 1, 1)
-	d.connect('delete-event', lambda widget, event: gtk.main_quit())
+	d.connect("delete-event", lambda widget, event: gtk.main_quit())
 	d.show_all()
 	gtk.main()

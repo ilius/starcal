@@ -14,7 +14,7 @@ class WidgetClass(NormalWidgetClass):
 		NormalWidgetClass.__init__(self, group)
 		###
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Show Date in Event Summary'))
+		label = gtk.Label(_("Show Date in Event Summary"))
 		label.set_alignment(0, 0.5)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)

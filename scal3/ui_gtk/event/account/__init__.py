@@ -17,7 +17,7 @@ class BaseWidgetClass(gtk.VBox):
 		self.sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
 		#####
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Title'))
+		label = gtk.Label(_("Title"))
 		label.set_alignment(0, 0.5)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
@@ -40,9 +40,9 @@ class AccountCombo(IdComboBox):
 		###
 		cell = gtk.CellRendererText()
 		pack(self, cell, 1)
-		self.add_attribute(cell, 'text', 1)
+		self.add_attribute(cell, "text", 1)
 		###
-		ls.append([-1, _('None')])
+		ls.append([-1, _("None")])
 		for account in ui.eventAccounts:
 			if account.enable:
 				ls.append([account.id, account.title])
@@ -71,7 +71,7 @@ class AccountGroupCombo(IdComboBox):
 		###
 		cell = gtk.CellRendererText()
 		pack(self, cell, 1)
-		self.add_attribute(cell, 'text', 1)
+		self.add_attribute(cell, "text", 1)
 
 	def setAccount(self, account):
 		self.account = account
@@ -83,8 +83,8 @@ class AccountGroupCombo(IdComboBox):
 		if self.account:
 			for groupData in self.account.remoteGroups:
 				ls.append([
-					str(groupData['id']),
-					groupData['title'],
+					str(groupData["id"]),
+					groupData["title"],
 				])
 
 
@@ -97,8 +97,8 @@ class AccountGroupBox(gtk.HBox):
 		button = gtk.Button(
 			#stock=gtk.STOCK_CONNECT,
 		)
-		button.set_label(_('Fetch'))
-		button.connect('clicked', self.fetchClicked)
+		button.set_label(_("Fetch"))
+		button.connect("clicked", self.fetchClicked)
 		pack(self, button)
 		self.fetchButton = button
 		##
@@ -108,7 +108,7 @@ class AccountGroupBox(gtk.HBox):
 		self.msgLabel = label
 		###
 		if accountCombo:
-			accountCombo.connect('changed', self.accountComboChanged)
+			accountCombo.connect("changed", self.accountComboChanged)
 
 	def accountComboChanged(self, combo):
 		aid = combo.get_active()
@@ -120,21 +120,21 @@ class AccountGroupBox(gtk.HBox):
 		combo = self.combo
 		account = combo.account
 		if not account:
-			self.msgLabel.set_label(_('No account selected'))
+			self.msgLabel.set_label(_("No account selected"))
 			return
-		self.msgLabel.set_label(_('Fatching'))
+		self.msgLabel.set_label(_("Fatching"))
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
 		try:
 			account.fetchGroups()
 		except Exception as e:
-			self.msgLabel.set_label(_('Error'))
+			self.msgLabel.set_label(_("Error"))
 			showError(
-				_('Error in fetching remote groups') + '\n' + str(e),
+				_("Error in fetching remote groups") + "\n" + str(e),
 				ui.eventManDialog,
 			)
 			return
 		else:
-			self.msgLabel.set_label('')
+			self.msgLabel.set_label("")
 			account.save()
 		self.combo.updateList()

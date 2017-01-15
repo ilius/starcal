@@ -14,14 +14,14 @@ class MonthComboBox(gtk.ComboBox):
 		###
 		cell = gtk.CellRendererText()
 		pack(self, cell, True)
-		self.add_attribute(cell, 'text', 0)
+		self.add_attribute(cell, "text", 0)
 
 	def build(self, mode):
 		active = self.get_active()
 		ls = self.get_model()
 		ls.clear()
 		if self.includeEvery:
-			ls.append([_('Every Month')])
+			ls.append([_("Every Month")])
 		for m in range(1, 13):
 			ls.append([locale_man.getMonthName(mode, m)])
 		if active is not None:

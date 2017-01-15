@@ -9,11 +9,11 @@ from scal3.json_utils import dataToPrettyJson
 from scal3 import event_lib
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	eventId = int(sys.argv[1])
 	with open(event_lib.Event.getFile(eventId)) as eventFile:
 		eventJsonData = json.load(eventFile)
 
-	lastHash = eventJsonData['history'][0][1]
+	lastHash = eventJsonData["history"][0][1]
 	data = loadBsonObject(lastHash)
 	print(dataToPrettyJson(data))

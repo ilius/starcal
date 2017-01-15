@@ -14,23 +14,23 @@ class GroupEditorDialog(gtk.Dialog):
 		checkEventsReadOnly()
 		gtk.Dialog.__init__(self, **kwargs)
 		self.isNew = (group is None)
-		self.set_title(_('Add New Group') if self.isNew else _('Edit Group'))
-		#self.connect('delete-event', lambda obj, e: self.destroy())
+		self.set_title(_("Add New Group") if self.isNew else _("Edit Group"))
+		#self.connect("delete-event", lambda obj, e: self.destroy())
 		#self.resize(800, 600)
 		###
 		dialog_add_button(
 			self,
 			gtk.STOCK_CANCEL,
-			_('_Cancel'),
+			_("_Cancel"),
 			gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
 			gtk.STOCK_OK,
-			_('_OK'),
+			_("_OK"),
 			gtk.ResponseType.OK,
 		)
-		self.connect('response', lambda w, e: self.hide())
+		self.connect("response", lambda w, e: self.hide())
 		#######
 		self.activeWidget = None
 		#######
@@ -38,9 +38,9 @@ class GroupEditorDialog(gtk.Dialog):
 		combo = gtk.ComboBoxText()
 		for cls in event_lib.classes.group:
 			combo.append_text(cls.desc)
-		pack(hbox, gtk.Label(_('Group Type')))
+		pack(hbox, gtk.Label(_("Group Type")))
 		pack(hbox, combo)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self.vbox, hbox)
 		####
 		if self.isNew:
@@ -50,7 +50,7 @@ class GroupEditorDialog(gtk.Dialog):
 			self._group = group
 			combo.set_active(event_lib.classes.group.names.index(group.name))
 		self.activeWidget = None
-		combo.connect('changed', self.typeChanged)
+		combo.connect("changed", self.typeChanged)
 		self.comboType = combo
 		self.vbox.show_all()
 		self.typeChanged()
@@ -64,7 +64,7 @@ class GroupEditorDialog(gtk.Dialog):
 			return baseTitle
 		i = 1
 		while True:
-			newTitle = baseTitle + ' ' + _(i)
+			newTitle = baseTitle + " " + _(i)
 			if newTitle in usedTitles:
 				i += 1
 			else:

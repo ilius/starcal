@@ -20,38 +20,38 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-name = 'indian_national'
-desc = 'Indian National'
-origLang = 'hi'  # or 'en' FIXME
+name = "indian_national"
+desc = "Indian National"
+origLang = "hi"  # or "en" FIXME
 
 monthName = (
-	'Chaitra',
-	'Vaishākh',
-	'Jyaishtha',
-	'Āshādha',
-	'Shrāvana',
-	'Bhādrapad',
-	'Āshwin',
-	'Kārtik',
-	'Agrahayana',
-	'Paush',
-	'Māgh',
-	'Phālgun',
+	"Chaitra",
+	"Vaishākh",
+	"Jyaishtha",
+	"Āshādha",
+	"Shrāvana",
+	"Bhādrapad",
+	"Āshwin",
+	"Kārtik",
+	"Agrahayana",
+	"Paush",
+	"Māgh",
+	"Phālgun",
 )
 
 monthNameAb = (
-	'Cha',
-	'Vai',
-	'Jya',
-	'Āsh',
-	'Shr',
-	'Bhā',
-	'Āsw',
-	'Kār',
-	'Agr',
-	'Pau',
-	'Māg',
-	'Phā',
+	"Cha",
+	"Vai",
+	"Jya",
+	"Āsh",
+	"Shr",
+	"Bhā",
+	"Āsw",
+	"Kār",
+	"Agr",
+	"Pau",
+	"Māg",
+	"Phā",
 )
 
 

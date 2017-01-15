@@ -40,12 +40,12 @@ class WidgetClass(gtk.VBox):
 	def __init__(self, event):## FIXME
 		gtk.VBox.__init__(self)
 		self.event = event
-		assert event.parent.name == 'universityTerm' ## FIXME
+		assert event.parent.name == "universityTerm" ## FIXME
 		sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
 		#####
 		if not event.parent.courses:
 			showError(event.parent.noCourseError, ui.eventManDialog)
-			raise RuntimeError('No courses added')
+			raise RuntimeError("No courses added")
 		self.courseIds = []
 		self.courseNames = []
 		combo = gtk.ComboBoxText()
@@ -53,11 +53,11 @@ class WidgetClass(gtk.VBox):
 			self.courseIds.append(course[0])
 			self.courseNames.append(course[1])
 			combo.append_text(course[1])
-		#combo.connect('changed', self.updateSummary)
+		#combo.connect("changed", self.updateSummary)
 		self.courseCombo = combo
 		##
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Course'))
+		label = gtk.Label(_("Course"))
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
@@ -66,26 +66,26 @@ class WidgetClass(gtk.VBox):
 		pack(self, hbox)
 		#####
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Week'))
+		label = gtk.Label(_("Week"))
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
-		self.weekNumModeCombo = WeekNumModeWidgetClass(event['weekNumMode'])
+		self.weekNumModeCombo = WeekNumModeWidgetClass(event["weekNumMode"])
 		pack(hbox, self.weekNumModeCombo)
 		pack(self, hbox)
 		#####
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Week Day'))
+		label = gtk.Label(_("Week Day"))
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.weekDayCombo = WeekDayComboBox()
-		#self.weekDayCombo.connect('changed', self.updateSummary)
+		#self.weekDayCombo.connect("changed", self.updateSummary)
 		pack(hbox, self.weekDayCombo)
 		pack(self, hbox)
 		#####
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Time'))
+		label = gtk.Label(_("Time"))
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
@@ -97,12 +97,12 @@ class WidgetClass(gtk.VBox):
 		#self.dayTimeEndCombo.get_child().set_direction(gtk.TextDirection.LTR)
 		##
 		pack(hbox, self.dayTimeStartCombo)
-		pack(hbox, gtk.Label(' ' + _('to') + ' '))
+		pack(hbox, gtk.Label(" " + _("to") + " "))
 		pack(hbox, self.dayTimeEndCombo)
 		pack(self, hbox)
 		###########
 		#hbox = gtk.HBox()
-		#label = gtk.Label(_('Summary'))
+		#label = gtk.Label(_("Summary"))
 		#label.set_alignment(0, 0.5)
 		#sizeGroup.add_widget(label)
 		#pack(hbox, label)
@@ -111,7 +111,7 @@ class WidgetClass(gtk.VBox):
 		#pack(self, hbox)
 		#####
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Description'))
+		label = gtk.Label(_("Description"))
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
@@ -120,14 +120,14 @@ class WidgetClass(gtk.VBox):
 		pack(self, hbox)
 		#####
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Icon'))
+		label = gtk.Label(_("Icon"))
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.iconSelect = IconSelectButton()
 		#print(join(pixDir, self.icon))
 		pack(hbox, self.iconSelect)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self, hbox)
 		######
 		self.notificationBox = common.NotificationBox(event)
@@ -145,10 +145,10 @@ class WidgetClass(gtk.VBox):
 	#def updateSummary(self, widget=None):
 	#	courseIndex = self.courseCombo.get_active()
 	#	summary = (
-	#		_('%s Class')%self.courseNames[courseIndex] +
-	#		' (' +
+	#		_("%s Class")%self.courseNames[courseIndex] +
+	#		" (" +
 	#		self.weekDayCombo.get_active_text() +
-	#		')'
+	#		")"
 	#	)
 	#	self.summaryEntry.set_text(summary)
 	#	self.event.summary = summary
@@ -160,7 +160,7 @@ class WidgetClass(gtk.VBox):
 			self.courseCombo.set_active(self.courseIds.index(self.event.courseId))
 		##
 		self.weekNumModeCombo.updateWidget()
-		weekDayList = self.event['weekDay'].weekDayList
+		weekDayList = self.event["weekDay"].weekDayList
 		if len(weekDayList) == 1:
 			self.weekDayCombo.setValue(weekDayList[0])  # FIXME
 		else:
@@ -172,7 +172,7 @@ class WidgetClass(gtk.VBox):
 			for combo in (self.dayTimeStartCombo, self.dayTimeEndCombo):
 				combo.set_value(hm)
 				combo.add_history()
-		timeRangeRule = self.event['dayTimeRange']
+		timeRangeRule = self.event["dayTimeRange"]
 		self.dayTimeStartCombo.set_value(timeRangeRule.dayTimeStart)
 		self.dayTimeEndCombo.set_value(timeRangeRule.dayTimeEnd)
 		####
@@ -187,15 +187,15 @@ class WidgetClass(gtk.VBox):
 	def updateVars(self):## FIXME
 		courseIndex = self.courseCombo.get_active()
 		if courseIndex is None:
-			showError(_('No course is selected'), ui.eventManDialog)
-			raise RuntimeError('No courses is selected')
+			showError(_("No course is selected"), ui.eventManDialog)
+			raise RuntimeError("No courses is selected")
 		else:
 			self.event.courseId = self.courseIds[courseIndex]
 		##
 		self.weekNumModeCombo.updateVars()
-		self.event['weekDay'].weekDayList = [self.weekDayCombo.getValue()]## FIXME
+		self.event["weekDay"].weekDayList = [self.weekDayCombo.getValue()]## FIXME
 		##
-		self.event['dayTimeRange'].setRange(
+		self.event["dayTimeRange"].setRange(
 			self.dayTimeStartCombo.get_value(),
 			self.dayTimeEndCombo.get_value(),
 		)

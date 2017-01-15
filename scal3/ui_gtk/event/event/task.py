@@ -34,14 +34,14 @@ class WidgetClass(common.WidgetClass):
 		sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
 		######
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Start'))
+		label = gtk.Label(_("Start"))
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.startDateInput = DateButton()
 		pack(hbox, self.startDateInput)
 		##
-		pack(hbox, gtk.Label(' ' + _('Time')))
+		pack(hbox, gtk.Label(" " + _("Time")))
 		self.startTimeInput = TimeButton()
 		pack(hbox, self.startTimeInput)
 		##
@@ -49,9 +49,9 @@ class WidgetClass(common.WidgetClass):
 		######
 		hbox = gtk.HBox()
 		self.endTypeCombo = gtk.ComboBoxText()
-		for item in ('Duration', 'End'):
+		for item in ("Duration", "End"):
 			self.endTypeCombo.append_text(_(item))
-		self.endTypeCombo.connect('changed', self.endTypeComboChanged)
+		self.endTypeCombo.connect("changed", self.endTypeComboChanged)
 		sizeGroup.add_widget(self.endTypeCombo)
 		pack(hbox, self.endTypeCombo)
 		####
@@ -62,13 +62,13 @@ class WidgetClass(common.WidgetClass):
 		self.endDateInput = DateButton()
 		pack(self.endDateHbox, self.endDateInput)
 		##
-		pack(self.endDateHbox, gtk.Label(' ' + _('Time')))
+		pack(self.endDateHbox, gtk.Label(" " + _("Time")))
 		self.endTimeInput = TimeButton()
 		pack(self.endDateHbox, self.endTimeInput)
 		##
 		pack(hbox, self.endDateHbox, 1, 1)
 		####
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self, hbox)
 		#############
 		self.notificationBox = common.NotificationBox(event)
@@ -96,12 +96,12 @@ class WidgetClass(common.WidgetClass):
 		self.startTimeInput.set_value(startTime)
 		###
 		endType, values = self.event.getEnd()
-		if endType == 'duration':
+		if endType == "duration":
 			self.endTypeCombo.set_active(0)
 			self.durationBox.setDuration(*values)
 			self.endDateInput.set_value(startDate)## FIXME
 			self.endTimeInput.set_value(startTime)## FIXME
-		elif endType == 'date':
+		elif endType == "date":
 			self.endTypeCombo.set_active(1)
 			self.endDateInput.set_value(values[0])
 			self.endTimeInput.set_value(values[1])
@@ -118,10 +118,10 @@ class WidgetClass(common.WidgetClass):
 		###
 		active = self.endTypeCombo.get_active()
 		if active == 0:
-			self.event.setEnd('duration', *self.durationBox.getDuration())
+			self.event.setEnd("duration", *self.durationBox.getDuration())
 		elif active == 1:
 			self.event.setEnd(
-				'date',
+				"date",
 				self.endDateInput.get_value(),
 				self.endTimeInput.get_value(),
 			)

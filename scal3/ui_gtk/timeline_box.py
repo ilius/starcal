@@ -79,7 +79,7 @@ def drawBoxBorder(cr, box, x, y, w, h):
 
 def drawBoxText(cr, box, x, y, w, h, widget):
 	## now draw the text
-	## how to find the best font size based in the box's width and height,
+	## how to find the best font size based in the box"s width and height,
 	## and font family? FIXME
 	## possibly write in many lines? or just in one line and wrap if needed?
 	if box.text:
@@ -87,7 +87,7 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 		textW = 0.9 * w
 		textH = 0.9 * h
 		textLen = len(toStr(box.text))
-		#print('textLen=%s'%textLen)
+		#print("textLen=%s"%textLen)
 		avgCharW = float(
 			textW if rotateBoxLabel == 0
 			else max(textW, textH)
@@ -97,7 +97,7 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 			layout = widget.create_pango_layout(box.text) ## a Pango.Layout object
 			layout.set_font_description(pfontEncode(font))
 			layoutW, layoutH = layout.get_pixel_size()
-			#print('orig font size: %s'%font[3])
+			#print("orig font size: %s"%font[3])
 			normRatio = min(
 				float(textW) / layoutW,
 				float(textH) / layoutH,
@@ -111,7 +111,7 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 				layout.set_font_description(pfontEncode(font))
 				layoutW, layoutH = layout.get_pixel_size()
 				fillColor(cr, fgColor)## before cr.move_to
-				#print('x=%s, y=%s, w=%s, h=%s, layoutW=%s, layoutH=%s'\)
+				#print("x=%s, y=%s, w=%s, h=%s, layoutW=%s, layoutH=%s"\)
 				#	%(x,y,w,h,layoutW,layoutH)
 				cr.move_to(
 					x + (w - rotateBoxLabel * layoutH) / 2.0,
@@ -122,7 +122,7 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 				try:
 					cr.rotate(rotateBoxLabel * pi / 2)
 				except:
-					print('counld not rotate by %s*pi/2 = %s' % (
+					print("counld not rotate by %s*pi/2 = %s" % (
 						rotateBoxLabel,
 						rotateBoxLabel * pi / 2,
 					))

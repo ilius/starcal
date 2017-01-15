@@ -26,5 +26,5 @@ def popenFile(fpath):
 	])
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	print(getDefaultAppCommand(sys.argv[1]))

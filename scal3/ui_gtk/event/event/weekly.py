@@ -36,41 +36,41 @@ class WidgetClass(common.WidgetClass):
 		sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
 		######
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Start'))
+		label = gtk.Label(_("Start"))
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.startDateInput = DateButton()
 		pack(hbox, self.startDateInput)
 		###
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self, hbox)
 		######
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Repeat Every '))
+		label = gtk.Label(_("Repeat Every "))
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.weeksSpin = IntSpinButton(1, 99999)
 		pack(hbox, self.weeksSpin)
-		pack(hbox, gtk.Label('  ' + _(' Weeks')))
+		pack(hbox, gtk.Label("  " + _(" Weeks")))
 		###
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self, hbox)
 		######
 		hbox = gtk.HBox()
-		label = gtk.Label(_('End'))
+		label = gtk.Label(_("End"))
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.endDateInput = DateButton()
 		pack(hbox, self.endDateInput)
 		###
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self, hbox)
 		#########
 		hbox = gtk.HBox()
-		label = gtk.Label(_('Time'))
+		label = gtk.Label(_("Time"))
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
@@ -79,7 +79,7 @@ class WidgetClass(common.WidgetClass):
 		self.dayTimeEndInput = HourMinuteButton()
 		##
 		pack(hbox, self.dayTimeStartInput)
-		pack(hbox, gtk.Label(' ' + _('to') + ' '))
+		pack(hbox, gtk.Label(" " + _("to") + " "))
 		pack(hbox, self.dayTimeEndInput)
 		pack(self, hbox)
 		#############
@@ -94,20 +94,20 @@ class WidgetClass(common.WidgetClass):
 		mode = self.event.mode
 		###
 		self.startDateInput.set_value(jd_to(self.event.getStartJd(), mode))
-		self.weeksSpin.set_value(self.event['cycleWeeks'].weeks)
+		self.weeksSpin.set_value(self.event["cycleWeeks"].weeks)
 		self.endDateInput.set_value(jd_to(self.event.getEndJd(), mode))
 		###
-		timeRangeRule = self.event['dayTimeRange']
+		timeRangeRule = self.event["dayTimeRange"]
 		self.dayTimeStartInput.set_value(timeRangeRule.dayTimeStart)
 		self.dayTimeEndInput.set_value(timeRangeRule.dayTimeEnd)
 
 	def updateVars(self):## FIXME
 		common.WidgetClass.updateVars(self)
-		self.event['start'].setDate(self.startDateInput.get_value())
-		self.event['end'].setDate(self.endDateInput.get_value())
-		self.event['cycleWeeks'].setData(self.weeksSpin.get_value())
+		self.event["start"].setDate(self.startDateInput.get_value())
+		self.event["end"].setDate(self.endDateInput.get_value())
+		self.event["cycleWeeks"].setData(self.weeksSpin.get_value())
 		###
-		self.event['dayTimeRange'].setRange(
+		self.event["dayTimeRange"].setRange(
 			self.dayTimeStartInput.get_value(),
 			self.dayTimeEndInput.get_value(),
 		)

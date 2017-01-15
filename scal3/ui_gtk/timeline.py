@@ -59,8 +59,8 @@ def show_event(widget, gevent):
 
 @registerSignals
 class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
-	_name = 'timeLine'
-	desc = _('Time Line')
+	_name = "timeLine"
+	desc = _("Time Line")
 
 	def centerToNow(self):
 		self.stopMovingAnim()
@@ -76,20 +76,20 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.initVars()
 		###
 		self.closeFunc = closeFunc
-		self.connect('draw', self.onExposeEvent)
-		self.connect('scroll-event', self.onScroll)
-		self.connect('button-press-event', self.buttonPress)
-		self.connect('motion-notify-event', self.motionNotify)
-		self.connect('button-release-event', self.buttonRelease)
-		self.connect('key-press-event', self.keyPress)
-		#self.connect('event', show_event)
+		self.connect("draw", self.onExposeEvent)
+		self.connect("scroll-event", self.onScroll)
+		self.connect("button-press-event", self.buttonPress)
+		self.connect("motion-notify-event", self.motionNotify)
+		self.connect("button-release-event", self.buttonRelease)
+		self.connect("key-press-event", self.keyPress)
+		#self.connect("event", show_event)
 		self.currentTime = now()
 		self.timeWidth = dayLen
 		self.timeStart = self.currentTime - self.timeWidth / 2.0
 		self.buttons = [
-			Button('home.png', self.centerToNowClicked, 1, -1, False),
-			Button('resize-small.png', self.startResize, -1, -1, False),
-			Button('exit.png', closeFunc, 35, -1, False)
+			Button("home.png", self.centerToNowClicked, 1, -1, False),
+			Button("resize-small.png", self.startResize, -1, -1, False),
+			Button("exit.png", closeFunc, 35, -1, False)
 		]
 		# zoom in and zoom out buttons FIXME
 		self.data = None
@@ -129,7 +129,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				self.get_parent().get_visible() and
 				self.timeStart <= tm <= self.timeStart + self.timeWidth + 1
 			):
-				#print('%.2f'%(tm%100), 'currentTimeUpdate: DRAW')
+				#print("%.2f"%(tm%100), "currentTimeUpdate: DRAW")
 				self.queue_draw()
 
 	def updateData(self):
@@ -155,9 +155,9 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			fillColor(cr, tick.color)
 		except:
 			print(
-				'error in fill' +
-				', x=%.2f, y=%.2f' % (tickX, tickY) +
-				', w=%.2f, h=%.2f' % (tickW, tickH)
+				"error in fill" +
+				", x=%.2f, y=%.2f" % (tickX, tickY) +
+				", w=%.2f, h=%.2f" % (tickW, tickH)
 			)
 		###
 		font = [
@@ -183,14 +183,14 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		)  # FIXME
 		if layout:
 			#layout.set_auto_dir(0)  # FIXME
-			#print('layout.get_auto_dir() = %s'%layout.get_auto_dir())
+			#print("layout.get_auto_dir() = %s"%layout.get_auto_dir())
 			layoutW, layoutH = layout.get_pixel_size()
 			layoutX = tick.pos - layoutW / 2.0
 			layoutY = tickH * labelYRatio
 			try:
 				cr.move_to(layoutX, layoutY)
 			except:
-				print('error in move_to, x=%.2f, y=%.2f' % (layoutX, layoutY))
+				print("error in move_to, x=%.2f, y=%.2f" % (layoutX, layoutY))
 			else:
 				show_layout(cr, layout)## with the same tick.color
 
@@ -241,16 +241,16 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		fillColor(cr, bgColor)
 		#####
 		setColor(cr, holidayBgBolor)
-		for x in self.data['holidays']:
+		for x in self.data["holidays"]:
 			cr.rectangle(x, 0, dayPixel, height)
 			cr.fill()
 		#####
-		for tick in self.data['ticks']:
+		for tick in self.data["ticks"]:
 			self.drawTick(cr, tick, maxTickHeight)
 		######
 		beforeBoxH = maxTickHeight ## FIXME
 		maxBoxH = height - beforeBoxH
-		for box in self.data['boxes']:
+		for box in self.data["boxes"]:
 			box.setPixelValues(timeStart, pixelPerSec, beforeBoxH, maxBoxH)
 			self.drawBox(cr, box)
 		self.drawBoxEditingHelperLines(cr)
@@ -271,9 +271,9 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				if dstChangeJd is not None:
 					deltaHour = deltaSec / 3600.0
 					dstChangeEpoch = getEpochFromJd(dstChangeJd)
-					#print('dstChangeEpoch = %s' % dstChangeEpoch)
+					#print("dstChangeEpoch = %s" % dstChangeEpoch)
 				else:
-					print('dstChangeEpoch not found')
+					print("dstChangeEpoch not found")
 
 		###### Draw Current Time Marker
 		dt = self.currentTime - timeStart
@@ -298,20 +298,20 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		#t1 = now()
 		self.drawAll(self.get_window().cairo_create())
 		#t2 = now()
-		#print('drawing time / data calc time: %.2f'%((t2-t1)/(t1-t0)))
+		#print("drawing time / data calc time: %.2f"%((t2-t1)/(t1-t0)))
 
 	def onScroll(self, widget, gevent):
 		d = getScrollValue(gevent)
-		#print('onScroll', d)
+		#print("onScroll", d)
 		if gevent.get_state() & gdk.ModifierType.CONTROL_MASK:
 			self.zoom(
-				d == 'up',
+				d == "up",
 				scrollZoomStep,
 				float(gevent.x) / self.get_allocation().width,
 			)
 		else:
 			self.movingUserEvent(
-				direction=(-1 if d == 'up' else 1),
+				direction=(-1 if d == "up" else 1),
 			)  # FIXME
 		self.queue_draw()
 		return True
@@ -327,7 +327,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 					button.func(gevent)
 					return True
 			####
-			for box in self.data['boxes']:
+			for box in self.data["boxes"]:
 				if not box.hasBorder:
 					continue
 				if not box.ids:
@@ -359,7 +359,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 					self.boxEditing = (editType, event, box, x, t0)
 					return True
 		elif gevent.button == 3:
-			for box in self.data['boxes']:
+			for box in self.data["boxes"]:
 				if not box.ids:
 					continue
 				if not box.contains(x, y):
@@ -371,7 +371,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				menu = gtk.Menu()
 				##
 				if not event.allReadOnly:
-					winTitle = _('Edit') + ' ' + event.desc
+					winTitle = _("Edit") + " " + event.desc
 					menu.add(labelStockMenuItem(
 						winTitle,
 						gtk.STOCK_EDIT,
@@ -381,7 +381,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 						gid,
 					))
 				##
-				winTitle = _('Edit') + ' ' + group.desc
+				winTitle = _("Edit") + " " + group.desc
 				menu.add(labelStockMenuItem(
 					winTitle,
 					gtk.STOCK_EDIT,
@@ -393,7 +393,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				menu.add(gtk.SeparatorMenuItem())
 				##
 				menu.add(labelImageMenuItem(
-					_('Move to %s') % ui.eventTrash.title,
+					_("Move to %s") % ui.eventTrash.title,
 					ui.eventTrash.icon,
 					self.moveEventToTrash,
 					group,
@@ -449,7 +449,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		).run()
 		if event is None:
 			return
-		ui.eventDiff.add('e', event)
+		ui.eventDiff.add("e", event)
 		self.onConfigChange()
 
 	def editGroupClicked(self, menu, winTitle, group):
@@ -492,44 +492,44 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 
 	def keyPress(self, arg, gevent):
 		k = gdk.keyval_name(gevent.keyval).lower()
-		#print('%.3f'%now())
-		if k in ('space', 'home'):
+		#print("%.3f"%now())
+		if k in ("space", "home"):
 			self.centerToNow()
-		elif k == 'right':
+		elif k == "right":
 			self.movingUserEvent(
 				direction=1,
 				smallForce=(gevent.get_state() & gdk.ModifierType.SHIFT_MASK),
 			)
-		elif k == 'left':
+		elif k == "left":
 			self.movingUserEvent(
 				direction=-1,
 				smallForce=(gevent.get_state() & gdk.ModifierType.SHIFT_MASK),
 			)
-		elif k == 'down':
+		elif k == "down":
 			self.stopMovingAnim()
-		elif k in ('q', 'escape'):
+		elif k in ("q", "escape"):
 			self.closeFunc()
-		#elif k=='end':
+		#elif k=="end":
 		#	pass
-		#elif k=='page_up':
+		#elif k=="page_up":
 		#	pass
-		#elif k=='page_down':
+		#elif k=="page_down":
 		#	pass
-		#elif k=='menu':# Simulate right click (key beside Right-Ctrl)
-		#	#self.emit('popup-cell-menu', gevent.time, *self.getCellPos())
-		#elif k in ('f10','m'): # F10 or m or M
+		#elif k=="menu":# Simulate right click (key beside Right-Ctrl)
+		#	#self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
+		#elif k in ("f10","m"): # F10 or m or M
 		#	if gevent.get_state() & gdk.ModifierType.SHIFT_MASK:
 		#		# Simulate right click (key beside Right-Ctrl)
-		#		self.emit('popup-cell-menu', gevent.time, *self.getCellPos())
+		#		self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
 		#	else:
 		#		self.emit(
-		#		'popup-main-menu',
+		#		"popup-main-menu",
 		#		gevent.time,
 		#		*self.getMainMenuPos()
 		#	)
-		elif k in ('plus', 'equal', 'kp_add'):
+		elif k in ("plus", "equal", "kp_add"):
 			self.keyboardZoom(True)
-		elif k in ('minus', 'kp_subtract'):
+		elif k in ("minus", "kp_subtract"):
 			self.keyboardZoom(False)
 		else:
 			#print(k)
@@ -542,12 +542,12 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			tm = now()
 			#dtEvent = tm - self.movingLastPress
 			self.movingLastPress = tm
-			'''
+			"""
 				We should call a new updateMovingAnim if:
 					last key press has bin timeout, OR
 					force direction has been change, OR
 					its currently still (no speed and no force)
-			'''
+			"""
 			if (
 				self.movingF * direction < 0
 				or self.movingF * self.movingV == 0
@@ -630,8 +630,8 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 
 @registerSignals
 class TimeLineWindow(gtk.Window, ud.BaseCalObj):
-	_name = 'timeLineWin'
-	desc = _('Time Line')
+	_name = "timeLineWin"
+	desc = _("Time Line")
 
 	def __init__(self):
 		gtk.Window.__init__(self)
@@ -640,13 +640,13 @@ class TimeLineWindow(gtk.Window, ud.BaseCalObj):
 		###
 		self.resize(ud.screenW, 150)
 		self.move(0, 0)
-		self.set_title(_('Time Line'))
+		self.set_title(_("Time Line"))
 		self.set_decorated(False)
-		self.connect('delete-event', self.closeClicked)
-		self.connect('button-press-event', self.buttonPress)
+		self.connect("delete-event", self.closeClicked)
+		self.connect("button-press-event", self.buttonPress)
 		###
 		self.tline = TimeLine(self.closeClicked)
-		self.connect('key-press-event', self.tline.keyPress)
+		self.connect("key-press-event", self.tline.keyPress)
 		self.add(self.tline)
 		self.tline.show()
 		self.appendItem(self.tline)
@@ -670,7 +670,7 @@ class TimeLineWindow(gtk.Window, ud.BaseCalObj):
 		return False
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	win = TimeLineWindow()
 	#win.tline.timeWidth = 100 * minYearLenSec # 2 * 10**17
 	#win.tline.timeStart = now() - win.tline.timeWidth # -10**17

@@ -55,9 +55,9 @@ class SObj:
 
 	def setData(self, data):
 		if not self.__class__.canSetDataMultipleTimes:
-			if getattr(self, 'dataIsSet', False):
+			if getattr(self, "dataIsSet", False):
 				raise RuntimeError(
-					'can not run setData multiple times for %s instance' %
+					"can not run setData multiple times for %s instance" %
 					self.__class__.__name__
 				)
 			self.dataIsSet = True
@@ -72,13 +72,13 @@ class SObj:
 			parent = self.parent
 		except AttributeError:
 			raise NotImplementedError(
-				'%s.getIdPath: no parent attribute' % self.__class__.__name__
+				"%s.getIdPath: no parent attribute" % self.__class__.__name__
 			)
 		try:
 			_id = self.id
 		except AttributeError:
 			raise NotImplementedError(
-				'%s.getIdPath: no id attribute' % self.__class__.__name__
+				"%s.getIdPath: no id attribute" % self.__class__.__name__
 			)
 		######
 		path = []
@@ -122,7 +122,7 @@ class JsonSObj(SObj):
 	canSetDataMultipleTimes = False
 	skipLoadExceptions = False
 	skipLoadNoFile = False
-	file = ''
+	file = ""
 	paramsOrder = ()
 
 	@classmethod
@@ -142,9 +142,9 @@ class JsonSObj(SObj):
 					raise e
 		else:
 			if not cls.skipLoadNoFile:
-				raise FileNotFoundError('%s : file not found' % _file)
+				raise FileNotFoundError("%s : file not found" % _file)
 		try:
-			_type = data['type']
+			_type = data["type"]
 		except (KeyError, TypeError):
 			subCls = cls
 		else:
@@ -166,11 +166,11 @@ class JsonSObj(SObj):
 	def save(self):
 		if self.file:
 			jstr = self.getJson()
-			open(self.file, 'w').write(jstr)
+			open(self.file, "w").write(jstr)
 		else:
 			print(
-				'save method called for object %r' % self +
-				' while file is not set'
+				"save method called for object %r" % self +
+				" while file is not set"
 			)
 
 	def setData(self, data):
@@ -178,13 +178,13 @@ class JsonSObj(SObj):
 		self.setModifiedFromFile()
 
 	def setModifiedFromFile(self):
-		if hasattr(self, 'modified'):
+		if hasattr(self, "modified"):
 			try:
 				self.modified = int(os.stat(self.file).st_mtime)
 			except OSError:
 				pass
 		#else:
-		#	print('no modified param for object %r'%self)
+		#	print("no modified param for object %r"%self)
 
 
 def saveBsonObject(data):
@@ -195,42 +195,42 @@ def saveBsonObject(data):
 	fpath = join(dpath, _hash[2:])
 	if not isfile(fpath):
 		makeDir(dpath)
-		open(fpath, 'wb').write(bsonBytes)
+		open(fpath, "wb").write(bsonBytes)
 	return _hash
 
 
 def loadBsonObject(_hash):
 	fpath = join(objectDir, _hash[:2], _hash[2:])
-	bsonBytes = open(fpath, 'rb').read()
+	bsonBytes = open(fpath, "rb").read()
 	if _hash != sha1(bsonBytes).hexdigest():
 		raise IOError(
-			'sha1 diggest does not match for object file "%s"' % fpath
+			"sha1 diggest does not match for object file \"%s\"" % fpath
 		)
 	return BSON.decode(bsonBytes)
 
 
 def updateBasicDataFromBson(data, filePath, fileType):
-	'''
-		fileType: 'event' | 'group' | 'account'...,
+	"""
+		fileType: "event" | "group" | "account"...,
 			display only, does not matter much
-	'''
+	"""
 	try:
-		lastHistRecord = data['history'][0]
+		lastHistRecord = data["history"][0]
 		lastEpoch = lastHistRecord[0]
 		lastHash = lastHistRecord[1]
 	except (KeyError, IndexError):
 		raise ValueError(
-			'invalid %s file "%s", no "history"' % (fileType, filePath)
+			"invalid %s file \"%s\", no \"history\"" % (fileType, filePath)
 		)
 	data.update(loadBsonObject(lastHash))
-	data['modified'] = lastEpoch ## FIXME
+	data["modified"] = lastEpoch ## FIXME
 
 
 class BsonHistObj(SObj):
 	canSetDataMultipleTimes = False
 	skipLoadExceptions = False
 	skipLoadNoFile = False
-	file = ''
+	file = ""
 	## basicParams or noHistParams ? FIXME
 	basicParams = (
 	)
@@ -248,16 +248,16 @@ class BsonHistObj(SObj):
 			data = jsonToData(jsonStr)
 		except FileNotFoundError:
 			if not cls.skipLoadNoFile:
-				raise FileNotFoundError('%s : file not found' % _file)
+				raise FileNotFoundError("%s : file not found" % _file)
 		except Exception as e:
 			if not cls.skipLoadExceptions:
-				print('error while opening json file "%s"' % _file)
+				print("error while opening json file \"%s\"" % _file)
 				raise e
 		else:
 			updateBasicDataFromBson(data, _file, cls.name)
 
 		try:
-			_type = data['type']
+			_type = data["type"]
 		except (KeyError, TypeError):
 			subCls = cls
 		else:
@@ -278,24 +278,24 @@ class BsonHistObj(SObj):
 	def loadHistory(self):
 		lastBasicData = self.loadBasicData()
 		try:
-			return lastBasicData['history']
+			return lastBasicData["history"]
 		except KeyError:
 			if lastBasicData:
-				print('no "history" in json file "%s"' % self.file)
+				print("no \"history\" in json file \"%s\"" % self.file)
 			return []
 
 	def saveBasicData(self, basicData):
 		jsonStr = dataToJson(basicData)
-		open(self.file, 'w').write(jsonStr)
+		open(self.file, "w").write(jsonStr)
 
 	def save(self, *histArgs):
-		'''
+		"""
 			returns last history record: (lastEpoch, lastHash, **args)
-		'''
+		"""
 		if not self.file:
 			raise RuntimeError(
-				'save method called for object %r' % self +
-				' while file is not set'
+				"save method called for object %r" % self +
+				" while file is not set"
 			)
 		data = self.getData()
 		basicData = {}
@@ -305,7 +305,7 @@ class BsonHistObj(SObj):
 			except KeyError:
 				pass
 		try:
-			data.pop('modified')
+			data.pop("modified")
 		except KeyError:
 			pass
 		_hash = saveBsonObject(data)
@@ -320,6 +320,6 @@ class BsonHistObj(SObj):
 			tm = now()
 			history.insert(0, [tm, _hash] + list(histArgs))
 			self.modified = tm
-		basicData['history'] = history
+		basicData["history"] = history
 		self.saveBasicData(basicData)
 		return history[0]

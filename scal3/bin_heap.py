@@ -44,7 +44,7 @@ class MaxHeap(list):
 		else:
 			N = len(self)
 			if index < 0 or index > N - 1:
-				raise ValueError('invalid index to pop()')
+				raise ValueError("invalid index to pop()")
 			if index == N - 1:
 				return list.pop(self, index)
 			self.exch(index, N - 1)
@@ -72,8 +72,8 @@ class MaxHeap(list):
 			yield k, v
 
 	def __str__(self):
-		return ' '.join([
-			'%s' % (-k)
+		return " ".join([
+			"%s" % (-k)
 			for k, v in self
 		])
 
@@ -96,13 +96,13 @@ class MaxHeap(list):
 			return True
 		try:
 			if self[2 * i + 1] < k:
-				print('[%s] > [%s]' % (2 * i + 1, i))
+				print("[%s] > [%s]" % (2 * i + 1, i))
 				return False
 		except IndexError:
 			return True
 		try:
 			if self[2 * i + 2] < k:
-				print('[%s] > [%s]' % (2 * i + 2, i))
+				print("[%s] > [%s]" % (2 * i + 2, i))
 				return False
 		except IndexError:
 			return True
@@ -114,14 +114,14 @@ class MaxHeap(list):
 
 	def getMax(self):
 		if not self:
-			raise ValueError('heap empty')
+			raise ValueError("heap empty")
 		k, v = self[0]
 		return -k, v
 
 	def getMin(self):
 		# at least 2 times faster than max(self)
 		if not self:
-			raise ValueError('heap empty')
+			raise ValueError("heap empty")
 		k, v = max(
 			self[- 2 ** int(
 				log(len(self), 2)
@@ -129,7 +129,7 @@ class MaxHeap(list):
 		)
 		return -k, v
 
-	'''
+	"""
 	def deleteLessThanStep(self, key, index):
 		try:
 			key1, value1 = self[index]
@@ -139,7 +139,7 @@ class MaxHeap(list):
 		#if key
 	def deleteLessThan(self, key):
 		pass
-	'''
+	"""
 
 
 def getMinTest(N):
@@ -155,8 +155,8 @@ def getMinTest(N):
 	k2 = h.getMin()[0]
 	t2 = now()
 	assert k1 == k2
-	#print('time getMin(h)/min(h) = %.5f'%((t2-t1)/(t1-t0)))
-	#print('min key = %s'%k1)
+	#print("time getMin(h)/min(h) = %.5f"%((t2-t1)/(t1-t0)))
+	#print("min key = %s"%k1)
 
 
 def testDeleteStep(N, maxKey):
@@ -171,10 +171,10 @@ def testDeleteStep(N, maxKey):
 	rmKey = -h[rmIndex][0]
 	rmKey2 = h.pop(rmIndex)
 	if not h.verify():
-		print('not verified, N=%s, I=%s' % (N, rmIndex))
+		print("not verified, N=%s, I=%s" % (N, rmIndex))
 		print(h0)
 		print(h)
-		print('------------------------')
+		print("------------------------")
 		return False
 	return True
 
@@ -185,5 +185,5 @@ def testDelete():
 			if not testDeleteStep(N, 10000):
 				break
 
-#if __name__=='__main__':
+#if __name__=="__main__":
 #	testDelete()

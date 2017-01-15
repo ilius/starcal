@@ -56,12 +56,12 @@ class FloatingMsg(gtk.DrawingArea):
 		self.finishFunc = finishFunc
 		self.isFinished = False
 		if finishOnClick:
-			self.connect('button-press-event', self.finish)
+			self.connect("button-press-event", self.finish)
 		########
 		if isinstance(text, str):
-			text = text.decode('utf8')
+			text = text.decode("utf8")
 		lines = []
-		for line in text.split('\n'):
+		for line in text.split("\n"):
 			line = line.strip()
 			if line:
 				lines.append(line)
@@ -74,15 +74,15 @@ class FloatingMsg(gtk.DrawingArea):
 		self.index = 0
 		self.height = 30
 		########
-		self.connect('draw', self.onExposeEvent)
-		self.connect('realize', self.on_realize)
+		self.connect("draw", self.onExposeEvent)
+		self.connect("realize", self.on_realize)
 		########
 		if createWindow:
 			self.win = gtk.Window(gtk.WindowType.POPUP)
 			# ^ gtk.WindowType.POPUP ?
 			self.win.add(self)
 			self.win.set_decorated(False)
-			self.win.set_property('skip-taskbar-hint', True)
+			self.win.set_property("skip-taskbar-hint", True)
 			self.win.set_keep_above(True)
 		else:
 			self.win = False
@@ -158,7 +158,7 @@ class MyLabel(gtk.DrawingArea):
 		gtk.DrawingArea.__init__(self)
 		self.bgColor = bgColor
 		self.textColor = textColor
-		self.connect('draw', self.onExposeEvent)
+		self.connect("draw", self.onExposeEvent)
 
 	def set_label(self, text):
 		self.text = text
@@ -204,7 +204,7 @@ class NoFillFloatingMsgWindow(gtk.Window):
 		self.set_type_hint(gtk.WindowType.POPUP)
 		# ^ OR gtk.WindowType.POPUP ?
 		self.set_decorated(False)
-		self.set_property('skip-taskbar-hint', True)
+		self.set_property("skip-taskbar-hint", True)
 		self.set_keep_above(True)
 		self.label = MyLabel(bgColor, textColor)
 		self.add(self.label)
@@ -215,13 +215,13 @@ class NoFillFloatingMsgWindow(gtk.Window):
 		self.finishFunc = finishFunc
 		self.isFinished = False
 		if finishOnClick:
-			self.connect('button-press-event', self.finish)
+			self.connect("button-press-event", self.finish)
 		########
 		if isinstance(text, str):
-			text = text.decode('utf8')
-		text = text.replace('\\n', '\n').replace('\\t', '\t')
+			text = text.decode("utf8")
+		text = text.replace("\\n", "\n").replace("\\t", "\t")
 		lines = []
-		for line in text.split('\n'):
+		for line in text.split("\n"):
 			line = line.strip()
 			if line:
 				lines.append(line)
@@ -229,7 +229,7 @@ class NoFillFloatingMsgWindow(gtk.Window):
 		self.lines = lines
 		self.index = 0
 		########
-		self.connect('realize', lambda widget: self.animateStart())
+		self.connect("realize", lambda widget: self.animateStart())
 
 	def updateLine(self):
 		self.label.set_label(self.lines[self.index])
@@ -268,11 +268,11 @@ class NoFillFloatingMsgWindow(gtk.Window):
 				self.updateLine()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	import sys
 	if len(sys.argv) < 2:
 		sys.exit(1)
-	text = ' '.join(sys.argv[1:])
+	text = " ".join(sys.argv[1:])
 	#msg = FloatingMsg(
 	msg = NoFillFloatingMsgWindow(
 		text,

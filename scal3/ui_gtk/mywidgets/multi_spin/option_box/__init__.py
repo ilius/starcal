@@ -6,13 +6,13 @@ from scal3.ui_gtk.mywidgets.multi_spin import MultiSpinButton
 @registerSignals
 class MultiSpinOptionBox(gtk.HBox):
 	signals = [
-		('activate', [])
+		("activate", [])
 	]
 
 	def _entry_activate(self, widget):
 		#self.spin.update() #?????
 		#self.add_history()
-		self.emit('activate')
+		self.emit("activate")
 		return False
 
 	def __init__(
@@ -34,11 +34,11 @@ class MultiSpinOptionBox(gtk.HBox):
 		pack(self, self.option, 1, 1)
 		self.menu = gtk.Menu()
 		#self.menu.show()
-		self.option.connect('button-press-event', self.option_pressed)
+		self.option.connect("button-press-event", self.option_pressed)
 		self.menuItems = []
 		#self.option.set_sensitive(False) #???????
 		#self.spin._entry_activate = self._entry_activate
-		self.spin.connect('activate', self._entry_activate)
+		self.spin.connect("activate", self._entry_activate)
 		self.get_value = self.spin.get_value
 		self.set_value = self.spin.set_value
 
@@ -61,7 +61,7 @@ class MultiSpinOptionBox(gtk.HBox):
 			n += 1
 		#m.prepend([text])#self.combo.prepend_text(text)
 		item = MenuItem(text)
-		item.connect('activate', lambda obj: self.spin.set_text(text))
+		item.connect("activate", lambda obj: self.spin.set_text(text))
 		item.text = text
 		self.menu.add(item)
 		self.menu.reorder_child(item, 0)

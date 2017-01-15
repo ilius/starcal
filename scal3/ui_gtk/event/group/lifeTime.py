@@ -11,10 +11,10 @@ class WidgetClass(NormalWidgetClass):
 		####
 		hbox = gtk.HBox()
 		self.showSeperatedYmdInputsCheck = gtk.CheckButton(_(
-			'Show Seperated Inputs for Year, Month and Day'
+			"Show Seperated Inputs for Year, Month and Day"
 		))
 		pack(hbox, self.showSeperatedYmdInputsCheck)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self, hbox)
 
 	def updateWidget(self):

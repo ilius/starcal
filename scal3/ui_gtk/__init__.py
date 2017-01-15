@@ -1,25 +1,25 @@
 __all__ = [
-	'gtk',
-	'gdk',
-	'GdkPixbuf',
-	'pack',
-	'TWO_BUTTON_PRESS',
-	'MenuItem',
-	'ImageMenuItem',
-	'getScrollValue',
+	"gtk",
+	"gdk",
+	"GdkPixbuf",
+	"pack",
+	"TWO_BUTTON_PRESS",
+	"MenuItem",
+	"ImageMenuItem",
+	"getScrollValue",
 ]
 
 import gi
-gi.require_version('Gtk', '3.0')
-gi.require_version('GdkPixbuf', '2.0')
-gi.require_version('PangoCairo', '1.0')
+gi.require_version("Gtk", "3.0")
+gi.require_version("GdkPixbuf", "2.0")
+gi.require_version("PangoCairo", "1.0")
 
 from gi.repository import Gtk as gtk
 from gi.repository import Gdk as gdk
 from gi.repository import GdkPixbuf
 
 
-TWO_BUTTON_PRESS = getattr(gdk.EventType, '2BUTTON_PRESS')
+TWO_BUTTON_PRESS = getattr(gdk.EventType, "2BUTTON_PRESS")
 
 
 def pack(box, child, expand=False, fill=False, padding=0):
@@ -28,16 +28,16 @@ def pack(box, child, expand=False, fill=False, padding=0):
 	elif isinstance(box, gtk.CellLayout):
 		box.pack_start(child, expand)
 	else:
-		raise TypeError('pack: unkown type %s' % type(box))
+		raise TypeError("pack: unkown type %s" % type(box))
 
 
 def getScrollValue(gevent):
 	value = gevent.direction.value_nick
-	if value == 'smooth':  # happens *sometimes* in PyGI (Gtk3)
+	if value == "smooth":  # happens *sometimes* in PyGI (Gtk3)
 		if gevent.delta_y < 0:  # -1.0 (up)
-			value = 'up'
+			value = "up"
 		elif gevent.delta_y > 0:  # 1.0 (down)
-			value = 'down'
+			value = "down"
 	return value
 
 

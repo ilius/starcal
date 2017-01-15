@@ -44,12 +44,12 @@ class DateChangeListener:
 dateChange = DateChangeListener()
 #timeChange = TimeChangeListener()
 
-if __name__ == '__main__':
+if __name__ == "__main__":
 	from gi.repository import GLib as glib
 
 	class TestRec:
 		def onCurrentDateChange(self, date):
-			print('current date changed to %s/%s/%s' % date)
+			print("current date changed to %s/%s/%s" % date)
 
 	dateChange.add(TestRec())
 	glib.MainLoop().run()

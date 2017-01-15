@@ -24,7 +24,7 @@ from scal3.core import myRaise, getMonthName, getMonthLen, pixDir
 
 from scal3 import ui
 
-pluginName = 'WeekCal'
+pluginName = "WeekCal"
 
 
 class WeekStatus(list):
@@ -40,7 +40,7 @@ class WeekStatus(list):
 		#list.__init__(self, [cellCache.getCell(jd) for jd in range(startJd, endJd)])
 		list.__init__(self, [])
 		for jd in range(startJd, endJd):
-			#print('WeekStatus', jd)
+			#print("WeekStatus", jd)
 			self.append(cellCache.getCell(jd))
 
 	def allCells(self):

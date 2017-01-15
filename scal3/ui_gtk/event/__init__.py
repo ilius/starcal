@@ -1,7 +1,7 @@
 __all__ = [
-	'rules',
-	'notifiers',
-	'occurrenceViews',
+	"rules",
+	"notifiers",
+	"occurrenceViews",
 ]
 
 ############################################
@@ -10,7 +10,7 @@ from scal3.utils import myRaise
 from scal3 import event_lib
 
 
-modPrefix = 'scal3.ui_gtk.event'
+modPrefix = "scal3.ui_gtk.event"
 
 
 def makeWidget(obj):
@@ -23,12 +23,12 @@ def makeWidget(obj):
 	except AttributeError:
 		try:
 			module = __import__(
-				'.'.join([
+				".".join([
 					modPrefix,
 					cls.tname,
 					cls.name,
 				]),
-				fromlist=['WidgetClass'],
+				fromlist=["WidgetClass"],
 			)
 			WidgetClass = cls.WidgetClass = module.WidgetClass
 		except:

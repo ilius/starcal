@@ -34,28 +34,28 @@ class WidgetClass(common.WidgetClass):
 		common.WidgetClass.__init__(self, event)
 		################
 		hbox = gtk.HBox()
-		pack(hbox, gtk.Label(_('Month')))
+		pack(hbox, gtk.Label(_("Month")))
 		self.monthCombo = MonthComboBox()
 		self.monthCombo.build(event.mode)
 		pack(hbox, self.monthCombo)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		#pack(self, hbox)
 		###
 		#hbox = gtk.HBox()
-		pack(hbox, gtk.Label(_('Day')))
+		pack(hbox, gtk.Label(_("Day")))
 		self.daySpin = DaySpinButton()
 		pack(hbox, self.daySpin)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self, hbox)
 		###
 		hbox = gtk.HBox()
-		self.startYearCheck = gtk.CheckButton(_('Start Year'))
+		self.startYearCheck = gtk.CheckButton(_("Start Year"))
 		pack(hbox, self.startYearCheck)
 		self.startYearSpin = YearSpinButton()
 		pack(hbox, self.startYearSpin)
-		pack(hbox, gtk.Label(''), 1, 1)
+		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self, hbox)
-		self.startYearCheck.connect('clicked', self.startYearCheckClicked)
+		self.startYearCheck.connect("clicked", self.startYearCheckClicked)
 		####
 		self.notificationBox = common.NotificationBox(event)
 		pack(self, self.notificationBox)
@@ -73,7 +73,7 @@ class WidgetClass(common.WidgetClass):
 		self.monthCombo.setValue(self.event.getMonth())
 		self.daySpin.set_value(self.event.getDay())
 		try:
-			startRule = self.event['start']
+			startRule = self.event["start"]
 		except:
 			self.startYearCheck.set_active(False)
 			self.startYearSpin.set_value(self.event.getSuggestedStartYear())
@@ -87,11 +87,11 @@ class WidgetClass(common.WidgetClass):
 		self.event.setMonth(self.monthCombo.getValue())
 		self.event.setDay(int(self.daySpin.get_value()))
 		if self.startYearCheck.get_active():
-			startRule = self.event.getAddRule('start')
+			startRule = self.event.getAddRule("start")
 			startRule.date = (self.startYearSpin.get_value(), 1, 1)
 		else:
 			try:
-				del self.event['start']
+				del self.event["start"]
 			except KeyError:
 				pass
 
