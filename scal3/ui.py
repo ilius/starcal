@@ -505,8 +505,8 @@ def moveEventToTrashFromOutside(group, event):
 getEvent = lambda groupId, eventId: eventGroups[groupId][eventId]
 
 def duplicateGroupTitle(group):
-    title = toBytes(group.title)
-    titleList = [toBytes(g.title) for g in eventGroups]
+    title = group.title
+    titleList = [g.title for g in eventGroups]
     parts = title.split('#')
     try:
         index = int(parts[-1])
