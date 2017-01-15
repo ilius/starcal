@@ -114,10 +114,11 @@ def labelStockMenuItem(label, stock=None, func=None, *args):
 	return item
 
 
-def labelImageMenuItem(label, image, func=None, *args):
+def labelImageMenuItem(label, imageName, func=None, *args):
 	item = ImageMenuItem(_(label))
 	item.set_use_underline(True)
-	item.set_image(imageFromFile(image))
+	if imageName:
+		item.set_image(imageFromFile(imageName))
 	if func:
 		item.connect('activate', func, *args)
 	return item
