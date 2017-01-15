@@ -3805,8 +3805,13 @@ class JsonObjectsHolder(JsonEventObj):
             assert isinstance(sid, int) and sid != 0
             _id = sid
             _id = abs(sid)
-            cls = getattr(classes, self.childName).main
-            obj = cls.load(_id)
+            try:
+                cls = getattr(classes, self.childName).main
+                obj = cls.load(_id)
+            except:
+                print('error loading %s' % self.childName)
+                myRaiseTback()
+                continue
             obj.parent = self
             obj.enable = (sid > 0)
             self.idList.append(_id)
@@ -3940,6 +3945,7 @@ class EventGroupsHolder(JsonObjectsHolder):
 
 class EventAccountsHolder(JsonObjectsHolder):
     file = join(confDir, 'event', 'account_list.json')
+    childName = 'account'
     def loadClass(self, name):
         try:
             return classes.account.byName[name]
