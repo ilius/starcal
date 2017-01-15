@@ -551,6 +551,48 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		addToItem.set_submenu(menu2)
 		return addToItem
 
+	def editEventFromMenu(self, item, groupId, eventId):
+		from scal3.ui_gtk.event.editor import EventEditorDialog
+		event = ui.getEvent(groupId, eventId)
+		group = ui.eventGroups[groupId]
+		event = EventEditorDialog(
+			event,
+			title=_('Edit ') + event.desc,
+			parent=self,## FIXME
+		).run()
+		if event is None:
+			return
+		ui.eventDiff.add('e', event)
+		self.onConfigChange()
+
+	def addEditEventCellMenuItems(self, menu):
+		if event_lib.allReadOnly:
+			return
+		eventsData = ui.cell.eventsData
+		if not eventsData:
+			return
+		if len(eventsData) < 4: # make it customizable TODO
+			for eData in eventsData:
+				groupId, eventId = eData['ids']
+				menu.add(labelImageMenuItem(
+					_('Edit') + ': ' + eData['text'][0],
+					eData['icon'],
+					self.editEventFromMenu, groupId, eventId,
+				))
+		else:
+			subMenu = gtk.Menu()
+			subMenuItem = labelStockMenuItem('_Edit Event', gtk.STOCK_ADD)
+			for eData in eventsData:
+				groupId, eventId = eData['ids']
+				subMenu.add(labelImageMenuItem(
+					eData['text'][0],
+					eData['icon'],
+					self.editEventFromMenu, groupId, eventId,
+				))
+			subMenu.show_all()
+			subMenuItem.set_submenu(subMenu)
+			menu.add(subMenuItem)
+
 	def menuCellPopup(self, widget, etime, x, y):
 		calObjName = widget._name  # why private? FIXME
 		# calObjName is in ('weekCal', 'monthCal', ...)
@@ -567,6 +609,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 			self.dayInfoShow,
 		))
 		menu.add(self.getEventAddToMenuItem())
+		self.addEditEventCellMenuItems(menu)
 		menu.add(gtk.SeparatorMenuItem())
 		menu.add(labelStockMenuItem(
 			'Select _Today',
