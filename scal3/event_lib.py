@@ -3385,6 +3385,7 @@ class EventGroup(EventContainer):
 		else:
 			self.setId(_id)
 		self.enable = True
+		self.__readOnly = False  # set True when syncing with remote group
 		self.showInDCal = True
 		self.showInWCal = True
 		self.showInMCal = True
@@ -3439,10 +3440,19 @@ class EventGroup(EventContainer):
 		self.remoteSyncDuration = (1, 3600)
 		# remoteSyncDuration (value, unit) where value and unit are both ints
 		self.remoteSyncData = {}
+		# remoteSyncData is a dict {remoteIds => (syncStartEpoch, syncEndEpoch)}
 		#self.eventIdByRemoteIds = {}
 		self.deletedRemoteEvents = {}
 
+	def setReadOnly(self, readOnly):
+		self.__readOnly = readOnly
+
+	def isReadOnly(self):
+		return allReadOnly or self.__readOnly
+
 	def save(self):
+		if self.__readOnly:
+			raise RuntimeError("event group is read-only right now")
 		if self.id is None:
 			self.setId()
 		EventContainer.save(self)
