@@ -92,6 +92,7 @@ makeDir(accountsDir)
 
 def init():
 	global allReadOnly
+	import scal3.account.starcal
 	from scal3.lockfile import checkAndSaveJsonLockFile
 	allReadOnly = checkAndSaveJsonLockFile(lockPath)
 	if allReadOnly:
@@ -3287,6 +3288,23 @@ class EventGroup(EventContainer):
 	def getSubclass(cls, _type):
 		return classes.group.byName[_type]
 
+	def getTimeZoneObj(self):
+		if self.timeZoneEnable and self.timeZone:
+			try:
+				return natz.timezone(self.timeZone)
+			except:
+				myRaise()
+		return core.localTz
+
+	def getEpochFromJd(self, jd):
+		return getEpochFromJd(jd, tz=self.getTimeZoneObj())
+
+	def getStartEpoch(self):
+		return self.getEpochFromJd(self.startJd)
+
+	def getEndEpoch(self):
+		return self.getEpochFromJd(self.endJd)
+
 	def showInCal(self):
 		return self.showInDCal or self.showInWCal or self.showInMCal
 
@@ -3464,10 +3482,16 @@ class EventGroup(EventContainer):
 		value, unit = self.remoteSyncDuration
 		return value * unit
 
-	def afterSync(self):
-		self.remoteSyncData[self.remoteIds] = now()
+	def afterSync(self, startEpoch=None):
+		endEpoch = now()
+		if startEpoch is None:
+			startEpoch = endEpoch
+		self.remoteSyncData[self.remoteIds] = (startEpoch, endEpoch)
 
 	def getLastSync(self):
+		"""
+		return a tuple (startEpoch, endEpoch) or None
+		"""
 		if self.remoteIds:
 			try:
 				return self.remoteSyncData[self.remoteIds]
