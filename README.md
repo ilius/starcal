@@ -11,6 +11,7 @@ Open this URL with your browser:
     http://github.com/ilius/starcal/tarball/master
 
 ##Installation/uninstallation on Ubuntu:
+    $ cd starcal
     $ sudo bash ./install-ubuntu
     $ sudo apt-get remove starcal3
 
