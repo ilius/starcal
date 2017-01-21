@@ -1798,6 +1798,9 @@ class Event(BsonHistEventObj, RuleContainer):
 			cls.iconName + ".png"
 		) if cls.iconName else ""
 
+	def getRevision(self, revHash):
+		return BsonHistObj.getRevision(self, revHash, self.id)
+
 	def __bool__(self):
 		return bool(self.rulesOd)  # FIXME
 
@@ -2176,6 +2179,32 @@ class Event(BsonHistEventObj, RuleContainer):
 		}
 		fixIconInData(data)
 		return data
+
+	def createPatchByHash(self, oldHash):
+		oldEvent = self.getRevision(sinceHash)
+		patch = {
+			"eventId": self.id,
+			"eventType": oldEvent.name,
+			"action": "modify",
+		}
+		if oldEvent.name != self.name:
+			patch["newEventType"] = self.name
+
+		oldData = oldEvent.getServerData()
+		newData = self.getServerData()
+
+		items = []
+		for fieldName, newValue in newData.items():
+			oldValue = oldData.get(fieldName, None)
+			if oldValue != newValue:
+				items.append({
+					"fieldName": fieldName,
+					"oldValue": oldValue,
+					"newValue": newValue,
+				})
+		patch["items"] = items
+
+		return patch
 
 
 class SingleStartEndEvent(Event):
@@ -4114,6 +4143,37 @@ class EventGroup(EventContainer):
 				})
 		#####
 		return data
+
+	def createPatchList(self, sinceEpoch):
+		patchList = []
+
+		for event in self:
+			# if not event.remoteIds:  # FIXME
+			eventHist = event.loadHistory()
+			if not eventHist:
+				print("eventHist = %r" % eventHist)
+				continue
+			# assert event.modified == eventHist[0][0]
+			if eventHist[0][0] > sinceEpoch:
+				creationEpoch = eventHist[-1][0]
+				if creationEpoch > sinceEpoch:
+					patchList.append({
+						"eventId": event.id,
+						"eventType": event.name,
+						"action": "add",
+						"newEventData": event.getServerData(),
+					})
+				else:
+					sinceHash = None
+					for tmpEpoch, tmpHash in eventHist:
+						sinceHash = tmpHash
+						if tmpEpoch <= sinceEpoch:
+							break
+					patchList.append(
+						event.createPatchByHash(sinceHash),
+					)
+
+		return patchList
 
 
 @classes.group.register

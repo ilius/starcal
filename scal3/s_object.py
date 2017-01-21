@@ -331,3 +331,17 @@ class BsonHistObj(SObj):
 		basicData["history"] = history
 		self.saveBasicData(basicData)
 		return history[0]
+
+	def getRevision(self, revHash, *args):
+		cls = self.__class__
+		data = self.loadBasicData()
+		data.update(loadBsonObject(revHash))
+		try:
+			_type = data["type"]
+		except (KeyError, TypeError):
+			subCls = cls
+		else:
+			subCls = cls.getSubclass(_type)
+		obj = subCls(*args)
+		obj.setData(data)
+		return obj
