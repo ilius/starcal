@@ -340,14 +340,14 @@ def strFindNth(st, sub, n):
 	return pos
 
 
-def numRangesEncode(values):
+def numRangesEncode(values, sep):
 	parts = []
 	for value in values:
 		if isinstance(value, int):
 			parts.append(str(value))
 		elif isinstance(value, (tuple, list)):
 			parts.append("%d-%d" % (value[0], value[1]))
-	return ", ".join(parts)
+	return sep.join(parts)
 
 
 def numRangesDecode(text):

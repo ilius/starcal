@@ -196,7 +196,7 @@ class NumRangesEntry(gtk.Entry):
 	def setValues(self, values):
 		return self.set_text(
 			textNumEncode(
-				numRangesEncode(values),
+				numRangesEncode(values, ", "),
 				changeSpecialChars=False,
 			)
 		)
