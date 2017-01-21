@@ -26,8 +26,8 @@ from scal3 import ui
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import dialog_add_button
 
-class BulkSaveTimeZoneDialog(gtk.Dialog, **kwargs):
-    def __init__(self):
+class BulkSaveTimeZoneDialog(gtk.Dialog):
+    def __init__(self, **kwargs):
         from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
         gtk.Dialog.__init__(self, **kwargs)
         self.set_title(_('Time Zone'))
