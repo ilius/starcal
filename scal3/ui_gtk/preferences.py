@@ -1045,6 +1045,15 @@ class PrefDialog(gtk.Dialog):
 				else:
 					d.destroy()
 
+	def refreshAccounts(self):
+		self.accountsTreestore.clear()
+		for account in ui.eventAccounts:
+			self.accountsTreestore.append([
+				account.id,
+				account.enable,
+				account.title,
+			])
+
 	def updatePrefGui(self):  # Updating Pref Gui (NOT MAIN GUI)
 		for opt in self.iterAllPrefItems():
 			opt.updateWidget()
@@ -1068,13 +1077,7 @@ class PrefDialog(gtk.Dialog):
 			self.plugAddTreestore.append([title])
 			self.plugButtonAdd.set_sensitive(True)
 		###### Accounts
-		self.accountsTreestore.clear()
-		for account in ui.eventAccounts:
-			self.accountsTreestore.append([
-				account.id,
-				account.enable,
-				account.title,
-			])
+		self.refreshAccounts()
 
 	#def plugTreevExpose(self, widget, gevent):
 	#	self.plugTitleCell.set_property(
@@ -1370,6 +1373,14 @@ class PrefDialog(gtk.Dialog):
 			account.enable,
 			account.title,
 		])
+		###
+		while gtk.events_pending():
+			gtk.main_iteration_do(False)
+		error = account.fetchGroups()
+		if error:
+			print(error)
+			return
+		account.save()
 
 	def accountsDelClicked(self, button):
 		cur = self.accountsTreeview.get_cursor()[0]
@@ -1384,6 +1395,7 @@ class PrefDialog(gtk.Dialog):
 		):
 			return
 		ui.eventAccounts.delete(account)
+		ui.eventAccounts.save()
 		del self.accountsTreestore[index]
 
 	def accountsUpClicked(self, button):
