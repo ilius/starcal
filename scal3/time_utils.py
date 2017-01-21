@@ -347,6 +347,12 @@ def clockWaitMilliseconds():
 	return int(1000 * (1.01 - now() % 1))
 
 
+def jsonTimeFromEpoch(epoch, tz=None):
+	tm = datetime.fromtimestamp(epoch, tz=None)
+	# Python's `datetime` does not support "%:z" format ("+03:30")
+	# so we have to set `tz` to None
+	return tm.strftime("%Y-%m-%dT%H:%M:%SZ")
+
 if __name__ == "__main__":
 	#print(floatHourToTime(3.6))
 	for tm in (

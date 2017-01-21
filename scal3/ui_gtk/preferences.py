@@ -835,14 +835,19 @@ class PrefDialog(gtk.Dialog):
 		size = gtk.IconSize.SMALL_TOOLBAR
 		# argument 2 to image_new_from_stock has no effect FIXME
 		######## gtk.IconSize.SMALL_TOOLBAR or gtk.IconSize.MENU
-		tb = toolButtonFromStock(gtk.STOCK_EDIT, size)
-		set_tooltip(tb, _("Edit"))
-		tb.connect("clicked", self.accountsEditClicked)
+		tb = toolButtonFromFile("starcal-24.png")
+		set_tooltip(tb, _("Register at StarCalendar.net"))
+		tb.connect("clicked", self.accountsRegisterClicked)
 		toolbar.insert(tb, -1)
 		###########
 		tb = toolButtonFromStock(gtk.STOCK_ADD, size)
 		set_tooltip(tb, _("Add"))
 		tb.connect("clicked", self.accountsAddClicked)
+		toolbar.insert(tb, -1)
+		###########
+		tb = toolButtonFromStock(gtk.STOCK_EDIT, size)
+		set_tooltip(tb, _("Edit"))
+		tb.connect("clicked", self.accountsEditClicked)
 		toolbar.insert(tb, -1)
 		###########
 		tb = toolButtonFromStock(gtk.STOCK_DELETE, size)
@@ -1359,6 +1364,11 @@ class PrefDialog(gtk.Dialog):
 			return
 		index = cur[0]
 		self.editAccount(index)
+
+	def accountsRegisterClicked(self, button):
+		from scal3.ui_gtk.event.register_starcal import StarCalendarRegisterDialog
+		win = StarCalendarRegisterDialog(parent=self)
+		win.present()
 
 	def accountsAddClicked(self, button):
 		from scal3.ui_gtk.event.account_op import AccountEditorDialog
