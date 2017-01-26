@@ -32,7 +32,7 @@ version=`$sourceDir/scal3/get_version.py`
 #%post
 #/usr/share/$pkgName/scripts/assert_python3
 
-requires=('python3(>=3.2)')
+requires=('python3')
 requires+=('python3-gobject') ## The new gobject introspection
 #requires+=('python3-gflags')
 requires+=('python3-httplib2')
@@ -45,7 +45,7 @@ requires+=('python3-dateutil')
 #requires+=('python3-gnomevfs')
 
 
-requires_str=$(printf " %s" "${requires[@]}") ; requires_str=${requires_str:2}
+requires_str=$(printf " %s" "${requires[@]}") ; requires_str=${requires_str:1}
 #recommends_str=$(printf ", %s" "${recommends[@]}") ; recommends_str=${recommends_str:2}
 
 
@@ -80,9 +80,17 @@ and Indian National calendars, as well as common english(Gregorian) calendar
 %{_prefix}/share/locale/*/LC_MESSAGES/$pkgName.mo
 " > $pkgName.spec
 
-pkgPath=`rpmbuild -bb $pkgName.spec | grep -o /usr/src/packages/RPMS/.*rpm`
+rpmbuild -bb $pkgName.spec
+status=$?
+if [ "$status" != "0" ] ; then
+    echo "rpmbuild exited with failed status '$status'"
+    exit $status
+fi
 
-if [ -z $pkgPath ] ; then
+pkgPath="/root/rpmbuild/RPMS/noarch/$pkgName-$version-1.noarch.rpm"
+
+if [ ! -f $pkgPath ] ; then
+    echo "rpmbuild exited with success status $rpmbuild_status, but no package file was found"
     exit 1
 fi
 
