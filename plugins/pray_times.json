@@ -1,16 +1,16 @@
 {
-  "type": "external",
-  "mainFile": "pray_times_files/pray_times.py",
-  "calType": "gregorian",
-  "title": "Islamic Pray Times",
-  "about": "Islamic Pray Times",
-  "authors": [
-    "Hamid Zarrabi-Zadeh <zarrabi@scs.carleton.ca>",
-    "Saeed Rasooli <saeed.gnu@gmail.com>"
-  ],
-  "hasConfig": true,
-  "hasImage": false,
-  "lastDayMerge": true,
-  "default_enable": false,
-  "default_show_date": false
+	"type": "external",
+	"mainFile": "pray_times_files/pray_times.py",
+	"calType": "gregorian",
+	"title": "Islamic Pray Times",
+	"about": "Islamic Pray Times",
+	"authors": [
+		"Hamid Zarrabi-Zadeh <zarrabi@scs.carleton.ca>",
+		"Saeed Rasooli <saeed.gnu@gmail.com>"
+	],
+	"hasConfig": true,
+	"hasImage": false,
+	"lastDayMerge": true,
+	"default_enable": false,
+	"default_show_date": false
 }

@@ -1,17 +1,17 @@
 {
-  "type": "yearlyText",
-  "dataFile": "iran-jalali-2-data.txt",
-  "calType": "jalali",
-  "title": "مناسبت‌های هجری شمسی (سایر)",
-  "about": "مناسبت‌های هجری شمسی (سایر)\nمناسبت‌های هجری شمسی که توسط مؤلف برنامه اضافه شده‌اند و در تقویم رسمی ایران نیست. و یا به تازگی از تقویم رسمی ایران حذف شده‌اند.\nآخرین تغییرات: ۲۰۱۲/۰۶/۰۶",
-  "authors": [
-    "شورای مرکز تقویم مؤسسهٔ ژئوفیزیک دانشگاه تهران و شورای فرهنگ عمومی",
-    "سعید رسولی <saeed.gnu@gmail.com>",
-    "مولا پهنادایان <mola.mp@gmail.com>"
-  ],
-  "hasConfig": false,
-  "hasImage": false,
-  "lastDayMerge": true,
-  "default_enable": false,
-  "default_show_date": false
+	"type": "yearlyText",
+	"dataFile": "iran-jalali-2-data.txt",
+	"calType": "jalali",
+	"title": "مناسبت‌های هجری شمسی (سایر)",
+	"about": "مناسبت‌های هجری شمسی (سایر)\nمناسبت‌های هجری شمسی که توسط مؤلف برنامه اضافه شده‌اند و در تقویم رسمی ایران نیست. و یا به تازگی از تقویم رسمی ایران حذف شده‌اند.\nآخرین تغییرات: ۲۰۱۲/۰۶/۰۶",
+	"authors": [
+		"شورای مرکز تقویم مؤسسهٔ ژئوفیزیک دانشگاه تهران و شورای فرهنگ عمومی",
+		"سعید رسولی <saeed.gnu@gmail.com>",
+		"مولا پهنادایان <mola.mp@gmail.com>"
+	],
+	"hasConfig": false,
+	"hasImage": false,
+	"lastDayMerge": true,
+	"default_enable": false,
+	"default_show_date": false
 }

@@ -1,15 +1,15 @@
 {
-  "type": "yearlyText",
-  "dataFile": "iran-hijri-2-data.txt",
-  "calType": "hijri",
-  "title": "مناسبت‌های اسلامی (سایر)",
-  "about": "مناسبت‌های اسلامی (سایر)\nوقایع اسلامی که در تقویم رسمی ایران درج نشده‌اند\nآخرین تغییرات: ۲۰۱۲/۰۶/۰۶",
-  "authors": [
-    "سعید رسولی <saeed.gnu@gmail.com>"
-  ],
-  "hasConfig": false,
-  "hasImage": false,
-  "lastDayMerge": true,
-  "default_enable": false,
-  "default_show_date": false
+	"type": "yearlyText",
+	"dataFile": "iran-hijri-2-data.txt",
+	"calType": "hijri",
+	"title": "مناسبت‌های اسلامی (سایر)",
+	"about": "مناسبت‌های اسلامی (سایر)\nوقایع اسلامی که در تقویم رسمی ایران درج نشده‌اند\nآخرین تغییرات: ۲۰۱۲/۰۶/۰۶",
+	"authors": [
+		"سعید رسولی <saeed.gnu@gmail.com>"
+	],
+	"hasConfig": false,
+	"hasImage": false,
+	"lastDayMerge": true,
+	"default_enable": false,
+	"default_show_date": false
 }
