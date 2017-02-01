@@ -27,6 +27,7 @@ from scal3.path import *
 from scal3.utils import myRaiseTback
 from scal3.json_utils import *
 from scal3.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG
+from scal3.date_utils import ymdRange
 from scal3.locale_man import tr as _
 from scal3.locale_man import getMonthName
 from scal3.ics import icsTmFormat, icsHeader
@@ -49,6 +50,7 @@ pluginClassByName = {}
 def registerPlugin(cls):
     assert cls.name
     pluginClassByName[cls.name] = cls
+    return cls
 
 
 getPlugPath = lambda _file: _file if isabs(_file) else join(plugDir, _file)
@@ -474,16 +476,16 @@ class IcsTextPlugin(BasePlugin):
         BasePlugin.__init__(
             self,
             _file,
-            mode=DATE_GREG,
-            title=title,
-            enable=enable,
-            show_date=show_date,
         )
+        self.mode = DATE_GREG
+        self.title = title
+        self.enable = enable
+        self.show_date = show_date
     def clear(self):
         self.ymd = None
         self.md = None
     def load(self):
-        lines = open(self.fpath).read().replace('\r', '').split('\n')
+        lines = open(self.file).read().replace('\r', '').split('\n')
         n = len(lines)
         i = 0
         while True:

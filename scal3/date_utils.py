@@ -1,5 +1,5 @@
 import math
-from scal3.cal_types import calTypes, to_jd
+from scal3.cal_types import calTypes, to_jd, DATE_GREG
 from scal3.time_utils import getEpochFromJd
 
 getMonthLen = lambda year, month, mode: calTypes[mode].getMonthLen(year, month)
@@ -84,4 +84,16 @@ def getJdFromFloatYear(fyear, mode):
 
 getEpochFromDate = lambda y, m, d, mode: getEpochFromJd(to_jd(y, m, d, mode))
 
-
+def ymdRange(date1, date2, mode=None):
+    y1, m1, d1 = date1
+    y2, m2, d2 = date2
+    if y1==y2 and m1==m2:
+        for d in range(d1, d2):
+            yield y1, m1, d
+    if mode==None:
+        mode = DATE_GREG
+    calType = calTypes[mode]
+    j1 = int(calType.to_jd(y1, m1, d1))
+    j2 = int(calType.to_jd(y2, m2, d2))
+    for j in range(j1, j2):
+        yield calType.jd_to(j)

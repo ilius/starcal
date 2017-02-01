@@ -403,19 +403,6 @@ def restart():## will not return from function
 
 #########################################################
 
-def ymdRange(date1, date2, mode=None):
-    y1, m1, d1 = date1
-    y2, m2, d2 = date2
-    if y1==y2 and m1==m2:
-        for d in range(d1, d2):
-            yield y1, m1, d
-    if mode==None:
-        mode = DATE_GREG
-    calType = calTypes[mode]
-    j1 = int(calType.to_jd(y1, m1, d1))
-    j2 = int(calType.to_jd(y2, m2, d2))
-    for j in range(j1, j2):
-        yield calType.jd_to(j)
 
 def mylocaltime(sec=None, mode=None):
     from scal3.cal_types import convert
