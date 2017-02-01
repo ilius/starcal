@@ -63,10 +63,11 @@ class ConButton(gtk.Button, ConButtonBase):
 if __name__ == "__main__":
 	win = gtk.Dialog(parent=None)
 	button = ConButton("Press")
-	button.connect(
-		"con-clicked",
-		lambda obj: print("%.4f\tcon-clicked" % now())
-	)
+
+	def con_clicked(arg):
+		print("%.4f\tcon-clicked" % now())
+
+	button.connect("con-clicked", con_clicked)
 	pack(win.vbox, button, 1, 1)
 	win.vbox.show_all()
 	win.resize(100, 100)
