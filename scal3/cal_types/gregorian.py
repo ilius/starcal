@@ -50,8 +50,6 @@ def save():
     pass
 
 def isLeap(y):
-    if y<1:
-        y += 1
     return y%4==0 and not ( y%100==0 and y%400!=0 )
 
 def to_jd(year, month, day):
