@@ -2,47 +2,47 @@
   "allPlugList": [
     {
       "enable": false,
-      "_file": "pray_times.py",
+      "_file": "pray_times.json",
       "show_date": false
     },
     {
       "enable": false,
-      "_file": "iran-holidays.hol",
+      "_file": "holidays-iran.json",
       "show_date": false
     },
     {
       "enable": false,
-      "_file": "iran-jalali.spg",
+      "_file": "iran-jalali.json",
       "show_date": false
     },
     {
       "enable": false,
-      "_file": "iran-gregorian.spg",
+      "_file": "iran-gregorian.json",
       "show_date": false
     },
     {
       "enable": false,
-      "_file": "iran-hijri.spg",
+      "_file": "iran-hijri.json",
       "show_date": false
     },
     {
       "enable": false,
-      "_file": "iran-ancient.spg",
+      "_file": "iran-ancient.json",
       "show_date": false
     },
     {
       "enable": false,
-      "_file": "iran-jalali-2.spg",
+      "_file": "iran-jalali-2.json",
       "show_date": false
     },
     {
       "enable": false,
-      "_file": "iran-gregorian-2.spg",
+      "_file": "iran-gregorian-2.json",
       "show_date": false
     },
     {
       "enable": false,
-      "_file": "iran-hijri-2.spg",
+      "_file": "iran-hijri-2.json",
       "show_date": false
     }
   ],
