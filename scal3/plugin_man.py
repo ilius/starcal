@@ -350,35 +350,66 @@ class HolidayPlugin(BaseJsonPlugin):
 					mode = calTypes.names.index(modeName)
 				except ValueError:
 					continue
-				self.holidays[mode] = [
-					(x[0], x[1])
-					for x in data["holidays"][modeName]
-					if len(x) == 2
-				]
+				modeHolidays = []
+				for row in data["holidays"][modeName]:
+					if isinstance(row, str):  # comment
+						continue
+					if not isinstance(row, (list, tuple)):
+						log.error("Bad type for holiday item %r" % row)
+						continue
+					if len(row) not in (2, 3):
+						log.error("Bad length for holiday item %r" % row)
+						continue
+					modeHolidays.append(tuple(row))
+				self.holidays[mode] = modeHolidays
 			del data["holidays"]
 		else:
 			log.error("no \"holidays\" key in holiday plugin \"%s\"" % self.file)
 		###
 		BaseJsonPlugin.setData(self, data)
 
+	def dateIsHoliday(self, mode, y, m, d, jd):
+		for item in self.holidays[mode]:
+			if len(item) == 2:
+				hm, hd = item
+				hy = None
+			elif len(item) == 3:
+				hy, hm, hd = item
+			else:
+				log.error("bad holiday item %r" % item)
+				continue
+
+			if hy is not None and hy != y:
+				continue
+
+			if hm != m:
+				continue
+
+			if d == hd:
+				return True
+
+			if (
+				hy is None
+				and
+				self.lastDayMerge
+				and
+				d == hd - 1
+				and
+				hd >= calTypes[mode].minMonthLen
+			):
+				ny, nm, nd = jd_to(jd + 1, mode)
+				if (ny, nm) > (y, m):
+					return True
+
+		return False
+
 	def updateCell(self, c):
 		if not c.holiday:
 			for mode in self.holidays:
 				y, m, d = c.dates[mode]
-				for hm, hd in self.holidays[mode]:
-					if m == hm:
-						if d == hd:
-							c.holiday = True
-							break
-						elif (
-							self.lastDayMerge and
-							d == hd - 1 and
-							hd >= calTypes[mode].minMonthLen
-						):
-							ny, nm, nd = jd_to(c.jd + 1, mode)
-							if (ny, nm) > (y, m):
-								c.holiday = True
-								break
+				if self.dateIsHoliday(mode, y, m, d, c.jd):
+					c.holiday = True
+					return
 
 	def exportToIcs(self, fileName, startJd, endJd):
 		currentTimeStamp = strftime(icsTmFormat)
@@ -388,6 +419,9 @@ class HolidayPlugin(BaseJsonPlugin):
 			for mode in self.holidays.keys():
 				myear, mmonth, mday = jd_to(jd, mode)
 				if (mmonth, mday) in self.holidays[mode]:
+					isHoliday = True
+					break
+				if (myear, mmonth, mday) in self.holidays[mode]:
 					isHoliday = True
 					break
 			if isHoliday:
@@ -760,6 +794,7 @@ def loadPlugin(_file=None, **kwargs):
 		data = jsonToData(text)
 	except Exception as e:
 		log.error("invalid json file \"%s\"" % _file)
+		myRaise()
 		return
 	####
 	data.update(kwargs)  # FIXME
