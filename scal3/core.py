@@ -158,7 +158,7 @@ try:
 	import logging.config
 
 	logConfText = open(join(rootDir, "conf", "logging-user.conf")).read()
-	for varName in ("confDir",):
+	for varName in ("confDir", "APP_NAME"):
 		logConfText = logConfText.replace(varName, eval(varName))
 
 	logging.config.fileConfig(StringIO(logConfText))
