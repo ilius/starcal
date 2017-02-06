@@ -346,10 +346,17 @@ def initPlugins():
 		if not isdir(direc):
 			continue
 		for fname in os.listdir(direc):
-			if fname == "__init__.py" or fname in names:  # FIXME
+			if fname in names + [
+				"__init__.py",
+				"README",
+			]:
+				continue
+			if fname.startswith("."):
+				continue
+			name, ext = os.path.splitext(fname)
+			if ext in (".txt", ".pyc"):
 				continue
 			path = "%s/%s" % (direc, fname)
-			name = os.path.splitext(fname)[0]
 			# if path in path:
 			#	# The plugin is not new, currently exists in allPlugList
 			#	log.warning("plugin "%s" already exists."%path)
@@ -358,6 +365,7 @@ def initPlugins():
 				continue
 			plug = loadPlugin(path)
 			if plug is None:
+				print('failed to load plugin', path)
 				continue
 			# try:
 			plugIndex.append(len(allPlugList))
