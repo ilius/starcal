@@ -1,0 +1,80 @@
+{
+	"type": "holiday",
+	"title": "Public Holidays of Malaysia - Kuala Lumpur",
+	"about": "Public Holidays of Malaysia - Kuala Lumpur",
+	"authors": [
+		"http://www.officeholidays.com/countries/malaysia/",
+		"Saeed Rasooli <saeed.gnu@gmail.com>"
+	],
+	"hasConfig": false,
+	"holidays": {
+		"gregorian": [
+			"New Years Day, All regions except Johor, Kedah, Kelantan, Perlis, Terengganu",
+			[1, 1],
+
+			"Federal Territory Day",
+			[2, 1],
+
+			"Labour Day (National Holiday)",
+			[5, 1],
+
+			"National Day (National Holiday)",
+			[8, 31],
+
+			"Malaysia Day (National Holiday)",
+			[9, 16],
+
+			"Christmas Day (National Holiday)",
+			[12, 25],
+
+
+			"Public Holiday as New Years Day of 2017 falls on a Sunday",
+			[2017, 1, 2],
+
+			"1st Saturday of June, Birthday of SPB Yang di Pertuan Agong (National Holiday)",
+			[2017, 6, 3],
+			[2018, 6, 2],
+			[2019, 6, 1],
+
+
+			"Hijri: */01/01, Awal Muharram (Islamic New Year) (National Holiday)",
+			[2017, 9, 21], 			
+
+
+			"Nuzul Quran, Hijri: */09/16 or */09/17",
+			"All regions except Johor, Kedah, Malacca, Negeri Sembilan, Sabah, Sarawak",
+			[2017, 6, 12],
+
+
+			"Hijri: */10/01, Hari Raya Aidilfitri (Eid Al-Fitr) (National Holiday)",
+			[2017, 6, 25], 
+
+
+			"Hijri: */10/02, Second day of holiday for Hari Raya Aidilfitri (Eid Al-Fitr)",
+			[2017, 6, 26],
+
+
+			"Hijri: */12/10, Hari Raya Haji (Festival of Sacrifice) (National Holiday)",
+			[2017, 9, 1],
+
+
+			"Chinese New Year (National Holiday) (LUNAR)",
+			[2017, 1, 28],
+
+
+			"Chinese New Year 2nd day (LUNAR), All regions except Terengganu",
+			[2017, 1, 29],
+
+
+			"Thaipusam (LUNAR, Tamil calendar)",
+			[2017, 2, 9],
+
+
+			"Wesak Day (National Holiday)(LUNAR, Hindu calendar, Ovserved)",
+			[2017, 5, 10]
+
+		]
+	},
+	"default_enable": false,
+	"default_show_date": false
+}
