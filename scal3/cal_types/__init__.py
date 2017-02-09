@@ -126,6 +126,14 @@ class CalTypesHolder:
 		for i in self.active + self.inactive:
 			yield i, modules[i]
 
+	def iterIndexModuleActive(self):
+		for i in self.active:
+			yield i, modules[i]
+
+	def iterIndexModuleInactive(self):
+		for i in self.inactive:
+			yield i, modules[i]
+
 	def allIndexes(self):
 		return self.active + self.inactive
 
