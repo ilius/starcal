@@ -10,10 +10,18 @@ class CalTypeCombo(IdComboBox):
 		ls = gtk.ListStore(int, str)
 		gtk.ComboBox.__init__(self)
 		self.set_model(ls)
+		self.set_row_separator_func(self._is_separator, None)
 		###
 		cell = gtk.CellRendererText()
 		pack(self, cell, True)
 		self.add_attribute(cell, "text", 1)
 		###
-		for i, mod in calTypes.iterIndexModule():
+		for i, mod in calTypes.iterIndexModuleActive():
 			ls.append([i, _(mod.desc)])
+		ls.append([-1, None])  # separator
+		# None is converted to 0 for `int` column, so we use -1
+		for i, mod in calTypes.iterIndexModuleInactive():
+			ls.append([i, _(mod.desc)])
+
+	def _is_separator(self, model, rowIter, data):
+		return model.get_value(rowIter, 1) is None
