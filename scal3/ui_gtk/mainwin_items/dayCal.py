@@ -264,8 +264,16 @@ class CalObj(gtk.DrawingArea, CalBase):
 			show_layout(cr, daynum)
 
 	def buttonPress(self, obj, gevent):
-		# FIXME
-		pass
+		b = gevent.button
+		#x, y, mask = col_win.get_pointer()
+		x, y = self.get_pointer()
+		#y += 10
+		###
+		if gevent.type == TWO_BUTTON_PRESS:
+			self.emit("2button-press")
+		if b == 3:
+			self.emit("popup-cell-menu", gevent.time, x, y)
+		return True
 
 	def jdPlus(self, p):
 		ui.jdPlus(p)
