@@ -402,7 +402,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
         liveConfChanged()
         return False
     def buttonPress(self, obj, gevent):
-        print('buttonPress')
+        print('MainWin.buttonPress')
         b = gevent.button
         #print('buttonPress', b)
         if b==3:
@@ -410,6 +410,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             self.menuMain.popup(None, None, None, None, 3, gevent.time)
             ui.updateFocusTime()
         elif b==1:
+            # FIXME: used to cause problems with `ConButton` when using 'pressed' and 'released' signals
             self.begin_move_drag(gevent.button, int(gevent.x_root), int(gevent.y_root), gevent.time)
         return False
     def childButtonPress(self, widget, gevent):

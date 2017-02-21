@@ -14,22 +14,35 @@ from scal3.ui_gtk import gtk_ud as ud
 class ConButtonBase:
     def __init__(self):
         self.pressTm = 0
-        self.remain = False
+        self.counter = 0
         ###
-        self.connect('pressed', self.onPress)
-        self.connect('released', self.onRelease)
-    doTrigger = lambda self: self.emit('con-clicked')
+        self.connect("button-press-event", self.onPress)
+        self.connect("button-release-event", self.onRelease)
+    def doTrigger(self):
+        return self.emit("con-clicked")
     def onPress(self, widget, event=None):
         self.pressTm = now()
-        self.remain = True
         self.doTrigger()
-        timeout_add(ui.timeout_initial, self.onPressRemain, self.doTrigger)
-    def onPressRemain(self, func):
-        if self.remain and now()-self.pressTm>=ui.timeout_repeat/1000.0:
-            func()
-            timeout_add(ui.timeout_repeat, self.onPressRemain, self.doTrigger)
+        self.counter += 1
+        timeout_add(
+            ui.timeout_initial,
+            self.onPressRemain,
+            self.doTrigger,
+            self.counter,
+        )
+        return True
     def onRelease(self, widget, event=None):
-        self.remain = False
+        self.counter += 1
+        return True
+    def onPressRemain(self, func, counter):
+        if counter == self.counter and now() - self.pressTm >= ui.timeout_repeat / 1000:
+            func()
+            timeout_add(
+                ui.timeout_repeat,
+                self.onPressRemain,
+                self.doTrigger,
+                self.counter,
+            )
 
 
 @registerSignals
