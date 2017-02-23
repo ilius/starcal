@@ -74,8 +74,6 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
         self.add_events(gdk.EventMask.POINTER_MOTION_MASK)
         self.onPressContinue = onPressContinue
         ###
-        self.connect('button-press-event', self.buttonPress)
-        ###
         optionsWidget = gtk.VBox()
         ##
         hbox = gtk.HBox()
@@ -196,12 +194,4 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
             gobject.timeout_add(ui.timeout_repeat, self.itemPressRemain, func)
     def itemRelease(self, widget, event=None):
         self.remain = False
-    def buttonPress(self, obj, gevent):
-        if ui.mainWin:
-            if gevent.button==1:
-                ui.mainWin.begin_move_drag(gevent.button, int(gevent.x_root), int(gevent.y_root), gevent.time)
-            elif gevent.button==3:
-                ui.mainWin.menuMainPopup(self, gevent.time, gevent.x, gevent.y)
-                #self.emit('popup-main-menu', gevent.time, gevent.x, gevent.y)
-        return False
 
