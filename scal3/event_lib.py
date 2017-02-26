@@ -1841,7 +1841,7 @@ class Event(BsonHistEventObj, RuleContainer):
 			self.setDefaultsFromGroup(parent)
 		######
 		self.modified = now()  # FIXME
-		self.remoteIds = None  # (accountId, groupId, eventId)
+		self.remoteIds = None  # (accountId, groupId, eventId) OR (accountId, groupId, eventId, sha1)
 		# remote groupId and eventId both can be integer or string
 		# (depending on remote account type)
 
