@@ -141,7 +141,12 @@ def decodeRemoteEvent(remoteEventFull, accountId, group):
 	eventData.update(eventTypeData)
 	event = event_lib.classes.event.byName[eventType]()
 	event.setData(eventData)
-	event.remoteIds = (accountId, remoteEventFull["eventId"])
+	event.remoteIds = (
+		accountId,
+		remoteEventFull["groupId"],  # remoteGroupId,
+		remoteEventFull["eventId"],
+		remoteEventFull["sha1"],
+	)
 	return event, None
 
 
