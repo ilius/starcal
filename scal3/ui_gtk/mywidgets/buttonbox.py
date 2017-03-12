@@ -21,6 +21,7 @@ from scal3.locale_man import tr as _
 from scal3 import ui
 from scal3.ui_gtk import *
 
+
 class MyHButtonBox(gtk.HButtonBox):
 	def __init__(self):
 		gtk.HButtonBox.__init__(self)
@@ -54,5 +55,3 @@ class MyHButtonBox(gtk.HButtonBox):
 			_("_Cancel"),
 			onClick=onClick,
 		)
-
-

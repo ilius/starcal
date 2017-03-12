@@ -469,7 +469,6 @@ def restart():
 # _____________________________________________________ #
 
 
-
 def mylocaltime(sec=None, mode=None):
 	from scal3.cal_types import convert
 	if mode is None:  # DATE_GREG
@@ -641,7 +640,6 @@ eventTrashLastTop = True
 
 
 # ___________________________________________________________________________ #
-
 
 
 licenseText = _("licenseText")
