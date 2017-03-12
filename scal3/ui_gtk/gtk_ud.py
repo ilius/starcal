@@ -151,6 +151,7 @@ class IntegatedWindowList(BaseCalObj):
 		BaseCalObj.onConfigChange(self, *a, **ka)
 		self.onDateChange()
 
+
 def getGtkDefaultFont():
 	fontName = settings.get_property("gtk-font-name")
 	font = gfontDecode(fontName)

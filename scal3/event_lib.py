@@ -90,13 +90,13 @@ makeDir(accountsDir)
 
 ###################################################
 
+
 def init():
 	global allReadOnly
 	from scal3.lockfile import checkAndSaveJsonLockFile
 	allReadOnly = checkAndSaveJsonLockFile(lockPath)
 	if allReadOnly:
 		print("Event lock file %s exists, EVENT DATA IS READ-ONLY" % lockPath)
-
 
 
 class JsonEventObj(JsonSObj):
