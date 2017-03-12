@@ -17,7 +17,7 @@ class AboutDialog(gtk.AboutDialog):
 		gtk.AboutDialog.__init__(self, **kwargs)
 		self.set_name(name)
 		self.set_program_name(name)
-		self.set_version(version)
+		self.set_version("Version:" + " <b>" + version + "</b>")
 		self.set_title(title)  # must call after set_name and set_version !
 		self.set_authors(authors)
 		self.set_comments(comments)
