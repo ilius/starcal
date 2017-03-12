@@ -188,6 +188,31 @@ def popen_output(cmd):
 	return Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
 
 
+def getVersion():
+	gitDir = os.path.join(rootDir, ".git")
+	if os.path.isdir(gitDir):
+		try:
+			outputB, error = subprocess.Popen(
+				[
+					"git",
+					"--git-dir", gitDir,
+					"describe",
+					"--tags",
+					"--always",
+				],
+				stdout=subprocess.PIPE,
+			).communicate()
+		except:
+			myRaise()
+		else:
+			# if error != None:
+			#	sys.stderr.write(error)
+			version = outputB.decode("utf-8").strip()
+			if version:
+				return version
+	return VERSION
+
+
 def primary_to_jd(y, m, d):
 	return calTypes.primaryModule().to_jd(y, m, d)
 
@@ -546,6 +571,8 @@ def dataToJson(data):
 
 
 def init():
+	global VERSION
+	VERSION = getVersion()  # right place?
 	loadConf()
 	initPlugins()
 
