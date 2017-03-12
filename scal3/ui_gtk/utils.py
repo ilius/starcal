@@ -252,36 +252,36 @@ def get_menu_width(menu):
 
 
 def get_pixbuf_hash(pbuf):
-    import hashlib
-    md5 = hashlib.md5()
+	import hashlib
+	md5 = hashlib.md5()
 
-    def save_func(chunkBytes, size, unknown):
-        # len(chunkBytes) == size
-        md5.update(chunkBytes)
-        return True
+	def save_func(chunkBytes, size, unknown):
+		# len(chunkBytes) == size
+		md5.update(chunkBytes)
+		return True
 
-    pbuf.save_to_callbackv(
-        save_func,
-        None,  # user_data
-        "bmp",  # type, name of file format
-        [],  # option_keys
-        [],  # option_values
-    )
-    return md5.hexdigest()
+	pbuf.save_to_callbackv(
+		save_func,
+		None,  # user_data
+		"bmp",  # type, name of file format
+		[],  # option_keys
+		[],  # option_values
+	)
+	return md5.hexdigest()
 
 
 def window_set_size_aspect(win, min_aspect, max_aspect=None):
-    if max_aspect is None:
-        max_aspect = min_aspect
-    geom = gdk.Geometry()
-    geom.min_aspect = min_aspect
-    geom.max_aspect = max_aspect
-    win.set_geometry_hints(
-        None,  # widget, ignored since Gtk 3.20
-        geom,  # geometry
-        gdk.WindowHints.ASPECT,  # geom_mask
-    )
-    win.resize(1, 1)
+	if max_aspect is None:
+		max_aspect = min_aspect
+	geom = gdk.Geometry()
+	geom.min_aspect = min_aspect
+	geom.max_aspect = max_aspect
+	win.set_geometry_hints(
+		None,  # widget, ignored since Gtk 3.20
+		geom,  # geometry
+		gdk.WindowHints.ASPECT,  # geom_mask
+	)
+	win.resize(1, 1)
 
 
 class IdComboBox(gtk.ComboBox):
