@@ -85,7 +85,14 @@ dpkg-deb -b "$tmpDir" "$pkgFile" || exit 1
 
 echo "Package file $pkgFile created, installing..."
 if [ -f /usr/bin/gdebi ] ; then
-	/usr/bin/gdebi "$pkgFile"
+	if ! /usr/bin/gdebi "$pkgFile" 2>/tmp/gdebi-error ; then
+		if grep -q 'A later version is already installed' /tmp/gdebi-error ; then
+			dpkg -i "$pkgFile"
+		else
+			cat /tmp/gdebi-error
+		fi
+		rm /tmp/gdebi-error
+	fi
 else
 	apt-get install python3-httplib2
 	dpkg -i "$pkgFile"
