@@ -184,8 +184,8 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
         pack(self.vbox, hbox)
         ####
         year, month, day = ui.todayCell.dates[calTypes.primary]
-        self.startDateInput.set_value((year, 1, 1, 0))
-        self.endDateInput.set_value((year+1, 1, 1, 0))
+        self.startDateInput.set_value((year, 1, 1))
+        self.endDateInput.set_value((year+1, 1, 1))
         ########
         self.fcw = gtk.FileChooserWidget(action=gtk.FileChooserAction.SAVE)
         pack(self.vbox, self.fcw, 1, 1)
