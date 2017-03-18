@@ -82,7 +82,7 @@ class WidgetClass(common.WidgetClass):
         self.event.setDay(int(self.daySpin.get_value()))
         if self.startYearCheck.get_active():
             startRule = self.event.getAddRule('start')
-            startRule.date = (self.startYearSpin.get_value(), 1, 1, 0)
+            startRule.date = (self.startYearSpin.get_value(), 1, 1)
         else:
             try:
                 del self.event['start']
