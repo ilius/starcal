@@ -890,6 +890,8 @@ class DateAndTimeEventRule(DateEventRule):
 		self.time = (0, 0, 0)
 
 	def setDate(self, date):
+		if len(date) != 3:
+			raise ValueError('DateAndTimeEventRule.setDate: bad date = %s' % repr(date))
 		self.date = date
 		self.time = (0, 0, 0)
 
