@@ -30,6 +30,7 @@ depends+=('python-pymongo')
 depends+=('python-cairo')
 
 optdepends=()
+optdepends+=('libappindicator-gtk3')
 optdepends+=('python-dateutil')
 optdepends+=('python-igraph')
 #optdepends+=('python-gnomevfs')
