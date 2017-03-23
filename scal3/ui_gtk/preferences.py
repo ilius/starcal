@@ -150,12 +150,12 @@ class PrefDialog(gtk.Dialog):
         customCheckItem.syncSensitive(customItem._widget)
         pack(vbox, hbox)
         ########################### Theme #####################
-        hbox = gtk.HBox(spacing=3)
-        item = CheckPrefItem(ui, 'bgUseDesk', _('Use Desktop Background'))
-        self.uiPrefItems.append(item)
-        pack(hbox, item._widget)
-        pack(hbox, gtk.Label(''), 1, 1)
-        pack(vbox, hbox)
+        #hbox = gtk.HBox(spacing=3)
+        #item = CheckPrefItem(ui, 'bgUseDesk', _('Use Desktop Background'))
+        #self.uiPrefItems.append(item)
+        #pack(hbox, item._widget)
+        #pack(hbox, gtk.Label(''), 1, 1)
+        #pack(vbox, hbox)
         #####################
         hbox = gtk.HBox(spacing=3)
         lab = gtk.Label('<b>%s:</b> '%_('Colors'))
