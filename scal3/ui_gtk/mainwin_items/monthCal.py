@@ -40,8 +40,6 @@ from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.cal_base import CalBase
-#from scal3.ui_gtk import desktop
-#from scal3.ui_gtk import wallpaper
 
 
 class MonthCalTypeParamBox(gtk.HBox):
@@ -238,26 +236,9 @@ class CalObj(gtk.DrawingArea, CalBase):
             #cr.scale(0.5, 0.5)
         wx = ui.winX
         wy = ui.winY
-        if ui.bgUseDesk:## FIXME
-            ### ????????????????? Need for mainWin !!!!!
-            coord = self.translate_coordinates(self, wx, wy)
-            if len(coord)==2:
-                from scal3.ui_gtk import desktop
-                x0, y0 = coord
-                try:
-                    bg = desktop.get_wallpaper(x0, y0, w, h)
-                except:
-                    print('Could not get wallpaper!')
-                    myRaise(__file__)
-                    #os.popen('gnome-settings-daemon')
-                    ui.bgUseDesk = False ##??????????????????
-                    #if ui.prefDialog
-                    #    ui.prefDialog.checkDeskBg.set_active(False)##??????????????????
-                else:
-                    gdk.cairo_set_source_pixbuf(cr, bg, 0, 0, 0)
-                    cr.paint()
-            #else:
-            #    print(coord)
+        #if ui.bgUseDesk: # FIXME: should be re-implemented
+        #    from scal3.ui_gtk import desktop
+        #    from scal3.ui_gtk import wallpaper
         cr.rectangle(0, 0, w, h)
         fillColor(cr, ui.bgColor)
         status = getCurrentMonthStatus()
