@@ -337,8 +337,12 @@ class StarCalendarAccount(Account):
 				if error:
 					print(error)
 					continue
-				#event.save()
-				#group.replaceEvent(event)
+				# record = event.save() # record is (lastEpoch, lastHash, **args)
+				# event.lastMergeSha1 = [
+				# 	record[1], # local sha1
+				# 	event.remoteIds[1], # remote sha1
+				# ]
+				# group.replaceEvent(event)
 
 			### Push
 			if lastSyncEndEpoch:
