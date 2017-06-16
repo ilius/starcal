@@ -310,8 +310,9 @@ class HolidayPlugin(BaseJsonPlugin):
                 except ValueError:
                     continue
                 self.holidays[mode] = [
-                    (m, d)
-                    for m, d in data['holidays'][modeName]
+                    (x[0], x[1])
+                    for x in data['holidays'][modeName]
+                    if len(x) == 2
                 ]
             del data['holidays']
         else:
