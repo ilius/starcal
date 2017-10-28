@@ -73,6 +73,8 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
         self.set_orientation(gtk.Orientation.VERTICAL if vertical else gtk.Orientation.HORIZONTAL)
         self.add_events(gdk.EventMask.POINTER_MOTION_MASK)
         self.onPressContinue = onPressContinue
+        self.remain = False
+        self.lastPressTime = 0
         ###
         optionsWidget = gtk.VBox()
         ##
@@ -183,15 +185,30 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
         self.buttonsBorderSpin.set_value(bb)
         self.setButtonsBorder(bb)
         ###
+
     def itemPress(self, func):
+        if self.remain:
+            # print("itemPress: skip: remain=%s" % self.remain)
+            return
+        if now()-self.lastPressTime < ui.timeout_repeat * 0.01:
+            # print("itemPress: skip: now()-self.lastPressTime = %s" % (now()-self.lastPressTime))
+            return
+        # print("itemPress:", now()-self.lastPressTime, ">=", ui.timeout_repeat * 0.01)
         self.lastPressTime = now()
         self.remain = True
         func()
         gobject.timeout_add(ui.timeout_initial, self.itemPressRemain, func)
+
     def itemPressRemain(self, func):
-        if self.remain and now()-self.lastPressTime>=ui.timeout_repeat/1000.0:
-            func()
-            gobject.timeout_add(ui.timeout_repeat, self.itemPressRemain, func)
+        if not self.remain:
+            return
+        if now()-self.lastPressTime < ui.timeout_repeat * 0.001:
+            return
+        # print("itemPressRemain:", now()-self.lastPressTime, ">=", ui.timeout_repeat * 0.001)
+        func()
+        gobject.timeout_add(ui.timeout_repeat, self.itemPressRemain, func)
+
     def itemRelease(self, widget, event=None):
+        # print("------------------------ itemRelease")
         self.remain = False
 
