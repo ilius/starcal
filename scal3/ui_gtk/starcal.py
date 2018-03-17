@@ -699,8 +699,8 @@ class MainWin(gtk.Window, ud.BaseCalObj):
             useAppIndicator = ui.useAppIndicator
             if useAppIndicator:
                 try:
-                    from gi.repository import AppIndicator3 as appIndicator
-                except ImportError:
+                    import scal3.ui_gtk.starcal_appindicator
+                except (ImportError, ValueError):
                     useAppIndicator = False
             if useAppIndicator:
                 from scal3.ui_gtk.starcal_appindicator import IndicatorStatusIconWrapper

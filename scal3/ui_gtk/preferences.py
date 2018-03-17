@@ -105,8 +105,8 @@ class PrefDialog(gtk.Dialog):
         pack(vbox, hbox)
         ##########################
         try:
-            from gi.repository import AppIndicator3 as appIndicator
-        except ImportError:
+            import scal3.ui_gtk.starcal_appindicator
+        except (ImportError, ValueError):
             pass
         else:
             item = CheckPrefItem(ui, 'useAppIndicator', _('Use AppIndicator'))
