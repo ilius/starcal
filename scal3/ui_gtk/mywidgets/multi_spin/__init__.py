@@ -175,15 +175,15 @@ class MultiSpinButton(gtk.SpinButton):
         step_inc, page_inc = self.get_increments()
         gwin_list = self.get_window().get_children()
         gwin_index = gwin_list.index(gwin)
-        gwin_size = get_size(gwin)
+        gwin_width = get_size(gwin)[0]
         button_type = None ## '+', '-'
         try:
-            if gwin_size == get_size(gwin_list[gwin_index + 1]):
+            if abs(gwin_width - get_size(gwin_list[gwin_index + 1])[0]) < 2:
                 button_type = '+'
         except IndexError:
             pass
         if gwin_index > 0:
-            if gwin_size == get_size(gwin_list[gwin_index - 1]):
+            if abs(gwin_width - get_size(gwin_list[gwin_index - 1])[0]) < 2:
                 button_type = '-'
         #print('_button_press', button_type)
         if button_type == '+':
