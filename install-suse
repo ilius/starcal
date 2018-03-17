@@ -46,9 +46,18 @@ requires+=('python3-psutil')
 requires+=('python3-pymongo')
 
 
+## Recommended Packages are treated as strict dependency in openSUSE by default
+## unless you uncheck this in Software Management:
+## [ ] Dependencies -> Install Recommended Packages
+
 recommends=()
 recommends+=('python3-dateutil')
 #recommends+=('python3-igraph')
+
+## The package for AppIndicator is: typelib-1_0-AppIndicator3-0_1
+## Which provides: typelib(AppIndicator3) = 0.1
+## This typelib(AppIndicator3) is automatically added to dependencies of starcal3
+## I still don't know why
 
 requires_str=$(printf "Requires: %s\n" "${requires[@]}")
 recommends_str=$(printf "Recommends: %s\n" "${recommends[@]}")
@@ -60,7 +69,7 @@ recommends_str=$(printf "Recommends: %s\n" "${recommends[@]}")
 echo "Name: $pkgName
 Version: $version
 Release: 1
-Summary: A full-featured international calendar writen in Python
+Summary: A full-featured international calendar written in Python
 
 Group: User Interface/Desktops
 License: GPLv3+
@@ -72,9 +81,9 @@ $recommends_str
 BuildArch: noarch
 
 %description
-StarCalendar is a full-featured international calendar writen in Python,
+StarCalendar is a full-featured international calendar written in Python,
 using Gtk3-based interface, that supports Jalai(Iranian), Hijri(Islamic),
-and Indian National calendars, as well as common english(Gregorian) calendar
+and Indian National calendars, as well as common English(Gregorian) calendar
 
 %install
 \"$sourceDir/install\" \"%{buildroot}\" --for-pkg --prefix=%{_prefix}
@@ -116,7 +125,7 @@ zypper install -f "$pkgPath"
 #    yum install --nogpgcheck "$pkgPath"
 #fi
 
-#rpm -U --force "$pkgPath" ## its OK when requiered packages are installed!
+#rpm -U --force "$pkgPath" ## its OK when required packages are installed!
 
 if [ "`check_pkg gnome-shell`" = installed ] ; then
     case `check_pkg gnome-shell-extension-topicons` in
