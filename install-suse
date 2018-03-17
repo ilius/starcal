@@ -38,7 +38,7 @@ version=`"$sourceDir/scal3/get_version.py" | sed 's/\-/_/g'`
 #echo version=$version
 
 
-requires=('python >= 2.6' 'python < 3.0')
+requires=('python3 >= 3.2')
 requires+=('python3-gobject') ## The new gobject introspection
 #requires+=('python3-gflags')
 requires+=('python3-httplib2')
