@@ -10,7 +10,11 @@ class ReadOnlyTextWidget:
     copyAll = lambda self, item: setClipboard(toStr(self.get_text()))
     def has_selection():
         raise NotImplementedError
-    def labelMenuAddCopyItems(self, menu):
+    def onPopup(self, widget, menu):
+        # instead of creating a new menu, we should remove all the current items from current menu
+        for item in menu.get_children():
+            menu.remove(item)
+        ####
         menu.add(labelStockMenuItem(
             'Copy _All',
             gtk.STOCK_COPY,
@@ -25,13 +29,9 @@ class ReadOnlyTextWidget:
         if not self.has_selection():
             itemCopy.set_sensitive(False)
         menu.add(itemCopy)
-    def onPopup(self, widget, menu):
-        menu = gtk.Menu()
-        self.labelMenuAddCopyItems(menu)
         ####
         menu.show_all()
         self.tmpMenu = menu
-        menu.popup(None, None, None, None, 3, 0)
         ui.updateFocusTime()
 
 
