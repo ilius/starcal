@@ -49,7 +49,7 @@ class ReadOnlyLabel(gtk.Label, ReadOnlyTextWidget):
     def __init__(self, *args, **kwargs):
         gtk.Label.__init__(self, *args, **kwargs)
         self.set_selectable(True)## to be selectable, with visible cursor
-        self.connect('populate-popup', self.onPopup)## FIXME
+        self.connect('populate-popup', self.onPopup)
 
 
 
@@ -72,7 +72,7 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
         gtk.TextView.__init__(self, *args, **kwargs)
         self.set_editable(False)
         self.set_cursor_visible(False)
-        self.connect('populate-popup', self.onPopup)## FIXME
+        self.connect('populate-popup', self.onPopup)
 
 
 
