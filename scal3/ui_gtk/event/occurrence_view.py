@@ -113,8 +113,8 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
         from scal3.ui_gtk.event.utils import menuItemFromEventGroup
         if event_lib.readOnly:
             return
-        menu = gtk.Menu()
-        label.labelMenuAddCopyItems(menu)
+        # instead of creating a new menu, we should remove the current items from current menu
+        # but here we will keep the items from ReadOnlyLabel
         ####
         groupId, eventId = occurData['ids']
         event = ui.getEvent(groupId, eventId)
@@ -191,7 +191,6 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
         ####
         menu.show_all()
         label.tmpMenu = menu
-        menu.popup(None, None, None, None, 3, 0)
         ui.updateFocusTime()
     def editEventClicked(self, item, winTitle, event, groupId):
         from scal3.ui_gtk.event.editor import EventEditorDialog

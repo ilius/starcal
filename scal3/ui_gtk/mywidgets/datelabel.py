@@ -15,24 +15,23 @@ class DateLabel(gtk.Label):
         self.set_can_focus(False)
         self.set_use_markup(True)
         self.connect('populate-popup', self.popupPopulate)
-        ####
-        self.menu = gtk.Menu()
-        ##
+    def popupPopulate(self, label, menu):
         itemCopyAll = ImageMenuItem(_('Copy _All'))
         itemCopyAll.set_image(gtk.Image.new_from_stock(gtk.STOCK_COPY, gtk.IconSize.MENU))
         itemCopyAll.connect('activate', self.copyAll)
-        self.menu.add(itemCopyAll)
         ##
         itemCopy = ImageMenuItem(_('_Copy'))
         itemCopy.set_image(gtk.Image.new_from_stock(gtk.STOCK_COPY, gtk.IconSize.MENU))
         itemCopy.connect('activate', self.copy)
-        self.itemCopy = itemCopy
-        self.menu.add(itemCopy)
+        itemCopy.set_sensitive(self.get_property('cursor-position') > self.get_property('selection-bound'))## FIXME
         ##
-        self.menu.show_all()
-    def popupPopulate(self, label, menu):
-        self.itemCopy.set_sensitive(self.get_property('cursor-position') > self.get_property('selection-bound'))## FIXME
-        self.menu.popup(None, None, None, None, 3, 0)
+        for item in menu.get_children():
+            menu.remove(item)
+        ##
+        menu.add(itemCopyAll)
+        menu.add(itemCopy)
+        menu.show_all()
+        ##
         ui.updateFocusTime()
     def copy(self, item):
         start = self.get_property('selection-bound')
