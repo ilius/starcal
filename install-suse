@@ -45,14 +45,13 @@ requires+=('python3-httplib2')
 requires+=('python3-psutil')
 requires+=('python3-pymongo')
 requires+=('python3-requests')
-
+requires+=('python3-dateutil')
 
 ## Recommended Packages are treated as strict dependency in openSUSE by default
 ## unless you uncheck this in Software Management:
 ## [ ] Dependencies -> Install Recommended Packages
 
 recommends=()
-recommends+=('python3-dateutil')
 #recommends+=('python3-igraph')
 
 ## The package for AppIndicator is: typelib-1_0-AppIndicator3-0_1

@@ -1,9 +1,30 @@
-#!/usr/bin/python
-
 import os
 import os.path
 from collections import OrderedDict
-from .directory import infoDir
+
+
+def findZoneInfoDir():
+	for tmpDir in [
+		"/usr/share/zoneinfo",
+		"/usr/lib/zoneinfo",
+		"/usr/share/lib/zoneinfo",
+		"/etc/zoneinfo",
+	]:
+		if os.path.isdir(tmpDir):
+			return tmpDir
+
+	try:
+		import pytz
+	except ImportError:
+		pass
+	else:
+		tmpDir = os.path.join(os.path.dirname(pytz.__file__), "zoneinfo")
+		if os.path.isdir(tmpDir):
+			return tmpDir
+
+	raise IOError("zoneinfo directory not found")
+
+infoDir = findZoneInfoDir()
 
 infoDirL = list(os.path.split(infoDir))
 

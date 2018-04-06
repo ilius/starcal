@@ -192,7 +192,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 			timeZone = self.timeZoneInput.get_text()
 			if chType != 0:
 				try:
-					natz.timezone(timeZone)
+					natz.gettz(timeZone)
 				except:
 					myRaise("Invalid Time Zone \"%s\"" % timeZone)
 				else:
