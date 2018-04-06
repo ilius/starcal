@@ -39,11 +39,11 @@ requires+=('python3-httplib2')
 requires+=('python3-psutil')
 requires+=('python3-bson')
 requires+=('python3-requests')
+requires+=('python3-dateutil')
 
 #recommends=()
-requires+=('python3-dateutil')
-#requires+=('python3-igraph')
-#requires+=('python3-gnomevfs')
+#recommends+=('python3-igraph')
+#recommends+=('python3-gnomevfs')
 
 
 requires_str=$(printf " %s" "${requires[@]}") ; requires_str=${requires_str:1}

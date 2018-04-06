@@ -29,7 +29,7 @@ from os.path import splitext
 import locale
 import gettext
 
-from natz.local import get_localzone
+import natz
 
 from .path import *
 from scal3.utils import StrOrderedDict, myRaise
@@ -44,7 +44,7 @@ from scal3.cal_types import calTypes
 
 ##########################################################
 
-localTz = get_localzone()
+localTz = natz.gettz()
 localTzStr = str(localTz)
 
 ##########################################################

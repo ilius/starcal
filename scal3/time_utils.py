@@ -23,13 +23,12 @@ from time import time as now
 from datetime import datetime
 
 import natz
-import natz.local
 
 from scal3.cal_types.gregorian import J0001, J1970
 from scal3.cal_types.gregorian import jd_to as jd_to_g
 from scal3.utils import ifloor, iceil
 
-# jd is the integer value of Chronological Julian Day,
+# jd is the integer value of Chreonological Julian Day,
 # which is specific to time zone
 # but epoch time is based on UTC, and not location-dependent
 
@@ -61,39 +60,37 @@ utcOffsetByJdCache = {}
 
 def getUtcOffsetByEpoch(epoch, tz=None):
 	if not tz:
-		tz = natz.local.get_localzone()
-	delta = 0
-	while True:
-		try:
-			return tz.utcoffset(datetime.fromtimestamp(epoch + delta)).total_seconds()
-		except natz.AmbiguousTimeError:## FIXME
-			#d = datetime.fromtimestamp(epoch + 3600)
-			#print(
-			#	"AmbiguousTimeError",
-			#	d.year, d.month, d.day,
-			#	d.hour, d.minute, d.second,
-			#)
-			delta += 3600
-			print("delta = %s" % delta)
-		except (
-			ValueError,
-			OverflowError,
-		):
-			return tz._utcoffset.total_seconds()
+		tz = natz.gettz()
+	return tz.utcoffset(datetime.fromtimestamp(epoch)).total_seconds()
+	#delta = 0
+	#while True:
+	#	try:
+	#		return tz.utcoffset(datetime.fromtimestamp(epoch + delta)).total_seconds()
+	#	except AmbiguousTimeError:## FIXME: do we still get this error with dateutil.tz ?
+	#		#d = datetime.fromtimestamp(epoch + 3600)
+	#		#print(
+	#		#	"AmbiguousTimeError",
+	#		#	d.year, d.month, d.day,
+	#		#	d.hour, d.minute, d.second,
+	#		#)
+	#		delta += 3600
+	#		print("delta = %s" % delta)
+	#	except (
+	#		ValueError,
+	#		OverflowError,
+	#	):
+	#		return tz._utcoffset.total_seconds() ## tz._utcoffset does not exist with dateutil
 
 
 def getUtcOffsetByGDate(year, month, day, tz=None):
 	if not tz:
-		tz = natz.local.get_localzone()
+		tz = natz.gettz()
 	try:
 		return tz.utcoffset(datetime(year, month, day)).total_seconds()
-	except (ValueError, OverflowError):
-		return tz._utcoffset.total_seconds()
-	except natz.NonExistentTimeError:
-		return tz.utcoffset(datetime(
-			year, month, day,
-			1, 0, 0,
-		)).total_seconds()
+	except ValueError as e:
+		if str(e) == "year is out of range":
+			return tz.utcoffset(datetime(3000, 1, 1)).total_seconds()
+		raise e
 
 
 #def getUtcOffsetByJd(jd, tz=None):
@@ -102,7 +99,7 @@ def getUtcOffsetByGDate(year, month, day, tz=None):
 
 def getUtcOffsetByJd(jd, tz=None):
 	if not tz:
-		tz = natz.local.get_localzone()
+		tz = natz.gettz()
 	tzStr = str(tz)
 	# utcOffsetByJdCache: {tzStr => {jd => utcOffset}}
 	if jd >= J1970:

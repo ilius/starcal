@@ -1,5 +1,3 @@
-import natz
-
 from scal3.utils import myRaise
 from scal3.locale_man import tr as _
 

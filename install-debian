@@ -49,9 +49,9 @@ depends+=('python3-httplib2')
 depends+=('python3-psutil')
 depends+=('python3-bson')
 depends+=('python3-requests')
+depends+=('python3-dateutil')
 
 recommends=()
-recommends+=('python3-dateutil')
 recommends+=('python3-igraph') ## FIXME
 recommends+=('python3-gnomevfs')
 

@@ -1618,7 +1618,7 @@ class RuleContainer:
 	def getTimeZoneObj(self):
 		if self.timeZoneEnable and self.timeZone:
 			try:
-				return natz.timezone(self.timeZone)
+				return natz.gettz(self.timeZone)
 			except:
 				myRaise()
 		return core.localTz
@@ -1841,9 +1841,7 @@ class Event(BsonHistEventObj, RuleContainer):
 		summary = self.getSummary()
 		##
 		if self.timeZoneEnable and self.timeZone:
-			try:
-				natz.timezone(self.timeZone)
-			except natz.exceptions.UnknownTimeZoneError:
+			if natz.gettz(self.timeZone) is None:
 				invalidTZ = _("Invalid Time Zone: %s") % self.timeZone
 				summary = "(%s) " % invalidTZ + summary
 		####
@@ -4581,7 +4579,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 		mod = self.getVcsModule()
 		####
 		try:
-			utc = natz.timezone("UTC")
+			utc = natz.gettz("UTC")
 			self.vcsMinJd = getJdFromEpoch(mod.getFirstCommitEpoch(self), tz=utc)
 			self.vcsMaxJd = getJdFromEpoch(mod.getLastCommitEpoch(self), tz=utc) + 1
 		except:

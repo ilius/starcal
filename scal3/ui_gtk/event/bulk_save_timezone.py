@@ -84,7 +84,7 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
 		if responseId == gtk.ResponseType.OK:
 			timeZone = self.timeZoneInput.get_text()
 			try:
-				natz.timezone(timeZone)
+				natz.gettz(timeZone)
 			except Exception as e:
 				self.errorLabel.set_text(
 					_("Time zone is invalid") + "\n" + str(e)
