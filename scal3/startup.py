@@ -13,7 +13,7 @@ comDesk = "%s/%s.desktop" % (comDeskDir, APP_NAME)
 
 def addStartup():
 	if osName == "win":
-		from scal3.windows import winMakeShortcut
+		from scal3.windows import winMakeShortcut, winStartupFile
 		makeDir(winStartupDir)
 		#fname = APP_NAME + ("-qt" if uiName=="qt" else "") + ".pyw"
 		fname = core.COMMAND + ".pyw"
@@ -57,6 +57,7 @@ Exec=%s""" % (
 
 def removeStartup():
 	if osName == "win":## FIXME
+		from scal3.windows import winStartupFile
 		if isfile(winStartupFile):
 			os.remove(winStartupFile)
 	elif isfile(comDesk):
@@ -65,6 +66,7 @@ def removeStartup():
 
 def checkStartup():
 	if osName == "win":
+		from scal3.windows import winStartupFile
 		return isfile(winStartupFile)
 	elif isfile(comDesk):
 		return True
