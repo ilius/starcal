@@ -1,4 +1,6 @@
 def setupMenuHideOnLeave(menu):
+	from time import time as now
+	from gi.repository.GObject import timeout_add
 	def menuLeaveNotify(m, e):
 		t0 = now()
 		if t0 - m.lastLeaveNotify < 0.001:
