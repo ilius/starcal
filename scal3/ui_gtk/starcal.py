@@ -1020,8 +1020,10 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 			setupMenuHideOnLeave(menu)
 		items = self.getStatusIconPopupItems()
 		# items.insert(0, self.getMainWinMenuItem())## FIXME
-		geo = self.sicon.get_geometry() ## Returns None on windows, why???
-		if geo is None:## windows, taskbar is on buttom(below)
+		geo = self.sicon.get_geometry()
+		## Previously geo was None on windows
+		## Now it's a tuple on windows?!
+		if geo is None or isinstance(geo, tuple):## windows, taskbar is on buttom(below)
 			items.reverse()
 			get_pos_func = None
 		else:
