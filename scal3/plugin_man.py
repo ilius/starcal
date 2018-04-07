@@ -223,7 +223,7 @@ class BasePlugin(SObj):
 					"END:VEVENT",
 				]) + "\n"
 		icsText += "END:VCALENDAR\n"
-		open(fileName, "w").write(icsText)
+		open(fileName, "w", encoding="utf-8").write(icsText)
 
 
 class BaseJsonPlugin(BasePlugin, JsonSObj):
@@ -291,7 +291,7 @@ def loadExternalPlugin(_file, **data):
 		"BaseJsonPlugin": BaseJsonPlugin,
 	}
 	try:
-		exec(open(mainFile).read(), pyEnv)
+		exec(open(mainFil, encoding="utf-8").read(), pyEnv)
 	except:
 		log.error("error while loading external plugin \"%s\"" % _file)
 		myRaiseTback()
@@ -451,7 +451,7 @@ class HolidayPlugin(BaseJsonPlugin):
 					"END:VEVENT",
 				])
 		icsText += "END:VCALENDAR\n"
-		open(fileName, "w").write(icsText)
+		open(fileName, "w", encoding="utf-8").write(icsText)
 
 	#def getJdList(self, startJd, endJd):
 
@@ -497,7 +497,7 @@ class YearlyTextPlugin(BaseJsonPlugin):
 		ext = splitext(self.dataFile)[1].lower()
 		if ext == ".txt":
 			sep = "\t"
-			lines = open(self.dataFile).read().split("\n")
+			lines = open(self.dataFile, encoding="utf-8").read().split("\n")
 			for line in lines[1:]:
 				line = line.strip()
 				if not line:
@@ -589,7 +589,7 @@ class IcsTextPlugin(BasePlugin):
 		self.md = None
 
 	def load(self):
-		lines = open(self.file).read().replace("\r", "").split("\n")
+		lines = open(self.file, encoding="utf-8").read().replace("\r", "").split("\n")
 		n = len(lines)
 		i = 0
 		while True:
@@ -783,7 +783,7 @@ def loadPlugin(_file=None, **kwargs):
 		)
 		return
 	try:
-		text = open(_file).read()
+		text = open(_file, encoding="utf-8").read()
 	except Exception as e:
 		log.error(
 			"error while reading plugin file \"%s\"" % _file +
