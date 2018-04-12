@@ -60,7 +60,7 @@ recommends=()
 ## I still don't know why
 
 requires_str=$(printf "Requires: %s\n" "${requires[@]}")
-recommends_str=$(printf "Recommends: %s\n" "${recommends[@]}")
+#recommends_str=$(printf "Recommends: %s\n" "${recommends[@]}")
 
 #echo "$requires_str"; exit
 
