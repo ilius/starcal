@@ -65,8 +65,8 @@ def getZoneInfoTree():
 		"Europe",
 		"Indian",
 		"Mexico",
-		"Mideast",
 		"Pacific",
+		"US",
 	]:
 		_addZoneNode(
 			zoneTree,
