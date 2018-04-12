@@ -21,6 +21,7 @@ def get_cmdline(proc):
 
 def checkAndSaveJsonLockFile(fpath):
 	locked = False
+	my_pid = os.getpid()
 	if isfile(fpath):
 		try:
 			text = open(fpath).read()
@@ -44,20 +45,25 @@ def checkAndSaveJsonLockFile(fpath):
 					except psutil.NoSuchProcess:
 						print("lock file %s: pid %s does not exist" % (fpath, pid))
 					else:
-						if get_cmdline(proc) == cmd:
-							locked = True
-						else:
+						if pid == my_pid:
+							print("lock file %s: pid == my_pid == %s" % (
+								fpath,
+								pid,
+							))
+						elif get_cmdline(proc) != cmd:
 							print("lock file %s: cmd does match: %s != %s" % (
 								fpath,
 								get_cmdline(proc),
 								cmd,
 							))
+						else:
+							locked = True
+
 	elif exists(fpath):
 		## what to do? FIXME
 		pass
 	######
 	if not locked:
-		my_pid = os.getpid()
 		my_proc = psutil.Process(my_pid)
 		my_cmd = get_cmdline(my_proc)
 		my_text = dataToPrettyJson(OrderedDict([
