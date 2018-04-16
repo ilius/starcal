@@ -1020,22 +1020,25 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 			setupMenuHideOnLeave(menu)
 		items = self.getStatusIconPopupItems()
 		# items.insert(0, self.getMainWinMenuItem())## FIXME
+		get_pos_func = None
+		y1 = 0
 		geo = self.sicon.get_geometry()
-		## Previously geo was None on windows
-		## Now it's a tuple on windows?!
-		if geo is None or isinstance(geo, tuple):## windows, taskbar is on buttom(below)
+		## Previously geo was None on windows, and on Linux it had `geo.index(1)` (not sure about the type)
+		## Now it's tuple on both Linux and windows
+		if geo is None:
 			items.reverse()
-			get_pos_func = None
+		elif isinstance(geo, tuple):
+			# geo == (True, screen, area, orientation)
+			y1 = geo[2].y
 		else:
-			#print(dir(geo))
 			y1 = geo.index(1)
-			try:
-				y = gtk.StatusIcon.position_menu(menu, self.sicon)[1]
-			except TypeError: ## new gi versions
-				y = gtk.StatusIcon.position_menu(menu, 0, 0, self.sicon)[1]
-			if y < y1:  # taskbar is on bottom
-				items.reverse()
-			get_pos_func = gtk.StatusIcon.position_menu
+		try:
+			y = gtk.StatusIcon.position_menu(menu, self.sicon)[1]
+		except TypeError: ## new gi versions
+			y = gtk.StatusIcon.position_menu(menu, 0, 0, self.sicon)[1]
+		if y1 > 0 and y < y1:  # taskbar is on bottom
+			items.reverse()
+		get_pos_func = gtk.StatusIcon.position_menu
 		for item in items:
 			menu.add(item)
 		menu.show_all()
