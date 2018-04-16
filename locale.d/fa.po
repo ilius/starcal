@@ -1556,6 +1556,14 @@ msgid "Events Box"
 msgstr ""
 "جعبهٔ رویدادها"
 
+msgid "Past Event Color"
+msgstr ""
+"رنگ رویداد گذشته"
+
+msgid "Use the color of event group for event text"
+msgstr ""
+"از رنگ گروه رویدادها بعنوان رنگ متن رویداد استفاده کن"
+
 msgid "Days of Month"
 msgstr ""
 "روزهای ماه"

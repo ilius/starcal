@@ -55,6 +55,7 @@ def show_event(widget, gevent):
 class ColumnBase(CustomizableCalObj):
 	customizeWidth = False
 	customizeFont = False
+	customizePastTextColor = False
 	autoButtonPressHandler = True
 	##
 
@@ -76,6 +77,18 @@ class ColumnBase(CustomizableCalObj):
 	def getFontValue(self):
 		return getattr(ui, self.getFontAttr(), None)
 
+	def getPastTextColorAttr(self):
+		return "wcalPastTextColor_%s" % self._name
+
+	def getPastTextColorValue(self):
+		return getattr(ui, self.getPastTextColorAttr(), None)
+
+	def getPastTextColorEnableAttr(self):
+		return "wcalPastTextColorEnable_%s" % self._name
+
+	def getPastTextColorEnableValue(self):
+		return getattr(ui, self.getPastTextColorEnableAttr(), None)
+
 	def onConfigChange(self, *a, **kw):
 		CustomizableCalObj.onConfigChange(self, *a, **kw)
 		if self.customizeWidth:
@@ -92,8 +105,19 @@ class ColumnBase(CustomizableCalObj):
 			setattr(ui, self.getFontAttr(), combo.get_value())
 			self.onDateChange()
 
+	def pastTextColorEnableToggled(self, checkb):
+		if self._name:
+			setattr(ui, self.getPastTextColorEnableAttr(), checkb.get_active())
+			self.onDateChange()
+
+	def pastTextColorSet(self, colorb):
+		if self._name:
+			setattr(ui, self.getPastTextColorAttr(), colorb.get_color())
+			self.onDateChange()
+
 	def optionsWidgetCreate(self):
 		from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
+		from scal3.ui_gtk.mywidgets import MyColorButton
 		if self.optionsWidget:
 			return
 		self.optionsWidget = gtk.VBox()
@@ -116,6 +140,19 @@ class ColumnBase(CustomizableCalObj):
 			combo.set_value(self.getFontValue())
 			pack(hbox, combo)
 			combo.connect("changed", self.fontFamilyComboChanged)
+			pack(self.optionsWidget, hbox)
+		####
+		if self.customizePastTextColor:
+			hbox = gtk.HBox()
+			checkb = gtk.CheckButton()
+			checkb.set_label(_("Past Event Color"))
+			checkb.set_active(self.getPastTextColorEnableValue())
+			pack(hbox, checkb)
+			colorb = MyColorButton()
+			colorb.set_color(self.getPastTextColorValue())
+			pack(hbox, colorb)
+			checkb.connect("toggled", self.pastTextColorEnableToggled)
+			colorb.connect("color-set", self.pastTextColorSet)
 			pack(self.optionsWidget, hbox)
 		####
 		self.optionsWidget.show_all()
@@ -549,6 +586,7 @@ class EventsTextColumn(Column):
 	expand = True
 	customizeFont = True
 	truncateText = False
+	customizePastTextColor = True
 
 	def __init__(self, wcal):
 		Column.__init__(self, wcal)
@@ -560,19 +598,19 @@ class EventsTextColumn(Column):
 		Column.optionsWidgetCreate(self)
 		#####
 		hbox = gtk.HBox()
+		check = gtk.CheckButton(_("Use the color of event group for event text"))
+		check.set_active(ui.wcal_eventsText_colorize)
+		pack(hbox, check)
+		pack(hbox, gtk.Label(""), 1, 1)
+		check.connect("clicked", self.colorizeCheckClicked)
+		pack(self.optionsWidget, hbox)
+		##
+		hbox = gtk.HBox()
 		check = gtk.CheckButton(_("Show Description"))
 		check.set_active(ui.wcal_eventsText_showDesc)
 		pack(hbox, check)
 		pack(hbox, gtk.Label(""), 1, 1)
 		check.connect("clicked", self.descCheckClicked)
-		pack(self.optionsWidget, hbox)
-		##
-		hbox = gtk.HBox()
-		check = gtk.CheckButton(_("Colorize"))
-		check.set_active(ui.wcal_eventsText_colorize)
-		pack(hbox, check)
-		pack(hbox, gtk.Label(""), 1, 1)
-		check.connect("clicked", self.colorizeCheckClicked)
 		pack(self.optionsWidget, hbox)
 		##
 		self.optionsWidget.show_all()
@@ -588,6 +626,7 @@ class EventsTextColumn(Column):
 	def getDayTextData(self, i):
 		from scal3.xml_utils import escape
 		data = []
+		currentTime = now()
 		for item in self.wcal.status[i].eventsData:
 			if not item["show"][1]:
 				continue
@@ -598,7 +637,11 @@ class EventsTextColumn(Column):
 			line = escape(line)
 			if item["time"]:
 				line = item["time"] + " " + line
-			color = item["color"] if ui.wcal_eventsText_colorize else ""
+			color = ""
+			if ui.wcal_eventsText_colorize:
+				color = item["color"]
+			if ui.wcalPastTextColorEnable_eventsText and item["time_epoch"][1] < currentTime:
+				color = ui.wcalPastTextColor_eventsText
 			data.append((line, color))
 		return data
 
