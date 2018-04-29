@@ -29,7 +29,7 @@ import sys
 from math import ceil
 
 from scal3 import ui
-from scal3.time_utils import time_rem
+from scal3.time_utils import clockWaitMilliseconds
 
 
 from gi.repository.GObject import timeout_add
@@ -192,7 +192,7 @@ class AdjusterDialog(gtk.Dialog):
 
 	def updateTimes(self):
 		dt = now() % 1
-		timeout_add(time_rem(), self.updateTimes)
+		timeout_add(clockWaitMilliseconds(), self.updateTimes)
 		#print("updateTimes", dt)
 		lt = localtime()
 		self.label_cur.set_label(

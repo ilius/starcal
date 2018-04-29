@@ -329,7 +329,7 @@ def floatHourToTime(fh):
 		int(r * 60),
 	)
 
-def time_rem():
+def clockWaitMilliseconds():
 	return int(1000 * (1.01 - now() % 1))
 
 
