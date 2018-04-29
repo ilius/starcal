@@ -154,3 +154,10 @@ class FClockWidget(gtk.DrawingArea): ## Time is in Local
 		#self.set_from_image(pmap.get_image(0, 0, w, h), mask)
 		self.set_from_pixmap(pmap, mask)
 		"""
+
+if __name__ == "__main__":
+	d = gtk.Dialog(parent=None)
+	widget = ClockLabel()
+	pack(d.vbox, widget, 1, 1)
+	d.vbox.show_all()
+	d.run()
