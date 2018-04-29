@@ -26,7 +26,7 @@ from gi.repository import GdkPixbuf
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.font_utils import *
-from scal3.time_utils import time_rem
+from scal3.time_utils import clockWaitMilliseconds
 
 
 class ClockLabel(gtk.Label):
@@ -46,7 +46,7 @@ class ClockLabel(gtk.Label):
 
 	def update(self):
 		if self.running:
-			timeout_add(time_rem(), self.update)
+			timeout_add(clockWaitMilliseconds(), self.update)
 			if self.seconds:
 				l = "%.2d:%.2d:%.2d" % tuple(localtime()[3:6])
 			else:
@@ -86,7 +86,7 @@ class FClockLabel(gtk.Label):
 
 	def update(self):
 		if self.running:
-			timeout_add(time_rem(), self.update)
+			timeout_add(clockWaitMilliseconds(), self.update)
 			if self.local:
 				self.set_label(strftime(self.format))
 			else:
@@ -117,7 +117,7 @@ class FClockWidget(gtk.DrawingArea): ## Time is in Local
 
 	def update(self):
 		if self.running:
-			timeout_add(time_rem(), self.update)
+			timeout_add(clockWaitMilliseconds(), self.update)
 			self.set_label(strftime(self.format))
 
 	def stop(self):

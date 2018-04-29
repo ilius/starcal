@@ -4,7 +4,7 @@ from gi.repository.GObject import timeout_add
 
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
-from scal3.time_utils import time_rem
+from scal3.time_utils import clockWaitMilliseconds
 
 
 @registerSignals
@@ -63,7 +63,7 @@ class TimerButton(TimeButton):
 	def clock_update(self):
 		if self.clock:
 			timeout_add(
-				time_rem(),
+				clockWaitMilliseconds(),
 				self.clock_update,
 			)
 			self.set_value(localtime()[3:6])
