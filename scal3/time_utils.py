@@ -329,6 +329,9 @@ def floatHourToTime(fh):
 		int(r * 60),
 	)
 
+def time_rem():
+	return int(1000 * (1.01 - now() % 1))
+
 
 if __name__ == "__main__":
 	#print(floatHourToTime(3.6))

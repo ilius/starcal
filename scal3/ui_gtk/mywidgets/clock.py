@@ -26,10 +26,7 @@ from gi.repository import GdkPixbuf
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.font_utils import *
-
-
-def time_rem():
-	return int(1000 * (1.01 - now() % 1))
+from scal3.time_utils import time_rem
 
 
 class ClockLabel(gtk.Label):
