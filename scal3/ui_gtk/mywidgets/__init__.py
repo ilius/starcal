@@ -47,10 +47,6 @@ def show_event(widget, gevent):
 	print(type(widget), gevent.type.value_name)#, gevent.send_event
 
 
-def time_rem():
-	return int(1000 * (1.01 - now() % 1))
-
-
 class MyFontButton(gtk.FontButton):
 	def __init__(self, parent):
 		gtk.FontButton.__init__(self)
