@@ -1,12 +1,16 @@
+import sys
 import os
 from os.path import isfile, join
 from time import time as now
 from collections import OrderedDict
 
 from hashlib import sha1
-from bson import BSON
 
-from scal3.path import objectDir
+from scal3.path import objectDir, rootDir
+
+sys.path.insert(0, join(rootDir, "bson"))
+import bson
+
 from scal3.os_utils import makeDir
 from scal3.json_utils import *
 from scal3.utils import myRaise
@@ -189,7 +193,7 @@ class JsonSObj(SObj):
 
 def saveBsonObject(data):
 	data = getSortedDict(data)
-	bsonBytes = bytes(BSON.encode(data))
+	bsonBytes = bytes(bson.dumps(data))
 	_hash = sha1(bsonBytes).hexdigest()
 	dpath = join(objectDir, _hash[:2])
 	fpath = join(dpath, _hash[2:])
@@ -206,7 +210,7 @@ def loadBsonObject(_hash):
 		raise IOError(
 			"sha1 diggest does not match for object file \"%s\"" % fpath
 		)
-	return BSON.decode(bsonBytes)
+	return bson.loads(bsonBytes)
 
 
 def updateBasicDataFromBson(data, filePath, fileType):
