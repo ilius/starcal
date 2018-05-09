@@ -43,7 +43,6 @@ requires+=('python3-gobject') ## The new gobject introspection
 #requires+=('python3-gflags')
 requires+=('python3-httplib2')
 requires+=('python3-psutil')
-requires+=('python3-pymongo')
 requires+=('python3-requests')
 requires+=('python3-dateutil')
 

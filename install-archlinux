@@ -26,7 +26,6 @@ depends+=('python-gobject') ## The new gobject introspection
 depends+=('python-httplib2')
 depends+=('python-psutil')
 depends+=('python-dateutil')
-depends+=('python-pymongo')
 depends+=('python-cairo')
 depends+=('python-requests')
 

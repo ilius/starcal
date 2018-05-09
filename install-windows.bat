@@ -9,7 +9,6 @@ REM - GTK+
 
 REM Install other dependencies:
 pip3 install python-dateutil
-pip3 install pymongo
 pip3 install psutil
 
 

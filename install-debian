@@ -31,7 +31,7 @@ tmpDir=/tmp/$pkgName-install-deb
 mkdir -p $tmpDir
 mkdir -p "$tmpDir/DEBIAN"
 
-"$sourceDir/install" "$tmpDir" "--for-pkg"
+"$sourceDir/install" "$tmpDir" "--for-pkg" || exit $?
 chown -R root "$tmpDir"
 installedSize=`getDirTotalSize "$tmpDir"` ## only /usr ? FIXME
 
@@ -47,7 +47,6 @@ depends+=('python3-gi-cairo(>=3.8)')
 #depends+=('python3-gflags') ## FIXME
 depends+=('python3-httplib2')
 depends+=('python3-psutil')
-depends+=('python3-bson')
 depends+=('python3-requests')
 depends+=('python3-dateutil')
 

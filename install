@@ -32,6 +32,11 @@ PY=python3
 "$sourceDir/update-perm" ## FIXME
 
 
+if [ ! -f "$sourceDir/bson/bson/__init__.py" ] ; then
+	echo "bson submodule was not found, run: git submodule update --init"
+	exit 1
+fi
+
 options=`getopt -o 'h' --long 'help,for-pkg,portable,prefix:,python:' -n "$0" -- "$@"`
 if [ $? != 0 ] ; then
 	printUsage
@@ -213,7 +218,7 @@ fi
 
 ## Cleaning useless files from targetDir
 cd "${shareDir}/$pkgName"
-rm -Rf .git .gitignore .Trash* 2>/dev/null
+rm -Rf .git .gitignore .gitmodules .Trash* 2>/dev/null
 rm -Rf google-api-python-client/.git google-api-python-client/.hg* 2>/dev/null
 clean
 cd - > /dev/null
