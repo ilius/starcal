@@ -3850,6 +3850,7 @@ class EventGroupsHolder(JsonObjectsHolder):
                 obj.setTitle(cls.desc)
                 obj.save()
                 self.append(obj)
+            self.save()
     def getEnableIds(self):
         ids = []
         for group in self:
