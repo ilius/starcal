@@ -10,5 +10,5 @@ REM - GTK+
 REM Install other dependencies:
 pip3 install python-dateutil
 pip3 install psutil
-
+pip3 install requests
 
