@@ -22,12 +22,12 @@ cd $tmpDir
 
 depends=('python>=3.2')
 depends+=('python-gobject') ## The new gobject introspection
-#depends+=('python-gflags')
-depends+=('python-httplib2')
-depends+=('python-psutil')
-depends+=('python-dateutil')
 depends+=('python-cairo')
+depends+=('python-httplib2')
+depends+=('python-dateutil')
+depends+=('python-psutil')
 depends+=('python-requests')
+#depends+=('python-gflags') # for google api client
 
 optdepends=()
 optdepends+=('libappindicator-gtk3')

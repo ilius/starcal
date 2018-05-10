@@ -40,11 +40,11 @@ version=`"$sourceDir/scal3/get_version.py" | sed 's/\-/_/g'`
 
 requires=('python3 >= 3.2')
 requires+=('python3-gobject') ## The new gobject introspection
-#requires+=('python3-gflags')
 requires+=('python3-httplib2')
+requires+=('python3-dateutil')
 requires+=('python3-psutil')
 requires+=('python3-requests')
-requires+=('python3-dateutil')
+#requires+=('python3-gflags') # for google api client
 
 ## Recommended Packages are treated as strict dependency in openSUSE by default
 ## unless you uncheck this in Software Management:
