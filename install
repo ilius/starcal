@@ -170,7 +170,7 @@ fi
 
 
 echo "#!/bin/bash
-$PY $runDirStr/scal3/ui_gtk/starcal.py \"\$@\"" > "${targetPrefix}/bin/$pkgName"
+$PY $runDirStr/scal3/ui_gtk/starcal-main.py \"\$@\"" > "${targetPrefix}/bin/$pkgName"
 chmod 755 "${targetPrefix}/bin/$pkgName"
 
 if [ $UI_QT_ENABLE ] ; then
