@@ -917,6 +917,64 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
 
 
 @registerSignals
+class MoonPhaseColumn(Column):
+	_name = "moonPhase"
+	desc = _("Moon Phase")
+	showCursor = False
+	customizeWidth = True
+
+	def __init__(self, wcal):
+		from scal3.ui_gtk.utils import pixbufFromFile
+		Column.__init__(self, wcal)
+		self.connect("draw", self.onExposeEvent)
+		self.moonPixbuf = pixbufFromFile("full_moon_48px.png")
+
+	def onExposeEvent(self, widget=None, event=None):
+		# pix_w = self.moonPixbuf.get_width()
+		# pix_h = self.moonPixbuf.get_height()
+		imgSize = 48
+		imgMoonSize = 44.25
+		# imgSize = 128
+		# imgMoonSize = 118
+		imgBorder = imgSize-imgMoonSize
+		imgRadius = imgMoonSize / 2
+		###
+		w = self.get_allocation().width
+		h = self.get_allocation().height
+		###
+		rowH = h / 7
+		itemW = w - ui.wcalPadding
+		size = min(rowH, itemW)
+		scaleFact = size / imgSize
+		border = imgBorder / imgSize
+		###
+		cr = self.getContext()
+		self.drawBg(cr)
+		###
+		cr.scale(scaleFact, scaleFact)
+		for i in range(7):
+			c = self.wcal.status[i]
+			print("cairo_set_source_pixbuf, border=%s, rowH=%s, size=%s" % (border, rowH, size))
+			gdk.cairo_set_source_pixbuf(cr, self.moonPixbuf, border, border)
+			cr.rectangle(0, 0, 1, 1)
+			cr.fill()
+			# cr.move_to(0.5, y)
+			# cr.arc(centerX, centerY, radius, startAngle, endAngle)
+			# cr.arc(centerX, centerY, radius, startAngle, endAngle)
+
+			# 	x1 = x0 + iconIndex * self.maxPixW - pix_w / 2
+			# 	y1 = y0 - pix_h / 2
+			# 	cr.scale(scaleFact, scaleFact)
+			# 	gdk.cairo_set_source_pixbuf(cr, pix, x1, y1)
+			# 	cr.rectangle(x1, y1, pix_w, pix_h)
+			# 	cr.fill()
+
+		cr.scale(1 / scaleFact, 1 / scaleFact)
+
+
+
+
+@registerSignals
 class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
 	_name = "weekCal"
 	desc = _("Week Calendar")
@@ -955,6 +1013,7 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
 			EventsTextColumn(self),
 			EventsBoxColumn(self),
 			DaysOfMonthColumnGroup(self),
+			MoonPhaseColumn(self),
 		]
 		defaultItemsDict = dict([(item._name, item) for item in defaultItems])
 		itemNames = list(defaultItemsDict.keys())

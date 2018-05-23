@@ -132,6 +132,7 @@ confParamsCustomize = (
 	"wcal_eventsCount_expand",
 	"wcal_eventsCount_width",
 	"wcalFont_eventsBox",
+	"wcal_moonPhase_width",
 	"dcalHeight",
 	"dcalTypeParams",
 	"pluginsTextInsideExpander",
@@ -871,6 +872,7 @@ wcalFont_eventsText = None
 wcalFont_weekDays = None
 wcalFont_pluginsText = None
 wcalFont_eventsBox = None
+wcal_moonPhase_width = 48
 
 
 ####################
