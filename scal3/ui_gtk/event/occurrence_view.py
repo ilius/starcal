@@ -51,11 +51,22 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
 		self.showDesc = True
 
 	def onSizeRequest(self, widget, requisition):
-		#print("onSizeRequest", requisition.width, requisition.height)
+		# minimum_size, natural_size = widget.get_preferred_size()
+		# print("onSizeRequest:", minimum_size.height, natural_size.height)
+		# FIXME: requisition.height is always the same (75),
+		# same as widget.get_allocation().height, and same as widget.size_request().height
+		# same as minimum_size.height, and natural_size.height, from: minimum_size, natural_size = widget.get_preferred_size()
+		# and re-setting it does not have any effect
+		# 75 is changed to 72 after changing policy from AUTOMATIC to NEVER
+		# this was not working since migration to gtk3 ?
+		# print("onSizeRequest: x=%s, y=%s, w=%s, h=%s, maxH=%s" % (requisition.x, requisition.y, requisition.width, requisition.height, self.maxHeight))
+		# print(dir(requisition))
 		requisition.height = min(
 			self.maxHeight,## FIXME
-			self.vbox.size_request().height + 2,## >=2 FIXME
+			self.vbox.size_request().height + 10,## >=2 FIXME
 		)
+		# self.set_allocation(requisition)
+		# self.queue_resize()
 		return True
 
 	def onDateChange(self, *a, **kw):
