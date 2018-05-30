@@ -1119,7 +1119,11 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		self.sicon.set_from_pixbuf(pixbuf)
 
 	def statusIconUpdateTooltip(self):
-		set_tooltip(self.sicon, self.getStatusIconTooltip())
+		try:
+			sicon = self.sicon
+		except AttributeError:
+			return
+		set_tooltip(sicon, self.getStatusIconTooltip())
 
 	def statusIconUpdate(self, gdate=None, checkStatusIconMode=True):
 		if checkStatusIconMode and self.statusIconMode < 1:
