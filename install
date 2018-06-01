@@ -5,7 +5,7 @@ function printUsage {
 	## echo "Usage: $0 [TERGET_DIR] [--for-pkg|--portable] [--prefix=/usr/local]"
 	U='\033[4m' ## start Underline
 	E='\033[0;0;0m' ## End formatting
-	echo -e "Usage: $0 [${U}TERGET_DIR${E}] [--for-pkg|--portable] [--prefix=${U}/usr/local${E}]"
+	echo -e "Usage: $0 [${U}TERGET_DIR${E}] [--for-pkg|--portable] [--prefix=${U}/usr/local${E}] [--python=${U}python3.x${E}]"
 }
 
 function clean {
@@ -25,7 +25,6 @@ fi
 
 pkgName=starcal3
 sourceDir="`dirname \"$myPath\"`"
-version=`"$sourceDir/scal3/get_version.py"`
 
 PY=python3
 #"$sourceDir/scripts/assert_python3"
@@ -33,7 +32,7 @@ PY=python3
 "$sourceDir/update-perm" ## FIXME
 
 
-options=`getopt -o 'h' --long 'help,for-pkg,portable,prefix:' -n "$0" -- "$@"`
+options=`getopt -o 'h' --long 'help,for-pkg,portable,prefix:,python:' -n "$0" -- "$@"`
 if [ $? != 0 ] ; then
 	printUsage
 	exit 1
@@ -51,10 +50,14 @@ while true ; do
 		--for-pkg) installType="for-pkg" ; shift ;;
 		--portable) installType="portable" ; shift ;;
 		--prefix) prefix="$2" ; shift 2 ;;
+		--python) PY="$2" ; shift 2 ;;
 		--) shift ; break ;;
 		*) echo "Internal error!" ; exit 1 ;;
 	esac
 done
+
+version=`$PY "$sourceDir/scal3/get_version.py"`
+
 
 targetDir="$1" ; shift
 if [ -n "$1" ] ; then ## extra arguments
