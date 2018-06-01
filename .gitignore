@@ -26,3 +26,4 @@ plugins/pray_times_files/pray_times_qt.py
 google-api-python-client
 oauth2client
 .[Tt]rash*
+/result
