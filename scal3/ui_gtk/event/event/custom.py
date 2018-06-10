@@ -33,6 +33,7 @@ class WidgetClass(common.WidgetClass):
 		gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL),
 		gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL),
 	]
+	expandDescription = False
 
 	def __init__(self, event, autoCheck=True):
 		common.WidgetClass.__init__(self, event)

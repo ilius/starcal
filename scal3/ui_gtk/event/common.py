@@ -70,6 +70,7 @@ def getGroupRow(group):
 
 
 class WidgetClass(gtk.VBox):
+	expandDescription = True
 	def __init__(self, event):
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
@@ -117,11 +118,10 @@ class WidgetClass(gtk.VBox):
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
 		swin.add_with_viewport(self.descriptionInput)
 		###
-		exp = gtk.Expander()
-		exp.set_expanded(True)
-		exp.set_label(_("Description"))
-		exp.add(swin)
-		pack(self, exp, 1, 1)
+		frame = gtk.Frame()
+		frame.set_label(_("Description"))
+		frame.add(swin)
+		pack(self, frame, self.expandDescription, self.expandDescription)
 		###########
 		hbox = gtk.HBox()
 		pack(hbox, gtk.Label(_("Icon") + ":"))
