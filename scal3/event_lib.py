@@ -585,9 +585,9 @@ class YearEventRule(MultiValueAllDayEventRule):
 				))
 			else:
 				values2.append(yearConv(item))
-		return values
+		return values2
 
-	def changeMode(self, mode):  # FIXME
+	def changeMode(self, mode):
 		self.values = self.newModeValues(mode)
 		return True
 

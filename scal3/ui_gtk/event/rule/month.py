@@ -37,9 +37,10 @@ class WidgetClass(gtk.HBox):
 		self.rule.setValuesPlain(monthList)
 
 	def changeMode(self, mode):
-		if mode != self.rule.getMode():
-			for i in range(12):
-				set_tooltip(
-					self.buttons[i],
-					locale_man.getMonthName(mode, i + 1),
-				)
+		if mode == self.rule.getMode():
+			return
+		for i in range(12):
+			set_tooltip(
+				self.buttons[i],
+				locale_man.getMonthName(mode, i + 1),
+			)
