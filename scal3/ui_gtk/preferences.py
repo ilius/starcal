@@ -296,17 +296,20 @@ class PrefDialog(gtk.Dialog):
 		###
 		pack(vbox, hbox)
 		###################
-		exp = gtk.Expander()
+		# the header label of gtk.Expander in gtk3 is always on the left (even in RTL mode)
+		# that's why we use gtk.Frame instead
+		exp = gtk.Frame()
+		exp.set_border_width(5)
 		label = gtk.Label("<b>%s</b>" % _("Status Icon"))
 		label.set_use_markup(True)
 		exp.set_label_widget(label)
 		expVbox = gtk.VBox(spacing=1)
+		expVbox.set_border_width(5)
 		exp.add(expVbox)
-		exp.set_expanded(True)
 		sgroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
 		####
 		hbox = gtk.HBox(spacing=1)
-		pack(hbox, gtk.Label("   "))
+		pack(hbox, gtk.Label(" "))
 		label = gtk.Label(_("Normal Days"))
 		sgroup.add_widget(label)
 		pack(hbox, label)
@@ -322,7 +325,7 @@ class PrefDialog(gtk.Dialog):
 		pack(expVbox, hbox)
 		####
 		hbox = gtk.HBox(spacing=1)
-		pack(hbox, gtk.Label("   "))
+		pack(hbox, gtk.Label(" "))
 		label = gtk.Label(_("Holidays"))
 		sgroup.add_widget(label)
 		pack(hbox, label)
@@ -338,7 +341,7 @@ class PrefDialog(gtk.Dialog):
 		pack(expVbox, hbox)
 		####
 		hbox = gtk.HBox(spacing=1)
-		pack(hbox, gtk.Label("   "))
+		pack(hbox, gtk.Label(" "))
 		checkItem = CheckPrefItem(
 			ui,
 			"statusIconFontFamilyEnable",
@@ -357,7 +360,7 @@ class PrefDialog(gtk.Dialog):
 		pack(expVbox, hbox)
 		####
 		hbox = gtk.HBox(spacing=1)
-		pack(hbox, gtk.Label("   "))
+		pack(hbox, gtk.Label(" "))
 		checkItem = CheckPrefItem(
 			ui,
 			"statusIconFixedSizeEnable",
@@ -367,7 +370,7 @@ class PrefDialog(gtk.Dialog):
 		self.uiPrefItems.append(checkItem)
 		#sgroup.add_widget(checkItem._widget)
 		pack(hbox, checkItem._widget)
-		pack(hbox, gtk.Label("  "))
+		pack(hbox, gtk.Label(" "))
 		item = WidthHeightPrefItem(
 			ui,
 			"statusIconFixedSizeWH",
