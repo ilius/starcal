@@ -31,7 +31,8 @@ class WidgetClass(gtk.HBox):
 		self.rule.time = self.timeInput.get_value()
 
 	def changeMode(self, mode):
-		curMode = self.rule.getMode()
-		if mode != curMode:
-			y, m, d = self.dateInput.get_value()
-			self.dateInput.set_value(core.convert(y, m, d, curMode, mode))
+		if mode == self.rule.getMode():
+			return
+		self.updateVars()
+		self.rule.changeMode(mode)
+		self.updateWidget()
