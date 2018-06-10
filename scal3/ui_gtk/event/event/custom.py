@@ -46,12 +46,15 @@ class WidgetClass(common.WidgetClass):
 		self.warnLabel.set_alignment(0, 0.5)
 		#self.warnLabel.set_visible(False)## FIXME
 		###########
-		self.rulesExp = gtk.Expander()
-		self.rulesExp.set_label(_("Rules"))
-		self.rulesExp.set_expanded(True)
+		self.rulesFrame = gtk.Frame()
+		self.rulesFrame.set_label(_("Rules"))
+		self.rulesFrame.set_border_width(1)
+		self.rulesSwin = gtk.ScrolledWindow()
 		self.rulesBox = gtk.VBox()
-		self.rulesExp.add(self.rulesBox)
-		pack(self, self.rulesExp)
+		self.rulesBox.set_border_width(5)
+		self.rulesSwin.add(self.rulesBox)
+		self.rulesFrame.add(self.rulesSwin)
+		pack(self, self.rulesFrame, expand=True, fill=True)
 		###
 		pack(self, self.ruleAddBox)
 		pack(self, self.warnLabel)
