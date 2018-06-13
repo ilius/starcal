@@ -1,0 +1,7 @@
+#!/bin/bash
+rm -Rf ./bson/
+git clone https://github.com/py-bson/bson
+rm -Rf ./bson/.git
+rm -Rf ./bson/bson/tests
+rm ./bson/test.py
+rm ./bson/.travis.yml
