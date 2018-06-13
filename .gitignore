@@ -27,3 +27,7 @@ google-api-python-client
 oauth2client
 .[Tt]rash*
 /result
+
+/bson/bson/tests
+/bson/test.py
+/bson/.travis.yml

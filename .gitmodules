@@ -1,3 +1,0 @@
-[submodule "bson"]
-	path = bson
-	url = https://github.com/py-bson/bson
