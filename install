@@ -183,7 +183,7 @@ echo "[Desktop Entry]
 Encoding=UTF-8
 Name=StarCalendar $version
 GenericName=StarCalendar
-Comment=A Perfect Calendar Program
+Comment=Full-featured Calendar Program
 Comment[fa]=یک برنامهٔ کامل تقویم
 Exec=$pkgName
 Icon=$pkgName
@@ -197,7 +197,7 @@ if [ $UI_QT_ENABLE ] ; then
 	echo "[Desktop Entry]
 Encoding=UTF-8
 Name=StarCalendar $version (Qt)
-Comment=A Perfect Calendar Program (Qt Interface)
+Comment=Full-featured Calendar Program (Qt Interface)
 Comment[fa]=یک برنامهٔ کامل تقویم
 Exec=$pkgName-qt
 Icon=$pkgName
