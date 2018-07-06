@@ -3998,7 +3998,7 @@ msgstr ""
 
 msgid "Reza Moradi Ghiasabadi (www.ghiasabadi.com)"
 msgstr ""
-"رضا مرادی قیاس آبادی (www.ghiasabadi.com)"
+"رضا مرادی غیاث‌آبادی (www.ghiasabadi.com)"
 
 msgid "translator-credits"
 msgstr "Saeed Rasooli <saeed.gnu@gmail.com>"
