@@ -24,9 +24,12 @@ from datetime import datetime
 
 import natz
 
-from scal3.cal_types.gregorian import J0001, J1970
+from scal3.cal_types.gregorian import J0001, J1970, J0001_epoch
 from scal3.cal_types.gregorian import jd_to as jd_to_g
 from scal3.utils import ifloor, iceil
+
+G10000_epoch = 253402300800 # getEpochFromJd(gregorian.to_jd(10000, 1, 1))
+
 
 # jd is the integer value of Chreonological Julian Day,
 # which is specific to time zone
@@ -59,9 +62,18 @@ utcOffsetByJdCache = {}
 
 
 def getUtcOffsetByEpoch(epoch, tz=None):
+	if epoch < J0001_epoch:
+		return 0
+	if epoch >= G10000_epoch:
+		return 0
 	if not tz:
 		tz = natz.gettz()
-	return tz.utcoffset(datetime.fromtimestamp(epoch)).total_seconds()
+	try:
+		dt = datetime.fromtimestamp(epoch)
+	except ValueError as e:
+		print("epoch=", epoch, "error:", e)
+		return 0
+	return tz.utcoffset(dt).total_seconds()
 	#delta = 0
 	#while True:
 	#	try:
@@ -82,16 +94,20 @@ def getUtcOffsetByEpoch(epoch, tz=None):
 	#		return tz._utcoffset.total_seconds() ## tz._utcoffset does not exist with dateutil
 
 
+
 def getUtcOffsetByGDate(year, month, day, tz=None):
+	if year <= 0:
+		return 0
+	if year >= 10000:
+		return 0
 	if not tz:
 		tz = natz.gettz()
 	try:
-		return tz.utcoffset(datetime(year, month, day)).total_seconds()
+		dt = datetime(year, month, day)
 	except ValueError as e:
-		if str(e) == "year is out of range":
-			return tz.utcoffset(datetime(3000, 1, 1)).total_seconds()
-		raise e
-
+		print("year=", year, "error:", e)
+		return 0
+	return tz.utcoffset(dt).total_seconds()
 
 #def getUtcOffsetByJd(jd, tz=None):
 #	return getUtcOffsetByEpoch(getEpochFromJd(jd), tz)
