@@ -1144,11 +1144,9 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
 		return True
 
 	def keyPress(self, arg, gevent):
-		#print("keyPress")
 		if CalBase.keyPress(self, arg, gevent):
 			return True
 		kname = gdk.keyval_name(gevent.keyval).lower()
-		#print("keyPress", kname)
 		if kname == "up":
 			self.jdPlus(-1)
 		elif kname == "down":
