@@ -220,13 +220,16 @@ class EventSearchTree:
 			yield item
 
 	def search(self, t0, t1):
-		for mt, dt, eid in self.searchStep(self.root, t0, t1):
-			yield (
-				max(t0, mt - dt),
-				min(t1, mt + dt),
-				eid,
-				2 * dt,
-			)
+		try:
+			for mt, dt, eid in self.searchStep(self.root, t0, t1):
+				yield (
+					max(t0, mt - dt),
+					min(t1, mt + dt),
+					eid,
+					2 * dt,
+				)
+		except StopIteration:
+			return
 
 	def getLastBefore(self, t1):
 		res = self.getLastBeforeStep(self.root, t1)
