@@ -3,6 +3,8 @@
 
 ## rpmbuild command is provided by package "rpm" that is a base and essential package is SUSE
 
+set -e
+
 function check_pkg(){
 	OUT=`zypper info "$1" | grep 'Installed:'`
 	if [ "$OUT" = 'Installed: Yes' ] ; then
@@ -38,7 +40,7 @@ version=`"$sourceDir/scal3/get_version.py" | sed 's/\-/_/g'`
 #echo version=$version
 
 
-requires=('python3 >= 3.2')
+requires=('python3 >= 3.2' 'python3 <= 3.6')
 requires+=('python3-gobject') ## The new gobject introspection
 requires+=('python3-httplib2')
 requires+=('python3-dateutil')

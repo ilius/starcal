@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 UI_QT_ENABLE=
 
 function printUsage {
@@ -10,10 +12,10 @@ function printUsage {
 
 function clean {
 	for EXP in '.hidden' '*~' '*.pyc' '*.pyo' '*.tar.xz' '*.tar.gz' '*.deb' '*.rpm' '*.spec'; do
-		find . -name "$EXP" -exec rm '{}' \;
+		find . -name "$EXP" -exec rm '{}' \; || true
 	done 2>/dev/null
-	find . -name '__pycache__' -exec rm -R '{}' \; 2>/dev/null
-	find . -type d -empty -delete
+	find . -name '__pycache__' -exec rm -R '{}' \; 2>/dev/null || true
+	find . -type d -empty -delete || true
 }
 
 myPath="$0"
@@ -26,7 +28,16 @@ fi
 pkgName=starcal3
 sourceDir="`dirname \"$myPath\"`"
 
-PY=python3
+PY_SUPPORTED=(3.6 3.5 3.4 3.3 3.2)
+
+for PY_TMP in "${PY_SUPPORTED[@]}" ; do
+	PY=`which "python$PY_TMP"` && break
+done
+if [ -z "$PY" ] ; then
+	echo "Only these python version are supported: ${PY_SUPPORTED[@]}"
+	exit 1
+fi
+
 #"$sourceDir/scripts/assert_python3"
 
 "$sourceDir/update-perm" ## FIXME
@@ -56,6 +67,7 @@ while true ; do
 	esac
 done
 
+echo "Using $PY"
 version=`$PY "$sourceDir/scal3/get_version.py"`
 
 

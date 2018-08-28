@@ -1,5 +1,6 @@
 #!/bin/bash
 ## makes PKGUILD and builds it (without root access), then installs it (prompts for password if necessary)
+set -e
 
 initPwd=$PWD
 
@@ -20,7 +21,7 @@ tmpDir="$HOME/.${pkgName}/tmp/install-arch"
 mkdir -p $tmpDir
 cd $tmpDir
 
-depends=('python>=3.2')
+depends=('python>=3.2' 'python<=3.6')
 depends+=('python-gobject') ## The new gobject introspection
 depends+=('python-cairo')
 depends+=('python-httplib2')
