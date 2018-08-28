@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e
+
 UI_QT_ENABLE=
 
 function printUsage {
@@ -10,10 +12,10 @@ function printUsage {
 
 function clean {
 	for EXP in '.hidden' '*~' '*.pyc' '*.pyo' '*.tar.xz' '*.tar.gz' '*.deb' '*.rpm' '*.spec'; do
-		find . -name "$EXP" -exec rm '{}' \;
+		find . -name "$EXP" -exec rm '{}' \; || true
 	done 2>/dev/null
-	find . -name '__pycache__' -exec rm -R '{}' \; 2>/dev/null
-	find . -type d -empty -delete
+	find . -name '__pycache__' -exec rm -R '{}' \; 2>/dev/null || true
+	find . -type d -empty -delete || true
 }
 
 myPath="$0"
