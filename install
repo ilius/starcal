@@ -31,6 +31,10 @@ PY_SUPPORTED=(3.6 3.5 3.4 3.3 3.2)
 for PY_TMP in "${PY_SUPPORTED[@]}" ; do
 	PY=`which "python$PY_TMP"` && break
 done
+if [ -z "$PY" ] ; then
+	echo "Only these python version are supported: ${PY_SUPPORTED[@]}"
+	exit 1
+fi
 
 #"$sourceDir/scripts/assert_python3"
 
