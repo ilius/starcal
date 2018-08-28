@@ -1,6 +1,7 @@
 #!/bin/bash
 ## This script builds DEB package on a debian-based distribution
 ## (like debian, ubuntu, mint, ...) and installs the package
+set -e
 
 function getDirTotalSize(){
 	du -ks "$1" | python3 -c "import sys;print(input().split('\t')[0])"
@@ -80,21 +81,15 @@ Description: A full-featured international calendar written in Python
 #chmod 755 "$tmpDir/DEBIAN/postinst"
 
 pkgFile=${pkgName}_${version}-1_all.deb
-dpkg-deb -b "$tmpDir" "$pkgFile" || exit 1
 
-echo "Package file $pkgFile created, installing..."
-if [ -f /usr/bin/gdebi ] ; then
-	if ! /usr/bin/gdebi "$pkgFile" 2>/tmp/gdebi-error ; then
-		if grep -q 'A later version is already installed' /tmp/gdebi-error ; then
-			dpkg -i "$pkgFile"
-		else
-			cat /tmp/gdebi-error
-		fi
-		rm /tmp/gdebi-error
-	fi
-else
-	apt-get install python3-httplib2
-	dpkg -i "$pkgFile"
+if dpkg-deb -b "$tmpDir" "$pkgFile" ; then
+    echo "Package file $pkgFile created, installing..."
+    if [ -f /usr/bin/gdebi ] ; then
+        /usr/bin/gdebi "$pkgFile"
+    else
+        apt-get install python3-httplib2
+        dpkg -i "$pkgFile"
+    fi
 fi
 
 rm -Rf "$tmpDir"

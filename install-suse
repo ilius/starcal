@@ -3,6 +3,8 @@
 
 ## rpmbuild command is provided by package "rpm" that is a base and essential package is SUSE
 
+set -e
+
 function check_pkg(){
 	OUT=`zypper info "$1" | grep 'Installed:'`
 	if [ "$OUT" = 'Installed: Yes' ] ; then

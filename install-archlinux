@@ -1,5 +1,6 @@
 #!/bin/bash
 ## makes PKGUILD and builds it (without root access), then installs it (prompts for password if necessary)
+set -e
 
 initPwd=$PWD
 
