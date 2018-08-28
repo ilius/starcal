@@ -26,7 +26,12 @@ fi
 pkgName=starcal3
 sourceDir="`dirname \"$myPath\"`"
 
-PY=python3
+PY_SUPPORTED=(3.6 3.5 3.4 3.3 3.2)
+
+for PY_TMP in "${PY_SUPPORTED[@]}" ; do
+	PY=`which "python$PY_TMP"` && break
+done
+
 #"$sourceDir/scripts/assert_python3"
 
 "$sourceDir/update-perm" ## FIXME
@@ -56,6 +61,7 @@ while true ; do
 	esac
 done
 
+echo "Using $PY"
 version=`$PY "$sourceDir/scal3/get_version.py"`
 
 

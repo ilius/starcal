@@ -32,7 +32,7 @@ version=`"$sourceDir/scal3/get_version.py"`
 #%post
 #/usr/share/$pkgName/scripts/assert_python3
 
-requires=('python3')
+requires=('python3 >= 3.2' 'python3 <= 3.6')
 requires+=('python3-gobject') ## The new gobject introspection
 requires+=('python3-httplib2')
 requires+=('python3-dateutil')
