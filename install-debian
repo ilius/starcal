@@ -8,7 +8,7 @@ function getDirTotalSize(){
 }
 
 if [ "$UID" != "0" ] ; then
-	echo "Run this script as root"
+	echo "Run this script as root" >&2
 	exit 1
 fi
 
@@ -83,13 +83,13 @@ Description: A full-featured international calendar written in Python
 pkgFile=${pkgName}_${version}-1_all.deb
 
 if dpkg-deb -b "$tmpDir" "$pkgFile" ; then
-    echo "Package file $pkgFile created, installing..."
-    if [ -f /usr/bin/gdebi ] ; then
-        /usr/bin/gdebi "$pkgFile"
-    else
-        apt-get install python3-httplib2
-        dpkg -i "$pkgFile"
-    fi
+	echo "Package file $pkgFile created, installing..."
+	if [ -f /usr/bin/gdebi ] ; then
+		/usr/bin/gdebi "$pkgFile"
+	else
+		apt-get install python3-httplib2
+		dpkg -i "$pkgFile"
+	fi
 fi
 
 rm -Rf "$tmpDir"
