@@ -13,9 +13,12 @@ fi
 
 if ! which rpmbuild ; then
 	if which dnf ; then
-		dnf install rpm-build || exit 1
+		dnf install rpm-build
+	elif which yum ; then
+		yum install rpm-build
 	else
-		yum install rpm-build || exit 1
+		echo "No 'dnf' nor 'yum' commands were found" >&2
+		exit 1
 	fi
 fi
 
