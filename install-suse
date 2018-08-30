@@ -102,7 +102,7 @@ and Indian National calendars, as well as common English(Gregorian) calendar
 
 #less $pkgName.spec ; exit 0
 
-rpmbuild -bb $pkgName.spec || exit 1
+rpmbuild -bb $pkgName.spec
 pkgPath="`ls /usr/src/packages/RPMS/noarch/$pkgName*$version*.rpm`"
 echo "pkgPath=$pkgPath"
 

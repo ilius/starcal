@@ -32,7 +32,7 @@ tmpDir=/tmp/$pkgName-install-deb
 mkdir -p $tmpDir
 mkdir -p "$tmpDir/DEBIAN"
 
-"$sourceDir/install" "$tmpDir" "--for-pkg" || exit $?
+"$sourceDir/install" "$tmpDir" "--for-pkg"
 chown -R root "$tmpDir"
 installedSize=`getDirTotalSize "$tmpDir"` ## only /usr ? FIXME
 
