@@ -17,7 +17,7 @@ function check_pkg(){
 }
 
 if [ "$UID" != "0" ] ; then
-	echo "Run this script as root"
+	echo "Run this script as root" >&2
 	exit 1
 fi
 
@@ -40,7 +40,7 @@ version=`"$sourceDir/scal3/get_version.py" | sed 's/\-/_/g'`
 #echo version=$version
 
 
-requires=('python3 >= 3.2' 'python3 <= 3.6')
+requires=('python3.6')
 requires+=('python3-gobject') ## The new gobject introspection
 requires+=('python3-httplib2')
 requires+=('python3-dateutil')
@@ -107,11 +107,11 @@ pkgPath="`ls /usr/src/packages/RPMS/noarch/$pkgName*$version*.rpm`"
 echo "pkgPath=$pkgPath"
 
 if [ -z "$pkgPath" ] ; then
-	echo "Package build failed"
+	echo "Package build failed" >&2
 	exit 1
 fi
 if [ ! -f "$pkgPath" ] ; then
-	echo "Package file $pkgPath does not exit"
+	echo "Package file $pkgPath does not exit" >&2
 	exit 1
 fi
 
@@ -122,8 +122,8 @@ zypper install -f "$pkgPath"
 ## Fixed with defining /usr as Provides
 
 #if [ -f /usr/bin/yum ] ; then
-#	 yum remove -y $pkgName >/dev/null 2>&1
-#	 yum install --nogpgcheck "$pkgPath"
+#	yum remove -y $pkgName >/dev/null 2>&1
+#	yum install --nogpgcheck "$pkgPath"
 #fi
 
 #rpm -U --force "$pkgPath" ## its OK when required packages are installed!

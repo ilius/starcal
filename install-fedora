@@ -7,11 +7,20 @@ set -e
 
 
 if [ "$UID" != "0" ] ; then
-	echo "Run this script as root"
+	echo "Run this script as root" >&2
 	exit 1
 fi
 
-dnf install rpm-build || exit 1
+if ! which rpmbuild ; then
+	if which dnf ; then
+		dnf install rpm-build
+	elif which yum ; then
+		yum install rpm-build
+	else
+		echo "No 'dnf' nor 'yum' commands were found" >&2
+		exit 1
+	fi
+fi
 
 myPath="$0"
 if [ "${myPath:0:2}" == "./" ] ; then
@@ -24,7 +33,7 @@ fi
 pkgName=starcal3
 sourceDir="`dirname \"$myPath\"`"
 #"$sourceDir/scripts/assert_python3"
-version=`"$sourceDir/scal3/get_version.py"`
+version=`"$sourceDir/scal3/get_version.py" | sed 's/\-/_/g'`
 
 #echo "myPath=$myPath"
 #echo "sourceDir=$sourceDir"
@@ -33,7 +42,7 @@ version=`"$sourceDir/scal3/get_version.py"`
 #%post
 #/usr/share/$pkgName/scripts/assert_python3
 
-requires=('python3 >= 3.2' 'python3 <= 3.6')
+requires=('python36')
 requires+=('python3-gobject') ## The new gobject introspection
 requires+=('python3-httplib2')
 requires+=('python3-dateutil')
@@ -84,19 +93,19 @@ and Indian National calendars, as well as common English(Gregorian) calendar
 rpmbuild -bb $pkgName.spec
 status=$?
 if [ "$status" != "0" ] ; then
-	echo "rpmbuild exited with failed status '$status'"
+	echo "rpmbuild exited with failed status '$status'" >&2
 	exit $status
 fi
 
-pkgPath="/root/rpmbuild/RPMS/noarch/$pkgName-$version-1.noarch.rpm"
+pkgPath="$HOME/rpmbuild/RPMS/noarch/$pkgName-$version-1.noarch.rpm"
 
 if [ ! -f $pkgPath ] ; then
-	echo "rpmbuild exited with success status $rpmbuild_status, but no package file was found"
+	echo "rpmbuild exited with success status $status, but no package file was found" >&2
 	exit 1
 fi
 
 if [ ! -f $pkgPath ] ; then
-	echo "Package file $pkgPath does not exit"
+	echo "Package file $pkgPath does not exit" >&2
 	exit 1
 fi
 

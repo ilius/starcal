@@ -8,7 +8,7 @@ function getDirTotalSize(){
 }
 
 if [ "$UID" != "0" ] ; then
-	echo "Run this script as root"
+	echo "Run this script as root" >&2
 	exit 1
 fi
 
@@ -40,7 +40,7 @@ installedSize=`getDirTotalSize "$tmpDir"` ## only /usr ? FIXME
 #getDirTotalSize "$tmpDir/usr"
 
 
-depends=('python3(>=3.2)' 'python(<=3.6)')
+depends=('python3.6 | python3.5 | python3.4 | python3.3 | python3.2')
 depends+=('gir1.2-gtk-3.0')
 depends+=('python3-gi(>=3.8)') ## The new gobject introspection
 depends+=('python3-gi-cairo(>=3.8)')
@@ -83,7 +83,7 @@ Description: A full-featured international calendar written in Python
 pkgFile=${pkgName}_${version}-1_all.deb
 
 if dpkg-deb -b "$tmpDir" "$pkgFile" ; then
-    echo "Package file $pkgFile created, installing..."
+	echo "Package file $pkgFile created, installing..."
 	if [ -f /usr/bin/gdebi ] ; then
 		if ! /usr/bin/gdebi "$pkgFile" 2>/tmp/gdebi-error ; then
 			if grep -q 'A later version is already installed' /tmp/gdebi-error ; then
@@ -94,9 +94,9 @@ if dpkg-deb -b "$tmpDir" "$pkgFile" ; then
 			rm /tmp/gdebi-error
 		fi
 	else
-        apt-get install python3-httplib2
-        dpkg -i "$pkgFile"
-    fi
+		apt-get install python3-httplib2
+		dpkg -i "$pkgFile"
+	fi
 fi
 
 rm -Rf "$tmpDir"
