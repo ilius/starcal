@@ -7,7 +7,7 @@ set -e
 
 
 if [ "$UID" != "0" ] ; then
-  echo "Run this script as root"
+  echo "Run this script as root" >&2
   exit 1
 fi
 
@@ -90,19 +90,19 @@ and Indian National calendars, as well as common English(Gregorian) calendar
 rpmbuild -bb $pkgName.spec
 status=$?
 if [ "$status" != "0" ] ; then
-    echo "rpmbuild exited with failed status '$status'"
+    echo "rpmbuild exited with failed status '$status'" >&2
     exit $status
 fi
 
 pkgPath="$HOME/rpmbuild/RPMS/noarch/$pkgName-$version-1.noarch.rpm"
 
 if [ ! -f $pkgPath ] ; then
-    echo "rpmbuild exited with success status $status, but no package file was found"
+    echo "rpmbuild exited with success status $status, but no package file was found" >&2
     exit 1
 fi
 
 if [ ! -f $pkgPath ] ; then
-    echo "Package file $pkgPath does not exit"
+    echo "Package file $pkgPath does not exit" >&2
     exit 1
 fi
 

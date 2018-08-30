@@ -34,7 +34,7 @@ for PY_TMP in "${PY_SUPPORTED[@]}" ; do
 	PY=`which "python$PY_TMP"` && break
 done
 if [ -z "$PY" ] ; then
-	echo "Only these python version are supported: ${PY_SUPPORTED[@]}"
+	echo "Only these python version are supported: ${PY_SUPPORTED[@]}" >&2
 	exit 1
 fi
 
@@ -63,7 +63,7 @@ while true ; do
 		--prefix) prefix="$2" ; shift 2 ;;
 		--python) PY="$2" ; shift 2 ;;
 		--) shift ; break ;;
-		*) echo "Internal error!" ; exit 1 ;;
+		*) echo "Internal error!" >&2 ; exit 1 ;;
 	esac
 done
 
@@ -87,7 +87,7 @@ fi
 
 ## do not f*** the system if a variable was empty amiss!
 if [ -z $pkgName ] ; then
-	echo "Internal Error! pkgName=''"
+	echo "Internal Error! pkgName=''" >&2
 	exit 1
 fi
 if [ -z "$prefix" ] ; then ## prefix is empty (not been set)
