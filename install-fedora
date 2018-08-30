@@ -7,8 +7,8 @@ set -e
 
 
 if [ "$UID" != "0" ] ; then
-  echo "Run this script as root" >&2
-  exit 1
+	echo "Run this script as root" >&2
+	exit 1
 fi
 
 if ! which rpmbuild ; then
@@ -21,9 +21,9 @@ fi
 
 myPath="$0"
 if [ "${myPath:0:2}" == "./" ] ; then
-    myPath=$PWD${myPath:1}
+	myPath=$PWD${myPath:1}
 elif [ "${myPath:0:1}" != "/" ] ; then
-    myPath=$PWD/$myPath
+	myPath=$PWD/$myPath
 fi
 
 
@@ -90,20 +90,20 @@ and Indian National calendars, as well as common English(Gregorian) calendar
 rpmbuild -bb $pkgName.spec
 status=$?
 if [ "$status" != "0" ] ; then
-    echo "rpmbuild exited with failed status '$status'" >&2
-    exit $status
+	echo "rpmbuild exited with failed status '$status'" >&2
+	exit $status
 fi
 
 pkgPath="$HOME/rpmbuild/RPMS/noarch/$pkgName-$version-1.noarch.rpm"
 
 if [ ! -f $pkgPath ] ; then
-    echo "rpmbuild exited with success status $status, but no package file was found" >&2
-    exit 1
+	echo "rpmbuild exited with success status $status, but no package file was found" >&2
+	exit 1
 fi
 
 if [ ! -f $pkgPath ] ; then
-    echo "Package file $pkgPath does not exit" >&2
-    exit 1
+	echo "Package file $pkgPath does not exit" >&2
+	exit 1
 fi
 
 echo "Package created in \"$pkgPath\", installing"

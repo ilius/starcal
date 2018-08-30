@@ -4,20 +4,20 @@
 set -e
 
 function getDirTotalSize(){
-    du -ks "$1" | python3 -c "import sys;print(input().split('\t')[0])"
+	du -ks "$1" | python3 -c "import sys;print(input().split('\t')[0])"
 }
 
 if [ "$UID" != "0" ] ; then
-  echo "Run this script as root" >&2
-  exit 1
+	echo "Run this script as root" >&2
+	exit 1
 fi
 
 
 myPath="$0"
 if [ "${myPath:0:2}" == "./" ] ; then
-    myPath=$PWD${myPath:1}
+	myPath=$PWD${myPath:1}
 elif [ "${myPath:0:1}" != "/" ] ; then
-    myPath=$PWD/$myPath
+	myPath=$PWD/$myPath
 fi
 
 
@@ -83,13 +83,13 @@ Description: A full-featured international calendar written in Python
 pkgFile=${pkgName}_${version}-1_all.deb
 
 if dpkg-deb -b "$tmpDir" "$pkgFile" ; then
-    echo "Package file $pkgFile created, installing..."
-    if [ -f /usr/bin/gdebi ] ; then
-        /usr/bin/gdebi "$pkgFile"
-    else
-        apt-get install python3-httplib2
-        dpkg -i "$pkgFile"
-    fi
+	echo "Package file $pkgFile created, installing..."
+	if [ -f /usr/bin/gdebi ] ; then
+		/usr/bin/gdebi "$pkgFile"
+	else
+		apt-get install python3-httplib2
+		dpkg -i "$pkgFile"
+	fi
 fi
 
 rm -Rf "$tmpDir"
