@@ -45,13 +45,13 @@ class MaxHeap(list):
 	moreThan = lambda self, key: self.moreThanStep(key, 0)
 	def moreThanStep(self, key, index):
 		if index < 0:
-			raise StopIteration
+			return
 		try:
 			item = self[index]
 		except IndexError:
-			raise StopIteration
+			return
 		if -item[0] <= key:
-			raise StopIteration
+			return
 		yield -item[0], item[1]
 		for k, v in self.moreThanStep(key, 2*index+1):
 			yield k, v
