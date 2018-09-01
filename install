@@ -30,14 +30,6 @@ sourceDir="`dirname \"$myPath\"`"
 
 PY_SUPPORTED=(3.6 3.5 3.4 3.3 3.2)
 
-for PY_TMP in "${PY_SUPPORTED[@]}" ; do
-	PY=`which "python$PY_TMP"` && break
-done
-if [ -z "$PY" ] ; then
-	echo "Only these python version are supported: ${PY_SUPPORTED[@]}" >&2
-	exit 1
-fi
-
 #"$sourceDir/scripts/assert_python3"
 
 "$sourceDir/update-perm" ## FIXME
@@ -52,6 +44,7 @@ eval set -- "$options" ## Note the quotes around $options are essential!
 options=""
 
 
+pyCmd=""
 prefix=""
 installType=""
 
@@ -61,14 +54,27 @@ while true ; do
 		--for-pkg) installType="for-pkg" ; shift ;;
 		--portable) installType="portable" ; shift ;;
 		--prefix) prefix="$2" ; shift 2 ;;
-		--python) PY="$2" ; shift 2 ;;
+		--python) pyCmd="$2" ; shift 2 ;;
 		--) shift ; break ;;
 		*) echo "Internal error!" >&2 ; exit 1 ;;
 	esac
 done
 
-echo "Using $PY"
-version=`$PY "$sourceDir/scal3/get_version.py"`
+if [ -z "$pyCmd" ] ; then
+	for ver in "${PY_SUPPORTED[@]}" ; do
+		pyCmd=`which "python$ver"` && break
+	done
+	if [ -z "$pyCmd" ] ; then
+		echo "Only these python version are supported: ${PY_SUPPORTED[@]}" >&2
+		exit 1
+	fi
+fi
+# else
+#	# TODO: check version is compatible
+# fi
+
+echo "Using $pyCmd"
+version=`$pyCmd "$sourceDir/scal3/get_version.py"`
 
 
 targetDir="$1" ; shift
@@ -177,12 +183,12 @@ fi
 
 
 echo "#!/bin/bash
-$PY $runDirStr/scal3/ui_gtk/starcal.py \"\$@\"" > "${targetPrefix}/bin/$pkgName"
+$pyCmd $runDirStr/scal3/ui_gtk/starcal.py \"\$@\"" > "${targetPrefix}/bin/$pkgName"
 chmod 755 "${targetPrefix}/bin/$pkgName"
 
 if [ $UI_QT_ENABLE ] ; then
 	echo "#!/bin/bash
-	$PY $runDirStr/scal3/ui_qt/starcal.py \"\$@\"" > "${targetPrefix}/bin/$pkgName-qt"
+	$pyCmd $runDirStr/scal3/ui_qt/starcal.py \"\$@\"" > "${targetPrefix}/bin/$pkgName-qt"
 	chmod 755 "${targetPrefix}/bin/$pkgName-qt"
 fi
 

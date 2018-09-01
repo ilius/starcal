@@ -11,6 +11,21 @@ if [ "$UID" != "0" ] ; then
 	exit 1
 fi
 
+pyCmd=
+for minor in 6 5 4 3 2 ; do
+	cmd="/usr/bin/python3.$minor"
+	if [ -f "$cmd" ] ; then
+		pyCmd="$cmd"
+		break
+	fi
+done
+if [ -z "$pyCmd" ] ; then
+	echo "Please install python3.6 and try again (or older down to python3.2)" >&2
+	exit 1
+fi
+echo "Using python: \"$pyCmd\""
+pyPkg="$pyCmd"
+
 if ! which rpmbuild ; then
 	if which dnf ; then
 		dnf install rpm-build
@@ -42,7 +57,7 @@ version=`"$sourceDir/scal3/get_version.py" | sed 's/\-/_/g'`
 #%post
 #/usr/share/$pkgName/scripts/assert_python3
 
-requires=('python36')
+requires=("$pyPkg")
 requires+=('python3-gobject') ## The new gobject introspection
 #requires+=('python3-gflags')
 requires+=('python3-httplib2')
@@ -77,7 +92,7 @@ using Gtk3-based interface, that supports Jalai(Iranian), Hijri(Islamic),
 and Indian National calendars, as well as common English(Gregorian) calendar
 
 %install
-\"$sourceDir/install\" \"%{buildroot}\" --for-pkg --prefix=%{_prefix}
+\"$sourceDir/install\" \"%{buildroot}\" --for-pkg --prefix=%{_prefix} --python='$pyCmd'
 
 %files
 %defattr(-,root,root,-)
@@ -101,11 +116,6 @@ pkgPath="$HOME/rpmbuild/RPMS/noarch/$pkgName-$version-1.noarch.rpm"
 
 if [ ! -f $pkgPath ] ; then
 	echo "rpmbuild exited with success status $status, but no package file was found" >&2
-	exit 1
-fi
-
-if [ ! -f $pkgPath ] ; then
-	echo "Package file $pkgPath does not exit" >&2
 	exit 1
 fi
 

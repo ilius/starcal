@@ -22,6 +22,28 @@ if [ "$UID" != "0" ] ; then
 fi
 
 
+
+pyCmd=
+for minor in 6 5 4 3 2 ; do
+	cmd="/usr/bin/python3.$minor"
+	if [ -f "$cmd" ] ; then
+		pyCmd="$cmd"
+		break
+	fi
+done
+if [ -z "$pyCmd" ] ; then
+	echo "Please install python3.6 and try again (or older down to python3.2)" >&2
+	exit 1
+fi
+echo "Using python: \"$pyCmd\""
+pyPkg="$pyCmd"
+## --provides and --file-list both work
+#pyPkg="`zypper search --match-exact --provides --installed-only \"$pyCmd\" | /bin/grep '^i |' | sed 's/i *| *//' | sed 's/ *|.*//g'`"
+# if [ -z "$pyPkg" ] ; then
+#	echo "Could not find python package name for \"$pyCmd\"" >&2
+#	exit 1
+#fi
+
 myPath="$0"
 if [ "${myPath:0:2}" == "./" ] ; then
 	myPath=$PWD${myPath:1}
@@ -40,7 +62,7 @@ version=`"$sourceDir/scal3/get_version.py" | sed 's/\-/_/g'`
 #echo version=$version
 
 
-requires=('python3.6')
+requires=("$pyPkg")
 requires+=('python3-gobject') ## The new gobject introspection
 #requires+=('python3-gflags')
 requires+=('python3-httplib2')
@@ -88,7 +110,7 @@ using Gtk3-based interface, that supports Jalai(Iranian), Hijri(Islamic),
 and Indian National calendars, as well as common English(Gregorian) calendar
 
 %install
-\"$sourceDir/install\" \"%{buildroot}\" --for-pkg --prefix=%{_prefix}
+\"$sourceDir/install\" \"%{buildroot}\" --for-pkg --prefix=%{_prefix} --python='$pyCmd'
 
 %files
 %defattr(-,root,root,-)
@@ -102,6 +124,10 @@ and Indian National calendars, as well as common English(Gregorian) calendar
 " > $pkgName.spec
 
 #less $pkgName.spec ; exit 0
+
+if [ ! -f /usr/bin/rpmbuild ] ; then
+	zypper install rpm-build
+fi
 
 rpmbuild -bb $pkgName.spec
 pkgPath="`ls /usr/src/packages/RPMS/noarch/$pkgName*$version*.rpm`"
