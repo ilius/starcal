@@ -199,19 +199,16 @@ class EventSearchTree:
 
 	def searchStep(self, node, t0, t1):
 		if not node:
-			raise StopIteration
+			return
 		t0 = max(t0, node.min_t)
 		t1 = min(t1, node.max_t)
 		if t0 >= t1:
-			raise StopIteration
-		###
-		try:
-			for item in self.searchStep(node.left, t0, t1):
-				yield item
-		except StopIteration:
 			return
 		###
-		min_dt = abs((t0 + t1) / 2.0 - node.mt) - (t1 - t0) / 2.0
+		for item in self.searchStep(node.left, t0, t1):
+			yield item
+		###
+		min_dt = abs((t0 + t1)/2.0 - node.mt) - (t1 - t0)/2.0
 		if min_dt <= 0:
 			for dt, eid in node.events.getAll():
 				yield node.mt, dt, eid
@@ -219,22 +216,16 @@ class EventSearchTree:
 			for dt, eid in node.events.moreThan(min_dt):
 				yield node.mt, dt, eid
 		###
-		try:
-			for item in self.searchStep(node.right, t0, t1):
-				yield item
-		except StopIteration:
-			return
+		for item in self.searchStep(node.right, t0, t1):
+			yield item
 	def search(self, t0, t1):
-		try:
-			for mt, dt, eid in self.searchStep(self.root, t0, t1):
-				yield (
-					max(t0, mt-dt),
-					min(t1, mt+dt),
-					eid,
-					2*dt,
-				)
-		except StopIteration:
-			return
+		for mt, dt, eid in self.searchStep(self.root, t0, t1):
+			yield (
+				max(t0, mt-dt),
+				min(t1, mt+dt),
+				eid,
+				2*dt,
+			)
 	def getLastBefore(self, t1):
 		res = self.getLastBeforeStep(self.root, t1)
 		if res:

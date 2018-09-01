@@ -66,7 +66,7 @@ class Node:
 		"""
 		# t0 and t1 are absolute. not relative to the self.offset
 		if not self.sOverlaps(t0, t1):
-			raise StopIteration
+			return
 		for ev_rt0, ev_rt1, eid in self.events:
 			ev_t0 = ev_rt0 + self.offset
 			ev_t1 = ev_rt1 + self.offset
@@ -136,16 +136,12 @@ class TimeLineTree:
 		self.byEvent = {}
 
 	def search(self, t0, t1):
-		try:
-			if self.offset < t1:
-				for item in self.right.search(t0, t1):
-					yield item
-			if t0 < self.offset:
-				for item in self.left.search(t0, t1):
-					yield item
-		except StopIteration:
-			return
-
+		if self.offset < t1:
+			for item in self.right.search(t0, t1):
+				yield item
+		if t0 < self.offset:
+			for item in self.left.search(t0, t1):
+				yield item
 	def add(self, t0, t1, eid, debug=False):
 		if debug:
 			from time import strftime, localtime
