@@ -58,12 +58,8 @@ def loadJsonConf(module, confPath, decoders={}):
 	if isinstance(module, str):
 		module = sys.modules[module]
 	for param, value in data.items():
-		try:
-			decoder = decoders[param]
-		except KeyError:
-			pass
-		else:
-			value = decoder(value)
+		if param in decoders:
+			value = decoders[param](value)
 		setattr(module, param, value)
 
 
@@ -74,12 +70,8 @@ def saveJsonConf(module, confPath, params, encoders={}):
 	data = OrderedDict()
 	for param in params:
 		value = getattr(module, param)
-		try:
-			encoder = encoders[param]
-		except KeyError:
-			pass
-		else:
-			value = encoder(value)
+		if param in encoders:
+			value = encoders[param](value)
 		data[param] = value
 	###
 	text = dataToPrettyJson(data)

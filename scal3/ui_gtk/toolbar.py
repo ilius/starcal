@@ -191,14 +191,13 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 
 	def setData(self, data):
 		for (name, enable) in data["items"]:
-			try:
-				item = self.defaultItemsDict[name]
-			except KeyError:
-				myRaise()
-			else:
-				item.enable = enable
-				self.setupItemSignals(item)
-				self.appendItem(item)
+			item = self.defaultItemsDict.get(name)
+			if item is None:
+				print("toolbar item %s does not exist" % name)
+				continue
+			item.enable = enable
+			self.setupItemSignals(item)
+			self.appendItem(item)
 		###
 		iconSize = data["iconSize"]
 		for (i, item) in enumerate(ud.iconSizeList):

@@ -254,10 +254,9 @@ class GoogleAccount(Account):
 	def setData(self, data):
 		Account.setData(self, data)
 		for attr in ("email",):
-			try:
-				setattr(self, attr, data[attr])
-			except KeyError:
-				pass
+			if attr not in data:
+				continue
+			setattr(self, attr, data[attr])
 
 	def askVerificationCode(self):
 		return input("Enter verification code: ").strip()
@@ -449,19 +448,17 @@ class GoogleAccount(Account):
 			self.showHttpException(e)
 			return str(e)
 		#pprint(geventsRes)
-		try:
-			gevents = geventsRes["items"]
-		except KeyError:
-			gevents = []
+		gevents = geventsRes.get("items", [])
 		#pprint(gevents)
 		diff = {}
 
 		def addToDiff(key, here, status, *args):
 			value = (status, here) + args
-			try:
-				diff[key].append(value)
-			except KeyError:
+			toAppend = diff.get(key)
+			if toAppend is None:
 				diff[key] = [value]
+			else:
+				diff[key].append(value)
 
 		for gevent in gevents:
 			remoteIds = (self.id, remoteGroupId, gevent["id"])

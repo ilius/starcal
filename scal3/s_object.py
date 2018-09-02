@@ -147,9 +147,10 @@ class JsonSObj(SObj):
 		else:
 			if not cls.skipLoadNoFile:
 				raise FileNotFoundError("%s : file not found" % _file)
-		try:
-			_type = data["type"]
-		except (KeyError, TypeError):
+
+		# data is the result of json.loads, so probably can be just dict or list (or str)
+		_type = data.get("type") if isinstance(data, dict) else None
+		if _type is None:
 			subCls = cls
 		else:
 			subCls = cls.getSubclass(_type)
@@ -260,9 +261,9 @@ class BsonHistObj(SObj):
 		else:
 			updateBasicDataFromBson(data, _file, cls.name)
 
-		try:
-			_type = data["type"]
-		except (KeyError, TypeError):
+		# data is the result of json.loads, so probably can be just dict or list (or str)
+		_type = data.get("type") if isinstance(data, dict) else None
+		if _type is None:
 			subCls = cls
 		else:
 			subCls = cls.getSubclass(_type)
@@ -281,12 +282,12 @@ class BsonHistObj(SObj):
 
 	def loadHistory(self):
 		lastBasicData = self.loadBasicData()
-		try:
-			return lastBasicData["history"]
-		except KeyError:
+		history = lastBasicData.get("history")
+		if history is None:
 			if lastBasicData:
 				print("no \"history\" in json file \"%s\"" % self.file)
-			return []
+			history = []
+		return history
 
 	def saveBasicData(self, basicData):
 		jsonStr = dataToJson(basicData)
@@ -304,14 +305,11 @@ class BsonHistObj(SObj):
 		data = self.getData()
 		basicData = {}
 		for param in self.basicParams:
-			try:
-				basicData[param] = data.pop(param)
-			except KeyError:
-				pass
-		try:
-			data.pop("modified")
-		except KeyError:
-			pass
+			if param not in data:
+				continue
+			basicData[param] = data.pop(param)
+		if "modified" in data:
+			del data["modified"]
 		_hash = saveBsonObject(data)
 		###
 		history = self.loadHistory()

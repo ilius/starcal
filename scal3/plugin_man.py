@@ -131,21 +131,16 @@ class BasePlugin(SObj):
 		if "show_date" not in data:
 			data["show_date"] = data.get("default_show_date", self.default_show_date)
 		###
-		try:
-			data["title"] = _(data["title"])
-		except KeyError:
-			pass
+		title = data.get("title")
+		if title:
+			data["title"] = _(title)
 		###
-		try:
-			data["about"] = _(data["about"])
-		except KeyError:
-			pass
+		about = data.get("about")
+		if about:
+			data["about"] = _(about)
 		###
-		try:
-			authors = data["authors"]
-		except KeyError:
-			pass
-		else:
+		authors = data.get("authors")
+		if authors:
 			data["authors"] = [_(author) for author in authors]
 		#####
 		if "calType" in data:
@@ -277,9 +272,8 @@ def loadExternalPlugin(_file, **data):
 			pluginsTitleByName.get(name, name),
 		)
 	###
-	try:
-		mainFile = data["mainFile"]
-	except KeyError:
+	mainFile = data.get("mainFile")
+	if not mainFile:
 		log.error("invalid external plugin \"%s\"" % _file)
 		return
 	###
@@ -291,15 +285,14 @@ def loadExternalPlugin(_file, **data):
 		"BaseJsonPlugin": BaseJsonPlugin,
 	}
 	try:
-		exec(open(mainFil, encoding="utf-8").read(), pyEnv)
+		exec(open(mainFile, encoding="utf-8").read(), pyEnv)
 	except:
 		log.error("error while loading external plugin \"%s\"" % _file)
 		myRaiseTback()
 		return
 	###
-	try:
-		cls = pyEnv["TextPlugin"]
-	except KeyError:
+	cls = pyEnv.get("TextPlugin")
+	if cls is None:
 		log.error("invalid external plugin \"%s\", no TextPlugin class" % _file)
 		return
 	###
@@ -482,6 +475,8 @@ class YearlyTextPlugin(BaseJsonPlugin):
 		BaseJsonPlugin.setData(self, data)
 
 	def clear(self):
+		# yearlyData is a list of size 13 or 0, each item being a list
+		# except for last item (index 12) which is a dict
 		self.yearlyData = []
 
 	def load(self):
@@ -528,41 +523,40 @@ class YearlyTextPlugin(BaseJsonPlugin):
 			raise ValueError("invalid plugin dataFile extention \"%s\"" % ext)
 		self.yearlyData = yearlyData
 
+	def getBasicYearlyText(month, day):
+		item = yearlyData[month - 1]
+
+
 	def getText(self, year, month, day):
 		yearlyData = self.yearlyData
 		if not yearlyData:
 			return ""
 		mode = self.mode
-		text = ""
 		#if mode!=calTypes.primary:
 		#	year, month, day = convert(year, month, day, calTypes.primary, mode)
-		try:
-			text = yearlyData[month - 1][day - 1]
-		except:## KeyError or IndexError
-			pass
-		else:
-			if self.show_date and text:
-				text = "%s %s: %s" % (
-					_(day),
-					getMonthName(mode, month),
-					text,
-				)
-		try:
-			text2 = yearlyData[12][(year, month, day)]
-		except:## KeyError or IndexError
-			pass
-		else:
-			if text:
-				text += "\n"
-			if self.show_date:
-				text2 = "%s %s %s: %s" % (
-					_(day),
-					getMonthName(mode, month, year),
-					_(year),
-					text2,
-				)
-
-			text += text2
+		text = ""
+		item = yearlyData[month - 1]
+		if len(item) > day:
+			text = item[day - 1]
+		if self.show_date and text:
+			text = "%s %s: %s" % (
+				_(day),
+				getMonthName(mode, month),
+				text,
+			)
+		if len(yearlyData) > 12:
+			text2 = yearlyData[12].get((year, month, day), "")
+			if text2:
+				if text:
+					text += "\n"
+				if self.show_date:
+					text2 = "%s %s %s: %s" % (
+						_(day),
+						getMonthName(mode, month, year),
+						_(year),
+						text2,
+					)
+				text += text2
 		return text
 
 
@@ -799,9 +793,8 @@ def loadPlugin(_file=None, **kwargs):
 	####
 	data.update(kwargs)  # FIXME
 	####
-	try:
-		name = data["type"]
-	except KeyError:
+	name = data.get("type")
+	if not name:
 		log.error("invalid plugin \"%s\", no \"type\" key" % _file)
 		return
 	####

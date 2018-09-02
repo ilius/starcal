@@ -1018,14 +1018,13 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
 		defaultItemsDict = dict([(item._name, item) for item in defaultItems])
 		itemNames = list(defaultItemsDict.keys())
 		for name, enable in ui.wcalItems:
-			try:
-				item = defaultItemsDict[name]
-			except KeyError:
+			item = defaultItemsDict.get(name)
+			if item is None:
 				print("weekCal item %s does not exist" % name)
-			else:
-				item.enable = enable
-				self.appendItem(item)
-				itemNames.remove(name)
+				continue
+			item.enable = enable
+			self.appendItem(item)
+			itemNames.remove(name)
 		for name in itemNames:
 			item = defaultItemsDict[name]
 			item.enable = False

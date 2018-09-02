@@ -21,28 +21,29 @@ class EventDiff:
 		eid = event.id
 		gid = event.parent.id
 		path = event.getPath()
-		try:
-			prefOrder, prefAction, prefGid, prefPath = self.byEventId[eid]
-		except KeyError:
+
+		if eid not in self.byEventId:
 			self.byEventId[eid] = (self.lastOrder, action, gid, path)
 			self.lastOrder += 1
-		else:
-			if prefAction == "-" or action == "+":
-				raise RuntimeError(
-					"EventDiff.add: eid=%s, " % eid +
-					"prefAction=%s, " % prefAction +
-					"action=%s" % action
-				)
-			both = prefAction + action
-			if both in ("+e", "ee", "ve"):  # skip the new action
-				pass
-			elif both == "+-":  # remove the last "+" action
-				del self.byEventId[eid]
-			elif both in ("e-", "ev"):  # replace the last edit action
-				self.byEventId[eid] = self.lastOrder, action, gid, path
-				self.lastOrder += 1
-			elif both == "v-":
-				self.byEventId[eid] = prefOrder, prefAction, gid, path
+			return
+
+		prefOrder, prefAction, prefGid, prefPath = self.byEventId[eid]
+		if prefAction == "-" or action == "+":
+			raise RuntimeError(
+				"EventDiff.add: eid=%s, " % eid +
+				"prefAction=%s, " % prefAction +
+				"action=%s" % action
+			)
+		both = prefAction + action
+		if both in ("+e", "ee", "ve"):  # skip the new action
+			pass
+		elif both == "+-":  # remove the last "+" action
+			del self.byEventId[eid]
+		elif both in ("e-", "ev"):  # replace the last edit action
+			self.byEventId[eid] = self.lastOrder, action, gid, path
+			self.lastOrder += 1
+		elif both == "v-":
+			self.byEventId[eid] = prefOrder, prefAction, gid, path
 
 	def __iter__(self):
 		for order, action, eid, gid, path in sorted(

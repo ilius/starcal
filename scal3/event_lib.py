@@ -1477,6 +1477,9 @@ class RuleContainer:
 	def getRule(self, key):
 		return self.rulesOd.__getitem__(key)
 
+	def getRuleIfExists(self, key):
+		return self.rulesOd.get(key)
+
 	def setRule(self, key, value):
 		return self.rulesOd.__setitem__(key, value)
 
@@ -1507,10 +1510,10 @@ class RuleContainer:
 		return rule
 
 	def getAddRule(self, ruleType):
-		try:
-			return self.getRule(ruleType)
-		except KeyError:
-			return self.addNewRule(ruleType)
+		rule = self.getRuleIfExists(ruleType)
+		if rule is not None:
+			return rule
+		return self.addNewRule(ruleType)
 
 	def removeRule(self, rule):
 		return self.rulesOd.__delitem__(rule.name)
@@ -1547,10 +1550,8 @@ class RuleContainer:
 
 	def removeSomeRuleTypes(self, *rmTypes):
 		for ruleType in rmTypes:
-			try:
+			if ruleType in self.rulesOd:
 				del self.rulesOd[ruleType]
-			except KeyError:
-				pass
 
 	def checkAndRemoveRule(self, rule):
 		ok, msg = self.checkRulesDependencies(disabledRule=rule)
@@ -1608,12 +1609,10 @@ class RuleContainer:
 					" for container %r" % self
 				)
 				continue
-			try:
-				rule = other.rulesOd[ruleType]
-			except KeyError:
-				pass
-			else:
-				self.getAddRule(ruleType).copyFrom(rule)
+			rule = other.getRuleIfExists(ruleType)
+			if rule is None:
+				continue
+			self.getAddRule(ruleType).copyFrom(rule)
 
 	def getTimeZoneObj(self):
 		if self.timeZoneEnable and self.timeZone:
@@ -4877,18 +4876,17 @@ class EventAccountsHolder(JsonObjectsHolder):
 		self.parent = None
 
 	def loadClass(self, name):
+		cls = classes.account.byName.get(name)
+		if cls is not None:
+			return cls
 		try:
-			return classes.account.byName[name]
-		except KeyError:## FIXME
-			try:
-				__import__("scal3.account.%s" % name)
-			except ImportError:
-				myRaiseTback()
-			else:
-				try:
-					return classes.account.byName[name]
-				except KeyError:## FIXME
-					pass
+			__import__("scal3.account.%s" % name)
+		except ImportError:
+			myRaiseTback()
+		else:
+			cls = classes.account.byName.get(name)
+			if cls is not None:
+				return cls
 		log.error(
 			"error while loading account: no account type \"%s\"" % name
 		)

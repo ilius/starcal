@@ -90,10 +90,8 @@ class WidgetClass(common.WidgetClass):
 			startRule = self.event.getAddRule("start")
 			startRule.date = (self.startYearSpin.get_value(), 1, 1)
 		else:
-			try:
+			if "start" in self.event:
 				del self.event["start"]
-			except KeyError:
-				pass
 
 	def modeComboChanged(self, obj=None):
 		# overwrite method from common.WidgetClass
