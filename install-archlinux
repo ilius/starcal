@@ -26,9 +26,9 @@ depends+=('python-gobject') ## The new gobject introspection
 depends+=('python-cairo')
 depends+=('python-httplib2')
 depends+=('python-dateutil')
-depends+=('python-psutil')
-depends+=('python-requests')
+depends+=('python-pymongo')
 #depends+=('python-gflags') # for google api client
+
 
 optdepends=()
 optdepends+=('libappindicator-gtk3')
