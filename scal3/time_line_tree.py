@@ -209,15 +209,15 @@ class TimeLineTree:
 	def getLastOfEvent(self, eid):
 		try:
 			node, ev_tuple = self.byEvent[eid][-1]
-			# self.byEvent is sorted by time? FIXME
-		except KeyError as IndexError:
+			## self.byEvent is sorted by time? FIXME
+		except (KeyError, IndexError):
 			return None
 		return ev_tuple[0], ev_tuple[1]
 
 	def getFirstOfEvent(self, eid):
 		try:
 			node, ev_tuple = self.byEvent[eid][0]
-		except KeyError as IndexError:
+		except (KeyError, IndexError):
 			return None
 		return ev_tuple[0], ev_tuple[1]
 
