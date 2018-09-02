@@ -30,6 +30,7 @@ depends+=('python-psutil')
 depends+=('python-requests')
 #depends+=('python-gflags') # for google api client
 
+
 optdepends=()
 optdepends+=('libappindicator-gtk3')
 optdepends+=('python-igraph')
