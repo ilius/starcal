@@ -113,9 +113,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		###
 		for action, eid, gid, path in ui.eventDiff:
 			if action == "-":
-				try:
-					eventIter = self.eventsIter[eid]
-				except KeyError:
+				eventIter = self.eventsIter.get(eid)
+				if eventIter is None:
 					if gid in self.loadedGroupIds:
 						print(
 							"trying to delete non-existing event row, " +
@@ -134,9 +133,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 					event = ui.getEvent(gid, eid)
 					self.insertEventRow(parentIter, eventIndex, event)
 			elif action == "e":
-				try:
-					eventIter = self.eventsIter[eid]
-				except KeyError:
+				eventIter = self.eventsIter.get(eid)
+				if eventIter is None:
 					if gid in self.loadedGroupIds:
 						print(
 							"trying to edit non-existing event row, " +

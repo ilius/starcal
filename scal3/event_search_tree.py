@@ -191,9 +191,8 @@ class EventSearchTree:
 			)
 		except:
 			myRaise()
-		try:
-			hp = self.byId[eid]
-		except KeyError:
+		hp = self.byId.get(eid)
+		if hp is None:
 			hp = self.byId[eid] = MaxHeap()
 		hp.push(mt, dt)## FIXME
 
@@ -292,9 +291,8 @@ class EventSearchTree:
 		return node
 
 	def delete(self, eid):
-		try:
-			hp = self.byId[eid]
-		except KeyError:
+		hp = self.byId.get(eid)
+		if hp is None:
 			return 0
 		else:
 			n = 0
@@ -309,9 +307,8 @@ class EventSearchTree:
 			return n
 
 	def getLastOfEvent(self, eid):
-		try:
-			hp = self.byId[eid]
-		except KeyError:
+		hp = self.byId.get(eid)
+		if hp is None:
 			return
 		try:
 			mt, dt = hp.getMax()
@@ -323,9 +320,8 @@ class EventSearchTree:
 		)
 
 	def getFirstOfEvent(self, eid):
-		try:
-			hp = self.byId[eid]
-		except KeyError:
+		hp = self.byId.get(eid)
+		if hp is None:
 			return
 		try:
 			mt, dt = hp.getMin()## slower than getMax, but twice faster than max() and

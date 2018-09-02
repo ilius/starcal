@@ -82,10 +82,11 @@ digits = {
 
 
 def getLangDigits(langSh0):
-	try:
-		return digits[langSh0]
-	except KeyError:
-		return digits["en"]
+	d = digits.get(langSh0)
+	if d is not None:
+		return d
+	return digits["en"]
+
 
 # ar: Aarbic   ar_* 	Arabic-indic				Arabic Contries
 # fa: Persian  fa_IR	Eastern (Extended) Arabic-indic    Iran & Afghanintan
@@ -317,21 +318,17 @@ def getNumSep():
 
 def getDigits():
 	if enableNumLocale:
-		try:
-			return digits[langSh]
-		except KeyError:
-			pass
+		d = digits.get(langSh)
+		if d is not None:
+			return d
 	return digits["en"]
 
 
 def getAvailableDigitKeys():
 	keys = set(digits["en"])
 	if langSh != "en":
-		try:
-			locDigits = digits[langSh]
-		except KeyError:
-			pass
-		else:
+		locDigits = digits.get(langSh)
+		if locDigits is not None:
 			keys.update(locDigits)
 	return keys
 

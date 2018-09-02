@@ -93,16 +93,16 @@ class Node:
 			)
 		dt = self.base ** (self.level - 1)
 		index = int((tm - self.offset) // dt)
-		try:
-			return self.children[index]
-		except KeyError:
-			child = self.children[index] = self.__class__(
-				self.base,
-				self.level - 1,
-				self.offset + index * dt,
-				self.rightOri,
-			)
+		child = self.children.get(index)
+		if child is not None:
 			return child
+		child = self.children[index] = self.__class__(
+			self.base,
+			self.level - 1,
+			self.offset + index * dt,
+			self.rightOri,
+		)
+		return child
 
 	def newParent(self):
 		parent = self.__class__(
@@ -186,10 +186,11 @@ class TimeLineTree:
 			eid,
 		)
 		node.events.append(ev_tuple)
-		try:
-			self.byEvent[eid].append((node, ev_tuple))
-		except KeyError:
+		toAppend = self.byEvent.get(eid)
+		if toAppend is None:
 			self.byEvent[eid] = [(node, ev_tuple)]
+		else:
+			toAppend.append((node, ev_tuple))
 
 	def delete(self, eid):
 		try:
@@ -207,18 +208,18 @@ class TimeLineTree:
 		return n
 
 	def getLastOfEvent(self, eid):
-		try:
-			node, ev_tuple = self.byEvent[eid][-1]
-			## self.byEvent is sorted by time? FIXME
-		except (KeyError, IndexError):
+		refList = self.byEvent.get(eid)
+		if not refList: # None or []
 			return None
+		node, ev_tuple = refList[-1]
+		# self.byEvent is sorted by time? FIXME
 		return ev_tuple[0], ev_tuple[1]
 
 	def getFirstOfEvent(self, eid):
-		try:
-			node, ev_tuple = self.byEvent[eid][0]
-		except (KeyError, IndexError):
+		refList = self.byEvent.get(eid)
+		if not refList: # None or []
 			return None
+		node, ev_tuple = refList][0]
 		return ev_tuple[0], ev_tuple[1]
 
 	def getDepth(self):

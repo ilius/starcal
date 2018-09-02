@@ -424,17 +424,17 @@ class CellCache:
 			setParamsCallable(localCell)
 
 	def getCell(self, jd):
-		try:
-			return self.jdCells[jd]
-		except KeyError:
-			return self.buildCell(jd)
+		c = self.jdCells.get(jd)
+		if c is not None:
+			return c
+		return self.buildCell(jd)
 
 	def getTmpCell(self, jd):
 		# don't keep, no eventsData, no plugin params
-		try:
-			return self.jdCells[jd]
-		except KeyError:
-			return Cell(jd)
+		c = self.jdCells.get(jd)
+		if c is not None:
+			return c
+		return Cell(jd)
 
 	def getCellByDate(self, y, m, d):
 		return self.getCell(core.primary_to_jd(y, m, d))
@@ -455,9 +455,8 @@ class CellCache:
 
 	def getWeekData(self, absWeekNumber):
 		cells = self.getCellGroup("WeekCal", absWeekNumber)
-		try:
-			wEventData = self.weekEvents[absWeekNumber]
-		except KeyError:
+		wEventData = self.weekEvents.get(absWeekNumber)
+		if wEventData is None:
 			wEventData = event_lib.getWeekOccurrenceData(
 				absWeekNumber,
 				eventGroups,
@@ -795,10 +794,9 @@ eventDiff = EventDiff()
 #		tagObj.usage = 0
 #	for event in events:  # FIXME
 #		for tag in event.tags:
-#			try:
+#			td = tagsDict.get(tag)
+#			if td is not None:
 #				tagsDict[tag].usage += 1
-#			except KeyError:
-#				pass
 
 
 ###################

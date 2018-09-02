@@ -119,13 +119,11 @@ def getUtcOffsetByJd(jd, tz=None):
 	tzStr = str(tz)
 	# utcOffsetByJdCache: {tzStr => {jd => utcOffset}}
 	if jd >= J1970:
-		try:
-			tzDict = utcOffsetByJdCache[tzStr]
-		except KeyError:
+		tzDict = utcOffsetByJdCache.get(tzStr)
+		if tzDict is None:
 			tzDict = utcOffsetByJdCache[tzStr] = {}
-		try:
-			offset = tzDict[jd]
-		except KeyError:
+		offset = tzDict.get(jd)
+		if offset is None:
 			y, m, d = jd_to_g(jd)
 			offset = tzDict[jd] = getUtcOffsetByGDate(y, m, d, tz)
 	else:
