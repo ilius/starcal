@@ -4506,6 +4506,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 		event.description = "\n".join(lines)
 
 	def getEvent(self, tag):  # cache commit data FIXME
+		tag = toStr(tag)
 		if tag not in self.vcsIds:
 			raise ValueError("No tag %r" % tag)
 		data = {}
