@@ -136,25 +136,13 @@ class TimeLineTree:
 		self.byEvent = {}
 
 	def search(self, t0, t1):
-<<<<<<< HEAD
-		try:
-			if self.offset < t1:
-				for item in self.right.search(t0, t1):
-					yield item
-			if t0 < self.offset:
-				for item in self.left.search(t0, t1):
-					yield item
-		except StopIteration:
-			return
-
-=======
 		if self.offset < t1:
 			for item in self.right.search(t0, t1):
 				yield item
 		if t0 < self.offset:
 			for item in self.left.search(t0, t1):
 				yield item
->>>>>>> master
+
 	def add(self, t0, t1, eid, debug=False):
 		if debug:
 			from time import strftime, localtime
