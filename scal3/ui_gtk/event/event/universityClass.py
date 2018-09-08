@@ -70,7 +70,10 @@ class WidgetClass(gtk.VBox):
 		label.set_alignment(0, 0.5)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
-		self.weekNumModeCombo = WeekNumModeWidgetClass(event["weekNumMode"])
+		weekNumModeRule, ok = event["weekNumMode"]
+		if not ok:
+			raise RuntimeError("no weekNumMode rule")
+		self.weekNumModeCombo = WeekNumModeWidgetClass(weekNumModeRule)
 		pack(hbox, self.weekNumModeCombo)
 		pack(self, hbox)
 		#####
@@ -160,7 +163,10 @@ class WidgetClass(gtk.VBox):
 			self.courseCombo.set_active(self.courseIds.index(self.event.courseId))
 		##
 		self.weekNumModeCombo.updateWidget()
-		weekDayList = self.event["weekDay"].weekDayList
+		weekDayRule, ok = self.event["weekDay"]
+		if not ok:
+			raise RuntimeError("no weekDay rule")
+		weekDayList = weekDayRule.weekDayList
 		if len(weekDayList) == 1:
 			self.weekDayCombo.setValue(weekDayList[0])  # FIXME
 		else:
@@ -172,7 +178,9 @@ class WidgetClass(gtk.VBox):
 			for combo in (self.dayTimeStartCombo, self.dayTimeEndCombo):
 				combo.set_value(hm)
 				combo.add_history()
-		timeRangeRule = self.event["dayTimeRange"]
+		timeRangeRule, ok = self.event["dayTimeRange"]
+		if not ok:
+			raise RuntimeError("no dayTimeRange rule")
 		self.dayTimeStartCombo.set_value(timeRangeRule.dayTimeStart)
 		self.dayTimeEndCombo.set_value(timeRangeRule.dayTimeEnd)
 		####
@@ -193,9 +201,16 @@ class WidgetClass(gtk.VBox):
 			self.event.courseId = self.courseIds[courseIndex]
 		##
 		self.weekNumModeCombo.updateVars()
-		self.event["weekDay"].weekDayList = [self.weekDayCombo.getValue()]## FIXME
 		##
-		self.event["dayTimeRange"].setRange(
+		weekDay, ok = self.event["weekDay"]
+		if not ok:
+			raise RuntimeError("no weekDay rule")
+		weekDay.weekDayList = [self.weekDayCombo.getValue()]## FIXME
+		##
+		dayTimeRange, ok = self.event["dayTimeRange"]
+		if not ok:
+			raise RuntimeError("no dayTimeRange rule")
+		dayTimeRange.setRange(
 			self.dayTimeStartCombo.get_value(),
 			self.dayTimeEndCombo.get_value(),
 		)

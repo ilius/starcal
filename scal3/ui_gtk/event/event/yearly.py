@@ -72,14 +72,13 @@ class WidgetClass(common.WidgetClass):
 		common.WidgetClass.updateWidget(self)
 		self.monthCombo.setValue(self.event.getMonth())
 		self.daySpin.set_value(self.event.getDay())
-		try:
-			startRule = self.event["start"]
-		except:
-			self.startYearCheck.set_active(False)
-			self.startYearSpin.set_value(self.event.getSuggestedStartYear())
-		else:
+		startRule, ok = self.event["start"]
+		if ok:
 			self.startYearCheck.set_active(True)
 			self.startYearSpin.set_value(startRule.date[0])
+		else:
+			self.startYearCheck.set_active(False)
+			self.startYearSpin.set_value(self.event.getSuggestedStartYear())
 		self.startYearCheckClicked()
 
 	def updateVars(self):## FIXME
