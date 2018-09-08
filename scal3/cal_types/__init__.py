@@ -148,6 +148,19 @@ class CalTypesHolder:
 				self.__class__.__name__,
 			))
 
+	def get(self, key, default=None):
+		if isinstance(key, str):
+			return self.byName.get(key, default)
+		if isinstance(key, int):
+			if key >= len(modules):
+				return default
+			return modules[key]
+		else:
+			raise TypeError("invalid key %r given to %s.__getitem__" % (
+				key,
+				self.__class__.__name__,
+			))
+
 
 calTypes = CalTypesHolder()
 
