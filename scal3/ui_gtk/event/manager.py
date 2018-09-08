@@ -125,7 +125,10 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 					self.trees.remove(eventIter)
 			elif action == "+":
 				if gid in self.loadedGroupIds:
-					parentIndex, eventIndex = path
+					try:
+						parentIndex, eventIndex = path
+					except ValueError as e:
+						raise RuntimeError("invalid path = %r" % path)
 					#print(gid, self.loadedGroupIds, parentIndex)
 					parentIter = self.trees.get_iter((parentIndex,))
 					event = ui.getEvent(gid, eid)
