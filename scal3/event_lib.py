@@ -1576,10 +1576,8 @@ class RuleContainer:
 		if newRule:
 			rulesOd[newRule.name] = newRule
 		if disabledRule:
-			#try:
-			del rulesOd[disabledRule.name]
-			#except:
-			#	pass
+			if disabledRule.name in rulesOd:
+				del rulesOd[disabledRule.name]
 		provideList = []
 		for ruleName, rule in rulesOd.items():
 			provideList.append(ruleName)
@@ -1730,9 +1728,9 @@ class Event(BsonHistEventObj, RuleContainer):
 		else:
 			self.setId(_id)
 		self.parent = parent
-		try:
+		if parent is not None:
 			self.mode = parent.mode
-		except:
+		else:
 			self.mode = calTypes.primary
 		self.icon = self.__class__.getDefaultIcon()
 		self.summary = self.desc  # + " (" + _(self.id) + ")"  # FIXME
@@ -1757,9 +1755,9 @@ class Event(BsonHistEventObj, RuleContainer):
 	def getShownDescription(self):
 		if not self.description:
 			return ""
-		try:
+		if self.parent is not None:
 			showFull = self.parent.showFullEventDesc
-		except:
+		else:
 			showFull = False
 		if showFull:
 			return self.description
@@ -1853,9 +1851,9 @@ class Event(BsonHistEventObj, RuleContainer):
 		####
 		description = self.getDescription()
 		if showDesc and description:
-			try:
+			if self.parent is not None:
 				sep = self.parent.eventTextSep
-			except:
+			else:
 				sep = core.eventTextSep
 			return (summary, sep, description)
 		else:
