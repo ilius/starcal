@@ -94,20 +94,40 @@ class WidgetClass(common.WidgetClass):
 		mode = self.event.mode
 		###
 		self.startDateInput.set_value(jd_to(self.event.getStartJd(), mode))
-		self.weeksSpin.set_value(self.event["cycleWeeks"].weeks)
+		###
+		cycleWeeks, ok = self.event["cycleWeeks"]
+		if not ok:
+			raise RuntimeError("no cycleWeeks rule")
+		self.weeksSpin.set_value(cycleWeeks.weeks)
+		###
 		self.endDateInput.set_value(jd_to(self.event.getEndJd(), mode))
 		###
-		timeRangeRule = self.event["dayTimeRange"]
-		self.dayTimeStartInput.set_value(timeRangeRule.dayTimeStart)
-		self.dayTimeEndInput.set_value(timeRangeRule.dayTimeEnd)
+		dayTimeRange, ok = self.event["dayTimeRange"]
+		self.dayTimeStartInput.set_value(dayTimeRange.dayTimeStart)
+		self.dayTimeEndInput.set_value(dayTimeRange.dayTimeEnd)
 
 	def updateVars(self):## FIXME
 		common.WidgetClass.updateVars(self)
-		self.event["start"].setDate(self.startDateInput.get_value())
-		self.event["end"].setDate(self.endDateInput.get_value())
-		self.event["cycleWeeks"].setData(self.weeksSpin.get_value())
 		###
-		self.event["dayTimeRange"].setRange(
+		start, ok = self.event["start"]
+		if not ok:
+			raise RuntimeError("no start rule")
+		start.setDate(self.startDateInput.get_value())
+		###
+		end, ok = self.event["end"]
+		if not ok:
+			raise RuntimeError("no end rule")
+		end.setDate(self.endDateInput.get_value())
+		###
+		cycleWeeks, ok = self.event["cycleWeeks"]
+		if not ok:
+			raise RuntimeError("no cycleWeeks rule")
+		cycleWeeks.setData(self.weeksSpin.get_value())
+		###
+		dayTimeRange, ok = self.event["dayTimeRange"]
+		if not ok:
+			raise RuntimeError("no dayTimeRange rule")
+		dayTimeRange.setRange(
 			self.dayTimeStartInput.get_value(),
 			self.dayTimeEndInput.get_value(),
 		)
