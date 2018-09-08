@@ -292,13 +292,11 @@ def jd_to(jd):
 
 
 def getMonthLen(y, m):
-	"""
-	if hijriUseDB:## and hijriAlg==0
-		try:
-			return monthDb.monthLenByYm[y*12+m]
-		except KeyError:
-			pass
-	"""
+	# if hijriUseDB:## and hijriAlg==0
+	#	try:
+	#		return monthDb.monthLenByYm[y*12+m]
+	#	except KeyError:
+	#		pass
 	if m == 12:
 		return to_jd(y + 1, 1, 1) - to_jd(y, 12, 1)
 	else:
