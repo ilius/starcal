@@ -199,7 +199,10 @@ class EditDbDialog(gtk.Dialog):
 		#for index, module in calTypes.iterIndexModule():
 		#	if module.name != "hijri":
 		for mode in calTypes.active:
-			modeDesc = calTypes[mode].desc
+			module, ok = calTypes[mode]
+			if not ok:
+				raise RuntimeError("cal type %r not found" % mode)
+			modeDesc = module.desc
 			if "hijri" not in modeDesc.lower():
 				self.altMode = mode
 				self.altModeDesc = modeDesc

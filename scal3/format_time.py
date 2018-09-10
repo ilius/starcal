@@ -106,7 +106,7 @@ def compileTmFormat(format, hasTime=True):
 			continue
 		elif c1 == "Q":## calendar name (gregorian, jalali, ...)
 			funcs.append(lambda cell, mode, tm: _(
-				calTypes[mode].name,
+				calTypes.nameByIndex(mode),
 			))
 			pyFmt += "%s"
 			i += 2
@@ -128,16 +128,22 @@ def compileTmFormat(format, hasTime=True):
 			i += 2
 			continue
 		elif c1 == "b" or c1 == "h":  # FIXME
-			funcs.append(lambda cell, mode, tm: _(
-				calTypes[mode].getMonthNameAb(cell.dates[mode][1]),
-			))
+			def f(cell, mode, tm):
+				module, ok = calTypes[mode]
+				if not ok:
+					raise RuntimeError("cal type %r not found" % mode)
+				return module.getMonthNameAb(cell.dates[mode][1])
+			funcs.append(f)
 			pyFmt += "%s"
 			i += 2
 			continue
 		elif c1 == "B":
-			funcs.append(lambda cell, mode, tm: _(
-				calTypes[mode].getMonthName(cell.dates[mode][1]),
-			))
+			def f(cell, mode, tm):
+				module, ok = calTypes[mode]
+				if not ok:
+					raise RuntimeError("cal type %r not found" % mode)
+				return module.getMonthName(cell.dates[mode][1])
+			funcs.append(f)
 			pyFmt += "%s"
 			i += 2
 			continue

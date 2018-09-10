@@ -953,9 +953,13 @@ class AICalsPrefItem():
 		self.inactiveTrees.clear()
 		##
 		for mode in calTypes.active:
-			module = calTypes[mode]
+			module, ok = calTypes[mode]
+			if not ok:
+				raise RuntimeError("cal type %r not found" % mode)
 			self.activeTrees.append([module.name, _(module.desc)])
 		##
 		for mode in calTypes.inactive:
-			module = calTypes[mode]
+			module, ok = calTypes[mode]
+			if not ok:
+				raise RuntimeError("cal type %r not found" % mode)
 			self.inactiveTrees.append([module.name, _(module.desc)])
