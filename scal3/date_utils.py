@@ -4,7 +4,10 @@ from scal3.time_utils import getEpochFromJd
 
 
 def getMonthLen(year, month, mode):
-	return calTypes[mode].getMonthLen(year, month)
+	module, ok = calTypes[mode]
+	if not ok:
+		raise RuntimeError("cal type %r not found" % mode)
+	return module.getMonthLen(year, month)
 
 
 def monthPlus(y, m, p):
@@ -96,7 +99,9 @@ def getJdRangeForMonth(year, month, mode):
 
 
 def getFloatYearFromJd(jd, mode):
-	module = calTypes[mode]
+	module, ok = calTypes[mode]
+	if not ok:
+		raise RuntimeError("cal type %r not found" % mode)
 	year, month, day = module.jd_to(jd)
 	yearStartJd = module.to_jd(year, 1, 1)
 	nextYearStartJd = module.to_jd(year + 1, 1, 1)
@@ -105,7 +110,9 @@ def getFloatYearFromJd(jd, mode):
 
 
 def getJdFromFloatYear(fyear, mode):
-	module = calTypes[mode]
+	module, ok = calTypes[mode]
+	if not ok:
+		raise RuntimeError("cal type %r not found" % mode)
 	year = int(math.floor(fyear))
 	yearStartJd = module.to_jd(year, 1, 1)
 	nextYearStartJd = module.to_jd(year + 1, 1, 1)
@@ -130,8 +137,10 @@ def ymdRange(date1, date2, mode=None):
 			yield y1, m1, d
 	if mode is None:
 		mode = DATE_GREG
-	calType = calTypes[mode]
-	j1 = int(calType.to_jd(y1, m1, d1))
-	j2 = int(calType.to_jd(y2, m2, d2))
+	module, ok = calTypes[mode]
+	if not ok:
+		raise RuntimeError("cal type %r not found" % mode)
+	j1 = int(module.to_jd(y1, m1, d1))
+	j2 = int(module.to_jd(y2, m2, d2))
 	for j in range(j1, j2):
-		yield calType.jd_to(j)
+		yield module.jd_to(j)

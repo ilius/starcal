@@ -137,11 +137,17 @@ class CalTypesHolder:
 	def allIndexes(self):
 		return self.active + self.inactive
 
+	# returns (module, found) where found is bool
 	def __getitem__(self, key):
 		if isinstance(key, str):
-			return self.byName[key]
+			module = self.byName.get(key)
+			if module is None:
+				return None, False
+			return module, True
 		if isinstance(key, int):
-			return modules[key]
+			if key >= len(modules):
+				return None, False
+			return modules[key], True
 		else:
 			raise TypeError("invalid key %r given to %s.__getitem__" % (
 				key,
@@ -161,6 +167,10 @@ class CalTypesHolder:
 				self.__class__.__name__,
 			))
 
+	def nameByIndex(self, index):
+		if index >= len(modules):
+			return ""
+		return modules[index].name
 
 calTypes = CalTypesHolder()
 

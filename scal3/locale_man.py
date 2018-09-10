@@ -309,7 +309,10 @@ def rtlSgn():
 
 
 def getMonthName(mode, month, year=None):
-	return tr(calTypes[mode].getMonthName(month, year))
+	module, ok = calTypes[mode]
+	if not ok:
+		raise RuntimeError("cal type %r not found" % mode)
+	return tr(module.getMonthName(month, year))
 
 
 def getNumSep():
@@ -340,8 +343,11 @@ def numEncode(num, mode=None, fillZero=0, negEnd=False):
 		mode = langSh
 	elif isinstance(mode, int):
 		if langSh != "en":
+			module, ok = calTypes[mode]
+			if not ok:
+				raise RuntimeError("cal type %r not found" % mode)
 			try:
-				mode = calTypes[mode].origLang
+				mode = module.origLang
 			except AttributeError:
 				mode = langSh
 	if mode == "en" or mode not in digits:
@@ -376,8 +382,11 @@ def textNumEncode(st, mode=None, changeSpecialChars=True, changeDot=False):
 		mode = langSh
 	elif isinstance(mode, int):
 		if langSh != "en":
+			module, ok = calTypes[mode]
+			if not ok:
+				raise RuntimeError("cal type %r not found" % mode)
 			try:
-				mode = calTypes[mode].origLang
+				mode = module.origLang
 			except AttributeError:
 				mode = langSh
 	dig = getLangDigits(mode)

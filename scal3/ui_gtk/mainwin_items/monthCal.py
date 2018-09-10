@@ -55,7 +55,10 @@ class MonthCalTypeParamBox(gtk.HBox):
 		self.index = index
 		self.mode = mode
 		######
-		label = gtk.Label(_(calTypes[mode].desc) + "  ")
+		module, ok = calTypes[mode]
+		if not ok:
+			raise RuntimeError("cal type %r not found" % mode)
+		label = gtk.Label(_(module.desc) + "  ")
 		label.set_alignment(0, 0.5)
 		pack(self, label)
 		sgroupLabel.add_widget(label)

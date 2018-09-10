@@ -154,7 +154,9 @@ class SelectDateDialog(gtk.Dialog):
 
 	def set_mode(self, mode):
 		self.mode = mode
-		module = calTypes[mode]
+		module, ok = calTypes[mode]
+		if not ok:
+			raise RuntimeError("cal type %r not found" % mode)
 		self.comboMode.set_active(mode)
 		self.ymdBox.set_mode(mode)
 		self.dateInput.setMaxDay(module.maxMonthLen)
@@ -163,7 +165,9 @@ class SelectDateDialog(gtk.Dialog):
 		pMode = self.mode
 		pDate = self.get()
 		mode = self.comboMode.get_active()
-		module = calTypes[mode]
+		module, ok = calTypes[mode]
+		if not ok:
+			raise RuntimeError("cal type %r not found" % mode)
 		if pDate is None:
 			y, m, d = ui.cell.dates[mode]
 		else:

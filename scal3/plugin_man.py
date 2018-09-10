@@ -168,13 +168,17 @@ class BasePlugin(SObj):
 		return ""
 
 	def updateCell(self, c):
+		module, ok = calTypes[self.mode]
+		if not ok:
+			raise RuntimeError("cal type %r not found" % self.mode)
+
 		y, m, d = c.dates[self.mode]
 		text = ""
 		t = self.getText(y, m, d)
 		if t:
 			text += t
-		if self.lastDayMerge and d >= calTypes[self.mode].minMonthLen:
-			# and d<=calTypes[self.mode].maxMonthLen:
+		if self.lastDayMerge and d >= module.minMonthLen:
+			# and d <= module.maxMonthLen:
 			ny, nm, nd = jd_to(c.jd + 1, self.mode)
 			if nm > m or ny > y:
 				nt = self.getText(y, m, d + 1)
@@ -362,6 +366,10 @@ class HolidayPlugin(BaseJsonPlugin):
 		BaseJsonPlugin.setData(self, data)
 
 	def dateIsHoliday(self, mode, y, m, d, jd):
+		module, ok = calTypes[mode]
+		if not ok:
+			raise RuntimeError("cal type %r not found" % mode)
+
 		for item in self.holidays[mode]:
 			if len(item) == 2:
 				hm, hd = item
@@ -388,7 +396,7 @@ class HolidayPlugin(BaseJsonPlugin):
 				and
 				d == hd - 1
 				and
-				hd >= calTypes[mode].minMonthLen
+				hd >= module.minMonthLen
 			):
 				ny, nm, nd = jd_to(jd + 1, mode)
 				if (ny, nm) > (y, m):
@@ -482,9 +490,12 @@ class YearlyTextPlugin(BaseJsonPlugin):
 	def load(self):
 		#print("YearlyTextPlugin(%s).load()"%self._file)
 		yearlyData = []
+		module, ok = calTypes[self.mode]
+		if not ok:
+			raise RuntimeError("cal type %r not found" % self.mode)
 		for j in range(12):
 			monthDb = []
-			for k in range(calTypes[self.mode].maxMonthLen):
+			for k in range(module.maxMonthLen):
 				monthDb.append("")
 			yearlyData.append(monthDb)
 		# last item is a dict of dates (y, m, d) and the description of day:

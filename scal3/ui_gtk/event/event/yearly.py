@@ -95,7 +95,9 @@ class WidgetClass(common.WidgetClass):
 	def modeComboChanged(self, obj=None):
 		# overwrite method from common.WidgetClass
 		newMode = self.modeCombo.get_active()
-		module = calTypes[newMode]
+		module, ok = calTypes[newMode]
+		if not ok:
+			raise RuntimeError("cal type %r not found" % mode)
 		monthCombo = self.monthCombo
 		month = monthCombo.getValue()
 		monthCombo.build(newMode)

@@ -223,8 +223,11 @@ def jd_to_primary(jd):
 
 def getCurrentJd():
 	# time.time() and mktime(localtime()) both return GMT, not local
+	module, ok = calTypes[DATE_GREG]
+	if not ok:
+		raise RuntimeError("cal type %r not found" % DATE_GREG)
 	y, m, d = localtime()[:3]
-	return calTypes[DATE_GREG].to_jd(y, m, d)
+	return module.to_jd(y, m, d)
 
 
 def getWeekDateHmsFromEpoch(epoch):
@@ -234,7 +237,10 @@ def getWeekDateHmsFromEpoch(epoch):
 
 
 def getMonthWeekNth(jd, mode):
-	year, month, day = calTypes[mode].jd_to(jd)
+	module, ok = calTypes[mode]
+	if not ok:
+		raise RuntimeError("cal type %r not found" % mode)
+	year, month, day = module.jd_to(jd)
 	absWeekNumber, weekDay = getWeekDateFromJd(jd)
 	##
 	dayDiv, dayMode = divmod(day - 1, 7)
@@ -445,8 +451,11 @@ def getDeletedPluginsTable():
 
 
 def convertAllPluginsToIcs(startYear, endYear):
-	startJd = calTypes[DATE_GREG].to_jd(startYear, 1, 1)
-	endJd = calTypes[DATE_GREG].to_jd(endYear + 1, 1, 1)
+	module, ok = calTypes[DATE_GREG]
+	if not ok:
+		raise RuntimeError("cal type %r not found" % DATE_GREG)
+	startJd = module.to_jd(startYear, 1, 1)
+	endJd = module.to_jd(endYear + 1, 1, 1)
 	namePostfix = "-%d-%d" % (startYear, endYear)
 	for plug in core.allPlugList:
 		if isinstance(plug, HolidayPlugin):
@@ -496,8 +505,11 @@ def getCompactTime(maxDays=1000, minSec=0.1):
 
 def floatJdEncode(jd, mode):
 	jd, hour, minute, second = getJhmsFromEpoch(getEpochFromJd(jd))
+	module, ok = calTypes[mode]
+	if not ok:
+		raise RuntimeError("cal type %r not found" % mode)
 	return "%s %s" % (
-		dateEncode(calTypes[mode].jd_to(jd)),
+		dateEncode(module.jd_to(jd)),
 		timeEncode((hour, minute, second)),
 	)
 
