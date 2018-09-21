@@ -24,6 +24,11 @@
 
 from datetime import datetime
 
+from typing import (
+	Tuple,
+	Optional,
+)
+
 name = "gregorian"
 desc = "Gregorian"
 origLang = "en"
@@ -59,15 +64,15 @@ monthNameAb = (
 )
 
 
-def getMonthName(m, y=None):
+def getMonthName(m: int, y: Optional[int] = None) -> str:
 	return monthName.__getitem__(m - 1)
 
 
-def getMonthNameAb(m, y=None):
+def getMonthNameAb(m, y: Optional[int] = None) -> str:
 	return monthNameAb.__getitem__(m - 1)
 
 
-def getMonthsInYear(y):
+def getMonthsInYear(y: int) -> int:
 	return 12
 
 
@@ -79,15 +84,15 @@ avgYearLen = 365.2425  # FIXME
 options = ()
 
 
-def save():
+def save() -> None:
 	pass
 
 
-def isLeap(y):
+def isLeap(y: int) -> bool:
 	return y % 4 == 0 and not (y % 100 == 0 and y % 400 != 0)
 
 
-def to_jd(year, month, day):
+def to_jd(year: int, month: int, day: int) -> int:
 	if 0 < year < 10000:  # > 1.5x faster
 		return datetime(year, month, day).toordinal() + 1721425
 
@@ -110,7 +115,7 @@ def to_jd(year, month, day):
 	)
 
 
-def jd_to(jd):
+def jd_to(jd: int) -> Tuple[int, int, int]:
 	ordinal = int(jd) - 1721425
 	if 0 < ordinal < 3652060:  # > 4x faster
 		# datetime(9999, 12, 31).toordinal() == 3652059
@@ -143,7 +148,7 @@ def jd_to(jd):
 	return int(year), int(month), int(day)
 
 
-def getMonthLen(y, m):
+def getMonthLen(y: int, m: int) -> int:
 	if m == 12:
 		return to_jd(y + 1, 1, 1) - to_jd(y, 12, 1)
 	else:
