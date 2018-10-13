@@ -1,0 +1,19 @@
+#!/bin/bash
+
+
+if [ "$UID" != "0" ] ; then
+	echo "Run this script as root" >&2
+	exit 1
+fi
+
+
+pip3 install pygobject
+pip3 install httplib2
+pip3 install python-dateutil
+pip3 install psutil
+pip3 install requests
+
+pip3 install igraph
+
+
+./install "$@"
