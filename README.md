@@ -1,7 +1,7 @@
 # StarCalendar (Desktop)
 
-StarCalendar is a Free and Open Source full-featured international calendar 
-written in Python. It supports Jalali, Garigorian and Islamic calendar.
+StarCalendar is a Free and Open Source full-featured international calendar
+written in Python, supporting Jalali/Persian, Garigorian and Islamic calendar.
 
 ## Download
 
@@ -49,12 +49,13 @@ or:
 2. Install Gtk3 and PyGI
 3. Copy starcal source folder somewhere you want to keep
 4. Send a shortcut from file starcal.pyw (inside source folder) to you desktop
+5. Click on the shortcut to starcal.pyw (or the file itself) to run
 
 ## Home Page:
     http://ilius.github.io/starcal
 
 ## License:
-StartCalendar is licensed under GNU Genaral Public License version 3.
+StartCalendar is licensed under GNU Genaral Public License version 3+
 
 ## Follow Us:
 To get notified on new releases, subscribe to
