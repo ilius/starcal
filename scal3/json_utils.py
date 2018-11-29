@@ -67,14 +67,14 @@ def saveJsonConf(module, confPath, params, encoders={}):
 	if isinstance(module, str):
 		module = sys.modules[module]
 	###
-	data = OrderedDict()
+	data = {}
 	for param in params:
 		value = getattr(module, param)
 		if param in encoders:
 			value = encoders[param](value)
 		data[param] = value
 	###
-	text = dataToPrettyJson(data)
+	text = dataToPrettyJson(data, sort_keys=True)
 	try:
 		open(confPath, "w").write(text)
 	except Exception as e:
