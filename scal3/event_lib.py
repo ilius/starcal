@@ -3193,6 +3193,7 @@ class EventGroup(EventContainer):
 	sortByDefault = "summary"
 	basicParams = EventContainer.basicParams + (
 		#"enable",## FIXME
+		"uuid",
 		#"remoteIds", user edits the value  # FIXME
 		"remoteSyncData",
 		#"eventIdByRemoteIds",
@@ -3200,6 +3201,7 @@ class EventGroup(EventContainer):
 	)
 	params = EventContainer.params + (
 		#"enable",
+		"uuid",
 		"showInDCal",
 		"showInWCal",
 		"showInMCal",
@@ -3218,6 +3220,7 @@ class EventGroup(EventContainer):
 	)
 	paramsOrder = (
 		"enable",
+		"uuid",
 		"type",
 		"title",
 		"calType",
@@ -3357,6 +3360,10 @@ class EventGroup(EventContainer):
 			self.title,
 		)
 
+	def set_uuid(self):
+		from uuid import uuid4
+		self.uuid = uuid4().hex
+
 	def __init__(self, _id=None):
 		EventContainer.__init__(self, title=self.desc)
 		if _id is None:
@@ -3369,6 +3376,7 @@ class EventGroup(EventContainer):
 		self.showInMCal = True
 		self.showInStatusIcon = False
 		self.showInTimeLine = True
+		self.uuid = None
 		self.color = (0, 0, 0)  # FIXME
 		#self.defaultNotifyBefore = (10, 60)  # FIXME
 		if len(self.acceptsEventTypes) == 1:
@@ -4810,9 +4818,13 @@ class EventGroupsHolder(JsonObjectsHolder):
 		self.clear()
 		if data:
 			JsonObjectsHolder.setData(self, data)
-			for obj in self:
-				if obj.enable:
-					obj.updateOccurrence()
+			for group in self:
+				if group.uuid is None:
+					group.set_uuid()
+					group.save()
+					print("saved group %d with uuid = %s" % (group.id, group.uuid))
+				if group.enable:
+					group.updateOccurrence()
 		else:
 			for name in (
 				"noteBook",
