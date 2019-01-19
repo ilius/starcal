@@ -218,6 +218,7 @@ def updateBasicDataFromBson(data, filePath, fileType):
 	"""
 		fileType: "event" | "group" | "account"...,
 			display only, does not matter much
+		return lastHistRecord = (lastEpoch, lastHash)
 	"""
 	try:
 		lastHistRecord = data["history"][0]
@@ -229,6 +230,7 @@ def updateBasicDataFromBson(data, filePath, fileType):
 		)
 	data.update(loadBsonObject(lastHash))
 	data["modified"] = lastEpoch ## FIXME
+	return (lastEpoch, lastHash)
 
 
 class BsonHistObj(SObj):
@@ -236,6 +238,7 @@ class BsonHistObj(SObj):
 	skipLoadExceptions = False
 	skipLoadNoFile = False
 	file = ""
+	lastHash = None
 	## basicParams or noHistParams ? FIXME
 	basicParams = (
 	)
@@ -259,7 +262,7 @@ class BsonHistObj(SObj):
 				print("error while opening json file \"%s\"" % _file)
 				raise e
 		else:
-			updateBasicDataFromBson(data, _file, cls.name)
+			lastEpoch, lastHash = updateBasicDataFromBson(data, _file, cls.name)
 
 		# data is the result of json.loads, so probably can be just dict or list (or str)
 		_type = data.get("type") if isinstance(data, dict) else None
@@ -269,6 +272,8 @@ class BsonHistObj(SObj):
 			subCls = cls.getSubclass(_type)
 		obj = subCls(*args)
 		obj.setData(data)
+		obj.lastHash = lastHash
+		obj.modified = lastEpoch
 		return obj
 	#######
 
