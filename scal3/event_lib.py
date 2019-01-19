@@ -3773,7 +3773,13 @@ class EventGroup(EventContainer):
 		data = makeOrderedData(data, self.paramsOrder)
 		data["events"] = []
 		for eventId in self.idList:
-			eventData = EventContainer.getEvent(self, eventId).getDataOrdered()
+			event = EventContainer.getEvent(self, eventId)
+			modified = event.modified
+			if event.uuid is None:
+				event.save()
+			eventData = event.getDataOrdered()
+			eventData["modified"] = modified
+			# eventData["sha1"] = event.lastHash
 			data["events"].append(eventData)
 			try:
 				del eventData["remoteIds"]  # FIXME
