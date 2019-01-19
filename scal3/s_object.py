@@ -57,8 +57,8 @@ class SObj:
 			for param in self.params
 		}
 
-	def setData(self, data):
-		if not self.__class__.canSetDataMultipleTimes:
+	def setData(self, data, force=False):
+		if not force and not self.__class__.canSetDataMultipleTimes:
 			if getattr(self, "dataIsSet", False):
 				raise RuntimeError(
 					"can not run setData multiple times for %s instance" %
