@@ -3083,9 +3083,11 @@ class EventContainer(BsonHistEventObj):
 			)
 		data = jsonToData(open(eventFile).read())
 		data["id"] = eid  # FIXME
-		updateBasicDataFromBson(data, eventFile, "event")
+		lastEpoch, lastHash = updateBasicDataFromBson(data, eventFile, "event")
 		event = classes.event.byName[data["type"]](eid)
 		event.setData(data)
+		event.lastHash = lastHash
+		event.modified = lastEpoch
 		return event
 
 	def __iter__(self):
