@@ -934,10 +934,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 							_(group.occurCount),
 						) + _(",") + " " + _("Group ID: %s") % _(group.id)
 					modified = group.modified
+					print("group, id =", group.id, "uuid =", group.uuid)
 				elif len(path) == 2:
 					group, event = self.getObjsByPath(path)
 					text = _("Event ID: %s") % _(event.id)
 					modified = event.modified
+					print("event, id =", event.id, "uuid =", event.uuid)
 				text += "%s %s: %s" % (
 					_(","),
 					_("Last Modified"),
