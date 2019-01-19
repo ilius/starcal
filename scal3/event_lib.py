@@ -108,10 +108,17 @@ class JsonEventObj(JsonSObj):
 
 
 class BsonHistEventObj(BsonHistObj):
+	def set_uuid(self):
+		from uuid import uuid4
+		self.uuid = uuid4().hex
+
 	def save(self, *args):
 		if allReadOnly:
 			print("events are read-only, ignored file %s" % self.file)
 			return
+		if hasattr(self, "uuid"):
+			if self.uuid is None:
+				self.set_uuid()
 		return BsonHistObj.save(self, *args)
 
 
@@ -1672,16 +1679,19 @@ class Event(BsonHistEventObj, RuleContainer):
 	isAllDay = False
 	isSingleOccur = False
 	basicParams = (
+		"uuid",
 		#"modified",
 		"remoteIds",
 		"notifiers",  # FIXME
 	)
 	params = RuleContainer.params + (
+		"uuid",
 		"icon",
 		"summary",
 		"description",
 	)
 	paramsOrder = RuleContainer.paramsOrder + (
+		"uuid",
 		"type",
 		"calType",
 		"summary",
@@ -1727,6 +1737,7 @@ class Event(BsonHistEventObj, RuleContainer):
 			self.id = None
 		else:
 			self.setId(_id)
+		self.uuid = None
 		self.parent = parent
 		if parent is not None:
 			self.mode = parent.mode
@@ -3361,10 +3372,6 @@ class EventGroup(EventContainer):
 			self.id,
 			self.title,
 		)
-
-	def set_uuid(self):
-		from uuid import uuid4
-		self.uuid = uuid4().hex
 
 	def __init__(self, _id=None):
 		EventContainer.__init__(self, title=self.desc)
