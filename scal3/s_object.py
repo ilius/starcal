@@ -251,6 +251,7 @@ class BsonHistObj(SObj):
 	def load(cls, *args):
 		_file = cls.getFile(*args)
 		data = {}
+		lastEpoch, lastHash = None, None
 		try:
 			jsonStr = open(_file).read()
 			data = jsonToData(jsonStr)
