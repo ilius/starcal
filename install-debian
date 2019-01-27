@@ -53,6 +53,7 @@ depends+=('python3-bson')
 
 recommends=()
 recommends+=('python3-igraph') ## FIXME
+recommends+=('python3-ujson')
 recommends+=('python3-gnomevfs')
 
 
