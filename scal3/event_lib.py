@@ -18,7 +18,6 @@
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
 
-import json
 import os
 from os.path import join, split, isdir, isfile, dirname, splitext
 from os import listdir

@@ -34,6 +34,7 @@ depends+=('python-requests')
 optdepends=()
 optdepends+=('libappindicator-gtk3')
 optdepends+=('python-igraph')
+optdepends+=('python-ujson')
 #optdepends+=('python-gnomevfs')
 
 

@@ -1,8 +1,12 @@
 import sys
 try:
-	import json
+	import ujson as json
 except ImportError:
-	import simplejson as json
+	print("-------------- did not find ujson")
+	try:
+		import json
+	except ImportError:
+		import simplejson as json
 
 from collections import OrderedDict
 

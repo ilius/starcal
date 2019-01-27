@@ -66,14 +66,18 @@ requires+=('python3-psutil')
 requires+=('python3-requests')
 #requires+=('python3-gflags') # for google api client
 
-#recommends=()
+
+recommends=()
+recommends+=('python3-ujson')
 #recommends+=('python3-igraph')
 #recommends+=('python3-gnomevfs')
 
 
-requires_str=$(printf " %s" "${requires[@]}") ; requires_str=${requires_str:1}
-#recommends_str=$(printf ", %s" "${recommends[@]}") ; recommends_str=${recommends_str:2}
+requires_str="Requires: ${requires[@]}"
+recommends_str="Recommends: ${recommends[@]}"
 
+## about "Recommends":
+## https://docs.fedoraproject.org/en-US/packaging-guidelines/WeakDependencies/
 
 
 echo "Name:     $pkgName
@@ -85,6 +89,7 @@ Group:          User Interface/Desktops
 License:        GPLv3+
 URL:            http://ilius.github.io/starcal
 Requires:       $requires_str
+Recommends:     $recommends_str
 BuildArch:      noarch
 
 %description

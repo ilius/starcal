@@ -77,6 +77,7 @@ requires+=('python3-requests')
 ## [ ] Dependencies -> Install Recommended Packages
 
 recommends=()
+recommends+=('python3-ujson')
 #recommends+=('python3-igraph')
 
 ## The package for AppIndicator is: typelib-1_0-AppIndicator3-0_1
@@ -84,8 +85,8 @@ recommends=()
 ## This typelib(AppIndicator3) is automatically added to dependencies of starcal3
 ## I still don't know why
 
-requires_str=$(printf "Requires: %s\n" "${requires[@]}")
-#recommends_str=$(printf "Recommends: %s\n" "${recommends[@]}")
+requires_str="Requires: ${requires[@]}"
+recommends_str="Recommends: ${recommends[@]}"
 
 #echo "$requires_str"; exit
 
