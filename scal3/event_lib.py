@@ -3790,14 +3790,18 @@ class EventGroup(EventContainer):
 		del data["idList"]
 		return data
 
+	def appendByData(self, eventData):
+		event = self.createEvent(eventData["type"])
+		event.setData(eventData)
+		event.save()
+		self.append(event)
+		return event
+
 	def importData(self, data):
 		self.setData(data)
 		self.clearRemoteAttrs()
 		for eventData in data["events"]:
-			event = self.createEvent(eventData["type"])
-			event.setData(eventData)
-			event.save()
-			self.append(event)
+			self.appendByData(eventData)
 		self.save()
 
 	def search(self, conds):
