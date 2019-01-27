@@ -4834,7 +4834,6 @@ class EventGroupsHolder(JsonObjectsHolder):
 			JsonObjectsHolder.setData(self, data)
 			for group in self:
 				if group.uuid is None:
-					group.set_uuid()
 					group.save()
 					print("saved group %d with uuid = %s" % (group.id, group.uuid))
 				if group.enable:
