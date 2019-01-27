@@ -88,8 +88,10 @@ Summary:        A full-featured international calendar written in Python
 Group:          User Interface/Desktops
 License:        GPLv3+
 URL:            http://ilius.github.io/starcal
-Requires:       $requires_str
-Recommends:     $recommends_str
+
+$requires_str
+$recommends_str
+
 BuildArch:      noarch
 
 %description
