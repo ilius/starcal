@@ -23,6 +23,7 @@ cd $tmpDir
 
 depends=('python>=3.2')
 depends+=('python-gobject') ## The new gobject introspection
+depends+=('python-glib')
 depends+=('python-cairo')
 depends+=('python-httplib2')
 depends+=('python-psutil')

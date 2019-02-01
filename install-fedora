@@ -59,6 +59,7 @@ version=`"$sourceDir/scal3/get_version.py" | sed 's/\-/_/g'`
 
 requires=("$pyPkg")
 requires+=('python3-gobject') ## The new gobject introspection
+requires+=('python3-glib')
 requires+=('python3-cairo')
 requires+=('python3-httplib2')
 requires+=('python3-psutil')

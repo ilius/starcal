@@ -2,7 +2,7 @@ from scal3 import core
 from scal3.locale_man import tr as _
 from scal3 import ui
 
-from gi.repository import GObject
+from gi.repository import GLib
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.font_utils import getFontFamilyList

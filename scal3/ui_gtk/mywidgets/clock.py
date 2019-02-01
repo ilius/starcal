@@ -20,7 +20,7 @@ import time
 from time import localtime, strftime
 from time import time as now
 
-from gi.repository.GObject import timeout_add
+from gi.repository.GLib import timeout_add
 from gi.repository import GdkPixbuf
 
 from scal3.ui_gtk import *

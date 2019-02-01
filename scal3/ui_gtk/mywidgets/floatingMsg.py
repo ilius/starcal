@@ -118,7 +118,7 @@ class FloatingMsg(gtk.DrawingArea):
 	def animateUpdate(self):
 		if self.isFinished:
 			return
-		GObject.timeout_add(self.refreshTime, self.animateUpdate)
+		GLib.timeout_add(self.refreshTime, self.animateUpdate)
 		self.xpos = self.startXpos + (now()-self.startTime)*self.speed*self.rtlSign
 		if self.xpos>screenWidth or self.xpos<-self.textWidth:
 			if self.index >= self.linesNum-1:
@@ -219,7 +219,7 @@ class NoFillFloatingMsgWindow(gtk.Window):
 	def animateUpdate(self):
 		if self.isFinished:
 			return
-		GObject.timeout_add(self.refreshTime, self.animateUpdate)
+		GLib.timeout_add(self.refreshTime, self.animateUpdate)
 		xpos = int(self.startXpos + (now()-self.startTime)*self.speed*self.label.rtlSign)
 		self.move(xpos, 0)
 		self.resize(1, 1)

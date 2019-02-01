@@ -22,7 +22,7 @@
 from time import sleep
 import sys, os, re
 
-from gi.repository import GObject as gobject
+from gi.repository import GLib as glib
 
 from scal3.ui_gtk import *
 
@@ -199,20 +199,20 @@ class MPlayer:
 
 	# Handle EOF (basically, a connection Hung Up in mplayerOut)
 	def startHandleEof(self):
-		self.eofHandle = gobject.io_add_watch(self.mplayerOut, gobject.IO_HUP, self.handleEof)
+		self.eofHandle = glib.io_add_watch(self.mplayerOut, glib.IO_HUP, self.handleEof)
 
 	# Stop looking for IO_HUP in mplayerOut
 	def stopEofHandler(self):
-		gobject.source_remove(self.eofHandle)
+		glib.source_remove(self.eofHandle)
 
 	# Call a function periodically to fetch status
 	def startStatusQuery(self):
 		print('start')
-		self.statusQuery = gobject.timeout_add(STATUS_UPDATE_TIMEOUT, self.queryStatus)
+		self.statusQuery = glib.timeout_add(STATUS_UPDATE_TIMEOUT, self.queryStatus)
 
 	# Stop calling the function that fetches status periodically
 	def stopStatusQuery(self):
-		gobject.source_remove(self.statusQuery)
+		glib.source_remove(self.statusQuery)
 
 
 class PlayerBox(gtk.HBox):

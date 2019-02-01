@@ -28,7 +28,7 @@ fi
 pkgName=starcal3
 sourceDir="`dirname \"$myPath\"`"
 
-PY_SUPPORTED=(3.6 3.5 3.4 3.3 3.2)
+PY_SUPPORTED=(3.7 3.6 3.5 3.4 3.3 3.2)
 
 #"$sourceDir/scripts/assert_python3"
 
@@ -65,7 +65,7 @@ if [ -z "$pyCmd" ] ; then
 		pyCmd=`which "python$ver"` && break
 	done
 	if [ -z "$pyCmd" ] ; then
-		echo "Only these python version are supported: ${PY_SUPPORTED[@]}" >&2
+		echo "Only these python versions are supported: ${PY_SUPPORTED[@]}" >&2
 		exit 1
 	fi
 fi

@@ -29,7 +29,7 @@ from math import ceil
 
 from scal3 import ui
 
-from gi.repository.GObject import timeout_add
+from gi.repository.GLib import timeout_add
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton

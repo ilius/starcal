@@ -29,7 +29,7 @@ from scal3.locale_man import rtl
 from scal3.mywidgets.multi_spin import * ## FIXME
 from scal3 import ui
 
-from gi.repository.GObject import timeout_add
+from gi.repository.GLib import timeout_add
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *

@@ -67,7 +67,7 @@ from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import DummyCalObj, CustomizableCalBox
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 
-import gi.repository.GObject as gobject
+import gi.repository.GLib as glib
 
 ui.uiName = 'gtk'
 
@@ -95,7 +95,7 @@ mainWinItemsDesc = {
 def liveConfChanged():
 	tm = now()
 	if tm-ui.lastLiveConfChangeTime > ui.saveLiveConfDelay:
-		gobject.timeout_add(int(ui.saveLiveConfDelay*1000), ui.saveLiveConfLoop)
+		glib.timeout_add(int(ui.saveLiveConfDelay*1000), ui.saveLiveConfLoop)
 		ui.lastLiveConfChangeTime = tm
 
 
@@ -327,7 +327,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		self.statusIconInit()
 		listener.dateChange.add(self)
 		#if self.statusIconMode!=1:
-		#	gobject.timeout_add_seconds(self.timeout, self.statusIconUpdate)
+		#	glib.timeout_add_seconds(self.timeout, self.statusIconUpdate)
 		#########
 		self.connect('delete-event', self.onDeleteEvent)
 		#########################################
@@ -373,7 +373,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		#print('focusOut', dt)
 		if dt > 0.05: ## FIXME
 			self.focus = False
-			gobject.timeout_add(2, self.focusOutDo)
+			glib.timeout_add(2, self.focusOutDo)
 	def focusOutDo(self):
 		if not self.focus:# and t-self.focusOutTime>0.002:
 			ab = self.checkAbove.get_active()

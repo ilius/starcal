@@ -1,6 +1,6 @@
 from time import localtime
 
-from gobject import timeout_add
+from glib import timeout_add
 
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton

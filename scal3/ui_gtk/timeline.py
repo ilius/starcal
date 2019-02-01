@@ -32,7 +32,7 @@ from scal3.locale_man import rtl
 from scal3 import ui
 from scal3.timeline import *
 
-from gi.repository.GObject import timeout_add
+from gi.repository.GLib import timeout_add
 from gi.repository.GLib import source_remove
 
 from scal3.ui_gtk import *

@@ -31,7 +31,7 @@ from scal3 import core
 from scal3.locale_man import tr as _
 from scal3 import ui
 
-from gi.repository.GObject import timeout_add
+from gi.repository.GLib import timeout_add
 from gi.repository import GdkPixbuf
 
 from scal3.ui_gtk import *

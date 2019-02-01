@@ -209,7 +209,7 @@ def setDefault_adjustTimeCmd():
 			]
 			break
 
-## user should be able to configure this in Preferences 
+## user should be able to configure this in Preferences
 adjustTimeCmd = ''
 setDefault_adjustTimeCmd()
 

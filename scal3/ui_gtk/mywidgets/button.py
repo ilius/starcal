@@ -3,8 +3,8 @@ import sys
 
 from scal3 import ui
 
-from gi.repository import GObject
-from gi.repository.GObject import timeout_add
+from gi.repository import GLib
+from gi.repository.GLib import timeout_add
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *

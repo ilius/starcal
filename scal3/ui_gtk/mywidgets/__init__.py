@@ -21,7 +21,7 @@ import sys, os
 from time import time as now
 from time import localtime
 
-from gi.repository import GObject
+from gi.repository import GLib
 from gi.repository import GdkPixbuf
 
 from scal3.ui_gtk import *
