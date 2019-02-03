@@ -547,7 +547,7 @@ class YearlyTextPlugin(BaseJsonPlugin):
 		#	year, month, day = convert(year, month, day, calTypes.primary, mode)
 		text = ""
 		item = yearlyData[month - 1]
-		if len(item) > day:
+		if len(item) > day - 1:
 			text = item[day - 1]
 		if self.show_date and text:
 			text = "%s %s: %s" % (
