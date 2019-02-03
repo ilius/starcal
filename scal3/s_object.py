@@ -8,7 +8,7 @@ from hashlib import sha1
 
 from scal3.path import objectDir, rootDir
 
-sys.path.insert(0, join(rootDir, "bson"))
+sys.path.insert(0, join(rootDir, "libs", "bson"))
 import bson
 
 from scal3.os_utils import makeDir
