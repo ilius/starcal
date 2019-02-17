@@ -5,8 +5,6 @@ from scal3 import core
 from scal3.locale_man import tr as _
 from scal3 import ui
 
-from gi.repository import GObject as gobject
-
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.utils import set_tooltip
@@ -225,7 +223,7 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 		self.lastPressTime = now()
 		self.remain = True
 		func()
-		gobject.timeout_add(ui.timeout_initial, self.itemPressRemain, func)
+		timeout_add(ui.timeout_initial, self.itemPressRemain, func)
 
 	def itemPressRemain(self, func):
 		if not self.remain:
@@ -234,7 +232,7 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 			return
 		# print("itemPressRemain:", now()-self.lastPressTime, ">=", ui.timeout_repeat * 0.001)
 		func()
-		gobject.timeout_add(ui.timeout_repeat, self.itemPressRemain, func)
+		timeout_add(ui.timeout_repeat, self.itemPressRemain, func)
 
 	def itemRelease(self, widget, event=None):
 		# print("------------------------ itemRelease")

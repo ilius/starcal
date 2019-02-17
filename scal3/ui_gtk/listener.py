@@ -6,9 +6,7 @@ from scal3.time_utils import getUtcOffsetCurrent
 from scal3 import core
 from scal3 import ui
 
-from gi.repository.GObject import timeout_add, timeout_add_seconds
-
-from scal3.ui_gtk import gtk
+from scal3.ui_gtk import gtk, timeout_add_seconds
 
 dayLen = 24 * 3600
 

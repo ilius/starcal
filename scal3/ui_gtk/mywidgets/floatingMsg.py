@@ -132,7 +132,7 @@ class FloatingMsg(gtk.DrawingArea):
 	def animateUpdate(self):
 		if self.isFinished:
 			return
-		GObject.timeout_add(self.refreshTime, self.animateUpdate)
+		timeout_add(self.refreshTime, self.animateUpdate)
 		self.xpos = self.startXpos + (
 			(now() - self.startTime)
 			* self.speed
@@ -249,7 +249,7 @@ class NoFillFloatingMsgWindow(gtk.Window):
 	def animateUpdate(self):
 		if self.isFinished:
 			return
-		GObject.timeout_add(self.refreshTime, self.animateUpdate)
+		timeout_add(self.refreshTime, self.animateUpdate)
 		xpos = int(
 			self.startXpos + (
 				(now() - self.startTime)
