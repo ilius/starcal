@@ -34,9 +34,6 @@ from scal3.locale_man import localTz
 from scal3 import ui
 from scal3.timeline import *
 
-from gi.repository.GObject import timeout_add
-from gi.repository.GLib import source_remove
-
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.font_utils import pfontEncode

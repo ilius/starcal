@@ -26,8 +26,6 @@ from scal3 import core
 from scal3.locale_man import tr as _
 from scal3.locale_man import numDecode
 
-from gi.repository import GObject
-
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.utils import toolButtonFromStock, set_tooltip

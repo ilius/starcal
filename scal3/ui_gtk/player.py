@@ -26,10 +26,7 @@ import sys
 import os
 import re
 
-from gi.repository import GObject as gobject
-
 from scal3.ui_gtk import *
-
 
 # Control
 SEEK_TIME_SMALL = 10 # in seconds
@@ -217,19 +214,19 @@ class MPlayer:
 
 	# Stop looking for IO_HUP in mplayerOut
 	def stopEofHandler(self):
-		gobject.source_remove(self.eofHandle)
+		source_remove(self.eofHandle)
 
 	# Call a function periodically to fetch status
 	def startStatusQuery(self):
 		print("start")
-		self.statusQuery = gobject.timeout_add(
+		self.statusQuery = timeout_add(
 			STATUS_UPDATE_TIMEOUT,
 			self.queryStatus,
 		)
 
 	# Stop calling the function that fetches status periodically
 	def stopStatusQuery(self):
-		gobject.source_remove(self.statusQuery)
+		source_remove(self.statusQuery)
 
 
 class PlayerBox(gtk.HBox):

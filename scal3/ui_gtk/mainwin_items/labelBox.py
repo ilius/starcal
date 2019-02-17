@@ -25,8 +25,6 @@ from scal3.locale_man import getMonthName, rtl
 from scal3.locale_man import tr as _
 from scal3 import ui
 
-from gi.repository import GObject as gobject
-
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.utils import set_tooltip, setClipboard, get_menu_width
@@ -355,7 +353,7 @@ class IntLabel(BaseLabel):
 
 	def arrowSelect(self, item, plus):
 		self.remain = plus
-		gobject.timeout_add(
+		timeout_add(
 			int(ui.labelMenuDelay * 1000),
 			self.arrowRemain,
 			plus,

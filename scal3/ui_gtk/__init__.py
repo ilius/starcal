@@ -7,6 +7,9 @@ __all__ = [
 	"MenuItem",
 	"ImageMenuItem",
 	"getScrollValue",
+	"timeout_add",
+	"timeout_add_seconds",
+	"source_remove",
 ]
 
 import gi
@@ -17,6 +20,11 @@ gi.require_version("PangoCairo", "1.0")
 from gi.repository import Gtk as gtk
 from gi.repository import Gdk as gdk
 from gi.repository import GdkPixbuf
+
+try:
+	from gi.repository.GLib import timeout_add, timeout_add_seconds, source_remove
+except ImportError:
+	from gi.repository.GObject import timeout_add, timeout_add_seconds, source_remove
 
 
 TWO_BUTTON_PRESS = getattr(gdk.EventType, "2BUTTON_PRESS")
