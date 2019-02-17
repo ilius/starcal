@@ -219,17 +219,38 @@ def updateFormatsBin():
 
 def setDefault_adjustTimeCmd():
 	global adjustTimeCmd
+	global adjustTimeEnv
+	from os.path import isfile
 	for cmd in ("gksudo", "kdesudo", "gksu", "gnomesu", "kdesu"):
-		if os.path.isfile("/usr/bin/%s" % cmd):
+		if isfile("/usr/bin/%s" % cmd):
 			adjustTimeCmd = [
 				cmd,
 				join(rootDir, "scripts", "run"),
 				"scal3/ui_gtk/adjust_dtime.py"
 			]
-			break
+			return
+	sudo = "/usr/bin/sudo"
+	if isfile(sudo):
+		for askpass in (
+			"/usr/lib/openssh/gnome-ssh-askpass",
+			"/usr/bin/ksshaskpass",
+			"/usr/bin/lxqt-openssh-askpass",
+			"/usr/bin/ssh-askpass-fullscreen",
+			"/usr/lib/ssh/x11-ssh-askpass",
+		):
+			if isfile(askpass):
+				adjustTimeCmd = [
+					sudo,
+					"-A", # --askpass
+					join(rootDir, "scripts", "run"),
+					"scal3/ui_gtk/adjust_dtime.py"
+				]
+				adjustTimeEnv["SUDO_ASKPASS"] = askpass
+				return
 
 # user should be able to configure this in Preferences
 adjustTimeCmd = ""
+adjustTimeEnv = os.environ
 setDefault_adjustTimeCmd()
 
 ##############################
