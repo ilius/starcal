@@ -2413,6 +2413,10 @@ msgid "Season Progress Bar"
 msgstr ""
 "نوار پیشروی فصل‌ها"
 
+msgid "Southern Hemisphere"
+msgstr ""
+"نیمکرهٔ جنوبی"
+
 msgid "Spring"
 msgstr ""
 "بهار"

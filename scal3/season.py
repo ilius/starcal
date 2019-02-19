@@ -29,9 +29,44 @@ def getSpringJdAfter(fromJd):
 	d, m = divmod(fromJd - 1 - springRefJd, avgYearLen)
 	return int(fromJd + (d + 1) * avgYearLen)
 
+"""
 
-def getSeasonNamePercentFromJd(jd):
+Spring - Above		3, 4, 5		March, April, May
+Spring - Below		9, 10, 11	September, October, November
+
+Summer - Above		6, 7, 8		June, July, August
+Summer - Below		12, 1, 2	December, January, February
+
+Autumn - Above		9, 10, 11	September, October, November
+Autumn - Below		3, 4, 5		March, April, May
+
+Winter - Above		12, 1, 2	December, January, February
+Winter - Below		6, 7, 8		June, July, August
+
+>>> monthShiftFunc = lambda month: ((month + 6) - 1) % 12 + 1
+
+
+Wikipedia:
+	Spring:
+		in the US and UK, spring months are March, April and May,
+		while in New Zealand and Australia, spring conventionally begins on September 1 and ends November 30
+	Summer:
+		The meteorological convention is to define summer as comprising the months of June, July,
+		and August in the northern hemisphere and the months of December, January, and February in the southern hemisphere
+	Autumn:
+		with autumn being September, October, and November in the northern hemisphere,
+		and March, April, and May in the southern hemisphere
+	Winter:
+		This corresponds to the months of December, January and February in the Northern Hemisphere,
+		and June, July and August in the Southern Hemisphere
+
+"""
+
+
+def getSeasonNamePercentFromJd(jd, southernHemisphere=False):
 	d, m = divmod(getSeasonValueFromJd(jd), 1)
+	if southernHemisphere:
+		d = (d + 2) % 4
 	name = [
 		"Spring",
 		"Summer",

@@ -21,7 +21,7 @@ class CalObj(gtk.ProgressBar, CustomizableCalObj):
 	def onDateChange(self, *a, **kw):
 		from scal3.season import getSeasonNamePercentFromJd
 		CustomizableCalObj.onDateChange(self, *a, **kw)
-		name, frac = getSeasonNamePercentFromJd(ui.cell.jd)
+		name, frac = getSeasonNamePercentFromJd(ui.cell.jd, ui.seasonPBar_southernHemisphere)
 		if rtl:
 			percent = "%d%%" % (frac * 100)
 		else:
@@ -35,3 +35,21 @@ class CalObj(gtk.ProgressBar, CustomizableCalObj):
 			)
 		)
 		self.set_fraction(frac)
+
+	def optionsWidgetCreate(self):
+		from scal3.ui_gtk.pref_utils import CheckPrefItem
+		if self.optionsWidget:
+			return
+		####
+		self.optionsWidget = gtk.HBox()
+		item = CheckPrefItem(ui, "seasonPBar_southernHemisphere", _("Southern Hemisphere"))
+		item.updateWidget()
+		checkb = item._widget
+		checkb.connect("clicked", self.southernHemisphereClicked)
+		pack(self.optionsWidget, checkb)
+		checkb.item = item
+		####
+		self.optionsWidget.show_all()
+
+	def southernHemisphereClicked(self, checkb):
+		checkb.item.updateVar()
