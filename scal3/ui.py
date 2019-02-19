@@ -856,7 +856,7 @@ wcalGridColor = (255, 252, 0, 82)
 wcalPastTextColorEnable_eventsText = False
 wcalPastTextColor_eventsText = (100, 100, 100, 50)
 
-wcal_toolbar_mainMenu_icon = join(pixDir, "starcal-24.png")
+wcal_toolbar_mainMenu_icon = "starcal-24.png"
 wcal_toolbar_mainMenu_icon_default = wcal_toolbar_mainMenu_icon
 wcal_toolbar_weekNum_negative = False
 wcal_weekDays_width = 80
