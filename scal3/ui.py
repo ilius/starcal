@@ -136,6 +136,7 @@ confParamsCustomize = (
 	"dcalHeight",
 	"dcalTypeParams",
 	"pluginsTextInsideExpander",
+	"seasonPBar_southernHemisphere",
 	"ud__wcalToolbarData",
 	"ud__mainToolbarData",
 )
@@ -960,6 +961,10 @@ wcalItems = (
 )
 
 wcalItemsDefault = wcalItems[:]
+
+####################
+
+seasonPBar_southernHemisphere = False
 
 ####################
 
