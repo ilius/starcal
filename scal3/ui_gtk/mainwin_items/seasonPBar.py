@@ -53,3 +53,4 @@ class CalObj(gtk.ProgressBar, CustomizableCalObj):
 
 	def southernHemisphereClicked(self, checkb):
 		checkb.item.updateVar()
+		self.onDateChange()
