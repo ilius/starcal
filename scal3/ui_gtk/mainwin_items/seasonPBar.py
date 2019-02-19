@@ -15,6 +15,7 @@ class CalObj(gtk.ProgressBar, CustomizableCalObj):
 
 	def __init__(self):
 		gtk.ProgressBar.__init__(self)
+		self.set_show_text(True)
 		self.initVars()
 
 	def onDateChange(self, *a, **kw):
