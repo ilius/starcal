@@ -248,11 +248,11 @@ class FontPrefItem(PrefItem):  # FIXME
 
 
 class CheckPrefItem(PrefItem):
-	def __init__(self, module, varName, label="", tooltip=None):
+	def __init__(self, module, varName, label="", tooltip=""):
 		self.module = module
 		self.varName = varName
 		w = gtk.CheckButton(label)
-		if tooltip is not None:
+		if tooltip:
 			set_tooltip(w, tooltip)
 		self._widget = w
 
@@ -274,6 +274,19 @@ class CheckPrefItem(PrefItem):
 			active = not active
 		self._sensitiveWidget.set_sensitive(active)
 
+
+class LiveCheckPrefItem(CheckPrefItem):
+	def __init__(self, module, varName, label="", tooltip="", calObj: "Optional[CalBase]" = None):
+		CheckPrefItem.__init__(self, module, varName, label=label, tooltip=tooltip)
+		self._calObj = calObj
+		# updateWidget needs to be called before following connect() calls
+		self.updateWidget()
+		self._widget.connect("clicked", self.onClicked)
+
+	def onClicked(self, w):
+		self.updateVar()
+		if self._calObj:
+			self._calObj.onConfigChange()
 
 class ColorPrefItem(PrefItem):
 	def __init__(self, module, varName, useAlpha=False):
@@ -305,6 +318,57 @@ class ColorPrefItem(PrefItem):
 				raise ValueError
 		else:
 			self._widget.set_color(color)
+
+
+class LiveColorPrefItem(ColorPrefItem):
+	def __init__(self, module, varName, useAlpha=False, calObj: "Optional[CalBase]" = None):
+		ColorPrefItem.__init__(self, module, varName, useAlpha=useAlpha)
+		self._calObj = calObj
+		# updateWidget needs to be called before following connect() calls
+		self.updateWidget()
+		self._widget.connect("color-set", self.onColorSet)
+
+	def onColorSet(self, w):
+		self.updateVar()
+		if self._calObj:
+			self._calObj.onConfigChange()
+
+
+# combination of CheckPrefItem and ColorPrefItem in a HBox, with auto-update / auto-apply, for use in Customize window
+class LiveCheckColorPrefItem(PrefItem):
+	def __init__(self, checkItem: CheckPrefItem, colorItem: ColorPrefItem, calObj: "Optional[CalBase]" = None):
+		self._checkItem = checkItem
+		self._colorItem = colorItem
+		self._calObj = calObj
+
+		checkb = self._checkItem._widget
+		colorb = self._colorItem._widget
+
+		hbox = gtk.HBox(spacing=3)
+		pack(hbox, checkb)
+		pack(hbox, colorb)
+		self._widget = hbox
+
+		# updateWidget needs to be called before following connect() calls
+		self.updateWidget()
+
+		checkb.connect("clicked", self.onChange)
+		colorb.connect("color-set", self.onChange)
+
+	def updateVar(self):
+		self._checkItem.updateVar()
+		self._colorItem.updateVar()
+
+	def updateWidget(self):
+		# FIXME: this func is triggering onChange func, can we avoid that?
+		self._checkItem.updateWidget()
+		self._colorItem.updateWidget()
+
+	def onChange(self, w):
+		self.updateVar()
+		self._colorItem._widget.set_sensitive(self._checkItem.get())
+		if self._calObj:
+			self._calObj.onConfigChange()
 
 
 class SpinPrefItem(PrefItem):
@@ -481,7 +545,6 @@ class ListPrefItem(PrefItem):
 
 	def set(self, valueL):
 		for i in range(self.num):
-
 			self.items[i].set(valueL[i])
 
 	def append(self, item):

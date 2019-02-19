@@ -37,20 +37,18 @@ class CalObj(gtk.ProgressBar, CustomizableCalObj):
 		self.set_fraction(frac)
 
 	def optionsWidgetCreate(self):
-		from scal3.ui_gtk.pref_utils import CheckPrefItem
+		from scal3.ui_gtk.pref_utils import LiveCheckPrefItem
 		if self.optionsWidget:
 			return
 		####
 		self.optionsWidget = gtk.HBox()
-		item = CheckPrefItem(ui, "seasonPBar_southernHemisphere", _("Southern Hemisphere"))
-		item.updateWidget()
-		checkb = item._widget
-		checkb.connect("clicked", self.southernHemisphereClicked)
-		pack(self.optionsWidget, checkb)
-		checkb.item = item
+		prefItem = LiveCheckPrefItem(
+			ui,
+			"seasonPBar_southernHemisphere",
+			label=_("Southern Hemisphere"),
+			calObj=self,
+		)
+		pack(self.optionsWidget, prefItem._widget)
 		####
 		self.optionsWidget.show_all()
 
-	def southernHemisphereClicked(self, checkb):
-		checkb.item.updateVar()
-		self.onDateChange()
