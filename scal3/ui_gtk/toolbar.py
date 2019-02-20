@@ -75,7 +75,6 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 	defaultItemsDict = {}
 
 	def __init__(self, funcOwner, vertical=False, onPressContinue=False):
-		from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 		gtk.Toolbar.__init__(self)
 		self.funcOwner = funcOwner
 		self.set_orientation(
@@ -86,37 +85,7 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 		self.onPressContinue = onPressContinue
 		self.remain = False
 		self.lastPressTime = 0
-		###
-		optionsWidget = gtk.VBox()
-		##
-		hbox = gtk.HBox()
-		pack(hbox, gtk.Label(_("Style")))
-		self.styleCombo = gtk.ComboBoxText()
-		for item in self.styleList:
-			self.styleCombo.append_text(_(item))
-		pack(hbox, self.styleCombo)
-		pack(optionsWidget, hbox)
-		##
-		hbox = gtk.HBox()
-		pack(hbox, gtk.Label(_("Icon Size")))
-		self.iconSizeCombo = gtk.ComboBoxText()
-		for (i, item) in enumerate(ud.iconSizeList):
-			self.iconSizeCombo.append_text(_(item[0]))
-		pack(hbox, self.iconSizeCombo)
-		pack(optionsWidget, hbox)
-		self.iconSizeHbox = hbox
-		##
-		hbox = gtk.HBox()
-		pack(hbox, gtk.Label(_("Buttons Border")))
-		self.buttonsBorderSpin = IntSpinButton(0, 99)
-		pack(hbox, self.buttonsBorderSpin)
-		pack(optionsWidget, hbox)
-		##
-		self.initVars(optionsWidget=optionsWidget)
-		self.iconSizeCombo.connect("changed", self.iconSizeComboChanged)
-		self.styleCombo.connect("changed", self.styleComboChanged)
-		self.buttonsBorderSpin.connect("changed", self.buttonsBorderSpinChanged)
-		#self.styleComboChanged()
+		self.initVars()
 		##
 		#print("toolbar state", self.get_state()## STATE_NORMAL)
 		#self.set_state(gtk.StateType.ACTIVE)## FIXME
@@ -124,6 +93,43 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 		#style = self.get_style()
 		#style.border_width = 10
 		#self.set_style(style)
+
+	def optionsWidgetCreate(self):
+		from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
+		if self.optionsWidget:
+			return
+		###
+		self.optionsWidget = gtk.VBox()
+		##
+		hbox = gtk.HBox()
+		pack(hbox, gtk.Label(_("Style")))
+		self.styleCombo = gtk.ComboBoxText()
+		for item in self.styleList:
+			self.styleCombo.append_text(_(item))
+		pack(hbox, self.styleCombo)
+		pack(self.optionsWidget, hbox)
+		##
+		hbox = gtk.HBox()
+		pack(hbox, gtk.Label(_("Icon Size")))
+		self.iconSizeCombo = gtk.ComboBoxText()
+		for (i, item) in enumerate(ud.iconSizeList):
+			self.iconSizeCombo.append_text(_(item[0]))
+		pack(hbox, self.iconSizeCombo)
+		pack(self.optionsWidget, hbox)
+		self.iconSizeHbox = hbox
+		##
+		hbox = gtk.HBox()
+		pack(hbox, gtk.Label(_("Buttons Border")))
+		self.buttonsBorderSpin = IntSpinButton(0, 99)
+		pack(hbox, self.buttonsBorderSpin)
+		pack(self.optionsWidget, hbox)
+		##
+		self.iconSizeCombo.connect("changed", self.iconSizeComboChanged)
+		self.styleCombo.connect("changed", self.styleComboChanged)
+		self.buttonsBorderSpin.connect("changed", self.buttonsBorderSpinChanged)
+		#self.styleComboChanged()
+		##
+		self.optionsWidget.show_all()
 
 	def getIconSizeName(self):
 		return ud.iconSizeList[self.iconSizeCombo.get_active()][0]
@@ -197,10 +203,13 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 			self.setupItemSignals(item)
 			self.appendItem(item)
 		###
+		self.optionsWidgetCreate() # because we update the Customize dialog widgets as well
+		###
 		iconSize = data["iconSize"]
 		for (i, item) in enumerate(ud.iconSizeList):
 			if item[0] == iconSize:
 				self.iconSizeCombo.set_active(i)
+				break
 		self.setIconSizeName(iconSize)
 		###
 		styleNum = self.styleList.index(data["style"])
