@@ -248,6 +248,8 @@ class CustomizeDialog(gtk.Dialog):
 		if item.customizable:
 			if item.optionsWidget:
 				item.optionsWidget.set_sensitive(item.enable)
+			elif active:
+				item.optionsWidgetCreate()
 		if ui.mainWin:
 			ui.mainWin.setMinHeight()
 
