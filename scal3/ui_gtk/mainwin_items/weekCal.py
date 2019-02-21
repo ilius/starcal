@@ -105,19 +105,9 @@ class ColumnBase(CustomizableCalObj):
 			setattr(ui, self.getFontAttr(), combo.get_value())
 			self.onDateChange()
 
-	def pastTextColorEnableToggled(self, checkb):
-		if self._name:
-			setattr(ui, self.getPastTextColorEnableAttr(), checkb.get_active())
-			self.onDateChange()
-
-	def pastTextColorSet(self, colorb):
-		if self._name:
-			setattr(ui, self.getPastTextColorAttr(), colorb.get_color())
-			self.onDateChange()
-
 	def optionsWidgetCreate(self):
-		from scal3.ui_gtk.pref_utils import LiveLabelSpinPrefItem, SpinPrefItem
-		from scal3.ui_gtk.mywidgets import MyColorButton
+		from scal3.ui_gtk.pref_utils import LiveLabelSpinPrefItem, SpinPrefItem, \
+			LiveCheckColorPrefItem, CheckPrefItem, ColorPrefItem
 		if self.optionsWidget:
 			return
 		self.optionsWidget = gtk.VBox()
@@ -140,17 +130,12 @@ class ColumnBase(CustomizableCalObj):
 			pack(self.optionsWidget, hbox)
 		####
 		if self.customizePastTextColor:
-			hbox = gtk.HBox()
-			checkb = gtk.CheckButton()
-			checkb.set_label(_("Past Event Color"))
-			checkb.set_active(self.getPastTextColorEnableValue())
-			pack(hbox, checkb)
-			colorb = MyColorButton()
-			colorb.set_color(self.getPastTextColorValue())
-			pack(hbox, colorb)
-			checkb.connect("toggled", self.pastTextColorEnableToggled)
-			colorb.connect("color-set", self.pastTextColorSet)
-			pack(self.optionsWidget, hbox)
+			prefItem = LiveCheckColorPrefItem(
+				CheckPrefItem(ui, self.getPastTextColorEnableAttr(), _("Past Event Color")),
+				ColorPrefItem(ui, self.getPastTextColorAttr(), True),
+				self.onDateChange,
+			)
+			pack(self.optionsWidget, prefItem._widget)
 		####
 		self.optionsWidget.show_all()
 
