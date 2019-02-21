@@ -157,8 +157,9 @@ class Column(gtk.DrawingArea, ColumnBase):
 		return self.get_window().cairo_create()
 
 	def drawBg(self, cr):
-		w = self.get_allocation().width
-		h = self.get_allocation().height
+		alloc = self.get_allocation()
+		w = alloc.width
+		h = alloc.height
 		cr.rectangle(0, 0, w, h)
 		fillColor(cr, ui.bgColor)
 		rowH = h / 7
@@ -183,8 +184,6 @@ class Column(gtk.DrawingArea, ColumnBase):
 				)
 				fillColor(cr, ui.cursorBgColor)
 		if ui.wcalGrid:
-			w = self.get_allocation().width
-			h = self.get_allocation().height
 			setColor(cr, ui.wcalGridColor)
 			###
 			cr.rectangle(
@@ -205,8 +204,9 @@ class Column(gtk.DrawingArea, ColumnBase):
 				cr.fill()
 
 	def drawCursorFg(self, cr):
-		w = self.get_allocation().width
-		h = self.get_allocation().height
+		alloc = self.get_allocation()
+		w = alloc.width
+		h = alloc.height
 		rowH = h / 7
 		for i in range(7):
 			c = self.wcal.status[i]
@@ -222,8 +222,9 @@ class Column(gtk.DrawingArea, ColumnBase):
 				fillColor(cr, ui.cursorOutColor)
 
 	def drawTextList(self, cr, textData, font=None):
-		w = self.get_allocation().width
-		h = self.get_allocation().height
+		alloc = self.get_allocation()
+		w = alloc.width
+		h = alloc.height
 		###
 		rowH = h / 7
 		itemW = w - ui.wcalPadding
@@ -706,8 +707,9 @@ class EventsBoxColumn(Column):
 		if not self.boxes:
 			return
 		###
-		w = self.get_allocation().width
-		h = self.get_allocation().height
+		alloc = self.get_allocation()
+		w = alloc.width
+		h = alloc.height
 		###
 		for box in self.boxes:
 			box.setPixelValues(
@@ -932,8 +934,9 @@ class MoonPhaseColumn(Column):
 		imgBorder = imgSize-imgMoonSize
 		imgRadius = imgMoonSize / 2
 		###
-		w = self.get_allocation().width
-		h = self.get_allocation().height
+		alloc = self.get_allocation()
+		w = alloc.width
+		h = alloc.height
 		###
 		rowH = h / 7
 		itemW = w - ui.wcalPadding
@@ -1154,9 +1157,10 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
 			return False
 
 	def getCellPos(self, *args):
+		alloc = self.get_allocation()
 		return (
-			int(self.get_allocation().width / 2),
-			(ui.cell.weekDayIndex + 1) * self.get_allocation().height / 7,
+			int(alloc.width / 2),
+			(ui.cell.weekDayIndex + 1) * alloc.height / 7,
 		)
 
 	def getToolbar(self):
