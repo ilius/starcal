@@ -38,7 +38,6 @@ from gi.repository import GdkPixbuf
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.drawing import *
-from scal3.ui_gtk.mywidgets.font_family_combo import FontFamilyCombo
 
 from scal3.ui_gtk import gtk_ud as ud
 
@@ -108,6 +107,7 @@ class ColumnBase(CustomizableCalObj):
 	def optionsWidgetCreate(self):
 		from scal3.ui_gtk.pref_utils import LiveLabelSpinPrefItem, SpinPrefItem, \
 			LiveCheckColorPrefItem, CheckPrefItem, ColorPrefItem
+		from scal3.ui_gtk.mywidgets.font_family_combo import FontFamilyCombo
 		if self.optionsWidget:
 			return
 		self.optionsWidget = gtk.VBox()
