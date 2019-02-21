@@ -79,15 +79,6 @@ class CalBase(CustomizableCalObj):
 	def getCellPagePlus(self, jd, plus):## use for sliding
 		raise NotImplementedError
 
-	def gridCheckClicked(self, checkb):
-		checkb.colorb.set_sensitive(checkb.get_active())
-		checkb.item.updateVar()
-		self.queue_draw()
-
-	def gridColorChanged(self, colorb):
-		colorb.item.updateVar()
-		self.queue_draw()
-
 	def defineDragAndDrop(self):
 		self.drag_source_set(
 			gdk.ModifierType.MODIFIER_MASK,

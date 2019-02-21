@@ -193,7 +193,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 
 	def optionsWidgetCreate(self):
 		from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
-		from scal3.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
+		from scal3.ui_gtk.pref_utils import LiveCheckColorPrefItem, CheckPrefItem, ColorPrefItem
 		if self.optionsWidget:
 			return
 		self.optionsWidget = gtk.VBox()
@@ -223,23 +223,12 @@ class CalObj(gtk.DrawingArea, CalBase):
 		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self.optionsWidget, hbox)
 		########
-		hbox = gtk.HBox(spacing=3)
-		####
-		item = CheckPrefItem(ui, "mcalGrid", _("Grid"))
-		item.updateWidget()
-		gridCheck = item._widget
-		pack(hbox, gridCheck)
-		gridCheck.item = item
-		####
-		colorItem = ColorPrefItem(ui, "mcalGridColor", True)
-		colorItem.updateWidget()
-		pack(hbox, colorItem._widget)
-		gridCheck.colorb = colorItem._widget
-		gridCheck.connect("clicked", self.gridCheckClicked)
-		colorItem._widget.item = colorItem
-		colorItem._widget.connect("color-set", self.gridColorChanged)
-		colorItem._widget.set_sensitive(ui.mcalGrid)
-		####
+		prefItem = LiveCheckColorPrefItem(
+			CheckPrefItem(ui, "mcalGrid", _("Grid")),
+			ColorPrefItem(ui, "mcalGridColor", True),
+			self.queue_draw,
+		)
+		hbox = prefItem._widget
 		pack(self.optionsWidget, hbox)
 		########
 		frame = gtk.Frame()
