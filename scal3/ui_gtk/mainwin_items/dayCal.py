@@ -122,10 +122,9 @@ class CalObj(gtk.DrawingArea, CalBase):
 		"f10", "m",
 	)
 
-	def heightSpinChanged(self, spin):
-		v = spin.get_value()
-		self.set_property("height-request", v)
-		ui.dcalHeight = v
+	def heightUpdate(self):
+		self.set_property("height-request", ui.dcalHeight)
+		self.onDateChange() # just to resize the main window when decreasing wcalHeight
 
 	def updateTypeParamsWidget(self):
 		try:
@@ -168,19 +167,18 @@ class CalObj(gtk.DrawingArea, CalBase):
 		self.connect("scroll-event", self.scroll)
 
 	def optionsWidgetCreate(self):
-		from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
-		from scal3.ui_gtk.pref_utils import CheckPrefItem, ColorPrefItem
+		from scal3.ui_gtk.pref_utils import LiveLabelSpinPrefItem, SpinPrefItem, \
+			CheckPrefItem, ColorPrefItem
 		if self.optionsWidget:
 			return
 		self.optionsWidget = gtk.VBox()
 		####
-		hbox = gtk.HBox()
-		spin = IntSpinButton(1, 9999)
-		spin.set_value(ui.dcalHeight)
-		spin.connect("changed", self.heightSpinChanged)
-		pack(hbox, gtk.Label(_("Height")))
-		pack(hbox, spin)
-		pack(self.optionsWidget, hbox)
+		prefItem = LiveLabelSpinPrefItem(
+			_("Height"),
+			SpinPrefItem(ui, "dcalHeight", 1, 9999, digits=0),
+			self.heightUpdate,
+		)
+		pack(self.optionsWidget, prefItem._widget)
 		########
 		frame = gtk.Frame()
 		frame.set_label(_("Calendars"))
