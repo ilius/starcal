@@ -46,7 +46,7 @@ class CalObj(gtk.ProgressBar, CustomizableCalObj):
 			ui,
 			"seasonPBar_southernHemisphere",
 			label=_("Southern Hemisphere"),
-			calObj=self,
+			onChangeFunc=self.onDateChange,
 		)
 		pack(self.optionsWidget, prefItem._widget)
 		####

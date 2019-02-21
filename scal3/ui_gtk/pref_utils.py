@@ -276,17 +276,17 @@ class CheckPrefItem(PrefItem):
 
 
 class LiveCheckPrefItem(CheckPrefItem):
-	def __init__(self, module, varName, label="", tooltip="", calObj: "Optional[CalBase]" = None):
+	def __init__(self, module, varName, label="", tooltip="", onChangeFunc: "Optional[Callable]" = None):
 		CheckPrefItem.__init__(self, module, varName, label=label, tooltip=tooltip)
-		self._calObj = calObj
+		self._onChangeFunc = onChangeFunc
 		# updateWidget needs to be called before following connect() calls
 		self.updateWidget()
 		self._widget.connect("clicked", self.onClicked)
 
 	def onClicked(self, w):
 		self.updateVar()
-		if self._calObj:
-			self._calObj.onConfigChange()
+		if self._onChangeFunc:
+			self._onChangeFunc()
 
 class ColorPrefItem(PrefItem):
 	def __init__(self, module, varName, useAlpha=False):
@@ -321,17 +321,17 @@ class ColorPrefItem(PrefItem):
 
 
 class LiveColorPrefItem(ColorPrefItem):
-	def __init__(self, module, varName, useAlpha=False, calObj: "Optional[CalBase]" = None):
+	def __init__(self, module, varName, useAlpha=False, onChangeFunc: "Optional[Callable]" = None):
 		ColorPrefItem.__init__(self, module, varName, useAlpha=useAlpha)
-		self._calObj = calObj
+		self._onChangeFunc = onChangeFunc
 		# updateWidget needs to be called before following connect() calls
 		self.updateWidget()
 		self._widget.connect("color-set", self.onColorSet)
 
 	def onColorSet(self, w):
 		self.updateVar()
-		if self._calObj:
-			self._calObj.onConfigChange()
+		if self._onChangeFunc:
+			self._onChangeFunc()
 
 
 # combination of CheckPrefItem and ColorPrefItem in a HBox, with auto-update / auto-apply, for use in Customize window
