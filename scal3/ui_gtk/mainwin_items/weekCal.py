@@ -1068,7 +1068,7 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
 		prefItem = LiveCheckColorPrefItem(
 			CheckPrefItem(ui, "wcalGrid", _("Grid")),
 			ColorPrefItem(ui, "wcalGridColor", True),
-			self,
+			self.queue_draw,
 		)
 		hbox = prefItem._widget
 		###

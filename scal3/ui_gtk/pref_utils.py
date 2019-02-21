@@ -336,10 +336,10 @@ class LiveColorPrefItem(ColorPrefItem):
 
 # combination of CheckPrefItem and ColorPrefItem in a HBox, with auto-update / auto-apply, for use in Customize window
 class LiveCheckColorPrefItem(PrefItem):
-	def __init__(self, checkItem: CheckPrefItem, colorItem: ColorPrefItem, calObj: "Optional[CalBase]" = None):
+	def __init__(self, checkItem: CheckPrefItem, colorItem: ColorPrefItem, onChangeFunc: "Optional[Callable]" = None):
 		self._checkItem = checkItem
 		self._colorItem = colorItem
-		self._calObj = calObj
+		self._onChangeFunc = onChangeFunc
 
 		checkb = self._checkItem._widget
 		colorb = self._colorItem._widget
@@ -367,8 +367,8 @@ class LiveCheckColorPrefItem(PrefItem):
 	def onChange(self, w):
 		self.updateVar()
 		self._colorItem._widget.set_sensitive(self._checkItem.get())
-		if self._calObj:
-			self._calObj.onConfigChange()
+		if self._onChangeFunc:
+			self._onChangeFunc()
 
 
 class SpinPrefItem(PrefItem):
