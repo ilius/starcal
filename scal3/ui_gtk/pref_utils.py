@@ -363,6 +363,7 @@ class LiveCheckColorPrefItem(PrefItem):
 		# FIXME: this func is triggering onChange func, can we avoid that?
 		self._checkItem.updateWidget()
 		self._colorItem.updateWidget()
+		self._colorItem._widget.set_sensitive(self._checkItem.get())
 
 	def onChange(self, w):
 		self.updateVar()
