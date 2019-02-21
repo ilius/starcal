@@ -94,9 +94,9 @@ class ColumnBase(CustomizableCalObj):
 		if self.customizeWidth:
 			self.setWidthWidget(self.getWidthValue())
 
-	def widthSpinChanged(self, spin):
+	def widthChanged(self):
 		if self._name:
-			value = spin.get_value()
+			value = self.getWidthValue()
 			self.setWidthValue(value)
 			self.setWidthWidget(value)
 
@@ -116,22 +116,19 @@ class ColumnBase(CustomizableCalObj):
 			self.onDateChange()
 
 	def optionsWidgetCreate(self):
-		from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
+		from scal3.ui_gtk.pref_utils import LiveLabelSpinPrefItem, SpinPrefItem
 		from scal3.ui_gtk.mywidgets import MyColorButton
 		if self.optionsWidget:
 			return
 		self.optionsWidget = gtk.VBox()
 		####
 		if self.customizeWidth:
-			value = self.getWidthValue()
-			###
-			hbox = gtk.HBox()
-			pack(hbox, gtk.Label(_("Width")))
-			spin = IntSpinButton(0, 999)
-			pack(hbox, spin)
-			spin.set_value(value)
-			spin.connect("changed", self.widthSpinChanged)
-			pack(self.optionsWidget, hbox)
+			prefItem = LiveLabelSpinPrefItem(
+				_("Width"),
+				SpinPrefItem(ui, self.getWidthAttr(), 1, 999, digits=0),
+				self.widthChanged,
+			)
+			pack(self.optionsWidget, prefItem._widget)
 		####
 		if self.customizeFont:
 			hbox = gtk.HBox()
@@ -1042,48 +1039,39 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
 			self.appendItem(item)
 
 	def optionsWidgetCreate(self):
-		from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
-		from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
-		from scal3.ui_gtk.pref_utils import LiveCheckColorPrefItem, CheckPrefItem, ColorPrefItem
+		from scal3.ui_gtk.pref_utils import LiveLabelSpinPrefItem, SpinPrefItem, \
+			LiveCheckColorPrefItem, CheckPrefItem, ColorPrefItem
+
 		if self.optionsWidget:
 			return
 		ColumnBase.optionsWidgetCreate(self)
 		#####
-		hbox = gtk.HBox()
-		spin = IntSpinButton(1, 9999)
-		spin.set_value(ui.wcalHeight)
-		spin.connect("changed", self.heightSpinChanged)
-		pack(hbox, gtk.Label(_("Height")))
-		pack(hbox, spin)
-		pack(self.optionsWidget, hbox)
+		prefItem = LiveLabelSpinPrefItem(
+			_("Height"),
+			SpinPrefItem(ui, "wcalHeight", 1, 9999, digits=0),
+			self.heightUpdate,
+		)
+		pack(self.optionsWidget, prefItem._widget)
 		###
-		hbox = gtk.HBox()
-		spin = FloatSpinButton(0.01, 1, 2)
-		spin.set_value(ui.wcalTextSizeScale)
-		spin.connect("changed", self.textSizeScaleSpinChanged)
-		pack(hbox, gtk.Label(_("Text Size Scale")))
-		pack(hbox, spin)
-		pack(self.optionsWidget, hbox)
+		prefItem = LiveLabelSpinPrefItem(
+			_("Text Size Scale"),
+			SpinPrefItem(ui, "wcalTextSizeScale", 0.01, 1, digits=2),
+			self.queue_draw,
+		)
+		pack(self.optionsWidget, prefItem._widget)
 		########
 		prefItem = LiveCheckColorPrefItem(
 			CheckPrefItem(ui, "wcalGrid", _("Grid")),
 			ColorPrefItem(ui, "wcalGridColor", True),
 			self.queue_draw,
 		)
-		hbox = prefItem._widget
-		###
-		pack(self.optionsWidget, hbox)
+		pack(self.optionsWidget, prefItem._widget)
 		###
 		self.optionsWidget.show_all()
 
-	def heightSpinChanged(self, spin):
-		v = spin.get_value()
-		self.set_property("height-request", v)
-		ui.wcalHeight = v
-
-	def textSizeScaleSpinChanged(self, spin):
-		ui.wcalTextSizeScale = spin.get_value()
-		self.queue_draw()
+	def heightUpdate(self):
+		self.set_property("height-request", ui.wcalHeight)
+		self.onDateChange() # just to resize the main window when decreasing wcalHeight
 
 	def updateVars(self):
 		CustomizableCalBox.updateVars(self)

@@ -388,6 +388,36 @@ class SpinPrefItem(PrefItem):
 		self._widget.set_value(value)
 
 
+class LiveLabelSpinPrefItem(PrefItem):
+	def __init__(self, label: str, spinItem: SpinPrefItem, onChangeFunc: "Optional[Callable]" = None):
+		self._spinItem = spinItem
+		self._onChangeFunc = onChangeFunc
+
+		spinb = self._spinItem._widget
+
+		hbox = gtk.HBox(spacing=3)
+		pack(hbox, gtk.Label(label))
+		pack(hbox, spinb)
+		self._widget = hbox
+
+		# updateWidget needs to be called before following connect() calls
+		self.updateWidget()
+
+		spinb.connect("changed", self.onChange)
+
+	def updateVar(self):
+		self._spinItem.updateVar()
+
+	def updateWidget(self):
+		# FIXME: this func is triggering onChange func, can we avoid that?
+		self._spinItem.updateWidget()
+
+	def onChange(self, w):
+		self.updateVar()
+		if self._onChangeFunc:
+			self._onChangeFunc()
+
+
 class WidthHeightPrefItem(PrefItem):
 	def __init__(self, module, varName, _max):
 		_min = 0
