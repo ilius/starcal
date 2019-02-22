@@ -120,6 +120,7 @@ confParamsCustomize = (
 	"wcalPastTextColor_eventsText",
 	"wcal_toolbar_mainMenu_icon",
 	"wcal_weekDays_width",
+	"wcal_weekDays_expand",
 	"wcalFont_weekDays",
 	"wcalFont_pluginsText",
 	"wcal_eventsIcon_width",
@@ -129,8 +130,9 @@ confParamsCustomize = (
 	"wcal_daysOfMonth_dir",
 	"wcalTypeParams",
 	"wcal_daysOfMonth_width",
-	"wcal_eventsCount_expand",
+	"wcal_daysOfMonth_expand",
 	"wcal_eventsCount_width",
+	"wcal_eventsCount_expand",
 	"wcalFont_eventsBox",
 	"wcal_moonPhase_width",
 	"dcalHeight",
@@ -860,12 +862,14 @@ wcal_toolbar_mainMenu_icon = "starcal-24.png"
 wcal_toolbar_mainMenu_icon_default = wcal_toolbar_mainMenu_icon
 wcal_toolbar_weekNum_negative = False
 wcal_weekDays_width = 80
+wcal_weekDays_expand = False
 wcal_eventsCount_width = 80
 wcal_eventsCount_expand = False
 wcal_eventsIcon_width = 50
 wcal_eventsText_showDesc = False
 wcal_eventsText_colorize = True
 wcal_daysOfMonth_width = 30
+wcal_daysOfMonth_expand = False
 wcal_daysOfMonth_dir = "ltr"  # ltr/rtl/auto
 wcalFont_eventsText = None
 wcalFont_weekDays = None

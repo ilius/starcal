@@ -53,6 +53,7 @@ def show_event(widget, gevent):
 
 class ColumnBase(CustomizableCalObj):
 	customizeWidth = False
+	customizeExpand = False
 	customizeFont = False
 	customizePastTextColor = False
 	autoButtonPressHandler = True
@@ -64,11 +65,14 @@ class ColumnBase(CustomizableCalObj):
 	def getWidthValue(self):
 		return getattr(ui, self.getWidthAttr(), None)
 
-	def setWidthValue(self, value):
-		return setattr(ui, self.getWidthAttr(), value)
-
 	def setWidthWidget(self, value):
 		return self.set_property("width-request", value)
+
+	def getExpandAttr(self):
+		return "wcal_%s_expand" % self._name
+
+	def getExpandValue(self):
+		return getattr(ui, self.getExpandAttr(), None)
 
 	def getFontAttr(self):
 		return "wcalFont_%s" % self._name
@@ -95,8 +99,8 @@ class ColumnBase(CustomizableCalObj):
 
 	def widthChanged(self):
 		if self._name:
+			# self.updatePacking()
 			value = self.getWidthValue()
-			self.setWidthValue(value)
 			self.setWidthWidget(value)
 
 	def fontFamilyComboChanged(self, combo):
@@ -106,7 +110,7 @@ class ColumnBase(CustomizableCalObj):
 
 	def optionsWidgetCreate(self):
 		from scal3.ui_gtk.pref_utils import LiveLabelSpinPrefItem, SpinPrefItem, \
-			LiveCheckColorPrefItem, CheckPrefItem, ColorPrefItem
+			LiveCheckColorPrefItem, CheckPrefItem, ColorPrefItem, LiveCheckPrefItem
 		from scal3.ui_gtk.mywidgets.font_family_combo import FontFamilyCombo
 		if self.optionsWidget:
 			return
@@ -117,6 +121,15 @@ class ColumnBase(CustomizableCalObj):
 				_("Width"),
 				SpinPrefItem(ui, self.getWidthAttr(), 1, 999, digits=0),
 				self.widthChanged,
+			)
+			pack(self.optionsWidget, prefItem._widget)
+		####
+		if self.customizeExpand:
+			prefItem = LiveCheckPrefItem(
+				ui,
+				self.getExpandAttr(),
+				_("Expand"),
+				onChangeFunc=self.expandCheckClicked,
 			)
 			pack(self.optionsWidget, prefItem._widget)
 		####
@@ -139,6 +152,19 @@ class ColumnBase(CustomizableCalObj):
 		####
 		self.optionsWidget.show_all()
 
+	def updatePacking(self):
+		self._parent.set_child_packing(
+			self,
+			self.expand,
+			self.expand,
+			0,
+			gtk.PackType.START,
+		)
+
+	def expandCheckClicked(self):
+		self.expand = self.getExpandValue()
+		self.updatePacking()
+		self.queue_draw()
 
 class Column(gtk.DrawingArea, ColumnBase):
 	colorizeHolidayText = False
@@ -152,6 +178,9 @@ class Column(gtk.DrawingArea, ColumnBase):
 		#self.connect("button-press-event", self.buttonPress)
 		#self.connect("event", show_event)
 		self.wcal = wcal
+		self._parent = wcal
+		if self.customizeExpand:
+			self.expand = self.getExpandValue()
 
 	def getContext(self):
 		return self.get_window().cairo_create()
@@ -410,6 +439,7 @@ class WeekDaysColumn(Column):
 	colorizeHolidayText = True
 	showCursor = True
 	customizeWidth = True
+	customizeExpand = True
 	customizeFont = True
 
 	def __init__(self, wcal):
@@ -516,10 +546,10 @@ class EventsCountColumn(Column):
 	_name = "eventsCount"
 	desc = _("Events Count")
 	customizeWidth = True
+	customizeExpand = True
 
 	def __init__(self, wcal):
 		Column.__init__(self, wcal)
-		self.expand = ui.wcal_eventsCount_expand
 		##
 		self.connect("draw", self.onExposeEvent)
 
@@ -527,21 +557,8 @@ class EventsCountColumn(Column):
 		if self.optionsWidget:
 			return
 		Column.optionsWidgetCreate(self)
-		#####
-		hbox = gtk.HBox()
-		check = gtk.CheckButton(_("Expand"))
-		check.set_active(ui.wcal_eventsCount_expand)
-		check.connect("clicked", self.expandCheckClicked)
-		pack(hbox, check)
-		pack(hbox, gtk.Label(""), 1, 1)
-		pack(self.optionsWidget, hbox)
+		###
 		self.optionsWidget.show_all()
-
-	def expandCheckClicked(self, check):
-		active = check.get_active()
-		self.expand = ui.wcal_eventsCount_expand = active
-		self.wcal.set_child_packing(self, active, active, 0, gtk.PACK_START)
-		self.queue_draw()
 
 	def getDayTextData(self, i):
 		n = len(self.wcal.status[i].eventsData)
@@ -726,6 +743,7 @@ class WcalTypeParamBox(gtk.HBox):
 		from scal3.ui_gtk.mywidgets import MyFontButton
 		gtk.HBox.__init__(self)
 		self.wcal = wcal
+		self._parent = wcal
 		self.index = index
 		self.mode = mode
 		######
@@ -812,6 +830,7 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
 	_name = "daysOfMonth"
 	desc = _("Days of Month")
 	customizeWidth = True
+	customizeExpand = True
 
 	def updateDir(self):
 		return self.set_direction(ud.textDirDict[ui.wcal_daysOfMonth_dir])
@@ -820,6 +839,7 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
 		gtk.HBox.__init__(self)
 		self.initVars()
 		self.wcal = wcal
+		self._parent = wcal
 		self.updateCols()
 		self.updateDir()
 		self.show()
@@ -848,9 +868,19 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
 		####
 		self.optionsWidget.show_all()
 
-	def setWidthWidget(self, value):## overwrites method from ColumnBase
+	# overwrites method from ColumnBase
+	def updatePacking(self):
+		ColumnBase.updatePacking(self)
+		for child in self.get_children():
+			child.expand = self.expand
+			child.updatePacking()
+
+	# overwrites method from ColumnBase
+	def setWidthWidget(self, value):
+		self.expand = self.getExpandValue()
 		for child in self.get_children():
 			child.set_property("width-request", value)
+		self.updatePacking()
 
 	def dirComboChanged(self, combo):
 		ui.wcal_daysOfMonth_dir = combo.getValue()
@@ -872,6 +902,7 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
 		elif n < n2:
 			for i in range(n, n2):
 				col = DaysOfMonthColumn(self.wcal, self, 0, i)
+				col._parent = self
 				pack(self, col)
 				columns.append(col)
 		for i, mode in enumerate(calTypes.active):
