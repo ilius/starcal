@@ -1302,7 +1302,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 	def customizeDialogCreate(self):
 		if not self.customizeDialog:
 			from scal3.ui_gtk.customize_dialog import CustomizeDialog
-			self.customizeDialog = CustomizeDialog(self.vbox)
+			self.customizeDialog = CustomizeDialog(self.vbox, parent=self)
 
 	def switchWcalMcal(self, widget=None):
 		self.customizeDialogCreate()
