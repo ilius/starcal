@@ -554,10 +554,11 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		from scal3.ui_gtk.event.editor import EventEditorDialog
 		event = ui.getEvent(groupId, eventId)
 		group = ui.eventGroups[groupId]
+		parent = self
 		event = EventEditorDialog(
 			event,
 			title=_("Edit ") + event.desc,
-			parent=self,## FIXME
+			parent=parent,
 		).run()
 		if event is None:
 			return
