@@ -243,6 +243,7 @@ class CustomizeDialog(gtk.Dialog):
 		###
 		if active:
 			item = self.loadItem(parentItem, itemIndex, path)
+			item.onConfigChange()
 		item.enable = active
 		item.showHide()
 		if item.customizable:
