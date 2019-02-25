@@ -11,7 +11,6 @@ class IntSpinButton(SingleSpinButton):
 			**kwargs
 		)
 
-	def set_range(self, _min, _max):
-		SingleSpinButton.set_range(self, _min, _max)
+	def set_range(self, _min: int, _max: int):
 		self.field.children[0].setRange(_min, _max)
 		self.set_text(self.field.getText())

@@ -33,21 +33,96 @@ from scal3 import ui
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
 
-
 @registerSignals
-class MultiSpinButton(gtk.SpinButton):
+class MultiSpinButton(gtk.HBox):
 	signals = [
 		("first-min", []),
 		("first-max", []),
 	]
 
-	def __init__(self, sep, fields, arrow_select=True, page_inc=10):
-		gtk.SpinButton.__init__(self)
+	def set_width_chars(self, w: int):
+		self.entry.set_width_chars(w)
+
+	def get_text(self) -> str:
+		return self.entry.get_text()
+
+	def set_text(self, text: str) -> None:
+		self.entry.set_text(text)
+
+	def connect(self, sigName, *args):
+		if sigName in ("changed", "activate"):
+			return self.entry.connect(sigName, *args)
+		# print("------ MultiSpinButton: sigName =", sigName)
+		return gtk.HBox.connect(self, sigName, *args)
+
+	def get_increments() -> "Tuple[int, int]":
+		return (self.step_inc, self.page_inc)
+
+	# def set_range(self, _min: int, _max: int):
+	# 	self.field.children[0].setRange(_min, _max)
+	# 	self.set_text(self.field.getText())
+
+	def __init__(self, sep, fields, arrow_select=True, step_inc=1, page_inc=10):
+		gtk.HBox.__init__(self)
+		self.entry = gtk.Entry()
+		##
+		self.step_inc = step_inc
+		self.page_inc = page_inc
+		##
+		button_size = gtk.IconSize.SMALL_TOOLBAR # FIXME
+		# 0 = IconSize.INVALID
+		# 1 = IconSize.MENU
+		# 2 = IconSize.SMALL_TOOLBAR
+		# 3 = IconSize.LARGE_TOOLBAR
+		# 4 = IconSize.BUTTON
+		# 5 = IconSize.DND
+		# 6 = IconSize.DIALOG
+		###
+		# in Gtk's sourc code, icon names are "value-decrease-symbolic" and "value-increase-symbolic"
+		# but I can not find these icons (and my Gtk does not either)
+		# instead "list-remove-symbolic" and "list-add-symbolic" used in this patch, work perfectly
+		# https://gitlab.gnome.org/GNOME/gtk/commit/5fd936beef7a999828e5e3625506ea6708188762
+		###
+		self.down_button = gtk.Button()
+		self.down_button.add(gtk.Image.new_from_icon_name("list-remove-symbolic", button_size))
+		self.down_button.get_style_context().add_class("image-button")
+		self.down_button.set_can_focus(False)
+		self.down_button.get_style_context().add_class("down")
+		self.down_button.connect("button-press-event", self.down_button_pressed)
+		self.down_button.connect("button-release-event", self._button_release)
+		###
+		self.up_button = gtk.Button()
+		self.up_button.add(gtk.Image.new_from_icon_name("list-add-symbolic", button_size))
+		self.up_button.get_style_context().add_class("image-button")
+		self.up_button.set_can_focus(False)
+		self.up_button.get_style_context().add_class("up")
+		self.up_button.connect("button-press-event", self.up_button_pressed)
+		self.up_button.connect("button-release-event", self._button_release)
+		###
+		pack(self, self.entry, expand=True, fill=True)
+		pack(self, self.down_button)
+		pack(self, self.up_button)
+		####
+		# priv->down_button = gtk_button_new ();
+		# gtk_container_add (GTK_CONTAINER (priv->down_button), gtk_image_new_from_icon_name ("value-decrease-symbolic"));
+		# gtk_style_context_add_class (gtk_widget_get_style_context (priv->down_button), "image-button");
+		# gtk_widget_set_can_focus (priv->down_button, FALSE);
+		# gtk_style_context_add_class (gtk_widget_get_style_context (priv->down_button), "down");
+		# gtk_container_add (GTK_CONTAINER (priv->box), priv->down_button);
+
+		# gesture = gtk_gesture_multi_press_new ();
+		# gtk_gesture_single_set_button (GTK_GESTURE_SINGLE (gesture), 0);
+		# gtk_gesture_single_set_touch_only (GTK_GESTURE_SINGLE (gesture), FALSE);
+		# gtk_event_controller_set_propagation_phase (GTK_EVENT_CONTROLLER (gesture),
+		# 											GTK_PHASE_CAPTURE);
+		# g_signal_connect (gesture, "pressed", G_CALLBACK (button_pressed_cb), spin_button);
+		# g_signal_connect (gesture, "released", G_CALLBACK (button_released_cb), spin_button);
+		# gtk_widget_add_controller (GTK_WIDGET (priv->down_button), GTK_EVENT_CONTROLLER (gesture));
 		####
 		sep = toStr(sep)
 		self.field = ContainerField(sep, *fields)
 		self.arrow_select = arrow_select
-		self.set_editable(True)
+		self.entry.set_editable(True)
 		###
 		self.digs = locale_man.getDigits()
 		###
@@ -55,74 +130,68 @@ class MultiSpinButton(gtk.SpinButton):
 		self.set_direction(gtk.TextDirection.LTR) ## self is a gtk.Entry
 		self.set_width_chars(self.field.getMaxWidth())
 		#print(self.__class__.__name__, "value=", value)
-		gtk.SpinButton.set_value(self, 0)
-		gtk.SpinButton.set_range(self, -2, 2)
-		self.set_digits(0)
-		self.set_increments(1, page_inc)
 		#self.connect("activate", lambda obj: self.update())
-		self.connect("activate", self._entry_activate)
-		self.connect("key-press-event", self._key_press)
-		self.connect("scroll-event", self._scroll)
-		self.connect("button-press-event", self._button_press)
-		self.connect("button-release-event", self._button_release)
-		self.connect("output", lambda obj: True)
-		# ^^ Disable auto-numeric-validation (the entry text is not a numebr)
+		self.entry.connect("activate", self._entry_activate)
+		for widget in (self, self.entry, self.down_button, self.up_button):
+			widget.connect("key-press-event", self._key_press)
+		self.entry.connect("scroll-event", self._scroll)
+		# self.connect("button-press-event", self._button_press) # FIXME
+		# self.connect("button-release-event", self._button_release) # FIXME
 		####
 		#self.select_region(0, 0)
 
 	def _entry_activate(self, widget):
-		#print("_entry_activate", self.get_text())
+		#print("_entry_activate", self.entry.get_text())
 		self.update()
-		#print(self.get_text())
+		#print(self.entry.get_text())
 		return True
 
 	def get_value(self):
-		self.field.setText(self.get_text())
+		self.field.setText(self.entry.get_text())
 		return self.field.getValue()
 
 	def set_value(self, value):
-		if isinstance(value, (int, float)):
-			gtk.SpinButton.set_value(self, value)
-		pos = self.get_position()
+		pos = self.entry.get_position()
 		self.field.setValue(value)
-		self.set_text(self.field.getText())
-		self.set_position(pos)
+		self.entry.set_text(self.field.getText())
+		self.entry.set_position(pos)
 
 	def update(self):
-		pos = self.get_position()
-		self.field.setText(toStr(self.get_text()))
-		self.set_text(self.field.getText())
-		self.set_position(pos)
+		pos = self.entry.get_position()
+		self.field.setText(toStr(self.entry.get_text()))
+		self.entry.set_text(self.field.getText())
+		self.entry.set_position(pos)
 
 	def insertText(self, s, clearSeceltion=True):
 		selection = self.get_selection_bounds()
 		if selection and clearSeceltion:
 			start, end = selection
-			text = toStr(self.get_text())
+			text = toStr(self.entry.get_text())
 			text = text[:start] + s + text[end:]
-			self.set_text(text)
-			self.set_position(start + len(s))
+			self.entry.set_text(text)
+			self.entry.set_position(start + len(s))
 		else:
-			pos = self.get_position()
+			pos = self.entry.get_position()
 			self.insert_text(s, pos)
-			self.set_position(pos + len(s))
+			self.entry.set_position(pos + len(s))
 
 	def entry_plus(self, p):
 		self.update()
-		pos = self.get_position()
+		pos = self.entry.get_position()
 		self.field.getFieldAt(
-			toStr(self.get_text()),
-			self.get_position()
+			toStr(self.entry.get_text()),
+			self.entry.get_position()
 		).plus(p)
-		self.set_text(self.field.getText())
-		self.set_position(pos)
+		self.entry.set_text(self.field.getText())
+		self.entry.set_position(pos)
 
 	def _key_press(self, widget, gevent):
 		kval = gevent.keyval
 		kname = gdk.keyval_name(kval).lower()
 		size = len(self.field)
 		sep = self.field.sep
-		step_inc, page_inc = self.get_increments()
+		step_inc = self.step_inc
+		page_inc = self.page_inc
 		if kname in (
 			"up",
 			"down",
@@ -131,7 +200,7 @@ class MultiSpinButton(gtk.SpinButton):
 			"left",
 			"right",
 		):
-			if not self.get_editable():
+			if not self.entry.get_editable():
 				return True
 			if kname in ("left", "right"):
 				return False
@@ -178,61 +247,20 @@ class MultiSpinButton(gtk.SpinButton):
 			#print(kname, kval)
 			return False
 
-	def _button_press(self, widget, gevent):
-		gwin = gevent.window
-		r = self.get_allocation()
-		##print(gwin.get_property("name"))
-		# ^TypeError: object of type `GdkX11Window" does not have property `name"
-		#print("allocation", r.width, r.height)
-		#print(gevent.x, gevent.y)
-		#print(gwin.get_position())
-		#print(dir(gwin))
-		if not self.has_focus():
-			self.grab_focus()
-		if self.get_editable():
-			self.update()
-		#height = self.size_request().height
-		get_size = lambda gw: (gw.get_width(), gw.get_height())
-		step_inc, page_inc = self.get_increments()
-		gwin_list = self.get_window().get_children()
-		gwin_index = gwin_list.index(gwin)
-		gwin_width = get_size(gwin)[0]
-		button_type = None ## "+", "-"
-		try:
-			if abs(gwin_width - get_size(gwin_list[gwin_index + 1])[0]) < 2:
-				button_type = "+"
-		except IndexError:
-			pass
-		if gwin_index > 0:
-			if abs(gwin_width - get_size(gwin_list[gwin_index - 1])[0]) < 2:
-				button_type = "-"
-		#print("_button_press", button_type)
-		if button_type == "+":
-			if gevent.button == 1:
-				self._arrow_press(step_inc)
-			elif gevent.button == 2:
-				self._arrow_press(page_inc)
-			return True
-		elif button_type == "-":
-			if gevent.button == 1:
-				self._arrow_press(-step_inc)
-			else:
-				self._arrow_press(-page_inc)
-			return True
-		#elif button_type == "text":## TEXT ENTRY
-		#	if gevent.type==TWO_BUTTON_PRESS:
-		#		pass ## FIXME
-		#		## select the numeric part containing cursor
-		#		#return True
-		return False
+	def down_button_pressed(self, button, gevent):
+		self._arrow_press(-self.step_inc)
+
+
+	def up_button_pressed(self, button, gevent):
+		self._arrow_press(self.step_inc)
 
 	def _scroll(self, widget, gevent):
 		d = getScrollValue(gevent)
 		if d in ("up", "down"):
-			if not self.has_focus():
-				self.grab_focus()
-			if self.get_editable():
-				plus = (1 if d == "up" else -1) * self.get_increments()[0]
+			if not self.entry.has_focus():
+				self.entry.grab_focus()
+			if self.entry.get_editable():
+				plus = (1 if d == "up" else -1) * self.step_inc
 				self.entry_plus(plus)
 		else:
 			return False
@@ -250,7 +278,7 @@ class MultiSpinButton(gtk.SpinButton):
 
 	def _arrow_remain(self, plus):
 		if (
-			self.get_editable()
+			self.entry.get_editable()
 			and
 			self._remain
 			and
@@ -287,11 +315,11 @@ class SingleSpinButton(MultiSpinButton):
 			(field,),
 			**kwargs
 		)
-		if isinstance(field, NumField):
-			gtk.SpinButton.set_range(self, field._min, field._max)
+		# if isinstance(field, NumField):
+		# 	gtk.SpinButton.set_range(self, field._min, field._max)
 
-	def set_range(self, _min, _max):
-		gtk.SpinButton.set_range(self, _min, _max)
+	# def set_range(self, _min, _max): FIXME
+	# 	gtk.SpinButton.set_range(self, _min, _max)
 
 	def get_value(self):
 		return MultiSpinButton.get_value(self)[0]
