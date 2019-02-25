@@ -11,3 +11,7 @@ class FloatSpinButton(SingleSpinButton):
 			FloatField(_min, _max, digits),
 			**kwargs
 		)
+
+	def set_range(self, _min: float, _max: float):
+		self.field.children[0].setRange(_min, _max)
+		self.set_text(self.field.getText())
