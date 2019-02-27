@@ -24,7 +24,7 @@ msgstr ""
 
 msgid "_Apply"
 msgstr ""
-"_اعمال"
+"ا_عمال"
 
 msgid "Cancel"
 msgstr ""
@@ -33,7 +33,7 @@ msgstr ""
 
 msgid "_Cancel"
 msgstr ""
-"_انصراف"
+"ا_نصراف"
 
 msgid "_Close"
 msgstr ""
@@ -1875,13 +1875,18 @@ msgid "Type"
 msgstr ""
 "نوع"
 
+
 msgid "_General"
 msgstr ""
 "ع_مومی"
 
-msgid "A_ppearance"
+msgid "Appeara_nce"
 msgstr ""
 "_ظاهر"
+
+msgid "_Regional"
+msgstr ""
+"من_طقه‌ای"
 
 msgid "_Plugins"
 msgstr ""
@@ -1891,14 +1896,15 @@ msgid "A_dvanced"
 msgstr ""
 "_پیشرفته"
 
-msgid "Account"
-msgstr ""
-"حساب"
-
-
 msgid "Accounts"
 msgstr ""
 "حساب‌ها"
+
+
+
+msgid "Account"
+msgstr ""
+"حساب"
 
 msgid "Edit Account"
 msgstr ""

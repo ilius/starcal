@@ -178,7 +178,8 @@ class PrefDialog(gtk.Dialog):
 		pack(vbox, hbox)
 		################################ Tab 2 (Appearance) ##################
 		vbox = gtk.VBox()
-		vbox.label = _("A_ppearance")
+		# A is for Apply, P is for Plugins, R is for Regional, C is for Cancel, only "n" is left!
+		vbox.label = _("Appeara_nce")
 		vbox.icon = "preferences-desktop-theme.png"
 		self.prefPages.append(vbox)
 		########
@@ -383,10 +384,10 @@ class PrefDialog(gtk.Dialog):
 		checkItem.syncSensitive(item._widget, reverse=False)
 		####
 		pack(vbox, exp)
-		################################ Tab 3 (Advanced) ###################
+		################################ Tab 3 (Regional) ###################
 		vbox = gtk.VBox()
-		vbox.label = _("A_dvanced")
-		vbox.icon = "applications-system.png"
+		vbox.label = _("_Regional")
+		vbox.icon = "preferences-desktop-locale.png"
 		self.prefPages.append(vbox)
 		######
 		sgroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
@@ -410,43 +411,6 @@ class PrefDialog(gtk.Dialog):
 		self.gtkPrefItems.append(item)
 		pack(hbox, item._widget, 1, 1)
 		pack(vbox, hbox)
-		###
-		hbox = gtk.HBox(spacing=5)
-		#pack(hbox, gtk.Label(""), 1, 1)
-		label = gtk.Label(_("Digital Clock Format"))
-		label.set_alignment(0, 0.5)
-		pack(hbox, label)
-		sgroup.add_widget(label)
-		item = ComboEntryTextPrefItem(ud, "clockFormat", (
-			"%T",
-			"%X",
-			"%Y/%m/%d - %T",
-			"%OY/%Om/%Od - %X",
-			"<i>%Y/%m/%d</i> - %T",
-			"<b>%T</b>",
-			"<b>%X</b>",
-			"%H:%M",
-			"<b>%H:%M</b>",
-			"<span size=\"smaller\">%OY/%Om/%Od</span>,%X"
-			"%OY/%Om/%Od,<span color=\"#ff0000\">%X</span>",
-			"<span font=\"bold\">%X</span>",
-			"%OH:%OM",
-			"<b>%OH:%OM</b>",
-		))
-		self.gtkPrefItems.append(item)
-		pack(hbox, item._widget, 1, 1)
-		pack(vbox, hbox)
-		######
-		hbox = gtk.HBox(spacing=5)
-		label = gtk.Label(_("Days maximum cache size"))
-		label.set_alignment(0, 0.5)
-		pack(hbox, label)
-		##sgroup.add_widget(label)
-		item = SpinPrefItem(ui, "maxDayCacheSize", 100, 9999, 0)
-		self.uiPrefItems.append(item)
-		pack(hbox, item._widget)
-		pack(vbox, hbox)
-		vbox4 = vbox
 		########
 		hbox = gtk.HBox(spacing=3)
 		pack(hbox, gtk.Label(_("First day of week")))
@@ -511,7 +475,48 @@ class PrefDialog(gtk.Dialog):
 				options.append(optl)
 				pack(vbox, optl._widget)
 		self.moduleOptions = options
-		################################ Tab 4 (Plugins) ####################
+		################################ Tab 4 (Advanced) ###################
+		vbox = gtk.VBox()
+		vbox.label = _("A_dvanced")
+		vbox.icon = "applications-system.png"
+		self.prefPages.append(vbox)
+		######
+		hbox = gtk.HBox(spacing=5)
+		#pack(hbox, gtk.Label(""), 1, 1)
+		label = gtk.Label(_("Digital Clock Format"))
+		label.set_alignment(0, 0.5)
+		pack(hbox, label)
+		#sgroup.add_widget(label)
+		item = ComboEntryTextPrefItem(ud, "clockFormat", (
+			"%T",
+			"%X",
+			"%Y/%m/%d - %T",
+			"%OY/%Om/%Od - %X",
+			"<i>%Y/%m/%d</i> - %T",
+			"<b>%T</b>",
+			"<b>%X</b>",
+			"%H:%M",
+			"<b>%H:%M</b>",
+			"<span size=\"smaller\">%OY/%Om/%Od</span>,%X"
+			"%OY/%Om/%Od,<span color=\"#ff0000\">%X</span>",
+			"<span font=\"bold\">%X</span>",
+			"%OH:%OM",
+			"<b>%OH:%OM</b>",
+		))
+		self.gtkPrefItems.append(item)
+		pack(hbox, item._widget, 1, 1)
+		pack(vbox, hbox)
+		######
+		hbox = gtk.HBox(spacing=5)
+		label = gtk.Label(_("Days maximum cache size"))
+		label.set_alignment(0, 0.5)
+		pack(hbox, label)
+		##sgroup.add_widget(label)
+		item = SpinPrefItem(ui, "maxDayCacheSize", 100, 9999, 0)
+		self.uiPrefItems.append(item)
+		pack(hbox, item._widget)
+		pack(vbox, hbox)
+		################################ Tab 5 (Plugins) ####################
 		vbox = gtk.VBox()
 		vbox.label = _("_Plugins")
 		vbox.icon = "preferences-plugin.png"
@@ -766,7 +771,7 @@ class PrefDialog(gtk.Dialog):
 		#############
 		##treev.set_resize_mode(gtk.RESIZE_IMMEDIATE)
 		##self.plugAddItems = []
-		####################################### Tab 5 (Accounts)
+		####################################### Tab 6 (Accounts)
 		vbox = gtk.VBox()
 		vbox.label = _("Accounts")
 		vbox.icon = "web-settings.png"
