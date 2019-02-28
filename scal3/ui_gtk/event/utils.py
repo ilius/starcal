@@ -4,7 +4,12 @@ from scal3 import event_lib
 from scal3 import ui
 
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import confirm, showError, labelStockMenuItem
+from scal3.ui_gtk.utils import (
+	confirm,
+	showError,
+	labelStockMenuItem,
+	labelImageMenuItem,
+)
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
 
 
@@ -36,6 +41,10 @@ def eventWriteMenuItem(*args, **kwargs):
 	item.set_sensitive(not event_lib.allReadOnly)
 	return item
 
+def eventWriteImageMenuItem(*args, **kwargs):
+	item = labelImageMenuItem(*args, **kwargs)
+	item.set_sensitive(not event_lib.allReadOnly)
+	return item
 
 def menuItemFromEventGroup(group):
 	item = ImageMenuItem()

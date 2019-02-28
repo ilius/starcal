@@ -1122,16 +1122,28 @@ class DurationEventRule(EventRule):
 	sgroup = 1
 	units = (1, 60, 3600, dayLen, 7 * dayLen)
 
+	def __str__(self):
+		return _("%s " + self.getUnitDesc()) % _(self.value)
+
+	def getUnitDesc(self):
+		return {
+			1:              "seconds",
+			60:             "minutes",
+			3600:           "hours",
+			3600 * 24:      "days",
+			3600 * 24 * 7:  "weeks",
+		}[self.unit]
+
 	def getServerString(self):
 		return "%d %s" % (self.value, self.getUnitSymbol())
 
 	def getUnitSymbol(self):
 		return {
-			1:				"s",
-			60:				"m",
-			3600:			"h",
-			3600 * 24:		"d",
-			3600 * 24 * 7:	"w",
+			1:              "s",
+			60:             "m",
+			3600:           "h",
+			3600 * 24:      "d",
+			3600 * 24 * 7:  "w",
 		}[self.unit]
 
 	def __init__(self, parent):
@@ -1898,10 +1910,25 @@ class Event(BsonHistEventObj, RuleContainer):
 			self.icon = group.icon
 
 	def getInfo(self):
+		mode = self.mode
+		calType, ok = calTypes[mode]
+		if not ok:
+			raise RuntimeError("cal type %r not found" % mode)
 		lines = []
+		lines.append(_("Type") + ": " + self.desc)
+		lines.append(_("Calendar Type") + ": " + calType.desc)
+		lines.append(_("Summary") + ": " + self.getSummary())
+		lines.append(_("Description") + ": " + self.description)
+		# "notifiers",
+		# "notifyBefore",
+		# "remoteIds",
+		# "lastMergeSha1",
+		# "modified",
+
 		rulesDict = self.rulesOd.copy()
 		for rule in rulesDict.values():
 			lines.append(rule.getInfo())
+
 		return "\n".join(lines)
 
 	#def addRequirements(self):
@@ -3821,11 +3848,14 @@ class EventGroup(EventContainer):
 	# event objects should be accessed from outside
 	# only via one of the following 3 methods
 
+	def removeFromCache(self, eid):
+		if eid in self.eventCache:
+			return self.eventCache[eid]
+
 	def getEvent(self, eid):
 		if eid not in self.idList:
 			raise ValueError("%s does not contain %s" % (self, eid))
-		if eid in self.eventCache:
-			return self.eventCache[eid]
+		self.removeFromCache(eid)
 		event = EventContainer.getEvent(self, eid)
 		event.parent = self
 		event.rulesHash = event.getRulesHash()
