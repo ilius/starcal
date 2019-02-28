@@ -1123,6 +1123,118 @@ msgid "Edit Trash"
 msgstr ""
 "ویرایش زباله‌دان"
 
+msgid "History"
+msgstr ""
+"تاریخچه"
+
+msgid "Event History"
+msgstr ""
+"تاریخچهٔ رویداد"
+
+msgid "Group History"
+msgstr ""
+"تاریخچهٔ گروه"
+
+msgid "Change Summary"
+msgstr ""
+"خلاصهٔ تغییرات"
+
+msgid "(Added Event)"
+msgstr ""
+"(رویداد اضافه شد)"
+
+msgid "%s parameters"
+msgstr ""
+"%s پارامتر"
+
+msgid "Revert"
+msgstr ""
+"خنثی‌سازی"
+
+msgid "Revert this vhange"
+msgstr ""
+"خنثی‌سازی این تغییر"
+
+msgid "Select revision after this change"
+msgstr ""
+"انتخاب نسخهٔ بعد از این تغییر"
+
+msgid "Select revision before this change"
+msgstr ""
+"انتخاب نسخهٔ قبل از این تغییر"
+
+msgid "View type"
+msgstr ""
+"نوع نمایش"
+
+msgid "Change Table"
+msgstr ""
+"جدول تغییرات"
+
+msgid "Full Table"
+msgstr ""
+"جدول کامل"
+
+msgid "After change (Text)"
+msgstr ""
+"بعد از تغییر (متنی)"
+
+msgid "After change (JSON)"
+msgstr ""
+"بعد از تغییر (JSON)"
+
+msgid "After change (Plain JSON)"
+msgstr ""
+"بعد از تغییر (JSON هموار)"
+
+msgid "Before change (Text)"
+msgstr ""
+"قبل از تغییر (متنی)"
+
+msgid "Before change (JSON)"
+msgstr ""
+"قبل از تغییر (JSON)"
+
+msgid "Before change (Plain JSON)"
+msgstr ""
+"قبل از تغییر (JSON هموار)"
+
+msgid "Change (JSON Diff)"
+msgstr ""
+"تغییر (JSON Diff)"
+
+msgid "Key"
+msgstr ""
+"کلید"
+
+msgid "Old Value"
+msgstr ""
+"مقدار قبلی"
+
+msgid "New Value"
+msgstr ""
+"مقدار جدید"
+
+msgid "%s seconds"
+msgstr ""
+"%s ثانیه"
+
+msgid "%s minutes"
+msgstr ""
+"%s دقیقه"
+
+msgid "%s hours"
+msgstr ""
+"%s ساعت"
+
+msgid "%s days"
+msgstr ""
+"%s روز"
+
+msgid "%s weeks"
+msgstr ""
+"%s هفته"
+
 msgid "Move to %s"
 msgstr ""
 "جابجایی به %s"

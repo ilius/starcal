@@ -544,10 +544,10 @@ class PrefDialog(gtk.Dialog):
 		treev = gtk.TreeView()
 		treev.set_headers_clickable(True)
 		trees = gtk.ListStore(
-			int,
-			bool,
-			bool,
-			str,
+			int, # index
+			bool, # enable
+			bool, # show_date
+			str, # title
 		)
 		treev.set_model(trees)
 		treev.enable_model_drag_source(

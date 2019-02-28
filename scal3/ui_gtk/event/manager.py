@@ -74,6 +74,7 @@ from scal3.ui_gtk.event.group_op import (
 )
 from scal3.ui_gtk.event.account_op import FetchRemoteGroupsDialog
 from scal3.ui_gtk.event.search_events import EventSearchWindow
+from scal3.ui_gtk.event.history import EventHistoryDialog
 
 #print("Testing translator", __file__, _("About"))
 
@@ -503,6 +504,10 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 				obj_list.append(obj_list[i - 1][obj_id])
 		return obj_list
 
+	def historyOfEventFromMenu(self, menu, path):
+		group, event = self.getObjsByPath(path)
+		EventHistoryDialog(event, parent=self).run()
+
 	def genRightClickMenu(self, path):
 		## how about multi-selection? FIXME
 		## and Select _All menu item
@@ -711,6 +716,13 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 					self.editEventFromMenu,
 					path,
 				))
+			####
+			menu.add(eventWriteImageMenuItem(
+				"History",
+				"history-24.png",
+				self.historyOfEventFromMenu,
+				path,
+			))
 			####
 			moveToItem = eventWriteMenuItem(
 				_("Move to %s") % "...",
