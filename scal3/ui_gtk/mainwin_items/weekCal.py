@@ -954,47 +954,128 @@ class MoonPhaseColumn(Column):
 		Column.__init__(self, wcal)
 		self.connect("draw", self.onExposeEvent)
 		self.moonPixbuf = pixbufFromFile("full_moon_48px.png")
+		self.showPhaseNumber = False
 
 	def onExposeEvent(self, widget=None, event=None):
+		from math import cos
+		from scal3.moon import getMoonPhase
 		# pix_w = self.moonPixbuf.get_width()
 		# pix_h = self.moonPixbuf.get_height()
 		imgSize = 48
 		imgMoonSize = 44.25
 		# imgSize = 128
 		# imgMoonSize = 118
-		imgBorder = imgSize-imgMoonSize
+		# imgBorder = (imgSize-imgMoonSize) / 2
 		imgRadius = imgMoonSize / 2
 		###
 		alloc = self.get_allocation()
 		w = alloc.width
 		h = alloc.height
 		###
-		rowH = h / 7
 		itemW = w - ui.wcalPadding
+		rowH = h / 7
 		size = min(rowH, itemW)
 		scaleFact = size / imgSize
-		border = imgBorder / imgSize
+		imgItemW = itemW / scaleFact
+		imgRowH = rowH / scaleFact
+		imgSqSize = size / scaleFact
+		imgXOffset = 0.5 * ui.wcalPadding / scaleFact
+		imgBorderX = imgXOffset + (imgItemW-imgMoonSize) / 2
+		imgBorderY = (imgRowH-imgMoonSize) / 2
 		###
 		cr = self.getContext()
 		self.drawBg(cr)
 		###
+		cr.set_line_width(0)
 		cr.scale(scaleFact, scaleFact)
 		for i in range(7):
 			c = self.wcal.status[i]
-			print("cairo_set_source_pixbuf, border=%s, rowH=%s, size=%s" % (border, rowH, size))
-			gdk.cairo_set_source_pixbuf(cr, self.moonPixbuf, border, border)
-			cr.rectangle(0, 0, 1, 1)
-			cr.fill()
-			# cr.move_to(0.5, y)
-			# cr.arc(centerX, centerY, radius, startAngle, endAngle)
-			# cr.arc(centerX, centerY, radius, startAngle, endAngle)
+			phase = getMoonPhase(c.jd)
+			## 0 <= phase < 2
 
-			# 	x1 = x0 + iconIndex * self.maxPixW - pix_w / 2
-			# 	y1 = y0 - pix_h / 2
-			# 	cr.scale(scaleFact, scaleFact)
-			# 	gdk.cairo_set_source_pixbuf(cr, pix, x1, y1)
-			# 	cr.rectangle(x1, y1, pix_w, pix_h)
-			# 	cr.fill()
+			x_center = imgXOffset + 0.5 * imgItemW
+
+			y0 = i * imgRowH + imgBorderY
+			y_center = (i+0.5) * imgRowH
+			y_end = y0 + imgMoonSize
+
+			pixbuf_x = imgBorderX
+			pixbuf_y = y0
+			gdk.cairo_set_source_pixbuf(cr, self.moonPixbuf, pixbuf_x, pixbuf_y)
+			
+			# cr.rectangle(0, y0, imgItemW, y_end)
+			# cr.fill()
+			
+			alpha = phase * pi # radians
+			radius = imgMoonSize / 2.0
+
+			if phase < 1:
+				cr.move_to(x_center, y_end)
+				cr.arc(
+					x_center, # center X
+					y_center, # center Y
+					radius, # radius
+					3*pi/2.0, # start angle
+					pi/2.0, # end angle
+				)
+				if phase == 0.5:
+					cr.move_to(x_center, y0)
+					cr.line_to(x_center, y_end)
+				else:
+					# the second one is ellipse arc, not circle arc, that's why we need to scale again!
+					cr.save()
+					cr.translate(x_center, y_center)
+					cr.scale(abs(cos(alpha)), 1)
+					arc = cr.arc_negative if phase < 0.5 else cr.arc
+					arc(
+						0, # center X
+						0, # center Y
+						radius, # radius
+						pi/2.0, # start angle
+						3*pi/2.0, # end angle
+					)
+					cr.restore()
+				cr.fill()
+			else:
+				cr.move_to(x_center, y0)
+				cr.arc(
+					x_center, # center X
+					y_center, # center Y
+					radius, # radius
+					pi/2.0, # start angle
+					3*pi/2.0, # end angle
+				)
+				if phase == 1.5:
+					cr.move_to(x_center, y_end)
+					cr.line_to(x_center, y0)
+				else:
+					# the second one is ellipse arc, not circle arc, that's why we need to scale again!
+					cr.save()
+					cr.translate(x_center, y_center)
+					cr.scale(abs(cos(alpha)), 1)
+					arc = cr.arc_negative if phase < 1.5 else cr.arc
+					cr.arc(
+						0, # center X
+						0, # center Y
+						radius, # radius
+						3*pi/2.0, # start angle
+						pi/2.0, # end angle
+					)
+					cr.restore()
+				cr.fill()
+
+			if self.showPhaseNumber:
+				layout = newTextLayout(
+					self,
+					text="%.1f" % phase,
+					maxSize=(imgItemW * 0.8, imgRowH * 0.8),
+				)
+				layoutW, layoutH = layout.get_pixel_size()
+				layoutX = x_center - layoutW * 0.4
+				layoutY = y_center - layoutH * 0.4
+				cr.move_to(layoutX, layoutY)
+				setColor(cr, (255, 0, 0))
+				show_layout(cr, layout)
 
 		cr.scale(1 / scaleFact, 1 / scaleFact)
 
