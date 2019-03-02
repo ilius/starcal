@@ -134,11 +134,12 @@ confParamsCustomize = (
 	"wcal_eventsCount_width",
 	"wcal_eventsCount_expand",
 	"wcalFont_eventsBox",
-	"wcal_moonPhase_width",
+	"wcal_moonStatus_width",
 	"dcalHeight",
 	"dcalTypeParams",
 	"pluginsTextInsideExpander",
 	"seasonPBar_southernHemisphere",
+	"wcal_moonStatus_southernHemisphere",
 	"ud__wcalToolbarData",
 	"ud__mainToolbarData",
 )
@@ -875,8 +876,7 @@ wcalFont_eventsText = None
 wcalFont_weekDays = None
 wcalFont_pluginsText = None
 wcalFont_eventsBox = None
-wcal_moonPhase_width = 48
-
+wcal_moonStatus_width = 48
 
 ####################
 dcalHeight = 250
@@ -969,6 +969,7 @@ wcalItemsDefault = wcalItems[:]
 ####################
 
 seasonPBar_southernHemisphere = False
+wcal_moonStatus_southernHemisphere = False
 
 ####################
 
