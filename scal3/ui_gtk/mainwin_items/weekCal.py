@@ -943,9 +943,9 @@ class DaysOfMonthColumnGroup(gtk.HBox, CustomizableCalBox, ColumnBase):
 
 
 @registerSignals
-class MoonPhaseColumn(Column):
-	_name = "moonPhase"
-	desc = _("Moon Phase")
+class MoonStatusColumn(Column):
+	_name = "moonStatus"
+	desc = _("Moon Status")
 	showCursor = False
 	customizeWidth = True
 
@@ -988,10 +988,39 @@ class MoonPhaseColumn(Column):
 		###
 		cr.set_line_width(0)
 		cr.scale(scaleFact, scaleFact)
+
+		def draw_arc(x_center: float, y_center: float, y0: float, arcScale: float, upwards: bool, clockWise: bool):
+			if arcScale is None: # None means infinity
+				if upwards:
+					cr.move_to(x_center, y0 + imgMoonSize)
+					cr.line_to(x_center, y0)
+				else:
+					cr.move_to(x_center, y0)
+					cr.line_to(x_center, y0 + imgMoonSize)
+				return
+			startAngle, endAngle = pi/2.0, 3*pi/2.0
+			if upwards:
+				startAngle, endAngle = endAngle, startAngle
+			cr.save()
+			cr.translate(x_center, y_center)
+			try:
+				cr.scale(arcScale, 1)
+			except Exception as e:
+				raise ValueError("%s: invalid scale factor %s" % (e, arcScale))
+			arc = cr.arc_negative if clockWise else cr.arc
+			arc(
+				0, # center X
+				0, # center Y
+				imgMoonSize / 2.0, # radius
+				startAngle, # start angle
+				endAngle, # end angle
+			)
+			cr.restore()
+
 		for i in range(7):
 			c = self.wcal.status[i]
-			phase = getMoonPhase(c.jd)
-			## 0 <= phase < 2
+			origPhase = getMoonPhase(c.jd, ui.wcal_moonStatus_southernHemisphere)
+			## 0 <= origPhase < 2
 
 			x_center = imgXOffset + 0.5 * imgItemW
 
@@ -1006,68 +1035,22 @@ class MoonPhaseColumn(Column):
 			# cr.rectangle(0, y0, imgItemW, y_end)
 			# cr.fill()
 			
-			alpha = phase * pi # radians
-			radius = imgMoonSize / 2.0
+			leftSide = origPhase >= 1
+			phase = origPhase % 1
 
-			if phase < 1:
-				cr.move_to(x_center, y_end)
-				cr.arc(
-					x_center, # center X
-					y_center, # center Y
-					radius, # radius
-					3*pi/2.0, # start angle
-					pi/2.0, # end angle
-				)
-				if phase == 0.5:
-					cr.move_to(x_center, y0)
-					cr.line_to(x_center, y_end)
-				else:
-					# the second one is ellipse arc, not circle arc, that's why we need to scale again!
-					cr.save()
-					cr.translate(x_center, y_center)
-					cr.scale(abs(cos(alpha)), 1)
-					arc = cr.arc_negative if phase < 0.5 else cr.arc
-					arc(
-						0, # center X
-						0, # center Y
-						radius, # radius
-						pi/2.0, # start angle
-						3*pi/2.0, # end angle
-					)
-					cr.restore()
-				cr.fill()
+			if phase == 0.5:
+				scale2 = None
 			else:
-				cr.move_to(x_center, y0)
-				cr.arc(
-					x_center, # center X
-					y_center, # center Y
-					radius, # radius
-					pi/2.0, # start angle
-					3*pi/2.0, # end angle
-				)
-				if phase == 1.5:
-					cr.move_to(x_center, y_end)
-					cr.line_to(x_center, y0)
-				else:
-					# the second one is ellipse arc, not circle arc, that's why we need to scale again!
-					cr.save()
-					cr.translate(x_center, y_center)
-					cr.scale(abs(cos(alpha)), 1)
-					arc = cr.arc_negative if phase < 1.5 else cr.arc
-					cr.arc(
-						0, # center X
-						0, # center Y
-						radius, # radius
-						3*pi/2.0, # start angle
-						pi/2.0, # end angle
-					)
-					cr.restore()
-				cr.fill()
+				scale2 = abs(cos(phase * pi))
+
+			draw_arc(x_center, y_center, y0, 1, False, not leftSide)
+			draw_arc(x_center, y_center, y0, scale2, True, phase > 0.5)
+			cr.fill()
 
 			if self.showPhaseNumber:
 				layout = newTextLayout(
 					self,
-					text="%.1f" % phase,
+					text="%.1f" % origPhase,
 					maxSize=(imgItemW * 0.8, imgRowH * 0.8),
 				)
 				layoutW, layoutH = layout.get_pixel_size()
@@ -1079,6 +1062,22 @@ class MoonPhaseColumn(Column):
 
 		cr.scale(1 / scaleFact, 1 / scaleFact)
 
+	def optionsWidgetCreate(self):
+		from scal3.ui_gtk.pref_utils import LiveCheckPrefItem
+		if self.optionsWidget:
+			return
+		ColumnBase.optionsWidgetCreate(self)
+		####
+		self.optionsWidget = gtk.HBox()
+		prefItem = LiveCheckPrefItem(
+			ui,
+			"wcal_moonStatus_southernHemisphere",
+			label=_("Southern Hemisphere"),
+			onChangeFunc=self.onDateChange,
+		)
+		pack(self.optionsWidget, prefItem._widget)
+		####
+		self.optionsWidget.show_all()
 
 
 
@@ -1121,7 +1120,7 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
 			EventsTextColumn(self),
 			EventsBoxColumn(self),
 			DaysOfMonthColumnGroup(self),
-			MoonPhaseColumn(self),
+			MoonStatusColumn(self),
 		]
 		defaultItemsDict = dict([(item._name, item) for item in defaultItems])
 		itemNames = list(defaultItemsDict.keys())

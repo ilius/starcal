@@ -2556,6 +2556,9 @@ msgid "Winter"
 msgstr ""
 "زمستان"
 
+msgid "Moon Status"
+msgstr ""
+"وضعیت ماه"
 
 
 msgid "Icon Size"
