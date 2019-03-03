@@ -980,8 +980,9 @@ class MoonStatusColumn(Column):
 		imgRowH = rowH / scaleFact
 		imgSqSize = size / scaleFact
 		imgXOffset = 0.5 * ui.wcalPadding / scaleFact
-		imgBorderX = imgXOffset + (imgItemW-imgMoonSize) / 2
-		imgBorderY = (imgRowH-imgMoonSize) / 2
+		imgBorderX = imgXOffset + (imgItemW - imgMoonSize) / 2
+		imgBorderY = (imgRowH - imgMoonSize) / 2
+		x_center = imgXOffset + 0.5 * imgItemW
 		###
 		cr = self.getContext()
 		self.drawBg(cr)
@@ -989,7 +990,7 @@ class MoonStatusColumn(Column):
 		cr.set_line_width(0)
 		cr.scale(scaleFact, scaleFact)
 
-		def draw_arc(x_center: float, y_center: float, y0: float, arcScale: float, upwards: bool, clockWise: bool):
+		def draw_arc(y_center: float, y0: float, arcScale: float, upwards: bool, clockWise: bool):
 			if arcScale is None: # None means infinity
 				if upwards:
 					cr.move_to(x_center, y0 + imgMoonSize)
@@ -998,7 +999,7 @@ class MoonStatusColumn(Column):
 					cr.move_to(x_center, y0)
 					cr.line_to(x_center, y0 + imgMoonSize)
 				return
-			startAngle, endAngle = pi/2.0, 3*pi/2.0
+			startAngle, endAngle = pi / 2.0, 3 * pi / 2.0
 			if upwards:
 				startAngle, endAngle = endAngle, startAngle
 			cr.save()
@@ -1018,33 +1019,32 @@ class MoonStatusColumn(Column):
 			cr.restore()
 
 		for i in range(7):
-			c = self.wcal.status[i]
-			origPhase = getMoonPhase(c.jd, ui.wcal_moonStatus_southernHemisphere)
-			## 0 <= origPhase < 2
-
-			x_center = imgXOffset + 0.5 * imgItemW
+			origPhase = getMoonPhase(
+				self.wcal.status[i].jd,
+				ui.wcal_moonStatus_southernHemisphere,
+			)
+			# 0 <= origPhase < 2
 
 			y0 = i * imgRowH + imgBorderY
-			y_center = (i+0.5) * imgRowH
-			y_end = y0 + imgMoonSize
+			y_center = (i + 0.5) * imgRowH
 
-			pixbuf_x = imgBorderX
-			pixbuf_y = y0
-			gdk.cairo_set_source_pixbuf(cr, self.moonPixbuf, pixbuf_x, pixbuf_y)
-			
-			# cr.rectangle(0, y0, imgItemW, y_end)
-			# cr.fill()
-			
+			gdk.cairo_set_source_pixbuf(cr, self.moonPixbuf, imgBorderX, y0)
+
 			leftSide = origPhase >= 1
 			phase = origPhase % 1
 
-			if phase == 0.5:
-				scale2 = None
-			else:
-				scale2 = abs(cos(phase * pi))
-
-			draw_arc(x_center, y_center, y0, 1, False, not leftSide)
-			draw_arc(x_center, y_center, y0, scale2, True, phase > 0.5)
+			draw_arc(
+				y_center, y0,
+				1, # arc scale factor
+				False, # upwards
+				not leftSide, # clockWise
+			)
+			draw_arc(
+				y_center, y0,
+				None if phase == 0.5 else abs(cos(phase * pi)), # arc scale factor
+				True, # upwards
+				phase > 0.5, # clockWise
+			)
 			cr.fill()
 
 			if self.showPhaseNumber:
@@ -1078,7 +1078,6 @@ class MoonStatusColumn(Column):
 		pack(self.optionsWidget, prefItem._widget)
 		####
 		self.optionsWidget.show_all()
-
 
 
 @registerSignals
