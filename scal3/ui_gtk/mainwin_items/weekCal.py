@@ -1068,7 +1068,6 @@ class MoonStatusColumn(Column):
 			return
 		ColumnBase.optionsWidgetCreate(self)
 		####
-		self.optionsWidget = gtk.HBox()
 		prefItem = LiveCheckPrefItem(
 			ui,
 			"wcal_moonStatus_southernHemisphere",
