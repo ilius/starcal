@@ -4,24 +4,19 @@ from scal3.locale_man import rtl, textNumEncode
 from scal3 import ui
 
 from scal3.ui_gtk import *
+from scal3.ui_gtk.pbar import MyProgressBar
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.customize import CustomizableCalObj
 
 
 @registerSignals
-class CalObj(gtk.ProgressBar, CustomizableCalObj):
+class CalObj(MyProgressBar, CustomizableCalObj):
 	_name = "yearPBar"
 	desc = _("Year Progress Bar")
 
 	def __init__(self):
-		gtk.ProgressBar.__init__(self)
-		self.set_show_text(True)
+		MyProgressBar.__init__(self)
 		self.initVars()
-
-		# removing transparency from text color
-		color = self.get_style_context().get_color(gtk.StateFlags.NORMAL)
-		color.alpha = 1.0
-		self.override_color(gtk.StateFlags.NORMAL, color)
 
 	def onDateChange(self, *a, **kw):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
