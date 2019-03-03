@@ -78,6 +78,7 @@ mainWinItemsDesc = {
 	"monthCal": _("Month Calendar"),
 	"pluginsText": _("Plugins Text"),
 	"seasonPBar": _("Season Progress Bar"),
+	"yearPBar": _("Year Progress Bar"),
 	"statusBar": _("Status Bar"),
 	"toolbar": _("Toolbar"),
 	"weekCal": _("Week Calendar"),
