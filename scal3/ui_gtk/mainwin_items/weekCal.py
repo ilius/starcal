@@ -1016,14 +1016,14 @@ class MoonStatusColumn(Column):
 			)
 			cr.restore()
 
-		for i in range(7):
-			origPhase = getMoonPhase(
-				self.wcal.status[i].jd,
+		for index in range(7):
+			bigPhase = getMoonPhase(
+				self.wcal.status[index].jd,
 				ui.wcal_moonStatus_southernHemisphere,
 			)
-			# 0 <= origPhase < 2
+			# 0 <= bigPhase < 2
 
-			imgCenterY = (i + 0.5) * imgRowH
+			imgCenterY = (index + 0.5) * imgRowH
 
 			gdk.cairo_set_source_pixbuf(
 				cr,
@@ -1032,14 +1032,13 @@ class MoonStatusColumn(Column):
 				imgCenterY - imgRadius,
 			)
 
-			leftSide = origPhase >= 1
-			phase = origPhase % 1
+			phase = bigPhase % 1
 
 			draw_arc(
 				imgCenterY,
 				1, # arc scale factor
 				False, # upwards
-				not leftSide, # clockWise
+				bigPhase < 1, # clockWise
 			)
 			draw_arc(
 				imgCenterY,
@@ -1052,7 +1051,7 @@ class MoonStatusColumn(Column):
 			if self.showPhaseNumber:
 				layout = newTextLayout(
 					self,
-					text="%.1f" % origPhase,
+					text="%.1f" % bigPhase,
 					maxSize=(imgItemW * 0.8, imgRowH * 0.8),
 				)
 				layoutW, layoutH = layout.get_pixel_size()
