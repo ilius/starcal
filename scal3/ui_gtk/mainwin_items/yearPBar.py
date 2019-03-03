@@ -18,6 +18,11 @@ class CalObj(gtk.ProgressBar, CustomizableCalObj):
 		self.set_show_text(True)
 		self.initVars()
 
+		# removing transparency from text color
+		color = self.get_style_context().get_color(gtk.StateFlags.NORMAL)
+		color.alpha = 1.0
+		self.override_color(gtk.StateFlags.NORMAL, color)
+
 	def onDateChange(self, *a, **kw):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 
