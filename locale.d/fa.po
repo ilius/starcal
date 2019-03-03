@@ -2556,6 +2556,11 @@ msgid "Winter"
 msgstr ""
 "زمستان"
 
+msgid "Year Progress Bar"
+msgstr ""
+"نوار پیشروی سال"
+
+
 msgid "Moon Status"
 msgstr ""
 "وضعیت ماه"
