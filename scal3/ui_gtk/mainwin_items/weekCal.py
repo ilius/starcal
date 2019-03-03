@@ -962,9 +962,10 @@ class MoonStatusColumn(Column):
 		# pix_w = self.moonPixbuf.get_width()
 		# pix_h = self.moonPixbuf.get_height()
 		imgSize = 48
-		imgMoonSize = 44.25
+		# imgMoonSize = 44
+		imgMoonSize = 44.625
 		# imgSize = 128
-		# imgMoonSize = 118
+		# imgMoonSize = 119
 		# imgBorder = (imgSize-imgMoonSize) / 2
 		imgRadius = imgMoonSize / 2
 		###
@@ -974,15 +975,12 @@ class MoonStatusColumn(Column):
 		###
 		itemW = w - ui.wcalPadding
 		rowH = h / 7
-		size = min(rowH, itemW)
-		scaleFact = size / imgSize
+		###
+		scaleFact = min(rowH, itemW) / imgSize
+		###
 		imgItemW = itemW / scaleFact
 		imgRowH = rowH / scaleFact
-		imgSqSize = size / scaleFact
-		imgXOffset = 0.5 * ui.wcalPadding / scaleFact
-		imgBorderX = imgXOffset + (imgItemW - imgMoonSize) / 2
-		imgBorderY = (imgRowH - imgMoonSize) / 2
-		x_center = imgXOffset + 0.5 * imgItemW
+		imgCenterX = w / 2 / scaleFact
 		###
 		cr = self.getContext()
 		self.drawBg(cr)
@@ -990,29 +988,29 @@ class MoonStatusColumn(Column):
 		cr.set_line_width(0)
 		cr.scale(scaleFact, scaleFact)
 
-		def draw_arc(y_center: float, y0: float, arcScale: float, upwards: bool, clockWise: bool):
+		def draw_arc(imgCenterY: float, arcScale: float, upwards: bool, clockWise: bool):
 			if arcScale is None: # None means infinity
 				if upwards:
-					cr.move_to(x_center, y0 + imgMoonSize)
-					cr.line_to(x_center, y0)
+					cr.move_to(imgCenterX, imgCenterY + imgRadius)
+					cr.line_to(imgCenterX, imgCenterY - imgRadius)
 				else:
-					cr.move_to(x_center, y0)
-					cr.line_to(x_center, y0 + imgMoonSize)
+					cr.move_to(imgCenterX, imgCenterY - imgRadius)
+					cr.line_to(imgCenterX, imgCenterY + imgRadius)
 				return
 			startAngle, endAngle = pi / 2.0, 3 * pi / 2.0
 			if upwards:
 				startAngle, endAngle = endAngle, startAngle
 			cr.save()
-			cr.translate(x_center, y_center)
+			cr.translate(imgCenterX, imgCenterY)
 			try:
-				cr.scale(arcScale, 1)
+				cr.scale(imgRadius * arcScale, imgRadius)
 			except Exception as e:
 				raise ValueError("%s: invalid scale factor %s" % (e, arcScale))
 			arc = cr.arc_negative if clockWise else cr.arc
 			arc(
 				0, # center X
 				0, # center Y
-				imgMoonSize / 2.0, # radius
+				1, # radius
 				startAngle, # start angle
 				endAngle, # end angle
 			)
@@ -1025,22 +1023,26 @@ class MoonStatusColumn(Column):
 			)
 			# 0 <= origPhase < 2
 
-			y0 = i * imgRowH + imgBorderY
-			y_center = (i + 0.5) * imgRowH
+			imgCenterY = (i + 0.5) * imgRowH
 
-			gdk.cairo_set_source_pixbuf(cr, self.moonPixbuf, imgBorderX, y0)
+			gdk.cairo_set_source_pixbuf(
+				cr,
+				self.moonPixbuf,
+				imgCenterX - imgRadius,
+				imgCenterY - imgRadius,
+			)
 
 			leftSide = origPhase >= 1
 			phase = origPhase % 1
 
 			draw_arc(
-				y_center, y0,
+				imgCenterY,
 				1, # arc scale factor
 				False, # upwards
 				not leftSide, # clockWise
 			)
 			draw_arc(
-				y_center, y0,
+				imgCenterY,
 				None if phase == 0.5 else abs(cos(phase * pi)), # arc scale factor
 				True, # upwards
 				phase > 0.5, # clockWise
@@ -1054,8 +1056,8 @@ class MoonStatusColumn(Column):
 					maxSize=(imgItemW * 0.8, imgRowH * 0.8),
 				)
 				layoutW, layoutH = layout.get_pixel_size()
-				layoutX = x_center - layoutW * 0.4
-				layoutY = y_center - layoutH * 0.4
+				layoutX = imgCenterX - layoutW * 0.4
+				layoutY = imgCenterY - layoutH * 0.4
 				cr.move_to(layoutX, layoutY)
 				setColor(cr, (255, 0, 0))
 				show_layout(cr, layout)
