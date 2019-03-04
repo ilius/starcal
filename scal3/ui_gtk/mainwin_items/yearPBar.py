@@ -18,6 +18,9 @@ class CalObj(MyProgressBar, CustomizableCalObj):
 		MyProgressBar.__init__(self)
 		self.initVars()
 
+	def onConfigChange(self, *a, **kw):
+		self.update_font()
+
 	def onDateChange(self, *a, **kw):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 
