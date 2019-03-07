@@ -36,6 +36,7 @@ from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import *
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.pref_utils import *
+from scal3.ui_gtk.pref_utils_extra import *
 
 
 class PrefDialog(gtk.Dialog):
