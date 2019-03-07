@@ -122,7 +122,7 @@ class ColumnBase(CustomizableCalObj):
 				SpinPrefItem(ui, self.getWidthAttr(), 1, 999, digits=0),
 				self.widthChanged,
 			)
-			pack(self.optionsWidget, prefItem._widget)
+			pack(self.optionsWidget, prefItem.getWidget())
 		####
 		if self.customizeExpand:
 			prefItem = LiveCheckPrefItem(
@@ -131,7 +131,7 @@ class ColumnBase(CustomizableCalObj):
 				_("Expand"),
 				onChangeFunc=self.expandCheckClicked,
 			)
-			pack(self.optionsWidget, prefItem._widget)
+			pack(self.optionsWidget, prefItem.getWidget())
 		####
 		if self.customizeFont:
 			hbox = gtk.HBox()
@@ -148,7 +148,7 @@ class ColumnBase(CustomizableCalObj):
 				ColorPrefItem(ui, self.getPastTextColorAttr(), True),
 				self.onDateChange,
 			)
-			pack(self.optionsWidget, prefItem._widget)
+			pack(self.optionsWidget, prefItem.getWidget())
 		####
 		self.optionsWidget.show_all()
 
@@ -1075,7 +1075,7 @@ class MoonStatusColumn(Column):
 			label=_("Southern Hemisphere"),
 			onChangeFunc=self.onDateChange,
 		)
-		pack(self.optionsWidget, prefItem._widget)
+		pack(self.optionsWidget, prefItem.getWidget())
 		####
 		self.optionsWidget.show_all()
 
@@ -1149,21 +1149,21 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
 			SpinPrefItem(ui, "wcalHeight", 1, 9999, digits=0),
 			self.heightUpdate,
 		)
-		pack(self.optionsWidget, prefItem._widget)
+		pack(self.optionsWidget, prefItem.getWidget())
 		###
 		prefItem = LiveLabelSpinPrefItem(
 			_("Text Size Scale"),
 			SpinPrefItem(ui, "wcalTextSizeScale", 0.01, 1, digits=2),
 			self.queue_draw,
 		)
-		pack(self.optionsWidget, prefItem._widget)
+		pack(self.optionsWidget, prefItem.getWidget())
 		########
 		prefItem = LiveCheckColorPrefItem(
 			CheckPrefItem(ui, "wcalGrid", _("Grid")),
 			ColorPrefItem(ui, "wcalGridColor", True),
 			self.queue_draw,
 		)
-		pack(self.optionsWidget, prefItem._widget)
+		pack(self.optionsWidget, prefItem.getWidget())
 		###
 		self.optionsWidget.show_all()
 

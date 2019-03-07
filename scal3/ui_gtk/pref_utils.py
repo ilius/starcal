@@ -94,6 +94,8 @@ class ModuleOptionItem:
 			getattr(self.module, self.var_name)
 		)
 
+	def getWidget(self):
+		return self._widget
 
 # ("button", LABEL, CLICKED_MODULE_NAME, CLICKED_FUNCTION_NAME)
 class ModuleOptionButton:
@@ -118,6 +120,8 @@ class ModuleOptionButton:
 	def updateWidget(self):
 		pass
 
+	def getWidget(self):
+		return self._widget
 
 class PrefItem():
 	# self.__init__, self.module, self.varName, self._widget
@@ -142,6 +146,8 @@ class PrefItem():
 			getattr(self.module, self.varName)
 		)
 
+	def getWidget(self):
+		return self._widget
 
 class ComboTextPrefItem(PrefItem):
 	def makeWidget(self):
@@ -341,8 +347,8 @@ class LiveCheckColorPrefItem(PrefItem):
 		self._colorItem = colorItem
 		self._onChangeFunc = onChangeFunc
 
-		checkb = self._checkItem._widget
-		colorb = self._colorItem._widget
+		checkb = self._checkItem.getWidget()
+		colorb = self._colorItem.getWidget()
 
 		hbox = gtk.HBox(spacing=3)
 		pack(hbox, checkb)
@@ -363,11 +369,11 @@ class LiveCheckColorPrefItem(PrefItem):
 		# FIXME: this func is triggering onChange func, can we avoid that?
 		self._checkItem.updateWidget()
 		self._colorItem.updateWidget()
-		self._colorItem._widget.set_sensitive(self._checkItem.get())
+		self._colorItem.getWidget().set_sensitive(self._checkItem.get())
 
 	def onChange(self, w):
 		self.updateVar()
-		self._colorItem._widget.set_sensitive(self._checkItem.get())
+		self._colorItem.getWidget().set_sensitive(self._checkItem.get())
 		if self._onChangeFunc:
 			self._onChangeFunc()
 
@@ -394,7 +400,7 @@ class LiveLabelSpinPrefItem(PrefItem):
 		self._spinItem = spinItem
 		self._onChangeFunc = onChangeFunc
 
-		spinb = self._spinItem._widget
+		spinb = self._spinItem.getWidget()
 
 		hbox = gtk.HBox(spacing=3)
 		pack(hbox, gtk.Label(label))
@@ -563,7 +569,7 @@ class ListPrefItem(PrefItem):
 		else:
 			box = gtk.HBox()
 		for item in items:
-			pack(box, item._widget)
+			pack(box, Item.getWidget())
 		self.num = len(items)
 		self.items = items
 		self._widget = box
@@ -579,7 +585,7 @@ class ListPrefItem(PrefItem):
 			self.items[i].set(valueL[i])
 
 	def append(self, item):
-		pack(self._widget, item._widget)
+		pack(self._widget, Item.getWidget())
 		self.items.append(item)
 
 
@@ -719,7 +725,7 @@ class LangPrefItem(PrefItem):
 	#	lang =
 
 
-class CheckStartupPrefItem():  # FIXME
+class CheckStartupPrefItem(PrefItem):  # FIXME
 	def __init__(self):
 		w = gtk.CheckButton(_("Run on session startup"))
 		set_tooltip(
@@ -860,7 +866,7 @@ class InactiveCalsTreeView(AICalsTreeview):
 	dragId = 101
 
 
-class AICalsPrefItem():
+class AICalsPrefItem(PrefItem):
 	def __init__(self):
 		self._widget = gtk.HBox()
 		size = gtk.IconSize.SMALL_TOOLBAR
