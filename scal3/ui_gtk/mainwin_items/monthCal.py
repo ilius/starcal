@@ -203,7 +203,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			SpinPrefItem(ui, "mcalHeight", 1, 9999, digits=0),
 			self.heightUpdate,
 		)
-		pack(self.optionsWidget, prefItem._widget)
+		pack(self.optionsWidget, prefItem.getWidget())
 		####
 		hbox = gtk.HBox(spacing=3)
 		##
@@ -227,7 +227,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			ColorPrefItem(ui, "mcalGridColor", True),
 			self.queue_draw,
 		)
-		hbox = prefItem._widget
+		hbox = prefItem.getWidget()
 		pack(self.optionsWidget, hbox)
 		########
 		frame = gtk.Frame()

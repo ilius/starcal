@@ -87,7 +87,7 @@ class PrefDialog(gtk.Dialog):
 		itemLang = LangPrefItem()
 		self.localePrefItems.append(itemLang)
 		###
-		pack(hbox, itemLang._widget)
+		pack(hbox, itemLang.getWidget())
 		if langSh != "en":
 			pack(hbox, gtk.Label("Language"))
 		pack(vbox, hbox)
@@ -97,7 +97,7 @@ class PrefDialog(gtk.Dialog):
 		frame.set_label(_("Calendar Types"))
 		itemCals = AICalsPrefItem()
 		self.corePrefItems.append(itemCals)
-		frame.add(itemCals._widget)
+		frame.add(itemCals.getWidget())
 		pack(hbox, frame)
 		pack(hbox, gtk.Label(""), 1, 1)
 		hbox.set_border_width(5)
@@ -108,7 +108,7 @@ class PrefDialog(gtk.Dialog):
 			hbox = gtk.HBox(spacing=3)
 			item = CheckStartupPrefItem()
 			self.uiPrefItems.append(item)
-			pack(hbox, item._widget, 1, 1)
+			pack(hbox, item.getWidget(), 1, 1)
 			pack(vbox, hbox)
 			########################
 			item = CheckPrefItem(
@@ -117,7 +117,7 @@ class PrefDialog(gtk.Dialog):
 				_("Show main window on start"),
 			)
 			self.uiPrefItems.append(item)
-			pack(vbox, item._widget)
+			pack(vbox, item.getWidget())
 		##########################
 		item = CheckPrefItem(
 			ui,
@@ -126,7 +126,7 @@ class PrefDialog(gtk.Dialog):
 		)
 		self.uiPrefItems.append(item)
 		hbox = gtk.HBox(spacing=3)
-		pack(hbox, item._widget)
+		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(""), 1, 1)
 		###########
 		pack(vbox, hbox)
@@ -143,7 +143,7 @@ class PrefDialog(gtk.Dialog):
 			)
 			self.uiPrefItems.append(item)
 			hbox = gtk.HBox(spacing=3)
-			pack(hbox, item._widget)
+			pack(hbox, item.getWidget())
 			pack(hbox, gtk.Label(""), 1, 1)
 			pack(vbox, hbox)
 		##########################
@@ -156,7 +156,7 @@ class PrefDialog(gtk.Dialog):
 		#	_("On Toolbar"),
 		#)  # FIXME
 		#self.uiPrefItems.append(item)
-		#pack(hbox, item._widget)
+		#pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(""), 1, 1)
 		if statusIconMode == 1:
 			item = CheckPrefItem(
@@ -173,7 +173,7 @@ class PrefDialog(gtk.Dialog):
 				"Notification Area",
 			)
 		self.uiPrefItems.append(item)
-		pack(hbox, item._widget)
+		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(""), 1, 1)
 		pack(vbox, hbox)
 		################################ Tab 2 (Appearance) ##################
@@ -191,19 +191,19 @@ class PrefDialog(gtk.Dialog):
 			_("Application Font"),
 		)
 		self.uiPrefItems.append(customCheckItem)
-		pack(hbox, customCheckItem._widget)
+		pack(hbox, customCheckItem.getWidget())
 		###
 		customItem = FontPrefItem(ui, "fontCustom", self)
 		self.uiPrefItems.append(customItem)
-		pack(hbox, customItem._widget)
+		pack(hbox, customItem.getWidget())
 		pack(hbox, gtk.Label(""), 1, 1)
-		customCheckItem.syncSensitive(customItem._widget)
+		customCheckItem.syncSensitive(customItem.getWidget())
 		pack(vbox, hbox)
 		########################### Theme #####################
 		#hbox = gtk.HBox(spacing=3)
 		#item = CheckPrefItem(ui, 'bgUseDesk', _('Use Desktop Background'))
 		#self.uiPrefItems.append(item)
-		#pack(hbox, item._widget)
+		#pack(hbox, item.getWidget())
 		#pack(hbox, gtk.Label(''), 1, 1)
 		#pack(vbox, hbox)
 		#####################
@@ -216,32 +216,32 @@ class PrefDialog(gtk.Dialog):
 		pack(hbox, gtk.Label(_("Background")))
 		item = ColorPrefItem(ui, "bgColor", True)
 		self.uiPrefItems.append(item)
-		self.colorbBg = item._widget ## FIXME
-		pack(hbox, item._widget)
+		self.colorbBg = item.getWidget() ## FIXME
+		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(""), 1, 1)
 		###
 		pack(hbox, gtk.Label(_("Border")))
 		item = ColorPrefItem(ui, "borderColor", True)
 		self.uiPrefItems.append(item)
-		pack(hbox, item._widget)
+		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(""), 1, 1)
 		###
 		pack(hbox, gtk.Label(_("Cursor")))
 		item = ColorPrefItem(ui, "cursorOutColor", False)
 		self.uiPrefItems.append(item)
-		pack(hbox, item._widget)
+		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(""), 1, 1)
 		###
 		pack(hbox, gtk.Label(_("Cursor BG")))
 		item = ColorPrefItem(ui, "cursorBgColor", True)
 		self.uiPrefItems.append(item)
-		pack(hbox, item._widget)
+		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(""), 1, 1)
 		###
 		pack(hbox, gtk.Label(_("Today")))
 		item = ColorPrefItem(ui, "todayCellColor", True)
 		self.uiPrefItems.append(item)
-		pack(hbox, item._widget)
+		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(""), 1, 1)
 		###
 		pack(vbox, hbox)
@@ -255,25 +255,25 @@ class PrefDialog(gtk.Dialog):
 		pack(hbox, gtk.Label(_("Normal")))
 		item = ColorPrefItem(ui, "textColor", False)
 		self.uiPrefItems.append(item)
-		pack(hbox, item._widget)
+		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(""), 1, 1)
 		###
 		pack(hbox, gtk.Label(_("Holiday")))
 		item = ColorPrefItem(ui, "holidayColor", False)
 		self.uiPrefItems.append(item)
-		pack(hbox, item._widget)
+		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(""), 1, 1)
 		###
 		pack(hbox, gtk.Label(_("Inactive Day")))
 		item = ColorPrefItem(ui, "inactiveColor", True)
 		self.uiPrefItems.append(item)
-		pack(hbox, item._widget)
+		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(""), 1, 1)
 		####
 		pack(hbox, gtk.Label(_("Border")))
 		item = ColorPrefItem(ui, "borderTextColor", False)
 		self.uiPrefItems.append(item)
-		pack(hbox, item._widget)
+		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(""), 1, 1)
 		####
 		pack(vbox, hbox)
@@ -286,13 +286,13 @@ class PrefDialog(gtk.Dialog):
 		pack(hbox, gtk.Label(_("Diameter Factor")))
 		item = SpinPrefItem(ui, "cursorDiaFactor", 0, 1, 2)
 		self.uiPrefItems.append(item)
-		pack(hbox, item._widget)
+		pack(hbox, item.getWidget())
 		###
 		pack(hbox, gtk.Label(""), 1, 1)
 		pack(hbox, gtk.Label(_("Rounding Factor")))
 		item = SpinPrefItem(ui, "cursorRoundingFactor", 0, 1, 2)
 		self.uiPrefItems.append(item)
-		pack(hbox, item._widget)
+		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(""), 1, 1)
 		###
 		pack(vbox, hbox)
@@ -322,7 +322,7 @@ class PrefDialog(gtk.Dialog):
 			defaultVarName="statusIconImageDefault",
 		)
 		self.uiPrefItems.append(item)
-		pack(hbox, item._widget, 1, 1)
+		pack(hbox, item.getWidget(), 1, 1)
 		pack(expVbox, hbox)
 		####
 		hbox = gtk.HBox(spacing=1)
@@ -338,7 +338,7 @@ class PrefDialog(gtk.Dialog):
 			defaultVarName="statusIconImageHoliDefault",
 		)
 		self.uiPrefItems.append(item)
-		pack(hbox, item._widget, 1, 1)
+		pack(hbox, item.getWidget(), 1, 1)
 		pack(expVbox, hbox)
 		####
 		hbox = gtk.HBox(spacing=1)
@@ -350,14 +350,14 @@ class PrefDialog(gtk.Dialog):
 			#tooltip=_("In SVG files"),
 		)
 		self.uiPrefItems.append(checkItem)
-		#sgroup.add_widget(checkItem._widget)
-		pack(hbox, checkItem._widget)
+		#sgroup.add_widget(checkItem.getWidget())
+		pack(hbox, checkItem.getWidget())
 		item = FontFamilyPrefItem(
 			ui,
 			"statusIconFontFamily",
 		)
 		self.uiPrefItems.append(item)
-		pack(hbox, item._widget, 1, 1)
+		pack(hbox, item.getWidget(), 1, 1)
 		pack(expVbox, hbox)
 		####
 		hbox = gtk.HBox(spacing=1)
@@ -369,8 +369,8 @@ class PrefDialog(gtk.Dialog):
 			#tooltip=_(""),
 		)
 		self.uiPrefItems.append(checkItem)
-		#sgroup.add_widget(checkItem._widget)
-		pack(hbox, checkItem._widget)
+		#sgroup.add_widget(checkItem.getWidget())
+		pack(hbox, checkItem.getWidget())
 		pack(hbox, gtk.Label(" "))
 		item = WidthHeightPrefItem(
 			ui,
@@ -378,10 +378,10 @@ class PrefDialog(gtk.Dialog):
 			999,
 		)
 		self.uiPrefItems.append(item)
-		pack(hbox, item._widget, 1, 1)
+		pack(hbox, item.getWidget(), 1, 1)
 		pack(expVbox, hbox)
 		########
-		checkItem.syncSensitive(item._widget, reverse=False)
+		checkItem.syncSensitive(item.getWidget(), reverse=False)
 		####
 		pack(vbox, exp)
 		################################ Tab 3 (Regional) ###################
@@ -409,7 +409,7 @@ class PrefDialog(gtk.Dialog):
 			"%m/%d/%Y",
 		))
 		self.gtkPrefItems.append(item)
-		pack(hbox, item._widget, 1, 1)
+		pack(hbox, item.getWidget(), 1, 1)
 		pack(vbox, hbox)
 		########
 		hbox = gtk.HBox(spacing=3)
@@ -428,7 +428,7 @@ class PrefDialog(gtk.Dialog):
 		item = WeekDayCheckListPrefItem(core, "holidayWeekDays")
 		self.corePrefItems.append(item)
 		self.holiWDItem = item ## Holiday Week Days Item
-		pack(hbox0, item._widget, 1, 1)
+		pack(hbox0, item.getWidget(), 1, 1)
 		pack(vbox, hbox0)
 		#########
 		hbox = gtk.HBox(spacing=3)
@@ -456,7 +456,7 @@ class PrefDialog(gtk.Dialog):
 			_("Numbers Localization"),
 		)
 		self.localePrefItems.append(item)
-		pack(hbox, item._widget)
+		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(""), 1, 1)
 		pack(vbox, hbox)
 		##################################################
@@ -473,7 +473,7 @@ class PrefDialog(gtk.Dialog):
 				else:
 					optl = ModuleOptionItem(mod, opt)
 				options.append(optl)
-				pack(vbox, optl._widget)
+				pack(vbox, optl.getWidget())
 		self.moduleOptions = options
 		################################ Tab 4 (Advanced) ###################
 		vbox = gtk.VBox()
@@ -504,7 +504,7 @@ class PrefDialog(gtk.Dialog):
 			"<b>%OH:%OM</b>",
 		))
 		self.gtkPrefItems.append(item)
-		pack(hbox, item._widget, 1, 1)
+		pack(hbox, item.getWidget(), 1, 1)
 		pack(vbox, hbox)
 		######
 		hbox = gtk.HBox(spacing=5)
@@ -514,7 +514,7 @@ class PrefDialog(gtk.Dialog):
 		##sgroup.add_widget(label)
 		item = SpinPrefItem(ui, "maxDayCacheSize", 100, 9999, 0)
 		self.uiPrefItems.append(item)
-		pack(hbox, item._widget)
+		pack(hbox, item.getWidget())
 		pack(vbox, hbox)
 		################################ Tab 5 (Plugins) ####################
 		vbox = gtk.VBox()
@@ -537,7 +537,7 @@ class PrefDialog(gtk.Dialog):
 				_("Show in Status Icon (for today)"),
 			)
 		self.uiPrefItems.append(item)
-		pack(hbox, item._widget)
+		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(""), 1, 1)
 		pack(vbox, hbox)
 		#####

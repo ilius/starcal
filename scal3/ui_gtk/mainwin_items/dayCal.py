@@ -178,7 +178,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			SpinPrefItem(ui, "dcalHeight", 1, 9999, digits=0),
 			self.heightUpdate,
 		)
-		pack(self.optionsWidget, prefItem._widget)
+		pack(self.optionsWidget, prefItem.getWidget())
 		########
 		frame = gtk.Frame()
 		frame.set_label(_("Calendars"))

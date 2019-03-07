@@ -51,7 +51,7 @@ class CalObj(MyProgressBar, CustomizableCalObj):
 			label=_("Southern Hemisphere"),
 			onChangeFunc=self.onDateChange,
 		)
-		pack(self.optionsWidget, prefItem._widget)
+		pack(self.optionsWidget, prefItem.getWidget())
 		####
 		self.optionsWidget.show_all()
 
