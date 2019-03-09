@@ -144,6 +144,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 				else:
 					event = ui.getEvent(gid, eid)
 					self.updateEventRowByIter(event, eventIter)
+		ui.eventDiff.clear()
 		###
 		for gid in ui.changedGroups:
 			group = ui.eventGroups[gid]
