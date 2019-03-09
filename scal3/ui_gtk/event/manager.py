@@ -274,6 +274,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		viewMenu.append(gtk.SeparatorMenuItem())
 		##
 		self.showDescItem = gtk.CheckMenuItem(_("Show _Description"))
+		self.showDescItem.set_use_underline(True)
 		self.showDescItem.set_active(ui.eventManShowDescription)
 		self.showDescItem.connect("toggled", self.showDescItemToggled)
 		viewMenu.append(self.showDescItem)
