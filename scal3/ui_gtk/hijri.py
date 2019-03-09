@@ -23,7 +23,8 @@ import os
 from os.path import isfile
 
 from scal3.cal_types import calTypes, jd_to, to_jd
-from scal3.cal_types.hijri import monthDb, monthName
+from scal3.cal_types import hijri
+
 from scal3.date_utils import monthPlus
 from scal3 import core
 from scal3.locale_man import rtl, dateLocale
@@ -159,9 +160,9 @@ class EditDbDialog(gtk.Dialog):
 		self.vbox.show_all()
 
 	def resetToDefaults(self, widget):
-		if isfile(monthDb.userDbPath):
-			os.remove(monthDb.userDbPath)
-		monthDb.load()
+		if isfile(hijri.monthDb.userDbPath):
+			os.remove(hijri.monthDb.userDbPath)
+		hijri.monthDb.load()
 		self.updateWidget()
 		return True
 
@@ -178,7 +179,7 @@ class EditDbDialog(gtk.Dialog):
 		self.trees.append((
 			ym,
 			_(year),
-			_(monthName[month0]),
+			_(hijri.monthName[month0]),
 			mLen,
 			"",
 		))
@@ -210,24 +211,24 @@ class EditDbDialog(gtk.Dialog):
 		self.topLabel.set_label(
 			_("Start") +
 			": " +
-			dateLocale(*monthDb.startDate) +
+			dateLocale(*hijri.monthDb.startDate) +
 			" " +
 			_("Equals to") +
 			" %s" % _(self.altModeDesc)
 		)
-		self.startDateInput.set_value(jd_to(monthDb.startJd, self.altMode))
+		self.startDateInput.set_value(jd_to(hijri.monthDb.startJd, self.altMode))
 		###########
 		selectYm = getCurrentYm() - 1 ## previous month
 		selectIndex = None
 		self.trees.clear()
-		for index, ym, mLen in monthDb.getMonthLenList():
+		for index, ym, mLen in hijri.monthDb.getMonthLenList():
 			if ym == selectYm:
 				selectIndex = index
 			year, month0 = divmod(ym, 12)
 			self.trees.append([
 				ym,
 				_(year),
-				_(monthName[month0]),
+				_(hijri.monthName[month0]),
 				mLen,
 				"",
 			])
@@ -270,17 +271,17 @@ class EditDbDialog(gtk.Dialog):
 
 	def updateVars(self):
 		y, m, d = self.startDateInput.get_value()
-		monthDb.endJd = monthDb.startJd = to_jd(y, m, d, self.altMode)
-		monthDb.monthLenByYm = {}
+		hijri.monthDb.endJd = hijri.monthDb.startJd = to_jd(y, m, d, self.altMode)
+		hijri.monthDb.monthLenByYm = {}
 		for row in self.trees:
 			ym = row[0]
 			mLen = row[3]
-			monthDb.monthLenByYm[ym] = mLen
-			monthDb.endJd += mLen
-		monthDb.save()
+			hijri.monthDb.monthLenByYm[ym] = mLen
+			hijri.monthDb.endJd += mLen
+		hijri.monthDb.save()
 
 	def run(self):
-		monthDb.load()
+		hijri.monthDb.load()
 		self.updateWidget()
 		self.treev.grab_focus()
 		gtk.Dialog.run(self)
