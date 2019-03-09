@@ -39,6 +39,8 @@ from scal3.ui_gtk.utils import (
 	set_tooltip,
 )
 from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk import listener
+
 
 hijriMode = calTypes.names.index("hijri")
 
@@ -303,6 +305,66 @@ def tuneHijriMonthes(widget=None):
 	dialog = EditDbDialog(parent=ui.prefDialog)
 	dialog.resize(400, 400)
 	dialog.run()
+
+
+def dbIsExpired() -> bool:
+	if not hijri.hijriUseDB:
+		return False
+	expJd = hijri.monthDb.expJd
+	if expJd is None:
+		print("checkDbExpired: hijri.monthDb.expJd = None")
+		return False
+	if ui.todayCell.jd >= expJd:
+		return True
+	return False
+
+class HijriMonthsExpirationDialog(gtk.Dialog):
+	message = _("""Hijri months are expired.
+Please update StarCalendar.
+Otherwise, Hijri dates and Iranian official holidays would be incorrect.""")
+	def __init__(self, **kwargs):
+		gtk.Dialog.__init__(self, **kwargs)
+		self.set_title(_("Hijri months expired"))
+		self.connect("response", self.onResponse)
+		###
+		pack(self.vbox, gtk.Label(self.message + "\n\n"), 1, 1)
+		###
+		hbox = gtk.HBox()
+		checkb = gtk.CheckButton(_("Don't show this again"))
+		pack(hbox, checkb)
+		pack(self.vbox, hbox)
+		self.noShowCheckb = checkb
+		###
+		dialog_add_button(
+			self,
+			gtk.STOCK_CLOSE,
+			_("_Close"),
+			gtk.ResponseType.OK,
+		)
+		###
+		self.vbox.show_all()
+
+	def onResponse(self, dialog, response_id):
+		if self.noShowCheckb.get_active():
+			open(hijri.monthDbExpiredIgnoreFile, "w").write("")
+		self.destroy()
+		return True
+
+
+def checkHijriMonthsExpiration():
+	if not dbIsExpired():
+		# not expired
+		return
+	if isfile(hijri.monthDbExpiredIgnoreFile):
+		# user previously checked "Don't show this again" checkbox
+		return
+	dialog = HijriMonthsExpirationDialog(parent=ui.mainWin)
+	dialog.run()
+
+class HijriMonthsExpirationListener():
+	def onCurrentDateChange(self, gdate):
+		checkHijriMonthsExpiration()
+
 
 
 if __name__ == "__main__":

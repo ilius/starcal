@@ -66,6 +66,7 @@ from scal3.ui_gtk import listener
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import DummyCalObj, CustomizableCalBox
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
+from scal3.ui_gtk import hijri as hijri_gtk
 
 
 ui.uiName = "gtk"
@@ -1411,6 +1412,9 @@ def main():
 		#	action = "svg"
 	###############################
 	ui.init()
+	###############################
+	listener.dateChange.add(hijri_gtk.HijriMonthsExpirationListener())
+	hijri_gtk.checkHijriMonthsExpiration()
 	###############################
 	checkEventsReadOnly(False)
 	## right place? FIXME

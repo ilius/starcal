@@ -104,6 +104,9 @@ from scal3.utils import iceil, ifloor
 from scal3.utils import myRaise
 
 
+monthDbExpiredIgnoreFile = join(confDir, "hijri-expired-ignore")
+
+
 oldDbPath = "%s/hijri.db" % confDir
 if isfile(oldDbPath):
 	os.remove(oldDbPath)
@@ -133,6 +136,7 @@ class MonthDbHolder:
 		self.startDate = (1426, 2, 1)  # hijriDbInitH
 		self.startJd = 2453441  # hijriDbInitJD
 		self.endJd = self.startJd  # hijriDbEndJD
+		self.expJd = None
 		self.monthLenByYm = {}  # hijriMonthLen
 		self.userDbPath = join(confDir, "hijri-monthes.json")
 		self.sysDbPath = "%s/hijri-monthes.json" % modDir
@@ -151,6 +155,7 @@ class MonthDbHolder:
 	def setData(self, data):
 		self.startDate = tuple(data["startDate"])
 		self.startJd = data["startJd"]
+		self.expJd = data["expJd"]
 		###
 		monthLenByYear = {}
 		for row in data["monthLen"]:
