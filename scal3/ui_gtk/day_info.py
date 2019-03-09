@@ -55,11 +55,11 @@ class AllDateLabelsVBox(gtk.VBox, ud.BaseCalObj):
 			sgroup.add_widget(label)
 			pack(hbox, gtk.Label("  "))
 			###
+			dateLabel = gtk.Label(ui.cell.format(ud.dateFormatBin, i))
+			dateLabel.set_selectable(True)
 			pack(
 				hbox,
-				gtk.Label(
-					ui.cell.format(ud.dateFormatBin, i)
-				),
+				dateLabel,
 				0,
 				0,
 				0,
