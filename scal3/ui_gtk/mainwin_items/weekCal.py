@@ -1203,11 +1203,20 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
 	def goForward4(self, obj=None):
 		self.jdPlus(28)
 
+	def itemContainsGdkWindow(self, item, col_win):
+		if col_win == item.get_window():
+			return True
+		if isinstance(item, gtk.Container):
+			for child in item.get_children():
+				if self.itemContainsGdkWindow(child, col_win):
+					return True
+		return False
+
 	def buttonPress(self, widget, gevent):
 		col_win = gevent.get_window()
 		col = None
 		for item in self.items:
-			if col_win == item.get_window():
+			if self.itemContainsGdkWindow(item, col_win):
 				col = item
 				break
 		if not col:
