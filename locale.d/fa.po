@@ -253,6 +253,10 @@ msgid "Ethiopian"
 msgstr ""
 "اتیوپیایی"
 
+msgid "Julian Day Number"
+msgstr ""
+"عدد روز جولی"
+
 
 msgid "Language"
 msgstr ""

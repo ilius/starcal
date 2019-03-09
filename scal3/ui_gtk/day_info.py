@@ -88,6 +88,28 @@ class PluginsTextView(gtk.TextView, ud.BaseCalObj):
 		self.get_buffer().set_text(ui.cell.pluginsText)
 
 
+
+@registerSignals
+class DayInfoJulianDayHBox(gtk.HBox, ud.BaseCalObj):
+	_name = "jd"
+	desc = _("Julian Day Number")
+	def __init__(self):
+		gtk.HBox.__init__(self)
+		self.initVars()
+		###
+		pack(self, gtk.Label(_("Julian Day Number") + ":  "))
+		self.jdLabel = gtk.Label("")
+		self.jdLabel.set_selectable(True)
+		pack(self, self.jdLabel)
+		pack(self, gtk.Label(""), 1, 1)
+		###
+		self.show_all()
+
+	def onDateChange(self, *a, **ka):
+		ud.BaseCalObj.onDateChange(self, *a, **ka)
+		self.jdLabel.set_label(str(ui.cell.jd))
+
+
 @registerSignals
 class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 	_name = "dayInfo"
@@ -107,20 +129,24 @@ class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 		dialog_add_button(self, "", _("Today"), 2, self.goToday)
 		dialog_add_button(self, "", _("Next"), 3, self.goNext)
 		###
-		self.allDateLabels = AllDateLabelsVBox()
-		self.pluginsTextView = PluginsTextView()
-		self.eventsView = DayOccurrenceView()
+		self.appendDayInfoItem(AllDateLabelsVBox())
+		self.appendDayInfoItem(DayInfoJulianDayHBox(), expander=False)
+		self.appendDayInfoItem(PluginsTextView())
+		self.appendDayInfoItem(DayOccurrenceView())
 		###
-		for item in (self.allDateLabels, self.pluginsTextView, self.eventsView):
-			self.appendItem(item)
-			###
+		self.vbox.show_all()
+
+	def appendDayInfoItem(self, item, expander=True):
+		self.appendItem(item)
+		###
+		widget = item
+		if expander:
 			exp = gtk.Expander()
 			exp.set_label(item.desc)
 			exp.add(item)
 			exp.set_expanded(True)
-			pack(self.vbox, exp)
-		self.vbox.show_all()
-		###
+			widget = exp
+		pack(self.vbox, widget)
 
 	def onClose(self, obj=None, event=None):
 		self.hide()
