@@ -257,6 +257,18 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 			dupItem.connect("activate", self.duplicateSelectedObj)
 			editMenu.append(dupItem)
 			self.mbarDupItem = dupItem
+			##
+			editMenu.append(gtk.SeparatorMenuItem())
+			##
+			enableAllItem = MenuItem(_("Enable All Groups"))
+			enableAllItem.connect("activate", self.enableAllClicked)
+			editMenu.append(enableAllItem)
+			self.mbarEnableAllItem = enableAllItem
+			##
+			disableAllItem = MenuItem(_("Disable All Groups"))
+			disableAllItem.connect("activate", self.disableAllClicked)
+			editMenu.append(disableAllItem)
+			self.mbarDisableAllItem = disableAllItem
 		####
 		viewItem = MenuItem(_("_View"))
 		viewMenu = gtk.Menu()
@@ -347,6 +359,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		col.add_attribute(cell, "pixbuf", 1)
 		col.set_property("expand", False)
 		self.treev.append_column(col)
+		self.pixbufCol = col
 		###
 		col = gtk.TreeViewColumn(
 			_("Summary"),
@@ -998,6 +1011,49 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 	def onGroupModify(self, group):
 		self.waitingDo(self._do_onGroupModify, group)
 
+	def setGroupEnable(self, enable: bool, group: event_lib.EventGroup, path: "Optional[Tuple[int]]") -> bool:
+		if path is None:
+			groupIter = self.groupIterById[group.id]
+		else:
+			groupIter = self.trees.get_iter(path)
+		group.enable = enable
+		self.trees.set_value(
+			groupIter,
+			1,
+			common.getGroupPixbuf(group),
+		)
+		ui.eventGroups.save()
+		#group.save()
+		if (
+			group.enable
+			and
+			self.trees.iter_n_children(groupIter) == 0
+			and
+			len(group) > 0
+		):
+			for event in group:
+				self.appendEventRow(groupIter, event)
+			self.loadedGroupIds.add(group.id)
+		self.onGroupModify(group)
+
+	def enableAllClicked(self, button=None):
+		for group in ui.eventGroups:
+			self.setGroupEnable(True, group, None)
+
+	def disableAllClicked(self, button=None):
+		for group in ui.eventGroups:
+			self.setGroupEnable(False, group, None)
+
+	def toggleEnableGroup(self, group: event_lib.EventGroup, path) -> bool:
+		col = self.pixbufCol
+		cell = col.get_cells()[0]
+		try:
+			cell.get_property("pixbuf")
+		except:
+			return False
+		enable = not group.enable
+		self.setGroupEnable(enable, group, path)
+
 	def treeviewButtonPress(self, treev, gevent):
 		pos_t = treev.get_path_at_pos(int(gevent.x), int(gevent.y))
 		if not pos_t:
@@ -1019,35 +1075,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 			obj_list = self.getObjsByPath(path)
 			if len(obj_list) == 1:## group, not event
 				group = obj_list[0]
-				if group.name != "trash":
-					cell = col.get_cells()[0]
-					try:
-						cell.get_property("pixbuf")
-					except:
-						pass
-					else:
-						group.enable = not group.enable
-						groupIter = self.trees.get_iter(path)
-						self.trees.set_value(
-							groupIter,
-							1,
-							common.getGroupPixbuf(group),
-						)
-						ui.eventGroups.save()
-						#group.save()
-						if (
-							group.enable
-							and
-							self.trees.iter_n_children(groupIter) == 0
-							and
-							len(group) > 0
-						):
-							for event in group:
-								self.appendEventRow(groupIter, event)
-							self.loadedGroupIds.add(group.id)
-						self.onGroupModify(group)
-						treev.set_cursor(path)
-						return True
+				if group.name != "trash" and col == self.pixbufCol and self.toggleEnableGroup(group, path):
+					treev.set_cursor(path)
+					return True
 
 	def insertNewGroup(self, groupIndex):
 		from scal3.ui_gtk.event.group.editor import GroupEditorDialog

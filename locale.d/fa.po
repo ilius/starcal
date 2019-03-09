@@ -1330,6 +1330,14 @@ msgid "Duplicate with All Events"
 msgstr ""
 "دوتا کردن با تمام رویدادها"
 
+msgid "Enable All Groups"
+msgstr ""
+"فعال کردن تمام گروه‌ها"
+
+msgid "Disable All Groups"
+msgstr ""
+"غیرفعال کردن تمام گروه‌ها"
+
 msgid "Convert to %s"
 msgstr ""
 "تبدیل به %s"
