@@ -773,6 +773,30 @@ msgid "Tune Hijri Monthes"
 msgstr ""
 "تنظیم ماه‌های قمری"
 
+
+msgid "Hijri months expired"
+msgstr ""
+"ماه‌های قمری منقضی شده‌اند"
+
+msgid "Hijri months are expired."
+"\n"
+"Please update StarCalendar."
+"\n"
+"Otherwise, Hijri dates and Iranian official holidays would be incorrect."
+msgstr ""
+"ماه‌های قمری منقضی شده‌اند"
+"\n"
+"لطفا StarCalendar را به‌روزرسانی کنید"
+"\n"
+"در غیر این صورت، تاریخ‌های قمری و تعطیلات رسمی ایران نادرست خواهند بود"
+
+
+msgid "Don't show this again"
+msgstr ""
+"دیگر این را نمایش نده"
+
+
+
 msgid "Equals to"
 msgstr ""
 "معادل"

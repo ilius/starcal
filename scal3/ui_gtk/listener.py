@@ -46,8 +46,8 @@ if __name__ == "__main__":
 	from gi.repository import GLib as glib
 
 	class TestRec:
-		def onCurrentDateChange(self, date):
-			print("current date changed to %s/%s/%s" % date)
+		def onCurrentDateChange(self, gdate):
+			print("current date changed to %s/%s/%s" % gdate)
 
 	dateChange.add(TestRec())
 	glib.MainLoop().run()
