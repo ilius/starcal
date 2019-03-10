@@ -65,13 +65,25 @@ class WidgetClass(common.WidgetClass):
 
 	def updateWidget(self):
 		common.WidgetClass.updateWidget(self)
-		self.startDateInput.set_value(self.event["start"].date)
-		self.endDateInput.set_value(self.event["end"].date)
+		start, ok = self.event["start"]
+		if not ok:
+			raise KeyError("rule \"start\" not found")
+		end, ok = self.event["end"]
+		if not ok:
+			raise KeyError("rule \"end\" not found")
+		self.startDateInput.set_value(start.date)
+		self.endDateInput.set_value(end.date)
 
 	def updateVars(self):## FIXME
 		common.WidgetClass.updateVars(self)
-		self.event["start"].setDate(self.startDateInput.get_value())
-		self.event["end"].setDate(self.endDateInput.get_value())
+		start, ok = self.event["start"]
+		if not ok:
+			raise KeyError("rule \"start\" not found")
+		end, ok = self.event["end"]
+		if not ok:
+			raise KeyError("rule \"end\" not found")
+		start.setDate(self.startDateInput.get_value())
+		end.setDate(self.endDateInput.get_value())
 
 	def modeComboChanged(self, obj=None):
 		# overwrite method from common.WidgetClass
