@@ -130,7 +130,7 @@ class MultiSpinButton(gtk.HBox):
 		self.digs = locale_man.getDigits()
 		###
 		####
-		self.set_direction(gtk.TextDirection.LTR) ## self is a gtk.Entry
+		self.entry.set_direction(gtk.TextDirection.LTR)
 		self.set_width_chars(self.field.getMaxWidth())
 		#print(self.__class__.__name__, "value=", value)
 		#self.connect("activate", lambda obj: self.update())
