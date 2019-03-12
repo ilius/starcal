@@ -24,7 +24,7 @@ fi
 
 
 pyCmd=
-for minor in 6 5 ; do
+for minor in 7 6 5 ; do
 	cmd="/usr/bin/python3.$minor"
 	if [ -f "$cmd" ] ; then
 		pyCmd="$cmd"
