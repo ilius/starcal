@@ -128,7 +128,7 @@ if [ ! -f $pkgPath ] ; then
 fi
 
 echo "Package created in \"$pkgPath\", installing"
-yum remove -y $pkgName >/dev/null 2>&1
+yum remove -y $pkgName >/dev/null 2>&1 | true
 yum install --nogpgcheck "$pkgPath" ## disable gpgcheck in /etc/yum.conf
 #rpm -U --force "$pkgPath" ## its OK when required packages are installed!
 
