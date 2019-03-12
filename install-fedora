@@ -99,6 +99,9 @@ StarCalendar is a full-featured international calendar written in Python,
 using Gtk3-based interface, that supports Jalai(Iranian), Hijri(Islamic),
 and Indian National calendars, as well as common English(Gregorian) calendar
 
+# Turn off the brp-python-bytecompile automagic
+%global _python_bytecompile_extra 0
+
 %install
 \"$sourceDir/install\" \"%{buildroot}\" --for-pkg --prefix=%{_prefix} --python='$pyCmd'
 
