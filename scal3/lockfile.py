@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import os
 from os.path import isfile, exists
 from time import time as now

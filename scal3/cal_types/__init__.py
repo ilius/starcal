@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 from os.path import join
 from time import localtime

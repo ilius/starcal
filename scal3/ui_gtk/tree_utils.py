@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 def tree_path_split(p):
 	return [
 		int(x)

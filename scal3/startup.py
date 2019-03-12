@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from os.path import isfile, isdir
 
 from scal3.path import *

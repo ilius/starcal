@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 
 from scal3.path import deskDir

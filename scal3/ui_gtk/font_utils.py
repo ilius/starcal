@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from gi.repository import Pango as pango
 W_NORMAL = pango.Weight.NORMAL
 S_NORMAL = pango.Style.NORMAL

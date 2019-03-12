@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from math import log
 from scal3.utils import s_join
 

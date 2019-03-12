@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 def processDroppedDate(text, dtype):
 	## data_type: "UTF8_STRING", "application/x-color", "text/uri-list",
 	if dtype == "UTF8_STRING":

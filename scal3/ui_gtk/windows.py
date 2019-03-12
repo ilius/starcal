@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 def setupMenuHideOnLeave(menu):
 	from time import time as now
 	def menuLeaveNotify(m, e):

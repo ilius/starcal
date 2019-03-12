@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import sys
 from xml.etree.ElementTree import XML, tostring
 
