@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 #from xml.sax.saxutils import escape, unescape
 def escape(data, entities={}):
 	"""

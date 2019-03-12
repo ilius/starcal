@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import time
 from time import localtime
 from time import time as now

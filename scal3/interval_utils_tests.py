@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import random
 
 from scal3.interval_utils import *

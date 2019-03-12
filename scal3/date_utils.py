@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import math
 from scal3.cal_types import calTypes, to_jd, DATE_GREG
 from scal3.time_utils import getEpochFromJd

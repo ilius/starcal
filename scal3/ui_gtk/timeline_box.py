@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from scal3.utils import toStr
 from scal3 import ui
 from scal3.timeline import *

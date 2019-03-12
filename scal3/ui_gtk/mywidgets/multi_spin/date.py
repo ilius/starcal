@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from time import localtime
 
 from scal3.cal_types import to_jd, jd_to

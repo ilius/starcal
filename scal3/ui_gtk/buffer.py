@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 """
 Thanks to "Pier Carteri" <m3tr0@dei.unipd.it> for program Py_Shell.py
 """

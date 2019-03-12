@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 
 def invertColor(r, g, b):
 	return (

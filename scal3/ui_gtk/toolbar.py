@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from time import time as now
 
 from scal3.utils import myRaise

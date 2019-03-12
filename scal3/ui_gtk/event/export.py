@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 from os.path import join, split, splitext
 
 from scal3.path import deskDir
