@@ -39,7 +39,7 @@ rootDir = "/usr/share/starcal3"
 sys.path.insert(0, dataDir)## FIXME
 sys.path.insert(0, rootDir)## FIXME
 
-from natz.local import get_localzone
+import natz
 
 from scal3 import plugin_api as api
 
@@ -69,7 +69,7 @@ from pray_times_gtk import *
 
 ####################################################
 
-localTz = get_localzone()
+localTz = natz.gettz()
 
 
 ####################### Methods and Classes ##################
