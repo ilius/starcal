@@ -28,7 +28,7 @@ fi
 pkgName=starcal3
 sourceDir="`dirname \"$myPath\"`"
 
-PY_SUPPORTED=(3.6 3.5)
+PY_SUPPORTED=(3.7 3.6 3.5)
 
 #"$sourceDir/scripts/assert_python3"
 
