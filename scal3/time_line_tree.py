@@ -219,7 +219,7 @@ class TimeLineTree:
 		refList = self.byEvent.get(eid)
 		if not refList: # None or []
 			return None
-		node, ev_tuple = refList][0]
+		node, ev_tuple = refList[0]
 		return ev_tuple[0], ev_tuple[1]
 
 	def getDepth(self):
