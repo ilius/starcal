@@ -93,7 +93,7 @@ $requires_str
 $recommends_str
 
 BuildArch:      noarch
-BuildRequires:  python3
+BuildRequires:  python3 desktop-file-utils gettext git
 
 %description
 StarCalendar is a full-featured international calendar written in Python,
