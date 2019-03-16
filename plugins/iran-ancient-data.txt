@@ -1,4 +1,3 @@
-#!/usr/bin/python
 ## جشن‌های باستانی ایران
 ## رضا مرادی غیاث‌آبادی (www.ghiasabadi.com)
 ## سعید رسولی <saeed.gnu@gmail.com>
