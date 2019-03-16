@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/usr/bin/env python3
 import sys
 from os.path import dirname, join
 rootDir = dirname(dirname(__file__))
