@@ -32,7 +32,12 @@ tmpDir=/tmp/$pkgName-install-deb
 mkdir -p $tmpDir
 mkdir -p "$tmpDir/DEBIAN"
 
-"$sourceDir/install" "$tmpDir" "--for-pkg"
+if [ ! -f /usr/bin/python3 ] ; then
+	echo "/usr/bin/python3 was not found" >&2
+	exit 1
+fi
+
+"$sourceDir/install" "$tmpDir" "--for-pkg" "--python=/usr/bin/python3"
 chown -R root "$tmpDir"
 installedSize=`getDirTotalSize "$tmpDir"` ## only /usr ? FIXME
 
