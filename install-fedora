@@ -72,6 +72,8 @@ recommends+=('python3-ujson')
 #recommends+=('python3-igraph')
 #recommends+=('python3-gnomevfs')
 
+recommends+=('lxqt-openssh-askpass')
+# I did not find openssh-askpass-gnome in Fedora repos
 
 requires_str="Requires: ${requires[@]}"
 recommends_str="Recommends: ${recommends[@]}"
