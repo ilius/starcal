@@ -228,6 +228,7 @@ def setDefault_adjustTimeCmd():
 			"/usr/lib/openssh/gnome-ssh-askpass",
 			"/usr/bin/ksshaskpass",
 			"/usr/bin/lxqt-openssh-askpass",
+			"/usr/libexec/openssh/lxqt-openssh-askpass",
 			"/usr/bin/ssh-askpass-fullscreen",
 			"/usr/lib/ssh/x11-ssh-askpass",
 		):
