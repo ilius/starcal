@@ -79,6 +79,7 @@ requires+=('python3-requests')
 recommends=()
 recommends+=('python3-ujson')
 #recommends+=('python3-igraph')
+recommends+=('openssh-askpass-gnome')
 
 ## The package for AppIndicator is: typelib-1_0-AppIndicator3-0_1
 ## Which provides: typelib(AppIndicator3) = 0.1
