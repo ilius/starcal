@@ -76,7 +76,10 @@ class AdjusterDialog(gtk.Dialog):
 		pack(self.vbox, hbox)
 		#########
 		hbox = gtk.HBox()
-		self.radioMan = gtk.RadioButton(None, _("Set _Manully:"), True)
+		self.radioMan = gtk.RadioButton.new_with_mnemonic(
+			group=None,
+			label=_("Set _Manully:"),
+		)
 		self.radioMan.connect("clicked", self.radioManClicked)
 		pack(hbox, self.radioMan)
 		pack(self.vbox, hbox)
@@ -90,7 +93,7 @@ class AdjusterDialog(gtk.Dialog):
 		l.set_property("width-request", self.xpad)
 		pack(hbox, l)
 		##
-		self.ckeckbEditTime = gtk.CheckButton(_("Edit Time"))
+		self.ckeckbEditTime = gtk.CheckButton.new_with_mnemonic(_("Edit _Time"))
 		self.editTime = False
 		self.ckeckbEditTime.connect("clicked", self.ckeckbEditTimeClicked)
 		pack(hbox, self.ckeckbEditTime)
@@ -105,7 +108,7 @@ class AdjusterDialog(gtk.Dialog):
 		l.set_property("width-request", self.xpad)
 		pack(hbox, l)
 		##
-		self.ckeckbEditDate = gtk.CheckButton(_("Edit Date"))
+		self.ckeckbEditDate = gtk.CheckButton.new_with_mnemonic(_("Edit _Date"))
 		self.editDate = False
 		self.ckeckbEditDate.connect("clicked", self.ckeckbEditDateClicked)
 		pack(hbox, self.ckeckbEditDate)
@@ -118,9 +121,9 @@ class AdjusterDialog(gtk.Dialog):
 		self.vboxMan = vb
 		######
 		hbox = gtk.HBox()
-		self.radioNtp = gtk.RadioButton(
-			group=self.radioMan,
-			label=_("Set from NTP:"),
+		self.radioNtp = gtk.RadioButton.new_with_mnemonic_from_widget(
+			radio_group_member=self.radioMan,
+			label=_("Set from _NTP:"),
 		)
 		self.radioNtp.connect("clicked", self.radioNtpClicked)
 		pack(hbox, self.radioNtp)
