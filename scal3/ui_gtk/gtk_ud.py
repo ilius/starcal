@@ -222,14 +222,6 @@ def setDefault_adjustTimeCmd():
 	global adjustTimeCmd
 	global adjustTimeEnv
 	from os.path import isfile
-	for cmd in ("gksudo", "kdesudo", "gksu", "gnomesu", "kdesu"):
-		if isfile("/usr/bin/%s" % cmd):
-			adjustTimeCmd = [
-				cmd,
-				join(rootDir, "scripts", "run"),
-				"scal3/ui_gtk/adjust_dtime.py"
-			]
-			return
 	sudo = "/usr/bin/sudo"
 	if isfile(sudo):
 		for askpass in (
@@ -248,6 +240,14 @@ def setDefault_adjustTimeCmd():
 				]
 				adjustTimeEnv["SUDO_ASKPASS"] = askpass
 				return
+	for cmd in ("gksudo", "kdesudo", "gksu", "gnomesu", "kdesu"):
+		if isfile("/usr/bin/%s" % cmd):
+			adjustTimeCmd = [
+				cmd,
+				join(rootDir, "scripts", "run"),
+				"scal3/ui_gtk/adjust_dtime.py"
+			]
+			return
 
 # user should be able to configure this in Preferences
 adjustTimeCmd = ""
