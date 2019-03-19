@@ -791,6 +791,11 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 			self.exportClicked,
 		))
 		menu.add(labelStockMenuItem(
+			"Ad_just System Time",
+			gtk.STOCK_PREFERENCES,
+			self.adjustTime,
+		))
+		menu.add(labelStockMenuItem(
 			"_About",
 			gtk.STOCK_ABOUT,
 			self.aboutShow,
