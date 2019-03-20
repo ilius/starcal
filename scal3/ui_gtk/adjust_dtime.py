@@ -64,6 +64,7 @@ class AdjusterDialog(gtk.Dialog):
 			gtk.STOCK_PREFERENCES,
 			gtk.IconSize.BUTTON,
 		))
+		self.set_keep_above(True)
 		#########
 		self.buttonCancel = self.add_button(gtk.STOCK_CANCEL, 0)
 		#self.buttonCancel.connect("clicked", lambda w: sys.exit(0))
