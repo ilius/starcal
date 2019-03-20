@@ -36,6 +36,7 @@ from scal3.ui_gtk import *
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 
+from gi.repository.Gtk import IconTheme
 
 _ = str ## FIXME
 iceil = lambda f: int(ceil(f))
@@ -60,11 +61,14 @@ class AdjusterDialog(gtk.Dialog):
 	def __init__(self, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Adjust System Date & Time"))  # FIXME
-		self.set_icon(self.render_icon(
-			gtk.STOCK_PREFERENCES,
-			gtk.IconSize.BUTTON,
-		))
 		self.set_keep_above(True)
+		self.set_icon(IconTheme.get_default().load_icon(
+			icon_name = "preferences-system-time",
+			size = 32,
+			flags = 0,
+		))
+		# render_icon: Deprecated since version 3.0: Use Gtk.Widget.render_icon_pixbuf() instead.
+		# render_icon_pixbuf: Deprecated since version 3.10: Use Gtk.IconTheme.load_icon() instead.
 		#########
 		self.buttonCancel = self.add_button(gtk.STOCK_CANCEL, 0)
 		#self.buttonCancel.connect("clicked", lambda w: sys.exit(0))
@@ -72,7 +76,7 @@ class AdjusterDialog(gtk.Dialog):
 		#self.buttonSet.connect("clicked", self.setSysTimeClicked)
 		#########
 		hbox = gtk.HBox()
-		self.label_cur = gtk.Label(_("Current:"))
+		self.label_cur = gtk.Label(label=_("Current:"))
 		pack(hbox, self.label_cur)
 		pack(self.vbox, hbox)
 		#########
@@ -86,11 +90,11 @@ class AdjusterDialog(gtk.Dialog):
 		pack(self.vbox, hbox)
 		######
 		vb = gtk.VBox()
-		sg = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
+		sg = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		###
 		hbox = gtk.HBox()
 		##
-		l = gtk.Label("")
+		l = gtk.Label()
 		l.set_property("width-request", self.xpad)
 		pack(hbox, l)
 		##
@@ -105,7 +109,7 @@ class AdjusterDialog(gtk.Dialog):
 		###
 		hbox = gtk.HBox()
 		##
-		l = gtk.Label("")
+		l = gtk.Label()
 		l.set_property("width-request", self.xpad)
 		pack(hbox, l)
 		##
@@ -132,11 +136,11 @@ class AdjusterDialog(gtk.Dialog):
 		###
 		hbox = gtk.HBox()
 		##
-		l = gtk.Label("")
+		l = gtk.Label()
 		l.set_property("width-request", self.xpad)
 		pack(hbox, l)
 		##
-		pack(hbox, gtk.Label(_("Server:") + " "))
+		pack(hbox, gtk.Label(label=_("Server:") + " "))
 		combo = gtk.ComboBoxText.new_with_entry()
 		combo.get_child().connect("changed", self.updateSetButtonSensitive)
 		pack(hbox, combo, 1, 1)
