@@ -147,7 +147,7 @@ fi
 
 echo "Package created in \"$pkgPath\", installing"
 
-zypper install -f "$pkgPath"
+zypper install -f --allow-unsigned-rpm "$pkgPath"
 ## Problem: nothing provides /usr needed by $pkgName-1.9.0-3.noarch
 ## Fixed with defining /usr as Provides
 
