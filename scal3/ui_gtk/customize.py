@@ -155,26 +155,12 @@ class CustomizableCalBox(CustomizableCalObj):
 			if item.loaded:
 				pack(self, item, item.expand, item.expand)
 
-	# Disabled the old implementation (with reorder_child) because it's very buggy
-	# I guess the bug is in gtk.Box.reorder_child, because the exact same logic is working with Gtk2 in starcal-2.4
+	# Disabled the old implementation (with reorder_child) because it was very buggy with Gtk3
 	# Removing all (active) items from gtk.Box and re-packing them all apears to be fast enough, so doing that instead
-	# def moveItemUp_old(self, i):
-	# 	if i > 0:
-	# 		if self.items[i].loaded and self.items[i - 1].loaded:
-	# 			print("moveItemUp: reorder_child:", self.items[i]._name, i - 1)
-	# 			self.reorder_child(self.items[i], i - 1)
-	# 	CustomizableCalObj.moveItemUp(self, i)
 
 	def moveItemUp(self, i):
 		CustomizableCalObj.moveItemUp(self, i)
 		self.repackAll()
-
-	# def insertItemWidget(self, i):
-	# 	item = self.items[i]
-	# 	if not item.loaded:
-	# 		return
-	# 	pack(self, item, item.expand, item.expand)
-	# 	self.reorder_child(item, i)
 
 	def insertItemWidget(self, i):
 		self.repackAll()
