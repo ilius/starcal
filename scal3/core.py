@@ -677,13 +677,13 @@ weekDayName = (
 	_("Saturday"),
 )
 weekDayNameAb = (
-	_("Sun"),
-	_("Mon"),
-	_("Tue"),
-	_("Wed"),
-	_("Thu"),
-	_("Fri"),
-	_("Sat"),
+	_("Sun", nums=True),
+	_("Mon", nums=True),
+	_("Tue", nums=True),
+	_("Wed", nums=True),
+	_("Thu", nums=True),
+	_("Fri", nums=True),
+	_("Sat", nums=True),
 )
 
 

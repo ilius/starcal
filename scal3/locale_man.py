@@ -279,7 +279,7 @@ def loadTranslator(ui_is_qt=False):
 	else:
 		transObj = gettext.GNUTranslations(fd)
 	if transObj:
-		def tr(s, *a, **ka):
+		def tr(s, *a, nums=False, **ka):
 			if isinstance(s, (int, float)):
 				s = numEncode(s, *a, **ka)
 			else:
@@ -290,6 +290,8 @@ def loadTranslator(ui_is_qt=False):
 					s = s % a
 				if ka:
 					s = s % ka
+				if nums:
+					s = textNumEncode(s)
 			return s
 		"""
 		if ui_is_qt:## qt takes "&" instead of "_" as trigger
