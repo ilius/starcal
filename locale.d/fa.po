@@ -342,23 +342,23 @@ msgstr ""
 
 msgid "Sun"
 msgstr ""
-"۱ ش"
+"1 ش"
 
 msgid "Mon"
 msgstr ""
-"۲ ش"
+"2 ش"
 
 msgid "Tue"
 msgstr ""
-"۳ ش"
+"3 ش"
 
 msgid "Wed"
 msgstr ""
-"۴ ش"
+"4 ش"
 
 msgid "Thu"
 msgstr ""
-"۵ ش"
+"5 ش"
 
 msgid "Fri"
 msgstr ""
