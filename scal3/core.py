@@ -36,6 +36,7 @@ from scal3.os_utils import *
 from scal3.json_utils import *
 from scal3.utils import *
 
+from scal3 import logger
 from scal3.cal_types import calTypes, DATE_GREG, getSysDate
 from scal3 import locale_man
 from scal3.locale_man import tr as _
@@ -141,32 +142,8 @@ def saveConf():
 	saveModuleJsonConf(__name__)
 	activeCalTypes = inactiveCalTypes = None
 
-# _____________________________________________________________________ #
 
-if os.path.exists(confDir):
-	if not isdir(confDir):
-		os.rename(confDir, confDir + "-old")
-		os.mkdir(confDir)
-else:
-	os.mkdir(confDir)
-
-makeDir(join(confDir, "log"))
-
-# _____________________________________________________________________ #
-
-try:
-	import logging
-	import logging.config
-
-	logConfText = open(join(rootDir, "conf", "logging-user.conf")).read()
-	for varName in ("confDir", "APP_NAME"):
-		logConfText = logConfText.replace(varName, eval(varName))
-
-	logging.config.fileConfig(StringIO(logConfText))
-	log = logging.getLogger(APP_NAME)
-except:
-	from scal3.utils import FallbackLogger
-	log = FallbackLogger()
+log = logger.get()
 
 
 def myRaise(File=None):
