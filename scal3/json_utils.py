@@ -3,7 +3,6 @@ import sys
 try:
 	import ujson as json
 except ImportError:
-	print("-------------- did not find ujson")
 	try:
 		import json
 	except ImportError:
