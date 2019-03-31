@@ -873,6 +873,10 @@ msgid "position"
 msgstr ""
 "مکان"
 
+msgid "Position"
+msgstr ""
+"مکان"
+
 msgid "Time"
 msgstr ""
 "زمان"

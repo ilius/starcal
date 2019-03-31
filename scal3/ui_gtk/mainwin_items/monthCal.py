@@ -44,47 +44,56 @@ from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.cal_base import CalBase
 
 
-class MonthCalTypeParamBox(gtk.HBox):
+class MonthCalTypeParamBox(gtk.Frame):
 	def getCellPagePlus(self, cell, plus):
 		return ui.getMonthPlus(cell, plus)
 
-	def __init__(self, cal, index, mode, params, sgroupLabel, sgroupFont):
+	def __init__(self, cal, index, mode, params, sgroupLabel):
 		from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
 		from scal3.ui_gtk.mywidgets import MyFontButton, MyColorButton
-		gtk.HBox.__init__(self)
+		gtk.Frame.__init__(self)
 		self.cal = cal
 		self.index = index
 		self.mode = mode
-		######
+		####
 		module, ok = calTypes[mode]
 		if not ok:
 			raise RuntimeError("cal type %r not found" % mode)
-		label = gtk.Label(_(module.desc) + "  ")
-		label.set_alignment(0, 0.5)
-		pack(self, label)
+		####
+		self.set_label(_(module.desc))
+		####
+		vbox = gtk.VBox()
+		self.add(vbox)
+		###
+		hbox = gtk.HBox()
+		label = gtk.Label(_("Position")+": ")
+		pack(hbox, label)
 		sgroupLabel.add_widget(label)
-		###
-		pack(self, gtk.Label(""), 1, 1)
-		pack(self, gtk.Label(_("position")))
-		###
 		spin = FloatSpinButton(-99, 99, 1)
 		self.spinX = spin
-		pack(self, spin)
-		###
+		pack(hbox, spin)
+		pack(hbox, gtk.Label(""), 1, 1)
 		spin = FloatSpinButton(-99, 99, 1)
 		self.spinY = spin
-		pack(self, spin)
+		pack(hbox, spin)
+		pack(hbox, gtk.Label(""), 1, 1)
+		pack(vbox, hbox)
 		####
-		pack(self, gtk.Label(""), 1, 1)
-		###
+		hbox = gtk.HBox()
+		label = gtk.Label(_("Font")+": ")
+		pack(hbox, label)
+		sgroupLabel.add_widget(label)
+		##
 		fontb = MyFontButton(cal)
 		self.fontb = fontb
-		pack(self, fontb)
-		sgroupFont.add_widget(fontb)
-		####
+		##
 		colorb = MyColorButton()
 		self.colorb = colorb
-		pack(self, colorb)
+		##
+		pack(hbox, colorb)
+		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, fontb)
+		pack(vbox, hbox)
 		####
 		self.set(params)
 		####
@@ -158,7 +167,6 @@ class CalObj(gtk.DrawingArea, CalBase):
 				"color": ui.textColor,
 			})
 		sgroupLabel = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
-		sgroupFont = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
 		for i, mode in enumerate(calTypes.active):
 			#try:
 			params = ui.mcalTypeParams[i]
@@ -170,7 +178,6 @@ class CalObj(gtk.DrawingArea, CalBase):
 				mode,
 				params,
 				sgroupLabel,
-				sgroupFont,
 			)
 			pack(vbox, hbox)
 		###
@@ -231,12 +238,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 		hbox = prefItem.getWidget()
 		pack(self.optionsWidget, hbox)
 		########
-		frame = gtk.Frame()
-		frame.set_label(_("Calendars"))
 		self.typeParamsVbox = gtk.VBox()
-		frame.add(self.typeParamsVbox)
-		frame.show_all()
-		pack(self.optionsWidget, frame)
+		pack(self.optionsWidget, self.typeParamsVbox)
 		self.optionsWidget.show_all()
 		self.updateTypeParamsWidget()## FIXME
 
