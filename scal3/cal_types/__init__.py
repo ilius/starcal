@@ -168,6 +168,9 @@ class CalTypesHolder:
 				self.__class__.__name__,
 			))
 
+	def getDesc(self, key):
+		return self.get(key).desc
+
 	def nameByIndex(self, index):
 		if index >= len(modules):
 			return ""
