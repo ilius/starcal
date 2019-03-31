@@ -600,11 +600,13 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		# calObjName is in ("weekCal", "monthCal", ...)
 		menu = gtk.Menu()
 		####
-		menu.add(labelStockMenuItem(
-			"_Copy Date",
-			gtk.STOCK_COPY,
-			self.copyDate,
-		))
+		for calType in calTypes.active:
+			menu.add(labelStockMenuItem(
+				_("Copy %s Date") % _(calTypes.getDesc(calType)),
+				gtk.STOCK_COPY,
+				self.copyDateGetCallback(calType),
+				calType,
+			))
 		menu.add(labelStockMenuItem(
 			"Day Info",
 			gtk.STOCK_INFO,
@@ -868,8 +870,11 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 			ui.winSticky = False
 		ui.saveLiveConf()
 
-	def copyDate(self, obj=None, event=None):
-		setClipboard(ui.cell.format(ud.dateFormatBin))
+	def copyDate(self, calType: int):
+		setClipboard(ui.cell.format(ud.dateFormatBin, mode=calType))
+
+	def copyDateGetCallback(self, calType: int):
+		return lambda obj=None, event=None: setClipboard(ui.cell.format(ud.dateFormatBin, mode=calType))
 
 	def copyDateToday(self, obj=None, event=None):
 		setClipboard(ui.todayCell.format(ud.dateFormatBin))
@@ -1157,7 +1162,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 	def statusIconButtonPress(self, obj, gevent):
 		if gevent.button == 2:
 			## middle button press
-			self.copyDate()
+			self.copyDate(calTypes.primary)
 			return True
 
 	def statusIconClicked(self, obj=None):

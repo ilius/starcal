@@ -1291,6 +1291,10 @@ msgid "Copy _Date"
 msgstr ""
 "کپی _تاریخ"
 
+msgid "Copy %s Date"
+msgstr ""
+"کپی تاریخ %s"
+
 msgid "Copy _Time"
 msgstr ""
 "کپی _زمان"
