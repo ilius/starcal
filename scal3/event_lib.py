@@ -3313,6 +3313,7 @@ class EventContainer(BsonHistEventObj):
 	desc = ""
 	basicParams = (
 		"idList",## FIXME
+		"uuid",
 	)
 	#BsonHistEventObj.params == ()
 	params = (
@@ -3323,6 +3324,7 @@ class EventContainer(BsonHistEventObj):
 		"showFullEventDesc",
 		"idList",
 		"modified",
+		"uuid",
 	)
 
 	def __getitem__(self, key):
@@ -3354,6 +3356,7 @@ class EventContainer(BsonHistEventObj):
 		self.icon = ""
 		self.showFullEventDesc = False
 		######
+		self.uuid = None
 		self.modified = now()
 		#self.eventsModified = self.modified
 
@@ -3485,7 +3488,6 @@ class EventGroup(EventContainer):
 	sortByDefault = "summary"
 	basicParams = EventContainer.basicParams + (
 		#"enable",## FIXME
-		"uuid",
 		#"remoteIds", user edits the value  # FIXME
 		"remoteSyncData",
 		#"eventIdByRemoteIds",
@@ -3493,7 +3495,6 @@ class EventGroup(EventContainer):
 	)
 	params = EventContainer.params + (
 		#"enable",
-		"uuid",
 		"showInDCal",
 		"showInWCal",
 		"showInMCal",
@@ -3688,7 +3689,6 @@ class EventGroup(EventContainer):
 		self.showInMCal = True
 		self.showInStatusIcon = False
 		self.showInTimeLine = True
-		self.uuid = None
 		self.color = (0, 0, 0)  # FIXME
 		#self.defaultNotifyBefore = (10, 60)  # FIXME
 		if len(self.acceptsEventTypes) == 1:
