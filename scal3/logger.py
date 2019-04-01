@@ -4,8 +4,9 @@ log = None
 def init():
 	global log
 	import os
+	from io import StringIO
 	from os.path import join, isdir
-	from scal3.path import confDir, rootDir
+	from scal3.path import confDir, rootDir, APP_NAME
 	from scal3.os_utils import makeDir
 
 	if os.path.exists(confDir):
