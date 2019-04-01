@@ -10,11 +10,11 @@ from scal3.ui_gtk import gtk
 
 def error_exit(resCode, text, parent=None):
 	d = gtk.MessageDialog(
-		parent,
-		gtk.DialogFlags.DESTROY_WITH_PARENT,
-		gtk.MessageType.ERROR,
-		gtk.ButtonsType.OK,
-		text.strip(),
+		parent=parent,
+		destroy_with_parent=True,
+		message_type=gtk.MessageType.ERROR,
+		buttons=gtk.ButtonsType.OK,
+		text=text.strip(),
 	)
 	d.set_title("Error")
 	d.run()
