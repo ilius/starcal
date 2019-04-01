@@ -29,19 +29,23 @@ from time import time as now
 from time import localtime
 import os
 import os.path
-from os.path import join, dirname, isdir
+from os.path import join, dirname, isfile, isdir
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
 from scal3.path import *
+from scal3 import logger
 from scal3.utils import myRaise
 
-if not isdir(confDir):
+log = logger.get()
+
+if not isfile(join(confDir, "core.json")) and not isdir(join(confDir, "event")):
 	from scal3.utils import restartLow
 	try:
 		__import__("scal3.ui_gtk.import_config_2to3")
-	except:
+	except Exception as e:
 		myRaise()
+		log.error(str(e)) # TODO: log the full traceback
 		if not isdir(confDir):
 			os.mkdir(confDir, 0o755)
 	else:

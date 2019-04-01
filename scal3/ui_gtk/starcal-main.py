@@ -6,7 +6,10 @@ from os.path import dirname
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
+from scal3 import logger
 from scal3.ui_gtk import gtk
+
+log = logger.get()
 
 def error_exit(resCode, text, parent=None):
 	d = gtk.MessageDialog(
@@ -27,4 +30,5 @@ try:
 	from scal3.ui_gtk.starcal import main
 	sys.exit(main())
 except Exception as e:
+	log.error(str(e))
 	error_exit(1, str(e))
