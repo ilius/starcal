@@ -281,6 +281,8 @@ class EditDbDialog(gtk.Dialog):
 			mLen = row[3]
 			hijri.monthDb.monthLenByYm[ym] = mLen
 			hijri.monthDb.endJd += mLen
+
+		hijri.monthDb.expJd = hijri.monthDb.endJd
 		hijri.monthDb.save()
 
 	def run(self):

@@ -152,11 +152,13 @@ class MonthDbHolder:
 				if ml:  # positive integer
 					self.monthLenByYm[y * 12 + m] = ml
 					self.endJd += ml
+		if self.expJd is None:
+			self.expJd = self.endJd
 
 	def setData(self, data):
 		self.startDate = tuple(data["startDate"])
 		self.startJd = data["startJd"]
-		self.expJd = data["expJd"]
+		self.expJd = data.get("expJd", None)
 		###
 		monthLenByYear = {}
 		for row in data["monthLen"]:
@@ -193,6 +195,7 @@ class MonthDbHolder:
 			("startDate", self.startDate),
 			("startJd", self.startJd),
 			("monthLen", mLenData),
+			("expJd", self.expJd),
 		]))
 		open(self.userDbPath, "w").write(text)
 
