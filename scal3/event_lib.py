@@ -2179,7 +2179,7 @@ class Event(BsonHistEventObj, RuleContainer):
 		date, ok = self["date"]
 		if ok:
 			return date.getEpoch()
-		return getEpochFromJd(self.parent.startJd)
+		return self.parent.getStartEpoch()
 
 	def getEndEpoch(self):## FIXME
 		end, ok = self["end"]
@@ -2188,7 +2188,7 @@ class Event(BsonHistEventObj, RuleContainer):
 		date, ok = self["date"]
 		if ok:
 			return date.getEpoch()
-		return self.getEpochFromJd(self.parent.endJd)
+		return self.parent.getEndEpoch()
 
 	def getJd(self):
 		return self.getStartJd()
