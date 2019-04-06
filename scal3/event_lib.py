@@ -3366,6 +3366,9 @@ class EventContainer(BsonHistEventObj):
 	def getEvent(self, eid):
 		if eid not in self.idList:
 			raise ValueError("%s does not contain %s" % (self, eid))
+		return self._getEvent(eid)
+
+	def _getEvent(self, eid):
 		eventFile = Event.getFile(eid)
 		if not isfile(eventFile):
 			self.idList.remove(eid)
@@ -3628,7 +3631,7 @@ class EventGroup(EventContainer):
 				return self.getSortByValue(event, attr)
 
 		self.idList.sort(
-			key=lambda eid: event_key(self.getEvent(eid)),
+			key=lambda eid: event_key(self._getEvent(eid)),
 			reverse=reverse,
 		)
 
