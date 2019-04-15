@@ -15,3 +15,6 @@ class IntSpinButton(SingleSpinButton):
 	def set_range(self, _min: int, _max: int):
 		self.field.children[0].setRange(_min, _max)
 		self.set_text(self.field.getText())
+
+	def get_value(self):
+		return int(self.get_text())
