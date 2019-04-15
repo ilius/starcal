@@ -143,12 +143,12 @@ class CalObj(gtk.DrawingArea, CalBase):
 		self.set_property("height-request", ui.mcalHeight)
 		self.onDateChange() # just to resize the main window when decreasing wcalHeight
 
-	def leftMarginSpinChanged(self, spin):
-		ui.mcalLeftMargin = spin.get_value()
+	def leftMarginSpinChanged(self, entry):
+		ui.mcalLeftMargin = int(entry.get_text())
 		self.queue_draw()
 
-	def topMarginSpinChanged(self, spin):
-		ui.mcalTopMargin = spin.get_value()
+	def topMarginSpinChanged(self, entry):
+		ui.mcalTopMargin = int(entry.get_text())
 		self.queue_draw()
 
 	def updateTypeParamsWidget(self):
