@@ -37,6 +37,8 @@ from scal3.ui_gtk.decorators import *
 @registerSignals
 class MultiSpinButton(gtk.HBox):
 	signals = [
+		("changed", []),
+		("activate", []),
 		("first-min", []),
 		("first-max", []),
 	]
@@ -55,12 +57,6 @@ class MultiSpinButton(gtk.HBox):
 
 	def get_selection_bounds(self):
 		return self.entry.get_selection_bounds()
-
-	def connect(self, sigName, *args):
-		if sigName in ("changed", "activate"):
-			return self.entry.connect(sigName, *args)
-		# print("------ MultiSpinButton: sigName =", sigName)
-		return gtk.HBox.connect(self, sigName, *args)
 
 	def get_increments() -> "Tuple[int, int]":
 		return (self.step_inc, self.page_inc)
@@ -137,6 +133,7 @@ class MultiSpinButton(gtk.HBox):
 		self.entry.set_direction(gtk.TextDirection.LTR)
 		self.set_width_chars(self.field.getMaxWidth())
 		#print(self.__class__.__name__, "value=", value)
+		self.entry.connect("changed", self._entry_changed)
 		#self.connect("activate", lambda obj: self.update())
 		self.entry.connect("activate", self._entry_activate)
 		for widget in (self, self.entry, self.down_button, self.up_button):
@@ -147,10 +144,14 @@ class MultiSpinButton(gtk.HBox):
 		####
 		#self.select_region(0, 0)
 
+	def _entry_changed(self, widget):
+		self.emit("changed")
+
 	def _entry_activate(self, widget):
 		#print("_entry_activate", self.entry.get_text())
 		self.update()
 		#print(self.entry.get_text())
+		self.emit("activate")
 		return True
 
 	def get_value(self):
