@@ -53,6 +53,9 @@ class MultiSpinButton(gtk.HBox):
 	def set_editable(self, editable: bool) -> None:
 		self.entry.set_editable(editable)
 
+	def get_selection_bounds(self):
+		return self.entry.get_selection_bounds()
+
 	def connect(self, sigName, *args):
 		if sigName in ("changed", "activate"):
 			return self.entry.connect(sigName, *args)
