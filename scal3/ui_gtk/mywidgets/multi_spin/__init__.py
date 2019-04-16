@@ -58,7 +58,7 @@ class MultiSpinButton(gtk.HBox):
 	def get_selection_bounds(self):
 		return self.entry.get_selection_bounds()
 
-	def get_increments() -> "Tuple[int, int]":
+	def get_increments(self) -> "Tuple[int, int]":
 		return (self.step_inc, self.page_inc)
 
 	# def set_range(self, _min: int, _max: int):
