@@ -49,7 +49,8 @@ if not isfile(join(confDir, "core.json")) and not isdir(join(confDir, "event")):
 		if not isdir(confDir):
 			os.mkdir(confDir, 0o755)
 	else:
-		restartLow()
+		if isfile(join(confDir, "core.json")):
+			restartLow()
 
 from scal3.utils import versionLessThan
 from scal3.cal_types import calTypes
