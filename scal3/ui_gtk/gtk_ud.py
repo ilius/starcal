@@ -172,6 +172,13 @@ gtk.Window.set_default_icon_from_file(ui.logo)
 
 settings = gtk.Settings.get_default()
 
+if settings is None:
+	# if gdk.Screen.get_default() is None:
+	#	raise RuntimeError("There is not default screen")
+	# raise RuntimeError("settings == None")
+	settings = gtk.Settings.get_for_screen(gdk.Screen())
+
+
 # ui.timeout_initial = settings.get_property("gtk-timeout-initial") # == 200
 # ui.timeout_repeat = settings.get_property("gtk-timeout-repeat") # == 20
 # timeout_repeat=20 is too small! FIXME
