@@ -63,9 +63,14 @@ version=`"$sourceDir/scal3/get_version.py" | sed 's/\-/_/g'`
 
 
 requires=("$pyPkg")
+
+# Confirmed: all following 5 packages are required!
 requires+=('typelib-1_0-Gtk-3_0')
 requires+=('python3-gobject') ## The new gobject introspection
+requires+=('python3-gobject-Gdk')
+requires+=('python3-gobject-cairo')
 requires+=('python3-cairo')
+
 requires+=('python3-httplib2')
 requires+=('python3-dateutil')
 requires+=('python3-psutil')
