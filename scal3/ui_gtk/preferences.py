@@ -635,6 +635,7 @@ class PrefDialog(gtk.Dialog):
 		hboxBut = gtk.HBox()
 		###
 		button = gtk.Button(_("_About Plugin"))
+		button.set_use_underline(True)
 		button.set_image(gtk.Image.new_from_stock(
 			gtk.STOCK_ABOUT,
 			gtk.IconSize.BUTTON,
@@ -646,6 +647,7 @@ class PrefDialog(gtk.Dialog):
 		pack(hboxBut, gtk.Label(""), 1, 1)
 		###
 		button = gtk.Button(_("C_onfigure Plugin"))
+		button.set_use_underline(True)
 		button.set_image(gtk.Image.new_from_stock(
 			gtk.STOCK_PREFERENCES,
 			gtk.IconSize.BUTTON,
