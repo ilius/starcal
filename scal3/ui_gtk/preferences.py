@@ -1101,7 +1101,7 @@ class PrefDialog(gtk.Dialog):
 		i = cur[0]
 		j = self.plugTreestore[i][0]
 		plug = core.allPlugList[j]
-		self.plugButtonAbout.set_sensitive(plug.about is not None)
+		self.plugButtonAbout.set_sensitive(bool(plug.about))
 		self.plugButtonConf.set_sensitive(plug.hasConfig)
 
 	def plugAboutClicked(self, obj=None):
