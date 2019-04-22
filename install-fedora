@@ -70,7 +70,7 @@ requires+=('python3-requests')
 
 recommends=()
 recommends+=('python3-ujson')
-#recommends+=('python3-igraph')
+recommends+=('python3-igraph') # since Fedora 27
 #recommends+=('python3-gnomevfs')
 
 recommends+=('lxqt-openssh-askpass')
