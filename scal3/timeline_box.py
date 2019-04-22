@@ -201,7 +201,7 @@ def calcEventBoxes(
 			)
 			box.hasBorder = (borderTm > 0 and event.name in movableEventTypes)
 			boxValue = (groupIndex, t0, t1)
-			toAppend = boxesDict[boxValue]
+			toAppend = boxesDict.get(boxValue)
 			if toAppend is None:
 				boxesDict[boxValue] = [box]
 			else:
