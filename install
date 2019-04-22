@@ -146,7 +146,7 @@ cp -Rf "$sourceDir/" "${shareDir}/$pkgName" ### PUT SLASH after $sourceDir to co
 
 "${shareDir}/$pkgName/update-perm" ## FIXME
 
-for docFile in license.txt authors ChangeLog ; do
+for docFile in license.txt authors ; do
 	mv -f "${shareDir}/$pkgName/$docFile" "${shareDir}/doc/$pkgName/"
 done
 
