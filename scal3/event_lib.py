@@ -172,8 +172,35 @@ class LastIdsWrapper(JsonEventObj):
 		self.group = 0
 		self.account = 0
 
+	def __str__(self):
+		return "LastIds(event=%s, group=%s, account=%s)" % (self.event, self.group, self.account)
+
+	def scanDir(self, dpath):
+		lastId = 0
+		for fname in os.listdir(join(confDir, dpath)):
+			idStr, ext = splitext(fname)
+			if ext != ".json":
+				continue
+			try:
+				_id = int(idStr)
+			except:
+				print("invalid file name:", dpath)
+				continue
+			if _id > lastId:
+				lastId = _id
+		return lastId
+
+	def scan(self):
+		t0 = now()
+		self.event = self.scanDir("event/events")
+		self.group = self.scanDir("event/groups")
+		self.account = self.scanDir("event/accounts")
+		self.save()
+		print("Scanning last_ids took %.3f seconds, %s" % (now() - t0, self))
+
 
 lastIds = LastIdsWrapper.load()
+lastIds.scan()
 
 ###########################################################################
 
