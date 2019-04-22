@@ -33,7 +33,7 @@ depends+=('python-requests')
 
 optdepends=()
 optdepends+=('libappindicator-gtk3')
-optdepends+=('python-igraph')
+optdepends+=('python-igraph' 'igraph' 'icu')
 optdepends+=('python-ujson')
 #optdepends+=('python-gnomevfs')
 optdepends+=('lxqt-openssh-askpass')
