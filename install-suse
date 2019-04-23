@@ -65,7 +65,8 @@ version=`"$sourceDir/scal3/get_version.py" | sed 's/\-/_/g'`
 requires=("$pyPkg")
 
 # Confirmed: all following 5 packages are required!
-requires+=('typelib-1_0-Gtk-3_0')
+requires+=('typelib(Gtk) = 3.0' 'typelib(Gdk) = 3.0')
+requires+=('typelib(GdkPixbuf) = 2.0')
 requires+=('python3-gobject') ## The new gobject introspection
 requires+=('python3-gobject-Gdk')
 requires+=('python3-gobject-cairo')
@@ -83,14 +84,13 @@ requires+=('python3-requests')
 ## [ ] Dependencies -> Install Recommended Packages
 
 recommends=()
+recommends+=('typelib(AppIndicator3)')
 recommends+=('python3-ujson')
 #recommends+=('python3-igraph')
 recommends+=('openssh-askpass-gnome')
 
 ## The package for AppIndicator is: typelib-1_0-AppIndicator3-0_1
 ## Which provides: typelib(AppIndicator3) = 0.1
-## This typelib(AppIndicator3) is automatically added to dependencies of starcal3
-## I still don't know why
 
 requires_str="Requires: ${requires[@]}"
 recommends_str="Recommends: ${recommends[@]}"
