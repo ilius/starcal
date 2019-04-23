@@ -95,9 +95,13 @@ class IntField(NumField):
 		self.setDefault()
 
 	def setText(self, text):
+		if text == "":
+			self.setDefault()
+			return
 		try:
 			num = int(float(textNumDecode(text)))
 		except:
+			print("IntField: invalid text = %r" % text)
 			myRaise()
 			self.setDefault()
 		else:
