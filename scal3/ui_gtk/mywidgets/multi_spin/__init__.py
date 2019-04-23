@@ -180,7 +180,7 @@ class MultiSpinButton(gtk.HBox):
 			self.entry.set_position(start + len(s))
 		else:
 			pos = self.entry.get_position()
-			self.insert_text(s, pos)
+			self.entry.insert_text(s, pos)
 			self.entry.set_position(pos + len(s))
 
 	def entry_plus(self, p):
