@@ -348,8 +348,8 @@ def clockWaitMilliseconds():
 	return int(1000 * (1.01 - now() % 1))
 
 
-def jsonTimeFromEpoch(epoch, tz=None):
-	tm = datetime.fromtimestamp(epoch, tz=None)
+def jsonTimeFromEpoch(epoch: int) -> str:
+	tm = datetime.fromtimestamp(epoch, tz=natz.UTC)
 	# Python's `datetime` does not support "%:z" format ("+03:30")
 	# so we have to set `tz` to None
 	return tm.strftime("%Y-%m-%dT%H:%M:%SZ")
