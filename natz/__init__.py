@@ -48,3 +48,5 @@ def gettz(*args, **kwargs):
 			return None
 	return tzfile(tz)
 
+UTC = gettz("UTC")
+
