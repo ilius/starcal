@@ -4,6 +4,14 @@ set -e
 
 initPwd=$PWD
 
+if ! git --version ; then
+	if ! sudo pacman -S git ; then
+		echo -e "\n\nPlease install git and try again" >&2
+		exit 1
+	fi
+fi
+
+
 myPath="$0"
 if [ "${myPath:0:2}" == "./" ] ; then
 	myPath=$initPwd${myPath:1}
