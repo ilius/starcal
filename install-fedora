@@ -11,6 +11,14 @@ if [ "$UID" != "0" ] ; then
 	exit 1
 fi
 
+if ! git --version ; then
+	if ! dnf install git-core ; then
+		echo -e "\n\nPlease install git and try again" >&2
+		exit 1
+	fi
+fi
+
+
 pyCmd=
 for minor in 7 6 5 ; do
 	cmd="/usr/bin/python3.$minor"
@@ -96,7 +104,7 @@ $requires_str
 $recommends_str
 
 BuildArch:      noarch
-BuildRequires:  python3 desktop-file-utils gettext git
+BuildRequires:  python3 desktop-file-utils gettext git-core
 
 %description
 StarCalendar is a full-featured international calendar written in Python,
