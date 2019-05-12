@@ -12,6 +12,13 @@ if [ "$UID" != "0" ] ; then
 	exit 1
 fi
 
+if ! git --version ; then
+	if ! apt-get install git ; then
+		echo -e "\n\nPlease install git and try again" >&2
+		exit 1
+	fi
+fi
+
 
 myPath="$0"
 if [ "${myPath:0:2}" == "./" ] ; then
