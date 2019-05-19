@@ -61,6 +61,7 @@ from scal3.ui_gtk.drawing import newColorCheckPixbuf
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.event import common
+from scal3.ui_gtk.event import setActionFuncs
 from scal3.ui_gtk.event.utils import *
 from scal3.ui_gtk.event.editor import *
 from scal3.ui_gtk.event.trash import TrashEditorDialog
@@ -1534,7 +1535,10 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 			self.waitingDo(self._do_groupBulkEdit, dialog, group, path)
 
 	def groupActionClicked(self, menu, group, actionFuncName):
-		func = getattr(group, actionFuncName)
+		func = getattr(group, actionFuncName, None)
+		if func is None:
+			setActionFuncs(group)
+			func = getattr(group, actionFuncName)
 		self.waitingDo(func, parentWin=self)
 
 	def cutEvent(self, menu, path):

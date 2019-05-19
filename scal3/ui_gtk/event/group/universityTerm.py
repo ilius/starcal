@@ -544,5 +544,5 @@ class WeeklyScheduleWindow(gtk.Dialog):
 		fcd.destroy()
 
 
-def viewWeeklySchedule(group):
-	WeeklyScheduleWindow(group, parent=ui.prefDialog).show()
+def viewWeeklySchedule(group, parentWin=None):
+	WeeklyScheduleWindow(group, parent=parentWin).show()
