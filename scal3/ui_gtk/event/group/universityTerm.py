@@ -327,6 +327,7 @@ class WidgetClass(NormalWidgetClass):
 		self.classTimeBoundsEditor.set_size_request(50, 150)
 		frame.add(self.classTimeBoundsEditor)
 		pack(expandHbox, frame)
+		expandHbox.show_all()
 		##
 		pack(totalVbox, expandHbox, 1, 1)
 		#####
