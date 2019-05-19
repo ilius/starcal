@@ -51,9 +51,9 @@ def colorComposite(front, back):
 	else:
 		raise ValueError
 	return (
-		a1 * r1 + (1 - a1) * a0 * r0,
-		a1 * g1 + (1 - a1) * a0 * g0,
-		a1 * b1 + (1 - a1) * a0 * b0,
+		int(a1 * r1 + (1 - a1) * a0 * r0),
+		int(a1 * g1 + (1 - a1) * a0 * g0),
+		int(a1 * b1 + (1 - a1) * a0 * b0),
 	)
 	# should return alpha? FIXME
 	# is so, we return `a0` as alpha,
@@ -209,12 +209,11 @@ CELLPADDING=4 CELLSPACING=0>
 						color = colors[0]
 					t = cell.pluginsText.replace("\n", pluginsTextSep)
 					if t:
-						pluginsText += "<B><FONT COLOR=\"%s\">%s</FONT>:</B>"
-						pluginsText += "    <SMALL>%s</SMALL>" % (
+						pluginsText += "<B><FONT COLOR=\"%s\">%s</FONT>:</B>" % (
 							color,
 							_(cell.dates[calTypes.primary][2]),
-							t,
 						)
+						pluginsText += "    <SMALL>%s</SMALL>" % t
 						if pluginsTextPerLine:
 							pluginsText += "<BR>\n"
 						else:
