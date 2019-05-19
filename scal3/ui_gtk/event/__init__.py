@@ -43,6 +43,31 @@ def makeWidget(obj):
 	widget.updateWidget()## FIXME
 	return widget
 
+def setActionFuncs(obj):
+	"""
+	obj is an instance of EventGroup
+	"""
+	cls = obj.__class__
+	try:
+		module = __import__(
+			".".join([
+				modPrefix,
+				cls.tname,
+				cls.name,
+			]),
+			fromlist=["WidgetClass"],
+		)
+	except:
+		myRaise()
+		return
+	else:
+		for actionName, actionFuncName in cls.actions:
+			actionFunc = getattr(module, actionFuncName, None)
+			if actionFunc is not None:
+				print("setting %s.%s" % (cls.__name__, actionFuncName))
+				setattr(cls, actionFuncName, actionFunc)
+
+
 
 # Load accounts, groups and trash? FIXME
 from os.path import join, isfile
