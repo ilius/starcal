@@ -21,12 +21,15 @@ def dataToPrettyJson(data, ensure_ascii=False, sort_keys=False):
 
 
 def dataToCompactJson(data, ensure_ascii=False, sort_keys=False):
-	return json.dumps(
-		data,
+	kwargs = dict(
 		sort_keys=sort_keys,
-		separators=(",", ":"),
 		ensure_ascii=ensure_ascii,
 	)
+	# ujson.dumps does not accept separators= arguments
+	# but for standard json module, this argument is needed to get the most compact json
+	if json.__name__ == "json":
+		kwargs["separators"] = (",", ":")
+	return json.dumps(data, **kwargs)
 
 
 jsonToData = json.loads
