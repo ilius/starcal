@@ -26,7 +26,7 @@ def rgbToHsl(r, g, b):
 	elif mx == g:
 		h = 60.0 * (b - r) / dm + 120
 	else:  # mx == b:
-		h = 60.0 * (r - g) / dm + 260
+		h = 60.0 * (r - g) / dm + 240
 	###
 	l = (mx + mn) / 2.0
 	###
