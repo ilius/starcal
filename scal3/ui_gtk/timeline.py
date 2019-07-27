@@ -354,6 +354,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 					self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_SIDE))
 				if editType is not None:
 					self.boxEditing = (editType, event, box, x, t0)
+					self.queue_draw()
 					return True
 		elif gevent.button == 3:
 			for box in self.data["boxes"]:
