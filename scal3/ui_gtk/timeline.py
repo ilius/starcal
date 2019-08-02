@@ -25,7 +25,12 @@ import math
 from math import pi
 
 from scal3.utils import iceil
-from scal3.time_utils import getUtcOffsetByJd
+from scal3.time_utils import (
+	getUtcOffsetByJd,
+	getUtcOffsetByEpoch,
+	getJdFromEpoch,
+	getEpochFromJd,
+)
 from scal3 import core
 from scal3.core import myRaise
 from scal3.locale_man import tr as _
