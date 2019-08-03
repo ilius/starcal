@@ -95,6 +95,9 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 		#style.border_width = 10
 		#self.set_style(style)
 
+		# set on setData(), used in getData() to keep compatibility
+		self.data = {}
+
 	def optionsWidgetCreate(self):
 		from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 		if self.optionsWidget:
@@ -174,12 +177,13 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 			item.show()
 
 	def getData(self):
-		return {
+		self.data.update({
 			"items": self.getItemsData(),
 			"iconSize": self.getIconSizeName(),
 			"style": self.styleList[self.styleCombo.get_active()],
 			"buttonsBorder": self.buttonsBorderSpin.get_value(),
-		}
+		})
+		return self.data
 
 	def setupItemSignals(self, item):
 		if item.method:
@@ -195,6 +199,7 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 				item.connect("clicked", func)
 
 	def setData(self, data):
+		self.data = data
 		for (name, enable) in data["items"]:
 			item = self.defaultItemsDict.get(name)
 			if item is None:
