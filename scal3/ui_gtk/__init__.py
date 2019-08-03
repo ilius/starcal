@@ -41,11 +41,16 @@ def pack(box, child, expand=False, fill=False, padding=0):
 
 
 def getScrollValue(gevent):
+	"""
+	return value is either "up" or "down"
+	"""
 	value = gevent.direction.value_nick
 	if value == "smooth":  # happens *sometimes* in PyGI (Gtk3)
 		if gevent.delta_y < 0:  # -1.0 (up)
 			value = "up"
-		elif gevent.delta_y > 0:  # 1.0 (down)
+		else:
+			# most of the time delta_y=1.0, but sometimes 0.0, why?!
+			# both mean "down" though
 			value = "down"
 	return value
 
