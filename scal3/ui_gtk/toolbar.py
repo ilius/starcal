@@ -206,14 +206,16 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 		###
 		self.optionsWidgetCreate() # because we update the Customize dialog widgets as well
 		###
-		iconSize = data["iconSize"]
-		for (i, item) in enumerate(ud.iconSizeList):
-			if item[0] == iconSize:
-				self.iconSizeCombo.set_active(i)
-				break
-		self.setIconSizeName(iconSize)
+		iconSize = data.get("iconSize")
+		if iconSize is not None:
+			for (i, item) in enumerate(ud.iconSizeList):
+				if item[0] == iconSize:
+					self.iconSizeCombo.set_active(i)
+					break
+			self.setIconSizeName(iconSize)
 		###
-		styleNum = self.styleList.index(data["style"])
+		style = data.get("style", "Icon")
+		styleNum = self.styleList.index(style)
 		self.styleCombo.set_active(styleNum)
 		self.set_style(styleNum)
 		###
