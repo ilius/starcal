@@ -77,7 +77,10 @@ echo "Using $pyCmd"
 version=`$pyCmd "$sourceDir/scal3/get_version.py"`
 
 
-targetDir="$1" ; shift
+targetDir=
+if [ -n "$1" ] ; then
+	targetDir="$1" ; shift
+fi
 if [ -n "$1" ] ; then ## extra arguments
 	printUsage
 	exit 1
