@@ -431,7 +431,7 @@ class HolidayPlugin(BaseJsonPlugin):
 				gyear_next, gmonth_next, gday_next = jd_to(jd + 1, DATE_GREG)
 				#######
 				icsText += "\n".join([
-					"BEGIN:VEVENT"
+					"BEGIN:VEVENT",
 					"CREATED:%s" % currentTimeStamp,
 					"LAST-MODIFIED:%s" % currentTimeStamp,
 					"DTSTART;VALUE=DATE:%.4d%.2d%.2d" % (
