@@ -439,7 +439,7 @@ class HolidayPlugin(BaseJsonPlugin):
 						gmonth,
 						gday,
 					),
-					"DTEND;VA0LUE=DATE:%.4d%.2d%.2d" % (
+					"DTEND;VALUE=DATE:%.4d%.2d%.2d" % (
 						gyear_next,
 						gmonth_next,
 						gday_next,
