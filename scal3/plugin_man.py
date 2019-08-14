@@ -451,7 +451,7 @@ class HolidayPlugin(BaseJsonPlugin):
 					# see http://www.kanzaki.com/docs/ical/transp.html
 					"SUMMARY:%s" % _("Holiday"),
 					"END:VEVENT",
-				])
+				]) + "\n"
 		icsText += "END:VCALENDAR\n"
 		open(fileName, "w", encoding="utf-8").write(icsText)
 
