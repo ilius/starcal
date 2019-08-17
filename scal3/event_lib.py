@@ -4085,13 +4085,13 @@ class EventGroup(EventContainer):
 
 		commonText = "\n".join([
 			"BEGIN:VEVENT",
-			"CREATED:%s" % currentTimeStamp,
-			"DTSTAMP:%s" % currentTimeStamp,  # FIXME
-			"LAST-MODIFIED:%s" % currentTimeStamp,
-			"SUMMARY:%s" % event.getText(),
-			"DESCRIPTION:",
-			#"CATEGORIES:%s" % self.title,  # FIXME
-			"CATEGORIES:%s" % event.name,  # FIXME
+			"CREATED:" + currentTimeStamp,
+			"DTSTAMP:" + currentTimeStamp,  # FIXME
+			"LAST-MODIFIED:" + currentTimeStamp,
+			"SUMMARY:" + event.getSummary().replace("\n", "\\n"),
+			"DESCRIPTION:" + event.getDescription().replace("\n", "\\n"),
+			#"CATEGORIES:" + self.title,  # FIXME
+			"CATEGORIES:" + event.name,  # FIXME
 			"LOCATION:",
 			"SEQUENCE:0",
 			"STATUS:CONFIRMED",
