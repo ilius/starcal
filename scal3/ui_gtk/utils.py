@@ -296,8 +296,11 @@ class IdComboBox(gtk.ComboBox):
 		i = gtk.ComboBox.get_active(self)
 		if i is None:
 			return
+		model = self.get_model()
+		if model is None:
+			print("IdComboBox.get_active: model is None")
 		try:
-			return self.get_model()[i][0]
+			return model[i][0]
 		except IndexError:
 			return
 
