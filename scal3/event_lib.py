@@ -109,6 +109,22 @@ class JsonEventObj(JsonSObj):
 		JsonSObj.save(self)
 
 
+class Smallest:
+	def __eq__(self, other):
+		if isinstance(other, Smallest):
+			return True
+		return False
+
+	def __lt__(self, other):
+		return True
+
+	def __gt__(self, other):
+		return False
+
+
+smallest = Smallest()
+
+
 class BsonHistEventObj(BsonHistObj):
 	def set_uuid(self):
 		from uuid import uuid4
@@ -3641,8 +3657,8 @@ class EventGroup(EventContainer):
 					return last[0]
 				else:
 					print("no time_last returned for event %s" % event.id)
-					return None
-		return getattr(event, attr, None)
+					return smallest
+		return getattr(event, attr, smallest)
 
 	def sort(self, attr="summary", reverse=False):
 		isTypeDep = True
