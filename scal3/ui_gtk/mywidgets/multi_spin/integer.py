@@ -17,4 +17,7 @@ class IntSpinButton(SingleSpinButton):
 		self.set_text(self.field.getText())
 
 	def get_value(self):
-		return int(self.get_text())
+		text = self.get_text().strip()
+		if not text:
+			return 0
+		return int(text)
