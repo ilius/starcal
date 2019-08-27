@@ -156,6 +156,9 @@ class CalObj(gtk.HBox, CustomizableCalBox):
 		self.initVars()
 		###########
 		for bname, enable in ui.winControllerButtons:
+			if bname not in self.buttonClassDict:
+				print("winController: invalid button name %r" % bname)
+				continue
 			button = self.buttonClassDict[bname](self)
 			button.enable = enable
 			self.appendItem(button)
