@@ -369,7 +369,7 @@ class TextPluginUI:
 		pack(self.confDialog.vbox, hbox)
 		######
 		hbox = gtk.HBox()
-		pack(hbox, gtk.Label(_("Seperator")))
+		pack(hbox, gtk.Label(label=_("Separator")))
 		textview = gtk.TextView()
 		textview.set_wrap_mode(gtk.WrapMode.CHAR)
 		if locale_man.rtl:

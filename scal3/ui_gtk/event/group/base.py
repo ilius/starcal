@@ -130,7 +130,7 @@ class BaseWidgetClass(gtk.VBox):
 		pack(self, hbox)
 		#####
 		hbox = gtk.HBox()
-		label = gtk.Label(_("Event Text Seperator"))
+		label = gtk.Label(label=_("Event Text Separator"))
 		label.set_alignment(0, 0.5)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)

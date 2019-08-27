@@ -1507,7 +1507,7 @@ msgid "Event Cache Size"
 msgstr ""
 "اندازهٔ cache رویدادها"
 
-msgid "Event Text Seperator"
+msgid "Event Text Separator"
 msgstr ""
 "جداکنندهٔ متن رویداد"
 
@@ -1904,7 +1904,7 @@ msgstr ""
 "کنترل‌کنندهٔ پنجره"
 
 
-msgid "Seperator"
+msgid "Separator"
 msgstr ""
 "جداکننده"
 
