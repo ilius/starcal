@@ -22,6 +22,7 @@ class WidgetClass(NormalWidgetClass):
 		self.defaultDurationBox = common.DurationInputBox()
 		pack(hbox, self.defaultDurationBox)
 		pack(self, hbox)
+		hbox.show_all()
 
 	def updateWidget(self):## FIXME
 		NormalWidgetClass.updateWidget(self)
