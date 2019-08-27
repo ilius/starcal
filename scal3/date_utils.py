@@ -41,7 +41,7 @@ def dateDecode(st):
 	elif "/" in st:
 		parts = st.split("/")
 	else:
-		raise ValueError("bad date %s (invalid seperator)" % st)
+		raise ValueError("bad date %s (invalid separator)" % st)
 	if len(parts) != 3:
 		raise ValueError(
 			"bad date %s (invalid numbers count %s)" % (st, len(parts))

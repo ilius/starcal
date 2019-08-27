@@ -117,7 +117,7 @@ class WinConButtonClose(WinConButton):
 
 class WinConButtonSep(WinConButton):
 	_name = "sep"
-	desc = _("Seperator")
+	desc = _("Separator")
 	expand = True
 
 	def build(self):
