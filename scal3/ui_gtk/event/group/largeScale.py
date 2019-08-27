@@ -25,6 +25,7 @@ class WidgetClass(BaseWidgetClass):
 		self.scaleCombo = common.Scale10PowerComboBox()
 		pack(hbox, self.scaleCombo)
 		pack(self, hbox)
+		hbox.show_all()
 		####
 		hbox = gtk.HBox()
 		label = gtk.Label(_("Start"))
@@ -34,6 +35,7 @@ class WidgetClass(BaseWidgetClass):
 		self.startSpin = IntSpinButton(-maxStartEnd, maxStartEnd)
 		pack(hbox, self.startSpin)
 		pack(self, hbox)
+		hbox.show_all()
 		####
 		hbox = gtk.HBox()
 		label = gtk.Label(_("End"))
@@ -43,6 +45,7 @@ class WidgetClass(BaseWidgetClass):
 		self.endSpin = IntSpinButton(-maxStartEnd, maxStartEnd)
 		pack(hbox, self.endSpin)
 		pack(self, hbox)
+		hbox.show_all()
 
 	def updateWidget(self):
 		BaseWidgetClass.updateWidget(self)

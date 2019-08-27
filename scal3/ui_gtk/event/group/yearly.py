@@ -22,6 +22,7 @@ class WidgetClass(NormalWidgetClass):
 		self.showDateCheck = gtk.CheckButton()
 		pack(hbox, self.showDateCheck)
 		pack(self, hbox)
+		hbox.show_all()
 
 	def updateWidget(self):  # FIXME
 		NormalWidgetClass.updateWidget(self)

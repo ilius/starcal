@@ -17,6 +17,7 @@ class WidgetClass(NormalWidgetClass):
 		pack(hbox, self.showSeperatedYmdInputsCheck)
 		pack(hbox, gtk.Label(""), 1, 1)
 		pack(self, hbox)
+		hbox.show_all()
 
 	def updateWidget(self):
 		NormalWidgetClass.updateWidget(self)
