@@ -322,9 +322,13 @@ class JdOccurSet(OccurSet):
 		return len(self.jdSet)
 
 	def getStartJd(self):
+		if not self.jdSet:
+			return
 		return min(self.jdSet)
 
 	def getEndJd(self):
+		if not self.jdSet:
+			return
 		return max(self.jdSet) + 1
 
 	def intersection(self, occur):
@@ -395,11 +399,15 @@ class IntervalOccurSet(OccurSet):
 	#	self.rangeList.__getitem__(i)  # FIXME
 
 	def getStartJd(self):
+		if not self.rangeList:
+			return
 		return getJdFromEpoch(min(
 			r[0] for r in self.rangeList
 		))
 
 	def getEndJd(self):
+		if not self.rangeList:
+			return
 		return getJdFromEpoch(max(
 			r[1] for r in self.rangeList
 		))
@@ -465,9 +473,13 @@ class TimeListOccurSet(OccurSet):
 		return bool(self.epochList)
 
 	def getStartJd(self):
+		if not self.epochList:
+			return
 		return getJdFromEpoch(min(self.epochList))
 
 	def getEndJd(self):
+		if not self.epochList:
+			return
 		return getJdFromEpoch(max(self.epochList) + 1)
 
 	def setRange(self, startEpoch, endEpoch, stepSeconds):
@@ -2128,10 +2140,16 @@ class Event(BsonHistEventObj, RuleContainer):
 				ruleStartJd = occur.getStartJd()
 			except:  # what exception? FIXME
 				ruleStartJd = startJd
+			else:
+				if ruleStartJd is None:
+					ruleStartJd = startJd
 			try:
 				ruleEndJd = occur.getEndJd()
 			except:  # what exception? FIXME
 				ruleEndJd = endJd
+			else:
+				if ruleEndJd is None:
+					ruleEndJd = endJd
 			occur = occur.intersection(rule.calcOccurrence(
 				ruleStartJd,
 				ruleEndJd,
