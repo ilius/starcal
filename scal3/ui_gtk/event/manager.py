@@ -56,7 +56,6 @@ from scal3.ui_gtk.utils import (
 	showError,
 	showInfo,
 )
-from scal3.ui_gtk.color_utils import gdkColorToRgb
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
