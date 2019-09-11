@@ -17,10 +17,11 @@ def rgbToGdkColor(r, g, b, a=None):
 
 
 def gdkColorToRgb(gc):
+	assert isinstance(gc, gdk.RGBA)
 	return (
-		gc.red // 257,
-		gc.green // 257,
-		gc.blue // 257,
+		int(gc.red * 257),
+		int(gc.green * 257),
+		int(gc.blue * 257),
 	)
 
 
