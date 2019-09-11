@@ -550,7 +550,6 @@ class SingleGroupComboBox(gtk.ComboBox):
 		self.updateItems()
 
 	def updateItems(self):
-		from scal3.ui_gtk.color_utils import gdkColorToRgb
 		ls = self.get_model()
 		activeGid = self.get_active()
 		ls.clear()
