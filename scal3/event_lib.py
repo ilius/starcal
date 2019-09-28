@@ -1611,7 +1611,7 @@ class CommandNotifier(EventNotifier):
 
 class RuleContainer:
 	requiredRules = ()
-	supportedRules = None
+	supportedRules = None  # None means all rules are supported
 	params = (
 		"timeZoneEnable",
 		"timeZone",
@@ -1757,7 +1757,7 @@ class RuleContainer:
 
 	def copyRulesFrom(self, other):
 		for ruleType, rule in other.rulesOd.items():
-			if self.supportedRules and ruleType in self.supportedRules:
+			if self.supportedRules is None or ruleType in self.supportedRules:
 				self.getAddRule(ruleType).copyFrom(rule)
 
 	def copySomeRuleTypesFrom(self, other, *ruleTypes):
