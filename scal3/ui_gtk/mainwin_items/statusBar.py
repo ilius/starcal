@@ -38,6 +38,7 @@ class CalObj(gtk.HBox, CustomizableCalObj):
 		for mode in calTypes.active:
 			label = DateLabel(None)
 			label.mode = mode
+			label.set_direction(gtk.TextDirection.LTR)
 			pack(self.labelBox, label, 1)
 		self.show_all()
 		###
