@@ -28,6 +28,9 @@ name = "jalali"
 desc = "Jalali"
 origLang = "fa"
 
+ALG33 = 0
+ALG2820 = 1
+
 monthNameMode = 0
 jalaliAlg = 0
 options = (
@@ -154,10 +157,10 @@ def isLeap(year):
 	alg = jalaliAlg
 	# 2820-years does not work with year < 1
 	if year < 1:
-		alg = 0 # # 33-years
-	if alg == 1:	# 2820-years
+		alg = ALG33
+	if alg == ALG2820:
 		return (((year - 473 - (year > 0)) % 2820) * 682) % 2816 < 682
-	elif alg == 0:  # 33-years
+	elif alg == ALG33:
 		jy = year - 979
 		gdays = (
 			365 * jy
@@ -191,8 +194,8 @@ def to_jd(year, month, day):
 	alg = jalaliAlg
 	# 2820-years does not work with year < 1
 	if year < 1:
-		alg = 0 # # 33-years
-	if alg == 1:	# 2820-years
+		alg = ALG33
+	if alg == ALG2820:
 		epbase = year - 474 if year >= 0 else 473
 		epyear = 474 + epbase % 2820
 		return (
@@ -204,7 +207,7 @@ def to_jd(year, month, day):
 			+ epoch
 			- 1
 		)
-	elif alg == 0:  # 33-years
+	elif alg == ALG33:
 		y2 = year - 979
 		jdays = (
 			365 * y2
@@ -227,8 +230,8 @@ def jd_to(jd):
 	# 2820-years does not work with year < 1
 	# date=1/1/1  ->  jd=1948321
 	if jd < 1948321:
-		alg = 0 # # 33-years
-	if alg == 1:	# 2820-years
+		alg = ALG33
+	if alg == ALG2820:
 		cycle, cyear = divmod(jd - to_jd(475, 1, 1), 1029983)
 		if cyear == 1029982:
 			ycycle = 2820
@@ -244,7 +247,7 @@ def jd_to(jd):
 			year -= 1
 		yday = jd - to_jd(year, 1, 1) + 1
 		month, day = getMonthDayFromYdays(yday)
-	elif alg == 0:  # 33-years
+	elif alg == ALG33:
 		jdays = int(jd - GREGORIAN_EPOCH - 584101)
 		# -(1600*365 + 1600//4 - 1600//100 + 1600//400) + 365-79+1 == -584101
 		# print("jdays =", jdays)
