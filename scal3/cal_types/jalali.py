@@ -150,6 +150,9 @@ def save():
 	))
 
 
+
+
+
 def isLeap(year):
 	"""
 	isLeap: Is a given year a leap year in the Jalali calendar ?
@@ -162,21 +165,13 @@ def isLeap(year):
 		return (((year - 473 - (year > 0)) % 2820) * 682) % 2816 < 682
 	elif alg == ALG33:
 		jy = year - 979
-		gdays = (
-			365 * jy
-			+ jy // 33 * 8
-			+ (jy % 33 + 3) // 4
-			+ 79
-		) % 146097
-		# 36525 == 365*100 + 100//4
-		if gdays >= 36525:
-			gdays = (gdays - 1) % 36524 + 1
-			if gdays < 366:
-				return False
-		if gdays % 1461 >= 366:
-			return False
-		return True
-
+		jyd, jym = divmod(jy, 33)
+		jyd2, jym2 = divmod(jy + 1, 33)
+		return 1 == (
+			(jyd2 - jyd) * 8
+			+ (jym2 + 3) // 4
+			- (jym + 3) // 4
+		)
 	else:
 		raise RuntimeError("bad option alg=%s" % alg)
 
@@ -208,16 +203,18 @@ def to_jd(year, month, day):
 			- 1
 		)
 	elif alg == ALG33:
-		y2 = year - 979
-		jdays = (
-			365 * y2
-			+ y2 // 33 * 8
-			+ (y2 % 33 + 3) // 4
+		jy = year - 979
+		jyd, jym = divmod(jy, 33)
+		return (
+			365 * jy
+			+ jyd * 8
+			+ (jym + 3) // 4
 			+ monthLenSum[month - 1]
 			+ day
 			- 1
+			+ 584101
+			+ GREGORIAN_EPOCH
 		)
-		return jdays + 584101 + GREGORIAN_EPOCH
 	else:
 		raise RuntimeError("bad option alg=%s" % alg)
 
@@ -250,14 +247,15 @@ def jd_to(jd):
 	elif alg == ALG33:
 		jdays = int(jd - GREGORIAN_EPOCH - 584101)
 		# -(1600*365 + 1600//4 - 1600//100 + 1600//400) + 365-79+1 == -584101
-		# print("jdays =", jdays)
-		j_np = jdays // 12053
-		jdays %= 12053
-		year = 979 + 33 * j_np + 4 * (jdays // 1461)
-		jdays %= 1461
+		# log.debug("jdays =", jdays)
+		j_np, jdays = divmod(jdays, 12053)
+
+		yearFact, jdays = divmod(jdays, 1461)
+		year = 979 + 33 * j_np + 4 * yearFact
+
 		if jdays >= 366:
-			year += (jdays - 1) // 365
-			jdays = (jdays - 1) % 365
+			yearPlus, jdays = divmod(jdays - 1, 365)
+			year += yearPlus
 		yday = jdays + 1
 		month, day = getMonthDayFromYdays(yday)
 	else:
