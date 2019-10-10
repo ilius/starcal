@@ -158,11 +158,8 @@ def isLeap(year):
 	isLeap: Is a given year a leap year in the Jalali calendar ?
 	"""
 	alg = jalaliAlg
-	# 2820-years does not work with year < 1
-	if year < 1:
-		alg = ALG33
 	if alg == ALG2820:
-		return (((year - 473 - (year > 0)) % 2820) * 682) % 2816 < 682
+		return (((year - 473 - (year > -2)) % 2820) * 682) % 2816 < 682
 	elif alg == ALG33:
 		jy = year - 979
 		jyd, jym = divmod(jy, 33)
@@ -187,11 +184,8 @@ def to_jd(year, month, day):
 	calculate Julian day from Jalali date
 	"""
 	alg = jalaliAlg
-	# 2820-years does not work with year < 1
-	if year < 1:
-		alg = ALG33
 	if alg == ALG2820:
-		epbase = year - 474 if year >= 0 else 473
+		epbase = year - (474 if year >= 0 else 473)
 		epyear = 474 + epbase % 2820
 		return (
 			day
@@ -224,10 +218,6 @@ def jd_to(jd):
 	calculate Jalali date from Julian day
 	"""
 	alg = jalaliAlg
-	# 2820-years does not work with year < 1
-	# date=1/1/1  ->  jd=1948321
-	if jd < 1948321:
-		alg = ALG33
 	if alg == ALG2820:
 		cycle, cyear = divmod(jd - to_jd(475, 1, 1), 1029983)
 		if cyear == 1029982:

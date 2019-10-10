@@ -6,56 +6,186 @@ from scal3.cal_types import jalali
 
 
 class TestJalali(unittest.TestCase):
-	# year -> isLeap33, isLeap2820
+	def isLeapByConvert(self, year):
+		return 30 == jalali.to_jd(year + 1, 1, 1) - jalali.to_jd(year, 12, 1)
+
+	def notest_isLeap_negativeYear(self):
+		print()
+		# mismatch between 2 algs in leap years for
+		# year <= 780
+		# 978 <= year <= 987
+		# isLeapFunc = jalali.isLeap
+		isLeapFunc = self.isLeapByConvert
+		for year in range(10, -101, -1):
+			jalali.jalaliAlg = 0
+			isLeap1 = isLeapFunc(year)
+			jalali.jalaliAlg = 1
+			isLeap2 = isLeapFunc(year)
+			# print(f"{str(year).center(10)}   {'L' if isLeap1 else ' '}   {'L' if isLeap2 else ' '}")
+			print(f"{year}: \"{'L' if isLeap1 else ' '}{'L' if isLeap2 else ' '}\",")
+
+
+	# year -> f"{'L' if isLeap33 else ' '}{'L' if isLeap2820 else ' '}"
 	isLeapDict = {
-		1360: (False, False),
-		1361: (False, False),
-		1362: (True, True),
-		1363: (False, False),
-		1364: (False, False),
-		1365: (False, False),
-		1366: (True, True),
-		1367: (False, False),
-		1368: (False, False),
-		1369: (False, False),
-		1370: (True, True),
-		1371: (False, False),
-		1372: (False, False),
-		1373: (False, False),
-		1374: (False, False),
-		1375: (True, True),
-		1376: (False, False),
-		1377: (False, False),
-		1378: (False, False),
-		1379: (True, True),
-		1380: (False, False),
-		1381: (False, False),
-		1382: (False, False),
-		1383: (True, True),
-		1384: (False, False),
-		1385: (False, False),
-		1386: (False, False),
-		1387: (True, True),
-		1388: (False, False),
-		1389: (False, False),
-		1390: (False, False),
-		1391: (True, True),
-		1392: (False, False),
-		1393: (False, False),
-		1394: (False, False),
-		1395: (True, True),
-		1396: (False, False),
-		1397: (False, False),
-		1398: (False, False),
-		1399: (True, True),
-		1400: (False, False),
-		1401: (False, False),
-		1402: (False, False),
-		1404: (False, True), # FIXME: why mismatch
-		1405: (False, False),
-		1406: (False, False),
-		1407: (False, False),
-		1408: (True, True),
+		10: "  ",
+		9:  "L ",
+		8:  " L",
+		7:  "  ",
+		6:  "  ",
+		5:  "L ",
+		4:  " L",
+		3:  "  ",
+		2:  "  ",
+		1:  "L ",
+		0:  " L",
+		-1: "  ",
+		-2: "  ",
+		-3: "L ",
+		-4: "  ",
+		-5: " L",
+		-6: "  ",
+		-7: "L ",
+		-8: "  ",
+		-9: " L",
+		-10: "  ",
+		-11: "L ",
+		-12: "  ",
+		-13: "  ",
+		-14: " L",
+		-15: "  ",
+		-16: "L ",
+		-17: "  ",
+		-18: " L",
+		-19: "  ",
+		-20: "L ",
+		-21: "  ",
+		-22: " L",
+		-23: "  ",
+		-24: "L ",
+		-25: "  ",
+		-26: " L",
+		-27: "  ",
+		-28: "L ",
+		-29: "  ",
+		-30: " L",
+		-31: "  ",
+		-32: "L ",
+		-33: "  ",
+		-34: " L",
+		-35: "  ",
+		-36: "L ",
+		-37: "  ",
+		-38: " L",
+		-39: "  ",
+		-40: "L ",
+		-41: "  ",
+		-42: "  ",
+		-43: " L",
+		-44: "L ",
+		-45: "  ",
+		-46: "  ",
+		-47: " L",
+		-48: "  ",
+		-49: "L ",
+		-50: "  ",
+		-51: " L",
+		-52: "  ",
+		-53: "L ",
+		-54: "  ",
+		-55: " L",
+		-56: "  ",
+		-57: "L ",
+		-58: "  ",
+		-59: " L",
+		-60: "  ",
+		-61: "L ",
+		-62: "  ",
+		-63: " L",
+		-64: "  ",
+		-65: "L ",
+		-66: "  ",
+		-67: " L",
+		-68: "  ",
+		-69: "L ",
+		-70: "  ",
+		-71: " L",
+		-72: "  ",
+		-73: "L ",
+		-74: "  ",
+		-75: "  ",
+		-76: " L",
+		-77: "L ",
+		-78: "  ",
+		-79: "  ",
+		-80: " L",
+		-81: "  ",
+		-82: "L ",
+		-83: "  ",
+		-84: " L",
+		-85: "  ",
+		-86: "L ",
+		-87: "  ",
+		-88: " L",
+		-89: "  ",
+		-90: "L ",
+		-91: "  ",
+		-92: " L",
+		-93: "  ",
+		-94: "L ",
+		-95: "  ",
+		-96: " L",
+		-97: "  ",
+		-98: "L ",
+		-99: "  ",
+
+		1360: "  ",
+		1361: "  ",
+		1362: "LL",
+		1363: "  ",
+		1364: "  ",
+		1365: "  ",
+		1366: "LL",
+		1367: "  ",
+		1368: "  ",
+		1369: "  ",
+		1370: "LL",
+		1371: "  ",
+		1372: "  ",
+		1373: "  ",
+		1374: "  ",
+		1375: "LL",
+		1376: "  ",
+		1377: "  ",
+		1378: "  ",
+		1379: "LL",
+		1380: "  ",
+		1381: "  ",
+		1382: "  ",
+		1383: "LL",
+		1384: "  ",
+		1385: "  ",
+		1386: "  ",
+		1387: "LL",
+		1388: "  ",
+		1389: "  ",
+		1390: "  ",
+		1391: "LL",
+		1392: "  ",
+		1393: "  ",
+		1394: "  ",
+		1395: "LL",
+		1396: "  ",
+		1397: "  ",
+		1398: "  ",
+		1399: "LL",
+		1400: "  ",
+		1401: "  ",
+		1402: "  ",
+		1404: " L", # FIXME: why mismatch
+		1405: "  ",
+		1406: "  ",
+		1407: "  ",
+		1408: "LL",
 	}
 	dateToJdDict = {
 		#(0, 1, 1): 1947955,
@@ -104,17 +234,22 @@ class TestJalali(unittest.TestCase):
 
 	def test_isLeap(self):
 		for alg in range(2):
+			jalali.jalaliAlg = alg
 			for year, isLeapByAlg in self.isLeapDict.items():
-				jalali.jalaliAlg = alg
-				isLeap = isLeapByAlg[alg]
+				isLeap = isLeapByAlg[alg] == "L"
+				isLeap2 = self.isLeapByConvert(year)
 				isLeapActual = jalali.isLeap(year)
-				#if isLeapActual:
-				#	print(f"{year} is leap?")
+				self.assertEqual(
+					isLeap2,
+					isLeap,
+					f"year={year}, isLeap={isLeap}, isLeap2={isLeap2}, alg={alg}",
+				)
 				self.assertEqual(
 					isLeapActual,
 					isLeap,
-					f"year={year}, isLeap={isLeap}, isLeapActual={isLeapActual}",
+					f"year={year}, isLeap={isLeap}, isLeapActual={isLeapActual}, alg={alg}",
 				)
+
 
 	def test_to_jd(self):
 		for alg in range(2):
