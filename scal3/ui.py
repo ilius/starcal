@@ -821,7 +821,7 @@ logo = join(pixDir, "starcal.png")
 # _________________________ Options _________________________ #
 
 winWidth = 480
-mcalHeight = 250
+mcalHeight = 400
 winTaskbar = False
 useAppIndicator = True
 showDigClockTb = True  # On Toolbar FIXME
@@ -850,7 +850,7 @@ mcalGridColor = (255, 252, 0, 82)
 mcalLeftMargin = 30
 mcalTopMargin = 30
 ####################
-wcalHeight = 200
+wcalHeight = 400
 wcalTextSizeScale = 0.6  # between 0 and 1
 # wcalTextColor = (255, 255, 255)  # FIXME
 wcalPadding = 10
