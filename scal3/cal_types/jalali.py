@@ -98,10 +98,10 @@ def getMonthName(m, y=None):
 def getMonthNameAb(m, y=None):
 	v = monthNameVars[monthNameMode]
 	try:
-		l = v[1]
+		ls = v[1]
 	except IndexError:
-		l = v[0]
-	return l[m - 1]
+		ls = v[0]
+	return ls[m - 1]
 
 
 def getMonthsInYear(y):
@@ -128,7 +128,6 @@ from bisect import bisect_left
 
 from scal3.path import sysConfDir, confDir
 from scal3.utils import iceil
-from scal3.utils import myRaise
 from scal3.json_utils import *
 
 # Here load user options(jalaliAlg) from file
