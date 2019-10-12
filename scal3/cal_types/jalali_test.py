@@ -5,17 +5,16 @@ import sys;sys.path.append(".")
 from scal3.cal_types import jalali
 
 
-class TestJalali(unittest.TestCase):
-	def isLeapByConvert(self, year):
-		return 30 == jalali.to_jd(year + 1, 1, 1) - jalali.to_jd(year, 12, 1)
+def lastMonthLenByConvert(year: int) -> int:
+	return jalali.to_jd(year + 1, 1, 1) - jalali.to_jd(year, 12, 1)
 
+class TestJalali(unittest.TestCase):
 	def notest_isLeap_negativeYear(self):
 		print()
 		# mismatch between 2 algs in leap years for
 		# year <= 780
 		# 978 <= year <= 987
-		# isLeapFunc = jalali.isLeap
-		isLeapFunc = self.isLeapByConvert
+		isLeapFunc = jalali.isLeap
 		for year in range(10, -101, -1):
 			jalali.jalaliAlg = 0
 			isLeap1 = isLeapFunc(year)
@@ -41,102 +40,104 @@ class TestJalali(unittest.TestCase):
 		-1: "  ",
 		-2: "  ",
 		-3: "L ",
-		-4: "  ",
-		-5: " L",
+		-4: " L",
+		-5: "  ",
 		-6: "  ",
 		-7: "L ",
-		-8: "  ",
-		-9: " L",
+		-8: " L",
+		-9: "  ",
 		-10: "  ",
 		-11: "L ",
 		-12: "  ",
-		-13: "  ",
-		-14: " L",
+		-13: " L",
+		-14: "  ",
 		-15: "  ",
 		-16: "L ",
-		-17: "  ",
-		-18: " L",
+		-17: " L",
+		-18: "  ",
 		-19: "  ",
 		-20: "L ",
-		-21: "  ",
-		-22: " L",
+		-21: " L",
+		-22: "  ",
 		-23: "  ",
 		-24: "L ",
-		-25: "  ",
-		-26: " L",
+		-25: " L",
+		-26: "  ",
 		-27: "  ",
 		-28: "L ",
-		-29: "  ",
-		-30: " L",
+		-29: " L",
+		-30: "  ",
 		-31: "  ",
 		-32: "L ",
-		-33: "  ",
-		-34: " L",
+		-33: " L",
+		-34: "  ",
 		-35: "  ",
 		-36: "L ",
-		-37: "  ",
-		-38: " L",
+		-37: " L",
+		-38: "  ",
 		-39: "  ",
 		-40: "L ",
 		-41: "  ",
-		-42: "  ",
-		-43: " L",
+		-42: " L",
+		-43: "  ",
 		-44: "L ",
 		-45: "  ",
-		-46: "  ",
-		-47: " L",
+		-46: " L",
+		-47: "  ",
 		-48: "  ",
 		-49: "L ",
-		-50: "  ",
-		-51: " L",
+		-50: " L",
+		-51: "  ",
 		-52: "  ",
 		-53: "L ",
-		-54: "  ",
-		-55: " L",
+		-54: " L",
+		-55: "  ",
 		-56: "  ",
 		-57: "L ",
-		-58: "  ",
-		-59: " L",
+		-58: " L",
+		-59: "  ",
 		-60: "  ",
 		-61: "L ",
-		-62: "  ",
-		-63: " L",
+		-62: " L",
+		-63: "  ",
 		-64: "  ",
 		-65: "L ",
-		-66: "  ",
-		-67: " L",
+		-66: " L",
+		-67: "  ",
 		-68: "  ",
 		-69: "L ",
-		-70: "  ",
-		-71: " L",
+		-70: " L",
+		-71: "  ",
 		-72: "  ",
 		-73: "L ",
 		-74: "  ",
-		-75: "  ",
-		-76: " L",
+		-75: " L",
+		-76: "  ",
 		-77: "L ",
 		-78: "  ",
-		-79: "  ",
-		-80: " L",
+		-79: " L",
+		-80: "  ",
 		-81: "  ",
 		-82: "L ",
-		-83: "  ",
-		-84: " L",
+		-83: " L",
+		-84: "  ",
 		-85: "  ",
 		-86: "L ",
-		-87: "  ",
-		-88: " L",
+		-87: " L",
+		-88: "  ",
 		-89: "  ",
 		-90: "L ",
-		-91: "  ",
-		-92: " L",
+		-91: " L",
+		-92: "  ",
 		-93: "  ",
 		-94: "L ",
-		-95: "  ",
-		-96: " L",
+		-95: " L",
+		-96: "  ",
 		-97: "  ",
 		-98: "L ",
-		-99: "  ",
+		-99: " L",
+		-100: "  ",
+
 
 		1360: "  ",
 		1361: "  ",
@@ -237,19 +238,21 @@ class TestJalali(unittest.TestCase):
 			jalali.jalaliAlg = alg
 			for year, isLeapByAlg in self.isLeapDict.items():
 				isLeap = isLeapByAlg[alg] == "L"
-				isLeap2 = self.isLeapByConvert(year)
+				lastMonthLen = lastMonthLenByConvert(year)
 				isLeapActual = jalali.isLeap(year)
-				self.assertEqual(
-					isLeap2,
-					isLeap,
-					f"year={year}, isLeap={isLeap}, isLeap2={isLeap2}, alg={alg}",
-				)
+				lastMonthLenExpected = 29
+				if isLeap:
+					lastMonthLenExpected = 30
 				self.assertEqual(
 					isLeapActual,
 					isLeap,
 					f"year={year}, isLeap={isLeap}, isLeapActual={isLeapActual}, alg={alg}",
 				)
-
+				self.assertEqual(
+					lastMonthLen,
+					lastMonthLenExpected,
+					f"year={year}, isLeap={isLeap}, alg={alg}",
+				)
 
 	def test_to_jd(self):
 		for alg in range(2):
