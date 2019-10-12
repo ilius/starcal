@@ -193,8 +193,7 @@ def to_jd(year, month, day):
 			+ (epyear * 682 - 110) // 2816
 			+ (epyear - 1) * 365
 			+ epbase // 2820 * 1029983
-			+ epoch
-			- 1
+			+ epoch - 1
 		)
 	elif alg == ALG33:
 		jy = year - 979
