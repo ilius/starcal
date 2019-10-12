@@ -159,7 +159,9 @@ def isLeap(year):
 	"""
 	alg = jalaliAlg
 	if alg == ALG2820:
-		return (((year - 473 - (year > -2)) % 2820) * 682) % 2816 < 682
+		# originally: year - 473 - (year > -2)
+		# since we don't exclude Zero Year, this seems like the correct formula:
+		return (((year - 474) % 2820) * 682) % 2816 < 682
 	elif alg == ALG33:
 		jy = year - 979
 		jyd, jym = divmod(jy, 33)
@@ -185,14 +187,17 @@ def to_jd(year, month, day):
 	"""
 	alg = jalaliAlg
 	if alg == ALG2820:
-		epbase = year - (474 if year >= 0 else 473)
-		epyear = 474 + epbase % 2820
+		# originally: year - (474 if year >= 0 else 473)
+		# since we don't exclude Zero Year, this seems like the correct formula:
+		epbase = year - 474
+		epbase_d, epbase_m = divmod(epbase, 2820)
+		epyear = 474 + epbase_m
 		return (
 			day
 			+ (month - 1) * 30 + min(6, month - 1)
 			+ (epyear * 682 - 110) // 2816
 			+ (epyear - 1) * 365
-			+ epbase // 2820 * 1029983
+			+ epbase_d * 1029983
 			+ epoch - 1
 		)
 	elif alg == ALG33:
@@ -229,8 +234,6 @@ def jd_to(jd):
 				+ 2815
 			) // 1028522 + aux1 + 1
 		year = 2820 * cycle + ycycle + 474
-		if year <= 0:
-			year -= 1
 		yday = jd - to_jd(year, 1, 1) + 1
 		month, day = getMonthDayFromYdays(yday)
 	elif alg == ALG33:
