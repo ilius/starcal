@@ -24,6 +24,7 @@ from os.path import join, split, isdir, isfile, dirname, splitext
 from os import listdir
 import math
 from time import time as now
+from typing import Dict
 
 import natz
 
@@ -40,6 +41,7 @@ from scal3.utils import (
 	myRaiseTback,
 	toStr,
 	s_join,
+	numRangesEncode,
 )
 from scal3.os_utils import makeDir
 from scal3.interval_utils import *
@@ -545,6 +547,11 @@ class EventRule(SObj):
 
 	def getMode(self):
 		return self.parent.mode
+
+	def copy(self):
+		newObj = self.__class__(self.parent)
+		newObj.copyFrom(self)
+		return newObj
 
 	def changeMode(self, mode):
 		return True
@@ -1621,6 +1628,13 @@ class RuleContainer:
 		"timeZone",
 	)
 
+	@staticmethod
+	def copyRulesDict(rulesOd: Dict[str, EventRule]) -> Dict[str, EventRule]:
+		newRulesOd = OrderedDict()
+		for ruleName, rule in rulesOd.items():
+			newRulesOd[ruleName] = rule.copy()
+		return newRulesOd
+
 	def __init__(self):
 		self.timeZoneEnable = False
 		self.timeZone = ""
@@ -2206,10 +2220,11 @@ class Event(BsonHistEventObj, RuleContainer):
 		return False
 
 	def changeMode(self, mode):
-		backupRulesOd = self.rulesOd.copy()## is it deep copy? FIXME
+		backupRulesOd = RuleContainer.copyRulesDict(self.rulesOd)
 		if mode != self.mode:
 			for rule in self.rulesOd.values():
 				if not rule.changeMode(mode):
+					log.info(f"changeMode: failed because of rule {rule.name}={rule}")
 					self.rulesOd = backupRulesOd
 					return False
 			self.mode = mode
