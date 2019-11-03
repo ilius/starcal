@@ -60,6 +60,26 @@ while true ; do
 	esac
 done
 
+if [ "$installType" != "for-pkg" ] ; then
+	if [ -f /etc/debian_version ] ; then
+		if [ "$(lsb_release -is)" = "Ubuntu" ] ; then
+			echo "Your distribution is based on Ubuntu, use: sudo ./install-ubuntu"
+		else
+			echo "Your distribution is based on Debian, use: sudo ./install-debian"
+		fi
+		exit 1
+	elif [ -f /etc/SUSE-brand ] ; then
+		echo "Your distribution is based on SUSE, use: sudo ./install-suse"
+		exit 1
+	elif [ -f /etc/redhat-release ] ; then
+		echo "Your distribution is based on Red Hat, use: sudo ./install-fedora"
+		exit 1
+	elif [ -f /etc/arch-release ] ; then
+		echo "Your distribution is based on ArchLinux, use ./install-archlinux"
+		exit 1
+	fi
+fi
+
 if [ -z "$pyCmd" ] ; then
 	for ver in "${PY_SUPPORTED[@]}" ; do
 		pyCmd=`which "python$ver"` && break
