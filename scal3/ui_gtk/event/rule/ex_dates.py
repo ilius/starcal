@@ -138,13 +138,12 @@ class WidgetClass(gtk.HBox):
 		self.trees[index][0] = validate(newText)
 
 	def getSelectedIndex(self):
-		cur = self.treev.get_cursor()
-		try:
-			path, col = cur
-			index = path[0]
-			return index
-		except:
+		path = self.treev.get_cursor()[0]
+		if path is None:
 			return None
+		if len(path) < 1:
+			return None
+		return path[0]
 
 	def addClicked(self, button):
 		index = self.getSelectedIndex()
