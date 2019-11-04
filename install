@@ -124,7 +124,7 @@ if [ -z "$prefix" ] ; then ## prefix is empty (not been set)
 	if [ "$installType" = "for-pkg" ] ; then
 		prefix=/usr
 	elif [ "$installType" = "portable" ] ; then
-		prefix=/usr/local ## FIXME
+		prefix=/usr/local
 	else
 		prefix=/usr/local
 	fi
