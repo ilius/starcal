@@ -27,6 +27,8 @@ elif [ "${myPath:0:1}" != "/" ] ; then
 fi
 
 pkgName=starcal3
+iconName=starcal3.png
+
 sourceDir="`dirname \"$myPath\"`"
 
 PY_SUPPORTED=(3.7 3.6 3.5)
@@ -189,7 +191,7 @@ mkdir -p "${shareDir}/icons/hicolor"
 for SZ in 16 22 24 32 48 ; do
 	relDir="icons/hicolor/${SZ}x${SZ}/apps"
 	mkdir -p "${shareDir}/$relDir"
-	mv -f "${shareDir}/$pkgName/$relDir/starcal.png" "${shareDir}/$relDir/$pkgName.png"
+	mv -f "${shareDir}/$pkgName/$relDir/starcal.png" "${shareDir}/$relDir/$iconName"
 done
 rm -R "${shareDir}/$pkgName/icons"
 
@@ -228,7 +230,7 @@ GenericName=StarCalendar
 Comment=Full-featured Calendar Program
 Comment[fa]=یک برنامهٔ کامل تقویم
 Exec=$pkgName
-Icon=$pkgName
+Icon=$iconName
 Type=Application
 Terminal=false
 Categories=GTK;Utility;Accessibility;Office;Calendar;
@@ -242,7 +244,7 @@ Name=StarCalendar $version (Qt)
 Comment=Full-featured Calendar Program (Qt Interface)
 Comment[fa]=یک برنامهٔ کامل تقویم
 Exec=$pkgName-qt
-Icon=$pkgName
+Icon=$iconName
 Type=Application
 Terminal=false
 Categories=GTK;Utility;Accessibility;Office;Calendar;
