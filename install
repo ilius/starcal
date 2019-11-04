@@ -10,15 +10,6 @@ function printUsage {
 	echo -e "Usage: $0 [${U}TERGET_DIR${E}] [--for-pkg|--portable] [--prefix=${U}/usr/local${E}] [--python=${U}python3.x${E}]"
 }
 
-function clean {
-	DIR="$1"
-	for EXP in '.hidden' '*~' '*.pyc' '*.pyo' '*.tar.xz' '*.tar.gz' '*.deb' '*.rpm' '*.spec'; do
-		find "$DIR" -name "$EXP" -exec rm '{}' \; || true
-	done 2>/dev/null
-	find "$DIR" -name '__pycache__' -exec rm -R '{}' \; 2>/dev/null || true
-	find "$DIR" -type d -empty -delete || true
-}
-
 myPath="$0"
 if [ "${myPath:0:2}" == "./" ] ; then
 	myPath=$PWD${myPath:1}
@@ -255,14 +246,29 @@ fi
 "$sourceDir/locale.d/install" "${targetPrefix}" ## FIXME
 
 
-## Cleaning useless files from targetDir
-rm -Rf "${shareDir}/$pkgName/.git" 2>/dev/null
-rm -Rf "${shareDir}/$pkgName/.gitignore" 2>/dev/null
-rm -Rf "${shareDir}/$pkgName/.Trash"* 2>/dev/null
-rm -Rf "${shareDir}/$pkgName/google-api-python-client/.git" 2>/dev/null
-rm -Rf "${shareDir}/$pkgName/google-api-python-client/.hg"* 2>/dev/null
+if [ "$installType" = "for-pkg" ] ; then
+	set -x
+	DIR="${shareDir}/$pkgName"
+	rm -Rf "$DIR/.git" 2>/dev/null
+	rm -Rf "$DIR/.gitignore" 2>/dev/null
+	rm -Rf "$DIR/.Trash"* 2>/dev/null
+	rm -Rf "$DIR/google-api-python-client/.git" 2>/dev/null
+	rm -Rf "$DIR/google-api-python-client/.hg"* 2>/dev/null
+	for EXP in '.hidden' '*~' '*.pyc' '*.pyo' '*.tar.xz' '*.tar.gz' '*.deb' '*.rpm' '*.spec'; do
+		find "$DIR" -name "$EXP" -exec rm '{}' \; || true
+	done 2>/dev/null
+	find "$DIR" -name '__pycache__' -exec rm -R '{}' \; 2>/dev/null || true
+	find "$DIR" -type d -empty -delete || true
+	set +x
+else
+	DIR="${shareDir}/$pkgName"
+	for P in "$DIR/.git" ; do
+		if [ -e "$P" ] ; then
+			echo "You may want to remove '$P'"
+		fi
+	done
+fi
 
-clean "${shareDir}/$pkgName"
 
 ## lib/        -->    starcal3-platform-spec
 ## locale/     -->    starcal3-region-*
