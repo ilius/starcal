@@ -11,6 +11,7 @@
 build
 dist
 debian
+screenshots
 .hidden
 *.deb
 *.rpm
