@@ -1822,6 +1822,9 @@ def fixIconInData(data):
 def fixIconInObj(self):
 	icon = self.icon
 	if icon and "/" not in icon:
+		iconNoExt, ext = splitext(icon)
+		if ext == ".svg":
+			icon = iconNoExt + ".png"
 		icon = join(pixDir, "event", icon)
 	self.icon = icon
 
