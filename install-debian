@@ -64,7 +64,7 @@ depends+=('python3-requests')
 #depends+=('python3-gflags') # for google api client
 
 recommends=()
-recommends+=('python3-igraph') ## FIXME
+recommends+=('python3-igraph')
 recommends+=('python3-ujson')
 recommends+=('python3-gnomevfs')
 recommends+=('ssh-askpass-gnome')
