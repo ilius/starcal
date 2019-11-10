@@ -105,6 +105,10 @@ confParamsLive = (
 
 confParamsCustomize = (
 	"mainWinItems",
+	"statusBarEnable",
+	"pluginsTextEnable",
+	"eventDayViewEnable",
+	"mainWinRightPanelEnable",
 	"winControllerButtons",
 	"mcalHeight",
 	"mcalLeftMargin",
@@ -588,8 +592,17 @@ def checkMainWinItems():
 		mainWinItems.insert(0, (name, True))
 		newNames.remove(name)
 	##
+	if mainWinRightPanelEnable:
+		pluginsTextEnable = True
+		eventDayViewEnable = True
+	newNamesEnable = {
+		"statusBar": statusBarEnable,
+		"pluginsText": pluginsTextEnable,
+		"eventDayView": eventDayViewEnable,
+	}
 	for name in newNames:
-		mainWinItems.append((name, False))  # FIXME
+		enable =  newNamesEnable.get(name, False)
+		mainWinItems.append((name, enable))  # FIXME
 
 
 def deleteEventGroup(group):
@@ -955,6 +968,13 @@ mainWinItems = (
 )
 
 mainWinItemsDefault = mainWinItems[:]
+
+
+# these 4 vars are for compatibility with future 3.2.x releases
+statusBarEnable = False
+pluginsTextEnable = False
+eventDayViewEnable = False
+mainWinRightPanelEnable = False
 
 
 wcalItems = (
