@@ -301,7 +301,8 @@ class TextPluginUI:
 		self.confDialog.set_title(
 			_("Pray Times") + " - " + _("Configuration")
 		)
-		group = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
+		self.confDialog.connect("delete-event", self.confDialogCancel)
+		group = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		###
 		hbox = gtk.HBox()
 		label = gtk.Label(_("Location"))
@@ -525,7 +526,7 @@ class TextPluginUI:
 		self.azanEnable = self.azanEnableCheck.get_active()
 		self.azanFile = self.azanFileButton.get_filename()
 
-	def confDialogCancel(self, widget):
+	def confDialogCancel(self, widget=None, gevent=None):
 		self.confDialog.hide()
 		self.updateConfWidget()
 
