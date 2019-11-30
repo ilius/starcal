@@ -382,7 +382,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		###
 		#self.treev.set_search_column(2)## or 3
 		###
-		self.toPasteEvent = None ## (path, bool move)
+		self.toPasteEvent = None ## (treeIter, bool move)
 		#####
 		self.sbar = gtk.Statusbar()
 		self.sbar.set_direction(gtk.TextDirection.LTR)
@@ -923,14 +923,14 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		if not path:
 			return
 		if len(path) == 2:
-			self.toPasteEvent = (path, True)
+			self.toPasteEvent = (self.trees.get_iter(path), True)
 
 	def mbarCopyClicked(self, obj):
 		path = self.treev.get_cursor()[0]
 		if not path:
 			return
 		if len(path) == 2:
-			self.toPasteEvent = (path, False)
+			self.toPasteEvent = (self.trees.get_iter(path), False)
 
 	def mbarPasteClicked(self, obj):
 		path = self.treev.get_cursor()[0]
@@ -1190,7 +1190,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		if len(path) == 1:
 			self.duplicateGroup(path)
 		elif len(path) == 2:## FIXME
-			self.toPasteEvent = (path, False)
+			self.toPasteEvent = (self.trees.get_iter(path), False)
 			self.pasteEventToPath(path)
 
 	def editGroupByPath(self, path):
@@ -1308,7 +1308,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		self.editEventByPath(path)
 
 	def moveEventToPathFromMenu(self, menu, path, tarPath):
-		self.toPasteEvent = (path, True)
+		self.toPasteEvent = (self.trees.get_iter(path), True)
 		self.pasteEventToPath(tarPath, False)
 
 	def moveEventToTrash(self, path):
@@ -1541,10 +1541,10 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		self.waitingDo(func, parentWin=self)
 
 	def cutEvent(self, menu, path):
-		self.toPasteEvent = (path, True)
+		self.toPasteEvent = (self.trees.get_iter(path), True)
 
 	def copyEvent(self, menu, path):
-		self.toPasteEvent = (path, False)
+		self.toPasteEvent = (self.trees.get_iter(path), False)
 
 	def pasteEventFromMenu(self, menu, tarPath):
 		self.pasteEventToPath(tarPath)
@@ -1552,7 +1552,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 	def pasteEventToPath(self, tarPath, doScroll=True):
 		if not self.toPasteEvent:
 			return
-		srcPath, move = self.toPasteEvent
+		srcIter, move = self.toPasteEvent
+		srcPath = self.trees.get_path(srcIter)
 		srcGroup, srcEvent = self.getObjsByPath(srcPath)
 		tarGroup = self.getObjsByPath(tarPath)[0]
 		self.checkEventToAdd(tarGroup, srcEvent)
