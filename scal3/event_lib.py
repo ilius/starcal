@@ -2990,15 +2990,17 @@ class WeeklyEvent(Event):
 		return data
 
 	def setDefaults(self):
-		currentJd = core.getCurrentJd()
+		self.setJd(core.getCurrentJd())
+
+	def setJd(self, jd: int) -> None:
 		start, ok = self["start"]
 		if not ok:
 			raise RuntimeError("no start rule")
 		end, ok = self["end"]
 		if not ok:
 			raise RuntimeError("no end rule")
-		start.setJd(currentJd)
-		end.setJd(currentJd + 8)
+		start.setJd(jd)
+		end.setJd(jd + 8)
 
 
 #@classes.event.register
