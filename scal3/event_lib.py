@@ -3240,6 +3240,7 @@ class LifeTimeEvent(SingleStartEndEvent):
 
 	def setJd(self, jd):
 		self.getAddRule("start").setJdExact(jd)
+		self.getAddRule("end").setJdExact(jd)
 
 	def addRule(self, rule):
 		if rule.name in ("start", "end"):
