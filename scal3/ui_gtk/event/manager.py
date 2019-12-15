@@ -18,19 +18,23 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 from time import time as now
 
 import os
 import sys
 from os.path import join, dirname, split, splitext
 
+from typing import Optional, List, Tuple, Union, Any
+
 from scal3.path import *
 from scal3 import core
-from scal3.core import myRaise
 from scal3 import locale_man
 from scal3.locale_man import tr as _
 from scal3.locale_man import rtl
-from scal3 import event_lib
+from scal3 import event_lib as lib
 from scal3 import ui
 
 from gi.repository import GdkPixbuf
@@ -41,28 +45,28 @@ from scal3.ui_gtk.utils import (
 	set_tooltip,
 	dialog_add_button,
 	confirm,
-)
-from scal3.ui_gtk.utils import (
-	toolButtonFromStock,
-	labelImageMenuItem,
-	labelStockMenuItem,
-)
-from scal3.ui_gtk.utils import (
-	pixbufFromFile,
-	rectangleContainsPoint,
-	getStyleColor,
-)
-from scal3.ui_gtk.utils import (
 	showError,
 	showInfo,
+	rectangleContainsPoint,
 )
-from scal3.ui_gtk.drawing import newColorCheckPixbuf
+from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
+from scal3.ui_gtk.toolbox import (
+	ToolBoxItem,
+	StaticToolBox,
+)
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.event import setActionFuncs
-from scal3.ui_gtk.event.utils import *
-from scal3.ui_gtk.event.editor import *
+from scal3.ui_gtk.event.utils import (
+	confirmEventTrash,
+	checkEventsReadOnly,
+	eventWriteMenuItem,
+	eventWriteImageMenuItem,
+	eventTreeIconPixbuf,
+	menuItemFromEventGroup,
+)
+from scal3.ui_gtk.event.editor import addNewEvent
 from scal3.ui_gtk.event.trash import TrashEditorDialog
 from scal3.ui_gtk.event.export import (
 	SingleGroupExportDialog,
@@ -71,12 +75,62 @@ from scal3.ui_gtk.event.export import (
 from scal3.ui_gtk.event.import_event import EventsImportWindow
 from scal3.ui_gtk.event.group_op import (
 	GroupSortDialog,
-	GroupConvertModeDialog,
+	GroupConvertCalTypeDialog,
 )
 from scal3.ui_gtk.event.account_op import FetchRemoteGroupsDialog
 from scal3.ui_gtk.event.history import EventHistoryDialog
 
-#print("Testing translator", __file__, _("About"))
+# log.debug("Testing translator", __file__, _("About"))
+
+
+EventOrGroup = Union[lib.Event, lib.EventGroup]
+
+
+
+class EventManagerToolbar(StaticToolBox):
+	def __init__(self, parent):
+		StaticToolBox.__init__(
+			self,
+			parent,
+			vertical=True,
+		)
+		# with iconSize < 20, the button would not become smaller
+		# so 20 is the best size
+		# self.append(ToolBoxItem(
+		# 	name="goto-top",
+		# 	imageName="go-top.svg",
+		# 	onClick="",
+		# 	desc=_("Move to top"),
+		# 	continuousClick=False,
+		# ))
+		self.append(ToolBoxItem(
+			name="go-up",
+			imageName="go-up.svg",
+			onClick="moveUpByButton",
+			desc=_("Move up"),
+			continuousClick=False,
+		))
+		self.append(ToolBoxItem(
+			name="go-down",
+			imageName="go-down.svg",
+			onClick="moveDownByButton",
+			desc=_("Move down"),
+			continuousClick=False,
+		))
+		#self.append(ToolBoxItem(
+		#	name="goto-bottom",
+		#	imageName="go-bottom.svg",
+		#	onClick="",
+		#	desc=_("Move to bottom"),
+		#	continuousClick=False,
+		#))
+		self.append(ToolBoxItem(
+			name="duplicate",
+			imageName="edit-copy.svg",
+			onClick="duplicateSelectedObj",
+			desc=_("Duplicate"),
+			continuousClick=False,
+		))
 
 
 @registerSignals
@@ -84,90 +138,104 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 	_name = "eventMan"
 	desc = _("Event Manager")
 
-	def onShow(self, widget):
+	def onShow(self, widget: gtk.Widget) -> None:
 		self.move(*ui.eventManPos)
 		self.onConfigChange()
 
-	def onDeleteEvent(self, obj, gevent):
-		## onResponse is going to be called after onDeleteEvent
-		## just return True, no need to do anything else
+	def onDeleteEvent(self, dialog: gtk.Dialog, gevent: gdk.Event) -> bool:
+		# onResponse is called before onDeleteEvent
+		# just return True, no need to do anything else
+		# without this signal handler, the window will be distroyed
+		# and can not be opened again
 		return True
 
-	def onResponse(self, dialog, response_id):
+	def onResponse(self, dialog: gtk.Dialog, response_id: int) -> None:
 		ui.eventManPos = self.get_position()
 		ui.saveLiveConf()
 		###
 		self.hide()
-		self.emit("config-change")
 
-	#def findEventByPath(self, eid, path):
+	#def findEventByPath(self, eid: int, path: List[int]):
 	#	groupIndex, eventIndex = path
 	#
 
-	def onConfigChange(self, *a, **kw):
+	def onConfigChange(self, *a, **kw) -> None:
 		ud.BaseCalObj.onConfigChange(self, *a, **kw)
 		###
 		if not self.isLoaded:
 			if self.get_property("visible"):
 				self.waitingDo(self.reloadEvents)## FIXME
 			return
-		###
-		for action, eid, gid, path in ui.eventDiff:
-			if action == "-":
-				eventIter = self.eventsIter.get(eid)
-				if eventIter is None:
-					if gid in self.loadedGroupIds:
-						print(
-							"trying to delete non-existing event row, " +
-							"eid=%s, path=%s" % (eid, path)
-						)
-				else:
-					self.trees.remove(eventIter)
-			elif action == "+":
-				if gid in self.loadedGroupIds:
-					try:
-						parentIndex, eventIndex = path
-					except ValueError as e:
-						raise RuntimeError("invalid path = %r" % path)
-					#print(gid, self.loadedGroupIds, parentIndex)
-					parentIter = self.trees.get_iter((parentIndex,))
-					event = ui.getEvent(gid, eid)
-					self.insertEventRow(parentIter, eventIndex, event)
-			elif action == "e":
-				eventIter = self.eventsIter.get(eid)
-				if eventIter is None:
-					if gid in self.loadedGroupIds:
-						print(
-							"trying to edit non-existing event row, " +
-							"eid=%s, path=%s" % (eid, path)
-						)
-				else:
-					event = ui.getEvent(gid, eid)
-					self.updateEventRowByIter(event, eventIter)
-		ui.eventDiff.clear()
-		###
-		for gid in ui.changedGroups:
-			group = ui.eventGroups[gid]
-			groupIter = self.groupIterById[gid]
+
+	def onEventUpdate(self, record: "EventUpdateRecord") -> None:
+		action = record.action
+
+		if action == "r":  # reload group or trash
+			if isinstance(record.obj, lib.EventTrash):
+				if self.trashIter:
+					self.trees.remove(self.trashIter)
+				self.appendTrash()
+				return
+			self.reloadGroupEvents(record.obj.id)
+
+		elif action == "+g":  # new group with events inside it (imported)
+			self.appendGroupTree(record.obj)
+
+		elif action == "-g":
+			log.error("Event Manager: onEventUpdate: unexpected action={action!r}")
+
+		elif action == "eg":  # edit group
+			group = record.obj
+			groupIter = self.groupIterById[group.id]
 			for i, value in enumerate(self.getGroupRow(group)):
 				self.trees.set_value(groupIter, i, value)
-		ui.changedGroups = []
-		###
-		for gid in ui.reloadGroups:
-			self.reloadGroupEvents(gid)
-		ui.reloadGroups = []
-		###
-		if ui.reloadTrash:
-			if self.trashIter:
-				self.trees.remove(self.trashIter)
-			self.appendTrash()
-		ui.reloadTrash = False
 
-	def __init__(self, **kwargs):
+		elif action == "-":
+			eventIter = self.eventsIter.get(record.obj.id)
+			if eventIter is None:
+				if record.obj.parent.id in self.loadedGroupIds:
+					log.error(
+						"trying to delete non-existing event row, " +
+						f"eid={record.obj.id}, path={path}"
+					)
+				self.addEventRowToTrash(record.obj)
+				return
+			path = self.trees.get_path(eventIter)
+			parentPathObj = gtk.TreePath(path[:1])
+			expanded = self.treev.row_expanded(parentPathObj)
+			print(f"path={path}, parentPathObj={parentPathObj}, expanded={expanded}")
+			self.trees.remove(eventIter)
+			self.addEventRowToTrash(record.obj)
+			if expanded:
+				# FIXME: does not work!
+				self.treev.expand_row(parentPathObj, False)
+
+		elif action == "+":
+			if not record.obj.parent.id in self.loadedGroupIds:
+				return
+			parentIter = self.groupIterById[record.obj.parent.id]
+			# event is always added to the end of group (at least from
+			# outside Event Manager dialog), unless we add a bool global option
+			# to add all created events to the begining of group (prepend)
+			self.appendEventRow(parentIter, record.obj)
+
+		elif action == "e":
+			eventIter = self.eventsIter.get(record.obj.id)
+			if eventIter is None:
+				if record.obj.parent.id in self.loadedGroupIds:
+					log.error(
+						"trying to edit non-existing event row, " +
+						f"eid={record.obj.id}"
+					)
+			else:
+				self.updateEventRowByIter(record.obj, eventIter)
+
+	def __init__(self, **kwargs) -> None:
 		checkEventsReadOnly()  # FIXME
 		gtk.Dialog.__init__(self, **kwargs)
 		self.initVars()
 		ud.windowList.appendItem(self)
+		ui.eventUpdateQueue.registerConsumer(self)
 		####
 		self.syncing = None ## or a tuple of (groupId, statusText)
 		self.groupIterById = {}
@@ -182,7 +250,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		self.set_transient_for(None)
 		self.set_type_hint(gdk.WindowTypeHint.NORMAL)
 		##
-		dialog_add_button(self, gtk.STOCK_OK, _("_OK"), gtk.ResponseType.OK)
+		dialog_add_button(
+			self,
+			imageName="dialog-ok.svg",
+			label=_("_OK"),
+			res=gtk.ResponseType.OK,
+		)
 		#self.connect("response", lambda w, e: self.hide())
 		self.connect("response", self.onResponse)
 		self.connect("show", self.onShow)
@@ -190,44 +263,45 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		menubar = gtk.MenuBar()
 		####
 		fileItem = MenuItem(_("_File"))
-		fileMenu = gtk.Menu()
+		fileMenu = Menu()
 		fileItem.set_submenu(fileMenu)
 		menubar.append(fileItem)
 		##
 		addGroupItem = MenuItem(_("Add New Group"))
-		addGroupItem.set_sensitive(not event_lib.allReadOnly)
+		addGroupItem.set_sensitive(not lib.allReadOnly)
 		addGroupItem.connect("activate", self.addGroupBeforeSelection)
-		## or before selected group? FIXME
+		# FIXME: or before selected group?
 		fileMenu.append(addGroupItem)
 		##
-		searchItem = MenuItem(_("_Search Events"))## FIXME right place?
+		# FIXME right place?
+		searchItem = MenuItem(_("_Search Events"))
 		searchItem.connect("activate", self.onMenuBarSearchClick)
 		fileMenu.append(searchItem)
 		##
 		exportItem = MenuItem(_("_Export"))
-		exportItem.connect("activate", self.mbarExportClicked)
+		exportItem.connect("activate", self.onMenuBarExportClick)
 		fileMenu.append(exportItem)
 		##
 		importItem = MenuItem(_("_Import"))
-		importItem.set_sensitive(not event_lib.allReadOnly)
-		importItem.connect("activate", self.mbarImportClicked)
+		importItem.set_sensitive(not lib.allReadOnly)
+		importItem.connect("activate", self.onMenuBarImportClick)
 		fileMenu.append(importItem)
 		##
 		orphanItem = MenuItem(_("Check for Orphan Events"))
-		orphanItem.set_sensitive(not event_lib.allReadOnly)
-		orphanItem.connect("activate", self.mbarOrphanClicked)
+		orphanItem.set_sensitive(not lib.allReadOnly)
+		orphanItem.connect("activate", self.onMenuBarOrphanClick)
 		fileMenu.append(orphanItem)
 		####
 		editItem = MenuItem(_("_Edit"))
-		if event_lib.allReadOnly:
+		if lib.allReadOnly:
 			editItem.set_sensitive(False)
 		else:
-			editMenu = gtk.Menu()
+			editMenu = Menu()
 			editItem.set_submenu(editMenu)
 			menubar.append(editItem)
 			##
 			editEditItem = MenuItem(_("Edit"))
-			editEditItem.connect("activate", self.mbarEditClicked)
+			editEditItem.connect("activate", self.onMenuBarEditClick)
 			editMenu.append(editEditItem)
 			editMenu.connect("show", self.mbarEditMenuPopup)
 			self.mbarEditItem = editEditItem
@@ -235,17 +309,17 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 			editMenu.append(gtk.SeparatorMenuItem())
 			##
 			cutItem = MenuItem(_("Cu_t"))
-			cutItem.connect("activate", self.mbarCutClicked)
+			cutItem.connect("activate", self.onMenuBarCutClick)
 			editMenu.append(cutItem)
 			self.mbarCutItem = cutItem
 			##
 			copyItem = MenuItem(_("_Copy"))
-			copyItem.connect("activate", self.mbarCopyClicked)
+			copyItem.connect("activate", self.onMenuBarCopyClick)
 			editMenu.append(copyItem)
 			self.mbarCopyItem = copyItem
 			##
 			pasteItem = MenuItem(_("_Paste"))
-			pasteItem.connect("activate", self.mbarPasteClicked)
+			pasteItem.connect("activate", self.onMenuBarPasteClick)
 			editMenu.append(pasteItem)
 			self.mbarPasteItem = pasteItem
 			##
@@ -259,38 +333,38 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 			editMenu.append(gtk.SeparatorMenuItem())
 			##
 			enableAllItem = MenuItem(_("Enable All Groups"))
-			enableAllItem.connect("activate", self.enableAllClicked)
+			enableAllItem.connect("activate", self.onEnableAllClick)
 			editMenu.append(enableAllItem)
 			self.mbarEnableAllItem = enableAllItem
 			##
 			disableAllItem = MenuItem(_("Disable All Groups"))
-			disableAllItem.connect("activate", self.disableAllClicked)
+			disableAllItem.connect("activate", self.onDisableAllClick)
 			editMenu.append(disableAllItem)
 			self.mbarDisableAllItem = disableAllItem
 		####
 		viewItem = MenuItem(_("_View"))
-		viewMenu = gtk.Menu()
+		viewMenu = Menu()
 		viewItem.set_submenu(viewMenu)
 		menubar.append(viewItem)
 		##
 		collapseItem = MenuItem(_("Collapse All"))
-		collapseItem.connect("activate", self.collapseAllClicked)
+		collapseItem.connect("activate", self.onCollapseAllClick)
 		viewMenu.append(collapseItem)
 		##
 		expandItem = MenuItem(_("Expand All"))
-		expandItem.connect("activate", self.expandAllClicked)
+		expandItem.connect("activate", self.onExpandAllAllClick)
 		viewMenu.append(expandItem)
 		##
 		viewMenu.append(gtk.SeparatorMenuItem())
 		##
-		self.showDescItem = gtk.CheckMenuItem(_("Show _Description"))
+		self.showDescItem = gtk.CheckMenuItem(label=_("Show _Description"))
 		self.showDescItem.set_use_underline(True)
 		self.showDescItem.set_active(ui.eventManShowDescription)
 		self.showDescItem.connect("toggled", self.showDescItemToggled)
 		viewMenu.append(self.showDescItem)
 		####
 		#testItem = MenuItem(_("Test"))
-		#testMenu = gtk.Menu()
+		#testMenu = Menu()
 		#testItem.set_submenu(testMenu)
 		#menubar.append(testItem)
 		###
@@ -301,7 +375,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		menubar.show_all()
 		pack(self.vbox, menubar)
 		#######
-		treeBox = gtk.HBox()
+		treeBox = HBox()
 		#####
 		self.treev = gtk.TreeView()
 		self.treev.set_search_column(2)
@@ -313,42 +387,25 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 			"changed",
 			self.treeviewCursorChanged,
 		)  # FIXME
-		self.treev.connect("button-press-event", self.treeviewButtonPress)
+		self.treev.connect("button-press-event", self.onTreeviewButtonPress)
 		self.treev.connect("row-activated", self.rowActivated)
-		self.treev.connect("key-press-event", self.keyPress)
+		self.treev.connect("key-press-event", self.onKeyPress)
 		#####
 		swin = gtk.ScrolledWindow()
 		swin.add(self.treev)
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
 		pack(treeBox, swin, 1, 1)
 		###
-		toolbar = gtk.Toolbar()
-		toolbar.set_orientation(gtk.Orientation.VERTICAL)
-		size = gtk.IconSize.SMALL_TOOLBAR
-		###
-		tb = toolButtonFromStock(gtk.STOCK_GO_UP, size)
-		set_tooltip(tb, _("Move up"))
-		tb.connect("clicked", self.moveUpByButton)
-		toolbar.insert(tb, -1)
-		###
-		tb = toolButtonFromStock(gtk.STOCK_GO_DOWN, size)
-		set_tooltip(tb, _("Move down"))
-		tb.connect("clicked", self.moveDownByButton)
-		toolbar.insert(tb, -1)
-		###
-		tb = toolButtonFromStock(gtk.STOCK_COPY, size)
-		set_tooltip(tb, _("Duplicate"))
-		tb.connect("clicked", self.duplicateSelectedObj)
-		toolbar.insert(tb, -1)
+		toolbar = EventManagerToolbar(self)
 		###
 		pack(treeBox, toolbar)
 		#####
 		pack(self.vbox, treeBox, 1, 1)
 		#######
 		self.trees = gtk.TreeStore(int, GdkPixbuf.Pixbuf, str, str)
-		## event: eid,  event_icon,   event_summary, event_description
-		## group: gid,  group_pixbuf, group_title,   ?description
-		## trash: -1,        trash_icon,   _("Trash"),    ""
+		# event: eid,  event_icon,   event_summary, event_description
+		# group: gid,  group_pixbuf, group_title,   ?description
+		# trash: -1,        trash_icon,   _("Trash"),    ""
 		self.treev.set_model(self.trees)
 		###
 		col = gtk.TreeViewColumn()
@@ -388,50 +445,71 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		#####
 		self.vbox.show_all()
 
-	def canPasteToGroup(self, group):
+	def canPasteToGroup(self, group: lib.EventGroup) -> bool:
 		if self.toPasteEvent is None:
 			return False
 		if not group.acceptsEventTypes:
 			return False
-		## check event type here? FIXME
+		# FIXME: check event type here?
 		return True
 
-	def checkEventToAdd(self, group, event):
+	def checkEventToAdd(
+		self,
+		group: lib.EventGroup,
+		event: lib.Event,
+	) -> None:
 		if not group.checkEventToAdd(event):
-			showError(
-				_("Group type \"%s\" can not contain event type \"%s\"") % (
-					group.desc,
-					event.desc,
-				),
-				self,
+			msg = _(
+				"Group type \"{groupType}\" can not contain "
+				"event type \"{eventType}\""
+			).format(
+				groupType=group.desc,
+				eventType=event.desc,
 			)
+			showError(msg, transient_for=self)
 			raise RuntimeError("Invalid event type for this group")
 
-	def getGroupRow(self, group):
+	def getGroupRow(self, group: lib.EventGroup) -> None:
 		return common.getGroupRow(group) + ("",)
 
-	def getEventRow(self, event):
-		pixbuf = pixbufFromFile(event.icon)
-		if event.icon and pixbuf is None:
-			print("getEventRow: invalid icon=%r for event id=%s in group=%s" % (event.icon, event.id, event.parent))
+	def getEventRow(self, event: lib.Event) -> Tuple[
+		int,
+		GdkPixbuf.Pixbuf,
+		str,
+		str,
+	]:
 		return (
 			event.id,
-			pixbuf,
+			eventTreeIconPixbuf(event.getIconRel()),
 			event.summary,
 			event.getShownDescription(),
 		)
 
-	def appendEventRow(self, parentIter, event):
+	def appendEventRow(
+		self,
+		parentIter: gtk.TreeIter,
+		event: lib.Event,
+	) -> gtk.TreeIter:
 		eventIter = self.trees.append(parentIter, self.getEventRow(event))
 		self.eventsIter[event.id] = eventIter
 		return eventIter
 
-	def insertEventRow(self, parentIter, position, event):
+	def insertEventRow(
+		self,
+		parentIter: gtk.TreeIter,
+		position: int,
+		event: lib.Event,
+	) -> gtk.TreeIter:
 		eventIter = self.trees.insert(parentIter, position, self.getEventRow(event))
 		self.eventsIter[event.id] = eventIter
 		return eventIter
 
-	def insertEventRowAfter(self, parentIter, siblingIter, event):
+	def insertEventRowAfter(
+		self,
+		parentIter: gtk.TreeIter,
+		siblingIter: gtk.TreeIter,
+		event: lib.Event,
+	) -> gtk.TreeIter:
 		eventIter = self.trees.insert_after(
 			parentIter,
 			siblingIter,
@@ -440,7 +518,11 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		self.eventsIter[event.id] = eventIter
 		return eventIter
 
-	def insertGroup(self, position, group):
+	def insertGroup(
+		self,
+		position: int,
+		group: lib.EventGroup,
+	) -> gtk.TreeIter:
 		self.groupIterById[group.id] = groupIter = self.trees.insert(
 			None,
 			position,
@@ -448,17 +530,21 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		)
 		return groupIter
 
-	def appendGroupEvents(self, group, groupIter):
+	def appendGroupEvents(
+		self,
+		group: lib.EventGroup,
+		groupIter: gtk.TreeIter,
+	) -> None:
 		for event in group:
 			self.appendEventRow(groupIter, event)
 		self.loadedGroupIds.add(group.id)
 
-	def insertGroupTree(self, position, group):
+	def insertGroupTree(self, position: int, group: lib.EventGroup) -> None:
 		groupIter = self.insertGroup(position, group)
 		if group.enable:
 			self.appendGroupEvents(group, groupIter)
 
-	def appendGroup(self, group):
+	def appendGroup(self, group: lib.EventGroup) -> gtk.TreeIter:
 		self.groupIterById[group.id] = groupIter = self.trees.insert_before(
 			None,
 			self.trashIter,
@@ -466,22 +552,22 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		)
 		return groupIter
 
-	def appendGroupTree(self, group):
+	def appendGroupTree(self, group: lib.EventGroup) -> None:
 		groupIter = self.appendGroup(group)
 		if group.enable:
 			self.appendGroupEvents(group, groupIter)
 
-	def appendTrash(self):
+	def appendTrash(self) -> None:
 		self.trashIter = self.trees.append(None, (
 			-1,
-			pixbufFromFile(ui.eventTrash.icon),
+			eventTreeIconPixbuf(ui.eventTrash.getIconRel()),
 			ui.eventTrash.title,
 			"",
 		))
 		for event in ui.eventTrash:
 			self.appendEventRow(self.trashIter, event)
 
-	def reloadGroupEvents(self, gid):
+	def reloadGroupEvents(self, gid: int) -> None:
 		groupIter = self.groupIterById[gid]
 		assert self.trees.get_value(groupIter, 0) == gid
 		##
@@ -493,20 +579,16 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		for event in group:
 			self.appendEventRow(groupIter, event)
 
-	def reloadEvents(self):
+	def reloadEvents(self) -> None:
 		self.trees.clear()
 		self.appendTrash()
 		for group in ui.eventGroups:
 			self.appendGroupTree(group)
 		self.treeviewCursorChanged()
 		####
-		ui.changedGroups = []
-		ui.reloadGroups = []
-		ui.reloadTrash = False
-		####
 		self.isLoaded = True
 
-	def getObjsByPath(self, path):
+	def getObjsByPath(self, path: List[int]) -> List[EventOrGroup]:
 		obj_list = []
 		for i in range(len(path)):
 			it = self.trees.get_iter(path[:i + 1])
@@ -520,75 +602,78 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 				obj_list.append(obj_list[i - 1][obj_id])
 		return obj_list
 
-	def historyOfEventFromMenu(self, menu, path):
+	def historyOfEventFromMenu(self, menu: gtk.Menu, path: List[int]) -> None:
 		group, event = self.getObjsByPath(path)
-		EventHistoryDialog(event, parent=self).run()
+		EventHistoryDialog(event, transient_for=self).run()
 
-	def genRightClickMenu(self, path):
-		## how about multi-selection? FIXME
-		## and Select _All menu item
+	# TODO: split this function based on len(obj_list)
+	def genRightClickMenu(self, path: List[int]) -> gtk.Menu:
+		# TODO: how about multi-selection?
+		# and Select _All menu item
 		obj_list = self.getObjsByPath(path)
-		#print(len(obj_list))
-		menu = gtk.Menu()
+		# log.debug(len(obj_list))
+		menu = Menu()
 		if len(obj_list) == 1:
 			group = obj_list[0]
 			if group.name == "trash":
-				#print("right click on trash", group.title)
+				# log.debug("right click on trash", group.title)
 				menu.add(eventWriteMenuItem(
-					"Edit",
-					gtk.STOCK_EDIT,
-					self.editTrash,
+					_("Edit"),
+					imageName="edit-copy.svg",
+					func=self.editTrash,
 				))
+				# FIXME: _("Empty {title}").format(title=group.title),
 				menu.add(eventWriteMenuItem(
-					"Empty Trash",## or use group.title FIXME
-					gtk.STOCK_CLEAR,
-					self.emptyTrash,
+					_("Empty Trash"),
+					imageName="sweep.svg",
+					func=self.emptyTrash,
 				))
 				#menu.add(gtk.SeparatorMenuItem())
 				#menu.add(eventWriteMenuItem(
 				#	"Add New Group",
-				#	gtk.STOCK_NEW,
-				#	self.addGroupBeforeSelection,
+				#	imageName="document-new.svg",
+				#	func=self.addGroupBeforeSelection,
 				#))## FIXME
 			else:
-				#print("right click on group", group.title)
+				# log.debug("right click on group", group.title)
 				menu.add(eventWriteMenuItem(
-					"Edit",
-					gtk.STOCK_EDIT,
-					self.editGroupFromMenu,
-					path,
+					_("Edit"),
+					imageName="document-edit.svg",
+					func=self.editGroupFromMenu,
+					args=(path,),
 				))
 				eventTypes = group.acceptsEventTypes
 				if eventTypes is None:
-					eventTypes = event_lib.classes.event.names
+					eventTypes = lib.classes.event.names
 				if len(eventTypes) > 3:
 					menu.add(eventWriteMenuItem(
 						_("Add Event"),
-						gtk.STOCK_ADD,
-						self.addGenericEventToGroupFromMenu,
-						path,
-						group,
+						imageName="list-add.svg",
+						func=self.addGenericEventToGroupFromMenu,
+						args=(path, group,),
 					))
 				else:
 					for eventType in eventTypes:
 						#if eventType == "custom":## FIXME
 						#	desc = _("Add ") + _("Event")
 						#else:
-						label = _("Add ") + event_lib.classes.event.byName[eventType].desc
+						label = _("Add ") + lib.classes.event.byName[eventType].desc
 						menu.add(eventWriteMenuItem(
 							label,
-							gtk.STOCK_ADD,
-							self.addEventToGroupFromMenu,
-							path,
-							group,
-							eventType,
-							label,
+							imageName="list-add.svg",
+							func=self.addEventToGroupFromMenu,
+							args=(
+								path,
+								group,
+								eventType,
+								label,
+							),
 						))
 				pasteItem = eventWriteMenuItem(
-					"Paste Event",
-					gtk.STOCK_PASTE,
-					self.pasteEventFromMenu,
-					path,
+					_("Paste Event"),
+					imageName="edit-paste.svg",
+					func=self.pasteEventFromMenu,
+					args=(path,),
 				)
 				menu.add(pasteItem)
 				pasteItem.set_sensitive(self.canPasteToGroup(group))
@@ -598,153 +683,154 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 					try:
 						account = ui.eventAccounts[aid]
 					except KeyError:
-						myRaise()
+						log.exception("")
 					else:
 						if account.enable:
 							menu.add(gtk.SeparatorMenuItem())
 							menu.add(eventWriteMenuItem(
-								"Synchronize",
-								gtk.STOCK_CONNECT,## or gtk.STOCK_REFRESH FIXME
-								self.syncGroupFromMenu,
-								path,
-								account,
+								_("Synchronize"),
+								imageName="",
+								# FIXME: sync-events.svg
+								func=self.syncGroupFromMenu,
+								args=(
+									path,
+									account,
+								),
 							))
 						#else:## FIXME
 				##
 				menu.add(gtk.SeparatorMenuItem())
 				#menu.add(eventWriteMenuItem(
-				#	"Add New Group",
-				#	gtk.STOCK_NEW,
-				#	self.addGroupBeforeGroup,
-				#	path,
+				#	_("Add New Group"),
+				#	imageName="document-new.svg",
+				#	func=self.addGroupBeforeGroup,
+				#	args=(path,),
 				#))## FIXME
 				menu.add(eventWriteMenuItem(
-					"Duplicate",
-					gtk.STOCK_COPY,
-					self.duplicateGroupFromMenu,
-					path,
+					_("Duplicate"),
+					imageName="edit-copy.svg",
+					func=self.duplicateGroupFromMenu,
+					args=(path,)
 				))
 				###
-				dupAllItem = labelStockMenuItem(
-					"Duplicate with All Events",
-					gtk.STOCK_COPY,
-					self.duplicateGroupWithEventsFromMenu,
-					path,
+				dupAllItem = eventWriteMenuItem(
+					_("Duplicate with All Events"),
+					imageName="edit-copy.svg",
+					func=self.duplicateGroupWithEventsFromMenu,
+					args=(path,)
 				)
 				menu.add(dupAllItem)
 				dupAllItem.set_sensitive(
-					not group.isReadOnly()
-					and bool(group.idList)
+					not group.isReadOnly() and bool(group.idList)
 				)
 				###
 				menu.add(gtk.SeparatorMenuItem())
 				menu.add(eventWriteMenuItem(
-					"Delete Group",
-					gtk.STOCK_DELETE,
-					self.deleteGroupFromMenu,
-					path,
+					_("Delete Group"),
+					imageName="edit-delete.svg",
+					func=self.deleteGroupFromMenu,
+					args=(path,)
 				))
 				menu.add(gtk.SeparatorMenuItem())
 				##
 				#menu.add(eventWriteMenuItem(
-				#	"Move Up",
-				#	gtk.STOCK_GO_UP,
-				#	self.moveUpFromMenu,
-				#	path,
+				#	_("Move Up"),
+				#	imageName="go-up.svg",
+				#	func=self.moveUpFromMenu,
+				#	args=(path,),
 				#))
 				#menu.add(eventWriteMenuItem(
-				#	"Move Down",
-				#	gtk.STOCK_GO_DOWN,
-				#	self.moveDownFromMenu,
-				#	path,
+				#	_("Move Down"),
+				#	imageName="go-down.svg",
+				#	func=self.moveDownFromMenu,
+				#	args=(path,)
 				#))
 				##
-				menu.add(labelStockMenuItem(
+				menu.add(ImageMenuItem(
 					_("Export"),
-					gtk.STOCK_CONVERT,
-					self.groupExportFromMenu,
-					group,
+					imageName="",
+					# FIXME: export-events.svg
+					func=self.groupExportFromMenu,
+					args=(group,),
 				))
 				###
-				sortItem = labelStockMenuItem(
+				sortItem = eventWriteMenuItem(
 					_("Sort Events"),
-					gtk.STOCK_SORT_ASCENDING,
-					self.groupSortFromMenu,
-					path,
+					imageName="view-sort-ascending.svg",
+					func=self.groupSortFromMenu,
+					args=(path,)
 				)
 				menu.add(sortItem)
 				sortItem.set_sensitive(
-					not group.isReadOnly()
-					and bool(group.idList)
+					not group.isReadOnly() and bool(group.idList)
 				)
 				###
-				convertItem = labelStockMenuItem(
+				convertItem = eventWriteMenuItem(
 					_("Convert Calendar Type"),
-					gtk.STOCK_CONVERT,
-					self.groupConvertModeFromMenu,
-					group,
+					imageName="convert-calendar.svg",
+					func=self.groupConvertCalTypeFromMenu,
+					args=(group,)
 				)
 				menu.add(convertItem)
 				convertItem.set_sensitive(
-					not group.isReadOnly()
-					and bool(group.idList)
+					not group.isReadOnly() and bool(group.idList)
 				)
 				###
 				for newGroupType in group.canConvertTo:
+					newGroupTypeDesc = lib.classes.group.byName[newGroupType].desc
 					menu.add(eventWriteMenuItem(
-						_(
-							"Convert to %s"
-						) % event_lib.classes.group.byName[newGroupType].desc,
-						None,
-						self.groupConvertTo,
-						group,
-						newGroupType,
+						_("Convert to {groupType}").format(
+							groupType=newGroupTypeDesc,
+						),
+						func=self.groupConvertToFromMenu,
+						args=(
+							group,
+							newGroupType,
+						),
 					))
 				###
-				bulkItem = labelStockMenuItem(
+				bulkItem = eventWriteMenuItem(
 					_("Bulk Edit Events"),
-					gtk.STOCK_EDIT,
-					self.groupBulkEditFromMenu,
-					group,
-					path,
+					imageName="document-edit.svg",
+					func=self.groupBulkEditFromMenu,
+					args=(group, path,)
 				)
 				menu.add(bulkItem)
 				bulkItem.set_sensitive(
-					not group.isReadOnly()
-					and bool(group.idList)
+					not group.isReadOnly() and bool(group.idList)
 				)
 				###
 				for actionName, actionFuncName in group.actions:
 					menu.add(eventWriteMenuItem(
 						_(actionName),
-						None,
-						self.groupActionClicked,
-						group,
-						actionFuncName,
+						func=self.onGroupActionClick,
+						args=(
+							group,
+							actionFuncName,
+						),
 					))
 		elif len(obj_list) == 2:
 			group, event = obj_list
-			#print("right click on event", event.summary)
+			# log.debug("right click on event", event.summary)
 			if group.name != "trash":
 				menu.add(eventWriteMenuItem(
-					"Edit",
-					gtk.STOCK_EDIT,
-					self.editEventFromMenu,
-					path,
+					_("Edit"),
+					imageName="document-edit.svg",
+					func=self.editEventFromMenu,
+					args=(path,)
 				))
 			####
 			menu.add(eventWriteImageMenuItem(
-				"History",
-				"history-24.png",
-				self.historyOfEventFromMenu,
-				path,
+				_("History"),
+				"history.svg",
+				func=self.historyOfEventFromMenu,
+				args=(path,),
 			))
 			####
 			moveToItem = eventWriteMenuItem(
-				_("Move to %s") % "...",
-				None,  # FIXME
+				_("Move to {title}").format(title="..."),
 			)
-			moveToMenu = gtk.Menu()
+			moveToMenu = Menu()
 			for new_group in ui.eventGroups:
 				if new_group.id == group.id:
 					continue
@@ -752,70 +838,67 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 				#	continue
 				new_groupPath = self.trees.get_path(self.groupIterById[new_group.id])
 				if event.name in new_group.acceptsEventTypes:
-					new_groupItem = ImageMenuItem()
-					new_groupItem.set_label(new_group.title)
-					##
-					image = gtk.Image()
-					image.set_from_pixbuf(newColorCheckPixbuf(new_group.color, 20, True))
-					new_groupItem.set_image(image)
-					##
-					new_groupItem.connect(
-						"activate",
-						self.moveEventToPathFromMenu,
-						path,
-						new_groupPath,
-					)
-					##
-					moveToMenu.add(new_groupItem)
+					moveToMenu.add(menuItemFromEventGroup(
+						new_group,
+						func=self.moveEventToPathFromMenu,
+						args=(
+							path,
+							new_groupPath,
+						),
+					))
 			moveToItem.set_submenu(moveToMenu)
 			menu.add(moveToItem)
 			####
 			menu.add(gtk.SeparatorMenuItem())
 			####
 			menu.add(eventWriteMenuItem(
-				"Cut",
-				gtk.STOCK_CUT,
-				self.cutEvent,
-				path,
+				_("Cut"),
+				imageName="edit-cut.svg",
+				func=self.cutEvent,
+				args=(path,),
 			))
 			menu.add(eventWriteMenuItem(
-				"Copy",
-				gtk.STOCK_COPY,
-				self.copyEvent,
-				path,
+				_("Copy"),
+				imageName="edit-copy.svg",
+				func=self.copyEvent,
+				args=(path,)
 			))
 			##
 			if group.name == "trash":
 				menu.add(gtk.SeparatorMenuItem())
 				menu.add(eventWriteMenuItem(
-					"Delete",
-					gtk.STOCK_DELETE,
-					self.deleteEventFromTrash,
-					path,
+					_("Delete"),
+					imageName="edit-delete.svg",
+					func=self.deleteEventFromTrash,
+					args=(path,),
 				))
 			else:
 				pasteItem = eventWriteMenuItem(
-					"Paste",
-					gtk.STOCK_PASTE,
-					self.pasteEventFromMenu,
-					path,
+					_("Paste"),
+					imageName="edit-paste.svg",
+					func=self.pasteEventFromMenu,
+					args=(path,),
 				)
 				menu.add(pasteItem)
 				pasteItem.set_sensitive(self.canPasteToGroup(group))
 				##
 				menu.add(gtk.SeparatorMenuItem())
-				menu.add(labelImageMenuItem(
-					_("Move to %s") % ui.eventTrash.title,
-					ui.eventTrash.icon,
-					self.moveEventToTrashFromMenu,
-					path,
+				menu.add(eventWriteMenuItem(
+					_("Move to {title}").format(title=ui.eventTrash.title),
+					imageName=ui.eventTrash.getIconRel(),
+					func=self.moveEventToTrashFromMenu,
+					args=(path,),
 				))
 		else:
 			return
 		menu.show_all()
 		return menu
 
-	def openRightClickMenu(self, path, etime=None):
+	def openRightClickMenu(
+		self,
+		path: List[int],
+		etime: Optional[int] = None,
+	) -> None:
 		menu = self.genRightClickMenu(path)
 		if not menu:
 			return
@@ -828,23 +911,29 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 	#	#self.reloadEvents()## FIXME
 	#	pass
 
-	def rowActivated(self, treev, path, col):
+	def rowActivated(
+		self,
+		treev: gtk.TreeView,
+		path: List[int],
+		col: gtk.TreeViewColumn,
+	) -> None:
 		if len(path) == 1:
-			if treev.row_expanded(path):
+			pathObj = gtk.TreePath(path)
+			if treev.row_expanded(pathObj):
 				treev.collapse_row(path)
 			else:
-				treev.expand_row(path, False)
+				treev.expand_row(pathObj, False)
 		elif len(path) == 2:
 			self.editEventByPath(path)
 
-	def keyPress(self, treev, gevent):
+	def onKeyPress(self, treev: gtk.TreeView, gevent: gdk.EventKey) -> bool:
 		#from scal3.time_utils import getGtkTimeFromEpoch
-		#print(gevent.time-getGtkTimeFromEpoch(now())## FIXME)
-		#print(now()-gdk.CURRENT_TIME/1000.0)
-		## gdk.CURRENT_TIME == 0## FIXME
-		## gevent.time == gtk.get_current_event_time() ## OK
+		# log.debug(gevent.time-getGtkTimeFromEpoch(now()))
+		# log.debug(now()-gdk.CURRENT_TIME/1000.0)
+		# gdk.CURRENT_TIME == 0
+		# gevent.time == gtk.get_current_event_time()	# OK
 		kname = gdk.keyval_name(gevent.keyval).lower()
-		if kname == "menu":## Simulate right click (key beside Right-Ctrl)
+		if kname == "menu": # Simulate right click (key beside Right-Ctrl)
 			path = treev.get_cursor()[0]
 			if path:
 				menu = self.genRightClickMenu(path)
@@ -874,29 +963,36 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		elif kname == "delete":
 			self.moveSelectionToTrash()
 		else:
-			#print(kname)
+			# log.debug(kname)
 			return False
 		return True
 
-	def mbarExportClicked(self, obj):
-		MultiGroupExportDialog(parent=self).run()
+	def onMenuBarExportClick(self, menuItem: gtk.MenuItem) -> None:
+		MultiGroupExportDialog(transient_for=self).run()
 
-	def mbarImportClicked(self, obj):
+	def onMenuBarImportClick(self, menuItem: gtk.MenuItem) -> None:
 		EventsImportWindow(self).present()
 
 	def onMenuBarSearchClick(self, menuItem: gtk.MenuItem) -> None:
 		ui.mainWin.eventSearchShow()
 
-	def _do_checkForOrphans(self):
+	def _do_checkForOrphans(self) -> None:
 		newGroup = ui.eventGroups.checkForOrphans()
 		if newGroup is not None:
 			self.appendGroupTree(newGroup)
 
-	def mbarOrphanClicked(self, obj):
+	def onMenuBarOrphanClick(self, menuItem: gtk.MenuItem) -> None:
 		self.waitingDo(self._do_checkForOrphans)
 
-	def mbarEditMenuPopup(self, obj):
-		path = self.treev.get_cursor()[0]
+	def getSelectedPath(self) -> Optional[List[int]]:
+		pathObj = self.treev.get_cursor()[0]
+		# pathObj is either None of gtk.TreePath
+		if pathObj is None:
+			return
+		return list(pathObj)
+
+	def mbarEditMenuPopup(self, menuItem: gtk.MenuItem) -> None:
+		path = self.getSelectedPath()
 		selected = bool(path)
 		eventSelected = selected and len(path) == 2
 		###
@@ -909,8 +1005,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 			selected and self.canPasteToGroup(self.getObjsByPath(path)[0])
 		)
 
-	def mbarEditClicked(self, obj):
-		path = self.treev.get_cursor()[0]
+	def onMenuBarEditClick(self, menuItem: gtk.MenuItem) -> None:
+		path = self.getSelectedPath()
 		if not path:
 			return
 		if len(path) == 1:
@@ -918,33 +1014,33 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		elif len(path) == 2:
 			self.editEventByPath(path)
 
-	def mbarCutClicked(self, obj):
-		path = self.treev.get_cursor()[0]
+	def onMenuBarCutClick(self, menuItem: gtk.MenuItem) -> None:
+		path = self.getSelectedPath()
 		if not path:
 			return
 		if len(path) == 2:
 			self.toPasteEvent = (self.trees.get_iter(path), True)
 
-	def mbarCopyClicked(self, obj):
-		path = self.treev.get_cursor()[0]
+	def onMenuBarCopyClick(self, menuItem: gtk.MenuItem) -> None:
+		path = self.getSelectedPath()
 		if not path:
 			return
 		if len(path) == 2:
 			self.toPasteEvent = (self.trees.get_iter(path), False)
 
-	def mbarPasteClicked(self, obj):
-		path = self.treev.get_cursor()[0]
+	def onMenuBarPasteClick(self, menuItem: gtk.MenuItem) -> None:
+		path = self.getSelectedPath()
 		if not path:
 			return
 		self.pasteEventToPath(path)
 
-	def collapseAllClicked(self, obj):
+	def onCollapseAllClick(self, menuItem: gtk.MenuItem) -> None:
 		return self.treev.collapse_all()
 
-	def expandAllClicked(self, obj):
+	def onExpandAllAllClick(self, menuItem: gtk.MenuItem) -> None:
 		return self.treev.expand_all()
 
-	def _do_showDescItemToggled(self):
+	def _do_showDescItemToggled(self) -> None:
 		active = self.showDescItem.get_active()
 		#self.showDescItem.set_active(active)
 		ui.eventManShowDescription = active
@@ -954,39 +1050,44 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		else:
 			self.treev.remove_column(self.colDesc)
 
-	def showDescItemToggled(self, obj=None):
+	def showDescItemToggled(self, menuItem: gtk.MenuItem) -> None:
 		self.waitingDo(self._do_showDescItemToggled)
 
-	def treeviewCursorChanged(self, selection=None):
-		path = self.treev.get_cursor()[0]
-		## update eventInfoBox
-		#print("treeviewCursorChanged", path)
+	def treeviewCursorChanged(self, selection: Any = None) -> None:
+		path = self.getSelectedPath()
+		# update eventInfoBox
 		if not self.syncing:
 			text = ""
 			if path:
 				if len(path) == 1:
-					group, = self.getObjsByPath(path)
+					group = self.getObjsByPath(path)[0]
 					if group.name == "trash":
-						text = _("contains %s events") % _(len(group))
+						text = _("contains {eventCount} events").format(
+							eventCount=_(len(group)),
+						)
 					else:
-						text = _("contains %s events and %s occurrences") % (
-							_(len(group)),
-							_(group.occurCount),
-						) + _(",") + " " + _("Group ID: %s") % _(group.id)
+						text = _(
+							"contains {eventCount} events"
+							" and {occurCount} occurences"
+						).format(
+							eventCount=_(len(group)),
+							occurCount=_(group.occurCount),
+						) + _(",") + " " + _("Group ID: {groupId}").format(
+							groupId=_(group.id),
+						)
 					modified = group.modified
-					print("group, id =", group.id, "uuid =", group.uuid)
+					log.info(f"group, id = {group.id}, uuid = {group.uuid}")
 				elif len(path) == 2:
 					group, event = self.getObjsByPath(path)
-					text = _("Event ID: %s") % _(event.id)
+					text = _("Event ID: {eventId}").format(eventId=_(event.id))
 					modified = event.modified
-					print("event, id =", event.id, "uuid =", event.uuid)
-				text += "%s %s: %s" % (
-					_(","),
-					_("Last Modified"),
-					locale_man.textNumEncode(
-						core.epochDateTimeEncode(modified),
-					),
+					log.info(f"event, id = {event.id}, uuid = {event.uuid}")
+				comma = _(",")
+				modifiedLabel = _("Last Modified")
+				modifiedTime = locale_man.textNumEncode(
+					core.epochDateTimeEncode(modified),
 				)
+				text += f"{comma} {modifiedLabel}: {modifiedTime}"
 			try:
 				sbar = self.sbar
 			except AttributeError:
@@ -995,24 +1096,29 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 				message_id = self.sbar.push(0, text)
 		return True
 
-	def _do_onGroupModify(self, group):
+	def _do_onGroupModify(self, group: lib.EventGroup) -> None:
 		group.afterModify()
-		group.save()## FIXME
+		group.save() # FIXME
 		try:
-			if group.name == "universityTerm":## FIXME
+			if group.name == "universityTerm": # FIXME
 				groupIter = self.groupIterById[group.id]
 				n = self.trees.iter_n_children(groupIter)
 				for i in range(n):
 					eventIter = self.trees.iter_nth_child(groupIter, i)
 					eid = self.trees.get(eventIter, 0)[0]
 					self.trees.set(eventIter, 2, group[eid].summary)
-		except:
-			myRaise()
+		except Exception:
+			log.exception("")
 
-	def onGroupModify(self, group):
+	def onGroupModify(self, group: lib.EventGroup) -> None:
 		self.waitingDo(self._do_onGroupModify, group)
 
-	def setGroupEnable(self, enable: bool, group: event_lib.EventGroup, path: "Optional[Tuple[int]]") -> bool:
+	def setGroupEnable(
+		self,
+		enable: bool,
+		group: lib.EventGroup,
+		path: "Optional[Tuple[int]]",
+	) -> bool:
 		if path is None:
 			groupIter = self.groupIterById[group.id]
 		else:
@@ -1021,7 +1127,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		self.trees.set_value(
 			groupIter,
 			1,
-			common.getGroupPixbuf(group),
+			common.getTreeGroupPixbuf(group),
 		)
 		ui.eventGroups.save()
 		#group.save()
@@ -1037,31 +1143,38 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 			self.loadedGroupIds.add(group.id)
 		self.onGroupModify(group)
 
-	def enableAllClicked(self, button=None):
+	def onEnableAllClick(self, menuItem: gtk.MenuItem) -> None:
 		for group in ui.eventGroups:
 			self.setGroupEnable(True, group, None)
 
-	def disableAllClicked(self, button=None):
+	def onDisableAllClick(self, menuItem: gtk.MenuItem) -> None:
 		for group in ui.eventGroups:
 			self.setGroupEnable(False, group, None)
 
-	def toggleEnableGroup(self, group: event_lib.EventGroup, path) -> bool:
+	def toggleEnableGroup(self, group: lib.EventGroup, path: List[int]) -> bool:
 		col = self.pixbufCol
 		cell = col.get_cells()[0]
 		try:
 			cell.get_property("pixbuf")
-		except:
+		except Exception:
 			return False
 		enable = not group.enable
 		self.setGroupEnable(enable, group, path)
+		ui.eventUpdateQueue.put("eg", group, self)
 
-	def treeviewButtonPress(self, treev, gevent):
+	def onTreeviewButtonPress(
+		self,
+		treev: gtk.TreeView,
+		gevent: gdk.EventButton,
+	) -> None:
 		pos_t = treev.get_path_at_pos(int(gevent.x), int(gevent.y))
 		if not pos_t:
 			return
-		path, col, xRel, yRel = pos_t
-		if not path:
+		pathObj, col, xRel, yRel = pos_t
+		# pathObj is either None of gtk.TreePath
+		if not pathObj:
 			return
+		path = list(pathObj)
 		if gevent.button == 3:
 			self.openRightClickMenu(path, gevent.time)
 		elif gevent.button == 1:
@@ -1076,13 +1189,17 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 			obj_list = self.getObjsByPath(path)
 			if len(obj_list) == 1:## group, not event
 				group = obj_list[0]
-				if group.name != "trash" and col == self.pixbufCol and self.toggleEnableGroup(group, path):
+				if (
+					group.name != "trash" and
+					col == self.pixbufCol and
+					self.toggleEnableGroup(group, path)
+				):
 					treev.set_cursor(path)
 					return True
 
-	def insertNewGroup(self, groupIndex):
+	def insertNewGroup(self, groupIndex: int) -> None:
 		from scal3.ui_gtk.event.group.editor import GroupEditorDialog
-		group = GroupEditorDialog(parent=self).run()
+		group = GroupEditorDialog(transient_for=self).run()
 		if group is None:
 			return
 		ui.eventGroups.insert(groupIndex, group)
@@ -1097,20 +1214,24 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		self.onGroupModify(group)
 		self.loadedGroupIds.add(group.id)
 
-	def addGroupBeforeGroup(self, menu, path):
+	def addGroupBeforeGroup(self, menu: gtk.Menu, path: List[int]) -> None:
 		self.insertNewGroup(path[0])
 
-	def addGroupBeforeSelection(self, obj=None):
-		path = self.treev.get_cursor()[0]
-		if path:
-			groupIndex = path[0]
-		else:
+	def addGroupBeforeSelection(self, w: Optional[gtk.Widget] = None) -> None:
+		path = self.getSelectedPath()
+		if path is None:
 			groupIndex = len(self.trees) - 1
+		else:
+			if not isinstance(path, list):
+				raise RuntimeError(f"invalid path = {path!r}")
+			groupIndex = path[0]
 		self.insertNewGroup(groupIndex)
 
-	def duplicateGroup(self, path):
-		index, = path
-		group, = self.getObjsByPath(path)
+	def duplicateGroup(self, path: List[int]) -> None:
+		if not (isinstance(path, list) and len(path) == 1):
+			raise RuntimeError(f"invalid path = {path!r}")
+		index = path[0]
+		group = self.getObjsByPath(path)[0]
 		newGroup = group.copy()
 		ui.duplicateGroupTitle(newGroup)
 		newGroup.afterModify()
@@ -1123,9 +1244,11 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 			self.getGroupRow(newGroup),
 		)
 
-	def duplicateGroupWithEvents(self, path):
-		index, = path
-		group, = self.getObjsByPath(path)
+	def duplicateGroupWithEvents(self, path: List[int]) -> None:
+		if not (isinstance(path, list) and len(path) == 1):
+			raise RuntimeError(f"invalid path = {path!r}")
+		index = path[0]
+		group = self.getObjsByPath(path)[0]
 		newGroup = group.deepCopy()
 		ui.duplicateGroupTitle(newGroup)
 		newGroup.save()
@@ -1140,9 +1263,11 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 			self.appendEventRow(newGroupIter, event)
 		self.loadedGroupIds.add(newGroup.id)
 
-	def syncGroupFromMenu(self, menu, path, account):
-		index, = path
-		group, = self.getObjsByPath(path)
+	def syncGroupFromMenu(self, menu: gtk.Menu, path: List[int], account: lib.Account) -> None:
+		if not (isinstance(path, list) and len(path) == 1):
+			raise RuntimeError(f"invalid path = {path!r}")
+		index = path[0]
+		group = self.getObjsByPath(path)[0]
 		if not group.remoteIds:
 			return
 		aid, remoteGid = group.remoteIds
@@ -1156,35 +1281,35 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		#try:
 		error = self.waitingDo(account.sync, group, remoteGid)
 		if error:
-			print(error)
+			log.error(error)
 		"""
 		except Exception as e:
-			showError(
-				_(
-					"Error in synchronizing group "%(group)s" with "
-					"account "%(account)s""
-				) % info + "\n" + str(e),
-				self,
-			)
+			msg = _(
+				"Error in synchronizing group "{group}" with "
+				"account "{account}""
+			).format(**info) + "\n" + str(e)
+			showError(msg, transient_for=self)
 		else:
-			showInfo(
-				_(
-					"Successful synchronizing of group "%(group)s" with "
-					"account "%(account)s""
-				) % info,
-				self,
-			)
+			msg = _(
+				"Successful synchronizing of group "{group}" with "
+				"account "{account}""
+			).format(**info)
+			showInfo(msg, transient_for=self)
 		"""
 		self.reloadGroupEvents(group.id)
 
-	def duplicateGroupFromMenu(self, menu, path):
+	def duplicateGroupFromMenu(self, menu: gtk.Menu, path: List[int]) -> None:
 		self.duplicateGroup(path)
 
-	def duplicateGroupWithEventsFromMenu(self, menu, path):
+	def duplicateGroupWithEventsFromMenu(
+		self,
+		menu: gtk.Menu,
+		path: List[int],
+	) -> None:
 		self.duplicateGroupWithEvents(path)
 
-	def duplicateSelectedObj(self, button=None):
-		path = self.treev.get_cursor()[0]
+	def duplicateSelectedObj(self, w: Optional[gtk.Widget] = None) -> None:
+		path = self.getSelectedPath()
 		if not path:
 			return
 		if len(path) == 1:
@@ -1193,29 +1318,34 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 			self.toPasteEvent = (self.trees.get_iter(path), False)
 			self.pasteEventToPath(path)
 
-	def editGroupByPath(self, path):
+	def editGroupByPath(self, path: List[int]) -> None:
 		from scal3.ui_gtk.event.group.editor import GroupEditorDialog
 		checkEventsReadOnly()  # FIXME
-		group, = self.getObjsByPath(path)
+		group = self.getObjsByPath(path)[0]
 		if group.name == "trash":
 			self.editTrash()
-		elif group.isReadOnly():
-			showError(_(
-				"Event group \"%s\" is synchronizing and read-only"
-			) % group.title, parent=self)
-		else:
-			group = GroupEditorDialog(group, parent=self).run()
-			if group is None:
-				return
-			groupIter = self.trees.get_iter(path)
-			for i, value in enumerate(self.getGroupRow(group)):
-				self.trees.set_value(groupIter, i, value)
-			self.onGroupModify(group)
+			return
 
-	def editGroupFromMenu(self, menu, path):
+		if group.isReadOnly():
+			msg = _(
+				"Event group \"{groupTitle}\" is synchronizing and read-only"
+			).format(groupTitle=group.title)
+			showError(msg, transient_for=self)
+			return
+
+		group = GroupEditorDialog(group, transient_for=self).run()
+		if group is None:
+			return
+		groupIter = self.trees.get_iter(path)
+		for i, value in enumerate(self.getGroupRow(group)):
+			self.trees.set_value(groupIter, i, value)
+		self.onGroupModify(group)
+		ui.eventUpdateQueue.put("eg", group, self)
+
+	def editGroupFromMenu(self, menu: gtk.Menu, path: List[int]) -> None:
 		self.editGroupByPath(path)
 
-	def _do_deleteGroup(self, path, group):
+	def _do_deleteGroup(self, path: List[int], group: lib.EventGroup) -> None:
 		trashedIds = group.idList
 		if core.eventTrashLastTop:
 			for eid in reversed(trashedIds):
@@ -1225,72 +1355,93 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 			for eid in trashedIds:
 				event = group[eid]
 				self.appendEventRow(self.trashIter, event)
-		ui.deleteEventGroup(group)
+		ui.eventGroups.moveToTrash(group, ui.eventTrash)
+		ui.eventUpdateQueue.put("-g", group, self)
 		self.trees.remove(self.trees.get_iter(path))
 
-	def deleteGroup(self, path):
-		index, = path
-		group, = self.getObjsByPath(path)
+	def deleteGroup(self, path: List[int]) -> None:
+		if not (isinstance(path, list) and len(path) == 1):
+			raise RuntimeError(f"invalid path = {path!r}")
+		index = path[0]
+		group = self.getObjsByPath(path)[0]
 		eventCount = len(group)
 		if eventCount > 0:
 			if not confirm(
 				_(
-					"Press OK if you want to delete group \"%s\" "
-					"and move its %s events to %s"
-				) % (
-					group.title,
-					_(eventCount),
-					ui.eventTrash.title,
+					"Press OK if you want to delete group \"{groupTitle}\" "
+					"and move its {eventCount} events to {trashTitle}"
+				).format(
+					groupTitle=group.title,
+					eventCount=_(eventCount),
+					trashTitle=ui.eventTrash.title,
 				),
-				parent=self,
+				transient_for=self,
 			):
 				return
 		self.waitingDo(self._do_deleteGroup, path, group)
 
-	def deleteGroupFromMenu(self, menu, path):
+	def deleteGroupFromMenu(self, menu: gtk.Menu, path: List[int]) -> None:
 		self.deleteGroup(path)
 
-	def addEventToGroupFromMenu(self, menu, path, group, eventType, title):
+	def addEventToGroupFromMenu(
+		self,
+		menu: gtk.Menu,
+		path: List[int],
+		group: lib.EventGroup,
+		eventType: str,
+		title: str,
+	) -> None:
 		event = addNewEvent(
 			group,
 			eventType,
 			title=title,
-			parent=self,
+			transient_for=self,
 		)
 		if event is None:
 			return
+		ui.eventUpdateQueue.put("+", event, self)
 		groupIter = self.trees.get_iter(path)
 		if group.id in self.loadedGroupIds:
 			self.appendEventRow(groupIter, event)
 		self.treeviewCursorChanged()
 
-	def addGenericEventToGroupFromMenu(self, menu, path, group):
+	def addGenericEventToGroupFromMenu(
+		self,
+		menu: gtk.Menu,
+		path: List[int],
+		group: lib.EventGroup,
+	) -> None:
 		event = addNewEvent(
 			group,
 			group.acceptsEventTypes[0],
 			typeChangable=True,
 			title=_("Add Event"),
-			parent=self,
+			transient_for=self,
 		)
 		if event is None:
 			return
+		ui.eventUpdateQueue.put("+", event, self)
 		groupIter = self.trees.get_iter(path)
 		if group.id in self.loadedGroupIds:
 			self.appendEventRow(groupIter, event)
 		self.treeviewCursorChanged()
 
-	def updateEventRow(self, event):
+	def updateEventRow(self, event: lib.Event) -> None:
 		self.updateEventRowByIter(
 			event,
 			self.eventsIter[event.id],
 		)
 
-	def updateEventRowByIter(self, event, eventIter):
+	def updateEventRowByIter(
+		self,
+		event: lib.Event,
+		eventIter: gtk.TreeIter,
+	) -> None:
 		for i, value in enumerate(self.getEventRow(event)):
 			self.trees.set_value(eventIter, i, value)
 		self.treeviewCursorChanged()
 
-	def editEventByPath(self, path):
+	def editEventByPath(self, path: List[int]) -> None:
 		from scal3.ui_gtk.event.editor import EventEditorDialog
 		group, event = self.getObjsByPath(path)
 		if group.name == "trash":## FIXME
@@ -1298,76 +1449,93 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		event = EventEditorDialog(
 			event,
 			title=_("Edit ") + event.desc,
-			parent=self,
+			transient_for=self,
 		).run()
 		if event is None:
 			return
+		ui.eventUpdateQueue.put("e", event, self)
 		self.updateEventRow(event)
 
-	def editEventFromMenu(self, menu, path):
+	def editEventFromMenu(self, menu: gtk.Menu, path: List[int]) -> None:
 		self.editEventByPath(path)
 
-	def moveEventToPathFromMenu(self, menu, path, tarPath):
+	def moveEventToPathFromMenu(
+		self,
+		menu: gtk.Menu,
+		path: List[int],
+		targetPath: List[int],
+	) -> None:
 		self.toPasteEvent = (self.trees.get_iter(path), True)
-		self.pasteEventToPath(tarPath, False)
+		self.pasteEventToPath(targetPath, False)
 
-	def moveEventToTrash(self, path):
+	def moveEventToTrashByPath(self, path: List[int]) -> None:
 		group, event = self.getObjsByPath(path)
-		if not confirmEventTrash(event, parent=self):
+		if not confirmEventTrash(event, transient_for=self):
 			return
-		ui.moveEventToTrash(group, event)
+		ui.moveEventToTrash(group, event, self)
 		self.trees.remove(self.trees.get_iter(path))
+		self.addEventRowToTrash(event)
+
+	def addEventRowToTrash(self, event: "lib.Event") -> None:
 		if core.eventTrashLastTop:
 			self.insertEventRow(self.trashIter, 0, event)
 		else:
 			self.appendEventRow(self.trashIter, event)
 
-	def moveEventToTrashFromMenu(self, menu, path):
-		self.moveEventToTrash(path)
+	def moveEventToTrashFromMenu(self, menu: gtk.Menu, path: List[int]) -> None:
+		self.moveEventToTrashByPath(path)
 
-	def moveSelectionToTrash(self):
-		path = self.treev.get_cursor()[0]
+	def moveSelectionToTrash(self) -> None:
+		path = self.getSelectedPath()
 		if not path:
 			return
 		objs = self.getObjsByPath(path)
 		if len(path) == 1:
 			self.deleteGroup(path)
 		elif len(path) == 2:
-			self.moveEventToTrash(path)
+			self.moveEventToTrashByPath(path)
 
-	def deleteEventFromTrash(self, menu, path):
+	def deleteEventFromTrash(self, menu: gtk.Menu, path: List[int]) -> None:
 		trash, event = self.getObjsByPath(path)
 		trash.delete(event.id)## trash == ui.eventTrash
 		trash.save()
 		self.trees.remove(self.trees.get_iter(path))
+		# no need to send to ui.eventUpdateQueue right now
+		# since events in trash (or their occurances) are not displayed
+		# outside Event Manager
 
-	def removeIterChildren(self, _iter):
+	def removeIterChildren(self, _iter: gtk.TreeIter) -> None:
 		while True:
 			childIter = self.trees.iter_children(_iter)
 			if childIter is None:
 				break
 			self.trees.remove(childIter)
 
-	def emptyTrash(self, menu):
+	def emptyTrash(self, menuItem: gtk.MenuItem) -> None:
 		ui.eventTrash.empty()
 		self.removeIterChildren(self.trashIter)
 		self.treeviewCursorChanged()
 
-	def editTrash(self, obj=None):
-		TrashEditorDialog(parent=self).run()
+	def editTrash(self, menuItem: Optional[gtk.MenuItem] = None) -> None:
+		TrashEditorDialog(transient_for=self).run()
 		self.trees.set_value(
 			self.trashIter,
 			1,
-			pixbufFromFile(ui.eventTrash.icon),
+			eventTreeIconPixbuf(ui.eventTrash.getIconRel()),
 		)
 		self.trees.set_value(
 			self.trashIter,
 			2,
 			ui.eventTrash.title,
 		)
+		# TODO: perhaps should put on eventUpdateQueue
+		# ui.eventUpdateQueue.put("et", ui.eventTrash, self)
+		# as a UI improvement, in case icon of title is changed
 
-	def moveUp(self, path):
+	def moveUp(self, path: List[int]) -> None:
 		srcIter = self.trees.get_iter(path)
+		if not isinstance(path, list):
+			raise RuntimeError(f"invalid path = {path!r}")
 		if len(path) == 1:
 			if path[0] == 0:
 				return
@@ -1377,11 +1545,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 			self.trees.move_before(srcIter, tarIter)
 			ui.eventGroups.moveUp(path[0])
 			ui.eventGroups.save()
+			# do we need to put on ui.eventUpdateQueue?
 		elif len(path) == 2:
 			parentObj, event = self.getObjsByPath(path)
 			parentLen = len(parentObj)
 			parentIndex, eventIndex = path
-			#print(eventIndex, parentLen)
+			# log.debug(eventIndex, parentLen)
 			if eventIndex > 0:
 				tarIter = self.trees.get_iter((
 					parentIndex,
@@ -1392,7 +1561,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 				parentObj.moveUp(eventIndex)
 				parentObj.save()
 			else:
-				## move event to end of previous group
+				# move event to end of previous group
 				#if parentObj.name == "trash":
 				#	return
 				if parentIndex < 1:
@@ -1410,15 +1579,18 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 				parentObj.save()
 				newGroup.append(event)
 				newGroup.save()
+			ui.eventUpdateQueue.put("r", parentObj, self)
 		else:
-			raise RuntimeError("invalid tree path %s" % path)
+			raise RuntimeError(f"invalid tree path {path}")
 		newPath = self.trees.get_path(srcIter)
 		if len(path) == 2:
 			self.treev.expand_to_path(newPath)
 		self.treev.set_cursor(newPath)
 		self.treev.scroll_to_cell(newPath)
 
-	def moveDown(self, path):
+	def moveDown(self, path: List[int]) -> None:
+		if not isinstance(path, list):
+			raise RuntimeError(f"invalid path = {path!r}")
 		srcIter = self.trees.get_iter(path)
 		if len(path) == 1:
 			if self.trees.get_value(srcIter, 0) == -1:
@@ -1429,11 +1601,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 			self.trees.move_after(srcIter, tarIter)## or use self.trees.swap FIXME
 			ui.eventGroups.moveDown(path[0])
 			ui.eventGroups.save()
+			# do we need to put on ui.eventUpdateQueue?
 		elif len(path) == 2:
 			parentObj, event = self.getObjsByPath(path)
 			parentLen = len(parentObj)
 			parentIndex, eventIndex = path
-			#print(eventIndex, parentLen)
+			# log.debug(eventIndex, parentLen)
 			if eventIndex < parentLen - 1:
 				tarIter = self.trees.get_iter((
 					parentIndex,
@@ -1443,7 +1616,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 				parentObj.moveDown(eventIndex)
 				parentObj.save()
 			else:
-				## move event to top of next group
+				# move event to top of next group
 				if parentObj.name == "trash":
 					return
 				newParentIter = self.trees.get_iter((parentIndex + 1))
@@ -1459,112 +1632,160 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 				parentObj.save()
 				newGroup.insert(0, event)
 				newGroup.save()
+			ui.eventUpdateQueue.put("r", parentObj, self)
 		else:
-			raise RuntimeError("invalid tree path %s" % path)
+			raise RuntimeError(f"invalid tree path {path}")
 		newPath = self.trees.get_path(srcIter)
 		if len(path) == 2:
 			self.treev.expand_to_path(newPath)
 		self.treev.set_cursor(newPath)
 		self.treev.scroll_to_cell(newPath)
 
-	def moveUpFromMenu(self, menu, path):
+	def moveUpFromMenu(self, menuItem: gtk.MenuItem, path: List[int]) -> None:
 		self.moveUp(path)
 
-	def moveDownFromMenu(self, menu, path):
+	def moveDownFromMenu(self, menuItem: gtk.MenuItem, path: List[int]) -> None:
 		self.moveDown(path)
 
-	def moveUpByButton(self, button):
-		path = self.treev.get_cursor()[0]
+	def moveUpByButton(self, tb: gtk.Button) -> None:
+		path = self.getSelectedPath()
 		if not path:
 			return
 		self.moveUp(path)
 
-	def moveDownByButton(self, button):
-		path = self.treev.get_cursor()[0]
+	def moveDownByButton(self, tb: gtk.Button) -> None:
+		path = self.getSelectedPath()
 		if not path:
 			return
 		self.moveDown(path)
 
-	def groupExportFromMenu(self, menu, group):
-		SingleGroupExportDialog(group, parent=self).run()
+	def groupExportFromMenu(
+		self,
+		menuItem: gtk.MenuItem,
+		group: lib.EventGroup,
+	) -> None:
+		SingleGroupExportDialog(group, transient_for=self).run()
 
-	def groupSortFromMenu(self, menu, path):
-		index, = path
-		group, = self.getObjsByPath(path)
-		if GroupSortDialog(group, parent=self).run():
+	def groupSortFromMenu(
+		self,
+		menuItem: gtk.MenuItem,
+		path: List[int],
+	) -> None:
+		if not (isinstance(path, list) and len(path) == 1):
+			raise RuntimeError(f"invalid path = {path!r}")
+		index = path[0]
+		group = self.getObjsByPath(path)[0]
+		if GroupSortDialog(group, transient_for=self).run():
 			if group.id in self.loadedGroupIds:
 				groupIter = self.trees.get_iter(path)
-				expanded = self.treev.row_expanded(path)
+				pathObj = gtk.TreePath(path)
+				expanded = self.treev.row_expanded(pathObj)
 				self.removeIterChildren(groupIter)
 				for event in group:
 					self.appendEventRow(groupIter, event)
 				if expanded:
-					self.treev.expand_row(path, False)
+					self.treev.expand_row(pathObj, False)
 
-	def groupConvertModeFromMenu(self, menu, group):
-		GroupConvertModeDialog(group, parent=self).run()
+	def groupConvertCalTypeFromMenu(
+		self,
+		menuItem: gtk.MenuItem,
+		group: lib.EventGroup,
+	) -> None:
+		if GroupConvertCalTypeDialog(group, transient_for=self).perform():
+			ui.eventUpdateQueue.put("r", group, self)
 
-	def _do_groupConvertTo(self, group, newGroupType):
+	def _do_groupConvertTo(self, group: lib.EventGroup, newGroupType: str) -> None:
 		idsCount = len(group.idList)
 		newGroup = ui.eventGroups.convertGroupTo(group, newGroupType)
-		## reload it's events in tree? FIXME
-		## summary and description haven"t changed!
+		# FIXME: reload its events in tree?
+		# summary and description have been not changed!
 		idsCount2 = len(newGroup.idList)
 		if idsCount2 != idsCount:
 			self.reloadGroupEvents(newGroup.id)
 		self.treeviewCursorChanged()
+		ui.eventUpdateQueue.put("eg", newGroup, self)
 
-	def groupConvertTo(self, menu, group, newGroupType):
+	def groupConvertToFromMenu(
+		self,
+		menuItem: gtk.MenuItem,
+		group: lib.EventGroup,
+		newGroupType: str,
+	) -> None:
 		self.waitingDo(self._do_groupConvertTo, group, newGroupType)
 
-	def _do_groupBulkEdit(self, dialog, group, path):
-		expanded = self.treev.row_expanded(path)
+	def _do_groupBulkEdit(
+		self,
+		dialog: gtk.Dialog,
+		group: lib.EventGroup,
+		path: List[int],
+	) -> None:
+		pathObj = gtk.TreePath(path)
+		expanded = self.treev.row_expanded(pathObj)
 		dialog.doAction()
 		dialog.destroy()
-		self.trees.remove(self.trees.get_iter(path))
+		self.trees.remove(self.trees.get_iter(pathObj))
 		self.insertGroupTree(path[0], group)
 		if expanded:
-			self.treev.expand_row(path, False)
-		self.treev.set_cursor(path)
+			self.treev.expand_row(pathObj, False)
+		self.treev.set_cursor(pathObj)
+		ui.eventUpdateQueue.put("r", group, self)
 
-	def groupBulkEditFromMenu(self, menu, group, path):
+	def groupBulkEditFromMenu(
+		self,
+		menuItem: gtk.MenuItem,
+		group: lib.EventGroup,
+		path: List[int],
+	) -> None:
 		from scal3.ui_gtk.event.bulk_edit import EventsBulkEditDialog
-		dialog = EventsBulkEditDialog(group, parent=self)
+		dialog = EventsBulkEditDialog(group, transient_for=self)
 		if dialog.run() == gtk.ResponseType.OK:
 			self.waitingDo(self._do_groupBulkEdit, dialog, group, path)
 
-	def groupActionClicked(self, menu, group, actionFuncName):
+	def onGroupActionClick(
+		self,
+		menuItem: gtk.MenuItem,
+		group: lib.EventGroup,
+		actionFuncName: str,
+	) -> None:
 		func = getattr(group, actionFuncName, None)
 		if func is None:
 			setActionFuncs(group)
 			func = getattr(group, actionFuncName)
 		self.waitingDo(func, parentWin=self)
 
-	def cutEvent(self, menu, path):
+	def cutEvent(self, menuItem: gtk.MenuItem, path: List[int]) -> None:
 		self.toPasteEvent = (self.trees.get_iter(path), True)
 
-	def copyEvent(self, menu, path):
+	def copyEvent(self, menuItem: gtk.MenuItem, path: List[int]) -> None:
 		self.toPasteEvent = (self.trees.get_iter(path), False)
 
-	def pasteEventFromMenu(self, menu, tarPath):
-		self.pasteEventToPath(tarPath)
+	def pasteEventFromMenu(
+		self,
+		menuItem: gtk.MenuItem,
+		targetPath: List[int],
+	) -> None:
+		self.pasteEventToPath(targetPath)
 
-	def pasteEventToPath(self, tarPath, doScroll=True):
+	def pasteEventToPath(
+		self,
+		targetPath: List[int],
+		doScroll: bool = True,
+	) -> None:
 		if not self.toPasteEvent:
 			return
 		srcIter, move = self.toPasteEvent
 		srcPath = self.trees.get_path(srcIter)
 		srcGroup, srcEvent = self.getObjsByPath(srcPath)
-		tarGroup = self.getObjsByPath(tarPath)[0]
+		tarGroup = self.getObjsByPath(targetPath)[0]
 		self.checkEventToAdd(tarGroup, srcEvent)
-		if len(tarPath) == 1:
-			tarGroupIter = self.trees.get_iter(tarPath)
+		if len(targetPath) == 1:
+			tarGroupIter = self.trees.get_iter(targetPath)
 			tarEventIter = None
 			tarEventIndex = len(tarGroup)
-		elif len(tarPath) == 2:
-			tarGroupIter = self.trees.get_iter(tarPath[:1])
-			tarEventIter = self.trees.get_iter(tarPath)
-			tarEventIndex = tarPath[1]
+		elif len(targetPath) == 2:
+			tarGroupIter = self.trees.get_iter(targetPath[:1])
+			tarEventIter = self.trees.get_iter(targetPath)
+			tarEventIndex = targetPath[1]
 		####
 		if move:
 			srcGroup.remove(srcEvent)
@@ -1573,11 +1794,16 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 			tarGroup.save()
 			self.trees.remove(self.trees.get_iter(srcPath))
 			newEvent = srcEvent
+			ui.eventUpdateQueue.put("r", srcGroup, self)
 		else:
 			newEvent = srcEvent.copy()
 			newEvent.save()
 			tarGroup.insert(tarEventIndex, newEvent)
 			tarGroup.save()
+		ui.eventUpdateQueue.put("+", newEvent, self)
+		# although we insert the new event (not append) to group
+		# it should not make any difference, since only occurances (and not
+		# events) are displayed outside Event Manager
 		####
 		if tarEventIter:
 			newEventIter = self.insertEventRowAfter(
@@ -1591,12 +1817,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 			self.treev.set_cursor(self.trees.get_path(newEventIter))
 		self.toPasteEvent = None
 
-	#def selectAllEventInGroup(self, menu):## FIXME
+	#def selectAllEventInGroup(self, menuItem):## FIXME
 	#	pass
 
-	#def selectAllEventInTrash(self, menu):## FIXME
+	#def selectAllEventInTrash(self, menuItem):## FIXME
 	#	pass
-
-	def onDeleteEvent(self, obj, event):
-		self.hide()
-		return True

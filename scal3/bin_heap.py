@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
-from math import log
+
+from scal3 import logger
+log = logger.get()
+
+from math import log as math_log
 from scal3.utils import s_join
 
 from heapq import heappush, heappop
@@ -74,7 +78,7 @@ class MaxHeap(list):
 
 	def __str__(self):
 		return " ".join([
-			"%s" % (-k)
+			str(-k)
 			for k, v in self
 		])
 
@@ -97,13 +101,13 @@ class MaxHeap(list):
 			return True
 		try:
 			if self[2 * i + 1] < k:
-				print("[%s] > [%s]" % (2 * i + 1, i))
+				log.info(f"[{2*i+1}] > [{i}]")
 				return False
 		except IndexError:
 			return True
 		try:
 			if self[2 * i + 2] < k:
-				print("[%s] > [%s]" % (2 * i + 2, i))
+				log.info(f"[{2*i+2}] > [{i}]")
 				return False
 		except IndexError:
 			return True
@@ -125,7 +129,7 @@ class MaxHeap(list):
 			raise ValueError("heap empty")
 		k, v = max(
 			self[- 2 ** int(
-				log(len(self), 2)
+				math_log(len(self), 2)
 			):]
 		)
 		return -k, v
@@ -156,8 +160,8 @@ def getMinTest(N):
 	k2 = h.getMin()[0]
 	t2 = now()
 	assert k1 == k2
-	#print("time getMin(h)/min(h) = %.5f"%((t2-t1)/(t1-t0)))
-	#print("min key = %s"%k1)
+	# log.debug(f"time getMin(h)/min(h) = {(t2-t1)/(t1-t0):.5f}")
+	# log.debug(f"min key = {k1}")
 
 
 def testDeleteStep(N, maxKey):
@@ -172,10 +176,10 @@ def testDeleteStep(N, maxKey):
 	rmKey = -h[rmIndex][0]
 	rmKey2 = h.pop(rmIndex)
 	if not h.verify():
-		print("not verified, N=%s, I=%s" % (N, rmIndex))
-		print(h0)
-		print(h)
-		print("------------------------")
+		log.info(f"not verified, N={N}, I={rmIndex}")
+		log.info(h0)
+		log.info(h)
+		log.info("------------------------")
 		return False
 	return True
 
@@ -186,5 +190,5 @@ def testDelete():
 			if not testDeleteStep(N, 10000):
 				break
 
-#if __name__=="__main__":
-#	testDelete()
+# if __name__=="__main__":
+# 	testDelete()

@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+
+from scal3 import logger
+log = logger.get()
+
 from scal3 import core
 from scal3.locale_man import tr as _
 from scal3 import event_lib
@@ -18,20 +21,20 @@ class WidgetClass(common.WidgetClass):
 	def __init__(self, event):  # FIXME
 		common.WidgetClass.__init__(self, event)
 		######
-		sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
+		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		######
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Scale"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Scale"))
+		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.scaleCombo = common.Scale10PowerComboBox()
 		pack(hbox, self.scaleCombo)
 		pack(self, hbox)
 		####
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Start"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Start"))
+		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.startSpin = IntSpinButton(-maxStart, maxStart)
@@ -39,7 +42,7 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, self.startSpin)
 		pack(self, hbox)
 		####
-		hbox = gtk.HBox()
+		hbox = HBox()
 		self.endRelCombo = gtk.ComboBoxText()
 		for item in ("Duration", "End"):
 			self.endRelCombo.append_text(_(item))
@@ -88,8 +91,8 @@ class WidgetClass(common.WidgetClass):
 if __name__ == "__main__":
 	combo = Scale10PowerComboBox()
 	combo.set_value(200)
-	win = gtk.Dialog(parent=None)
+	win = gtk.Dialog()
 	pack(win.vbox, combo)
 	win.vbox.show_all()
 	win.run()
-	print(combo.get_value())
+	log.info(combo.get_value())

@@ -4,12 +4,16 @@ from scal3.ui_gtk.mywidgets.multi_spin import SingleSpinButton
 
 
 class FloatSpinButton(SingleSpinButton):
-	def __init__(self, _min, _max, digits, **kwargs):
+	def __init__(self, _min, _max, digits, step=0.0, **kwargs):
 		if digits < 1:
-			raise ValueError("FloatSpinButton: invalid digits=%r" % digits)
+			raise ValueError(f"FloatSpinButton: invalid digits={digits!r}")
+		if step == 0.0:
+			step = 10 ** (1 - digits)
 		SingleSpinButton.__init__(
 			self,
-			FloatField(_min, _max, digits),
+			field=FloatField(_min, _max, digits),
+			step_inc=step,
+			page_inc=step * 10,
 			**kwargs
 		)
 

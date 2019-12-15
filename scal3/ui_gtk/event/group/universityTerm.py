@@ -18,6 +18,9 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 import sys
 from time import time as now
 
@@ -29,12 +32,18 @@ from scal3.locale_man import numDecode
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.utils import toolButtonFromStock, set_tooltip
+from scal3.ui_gtk.utils import (
+	set_tooltip,
+)
 from scal3.ui_gtk.drawing import *
 from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
+from scal3.ui_gtk.toolbox import (
+	ToolBoxItem,
+	StaticToolBox,
+)
 
 
-class CourseListEditor(gtk.HBox):
+class CourseListEditor(gtk.Box):
 	def __init__(
 		self,
 		term,
@@ -46,24 +55,22 @@ class CourseListEditor(gtk.HBox):
 		self.defaultCourseName = defaultCourseName
 		self.defaultCourseUnits = defaultCourseUnits
 		#####
-		gtk.HBox.__init__(self)
+		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.treev = gtk.TreeView()
 		self.treev.set_headers_visible(True)
 		self.trees = gtk.ListStore(int, str, int)
 		self.treev.set_model(self.trees)
 		##########
-		cell = gtk.CellRendererText()
-		cell.set_property("editable", True)
+		cell = gtk.CellRendererText(editable=True)
 		cell.connect("edited", self.courseNameEdited)
 		# cell.connect("editing-started", ....)
 		# cell.connect("editing-canceled", ...)
-		col = gtk.TreeViewColumn(_("Course Name"), cell, text=1)
+		col = gtk.TreeViewColumn(title=_("Course Name"), cell_renderer=cell, text=1)
 		self.treev.append_column(col)
 		###
-		cell = gtk.CellRendererText()
-		cell.set_property("editable", True)
+		cell = gtk.CellRendererText(editable=True)
 		cell.connect("edited", self.courseUnitsEdited)
-		col = gtk.TreeViewColumn(_("Units"), cell, text=2)
+		col = gtk.TreeViewColumn(title=_("Units"), cell_renderer=cell, text=2)
 		self.treev.append_column(col)
 		####
 		if enableScrollbars:## FIXME
@@ -74,37 +81,39 @@ class CourseListEditor(gtk.HBox):
 		else:
 			pack(self, self.treev, 1, 1)
 		##########
-		toolbar = gtk.Toolbar()
-		toolbar.set_orientation(gtk.Orientation.VERTICAL)
-		#try:## DeprecationWarning #?????????????
-		#	#toolbar.set_icon_size(gtk.IconSize.SMALL_TOOLBAR)
-		#	# argument to set_icon_size has no effect
-		#except:
-		#	pass
-		size = gtk.IconSize.SMALL_TOOLBAR
-		# no different(argument2 to image_new_from_stock has no effect)
-		# gtk.IconSize.SMALL_TOOLBAR or gtk.IconSize.MENU
-		tb = toolButtonFromStock(gtk.STOCK_ADD, size)
-		set_tooltip(tb, _("Add"))
-		tb.connect("clicked", self.addClicked)
-		toolbar.insert(tb, -1)
-		#self.buttonAdd = tb
+		toolbar = StaticToolBox(self, vertical=True)
 		####
-		tb = toolButtonFromStock(gtk.STOCK_DELETE, size)
-		set_tooltip(tb, _("Delete"))
-		tb.connect("clicked", self.deleteClicked)
-		toolbar.insert(tb, -1)
-		#self.buttonDel = tb
+		toolbar.append(ToolBoxItem(
+			name="add",
+			imageName="list-add.svg",
+			onClick="onAddClick",
+			desc=_("Add"),
+			continuousClick=False,
+		))
 		####
-		tb = toolButtonFromStock(gtk.STOCK_GO_UP, size)
-		set_tooltip(tb, _("Move up"))
-		tb.connect("clicked", self.moveUpClicked)
-		toolbar.insert(tb, -1)
+		toolbar.append(ToolBoxItem(
+			name="delete",
+			imageName="edit-delete.svg",
+			onClick="onDeleteClick",
+			desc=_("Delete"),
+			continuousClick=False,
+		))
 		####
-		tb = toolButtonFromStock(gtk.STOCK_GO_DOWN, size)
-		set_tooltip(tb, _("Move down"))
-		tb.connect("clicked", self.moveDownClicked)
-		toolbar.insert(tb, -1)
+		toolbar.append(ToolBoxItem(
+			name="moveUp",
+			imageName="go-up.svg",
+			onClick="onMoveUpClick",
+			desc=_("Move up"),
+			continuousClick=False,
+		))
+		####
+		toolbar.append(ToolBoxItem(
+			name="moveDown",
+			imageName="go-down.svg",
+			onClick="onMoveDownClick",
+			desc=_("Move down"),
+			continuousClick=False,
+		))
 		#######
 		pack(self, toolbar)
 
@@ -114,10 +123,10 @@ class CourseListEditor(gtk.HBox):
 			path, col = cur
 			index = path[0]
 			return index
-		except:
+		except (ValueError, IndexError):
 			return None
 
-	def addClicked(self, button):
+	def onAddClick(self, button):
 		index = self.getSelectedIndex()
 		lastCourseId = max(
 			[1] + [row[0] for row in self.trees]
@@ -136,13 +145,13 @@ class CourseListEditor(gtk.HBox):
 		#cell = col.get_cell_renderers()[0]
 		#cell.start_editing(...) ## FIXME
 
-	def deleteClicked(self, button):
+	def onDeleteClick(self, button):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
 		del self.trees[index]
 
-	def moveUpClicked(self, button):
+	def onMoveUpClick(self, button):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
@@ -156,7 +165,7 @@ class CourseListEditor(gtk.HBox):
 		)
 		self.treev.set_cursor(index - 1)
 
-	def moveDownClicked(self, button):
+	def onMoveDownClick(self, button):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
@@ -171,7 +180,7 @@ class CourseListEditor(gtk.HBox):
 		self.treev.set_cursor(index + 1)
 
 	def courseNameEdited(self, cell, path, newText):
-		#print("courseNameEdited", newText)
+		# log.debug("courseNameEdited", newText)
 		index = int(path)
 		self.trees[index][1] = newText
 
@@ -189,45 +198,40 @@ class CourseListEditor(gtk.HBox):
 		return [tuple(row) for row in self.trees]
 
 
-class ClassTimeBoundsEditor(gtk.HBox):
+class ClassTimeBoundsEditor(gtk.Box):
 	def __init__(self, term):
 		self.term = term
 		#####
-		gtk.HBox.__init__(self)
+		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.treev = gtk.TreeView()
 		self.treev.set_headers_visible(False)
 		self.trees = gtk.ListStore(str)
 		self.treev.set_model(self.trees)
 		##########
-		cell = gtk.CellRendererText()
-		cell.set_property("editable", True)
+		cell = gtk.CellRendererText(editable=True)
 		cell.connect("edited", self.timeEdited)
-		col = gtk.TreeViewColumn(_("Time"), cell, text=0)
+		col = gtk.TreeViewColumn(title=_("Time"), cell_renderer=cell, text=0)
 		self.treev.append_column(col)
 		####
 		pack(self, self.treev, 1, 1)
 		##########
-		toolbar = gtk.Toolbar()
-		toolbar.set_orientation(gtk.Orientation.VERTICAL)
-		#try:## DeprecationWarning #?????????????
-		#	#toolbar.set_icon_size(gtk.IconSize.SMALL_TOOLBAR)
-		#	# no different (argument to set_icon_size has no effect) ?????????
-		#except:
-		#	pass
-		size = gtk.IconSize.SMALL_TOOLBAR
-		##no different(argument2 to image_new_from_stock has no effect) ?????????
-		#### gtk.IconSize.SMALL_TOOLBAR or gtk.IconSize.MENU
-		tb = toolButtonFromStock(gtk.STOCK_ADD, size)
-		set_tooltip(tb, _("Add"))
-		tb.connect("clicked", self.addClicked)
-		toolbar.insert(tb, -1)
-		#self.buttonAdd = tb
+		toolbar = StaticToolBox(self, vertical=True)
 		####
-		tb = toolButtonFromStock(gtk.STOCK_DELETE, size)
-		set_tooltip(tb, _("Delete"))
-		tb.connect("clicked", self.deleteClicked)
-		toolbar.insert(tb, -1)
-		#self.buttonDel = tb
+		toolbar.append(ToolBoxItem(
+			name="add",
+			imageName="list-add.svg",
+			onClick="onAddClick",
+			desc=_("Add"),
+			continuousClick=False,
+		))
+		####
+		toolbar.append(ToolBoxItem(
+			name="delete",
+			imageName="edit-delete.svg",
+			onClick="onDeleteClick",
+			desc=_("Delete"),
+			continuousClick=False,
+		))
 		#######
 		pack(self, toolbar)
 
@@ -237,10 +241,10 @@ class ClassTimeBoundsEditor(gtk.HBox):
 			path, col = cur
 			index = path[0]
 			return index
-		except:
+		except (ValueError, IndexError):
 			return None
 
-	def addClicked(self, button):
+	def onAddClick(self, button):
 		index = self.getSelectedIndex()
 		row = ["00:00"]
 		if index is None:
@@ -249,13 +253,13 @@ class ClassTimeBoundsEditor(gtk.HBox):
 			newIter = self.trees.insert(index + 1, row)
 		self.treev.set_cursor(self.trees.get_path(newIter))
 
-	def deleteClicked(self, button):
+	def onDeleteClick(self, button):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
 		del self.trees[index]
 
-	def moveUpClicked(self, button):
+	def onMoveUpClick(self, button):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
@@ -269,7 +273,7 @@ class ClassTimeBoundsEditor(gtk.HBox):
 		)
 		self.treev.set_cursor(index - 1)
 
-	def moveDownClicked(self, button):
+	def onMoveDownClick(self, button):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
@@ -310,9 +314,9 @@ class WidgetClass(NormalWidgetClass):
 		#####
 		totalFrame = gtk.Frame()
 		totalFrame.set_label(group.desc)
-		totalVbox = gtk.VBox()
+		totalVbox = VBox()
 		###
-		expandHbox = gtk.HBox()## for courseList and classTimeBounds
+		expandHbox = HBox()## for courseList and classTimeBounds
 		##
 		frame = gtk.Frame()
 		frame.set_label(_("Course List"))
@@ -353,12 +357,23 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 		self.data = []
 		####
 		gtk.DrawingArea.__init__(self)
-		#self.connect("button-press-event", self.buttonPress)
+		#self.connect("button-press-event", self.onButtonPress)
 		self.connect("draw", self.onExposeEvent)
 		#self.connect("event", show_event)
 
 	def onExposeEvent(self, widget=None, event=None):
-		self.drawCairo(self.get_window().cairo_create())
+		win = self.get_window()
+		region = win.get_visible_region()
+		# FIXME: This must be freed with cairo_region_destroy() when you are done.
+		# where is cairo_region_destroy? No region.destroy() method
+		dctx = win.begin_draw_frame(region)
+		if dctx is None:
+			raise RuntimeError("begin_draw_frame returned None")
+		cr = dctx.get_cairo_context()
+		try:
+			self.drawCairo(cr)
+		finally:
+			win.end_draw_frame(dctx)
 
 	def drawCairo(self, cr):
 		if not self.data:
@@ -384,14 +399,14 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 		leftMargin = max(weekDayLayoutsWidth) + 6
 		###
 		topMargin = 20 ## FIXME
-		### Calc Coordinates: ycenters(list), dy(float)
+		# calculate coordinates: ycenters(list), dy(float)
 		ycenters = [
 			topMargin + (h - topMargin) * (1 + 2 * i) / 14
 			for i in range(7)
 		] ## centers y
 		dy = (h - topMargin) / 7  # delta y
-		### Draw grid
-		## tmfactors includes 0 at the first, and 1 at the end
+		# drawing the grid
+		# tmfactors includes 0 at the first, and 1 at the end
 		setColor(cr, gridColor)
 		##
 		for i in range(7):
@@ -483,15 +498,15 @@ class WeeklyScheduleWindow(gtk.Dialog):
 		self.set_title(_("View Weekly Schedule"))
 		self.connect("delete-event", self.onDeleteEvent)
 		#####
-		hbox = gtk.HBox()
-		self.currentWOnlyCheck = gtk.CheckButton(_("Current Week Only"))
+		hbox = HBox()
+		self.currentWOnlyCheck = gtk.CheckButton(label=_("Current Week Only"))
 		self.currentWOnlyCheck.connect("clicked", lambda obj: self.updateWidget())
 		pack(hbox, self.currentWOnlyCheck)
 		##
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		##
-		button = gtk.Button(_("Export to ") + "SVG")
-		button.connect("clicked", self.exportToSvgClicked)
+		button = gtk.Button(label=_("Export to ") + "SVG")
+		button.connect("clicked", self.onExportToSvgClick)
 		pack(hbox, button)
 		##
 		pack(self.vbox, hbox)
@@ -521,27 +536,29 @@ class WeeklyScheduleWindow(gtk.Dialog):
 		surface.flush()
 		surface.finish()
 
-	def exportToSvgClicked(self, obj=None):
-		fcd = gtk.FileChooserDialog(parent=self, action=gtk.FileChooserAction.SAVE)
+	def onExportToSvgClick(self, obj=None):
+		fcd = gtk.FileChooserDialog(
+			transient_for=self,
+			action=gtk.FileChooserAction.SAVE,
+		)
 		fcd.set_current_folder(deskDir)
 		fcd.set_current_name(self.term.title + ".svg")
-		canB = fcd.add_button(gtk.STOCK_CANCEL, gtk.ResponseType.CANCEL)
-		saveB = fcd.add_button(gtk.STOCK_SAVE, gtk.ResponseType.OK)
-		if ui.autoLocale:
-			canB.set_label(_("_Cancel"))
-			canB.set_image(gtk.Image.new_from_stock(
-				gtk.STOCK_CANCEL,
-				gtk.IconSize.BUTTON,
-			))
-			saveB.set_label(_("_Save"))
-			saveB.set_image(gtk.Image.new_from_stock(
-				gtk.STOCK_SAVE,
-				gtk.IconSize.BUTTON,
-			))
+		dialog_add_button(
+			fcd,
+			imageName="dialog-cancel.svg",
+			label=_("_Cancel"),
+			res=gtk.ResponseType.CANCEL,
+		)
+		dialog_add_button(
+			fcd,
+			imageName="document-save.svg",
+			label=_("_Save"),
+			res=gtk.ResponseType.OK,
+		)
 		if fcd.run() == gtk.ResponseType.OK:
 			self.exportToSvg(fcd.get_filename())
 		fcd.destroy()
 
 
 def viewWeeklySchedule(group, parentWin=None):
-	WeeklyScheduleWindow(group, parent=parentWin).show()
+	WeeklyScheduleWindow(group, transient_for=parentWin).show()

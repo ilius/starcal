@@ -7,19 +7,23 @@ from scal3.locale_man import tr as _
 from scal3 import ui
 
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import IdComboBox, showError
+from scal3.ui_gtk.utils import (
+	IdComboBox,
+	showError,
+	labelImageButton,
+)
 
 
-class BaseWidgetClass(gtk.VBox):
+class BaseWidgetClass(gtk.Box):
 	def __init__(self, account):
-		gtk.VBox.__init__(self)
+		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.account = account
 		########
-		self.sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
+		self.sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		#####
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Title"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Title"))
+		label.set_xalign(0)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
 		self.titleEntry = gtk.Entry()
@@ -89,22 +93,22 @@ class AccountGroupCombo(IdComboBox):
 				])
 
 
-class AccountGroupBox(gtk.HBox):
+class AccountGroupBox(gtk.Box):
 	def __init__(self, accountCombo=None):
-		gtk.HBox.__init__(self)
+		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.combo = AccountGroupCombo()
 		pack(self, self.combo)
 		##
-		button = gtk.Button(
-			#stock=gtk.STOCK_CONNECT,
+		button = labelImageButton(
+			label=_("Fetch"),
+			# TODO: imageName="fetch-account.svg",
 		)
-		button.set_label(_("Fetch"))
-		button.connect("clicked", self.fetchClicked)
+		button.connect("clicked", self.onFetchClick)
 		pack(self, button)
 		self.fetchButton = button
 		##
 		label = gtk.Label()
-		label.set_alignment(0.1, 0.5)
+		label.set_xalign(0.1)
 		pack(self, label, 1, 1)
 		self.msgLabel = label
 		###
@@ -117,7 +121,7 @@ class AccountGroupBox(gtk.HBox):
 			account = ui.eventAccounts[aid]
 			self.combo.setAccount(account)
 
-	def fetchClicked(self, obj=None):
+	def onFetchClick(self, obj=None):
 		combo = self.combo
 		account = combo.account
 		if not account:
@@ -130,10 +134,8 @@ class AccountGroupBox(gtk.HBox):
 			account.fetchGroups()
 		except Exception as e:
 			self.msgLabel.set_label(_("Error"))
-			showError(
-				_("Error in fetching remote groups") + "\n" + str(e),
-				ui.eventManDialog,
-			)
+			msg = _("Error in fetching remote groups") + "\n" + str(e)
+			showError(msg, transient_for=ui.eventManDialog)
 			return
 		else:
 			self.msgLabel.set_label("")

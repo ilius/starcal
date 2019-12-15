@@ -32,23 +32,23 @@ class WidgetClass(common.WidgetClass):
 	def __init__(self, event):  # FIXME
 		common.WidgetClass.__init__(self, event)
 		######
-		sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
+		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		######
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Start"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Start"))
+		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.startDateInput = DateButton()
 		pack(hbox, self.startDateInput)
 		##
-		pack(hbox, gtk.Label(" " + _("Time")))
+		pack(hbox, gtk.Label(label=" " + _("Time")))
 		self.startTimeInput = TimeButton()
 		pack(hbox, self.startTimeInput)
 		##
 		pack(self, hbox)
 		######
-		hbox = gtk.HBox()
+		hbox = HBox()
 		self.endTypeCombo = gtk.ComboBoxText()
 		for item in ("Duration", "End"):
 			self.endTypeCombo.append_text(_(item))
@@ -59,17 +59,17 @@ class WidgetClass(common.WidgetClass):
 		self.durationBox = common.DurationInputBox()
 		pack(hbox, self.durationBox, 1, 1)
 		####
-		self.endDateHbox = gtk.HBox()
+		self.endDateHbox = HBox()
 		self.endDateInput = DateButton()
 		pack(self.endDateHbox, self.endDateInput)
 		##
-		pack(self.endDateHbox, gtk.Label(" " + _("Time")))
+		pack(self.endDateHbox, gtk.Label(label=" " + _("Time")))
 		self.endTimeInput = TimeButton()
 		pack(self.endDateHbox, self.endTimeInput)
 		##
 		pack(hbox, self.endDateHbox, 1, 1)
 		####
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
 		#############
 		self.notificationBox = common.NotificationBox(event)
@@ -127,9 +127,9 @@ class WidgetClass(common.WidgetClass):
 				self.endTimeInput.get_value(),
 			)
 
-	def modeComboChanged(self, obj=None):
+	def calTypeComboChanged(self, obj=None):
 		# overwrite method from common.WidgetClass
-		newMode = self.modeCombo.get_active()
-		self.startDateInput.changeMode(self.event.mode, newMode)
-		self.endDateInput.changeMode(self.event.mode, newMode)
-		self.event.mode = newMode
+		newCalType = self.calTypeCombo.get_active()
+		self.startDateInput.changeCalType(self.event.calType, newCalType)
+		self.endDateInput.changeCalType(self.event.calType, newCalType)
+		self.event.calType = newCalType

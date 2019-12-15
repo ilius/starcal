@@ -30,21 +30,21 @@ from time import localtime
 import os
 import os.path
 from os.path import join, dirname, isfile, isdir
+from typing import Tuple
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
 from scal3.path import *
 from scal3 import logger
-from scal3.utils import myRaise
 
 log = logger.get()
 
-if not isfile(join(confDir, "core.json")) and not isdir(join(confDir, "event")):
+if not (isfile(join(confDir, "core.json")) or isdir(join(confDir, "event"))):
 	from scal3.utils import restartLow
 	try:
 		__import__("scal3.ui_gtk.import_config_2to3")
 	except Exception as e:
-		myRaise()
+		log.exception("")
 		log.error(str(e)) # TODO: log the full traceback
 		if not isdir(confDir):
 			os.mkdir(confDir, 0o755)
@@ -53,48 +53,43 @@ if not isfile(join(confDir, "core.json")) and not isdir(join(confDir, "event")):
 			restartLow()
 
 from scal3.utils import versionLessThan
+from scal3 import cal_types
 from scal3.cal_types import calTypes
 from scal3 import core
 
 from scal3 import locale_man
-from scal3.locale_man import rtl, lang ## import scal3.locale_man after core
-#_ = locale_man.loadTranslator(False)## FIXME
+from scal3.locale_man import rtl, lang # import scal3.locale_man after core
+# _ = locale_man.loadTranslator(False) # FIXME
 from scal3.locale_man import tr as _
 from scal3 import event_lib
 from scal3 import ui
+from scal3.color_utils import rgbToHtmlColor
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.utils import *
-#from scal3.ui_gtk.color_utils import rgbToGdkColor
+from scal3.ui_gtk.menuitems import (
+	ImageMenuItem,
+	CheckMenuItem,
+)
 from scal3.ui_gtk import listener
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.customize import DummyCalObj, CustomizableCalBox
+from scal3.ui_gtk.customize import (
+	DummyCalObj,
+	CustomizableCalBox,
+	CustomizableCalObj,
+	newSubPageButton
+)
+from scal3.ui_gtk.layout import WinLayoutBox, WinLayoutObj
+from scal3.ui_gtk.layout_utils import moduleObjectInitializer
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk import hijri as hijri_gtk
+from scal3.ui_gtk.mainwin_items import mainWinItemsDesc
+
+from gi.repository import Gio as gio
 
 
 ui.uiName = "gtk"
-
-
-mainWinItemsDesc = {
-	"dayCal": _("Day Calendar"),
-	"eventDayView": _("Events of Day"),
-	"labelBox": _("Year & Month Labels"),
-	"monthCal": _("Month Calendar"),
-	"pluginsText": _("Plugins Text"),
-	"seasonPBar": _("Season Progress Bar"),
-	"yearPBar": _("Year Progress Bar"),
-	"statusBar": _("Status Bar"),
-	"toolbar": _("Toolbar"),
-	"weekCal": _("Week Calendar"),
-	"winContronller": _("Window Controller"),
-}
-
-
-#def show_event(widget, gevent):
-#	print(type(widget), gevent.type.value_name, gevent.get_value())
-#	# gevent.send_event
 
 
 def liveConfChanged():
@@ -107,60 +102,76 @@ def liveConfChanged():
 		ui.lastLiveConfChangeTime = tm
 
 
-# How to define icon of custom stock????????????
-#gtk.stock_add((
-#("gtk-evolution", "E_volution", gdk.ModifierType.BUTTON1_MASK, 0, "gtk20")
-
-
 @registerSignals
-class MainWinVbox(gtk.VBox, CustomizableCalBox):
-	_name = "mainWin"
-	desc = _("Main Window")
-	params = (
-		"ui.mainWinItems",
-		"ui.winControllerButtons",
-		"ui.mcalHeight",
-		"ui.mcalLeftMargin",
-		"ui.mcalTopMargin",
-		"ui.mcalTypeParams",
-		"ui.mcalGrid",
-		"ui.mcalGridColor",
-		"ui.wcalHeight",
-		"ui.wcalTextSizeScale",
-		"ui.wcalItems",
-		"ui.wcalGrid",
-		"ui.wcalGridColor",
-		"ud.wcalToolbarData",
-		"ui.wcal_toolbar_mainMenu_icon",
-		"ui.wcal_weekDays_width",
-		"ui.wcalFont_weekDays",
-		"ui.wcalFont_pluginsText",
-		"ui.wcal_eventsIcon_width",
-		"ui.wcal_eventsText_showDesc",
-		"ui.wcal_eventsText_colorize",
-		"ui.wcalFont_eventsText",
-		"ui.wcal_daysOfMonth_dir",
-		"ui.wcalTypeParams",
-		"ui.wcal_daysOfMonth_width",
-		"ui.wcal_eventsCount_expand",
-		"ui.wcal_eventsCount_width",
-		"ui.wcalFont_eventsBox",
-		"ui.dcalHeight",
-		"ui.dcalTypeParams",
-		"ui.pluginsTextInsideExpander",
-		"ud.mainToolbarData",
+class MainWinVbox(gtk.Box, CustomizableCalBox):
+	_name = "mainPanel"
+	desc = _("Main Panel")
+	itemListCustomizable = True
+	myKeys = (
+		'down',
+		'end',
+		'f10',
+		'home',
+		'i',
+		'j',
+		'k',
+		'left',
+		'm',
+		'menu',
+		'n',
+		'p',
+		'page_down',
+		'page_up',
+		'right',
+		'space',
+		't',
+		'up',
 	)
 
 	def __init__(self):
-		gtk.VBox.__init__(self)
+		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.initVars()
+		itemsPkg = "scal3.ui_gtk.mainwin_items"
+		for (name, enable) in ui.mainWinItems:
+			if name in ("winContronller", "statusBar"):
+				log.warning(f"Skipping main win item {name!r}")
+				continue
+			# log.debug(name, enable)
+			if enable:
+				try:
+					module = __import__(
+						".".join([
+							itemsPkg,
+							name,
+						]),
+						fromlist=["CalObj"],
+					)
+					CalObj = module.CalObj
+				except RuntimeError as e:
+					raise e
+				except Exception as e:
+					log.error(f"error importing mainWinItem {name}")
+					log.exception("")
+					# raise e
+					continue
+				item = CalObj()
+				item.enable = enable
+				#modify_bg_all(
+				#	item,
+				#	gtk.StateType.NORMAL,
+				#	rgbToGdkColor(*ui.bgColor),
+				#)
+			else:
+				desc = mainWinItemsDesc[name]
+				item = DummyCalObj(name, desc, itemsPkg, True)
+			self.appendItem(item)
 
 	def updateVars(self):
 		CustomizableCalBox.updateVars(self)
 		ui.mainWinItems = self.getItemsData()
 
-	def keyPress(self, arg, gevent):
-		CustomizableCalBox.keyPress(self, arg, gevent)
+	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
+		CustomizableCalBox.onKeyPress(self, arg, gevent)
 		return True ## FIXME
 
 	def switchWcalMcal(self, customizeDialog):
@@ -172,41 +183,55 @@ class MainWinVbox(gtk.VBox, CustomizableCalBox):
 			elif item._name == "monthCal":
 				mi = i
 		for itemIndex in (wi, mi):
-			customizeDialog.loadItem(
-				self,
-				itemIndex,
-				(itemIndex,),
-			)
+			customizeDialog.loadItem(self, itemIndex)
 		wcal, mcal = self.items[wi], self.items[mi]
 		wcal.enable, mcal.enable = mcal.enable, wcal.enable
-		## FIXME
-		#self.reorder_child(wcal, mi)
-		#self.reorder_child(mcal, wi)
-		#self.items[wi], self.items[mi] = mcal, wcal
+		# FIXME
+		# self.reorder_child(wcal, mi)
+		# self.reorder_child(mcal, wi)
+		# self.items[wi], self.items[mi] = mcal, wcal
 		self.showHide()
 		self.onDateChange()
 
+	def getOptionsWidget(self):
+		if self.optionsWidget is not None:
+			return self.optionsWidget
+		self.optionsWidget = VBox(spacing=self.optionsPageSpacing)
+		return self.optionsWidget
+
 
 @registerSignals
-#class MainWin(gtk.ApplicationWindow, ud.IntegratedCalObj):
-class MainWin(gtk.Window, ud.BaseCalObj):
+class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	_name = "mainWin"
 	desc = _("Main Window")
-	timeout = 1 ## second
-	setMinHeight = lambda self: self.resize(ui.winWidth, 2)
+	timeout = 1 # second
+	signals = ud.BaseCalObj.signals + [
+		("toggle-right-panel", []),
+	]
+
+
+	def autoResize(self):
+		self.resize(ui.winWidth, ui.winHeight)
+
 	#def maximize(self):
 	#	pass
 
 	def __init__(self, statusIconMode=2):
-		#from gi.repository import Gio
-		#self.app = gtk.Application(application_id="apps.starcal")
-		#self.app.register(Gio.Cancellable.new())
-		#gtk.ApplicationWindow.__init__(self, application=self.app)
-		gtk.Window.__init__(self)
+		appId = "apps.starcal"
+		# if this application_id is already running, Gtk will crash
+		# with Segmentation fault
+		if event_lib.allReadOnly:
+			appId += "2"
+		self.app = gtk.Application(application_id=appId)
+		self.app.register(gio.Cancellable.new())
+		gtk.ApplicationWindow.__init__(self, application=self.app)
+		###
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initVars()
 		ud.windowList.appendItem(self)
 		ui.mainWin = self
+		##################
+		self.ignoreConfigureEvent = False
 		##################
 		# statusIconMode:
 		#	("none", "none")
@@ -215,7 +240,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		#	("applet", "kde")
 		##
 		#	0: none (simple window)
-		#	1: applet
+		#	1: (dropped) applet
 		#	2: standard status icon
 		self.statusIconMode = statusIconMode
 		###
@@ -227,10 +252,10 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		#ud.windowList.appendItem(ui.weekCalWin)
 		###
 		self.dayInfoDialog = None
-		#print("windowList.items", [item._name for item in ud.windowList.items])
+		# log.debug("windowList.items", [item._name for item in ud.windowList.items])
 		###########
 		##self.connect("window-state-event", selfStateEvent)
-		self.set_title("%s %s" % (core.APP_DESC, core.VERSION))
+		self.set_title(f"{core.APP_DESC} {core.VERSION}")
 		#self.connect("main-show", lambda arg: self.present())
 		#self.connect("main-hide", lambda arg: self.hide())
 		self.set_decorated(False)
@@ -241,16 +266,13 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		#self.set_type_hint(gdk.WindowTypeHint.NORMAL)
 		#self.connect("realize", self.onRealize)
 		self.set_default_size(ui.winWidth, 1)
-		try:
-			self.move(ui.winX, ui.winY)
-		except:
-			pass
+		self.move(ui.winX, ui.winY)
 		#############################################################
 		self.connect("focus-in-event", self.focusIn, "Main")
 		self.connect("focus-out-event", self.focusOut, "Main")
-		self.connect("button-press-event", self.buttonPress)
-		self.connect("key-press-event", self.keyPress)
-		self.connect("configure-event", self.configureEvent)
+		self.connect("key-press-event", self.onKeyPress)
+		self.connect("configure-event", self.onConfigureEvent)
+		self.connect("toggle-right-panel", self.onToggleRightPanel)
 		#############################################################
 		"""
 		#self.add_events(gdk.EventMask.VISIBILITY_NOTIFY_MASK)
@@ -263,7 +285,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		ud.rootWindow.add_filter(self.onRootWinEvent)
 		#self.realize()
 		#gdk.flush()
-		#self.configureEvent(None, None)
+		#self.onConfigureEvent(None, None)
 		#self.connect("drag-motion", show_event)
 		######################
 		## ????????????????????????????????????????????????
@@ -276,72 +298,131 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		#self.clockTr = None
 		##################################################################
 		self.winCon = None
-		############
-		self.vbox = MainWinVbox()
-		ui.checkMainWinItems()
-		itemsPkg = "scal3.ui_gtk.mainwin_items"
-		for (name, enable) in ui.mainWinItems:
-			#print(name, enable)
-			if enable:
-				try:
-					module = __import__(
-						".".join([
-							itemsPkg,
-							name,
-						]),
-						fromlist=["CalObj"],
-					)
-					CalObj = module.CalObj
-				except:
-					myRaise()
-					continue
-				item = CalObj()
-				item.enable = enable
-				item.connect("size-allocate", self.childSizeAllocate)
-				#modify_bg_all(
-				#	item,
-				#	gtk.StateType.NORMAL,
-				#	rgbToGdkColor(*ui.bgColor),
-				#)
-			else:
-				desc = mainWinItemsDesc[name]
-				item = DummyCalObj(name, desc, itemsPkg, True)
-			self.vbox.appendItem(item)
-		self.appendItem(self.vbox)
-		self.vbox.show()
+		self.mainVBox = None
+		self.rightPanel = None
+		self.statusBar = None
+		####
 		self.customizeDialog = None
-		#######
+		############
+		layoutFooter = WinLayoutBox(
+			name="footer",
+			desc="Footer",  # should not be seen in GUI
+			enableParam="",
+			vertical=True,
+			expand=False,
+			itemsMovable=True,
+			itemsParam="mainWinFooterItems",
+			buttonSpacing=2,
+			items=[
+				WinLayoutObj(
+					name="statusBar",
+					desc=_("Status Bar"),
+					enableParam="statusBarEnable",
+					vertical=False,
+					expand=False,
+					movable=True,
+					buttonBorder=0,
+					initializer=self.createStatusBar,
+				),
+				WinLayoutObj(
+					name="pluginsText",
+					desc=_("Plugins Text"),
+					enableParam="pluginsTextEnable",
+					vertical=False,
+					expand=False,
+					movable=True,
+					buttonBorder=0,
+					initializer=moduleObjectInitializer(
+						"scal3.ui_gtk.pluginsText",
+						"PluginsTextBox",
+						insideExpanderParam="pluginsTextInsideExpander",
+					),
+				),
+				WinLayoutObj(
+					name="eventDayView",
+					desc=_("Events of Day"),
+					enableParam="eventDayViewEnable",
+					vertical=False,
+					expand=False,
+					movable=True,
+					buttonBorder=0,
+					initializer=moduleObjectInitializer(
+						"scal3.ui_gtk.event.occurrence_view",
+						"LimitedHeightDayOccurrenceView",
+						eventSepParam="eventDayViewEventSep",
+					),
+				),
+			],
+		)
+		layoutFooter.setItemsOrder(ui.mainWinFooterItems)
+		self.layout = WinLayoutBox(
+			name="layout",
+			desc=_("Main Window"),
+			enableParam="",
+			vertical=True,
+			expand=True,
+			items=[
+				WinLayoutObj(
+					name="layout_winContronller",
+					desc=_("Window Controller"),
+					enableParam="winControllerEnable",
+					vertical=False,
+					expand=False,
+					initializer=self.createWindowControllers,
+				),
+				WinLayoutBox(
+					name="middleBox",
+					desc="Middle Box",  # should not be seen in GUI
+					enableParam="",
+					vertical=False,
+					expand=True,
+					items=[
+						WinLayoutObj(
+							name="mainPanel",
+							desc=_("Main Panel"),
+							enableParam="",
+							vertical=True,
+							expand=True,
+							initializer=self.createMainVBox,
+						),
+						WinLayoutObj(
+							name="rightPanel",
+							desc=_("Right Panel"),
+							enableParam="mainWinRightPanelEnable",
+							vertical=True,
+							expand=False,
+							labelAngle=90 if rtl else -90,
+							initializer=self.createRightPanel,
+						),
+					],
+				),
+				layoutFooter,
+			],
+		)
+
+		self.appendItem(self.layout)
+		self.vbox = self.layout.getWidget()
+		self.vbox.show()
 		self.add(self.vbox)
 		####################
-		self.isMaximized = False
+		if ui.winMaximized:
+			self.maximize()
 		####################
-		#ui.prefDialog = None
+		#ui.prefWindow = None
 		self.exportDialog = None
 		self.selectDateDialog = None
-		############### Building About Dialog
+		# ############# Building About Dialog
 		self.aboutDialog = None
 		###############
 		self.menuMain = None
+		self.menuCell = None
 		#####
-		check = gtk.CheckMenuItem(label=_("_On Top"))
-		check.set_use_underline(True)
-		check.connect("activate", self.keepAboveClicked)
-		check.set_active(ui.winKeepAbove)
 		self.set_keep_above(ui.winKeepAbove)
-		self.checkAbove = check
-		#####
-		check = gtk.CheckMenuItem(label=_("_Sticky"))
-		check.set_use_underline(True)
-		check.connect("activate", self.stickyClicked)
-		check.set_active(ui.winSticky)
 		if ui.winSticky:
 			self.stick()
-		self.checkSticky = check
 		############################################################
 		self.statusIconInit()
 		listener.dateChange.add(self)
-		#if self.statusIconMode!=1:
-		#	timeout_add_seconds(self.timeout, self.statusIconUpdate)
 		#########
 		self.connect("delete-event", self.onDeleteEvent)
 		#########################################
@@ -356,20 +437,78 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		#ud.rootWindow.set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
 
 	#def mainWinStateEvent(self, obj, gevent):
-		#print(dir(event))
-		#print(gevent.new_window_state)
+		# log.debug(dir(event))
+		# log.debug(gevent.new_window_state)
 		#self.event = event
 
-	def childSizeAllocate(self, cal, req):
-		self.setMinHeight()
+	def createWindowControllers(self):
+		from scal3.ui_gtk.winContronller import CalObj as WinContronllersObj
+		if self.winCon is not None:
+			return self.winCon
+		ui.checkWinControllerButtons()
+		self.winCon = WinContronllersObj()
+		return self.winCon
+
+	def createMainVBox(self):
+		if self.mainVBox is not None:
+			return self.mainVBox
+		ui.checkMainWinItems()
+		mainVBox = MainWinVbox()
+		mainVBox.connect("button-press-event", self.onMainButtonPress)
+		self.mainVBox = mainVBox
+		return mainVBox
+
+	def createRightPanel(self):
+		from scal3.ui_gtk.right_panel import MainWinRightPanel
+		if self.rightPanel is not None:
+			return self.rightPanel
+		self.rightPanel = MainWinRightPanel()
+		self.rightPanel.onConfigChange()
+		return self.rightPanel
+
+	def _onToggleRightPanel(self):
+		enable = not ui.mainWinRightPanelEnable
+		ui.mainWinRightPanelEnable = enable
+		self.rightPanel.enable = enable
+		self.rightPanel.showHide()
+		self.rightPanel.onDateChange()
+		if ui.mainWinRightPanelResizeOnToggle:
+			ww, wh = self.get_size()
+			mw = ui.mainWinRightPanelWidth
+			if enable:
+				ww += mw
+			else:
+				ww -= mw
+			if rtl:
+				wx, wy = self.get_position()
+				wx += mw * (-1 if enable else 1)
+				self.move(wx, wy)
+			self.resize(ww, wh)
+
+	def onToggleRightPanel(self, widget):
+		self.ignoreConfigureEvent = True
+		ui.disableRedraw = True
+		try:
+			self._onToggleRightPanel()
+		finally:
+			self.ignoreConfigureEvent = False
+			ui.disableRedraw = False
+			ui.saveConfCustomize()
+
+	def createStatusBar(self):
+		from scal3.ui_gtk.statusBar import CalObj as StatusBar
+		if self.statusBar is not None:
+			return self.statusBar
+		self.statusBar = StatusBar()
+		return self.statusBar
 
 	def selectDateResponse(self, widget, y, m, d):
 		ui.changeDate(y, m, d)
 		self.onDateChange()
 
-	def keyPress(self, arg, gevent):
+	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
 		kname = gdk.keyval_name(gevent.keyval).lower()
-		#print(now(), "MainWin.keyPress", kname)
+		# log.debug(f"{now()}: MainWin.onKeyPress: {kname}")
 		if kname == "escape":
 			self.onEscape()
 		elif kname == "f1":
@@ -378,11 +517,16 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 			self.eventManShow()
 		elif kname in ("q", "arabic_dad"):## FIXME
 			self.quit()
+		elif kname == "r":
+			if gevent.state & gdk.ModifierType.CONTROL_MASK:
+				log.info(f"Ctrl + R -> onConfigChange")
+				self.onConfigChange()
 		else:
-			self.vbox.keyPress(arg, gevent)
+			self.layout.onKeyPress(arg, gevent)
 		return True ## FIXME
 
-	def focusIn(self, widegt, event, data=None):
+	def focusIn(self, widget=None, gevent=None, data=None):
+		log.debug("focusIn")
 		self.focus = True
 		if self.winCon and self.winCon.enable:
 			self.winCon.windowFocusIn()
@@ -391,70 +535,71 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		# called 0.0004 sec (max) after focusIn
 		# (if switched between two windows)
 		dt = now() - ui.focusTime
-		#print("focusOut", dt)
+		log.debug(f"MainWin: focusOut: focusTime={ui.focusTime}, dt={dt}")
 		if dt > 0.05:  # FIXME
 			self.focus = False
 			timeout_add(2, self.focusOutDo)
 
 	def focusOutDo(self):
 		if not self.focus:# and t-self.focusOutTime>0.002:
-			ab = self.checkAbove.get_active()
-			self.set_keep_above(ab)
+			self.set_keep_above(ui.winKeepAbove)
 			if self.winCon and self.winCon.enable:
 				self.winCon.windowFocusOut()
 		return False
 
-	"""
-	def checkResize(self, widget, req):
-		if ui.mcalHeight != req.height:# and ui.winWidth == req.width:
-			if req.height == 0:
-				req.height = 1
-			ui.mcalHeight = req.height
-	"""
-
-	def configureEvent(self, widget, gevent):
+	def onConfigureEvent(self, widget, gevent):
+		if self.ignoreConfigureEvent:
+			return
 		wx, wy = self.get_position()
-		maxPosDelta = max(
-			abs(ui.winX - wx),
-			abs(ui.winY - wy),
-		)
-		#print(wx, wy)
+		# maxPosDelta = max(
+		# 	abs(ui.winX - wx),
+		# 	abs(ui.winY - wy),
+		# )
+		# log.debug(wx, wy)
 		ww, wh = self.get_size()
-		#if ui.bgUseDesk and maxPosDelta > 1:## FIXME
-		#	self.queue_draw()
 		if self.get_property("visible"):
 			ui.winX, ui.winY = (wx, wy)
-		ui.winWidth = ww
+		if not ui.winMaximized:
+			ui.winWidth = ww
+			ui.winHeight = wh
+		self.onWindowSizeChange()
 		liveConfChanged()
 		return False
 
-	def buttonPress(self, obj, gevent):
-		print("MainWin.buttonPress")
+	def onWindowSizeChange(self):
+		if self.rightPanel:
+			self.rightPanel.onWindowSizeChange()
+
+	def onMainButtonPress(self, obj, gevent):
+		# only for mainVBox for now, not rightPanel
+		# does not work for statusBar, don't know why
+		# log.debug("MainWin: onMainButtonPress, button={gevent.button}")
 		b = gevent.button
-		#print("buttonPress", b)
 		if b == 3:
 			self.menuMainCreate()
 			self.menuMain.popup(None, None, None, None, 3, gevent.time)
-			ui.updateFocusTime()
 		elif b == 1:
-			# FIXME: used to cause problems with `ConButton` when using 'pressed' and 'released' signals
+			# FIXME: used to cause problems with `ConButton`
+			# when using 'pressed' and 'released' signals
 			self.begin_move_drag(
 				gevent.button,
 				int(gevent.x_root),
 				int(gevent.y_root),
 				gevent.time,
 			)
+		ui.updateFocusTime()
 		return False
 
 	def childButtonPress(self, widget, gevent):
 		b = gevent.button
-		#print(dir(gevent))
+		# log.debug(dir(gevent))
 		#foo, x, y, mask = gevent.get_window().get_pointer()
 		#x, y = self.get_pointer()
 		x, y = gevent.x_root, gevent.y_root
+		result = False
 		if b == 1:
 			self.begin_move_drag(gevent.button, x, y, gevent.time)
-			return True
+			result = True
 		elif b == 3:
 			self.menuMainCreate()
 			if rtl:
@@ -467,11 +612,15 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 				3,
 				gevent.time,
 			)
-			ui.updateFocusTime()
-			return True
-		return False
+			result = True
+		ui.updateFocusTime()
+		return result
 
-	def startResize(self, widget, gevent):
+	def begin_resize_drag(self, *args):
+		ui.updateFocusTime()
+		return gtk.Window.begin_resize_drag(self, *args)
+
+	def onResizeFromMenu(self, widget, gevent):
 		if self.menuMain:
 			self.menuMain.hide()
 		self.begin_resize_drag(
@@ -488,34 +637,31 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		self.onDateChange()
 
 	def goToday(self, obj=None):
-		return self.changeDate(*core.getSysDate(calTypes.primary))
+		return self.changeDate(*cal_types.getSysDate(calTypes.primary))
 
 	def onDateChange(self, *a, **kw):
-		#print("MainWin.onDateChange")
+		# log.debug("MainWin.onDateChange")
 		ud.BaseCalObj.onDateChange(self, *a, **kw)
 		#for j in range(len(core.plugIndex)):##????????????????????
 		#	try:
 		#		core.allPlugList[core.plugIndex[j]].date_change(*date)
 		#	except AttributeError:
 		#		pass
-		self.setMinHeight()
 		for j in range(len(core.plugIndex)):
 			try:
 				core.allPlugList[core.plugIndex[j]].date_change_after(*date)
 			except AttributeError:
 				pass
-		#print("Occurence Time: max=%e, avg=%e" % (
-		#	ui.Cell.ocTimeMax,
-		#	ui.Cell.ocTimeSum/ui.Cell.ocTimeCount
-		#))
+		# log.debug(
+		#	f"Occurence Time: max={ui.Cell.ocTimeMax:e}, " +
+		#	f"avg={ui.Cell.ocTimeSum/ui.Cell.ocTimeCount:e}"
+		#)
 
-	def getEventAddToMenuItem(self):
+	def getEventAddToMenuItem(self) -> Optional[gtk.MenuItem]:
 		from scal3.ui_gtk.drawing import newColorCheckPixbuf
-		addToItem = labelStockMenuItem("_Add to", gtk.STOCK_ADD)
 		if event_lib.allReadOnly:
-			addToItem.set_sensitive(False)
-			return addToItem
-		menu2 = gtk.Menu()
+			return None
+		menu2 = Menu()
 		##
 		for group in ui.eventGroups:
 			if not group.enable:
@@ -525,34 +671,44 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 			eventTypes = group.acceptsEventTypes
 			if not eventTypes:
 				continue
-			item2 = ImageMenuItem()
-			item2.set_label(group.title)
-			##
-			image = gtk.Image()
+			item2_kwargs = {}
 			if group.icon:
-				image.set_from_file(group.icon)
+				item2_kwargs["imageName"] = group.icon
 			else:
-				image.set_from_pixbuf(newColorCheckPixbuf(group.color, 20, True))
-			item2.set_image(image)
+				item2_kwargs["pixbuf"] = newColorCheckPixbuf(group.color, 20, True)
 			##
 			if len(eventTypes) == 1:
-				item2.connect("activate", self.addToGroupFromMenu, group, eventTypes[0])
+				menu2.add(ImageMenuItem(
+					group.title,
+					func=self.addToGroupFromMenu,
+					args=(group, eventTypes[0]),
+					**item2_kwargs
+				))
 			else:
-				menu3 = gtk.Menu()
+				menu3 = Menu()
 				for eventType in eventTypes:
 					eventClass = event_lib.classes.event.byName[eventType]
-					item3 = ImageMenuItem()
-					item3.set_label(eventClass.desc)
-					icon = eventClass.getDefaultIcon()
-					if icon:
-						item3.set_image(imageFromFile(icon))
-					item3.connect("activate", self.addToGroupFromMenu, group, eventType)
-					menu3.add(item3)
+					menu3.add(ImageMenuItem(
+						eventClass.desc,
+						imageName=eventClass.getDefaultIcon(),
+						func=self.addToGroupFromMenu,
+						args=(group, eventType),
+					))
 				menu3.show_all()
+				item2 = ImageMenuItem(
+					group.title,
+					**item2_kwargs
+				)
 				item2.set_submenu(menu3)
-			menu2.add(item2)
+				menu2.add(item2)
 		##
+		if not menu2.get_children():
+			return None
 		menu2.show_all()
+		addToItem = ImageMenuItem(
+			_("_Add Event to"),
+			imageName="list-add.svg",
+		)
 		addToItem.set_submenu(menu2)
 		return addToItem
 
@@ -568,37 +724,42 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		).run()
 		if event is None:
 			return
-		ui.eventDiff.add("e", event)
+		ui.eventUpdateQueue.put("e", event, self)
 		self.onConfigChange()
 
 	def trimMenuItemLabel(self, s: str, maxLen: int):
-		if len(s) > maxLen-3:
-			s = s[:maxLen-3].rstrip(" ") + "..."
+		if len(s) > maxLen - 3:
+			s = s[:maxLen - 3].rstrip(" ") + "..."
 		return s
 
 	def addEditEventCellMenuItems(self, menu):
 		if event_lib.allReadOnly:
 			return
-		eventsData = ui.cell.eventsData
+		eventsData = ui.cell.getEventsData()
 		if not eventsData:
 			return
 		if len(eventsData) < 4: # make it customizable TODO
 			for eData in eventsData:
 				groupId, eventId = eData["ids"]
-				menu.add(labelImageMenuItem(
+				menu.add(ImageMenuItem(
 					_("Edit") + ": " + self.trimMenuItemLabel(eData["text"][0], 25),
-					eData["icon"],
-					self.editEventFromMenu, groupId, eventId,
+					imageName=eData["icon"],
+					func=self.editEventFromMenu,
+					args=(groupId, eventId,),
 				))
 		else:
-			subMenu = gtk.Menu()
-			subMenuItem = labelStockMenuItem("_Edit Event", gtk.STOCK_ADD)
+			subMenu = Menu()
+			subMenuItem = ImageMenuItem(
+				_("_Edit Event"),
+				imageName="list-add.svg",
+			)
 			for eData in eventsData:
 				groupId, eventId = eData["ids"]
-				subMenu.add(labelImageMenuItem(
+				subMenu.add(ImageMenuItem(
 					eData["text"][0],
-					eData["icon"],
-					self.editEventFromMenu, groupId, eventId,
+					imageName=eData["icon"],
+					func=self.editEventFromMenu,
+					args=(groupId, eventId,),
 				))
 			subMenu.show_all()
 			subMenuItem.set_submenu(subMenu)
@@ -607,111 +768,117 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 	def menuCellPopup(self, widget, etime, x, y):
 		calObjName = widget._name  # why private? FIXME
 		# calObjName is in ("weekCal", "monthCal", ...)
-		menu = gtk.Menu()
+		menu = Menu()
 		####
 		for calType in calTypes.active:
-			menu.add(labelStockMenuItem(
-				_("Copy %s Date") % _(calTypes.getDesc(calType)),
-				gtk.STOCK_COPY,
-				self.copyDateGetCallback(calType),
-				calType,
+			menu.add(ImageMenuItem(
+				_("Copy {calType} Date").format(calType=_(calTypes.getDesc(calType))),
+				imageName="edit-copy.svg",
+				func=self.copyDateGetCallback(calType),
+				args=(calType,)
 			))
-		menu.add(labelStockMenuItem(
-			"Day Info",
-			gtk.STOCK_INFO,
-			self.dayInfoShow,
+		menu.add(ImageMenuItem(
+			_("Day Info"),
+			imageName="info.svg",
+			func=self.dayInfoShow,
 		))
-		menu.add(self.getEventAddToMenuItem())
+		addToItem = self.getEventAddToMenuItem()
+		if addToItem is not None:
+			menu.add(addToItem)
 		self.addEditEventCellMenuItems(menu)
 		menu.add(gtk.SeparatorMenuItem())
-		menu.add(labelStockMenuItem(
-			"Select _Today",
-			gtk.STOCK_HOME,
-			self.goToday,
+		menu.add(ImageMenuItem(
+			_("Select _Today"),
+			imageName="go-home.svg",
+			func=self.goToday,
 		))
-		menu.add(labelStockMenuItem(
-			"Select _Date...",
-			gtk.STOCK_INDEX,
-			self.selectDateShow,
+		menu.add(ImageMenuItem(
+			_("Select _Date..."),
+			imageName="select-date.svg",
+			func=self.selectDateShow,
 		))
 		if calObjName in ("weekCal", "monthCal"):
-			menu.add(labelStockMenuItem(
-				"Switch to " + (
-					"Month Calendar" if calObjName == "weekCal"
-					else "Week Calendar"
-				),
-				gtk.STOCK_REDO,
-				self.switchWcalMcal,
+			isWeek = calObjName == "weekCal"
+			menu.add(ImageMenuItem(
+				_("Switch to " + (
+					"Month Calendar" if isWeek else "Week Calendar"
+				)),
+				imageName="" if isWeek else "week-calendar.svg",
+				func=self.switchWcalMcal,
 			))
 		if os.path.isfile("/usr/bin/evolution"):  # FIXME
-			menu.add(labelImageMenuItem(
-				"In E_volution",
-				"evolution-18.png",
-				ui.dayOpenEvolution,
+			menu.add(ImageMenuItem(
+				_("In E_volution"),
+				imageName="evolution.png",
+				func=ui.dayOpenEvolution,
 			))
-		#if os.path.isfile("/usr/bin/sunbird"):  # FIXME
-		#	menu.add(labelImageMenuItem(
-		#	"In _Sunbird",
-		#	"sunbird-18.png",
-		#	ui.dayOpenSunbird,
-		#))
 		####
-		moreMenu = gtk.Menu()
-		moreMenu.add(labelStockMenuItem(
-			"_Customize",
-			gtk.STOCK_EDIT,
-			self.customizeShow,
+		moreMenu = Menu()
+		moreMenu.add(ImageMenuItem(
+			_("_Customize"),
+			imageName="document-edit.svg",
+			func=self.customizeShow,
 		))
-		moreMenu.add(labelStockMenuItem(
-			"_Preferences",
-			gtk.STOCK_PREFERENCES,
-			self.prefShow,
+		moreMenu.add(ImageMenuItem(
+			_("_Preferences"),
+			imageName="preferences-system.svg",
+			func=self.prefShow,
 		))
-		moreMenu.add(labelStockMenuItem(
-			"_Event Manager",
-			gtk.STOCK_ADD,
-			self.eventManShow,
+		moreMenu.add(ImageMenuItem(
+			_("_Event Manager"),
+			imageName="list-add.svg",
+			func=self.eventManShow,
 		))
-		moreMenu.add(labelImageMenuItem(
-			"Time Line",
-			"timeline-18.png",
-			self.timeLineShow,
+		moreMenu.add(ImageMenuItem(
+			_("Time Line"),
+			imageName="timeline.svg",
+			func=self.timeLineShow,
 		))
-		moreMenu.add(labelImageMenuItem(
-			"Year Wheel",
-			"year-wheel-18.png",
-			self.yearWheelShow,
+		moreMenu.add(ImageMenuItem(
+			_("Year Wheel"),
+			imageName="year-wheel.svg",
+			func=self.yearWheelShow,
 		))  # icon? FIXME
-		#moreMenu.add(labelImageMenuItem(
+		moreMenu.add(ImageMenuItem(
+			_("Day Calendar (Desktop Widget)"),
+			imageName="starcal.svg",
+			func=self.dayCalWinShow,
+		))
+		#moreMenu.add(ImageMenuItem(
 		#	"Week Calendar",
-		#	"weekcal-18.png",
-		#	self.weekCalShow,
+		#	imageName="week-calendar.svg",
+		#	func=self.weekCalShow,
 		#))
-		moreMenu.add(labelStockMenuItem(
-			_("Export to %s") % "HTML",
-			gtk.STOCK_CONVERT,
-			self.exportClicked,
+		moreMenu.add(ImageMenuItem(
+			_("Export to {format}").format(format="HTML"),
+			imageName="export-to-html.svg",
+			func=self.onExportClick,
 		))
-		moreMenu.add(labelStockMenuItem(
-			"_About",
-			gtk.STOCK_ABOUT,
-			self.aboutShow,
+		moreMenu.add(ImageMenuItem(
+			_("_About"),
+			imageName="help-about.svg",
+			func=self.aboutShow,
 		))
-		if self.statusIconMode != 1:
-			moreMenu.add(labelStockMenuItem(
-				"_Quit",
-				gtk.STOCK_QUIT,
-				self.quit,
-			))
+		moreMenu.add(ImageMenuItem(
+			_("_Quit"),
+			imageName="application-exit.svg",
+			func=self.quit,
+		))
 		##
 		moreMenu.show_all()
-		moreItem = MenuItem(_("More"))
+		moreItem = ImageMenuItem(label=_("More"))
 		moreItem.set_submenu(moreMenu)
 		#moreItem.show_all()
 		menu.add(moreItem)
 		####
 		menu.show_all()
-		dx, dy = widget.translate_coordinates(self, x, y)
+		coord = widget.translate_coordinates(self, x, y)
+		if coord is None:
+			raise RuntimeError(
+				f"failed to translate coordinates ({x}, {y})" +
+				f" from widget {widget}"
+			)
+		dx, dy = coord
 		foo, wx, wy = self.get_window().get_origin()
 		x = wx + dx
 		y = wy + dy
@@ -719,7 +886,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 			x -= get_menu_width(menu)
 		####
 		etime = gtk.get_current_event_time()
-		#print("menuCellPopup", x, y, etime)
+		# log.debug("menuCellPopup", x, y, etime)
 		self.menuCell = menu
 		# without the above line, the menu is not showing up
 		# some GC-related pygi bug probably
@@ -736,91 +903,109 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 	def menuMainCreate(self):
 		if self.menuMain:
 			return
-		menu = gtk.Menu()
+		menu = gtk.Menu(reserve_toggle_size=0)
 		####
-		item = ImageMenuItem(_("Resize"))
-		item.set_image(imageFromFile("resize.png"))
-		item.connect("button-press-event", self.startResize)
+		item = ImageMenuItem(_("Resize"), "resize.svg")
+		item.connect("button-press-event", self.onResizeFromMenu)
 		menu.add(item)
 		#######
-		menu.add(self.checkAbove)
-		menu.add(self.checkSticky)
+		menu.add(CheckMenuItem(
+			label=_("_On Top"),
+			func=self.onKeepAboveClick,
+			active=ui.winKeepAbove,
+		))
+		menu.add(CheckMenuItem(
+			label=_("_Sticky"),
+			func=self.onStickyClick,
+			active=ui.winSticky,
+		))
 		#######
-		menu.add(labelStockMenuItem(
-			"Select _Today",
-			gtk.STOCK_HOME,
-			self.goToday,
+		menu.add(ImageMenuItem(
+			_("Select _Today"),
+			imageName="go-home.svg",
+			func=self.goToday,
 		))
-		menu.add(labelStockMenuItem(
-			"Select _Date...",
-			gtk.STOCK_INDEX,
-			self.selectDateShow,
+		menu.add(ImageMenuItem(
+			_("Select _Date..."),
+			imageName="select-date.svg",
+			func=self.selectDateShow,
 		))
-		menu.add(labelStockMenuItem(
-			"Day Info",
-			gtk.STOCK_INFO,
-			self.dayInfoShow,
+		menu.add(ImageMenuItem(
+			_("Day Info"),
+			imageName="info.svg",
+			func=self.dayInfoShow,
 		))
-		menu.add(labelStockMenuItem(
-			"_Customize",
-			gtk.STOCK_EDIT,
-			self.customizeShow,
+		menu.add(ImageMenuItem(
+			_("_Customize"),
+			imageName="document-edit.svg",
+			func=self.customizeShow,
 		))
-		menu.add(labelStockMenuItem(
-			"_Preferences",
-			gtk.STOCK_PREFERENCES,
-			self.prefShow,
+		menu.add(ImageMenuItem(
+			_("_Preferences"),
+			imageName="preferences-system.svg",
+			func=self.prefShow,
 		))
-		#menu.add(labelStockMenuItem(
-		#	"_Add Event",
-		#	gtk.STOCK_ADD,
-		#	ui.addCustomEvent,
+		#menu.add(ImageMenuItem(
+		#	_("_Add Event"),
+		#	imageName="list-add.svg",
+		#	func=ui.addCustomEvent,
 		#))
-		#menu.add(labelStockMenuItem(
-		#	"_Event Manager",
-		#	gtk.STOCK_ADD,
-		#	self.eventManShow,
+		#menu.add(ImageMenuItem(
+		#	_("_Event Manager"),
+		#	imageName="list-add.svg",
+		#	func=self.eventManShow,
 		#))
-		menu.add(labelImageMenuItem(
-			"Time Line",
-			"timeline-18.png",
-			self.timeLineShow,
+		menu.add(ImageMenuItem(
+			_("Day Calendar (Desktop Widget)"),
+			imageName="starcal.svg",
+			func=self.dayCalWinShow,
 		))
-		menu.add(labelImageMenuItem(
-			"Year Wheel",
-			"year-wheel-18.png",
-			self.yearWheelShow,
+		menu.add(ImageMenuItem(
+			_("Time Line"),
+			imageName="timeline.svg",
+			func=self.timeLineShow,
+		))
+		menu.add(ImageMenuItem(
+			_("Year Wheel"),
+			imageName="year-wheel.svg",
+			func=self.yearWheelShow,
 		))  # icon? FIXME
-		#menu.add(labelImageMenuItem(
-		#	"Week Calendar",
-		#	"weekcal-18.png",
-		#	self.weekCalShow,
+		#menu.add(ImageMenuItem(
+		#	_("Week Calendar"),
+		#	imageName="week-calendar.svg",
+		#	func=self.weekCalShow,
 		#))
-		menu.add(labelStockMenuItem(
-			_("Export to %s") % "HTML",
-			gtk.STOCK_CONVERT,
-			self.exportClicked,
+		menu.add(ImageMenuItem(
+			_("Export to {format}").format(format="HTML"),
+			imageName="export-to-html.svg",
+			func=self.onExportClick,
 		))
-		menu.add(labelStockMenuItem(
-			"Ad_just System Time",
-			gtk.STOCK_PREFERENCES,
-			self.adjustTime,
+		menu.add(ImageMenuItem(
+			_("Ad_just System Time"),
+			imageName="preferences-system.svg",
+			func=self.adjustTime,
 		))
-		menu.add(labelStockMenuItem(
-			"_About",
-			gtk.STOCK_ABOUT,
-			self.aboutShow,
+		menu.add(ImageMenuItem(
+			_("_About"),
+			imageName="help-about.svg",
+			func=self.aboutShow,
 		))
-		if self.statusIconMode != 1:
-			menu.add(labelStockMenuItem(
-				"_Quit",
-				gtk.STOCK_QUIT,
-				self.quit,
-			))
+		menu.add(ImageMenuItem(
+			_("_Quit"),
+			imageName="application-exit.svg",
+			func=self.quit,
+		))
 		menu.show_all()
 		self.menuMain = menu
 
-	def menuMainPopup(self, widget, etime, x, y):
+	# handler for "popup-main-menu" signal
+	def menuMainPopup(
+		self,
+		widget: gtk.Widget,
+		etime: int,
+		x: int,
+		y: int,
+	):
 		self.menuMainCreate()
 		if etime == 0:
 			etime = gtk.get_current_event_time()
@@ -831,7 +1016,13 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		y = wy + dy
 		if rtl:
 			x -= get_menu_width(menu)
-		#print("menuMainPopup", x, y, etime)
+		menuH = get_menu_height(menu)
+		if menuH > 0 and y + menuH > ud.screenH:
+			if y - menuH >= 0:
+				y -= menuH
+			else:
+				y -= menuH // 2
+		# log.debug("menuMainPopup", x, y, etime)
 		menu.popup(
 			None,
 			None,
@@ -844,7 +1035,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 
 	def addToGroupFromMenu(self, menu, group, eventType):
 		from scal3.ui_gtk.event.editor import addNewEvent
-		#print("addToGroupFromMenu", group.title, eventType)
+		# log.debug("addToGroupFromMenu", group.title, eventType)
 		title = _("Add ") + event_lib.classes.event.byName[eventType].desc
 		event = addNewEvent(
 			group,
@@ -855,22 +1046,24 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		)
 		if event is None:
 			return
-		ui.eventDiff.add("+", event)
+		if event.parent is None:
+			raise RuntimeError("event.parent is None")
+		ui.eventUpdateQueue.put("+", event, self)
 		self.onConfigChange()
 
 	def prefUpdateBgColor(self, cal):
-		if ui.prefDialog:
-			ui.prefDialog.colorbBg.set_color(ui.bgColor)
+		if ui.prefWindow:
+			ui.prefWindow.colorbBg.set_rgba(ui.bgColor)
 		#else:## FIXME
 		ui.saveLiveConf()
 
-	def keepAboveClicked(self, check):
+	def onKeepAboveClick(self, check):
 		act = check.get_active()
 		self.set_keep_above(act)
 		ui.winKeepAbove = act
 		ui.saveLiveConf()
 
-	def stickyClicked(self, check):
+	def onStickyClick(self, check):
 		if check.get_active():
 			self.stick()
 			ui.winSticky = True
@@ -880,10 +1073,13 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		ui.saveLiveConf()
 
 	def copyDate(self, calType: int):
-		setClipboard(ui.cell.format(ud.dateFormatBin, mode=calType))
+		setClipboard(ui.cell.format(ud.dateFormatBin, calType=calType))
 
 	def copyDateGetCallback(self, calType: int):
-		return lambda obj=None, event=None: setClipboard(ui.cell.format(ud.dateFormatBin, mode=calType))
+		return lambda obj=None, event=None: setClipboard(ui.cell.format(
+			ud.dateFormatBin,
+			calType=calType,
+		))
 
 	def copyDateToday(self, obj=None, event=None):
 		setClipboard(ui.todayCell.format(ud.dateFormatBin))
@@ -935,107 +1131,104 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 	#	openWindow(ui.weekCalWin)
 
 	def statusIconInit(self):
-		if self.statusIconMode == 2:
-			useAppIndicator = ui.useAppIndicator
-			if useAppIndicator:
-				try:
-					import scal3.ui_gtk.starcal_appindicator
-				except (ImportError, ValueError):
-					useAppIndicator = False
-			if useAppIndicator:
-				from scal3.ui_gtk.starcal_appindicator import (
-					IndicatorStatusIconWrapper,
-				)
-				self.sicon = IndicatorStatusIconWrapper(self)
-			else:
-				self.sicon = gtk.StatusIcon()
-				##self.sicon.set_blinking(True)
-				## ^ for Alarms ## some problem with gnome-shell
-				#self.sicon.set_name("starcal")
-				# Warning: g_object_notify: object class `GtkStatusIcon"
-				# has no property named `name"
-				self.sicon.set_title(core.APP_DESC)
-				self.sicon.set_visible(True)  # is needed?
-				self.sicon.connect(
-					"button-press-event",
-					self.statusIconButtonPress,
-				)
-				self.sicon.connect("activate", self.statusIconClicked)
-				self.sicon.connect("popup-menu", self.statusIconPopup)
-				#self.sicon.set_from_stock(gtk.STOCK_HOME)
-		else:
+		if self.statusIconMode != 2:
 			self.sicon = None
+			return
+
+		useAppIndicator = ui.useAppIndicator
+		if useAppIndicator:
+			try:
+				import scal3.ui_gtk.starcal_appindicator
+			except (ImportError, ValueError):
+				useAppIndicator = False
+		if useAppIndicator:
+			from scal3.ui_gtk.starcal_appindicator import (
+				IndicatorStatusIconWrapper,
+			)
+			self.sicon = IndicatorStatusIconWrapper(self)
+		else:
+			self.sicon = gtk.StatusIcon()
+			self.sicon.set_title(core.APP_DESC)
+			self.sicon.set_visible(True)  # is needed?
+			self.sicon.connect(
+				"button-press-event",
+				self.onStatusIconPress,
+			)
+			self.sicon.connect("activate", self.onStatusIconClick)
+			self.sicon.connect("popup-menu", self.statusIconPopup)
 
 	def getMainWinMenuItem(self):
-		return labelMenuItem("Main Window", self.statusIconClicked)
+		item = gtk.MenuItem(label=_("Main Window"))
+		item.connect("activate", self.onStatusIconClick)
+		return item
 
 	def getStatusIconPopupItems(self):
 		return [
-			labelStockMenuItem(
-				"Copy _Time",
-				gtk.STOCK_COPY,
-				self.copyTime,
+			ImageMenuItem(
+				_("Copy _Time"),
+				imageName="edit-copy.svg",
+				func=self.copyTime,
 			),
-			labelStockMenuItem(
-				"Copy _Date",
-				gtk.STOCK_COPY,
-				self.copyDateToday,
+			ImageMenuItem(
+				_("Copy _Date"),
+				imageName="edit-copy.svg",
+				func=self.copyDateToday,
 			),
-			labelStockMenuItem(
-				"Ad_just System Time",
-				gtk.STOCK_PREFERENCES,
-				self.adjustTime,
+			ImageMenuItem(
+				_("Ad_just System Time"),
+				imageName="preferences-system.svg",
+				func=self.adjustTime,
 			),
-			#labelStockMenuItem(
-			#	"_Add Event",
-			#	gtk.STOCK_ADD,
-			#	ui.addCustomEvent,
+			#ImageMenuItem(
+			#	_("_Add Event"),
+			#	imageName="list-add.svg",
+			#	func=ui.addCustomEvent,
 			#),  # FIXME
-			labelStockMenuItem(
-				_("Export to %s") % "HTML",
-				gtk.STOCK_CONVERT,
-				self.exportClickedStatusIcon,
+			ImageMenuItem(
+				_("Export to {format}").format(format="HTML"),
+				imageName="export-to-html.svg",
+				func=self.onExportClickStatusIcon,
 			),
-			labelStockMenuItem(
-				"_Preferences",
-				gtk.STOCK_PREFERENCES,
-				self.prefShow,
+			ImageMenuItem(
+				_("_Preferences"),
+				imageName="preferences-system.svg",
+				func=self.prefShow,
 			),
-			labelStockMenuItem(
-				"_Customize",
-				gtk.STOCK_EDIT,
-				self.customizeShow,
+			ImageMenuItem(
+				_("_Customize"),
+				imageName="document-edit.svg",
+				func=self.customizeShow,
 			),
-			labelStockMenuItem(
-				"_Event Manager",
-				gtk.STOCK_ADD,
-				self.eventManShow,
+			ImageMenuItem(
+				_("_Event Manager"),
+				imageName="list-add.svg",
+				func=self.eventManShow,
 			),
-			labelImageMenuItem(
-				"Time Line",
-				"timeline-18.png",
-				self.timeLineShow,
+			ImageMenuItem(
+				_("Time Line"),
+				imageName="timeline.svg",
+				func=self.timeLineShow,
 			),
-			labelImageMenuItem(
-				"Year Wheel",
-				"year-wheel-18.png",
-				self.yearWheelShow,
-			),  # icon? FIXME
-			labelStockMenuItem(
-				"_About",
-				gtk.STOCK_ABOUT,
-				self.aboutShow,
+			ImageMenuItem(
+				_("Year Wheel"),
+				imageName="year-wheel.svg",
+				func=self.yearWheelShow,
+			),
+			ImageMenuItem(
+				_("_About"),
+				imageName="help-about.svg",
+				func=self.aboutShow,
 			),
 			gtk.SeparatorMenuItem(),
-			labelStockMenuItem(
-				"_Quit",
-				gtk.STOCK_QUIT,
-				self.quit,
+			ImageMenuItem(
+				_("_Quit"),
+				imageName="application-exit.svg",
+				func=self.quit,
 			),
 		]
 
 	def statusIconPopup(self, sicon, button, etime):
-		menu = gtk.Menu()
+		menu = Menu()
 		if os.sep == "\\":
 			from scal3.ui_gtk.windows import setupMenuHideOnLeave
 			setupMenuHideOnLeave(menu)
@@ -1044,8 +1237,9 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		get_pos_func = None
 		y1 = 0
 		geo = self.sicon.get_geometry()
-		## Previously geo was None on windows, and on Linux it had `geo.index(1)` (not sure about the type)
-		## Now it's tuple on both Linux and windows
+		# Previously geo was None on windows
+		# and on Linux it had `geo.index(1)` (not sure about the type)
+		# Now it's tuple on both Linux and windows
 		if geo is None:
 			items.reverse()
 		elif isinstance(geo, tuple):
@@ -1063,7 +1257,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		for item in items:
 			menu.add(item)
 		menu.show_all()
-		#print("statusIconPopup", button, etime)
+		# log.debug("statusIconPopup", button, etime)
 		menu.popup(None, None, get_pos_func, self.sicon, button, etime)
 		#self.sicon.do_popup_menu(self.sicon, button, etime)
 		ui.updateFocusTime()
@@ -1079,26 +1273,28 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		#	sep = _(",")+" "
 		#else:
 		sep = "\n"
-		for mode in calTypes.active:
-			y, m, d = ui.todayCell.dates[mode]
-			tt += "%s%s %s %s" % (
-				sep,
-				_(d),
-				locale_man.getMonthName(mode, m, y),
-				_(y),
+		for calType in calTypes.active:
+			y, m, d = ui.todayCell.dates[calType]
+			tt += (
+				sep +
+				_(d) +
+				" " +
+				locale_man.getMonthName(calType, m, y) +
+				" " +
+				_(y)
 			)
 		if ui.pluginsTextStatusIcon:
 			text = ui.todayCell.pluginsText
 			if text != "":
-				tt += "\n\n%s" % text  # .replace("\t", "\n") ## FIXME
-		for item in ui.todayCell.eventsData:
+				tt += "\n\n" + text  # .replace("\t", "\n") ## FIXME
+		for item in ui.todayCell.getEventsData():
 			if not item["showInStatusIcon"]:
 				continue
 			itemS = ""
 			if item["time"]:
 				itemS += item["time"] + " - "
 			itemS += item["text"][0]
-			tt += "\n\n%s" % itemS
+			tt += "\n\n" + itemS
 		return tt
 
 	def statusIconUpdateIcon(self, ddate):  # FIXME
@@ -1107,36 +1303,48 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 			ui.statusIconImageHoli if ui.todayCell.holiday
 			else ui.statusIconImage
 		)
-		ext = os.path.splitext(imagePath)[1][1:].lower()
-		loader = GdkPixbuf.PixbufLoader.new_with_type(ext)
-		if ui.statusIconFixedSizeEnable:
-			try:
-				width, height = ui.statusIconFixedSizeWH
-				loader.set_size(width, height)
-			except:
-				myRaise()
-		data = open(imagePath, "rb").read()
+		ext = os.path.splitext(imagePath)[1].lstrip(".").lower()
+		with open(imagePath, "rb") as fp:
+			data = fp.read()
 		if ext == "svg":
 			dayNum = locale_man.numEncode(
 				ddate[2],
-				mode=calTypes.primary,  # FIXME
+				localeMode=calTypes.primary,  # FIXME
 			)
+			style = []  # type: List[Tuple[str, Any]]
 			if ui.statusIconFontFamilyEnable:
 				if ui.statusIconFontFamily:
 					family = ui.statusIconFontFamily
 				else:
 					family = ui.getFont()[0]
-				dayNum = "<tspan style=\"font-family:%s\">%s</tspan>" % (
-					family,
-					dayNum,
-				)
+				style.append(("font-family", family))
+			if ui.statusIconHolidayFontColorEnable and ui.statusIconHolidayFontColor:
+				if ui.todayCell.holiday:
+					style.append(("fill", rgbToHtmlColor(ui.statusIconHolidayFontColor)))
+			if style:
+				styleStr = "".join([f"{key}:{value};" for key, value in style])
+				dayNum = f"<tspan style=\"{styleStr}\">{dayNum}</tspan>"
 			data = data.replace(
 				b"TX",
 				toBytes(dayNum),
 			)
-		loader.write(data)
-		loader.close()
+		loader = GdkPixbuf.PixbufLoader.new_with_type(ext)
+		if ui.statusIconFixedSizeEnable:
+			try:
+				width, height = ui.statusIconFixedSizeWH
+				loader.set_size(width, height)
+			except Exception:
+				log.exception("")
+		try:
+			loader.write(data)
+		finally:
+			loader.close()
 		pixbuf = loader.get_pixbuf()
+
+		# alternative way:
+		# stream = Gio.MemoryInputStream.new_from_bytes(GLib.Bytes.new(data))
+		# pixbuf = GdkPixbuf.Pixbuf.new_from_stream(stream, None)
+
 		self.sicon.set_from_pixbuf(pixbuf)
 
 	def statusIconUpdateTooltip(self):
@@ -1151,14 +1359,14 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 			return
 		if gdate is None:
 			gdate = localtime()[:3]
-		if calTypes.primary == core.DATE_GREG:
+		if calTypes.primary == core.GREGORIAN:
 			ddate = gdate
 		else:
 			ddate = core.convert(
 				gdate[0],
 				gdate[1],
 				gdate[2],
-				core.DATE_GREG,
+				core.GREGORIAN,
 				calTypes.primary,
 			)
 		#######
@@ -1168,26 +1376,25 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		self.statusIconUpdateTooltip()
 		return True
 
-	def statusIconButtonPress(self, obj, gevent):
+	def onStatusIconPress(self, obj, gevent):
 		if gevent.button == 2:
-			## middle button press
+			# middle button press
 			self.copyDate(calTypes.primary)
 			return True
 
-	def statusIconClicked(self, obj=None):
+	def onStatusIconClick(self, obj=None):
 		if self.get_property("visible"):
 			#ui.winX, ui.winY = self.get_position()
 			# ^ FIXME gives bad position sometimes
 			#liveConfChanged()
-			#print(ui.winX, ui.winY)
+			# log.debug(ui.winX, ui.winY)
 			self.hide()
 		else:
 			self.move(ui.winX, ui.winY)
 			# every calling of .hide() and .present(), makes dialog not on top
 			# (forgets being on top)
-			act = self.checkAbove.get_active()
-			self.set_keep_above(act)
-			if self.checkSticky.get_active():
+			self.set_keep_above(ui.winKeepAbove)
+			if ui.winSticky:
 				self.stick()
 			self.deiconify()
 			self.present()
@@ -1196,7 +1403,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		#ui.winX, ui.winY = self.get_position()
 		# ^ FIXME gives bad position sometimes
 		#liveConfChanged()
-		#print(ui.winX, ui.winY)
+		# log.debug(ui.winX, ui.winY)
 		if self.statusIconMode == 0 or not self.sicon:
 			self.quit()
 		elif self.statusIconMode > 1:
@@ -1210,7 +1417,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		#ui.winX, ui.winY = self.get_position()
 		# ^ FIXME gives bad position sometimes
 		#liveConfChanged()
-		#print(ui.winX, ui.winY)
+		# log.debug(ui.winX, ui.winY)
 		if self.statusIconMode == 0:
 			self.quit()
 		elif self.statusIconMode > 1:
@@ -1220,21 +1427,34 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 	def quit(self, widget=None, event=None):
 		try:
 			ui.saveLiveConf()
-		except:
-			myRaise()
+		except Exception:
+			log.exception("")
 		if self.statusIconMode > 1 and self.sicon:
 			self.sicon.set_visible(False)
 			# ^ needed for windows. before or after main_quit ?
 		self.destroy()
 		######
+		t0 = now()
 		core.stopRunningThreads()
+		t1 = now()
+		pixcache.cacheSaveStop()
+		t2 = now()
+		ui.eventUpdateQueue.stopLoop()
+		t3 = now()
+		log.info(f"stopRunningThreads took {t1 - t0:.6f} seconds")
+		log.info(f"cacheSaveStop took {t2 - t1:.6f} seconds")
+		log.info(f"eventUpdateQueue.stopLoop took {t3 - t2:.6f} seconds")
 		######
 		return gtk.main_quit()
 
 	def adjustTime(self, widget=None, event=None):
 		from subprocess import Popen
 		if not ud.adjustTimeCmd:
-			showError("Failed to find gksudo, kdesudo, gksu, gnomesu, kdesu or any askpass program to use with sudo")
+			showError(
+				"Failed to find gksudo, kdesudo, gksu, gnomesu, kdesu" +
+				" or any askpass program to use with sudo",
+				transient_for=self,
+			)
 			return
 		Popen(ud.adjustTimeCmd, env=ud.adjustTimeEnv)
 
@@ -1242,7 +1462,7 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		if not self.aboutDialog:
 			from scal3.ui_gtk.about import AboutDialog
 			with open(
-				join(rootDir, "authors-dialog"),
+				join(sourceDir, "authors-dialog"),
 				encoding="utf-8",
 			) as authorsFile:
 				authors = authorsFile.read().splitlines()
@@ -1256,12 +1476,12 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 				comments=core.aboutText,
 				license=core.licenseText,
 				website=core.homePage,
+				logo=GdkPixbuf.Pixbuf.new_from_file(ui.appLogo),
 				transient_for=self,
 			)
 			# add Donate button, FIXME
 			dialog.connect("delete-event", self.aboutHide)
 			dialog.connect("response", self.aboutHide)
-			#dialog.set_logo(GdkPixbuf.Pixbuf.new_from_file(ui.logo))
 			#dialog.set_skip_taskbar_hint(True)
 			self.aboutDialog = dialog
 		openWindow(self.aboutDialog)
@@ -1272,11 +1492,11 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		return True
 
 	def prefShow(self, obj=None, data=None):
-		if not ui.prefDialog:
-			from scal3.ui_gtk.preferences import PrefDialog
-			ui.prefDialog = PrefDialog(self.statusIconMode, transient_for=self)
-			ui.prefDialog.updatePrefGui()
-		openWindow(ui.prefDialog)
+		if not ui.prefWindow:
+			from scal3.ui_gtk.preferences import PreferencesWindow
+			ui.prefWindow = PreferencesWindow(transient_for=self)
+			ui.prefWindow.updatePrefGui()
+		openWindow(ui.prefWindow)
 
 	def eventManCreate(self):
 		checkEventsReadOnly() ## FIXME
@@ -1300,6 +1520,12 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 	def addCustomEvent(self, obj=None):
 		self.eventManCreate()
 		ui.eventManDialog.addCustomEvent()
+
+	def dayCalWinShow(self, obj=None, data=None):
+		if not ui.dayCalWin:
+			from scal3.ui_gtk.day_cal_window import DayCalWindow
+			ui.dayCalWin = DayCalWindow()
+		ui.dayCalWin.present()
 
 	def timeLineShow(self, obj=None, data=None):
 		if not ui.timeLineWin:
@@ -1327,17 +1553,17 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		if not self.dayInfoDialog:
 			from scal3.ui_gtk.day_info import DayInfoDialog
 			self.dayInfoDialog = DayInfoDialog(transient_for=self)
-			self.dayInfoDialog.onDateChange()
+			self.emit("date-change")
 		openWindow(self.dayInfoDialog)
 
 	def customizeDialogCreate(self):
 		if not self.customizeDialog:
 			from scal3.ui_gtk.customize_dialog import CustomizeDialog
-			self.customizeDialog = CustomizeDialog(self.vbox, transient_for=self)
+			self.customizeDialog = CustomizeDialog(self.layout, transient_for=self)
 
 	def switchWcalMcal(self, widget=None):
 		self.customizeDialogCreate()
-		self.vbox.switchWcalMcal(self.customizeDialog)
+		self.mainVBox.switchWcalMcal(self.customizeDialog)
 		self.customizeDialog.updateTreeEnableChecks()
 		self.customizeDialog.save()
 
@@ -1351,15 +1577,22 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 			self.exportDialog = ExportDialog(transient_for=self)
 		self.exportDialog.showDialog(year, month)
 
-	def exportClicked(self, widget=None):
+	def onExportClick(self, widget=None):
 		self.exportShow(ui.cell.year, ui.cell.month)
 
-	def exportClickedStatusIcon(self, widget=None, event=None):
-		year, month, day = core.getSysDate(calTypes.primary)
+	def onExportClickStatusIcon(self, widget=None, event=None):
+		year, month, day = cal_types.getSysDate(calTypes.primary)
 		self.exportShow(year, month)
 
 	def onConfigChange(self, *a, **kw):
+		if self.menuMain:
+			self.menuMain.destroy()
+			self.menuMain = None
+		if self.menuCell:
+			self.menuCell.destroy()
+			self.menuCell = None
 		ud.BaseCalObj.onConfigChange(self, *a, **kw)
+		self.autoResize()
 		#self.set_property("skip-taskbar-hint", not ui.winTaskbar)
 		# self.set_skip_taskbar_hint ## FIXME
 		# skip-taskbar-hint need to restart ro be applied
@@ -1376,7 +1609,8 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 
 gtk.init_check(sys.argv)
 
-# clickWebsite = lambda widget, url: core.openUrl(url)
+# from scal3.os_utils import openUrl
+# clickWebsite = lambda widget, url: openUrl(url)
 # gtk.link_button_set_uri_hook(clickWebsite)
 # gtk.about_dialog_set_url_hook(clickWebsite)
 
@@ -1397,7 +1631,7 @@ for plug in core.allPlugList:
 
 
 """
-themeDir = join(rootDir, "themes")
+themeDir = join(sourceDir, "themes")
 theme = "Dark" # "Default
 if theme is not None:
 	gtkrc = join(themeDir, theme, "gtkrc")
@@ -1407,21 +1641,11 @@ if theme is not None:
 		#gtk.rc_reparse_all()
 		#exec(open(join(themeDir, theme, "starcalrc")).read())
 	except:
-		myRaise(__file__)
+		log.exception("")
 """
 
 
 def main():
-	"""
-	try:
-		import psyco
-	except ImportError:
-		print("Warning: module "psyco" not found. It could speed up execution.")
-		psyco_found=False
-	else:
-		psyco.full()
-		print("Using module "psyco" to speed up execution.")
-		psyco_found=True"""
 	statusIconMode = 2
 	action = ""
 	if ui.showMain:
@@ -1441,22 +1665,28 @@ def main():
 	###############################
 	ui.init()
 	###############################
+	pixcache.cacheSaveStart()
+	ui.eventUpdateQueue.startLoop()
+	###############################
 	listener.dateChange.add(hijri_gtk.HijriMonthsExpirationListener())
 	hijri_gtk.checkHijriMonthsExpiration()
 	###############################
 	checkEventsReadOnly(False)
-	## right place? FIXME
+	# FIXME: right place?
 	event_lib.info.updateAndSave()
 	###############################
 	mainWin = MainWin(statusIconMode=statusIconMode)
+	###############################
 	#if action == "html":
 	#	mainWin.exportHtml("calendar.html") ## exportHtml(path, months, title)
 	#	sys.exit(0)
 	#elif action == "svg":
-	#	mainWin.export.exportSvg("%s/2010-01.svg"%core.deskDir, [(2010, 1)])
+	#	mainWin.export.exportSvg(f"{core.deskDir}/2010-01.svg", [(2010, 1)])
 	#	sys.exit(0)
 	if action == "show" or not mainWin.sicon:
 		mainWin.present()
+	if ui.showDesktopWidget:
+		mainWin.dayCalWinShow()
 	#ud.rootWindow.set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
 	# ^ FIXME
 	#mainWin.app.run(None)

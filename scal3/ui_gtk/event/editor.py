@@ -31,15 +31,15 @@ class EventEditorDialog(gtk.Dialog):
 		###
 		dialog_add_button(
 			self,
-			gtk.STOCK_CANCEL,
-			_("_Cancel"),
-			gtk.ResponseType.CANCEL,
+			imageName="dialog-cancel.svg",
+			label=_("_Cancel"),
+			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
-			gtk.STOCK_OK,
-			_("_OK"),
-			gtk.ResponseType.OK,
+			imageName="dialog-ok.svg",
+			label=_("_OK"),
+			res=gtk.ResponseType.OK,
 		)
 		###
 		self.connect("response", lambda w, e: self.hide())
@@ -57,15 +57,15 @@ class EventEditorDialog(gtk.Dialog):
 		if isNew and not event.timeZone:
 			event.timeZone = str(core.localTz)## why? FIXME
 		#######
-		hbox = gtk.HBox()
+		hbox = HBox()
 		pack(hbox, gtk.Label(
-			_("Group") + ": " + self._group.title
+			label=_("Group") + ": " + self._group.title
 		))
 		hbox.show_all()
 		pack(self.vbox, hbox)
 		#######
-		hbox = gtk.HBox()
-		pack(hbox, gtk.Label(_("Event Type")))
+		hbox = HBox()
+		pack(hbox, gtk.Label(label=_("Event Type")))
 		if typeChangable:
 			combo = gtk.ComboBoxText()
 			for tmpEventType in self.eventTypeOptions:
@@ -78,8 +78,8 @@ class EventEditorDialog(gtk.Dialog):
 			combo.connect("changed", self.typeChanged)
 			self.comboEventType = combo
 		else:
-			pack(hbox, gtk.Label(":  " + event.desc))
-		pack(hbox, gtk.Label(""), 1, 1)
+			pack(hbox, gtk.Label(label=":  " + event.desc))
+		pack(hbox, gtk.Label(), 1, 1)
 		hbox.show_all()
 		pack(self.vbox, hbox)
 		#####
@@ -91,21 +91,33 @@ class EventEditorDialog(gtk.Dialog):
 		pack(self.vbox, self.activeWidget, 1, 1)
 		self.vbox.show()
 
+	def replaceEventWithType(self, eventType):
+		if not self.isNew:
+			self.event = self._group.copyEventWithType(self.event, eventType)
+			return
+
+		restoreDict = {}
+		if self.event:
+			if self.event.summary and self.event.summary != self.event.desc:
+				restoreDict["summary"] = self.event.summary
+			if self.event.description:
+				restoreDict["description"] = self.event.description
+		self.event = self._group.create(eventType)
+		for attr, value in restoreDict.items():
+			setattr(self.event, attr, value)
+
 	def typeChanged(self, combo):
 		if self.activeWidget:
 			self.activeWidget.updateVars()
 			self.activeWidget.destroy()
 		eventType = self.eventTypeOptions[combo.get_active()]
-		if self.isNew:
-			self.event = self._group.createEvent(eventType)
-		else:
-			self.event = self._group.copyEventWithType(self.event, eventType)
+		self.replaceEventWithType(eventType)
 		self._group.updateCache(self.event)## needed? FIXME
 		self.activeWidget = makeWidget(self.event)
 		if self.isNew:
 			self.activeWidget.focusSummary()
 		pack(self.vbox, self.activeWidget, 1, 1)
-		#self.activeWidget.modeComboChanged()## apearantly not needed
+		#self.activeWidget.calTypeComboChanged()## apearantly not needed
 
 	def run(self):
 		#if not self.activeWidget:
@@ -133,13 +145,12 @@ class EventEditorDialog(gtk.Dialog):
 				self.event.parent.endJd,
 			)
 			if not occur:
-				showInfo(
-					_(
-						"This event is outside of date range specified in "
-						"it\'s group. You probably need to edit group "
-						"\"%s\" and change \"Start\" or \"End\" values"
-					) % self.event.parent.title
-				)
+				msg = _(
+					"This event is outside of date range specified in "
+					"it\'s group. You probably need to edit group "
+					"\"{groupTitle}\" and change \"Start\" or \"End\" values"
+				).format(groupTitle=self.event.parent.title)
+				showInfo(msg)
 		#####
 		if parentWin is not None:
 			parentWin.present()
@@ -148,7 +159,7 @@ class EventEditorDialog(gtk.Dialog):
 
 
 def addNewEvent(group, eventType, typeChangable=False, **kwargs):
-	event = group.createEvent(eventType)
+	event = group.create(eventType)
 	if eventType == "custom":  # FIXME
 		typeChangable = True
 	event = EventEditorDialog(

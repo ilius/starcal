@@ -18,6 +18,9 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 import sys
 import os
 from time import localtime
@@ -33,15 +36,47 @@ from scal3 import ui
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.utils import imageClassButton
+from scal3.ui_gtk.drawing import calcTextPixelWidth
+
+
+class AutoSizeEntry(gtk.Entry):
+	def __init__(self, *args, maxChars=0, **kwargs):
+		gtk.Entry.__init__(self, *args, **kwargs)
+		self.set_width_chars(maxChars)
+		###
+		self.maxChars = maxChars
+		self.maxPixelWidth = 0
+		###
+		self.connect("changed", self.onChange)
+
+	def do_get_preferred_width(self):
+		# must return minimum_size, natural_size
+		text = self.get_text()
+		text = " " + text + " "
+		pixelWidth = calcTextPixelWidth(self, text)
+		pixelWidth += 6
+		# log.debug(f"{self.__class__.__name__}: text={text}, pixelWidth={pixelWidth}, max={self.maxChars}")
+		if pixelWidth < self.maxPixelWidth:
+			pixelWidth = self.maxPixelWidth
+		else:
+			self.maxPixelWidth = pixelWidth
+		return pixelWidth, pixelWidth
+
+	def onChange(self, entry):
+		self.queue_resize()
+
 
 @registerSignals
-class MultiSpinButton(gtk.HBox):
+class MultiSpinButton(gtk.Box):
 	signals = [
 		("changed", []),
 		("activate", []),
 		("first-min", []),
 		("first-max", []),
 	]
+
+	buttonSize = gtk.IconSize.MENU # FIXME
 
 	def set_width_chars(self, w: int):
 		self.entry.set_width_chars(w)
@@ -65,14 +100,27 @@ class MultiSpinButton(gtk.HBox):
 	# 	self.field.children[0].setRange(_min, _max)
 	# 	self.set_text(self.field.getText())
 
-	def __init__(self, sep, fields, arrow_select=True, step_inc=1, page_inc=10):
-		gtk.HBox.__init__(self)
-		self.entry = gtk.Entry()
+	def __init__(
+		self,
+		sep=None,
+		fields=None,
+		arrow_select=True,
+		step_inc=1,
+		page_inc=10,
+	):
+		if sep is None:
+			raise ValueError("MultiSpinButton: sep is None")
+		if fields is None:
+			raise ValueError("MultiSpinButton: fields is None")
+		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
+		##
+		sep = toStr(sep)
+		self.field = ContainerField(sep, *fields)
+		self.entry = AutoSizeEntry(maxChars=self.field.getMaxWidth())
 		##
 		self.step_inc = step_inc
 		self.page_inc = page_inc
 		##
-		button_size = gtk.IconSize.SMALL_TOOLBAR # FIXME
 		# 0 = IconSize.INVALID
 		# 1 = IconSize.MENU
 		# 2 = IconSize.SMALL_TOOLBAR
@@ -81,36 +129,33 @@ class MultiSpinButton(gtk.HBox):
 		# 5 = IconSize.DND
 		# 6 = IconSize.DIALOG
 		###
-		# in Gtk's sourc code, icon names are "value-decrease-symbolic" and "value-increase-symbolic"
-		# but I can not find these icons (and my Gtk does not either)
-		# instead "list-remove-symbolic" and "list-add-symbolic" used in this patch, work perfectly
+		# in Gtk's sourc code, icon names are "value-decrease-symbolic" and
+		# "value-increase-symbolic" but I can not find these icons
+		# (and my Gtk does not either)
+		# instead "list-remove-symbolic" and "list-add-symbolic" used in this
+		# patch, work perfectly
 		# https://gitlab.gnome.org/GNOME/gtk/commit/5fd936beef7a999828e5e3625506ea6708188762
 		###
-		self.down_button = gtk.Button()
-		self.down_button.add(gtk.Image.new_from_icon_name("list-remove-symbolic", button_size))
-		self.down_button.get_style_context().add_class("image-button")
-		self.down_button.set_can_focus(False)
-		self.down_button.get_style_context().add_class("down")
-		self.down_button.connect("button-press-event", self.down_button_pressed)
-		self.down_button.connect("button-release-event", self._button_release)
+		self.down_button = imageClassButton("list-remove-symbolic", "down", self.buttonSize)
+		self.down_button.connect("button-press-event", self.onDownButtonPress)
+		self.down_button.connect("button-release-event", self.onButtonRelease)
 		###
-		self.up_button = gtk.Button()
-		self.up_button.add(gtk.Image.new_from_icon_name("list-add-symbolic", button_size))
-		self.up_button.get_style_context().add_class("image-button")
-		self.up_button.set_can_focus(False)
-		self.up_button.get_style_context().add_class("up")
-		self.up_button.connect("button-press-event", self.up_button_pressed)
-		self.up_button.connect("button-release-event", self._button_release)
+		self.up_button = imageClassButton("list-add-symbolic", "up", self.buttonSize)
+		self.up_button.connect("button-press-event", self.onUpButtonPress)
+		self.up_button.connect("button-release-event", self.onButtonRelease)
 		###
 		pack(self, self.entry, expand=True, fill=True)
 		pack(self, self.down_button)
 		pack(self, self.up_button)
 		####
 		# priv->down_button = gtk_button_new ();
-		# gtk_container_add (GTK_CONTAINER (priv->down_button), gtk_image_new_from_icon_name ("value-decrease-symbolic"));
-		# gtk_style_context_add_class (gtk_widget_get_style_context (priv->down_button), "image-button");
+		# gtk_container_add (GTK_CONTAINER (priv->down_button),
+		# 		gtk_image_new_from_icon_name ("value-decrease-symbolic"));
+		# gtk_style_context_add_class (gtk_widget_get_style_context
+		#		(priv->down_button), "image-button");
 		# gtk_widget_set_can_focus (priv->down_button, FALSE);
-		# gtk_style_context_add_class (gtk_widget_get_style_context (priv->down_button), "down");
+		# gtk_style_context_add_class (gtk_widget_get_style_context
+		# 		(priv->down_button), "down");
 		# gtk_container_add (GTK_CONTAINER (priv->box), priv->down_button);
 
 		# gesture = gtk_gesture_multi_press_new ();
@@ -118,12 +163,13 @@ class MultiSpinButton(gtk.HBox):
 		# gtk_gesture_single_set_touch_only (GTK_GESTURE_SINGLE (gesture), FALSE);
 		# gtk_event_controller_set_propagation_phase (GTK_EVENT_CONTROLLER (gesture),
 		# 											GTK_PHASE_CAPTURE);
-		# g_signal_connect (gesture, "pressed", G_CALLBACK (button_pressed_cb), spin_button);
-		# g_signal_connect (gesture, "released", G_CALLBACK (button_released_cb), spin_button);
-		# gtk_widget_add_controller (GTK_WIDGET (priv->down_button), GTK_EVENT_CONTROLLER (gesture));
+		# g_signal_connect (gesture, "pressed",
+		#		G_CALLBACK (button_pressed_cb), spin_button);
+		# g_signal_connect (gesture, "released",
+		# 		G_CALLBACK (button_released_cb), spin_button);
+		# gtk_widget_add_controller (GTK_WIDGET (priv->down_button),
+		# 		GTK_EVENT_CONTROLLER (gesture));
 		####
-		sep = toStr(sep)
-		self.field = ContainerField(sep, *fields)
 		self.arrow_select = arrow_select
 		self.entry.set_editable(True)
 		###
@@ -131,16 +177,15 @@ class MultiSpinButton(gtk.HBox):
 		###
 		####
 		self.entry.set_direction(gtk.TextDirection.LTR)
-		self.set_width_chars(self.field.getMaxWidth())
-		#print(self.__class__.__name__, "value=", value)
+		# log.debug(self.__class__.__name__, "value=", value)
 		self.entry.connect("changed", self._entry_changed)
 		#self.connect("activate", lambda obj: self.update())
 		self.entry.connect("activate", self._entry_activate)
 		for widget in (self, self.entry, self.down_button, self.up_button):
-			widget.connect("key-press-event", self._key_press)
+			widget.connect("key-press-event", self.onKeyPress)
 		self.entry.connect("scroll-event", self._scroll)
-		# self.connect("button-press-event", self._button_press) # FIXME
-		# self.connect("button-release-event", self._button_release) # FIXME
+		# self.connect("button-press-event", self.onButtonPress) # FIXME
+		# self.connect("button-release-event", self.onButtonRelease) # FIXME
 		####
 		#self.select_region(0, 0)
 
@@ -148,9 +193,9 @@ class MultiSpinButton(gtk.HBox):
 		self.emit("changed")
 
 	def _entry_activate(self, widget):
-		#print("_entry_activate", self.entry.get_text())
+		# log.debug("_entry_activate", self.entry.get_text())
 		self.update()
-		#print(self.entry.get_text())
+		# log.debug(self.entry.get_text())
 		self.emit("activate")
 		return True
 
@@ -193,7 +238,7 @@ class MultiSpinButton(gtk.HBox):
 		self.entry.set_text(self.field.getText())
 		self.entry.set_position(pos)
 
-	def _key_press(self, widget, gevent):
+	def onKeyPress(self, widget, gevent):
 		kval = gevent.keyval
 		kname = gdk.keyval_name(kval).lower()
 		size = len(self.field)
@@ -252,14 +297,13 @@ class MultiSpinButton(gtk.HBox):
 			self.insertText(locale_man.getNumSep())
 			return True
 		else:
-			#print(kname, kval)
+			# log.debug(kname, kval)
 			return False
 
-	def down_button_pressed(self, button, gevent):
+	def onDownButtonPress(self, button, gevent):
 		self._arrow_press(-self.step_inc)
 
-
-	def up_button_pressed(self, button, gevent):
+	def onUpButtonPress(self, button, gevent):
 		self._arrow_press(self.step_inc)
 
 	def _scroll(self, widget, gevent):
@@ -276,7 +320,7 @@ class MultiSpinButton(gtk.HBox):
 
 	#def _move_cursor(self, obj, step, count, extend_selection):
 	#	# force_select
-	#	#print"_entry_move_cursor", count, extend_selection
+	#	log.debug(f"_move_cursor: count={count}, extend_selection={extend_selection}")
 
 	def _arrow_press(self, plus):
 		self.pressTm = now()
@@ -299,28 +343,30 @@ class MultiSpinButton(gtk.HBox):
 				plus,
 			)
 
-	def _button_release(self, widget, gevent):
+	def onButtonRelease(self, widget, gevent):
 		self._remain = False
 
 	"""## ????????????????????????????????
 	def _arrow_enter_notify(self, gtkWin):
 		if gtkWin!=None:
-			print("_arrow_enter_notify")
+			log.info("_arrow_enter_notify")
 			gtkWin.set_background(gdk.Color(65535, 0, 0))
 			gtkWin.show()
 	def _arrow_leave_notify(self, gtkWin):
 		if gtkWin!=None:
-			print("_arrow_leave_notify")
+			log.info("_arrow_leave_notify")
 			gtkWin.set_background(gdk.Color(65535, 65535, 65535))
 	#"""
 
 
 class SingleSpinButton(MultiSpinButton):
-	def __init__(self, field, **kwargs):
+	def __init__(self, field=None, **kwargs):
+		if field is None:
+			raise ValueError("SingleSpinButton: field is None")
 		MultiSpinButton.__init__(
 			self,
-			" ",
-			(field,),
+			sep=" ",
+			fields=(field,),
 			**kwargs
 		)
 		# if isinstance(field, NumField):

@@ -11,16 +11,16 @@ from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 
 
-class WidgetClass(gtk.HBox):
+class WidgetClass(gtk.Box):
 	def __init__(self, rule):
 		self.rule = rule
 		###
-		gtk.HBox.__init__(self)
+		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		spin = IntSpinButton(0, 9999)
 		pack(self, spin)
 		self.spin = spin
 		##
-		pack(self, gtk.Label(" " + _("days and") + " "))
+		pack(self, gtk.Label(label=" " + _("days and") + " "))
 		tbox = TimeButton()
 		pack(self, tbox)
 		self.tbox = tbox

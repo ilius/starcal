@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+from scal3 import logger
+log = logger.get()
+
 from collections import OrderedDict
 
 from scal3 import core
@@ -13,14 +17,17 @@ from scal3 import ui
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.utils import dialog_add_button
-from scal3.ui_gtk.utils import showInfo
+from scal3.ui_gtk.utils import (
+	dialog_add_button,
+	labelImageButton,
+)
 from scal3.ui_gtk.mywidgets.text_widgets import ReadOnlyTextView
 
 from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 
 historyTimeBinFmt = compileTmFormat("%Y/%m/%d    %H:%M:%S")
+
 
 def _unnestStep(dst, src, path):
 	if not isinstance(src, (dict, OrderedDict)):
@@ -30,6 +37,7 @@ def _unnestStep(dst, src, path):
 		path += "."
 	for key, value in src.items():
 		_unnestStep(dst, value, path + key)
+
 
 def unnest(src):
 	if not isinstance(src, (dict, OrderedDict)):
@@ -54,8 +62,7 @@ class EventHistoryDialog(gtk.Dialog):
 
 	def onResponse(self, w, e):
 		self.hide()
-		if ui.eventManDialog:
-			ui.eventManDialog.onConfigChange()
+		ud.windowList.onConfigChange()
 
 	def __init__(
 		self,
@@ -70,9 +77,9 @@ class EventHistoryDialog(gtk.Dialog):
 
 		dialog_add_button(
 			self,
-			gtk.STOCK_CLOSE,
-			_("_Close"),
-			gtk.ResponseType.OK,
+			imageName="dialog-close.svg",
+			label=_("_Close"),
+			res=gtk.ResponseType.OK,
 		)
 
 		self.connect("response", self.onResponse)
@@ -101,41 +108,35 @@ class EventHistoryDialog(gtk.Dialog):
 
 		hpan = gtk.HPaned()
 		hpan.add1(treevSwin)
-		leftVbox = gtk.VBox()
+		leftVbox = VBox()
 		hpan.add2(leftVbox)
 		hpan.set_position(600)
 		pack(self.vbox, hpan, expand=True, fill=True)
 
-		actionBox = gtk.VBox(spacing=5)
+		actionBox = VBox(spacing=5)
 		pack(leftVbox, actionBox, padding=30)
 
-		# revertButton = gtk.Button()
-		# revertButton.set_label(_("Revert this vhange"))
-		# revertButton.set_image(gtk.Image.new_from_stock(
-		# 	gtk.STOCK_UNDO,
-		# 	gtk.IconSize.BUTTON,
-		# ))
-		# revertButton.connect("clicked", self.revertClicked)
+		# revertButton = labelImageButton(
+		# 	label=_("Revert this vhange"),
+		# 	imageName="edit-undo.svg",
+		# )
+		# revertButton.connect("clicked", self.onRevertClick)
 		# pack(actionBox, revertButton, padding=1)
 		# self.revertButton = revertButton
 
-		checkoutAfterButton = gtk.Button()
-		checkoutAfterButton.set_label(_("Select revision after this change"))
-		checkoutAfterButton.set_image(gtk.Image.new_from_stock(
-			gtk.STOCK_UNDO,
-			gtk.IconSize.BUTTON,
-		))
-		checkoutAfterButton.connect("clicked", self.checkoutAfterClicked)
+		checkoutAfterButton = labelImageButton(
+			label=_("Select revision after this change"),
+			imageName="edit-undo.svg",
+		)
+		checkoutAfterButton.connect("clicked", self.onCheckoutAfterClick)
 		pack(actionBox, checkoutAfterButton, padding=1)
 		self.checkoutAfterButton = checkoutAfterButton
 
-		checkoutBeforeButton = gtk.Button()
-		checkoutBeforeButton.set_label(_("Select revision before this change"))
-		checkoutBeforeButton.set_image(gtk.Image.new_from_stock(
-			gtk.STOCK_UNDO,
-			gtk.IconSize.BUTTON,
-		))
-		checkoutBeforeButton.connect("clicked", self.checkoutBeforeClicked)
+		checkoutBeforeButton = labelImageButton(
+			label=_("Select revision before this change"),
+			imageName="edit-undo.svg",
+		)
+		checkoutBeforeButton.connect("clicked", self.onCheckoutBeforeClick)
 		pack(actionBox, checkoutBeforeButton, padding=1)
 		self.checkoutBeforeButton = checkoutBeforeButton
 
@@ -148,8 +149,8 @@ class EventHistoryDialog(gtk.Dialog):
 		combo.connect("changed", self.viewTypeComboChanged)
 		self.viewTypeCombo = combo
 
-		textTypeHbox = gtk.HBox()
-		pack(textTypeHbox, gtk.Label(_("View type")+": "))
+		textTypeHbox = HBox()
+		pack(textTypeHbox, gtk.Label(label=_("View type") + ": "))
 		pack(textTypeHbox, self.viewTypeCombo)
 		pack(leftVbox, textTypeHbox)
 
@@ -172,23 +173,36 @@ class EventHistoryDialog(gtk.Dialog):
 		self.cmpTreev = cmpTreev
 
 		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn("", cell, text=0)
-		col.set_resizable(True)
+		col = gtk.TreeViewColumn(title="", cell_renderer=cell, text=0)
+		col.set_resizable(False)
 		cmpTreev.append_column(col)
 
 		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn(_("Key"), cell, text=1)
-		col.set_resizable(True)
+		col = gtk.TreeViewColumn(title=_("Key"), cell_renderer=cell, text=1)
+		col.set_resizable(False)
 		cmpTreev.append_column(col)
 
-		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn(_("Old Value"), cell, text=2)
+		wrap_width = 500
+		# despite the setColumnWidth handler, this inital wrap_width is needed
+		# 500px works with a typical display size (width >= 1200 px)
+		# FIXME: but how to calculate the optimal inital wrap_width??
+
+		cell = gtk.CellRendererText(
+			wrap_mode=pango.WrapMode.WORD_CHAR,
+			wrap_width=wrap_width,
+		)
+		col = gtk.TreeViewColumn(title=_("Old Value"), cell_renderer=cell, text=2)
 		col.set_resizable(True)
+		col.connect_after("notify::width", self.setColumnWidth, cell)
 		cmpTreev.append_column(col)
 
-		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn(_("New Value"), cell, text=3)
+		cell = gtk.CellRendererText(
+			wrap_mode=pango.WrapMode.WORD_CHAR,
+			wrap_width=wrap_width,
+		)
+		col = gtk.TreeViewColumn(title=_("New Value"), cell_renderer=cell, text=3)
 		col.set_resizable(True)
+		col.connect_after("notify::width", self.setColumnWidth, cell)
 		cmpTreev.append_column(col)
 
 		leftSwin = gtk.ScrolledWindow()
@@ -200,17 +214,21 @@ class EventHistoryDialog(gtk.Dialog):
 		self.leftSwin = leftSwin
 
 		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn(_("Time"), cell, text=2)
+		col = gtk.TreeViewColumn(title=_("Time"), cell_renderer=cell, text=2)
 		treev.append_column(col)
 
 		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn(_("Change Summary"), cell, text=3)
+		col = gtk.TreeViewColumn(title=_("Change Summary"), cell_renderer=cell, text=3)
 		treev.append_column(col)
 		col.set_property("expand", True)
 
 		self.load()
 		self.vbox.show_all()
-		self.resize(ud.screenW, ud.screenH*0.9) # FIXME
+		self.resize(ud.screenW, ud.screenH * 0.9) # FIXME
+
+	def setColumnWidth(self, col, widthParam, cell):
+		width = col.get_width()
+		cell.set_property("wrap_width", width)
 
 	def treeviewCursorChanged(self, treev, e=None):
 		self.updateViewType()
@@ -260,7 +278,7 @@ class EventHistoryDialog(gtk.Dialog):
 			for row in self.extractFullTable(hashBefore, hashAfter):
 				trees.append(row)
 		else:
-			raise ValueError("Unexpected viewType=%r" % viewType)
+			raise ValueError(f"unexpected viewType={viewType!r}")
 
 		self.setScrolledWinChild(self.cmpTreev)
 
@@ -290,8 +308,8 @@ class EventHistoryDialog(gtk.Dialog):
 				diff = self.extractChangeDiff(hashBefore, hashAfter)
 				text = dataToPrettyJson(diff)
 		else:
-			raise ValueError("Unexpected viewType=%r" % viewType)
-		
+			raise ValueError(f"unexpected viewType={viewType!r}")
+
 		self.textbuff.set_text(text)
 		self.setScrolledWinChild(self.textview)
 
@@ -299,9 +317,9 @@ class EventHistoryDialog(gtk.Dialog):
 		old_child = self.leftSwin.get_child()
 		if old_child != new_child:
 			if old_child is not None:
-				print("removing old child")
+				log.info("removing old child")
 				self.leftSwin.remove(old_child)
-			print("adding new child")
+			log.info("adding new child")
 			self.leftSwin.add(new_child)
 			new_child.show()
 
@@ -313,9 +331,9 @@ class EventHistoryDialog(gtk.Dialog):
 		newEvent.save()
 		self.event = newEvent
 		self.load()
-		ui.eventDiff.add("e", newEvent)
+		ui.eventUpdateQueue.put("e", newEvent, self)
 
-	def checkoutAfterClicked(self, button):
+	def onCheckoutAfterClick(self, button):
 		path = self.treev.get_cursor()[0]
 		if not path:
 			return
@@ -325,7 +343,7 @@ class EventHistoryDialog(gtk.Dialog):
 		hashAfter = row[1]
 		self.switchToRevision(hashAfter)
 
-	def checkoutBeforeClicked(self, button):
+	def onCheckoutBeforeClick(self, button):
 		path = self.treev.get_cursor()[0]
 		if not path:
 			return
@@ -334,8 +352,8 @@ class EventHistoryDialog(gtk.Dialog):
 		row = self.trees[index]
 		hashBefore = row[0]
 		self.switchToRevision(hashBefore)
-		
-	# def revertClicked(self, button):
+
+	# def onRevertClick(self, button):
 	# 	path = self.treev.get_cursor()[0]
 	# 	if not path:
 	# 		return
@@ -365,7 +383,7 @@ class EventHistoryDialog(gtk.Dialog):
 			return {}
 		if _hash in self.objectCache:
 			return self.objectCache[_hash]
-		data = loadBsonObject(_hash)
+		data = loadBsonObject(_hash, ui.fs)
 		data = self.normalizeObjectData(data)
 		if len(self.objectCache) > 100:
 			self.objectCache.popitem()
@@ -391,7 +409,7 @@ class EventHistoryDialog(gtk.Dialog):
 			if valueAfter == valueBefore:
 				continue
 			diff[key] = (valueBefore, valueAfter)
-		
+
 		return diff
 
 	def extractFullTable(self, hashBefore, hashAfter):
@@ -414,8 +432,8 @@ class EventHistoryDialog(gtk.Dialog):
 			dataFull.append([
 				symbol,
 				key,
-				"%s" % (valueBefore,),
-				"%s" % (valueAfter,),
+				str(valueBefore),
+				str(valueAfter),
 			])
 		return dataFull
 
@@ -426,8 +444,8 @@ class EventHistoryDialog(gtk.Dialog):
 
 		if len(diff) < 3:
 			return ", ".join(diff.keys())
-		
-		return _("%s parameters") % _(len(diff))
+
+		return _("{count} parameters").format(count=_(len(diff)))
 
 	def load(self):
 		trees = self.trees
@@ -435,16 +453,16 @@ class EventHistoryDialog(gtk.Dialog):
 		hist = self.event.loadHistory()
 		count = len(hist)
 		for index, (epoch, hashAfter) in enumerate(hist):
-			if index == count-1:
+			if index == count - 1:
 				trees.append([
 					"",
 					hashAfter,
 					self.formatEpoch(epoch),
 					_("(Added Event)"),
 				])
-				continue				
-			
-			hashBefore = hist[index+1][1]
+				continue
+
+			hashBefore = hist[index + 1][1]
 			diff = self.extractChangeDiff(hashBefore, hashAfter)
 			changeSummary = self.extractChangeSummary(diff)
 
@@ -454,4 +472,3 @@ class EventHistoryDialog(gtk.Dialog):
 				self.formatEpoch(epoch),
 				changeSummary,
 			])
-

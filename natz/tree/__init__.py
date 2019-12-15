@@ -9,5 +9,3 @@ if os.sep == "\\":
 	from .tree_win import getZoneInfoTree
 else:
 	from .tree_unix import getZoneInfoTree
-
-

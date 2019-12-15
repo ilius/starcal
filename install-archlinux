@@ -22,71 +22,30 @@ if ! [ -f /usr/bin/strip ] ; then
 fi
 
 
-myPath="$0"
-if [ "${myPath:0:2}" == "./" ] ; then
-	myPath=$initPwd${myPath:1}
-elif [ "${myPath:0:1}" != "/" ] ; then
-	myPath=$initPwd/$myPath
-fi
-
+myPath=$(realpath "$0")
 
 pkgName=starcal3
 sourceDir="`dirname \"$myPath\"`"
 #"$sourceDir/scripts/assert_python3"
+version=`"$sourceDir/scripts/version" | sed 's/\-/_/g'`
 
-"$sourceDir/fetch" || echo "WARNING: failed to fetch tags"
-version=`"$sourceDir/scal3/get_version.py" | sed 's/\-/_/g'`
+#echo "myPath=$myPath"
+#echo "sourceDir=$sourceDir"
+#echo version=$version
 
-tmpDir="$HOME/.${pkgName}/tmp/install-arch"
-mkdir -p $tmpDir
-cd $tmpDir
+outDir="$HOME/.${pkgName}/pkgs/archlinux/`/bin/date +%F-%H%M%S`"
+mkdir -p "$outDir"
 
-depends=('python>=3.5')
-depends+=('python-gobject') ## The new gobject introspection
-depends+=('python-cairo')
-depends+=('python-httplib2')
-depends+=('python-dateutil')
-depends+=('python-psutil')
-depends+=('python-requests')
-#depends+=('python-gflags') # for google api client
+pyCmd=$(ls -1 /usr/bin/python3.? | tail -n1)
+if [ -z "$pyCmd" ] ; then
+	echo "Could not find python3.x binary" >&2
+	exit 1
+fi
+echo "Using python: \"$pyCmd\""
 
+"$sourceDir/pkg/archlinux/build.sh" "$outDir" "$pyCmd"
+pkgPath=`ls -1 "$outDir"/*.pkg.tar* | tail -n1`
 
-optdepends=()
-optdepends+=('libappindicator-gtk3')
-optdepends+=('python-igraph' 'igraph' 'icu')
-optdepends+=('python-ujson')
-#optdepends+=('python-gnomevfs')
-optdepends+=('lxqt-openssh-askpass')
-optdepends+=('python-pygit2')
+sudo pacman -U "$pkgPath"
 
-## Note: optdepends are not installed by default
-
-depends_str=$(printf " '%s'" "${depends[@]}") ; depends_str=${depends_str:1}
-optdepends_str=$(printf " '%s'" "${optdepends[@]}") ; optdepends_str=${optdepends_str:1}
-
-echo "# Contributor: Saeed Rasooli <saeed.gnu@gmail.com>
-# This is a local PKGBUILD
-sourceDir='$sourceDir'
-pkgname=$pkgName
-pkgver=$version
-pkgrel=1
-pkgdesc='A full-featured international calendar written in Python'
-arch=('any')
-url=http://ilius.github.io/starcal
-license=('GPLv3')
-depends=($depends_str)
-optdepends=($optdepends_str)
-makedepends=()
-conflicts=('starcal-git')
-source=()
-md5sums=()
-package() {
-	\"\$sourceDir/install\" \"\$pkgdir\" --for-pkg
-}" > PKGBUILD
-
-makepkg -sif
-
-cp $pkgName*.pkg.tar* "$initPwd" || sudo cp $pkgName*.pkg.tar* "$initPwd" && echo "Package installed and copied into $initPwd directory"
 cd "$initPwd"
-rm -Rf $tmpDir
-

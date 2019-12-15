@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+from scal3 import logger
+log = logger.get()
+
 from scal3.ui_gtk import *
 
 
@@ -34,6 +38,7 @@ def getFloatBuiltinWidget():
 	btn.set_editable(True)
 	return btn
 
+
 def getTimerWidget():
 	from scal3.ui_gtk.mywidgets.multi_spin.timer import TimerButton
 	btn = TimerButton()
@@ -42,9 +47,9 @@ def getTimerWidget():
 
 
 if __name__ == "__main__":
-	d = gtk.Dialog(parent=None)
+	d = gtk.Dialog()
 	btn = getTimerWidget()
 	pack(d.vbox, btn, 1, 1)
 	d.vbox.show_all()
 	d.run()
-	print(btn.get_value())
+	log.info(btn.get_value())

@@ -17,8 +17,8 @@ class DateTimeButton(MultiSpinButton):
 	def __init__(self, date_time=None, **kwargs):
 		MultiSpinButton.__init__(
 			self,
-			" ",
-			(
+			sep=" ",
+			fields=(
 				ContainerField(
 					"/",
 					YearField(),
@@ -31,18 +31,18 @@ class DateTimeButton(MultiSpinButton):
 					Z60Field(),
 					Z60Field(),
 				),
+				#StrConField("seconds"),
 			),
-			#StrConField("seconds"),
 			**kwargs
 		)
 		if date_time is None:
 			date_time = localtime()[:6]
 		self.set_value(date_time)
 
-	def get_epoch(self, mode):
+	def get_epoch(self, calType):
 		from scal3.time_utils import getEpochFromJhms
 		date, hms = self.get_value()
 		return getEpochFromJhms(
-			to_jd(date[0], date[1], date[2], mode),
+			to_jd(date[0], date[1], date[2], calType),
 			*hms
 		)

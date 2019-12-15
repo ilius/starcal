@@ -18,6 +18,9 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 import sys
 import os
 import time
@@ -41,18 +44,6 @@ from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
 
 
-def myRaise():
-	i = sys.exc_info()
-	try:
-		print("line %s: %s: %s" % (
-			i[2].tb_lineno,
-			i[0].__name__,
-			i[1],
-		))
-	except:
-		print(i)
-
-
 @registerType
 class NumRangesEntry(gtk.Entry):
 	def __init__(self, _min, _max, page_inc=10):
@@ -62,7 +53,7 @@ class NumRangesEntry(gtk.Entry):
 		self.page_inc = page_inc
 		####
 		gtk.Entry.__init__(self)
-		self.connect("key-press-event", self.keyPress)
+		self.connect("key-press-event", self.onKeyPress)
 		self.set_direction(gtk.TextDirection.LTR)
 		self.set_alignment(0.5)
 
@@ -98,13 +89,13 @@ class NumRangesEntry(gtk.Entry):
 			endI = nextCommaI
 		dashI = text.find("-", startI, endI)
 		if dashI != -1:
-			#print("dashI=%r"%dashI)
+			# log.debug(f"dashI={dashI!r}")
 			if pos < dashI:
 				endI = dashI
 			else:
 				startI = dashI + 1
 		thisNumStr = text[startI:endI]
-		#print(startI, endI, thisNumStr)
+		# log.debug(startI, endI, thisNumStr)
 		if thisNumStr:
 			thisNum = numDecode(thisNumStr)
 			newNum = thisNum + plus
@@ -118,17 +109,17 @@ class NumRangesEntry(gtk.Entry):
 		newNumStr = _(newNum)
 		newText = text[:startI] + newNumStr + text[endI:]
 		self.set_text(newText)
-		#print("new end index", endI - len(thisNumStr) + len(newNumStr))
+		# log.debug("new end index", endI - len(thisNumStr) + len(newNumStr))
 		self.set_position(pos)
 		self.select_region(
 			startI,
 			endI - len(thisNumStr) + len(newNumStr),
 		)
 
-	def keyPress(self, obj, gevent):
+	def onKeyPress(self, obj: gtk.Widget, gevent: gdk.EventKey):
 		kval = gevent.keyval
 		kname = gdk.keyval_name(gevent.keyval).lower()
-		#print(kval, kname)
+		# log.debug(kval, kname)
 		if kname in (
 			"tab",
 			"escape",
@@ -176,17 +167,17 @@ class NumRangesEntry(gtk.Entry):
 			self.insertText(self.digs[kval - ord("0")])
 		else:
 			uniVal = gdk.keyval_to_unicode(kval)
-			#print("uniVal=%r"%uniVal)
+			# log.debug(f"uniVal={uniVal!r}")
 			if uniVal != 0:
 				ch = chr(uniVal)
-				#print("ch=%r"%ch)
+				# log.debug(f"ch={ch!r}")
 				if ch in self.digs:
 					self.insertText(ch)
 				if gevent.get_state() & gdk.ModifierType.CONTROL_MASK:
 					# Shortcuts like Ctrl + [A, C, X, V]
 					return False
 			else:
-				print(kval, kname)
+				log.info(kval, kname)
 		return True
 
 	def getValues(self):
@@ -210,7 +201,7 @@ if __name__ == "__main__":
 	from scal3 import core
 	###
 	entry = NumRangesEntry(0, 9999)
-	win = gtk.Dialog(parent=None)
+	win = gtk.Dialog()
 	win.vbox.add(entry)
 	win.vbox.show_all()
 	win.resize(100, 40)

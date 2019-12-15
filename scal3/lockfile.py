@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+from scal3 import logger
+log = logger.get()
+
 import os
 from os.path import isfile, exists
 from time import time as now
@@ -8,12 +12,11 @@ import atexit
 
 import psutil
 
-from scal3.utils import myRaise
 from scal3.json_utils import jsonToData, dataToPrettyJson
 
 
 def get_cmdline(proc):
-	#print(psutil.version_info, proc.cmdline)
+	# log.debug(psutil.version_info, proc.cmdline)
 	if isinstance(proc.cmdline, list):## psutil < 2.0
 		return proc.cmdline
 	else:## psutil >= 2.0
@@ -25,43 +28,37 @@ def checkAndSaveJsonLockFile(fpath):
 	my_pid = os.getpid()
 	if isfile(fpath):
 		try:
-			text = open(fpath).read()
-		except:
-			myRaise()
+			with open(fpath) as fp:
+				text = fp.read()
+		except Exception:
+			log.exception("")
 			locked = True
 		else:
 			try:
 				data = jsonToData(text)
-			except:
-				print("lock file %s is not valid" % fpath)
+			except Exception:
+				log.info(f"lock file {fpath} is not valid")
 			else:
 				try:
 					pid = data["pid"]
 					cmd = data["cmd"]
-				except:
-					print("lock file %s is not valid" % fpath)
+				except KeyError:
+					log.info(f"lock file {fpath} is not valid")
 				else:
 					try:
 						proc = psutil.Process(pid)
 					except psutil.NoSuchProcess:
-						print("lock file %s: pid %s does not exist" % (fpath, pid))
+						log.info(f"lock file {fpath}: pid {pid} does not exist")
 					else:
 						if pid == my_pid:
-							print("lock file %s: pid == my_pid == %s" % (
-								fpath,
-								pid,
-							))
+							log.info(f"lock file {fpath}: pid == my_pid == {pid}")
 						elif get_cmdline(proc) != cmd:
-							print("lock file %s: cmd does match: %s != %s" % (
-								fpath,
-								get_cmdline(proc),
-								cmd,
-							))
+							log.info(f"lock file {fpath}: cmd does match: get_cmdline(proc) != cmd")
 						else:
 							locked = True
 
 	elif exists(fpath):
-		## what to do? FIXME
+		# FIXME: what to do?
 		pass
 	######
 	if not locked:
@@ -73,9 +70,10 @@ def checkAndSaveJsonLockFile(fpath):
 			("time", now()),
 		]))
 		try:
-			open(fpath, "w").write(my_text)
+			with open(fpath, "w") as fp:
+				fp.write(my_text)
 		except Exception as e:
-			print("failed to write lock file %s: %s" % (fpath, e))
+			log.error(f"failed to write lock file {fpath}: {e}")
 		else:
 			atexit.register(os.remove, fpath)
 	######

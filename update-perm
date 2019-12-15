@@ -27,7 +27,7 @@ chmod 755 'locale.d/compile'
 chmod 755 'locale.d/install'
 chmod 755 'locale.d/make-template'
 
-chmod 755 'scal3/get_version.py'
+chmod 755 'scripts/version'
 chmod 755 'scal3/import_config_2to3.py'
 
 chmod 755 'scal3/ui_gtk/adjust_dtime.py'

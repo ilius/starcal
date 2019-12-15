@@ -18,6 +18,9 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 import os
 import sys
 
@@ -37,36 +40,28 @@ from scal3.ui_gtk.mywidgets.multi_spin.year_month import YearMonthButton
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 
 
-#def gdkColorToHtml(color):
-#	return "#%.2x%.2x%.2x" % (
-#		color.red / 256,
-#		color.green / 256,
-#		color.blue / 256,
-#	)
-
-
 class ExportDialog(gtk.Dialog, MyDialog):
 	def __init__(self, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
-		self.set_title(_("Export to %s") % "HTML")
+		self.set_title(_("Export to {format}").format(format="HTML"))
 		# parent=None FIXME
 		#self.set_has_separator(False)
 		########
-		hbox = gtk.HBox(spacing=2)
-		pack(hbox, gtk.Label(_("Month Range")))
+		hbox = HBox(spacing=2)
+		pack(hbox, gtk.Label(label=_("Month Range")))
 		combo = gtk.ComboBoxText()
 		for t in ("Current Month", "Whole Current Year", "Custom"):
 			combo.append_text(_(t))
 		pack(hbox, combo)
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		self.combo = combo
 		###
-		hbox2 = gtk.HBox(spacing=2)
-		pack(hbox2, gtk.Label(_("from month")))
+		hbox2 = HBox(spacing=2)
+		pack(hbox2, gtk.Label(label=_("from month")))
 		self.ymBox0 = YearMonthButton()
 		pack(hbox2, self.ymBox0)
-		pack(hbox2, gtk.Label(""), 1, 1)
-		pack(hbox2, gtk.Label(_("to month")))
+		pack(hbox2, gtk.Label(), 1, 1)
+		pack(hbox2, gtk.Label(label=_("to month")))
 		self.ymBox1 = YearMonthButton()
 		pack(hbox2, self.ymBox1)
 		pack(hbox, hbox2, 1, 1)
@@ -80,8 +75,20 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		self.vbox.show_all()
 		combo.connect("changed", self.comboChanged)
 		##
-		dialog_add_button(self, gtk.STOCK_CANCEL, _("_Cancel"), 1, self.onDelete)
-		dialog_add_button(self, gtk.STOCK_SAVE, _("_Save"), 2, self.save)
+		dialog_add_button(
+			self,
+			imageName="dialog-cancel.svg",
+			label=_("_Cancel"),
+			res=gtk.ResponseType.CANCEL,
+			onClick=self.onDelete,
+		)
+		dialog_add_button(
+			self,
+			imageName="document-save.svg",
+			label=_("_Save"),
+			res=gtk.ResponseType.OK,
+			onClick=self.save,
+		)
 		##
 		self.connect("delete-event", self.onDelete)
 		self.fcw.set_current_folder(core.deskDir)
@@ -91,15 +98,15 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		if ym is None:
 			ym = (ui.cell.year, ui.cell.month)
 		if i == 0:
-			self.fcw.set_current_name("calendar-%.4d-%.2d.html" % ym)
+			self.fcw.set_current_name(f"calendar-{ym[0]:04d}-{ym[1]:02d}.html")
 			self.hbox2.hide()
 		elif i == 1:
-			self.fcw.set_current_name("calendar-%.4d.html" % ym[0])
+			self.fcw.set_current_name(f"calendar-{ym[0]:04d}.html")
 			self.hbox2.hide()
 		else:  # elif i==2
 			self.fcw.set_current_name("calendar.html")
 			self.hbox2.show()
-		## select_region(0, -4) ## FIXME
+		# select_region(0, -4) # FIXME
 
 	def onDelete(self, widget=None, event=None):
 		# hide(close) File Chooser Dialog
@@ -109,22 +116,22 @@ class ExportDialog(gtk.Dialog, MyDialog):
 	def _save(self, path):
 		comboItem = self.combo.get_active()
 		months = []
-		module = calTypes.primaryModule()
 		if comboItem == 0:
 			s = getCurrentMonthStatus()
 			months = [s]
-			title = "%s %s" % (
+			title = (
 				locale_man.getMonthName(
 					calTypes.primary,
 					s.month,
 					s.year,
-				),
-				_(s.year),
+				) +
+				" " +
+				_(s.year)
 			)
 		elif comboItem == 1:
 			for i in range(1, 13):
 				months.append(getMonthStatus(ui.cell.year, i))
-			title = "%s %s" % (_("Calendar"), _(ui.cell.year))
+			title = _("Calendar {year}").format(year=_(ui.cell.year))
 		elif comboItem == 2:
 			y0, m0 = self.ymBox0.get_value()
 			y1, m1 = self.ymBox1.get_value()
@@ -142,7 +149,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		path = self.fcw.get_filename()
 		if path in (None, ""):
 			return
-		print("Exporting to html file \"%s\"" % path)
+		log.info(f"Exporting to html file \"{path}\"")
 		self.waitingDo(
 			self._save,
 			path,
@@ -186,15 +193,15 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
 	def __init__(self, saveIcsFunc, defaultFileName, **kwargs):
 		self.saveIcsFunc = saveIcsFunc
 		gtk.Dialog.__init__(self, **kwargs)
-		self.set_title(_("Export to %s") % "iCalendar")
-		## parent=None FIXME
-		#self.set_has_separator(False)
+		self.set_title(_("Export to {format}").format(format="iCalendar"))
+		# parent=None FIXME
+		# self.set_has_separator(False)
 		########
-		hbox = gtk.HBox(spacing=2)
-		pack(hbox, gtk.Label(_("From") + " "))
+		hbox = HBox(spacing=2)
+		pack(hbox, gtk.Label(label=_("From") + " "))
 		self.startDateInput = DateButton()
 		pack(hbox, self.startDateInput)
-		pack(hbox, gtk.Label(" " + _("To") + " "))
+		pack(hbox, gtk.Label(label=" " + _("To") + " "))
 		self.endDateInput = DateButton()
 		pack(hbox, self.endDateInput)
 		pack(self.vbox, hbox)
@@ -210,17 +217,17 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
 		##
 		dialog_add_button(
 			self,
-			gtk.STOCK_CANCEL,
-			_("_Cancel"),
-			1,
-			self.onDelete,
+			imageName="dialog-cancel.svg",
+			label=_("_Cancel"),
+			res=gtk.ResponseType.CANCEL,
+			onClick=self.onDelete,
 		)
 		dialog_add_button(
 			self,
-			gtk.STOCK_SAVE,
-			_("_Save"),
-			2,
-			self.save,
+			imageName="document-save.svg",
+			label=_("_Save"),
+			res=gtk.ResponseType.OK,
+			onClick=self.save,
 		)
 		##
 		self.connect("delete-event", self.onDelete)
@@ -245,7 +252,7 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
 		path = self.fcw.get_filename()
 		if path in (None, ""):
 			return
-		print("Exporting to ics file \"%s\"" % path)
+		log.info(f"Exporting to ics file \"{path}\"")
 		self.waitingDo(
 			self._save,
 			path,

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+from scal3 import logger
+log = logger.get()
+
 import sys
 
 from scal3.locale_man import popenDefaultLang
@@ -28,4 +32,4 @@ def popenFile(fpath):
 
 
 if __name__ == "__main__":
-	print(getDefaultAppCommand(sys.argv[1]))
+	log.info(getDefaultAppCommand(sys.argv[1]))

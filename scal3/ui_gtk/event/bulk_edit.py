@@ -1,7 +1,9 @@
 #!/usr/bin/env python3
+from scal3 import logger
+log = logger.get()
+
 import natz
 
-from scal3.utils import myRaise
 from scal3.locale_man import tr as _
 
 from scal3.ui_gtk import *
@@ -22,15 +24,15 @@ class EventsBulkEditDialog(gtk.Dialog):
 		####
 		dialog_add_button(
 			self,
-			gtk.STOCK_CANCEL,
-			_("_Cancel"),
-			gtk.ResponseType.CANCEL,
+			imageName="dialog-cancel.svg",
+			label=_("_Cancel"),
+			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
-			gtk.STOCK_OK,
-			_("_OK"),
-			gtk.ResponseType.OK,
+			imageName="dialog-ok.svg",
+			label=_("_OK"),
+			res=gtk.ResponseType.OK,
 		)
 		##
 		self.connect("response", lambda w, e: self.hide())
@@ -40,13 +42,13 @@ class EventsBulkEditDialog(gtk.Dialog):
 		except AttributeError:
 			event_count = len(container)
 			msg = _(
-				"Here you are going to modify these %s events at once."
-			) % event_count
+				"Here you are going to modify these {eventCount} events at once."
+			).format(eventCount=event_count)
 		else:
 			msg = _(
 				"Here you are going to modify all events "
-				"inside group \"%s\" at once."
-			) % title
+				"inside group \"{groupTitle}\" at once."
+			).format(groupTitle=title)
 		msg += " "
 		msg += _(
 			"You better make a backup from your events before doing this." +
@@ -54,11 +56,11 @@ class EventsBulkEditDialog(gtk.Dialog):
 			" (or a full backup: menu File -> Export)"
 		)
 		msg += "\n\n"
-		label = gtk.Label(msg)
+		label = gtk.Label(label=msg)
 		label.set_line_wrap(True)
 		pack(self.vbox, label)
 		####
-		hbox = gtk.HBox()
+		hbox = HBox()
 		self.iconRadio = gtk.RadioButton(label=_("Icon"))
 		pack(hbox, self.iconRadio, 1, 1)
 		self.summaryRadio = gtk.RadioButton(
@@ -83,26 +85,26 @@ class EventsBulkEditDialog(gtk.Dialog):
 		self.descriptionRadio.connect("clicked", self.firstRadioChanged)
 		self.timeZoneRadio.connect("clicked", self.firstRadioChanged)
 		####
-		hbox = gtk.HBox()
+		hbox = HBox()
 		self.iconChangeCombo = gtk.ComboBoxText()
 		self.iconChangeCombo.append_text("----")
 		self.iconChangeCombo.append_text(_("Change"))
 		self.iconChangeCombo.append_text(_("Change if empty"))
 		pack(hbox, self.iconChangeCombo)
-		pack(hbox, gtk.Label("  "))
+		pack(hbox, gtk.Label(label="  "))
 		self.iconSelect = IconSelectButton()
 		try:
 			self.iconSelect.set_filename(container.icon)
 		except AttributeError:
 			pass
 		pack(hbox, self.iconSelect)
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
 		self.iconHbox = hbox
 		####
-		self.textVbox = gtk.VBox()
+		self.textVbox = VBox()
 		###
-		hbox = gtk.HBox()
+		hbox = HBox()
 		self.textChangeCombo = gtk.ComboBoxText()
 		self.textChangeCombo.append_text("----")
 		self.textChangeCombo.append_text(_("Add to beginning"))
@@ -110,16 +112,16 @@ class EventsBulkEditDialog(gtk.Dialog):
 		self.textChangeCombo.append_text(_("Replace text"))
 		self.textChangeCombo.connect("changed", self.textChangeComboChanged)
 		pack(hbox, self.textChangeCombo)
-		pack(hbox, gtk.Label(""), 1, 1)
-		## CheckButton(_("Regexp"))
+		pack(hbox, gtk.Label(), 1, 1)
+		# CheckButton(_("Regexp"))
 		pack(self.textVbox, hbox)
 		###
 		self.textInput1 = TextFrame()
 		pack(self.textVbox, self.textInput1, 1, 1)
 		###
-		hbox = gtk.HBox()
-		pack(hbox, gtk.Label(_("with")))
-		pack(hbox, gtk.Label(""), 1, 1)
+		hbox = HBox()
+		pack(hbox, gtk.Label(label=_("with")))
+		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.textVbox, hbox, 1, 1)
 		self.withHbox = hbox
 		###
@@ -128,16 +130,16 @@ class EventsBulkEditDialog(gtk.Dialog):
 		####
 		pack(self.vbox, self.textVbox, 1, 1)
 		####
-		hbox = gtk.HBox()
+		hbox = HBox()
 		self.timeZoneChangeCombo = gtk.ComboBoxText()
 		self.timeZoneChangeCombo.append_text("----")
 		self.timeZoneChangeCombo.append_text(_("Change"))
 		self.timeZoneChangeCombo.append_text(_("Change if empty"))
 		pack(hbox, self.timeZoneChangeCombo)
-		pack(hbox, gtk.Label("  "))
+		pack(hbox, gtk.Label(label="  "))
 		self.timeZoneInput = TimeZoneComboBoxEntry()
 		pack(hbox, self.timeZoneInput)
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox, 1, 1)
 		self.timeZoneHbox = hbox
 		####
@@ -192,16 +194,15 @@ class EventsBulkEditDialog(gtk.Dialog):
 			chType = self.timeZoneChangeCombo.get_active()
 			timeZone = self.timeZoneInput.get_text()
 			if chType != 0:
-				try:
-					natz.gettz(timeZone)
-				except:
-					myRaise("Invalid Time Zone \"%s\"" % timeZone)
-				else:
+				# natz.gettz does not raise exception, returns None if invalid
+				if natz.gettz(timeZone):
 					for event in container:
 						if not (chType == 2 and event.timeZone):
 							event.timeZone = timeZone
 							event.afterModify()
 							event.save()
+				else:
+					log.error(f"Invalid Time Zone {timeZone!r}")
 		else:
 			chType = self.textChangeCombo.get_active()
 			if chType != 0:
