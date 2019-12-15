@@ -18,12 +18,10 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from scal3.cal_types import calTypes
+from scal3.cal_types import calTypes, getMonthLen
 from scal3 import core
 from scal3.core import (
-	myRaise,
 	getMonthName,
-	getMonthLen,
 	getWeekDay,
 	getWeekNumberByJd,
 )
@@ -35,8 +33,8 @@ pluginName = "MonthCal"
 
 
 class MonthStatus(list): ## FIXME
-	## self[sy<6][sx<7] of cells
-	## list (of 6 lists, each list containing 7 cells)
+	# self[sy<6][sx<7] of cells
+	# list (of 6 lists, each list containing 7 cells)
 	def __init__(self, cellCache, year, month):
 		self.year = year
 		self.month = month
@@ -64,10 +62,10 @@ class MonthStatus(list): ## FIXME
 	#	return self[yPos][xPos]
 
 	def allCells(self):
-		l = []
+		ls = []
 		for row in self:
-			l += row
-		return l
+			ls += row
+		return ls
 
 
 def setParamsFunc(cell):
@@ -106,6 +104,7 @@ def getCurrentMonthStatus():
 ########################
 
 
+# TODO: write test for it
 def getMonthDesc(status=None):
 	if not status:
 		status = getCurrentMonthStatus()
@@ -125,73 +124,78 @@ def getMonthDesc(status=None):
 				else:
 					continue
 	text = ""
-	for mode in calTypes.active:
+	for calType in calTypes.active:
 		if text != "":
 			text += "\n"
-		if mode == calTypes.primary:
-			y, m = first.dates[mode][:2]  # = (status.year, status.month)
-			text += "%s %s" % (getMonthName(mode, m), _(y))
+		if calType == calTypes.primary:
+			y, m = first.dates[calType][:2]  # = (status.year, status.month)
+			text += getMonthName(calType, m) + " " + _(y)
 		else:
-			y1, m1 = first.dates[mode][:2]
-			y2, m2 = last.dates[mode][:2]
+			y1, m1 = first.dates[calType][:2]
+			y2, m2 = last.dates[calType][:2]
 			dy = y2 - y1
 			if dy == 0:
 				dm = m2 - m1
 			elif dy == 1:
 				dm = m2 + 12 - m1
 			else:
-				raise RuntimeError("y1=%d, m1=%d, y2=%d, m2=%d" % (
-					y1, m1,
-					y2, m2,
-				))
+				raise RuntimeError(f"y1={y1}, m1={m1}, y2={y2}, m2={m2}")
 			if dm == 0:
-				text += "%s %s" % (getMonthName(mode, m1), _(y1))
+				text += getMonthName(calType, m1) + " " + _(y1)
 			elif dm == 1:
 				if dy == 0:
-					text += "%s %s %s %s" % (
-						getMonthName(mode, m1),
-						_("and"),
-						getMonthName(mode, m2),
-						_(y1),
+					text += (
+						getMonthName(calType, m1) +
+						" " + _("and") + " " +
+						getMonthName(calType, m2) +
+						" " +
+						_(y1)
 					)
 				else:
-					text += "%s %s %s %s %s" % (
-						getMonthName(mode, m1),
-						_(y1),
-						_("and"),
-						getMonthName(mode, m2),
-						_(y2),
+					text += (
+						getMonthName(calType, m1) + " " + _(y1) +
+						" " + _("and") + " " +
+						getMonthName(calType, m2) + " " + _(y2)
 					)
 			elif dm == 2:
 				if dy == 0:
-					text += "%s%s %s %s %s %s" % (
-						getMonthName(mode, m1),
-						_(","),
-						getMonthName(mode, m1 + 1),
-						_("and"),
-						getMonthName(mode, m2),
-						_(y1),
+					text += (
+						getMonthName(calType, m1) +
+						_(",") + " " +
+						getMonthName(calType, m1 + 1) +
+						" " + _("and") + " " +
+						getMonthName(calType, m2) +
+						" " +
+						_(y1)
 					)
 				else:
 					if m1 == 11:
-						text += "%s %s %s %s %s %s %s" % (
-							getMonthName(mode, m1),
-							_("and"),
-							getMonthName(mode, m1 + 1),
-							_(y1),
-							_("and"),
-							getMonthName(mode, 1),
-							_(y2),
+						text += (
+							getMonthName(calType, m1) +
+							" " + _("and") + " " +
+							getMonthName(calType, m1 + 1) +
+							" " +
+							_(y1) +
+							" " + _("and") + " " +
+							getMonthName(calType, 1) +
+							" " +
+							_(y2)
 						)
 					elif m1 == 12:
-						text += "%s %s %s %s %s %s %s" % (
-							getMonthName(mode, m1),
-							_(y1),
-							_("and"),
-							getMonthName(mode, 1),
-							_("and"),
-							getMonthName(mode, 2),
-							_(y2),
+						text += (
+							getMonthName(calType, m1) +
+							" " +
+							_(y1) +
+							" " +
+							_("and") +
+							" " +
+							getMonthName(calType, 1) +
+							" " +
+							_("and") +
+							" " +
+							getMonthName(calType, 2) +
+							" " +
+							_(y2)
 						)
 	return text
 

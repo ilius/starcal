@@ -26,7 +26,7 @@ elif [ "${myPath:0:1}" != "/" ] ; then
 fi
 
 pkgName=starcal3
-iconName=starcal3.png
+iconName=starcal32.png
 
 sourceDir="`dirname \"$myPath\"`"
 
@@ -272,6 +272,7 @@ if [ "$installType" = "for-pkg" ] || [ "$installType" = "system" ] ; then
 	rm -Rf "$DIR/.Trash"* 2>/dev/null
 	rm -Rf "$DIR/google-api-python-client/.git" 2>/dev/null
 	rm -Rf "$DIR/google-api-python-client/.hg"* 2>/dev/null
+	rm -Rf "$DIR/screenshots/" 2>/dev/null
 	for EXP in '.hidden' '*~' '*.pyc' '*.pyo' '*.tar.xz' '*.tar.gz' '*.deb' '*.rpm' '*.spec'; do
 		find "$DIR" -name "$EXP" -exec rm '{}' \; || true
 	done 2>/dev/null

@@ -24,6 +24,9 @@
 # Iranian (Jalali) calendar:
 # http://en.wikipedia.org/wiki/Iranian_calendar
 
+from scal3 import logger
+log = logger.get()
+
 name = "jalali"
 desc = "Jalali"
 origLang = "fa"
@@ -120,7 +123,7 @@ monthLenSum = [0]
 for i in range(12):
 	monthLenSum.append(monthLenSum[-1] + monthLen[i])
 
-# print(monthLenSum)
+# log.debug(monthLenSum)
 # monthLenSum[i] == sum(monthLen[:i])
 
 import os
@@ -131,11 +134,11 @@ from scal3.utils import iceil
 from scal3.json_utils import *
 
 # Here load user options(jalaliAlg) from file
-sysConfPath = "%s/%s.json" % (sysConfDir, name)
+sysConfPath = f"{sysConfDir}/{name}.json"
 loadJsonConf(__name__, sysConfPath)
 
 
-confPath = "%s/%s.json" % (confDir, name)
+confPath = f"{confDir}/{name}.json"
 loadJsonConf(__name__, confPath)
 
 
@@ -171,7 +174,7 @@ def isLeap(year):
 			- (jym + 3) // 4
 		)
 	else:
-		raise RuntimeError("bad option alg=%s" % alg)
+		raise RuntimeError(f"bad option alg={alg!r}")
 
 
 def getMonthDayFromYdays(yday):
@@ -213,7 +216,7 @@ def to_jd(year, month, day):
 			+ GREGORIAN_EPOCH
 		)
 	else:
-		raise RuntimeError("bad option alg=%s" % alg)
+		raise RuntimeError(f"bad option alg={alg!r}")
 
 
 def jd_to(jd):
@@ -250,7 +253,7 @@ def jd_to(jd):
 		yday = jdays + 1
 		month, day = getMonthDayFromYdays(yday)
 	else:
-		raise RuntimeError("bad option alg=%s" % alg)
+		raise RuntimeError(f"bad option alg={alg!r}")
 	return year, month, day
 
 

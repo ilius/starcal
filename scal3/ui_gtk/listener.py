@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+from scal3 import logger
+log = logger.get()
+
 import time
 from time import localtime
 from time import time as now
@@ -40,6 +44,7 @@ class DateChangeListener:
 
 #class TimeChangeListener:
 
+
 dateChange = DateChangeListener()
 #timeChange = TimeChangeListener()
 
@@ -48,7 +53,7 @@ if __name__ == "__main__":
 
 	class TestRec:
 		def onCurrentDateChange(self, gdate):
-			print("current date changed to %s/%s/%s" % gdate)
+			log.info(f"current date changed to {gdate!r}")
 
 	dateChange.add(TestRec())
 	glib.MainLoop().run()

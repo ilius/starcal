@@ -7,7 +7,7 @@ class DaySpinButton(SingleSpinButton):
 	def __init__(self, **kwargs):
 		SingleSpinButton.__init__(
 			self,
-			DayField(pad=0),
+			field=DayField(pad=0),
 			**kwargs
 		)
 

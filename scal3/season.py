@@ -18,6 +18,9 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 avgYearLen = 365.24219
 springRefJd = 2456372.4597222223
 
@@ -29,6 +32,7 @@ def getSeasonValueFromJd(jd):
 def getSpringJdAfter(fromJd):
 	d, m = divmod(fromJd - 1 - springRefJd, avgYearLen)
 	return int(fromJd + (d + 1) * avgYearLen)
+
 
 """
 
@@ -50,16 +54,19 @@ Winter - Below		6, 7, 8		June, July, August
 Wikipedia:
 	Spring:
 		in the US and UK, spring months are March, April and May,
-		while in New Zealand and Australia, spring conventionally begins on September 1 and ends November 30
+		while in New Zealand and Australia, spring conventionally begins on
+		September 1 and ends November 30
 	Summer:
-		The meteorological convention is to define summer as comprising the months of June, July,
-		and August in the northern hemisphere and the months of December, January, and February in the southern hemisphere
+		The meteorological convention is to define summer as comprising the
+		months of June, July, and August in the northern hemisphere and the
+		months of December, January, and February in the southern hemisphere
 	Autumn:
-		with autumn being September, October, and November in the northern hemisphere,
-		and March, April, and May in the southern hemisphere
+		with autumn being September, October, and November in the northern
+		hemisphere, and March, April, and May in the southern hemisphere
 	Winter:
-		This corresponds to the months of December, January and February in the Northern Hemisphere,
-		and June, July and August in the Southern Hemisphere
+		This corresponds to the months of December, January and February in
+		the Northern Hemisphere, and June, July and August in the Southern
+		Hemisphere
 
 """
 
@@ -83,7 +90,7 @@ def test():
 		#for month in (1, 4, 7, 10):
 		for month in (1,):
 			s = getSeasonFromJd(jalali_to_jd(year, month, 1))
-			print("%.4d/%.2d/01\t%.5f" % (year, month, s))
+			log.info(f"{year:04d}/{month:02d}/01\t{s:.5f}")
 		#print
 
 

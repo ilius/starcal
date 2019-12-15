@@ -8,19 +8,24 @@ from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import (
 	confirm,
 	showError,
-	labelStockMenuItem,
-	labelImageMenuItem,
+	pixbufFromFile,
+)
+from scal3.ui_gtk.menuitems import (
+	ImageMenuItem,
 )
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
 
 
-def confirmEventTrash(event, parent=None):
+def confirmEventTrash(event, **kwargs):
 	return confirm(
-		_("Press OK if you want to move event \"%s\" to %s") % (
-			event.summary,
-			ui.eventTrash.title,
+		_(
+			"Press OK if you want to move event \"{eventSummary}\""
+			" to {trashTitle}"
+		).format(
+			eventSummary=event.summary,
+			trashTitle=ui.eventTrash.title,
 		),
-		parent=parent,
+		**kwargs
 	)
 
 
@@ -38,24 +43,31 @@ def checkEventsReadOnly(doException=True):
 
 
 def eventWriteMenuItem(*args, **kwargs):
-	item = labelStockMenuItem(*args, **kwargs)
+	item = ImageMenuItem(*args, **kwargs)
 	item.set_sensitive(not event_lib.allReadOnly)
 	return item
+
 
 def eventWriteImageMenuItem(*args, **kwargs):
-	item = labelImageMenuItem(*args, **kwargs)
+	item = ImageMenuItem(*args, **kwargs)
 	item.set_sensitive(not event_lib.allReadOnly)
 	return item
 
-def menuItemFromEventGroup(group):
-	item = ImageMenuItem()
-	item.set_label(group.title)
-	##
-	image = gtk.Image()
-	image.set_from_pixbuf(newColorCheckPixbuf(
-		group.color,
-		20,
-		group.enable,
-	))
-	item.set_image(image)
-	return item
+
+def menuItemFromEventGroup(group, **kwargs):
+	return ImageMenuItem(
+		group.title,
+		pixbuf=newColorCheckPixbuf(
+			group.color,
+			ui.menuEventCheckIconSize,
+			group.enable,
+		),
+		**kwargs
+	)
+
+
+def eventTreeIconPixbuf(icon: str) -> GdkPixbuf.Pixbuf:
+	return pixbufFromFile(
+		icon,
+		ui.eventTreeIconSize,
+	)

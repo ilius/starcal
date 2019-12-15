@@ -17,8 +17,8 @@ class WidgetClass(common.WidgetClass):
 	def __init__(self, event):
 		common.WidgetClass.__init__(self, event)
 		###
-		hbox = gtk.HBox()
-		pack(hbox, gtk.Label(_("Date")))
+		hbox = HBox()
+		pack(hbox, gtk.Label(label=_("Date")))
 		self.dateInput = DateButton()
 		pack(hbox, self.dateInput)
 		pack(self, hbox)
@@ -34,8 +34,8 @@ class WidgetClass(common.WidgetClass):
 		common.WidgetClass.updateVars(self)
 		self.event.setDate(*self.dateInput.get_value())
 
-	def modeComboChanged(self, obj=None):
+	def calTypeComboChanged(self, obj=None):
 		# overwrite method from common.WidgetClass
-		newMode = self.modeCombo.get_active()
-		self.dateInput.changeMode(self.event.mode, newMode)
-		self.event.mode = newMode
+		newCalType = self.calTypeCombo.get_active()
+		self.dateInput.changeCalType(self.event.calType, newCalType)
+		self.event.calType = newCalType

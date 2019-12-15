@@ -49,7 +49,7 @@ class FloatingMsg(gtk.DrawingArea):
 		createWindow=True,
 	):
 		gtk.DrawingArea.__init__(self)
-		## speed: pixels per second
+		# speed: pixels per second
 		self.speed = speed
 		self.bgColor = bgColor
 		self.textColor = textColor
@@ -59,7 +59,7 @@ class FloatingMsg(gtk.DrawingArea):
 		if finishOnClick:
 			self.connect("button-press-event", self.finish)
 		########
-		if isinstance(text, str):
+		if isinstance(bytes, str):
 			text = text.decode("utf8")
 		lines = []
 		for line in text.split("\n"):
@@ -90,8 +90,9 @@ class FloatingMsg(gtk.DrawingArea):
 
 	def isRtl(self, line, layout):
 		for i in range(len(line)):
-			if layout.index_to_pos(i)[2] != 0:
-				return (layout.index_to_pos(i)[2] < 0)
+			y = layout.index_to_pos(i).y
+			if y != 0:
+				return y < 0
 		return False
 
 	def updateLine(self):
@@ -115,8 +116,20 @@ class FloatingMsg(gtk.DrawingArea):
 			self.finishFunc()
 
 	def onExposeEvent(self, widget, gevent):
-		cr = self.cr = self.get_window().cairo_create()
-		#######
+		win = self.get_window()
+		region = win.get_visible_region()
+		# FIXME: This must be freed with cairo_region_destroy() when you are done.
+		# where is cairo_region_destroy? No region.destroy() method
+		dctx = win.begin_draw_frame(region)
+		if dctx is None:
+			raise RuntimeError("begin_draw_frame returned None")
+		cr = dctx.get_cairo_context()
+		try:
+			self.drawWithContext(cr)
+		finally:
+			win.end_draw_frame(dctx)
+
+	def drawWithContext(self, cr: "cairo.Context"):
 		cr.rectangle(0, 0, screenWidth, self.height)
 		setColor(cr, self.bgColor)
 		cr.fill()
@@ -172,8 +185,20 @@ class MyLabel(gtk.DrawingArea):
 		self.rtlSign = 1 if self.rtl else -1
 
 	def onExposeEvent(self, widget, gevent):
-		cr = self.cr = self.get_window().cairo_create()
-		#######
+		win = self.get_window()
+		region = win.get_visible_region()
+		# FIXME: This must be freed with cairo_region_destroy() when you are done.
+		# where is cairo_region_destroy? No region.destroy() method
+		dctx = win.begin_draw_frame(region)
+		if dctx is None:
+			raise RuntimeError("begin_draw_frame returned None")
+		cr = dctx.get_cairo_context()
+		try:
+			self.drawWithContext(cr)
+		finally:
+			win.end_draw_frame(dctx)
+
+	def drawWithContext(self, cr: "cairo.Context"):
 		cr.rectangle(0, 0, self.width, self.height)
 		setColor(cr, self.bgColor)
 		cr.fill()
@@ -184,8 +209,9 @@ class MyLabel(gtk.DrawingArea):
 
 	def isRtl(self):
 		for i in range(len(self.text)):
-			if self.layout.index_to_pos(i)[2] != 0:
-				return (self.layout.index_to_pos(i)[2] < 0)
+			y = self.layout.index_to_pos(i).y
+			if y != 0:
+				return y < 0
 		return False
 
 
@@ -210,7 +236,7 @@ class NoFillFloatingMsgWindow(gtk.Window):
 		self.label = MyLabel(bgColor, textColor)
 		self.add(self.label)
 		self.label.show()
-		## speed: pixels per second
+		# speed: pixels per second
 		self.speed = speed
 		self.refreshTime = refreshTime
 		self.finishFunc = finishFunc
@@ -218,7 +244,7 @@ class NoFillFloatingMsgWindow(gtk.Window):
 		if finishOnClick:
 			self.connect("button-press-event", self.finish)
 		########
-		if isinstance(text, str):
+		if isinstance(text, bytes):
 			text = text.decode("utf8")
 		text = text.replace("\\n", "\n").replace("\\t", "\t")
 		lines = []

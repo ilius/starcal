@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+from scal3 import logger
+log = logger.get()
+
 from os.path import isfile, isdir
 
 from scal3.path import *
@@ -7,9 +10,9 @@ from scal3.os_utils import makeDir
 from scal3 import core
 from scal3.core import osName
 
-comDeskDir = "%s/.config/autostart" % homeDir
-comDesk = "%s/%s.desktop" % (comDeskDir, APP_NAME)
-#kdeDesk="%s/.kde/Autostart/%s.desktop" % (homeDir, APP_NAME)
+comDeskDir = f"{homeDir}/.config/autostart"
+comDesk = f"{comDeskDir}/{APP_NAME}.desktop"
+#kdeDesk = f"{homeDir}/.kde/Autostart/{APP_NAME}.desktop"
 
 
 def addStartup():
@@ -18,35 +21,29 @@ def addStartup():
 		makeDir(winStartupDir)
 		#fname = APP_NAME + ("-qt" if uiName=="qt" else "") + ".pyw"
 		fname = core.COMMAND + ".pyw"
-		fpath = join(rootDir, fname)
-		#open(winStartupFile, "w").write(
-		#	"execfile(%r, {"__file__":%r})"%(fpath, fpath)
-		#)
+		fpath = join(sourceDir, fname)
 		try:
 			winMakeShortcut(fpath, winStartupFile)
-		except:
+		except Exception:
 			return False
 		else:
 			return True
-	elif isdir("%s/.config" % homeDir):
+	elif isdir(f"{homeDir}/.config"):
 		# osName in ("linux", "mac")
 		# maybe Gnome/KDE on Solaris, *BSD, ...
-		text = """[Desktop Entry]
+		text = f"""[Desktop Entry]
 Type=Application
-Name=%s %s
-Icon=%s
-Exec=%s""" % (
-			core.APP_DESC,
-			core.VERSION,
-			APP_NAME,
-			core.COMMAND,
-		)
-		# double quotes needed when the exec path has space
+Name={core.APP_DESC} {core.VERSION}
+Icon={APP_NAME}
+Exec={core.COMMAND}"""
+		# FIXME: double quotes needed when the exec path has space
+		# f"{core.COMMAND!r}" or repr(core.COMMAND) adds single quotes
+		# does it work with single quotes too??
 		makeDir(comDeskDir)
 		try:
 			fp = open(comDesk, "w")
-		except:
-			core.myRaise(__file__)
+		except Exception:
+			log.exception("")
 			return False
 		else:
 			fp.write(text)

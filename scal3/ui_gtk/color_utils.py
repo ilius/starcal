@@ -16,6 +16,15 @@ def rgbToGdkColor(r, g, b, a=None):
 	)
 
 
+def rgbaToGdkRGBA(r, g, b, a=255):
+	return gdk.RGBA(
+		red=r / 255,
+		green=g / 255,
+		blue=b / 255,
+		alpha=a / 255,
+	)
+
+
 def gdkColorToRgb(gc):
 	assert isinstance(gc, gdk.RGBA)
 	return (
@@ -29,8 +38,5 @@ def gdkColorToRgb(gc):
 #	return gdk.color_parse(hc)
 
 
-def colorize(text, color):
-	return "<span color=\"%s\">%s</span>" % (
-		rgbToHtmlColor(*color),
-		text,
-	)
+#def gdkColorToHtml(gc):
+#	return f"#{gc.red/256:02x}{gc.green/256:02x}{gc.blue/256:02x}"

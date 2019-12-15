@@ -1,18 +1,20 @@
 #!/usr/bin/env python3
 #from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
+from scal3.ui_gtk.utils import pixbufFromFile
 
 
 class AboutDialog(gtk.AboutDialog):
 	def __init__(
 		self,
-		name="",
-		version="",
-		title="",
-		authors=[],
-		comments="",
-		license="",
-		website="",
+		name: str = "",
+		version: str = "",
+		title: str = "",
+		authors: "List[str]" = [],
+		comments: str = "",
+		license: str = "",
+		website: str = "",
+		logo: "GdkPixbuf.Pixbuf" = None,
 		**kwargs
 	):
 		gtk.AboutDialog.__init__(self, **kwargs)
@@ -27,3 +29,6 @@ class AboutDialog(gtk.AboutDialog):
 			self.set_wrap_license(True)
 		if website:
 			self.set_website(website)  # A plain label (not link)
+		if logo is None:
+			logo = pixbufFromFile("empty-pixel.png")
+		self.set_logo(logo)

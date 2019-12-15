@@ -32,30 +32,30 @@ class WidgetClass(common.WidgetClass):
 	def __init__(self, event):## FIXME
 		common.WidgetClass.__init__(self, event)
 		######
-		sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
+		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		######
 		try:
-			seperated = event.parent.showSeperatedYmdInputs
+			separated = event.parent.showSeparatedYmdInputs
 		except AttributeError:
-			seperated = False
-		if seperated:
+			separated = False
+		if separated:
 			self.startDateInput = YearMonthDayBox()
 			self.endDateInput = YearMonthDayBox()
 		else:
 			self.startDateInput = DateButton()
 			self.endDateInput = DateButton()
 		######
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Start") + ": ")
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Start") + ": ")
+		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		pack(hbox, self.startDateInput)
 		pack(self, hbox)
 		######
-		hbox = gtk.HBox()
-		label = gtk.Label(_("End") + ": ")
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("End") + ": ")
+		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		pack(hbox, self.endDateInput)
@@ -86,9 +86,9 @@ class WidgetClass(common.WidgetClass):
 		start.setDate(self.startDateInput.get_value())
 		end.setDate(self.endDateInput.get_value())
 
-	def modeComboChanged(self, obj=None):
+	def calTypeComboChanged(self, obj=None):
 		# overwrite method from common.WidgetClass
-		newMode = self.modeCombo.get_active()
-		self.startDateInput.changeMode(self.event.mode, newMode)
-		self.endDateInput.changeMode(self.event.mode, newMode)
-		self.event.mode = newMode
+		newCalType = self.calTypeCombo.get_active()
+		self.startDateInput.changeCalType(self.event.calType, newCalType)
+		self.endDateInput.changeCalType(self.event.calType, newCalType)
+		self.event.calType = newCalType

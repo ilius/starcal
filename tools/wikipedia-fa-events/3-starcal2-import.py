@@ -13,7 +13,7 @@ from scal3 import ui
 
 dataToPrettyJson = lambda data: json.dumps(data, sort_keys=True, indent=2)
 
-DATE_GREG = moduleNames.index("gregorian")
+GREGORIAN = moduleNames.index("gregorian")
 DATE_JALALI = moduleNames.index("jalali")
 
 ui.eventGroups.load()
@@ -50,7 +50,7 @@ for line in open("wikipedia-fa.tab"):
 		date_str, category, summary = parts
 		description = ""
 	else:
-		print("BAD LINE", line)
+		log.info("BAD LINE", line)
 		continue
 	year, month, day = dateDecode(date_str)
 	group = getGroupByTitle(groupTitlePrefix + category)

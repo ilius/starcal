@@ -11,26 +11,32 @@ from scal3.ui_gtk.customize import CustomizableCalObj
 
 
 @registerSignals
-class CalObj(MyProgressBar, CustomizableCalObj):
+class CalObj(gtk.Frame, CustomizableCalObj):
 	_name = "seasonPBar"
 	desc = _("Season Progress Bar")
+	itemListCustomizable = False
 
 	def __init__(self):
-		MyProgressBar.__init__(self)
+		gtk.Frame.__init__(self)
+		self.set_shadow_type(gtk.ShadowType.ETCHED_IN)
+		self.set_border_width(0)
+		self.pbar = MyProgressBar()
+		self.add(self.pbar)
+		self.pbar.show()
 		self.initVars()
-
-	def onConfigChange(self, *a, **kw):
-		self.update_font()
 
 	def onDateChange(self, *a, **kw):
 		from scal3.season import getSeasonNamePercentFromJd
 		CustomizableCalObj.onDateChange(self, *a, **kw)
-		name, frac = getSeasonNamePercentFromJd(ui.cell.jd, ui.seasonPBar_southernHemisphere)
+		name, frac = getSeasonNamePercentFromJd(
+			ui.cell.jd,
+			ui.seasonPBar_southernHemisphere,
+		)
 		if rtl:
-			percent = "%d%%" % (frac * 100)
+			percent = f"{int(frac * 100)}%"
 		else:
-			percent = "%%%d" % (frac * 100)
-		self.set_text(
+			percent = f"%{int(frac * 100)}"
+		self.pbar.set_text(
 			_(name) +
 			" - " +
 			textNumEncode(
@@ -38,21 +44,22 @@ class CalObj(MyProgressBar, CustomizableCalObj):
 				changeDot=True,
 			)
 		)
-		self.set_fraction(frac)
+		self.pbar.set_fraction(frac)
 
-	def optionsWidgetCreate(self):
-		from scal3.ui_gtk.pref_utils import LiveCheckPrefItem
+	def getOptionsWidget(self) -> gtk.Widget:
+		from scal3.ui_gtk.pref_utils import CheckPrefItem
 		if self.optionsWidget:
-			return
+			return self.optionsWidget
 		####
-		self.optionsWidget = gtk.HBox()
-		prefItem = LiveCheckPrefItem(
+		self.optionsWidget = HBox()
+		prefItem = CheckPrefItem(
 			ui,
 			"seasonPBar_southernHemisphere",
 			label=_("Southern Hemisphere"),
+			live=True,
 			onChangeFunc=self.onDateChange,
 		)
 		pack(self.optionsWidget, prefItem.getWidget())
 		####
 		self.optionsWidget.show_all()
-
+		return self.optionsWidget

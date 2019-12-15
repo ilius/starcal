@@ -18,6 +18,10 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
+from scal3 import cal_types
 from scal3 import core
 from scal3.date_utils import dateEncode, dateDecode
 from scal3.locale_man import tr as _
@@ -26,7 +30,14 @@ from scal3 import event_lib
 from scal3 import ui
 
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import toolButtonFromStock, set_tooltip
+from scal3.ui_gtk.utils import (
+	set_tooltip,
+	labelImageButton,
+)
+from scal3.ui_gtk.toolbox import (
+	ToolBoxItem,
+	StaticToolBox,
+)
 
 
 def encode(d):
@@ -41,39 +52,38 @@ def validate(s):
 	return encode(decode(s))
 
 
-class WidgetClass(gtk.HBox):
+class WidgetClass(gtk.Box):
 	def __init__(self, rule):
 		self.rule = rule
-		gtk.HBox.__init__(self)
+		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		###
-		self.countLabel = gtk.Label("")
+		self.countLabel = gtk.Label()
 		pack(self, self.countLabel)
 		###
 		self.trees = gtk.ListStore(str)
 		self.dialog = None
 		###
-		self.editButton = gtk.Button(_("Edit"))
-		self.editButton.set_image(gtk.Image.new_from_stock(
-			gtk.STOCK_EDIT,
-			gtk.IconSize.BUTTON,
-		))
+		self.editButton = labelImageButton(
+			label=_("Edit"),
+			imageName="document-edit.svg",
+		)
 		self.editButton.connect("clicked", self.showDialog)
 		pack(self, self.editButton)
 
 	def updateCountLabel(self):
 		self.countLabel.set_label(
 			" " * 2 +
-			_("%s items") % _(len(self.trees)) +
+			_("{count} items").format(count=_(len(self.trees))) +
 			" " * 2
 		)
 
 	def createDialog(self):
 		if self.dialog:
 			return
-		print("----- toplevel", self.get_toplevel())
+		log.debug("----- toplevel: {self.get_toplevel()}")
 		self.dialog = gtk.Dialog(
 			title=self.rule.desc,
-			parent=self.get_toplevel(),
+			transient_for=self.get_toplevel(),
 		)
 		###
 		self.treev = gtk.TreeView()
@@ -83,36 +93,45 @@ class WidgetClass(gtk.HBox):
 		cell = gtk.CellRendererText()
 		cell.set_property("editable", True)
 		cell.connect("edited", self.dateCellEdited)
-		col = gtk.TreeViewColumn(_("Date"), cell, text=0)
+		col = gtk.TreeViewColumn(title=_("Date"), cell_renderer=cell, text=0)
+		# col.set_title
 		self.treev.append_column(col)
 		##
-		toolbar = gtk.Toolbar()
-		toolbar.set_orientation(gtk.Orientation.VERTICAL)
-		size = gtk.IconSize.SMALL_TOOLBAR
+		toolbar = StaticToolBox(self, vertical=True)
 		##
-		tb = toolButtonFromStock(gtk.STOCK_ADD, size)
-		set_tooltip(tb, _("Add"))
-		tb.connect("clicked", self.addClicked)
-		toolbar.insert(tb, -1)
-		#self.buttonAdd = tb
+		toolbar.append(ToolBoxItem(
+			name="add",
+			imageName="list-add.svg",
+			onClick="onAddClick",
+			desc=_("Add"),
+			continuousClick=False,
+		))
 		##
-		tb = toolButtonFromStock(gtk.STOCK_DELETE, size)
-		set_tooltip(tb, _("Delete"))
-		tb.connect("clicked", self.deleteClicked)
-		toolbar.insert(tb, -1)
-		#self.buttonDel = tb
+		toolbar.append(ToolBoxItem(
+			name="delete",
+			imageName="edit-delete.svg",
+			onClick="onDeleteClick",
+			desc=_("Delete"),
+			continuousClick=False,
+		))
 		##
-		tb = toolButtonFromStock(gtk.STOCK_GO_UP, size)
-		set_tooltip(tb, _("Move up"))
-		tb.connect("clicked", self.moveUpClicked)
-		toolbar.insert(tb, -1)
+		toolbar.append(ToolBoxItem(
+			name="moveUp",
+			imageName="go-up.svg",
+			onClick="onMoveUpClick",
+			desc=_("Move up"),
+			continuousClick=False,
+		))
 		##
-		tb = toolButtonFromStock(gtk.STOCK_GO_DOWN, size)
-		set_tooltip(tb, _("Move down"))
-		tb.connect("clicked", self.moveDownClicked)
-		toolbar.insert(tb, -1)
+		toolbar.append(ToolBoxItem(
+			name="moveDown",
+			imageName="go-down.svg",
+			onClick="onMoveDownClick",
+			desc=_("Move down"),
+			continuousClick=False,
+		))
 		##
-		dialogHbox = gtk.HBox()
+		dialogHbox = HBox()
 		pack(dialogHbox, self.treev, 1, 1)
 		pack(dialogHbox, toolbar)
 		pack(self.dialog.vbox, dialogHbox, 1, 1)
@@ -120,13 +139,12 @@ class WidgetClass(gtk.HBox):
 		self.dialog.resize(200, 300)
 		self.dialog.connect("response", lambda w, e: self.dialog.hide())
 		##
-		okButton = self.dialog.add_button(gtk.STOCK_OK, gtk.ResponseType.CANCEL)
-		if ui.autoLocale:
-			okButton.set_label(_("_OK"))
-			okButton.set_image(gtk.Image.new_from_stock(
-				gtk.STOCK_OK,
-				gtk.IconSize.BUTTON,
-			))
+		okButton = dialog_add_button(
+			self.dialog,
+			imageName="dialog-ok.svg",
+			label=_("_OK"),
+			res=gtk.ResponseType.OK,
+		)
 
 	def showDialog(self, w=None):
 		self.createDialog()
@@ -145,10 +163,10 @@ class WidgetClass(gtk.HBox):
 			return None
 		return path[0]
 
-	def addClicked(self, button):
+	def onAddClick(self, button):
 		index = self.getSelectedIndex()
-		mode = self.rule.getMode()## FIXME
-		row = [encode(core.getSysDate(mode))]
+		calType = self.rule.getCalType()## FIXME
+		row = [encode(cal_types.getSysDate(calType))]
 		if index is None:
 			newIter = self.trees.append(row)
 		else:
@@ -158,13 +176,13 @@ class WidgetClass(gtk.HBox):
 		#cell = col.get_cell_renderers()[0]
 		#cell.start_editing(...) ## FIXME
 
-	def deleteClicked(self, button):
+	def onDeleteClick(self, button):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
 		del self.trees[index]
 
-	def moveUpClicked(self, button):
+	def onMoveUpClick(self, button):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
@@ -178,7 +196,7 @@ class WidgetClass(gtk.HBox):
 		)
 		self.treev.set_cursor(index - 1)
 
-	def moveDownClicked(self, button):
+	def onMoveDownClick(self, button):
 		index = self.getSelectedIndex()
 		if index is None:
 			return

@@ -10,8 +10,8 @@ class DateButton(MultiSpinButton):
 	def __init__(self, date=None, **kwargs):
 		MultiSpinButton.__init__(
 			self,
-			"/",
-			(
+			sep="/",
+			fields=(
 				YearField(),
 				MonthField(),
 				DayField(),
@@ -22,11 +22,11 @@ class DateButton(MultiSpinButton):
 			date = localtime()[:3]
 		self.set_value(date)
 
-	def get_jd(self, mode):
+	def get_jd(self, calType):
 		y, m, d = self.get_value()
-		return to_jd(y, m, d, mode)
+		return to_jd(y, m, d, calType)
 
-	def changeMode(self, fromMode, toMode):
+	def changeCalType(self, fromMode, toMode):
 		self.set_value(jd_to(
 			self.get_jd(fromMode),
 			toMode,

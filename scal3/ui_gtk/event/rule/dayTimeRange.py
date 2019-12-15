@@ -10,16 +10,16 @@ from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 
 
-class WidgetClass(gtk.HBox):
+class WidgetClass(gtk.Box):
 	def __init__(self, rule):
 		self.rule = rule
 		###
-		gtk.HBox.__init__(self)
+		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		###
 		self.startTbox = TimeButton()
 		self.endTbox = TimeButton()
 		pack(self, self.startTbox)
-		pack(self, gtk.Label(" " + _("to") + " "))
+		pack(self, gtk.Label(label=" " + _("to") + " "))
 		pack(self, self.endTbox)
 
 	def updateWidget(self):

@@ -1,8 +1,8 @@
 {
-    "code": "en_US.UTF-8",
-    "name": "English",
-    "nativeName": "English",
-    "fileName": "",
-    "flag": "flag-us.png",
-    "rtl": false
+	"code": "en_US.UTF-8",
+	"name": "English",
+	"nativeName": "English",
+	"fileName": "",
+	"flag": "",
+	"rtl": false
 }

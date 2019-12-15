@@ -7,7 +7,9 @@ __all__ = [
 
 ############################################
 
-from scal3.utils import myRaise
+from scal3 import logger
+log = logger.get()
+
 from scal3 import event_lib
 
 
@@ -32,8 +34,8 @@ def makeWidget(obj):
 				fromlist=["WidgetClass"],
 			)
 			WidgetClass = cls.WidgetClass = module.WidgetClass
-		except:
-			myRaise()
+		except Exception:
+			log.exception("")
 			return
 	widget = WidgetClass(obj)
 	try:
@@ -42,6 +44,7 @@ def makeWidget(obj):
 		widget.show()
 	widget.updateWidget()## FIXME
 	return widget
+
 
 def setActionFuncs(obj):
 	"""
@@ -57,18 +60,16 @@ def setActionFuncs(obj):
 			]),
 			fromlist=["WidgetClass"],
 		)
-	except:
-		myRaise()
+	except Exception:
+		log.exception("")
 		return
 	else:
 		for actionName, actionFuncName in cls.actions:
 			actionFunc = getattr(module, actionFuncName, None)
 			if actionFunc is not None:
-				print("setting %s.%s" % (cls.__name__, actionFuncName))
 				setattr(cls, actionFuncName, actionFunc)
 
 
-
-# Load accounts, groups and trash? FIXME
+# FIXME: Load accounts, groups and trash?
 from os.path import join, isfile
 from scal3.path import confDir
