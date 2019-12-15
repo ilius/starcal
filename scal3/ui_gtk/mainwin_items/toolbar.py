@@ -105,6 +105,15 @@ class CalObj(CustomizableToolbar):
 			continuousClick=False,
 		),
 		ToolbarItem(
+			name="search",
+			iconName="gtk-find",
+			imageName="system-search.svg",
+			onClick="eventSearchShow",
+			desc="Search Events",
+			shortDesc="Search",
+			continuousClick=False,
+		),
+		ToolbarItem(
 			name="export",
 			iconName="gtk-convert",
 			imageName="export-to-html.svg",
@@ -116,7 +125,7 @@ class CalObj(CustomizableToolbar):
 		ToolbarItem(
 			name="about",
 			iconName="gtk-about",
-			imageName="help-about.svg",
+			imageName="dialog-information.svg",
 			onClick="aboutShow",
 			desc=_("About ") + core.APP_DESC,
 			shortDesc="About",

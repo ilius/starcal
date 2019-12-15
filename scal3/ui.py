@@ -1000,6 +1000,7 @@ eventTags = (
 	TagIconItem("phone_call", desc="Phone Call", eventTypes=("task",)),
 	TagIconItem("task", eventTypes=("task",)),
 	TagIconItem("university", eventTypes=("task",)),  # FIXME: eventTypes
+	TagIconItem("shopping_cart", desc="Shopping Cart"),
 
 	TagIconItem("personal"),  # TODO: icon
 	TagIconItem("appointment", eventTypes=("task",)),  # TODO: icon

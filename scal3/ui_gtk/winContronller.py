@@ -12,12 +12,14 @@ from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import set_tooltip, pixbufFromFile
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox
+from scal3.ui_gtk import gtk_ud as ud
 
 
 @registerSignals
 class WinConButton(gtk.EventBox, CustomizableCalObj):
 	hasOptions = False
 	expand = False
+
 	imageName = ""
 	imageNameFocus = ""
 	imageNameInactive = ""
@@ -40,8 +42,10 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 		raise NotImplementedError
 
 	def setImage(self, imName):
+		if self.controller.light:
+			imName += "-light"
 		self.im.set_from_pixbuf(pixbufFromFile(
-			imName,
+			imName + ".svg",
 			ui.winControllerIconSize,
 		))
 
@@ -89,9 +93,9 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 class WinConButtonMin(WinConButton):
 	_name = "min"
 	desc = _("Minimize Window")
-	imageName = "wm-minimize.svg"
-	imageNameFocus = "wm-minimize-focus.svg"
-	imageNameInactive = "wm-minimize-inactive.svg"
+	imageName = "wm-minimize"
+	imageNameFocus = "wm-minimize-focus"
+	imageNameInactive = "wm-minimize-inactive"
 
 	def onClick(self, gWin, gevent):
 		if ui.winTaskbar:
@@ -103,9 +107,9 @@ class WinConButtonMin(WinConButton):
 class WinConButtonMax(WinConButton):
 	_name = "max"
 	desc = _("Maximize Window")
-	imageName = "wm-maximize.svg"
-	imageNameFocus = "wm-maximize-focus.svg"
-	imageNameInactive = "wm-maximize-inactive.svg"
+	imageName = "wm-maximize"
+	imageNameFocus = "wm-maximize-focus"
+	imageNameInactive = "wm-maximize-inactive"
 
 	def onClick(self, gWin, gevent):
 		if ui.winMaximized:
@@ -119,9 +123,9 @@ class WinConButtonMax(WinConButton):
 class WinConButtonClose(WinConButton):
 	_name = "close"
 	desc = _("Close Window")
-	imageName = "wm-close.svg"
-	imageNameFocus = "wm-close-focus.svg"
-	imageNameInactive = "wm-close-inactive.svg"
+	imageName = "wm-close"
+	imageNameFocus = "wm-close-focus"
+	imageNameInactive = "wm-close-inactive"
 
 	def onClick(self, gWin, gevent):
 		gWin.emit("delete-event", gdk.Event())
@@ -133,9 +137,9 @@ class WinConButtonRightPanel(WinConButton):
 	
 	def __init__(self, controller):
 		direc = "left" if rtl else "right"
-		self.imageName = f"wm-{direc}.svg"
-		self.imageNameFocus = f"wm-{direc}-focus.svg"
-		self.imageNameInactive = f"wm-{direc}-inactive.svg"		
+		self.imageName = f"wm-{direc}"
+		self.imageNameFocus = f"wm-{direc}-focus"
+		self.imageNameInactive = f"wm-{direc}-inactive"		
 		WinConButton.__init__(self, controller)
 
 	def onClick(self, gWin, gevent):
@@ -187,6 +191,9 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		self.set_spacing(ui.winControllerSpacing)
 		self.set_direction(gtk.TextDirection.LTR)## FIXME
 		self.initVars()
+		###########
+		# passing `self` to ud.hasLightTheme does not work!
+		self.light = ud.hasLightTheme(ui.mainWin)
 		###########
 		for bname, enable in ui.winControllerButtons:
 			button = self.buttonClassDict[bname](self)

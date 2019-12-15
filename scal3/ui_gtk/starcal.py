@@ -859,7 +859,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		))
 		moreMenu.add(ImageMenuItem(
 			_("_About"),
-			imageName="help-about.svg",
+			imageName="dialog-information.svg",
 			func=self.aboutShow,
 		))
 		moreMenu.add(ImageMenuItem(
@@ -990,7 +990,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		))
 		menu.add(ImageMenuItem(
 			_("_About"),
-			imageName="help-about.svg",
+			imageName="dialog-information.svg",
 			func=self.aboutShow,
 		))
 		menu.add(ImageMenuItem(
@@ -1219,7 +1219,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			),
 			ImageMenuItem(
 				_("_About"),
-				imageName="help-about.svg",
+				imageName="dialog-information.svg",
 				func=self.aboutShow,
 			),
 			gtk.SeparatorMenuItem(),

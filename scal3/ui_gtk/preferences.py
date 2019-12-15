@@ -867,7 +867,7 @@ class PreferencesWindow(gtk.Window):
 		###
 		button = labelImageButton(
 			label=_("_About Plugin"),
-			imageName="help-about.svg",
+			imageName="dialog-information.svg",
 		)
 		button.set_sensitive(False)
 		button.connect("clicked", self.onPlugAboutClick)
@@ -1419,7 +1419,7 @@ class PreferencesWindow(gtk.Window):
 				##
 				item = ImageMenuItem(
 					_("_About"),
-					imageName="help-about.svg",
+					imageName="dialog-information.svg",
 					func=self.onPlugAboutClick,
 				)
 				item.set_sensitive(bool(plug.about))

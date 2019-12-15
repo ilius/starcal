@@ -281,6 +281,23 @@ def getGtkDefaultFont():
 	return font
 
 
+def _getLightness(c: "gdk.Color"):
+	return (max(c.red, c.green, c.blue) + min(c.red, c.green, c.blue)) / 2.0
+
+def hasLightTheme(widget):
+	styleCtx = widget.get_style_context()
+	fg = styleCtx.get_color(gtk.StateFlags.NORMAL)
+	bg = styleCtx.get_property('background-color', gtk.StateFlags.NORMAL)
+	# from scal3.ui_gtk.color_utils import gdkColorToRgb
+	# from scal3.color_utils import rgbToHsl
+	# print("fg_rgb:", gdkColorToRgb(fg))
+	# print("bg_rgb:", gdkColorToRgb(bg))
+	# print("fg_hsl:", rgbToHsl(*gdkColorToRgb(fg)))
+	# print("bg_hsl:", rgbToHsl(*gdkColorToRgb(bg)))
+	# print(f"fg lightness: {_getLightness(fg):.2f}, bg lightness: {_getLightness(bg):.2f}")
+	return _getLightness(fg) < _getLightness(bg)
+
+
 ####################################################
 
 windowList = IntegatedWindowList()

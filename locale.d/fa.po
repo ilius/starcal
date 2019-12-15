@@ -869,6 +869,8 @@ msgid "Note"
 msgstr ""
 "یادداشت"
 
+msgid "Shopping Cart"
+msgstr "سبد خرید"
 
 msgid "Today"
 msgstr ""

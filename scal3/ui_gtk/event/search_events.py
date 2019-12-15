@@ -209,7 +209,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		###
 		searchButton = labelImageButton(
 			label=_("_Search"),
-			imageName="edit-find.png",
+			imageName="system-search.svg",
 		)
 		searchButton.connect("clicked", self.onSearchClick)
 		bbox.add(searchButton)
