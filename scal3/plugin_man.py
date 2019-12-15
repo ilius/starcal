@@ -18,6 +18,9 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 import sys
 from time import strftime
 from time import localtime
@@ -25,9 +28,17 @@ from os.path import isfile, dirname, join, split, splitext, isabs
 
 
 from scal3.path import *
-from scal3.utils import myRaiseTback
 from scal3.json_utils import *
-from scal3.cal_types import calTypes, jd_to, to_jd, convert, DATE_GREG
+from scal3.time_utils import getJdListFromEpochRange
+from scal3.ics import getEpochByIcsTime, getIcsDateByJd
+from scal3.cal_types import (
+	calTypes,
+	jd_to,
+	to_jd,
+	convert,
+	GREGORIAN,
+	gregorian,
+)
 from scal3.date_utils import ymdRange
 from scal3.locale_man import tr as _
 from scal3.locale_man import getMonthName
@@ -37,11 +48,11 @@ from scal3.s_object import *
 try:
 	import logging
 	log = logging.getLogger(APP_NAME)
-except:
+except Exception:
 	from scal3.utils import FallbackLogger
 	log = FallbackLogger()
 
-## FIXME
+# FIXME
 pluginsTitleByName = {
 	"pray_times": _("Islamic Pray Times"),
 }
@@ -59,21 +70,12 @@ def getPlugPath(_file):
 	return _file if isabs(_file) else join(plugDir, _file)
 
 
-def myRaise(File=__file__):
-	i = sys.exc_info()
-	log.error("File \"%s\", line %s: %s: %s\n" % (
-		File,
-		i[2].tb_lineno,
-		i[0].__name__, i[1],
-	))
-
-
 class BasePlugin(SObj):
 	name = None
 	external = False
 	loaded = True
 	params = (
-		#"mode",
+		#"calType",
 		"title",  # previously "desc"
 		"enable",
 		"show_date",
@@ -105,7 +107,7 @@ class BasePlugin(SObj):
 	):
 		self.file = _file
 		######
-		self.mode = DATE_GREG
+		self.calType = GREGORIAN
 		self.title = ""
 		###
 		self.enable = False
@@ -122,7 +124,7 @@ class BasePlugin(SObj):
 
 	def getData(self):
 		data = JsonSObj.getData(self)
-		data["calType"] = calTypes.names[self.mode]
+		data["calType"] = calTypes.names[self.calType]
 		return data
 
 	def setData(self, data):
@@ -147,14 +149,14 @@ class BasePlugin(SObj):
 		if "calType" in data:
 			calType = data["calType"]
 			try:
-				self.mode = calTypes.names.index(calType)
+				self.calType = calTypes.names.index(calType)
 			except ValueError:
-				#raise ValueError("Invalid calType: %r"%calType)
+				#raise ValueError(f"Invalid calType: '{calType}'")
 				log.error(
-					"Plugin \"%s\" needs calendar module " % _file +
-					"\"%s\" that is not loaded!\n" % mode
+					f"Plugin \"{_file}\" needs calendar module " +
+					f"\"{calType}\" that is not loaded!\n"
 				)
-				self.mode = None
+				self.calType = None
 			del data["calType"]
 		#####
 		JsonSObj.setData(self, data)
@@ -169,18 +171,18 @@ class BasePlugin(SObj):
 		return ""
 
 	def updateCell(self, c):
-		module, ok = calTypes[self.mode]
+		module, ok = calTypes[self.calType]
 		if not ok:
-			raise RuntimeError("cal type %r not found" % self.mode)
+			raise RuntimeError(f"cal type '{self.calType}' not found")
 
-		y, m, d = c.dates[self.mode]
+		y, m, d = c.dates[self.calType]
 		text = ""
 		t = self.getText(y, m, d)
 		if t:
 			text += t
 		if self.lastDayMerge and d >= module.minMonthLen:
 			# and d <= module.maxMonthLen:
-			ny, nm, nd = jd_to(c.jd + 1, self.mode)
+			ny, nm, nd = jd_to(c.jd + 1, self.calType)
 			if nm > m or ny > y:
 				nt = self.getText(y, m, d + 1)
 				if nt:
@@ -196,30 +198,22 @@ class BasePlugin(SObj):
 	def exportToIcs(self, fileName, startJd, endJd):
 		currentTimeStamp = strftime(icsTmFormat)
 		self.load()  # FIXME
-		mode = self.mode
+		calType = self.calType
 		icsText = icsHeader
 		for jd in range(startJd, endJd):
-			myear, mmonth, mday = jd_to(jd, mode)
+			myear, mmonth, mday = jd_to(jd, calType)
 			dayText = self.getText(myear, mmonth, mday)
 			if dayText:
-				gyear, gmonth, gday = jd_to(jd, DATE_GREG)
-				gyear_next, gmonth_next, gday_next = jd_to(jd + 1, DATE_GREG)
+				gyear, gmonth, gday = jd_to(jd, GREGORIAN)
+				gyear2, gmonth2, gday2 = jd_to(jd + 1, GREGORIAN)
 				#######
 				icsText += "\n".join([
 					"BEGIN:VEVENT",
-					"CREATED:%s" % currentTimeStamp,
-					"LAST-MODIFIED:%s" % currentTimeStamp,
-					"DTSTART;VALUE=DATE:%.4d%.2d%.2d" % (
-						gyear,
-						gmonth,
-						gday,
-					),
-					"DTEND;VALUE=DATE:%.4d%.2d%.2d" % (
-						gyear_next,
-						gmonth_next,
-						gday_next,
-					),
-					"SUMMARY:%s" % dayText,
+					"CREATED:" + currentTimeStamp,
+					"LAST-MODIFIED:" + currentTimeStamp,
+					"DTSTART;VALUE=DATE:" + getIcsDateByJd(jd),
+					"DTEND;VALUE=DATE:" + getIcsDateByJd(jd + 1),
+					"SUMMARY:" + dayText,
 					"END:VEVENT",
 				]) + "\n"
 		icsText += "END:VCALENDAR\n"
@@ -243,7 +237,7 @@ class DummyExternalPlugin(BasePlugin):
 	hasImage = False
 
 	def __repr__(self):
-		return "loadPlugin(%r, enable=False, show_date=False)" % self.file
+		return f"loadPlugin({self.file!r}, enable=False, show_date=False)"
 
 	def __init__(self, _file, title):
 		self.file = _file
@@ -254,13 +248,13 @@ def loadExternalPlugin(_file, **data):
 	_file = getPlugPath(_file)
 	fname = split(_file)[-1]
 	if not isfile(_file):
-		log.error("plugin file \"%s\" not found! maybe removed?" % _file)
+		log.error(f"plugin file \"{_file}\" not found! maybe removed?")
 		#try:
 		#	plugIndex.remove(
 		return None  # FIXME
 		#plug = BaseJsonPlugin(
 		#	_file,
-		#	mode=0,
+		#	calType=0,
 		#	title="Failed to load plugin",
 		#	enable=enable,
 		#	show_date=show_date,
@@ -279,7 +273,7 @@ def loadExternalPlugin(_file, **data):
 	###
 	mainFile = data.get("mainFile")
 	if not mainFile:
-		log.error("invalid external plugin \"%s\"" % _file)
+		log.error(f"invalid external plugin \"{_file}\"")
 		return
 	###
 	mainFile = getPlugPath(mainFile)
@@ -290,38 +284,39 @@ def loadExternalPlugin(_file, **data):
 		"BaseJsonPlugin": BaseJsonPlugin,
 	}
 	try:
-		exec(open(mainFile, encoding="utf-8").read(), pyEnv)
-	except:
-		log.error("error while loading external plugin \"%s\"" % _file)
-		myRaiseTback()
+		with open(mainFile, encoding="utf-8") as fp:
+			exec(fp.read(), pyEnv)
+	except Exception:
+		log.error(f"error while loading external plugin \"{_file}\"")
+		log.exception("")
 		return
 	###
 	cls = pyEnv.get("TextPlugin")
 	if cls is None:
-		log.error("invalid external plugin \"%s\", no TextPlugin class" % _file)
+		log.error(f"invalid external plugin \"{_file}\", no TextPlugin class")
 		return
 	###
 	try:
 		plugin = cls(_file)
-	except:
-		log.error("error while loading external plugin \"%s\"" % _file)
-		myRaiseTback()
+	except Exception:
+		log.error(f"error while loading external plugin \"{_file}\"")
+		log.exception("")
 		return
 
 	#sys.path.insert(0, direc)
 	#try:
 	#	mod = __import__(name)
 	#except:
-	#	myRaiseTback()
+	#	log.exception("")
 	#	return None
 	#finally:
 	#	sys.path.pop(0)
-	## mod.module_init(rootDir, ) ## FIXME
+	# mod.module_init(sourceDir, ) # FIXME
 	#try:
 	#	plugin = mod.TextPlugin(_file)
 	#except:
-	#	myRaiseTback()
-	#	#print(dir(mod))
+	#	log.exception("")
+	#	# log.debug(dir(mod))
 	#	return
 	plugin.external = True
 	plugin.setData(data)
@@ -343,42 +338,42 @@ class HolidayPlugin(BaseJsonPlugin):
 
 	def setData(self, data):
 		if "holidays" in data:
-			for modeName in data["holidays"]:
+			for calTypeName in data["holidays"]:
 				try:
-					mode = calTypes.names.index(modeName)
+					calType = calTypes.names.index(calTypeName)
 				except ValueError:
 					continue
-				modeHolidays = []
-				for row in data["holidays"][modeName]:
+				calTypeHolidays = []
+				for row in data["holidays"][calTypeName]:
 					if isinstance(row, str):  # comment
 						continue
 					if not isinstance(row, (list, tuple)):
-						log.error("Bad type for holiday item %r" % row)
+						log.error(f"Bad type for holiday item '{row}'")
 						continue
 					if len(row) not in (2, 3):
-						log.error("Bad length for holiday item %r" % row)
+						log.error(f"Bad length for holiday item '{row}'")
 						continue
-					modeHolidays.append(tuple(row))
-				self.holidays[mode] = modeHolidays
+					calTypeHolidays.append(tuple(row))
+				self.holidays[calType] = calTypeHolidays
 			del data["holidays"]
 		else:
-			log.error("no \"holidays\" key in holiday plugin \"%s\"" % self.file)
+			log.error(f"no \"holidays\" key in holiday plugin \"{self.file}\"")
 		###
 		BaseJsonPlugin.setData(self, data)
 
-	def dateIsHoliday(self, mode, y, m, d, jd):
-		module, ok = calTypes[mode]
+	def dateIsHoliday(self, calType, y, m, d, jd):
+		module, ok = calTypes[calType]
 		if not ok:
-			raise RuntimeError("cal type %r not found" % mode)
+			raise RuntimeError(f"cal type '{calType}' not found")
 
-		for item in self.holidays[mode]:
+		for item in self.holidays[calType]:
 			if len(item) == 2:
 				hm, hd = item
 				hy = None
 			elif len(item) == 3:
 				hy, hm, hd = item
 			else:
-				log.error("bad holiday item %r" % item)
+				log.error(f"bad holiday item '{item}'")
 				continue
 
 			if hy is not None and hy != y:
@@ -399,7 +394,7 @@ class HolidayPlugin(BaseJsonPlugin):
 				and
 				hd >= module.minMonthLen
 			):
-				ny, nm, nd = jd_to(jd + 1, mode)
+				ny, nm, nd = jd_to(jd + 1, calType)
 				if (ny, nm) > (y, m):
 					return True
 
@@ -407,49 +402,42 @@ class HolidayPlugin(BaseJsonPlugin):
 
 	def updateCell(self, c):
 		if not c.holiday:
-			for mode in self.holidays:
-				y, m, d = c.dates[mode]
-				if self.dateIsHoliday(mode, y, m, d, c.jd):
+			for calType in self.holidays:
+				y, m, d = c.dates[calType]
+				if self.dateIsHoliday(calType, y, m, d, c.jd):
 					c.holiday = True
 					return
 
 	def exportToIcs(self, fileName, startJd, endJd):
 		currentTimeStamp = strftime(icsTmFormat)
 		icsText = icsHeader
+
 		for jd in range(startJd, endJd):
 			isHoliday = False
-			for mode in self.holidays.keys():
-				myear, mmonth, mday = jd_to(jd, mode)
-				if (mmonth, mday) in self.holidays[mode]:
+			for calType in self.holidays.keys():
+				myear, mmonth, mday = jd_to(jd, calType)
+				if (mmonth, mday) in self.holidays[calType]:
 					isHoliday = True
 					break
-				if (myear, mmonth, mday) in self.holidays[mode]:
+				if (myear, mmonth, mday) in self.holidays[calType]:
 					isHoliday = True
 					break
 			if isHoliday:
-				gyear, gmonth, gday = jd_to(jd, DATE_GREG)
-				gyear_next, gmonth_next, gday_next = jd_to(jd + 1, DATE_GREG)
+				gyear, gmonth, gday = jd_to(jd, GREGORIAN)
+				gyear2, gmonth2, gday2 = jd_to(jd + 1, GREGORIAN)
 				#######
 				icsText += "\n".join([
 					"BEGIN:VEVENT",
-					"CREATED:%s" % currentTimeStamp,
-					"LAST-MODIFIED:%s" % currentTimeStamp,
-					"DTSTART;VALUE=DATE:%.4d%.2d%.2d" % (
-						gyear,
-						gmonth,
-						gday,
-					),
-					"DTEND;VALUE=DATE:%.4d%.2d%.2d" % (
-						gyear_next,
-						gmonth_next,
-						gday_next,
-					),
+					"CREATED:" + currentTimeStamp,
+					"LAST-MODIFIED:" + currentTimeStamp,
+					"DTSTART;VALUE=DATE:" + getIcsDateByJd(jd),
+					"DTEND;VALUE=DATE:" + getIcsDateByJd(jd + 1),
 					"CATEGORIES:Holidays",
 					"TRANSP:TRANSPARENT",
 					# TRANSPARENT because being in holiday time,
 					# does not make you busy!
 					# see http://www.kanzaki.com/docs/ical/transp.html
-					"SUMMARY:%s" % _("Holiday"),
+					"SUMMARY:" + _("Holiday"),
 					"END:VEVENT",
 				]) + "\n"
 		icsText += "END:VCALENDAR\n"
@@ -478,7 +466,7 @@ class YearlyTextPlugin(BaseJsonPlugin):
 			del data["dataFile"]
 		else:
 			log.error(
-				"no \"dataFile\" key in yearly text plugin \"%s\"" % self.file
+				f"no \"dataFile\" key in yearly text plugin \"{self.file}\""
 			)
 		####
 		BaseJsonPlugin.setData(self, data)
@@ -489,11 +477,11 @@ class YearlyTextPlugin(BaseJsonPlugin):
 		self.yearlyData = []
 
 	def load(self):
-		#print("YearlyTextPlugin(%s).load()"%self._file)
+		# log.debug(f"YearlyTextPlugin({self._file}).load()")
 		yearlyData = []
-		module, ok = calTypes[self.mode]
+		module, ok = calTypes[self.calType]
 		if not ok:
-			raise RuntimeError("cal type %r not found" % self.mode)
+			raise RuntimeError(f"cal type '{self.calType}' not found")
 		for j in range(12):
 			monthDb = []
 			for k in range(module.maxMonthLen):
@@ -504,7 +492,8 @@ class YearlyTextPlugin(BaseJsonPlugin):
 		ext = splitext(self.dataFile)[1].lower()
 		if ext == ".txt":
 			sep = "\t"
-			lines = open(self.dataFile, encoding="utf-8").read().split("\n")
+			with open(self.dataFile, encoding="utf-8") as fp:
+				lines = fp.read().split("\n")
 			for line in lines[1:]:
 				line = line.strip()
 				if not line:
@@ -513,7 +502,7 @@ class YearlyTextPlugin(BaseJsonPlugin):
 					continue
 				parts = line.split("\t")
 				if len(parts) < 2:
-					log.error("bad plugin data line: %s" % line)
+					log.error(f"bad plugin data line: {line}")
 					continue
 				date = parts[0].split("/")
 				text = "\t".join(parts[1:])
@@ -527,34 +516,32 @@ class YearlyTextPlugin(BaseJsonPlugin):
 					d = int(date[1])
 					yearlyData[m - 1][d - 1] = text
 				else:
-					raise IOError("Bad line in database %s:\n%s" % (
-						self.dataFile,
-						line,
-					))
+					raise IOError(f"Bad line in data file {self.dataFile}:\n{line}")
 		else:
-			raise ValueError("invalid plugin dataFile extention \"%s\"" % ext)
+			raise ValueError(f"invalid plugin dataFile extention \"{ext}\"")
 		self.yearlyData = yearlyData
 
 	def getBasicYearlyText(month, day):
 		item = yearlyData[month - 1]
 
-
 	def getText(self, year, month, day):
 		yearlyData = self.yearlyData
 		if not yearlyData:
 			return ""
-		mode = self.mode
-		#if mode!=calTypes.primary:
-		#	year, month, day = convert(year, month, day, calTypes.primary, mode)
+		calType = self.calType
+		#if calType!=calTypes.primary:
+		#	year, month, day = convert(year, month, day, calTypes.primary, calType)
 		text = ""
 		item = yearlyData[month - 1]
 		if len(item) > day - 1:
 			text = item[day - 1]
 		if self.show_date and text:
-			text = "%s %s: %s" % (
-				_(day),
-				getMonthName(mode, month),
-				text,
+			text = (
+				_(day) +
+				" " +
+				getMonthName(calType, month) + 
+				": " +
+				text
 			)
 		if len(yearlyData) > 12:
 			text2 = yearlyData[12].get((year, month, day), "")
@@ -562,11 +549,14 @@ class YearlyTextPlugin(BaseJsonPlugin):
 				if text:
 					text += "\n"
 				if self.show_date:
-					text2 = "%s %s %s: %s" % (
-						_(day),
-						getMonthName(mode, month, year),
-						_(year),
-						text2,
+					text2 = (
+						_(day) +
+						" " +
+						getMonthName(calType, month, year) +
+						" " +
+						_(year) +
+						": " +
+						text2
 					)
 				text += text2
 		return text
@@ -585,7 +575,7 @@ class IcsTextPlugin(BasePlugin):
 			self,
 			_file,
 		)
-		self.mode = DATE_GREG
+		self.calType = GREGORIAN
 		self.title = title
 		self.enable = enable
 		self.show_date = show_date
@@ -595,7 +585,8 @@ class IcsTextPlugin(BasePlugin):
 		self.md = None
 
 	def load(self):
-		lines = open(self.file, encoding="utf-8").read().replace("\r", "").split("\n")
+		with open(self.file, encoding="utf-8") as fp:
+			lines = fp.read().replace("\r", "").split("\n")
 		n = len(lines)
 		i = 0
 		while True:
@@ -603,7 +594,7 @@ class IcsTextPlugin(BasePlugin):
 				if lines[i] == "BEGIN:VEVENT":
 					break
 			except IndexError:
-				log.error("bad ics file \"%s\"" % self.fpath)
+				log.error(f"bad ics file \"{self.fpath}\"")
 				return
 			i += 1
 		SUMMARY = ""
@@ -622,15 +613,14 @@ class IcsTextPlugin(BasePlugin):
 					if SUMMARY and DTSTART and DTEND:
 						text = SUMMARY
 						if DESCRIPTION:
-							text += "\n%s" % DESCRIPTION
-						for (y, m, d) in ymdRange(DTSTART, DTEND):
+							text += "\n" + DESCRIPTION
+						for jd in getJdListFromEpochRange(DTSTART, DTEND):
+							y, m, d = gregorian.jd_to(jd)
 							md[(m, d)] = text
 					else:
 						log.error(
-							"unsupported ics event" +
-							", SUMMARY=%s" % SUMMARY +
-							", DTSTART=%s" % DTSTART +
-							", DTEND=%s" % DTEND								,
+							f"unsupported ics event, SUMMARY={SUMMARY}, " +
+							f"DTSTART={DTSTART}, DTEND={DTEND}"
 						)
 					SUMMARY = ""
 					DESCRIPTION = ""
@@ -642,39 +632,31 @@ class IcsTextPlugin(BasePlugin):
 					DESCRIPTION = line[12:].replace("\\,", ",").replace("\\n", "\n")
 				elif line.startswith("DTSTART;"):
 					#if not line.startswith("DTSTART;VALUE=DATE;"):
-					#	log.error("unsupported ics line: %s"%line)
+					#	log.error(f"unsupported ics line: {line}")
 					#	continue
-					date = line.split(":")[-1]
-					#if len(date)!=8:
-					#	log.error("unsupported ics line: %s"%line)
+					icsTime = line.split(":")[-1]
+					#if len(icsTime)!=8:
+					#	log.error(f"unsupported ics line: {line}")
 					#	continue
 					try:
-						DTSTART = (
-							int(date[:4]),
-							int(date[4:6]),
-							int(date[6:8]),
-						)
-					except:
-						log.error("unsupported ics line: %s" % line)
-						myRaise()
+						DTSTART = getEpochByIcsTime(icsTime)
+					except Exception:
+						log.error(f"unsupported ics line: {line}")
+						log.exception("")
 						continue
 				elif line.startswith("DTEND;"):
 					#if not line.startswith("DTEND;VALUE=DATE;"):
-					#	log.error("unsupported ics line: %s"%line)
+					#	log.error(f"unsupported ics line: {line}")
 					#	continue
-					date = line.split(":")[-1]
-					#if len(date)!=8:
-					#	log.error("unsupported ics line: %s"%line)
+					icsTime = line.split(":")[-1]
+					#if len(icsTime)!=8:
+					#	log.error(f"unsupported ics line: {line}")
 					#	continue
 					try:
-						DTEND = (
-							int(date[:4]),
-							int(date[4:6]),
-							int(date[6:8]),
-						)
-					except:
-						log.error("unsupported ics line: %s" % line)
-						myRaise()
+						DTEND = getEpochByIcsTime(icsTime)
+					except Exception:
+						log.error(f"unsupported ics line: {line}" )
+						log.exception("")
 						continue
 			self.ymd = None
 			self.md = md
@@ -690,8 +672,9 @@ class IcsTextPlugin(BasePlugin):
 					if SUMMARY and DTSTART and DTEND:
 						text = SUMMARY
 						if DESCRIPTION:
-							text += "\n%s" % DESCRIPTION
-						for (y, m, d) in ymdRange(DTSTART, DTEND):
+							text += "\n" + DESCRIPTION
+						for jd in getJdListFromEpochRange(DTSTART, DTEND):
+							y, m, d = gregorian.jd_to(jd)
 							ymd[(y, m, d)] = text
 					SUMMARY = ""
 					DESCRIPTION = ""
@@ -701,33 +684,33 @@ class IcsTextPlugin(BasePlugin):
 					SUMMARY = line[8:].replace("\\,", ",").replace("\\n", "\n")
 				elif line.startswith("DESCRIPTION:"):
 					DESCRIPTION = line[12:].replace("\\,", ",").replace("\\n", "\n")
-				elif line.startswith("DTSTART;"):
-					#if not line.startswith("DTSTART;VALUE=DATE;"):
-					#	log.error("unsupported ics line: %s"%line)
+				elif line.startswith("DTSTART"):
+					#if not line.startswith("DTSTART;VALUE=DATE"):
+					#	log.error("unsupported ics line: {line}")
 					#	continue
-					date = line.split(":")[-1]
-					#if len(date)!=8:
-					#	log.error("unsupported ics line: %s"%line)
+					icsTime = line.split(":")[-1]
+					#if len(icsTime)!=8:
+					#	log.error("unsupported ics line: {line}")
 					#	continue
 					try:
-						DTSTART = (int(date[:4]), int(date[4:6]), int(date[6:8]))
-					except:
-						log.error("unsupported ics line: %s" % line)
-						myRaise()
+						DTSTART = getEpochByIcsTime(icsTime)
+					except Exception:
+						log.error(f"unsupported ics line: {line}")
+						log.exception("")
 						continue
-				elif line.startswith("DTEND;"):
+				elif line.startswith("DTEND"):
 					#if not line.startswith("DTEND;VALUE=DATE;"):
-					#	log.error("unsupported ics line: %s"%line)
+					#	log.error(f"unsupported ics line: {line}")
 					#	continue
-					date = line.split(":")[-1]
-					#if len(date)!=8:
-					#	log.error("unsupported ics line: %s"%line)
+					icsTime = line.split(":")[-1]
+					#if len(icsTime)!=8:
+					#	log.error(f"unsupported ics line: {line}")
 					#	continue
 					try:
-						DTEND = (int(date[:4]), int(date[4:6]), int(date[6:8]))
-					except:
-						log.error("unsupported ics line: %s" % line)
-						myRaise()
+						DTEND = getEpochByIcsTime(icsTime)
+					except Exception:
+						log.error(f"unsupported ics line: {line}")
+						log.exception("")
 						continue
 			self.ymd = ymd
 			self.md = None
@@ -736,22 +719,28 @@ class IcsTextPlugin(BasePlugin):
 		if self.ymd:
 			if (y, m, d) in self.ymd:
 				if self.show_date:
-					return "%s %s %s: %s" % (
-						_(d),
-						getMonthName(self.mode, m),
-						_(y),
-						self.ymd[(y, m, d)],
+					return (
+						_(d) +
+						" " +
+						getMonthName(self.calType, m) +
+						" " +
+						_(y) +
+						": " +
+						self.ymd[(y, m, d)]
 					)
 				else:
 					return self.ymd[(y, m, d)]
 		if self.md:
 			if (m, d) in self.md:
 				if self.show_date:
-					return "%s %s %s: %s" % (
-						_(d),
-						getMonthName(self.mode, m),
-						_(y),
-						self.ymd[(y, m, d)],
+					return (
+						_(d) +
+						" " +
+						getMonthName(self.calType, m) +
+						" " +
+						_(y) +
+						": " +
+						self.ymd[(y, m, d)]
 					)
 				else:
 					return self.md[(m, d)]
@@ -773,41 +762,43 @@ def loadPlugin(_file=None, **kwargs):
 		return
 	_file = getPlugPath(_file)
 	if not isfile(_file):
-		log.error("error while loading plugin \"%s\": no such file!\n" % _file)
+		log.error(f"error while loading plugin \"{_file}\": no such file!\n")
 		return
 	ext = splitext(_file)[1].lower()
 	####
-	## should ics plugins require a json file too?
-	## FIXME
+	# FIXME: should ics plugins require a json file too?
 	if ext == ".ics":
 		return IcsTextPlugin(_file, **kwargs)
 	####
+	if ext == ".md":
+		return
 	if ext != ".json":
 		log.error(
-			"unsupported plugin extention %s" % ext +
+			f"unsupported plugin extention {ext}" +
 			", new style plugins have a json file"
 		)
 		return
 	try:
-		text = open(_file, encoding="utf-8").read()
+		with open(_file, encoding="utf-8") as fp:
+			text = fp.read()
 	except Exception as e:
 		log.error(
-			"error while reading plugin file \"%s\"" % _file +
-			": %s" % e
+			f"error while reading plugin file \"{_file}\"" +
+			f": {e}"
 		)
 		return
 	try:
 		data = jsonToData(text)
 	except Exception as e:
-		log.error("invalid json file \"%s\"" % _file)
-		myRaise()
+		log.error(f"invalid json file \"{_file}\"")
+		log.exception("")
 		return
 	####
 	data.update(kwargs)  # FIXME
 	####
 	name = data.get("type")
 	if not name:
-		log.error("invalid plugin \"%s\", no \"type\" key" % _file)
+		log.error(f"invalid plugin \"{_file}\", no \"type\" key")
 		return
 	####
 	if name == "external":
@@ -815,15 +806,15 @@ def loadPlugin(_file=None, **kwargs):
 	####
 	try:
 		cls = pluginClassByName[name]
-	except:
-		log.error("invald plugin type \"%s\" in file \"%s\"" % (name, _file))
+	except KeyError:
+		log.error(f"invald plugin type \"{name}\" in file \"{_file}\"")
 		return
 	####
 	for param in cls.essentialParams:
 		if not data.get(param):
 			log.error(
-				"invalid plugin \"%s\"" % _file +
-				": parameter \"%s\" is missing" % param
+				f"invalid plugin \"{_file}\"" +
+				f": parameter \"{param}\" is missing"
 			)
 			return
 	####

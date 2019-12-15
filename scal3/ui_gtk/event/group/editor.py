@@ -21,31 +21,32 @@ class GroupEditorDialog(gtk.Dialog):
 		###
 		dialog_add_button(
 			self,
-			gtk.STOCK_CANCEL,
-			_("_Cancel"),
-			gtk.ResponseType.CANCEL,
+			imageName="dialog-cancel.svg",
+			label=_("_Cancel"),
+			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
-			gtk.STOCK_OK,
-			_("_OK"),
-			gtk.ResponseType.OK,
+			imageName="dialog-ok.svg",
+			label=_("_OK"),
+			res=gtk.ResponseType.OK,
 		)
 		self.connect("response", lambda w, e: self.hide())
 		#######
 		self.activeWidget = None
 		#######
-		hbox = gtk.HBox()
+		hbox = HBox()
 		combo = gtk.ComboBoxText()
 		for cls in event_lib.classes.group:
 			combo.append_text(cls.desc)
-		pack(hbox, gtk.Label(_("Group Type")))
+		pack(hbox, gtk.Label(label=_("Group Type")))
 		pack(hbox, combo)
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
 		####
 		if self.isNew:
-			self._group = event_lib.classes.group[event_lib.defaultGroupTypeIndex]()
+			name = event_lib.classes.group[event_lib.defaultGroupTypeIndex].name
+			self._group = ui.eventGroups.create(name)
 			combo.set_active(event_lib.defaultGroupTypeIndex)
 		else:
 			self._group = group
@@ -75,8 +76,7 @@ class GroupEditorDialog(gtk.Dialog):
 		if self.activeWidget:
 			self.activeWidget.updateVars()
 			self.activeWidget.destroy()
-		cls = event_lib.classes.group[self.comboType.get_active()]
-		group = cls()
+		group = ui.withFS(event_lib.classes.group[self.comboType.get_active()]())
 		if self.isNew:
 			group.setRandomColor()
 			if group.icon:
@@ -85,7 +85,7 @@ class GroupEditorDialog(gtk.Dialog):
 			group.copyFrom(self._group)
 		group.setId(self._group.id)
 		if self.isNew:
-			group.title = self.getNewGroupTitle(cls.desc)
+			group.title = self.getNewGroupTitle(group.desc)
 		self._group = group
 		self.activeWidget = makeWidget(group)
 		pack(self.vbox, self.activeWidget)

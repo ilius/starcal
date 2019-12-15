@@ -10,4 +10,3 @@ nix-shell -p \
 	python3Packages.requests \
 	python3Packages.python-igraph \
 	lxqt.lxqt-openssh-askpass
-

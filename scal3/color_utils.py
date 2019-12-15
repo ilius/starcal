@@ -1,11 +1,26 @@
 #!/usr/bin/env python3
 
+from typing import Tuple, Union
+
+ColorType = Union[
+	Tuple[int, int, int],
+	Tuple[int, int, int, int],
+]
+
+
 def invertColor(r, g, b):
 	return (
 		255 - r,
 		255 - g,
 		255 - b,
 	)
+
+
+def rgbToInt(r, g, b):
+	"""
+		for example (170, 85, 52) or "#aa5534" becomes 0xaa5534
+	"""
+	return b + g * 256 + r * 256 ** 2
 
 
 def rgbToHsl(r, g, b):
@@ -28,26 +43,27 @@ def rgbToHsl(r, g, b):
 	else:  # mx == b:
 		h = 60.0 * (r - g) / dm + 240
 	###
-	l = (mx + mn) / 2.0
+	# ln means lightness
+	ln = (mx + mn) / 2.0
 	###
-	if l == 0 or dm == 0:
+	if ln == 0 or dm == 0:
 		s = 0
-	elif 0 < l < 0.5:
+	elif 0 < ln < 0.5:
 		s = dm / (mx + mn)
-	else:  # l > 0.5
+	else:  # ln > 0.5
 		s = dm / (2.0 - mx - mn)
-	return (h, s, l)
+	return (h, s, ln)
 
 
-def hslToRgb(h, s, l):
+def hslToRgb(h, s, ln):
 	# 0.0 <= h <= 360.0
 	# 0.0 <= s <= 1.0
-	# 0.0 <= l <= 1.0
-	if l < 0.5:
-		q = l * (1.0 + s)
+	# 0.0 <= ln <= 1.0
+	if ln < 0.5:
+		q = ln * (1.0 + s)
 	else:
-		q = l + s - l * s
-	p = 2 * l - q
+		q = ln + s - ln * s
+	p = 2 * ln - q
 	hk = h / 360.0
 	tr = (hk + 1.0 / 3) % 1
 	tg = hk % 1
@@ -62,16 +78,16 @@ def hslToRgb(h, s, l):
 			c = p + (q - p) * 6 * (2.0 / 3 - tc)
 		else:
 			c = p
-		rgb.append(int(c * 255))
+		rgb.append(round(c * 255))
 	rgb = tuple(rgb)
-	#rgb = rgb + (255,)
+	# rgb = rgb + (255,)
 	return rgb
 
 
-#def getRandomHueColor(s, l):
-#	import random
-#	h = random.uniform(0, 360)
-#	return hslToRgb(h, s, l)
+# def getRandomHueColor(s, l):
+# 	import random
+# 	h = random.uniform(0, 360)
+# 	return hslToRgb(h, s, l)
 
 
 def htmlColorToRgb(hc):
@@ -82,7 +98,21 @@ def htmlColorToRgb(hc):
 	)
 
 
-def rgbToHtmlColor(r, g, b):
+def rgbToHtmlColor(color: ColorType):
 	return "#" + "".join([
-		"%.2x" % x for x in (r, g, b)
+		f"{int(x):02x}" for x in color
 	])
+
+
+def rgbToCSS(color: ColorType) -> str:
+	color = tuple(color)
+	if len(color) == 3:
+		return f"rgb{color}"
+	elif len(color) == 4:
+		return f"rgba{color}"
+	else:
+		raise ValueError(f"invalid color={color}")
+
+
+def colorizeSpan(text, color):
+	return f"<span color=\"{rgbToHtmlColor(color)}\">{text}</span>"

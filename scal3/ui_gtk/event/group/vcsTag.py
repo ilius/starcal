@@ -12,15 +12,16 @@ class WidgetClass(BaseWidgetClass):
 	def __init__(self, group):
 		BaseWidgetClass.__init__(self, group)
 		####
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Tag Description"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Tag Description"))
+		label.set_xalign(0)
 		self.sizeGroup.add_widget(label)
 		pack(hbox, label)
 		##
-		self.statCheck = gtk.CheckButton(_("Stat"))
+		self.statCheck = gtk.CheckButton(label=_("Stat"))
 		pack(hbox, self.statCheck)
 		##
+		hbox.show_all()
 		pack(self, hbox)
 
 	def updateWidget(self):

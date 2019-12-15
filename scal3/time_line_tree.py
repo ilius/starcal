@@ -18,8 +18,10 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 import sys
-from math import log
 
 from scal3.interval_utils import ab_overlaps
 from scal3.time_utils import *
@@ -37,10 +39,10 @@ class Node:
 		# (with its children)
 		#if level > maxLevel:
 		#	maxLevel = level
-		#	print("maxLevel =", level)
+		#	log.debug(f"maxLevel = {level}")
 		#if level < minLevel:
 		#	minLevel = level
-		#	print("minLevel =", level)
+		#	log.debug(f"minLevel = {level}")
 		self.offset = offset ## in days
 		self.rightOri = rightOri ## FIXME
 		###
@@ -85,12 +87,8 @@ class Node:
 	def getChild(self, tm):
 		if not self.s0 <= tm <= self.s1:
 			raise RuntimeError(
-				"Node.getChild: Out of scope" +
-				"level=%s, offset=%s, rightOri=%s" % (
-					self.level,
-					self.offset,
-					self.rightOri,
-				)
+				f"Node.getChild: Out of scope: level={self.level}, " +
+				f"offset={self.offset}, rightOri={self.rightOri}"
 			)
 		dt = self.base ** (self.level - 1)
 		index = int((tm - self.offset) // dt)
@@ -148,11 +146,10 @@ class TimeLineTree:
 		if debug:
 			from time import strftime, localtime
 			f = "%F, %T"
-			print("%s.add: %s\t%s" % (
-				self.__class__.__name__,
-				strftime(f, localtime(t0)),
-				strftime(f, localtime(t1)),
-			))
+			log.info(
+				f"{self.__class__.__name__}.add: " +
+				f"{strftime(f, localtime(t0))}\t{strftime(f, localtime(t1))}"
+			)
 		if self.offset <= t0:
 			isRight = True
 			node = self.right
@@ -237,4 +234,4 @@ class TimeLineTree:
 #	for group in ui.eventGroups:
 #		t0 = now()
 #		group.updateOccurrenceNode()
-#		print(now()-t0, group.title)
+#		log.info(f"{now()-t0}, {group.title}")

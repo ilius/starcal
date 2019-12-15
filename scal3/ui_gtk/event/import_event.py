@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+from scal3 import logger
+log = logger.get()
+
 import sys
 
 from scal3.path import deskDir
@@ -9,6 +13,7 @@ from scal3 import ui
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.wizard import WizardWindow
+from scal3.ui_gtk.mywidgets.dialog import MyDialog
 
 
 class EventsImportWindow(WizardWindow):
@@ -22,21 +27,22 @@ class EventsImportWindow(WizardWindow):
 		#self.set_destroy_with_parent(True)
 		self.resize(400, 200)
 
-	class FirstStep(gtk.VBox):
+	class FirstStep(gtk.Box):
+		desc = ""
 		def __init__(self, win):
-			gtk.VBox.__init__(self)
+			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
 			self.win = win
 			self.buttons = (
-				(_("Cancel"), self.cancelClicked),
-				(_("Next"), self.nextClicked),
+				(_("Cancel"), self.onCancelClick),
+				(_("Next"), self.onNextClick),
 			)
 			####
-			hbox = gtk.HBox(spacing=10)
+			hbox = HBox(spacing=10)
 			frame = gtk.Frame()
 			frame.set_label(_("Format"))
 			#frame.set_border_width(10)
-			radioBox = gtk.VBox(spacing=10)
+			radioBox = VBox(spacing=10)
 			radioBox.set_border_width(10)
 			##
 			self.radioJson = gtk.RadioButton(label=_("JSON (StarCalendar)"))
@@ -51,12 +57,12 @@ class EventsImportWindow(WizardWindow):
 			##
 			frame.add(radioBox)
 			pack(hbox, frame, 0, 0, 10)
-			pack(hbox, gtk.Label(""), 1, 1)
+			pack(hbox, gtk.Label(), 1, 1)
 			pack(self, hbox)
 			####
-			hbox = gtk.HBox()
-			pack(hbox, gtk.Label(_("File") + ":"))
-			self.fcb = gtk.FileChooserButton(_("Import: Select File"))
+			hbox = HBox()
+			pack(hbox, gtk.Label(label=_("File") + ":"))
+			self.fcb = gtk.FileChooserButton(title=_("Import: Select File"))
 			self.fcb.set_local_only(True)
 			self.fcb.set_current_folder(deskDir)
 			pack(hbox, self.fcb, 1, 1)
@@ -67,10 +73,10 @@ class EventsImportWindow(WizardWindow):
 		def run(self):
 			pass
 
-		def cancelClicked(self, obj):
+		def onCancelClick(self, obj):
 			self.win.destroy()
 
-		def nextClicked(self, obj):
+		def onNextClick(self, obj):
 			fpath = self.fcb.get_filename()
 			if not fpath:
 				return
@@ -82,14 +88,15 @@ class EventsImportWindow(WizardWindow):
 				return
 			self.win.showStep(1, format, fpath)
 
-	class SecondStep(gtk.VBox):
+	class SecondStep(gtk.Box):
+		desc = ""
 		def __init__(self, win):
-			gtk.VBox.__init__(self)
+			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
 			self.win = win
 			self.buttons = (
-				(_("Back"), self.backClicked),
-				(_("Close"), self.closeClicked),
+				(_("Back"), self.onBackClick),
+				(_("Close"), self.onCloseClick),
 			)
 			####
 			self.textview = gtk.TextView()
@@ -116,51 +123,52 @@ class EventsImportWindow(WizardWindow):
 
 		def run(self, format, fpath):
 			self.redirectStdOutErr()
+			self.win.waitingDo(self._runAndCleanup, format, fpath)
+
+		def _runAndCleanup(self, format, fpath):
 			try:
 				if format == "json":
-					try:
-						text = open(fpath, "r", encoding="utf-8").read()
-					except Exception as e:
-						sys.stderr.write(
-							_(
-								"Error in reading file"
-							) + "\n%s\n" % e
-						)
-					else:
-						try:
-							data = jsonToData(text)
-						except Exception as e:
-							sys.stderr.write(
-								_(
-									"Error in loading JSON data"
-								) + "\n%s\n" % e
-							)
-						else:
-							try:
-								newGroups = ui.eventGroups.importData(data)
-							except Exception as e:
-								sys.stderr.write(
-									_(
-										"Error in importing events"
-									) + "\n%s\n" % e
-								)
-							else:
-								for group in newGroups:
-									self.win.manager.appendGroupTree(group)
-								print(
-									_(
-										"%s groups imported successfully"
-									) % _(len(newGroups))
-								)
+					self._runJson(fpath)
 				else:
-					raise ValueError("invalid format %r" % format)
+					raise ValueError(f"invalid format {format!r}")
 			finally:
 				self.restoreStdOutErr()
 
-		def backClicked(self, obj):
+		def _runJson(self, fpath):
+			try:
+				with open(fpath, "r", encoding="utf-8") as fp:
+					text = fp.read()
+			except Exception as e:
+				sys.stderr.write(f"{_('Error in reading file')}\n{e}\n")
+				return
+
+			try:
+				data = jsonToData(text)
+			except Exception as e:
+				sys.stderr.write(f"{_('Error in loading JSON data')}\n{e}\n")
+			else:
+				try:
+					res = ui.eventGroups.importData(data)
+				except Exception as e:
+					sys.stderr.write(f"{_('Error in importing events')}\n{e}\n")
+					log.exception("")
+				else:
+					for gid in res.newGroupIds:
+						group = ui.eventGroups[gid]
+						ui.eventUpdateQueue.put("+g", group, None)
+					# TODO: res.newEventIds
+					# TODO: res.modifiedEventIds
+					msg = _("Imported successfuly: {newGroupCount} new groups, {newEventCount} new events, {modifiedEventCount} modified events")
+					print(msg.format(
+						newGroupCount=_(len(res.newGroupIds)),
+						newEventCount=_(len(res.newEventIds)),
+						modifiedEventCount=_(len(res.modifiedEventIds)),
+					))
+
+		def onBackClick(self, obj):
 			self.win.showStep(0)
 
-		def closeClicked(self, obj):
+		def onCloseClick(self, obj):
 			self.win.destroy()
 
 	stepClasses = [

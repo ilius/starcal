@@ -1,5 +1,5 @@
-REM Install Python 3.4 (because pygi-aio does not work with Python 3.6)
-REM Add to environment variable: Python34/ and Python34/Scripts
+REM Install Python 3.7
+REM Add to PATH environment variable: Python37/ and Python37/Scripts
 REM Download latest pygi-aio from: https://sourceforge.net/projects/pygobjectwin32/files/
 REM Run pygi-aio, check these packages:
 REM - Base packages

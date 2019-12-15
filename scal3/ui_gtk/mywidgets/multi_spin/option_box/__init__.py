@@ -1,11 +1,12 @@
 #!/usr/bin/env python3
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.utils import imageClassButton
 from scal3.ui_gtk.mywidgets.multi_spin import MultiSpinButton
 
 
 @registerSignals
-class MultiSpinOptionBox(gtk.HBox):
+class MultiSpinOptionBox(gtk.Box):
 	signals = [
 		("activate", [])
 	]
@@ -26,14 +27,21 @@ class MultiSpinOptionBox(gtk.HBox):
 		**kwargs
 	):
 		if not is_hbox:
-			gtk.HBox.__init__(self, spacing=spacing)
-		self.spin = MultiSpinButton(sep, fields, **kwargs)
+			gtk.Box.__init__(
+				self,
+				orientation=gtk.Orientation.HORIZONTAL,
+				spacing=spacing,
+			)
+		self.spin = MultiSpinButton(sep=sep, fields=fields, **kwargs)
 		pack(self, self.spin, 1, 1)
 		self.hist_size = hist_size
-		self.option = gtk.Button()
-		self.option.add(gtk.Arrow(gtk.ArrowType.DOWN, gtk.ShadowType.IN))
+		self.option = imageClassButton(
+			"pan-down-symbolic",
+			"down",  # FIXME: same class as decrease button?
+			MultiSpinButton.buttonSize,
+		)
 		pack(self, self.option, 1, 1)
-		self.menu = gtk.Menu()
+		self.menu = Menu()
 		#self.menu.show()
 		self.option.connect("button-press-event", self.option_pressed)
 		self.menuItems = []

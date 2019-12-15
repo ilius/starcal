@@ -1,59 +1,53 @@
 #!/usr/bin/env python3
+
+from scal3 import logger
+log = logger.get()
+
 import sys
 from os.path import join
 from time import localtime
 
 from scal3.cal_types import gregorian
 from scal3.path import *
-from scal3.utils import printError
 
-DATE_GREG = 0  # Gregorian (common calendar)
+GREGORIAN = 0  # Gregorian (common calendar)
 modules = [gregorian]
 
 
-def myRaise():
-	i = sys.exc_info()
-	sys.stdout.write("File \"%s\", line %s: %s: %s\n" % (
-		__file__,
-		i[2].tb_lineno,
-		i[0].__name__,
-		i[1],
-	))
-
-
-for name in open(join(modDir, "modules.list")).read().split("\n"):
-	name = name.strip()
-	if not name:
-		continue
-	if name.startswith("#"):
-		continue
-	#try:
-	mod = __import__("scal3.cal_types.%s" % name, fromlist=[name])
-	#mod = __import__(name) # Need to "sys.path.insert(0, modDir)" before
-	#except:
-	#	myRaise()
-	#	print("Could not load calendar modules "%s"" % name)
-	#	continue
-	for attr in (
-		"name",
-		"desc",
-		"origLang",
-		"getMonthName",
-		"getMonthNameAb",
-		"minMonthLen",
-		"maxMonthLen",
-		"getMonthLen",
-		"to_jd",
-		"jd_to",
-		"options",
-		"save",
-	):
-		if not hasattr(mod, attr):
-			printError(
-				"Invalid calendar module: " +
-				"module \"%s\" has no attribute \"%s\"\n" % (name, attr)
-			)
-	modules.append(mod)
+with open(join(modDir, "modules.list")) as fp:
+	for name in fp.read().split("\n"):
+		name = name.strip()
+		if not name:
+			continue
+		if name.startswith("#"):
+			continue
+		#try:
+		mod = __import__(f"scal3.cal_types.{name}", fromlist=[name])
+		#mod = __import__(name) # Need to "sys.path.insert(0, modDir)" before
+		#except:
+		#	log.exception("")
+		#	log.info(f"Could not load calendar modules {name!r}")
+		#	continue
+		for attr in (
+			"name",
+			"desc",
+			"origLang",
+			"getMonthName",
+			"getMonthNameAb",
+			"minMonthLen",
+			"maxMonthLen",
+			"getMonthLen",
+			"to_jd",
+			"jd_to",
+			"options",
+			"save",
+		):
+			if not hasattr(mod, attr):
+				log.error(
+					"Invalid calendar module: " +
+					f"module {name!r} has no attribute {attr!r}\n"
+				)
+		modules.append(mod)
 
 
 class CalTypesHolder:
@@ -138,6 +132,17 @@ class CalTypesHolder:
 	def allIndexes(self):
 		return self.active + self.inactive
 
+	def __contains__(self, key) -> bool:
+		if isinstance(key, str):
+			return key in self.byName
+		if isinstance(key, int):
+			return 0 <= key < len(modules)
+		else:
+			raise TypeError(
+				f"invalid key {key!r} given to " +
+				f"{self.__class__.__name__!r}.__getitem__"
+			)
+
 	# returns (module, found) where found is bool
 	def __getitem__(self, key):
 		if isinstance(key, str):
@@ -150,11 +155,10 @@ class CalTypesHolder:
 				return None, False
 			return modules[key], True
 		else:
-			raise TypeError("invalid key %r given to %s.__getitem__" % (
-				key,
-				self.__class__.__name__,
-			))
-
+			raise TypeError(
+				f"invalid key {key!r} given to " +
+				f"{self.__class__.__name__!r}.__getitem__"
+			)
 	def get(self, key, default=None):
 		if isinstance(key, str):
 			return self.byName.get(key, default)
@@ -163,10 +167,10 @@ class CalTypesHolder:
 				return default
 			return modules[key]
 		else:
-			raise TypeError("invalid key %r given to %s.__getitem__" % (
-				key,
-				self.__class__.__name__,
-			))
+			raise TypeError(
+				f"invalid key {key!r} given to " +
+				f"{self.__class__.__name__!r}.__getitem__"
+			)
 
 	def getDesc(self, key):
 		return self.get(key).desc
@@ -175,6 +179,7 @@ class CalTypesHolder:
 		if index >= len(modules):
 			return ""
 		return modules[index].name
+
 
 calTypes = CalTypesHolder()
 
@@ -196,9 +201,16 @@ def convert(y, m, d, source, target):
 	)
 
 
-def getSysDate(mode):
-	if mode == DATE_GREG:
+def getMonthLen(year: int, month: int, calType: int) -> int:
+	module, ok = calTypes[calType]
+	if not ok:
+		raise RuntimeError(f"cal type '{calType}' not found")
+	return module.getMonthLen(year, month)
+
+
+def getSysDate(calType):
+	if calType == GREGORIAN:
 		return localtime()[:3]
 	else:
 		gy, gm, gd = localtime()[:3]
-		return convert(gy, gm, gd, DATE_GREG, mode)
+		return convert(gy, gm, gd, GREGORIAN, calType)

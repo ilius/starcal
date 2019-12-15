@@ -111,14 +111,3 @@ def getMonthLen(year, month):
 		return 35 + isLeap(year)
 	else:
 		return monthLen[month - 1]
-
-
-if __name__ == "__main__":
-	import sys
-	from . import gregorian
-	for gy in range(2012, 1990, -1):
-		jd = gregorian.to_jd(gy, 1, 1)
-		ey, em, ed = jd_to(jd)
-		#if ed==22:
-		#	print(gy)
-		print("%.4d/%.2d/%.2d\t%.4d/%.2d/%.2d" % (gy, 1, 1, ey, em, ed))

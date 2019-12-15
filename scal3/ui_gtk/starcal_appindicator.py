@@ -18,6 +18,9 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 import sys
 import atexit
 import os
@@ -25,7 +28,6 @@ from os.path import dirname
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
 from scal3.path import *
-from scal3.utils import myRaise
 from scal3 import core
 from scal3 import locale_man
 from scal3.locale_man import tr as _
@@ -42,7 +44,7 @@ from gi.repository import AppIndicator3 as appindicator
 
 
 class IndicatorStatusIconWrapper:
-	imNamePrefix = APP_NAME + "-indicator-%s-" % os.getuid()
+	imNamePrefix = f"{APP_NAME}-indicator-{os.getuid()}-"
 
 	def __init__(self, mainWin):
 		self.mainWin = mainWin
@@ -61,7 +63,7 @@ class IndicatorStatusIconWrapper:
 
 	"""
 	def create_menu_simple(self):
-		menu = gtk.Menu()
+		menu = Menu()
 		###
 		for item in [
 			self.mainWin.getMainWinMenuItem(),
@@ -75,7 +77,7 @@ class IndicatorStatusIconWrapper:
 	"""
 
 	def create_menu(self):
-		menu = gtk.Menu()
+		menu = Menu()
 		self.menuItems = []
 		# ^ just to prevent GC from removing custom objects for items
 		####
@@ -90,10 +92,15 @@ class IndicatorStatusIconWrapper:
 		item.show()
 		menu.append(item)
 		####
-		submenu = gtk.Menu()
+		item = gtk.MenuItem(_("Desktop Widget"))
+		item.connect("activate", self.mainWin.dayCalWinShow)
+		item.show()
+		menu.append(item)
+		####
+		submenu = Menu()
 		for item in self.mainWin.getStatusIconPopupItems():
 			self.menuItems.append(item)
-			item.show()
+			item.show_all()
 			submenu.add(item)
 		sitem = MenuItem(label=_("More"))
 		sitem.set_submenu(submenu)
@@ -124,8 +131,8 @@ class IndicatorStatusIconWrapper:
 				continue
 			try:
 				os.remove(join(tmpDir, fname))
-			except:
-				myRaise()
+			except Exception:
+				log.exception("")
 
 	def is_embedded(self):
 		return True  # FIXME

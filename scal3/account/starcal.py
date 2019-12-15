@@ -18,13 +18,13 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 import requests
 from datetime import datetime
 from pprint import pprint
 
-from scal3.utils import (
-	myRaise,
-)
 from scal3.time_utils import (
 	jsonTimeFromEpoch,
 )
@@ -47,8 +47,8 @@ from scal3.cal_types import (
 
 def formatJd(remoteEvent, attrName):
 	jd = remoteEvent[attrName]
-	year, month, day = calTypes[remoteEvent["calType"]].jd_to(jd)
-	return "%.4d/%.2d/%.2d" % (year, month, day)
+	y, m, d = calTypes[remoteEvent["calType"]].jd_to(jd)
+	return f"{y:04}/{m:02}/{d:02}"
 
 
 def allDayTaskDecoder(remoteEvent):
@@ -65,7 +65,7 @@ def allDayTaskDecoder(remoteEvent):
 		rules.append(
 			[
 				"duration",
-				"%d day" % (remoteEvent["endJd"] - remoteEvent["startJd"])
+				str(remoteEvent["endJd"] - remoteEvent["startJd"]) + " day",
 			]
 		)
 	else:
@@ -125,7 +125,7 @@ def decodeRemoteEvent(remoteEventFull, accountId, group):
 	try:
 		decoder = remoteEventTypeDecoders[eventType]
 	except KeyError:
-		return None, "bad remoteEventFull: unkown type \"%s\"" % eventType
+		return None, f"bad remoteEventFull: unkown type \"{eventType}\""
 	eventData = {
 		"summary": remoteEvent["summary"],
 		"description": remoteEvent["description"],
@@ -137,8 +137,8 @@ def decodeRemoteEvent(remoteEventFull, accountId, group):
 	try:
 		eventTypeData = decoder(remoteEvent)
 	except Exception as e:
-		myRaise()
-		return None, "bad remoteEvent: %s" % e
+		log.exception("")
+		return None, f"bad remoteEvent: {e}"
 	eventData.update(eventTypeData)
 	event = event_lib.classes.event.byName[eventType]()
 	event.setData(eventData)
@@ -207,8 +207,9 @@ class StarCalendarAccount(Account):
 
 		try:
 			data = res.json()
-		except:
-			error = "non-json data: %s" % res.text
+		except Exception:
+			# simplejson.errors.JSONDecodeError
+			error = "non-json data: " + res.text
 		else:
 			try:
 				error = data.pop("error")
@@ -230,7 +231,7 @@ class StarCalendarAccount(Account):
 
 		return None if successful, or error string if failed
 		"""
-		print("login started")
+		log.info("login started")
 
 		email = self.email
 		password = self.password
@@ -245,8 +246,9 @@ class StarCalendarAccount(Account):
 		token = ""
 		try:
 			data = res.json()
-		except:
-			error = "non-json data: %s" % res.text
+		except Exception:
+			# simplejson.errors.JSONDecodeError
+			error = "non-json data: " + res.text
 		else:
 			error = data.get("error", "")
 			token = data.get("token", "")
@@ -257,13 +259,13 @@ class StarCalendarAccount(Account):
 			return error
 
 		self.lastToken = token
-		print("login successful")
+		log.info("login successful")
 
 	def fetchGroups(self):
 		"""
 		return None if successful, or error string if failed
 		"""
-		print("fetchGroups started")
+		log.info("fetchGroups started")
 		data, error = self.call("get", "event/groups/")
 		if error:
 			return error
@@ -283,9 +285,9 @@ class StarCalendarAccount(Account):
 				if g["ownerEmail"] == self.email
 			]
 		except Exception as e:
-			return "bad data: %s" % e
+			return f"bad data: {e}"
 
-		print("fetchGroups successful, %s groups" % len(self.remoteGroups))
+		log.info(f"fetchGroups successful, {len(self.remoteGroups)} groups")
 
 	def addNewGroup(self, title):
 		pass
@@ -297,7 +299,7 @@ class StarCalendarAccount(Account):
 		"""
 		return None if successful, or error string if failed
 		"""
-		print("sync started")
+		log.info("sync started")
 		if not group.remoteIds:
 			return "sync not enabled"
 		if group.remoteIds[0] != self.id:
@@ -312,10 +314,7 @@ class StarCalendarAccount(Account):
 
 		syncStart = datetime.now()
 
-		path = "event/groups/%s/modified-events/%s/" % (
-			groupId,
-			jsonTimeFromEpoch(lastSyncStartEpoch),
-		)
+		path = f"event/groups/{groupId}/modified-events/{jsonTimeFromEpoch(lastSyncStartEpoch)}/"
 		data, error = self.call("get", path)
 		if error:
 			return error
@@ -326,17 +325,17 @@ class StarCalendarAccount(Account):
 		try:
 			group.setReadOnly(True)
 
-			### Pull
+			# ## Pull
 			for remoteEvent in remoteModifiedEvents:
 				# remoteEvent is a dict
-				pprint(remoteEvent)
+				plog.info(remoteEvent)
 				event, error = decodeRemoteEvent(
 					remoteEvent,
 					self.id,
 					group,
 				)
 				if error:
-					print(error)
+					log.error(error)
 					continue
 				# record = event.save() # record is (lastEpoch, lastHash, **args)
 				# event.lastMergeSha1 = [
@@ -345,13 +344,13 @@ class StarCalendarAccount(Account):
 				# ]
 				# group.replaceEvent(event)
 
-			### Push
+			# ## Push
 			if lastSyncEndEpoch:
 				pass
 
 		except Exception as e:
-			myRaise()
-			return "sync failed: %s" % e
+			log.exception("")
+			return f"sync failed: {e}"
 		else:
 			group.afterSync(syncStart.timestamp())
 		finally:

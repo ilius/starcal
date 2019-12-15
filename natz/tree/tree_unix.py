@@ -29,6 +29,7 @@ def findZoneInfoDir():
 
 	raise IOError("zoneinfo directory not found")
 
+
 infoDir = findZoneInfoDir()
 
 infoDirL = list(os.path.split(infoDir))
@@ -49,7 +50,7 @@ def _addZoneNode(parentDict, zone, zoneNamesLevel):
 				zoneNamesLevel,
 			)
 	else:
-		print("invalid path =", path)
+		log.error(f"invalid path = {path}")
 
 
 def getZoneInfoTree():
@@ -81,5 +82,5 @@ def getZoneInfoTree():
 	#zoneNamesList = []
 	#for levelNames in zoneNamesLevel:
 	#	zoneNamesList += sorted(levelNames)
-	#from pprint import pprint ; pprint(zoneTree)
+	#from pprint import pprint ; plog.info(zoneTree)
 	return zoneTree

@@ -148,12 +148,3 @@ def getFirstCommitEpoch(obj):
 
 def getLastCommitEpoch(obj):
 	return obj.repo[len(obj.repo) - 1].date()[0]
-
-
-def getLastCommitIdUntilJd(obj, jd):
-	untilEpoch = getEpochFromJd(jd)
-	last = obj.est.getLastBefore(untilEpoch)
-	if not last:
-		return
-	t0, t1, rev_id = last
-	return str(obj.repo[rev_id])

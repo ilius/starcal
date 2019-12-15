@@ -18,10 +18,15 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 import time
 from time import localtime, mktime
 from time import time as now
 from datetime import datetime
+
+from typing import Optional, Tuple, List, Dict, Union
 
 import natz
 
@@ -31,6 +36,7 @@ from scal3.utils import ifloor, iceil
 
 G10000_epoch = 253402300800 # getEpochFromJd(gregorian.to_jd(10000, 1, 1))
 
+TZ = Optional[natz.TimeZone]
 
 # jd is the integer value of Chreonological Julian Day,
 # which is specific to time zone
@@ -53,7 +59,7 @@ utcOffsetByJdCache = {}
 # utcOffsetByJdCacheSize # FIXME
 
 
-#def getUtcOffsetByEpoch(epoch):
+#def getUtcOffsetByEpoch(epoch: int) -> int:
 #	try:
 #		return (
 #			datetime.fromtimestamp(epoch) - datetime.utcfromtimestamp(epoch)
@@ -62,7 +68,7 @@ utcOffsetByJdCache = {}
 #		return 0
 
 
-def getUtcOffsetByEpoch(epoch, tz=None):
+def getUtcOffsetByEpoch(epoch: int, tz: TZ = None) -> int:
 	if epoch < J0001_epoch:
 		return 0
 	if epoch >= G10000_epoch:
@@ -72,31 +78,34 @@ def getUtcOffsetByEpoch(epoch, tz=None):
 	try:
 		dt = datetime.fromtimestamp(epoch)
 	except ValueError as e:
-		print("epoch=", epoch, "error:", e)
+		log.error(f"epoch={epoch}, error: {e}")
 		return 0
 	return tz.utcoffset(dt).total_seconds()
 	#delta = 0
 	#while True:
 	#	try:
-	#		return tz.utcoffset(datetime.fromtimestamp(epoch + delta)).total_seconds()
-	#	except AmbiguousTimeError:## FIXME: do we still get this error with dateutil.tz ?
+	#		return tz.utcoffset(
+	#			datetime.fromtimestamp(epoch + delta),
+	#		).total_seconds()
+	#	except AmbiguousTimeError:
+	#		## FIXME: do we still get this error with dateutil.tz ?
 	#		#d = datetime.fromtimestamp(epoch + 3600)
-	#		#print(
+	#		# log.debug(
 	#		#	"AmbiguousTimeError",
 	#		#	d.year, d.month, d.day,
 	#		#	d.hour, d.minute, d.second,
 	#		#)
 	#		delta += 3600
-	#		print("delta = %s" % delta)
+	#		log.info(f"delta = {delta}")
 	#	except (
 	#		ValueError,
 	#		OverflowError,
 	#	):
-	#		return tz._utcoffset.total_seconds() ## tz._utcoffset does not exist with dateutil
+	#		return tz._utcoffset.total_seconds()
+	#		# tz._utcoffset does not exist with dateutil
 
 
-
-def getUtcOffsetByGDate(year, month, day, tz=None):
+def getUtcOffsetByGDate(year: int, month: int, day: int, tz: TZ = None) -> int:
 	if year <= 0:
 		return 0
 	if year >= 10000:
@@ -106,15 +115,15 @@ def getUtcOffsetByGDate(year, month, day, tz=None):
 	try:
 		dt = datetime(year, month, day)
 	except ValueError as e:
-		print("year=", year, "error:", e)
+		log.error(f"getUtcOffsetByGDate: year={year}, error: {e}")
 		return 0
 	return tz.utcoffset(dt).total_seconds()
 
-#def getUtcOffsetByJd(jd, tz=None):
+#def getUtcOffsetByJd(jd, tz: TZ = None) -> int:
 #	return getUtcOffsetByEpoch(getEpochFromJd(jd), tz)
 
 
-def getUtcOffsetByJd(jd, tz=None):
+def getUtcOffsetByJd(jd: int, tz: TZ = None) -> int:
 	if not tz:
 		tz = natz.gettz()
 	tzStr = str(tz)
@@ -134,72 +143,83 @@ def getUtcOffsetByJd(jd, tz=None):
 	return offset
 
 
-def getUtcOffsetCurrent(tz=None):
+def getUtcOffsetCurrent(tz: TZ = None) -> int:
 	return getUtcOffsetByEpoch(now(), tz)
 
-#def getUtcOffsetCurrent():
+#def getUtcOffsetCurrent() -> int:
 #	return (
 #		-time.altzone if time.daylight and localtime().tm_isdst
 #		else -time.timezone
 #	)
 
 
-def getGtkTimeFromEpoch(epoch):
+def getGtkTimeFromEpoch(epoch: int) -> int:
 	return int((epoch - 1321715288.39) * 1000 // 1)
 
 
-def getFloatJdFromEpoch(epoch, tz=None):
+def getFloatJdFromEpoch(epoch, tz: TZ = None) -> float:
 	return (epoch + getUtcOffsetByEpoch(epoch, tz)) / (24.0 * 3600) + J1970
 	#return datetime.fromtimestamp(epoch).toordinal() - 1 + J0001
 
 
-def getJdFromEpoch(epoch, tz=None):
+def getJdFromEpoch(epoch, tz: TZ = None) -> int:
 	return ifloor(getFloatJdFromEpoch(epoch, tz))
 
 
-def getEpochFromJd(jd, tz=None):
+def getEpochFromJd(jd, tz: TZ = None) -> int:
 	localEpoch = (jd - J1970) * 24 * 3600
 	year, month, day = jd_to_g(jd)  # jd or jd-1? FIXME
 	return localEpoch - getUtcOffsetByGDate(year, month, day, tz)
-#def getEpochFromJd(jd):
+
+#def getEpochFromJd(jd: int) -> int:
 #	return int(mktime(datetime.fromordinal(int(jd) - J0001 + 1).timetuple()))
 
 
-def roundEpochToDay(epoch):
+def roundEpochToDay(epoch: int) -> int:
 	return getEpochFromJd(round(getFloatJdFromEpoch(epoch)))
 
 
-def getJdListFromEpochRange(startEpoch, endEpoch):
+def getJdListFromEpochRange(startEpoch: int, endEpoch: int) -> List[int]:
 	startJd = getJdFromEpoch(startEpoch)
 	endJd = getJdFromEpoch(endEpoch - 0.01) + 1
 	return list(range(startJd, endJd))
 
 
-def getHmsFromSeconds(second):
+def getHmsFromSeconds(second: int) -> Tuple[int, int, int]:
 	minute, second = divmod(int(second), 60)
 	hour, minute = divmod(minute, 60)
 	return hour, minute, second
 
 
-def getJhmsFromEpoch(epoch, currentOffset=False, tz=None):
-	## return a tuple (julain_day, hour, minute, second) from epoch
+def getJhmsFromEpoch(
+	epoch: int,
+	currentOffset: bool = False,
+	tz: TZ = None,
+) -> Tuple[int, int, int, int]:
+	# return a tuple (julain_day, hour, minute, second) from epoch
 	offset = (
 		getUtcOffsetCurrent(tz) if currentOffset
 		else getUtcOffsetByEpoch(epoch, tz)
-	)  # FIXME
+	) # FIXME
 	days, second = divmod(ifloor(epoch + offset), 24 * 3600)
 	return (days + J1970,) + getHmsFromSeconds(second)
 
 
-def getSecondsFromHms(hour, minute, second=0):
+def getSecondsFromHms(hour: int, minute: int, second: int = 0) -> int:
 	return hour * 3600 + minute * 60 + second
 
 
-def getEpochFromJhms(jd, hour, minute, second, tz=None):
+def getEpochFromJhms(
+	jd: int,
+	hour: int,
+	minute: int,
+	second: int,
+	tz: TZ = None,
+) -> int:
 	return getEpochFromJd(jd, tz) + hour * 3600 + minute * 60 + second
 
 
-def getJdAndSecondsFromEpoch(epoch):
+def getJdAndSecondsFromEpoch(epoch: int) -> Tuple[int, int]:
 	"""return a tuple (julain_day, extra_seconds) from epoch"""
 	days, second = divmod(epoch, 24 * 3600)
 	return (days + J1970, second)
@@ -211,79 +231,84 @@ durationUnitsRel = (
 	(60, "hour"),
 	(24, "day"),
 	(7, "week"),
-)
+) # type: List[Tuple[int, str]]
 
-durationUnitsAbs = []
+durationUnitsAbs = [] # type: List[Tuple[int, str]]
 num = 1
 for item in durationUnitsRel:
 	num *= item[0]
 	durationUnitsAbs.append((num, item[1]))
 
-durationUnitValueToName = dict(durationUnitsAbs)
-durationUnitValues = [item[0] for item in durationUnitsAbs]
-durationUnitNames = [item[1] for item in durationUnitsAbs]
+durationUnitValueToName = dict(durationUnitsAbs) # type: Dict[int, str]
+durationUnitValues = [item[0] for item in durationUnitsAbs] # type: List[int]
+durationUnitNames = [item[1] for item in durationUnitsAbs] # type: List[str]
 
 
-def timeEncode(tm, checkSec=False):
+def timeEncode(
+	tm: Union[Tuple[int, int, int], Tuple[int, int]],
+	checkSec: bool = False,
+) -> str:
 	if len(tm) == 2:
 		tm = tm + (0,)
 	if checkSec:
 		if len(tm) == 3 and tm[2] > 0:
-			return "%.2d:%.2d:%.2d" % tuple(tm)
+			return f"{tm[0]:02d}:{tm[1]:02d}:{tm[2]:02d}"
 		else:
-			return "%.2d:%.2d" % tuple(tm[:2])
+			return f"{tm[0]:02d}:{tm[1]:02d}"
 	else:
-		return "%.2d:%.2d:%.2d" % tuple(tm)
+		return f"{tm[0]:02d}:{tm[1]:02d}:{tm[2]:02d}"
 
 
-def simpleTimeEncode(tm):
+def simpleTimeEncode(
+	tm: Union[Tuple[int, int, int], Tuple[int, int], Tuple[int]],
+) -> str:
 	if len(tm) == 1:
-		return "%d" % tm
+		return str(int(tm))
 	elif len(tm) == 2:
 		if tm[1] == 0:
-			return "%d" % tm[0]
+			return str(int(tm[0]))
 		else:
-			return "%d:%.2d" % tm
+			return f"{tm[0]}:{tm[1]:02d}"
 	elif len(tm) == 3:
 		if tm[1] == 0:
 			if tm[2] == 0:
-				return "%d" % tm[0]
+				return str(int(tm))
 			else:
-				return "%d:%.2d:%.2d" % tm
+				return f"{tm[0]}:{tm[1]:02d}:{tm[2]:02d}"
 		else:
-			return "%d:%.2d:%.2d" % tm
+			return f"{tm[0]}:{tm[1]:02d}:{tm[2]:02d}"
 
 
-def timeDecode(st):
+def timeDecode(st: str) -> Tuple[int, int, int]:
 	parts = st.split(":")
 	try:
 		tm = tuple([int(p) for p in parts])
 	except ValueError:
-		raise ValueError("bad time %s" % st)
+		raise ValueError(f"bad time '{st}'")
 	if len(tm) == 1:
 		tm += (0, 0)
 	elif len(tm) == 2:
 		tm += (0,)
 	elif len(tm) != 3:
-		raise ValueError("bad time %s" % st)
+		raise ValueError(f"bad time '{st}'" )
 	return tm
 
 
-def hmEncode(hm):
-	return "%.2d:%.2d" % tuple(hm)
+def hmEncode(hm: Tuple[int, int]) -> str:
+	return f"{hm[0]:02d}:{hm[1]:02d}"
 
 
-def hmDecode(st):
+def hmDecode(st: str) -> Tuple[int, int]:
 	parts = st.split(":")
 	if len(parts) == 1:
 		return (int(parts[0]), 0)
 	elif len(parts) == 2:
 		return (int(parts[0]), int(parts[1]))
 	else:
-		raise ValueError("bad hour:minute time %s" % st)
+		raise ValueError(f"bad hour:minute time '{st}'")
 
 
-def hmsRangeToStr(h1, m1, s1, h2, m2, s2):
+def hmsRangeToStr(h1: int, m1: int, s1: int, h2: int, m2: int, s2: int) -> str:
 	return timeEncode(
 		(h1, m1, s1),
 		True,
@@ -293,31 +318,24 @@ def hmsRangeToStr(h1, m1, s1, h2, m2, s2):
 	)
 
 
-def epochGregDateTimeEncode(epoch, tz=None):
+def epochGregDateTimeEncode(epoch: int, tz: TZ = None) -> str:
 	jd, hour, minute, second = getJhmsFromEpoch(epoch, tz)
 	year, month, day = jd_to_g(jd)
-	return "%.4d/%.2d/%.2d %.2d:%.2d:%.2d" % (
-		year,
-		month,
-		day,
-		hour,
-		minute,
-		second,
-	)
+	return f"{year:04d}/{month:02d}/{day:02d} {hour:02d}:{minute:02d}:{second:02d}"
 
 
-def encodeJd(jd):
+def encodeJd(jd: int) -> str:
 	return epochGregDateTimeEncode(getEpochFromJd(jd))
 
 
-def durationEncode(value, unit):
+def durationEncode(value: int, unit: int) -> str:
 	iValue = int(value)
 	if iValue == value:
 		value = iValue
-	return "%s %s" % (value, durationUnitValueToName[unit])
+	return str(value) + " " + durationUnitValueToName[unit]
 
 
-def durationDecode(durStr):
+def durationDecode(durStr: str) -> Tuple[int, int]:
 	durStr = durStr.strip()
 	if " " in durStr:
 		value, unit = durStr.split(" ")
@@ -328,14 +346,14 @@ def durationDecode(durStr):
 		for unitValue, unitName in durationUnitsAbs:
 			if unit in (unitName, unitName + "s"):  # ,unitName[0]
 				return (value, unitValue)
-	raise ValueError("invalid duration %r" % durStr)
+	raise ValueError(f"invalid duration '{durStr}'")
 
 
-def timeToFloatHour(h, m, s=0):
+def timeToFloatHour(h: int, m: int, s: int = 0) -> float:
 	return h + m / 60.0 + s / 3600.0
 
 
-def floatHourToTime(fh):
+def floatHourToTime(fh: float) -> Tuple[int, int, int]:
 	h, r = divmod(fh, 1)
 	m, r = divmod(r * 60, 1)
 	return (
@@ -344,7 +362,8 @@ def floatHourToTime(fh):
 		int(r * 60),
 	)
 
-def clockWaitMilliseconds():
+
+def clockWaitMilliseconds() -> int:
 	return int(1000 * (1.01 - now() % 1))
 
 
@@ -354,8 +373,9 @@ def jsonTimeFromEpoch(epoch: int) -> str:
 	# so we have to set `tz` to None
 	return tm.strftime("%Y-%m-%dT%H:%M:%SZ")
 
+
 if __name__ == "__main__":
-	#print(floatHourToTime(3.6))
+	# log.debug(floatHourToTime(3.6))
 	for tm in (
 		(8, 0, 0),
 		(8, 0),
@@ -364,4 +384,4 @@ if __name__ == "__main__":
 		(8, 30, 55),
 		(8, 0, 10),
 	):
-		print("%r, %r" % (tm, simpleTimeEncode(tm)))
+		log.info(f"{tm!r}, {simpleTimeEncode(tm)!r}")

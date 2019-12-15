@@ -18,12 +18,17 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
+from typing import Tuple, List, Union
+
 from scal3.utils import s_join
 
 CLOSED_START, OPEN_START, OPEN_END, CLOSED_END = range(4)
 
 
-def ab_overlaps(a0, b0, a1, b1):
+def ab_overlaps(a0: float, b0: float, a1: float, b1: float) -> None:
 	return (
 		b0 - a0
 		+ b1 - a1
@@ -31,11 +36,14 @@ def ab_overlaps(a0, b0, a1, b1):
 	)
 
 
-def md_overlaps(m0, d0, m1, d1):
+def md_overlaps(m0: float, d0: float, m1: float, d1: float) -> None:
 	return d0 + d1 - abs(m0 - m1) > 0.01
 
 
-def simplifyNumList(nums, minCount=3):
+def simplifyNumList(
+	nums: List[int],
+	minCount: int = 3,
+) -> List[Union[int, Tuple[int, int]]]:
 	"""
 	nums must be sorted
 	minCount >= 2
@@ -58,7 +66,15 @@ def simplifyNumList(nums, minCount=3):
 	return ranges
 
 
-def getIntervalPoints(lst, lst_index=0):
+def getIntervalPoints(
+	lst: List[
+		Union[
+			Tuple[int, int],
+			Tuple[int, int, bool],
+		],
+	],
+	lst_index: int = 0,
+) -> List[Tuple[int, int, int]]:
 	"""
 	lst is a list of (start, end, closedEnd) or (start, end) tuples
 		start (int)
@@ -91,15 +107,26 @@ def getIntervalPoints(lst, lst_index=0):
 	return points
 
 
-def getIntervalListByPoints(points):
+def getIntervalListByPoints(
+	points: List[Tuple[int, int, int]],
+) -> List[Tuple[int, int, bool]]:
+	"""
+	points: a list of (pos, ptype, lst_index) tuples
+		ptype in (CLOSED_START, OPEN_START, OPEN_END, CLOSED_END)
+
+	return a list of (start, end, closedEnd) tuples
+		start (int)
+		end (int)
+		closedEnd (bool)
+	"""
 	lst = []
 	startedStack = []
 	for pos, ptype, _ in points:
 		if ptype in (OPEN_END, CLOSED_END):
 			if not startedStack:
-				raise RuntimeError("pos=%s, start=None" % pos)
+				raise RuntimeError(f"pos={pos}, start=None")
 			start = startedStack.pop()
-			#print("pop %s"%start)
+			# log.debug(f"pop {start}")
 			if not startedStack:
 				lst.append((
 					start,
@@ -107,7 +134,7 @@ def getIntervalListByPoints(points):
 					ptype == CLOSED_END,
 				))
 		else:
-			#print("push %s"%pos)
+			# log.debug(f"push {pos}")
 			startedStack.append(pos)
 	return lst
 
@@ -156,7 +183,7 @@ def intersectionOfTwoIntervalList(*lists):
 			if None not in openStartList:
 				start = max(openStartList)
 				if start > pos:
-					raise RuntimeError("start - pos = %s" % (start - pos))
+					raise RuntimeError(f"start - pos = {start-pos}")
 				if pos > start or ptype == CLOSED_END:
 					result.append((
 						start,
@@ -164,17 +191,16 @@ def intersectionOfTwoIntervalList(*lists):
 						ptype == CLOSED_END,
 					))
 				#if start == pos:  # FIXME
-				#	print("start = pos = %s, ptype=%s"%(start%(24*3600)/3600.0, ptype))
+				#	log.info(f"start = pos={start%(24*3600)/3600.0}, ptype={ptype}")
 			openStartList[lst_index] = None
 		else:  # start
 			# start == pos
 			if openStartList[lst_index] is None:
 				openStartList[lst_index] = pos
 			else:
-				raise RuntimeError("pos=%s, openStartList[%s]=%s" % (
-					pos,
-					lst_index,
-					openStartList[lst_index],
-				))
+				raise RuntimeError(
+					f"pos={pos}, openStartList[{lst_index}]=" +
+					f"{openStartList[lst_index]}"
+				)
 	result = humanizeIntervalList(result)  # right place? FIXME
 	return result

@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+from scal3 import logger
+log = logger.get()
+
 from time import time as now
 import sys
 
@@ -37,7 +41,10 @@ class ConButtonBase:
 		return True
 
 	def onPressRemain(self, func, counter):
-		if counter == self.counter and now() - self.pressTm >= ui.timeout_repeat / 1000:
+		if (
+			counter == self.counter and
+			now() - self.pressTm >= ui.timeout_repeat / 1000
+		):
 			func()
 			timeout_add(
 				ui.timeout_repeat,
@@ -59,11 +66,11 @@ class ConButton(gtk.Button, ConButtonBase):
 
 
 if __name__ == "__main__":
-	win = gtk.Dialog(parent=None)
+	win = gtk.Dialog()
 	button = ConButton("Press")
 
 	def con_clicked(arg):
-		print("%.4f\tcon-clicked" % now())
+		log.info(f"{now():.4f}\tcon-clicked")
 
 	button.connect("con-clicked", con_clicked)
 	pack(win.vbox, button, 1, 1)

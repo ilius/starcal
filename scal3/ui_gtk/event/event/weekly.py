@@ -34,45 +34,45 @@ class WidgetClass(common.WidgetClass):
 	def __init__(self, event):## FIXME
 		common.WidgetClass.__init__(self, event)
 		######
-		sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
+		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		######
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Start"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Start"))
+		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.startDateInput = DateButton()
 		pack(hbox, self.startDateInput)
 		###
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
 		######
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Repeat Every "))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Repeat Every "))
+		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.weeksSpin = IntSpinButton(1, 99999)
 		pack(hbox, self.weeksSpin)
-		pack(hbox, gtk.Label("  " + _(" Weeks")))
+		pack(hbox, gtk.Label(label="  " + _(" Weeks")))
 		###
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
 		######
-		hbox = gtk.HBox()
-		label = gtk.Label(_("End"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("End"))
+		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.endDateInput = DateButton()
 		pack(hbox, self.endDateInput)
 		###
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
 		#########
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Time"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Time"))
+		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		##
@@ -80,7 +80,7 @@ class WidgetClass(common.WidgetClass):
 		self.dayTimeEndInput = HourMinuteButton()
 		##
 		pack(hbox, self.dayTimeStartInput)
-		pack(hbox, gtk.Label(" " + _("to") + " "))
+		pack(hbox, gtk.Label(label=" " + _("to") + " "))
 		pack(hbox, self.dayTimeEndInput)
 		pack(self, hbox)
 		#############
@@ -92,16 +92,16 @@ class WidgetClass(common.WidgetClass):
 
 	def updateWidget(self):## FIXME
 		common.WidgetClass.updateWidget(self)
-		mode = self.event.mode
+		calType = self.event.calType
 		###
-		self.startDateInput.set_value(jd_to(self.event.getStartJd(), mode))
+		self.startDateInput.set_value(jd_to(self.event.getStartJd(), calType))
 		###
 		cycleWeeks, ok = self.event["cycleWeeks"]
 		if not ok:
 			raise RuntimeError("no cycleWeeks rule")
 		self.weeksSpin.set_value(cycleWeeks.weeks)
 		###
-		self.endDateInput.set_value(jd_to(self.event.getEndJd(), mode))
+		self.endDateInput.set_value(jd_to(self.event.getEndJd(), calType))
 		###
 		dayTimeRange, ok = self.event["dayTimeRange"]
 		self.dayTimeStartInput.set_value(dayTimeRange.dayTimeStart)
@@ -133,9 +133,9 @@ class WidgetClass(common.WidgetClass):
 			self.dayTimeEndInput.get_value(),
 		)
 
-	def modeComboChanged(self, obj=None):
+	def calTypeComboChanged(self, obj=None):
 		# overwrite method from common.WidgetClass
-		newMode = self.modeCombo.get_active()
-		self.startDateInput.changeMode(self.event.mode, newMode)
-		self.endDateInput.changeMode(self.event.mode, newMode)
-		self.event.mode = newMode
+		newCalType = self.calTypeCombo.get_active()
+		self.startDateInput.changeCalType(self.event.calType, newCalType)
+		self.endDateInput.changeCalType(self.event.calType, newCalType)
+		self.event.calType = newCalType

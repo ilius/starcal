@@ -33,11 +33,11 @@ class WidgetClass(common.WidgetClass):
 	def __init__(self, event):## FIXME
 		common.WidgetClass.__init__(self, event)
 		######
-		sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
+		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		######
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Start"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Start"))
+		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.startDateInput = DateButton()
@@ -45,7 +45,7 @@ class WidgetClass(common.WidgetClass):
 		##
 		pack(self, hbox)
 		######
-		hbox = gtk.HBox()
+		hbox = HBox()
 		self.endTypeCombo = gtk.ComboBoxText()
 		for item in ("Duration", "End"):
 			self.endTypeCombo.append_text(_(item))
@@ -53,16 +53,16 @@ class WidgetClass(common.WidgetClass):
 		sizeGroup.add_widget(self.endTypeCombo)
 		pack(hbox, self.endTypeCombo)
 		####
-		self.durationBox = gtk.HBox()
+		self.durationBox = HBox()
 		self.durationSpin = IntSpinButton(1, 999)
 		pack(self.durationBox, self.durationSpin)
-		pack(self.durationBox, gtk.Label(_(" days")))
+		pack(self.durationBox, gtk.Label(label=_(" days")))
 		pack(hbox, self.durationBox)
 		####
 		self.endDateInput = DateButton()
 		pack(hbox, self.endDateInput)
 		####
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
 		#############
 		self.notificationBox = common.NotificationBox(event)
@@ -84,16 +84,16 @@ class WidgetClass(common.WidgetClass):
 
 	def updateWidget(self):## FIXME
 		common.WidgetClass.updateWidget(self)
-		mode = self.event.mode
+		calType = self.event.calType
 		###
 		startJd = self.event.getJd()
-		self.startDateInput.set_value(jd_to(startJd, mode))
+		self.startDateInput.set_value(jd_to(startJd, calType))
 		###
 		endType, endValue = self.event.getEnd()
 		if endType == "duration":
 			self.endTypeCombo.set_active(0)
 			self.durationSpin.set_value(endValue)
-			self.endDateInput.set_value(jd_to(self.event.getEndJd(), mode))
+			self.endDateInput.set_value(jd_to(self.event.getEndJd(), calType))
 			# ^ FIXME
 		elif endType == "date":
 			self.endTypeCombo.set_active(1)
@@ -115,9 +115,9 @@ class WidgetClass(common.WidgetClass):
 				self.endDateInput.get_value(),
 			)
 
-	def modeComboChanged(self, obj=None):
+	def calTypeComboChanged(self, obj=None):
 		# overwrite method from common.WidgetClass
-		newMode = self.modeCombo.get_active()
-		self.startDateInput.changeMode(self.event.mode, newMode)
-		self.endDateInput.changeMode(self.event.mode, newMode)
-		self.event.mode = newMode
+		newCalType = self.calTypeCombo.get_active()
+		self.startDateInput.changeCalType(self.event.calType, newCalType)
+		self.endDateInput.changeCalType(self.event.calType, newCalType)
+		self.event.calType = newCalType

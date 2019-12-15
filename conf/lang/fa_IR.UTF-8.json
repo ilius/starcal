@@ -1,11 +1,11 @@
 {
-    "code": "fa_IR.UTF-8",
-    "name": "Persian",
-    "nativeName": "فارسی",
-    "fileName": "fa",
-    "flag": "flag-ir.png",
-    "timeZoneList": [
-        "Asia/Tehran"
-    ],
-    "rtl": true
+	"code": "fa_IR.UTF-8",
+	"name": "Persian",
+	"nativeName": "فارسی",
+	"fileName": "fa",
+	"flag": "",
+	"timeZoneList": [
+		"Asia/Tehran"
+	],
+	"rtl": true
 }

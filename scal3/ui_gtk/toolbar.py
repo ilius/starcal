@@ -1,60 +1,185 @@
 #!/usr/bin/env python3
+
+from scal3 import logger
+log = logger.get()
+
 from time import time as now
 
-from scal3.utils import myRaise
+from typing import Optional, Tuple, Dict, Union, Callable, Any
+
 from scal3 import core
 from scal3.locale_man import tr as _
 from scal3 import ui
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.utils import set_tooltip
+from scal3.ui_gtk.utils import (
+	set_tooltip,
+	imageFromIconName,
+	imageFromFile,
+)
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
+from scal3.ui_gtk.pref_utils import PrefItem
+
+
+# Gnome's naming is not exactly the best here
+# And Gnome's order of options is also different from Gtk"s enum
+toolbarStyleList = (
+	"Icon",  # "icons", "Icons only"
+	"Text",  # "text", "Text only"
+	"Text below Icon",  # "both", "Text below items"
+	"Text beside Icon",  # "both-horiz", "Text beside items"
+)
 
 
 @registerSignals
 class ToolbarItem(gtk.ToolButton, CustomizableCalObj):
+	hasOptions = False
+
 	def __init__(
 		self,
-		name,
-		stockName,
-		method,
-		desc="",
-		shortDesc="",
-		enableTooltip=True,
-	):
-		#print("ToolbarItem", name, stockName, method, desc, text)
-		self.method = method
+		name: str = "",
+		iconName: str = "",
+		imageName: str = "",
+		onClick: Union[str, Callable] = None,
+		desc: str = "",
+		shortDesc: str = "",
+		enableTooltip: bool = True,
+		labelOnly: bool = False,
+		continuousClick: bool = True,
+		onPress: Optional[Union[str, Callable]] = None,
+		args: Optional[Tuple[Any]] = None,  # for onClick and onPress
+		iconSize: int = 26,
+		enable: bool = True,
+	) -> None:
+		# log.debug("ToolbarItem", name, iconName, onClick, desc, text)
+		self._name = name
+		self.onClick = onClick
+		self.onPress = onPress
+		if args is None:
+			args = ()
+		self.args = args
+		self.continuousClick = continuousClick
+		self.iconSize = iconSize
 		######
 		if not desc:
 			desc = name.capitalize()
-		##
 		if not shortDesc:
 			shortDesc = desc
 		##
 		desc = _(desc)
 		shortDesc = _(shortDesc)
+		self.desc = desc
+		# self.shortDesc = shortDesc  # FIXME
 		######
 		gtk.ToolButton.__init__(self)
-		self.set_icon_widget(
-			gtk.Image.new_from_stock(
-				getattr(gtk, "STOCK_%s" % (stockName.upper())),
+		if labelOnly:
+			self.label = gtk.Label()
+			self.set_property("label-widget", self.label)
+		elif imageName:
+			self.set_icon_widget(imageFromFile(
+				imageName,
+				size=iconSize,
+			))
+		elif iconName:
+			self.set_icon_widget(imageFromIconName(
+				iconName,
 				gtk.IconSize.DIALOG,
-			) if stockName else None,
-			#shortDesc,
-		)
+			))
 		self.set_label(shortDesc)
-		self._name = name
-		self.desc = desc
 		#self.shortDesc = shortDesc## FIXME
 		self.initVars()
 		if enableTooltip:
 			set_tooltip(self, desc)## FIXME
 		self.set_is_important(True)## FIXME
+		###
+		self.enable = enable
+
+	def setIconFile(self, fname: str) -> None:
+		from scal3.ui_gtk.utils import imageFromFile
+		self.set_property(
+			"label-widget",
+			imageFromFile(fname, self.iconSize),
+		)
 
 	def show(self):
 		self.show_all()
+
+
+class ToolbarStylePrefItem(PrefItem):
+	def __init__(
+		self,
+		obj: "CustomizableToolbar",
+		attrName: str,
+		label: str = "",
+		onChangeFunc: Optional[Callable] = None,
+	):
+		self.obj = obj  # because of PrefItem
+		self.attrName = attrName
+		self._onChangeFunc = onChangeFunc
+		###
+		hbox = HBox()
+		if label:
+			pack(hbox, gtk.Label(label=label))
+		self.combo = gtk.ComboBoxText()
+		for item in toolbarStyleList:
+			self.combo.append_text(_(item))
+		pack(hbox, self.combo)
+		self._widget = hbox
+		###
+		self.combo.connect("changed", self.onComboChange)
+		###
+		self.updateWidget()
+
+	def get(self) -> str:
+		return toolbarStyleList[self.combo.get_active()]
+
+	def set(self, styleName: str) -> None:
+		self.combo.set_active(toolbarStyleList.index(styleName))
+
+	def onComboChange(self, w):
+		self.updateVar()
+		if self._onChangeFunc:
+			self._onChangeFunc()
+
+
+class ToolbarIconSizePrefItem(PrefItem):
+	def __init__(
+		self,
+		obj: "CustomizableToolbar",
+		attrName: str,
+		label: str = "",
+		onChangeFunc: Optional[Callable] = None,
+	):
+		self.obj = obj  # because of PrefItem
+		self.attrName = attrName
+		self._onChangeFunc = onChangeFunc
+		###
+		hbox = HBox()
+		if label:
+			pack(hbox, gtk.Label(label=label))
+		self.combo = gtk.ComboBoxText()
+		for name, value in ud.iconSizeList:
+			self.combo.append_text(_(name))
+		pack(hbox, self.combo)
+		self._widget = hbox
+		###
+		self.combo.connect("changed", self.onComboChange)
+		###
+		self.updateWidget()
+
+	def get(self) -> str:
+		return ud.iconSizeList[self.combo.get_active()][0]
+
+	def set(self, sizeName: str) -> None:
+		self.combo.set_active(ud.iconSizeNames.index(sizeName))
+
+	def onComboChange(self, w):
+		self.updateVar()
+		if self._onChangeFunc:
+			self._onChangeFunc()
+
 
 
 #@registerSignals
@@ -64,18 +189,15 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 	#signals = CustomizableCalObj.signals + [
 	#	("popup-main-menu", [int, int, int]),
 	#]
-	styleList = (
-		## Gnome"s naming is not exactly the best here
-		## And Gnome"s order of options is also different from Gtk"s enum
-		"Icon",## "icons", "Icons only"
-		"Text",## "text", "Text only"
-		"Text below Icon",## "both", "Text below items"
-		"Text beside Icon",## "both-horiz", "Text beside items"
-	)
 	defaultItems = []
 	defaultItemsDict = {}
 
-	def __init__(self, funcOwner, vertical=False, onPressContinue=False):
+	def __init__(
+		self,
+		funcOwner: Any,
+		vertical: bool = False,
+		continuousClick: bool = True,
+	) -> None:
 		gtk.Toolbar.__init__(self)
 		self.funcOwner = funcOwner
 		self.set_orientation(
@@ -83,12 +205,15 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 			else gtk.Orientation.HORIZONTAL
 		)
 		self.add_events(gdk.EventMask.POINTER_MOTION_MASK)
-		self.onPressContinue = onPressContinue
+		self.continuousClick = continuousClick
 		self.remain = False
 		self.lastPressTime = 0
 		self.initVars()
 		##
-		#print("toolbar state", self.get_state()## STATE_NORMAL)
+		self.iconSizeName = "Button"
+		self.styleName = "Icon"
+		self.buttonBorder = 0
+		# log.debug("toolbar state", self.get_state()## STATE_NORMAL)
 		#self.set_state(gtk.StateType.ACTIVE)## FIXME
 		#self.set_property("border-width", 0)
 		#style = self.get_style()
@@ -98,159 +223,185 @@ class CustomizableToolbar(gtk.Toolbar, CustomizableCalObj):
 		# set on setData(), used in getData() to keep compatibility
 		self.data = {}
 
-	def optionsWidgetCreate(self):
-		from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
+	def getOptionsWidget(self) -> gtk.Widget:
+		from scal3.ui_gtk.pref_utils import SpinPrefItem
 		if self.optionsWidget:
-			return
+			return self.optionsWidget
 		###
-		self.optionsWidget = gtk.VBox()
+		optionsWidget = VBox()
 		##
-		hbox = gtk.HBox()
-		pack(hbox, gtk.Label(_("Style")))
-		self.styleCombo = gtk.ComboBoxText()
-		for item in self.styleList:
-			self.styleCombo.append_text(_(item))
-		pack(hbox, self.styleCombo)
-		pack(self.optionsWidget, hbox)
+		prefItem = ToolbarStylePrefItem(
+			self,
+			"styleName",
+			label=_("Style"),
+			onChangeFunc=self.onStyleNameChange,
+		)
+		pack(optionsWidget, prefItem.getWidget())
 		##
-		hbox = gtk.HBox()
-		pack(hbox, gtk.Label(_("Icon Size")))
-		self.iconSizeCombo = gtk.ComboBoxText()
-		for (i, item) in enumerate(ud.iconSizeList):
-			self.iconSizeCombo.append_text(_(item[0]))
-		pack(hbox, self.iconSizeCombo)
-		pack(self.optionsWidget, hbox)
-		self.iconSizeHbox = hbox
+		prefItem = ToolbarIconSizePrefItem(
+			self,
+			"iconSizeName",
+			label=_("Icon Size"),
+			onChangeFunc=self.onIconSizeNameChange,
+		)
+		pack(optionsWidget, prefItem.getWidget())
 		##
-		hbox = gtk.HBox()
-		pack(hbox, gtk.Label(_("Buttons Border")))
-		self.buttonsBorderSpin = IntSpinButton(0, 99)
-		pack(hbox, self.buttonsBorderSpin)
-		pack(self.optionsWidget, hbox)
+		prefItem = SpinPrefItem(
+			self,
+			"buttonBorder",
+			0, 99,
+			digits=1, step=1,
+			label=_("Buttons Border"),
+			live=True,
+			onChangeFunc=self.onButtonBorderChange,
+		)
+		pack(optionsWidget, prefItem.getWidget())
 		##
-		self.iconSizeCombo.connect("changed", self.iconSizeComboChanged)
-		self.styleCombo.connect("changed", self.styleComboChanged)
-		self.buttonsBorderSpin.connect("changed", self.buttonsBorderSpinChanged)
-		#self.styleComboChanged()
-		##
-		self.optionsWidget.show_all()
+		optionsWidget.show_all()
+		optionsWidget = optionsWidget
+		return optionsWidget
 
-	def getIconSizeName(self):
-		return ud.iconSizeList[self.iconSizeCombo.get_active()][0]
+	def getIconSizeName(self) -> str:
+		return self.iconSizeName
 
-	def setIconSizeName(self, size_name):
-		self.set_icon_size(ud.iconSizeDict[size_name])
+	def setIconSizeName(self, iconSizeName: str) -> None:
+		self.iconSizeName = iconSizeName
+		self.onIconSizeNameChange()
+
+	def onIconSizeNameChange(self):
+		self.set_icon_size(ud.iconSizeDict[self.iconSizeName])
 		# gtk.Toolbar.set_icon_size was previously Deprecated
 		# but it's not Deprecated now? FIXME
 
-	def setButtonsBorder(self, bb):
+	def getButtonBorder(self):
+		return self.buttonBorder
+
+	def setButtonBorder(self, buttonBorder: int) -> None:
+		self.buttonBorder = buttonBorder
+		self.onButtonBorderChange()
+
+	def onButtonBorderChange(self):
+		buttonBorder = self.buttonBorder
 		for item in self.items:
-			item.set_border_width(bb)
+			item.set_border_width(buttonBorder)
 
-	def iconSizeComboChanged(self, combo=None):
-		self.setIconSizeName(self.getIconSizeName())
-
-	def styleComboChanged(self, combo=None):
-		style = self.styleCombo.get_active()
-		self.set_style(style)
-		#self.showHide()## FIXME
-		self.iconSizeHbox.set_sensitive(style != 1)
-
-	def buttonsBorderSpinChanged(self, spin=None):
-		self.setButtonsBorder(self.buttonsBorderSpin.get_value())
-
-	def moveItemUp(self, i):
+	def moveItem(self, i: int, j: int) -> None:
 		button = self.items[i]
 		self.remove(button)
-		self.insert(button, i - 1)
-		self.items.insert(i - 1, self.items.pop(i))
+		self.insert(button, j)
+		self.items.insert(j, self.items.pop(i))
 
 	#def insertItem(self, item, pos):
 	#	CustomizableCalObj.insertItem(self, pos, item)
 	#	gtk.Toolbar.insert(self, item, pos)
 	#	item.show()
 
-	def appendItem(self, item):
+	def appendItem(self, item: ud.CalObjType) -> None:
 		CustomizableCalObj.appendItem(self, item)
 		gtk.Toolbar.insert(self, item, -1)
 		if item.enable:
 			item.show()
 
-	def getData(self):
+	def getStyleName(self) -> str:
+		return self.styleName
+
+	def setStyleName(self, styleName: str) -> None:
+		self.styleName = styleName
+		self.onStyleNameChange()
+		
+	def onStyleNameChange(self):
+		style = toolbarStyleList.index(self.styleName)
+		self.set_style(style)
+		# self.showHide()  # FIXME
+
+	def getData(self) -> Dict[str, Any]:
 		self.data.update({
 			"items": self.getItemsData(),
 			"iconSize": self.getIconSizeName(),
-			"style": self.styleList[self.styleCombo.get_active()],
-			"buttonsBorder": self.buttonsBorderSpin.get_value(),
+			"style": self.getStyleName(),
+			"buttonsBorder": self.getButtonBorder(),
 		})
 		return self.data
 
-	def setupItemSignals(self, item):
-		if item.method:
-			if isinstance(item.method, str):
-				func = getattr(self.funcOwner, item.method)
+	def setupItemSignals(self, item: ud.CalObjType) -> None:
+		if item.onClick:
+			if isinstance(item.onClick, str):
+				onClick = getattr(self.funcOwner, item.onClick)
 			else:
-				func = item.method
-			if self.onPressContinue:
+				onClick = item.onClick
+			if self.continuousClick and item.continuousClick:
 				child = item.get_child()
-				child.connect("button-press-event", lambda obj, ev: self.itemPress(func))
-				child.connect("button-release-event", self.itemRelease)
+				child.connect("button-press-event", lambda obj, ev: self.itemPress(onClick, item.args))
+				child.connect("button-release-event", self.onItemButtonRelease)
 			else:
-				item.connect("clicked", func)
+				item.connect("clicked", onClick, *item.args)
 
-	def setData(self, data):
+		if item.onPress:
+			if isinstance(item.onPress, str):
+				onPress = getattr(self.funcOwner, item.onPress)
+			else:
+				onPress = item.onPress
+			child = item.get_child()
+			child.connect("button-press-event", onPress, *item.args)
+
+	def setData(self, data: Dict[str, Any]) -> None:
 		self.data = data
+		newItemNames = set()
 		for (name, enable) in data["items"]:
 			item = self.defaultItemsDict.get(name)
 			if item is None:
-				print("toolbar item %s does not exist" % name)
+				log.info(f"toolbar item {name!r} does not exist")
 				continue
 			item.enable = enable
 			self.setupItemSignals(item)
 			self.appendItem(item)
-		###
-		self.optionsWidgetCreate() # because we update the Customize dialog widgets as well
+			newItemNames.add(name)
+		for item in self.defaultItems:
+			if item._name not in newItemNames:
+				self.setupItemSignals(item)
+				self.appendItem(item)
 		###
 		iconSize = data.get("iconSize")
 		if iconSize is not None:
-			for (i, item) in enumerate(ud.iconSizeList):
-				if item[0] == iconSize:
-					self.iconSizeCombo.set_active(i)
-					break
 			self.setIconSizeName(iconSize)
 		###
-		style = data.get("style", "Icon")
-		styleNum = self.styleList.index(style)
-		self.styleCombo.set_active(styleNum)
-		self.set_style(styleNum)
+		self.setStyleName(data.get("style", "Icon"))
+		self.setButtonBorder(data.get("buttonsBorder", 0))
 		###
-		bb = data.get("buttonsBorder", 0)
-		self.buttonsBorderSpin.set_value(bb)
-		self.setButtonsBorder(bb)
-		###
+		self.optionsWidget = None
 
-	def itemPress(self, func):
+	def itemPress(self, func, args: "Tuple[Any]"):
 		if self.remain:
-			# print("itemPress: skip: remain=%s" % self.remain)
+			# log.debug(f"itemPress: skip: remain={self.remain}")
 			return
-		if now()-self.lastPressTime < ui.timeout_repeat * 0.01:
-			# print("itemPress: skip: now()-self.lastPressTime = %s" % (now()-self.lastPressTime))
+		if now() - self.lastPressTime < ui.timeout_repeat * 0.01:
+			# log.debug(f"itemPress: skip: delta = {now()-self.lastPressTime}")
 			return
-		# print("itemPress:", now()-self.lastPressTime, ">=", ui.timeout_repeat * 0.01)
+		# log.debug(
+		#	"itemPress:",
+		#	now() - self.lastPressTime,
+		#	">=",
+		#	ui.timeout_repeat * 0.01,
+		#)
 		self.lastPressTime = now()
 		self.remain = True
-		func()
-		timeout_add(ui.timeout_initial, self.itemPressRemain, func)
+		func(*args)
+		timeout_add(ui.timeout_initial, self.itemPressRemain, func, args)
 
-	def itemPressRemain(self, func):
+	def itemPressRemain(self, func, args: "Tuple[Any]"):
 		if not self.remain:
 			return
-		if now()-self.lastPressTime < ui.timeout_repeat * 0.001:
+		if now() - self.lastPressTime < ui.timeout_repeat * 0.001:
 			return
-		# print("itemPressRemain:", now()-self.lastPressTime, ">=", ui.timeout_repeat * 0.001)
-		func()
+		# log.debug(
+		#	"itemPressRemain:",
+		#	now() - self.lastPressTime,
+		#	">=",
+		#	ui.timeout_repeat * 0.001,
+		#)
+		func(*args)
 		timeout_add(ui.timeout_repeat, self.itemPressRemain, func)
 
-	def itemRelease(self, widget, event=None):
-		# print("------------------------ itemRelease")
+	def onItemButtonRelease(self, widget, event=None):
+		# log.debug("------------------------ onItemButtonRelease")
 		self.remain = False

@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 from subprocess import Popen, PIPE
 
@@ -24,7 +23,8 @@ from scal3.ui_gtk import *
 class WidgetClass(gtk.FileChooserButton):
 	def __init__(self, notifier):
 		self.notifier = notifier
-		gtk.FileChooserButton.__init__(self, _("Select Sound"))
+		gtk.FileChooserButton.__init__(self)
+		self.set_title(_("Select Sound"))
 		self.set_local_only(True)
 
 	def updateWidget(self):
@@ -54,5 +54,5 @@ def notify(notifier, finishFunc):
 	finishFunc()
 	Popen([notifier.playerCmd, notifier.alarmSound], stdout=PIPE, stderr=PIPE)
 
-## event_lib.AlarmNotifier.WidgetClass = AlarmWidgetClass
-## event_lib.AlarmNotifier.notify = notify
+# event_lib.AlarmNotifier.WidgetClass = AlarmWidgetClass
+# event_lib.AlarmNotifier.notify = notify

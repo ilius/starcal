@@ -32,6 +32,7 @@ from math import floor
 def ifloor(x):
 	return int(floor(x))
 
+
 monthName = (
 	"January", "February", "March",
 	"April", "May", "June",
@@ -57,6 +58,7 @@ def getMonthNameAb(m, y=None):
 
 def getMonthsInYear(y):
 	return 12
+
 
 epoch = 1721058
 minMonthLen = 28

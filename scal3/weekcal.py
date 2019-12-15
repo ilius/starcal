@@ -18,10 +18,12 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 #from scal3.locale_man import tr as _
 
 from scal3 import core
-from scal3.core import myRaise, getMonthName, getMonthLen, pixDir
 
 from scal3 import ui
 
@@ -41,7 +43,7 @@ class WeekStatus(list):
 		#list.__init__(self, [cellCache.getCell(jd) for jd in range(startJd, endJd)])
 		list.__init__(self, [])
 		for jd in range(startJd, endJd):
-			#print("WeekStatus", jd)
+			# log.debug("WeekStatus", jd)
 			self.append(cellCache.getCell(jd))
 
 	def allCells(self):
@@ -64,6 +66,7 @@ def getCurrentWeekStatus():
 		pluginName,
 		ui.cell.absWeekNumber,
 	)
+
 
 ########################
 
