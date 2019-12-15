@@ -3,7 +3,7 @@ from igraph import Graph
 
 
 def colorGraph(g, add_height=True):
-	## Using "SL" (Smalest Last) algorithm
+	# Using "SL" (Smalest Last) algorithm
 	n = g.vcount()
 	adjlist = g.get_adjlist()
 	colors = [None] * n

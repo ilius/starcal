@@ -18,36 +18,43 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 from os.path import join, isfile
 
+from typing import Optional, List, Tuple
+
 from scal3.path import confDir
-from scal3.utils import myRaise
 from scal3.json_utils import *
 from scal3 import core
 from scal3.locale_man import tr as _
 from scal3 import ui
 
-from gi.overrides.GObject import Object
-
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk import gtk_ud as ud
-
-
-if "mainMenu" not in dict(ud.wcalToolbarData["items"]):
-	ud.wcalToolbarData["items"].insert(0, ("mainMenu", True))
+from scal3.ui_gtk.utils import imageFromFile
 
 
 @registerSignals
-class DummyCalObj(Object):
+class DummyCalObj(ud.CalObjType):
 	loaded = False
-	signals = [
-		("config-change", []),
-		("date-change", []),
-	]
+	itemListCustomizable = False
+	hasOptions = False
+	isWrapper = False
+	enableParam = ""
+	itemsPageEnable = False
+	signals = ud.BaseCalObj.signals
 
-	def __init__(self, name, desc, pkg, customizable):
-		Object.__init__(self)
+	def __init__(
+		self,
+		name: str,
+		desc: str,
+		pkg: str,
+		customizable: bool,
+	) -> None:
+		ud.CalObjType.__init__(self)
 		self.enable = False
 		self._name = name
 		self.desc = desc
@@ -56,86 +63,80 @@ class DummyCalObj(Object):
 		self.optionsWidget = None
 		self.items = []
 
-	def getLoadedObj(self):
+	def getLoadedObj(self) -> ud.BaseCalObj:
 		try:
 			module = __import__(
 				self.moduleName,
 				fromlist=["CalObj"],
 			)
 			CalObj = module.CalObj
-		except:
-			myRaise()
+		except Exception:
+			log.exception("")
 			return
 		obj = CalObj()
 		obj.enable = self.enable
 		return obj
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		pass
 
-	#def getData(self):## FIXME a real problem
-	#	return None
+	def getOptionsWidget(self) -> Optional[gtk.Widget]:
+		return None
 
-	def optionsWidgetCreate(self):
-		pass
+	def getSubPages(self) -> "List[StackPage]":
+		return []
 
-	def showHide(self):
+	def showHide(self) -> None:
 		pass
 
 
 class CustomizableCalObj(ud.BaseCalObj):
 	customizable = True
+	itemListCustomizable = True
+	hasOptions = True
+	isWrapper = False
+	enableParam = ""
+	optionsPageSpacing = 0
+	itemsPageEnable = False
+	itemsPageTitle = ""
+	itemsPageButtonBorder = 5
 	expand = False
 	params = ()
 	myKeys = ()
 
-	def initVars(self, optionsWidget=None):
+	def initVars(self) -> None:
 		ud.BaseCalObj.initVars(self)
 		self.itemWidgets = {} ## for lazy construction of widgets
-		self.optionsWidget = optionsWidget
-		if self.optionsWidget:
-			self.optionsWidget.show_all()
+		self.optionsWidget = None
 		try:
-			self.connect("key-press-event", self.keyPress)## FIXME
-		except:
+			self.connect("key-press-event", self.onKeyPress)## FIXME
+		except TypeError:
+			# TypeError: <...>: unknown signal name
 			pass
 
-	def getItemsData(self):
+	def getItemsData(self) -> List[Tuple[str, bool]]:
 		return [
 			(item._name, item.enable)
 			for item in self.items
 		]
 
-	def updateVars(self):
+	def updateVars(self) -> None:
 		for item in self.items:
 			if item.customizable:
 				item.updateVars()
 
-	#def getData(self):## remove? FIXME
-	#	data = {}
-	#	for mod_attr in self.params:
-	#		try:
-	#			value = eval(mod_attr)
-	#		except:
-	#			myRaise()
-	#		else:
-	#			data[mod_attr] = value
-	#	for item in self.items:
-	#		if item.customizable:
-	#			itemData = item.getData()
-	#			if itemData:
-	#				data.update(itemData)
-	#	return data
-
-	def keyPress(self, arg, gevent):
+	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		for item in self.items:
 			if item.enable and kname in item.myKeys:
-				if item.keyPress(arg, gevent):
+				if item.onKeyPress(arg, gevent):
 					break
 
-	def optionsWidgetCreate(self):
-		pass
+	def getOptionsWidget(self) -> gtk.Widget:
+		return None
+
+	def getSubPages(self) -> "List[StackPage]":
+		return []
 
 
 class CustomizableCalBox(CustomizableCalObj):
@@ -155,12 +156,42 @@ class CustomizableCalBox(CustomizableCalObj):
 			if item.loaded:
 				pack(self, item, item.expand, item.expand)
 
-	# Disabled the old implementation (with reorder_child) because it was very buggy with Gtk3
-	# Removing all (active) items from gtk.Box and re-packing them all apears to be fast enough, so doing that instead
+	# Disabled the old implementation (with reorder_child) because it was
+	# very buggy with Gtk3. Removing all (active) items from gtk.Box and
+	# re-packing them all apears to be fast enough, so doing that instead
 
-	def moveItemUp(self, i):
-		CustomizableCalObj.moveItemUp(self, i)
+	def moveItem(self, i, j):
+		CustomizableCalObj.moveItem(self, i, j)
 		self.repackAll()
 
 	def insertItemWidget(self, i):
 		self.repackAll()
+
+
+def newSubPageButton(
+	item: CustomizableCalObj,
+	page: "StackPage",
+	vertical: bool = False,
+	borderWidth: int = 10,
+	spacing: int = 10,
+	labelAngle: int = 0,
+) -> gtk.Button:
+	hbox = gtk.Box(
+		orientation=getOrientation(vertical),
+		spacing=spacing,
+	)
+	hbox.set_border_width(borderWidth)
+	label = gtk.Label(label=page.pageLabel)
+	label.set_use_underline(True)
+	label.set_angle(labelAngle)
+	pack(hbox, gtk.Label(), 1, 1)
+	if page.pageIcon and ui.buttonIconEnable:
+		pack(hbox, imageFromFile(page.pageIcon, size=ui.stackIconSize))
+	pack(hbox, label, 0, 0)
+	pack(hbox, gtk.Label(), 1, 1)
+	button = gtk.Button()
+	button.add(hbox)
+	button.connect("clicked", lambda b: item.emit("goto-page", page.pageName))
+	button.show_all()
+	button.label = label
+	return button

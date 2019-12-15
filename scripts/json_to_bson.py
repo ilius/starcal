@@ -5,9 +5,9 @@ from os.path import join, dirname, abspath, splitext
 
 import json
 
-rootDir = dirname(dirname(abspath(__file__)))
+sourceDir = dirname(dirname(abspath(__file__)))
 
-sys.path.append(join(rootDir, "bson"))
+sys.path.append(join(sourceDir, "bson"))
 import bson
 
 for fname_json in sys.argv[1:]:

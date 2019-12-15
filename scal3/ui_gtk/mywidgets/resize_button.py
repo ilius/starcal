@@ -4,16 +4,16 @@ from scal3.ui_gtk.utils import imageFromFile
 
 
 class ResizeButton(gtk.EventBox):
-	def __init__(self, win, edge=gdk.WindowEdge.SOUTH_EAST):
+	def __init__(self, win, size=20, edge=gdk.WindowEdge.SOUTH_EAST):
 		gtk.EventBox.__init__(self)
 		self.win = win
 		self.edge = edge
 		###
-		self.image = imageFromFile("resize-small.png")
+		self.image = imageFromFile("resize-small.svg", size)
 		self.add(self.image)
-		self.connect("button-press-event", self.buttonPress)
+		self.connect("button-press-event", self.onButtonPress)
 
-	def buttonPress(self, obj, gevent):
+	def onButtonPress(self, obj, gevent):
 		self.win.begin_resize_drag(
 			self.edge,
 			gevent.button,

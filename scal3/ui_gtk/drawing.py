@@ -17,10 +17,16 @@
 # with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
+
+from scal3 import logger
+log = logger.get()
+
 from os.path import join
 from math import pi
 from math import sin, cos
 import re
+
+from typing import Optional, Tuple
 
 from scal3.path import *
 from scal3.utils import toBytes
@@ -38,7 +44,8 @@ from gi.repository.PangoCairo import show_layout
 if not ui.fontCustom:
 	ui.fontCustom = ui.fontDefault[:]
 
-colorCheckSvgTextChecked = open(join(rootDir, "svg", "color-check.svg")).read()
+with open(join(sourceDir, "svg", "special", "color-check.svg")) as fp:
+	colorCheckSvgTextChecked = fp.read()
 colorCheckSvgTextUnchecked = re.sub(
 	"<path[^<>]*?id=\"check\"[^<>]*?/>",
 	"",
@@ -63,7 +70,7 @@ def setColor(cr, color):
 			color[3] / 255.0,
 		)
 	else:
-		raise ValueError("bad color %s" % color)
+		raise ValueError(f"bad color {color}")
 
 
 def fillColor(cr, color):
@@ -89,7 +96,7 @@ def newTextLayout(
 		font = ui.getFont()
 	layout.set_font_description(pfontEncode(font))
 	if text:
-		layout.set_markup(text, -1)
+		layout.set_markup(text=text, length=-1)
 		if maxSize:
 			layoutW, layoutH = layout.get_pixel_size()
 			##
@@ -147,10 +154,11 @@ def newLimitedWidthTextLayout(
 	if not font:
 		font = ui.getFont()
 	layout = widget.create_pango_layout("")
+	length = len(text.encode("utf8")
 	if markup:
-		layout.set_markup(text, -1)
+		layout.set_markup(text=text, length=length)
 	else:
-		layout.set_text(text, -1)
+		layout.set_text(text=text, length=length)
 	layout.set_font_description(pfontEncode(font))
 	if not layout:
 		return None
@@ -174,51 +182,81 @@ def newLimitedWidthTextLayout(
 				font2[3] = 0.9*font2[3]*width/layoutW
 				layout.set_font_description(pfontEncode(font2))
 				layoutW, layoutH = layout.get_pixel_size()
-				#print(layoutW, width)
+				# log.debug(layoutW, width)
 			#print
 	return layout
 """
 
 
+def calcTextPixelSize(
+	widget: gtk.Widget,
+	text: str,
+	font: Optional[Tuple[str, bool, bool, float]] = None,
+) -> Tuple[float, float]:
+	layout = widget.create_pango_layout(text)  # a Pango.Layout object
+	if font is not None:
+		layout.set_font_description(pfontEncode(list(font)))
+	width, height = layout.get_pixel_size()
+	return width, height
+
+
+def calcTextPixelWidth(
+	widget: gtk.Widget,
+	text: str,
+	font = None,
+) -> float:
+	width, height = calcTextPixelSize(widget, text, font=font)
+	return width
+
+
 def newColorCheckPixbuf(color, size, checked):
-	loader = GdkPixbuf.PixbufLoader.new_with_type("svg")
 	if checked:
 		data = colorCheckSvgTextChecked
 	else:
 		data = colorCheckSvgTextUnchecked
 	data = data.replace(
-		"fill:#000000;",
-		"fill:%s;" % rgbToHtmlColor(*color[:3]),
+		f"fill:#000000;",
+		f"fill:{rgbToHtmlColor(color[:3])};",
 	)
 	data = toBytes(data)
-	loader.write(data)
-	loader.close()
+	loader = GdkPixbuf.PixbufLoader.new_with_type("svg")
+	loader.set_size(size, size)
+	try:
+		loader.write(data)
+	finally:
+		loader.close()
 	pixbuf = loader.get_pixbuf()
 	return pixbuf
 
 
 def newDndDatePixbuf(ymd):
-	imagePath = join(rootDir, "svg", "dnd-date.svg")
-	loader = GdkPixbuf.PixbufLoader.new_with_type("svg")
-	data = open(imagePath).read()
-	data = data.replace("YYYY", "%.4d" % ymd[0])
-	data = data.replace("MM", "%.2d" % ymd[1])
-	data = data.replace("DD", "%.2d" % ymd[2])
+	imagePath = join(sourceDir, "svg", "special", "dnd-date.svg")
+	with open(imagePath) as fp:
+		data = fp.read()
+	data = data.replace("YYYY", f"{ymd[0]:04d}")
+	data = data.replace("MM", f"{ymd[1]:02d}")
+	data = data.replace("DD", f"{ymd[2]:02d}")
 	data = toBytes(data)
-	loader.write(data)
-	loader.close()
+	loader = GdkPixbuf.PixbufLoader.new_with_type("svg")
+	try:
+		loader.write(data)
+	finally:
+		loader.close()
 	pixbuf = loader.get_pixbuf()
 	return pixbuf
 
 
 def newDndFontNamePixbuf(name):
-	imagePath = join(rootDir, "svg", "dnd-font.svg")
-	loader = GdkPixbuf.PixbufLoader.new_with_type("svg")
-	data = open(imagePath).read()
+	imagePath = join(sourceDir, "svg", "special", "dnd-font.svg")
+	with open(imagePath) as fp:
+		data = fp.read()
 	data = data.replace("FONTNAME", name)
 	data = toBytes(data)
-	loader.write(data)
-	loader.close()
+	loader = GdkPixbuf.PixbufLoader.new_with_type("svg")
+	try:
+		loader.write(data)
+	finally:
+		loader.close()
 	pixbuf = loader.get_pixbuf()
 	return pixbuf
 
@@ -284,17 +322,12 @@ def drawRoundedRect(cr, cx0, cy0, cw, ch, ro):
 	cr.close_path()
 
 
-def drawCursorBg(cr, cx0, cy0, cw, ch):
-	cursorRadius = ui.cursorRoundingFactor * min(cw, ch) * 0.5
-	drawRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius)
-
-
 def drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ro, d):
 	ro = min(ro, cw / 2.0, ch / 2.0)
 	#a = min(cw, ch); ri = ro*(a-2*d)/a
 	ri = max(0, ro - d)
-	#print(ro, ri)
-	######### Outline:
+	# log.debug(ro, ri)
+	# ####### Outline:
 	cr.move_to(
 		cx0 + ro,
 		cy0,
@@ -347,7 +380,7 @@ def drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ro, d):
 		pi,
 		3 * pi / 2,
 	)
-	#### Inline:
+	# ## Inline:
 	if ri == 0:
 		cr.move_to(
 			cx0 + d,
@@ -371,8 +404,8 @@ def drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ro, d):
 		)
 	else:
 		cr.move_to(  # or line_to
-			cx0 + ro,
 			cy0 + d,
+			cx0 + ro,
 		)
 		# up left corner:
 		cr.arc_negative(
@@ -423,12 +456,6 @@ def drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ro, d):
 			cy0 + d,
 		)
 	cr.close_path()
-
-
-def drawCursorOutline(cr, cx0, cy0, cw, ch):
-	cursorRadius = ui.cursorRoundingFactor * min(cw, ch) * 0.5
-	cursorDia = ui.cursorDiaFactor * min(cw, ch) * 0.5
-	drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius, cursorDia)
 
 
 def drawCircle(cr, cx, cy, r):
@@ -496,52 +523,3 @@ def drawArcOutline(cr, xc, yc, r, d, a0, a1):
 	#cr.line_to(x1, y1)
 
 	cr.close_path()
-
-
-class Button:
-	def __init__(self, imageName, func, x, y, autoDir=True):
-		self.imageName = imageName
-		if imageName.startswith("gtk-"):
-			self.pixbuf = GdkPixbuf.Pixbuf.new_from_stock(imageName)
-		else:
-			self.pixbuf = GdkPixbuf.Pixbuf.new_from_file(join(pixDir, imageName))
-		self.func = func
-		self.width = self.pixbuf.get_width()
-		self.height = self.pixbuf.get_height()
-		self.x = x
-		self.y = y
-		self.autoDir = autoDir
-
-	def __repr__(self):
-		return "Button(%r, %r, %r, %r, %r)" % (
-			self.imageName,
-			self.func.__name__,
-			self.x,
-			self.y,
-			self.autoDir,
-		)
-
-	def getAbsPos(self, w, h):
-		x = self.x
-		y = self.y
-		if self.autoDir and rtl:
-			x = -x
-		if x < 0:
-			x = w - self.width + x
-		if y < 0:
-			y = h - self.height + y
-		return (x, y)
-
-	def draw(self, cr, w, h):
-		x, y = self.getAbsPos(w, h)
-		gdk.cairo_set_source_pixbuf(cr, self.pixbuf, x, y)
-		cr.rectangle(x, y, self.width, self.height)
-		cr.fill()
-
-	def contains(self, px, py, w, h):
-		x, y = self.getAbsPos(w, h)
-		return (
-			x <= px < x + self.width
-			and
-			y <= py < y + self.height
-		)

@@ -29,7 +29,7 @@ from scal3.monthcal import getMonthDesc
 
 
 def rgbToHtml(r, g, b, a=None):
-	return "#%.2x%.2x%.2x" % (r, g, b)
+	return f"#{r:02x}{g:02x}{b:02x}"
 	# What to do with alpha? FIXME
 
 
@@ -68,13 +68,15 @@ def colorComposite3(front, middle, back):  # FIXME
 
 
 def exportToHtml(fpath, monthsStatus, title=""):
-	##################### Options:
+	def sizeMap(size):
+		return size * 0.25 - 0.5  # FIXME
+
+	# ################### Options:
 	calTypesFormat = (
 		(2, "SUB"),
 		(0, None),
 		(1, "SUB")
 	)  # a list of (calTypeIndex, htmlTag) tuples
-	sizeMap = lambda size: size * 0.25 - 0.5  # FIXME
 	sep = " "
 	pluginsTextSep = " <B>ـ</B> "
 	pluginsTextPerLine = True ## description of each day in one line
@@ -90,76 +92,59 @@ def exportToHtml(fpath, monthsStatus, title=""):
 		DIR = "RTL"
 	else:
 		DIR = "LRT"
-	text = """<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+	text = f"""<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
 <HTML>
 <HEAD>
 <META HTTP-EQUIV="CONTENT-TYPE" CONTENT="text/html; charset=utf-8">
-<TITLE>%s</TITLE>
+<TITLE>{title}</TITLE>
 </HEAD>
-<BODY LANG="%s" DIR="%s" BGCOLOR="%s">\n""" % (
-		title,
-		locale_man.langSh,
-		DIR,
-		bgColor,
-	)
+<BODY LANG="{locale_man.langSh}" DIR="{DIR}" BGCOLOR="{bgColor}">\n"""
 	for status in monthsStatus:
-		text += "    <P>\n"
+		text += "\t<P>\n"
 		for i, line in enumerate(getMonthDesc(status).split("\n")):
 			try:
 				color = colors[i]
 			except IndexError:
 				color = textColor
-			text += "        <FONT COLOR=\"%s\">%s</FONT>\n        <BR>\n" % (
-				color,
-				line,
-			)
-		text += "    </P>\n"
-		text += """    <TABLE WIDTH=100%% BGCOLOR="%s" BORDER=%s BORDERCOLOR="#000000"
-CELLPADDING=4 CELLSPACING=0>
-	<TR VALIGN=TOP>\n""" % (
-			bgColor,
-			int(ui.mcalGrid),
-		)
-		text += """            <TD WIDTH=9%% BGCOLOR="%s">
+			text += f"\t\t<FONT COLOR=\"{color}\">{line}</FONT>\n\t\t<BR>\n"
+		text += "\t</P>\n"
+		text += "\n".join([
+			f'\t<TABLE WIDTH=100%% BGCOLOR="{bgColor}" BORDER={int(ui.mcalGrid)} BORDERCOLOR="#000000"',
+			"\t\tCELLPADDING=4 CELLSPACING=0>",
+			"\t\t<TR VALIGN=TOP>\n",
+		])
+		text += f"""\t\t\t<TD WIDTH=9%% BGCOLOR="{borderColor}">
 			<P ALIGN=CENTER></P>
-		</TD>\n""" % borderColor  # what text? FIXME
+		</TD>\n"""  # what text? FIXME
 		for j in range(7):
-			text += """            <TD WIDTH=13%% BGCOLOR="%s">
+			text += f"""\t\t\t<TD WIDTH=13%% BGCOLOR="{borderColor}">
 			<P ALIGN=CENTER>
-				<FONT COLOR="%s"><B>%s</B></FONT>
+				<FONT COLOR="{borderTextColor}"><B>{core.getWeekDayN(j)}</B></FONT>
 			</P>
-		</TD>\n""" % (
-				borderColor,
-				borderTextColor,
-				core.getWeekDayN(j),
-			)
-		pluginsText = "<P><FONT COLOR=\"%s\">\n" % colors[0]
-		text += "        </TR>\n"
+		</TD>\n"""
+		pluginsText = f"\t<P><FONT COLOR=\"{colors[0]}\">\n"
+		text += "\t\t</TR>\n"
 		for i in range(6):
-			text += """        <TR VALIGN=TOP>
-		<TD WIDTH=9%% BGCOLOR="%s">
+			text += f"""\t\t<TR VALIGN=TOP>
+		<TD WIDTH=9%% BGCOLOR="{borderColor}">
 			<P ALIGN=CENTER>
-				<FONT COLOR="%s"><B>%s</B></FONT>
+				<FONT COLOR="{borderTextColor}"><B>{_(status.weekNum[i])}</B></FONT>
 			</P>
-		</TD>\n""" % (
-				borderColor,
-				borderTextColor,
-				_(status.weekNum[i]),
-			)
+		</TD>\n"""
 			for j in range(7):
 				cell = status[i][j]
-				text += "            <TD WIDTH=13%>\n"
-				text += "                <P DIR=\"LTR\" ALIGN=CENTER>\n"
+				text += "\t\t\t<TD WIDTH=13%>\n"
+				text += "\t\t\t\t<P DIR=\"LTR\" ALIGN=CENTER>\n"
 				for (calTypeIndex, calTypeTag) in calTypesFormat:
 					try:
-						mode = calTypes.active[calTypeIndex]
+						calType = calTypes.active[calTypeIndex]
 					except IndexError:
 						continue
 					try:
 						params = ui.mcalTypeParams[calTypeIndex]
 					except IndexError:
 						continue
-					day = _(cell.dates[mode][2], mode)## , 2
+					day = _(cell.dates[calType][2], calType)## , 2
 					font = params["font"]
 					face = font[0]
 					if font[1]:
@@ -169,39 +154,35 @@ CELLPADDING=4 CELLSPACING=0>
 					size = str(sizeMap(font[3]))
 					if cell.month != status.month:
 						if calTypeIndex == 0:
-							text += "                    "
+							text += "\t\t\t\t\t"
 							if calTypeTag:
-								text += "<%s>" % calTypeTag
-							text += "<FONT COLOR=\"%s\" FACE=\"%s\" SIZE=\"%s\">%s</FONT>" % (
-								inactiveColor,
-								face,
-								size,
-								day,
+								text += f"<{calTypeTag}>"
+							text += (
+								f"<FONT COLOR=\"{inactiveColor}\" " +
+								f"FACE=\"{face}\" SIZE=\"{size}\">{day}</FONT>"
 							)
 							if calTypeTag:
-								text += "</%s>" % calTypeTag
+								text += f"</{calTypeTag}>"
 							text += "\n"
 							break
 						else:
 							continue
-					text += "                    "
+					text += "\t\t\t\t\t"
 					if calTypeTag:
-						text += "<%s>" % calTypeTag
+						text += f"<{calTypeTag}>"
 					if calTypeIndex == 0 and cell.holiday:
 						color = holidayColor
 					else:
 						color = colors[calTypeIndex]
-					text += "<FONT COLOR=\"%s\" FACE=\"%s\" SIZE=\"%s\">%s</FONT>" % (
-						color,
-						face,
-						size,
-						day,
+					text += (
+						f"<FONT COLOR=\"{color}\" FACE=\"{face}\" " +
+						f"SIZE=\"{size}\">{day}</FONT>" 
 					)
 					if calTypeTag:
-						text += "</%s>" % calTypeTag
+						text += f"</{calTypeTag}>"
 					text += "\n"
 					#text += sep##???????????
-				text += "                </P>\n            </TD>\n"
+				text += "\t\t\t\t</P>\n\t\t\t</TD>\n"
 				if cell.month == status.month:
 					if cell.holiday:
 						color = holidayColor
@@ -209,30 +190,30 @@ CELLPADDING=4 CELLSPACING=0>
 						color = colors[0]
 					t = cell.pluginsText.replace("\n", pluginsTextSep)
 					if t:
-						pluginsText += "<B><FONT COLOR=\"%s\">%s</FONT>:</B>" % (
-							color,
-							_(cell.dates[calTypes.primary][2]),
+						pluginsText += (
+							f"<B><FONT COLOR=\"{color}\">" +
+							f"{_(cell.dates[calTypes.primary][2])}</FONT>:</B>"
 						)
-						pluginsText += "    <SMALL>%s</SMALL>" % t
+						pluginsText += f"\t<SMALL>{t}</SMALL>"
 						if pluginsTextPerLine:
 							pluginsText += "<BR>\n"
 						else:
-							pluginsText += "    \n"
-			text += "        </TR>\n"
-		pluginsText += "    </FONT></P>\n"
-		text += "    </TABLE>\n"
+							pluginsText += "\t\n"
+			text += "\t\t</TR>\n"
+		pluginsText += "\t</FONT></P>\n"
+		text += "\t</TABLE>\n"
 		text += pluginsText
-		text += "\n<P STYLE=\"border-bottom: 5pt double %s\"></P>\n" % colors[0]
-	text += """    <P>
-	<FONT COLOR="%s">%s <A HREF="%s">%s</A> %s %s</FONT>
-</P>
-</BODY>
-</HTML>""" % (
-		colors[0],
-		_("Generated by"),
-		core.homePage,
-		core.APP_DESC,
-		_("version"),
-		core.VERSION,
+		text += f"\n\t<P STYLE=\"border-bottom: 5pt double {colors[0]}\"></P>\n"
+	generatedBy = (
+		f'{_("Generated by")} ' + 
+		f'<A HREF="{core.homePage}">{core.APP_DESC}</A> ' +
+		f'{_("version")} <code>{core.VERSION}</code>'
 	)
+	text += "\n".join([
+		"\t<P>",
+		f'\t\t<FONT COLOR="{colors[0]}">{generatedBy}</FONT>',
+		"\t</P>",
+		"</BODY>",
+		"</HTML>",
+	])
 	open(fpath, "w").write(text)

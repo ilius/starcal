@@ -18,11 +18,24 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 from os.path import join
 from subprocess import Popen, PIPE
 
-from scal3.utils import toStr
+from typing import List, Tuple
+
+from pygit2 import (
+	Repository,
+	GIT_SORT_TIME,
+	GIT_SORT_TOPOLOGICAL,
+	GIT_SORT_REVERSE,
+)
+
+from scal3.utils import toStr, toBytes
 from scal3.time_utils import getEpochFromJd, encodeJd
+from scal3.vcs_modules import encodeShortStat
 
 
 def prepareObj(obj):
@@ -33,78 +46,50 @@ def clearObj(obj):
 	pass
 
 
-def decodeStatLine(line):
-	if not line:
-		return 0, 0, 0
-	files_changed, insertions, deletions = 0, 0, 0
-	for section in line.split(","):
-		parts = section.strip().split(" ")
-		if len(parts) < 2:
-			continue
-		try:
-			num = int(parts[0])
-		except:
-			print("bad section: %r, stat line=%r" % (section, line))
-		else:
-			action = parts[-1].strip()
-			if "changed" in action:
-				files_changed = num
-			elif "insertions" in action:
-				insertions = num
-			elif "deletions" in action:
-				deletions = num
-	return files_changed, insertions, deletions
 
-
-def getCommitList(obj, startJd=None, endJd=None):
+def getCommitList(obj, startJd=None, endJd=None, branch="") -> List[Tuple[int, str]]:
 	"""
 	returns a list of (epoch, commit_id) tuples
+
+	this function is optimized for recent commits
+		i.e. endJd is either None or recent
 	"""
-	cmd = [
-		"git",
-		"--git-dir", join(obj.vcsDir, ".git"),
-		"log",
-		"--format=%ct %H",## or "--format=%ct %H"
-	]
+	if not branch:
+		branch = "master"
+	startEpoch = None
+	endEpoch = None
 	if startJd is not None:
-		cmd += [
-			"--since",
-			encodeJd(startJd),
-		]
+		startEpoch = getEpochFromJd(startJd)
 	if endJd is not None:
-		cmd += [
-			"--until",
-			encodeJd(endJd),
-		]
-	data = []
-	for line in Popen(cmd, stdout=PIPE).stdout:
-		line = toStr(line)
-		parts = line.strip().split(" ")
+		endEpoch = getEpochFromJd(endJd)
+	repo = Repository(obj.vcsDir)
+	data = []  # type: List[Tuple[int, str]]
+	# items of data are (epochTime, commitHash)
+	target = repo.branches[branch].target
+	for commit in repo.walk(target, GIT_SORT_TIME):
+		tm = commit.author.time
+		if endEpoch is not None and tm > endEpoch:
+			continue
+		if startEpoch is not None and tm < startEpoch:
+			break
 		data.append((
-			int(parts[0]),
-			parts[1],
+			tm,
+			commit.id.hex,
 		))
+	data.reverse()
 	return data
 
 
 def getCommitInfo(obj, commid_id):
-	cmd = [
-		"git",
-		"--git-dir", join(obj.vcsDir, ".git"),
-		"log",
-		"-1",
-		"--format=%at\n%cn <%ce>\n%h\n%s",
-		commid_id,
-	]
-	parts = Popen(cmd, stdout=PIPE).stdout.read().strip().split("\n")
-	if not parts:
-		return
+	repo = Repository(obj.vcsDir)
+	commit = repo.revparse_single(commid_id)
+	msg = commit.message
 	return {
-		"epoch": int(parts[0]),
-		"author": parts[1],
-		"shortHash": parts[2],
-		"summary": parts[3],
-		"description": "\n".join(parts[4:]),
+		"epoch": commit.author.time,
+		"author": f"{commit.author.name} <{commit.author.email}>",
+		"shortHash": commit.id.hex[:8],  # or commit.short_id.hex
+		"summary": msg.split("\n")[0],
+		"description": msg,
 	}
 
 
@@ -112,78 +97,71 @@ def getShortStatLine(obj, prevId, thisId):
 	"""
 	returns str
 	"""
-	cmd = [
-		"git",
-		"--git-dir", join(obj.vcsDir, ".git"),
-		"diff",
-		"--shortstat",
-		prevId,
-		thisId,
-	]
-	return toStr(Popen(cmd, stdout=PIPE).stdout.read().strip())
+	return encodeShortStat(*getShortStat(obj, prevId, thisId))
 
 
 def getShortStat(obj, prevId, thisId):
-	return decodeStatLine(getShortStatLine(obj, prevId, thisId))
+	"""
+	returns (files_changed, insertions, deletions)
+	"""
+	repo = Repository(obj.vcsDir)
+	diff = repo.diff(
+		a=repo.revparse_single(prevId).id.hex,
+		b=repo.revparse_single(thisId).id.hex,
+	)
+	stats = diff.stats
+	return (stats.files_changed, stats.insertions, stats.deletions)
 
 
 def getCommitShortStatLine(obj, commit_id):
 	"""
 	returns str
 	"""
-	lines = Popen([
-		"git",
-		"--git-dir", join(obj.vcsDir, ".git"),
-		"log",
-		"--shortstat",
-		"-1",
-		"--pretty=format:",
-		commit_id,
-	], stdout=PIPE).stdout.readlines()
-	if lines:
-		return lines[-1].strip()
-	return ""
+	return encodeShortStat(*getCommitShortStat(obj, commit_id))
 
 
 def getCommitShortStat(obj, commit_id):
 	"""
 	returns (files_changed, insertions, deletions)
 	"""
-	return decodeStatLine(getCommitShortStatLine(obj.vcsDir, commit_id))
+	repo = Repository(obj.vcsDir)
+	commit = repo.revparse_single(commit_id)
+	diff = repo.diff(
+		a=commit.parent_ids[0].hex,
+		b=commit.id.hex,
+	)
+	stats = diff.stats
+	return (stats.files_changed, stats.insertions, stats.deletions)
 
 
 def getTagList(obj, startJd, endJd):
 	"""
 	returns a list of (epoch, tag_name) tuples
 	"""
+	repo = Repository(obj.vcsDir)
 	startEpoch = getEpochFromJd(startJd)
 	endEpoch = getEpochFromJd(endJd)
-	cmd = [
-		"git",
-		"--git-dir", join(obj.vcsDir, ".git"),
-		"tag",
-	]
 	data = []
-	for line in Popen(cmd, stdout=PIPE).stdout:
-		tag = line.strip()
-		if not tag:
+	for refName in repo.references:
+		if not refName.startswith("refs/tags/"):
 			continue
-		line = Popen([
-			"git",
-			"--git-dir", join(obj.vcsDir, ".git"),
-			"log",
-			"-1",
-			tag,
-			"--pretty=%ct",
-		], stdout=PIPE).stdout.read().strip()
-		epoch = int(line)
+		tagName = refName[len("refs/tags/"):]
+		ref = repo.references[refName]
+		tag = repo.get(ref.target)
+		# in some cases, tag is instance of _pygit2.Tag, with tag.author
+		# in other cases, tag is instance of _pygit2.Commit, with tag.author
+		try:
+			author = tag.author
+		except AttributeError:
+			author = tag.tagger
+		epoch = author.time  # type: int
 		if epoch < startEpoch:
 			continue
 		if epoch >= endEpoch:
 			break
 		data.append((
 			epoch,
-			tag,
+			tagName,
 		))
 	return data
 
@@ -193,34 +171,50 @@ def getTagShortStatLine(obj, prevTag, tag):
 
 
 def getFirstCommitEpoch(obj):
-	return int(
-		Popen([
-			"git",
-			"--git-dir", join(obj.vcsDir, ".git"),
-			"rev-list",
-			"--max-parents=0",
-			"HEAD",
-			"--format=%ct",
-		], stdout=PIPE).stdout.readlines()[1].strip()
-	)
+	repo = Repository(obj.vcsDir)
+	target = repo.branches["master"].target
+	commitIter = repo.walk(target, GIT_SORT_TIME | GIT_SORT_REVERSE)
+	commit = next(commitIter)
+	return commit.author.time
 
 
 def getLastCommitEpoch(obj):
-	return int(Popen([
-		"git",
-		"--git-dir", join(obj.vcsDir, ".git"),
-		"log",
-		"-1",
-		"--format=%ct",
-	], stdout=PIPE).stdout.read().strip())
+	repo = Repository(obj.vcsDir)
+	target = repo.branches["master"].target
+	commitIter = repo.walk(target, GIT_SORT_TIME)
+	commit = next(commitIter)
+	return commit.author.time
+
+def getLatestParentBefore(obj, commitId: str, beforeEpoch: float) -> str:
+	repo = Repository(obj.vcsDir)
+
+	def find(commitIdArg):
+		for commit in repo.walk(commitIdArg, GIT_SORT_TOPOLOGICAL):
+			if commit.author.time < beforeEpoch:
+				return commit.id.hex
+			if len(commit.parent_ids) > 1:
+				nextId = find(commit.parent_ids[0])
+				if nextId:
+					return nextId
+				return commit.id.hex
+		return ""
+
+	return find(commitId)
 
 
-def getLastCommitIdUntilJd(obj, jd):
-	return Popen([
-		"git",
-		"--git-dir", join(obj.vcsDir, ".git"),
-		"log",
-		"--until", encodeJd(jd),
-		"-1",
-		"--format=%H",
-	], stdout=PIPE).stdout.read().strip()
+if __name__ == "__main__":
+	import sys
+	import os
+	from dateutil.parser import parse
+	
+	class DummyObj:
+		def __init__(self, vcsDir):
+			self.vcsDir = vcsDir
+
+	vcsDir = os.getcwd()
+	commitId = sys.argv[1]
+	beforeStr = sys.argv[2]
+	beforeEpoch = parse(beforeStr).timestamp()
+	obj = DummyObj(vcsDir)
+	parentCommitId = getLatestParentBefore(obj, commitId, beforeEpoch)
+	log.info(parentCommitId)

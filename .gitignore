@@ -10,7 +10,6 @@
 .settings
 build
 dist
-debian
 screenshots
 .hidden
 *.deb

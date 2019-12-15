@@ -10,11 +10,11 @@ from scal3.ui_gtk.mywidgets.weekday_combo import WeekDayComboBox
 from scal3.ui_gtk.mywidgets.month_combo import MonthComboBox
 
 
-class WidgetClass(gtk.HBox):
+class WidgetClass(gtk.Box):
 	def __init__(self, rule):
 		self.rule = rule
 		#####
-		gtk.HBox.__init__(self)
+		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		###
 		combo = gtk.ComboBoxText()
 		for item in rule.wmIndexNames:
@@ -26,10 +26,10 @@ class WidgetClass(gtk.HBox):
 		pack(self, combo)
 		self.weekDayCombo = combo
 		###
-		pack(self, gtk.Label(_(" of ")))
+		pack(self, gtk.Label(label=_(" of ")))
 		###
 		combo = MonthComboBox(True)
-		combo.build(rule.getMode())
+		combo.build(rule.getCalType())
 		pack(self, combo)
 		self.monthCombo = combo
 
@@ -43,7 +43,7 @@ class WidgetClass(gtk.HBox):
 		self.weekDayCombo.setValue(self.rule.weekDay)
 		self.monthCombo.setValue(self.rule.month)
 
-	def changeMode(self, mode):
-		if mode == self.rule.getMode():
+	def changeCalType(self, calType):
+		if calType == self.rule.getCalType():
 			return
-		self.monthCombo.build(mode)
+		self.monthCombo.build(calType)

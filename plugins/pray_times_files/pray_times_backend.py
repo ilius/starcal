@@ -50,17 +50,17 @@ timeNames = (
 )
 
 ASR_STANDARD, ASR_HANAFI = (1, 2)
-## asr juristics:
-##   standard => Shafi`i, Maliki, Ja`fari, Hanbali
-##   hanafi => Hanafi
-## used in which method? FIXME
+# asr juristics:
+#   standard => Shafi`i, Maliki, Ja`fari, Hanbali
+#   hanafi => Hanafi
+# used in which method? FIXME
 
 MIDNIGHT_STANDARD, MIDNIGHT_JAFARI = list(range(2))
-## midnight methods
-##   standard => Mid Sunset to Sunrise
-##   jafari => Mid Maghrib to Fajr
+# midnight methods
+#   standard => Mid Sunset to Sunrise
+#   jafari => Mid Maghrib to Fajr
 
-## Adjust Methods for Higher Latitudes
+# Adjust Methods for Higher Latitudes
 highLatMethods = (
 	"NightMiddle", # middle of night
 	"AngleBased",  # angle/60th of night
@@ -139,8 +139,8 @@ methodsDict = {
 	m.name: m for m in methodsList
 }
 
-########################### Functions ####################################
 
+# ######################### Functions ####################################
 
 def isMin(tm):
 	return isinstance(tm, str) and tm.endswith("min")
@@ -215,7 +215,7 @@ def timesMiddle(time1, time2):
 	return time1 + fixHour(time2 - time1) / 2
 
 
-################################ Classes ################################
+# ############################## Classes ################################
 
 class PrayTimes:
 	numIterations = 1
@@ -252,7 +252,7 @@ class PrayTimes:
 		return prayer times for a given julian day
 		"""
 		#if time.daylight and time.gmtime(core.getEpochFromJd(jd)):
-		#print(time.gmtime((jd-2440588)*(24*3600)).tm_isdst)
+		# log.debug(time.gmtime((jd-2440588)*(24*3600)).tm_isdst)
 		self.utcOffset = utcOffset
 		self.jDate = jd - 0.5 - self.lng / (15 * 24)
 		return self.computeTimes()
@@ -271,20 +271,14 @@ class PrayTimes:
 		hours = floor(tm)
 		minutes = floor((tm - hours) * 60)
 		if format == "24h":
-			return "%d:%.2d" % (hours, minutes)
+			return f"{hours:d}:{minutes:02d}"
 		elif format == "12h":
-			return "%d:%.2d %s" % (
-				(hours - 1) % 12 + 1,
-				minutes,
-				tr("AM") if hours < 12 else tr("PM"),
-			)
+			ampm = tr("AM") if hours < 12 else tr("PM")
+			return f"{(hours-1)%12+1:d}:{minutes:02d} {ampm}"
 		elif format == "12hNS":
-			return "%d:%.2d" % (
-				(hours - 1) % 12 + 1,
-				minutes,
-			)
+			return f"{(hours-1)%12+1:d}:{minutes:02d}"
 		else:
-			raise ValueError("bad time format %s" % format)
+			raise ValueError(f"bad time format '{format}'")
 
 	def midDay(self, tm):
 		"""
@@ -305,11 +299,9 @@ class PrayTimes:
 		#try:
 		t = arccos(ratio) / 15
 		#except:
-		#	print(
-		#		"sunAngleTime: angle=%s" % angle +
-		#		", tm=%s" % tm +
-		#		", direction=%s" % direction +
-		#		" ==> ratio=%s" % ratio
+		#	log.info(
+		#		f"sunAngleTime: angle={angle}, tm={tm}" +
+		#		f", direction={direction} ==> ratio={ratio}" +
 		#	)
 		#	return 0
 		return noon + dirSign(direction) * t
@@ -381,8 +373,8 @@ class PrayTimes:
 
 		# main iterations
 		for i in range(self.numIterations):
-			## computePrayerTimes
-			## dayPortion
+			# computePrayerTimes
+			# dayPortion
 			for key in times:
 				times[key] /= 24
 			times["imsak"] = self.sunAngleTime(
@@ -415,11 +407,11 @@ class PrayTimes:
 				times["isha"],
 			)
 
-		## adjustTimes
+		# adjustTimes
 		for key in times:
 			times[key] += self.utcOffset - self.lng / 15.0
 		if self.highLats != "None":
-			## adjustHighLats
+			# adjustHighLats
 			nightTime = timeDiff(
 				times["sunset"],
 				times["sunrise"],
@@ -478,7 +470,7 @@ class PrayTimes:
 		#for key in times:
 		#	times[key] = self.getFormattedTime(times[key], format)
 
-		times["timezone"] = "GMT%+.1f" % self.utcOffset
+		times["timezone"] = f"GMT{self.utcOffset:+.1f}"
 		# ^^^ utcOffset is not timeZone FIXME
 
 		return times

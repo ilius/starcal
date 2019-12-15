@@ -45,6 +45,9 @@ def getOsName():## "linux", "win", "mac", "unix"
 		raise OSError("Unkown operating system!")
 
 
+osName = getOsName()
+
+
 def makeDir(direc):
 	if not isdir(direc):
 		os.makedirs(direc)
@@ -52,18 +55,19 @@ def makeDir(direc):
 
 def getUsersData():
 	data = []
-	for line in open("/etc/passwd").readlines():
-		parts = line.strip().split(":")
-		if len(parts) < 7:
-			continue
-		data.append({
-			"login": parts[0],
-			"uid": parts[2],
-			"gid": parts[3],
-			"real_name": parts[4],
-			"home_dir": parts[5],
-			"shell": parts[6],
-		})
+	with open("/etc/passwd") as fp:
+		for line in fp.readlines():
+			parts = line.strip().split(":")
+			if len(parts) < 7:
+				continue
+			data.append({
+				"login": parts[0],
+				"uid": parts[2],
+				"gid": parts[3],
+				"real_name": parts[4],
+				"home_dir": parts[5],
+				"shell": parts[6],
+			})
 	return data
 
 
@@ -141,9 +145,67 @@ def goodkill(pid, interval=1, hung=20):
 		if i < hung:
 			i += 1
 		else:
-			raise OSError("Process %s is hung. Giving up kill." % pid)
+			raise OSError(f"Process {pid} is hung. Giving up kill.")
 		if kill(pid, SIGKILL):
 			return
 		if dead(pid):
 			return
 		sleep(interval)
+
+def fixStrForFileNameForWindows(fname: str) -> str:
+	import re
+	fname = re.sub(r'[\x00-\x1f\\/:"*?<>|]+', "_", fname)
+	fname = re.sub(r"[ _]+", "_", fname)
+	if fname.upper() in (
+		"COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+		"LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9",
+		"CON", "PRN", "AUX", "NUL",
+	):
+		fname += "-1"
+	return fname
+
+
+def fixStrForFileName(fname: str) -> str:
+	if osName == "win":
+		return fixStrForFileNameForWindows(fname)
+	return fname.replace("/", "_").replace("\\", "_")
+
+
+# returns False if could not find any browser or command to open the URL
+def openUrl(url: str) -> bool:
+	if osName == "win":
+		Popen([url])
+		return True
+	if osName == "mac":
+		Popen(["open", url])
+		return True
+	try:
+		Popen(["xdg-open", url])
+	except Exception:
+		log.exception("")
+	else:
+		return True
+	#if not url.startswith("http"):  # FIXME
+	#	return
+	try:
+		import webbrowser
+	except ImportError:
+		pass
+	else:
+		webbrowser.open(url)
+		return True
+	try:
+		import gnomevfs
+	except ImportError:
+		pass
+	else:
+		gnomevfs.url_show(url)
+		return True
+	for command in ("gnome-www-browser", "firefox", "iceweasel", "konqueror"):
+		try:
+			Popen([command, url])
+		except Exception:
+			pass
+		else:
+			return True
+	return False

@@ -18,6 +18,9 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 from scal3 import core
 from scal3.locale_man import tr as _
 from scal3 import event_lib
@@ -32,15 +35,15 @@ from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.event import common
 
 
-class WidgetClass(gtk.VBox):
+class WidgetClass(gtk.Box):
 	def __init__(self, event):## FIXME
-		gtk.VBox.__init__(self)
+		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.event = event
 		assert event.parent.name == "universityTerm" ## FIXME
-		sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
+		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		#####
 		if not event.parent.courses:
-			showError(event.parent.noCourseError, ui.eventManDialog)
+			showError(event.parent.noCourseError, transient_for=ui.eventManDialog)
 			raise RuntimeError("No courses added")
 		self.courseIds = []
 		self.courseNames = []
@@ -52,27 +55,27 @@ class WidgetClass(gtk.VBox):
 		#combo.connect("changed", self.updateSummary)
 		self.courseCombo = combo
 		##
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Course"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Course"))
+		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		pack(hbox, combo)
 		##
 		pack(self, hbox)
 		#####
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Date"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Date"))
+		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.dateInput = DateButton()
 		pack(hbox, self.dateInput)
 		pack(self, hbox)
 		#####
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Time"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Time"))
+		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		##
@@ -83,37 +86,37 @@ class WidgetClass(gtk.VBox):
 		#self.dayTimeEndCombo.get_child().set_direction(gtk.TextDirection.LTR)
 		##
 		pack(hbox, self.dayTimeStartCombo)
-		pack(hbox, gtk.Label(" " + _("to") + " "))
+		pack(hbox, gtk.Label(label=" " + _("to") + " "))
 		pack(hbox, self.dayTimeEndCombo)
 		pack(self, hbox)
 		###########
-		#hbox = gtk.HBox()
-		#label = gtk.Label(_("Summary"))
-		#label.set_alignment(0, 0.5)
+		#hbox = HBox()
+		#label = gtk.Label(label=_("Summary"))
+		#label.set_xalign(0)
 		#sizeGroup.add_widget(label)
 		#pack(hbox, label)
 		#self.summaryEntry = gtk.Entry()
 		#pack(hbox, self.summaryEntry, 1, 1)
 		#pack(self, hbox)
 		#####
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Description"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Description"))
+		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.descriptionInput = TextFrame()
 		pack(hbox, self.descriptionInput, 1, 1)
 		pack(self, hbox)
 		#####
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Icon"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Icon"))
+		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
 		self.iconSelect = IconSelectButton()
-		#print(join(pixDir, self.icon))
+		# log.debug(join(pixDir, self.icon))
 		pack(hbox, self.iconSelect)
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
 		######
 		self.notificationBox = common.NotificationBox(event)
@@ -130,7 +133,9 @@ class WidgetClass(gtk.VBox):
 
 	#def updateSummary(self, widget=None):
 	#	courseIndex = self.courseCombo.get_active()
-	#	summary = _("%s Exam")%self.courseNames[courseIndex]
+	#	summary = _("{courseName} Exam").format(
+	#		courseName=self.courseNames[courseIndex],
+	#	)
 	#	self.summaryEntry.set_text(summary)
 	#	self.event.summary = summary
 
@@ -159,7 +164,7 @@ class WidgetClass(gtk.VBox):
 	def updateVars(self):## FIXME
 		courseIndex = self.courseCombo.get_active()
 		if courseIndex is None:
-			showError(_("No course is selected"), ui.eventManDialog)
+			showError(_("No course is selected"), transient_for=ui.eventManDialog)
 			raise RuntimeError("No courses is selected")
 		else:
 			self.event.courseId = self.courseIds[courseIndex]
@@ -181,8 +186,8 @@ class WidgetClass(gtk.VBox):
 		self.notificationBox.updateVars()
 		self.event.updateSummary()
 
-	def modeComboChanged(self, obj=None):
+	def calTypeComboChanged(self, obj=None):
 		# overwrite method from common.WidgetClass
-		newMode = self.modeCombo.get_active()
-		self.dateInput.changeMode(self.event.mode, newMode)
-		self.event.mode = newMode
+		newCalType = self.calTypeCombo.get_active()
+		self.dateInput.changeCalType(self.event.calType, newCalType)
+		self.event.calType = newCalType

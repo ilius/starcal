@@ -30,34 +30,38 @@ from scal3 import ui
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.utils import dialog_add_button
+from scal3.ui_gtk.mywidgets.label import SLabel
+from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.event.occurrence_view import DayOccurrenceView
 
 
 @registerSignals
-class AllDateLabelsVBox(gtk.VBox, ud.BaseCalObj):
+class AllDateLabelsVBox(gtk.Box, ud.BaseCalObj):
 	_name = "allDateLabels"
 	desc = _("Dates")
 
 	def __init__(self):
-		gtk.VBox.__init__(self, spacing=5)
+		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL, spacing=5)
 		self.initVars()
 
 	def onDateChange(self, *a, **ka):
 		ud.BaseCalObj.onDateChange(self, *a, **ka)
 		for child in self.get_children():
 			child.destroy()
-		sgroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
+		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
+		sgroupDate = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		for i, module in calTypes.iterIndexModule():
-			hbox = gtk.HBox()
-			label = gtk.Label(_(module.desc))
-			label.set_alignment(0, 0.5)
+			hbox = HBox()
+			label = gtk.Label(label=_(module.desc))
+			label.set_xalign(0)
 			pack(hbox, label)
 			sgroup.add_widget(label)
-			pack(hbox, gtk.Label("  "))
+			pack(hbox, gtk.Label(label="  "))
 			###
-			dateLabel = gtk.Label(ui.cell.format(ud.dateFormatBin, i))
+			dateLabel = SLabel(label=ui.cell.format(ud.dateFormatBin, i))
 			dateLabel.set_selectable(True)
+			dateLabel.set_xalign(1.0 if rtl else 0.0)
 			pack(
 				hbox,
 				dateLabel,
@@ -65,6 +69,7 @@ class AllDateLabelsVBox(gtk.VBox, ud.BaseCalObj):
 				0,
 				0,
 			)
+			sgroupDate.add_widget(dateLabel)
 			###
 			pack(self, hbox)
 		self.show_all()
@@ -89,20 +94,20 @@ class PluginsTextView(gtk.TextView, ud.BaseCalObj):
 		self.get_buffer().set_text(ui.cell.pluginsText)
 
 
-
 @registerSignals
-class DayInfoJulianDayHBox(gtk.HBox, ud.BaseCalObj):
+class DayInfoJulianDayHBox(gtk.Box, ud.BaseCalObj):
 	_name = "jd"
 	desc = _("Julian Day Number")
+
 	def __init__(self):
-		gtk.HBox.__init__(self)
+		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
 		###
-		pack(self, gtk.Label(_("Julian Day Number") + ":  "))
-		self.jdLabel = gtk.Label("")
+		pack(self, gtk.Label(label=_("Julian Day Number") + ":  "))
+		self.jdLabel = SLabel()
 		self.jdLabel.set_selectable(True)
 		pack(self, self.jdLabel)
-		pack(self, gtk.Label(""), 1, 1)
+		pack(self, gtk.Label(), 1, 1)
 		###
 		self.show_all()
 
@@ -125,10 +130,34 @@ class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 		self.connect("delete-event", self.onClose)
 		self.vbox.set_spacing(15)
 		###
-		dialog_add_button(self, gtk.STOCK_CLOSE, _("Close"), 0, self.onClose)
-		dialog_add_button(self, "", _("Previous"), 1, self.goBack)
-		dialog_add_button(self, "", _("Today"), 2, self.goToday)
-		dialog_add_button(self, "", _("Next"), 3, self.goNext)
+		dialog_add_button(
+			self,
+			label=_("Close"),
+			imageName="dialog-close.svg",
+			res=0,
+			onClick=self.onClose,
+		)
+		dialog_add_button(
+			self,
+			label=_("Previous"),
+			imageName="go-previous.svg",
+			res=1,
+			onClick=self.goBack,
+		)
+		dialog_add_button(
+			self,
+			label=_("Today"),
+			imageName="go-home.svg",
+			res=2,
+			onClick=self.goToday,
+		)
+		dialog_add_button(
+			self,
+			label=_("Next"),
+			imageName="go-next.svg",
+			res=3,
+			onClick=self.goNext,
+		)
 		###
 		self.appendDayInfoItem(AllDateLabelsVBox())
 		self.appendDayInfoItem(DayInfoJulianDayHBox(), expander=False)
@@ -142,10 +171,11 @@ class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 		###
 		widget = item
 		if expander:
-			exp = gtk.Expander()
-			exp.set_label(item.desc)
+			exp = ExpanderFrame(
+				label=item.desc,
+				expanded=True,
+			)
 			exp.add(item)
-			exp.set_expanded(True)
 			widget = exp
 		pack(self.vbox, widget)
 

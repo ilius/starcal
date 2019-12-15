@@ -18,6 +18,9 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 from difflib import SequenceMatcher
 
 from scal3.utils import NullObj
@@ -115,7 +118,7 @@ def getShortStatByTrees(repo, old_tree, tree):
 		if changed_content:
 			#for kind in (old_kind, new_kind):
 			#	if not kind in (None, "file", "symlink", "directory"):
-			#		print("kind", old_kind, new_kind)
+			#		log.info(f"kind: {old_kind}, {new_kind}")
 			if new_kind in ("file", "symlink"):
 				files_changed += 1
 				text = tree.get_file_text(file_id)
@@ -133,7 +136,7 @@ def getShortStatByTrees(repo, old_tree, tree):
 							if op == "equal":
 								continue
 							#if not op in ("insert", "delete", "replace"):
-							#	print("op", op)
+							#	log.info(f"op = {op}")
 							insertions += (j2 - j1)
 							deletions += (i2 - i1)
 			elif new_kind is None:
@@ -214,12 +217,3 @@ def getFirstCommitEpoch(obj):
 
 def getLastCommitEpoch(obj):
 	return obj.lastRev.timestamp
-
-
-def getLastCommitIdUntilJd(obj, jd):
-	untilEpoch = getEpochFromJd(jd)
-	last = obj.est.getLastBefore(untilEpoch)
-	if not last:
-		return
-	t0, t1, rev_id = last
-	return str(obj.repo.get_revision(rev_id))

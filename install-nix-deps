@@ -1,0 +1,14 @@
+#!/bin/bash
+
+nix-shell -p \
+	pythonPackages.pygobject3 \
+	pythonPackages.pycairo \
+	pythonPackages.pexpect \
+	pythonPackages.httplib2 \
+	pythonPackages.dateutil \
+	pythonPackages.psutil \
+	pythonPackages.requests \
+	pythonPackages.python-igraph \
+	lxqt.lxqt-openssh-askpass \
+
+

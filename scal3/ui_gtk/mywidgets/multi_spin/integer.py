@@ -5,10 +5,14 @@ from scal3.ui_gtk.mywidgets.multi_spin import SingleSpinButton
 
 
 class IntSpinButton(SingleSpinButton):
-	def __init__(self, _min, _max, **kwargs):
+	def __init__(self, _min, _max, step=0, **kwargs):
+		if step == 0:
+			step = 1
 		SingleSpinButton.__init__(
 			self,
-			IntField(_min, _max),
+			field=IntField(_min, _max),
+			step_inc=step,
+			page_inc=step * 10,
 			**kwargs
 		)
 

@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.0" viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg" xmlns:cc="http://creativecommons.org/ns#" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:xlink="http://www.w3.org/1999/xlink">
+<defs>
+<clipPath id="j">
+<circle cx="344" cy="92" r="36" fill="url(#linearGradient5167)"/>
+</clipPath>
+<filter id="g">
+<feGaussianBlur stdDeviation="1.04"/>
+</filter>
+<filter id="f">
+<feGaussianBlur stdDeviation="2.8805897"/>
+</filter>
+<linearGradient id="e" x1="-80.003" x2="-45.097" y1="-131.93" y2="-131.93" gradientTransform="matrix(0 1.346 -1.346 0 -112.67 119.24)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#fff" offset="0"/>
+<stop stop-color="#fff" stop-opacity="0" offset="1"/>
+</linearGradient>
+<linearGradient id="d" x1="117.82" x2="90.538" y1="103.01" y2="76.634" gradientTransform="translate(20 -56)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#4d0000" stop-opacity="0" offset="0"/>
+<stop stop-color="#4d0000" offset=".5"/>
+<stop stop-color="#4d0000" stop-opacity="0" offset="1"/>
+</linearGradient>
+<linearGradient id="c" x1="328.12" x2="336.98" y1="120.81" y2="87.759" gradientUnits="userSpaceOnUse">
+<stop stop-color="#f00" offset="0"/>
+<stop stop-color="#650000" offset="1"/>
+</linearGradient>
+<radialGradient id="a" cx="345.81" cy="85.25" r="36" gradientTransform="matrix(.66629 -.65601 .98938 1.0049 31.056 226.44)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#ffbe00" offset="0"/>
+<stop stop-color="#f5d600" stop-opacity="0" offset="1"/>
+</radialGradient>
+<linearGradient id="b" x1="-86.12" x2="-56.358" y1="-381.1" y2="-373.12" gradientTransform="rotate(90 -90.001 50.002)" gradientUnits="userSpaceOnUse">
+<stop stop-color="#8c0000" offset="0"/>
+<stop stop-color="#bf0000" offset="1"/>
+</linearGradient>
+<filter id="i">
+<feGaussianBlur stdDeviation="5.6513927"/>
+</filter>
+<filter id="h">
+<feGaussianBlur stdDeviation="0.96794009"/>
+</filter>
+</defs>
+<metadata>
+<rdf:RDF>
+<cc:Work rdf:about="">
+<dc:format>image/svg+xml</dc:format>
+<dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+<dc:title/>
+</cc:Work>
+</rdf:RDF>
+</metadata>
+<g transform="translate(0,192)">
+<g transform="matrix(2.5 0 0 2.5 -2.2651 -187.75)">
+<circle transform="matrix(.5662 0 0 .5662 55.74 54.555)" cx="15.5" cy="20" r="100" filter="url(#i)" opacity=".50272" stroke="#000" stroke-dashoffset="4.15" stroke-linecap="round" stroke-linejoin="round" stroke-width=".1375"/>
+<circle transform="matrix(-1.5639 .41906 -.41906 -1.5639 641.55 62.028)" cx="344" cy="92" r="36" fill="url(#b)"/>
+<circle transform="matrix(-1.173 .31429 -.31429 -1.173 497.41 62.096)" cx="344" cy="92" r="36" fill="url(#a)" filter="url(#h)"/>
+<circle transform="matrix(-1.5639 -.41906 -.41906 1.5639 641.55 62.573)" cx="344" cy="92" r="36" clip-path="url(#j)" fill="none" filter="url(#f)" opacity=".8" stroke="url(#c)" stroke-width="6.7514"/>
+<path d="m65 11.558c-20.67 0-37.943 14.596-42.106 34.029 8.298 7.7355 24.043 12.956 42.106 12.956 18.062 0 33.808-5.2201 42.106-12.956-4.163-19.433-21.435-34.029-42.106-34.029z" fill="url(#e)" opacity=".8"/>
+<g transform="matrix(1.2883 1.2883 -1.2883 1.2883 -45.79 -141.25)">
+<path d="m118 16v16h-16v8h16v16h8v-16h16v-8h-16v-16z" fill="none" filter="url(#g)" stroke="url(#d)" stroke-linecap="round" stroke-linejoin="round" stroke-width="4"/>
+<path d="m118 16v16h-16v8h16v16h8v-16h16v-8h-16v-16z" fill="#fff" fill-rule="evenodd"/>
+</g>
+</g>
+</g>
+</svg>

@@ -18,64 +18,57 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 import sys
 import os
 from math import floor, ceil
 
-from collections import (
-	Iterable,
-	Iterator,
-	OrderedDict,
-)
+import typing
+from typing import Union, Optional, Any, List, Tuple, Dict
+
+Number = Union[int, float]
 
 
-def ifloor(x):
+def ifloor(x: float) -> int:
 	return int(floor(x))
 
 
-def iceil(x):
+def iceil(x: float) -> int:
 	return int(ceil(x))
 
 
-def arange(start, stop, step):
-	l = []
+# replacement for numpy.core.multiarray.arange, in the lack of numpy
+def arange(
+	start: Number,
+	stop: Number,
+	step: Number,
+) -> List[Number]:
+	ls = []
 	x = start
 	stop -= 0.000001
 	while x < stop:
-		l.append(x)
+		ls.append(x)
 		x += step
-	return l
+	return ls
 
 
-def toBytes(s):
+def toBytes(s: Union[bytes, str]) -> bytes:
 	return s.encode("utf8") if isinstance(s, str) else bytes(s)
 
 
-def toStr(s):
+def toStr(s: Union[bytes, str]) -> str:
 	return str(s, "utf8") if isinstance(s, bytes) else str(s)
 
 
-def cmp(a, b):
+def cmp(a: Any, b: Any) -> bool:
 	return 0 if a == b else (1 if a > b else -1)
 
 
-def versionLessThan(v0, v1):
-	if v0 == "":
-		if v1 == "":
-			return 0
-		else:
-			return -1
-	elif v1 == "":
-		return 1
-	return [
-		int(p) for p in v0.split(".")
-	] < [
-		int(p) for p in v1.split(".")
-	]
-
-
-def printError(text):
-	sys.stderr.write("%s\n" % text)
+def versionLessThan(v0: str, v1: str) -> bool:
+	from packaging import version
+	return version.parse(v0) < version.parse(v1)
 
 
 class FallbackLogger:
@@ -83,44 +76,36 @@ class FallbackLogger:
 		pass
 
 	def error(self, text):
-		sys.stderr.write("ERROR: %s\n" % text)
+		sys.stderr.write("ERROR: " + text + "\n")
 
 	def warning(self, text):
-		print("WARNING: %s" % text)
+		log.info("WARNING: " + text)
 
 	def debug(self, text):
-		print(text)
+		log.info(text)
 
 
-def myRaise(File=None):
-	i = sys.exc_info()
-	typ, value, tback = sys.exc_info()
-	text = "line %s: %s: %s\n" % (tback.tb_lineno, typ.__name__, value)
-	if File:
-		text = "File \"%s\", " % File + text
-	sys.stderr.write(text)
-
-
-def myRaiseTback():
-	import traceback
-	typ, value, tback = sys.exc_info()
-	sys.stderr.write(
-		"".join(traceback.format_exception(typ, value, tback))
-	)
-
-
-def restartLow():
-	return os.execl(
+def restartLow() -> typing.NoReturn:
+	"""
+	will not return from the function
+	"""
+	os.execl(
 		sys.executable,
 		sys.executable,
 		*sys.argv
-	)  # will not return from the function
+	)
 
 
 class StrOrderedDict(dict):
 	# A dict from strings to objects, with ordered keys
 	# and some looks like a list
-	def __init__(self, arg=[], reorderOnModify=True):
+	def __init__(
+		self,
+		arg: Union[None, List, Tuple, Dict] = None,
+		reorderOnModify: bool = True,
+	) -> None:
+		if arg is None:
+			arg = []
 		self.reorderOnModify = reorderOnModify
 		if isinstance(arg, (list, tuple)):
 			self.keyList = [item[0] for item in arg]
@@ -128,26 +113,26 @@ class StrOrderedDict(dict):
 			self.keyList = sorted(arg.keys())
 		else:
 			raise TypeError(
-				"StrOrderedDict: bad type for first argument: %s" % type(arg)
+				f"StrOrderedDict: bad type for first argument: {type(arg)}"
 			)
 		dict.__init__(self, arg)
 
-	def keys(self):
+	def keys(self) -> List[str]:
 		return self.keyList
 
-	def values(self):
+	def values(self) -> List[Any]:
 		return [
 			dict.__getitem__(self, key)
 			for key in self.keyList
 		]
 
-	def items(self):
+	def items(self) -> List[Tuple[str, Any]]:
 		return [
 			(key, dict.__getitem__(self, key))
 			for key in self.keyList
 		]
 
-	def __getitem__(self, arg):
+	def __getitem__(self, arg: Union[int, str, slice]) -> Any:
 		if isinstance(arg, int):
 			return dict.__getitem__(self, self.keyList[arg])
 		elif isinstance(arg, str):
@@ -160,10 +145,10 @@ class StrOrderedDict(dict):
 		else:
 			raise ValueError(
 				"Bad type argument given to StrOrderedDict.__getitem__" +
-				": %s" % type(arg)
+				f": {type(arg)}"
 			)
 
-	def __setitem__(self, arg, value):
+	def __setitem__(self, arg: Union[int, str], value) -> None:
 		if isinstance(arg, int):
 			dict.__setitem__(self, self.keyList[arg], value)
 		elif isinstance(arg, str):
@@ -181,10 +166,10 @@ class StrOrderedDict(dict):
 		else:
 			raise ValueError(
 				"Bad type argument given to StrOrderedDict.__setitem__" +
-				": %s" % type(item)
+				f": {type(item)}"
 			)
 
-	def __delitem__(self, arg):
+	def __delitem__(self, arg: Union[int, str, slice]) -> None:
 		if isinstance(arg, int):
 			self.keyList.__delitem__(arg)
 			dict.__delitem__(self, self.keyList[arg])
@@ -198,29 +183,29 @@ class StrOrderedDict(dict):
 		else:
 			raise ValueError(
 				"Bad type argument given to StrOrderedDict.__delitem__" +
-				": %s" % type(arg)
+				f": {type(arg)}"
 			)
 
-	#def pop(self, key):  # FIXME
+	#def pop(self, key: str) -> Any:  # FIXME
 	#	value = dict.pop(self, key)
 	#	del self.keyList[key]
 	#	return value
 
-	def clear(self):
+	def clear(self) -> None:
 		self.keyList = []
 		dict.clear(self)
 
-	def append(self, key, value):
+	def append(self, key: str, value: Any):
 		assert isinstance(key, str) and key not in self.keyList
 		self.keyList.append(key)
 		dict.__setitem__(self, key, value)
 
-	def insert(self, index, key, value):
+	def insert(self, index: int, key: str, value: Any):
 		assert isinstance(key, str) and key not in self.keyList
 		self.keyList.insert(index, key)
 		dict.__setitem__(self, key, value)
 
-	def sort(self, attr=None):
+	def sort(self, attr: Optional[str] = None) -> typing.Iterator:
 		if attr is None:
 			self.keyList.sort()
 		else:
@@ -236,7 +221,7 @@ class StrOrderedDict(dict):
 			yield (key, dict.__getitem__(self, key))
 
 	def __str__(self):
-		return "StrOrderedDict(%r)" % self.items()
+		return f"StrOrderedDict({self.items()!r})"
 
 	#"StrOrderedDict{" + ", ".join([
 	#	repr(k) + ":" + repr(self[k])
@@ -244,38 +229,39 @@ class StrOrderedDict(dict):
 	#]) + "}"
 
 	def __repr__(self):
-		return "StrOrderedDict(%r)" % self.items()
+		return f"StrOrderedDict(({self.items()!r})"
 
 
-class NullObj:## a fully transparent object
-	def __setattr__(self, attr, value):
+# a fully transparent object
+class NullObj:
+	def __setattr__(self, attr: str, value: Any) -> None:
 		pass
 
-	def __getattr__(self, attr):
+	def __getattr__(self, attr: str) -> "NullObj":
 		return self
 
-	def __call__(self, *args, **kwargs):
+	def __call__(self, *args, **kwargs) -> "NullObj":
 		return self
 
-	def __str__(self):
+	def __str__(self) -> str:
 		return ""
 
-	def __repr__(self):
+	def __repr__(self) -> str:
 		return ""
 
-	def __int__(self):
+	def __int__(self) -> int:
 		return 0
 
 
-def int_split(s):
+def int_split(s: str) -> List[int]:
 	return [int(x) for x in s.split()]
 
 
-def s_join(l):
-	return " ".join([str(x) for x in l])
+def s_join(ls: List[Any]) -> str:
+	return " ".join([str(x) for x in ls])
 
 
-def cleanCacheDict(cache, maxSize, currentValue):
+def cleanCacheDict(cache: Dict[Any, Any], maxSize: int, currentValue: Any):
 	n = len(cache)
 	if n >= maxSize > 2:
 		keys = sorted(cache.keys())
@@ -286,7 +272,7 @@ def cleanCacheDict(cache, maxSize, currentValue):
 		cache.pop(rm)
 
 
-def urlToPath(url):
+def urlToPath(url: str) -> str:
 	if not url.startswith("file://"):
 		return url
 	path = url[7:]
@@ -303,7 +289,7 @@ def urlToPath(url):
 	while i < n:
 		if path[i] == "%" and i < n - 2:
 			path2 += chr(int(path[i + 1:i + 3], 16))
-			# OR: chr(eval("0x%s"%path[i + 1:i + 3]))
+			# OR: chr(eval("0x" + path[i + 1:i + 3]))
 			i += 3
 		else:
 			path2 += path[i]
@@ -311,7 +297,7 @@ def urlToPath(url):
 	return path2
 
 
-def findNearestNum(lst, num):
+def findNearestNum(lst: List[int], num: int) -> int:
 	if not lst:
 		return
 	best = lst[0]
@@ -321,7 +307,7 @@ def findNearestNum(lst, num):
 	return best
 
 
-def findNearestIndex(lst, num):
+def findNearestIndex(lst: List[int], num: int) -> int:
 	if not lst:
 		return
 	index = 0
@@ -332,7 +318,7 @@ def findNearestIndex(lst, num):
 	return index
 
 
-def strFindNth(st, sub, n):
+def strFindNth(st: str, sub: str, n: int) -> int:
 	pos = 0
 	for i in range(n):
 		pos = st.find(sub, pos + 1)
@@ -341,17 +327,20 @@ def strFindNth(st, sub, n):
 	return pos
 
 
-def numRangesEncode(values, sep):
+def numRangesEncode(
+	values: List[Union[int, Tuple[int, int], List[int]]],
+	sep: str,
+):
 	parts = []
 	for value in values:
 		if isinstance(value, int):
 			parts.append(str(value))
 		elif isinstance(value, (tuple, list)):
-			parts.append("%d-%d" % (value[0], value[1]))
+			parts.append(f"{value[0]:d}-{value[1]:d}")
 	return sep.join(parts)
 
 
-def numRangesDecode(text):
+def numRangesDecode(text: str) -> List[Union[int, Tuple[int, int]]]:
 	values = []
 	for part in text.split(","):
 		pparts = part.strip().split("-")
@@ -363,12 +352,14 @@ def numRangesDecode(text):
 					int(pparts[0]),
 					int(pparts[1]),
 				))
-		except:
-			myRaise()
+			else:
+				log.error(f"numRangesDecode: invalid range string '{part}'")
+		except ValueError:
+			log.exception("")
 	return values
 
 
-def inputDate(msg):
+def inputDate(msg: str) -> Optional[Tuple[int, int, int]]:
 	while True:
 		try:
 			date = input(msg)
@@ -379,15 +370,15 @@ def inputDate(msg):
 		try:
 			return dateDecode(date)
 		except Exception as e:
-			print(str(e))
+			log.info(str(e))
 
 
-def inputDateJd(msg):
+def inputDateJd(msg: str) -> Optional[int]:
 	date = inputDate(msg)
 	if date:
 		y, m, d = date
-		return to_jd(y, m, d, DATE_GREG)
+		return to_jd(y, m, d, GREGORIAN)
 
 
 #if __name__=="__main__":
-#	print(findNearestNum([1, 2, 4, 6, 3, 7], 3.6))
+#	log.info(findNearestNum([1, 2, 4, 6, 3, 7], 3.6))

@@ -11,16 +11,20 @@ from scal3.ui_gtk.customize import CustomizableCalObj
 
 
 @registerSignals
-class CalObj(MyProgressBar, CustomizableCalObj):
+class CalObj(gtk.Frame, CustomizableCalObj):
 	_name = "yearPBar"
 	desc = _("Year Progress Bar")
+	itemListCustomizable = False
+	hasOptions = False
 
 	def __init__(self):
-		MyProgressBar.__init__(self)
+		gtk.Frame.__init__(self)
+		self.set_shadow_type(gtk.ShadowType.ETCHED_IN)
+		self.set_border_width(0)
+		self.pbar = MyProgressBar()
+		self.add(self.pbar)
+		self.pbar.show()
 		self.initVars()
-
-	def onConfigChange(self, *a, **kw):
-		self.update_font()
 
 	def onDateChange(self, *a, **kw):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
@@ -28,17 +32,23 @@ class CalObj(MyProgressBar, CustomizableCalObj):
 		year = ui.cell.year
 		jd0 = core.primary_to_jd(year, 1, 1)
 		jd1 = ui.cell.jd
-		jd2 = core.primary_to_jd(year+1, 1, 1)
+		jd2 = core.primary_to_jd(year + 1, 1, 1)
 		length = jd2 - jd0
 		past = jd1 - jd0
 		fraction = float(past) / length
-		percent = "%%%d" % (fraction * 100)
-		self.set_text(
+		if rtl:
+			percent = f"{int(fraction*100)}%"
+		else:
+			percent = f"%{int(fraction*100)}"
+		self.pbar.set_text(
+			_("Year") + ":  " +
 			textNumEncode(
 				percent,
 				changeDot=True,
 			) +
 			"   =   " +
-			"%s%s / %s%s" %(_(past), _(" days"), _(length), _(" days"))
+			_("{dayCount} days").format(dayCount=_(past)) +
+			" / " +
+			_("{dayCount} days").format(dayCount=_(length))
 		)
-		self.set_fraction(fraction)
+		self.pbar.set_fraction(fraction)

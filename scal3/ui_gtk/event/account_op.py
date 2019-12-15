@@ -15,15 +15,15 @@ class AccountEditorDialog(gtk.Dialog):
 		###
 		dialog_add_button(
 			self,
-			gtk.STOCK_CANCEL,
-			_("_Cancel"),
-			gtk.ResponseType.CANCEL,
+			imageName="dialog-cancel.svg",
+			label=_("_Cancel"),
+			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
-			gtk.STOCK_OK,
-			_("_OK"),
-			gtk.ResponseType.OK,
+			imageName="dialog-ok.svg",
+			label=_("_OK"),
+			res=gtk.ResponseType.OK,
 		)
 		##
 		self.connect("response", lambda w, e: self.hide())
@@ -31,13 +31,13 @@ class AccountEditorDialog(gtk.Dialog):
 		self.account = account
 		self.activeWidget = None
 		#######
-		hbox = gtk.HBox()
+		hbox = HBox()
 		combo = gtk.ComboBoxText()
 		for cls in event_lib.classes.account:
 			combo.append_text(cls.desc)
-		pack(hbox, gtk.Label(_("Account Type")))
+		pack(hbox, gtk.Label(label=_("Account Type")))
 		pack(hbox, combo)
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
 		####
 		if self.account:
@@ -49,7 +49,9 @@ class AccountEditorDialog(gtk.Dialog):
 			self.isNew = True
 			defaultAccountTypeIndex = 0
 			combo.set_active(defaultAccountTypeIndex)
-			self.account = event_lib.classes.account[defaultAccountTypeIndex]()
+			self.account = ui.withFS(event_lib.classes.account[
+				defaultAccountTypeIndex
+			]())
 		self.activeWidget = None
 		combo.connect("changed", self.typeChanged)
 		self.comboType = combo
@@ -64,7 +66,7 @@ class AccountEditorDialog(gtk.Dialog):
 			self.activeWidget.updateVars()
 			self.activeWidget.destroy()
 		cls = event_lib.classes.account[self.comboType.get_active()]
-		account = cls()
+		account = ui.withFS(cls())
 		if self.account:
 			account.copyFrom(self.account)
 			account.setId(self.account.id)

@@ -25,43 +25,43 @@ from scal3.ui_gtk import *
 from scal3.ui_gtk.mywidgets.floatingMsg import *
 
 
-class WidgetClass(gtk.HBox):
+class WidgetClass(gtk.Box):
 	def __init__(self, notifier):
 		self.notifier = notifier
 		##
-		gtk.HBox.__init__(self)
+		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		# [_] Fill Screen Width   Speed [__]   BG Color [__]  Text Color [__]
 		##
-		self.fillWidthCb = gtk.CheckButton(_("Fill Width"))
+		self.fillWidthCb = gtk.CheckButton(label=_("Fill Width"))
 		pack(self, self.fillWidthCb)
-		pack(self, gtk.Label(""), 1, 1)
+		pack(self, gtk.Label(), 1, 1)
 		##
 		self.speedSpin = IntSpinButton(1, 999)
-		pack(self, gtk.Label(_("Speed")))
+		pack(self, gtk.Label(label=_("Speed")))
 		pack(self, self.speedSpin)
-		pack(self, gtk.Label(""), 1, 1)
+		pack(self, gtk.Label(), 1, 1)
 		##
 		self.bgColorButton = MyColorButton()
-		pack(self, gtk.Label(_("BG Color")))
+		pack(self, gtk.Label(label=_("BG Color")))
 		pack(self, self.bgColorButton)
-		pack(self, gtk.Label(""), 1, 1)
+		pack(self, gtk.Label(), 1, 1)
 		##
 		self.textColorButton = MyColorButton()
-		pack(self, gtk.Label(_("Text Color")))
+		pack(self, gtk.Label(label=_("Text Color")))
 		pack(self, self.textColorButton)
-		pack(self, gtk.Label(""), 1, 1)
+		pack(self, gtk.Label(), 1, 1)
 
 	def updateWidget(self):
 		self.fillWidthCb.set_active(self.notifier.fillWidth)
 		self.speedSpin.set_value(self.notifier.speed)
-		self.bgColorButton.set_color(self.notifier.bgColor)
-		self.textColorButton.set_color(self.notifier.textColor)
+		self.bgColorButton.set_rgba(self.notifier.bgColor)
+		self.textColorButton.set_rgba(self.notifier.textColor)
 
 	def updateVars(self):
 		self.notifier.fillWidth = self.fillWidthCb.get_active()
 		self.notifier.speed = self.speedSpin.get_value()
-		self.notifier.bgColor = self.bgColorButton.get_color()
-		self.notifier.textColor = self.textColorButton.get_color()
+		self.notifier.bgColor = self.bgColorButton.get_rgba()
+		self.notifier.textColor = self.textColorButton.get_rgba()
 
 
 def notify(notifier, finishFunc):## FIXME

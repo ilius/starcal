@@ -10,7 +10,7 @@ from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 
 
-class WidgetClass(gtk.HBox):
+class WidgetClass(gtk.Box):
 	def __init__(self, rule):
 		self.rule = rule
 		###
@@ -19,7 +19,7 @@ class WidgetClass(gtk.HBox):
 		self.dateInput = DateButton()
 		pack(self, self.dateInput)
 		###
-		pack(self, gtk.Label("   " + _("Time")))
+		pack(self, gtk.Label(label="   " + _("Time")))
 		self.timeInput = TimeButton()
 		pack(self, self.timeInput)
 
@@ -31,9 +31,9 @@ class WidgetClass(gtk.HBox):
 		self.rule.date = self.dateInput.get_value()
 		self.rule.time = self.timeInput.get_value()
 
-	def changeMode(self, mode):
-		if mode == self.rule.getMode():
+	def changeCalType(self, calType):
+		if calType == self.rule.getCalType():
 			return
 		self.updateVars()
-		self.rule.changeMode(mode)
+		self.rule.changeCalType(calType)
 		self.updateWidget()

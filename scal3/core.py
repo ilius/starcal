@@ -28,6 +28,9 @@ from io import StringIO
 import os.path
 from os.path import join, isfile, isdir
 
+import typing
+from typing import Union, Tuple, List, Any
+
 import scal3
 from scal3.path import *
 from scal3.time_utils import *
@@ -37,7 +40,7 @@ from scal3.json_utils import *
 from scal3.utils import *
 
 from scal3 import logger
-from scal3.cal_types import calTypes, DATE_GREG, getSysDate
+from scal3.cal_types import calTypes, jd_to, to_jd, GREGORIAN
 from scal3 import locale_man
 from scal3.locale_man import tr as _
 from scal3.locale_man import localTz
@@ -56,25 +59,24 @@ VERSION = "3.1.11"
 APP_DESC = "StarCalendar"
 COMMAND = APP_NAME
 homePage = "http://ilius.github.io/starcal/"
-osName = getOsName()
 userDisplayName = getUserDisplayName()
 
 
-#__plugin_api_get__ = [
-#	"VERSION", "APP_NAME", "APP_DESC", "COMMAND",
-#	"homePage", "osName", "userDisplayName"
-#	"jd_to_primary", "primary_to_jd",
-#]
-#__plugin_api_set__ = []
+# __plugin_api_get__ = [
+# 	"VERSION", "APP_NAME", "APP_DESC", "COMMAND",
+# 	"homePage", "osName", "userDisplayName"
+# 	"jd_to_primary", "primary_to_jd",
+# ]
+# __plugin_api_set__ = []
 
-#def pluginCanGet(funcClass):
-#	global __plugin_api_get__
-#	__plugin_api_get__.append(funcClass.__name__)
-#	return funcClass
+# def pluginCanGet(funcClass):
+# 	global __plugin_api_get__
+# 	__plugin_api_get__.append(funcClass.__name__)
+# 	return funcClass
 
-#def pluginCanSet(funcClass):
-#	global __plugin_api_set__
-#	__plugin_api_set__.append(funcClass.__name__)
+# def pluginCanSet(funcClass):
+# 	global __plugin_api_set__
+# 	__plugin_api_set__.append(funcClass.__name__)
 
 # ________________ Defining user core configuration ________________ #
 
@@ -93,7 +95,6 @@ confParams = (
 	"firstWeekDay",
 	"weekNumberModeAuto",
 	"weekNumberMode",
-	"debugMode",
 )
 
 confDecoders = {
@@ -109,7 +110,7 @@ confEncoders = {
 }
 
 
-def loadConf():
+def loadConf() -> None:
 	global version, prefVersion, activeCalTypes, inactiveCalTypes
 	###########
 	loadModuleJsonConf(__name__)
@@ -133,7 +134,7 @@ def loadConf():
 	calTypes.update()
 
 
-def saveConf():
+def saveConf() -> None:
 	global activeCalTypes, inactiveCalTypes
 	activeCalTypes, inactiveCalTypes = (
 		calTypes.activeNames,
@@ -146,28 +147,12 @@ def saveConf():
 log = logger.get()
 
 
-def myRaise(File=None):
-	typ, value, tback = sys.exc_info()
-	text = "line %s: %s: %s\n" % (
-		tback.tb_lineno,
-		typ.__name__,
-		value,
-	)
-	if File:
-		text = "File \"%s\", " % File + text
-	log.error(text)
-
-
 # ____________________________________________________________________ #
 # __________________ class and function defenitions __________________ #
 
 
-def popen_output(cmd):
-	return Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
-
-
-def getVersion():
-	gitDir = os.path.join(rootDir, ".git")
+def getVersion() -> str:
+	gitDir = os.path.join(sourceDir, ".git")
 	if os.path.isdir(gitDir):
 		try:
 			outputB, error = subprocess.Popen(
@@ -179,73 +164,73 @@ def getVersion():
 				],
 				stdout=subprocess.PIPE,
 			).communicate()
-		except:
-			myRaise()
+		except Exception:
+			log.exception("")
 		else:
 			# if error != None:
-			#	sys.stderr.write(error)
+			# 	sys.stderr.write(error)
 			version = outputB.decode("utf-8").strip()
 			if version:
 				return version
 	return VERSION
 
 
-def primary_to_jd(y, m, d):
-	return calTypes.primaryModule().to_jd(y, m, d)
+def primary_to_jd(y: int, m: int, d: int) -> int:
+	return to_jd(y, m, d, calTypes.primary)
 
 
-def jd_to_primary(jd):
-	return calTypes.primaryModule().jd_to(jd)
+def jd_to_primary(jd: int) -> Tuple[int, int, int]:
+	return jd_to(jd, calTypes.primary)
 
 
-def getCurrentJd():
+def getCurrentJd() -> int:
 	# time.time() and mktime(localtime()) both return GMT, not local
-	module, ok = calTypes[DATE_GREG]
-	if not ok:
-		raise RuntimeError("cal type %r not found" % DATE_GREG)
+	if GREGORIAN not in calTypes:
+		raise RuntimeError(f"cal type GREGORIAN={GREGORIAN} not found")
 	y, m, d = localtime()[:3]
-	return module.to_jd(y, m, d)
+	return to_jd(y, m, d, GREGORIAN)
 
 
-def getWeekDateHmsFromEpoch(epoch):
+def getWeekDateHmsFromEpoch(epoch: int) -> Tuple[int, int, int, int, int]:
 	jd, hour, minute, sec = getJhmsFromEpoch(epoch)
 	absWeekNumber, weekDay = getWeekDateFromJd(jd)
 	return (absWeekNumber, weekDay, hour, minute, sec)
 
 
-def getMonthWeekNth(jd, mode):
-	module, ok = calTypes[mode]
-	if not ok:
-		raise RuntimeError("cal type %r not found" % mode)
-	year, month, day = module.jd_to(jd)
+def getMonthWeekNth(jd: int, calType: int) -> Tuple[int, int, int]:
+	if calType not in calTypes:
+		raise RuntimeError(f"cal type '{calType}' not found")
+	year, month, day = jd_to(jd, calType)
 	absWeekNumber, weekDay = getWeekDateFromJd(jd)
 	##
 	dayDiv, dayMode = divmod(day - 1, 7)
 	return month, dayDiv, weekDay
 
 
-def getWeekDay(y, m, d):
+def getWeekDay(y: int, m: int, d: int) -> int:
 	return jwday(primary_to_jd(y, m, d) - firstWeekDay)
 
 
-def getWeekDayN(i):
+def getWeekDayN(i: int) -> int:
 	# 0 <= i < 7	(0 = first day)
 	return weekDayName[(i + firstWeekDay) % 7]
 
 
-def getWeekDayAuto(i, abr=False):
-	if abr:
-		return weekDayNameAb[(i + firstWeekDay) % 7]
+def getWeekDayAuto(
+	number: int,
+	abbreviate: bool = False,
+	relative: bool = True,
+) -> str:
+	if relative:
+		number = (number + firstWeekDay) % 7
+	if abbreviate:
+		return weekDayNameAb[number]
 	else:
-		return weekDayName[(i + firstWeekDay) % 7]
-
-
-def getLocaleFirstWeekDay():
-	return int(popen_output(["locale", "first_weekday"])) - 1
+		return weekDayName[number]
 
 
 # week number in year
-def getWeekNumberByJdAndDate(jd, year, month, day):
+def getWeekNumberByJdAndDate(jd: int, year: int, month: int, day: int) -> int:
 	if primary_to_jd(year + 1, 1, 1) - jd < 7:  # FIXME
 		if getWeekNumber(*jd_to_primary(jd + 14)) == 3:
 			return 1
@@ -266,21 +251,21 @@ def getWeekNumberByJdAndDate(jd, year, month, day):
 	return weekNum
 
 
-def getWeekNumber(year, month, day):
+def getWeekNumber(year: int, month: int, day: int) -> int:
 	jd = primary_to_jd(year, month, day)
 	return getWeekNumberByJdAndDate(jd, year, month, day)
 
 
-def getWeekNumberByJd(jd):
+def getWeekNumberByJd(jd: int) -> int:
 	year, month, day = jd_to_primary(jd)
 	return getWeekNumberByJdAndDate(jd, year, month, day)
 
 # FIXME
-# def getYearWeeksCount(year):
-#	return getWeekNumberByJd(primary_to_jd(year+1, 1, 1) - 7)
+# def getYearWeeksCount(year: int) -> int:
+# 	return getWeekNumberByJd(primary_to_jd(year+1, 1, 1) - 7)
 
 
-def getJdFromWeek(year, weekNumber):  # FIXME
+def getJdFromWeek(year: int, weekNumber: int) -> int:  # FIXME
 	# weekDay == 0
 	wd0 = getWeekDay(year, 1, 1) - 1
 	wn0 = getWeekNumber(year, 1, 1, False)
@@ -288,35 +273,35 @@ def getJdFromWeek(year, weekNumber):  # FIXME
 	return jd0 - wd0 + (weekNumber - wn0) * 7
 
 
-def getWeekDateFromJd(jd):
+def getWeekDateFromJd(jd: int) -> Tuple[int, int]:
 	"""
 	return (absWeekNumber, weekDay)
 	"""
 	return divmod(jd - firstWeekDay + 1, 7)
 
 
-def getAbsWeekNumberFromJd(jd):
+def getAbsWeekNumberFromJd(jd: int) -> int:
 	return getWeekDateFromJd(jd)[0]
 
 
-def getStartJdOfAbsWeekNumber(absWeekNumber):
+def getStartJdOfAbsWeekNumber(absWeekNumber: int) -> int:
 	return absWeekNumber * 7 + firstWeekDay - 1
 
 
-#def getLocaleWeekNumberMode():##????????????
-#	return (int(popen_output(["locale", "week-1stweek"]))-1)%8
-	## will be 7 for farsi (OK)
-	## will be 6 for english (usa) (NOT OK, must be 4)
-	#return int(popen_output("LANG=%s locale first_weekday"%locale_man.lang))-1
-	## locale week-1stweek:
-	##	en_US.UTF-8             7
-	##	en_GB.UTF-8             4
-	##	fa_IR.UTF-8             0
+# def getLocaleWeekNumberMode():
+# 	return (int(popen_output(["locale", "week-1stweek"]))-1)%8
+# 	# will be 7 for farsi (OK)
+# 	# will be 6 for english (usa) (NOT OK, must be 4)
+# 	# return int(popen_output(f"LANG={locale_man.lang} locale first_weekday"))-1
+# 	# locale week-1stweek:
+# 	#	en_US.UTF-8             7
+# 	#	en_GB.UTF-8             4
+# 	#	fa_IR.UTF-8             0
 
 
 ######################################################
 
-def validatePlugList():
+def validatePlugList() -> None:
 	global allPlugList, plugIndex
 	n = len(allPlugList)
 	i = 0
@@ -342,7 +327,7 @@ def validatePlugList():
 			m -= 1
 
 
-def initPlugins():
+def initPlugins() -> None:
 	# log.debug("----------------------- initPlugins")
 	global allPlugList, plugIndex
 	# Assert that user configuarion for plugins is OK
@@ -356,7 +341,7 @@ def initPlugins():
 		for fname in os.listdir(direc):
 			if fname in names + [
 				"__init__.py",
-				"README",
+				"README.md",
 			]:
 				continue
 			if fname.startswith("."):
@@ -364,28 +349,25 @@ def initPlugins():
 			name, ext = os.path.splitext(fname)
 			if ext in (".txt", ".pyc"):
 				continue
-			path = "%s/%s" % (direc, fname)
+			path = f"{direc}/{fname}"
 			# if path in path:
-			#	# The plugin is not new, currently exists in allPlugList
-			#	log.warning("plugin "%s" already exists."%path)
-			#	continue
+			# 	# The plugin is not new, currently exists in allPlugList
+			# 	log.warning(f"plugin {path!r} already exists.")
+			# 	continue
 			if not isfile(path):
 				continue
 			plug = loadPlugin(path)
 			if plug is None:
-				print('failed to load plugin', path)
+				log.error(f"failed to load plugin {path}")
 				continue
-			# try:
 			plugIndex.append(len(allPlugList))
 			allPlugList.append(plug)
-			#except:
-			#	myRaise(__file__)
 	# Assert again that final plugins are OK
 	validatePlugList()
 	updatePlugins()
 
 
-def getHolidayPlugins():
+def getHolidayPlugins() -> List[BasePlugin]:
 	hPlugs = []
 	for i in plugIndex:
 		plug = allPlugList[i]
@@ -394,7 +376,7 @@ def getHolidayPlugins():
 	return hPlugs
 
 
-def updatePlugins():
+def updatePlugins() -> None:
 	for i in plugIndex:
 		plug = allPlugList[i]
 		if plug is None:
@@ -405,7 +387,7 @@ def updatePlugins():
 			plug.clear()
 
 
-def getPluginsTable():
+def getPluginsTable() -> List[List]:
 	# returns a list of [i, enable, show_date, description]
 	table = []
 	for i in plugIndex:
@@ -414,7 +396,7 @@ def getPluginsTable():
 	return table
 
 
-def getDeletedPluginsTable():
+def getDeletedPluginsTable() -> List[List]:
 	"""
 	returns a list of (index description)
 	"""
@@ -427,25 +409,10 @@ def getDeletedPluginsTable():
 	return table
 
 
-def convertAllPluginsToIcs(startYear, endYear):
-	module, ok = calTypes[DATE_GREG]
-	if not ok:
-		raise RuntimeError("cal type %r not found" % DATE_GREG)
-	startJd = module.to_jd(startYear, 1, 1)
-	endJd = module.to_jd(endYear + 1, 1, 1)
-	namePostfix = "-%d-%d" % (startYear, endYear)
-	for plug in core.allPlugList:
-		if isinstance(plug, HolidayPlugin):
-			convertHolidayPlugToIcs(plug, startJd, endJd, namePostfix)
-		elif isinstance(plug, BuiltinTextPlugin):
-			convertBuiltinTextPlugToIcs(plug, startJd, endJd, namePostfix)
-		else:
-			print("Ignoring unsupported plugin %s" % plug.file)
-
 # _____________________________________________________ #
 
 
-def restart():
+def restart() -> typing.NoReturn:
 	"""
 	will not return from function
 	"""
@@ -455,16 +422,22 @@ def restart():
 # _____________________________________________________ #
 
 
-def mylocaltime(sec=None, mode=None):
+def mylocaltime(
+	sec: Optional[int] = None,
+	calType: Optional[int] = None,
+) -> List[int]:
 	from scal3.cal_types import convert
-	if mode is None:  # DATE_GREG
+	if calType is None:  # GREGORIAN
 		return list(localtime(sec))
 	t = list(localtime(sec))
-	t[:3] = convert(t[0], t[1], t[2], DATE_GREG, mode)
+	t[:3] = convert(t[0], t[1], t[2], GREGORIAN, calType)
 	return t
 
 
-def compressLongInt(num):
+def compressLongInt(num: int) -> str:
+	"""
+	num must be less than 2**64
+	"""
 	from struct import pack
 	from base64 import b64encode
 	return b64encode(
@@ -472,7 +445,7 @@ def compressLongInt(num):
 	)[:-3].decode("ascii").replace("/", "_")
 
 
-def getCompactTime(maxDays=1000, minSec=0.1):
+def getCompactTime(maxDays: int = 1000, minSec: float = 0.1) -> str:
 	return compressLongInt(
 		int(
 			now() % (maxDays * 24 * 3600) / minSec
@@ -480,64 +453,27 @@ def getCompactTime(maxDays=1000, minSec=0.1):
 	)
 
 
-def floatJdEncode(jd, mode):
+def floatJdEncode(jd: int, calType: int) -> str:
 	jd, hour, minute, second = getJhmsFromEpoch(getEpochFromJd(jd))
-	module, ok = calTypes[mode]
-	if not ok:
-		raise RuntimeError("cal type %r not found" % mode)
-	return "%s %s" % (
-		dateEncode(module.jd_to(jd)),
-		timeEncode((hour, minute, second)),
-	)
+	if calType not in calTypes:
+		raise RuntimeError(f"cal type '{calType}' not found")
+	return dateEncode(jd_to(jd, calType)) + " " + timeEncode((
+		hour,
+		minute,
+		second,
+	))
 
 
-def epochDateTimeEncode(epoch):
+def epochDateTimeEncode(epoch: int) -> str:
 	jd, hour, minute, sec = getJhmsFromEpoch(epoch)
-	return "%s, %s" % (
-		dateEncode(jd_to_primary(jd)),
-		timeEncode((hour, minute, sec)),
-	)
+	return dateEncode(jd_to_primary(jd)) + " " + timeEncode((
+		hour,
+		minute,
+		sec,
+	))
 
 
-def fixStrForFileName(fname):
-	fname = fname.replace("/", "_").replace("\\", "_")
-	#if osName=="win":  # FIXME
-	return fname
-
-
-def openUrl(url):
-	if osName == "win":
-		return Popen([url])
-	if osName == "mac":
-		return Popen(["open", url])
-	try:
-		Popen(["xdg-open", url])
-	except:
-		myRaise()
-	else:
-		return
-	#if not url.startswith("http"):  # FIXME
-	#	return
-	try:
-		import webbrowser
-		return webbrowser.open(url)
-	except ImportError:
-		pass
-	try:
-		import gnomevfs
-		return gnomevfs.url_show(url)
-	except ImportError:
-		pass
-	for command in ("gnome-www-browser", "firefox", "iceweasel", "konqueror"):
-		try:
-			Popen([command, url])
-		except:
-			pass
-		else:
-			return
-
-
-def stopRunningThreads():
+def stopRunningThreads() -> None:
 	"""
 	Stopping running timer threads
 	"""
@@ -549,23 +485,23 @@ def stopRunningThreads():
 		except AttributeError:
 			pass
 		else:
-			print("stopping thread %s" % thread.getName())
+			log.info(f"stopping thread {thread.getName()}")
 			cancel()
 
 
-def dataToJson(data):
+def dataToJson(data: Any) -> str:
 	return dataToCompactJson(data, useAsciiJson) if useCompactJson \
 		else dataToPrettyJson(data, useAsciiJson)
 
 
-def init():
+def init() -> None:
 	global VERSION
 	VERSION = getVersion()  # right place?
 	loadConf()
 	initPlugins()
 
 
-def prefIsOlderThan(v):
+def prefIsOlderThan(v: str) -> bool:
 	return versionLessThan(prefVersion, v)
 
 
@@ -575,23 +511,24 @@ def prefIsOlderThan(v):
 
 if len(sys.argv) > 1:
 	if sys.argv[1] in ("--help", "-h"):
-		print("No help implemented yet!")
+		log.info("No help implemented yet!")
 		sys.exit(0)
 	elif sys.argv[1] == "--version":
-		print(VERSION)
+		log.info(VERSION)
 		sys.exit(0)
 
 print("Local Timezone:", locale_man.localTzStr)
 
-#holidayWeekDay=6  # 6 means last day of week ( 0 means first day of week)
-#thDay = (tr("First day"), tr("2nd day"), tr("3rd day"), tr("4th day"),\
-#	tr("5th day"), tr("6th day"), tr("Last day"))
-#holidayWeekEnable = True
+# holidayWeekDay=6  # 6 means last day of week ( 0 means first day of week)
+# thDay = (tr("First day"), tr("2nd day"), tr("3rd day"), tr("4th day"),\
+# 	tr("5th day"), tr("6th day"), tr("Last day"))
+# holidayWeekEnable = True
 
-libDir = join(rootDir, "lib")
+libDir = join(sourceDir, "lib")
 if isdir(libDir):
 	sys.path.insert(libDir)
-	pyVersion = "%d.%d" % tuple(sys.version_info[:2])
+	major, minor, patch = sys.version_info
+	pyVersion = f"{major}.{minor}"
 	pyLibDir = join(libDir, pyVersion)
 	if isdir(pyLibDir):
 		sys.path.insert(0, pyLibDir)
@@ -609,7 +546,7 @@ holidayWeekDays = [0]  # 0 means Sunday (5 means Friday)
 # [0] in most of contries
 firstWeekDayAuto = True
 firstWeekDay = 0  # 0 means Sunday (6 means Saturday)
-weekNumberModeAuto = False	# ????????????
+weekNumberModeAuto = False  # not used yet
 weekNumberMode = 7
 
 # 0: First week contains first Sunday of year
@@ -622,26 +559,24 @@ weekNumberMode = 7
 
 # ___________________________________________________________________________ #
 
-debugMode = False
-useCompactJson = False	# FIXME
-useAsciiJson = False
-eventTextSep = ": "  # use to seperate summary from description for display
-eventTrashLastTop = True
 
+useCompactJson = False  # TODO: add to Preferences
+useAsciiJson = False
+eventTextSep = ": "  # use to separate summary from description for display
+eventTrashLastTop = True
 
 # ___________________________________________________________________________ #
 
 
-licenseText = _("licenseText")
-if licenseText in ("licenseText", ""):
-	licenseText = open(
-		"%s/license-dialog" % rootDir,
-		encoding="utf-8",
-	).read()
+licenseText = _("__license__")
+if licenseText in ("__license__", ""):
+	with open(f"{sourceDir}/license-dialog", encoding="utf-8") as fp:
+		licenseText = fp.read()
 
 aboutText = _("aboutText")
 if aboutText in ("aboutText", ""):
-	aboutText = open("%s/about" % rootDir, encoding="utf-8").read()
+	with open(f"{sourceDir}/about", encoding="utf-8") as fp:
+		aboutText = fp.read()
 
 
 weekDayName = (
@@ -664,8 +599,9 @@ weekDayNameAb = (
 )
 
 
-#if firstWeekDayAuto and os.sep=="/":	# only if unix
-#	firstWeekDay = getLocaleFirstWeekDay()
+# if firstWeekDayAuto and os.sep=="/":	# only if unix
+# 	firstWeekDay = getLocaleFirstWeekDay()
 
-#if weekNumberModeAuto and os.sep=="/":  # FIXME
-#	weekNumberMode = getLocaleWeekNumberMode()
+# TODO
+# if weekNumberModeAuto and os.sep=="/":
+# 	weekNumberMode = getLocaleWeekNumberMode()
