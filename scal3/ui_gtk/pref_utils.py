@@ -18,6 +18,9 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 import sys
 import os
 from os.path import join, isabs
@@ -212,7 +215,10 @@ class FontFamilyPrefItem(PrefItem):
 		###
 		self.fontButton = gtk.FontButton()
 		self.fontButton.set_show_size(False)
-		self.fontButton.set_level(gtk.FontChooserLevel.FAMILY)
+		try:
+			self.fontButton.set_level(gtk.FontChooserLevel.FAMILY)
+		except Exception:
+			log.exception("")
 		# set_level: FAMILY, STYLE, SIZE
 		self.fontButton.connect("font-set", self.onChange)
 		###
