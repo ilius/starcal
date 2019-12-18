@@ -47,6 +47,9 @@ def cacheSaveLoop():
 		if qitem is None:
 			return
 		fpath, pixbuf = qitem
+		if pixbuf is None:
+			log.error(f"cacheSaveLoop: pixbuf={pixbuf}, fpath={fpath}")
+			continue
 		pixbuf.savev(
 			fpath,  # filename
 			"png",  # type
