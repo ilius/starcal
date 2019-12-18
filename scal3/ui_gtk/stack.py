@@ -127,7 +127,8 @@ class MyStack(gtk.Stack):
 		)
 
 	def _newHeaderBox(self, parentName: str, title: str = "", icon: str = ""):
-		hbox = HBox(spacing=10)
+		spacing = 10
+		hbox = HBox(spacing=spacing)
 		# hbox.set_direction(gtk.TextDirection.LTR)
 		backButton = gtk.Button()
 		backHbox = HBox(spacing=3)
@@ -158,6 +159,8 @@ class MyStack(gtk.Stack):
 				label.set_use_markup(True)
 			pack(hbox, label, 0, 0)
 			if self._titleCentered:
+				if icon:
+					pack(hbox, imageFromFile("empty.png", self._iconSize + spacing), 0, 0)
 				pack(hbox, gtk.Label(), 1, 1)
 		hbox.show_all()
 		return hbox
