@@ -162,7 +162,8 @@ def pixbufFromFile(
 		return pixbuf
 	if path.endswith(".svg"):
 		pixbuf = pixbufFromSvgFile(path, size)
-		pixcache.setPixbuf(path, size, pixbuf)
+		if pixbuf is not None:
+			pixcache.setPixbuf(path, size, pixbuf)
 		return pixbuf
 	relPath = path
 	if not isabs(path):
@@ -181,7 +182,8 @@ def pixbufFromFile(
 			size, size,
 			GdkPixbuf.InterpType.BILINEAR,
 		)
-		pixcache.setPixbuf(relPath, size, pixbuf)
+		if pixbuf is not None:
+			pixcache.setPixbuf(relPath, size, pixbuf)
 	return pixbuf
 
 
