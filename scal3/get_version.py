@@ -14,7 +14,6 @@ if os.path.isdir(gitDir):
 				"git",
 				"--git-dir", gitDir,
 				"describe",
-				"--tags",
 				"--always",
 			],
 			stdout=subprocess.PIPE,
