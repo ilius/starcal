@@ -563,6 +563,7 @@ def getHolidaysJdList(startJd, endJd):
 
 def checkMainWinItems():
 	global mainWinItems
+	global pluginsTextEnable, eventDayViewEnable
 	# print(mainWinItems)
 	# cleaning and updating mainWinItems
 	names = {
