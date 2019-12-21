@@ -175,7 +175,6 @@ def getVersion():
 					"git",
 					"--git-dir", gitDir,
 					"describe",
-					"--tags",
 					"--always",
 				],
 				stdout=subprocess.PIPE,
