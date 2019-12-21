@@ -7,7 +7,7 @@ sourceDir=$(dirname "$myDir")
 gitDir="$sourceDir/.git"
 
 if [ -d "$gitDir" ] ; then
-	git --git-dir "$gitDir" describe --tags --always
+	git --git-dir "$gitDir" describe --always
 	exit 0
 fi
 
