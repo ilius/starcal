@@ -568,12 +568,6 @@
 		<source>https://commons.wikimedia.org/wiki/File:Faenza-gtk-info.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
-	<resource path="svg/help-about.svg">
-		<author>>Oxygen Icon Theme</author>
-		<license>LGPLv3+</license>
-		<source>scalable/status/dialog-information.svg</source>
-		<comment>Link to dialog-information.svg</comment>
-	</resource>
 	<resource path="svg/history.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>

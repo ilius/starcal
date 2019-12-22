@@ -36,7 +36,6 @@ iconNameByImageName = {
 	"go-previous.svg": "gtk-go-back",
 	"go-top.svg": "gtk-goto-top",
 	"go-up.svg": "gtk-go-up",
-	"help-about.svg": "gtk-about",
 	"history.svg": "",
 	"info.svg": "gtk-dialog-info",
 	"list-add.svg": "gtk-add",

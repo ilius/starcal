@@ -116,7 +116,7 @@ class CalObj(CustomizableToolbar):
 		ToolbarItem(
 			name="about",
 			iconName="gtk-about",
-			imageName="help-about.svg",
+			imageName="dialog-information.svg",
 			onClick="aboutShow",
 			desc=_("About ") + core.APP_DESC,
 			shortDesc="About",
