@@ -619,7 +619,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 				# log.debug("right click on trash", group.title)
 				menu.add(eventWriteMenuItem(
 					_("Edit"),
-					imageName="edit-copy.svg",
+					imageName="document-edit.svg",
 					func=self.editTrash,
 				))
 				# FIXME: _("Empty {title}").format(title=group.title),
