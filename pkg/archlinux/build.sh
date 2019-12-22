@@ -30,6 +30,8 @@ myDir="`dirname \"$myPath\"`"
 pkgDir="`dirname \"$myDir\"`"
 sourceDir="`dirname \"$pkgDir\"`"
 #"$sourceDir/scripts/assert_python3"
+
+git fetch --tags https://github.com/ilius/starcal || echo "WARNING: failed to fetch tags"
 version=`"$sourceDir/scripts/version" | sed 's/\-/_/g'`
 
 #echo "myPath=$myPath"
