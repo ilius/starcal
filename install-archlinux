@@ -23,6 +23,8 @@ fi
 pkgName=starcal3
 sourceDir="`dirname \"$myPath\"`"
 #"$sourceDir/scripts/assert_python3"
+
+git fetch --tags https://github.com/ilius/starcal || echo "WARNING: failed to fetch tags"
 version=`"$sourceDir/scal3/get_version.py" | sed 's/\-/_/g'`
 
 tmpDir="$HOME/.${pkgName}/tmp/install-arch"
