@@ -319,12 +319,6 @@
 		<source>scalable/actions/dialog-cancel.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
-	<resource path="svg/dialog-close.svg">
-		<author>>Oxygen Icon Theme</author>
-		<license>LGPLv3+</license>
-		<source>scalable/actions/window-close.svg</source>
-		<comment>Link to window-close.svg</comment>
-	</resource>
 	<resource path="svg/dialog-warning.svg">
 		<author>>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>

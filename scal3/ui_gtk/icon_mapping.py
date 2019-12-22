@@ -13,7 +13,6 @@ iconNameByImageName = {
 	# "computer.svg": "computer",
 	"configure-toolbars.png": "",
 	"dialog-cancel.svg": "gtk-cancel",
-	"dialog-close.svg": "gtk-close",
 	"dialog-error.svg": "gtk-dialog-error",
 	"dialog-information.svg": "gtk-dialog-info",
 	"dialog-ok-apply.svg": "gtk-apply",

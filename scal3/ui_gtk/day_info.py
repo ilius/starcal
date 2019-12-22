@@ -133,7 +133,7 @@ class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 		dialog_add_button(
 			self,
 			label=_("Close"),
-			imageName="dialog-close.svg",
+			imageName="window-close.svg",
 			res=0,
 			onClick=self.onClose,
 		)
