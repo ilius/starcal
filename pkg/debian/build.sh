@@ -28,6 +28,8 @@ iconName=starcal32.png
 myDir="`dirname \"$myPath\"`"
 pkgDir="`dirname \"$myDir\"`"
 sourceDir="`dirname \"$pkgDir\"`"
+
+git fetch --tags https://github.com/ilius/starcal || echo "WARNING: failed to fetch tags"
 version=`"$sourceDir/scripts/version"`
 
 tmpDir="$outDir/tmp"
