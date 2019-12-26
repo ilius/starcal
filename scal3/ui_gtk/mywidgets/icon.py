@@ -17,34 +17,42 @@ from scal3.ui_gtk.menuitems import (
 )
 
 
+# FIXME
+# for uknown reason, the file chooser dialog comes logically behind it's parent
+# so it's not capturing mouse and keyboard unless you press Escape that closes
+# the parent, and so making this widget useless unless you use icons from the
+# right-click menu
+
+
 @registerSignals
 class IconSelectButton(gtk.Button):
 	signals = [
 		("changed", [str]),
 	]
 
-	def __init__(self, filename=""):
+	def __init__(self, filename="", transient_for=None):
 		gtk.Button.__init__(self)
 		self.image = gtk.Image()
 		self.add(self.image)
-		self.dialog = gtk.FileChooserDialog(
+		dialog = gtk.FileChooserDialog(
 			title=_("Select Icon File"),
 			action=gtk.FileChooserAction.OPEN,
+			transient_for=transient_for,
 		)
 		okB = dialog_add_button(
-			self.dialog,
+			dialog,
 			imageName="dialog-ok.svg",
 			label=_("_OK"),
 			res=gtk.ResponseType.OK
 		)
 		dialog_add_button(
-			self.dialog,
+			dialog,
 			imageName="dialog-cancel.svg",
 			label=_("_Cancel"),
 			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
-			self.dialog,
+			dialog,
 			imageName="sweep.svg",
 			label=_("Clear"),
 			res=gtk.ResponseType.REJECT,
@@ -69,17 +77,20 @@ class IconSelectButton(gtk.Button):
 			))
 		menu.show_all()
 		###
-		self.dialog.connect("file-activated", self.fileActivated)
-		self.dialog.connect("response", self.dialogResponse)
+		dialog.connect("file-activated", self.fileActivated)
+		dialog.connect("response", self.dialogResponse)
 		#self.connect("clicked", lambda button: button.dialog.run())
-		self.connect("button-press-event", self.onButtonPressEvent)
+		self.connect("button-press-event", self.onButtonPressEvent, dialog)
+		###
+		self._dialog = dialog
 		###
 		self.set_filename(filename)
 
-	def onButtonPressEvent(self, widget, gevent):
+	def onButtonPressEvent(self, widget, gevent, dialog):
+		# FIXME: the dialog is not focusable and not usable!!
 		b = gevent.button
 		if b == 1:
-			self.dialog.run()
+			dialog.present()
 		elif b == 3:
 			self.menu.popup(None, None, None, None, b, gevent.time)
 
@@ -109,7 +120,7 @@ class IconSelectButton(gtk.Button):
 		self.filename = fname
 		self._setImage(self.filename)
 		self.emit("changed", fname)
-		self.dialog.hide()
+		dialog.hide()
 
 	def get_filename(self):
 		return self.filename
@@ -117,7 +128,7 @@ class IconSelectButton(gtk.Button):
 	def set_filename(self, filename):
 		if filename is None:
 			filename = ""
-		self.dialog.set_filename(filename)
+		self._dialog.set_filename(filename)
 		self.filename = filename
 		if not filename:
 			self._setImage(join(pixDir, "empty.png"))
