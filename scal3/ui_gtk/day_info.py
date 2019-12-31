@@ -91,7 +91,7 @@ class PluginsTextView(gtk.TextView, ud.BaseCalObj):
 
 	def onDateChange(self, *a, **ka):
 		ud.BaseCalObj.onDateChange(self, *a, **ka)
-		self.get_buffer().set_text(ui.cell.pluginsText)
+		self.get_buffer().set_text(ui.cell.getPluginsText())
 
 
 @registerSignals

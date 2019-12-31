@@ -333,10 +333,8 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 
 	def updateCell(self, c):
 		text = self.getTextByJd(c.jd)
-		if text != "":
-			if c.pluginsText != "":
-				c.pluginsText += "\n"
-			c.pluginsText += text
+		if text:
+			c.addPluginText(text)
 
 	def killPrevSound(self):
 		try:

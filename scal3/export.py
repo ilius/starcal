@@ -188,7 +188,7 @@ def exportToHtml(fpath, monthsStatus, title=""):
 						color = holidayColor
 					else:
 						color = colors[0]
-					t = cell.pluginsText.replace("\n", pluginsTextSep)
+					t = cell.getPluginsText().replace("\n", pluginsTextSep)
 					if t:
 						pluginsText += (
 							f"<B><FONT COLOR=\"{color}\">" +
