@@ -1284,7 +1284,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				_(y)
 			)
 		if ui.pluginsTextStatusIcon:
-			text = ui.todayCell.pluginsText
+			text = ui.todayCell.getPluginsText()
 			if text != "":
 				tt += "\n\n" + text  # .replace("\t", "\n") ## FIXME
 		for item in ui.todayCell.getEventsData():

@@ -182,6 +182,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 
 
 	def onDateChange(self, *a, **kw):
-		log.debug(f"PluginsText.onDateChange: {ui.cell.pluginsText}")
+		pluginsText = ui.cell.getPluginsText()
+		log.debug(f"PluginsText.onDateChange: {pluginsText}")
 		CustomizableCalObj.onDateChange(self, *a, **kw)
-		self.setText(ui.cell.pluginsText)
+		self.setText(pluginsText)

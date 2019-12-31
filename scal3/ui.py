@@ -347,7 +347,7 @@ class Cell(CellType):
 	# ocTimeSum = 0
 	def __init__(self, jd: int):
 		self._eventsData = None # type: Optional[List[Dict]]
-		self.pluginsText = ""
+		self._pluginsText = [] # type: List[List[str]]
 		###
 		self.jd = jd
 		date = core.jd_to_primary(jd)
@@ -382,6 +382,16 @@ class Cell(CellType):
 					log.exception("")
 		###################
 		self.getEventsData()
+
+	def getPluginsText(self, firstLineOnly=False) -> str:
+		return "\n".join(
+			lines[0] if firstLineOnly
+			else "\n".join(lines)
+			for lines in self._pluginsText
+		)
+
+	def addPluginText(self, text):
+		self._pluginsText.append(text.split("\n"))
 
 	def clearEventsData(self):
 		self._eventsData = None
