@@ -3155,6 +3155,10 @@ msgid "Swap with Plugins Text"
 msgstr ""
 "جابجایی با متن افزونه‌ها"
 
+msgid "Only first line of text"
+msgstr ""
+"فقط خط اول متن"
+
 
 msgid "Season Progress Bar"
 msgstr ""

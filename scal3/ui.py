@@ -172,6 +172,7 @@ confParamsCustomize = (
 	"wcal_eventsIcon_width",
 	"wcal_eventsText_showDesc",
 	"wcal_eventsText_colorize",
+	"wcal_pluginsText_firstLineOnly",
 	"wcalFont_eventsText",
 	"wcal_daysOfMonth_dir",
 	"wcalTypeParams",
@@ -1156,6 +1157,7 @@ wcal_eventsCount_expand = False
 wcal_eventsIcon_width = 50
 wcal_eventsText_showDesc = False
 wcal_eventsText_colorize = True
+wcal_pluginsText_firstLineOnly = False
 wcal_daysOfMonth_width = 30
 wcal_daysOfMonth_expand = False
 wcal_daysOfMonth_dir = "ltr"  # ltr/rtl/auto

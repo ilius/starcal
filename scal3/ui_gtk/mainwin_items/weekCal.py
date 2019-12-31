@@ -583,18 +583,43 @@ class PluginsTextColumn(Column):
 		Column.__init__(self, wcal)
 		self.connect("draw", self.onExposeEvent)
 
+	def getTextListByIndex(self, i: int) -> List[str]:
+		lines = self.wcal.status[i].pluginsText.split("\n")
+		if lines and ui.wcal_pluginsText_firstLineOnly:
+			lines = lines[:1]
+		return [
+			(line, "")
+			for line in lines
+		]
+
 	def drawColumn(self, cr):
 		self.drawBg(cr)
 		self.drawTextList(
 			cr,
 			[
-				[
-					(line, "")
-					for line in self.wcal.status[i].pluginsText.split("\n")
-				]
+				self.getTextListByIndex(i)
 				for i in range(7)
 			]
 		)
+
+	def getOptionsWidget(self) -> gtk.Widget:
+		from scal3.ui_gtk.pref_utils import CheckPrefItem
+		if self.optionsWidget:
+			return self.optionsWidget
+		optionsWidget = Column.getOptionsWidget(self)
+		#####
+		prefItem = CheckPrefItem(
+			ui,
+			"wcal_pluginsText_firstLineOnly",
+			label=_("Only first line of text"),
+			live=True,
+			onChangeFunc=self.queue_draw,
+		)
+		pack(optionsWidget, prefItem.getWidget())
+		#####
+		optionsWidget.show_all()
+		self.optionsWidget = optionsWidget
+		return optionsWidget
 
 
 @registerSignals
