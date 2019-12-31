@@ -584,12 +584,11 @@ class PluginsTextColumn(Column):
 		self.connect("draw", self.onExposeEvent)
 
 	def getTextListByIndex(self, i: int) -> List[str]:
-		lines = self.wcal.status[i].pluginsText.split("\n")
-		if lines and ui.wcal_pluginsText_firstLineOnly:
-			lines = lines[:1]
 		return [
 			(line, "")
-			for line in lines
+			for line in self.wcal.status[i].getPluginsText(
+				firstLineOnly=ui.wcal_pluginsText_firstLineOnly,
+			).split("\n")
 		]
 
 	def drawColumn(self, cr):
