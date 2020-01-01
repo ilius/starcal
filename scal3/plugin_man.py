@@ -560,6 +560,7 @@ class YearlyTextPlugin(BaseJsonPlugin):
 		return text
 
 
+# TODO: add checkbox/bool: holiday=False
 @registerPlugin
 class IcsTextPlugin(BasePlugin):
 	name = "ics"
