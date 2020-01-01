@@ -327,6 +327,18 @@ def strFindNth(st: str, sub: str, n: int) -> int:
 	return pos
 
 
+def findWordByPos(text: str, pos: int) -> Tuple[str, int, int]:
+	"returns (word, startPos)"
+	if pos < 0:
+		return "", -1
+	lastPos = -1
+	for word in text.split(" "):
+		if pos <= lastPos + len(word) + 1:
+			return word, lastPos + 1
+		lastPos += 1 + len(word)
+	return "", -1
+
+
 def numRangesEncode(
 	values: List[Union[int, Tuple[int, int], List[int]]],
 	sep: str,
