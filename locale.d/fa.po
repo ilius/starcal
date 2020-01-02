@@ -1432,6 +1432,11 @@ msgid "Copy _Time"
 msgstr ""
 "کپی _زمان"
 
+msgid "Copy _URL"
+msgstr ""
+"کپی _URL"
+
+
 msgid "Copy to {title}"
 msgstr ""
 "کپی به {title}"
