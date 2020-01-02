@@ -43,7 +43,6 @@ from scal3.ui_gtk.menuitems import (
 )
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
-from scal3.ui_gtk.mywidgets.text_widgets import ReadOnlyLabel
 
 @registerSignals
 class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
@@ -458,8 +457,6 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 	def addEventMenuItems(self, menu, occurData: Dict[str, Any]):
 		if event_lib.allReadOnly:
 			return
-		# instead of creating a new menu, we should remove the current items
-		# from current menu, but here we will keep the items from ReadOnlyLabel
 		####
 		groupId, eventId = occurData["ids"]
 		event = ui.getEvent(groupId, eventId)
