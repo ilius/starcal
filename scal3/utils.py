@@ -327,16 +327,17 @@ def strFindNth(st: str, sub: str, n: int) -> int:
 	return pos
 
 
-def findWordByPos(text: str, pos: int) -> Tuple[str, int, int]:
+def findWordByPos(text: str, pos: int) -> Tuple[str, int]:
 	"returns (word, startPos)"
 	if pos < 0:
 		return "", -1
-	lastPos = -1
-	for word in text.split(" "):
-		if pos <= lastPos + len(word) + 1:
-			return word, lastPos + 1
-		lastPos += 1 + len(word)
-	return "", -1
+	if pos > len(text):
+		return "", -1
+	prevI = text.rfind(" ", 0, pos) + 1
+	nextI = text.find(" ", pos)
+	if nextI == -1:
+		nextI = len(text)
+	return text[prevI:nextI], prevI
 
 
 def numRangesEncode(
