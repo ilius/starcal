@@ -450,8 +450,17 @@ class CustomizableToolBox(StaticToolBox):
 	def setButtonPadding(self, padding: int) -> None:
 		self.buttonPadding = padding
 
-	def moveItem(self, i: int, j: int) -> None:
-		self.box.moveItem(i, j)
+	def repackAll(self):
+		for item in self.items:
+			if item.loaded:
+				self.box.remove(item)
+		for item in self.items:
+			if item.loaded:
+				pack(self.box, item, item.expand, item.expand)
+
+	def moveItem(self, i, j):
+		CustomizableCalObj.moveItem(self, i, j)
+		self.repackAll()
 
 	def appendItem(self, item: BaseToolBoxItem) -> None:
 		CustomizableCalObj.appendItem(self, item)
