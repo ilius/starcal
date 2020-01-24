@@ -513,6 +513,7 @@ class ToolbarColumn(CustomizableToolbar, ColumnBase):
 				imageName="go-home.svg",
 				onClick="goToday",
 				desc="Today",
+				continuousClick=False,
 			),
 			ToolbarItem(
 				name="forward",
