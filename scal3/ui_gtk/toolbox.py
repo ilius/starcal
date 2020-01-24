@@ -76,7 +76,7 @@ class ToolBoxItem(BaseToolBoxItem):
 	) -> None:
 		gtk.Button.__init__(self)
 		if continuousClick:
-			ConButtonBase.__init__(self)
+			ConButtonBase.__init__(self, button=1)  # only left-click
 		######
 		# this lines removes the background shadow of button
 		# and makes it look like a standard Gtk.ToolButton on a Gtk.ToolBar
@@ -207,7 +207,7 @@ class LabelToolBoxItem(BaseToolBoxItem):
 	) -> None:
 		gtk.Button.__init__(self)
 		if continuousClick:
-			ConButtonBase.__init__(self)
+			ConButtonBase.__init__(self, button=1)
 		######
 		# this lines removes the background shadow of button
 		# and makes it look like a standard Gtk.ToolButton on a Gtk.ToolBar

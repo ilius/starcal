@@ -3,6 +3,7 @@
 from scal3 import logger
 log = logger.get()
 
+from typing import Optional
 from time import time as now
 import sys
 
@@ -14,9 +15,10 @@ from scal3.ui_gtk import gtk_ud as ud
 
 
 class ConButtonBase:
-	def __init__(self):
+	def __init__(self, button: Optional[int] = None):
 		self.pressTm = 0
 		self.counter = 0
+		self._button = button
 		###
 		self.connect("button-press-event", self.onPress)
 		self.connect("button-release-event", self.onRelease)
@@ -24,7 +26,10 @@ class ConButtonBase:
 	def doTrigger(self):
 		return self.emit("con-clicked")
 
-	def onPress(self, widget, event=None):
+	def onPress(self, widget, event):
+		if self._button is not None:
+			if event.button != self._button:
+				return
 		self.pressTm = now()
 		self.doTrigger()
 		self.counter += 1
@@ -36,7 +41,7 @@ class ConButtonBase:
 		)
 		return True
 
-	def onRelease(self, widget, event=None):
+	def onRelease(self, widget, event):
 		self.counter += 1
 		return True
 
