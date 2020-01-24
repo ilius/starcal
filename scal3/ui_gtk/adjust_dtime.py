@@ -36,6 +36,7 @@ from scal3.time_utils import clockWaitMilliseconds
 
 
 from scal3.ui_gtk import *
+from scal3.ui_gtk.utils import dialog_add_button
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 
