@@ -464,6 +464,7 @@ class WeekNumToolbarItem(LabelToolBoxItem):
 			name="weekNum",
 			onClick=self.onClick,
 			desc=("Week Number"),
+			continuousClick=False,
 		)
 		self.label.set_direction(gtk.TextDirection.LTR)
 
