@@ -8,6 +8,7 @@ from typing import Union
 from scal3 import logger
 log = logger.get()
 
+from scal3 import event_lib
 
 """
 Usage:
@@ -54,10 +55,10 @@ class EventUpdateQueue(Queue):
 		if action not in ("r", "eg", "+g", "-g") and obj.parent is None:
 			raise ValueError("obj.parent is None")
 		if action == "r":
-			if obj.__class__.__name__ not in ("EventGroup", "EventTrash"):
+			if not isinstance(obj, (event_lib.EventGroup, event_lib.EventTrash)):
 				raise TypeError(f"invalid obj type {obj.__class__.__name__} for action={action!r}")
 		elif action == "eg":
-			if obj.__class__.__name__ != "EventGroup":
+			if not isinstance(obj, event_lib.EventGroup):
 				raise TypeError(f"invalid obj type {obj.__class__.__name__} for action={action!r}")
 		log.info(f"EventUpdateQueue: add: obj={obj}")
 		record = EventUpdateRecord(action, obj, sender)
