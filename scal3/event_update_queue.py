@@ -60,7 +60,7 @@ class EventUpdateQueue(Queue):
 		elif action == "eg":
 			if not isinstance(obj, event_lib.EventGroup):
 				raise TypeError(f"invalid obj type {obj.__class__.__name__} for action={action!r}")
-		log.info(f"EventUpdateQueue: add: obj={obj}")
+		log.info(f"EventUpdateQueue: add: action={action!r}, obj={obj}")
 		record = EventUpdateRecord(action, obj, sender)
 		Queue.put(self, record)
 
