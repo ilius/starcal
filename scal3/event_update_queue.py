@@ -55,10 +55,10 @@ class EventUpdateQueue(Queue):
 			raise ValueError("obj.parent is None")
 		if action == "r":
 			if obj.__class__.__name__ not in ("EventGroup", "EventTrash"):
-				raise TypeError(f"invalid obj type obj.__class__.__name__ for action={action!r}")
+				raise TypeError(f"invalid obj type {obj.__class__.__name__} for action={action!r}")
 		elif action == "eg":
 			if obj.__class__.__name__ != "EventGroup":
-				raise TypeError(f"invalid obj type obj.__class__.__name__ for action={action!r}")
+				raise TypeError(f"invalid obj type {obj.__class__.__name__} for action={action!r}")
 		log.info(f"EventUpdateQueue: add: obj={obj}")
 		record = EventUpdateRecord(action, obj, sender)
 		Queue.put(self, record)
