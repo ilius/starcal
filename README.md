@@ -52,7 +52,7 @@ or:
 5. Click on the shortcut to starcal.pyw (or the file itself) to run
 
 ## Home Page:
-    http://ilius.github.io/starcal
+    https://ilius.github.io/starcal
 
 ## License:
 StartCalendar is licensed under GNU Genaral Public License version 3+
