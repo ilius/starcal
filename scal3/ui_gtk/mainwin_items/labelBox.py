@@ -573,7 +573,7 @@ class CalObj(gtk.HBox, CustomizableCalObj):
 				if ui.boldYmLabel:
 					lay.set_markup("<b>%s</b>" % name)
 				else:
-					lay.set_text(name)  # OR lay.set_markup
+					lay.set_markup(name)
 				w = lay.get_pixel_size()[0]
 				if w > wm:
 					wm = w
