@@ -478,9 +478,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		str,
 		str,
 	]:
+		pixbuf = eventTreeIconPixbuf(event.getIconRel())
+		if event.icon and pixbuf is None:
+			print(f"getEventRow: invalid icon={event.icon!r} for event id={event.id} in group={event.parent}")
 		return (
 			event.id,
-			eventTreeIconPixbuf(event.getIconRel()),
+			pixbuf,
 			event.summary,
 			event.getShownDescription(),
 		)
