@@ -1821,6 +1821,8 @@ def fixIconInData(data):
 
 def fixIconInObj(self):
 	icon = self.icon
+	if icon.startswith("event/") and "/" not in icon[6:]:
+		icon = icon[6:]
 	if icon and "/" not in icon:
 		iconNoExt, ext = splitext(icon)
 		if ext == ".svg":

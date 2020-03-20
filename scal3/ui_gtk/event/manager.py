@@ -414,9 +414,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		return common.getGroupRow(group) + ("",)
 
 	def getEventRow(self, event):
+		pixbuf = pixbufFromFile(event.icon)
+		if event.icon and pixbuf is None:
+			print("getEventRow: invalid icon=%r for event id=%s in group=%s" % (event.icon, event.id, event.parent))
 		return (
 			event.id,
-			pixbufFromFile(event.icon),
+			pixbuf,
 			event.summary,
 			event.getShownDescription(),
 		)
