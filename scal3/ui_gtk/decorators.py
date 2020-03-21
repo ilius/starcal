@@ -21,8 +21,8 @@ def registerSignals(cls):
 				None,
 				args,
 			)
-		except RuntimeError as e:
-			raise RuntimeError(
+		except Exception as e:
+			log.error(
 				f"Failed to create signal {name} " +
 				f"for class {cls.__name__} in {cls.__module__}",
 			)
