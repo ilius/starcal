@@ -1234,7 +1234,7 @@ class CalObj(gtk.HBox, CustomizableCalBox, ColumnBase, CalBase):
 		cell = self.status[i]
 		self.gotoJd(cell.jd)
 		if gevent.type == TWO_BUTTON_PRESS:
-			self.emit("2button-press")
+			self.emit("double-button-press")
 		if b == 3:
 			self.emit("popup-cell-menu", gevent.time, x, y)
 		return True

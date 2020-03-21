@@ -272,7 +272,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		#y += 10
 		###
 		if gevent.type == TWO_BUTTON_PRESS:
-			self.emit("2button-press")
+			self.emit("double-button-press")
 		if b == 3:
 			self.emit("popup-cell-menu", gevent.time, x, y)
 		return True
