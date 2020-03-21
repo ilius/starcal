@@ -136,7 +136,7 @@ class FClockWidget(gtk.DrawingArea): ## Time is in Local
 		self.set_size_request(w, h)
 		"""
 		textLay = self.create_pango_layout("") ## markup
-		textLay.set_markup(text)
+		textLay.set_markup(text, -1)
 		textLay.set_font_description(Pango.FontDescription(ui.getFont()))
 		w, h = textLay.get_pixel_size()
 		pixbuf = GdkPixbuf.Pixbuf(GdkPixbuf.Colorspace.RGB, True, 8, w, h)

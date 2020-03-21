@@ -571,9 +571,11 @@ class CalObj(gtk.HBox, CustomizableCalObj):
 			for m in range(12):
 				name = getMonthName(label.mode, m)
 				if ui.boldYmLabel:
-					lay.set_markup("<b>%s</b>" % name)
+					lay.set_markup("<b>%s</b>" % name, -1)
 				else:
-					lay.set_markup(name)
+					lay.set_markup(name, -1)
+					# lay.set_text(name) gives exception in Fedora with gtk 3.24.14 and gi 3.34.0
+					# while works in Debian with same gtk and gi version
 				w = lay.get_pixel_size()[0]
 				if w > wm:
 					wm = w
