@@ -496,7 +496,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			cell = status[yPos][xPos]
 			self.changeDate(*cell.dates[calTypes.primary])
 			if gevent.type == TWO_BUTTON_PRESS:
-				self.emit("2button-press")
+				self.emit("double-button-press")
 			if b == 3 and cell.month == ui.cell.month:## right click on a normal cell
 				#self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
 				self.emit("popup-cell-menu", gevent.time, gevent.x, gevent.y)

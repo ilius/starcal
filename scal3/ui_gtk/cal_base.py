@@ -17,6 +17,8 @@
 # with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
+from scal3 import logger
+log = logger.get()
 
 from time import time
 
@@ -37,7 +39,7 @@ class CalBase(CustomizableCalObj):
 	signals = CustomizableCalObj.signals + [
 		("popup-cell-menu", [int, int, int]),
 		("popup-main-menu", [int, int, int]),
-		("2button-press", []),
+		("double-button-press", []),
 		("pref-update-bg-color", []),
 		("day-info", []),
 	]
@@ -47,12 +49,18 @@ class CalBase(CustomizableCalObj):
 		"i",
 	)
 
+	def connect(self, sigName, *a, **ka):
+		try:
+			CustomizableCalObj.connect(self, sigName, *a, **ka)
+		except Exception:
+			log.exception("sigName=%s" % sigName)
+
 	def initCal(self):
 		self.initVars()
 		listener.dateChange.add(self)
 		####
 		self.defineDragAndDrop()
-		self.connect("2button-press", ui.dayOpenEvolution)
+		self.connect("double-button-press", ui.dayOpenEvolution)
 		if ui.mainWin:
 			self.connect("popup-cell-menu", ui.mainWin.menuCellPopup)
 			self.connect("popup-main-menu", ui.mainWin.menuMainPopup)
