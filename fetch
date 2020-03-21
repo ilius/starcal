@@ -1,0 +1,8 @@
+#!/bin/bash
+
+if [ -n "$SUDO_UID" ] ; then
+	sudo -u "#$SUDO_UID" git fetch --tags https://github.com/ilius/starcal
+	exit $?
+fi
+
+git fetch --tags https://github.com/ilius/starcal
