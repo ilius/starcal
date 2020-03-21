@@ -58,7 +58,7 @@ class CalBase(CustomizableCalObj):
 		try:
 			CustomizableCalObj.connect(self, sigName, *a, **ka)
 		except Exception:
-			log.exception("sigName=%s" % sigName)
+			log.exception(f"sigName={sigName}")
 
 	def initCal(self):
 		self.initVars()
