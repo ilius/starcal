@@ -78,14 +78,14 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		self.closeFunc = closeFunc
 		self.angleOffset = 0.0
 		###
-		#self.closeFunc = closeFunc
+		# self.closeFunc = closeFunc
 		self.connect("draw", self.onDraw)
 		self.connect("scroll-event", self.onScroll)
 		self.connect("button-press-event", self.onButtonPress)
-		#self.connect("motion-notify-event", self.onMotionNotify)
-		#self.connect("button-release-event", self.onButtonRelease)
+		# self.connect("motion-notify-event", self.onMotionNotify)
+		# self.connect("button-release-event", self.onButtonRelease)
 		self.connect("key-press-event", self.onKeyPress)
-		#self.connect("event", show_event)
+		# self.connect("event", show_event)
 
 		iconSize = 20
 		self.buttons = [
@@ -159,12 +159,12 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		cx = x0 + maxR
 		cy = y0 + maxR
 		####
-		#self.angleOffset
-		#self.bgColor
-		#self.wheelBgColor
-		#self.lineColor
-		#self.lineWidth
-		#self.textColor
+		# self.angleOffset
+		# self.bgColor
+		# self.wheelBgColor
+		# self.lineColor
+		# self.lineWidth
+		# self.textColor
 		####
 		cr.rectangle(0, 0, width, height)
 		fillColor(cr, self.bgColor)
@@ -193,8 +193,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		####
 		drawCircleOutline(
 			cr,
-			cx,
-			cy,
+			cx, cy,
 			maxR,
 			maxR - minR,
 		)
@@ -210,8 +209,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		)):
 			drawArcOutline(
 				cr,
-				cx,
-				cy,
+				cx, cy,
 				maxR,
 				maxR - minR,
 				springAngle + index * pi / 2,
@@ -232,14 +230,14 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 			ym0 = year0 * 12 + (month0 - 1)
 			cr.set_line_width(self.lineWidth)
 			for ym in range(ym0, ym0 + 12):
-				year, month = divmod(ym, 12); month += 1
+				year, mm1 = divmod(ym, 12)
+				month = mm1 + 1
 				jd = to_jd(year, month, 1, calType)
 				angle = angle0 + 2 * pi * (jd - jd0) / yearLen  # radians
-				#angleD = angle * 180 / pi
+				# angleD = angle * 180 / pi
 				d = self.lineWidth
 				sepX, sepY = goAngle(
-					cx,
-					cy,
+					cx, cy,
 					angle,
 					r - d * 0.2,  # FIXME
 				)
@@ -268,33 +266,28 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				layoutW, layoutH = layout.get_pixel_size()
 				centerAngle = angle + avgDeltaAngle / 2
 				lx, ly = goAngle(
-					cx,
-					cy,
+					cx, cy,
 					centerAngle,
 					(r - deltaR / 3),
 				)
 				lx, ly = goAngle(
-					lx,
-					ly,
+					lx, ly,
 					angle - pi / 2,
 					layoutW / 2,
 				)
 				lx, ly = goAngle(
-					lx,
-					ly,
+					lx, ly,
 					angle,
 					layoutH / 2,
 				)
-				cr.move_to(
-					lx,
-					ly,
-				)
-				#cr.save()
+				cr.move_to(lx, ly)
+				# cr.save()
 				rotateAngle = centerAngle + pi / 2
 				cr.rotate(rotateAngle)
-				setColor(cr, self.textColor); show_layout(cr, layout)
+				setColor(cr, self.textColor)
+				show_layout(cr, layout)
 				cr.rotate(-rotateAngle)
-				#cr.restore()
+				# cr.restore()
 
 				if month == 1:
 					layout = newTextLayout(
@@ -308,18 +301,15 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 						truncate=False,
 					)
 					yearX, yearY = goAngle(
-						cx,
-						cy,
+						cx, cy,
 						angle + 0.02 * pi / 12,
 						r - deltaR * 0.75,  # FIXME
 					)
-					cr.move_to(
-						yearX,
-						yearY,
-					)
+					cr.move_to(yearX, yearY)
 					rotateAngle = centerAngle - pi / 12
 					cr.rotate(rotateAngle)
-					setColor(cr, self.yearStartLineColor); show_layout(cr, layout)
+					setColor(cr, self.yearStartLineColor)
+					show_layout(cr, layout)
 					cr.rotate(-rotateAngle)
 			#####
 			drawCircleOutline(cr, cx, cy, minR, self.lineWidth)
@@ -341,18 +331,18 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		# log.debug("%.3f"%now())
 		if k in ("space", "home"):
 			self.onHomeClick()
-		#elif k=="right":
-		#	pass
-		#elif k=="left":
-		#	pass
-		#elif k=="down":
-		#	self.stopMovingAnim()
+		# elif k=="right":
+		# 	pass
+		# elif k=="left":
+		# 	pass
+		# elif k=="down":
+		# 	self.stopMovingAnim()
 		elif k in ("q", "escape"):
 			self.closeFunc()
-		#elif k in ("plus", "equal", "kp_add"):
-		#	self.keyboardZoom(True)
-		#elif k in ("minus", "kp_subtract"):
-		#	self.keyboardZoom(False)
+		# elif k in ("plus", "equal", "kp_add"):
+		# 	self.keyboardZoom(True)
+		# elif k in ("minus", "kp_subtract"):
+		# 	self.keyboardZoom(False)
 		else:
 			# log.debug(k)
 			return False
@@ -369,15 +359,15 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				if button.contains(x, y, w, h):
 					button.onPress(gevent)
 					return True
-			#self.begin_move_drag(
-			#	gevent.button,
-			#	int(gevent.x_root),
-			#	int(gevent.y_root),
-			#	gevent.time,
-			#)
-			#return True
-		#elif gevent.button==3:
-		#	pass
+			# self.begin_move_drag(
+			# 	gevent.button,
+			# 	int(gevent.x_root),
+			# 	int(gevent.y_root),
+			# 	gevent.time,
+			# )
+			# return True
+		# elif gevent.button==3:
+		# 	pass
 		return False
 
 
@@ -430,8 +420,8 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 
 
 if __name__ == "__main__":
-	#locale_man.langActive = ""
-	#_ = locale_man.loadTranslator()
+	# locale_man.langActive = ""
+	# _ = locale_man.loadTranslator()
 	ui.init()
 	win = YearWheelWindow()
 	win.show()
