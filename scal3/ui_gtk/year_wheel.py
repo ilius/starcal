@@ -216,6 +216,13 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				springAngle + (index + 1) * pi / 2,
 			)
 			fillColor(cr, color)
+
+		def calcAngles(jd: int) -> Tuple[float, float]:
+			angle = angle0 + 2 * pi * (jd - jd0) / yearLen  # radians
+			# angleD = angle * 180 / pi
+			centerAngle = angle + avgDeltaAngle / 2
+			return angle, centerAngle
+
 		####
 		for index, calType in enumerate(calTypes.active):
 			dr = index * deltaR
@@ -233,8 +240,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				year, mm1 = divmod(ym, 12)
 				month = mm1 + 1
 				jd = to_jd(year, month, 1, calType)
-				angle = angle0 + 2 * pi * (jd - jd0) / yearLen  # radians
-				# angleD = angle * 180 / pi
+				angle, centerAngle = calcAngles(jd)
 				d = self.lineWidth
 				sepX, sepY = goAngle(
 					cx, cy,
@@ -264,7 +270,6 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 					truncate=False,
 				)
 				layoutW, layoutH = layout.get_pixel_size()
-				centerAngle = angle + avgDeltaAngle / 2
 				lx, ly = goAngle(
 					cx, cy,
 					centerAngle,
@@ -290,34 +295,54 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				# cr.restore()
 
 				if month == 1:
-					layout = newTextLayout(
-						self,
-						text=_(year),
-						maxSize=(
-							deltaR * 0.50,
-							deltaR * 0.25,
-						),
-						maximizeScale=1.0,
-						truncate=False,
+					t_year = ui.cell.dates[calType][0]
+					self.drawYearStartLine(
+						t_year, 1,
+						cr, cx, cy,
+						angle, centerAngle, r, deltaR,
 					)
-					yearX, yearY = goAngle(
-						cx, cy,
-						angle + 0.02 * pi / 12,
-						r - deltaR * 0.75,  # FIXME
+					self.drawYearStartLine(
+						t_year + 1, -1,
+						cr, cx, cy,
+						angle, centerAngle, r, deltaR,
 					)
-					cr.move_to(yearX, yearY)
-					rotateAngle = centerAngle - pi / 12
-					cr.rotate(rotateAngle)
-					setColor(cr, self.yearStartLineColor)
-					show_layout(cr, layout)
-					cr.rotate(-rotateAngle)
 			#####
 			drawCircleOutline(cr, cx, cy, minR, self.lineWidth)
 			fillColor(cr, self.lineColor)
 			###
+
 		######
 		for button in self.buttons:
 			button.draw(cr, width, height)
+
+	def drawYearStartLine(self, year, direction, cr, cx, cy, angle, centerAngle, r, deltaR):
+		layout = newTextLayout(
+			self,
+			text=_(year),
+			maxSize=(
+				deltaR * 0.50,
+				deltaR * 0.25,
+			),
+			maximizeScale=1.0,
+			truncate=False,
+		)
+		layoutW, layoutH = layout.get_pixel_size()
+		tickX, tickY = goAngle(
+			cx, cy,
+			angle,
+			r - deltaR * 0.75,  # FIXME
+		)
+		layoutX, layoutY = goAngle(
+			tickX, tickY,
+			angle + direction * pi / 2,
+			(1 - direction) * layoutH / 2.5,  # factor should be between 2 and 3
+		)
+		cr.move_to(layoutX, layoutY)
+		rotateAngle = centerAngle - pi / 12
+		cr.rotate(rotateAngle)
+		setColor(cr, self.yearStartLineColor)
+		show_layout(cr, layout)
+		cr.rotate(-rotateAngle)
 
 	def onScroll(self, widget, gevent):
 		d = getScrollValue(gevent)
