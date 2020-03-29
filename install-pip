@@ -25,7 +25,7 @@ $PIP install psutil
 $PIP install requests
 
 $PIP install ujson
-$PIP install igraph
+$PIP install python-igraph
 $PIP install pygit2
 
 ./install "$@"
