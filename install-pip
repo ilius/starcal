@@ -13,7 +13,7 @@ pip3 install python-dateutil
 pip3 install psutil
 pip3 install requests
 
-pip3 install igraph
+pip3 install python-igraph
 pip3 install ujson
 
 ./install "$@"
