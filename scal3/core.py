@@ -51,7 +51,7 @@ except NameError:
 	__file__ = join(os.path.dirname(inspect.getfile(scal3)), "core.py")
 
 
-VERSION = "3.1.8"
+VERSION = "3.1.9"
 # BRANCH = join(sourceDir, "branch") # FIXME: figure out a policy for updating it
 APP_DESC = "StarCalendar"
 COMMAND = APP_NAME
