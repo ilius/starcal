@@ -2229,7 +2229,7 @@ class Event(BsonHistEventObj, RuleContainer):
 		if mode != self.mode:
 			for rule in self.rulesOd.values():
 				if not rule.changeMode(mode):
-					log.info(f"changeMode: failed because of rule {rule.name}={rule}")
+					log.info("changeMode: failed because of rule %s=%s" % (rule.name, rule))
 					self.rulesOd = backupRulesOd
 					return False
 			self.mode = mode
