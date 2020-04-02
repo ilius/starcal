@@ -517,7 +517,6 @@ if len(sys.argv) > 1:
 		log.info(VERSION)
 		sys.exit(0)
 
-print("Local Timezone:", locale_man.localTzStr)
 
 # holidayWeekDay=6  # 6 means last day of week ( 0 means first day of week)
 # thDay = (tr("First day"), tr("2nd day"), tr("3rd day"), tr("4th day"),\
