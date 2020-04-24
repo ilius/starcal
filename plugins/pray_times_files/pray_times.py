@@ -30,15 +30,15 @@ from time import time as now
 from os.path import join, isfile, isdir, dirname
 
 
-#_mypath = __file__
-#if _mypath.endswith(".pyc"):
-#	_mypath = _mypath[:-1]
-#dataDir = dirname(_mypath)
+# _mypath = __file__
+# if _mypath.endswith(".pyc"):
+# 	_mypath = _mypath[:-1]
+# dataDir = dirname(_mypath)
 dataDir = dirname(__file__)
 sourceDir = "/usr/share/starcal3"
 
-sys.path.insert(0, dataDir)## FIXME
-sys.path.insert(0, sourceDir)## FIXME
+sys.path.insert(0, dataDir)  # FIXME
+sys.path.insert(0, sourceDir)  # FIXME
 
 import natz
 
@@ -60,14 +60,14 @@ from scal3.time_utils import (
 	getEpochFromJd,
 )
 from scal3.os_utils import kill, goodkill
-#from scal3 import event_lib## needs core!! FIXME
+# from scal3 import event_lib  # needs core!! FIXME
 
 from threading import Timer
 
-#if "gtk" in sys.modules:
+# if "gtk" in sys.modules:
 from pray_times_gtk import *
-#else:
-#	from pray_times_qt import *
+# else:
+# 	from pray_times_qt import *
 
 ####################################################
 
@@ -79,7 +79,6 @@ localTz = natz.gettz()
 def getCurrentJd() -> int:
 	y, m, d = time.localtime()[:3]
 	return gregorian_to_jd(y, m, d)
-
 
 
 def readLocationData():
@@ -134,7 +133,7 @@ def readLocationData():
 def guessLocation(cityData):
 	tzname = str(localTz)
 	# TODO
-	#for countryCity, countryCityLocale, lat, lng in cityData:
+	# for countryCity, countryCityLocale, lat, lng in cityData:
 	return "Tehran", 35.705, 51.4216
 
 
@@ -202,10 +201,10 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		self.locName, self.lat, self.lng = "", 0, 0
 		method = ""
 		#######
-		self.imsak = 10 ## minutes before Fajr (Morning Azan)
-		#self.asrMode=ASR_STANDARD
-		#self.highLats="NightMiddle"
-		#self.timeFormat="24h"
+		self.imsak = 10  # minutes before Fajr (Morning Azan)
+		# self.asrMode = ASR_STANDARD
+		# self.highLats = "NightMiddle"
+		# self.timeFormat = "24h"
 		self.shownTimeNames = (
 			"fajr",
 			"sunrise",
@@ -245,17 +244,17 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		)
 		####
 		#######
-		#PrayTimeEventRule.plug = self
+		# PrayTimeEventRule.plug = self
 		#######
 		if confNeedsSave:
 			self.saveConfig()
 		#######
-		self.makeWidget()## FIXME
-		#self.onCurrentDateChange(localtime()[:3])
+		self.makeWidget()  # FIXME
+		# self.onCurrentDateChange(localtime()[:3])
 		###
-		#self.doPlayPreAzan()
-		#time.sleep(2)
-		#self.doPlayAzan() ## for testing ## FIXME
+		# self.doPlayPreAzan()
+		# time.sleep(2)
+		# self.doPlayAzan()  # for testing
 		###
 		self.checkShowDisclaimer()
 
@@ -285,7 +284,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 			return True
 
 		hyear, hmonth, hday = hijri.jd_to(getCurrentJd())
-		if hmonth == 9: # Ramadan
+		if hmonth == 9:  # Ramadan
 			if dt > hday * 24 * 3600:
 				return True
 
@@ -297,13 +296,13 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		self.method = self.backend.method.name
 		saveModuleJsonConf(self)
 
-	#def date_change_after(self, widget, year, month, day):
-	#	self.dialog.menuCell.add(self.menuitem)
-	#	self.menu_unmap_id = self.dialog.menuCell.connect("unmap", self.menu_unmap)
+	# def date_change_after(self, widget, year, month, day):
+	# 	self.dialog.menuCell.add(self.menuitem)
+	# 	self.menu_unmap_id = self.dialog.menuCell.connect("unmap", self.menu_unmap)
 
-	#def menu_unmap(self, menu):
-	#	menu.remove(self.menuitem)
-	#	menu.disconnect(self.menu_unmap_id)
+	# def menu_unmap(self, menu):
+	# 	menu.remove(self.menuitem)
+	# 	menu.disconnect(self.menu_unmap_id)
 
 	def get_times_jd(self, jd):
 		times = self.backend.getTimesByJd(
@@ -315,7 +314,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 			for name in self.shownTimeNames
 		]
 
-	def getFormattedTime(self, tm):## tm is float hour
+	def getFormattedTime(self, tm):  # tm is float hour
 		try:
 			h, m, s = floatHourToTime(float(tm))
 		except ValueError:
@@ -344,36 +343,38 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		else:
 			log.info(f"pray_times: killing process {p.pid}")
 			goodkill(p.pid, interval=0.01)
-			#kill(p.pid, 15)
-			#p.terminate()
+			# kill(p.pid, 15)
+			# p.terminate()
 
-	def doPlayAzan(self):## , tm
+	def doPlayAzan(self):
+		# pass tm as argument?
 		if not self.azanEnable:
 			return
-		#dt = tm - now()
+		# dt = tm - now()
 		# log.debug(f"---------------------------- doPlayAzan, dt={dt:.1f}")
-		#if dt > 1:
-		#	Timer(
-		#		int(dt),
-		#		self.doPlayAzan,
-		#		#tm,
-		#	).start()
-		#	return
+		# if dt > 1:
+		# 	Timer(
+		# 		int(dt),
+		# 		self.doPlayAzan,
+		# 		#tm,
+		# 	).start()
+		# 	return
 		self.killPrevSound()
 		self.proc = popenFile(self.azanFile)
 
-	def doPlayPreAzan(self):## , tm
+	def doPlayPreAzan(self):
+		# pass tm as argument?
 		if not self.preAzanEnable:
 			return
-		#dt = tm - now()
+		# dt = tm - now()
 		# log.debug(f"---------------------------- doPlayPreAzan, dt={dt:.1f}")
-		#if dt > 1:
-		#	Timer(
-		#		int(dt),
-		#		self.doPlayPreAzan,
-		#		#tm,
-		#	).start()
-		#	return
+		# if dt > 1:
+		# 	Timer(
+		# 		int(dt),
+		# 		self.doPlayPreAzan,
+		# 		#tm,
+		# 	).start()
+		# 	return
 		self.killPrevSound()
 		self.proc = popenFile(self.preAzanFile)
 
@@ -383,10 +384,10 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 			return
 		jd = gregorian_to_jd(*tuple(gdate))
 		# log.debug(
-		#	getUtcOffsetByJd(jd, localTz) / 3600,
-		#	getUtcOffsetCurrent() / 3600,
-		#)
-		#utcOffset = getUtcOffsetCurrent()
+		# 	getUtcOffsetByJd(jd, localTz) / 3600,
+		# 	getUtcOffsetCurrent() / 3600,
+		# )
+		# utcOffset = getUtcOffsetCurrent()
 		utcOffset = getUtcOffsetByJd(jd, localTz)
 		tmUtc = now()
 		epochLocal = tmUtc + utcOffset
@@ -414,26 +415,26 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 				Timer(
 					toPreAzanSec,
 					self.doPlayPreAzan,
-					#midnightUtc + preAzanSec,
+					# midnightUtc + preAzanSec,
 				).start()
 				###
 				log.debug(f"toAzanSecs={toAzanSecs:.1f}")
 				Timer(
 					toAzanSecs,
 					self.doPlayAzan,
-					#midnightUtc + azanSec,
+					# midnightUtc + azanSec,
 				).start()
 
 
 if __name__ == "__main__":
-	#from scal3 import core
-	#from scal3.locale_man import rtl
-	#if rtl:
-	#	gtk.widget_set_default_direction(gtk.TextDirection.RTL)
+	# from scal3 import core
+	# from scal3.locale_man import rtl
+	# if rtl:
+	# 	gtk.widget_set_default_direction(gtk.TextDirection.RTL)
 	dialog = LocationDialog(readLocationData())
 	dialog.connect("delete-event", gtk.main_quit)
-	#dialog.connect("response", gtk.main_quit)
+	# dialog.connect("response", gtk.main_quit)
 	dialog.resize(600, 600)
 	result = dialog.run()
 	log.info("{result}")
-	#gtk.main()
+	# gtk.main()

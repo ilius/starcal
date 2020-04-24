@@ -35,19 +35,21 @@ def iso_to_jd(year, week, day):
 	"""
 	Return Julian day of given ISO year, week, and day
 	"""
-	#assert week>0 and day>0 and day<=7
+	# assert week > 0 and day > 0 and day <= 7
 	jd0 = gregorian.to_jd(year - 1, 12, 28)
 	return day + 7 * week + jd0 - jd0 % 7 - 1
 
 
-def isow_year(jd):## iso week year
+def isow_year(jd):
+	""" iso week year """
 	year = gregorian.jd_to(jd - 3)[0]
 	if jd >= iso_to_jd(year + 1, 1, 1):
 		year += 1
 	return year
 
 
-def isow(jd):## iso week number
+def isow(jd):
+	""" iso week number """
 	year = gregorian.jd_to(jd - 3)[0]
 	if jd >= iso_to_jd(year + 1, 1, 1):
 		year += 1
@@ -108,7 +110,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 			pyFmt += "%s"
 			i += 2
 			continue
-		elif c1 == "Q":## calendar name (gregorian, jalali, ...)
+		elif c1 == "Q":  # calendar name (gregorian, jalali, ...)
 			funcs.append(lambda cell, calType, tm: _(
 				calTypes.nameByIndex(calType),
 			))
@@ -151,10 +153,10 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 			pyFmt += "%s"
 			i += 2
 			continue
-		#elif c1 == "c":
-		#	FIXME locale"s date and time (e.g., Thu Mar    3 23:05:25 2005)
-		#elif c1 == "x":
-		#	FIXME locale"s date representation (e.g., 12/31/99)
+		# elif c1 == "c":
+		# 	TODO: locale's date and time (e.g., Thu Mar    3 23:05:25 2005)
+		# elif c1 == "x":
+		# 	TODO: locale's date representation (e.g., 12/31/99)
 		elif c1 == "C":
 			funcs.append(lambda cell, calType, tm: _(
 				cell.dates[calType][0] // 100,
@@ -163,7 +165,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 			pyFmt += "%s"
 			i += 2
 			continue
-		elif c1 == "D":## %m/%d/%y
+		elif c1 == "D":  # %m/%d/%y
 			funcs += [
 				lambda cell, calType, tm: _(
 					cell.dates[calType][1],
@@ -181,7 +183,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 			pyFmt += "%s/%s/%s"
 			i += 2
 			continue
-		elif c1 == "e":## day of month, space padded; same as %_d
+		elif c1 == "e":  # day of month, space padded; same as %_d
 			funcs.append(lambda cell, calType, tm: _(
 				cell.dates[calType][2],
 				fillZero=2,
@@ -189,7 +191,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 			pyFmt += "%2s"
 			i += 2
 			continue
-		elif c1 == "F":## %Y-%m-%d
+		elif c1 == "F":  # %Y-%m-%d
 			funcs += [
 				lambda cell, calType, tm: _(
 					cell.dates[calType][0],
@@ -207,7 +209,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 			pyFmt += "%s-%s-%s"
 			i += 2
 			continue
-		elif c1 == "g":## not affected by calType!
+		elif c1 == "g":  # not affected by calType!
 			funcs.append(lambda cell, calType, tm: _(
 				isow_year(cell.jd) % 100,
 				fillZero=2,
@@ -215,7 +217,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 			pyFmt += "%s"
 			i += 2
 			continue
-		elif c1 == "G":## not affected by calType!
+		elif c1 == "G":  # not affected by calType!
 			funcs.append(lambda cell, calType, tm: _(
 				isow_year(cell.jd),
 				fillZero=4,
@@ -223,7 +225,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 			pyFmt += "%s"
 			i += 2
 			continue
-		elif c1 == "V":## not affected by calType!
+		elif c1 == "V":  # not affected by calType!
 			funcs.append(lambda cell, calType, tm: _(
 				isow(cell.jd),
 				fillZero=2,
@@ -256,11 +258,11 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 			pyFmt += "%s"
 			i += 2
 			continue
-		#elif c1 == "U":  # FIXME
-		#	funcs.append(lambda cell, calType, tm: _())
-		#	pyFmt += "%s"
-		#	i += 2
-		#	continue
+		# elif c1 == "U":  # FIXME
+		# 	funcs.append(lambda cell, calType, tm: _())
+		# 	pyFmt += "%s"
+		# 	i += 2
+		# 	continue
 		elif c1 == "j":
 			funcs.append(lambda cell, calType, tm: _(
 				cell.jd - to_jd(cell.dates[calType][0], 1, 1, calType) + 1,
@@ -287,7 +289,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 			pyFmt += "%s"
 			i += 2
 			continue
-		#elif c1 == "Z":  # alphabetic time zone abbreviation (e.g., EDT)
+		# elif c1 == "Z":  # alphabetic time zone abbreviation (e.g., EDT)
 		elif c1 == ":":
 			c2 = format[i + 2]
 			if c2 == "z":  # %:z
@@ -301,7 +303,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 				i += 3
 				continue
 			# %::z , %:::z
-			#elif c2 == ":":## ???????????????????????
+			# elif c2 == ":":  # FIXME
 		elif hasTime:
 			if c1 == "H":
 				funcs.append(lambda cell, calType, tm: _(
@@ -333,7 +335,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 				pyFmt += "%s"
 				i += 2
 				continue
-			elif c1 == "r":## %I:%M:%s PM
+			elif c1 == "r":  # %I:%M:%s PM
 				funcs.append(
 					lambda cell, calType, tm:
 						_((tm[0] - 1) % 12 + 1, fillZero=2) + ":" +
@@ -344,7 +346,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 				pyFmt += "%s"
 				i += 2
 				continue
-			elif c1 == "R":## %H:%M
+			elif c1 == "R":  # %H:%M
 				funcs.append(
 					lambda cell, calType, tm:
 						_(tm[0], fillZero=2) + ":" +
@@ -369,17 +371,17 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 				pyFmt += "%s"
 				i += 2
 				continue
-			elif c1 == "s":## seconds since 1970-01-01 00:00:00 UTC
-				#funcs.append(lambda cell, calType, tm: _(
-				#	int(time.mktime(
-				#		a[2:7] + (
-				#			int(tm[2]),
-				#			0,
-				#			0,
-				#			1,
-				#		),
-				#	)),
-				#))
+			elif c1 == "s":  # seconds since 1970-01-01 00:00:00 UTC
+				# funcs.append(lambda cell, calType, tm: _(
+				# 	int(time.mktime(
+				# 		a[2:7] + (
+				# 			int(tm[2]),
+				# 			0,
+				# 			0,
+				# 			1,
+				# 		),
+				# 	)),
+				# ))
 				funcs.append(lambda cell, calType, tm: _(
 					core.getEpochFromJhms(cell.jd, *tm),
 				))
@@ -407,7 +409,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 				pyFmt += "%s"
 				i += 2
 				continue
-			elif c1 == "T":## %%H:%M:%S
+			elif c1 == "T":  # %%H:%M:%S
 				funcs.append(
 					lambda cell, calType, tm:
 						_(tm[0], fillZero=2) + ":" +
@@ -417,7 +419,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 				pyFmt += "%s"
 				i += 2
 				continue
-			elif c1 == "X":## locale"s time representation (e.g., 23:13:48)
+			elif c1 == "X":  # locale's time representation (e.g., 23:13:48)
 				funcs.append(
 					lambda cell, calType, tm:
 						_(tm[0], fillZero=2) + ":" +
@@ -429,56 +431,4 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 				continue
 		pyFmt += ("%" + c1)
 		i += 2
-	return (pyFmt, funcs) ## compiledFmt
-
-
-def testSpeed():
-	import time
-	from time import strftime
-	#format = "Date: %Y/%m/%d - Time: %H:%M:%S - %a %A %C %B %b %g %G %V"
-	format = "%Y/%m/%d - %H:%M:%S"
-	format2 = "%OY/%Om/%Od - %OH:%OM:%OS"
-	n = 1
-	########
-	compiledFmt = compileTmFormat(format)
-	calType = core.GREGORIAN
-	tm = list(time.localtime())
-	jd = to_jd(tm[0], tm[1], tm[2], calType)
-	########
-	t0 = now()
-	for i in range(n):
-		strftime(format, tm)
-	t1 = now()
-	log.info(f"Python strftime: {t1 - t0} sec")
-	########
-	jd = to_jd(tm[0], tm[1], tm[2], calType)
-	t0 = now()
-	for i in range(n):
-		formatTime(compiledFmt, calType, jd, tm)
-	t1 = now()
-	log.info(f"My strftime:     {t1 - t0} sec")
-	########
-	from scal3.ui_gtk.preferences import strftime
-	t0 = now()
-	for i in range(n):
-		strftime(format2, tm)
-	t1 = now()
-	log.info(f"My old strftime: {t1 - t0} sec")
-
-
-def testOutput():
-	from time import strftime
-	compiledFmt = compileTmFormat("%Y/%m/%d")
-	year = 2010
-	month = 1
-	day = 4
-	jd = to_jd(year, month, day, core.GREGORIAN)
-	tm = (year, month, day, 12, 10, 0, 15, 1, 1)
-	log.info(formatTime(compiledFmt, core.GREGORIAN, jd, tm))
-	log.info(strftime("%OY/%Om/%Od", tm))
-
-
-if __name__ == "__main__":
-	import sys
-	testSpeed()
-	#testOutput()
+	return (pyFmt, funcs)  # compiledFmt

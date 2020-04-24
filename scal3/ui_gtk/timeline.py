@@ -78,6 +78,7 @@ import scal3.ui_gtk.event.manager
 # FIXME: rewove this
 from scal3.ui_gtk.timeline_prefs import TimeLinePreferencesWindow
 
+
 def show_event(widget, gevent):
 	log.info(
 		type(widget),
@@ -127,7 +128,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.connect("motion-notify-event", self.motionNotify)
 		self.connect("button-release-event", self.buttonRelease)
 		self.connect("key-press-event", self.onKeyPress)
-		#self.connect("event", show_event)
+		# self.connect("event", show_event)
 		self.currentTime = now()
 		self.timeWidth = dayLen
 		self.timeStart = self.currentTime - self.timeWidth / 2.0
@@ -260,7 +261,6 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			),
 		]
 
-
 	def getButtons(self):
 		return self.basicButtons + self.movementButtons
 
@@ -308,7 +308,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		menu.popup(
 			None,
 			None,
-			None, # lambda *args: (x, y, True),
+			None,  # lambda *args: (x, y, True),
 			None,
 			3,
 			etime,
@@ -375,13 +375,13 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			False,
 			tick.fontSize,
 		]
-		#layout = newLimitedWidthTextLayout(
-		#	self,
-		#	tick.label,
-		#	tick.maxLabelWidth,
-		#	font=font,
-		#	truncate=truncateTickLabel,
-		#)  # FIXME
+		# layout = newLimitedWidthTextLayout(
+		# 	self,
+		# 	tick.label,
+		# 	tick.maxLabelWidth,
+		# 	font=font,
+		# 	truncate=truncateTickLabel,
+		# )  # FIXME
 		layout = newTextLayout(
 			self,
 			text=tick.label,
@@ -391,14 +391,14 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			truncate=tl.truncateTickLabel,
 		)  # FIXME
 		if layout:
-			#layout.set_auto_dir(0)  # FIXME
+			# layout.set_auto_dir(0)  # FIXME
 			# log.debug(f"layout.get_auto_dir() = {layout.get_auto_dir()}")
 			layoutW, layoutH = layout.get_pixel_size()
 			layoutX = tick.pos - layoutW / 2.0
 			layoutY = tickH * tl.labelYRatio
 			cr.move_to(layoutX, layoutY)
 			# cr.move_to never seems to raise exception anymore
-			show_layout(cr, layout)## with the same tick.color
+			show_layout(cr, layout)  # with the same tick.color
 
 	def drawBox(self, cr, box):
 		d = box.lineW
@@ -440,7 +440,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		width = self.get_allocation().width
 		height = self.get_allocation().height
 		pixelPerSec = self.pixelPerSec
-		dayPixel = dayLen * pixelPerSec ## pixel
+		dayPixel = dayLen * pixelPerSec  # pixel
 		maxTickHeight = tl.maxTickHeightRatio * height
 		#####
 		cr.rectangle(0, 0, width, height)
@@ -454,7 +454,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		for tick in self.data["ticks"]:
 			self.drawTick(cr, tick, maxTickHeight)
 		######
-		beforeBoxH = maxTickHeight ## FIXME
+		beforeBoxH = maxTickHeight  # FIXME
 		maxBoxH = height - beforeBoxH
 		for box in self.data["boxes"]:
 			box.setPixelValues(timeStart, pixelPerSec, beforeBoxH, maxBoxH)
@@ -511,13 +511,13 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			win.end_draw_frame(dctx)
 
 	def drawWithContext(self, cr: "cairo.Context"):
-		#t0 = now()
+		# t0 = now()
 		if not self.boxEditing:
 			self.updateData()
 			self.currentTimeUpdate(restart=True, draw=False)
-		#t1 = now()
+		# t1 = now()
 		self.drawAll(cr)
-		#t2 = now()
+		# t2 = now()
 		# log.debug(f"drawing time / data calc time: {(t2-t1)/(t1-t0):.2f}")
 
 	def getLastScrollDir(self) -> "":
@@ -537,9 +537,9 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		smallForce = False
 		if gevent.is_scroll_stop_event():  # or gevent.is_stop == 1
 			smallForce = True
-			#self._lastScrollDir = ""
-			#self.stopMovingAnim()
-			#return
+			# self._lastScrollDir = ""
+			# self.stopMovingAnim()
+			# return
 		dirStr = getScrollValue(gevent, last=self.getLastScrollDir())
 		if not dirStr:
 			return
@@ -719,7 +719,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		).run()
 		if group is not None:
 			group.afterModify()
-			group.save()## FIXME
+			group.save()  # FIXME
 			ui.eventUpdateQueue.put("eg", group, self)
 			self.onConfigChange()
 			self.queue_draw()
@@ -788,24 +788,24 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				func(gevent)
 				self.queue_draw()
 				return True
-		#if k=="end":
-		#	pass
-		#elif k=="page_up":
-		#	pass
-		#elif k=="page_down":
-		#	pass
-		#elif k=="menu":# Simulate right click (key beside Right-Ctrl)
-		#	#self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
-		#elif k in ("f10","m"): # F10 or m or M
-		#	if gevent.get_state() & gdk.ModifierType.SHIFT_MASK:
-		#		# Simulate right click (key beside Right-Ctrl)
-		#		self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
-		#	else:
-		#		self.emit(
-		#		"popup-main-menu",
-		#		gevent.time,
-		#		*self.getMainMenuPos()
-		#	)
+		# if k=="end":
+		# 	pass
+		# elif k=="page_up":
+		# 	pass
+		# elif k=="page_down":
+		# 	pass
+		# elif k=="menu":# Simulate right click (key beside Right-Ctrl)
+		# 	#self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
+		# elif k in ("f10","m"): # F10 or m or M
+		# 	if gevent.get_state() & gdk.ModifierType.SHIFT_MASK:
+		# 		# Simulate right click (key beside Right-Ctrl)
+		# 		self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
+		# 	else:
+		# 		self.emit(
+		# 		"popup-main-menu",
+		# 		gevent.time,
+		# 		*self.getMainMenuPos()
+		# 	)
 		return False
 
 	def movingUserEvent(self, direction=1, smallForce=False, source="keyboard"):
@@ -814,7 +814,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		"""
 		if tl.enableAnimation:
 			tm = now()
-			#dtEvent = tm - self.movingLastPress
+			# dtEvent = tm - self.movingLastPress
 			self.movingLastPress = tm
 			"""
 				We should call a new updateMovingAnim if:
@@ -825,18 +825,18 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			if (
 				self.movingF * direction < 0
 				or self.movingF * self.movingV == 0
-				#or dtEvent > tl.movingKeyTimeout
+				# or dtEvent > tl.movingKeyTimeout
 			):
-				if source=="scroll":
+				if source == "scroll":
 					force = tl.movingHandForceMouse
 					if smallForce:
 						force = (force + tl.movingFrictionForce) / 2.0
-				elif source=="keyboard":
+				elif source == "keyboard":
 					if smallForce:
 						force = tl.movingHandForceKeyboardSmall
 					else:
 						force = tl.movingHandForceKeyboard
-				elif source=="button":
+				elif source == "button":
 					force = tl.movingHandForceButton
 				else:
 					raise ValueError(f"invalid source={source}")
@@ -975,7 +975,7 @@ class TimeLineWindow(gtk.Window, ud.BaseCalObj):
 		if ui.mainWin:
 			self.hide()
 		else:
-			gtk.main_quit()## FIXME
+			gtk.main_quit()  # FIXME
 		return True
 
 	def onButtonPress(self, obj, gevent):
@@ -992,7 +992,7 @@ class TimeLineWindow(gtk.Window, ud.BaseCalObj):
 
 if __name__ == "__main__":
 	win = TimeLineWindow()
-	#win.tline.timeWidth = 100 * minYearLenSec # 2 * 10**17
-	#win.tline.timeStart = now() - win.tline.timeWidth # -10**17
+	# win.tline.timeWidth = 100 * minYearLenSec  # 2 * 10**17
+	# win.tline.timeStart = now() - win.tline.timeWidth  # -10**17
 	win.show()
 	gtk.main()

@@ -108,6 +108,7 @@ class PreferencesPluginsToolbar(StaticToolBox):
 	def setCanAdd(self, canAdd: bool):
 		self.buttonAdd.set_sensitive(canAdd)
 
+
 class PreferencesWindow(gtk.Window):
 	def __init__(self, **kwargs):
 		from math import ceil
@@ -117,8 +118,8 @@ class PreferencesWindow(gtk.Window):
 		self.set_position(gtk.WindowPosition.CENTER)
 		self.connect("delete-event", self.onDelete)
 		self.connect("key-press-event", self.onKeyPress)
-		#self.set_has_separator(False)
-		#self.set_skip_taskbar_hint(True)
+		# self.set_has_separator(False)
+		# self.set_skip_taskbar_hint(True)
 		###
 		self.vbox = VBox()
 		self.add(self.vbox)
@@ -140,8 +141,8 @@ class PreferencesWindow(gtk.Window):
 			onClick=self.ok,
 			tooltip=_("Apply and Close"),
 		)
-		#okB.grab_default()  # FIXME
-		#okB.grab_focus()  # FIXME
+		# okB.grab_default()  # FIXME
+		# okB.grab_focus()  # FIXME
 		##############################################
 		self.loggerPrefItem = None
 		self.localePrefItems = []
@@ -333,7 +334,7 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, newAlignLabel(sgroup=sgroup, label=_("Background")))
 		item = ColorPrefItem(ui, "bgColor", True)
 		self.uiPrefItems.append(item)
-		self.colorbBg = item.getWidget() ## FIXME
+		self.colorbBg = item.getWidget()  # FIXME
 		pack(hbox, item.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox)
@@ -458,10 +459,10 @@ class PreferencesWindow(gtk.Window):
 			ui,
 			"statusIconFontFamilyEnable",
 			label=_("Change font family to"),
-			#tooltip=_("In SVG files"),
+			# tooltip=_("In SVG files"),
 		)
 		self.uiPrefItems.append(checkItem)
-		#sgroup.add_widget(checkItem.getWidget())
+		# sgroup.add_widget(checkItem.getWidget())
 		pack(hbox, checkItem.getWidget())
 		item = FontFamilyPrefItem(
 			ui,
@@ -492,10 +493,10 @@ class PreferencesWindow(gtk.Window):
 			ui,
 			"statusIconFixedSizeEnable",
 			label=_("Fixed Size"),
-			#tooltip=_(""),
+			# tooltip=_(""),
 		)
 		self.uiPrefItems.append(checkItem)
-		#sgroup.add_widget(checkItem.getWidget())
+		# sgroup.add_widget(checkItem.getWidget())
 		pack(hbox, checkItem.getWidget())
 		pack(hbox, gtk.Label(label=" "))
 		item = WidthHeightPrefItem(
@@ -546,7 +547,7 @@ class PreferencesWindow(gtk.Window):
 		label = gtk.Label(label=_("Date Format"))
 		pack(hbox, label)
 		sgroup.add_widget(label)
-		#pack(hbox, gtk.Label(), 1, 1)
+		# pack(hbox, gtk.Label(), 1, 1)
 		item = ComboEntryTextPrefItem(ud, "dateFormat", (
 			"%Y/%m/%d",
 			"%Y-%m-%d",
@@ -576,7 +577,7 @@ class PreferencesWindow(gtk.Window):
 		####
 		hbox = HBox(spacing=3)
 		pack(hbox, gtk.Label(label=_("First day of week")))
-		##item = ComboTextPrefItem( ## FIXME
+		# item = ComboTextPrefItem(  # FIXME
 		self.comboFirstWD = gtk.ComboBoxText()
 		for item in core.weekDayName:
 			self.comboFirstWD.append_text(item)
@@ -594,10 +595,10 @@ class PreferencesWindow(gtk.Window):
 		] + [
 			_("First day of year"),
 		]
-		texts[4] += " (ISO 8601)" ## FIXME
+		texts[4] += " (ISO 8601)"  # FIXME
 		for text in texts:
 			combo.append_text(text)
-		#combo.append_text(_("Automatic"))## (as Locale)  # FIXME
+		# combo.append_text(_("Automatic"))## (as Locale)  # FIXME
 		pack(hbox, combo)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(pageVBox, hbox, padding=5)
@@ -613,7 +614,7 @@ class PreferencesWindow(gtk.Window):
 			twoRows=True,
 		)
 		self.corePrefItems.append(item)
-		self.holiWDItem = item ## Holiday Week Days Item
+		self.holiWDItem = item  # Holiday Week Days Item
 		itemWidget = item.getWidget()
 		itemWidget.set_border_width(10)
 		frame.add(itemWidget)
@@ -691,10 +692,10 @@ class PreferencesWindow(gtk.Window):
 		pack(vbox, item.getWidget())
 		######
 		hbox = HBox(spacing=5)
-		#pack(hbox, gtk.Label(), 1, 1)
+		# pack(hbox, gtk.Label(), 1, 1)
 		label = gtk.Label(label=_("Digital Clock Format"))
 		pack(hbox, label)
-		#sgroup.add_widget(label)
+		# sgroup.add_widget(label)
 		item = ComboEntryTextPrefItem(ud, "clockFormat", (
 			"%T",
 			"%X",
@@ -718,7 +719,7 @@ class PreferencesWindow(gtk.Window):
 		hbox = HBox(spacing=5)
 		label = gtk.Label(label=_("Days maximum cache size"))
 		pack(hbox, label)
-		##sgroup.add_widget(label)
+		# sgroup.add_widget(label)
 		item = SpinPrefItem(ui, "maxDayCacheSize", 100, 9999, digits=0, step=10)
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget())
@@ -752,7 +753,7 @@ class PreferencesWindow(gtk.Window):
 		page.pageIcon = "preferences-plugin.svg"
 		self.prefPages.append(page)
 		#####
-		##pluginsTextStatusIcon:
+		# pluginsTextStatusIcon:
 		hbox = HBox()
 		item = CheckPrefItem(
 			ui,
@@ -767,10 +768,10 @@ class PreferencesWindow(gtk.Window):
 		treev = gtk.TreeView()
 		treev.set_headers_clickable(True)
 		trees = gtk.ListStore(
-			int, # index
-			bool, # enable
-			bool, # show_date
-			str, # title
+			int,  # index
+			bool,  # enable
+			bool,  # show_date
+			str,  # title
 		)
 		treev.set_model(trees)
 		treev.enable_model_drag_source(
@@ -791,9 +792,9 @@ class PreferencesWindow(gtk.Window):
 		treev.connect("row-activated", self.plugTreevRActivate)
 		treev.connect("button-press-event", self.plugTreevButtonPress)
 		###
-		#treev.drag_source_add_text_targets()
-		#treev.drag_source_add_uri_targets()
-		#treev.drag_source_unset()
+		# treev.drag_source_add_text_targets()
+		# treev.drag_source_add_uri_targets()
+		# treev.drag_source_unset()
 		###
 		swin = gtk.ScrolledWindow()
 		swin.add(treev)
@@ -803,7 +804,7 @@ class PreferencesWindow(gtk.Window):
 		)
 		######
 		cell = gtk.CellRendererToggle()
-		#cell.set_property("activatable", True)
+		# cell.set_property("activatable", True)
 		cell.connect("toggled", self.plugTreeviewCellToggled)
 		titleLabel = gtk.Label(
 			label="<span size='small'>" + _("Enable") + "</span>",
@@ -813,13 +814,13 @@ class PreferencesWindow(gtk.Window):
 		col = gtk.TreeViewColumn(cell_renderer=cell)
 		col.set_widget(titleLabel)
 		col.add_attribute(cell, "active", 1)
-		#cell.set_active(False)
+		# cell.set_active(False)
 		col.set_resizable(True)
 		col.set_property("expand", False)
 		treev.append_column(col)
 		######
 		cell = gtk.CellRendererToggle()
-		#cell.set_property("activatable", True)
+		# cell.set_property("activatable", True)
 		cell.connect("toggled", self.plugTreeviewCellToggled2)
 		titleLabel = gtk.Label(
 			label="<span size='xx-small'>" + _("Show\nDate") + "</span>",
@@ -829,32 +830,32 @@ class PreferencesWindow(gtk.Window):
 		col = gtk.TreeViewColumn(cell_renderer=cell)
 		col.set_widget(titleLabel)
 		col.add_attribute(cell, "active", 2)
-		#cell.set_active(False)
+		# cell.set_active(False)
 		col.set_resizable(True)
 		col.set_property("expand", False)
 		treev.append_column(col)
 		######
-		#cell = gtk.CellRendererText()
-		#col = gtk.TreeViewColumn(title=_("File Name"), cell_renderer=cell, text=2)
-		#col.set_resizable(True)
-		#treev.append_column(col)
-		#treev.set_search_column(1)
+		# cell = gtk.CellRendererText()
+		# col = gtk.TreeViewColumn(title=_("File Name"), cell_renderer=cell, text=2)
+		# col.set_resizable(True)
+		# treev.append_column(col)
+		# treev.set_search_column(1)
 		######
 		cell = gtk.CellRendererText()
-		#cell.set_property("wrap-mode", gtk.WrapMode.WORD)
-		#cell.set_property("editable", True)
-		#cell.set_property("wrap-width", 200)
+		# cell.set_property("wrap-mode", gtk.WrapMode.WORD)
+		# cell.set_property("editable", True)
+		# cell.set_property("wrap-width", 200)
 		col = gtk.TreeViewColumn(title=_("Title"), cell_renderer=cell, text=3)
-		#treev.connect("draw", self.plugTreevExpose)
-		#self.plugTitleCell = cell
-		#self.plugTitleCol = col
-		#col.set_resizable(True)## No need!
+		# treev.connect("draw", self.plugTreevExpose)
+		# self.plugTitleCell = cell
+		# self.plugTitleCol = col
+		# col.set_resizable(True)## No need!
 		col.set_property("expand", True)
 		treev.append_column(col)
 		######
-		#for i in xrange(len(core.plugIndex)):
-		#	x = core.plugIndex[i]
-		#	trees.append([x[0], x[1], x[2], core.allPlugList[x[0]].title])
+		# for i in xrange(len(core.plugIndex)):
+		# 	x = core.plugIndex[i]
+		# 	trees.append([x[0], x[1], x[2], core.allPlugList[x[0]].title])
 		######
 		self.plugTreeview = treev
 		#######################
@@ -909,7 +910,7 @@ class PreferencesWindow(gtk.Window):
 		# but if you call dialog.show() or dialog.present(), the parent is
 		# still active(clickabel widgets) before closing child "dialog"
 		# you may call dialog.run() to realy make it transient for parent
-		#d.set_has_separator(False)
+		# d.set_has_separator(False)
 		d.connect("delete-event", self.plugAddDialogClose)
 		d.set_title(_("Add Plugin"))
 		###
@@ -931,21 +932,21 @@ class PreferencesWindow(gtk.Window):
 		treev = gtk.TreeView()
 		trees = gtk.ListStore(str)
 		treev.set_model(trees)
-		#treev.enable_model_drag_source(
-		#	gdk.ModifierType.BUTTON1_MASK,
-		#	[("", 0, 0, 0)],
-		#	gdk.DragAction.MOVE,
-		#)  # FIXME
-		#treev.enable_model_drag_dest(
-		#	[("", 0, 0, 0)],
-		#	gdk.DragAction.MOVE,
-		#)  # FIXME
+		# treev.enable_model_drag_source(
+		# 	gdk.ModifierType.BUTTON1_MASK,
+		# 	[("", 0, 0, 0)],
+		# 	gdk.DragAction.MOVE,
+		# )  # FIXME
+		# treev.enable_model_drag_dest(
+		# 	[("", 0, 0, 0)],
+		# 	gdk.DragAction.MOVE,
+		# )  # FIXME
 		treev.connect("drag_data_received", self.plugTreevDragReceived)
 		treev.connect("row-activated", self.plugAddTreevRActivate)
 		####
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(title=_("Title"), cell_renderer=cell, text=0)
-		#col.set_resizable(True)# no need when have only one column!
+		# col.set_resizable(True)# no need when have only one column!
 		treev.append_column(col)
 		####
 		swin = gtk.ScrolledWindow()
@@ -957,8 +958,8 @@ class PreferencesWindow(gtk.Window):
 		self.plugAddTreeview = treev
 		self.plugAddTreestore = trees
 		#############
-		##treev.set_resize_mode(gtk.RESIZE_IMMEDIATE)
-		##self.plugAddItems = []
+		# treev.set_resize_mode(gtk.RESIZE_IMMEDIATE)
+		# self.plugAddItems = []
 		# ##################################### Page 6 (Accounts)
 		vbox = VBox()
 		vbox.set_border_width(5)
@@ -972,7 +973,7 @@ class PreferencesWindow(gtk.Window):
 		#####
 		treev = gtk.TreeView()
 		treev.set_headers_clickable(True)
-		trees = gtk.ListStore(int, bool, str)## id (hidden), enable, title
+		trees = gtk.ListStore(int, bool, str)  # id (hidden), enable, title
 		treev.set_model(trees)
 		treev.enable_model_drag_source(
 			gdk.ModifierType.BUTTON1_MASK,
@@ -995,18 +996,17 @@ class PreferencesWindow(gtk.Window):
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
 		######
 		cell = gtk.CellRendererToggle()
-		#cell.set_property("activatable", True)
+		# cell.set_property("activatable", True)
 		cell.connect("toggled", self.accountsTreeviewCellToggled)
 		col = gtk.TreeViewColumn(title=_("Enable"), cell_renderer=cell)
 		col.add_attribute(cell, "active", 1)
-		#cell.set_active(False)
+		# cell.set_active(False)
 		col.set_resizable(True)
 		col.set_property("expand", False)
 		treev.append_column(col)
 		######
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(title=_("Title"), cell_renderer=cell, text=2)
-		#col.set_resizable(True)## No need!
 		col.set_property("expand", True)
 		treev.append_column(col)
 		######
@@ -1148,8 +1148,8 @@ class PreferencesWindow(gtk.Window):
 		return button
 
 	def comboFirstWDChanged(self, combo):
-		f = self.comboFirstWD.get_active() ## 0 means Sunday
-		if f == 7: ## auto
+		f = self.comboFirstWD.get_active()  # 0 means Sunday
+		if f == 7:  # auto
 			try:
 				f = core.getLocaleFirstWeekDay()
 			except Exception:
@@ -1344,11 +1344,11 @@ class PreferencesWindow(gtk.Window):
 		# #### Accounts
 		self.refreshAccounts()
 
-	#def plugTreevExpose(self, widget, gevent):
-	#	self.plugTitleCell.set_property(
-	#		"wrap-width",
-	#		self.plugTitleCol.get_width() + 2
-	#	)
+	# def plugTreevExpose(self, widget, gevent):
+	# 	self.plugTitleCell.set_property(
+	# 		"wrap-width",
+	# 		self.plugTitleCol.get_width() + 2
+	# 	)
 
 	def plugTreevCursorChanged(self, selection=None):
 		cur = self.plugTreeview.get_cursor()[0]
@@ -1375,7 +1375,7 @@ class PreferencesWindow(gtk.Window):
 		if plug.about is None:
 			return
 		about = AboutDialog(
-			name="",## FIXME
+			name="",  # FIXME
 			title=_("About Plugin"),  # _("About ") + plug.title
 			authors=plug.authors,
 			comments=plug.about,
@@ -1383,9 +1383,9 @@ class PreferencesWindow(gtk.Window):
 		about.set_transient_for(self)
 		about.connect("delete-event", lambda w, e: w.destroy())
 		about.connect("response", lambda w, e: w.destroy())
-		#about.set_resizable(True)
-		#about.vbox.show_all()## OR about.vbox.show_all() ; about.run()
-		openWindow(about)## FIXME
+		# about.set_resizable(True)
+		# about.vbox.show_all()  # OR about.vbox.show_all() ; about.run()
+		openWindow(about)  # FIXME
 
 	def onPlugConfClick(self, obj=None):
 		cur = self.plugTreeview.get_cursor()[0]
@@ -1404,7 +1404,7 @@ class PreferencesWindow(gtk.Window):
 		ExportToIcsDialog(plug.exportToIcs, plug.title).run()
 
 	def plugTreevRActivate(self, treev, path, col):
-		if col.get_title() == _("Title"):## FIXME
+		if col.get_title() == _("Title"):  # FIXME
 			self.onPlugAboutClick(None)
 
 	def plugTreevButtonPress(self, widget, gevent):
@@ -1449,7 +1449,7 @@ class PreferencesWindow(gtk.Window):
 	def onPlugAddClick(self, button):
 		# FIXME
 		# Reize window to show all texts
-		#self.plugAddTreeview.columns_autosize()  # FIXME
+		# self.plugAddTreeview.columns_autosize()  # FIXME
 		x, y, w, h = self.plugAddTreeview.get_column(0).cell_get_size()
 		# log.debug(x, y, w, h)
 		self.plugAddDialog.resize(
@@ -1535,7 +1535,7 @@ class PreferencesWindow(gtk.Window):
 		self.plugTreeview.set_cursor(i + 1)
 
 	def plugTreevDragReceived(self, treev, context, x, y, selec, info, etime):
-		t = treev.get_model() #self.plugAddTreestore
+		t = treev.get_model()  # self.plugAddTreestore
 		cur = treev.get_cursor()[0]
 		if cur is None:
 			return
@@ -1605,7 +1605,7 @@ class PreferencesWindow(gtk.Window):
 		self.plugTreeview.set_cursor(pos)  # pos == -1 ## FIXME
 
 	def plugAddTreevRActivate(self, treev, path, col):
-		self.plugAddDialogOK(None)## FIXME
+		self.plugAddDialogOK(None)  # FIXME
 
 	def editAccount(self, index):
 		from scal3.ui_gtk.event.account_op import AccountEditorDialog
@@ -1720,9 +1720,9 @@ class PreferencesWindow(gtk.Window):
 				##
 				# FIXME
 				##
-				#menu.show_all()
-				#self.tmpMenu = menu
-				#menu.popup(None, None, None, None, 3, gevent.time)
+				# menu.show_all()
+				# self.tmpMenu = menu
+				# menu.popup(None, None, None, None, 3, gevent.time)
 			return True
 		return False
 
@@ -1732,7 +1732,7 @@ class PreferencesWindow(gtk.Window):
 		###
 		accountId = self.accountsTreestore[index][0]
 		account = ui.eventAccounts[accountId]
-		if not account.loaded:## it's a dummy account
+		if not account.loaded:  # it's a dummy account
 			if active:
 				account = ui.eventAccounts.replaceDummyObj(account)
 				if account is None:
