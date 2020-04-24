@@ -75,7 +75,7 @@ class BasePlugin(SObj):
 	external = False
 	loaded = True
 	params = (
-		#"calType",
+		# "calType",
 		"title",  # previously "desc"
 		"enable",
 		"show_date",
@@ -151,7 +151,7 @@ class BasePlugin(SObj):
 			try:
 				self.calType = calTypes.names.index(calType)
 			except ValueError:
-				#raise ValueError(f"Invalid calType: '{calType}'")
+				# raise ValueError(f"Invalid calType: '{calType}'")
 				log.error(
 					f"Plugin \"{_file}\" needs calendar module " +
 					f"\"{calType}\" that is not loaded!\n"
@@ -224,7 +224,7 @@ class BaseJsonPlugin(BasePlugin, JsonSObj):
 
 
 class DummyExternalPlugin(BasePlugin):
-	name = "external" ## FIXME
+	name = "external"  # FIXME
 	external = True
 	loaded = False
 	enable = False
@@ -247,18 +247,18 @@ def loadExternalPlugin(_file, **data):
 	fname = split(_file)[-1]
 	if not isfile(_file):
 		log.error(f"plugin file \"{_file}\" not found! maybe removed?")
-		#try:
-		#	plugIndex.remove(
+		# try:
+		# 	plugIndex.remove(
 		return None  # FIXME
-		#plug = BaseJsonPlugin(
-		#	_file,
-		#	calType=0,
-		#	title="Failed to load plugin",
-		#	enable=enable,
-		#	show_date=show_date,
-		#)
-		#plug.external = True
-		#return plug
+		# plug = BaseJsonPlugin(
+		# 	_file,
+		# 	calType=0,
+		# 	title="Failed to load plugin",
+		# 	enable=enable,
+		# 	show_date=show_date,
+		# )
+		# plug.external = True
+		# return plug
 	###
 	direc = dirname(_file)
 	name = splitext(fname)[0]
@@ -301,21 +301,21 @@ def loadExternalPlugin(_file, **data):
 		log.exception("")
 		return
 
-	#sys.path.insert(0, direc)
-	#try:
-	#	mod = __import__(name)
-	#except:
-	#	log.exception("")
-	#	return None
-	#finally:
-	#	sys.path.pop(0)
-	# mod.module_init(sourceDir, ) # FIXME
-	#try:
-	#	plugin = mod.TextPlugin(_file)
-	#except:
-	#	log.exception("")
-	#	# log.debug(dir(mod))
-	#	return
+	# sys.path.insert(0, direc)
+	# try:
+	# 	mod = __import__(name)
+	# except:
+	# 	log.exception("")
+	# 	return None
+	# finally:
+	# 	sys.path.pop(0)
+	# mod.module_init(sourceDir, )  # FIXME
+	# try:
+	# 	plugin = mod.TextPlugin(_file)
+	# except:
+	# 	log.exception("")
+	# 	# log.debug(dir(mod))
+	# 	return
 	plugin.external = True
 	plugin.setData(data)
 	plugin.onCurrentDateChange(localtime()[:3])
@@ -331,7 +331,7 @@ class HolidayPlugin(BaseJsonPlugin):
 			self,
 			_file,
 		)
-		self.lastDayMerge = True ## FIXME
+		self.lastDayMerge = True  # FIXME
 		self.holidays = {}
 
 	def setData(self, data):
@@ -441,7 +441,7 @@ class HolidayPlugin(BaseJsonPlugin):
 		icsText += "END:VCALENDAR\n"
 		open(fileName, "w", encoding="utf-8").write(icsText)
 
-	#def getJdList(self, startJd, endJd):
+	# def getJdList(self, startJd, endJd):
 
 
 @registerPlugin
@@ -527,8 +527,8 @@ class YearlyTextPlugin(BaseJsonPlugin):
 		if not yearlyData:
 			return ""
 		calType = self.calType
-		#if calType!=calTypes.primary:
-		#	year, month, day = convert(year, month, day, calTypes.primary, calType)
+		# if calType != calTypes.primary:
+		# 	year, month, day = convert(year, month, day, calTypes.primary, calType)
 		text = ""
 		item = yearlyData[month - 1]
 		if len(item) > day - 1:
@@ -537,7 +537,7 @@ class YearlyTextPlugin(BaseJsonPlugin):
 			text = (
 				_(day) +
 				" " +
-				getMonthName(calType, month) + 
+				getMonthName(calType, month) +
 				": " +
 				text
 			)
@@ -630,13 +630,13 @@ class IcsTextPlugin(BasePlugin):
 				elif line.startswith("DESCRIPTION:"):
 					DESCRIPTION = line[12:].replace("\\,", ",").replace("\\n", "\n")
 				elif line.startswith("DTSTART;"):
-					#if not line.startswith("DTSTART;VALUE=DATE;"):
-					#	log.error(f"unsupported ics line: {line}")
-					#	continue
+					# if not line.startswith("DTSTART;VALUE=DATE;"):
+					# 	log.error(f"unsupported ics line: {line}")
+					# 	continue
 					icsTime = line.split(":")[-1]
-					#if len(icsTime)!=8:
-					#	log.error(f"unsupported ics line: {line}")
-					#	continue
+					# if len(icsTime)!=8:
+					# 	log.error(f"unsupported ics line: {line}")
+					# 	continue
 					try:
 						DTSTART = getEpochByIcsTime(icsTime)
 					except Exception:
@@ -644,22 +644,22 @@ class IcsTextPlugin(BasePlugin):
 						log.exception("")
 						continue
 				elif line.startswith("DTEND;"):
-					#if not line.startswith("DTEND;VALUE=DATE;"):
-					#	log.error(f"unsupported ics line: {line}")
-					#	continue
+					# if not line.startswith("DTEND;VALUE=DATE;"):
+					# 	log.error(f"unsupported ics line: {line}")
+					# 	continue
 					icsTime = line.split(":")[-1]
-					#if len(icsTime)!=8:
-					#	log.error(f"unsupported ics line: {line}")
-					#	continue
+					# if len(icsTime)!=8:
+					# 	log.error(f"unsupported ics line: {line}")
+					# 	continue
 					try:
 						DTEND = getEpochByIcsTime(icsTime)
 					except Exception:
-						log.error(f"unsupported ics line: {line}" )
+						log.error(f"unsupported ics line: {line}")
 						log.exception("")
 						continue
 			self.ymd = None
 			self.md = md
-		else:## not self.all_years
+		else:  # not self.all_years
 			ymd = {}
 			while True:
 				i += 1
@@ -684,13 +684,13 @@ class IcsTextPlugin(BasePlugin):
 				elif line.startswith("DESCRIPTION:"):
 					DESCRIPTION = line[12:].replace("\\,", ",").replace("\\n", "\n")
 				elif line.startswith("DTSTART"):
-					#if not line.startswith("DTSTART;VALUE=DATE"):
-					#	log.error("unsupported ics line: {line}")
-					#	continue
+					# if not line.startswith("DTSTART;VALUE=DATE"):
+					# 	log.error("unsupported ics line: {line}")
+					# 	continue
 					icsTime = line.split(":")[-1]
-					#if len(icsTime)!=8:
-					#	log.error("unsupported ics line: {line}")
-					#	continue
+					# if len(icsTime)!=8:
+					# 	log.error("unsupported ics line: {line}")
+					# 	continue
 					try:
 						DTSTART = getEpochByIcsTime(icsTime)
 					except Exception:
@@ -698,13 +698,13 @@ class IcsTextPlugin(BasePlugin):
 						log.exception("")
 						continue
 				elif line.startswith("DTEND"):
-					#if not line.startswith("DTEND;VALUE=DATE;"):
-					#	log.error(f"unsupported ics line: {line}")
-					#	continue
+					# if not line.startswith("DTEND;VALUE=DATE;"):
+					# 	log.error(f"unsupported ics line: {line}")
+					# 	continue
 					icsTime = line.split(":")[-1]
-					#if len(icsTime)!=8:
-					#	log.error(f"unsupported ics line: {line}")
-					#	continue
+					# if len(icsTime)!=8:
+					# 	log.error(f"unsupported ics line: {line}")
+					# 	continue
 					try:
 						DTEND = getEpochByIcsTime(icsTime)
 					except Exception:
@@ -751,8 +751,8 @@ class IcsTextPlugin(BasePlugin):
 	def open_about(self):
 		pass
 
-#class EveryDayTextPlugin(BaseJsonPlugin):
-#class RandomTextPlugin(BaseJsonPlugin):
+# class EveryDayTextPlugin(BaseJsonPlugin):
+# class RandomTextPlugin(BaseJsonPlugin):
 
 
 def loadPlugin(_file=None, **kwargs):
