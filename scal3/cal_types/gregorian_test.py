@@ -1,6 +1,7 @@
 import unittest
 
-import sys;sys.path.append(".")
+import sys
+sys.path.append(".")
 
 from scal3.cal_types import gregorian
 
@@ -13,7 +14,6 @@ class Testgregorian(unittest.TestCase):
 			isLeap = isLeapFunc(year)
 			# print(f"{str(year).center(10)}   {'L' if isLeap1 else ' '}")
 			print(f"{year}: \"{'L' if isLeap else ' '}\",")
-
 
 	# year -> f"{'L' if isLeap33 else ' '}{'L' if isLeap2820 else ' '}"
 	isLeapDict = {

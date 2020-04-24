@@ -93,9 +93,9 @@ class CalObj(gtk.DrawingArea, CalBase):
 			if not ok:
 				raise RuntimeError(f"cal type '{calType}' not found")
 			###
-			#try:
+			# try:
 			params = ui.mcalTypeParams[index]
-			#except IndexError:
+			# except IndexError:
 			##
 			pageWidget = CalTypeParamWidget(
 				"mcalTypeParams",
@@ -134,14 +134,14 @@ class CalObj(gtk.DrawingArea, CalBase):
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initCal()
 		######################
-		#self.kTime = 0
+		# self.kTime = 0
 		######################
 		self.connect("draw", self.drawAll)
 		self.connect("button-press-event", self.onButtonPress)
-		#self.connect("screen-changed", self.screenChanged)
+		# self.connect("screen-changed", self.screenChanged)
 		self.connect("scroll-event", self.scroll)
 		######################
-		#self.updateTextWidth()
+		# self.updateTextWidth()
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
@@ -236,7 +236,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		self.typeParamsVbox = VBox()
 		pack(optionsWidget, self.typeParamsVbox, padding=5)
 		optionsWidget.show_all()
-		self.updateTypeParamsWidget()## FIXME
+		self.updateTypeParamsWidget()  # FIXME
 		return optionsWidget
 
 	def getSubPages(self):
@@ -260,8 +260,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 			win.end_draw_frame(dctx)
 
 	def drawWithContext(self, cr: "cairo.Context", cursor: bool):
-		#gevent = gtk.get_current_event()
-		#?????? Must enhance (only draw few cells, not all cells)
+		# gevent = gtk.get_current_event()
+		# FIXME: must enhance (only draw few cells, not all cells)
 		self.calcCoord()
 		w = self.get_allocation().width
 		h = self.get_allocation().height
@@ -342,7 +342,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 				show_layout(cr, lay)
 		selectedCellPos = ui.cell.monthPos
 		if ui.todayCell.inSameMonth(ui.cell):
-			tx, ty = ui.todayCell.monthPos ## today x and y
+			tx, ty = ui.todayCell.monthPos  # today x and y
 			x0 = self.cx[tx] - self.dx / 2
 			y0 = self.cy[ty] - self.dy / 2
 			cr.rectangle(x0, y0, self.dx, self.dy)
@@ -372,7 +372,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 						scaleFact = 1 / sqrt(iconsN)
 						fromRight = 0
 						for index, icon in enumerate(iconList):
-							# if len(iconList) > 1 # FIXME
+							# if len(iconList) > 1  # FIXME
 							try:
 								pix = pixbufFromFile(icon, size=iconSizeMax)
 							except Exception:
@@ -394,12 +394,12 @@ class CalObj(gtk.DrawingArea, CalBase):
 							cr.scale(1 / scaleFact, 1 / scaleFact)
 							fromRight += pix_w
 				# ## Drawing numbers inside every cell
-				#cr.rectangle(
-				#	x0-self.dx / 2+1,
-				#	y0-self.dy / 2+1,
-				#	self.dx-1,
-				#	self.dy-1,
-				#)
+				# cr.rectangle(
+				# 	x0 - self.dx / 2 + 1,
+				# 	y0 - self.dy / 2 + 1,
+				# 	self.dx - 1,
+				# 	self.dy - 1,
+				# )
 				calType = calTypes.primary
 				params = ui.mcalTypeParams[0]
 				daynum = newTextLayout(
@@ -471,17 +471,17 @@ class CalObj(gtk.DrawingArea, CalBase):
 		# update width of week days names to be able to find out
 		# whether or not they should be shortened for the UI
 		lay = newTextLayout(self)
-		wm = 0 ## max width
+		wm = 0  # max width
 		for i in range(7):
 			wday = core.weekDayName[i]
 			lay.set_markup(text=wday, length=-1)
-			w = lay.get_pixel_size()[0] ## ????????
-			#w = lay.get_pixel_extents()[0] ## ????????
+			w = lay.get_pixel_size()[0]  # FIXME
+			# w = lay.get_pixel_extents()[0]  # FIXME
 			# log.debug(w,)
 			if w > wm:
 				wm = w
 		self.wdaysWidth = wm * 7 + ui.mcalLeftMargin
-		#self.wdaysWidth = wm * 7 * 0.7 + ui.mcalLeftMargin
+		# self.wdaysWidth = wm * 7 * 0.7 + ui.mcalLeftMargin
 		# log.debug("max =", wm, "     wdaysWidth =", self.wdaysWidth)
 
 	def onButtonPress(self, obj, gevent):
@@ -510,19 +510,20 @@ class CalObj(gtk.DrawingArea, CalBase):
 			self.changeDate(*cell.dates[calTypes.primary])
 			if gevent.type == TWO_BUTTON_PRESS:
 				self.emit("double-button-press")
-			if b == 3 and cell.month == ui.cell.month:## right click on a normal cell
-				#self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
+			if b == 3 and cell.month == ui.cell.month:  # right click on a normal cell
+				# self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
 				self.emit("popup-cell-menu", gevent.time, gevent.x, gevent.y)
 		return True
 
-	def calcCoord(self):## calculates coordidates (x and y of cells centers)
+	def calcCoord(self):  # calculates coordidates (x and y of cells centers)
 		w = self.get_allocation().width
 		h = self.get_allocation().height
+		# self.cx is centers x, self.cy is centers y
 		if rtl:
 			self.cx = [
 				(w - ui.mcalLeftMargin) * (13 - 2 * i) / 14
 				for i in range(7)
-			] ## centers x
+			]
 		else:
 			self.cx = [
 				ui.mcalLeftMargin + (
@@ -531,11 +532,11 @@ class CalObj(gtk.DrawingArea, CalBase):
 					/ 14
 				)
 				for i in range(7)
-			] ## centers x
+			]
 		self.cy = [
 			ui.mcalTopMargin + (h - ui.mcalTopMargin) * (1 + 2 * i) / 12
 			for i in range(6)
-		] ## centers y
+		]
 		self.dx = (w - ui.mcalLeftMargin) / 7  # delta x
 		self.dy = (h - ui.mcalTopMargin) / 6  # delta y
 
@@ -547,8 +548,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 		if CalBase.onKeyPress(self, arg, gevent):
 			return True
 		kname = gdk.keyval_name(gevent.keyval).lower()
-		#if kname.startswith("alt"):
-		#	return True
+		# if kname.startswith("alt"):
+		# 	return True
 		if kname == "up":
 			self.jdPlus(-7)
 		elif kname == "down":
@@ -598,7 +599,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			int(self.cy[ui.cell.monthPos[1]] + self.dy / 2),
 		)
 
-	def getMainMenuPos(self, *args):## FIXME
+	def getMainMenuPos(self, *args):  # FIXME
 		if rtl:
 			return (
 				int(self.get_allocation().width - ui.mcalLeftMargin / 2),
