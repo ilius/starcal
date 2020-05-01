@@ -18,6 +18,9 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 from os.path import join, isabs
 
 from scal3.path import pixDir, svgDir, sourceDir
@@ -36,7 +39,10 @@ def pixbufFromSvgFile(path: str, size: int):
 	try:
 		loader.write(data)
 	finally:
-		loader.close()
+		try:
+			loader.close()
+		except GLibError:
+			log.exception("")
 	pixbuf = loader.get_pixbuf()
 	return pixbuf
 
