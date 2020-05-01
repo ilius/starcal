@@ -440,4 +440,5 @@ class BsonHistObj(SObj):
 			subCls = cls.getSubclass(_type)
 		obj = subCls(*args)
 		obj.setData(data)
+		obj.fs = self.fs
 		return obj
