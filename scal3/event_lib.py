@@ -3938,12 +3938,13 @@ class EventGroup(EventContainer):
 
 	def removeFromCache(self, eid):
 		if eid in self.eventCache:
-			return self.eventCache[eid]
+			del self.eventCache[eid]
 
 	def getEvent(self, eid):
 		if eid not in self.idList:
 			raise ValueError("%s does not contain %s" % (self, eid))
-		self.removeFromCache(eid)
+		if eid in self.eventCache:
+			return self.eventCache[eid]
 		event = EventContainer.getEvent(self, eid)
 		event.parent = self
 		event.rulesHash = event.getRulesHash()
