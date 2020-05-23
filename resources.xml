@@ -393,7 +393,7 @@
 	</resource>
 	<resource path="svg/event/alarm.svg">
 		<author>svgrepo.com</author>
-		<license>Creative Commons BY 4.0</license>
+		<license>Public Domain</license>
 		<source>https://www.svgrepo.com/svg/46885/alarm-clock</source>
 		<comment>
 			Modified by Saeed Rasooli
@@ -402,7 +402,7 @@
 	</resource>
 	<resource path="svg/event/birthday2.svg">
 		<author>svgrepo.com</author>
-		<license>Creative Commons BY 4.0</license>
+		<license>Public Domain</license>
 		<source>https://www.svgrepo.com/svg/229632/birthday-cake-cake</source>
 		<comment>
 			Modified by Saeed Rasooli
@@ -417,7 +417,7 @@
 	</resource>
 	<resource path="svg/event/business.svg">
 		<author>svgrepo.com</author>
-		<license>Creative Commons BY 4.0</license>
+		<license>Public Domain</license>
 		<source>https://www.svgrepo.com/svg/241842/suitcase-portfolio</source>
 		<comment>
 			Modified by Saeed Rasooli
@@ -454,7 +454,7 @@
 	</resource>
 	<resource path="svg/event/holiday.svg">
 		<author>svgrepo.com</author>
-		<license>Creative Commons BY 4.0</license>
+		<license>Public Domain</license>
 		<source>https://www.svgrepo.com/svg/56142/beach</source>
 		<comment>
 			Modified by Saeed Rasooli
@@ -469,7 +469,7 @@
 	</resource>
 	<resource path="svg/event/marriage.svg">
 		<author>svgrepo.com</author>
-		<license>Creative Commons BY 4.0</license>
+		<license>Public Domain</license>
 		<source>https://www.svgrepo.com/svg/13540/wedding-couple</source>
 		<comment>
 			Modified by Saeed Rasooli
@@ -519,7 +519,7 @@
 	</resource>
 	<resource path="svg/export-to-html.svg">
 		<author>Saeed Rasooli</author>
-		<license>Creative Commons BY 4.0</license>
+		<license>Public Domain</license>
 		<comment>
 			Based on:
 				https://www.svgrepo.com/svg/241826/internet
@@ -691,7 +691,7 @@
 	</resource>
 	<resource path="svg/select-date.svg">
 		<author>Saeed Rasooli</author>
-		<license>Creative Commons BY 4.0</license>
+		<license>Public Domain</license>
 		<comment>
 			Based on these 2 icons:
 				https://www.svgrepo.com/svg/192905/zoom-in-hand
@@ -706,7 +706,7 @@
 	</resource>
 	<resource path="svg/sweep.svg">
 		<author>www.svgrepo.com</author>
-		<license>Creative Commons BY 4.0</license>
+		<license>Public Domain</license>
 		<source>https://www.svgrepo.com/svg/278713/broom</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
