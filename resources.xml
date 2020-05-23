@@ -246,19 +246,19 @@
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/application-exit.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable//actions/small/22x22/application-exit.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="pixmaps/applications-development-web.png">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/categories/applications-development-web.svg</source>
 		<comment></comment>
 	</resource>
 	<resource path="svg/applications-system.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/categories/applications-system.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
@@ -286,7 +286,7 @@
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="pixmaps/configure-toolbars.png">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/configure-toolbars.svg</source>
 		<comment></comment>
@@ -294,51 +294,51 @@
 	<resource path="svg/special/dnd-date.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
-		<comment>>Minified by https://vecta.io/nano</comment>
+		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/special/dnd-font.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
-		<comment>>Minified by https://vecta.io/nano</comment>
+		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/dialog-ok.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/dialog-ok.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/dialog-ok-apply.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/dialog-ok-apply.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/dialog-cancel.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/dialog-cancel.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/dialog-warning.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/status/dialog-warning.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/dialog-information.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/status/dialog-information.svg</source>
 		<comment>Minified by www.svgminify.com and https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/dialog-error.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/status/dialog-error.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/document-edit.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/document-edit.svg</source>
 		<comment>Minified by https://www.svgminify.com and https://vecta.io/nano</comment>
@@ -353,37 +353,37 @@
 		</comment>
 	</resource>
 	<resource path="svg/edit-copy.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/edit-copy.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/edit-cut.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/edit-cut.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/edit-delete.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/edit-delete.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="pixmaps/edit-find.png">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/edit-find.svg</source>
 		<comment></comment>
 	</resource>
 	<resource path="svg/edit-paste.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/edit-paste.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/edit-undo.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/edit-undo.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
@@ -521,43 +521,43 @@
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/go-bottom.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/go-bottom.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/go-down.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/go-down.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/go-home.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/go-home.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/go-next.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/go-next.svg</source>
 		<comment>Minified with https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/go-previous.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/go-previous.svg</source>
 		<comment>Minified with https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/go-top.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/go-top.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/go-up.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/go-up.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
@@ -574,31 +574,31 @@
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/list-add.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/list-add.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="list-remove.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/list-remove.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/media-playback-start.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/media-playback-start.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/media-playback-pause.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/media-playback-pause.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/media-playback-stop.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/media-playback-stop.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
@@ -613,25 +613,25 @@
 		</comment>
 	</resource>
 	<resource path="svg/preferences-desktop-color.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/apps/preferences-desktop-color.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="pixmaps/preferences-desktop-locale.png">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/apps/preferences-desktop-locale.svg</source>
 		<comment></comment>
 	</resource>
 	<resource path="pixmaps/preferences-desktop-theme.png">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/apps/preferences-desktop-theme.svg</source>
 		<comment></comment>
 	</resource>
 	<resource path="svg/preferences-plugin.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/apps/preferences-plugin.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
@@ -693,7 +693,7 @@
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/switch-vertical.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/system-switch-user.svg</source>
 		<comment>
@@ -702,7 +702,7 @@
 		</comment>
 	</resource>
 	<resource path="pixmaps/text-calendar-ics.png">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/mimetypes/text-calendar.svg</source>
 		<comment>
@@ -718,7 +718,7 @@
 		</comment>
 	</resource>
 	<resource path="svg/transform-move.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/transform-move.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
@@ -742,7 +742,7 @@
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/view-sort-ascending.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/view-sort-ascending.svg</source>
 		<comment>Minified by https://vecta.io/nano</comment>
@@ -753,7 +753,7 @@
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/window-close.svg">
-		<author>>Oxygen Icon Theme</author>
+		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
 		<source>scalable/actions/window-close.svg</source>
 		<comment>Minified by www.svgminify.com</comment>
