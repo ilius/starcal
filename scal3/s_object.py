@@ -256,6 +256,8 @@ def iterObjectFiles(fs: FileSystem):
 		if not fs.isdir(dpath):
 			continue
 		if len(dname) != 2:
+			if dname.startswith("."):
+				continue
 			log.error(f"Unexpected directory: {dname}")  # do not skip it!
 		for fname in fs.listdir(dpath):
 			fpath = join(dpath, fname)
