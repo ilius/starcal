@@ -28,7 +28,7 @@ for minor in 8 7 6 5 ; do
 	fi
 done
 if [ -z "$pyCmd" ] ; then
-	echo "Please install python3.8 and try again (or older down to python3.2)" >&2
+	echo "Please install python3.8 and try again (or older down to python3.5)" >&2
 	exit 1
 fi
 echo "Using python: \"$pyCmd\""
