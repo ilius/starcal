@@ -1,4 +1,8 @@
 #!/bin/bash
 myDir=`dirname "$0"`
-"$myDir/run" scal3/run_gc.py "$@"
 
+du -k --max-depth 0 ~/.starcal3/objects/
+
+time "$myDir/run" scal3/run_gc.py "$@"
+
+du -k --max-depth 0 ~/.starcal3/objects/
