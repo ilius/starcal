@@ -14,9 +14,7 @@ from scal3.ui_gtk.event.account import AccountCombo, AccountGroupBox
 
 
 class WidgetClass(BaseWidgetClass):
-	def __init__(self, group):
-		BaseWidgetClass.__init__(self, group)
-		####
+	def addStartEndWidgets(self):
 		hbox = HBox()
 		label = gtk.Label(label=_("Start"))
 		label.set_xalign(0)
@@ -34,6 +32,9 @@ class WidgetClass(BaseWidgetClass):
 		self.endDateInput = DateButton()
 		pack(hbox, self.endDateInput)
 		pack(self, hbox)
+
+	def __init__(self, group):
+		BaseWidgetClass.__init__(self, group)
 		######
 		exp = ExpanderFrame(
 			label=_("Online Service"),
