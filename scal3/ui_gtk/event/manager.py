@@ -1409,9 +1409,21 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			return
 		ui.eventUpdateQueue.put("+", event, self)
 		groupIter = self.trees.get_iter(path)
-		if group.id in self.loadedGroupIds:
-			self.appendEventRow(groupIter, event)
+		self.addNewEventRow(group, groupIter, event)
 		self.treeviewCursorChanged()
+
+	def addNewEventRow(
+		self,
+		group: lib.EventGroup,
+		groupIter: gtk.TreeIter,
+		event: lib.Event,
+	) -> None:
+		if group.id not in self.loadedGroupIds:
+			return
+		if group.addEventsToBegining:
+			self.insertEventRow(groupIter, 0, event)
+			return
+		self.appendEventRow(groupIter, event)
 
 	def addGenericEventToGroupFromMenu(
 		self,
@@ -1430,8 +1442,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			return
 		ui.eventUpdateQueue.put("+", event, self)
 		groupIter = self.trees.get_iter(path)
-		if group.id in self.loadedGroupIds:
-			self.appendEventRow(groupIter, event)
+		self.addNewEventRow(group, groupIter, event)
 		self.treeviewCursorChanged()
 
 	def updateEventRow(self, event: lib.Event) -> None:

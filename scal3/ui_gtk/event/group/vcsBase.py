@@ -8,6 +8,8 @@ from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 
 
 class VcsBaseWidgetClass(NormalWidgetClass):
+	userCanAddEvents = False
+
 	def __init__(self, group):
 		NormalWidgetClass.__init__(self, group)
 		######
