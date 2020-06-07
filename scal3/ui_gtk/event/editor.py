@@ -170,6 +170,6 @@ def addNewEvent(group, eventType, typeChangable=False, **kwargs):
 	).run()
 	if event is None:
 		return
-	group.append(event)
+	group.add(event)
 	group.save()
 	return event

@@ -30,6 +30,8 @@ from scal3.ui_gtk.event import common
 
 
 class BaseWidgetClass(gtk.Box):
+	userCanAddEvents = True
+
 	def __init__(self, group):
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
@@ -156,6 +158,16 @@ class BaseWidgetClass(gtk.Box):
 			"changed",
 			self.calTypeComboChanged,
 		)  # right place? before updateWidget? FIXME
+		#####
+		if self.userCanAddEvents:
+			hbox = HBox()
+			self.addEventsToBeginingCheck = gtk.CheckButton(label=_("Add New Events to Beginning"))
+			set_tooltip(
+				hbox, # label or hbox?
+				_("Add new events to beginning of event list, not to the end"),
+			)
+			pack(hbox, self.addEventsToBeginingCheck)
+			pack(self, hbox)
 
 	def addStartEndWidgets(self):
 		pass
@@ -179,6 +191,8 @@ class BaseWidgetClass(gtk.Box):
 		self.cacheSizeSpin.set_value(self.group.eventCacheSize)
 		self.sepInput.set_text(self.group.eventTextSep)
 		#self.showFullEventDescCheck.set_active(self.group.showFullEventDesc)
+		if self.userCanAddEvents:
+			self.addEventsToBeginingCheck.set_active(self.group.addEventsToBegining)
 
 	def updateVars(self):
 		self.group.title = self.titleEntry.get_text()
@@ -197,6 +211,8 @@ class BaseWidgetClass(gtk.Box):
 		self.group.eventCacheSize = int(self.cacheSizeSpin.get_value())
 		self.group.eventTextSep = self.sepInput.get_text()
 		#self.group.showFullEventDesc = self.showFullEventDescCheck.get_active()
+		if self.userCanAddEvents:
+			self.group.addEventsToBegining = self.addEventsToBeginingCheck.get_active()
 
 	def calTypeComboChanged(self, obj=None):
 		pass

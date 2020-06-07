@@ -1656,6 +1656,15 @@ msgstr ""
 "تقویم پیش‌فرض"
 
 
+msgid "Add New Events to Beginning"
+msgstr ""
+"افزودن رویدادهای جدید به ابتدا"
+
+msgid "Add new events to beginning of event list, not to the end"
+msgstr ""
+"رویدادهای جدید را به ابتدای لیست رویدادها اضافه کن، نه به انتهای لیست"
+
+
 msgid "Event Cache Size"
 msgstr ""
 "اندازهٔ cache رویدادها"

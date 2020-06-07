@@ -3819,6 +3819,7 @@ class EventGroup(EventContainer):
 		"showInMCal",
 		"showInStatusIcon",
 		"showInTimeLine",
+		"addEventsToBegining",
 		"color",
 		"eventCacheSize",
 		"eventTextSep",
@@ -3845,6 +3846,7 @@ class EventGroup(EventContainer):
 		"showInMCal",
 		"showInStatusIcon",
 		"showInTimeLine",
+		"addEventsToBegining",
 		"showFullEventDesc",
 		"color",
 		"icon",
@@ -4016,6 +4018,7 @@ class EventGroup(EventContainer):
 		self.showInMCal = True
 		self.showInStatusIcon = False
 		self.showInTimeLine = True
+		self.addEventsToBegining = False
 		self.uuid = None
 		self.idByUuid = {}
 		self.color = (0, 0, 0)  # FIXME
@@ -4052,6 +4055,12 @@ class EventGroup(EventContainer):
 		self.setDefaults()
 		###########
 		self.clearRemoteAttrs()
+
+	def add(self, event):
+		if self.addEventsToBegining:
+			self.insert(0, event)
+		else:
+			self.append(event)
 
 	def setRandomColor(self):
 		import random
