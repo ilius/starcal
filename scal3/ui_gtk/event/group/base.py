@@ -77,6 +77,8 @@ class BaseWidgetClass(gtk.Box):
 		self.calTypeCombo = combo
 		pack(self, hbox)
 		#####
+		self.addStartEndWidgets()
+		#####
 		hbox = HBox()
 		self.tzCheck = gtk.CheckButton(label=_("Default Time Zone"))
 		pack(hbox, self.tzCheck)
@@ -154,6 +156,9 @@ class BaseWidgetClass(gtk.Box):
 			"changed",
 			self.calTypeComboChanged,
 		)  # right place? before updateWidget? FIXME
+
+	def addStartEndWidgets(self):
+		pass
 
 	def updateWidget(self):
 		self.titleEntry.set_text(self.group.title)
