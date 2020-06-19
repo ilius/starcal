@@ -2353,6 +2353,10 @@ msgstr ""
 "در اپلت"
 
 
+msgid "Event Time Format"
+msgstr ""
+"فرمت زمان رویداد"
+
 msgid "Digital Clock Format"
 msgstr ""
 "فرمت ساعت رقمی"
