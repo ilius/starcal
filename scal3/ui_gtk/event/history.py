@@ -365,9 +365,9 @@ class EventHistoryDialog(gtk.Dialog):
 	# 	# TODO
 
 	def formatEpoch(self, epoch):
-		jd, h, m, s = getJhmsFromEpoch(epoch)
+		jd, hms = getJhmsFromEpoch(epoch)
 		cell = ui.cellCache.getCell(jd)
-		return cell.format(historyTimeBinFmt, tm=(h, m, s))
+		return cell.format(historyTimeBinFmt, tm=hms.tuple())
 
 	def normalizeObjectData(self, data):
 		if "rules" in data:

@@ -90,6 +90,10 @@ eventsDir = join("event", "events")
 groupsDir = join("event", "groups")
 accountsDir = join("event", "accounts")
 
+hms_zero = HMS(0, 0, 0)
+hms_24 = HMS(24, 0, 0)
+
+
 ##########################
 
 lockPath = join(confDir, "event", "lock.json")
@@ -1086,9 +1090,9 @@ class DateAndTimeEventRule(DateEventRule):
 		)
 
 	def setEpoch(self, epoch: int) -> None:
-		jd, h, m, s = self.parent.getJhmsFromEpoch(epoch)
+		jd, hms = self.parent.getJhmsFromEpoch(epoch)
 		self.setJd(jd)
-		self.time = (h, m, s)
+		self.time = hms.tuple()
 
 	def setJdExact(self, jd: int) -> None:
 		self.setJd(jd)
@@ -6044,7 +6048,7 @@ class Account(BsonHistEventObj):
 
 ########################################################################
 
-def getDayOccurrenceData(curJd, groups):
+def getDayOccurrenceData(curJd, groups, tfmt="HM$"):
 	data = []
 	for groupIndex, group in enumerate(groups):
 		if not group.enable:
@@ -6064,16 +6068,16 @@ def getDayOccurrenceData(curJd, groups):
 			###
 			timeStr = ""
 			if epoch1 - epoch0 < dayLen:
-				jd0, h0, m0, s0 = getJhmsFromEpoch(epoch0)
+				jd0, hms0 = getJhmsFromEpoch(epoch0)
 				if jd0 < curJd:
-					h0, m0, s0 = 0, 0, 0
+					hms0 = hms_zero
 				if epoch1 - epoch0 < 1:
-					timeStr = timeEncode((h0, m0, s0), True)
+					timeStr = f"{hms0:{tfmt}}"
 				else:
-					jd1, h1, m1, s1 = getJhmsFromEpoch(epoch1)
+					jd1, hms1 = getJhmsFromEpoch(epoch1)
 					if jd1 > curJd:
-						h1, m1, s1 = 24, 0, 0
-					timeStr = hmsRangeToStr(h0, m0, s0, h1, m1, s1)
+						hms1 = hms_24
+					timeStr = f"{hms0:{tfmt}} - {hms1:{tfmt}}"
 			###
 			try:
 				eventIndex = group.index(eid)
@@ -6101,10 +6105,20 @@ def getDayOccurrenceData(curJd, groups):
 	return [item[1] for item in data]
 
 
-def getWeekOccurrenceData(curAbsWeekNumber, groups):
-	startJd = core.getStartJdOfAbsWeekNumber(absWeekNumber)
+def getWeekOccurrenceData(curAbsWeekNumber, groups, tfmt="HM$"):
+	startJd = core.getStartJdOfAbsWeekNumber(curAbsWeekNumber)
 	endJd = startJd + 7
 	data = []
+
+	def add(group: "EventGroup", event:"Event", eData: "dict"):
+		eData["show"] = (
+			group.showInDCal,
+			group.showInWCal,
+			group.showInMCal,
+		)
+		eData["ids"] = (group.id, event.id)
+		data.append(eData)
+
 	for group in groups:
 		if not group.enable:
 			continue
@@ -6116,88 +6130,72 @@ def getWeekOccurrenceData(curAbsWeekNumber, groups):
 				continue
 			text = event.getText()
 			icon = event.getIconRel()
-			ids = (group.id, event.id)
 			if isinstance(occur, JdOccurSet):
 				for jd in occur.getDaysJdList():
 					wnum, weekDay = core.getWeekDateFromJd(jd)
 					if wnum == curAbsWeekNumber:
-						data.append({
+						add(group, event, {
 							"weekDay": weekDay,
 							"time": "",
 							"text": text,
 							"icon": icon,
-							"ids": ids,
 						})
 			elif isinstance(occur, IntervalOccurSet):
 				for startEpoch, endEpoch in occur.getTimeRangeList():
-					jd1, h1, min1, s1 = getJhmsFromEpoch(startEpoch)
-					jd2, h2, min2, s2 = getJhmsFromEpoch(endEpoch)
+					jd1, hms1 = getJhmsFromEpoch(startEpoch)
+					jd2, hms2 = getJhmsFromEpoch(endEpoch)
 					wnum, weekDay = core.getWeekDateFromJd(jd1)
 					if wnum == curAbsWeekNumber:
 						if jd1 == jd2:
-							data.append({
+							add(group, event, {
 								"weekDay": weekDay,
-								"time": hmsRangeToStr(
-									h1, min1, s1,
-									h2, min2, s2,
-								),
+								"time": f"{hms1:{tfmt}} - {hms2:{tfmt}}",
 								"text": text,
 								"icon": icon,
-								"ids": ids,
 							})
 						else:  # FIXME
-							data.append({
+							add(group, event, {
 								"weekDay": weekDay,
-								"time": hmsRangeToStr(
-									h1, min1, s1,
-									24, 0, 0,
-								),
+								"time": f"{hms1:{tfmt}} - {hms_24:{tfmt}}",
 								"text": text,
 								"icon": icon,
-								"ids": ids,
 							})
 							for jd in range(jd1 + 1, jd2):
 								wnum, weekDay = core.getWeekDateFromJd(jd)
 								if wnum == curAbsWeekNumber:
-									data.append({
+									add(group, event, {
 										"weekDay": weekDay,
 										"time": "",
 										"text": text,
 										"icon": icon,
-										"ids": ids,
 									})
 								else:
 									break
 							wnum, weekDay = core.getWeekDateFromJd(jd2)
 							if wnum == curAbsWeekNumber:
-								data.append({
+								add(group, event, {
 									"weekDay": weekDay,
-									"time": hmsRangeToStr(
-										0, 0, 0,
-										h2, min2, s2,
-									),
+									"time": f"{hms_zero:{tfmt}} - {hms2:{tfmt}}",
 									"text": text,
 									"icon": icon,
-									"ids": ids,
 								})
 			elif isinstance(occur, TimeListOccurSet):
 				for epoch in occur.epochList:
-					jd, hour, minute, sec = getJhmsFromEpoch(epoch)
+					jd, hms = getJhmsFromEpoch(epoch)
 					wnum, weekDay = core.getWeekDateFromJd(jd)
 					if wnum == curAbsWeekNumber:
-						data.append({
+						add(group, event, {
 							"weekDay": weekDay,
-							"time": timeEncode((hour, minute, sec), True),
+							"time": f"{hms:{tfmt}}",
 							"text": text,
 							"icon": icon,
-							"ids": ids,
 						})
 			else:
 				raise TypeError
 	return data
 
 
-def getMonthOccurrenceData(curYear, curMonth, groups):
+def getMonthOccurrenceData(curYear, curMonth, groups, tfmt="HM$"):
 	startJd, endJd = core.getJdRangeForMonth(curYear, curMonth, calTypes.primary)
 	data = []
 	for group in groups:
@@ -6225,17 +6223,14 @@ def getMonthOccurrenceData(curYear, curMonth, groups):
 						})
 			elif isinstance(occur, IntervalOccurSet):
 				for startEpoch, endEpoch in occur.getTimeRangeList():
-					jd1, h1, min1, s1 = getJhmsFromEpoch(startEpoch)
-					jd2, h2, min2, s2 = getJhmsFromEpoch(endEpoch)
+					jd1, hms1 = getJhmsFromEpoch(startEpoch)
+					jd2, hms2 = getJhmsFromEpoch(endEpoch)
 					y, m, d = jd_to_primary(jd1)
 					if y == curYear and m == curMonth:
 						if jd1 == jd2:
 							data.append({
 								"day": d,
-								"time": hmsRangeToStr(
-									h1, min1, s1,
-									h2, min2, s2,
-								),
+								"time": f"{hms1:{tfmt}} - {hms2:{tfmt}}",
 								"text": text,
 								"icon": icon,
 								"ids": ids,
@@ -6243,10 +6238,7 @@ def getMonthOccurrenceData(curYear, curMonth, groups):
 						else:  # FIXME
 							data.append({
 								"day": d,
-								"time": hmsRangeToStr(
-									h1, min1, s1,
-									24, 0, 0,
-								),
+								"time": f"{hms1:{tfmt}} - {hms_24:{tfmt}}",
 								"text": text,
 								"icon": icon,
 								"ids": ids,
@@ -6267,22 +6259,19 @@ def getMonthOccurrenceData(curYear, curMonth, groups):
 							if y == curYear and m == curMonth:
 								data.append({
 									"day": d,
-									"time": hmsRangeToStr(
-										0, 0, 0,
-										h2, min2, s2,
-									),
+									"time": f"{hms_zero:{tfmt}} - {hms2:{tfmt}}",
 									"text": text,
 									"icon": icon,
 									"ids": ids,
 								})
 			elif isinstance(occur, TimeListOccurSet):
 				for epoch in occur.epochList:
-					jd, hour, minute, sec = getJhmsFromEpoch(epoch)
+					jd, hms = getJhmsFromEpoch(epoch)
 					y, m, d = jd_to_primary(jd1)
 					if y == curYear and m == curMonth:
 						data.append({
 							"day": d,
-							"time": timeEncode((hour, minute, sec), True),
+							"time": f"{hms:{tfmt}}",
 							"text": text,
 							"icon": icon,
 							"ids": ids,
