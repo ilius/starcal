@@ -374,6 +374,46 @@ def jsonTimeFromEpoch(epoch: int) -> str:
 	return tm.strftime("%Y-%m-%dT%H:%M:%SZ")
 
 
+# still not sure how can I use this kind of formatting in getDayOccurrenceData
+class HMS:
+	formats = {
+		"HMS": "{h:02d}:{m:02d}:{s:02d}",
+		"hMS": "{h}:{m:02d}:{s:02d}",
+		"hms": "{h}:{m}:{s}",
+
+		"HM": "{h:02d}:{m:02d}",
+		"hm": "{h}:{m}",
+		"hM": "{h}:{m:02d}",
+	}
+
+	def __init__(self, h, m, s):
+		self.h = h
+		self.m = m
+		self.s = s
+
+	def __format__(self, fmt=""):
+		if not fmt:
+			# shortcut for HM$
+			return (
+				"{h:02d}:{m:02d}" if self.s == 0
+				else "{h:02d}:{m:02d}:{s:02d}"
+			).format(h=self.h, m=self.m, s=self.s)
+		if fmt.endswith("$"):
+			if len(fmt) < 2:
+				raise ValueError(f"invalid HMS format {fmt!r}")
+			if self.s == 0:
+				fmt = fmt[:-1]
+			elif fmt[-2] < "a":
+				fmt = fmt[:-1] + "S"
+			else:
+				fmt = fmt[:-1] + "s"
+		pyfmt = self.formats.get(fmt)
+		if pyfmt is None:
+			raise ValueError(f"invalid HMS format {fmt!r}")
+		return pyfmt.format(h=self.h, m=self.m, s=self.s)
+
+
+
 if __name__ == "__main__":
 	# log.debug(floatHourToTime(3.6))
 	for tm in (
@@ -385,3 +425,14 @@ if __name__ == "__main__":
 		(8, 0, 10),
 	):
 		log.info(f"{tm!r}, {simpleTimeEncode(tm)!r}")
+
+	print(f"default: {HMS(5, 9, 7)}")
+	print(f"HMS: {HMS(5, 9, 7):HMS}")
+	print(f"HM:  {HMS(5, 9, 7):HM}")
+	print(f"hms: {HMS(5, 9, 7):hms}")
+	print(f"hm:  {HMS(5, 9, 7):hm}")
+	print(f"hMS: {HMS(5, 9, 7):hMS}")
+	print(f"hM:  {HMS(5, 9, 7):hM}")
+	print(f"HM$: {HMS(5, 9, 7):HM$}")
+	print(f"HM$: {HMS(5, 9, 0):HM$}")
+	print(f"hm$: {HMS(5, 9, 0):hm$}")
