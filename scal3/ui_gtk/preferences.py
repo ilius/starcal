@@ -693,6 +693,35 @@ class PreferencesWindow(gtk.Window):
 		######
 		hbox = HBox(spacing=5)
 		# pack(hbox, gtk.Label(), 1, 1)
+		label = gtk.Label(label=_("Event Time Format"))
+		pack(hbox, label)
+		# sgroup.add_widget(label)
+		item = ComboEntryTextPrefItem(ui, "eventDayViewTimeFormat", (
+			"HM$",
+			"HMS",
+			"hMS",
+			"hm$",
+			"hms",
+			"HM",
+			"hm",
+			"hM",
+		))
+		item.addDescriptionColumn({
+			"HM$": f"05:07:09 {_('or')} 05:07",
+			"HMS": f"05:07:09 {_('or')} 05:07:00",
+			"hMS": f"05:07:09 {_('or')} 5:07:00",
+			"hm$": f"5:7:9 {_('or')} 5:7",
+			"hms": f"5:7:9 {_('or')} 5:7:0",
+			"HM": f"05:07",
+			"hm": f"5:7",
+			"hM": f"5:07",
+		})
+		self.uiPrefItems.append(item)
+		pack(hbox, item.getWidget(), 1, 1)
+		pack(vbox, hbox)
+		######
+		hbox = HBox(spacing=5)
+		# pack(hbox, gtk.Label(), 1, 1)
 		label = gtk.Label(label=_("Digital Clock Format"))
 		pack(hbox, label)
 		# sgroup.add_widget(label)
