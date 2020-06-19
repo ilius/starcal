@@ -314,6 +314,15 @@ class ComboEntryTextPrefItem(PrefItem):
 	def set(self, value: str) -> None:
 		self._widget.get_child().set_text(value)
 
+	def addDescriptionColumn(self, descByValue: dict):
+		w = self._widget
+		cell = gtk.CellRendererText()
+		pack(w, cell, True)
+		w.add_attribute(cell, "text", 1)
+		ls = w.get_model()
+		for row in ls:
+			row[1] = descByValue.get(row[0], "")
+
 
 class ComboImageTextPrefItem(PrefItem):
 	def __init__(

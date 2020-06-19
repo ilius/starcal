@@ -100,6 +100,7 @@ confParams = (
 	"statusIconFixedSizeEnable",
 	"statusIconFixedSizeWH",
 	"maxDayCacheSize",
+	"eventDayViewTimeFormat",
 	"pluginsTextStatusIcon",
 	# "localTzHist",  # FIXME
 	"showYmArrows",
