@@ -263,7 +263,7 @@ def simpleTimeEncode(
 	tm: Union[Tuple[int, int, int], Tuple[int, int], Tuple[int]],
 ) -> str:
 	if len(tm) == 1:
-		return str(int(tm))
+		return str(int(tm[0]))
 	elif len(tm) == 2:
 		if tm[1] == 0:
 			return str(int(tm[0]))
@@ -272,7 +272,7 @@ def simpleTimeEncode(
 	elif len(tm) == 3:
 		if tm[1] == 0:
 			if tm[2] == 0:
-				return str(int(tm))
+				return str(int(tm[0]))
 			else:
 				return f"{tm[0]}:{tm[1]:02d}:{tm[2]:02d}"
 		else:
