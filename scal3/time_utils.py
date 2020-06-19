@@ -60,6 +60,47 @@ utcOffsetByJdCache = {}
 # utcOffsetByJdCacheSize # FIXME
 
 
+class HMS:
+	formats = {
+		"HMS": "{h:02d}:{m:02d}:{s:02d}",
+		"hMS": "{h}:{m:02d}:{s:02d}",
+		"hms": "{h}:{m}:{s}",
+
+		"HM": "{h:02d}:{m:02d}",
+		"hm": "{h}:{m}",
+		"hM": "{h}:{m:02d}",
+	}
+
+	def __init__(self, h=0, m=0, s=0):
+		self.h = h
+		self.m = m
+		self.s = s
+
+	def tuple(self) -> "Tuple[int, int, int]":
+		return (self.h, self.m, self.s)
+
+	def __format__(self, fmt=""):
+		if fmt in ("", "HM$"):
+			# optimization for default format
+			return (
+				"{h:02d}:{m:02d}" if self.s == 0
+				else "{h:02d}:{m:02d}:{s:02d}"
+			).format(h=self.h, m=self.m, s=self.s)
+		if fmt.endswith("$"):
+			if len(fmt) < 2:
+				raise ValueError(f"invalid HMS format {fmt!r}")
+			if self.s == 0:
+				fmt = fmt[:-1]
+			elif fmt[-2] < "a":
+				fmt = fmt[:-1] + "S"
+			else:
+				fmt = fmt[:-1] + "s"
+		pyfmt = self.formats.get(fmt)
+		if pyfmt is None:
+			raise ValueError(f"invalid HMS format {fmt!r}")
+		return pyfmt.format(h=self.h, m=self.m, s=self.s)
+
+
 def getUtcOffsetByEpoch(epoch: int, tz: TZ = None) -> int:
 	if epoch < J0001_epoch:
 		return 0
@@ -142,17 +183,17 @@ def getJdListFromEpochRange(startEpoch: int, endEpoch: int) -> List[int]:
 	return list(range(startJd, endJd))
 
 
-def getHmsFromSeconds(second: int) -> Tuple[int, int, int]:
+def getHmsFromSeconds(second: int) -> HMS:
 	minute, second = divmod(int(second), 60)
 	hour, minute = divmod(minute, 60)
-	return hour, minute, second
+	return HMS(hour, minute, second)
 
 
 def getJhmsFromEpoch(
 	epoch: int,
 	currentOffset: bool = False,
 	tz: TZ = None,
-) -> Tuple[int, int, int, int]:
+) -> Tuple[int, HMS]:
 	# return a tuple (julain_day, hour, minute, second) from epoch
 	offset = (
 		getUtcOffsetCurrent(tz) if currentOffset
@@ -160,7 +201,7 @@ def getJhmsFromEpoch(
 	)
 	# ^ FIXME
 	days, second = divmod(ifloor(epoch + offset), 24 * 3600)
-	return (days + J1970,) + getHmsFromSeconds(second)
+	return days + J1970, getHmsFromSeconds(second)
 
 
 def getSecondsFromHms(hour: int, minute: int, second: int = 0) -> int:
@@ -205,37 +246,24 @@ durationUnitNames = [item[1] for item in durationUnitsAbs]  # type: List[str]
 
 def timeEncode(
 	tm: Union[Tuple[int, int, int], Tuple[int, int]],
-	checkSec: bool = False,
 ) -> str:
-	if len(tm) == 2:
-		tm = tm + (0,)
-	if checkSec:
-		if len(tm) == 3 and tm[2] > 0:
-			return f"{tm[0]:02d}:{tm[1]:02d}:{tm[2]:02d}"
-		else:
-			return f"{tm[0]:02d}:{tm[1]:02d}"
-	else:
-		return f"{tm[0]:02d}:{tm[1]:02d}:{tm[2]:02d}"
+	return f"{HMS(*tm)}"
 
 
 def simpleTimeEncode(
 	tm: Union[Tuple[int, int, int], Tuple[int, int], Tuple[int]],
 ) -> str:
+	# FIXME: how to extend HMS formatting to include this conditioning?
+	# need a new symbol for "minute, omit if zero", like "$" for second
 	if len(tm) == 1:
 		return str(int(tm[0]))
 	elif len(tm) == 2:
 		if tm[1] == 0:
 			return str(int(tm[0]))
 		else:
-			return f"{tm[0]}:{tm[1]:02d}"
+			return f"{HMS(*tm)}"
 	elif len(tm) == 3:
-		if tm[1] == 0:
-			if tm[2] == 0:
-				return str(int(tm[0]))
-			else:
-				return f"{tm[0]}:{tm[1]:02d}:{tm[2]:02d}"
-		else:
-			return f"{tm[0]}:{tm[1]:02d}:{tm[2]:02d}"
+		return f"{HMS(*tm)}"
 
 
 def timeDecode(st: str) -> Tuple[int, int, int]:
@@ -267,21 +295,10 @@ def hmDecode(st: str) -> Tuple[int, int]:
 		raise ValueError(f"bad hour:minute time '{st}'")
 
 
-def hmsRangeToStr(h1: int, m1: int, s1: int, h2: int, m2: int, s2: int) -> str:
-	return timeEncode(
-		(h1, m1, s1),
-		True,
-	) + " - " + timeEncode(
-		(h2, m2, s2),
-		True,
-	)
-
-
 def epochGregDateTimeEncode(epoch: int, tz: TZ = None) -> str:
-	jd, hour, minute, second = getJhmsFromEpoch(epoch, tz)
+	jd, hms = getJhmsFromEpoch(epoch, tz)
 	year, month, day = jd_to_g(jd)
-	return f"{year:04d}/{month:02d}/{day:02d} " \
-		f"{hour:02d}:{minute:02d}:{second:02d}"
+	return f"{year:04d}/{month:02d}/{day:02d} {hms:HMS}"
 
 
 def encodeJd(jd: int) -> str:
@@ -332,45 +349,6 @@ def jsonTimeFromEpoch(epoch: int) -> str:
 	# Python's `datetime` does not support "%:z" format ("+03:30")
 	# so we have to set `tz` to None
 	return tm.strftime("%Y-%m-%dT%H:%M:%SZ")
-
-
-# still not sure how can I use this kind of formatting in getDayOccurrenceData
-class HMS:
-	formats = {
-		"HMS": "{h:02d}:{m:02d}:{s:02d}",
-		"hMS": "{h}:{m:02d}:{s:02d}",
-		"hms": "{h}:{m}:{s}",
-
-		"HM": "{h:02d}:{m:02d}",
-		"hm": "{h}:{m}",
-		"hM": "{h}:{m:02d}",
-	}
-
-	def __init__(self, h, m, s):
-		self.h = h
-		self.m = m
-		self.s = s
-
-	def __format__(self, fmt=""):
-		if not fmt:
-			# shortcut for HM$
-			return (
-				"{h:02d}:{m:02d}" if self.s == 0
-				else "{h:02d}:{m:02d}:{s:02d}"
-			).format(h=self.h, m=self.m, s=self.s)
-		if fmt.endswith("$"):
-			if len(fmt) < 2:
-				raise ValueError(f"invalid HMS format {fmt!r}")
-			if self.s == 0:
-				fmt = fmt[:-1]
-			elif fmt[-2] < "a":
-				fmt = fmt[:-1] + "S"
-			else:
-				fmt = fmt[:-1] + "s"
-		pyfmt = self.formats.get(fmt)
-		if pyfmt is None:
-			raise ValueError(f"invalid HMS format {fmt!r}")
-		return pyfmt.format(h=self.h, m=self.m, s=self.s)
 
 
 if __name__ == "__main__":

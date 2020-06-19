@@ -30,7 +30,6 @@ from typing import List
 from os.path import join, split, splitext
 
 from scal3.path import *
-from scal3.time_utils import getJhmsFromEpoch
 from scal3.cal_types import calTypes, jd_to, to_jd, GREGORIAN
 
 
@@ -54,14 +53,15 @@ def encodeIcsWeekDayList(weekDayList: List[int]) -> str:
 
 
 def getIcsTimeByEpoch(epoch: int, pretty: bool = False) -> str:
+	# from scal3.time_utils import getJhmsFromEpoch
 	return strftime(
 		icsTmFormatPretty if pretty else icsTmFormat,
 		gmtime(epoch)
 	)
-	#format = icsTmFormatPretty if pretty else icsTmFormat
-	#jd, hour, minute, second = getJhmsFromEpoch(epoch)
-	#year, month, day = jd_to(jd, GREGORIAN)
-	#return strftime(format, (year, month, day, hour, minute, second, 0, 0, 0))
+	# format = icsTmFormatPretty if pretty else icsTmFormat
+	# jd, hms = getJhmsFromEpoch(epoch)
+	# year, month, day = jd_to(jd, GREGORIAN)
+	# return strftime(format, (year, month, day, hms.h, hms.m, hms.s, 0, 0, 0))
 
 
 def getIcsDate(y: int, m: int, d: int, pretty: bool = False) -> str:
