@@ -192,9 +192,9 @@ def getCurrentJd() -> int:
 
 
 def getWeekDateHmsFromEpoch(epoch: int) -> Tuple[int, int, int, int, int]:
-	jd, hour, minute, sec = getJhmsFromEpoch(epoch)
+	jd, hms = getJhmsFromEpoch(epoch)
 	absWeekNumber, weekDay = getWeekDateFromJd(jd)
-	return (absWeekNumber, weekDay, hour, minute, sec)
+	return (absWeekNumber, weekDay, hms.h, hms.m, hms.s)
 
 
 def getMonthWeekNth(jd: int, calType: int) -> Tuple[int, int, int]:
@@ -454,23 +454,15 @@ def getCompactTime(maxDays: int = 1000, minSec: float = 0.1) -> str:
 
 
 def floatJdEncode(jd: int, calType: int) -> str:
-	jd, hour, minute, second = getJhmsFromEpoch(getEpochFromJd(jd))
+	jd, hms = getJhmsFromEpoch(getEpochFromJd(jd))
 	if calType not in calTypes:
 		raise RuntimeError(f"cal type '{calType}' not found")
-	return dateEncode(jd_to(jd, calType)) + " " + timeEncode((
-		hour,
-		minute,
-		second,
-	))
+	return dateEncode(jd_to(jd, calType)) + f" {hms:HMS}"
 
 
 def epochDateTimeEncode(epoch: int) -> str:
-	jd, hour, minute, sec = getJhmsFromEpoch(epoch)
-	return dateEncode(jd_to_primary(jd)) + " " + timeEncode((
-		hour,
-		minute,
-		sec,
-	))
+	jd, hms = getJhmsFromEpoch(epoch)
+	return dateEncode(jd_to_primary(jd)) + f" {hms:HMS}"
 
 
 def stopRunningThreads() -> None:

@@ -9,7 +9,10 @@ from scal3 import ui
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.menuitems import ImageMenuItem
-from scal3.ui_gtk.event.occurrence_view import DayOccurrenceView
+from scal3.ui_gtk.event.occurrence_view import (
+	DayOccurrenceView,
+	# WeekOccurrenceView,
+)
 
 from scal3.ui_gtk.customize import (
 	CustomizableCalObj,
@@ -66,6 +69,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			),
 			styleClass="right-panel-events",
 		)
+		# self.eventItem = WeekOccurrenceView()  # just temp to see it works
 		self.plugItem = PluginsTextBox(
 			hideIfEmpty=False,
 			tabToNewline=True,
@@ -93,7 +97,10 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		item.show_all()
 
 	def addItems(self):
-		items = [self.eventItem, self.plugItem]
+		items = [
+			self.eventItem,
+			self.plugItem,
+		]
 		if ui.mainWinRightPanelSwap:
 			items.reverse()
 		for item in items:

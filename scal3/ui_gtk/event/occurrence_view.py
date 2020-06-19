@@ -553,11 +553,13 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 		ui.mainWin.autoResize()
 
 
-class WeekOccurrenceView(gtk.TreeView):
+@registerSignals
+class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
 	def updateData(self):
 		return self.updateDataByGroups(ui.eventGroups)
 
 	def __init__(self, abbreviateWeekDays=False):
+		self.initVars()
 		self.abbreviateWeekDays = abbreviateWeekDays
 		self.absWeekNumber = core.getAbsWeekNumberFromJd(ui.cell.jd)## FIXME
 		gtk.TreeView.__init__(self)
@@ -602,18 +604,24 @@ class WeekOccurrenceView(gtk.TreeView):
 		col.set_resizable(True)
 		self.append_column(col)
 
-	def updateWidget(self):
+	def onDateChange(self, *a, **kw):
+		CustomizableCalObj.onDateChange(self, *a, **kw)
+		self.absWeekNumber = ui.cell.absWeekNumber
 		cells, wEventData = ui.cellCache.getWeekData(self.absWeekNumber)
 		self.ls.clear()
 		for item in wEventData:
+			if not "show" in item:
+				raise RuntimeError(f"bad item={item}")
 			if not item["show"][1]:
 				continue
-			self.ls.append(
+			self.ls.append([
 				pixbufFromFile(item["icon"]),
 				core.getWeekDayAuto(item["weekDay"], abbreviate=self.abbreviateWeekDays),
 				item["time"],
 				item["text"],
-			)
+			])
+
+
 
 
 """

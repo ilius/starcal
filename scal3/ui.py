@@ -403,6 +403,7 @@ class Cell(CellType):
 		self._eventsData = event_lib.getDayOccurrenceData(
 			self.jd,
 			eventGroups,
+			tfmt=eventDayViewTimeFormat,
 		)
 		return self._eventsData
 		"""
@@ -552,6 +553,7 @@ class CellCache:
 			wEventData = event_lib.getWeekOccurrenceData(
 				absWeekNumber,
 				eventGroups,
+				tfmt=eventWeekViewTimeFormat,
 			)
 			cleanCacheDict(self.weekEvents, maxWeekCacheSize, absWeekNumber)
 			self.weekEvents[absWeekNumber] = wEventData
@@ -1399,6 +1401,12 @@ mainWinRightPanelResizeOnToggle = True
 
 mainWinRightPanelEventSep = "\n\n"
 eventDayViewEventSep = "\n"
+
+
+# options: "HM$", "HMS", "hMS", "hms", "HM", "hm", "hM"
+eventDayViewTimeFormat = "HM$"
+eventWeekViewTimeFormat = "HM$"
+
 
 ####################
 
