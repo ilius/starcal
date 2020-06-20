@@ -677,7 +677,7 @@ class PreferencesWindow(gtk.Window):
 		###
 		self.moduleOptions = options
 		# ############################## Page 4 (Advanced) ###################
-		vbox = VBox(spacing=15)
+		vbox = VBox(spacing=10)
 		vbox.set_border_width(5)
 		page = StackPage()
 		page.pageWidget = vbox
