@@ -4194,7 +4194,8 @@ class EventGroup(EventContainer):
 		# 		raise ValueError(f"Invalid defaultEventType: {self.defaultEventType!r}")
 
 	# event objects should be accessed from outside
-	# only via one of the following 3 methods
+	# only via one of the following 4 methods:
+	# getEvent, getEventNoCache, create, copyEventWithType
 
 	def removeFromCache(self, eid):
 		if eid in self.eventCache:
