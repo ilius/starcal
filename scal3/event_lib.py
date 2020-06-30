@@ -27,6 +27,7 @@ from os.path import join, split, dirname, splitext, isabs
 from os import listdir
 import math
 from time import time as now
+from cachetools import LRUCache
 
 from typing import Tuple, List, Dict, Set, Any, ClassVar, Callable, Iterator
 
@@ -3814,6 +3815,7 @@ class EventGroup(EventContainer):
 		("icon", _("Icon"), False),
 	)
 	sortByDefault = "summary"
+	eventCacheSizeMin = 0  # minimum cache size for events
 	basicParams = EventContainer.basicParams + (
 		# "enable",  # FIXME
 		# "remoteIds",  # user edits the value, FIXME
@@ -4044,10 +4046,11 @@ class EventGroup(EventContainer):
 				self.icon = icon
 		else:
 			self.defaultEventType = "custom"
-		self.eventCacheSize = 0
 		self.eventTextSep = core.eventTextSep
 		###
-		self.eventCache = {}  # from eid to event object
+		self.eventCacheSize = 100
+		self.resetCache()
+		# eventCache: key is eid, value is Event object
 		###
 		year, month, day = getSysDate(self.calType)
 		self.startJd = to_jd(
@@ -4068,6 +4071,16 @@ class EventGroup(EventContainer):
 		self.setDefaults()
 		###########
 		self.clearRemoteAttrs()
+
+	def resetCache(self):
+		if self.eventCacheSize < 1:
+			self.eventCache = None
+			return
+		self.eventCache = LRUCache(maxsize=self.eventCacheSize)
+
+	def clearCache(self):
+		if self.eventCache:
+			self.eventCache.clear()
 
 	def add(self, event: "Event") -> None:
 		if self.addEventsToBegining:
@@ -4167,6 +4180,7 @@ class EventGroup(EventContainer):
 		return data
 
 	def setData(self, data: Dict[str, Any]) -> None:
+		eventCacheSize = self.eventCacheSize
 		if "showInCal" in data:  # for compatibility
 			data["showInDCal"] = data["showInWCal"] = \
 				data["showInMCal"] = data["showInCal"]
@@ -4193,6 +4207,12 @@ class EventGroup(EventContainer):
 			self.setId(data["id"])
 		self.startJd = int(self.startJd)
 		self.endJd = int(self.endJd)
+
+		if self.eventCacheSize != eventCacheSize:
+			if self.eventCacheSize < self.eventCacheSizeMin:
+				self.eventCacheSize = self.eventCacheSizeMin
+			self.resetCache()
+
 		####
 		# if "defaultEventType" in data:
 		# 	self.defaultEventType = data["defaultEventType"]
@@ -4204,19 +4224,28 @@ class EventGroup(EventContainer):
 	# getEvent, getEventNoCache, create, copyEventWithType
 
 	def removeFromCache(self, eid: int) -> None:
-		if eid in self.eventCache:
-			del self.eventCache[eid]
+		if not self.eventCache:
+			return
+		if self.eventCache.get(eid) is not None:
+			self.eventCache.pop(eid)
+
+	def setToCache(self, event: "Event"):
+		if not self.eventCache:
+			return
+		self.eventCache[event.id] = event
 
 	def getEvent(self, eid: int) -> "Event":
 		if eid not in self.idList:
 			raise ValueError(f"{self} does not contain {eid!r}")
-		if eid in self.eventCache:
-			return self.eventCache[eid]
+		if self.eventCache:
+			event = self.eventCache.get(eid)
+			if event is not None:
+				return event
 		event = EventContainer.getEvent(self, eid)
 		event.parent = self
 		event.rulesHash = event.getRulesHash()
-		if self.enable and len(self.eventCache) < self.eventCacheSize:
-			self.eventCache[eid] = event
+		if self.enable:
+			self.setToCache(event)
 		return event
 
 	def getEventNoCache(self, eid: int) -> "Event":
@@ -4255,8 +4284,7 @@ class EventGroup(EventContainer):
 	# call when moving to trash
 	def remove(self, event: "Event") -> int:
 		index = EventContainer.remove(self, event)
-		if event.id in self.eventCache:
-			del self.eventCache[event.id]
+		self.removeFromCache(event.id)
 		if event.remoteIds:
 			self.deletedRemoteEvents[event.id] = (now(),) + event.remoteIds
 		# try:
@@ -4268,18 +4296,18 @@ class EventGroup(EventContainer):
 
 	# clearEvents or excludeAll or removeAll?
 	def removeAll(self) -> None:
-		for event in self.eventCache.values():
-			event.parent = None  # needed? FIXME
+		if self.eventCache:
+			for event in self.eventCache.values():
+				event.parent = None  # needed? FIXME
 		###
 		self.idList = []
-		self.eventCache = {}
+		self.clearCache()
 		self.occur.clear()
 		self.occurCount = 0
 
 	def postAdd(self, event: "Event") -> None:
 		EventContainer.postAdd(self, event)
-		if len(self.eventCache) < self.eventCacheSize:
-			self.eventCache[event.id] = event
+		self.setToCache(event)
 		# if event.remoteIds:
 		# 	self.eventIdByRemoteIds[event.remoteIds] = event.id
 		# need to update self.occur?
@@ -4289,8 +4317,8 @@ class EventGroup(EventContainer):
 			self.updateOccurrenceEvent(event)
 
 	def updateCache(self, event: "Event"):
-		if event.id in self.eventCache:
-			self.eventCache[event.id] = event
+		if self.eventCache and self.eventCache.get(event.id) is not None:
+			self.setToCache(event)
 		event.afterModify()
 
 	def copy(self) -> "EventGroup":
@@ -4348,7 +4376,7 @@ class EventGroup(EventContainer):
 		if self.enable:
 			self.updateOccurrence()
 		else:
-			self.eventCache = {}
+			self.clearCache()
 
 	def updateOccurrenceEvent(self, event: "Event") -> None:
 		log.debug(
