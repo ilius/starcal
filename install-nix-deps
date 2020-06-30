@@ -7,6 +7,7 @@ nix-shell -p \
 	pythonPackages.httplib2 \
 	pythonPackages.dateutil \
 	pythonPackages.psutil \
+	pythonPackages.cachetools \
 	pythonPackages.requests \
 	pythonPackages.python-igraph \
 	lxqt.lxqt-openssh-askpass \
