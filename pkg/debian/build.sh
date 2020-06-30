@@ -58,6 +58,7 @@ depends+=('python3-gi-cairo')
 depends+=('python3-httplib2')
 depends+=('python3-dateutil')
 depends+=('python3-psutil')
+depends+=('python3-cachetools')
 depends+=('python3-requests')
 #depends+=('python3-gflags') # for google api client
 

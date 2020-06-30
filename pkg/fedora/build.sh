@@ -46,6 +46,7 @@ requires+=('libappindicator-gtk3')
 requires+=('python3-httplib2')
 requires+=('python3-dateutil')
 requires+=('python3-psutil')
+requires+=('python3-cachetools')
 requires+=('python3-requests')
 #requires+=('python3-gflags') # for google api client
 
