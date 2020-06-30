@@ -56,6 +56,7 @@ from scal3.ui_gtk.toolbox import (
 	ToolBoxItem,
 	StaticToolBox,
 )
+from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.event import setActionFuncs
 from scal3.ui_gtk.event.utils import (
@@ -436,10 +437,13 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		###
 		self.toPasteEvent = None  # (treeIter, bool move)
 		#####
+		hbox = HBox()
+		hbox.set_direction(gtk.TextDirection.LTR)
 		self.sbar = gtk.Statusbar()
 		self.sbar.set_direction(gtk.TextDirection.LTR)
-		# self.sbar.set_has_resize_grip(False)
-		pack(self.vbox, self.sbar)
+		pack(hbox, self.sbar, 1, 1)
+		pack(hbox, ResizeButton(self))
+		pack(self.vbox, hbox)
 		#####
 		self.vbox.show_all()
 
