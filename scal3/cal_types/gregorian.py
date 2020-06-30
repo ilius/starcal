@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
-# Copyright (C) 2008-2019 Saeed Rasooli <saeed.gnu@gmail.com>
-# Copyright (C) 2007 Mehdi Bayazee <Bayazee@Gmail.com>
+# Copyright © 2008-2019 Saeed Rasooli <saeed.gnu@gmail.com>
+# Copyright © 2007 Mehdi Bayazee <Bayazee@Gmail.com>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -156,7 +156,7 @@ def getMonthLen(y: int, m: int) -> int:
 		return to_jd(y, m + 1, 1) - to_jd(y, m, 1)
 
 
-J0001 = 1721426 # to_jd(1, 1, 1)
-J1970 = 2440588 # to_jd(1970, 1, 1)
+J0001 = 1721426  # to_jd(1, 1, 1)
+J1970 = 2440588  # to_jd(1970, 1, 1)
 
 J0001_epoch = -62135621220
