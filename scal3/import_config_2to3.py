@@ -62,7 +62,7 @@ def loadConf(confPath) -> None:
 		with open(confPath) as fp:
 			text = fp.read()
 	except Exception as e:
-		log.error(f"failed to read file {confPath!r}: {e}")
+		print(f"failed to read file {confPath!r}: {e}")
 		return
 	#####
 	data = OrderedDict()
@@ -74,6 +74,9 @@ def loadCoreConf() -> None:
 	confPath = join(oldConfDir, "core.conf")
 	#####
 
+	if not isfile(confPath):
+		return {}
+
 	def loadPlugin(fname, **data):
 		data["_file"] = fname
 		return data
@@ -82,8 +85,7 @@ def loadCoreConf() -> None:
 		with open(confPath) as fp:
 			text = fp.read()
 	except Exception as e:
-		log.error(f"failed to read file {confPath!r}: {e}")
-		return
+		raise IOError(f"failed to read file {confPath!r}: {e}")
 	######
 	text = text.replace("calTypes.activeNames", "activeCalTypes")
 	text = text.replace("calTypes.inactiveNames", "inactiveCalTypes")
@@ -105,7 +107,7 @@ def loadUiCustomizeConf() -> None:
 		with open(confPath) as fp:
 			text = fp.read()
 	except Exception as e:
-		log.error(f"failed to read file {confPath!r}: {e}")
+		print(f"failed to read file {confPath!r}: {e}")
 		return
 	#####
 	text = re.sub(r"^ui\.", "", text, flags=re.M)
@@ -126,7 +128,7 @@ def writeJsonConf(name: str, data: Any):
 	try:
 		open(jsonPath, "w").write(text)
 	except Exception as e:
-		log.error(f"failed to write file {jsonPath!r}: {e}")
+		print(f"failed to write file {jsonPath!r}: {e}")
 
 
 def importEventsIter() -> Generator[int, None, None]:
@@ -154,7 +156,7 @@ def importEventsIter() -> Generator[int, None, None]:
 			with open(jsonPath) as fp:
 				data = json.loads(fp.read())
 		except Exception as e:
-			log.error(f"error while loading json file {jsonPath!r}")
+			print(f"error while loading json file {jsonPath!r}")
 			continue
 		try:
 			tm = data.pop("modified")
@@ -208,7 +210,7 @@ def importGroupsIter() -> Generator[int, None, None]:
 			with open(jsonPath) as fp:
 				data = json.loads(fp.read())
 		except Exception as e:
-			log.error(f"error while loading json file {jsonPath!r}")
+			print(f"error while loading json file {jsonPath!r}")
 			continue
 		####
 		groupsEnableDict[_id] = data.pop("enable", True)
@@ -251,7 +253,7 @@ def importGroupsIter() -> Generator[int, None, None]:
 		with open(oldGroupListFile) as fp:
 			groupIds = json.loads(fp.read())
 	except Exception as e:
-		log.error(f"error while loading {oldGroupListFile!r}: {e}")
+		print(f"error while loading {oldGroupListFile!r}: {e}")
 	else:
 		if isinstance(groupIds, list):
 			signedGroupIds = [
@@ -261,7 +263,7 @@ def importGroupsIter() -> Generator[int, None, None]:
 			try:
 				open(newGroupListFile, "w").write(dataToPrettyJson(signedGroupIds))
 			except Exception as e:
-				log.error(f"error while writing {newGroupListFile!r}: {e}")
+				print(f"error while writing {newGroupListFile!r}: {e}")
 		else:
 			log.info(
 				f"file {oldGroupListFile!r} contains invalid data" +
@@ -294,7 +296,7 @@ def importAccountsIter() -> Generator[int, None, None]:
 			with open(jsonPath) as fp:
 				data = json.loads(fp.read())
 		except Exception as e:
-			log.error(f"error while loading json file {jsonPath!r}")
+			print(f"error while loading json file {jsonPath!r}")
 			continue
 		if "history" in data:
 			log.info(f"skipping {jsonPath!r}: history already exists")
