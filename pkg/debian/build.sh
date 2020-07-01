@@ -50,7 +50,7 @@ installedSize=`getDirTotalSize "$tmpDir"` ## only /usr ? FIXME
 #getDirTotalSize "$tmpDir/usr"
 
 
-depends=('python3.7 | python3.6')
+depends=('python3.8 | python3.7 | python3.6')
 depends+=('gir1.2-gtk-3.0')
 depends+=('python3-gi(>=3.24)') ## The new gobject introspection
 depends+=('python3-gi-cairo')
