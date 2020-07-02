@@ -279,13 +279,14 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			if unitSize < tl.majorStepMin:
 				label = ""
 			else:
-				jd, h, m, s = getJhmsFromEpoch(tmEpoch)
-				if s == 0:
-					label = f"{_(h)}:{_(m, fillZero=2)}"
+				jd, hms = getJhmsFromEpoch(tmEpoch)
+				m2 = _(hms.m, fillZero=2)
+				if hms.s == 0:
+					label = f"{_(hms.h)}:{m2}"
 				else:# elif timeWidth < 60 or stepSec < 30:
-					label = addLRM(_(s, fillZero=2) + '"')
+					label = addLRM(_(hms.s, fillZero=2) + '"')
 				#else:
-				#	label = f"{_(h)}:{_(m, fillZero=2)}:_(s, fillZero=2)"
+				#	label = f"{_(hms.h)}:{m2}:_(hms.s, fillZero=2)"
 			ticks.append(Tick(
 				tmEpoch,
 				getEPos(tmEpoch),
