@@ -4288,9 +4288,9 @@ msgid "Hamid Zarrabi-Zadeh <zarrabi@scs.carleton.ca>"
 msgstr ""
 "حمید ضرابی‌زاده <zarrabi@scs.carleton.ca>"
 
-msgid "Reza Moradi Ghiasabadi (www.ghiasabadi.com)"
+msgid "Reza Moradi Ghiasabadi http://ghiasabadi.com"
 msgstr ""
-"رضا مرادی غیاث‌آبادی (www.ghiasabadi.com)"
+"رضا مرادی غیاث‌آبادی http://ghiasabadi.com"
 
 msgid "translator-credits"
 msgstr "Saeed Rasooli <saeed.gnu@gmail.com>"
