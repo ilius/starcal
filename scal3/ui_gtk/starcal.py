@@ -914,7 +914,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			active=ui.winKeepAbove,
 		))
 		menu.add(CheckMenuItem(
-			label=_("_Sticky"),
+			label=_("On All De_sktops"),
 			func=self.onStickyClick,
 			active=ui.winSticky,
 		))

@@ -3064,9 +3064,9 @@ msgid "_On Top"
 msgstr ""
 "در _بالا"
 
-msgid "_Sticky"
+msgid "On All De_sktops"
 msgstr ""
-"_چسبناک"
+"در _همهٔ دسکتاپ‌ها"
 
 
 msgid "Ad_just System Time"
