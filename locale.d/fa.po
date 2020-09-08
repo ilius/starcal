@@ -1645,6 +1645,23 @@ msgid "Color"
 msgstr ""
 "رنگ"
 
+msgid "Red"
+msgstr ""
+"قرمز"
+
+msgid "Green"
+msgstr ""
+"سبز"
+
+msgid "Blue"
+msgstr ""
+"آبی"
+
+msgid "Opacity"
+msgstr ""
+"ماتی"
+
+
 msgid "Default Icon"
 msgstr ""
 "نماد پیش‌فرض"
