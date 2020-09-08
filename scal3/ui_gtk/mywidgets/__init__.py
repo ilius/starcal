@@ -35,6 +35,8 @@ from scal3.ui_gtk.color_utils import *
 from scal3.ui_gtk.utils import buffer_get_text
 from scal3.ui_gtk.drawing import newDndFontNamePixbuf
 
+from scal3.locale_man import tr as _
+
 
 def show_event(widget, gevent):
 	log.info(f"{type(widget)}, {gevent.type.value_name}")
@@ -121,9 +123,9 @@ class MyColorButton(gtk.ColorButton):
 	def update_tooltip(self, colorb=None):
 		r, g, b, a = self.get_rgba()
 		if gtk.ColorChooser.get_use_alpha(self):
-			text = f"{r}\n{g}\n{b}\n{a}"
+			text = f"{_('Red')}: {_(r)}\n{_('Green')}: {_(g)}\n{_('Blue')}: {_(b)}\n{_('Opacity')}: {_(a)}"
 		else:
-			text = f"{r}\n{g}\n{b}"
+			text = f"{_('Red')}: {_(r)}\n{_('Green')}: {_(g)}\n{_('Blue')}: {_(b)}"
 		##self.get_tooltip_window().set_direction(gtk.TextDirection.LTR)
 		## log.debug(self.get_tooltip_window())
 		self.set_tooltip_text(text) ##???????????????? Right to left
