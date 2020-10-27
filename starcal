@@ -1,2 +1,2 @@
-#!/bin/bash
+#!/usr/bin/env bash
 python3 `dirname "$0"`/scal3/ui_gtk/starcal-main.py "$@"
