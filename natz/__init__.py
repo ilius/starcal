@@ -40,14 +40,14 @@ def readEtcLocaltime():
 			with open("/var/db/zoneinfo") as _file:
 				tzname = _file.read().strip()
 				return dateutil.tz.gettz(tzname)
-		print("failed to detect timezone name")
+		log.error(f"failed to detect timezone name")
 		return None
 	fpath = os.readlink("/etc/localtime")
 	parts = fpath.split("/")
 	try:
 		index = parts.index("zoneinfo")
 	except ValueError:
-		log.info(f"Unexpected timezone file: {fpath}")
+		log.error(f"Unexpected timezone file: {fpath}")
 		return
 	tzname = "/".join(parts[index + 1:])
 	return dateutil.tz.gettz(tzname)
