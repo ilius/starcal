@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+import logging
+log = logging.getLogger("root")
+
 import os
 import os.path
 from collections import OrderedDict

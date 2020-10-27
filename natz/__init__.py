@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
+
+import logging
+log = logging.getLogger("root")
+
 import os
-from os.path import split, join
+from os.path import split, join, islink, isfile
 import datetime
 import dateutil.tz
 
@@ -28,6 +32,13 @@ class tzfile(datetime.tzinfo):
 
 
 def readEtcLocaltime():
+	if not islink("/etc/localtime"):
+		if isfile("/var/db/zoneinfo"):
+			with open("/var/db/zoneinfo") as _file:
+				tzname = _file.read().strip()
+				return dateutil.tz.gettz(tzname)
+		print("failed to detect timezone name")
+		return None
 	fpath = os.readlink("/etc/localtime")
 	parts = fpath.split("/")
 	try:
