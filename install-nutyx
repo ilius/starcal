@@ -1,0 +1,29 @@
+#!/usr/bin/env bash
+
+if [ "$UID" != "0" ] ; then
+	echo "Run this script as root" >&2
+	exit 1
+fi
+
+PIP=pip3
+if [ -n "$1" ] ; then
+	PIP="python$1 -m pip"
+fi
+
+cards install python
+cards install python-gobject
+cards install python-cairo
+cards install dejavu-ttf
+cards install python-requests
+cards install python-psutil
+
+
+$PIP install httplib2
+$PIP install python-dateutil
+$PIP install cachetools
+
+$PIP install python-igraph
+$PIP install pygit2
+
+
+./install "$@"
