@@ -4,7 +4,7 @@ myDir="`dirname \"$0\"`"
 myDir=`realpath "$myDir"`
 cd "$myDir/../.."
 
-suseDir="$HOME/.starcal3/pkgs/suse"
+suseDir="$HOME/.cache/starcal3-pkgs/suse"
 pkgCacheDir="$suseDir/cache"
 
 mkdir -p "$pkgCacheDir"
