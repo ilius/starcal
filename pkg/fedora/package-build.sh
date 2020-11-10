@@ -5,8 +5,9 @@ myDir="`dirname \"$0\"`"
 myDir=`realpath "$myDir"`
 cd "$myDir/../.."
 
-fedoraDir="$HOME/.cache/starcal3-pkgs/fedora"
-pkgCacheDir="$fedoraDir/cache"
+distro=fedora
+distroDir="$HOME/.cache/starcal3-pkgs/$distro"
+pkgCacheDir="$distroDir/cache"
 
 mkdir -p "$pkgCacheDir"
 
@@ -20,7 +21,7 @@ function shouldBuild() {
 	if [ -z "$imageAge" ] ; then
 		return 0
 	fi
-	echo "Existing image is $imageAge seconds old"
+	echo "Existing $imageName image is $imageAge seconds old"
 	if [[ "$imageAge" > 604800 ]] ; then
 		# more than a week old
 		return 0
@@ -28,26 +29,26 @@ function shouldBuild() {
 	return 1
 }
 
-if shouldBuild starcal3-fedora ; then
+if shouldBuild starcal3-$distro ; then
 	docker build . \
-		-f pkg/fedora/Dockerfile \
-		-t starcal3-fedora:latest
+		-f pkg/$distro/Dockerfile \
+		-t starcal3-$distro:latest
 else
-	echo "Using existing starcal3-fedora image"
+	echo "Using existing starcal3-$distro image"
 fi
 
 DATE=`/bin/date +%F-%H%M%S`
 dockerOutDir=/root/pkgs/$DATE/
 
 docker run -it \
-	--volume $fedoraDir:/root/pkgs \
+	--volume $distroDir:/root/pkgs \
 	--volume $pkgCacheDir:/var/cache/dnf \
-	starcal3-fedora:latest \
-	/root/starcal/pkg/fedora/docker-build-internal.sh $dockerOutDir
+	starcal3-$distro:latest \
+	/root/starcal/pkg/$distro/docker-build-internal.sh $dockerOutDir
 
 #	--mount type=bind,source="$pkgCacheDir",target=/var/cache/zypp
 
 cd -
 
-outDir="$fedoraDir/$DATE"
+outDir="$distroDir/$DATE"
 ls -l "$outDir"/*.rpm
