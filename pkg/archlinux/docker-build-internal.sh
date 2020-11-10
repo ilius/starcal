@@ -11,4 +11,4 @@ pacman -Sy --noconfirm git gettext fakeroot binutils file gawk
 
 mkdir -p "$outDir"
 chown build "$outDir"
-su build -c "/home/build/starcal/pkg/archlinux/build.sh \"$outDir\" /usr/bin/python3.7"
+su build -c "/home/build/starcal/pkg/archlinux/build.sh \"$outDir\" /usr/bin/python3"
