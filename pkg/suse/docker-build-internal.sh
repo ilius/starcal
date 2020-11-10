@@ -12,4 +12,4 @@ zypper --no-refresh install -y rpm-build
 zypper --no-refresh install -y git-core
 
 mkdir -p "$outDir"
-/root/starcal/pkg/suse/build.sh $outDir /usr/bin/python3.7
+/root/starcal/pkg/suse/build.sh $outDir /usr/bin/python3
