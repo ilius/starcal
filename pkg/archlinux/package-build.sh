@@ -5,8 +5,9 @@ myDir="`dirname \"$0\"`"
 myDir=`realpath "$myDir"`
 cd "$myDir/../.."
 
-archlinuxDir="$HOME/.cache/starcal3-pkgs/archlinux"
-pkgCacheDir="$archlinuxDir/cache"
+distro=archlinux
+distroDir="$HOME/.cache/starcal3-pkgs/$distro"
+pkgCacheDir="$distroDir/cache"
 
 mkdir -p "$pkgCacheDir"
 
@@ -20,7 +21,7 @@ function shouldBuild() {
 	if [ -z "$imageAge" ] ; then
 		return 0
 	fi
-	echo "Existing image is $imageAge seconds old"
+	echo "Existing $imageName image is $imageAge seconds old"
 	if [[ "$imageAge" > 604800 ]] ; then
 		# more than a week old
 		return 0
@@ -28,26 +29,26 @@ function shouldBuild() {
 	return 1
 }
 
-if shouldBuild starcal3-archlinux ; then
+if shouldBuild starcal3-$distro ; then
 	docker build . \
-		-f pkg/archlinux/Dockerfile \
-		-t starcal3-archlinux:latest
+		-f pkg/$distro/Dockerfile \
+		-t starcal3-$distro:latest
 else
-	echo "Using existing starcal3-archlinux image"
+	echo "Using existing starcal3-$distro image"
 fi
 
 DATE=`/bin/date +%F-%H%M%S`
 dockerOutDir=/home/build/pkgs/$DATE/
 
 docker run -it \
-	--volume $archlinuxDir:/home/build/pkgs \
+	--volume $distroDir:/home/build/pkgs \
 	--volume $pkgCacheDir:/var/cache/pacman \
-	starcal3-archlinux:latest \
-	/home/build/starcal/pkg/archlinux/docker-build-internal.sh $dockerOutDir
+	starcal3-$distro:latest \
+	/home/build/starcal/pkg/$distro/docker-build-internal.sh $dockerOutDir
 
 #	--mount type=bind,source="$pkgCacheDir",target=/var/cache/zypp
 
 cd -
 
-outDir="$archlinuxDir/$DATE"
+outDir="$distroDir/$DATE"
 ls -l "$outDir"/*.pkg.tar* || rmdir "$outDir"
