@@ -5,7 +5,7 @@ myDir="`dirname \"$0\"`"
 myDir=`realpath "$myDir"`
 cd "$myDir/../.."
 
-archlinuxDir="$HOME/.starcal3/pkgs/archlinux"
+archlinuxDir="$HOME/.cache/starcal3-pkgs/archlinux"
 pkgCacheDir="$archlinuxDir/cache"
 
 mkdir -p "$pkgCacheDir"

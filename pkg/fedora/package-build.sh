@@ -5,7 +5,7 @@ myDir="`dirname \"$0\"`"
 myDir=`realpath "$myDir"`
 cd "$myDir/../.."
 
-fedoraDir="$HOME/.starcal3/pkgs/fedora"
+fedoraDir="$HOME/.cache/starcal3-pkgs/fedora"
 pkgCacheDir="$fedoraDir/cache"
 
 mkdir -p "$pkgCacheDir"
