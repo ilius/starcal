@@ -10,9 +10,31 @@ pkgCacheDir="$archlinuxDir/cache"
 
 mkdir -p "$pkgCacheDir"
 
-docker build . \
-	-f pkg/archlinux/Dockerfile \
-	-t starcal3-archlinux:latest
+function shouldBuild() {
+	imageName=$1
+	imageCreated=$(docker inspect -f '{{ .Created }}' "$imageName" 2>/dev/null)
+	if [ -z "$imageCreated" ] ; then
+		return 0
+	fi
+	imageAge=$[$(/usr/bin/date +%s) - $(/usr/bin/date +%s -d "$imageCreated")]
+	if [ -z "$imageAge" ] ; then
+		return 0
+	fi
+	echo "Existing image is $imageAge seconds old"
+	if [[ "$imageAge" > 604800 ]] ; then
+		# more than a week old
+		return 0
+	fi
+	return 1
+}
+
+if shouldBuild starcal3-archlinux ; then
+	docker build . \
+		-f pkg/archlinux/Dockerfile \
+		-t starcal3-archlinux:latest
+else
+	echo "Using existing starcal3-archlinux image"
+fi
 
 DATE=`/bin/date +%F-%H%M%S`
 dockerOutDir=/home/build/pkgs/$DATE/
