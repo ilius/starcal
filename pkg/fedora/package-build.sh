@@ -13,7 +13,7 @@ mkdir -p "$pkgCacheDir"
 
 function shouldBuild() {
 	imageName=$1
-	if [ $REBUILD = 1 ] ; then
+	if [ "$REBUILD" = 1 ] ; then
 		return 0
 	fi
 	imageCreated=$(docker inspect -f '{{ .Created }}' "$imageName" 2>/dev/null)
