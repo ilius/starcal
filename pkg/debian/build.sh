@@ -17,7 +17,7 @@ pyCmd="/usr/bin/python3"
 
 
 function getDirTotalSize(){
-	du -ks "$1" | python3 -c "import sys;print(input().split('\t')[0])"
+	du -ks "$1" | awk '{ print($1) }'
 }
 
 myPath=$(realpath "$0")
@@ -36,11 +36,6 @@ tmpDir="$outDir/tmp"
 
 mkdir -p $tmpDir
 mkdir -p "$tmpDir/DEBIAN"
-
-if [ ! -f /usr/bin/python3 ] ; then
-	echo "/usr/bin/python3 was not found" >&2
-	exit 1
-fi
 
 "$sourceDir/install" "$tmpDir" "--for-pkg" "--python=$pyCmd"
 chown -R root "$tmpDir"
