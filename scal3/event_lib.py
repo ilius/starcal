@@ -5841,28 +5841,30 @@ class EventGroupsHolder(JsonObjectsHolder):
 		fp.close()
 
 	def checkForOrphans(self) -> Optional[EventGroup]:
+		fs = self.fs
 		newGroup = EventGroup()
-		newGroup.fs = self.fs
+		newGroup.fs = fs
 		newGroup.setTitle(_("Orphan Events"))
 		newGroup.setColor((255, 255, 0))
 		newGroup.enable = False
-		for gid_fname in self.fs.listdir(groupsDir):
+		for gid_fname in fs.listdir(groupsDir):
 			try:
 				gid = int(splitext(gid_fname)[0])
 			except ValueError:
 				continue
 			if gid not in self.idList:
 				try:
-					self.fs.removeFile(join(groupsDir, gid_fname))
+					fs.removeFile(join(groupsDir, gid_fname))
 				except Exception:
 					log.exception("")
-		######
+		#########
 		myEventIds = []
 		for group in self:
 			myEventIds += group.idList
 		myEventIds = set(myEventIds)
-		##
-		for fname in self.fs.listdir(eventsDir):
+		eventHashSet = set()
+
+		for fname in fs.listdir(eventsDir):
 			fname_nox, ext = splitext(fname)
 			if ext != ".json":
 				continue
@@ -5870,9 +5872,32 @@ class EventGroupsHolder(JsonObjectsHolder):
 				eid = int(fname_nox)
 			except ValueError:
 				continue
-			if eid in myEventIds:
+			if eid not in myEventIds:
+				newGroup.idList.append(eid)
+
+			with fs.open(join(eventsDir, fname)) as fp:
+				data = jsonToData(fp.read())
+			history = data.get("history")
+			if history:
+				for record in history:
+					eventHashSet.add(record[1])
+
+		# newEventHashList = []
+		eventTypeSet = set(classes.event.names)
+		for _hash, fpath in iterObjectFiles(fs):
+			if _hash in eventHashSet:
 				continue
-			newGroup.idList.append(eid)
+			data = loadBsonObject(_hash, fs)
+			if data.get("type") not in eventTypeSet:
+				continue
+			# newEventHashList.append(_hash)
+			newEvent = newGroup.create(data["type"])
+			newEvent.setData(data)
+			newEvent.save()
+			newGroup.append(newEvent)
+
+		# print(newEventHashList)
+
 		if newGroup.idList:
 			newGroup.save()
 			self.append(newGroup)
