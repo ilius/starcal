@@ -2999,6 +2999,12 @@ class YearlyEvent(Event):
 		calType = self.calType
 		month = self.getMonth()
 		day = self.getDay()
+		if month is None:
+			log.error(f"month is None for eventId={self.id}")
+			return
+		if day is None:
+			log.error(f"day is None for eventId={self.id}")
+			return
 		startRule, ok = self["start"]
 		if ok:
 			startJd = max(startJd, startRule.getJd())
