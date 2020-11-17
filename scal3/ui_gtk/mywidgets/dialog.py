@@ -32,8 +32,10 @@ class MyDialog:
 		result = None
 		self.startWaiting()
 		if log.level >= logging.DEBUG:
-			result = func(*args, **kwargs)
-			self.endWaiting()
+			try:
+				result = func(*args, **kwargs)
+			finally:
+				self.endWaiting()
 			return result
 		try:
 			result = func(*args, **kwargs)
