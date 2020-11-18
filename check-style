@@ -6,17 +6,17 @@ function ignore() {
 }
 
 ignore W191 "indentation contains tabs"
-ignore W503 "line break occurred before a binary operator"
+#ignore W503 "line break occurred before a binary operator"
 ignore W504 "line break after binary operator"
-ignore E117 "over-indented"
+#ignore E117 "over-indented"
 #ignore E261 "at least two spaces before inline comment"
 #ignore E262 "inline comment should start with '# '"
 #ignore E265 "block comment should start with '# '"
 ignore E402 "module level import not at top of file"
 #ignore E702 "multiple statements on one line (semicolon)"
 
-if [ -z $2 ] ; then
-	/usr/bin/pep8 --ignore=$IGNORE "$1" | grep --color=always -P ':\d*:' | less -RU
-else
-	/usr/bin/pep8 --select "$@" | grep --color=always -P ':\d*:'
-fi
+#if [ -z $2 ] ; then
+pycodestyle --ignore=$IGNORE "$@" | grep --color=always -P ':\d*:' 2>&1 | less -RU
+#else
+#	pycodestyle --select "$@" | grep --color=always -P ':\d*:' 2>&1
+#fi
