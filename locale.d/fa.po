@@ -2989,6 +2989,24 @@ msgid "Columns"
 msgstr ""
 "ستون‌ها"
 
+msgid "Direct Export"
+msgstr ""
+"صادر کردن مستقیم"
+
+msgid "Search and save the results in JSON file without listing them here"
+msgstr ""
+"جستجو و ذخیرهٔ نتایج در فایل json بدون اینکه اینجا نمایش داده شوند"
+
+msgid "Direct search and export failed"
+msgstr ""
+"جستجو و صادر کردن مستقیم ناموفق بود"
+
+msgid "Direct search and export successfully finished"
+msgstr ""
+"جستجو و صادر کردن مستقیم با موفقیت پایان یافت"
+
+
+
 msgid "Error in reading file"
 msgstr ""
 "خطا در خواندن فایل"
