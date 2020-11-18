@@ -74,6 +74,9 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self.initVars()
 		ud.windowList.appendItem(self)
 		###
+		self.dateTimeInputs = []
+		self.currentCalType = calTypes.primary
+		##
 		self.set_title(_("Search Events"))
 		self.connect("delete-event", self.closed)
 		self.connect("key-press-event", self.onKeyPress)
@@ -123,6 +126,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self.timeFromInput = DateTimeButton()
 		self.timeFromInput.set_value(((year, 1, 1), (0, 0, 0)))
 		pack(hboxIn, self.timeFromInput)
+		self.dateTimeInputs.append(self.timeFromInput)
 		##
 		pack(vboxIn, hboxIn)
 		####
@@ -139,6 +143,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 			(0, 0, 0),
 		))
 		pack(hboxIn, self.timeToInput)
+		self.dateTimeInputs.append(self.timeToInput)
 		##
 		pack(vboxIn, hboxIn)
 		##
@@ -164,6 +169,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self.modifiedFromInput = DateTimeButton()
 		self.modifiedFromInput.set_value(((year, 1, 1), (0, 0, 0)))
 		pack(hbox, self.modifiedFromInput)
+		self.dateTimeInputs.append(self.modifiedFromInput)
 		##
 		self.modifiedFromCheck.connect("clicked", self.updateModifiedFromSensitive)
 		self.updateModifiedFromSensitive()
@@ -375,6 +381,13 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self.vbox.show_all()
 		#self.maximize()## FIXME
 
+	def onConfigChange(self, *a, **kw) -> None:
+		ud.BaseCalObj.onConfigChange(self, *a, **kw)
+		if self.currentCalType != calTypes.primary:
+			for dateTimeInput in self.dateTimeInputs:
+				dateTimeInput.changeCalType(self.currentCalType, calTypes.primary)
+		self.currentCalType = calTypes.primary
+
 	def sort_func_group(self, model, iter1, iter2, user_data=None):
 		return cmp(
 			ui.eventGroups.index(model.get(iter1, 0)[0]),
@@ -407,17 +420,20 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		else:
 			groupIds = ui.eventGroups.getEnableIds()
 		###
+		# TODO: get from input widget
+		calType = self.currentCalType
+		###
 		conds = {}
 		if self.textCSensCheck.get_active():
 			conds["text"] = self.textInput.get_text()
 		else:
 			conds["text_lower"] = self.textInput.get_text().lower()
 		if self.timeFromCheck.get_active():
-			conds["time_from"] = self.timeFromInput.get_epoch(calTypes.primary)
+			conds["time_from"] = self.timeFromInput.get_epoch(calType)
 		if self.timeToCheck.get_active():
-			conds["time_to"] = self.timeToInput.get_epoch(calTypes.primary)
+			conds["time_to"] = self.timeToInput.get_epoch(calType)
 		if self.modifiedFromCheck.get_active():
-			conds["modified_from"] = self.modifiedFromInput.get_epoch(calTypes.primary)
+			conds["modified_from"] = self.modifiedFromInput.get_epoch(calType)
 		if self.typeCheck.get_active():
 			index = self.typeCombo.get_active()
 			cls = event_lib.classes.event[index]
