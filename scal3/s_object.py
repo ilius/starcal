@@ -21,7 +21,7 @@ from scal3.os_utils import makeDir
 from scal3.json_utils import *
 
 dataToJson = dataToPrettyJson
-#from scal3.core import dataToJson## FIXME
+# from scal3.core import dataToJson  # FIXME
 
 
 class FileSystem:
@@ -114,7 +114,7 @@ class SObj:
 				)
 			self.dataIsSet = True
 		###########
-		#if isinstance(data, dict):## FIXME
+		# if isinstance(data, dict):  # FIXME
 		for key, value in data.items():
 			if key in self.params:
 				setattr(self, key, value)
@@ -240,8 +240,8 @@ class JsonSObj(SObj):
 				self.modified = int(os.stat(self.file).st_mtime)
 			except OSError:
 				pass
-		#else:
-		#	log.info(f"no modified param for object {self!r}")
+		# else:
+		# 	log.info(f"no modified param for object {self!r}")
 
 
 def getObjectPath(_hash: str) -> Tuple[str, str]:
@@ -319,7 +319,7 @@ def updateBasicDataFromBson(
 			f"invalid {fileType} file \"{filePath}\", no \"history\""
 		)
 	data.update(loadBsonObject(lastHash, fs))
-	data["modified"] = lastEpoch ## FIXME
+	data["modified"] = lastEpoch  # FIXME
 	return (lastEpoch, lastHash)
 
 
@@ -422,7 +422,7 @@ class BsonHistObj(SObj):
 			lastHash = history[0][1]
 		except IndexError:
 			lastHash = None
-		if _hash != lastHash:## or lastHistArgs != histArgs:## FIXME
+		if _hash != lastHash:  # or lastHistArgs != histArgs:  # FIXME
 			tm = now()
 			history.insert(0, [tm, _hash] + list(histArgs))
 			self.modified = tm

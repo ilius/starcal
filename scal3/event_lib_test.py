@@ -5,7 +5,8 @@ from os.path import join
 import tempfile
 import atexit
 
-import sys;sys.path.append(".")
+import sys
+sys.path.append(".")
 
 from scal3.event_lib import *
 
@@ -20,8 +21,3 @@ eventTrash = event_lib.EventTrash.load(fs)
 
 class TestEventLib(unittest.TestCase):
 	pass
-
-
-
-
-

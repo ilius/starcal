@@ -26,25 +26,25 @@ import sys
 from scal3.interval_utils import ab_overlaps
 from scal3.time_utils import *
 
-#maxLevel = 1
-#minLevel = 1
+# maxLevel = 1
+# minLevel = 1
 
 
 class Node:
 	def __init__(self, base, level, offset, rightOri):
-		#global maxLevel, minLevel
-		self.base = base ## 8 or 16 is better
+		# global maxLevel, minLevel
+		self.base = base  # 8 or 16 is better
 		self.level = level
 		# base ** level is the mathematical scope of the node
 		# (with its children)
-		#if level > maxLevel:
-		#	maxLevel = level
-		#	log.debug(f"maxLevel = {level}")
-		#if level < minLevel:
-		#	minLevel = level
-		#	log.debug(f"minLevel = {level}")
-		self.offset = offset ## in days
-		self.rightOri = rightOri ## FIXME
+		# if level > maxLevel:
+		# 	maxLevel = level
+		# 	log.debug(f"maxLevel = {level}")
+		# if level < minLevel:
+		# 	minLevel = level
+		# 	log.debug(f"minLevel = {level}")
+		self.offset = offset  # in days
+		self.rightOri = rightOri  # FIXME
 		###
 		width = base ** level
 		if rightOri:
@@ -58,7 +58,7 @@ class Node:
 		self.children = {}
 		# possible keys of `self.children` are 0 to `base-1` for right node,
 		# and `-(base-1)` to 0 for left node
-		self.events = [] ## list of tuples (rel_start, rel_end, event_id)
+		self.events = []  # list of tuples (rel_start, rel_end, event_id)
 
 	def sOverlaps(self, t0, t1):
 		return ab_overlaps(t0, t1, self.s0, self.s1)
@@ -202,13 +202,13 @@ class TimeLineTree:
 				node.events.remove(ev_tuple)
 			except ValueError:
 				continue
-			#if not node.events:
-			#	node.parent.removeChild(node)
+			# if not node.events:
+			# 	node.parent.removeChild(node)
 		return n
 
 	def getLastOfEvent(self, eid):
 		refList = self.byEvent.get(eid)
-		if not refList: # None or []
+		if not refList:  # None or []
 			return None
 		node, ev_tuple = refList[-1]
 		# self.byEvent is sorted by time? FIXME
@@ -216,7 +216,7 @@ class TimeLineTree:
 
 	def getFirstOfEvent(self, eid):
 		refList = self.byEvent.get(eid)
-		if not refList: # None or []
+		if not refList:  # None or []
 			return None
 		node, ev_tuple = refList[0]
 		return ev_tuple[0], ev_tuple[1]
@@ -226,12 +226,3 @@ class TimeLineTree:
 			self.left.getDepth(),
 			self.right.getDepth(),
 		)
-
-#if __name__=="__main__":
-#	from scal3 import ui
-#	from time import time as now
-#	ui.eventGroups = event_lib.EventGroupsHolder.load()
-#	for group in ui.eventGroups:
-#		t0 = now()
-#		group.updateOccurrenceNode()
-#		log.info(f"{now()-t0}, {group.title}")

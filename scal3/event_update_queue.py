@@ -37,7 +37,9 @@ class EventUpdateQueue(Queue):
 	def registerConsumer(self, consumer) -> None:
 		log.info(f"registerConsumer: {consumer.__class__.__name__}")
 		if not hasattr(consumer, "onEventUpdate"):
-			raise TypeError(f"type {consumer.__class__.__name__} has no method onEventUpdate")
+			raise TypeError(
+				f"type {consumer.__class__.__name__} has no method onEventUpdate"
+			)
 		self._consumers.append(consumer)
 
 	def put(self, action, obj, sender):
@@ -56,10 +58,14 @@ class EventUpdateQueue(Queue):
 			raise ValueError("obj.parent is None")
 		if action == "r":
 			if not isinstance(obj, (event_lib.EventGroup, event_lib.EventTrash)):
-				raise TypeError(f"invalid obj type {obj.__class__.__name__} for action={action!r}")
+				raise TypeError(
+					f"invalid obj type {obj.__class__.__name__} for action={action!r}"
+				)
 		elif action == "eg":
 			if not isinstance(obj, event_lib.EventGroup):
-				raise TypeError(f"invalid obj type {obj.__class__.__name__} for action={action!r}")
+				raise TypeError(
+					f"invalid obj type {obj.__class__.__name__} for action={action!r}"
+				)
 		log.info(f"EventUpdateQueue: add: action={action!r}, obj={obj}")
 		record = EventUpdateRecord(action, obj, sender)
 		Queue.put(self, record)
@@ -103,6 +109,7 @@ def testEventUpdateQueue():
 		def __init__(self, _id, parent):
 			self.id = _id
 			self.parent = parent
+
 		def getPath(self):
 			return (0, self.id)
 

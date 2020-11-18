@@ -5,6 +5,7 @@ import os
 from scal3 import locale_man
 from scal3.cal_types import calTypes, GREGORIAN
 
+
 class Test_getMonthDesc(unittest.TestCase):
 	def __init__(self, *args):
 		unittest.TestCase.__init__(self, *args)

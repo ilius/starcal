@@ -137,7 +137,7 @@ class StrOrderedDict(dict):
 			return dict.__getitem__(self, self.keyList[arg])
 		elif isinstance(arg, str):
 			return dict.__getitem__(self, arg)
-		elif isinstance(arg, slice):## not tested FIXME
+		elif isinstance(arg, slice):  # not tested FIXME
 			return StrOrderedDict([
 				(key, dict.__getitem__(self, key))
 				for key in self.keyList.__getitem__(arg)
@@ -152,14 +152,14 @@ class StrOrderedDict(dict):
 		if isinstance(arg, int):
 			dict.__setitem__(self, self.keyList[arg], value)
 		elif isinstance(arg, str):
-			if arg in self.keyList:## Modifying value for an existing key
+			if arg in self.keyList:  # Modifying value for an existing key
 				if reorderOnModify:
 					self.keyList.remove(arg)
 					self.keyList.append(arg)
-			#elif isinstance(arg, slice):## ???????????? is not tested
-			#	#assert isinstance(value, StrOrderedDict)
-			#	if isinstance(value, StrOrderedDict):
-			#		for key in self.keyList.__getitem__(arg):
+			# elif isinstance(arg, slice):## ???????????? is not tested
+			# 	#assert isinstance(value, StrOrderedDict)
+			# 	if isinstance(value, StrOrderedDict):
+			# 		for key in self.keyList.__getitem__(arg):
 			else:
 				self.keyList.append(arg)
 			dict.__setitem__(self, arg, value)
@@ -186,10 +186,10 @@ class StrOrderedDict(dict):
 				f": {type(arg)}"
 			)
 
-	#def pop(self, key: str) -> Any:  # FIXME
-	#	value = dict.pop(self, key)
-	#	del self.keyList[key]
-	#	return value
+	# def pop(self, key: str) -> Any:  # FIXME
+	# 	value = dict.pop(self, key)
+	# 	del self.keyList[key]
+	# 	return value
 
 	def clear(self) -> None:
 		self.keyList = []
@@ -216,17 +216,17 @@ class StrOrderedDict(dict):
 	def __iter__(self):
 		return self.keyList.__iter__()
 
-	def iteritems(self):## OR lambda self: self.items().__iter__()
-		for key in self.keyList:## OR self.keyList.__iter__()
+	# lambda self: self.items().__iter__()
+	def iteritems(self):
+		for key in self.keyList:
 			yield (key, dict.__getitem__(self, key))
 
 	def __str__(self):
 		return f"StrOrderedDict({self.items()!r})"
-
-	#"StrOrderedDict{" + ", ".join([
-	#	repr(k) + ":" + repr(self[k])
-	#	for k in self.keyList
-	#]) + "}"
+		# "StrOrderedDict{" + ", ".join([
+		# 	repr(k) + ":" + repr(self[k])
+		# 	for k in self.keyList
+		# ]) + "}"
 
 	def __repr__(self):
 		return f"StrOrderedDict(({self.items()!r})"
@@ -391,7 +391,3 @@ def inputDateJd(msg: str) -> Optional[int]:
 	if date:
 		y, m, d = date
 		return to_jd(y, m, d, GREGORIAN)
-
-
-#if __name__=="__main__":
-#	log.info(findNearestNum([1, 2, 4, 6, 3, 7], 3.6))

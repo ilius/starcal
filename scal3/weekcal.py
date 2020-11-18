@@ -21,7 +21,7 @@
 from scal3 import logger
 log = logger.get()
 
-#from scal3.locale_man import tr as _
+# from scal3.locale_man import tr as _
 
 from scal3 import core
 
@@ -36,11 +36,13 @@ class WeekStatus(list):
 		self.absWeekNumber = absWeekNumber
 		startJd = core.getStartJdOfAbsWeekNumber(absWeekNumber)
 		endJd = startJd + 7
-		#self.startJd = startJd
-		#self.startDate = core.jd_to_primary(self.startJd)
-		#self.weekNumberOfYear = core.getWeekNumber(*self.startDate)
+		# self.startJd = startJd
+		# self.startDate = core.jd_to_primary(self.startJd)
+		# self.weekNumberOfYear = core.getWeekNumber(*self.startDate)
 		#########
-		#list.__init__(self, [cellCache.getCell(jd) for jd in range(startJd, endJd)])
+		# list.__init__(self, [
+		# 	cellCache.getCell(jd) for jd in range(startJd, endJd)
+		# ])
 		list.__init__(self, [])
 		for jd in range(startJd, endJd):
 			# log.debug("WeekStatus", jd)

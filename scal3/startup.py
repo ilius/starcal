@@ -12,14 +12,14 @@ from scal3.core import osName
 
 comDeskDir = f"{homeDir}/.config/autostart"
 comDesk = f"{comDeskDir}/{APP_NAME}.desktop"
-#kdeDesk = f"{homeDir}/.kde/Autostart/{APP_NAME}.desktop"
+# kdeDesk = f"{homeDir}/.kde/Autostart/{APP_NAME}.desktop"
 
 
 def addStartup():
 	if osName == "win":
 		from scal3.windows import winMakeShortcut, winStartupFile
 		makeDir(winStartupDir)
-		#fname = APP_NAME + ("-qt" if uiName=="qt" else "") + ".pyw"
+		# fname = APP_NAME + ("-qt" if uiName=="qt" else "") + ".pyw"
 		fname = core.COMMAND + ".pyw"
 		fpath = join(sourceDir, fname)
 		try:
@@ -54,7 +54,7 @@ Exec={core.COMMAND}"""
 
 
 def removeStartup():
-	if osName == "win":## FIXME
+	if osName == "win":  # FIXME
 		from scal3.windows import winStartupFile
 		if isfile(winStartupFile):
 			os.remove(winStartupFile)

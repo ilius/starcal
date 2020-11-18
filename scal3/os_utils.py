@@ -21,12 +21,15 @@
 import sys
 import os
 from os.path import isdir, isfile
-#import platform
+# import platform
 
 
-def getOsName():## "linux", "win", "mac", "unix"
-	#psys = platform.system().lower()## "linux", "windows", "darwin", ...
-	plat = sys.platform ## "linux2", "win32", "darwin"
+def getOsName():
+	"""
+		returns: "linux", "win", "mac", "unix"
+	"""
+	# psys = platform.system().lower()## "linux", "windows", "darwin", ...
+	plat = sys.platform  # "linux2", "win32", "darwin"
 	if plat.startswith("linux"):
 		return "linux"
 	elif plat.startswith("win"):
@@ -93,14 +96,14 @@ def kill(pid, signal=0):
 		returns True if the pid is dead
 		with no signal argument, sends no signal
 	"""
-	#if "ps --no-headers" returns no lines, the pid is dead
+	# if "ps --no-headers" returns no lines, the pid is dead
 	try:
 		return os.kill(pid, signal)
 	except OSError as e:
-		#process is dead
+		# process is dead
 		if e.errno == 3:
 			return True
-		#no permissions
+		# no permissions
 		elif e.errno == 1:
 			return False
 		else:
@@ -124,7 +127,7 @@ def dead(pid):
 	return dead
 
 
-#def kill(pid, sig=0): pass #DEBUG: test hang condition
+# def kill(pid, sig=0): pass #DEBUG: test hang condition
 
 
 def goodkill(pid, interval=1, hung=20):
@@ -141,7 +144,7 @@ def goodkill(pid, interval=1, hung=20):
 
 	i = 0
 	while True:
-		#infinite-loop protection
+		# infinite-loop protection
 		if i < hung:
 			i += 1
 		else:
@@ -151,6 +154,7 @@ def goodkill(pid, interval=1, hung=20):
 		if dead(pid):
 			return
 		sleep(interval)
+
 
 def fixStrForFileNameForWindows(fname: str) -> str:
 	import re
@@ -185,8 +189,8 @@ def openUrl(url: str) -> bool:
 		log.exception("")
 	else:
 		return True
-	#if not url.startswith("http"):  # FIXME
-	#	return
+	# if not url.startswith("http"):  # FIXME
+	# 	return
 	try:
 		import webbrowser
 	except ImportError:
