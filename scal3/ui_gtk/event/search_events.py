@@ -361,8 +361,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self.vbox.show_all()
 		#self.maximize()## FIXME
 
-	# FIXME
-	def sort_func_group(self, model, iter1, iter2):
+	def sort_func_group(self, model, iter1, iter2, user_data=None):
 		return cmp(
 			ui.eventGroups.index(model.get(iter1, 0)[0]),
 			ui.eventGroups.index(model.get(iter2, 0)[0]),
