@@ -91,7 +91,7 @@ def testIntersection():
 	for (list1Str, list2Str), answerStr in testDict.items():
 		list1 = parseIntervalList(list1Str, True)
 		list2 = parseIntervalList(list2Str, True)
-		answer = parseIntervalList(answerStr, False)# no shuffle
+		answer = parseIntervalList(answerStr, False)  # no shuffle
 		result = intersectionOfTwoIntervalList(list1, list2)
 		if result == answer:
 			log.info("OK")
@@ -103,13 +103,15 @@ def testIntersection():
 
 
 def testJdRanges():
-	pprint.plog.info(JdOccurSet([
+	from pprint import pprint
+	pprint(JdOccurSet([
 		1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 18,
 	]).calcJdRanges())
 
 
 def testSimplifyNumList():
-	pprint.plog.info(simplifyNumList([
+	from pprint import pprint
+	pprint(simplifyNumList([
 		1, 2, 3, 4, 5, 7, 9, 10, 14, 16, 17, 18, 19, 21, 22, 23, 24,
 	]))
 

@@ -55,7 +55,10 @@ except NameError:
 
 
 VERSION = "3.2rc2"
-# BRANCH = join(sourceDir, "branch") # FIXME: figure out a policy for updating it
+
+# BRANCH = join(sourceDir, "branch")
+# FIXME: figure out a policy for updating it
+
 APP_DESC = "StarCalendar"
 COMMAND = APP_NAME
 homePage = "http://ilius.github.io/starcal/"

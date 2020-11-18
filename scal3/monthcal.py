@@ -32,14 +32,14 @@ from scal3 import ui
 pluginName = "MonthCal"
 
 
-class MonthStatus(list): ## FIXME
+class MonthStatus(list):  # FIXME
 	# self[sy<6][sx<7] of cells
 	# list (of 6 lists, each list containing 7 cells)
 	def __init__(self, cellCache, year, month):
 		self.year = year
 		self.month = month
 		self.monthLen = getMonthLen(year, month, calTypes.primary)
-		self.offset = getWeekDay(year, month, 1)## month start offset
+		self.offset = getWeekDay(year, month, 1)  # month start offset
 		initJd = core.primary_to_jd(year, month, 1)
 		self.weekNum = [
 			getWeekNumberByJd(initJd + i * 7)
@@ -57,9 +57,11 @@ class MonthStatus(list): ## FIXME
 				for xPos in range(7)
 			] for yPos in range(6)
 		])
-	#def getDayCell(self, day):## needed? FIXME
-	#	yPos, xPos = divmod(day + self.offset - 1, 7)
-	#	return self[yPos][xPos]
+
+	# needed? FIXME
+	# def getDayCell(self, day):
+	# 	yPos, xPos = divmod(day + self.offset - 1, 7)
+	# 	return self[yPos][xPos]
 
 	def allCells(self):
 		ls = []
@@ -69,7 +71,7 @@ class MonthStatus(list): ## FIXME
 
 
 def setParamsFunc(cell):
-	offset = getWeekDay(cell.year, cell.month, 1)## month start offset
+	offset = getWeekDay(cell.year, cell.month, 1)  # month start offset
 	yPos, xPos = divmod(offset + cell.day - 1, 7)
 	cell.monthPos = (xPos, yPos)
 	###

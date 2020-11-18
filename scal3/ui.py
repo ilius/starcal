@@ -306,15 +306,18 @@ def parseDroppedDate(text) -> Tuple[int, int, int]:
 	else:
 		return None
 	# FIXME: when drag from a persian GtkCalendar with format %y/%m/%d
-	#if year < 100:
-	#	year += 2000
+	# if year < 100:
+	# 	year += 2000
 	return (year, month, day)
 
 
 def checkNeedRestart() -> bool:
 	for key in needRestartPref.keys():
 		if needRestartPref[key] != eval(key):
-			log.info(f"checkNeedRestart: \"{key}\", \"{needRestartPref[key]}\", \"{eval(key)}\"")
+			log.info(
+				f"checkNeedRestart: {key!r}, "
+				f"{needRestartPref[key]!r}, {eval(key)!r}"
+			)
 			return True
 	return False
 
@@ -347,8 +350,8 @@ class Cell(CellType):
 	# ocTimeCount = 0
 	# ocTimeSum = 0
 	def __init__(self, jd: int):
-		self._eventsData = None # type: Optional[List[Dict]]
-		self._pluginsText = [] # type: List[List[str]]
+		self._eventsData = None  # type: Optional[List[Dict]]
+		self._pluginsText = []  # type: List[List[str]]
 		###
 		self.jd = jd
 		date = core.jd_to_primary(jd)
@@ -467,17 +470,17 @@ class Cell(CellType):
 
 # I can't find the correct syntax for this `...`
 # CellPluginsType = Dict[str, Tuple[
-#	Callable[[CellType], None],
-#	Callable[[CellCache, ...], List[CellType]]
+# 	Callable[[CellType], None],
+# 	Callable[[CellCache, ...], List[CellType]]
 # ]]
 
 
 class CellCache:
 	def __init__(self) -> None:
 		# a mapping from julan_day to Cell instance
-		self.jdCells = {} # type: Dict[int, CellType]
-		self.plugins = {} # disabled type: CellPluginsType
-		self.weekEvents = {} # type Dict[int, List[Dict]]
+		self.jdCells = {}  # type: Dict[int, CellType]
+		self.plugins = {}  # disabled type: CellPluginsType
+		self.weekEvents = {}  # type Dict[int, List[Dict]]
 
 	def clear(self) -> None:
 		global cell, todayCell
@@ -627,7 +630,7 @@ def getParamsFont(params: Dict) -> Optional[Tuple[str, bool, bool, float]]:
 	if not font:
 		return None
 	if font[0] is None:
-		font = list(font) # copy
+		font = list(font)  # copy
 		font[0] = getFont()[0]
 	return font
 
@@ -799,7 +802,7 @@ localTzHist = [
 	str(core.localTz),
 ]
 
-shownCals = []	# FIXME
+shownCals = []  # FIXME
 
 mcalTypeParams = [
 	{
@@ -849,7 +852,7 @@ dcalDayParams = [  # FIXME
 dcalMonthParams = [  # FIXME
 	{
 		"enable": False,
-		"pos": (0, -12), # FIXME
+		"pos": (0, -12),  # FIXME
 		"xalign": "center",
 		"yalign": "center",
 		"font": None,
@@ -859,7 +862,7 @@ dcalMonthParams = [  # FIXME
 	},
 	{
 		"enable": False,
-		"pos": (125, 30), # FIXME
+		"pos": (125, 30),  # FIXME
 		"xalign": "center",
 		"yalign": "center",
 		"font": None,
@@ -869,7 +872,7 @@ dcalMonthParams = [  # FIXME
 	},
 	{
 		"enable": False,
-		"pos": (-125, 24), # FIXME
+		"pos": (-125, 24),  # FIXME
 		"xalign": "center",
 		"yalign": "center",
 		"font": None,
@@ -915,7 +918,7 @@ dcalWinDayParams = [
 dcalWinMonthParams = [
 	{
 		"enable": False,
-		"pos": (0, 5), # FIXME
+		"pos": (0, 5),  # FIXME
 		"xalign": "left",
 		"yalign": "center",
 		"font": None,
@@ -925,7 +928,7 @@ dcalWinMonthParams = [
 	},
 	{
 		"enable": False,
-		"pos": (5, 0), # FIXME
+		"pos": (5, 0),  # FIXME
 		"xalign": "right",
 		"yalign": "top",
 		"font": None,
@@ -935,7 +938,7 @@ dcalWinMonthParams = [
 	},
 	{
 		"enable": False,
-		"pos": (0, 0), # FIXME
+		"pos": (0, 0),  # FIXME
 		"xalign": "right",
 		"yalign": "buttom",
 		"font": None,
@@ -989,7 +992,7 @@ class TagIconItem:
 	def getIconRel(self):
 		icon = self.icon
 		if icon.startswith(svgDir + os.sep):
-			return icon[len(svgDir)+1:]
+			return icon[len(svgDir) + 1:]
 		return icon
 
 	def __repr__(self):
@@ -1033,10 +1036,10 @@ eventTagsDesc = {
 }
 
 ###################
-fs = None # type: event_lib.FileSystem
-eventAccounts = [] # type: List[event_lib.EventAccount]
-eventGroups = [] # type: List[event_lib.EventGroup]
-eventTrash = None # type: event_lib.EventTrash
+fs = None  # type: event_lib.FileSystem
+eventAccounts = []  # type: List[event_lib.EventAccount]
+eventGroups = []  # type: List[event_lib.EventGroup]
+eventTrash = None  # type: event_lib.EventTrash
 
 
 def iterAllEvents():  # dosen"t include orphan events
@@ -1051,14 +1054,14 @@ eventUpdateQueue = EventUpdateQueue()
 
 
 # def updateEventTagsUsage():  # FIXME where to use?
-#	tagsDict = getEventTagsDict()
-#	for tagObj in eventTags:
-#		tagObj.usage = 0
-#	for event in events:  # FIXME
-#		for tag in event.tags:
-#			td = tagsDict.get(tag)
-#			if td is not None:
-#				tagsDict[tag].usage += 1
+# 	tagsDict = getEventTagsDict()
+# 	for tagObj in eventTags:
+# 		tagObj.usage = 0
+# 	for event in events:  # FIXME
+# 		for tag in event.tags:
+# 			td = tagsDict.get(tag)
+# 			if td is not None:
+# 				tagsDict[tag].usage += 1
 
 
 ###################
@@ -1116,7 +1119,8 @@ menuEventCheckIconSize = 20
 buttonIconEnable = True
 buttonIconSize = 20
 
-# stackIconSize: the size of icons in MyStack pages/buttons, used only for svg icons
+# stackIconSize: the size of icons in MyStack pages/buttons,
+# used only for svg icons
 stackIconSize = 22
 eventTreeIconSize = 22
 eventTreeGroupIconSize = 24
@@ -1336,7 +1340,7 @@ fontCustom = None
 fontCustomEnable = False
 #####################
 showMain = True  # Open main window on start (or only goto statusIcon)
-showDesktopWidget = False # Open desktop widget on start
+showDesktopWidget = False  # Open desktop widget on start
 #####################
 mainWinItems = (
 	("toolbar", True),

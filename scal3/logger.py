@@ -9,6 +9,7 @@ confPath = join(confDir, "log.json")
 log = None
 logLevel = logging.INFO
 
+
 def init():
 	global log, logLevel
 	import os
