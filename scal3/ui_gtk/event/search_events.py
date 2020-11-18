@@ -414,14 +414,14 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self.trees.clear()
 		for gid in groupIds:
 			group = ui.eventGroups[gid]
-			for evData in group.search(conds):
+			for event in group.search(conds):
 				self.trees.append(None, (
 					group.id,
-					evData["id"],
+					event.id,
 					group.title,
-					eventTreeIconPixbuf(evData["icon"]),
-					evData["summary"],
-					evData["description"],
+					eventTreeIconPixbuf(event.getIcon()),
+					event.summary,
+					event.getShownDescription(),
 				))
 		self.resultLabel.set_label(
 			_("Found {eventCount} events").format(eventCount=_(len(self.trees)))
