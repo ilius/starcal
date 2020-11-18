@@ -4598,30 +4598,32 @@ class EventGroup(EventContainer):
 
 		return res
 
+	def _searchTimeFilter(self, conds):
+		if not ("time_from" in conds or "time_to" in conds):
+			for eid in self.idList:
+				yield eid
+			return
+
+		try:
+			time_from = conds["time_from"]
+		except KeyError:
+			time_from = getEpochFromJd(self.startJd)
+		else:
+			del conds["time_from"]
+		try:
+			time_to = conds["time_to"]
+		except KeyError:
+			time_to = getEpochFromJd(self.endJd)
+		else:
+			del conds["time_to"]
+
+		for _, _, eid, _ in self.occur.search(time_from, time_to):
+			yield eid
+
 	def search(self, conds):
 		conds = dict(conds)  # take a copy, we may modify it
-		if "time_from" in conds or "time_to" in conds:
-			try:
-				time_from = conds["time_from"]
-			except KeyError:
-				time_from = getEpochFromJd(self.startJd)
-			else:
-				del conds["time_from"]
-			try:
-				time_to = conds["time_to"]
-			except KeyError:
-				time_to = getEpochFromJd(self.endJd)
-			else:
-				del conds["time_to"]
-			idList = sorted({
-				eid
-				for _, _, eid, _ in self.occur.search(time_from, time_to)
-			})
-		else:
-			idList = self.idList
-		#####
-		data = []
-		for eid in idList:
+
+		for eid in self._searchTimeFilter(conds):
 			try:
 				event = self[eid]
 				# FIXME: is this check really useful?
@@ -4635,14 +4637,12 @@ class EventGroup(EventContainer):
 				if not func(event, value):
 					break
 			else:
-				data.append({
+				yield {
 					"id": eid,
 					"icon": event.getIcon(),
 					"summary": event.summary,
 					"description": event.getShownDescription(),
-				})
-		#####
-		return data
+				}
 
 	def createPatchList(self, sinceEpoch: int) -> "List[Dict[str, Any]]":
 		patchList = []
