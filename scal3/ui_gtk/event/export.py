@@ -5,7 +5,6 @@ from scal3.path import deskDir
 from scal3.json_utils import *
 from scal3 import cal_types
 from scal3 import core
-from scal3.core import GREGORIAN
 from scal3.locale_man import tr as _
 from scal3 import ui
 
@@ -165,7 +164,7 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 		hbox = HBox(spacing=2)
 		pack(hbox, gtk.Label(label=_("File") + ":"))
 		self.fpathEntry = gtk.Entry()
-		y, m, d = cal_types.getSysDate(GREGORIAN)
+		y, m, d = cal_types.getSysDate(core.GREGORIAN)
 		self.fpathEntry.set_text(join(
 			deskDir,
 			f"events-{y:04d}-{m:02d}-{d:02d}",
@@ -213,6 +212,105 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 			else:
 				raise RuntimeError
 			open(fpath, "w", encoding="utf-8").write(text)
+
+	def run(self):
+		if gtk.Dialog.run(self) == gtk.ResponseType.OK:
+			self.waitingDo(self.save)
+		self.destroy()
+
+
+class EventListExportDialog(gtk.Dialog, MyDialog):
+	def __init__(self, idsList, defaultFileName="", groupTitle="", **kwargs):
+		self._idsList = idsList
+		self._defaultFileName = defaultFileName
+		self._groupTitle = groupTitle
+		gtk.Dialog.__init__(self, **kwargs)
+		self.set_title(_("Export Group"))
+		####
+		dialog_add_button(
+			self,
+			imageName="dialog-cancel.svg",
+			label=_("_Cancel"),
+			res=gtk.ResponseType.CANCEL,
+		)
+		dialog_add_button(
+			self,
+			imageName="dialog-ok.svg",
+			label=_("_OK"),
+			res=gtk.ResponseType.OK,
+		)
+		self.connect("response", lambda w, e: self.hide())
+		####
+		hbox = HBox()
+		frame = gtk.Frame()
+		frame.set_label(_("Format"))
+		radioBox = VBox()
+		##
+		self.radioJsonCompact = gtk.RadioButton(
+			label=_("Compact JSON (StarCalendar)"),
+		)
+		self.radioJsonPretty = gtk.RadioButton(
+			label=_("Pretty JSON (StarCalendar)"),
+			group=self.radioJsonCompact,
+		)
+		#self.radioIcs = gtk.RadioButton(label="iCalendar")
+		##
+		pack(radioBox, self.radioJsonCompact)
+		pack(radioBox, self.radioJsonPretty)
+		#pack(radioBox, self.radioIcs)
+		##
+		self.radioJsonCompact.set_active(True)
+		#self.radioIcs.connect("clicked", self.formatRadioChanged)
+		self.radioJsonCompact.connect("clicked", self.formatRadioChanged)
+		self.radioJsonPretty.connect("clicked", self.formatRadioChanged)
+		##
+		frame.add(radioBox)
+		pack(hbox, frame)
+		pack(hbox, gtk.Label(), 1, 1)
+		pack(self.vbox, hbox)
+		########
+		self.fcw = gtk.FileChooserWidget(action=gtk.FileChooserAction.SAVE)
+		self.fcw.set_current_folder(deskDir)
+		pack(self.vbox, self.fcw, 1, 1)
+		####
+		self.vbox.show_all()
+		self.formatRadioChanged()
+
+	def formatRadioChanged(self, widget=None):
+		from scal3.os_utils import fixStrForFileName
+		fpath = self.fcw.get_filename()
+		if fpath:
+			fname_nox, ext = splitext(split(fpath)[1])
+		else:
+			fname_nox, ext = "", ""
+		if not fname_nox:
+			fname_nox = self._defaultFileName
+		#if self.radioIcs.get_active():
+		#	if ext != ".ics":
+		#		ext = ".ics"
+		#else:
+		if ext != ".json":
+			ext = ".json"
+		self.fcw.set_current_name(fname_nox + ext)
+
+	def save(self):
+		fpath = self.fcw.get_filename()
+		#if self.radioIcs.get_active():
+		#	pass
+
+		data = ui.eventGroups.eventListExportData(
+			self._idsList,
+			groupTitle=self._groupTitle,
+		)
+
+		if self.radioJsonCompact.get_active():
+			text = dataToCompactJson(data)
+			open(fpath, "w", encoding="utf-8").write(text)
+		elif self.radioJsonPretty.get_active():
+			text = dataToPrettyJson(data)
+			open(fpath, "w", encoding="utf-8").write(text)
+		else:
+			RuntimeError("no format is selected")
 
 	def run(self):
 		if gtk.Dialog.run(self) == gtk.ResponseType.OK:
