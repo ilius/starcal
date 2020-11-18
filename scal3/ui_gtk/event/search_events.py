@@ -23,6 +23,7 @@ log = logger.get()
 
 from scal3.path import *
 from scal3.utils import cmp
+from scal3 import cal_types
 from scal3.cal_types import calTypes
 from scal3 import core
 from scal3.core import jd_to_primary
@@ -56,6 +57,7 @@ from scal3.ui_gtk.event.utils import (
 	menuItemFromEventGroup,
 )
 from scal3.ui_gtk.event.common import SingleGroupComboBox
+from scal3.ui_gtk.event.export import EventListExportDialog
 
 
 @registerSignals
@@ -213,6 +215,13 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		)
 		searchButton.connect("clicked", self.onSearchClick)
 		bbox.add(searchButton)
+		###
+		exportButton = labelImageButton(
+			label=_("_Export"),
+			# FIXME: imageName="export-events.svg",
+		)
+		exportButton.connect("clicked", self.onExportClick)
+		bbox.add(exportButton)
 		###
 		hideShowFiltersButton = labelImageButton(
 			label=_("Hide Filters"),
@@ -421,6 +430,20 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 
 	def onSearchClick(self, obj=None):
 		self.waitingDo(self._do_search)
+
+	def onExportClick(self, obj=None):
+		idsList = []
+		for row in self.trees:
+			gid = row[0]
+			eid = row[1]
+			idsList.append((gid, eid))
+		y, m, d = cal_types.getSysDate(core.GREGORIAN)
+		EventListExportDialog(
+			idsList=idsList,
+			defaultFileName=f"search-events-{y:04d}-{m:02d}-{d:02d}",
+			groupTitle=f"Search Results ({y:04d}-{m:02d}-{d:02d})",
+			transient_for=self,
+		).run()
 
 	def onHideShowFiltersClick(self, obj=None):
 		visible = not self.vboxFilters.get_visible()

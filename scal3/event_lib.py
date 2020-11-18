@@ -5808,6 +5808,43 @@ class EventGroupsHolder(JsonObjectsHolder):
 			data["groups"].append(self.byId[gid].exportData())
 		return data
 
+	def eventListExportData(
+		self,
+		idsList: List[Tuple[int, int]],
+		groupTitle: str = "",
+	) -> Dict[str, Any]:
+		eventsData = []
+		for groupId, eventId in idsList:
+			event = self.byId[groupId][eventId]
+			modified = event.modified
+			if event.uuid is None:
+				event.save()
+			eventData = event.getDataOrdered()
+			eventData["modified"] = modified
+			# eventData["sha1"] = event.lastHash
+			try:
+				del eventData["remoteIds"]  # FIXME
+			except KeyError:
+				pass
+			if not eventData["notifiers"]:
+				del eventData["notifiers"]
+				del eventData["notifyBefore"]
+			eventsData.append(eventData)
+
+		return OrderedDict([
+			("info", OrderedDict([
+				("appName", core.APP_NAME),
+				("version", core.VERSION),
+			])),
+			("groups", [
+				OrderedDict([
+					("type", "group"),
+					("title", groupTitle),
+					("events", eventsData),
+				]),
+			]),
+		])
+
 	def importData(self, data: Dict[str, Any]) -> EventGroupsImportResult:
 		newGroups = []  # type: List[EventGroup]
 		res = EventGroupsImportResult()
