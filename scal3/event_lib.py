@@ -1998,7 +1998,7 @@ def iconAbsToRelativelnData(data):
 def iconRelativeToAbsInObj(self):
 	icon = self.icon
 	if icon and not isabs(icon):
-		if not "/" in icon:
+		if "/" not in icon:
 			icon = join("event", icon)
 		if icon.endswith(".png"):
 			icon = join(pixDir, icon)
@@ -2018,7 +2018,7 @@ class WithIcon:
 		icon = self.icon
 		for direc in (svgDir, pixDir):
 			if icon.startswith(direc + os.sep):
-				return icon[len(direc)+1:]
+				return icon[len(direc) + 1:]
 		return icon
 
 
@@ -6021,6 +6021,7 @@ class EventAccountsHolder(JsonObjectsHolder):
 		self.byId[_id] = obj
 		return obj
 
+
 # ----> continue adding types from here <----
 class EventTrash(EventContainer, WithIcon):
 	name = "trash"
@@ -6253,7 +6254,7 @@ def getWeekOccurrenceData(curAbsWeekNumber, groups, tfmt="HM$"):
 	endJd = startJd + 7
 	data = []
 
-	def add(group: "EventGroup", event:"Event", eData: "dict"):
+	def add(group: "EventGroup", event: "Event", eData: "dict"):
 		eData["show"] = (
 			group.showInDCal,
 			group.showInWCal,
