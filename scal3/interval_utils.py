@@ -29,11 +29,7 @@ CLOSED_START, OPEN_START, OPEN_END, CLOSED_END = range(4)
 
 
 def ab_overlaps(a0: float, b0: float, a1: float, b1: float) -> None:
-	return (
-		b0 - a0
-		+ b1 - a1
-		- abs(a0 + b0 - a1 - b1) > 0.01
-	)
+	return b0 - a0 + b1 - a1 - abs(a0 + b0 - a1 - b1) > 0.01
 
 
 def md_overlaps(m0: float, d0: float, m1: float, d1: float) -> None:
@@ -190,8 +186,8 @@ def intersectionOfTwoIntervalList(*lists):
 						pos,
 						ptype == CLOSED_END,
 					))
-				#if start == pos:  # FIXME
-				#	log.info(f"start = pos={start%(24*3600)/3600.0}, ptype={ptype}")
+				# if start == pos:  # FIXME
+				# 	log.info(f"start = pos={start%(24*3600)/3600.0}, ptype={ptype}")
 			openStartList[lst_index] = None
 		else:  # start
 			# start == pos

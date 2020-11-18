@@ -384,12 +384,9 @@ class HolidayPlugin(BaseJsonPlugin):
 				return True
 
 			if (
-				hy is None
-				and
-				self.lastDayMerge
-				and
-				d == hd - 1
-				and
+				hy is None and
+				self.lastDayMerge and
+				d == hd - 1 and
 				hd >= module.minMonthLen
 			):
 				ny, nm, nd = jd_to(jd + 1, calType)

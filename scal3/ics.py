@@ -90,20 +90,20 @@ def getEpochByIcsTime(tmStr: str) -> int:
 	)
 
 
-#def getEpochByIcsTime(tmStr):
-#	utcOffset = 0
-#	if "T" in tmStr:
-#		if "+" in tmStr or "-" in tmStr:
-#			format = "%Y%m%dT%H%M%S%z" ## not working FIXME
-#		else:
-#			format = "%Y%m%dT%H%M%S"
-#	else:
-#		format = "%Y%m%d"
-#	try:
-#		tm = strptime(tmStr, format)
-#	except ValueError as e:
-#		raise ValueError(f"getEpochByIcsTime: Bad ics time format {tmStr!r}")
-#	return int(mktime(tm))
+# def getEpochByIcsTime(tmStr):
+# 	utcOffset = 0
+# 	if "T" in tmStr:
+# 		if "+" in tmStr or "-" in tmStr:
+# 			format = "%Y%m%dT%H%M%S%z" ## not working FIXME
+# 		else:
+# 			format = "%Y%m%dT%H%M%S"
+# 	else:
+# 		format = "%Y%m%d"
+# 	try:
+# 		tm = strptime(tmStr, format)
+# 	except ValueError as e:
+# 		raise ValueError(f"getEpochByIcsTime: Bad ics time format {tmStr!r}")
+# 	return int(mktime(tm))
 
 
 def splitIcsValue(value: str) -> List[str]:
@@ -136,7 +136,7 @@ def convertBuiltinTextPlugToIcs(
 	endJd: int,
 	namePostfix: str = "",
 ) -> None:
-	plug.load() # FIXME
+	plug.load()  # FIXME
 	calType = plug.calType
 	icsText = icsHeader
 	currentTimeStamp = strftime(icsTmFormat)

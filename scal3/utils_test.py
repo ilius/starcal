@@ -1,9 +1,14 @@
 #!/usr/bin/env python3
 import unittest
 
-# import sys; sys.path.append(".")
+import sys
+from os.path import join, dirname, abspath
+
+rootDir = dirname(dirname(abspath(__file__)))
+sys.path.insert(0, rootDir)
 
 from scal3.utils import *
+
 
 class TestVersionCompare(unittest.TestCase):
 	def test_versionLessThan(self):
@@ -20,6 +25,7 @@ class TestVersionCompare(unittest.TestCase):
 
 	def assertVLessThan(self, v1, v2):
 		self.assertTrue(versionLessThan(v1, v2))
+
 
 class TestFindWordByPos(unittest.TestCase):
 	def test_findWordByPos(self):
@@ -91,6 +97,10 @@ class TestFindWordByPos(unittest.TestCase):
 		self.assertEqual(findWordByPos(s1, 60), ("", -1))
 		self.assertEqual(findWordByPos(s1, 61), ("", -1))
 
+
+class TestFindNearestNum(unittest.TestCase):
+	def test1(self):
+		self.assertEqual(findNearestNum([1, 2, 4, 6, 3, 7], 3.6), 4)
 
 
 if __name__ == "__main__":

@@ -17,9 +17,9 @@ from scal3.json_utils import jsonToData, dataToPrettyJson
 
 def get_cmdline(proc):
 	# log.debug(psutil.version_info, proc.cmdline)
-	if isinstance(proc.cmdline, list):## psutil < 2.0
+	if isinstance(proc.cmdline, list):  # psutil < 2.0
 		return proc.cmdline
-	else:## psutil >= 2.0
+	else:  # psutil >= 2.0
 		return proc.cmdline()
 
 
