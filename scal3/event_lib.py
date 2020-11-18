@@ -4634,6 +4634,8 @@ class EventGroup(EventContainer):
 				if not func(event, value):
 					break
 			else:
+				if event.uuid is None:
+					event.save()
 				yield event
 
 	def createPatchList(self, sinceEpoch: int) -> "List[Dict[str, Any]]":
@@ -5812,11 +5814,10 @@ class EventGroupsHolder(JsonObjectsHolder):
 		eventsData = []
 		for groupId, eventId in idsList:
 			event = self.byId[groupId][eventId]
-			modified = event.modified
 			if event.uuid is None:
 				event.save()
 			eventData = event.getDataOrdered()
-			eventData["modified"] = modified
+			eventData["modified"] = event.modified
 			# eventData["sha1"] = event.lastHash
 			try:
 				del eventData["remoteIds"]  # FIXME

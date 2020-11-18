@@ -18,6 +18,7 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from time import localtime
 from scal3 import logger
 log = logger.get()
 
@@ -49,6 +50,11 @@ from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
 from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
 from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk.utils import (
+	showError,
+	showInfo,
+	set_tooltip,
+)
 from scal3.ui_gtk.event.utils import (
 	confirmEventTrash,
 	eventWriteMenuItem,
@@ -223,6 +229,14 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		exportButton.connect("clicked", self.onExportClick)
 		bbox.add(exportButton)
 		###
+		directExportButton = labelImageButton(
+			label=_("Direct Export"),
+			# FIXME: imageName="export-events.svg",
+		)
+		directExportButton.connect("clicked", self.onDirectExportClick)
+		bbox.add(directExportButton)
+		set_tooltip(directExportButton, _("Search and save the results in JSON file without listing them here"))
+		###
 		hideShowFiltersButton = labelImageButton(
 			label=_("Hide Filters"),
 			imageName="",
@@ -385,7 +399,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 	def updateTimezoneSensitive(self, obj=None):
 		self.timezoneCombo.set_sensitive(self.timezoneCheck.get_active())
 
-	def _do_search(self):
+	def _collectConds(self):
 		if self.groupCheck.get_active():
 			groupIds = [
 				self.groupCombo.get_active()
@@ -410,6 +424,11 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 			conds["type"] = cls.name
 		if self.timezoneCheck.get_active():
 			conds["timezone"] = self.timezoneCombo.get_text()
+
+		return groupIds, conds
+
+	def _do_search(self):
+		groupIds, conds = self._collectConds()
 		###
 		self.trees.clear()
 		for gid in groupIds:
@@ -427,6 +446,44 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 			_("Found {eventCount} events").format(eventCount=_(len(self.trees)))
 		)
 
+	def searchAndExportToJSON(
+		self,
+		groupIds: "List[int]",
+		conds: "Dict[str, Any]",
+		fpath: str,
+		# TODO: compact: bool,
+	):
+		# open json file and write header
+		from json import dumps
+		y, m, d = cal_types.getSysDate(core.GREGORIAN)
+		groupTitle = f"Search Results ({y:04d}-{m:02d}-{d:02d})"
+		with open(fpath, mode="w", encoding="utf-8") as _file:
+			_file.write(
+				f'{{"info":{{"appName":{dumps(core.APP_NAME)},'
+				f'"version":{dumps(core.VERSION)}}},'
+				f'"groups":[{{"type":"group","title":{dumps(groupTitle)},"events":['
+			)
+			_file.flush()
+			eventCount = 0
+			for gid in groupIds:
+				group = ui.eventGroups[gid]
+				for event in group.search(conds):
+					eventData = event.getDataOrdered()
+					eventData["modified"] = event.modified
+					# eventData["sha1"] = event.lastHash
+					try:
+						del eventData["remoteIds"]  # FIXME
+					except KeyError:
+						pass
+					if not eventData["notifiers"]:
+						del eventData["notifiers"]
+						del eventData["notifyBefore"]
+					if eventCount > 0:
+						_file.write(",")
+					_file.write(dumps(eventData))
+					eventCount += 1
+			_file.write("]}]}")
+
 	def onSearchClick(self, obj=None):
 		self.waitingDo(self._do_search)
 
@@ -443,6 +500,33 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 			groupTitle=f"Search Results ({y:04d}-{m:02d}-{d:02d})",
 			transient_for=self,
 		).run()
+
+	def _do_directExport(self):
+		groupIds, conds = self._collectConds()
+		y, m, d, H, M, S = localtime()[:6]
+		fname = f"search-events-{y:04d}-{m:02d}-{d:02d}-{H:02d}{M:02d}{S:02d}.json"
+		fpath = join(deskDir, fname)
+		log.info(f"direct event search and export to: {fpath}")
+		fpathMsg = _("File:") + f" {fpath}"
+		try:
+			self.searchAndExportToJSON(
+				groupIds=groupIds,
+				conds=conds,
+				fpath=fpath,
+			)
+		except Exception as e:
+			showError(
+				_("Direct search and export failed") + f"\n{fpathMsg}\n{e}",
+				selectable=True,
+			)
+		else:
+			showInfo(
+				_("Direct search and export successfully finished") + f"\n{fpathMsg}",
+				selectable=True,
+			)
+
+	def onDirectExportClick(self, obj=None):
+		self.waitingDo(self._do_directExport)
 
 	def onHideShowFiltersClick(self, obj=None):
 		visible = not self.vboxFilters.get_visible()
