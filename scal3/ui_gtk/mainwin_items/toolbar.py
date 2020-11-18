@@ -105,6 +105,15 @@ class CalObj(CustomizableToolbar):
 			continuousClick=False,
 		),
 		ToolbarItem(
+			name="search",
+			iconName="gtk-find",
+			imageName="",
+			onClick="eventSearchShow",
+			desc="Search Events",
+			shortDesc="Search",
+			continuousClick=False,
+		),
+		ToolbarItem(
 			name="export",
 			iconName="gtk-convert",
 			imageName="export-to-html.svg",
