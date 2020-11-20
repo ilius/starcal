@@ -170,6 +170,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		bbox.set_border_width(5)
 		searchButton = gtk.Button()
 		searchButton.set_label(_("_Search"))
+		searchButton.set_use_underline(True)
 		searchButton.set_image(gtk.Image.new_from_stock(
 			gtk.STOCK_FIND,
 			gtk.IconSize.BUTTON,
