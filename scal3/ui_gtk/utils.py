@@ -265,6 +265,20 @@ def imageClassButton(iconName: str, styleClass: str, size: int):
 		button.get_style_context().add_class(styleClass)
 	return button
 
+def setImageClassButton(button: "gtk.Button", iconName: str, styleClass: str, size: int):
+	button.remove(button.get_child())
+	image = imageFromIconName(
+		iconName,
+		size,
+	)
+	image.show()
+	button.add(image)
+	button.get_style_context().add_class("image-button")
+	button.set_can_focus(False)
+	if styleClass:
+		button.get_style_context().add_class(styleClass)
+	return button
+
 
 def getStyleColor(widget, state=gtk.StateType.NORMAL):
 	return widget.get_style_context().get_color(state)
