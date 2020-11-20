@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+from scal3 import logger
+log = logger.get()
+
 from scal3 import core
 from scal3.locale_man import tr as _
 from scal3 import event_lib
@@ -77,6 +81,7 @@ class GroupEditorDialog(gtk.Dialog):
 			self.activeWidget.updateVars()
 			self.activeWidget.destroy()
 		group = ui.withFS(event_lib.classes.group[self.comboType.get_active()]())
+		log.info(f"GroupEditorDialog: typeChanged: self.activeWidget={self.activeWidget}, new class: {group.name}")
 		if self.isNew:
 			group.setRandomColor()
 			if group.icon:
@@ -89,6 +94,7 @@ class GroupEditorDialog(gtk.Dialog):
 		self._group = group
 		self.activeWidget = makeWidget(group)
 		pack(self.vbox, self.activeWidget)
+		self.activeWidget.show()
 
 	def run(self):
 		if self.activeWidget is None:
