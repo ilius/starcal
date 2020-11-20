@@ -30,7 +30,7 @@ from scal3.locale_man import tr as _
 from scal3 import ui
 
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import imageClassButton
+from scal3.ui_gtk.utils import imageClassButton, setImageClassButton
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
 from scal3.ui_gtk.stack import StackPage
 
@@ -68,6 +68,7 @@ class WinLayoutBase(CustomizableCalObj):
 
 class WinLayoutObj(WinLayoutBase):
 	isWrapper = True
+
 	def __init__(
 		self,
 		name: str = "",
@@ -130,7 +131,7 @@ class WinLayoutObj(WinLayoutBase):
 			button.enable = item.enable
 
 	def getOptionsButtonBox(self):
-		#log.debug(f"WinLayoutObj: getOptionsButtonBox: name={self._name}")
+		# log.debug(f"WinLayoutObj: getOptionsButtonBox: name={self._name}")
 		if self.optionsButtonBox is not None:
 			return self.optionsButtonBox
 		item = self.getWidget()
@@ -249,7 +250,7 @@ class WinLayoutBox(WinLayoutBase):
 		self.items = [itemByName[name] for name in itemNames]
 
 	def getOptionsButtonBox(self):
-		#log.debug(f"WinLayoutBox: getOptionsButtonBox: name={self._name}")
+		# log.debug(f"WinLayoutBox: getOptionsButtonBox: name={self._name}")
 		if self.optionsButtonBox is not None:
 			return self.optionsButtonBox
 
@@ -262,42 +263,60 @@ class WinLayoutBox(WinLayoutBase):
 			for index, item in enumerate(self.items):
 				childBox = item.getOptionsButtonBox()
 				hbox = HBox(spacing=0)
+				action = "down" if index == 0 else "up"
 				upButton = imageClassButton(
-					"pan-up-symbolic",
-					"up",
+					f"pan-{action}-symbolic",
+					action,
 					self.arrowSize,
 				)
+				upButton.action = action
 				pack(hbox, childBox, 1, 1)
 				pack(hbox, upButton, 0, 0)
 				optionsButtonBox.insert(hbox, -1)
 				###
-				upButton.connect("clicked", self.onItemMoveUpClick, item)
+				upButton.connect("clicked", self.onItemMoveClick, item)
 				item.upButton = upButton
-				if index == 0:
-					upButton.set_sensitive(False)
 		else:
 			optionsButtonBox = gtk.Box(
 				orientation=getOrientation(self.vertical),
 				spacing=self.buttonSpacing,
 			)
 			for item in self.items:
-				pack(optionsButtonBox, item.getOptionsButtonBox(), item.expand, item.expand)
+				pack(
+					optionsButtonBox,
+					item.getOptionsButtonBox(),
+					item.expand,
+					item.expand,
+				)
 		self.optionsButtonBox = optionsButtonBox
 		return optionsButtonBox
 
-	def onItemMoveUpClick(self, button: gtk.Button, item: Union["WinLayoutBox", "WinLayoutObj"]):
+	def onItemMoveClick(
+		self,
+		button: gtk.Button,
+		item: Union["WinLayoutBox", "WinLayoutObj"],
+	):
 		index = self.items.index(item)
-		if index < 1:
-			log.error(f"onItemMoveUpClick: bad index={index}, item={item}")
-		###
-		self.moveItem(index, index - 1)
+		if index == 0:
+			newIndex = index + 1
+		else:
+			newIndex = index - 1
+		self.moveItem(index, newIndex)
 		###
 		listBox = self.optionsButtonBox
 		hbox = listBox.get_row_at_index(index)
 		listBox.remove(hbox)
-		listBox.insert(hbox, index - 1)
+		listBox.insert(hbox, newIndex)
 		for tmpIndex, tmpItem in enumerate(self.items):
-			tmpItem.upButton.set_sensitive(tmpIndex > 0)
+			action = "down" if tmpIndex == 0 else "up"
+			if tmpItem.upButton.action != action:
+				setImageClassButton(
+					tmpItem.upButton,
+					f"pan-{action}-symbolic",
+					action,
+					self.arrowSize,
+				)
+				tmpItem.upButton.action = action
 		self.onConfigChange()
 
 	def getSubPages(self):
@@ -311,6 +330,3 @@ class WinLayoutBox(WinLayoutBase):
 				subPages.append(page)
 		self.subPages = subPages
 		return subPages
-
-
-
