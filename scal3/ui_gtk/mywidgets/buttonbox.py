@@ -34,6 +34,18 @@ class MyHButtonBox(gtk.ButtonBox):
 		self.set_layout(gtk.ButtonBoxStyle.END)
 		self.set_spacing(15)
 		self.set_border_width(15)
+		self._homogeneous = True
+
+	def set_homogeneous(self, homogeneous: bool):
+		# gtk.ButtonBox.set_homogeneous does not work anymore!
+		# not sure since when
+		self._homogeneous = homogeneous
+
+	def add(self, child):
+		gtk.ButtonBox.add(self, child)
+		if not self._homogeneous:
+			self.set_child_non_homogeneous(child, True)
+			# New in gi version 3.2.
 
 	def add_button(
 		self,
