@@ -52,7 +52,7 @@ class AccountCombo(IdComboBox):
 
 	def get_active(self):
 		active = IdComboBox.get_active(self)
-		if active is -1:
+		if active == -1:
 			active = None
 		return active
 
