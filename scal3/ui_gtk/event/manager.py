@@ -74,7 +74,6 @@ from scal3.ui_gtk.event.group_op import (
 	GroupConvertModeDialog,
 )
 from scal3.ui_gtk.event.account_op import FetchRemoteGroupsDialog
-from scal3.ui_gtk.event.search_events import EventSearchWindow
 from scal3.ui_gtk.event.history import EventHistoryDialog
 
 #print("Testing translator", __file__, _("About"))
@@ -188,8 +187,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		self.connect("response", self.onResponse)
 		self.connect("show", self.onShow)
 		#######
-		self.searchWin = EventSearchWindow()
-		#######
 		menubar = gtk.MenuBar()
 		####
 		fileItem = MenuItem(_("_File"))
@@ -204,7 +201,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 		fileMenu.append(addGroupItem)
 		##
 		searchItem = MenuItem(_("_Search Events"))## FIXME right place?
-		searchItem.connect("activate", self.mbarSearchClicked)
+		searchItem.connect("activate", self.onMenuBarSearchClick)
 		fileMenu.append(searchItem)
 		##
 		exportItem = MenuItem(_("_Export"))
@@ -887,8 +884,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 	def mbarImportClicked(self, obj):
 		EventsImportWindow(self).present()
 
-	def mbarSearchClicked(self, obj):
-		self.searchWin.present()
+	def onMenuBarSearchClick(self, menuItem: gtk.MenuItem) -> None:
+		ui.mainWin.eventSearchShow()
 
 	def _do_checkForOrphans(self):
 		newGroup = ui.eventGroups.checkForOrphans()

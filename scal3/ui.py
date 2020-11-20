@@ -1071,6 +1071,7 @@ if menuTextColor is None:
 mainWin = None
 prefDialog = None
 eventManDialog = None
+eventSearchWin = None
 timeLineWin = None
 yearWheelWin = None
 weekCalWin = None

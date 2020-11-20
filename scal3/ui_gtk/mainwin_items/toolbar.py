@@ -44,6 +44,13 @@ class CalObj(CustomizableToolbar):
 			"Event",
 		),
 		ToolbarItem(
+			"search",
+			"find",
+			"eventSearchShow",
+			"Search Events",
+			"Search",
+		),
+		ToolbarItem(
 			"export",
 			"convert",
 			"exportClicked",
@@ -74,6 +81,12 @@ class CalObj(CustomizableToolbar):
 			ud.mainToolbarData["items"] = [
 				(item._name, True) for item in self.defaultItems
 			]
+		else:
+			currentNames = {item[0] for item in ud.mainToolbarData["items"]}
+			for name, item in self.defaultItemsDict.items():
+				if name not in currentNames:
+					ud.mainToolbarData["items"].append((name, False))
+
 		self.setData(ud.mainToolbarData)
 		if ui.mainWin:
 			self.connect("button-press-event", ui.mainWin.childButtonPress)

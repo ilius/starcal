@@ -1288,6 +1288,15 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 		self.eventManCreate()
 		openWindow(ui.eventManDialog)
 
+	def eventSearchCreate(self):
+		if ui.eventSearchWin is None:
+			from scal3.ui_gtk.event.search_events import EventSearchWindow
+			ui.eventSearchWin = EventSearchWindow()
+
+	def eventSearchShow(self, obj=None, data=None):
+		self.eventSearchCreate()
+		openWindow(ui.eventSearchWin)
+
 	def addCustomEvent(self, obj=None):
 		self.eventManCreate()
 		ui.eventManDialog.addCustomEvent()
