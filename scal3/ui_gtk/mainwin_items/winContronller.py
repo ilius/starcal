@@ -15,7 +15,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 	expand = False
 	imageName = ""
 	imageNameFocus = ""
-	imageNameInactive = "button-inactive.png"
+	imageNameInactive = ""
 
 	def __init__(self, controller, size=23):
 		gtk.EventBox.__init__(self)
@@ -82,6 +82,7 @@ class WinConButtonMin(WinConButton):
 	desc = _("Minimize Window")
 	imageName = "button-min.png"
 	imageNameFocus = "button-min-focus.png"
+	imageNameInactive = "button-min-inactive.png"
 
 	def onClicked(self, gWin, gevent):
 		if ui.winTaskbar:
@@ -95,6 +96,7 @@ class WinConButtonMax(WinConButton):
 	desc = _("Maximize Window")
 	imageName = "button-max.png"
 	imageNameFocus = "button-max-focus.png"
+	imageNameInactive = "button-max-inactive.png"
 
 	def onClicked(self, gWin, gevent):
 		if gWin.isMaximized:
@@ -110,6 +112,7 @@ class WinConButtonClose(WinConButton):
 	desc = _("Close Window")
 	imageName = "button-close.png"
 	imageNameFocus = "button-close-focus.png"
+	imageNameInactive = "button-close-inactive.png"
 
 	def onClicked(self, gWin, gevent):
 		gWin.emit("delete-event", gdk.Event())
