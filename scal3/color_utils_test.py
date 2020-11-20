@@ -1,4 +1,10 @@
+import sys
+from os.path import join, dirname, abspath
 import unittest
+import logging
+
+rootDir = dirname(dirname(abspath(__file__)))
+sys.path.insert(0, rootDir)
 
 # results are confirmed with
 # https://www.w3schools.com/colors/colors_converter.asp
