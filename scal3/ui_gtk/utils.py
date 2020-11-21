@@ -203,11 +203,12 @@ Date:   Fri Oct 14 17:31:56 2016
 
 def newButtonImageBox(label: str, image: gtk.Image, spacing=0) -> gtk.Box:
 	hbox = HBox(spacing=spacing)
-	labelObj = gtk.Label(label=label)
-	labelObj.set_use_underline(True)
-	labelObj.set_xalign(0)
 	pack(hbox, image, 0, 0)
-	pack(hbox, labelObj, 0, 0)
+	if label:
+		labelObj = gtk.Label(label=label)
+		labelObj.set_use_underline(True)
+		labelObj.set_xalign(0)
+		pack(hbox, labelObj, 0, 0)
 	hbox.show_all()
 	return hbox
 
@@ -234,22 +235,29 @@ def labelImageButton(
 	label: str = "",
 	imageName: str = "",
 	size: int = 0,
+	func: "Optional[Callable]" = None,
+	tooltip: str = "",
+	spacing: int = 10,
 ):
 	button = gtk.Button()
-	if ui.buttonIconEnable:
+	if ui.buttonIconEnable or not label:
 		if size == 0:
 			size = ui.buttonIconSize
 		button.add(newButtonImageBox(
 			label,
 			imageFromFile(imageName, size=size),
-			spacing=10,
+			spacing=spacing,
 		))
 		# TODO: the child(HBox) is not centered in the Button
 		# problem can be seen in Preferences window: Apply and OK buttons
 		# button.set_alignment(0.5, 0.5)
-		return button
-	button.set_label(label)
-	button.set_use_underline(True)
+	else:
+		button.set_label(label)
+		button.set_use_underline(True)
+	if func is not None:
+		button.connect("clicked", func)
+	if tooltip:
+		set_tooltip(button, tooltip)
 	return button
 
 

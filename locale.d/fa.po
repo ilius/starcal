@@ -1717,6 +1717,23 @@ msgstr ""
 "اگر می‌خواهید رویداد «{eventSummary}» به {trashTitle} منتقل شود، دکمهٔ تائید را فشار دهید"
 
 
+msgid "Press OK if you want to move {eventCount} events to {trashTitle}"
+msgstr ""
+"اگر می‌خواهید {eventCount} رویداد به {trashTitle} منتقل شود، دکمهٔ تائید را فشار دهید"
+
+msgid "Multi-select"
+msgstr ""
+"انتخاب چندگانه"
+
+msgid "No event selected"
+msgstr ""
+"هیچ رویدادی انتخاب نشده"
+
+msgid "{count} events selected"
+msgstr ""
+"{count} رویداد انتخاب شده"
+
+
 msgid "Sort Events"
 msgstr ""
 "مرتب کردن رویدادها"
