@@ -6238,7 +6238,7 @@ def getDayOccurrenceData(curJd, groups, tfmt="HM$"):
 					"showInStatusIcon": group.showInStatusIcon,
 				}
 			))
-	data.sort()
+	data.sort(key=lambda x: x[0])
 	return [item[1] for item in data]
 
 
