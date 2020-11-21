@@ -1498,7 +1498,6 @@ class PreferencesWindow(gtk.Window):
 		active = not cell.get_active()
 		itr = model.get_iter(path)
 		model.set_value(itr, 1, active)
-		cell.set_active(active)
 		if active:
 			plugI = model[path[0]][0]
 			plug = core.allPlugList[plugI]
@@ -1511,7 +1510,6 @@ class PreferencesWindow(gtk.Window):
 		active = not cell.get_active()
 		itr = model.get_iter(path)
 		model.set_value(itr, 2, active)
-		cell.set_active(active)
 
 	def plugTreeviewTop(self, button):
 		cur = self.plugTreeview.get_cursor()[0]
@@ -1770,7 +1768,6 @@ class PreferencesWindow(gtk.Window):
 		account.save()
 		###
 		self.accountsTreestore[index][1] = active
-		cell.set_active(active)
 
 
 if __name__ == "__main__":
