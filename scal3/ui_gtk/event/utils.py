@@ -28,6 +28,16 @@ def confirmEventTrash(event, **kwargs):
 		**kwargs
 	)
 
+def confirmEventsTrash(eventCount: int, **kwargs):
+	return confirm(
+		_(
+			"Press OK if you want to move {eventCount} events to {trashTitle}"
+		).format(
+			eventCount=_(eventCount),
+			trashTitle=ui.eventTrash.title,
+		),
+		**kwargs
+	)
 
 def checkEventsReadOnly(doException=True):
 	if event_lib.allReadOnly:
