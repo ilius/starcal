@@ -646,7 +646,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			# so that events are inserted in the same order as they are selected
 
 		for srcIter in iterList:
-			_iter = self.multiSelectPasteEvent(srcIter, move, targetPath)
+			_iter = self._pasteEventToPath(srcIter, move, targetPath)
 			if newEventIter is None:
 				newEventIter = _iter
 
@@ -665,48 +665,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 		if newEventIter:
 			self.treev.set_cursor(self.trees.get_path(newEventIter))
-
-	def multiSelectPasteEvent(
-		self,
-		srcIter,
-		move,
-		targetPath: List[int],
-	) -> None:
-		srcPath = self.trees.get_path(srcIter)
-		srcGroup, srcEvent = self.getObjsByPath(srcPath)
-		tarGroup = self.getObjsByPath(targetPath)[0]
-		self.checkEventToAdd(tarGroup, srcEvent)
-		if len(targetPath) == 1:
-			tarGroupIter = self.trees.get_iter(targetPath)
-			tarEventIter = None
-			tarEventIndex = len(tarGroup)
-		elif len(targetPath) == 2:
-			tarGroupIter = self.trees.get_iter(targetPath[:1])
-			tarEventIter = self.trees.get_iter(targetPath)
-			tarEventIndex = targetPath[1]
-		####
-		if move:
-			srcGroup.remove(srcEvent)
-			srcGroup.save()
-			tarGroup.insert(tarEventIndex, srcEvent)
-			tarGroup.save()
-			self.trees.remove(self.trees.get_iter(srcPath))
-			newEvent = srcEvent
-			ui.eventUpdateQueue.put("r", srcGroup, self)
-		else:
-			newEvent = srcEvent.copy()
-			newEvent.save()
-			tarGroup.insert(tarEventIndex, newEvent)
-			tarGroup.save()
-		ui.eventUpdateQueue.put("+", newEvent, self)
-		# although we insert the new event (not append) to group
-		# it should not make any difference, since only occurances (and not
-		# events) are displayed outside Event Manager
-		return self.insertEventRowAfter(
-			tarGroupIter,
-			tarEventIter,
-			newEvent,
-		)
 
 	def multiSelectDelete(self, obj=None):
 		model = self.trees
@@ -2098,14 +2056,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	) -> None:
 		self.pasteEventToPath(targetPath)
 
-	def pasteEventToPath(
+	def _pasteEventToPath(
 		self,
+		srcIter: "gtk.TreeIter",
+		move: bool,
 		targetPath: List[int],
-		doScroll: bool = True,
-	) -> None:
-		if not self.toPasteEvent:
-			return
-		srcIter, move = self.toPasteEvent
+	):
 		srcPath = self.trees.get_path(srcIter)
 		srcGroup, srcEvent = self.getObjsByPath(srcPath)
 		tarGroup = self.getObjsByPath(targetPath)[0]
@@ -2145,6 +2101,18 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			)
 		else:
 			newEventIter = self.appendEventRow(tarGroupIter, newEvent)
+		return newEventIter
+
+
+	def pasteEventToPath(
+		self,
+		targetPath: List[int],
+		doScroll: bool = True,
+	) -> None:
+		if not self.toPasteEvent:
+			return
+		srcIter, move = self.toPasteEvent
+		newEventIter = self._pasteEventToPath(srcIter, move, targetPath)
 		if doScroll:
 			self.treev.set_cursor(self.trees.get_path(newEventIter))
 		self.toPasteEvent = None
