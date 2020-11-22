@@ -250,6 +250,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		####
 		self.multiSelect = False
 		self.multiSelectPathDict = odict()
+		self.multiSelectSelectedGroupPathDict = {}
 		self.multiSelectToPaste = None  # Optional[Tuple[bool, List[gtk.TreeIter]]]
 		####
 		self.set_title(_("Event Manager"))
@@ -581,16 +582,29 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def multiSelectTreeviewToggle(self, cell, pathStr):
 		model = self.trees
-		pathObj = gtk.TreePath.new_from_string(pathStr)
-		if pathObj.get_depth() == 1:
-			# TODO: enable/disable all events in group
-			return
-		if pathObj.get_depth() != 2:
-			raise RuntimeError(f"invalid path depth={pathObj.get_depth()}, pathStr={pathStr}")
-		pathTuple = tuple(pathObj)
-		itr = model.get_iter(pathObj)
-		active = not cell.get_active()
+		path = gtk.TreePath.new_from_string(pathStr).get_indices()
+		if len(path) not in (1, 2):
+			raise RuntimeError(f"invalid path depth={len(path)}, pathStr={pathStr}")
+		itr = model.get_iter(path)
+		pathTuple = tuple(path)
+
+		active = not model.get_value(itr, 0)
 		model.set_value(itr, 0, active)
+
+		if len(path) == 1:
+			childIter = model.iter_children(itr)
+			while childIter is not None:
+				childPathTuple = tuple(model.get_path(childIter).get_indices())
+				model.set_value(childIter, 0, active)
+				if active:
+					self.multiSelectPathDict[childPathTuple] = None
+				elif childPathTuple in self.multiSelectPathDict:
+					del self.multiSelectPathDict[childPathTuple]
+				childIter = model.iter_next(childIter)
+			self.multiSelectLabelUpdate()
+			self.multiSelectSelectedGroupPathDict[pathTuple] = None
+			return
+
 		if active:
 			self.multiSelectPathDict[pathTuple] = None
 		else:
@@ -617,19 +631,35 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		if toPaste is None:
 			log.error("nothing to paste")
 			return
+
 		treev = self.treev
 		model = self.trees
 		move, iterList = toPaste
 		if not iterList:
 			return
+
 		targetPath = self.getSelectedPath()
 		newEventIter = None
-		for srcIter in reversed(iterList):
-			newEventIter = self.multiSelectPasteEvent(srcIter, move, targetPath)
+
+		if len(targetPath) == 2:
+			iterList = list(reversed(iterList))
+			# so that events are inserted in the same order as they are selected
+
+		for srcIter in iterList:
+			_iter = self.multiSelectPasteEvent(srcIter, move, targetPath)
+			if newEventIter is None:
+				newEventIter = _iter
 
 		if not move:
 			for _iter in iterList:
 				model.set_value(_iter, 0, False)
+
+		for groupPath in self.multiSelectSelectedGroupPathDict:
+			try:
+				model.set_value(model.get_iter(groupPath), 0, False)
+			except ValueError:
+				pass
+
 		self.multiSelectPathDict = odict()
 		self.multiSelectLabelUpdate()
 
@@ -694,6 +724,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			ui.moveEventToTrash(group, event, self)
 			model.remove(_iter)
 			self.addEventRowToTrash(event)
+
+		for groupPath in self.multiSelectSelectedGroupPathDict:
+			try:
+				model.set_value(model.get_iter(groupPath), 0, False)
+			except ValueError:
+				pass
 
 		self.multiSelectPathDict = odict()
 		self.multiSelectLabelUpdate()
