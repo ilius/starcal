@@ -580,9 +580,16 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			count=_(len(self.multiSelectPathDict)),
 		))
 
+	def multiSelectTreeviewToggleSelected(self):
+		path = self.getSelectedPath()
+		self.multiSelectTreeviewTogglePath(path)
+
 	def multiSelectTreeviewToggle(self, cell, pathStr):
-		model = self.trees
 		path = gtk.TreePath.new_from_string(pathStr).get_indices()
+		self.multiSelectTreeviewTogglePath(path)
+
+	def multiSelectTreeviewTogglePath(self, path: "List[int]"):
+		model = self.trees
 		if len(path) not in (1, 2):
 			raise RuntimeError(f"invalid path depth={len(path)}, pathStr={pathStr}")
 		itr = model.get_iter(path)
@@ -675,10 +682,18 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		]
 		if not confirmEventsTrash(len(iterList)):
 			return
+		# FIXME: show another message for deleting events that are in trash
 
 		for _iter in iterList:
 			path = model.get_path(_iter)
 			group, event = self.getObjsByPath(path)
+
+			if group.name == "trash":
+				group.delete(event.id)  # group == ui.eventTrash
+				group.save()
+				model.remove(_iter)
+				continue
+
 			ui.moveEventToTrash(group, event, self)
 			model.remove(_iter)
 			self.addEventRowToTrash(event)
@@ -691,6 +706,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 		self.multiSelectPathDict = odict()
 		self.multiSelectLabelUpdate()
+		self.treeviewCursorChanged()
 
 	def multiSelectCancel(self, obj=None):
 		model = self.trees
@@ -1202,6 +1218,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		# gevent.time == gtk.get_current_event_time()	# OK
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		if kname == "menu":  # simulate right click (key beside Right-Ctrl)
+			if self.multiSelect:
+				return False
 			path = self.getSelectedPath()
 			if path:
 				menu = self.genRightClickMenu(path)
@@ -1229,7 +1247,13 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 					gevent.time,
 				)
 		elif kname == "delete":
-			self.moveSelectionToTrash()
+			if self.multiSelect:
+				self.multiSelectDelete()
+			else:
+				self.moveSelectionToTrash()
+		elif kname == "space":
+			if self.multiSelect:
+				self.multiSelectTreeviewToggleSelected()
 		else:
 			# log.debug(kname)
 			return False
