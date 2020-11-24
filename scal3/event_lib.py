@@ -3633,6 +3633,15 @@ class EventContainer(BsonHistEventObj):
 		"uuid",
 	)
 
+	sortBys = (
+		# name, description, is_type_dependent
+		("calType", _("Calendar Type"), False),
+		("summary", _("Summary"), False),
+		("description", _("Description"), False),
+		("icon", _("Icon"), False),
+	)
+	sortByDefault = "summary"
+
 	def __getitem__(self, key):
 		if isinstance(key, int):  # eventId
 			return self.getEvent(key)
@@ -3776,6 +3785,65 @@ class EventContainer(BsonHistEventObj):
 		###
 		iconRelativeToAbsInObj(self)
 
+	def getEventNoCache(self, eid: int) -> "Event":
+		"""
+			no caching. and no checking if group contains eid
+			used only for sorting events
+		"""
+		event = EventContainer._getEvent(self, eid)
+		event.parent = self
+		event.rulesHash = event.getRulesHash()
+		return event
+
+	def getSortBys(self) -> "Tuple[str, List[str]]":
+		sortBys = list(self.sortBys)
+		if self.enable:
+			sortBys.append(("time_last", _("Last Occurrence Time"), False))
+			sortBys.append(("time_first", _("First Occurrence Time"), False))
+			return "time_last", sortBys
+		else:
+			return self.sortByDefault, sortBys
+
+	def getSortByValue(self, event: "Event", attr: str) -> Any:
+		if attr in ("time_last", "time_first"):
+			if event.isSingleOccur:
+				epoch = event.getStartEpoch()
+				if epoch is not None:
+					return epoch
+			if self.enable:
+				if attr == "time_last":
+					last = self.occur.getLastOfEvent(event.id)
+				else:
+					last = self.occur.getFirstOfEvent(event.id)
+				if last:
+					return last[0]
+				else:
+					log.info(f"no time_last returned for event {event.id}")
+					return smallest
+		return getattr(event, attr, smallest)
+
+	def sort(
+		self,
+		attr: str = "summary",
+		reverse: bool = False,
+	) -> None:
+		isTypeDep = True
+		for name, desc, dep in self.getSortBys()[1]:
+			if name == attr:
+				isTypeDep = dep
+				break
+		if isTypeDep:
+			def event_key(event: "Event"):
+				return (event.name, self.getSortByValue(event, attr))
+		else:
+			def event_key(event: "Event"):
+				return self.getSortByValue(event, attr)
+
+		self.idList.sort(
+			key=lambda eid: event_key(self.getEventNoCache(eid)),
+			reverse=reverse,
+		)
+
 
 class EventGroupsImportResult:
 	def __init__(self):
@@ -3813,14 +3881,6 @@ class EventGroup(EventContainer):
 	canConvertTo = ()
 	actions = []  # [("Export to ICS", "exportToIcs")]
 	eventActions = []  # FIXME
-	sortBys = (
-		# name, description, is_type_dependent
-		("calType", _("Calendar Type"), False),
-		("summary", _("Summary"), False),
-		("description", _("Description"), False),
-		("icon", _("Icon"), False),
-	)
-	sortByDefault = "summary"
 	eventCacheSizeMin = 0  # minimum cache size for events
 	basicParams = EventContainer.basicParams + (
 		# "enable",  # FIXME
@@ -3935,55 +3995,6 @@ class EventGroup(EventContainer):
 
 	def showInCal(self) -> bool:
 		return self.showInDCal or self.showInWCal or self.showInMCal
-
-	def getSortBys(self) -> "Tuple[str, List[str]]":
-		sortBys = list(self.sortBys)
-		if self.enable:
-			sortBys.append(("time_last", _("Last Occurrence Time"), False))
-			sortBys.append(("time_first", _("First Occurrence Time"), False))
-			return "time_last", sortBys
-		else:
-			return self.sortByDefault, sortBys
-
-	def getSortByValue(self, event: "Event", attr: str) -> Any:
-		if attr in ("time_last", "time_first"):
-			if event.isSingleOccur:
-				epoch = event.getStartEpoch()
-				if epoch is not None:
-					return epoch
-			if self.enable:
-				if attr == "time_last":
-					last = self.occur.getLastOfEvent(event.id)
-				else:
-					last = self.occur.getFirstOfEvent(event.id)
-				if last:
-					return last[0]
-				else:
-					log.info(f"no time_last returned for event {event.id}")
-					return smallest
-		return getattr(event, attr, smallest)
-
-	def sort(
-		self,
-		attr: str = "summary",
-		reverse: bool = False,
-	) -> None:
-		isTypeDep = True
-		for name, desc, dep in self.getSortBys()[1]:
-			if name == attr:
-				isTypeDep = dep
-				break
-		if isTypeDep:
-			def event_key(event: "Event"):
-				return (event.name, self.getSortByValue(event, attr))
-		else:
-			def event_key(event: "Event"):
-				return self.getSortByValue(event, attr)
-
-		self.idList.sort(
-			key=lambda eid: event_key(self.getEventNoCache(eid)),
-			reverse=reverse,
-		)
 
 	def __getitem__(self, key: str) -> "Event":
 		# if isinstance(key, basestring):  # ruleName
@@ -4252,16 +4263,6 @@ class EventGroup(EventContainer):
 		event.rulesHash = event.getRulesHash()
 		if self.enable:
 			self.setToCache(event)
-		return event
-
-	def getEventNoCache(self, eid: int) -> "Event":
-		"""
-			no caching. and no checking if group contains eid
-			used only for sorting events
-		"""
-		event = EventContainer._getEvent(self, eid)
-		event.parent = self
-		event.rulesHash = event.getRulesHash()
 		return event
 
 	def create(self, eventType: str) -> "Event":

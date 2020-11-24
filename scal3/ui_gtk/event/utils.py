@@ -52,9 +52,9 @@ def checkEventsReadOnly(doException=True):
 	return True
 
 
-def eventWriteMenuItem(*args, **kwargs):
+def eventWriteMenuItem(*args, sensitive=True, **kwargs):
 	item = ImageMenuItem(*args, **kwargs)
-	item.set_sensitive(not event_lib.allReadOnly)
+	item.set_sensitive(sensitive and not event_lib.allReadOnly)
 	return item
 
 
