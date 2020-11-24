@@ -673,17 +673,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		if newEventIter:
 			self.treev.set_cursor(self.trees.get_path(newEventIter))
 
-	def multiSelectDelete(self, obj=None):
+	def _do_multiSelectDelete(self, iterList):
 		model = self.trees
-		if not self.multiSelectPathDict:
-			return
-		iterList = [
-			model.get_iter(path) for path in self.multiSelectPathDict
-		]
-		if not confirmEventsTrash(len(iterList)):
-			return
-		# FIXME: show another message for deleting events that are in trash
-
 		for _iter in iterList:
 			path = model.get_path(_iter)
 			group, event = self.getObjsByPath(path)
@@ -697,6 +688,19 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			ui.moveEventToTrash(group, event, self)
 			model.remove(_iter)
 			self.addEventRowToTrash(event)
+
+	def multiSelectDelete(self, obj=None):
+		model = self.trees
+		if not self.multiSelectPathDict:
+			return
+		iterList = [
+			model.get_iter(path) for path in self.multiSelectPathDict
+		]
+		if not confirmEventsTrash(len(iterList)):
+			return
+		# FIXME: show another message for deleting events that are in trash
+
+		self.waitingDo(self._do_multiSelectDelete, iterList)
 
 		for groupPath in self.multiSelectSelectedGroupPathDict:
 			try:
@@ -890,9 +894,291 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		group, event = self.getObjsByPath(path)
 		EventHistoryDialog(event, transient_for=self).run()
 
-	# TODO: split this function based on len(obj_list)
+	def trashAddRightClickMenuItems(self, menu, path, group):
+		# log.debug("right click on trash", group.title)
+		menu.add(eventWriteMenuItem(
+			_("Edit"),
+			imageName="document-edit.svg",
+			func=self.editTrash,
+		))
+
+		menu.add(eventWriteMenuItem(
+			_("Sort Events"),
+			imageName="view-sort-ascending.svg",
+			func=self.groupSortFromMenu,
+			args=(path,),
+			sensitive=bool(group.idList),
+		))
+
+		# FIXME: _("Empty {title}").format(title=group.title),
+		menu.add(eventWriteMenuItem(
+			_("Empty Trash"),
+			imageName="sweep.svg",
+			func=self.emptyTrash,
+			sensitive=bool(group.idList),
+		))
+		# menu.add(gtk.SeparatorMenuItem())
+		# menu.add(eventWriteMenuItem(
+		# 	"Add New Group",
+		# 	imageName="document-new.svg",
+		# 	func=self.addGroupBeforeSelection,
+		# ))  # FIXME
+
+	def groupAddRightClickMenuItems(self, menu, path, group):
+		# log.debug("right click on group", group.title)
+		menu.add(eventWriteMenuItem(
+			_("Edit"),
+			imageName="document-edit.svg",
+			func=self.editGroupFromMenu,
+			args=(path,),
+		))
+		eventTypes = group.acceptsEventTypes
+		if eventTypes is None:
+			eventTypes = lib.classes.event.names
+		if len(eventTypes) > 3:
+			menu.add(eventWriteMenuItem(
+				_("Add Event"),
+				imageName="list-add.svg",
+				func=self.addGenericEventToGroupFromMenu,
+				args=(path, group,),
+			))
+		else:
+			for eventType in eventTypes:
+				# if eventType == "custom":  # FIXME
+				# 	desc = _("Add ") + _("Event")
+				# else:
+				label = _("Add ") + lib.classes.event.byName[eventType].desc
+				menu.add(eventWriteMenuItem(
+					label,
+					imageName="list-add.svg",
+					func=self.addEventToGroupFromMenu,
+					args=(
+						path,
+						group,
+						eventType,
+						label,
+					),
+				))
+		pasteItem = eventWriteMenuItem(
+			_("Paste Event"),
+			imageName="edit-paste.svg",
+			func=self.pasteEventFromMenu,
+			args=(path,),
+		)
+		menu.add(pasteItem)
+		pasteItem.set_sensitive(self.canPasteToGroup(group))
+		##
+		if group.remoteIds:
+			aid, remoteGid = group.remoteIds
+			try:
+				account = ui.eventAccounts[aid]
+			except KeyError:
+				log.exception("")
+			else:
+				if account.enable:
+					menu.add(gtk.SeparatorMenuItem())
+					menu.add(eventWriteMenuItem(
+						_("Synchronize"),
+						imageName="",
+						# FIXME: sync-events.svg
+						func=self.syncGroupFromMenu,
+						args=(
+							path,
+							account,
+						),
+					))
+				# else:  # FIXME
+		##
+		menu.add(gtk.SeparatorMenuItem())
+		# menu.add(eventWriteMenuItem(
+		# 	_("Add New Group"),
+		# 	imageName="document-new.svg",
+		# 	func=self.addGroupBeforeGroup,
+		# 	args=(path,),
+		# ))  # FIXME
+		menu.add(eventWriteMenuItem(
+			_("Duplicate"),
+			imageName="edit-copy.svg",
+			func=self.duplicateGroupFromMenu,
+			args=(path,)
+		))
+		###
+		dupAllItem = eventWriteMenuItem(
+			_("Duplicate with All Events"),
+			imageName="edit-copy.svg",
+			func=self.duplicateGroupWithEventsFromMenu,
+			args=(path,)
+		)
+		menu.add(dupAllItem)
+		dupAllItem.set_sensitive(
+			not group.isReadOnly() and bool(group.idList)
+		)
+		###
+		menu.add(gtk.SeparatorMenuItem())
+		menu.add(eventWriteMenuItem(
+			_("Delete Group"),
+			imageName="edit-delete.svg",
+			func=self.deleteGroupFromMenu,
+			args=(path,)
+		))
+		menu.add(gtk.SeparatorMenuItem())
+		##
+		# menu.add(eventWriteMenuItem(
+		# 	_("Move Up"),
+		# 	imageName="go-up.svg",
+		# 	func=self.moveUpFromMenu,
+		# 	args=(path,),
+		# ))
+		# menu.add(eventWriteMenuItem(
+		# 	_("Move Down"),
+		# 	imageName="go-down.svg",
+		# 	func=self.moveDownFromMenu,
+		# 	args=(path,)
+		# ))
+		##
+		menu.add(ImageMenuItem(
+			_("Export"),
+			imageName="",
+			# FIXME: export-events.svg
+			func=self.groupExportFromMenu,
+			args=(group,),
+		))
+		###
+		menu.add(eventWriteMenuItem(
+			_("Sort Events"),
+			imageName="view-sort-ascending.svg",
+			func=self.groupSortFromMenu,
+			args=(path,),
+			sensitive=not group.isReadOnly() and bool(group.idList)
+		))
+		###
+		convertItem = eventWriteMenuItem(
+			_("Convert Calendar Type"),
+			imageName="convert-calendar.svg",
+			func=self.groupConvertCalTypeFromMenu,
+			args=(group,)
+		)
+		menu.add(convertItem)
+		convertItem.set_sensitive(
+			not group.isReadOnly() and bool(group.idList)
+		)
+		###
+		for newGroupType in group.canConvertTo:
+			newGroupTypeDesc = lib.classes.group.byName[newGroupType].desc
+			menu.add(eventWriteMenuItem(
+				_("Convert to {groupType}").format(
+					groupType=newGroupTypeDesc,
+				),
+				func=self.groupConvertToFromMenu,
+				args=(
+					group,
+					newGroupType,
+				),
+			))
+		###
+		bulkItem = eventWriteMenuItem(
+			_("Bulk Edit Events"),
+			imageName="document-edit.svg",
+			func=self.groupBulkEditFromMenu,
+			args=(group, path,)
+		)
+		menu.add(bulkItem)
+		bulkItem.set_sensitive(
+			not group.isReadOnly() and bool(group.idList)
+		)
+		###
+		for actionName, actionFuncName in group.actions:
+			menu.add(eventWriteMenuItem(
+				_(actionName),
+				func=self.onGroupActionClick,
+				args=(
+					group,
+					actionFuncName,
+				),
+			))
+
+	def eventAddRightClickMenuItems(self, menu, path, group, event):
+		# log.debug("right click on event", event.summary)
+		if group.name != "trash":
+			menu.add(eventWriteMenuItem(
+				_("Edit"),
+				imageName="document-edit.svg",
+				func=self.editEventFromMenu,
+				args=(path,)
+			))
+		####
+		menu.add(eventWriteImageMenuItem(
+			_("History"),
+			"history.svg",
+			func=self.historyOfEventFromMenu,
+			args=(path,),
+		))
+		####
+		moveToItem = eventWriteMenuItem(
+			_("Move to {title}").format(title="..."),
+		)
+		moveToMenu = Menu()
+		for new_group in ui.eventGroups:
+			if new_group.id == group.id:
+				continue
+			# if not new_group.enable:  # FIXME
+			# 	continue
+			new_groupPath = self.trees.get_path(self.groupIterById[new_group.id])
+			if event.name in new_group.acceptsEventTypes:
+				moveToMenu.add(menuItemFromEventGroup(
+					new_group,
+					func=self.moveEventToPathFromMenu,
+					args=(
+						path,
+						new_groupPath,
+					),
+				))
+		moveToItem.set_submenu(moveToMenu)
+		menu.add(moveToItem)
+		####
+		menu.add(gtk.SeparatorMenuItem())
+		####
+		menu.add(eventWriteMenuItem(
+			_("Cut"),
+			imageName="edit-cut.svg",
+			func=self.cutEvent,
+			args=(path,),
+		))
+		menu.add(eventWriteMenuItem(
+			_("Copy"),
+			imageName="edit-copy.svg",
+			func=self.copyEvent,
+			args=(path,)
+		))
+		##
+		if group.name == "trash":
+			menu.add(gtk.SeparatorMenuItem())
+			menu.add(eventWriteMenuItem(
+				_("Delete"),
+				imageName="edit-delete.svg",
+				func=self.deleteEventFromTrash,
+				args=(path,),
+			))
+		else:
+			pasteItem = eventWriteMenuItem(
+				_("Paste"),
+				imageName="edit-paste.svg",
+				func=self.pasteEventFromMenu,
+				args=(path,),
+			)
+			menu.add(pasteItem)
+			pasteItem.set_sensitive(self.canPasteToGroup(group))
+			##
+			menu.add(gtk.SeparatorMenuItem())
+			menu.add(eventWriteMenuItem(
+				_("Move to {title}").format(title=ui.eventTrash.title),
+				imageName=ui.eventTrash.getIconRel(),
+				func=self.moveEventToTrashFromMenu,
+				args=(path,),
+			))
+
+
 	def genRightClickMenu(self, path: List[int]) -> gtk.Menu:
-		# TODO: how about multi-selection?
 		# and Select _All menu item
 		obj_list = self.getObjsByPath(path)
 		# log.debug(len(obj_list))
@@ -900,279 +1186,14 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		if len(obj_list) == 1:
 			group = obj_list[0]
 			if group.name == "trash":
-				# log.debug("right click on trash", group.title)
-				menu.add(eventWriteMenuItem(
-					_("Edit"),
-					imageName="document-edit.svg",
-					func=self.editTrash,
-				))
-				# FIXME: _("Empty {title}").format(title=group.title),
-				menu.add(eventWriteMenuItem(
-					_("Empty Trash"),
-					imageName="sweep.svg",
-					func=self.emptyTrash,
-				))
-				# menu.add(gtk.SeparatorMenuItem())
-				# menu.add(eventWriteMenuItem(
-				# 	"Add New Group",
-				# 	imageName="document-new.svg",
-				# 	func=self.addGroupBeforeSelection,
-				# ))  # FIXME
+				self.trashAddRightClickMenuItems(menu, path, group)
 			else:
-				# log.debug("right click on group", group.title)
-				menu.add(eventWriteMenuItem(
-					_("Edit"),
-					imageName="document-edit.svg",
-					func=self.editGroupFromMenu,
-					args=(path,),
-				))
-				eventTypes = group.acceptsEventTypes
-				if eventTypes is None:
-					eventTypes = lib.classes.event.names
-				if len(eventTypes) > 3:
-					menu.add(eventWriteMenuItem(
-						_("Add Event"),
-						imageName="list-add.svg",
-						func=self.addGenericEventToGroupFromMenu,
-						args=(path, group,),
-					))
-				else:
-					for eventType in eventTypes:
-						# if eventType == "custom":  # FIXME
-						# 	desc = _("Add ") + _("Event")
-						# else:
-						label = _("Add ") + lib.classes.event.byName[eventType].desc
-						menu.add(eventWriteMenuItem(
-							label,
-							imageName="list-add.svg",
-							func=self.addEventToGroupFromMenu,
-							args=(
-								path,
-								group,
-								eventType,
-								label,
-							),
-						))
-				pasteItem = eventWriteMenuItem(
-					_("Paste Event"),
-					imageName="edit-paste.svg",
-					func=self.pasteEventFromMenu,
-					args=(path,),
-				)
-				menu.add(pasteItem)
-				pasteItem.set_sensitive(self.canPasteToGroup(group))
-				##
-				if group.remoteIds:
-					aid, remoteGid = group.remoteIds
-					try:
-						account = ui.eventAccounts[aid]
-					except KeyError:
-						log.exception("")
-					else:
-						if account.enable:
-							menu.add(gtk.SeparatorMenuItem())
-							menu.add(eventWriteMenuItem(
-								_("Synchronize"),
-								imageName="",
-								# FIXME: sync-events.svg
-								func=self.syncGroupFromMenu,
-								args=(
-									path,
-									account,
-								),
-							))
-						# else:  # FIXME
-				##
-				menu.add(gtk.SeparatorMenuItem())
-				# menu.add(eventWriteMenuItem(
-				# 	_("Add New Group"),
-				# 	imageName="document-new.svg",
-				# 	func=self.addGroupBeforeGroup,
-				# 	args=(path,),
-				# ))  # FIXME
-				menu.add(eventWriteMenuItem(
-					_("Duplicate"),
-					imageName="edit-copy.svg",
-					func=self.duplicateGroupFromMenu,
-					args=(path,)
-				))
-				###
-				dupAllItem = eventWriteMenuItem(
-					_("Duplicate with All Events"),
-					imageName="edit-copy.svg",
-					func=self.duplicateGroupWithEventsFromMenu,
-					args=(path,)
-				)
-				menu.add(dupAllItem)
-				dupAllItem.set_sensitive(
-					not group.isReadOnly() and bool(group.idList)
-				)
-				###
-				menu.add(gtk.SeparatorMenuItem())
-				menu.add(eventWriteMenuItem(
-					_("Delete Group"),
-					imageName="edit-delete.svg",
-					func=self.deleteGroupFromMenu,
-					args=(path,)
-				))
-				menu.add(gtk.SeparatorMenuItem())
-				##
-				# menu.add(eventWriteMenuItem(
-				# 	_("Move Up"),
-				# 	imageName="go-up.svg",
-				# 	func=self.moveUpFromMenu,
-				# 	args=(path,),
-				# ))
-				# menu.add(eventWriteMenuItem(
-				# 	_("Move Down"),
-				# 	imageName="go-down.svg",
-				# 	func=self.moveDownFromMenu,
-				# 	args=(path,)
-				# ))
-				##
-				menu.add(ImageMenuItem(
-					_("Export"),
-					imageName="",
-					# FIXME: export-events.svg
-					func=self.groupExportFromMenu,
-					args=(group,),
-				))
-				###
-				sortItem = eventWriteMenuItem(
-					_("Sort Events"),
-					imageName="view-sort-ascending.svg",
-					func=self.groupSortFromMenu,
-					args=(path,)
-				)
-				menu.add(sortItem)
-				sortItem.set_sensitive(
-					not group.isReadOnly() and bool(group.idList)
-				)
-				###
-				convertItem = eventWriteMenuItem(
-					_("Convert Calendar Type"),
-					imageName="convert-calendar.svg",
-					func=self.groupConvertCalTypeFromMenu,
-					args=(group,)
-				)
-				menu.add(convertItem)
-				convertItem.set_sensitive(
-					not group.isReadOnly() and bool(group.idList)
-				)
-				###
-				for newGroupType in group.canConvertTo:
-					newGroupTypeDesc = lib.classes.group.byName[newGroupType].desc
-					menu.add(eventWriteMenuItem(
-						_("Convert to {groupType}").format(
-							groupType=newGroupTypeDesc,
-						),
-						func=self.groupConvertToFromMenu,
-						args=(
-							group,
-							newGroupType,
-						),
-					))
-				###
-				bulkItem = eventWriteMenuItem(
-					_("Bulk Edit Events"),
-					imageName="document-edit.svg",
-					func=self.groupBulkEditFromMenu,
-					args=(group, path,)
-				)
-				menu.add(bulkItem)
-				bulkItem.set_sensitive(
-					not group.isReadOnly() and bool(group.idList)
-				)
-				###
-				for actionName, actionFuncName in group.actions:
-					menu.add(eventWriteMenuItem(
-						_(actionName),
-						func=self.onGroupActionClick,
-						args=(
-							group,
-							actionFuncName,
-						),
-					))
+				self.groupAddRightClickMenuItems(menu, path, group)
+
 		elif len(obj_list) == 2:
 			group, event = obj_list
-			# log.debug("right click on event", event.summary)
-			if group.name != "trash":
-				menu.add(eventWriteMenuItem(
-					_("Edit"),
-					imageName="document-edit.svg",
-					func=self.editEventFromMenu,
-					args=(path,)
-				))
-			####
-			menu.add(eventWriteImageMenuItem(
-				_("History"),
-				"history.svg",
-				func=self.historyOfEventFromMenu,
-				args=(path,),
-			))
-			####
-			moveToItem = eventWriteMenuItem(
-				_("Move to {title}").format(title="..."),
-			)
-			moveToMenu = Menu()
-			for new_group in ui.eventGroups:
-				if new_group.id == group.id:
-					continue
-				# if not new_group.enable:  # FIXME
-				# 	continue
-				new_groupPath = self.trees.get_path(self.groupIterById[new_group.id])
-				if event.name in new_group.acceptsEventTypes:
-					moveToMenu.add(menuItemFromEventGroup(
-						new_group,
-						func=self.moveEventToPathFromMenu,
-						args=(
-							path,
-							new_groupPath,
-						),
-					))
-			moveToItem.set_submenu(moveToMenu)
-			menu.add(moveToItem)
-			####
-			menu.add(gtk.SeparatorMenuItem())
-			####
-			menu.add(eventWriteMenuItem(
-				_("Cut"),
-				imageName="edit-cut.svg",
-				func=self.cutEvent,
-				args=(path,),
-			))
-			menu.add(eventWriteMenuItem(
-				_("Copy"),
-				imageName="edit-copy.svg",
-				func=self.copyEvent,
-				args=(path,)
-			))
-			##
-			if group.name == "trash":
-				menu.add(gtk.SeparatorMenuItem())
-				menu.add(eventWriteMenuItem(
-					_("Delete"),
-					imageName="edit-delete.svg",
-					func=self.deleteEventFromTrash,
-					args=(path,),
-				))
-			else:
-				pasteItem = eventWriteMenuItem(
-					_("Paste"),
-					imageName="edit-paste.svg",
-					func=self.pasteEventFromMenu,
-					args=(path,),
-				)
-				menu.add(pasteItem)
-				pasteItem.set_sensitive(self.canPasteToGroup(group))
-				##
-				menu.add(gtk.SeparatorMenuItem())
-				menu.add(eventWriteMenuItem(
-					_("Move to {title}").format(title=ui.eventTrash.title),
-					imageName=ui.eventTrash.getIconRel(),
-					func=self.moveEventToTrashFromMenu,
-					args=(path,),
-				))
+			self.eventAddRightClickMenuItems(menu, path, group, event)
+
 		else:
 			return
 		menu.show_all()
@@ -1986,7 +2007,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		index = path[0]
 		group = self.getObjsByPath(path)[0]
 		if GroupSortDialog(group, transient_for=self).run():
-			if group.id in self.loadedGroupIds:
+			if group.id in self.loadedGroupIds or group.name == "trash":
 				groupIter = self.trees.get_iter(path)
 				pathObj = gtk.TreePath(path)
 				expanded = self.treev.row_expanded(pathObj)
