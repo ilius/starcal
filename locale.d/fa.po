@@ -1750,6 +1750,15 @@ msgid "Deleted {count} events from {title}"
 msgstr ""
 "{count} رویداد از {title} حذف شدند"
 
+msgid "{count} events successfully moved"
+msgstr "{count}"
+" رویداد با موفقیت جابجا شدند"
+
+msgid "{count} events successfully copied"
+msgstr "{count}"
+" رویداد با موفقیت کپی شدند"
+
+
 msgid "Sort Events"
 msgstr ""
 "مرتب کردن رویدادها"
