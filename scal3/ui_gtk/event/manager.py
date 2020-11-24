@@ -678,6 +678,14 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			except ValueError:
 				pass
 
+		if move:
+			msg = _("{count} events successfully moved")
+		else:
+			msg = _("{count} events successfully copied")
+		self.sbar.push(0, msg.format(
+			count=_(len(iterList)),
+		))
+
 		self.multiSelectOperationFinished()
 		self.multiSelectToPaste = None
 
