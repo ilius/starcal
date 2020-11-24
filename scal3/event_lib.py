@@ -3629,6 +3629,18 @@ class EventContainer(BsonHistEventObj):
 		"uuid",
 	)
 
+	acceptsEventTypes = (
+		"yearly",
+		"dailyNote",
+		"task",
+		"allDayTask",
+		"weekly",
+		"monthly",
+		"lifeTime",
+		"largeScale",
+		"custom",
+	)
+
 	sortBys = (
 		# name, description, is_type_dependent
 		("calType", _("Calendar Type"), False),
@@ -3701,6 +3713,7 @@ class EventContainer(BsonHistEventObj):
 		)
 		event = classes.event.byName[data["type"]](eid)
 		event.fs = self.fs
+		event.parent = self
 		event.setData(data)
 		event.lastHash = lastHash
 		event.modified = lastEpoch
@@ -3863,17 +3876,6 @@ class EventGroupsImportResult:
 class EventGroup(EventContainer):
 	name = "group"
 	desc = _("Event Group")
-	acceptsEventTypes = (
-		"yearly",
-		"dailyNote",
-		"task",
-		"allDayTask",
-		"weekly",
-		"monthly",
-		"lifeTime",
-		"largeScale",
-		"custom",
-	)
 	canConvertTo = ()
 	actions = []  # [("Export to ICS", "exportToIcs")]
 	eventActions = []  # FIXME
@@ -4255,7 +4257,6 @@ class EventGroup(EventContainer):
 			if event is not None:
 				return event
 		event = EventContainer.getEvent(self, eid)
-		event.parent = self
 		event.rulesHash = event.getRulesHash()
 		if self.enable:
 			self.setToCache(event)

@@ -1142,13 +1142,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def eventAddRightClickMenuItems(self, menu, path, group, event):
 		# log.debug("right click on event", event.summary)
-		if group.name != "trash":
-			menu.add(eventWriteMenuItem(
-				_("Edit"),
-				imageName="document-edit.svg",
-				func=self.editEventFromMenu,
-				args=(path,)
-			))
+		menu.add(eventWriteMenuItem(
+			_("Edit"),
+			imageName="document-edit.svg",
+			func=self.editEventFromMenu,
+			args=(path,)
+		))
 		####
 		menu.add(eventWriteImageMenuItem(
 			_("History"),
@@ -1818,8 +1817,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	def editEventByPath(self, path: List[int]) -> None:
 		from scal3.ui_gtk.event.editor import EventEditorDialog
 		group, event = self.getObjsByPath(path)
-		if group.name == "trash":  # FIXME
-			return
 		event = EventEditorDialog(
 			event,
 			title=_("Edit ") + event.desc,
