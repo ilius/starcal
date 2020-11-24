@@ -745,11 +745,13 @@ def moveEventToTrash(
 	group: event_lib.EventGroup,
 	event: event_lib.Event,
 	sender: "BaseCalObj",
+	save: bool = True,
 ) -> int:
 	eventIndex = group.remove(event)
-	group.save()
 	eventTrash.insert(0, event)  # or append? FIXME
-	eventTrash.save()
+	if save:
+		group.save()
+		eventTrash.save()
 	eventUpdateQueue.put("-", event, sender)
 	return eventIndex
 

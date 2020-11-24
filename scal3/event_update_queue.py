@@ -2,6 +2,7 @@
 
 from queue import Queue
 from threading import Thread
+from time import sleep
 
 from typing import Union
 
@@ -33,6 +34,7 @@ class EventUpdateQueue(Queue):
 		Queue.__init__(self)
 		self._consumers = []
 		self._thread = None
+		self._paused = False
 
 	def registerConsumer(self, consumer) -> None:
 		log.info(f"registerConsumer: {consumer.__class__.__name__}")
@@ -86,8 +88,17 @@ class EventUpdateQueue(Queue):
 		self._thread.join()
 		self._thread = None
 
+	def pauseLoop(self):
+		self._paused = True
+
+	def resumeLoop(self):
+		self._paused = False
+
 	def runLoop(self):
 		while True:
+			if self._paused:
+				sleep(0.2)
+				continue
 			# Queue.get: Remove and return an item from the queue.
 			# If queue is empty, wait until an item is available.
 			record = self.get()
