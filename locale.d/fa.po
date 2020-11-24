@@ -239,6 +239,9 @@ msgstr "تا"
 msgid ","
 msgstr "،"
 
+msgid ", "
+msgstr "، "
+
 msgid "_"
 msgstr "ـ"
 
@@ -1733,6 +1736,13 @@ msgid "{count} events selected"
 msgstr ""
 "{count} رویداد انتخاب شده"
 
+msgid "Moved {count} events to {title}"
+msgstr ""
+"{count} رویداد به {title} منتقل شدند"
+
+msgid "Deleted {count} events from {title}"
+msgstr ""
+"{count} رویداد از {title} حذف شدند"
 
 msgid "Sort Events"
 msgstr ""

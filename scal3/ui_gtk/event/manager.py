@@ -251,6 +251,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.multiSelect = False
 		self.multiSelectPathDict = odict()
 		self.multiSelectSelectedGroupPathDict = {}
+		self.multiSelectSelectedTrashedCount = 0
 		self.multiSelectToPaste = None  # Optional[Tuple[bool, List[gtk.TreeIter]]]
 		####
 		self.set_title(_("Event Manager"))
@@ -598,16 +599,24 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		active = not model.get_value(itr, 0)
 		model.set_value(itr, 0, active)
 
+		isInTrash = self.getRowId(model.get_iter(path[:1])) == -1
+
 		if len(path) == 1:
 			childIter = model.iter_children(itr)
 			while childIter is not None:
-				childPathTuple = tuple(model.get_path(childIter).get_indices())
+				isActive = model.get_value(childIter, 0)
+				if isActive == active:
+					childIter = model.iter_next(childIter)
+					continue
 				model.set_value(childIter, 0, active)
+				childPathTuple = tuple(model.get_path(childIter).get_indices())
 				if active:
 					self.multiSelectPathDict[childPathTuple] = None
 				elif childPathTuple in self.multiSelectPathDict:
 					del self.multiSelectPathDict[childPathTuple]
 				childIter = model.iter_next(childIter)
+				if isInTrash:
+					self.multiSelectSelectedTrashedCount += (1 if active else -1)
 			self.multiSelectLabelUpdate()
 			self.multiSelectSelectedGroupPathDict[pathTuple] = None
 			return
@@ -617,6 +626,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		else:
 			del self.multiSelectPathDict[pathTuple]
 		self.multiSelectLabelUpdate()
+
+		if isInTrash:
+			self.multiSelectSelectedTrashedCount += (1 if active else -1)
 
 	def multiSelectCopy(self, obj=None):
 		model = self.trees
@@ -667,8 +679,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			except ValueError:
 				pass
 
-		self.multiSelectPathDict = odict()
-		self.multiSelectLabelUpdate()
+		self.multiSelectOperationFinished()
+		self.multiSelectToPaste = None
 
 		if newEventIter:
 			self.treev.set_cursor(self.trees.get_path(newEventIter))
@@ -700,6 +712,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 		ui.eventUpdateQueue.resumeLoop()
 
+	def multiSelectOperationFinished(self):
+		self.multiSelectPathDict = odict()
+		self.multiSelectSelectedGroupPathDict = {}
+		self.multiSelectSelectedTrashedCount = 0
+		self.multiSelectLabelUpdate()
+
 	def multiSelectDelete(self, obj=None):
 		model = self.trees
 		if not self.multiSelectPathDict:
@@ -719,9 +737,24 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			except ValueError:
 				pass
 
-		self.multiSelectPathDict = odict()
-		self.multiSelectLabelUpdate()
-		self.treeviewCursorChanged()
+		# self.treeviewCursorChanged()
+		count = len(iterList)
+		deletedCount = self.multiSelectSelectedTrashedCount
+		trashedCount = count - deletedCount
+		msgs = []
+		if trashedCount:
+			msgs.append(_("Moved {count} events to {title}").format(
+				count=_(trashedCount),
+				title=ui.eventTrash.title,
+			))
+		if deletedCount:
+			msgs.append(_("Deleted {count} events from {title}").format(
+				count=_(deletedCount),
+				title=ui.eventTrash.title,
+			))
+		self.sbar.push(0, _(", ").join(msgs))
+
+		self.multiSelectOperationFinished()
 
 	def multiSelectCancel(self, obj=None):
 		model = self.trees
@@ -729,8 +762,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.multiSelectItem.set_active(False)
 		for path in self.multiSelectPathDict:
 			model.set_value(model.get_iter(path), 0, False)
-		self.multiSelectPathDict = odict()
-		self.multiSelectLabelUpdate()
+		self.multiSelectOperationFinished()
 
 	def getRowId(self, _iter) -> int:
 		return self.trees.get_value(_iter, self.idColIndex)
