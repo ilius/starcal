@@ -645,7 +645,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.multiSelectToPaste = (True, iterList)
 
 	def multiSelectPaste(self, obj=None):
-		# FIXME: not inserting new rows
 		toPaste = self.multiSelectToPaste
 		if toPaste is None:
 			log.error("nothing to paste")
@@ -725,9 +724,13 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		iterList = [
 			model.get_iter(path) for path in self.multiSelectPathDict
 		]
-		if not confirmEventsTrash(len(iterList)):
+
+		count = len(iterList)
+		deleteCount = self.multiSelectSelectedTrashedCount
+		toTrashCount = count - deleteCount
+
+		if not confirmEventsTrash(toTrashCount, deleteCount):
 			return
-		# FIXME: show another message for deleting events that are in trash
 
 		self.waitingDo(self._do_multiSelectDelete, iterList)
 
@@ -738,18 +741,15 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				pass
 
 		# self.treeviewCursorChanged()
-		count = len(iterList)
-		deletedCount = self.multiSelectSelectedTrashedCount
-		trashedCount = count - deletedCount
 		msgs = []
-		if trashedCount:
+		if toTrashCount:
 			msgs.append(_("Moved {count} events to {title}").format(
-				count=_(trashedCount),
+				count=_(toTrashCount),
 				title=ui.eventTrash.title,
 			))
-		if deletedCount:
+		if deleteCount:
 			msgs.append(_("Deleted {count} events from {title}").format(
-				count=_(deletedCount),
+				count=_(deleteCount),
 				title=ui.eventTrash.title,
 			))
 		self.sbar.push(0, _(", ").join(msgs))

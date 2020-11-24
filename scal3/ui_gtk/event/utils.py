@@ -28,14 +28,17 @@ def confirmEventTrash(event, **kwargs):
 		**kwargs
 	)
 
-def confirmEventsTrash(eventCount: int, **kwargs):
+def confirmEventsTrash(toTrashCount: int, deleteCount: int, **kwargs):
 	return confirm(
 		_(
-			"Press OK if you want to move {eventCount} events to {trashTitle}"
+			"Press OK if you want to move {toTrashCount} events to {trashTitle}"
+			", and delete {deleteCount} events from {trashTitle}"
 		).format(
-			eventCount=_(eventCount),
+			toTrashCount=_(toTrashCount),
+			deleteCount=_(deleteCount),
 			trashTitle=ui.eventTrash.title,
 		),
+		use_markup=True,
 		**kwargs
 	)
 
