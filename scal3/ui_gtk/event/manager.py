@@ -675,19 +675,30 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def _do_multiSelectDelete(self, iterList):
 		model = self.trees
+
+		saveGroupSet = set()
+		ui.eventUpdateQueue.pauseLoop()
+
 		for _iter in iterList:
 			path = model.get_path(_iter)
 			group, event = self.getObjsByPath(path)
 
 			if group.name == "trash":
 				group.delete(event.id)  # group == ui.eventTrash
-				group.save()
+				saveGroupSet.add(group)
 				model.remove(_iter)
 				continue
 
-			ui.moveEventToTrash(group, event, self)
+			ui.moveEventToTrash(group, event, self, save=False)
+			saveGroupSet.add(group)
+			saveGroupSet.add(ui.eventTrash)
 			model.remove(_iter)
 			self.addEventRowToTrash(event)
+
+		for group in saveGroupSet:
+			group.save()
+
+		ui.eventUpdateQueue.resumeLoop()
 
 	def multiSelectDelete(self, obj=None):
 		model = self.trees
@@ -1389,12 +1400,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 							groupId=_(group.id),
 						)
 					modified = group.modified
-					log.info(f"group, id = {group.id}, uuid = {group.uuid}")
+					# log.info(f"group, id = {group.id}, uuid = {group.uuid}")
 				elif len(path) == 2:
 					group, event = self.getObjsByPath(path)
 					text = _("Event ID: {eventId}").format(eventId=_(event.id))
 					modified = event.modified
-					log.info(f"event, id = {event.id}, uuid = {event.uuid}")
+					# log.info(f"event, id = {event.id}, uuid = {event.uuid}")
 				comma = _(",")
 				modifiedLabel = _("Last Modified")
 				modifiedTime = locale_man.textNumEncode(
