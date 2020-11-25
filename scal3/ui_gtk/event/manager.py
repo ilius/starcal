@@ -270,7 +270,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.connect("response", self.onResponse)
 		self.connect("show", self.onShow)
 		#######
-		menubar = gtk.MenuBar()
+		menubar = self.menubar = gtk.MenuBar()
 		####
 		fileItem = MenuItem(_("_File"))
 		fileMenu = Menu()
@@ -383,7 +383,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		# testMenu.append(item)
 		####
 		multiSelectMenu = Menu()
-		multiSelectItemMain = MenuItem(label=_("Multi-select"))
+		multiSelectItemMain = self.multiSelectItemMain = MenuItem(label=_("Multi-select"))
 		multiSelectItemMain.set_submenu(multiSelectMenu)
 		menubar.append(multiSelectItemMain)
 		##
@@ -1286,6 +1286,10 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		if kname == "escape":
 			return self.onEscape()
+		if kname == "menu":  # simulate right click (key beside Right-Ctrl)
+			if self.multiSelect:
+				self.menubar.select_item(self.multiSelectItemMain)
+				return True
 		return False
 		# return self.onTreeviewKeyPress(self.treev, gevent)
 
@@ -1298,7 +1302,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		if kname == "menu":  # simulate right click (key beside Right-Ctrl)
 			if self.multiSelect:
-				return False
+				self.menubar.select_item(self.multiSelectItemMain)
+				return True
 			path = self.getSelectedPath()
 			if path:
 				menu = self.genRightClickMenu(path)
