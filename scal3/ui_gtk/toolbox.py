@@ -283,10 +283,11 @@ class BaseToolBox(gtk.EventBox, CustomizableCalObj):
 	) -> None:
 		gtk.EventBox.__init__(self)
 		self.vertical = vertical
-		self.box = gtk.Box(self, orientation=self.get_orientation())
-		self.add(self.box)
-		self.box.set_homogeneous(False)
+		self.box = gtk.Box()
+		self.box.set_orientation(self.get_orientation())
+		self.box.set_homogeneous(homogeneous=False)
 		self.box.show()
+		self.add(self.box)
 		self.funcOwner = funcOwner
 		self.preferIconName = ui.useSystemIcons
 		if iconSize == 0:

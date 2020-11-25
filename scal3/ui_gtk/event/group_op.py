@@ -95,7 +95,7 @@ class GroupConvertCalTypeDialog(gtk.Dialog):
 		self.connect("response", lambda w, e: self.hide())
 		####
 		hbox = HBox()
-		label = gtk.Label(_(
+		label = gtk.Label(label=_(
 			"This is going to convert calendar types of all events inside "
 			"group \"{groupTitle}\" to a specific type. This operation does not work "
 			"for Yearly events and also some of Custom events. You have to "

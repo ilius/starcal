@@ -1303,10 +1303,8 @@ class PreferencesWindow(gtk.Window):
 				d = gtk.Dialog(
 					title=_("Restart " + core.APP_DESC),
 					transient_for=self,
-					flags=(
-						gtk.DialogFlags.MODAL |
-						gtk.DialogFlags.DESTROY_WITH_PARENT
-					),
+					modal=True,
+					destroy_with_parent=True,
 				)
 				dialog_add_button(
 					d,
@@ -1315,7 +1313,7 @@ class PreferencesWindow(gtk.Window):
 					res=gtk.ResponseType.CANCEL,
 				)
 				d.set_keep_above(True)
-				label = gtk.Label(_(
+				label = gtk.Label(label=_(
 					f"Some preferences need restarting {core.APP_DESC} to apply."
 				))
 				label.set_line_wrap(True)

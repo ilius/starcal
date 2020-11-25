@@ -419,7 +419,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		#######
 		# multi-select bar
 		self.multiSelectHBox = hbox = HBox(spacing=3)
-		self.multiSelectLabel = gtk.Label(_("No event selected"))
+		self.multiSelectLabel = gtk.Label(label=_("No event selected"))
 		self.multiSelectLabel.set_xalign(0)
 		self.multiSelectLabel.get_style_context().add_class("smaller")
 		pack(hbox, self.multiSelectLabel, 1, 1)
