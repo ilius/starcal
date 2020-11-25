@@ -90,7 +90,6 @@ class IconSelectButton(gtk.Button):
 			res=gtk.ResponseType.REJECT,
 		)
 
-		dialog.set_filename(self.filename)
 		dialog.connect("file-activated", self.fileActivated)
 		dialog.connect("response", self.dialogResponse)
 		self._dialog = dialog
@@ -98,9 +97,10 @@ class IconSelectButton(gtk.Button):
 		return dialog
 
 	def onButtonPressEvent(self, widget, gevent):
-		dialog = self.createDialog()
 		b = gevent.button
 		if b == 1:
+			dialog = self.createDialog()
+			dialog.set_filename(self.filename)
 			dialog.run()
 		elif b == 3:
 			self.menu.popup(None, None, None, None, b, gevent.time)
@@ -141,8 +141,6 @@ class IconSelectButton(gtk.Button):
 			filename = ""
 		if filename:
 			filename = resolveImagePath(filename)
-		if self._dialog:
-			self._dialog.set_filename(filename)
 		self.filename = filename
 		if not filename:
 			self._setImage(join(pixDir, "empty.png"))
