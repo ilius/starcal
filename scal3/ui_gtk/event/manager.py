@@ -51,6 +51,7 @@ from scal3.ui_gtk.utils import (
 	rectangleContainsPoint,
 	labelImageButton,
 	newHSep,
+	get_menu_width,
 )
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk import gtk_ud as ud
@@ -1312,10 +1313,10 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				rect = treev.get_cell_area(path, treev.get_column(1))
 				x = rect.x
 				if rtl:
-					x -= 100
+					x -= get_menu_width(menu) + 40
 				else:
-					x += 50
-				dx, dy = treev.translate_coordinates(self, x, rect.y + rect.height)
+					x += 40
+				dx, dy = treev.translate_coordinates(self, x, rect.y + 2 * rect.height)
 				foo, wx, wy = self.get_window().get_origin()
 				self.tmpMenu = menu
 				menu.popup(
@@ -1323,7 +1324,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 					None,
 					lambda *args: (
 						wx + dx,
-						wy + dy + 20,
+						wy + dy,
 						True,
 					),
 					None,
