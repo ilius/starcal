@@ -26,6 +26,7 @@ import os
 os.environ["LANG"] = "en_US.UTF-8"  # FIXME
 
 import subprocess
+import shutil
 from time import localtime
 from time import time as now
 import sys
@@ -42,7 +43,7 @@ from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 
 from gi.repository.Gtk import IconTheme
 
-_ = str # FIXME
+_ = str  # FIXME
 
 
 def iceil(f):
@@ -69,15 +70,7 @@ class AdjusterDialog(gtk.Dialog):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Adjust System Date & Time"))  # FIXME
 		self.set_keep_above(True)
-		self.set_icon(IconTheme.get_default().load_icon(
-			icon_name="preferences-system-time",
-			size=32,
-			flags=0,
-		))
-		# render_icon: Deprecated since version 3.0:
-		# 		Use Gtk.Widget.render_icon_pixbuf() instead.
-		# render_icon_pixbuf: Deprecated since version 3.10:
-		# 		Use Gtk.IconTheme.load_icon() instead.
+		# TODO: self.set_icon_from_file(join(svgDir, "preferences-system-time.svg"))
 		#########
 		self.buttonCancel = dialog_add_button(
 			self,
@@ -85,14 +78,14 @@ class AdjusterDialog(gtk.Dialog):
 			label=_("Cancel"),
 			res=gtk.ResponseType.CANCEL,
 		)
-		#self.buttonCancel.connect("clicked", lambda w: sys.exit(0))
+		# self.buttonCancel.connect("clicked", lambda w: sys.exit(0))
 		self.buttonSet = dialog_add_button(
 			self,
 			imageName="preferences-system.svg",
 			label=_("Set System Time"),
 			res=gtk.ResponseType.OK,
 		)
-		#self.buttonSet.connect("clicked", self.onSetSysTimeClick)
+		# self.buttonSet.connect("clicked", self.onSetSysTimeClick)
 		#########
 		hbox = HBox()
 		self.label_cur = gtk.Label(label=_("Current:"))
@@ -118,7 +111,7 @@ class AdjusterDialog(gtk.Dialog):
 		self.ckeckbEditTime.connect("clicked", self.onCkeckbEditTimeClick)
 		pack(hbox, self.ckeckbEditTime, padding=self.xpad)
 		sg.add_widget(self.ckeckbEditTime)
-		self.timeInput = TimeButton() ## ??????? options
+		self.timeInput = TimeButton()
 		pack(hbox, self.timeInput)
 		pack(vb, hbox)
 		###
@@ -129,11 +122,11 @@ class AdjusterDialog(gtk.Dialog):
 		self.ckeckbEditDate.connect("clicked", self.onCkeckbEditDateClick)
 		pack(hbox, self.ckeckbEditDate, padding=self.xpad)
 		sg.add_widget(self.ckeckbEditDate)
-		self.dateInput = DateButton() ## ??????? options
+		self.dateInput = DateButton()
 		pack(hbox, self.dateInput)
 		pack(vb, hbox)
 		###
-		pack(self.vbox, vb, 0, 0, 10)#?????
+		pack(self.vbox, vb, 0, 0, padding=10)
 		self.vboxMan = vb
 		######
 		hbox = HBox()
@@ -159,7 +152,7 @@ class AdjusterDialog(gtk.Dialog):
 		pack(self.vbox, hbox)
 		######
 		self.onRadioManClick()
-		#self.onRadioNtpClick()
+		# self.onRadioNtpClick()
 		self.onCkeckbEditTimeClick()
 		self.onCkeckbEditDateClick()
 		######
@@ -194,14 +187,46 @@ class AdjusterDialog(gtk.Dialog):
 		self.dateInput.set_sensitive(self.editDate)
 		self.updateSetButtonSensitive()
 
-	#def set_sys_time(self):
-	#	if os.path.isfile("/bin/date"):
-	#		pass  # FIXME
-	#	elif sys.platform == "win32":
-	#		import win32api
-	#		win32api.SetSystemTime()##????????
-	#	else:
-	#		pass
+	def runCommand(self, cmd):
+		proc = subprocess.Popen(
+			cmd,
+			stderr=subprocess.PIPE,
+			stdout=subprocess.PIPE,
+		)
+		resCode = proc.wait()
+		error = proc.stderr.read().strip()
+		output = proc.stdout.read().strip()
+		if output:
+			log.info(output)
+		# log.debug(f"resCode={resCode!r}, error={error!r}, output={output!r}")
+		if error:
+			log.error(error)
+		if resCode != 0:
+			error_exit(
+				resCode,
+				error,
+				transient_for=self,
+			)
+		# else:
+		# 	sys.exit(0)
+
+	def setSystemTimeUnix(self, timeStr: str):
+		dateCmd = shutil.which("date")  # "/bin/date"
+		if not dateCmd:
+			error_exit(1, "Could not find command 'date'", transient_for=self)
+		self.runCommand([dateCmd, "-s", timeStr])
+
+	def setSystemTime(self, timeStr: str):
+		if os.sep == "/":
+			return self.setSystemTimeUnix(timeStr)
+
+		if sys.platform == "win32":
+			# TODO: test
+			import win32api
+			win32api.SetSystemTime(timeStr)
+			return
+
+		raise OSError("unknown or unsupported operating system")
 
 	def updateTimes(self):
 		dt = now() % 1
@@ -232,69 +257,32 @@ class AdjusterDialog(gtk.Dialog):
 				h, m, s = self.timeInput.get_value()
 				if self.editDate:
 					Y, M, D = self.dateInput.get_value()
-					cmd = [
-						"/bin/date",
-						"-s",
-						f"{Y:04d}/{M:02d}/{D:02d} {h:02d}:{m:02d}:{s:02d}",
-					]
+					self.setSystemTime(f"{Y:04d}/{M:02d}/{D:02d} {h:02d}:{m:02d}:{s:02d}")
 				else:
-					cmd = [
-						"/bin/date",
-						"-s",
-						f"{h:02d}:{m:02d}:{s:02d}",
-					]
+					self.setSystemTime(f"{h:02d}:{m:02d}:{s:02d}")
 			else:
-				if self.editDate:
-					Y, M, D = self.dateInput.get_value()
-					##h, m, s = self.timeInput.get_value()
-					h, m, s = localtime()[3:6]
-					cmd = [
-						"/bin/date",
-						"-s",
-						f"{Y:04d}/{M:02d}/{D:02d} {h:02d}:{m:02d}:{s:02d}",
-					]
-				else:
-					error_exit("No change!", self)  # FIXME
+				if not self.editDate:
+					error_exit(1, "No change!", transient_for=self)  # FIXME
+				Y, M, D = self.dateInput.get_value()
+				# h, m, s = self.timeInput.get_value()
+				h, m, s = localtime()[3:6]
+				self.setSystemTime(f"{Y:04d}/{M:02d}/{D:02d} {h:02d}:{m:02d}:{s:02d}")
+
 		elif self.radioNtp.get_active():
-			cmd = ["ntpdate", self.ntpServerEntry.get_text()]
-			#if os.path.isfile("/usr/sbin/ntpdate"):
-			#	cmd = ["/usr/sbin/ntpdate", self.ntpServerEntry.get_text()]
-			#else:
-			#	error_exit(
-			#	"Could not find command /usr/sbin/ntpdate: no such file!",
-			#	self,
-			#)  # FIXME
+			ntpdate = shutil.which("ntpdate")
+			if not ntpdate:
+				error_exit(1, "Could not find command 'ntpdate'", transient_for=self)
+			self.runCommand([ntpdate, self.ntpServerEntry.get_text()])
 		else:
-			error_exit("Not valid option!", self)
-		proc = subprocess.Popen(
-			cmd,
-			stderr=subprocess.PIPE,
-			stdout=subprocess.PIPE,
-		)
-		resCode = proc.wait()
-		error = proc.stderr.read().strip()
-		output = proc.stdout.read().strip()
-		if output:
-			log.info(output)
-		# log.debug(f"resCode={resCode!r}, error={error!r}, output={output!r}")
-		if error:
-			log.error(error)
-		if resCode != 0:
-			error_exit(
-				resCode,
-				error,
-				transient_for=self,
-			)
-		#else:
-		#	sys.exit(0)
+			error_exit(1, "Not valid option!", transient_for=self)
 
 
 if __name__ == "__main__":
 	if os.getuid() != 0:
 		error_exit(1, "This program must be run as root")
-		#raise OSError("This program must be run as root")
-		###os.setuid(0)  # FIXME
+		# raise OSError("This program must be run as root")
+		# os.setuid(0)  # FIXME
 	d = AdjusterDialog()
-	#d.set_keap_above(True)
+	# d.set_keap_above(True)
 	if d.run() == gtk.ResponseType.OK:
 		d.onSetSysTimeClick()
