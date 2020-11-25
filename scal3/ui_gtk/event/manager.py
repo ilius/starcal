@@ -472,7 +472,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		)  # FIXME
 		self.treev.connect("button-press-event", self.onTreeviewButtonPress)
 		self.treev.connect("row-activated", self.rowActivated)
-		self.treev.connect("key-press-event", self.onKeyPress)
+		self.connect("key-press-event", self.onKeyPress)
+		self.treev.connect("key-press-event", self.onTreeviewKeyPress)
 		#####
 		swin = gtk.ScrolledWindow()
 		swin.add(self.treev)
@@ -1281,7 +1282,14 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		elif len(path) == 2:
 			self.editEventByPath(path)
 
-	def onKeyPress(self, treev: gtk.TreeView, gevent: gdk.EventKey) -> bool:
+	def onKeyPress(self, dialog, gevent: gdk.EventKey) -> bool:
+		kname = gdk.keyval_name(gevent.keyval).lower()
+		if kname == "escape":
+			return self.onEscape()
+		return False
+		# return self.onTreeviewKeyPress(self.treev, gevent)
+
+	def onTreeviewKeyPress(self, treev: gtk.TreeView, gevent: gdk.EventKey) -> bool:
 		# from scal3.time_utils import getGtkTimeFromEpoch
 		# log.debug(gevent.time-getGtkTimeFromEpoch(now()))
 		# log.debug(now()-gdk.CURRENT_TIME/1000.0)
@@ -1328,6 +1336,13 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		else:
 			# log.debug(kname)
 			return False
+		return True
+
+	def onEscape(self):
+		if self.multiSelect:
+			self.multiSelectCancel()
+			return True
+		self.hide()
 		return True
 
 	def onMenuBarExportClick(self, menuItem: gtk.MenuItem) -> None:
