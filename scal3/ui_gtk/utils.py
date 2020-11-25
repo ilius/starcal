@@ -600,10 +600,17 @@ def getBackgroundColor(widget: gtk.Widget):
 		get_background_color(gtk.StateFlags.NORMAL)
 	)
 
+
 def getBackgroundColorCSS(widget: gtk.Widget):
 	from scal3.color_utils import rgbToCSS
 	return rgbToCSS(getBackgroundColor(widget))
 
+
+def getGtkWindow(widget: "gtk.Widget") -> "Optional[gtk.Window]":
+	top = widget.get_toplevel()
+	if isinstance(top, gtk.Window):
+		return top
+	return None
 
 if __name__ == "__main__":
 	diolog = gtk.Dialog()
