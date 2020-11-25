@@ -3898,7 +3898,7 @@ class EventGroup(EventContainer):
 		"showInMCal",
 		"showInStatusIcon",
 		"showInTimeLine",
-		"addEventsToBegining",
+		"addEventsToBeginning",
 		"color",
 		"eventCacheSize",
 		"eventTextSep",
@@ -3925,7 +3925,7 @@ class EventGroup(EventContainer):
 		"showInMCal",
 		"showInStatusIcon",
 		"showInTimeLine",
-		"addEventsToBegining",
+		"addEventsToBeginning",
 		"showFullEventDesc",
 		"color",
 		"icon",
@@ -4052,7 +4052,7 @@ class EventGroup(EventContainer):
 		self.showInMCal = True
 		self.showInStatusIcon = False
 		self.showInTimeLine = True
-		self.addEventsToBegining = False
+		self.addEventsToBeginning = False
 		self.uuid = None
 		self.idByUuid = {}
 		self.color = (0, 0, 0)  # FIXME
@@ -4102,7 +4102,7 @@ class EventGroup(EventContainer):
 			self.eventCache.clear()
 
 	def add(self, event: "Event") -> None:
-		if self.addEventsToBegining:
+		if self.addEventsToBeginning:
 			self.insert(0, event)
 		else:
 			self.append(event)
