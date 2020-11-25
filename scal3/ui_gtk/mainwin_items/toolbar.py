@@ -144,10 +144,11 @@ class CalObj(CustomizableToolbar):
 		for item in defaultItems
 	}
 
-	def __init__(self):
+	def __init__(self, win):
+		self.win = win
 		CustomizableToolbar.__init__(
 			self,
-			ui.mainWin,
+			win,
 			vertical=False,
 			continuousClick=False,
 		)
@@ -162,9 +163,9 @@ class CalObj(CustomizableToolbar):
 					ud.mainToolbarData["items"].append((name, False))
 
 		self.setData(ud.mainToolbarData)
-		if ui.mainWin:
-			self.connect("button-press-event", ui.mainWin.childButtonPress)
-			self.connect("popup-main-menu", ui.mainWin.menuMainPopup)
+		if win:
+			self.connect("button-press-event", win.childButtonPress)
+			self.connect("popup-main-menu", win.menuMainPopup)
 
 	def updateVars(self):
 		CustomizableToolbar.updateVars(self)

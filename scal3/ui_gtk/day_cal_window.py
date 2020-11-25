@@ -153,8 +153,8 @@ class DayCalWindowWidget(DayCal):
 	def getCell(self):
 		return ui.todayCell
 
-	def __init__(self):
-		DayCal.__init__(self)
+	def __init__(self, win):
+		DayCal.__init__(self, win)
 		self.set_size_request(50, 50)
 		self.menu = None
 		self.customizeDialog = None
@@ -195,7 +195,7 @@ class DayCalWindowWidget(DayCal):
 				ui.mainWin.onStatusIconClick()
 				return True
 		elif b == 3:
-			self.popupMenu(obj, gevent)
+			self.popupMenuOnButtonPress(obj, gevent)
 		return True
 
 	def getMenuPosFunc(self, menu, gevent, above: bool):
@@ -219,9 +219,7 @@ class DayCalWindowWidget(DayCal):
 
 		return lambda *args: (mx, my, False)
 
-	def popupMenu(self, obj, gevent):
-		reverse = gevent.y_root > ud.screenH / 2.0
-
+	def getMenu(self, reverse: bool):
 		menu = self.menu
 		if menu is None:
 			menu = Menu()
@@ -239,8 +237,12 @@ class DayCalWindowWidget(DayCal):
 			for item in items:
 				menu.add(item)
 			self.menu = menu
-
 		menu.show_all()
+		return menu
+
+	def popupMenuOnButtonPress(self, obj, gevent):
+		reverse = gevent.y_root > ud.screenH / 2.0
+		menu = self.getMenu(reverse)
 		menu.popup(
 			None,
 			None,
@@ -269,7 +271,7 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 		self.set_keep_below(True)
 		self.stick()
 		###
-		self._widget = DayCalWindowWidget()
+		self._widget = DayCalWindowWidget(self)
 		self._widget._window = self
 
 		self.connect("key-press-event", self._widget.onKeyPress)
@@ -279,6 +281,52 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 		self.add(self._widget)
 		self._widget.show()
 		self.appendItem(self._widget)
+
+	def menuCellPopup(self, widget, etime, x, y):
+		reverse = False
+		menu = self._widget.getMenu(reverse)
+		coord = widget.translate_coordinates(self, x, y)
+		if coord is None:
+			raise RuntimeError(
+				f"failed to translate coordinates ({x}, {y})" +
+				f" from widget {widget}"
+			)
+		dx, dy = coord
+		foo, wx, wy = self.get_window().get_origin()
+		x = wx + dx
+		y = wy + dy
+		if rtl:
+			x -= get_menu_width(menu)
+		####
+		etime = gtk.get_current_event_time()
+		# log.debug("menuCellPopup", x, y, etime)
+		# without the above line, the menu is not showing up
+		# some GC-related pygi bug probably
+		menu.popup(
+			None,
+			None,
+			lambda *args: (x, y, True),
+			None,
+			3,
+			etime,
+		)
+		ui.updateFocusTime()
+
+
+	def menuMainPopup(
+		self,
+		widget: gtk.Widget,
+		etime: int,
+		x: int,
+		y: int,
+	):
+		pass
+
+	def prefUpdateBgColor(self, cal):
+		pass
+
+	def dayInfoShow(self, widget=None):
+		ui.mainWin.dayInfoShow(widget)
 
 	def onDeleteEvent(self, arg=None, event=None):
 		if ui.mainWin:

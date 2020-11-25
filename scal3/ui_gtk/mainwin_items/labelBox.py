@@ -545,7 +545,8 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			font[1] = True
 		return font
 
-	def __init__(self):
+	def __init__(self, win):
+		self.win = win
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
 		self.get_style_context().add_class(self.styleClass)
@@ -560,7 +561,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 
 	def updateIconSize(self):
 		alphabet = locale_man.getAlphabet()
-		height = calcTextPixelSize(ui.mainWin, alphabet, font=self.getFont())[1]
+		height = calcTextPixelSize(self.win, alphabet, font=self.getFont())[1]
 		ui.labelBoxIconSize = height * 0.6
 
 	def updateTextWidth(self):

@@ -129,7 +129,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 		cursorRadius = ui.mcalCursorRoundingFactor * min(cw, ch) * 0.5
 		drawRoundedRect(cr, cx0, cy0, cw, ch, cursorRadius)
 
-	def __init__(self):
+	def __init__(self, win):
+		self.win = win
 		gtk.DrawingArea.__init__(self)
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initCal()

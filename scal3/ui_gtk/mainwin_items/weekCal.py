@@ -1281,7 +1281,8 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 	def getCellPagePlus(self, cell, plus):
 		return ui.cellCache.getCell(cell.jd + 7 * plus)
 
-	def __init__(self):
+	def __init__(self, win):
+		self.win = win
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initCal()

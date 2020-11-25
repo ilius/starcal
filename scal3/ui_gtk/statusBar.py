@@ -22,14 +22,15 @@ class CalObj(gtk.Box, CustomizableCalObj):
 	hasOptions = True
 	optionsPageSpacing = 15
 
-	def __init__(self):
+	def __init__(self, win):
+		self.win = win
 		from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
 		####
 		self.labelBox = HBox()
 		pack(self, self.labelBox, 1, 1)
-		resizeB = ResizeButton(ui.mainWin)
+		resizeB = ResizeButton(win)
 		pack(self, resizeB, 0, 0)
 		if rtl:
 			self.set_direction(gtk.TextDirection.LTR)

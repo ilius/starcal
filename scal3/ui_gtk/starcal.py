@@ -128,7 +128,8 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 		'up',
 	)
 
-	def __init__(self):
+	def __init__(self, win):
+		self.win = win
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.initVars()
 		itemsPkg = "scal3.ui_gtk.mainwin_items"
@@ -154,7 +155,11 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 					log.exception("")
 					# raise e
 					continue
-				item = CalObj()
+				try:
+					item = CalObj(win)
+				except Exception as e:
+					log.error(f"name={name}, module={module}")
+					raise e
 				item.enable = enable
 				# modify_bg_all(
 				# 	item,
@@ -445,14 +450,14 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		if self.winCon is not None:
 			return self.winCon
 		ui.checkWinControllerButtons()
-		self.winCon = WinContronllersObj()
+		self.winCon = WinContronllersObj(self)
 		return self.winCon
 
 	def createMainVBox(self):
 		if self.mainVBox is not None:
 			return self.mainVBox
 		ui.checkMainWinItems()
-		mainVBox = MainWinVbox()
+		mainVBox = MainWinVbox(self)
 		mainVBox.connect("button-press-event", self.onMainButtonPress)
 		self.mainVBox = mainVBox
 		return mainVBox
@@ -498,7 +503,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		from scal3.ui_gtk.statusBar import CalObj as StatusBar
 		if self.statusBar is not None:
 			return self.statusBar
-		self.statusBar = StatusBar()
+		self.statusBar = StatusBar(self)
 		return self.statusBar
 
 	def selectDateResponse(self, widget, y, m, d):

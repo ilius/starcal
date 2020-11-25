@@ -37,4 +37,4 @@ class CalObj(DayCal):
 	weekdayUppercaseParam = "dcalWeekdayUppercase"
 
 	def getWindow(self):
-		return ui.mainWin
+		return self.win
