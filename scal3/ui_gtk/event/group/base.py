@@ -161,12 +161,12 @@ class BaseWidgetClass(gtk.Box):
 		#####
 		if self.userCanAddEvents:
 			hbox = HBox()
-			self.addEventsToBeginingCheck = gtk.CheckButton(label=_("Add New Events to Beginning"))
+			self.addEventsToBeginningCheck = gtk.CheckButton(label=_("Add New Events to Beginning"))
 			set_tooltip(
 				hbox, # label or hbox?
 				_("Add new events to beginning of event list, not to the end"),
 			)
-			pack(hbox, self.addEventsToBeginingCheck)
+			pack(hbox, self.addEventsToBeginningCheck)
 			pack(self, hbox)
 
 	def addStartEndWidgets(self):
@@ -192,7 +192,7 @@ class BaseWidgetClass(gtk.Box):
 		self.sepInput.set_text(self.group.eventTextSep)
 		#self.showFullEventDescCheck.set_active(self.group.showFullEventDesc)
 		if self.userCanAddEvents:
-			self.addEventsToBeginingCheck.set_active(self.group.addEventsToBegining)
+			self.addEventsToBeginningCheck.set_active(self.group.addEventsToBeginning)
 
 	def updateVars(self):
 		self.group.title = self.titleEntry.get_text()
@@ -212,7 +212,7 @@ class BaseWidgetClass(gtk.Box):
 		self.group.eventTextSep = self.sepInput.get_text()
 		#self.group.showFullEventDesc = self.showFullEventDescCheck.get_active()
 		if self.userCanAddEvents:
-			self.group.addEventsToBegining = self.addEventsToBeginingCheck.get_active()
+			self.group.addEventsToBeginning = self.addEventsToBeginningCheck.get_active()
 
 	def calTypeComboChanged(self, obj=None):
 		pass
