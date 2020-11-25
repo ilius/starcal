@@ -412,7 +412,6 @@ class MainMenuToolbarItem(ToolbarItem):
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		from os.path import isabs
-		from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 		from scal3.ui_gtk.pref_utils import IconChooserPrefItem
 		if self.optionsWidget:
 			return self.optionsWidget
