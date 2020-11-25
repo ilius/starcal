@@ -153,8 +153,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 		)
 
 	def openCustomize(self, gevent):
-		if ui.mainWin:
-			ui.mainWin.customizeShow()
+		if self.win:
+			self.win.customizeShow()
 
 	def updateTypeParamsWidget(self):
 		from scal3.ui_gtk.cal_type_params import CalTypeParamWidget
@@ -229,8 +229,9 @@ class DayCal(gtk.DrawingArea, CalBase):
 		vbox.show_all()
 		return subPages
 
-	def __init__(self):
+	def __init__(self, win):
 		gtk.DrawingArea.__init__(self)
+		self.win = win
 		self._window = None
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initCal()
@@ -547,6 +548,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 	def onButtonPress(self, obj, gevent):
 		b = gevent.button
 		x, y = gevent.x, gevent.y
+		print("onButtonPress", x, y)
 		###
 		if gevent.type == TWO_BUTTON_PRESS:
 			self.emit("double-button-press")
@@ -607,6 +609,13 @@ class DayCal(gtk.DrawingArea, CalBase):
 			self.jdPlus(1)
 		else:
 			return False
+
+	def getCellPos(self, *args):
+		alloc = self.get_allocation()
+		return (
+			int(alloc.width / 2),
+			int(alloc.height / 2),
+		)
 
 	def onDateChange(self, *a, **kw):
 		CustomizableCalObj.onDateChange(self, *a, **kw)

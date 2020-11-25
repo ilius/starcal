@@ -73,7 +73,7 @@ class DummyCalObj(ud.CalObjType):
 		except Exception:
 			log.exception("")
 			return
-		obj = CalObj()
+		obj = CalObj(ui.mainWin)
 		obj.enable = self.enable
 		return obj
 

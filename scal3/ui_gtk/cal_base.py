@@ -68,11 +68,11 @@ class CalBase(CustomizableCalObj):
 			self.defineDragAndDrop()
 		if self.doubleClickEnable:
 			self.connect("double-button-press", ui.dayOpenEvolution)
-		if ui.mainWin:
-			self.connect("popup-cell-menu", ui.mainWin.menuCellPopup)
-			self.connect("popup-main-menu", ui.mainWin.menuMainPopup)
-			self.connect("pref-update-bg-color", ui.mainWin.prefUpdateBgColor)
-			self.connect("day-info", ui.mainWin.dayInfoShow)
+		if self.win:
+			self.connect("popup-cell-menu", self.win.menuCellPopup)
+			self.connect("popup-main-menu", self.win.menuMainPopup)
+			self.connect("pref-update-bg-color", self.win.prefUpdateBgColor)
+			self.connect("day-info", self.win.dayInfoShow)
 		###
 		self.subPages = None
 
