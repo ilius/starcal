@@ -748,7 +748,7 @@ def moveEventToTrash(
 	save: bool = True,
 ) -> int:
 	eventIndex = group.remove(event)
-	eventTrash.insert(0, event)  # or append? FIXME
+	eventTrash.add(event)  # or append? FIXME
 	if save:
 		group.save()
 		eventTrash.save()

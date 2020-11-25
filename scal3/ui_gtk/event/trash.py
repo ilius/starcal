@@ -4,7 +4,10 @@ from scal3.locale_man import tr as _
 from scal3 import ui
 
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import dialog_add_button
+from scal3.ui_gtk.utils import (
+	dialog_add_button,
+	set_tooltip,
+)
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 
@@ -55,6 +58,15 @@ class TrashEditorDialog(gtk.Dialog):
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
 		####
+		hbox = HBox()
+		self.addEventsToBeginningCheck = gtk.CheckButton(label=_("Add New Events to Beginning"))
+		set_tooltip(
+			hbox, # label or hbox?
+			_("Add new events to beginning of event list, not to the end"),
+		)
+		pack(hbox, self.addEventsToBeginningCheck)
+		pack(self.vbox, hbox)
+		####
 		self.vbox.show_all()
 		self.updateWidget()
 
@@ -66,8 +78,10 @@ class TrashEditorDialog(gtk.Dialog):
 	def updateWidget(self):
 		self.titleEntry.set_text(self.trash.title)
 		self.iconSelect.set_filename(self.trash.icon)
+		self.addEventsToBeginningCheck.set_active(self.trash.addEventsToBeginning)
 
 	def updateVars(self):
 		self.trash.title = self.titleEntry.get_text()
 		self.trash.icon = self.iconSelect.filename
+		self.trash.addEventsToBeginning = self.addEventsToBeginningCheck.get_active()
 		self.trash.save()
