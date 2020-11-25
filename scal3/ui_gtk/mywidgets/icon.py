@@ -90,7 +90,7 @@ class IconSelectButton(gtk.Button):
 		# FIXME: the dialog is not focusable and not usable!!
 		b = gevent.button
 		if b == 1:
-			dialog.present()
+			dialog.run()
 		elif b == 3:
 			self.menu.popup(None, None, None, None, b, gevent.time)
 
