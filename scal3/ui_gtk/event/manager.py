@@ -219,7 +219,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			parentIter = self.groupIterById[record.obj.parent.id]
 			# event is always added to the end of group (at least from
 			# outside Event Manager dialog), unless we add a bool global option
-			# to add all created events to the begining of group (prepend)
+			# to add all created events to the beginning of group (prepend)
 			self.appendEventRow(parentIter, record.obj)
 
 		elif action == "e":
@@ -1782,7 +1782,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	) -> None:
 		if group.id not in self.loadedGroupIds:
 			return
-		if group.addEventsToBegining:
+		if group.addEventsToBeginning:
 			self.insertEventRow(groupIter, 0, event)
 			return
 		self.appendEventRow(groupIter, event)
