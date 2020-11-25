@@ -12,6 +12,7 @@ from scal3.ui_gtk.utils import (
 	pixbufFromFile,
 	dialog_add_button,
 	resolveImagePath,
+	getGtkWindow,
 )
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
@@ -35,29 +36,7 @@ class IconSelectButton(gtk.Button):
 		gtk.Button.__init__(self)
 		self.image = gtk.Image()
 		self.add(self.image)
-		dialog = gtk.FileChooserDialog(
-			title=_("Select Icon File"),
-			action=gtk.FileChooserAction.OPEN,
-			transient_for=transient_for,
-		)
-		okB = dialog_add_button(
-			dialog,
-			imageName="dialog-ok.svg",
-			label=_("_OK"),
-			res=gtk.ResponseType.OK
-		)
-		dialog_add_button(
-			dialog,
-			imageName="dialog-cancel.svg",
-			label=_("_Cancel"),
-			res=gtk.ResponseType.CANCEL,
-		)
-		dialog_add_button(
-			dialog,
-			imageName="sweep.svg",
-			label=_("Clear"),
-			res=gtk.ResponseType.REJECT,
-		)
+		self._dialog = None
 		###
 		menu = Menu()
 		self.menu = menu
@@ -78,17 +57,48 @@ class IconSelectButton(gtk.Button):
 			))
 		menu.show_all()
 		###
-		dialog.connect("file-activated", self.fileActivated)
-		dialog.connect("response", self.dialogResponse)
 		#self.connect("clicked", lambda button: button.dialog.run())
-		self.connect("button-press-event", self.onButtonPressEvent, dialog)
-		###
-		self._dialog = dialog
+		self.connect("button-press-event", self.onButtonPressEvent)
 		###
 		self.set_filename(filename)
 
-	def onButtonPressEvent(self, widget, gevent, dialog):
-		# FIXME: the dialog is not focusable and not usable!!
+	def createDialog(self):
+		if self._dialog:
+			return self._dialog
+
+		dialog = gtk.FileChooserDialog(
+			title=_("Select Icon File"),
+			action=gtk.FileChooserAction.OPEN,
+			transient_for=getGtkWindow(self),
+		)
+		okB = dialog_add_button(
+			dialog,
+			imageName="dialog-ok.svg",
+			label=_("_OK"),
+			res=gtk.ResponseType.OK
+		)
+		dialog_add_button(
+			dialog,
+			imageName="dialog-cancel.svg",
+			label=_("_Cancel"),
+			res=gtk.ResponseType.CANCEL,
+		)
+		dialog_add_button(
+			dialog,
+			imageName="sweep.svg",
+			label=_("Clear"),
+			res=gtk.ResponseType.REJECT,
+		)
+
+		dialog.set_filename(self.filename)
+		dialog.connect("file-activated", self.fileActivated)
+		dialog.connect("response", self.dialogResponse)
+		self._dialog = dialog
+
+		return dialog
+
+	def onButtonPressEvent(self, widget, gevent):
+		dialog = self.createDialog()
 		b = gevent.button
 		if b == 1:
 			dialog.run()
@@ -131,7 +141,8 @@ class IconSelectButton(gtk.Button):
 			filename = ""
 		if filename:
 			filename = resolveImagePath(filename)
-		self._dialog.set_filename(filename)
+		if self._dialog:
+			self._dialog.set_filename(filename)
 		self.filename = filename
 		if not filename:
 			self._setImage(join(pixDir, "empty.png"))
