@@ -217,4 +217,5 @@ def exportToHtml(fpath, monthsStatus, title=""):
 		"</BODY>",
 		"</HTML>",
 	])
-	open(fpath, "w").write(text)
+	with open(fpath, mode="w", encoding="utf-8") as _file:
+		_file.write(text)
