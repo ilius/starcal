@@ -255,7 +255,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.multiSelectToPaste = None  # Optional[Tuple[bool, List[gtk.TreeIter]]]
 		####
 		self.set_title(_("Event Manager"))
-		self.resize(600, 300)
+		self.resize(800, 600)
 		self.connect("delete-event", self.onDeleteEvent)
 		self.set_transient_for(None)
 		self.set_type_hint(gdk.WindowTypeHint.NORMAL)
