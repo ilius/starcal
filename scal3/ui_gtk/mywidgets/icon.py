@@ -11,6 +11,7 @@ from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.utils import (
 	pixbufFromFile,
 	dialog_add_button,
+	resolveImagePath,
 )
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
@@ -128,6 +129,8 @@ class IconSelectButton(gtk.Button):
 	def set_filename(self, filename):
 		if filename is None:
 			filename = ""
+		if filename:
+			filename = resolveImagePath(filename)
 		self._dialog.set_filename(filename)
 		self.filename = filename
 		if not filename:

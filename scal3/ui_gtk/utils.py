@@ -31,7 +31,7 @@ from typing import Optional, Tuple, Union, Callable
 from scal3.utils import toBytes, toStr
 from scal3.json_utils import *
 from scal3.color_utils import ColorType, rgbToCSS
-from scal3.path import pixDir, sourceDir
+from scal3.path import pixDir, sourceDir, svgDir
 from scal3.cal_types import calTypes
 from scal3 import core
 from scal3.locale_man import tr as _
@@ -148,6 +148,14 @@ def imageFromFile(path, size=0):
 	pixbuf = pixbufFromFile(path, size=size)
 	im.set_from_pixbuf(pixbuf)
 	return im
+
+
+def resolveImagePath(path: str):
+	if isabs(path):
+		return path
+	if path.endswith(".svg"):
+		return join(svgDir, path)
+	return join(pixDir, path)
 
 
 def pixbufFromFile(
