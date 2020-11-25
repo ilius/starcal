@@ -33,8 +33,8 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 		CustomizableCalObj.initVars(self)
 		self.build()
 		###
-		if ui.mainWin:
-			self.connect("button-press-event", ui.mainWin.childButtonPress)
+		if controller.win:
+			self.connect("button-press-event", controller.win.childButtonPress)
 		###
 		self.show_all()
 
@@ -86,7 +86,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 
 	def onButtonRelease(self, button, gevent):
 		if gevent.button == 1:
-			self.onClick(self.controller.gWin, gevent)
+			self.onClick(self.controller.win, gevent)
 		return False
 
 
@@ -182,7 +182,8 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		for cls in buttonClassList
 	}
 
-	def __init__(self):
+	def __init__(self, win):
+		self.win = win
 		gtk.Box.__init__(
 			self,
 			orientation=gtk.Orientation.HORIZONTAL,
@@ -193,7 +194,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		self.initVars()
 		###########
 		# passing `self` to ud.hasLightTheme does not work!
-		self.light = ud.hasLightTheme(ui.mainWin)
+		self.light = ud.hasLightTheme(win)
 		###########
 		for bname, enable in ui.winControllerButtons:
 			button = self.buttonClassDict[bname](self)
@@ -201,9 +202,8 @@ class CalObj(gtk.Box, CustomizableCalBox):
 			self.appendItem(button)
 		self.set_property("can-focus", True)
 		##################
-		self.gWin = ui.mainWin
-		if self.gWin:
-			self.gWin.winCon = self ## dirty FIXME
+		if win:
+			win.winCon = self  # dirty FIXME
 		##gWin.connect("focus-in-event", self.windowFocusIn)
 		##gWin.connect("focus-out-event", self.windowFocusOut)
 		self.winFocused = True
