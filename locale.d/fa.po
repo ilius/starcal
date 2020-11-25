@@ -2150,6 +2150,10 @@ msgid "Events Icon"
 msgstr ""
 "نماد رویدادها"
 
+msgid "Select Icon File"
+msgstr ""
+"انتخاب فایل نماد"
+
 msgid "Events Box"
 msgstr ""
 "جعبهٔ رویدادها"
