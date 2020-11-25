@@ -3627,6 +3627,7 @@ class EventContainer(BsonHistEventObj):
 		"idList",
 		"modified",
 		"uuid",
+		"addEventsToBeginning",
 	)
 
 	acceptsEventTypes = (
@@ -3680,6 +3681,7 @@ class EventContainer(BsonHistEventObj):
 		self.title = title
 		self.icon = ""
 		self.showFullEventDesc = False
+		self.addEventsToBeginning = False
 		######
 		self.uuid = None
 		self.modified = now()
@@ -3752,6 +3754,12 @@ class EventContainer(BsonHistEventObj):
 		self.preAdd(event)
 		self.idList.append(event.id)
 		self.postAdd(event)
+
+	def add(self, event: "Event") -> None:
+		if self.addEventsToBeginning:
+			self.insert(0, event)
+		else:
+			self.append(event)
 
 	def index(self, eid):
 		return self.idList.index(eid)
@@ -3894,7 +3902,6 @@ class EventGroup(EventContainer):
 		"showInMCal",
 		"showInStatusIcon",
 		"showInTimeLine",
-		"addEventsToBeginning",
 		"color",
 		"eventCacheSize",
 		"eventTextSep",
@@ -4048,7 +4055,6 @@ class EventGroup(EventContainer):
 		self.showInMCal = True
 		self.showInStatusIcon = False
 		self.showInTimeLine = True
-		self.addEventsToBeginning = False
 		self.uuid = None
 		self.idByUuid = {}
 		self.color = (0, 0, 0)  # FIXME
@@ -4096,12 +4102,6 @@ class EventGroup(EventContainer):
 	def clearCache(self):
 		if self.eventCache:
 			self.eventCache.clear()
-
-	def add(self, event: "Event") -> None:
-		if self.addEventsToBeginning:
-			self.insert(0, event)
-		else:
-			self.append(event)
 
 	def setRandomColor(self) -> None:
 		import random
@@ -5769,7 +5769,7 @@ class EventGroupsHolder(JsonObjectsHolder):
 		trash: "EventTrash",
 		addToFirst: bool = True,
 	) -> None:
-		if core.eventTrashLastTop:
+		if trash.addEventsToBeginning:
 			trash.idList = group.idList + trash.idList
 		else:
 			trash.idList += group.idList
@@ -6031,6 +6031,7 @@ class EventTrash(EventContainer, WithIcon):
 		EventContainer.__init__(self, title=_("Trash"))
 		self.icon = self.defaultIcon
 		self.enable = False
+		self.addEventsToBeginning = True
 
 	def setData(self, data):
 		EventContainer.setData(self, data)

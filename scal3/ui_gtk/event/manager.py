@@ -1717,7 +1717,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def _do_deleteGroup(self, path: List[int], group: lib.EventGroup) -> None:
 		trashedIds = group.idList
-		if core.eventTrashLastTop:
+		if ui.eventTrash.addEventsToBeginning:
 			for eid in reversed(trashedIds):
 				event = group[eid]
 				self.insertEventRow(self.trashIter, 0, event)
@@ -1856,7 +1856,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.addEventRowToTrash(event)
 
 	def addEventRowToTrash(self, event: "lib.Event") -> None:
-		if core.eventTrashLastTop:
+		if ui.eventTrash.addEventsToBeginning:
 			self.insertEventRow(self.trashIter, 0, event)
 		else:
 			self.appendEventRow(self.trashIter, event)

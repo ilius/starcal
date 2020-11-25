@@ -557,7 +557,6 @@ weekNumberMode = 7
 useCompactJson = False  # TODO: add to Preferences
 useAsciiJson = False
 eventTextSep = ": "  # use to separate summary from description for display
-eventTrashLastTop = True
 
 # ___________________________________________________________________________ #
 
