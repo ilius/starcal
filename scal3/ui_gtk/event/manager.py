@@ -572,8 +572,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def multiSelectTreeviewToggleStatus(self, column, cell, model, _iter, userData):
 		if not self.multiSelect:
-			# cell.set_property("inconsistent", False)
-			# cell.set_active(model.get_value(_iter, 0))
 			return
 
 		path = model.get_path(_iter).get_indices()
@@ -806,7 +804,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 		self.waitingDo(self._do_multiSelectDelete, iterList)
 
-		# self.treeviewCursorChanged()
 		msgs = []
 		if toTrashCount:
 			msgs.append(_("Moved {count} events to {title}").format(
@@ -1437,7 +1434,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def getSelectedPath(self) -> Optional[List[int]]:
 		pathObj = self.treev.get_cursor()[0]
-		# pathObj is either None of gtk.TreePath
+		# pathObj is either None or gtk.TreePath
 		if pathObj is None:
 			return
 		return pathObj.get_indices()
@@ -1493,7 +1490,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def _do_showDescItemToggled(self) -> None:
 		active = self.showDescItem.get_active()
-		# self.showDescItem.set_active(active)
 		ui.eventManShowDescription = active
 		ui.saveLiveConf()  # FIXME
 		if active:
@@ -1581,7 +1577,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			common.getTreeGroupPixbuf(group),
 		)
 		ui.eventGroups.save()
-		# group.save()
 		if (
 			group.enable and
 			self.trees.iter_n_children(groupIter) == 0 and
@@ -1624,7 +1619,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		if not pathObj:
 			return
 		path = pathObj.get_indices()
-		# log.info(f"path={path}, list(pathObj)={list(pathObj)}")
 		if gevent.button == 3:
 			if self.multiSelect:
 				return False
@@ -1734,16 +1728,14 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		account.showError = showError
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
-		# try:
 		error = self.waitingDo(account.sync, group, remoteGid)
 		if error:
 			log.error(error)
 		"""
-		except Exception as e:
 			msg = _(
 				"Error in synchronizing group "{group}" with "
 				"account "{account}""
-			).format(**info) + "\n" + str(e)
+			).format(**info) + "\n" + error
 			showError(msg, transient_for=self)
 		else:
 			msg = _(
@@ -2063,7 +2055,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			tarIter = self.trees.get_iter((path[0] + 1))
 			if self.getRowId(tarIter) == -1:
 				return
-			self.trees.move_after(srcIter, tarIter)  # or use self.trees.swap FIXME
+			self.trees.move_after(srcIter, tarIter)
+			# or use self.trees.swap FIXME
 			ui.eventGroups.moveDown(path[0])
 			ui.eventGroups.save()
 			# do we need to put on ui.eventUpdateQueue?
@@ -2294,9 +2287,3 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		if doScroll:
 			self.treev.set_cursor(self.trees.get_path(newEventIter))
 		self.toPasteEvent = None
-
-	# def selectAllEventInGroup(self, menuItem):  # FIXME
-	# 	pass
-
-	# def selectAllEventInTrash(self, menuItem): # FIXME
-	# 	pass
