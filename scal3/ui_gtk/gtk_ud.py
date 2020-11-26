@@ -402,29 +402,52 @@ def updateFormatsBin():
 ##############################
 
 
+def findAskpass():
+	from os.path import isfile
+	for askpass in (
+		# Debian (not in PATH)
+		"/usr/lib/openssh/gnome-ssh-askpass",
+
+		# Debian (in PATH)
+		"/usr/bin/ksshaskpass",
+
+		# Debian (in PATH)
+		"/usr/bin/lxqt-openssh-askpass",
+
+		# Red Hat
+		"/usr/libexec/openssh/lxqt-openssh-askpass",
+
+		# Debian (in PATH)
+		"/usr/bin/ssh-askpass-fullscreen",
+
+		# Debian (not in PATH), ArchLinux
+		"/usr/lib/ssh/x11-ssh-askpass",
+
+		# FreeBSD (package openssh-askpass)
+		"/bin/x11-ssh-askpass",
+	):
+		if isfile(askpass):
+			return askpass
+
+
 def setDefault_adjustTimeCmd():
 	global adjustTimeCmd
 	global adjustTimeEnv
 	from os.path import isfile
+
 	sudo = "/usr/bin/sudo"
 	if isfile(sudo):
-		for askpass in (
-			"/usr/lib/openssh/gnome-ssh-askpass",
-			"/usr/bin/ksshaskpass",
-			"/usr/bin/lxqt-openssh-askpass",
-			"/usr/libexec/openssh/lxqt-openssh-askpass",
-			"/usr/bin/ssh-askpass-fullscreen",
-			"/usr/lib/ssh/x11-ssh-askpass",
-		):
-			if isfile(askpass):
-				adjustTimeCmd = [
-					sudo,
-					"-A", # --askpass
-					join(sourceDir, "scripts", "run"),
-					"scal3/ui_gtk/adjust_dtime.py"
-				]
-				adjustTimeEnv["SUDO_ASKPASS"] = askpass
-				return
+		askpass = findAskpass()
+		if askpass:
+			adjustTimeCmd = [
+				sudo,
+				"-A", # --askpass
+				join(sourceDir, "scripts", "run"),
+				"scal3/ui_gtk/adjust_dtime.py"
+			]
+			adjustTimeEnv["SUDO_ASKPASS"] = askpass
+			return
+
 	for cmd in ("gksudo", "kdesudo", "gksu", "gnomesu", "kdesu"):
 		if isfile(f"/usr/bin/{cmd}"):
 			adjustTimeCmd = [
