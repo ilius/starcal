@@ -384,7 +384,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		# testMenu.append(item)
 		####
 		multiSelectMenu = Menu()
-		multiSelectItemMain = self.multiSelectItemMain = MenuItem(label=_("Multi-select"))
+		multiSelectItemMain = MenuItem(label=_("Multi-select"))
+		self.multiSelectItemMain = multiSelectItemMain
 		multiSelectItemMain.set_submenu(multiSelectMenu)
 		menubar.append(multiSelectItemMain)
 		##
@@ -393,6 +394,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		multiSelectMenu.append(multiSelectItem)
 		self.multiSelectItem = multiSelectItem
 		self.multiSelectItemsOther = []
+		####
+		multiSelectMenu.append(gtk.SeparatorMenuItem())
 		####
 		cutItem = MenuItem(_("Cu_t"))
 		cutItem.connect("activate", self.multiSelectCut)
@@ -406,7 +409,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		pasteItem.connect("activate", self.multiSelectPaste)
 		self.multiSelectItemsOther.append(pasteItem)
 		##
-		deleteItem = MenuItem(_("Move to {title}").format(title=ui.eventTrash.title))
+		self.multiSelectItemsOther.append(gtk.SeparatorMenuItem())
+		##
+		deleteItem = MenuItem(_("Delete"))
 		deleteItem.connect("activate", self.multiSelectDelete)
 		self.multiSelectItemsOther.append(deleteItem)
 		###
@@ -1244,7 +1249,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				args=(path,),
 			))
 
-
 	def genRightClickMenu(self, path: List[int]) -> gtk.Menu:
 		# and Select _All menu item
 		obj_list = self.getObjsByPath(path)
@@ -1309,7 +1313,11 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		return False
 		# return self.onTreeviewKeyPress(self.treev, gevent)
 
-	def onTreeviewKeyPress(self, treev: gtk.TreeView, gevent: gdk.EventKey) -> bool:
+	def onTreeviewKeyPress(
+		self,
+		treev: "gtk.TreeView",
+		gevent: "gdk.EventKey",
+	) -> bool:
 		# from scal3.time_utils import getGtkTimeFromEpoch
 		# log.debug(gevent.time-getGtkTimeFromEpoch(now()))
 		# log.debug(now()-gdk.CURRENT_TIME/1000.0)
@@ -1531,10 +1539,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		ui.eventGroups.save()
 		# group.save()
 		if (
-			group.enable
-			and
-			self.trees.iter_n_children(groupIter) == 0
-			and
+			group.enable and
+			self.trees.iter_n_children(groupIter) == 0 and
 			len(group) > 0
 		):
 			for event in group:
@@ -2231,7 +2237,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		else:
 			newEventIter = self.appendEventRow(tarGroupIter, newEvent)
 		return newEventIter
-
 
 	def pasteEventToPath(
 		self,
