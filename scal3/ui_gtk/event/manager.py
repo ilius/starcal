@@ -273,7 +273,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		#######
 		menubar = self.menubar = gtk.MenuBar()
 		####
-		fileItem = MenuItem(_("_File"))
+		fileItem = self.fileItem = MenuItem(_("_File"))
 		fileMenu = Menu()
 		fileItem.set_submenu(fileMenu)
 		menubar.append(fileItem)
@@ -463,6 +463,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		#####
 		self.treev = gtk.TreeView()
 		self.treev.set_search_column(3)
+		self.treev.set_fixed_height_mode(True)
 		# self.treev.set_headers_visible(False)  # FIXME
 		# self.treev.get_selection().set_mode(gtk.SelectionMode.MULTIPLE)  # FIXME
 		# self.treev.set_rubber_banding(gtk.SelectionMode.MULTIPLE)  # FIXME
@@ -481,9 +482,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
 		pack(treeBox, swin, 1, 1)
 		###
-		toolbar = EventManagerToolbar(self)
+		self.toolbar = EventManagerToolbar(self)
 		###
-		pack(treeBox, toolbar)
+		pack(treeBox, self.toolbar)
 		#####
 		pack(self.vbox, treeBox, 1, 1)
 		#######
@@ -499,8 +500,13 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		###
 		cell = gtk.CellRendererToggle()
 		# cell.set_property("activatable", True)
+		# cell.set_radio(True)
 		cell.connect("toggled", self.multiSelectTreeviewToggle)
-		col = gtk.TreeViewColumn(title="", cell_renderer=cell)
+		col = gtk.TreeViewColumn(
+			title="",
+			cell_renderer=cell,
+		)
+		col.set_sizing(gtk.TreeViewColumnSizing.FIXED)
 		col.add_attribute(cell, "active", 0)
 		# cell.set_active(False)
 		col.set_resizable(True)
@@ -509,31 +515,38 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.multiSelectColumn = col
 		self.treev.append_column(col)
 		###
-		col = gtk.TreeViewColumn()
 		cell = gtk.CellRendererPixbuf()
-		pack(col, cell)
+		col = gtk.TreeViewColumn(
+			title="",
+			cell_renderer=cell,
+		)
+		col.set_sizing(gtk.TreeViewColumnSizing.FIXED)
 		col.add_attribute(cell, "pixbuf", 2)
 		col.set_property("expand", False)
 		self.treev.append_column(col)
 		self.pixbufCol = col
 		###
+		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(
-			_("Summary"),
-			gtk.CellRendererText(),
+			title=_("Summary"),
+			cell_renderer=cell,
 			text=3,
 		)
+		col.set_sizing(gtk.TreeViewColumnSizing.FIXED)
 		col.set_resizable(True)
 		col.set_property("expand", True)
 		self.treev.append_column(col)
 		###
-		self.colDesc = gtk.TreeViewColumn(
-			_("Description"),
-			gtk.CellRendererText(),
+		cell = gtk.CellRendererText()
+		col = self.colDesc = gtk.TreeViewColumn(
+			title=_("Description"),
+			cell_renderer=cell,
 			text=4,
 		)
-		self.colDesc.set_property("expand", True)
+		col.set_sizing(gtk.TreeViewColumnSizing.FIXED)
+		col.set_property("expand", True)
 		if ui.eventManShowDescription:
-			self.treev.append_column(self.colDesc)
+			self.treev.append_column(col)
 		###
 		# self.treev.set_search_column(2)## or 3
 		###
@@ -570,6 +583,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.multiSelectHBox.set_visible(enable)
 		self.multiSelectColumn.set_visible(enable)
 		self.editItem.set_sensitive(not enable)
+		self.fileItem.set_sensitive(not enable)
+		self.toolbar.set_sensitive(not enable)
 		for item in self.multiSelectItemsOther:
 			item.set_sensitive(enable)
 		self.multiSelect = enable
