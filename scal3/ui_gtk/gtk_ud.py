@@ -264,6 +264,12 @@ class IntegatedWindowList(BaseCalObj):
 			fgColor=fgColor,
 		) + "\n"
 
+		smallerFont = ui.getFont(0.8)
+		css += f".smaller {cssTextStyle(font=smallerFont)}\n"
+
+		biggerFont = ui.getFont(1.25)
+		css += f".bigger {cssTextStyle(font=biggerFont)}\n"
+
 		for func in self.cssFuncList:
 			cssPart = func()
 			if not cssPart:

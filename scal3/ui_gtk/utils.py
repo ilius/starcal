@@ -360,26 +360,35 @@ def dialog_add_button(
 	return b
 
 
-def confirm(msg, **kwargs):
+def confirm(
+	msg,
+	title=_("Confirmation"),
+	border_width=15,
+	**kwargs
+):
 	win = gtk.MessageDialog(
-		flags=0,
 		message_type=gtk.MessageType.INFO,
 		buttons=gtk.ButtonsType.NONE,
 		text=msg,
+		title=title,
 		**kwargs
 	)
-	dialog_add_button(
+	button = dialog_add_button(
 		win,
 		imageName="dialog-cancel.svg",
 		label=_("_Cancel"),
 		res=gtk.ResponseType.CANCEL,
 	)
-	dialog_add_button(
+	button.set_border_width(border_width)
+	button.get_style_context().add_class("bigger")
+	button = dialog_add_button(
 		win,
 		imageName="dialog-ok.svg",
 		label=_("_OK"),
 		res=gtk.ResponseType.OK,
 	)
+	button.set_border_width(border_width)
+	button.get_style_context().add_class("bigger")
 	ok = win.run() == gtk.ResponseType.OK
 	win.destroy()
 	return ok

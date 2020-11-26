@@ -2453,6 +2453,10 @@ msgid "Critical"
 msgstr ""
 "خطای بحرانی (Critical)"
 
+msgid "Confirmation"
+msgstr ""
+"تأییدیه"
+
 
 msgid "Horizontal offset for day right-click menu"
 msgstr ""
