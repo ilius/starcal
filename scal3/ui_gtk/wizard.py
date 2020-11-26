@@ -27,7 +27,6 @@ class WizardWindow(gtk.Window, MyDialog):
 		self.steps = []
 		self.stepIndex = 0
 		####
-		#self.steps = []
 		for index, cls in enumerate(self.stepClasses):
 			step = cls(self)
 			self.steps.append(step)
@@ -50,7 +49,6 @@ class WizardWindow(gtk.Window, MyDialog):
 		####
 		self.showStep(0)
 		self.show_all()
-		#self.vbox.pack_end(
 		# log.debug(id(self.get_action_area()))
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
@@ -70,9 +68,8 @@ class WizardWindow(gtk.Window, MyDialog):
 		for child in bbox.get_children():
 			child.destroy()
 		for label, func in step.buttons:
-			# log.debug(label, func)
 			button = gtk.Button(label=label)
 			button.connect("clicked", func)
 			bbox.add(button)
-			#pack(bbox, button)
+			# pack(bbox, button)
 		bbox.show_all()
