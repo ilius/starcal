@@ -686,9 +686,19 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			return
 
 		self.multiSelectCBSetEvent(pathTuple[0], pathTuple[1], active)
-		parent = model.get_iter(path[:1])
-		model.set_value(parent, 0, model.get_value(parent, 0))
-		# ^ to re-render the parent (group) checkbox
+
+		parentIter = model.get_iter(path[:1])
+		groupIndex = path[0]
+		try:
+			count = len(self.multiSelectPathDict[groupIndex])
+		except KeyError:
+			model.set_value(parentIter, 0, False)
+		else:
+			model.set_value(
+				parentIter,
+				0,
+				count == len(ui.eventGroups[self.getRowId(parentIter)]),
+			)
 
 		self.multiSelectLabelUpdate()
 
