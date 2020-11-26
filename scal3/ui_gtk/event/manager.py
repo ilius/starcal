@@ -1292,6 +1292,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		path: List[int],
 		col: gtk.TreeViewColumn,
 	) -> None:
+		if self.multiSelect:
+			return
 		if len(path) == 1:
 			pathObj = gtk.TreePath(path)
 			if treev.row_expanded(pathObj):
