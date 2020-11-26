@@ -270,6 +270,8 @@ class IntegatedWindowList(BaseCalObj):
 		biggerFont = ui.getFont(1.25)
 		css += f".bigger {cssTextStyle(font=biggerFont)}\n"
 
+		css += "check {min-width: 1.42em; min-height: 1.42em;}\n"
+
 		for func in self.cssFuncList:
 			cssPart = func()
 			if not cssPart:
