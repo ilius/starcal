@@ -467,7 +467,10 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		#####
 		self.treev = gtk.TreeView()
 		self.treev.set_search_column(3)
-		self.treev.set_fixed_height_mode(True)
+
+		# self.treev.set_fixed_height_mode(True)
+		# ^ causes multi-select checkbox to be hidden after row-expanded in multi-select mode
+
 		# self.treev.set_headers_visible(False)  # FIXME
 		# self.treev.get_selection().set_mode(gtk.SelectionMode.MULTIPLE)  # FIXME
 		# self.treev.set_rubber_banding(gtk.SelectionMode.MULTIPLE)  # FIXME
