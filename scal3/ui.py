@@ -28,6 +28,7 @@ import os
 from os import listdir
 import os.path
 from os.path import dirname, join, isfile, splitext, isabs
+from cachetools import LRUCache
 
 from typing import (
 	Any,
@@ -40,7 +41,6 @@ from typing import (
 	TypeVar,
 )
 
-from scal3.utils import cleanCacheDict
 from scal3.utils import toBytes
 from scal3.json_utils import *
 from scal3.path import *
@@ -478,24 +478,33 @@ class Cell(CellType):
 class CellCache:
 	def __init__(self) -> None:
 		# a mapping from julan_day to Cell instance
-		self.jdCells = {}  # type: Dict[int, CellType]
+		self.resetCache()
 		self.plugins = {}  # disabled type: CellPluginsType
-		self.weekEvents = {}  # type Dict[int, List[Dict]]
+
+	def resetCache(self):
+		log.debug(
+			f"resetCache: maxDayCacheSize={maxDayCacheSize},"
+			f" maxWeekCacheSize={maxWeekCacheSize}"
+		)
+
+		# key: jd(int), value: CellType
+		self.jdCells = LRUCache(maxsize=maxDayCacheSize)
+
+		# key: absWeekNumber(int), value: List[Dict]
+		self.weekEvents = LRUCache(maxsize=maxWeekCacheSize)
 
 	def clear(self) -> None:
 		global cell, todayCell
-		self.jdCells = {}
-		self.weekEvents = {}
+		self.resetCache()
 		cell = self.getCell(cell.jd)
 		todayCell = self.getCell(todayCell.jd)
 
 	def clearEventsData(self):
-		# self.jdCells = {}
-		self.weekEvents = {}
 		for tmpCell in self.jdCells.values():
 			tmpCell.clearEventsData()
 		cell.clearEventsData()
 		todayCell.clearEventsData()
+		self.weekEvents = LRUCache(maxsize=maxWeekCacheSize)
 
 	def registerPlugin(
 		self,
@@ -541,7 +550,6 @@ class CellCache:
 		for pluginData in self.plugins.values():
 			pluginData[0](localCell)
 		self.jdCells[jd] = localCell
-		cleanCacheDict(self.jdCells, maxDayCacheSize, jd)
 		return localCell
 
 	def getCellGroup(self, pluginName: int, *args) -> List[CellType]:
@@ -559,8 +567,8 @@ class CellCache:
 				eventGroups,
 				tfmt=eventWeekViewTimeFormat,
 			)
-			cleanCacheDict(self.weekEvents, maxWeekCacheSize, absWeekNumber)
 			self.weekEvents[absWeekNumber] = wEventData
+			# log.info(f"weekEvents cache: {len(self.weekEvents)}")
 		return cells, wEventData
 
 	# def getMonthData(self, year, month):  # needed? FIXME
