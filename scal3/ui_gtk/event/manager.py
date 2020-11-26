@@ -240,7 +240,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.initVars()
 		ud.windowList.appendItem(self)
 		ui.eventUpdateQueue.registerConsumer(self)
-		ud.windowList.addCSSFunc(self.getCSS)
 		####
 		self.syncing = None  # or a tuple of (groupId, statusText)
 		self.groupIterById = {}
@@ -441,12 +440,14 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			func=self.multiSelectCut,
 			tooltip=_("Cut"),
 		))
-		pack(hbox, self.smallerButton(
+		self.multiSelectPasteButton = self.smallerButton(
 			label=_("Paste"),
 			# imageName="edit-paste.svg",
 			func=self.multiSelectPaste,
 			tooltip=_("Paste"),
-		))
+		)
+		pack(hbox, self.multiSelectPasteButton)
+		self.multiSelectPasteButton.set_sensitive(False)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(hbox, self.smallerButton(
 			label=_("Delete"),
@@ -568,11 +569,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.vbox.show_all()
 		self.multiSelectHBox.hide()
 
-	def getCSS(self) -> str:
-		from scal3.ui_gtk.utils import cssTextStyle
-		font = ui.getFont(0.8)
-		return ".smaller " + cssTextStyle(font=font)
-
 	def smallerButton(self, label="", imageName="", func=None, tooltip=""):
 		button = labelImageButton(
 			label=label,
@@ -658,6 +654,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			model.get_iter(path) for path in self.multiSelectPathDict
 		]
 		self.multiSelectToPaste = (False, iterList)
+		self.multiSelectPasteButton.set_sensitive(True)
 
 	def multiSelectCut(self, obj=None):
 		model = self.trees
@@ -665,6 +662,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			model.get_iter(path) for path in self.multiSelectPathDict
 		]
 		self.multiSelectToPaste = (True, iterList)
+		self.multiSelectPasteButton.set_sensitive(True)
 
 	def multiSelectPaste(self, obj=None):
 		toPaste = self.multiSelectToPaste
@@ -746,6 +744,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.multiSelectSelectedGroupPathDict = {}
 		self.multiSelectSelectedTrashedCount = 0
 		self.multiSelectLabelUpdate()
+		self.multiSelectPasteButton.set_sensitive(False)
 
 	def multiSelectDelete(self, obj=None):
 		model = self.trees
