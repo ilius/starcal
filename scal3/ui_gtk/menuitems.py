@@ -114,6 +114,49 @@ class CheckMenuItem(gtk.MenuItem):
 		args=None,
 	):
 		gtk.MenuItem.__init__(self)
+		self._check = gtk.CheckButton(label=" " + label)
+		self._check.set_use_underline(True)
+		# self._check.set_border_width((ui.menuCheckSize - ui.menuIconSize) // 2)
+		self._box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=0)
+		edgePadding = 0
+		# edgePadding = ui.menuIconEdgePadding - ui.menuCheckSize + ui.menuIconSize
+		# print(f"CheckMenuItem: edgePadding={edgePadding}")
+		# edgePadding += 2  # FIXME: why is this needed?
+		# edgePadding = max(0, edgePadding)
+		pack(self._box, self._check, padding=edgePadding)
+		self._box.show_all()
+		self.add(self._box)
+		###
+		self.set_active(active)
+		###
+		self._func = func
+		if args is None:
+			args = ()
+		self._args = args
+		self.connect("activate", self._onActivate)
+
+	def _onActivate(self, menuItem):
+		self.set_active(not self._active)
+		self._func(menuItem, *self._args)
+
+	def set_active(self, active: bool) -> None:
+		self._active = active
+		self._check.set_active(active)
+
+	def get_active(self) -> bool:
+		return self._active
+
+
+
+class CustomCheckMenuItem(gtk.MenuItem):
+	def __init__(
+		self,
+		label="",
+		active=False,
+		func=None,
+		args=None,
+	):
+		gtk.MenuItem.__init__(self)
 		self._image = gtk.Image()
 		self._box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=0)
 		edgePadding = ui.menuIconEdgePadding - ui.menuCheckSize + ui.menuIconSize
@@ -156,8 +199,3 @@ class CheckMenuItem(gtk.MenuItem):
 
 	def get_active(self) -> bool:
 		return self._active
-
-	def get_image(self):
-		return self._image
-
-

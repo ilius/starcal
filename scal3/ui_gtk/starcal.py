@@ -71,6 +71,7 @@ from scal3.ui_gtk.utils import *
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
 	CheckMenuItem,
+	CustomCheckMenuItem,
 )
 from scal3.ui_gtk import listener
 from scal3.ui_gtk import gtk_ud as ud

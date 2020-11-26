@@ -272,6 +272,9 @@ class IntegatedWindowList(BaseCalObj):
 
 		css += "check {min-width: 1.42em; min-height: 1.42em;}\n"
 
+		mcs = ui.menuCheckSize
+		css += f"menuitem check {{min-width: {mcs}px; min-height: {mcs}px;}}\n"
+
 		for func in self.cssFuncList:
 			cssPart = func()
 			if not cssPart:
