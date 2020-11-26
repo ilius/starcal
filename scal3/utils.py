@@ -261,17 +261,6 @@ def s_join(ls: List[Any]) -> str:
 	return " ".join([str(x) for x in ls])
 
 
-def cleanCacheDict(cache: Dict[Any, Any], maxSize: int, currentValue: Any):
-	n = len(cache)
-	if n >= maxSize > 2:
-		keys = sorted(cache.keys())
-		if keys[n // 2] < currentValue:
-			rm = keys[0]
-		else:
-			rm = keys[-1]
-		cache.pop(rm)
-
-
 def urlToPath(url: str) -> str:
 	if not url.startswith("file://"):
 		return url
