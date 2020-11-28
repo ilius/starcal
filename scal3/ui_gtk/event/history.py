@@ -86,17 +86,17 @@ class EventHistoryDialog(gtk.Dialog):
 
 		treev = gtk.TreeView()
 		treev.set_headers_clickable(True)
-		trees = gtk.ListStore(
+		treeModel = gtk.ListStore(
 			str, # hashBefore (hidden)
 			str, # hashAfter (hidden)
 			str, # formatted date & time
 			str, # change msg (names or the number of changed params)
 		)
-		treev.set_model(trees)
+		treev.set_model(treeModel)
 		treev.connect("cursor-changed", self.treeviewCursorChanged)
 		# treev.connect("button-press-event", self.treeviewCursorChanged)
 		# FIXME: what is the signal for deselecting / unselecting a row?
-		self.trees = trees
+		self.treeModel = treeModel
 		self.treev = treev
 
 		treevSwin = gtk.ScrolledWindow()
@@ -249,7 +249,7 @@ class EventHistoryDialog(gtk.Dialog):
 		assert len(path) == 1
 		self.setButtonsSensitive(True)
 		index = path[0]
-		row = self.trees[index]
+		row = self.treeModel[index]
 		hashBefore = row[0]
 		hashAfter = row[1]
 
@@ -265,18 +265,18 @@ class EventHistoryDialog(gtk.Dialog):
 
 	def updateTableViewType(self, viewType, hashBefore, hashAfter):
 		event = self.event
-		trees = self.cmpTrees
-		trees.clear()
+		treeModel = self.cmpTrees
+		treeModel.clear()
 
 		if viewType == "Change Table":
 			if hashBefore != "":
 				diff = self.extractChangeDiff(hashBefore, hashAfter)
 				for key in sorted(diff.keys()):
 					(valueBefore, valueAfter) = diff[key]
-					trees.append(["M", key, str(valueBefore), str(valueAfter)])
+					treeModel.append(["M", key, str(valueBefore), str(valueAfter)])
 		elif viewType == "Full Table":
 			for row in self.extractFullTable(hashBefore, hashAfter):
-				trees.append(row)
+				treeModel.append(row)
 		else:
 			raise ValueError(f"unexpected viewType={viewType!r}")
 
@@ -339,7 +339,7 @@ class EventHistoryDialog(gtk.Dialog):
 			return
 		assert len(path) == 1
 		index = path[0]
-		row = self.trees[index]
+		row = self.treeModel[index]
 		hashAfter = row[1]
 		self.switchToRevision(hashAfter)
 
@@ -349,7 +349,7 @@ class EventHistoryDialog(gtk.Dialog):
 			return
 		assert len(path) == 1
 		index = path[0]
-		row = self.trees[index]
+		row = self.treeModel[index]
 		hashBefore = row[0]
 		self.switchToRevision(hashBefore)
 
@@ -359,7 +359,7 @@ class EventHistoryDialog(gtk.Dialog):
 	# 		return
 	# 	assert len(path) == 1
 	# 	index = path[0]
-	# 	row = self.trees[index]
+	# 	row = self.treeModel[index]
 	# 	hashBefore = row[0]
 	# 	hashAfter = row[1]
 	# 	# TODO
@@ -448,13 +448,13 @@ class EventHistoryDialog(gtk.Dialog):
 		return _("{count} parameters").format(count=_(len(diff)))
 
 	def load(self):
-		trees = self.trees
-		trees.clear()
+		treeModel = self.treeModel
+		treeModel.clear()
 		hist = self.event.loadHistory()
 		count = len(hist)
 		for index, (epoch, hashAfter) in enumerate(hist):
 			if index == count - 1:
-				trees.append([
+				treeModel.append([
 					"",
 					hashAfter,
 					self.formatEpoch(epoch),
@@ -466,7 +466,7 @@ class EventHistoryDialog(gtk.Dialog):
 			diff = self.extractChangeDiff(hashBefore, hashAfter)
 			changeSummary = self.extractChangeSummary(diff)
 
-			trees.append([
+			treeModel.append([
 				hashBefore,
 				hashAfter,
 				self.formatEpoch(epoch),

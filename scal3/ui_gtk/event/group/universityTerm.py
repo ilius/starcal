@@ -58,8 +58,8 @@ class CourseListEditor(gtk.Box):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.treev = gtk.TreeView()
 		self.treev.set_headers_visible(True)
-		self.trees = gtk.ListStore(int, str, int)
-		self.treev.set_model(self.trees)
+		self.treeModel = gtk.ListStore(int, str, int)
+		self.treev.set_model(self.treeModel)
 		##########
 		cell = gtk.CellRendererText(editable=True)
 		cell.connect("edited", self.courseNameEdited)
@@ -129,7 +129,7 @@ class CourseListEditor(gtk.Box):
 	def onAddClick(self, button):
 		index = self.getSelectedIndex()
 		lastCourseId = max(
-			[1] + [row[0] for row in self.trees]
+			[1] + [row[0] for row in self.treeModel]
 		)
 		row = [
 			lastCourseId + 1,
@@ -137,10 +137,10 @@ class CourseListEditor(gtk.Box):
 			self.defaultCourseUnits,
 		]
 		if index is None:
-			newIter = self.trees.append(row)
+			newIter = self.treeModel.append(row)
 		else:
-			newIter = self.trees.insert(index + 1, row)
-		self.treev.set_cursor(self.trees.get_path(newIter))
+			newIter = self.treeModel.insert(index + 1, row)
+		self.treev.set_cursor(self.treeModel.get_path(newIter))
 		#col = self.treev.get_column(0)
 		#cell = col.get_cell_renderers()[0]
 		#cell.start_editing(...) ## FIXME
@@ -149,13 +149,13 @@ class CourseListEditor(gtk.Box):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
-		del self.trees[index]
+		del self.treeModel[index]
 
 	def onMoveUpClick(self, button):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
-		t = self.trees
+		t = self.treeModel
 		if index <= 0 or index >= len(t):
 			gdk.beep()
 			return
@@ -169,7 +169,7 @@ class CourseListEditor(gtk.Box):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
-		t = self.trees
+		t = self.treeModel
 		if index < 0 or index >= len(t) - 1:
 			gdk.beep()
 			return
@@ -182,20 +182,20 @@ class CourseListEditor(gtk.Box):
 	def courseNameEdited(self, cell, path, newText):
 		# log.debug("courseNameEdited", newText)
 		index = int(path)
-		self.trees[index][1] = newText
+		self.treeModel[index][1] = newText
 
 	def courseUnitsEdited(self, cell, path, newText):
 		index = int(path)
 		units = numDecode(newText)
-		self.trees[index][2] = units
+		self.treeModel[index][2] = units
 
 	def setData(self, rows):
-		self.trees.clear()
+		self.treeModel.clear()
 		for row in rows:
-			self.trees.append(row)
+			self.treeModel.append(row)
 
 	def getData(self):
-		return [tuple(row) for row in self.trees]
+		return [tuple(row) for row in self.treeModel]
 
 
 class ClassTimeBoundsEditor(gtk.Box):
@@ -205,8 +205,8 @@ class ClassTimeBoundsEditor(gtk.Box):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.treev = gtk.TreeView()
 		self.treev.set_headers_visible(False)
-		self.trees = gtk.ListStore(str)
-		self.treev.set_model(self.trees)
+		self.treeModel = gtk.ListStore(str)
+		self.treev.set_model(self.treeModel)
 		##########
 		cell = gtk.CellRendererText(editable=True)
 		cell.connect("edited", self.timeEdited)
@@ -248,22 +248,22 @@ class ClassTimeBoundsEditor(gtk.Box):
 		index = self.getSelectedIndex()
 		row = ["00:00"]
 		if index is None:
-			newIter = self.trees.append(row)
+			newIter = self.treeModel.append(row)
 		else:
-			newIter = self.trees.insert(index + 1, row)
-		self.treev.set_cursor(self.trees.get_path(newIter))
+			newIter = self.treeModel.insert(index + 1, row)
+		self.treev.set_cursor(self.treeModel.get_path(newIter))
 
 	def onDeleteClick(self, button):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
-		del self.trees[index]
+		del self.treeModel[index]
 
 	def onMoveUpClick(self, button):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
-		t = self.trees
+		t = self.treeModel
 		if index <= 0 or index >= len(t):
 			gdk.beep()
 			return
@@ -277,7 +277,7 @@ class ClassTimeBoundsEditor(gtk.Box):
 		index = self.getSelectedIndex()
 		if index is None:
 			return
-		t = self.trees
+		t = self.treeModel
 		if index < 0 or index >= len(t) - 1:
 			gdk.beep()
 			return
@@ -293,18 +293,18 @@ class ClassTimeBoundsEditor(gtk.Box):
 		h = numDecode(parts[0])
 		m = numDecode(parts[1])
 		hm = hmEncode((h, m))
-		self.trees[index][0] = hm
-		#self.trees.sort()## FIXME
+		self.treeModel[index][0] = hm
+		#self.treeModel.sort()## FIXME
 
 	def setData(self, hmList):
-		self.trees.clear()
+		self.treeModel.clear()
 		for hm in hmList:
-			self.trees.append([hmEncode(hm)])
+			self.treeModel.append([hmEncode(hm)])
 
 	def getData(self):
 		return sorted(
 			hmDecode(row[0])
-			for row in self.trees
+			for row in self.treeModel
 		)
 
 
