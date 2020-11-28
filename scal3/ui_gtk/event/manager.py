@@ -503,6 +503,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			str,  # eventDescription, empty for group or trash
 		)
 		self.idColIndex = 1
+		self.summaryColIndex = 3
 		self.treev.set_model(self.treeModel)
 		###
 		cell = gtk.CellRendererToggle()
@@ -1562,8 +1563,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				n = self.treeModel.iter_n_children(groupIter)
 				for i in range(n):
 					eventIter = self.treeModel.iter_nth_child(groupIter, i)
-					eid = self.treeModel.get(eventIter, 0)[0]
-					self.treeModel.set(eventIter, 2, group[eid].summary)
+					eid = self.getRowId(eventIter)
+					self.treeModel.set_value(
+						eventIter,
+						self.summaryColIndex,
+						group[eid].getSummary(),
+					)
 		except Exception:
 			log.exception("")
 
