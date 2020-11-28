@@ -375,8 +375,8 @@ class StrListEditor(gtk.Box):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.treev = gtk.TreeView()
 		self.treev.set_headers_visible(False)
-		self.trees = gtk.ListStore(str)
-		self.treev.set_model(self.trees)
+		self.treeModel = gtk.ListStore(str)
+		self.treev.set_model(self.treeModel)
 		##########
 		cell = gtk.CellRendererText()
 		cell.set_property("editable", True)
@@ -415,16 +415,16 @@ class StrListEditor(gtk.Box):
 	def onAddClick(self, button):
 		cur = self.treev.get_cursor()
 		if cur:
-			self.trees.insert(cur[0], [self.defaultValue])
+			self.treeModel.insert(cur[0], [self.defaultValue])
 		else:
-			self.trees.append([self.defaultValue])
+			self.treeModel.append([self.defaultValue])
 
 	def onMoveUpClick(self, button):
 		cur = self.treev.get_cursor()
 		if not cur:
 			return
 		i = cur[0]
-		t = self.trees
+		t = self.treeModel
 		if i <= 0 or i >= len(t):
 			gdk.beep()
 			return
@@ -439,7 +439,7 @@ class StrListEditor(gtk.Box):
 		if not cur:
 			return
 		i = cur[0]
-		t = self.trees
+		t = self.treeModel
 		if i < 0 or i >= len(t) - 1:
 			gdk.beep()
 			return
@@ -450,12 +450,12 @@ class StrListEditor(gtk.Box):
 		self.treev.set_cursor(i + 1)
 
 	def setData(self, strList):
-		self.trees.clear()
+		self.treeModel.clear()
 		for st in strList:
-			self.trees.append([st])
+			self.treeModel.append([st])
 
 	def getData(self):
-		return [row[0] for row in self.trees]
+		return [row[0] for row in self.treeModel]
 
 
 class Scale10PowerComboBox(gtk.ComboBox):
@@ -495,8 +495,8 @@ class Scale10PowerComboBox(gtk.ComboBox):
 class GroupsTreeCheckList(gtk.TreeView):
 	def __init__(self):
 		gtk.TreeView.__init__(self)
-		self.trees = gtk.ListStore(int, bool, str)## groupId(hidden), enable, summary
-		self.set_model(self.trees)
+		self.treeModel = gtk.ListStore(int, bool, str)## groupId(hidden), enable, summary
+		self.set_model(self.treeModel)
 		self.set_headers_visible(False)
 		###
 		cell = gtk.CellRendererToggle()
@@ -514,21 +514,21 @@ class GroupsTreeCheckList(gtk.TreeView):
 		self.append_column(col)
 		###
 		for group in ui.eventGroups:
-			self.trees.append([group.id, True, group.title])
+			self.treeModel.append([group.id, True, group.title])
 
 	def enableCellToggled(self, cell, path):
 		i = int(path)
 		active = not cell.get_active()
-		self.trees[i][1] = active
+		self.treeModel[i][1] = active
 		cell.set_active(active)
 
 	def getValue(self):
 		return [
-			row[0] for row in self.trees if row[1]
+			row[0] for row in self.treeModel if row[1]
 		]
 
 	def setValue(self, gids):
-		for row in self.trees:
+		for row in self.treeModel:
 			row[1] = (row[0] in gids)
 
 

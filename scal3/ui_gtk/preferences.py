@@ -796,13 +796,13 @@ class PreferencesWindow(gtk.Window):
 		#####
 		treev = gtk.TreeView()
 		treev.set_headers_clickable(True)
-		trees = gtk.ListStore(
+		treeModel = gtk.ListStore(
 			int,  # index
 			bool,  # enable
 			bool,  # show_date
 			str,  # title
 		)
-		treev.set_model(trees)
+		treev.set_model(treeModel)
 		treev.enable_model_drag_source(
 			gdk.ModifierType.BUTTON1_MASK,
 			[
@@ -884,7 +884,7 @@ class PreferencesWindow(gtk.Window):
 		######
 		# for i in xrange(len(core.plugIndex)):
 		# 	x = core.plugIndex[i]
-		# 	trees.append([x[0], x[1], x[2], core.allPlugList[x[0]].title])
+		# 	treeModel.append([x[0], x[1], x[2], core.allPlugList[x[0]].title])
 		######
 		self.plugTreeview = treev
 		#######################
@@ -959,8 +959,8 @@ class PreferencesWindow(gtk.Window):
 		)
 		###
 		treev = gtk.TreeView()
-		trees = gtk.ListStore(str)
-		treev.set_model(trees)
+		treeModel = gtk.ListStore(str)
+		treev.set_model(treeModel)
 		# treev.enable_model_drag_source(
 		# 	gdk.ModifierType.BUTTON1_MASK,
 		# 	[("", 0, 0, 0)],
@@ -985,7 +985,7 @@ class PreferencesWindow(gtk.Window):
 		d.vbox.show_all()
 		self.plugAddDialog = d
 		self.plugAddTreeview = treev
-		self.plugAddTreestore = trees
+		self.plugAddTreeModel = treeModel
 		#############
 		# treev.set_resize_mode(gtk.RESIZE_IMMEDIATE)
 		# self.plugAddItems = []
@@ -1002,8 +1002,8 @@ class PreferencesWindow(gtk.Window):
 		#####
 		treev = gtk.TreeView()
 		treev.set_headers_clickable(True)
-		trees = gtk.ListStore(int, bool, str)  # id (hidden), enable, title
-		treev.set_model(trees)
+		treeModel = gtk.ListStore(int, bool, str)  # id (hidden), enable, title
+		treev.set_model(treeModel)
 		treev.enable_model_drag_source(
 			gdk.ModifierType.BUTTON1_MASK,
 			[
@@ -1040,7 +1040,7 @@ class PreferencesWindow(gtk.Window):
 		treev.append_column(col)
 		######
 		self.accountsTreeview = treev
-		self.accountsTreestore = trees
+		self.accountsTreeModel = treeModel
 		#######################
 		hbox = HBox()
 		vboxPlug = VBox()
@@ -1337,9 +1337,9 @@ class PreferencesWindow(gtk.Window):
 					d.destroy()
 
 	def refreshAccounts(self):
-		self.accountsTreestore.clear()
+		self.accountsTreeModel.clear()
 		for account in ui.eventAccounts:
-			self.accountsTreestore.append([
+			self.accountsTreeModel.append([
 				account.id,
 				account.enable,
 				account.title,
@@ -1363,10 +1363,10 @@ class PreferencesWindow(gtk.Window):
 		for row in core.getPluginsTable():
 			model.append(row)
 		self.plugAddItems = []
-		self.plugAddTreestore.clear()
+		self.plugAddTreeModel.clear()
 		for (i, title) in core.getDeletedPluginsTable():
 			self.plugAddItems.append(i)
-			self.plugAddTreestore.append([title])
+			self.plugAddTreeModel.append([title])
 			self.pluginsToolbar.setCanAdd(True)
 		# #### Accounts
 		self.refreshAccounts()
@@ -1481,7 +1481,7 @@ class PreferencesWindow(gtk.Window):
 		# log.debug(x, y, w, h)
 		self.plugAddDialog.resize(
 			w + 30,
-			75 + 30 * len(self.plugAddTreestore),
+			75 + 30 * len(self.plugAddTreeModel),
 		)
 		###############
 		self.plugAddDialog.run()
@@ -1560,7 +1560,7 @@ class PreferencesWindow(gtk.Window):
 		self.plugTreeview.set_cursor(i + 1)
 
 	def plugTreevDragReceived(self, treev, context, x, y, selec, info, etime):
-		t = treev.get_model()  # self.plugAddTreestore
+		t = treev.get_model()  # self.plugAddTreeModel
 		cur = treev.get_cursor()[0]
 		if cur is None:
 			return
@@ -1600,7 +1600,7 @@ class PreferencesWindow(gtk.Window):
 		# j is index of deleted plugin
 		self.plugAddItems.append(j)
 		title = core.allPlugList[j].title
-		self.plugAddTreestore.append([title])
+		self.plugAddTreeModel.append([title])
 		log.debug(f"deleting {title}")
 		self.pluginsToolbar.setCanAdd(True)
 		if n > 1:
@@ -1624,7 +1624,7 @@ class PreferencesWindow(gtk.Window):
 			False,
 			core.allPlugList[j].title,
 		])
-		self.plugAddTreestore.remove(self.plugAddTreestore.get_iter(i))
+		self.plugAddTreeModel.remove(self.plugAddTreeModel.get_iter(i))
 		self.plugAddItems.pop(i)
 		self.plugAddDialog.hide()
 		self.plugTreeview.set_cursor(pos)  # pos == -1 ## FIXME
@@ -1634,7 +1634,7 @@ class PreferencesWindow(gtk.Window):
 
 	def editAccount(self, index):
 		from scal3.ui_gtk.event.account_op import AccountEditorDialog
-		accountId = self.accountsTreestore[index][0]
+		accountId = self.accountsTreeModel[index][0]
 		account = ui.eventAccounts[accountId]
 		if not account.loaded:
 			showError(_("Account must be enabled before editing"), transient_for=self)
@@ -1644,7 +1644,7 @@ class PreferencesWindow(gtk.Window):
 			return
 		account.save()
 		ui.eventAccounts.save()
-		self.accountsTreestore[index][2] = account.title
+		self.accountsTreeModel[index][2] = account.title
 
 	def onAccountsEditClick(self, button):
 		cur = self.accountsTreeview.get_cursor()[0]
@@ -1666,7 +1666,7 @@ class PreferencesWindow(gtk.Window):
 		account.save()
 		ui.eventAccounts.append(account)
 		ui.eventAccounts.save()
-		self.accountsTreestore.append([
+		self.accountsTreeModel.append([
 			account.id,
 			account.enable,
 			account.title,
@@ -1685,7 +1685,7 @@ class PreferencesWindow(gtk.Window):
 		if cur is None:
 			return
 		index = cur[0]
-		accountId = self.accountsTreestore[index][0]
+		accountId = self.accountsTreeModel[index][0]
 		account = ui.eventAccounts[accountId]
 		if not confirm(
 			_("Do you want to delete account \"{accountTitle}\"").format(
@@ -1696,14 +1696,14 @@ class PreferencesWindow(gtk.Window):
 			return
 		ui.eventAccounts.delete(account)
 		ui.eventAccounts.save()
-		del self.accountsTreestore[index]
+		del self.accountsTreeModel[index]
 
 	def onAccountsUpClick(self, button):
 		cur = self.accountsTreeview.get_cursor()[0]
 		if cur is None:
 			return
 		index = cur[0]
-		t = self.accountsTreestore
+		t = self.accountsTreeModel
 		if index <= 0 or index >= len(t):
 			gdk.beep()
 			return
@@ -1720,7 +1720,7 @@ class PreferencesWindow(gtk.Window):
 		if cur is None:
 			return
 		index = cur[0]
-		t = self.accountsTreestore
+		t = self.accountsTreeModel
 		if index < 0 or index >= len(t) - 1:
 			gdk.beep()
 			return
@@ -1739,7 +1739,7 @@ class PreferencesWindow(gtk.Window):
 			cur = self.accountsTreeview.get_cursor()[0]
 			if cur:
 				index = cur[0]
-				accountId = self.accountsTreestore[index][0]
+				accountId = self.accountsTreeModel[index][0]
 				account = ui.eventAccounts[accountId]
 				menu = Menu()
 				##
@@ -1755,7 +1755,7 @@ class PreferencesWindow(gtk.Window):
 		index = int(path)
 		active = not cell.get_active()
 		###
-		accountId = self.accountsTreestore[index][0]
+		accountId = self.accountsTreeModel[index][0]
 		account = ui.eventAccounts[accountId]
 		if not account.loaded:  # it's a dummy account
 			if active:
@@ -1765,7 +1765,7 @@ class PreferencesWindow(gtk.Window):
 		account.enable = active
 		account.save()
 		###
-		self.accountsTreestore[index][1] = active
+		self.accountsTreeModel[index][1] = active
 
 
 if __name__ == "__main__":

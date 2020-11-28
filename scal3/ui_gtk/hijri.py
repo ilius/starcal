@@ -76,14 +76,14 @@ class EditDbDialog(gtk.Dialog):
 		pack(self.vbox, hbox)
 		############################
 		treev = gtk.TreeView()
-		trees = gtk.ListStore(
+		treeModel = gtk.ListStore(
 			int,  # ym (hidden)
 			str,  # localized year
 			str,  # localized month
 			int,  # monthLenCombo
 			str,  # localized endDate
 		)
-		treev.set_model(trees)
+		treev.set_model(treeModel)
 		#treev.get_selection().connect("changed", self.plugTreevCursorChanged)
 		#treev.connect("row-activated", self.plugTreevRActivate)
 		#treev.connect("button-press-event", self.plugTreevButtonPress)
@@ -134,7 +134,7 @@ class EditDbDialog(gtk.Dialog):
 		))
 		######
 		self.treev = treev
-		self.trees = trees
+		self.treeModel = treeModel
 		#####
 		mainHbox = HBox()
 		pack(mainHbox, swin, 1, 1)
@@ -176,7 +176,7 @@ class EditDbDialog(gtk.Dialog):
 		return True
 
 	def onAddClick(self, obj=None):
-		last = self.trees[-1]
+		last = self.treeModel[-1]
 		# 0 ym
 		# 1 yearLocale
 		# 2 monthLocale
@@ -185,7 +185,7 @@ class EditDbDialog(gtk.Dialog):
 		ym = last[0] + 1
 		mLen = 59 - last[3]
 		year, month0 = divmod(ym, 12)
-		self.trees.append((
+		self.treeModel.append((
 			ym,
 			_(year),
 			_(hijri.monthName[month0]),
@@ -196,13 +196,13 @@ class EditDbDialog(gtk.Dialog):
 		self.selectLastRow()
 
 	def selectLastRow(self):
-		lastPath = (len(self.trees) - 1,)
+		lastPath = (len(self.treeModel) - 1,)
 		self.treev.scroll_to_cell(lastPath)
 		self.treev.set_cursor(lastPath)
 
 	def onDeleteClick(self, obj=None):
-		if len(self.trees) > 1:
-			del self.trees[-1]
+		if len(self.treeModel) > 1:
+			del self.treeModel[-1]
 		self.selectLastRow()
 
 	def updateWidget(self):
@@ -230,12 +230,12 @@ class EditDbDialog(gtk.Dialog):
 		###########
 		selectYm = getCurrentYm() - 1 ## previous month
 		selectIndex = None
-		self.trees.clear()
+		self.treeModel.clear()
 		for index, ym, mLen in hijri.monthDb.getMonthLenList():
 			if ym == selectYm:
 				selectIndex = index
 			year, month0 = divmod(ym, 12)
-			self.trees.append([
+			self.treeModel.append([
 				ym,
 				_(year),
 				_(hijri.monthName[month0]),
@@ -251,7 +251,7 @@ class EditDbDialog(gtk.Dialog):
 	def updateEndDates(self):
 		y, m, d = self.startDateInput.get_value()
 		jd0 = to_jd(y, m, d, self.altMode) - 1
-		for row in self.trees:
+		for row in self.treeModel:
 			mLen = row[3]
 			jd0 += mLen
 			row[4] = dateLocale(*jd_to(jd0, self.altMode))
@@ -261,21 +261,21 @@ class EditDbDialog(gtk.Dialog):
 		mLen = int(new_text)
 		if mLen not in (29, 30):
 			return
-		mLenPrev = self.trees[editIndex][3]
+		mLenPrev = self.treeModel[editIndex][3]
 		delta = mLen - mLenPrev
 		if delta == 0:
 			return
-		n = len(self.trees)
-		self.trees[editIndex][3] = mLen
+		n = len(self.treeModel)
+		self.treeModel[editIndex][3] = mLen
 		if delta == 1:
 			for i in range(editIndex + 1, n):
-				if self.trees[i][3] == 30:
-					self.trees[i][3] = 29
+				if self.treeModel[i][3] == 30:
+					self.treeModel[i][3] = 29
 					break
 		elif delta == -1:
 			for i in range(editIndex + 1, n):
-				if self.trees[i][3] == 29:
-					self.trees[i][3] = 30
+				if self.treeModel[i][3] == 29:
+					self.treeModel[i][3] = 30
 					break
 		self.updateEndDates()
 
@@ -283,7 +283,7 @@ class EditDbDialog(gtk.Dialog):
 		y, m, d = self.startDateInput.get_value()
 		hijri.monthDb.endJd = hijri.monthDb.startJd = to_jd(y, m, d, self.altMode)
 		hijri.monthDb.monthLenByYm = {}
-		for row in self.trees:
+		for row in self.treeModel:
 			ym = row[0]
 			mLen = row[3]
 			hijri.monthDb.monthLenByYm[ym] = mLen

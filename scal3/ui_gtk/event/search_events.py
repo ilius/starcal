@@ -254,7 +254,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		pack(self.vbox, bbox)
 		######
 		treev = gtk.TreeView()
-		trees = gtk.TreeStore(
+		treeModel = gtk.TreeStore(
 			int,  # gid
 			int,  # eid
 			str,  # group_name
@@ -263,7 +263,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 			str,  # description
 		)
 		###
-		treev.set_model(trees)
+		treev.set_model(treeModel)
 		treev.connect("button-press-event", self.onTreeviewButtonPress)
 		treev.connect("row-activated", self.rowActivated)
 		treev.connect("key-press-event", self.onTreeviewKeyPress)
@@ -309,7 +309,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self.colDesc.set_property("expand", True)  # FIXME
 		treev.append_column(self.colDesc)
 		###
-		trees.set_sort_func(2, self.sort_func_group)
+		treeModel.set_sort_func(2, self.sort_func_group)
 		######
 		swin = gtk.ScrolledWindow()
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
@@ -377,7 +377,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		pack(self.vbox, bbox2)
 		######
 		self.treev = treev
-		self.trees = trees
+		self.treeModel = treeModel
 		self.vbox.show_all()
 		#self.maximize()## FIXME
 
@@ -446,11 +446,11 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 	def _do_search(self):
 		groupIds, conds = self._collectConds()
 		###
-		self.trees.clear()
+		self.treeModel.clear()
 		for gid in groupIds:
 			group = ui.eventGroups[gid]
 			for event in group.search(conds):
-				self.trees.append(None, (
+				self.treeModel.append(None, (
 					group.id,
 					event.id,
 					group.title,
@@ -459,7 +459,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 					event.getShownDescription(),
 				))
 		self.resultLabel.set_label(
-			_("Found {eventCount} events").format(eventCount=_(len(self.trees)))
+			_("Found {eventCount} events").format(eventCount=_(len(self.treeModel)))
 		)
 
 	def searchAndExportToJSON(
@@ -505,7 +505,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 
 	def onExportClick(self, obj=None):
 		idsList = []
-		for row in self.trees:
+		for row in self.treeModel:
 			gid = row[0]
 			eid = row[1]
 			idsList.append((gid, eid))
@@ -554,8 +554,8 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 	def editEventByPath(self, path):
 		from scal3.ui_gtk.event.editor import EventEditorDialog
 		try:
-			gid = self.trees[path][0]
-			eid = self.trees[path][1]
+			gid = self.treeModel[path][0]
+			eid = self.treeModel[path][1]
 		except IndexError:
 			# IndexError: could not find tree path 'N'
 			# IndexError: column index is out of bounds: N
@@ -572,10 +572,10 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		###
 		ui.eventUpdateQueue.put("e", event, self)
 		###
-		eventIter = self.trees.get_iter(path)
-		self.trees.set_value(eventIter, 3, eventTreeIconPixbuf(event.icon))
-		self.trees.set_value(eventIter, 4, event.summary)
-		self.trees.set_value(eventIter, 5, event.getShownDescription())
+		eventIter = self.treeModel.get_iter(path)
+		self.treeModel.set_value(eventIter, 3, eventTreeIconPixbuf(event.icon))
+		self.treeModel.set_value(eventIter, 4, event.summary)
+		self.treeModel.set_value(eventIter, 5, event.getShownDescription())
 
 	def rowActivated(self, treev, path, col):
 		self.editEventByPath(path)
@@ -599,9 +599,9 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		ui.eventUpdateQueue.put("v", event, self)
 		# FIXME
 		###
-		eventIter = self.trees.get_iter(eventPath)
-		self.trees.set_value(eventIter, 0, new_group.id)
-		self.trees.set_value(eventIter, 2, new_group.title)
+		eventIter = self.treeModel.get_iter(eventPath)
+		self.treeModel.set_value(eventIter, 0, new_group.id)
+		self.treeModel.set_value(eventIter, 2, new_group.title)
 
 	def copyEventToGroupFromMenu(self, menu, eventPath, event, new_group):
 		new_event = event.copy()
@@ -612,12 +612,12 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		ui.eventUpdateQueue.put("+", new_event, self)
 		# FIXME
 		###
-		eventIter = self.trees.get_iter(eventPath)
+		eventIter = self.treeModel.get_iter(eventPath)
 
 	def moveEventToTrash(self, path):
 		try:
-			gid = self.trees[path][0]
-			eid = self.trees[path][1]
+			gid = self.treeModel[path][0]
+			eid = self.treeModel[path][1]
 		except IndexError:
 			return
 		group = ui.eventGroups[gid]
@@ -625,7 +625,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		if not confirmEventTrash(event):
 			return
 		ui.moveEventToTrash(group, event, self)
-		self.trees.remove(self.trees.get_iter(path))
+		self.treeModel.remove(self.treeModel.get_iter(path))
 
 	def moveEventToTrashFromMenu(self, menu, path):
 		return self.moveEventToTrash(path)
@@ -691,15 +691,15 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 
 	def historyOfEventFromMenu(self, menu, path):
 		from scal3.ui_gtk.event.history import EventHistoryDialog
-		gid = self.trees[path][0]
-		eid = self.trees[path][1]
+		gid = self.treeModel[path][0]
+		eid = self.treeModel[path][1]
 		group = ui.eventGroups[gid]
 		event = group[eid]
 		EventHistoryDialog(event, transient_for=self).run()
 
 	def genRightClickMenu(self, path):
-		gid = self.trees[path][0]
-		eid = self.trees[path][1]
+		gid = self.treeModel[path][0]
+		eid = self.treeModel[path][1]
 		group = ui.eventGroups[gid]
 		event = group[eid]
 		##
@@ -802,7 +802,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		return True
 
 	def clearResults(self):
-		self.trees.clear()
+		self.treeModel.clear()
 		self.resultLabel.set_label("")
 
 	def closed(self, obj=None, gevent=None):

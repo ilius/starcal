@@ -173,14 +173,14 @@ class TagsListBox(gtk.Box):
 			pack(self, hbox)
 		########
 		treev = gtk.TreeView()
-		trees = gtk.ListStore(
+		treeModel = gtk.ListStore(
 			str,  # name(hidden)
 			bool,  # enable
 			str,  # description
 			int,  # usage(hidden)
 			str,  # usage(locale)
 		)
-		treev.set_model(trees)
+		treev.set_model(treeModel)
 		###
 		cell = gtk.CellRendererToggle()
 		#cell.set_property("activatable", True)
@@ -213,7 +213,7 @@ class TagsListBox(gtk.Box):
 		pack(self, swin, 1, 1)
 		####
 		self.treeview = treev
-		self.treestore = trees
+		self.treeModel = treeModel
 		####
 		#ui.updateEventTagsUsage()## FIXME
 		#for (i, tagObj) in enumerate(ui.eventTags):  # for testing
@@ -228,9 +228,9 @@ class TagsListBox(gtk.Box):
 		if self.eventType:
 			if self.relatedCheck.get_active():
 				tagObjList = [t for t in tagObjList if self.eventType in t.eventTypes]
-		self.treestore.clear()
+		self.treeModel.clear()
 		for t in tagObjList:
-			self.treestore.append((
+			self.treeModel.append((
 				t.name,
 				t.name in tags, ## True or False
 				t.desc,
@@ -241,12 +241,12 @@ class TagsListBox(gtk.Box):
 	def enableCellToggled(self, cell, path):
 		i = int(path)
 		active = not cell.get_active()
-		self.treestore[i][1] = active
+		self.treeModel[i][1] = active
 		cell.set_active(active)
 
 	def getData(self):
 		tags = []
-		for row in self.treestore:
+		for row in self.treeModel:
 			if row[1]:
 				tags.append(row[0])
 		return tags
