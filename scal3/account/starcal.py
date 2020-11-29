@@ -170,7 +170,7 @@ class StarCalendarAccount(Account):
 		"lastToken",
 	)
 
-	serverUrl = "http://starcalendar.net:9001/"
+	serverUrl = "http://127.0.0.1:9001/"
 
 	def callBase(self, method, path, **kwargs):
 		return getattr(requests, method)(

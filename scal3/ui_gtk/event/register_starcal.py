@@ -37,17 +37,15 @@ from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
 
 
-class StarCalendarRegisterDialog(gtk.Window, MyDialog):
+class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 	def __init__(self, **kwargs):
-		gtk.Window.__init__(self, **kwargs)
+		gtk.Dialog.__init__(self, **kwargs)
 		###
 		self.set_title(_("Register at StarCalendar.net"))
 		self.resize(600, 300)
 		self.connect("delete-event", self.onDeleteEvent)
 		self.set_transient_for(None)
 		self.set_type_hint(gdk.WindowTypeHint.NORMAL)
-		self.vbox = VBox()
-		self.add(self.vbox)
 		###
 		self.buttonBox = MyHButtonBox()
 		self.okButton = self.buttonBox.add_ok(self.onOkClick)
