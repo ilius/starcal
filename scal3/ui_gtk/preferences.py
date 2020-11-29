@@ -1656,7 +1656,7 @@ class PreferencesWindow(gtk.Window):
 	def onAccountsRegisterClick(self, button):
 		from scal3.ui_gtk.event.register_starcal import StarCalendarRegisterDialog
 		win = StarCalendarRegisterDialog(transient_for=self)
-		win.present()
+		win.run()
 
 	def onAccountsAddClick(self, button):
 		from scal3.ui_gtk.event.account_op import AccountEditorDialog
