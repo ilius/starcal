@@ -646,14 +646,31 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.multiSelectPathDict[groupIndex][eventIndex] = None
 
 	def multiSelectCBSetEvent(self, groupIndex, eventIndex, active):
+		model = self.treeModel
+		itr = model.get_iter((groupIndex, eventIndex))
+		model.set_value(itr, 0, active)
 		if active:
-			return self.multiSelectCBActivate(groupIndex, eventIndex)
+			self.multiSelectCBActivate(groupIndex, eventIndex)
+		else:
+			if groupIndex in self.multiSelectPathDict:
+				if eventIndex in self.multiSelectPathDict[groupIndex]:
+					del self.multiSelectPathDict[groupIndex][eventIndex]
+				if not self.multiSelectPathDict[groupIndex]:
+					del self.multiSelectPathDict[groupIndex]
 
-		if groupIndex in self.multiSelectPathDict:
-			if eventIndex in self.multiSelectPathDict[groupIndex]:
-				del self.multiSelectPathDict[groupIndex][eventIndex]
-			if not self.multiSelectPathDict[groupIndex]:
-				del self.multiSelectPathDict[groupIndex]
+		parentIter = model.get_iter((groupIndex,))
+		try:
+			count = len(self.multiSelectPathDict[groupIndex])
+		except KeyError:
+			model.set_value(parentIter, 0, False)
+		else:
+			model.set_value(
+				parentIter,
+				0,
+				count == len(ui.eventGroups[self.getRowId(parentIter)]),
+			)
+
+		self.multiSelectLabelUpdate()
 
 	def multiSelectCBSetGroup(self, groupIndex, eventIndex, active):
 		if active:
@@ -670,9 +687,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		pathTuple = tuple(path)
 
 		active = not model.get_value(itr, 0)
-		model.set_value(itr, 0, active)
 
 		if len(path) == 1:
+			model.set_value(itr, 0, active)
 			childIter = model.iter_children(itr)
 			while childIter is not None:
 				isActive = model.get_value(childIter, 0)
@@ -687,21 +704,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			return
 
 		self.multiSelectCBSetEvent(pathTuple[0], pathTuple[1], active)
-
-		parentIter = model.get_iter(path[:1])
-		groupIndex = path[0]
-		try:
-			count = len(self.multiSelectPathDict[groupIndex])
-		except KeyError:
-			model.set_value(parentIter, 0, False)
-		else:
-			model.set_value(
-				parentIter,
-				0,
-				count == len(ui.eventGroups[self.getRowId(parentIter)]),
-			)
-
-		self.multiSelectLabelUpdate()
 
 	def multiSelectCopy(self, obj=None):
 		model = self.treeModel
@@ -1444,11 +1446,10 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.waitingDo(self._do_checkForOrphans)
 
 	def getSelectedPath(self) -> Optional[List[int]]:
-		pathObj = self.treev.get_cursor()[0]
-		# pathObj is either None or gtk.TreePath
-		if pathObj is None:
+		_iter = self.treev.get_selection().get_selected()[1]
+		if _iter is None:
 			return
-		return pathObj.get_indices()
+		return self.treeModel.get_path(_iter).get_indices()
 
 	def mbarEditMenuPopup(self, menuItem: gtk.MenuItem) -> None:
 		path = self.getSelectedPath()
@@ -1620,6 +1621,58 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		enable = not group.enable
 		self.setGroupEnable(enable, group, path)
 		ui.eventUpdateQueue.put("eg", group, self)
+		return True
+
+	def multiSelectShiftButtonPress(
+		self,
+		path: "List[int]",
+		col: "gtk.TreeViewColumn",
+		group,
+		event,
+	) -> None:
+		groupIndex, eventIndex = path
+		# s_iter = self.treev.get_selection().get_selected()[1]
+		# if s_iter is None
+		# s_path = self.treeModel.get_path(s_iter).get_indices()
+		if groupIndex not in self.multiSelectPathDict:
+			return
+		lastEventIndex = next(reversed(self.multiSelectPathDict[groupIndex]))
+		# print(f"groupIndex: {groupIndex}, eventIndex: {lastEventIndex} .. {path[1]}")
+		if eventIndex == lastEventIndex:
+			return
+		if eventIndex > lastEventIndex:
+			evIndexRange = range(lastEventIndex + 1, eventIndex + 1)
+		else:
+			evIndexRange = range(eventIndex, lastEventIndex)
+		for evIndex in evIndexRange:
+			self.multiSelectCBSetEvent(groupIndex, evIndex, True)
+		return True
+
+	def onTreeviewLeftButtonPress(
+		self,
+		treev: gtk.TreeView,
+		gevent: gdk.EventButton,
+		path: "List[int]",
+		col: "gtk.TreeViewColumn",
+	) -> None:
+		objs = self.getObjsByPath(path)
+
+		if len(objs) == 1:  # group, not event
+			group = objs[0]
+			if group.name != "trash" and col == self.pixbufCol:
+				if self.toggleEnableGroup(group, path):
+					treev.set_cursor(path)
+					return True
+			return False
+
+		if len(objs) != 2:
+			log.error("onTreeviewLeftButtonPress: unexpected objs={objs}, path={path}")
+			return False
+
+		if self.multiSelect and gevent.state & gdk.ModifierType.SHIFT_MASK > 0:
+			return self.multiSelectShiftButtonPress(path, col, objs[0], objs[1])
+
+		return False
 
 	def onTreeviewButtonPress(
 		self,
@@ -1647,16 +1700,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				gevent.y,
 			):
 				return
-			obj_list = self.getObjsByPath(path)
-			if len(obj_list) == 1:  # group, not event
-				group = obj_list[0]
-				if (
-					group.name != "trash" and
-					col == self.pixbufCol and
-					self.toggleEnableGroup(group, path)
-				):
-					treev.set_cursor(path)
-					return True
+			self.onTreeviewLeftButtonPress(treev, gevent, path, col)
+
 
 	def insertNewGroup(self, groupIndex: int) -> None:
 		from scal3.ui_gtk.event.group.editor import GroupEditorDialog
