@@ -236,6 +236,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		ud.windowList.appendItem(self)
 		ui.mainWin = self
 		##################
+		self.unmaxWinWidth = 0
 		self.ignoreConfigureEvent = False
 		##################
 		# statusIconMode:
@@ -551,6 +552,34 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			if self.winCon and self.winCon.enable:
 				self.winCon.windowFocusOut()
 		return False
+
+	def toggleMinimized(self, gevent):
+		if ui.winTaskbar:
+			self.iconify()
+		else:
+			self.emit("delete-event", gdk.Event(gevent))
+
+	def toggleMaximized(self, gevent):
+		if ui.winMaximized:
+			self.unmaximize()
+		else:
+			self.unmaxWinWidth = ui.winWidth
+			self.maximize()
+		ui.winMaximized = not ui.winMaximized
+		ui.saveLiveConf()
+
+	def toggleWidthMaximized(self, gevent):
+		ww = ui.winWidth
+		screenW = ud.screenW
+		if ww < screenW:
+			self.unmaxWinWidth = ww
+			ww = screenW
+		elif self.unmaxWinWidth > 0:
+			ww = self.unmaxWinWidth
+		else:
+			return
+		ui.winWidth = ww
+		self.resize(ww, ui.winHeight)
 
 	def onConfigureEvent(self, widget, gevent):
 		if self.ignoreConfigureEvent:
