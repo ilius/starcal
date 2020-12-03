@@ -524,3 +524,17 @@ rootWindow = gdk.get_default_root_window() ## Good Place?????
 
 screenW = rootWindow.get_width()
 screenH = rootWindow.get_height()
+
+
+def screenSizeChanged(screen):
+	global screenW, screenH
+	if ui.mainWin is None:
+		return
+	monitor = gdk.Display.get_default().get_monitor_at_window(ui.mainWin.get_window())
+	rect = monitor.get_geometry()
+	screenW = rect.width
+	screenH = rect.height
+	ui.mainWin.screenSizeChanged(rect)
+
+
+gdk.Screen.get_default().connect("size-changed", screenSizeChanged)
