@@ -581,6 +581,20 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		ui.winWidth = ww
 		self.resize(ww, ui.winHeight)
 
+	def screenSizeChanged(self, rect: "gdk.Rectangle"):
+		if ui.winMaximized:
+			return
+		winWidth = min(ui.winWidth, rect.width)
+		winHeight = min(ui.winHeight, rect.height)
+		winX = min(ui.winX, rect.width - ui.winWidth)
+		winY = min(ui.winY, rect.height - ui.winHeight)
+
+		if (winWidth, winHeight) != (ui.winWidth, ui.winHeight):
+			self.resize(winWidth, winHeight)
+
+		if (winX, winY) != (ui.winX, ui.winY):
+			self.move(winX, winY)
+
 	def onConfigureEvent(self, widget, gevent):
 		if self.ignoreConfigureEvent:
 			return
