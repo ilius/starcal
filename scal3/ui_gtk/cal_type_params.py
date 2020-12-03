@@ -128,8 +128,6 @@ class TextParamWidget(gtk.Box):
 		if not enableTitleLabel:
 			if hasEnable:
 				enableTitleLabel = _("Enable")
-			else:
-				raise ValueError("enableTitleLabel is not passed")
 		if hasEnable:
 			self.enableCheck = gtk.CheckButton(label=enableTitleLabel)
 		###
@@ -145,7 +143,8 @@ class TextParamWidget(gtk.Box):
 			else:
 				frame.set_label(enableTitleLabel)
 		else:
-			pack(vbox, self.enableCheck)
+			if hasEnable:
+				pack(vbox, self.enableCheck)
 		####
 		self.set_border_width(5)
 		###
