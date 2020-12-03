@@ -84,9 +84,16 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 	def onClick(self, gWin, gevent):
 		pass
 
+	def onRightClick(self, gWin, gevent):
+		pass
+
 	def onButtonRelease(self, button, gevent):
 		if gevent.button == 1:
 			self.onClick(self.controller.win, gevent)
+			return True
+		elif gevent.button == 3:
+			self.onRightClick(self.controller.win, gevent)
+			return True
 		return False
 
 
@@ -98,10 +105,7 @@ class WinConButtonMin(WinConButton):
 	imageNameInactive = "wm-minimize-inactive"
 
 	def onClick(self, gWin, gevent):
-		if ui.winTaskbar:
-			gWin.iconify()
-		else:
-			gWin.emit("delete-event", gdk.Event(gevent))
+		gWin.toggleMinimized(gevent)
 
 
 class WinConButtonMax(WinConButton):
@@ -112,12 +116,11 @@ class WinConButtonMax(WinConButton):
 	imageNameInactive = "wm-maximize-inactive"
 
 	def onClick(self, gWin, gevent):
-		if ui.winMaximized:
-			gWin.unmaximize()
-		else:
-			gWin.maximize()
-		ui.winMaximized = not ui.winMaximized
-		ui.saveLiveConf()
+		gWin.toggleMaximized(gevent)
+
+	def onRightClick(self, gWin, gevent):
+		gWin.toggleWidthMaximized(gevent)
+
 
 
 class WinConButtonClose(WinConButton):
