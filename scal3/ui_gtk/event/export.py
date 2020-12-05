@@ -157,10 +157,25 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 		self.radioIcs.connect("clicked", self.formatRadioChanged)
 		self.radioJsonCompact.connect("clicked", self.formatRadioChanged)
 		self.radioJsonPretty.connect("clicked", self.formatRadioChanged)
-		##
+		####
 		frame.add(radioBox)
 		pack(hbox, frame)
 		pack(hbox, gtk.Label(), 1, 1)
+		####
+		hButtonBox = VBox()
+		pack(hButtonBox, gtk.Label(), 1, 1)
+		##
+		button = gtk.Button(label=_("Disable All"))
+		button.connect("clicked", self.disableAllClicked)
+		pack(hButtonBox, button)
+		##
+		button = gtk.Button(label=_("Enable All"))
+		button.connect("clicked", self.enableAllClicked)
+		pack(hButtonBox, button)
+		##
+		hButtonBox.show_all()
+		pack(hbox, hButtonBox)
+		##
 		pack(self.vbox, hbox)
 		########
 		hbox = HBox(spacing=2)
@@ -183,6 +198,12 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 		self.vbox.show_all()
 		self.formatRadioChanged()
 		self.resize(600, 600)
+
+	def disableAllClicked(self, widget=None):
+		self.groupSelect.disableAll()
+
+	def enableAllClicked(self, widget=None):
+		self.groupSelect.enableAll()
 
 	def formatRadioChanged(self, widget=None):
 		#self.dateRangeBox.set_visible(self.radioIcs.get_active())
