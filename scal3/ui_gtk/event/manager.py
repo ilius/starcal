@@ -624,6 +624,60 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		enable = menuItem.get_active()
 		self.multiSelectSetEnable(enable)
 
+	def multiSelectShiftUpDownPress(self, isDown: bool):
+		path = self.getSelectedPath()
+		if len(path) == 1:
+			return  # TODO
+
+		if len(path) != 2:
+			raise RuntimeError(f"unexpected path={path}")
+
+		model = self.treeModel
+		groupIndex, eventIndex = path
+
+		self.multiSelectCBSetEvent(groupIndex, eventIndex, True)
+
+		if eventIndex == 0 and not isDown:
+			return
+
+		plus = 1 if isDown else -1
+		nextPath = (groupIndex, eventIndex + plus)
+
+		try:
+			model.get_iter(nextPath)
+		except ValueError:
+			# ValueError: invalid tree path '0:4'
+			return
+
+		self.multiSelectCBSetEvent(groupIndex, eventIndex + plus, True)
+		self.treev.set_cursor(nextPath)
+		self.treev.scroll_to_cell(nextPath)
+
+	def multiSelectShiftButtonPress(
+		self,
+		path: "List[int]",
+		col: "gtk.TreeViewColumn",
+		group,
+		event,
+	) -> None:
+		groupIndex, eventIndex = path
+		# s_iter = self.treev.get_selection().get_selected()[1]
+		# if s_iter is None
+		# s_path = self.treeModel.get_path(s_iter).get_indices()
+		if groupIndex not in self.multiSelectPathDict:
+			return
+		lastEventIndex = next(reversed(self.multiSelectPathDict[groupIndex]))
+		# print(f"groupIndex: {groupIndex}, eventIndex: {lastEventIndex} .. {path[1]}")
+		if eventIndex == lastEventIndex:
+			return
+		if eventIndex > lastEventIndex:
+			evIndexRange = range(lastEventIndex + 1, eventIndex + 1)
+		else:
+			evIndexRange = range(eventIndex, lastEventIndex)
+		for evIndex in evIndexRange:
+			self.multiSelectCBSetEvent(groupIndex, evIndex, True)
+		return True
+
 	def multiSelectLabelUpdate(self):
 		self.multiSelectLabel.set_label(_("{count} events selected").format(
 			count=_(sum([
@@ -1367,6 +1421,30 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		return False
 		# return self.onTreeviewKeyPress(self.treev, gevent)
 
+	def menuKeyPressOnPath(self, path: "List[str]", gevent: "gdk.EventKey"):
+		treev = self.treev
+		menu = self.genRightClickMenu(path)
+		if not menu:
+			return
+		rect = treev.get_cell_area(path, treev.get_column(1))
+		x = rect.x
+		if rtl:
+			x -= get_menu_width(menu) + 40
+		else:
+			x += 40
+		dx, dy = treev.translate_coordinates(self, x, rect.y + 2 * rect.height)
+		foo, wx, wy = self.get_window().get_origin()
+		self.tmpMenu = menu
+		menu.popup(
+			None, None,
+			lambda *args: (
+				wx + dx,
+				wy + dy,
+				True,
+			),
+			None, 3, gevent.time,
+		)
+
 	def onTreeviewKeyPress(
 		self,
 		treev: "gtk.TreeView",
@@ -1384,42 +1462,28 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				return True
 			path = self.getSelectedPath()
 			if path:
-				menu = self.genRightClickMenu(path)
-				if not menu:
-					return
-				rect = treev.get_cell_area(path, treev.get_column(1))
-				x = rect.x
-				if rtl:
-					x -= get_menu_width(menu) + 40
-				else:
-					x += 40
-				dx, dy = treev.translate_coordinates(self, x, rect.y + 2 * rect.height)
-				foo, wx, wy = self.get_window().get_origin()
-				self.tmpMenu = menu
-				menu.popup(
-					None,
-					None,
-					lambda *args: (
-						wx + dx,
-						wy + dy,
-						True,
-					),
-					None,
-					3,
-					gevent.time,
-				)
+				self.menuKeyPressOnPath(path, gevent)
+				return True
+
 		elif kname == "delete":
 			if self.multiSelect:
 				self.multiSelectDelete()
 			else:
 				self.moveSelectionToTrash()
+			return True
+
 		elif kname == "space":
 			if self.multiSelect:
 				self.multiSelectTreeviewToggleSelected()
-		else:
-			# log.debug(kname)
-			return False
-		return True
+				return True
+
+		elif kname in ("up", "down"):
+			if self.multiSelect and gevent.state & gdk.ModifierType.SHIFT_MASK > 0:
+				isDown = kname == "down"
+				self.multiSelectShiftUpDownPress(isDown)
+				return True
+
+		return False
 
 	def onEscape(self):
 		if self.multiSelect:
@@ -1621,31 +1685,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		enable = not group.enable
 		self.setGroupEnable(enable, group, path)
 		ui.eventUpdateQueue.put("eg", group, self)
-		return True
-
-	def multiSelectShiftButtonPress(
-		self,
-		path: "List[int]",
-		col: "gtk.TreeViewColumn",
-		group,
-		event,
-	) -> None:
-		groupIndex, eventIndex = path
-		# s_iter = self.treev.get_selection().get_selected()[1]
-		# if s_iter is None
-		# s_path = self.treeModel.get_path(s_iter).get_indices()
-		if groupIndex not in self.multiSelectPathDict:
-			return
-		lastEventIndex = next(reversed(self.multiSelectPathDict[groupIndex]))
-		# print(f"groupIndex: {groupIndex}, eventIndex: {lastEventIndex} .. {path[1]}")
-		if eventIndex == lastEventIndex:
-			return
-		if eventIndex > lastEventIndex:
-			evIndexRange = range(lastEventIndex + 1, eventIndex + 1)
-		else:
-			evIndexRange = range(eventIndex, lastEventIndex)
-		for evIndex in evIndexRange:
-			self.multiSelectCBSetEvent(groupIndex, evIndex, True)
 		return True
 
 	def onTreeviewLeftButtonPress(
