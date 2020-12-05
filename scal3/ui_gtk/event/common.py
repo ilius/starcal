@@ -531,6 +531,17 @@ class GroupsTreeCheckList(gtk.TreeView):
 		for row in self.treeModel:
 			row[1] = (row[0] in gids)
 
+	def disableAll(self):
+		model = self.get_model()
+		for i in range(len(model)):
+			model.set_value(model.get_iter((i,)), 1, False)
+
+	def enableAll(self):
+		model = self.get_model()
+		for i in range(len(model)):
+			model.set_value(model.get_iter((i,)), 1, True)
+
+
 
 class SingleGroupComboBox(gtk.ComboBox):
 	def __init__(self):
