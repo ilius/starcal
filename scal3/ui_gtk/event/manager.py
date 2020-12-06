@@ -411,6 +411,15 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		deleteItem = MenuItem(_("Delete"))
 		deleteItem.connect("activate", self.multiSelectDelete)
 		self.multiSelectItemsOther.append(deleteItem)
+		##
+		self.multiSelectItemsOther.append(gtk.SeparatorMenuItem())
+		##
+		bulkEditItem = eventWriteMenuItem(
+			_("Bulk Edit Events"),
+			imageName="document-edit.svg",
+			func=self.multiSelectBulkEdit,
+		)
+		self.multiSelectItemsOther.append(bulkEditItem)
 		###
 		for item in self.multiSelectItemsOther:
 			item.set_sensitive(False)
@@ -898,6 +907,41 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.multiSelectItem.set_active(False)
 		for _iter in self.multiSelectIters():
 			model.set_value(_iter, 0, False)
+		self.multiSelectOperationFinished()
+
+	def multiSelectEventIdsDict(self) -> "Dict[int, List[int]]":
+		model = self.treeModel
+		idsDict = odict()
+		for groupIndex, eventIndexes in self.multiSelectPathDict.items():
+			groupId = self.getRowId(model.get_iter((groupIndex,)))
+			idsDict[groupId] = [
+				self.getRowId(model.get_iter((groupIndex, eventIndex)))
+				for eventIndex in eventIndexes
+			]
+		return idsDict
+
+	def multiSelectBulkEdit(self, widget=None):
+		from scal3.event_container import DummyEventContainer
+		from scal3.ui_gtk.event.bulk_edit import EventsBulkEditDialog
+
+		idsDict = self.multiSelectEventIdsDict()
+		container = DummyEventContainer(idsDict)
+		dialog = EventsBulkEditDialog(container, transient_for=self)
+
+		if dialog.run() == gtk.ResponseType.OK:
+			self.waitingDo(self._do_multiSelectBulkEdit, dialog, container)
+
+	def _do_multiSelectBulkEdit(
+		self,
+		dialog: gtk.Dialog,
+		container: "DummyEventContainer",
+	) -> None:
+		dialog.doAction()
+		dialog.destroy()
+		for event in container:
+			self.updateEventRow(event)
+			ui.eventUpdateQueue.put("e", event, self)
+
 		self.multiSelectOperationFinished()
 
 	def getRowId(self, _iter) -> int:
