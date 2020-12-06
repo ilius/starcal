@@ -2978,6 +2978,10 @@ msgid "Enable All"
 msgstr ""
 "فعال کردن همه"
 
+msgid "Exporting {count} events finished"
+msgstr ""
+"صدور {count} رویداد پایان یافت"
+
 
 msgid "Import"
 msgstr ""
