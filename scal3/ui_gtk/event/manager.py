@@ -415,11 +415,10 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		##
 		self.multiSelectItemsOther.append(gtk.SeparatorMenuItem())
 		##
-		bulkEditItem = eventWriteMenuItem(
-			_("Bulk Edit Events"),
-			imageName="document-edit.svg",
-			func=self.multiSelectBulkEdit,
-		)
+		bulkEditItem = MenuItem(_("Bulk Edit Events"))
+		# imageName="document-edit.svg",
+		# native CheckMenuItem and ImageMenuItem are not aligned
+		bulkEditItem.connect("activate", self.multiSelectBulkEdit)
 		self.multiSelectItemsOther.append(bulkEditItem)
 		##
 		exportItem = MenuItem(_("_Export"))
