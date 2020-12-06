@@ -322,9 +322,13 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 		#if self.radioIcs.get_active():
 		#	pass
 
+		groupTitle = self._groupTitle
+		if not groupTitle:
+			groupTitle = split(fpath)[1]
+
 		data = ui.eventGroups.eventListExportData(
 			self._idsList,
-			groupTitle=self._groupTitle,
+			groupTitle=groupTitle,
 		)
 
 		if self.radioJsonCompact.get_active():
