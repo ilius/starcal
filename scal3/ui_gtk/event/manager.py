@@ -31,6 +31,7 @@ from collections import OrderedDict as odict
 from typing import Optional, List, Tuple, Union, Any
 
 from scal3.path import *
+from scal3 import cal_types
 from scal3 import core
 from scal3 import locale_man
 from scal3.locale_man import tr as _
@@ -420,6 +421,10 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			func=self.multiSelectBulkEdit,
 		)
 		self.multiSelectItemsOther.append(bulkEditItem)
+		##
+		exportItem = MenuItem(_("_Export"))
+		exportItem.connect("activate", self.multiSelectExport)
+		self.multiSelectItemsOther.append(exportItem)
 		###
 		for item in self.multiSelectItemsOther:
 			item.set_sensitive(False)
@@ -920,6 +925,20 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			]
 		return idsDict
 
+	def multiSelectEventIdsList(self) -> "List[Tuple[int, int]]":
+		model = self.treeModel
+		idsList = []
+		for groupIndex, eventIndexes in self.multiSelectPathDict.items():
+			groupId = self.getRowId(model.get_iter((groupIndex,)))
+			idsList += [
+				(
+					groupId,
+					self.getRowId(model.get_iter((groupIndex, eventIndex))),
+				)
+				for eventIndex in eventIndexes
+			]
+		return idsList
+
 	def multiSelectBulkEdit(self, widget=None):
 		from scal3.event_container import DummyEventContainer
 		from scal3.ui_gtk.event.bulk_edit import EventsBulkEditDialog
@@ -942,6 +961,21 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			self.updateEventRow(event)
 			ui.eventUpdateQueue.put("e", event, self)
 
+		self.multiSelectOperationFinished()
+
+	def multiSelectExport(self, widget=None):
+		from scal3.ui_gtk.event.export import EventListExportDialog
+		idsList = self.multiSelectEventIdsList()
+		y, m, d = cal_types.getSysDate(core.GREGORIAN)
+		dialog = EventListExportDialog(
+			idsList,
+			defaultFileName=f"selected-events-{y:04d}-{m:02d}-{d:02d}",
+			# groupTitle="",
+		)
+		dialog.run()
+		self.sbar.push(0, _("Exporting {count} events finished").format(
+			count=_(len(idsList)),
+		))
 		self.multiSelectOperationFinished()
 
 	def getRowId(self, _iter) -> int:
