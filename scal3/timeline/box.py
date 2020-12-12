@@ -163,7 +163,7 @@ def calcEventBoxes(
 				errorBoxH,  # du
 				text="Install \"python3-igraph\" to see events",
 				color=(128, 0, 0),## FIXME
-				lineW=2 * boxLineWidth,
+				lineW=2 * tl.boxLineWidth,
 			)
 		]
 	boxesDict = {}
