@@ -23,7 +23,6 @@ log = logger.get()
 
 import time
 import sys
-import requests
 
 sys.path.append("/starcal")  # REMOVE FIXME
 
@@ -139,6 +138,7 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 		"""
 		return None if successful, or error string if failed
 		"""
+		import requests
 		email = self.emailEntry.get_text()
 		password = self.passwordEntry.get_text()
 		fullName = self.nameEntry.get_text()
