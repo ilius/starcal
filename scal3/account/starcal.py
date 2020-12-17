@@ -21,7 +21,6 @@
 from scal3 import logger
 log = logger.get()
 
-import requests
 from datetime import datetime
 from pprint import pprint
 
@@ -173,6 +172,7 @@ class StarCalendarAccount(Account):
 	serverUrl = "http://127.0.0.1:9001/"
 
 	def callBase(self, method, path, **kwargs):
+		import requests
 		return getattr(requests, method)(
 			self.serverUrl + path,
 			headers={"Authorization": "bearer " + self.lastToken},
@@ -231,6 +231,7 @@ class StarCalendarAccount(Account):
 
 		return None if successful, or error string if failed
 		"""
+		import requests
 		log.info("login started")
 
 		email = self.email
