@@ -165,6 +165,9 @@ class ColumnBase(CustomizableCalObj):
 			)
 			prefItem.updateWidget()  # done inside Live*PrefItem classes
 			pack(optionsWidget, prefItem.getWidget())
+			previewText = self.getFontPreviewText()
+			if previewText:
+				prefItem.setPreviewText(previewText)
 		####
 		if self.customizePastTextColor:
 			prefItem = CheckColorPrefItem(
@@ -200,6 +203,9 @@ class ColumnBase(CustomizableCalObj):
 		self.expand = self.getExpandValue()
 		self.updatePacking()
 		self.queue_draw()
+
+	def getFontPreviewText(self):
+		return ""
 
 
 class Column(gtk.DrawingArea, ColumnBase):
@@ -570,6 +576,11 @@ class WeekDaysColumn(Column):
 		)
 		self.drawCursorFg(cr)
 
+	def getFontPreviewText(self):
+		return _(", ").join([
+			_(core.getWeekDayN(i)) for i in range(7)
+		])
+
 
 @registerSignals
 class PluginsTextColumn(Column):
@@ -620,6 +631,9 @@ class PluginsTextColumn(Column):
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
 		return optionsWidget
+
+	def getFontPreviewText(self):
+		return ""  # TODO
 
 
 @registerSignals
@@ -793,6 +807,9 @@ class EventsTextColumn(Column):
 				for i in range(7)
 			],
 		)
+
+	def getFontPreviewText(self):
+		return ""  # TODO
 
 
 @registerSignals

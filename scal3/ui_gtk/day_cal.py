@@ -225,6 +225,14 @@ class DayCal(gtk.DrawingArea, CalBase):
 			page.pageExpand = False
 			subPages.append(page)
 			pack(vbox, newSubPageButton(self, page), padding=4)
+			###
+			c = self.getCell()
+			dayWidget.setFontPreviewText(
+				_(c.dates[calType][2], calTypes.primary),
+			)
+			monthWidget.setFontPreviewText(
+				self.getMonthName(c, calType, monthParams[index]),
+			)
 		###
 		vbox.show_all()
 		return subPages
@@ -290,7 +298,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			params = self.getWeekDayParams()
 			pageWidget = VBox(spacing=5)
 			###
-			testParamsWidget = TextParamWidget(
+			weekdayWidget = TextParamWidget(
 				self.weekdayParamsParam,
 				self,
 				params,
@@ -299,7 +307,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 				hasEnable=True,
 				hasAlign=True,
 			)
-			pack(pageWidget, testParamsWidget)
+			pack(pageWidget, weekdayWidget)
 			###
 			if self.weekdayAbbreviateParam:
 				prefItem = CheckPrefItem(
@@ -330,6 +338,14 @@ class DayCal(gtk.DrawingArea, CalBase):
 			subPages.append(page)
 			button = newSubPageButton(self, page)
 			pack(optionsWidget, button, padding=4)
+			###
+			c = self.getCell()
+			abbreviate = False
+			if self.weekdayAbbreviateParam:
+				abbreviate = getattr(ui, self.weekdayAbbreviateParam)
+			text = core.getWeekDayAuto(c.weekDay, abbreviate=abbreviate, relative=False)
+			weekdayWidget.setFontPreviewText(text)
+
 		########
 		vbox = VBox(spacing=10)
 		page = StackPage()
@@ -457,6 +473,24 @@ class DayCal(gtk.DrawingArea, CalBase):
 			cr.rectangle(x2, y2, iconSize, iconSize)
 			cr.fill()
 
+	def getMonthName(self, c: "ui.Cell", calType: int, params: "Dict[str, Any]"):
+		month = c.dates[calType][1]  # type: int
+		abbreviate = params.get("abbreviate", False)
+		uppercase = params.get("uppercase", False)
+		text = getMonthName(calType, month, abbreviate=abbreviate)
+		if uppercase:
+			text = text.upper()
+		return text
+
+	def iterMonthParams(self):
+		for calType, params in zip(
+			calTypes.active,
+			self.getMonthParams(),
+		):
+			if not params.get("enable", True):
+				continue
+			yield calType, params
+
 	def drawWithContext(self, cr: "cairo.Context", cursor: bool):
 		#gevent = gtk.get_current_event()
 		w = self.get_allocation().width
@@ -497,18 +531,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 			cr.move_to(font_x, font_y)
 			show_layout(cr, layout)
 
-		for calType, params in zip(
-			calTypes.active,
-			self.getMonthParams(),
-		):
-			if not params.get("enable", True):
-				continue
-			month = c.dates[calType][1]  # type: int
-			abbreviate = params.get("abbreviate", False)
-			uppercase = params.get("uppercase", False)
-			text = getMonthName(calType, month, abbreviate=abbreviate)
-			if uppercase:
-				text = text.upper()
+		for calType, params in self.iterMonthParams():
+			text = self.getMonthName(c, calType, params)
 			layout = newTextLayout(
 				self,
 				text,
