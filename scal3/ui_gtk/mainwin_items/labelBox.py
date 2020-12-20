@@ -583,6 +583,18 @@ class CalObj(gtk.Box, CustomizableCalObj):
 					wm = w
 			label.set_property("width-request", wm)
 
+	def getFontPreviewText(self, calType):
+		date = ui.cell.dates[calType]
+		year = _(date[0])
+		month = getMonthName(calType, date[1])
+		return f"{year} {month}"
+
+	def getFontPreviewTextFull(self):
+		parts = []
+		for calType in calTypes.active:
+			parts.append(self.getFontPreviewText(calType))
+		return " ".join(parts)
+
 	def onConfigChange(self, *a, **kw):
 		CustomizableCalObj.onConfigChange(self, *a, **kw)
 		#####
@@ -695,21 +707,23 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		###
+		previewText = self.getFontPreviewTextFull()
 		prefItem = CheckFontPrefItem(
 			CheckPrefItem(ui, "labelBoxFontEnable", label=_("Font")),
-			FontPrefItem(ui, "labelBoxFont"),
+			FontPrefItem(ui, "labelBoxFont", previewText=previewText),
 			live=True,
 			onChangeFunc=self.onFontConfigChange,
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		###
+		previewText = self.getFontPreviewText(calTypes.primary)
 		prefItem = CheckFontPrefItem(
 			CheckPrefItem(
 				ui,
 				"labelBoxPrimaryFontEnable",
 				label=_("Primary Calendar Font"),
 			),
-			FontPrefItem(ui, "labelBoxPrimaryFont"),
+			FontPrefItem(ui, "labelBoxPrimaryFont", previewText=previewText),
 			vertical=True,
 			spacing=0,
 			live=True,
