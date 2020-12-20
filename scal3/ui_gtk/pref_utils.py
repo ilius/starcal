@@ -268,6 +268,9 @@ class FontFamilyPrefItem(PrefItem):
 		if self._onChangeFunc:
 			self._onChangeFunc()
 
+	def setPreviewText(self, text):
+		self.fontButton.set_property("preview-text", text)
+
 
 # TODO: FontStylePrefItem
 # get() should return a dict, with keys and values being compatible
@@ -381,12 +384,15 @@ class FontPrefItem(PrefItem):
 		obj: Any,
 		attrName: str,
 		dragAndDrop: bool = True,
+		previewText: str = "",
 	) -> None:
 		from scal3.ui_gtk.mywidgets import MyFontButton
 		self.obj = obj
 		self.attrName = attrName
 		w = MyFontButton(dragAndDrop=dragAndDrop)
 		self._widget = w
+		if previewText:
+			self.setPreviewText(previewText)
 
 	def get(self) -> Tuple[str, bool, bool, float]:
 		return self._widget.get_font()
@@ -395,6 +401,9 @@ class FontPrefItem(PrefItem):
 		if value is None:
 			return
 		self._widget.set_font(value)
+
+	def setPreviewText(self, text):
+		self._widget.set_property("preview-text", text)
 
 
 class CheckPrefItem(PrefItem):

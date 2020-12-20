@@ -255,6 +255,9 @@ class TextParamWidget(gtk.Box):
 		setattr(ui, self.paramName, self.get())
 		self.cal.queue_draw()
 
+	def setFontPreviewText(self, text):
+		self.fontb.set_property("preview-text", text)
+
 
 class CalTypeParamWidget(TextParamWidget):
 	def __init__(self, *args, **kwargs):
