@@ -505,6 +505,51 @@ msgid "Esfand"
 msgstr ""
 "اسفند"
 
+msgid "Far"
+msgstr ""
+"فَرو"
+
+msgid "Ord"
+msgstr ""
+"اُرد"
+
+msgid "Khr"
+msgstr ""
+"خُرد"
+
+msgid "Tir"
+msgstr ""
+"تیر"
+
+msgid "Mor"
+msgstr ""
+"مرد"
+
+msgid "Shr"
+msgstr ""
+"شهر"
+
+msgid "Meh"
+msgstr ""
+"مهر"
+
+msgid "Abn"
+msgstr ""
+"آبان"
+
+msgid "Azr"
+msgstr ""
+"آذر"
+
+msgid "Bah"
+msgstr ""
+"بَهم‍"
+
+msgid "Esf"
+msgstr ""
+"اِسف‍"
+
+
 
 
 msgid "Xakelêwe"
@@ -670,6 +715,56 @@ msgstr ""
 msgid "Dhu'l Hijjah"
 msgstr ""
 "ذو‌الحجه"
+
+
+msgid "Moh"
+msgstr ""
+"مُحرّ"
+
+msgid "Saf"
+msgstr ""
+"صفر"
+
+msgid "Rb1"
+msgstr ""
+"رب‍.۱"
+
+msgid "Rb2"
+msgstr ""
+"رب‍.۲"
+
+msgid "Jm1"
+msgstr ""
+"جم‍.۱"
+
+msgid "Jm2"
+msgstr ""
+"جم‍.۲"
+
+msgid "Raj"
+msgstr ""
+"رجب"
+
+msgid "Shb"
+msgstr ""
+"شعب‍"
+
+msgid "Ram"
+msgstr ""
+"رمض‍"
+
+msgid "Shw"
+msgstr ""
+"شوال"
+
+msgid "DhQ"
+msgstr ""
+"ذو‌.ق"
+
+msgid "DhH"
+msgstr ""
+"ذو‌.ح"
+
 
 
 msgid "Meskerem"
