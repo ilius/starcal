@@ -79,7 +79,7 @@ class ToolBoxItem(BaseToolBoxItem):
 			ConButtonBase.__init__(self, button=1)  # only left-click
 		######
 		# this lines removes the background shadow of button
-		# and makes it look like a standard Gtk.ToolButton on a Gtk.ToolBar
+		# and makes it look like a standard GtkToolButton on a GtkToolbar
 		self.set_relief(gtk.ReliefStyle.NONE)
 		##
 		self.set_focus_on_click(False)
@@ -210,7 +210,7 @@ class LabelToolBoxItem(BaseToolBoxItem):
 			ConButtonBase.__init__(self, button=1)
 		######
 		# this lines removes the background shadow of button
-		# and makes it look like a standard Gtk.ToolButton on a Gtk.ToolBar
+		# and makes it look like a standard GtkToolButton on a GtkToolbar
 		self.set_relief(gtk.ReliefStyle.NONE)
 		##
 		self.set_focus_on_click(False)
