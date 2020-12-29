@@ -57,7 +57,6 @@ from scal3.ui_gtk.customize import (
 	newSubPageButton,
 )
 
-#from scal3.ui_gtk.toolbar import ToolbarItem, CustomizableToolbar
 from scal3.ui_gtk.toolbox import (
 	ToolBoxItem as ToolbarItem,
 	CustomizableToolBox as CustomizableToolbar,
