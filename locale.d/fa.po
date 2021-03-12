@@ -1526,9 +1526,13 @@ msgid "Copy {calType} Date"
 msgstr ""
 "کپی تاریخ {calType}"
 
-msgid "Copy _Time"
+#msgid "Copy _Time"
+#msgstr ""
+#"کپی _زمان"
+
+msgid "Copy Date and _Time"
 msgstr ""
-"کپی _زمان"
+"کپی تاریخ و _زمان"
 
 msgid "Copy _URL"
 msgstr ""
