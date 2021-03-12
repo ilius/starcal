@@ -1129,14 +1129,16 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			calType=calType,
 		))
 
-	def copyDateToday(self, obj=None, event=None):
+	def copyCurrentDate(self, obj=None, event=None):
 		setClipboard(ui.todayCell.format(ud.dateFormatBin))
 
-	def copyTime(self, obj=None, event=None):
-		setClipboard(ui.todayCell.format(
+	def copyCurrentDateTime(self, obj=None, event=None):
+		dateStr = ui.todayCell.format(ud.dateFormatBin)
+		timeStr = ui.todayCell.format(
 			ud.clockFormatBin,
 			tm=localtime()[3:6],
-		))
+		)
+		setClipboard(f"{dateStr}, {timeStr}")
 
 	"""
 	def updateToolbarClock(self):
@@ -1213,14 +1215,14 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def getStatusIconPopupItems(self):
 		return [
 			ImageMenuItem(
-				_("Copy _Time"),
+				_("Copy Date and _Time"),
 				imageName="edit-copy.svg",
-				func=self.copyTime,
+				func=self.copyCurrentDateTime,
 			),
 			ImageMenuItem(
 				_("Copy _Date"),
 				imageName="edit-copy.svg",
-				func=self.copyDateToday,
+				func=self.copyCurrentDate,
 			),
 			ImageMenuItem(
 				_("Ad_just System Time"),
