@@ -1001,7 +1001,13 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 
 	def updateDirection(self):
 		self.set_direction(ud.textDirDict[ui.wcal_daysOfMonth_dir])
-		# FIXME: not working, needs restarting starcal to be applied
+		# set_direction does not apply to existing children.
+		# that's why we remove children(columns) and add them again
+		columns = self.get_children()
+		for col in columns:
+			self.remove(col)
+		for col in columns:
+			pack(self, col, 1, 1)
 
 	def __init__(self, wcal):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
