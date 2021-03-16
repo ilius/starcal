@@ -714,6 +714,66 @@ msgid "Elul"
 msgstr "ایلول"
 
 
+msgid "Chaitra"
+msgstr "چَیتره"
+msgid "Cha"
+msgstr "چیت‍"
+
+msgid "Vaisākha"
+msgstr "ویشاکهه"
+msgid "Vai"
+msgstr "ویش‍"
+
+msgid "Jyēshtha"
+msgstr "جییشته"
+msgid "Jyē"
+msgstr "جی‍"
+
+msgid "Āshādha"
+msgstr "آشادهه"
+msgid "Āsh"
+msgstr "آش‍"
+
+msgid "Shrāvana"
+msgstr "شِراوَنَه"
+msgid "Shrā"
+msgstr "شِرا"
+
+msgid "Bhādra"
+msgstr "بِهادْرَه"
+msgid "Bhā"
+msgstr "بِه‍"
+
+msgid "Āshwin"
+msgstr "آشوین"
+msgid "Āsw"
+msgstr "آشو"
+
+msgid "Kārtika"
+msgstr "کارتیکه"
+msgid "Kār"
+msgstr "کار"
+
+msgid "Agrahayana"
+msgstr "اَگرَهَیَنَه"
+msgid "Agr"
+msgstr "اَگر"
+
+msgid "Pausha"
+msgstr "پاوشه"
+msgid "Pau"
+msgstr "پاو"
+
+msgid "Māgha"
+msgstr "ماگهه"
+msgid "Māg"
+msgstr "ماگ"
+
+msgid "Phālguna"
+msgstr "پهالگونه"
+msgid "Phā"
+msgstr "پها"
+
 
 msgid "Previous Year"
 msgstr ""
