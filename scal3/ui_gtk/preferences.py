@@ -1027,7 +1027,7 @@ class PrefDialog(gtk.Dialog):
 			"""
 			if ui.checkNeedRestart():
 				d = gtk.Dialog(
-					title=_("Need Restart " + core.APP_DESC),
+					title=_("Restart " + core.APP_DESC),
 					parent=self,
 					flags=(
 						gtk.DialogFlags.MODAL |
@@ -1037,7 +1037,7 @@ class PrefDialog(gtk.Dialog):
 				)
 				d.set_keep_above(True)
 				label = gtk.Label(_(
-					"Some preferences need for restart %s to apply."
+					"Some preferences need restarting %s to apply."
 					% core.APP_DESC
 				))
 				label.set_line_wrap(True)
