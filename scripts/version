@@ -1,19 +1,35 @@
 #!/bin/bash
 set -e
 
+function version_lte() {
+	[ "$1" = "`echo -e "$1\n$2" | sort -V | head -n1`" ]
+}
+
+function core_version() {
+	cat "$sourceDir/scal3/core.py" | while read line ; do
+		if [[ "$line" == 'VERSION = '* ]] ; then
+			echo $line | sed 's/VERSION\s*=\s*//' | sed 's/"//g'
+			return
+		fi
+	done
+}
+
 myPath=$(realpath "$0")
 myDir=$(dirname "$myPath")
 sourceDir=$(dirname "$myDir")
 gitDir="$sourceDir/.git"
 
-if [ -d "$gitDir" ] ; then
-	git --git-dir "$gitDir" describe --always
-	exit 0
+VER=$(core_version)
+if [ -z "$VER" ] ; then
+	exit 1
 fi
 
-cat "$sourceDir/scal3/core.py" | while read line ; do
-	if [[ $line = VERSION* ]] ; then
-		echo $line | sed 's/VERSION\s*=\s*//' | sed 's/"//g'
-		exit 0
+if [ -d "$gitDir" ] ; then
+	if VER2=$(git --git-dir "$gitDir" describe --always); then
+		if version_lte $VER $VER2; then
+			VER=$VER2
+		fi
 	fi
-done
+fi
+
+echo $VER
