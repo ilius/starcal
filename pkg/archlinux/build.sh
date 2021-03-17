@@ -31,7 +31,6 @@ pkgDir="`dirname \"$myDir\"`"
 sourceDir="`dirname \"$pkgDir\"`"
 #"$sourceDir/scripts/assert_python3"
 
-"$sourceDir/fetch" || echo "WARNING: failed to fetch tags"
 version=`"$sourceDir/scripts/version" | sed 's/\-/_/g'`
 
 #echo "myPath=$myPath"
