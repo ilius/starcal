@@ -29,7 +29,6 @@ myDir="`dirname \"$myPath\"`"
 pkgDir="`dirname \"$myDir\"`"
 sourceDir="`dirname \"$pkgDir\"`"
 
-"$sourceDir/fetch" || echo "WARNING: failed to fetch tags"
 version=`"$sourceDir/scripts/version"`
 
 tmpDir="$outDir/tmp"
