@@ -2219,6 +2219,22 @@ msgid "Zoom Factor by Keyboard"
 msgstr ""
 "ضریب بزرگنمایى با کیبورد"
 
+msgid "Keys"
+msgstr ""
+"کلیدها"
+
+msgid "Action"
+msgstr ""
+"عمل"
+
+msgid "Modify Key"
+msgstr ""
+"تغییر کلید"
+
+msgid "Default Key"
+msgstr ""
+"کلید پیش‌فرض"
+
 
 msgid "Year Wheel"
 msgstr ""
