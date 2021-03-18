@@ -8,7 +8,7 @@ function version_lte() {
 function core_version() {
 	cat "$sourceDir/scal3/core.py" | while read line ; do
 		if [[ "$line" == 'VERSION = '* ]] ; then
-			echo $line | sed 's/VERSION\s*=\s*//' | sed 's/"//g'
+			echo $line | sed 's/VERSION\s*=\s*//' | sed s/[\"\']//g
 			return
 		fi
 	done
@@ -26,7 +26,7 @@ fi
 
 if [ -d "$gitDir" ] ; then
 	if VER2=$(git --git-dir "$gitDir" describe --always); then
-		if version_lte $VER $VER2; then
+		if [[ $VER2 == *.* ]] && version_lte $VER $VER2; then
 			VER=$VER2
 		fi
 	fi
