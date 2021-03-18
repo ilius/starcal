@@ -21,7 +21,7 @@
 from scal3 import logger
 log = logger.get()
 
-from typing import Optional, Callable, Any, List
+from typing import Optional, Callable, Any, List, Dict
 from os.path import join, isabs
 
 from scal3.path import *
@@ -688,3 +688,126 @@ class AICalsPrefItem(PrefItem):
 			if not ok:
 				raise RuntimeError(f"cal type '{calType}' not found")
 			self.inactiveTrees.append([module.name, _(module.desc)])
+
+
+class KeyBindingPrefItem(PrefItem):
+	def __init__(
+		self,
+		obj: Any,
+		attrName: str,
+		actions: List[str],
+		# live: bool = False,
+		# onChangeFunc: Optional[Callable] = None,
+	) -> None:
+		self.obj = obj
+		self.attrName = attrName
+		self.actions = actions
+		######
+		treev = gtk.TreeView()
+		treev.set_headers_clickable(True)
+		trees = gtk.ListStore(
+			str, # key
+			str, # action
+		)
+		treev.set_model(trees)
+		###
+		cell = gtk.CellRendererText()
+		col = gtk.TreeViewColumn(title=_("Key"), cell_renderer=cell, text=0)
+		col.set_property("expand", False)
+		treev.append_column(col)
+		###
+		cell = gtk.CellRendererCombo(editable=True)
+		actionModel = gtk.ListStore(str)
+		for action in actions:
+			actionModel.append([action])
+		cell.set_property("model", actionModel)
+		col = gtk.TreeViewColumn(title=_("Action"), cell_renderer=cell, text=1)
+		col.set_property("expand", False)
+		treev.append_column(col)
+		###
+		self.treeview = treev
+		###
+		treev.connect("button-press-event", self.onTreeviewButtonPress)
+		###
+		treev.show_all()
+		self.treev = treev
+		###
+		swin = gtk.ScrolledWindow()
+		swin.add(treev)
+		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
+		self._widget = swin
+
+	def onMenuModifyKeyClick(self, menu: gtk.Menu, rowI: int):
+		trees = self.treev.get_model()
+		row = trees[rowI]
+		print(f"Modify Key: row={row}")
+
+	#def onMenuDefaultKeyClick(self, menu: gtk.Menu, rowI: int):
+	#	trees = self.treev.get_model()
+	#	row = trees[rowI]
+	#	print(f"Default Key: row={row}")
+
+	def onMenuDeleteClick(self, menu: gtk.Menu, rowI: int):
+		trees = self.treev.get_model()
+		trees.remove(trees.get_iter(rowI))
+
+	def onTreeviewButtonPress(self, widget, gevent):
+		from scal3.ui_gtk.menuitems import ImageMenuItem
+		b = gevent.button
+		cur = self.treeview.get_cursor()[0]
+		if not cur:
+			return
+		# cur is gtk.TreePath
+		rowI = cur[0]
+		if b == 1:
+			pass
+		elif b == 3:
+			menu = gtk.Menu()
+			menu.add(ImageMenuItem(
+				label=_("Modify Key"),
+				imageName="document-edit.svg",
+				func=self.onMenuModifyKeyClick,
+				args=(rowI,),
+			))
+			#menu.add(ImageMenuItem(
+			#	label=_("Default Key"),
+			#	imageName="edit-undo.svg",
+			#	func=self.onMenuDefaultKeyClick,
+			#	args=(rowI,),
+			#))
+			menu.add(gtk.SeparatorMenuItem())
+			menu.add(ImageMenuItem(
+				label=_("Delete"),
+				imageName="edit-delete.svg",
+				func=self.onMenuDeleteClick,
+				args=(rowI,),
+			))
+			menu.show_all()
+			menu.popup(
+				None,
+				None,
+				None,
+				None,
+				3,
+				gevent.time,
+			)
+			return True
+
+		return False
+
+	def set(self, keys: Dict[str, str]):
+		trees = self.treev.get_model()
+		trees.clear()
+		for key, action in keys.items():
+			trees.append([key, action])
+
+	def get(self) -> Dict[str, str]:
+		trees = self.treev.get_model()
+		keys = {}
+		for row in trees:
+			if not row[0]:
+				continue
+			key, action = row
+			keys[key] = action
+		return keys
+
