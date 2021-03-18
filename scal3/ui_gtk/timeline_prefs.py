@@ -40,6 +40,8 @@ from scal3.ui_gtk.pref_utils import (
 	ColorPrefItem,
 	CheckColorPrefItem,
 )
+from scal3.ui_gtk.pref_utils_extra import KeyBindingPrefItem
+
 
 class TimeLinePreferencesWindow(gtk.Window):
 	def __init__(self, timeLine, **kwargs):
@@ -818,6 +820,24 @@ class TimeLinePreferencesWindow(gtk.Window):
 		)
 		pack(hbox, prefItem.getWidget())
 		pack(vbox, hbox)
+		####################################################
+		vbox = VBox(spacing=5)
+		vbox.set_border_width(5)
+		page = StackPage()
+		page.pageWidget = vbox
+		page.pageName = "keys"
+		page.pageTitle = _("Keys")
+		page.pageLabel = _("Keys")
+		page.pageIcon = "configure-shortcuts.png"
+		self.prefPages.append(page)
+		#####
+		prefItem = KeyBindingPrefItem(
+			tl,
+			"keys",
+			tl.keyActions,
+		)
+		prefItem.updateWidget()
+		pack(vbox, prefItem.getWidget(), 1, 1)
 		####################################################################
 		rootPageName = "root"
 		###
