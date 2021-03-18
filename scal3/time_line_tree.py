@@ -143,6 +143,7 @@ class TimeLineTree:
 		if t0 < self.offset:
 			for item in self.left.search(t0, t1):
 				yield item
+
 	def add(self, t0, t1, eid, debug=False):
 		if debug:
 			from time import strftime, localtime

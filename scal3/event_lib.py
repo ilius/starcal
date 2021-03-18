@@ -4952,12 +4952,13 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 				prevTag = None
 			statLine = mod.getTagShortStatLine(self, prevTag, tag)
 			if statLine:
-				lines.append(statLine)## translation FIXME
-		event.description = '\n'.join(lines)
-	def getEvent(self, tag):## cache commit data FIXME
+				lines.append(statLine)  # translation FIXME
+		event.description = "\n".join(lines)
+
+	def getEvent(self, tag):  # cache commit data FIXME
 		tag = toStr(tag)
-		if not tag in self.vcsIds:
-			raise ValueError('No tag %r'%tag)
+		if tag not in self.vcsIds:
+			raise ValueError("No tag %r" % tag)
 		data = {}
 		data["summary"] = self.title + " " + tag  # FIXME
 		data["icon"] = self.icon

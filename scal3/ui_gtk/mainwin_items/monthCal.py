@@ -531,7 +531,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 		if CalBase.keyPress(self, arg, gevent):
 			return True
 		kname = gdk.keyval_name(gevent.keyval).lower()
-		#if kname.startswith('alt'):
+		#if kname.startswith("alt"):
 		#	return True
 		## How to disable Alt+Space of metacity ?????????????????????
 		if kname == "up":
