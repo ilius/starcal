@@ -154,11 +154,10 @@ def newLimitedWidthTextLayout(
 	if not font:
 		font = ui.getFont()
 	layout = widget.create_pango_layout("")
-	length = len(text.encode("utf8")
 	if markup:
-		layout.set_markup(text=text, length=length)
+		layout.set_markup(text=text, length=-1)
 	else:
-		layout.set_text(text=text, length=length)
+		layout.set_text(text=text, length=-1)
 	layout.set_font_description(pfontEncode(font))
 	if not layout:
 		return None
