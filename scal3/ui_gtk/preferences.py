@@ -832,11 +832,27 @@ class PreferencesWindow(gtk.Window):
 			gtk.PolicyType.AUTOMATIC,
 		)
 		######
+		# each named font size if 1.2 times larger than last
+		# size='medium' is the same as not having this tag (equal to widget's font)
+		# so size='large' is 1.2 times larger and size='small' is 1.2 times
+		# smaller than default
+		# font='12.5' is equal to size='12800' because 12.5*1024 = 12800
+		# named sizes:
+		#   xx-small	= default * 0.5787
+		#   x-small		= default * 0.6944
+		#   small		= default * 0.8333
+		#   medium		= default * 1.0
+		#   large		= default * 1.2
+		#   x-large		= default * 1.44
+		#   xx-large	= default * 1.7279
+		######
+		size = ui.getFont()[3]
+		######
 		cell = gtk.CellRendererToggle()
 		# cell.set_property("activatable", True)
 		cell.connect("toggled", self.plugTreeviewCellToggled)
 		titleLabel = gtk.Label(
-			label="<span size='small'>" + _("Enable") + "</span>",
+			label=f"<span font='{size*0.7}'>" + _("Enable") + "</span>",
 			use_markup=True,
 		)
 		titleLabel.show()
@@ -852,7 +868,7 @@ class PreferencesWindow(gtk.Window):
 		# cell.set_property("activatable", True)
 		cell.connect("toggled", self.plugTreeviewCellToggled2)
 		titleLabel = gtk.Label(
-			label="<span size='xx-small'>" + _("Show\nDate") + "</span>",
+			label=f"<span font='{size*0.5}'>" + _("Show\nDate") + "</span>",
 			use_markup=True,
 		)
 		titleLabel.show()
