@@ -23,11 +23,10 @@ class EventEditorDialog(gtk.Dialog):
 	):
 		checkEventsReadOnly()
 		gtk.Dialog.__init__(self, **kwargs)
-		#self.set_transient_for(None)
-		#self.set_type_hint(gdk.WindowTypeHint.NORMAL)
+		# self.set_type_hint(gdk.WindowTypeHint.NORMAL)
 		self.isNew = isNew
-		#self.connect("delete-event", lambda obj, e: self.destroy())
-		#self.resize(800, 600)
+		# self.connect("delete-event", lambda obj, e: self.destroy())
+		# self.resize(800, 600)
 		###
 		dialog_add_button(
 			self,
@@ -74,7 +73,7 @@ class EventEditorDialog(gtk.Dialog):
 			####
 			combo.set_active(eventTypeIndex)
 			####
-			#self.activeWidget = makeWidget(event)
+			# self.activeWidget = makeWidget(event)
 			combo.connect("changed", self.typeChanged)
 			self.comboEventType = combo
 		else:
@@ -117,11 +116,11 @@ class EventEditorDialog(gtk.Dialog):
 		if self.isNew:
 			self.activeWidget.focusSummary()
 		pack(self.vbox, self.activeWidget, 1, 1)
-		#self.activeWidget.calTypeComboChanged()## apearantly not needed
+		# self.activeWidget.calTypeComboChanged()## apearantly not needed
 
 	def run(self):
-		#if not self.activeWidget:
-		#	return None
+		# if not self.activeWidget:
+		# 	return None
 		parentWin = self.get_transient_for()
 		if gtk.Dialog.run(self) != gtk.ResponseType.OK:
 			try:
