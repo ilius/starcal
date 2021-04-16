@@ -110,6 +110,7 @@ class EventEditorDialog(gtk.Dialog):
 	def run(self):
 		#if not self.activeWidget:
 		#	return None
+		parentWin = self.get_transient_for()
 		if gtk.Dialog.run(self) != gtk.ResponseType.OK:
 			try:
 				filesBox = self.activeWidget.filesBox
@@ -117,6 +118,8 @@ class EventEditorDialog(gtk.Dialog):
 				pass
 			else:
 				filesBox.removeNewFiles()
+			if parentWin is not None:
+				parentWin.present()
 			return None
 		self.activeWidget.updateVars()
 		self.event.afterModify()
@@ -137,6 +140,9 @@ class EventEditorDialog(gtk.Dialog):
 						"\"%s\" and change \"Start\" or \"End\" values"
 					) % self.event.parent.title
 				)
+		#####
+		if parentWin is not None:
+			parentWin.present()
 		#####
 		return self.event
 
