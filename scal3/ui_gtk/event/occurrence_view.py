@@ -254,7 +254,7 @@ class DayOccurrenceView(gtk.ScrolledWindow, ud.BaseCalObj):
 		event = EventEditorDialog(
 			event,
 			title=winTitle,
-			#parent=self,## FIXME
+			transient_for=self.get_toplevel(),
 		).run()
 		if event is None:
 			return
