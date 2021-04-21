@@ -1653,47 +1653,51 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	def showDescItemToggled(self, menuItem: gtk.MenuItem) -> None:
 		self.waitingDo(self._do_showDescItemToggled)
 
+	def treeviewCursorChangedPath(self, path: "List[int]") -> None:
+		text = ""
+		if len(path) == 1:
+			group = self.getObjsByPath(path)[0]
+			if group.name == "trash":
+				text = _("contains {eventCount} events").format(
+					eventCount=_(len(group)),
+				)
+			else:
+				text = _(
+					"contains {eventCount} events"
+					" and {occurCount} occurences"
+				).format(
+					eventCount=_(len(group)),
+					occurCount=_(group.occurCount),
+				) + _(",") + " " + _("Group ID: {groupId}").format(
+					groupId=_(group.id),
+				)
+			modified = group.modified
+			# log.info(f"group, id = {group.id}, uuid = {group.uuid}")
+		elif len(path) == 2:
+			group, event = self.getObjsByPath(path)
+			text = _("Event ID: {eventId}").format(eventId=_(event.id))
+			modified = event.modified
+			# log.info(f"event, id = {event.id}, uuid = {event.uuid}")
+		comma = _(",")
+		modifiedLabel = _("Last Modified")
+		modifiedTime = locale_man.textNumEncode(
+			core.epochDateTimeEncode(modified),
+		)
+		text += f"{comma} {modifiedLabel}: {modifiedTime}"
+		if hasattr(self, "sbar"):
+			message_id = self.sbar.push(0, text)
+
 	def treeviewCursorChanged(self, selection: Any = None) -> None:
 		path = self.getSelectedPath()
-		# update eventInfoBox
+
 		if not self.syncing:
-			text = ""
 			if path:
-				if len(path) == 1:
-					group = self.getObjsByPath(path)[0]
-					if group.name == "trash":
-						text = _("contains {eventCount} events").format(
-							eventCount=_(len(group)),
-						)
-					else:
-						text = _(
-							"contains {eventCount} events"
-							" and {occurCount} occurences"
-						).format(
-							eventCount=_(len(group)),
-							occurCount=_(group.occurCount),
-						) + _(",") + " " + _("Group ID: {groupId}").format(
-							groupId=_(group.id),
-						)
-					modified = group.modified
-					# log.info(f"group, id = {group.id}, uuid = {group.uuid}")
-				elif len(path) == 2:
-					group, event = self.getObjsByPath(path)
-					text = _("Event ID: {eventId}").format(eventId=_(event.id))
-					modified = event.modified
-					# log.info(f"event, id = {event.id}, uuid = {event.uuid}")
-				comma = _(",")
-				modifiedLabel = _("Last Modified")
-				modifiedTime = locale_man.textNumEncode(
-					core.epochDateTimeEncode(modified),
-				)
-				text += f"{comma} {modifiedLabel}: {modifiedTime}"
-			try:
-				sbar = self.sbar
-			except AttributeError:
-				pass
-			else:
-				message_id = self.sbar.push(0, text)
+				self.treeviewCursorChangedPath(path)
+			elif hasattr(self, "sbar"):
+				self.sbar.push(0, "")
+
+		self.toolbar.set_sensitive(bool(path))
+
 		return True
 
 	def _do_onGroupModify(self, group: lib.EventGroup) -> None:
