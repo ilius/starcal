@@ -536,7 +536,6 @@ def window_set_size_aspect(win, min_aspect, max_aspect=None):
 		geom,  # geometry
 		gdk.WindowHints.ASPECT,  # geom_mask
 	)
-	win.resize(1, 1)
 
 
 def newHSep():
