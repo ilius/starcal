@@ -94,7 +94,6 @@ class GroupConvertCalTypeDialog(gtk.Dialog):
 		##
 		self.connect("response", lambda w, e: self.hide())
 		####
-		hbox = HBox()
 		label = gtk.Label(label=_(
 			"This is going to convert calendar types of all events inside "
 			"group \"{groupTitle}\" to a specific type. This operation does not work "
@@ -102,9 +101,8 @@ class GroupConvertCalTypeDialog(gtk.Dialog):
 			"edit those events manually to change calendar type."
 		).format(groupTitle=group.title))
 		label.set_line_wrap(True)
-		pack(hbox, label)
-		pack(hbox, gtk.Label(), 1, 1)
-		pack(self.vbox, hbox)
+		label.set_yalign(0.5)
+		pack(self.vbox, label, 1, 1)
 		###
 		hbox = HBox()
 		pack(hbox, gtk.Label(label=_("Calendar Type") + ":"))
@@ -114,9 +112,13 @@ class GroupConvertCalTypeDialog(gtk.Dialog):
 		pack(hbox, gtk.Label(), 1, 1)
 		self.calTypeCombo = combo
 		pack(self.vbox, hbox)
+		###
+		pack(self.vbox, gtk.Label())
 		####
+		self.vbox.set_border_width(10)
 		self.vbox.show_all()
-		window_set_size_aspect(self, 1.6)
+		window_set_size_aspect(self, min_aspect=1.5, max_aspect=2.0)
+		self.resize(100, 50)
 
 	def perform(self) -> bool:
 		if gtk.Dialog.run(self) == gtk.ResponseType.OK:
