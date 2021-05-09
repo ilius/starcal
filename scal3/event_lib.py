@@ -5021,7 +5021,7 @@ class LifeTimeGroup(EventGroup):
 		("start", _("Start"), True),
 	)
 	params = EventGroup.params + (
-		"showSeparatedYmdInputs",
+		"showSeparateYmdInputs",
 	)
 
 	def getSortByValue(self, event: "Event", attr: str) -> Any:
@@ -5033,13 +5033,15 @@ class LifeTimeGroup(EventGroup):
 		return EventGroup.getSortByValue(self, event, attr)
 
 	def __init__(self, _id: Optional[int] = None) -> None:
-		self.showSeparatedYmdInputs = False
+		self.showSeparateYmdInputs = False
 		EventGroup.__init__(self, _id)
 
 	def setData(self, data: Dict[str, Any]) -> None:
 		if "showSeperatedYmdInputs" in data:
 			# misspell in < 3.1.x
-			data["showSeparatedYmdInputs"] = data["showSeperatedYmdInputs"]
+			data["showSeparateYmdInputs"] = data["showSeperatedYmdInputs"]
+		if "showSeparatedYmdInputs" in data:
+			data["showSeparateYmdInputs"] = data["showSeparatedYmdInputs"]
 		EventGroup.setData(self, data)
 
 	def setDefaults(self) -> None:
