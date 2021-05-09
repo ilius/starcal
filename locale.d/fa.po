@@ -1159,7 +1159,7 @@ msgid "Life Time Events Group"
 msgstr ""
 "گروه رویدادهای زیست زمان"
 
-msgid "Show Separated Inputs for Year, Month and Day"
+msgid "Show Separate Inputs for Year, Month and Day"
 msgstr ""
 "نمایش ورودی‌های مجزا برای سال، ماه و روز"
 

@@ -35,10 +35,10 @@ class WidgetClass(common.WidgetClass):
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		######
 		try:
-			separated = event.parent.showSeparatedYmdInputs
+			separateYmd = event.parent.showSeparateYmdInputs
 		except AttributeError:
-			separated = False
-		if separated:
+			separateYmd = False
+		if separateYmd:
 			self.startDateInput = YearMonthDayBox()
 			self.endDateInput = YearMonthDayBox()
 		else:
