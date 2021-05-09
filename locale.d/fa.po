@@ -588,8 +588,7 @@ msgstr "ڕێبەندان"
 msgid "Reşeme"
 msgstr "ڕەشەمە"
 
-         
-         
+
 
 msgid "Hamal"
 msgstr "حمل"
@@ -626,7 +625,6 @@ msgstr "دلو"
 
 msgid "Hūt"
 msgstr "حوت"
-
 
 
 
@@ -2050,15 +2048,15 @@ msgstr ""
 
 msgid "Major Indicator Step (Minimum)"
 msgstr ""
-"فواصل نشانگرهای اصلی (حداقل)"
+"فواصل نشانگرهای اصلی (کمینه)"
 
 msgid "Minor Indicator Step (Minimum)"
 msgstr ""
-"فواصل نشانگرهای فرعی (حداقل)"
+"فواصل نشانگرهای فرعی (کمینه)"
 
 msgid "Maximum Label Width"
 msgstr ""
-"حداکثر عرض برچسب‌ها"
+"بیشینهٔ عرض برچسب‌ها"
 
 msgid "Size of Indicators"
 msgstr ""
@@ -2080,7 +2078,7 @@ msgstr ""
 
 msgid "Maximum Width"
 msgstr ""
-"حداکثر عرض"
+"بیشینهٔ عرض"
 
 msgid "of window height"
 msgstr ""
@@ -2100,11 +2098,11 @@ msgstr ""
 
 msgid "Minimum Interval"
 msgstr ""
-"حداقل بازهٔ زمانی"
+"کمینهٔ بازهٔ زمانی"
 
 msgid "Maximum Interval"
 msgstr ""
-"حداکثر بازهٔ زمانی"
+"بیشینهٔ بازهٔ زمانی"
 
 
 msgid "days"
@@ -2168,7 +2166,7 @@ msgstr ""
 
 msgid "Maximum Velocity"
 msgstr ""
-"حداکثر سرعت"
+"بیشینهٔ سرعت"
 
 
 msgid "Acceleration with mouse"
@@ -3000,16 +2998,16 @@ msgstr ""
 "ارتفاع"
 msgid "Minimum Height"
 msgstr ""
-"حداقل ارتفاع"
+"کمینهٔ ارتفاع"
 
 msgid "Maximum Height"
 msgstr ""
-"حداکثر ارتفاع"
+"بیشینهٔ ارتفاع"
 
 
 msgid "Days maximum cache size"
 msgstr ""
-"حداکثر اندازهٔ cache روزها"
+"بیشینهٔ اندازهٔ cache روزها"
 
 msgid "Date Format"
 msgstr ""
@@ -3307,11 +3305,11 @@ msgstr ""
 
 msgid "Minimize Window"
 msgstr ""
-"کوچک کردن پنجره"
+"کمینه‌سازی پنجره"
 
 msgid "Maximize Window"
 msgstr ""
-"بزرگ‌ترین حالت پنجره"
+"بیشینه‌سازی پنجره"
 
 msgid "Close Window"
 msgstr ""
