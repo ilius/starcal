@@ -28,32 +28,32 @@ msgstr ""
 
 msgid "_Apply"
 msgstr ""
-"ا_عمال"
+"ا_عمال کن"
 
 msgid "Cancel"
 msgstr ""
-"انصراف"
+"فراموش کن"
 
 
 msgid "_Cancel"
 msgstr ""
-"ا_نصراف"
+"_فراموش کن"
 
 msgid "_Close"
 msgstr ""
-"_بستن"
+"_ببند"
 
 msgid "Close"
 msgstr ""
-"بستن"
+"ببند"
 
 msgid "_Open"
 msgstr ""
-"_باز کردن"
+"_باز کن"
 
 msgid "_Revert"
 msgstr ""
-"برگرداندن"
+"برگردان"
 
 msgid "_Reset to Defaults"
 msgstr ""
