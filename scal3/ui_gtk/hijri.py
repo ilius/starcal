@@ -144,13 +144,13 @@ class EditDbDialog(gtk.Dialog):
 		dialog_add_button(
 			self,
 			imageName="dialog-ok.svg",
-			label=_("_OK"),
+			label=_("_Save"),
 			res=gtk.ResponseType.OK,
 		)
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
-			label=_("_Cancel"),
+			label=_("Cancel"),
 			res=gtk.ResponseType.CANCEL,
 		)
 		##
@@ -350,7 +350,7 @@ Otherwise, Hijri dates and Iranian official holidays would be incorrect.""")
 		dialog_add_button(
 			self,
 			imageName="window-close.svg",
-			label=_("_Close"),
+			label=_("Understood"),
 			res=gtk.ResponseType.OK,
 		)
 		###

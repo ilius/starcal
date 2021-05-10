@@ -75,13 +75,13 @@ class MyHButtonBox(gtk.ButtonBox):
 	def add_ok(self, onClick=None):
 		return self.add_button(
 			imageName="dialog-ok.svg",
-			label=_("_OK"),
+			label=_("_Confirm"),
 			onClick=onClick,
 		)
 
 	def add_cancel(self, onClick=None):
 		return self.add_button(
 			imageName="dialog-cancel.svg",
-			label=_("_Cancel"),
+			label=_("Cancel"),
 			onClick=onClick,
 		)

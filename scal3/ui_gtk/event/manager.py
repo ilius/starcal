@@ -262,7 +262,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		dialog_add_button(
 			self,
 			imageName="dialog-ok.svg",
-			label=_("_OK"),
+			label=_("_Apply"),
 			res=gtk.ResponseType.OK,
 		)
 		# self.connect("response", lambda w, e: self.hide())
@@ -1996,7 +1996,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		if eventCount > 0:
 			if not confirm(
 				_(
-					"Press OK if you want to delete group \"{groupTitle}\" "
+					"Press Confirm if you want to delete group \"{groupTitle}\" "
 					"and move its {eventCount} events to {trashTitle}"
 				).format(
 					groupTitle=group.title,
