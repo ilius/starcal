@@ -507,6 +507,7 @@ class AICalsPrefItemToolbar(StaticToolBox):
 				"go-next.svg" if isRight ^ rtl else "go-previous.svg"
 			)
 			self._leftRightAction = "inactivate" if isRight else "activate"
+		tb.build()
 		tb.show_all()
 
 
