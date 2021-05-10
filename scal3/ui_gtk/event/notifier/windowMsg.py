@@ -53,7 +53,7 @@ def notify(notifier, finishFunc):  # FIXME
 	okB = dialog_add_button(
 		dialog,
 		imageName="dialog-ok.svg",
-		label=_("_OK"),
+		label=_("_Close"),
 		res=gtk.ResponseType.OK,
 	)
 	okB.connect("clicked", hideWindow, dialog)

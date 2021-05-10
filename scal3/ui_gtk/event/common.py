@@ -231,13 +231,13 @@ class FilesBox(gtk.Box):
 		dialog_add_button(
 			fcd,
 			imageName="dialog-ok.svg",
-			label=_("_OK"),
+			label=_("_Choose"),
 			res=gtk.ResponseType.OK,
 		)
 		dialog_add_button(
 			fcd,
 			imageName="dialog-cancel.svg",
-			label=_("_Cancel"),
+			label=_("Cancel"),
 			res=gtk.ResponseType.CANCEL,
 		)
 		fcd.set_local_only(True)

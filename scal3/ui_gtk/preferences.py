@@ -127,7 +127,7 @@ class PreferencesWindow(gtk.Window):
 		self.buttonbox = MyHButtonBox()
 		self.buttonbox.add_button(
 			imageName="dialog-cancel.svg",
-			label=_("_Cancel"),
+			label=_("Cancel"),
 			onClick=self.cancel,
 		)
 		self.buttonbox.add_button(
@@ -137,7 +137,7 @@ class PreferencesWindow(gtk.Window):
 		)
 		okB = self.buttonbox.add_button(
 			imageName="dialog-ok.svg",
-			label=_("_OK"),
+			label=_("_Confirm"),
 			onClick=self.ok,
 			tooltip=_("Apply and Close"),
 		)
@@ -962,14 +962,14 @@ class PreferencesWindow(gtk.Window):
 		dialog_add_button(
 			d,
 			imageName="dialog-cancel.svg",
-			label=_("_Cancel"),
+			label=_("Cancel"),
 			res=gtk.ResponseType.CANCEL,
 			onClick=self.plugAddDialogClose,
 		)
 		dialog_add_button(
 			d,
 			imageName="dialog-ok.svg",
-			label=_("_OK"),
+			label=_("_Choose"),
 			res=gtk.ResponseType.OK,
 			onClick=self.plugAddDialogOK,
 		)

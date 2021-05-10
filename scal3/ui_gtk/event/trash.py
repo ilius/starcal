@@ -23,13 +23,13 @@ class TrashEditorDialog(gtk.Dialog):
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
-			label=_("_Cancel"),
+			label=_("Cancel"),
 			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
 			imageName="dialog-ok.svg",
-			label=_("_OK"),
+			label=_("_Save"),
 			res=gtk.ResponseType.OK,
 		)
 		##

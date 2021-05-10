@@ -60,7 +60,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		self.buttonbox = MyHButtonBox()
 		#self.buttonbox.add_button(
 		#	imageName="dialog-cancel.svg",
-		#	label=_("_Cancel"),
+		#	label=_("Cancel"),
 		#	onClick=self.onCancelClick,
 		#)
 		#self.buttonbox.add_button(
