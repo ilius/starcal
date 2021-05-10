@@ -104,14 +104,14 @@ class SelectDateDialog(gtk.Dialog):
 		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
-			label=_("_Cancel"),
+			label=_("Cancel"),
 			res=gtk.ResponseType.CANCEL,
 			onClick=self.hideMe,
 		)
 		dialog_add_button(
 			self,
 			imageName="dialog-ok.svg",
-			label=_("_OK"),
+			label=_("_Choose"),
 			res=gtk.ResponseType.OK,
 			onClick=self.ok,
 		)

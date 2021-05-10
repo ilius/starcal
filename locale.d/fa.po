@@ -34,11 +34,6 @@ msgid "Cancel"
 msgstr ""
 "فراموش کن"
 
-
-msgid "_Cancel"
-msgstr ""
-"_فراموش کن"
-
 msgid "_Close"
 msgstr ""
 "_ببند"
@@ -46,6 +41,10 @@ msgstr ""
 msgid "Close"
 msgstr ""
 "ببند"
+
+msgid "Understood"
+msgstr ""
+"متوجه شدم"
 
 msgid "_Open"
 msgstr ""
@@ -109,6 +108,26 @@ msgid "_OK"
 msgstr ""
 "_تأیید"
 
+msgid "_Confirm"
+msgstr ""
+"_تأیید"
+
+msgid "Confirm"
+msgstr ""
+"تأیید"
+
+msgid "_Choose"
+msgstr ""
+"_انتخاب"
+
+msgid "Choose"
+msgstr ""
+"انتخاب"
+
+msgid "_Perform"
+msgstr ""
+"_انجام"
+
 msgid "_Preferences"
 msgstr ""
 "تر_جیحات"
@@ -119,7 +138,7 @@ msgstr ""
 
 msgid "_Save"
 msgstr ""
-"ذ_خیره"
+"ذ_خیره کن"
 msgid "_File"
 msgstr ""
 "_فایل"
@@ -1070,7 +1089,7 @@ msgstr ""
 
 msgid "Enable/Disable"
 msgstr ""
-"فعال/غیرفعال کردن"
+"فعال/غیرفعال کن"
 
 msgid "Disabled"
 msgstr ""
@@ -1807,17 +1826,17 @@ msgid "Move Down"
 msgstr ""
 "جابجایی به پایین"
 
-msgid "Press OK if you want to delete group \"{groupTitle}\" and move its {eventCount} events to {trashTitle}"
+msgid "Press Confirm if you want to delete group \"{groupTitle}\" and move its {eventCount} events to {trashTitle}"
 msgstr ""
 "اگر می‌خواهید گروه «{groupTitle}» حذف شده و {eventCount} رویدادش به {trashTitle} منتقل شوند، دکمهٔ تأیید را فشار دهید"
 
 
-msgid "Press OK if you want to move event \"{eventSummary}\" to {trashTitle}"
+msgid "Press Confirm if you want to move event \"{eventSummary}\" to {trashTitle}"
 msgstr ""
 "اگر می‌خواهید رویداد «{eventSummary}» به {trashTitle} منتقل شود، دکمهٔ تأیید را فشار دهید"
 
 
-msgid "Press OK if you want to move {toTrashCount} events to {trashTitle}"
+msgid "Press Confirm if you want to move {toTrashCount} events to {trashTitle}"
 ", and delete {deleteCount} events from {trashTitle}"
 msgstr ""
 "با فشردن دکمهٔ تأیید، تعداد "

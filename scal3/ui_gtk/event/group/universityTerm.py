@@ -546,7 +546,7 @@ class WeeklyScheduleWindow(gtk.Dialog):
 		dialog_add_button(
 			fcd,
 			imageName="dialog-cancel.svg",
-			label=_("_Cancel"),
+			label=_("Cancel"),
 			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(

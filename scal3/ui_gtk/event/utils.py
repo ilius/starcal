@@ -19,7 +19,7 @@ from scal3.ui_gtk.drawing import newColorCheckPixbuf
 def confirmEventTrash(event, **kwargs):
 	return confirm(
 		_(
-			"Press OK if you want to move event \"{eventSummary}\""
+			"Press Confirm if you want to move event \"{eventSummary}\""
 			" to {trashTitle}"
 		).format(
 			eventSummary=event.summary,
@@ -31,7 +31,7 @@ def confirmEventTrash(event, **kwargs):
 def confirmEventsTrash(toTrashCount: int, deleteCount: int, **kwargs):
 	return confirm(
 		_(
-			"Press OK if you want to move {toTrashCount} events to {trashTitle}"
+			"Press Confirm if you want to move {toTrashCount} events to {trashTitle}"
 			", and delete {deleteCount} events from {trashTitle}"
 		).format(
 			toTrashCount=_(toTrashCount),

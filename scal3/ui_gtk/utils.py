@@ -376,7 +376,7 @@ def confirm(
 	button = dialog_add_button(
 		win,
 		imageName="dialog-cancel.svg",
-		label=_("_Cancel"),
+		label=_("Cancel"),
 		res=gtk.ResponseType.CANCEL,
 	)
 	button.set_border_width(border_width)
@@ -384,7 +384,7 @@ def confirm(
 	button = dialog_add_button(
 		win,
 		imageName="dialog-ok.svg",
-		label=_("_OK"),
+		label=_("_Confirm"),
 		res=gtk.ResponseType.OK,
 	)
 	button.set_border_width(border_width)

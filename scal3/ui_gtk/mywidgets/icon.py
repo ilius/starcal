@@ -74,13 +74,13 @@ class IconSelectButton(gtk.Button):
 		okB = dialog_add_button(
 			dialog,
 			imageName="dialog-ok.svg",
-			label=_("_OK"),
+			label=_("_Choose"),
 			res=gtk.ResponseType.OK
 		)
 		dialog_add_button(
 			dialog,
 			imageName="dialog-cancel.svg",
-			label=_("_Cancel"),
+			label=_("Cancel"),
 			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
