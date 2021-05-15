@@ -19,7 +19,7 @@ from scal3.ui_gtk.mywidgets.dialog import MyDialog
 class EventsImportWindow(WizardWindow):
 	def __init__(self, manager):
 		self.manager = manager
-		WizardWindow.__init__(self, _("Import Events"))
+		WizardWindow.__init__(self, _("Import Events", ctx="window title"))
 		self.set_type_hint(gdk.WindowTypeHint.DIALOG)
 		#self.set_property("skip-taskbar-hint", True)
 		#self.set_modal(True)
