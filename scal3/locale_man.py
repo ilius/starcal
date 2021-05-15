@@ -306,11 +306,14 @@ def loadTranslator(ui_is_qt=False) -> Callable:
 		except Exception:
 			log.exception("")
 	if transObj:
-		def tr(s, *a, nums=False, **ka):
+		def tr(s, *a, nums=False, ctx=None, **ka):
 			if isinstance(s, (int, float)):
 				s = numEncode(s, *a, **ka)
 			else:
-				s = toStr(transObj.gettext(s))
+				if ctx:
+					s = toStr(transObj.pgettext(ctx, s))
+				else:
+					s = toStr(transObj.gettext(s))
 				if ui_is_qt:
 					s = s.replace("_", "&")
 				if a:

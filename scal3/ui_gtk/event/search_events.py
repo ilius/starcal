@@ -229,7 +229,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		bbox.add(searchButton)
 		###
 		exportButton = labelImageButton(
-			label=_("_Export"),
+			label=_("_Export"),  # ctx="window action"
 			# FIXME: imageName="export-events.svg",
 		)
 		exportButton.connect("clicked", self.onExportClick)

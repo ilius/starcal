@@ -29,7 +29,7 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 		dialog_add_button(
 			self,
 			imageName="dialog-ok.svg",
-			label=_("_Export"),
+			label=_("_Export", ctx="window action"),
 			res=gtk.ResponseType.OK,
 		)
 		self.connect("response", lambda w, e: self.hide())
@@ -116,7 +116,7 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 	def __init__(self, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
-		self.set_title(_("Export"))
+		self.set_title(_("Export", ctx="window title"))
 		self.vbox.set_spacing(10)
 		####
 		dialog_add_button(
@@ -128,7 +128,7 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 		dialog_add_button(
 			self,
 			imageName="dialog-ok.svg",
-			label=_("_Export"),
+			label=_("_Export", ctx="window action"),
 			res=gtk.ResponseType.OK,
 		)
 		####
@@ -249,7 +249,7 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 		self._defaultFileName = defaultFileName
 		self._groupTitle = groupTitle
 		gtk.Dialog.__init__(self, **kwargs)
-		self.set_title(_("Export Group"))
+		self.set_title(_("Export Group"))# , ctx="window title"
 		####
 		dialog_add_button(
 			self,
@@ -260,7 +260,7 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 		dialog_add_button(
 			self,
 			imageName="dialog-ok.svg",
-			label=_("_Export"),
+			label=_("_Export", ctx="window action"),
 			res=gtk.ResponseType.OK,
 		)
 		self.connect("response", lambda w, e: self.hide())

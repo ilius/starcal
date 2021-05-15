@@ -3075,13 +3075,35 @@ msgid "Text Size Scale"
 msgstr ""
 "مقیاس اندازهٔ متن"
 
+msgctxt "window action"
 msgid "Export"
-msgstr ""
-"صادر کردن"
+msgstr "صادر کن"
+
+msgctxt "window action"
+msgid "_Export"
+msgstr "_صادر کن"
+
+msgctxt "window title"
+msgid "Export"
+msgstr "صادر کردن"
+
+msgctxt "window title"
+msgid "_Export"
+msgstr "_صادر کردن"
+
+msgctxt "menu"
+msgid "Export"
+msgstr "صادر کردن"
+
+msgctxt "menu"
+msgid "_Export"
+msgstr "_صادر کردن"
+
+msgid "Export"
+msgstr "صادر کردن"
 
 msgid "_Export"
-msgstr ""
-"_صادر کردن"
+msgstr "_صادر کردن"
 
 
 msgid "Export to {format}"
@@ -3116,13 +3138,21 @@ msgstr ""
 
 
 msgid "Import"
-msgstr ""
-"وارد کردن"
+msgstr "وارد کردن"
 
 msgid "_Import"
-msgstr ""
-"_وارد کردن"
+msgstr "_وارد کردن"
 
+msgctxt "menu"
+msgid "Import"
+msgstr "وارد کردن"
+
+msgctxt "menu"
+msgid "_Import"
+msgstr "_وارد کردن"
+
+
+msgctxt "window title"
 msgid "Import Events"
 msgstr ""
 "وارد کردن رویدادها"
