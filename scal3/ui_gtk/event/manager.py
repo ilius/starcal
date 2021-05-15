@@ -287,11 +287,11 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		searchItem.connect("activate", self.onMenuBarSearchClick)
 		fileMenu.append(searchItem)
 		##
-		exportItem = MenuItem(_("_Export"))
+		exportItem = MenuItem(_("_Export", ctx="menu"))
 		exportItem.connect("activate", self.onMenuBarExportClick)
 		fileMenu.append(exportItem)
 		##
-		importItem = MenuItem(_("_Import"))
+		importItem = MenuItem(_("_Import", ctx="menu"))
 		importItem.set_sensitive(not lib.allReadOnly)
 		importItem.connect("activate", self.onMenuBarImportClick)
 		fileMenu.append(importItem)
@@ -421,7 +421,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		bulkEditItem.connect("activate", self.multiSelectBulkEdit)
 		self.multiSelectItemsOther.append(bulkEditItem)
 		##
-		exportItem = MenuItem(_("_Export"))
+		exportItem = MenuItem(_("_Export", ctx="menu"))
 		exportItem.connect("activate", self.multiSelectExport)
 		self.multiSelectItemsOther.append(exportItem)
 		###
@@ -1293,7 +1293,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		# ))
 		##
 		menu.add(ImageMenuItem(
-			_("Export"),
+			_("Export", ctx="menu"),
 			imageName="",
 			# FIXME: export-events.svg
 			func=self.groupExportFromMenu,
