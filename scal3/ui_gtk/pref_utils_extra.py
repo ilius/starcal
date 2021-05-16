@@ -682,13 +682,13 @@ class AICalsPrefItem(PrefItem):
 			module, ok = calTypes[calType]
 			if not ok:
 				raise RuntimeError(f"cal type '{calType}' not found")
-			self.activeTrees.append([module.name, _(module.desc)])
+			self.activeTrees.append([module.name, _(module.desc, ctx="calendar")])
 		##
 		for calType in calTypes.inactive:
 			module, ok = calTypes[calType]
 			if not ok:
 				raise RuntimeError(f"cal type '{calType}' not found")
-			self.inactiveTrees.append([module.name, _(module.desc)])
+			self.inactiveTrees.append([module.name, _(module.desc, ctx="calendar")])
 
 
 class KeyBindingPrefItem(PrefItem):
