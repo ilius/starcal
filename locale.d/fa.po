@@ -1168,13 +1168,13 @@ msgstr ""
 "تکرار هر "
 
 
-msgid "Life Time Event"
+msgid "Lifetime Event"
 msgstr ""
-"رویداد زیست زمان"
+"رویداد زیست‌زمان"
 
-msgid "Life Time Events Group"
+msgid "Lifetime Events Group"
 msgstr ""
-"گروه رویدادهای زیست زمان"
+"گروه رویدادهای زیست‌زمان"
 
 msgid "Show Separate Inputs for Year, Month and Day"
 msgstr ""
