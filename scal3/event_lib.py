@@ -3435,10 +3435,10 @@ class UniversityExamEvent(DailyNoteEvent):
 
 
 @classes.event.register
-class LifeTimeEvent(SingleStartEndEvent):
+class LifetimeEvent(SingleStartEndEvent):
 	name = "lifeTime"
 	nameAlias = "lifetime"
-	desc = _("Life Time Event")
+	desc = _("Lifetime Event")
 	requiredRules = (
 		"start",
 		"end",
@@ -5014,10 +5014,9 @@ class UniversityTerm(EventGroup):
 
 
 @classes.group.register
-class LifeTimeGroup(EventGroup):
+class LifetimeGroup(EventGroup):
 	name = "lifeTime"
-	nameAlias = "lifetime"
-	desc = _("Life Time Events Group")
+	desc = _("Lifetime Events Group")
 	acceptsEventTypes = (
 		"lifeTime",
 	)
