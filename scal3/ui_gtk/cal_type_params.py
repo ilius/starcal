@@ -274,7 +274,7 @@ class CalTypeParamWidget(TextParamWidget):
 		module, ok = calTypes[calType]
 		if not ok:
 			raise RuntimeError(f"cal type '{calType}' not found")
-		kwargs["desc"] = _(module.desc)
+		kwargs["desc"] = _(module.desc, ctx="calendar")
 		####
 		TextParamWidget.__init__(self, *args, **kwargs)
 

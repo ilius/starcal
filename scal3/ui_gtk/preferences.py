@@ -642,12 +642,12 @@ class PreferencesWindow(gtk.Window):
 			page.pageWidget = pageVBox
 			page.pageName = "regional_" + mod.name
 			page.pageTitle = (
-				_("{calType} Calendar").format(calType=_(mod.desc)) +
+				_("{calType} Calendar").format(calType=_(mod.desc, ctx="calendar")) +
 				" - " +
 				_("Regional")
 			)
 			page.pageLabel = _("{calType} Calendar").format(
-				calType=_(mod.desc),
+				calType=_(mod.desc, ctx="calendar"),
 			)
 			page.pageExpand = False
 			self.prefPages.append(page)
