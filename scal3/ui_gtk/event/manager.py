@@ -1664,7 +1664,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			else:
 				text = _(
 					"contains {eventCount} events"
-					" and {occurCount} occurences"
+					" and {occurCount} occurrences"
 				).format(
 					eventCount=_(len(group)),
 					occurCount=_(group.occurCount),
