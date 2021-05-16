@@ -1998,7 +1998,7 @@ msgstr ""
 "شامل {eventCount} رویداد"
 
 
-msgid "contains {eventCount} events and {occurCount} occurences"
+msgid "contains {eventCount} events and {occurCount} occurrences"
 msgstr ""
 "شامل {eventCount} رویداد و {occurCount} رخداد"
 
