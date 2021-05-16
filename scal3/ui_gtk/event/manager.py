@@ -969,7 +969,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):## FIXME
 					if group.name == "trash":
 						text = _("contains %s events") % _(len(group))
 					else:
-						text = _("contains %s events and %s occurences") % (
+						text = _("contains %s events and %s occurrences") % (
 							_(len(group)),
 							_(group.occurCount),
 						) + _(",") + " " + _("Group ID: %s") % _(group.id)

@@ -1721,7 +1721,7 @@ msgstr ""
 "شامل %s رویداد"
 
 
-msgid "contains %s events and %s occurences"
+msgid "contains %s events and %s occurrences"
 msgstr ""
 "شامل %s رویداد و %s رخداد"
 
