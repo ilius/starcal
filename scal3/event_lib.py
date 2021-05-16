@@ -3691,9 +3691,10 @@ class EventGroup(EventContainer):
 				if epoch is not None:
 					return epoch
 			if self.enable:
-				method = self.occur.getLastOfEvent if "time_last" \
-					else self.occur.getFirstOfEvent
-				last = method(event.id)
+				if attr == "time_last":
+					last = self.occur.getLastOfEvent(event.id)
+				else:
+					last = self.occur.getFirstOfEvent(event.id)
 				if last:
 					return last[0]
 				else:
