@@ -701,7 +701,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			except AttributeError:
 				pass
 		# log.debug(
-		# 	f"Occurence Time: max={ui.Cell.ocTimeMax:e}, " +
+		# 	f"Occurrence Time: max={ui.Cell.ocTimeMax:e}, " +
 		# 	f"avg={ui.Cell.ocTimeSum/ui.Cell.ocTimeCount:e}"
 		# )
 
