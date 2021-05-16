@@ -23,11 +23,11 @@ class CalTypeCombo(IdComboBox):
 			ls.append([-2, None])  # separator
 
 		for i, mod in calTypes.iterIndexModuleActive():
-			ls.append([i, _(mod.desc)])
+			ls.append([i, _(mod.desc, ctx="calendar")])
 		ls.append([-2, None])  # separator
 
 		for i, mod in calTypes.iterIndexModuleInactive():
-			ls.append([i, _(mod.desc)])
+			ls.append([i, _(mod.desc, ctx="calendar")])
 
 	def _is_separator(self, model, rowIter, data):
 		return model.get_value(rowIter, 1) is None

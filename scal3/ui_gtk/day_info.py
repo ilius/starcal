@@ -53,7 +53,7 @@ class AllDateLabelsVBox(gtk.Box, ud.BaseCalObj):
 		sgroupDate = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		for i, module in calTypes.iterIndexModule():
 			hbox = HBox()
-			label = gtk.Label(label=_(module.desc))
+			label = gtk.Label(label=_(module.desc, ctx="calendar"))
 			label.set_xalign(0)
 			pack(hbox, label)
 			sgroup.add_widget(label)

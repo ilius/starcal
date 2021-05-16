@@ -175,6 +175,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			module, ok = calTypes[calType]
 			if not ok:
 				raise RuntimeError(f"cal type '{calType}' not found")
+			calTypeDesc = _(module.desc, ctx="calendar")
 			##
 			pageWidget = VBox(spacing=5)
 			###
@@ -210,7 +211,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			page = StackPage()
 			page.pageWidget = monthWidget
 			page.pageName = module.name + "." + "month"
-			page.pageTitle = _("Month Name") + " - " + _(module.desc)
+			page.pageTitle = _("Month Name") + " - " + calTypeDesc
 			page.pageLabel = _("Month Name")
 			page.pageExpand = False
 			subPages.append(page)
@@ -220,8 +221,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 			page = StackPage()
 			page.pageWidget = pageWidget
 			page.pageName = module.name
-			page.pageTitle = _(module.desc)
-			page.pageLabel = _(module.desc)
+			page.pageTitle = calTypeDesc
+			page.pageLabel = calTypeDesc
 			page.pageExpand = False
 			subPages.append(page)
 			pack(vbox, newSubPageButton(self, page), padding=4)
