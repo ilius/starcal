@@ -2138,7 +2138,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		trash.save()
 		self.treeModel.remove(self.treeModel.get_iter(path))
 		# no need to send to ui.eventUpdateQueue right now
-		# since events in trash (or their occurances) are not displayed
+		# since events in trash (or their occurrences) are not displayed
 		# outside Event Manager
 
 	def removeIterChildren(self, _iter: gtk.TreeIter) -> None:
@@ -2442,7 +2442,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			tarGroup.save()
 		ui.eventUpdateQueue.put("+", newEvent, self)
 		# although we insert the new event (not append) to group
-		# it should not make any difference, since only occurances (and not
+		# it should not make any difference, since only occurrences (and not
 		# events) are displayed outside Event Manager
 		####
 		if tarEventIter:
