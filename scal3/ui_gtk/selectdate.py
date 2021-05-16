@@ -50,7 +50,7 @@ class SelectDateDialog(gtk.Dialog):
 		self.set_title(_("Select Date..."))
 		#self.set_has_separator(False)
 		#self.set_skip_taskbar_hint(True)
-		self.connect("delete-event", self.hideMe)
+		self.connect("delete-event", self.onCancel)
 		self.calType = calTypes.primary
 		# #### Receiving dropped day!
 		self.drag_dest_set(
@@ -106,7 +106,7 @@ class SelectDateDialog(gtk.Dialog):
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
 			res=gtk.ResponseType.CANCEL,
-			onClick=self.hideMe,
+			onClick=self.onCancel,
 		)
 		dialog_add_button(
 			self,
@@ -166,8 +166,14 @@ class SelectDateDialog(gtk.Dialog):
 		self.jdInput.set_value(ui.cell.jd)
 		openWindow(self)
 
-	def hideMe(self, widget, event=None):
+	def onResponse(self):
 		self.hide()
+		parentWin = self.get_transient_for()
+		if parentWin is not None:
+			parentWin.present()
+
+	def onCancel(self, widget, event=None):
+		self.onResponse()
 		return True
 
 	def set(self, y, m, d):
@@ -228,7 +234,7 @@ class SelectDateDialog(gtk.Dialog):
 		#	log.error(f"bad date: calType={calType}, date={y}/{m}/{d}")
 		#	return
 		self.emit("response-date", y, m, d)
-		self.hide()
+		self.onResponse()
 		self.dateInput.set_value((y0, m0, d0))
 		self.dateInput.add_history()
 
