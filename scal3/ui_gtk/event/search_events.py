@@ -640,7 +640,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		# returns a MenuItem instance
 		item = ImageMenuItem(
 			_("Move to {title}").format(title="..."),
-			iconName=None,## FIXME
+			# imageName="",  # FIXME
 		)
 		subMenu = Menu()
 		###
@@ -668,7 +668,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		# returns a MenuItem instance
 		item = ImageMenuItem(
 			_("Copy to {title}").format(title="..."),
-			iconName=None,## FIXME
+			# imageName="",  # FIXME
 		)
 		subMenu = Menu()
 		###
