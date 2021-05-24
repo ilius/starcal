@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 from scal3 import logger
 log = logger.get()
@@ -27,6 +28,10 @@ from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 
 historyTimeBinFmt = compileTmFormat("%Y/%m/%d    %H:%M:%S")
+
+modifySymbol = "ⓜ"
+addSymbol = "⊕"
+removeSymbol = "⊖"
 
 
 def _unnestStep(dst, src, path):
@@ -162,7 +167,7 @@ class EventHistoryDialog(gtk.Dialog):
 		cmpTreev = gtk.TreeView()
 		cmpTreev.set_headers_clickable(True)
 		cmpTrees = gtk.ListStore(
-			str, # change symbol ("M", "+", "-", "")
+			str, # change symbol (modifySymbol, addSymbol, removeSymbol, "")
 			str, # key
 			str, # old value
 			str, # new value
@@ -273,7 +278,7 @@ class EventHistoryDialog(gtk.Dialog):
 				diff = self.extractChangeDiff(hashBefore, hashAfter)
 				for key in sorted(diff.keys()):
 					(valueBefore, valueAfter) = diff[key]
-					treeModel.append(["M", key, str(valueBefore), str(valueAfter)])
+					treeModel.append([modifySymbol, key, str(valueBefore), str(valueAfter)])
 		elif viewType == "Full Table":
 			for row in self.extractFullTable(hashBefore, hashAfter):
 				treeModel.append(row)
@@ -424,11 +429,11 @@ class EventHistoryDialog(gtk.Dialog):
 			if valueBefore == valueAfter:
 				pass
 			elif key not in dataBefore:
-				symbol = "+"
+				symbol = addSymbol
 			elif key not in dataAfter:
-				symbol = "-"
+				symbol = removeSymbol
 			else:
-				symbol = "M"
+				symbol = modifySymbol
 			dataFull.append([
 				symbol,
 				key,
