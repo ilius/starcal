@@ -32,7 +32,7 @@ from scal3.timeline import tl
 
 movableEventTypes = (
 	"task",
-	"lifeTime",
+	"lifetime",
 )
 
 #########################################

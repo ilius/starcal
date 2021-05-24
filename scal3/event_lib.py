@@ -3432,8 +3432,8 @@ class UniversityExamEvent(DailyNoteEvent):
 
 @classes.event.register
 class LifetimeEvent(SingleStartEndEvent):
-	name = "lifeTime"
-	nameAlias = "lifetime"
+	name = "lifetime"
+	nameAlias = "lifeTime"
 	desc = _("Lifetime Event")
 	requiredRules = (
 		"start",
@@ -3637,7 +3637,7 @@ class EventContainer(BsonHistEventObj):
 		"allDayTask",
 		"weekly",
 		"monthly",
-		"lifeTime",
+		"lifetime",
 		"largeScale",
 		"custom",
 	)
@@ -5011,10 +5011,11 @@ class UniversityTerm(EventGroup):
 
 @classes.group.register
 class LifetimeGroup(EventGroup):
-	name = "lifeTime"
+	name = "lifetime"
+	nameAlias = "lifeTime"
 	desc = _("Lifetime Events Group")
 	acceptsEventTypes = (
-		"lifeTime",
+		"lifetime",
 	)
 	sortBys = EventGroup.sortBys + (
 		("start", _("Start"), True),
