@@ -88,7 +88,7 @@ remoteEventTypeDecoders = {
 	},
 	"largeScale": lambda ev: {
 	},
-	"lifeTime": lambda ev: {
+	"lifetime": lambda ev: {
 	},
 	"monthly": lambda ev: {
 	},

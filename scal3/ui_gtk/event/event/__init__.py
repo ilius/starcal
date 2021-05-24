@@ -4,7 +4,7 @@ __all__ = [
 	"custom",
 	"dailyNote",
 	"largeScale",
-	"lifeTime",
+	"lifetime",
 	"task",
 	"universityClass",
 	"universityExam",
