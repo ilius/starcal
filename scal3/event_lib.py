@@ -239,6 +239,8 @@ class ClassGroup(list):
 		self.names.append(cls.name)
 		self.byName[cls.name] = cls
 		self.byDesc[cls.desc] = cls
+		if hasattr(cls, "nameAlias"):
+			self.byName[cls.nameAlias] = cls
 		return cls
 
 	def setMain(self, cls):
@@ -3217,6 +3219,7 @@ class UniversityExamEvent(DailyNoteEvent):
 @classes.event.register
 class LifeTimeEvent(SingleStartEndEvent):
 	name = "lifeTime"
+	nameAlias = "lifetime"
 	desc = _("Life Time Event")
 	requiredRules = (
 		"start",
@@ -4625,6 +4628,7 @@ class UniversityTerm(EventGroup):
 @classes.group.register
 class LifeTimeGroup(EventGroup):
 	name = "lifeTime"
+	nameAlias = "lifetime"
 	desc = _("Life Time Events Group")
 	acceptsEventTypes = (
 		"lifeTime",
