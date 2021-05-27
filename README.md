@@ -11,7 +11,7 @@ To get the latest codes via git, run this:
 
 To get the latest snapshot (without git) open this URL in your browser:
 
-    http://github.com/ilius/starcal/tarball/master
+    http://github.com/ilius/starcal/tarball/main
 
 ## Installation and Uninstallation
 
