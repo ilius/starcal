@@ -9,9 +9,13 @@ To get the latest codes via git, run this:
 
     $ git clone git://github.com/ilius/starcal.git
 
-To get the latest snapshot (without git) open this URL in your browser:
+To get the latest stable snapshot (without git) open this URL in your browser:
 
     http://github.com/ilius/starcal/tarball/main
+
+To get the latest development snapshot:
+
+    http://github.com/ilius/starcal/tarball/next
 
 ## Installation and Uninstallation
 
