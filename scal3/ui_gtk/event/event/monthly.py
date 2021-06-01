@@ -80,7 +80,7 @@ class WidgetClass(common.WidgetClass):
 		self.dayTimeEndInput = HourMinuteButton()
 		##
 		pack(hbox, self.dayTimeStartInput)
-		pack(hbox, gtk.Label(label=" " + _("to") + " "))
+		pack(hbox, gtk.Label(label=" " + _("To", ctx="time range") + " "))
 		pack(hbox, self.dayTimeEndInput)
 		pack(self, hbox)
 		#############

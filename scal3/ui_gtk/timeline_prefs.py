@@ -65,7 +65,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		#)
 		#self.buttonbox.add_button(
 		#	imageName="dialog-ok-apply.svg",
-		#	label=_("_Apply"),
+		#	label=_("_Apply", ctx="window action"),
 		#	onClick=self.onApplyClick,
 		#)
 		self.buttonbox.add_button(

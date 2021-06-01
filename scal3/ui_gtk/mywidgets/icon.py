@@ -86,7 +86,7 @@ class IconSelectButton(gtk.Button):
 		dialog_add_button(
 			dialog,
 			imageName="sweep.svg",
-			label=_("Clear"),
+			label=_("Clear", ctx="window action"),
 			res=gtk.ResponseType.REJECT,
 		)
 

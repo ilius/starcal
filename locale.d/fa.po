@@ -18,17 +18,15 @@ msgid "_About"
 msgstr ""
 "_درباره"
 
-msgid "_Add"
-msgstr ""
-"_افزودن"
-
-msgid "_Add Event to"
-msgstr ""
-"_افزودن رویداد به"
-
+msgctxt "window action"
 msgid "_Apply"
 msgstr ""
 "ا_عمال کن"
+
+msgctxt "window action"
+msgid "Apply and Close"
+msgstr ""
+"اعمال و بستن"
 
 msgid "Cancel"
 msgstr ""
@@ -44,7 +42,7 @@ msgstr ""
 
 msgid "Understood"
 msgstr ""
-"متوجه شدم"
+"دریافتم"
 
 msgid "_Open"
 msgstr ""
@@ -56,15 +54,11 @@ msgstr ""
 
 msgid "_Reset to Defaults"
 msgstr ""
-"بازگشت به حالت پیش‌فرض"
+"به حالت پیش‌فرض برگردان"
 
 msgid "C_redits"
 msgstr ""
 "_دست‌اندرکاران"
-
-msgid "_Delete"
-msgstr ""
-"_حذف"
 
 msgid "_Edit"
 msgstr ""
@@ -82,9 +76,10 @@ msgid "_View"
 msgstr ""
 "_نما"
 
+msgctxt "window action"
 msgid "Clear"
 msgstr ""
-"پاک کردن"
+"پاک کن"
 
 
 msgid "_License"
@@ -143,15 +138,18 @@ msgid "_File"
 msgstr ""
 "_فایل"
 
-
-
+msgctxt "time range"
 msgid "From"
-msgstr ""
-"از"
+msgstr "از"
 
+msgctxt "time range"
 msgid "To"
-msgstr ""
-"تا"
+msgstr "تا"
+
+msgctxt "time range"
+msgid "{start} to {end}"
+msgstr "{start} تا {end}"
+
 
 msgid "Main Window"
 msgstr ""
@@ -163,11 +161,11 @@ msgstr ""
 
 msgid "Right Panel"
 msgstr ""
-"پنل چپ"
+"پنل سمت چپ"
 
 msgid "Show Right Panel"
 msgstr ""
-"نمایش پنل چپ"
+"نمایش پنل سمت چپ"
 
 msgid "Sizes"
 msgstr ""
@@ -182,9 +180,6 @@ msgstr ""
 "ترجیحات"
 
 msgid "Configuration"
-msgstr "تنظیمات"
-
-msgid "Settings"
 msgstr "تنظیمات"
 
 
@@ -223,22 +218,33 @@ msgid "Calendar {year}"
 msgstr ""
 "تقویم {year}"
 
-msgid "Apply and Close"
-msgstr ""
-"اعمال و بستن"
 
+msgctxt "button"
 msgid "Delete"
-msgstr ""
-"حذف"
+msgstr "حذف کن"
+
+msgctxt "menu"
+msgid "Delete"
+msgstr "حذف"
+
+msgctxt "event manager"
+msgid "Delete"
+msgstr "حذف"
 
 msgid "Add"
-msgstr ""
-"افزودن"
+msgstr "افزودن"
 
-msgid "Add "
-msgstr ""
-"افزودن "
+msgid "_Add"
+msgstr "_افزودن"
 
+msgid "Add Event"
+msgstr "افزودن رویداد"
+
+msgid "_Add Event to"
+msgstr "_افزودن رویداد به"
+
+msgid "Add {eventType}"
+msgstr "افزودن {eventType}"
 
 msgid "Name"
 msgstr "نام"
@@ -251,9 +257,6 @@ msgstr "و"
 
 msgid "or"
 msgstr "یا"
-
-msgid "to"
-msgstr "تا"
 
 msgid ","
 msgstr "،"
@@ -1359,11 +1362,6 @@ msgstr ""
 msgid "_Edit Event"
 msgstr ""
 "_ویرایش رویداد"
-
-
-msgid "Add Event"
-msgstr ""
-"افزودن رویداد"
 
 
 msgid "Trash"
@@ -2507,7 +2505,7 @@ msgstr ""
 
 msgid "Window in Taskbar"
 msgstr ""
-"پنجره در نواروظیفه"
+"پنجره در نوار وظیفه"
 
 msgid "Use AppIndicator"
 msgstr ""
@@ -2524,13 +2522,13 @@ msgid "Separator"
 msgstr ""
 "جداکننده"
 
-msgid "Show Digital Clock:"
-msgstr ""
-"نمایش ساعت رقمی:"
+#msgid "Show Digital Clock:"
+#msgstr ""
+#"نمایش ساعت رقمی:"
 
 msgid "On Toolbar"
 msgstr ""
-"روی نوارابزار"
+"روی نوار ابزار"
 
 msgid "Status Icon"
 msgstr ""
@@ -3377,7 +3375,7 @@ msgstr ""
 
 msgid "Toolbar"
 msgstr ""
-"نوارابزار"
+"نوار ابزار"
 
 msgid "Year & Month Labels"
 msgstr ""
@@ -3491,7 +3489,7 @@ msgstr ""
 
 msgid "Small Toolbar"
 msgstr ""
-"نوارابزار کوچک"
+"نوار ابزار کوچک"
 
 msgid "Button"
 msgstr ""
@@ -3499,7 +3497,7 @@ msgstr ""
 
 msgid "Large Toolbar"
 msgstr ""
-"نوارابزار بزرگ"
+"نوار ابزار بزرگ"
 
 msgid "DND"
 msgstr ""
@@ -3852,9 +3850,6 @@ msgstr ""
 ###############################
 
 msgid "Time Zone"
-msgstr "منطقهٔ زمانی"
-
-msgid "Timezone"
 msgstr "منطقهٔ زمانی"
 
 msgid "Default Time Zone"

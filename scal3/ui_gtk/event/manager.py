@@ -262,7 +262,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		dialog_add_button(
 			self,
 			imageName="dialog-ok.svg",
-			label=_("_Apply"),
+			label=_("_Apply", ctx="window action"),
 			res=gtk.ResponseType.OK,
 		)
 		# self.connect("response", lambda w, e: self.hide())
@@ -409,7 +409,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		##
 		self.multiSelectItemsOther.append(gtk.SeparatorMenuItem())
 		##
-		deleteItem = MenuItem(_("Delete"))
+		deleteItem = MenuItem(_("Delete", ctx="event manager"))
 		deleteItem.connect("activate", self.multiSelectDelete)
 		self.multiSelectItemsOther.append(deleteItem)
 		##
@@ -461,7 +461,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.multiSelectPasteButton.set_sensitive(False)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(hbox, self.smallerButton(
-			label=_("Delete"),
+			label=_("Delete", ctx="event manager"),
 			imageName="edit-delete.svg",
 			func=self.multiSelectDelete,
 			tooltip=_("Move to {title}").format(title=ui.eventTrash.title),
@@ -1201,9 +1201,10 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		else:
 			for eventType in eventTypes:
 				# if eventType == "custom":  # FIXME
-				# 	desc = _("Add ") + _("Event")
+				# 	eventTypeDesc = _("Event")
 				# else:
-				label = _("Add ") + lib.classes.event.byName[eventType].desc
+				eventTypeDesc = lib.classes.event.byName[eventType].desc
+				label = _("Add {eventType}").format(eventType=eventTypeDesc) 
 				menu.add(eventWriteMenuItem(
 					label,
 					imageName="list-add.svg",
@@ -1409,7 +1410,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		if group.name == "trash":
 			menu.add(gtk.SeparatorMenuItem())
 			menu.add(eventWriteMenuItem(
-				_("Delete"),
+				_("Delete", ctx="event manager"),
 				imageName="edit-delete.svg",
 				func=self.deleteEventFromTrash,
 				args=(path,),

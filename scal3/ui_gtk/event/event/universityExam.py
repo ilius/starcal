@@ -86,7 +86,7 @@ class WidgetClass(gtk.Box):
 		#self.dayTimeEndCombo.get_child().set_direction(gtk.TextDirection.LTR)
 		##
 		pack(hbox, self.dayTimeStartCombo)
-		pack(hbox, gtk.Label(label=" " + _("to") + " "))
+		pack(hbox, gtk.Label(label=" " + _("To", ctx="time range") + " "))
 		pack(hbox, self.dayTimeEndCombo)
 		pack(self, hbox)
 		###########

@@ -1084,7 +1084,8 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def addToGroupFromMenu(self, menu, group, eventType):
 		from scal3.ui_gtk.event.editor import addNewEvent
 		# log.debug("addToGroupFromMenu", group.title, eventType)
-		title = _("Add ") + event_lib.classes.event.byName[eventType].desc
+		eventTypeDesc = event_lib.classes.event.byName[eventType].desc
+		title = _("Add {eventType}").format(eventType=eventTypeDesc) 
 		event = addNewEvent(
 			group,
 			eventType,

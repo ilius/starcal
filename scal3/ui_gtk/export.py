@@ -198,10 +198,10 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
 		# self.set_has_separator(False)
 		########
 		hbox = HBox(spacing=2)
-		pack(hbox, gtk.Label(label=_("From") + " "))
+		pack(hbox, gtk.Label(label=_("From", ctx="time range") + " "))
 		self.startDateInput = DateButton()
 		pack(hbox, self.startDateInput)
-		pack(hbox, gtk.Label(label=" " + _("To") + " "))
+		pack(hbox, gtk.Label(label=" " + _("To", ctx="time range") + " "))
 		self.endDateInput = DateButton()
 		pack(hbox, self.endDateInput)
 		pack(self.vbox, hbox)
