@@ -19,7 +19,7 @@ class WidgetClass(gtk.Box):
 		self.startTbox = TimeButton()
 		self.endTbox = TimeButton()
 		pack(self, self.startTbox)
-		pack(self, gtk.Label(label=" " + _("to") + " "))
+		pack(self, gtk.Label(label=" " + _("To", ctx="time range") + " "))
 		pack(self, self.endTbox)
 
 	def updateWidget(self):

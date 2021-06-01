@@ -132,14 +132,14 @@ class PreferencesWindow(gtk.Window):
 		)
 		self.buttonbox.add_button(
 			imageName="dialog-ok-apply.svg",
-			label=_("_Apply"),
+			label=_("_Apply", ctx="window action"),
 			onClick=self.apply,
 		)
 		okB = self.buttonbox.add_button(
 			imageName="dialog-ok.svg",
 			label=_("_Confirm"),
 			onClick=self.ok,
-			tooltip=_("Apply and Close"),
+			tooltip=_("Apply and Close", ctx="window action"),
 		)
 		# okB.grab_default()  # FIXME
 		# okB.grab_focus()  # FIXME
@@ -1093,7 +1093,7 @@ class PreferencesWindow(gtk.Window):
 			name="delete",
 			imageName="edit-delete.svg",
 			onClick="onAccountsDeleteClick",
-			desc=_("Delete"),
+			desc=_("Delete", ctx="button"),
 			continuousClick=False,
 		))
 		######

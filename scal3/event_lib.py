@@ -4836,11 +4836,10 @@ class UniversityTerm(EventGroup):
 		deltaTm = lastTm - firstTm
 		for i in range(count - 1):
 			tm0, tm1 = self.classTimeBounds[i:i + 2]
-			titles.append(
-				textNumEncode(simpleTimeEncode(tm0)) +
-				" " + _("to") + " " +
-				textNumEncode(simpleTimeEncode(tm1))
-			)
+			titles.append(_("{start} to {end}", ctx="time range").format(
+				start=textNumEncode(simpleTimeEncode(tm0)),
+				end=textNumEncode(simpleTimeEncode(tm1)),
+			))
 		for tm1 in self.classTimeBounds:
 			tmfactors.append(
 				(timeToFloatHour(*tm1) - firstTm) / deltaTm

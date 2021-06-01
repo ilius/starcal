@@ -118,7 +118,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		####
 		hboxIn = HBox()
 		##
-		self.timeFromCheck = gtk.CheckButton(label=_("From"))
+		self.timeFromCheck = gtk.CheckButton(label=_("From", ctx="time range"))
 		sgroup.add_widget(self.timeFromCheck)
 		pack(hboxIn, self.timeFromCheck)
 		pack(hboxIn, gtk.Label(label="  "))
@@ -132,7 +132,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		####
 		hboxIn = HBox()
 		##
-		self.timeToCheck = gtk.CheckButton(label=_("To"))
+		self.timeToCheck = gtk.CheckButton(label=_("To", ctx="time range"))
 		sgroup.add_widget(self.timeToCheck)
 		pack(hboxIn, self.timeToCheck)
 		pack(hboxIn, gtk.Label(label="  "))
