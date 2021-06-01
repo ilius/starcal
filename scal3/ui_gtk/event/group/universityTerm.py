@@ -34,6 +34,7 @@ from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.utils import (
 	set_tooltip,
+	dialog_add_button,
 )
 from scal3.ui_gtk.drawing import *
 from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
@@ -95,7 +96,7 @@ class CourseListEditor(gtk.Box):
 			name="delete",
 			imageName="edit-delete.svg",
 			onClick="onDeleteClick",
-			desc=_("Delete"),
+			desc=_("Delete", ctx="button"),
 			continuousClick=False,
 		))
 		####

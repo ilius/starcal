@@ -778,7 +778,7 @@ class KeyBindingPrefItem(PrefItem):
 			#))
 			menu.add(gtk.SeparatorMenuItem())
 			menu.add(ImageMenuItem(
-				label=_("Delete"),
+				label=_("Delete", ctx="menu"),
 				imageName="edit-delete.svg",
 				func=self.onMenuDeleteClick,
 				args=(rowI,),

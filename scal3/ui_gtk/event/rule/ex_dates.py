@@ -111,7 +111,7 @@ class WidgetClass(gtk.Box):
 			name="delete",
 			imageName="edit-delete.svg",
 			onClick="onDeleteClick",
-			desc=_("Delete"),
+			desc=_("Delete", ctx="button"),
 			continuousClick=False,
 		))
 		##

@@ -214,7 +214,7 @@ class FilesBox(gtk.Box):
 		pack(hbox, link)
 		pack(hbox, gtk.Label(), 1, 1)
 		delButton = labelImageButton(
-			label=_("_Delete"),
+			label=_("Delete", ctx="button"),
 			imageName="edit-delete.svg",
 		)
 		delButton.fname = fname
