@@ -358,7 +358,7 @@ def getMonthName(
 
 
 def getNumSep() -> str:
-	return tr(".") if enableNumLocale else "."
+	return tr(".", ctx="number formatting") if enableNumLocale else "."
 
 
 def getDigits() -> Tuple[str, str, str, str, str, str, str, str, str, str]:
@@ -420,9 +420,7 @@ def numEncode(
 	res = ""
 	for c in str(abs(num)):
 		if c == ".":
-			if enableNumLocale:
-				c = tr(".")
-			res += c
+			res += getNumSep()
 		else:
 			res += dig[int(c)]
 	if fillZero > 0:
@@ -466,7 +464,7 @@ def textNumEncode(
 						c = tr(c)
 				elif c == ".":
 					if changeDot:
-						c = tr(c)
+						c = tr(c, ctx="number formatting")
 			res += c
 		else:
 			res += dig[i]
@@ -523,11 +521,12 @@ def textNumDecode(text: str) -> str:
 		try:
 			textEn += str(langDigits.index(ch))
 		except ValueError:
-			for sch in (",", "_", "."):
-				if ch == tr(sch):
-					ch = sch
-					break
-			textEn += ch
+			if ch == tr(".", ctx="number formatting"):
+				textEn += "."
+			elif ch == tr(","):
+				textEn += ","
+			elif ch == tr("_"):
+				textEn += "_"
 	return textEn
 
 
