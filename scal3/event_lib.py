@@ -5218,7 +5218,7 @@ class VcsBaseEventGroup(EventGroup):
 		return (
 			f"{self.__class__.__name__}(_id={self.id!r}, " +
 			f"title='{self.title}', vcsType={self.vcsType!r}, " +
-			f"vcsDir={self.vcsDir!r})"
+			f"vcsDir={self.vcsDir!r}, vcsBranch={self.vcsBranch!r})"
 		)
 
 	def setDefaults(self) -> None:
