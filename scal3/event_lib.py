@@ -4809,12 +4809,13 @@ class VcsBaseEventGroup(EventGroup):
 	myParams = (
 		"vcsType",
 		"vcsDir",
+		"vcsBranch",
 	)
 
 	def __init__(self, _id=None):
 		self.vcsType = "git"
 		self.vcsDir = ""
-		#self.branch = "master"
+		self.vcsBranch = "main"
 		EventGroup.__init__(self, _id)
 
 	def __str__(self):
@@ -4835,6 +4836,7 @@ class VcsBaseEventGroup(EventGroup):
 			self.name,
 			self.vcsType,
 			self.vcsDir,
+			self.vcsBranch,
 		)))  # FIXME
 
 	def __getitem__(self, key):
@@ -4856,6 +4858,10 @@ class VcsBaseEventGroup(EventGroup):
 
 	def updateVcsModuleObj(self):
 		mod = self.getVcsModule()
+		if mod is None:
+			print("VCS module %r not found" % self.vcsType)
+			return
+
 		mod.clearObj(self)
 		if self.enable and self.vcsDir:
 			try:
@@ -4898,6 +4904,7 @@ class VcsEpochBaseEventGroup(VcsBaseEventGroup):
 			self.name,
 			self.vcsType,
 			self.vcsDir,
+			self.vcsBranch,
 			self.showSeconds,
 		)))
 
@@ -4943,6 +4950,9 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 		if not self.vcsDir:
 			return
 		mod = self.getVcsModule()
+		if mod is None:
+			print("VCS module %r not found" % self.vcsType)
+			return
 		try:
 			commitsData = mod.getCommitList(
 				self,
@@ -4967,6 +4977,9 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 
 	def updateEventDesc(self, event):
 		mod = self.getVcsModule()
+		if mod is None:
+			print("VCS module %r not found" % self.vcsType)
+			return
 		lines = []
 		if event.description:
 			lines.append(event.description)
@@ -4982,6 +4995,9 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 
 	def getEvent(self, commit_id):## cache commit data FIXME
 		mod = self.getVcsModule()
+		if mod is None:
+			print("VCS module %r not found" % self.vcsType)
+			return
 		data = mod.getCommitInfo(self, commit_id)
 		if not data:
 			raise ValueError("No commit with id=%r" % commit_id)
@@ -5013,6 +5029,9 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 		if not self.vcsDir:
 			return
 		mod = self.getVcsModule()
+		if mod is None:
+			print("VCS module %r not found" % self.vcsType)
+			return
 		try:
 			tagsData = mod.getTagList(self, self.startJd, self.endJd)
 			# TOO SLOW, FIXME
@@ -5035,6 +5054,9 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 
 	def updateEventDesc(self, event):
 		mod = self.getVcsModule()
+		if mod is None:
+			print("VCS module %r not found" % self.vcsType)
+			return
 		tag = event.id
 		lines = []
 		if self.showStat:
@@ -5121,6 +5143,9 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 		if not self.vcsDir:
 			return
 		mod = self.getVcsModule()
+		if mod is None:
+			print("VCS module %r not found" % self.vcsType)
+			return
 		####
 		try:
 			utc = natz.gettz("UTC")
@@ -5163,6 +5188,9 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 		except KeyError:
 			raise ValueError("No commit for jd %s" % jd)
 		mod = self.getVcsModule()
+		if mod is None:
+			print("VCS module %r not found" % self.vcsType)
+			return
 		event = VcsDailyStatEvent(self, jd)
 		###
 		event.icon = self.icon
