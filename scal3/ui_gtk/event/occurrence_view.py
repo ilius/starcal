@@ -265,6 +265,8 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		endIter = self.textbuff.get_bounds()[1]
 
 		text = text.replace("&", "&amp;")
+		text = text.replace(">", "&gt;")
+		text = text.replace("<", "&lt;")
 		# Gtk-WARNING **: HH:MM:SS.sss: Invalid markup string: Error on line N:
 		# Entity did not end with a semicolon; most likely you used an
 		# ampersand character without intending to start an entity —
