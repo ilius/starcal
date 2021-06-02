@@ -34,6 +34,7 @@ from scal3.ui_gtk.drawing import fillColor
 
 
 def drawBoxBG(cr, box, x, y, w, h):
+	import cairo
 	d = box.lineW
 	cr.rectangle(x, y, w, h)
 	if d == 0:
