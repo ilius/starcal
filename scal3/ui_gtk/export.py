@@ -168,13 +168,12 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		#import cairo
 		hspace = 20
 		mcal = ui.mainWin.mcal
-		x, y, w, h0 = mcal.get_allocation()
+		aloc = mcal.get_allocation()
 		n = len(monthList)
-		h = n*h0 + (n-1)*hspace
-		fo = open(path+".svg", "w")
-		surface = cairo.SVGSurface(fo, w, h)
-		cr0 = cairo.Context(surface)
-		cr = gdk.CairoContext(cr0)
+		w = aloc.width
+		h = n * aloc.height + (n - 1) * hspace
+		surface = cairo.SVGSurface(f"{path}.svg", w, h)
+		cr = cairo.Context(surface)
 		year = ui.cell.year
 		month = ui.cell.month
 		day = self.mcal.day
@@ -185,6 +184,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 			mcal.drawAll(cr=cr, cursor=False)
 			mcal.queue_draw()
 		ui.mainWin.dateChange((year, month, day))
+		surface.flush()
 		surface.finish()
 	"""
 
