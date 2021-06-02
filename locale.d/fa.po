@@ -277,8 +277,7 @@ msgstr "٪"
 
 msgctxt "calendar"
 msgid "Gregorian"
-msgstr ""
-"گریگوری(میلادی)"
+msgstr "گریگوری(میلادی)"
 
 msgctxt "calendar"
 msgid "Jalali"
@@ -299,10 +298,6 @@ msgstr "جولی"
 msgctxt "calendar"
 msgid "Indian National"
 msgstr "ملی هند"
-
-msgctxt "calendar"
-msgid "Hebrew(Jewish)"
-msgstr "عبری(یهودی)"
 
 msgctxt "calendar"
 msgid "Ethiopian"
@@ -399,30 +394,37 @@ msgstr ""
 "شنبه"
 
 
+msgctxt "week days"
 msgid "Sun"
 msgstr ""
 "1 ش"
 
+msgctxt "week days"
 msgid "Mon"
 msgstr ""
 "2 ش"
 
+msgctxt "week days"
 msgid "Tue"
 msgstr ""
 "3 ش"
 
+msgctxt "week days"
 msgid "Wed"
 msgstr ""
 "4 ش"
 
+msgctxt "week days"
 msgid "Thu"
 msgstr ""
 "5 ش"
 
+msgctxt "week days"
 msgid "Fri"
 msgstr ""
 "ج"
 
+msgctxt "week days"
 msgid "Sat"
 msgstr ""
 "ش"
