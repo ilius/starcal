@@ -38,7 +38,6 @@ from scal3.ui_gtk import *
 from scal3.ui_gtk.font_utils import *
 from scal3.ui_gtk.color_utils import *
 
-from gi.repository import cairo
 from gi.repository.PangoCairo import show_layout
 
 if not ui.fontCustom:
