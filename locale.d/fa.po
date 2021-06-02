@@ -267,9 +267,11 @@ msgstr "، "
 msgid "_"
 msgstr "ـ"
 
+msgctxt "number formatting"
 msgid "."
 msgstr "٫"
 
+msgctxt "number formatting"
 msgid "%"
 msgstr "٪"
 
