@@ -55,7 +55,7 @@ def getCommitList(obj, startJd=None, endJd=None, branch="") -> List[Tuple[int, s
 		i.e. endJd is either None or recent
 	"""
 	if not branch:
-		branch = "master"
+		branch = "main"
 	startEpoch = None
 	endEpoch = None
 	if startJd is not None:
@@ -172,7 +172,7 @@ def getTagShortStatLine(obj, prevTag, tag):
 
 def getFirstCommitEpoch(obj):
 	repo = Repository(obj.vcsDir)
-	target = repo.branches["master"].target
+	target = repo.branches[obj.vcsBranch].target
 	commitIter = repo.walk(target, GIT_SORT_TIME | GIT_SORT_REVERSE)
 	commit = next(commitIter)
 	return commit.author.time
@@ -180,7 +180,7 @@ def getFirstCommitEpoch(obj):
 
 def getLastCommitEpoch(obj):
 	repo = Repository(obj.vcsDir)
-	target = repo.branches["master"].target
+	target = repo.branches[obj.vcsBranch].target
 	commitIter = repo.walk(target, GIT_SORT_TIME)
 	commit = next(commitIter)
 	return commit.author.time

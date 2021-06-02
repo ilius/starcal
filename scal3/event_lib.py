@@ -5207,14 +5207,14 @@ class VcsBaseEventGroup(EventGroup):
 	def __init__(self, _id: Optional[str] = None) -> None:
 		self.vcsType = "git"
 		self.vcsDir = ""
-		self.vcsBranch = "master"
+		self.vcsBranch = "main"
 		EventGroup.__init__(self, _id)
 
 	def __str__(self) -> str:
 		return (
 			f"{self.__class__.__name__}(_id={self.id!r}, " +
 			f"title='{self.title}', vcsType={self.vcsType!r}, " +
-			f"vcsDir={self.vcsDir!r})"
+			f"vcsDir={self.vcsDir!r}, vcsBranch={self.vcsBranch!r})"
 		)
 
 	def setDefaults(self) -> None:
