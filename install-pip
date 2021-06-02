@@ -8,6 +8,7 @@ fi
 
 
 pip3 install pygobject
+pip3 install pycairo
 pip3 install httplib2
 pip3 install python-dateutil
 pip3 install psutil
