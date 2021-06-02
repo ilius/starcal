@@ -513,13 +513,12 @@ class WeeklyScheduleWindow(gtk.Dialog):
 		self._widget.queue_draw()
 
 	def exportToSvg(self, fpath):
-		x, y, w, h = self._widget.get_allocation()
-		fo = open(fpath, "w")
-		surface = cairo.SVGSurface(fo, w, h)
-		cr0 = cairo.Context(surface)
-		cr = gdk.CairoContext(cr0)
-		#surface.set_device_offset(0, 0)
+		import cairo
+		aloc = self._widget.get_allocation()
+		surface = cairo.SVGSurface(fpath, aloc.width, aloc.height)
+		cr = cairo.Context(surface)
 		self._widget.drawCairo(cr)
+		surface.flush()
 		surface.finish()
 
 	def exportToSvgClicked(self, obj=None):
