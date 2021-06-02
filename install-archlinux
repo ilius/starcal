@@ -47,6 +47,7 @@ optdepends+=('python-igraph' 'igraph' 'icu')
 optdepends+=('python-ujson')
 #optdepends+=('python-gnomevfs')
 optdepends+=('lxqt-openssh-askpass')
+optdepends+=('python-pygit2')
 
 ## Note: optdepends are not installed by default
 
