@@ -820,7 +820,9 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		####
 		for calType in calTypes.active:
 			menu.add(ImageMenuItem(
-				_("Copy {calType} Date").format(calType=_(calTypes.getDesc(calType))),
+				_("Copy {calType} Date").format(
+					calType=_(calTypes.getDesc(calType), ctx="calendar"),
+				),
 				imageName="edit-copy.svg",
 				func=self.copyDateGetCallback(calType),
 				args=(calType,)
