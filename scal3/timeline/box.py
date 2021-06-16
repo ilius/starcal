@@ -144,10 +144,6 @@ def renderBoxesByGraph(boxes, graph, minColor, minU):
 		)
 
 
-def boxSortKeyFunc(g: "igraph.Graph", i: int) -> "Tuple":
-	return (-g.degree(i), i)
-
-
 def calcEventBoxes(
 	timeStart,
 	timeEnd,
@@ -245,8 +241,21 @@ def calcEventBoxes(
 	graph = makeIntervalGraph(boxes)
 	if debugMode:
 		log.debug(f"makeIntervalGraph: {now() - t1:e}")
-	###
 	#####
+
+	def boxSortKeyFunc(g: "igraph.Graph", i: int) -> "Tuple":
+		# the last item must be i
+		# the first item should be -g.degree(i) to have less number of colors/levels,
+		# and give higher colors to more isolated vertices/boxes
+		# adding -boxes[i].odt before i does not seem very effective or useful
+		return (
+			-g.degree(i),
+			i,
+		)
+
+	# TODO: assign same color to subsequent events / boxes
+	# (box2.t0 == box1.t1)
+
 	colorGraph(graph, boxSortKeyFunc)
 	addBoxHeightToColoredGraph(graph)
 	renderBoxesByGraph(boxes, graph, 0, 0)
