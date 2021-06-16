@@ -2,7 +2,7 @@
 from igraph import Graph
 
 
-def colorGraph(g, add_height=True):
+def colorGraph(g):
 	# Using "SL" (Smalest Last) algorithm
 	n = g.vcount()
 	adjlist = g.get_adjlist()
@@ -21,15 +21,19 @@ def colorGraph(g, add_height=True):
 			c += 1
 		colors[i] = c
 	g.vs["color"] = colors
-	if add_height:
-		colorCount = max(colors) + 1
-		height = [1 for i in range(n)]
-		for i, c in enumerate(colors):
-			adjColors = set()
-			for j in adjlist[i]:
-				adjColors.add(colors[j])
-			for c_end in range(c + 1, colorCount + 1):
-				if c_end in adjColors:
-					height[i] = c_end - c
-					break
-		g.vs["color_h"] = height
+
+def addBoxHeightToColoredGraph(g):
+	n = g.vcount()
+	adjlist = g.get_adjlist()
+	colors = g.vs["color"]
+	colorCount = max(colors) + 1
+	heightList = [1 for i in range(n)]
+	for i, c in enumerate(colors):
+		adjColors = set()
+		for j in adjlist[i]:
+			adjColors.add(colors[j])
+		for c_end in range(c + 1, colorCount + 1):
+			if c_end in adjColors:
+				heightList[i] = c_end - c
+				break
+	g.vs["box_height"] = heightList

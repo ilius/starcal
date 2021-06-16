@@ -131,7 +131,7 @@ def renderBoxesByGraph(boxes, graph, minColor, minU):
 	min_vertices = graph.vs.select(color_eq=minColor) ## a VertexSeq
 	for v in min_vertices:
 		box = boxes[v["name"]]
-		box_du = du * v["color_h"]
+		box_du = du * v["box_height"]
 		box.u0 = minU if tl.boxReverseGravity else 1 - minU - box_du
 		box.du = box_du
 	graph.delete_vertices(min_vertices)
@@ -151,7 +151,11 @@ def calcEventBoxes(
 	borderTm,
 ):
 	try:
-		from scal3.graph_utils import Graph, colorGraph
+		from scal3.graph_utils import (
+			Graph,
+			colorGraph,
+			addBoxHeightToColoredGraph,
+		)
 	except ImportError:
 		errorBoxH = 0.8 ## FIXME
 		return [
@@ -240,6 +244,7 @@ def calcEventBoxes(
 	###
 	#####
 	colorGraph(graph)
+	addBoxHeightToColoredGraph(graph)
 	renderBoxesByGraph(boxes, graph, 0, 0)
 	if debugMode:
 		log.debug(f"box placing time:  {now() - t0:e}")
