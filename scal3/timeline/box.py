@@ -243,13 +243,13 @@ def calcEventBoxes(
 		log.debug(f"makeIntervalGraph: {now() - t1:e}")
 	#####
 
-	def boxSortKeyFunc(g: "igraph.Graph", i: int) -> "Tuple":
-		# the last item must be i
+	def boxSortKeyFunc(i: int) -> "Tuple":
+		# the last item should be i
 		# the first item should be -g.degree(i) to have less number of colors/levels,
 		# and give higher colors to more isolated vertices/boxes
 		# adding -boxes[i].odt before i does not seem very effective or useful
 		return (
-			-g.degree(i),
+			-graph.degree(i),
 			i,
 		)
 

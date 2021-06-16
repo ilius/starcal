@@ -2,19 +2,18 @@
 from igraph import Graph
 
 
-def colorGraph(g: Graph, vertexSortKey: "Callable[[Graph, int], [Any]]"):
+def colorGraph(g: Graph, vertexSortKey: "Callable[[int], [Any]]"):
 	"""
 		vertexSortKey is the key function for sorting vertices
-		it must return a tuple, in which the last item is vertex index
 	"""
 	# Using "SL" (Smalest Last) algorithm
 	n = g.vcount()
 	adjlist = g.get_adjlist()
 	colors = [None] * n
-	for row in sorted(
-		vertexSortKey(g, i) for i in range(n)
+	for i in sorted(
+		range(n),
+		key=vertexSortKey,
 	):
-		i = row[-1]
 		adjColors = set()
 		for j in adjlist[i]:
 			c = colors[j]
