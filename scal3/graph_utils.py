@@ -2,14 +2,13 @@
 from igraph import Graph
 
 
-def colorGraph(g):
+def colorGraph(g: Graph, vertexSortKey: "Callable[[Graph, int], [Any]]"):
 	# Using "SL" (Smalest Last) algorithm
 	n = g.vcount()
 	adjlist = g.get_adjlist()
 	colors = [None] * n
 	for d, i in sorted(
-		(-g.degree(i), i)
-		for i in range(n)
+		vertexSortKey(g, i) for i in range(n)
 	):
 		adjColors = set()
 		for j in adjlist[i]:

@@ -144,6 +144,10 @@ def renderBoxesByGraph(boxes, graph, minColor, minU):
 		)
 
 
+def boxSortKeyFunc(g: "igraph.Graph", i: int) -> "Tuple":
+	return (-g.degree(i), i)
+
+
 def calcEventBoxes(
 	timeStart,
 	timeEnd,
@@ -243,7 +247,7 @@ def calcEventBoxes(
 		log.debug(f"makeIntervalGraph: {now() - t1:e}")
 	###
 	#####
-	colorGraph(graph)
+	colorGraph(graph, boxSortKeyFunc)
 	addBoxHeightToColoredGraph(graph)
 	renderBoxesByGraph(boxes, graph, 0, 0)
 	if debugMode:

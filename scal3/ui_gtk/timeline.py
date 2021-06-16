@@ -291,14 +291,15 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		avgYearLen = dayLen * calTypes.primaryModule().avgYearLen
 		etime = gtk.get_current_event_time()
 		menu = Menu()
-		for title, timeWidth in (
+		for title, timeWidth in [
 			(_("1 day"), dayLen),
 			(_("1 week"), dayLen * 7),
 			(_("{count} weeks").format(count=_(4)), dayLen * 28),
 			(_("1 year"), avgYearLen),
-			(_("{count} years").format(count=_(10)), avgYearLen * 10),
-			(_("{count} years").format(count=_(100)), avgYearLen * 100),
-		):
+		] + [
+			(_("{count} years").format(count=_(num)), avgYearLen * num)
+			for num in (2, 4, 8, 16, 32, 64, 100)
+		]:
 			menu.add(ImageMenuItem(
 				title,
 				func=self.onZoomMenuItemClick,
