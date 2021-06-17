@@ -248,6 +248,7 @@ def calcEventBoxes(
 		# the first item should be -g.degree(i) to have less number of colors/levels,
 		# and give higher colors to more isolated vertices/boxes
 		# adding -boxes[i].odt before i does not seem very effective or useful
+		# should I add groupIndex before i?
 		return (
 			-graph.degree(i),
 			i,
