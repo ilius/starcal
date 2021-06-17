@@ -107,56 +107,64 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 	# FIXME how to find the best font size based on the box's width,
 	# height, and font family?
 	# possibly write in many lines? or just in one line and wrap if needed?
-	if box.text:
-		# log.debug(box.text)
-		textW = 0.9 * w
-		textH = 0.9 * h
-		textLen = len(toStr(box.text))
-		# log.debug(f"textLen={textLen}")
-		avgCharW = float(
-			textW if tl.rotateBoxLabel == 0
-			else max(textW, textH)
-		) / textLen
-		if avgCharW > 3:## FIXME
-			font = list(ui.getFont())
-			layout = widget.create_pango_layout(box.text) ## a Pango.Layout object
-			layout.set_font_description(pfontEncode(font))
-			layoutW, layoutH = layout.get_pixel_size()
-			# log.debug(f"orig font size: {font[3]}")
-			normRatio = min(
-				float(textW) / layoutW,
-				float(textH) / layoutH,
+	if not box.text:
+		return
+	# log.debug(box.text)
+	text = box.text
+	if len(text) < 4:
+		text = f" {text} "
+
+	textW = 0.95 * w
+	textH = 0.85 * h
+	textLen = len(text)
+	# log.debug(f"textLen={textLen}")
+	avgCharW = float(
+		textW if tl.rotateBoxLabel == 0
+		else max(textW, textH)
+	) / textLen
+
+	if avgCharW < 3:  # FIXME
+		return
+
+	font = list(ui.getFont())
+	layout = widget.create_pango_layout(text) ## a Pango.Layout object
+	layout.set_font_description(pfontEncode(font))
+	layoutW, layoutH = layout.get_pixel_size()
+	# log.debug(f"orig font size: {font[3]}")
+	normRatio = min(
+		float(textW) / layoutW,
+		float(textH) / layoutH,
+	)
+	rotateRatio = min(
+		float(textW) / layoutH,
+		float(textH) / layoutW,
+	)
+	if tl.rotateBoxLabel != 0 and rotateRatio > normRatio:
+		font[3] *= rotateRatio
+		layout.set_font_description(pfontEncode(font))
+		layoutW, layoutH = layout.get_pixel_size()
+		fillColor(cr, tl.fgColor)  # before cr.move_to
+		# log.debug(f"x={x}, y={y}, w={w}, h={h}, layoutW={layoutW}, layoutH={layoutH}")
+		cr.move_to(
+			x + (w - tl.rotateBoxLabel * layoutH) / 2.0,
+			y + (h + tl.rotateBoxLabel * layoutW) / 2.0,
+		)
+		cr.rotate(-tl.rotateBoxLabel * pi / 2)
+		show_layout(cr, layout)
+		try:
+			cr.rotate(tl.rotateBoxLabel * pi / 2)
+		except Exception:
+			log.info(
+				"counld not rotate by " +
+				f"{rotateBoxLabel}*pi/2 = {rotateBoxLabel*pi/2}"
 			)
-			rotateRatio = min(
-				float(textW) / layoutH,
-				float(textH) / layoutW,
-			)
-			if tl.rotateBoxLabel != 0 and rotateRatio > normRatio:
-				font[3] *= max(normRatio, rotateRatio)
-				layout.set_font_description(pfontEncode(font))
-				layoutW, layoutH = layout.get_pixel_size()
-				fillColor(cr, tl.fgColor)  # before cr.move_to
-				# log.debug(f"x={x}, y={y}, w={w}, h={h}, layoutW={layoutW}, layoutH={layoutH}")
-				cr.move_to(
-					x + (w - tl.rotateBoxLabel * layoutH) / 2.0,
-					y + (h + tl.rotateBoxLabel * layoutW) / 2.0,
-				)
-				cr.rotate(-tl.rotateBoxLabel * pi / 2)
-				show_layout(cr, layout)
-				try:
-					cr.rotate(tl.rotateBoxLabel * pi / 2)
-				except Exception:
-					log.info(
-						"counld not rotate by " +
-						f"{rotateBoxLabel}*pi/2 = {rotateBoxLabel*pi/2}"
-					)
-			else:
-				font[3] *= normRatio
-				layout.set_font_description(pfontEncode(font))
-				layoutW, layoutH = layout.get_pixel_size()
-				fillColor(cr, tl.fgColor)## before cr.move_to
-				cr.move_to(
-					x + (w - layoutW) / 2.0,
-					y + (h - layoutH) / 2.0,
-				)
-				show_layout(cr, layout)
+	else:
+		font[3] *= normRatio
+		layout.set_font_description(pfontEncode(font))
+		layoutW, layoutH = layout.get_pixel_size()
+		fillColor(cr, tl.fgColor)## before cr.move_to
+		cr.move_to(
+			x + (w - layoutW) / 2.0,
+			y + (h - layoutH) / 2.0,
+		)
+		show_layout(cr, layout)
