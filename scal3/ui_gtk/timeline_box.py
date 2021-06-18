@@ -115,10 +115,10 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 		text = f" {text} "
 
 	textW = 0.95 * w
-	textH = 0.85 * h
+	textH = 0.95 * h
 	textLen = len(text)
 	# log.debug(f"textLen={textLen}")
-	avgCharW = float(
+	avgCharW = (
 		textW if tl.rotateBoxLabel == 0
 		else max(textW, textH)
 	) / textLen
@@ -132,39 +132,40 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 	layoutW, layoutH = layout.get_pixel_size()
 	# log.debug(f"orig font size: {font[3]}")
 	normRatio = min(
-		float(textW) / layoutW,
-		float(textH) / layoutH,
+		textW / layoutW,
+		textH / layoutH,
 	)
 	rotateRatio = min(
-		float(textW) / layoutH,
-		float(textH) / layoutW,
+		textW / layoutH,
+		textH / layoutW,
 	)
-	if tl.rotateBoxLabel != 0 and rotateRatio > normRatio:
-		font[3] *= rotateRatio
-		layout.set_font_description(pfontEncode(font))
-		layoutW, layoutH = layout.get_pixel_size()
-		fillColor(cr, tl.fgColor)  # before cr.move_to
-		# log.debug(f"x={x}, y={y}, w={w}, h={h}, layoutW={layoutW}, layoutH={layoutH}")
-		cr.move_to(
-			x + (w - tl.rotateBoxLabel * layoutH) / 2.0,
-			y + (h + tl.rotateBoxLabel * layoutW) / 2.0,
-		)
-		cr.rotate(-tl.rotateBoxLabel * pi / 2)
-		show_layout(cr, layout)
-		try:
-			cr.rotate(tl.rotateBoxLabel * pi / 2)
-		except Exception:
-			log.info(
-				"counld not rotate by " +
-				f"{rotateBoxLabel}*pi/2 = {rotateBoxLabel*pi/2}"
-			)
-	else:
+
+	fillColor(cr, tl.fgColor)  # before cr.move_to
+
+	if tl.rotateBoxLabel == 0 or rotateRatio <= normRatio:
 		font[3] *= normRatio
 		layout.set_font_description(pfontEncode(font))
 		layoutW, layoutH = layout.get_pixel_size()
-		fillColor(cr, tl.fgColor)## before cr.move_to
 		cr.move_to(
 			x + (w - layoutW) / 2.0,
 			y + (h - layoutH) / 2.0,
 		)
 		show_layout(cr, layout)
+		return
+
+	font[3] *= rotateRatio
+	layout.set_font_description(pfontEncode(font))
+	layoutW, layoutH = layout.get_pixel_size()
+	cr.move_to(
+		x + (w - tl.rotateBoxLabel * layoutH) / 2.0,
+		y + (h + tl.rotateBoxLabel * layoutW) / 2.0,
+	)
+	cr.rotate(-tl.rotateBoxLabel * pi / 2)
+	show_layout(cr, layout)
+	try:
+		cr.rotate(tl.rotateBoxLabel * pi / 2)
+	except Exception:
+		log.warning(
+			"counld not rotate by " +
+			f"{rotateBoxLabel}*pi/2 = {rotateBoxLabel*pi/2}"
+		)
