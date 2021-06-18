@@ -350,7 +350,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 
 	def updateData(self):
 		width = self.get_allocation().width
-		self.pixelPerSec = float(width) / self.timeWidth  # pixel/second
+		self.pixelPerSec = width / self.timeWidth  # pixel/second
 		self.borderTm = tl.boxEditBorderWidth / self.pixelPerSec  # second
 		self.data = calcTimeLineData(
 			self.timeStart,
@@ -550,7 +550,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			self.zoom(
 				dirStr == "up",
 				tl.scrollZoomStep,
-				float(gevent.x) / self.get_allocation().width,
+				gevent.x / self.get_allocation().width,
 			)
 		else:
 			self.movingUserEvent(

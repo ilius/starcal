@@ -2691,7 +2691,7 @@ class TaskEvent(SingleStartEndEvent):
 			raise KeyError
 		duration, ok = self["duration"]
 		if ok:
-			duration.value -= float(newStartEpoch - start.getEpoch()) / duration.unit
+			duration.value -= (newStartEpoch - start.getEpoch()) / duration.unit
 		start.setEpoch(newStartEpoch)
 
 	def modifyEnd(self, newEndEpoch):
@@ -2701,7 +2701,7 @@ class TaskEvent(SingleStartEndEvent):
 		else:
 			duration, ok = self["duration"]
 			if ok:
-				duration.value = float(newEndEpoch - self.getStartEpoch()) / duration.unit
+				duration.value = (newEndEpoch - self.getStartEpoch()) / duration.unit
 			else:
 				raise RuntimeError("no end rule nor duration rule")
 

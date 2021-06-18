@@ -106,7 +106,7 @@ def getFloatYearFromJd(jd: int, calType: int) -> float:
 	yearStartJd = to_jd(year, 1, 1, calType)
 	nextYearStartJd = to_jd(year + 1, 1, 1, calType)
 	dayOfYear = jd - yearStartJd
-	return year + float(dayOfYear) / (nextYearStartJd - yearStartJd)
+	return year + dayOfYear / (nextYearStartJd - yearStartJd)
 
 
 def getJdFromFloatYear(fyear: float, calType: int) -> int:
