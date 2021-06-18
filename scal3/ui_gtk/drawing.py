@@ -114,7 +114,7 @@ def newTextLayout(
 				layout.set_font_description(pfontEncode(font))
 				layoutW, layoutH = layout.get_pixel_size()
 				if layoutW > 0:
-					char_w = float(layoutW) / len(text)
+					char_w = layoutW / len(text)
 					char_num = int(maxW // char_w)
 					while layoutW > maxW:
 						text = cutText(text, char_num)

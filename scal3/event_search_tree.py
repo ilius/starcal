@@ -381,7 +381,7 @@ class EventSearchTree:
 	def calcAvgDepth(self):
 		s, n = self.calcAvgDepthStep(self.root, 0)
 		if n > 0:
-			return float(s) / n
+			return s / n
 
 
 if __name__ == "__main__":

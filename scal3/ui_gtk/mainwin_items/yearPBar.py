@@ -36,7 +36,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 		jd2 = core.primary_to_jd(year + 1, 1, 1)
 		length = jd2 - jd0
 		past = jd1 - jd0
-		fraction = float(past) / length
+		fraction = past / length
 		if rtl:
 			percent = f"{int(fraction*100)}%"
 		else:

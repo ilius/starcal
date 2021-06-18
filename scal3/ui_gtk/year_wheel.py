@@ -152,7 +152,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		width = float(self.get_allocation().width)
 		height = float(self.get_allocation().height)
 		dia = min(width, height)
-		maxR = float(dia) / 2
+		maxR = dia / 2
 		minR = self.innerCircleRatio * maxR
 		x0 = (width - dia) / 2
 		y0 = (height - dia) / 2
@@ -170,7 +170,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		fillColor(cr, self.bgColor)
 		####
 		calsN = len(calTypes.active)
-		deltaR = (maxR - minR) / float(calsN)
+		deltaR = (maxR - minR) / calsN
 		calType0 = calTypes.active[0]
 		jd0 = to_jd(ui.todayCell.year, 1, 1, calType0)
 		yearLen = calTypes.primaryModule().avgYearLen
