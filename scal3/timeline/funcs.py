@@ -139,7 +139,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	timeEnd = timeStart + timeWidth
 	jd0 = getJdFromEpoch(timeStart)
 	jd1 = getJdFromEpoch(timeEnd)
-	widthDays = float(timeWidth) / dayLen
+	widthDays = timeWidth / dayLen
 	dayPixel = dayLen * pixelPerSec ## px
 	# log.debug(f"dayPixel = {dayPixel} px")
 
@@ -189,7 +189,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 		tickEpochList.append(tmEpoch)
 	# ########## Month
 	monthPixel = avgMonthLen * pixelPerSec ## px
-	minMonthUnit = float(minStep) / avgMonthLen ## month
+	minMonthUnit = minStep / avgMonthLen  # month
 	if minMonthUnit <= 3:
 		for ym in range(
 			year0 * 12 + (month0 - 1),
@@ -234,7 +234,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			# tickEpochList.append(tmEpoch)
 	# ########## Day of Month
 	hasMonthName = timeWidth < 5 * dayLen
-	minDayUnit = float(minStep) / dayLen ## days
+	minDayUnit = minStep / dayLen  # days
 	if minDayUnit <= 15:
 		for jd in range(jd0, jd1 + 1):
 			tmEpoch = getEpochFromJd(jd)
