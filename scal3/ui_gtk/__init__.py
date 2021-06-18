@@ -16,6 +16,7 @@ __all__ = [
 	"getOrientation",
 	"timeout_add",
 	"timeout_add_seconds",
+	"main_context_default",
 	"source_remove",
 	"GLibError",
 ]
@@ -42,12 +43,14 @@ try:
 		timeout_add,
 		timeout_add_seconds,
 		source_remove,
+		main_context_default,
 	)
 except ImportError:
 	from gi.repository.GObject import (
 		timeout_add,
 		timeout_add_seconds,
 		source_remove,
+		main_context_default,
 	)
 
 try:

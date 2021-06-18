@@ -865,9 +865,10 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 	def stopAnimTimers(self):
 		if self.animTimerSource is None:
 			return
-		source, self.animTimerSource = self.animTimerSource, None
-		source_remove(source)
-		# we unset self.animTimerSource first, to prevent this warning
+		if not self.animTimerSource.is_destroyed():
+			source_remove(self.animTimerSource.get_id())
+		self.animTimerSource = None
+		# .is_destroyed() is checked to get rid of this warning:
 		# Warning: Source ID {id} was not found when attempting to remove it
 
 	def startAnimConstantAccel(self, direction, force):
@@ -925,7 +926,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			# log.debug("Stopping movement: f == 0 and v1 * v2 <= 0")
 			self.movingV = 0
 			return
-		self.animTimerSource = timeout_add(
+		source_id = timeout_add(
 			tl.movingUpdateTime,
 			self.updateMovingAnim,
 			f,
@@ -935,6 +936,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			a2,
 			holdForce,
 		)
+		self.animTimerSource = main_context_default().find_source_by_id(source_id)
 		self.movingV = v2
 		self.timeStart += (
 			v2
