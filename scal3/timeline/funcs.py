@@ -22,6 +22,7 @@ from scal3 import logger
 log = logger.get()
 
 from math import log10
+from bisect import bisect_right, bisect_left
 
 from scal3.time_utils import (
 	getEpochFromJd,
@@ -265,9 +266,24 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 				continue
 			addDayOfMonthTick(jd, month, day, 1)
 
-	# if minDayUnit <= 5:
-	# 	year, month, day = jd_to_primary(jd0)
-	# 	dayStart = day // 5 + 6
+	if minDayUnit <= 5:
+		tmpDays = [6, 11, 21, 26]
+
+		year0, month0, day0 = jd_to_primary(jd0)
+		year1, month1, day1 = jd_to_primary(jd1)
+
+		for day in tmpDays[bisect_right(tmpDays, day0 - 1):]:
+			addDayOfMonthTick(jd0 - day0 + day, month0, day, 5)
+
+		for ym in range(year0 * 12 + month0, year1 * 12 + month1 - 1):
+			year, mm = divmod(ym, 12)
+			month = mm + 1
+			startJd = primary_to_jd(year, month, 1) - 1
+			for day in tmpDays:
+				addDayOfMonthTick(startJd + day, month, day, 5)
+
+		for day in tmpDays[:bisect_left(tmpDays, day1 + 1)]:
+			addDayOfMonthTick(jd1 - day1 + day, month1, day, 5)
 
 	if minDayUnit <= 15:
 		year0, month0, day0 = jd_to_primary(jd0)
