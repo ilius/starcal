@@ -28,7 +28,7 @@ from scal3.time_utils import (
 	getJdFromEpoch,
 	getFloatJdFromEpoch,
 	getJhmsFromEpoch,
-	getUtcOffsetCurrent,
+	getUtcOffsetByJd,
 )
 from scal3.date_utils import jwday, getEpochFromDate
 from scal3.cal_types import calTypes, jd_to, to_jd
@@ -291,31 +291,36 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 		if stepSec < minStep:
 			break
 		unitSize = stepSec * pixelPerSec
-		utcOffset = int(getUtcOffsetCurrent())
-		firstEpoch = iceil(
-			(timeStart + utcOffset) / stepSec
-		) * stepSec - utcOffset
-		for tmEpoch in range(firstEpoch, iceil(timeEnd), stepSec):
-			if tmEpoch in tickEpochSet:
-				continue
-			if unitSize < tl.majorStepMin:
-				label = ""
-			else:
-				jd, hms = getJhmsFromEpoch(tmEpoch)
-				m2 = _(hms.m, fillZero=2)
-				if hms.s == 0:
-					label = f"{_(hms.h)}:{m2}"
-				else:# elif timeWidth < 60 or stepSec < 30:
-					label = addLRM(_(hms.s, fillZero=2) + '"')
-				#else:
-				#	label = f"{_(hms.h)}:{m2}:_(hms.s, fillZero=2)"
-			ticks.append(Tick(
-				tmEpoch,
-				getEPos(tmEpoch),
-				unitSize,
-				label,
-			))
-			tickEpochSet.add(tmEpoch)
+		for jd in range(jd0, jd1 + 1):
+			utcOffset = int(getUtcOffsetByJd(jd))
+			firstEpoch = iceil(
+				(timeStart + utcOffset) / stepSec
+			) * stepSec - utcOffset
+			for tmEpoch in range(
+				firstEpoch,
+				min(int(getEpochFromJd(jd + 1)), iceil(timeEnd)),
+				stepSec,
+			):
+				if tmEpoch in tickEpochSet:
+					continue
+				if unitSize < tl.majorStepMin:
+					label = ""
+				else:
+					jd, hms = getJhmsFromEpoch(tmEpoch)
+					m2 = _(hms.m, fillZero=2)
+					if hms.s == 0:
+						label = f"{_(hms.h)}:{m2}"
+					else:# elif timeWidth < 60 or stepSec < 30:
+						label = addLRM(_(hms.s, fillZero=2) + '"')
+					#else:
+					#	label = f"{_(hms.h)}:{m2}:_(hms.s, fillZero=2)"
+				ticks.append(Tick(
+					tmEpoch,
+					getEPos(tmEpoch),
+					unitSize,
+					label,
+				))
+				tickEpochSet.add(tmEpoch)
 	# print(f"total: count: {len(tickEpochSet)}, {len(ticks)}, dt={now()-funcTimeStart:.5f}\n")
 	# ###################### Event Boxes
 	data = {
