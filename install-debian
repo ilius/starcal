@@ -19,7 +19,7 @@ function installPackage(){
 			return $aptExitCode
 		fi
 	fi
-	dpkg -i "$pkgPath" || apt-get -f install
+	apt-get install "$(readlink -f "$pkgPath")"
 }
 
 if [ "$UID" != "0" ] ; then
