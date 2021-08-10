@@ -339,12 +339,14 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		try:
 			p = self.proc
 		except AttributeError:
-			pass
-		else:
-			log.info(f"pray_times: killing process {p.pid}")
-			goodkill(p.pid, interval=0.01)
-			# kill(p.pid, 15)
-			# p.terminate()
+			return
+		if p is None:
+			return
+
+		log.info(f"pray_times: killing process {p.pid}")
+		goodkill(p.pid, interval=0.01)
+		# kill(p.pid, 15)
+		# p.terminate()
 
 	def doPlayAzan(self):
 		# pass tm as argument?
