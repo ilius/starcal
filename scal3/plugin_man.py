@@ -188,7 +188,7 @@ class BasePlugin(SObj):
 				if nt:
 					text += nt
 		if text:
-			c.addPluginText(text)
+			c.addPluginText(self, text)
 
 	def onCurrentDateChange(self, gdate):
 		pass
