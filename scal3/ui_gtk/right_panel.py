@@ -18,6 +18,8 @@ from scal3.ui_gtk.customize import (
 	CustomizableCalObj,
 	newSubPageButton
 )
+from scal3.ui_gtk.pluginsText import PluginsTextBox
+
 
 class RightPanelDayOccurrenceView(DayOccurrenceView):
 	def __init__(self, rightPanel=None, **kwargs):
@@ -37,6 +39,26 @@ class RightPanelDayOccurrenceView(DayOccurrenceView):
 		self.rightPanel.swapItems()
 
 
+class RightPanelPluginsTextBox(PluginsTextBox):
+	def __init__(self, rightPanel=None, **kwargs):
+		PluginsTextBox.__init__(self, **kwargs)
+		self.rightPanel = rightPanel
+		self.updateJustification()
+		self.textview.addExtraMenuItems = self.addExtraMenuItems
+
+	def addExtraMenuItems(self, menu):
+		if self.rightPanel:
+			menu.add(gtk.SeparatorMenuItem())
+			menu.add(ImageMenuItem(
+				_("Swap with Events Text"),
+				imageName="switch-vertical.svg",
+				func=self.onSwapClick,
+			))
+
+	def onSwapClick(self, widget):
+		self.rightPanel.swapItems()
+
+
 @registerSignals
 class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 	_name = "rightPanel"
@@ -45,7 +67,6 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 	optionsPageSpacing = 5
 
 	def __init__(self):
-		from scal3.ui_gtk.pluginsText import PluginsTextBox
 		gtk.Paned.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.set_border_width(ui.mainWinRightPanelBorder)
 		###
@@ -70,7 +91,8 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			styleClass="right-panel-events",
 		)
 		# self.eventItem = WeekOccurrenceView()  # just temp to see it works
-		self.plugItem = PluginsTextBox(
+		self.plugItem = RightPanelPluginsTextBox(
+			rightPanel=self,
 			hideIfEmpty=False,
 			tabToNewline=True,
 			justificationParam="mainWinRightPanelPluginsJustification",
