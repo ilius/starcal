@@ -125,6 +125,9 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		####
 		menu.add(gtk.SeparatorMenuItem())
 
+	def addExtraMenuItems(self, menu):
+		pass
+
 	def onPlugConfClick(self, item, plug):
 		if not plug.hasConfig:
 			return
@@ -215,6 +218,8 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 				args=(word,)
 			))
 		####
+		self.addExtraMenuItems(menu)
+		###
 		menu.show_all()
 		self.tmpMenu = menu
 		menu.popup(
