@@ -352,6 +352,7 @@ class Cell(CellType):
 	def __init__(self, jd: int):
 		self._eventsData = None  # type: Optional[List[Dict]]
 		self._pluginsText = []  # type: List[List[str]]
+		self._pluginsData = []  # type: List[Tuple[?,?]]
 		###
 		self.jd = jd
 		date = core.jd_to_primary(jd)
@@ -387,15 +388,22 @@ class Cell(CellType):
 		###################
 		self.getEventsData()
 
+	def addPluginText(self, plug, text):
+		self._pluginsText.append(text.split("\n"))
+		self._pluginsData.append((plug, text))
+
+	def getPluginsData(self, firstLineOnly=False) -> "List[Tuple[BasePlugin, str]]":
+		return [
+			(plug, text.split("\n")[0]) if firstLineOnly
+			else (plug, text)
+			for (plug, text) in self._pluginsData
+		]
+
 	def getPluginsText(self, firstLineOnly=False) -> str:
 		return "\n".join(
-			lines[0] if firstLineOnly
-			else "\n".join(lines)
-			for lines in self._pluginsText
+			text
+			for (plug, text) in self.getPluginsData(firstLineOnly)
 		)
-
-	def addPluginText(self, text):
-		self._pluginsText.append(text.split("\n"))
 
 	def clearEventsData(self):
 		self._eventsData = None

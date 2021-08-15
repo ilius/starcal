@@ -7,13 +7,227 @@ from typing import Tuple
 
 from scal3 import core
 from scal3.locale_man import tr as _
+from scal3.utils import toStr, findWordByPos
 from scal3 import ui
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.utils import (
+	setClipboard,
+	buffer_get_text,
+	openWindow,
+)
+from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.customize import CustomizableCalObj
+
+
+@registerSignals
+class PluginsTextView(gtk.TextView, CustomizableCalObj):
+	def __init__(self, *args, **kwargs):
+		gtk.TextView.__init__(self, *args, **kwargs)
+		self.set_editable(False)
+		self.set_cursor_visible(False)
+		self.connect("button-press-event", self.onButtonPress)
+		self.occurOffsets = []
+		self.initVars()
+
+	def copyAll(self, item):
+		return setClipboard(toStr(self.get_text()))
+
+	def cursorIsOnURL(self):
+		return False
+
+	def get_text(self):
+		return buffer_get_text(self.get_buffer())
+
+	def get_cursor_position(self):
+		return self.get_buffer().get_property("cursor-position")
+
+	def has_selection(self):
+		buf = self.get_buffer()
+		try:
+			start_iter, end_iter = buf.get_selection_bounds()
+		except ValueError:
+			return False
+		else:
+			return True
+
+	def copy(self, item):
+		buf = self.get_buffer()
+		start_iter, end_iter = buf.get_selection_bounds()
+		setClipboard(toStr(buf.get_text(start_iter, end_iter, True)))
+
+	def copyWordByIter(self, item, _iter):
+		text = self.get_text()
+		buf = self.get_buffer()
+		pos = _iter.get_offset()
+		word = findWordByPos(text, pos)[0]
+		setClipboard(word)
+
+	def copyText(self, item, text):
+		setClipboard(text)
+
+	def onDateChange(self, *a, **kw):
+		CustomizableCalObj.onDateChange(self, *a, **kw)
+		cell = ui.cell
+		textbuff = self.get_buffer()
+		textbuff.set_text("")
+		occurOffsets = []
+		eventSep = "\n"
+		for index, occurData in enumerate(cell.getPluginsData()):
+			plug, text = occurData
+			lastEndOffset = textbuff.get_end_iter().get_offset()
+			occurOffsets.append((lastEndOffset, occurData))
+			if index > 0:
+				self.addText(eventSep)
+			self.addText(text)
+		self.occurOffsets = occurOffsets
+
+	def findPluginByY(self, y: int):
+		lineIter, lineTop = self.get_line_at_y(y)
+		lineOffset = lineIter.get_offset()
+		# lineIter = self.get_buffer().get_iter_at_line(lineNum)
+		for lastEndOffset, occurData in reversed(self.occurOffsets):
+			if lineOffset >= lastEndOffset:
+				return occurData
+		return None
+
+	def addPluginMenuItems(self, menu, occurData):
+		plug, text = occurData
+		# print(f"addPluginMenuItems, title={plug.title}, file={plug.file}")
+		####
+		menu.add(ImageMenuItem(
+			_("Copy Event Text"),  # FIXME: "Event" is a bit misleading
+			imageName="edit-copy.svg",
+			func=self.copyTextFromMenu,
+			args=(text,),
+		))
+		####
+		item = ImageMenuItem(
+			_("C_onfigure Plugin"),
+			imageName="preferences-system.svg",
+			func=self.onPlugConfClick,
+			args=(plug,),
+		)
+		item.set_sensitive(plug.hasConfig)
+		menu.add(item)
+		####
+		item = ImageMenuItem(
+			_("_About Plugin"),
+			imageName="dialog-information.svg",
+			func=self.onPlugAboutClick,
+			args=(plug,),
+		)
+		item.set_sensitive(bool(plug.about))
+		menu.add(item)
+		####
+		menu.add(gtk.SeparatorMenuItem())
+
+	def onPlugConfClick(self, item, plug):
+		if not plug.hasConfig:
+			return
+		plug.open_configure()
+
+	def onPlugAboutClick(self, item, plug):
+		from scal3.ui_gtk.about import AboutDialog
+		if hasattr(plug, "open_about"):
+			return plug.open_about()
+		if plug.about is None:
+			return
+		about = AboutDialog(
+			name="",  # FIXME
+			title=_("About Plugin"),  # _("About ") + plug.title
+			authors=plug.authors,
+			comments=plug.about,
+		)
+		about.set_transient_for(self.get_toplevel())
+		about.connect("delete-event", lambda w, e: w.destroy())
+		about.connect("response", lambda w, e: w.destroy())
+		# about.set_resizable(True)
+		# about.vbox.show_all()  # OR about.vbox.show_all() ; about.run()
+		openWindow(about)  # FIXME
+
+	def copyTextFromMenu(self, item, text):
+		setClipboard(text)
+
+	def addText(self, text):
+		textbuff = self.get_buffer()
+		endIter = textbuff.get_bounds()[1]
+
+		text = text.replace("&", "&amp;")
+		text = text.replace(">", "&gt;")
+		text = text.replace("<", "&lt;")
+		# Gtk-WARNING **: HH:MM:SS.sss: Invalid markup string: Error on line N:
+		# Entity did not end with a semicolon; most likely you used an
+		# ampersand character without intending to start an entity —
+		# escape ampersand as &amp;
+
+		b_text = text.encode("utf-8")
+		textbuff.insert_markup(endIter, text, len(b_text))
+
+	def onButtonPress(self, widget, gevent):
+		if gevent.button != 3:
+			return False
+		####
+		_iter = None
+		buf_x, buf_y = self.window_to_buffer_coords(
+			gtk.TextWindowType.TEXT,
+			gevent.x,
+			gevent.y,
+		)
+		if buf_x is not None and buf_y is not None:
+			# overText, _iter, trailing = ...
+			_iter = self.get_iter_at_position(buf_x, buf_y)[1]
+		####
+		text = self.get_text()
+		buf = self.get_buffer()
+		pos = _iter.get_offset()
+		word = findWordByPos(text, pos)[0]
+		####
+		menu = Menu()
+		####
+		occurData = self.findPluginByY(gevent.y)
+		if occurData is not None:
+			self.addPluginMenuItems(menu, occurData)
+		####
+		menu.add(ImageMenuItem(
+			_("Copy _All"),
+			imageName="edit-copy.svg",
+			func=self.copyAll,
+		))
+		####
+		itemCopy = ImageMenuItem(
+			_("_Copy"),
+			imageName="edit-copy.svg",
+			func=self.copy,
+		)
+		if not self.has_selection():
+			itemCopy.set_sensitive(False)
+		menu.add(itemCopy)
+		####
+		if "://" in word:
+			menu.add(ImageMenuItem(
+				_("Copy _URL"),
+				imageName="edit-copy.svg",
+				func=self.copyText,
+				args=(word,)
+			))
+		####
+		menu.show_all()
+		self.tmpMenu = menu
+		menu.popup(
+			None,
+			None,
+			None,
+			None,
+			3,
+			gevent.time,
+		)
+		ui.updateFocusTime()
+		return True
+
 
 
 @registerSignals
@@ -32,7 +246,6 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		fontParams: Tuple[str, str] = None,
 		styleClass: str = "",
 	):
-		from scal3.ui_gtk.mywidgets.text_widgets import ReadOnlyTextView
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.initVars()
 		####
@@ -45,7 +258,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		self.hideIfEmpty = hideIfEmpty
 		self.tabToNewline = tabToNewline
 		####
-		self.textview = ReadOnlyTextView()
+		self.textview = PluginsTextView()
 		self.textview.set_wrap_mode(gtk.WrapMode.WORD)
 		self.textbuff = self.textview.get_buffer()
 		###
@@ -62,6 +275,8 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 			self.updateJustification()
 		else:
 			self.textview.set_justification(gtk.Justification.CENTER)
+		###
+		self.appendItem(self.textview)
 		###
 		if insideExpanderParam:
 			self.expander = ExpanderFrame(label=self.desc)

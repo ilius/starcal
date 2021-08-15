@@ -3431,6 +3431,10 @@ msgid "Swap with Plugins Text"
 msgstr ""
 "جابجایی با متن افزونه‌ها"
 
+msgid "Swap with Events Text"
+msgstr ""
+"جابجایی با متن رویدادها"
+
 msgid "Only first line of text"
 msgstr ""
 "فقط خط اول متن"
