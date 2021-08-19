@@ -2935,8 +2935,9 @@ class MonthlyEvent(Event):
 		})
 		return data
 
-	def setJd(self, jd):
-		year, month, day = jd_to(jd, self.mode)
+	def setDefaults(self):
+		Event.setDefaults(self)
+		year, month, day = jd_to(core.getCurrentJd(), self.mode)
 		start, ok = self["start"]
 		if ok:
 			start.setDate((year, month, 1))
@@ -2948,9 +2949,6 @@ class MonthlyEvent(Event):
 		else:
 			raise RuntimeError("no end rule")
 		self.setDay(day)
-
-	def setDefaults(self):
-		self.setJd(core.getCurrentJd())
 
 	def getDay(self):
 		rule, ok = self["day"]
