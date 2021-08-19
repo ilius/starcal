@@ -3203,9 +3203,7 @@ class WeeklyEvent(Event):
 
 	def setDefaults(self, group=None):
 		Event.setDefaults(self, group=group)
-		self.setJd(core.getCurrentJd())
-
-	def setJd(self, jd: int) -> None:
+		jd = core.getCurrentJd()
 		start, ok = self["start"]
 		if not ok:
 			raise RuntimeError("no start rule")
