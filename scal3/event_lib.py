@@ -2295,12 +2295,13 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		self.addRequirements()
 		####
 		# copy dates between different rule types in different event types
-		jd = other.getJd()
-		if jd is not None:
-			if exact:
-				self.setJdExact(jd)
-			else:
-				self.setJd(jd)
+		if self.name != other.name:
+			jd = other.getJd()
+			if jd is not None:
+				if exact:
+					self.setJdExact(jd)
+				else:
+					self.setJd(jd)
 
 	def getData(self):
 		data = BsonHistEventObj.getData(self)
