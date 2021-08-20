@@ -2595,17 +2595,23 @@ class TaskEvent(SingleStartEndEvent):
 		})
 		return data
 
+	def _setDefaultDuration(self, group):
+		if group is None or group.name != "taskList":
+			self.setEnd("duration", 1, 3600)
+			return
+
+		value, unit = group.defaultDuration
+		if value == 0:
+			value, unit = 1, 3600
+		self.setEnd("duration", value, unit)
+
 	def setDefaults(self, group=None):
 		Event.setDefaults(self, group=group)
 		self.setStart(
 			getSysDate(self.calType),
 			tuple(localtime()[3:6]),
 		)
-		if group and group.name == "taskList":
-			value, unit = group.defaultDuration
-			self.setEnd("duration", value, unit)
-		else:
-			self.setEnd("duration", 1, 3600)
+		self._setDefaultDuration(group)
 
 	def setJdExact(self, jd: int) -> None:
 		self.getAddRule("start").setJdExact(jd)
@@ -4693,8 +4699,6 @@ class TaskList(EventGroup):
 	def __init__(self, _id: "Optional[int]" = None) -> None:
 		EventGroup.__init__(self, _id)
 		self.defaultDuration = (0, 1)  # (value, unit)
-		# if defaultDuration[0] is set to zero, the checkbox for task"s end,
-		# will be unchecked for new tasks
 
 	def copyFrom(self, other: "EventGroup") -> None:
 		EventGroup.copyFrom(self, other)
