@@ -42,6 +42,7 @@ class WidgetClass(BaseWidgetClass):
 		vbox = VBox()
 		exp.add(vbox)
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
+		self.onlineServiceExpander = exp
 		##
 		hbox = HBox()
 		label = gtk.Label(label=_("Account"))
@@ -99,6 +100,8 @@ class WidgetClass(BaseWidgetClass):
 
 		value, unit = self.group.remoteSyncDuration
 		self.syncIntervalInput.setDuration(value, unit)
+
+		self.onlineServiceExpander.set_expanded(False)
 
 	def updateVars(self):
 		BaseWidgetClass.updateVars(self)
