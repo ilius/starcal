@@ -10,6 +10,8 @@ import dateutil.tz
 
 from typing import Optional
 
+defaultTZ = None
+
 
 class TimeZone(datetime.tzinfo):
 	def __init__(self, tz):
@@ -56,11 +58,11 @@ def readEtcLocaltime():
 def gettz(*args, **kwargs) -> Optional[TimeZone]:
 	tz = dateutil.tz.gettz(*args, **kwargs)
 	if tz is None:
-		return None
+		return defaultTZ
 	if tz._filename == "/etc/localtime":
 		tz = readEtcLocaltime()
 		if tz is None:
-			return None
+			return defaultTZ
 	return TimeZone(tz)
 
 

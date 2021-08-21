@@ -46,6 +46,8 @@ from scal3.cal_types import calTypes
 
 ##########################################################
 
+natz.defaultTZ = natz.UTC
+
 localTz = natz.gettz()
 localTzStr = str(localTz)
 # FIXME: looks like in some cases localTzStr == "etc/localtime"
