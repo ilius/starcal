@@ -102,9 +102,9 @@ confParams = (
 	"maxDayCacheSize",
 	"eventDayViewTimeFormat",
 	"pluginsTextStatusIcon",
-	# "localTzHist",  # FIXME
 	"showYmArrows",
 	"preferencesPageName",
+	"localTzHist",  # move to a new file like local-tz.json?
 )
 
 confParamsLive = (
@@ -117,7 +117,6 @@ confParamsLive = (
 	"winMaximized",
 	"pluginsTextIsExpanded",
 	"bgColor",
-	"localTzHist",
 	"wcal_toolbar_weekNum_negative",
 	"mainWinRightPanelRatio",
 )
@@ -814,9 +813,7 @@ def withFS(obj: "SObj") -> "SObj":
 
 ######################################################################
 
-localTzHist = [
-	str(core.localTz),
-]
+localTzHist = []
 
 shownCals = []  # FIXME
 
@@ -1484,12 +1481,21 @@ if not isfile(statusIconImageHoli):
 	statusIconImageHoli = statusIconImageHoliDefault
 
 
-try:
-	localTzHist.remove(str(core.localTz))
-except ValueError:
-	pass
-localTzHist.insert(0, str(core.localTz))
-saveLiveConf()
+_localTzName = str(core.localTz)
+if localTzHist:
+	if localTzHist[0] != _localTzName:
+		try:
+			localTzHist.remove(_localTzName)
+		except ValueError:
+			pass
+		localTzHist.insert(0, _localTzName)
+		if len(localTzHist) > 10:
+			localTzHist = localTzHist[:10]
+		saveConf()
+else:
+	localTzHist.insert(0, _localTzName)
+	saveConf()
+
 
 
 needRestartPref = {}  # Right place? FIXME
