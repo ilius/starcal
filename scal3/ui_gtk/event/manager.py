@@ -510,7 +510,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.treev.set_search_column(3)
 
 		# self.treev.set_fixed_height_mode(True)
-		# ^ causes multi-select checkbox to be hidden after row-expanded in multi-select mode
+		# ^ causes multi-select checkbox to be hidden after row-expanded in
+		# multi-select mode
 
 		# self.treev.set_headers_visible(False)  # FIXME
 		# self.treev.get_selection().set_mode(gtk.SelectionMode.MULTIPLE)  # FIXME
@@ -612,7 +613,14 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.vbox.show_all()
 		self.multiSelectHBox.hide()
 
-	def multiSelectTreeviewToggleStatus(self, column, cell, model, _iter, userData):
+	def multiSelectTreeviewToggleStatus(
+		self,
+		column,
+		cell,
+		model,
+		_iter,
+		userData,
+	):
 		if not self.multiSelect:
 			return
 
@@ -708,7 +716,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		if groupIndex not in self.multiSelectPathDict:
 			return
 		lastEventIndex = next(reversed(self.multiSelectPathDict[groupIndex]))
-		# print(f"groupIndex: {groupIndex}, eventIndex: {lastEventIndex} .. {path[1]}")
+		# print(f"groupIndex: {groupIndex}")
+		# print(f"eventIndex: {lastEventIndex} .. {path[1]}")
 		if eventIndex == lastEventIndex:
 			return
 		if eventIndex > lastEventIndex:
@@ -731,7 +740,11 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		path = self.getSelectedPath()
 		self.multiSelectTreeviewTogglePath(path)
 
-	def multiSelectTreeviewToggle(self, cell: "gtk.CellRendererToggle", pathStr: str):
+	def multiSelectTreeviewToggle(
+		self,
+		cell: "gtk.CellRendererToggle",
+		pathStr: str,
+	):
 		path = gtk.TreePath.new_from_string(pathStr).get_indices()
 		self.multiSelectTreeviewTogglePath(path)
 
@@ -1071,7 +1084,11 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		position: int,
 		event: lib.Event,
 	) -> gtk.TreeIter:
-		eventIter = self.treeModel.insert(parentIter, position, self.getEventRow(event))
+		eventIter = self.treeModel.insert(
+			parentIter,
+			position,
+			self.getEventRow(event),
+		)
 		self.eventsIter[event.id] = eventIter
 		return eventIter
 
@@ -1232,7 +1249,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				# 	eventTypeDesc = _("Event")
 				# else:
 				eventTypeDesc = lib.classes.event.byName[eventType].desc
-				label = _("Add {eventType}").format(eventType=eventTypeDesc) 
+				label = _("Add {eventType}").format(
+					eventType=eventTypeDesc,
+				)
 				menu.add(eventWriteMenuItem(
 					label,
 					imageName="list-add.svg",
@@ -1851,7 +1870,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			):
 				return
 			self.onTreeviewLeftButtonPress(treev, gevent, path, col)
-
 
 	def insertNewGroup(self, groupIndex: int) -> None:
 		from scal3.ui_gtk.event.group.editor import GroupEditorDialog
