@@ -35,7 +35,11 @@ from scal3 import ui
 from gi.repository import GdkPixbuf
 
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import set_tooltip, dialog_add_button, newAlignLabel
+from scal3.ui_gtk.utils import (
+	set_tooltip,
+	dialog_add_button,
+	newAlignLabel,
+)
 from scal3.ui_gtk.font_utils import gfontEncode, gfontDecode
 
 
