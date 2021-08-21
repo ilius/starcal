@@ -117,8 +117,6 @@ confParamsLive = (
 	"winMaximized",
 	"pluginsTextIsExpanded",
 	"bgColor",
-	"eventManPos",  # FIXME
-	"eventManShowDescription",  # FIXME
 	"localTzHist",
 	"wcal_toolbar_weekNum_negative",
 	"mainWinRightPanelRatio",
@@ -1454,14 +1452,6 @@ ntpServers = (
 	"ntp.ubuntu.com",
 )
 
-
-#####################
-
-# change date of a dailyNoteEvent when editing it
-# dailyNoteChDateOnEdit = True
-
-eventManPos = (0, 0)
-eventManShowDescription = True
 
 #####################
 
