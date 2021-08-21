@@ -16,27 +16,34 @@ from scal3 import event_lib
 modPrefix = "scal3.ui_gtk.event"
 
 
+def getWidgetClass(obj):
+	cls = obj.__class__
+
+	if hasattr(cls, "WidgetClass"):
+		return cls.WidgetClass
+
+	modulePath = ".".join([
+		modPrefix,
+		cls.tname,
+		cls.name,
+	])
+	try:
+		module = __import__(modulePath, fromlist=["WidgetClass"])
+	except Exception:
+		log.exception("")
+		return
+	WidgetClass = cls.WidgetClass = module.WidgetClass
+	log.info(f"getWidgetClass: {cls.__name__} -> {modulePath} -> {WidgetClass}")
+	return WidgetClass
+
+
 def makeWidget(obj):
 	"""
 	obj is an instance of Event, EventRule, EventNotifier or EventGroup
 	"""
-	cls = obj.__class__
-	try:
-		WidgetClass = cls.WidgetClass
-	except AttributeError:
-		try:
-			module = __import__(
-				".".join([
-					modPrefix,
-					cls.tname,
-					cls.name,
-				]),
-				fromlist=["WidgetClass"],
-			)
-			WidgetClass = cls.WidgetClass = module.WidgetClass
-		except Exception:
-			log.exception("")
-			return
+	WidgetClass = getWidgetClass(obj)
+	if WidgetClass is None:
+		return
 	widget = WidgetClass(obj)
 	try:
 		widget.show_all()
