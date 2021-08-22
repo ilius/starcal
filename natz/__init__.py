@@ -11,6 +11,7 @@ import dateutil.tz
 from typing import Optional
 
 defaultTZ = None
+tzErrCount = 0
 
 
 class TimeZone(datetime.tzinfo):
@@ -56,12 +57,19 @@ def readEtcLocaltime():
 
 
 def gettz(*args, **kwargs) -> Optional[TimeZone]:
+	global tzErrCount
 	tz = dateutil.tz.gettz(*args, **kwargs)
 	if tz is None:
+		if tzErrCount < 5:
+			log.error(f"failed to detect timezone")
+		tzErrCount += 1
 		return defaultTZ
 	if tz._filename == "/etc/localtime":
 		tz = readEtcLocaltime()
 		if tz is None:
+			if tzErrCount < 5:
+				log.error(f"failed to detect timezone")
+			tzErrCount += 1
 			return defaultTZ
 	return TimeZone(tz)
 
