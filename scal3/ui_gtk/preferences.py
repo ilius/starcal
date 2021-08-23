@@ -690,6 +690,8 @@ class PreferencesWindow(gtk.Window):
 		item = LogLevelPrefItem()
 		self.loggerPrefItem = item
 		pack(vbox, item.getWidget())
+		###
+		self.initialLogLevel = logger.logLevel
 		######
 		hbox = HBox(spacing=5)
 		# pack(hbox, gtk.Label(), 1, 1)
@@ -1315,7 +1317,7 @@ class PreferencesWindow(gtk.Window):
 		# ####################### Updating GUI ###########################
 		ud.windowList.onConfigChange()
 		if ui.mainWin:
-			if ui.checkNeedRestart():
+			if self.checkNeedRestart():
 				d = gtk.Dialog(
 					title=_("Restart " + core.APP_DESC),
 					transient_for=self,
@@ -1351,6 +1353,13 @@ class PreferencesWindow(gtk.Window):
 					core.restart()
 				else:
 					d.destroy()
+
+	def checkNeedRestart(self):
+		if ui.checkNeedRestart():
+			return True
+		if logger.logLevel != self.initialLogLevel:
+			return True
+		return False
 
 	def refreshAccounts(self):
 		self.accountsTreeModel.clear()
