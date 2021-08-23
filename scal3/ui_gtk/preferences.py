@@ -1327,12 +1327,14 @@ class PreferencesWindow(gtk.Window):
 				dialog_add_button(
 					d,
 					imageName="dialog-cancel.svg",
-					label=_("Cancel"),
+					label=_("_No"),
 					res=gtk.ResponseType.CANCEL,
 				)
 				d.set_keep_above(True)
-				label = gtk.Label(label=_(
-					f"Some preferences need restarting {core.APP_DESC} to apply."
+				label = gtk.Label(label=(
+					_(f"Some preferences need restarting {core.APP_DESC} to apply.") +
+					" " +
+					_("Restart Now?")
 				))
 				label.set_line_wrap(True)
 				vbox = VBox()

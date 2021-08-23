@@ -32,6 +32,10 @@ msgid "Cancel"
 msgstr ""
 "فراموش کن"
 
+msgid "_No"
+msgstr ""
+"خیر"
+
 msgid "_Close"
 msgstr ""
 "_ببند"
@@ -3346,7 +3350,12 @@ msgstr ""
 
 msgid "Some preferences need restarting StarCalendar to apply."
 msgstr ""
-"بعضی از تنظیمات برای اعمال شدن نیاز دارند که StarCalendar دوباره راه‌اندازی شود"
+"بعضی از ترجیحات برای اعمال شدن نیاز به شروع دوبارهٔ برنامه دارند."
+
+msgid "Restart Now?"
+msgstr ""
+"آیا الآن شروع دوباره شود؟"
+
 
 msgid "_Restart"
 msgstr ""
