@@ -2297,6 +2297,10 @@ msgid "Past Event Color"
 msgstr ""
 "رنگ رویداد گذشته"
 
+msgid "Ongoing Event Color"
+msgstr ""
+"رنگ رویداد جاری"
+
 msgid "Use color of event group\nfor event text"
 msgstr ""
 "از رنگ گروه رویدادها بعنوان\nرنگ متن رویداد استفاده کن"
