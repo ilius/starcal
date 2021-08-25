@@ -753,6 +753,8 @@ class EventsTextColumn(Column):
 			CheckColorPrefItem,
 		)
 
+		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
+
 		pack(optionsWidget, CheckColorPrefItem(
 			CheckPrefItem(
 				ui,
@@ -766,6 +768,7 @@ class EventsTextColumn(Column):
 			),
 			live=True,
 			onChangeFunc=self.onDateChange,
+			checkSizeGroup=sizeGroup,
 		).getWidget())
 
 		pack(optionsWidget, CheckColorPrefItem(
@@ -781,6 +784,7 @@ class EventsTextColumn(Column):
 			),
 			live=True,
 			onChangeFunc=self.onDateChange,
+			checkSizeGroup=sizeGroup,
 		).getWidget())
 
 		pack(optionsWidget, CheckPrefItem(
