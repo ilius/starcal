@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# Python 3.9 added support for the IANA Time Zone Database
+# in the Standard Library
+# https://www.python.org/dev/peps/pep-0615/
+
 import logging
 log = logging.getLogger("root")
 
