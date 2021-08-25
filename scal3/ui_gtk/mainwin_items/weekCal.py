@@ -743,12 +743,6 @@ class EventsTextColumn(Column):
 	def getFontPreviewText(self):
 		return ""  # TODO
 
-	def getPastTextColorAttr(self):
-		return f"wcalPastTextColor_{self._name}"
-
-	def getPastTextColorEnableAttr(self):
-		return f"wcalPastTextColorEnable_{self._name}"
-
 	def addExtraOptionsWidget(self, optionsWidget):
 		from scal3.ui_gtk.pref_utils import (
 			CheckPrefItem,
@@ -759,12 +753,12 @@ class EventsTextColumn(Column):
 		pack(optionsWidget, CheckColorPrefItem(
 			CheckPrefItem(
 				ui,
-				self.getPastTextColorEnableAttr(),
+				f"wcalPastTextColorEnable_{self._name}",
 				_("Past Event Color"),
 			),
 			ColorPrefItem(
 				ui,
-				self.getPastTextColorAttr(),
+				f"wcalPastTextColor_{self._name}",
 				useAlpha=True,
 			),
 			live=True,
