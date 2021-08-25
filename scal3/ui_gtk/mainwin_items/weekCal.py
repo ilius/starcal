@@ -724,9 +724,9 @@ class EventsTextColumn(Column):
 			color = ""
 			if ui.wcal_eventsText_colorize:
 				color = item["color"]
-			if ui.wcalPastTextColorEnable_eventsText and \
+			if ui.wcal_eventsText_pastColorEnable and \
 				item["time_epoch"][1] < currentTime:
-				color = ui.wcalPastTextColor_eventsText
+				color = ui.wcal_eventsText_pastColor
 			data.append((line, color))
 		return data
 
@@ -753,12 +753,12 @@ class EventsTextColumn(Column):
 		pack(optionsWidget, CheckColorPrefItem(
 			CheckPrefItem(
 				ui,
-				f"wcalPastTextColorEnable_{self._name}",
+				f"wcal_eventsText_pastColorEnable",
 				_("Past Event Color"),
 			),
 			ColorPrefItem(
 				ui,
-				f"wcalPastTextColor_{self._name}",
+				f"wcal_eventsText_pastColor",
 				useAlpha=True,
 			),
 			live=True,

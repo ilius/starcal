@@ -160,8 +160,8 @@ confParamsCustomize = (
 	"wcalItems",
 	"wcalGrid",
 	"wcalGridColor",
-	"wcalPastTextColorEnable_eventsText",
-	"wcalPastTextColor_eventsText",
+	"wcal_eventsText_pastColorEnable",
+	"wcal_eventsText_pastColor",
 	"wcal_toolbar_mainMenu_icon",
 	"wcal_weekDays_width",
 	"wcal_weekDays_expand",
@@ -1175,8 +1175,8 @@ wcalPadding = 10
 wcalGrid = False
 wcalGridColor = (255, 252, 0, 82)
 
-wcalPastTextColorEnable_eventsText = False
-wcalPastTextColor_eventsText = (100, 100, 100, 50)
+wcal_eventsText_pastColorEnable = False
+wcal_eventsText_pastColor = (100, 100, 100, 50)
 
 wcal_toolbar_mainMenu_icon = "starcal.png"
 wcal_toolbar_mainMenu_icon_default = wcal_toolbar_mainMenu_icon
