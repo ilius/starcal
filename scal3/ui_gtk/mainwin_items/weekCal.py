@@ -74,7 +74,6 @@ class ColumnBase(CustomizableCalObj):
 	customizeWidth = False
 	customizeExpand = False
 	customizeFont = False
-	customizePastTextColor = False
 	autoButtonPressHandler = True
 	##
 
@@ -98,18 +97,6 @@ class ColumnBase(CustomizableCalObj):
 
 	def getFontValue(self):
 		return getattr(ui, self.getFontAttr(), None)
-
-	def getPastTextColorAttr(self):
-		return f"wcalPastTextColor_{self._name}"
-
-	def getPastTextColorValue(self):
-		return getattr(ui, self.getPastTextColorAttr(), None)
-
-	def getPastTextColorEnableAttr(self):
-		return f"wcalPastTextColorEnable_{self._name}"
-
-	def getPastTextColorEnableValue(self):
-		return getattr(ui, self.getPastTextColorEnableAttr(), None)
 
 	def onConfigChange(self, *a, **kw):
 		CustomizableCalObj.onConfigChange(self, *a, **kw)
@@ -168,26 +155,14 @@ class ColumnBase(CustomizableCalObj):
 			if previewText:
 				prefItem.setPreviewText(previewText)
 		####
-		if self.customizePastTextColor:
-			prefItem = CheckColorPrefItem(
-				CheckPrefItem(
-					ui,
-					self.getPastTextColorEnableAttr(),
-					_("Past Event Color"),
-				),
-				ColorPrefItem(
-					ui,
-					self.getPastTextColorAttr(),
-					useAlpha=True,
-				),
-				live=True,
-				onChangeFunc=self.onDateChange,
-			)
-			pack(optionsWidget, prefItem.getWidget())
+		self.addExtraOptionsWidget(optionsWidget)
 		####
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
 		return optionsWidget
+
+	def addExtraOptionsWidget(self, optionsWidget):
+		pass
 
 	def updatePacking(self):
 		self._parent.set_child_packing(
@@ -612,11 +587,8 @@ class PluginsTextColumn(Column):
 			]
 		)
 
-	def getOptionsWidget(self) -> gtk.Widget:
+	def addExtraOptionsWidget(self, optionsWidget):
 		from scal3.ui_gtk.pref_utils import CheckPrefItem
-		if self.optionsWidget:
-			return self.optionsWidget
-		optionsWidget = Column.getOptionsWidget(self)
 		#####
 		prefItem = CheckPrefItem(
 			ui,
@@ -626,10 +598,6 @@ class PluginsTextColumn(Column):
 			onChangeFunc=self.queue_draw,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		#####
-		optionsWidget.show_all()
-		self.optionsWidget = optionsWidget
-		return optionsWidget
 
 	def getFontPreviewText(self):
 		return ""  # TODO
@@ -700,11 +668,6 @@ class EventsCountColumn(Column):
 		##
 		self.connect("draw", self.onExposeEvent)
 
-	def getOptionsWidget(self) -> gtk.Widget:
-		optionsWidget = Column.getOptionsWidget(self)
-		optionsWidget.show_all()
-		return optionsWidget
-
 	def getDayTextData(self, i):
 		n = len(self.wcal.status[i].getEventsData())
 		# FIXME: item["show"][1]
@@ -738,41 +701,11 @@ class EventsTextColumn(Column):
 	expand = True
 	customizeFont = True
 	truncateText = False
-	customizePastTextColor = True
 	optionsPageSpacing = 20
 
 	def __init__(self, wcal):
 		Column.__init__(self, wcal)
 		self.connect("draw", self.onExposeEvent)
-
-	def getOptionsWidget(self) -> gtk.Widget:
-		from scal3.ui_gtk.pref_utils import CheckPrefItem
-		if self.optionsWidget:
-			return self.optionsWidget
-		optionsWidget = Column.getOptionsWidget(self)
-		#####
-		prefItem = CheckPrefItem(
-			ui,
-			"wcal_eventsText_colorize",
-			label=_("Use color of event group\nfor event text"),
-			live=True,
-			onChangeFunc=self.queue_draw,
-		)
-		pack(optionsWidget, prefItem.getWidget())
-		#####
-		prefItem = CheckPrefItem(
-			ui,
-			"wcal_eventsText_showDesc",
-			label=_("Show Description"),
-			live=True,
-			onChangeFunc=self.queue_draw,
-		)
-		pack(optionsWidget, prefItem.getWidget())
-		#####
-		optionsWidget.show_all()
-		self.optionsWidget = optionsWidget
-		return optionsWidget
-
 
 	def getDayTextData(self, i):
 		from scal3.xml_utils import escape
@@ -809,6 +742,50 @@ class EventsTextColumn(Column):
 
 	def getFontPreviewText(self):
 		return ""  # TODO
+
+	def getPastTextColorAttr(self):
+		return f"wcalPastTextColor_{self._name}"
+
+	def getPastTextColorEnableAttr(self):
+		return f"wcalPastTextColorEnable_{self._name}"
+
+	def addExtraOptionsWidget(self, optionsWidget):
+		from scal3.ui_gtk.pref_utils import (
+			CheckPrefItem,
+			ColorPrefItem,
+			CheckColorPrefItem,
+		)
+
+		pack(optionsWidget, CheckColorPrefItem(
+			CheckPrefItem(
+				ui,
+				self.getPastTextColorEnableAttr(),
+				_("Past Event Color"),
+			),
+			ColorPrefItem(
+				ui,
+				self.getPastTextColorAttr(),
+				useAlpha=True,
+			),
+			live=True,
+			onChangeFunc=self.onDateChange,
+		).getWidget())
+
+		pack(optionsWidget, CheckPrefItem(
+			ui,
+			"wcal_eventsText_colorize",
+			label=_("Use color of event group\nfor event text"),
+			live=True,
+			onChangeFunc=self.queue_draw,
+		).getWidget())
+
+		pack(optionsWidget, CheckPrefItem(
+			ui,
+			"wcal_eventsText_showDesc",
+			label=_("Show Description"),
+			live=True,
+			onChangeFunc=self.queue_draw,
+		).getWidget())
 
 
 @registerSignals
@@ -1024,11 +1001,8 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 		for child in self.get_children():
 			child.onWidthChange()
 
-	def getOptionsWidget(self) -> gtk.Widget:
+	def addExtraOptionsWidget(self, optionsWidget):
 		from scal3.ui_gtk.pref_utils import DirectionPrefItem
-		if self.optionsWidget:
-			return self.optionsWidget
-		optionsWidget = ColumnBase.getOptionsWidget(self)
 		###
 		prefItem = DirectionPrefItem(
 			ui,
@@ -1045,10 +1019,6 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 		frame.show_all()
 		pack(optionsWidget, frame)
 		self.updateTypeParamsWidget()## FIXME
-		####
-		optionsWidget.show_all()
-		self.optionsWidget = optionsWidget
-		return optionsWidget
 
 	# overwrites method from ColumnBase
 	def updatePacking(self):
@@ -1258,11 +1228,8 @@ class MoonStatusColumn(Column):
 
 		cr.scale(1 / scaleFact, 1 / scaleFact)
 
-	def getOptionsWidget(self) -> gtk.Widget:
+	def addExtraOptionsWidget(self, optionsWidget):
 		from scal3.ui_gtk.pref_utils import CheckPrefItem
-		if self.optionsWidget:
-			return self.optionsWidget
-		optionsWidget = ColumnBase.getOptionsWidget(self)
 		####
 		prefItem = CheckPrefItem(
 			ui,
@@ -1272,10 +1239,6 @@ class MoonStatusColumn(Column):
 			onChangeFunc=self.onDateChange,
 		)
 		pack(optionsWidget, prefItem.getWidget())
-		####
-		optionsWidget.show_all()
-		self.optionsWidget = optionsWidget
-		return optionsWidget
 
 
 @registerSignals
