@@ -132,6 +132,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		if not plug.hasConfig:
 			return
 		plug.open_configure()
+		ud.windowList.onConfigChange()
 
 	def onPlugAboutClick(self, item, plug):
 		from scal3.ui_gtk.about import AboutDialog
