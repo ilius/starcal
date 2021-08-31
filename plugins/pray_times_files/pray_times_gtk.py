@@ -356,9 +356,8 @@ class TextPluginUI:
 		pack(self.confDialog.vbox, hbox)
 		#######
 		self.timeNamesButtons = []
-		for name in timeNames:
-			desc = _(name.capitalize())
-			cb = gtk.CheckButton(label=desc)
+		for name, desc in timeNames:
+			cb = gtk.CheckButton(label=_(desc))
 			cb.name = name
 			self.timeNamesButtons.append(cb)
 		vbox = VBox()
