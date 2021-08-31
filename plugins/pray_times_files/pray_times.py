@@ -73,6 +73,11 @@ from pray_times_gtk import *
 
 localTz = natz.gettz()
 
+timeDescByName = {
+	name: desc
+	for name, desc in timeNames
+}
+
 # ##################### Functions and Classes ##################
 
 
@@ -324,7 +329,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 
 	def getTextByJd(self, jd):
 		return self.sep.join([
-			_(name.capitalize()) +
+			_(timeDescByName[name]) +
 			": " +
 			self.getFormattedTime(tm)
 			for name, tm in self.get_times_jd(jd)

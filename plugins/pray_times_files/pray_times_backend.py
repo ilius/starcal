@@ -37,16 +37,16 @@ from math import floor
 tr = str ## FIXME
 
 timeNames = (
-	"imsak",
-	"fajr",
-	"sunrise",
-	"dhuhr",
-	"asr",
-	"sunset",
-	"maghrib",
-	"isha",
-	"midnight",
-	"timezone",
+	("imsak", "Imsak"),
+	("fajr", "Fajr"),
+	("sunrise", "Sunrise"),
+	("dhuhr", "Dhuhr"),
+	("asr", "Asr"),
+	("sunset", "Sunset"),
+	("maghrib", "Maghrib"),
+	("isha", "Isha"),
+	("midnight", "Midnight"),
+	("timezone", "Time Zone"),
 )
 
 ASR_STANDARD, ASR_HANAFI = (1, 2)
