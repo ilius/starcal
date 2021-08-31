@@ -3755,9 +3755,6 @@ msgstr "امساک"
 msgid "Fajr"
 msgstr "اذان صبح"
 
-msgid "Azan Subh"
-msgstr "اذان صبح"
-
 msgid "Sun Rise"
 msgstr "طلوع آفتاب"
 
@@ -3766,9 +3763,6 @@ msgstr "طلوع آفتاب"
 
 msgid "Sun Rise (Shorook)"
 msgstr "طلوع آفتاب"
-
-msgid "Azan Dhuhr"
-msgstr "اذان ظهر"
 
 msgid "Dhuhr"
 msgstr "اذان ظهر"
@@ -3782,14 +3776,7 @@ msgstr "غروب آفتاب"
 msgid "Sunset"
 msgstr "غروب آفتاب"
 
-
 msgid "Maghrib"
-msgstr "اذان مغرب"
-
-msgid "Maghreb"
-msgstr "اذان مغرب"
-
-msgid "Azan Maghreb"
 msgstr "اذان مغرب"
 
 msgid "Isha"
