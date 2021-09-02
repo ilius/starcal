@@ -3,6 +3,28 @@
 ## (like debian, ubuntu, mint, ...) and installs the package
 set -e
 
+function installPackage(){
+	# must run `set +e` before running this function
+	pkgPath="$1"
+	if apt-get install $(realpath "$pkgPath") ; then
+		return 0
+	fi
+	if [ -f /usr/bin/apt ] ; then
+		/usr/bin/apt reinstall "$pkgPath" 2>/tmp/starcal-apt-error
+		aptExitCode="$?"
+		if [[ $aptExitCode == "0" ]] ; then
+			return 0
+		fi
+		cat /tmp/starcal-apt-error
+		rm /tmp/starcal-apt-error
+		if [[ $aptExitCode == "1" ]] ; then
+			# user answered No, abort installation
+			return $aptExitCode
+		fi
+	fi
+	dpkg -i "$pkgPath" || apt-get -f install
+}
+
 function getDirTotalSize(){
 	du -ks "$1" | python3 -c "import sys;print(input().split('\t')[0])"
 }
@@ -102,19 +124,8 @@ pkgFile=${pkgName}_${version}-1_all.deb
 
 if dpkg-deb -b "$tmpDir" "$pkgFile" ; then
 	echo "Package file $pkgFile created, installing..."
-	if [ -f /usr/bin/gdebi ] ; then
-		if ! /usr/bin/gdebi "$pkgFile" 2>/tmp/gdebi-error ; then
-			if grep -q 'A later version is already installed' /tmp/gdebi-error ; then
-				dpkg -i "$pkgFile"
-			else
-				cat /tmp/gdebi-error
-			fi
-			rm /tmp/gdebi-error
-		fi
-	else
-		apt-get install python3-httplib2
-		dpkg -i "$pkgFile"
-	fi
+	set +e
+	installPackage "$pkgFile"
 fi
 
 rm -Rf "$tmpDir"
