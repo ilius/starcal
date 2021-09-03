@@ -41,7 +41,7 @@ options = (
 		"monthNameMode",
 		list,
 		"Jalali Month Names",
-		("Iranian", "Kurdish", "Dari", "Pashto"),
+		("Iranian", "Kurdish/Maadi", "Afghan/Dari", "Pashto"),
 	),
 	(
 		"jalaliAlg",
@@ -55,12 +55,14 @@ options = (
 monthNameVars = (
 	(
 		(
+			# Iranian
 			"Farvardin", "Ordibehesht", "Khordad",
 			"Teer", "Mordad", "Shahrivar",
 			"Mehr", "Aban", "Azar",
 			"Dey", "Bahman", "Esfand",
 		),
 		(
+			# Iranian - abbreviated
 			"Far", "Ord", "Khr",
 			"Tir", "Mor", "Shr",
 			"Meh", "Abn", "Azr",
@@ -69,6 +71,7 @@ monthNameVars = (
 	),
 	(
 		(
+			# Kurdish/Maadi
 			"Xakelêwe", "Gullan", "Cozerdan",
 			"Pûşper", "Gelawêj", "Xermanan",
 			"Rezber", "Gelarêzan", "Sermawez",
@@ -77,6 +80,7 @@ monthNameVars = (
 	),
 	(
 		(
+			# Afghan/Dari
 			"Hamal", "Sawr", "Jawzā",
 			"Saratān", "Asad", "Sonbola",
 			"Mizān", "Aqrab", "Qaws",
@@ -85,6 +89,7 @@ monthNameVars = (
 	),
 	(
 		(
+			# Pashto
 			"Wray", "Ǧwayay", "Ǧbargolay",
 			"Čungāx̌", "Zmaray", "Waǵay",
 			"Təla", "Laṛam", "Līndəi",
