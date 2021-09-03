@@ -31,16 +31,16 @@ origLang = "ar"
 monthName = (
 	"Muharram",
 	"Safar",
-	"Rabia\' 1",
-	"Rabia\' 2",
-	"Jumada 1",
-	"Jumada 2",
+	"Rabīʽ 1",
+	"Rabīʽ 2",
+	"Jumadā 1",
+	"Jumadā 2",
 	"Rajab",
-	"Sha\'aban",
-	"Ramadan",
-	"Shawwal",
-	"Dhu\'l Qidah",
-	"Dhu\'l Hijjah",
+	"Shaʿbān",
+	"Ramaḍān",
+	"Shawwāl",
+	"Ḏū'l-Qaʿdah",
+	"Ḏū'l-Ḥijjah",
 )
 
 monthNameAb = (
