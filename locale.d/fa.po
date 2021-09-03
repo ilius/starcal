@@ -701,19 +701,19 @@ msgid "Safar"
 msgstr ""
 "صفر"
 
-msgid "Rabia' 1"
+msgid "Rabīʽ 1"
 msgstr ""
 "ربیع‌الاول"
 
-msgid "Rabia' 2"
+msgid "Rabīʽ 2"
 msgstr ""
 "ربیع‌الثانی"
 
-msgid "Jumada 1"
+msgid "Jumadā 1"
 msgstr ""
 "جمادی‌الاول"
 
-msgid "Jumada 2"
+msgid "Jumadā 2"
 msgstr ""
 "جمادی‌الثانی"
 
@@ -721,23 +721,23 @@ msgid "Rajab"
 msgstr ""
 "رجب"
 
-msgid "Sha'aban"
+msgid "Shaʿbān"
 msgstr ""
 "شعبان"
 
-msgid "Ramadan"
+msgid "Ramaḍān"
 msgstr ""
 "رمضان"
 
-msgid "Shawwal"
+msgid "Shawwāl"
 msgstr ""
 "شوال"
 
-msgid "Dhu'l Qidah"
+msgid "Ḏū'l-Qaʿdah"
 msgstr ""
 "ذو‌القعده"
 
-msgid "Dhu'l Hijjah"
+msgid "Ḏū'l-Ḥijjah"
 msgstr ""
 "ذو‌الحجه"
 
