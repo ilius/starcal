@@ -1070,11 +1070,11 @@ msgstr ""
 msgid "Iranian"
 msgstr "ایرانی"
 
-msgid "Kurdish"
-msgstr "کردی"
+msgid "Kurdish/Maadi"
+msgstr "کردی/مادی"
 
-msgid "Dari"
-msgstr "دری"
+msgid "Afghan/Dari"
+msgstr "افغانی/دری"
 
 msgid "Pashto"
 msgstr "پشتو"
