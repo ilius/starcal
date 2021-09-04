@@ -378,7 +378,7 @@ class CustomizeDialog(gtk.Dialog):
 		for page in item.getSubPages():
 			page.pageParent = pageName
 			page.pageName = pageName + "." + page.pageName
-			page.pageTitle = title + " - " + page.pageTitle
+			page.pageTitle = page.pageTitle + " - " + title
 			self.stack.addPage(page)
 		item.connect("goto-page", self.gotoPageCallback)
 
