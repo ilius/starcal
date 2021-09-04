@@ -47,6 +47,7 @@ with open(join(modDir, "modules.list")) as fp:
 					"Invalid calendar module: " +
 					f"module {name!r} has no attribute {attr!r}\n"
 				)
+		# TODO: check argument names and count for funcs
 		modules.append(mod)
 
 

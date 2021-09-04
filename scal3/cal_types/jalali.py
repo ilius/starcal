@@ -103,13 +103,15 @@ def getMonthName(m, y=None):
 	return monthNameVars[monthNameMode][0][m - 1]
 
 
-def getMonthNameAb(m, y=None):
-	v = monthNameVars[monthNameMode]
-	try:
-		ls = v[1]
-	except IndexError:
-		ls = v[0]
-	return ls[m - 1]
+def getMonthNameAb(tr, m, y=None):
+	names = monthNameVars[monthNameMode]
+	fullEn = names[0][m - 1]
+	abbr = tr(fullEn, ctx="abbreviation")
+	if abbr != fullEn:
+		return abbr
+	if len(names) == 2:
+		return tr(names[1][m - 1])
+	return tr(fullEn)
 
 
 def getMonthsInYear(y):

@@ -138,7 +138,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 				module, ok = calTypes[calType]
 				if not ok:
 					raise RuntimeError(f"cal type '{calType}' not found")
-				return module.getMonthNameAb(cell.dates[calType][1])
+				return module.getMonthNameAb(_, cell.dates[calType][1])
 			funcs.append(f)
 			pyFmt += "%s"
 			i += 2
