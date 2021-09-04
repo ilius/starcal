@@ -376,7 +376,9 @@ class CustomizeDialog(gtk.Dialog):
 		self.stack.addPage(page) # FIXME: crashes here
 
 		for page in item.getSubPages():
-			page.pageParent = pageName
+			page.pageParent = ".".join(
+				[pageName] + page.pageName.split(".")[:-1]
+			)
 			page.pageName = pageName + "." + page.pageName
 			page.pageTitle = page.pageTitle + " - " + title
 			self.stack.addPage(page)
