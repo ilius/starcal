@@ -66,11 +66,15 @@ monthNameAb = (
 
 
 def getMonthName(m: int, y: Optional[int] = None) -> str:
-	return monthName.__getitem__(m - 1)
+	return monthName[m - 1]
 
 
-def getMonthNameAb(m, y: Optional[int] = None) -> str:
-	return monthNameAb.__getitem__(m - 1)
+def getMonthNameAb(tr, m, y: Optional[int] = None) -> str:
+	fullEn = monthName[m - 1]
+	abbr = tr(fullEn, ctx="abbreviation")
+	if abbr != fullEn:
+		return abbr
+	return monthNameAb[m - 1]
 
 
 def getMonthsInYear(y: int) -> int:

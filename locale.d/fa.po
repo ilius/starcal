@@ -370,213 +370,227 @@ msgstr ""
 
 
 msgid "Sunday"
-msgstr ""
-"یک‌شنبه"
+msgstr "یک‌شنبه"
 
 msgid "Monday"
-msgstr ""
-"دوشنبه"
+msgstr "دوشنبه"
 
 msgid "Tuesday"
-msgstr ""
-"سه‌شنبه"
+msgstr "سه‌شنبه"
 
 msgid "Wednesday"
-msgstr ""
-"چهارشنبه"
+msgstr "چهارشنبه"
 
 msgid "Thursday"
-msgstr ""
-"پنج‌شنبه"
+msgstr "پنج‌شنبه"
 
 msgid "Friday"
-msgstr ""
-"جمعه"
+msgstr "جمعه"
 
 msgid "Saturday"
-msgstr ""
-"شنبه"
+msgstr "شنبه"
 
+
+# TODO:
+# msgctxt "abbreviation"
+# msgid "Sunday"
 
 msgctxt "week days"
 msgid "Sun"
-msgstr ""
-"1 ش"
+msgstr "1 ش"
 
 msgctxt "week days"
 msgid "Mon"
-msgstr ""
-"2 ش"
+msgstr "2 ش"
 
 msgctxt "week days"
 msgid "Tue"
-msgstr ""
-"3 ش"
+msgstr "3 ش"
 
 msgctxt "week days"
 msgid "Wed"
-msgstr ""
-"4 ش"
+msgstr "4 ش"
 
 msgctxt "week days"
 msgid "Thu"
-msgstr ""
-"5 ش"
+msgstr "5 ش"
 
 msgctxt "week days"
 msgid "Fri"
-msgstr ""
-"ج"
+msgstr "ج"
 
 msgctxt "week days"
 msgid "Sat"
-msgstr ""
-"ش"
+msgstr "ش"
 
 
 msgid "January"
-msgstr ""
-"ژانویه"
+msgstr "ژانویه"
+
+msgctxt "abbreviation"
+msgid "January"
+msgstr "ژان‍"
 
 msgid "February"
-msgstr ""
-"فوریه" # "فبریه"
+msgstr "فوریه" # or "فبریه"
+
+msgctxt "abbreviation"
+msgid "February"
+msgstr "فور" # or "فِبر"
+
+msgctxt "abbreviation"
+msgid "March"
+msgstr "مار"
 
 msgid "March"
-msgstr ""
-"مارس"
+msgstr "مارس"
 
 msgid "April"
-msgstr ""
-"آوریل" # "آپریل"
+msgstr "آوریل" # or "آپریل"
 
+msgctxt "abbreviation"
+msgid "April"
+msgstr "آور" # or "آپر"
 
 msgid "May"
-msgstr ""
-"می" # "مه"
+msgstr "می" # or "مه"
+
+msgctxt "abbreviation"
+msgid "May"
+msgstr "می" # or "مه"
 
 msgid "June"
-msgstr ""
-"ژوئن" # "جوئن"
+msgstr "ژوئن" # or "جوئن"
+
+msgctxt "abbreviation"
+msgid "June"
+msgstr "ژوئ‍" # or "جوئن"
 
 msgid "July"
-msgstr ""
-"جولای" # "ژوئیه"
+msgstr "جولای" # or "ژوئیه"
+
+msgctxt "abbreviation"
+msgid "July"
+msgstr "جول‍" # or "ژوئیه"
 
 msgid "August"
-msgstr ""
-"آگوست" # "اوت"
+msgstr "آگوست" # or "اوت"
+
+msgctxt "abbreviation"
+msgid "August"
+msgstr "آگ‍" # or "اوت"
 
 msgid "September"
-msgstr ""
-"سپتامبر"
+msgstr "سپتامبر"
+
+msgctxt "abbreviation"
+msgid "September"
+msgstr "سِپت‍"
 
 msgid "October"
-msgstr ""
-"اکتبر"
+msgstr "اکتبر"
+
+msgctxt "abbreviation"
+msgid "October"
+msgstr "اُکت‍"
 
 msgid "November"
-msgstr ""
-"نوامبر"
+msgstr "نوامبر"
+
+msgctxt "abbreviation"
+msgid "November"
+msgstr "نُوا"
 
 msgid "December"
-msgstr ""
-"دسامبر"
+msgstr "دسامبر"
 
+msgctxt "abbreviation"
+msgid "December"
+msgstr "دِسا"
 
 msgid "Farvardin"
-msgstr ""
-"فروردین"
+msgstr "فروردین"
+
+msgctxt "abbreviation"
+msgid "Farvardin"
+msgstr "فَرو"
 
 msgid "Ordibehesht"
-msgstr ""
-"اردیبهشت"
+msgstr "اردیبهشت"
+
+msgctxt "abbreviation"
+msgid "Ordibehesht"
+msgstr "اُرد"
 
 msgid "Khordad"
-msgstr ""
-"خرداد"
+msgstr "خرداد"
+
+msgctxt "abbreviation"
+msgid "Khordad"
+msgstr "خُرد"
 
 msgid "Teer"
-msgstr ""
-"تیر"
+msgstr "تیر"
+
+msgctxt "abbreviation"
+msgid "Teer"
+msgstr "تیر"
 
 msgid "Mordad"
-msgstr ""
-"مرداد"
+msgstr "مرداد"
+
+msgctxt "abbreviation"
+msgid "Mordad"
+msgstr "مرد"
 
 msgid "Shahrivar"
-msgstr ""
-"شهریور"
+msgstr "شهریور"
+
+msgctxt "abbreviation"
+msgid "Shahrivar"
+msgstr "شهر"
 
 msgid "Mehr"
-msgstr ""
-"مهر"
+msgstr "مهر"
+
+msgctxt "abbreviation"
+msgid "Mehr"
+msgstr "مهر"
 
 msgid "Aban"
-msgstr ""
-"آبان"
+msgstr "آبان"
+
+msgctxt "abbreviation"
+msgid "Aban"
+msgstr "آبان"
 
 msgid "Azar"
-msgstr ""
-"آذر"
+msgstr "آذر"
+
+msgctxt "abbreviation"
+msgid "Azar"
+msgstr "آذر"
 
 msgid "Dey"
-msgstr ""
-"دی"
+msgstr "دی"
+
+msgctxt "abbreviation"
+msgid "Dey"
+msgstr "دی"
 
 msgid "Bahman"
-msgstr ""
-"بهمن"
+msgstr "بهمن"
+
+msgctxt "abbreviation"
+msgid "Bahman"
+msgstr "بَهم‍"
 
 msgid "Esfand"
-msgstr ""
-"اسفند"
+msgstr "اسفند"
 
-msgid "Far"
-msgstr ""
-"فَرو"
-
-msgid "Ord"
-msgstr ""
-"اُرد"
-
-msgid "Khr"
-msgstr ""
-"خُرد"
-
-msgid "Tir"
-msgstr ""
-"تیر"
-
-msgid "Mor"
-msgstr ""
-"مرد"
-
-msgid "Shr"
-msgstr ""
-"شهر"
-
-msgid "Meh"
-msgstr ""
-"مهر"
-
-msgid "Abn"
-msgstr ""
-"آبان"
-
-msgid "Azr"
-msgstr ""
-"آذر"
-
-msgid "Bah"
-msgstr ""
-"بَهم‍"
-
-msgid "Esf"
-msgstr ""
-"اِسف‍"
-
-
+msgctxt "abbreviation"
+msgid "Esfand"
+msgstr "اِسف‍"
 
 
 msgid "Xakelêwe"
@@ -694,102 +708,88 @@ msgstr "كب"
 
 
 msgid "Muharram"
-msgstr ""
-"محرم"
+msgstr "محرم"
+
+msgctxt "abbreviation"
+msgid "Muharram"
+msgstr "مُحرّ"
 
 msgid "Safar"
-msgstr ""
-"صفر"
+msgstr "صفر"
+
+msgctxt "abbreviation"
+msgid "Safar"
+msgstr "صفر"
 
 msgid "Rabīʽ 1"
-msgstr ""
-"ربیع‌الاول"
+msgstr "ربیع‌الاول"
+
+msgctxt "abbreviation"
+msgid "Rabīʽ 1"
+msgstr "رب‍.۱"
 
 msgid "Rabīʽ 2"
-msgstr ""
-"ربیع‌الثانی"
+msgstr "ربیع‌الثانی"
+
+msgctxt "abbreviation"
+msgid "Rabīʽ 2"
+msgstr "رب‍.۲"
 
 msgid "Jumadā 1"
-msgstr ""
-"جمادی‌الاول"
+msgstr "جمادی‌الاول"
+
+msgctxt "abbreviation"
+msgid "Jumadā 1"
+msgstr "جم‍.۱"
 
 msgid "Jumadā 2"
-msgstr ""
-"جمادی‌الثانی"
+msgstr "جمادی‌الثانی"
+
+msgctxt "abbreviation"
+msgid "Jumadā 2"
+msgstr "جم‍.۲"
 
 msgid "Rajab"
-msgstr ""
-"رجب"
+msgstr "رجب"
+
+msgctxt "abbreviation"
+msgid "Rajab"
+msgstr "رجب"
 
 msgid "Shaʿbān"
-msgstr ""
-"شعبان"
+msgstr "شعبان"
+
+msgctxt "abbreviation"
+msgid "Shaʿbān"
+msgstr "شَعب‍"
 
 msgid "Ramaḍān"
-msgstr ""
-"رمضان"
+msgstr "رمضان"
+
+msgctxt "abbreviation"
+msgid "Ramaḍān"
+msgstr "رمض‍"
 
 msgid "Shawwāl"
-msgstr ""
-"شوال"
+msgstr "شوّال"
+
+msgctxt "abbreviation"
+msgid "Shawwāl"
+msgstr "شَوّا"
 
 msgid "Ḏū'l-Qaʿdah"
-msgstr ""
-"ذو‌القعده"
+msgstr "ذو‌القعده"
+
+msgctxt "abbreviation"
+msgid "Ḏū'l-Qaʿdah"
+msgstr "ذو‌.ق"
 
 msgid "Ḏū'l-Ḥijjah"
-msgstr ""
-"ذو‌الحجه"
+msgstr "ذو‌الحجه"
 
-
-msgid "Moh"
-msgstr ""
-"مُحرّ"
-
-msgid "Saf"
-msgstr ""
-"صفر"
-
-msgid "Rb1"
-msgstr ""
-"رب‍.۱"
-
-msgid "Rb2"
-msgstr ""
-"رب‍.۲"
-
-msgid "Jm1"
-msgstr ""
-"جم‍.۱"
-
-msgid "Jm2"
-msgstr ""
-"جم‍.۲"
-
-msgid "Raj"
-msgstr ""
-"رجب"
-
-msgid "Shb"
-msgstr ""
-"شعب‍"
-
-msgid "Ram"
-msgstr ""
-"رمض‍"
-
-msgid "Shw"
-msgstr ""
-"شوال"
-
-msgid "DhQ"
-msgstr ""
-"ذو‌.ق"
-
-msgid "DhH"
-msgstr ""
-"ذو‌.ح"
-
+msgctxt "abbreviation"
+msgid "Ḏū'l-Ḥijjah"
+msgstr "ذو‌.ح"
 
 
 msgid "Meskerem"
@@ -874,63 +874,87 @@ msgstr "ایلول"
 
 msgid "Chaitra"
 msgstr "چَیتره"
-msgid "Cha"
+
+msgctxt "abbreviation"
+msgid "Chaitra"
 msgstr "چیت‍"
 
 msgid "Vaisākha"
 msgstr "ویشاکهه"
-msgid "Vai"
+
+msgctxt "abbreviation"
+msgid "Vaisākha"
 msgstr "ویش‍"
 
 msgid "Jyēshtha"
 msgstr "جییشته"
-msgid "Jyē"
+
+msgctxt "abbreviation"
+msgid "Jyēshtha"
 msgstr "جی‍"
 
 msgid "Āshādha"
 msgstr "آشادهه"
-msgid "Āsh"
-msgstr "آش‍"
+
+msgctxt "abbreviation"
+msgid "Āshādha"
+msgstr "آشا"
 
 msgid "Shrāvana"
 msgstr "شِراوَنَه"
-msgid "Shrā"
+
+msgctxt "abbreviation"
+msgid "Shrāvana"
 msgstr "شِرا"
 
 msgid "Bhādra"
 msgstr "بِهادْرَه"
-msgid "Bhā"
-msgstr "بِه‍"
+
+msgctxt "abbreviation"
+msgid "Bhādra"
+msgstr "بِها"
 
 msgid "Āshwin"
 msgstr "آشوین"
-msgid "Āsw"
+
+msgctxt "abbreviation"
+msgid "Āshwin"
 msgstr "آشو"
 
 msgid "Kārtika"
 msgstr "کارتیکه"
-msgid "Kār"
+
+msgctxt "abbreviation"
+msgid "Kārtika"
 msgstr "کار"
 
 msgid "Agrahayana"
 msgstr "اَگرَهَیَنَه"
-msgid "Agr"
+
+msgctxt "abbreviation"
+msgid "Agrahayana"
 msgstr "اَگر"
 
 msgid "Pausha"
 msgstr "پاوشه"
-msgid "Pau"
+
+msgctxt "abbreviation"
+msgid "Pausha"
 msgstr "پاو"
 
 msgid "Māgha"
 msgstr "ماگهه"
-msgid "Māg"
-msgstr "ماگ"
+
+msgctxt "abbreviation"
+msgid "Māgha"
+msgstr "ماگ‍"
 
 msgid "Phālguna"
 msgstr "پهالگونه"
-msgid "Phā"
-msgstr "پها"
+
+msgctxt "abbreviation"
+msgid "Phālguna"
+msgstr "پَها"
 
 
 msgid "Previous Year"

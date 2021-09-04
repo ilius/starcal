@@ -355,7 +355,7 @@ def getMonthName(
 	if not ok:
 		raise RuntimeError(f"cal type '{calType}' not found")
 	if abbreviate:
-		return tr(module.getMonthNameAb(month, year))
+		return module.getMonthNameAb(tr, month, year)
 	return tr(module.getMonthName(month, year))
 
 
