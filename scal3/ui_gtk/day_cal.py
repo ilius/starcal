@@ -648,4 +648,6 @@ class DayCal(gtk.DrawingArea, CalBase):
 
 	def onConfigChange(self, *a, **kw):
 		CustomizableCalObj.onConfigChange(self, *a, **kw)
-		self.updateTypeParamsWidget() # why is this needed? FIXME
+		# TODO: if active cal types are changed, we should re-order buttons
+		# hide extra buttons, and possibly add new buttons with their pages
+		# in Customize window
