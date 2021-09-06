@@ -1669,6 +1669,10 @@ msgid "Week Day"
 msgstr ""
 "روز هفته"
 
+msgid "Localize"
+msgstr ""
+"بومی‌سازی"
+
 msgid "Abbreviate"
 msgstr ""
 "خلاصه کردن"

@@ -240,15 +240,23 @@ def getWeekDayN(i: int) -> int:
 
 def getWeekDayAuto(
 	number: int,
+	localize: bool = True,
 	abbreviate: bool = False,
 	relative: bool = True,
 ) -> str:
 	if relative:
 		number = (number + firstWeekDay) % 7
+
+	if not localize:
+		if abbreviate:
+			return weekDayNameAbEnglish[number]
+		else:
+			return weekDayNameEnglish[number]
+
 	if abbreviate:
 		return weekDayNameAb[number]
-	else:
-		return weekDayName[number]
+
+	return weekDayName[number]
 
 
 # week number in year
