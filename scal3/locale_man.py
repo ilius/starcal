@@ -298,7 +298,8 @@ def loadTranslator() -> Callable:
 		except Exception:
 			log.exception("")
 	if transObj:
-		def tr(s, *a, nums=False, ctx=None, **ka):
+		def tr(s, *a, nums=False, ctx=None, default=None, **ka):
+			orig = s
 			if isinstance(s, (int, float)):
 				s = numEncode(s, *a, **ka)
 			else:
@@ -306,6 +307,8 @@ def loadTranslator() -> Callable:
 					s = toStr(transObj.pgettext(ctx, s))
 				else:
 					s = toStr(transObj.gettext(s))
+				if default is not None and s == orig:
+					s = default
 				if a:
 					s = s % a
 				if ka:
