@@ -591,25 +591,22 @@ if aboutText in ("aboutText", ""):
 		aboutText = fp.read()
 
 
-weekDayName = (
-	_("Sunday"),
-	_("Monday"),
-	_("Tuesday"),
-	_("Wednesday"),
-	_("Thursday"),
-	_("Friday"),
-	_("Saturday"),
+weekDayNameEnglish = (
+	"Sunday",
+	"Monday",
+	"Tuesday",
+	"Wednesday",
+	"Thursday",
+	"Friday",
+	"Saturday",
 )
-weekDayNameAb = (
-	_("Sunday", nums=True, ctx="abbreviation", default="Sun"),
-	_("Monday", nums=True, ctx="abbreviation", default="Mon"),
-	_("Tuesday", nums=True, ctx="abbreviation", default="Tue"),
-	_("Wednesday", nums=True, ctx="abbreviation", default="Wed"),
-	_("Thursday", nums=True, ctx="abbreviation", default="Thu"),
-	_("Friday", nums=True, ctx="abbreviation", default="Fri"),
-	_("Saturday", nums=True, ctx="abbreviation", default="Sat"),
-)
+weekDayNameAbEnglish = ("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")
 
+weekDayName = tuple(_(name) for name in weekDayNameEnglish)
+weekDayNameAb = tuple(
+	_(name, nums=True, ctx="abbreviation", default=weekDayNameAbEnglish[i])
+	for i, name in enumerate(weekDayNameEnglish)
+)
 
 # if firstWeekDayAuto and os.sep=="/":	# only if unix
 # 	firstWeekDay = getLocaleFirstWeekDay()
