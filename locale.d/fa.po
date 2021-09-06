@@ -372,55 +372,50 @@ msgstr ""
 msgid "Sunday"
 msgstr "یک‌شنبه"
 
+msgctxt "abbreviation"
+msgid "Sunday"
+msgstr "1 ش"
+
 msgid "Monday"
 msgstr "دوشنبه"
+
+msgctxt "abbreviation"
+msgid "Monday"
+msgstr "2 ش"
 
 msgid "Tuesday"
 msgstr "سه‌شنبه"
 
+msgctxt "abbreviation"
+msgid "Tuesday"
+msgstr "3 ش"
+
 msgid "Wednesday"
 msgstr "چهارشنبه"
+
+msgctxt "abbreviation"
+msgid "Wednesday"
+msgstr "4 ش"
 
 msgid "Thursday"
 msgstr "پنج‌شنبه"
 
+msgctxt "abbreviation"
+msgid "Thursday"
+msgstr "5 ش"
+
 msgid "Friday"
 msgstr "جمعه"
+
+msgctxt "abbreviation"
+msgid "Friday"
+msgstr "ج"
 
 msgid "Saturday"
 msgstr "شنبه"
 
-
-# TODO:
-# msgctxt "abbreviation"
-# msgid "Sunday"
-
-msgctxt "week days"
-msgid "Sun"
-msgstr "1 ش"
-
-msgctxt "week days"
-msgid "Mon"
-msgstr "2 ش"
-
-msgctxt "week days"
-msgid "Tue"
-msgstr "3 ش"
-
-msgctxt "week days"
-msgid "Wed"
-msgstr "4 ش"
-
-msgctxt "week days"
-msgid "Thu"
-msgstr "5 ش"
-
-msgctxt "week days"
-msgid "Fri"
-msgstr "ج"
-
-msgctxt "week days"
-msgid "Sat"
+msgctxt "abbreviation"
+msgid "Saturday"
 msgstr "ش"
 
 
