@@ -33,6 +33,7 @@ class CalObj(DayCal):
 	buttonsParam = "dcalButtons"
 	eventIconSizeParam = "dcalEventIconSize"
 	eventTotalSizeRatioParam = "dcalEventTotalSizeRatio"
+	weekdayLocalizeParam = "dcalWeekdayLocalize"
 	weekdayAbbreviateParam = "dcalWeekdayAbbreviate"
 	weekdayUppercaseParam = "dcalWeekdayUppercase"
 

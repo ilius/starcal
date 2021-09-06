@@ -57,6 +57,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 	dayParamsParam = ""
 	monthParamsParam = ""
 	weekdayParamsParam = ""
+	weekdayLocalizeParam = ""
 	weekdayAbbreviateParam = ""
 	weekdayUppercaseParam = ""
 	weekdayUppercaseParam = ""
@@ -310,6 +311,15 @@ class DayCal(gtk.DrawingArea, CalBase):
 			)
 			pack(pageWidget, weekdayWidget)
 			###
+			if self.weekdayLocalizeParam:
+				prefItem = CheckPrefItem(
+					ui,
+					self.weekdayLocalizeParam,
+					label=_("Localize"),
+					live=True,
+					onChangeFunc=self.queue_draw,
+				)
+				pack(pageWidget, prefItem.getWidget())
 			if self.weekdayAbbreviateParam:
 				prefItem = CheckPrefItem(
 					ui,
@@ -341,10 +351,12 @@ class DayCal(gtk.DrawingArea, CalBase):
 			pack(optionsWidget, button, padding=4)
 			###
 			c = self.getCell()
-			abbreviate = False
-			if self.weekdayAbbreviateParam:
-				abbreviate = getattr(ui, self.weekdayAbbreviateParam)
-			text = core.getWeekDayAuto(c.weekDay, abbreviate=abbreviate, relative=False)
+			text = core.getWeekDayAuto(
+				c.weekDay,
+				localize=self.getWeekdayLocalize(),
+				abbreviate=self.getWeekdayAbbreviate(),
+				relative=False,
+			)
 			weekdayWidget.setFontPreviewText(text)
 
 		########
@@ -492,6 +504,16 @@ class DayCal(gtk.DrawingArea, CalBase):
 				continue
 			yield calType, params
 
+	def getWeekdayLocalize(self) -> bool:
+		if self.weekdayLocalizeParam:
+			return getattr(ui, self.weekdayLocalizeParam)
+		return True
+
+	def getWeekdayAbbreviate(self) -> bool:
+		if self.weekdayAbbreviateParam:
+			return getattr(ui, self.weekdayAbbreviateParam)
+		return False
+
 	def drawWithContext(self, cr: "cairo.Context", cursor: bool):
 		#gevent = gtk.get_current_event()
 		w = self.get_allocation().width
@@ -548,10 +570,12 @@ class DayCal(gtk.DrawingArea, CalBase):
 		if self.weekdayParamsParam:
 			params = self.getWeekDayParams()
 			if params.get("enable", True):
-				abbreviate = False
-				if self.weekdayAbbreviateParam:
-					abbreviate = getattr(ui, self.weekdayAbbreviateParam)
-				text = core.getWeekDayAuto(c.weekDay, abbreviate=abbreviate, relative=False)
+				text = core.getWeekDayAuto(
+					c.weekDay,
+					localize=self.getWeekdayLocalize(),
+					abbreviate=self.getWeekdayAbbreviate(),
+					relative=False,
+				)
 				if self.weekdayUppercaseParam:
 					if getattr(ui, self.weekdayUppercaseParam):
 						text = text.upper()

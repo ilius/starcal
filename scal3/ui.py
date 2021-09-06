@@ -193,8 +193,10 @@ confParamsCustomize = (
 	"dcalWinButtonsEnable",
 	# "dcalWinButtons",
 
+	"dcalWeekdayLocalize",
 	"dcalWeekdayAbbreviate",
 	"dcalWeekdayUppercase",
+	"dcalWinWeekdayLocalize",
 	"dcalWinWeekdayAbbreviate",
 	"dcalWinWeekdayUppercase",
 
@@ -1260,9 +1262,11 @@ dcalWinButtons = [
 
 ####################
 
+dcalWeekdayLocalize = True
 dcalWeekdayAbbreviate = False
 dcalWeekdayUppercase = False
 
+dcalWinWeekdayLocalize = True
 dcalWinWeekdayAbbreviate = False
 dcalWinWeekdayUppercase = False
 

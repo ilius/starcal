@@ -147,6 +147,7 @@ class DayCalWindowWidget(DayCal):
 	buttonsParam = "dcalWinButtons"
 	eventIconSizeParam = "dcalWinEventIconSize"
 	eventTotalSizeRatioParam = "dcalWinEventTotalSizeRatio"
+	weekdayLocalizeParam = "dcalWinWeekdayLocalize"
 	weekdayAbbreviateParam = "dcalWinWeekdayAbbreviate"
 	weekdayUppercaseParam = "dcalWinWeekdayUppercase"
 
