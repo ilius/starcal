@@ -83,7 +83,7 @@ def liveConfChanged():
 		lastLiveConfChangeTime = tm
 
 
-class DayCalWindowCustomizeDialog(gtk.Dialog):
+class DayCalWindowCustomizeWindow(gtk.Dialog):
 	def __init__(self, dayCal: DayCal, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
 		self._widget = dayCal
@@ -158,28 +158,28 @@ class DayCalWindowWidget(DayCal):
 		DayCal.__init__(self, win)
 		self.set_size_request(50, 50)
 		self.menu = None
-		self.customizeDialog = None
+		self.customizeWindow = None
 
-	def customizeDialogCreate(self):
-		if not self.customizeDialog:
-			self.customizeDialog = DayCalWindowCustomizeDialog(
+	def customizeWindowCreate(self):
+		if not self.customizeWindow:
+			self.customizeWindow = DayCalWindowCustomizeWindow(
 				self,
 				transient_for=self._window,
 			)
 
 	def openCustomize(self, gevent):
-		self.customizeDialogCreate()
+		self.customizeWindowCreate()
 		x, y = self._window.get_position()
 		w, h = self._window.get_size()
-		cw, ch = self.customizeDialog.get_size()
+		cw, ch = self.customizeWindow.get_size()
 		cx = x + w + 5
 		cy = y
 		if cx + cw > ud.screenW:
 			cx = x - cw - 5
 		if cy + ch > ud.screenH:
 			cy = y + h - ch
-		self.customizeDialog.present()
-		self.customizeDialog.move(cx, cy)
+		self.customizeWindow.present()
+		self.customizeWindow.move(cx, cy)
 		# should move() after present()
 
 	def onButtonPress(self, obj, gevent):
