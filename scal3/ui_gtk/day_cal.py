@@ -346,7 +346,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			pageWidget.show_all()
 			page = StackPage()
 			page.pageWidget = pageWidget
-			page.pageName = "dayCal.weekday"
+			page.pageName = "weekday"
 			page.pageTitle = _("Week Day")
 			page.pageLabel = _("Week Day")
 			page.pageExpand = False
@@ -367,7 +367,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		vbox = VBox(spacing=10)
 		page = StackPage()
 		page.pageWidget = vbox
-		page.pageName = "dayCal.events"
+		page.pageName = "events"
 		page.pageTitle = _("Events")
 		page.pageLabel = _("Events")
 		page.pageExpand = False
