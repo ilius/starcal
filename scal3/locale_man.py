@@ -289,16 +289,6 @@ def prepareLanguage() -> str:
 
 def loadTranslator() -> Callable:
 	global tr
-	# FIXME: How to say to gettext that itself detects coding(charset)
-	# from locale name and return a unicode object instead of str?
-	# if isdir(localeDir):
-	# 	transObj = gettext.translation(
-	# 		APP_NAME,
-	# 		localeDir,
-	# 		languages=[langActive, langDefault],
-	# 		fallback=True,
-	# 	)
-	# else:  # for example on windows (what about mac?)
 	transObj = None
 	langObj = langDict[langActive]
 	if langObj.transPath:
