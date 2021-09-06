@@ -287,7 +287,7 @@ def prepareLanguage() -> str:
 	return langSh
 
 
-def loadTranslator(ui_is_qt=False) -> Callable:
+def loadTranslator() -> Callable:
 	global tr
 	# FIXME: How to say to gettext that itself detects coding(charset)
 	# from locale name and return a unicode object instead of str?
@@ -316,8 +316,6 @@ def loadTranslator(ui_is_qt=False) -> Callable:
 					s = toStr(transObj.pgettext(ctx, s))
 				else:
 					s = toStr(transObj.gettext(s))
-				if ui_is_qt:
-					s = s.replace("_", "&")
 				if a:
 					s = s % a
 				if ka:
@@ -325,16 +323,6 @@ def loadTranslator(ui_is_qt=False) -> Callable:
 				if nums:
 					s = textNumEncode(s)
 			return s
-		"""
-		if ui_is_qt:## qt takes "&" instead of "_" as trigger
-			tr = lambda s, *a, **ka: numEncode(s, *a, **ka) \
-				if isinstance(s, int) \
-				else transObj.gettext(toBytes(s)).replace("_", "&").decode("utf-8")
-		else:
-			tr = lambda s, *a, **ka: numEncode(s, *a, **ka) \
-				if isinstance(s, int) \
-				else transObj.gettext(toBytes(s)).decode("utf-8")
-		"""
 	else:
 		def tr(s, *a, **ka):
 			return str(s)
