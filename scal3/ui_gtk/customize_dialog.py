@@ -47,7 +47,7 @@ from scal3.ui_gtk.toolbox import (
 )
 
 
-class CustomizeDialogItemsToolbar(StaticToolBox):
+class CustomizeWindowItemsToolbar(StaticToolBox):
 	def __init__(self, parent, onClickArgs):
 		StaticToolBox.__init__(
 			self,
@@ -91,7 +91,7 @@ class CustomizeDialogItemsToolbar(StaticToolBox):
 
 
 
-class CustomizeDialog(gtk.Dialog):
+class CustomizeWindow(gtk.Dialog):
 	def __init__(self, item: "CustomizableCalObj", scrolled=True, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.vbox.set_border_width(10)
@@ -220,7 +220,7 @@ class CustomizeDialog(gtk.Dialog):
 			pack(vbox_l, treev, 1, 1)
 		pack(hbox, vbox_l, 1, 1)
 		###
-		toolbar = CustomizeDialogItemsToolbar(
+		toolbar = CustomizeWindowItemsToolbar(
 			self,
 			(treev,)
 		)

@@ -180,7 +180,7 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 		CustomizableCalBox.onKeyPress(self, arg, gevent)
 		return True  # FIXME
 
-	def switchWcalMcal(self, customizeDialog):
+	def switchWcalMcal(self, customizeWindow):
 		wi = None
 		mi = None
 		for i, item in enumerate(self.items):
@@ -189,7 +189,7 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 			elif item._name == "monthCal":
 				mi = i
 		for itemIndex in (wi, mi):
-			customizeDialog.loadItem(self, itemIndex)
+			customizeWindow.loadItem(self, itemIndex)
 		wcal, mcal = self.items[wi], self.items[mi]
 		wcal.enable, mcal.enable = mcal.enable, wcal.enable
 		# FIXME
@@ -308,7 +308,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		self.rightPanel = None
 		self.statusBar = None
 		####
-		self.customizeDialog = None
+		self.customizeWindow = None
 		############
 		layoutFooter = WinLayoutBox(
 			name="footer",
@@ -1609,20 +1609,20 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			self.emit("date-change")
 		openWindow(self.dayInfoDialog)
 
-	def customizeDialogCreate(self):
-		if not self.customizeDialog:
-			from scal3.ui_gtk.customize_dialog import CustomizeDialog
-			self.customizeDialog = CustomizeDialog(self.layout, transient_for=self)
+	def customizeWindowCreate(self):
+		if not self.customizeWindow:
+			from scal3.ui_gtk.customize_dialog import CustomizeWindow
+			self.customizeWindow = CustomizeWindow(self.layout, transient_for=self)
 
 	def switchWcalMcal(self, widget=None):
-		self.customizeDialogCreate()
-		self.mainVBox.switchWcalMcal(self.customizeDialog)
-		self.customizeDialog.updateTreeEnableChecks()
-		self.customizeDialog.save()
+		self.customizeWindowCreate()
+		self.mainVBox.switchWcalMcal(self.customizeWindow)
+		self.customizeWindow.updateTreeEnableChecks()
+		self.customizeWindow.save()
 
 	def customizeShow(self, obj=None, data=None):
-		self.customizeDialogCreate()
-		openWindow(self.customizeDialog)
+		self.customizeWindowCreate()
+		openWindow(self.customizeWindow)
 
 	def exportShow(self, year, month):
 		if not self.exportDialog:
