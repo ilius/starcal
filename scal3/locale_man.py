@@ -124,6 +124,7 @@ langActive = ""
 # (because it needs to restart program to apply new language)
 langSh = ""  # short language name, for example "en", "fa", "fr", ...
 rtl = False  # right to left
+langHasUppercase = True
 
 enableNumLocale = True
 
@@ -149,6 +150,7 @@ class LangData(JsonSObj):
 		"fileName",  # shortName
 		"flag",  # flagFile
 		"rtl",
+		"hasUppercase",
 		"timeZoneList",
 	)
 
@@ -161,6 +163,7 @@ class LangData(JsonSObj):
 		self.fileName = ""
 		self.flag = ""
 		self.rtl = False
+		self.hasUppercase = True
 		self.transPath = ""
 		##
 		self.timeZoneList = []  # type: List[str]
@@ -258,7 +261,7 @@ def getLocaleFirstWeekDay() -> int:
 
 
 def prepareLanguage() -> str:
-	global lang, langActive, langSh, rtl
+	global lang, langActive, langSh, rtl, langHasUppercase
 	if lang == "":
 		# langActive = locale.setlocale(locale.LC_ALL, "")
 		langActive = sysLangDefault
@@ -284,6 +287,7 @@ def prepareLanguage() -> str:
 	langSh = langActive.split("_")[0]
 	# sysRtl = (popen_output(["locale", "cal_direction"])=="3\n")  # FIXME
 	rtl = langDict[langActive].rtl
+	langHasUppercase = langDict[langActive].hasUppercase
 	return langSh
 
 

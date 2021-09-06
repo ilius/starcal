@@ -4,5 +4,6 @@
 	"nativeName": "English",
 	"fileName": "",
 	"flag": "",
-	"rtl": false
+	"rtl": false,
+	"hasUppercase": true
 }

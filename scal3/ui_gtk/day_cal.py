@@ -31,7 +31,12 @@ from math import sqrt
 from scal3.cal_types import calTypes
 from scal3 import core
 from scal3.core import log
-from scal3.locale_man import rtl, rtlSgn, getMonthName
+from scal3.locale_man import (
+	rtl,
+	rtlSgn,
+	langHasUppercase,
+	getMonthName,
+)
 from scal3.locale_man import tr as _
 from scal3 import ui
 from scal3.monthcal import getCurrentMonthStatus
@@ -59,7 +64,6 @@ class DayCal(gtk.DrawingArea, CalBase):
 	weekdayParamsParam = ""
 	weekdayLocalizeParam = ""
 	weekdayAbbreviateParam = ""
-	weekdayUppercaseParam = ""
 	weekdayUppercaseParam = ""
 	buttonsEnableParam = ""
 	buttonsParam = ""
@@ -204,7 +208,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 				hasEnable=True,
 				hasAlign=True,
 				hasAbbreviate=True,
-				hasUppercase=True,
+				hasUppercase=langHasUppercase,
 				enableTitleLabel=_("Month Name"),
 				useFrame=True,
 			)
@@ -329,7 +333,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 					onChangeFunc=self.queue_draw,
 				)
 				pack(pageWidget, prefItem.getWidget())
-			if self.weekdayUppercaseParam:
+			if langHasUppercase and self.weekdayUppercaseParam:
 				prefItem = CheckPrefItem(
 					ui,
 					self.weekdayUppercaseParam,
@@ -576,7 +580,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 					abbreviate=self.getWeekdayAbbreviate(),
 					relative=False,
 				)
-				if self.weekdayUppercaseParam:
+				if langHasUppercase and self.weekdayUppercaseParam:
 					if getattr(ui, self.weekdayUppercaseParam):
 						text = text.upper()
 				daynum = newTextLayout(
