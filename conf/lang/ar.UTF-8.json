@@ -14,5 +14,6 @@
 		"Asia/Damascus",
 		"Asia/Beirut"
 	],
-	"rtl": true
+	"rtl": true,
+	"hasUppercase": true
 }
