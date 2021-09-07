@@ -1549,6 +1549,8 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			from scal3.ui_gtk.preferences import PreferencesWindow
 			ui.prefWindow = PreferencesWindow(transient_for=self)
 			ui.prefWindow.updatePrefGui()
+		if self.customizeWindow and self.customizeWindow.is_visible():
+			log.warn("customize window is open")
 		openWindow(ui.prefWindow)
 
 	def eventManCreate(self):
