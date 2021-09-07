@@ -36,6 +36,7 @@ from scal3.locale_man import (
 	rtlSgn,
 	langHasUppercase,
 	getMonthName,
+	langSh,
 )
 from scal3.locale_man import tr as _
 from scal3 import ui
@@ -315,7 +316,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			)
 			pack(pageWidget, weekdayWidget)
 			###
-			if self.weekdayLocalizeParam:
+			if self.weekdayLocalizeParam and langSh != "en":
 				prefItem = CheckPrefItem(
 					ui,
 					self.weekdayLocalizeParam,
