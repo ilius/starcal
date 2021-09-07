@@ -514,6 +514,9 @@ def textNumDecode(text: str) -> str:
 				textEn += ","
 			elif ch == tr("_"):
 				textEn += "_"
+			else:
+				# "-" is specially important
+				textEn += ch
 	return textEn
 
 
