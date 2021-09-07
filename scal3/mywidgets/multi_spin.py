@@ -224,7 +224,7 @@ class StrConField(Field):
 		return self._text
 
 	def getText(self):
-		return self_text
+		return self._text
 
 	def getMaxWidth(self):
 		return len(self._text)
