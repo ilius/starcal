@@ -24,8 +24,8 @@ def getIntWidget():
 
 def getFloatWidget():
 	from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
-	btn = FloatSpinButton(-3.3, 5.5, 1)
-	btn.set_value(3.67)
+	btn = FloatSpinButton(-10, 10, 1)
+	btn.set_value(-3)
 	btn.set_editable(True)
 	return btn
 
@@ -48,7 +48,7 @@ def getTimerWidget():
 
 if __name__ == "__main__":
 	d = gtk.Dialog()
-	btn = getTimerWidget()
+	btn = getFloatWidget()
 	pack(d.vbox, btn, 1, 1)
 	d.vbox.show_all()
 	d.run()
