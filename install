@@ -22,8 +22,6 @@ iconName=starcal3.png
 
 sourceDir="`dirname \"$myPath\"`"
 
-PY_SUPPORTED=(3.9 3.8 3.7 3.6 3.5)
-
 #"$sourceDir/scripts/assert_python3"
 
 "$sourceDir/update-perm" ## FIXME
@@ -75,17 +73,23 @@ if [ "$installType" != "for-pkg" ] ; then
 fi
 
 if [ -z "$pyCmd" ] ; then
-	for ver in "${PY_SUPPORTED[@]}" ; do
-		pyCmd=`which "python$ver"` && break
-	done
-	if [ -z "$pyCmd" ] ; then
-		echo "Only these python versions are supported: ${PY_SUPPORTED[@]}" >&2
+	if ! pyCmd=`which "python3"` ; then
+		echo "Python executable file not found." >&2
+		echo "Make sure 'python3' is in one of \$PATH directories." >&2
 		exit 1
 	fi
 fi
-# else
-#	# TODO: check version is compatible
-# fi
+if ! "$pyCmd" -c 'import sys
+version = (sys.version_info.major, sys.version_info.minor)
+if (3, 5) <= version <= (3, 9):
+	exit(0)
+else:
+	exit(1)
+' ; then
+	pyVer=`"$pyCmd" --version`
+	printf "\e[31mWarning: $pyVer is not officially supported.\e[m\n" >&2
+fi
+
 
 echo "Using $pyCmd"
 version=`$pyCmd "$sourceDir/scal3/get_version.py"`
