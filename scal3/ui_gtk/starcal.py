@@ -1451,8 +1451,9 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				self.stick()
 			self.deiconify()
 			self.present()
-			# in LXDE and LXQt, the window is not focused (sometimes or never)
-			# works in Xfce and GNOME. (to test on other desktops)
+			self.focusIn()
+			# in LXDE, the window was not focused without self.focusIn()
+			# while worked in Xfce and GNOME.
 
 	def onDeleteEvent(self, widget=None, event=None):
 		# ui.winX, ui.winY = self.get_position()
