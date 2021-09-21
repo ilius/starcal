@@ -90,9 +90,20 @@ class EventEditorDialog(gtk.Dialog):
 		pack(self.vbox, self.activeWidget, 1, 1)
 		self.vbox.show()
 
+	def replaceExistingEvent(self, eventType):
+		oldEvent = self.event
+		newEvent = self._group.create(eventType)
+		###
+		newEvent.changeCalType(oldEvent.calType)
+		newEvent.copyFrom(oldEvent)
+		###
+		newEvent.setId(oldEvent.id)
+		oldEvent.invalidate()
+		self.event = newEvent
+
 	def replaceEventWithType(self, eventType):
 		if not self.isNew:
-			self.event = self._group.copyEventWithType(self.event, eventType)
+			self.replaceExistingEvent(eventType)
 			return
 
 		restoreDict = {}
