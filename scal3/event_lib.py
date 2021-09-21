@@ -4241,7 +4241,7 @@ class EventGroup(EventContainer):
 
 	# event objects should be accessed from outside
 	# only via one of the following 4 methods:
-	# getEvent, getEventNoCache, create, copyEventWithType
+	# getEvent, getEventNoCache, create
 
 	def removeFromCache(self, eid: int) -> None:
 		if not self.eventCache:
@@ -4276,17 +4276,6 @@ class EventGroup(EventContainer):
 		event = classes.event.byName[eventType](parent=self)  # FIXME
 		event.fs = self.fs
 		return event
-
-	def copyEventWithType(self, event: "Event", eventType: str) -> "Event":
-		newEvent = self.create(eventType)
-		###
-		newEvent.changeCalType(event.calType)
-		newEvent.copyFrom(event)
-		###
-		newEvent.setId(event.id)
-		event.invalidate()
-		###
-		return newEvent
 
 	###############################################
 
