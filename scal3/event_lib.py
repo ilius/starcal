@@ -589,7 +589,7 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 	conflict = (
 		"date",
 	)
-	#params = ("values",)
+	params = ("values",)
 	expand = True  # FIXME
 
 	def __init__(self, parent):
@@ -639,6 +639,7 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 class YearEventRule(MultiValueAllDayEventRule):
 	name = "year"
 	desc = _("Year")
+	params = ("values",)
 
 	def getServerString(self):
 		return numRangesEncode(self.values, " ")  # no comma
@@ -679,6 +680,7 @@ class MonthEventRule(MultiValueAllDayEventRule):
 		"date",
 		"weekMonth",
 	)
+	params = ("values",)
 
 	def getServerString(self):
 		return numRangesEncode(self.values, " ")  # no comma
@@ -697,6 +699,7 @@ class MonthEventRule(MultiValueAllDayEventRule):
 class DayOfMonthEventRule(MultiValueAllDayEventRule):
 	name = "day"
 	desc = _("Day of Month")
+	params = ("values",)
 
 	def getServerString(self):
 		return numRangesEncode(self.values, " ")  # no comma
