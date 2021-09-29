@@ -8,6 +8,7 @@ function printUsage {
 	echo -e "Usage: $0 [${U}TERGET_DIR${E}] [--for-pkg|--portable] [--prefix=${U}/usr/local${E}] [--python=${U}python3.x${E}]"
 }
 
+myPath="`realpath \"$0\"`"
 sourceDir="`dirname \"$myPath\"`"
 
 function getVersion {
@@ -17,13 +18,6 @@ function getVersion {
 	fi
 	"$sourceDir/scripts/version.py"
 }
-
-myPath="$0"
-if [ "${myPath:0:2}" == "./" ] ; then
-	myPath=$PWD${myPath:1}
-elif [ "${myPath:0:1}" != "/" ] ; then
-	myPath=$PWD/$myPath
-fi
 
 pkgName=starcal3
 iconName=starcal32.png
