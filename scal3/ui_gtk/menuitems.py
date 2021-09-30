@@ -65,15 +65,18 @@ class ImageMenuItem(gtk.MenuItem):
 		image = None
 		if imageName:
 			iconName = ""
-			if ui.useSystemIcons:
-				iconName = iconNameByImageName.get(imageName, "")
-			if iconName:
-				image = imageFromIconName(iconName, gtk.IconSize.MENU)
-			else:
-				image = imageFromFile(
-					imageName,
-					size=ui.menuIconSize,
-				)
+			try:
+				if ui.useSystemIcons:
+					iconName = iconNameByImageName.get(imageName, "")
+				if iconName:
+					image = imageFromIconName(iconName, gtk.IconSize.MENU)
+				else:
+					image = imageFromFile(
+						imageName,
+						size=ui.menuIconSize,
+					)
+			except Exception:
+				log.exception("")
 		elif pixbuf:
 			image = gtk.Image.new_from_pixbuf(pixbuf)
 
