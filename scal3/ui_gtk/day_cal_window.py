@@ -197,6 +197,8 @@ class DayCalWindowWidget(DayCal):
 				return True
 		elif b == 3:
 			self.popupMenuOnButtonPress(obj, gevent)
+		elif b == 2:
+			self.startMove(gevent, button=b)
 		return True
 
 	def getMenuPosFunc(self, menu, gevent, above: bool):
