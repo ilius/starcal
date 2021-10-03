@@ -135,12 +135,12 @@ class DayCal(gtk.DrawingArea, CalBase):
 			for d in getattr(ui, self.buttonsParam)
 		]
 
-	def startMove(self, gevent):
+	def startMove(self, gevent, button=1):
 		win = self.getWindow()
 		if not win:
 			return
 		win.begin_move_drag(
-			1,
+			button,
 			int(gevent.x_root),
 			int(gevent.y_root),
 			gevent.time,
