@@ -23,8 +23,6 @@ import os
 from math import floor, ceil
 
 from collections import (
-	Iterable,
-	Iterator,
 	OrderedDict,
 )
 
