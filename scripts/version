@@ -25,7 +25,7 @@ if [ -z "$VER" ] ; then
 fi
 
 if [ -d "$gitDir" ] ; then
-	if VER2=$(git --git-dir "$gitDir" describe --always); then
+	if VER2=$(git --git-dir "$gitDir" describe --tags --always); then
 		if [[ $VER2 == *.* ]] && version_lte $VER $VER2; then
 			VER=$VER2
 		fi
