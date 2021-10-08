@@ -117,7 +117,7 @@ fi
 
 rpmbuild -bb $pkgName.spec
 
-pkgPath="`ls /usr/src/packages/RPMS/noarch/$pkgName*$version*.rpm`"
+pkgPath="/usr/src/packages/RPMS/noarch/$pkgName-$version-1.noarch.rpm"
 cp "$pkgPath" "$outDir/"
 
 
