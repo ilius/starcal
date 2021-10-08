@@ -29,19 +29,11 @@ if ! git --version ; then
 fi
 
 
-
-pyCmd=
-for minor in 8 7 6 5 ; do
-	cmd="/usr/bin/python3.$minor"
-	if [ -f "$cmd" ] ; then
-		pyCmd="$cmd"
-		break
-	fi
-done
-if [ -z "$pyCmd" ] ; then
-	echo "Please install python3.8 and try again (or older down to python3.5)" >&2
+if [ ! -f /usr/bin/python3 ] ; then
+	echo "/usr/bin/python3 was not found" >&2
 	exit 1
 fi
+pyCmd=/usr/bin/python3
 echo "Using python: \"$pyCmd\""
 pyPkg="$pyCmd"
 ## --provides and --file-list both work
