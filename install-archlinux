@@ -4,11 +4,21 @@ set -e
 
 initPwd=$PWD
 
+sudo pacman -Sy
+
 if ! git --version ; then
 	if ! sudo pacman -S git ; then
 		echo -e "\n\nPlease install git and try again" >&2
 		exit 1
 	fi
+fi
+
+if ! [ -f /usr/bin/fakeroot ] ; then
+	sudo pacman -S fakeroot
+fi
+
+if ! [ -f /usr/bin/strip ] ; then
+	sudo pacman -S binutils
 fi
 
 
