@@ -1,21 +1,30 @@
 #!/usr/bin/env bash
 
+# Usage:
+# sudo ./install-pip
+# sudo ./install-pip 3.8
+
+set -x
 
 if [ "$UID" != "0" ] ; then
 	echo "Run this script as root" >&2
 	exit 1
 fi
 
+PIP=pip3
+if [ -n "$1" ] ; then
+	PIP="python$1 -m pip"
+fi
 
-pip3 install pygobject
-pip3 install pycairo
-pip3 install httplib2
-pip3 install python-dateutil
-pip3 install psutil
-pip3 install requests
+$PIP install pygobject
+$PIP install pycairo
+$PIP install httplib2
+$PIP install python-dateutil
+$PIP install psutil
+$PIP install requests
 
-pip3 install python-igraph
-pip3 install pygit2
-pip3 install ujson
+$PIP install ujson
+$PIP install python-igraph
+$PIP install pygit2
 
 ./install "$@"
