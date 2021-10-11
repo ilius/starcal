@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 rm -Rf ./bson/
 git clone https://github.com/py-bson/bson
 rm -Rf ./bson/.git

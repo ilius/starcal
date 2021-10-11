@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # W191: indentation contains tabs
 # E265: block comment should start with '# '

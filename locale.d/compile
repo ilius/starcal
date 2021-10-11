@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 myDir="`dirname "$0"`"
 for LANG in fa ; do
 	msgfmt "$myDir/$LANG.po" -o "$myDir/$LANG.mo"

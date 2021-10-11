@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 if [ -n "$SUDO_UID" ] ; then
 	sudo -u "#$SUDO_UID" git fetch -f --tags https://github.com/ilius/starcal

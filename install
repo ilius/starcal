@@ -203,12 +203,12 @@ else
 fi
 
 
-echo "#!/bin/bash
+echo "#!/usr/bin/env bash
 $pyCmd $runDirStr/scal3/ui_gtk/starcal-main.py \"\$@\"" > "${targetPrefix}/bin/$pkgName"
 chmod 755 "${targetPrefix}/bin/$pkgName"
 
 if [ $UI_QT_ENABLE ] ; then
-	echo "#!/bin/bash
+	echo "#!/usr/bin/env bash
 	$pyCmd $runDirStr/scal3/ui_qt/starcal.py \"\$@\"" > "${targetPrefix}/bin/$pkgName-qt"
 	chmod 755 "${targetPrefix}/bin/$pkgName-qt"
 fi

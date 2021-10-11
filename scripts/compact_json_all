@@ -1,5 +1,5 @@
-#!/bin/bash
-#!/bin/bash
+#!/usr/bin/env bash
+
 myDir=`dirname "$0"`
 find ~/.starcal3 -name '*.json' -print -exec "$myDir/compact_json.py" '{}' \;
 

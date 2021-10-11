@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 cd /usr/bin
 if [ ! -f python3 ] ; then
 	echo "python3 command not found"

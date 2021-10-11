@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 myPath="$0"
 if [ "${myPath:0:2}" == "./" ] ; then
 	myPath=$PWD${myPath:1}

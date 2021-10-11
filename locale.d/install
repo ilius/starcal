@@ -1,4 +1,5 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
 myDir="`dirname "$0"`"
 if [ -n "$1" ] ; then
 	targetPrefix="$1" ## no slash at the end
