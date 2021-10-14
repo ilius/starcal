@@ -235,7 +235,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			path = self.treeModel.get_path(eventIter)
 			parentPathObj = gtk.TreePath(path[:1])
 			expanded = self.treev.row_expanded(parentPathObj)
-			print(f"path={path}, parentPathObj={parentPathObj}, expanded={expanded}")
+			# log.debug(f"path={path}, parentPathObj={parentPathObj}, expanded={expanded}")
 			self.treeModel.remove(eventIter)
 			self.addEventRowToTrash(record.obj)
 			if expanded:
@@ -716,8 +716,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		if groupIndex not in self.multiSelectPathDict:
 			return
 		lastEventIndex = next(reversed(self.multiSelectPathDict[groupIndex]))
-		# print(f"groupIndex: {groupIndex}")
-		# print(f"eventIndex: {lastEventIndex} .. {path[1]}")
+		# log.debug(f"groupIndex: {groupIndex}")
+		# log.debug(f"eventIndex: {lastEventIndex} .. {path[1]}")
 		if eventIndex == lastEventIndex:
 			return
 		if eventIndex > lastEventIndex:
@@ -1057,7 +1057,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	]:
 		pixbuf = eventTreeIconPixbuf(event.getIconRel())
 		if event.icon and pixbuf is None:
-			print(
+			log.error(
 				f"getEventRow: invalid icon={event.icon!r} " +
 				f"for event id={event.id} in group={event.parent}"
 			)
@@ -1727,6 +1727,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			text = _("Event ID: {eventId}").format(eventId=_(event.id))
 			modified = event.modified
 			# log.info(f"event, id = {event.id}, uuid = {event.uuid}")
+			for rule in event.rulesOd.values():
+				log.debug(f"Rule {rule.name}: '{rule}', info='{rule.getInfo()}'")
+
 		comma = _(",")
 		modifiedLabel = _("Last Modified")
 		modifiedTime = locale_man.textNumEncode(
