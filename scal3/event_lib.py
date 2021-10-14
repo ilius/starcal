@@ -1197,6 +1197,11 @@ class DayTimeRangeEventRule(EventRule):
 		"dayTimeEnd",
 	)
 
+	def __str__(self) -> str:
+		H1, M1, S1 = self.dayTimeStart
+		H2, M2, S2 = self.dayTimeEnd
+		return f"{H1:02d}:{M1:02d}:{S1:02d} - {H2:02d}:{M2:02d}:{S2:02d}"
+
 	def getServerString(self) -> str:
 		H1, M1, S1 = self.dayTimeStart
 		H2, M2, S2 = self.dayTimeEnd
