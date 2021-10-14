@@ -776,8 +776,6 @@ class MonthEventRule(MultiValueAllDayEventRule):
 	def jdMatches(self, jd: int) -> bool:
 		return self.hasValue(jd_to(jd, self.getCalType())[1])
 
-	# overwrite __str__? FIXME
-
 
 @classes.rule.register
 class DayOfMonthEventRule(MultiValueAllDayEventRule):
@@ -859,6 +857,9 @@ class WeekNumberModeEventRule(EventRule):
 				if (getAbsWeekNumberFromJd(jd) - startAbsWeekNum) % 2 == 0
 			})
 
+	def __str__(self) -> str:
+		return self.weekNumModeNames[self.weekNumMode]
+
 	def getInfo(self) -> None:
 		if self.weekNumMode == self.EVERY_WEEK:
 			return ""
@@ -905,6 +906,13 @@ class WeekDayEventRule(AllDayEventRule):
 	def jdMatches(self, jd: int) -> None:
 		return jwday(jd) in self.weekDayList
 
+	def __str__(self) -> str:
+		if self.weekDayList == list(range(7)):
+			return ""
+		return ", ".join([
+			core.weekDayNameEnglish[wd] for wd in self.weekDayList
+		])
+
 	def getInfo(self) -> str:
 		if self.weekDayList == list(range(7)):
 			return ""
@@ -943,6 +951,13 @@ class WeekMonthEventRule(EventRule):
 		"weekDay": lambda m: 0 <= m <= 6,
 	}
 	"""
+	wmIndexNamesEn = (
+		"First",  # 0
+		"Second",  # 1
+		"Third",  # 2
+		"Fourth",  # 3
+		"Last",  # 4
+	)
 	wmIndexNames = (
 		_("First"),  # 0
 		_("Second"),  # 1
@@ -957,6 +972,19 @@ class WeekMonthEventRule(EventRule):
 			"weekDay": self.weekDay,
 			"month": self.month,
 		})
+
+	def __str__(self) -> str:
+		calType = self.getCalType()
+		if self.month == 0:
+			monthDesc = "every month"
+		else:
+			monthDesc = core.getMonthName(calType, self.month)
+		return " ".join([
+			self.wmIndexNamesEn[self.wmIndex],
+			core.weekDayNameEnglish[self.weekDay],
+			"of",
+			monthDesc,
+		])
 
 	def __init__(self, parent: "Event") -> None:
 		EventRule.__init__(self, parent)
@@ -1157,6 +1185,10 @@ class DayTimeEventRule(EventRule):  # Moment Event
 		H, M, S = self.dayTime
 		return f"{H:02d}:{M:02d}:{S:02d}"
 
+	def __str__(self) -> str:
+		H, M, S = self.dayTime
+		return f"{H:02d}:{M:02d}:{S:02d}"
+
 	def __init__(self, parent: "Event") -> None:
 		EventRule.__init__(self, parent)
 		self.dayTime = localtime()[3:6]
@@ -1322,7 +1354,10 @@ class DurationEventRule(EventRule):
 	units = (1, 60, 3600, dayLen, 7 * dayLen)
 
 	def __str__(self) -> str:
-		return _("{count} " + self.getUnitDesc()).format(count=_(self.value))
+		return f"{self.value} {self.getUnitDesc()}"
+
+	def getInfo(self) -> str:
+		return self.desc + ": " + _("{count} " + self.getUnitDesc()).format(count=_(self.value))
 
 	def getUnitDesc(self) -> str:
 		return {
@@ -1433,6 +1468,9 @@ class CycleDaysEventRule(EventRule):
 	def getServerString(self) -> str:
 		return str(self.days)
 
+	def __str__(self) -> str:
+		return f"{self.days}"
+
 	def __init__(self, parent: "Event") -> None:
 		EventRule.__init__(self, parent)
 		self.days = 7
@@ -1474,6 +1512,9 @@ class CycleWeeksEventRule(EventRule):
 
 	def getServerString(self) -> str:
 		return str(self.weeks)
+
+	def __str__(self) -> str:
+		return f"{self.weeks}"
 
 	def __init__(self, parent: "RuleContainer") -> None:
 		EventRule.__init__(self, parent)
@@ -1528,6 +1569,9 @@ class CycleLenEventRule(EventRule):
 	def getServerString(self) -> str:
 		H, M, S = self.extraTime
 		return f"{self.days} {H:02d}:{M:02d}:{S:02d}"
+
+	def __str__(self) -> str:
+		return f"{self.days} days, {H:02d}:{M:02d}:{S:02d}"
 
 	def __init__(self, parent: "RuleContainer") -> None:
 		EventRule.__init__(self, parent)
@@ -1617,6 +1661,12 @@ class ExDatesEventRule(EventRule):
 	)
 
 	def getServerString(self) -> str:
+		return " ".join(
+			f"{y:04d}/{m:02d}/{d:02d}"
+			for y, m, d in self.dates
+		)
+
+	def __str__(self) -> str:
 		return " ".join(
 			f"{y:04d}/{m:02d}/{d:02d}"
 			for y, m, d in self.dates
