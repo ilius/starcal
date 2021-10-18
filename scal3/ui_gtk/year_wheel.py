@@ -406,11 +406,11 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 		self.initVars()
 		ud.windowList.appendItem(self)
 		###
-		size = min(ud.screenW, ud.screenH) * 0.9
+		size = min(ud.workAreaWW, ud.workAreaWH) * 0.9
 		self.resize(size, size)
 		self.move(
-			(ud.screenW - size) / 2,
-			(ud.screenH - size) / 2,
+			(ud.workAreaWW - size) / 2,
+			(ud.workAreaWH - size) / 2,
 		)
 		self.set_title(self.desc)
 		self.set_decorated(False)

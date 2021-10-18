@@ -229,7 +229,7 @@ class EventHistoryDialog(gtk.Dialog):
 
 		self.load()
 		self.vbox.show_all()
-		self.resize(ud.screenW, ud.screenH * 0.9) # FIXME
+		self.resize(ud.workAreaW, ud.workAreaH * 0.9) # FIXME
 
 	def setColumnWidth(self, col, widthParam, cell):
 		width = col.get_width()

@@ -30,6 +30,7 @@ from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
 rootWin = gdk.get_default_root_window()
 screenWidth = rootWin.get_width()
+# FIXME: use ud.workAreaW from gtk_ud.py
 
 
 @registerType
