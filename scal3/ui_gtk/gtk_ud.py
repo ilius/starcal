@@ -513,7 +513,31 @@ setDefault_adjustTimeCmd()## FIXME
 
 ############################################################
 
-rootWindow = gdk.get_default_root_window() ## Good Place?????
+def getScreenSize():
+	# incluses panels/docks
+	monitor = gdk.Display.get_default().get_primary_monitor()
+	rect = monitor.get_geometry()
+	return rect.width, rect.height
+
+
+def getWorkAreaSize():
+	# excludes panels/docks
+	monitor = gdk.Display.get_default().get_primary_monitor()
+	rect = monitor.get_workarea()
+	return rect.width, rect.height
+
+##############################
+
+screenW, screenH = getScreenSize()
+workAreaW, workAreaH = getWorkAreaSize()
+# print(f"screen: {screenW}x{screenH}, work area: {workAreaW}x{workAreaH}")
+# for normal windows, we should use workAreaW and workAreaH
+# for menus, we should use screenW and screenH, because they can go over panels
+
+
+rootWindow = gdk.get_default_root_window()  # Good Place?????
+
+##############################
 
 #import atexit
 #atexit.register(
@@ -522,19 +546,17 @@ rootWindow = gdk.get_default_root_window() ## Good Place?????
 #)  # FIXME
 #rootWindow.set_cursor(cursor=gdk.Cursor.new(gdk.CursorType.WATCH))  # FIXME
 
-screenW = rootWindow.get_width()
-screenH = rootWindow.get_height()
-
-
 def screenSizeChanged(screen):
-	global screenW, screenH
+	global screenW, screenH, workAreaW, workAreaH
 	if ui.mainWin is None:
 		return
 	monitor = gdk.Display.get_default().get_monitor_at_window(ui.mainWin.get_window())
-	rect = monitor.get_geometry()
-	screenW = rect.width
-	screenH = rect.height
-	ui.mainWin.screenSizeChanged(rect)
+	screenSize = monitor.get_geometry()
+	workAreaSize = monitor.get_workarea()
+	screenW, screenH = screenSize.width, screenSize.height
+	workAreaW, workAreaH = workAreaSize.width, workAreaSize.height
+	log.info(f"screen: {screenW}x{screenH}, work area: {workAreaW}x{workAreaH}")
+	ui.mainWin.screenSizeChanged(screenSize)
 
 
 gdk.Screen.get_default().connect("size-changed", screenSizeChanged)

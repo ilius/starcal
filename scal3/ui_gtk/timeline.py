@@ -962,7 +962,7 @@ class TimeLineWindow(gtk.Window, ud.BaseCalObj):
 		self.initVars()
 		ud.windowList.appendItem(self)
 		###
-		self.resize(ud.screenW, 150)
+		self.resize(ud.workAreaW, 150)
 		self.move(0, 0)
 		self.set_title(_("Time Line"))
 		self.set_decorated(False)

@@ -174,9 +174,9 @@ class DayCalWindowWidget(DayCal):
 		cw, ch = self.customizeWindow.get_size()
 		cx = x + w + 5
 		cy = y
-		if cx + cw > ud.screenW:
+		if cx + cw > ud.workAreaW:
 			cx = x - cw - 5
-		if cy + ch > ud.screenH:
+		if cy + ch > ud.workAreaH:
 			cy = y + h - ch
 		self.customizeWindow.present()
 		self.customizeWindow.move(cx, cy)

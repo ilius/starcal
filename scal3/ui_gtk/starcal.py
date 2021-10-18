@@ -570,10 +570,10 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 
 	def toggleWidthMaximized(self, gevent):
 		ww = ui.winWidth
-		screenW = ud.screenW
-		if ww < screenW:
+		workAreaW = ud.workAreaW
+		if ww < workAreaW:
 			self.unmaxWinWidth = ww
-			ww = screenW
+			ww = workAreaW
 		elif self.unmaxWinWidth > 0:
 			ww = self.unmaxWinWidth
 		else:
