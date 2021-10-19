@@ -14,6 +14,7 @@ fi
 PIP=pip3
 if [ -n "$1" ] ; then
 	PIP="python$1 -m pip"
+	shift
 fi
 
 $PIP install pygobject
@@ -27,4 +28,4 @@ $PIP install ujson
 $PIP install python-igraph
 $PIP install pygit2
 
-./install "$@"
+./install --system

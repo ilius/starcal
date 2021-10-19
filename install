@@ -27,7 +27,7 @@ sourceDir="`dirname \"$myPath\"`"
 "$sourceDir/update-perm" ## FIXME
 
 
-options=`getopt -o 'h' --long 'help,for-pkg,portable,prefix:,python:' -n "$0" -- "$@"`
+options=`getopt -o 'h' --long 'help,for-pkg,portable,system,prefix:,python:' -n "$0" -- "$@"`
 if [ $? != 0 ] ; then
 	printUsage
 	exit 1
@@ -45,6 +45,7 @@ while true ; do
 		--help | -h) printUsage ; exit 0 ;;
 		--for-pkg) installType="for-pkg" ; shift ;;
 		--portable) installType="portable" ; shift ;;
+		--system) installType="system" ; shift ;;
 		--prefix) prefix="$2" ; shift 2 ;;
 		--python) pyCmd="$2" ; shift 2 ;;
 		--) shift ; break ;;
@@ -121,6 +122,8 @@ if [ -z "$prefix" ] ; then ## prefix is empty (not been set)
 	if [ "$installType" = "for-pkg" ] ; then
 		prefix=/usr
 	elif [ "$installType" = "portable" ] ; then
+		prefix=/usr/local
+	elif [ "$installType" = "system" ] ; then
 		prefix=/usr/local
 	else
 		prefix=/usr/local
@@ -250,7 +253,7 @@ fi
 "$sourceDir/locale.d/install" "${targetPrefix}" ## FIXME
 
 
-if [ "$installType" = "for-pkg" ] ; then
+if [ "$installType" = "for-pkg" ] || [ "$installType" = "system" ] ; then
 	set -x
 	DIR="${shareDir}/$pkgName"
 	rm -Rf "$DIR/.git" 2>/dev/null
