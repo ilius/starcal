@@ -37,8 +37,8 @@ def readEtcLocaltime():
 			with open("/var/db/zoneinfo") as _file:
 				tzname = _file.read().strip()
 				return dateutil.tz.gettz(tzname)
-		print("failed to detect timezone name")
-		return None
+		# 'zdump /etc/localtime' does not show timezone's name
+		return dateutil.tz.tzfile("/etc/localtime")
 	fpath = os.readlink("/etc/localtime")
 	parts = fpath.split("/")
 	try:
