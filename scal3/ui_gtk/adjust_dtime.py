@@ -25,6 +25,7 @@ import os
 
 os.environ["LANG"] = "en_US.UTF-8"  # FIXME
 
+from os.path import join
 import subprocess
 import shutil
 from time import localtime
@@ -32,9 +33,9 @@ from time import time as now
 import sys
 from math import ceil
 
+from scal3.path import pixDir
 from scal3 import ui
 from scal3.time_utils import clockWaitMilliseconds
-
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import dialog_add_button
@@ -70,7 +71,7 @@ class AdjusterDialog(gtk.Dialog):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Adjust System Date & Time"))  # FIXME
 		self.set_keep_above(True)
-		# TODO: self.set_icon_from_file(join(svgDir, "preferences-system-time.svg"))
+		self.set_icon_from_file(join(pixDir, "preferences-system-time.png"))
 		#########
 		self.buttonCancel = dialog_add_button(
 			self,

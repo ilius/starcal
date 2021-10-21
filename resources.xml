@@ -652,6 +652,12 @@
 		<source>scalable/apps/preferences-desktop-theme.svg</source>
 		<comment></comment>
 	</resource>
+	<resource path="pixmaps/preferences-system-time.png">
+		<author>Oxygen Icon Theme</author>
+		<license>LGPLv3+</license>
+		<source>scalable/apps/preferences-system-time.svg</source>
+		<comment></comment>
+	</resource>
 	<resource path="svg/preferences-plugin.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
