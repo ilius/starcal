@@ -15,6 +15,8 @@ PIP=pip3
 if [ -n "$1" ] ; then
 	PIP="python$1 -m pip"
 	shift
+elif ! which $PIP ; then
+	python3 -m ensurepip
 fi
 
 $PIP install pygobject
