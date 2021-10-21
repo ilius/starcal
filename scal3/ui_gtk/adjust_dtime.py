@@ -70,18 +70,6 @@ class AdjusterDialog(gtk.Dialog):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Adjust System Date & Time"))  # FIXME
 		self.set_keep_above(True)
-		try:
-			self.set_icon(IconTheme.get_default().load_icon(
-				icon_name = "preferences-system-time",
-				size = 32,
-				flags = 0,
-			))
-		except Exception:
-			pass
-		# render_icon: Deprecated since version 3.0:
-		# 		Use Gtk.Widget.render_icon_pixbuf() instead.
-		# render_icon_pixbuf: Deprecated since version 3.10:
-		# 		Use Gtk.IconTheme.load_icon() instead.
 		# TODO: self.set_icon_from_file(join(svgDir, "preferences-system-time.svg"))
 		#########
 		self.buttonCancel = dialog_add_button(
