@@ -99,7 +99,6 @@ else:
 	printf "\e[31mWarning: $pyVer is not officially supported.\e[m\n" >&2
 fi
 
-
 echo "Using $pyCmd"
 version=$(getVersion)
 
