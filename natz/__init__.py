@@ -54,7 +54,7 @@ def readEtcLocaltime():
 	try:
 		index = parts.index("zoneinfo")
 	except ValueError:
-		log.info(f"Unexpected timezone file: {fpath}")
+		log.error(f"Unexpected timezone file: {fpath}")
 		return
 	tzname = "/".join(parts[index + 1:])
 	return dateutil.tz.gettz(tzname)
