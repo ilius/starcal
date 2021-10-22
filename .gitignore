@@ -17,6 +17,7 @@ screenshots
 *.rpm
 *.spec
 *.pkg.tar*
+*.txz
 PKGBUILD
 scal2
 ui_qt
