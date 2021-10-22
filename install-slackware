@@ -1,0 +1,23 @@
+#!/bin/bash
+set -e
+
+if [ "$UID" != "0" ] ; then
+	echo "Run this script as root" >&2
+	exit 1
+fi
+
+SLACKPKG=slackpkg-2.83.0-noarch-4.txz
+
+if ! which slackpkg ; then
+	curl -o $SLACKPKG "https://slackpkg.org/stable/$SLACKPKG"
+	installpkg $SLACKPKG
+	# need to edit /etc/slackpkg/mirrors and then run:
+	# slackpkg update
+fi
+
+if ! which pip3 ; then
+	slackpkg install python-pip
+fi
+
+./install-pip
+
