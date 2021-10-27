@@ -42,6 +42,8 @@ class TimeZone(datetime.tzinfo):
 
 
 def readEtcLocaltime():
+	# TODO: maybe use tzlocal -> unix.py -> _get_localzone_name:
+	# https://github.com/regebro/tzlocal/blob/master/tzlocal/unix.py
 	if not islink("/etc/localtime"):
 		if isfile("/var/db/zoneinfo"):
 			with open("/var/db/zoneinfo") as _file:
