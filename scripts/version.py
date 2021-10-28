@@ -4,7 +4,11 @@ from os.path import join
 import sys
 import subprocess
 import re
-from packaging.version import parse as parse_version
+
+try:
+	from packaging.version import parse as parse_version
+except ImportError:
+	from pkg_resources import parse_version
 
 scriptsDir = os.path.dirname(__file__)
 rootDir = os.path.dirname(scriptsDir)
