@@ -8,6 +8,8 @@ function printUsage {
 	echo -e "Usage: $0 [${U}TERGET_DIR${E}] [--for-pkg|--portable] [--prefix=${U}/usr/local${E}] [--python=${U}python3.x${E}]"
 }
 
+sourceDir="`dirname \"$myPath\"`"
+
 function getVersion {
 	if version=$("$sourceDir/scripts/version") ; then
 		echo $version
@@ -25,8 +27,6 @@ fi
 
 pkgName=starcal3
 iconName=starcal32.png
-
-sourceDir="`dirname \"$myPath\"`"
 
 #"$sourceDir/scripts/assert_python3"
 
