@@ -21,8 +21,13 @@ chmod 755 'install-fedora'
 chmod 755 'install-suse'
 chmod 755 'install-ubuntu'
 chmod 755 'install-pip'
+chmod 755 'install-slackware'
 chmod 755 'install-nix-deps'
 chmod 755 'install-nutyx'
+
+chmod 755 pkg/*/build.sh
+chmod 755 pkg/*/docker-build-internal.sh
+chmod 755 pkg/*/package-build.sh
 
 chmod 755 'uninstall'
 chmod 755 'update-perm'
