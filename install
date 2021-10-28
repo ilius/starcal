@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 set -e
 
-UI_QT_ENABLE=
-
 function printUsage {
 	## echo "Usage: $0 [TERGET_DIR] [--for-pkg|--portable] [--prefix=/usr/local]"
 	U='\033[4m' ## start Underline
@@ -217,14 +215,6 @@ echo "#!/usr/bin/env bash
 $pyCmd $runDirStr/scal3/ui_gtk/starcal-main.py \"\$@\"" > "${targetPrefix}/bin/$pkgName"
 chmod 755 "${targetPrefix}/bin/$pkgName"
 
-if [ $UI_QT_ENABLE ] ; then
-	echo "#!/usr/bin/env bash
-	$pyCmd $runDirStr/scal3/ui_qt/starcal.py \"\$@\"" > "${targetPrefix}/bin/$pkgName-qt"
-	chmod 755 "${targetPrefix}/bin/$pkgName-qt"
-fi
-
-
-
 
 if [ "$installType" = "for-pkg" ] ; then
 	rm "${shareDir}/$pkgName/uninstall"
@@ -243,21 +233,6 @@ Type=Application
 Terminal=false
 Categories=GTK;Utility;Accessibility;Office;Calendar;
 StartupNotify=true" > "${shareDir}/applications/$pkgName.desktop"
-
-
-if [ $UI_QT_ENABLE ] ; then
-	echo "[Desktop Entry]
-Encoding=UTF-8
-Name=StarCalendar $version (Qt)
-Comment=Full-featured Calendar Program (Qt Interface)
-Comment[fa]=یک برنامهٔ کامل تقویم
-Exec=$pkgName-qt
-Icon=$iconName
-Type=Application
-Terminal=false
-Categories=GTK;Utility;Accessibility;Office;Calendar;
-StartupNotify=true" > "${shareDir}/applications/$pkgName-qt.desktop"
-fi
 
 
 "$sourceDir/locale.d/install" "${targetPrefix}" ## FIXME
