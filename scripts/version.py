@@ -51,6 +51,6 @@ if os.path.isdir(gitDir):
 				VERSION_GIT_RAW,
 			)
 			if parse_version(VERSION_GIT) > parse_version(VERSION):
-				VERSION = VERSION_GIT_RAW
+				VERSION = VERSION_GIT
 
 print(VERSION)
