@@ -10,6 +10,14 @@ function printUsage {
 	echo -e "Usage: $0 [${U}TERGET_DIR${E}] [--for-pkg|--portable] [--prefix=${U}/usr/local${E}] [--python=${U}python3.x${E}]"
 }
 
+function getVersion {
+	if version=$("$sourceDir/scripts/version") ; then
+		echo $version
+		return
+	fi
+	"$sourceDir/scripts/version.py"
+}
+
 myPath="$0"
 if [ "${myPath:0:2}" == "./" ] ; then
 	myPath=$PWD${myPath:1}
@@ -93,7 +101,7 @@ fi
 
 
 echo "Using $pyCmd"
-version=`$pyCmd "$sourceDir/scal3/get_version.py"`
+version=$(getVersion)
 
 
 targetDir=
