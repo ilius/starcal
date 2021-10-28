@@ -27,6 +27,7 @@ from subprocess import Popen
 from io import StringIO
 import os.path
 from os.path import join, isfile, isdir
+import re
 
 import scal3
 from scal3.path import *
@@ -168,26 +169,40 @@ def popen_output(cmd):
 
 def getVersion():
 	gitDir = os.path.join(rootDir, ".git")
-	if os.path.isdir(gitDir):
-		try:
-			outputB, error = subprocess.Popen(
-				[
-					"git",
-					"--git-dir", gitDir,
-					"describe",
-					"--always",
-				],
-				stdout=subprocess.PIPE,
-			).communicate()
-		except:
-			myRaise()
-		else:
-			# if error != None:
-			#	sys.stderr.write(error)
-			version = outputB.decode("utf-8").strip()
-			if version:
-				return version
-	return VERSION
+	if not os.path.isdir(gitDir):
+		return VERSION
+	try:
+		outputB, error = subprocess.Popen(
+			[
+				"git",
+				"--git-dir", gitDir,
+				"describe",
+				"--always",
+			],
+			stdout=subprocess.PIPE,
+		).communicate()
+	except Exception:
+		return VERSION
+
+	gitRawVersion = outputB.decode("utf-8").strip()
+	if not gitRawVersion:
+		return VERSION
+
+	# Python believes:
+	# 3.1.12-15-gd50399ea	< 3.1.12
+	# 3.1.12dev15+d50399ea	< 3.1.12
+	# 3.1.12.dev15+d50399ea	< 3.1.12
+	# 3.1.12post15+d50399ea	> 3.1.12
+	# 3.1.12.post15+d50399ea	> 3.1.12
+	# so the only way to make it work is to use "post"
+	# if error != None:
+	# 	sys.stderr.write(error)
+
+	return re.sub(
+		'-([0-9]+)-g([0-9a-f]{8})',
+		r'post\1+\2',
+		gitRawVersion,
+	)
 
 
 def primary_to_jd(y, m, d):
