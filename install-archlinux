@@ -35,7 +35,7 @@ sourceDir="`dirname \"$myPath\"`"
 #"$sourceDir/scripts/assert_python3"
 
 "$sourceDir/fetch" || echo "WARNING: failed to fetch tags"
-version=`"$sourceDir/scal3/get_version.py" | sed 's/\-/_/g'`
+version=`"$sourceDir/scripts/version" | sed 's/\-/_/g'`
 
 tmpDir="$HOME/.${pkgName}/tmp/install-arch"
 mkdir -p $tmpDir

@@ -56,7 +56,7 @@ sourceDir="`dirname \"$myPath\"`"
 #"$sourceDir/scripts/assert_python3"
 
 "$sourceDir/fetch" || echo "WARNING: failed to fetch tags"
-version=`"$sourceDir/scal3/get_version.py"`
+version=`"$sourceDir/scripts/version"`
 
 
 tmpDir=/tmp/$pkgName-install-deb
