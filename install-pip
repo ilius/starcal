@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/usr/bin/env sh
 
 # Usage:
 # sudo ./install-pip
@@ -6,7 +6,7 @@
 
 set -x
 
-if [ "$UID" != "0" ] ; then
+if [ $(id -u) != "0" ] ; then
 	echo "Run this script as root" >&2
 	exit 1
 fi
