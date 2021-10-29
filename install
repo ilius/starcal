@@ -167,14 +167,11 @@ fi
 
 cp -Rf "$sourceDir/" "${shareDir}/$pkgName" ### PUT SLASH after $sourceDir to copy whole folder, not just a link (if was a link)
 
-"${shareDir}/$pkgName/update-perm" ## FIXME
+"${shareDir}/$pkgName/update-perm"
 
-for docFile in license.txt authors ; do
+for docFile in license.txt authors donate ; do
 	mv -f "${shareDir}/$pkgName/$docFile" "${shareDir}/doc/$pkgName/"
 done
-
-cp -f "${shareDir}/$pkgName/donate" "${shareDir}/doc/$pkgName/"
-
 
 
 ## "$sourceDir/config" is not used yet, and will not created by git yet
