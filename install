@@ -190,7 +190,7 @@ done
 rm -R "${shareDir}/$pkgName/icons"
 
 
-cp -f "$sourceDir/pixmaps/starcal.png" "${shareDir}/pixmaps/$pkgName.png"
+cp -f "$sourceDir/pixmaps/starcal.png" "${shareDir}/pixmaps/$iconName"
 
 
 if [ "$installType" = "for-pkg" ] ; then
