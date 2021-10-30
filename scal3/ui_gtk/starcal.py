@@ -856,6 +856,11 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				imageName="" if isWeek else "week-calendar.svg",
 				func=self.switchWcalMcal,
 			))
+		menu.add(ImageMenuItem(
+			_("In Time Line"),
+			imageName="timeline.svg",
+			func=self.timeLineShowSelectedDay,
+		))
 		if os.path.isfile("/usr/bin/evolution"):  # FIXME
 			menu.add(ImageMenuItem(
 				_("In E_volution"),
@@ -878,11 +883,6 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			_("_Event Manager"),
 			imageName="list-add.svg",
 			func=self.eventManShow,
-		))
-		moreMenu.add(ImageMenuItem(
-			_("Time Line"),
-			imageName="timeline.svg",
-			func=self.timeLineShow,
 		))
 		moreMenu.add(ImageMenuItem(
 			_("Year Wheel"),
@@ -1589,6 +1589,13 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		if not ui.timeLineWin:
 			from scal3.ui_gtk.timeline import TimeLineWindow
 			ui.timeLineWin = TimeLineWindow()
+		openWindow(ui.timeLineWin)
+
+	def timeLineShowSelectedDay(self, obj=None, data=None):
+		if not ui.timeLineWin:
+			from scal3.ui_gtk.timeline import TimeLineWindow
+			ui.timeLineWin = TimeLineWindow()
+		ui.timeLineWin.showDayInWeek(ui.cell.jd)
 		openWindow(ui.timeLineWin)
 
 	def yearWheelShow(self, obj=None, data=None):
