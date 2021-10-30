@@ -2044,6 +2044,10 @@ msgid "Time Line"
 msgstr ""
 "خط زمان"
 
+msgid "In Time Line"
+msgstr ""
+"در خط زمان"
+
 msgid "Background Color"
 msgstr ""
 "رنگ زمینه"

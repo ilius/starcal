@@ -96,6 +96,13 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.stopMovingAnim()
 		self.timeStart = now() - self.timeWidth / 2.0
 
+	def showDayInWeek(self, jd):
+		timeCenter = getEpochFromJd(jd) + dayLen / 2
+		timeWidth = 7 * dayLen
+		self.timeStart = timeCenter - timeWidth / 2
+		self.timeWidth = timeWidth
+		self.queue_draw()
+
 	def onCenterToNowClick(self, arg=None):
 		self.centerToNow()
 		self.queue_draw()
@@ -973,6 +980,9 @@ class TimeLineWindow(gtk.Window, ud.BaseCalObj):
 		self.add(self.tline)
 		self.tline.show()
 		self.appendItem(self.tline)
+
+	def showDayInWeek(self, jd):
+		self.tline.showDayInWeek(jd)
 
 	def onCloseClick(self, arg=None, event=None):
 		if ui.mainWin:
