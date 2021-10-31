@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-from os.path import join
+from os.path import join, isfile
 import sys
 import subprocess
 import re
@@ -13,6 +13,11 @@ except ImportError:
 scriptsDir = os.path.dirname(__file__)
 rootDir = os.path.dirname(scriptsDir)
 scalDir = join(rootDir, "scal3")
+
+if isfile(join(rootDir, "VERSION")):
+	with open(join(rootDir, "VERSION")) as _file:
+		print(_file.read().strip())
+		sys.exit(0)
 
 VERSION = ""
 fp = open("%s/core.py" % scalDir)

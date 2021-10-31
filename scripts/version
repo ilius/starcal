@@ -19,6 +19,11 @@ myDir=$(dirname "$myPath")
 sourceDir=$(dirname "$myDir")
 gitDir="$sourceDir/.git"
 
+if [ -f "$sourceDir/VERSION" ] ; then
+	cat "$sourceDir/VERSION"
+	exit 0
+fi
+
 VER=$(core_version)
 if [ -z "$VER" ] ; then
 	exit 1
