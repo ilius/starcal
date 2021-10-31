@@ -208,7 +208,7 @@ cp -f "$sourceDir/pixmaps/starcal.png" "${shareDir}/pixmaps/$pkgName.png"
 if [ "$installType" = "for-pkg" ] ; then
 	runDirStr="/usr/share/$pkgName"
 elif [ "$installType" = "portable" ] ; then
-	runDirStr="\"\`dirname \\\"\$0\\\"\`/../share/$pkgName"
+	runDirStr="\"\`dirname \\\"\$0\\\"\`\"/../share/$pkgName"
 else
 	runDirStr="${shareDir}/$pkgName"
 fi
