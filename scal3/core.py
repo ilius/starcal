@@ -160,6 +160,10 @@ def popen_output(cmd):
 
 
 def getVersion():
+	if isfile(join(sourceDir, "VERSION")):
+		with open(join(sourceDir, "VERSION")) as _file:
+			return _file.read().strip()
+
 	gitDir = os.path.join(sourceDir, ".git")
 	if not os.path.isdir(gitDir):
 		return VERSION
@@ -536,7 +540,7 @@ if len(sys.argv) > 1:
 		log.info("No help implemented yet!")
 		sys.exit(0)
 	elif sys.argv[1] == "--version":
-		log.info(VERSION)
+		log.info(getVersion())
 		sys.exit(0)
 
 

@@ -206,6 +206,7 @@ echo "#!/usr/bin/env bash
 $pyCmd $runDirStr/scal3/ui_gtk/starcal-main.py \"\$@\"" > "${targetPrefix}/bin/$pkgName"
 chmod 755 "${targetPrefix}/bin/$pkgName"
 
+echo "$version" > "$targetCodeDir/VERSION"
 
 if [ "$installType" = "for-pkg" ] ; then
 	rm "$targetCodeDir/uninstall"
