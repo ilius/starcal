@@ -227,6 +227,9 @@ fi
 
 
 
+if [ "$installType" = "for-pkg" ] ; then
+	rm "${shareDir}/$pkgName/uninstall"
+fi
 
 
 echo "[Desktop Entry]
