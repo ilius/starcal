@@ -6,7 +6,7 @@ set -e
 function installPackage(){
 	# must run `set +e` before running this function
 	pkgPath="$1"
-	if apt-get install $(realpath "$pkgPath") ; then
+	if apt-get install --reinstall $(realpath "$pkgPath") ; then
 		return 0
 	fi
 	if [ -f /usr/bin/apt ] ; then
