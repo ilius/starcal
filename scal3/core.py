@@ -191,7 +191,7 @@ def getVersion():
 	# 	sys.stderr.write(error)
 
 	return re.sub(
-		'-([0-9]+)-g([0-9a-f]{8})',
+		'-([0-9]+)-g([0-9a-f]{6,8})',
 		r'post\1+\2',
 		gitRawVersion,
 	)
