@@ -141,7 +141,7 @@ fi
 
 targetPrefix="${targetDir}${prefix}"
 shareDir="${targetPrefix}/share"
-
+targetCodeDir="${shareDir}/$pkgName"
 
 
 
@@ -159,18 +159,18 @@ mkdir -p "${targetDir}/etc"
 
 
 
-if [ -L "${shareDir}/$pkgName" ] ; then ## a symbiloc link
-	rm -f "${shareDir}/$pkgName"
-elif [ -d "${shareDir}/$pkgName" ] ; then
-	rm -Rf "${shareDir}/$pkgName"
+if [ -L "$targetCodeDir" ] ; then ## a symbiloc link
+	rm -f "$targetCodeDir"
+elif [ -d "$targetCodeDir" ] ; then
+	rm -Rf "$targetCodeDir"
 fi
 
-cp -Rf "$sourceDir/" "${shareDir}/$pkgName" ### PUT SLASH after $sourceDir to copy whole folder, not just a link (if was a link)
+cp -Rf "$sourceDir/" "$targetCodeDir" ### PUT SLASH after $sourceDir to copy whole folder, not just a link (if was a link)
 
-"${shareDir}/$pkgName/update-perm"
+"$targetCodeDir/update-perm"
 
 for docFile in license.txt authors donate ; do
-	mv -f "${shareDir}/$pkgName/$docFile" "${shareDir}/doc/$pkgName/"
+	mv -f "$targetCodeDir/$docFile" "${shareDir}/doc/$pkgName/"
 done
 
 
@@ -185,20 +185,20 @@ mkdir -p "${shareDir}/icons/hicolor"
 for SZ in 16 22 24 32 48 ; do
 	relDir="icons/hicolor/${SZ}x${SZ}/apps"
 	mkdir -p "${shareDir}/$relDir"
-	mv -f "${shareDir}/$pkgName/$relDir/starcal.png" "${shareDir}/$relDir/$iconName"
+	mv -f "$targetCodeDir/$relDir/starcal.png" "${shareDir}/$relDir/$iconName"
 done
-rm -R "${shareDir}/$pkgName/icons"
+rm -R "$targetCodeDir/icons"
 
 
 cp -f "$sourceDir/pixmaps/starcal.png" "${shareDir}/pixmaps/$iconName"
 
 
 if [ "$installType" = "for-pkg" ] ; then
-	runDirStr="/usr/share/$pkgName"
+	runDirStr="$prefix/share/$pkgName"
 elif [ "$installType" = "portable" ] ; then
 	runDirStr="\"\`dirname \\\"\$0\\\"\`\"/../share/$pkgName"
 else
-	runDirStr="${shareDir}/$pkgName"
+	runDirStr="$targetCodeDir"
 fi
 
 
@@ -208,7 +208,7 @@ chmod 755 "${targetPrefix}/bin/$pkgName"
 
 
 if [ "$installType" = "for-pkg" ] ; then
-	rm "${shareDir}/$pkgName/uninstall"
+	rm "$targetCodeDir/uninstall"
 fi
 
 
@@ -231,7 +231,7 @@ StartupNotify=true" > "${shareDir}/applications/$pkgName.desktop"
 
 if [ "$installType" = "for-pkg" ] || [ "$installType" = "system" ] ; then
 	set -x
-	DIR="${shareDir}/$pkgName"
+	DIR="$targetCodeDir"
 	rm -Rf "$DIR/.git" 2>/dev/null
 	rm -Rf "$DIR/.gitignore" 2>/dev/null
 	rm -Rf "$DIR/.Trash"* 2>/dev/null
@@ -245,7 +245,7 @@ if [ "$installType" = "for-pkg" ] || [ "$installType" = "system" ] ; then
 	find "$DIR" -type d -empty -delete || true
 	set +x
 else
-	DIR="${shareDir}/$pkgName"
+	DIR="$targetCodeDir"
 	for P in "$DIR/.git" ; do
 		if [ -e "$P" ] ; then
 			echo "You may want to remove '$P'"
