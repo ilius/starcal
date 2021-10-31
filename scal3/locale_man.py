@@ -50,8 +50,6 @@ natz.defaultTZ = natz.UTC
 
 localTz = natz.gettz()
 localTzStr = str(localTz)
-log.info(f"Local Time Zone: {localTzStr}")
-# FIXME: looks like in some cases localTzStr == "etc/localtime"
 
 ##########################################################
 
