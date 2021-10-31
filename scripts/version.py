@@ -46,7 +46,7 @@ if os.path.isdir(gitDir):
 		# so the only way to make it work is to use "post"
 		if VERSION_GIT_RAW:
 			VERSION_GIT = re.sub(
-				'-([0-9]+)-g([0-9a-f]{8})',
+				'-([0-9]+)-g([0-9a-f]{6,8})',
 				r'post\1+\2',
 				VERSION_GIT_RAW,
 			)

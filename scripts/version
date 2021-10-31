@@ -27,7 +27,7 @@ fi
 if [ -d "$gitDir" ] ; then
 	if VER2=$(git --git-dir "$gitDir" describe --tags --always); then
 		if [[ $VER2 == *.* ]] && version_lte $VER $VER2; then
-			VER=$(echo $VER2 | sed -E 's/-([0-9]+)-g([0-9a-f]{8})/post\1+\2/')
+			VER=$(echo $VER2 | sed -E 's/-([0-9]+)-g([0-9a-f]{6,8})/post\1+\2/')
 		fi
 	fi
 fi
