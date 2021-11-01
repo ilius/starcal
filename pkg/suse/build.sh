@@ -43,6 +43,7 @@ requires=("$pyCmd")
 # Confirmed: all following 5 packages are required!
 requires+=('typelib(Gtk) = 3.0' 'typelib(Gdk) = 3.0')
 requires+=('typelib(GdkPixbuf) = 2.0')
+requires+=('typelib-1_0-GtkSource-4')
 requires+=('python3-gobject >= 3.24') ## The new gobject introspection
 requires+=('python3-gobject-Gdk')
 requires+=('python3-gobject-cairo')

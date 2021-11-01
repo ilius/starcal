@@ -39,6 +39,7 @@ version=`"$sourceDir/scripts/version" | sed 's/\-/_/g'`
 
 depends=('python>=3.6')
 depends+=('python-gobject>=3.24') ## The new gobject introspection
+depends+=('gtksourceview4')
 depends+=('python-cairo')
 depends+=('python-httplib2')
 depends+=('python-dateutil')

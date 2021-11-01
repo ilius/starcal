@@ -41,7 +41,6 @@ from scal3.ui_gtk.utils import (
 	labelImageButton,
 )
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
-from scal3.ui_gtk.mywidgets import TextFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
@@ -52,6 +51,12 @@ from scal3.ui_gtk.toolbox import (
 	ToolBoxItem,
 	StaticToolBox,
 )
+
+try:
+	from scal3.ui_gtk.mywidgets.source_editor import SourceEditorWithFrame
+except ImportError:
+	log.exception("")
+	from scal3.ui_gtk.mywidgets import TextFrame as SourceEditorWithFrame
 
 
 def getTreeGroupPixbuf(group):
@@ -115,7 +120,7 @@ class WidgetClass(gtk.Box):
 		pack(hbox, self.summaryEntry, 1, 1)
 		pack(self, hbox)
 		###########
-		self.descriptionInput = TextFrame()
+		self.descriptionInput = SourceEditorWithFrame()
 		swin = gtk.ScrolledWindow()
 		swin.set_policy(gtk.PolicyType.AUTOMATIC, gtk.PolicyType.AUTOMATIC)
 		swin.add(self.descriptionInput)
