@@ -19,6 +19,7 @@ fi
 cards sync
 
 cards install python-gobject
+# TODO: gtksource-4 / gtksourceview4
 cards install python-cairo
 cards install dejavu-ttf
 cards install python-requests

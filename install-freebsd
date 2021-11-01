@@ -22,6 +22,8 @@ PYV=$(python3 -c 'import sys;v=sys.version_info;print(f"py{v.major}{v.minor}")')
 # you can run "pkg install -f ..." to re-install a package
 # if it's installed with pip3, pkg will still install it without "-f"
 
+pkg install gtksourceview4
+
 pkg install $PYV-gobject3
 pkg install $PYV-cairo
 pkg install $PYV-httplib2

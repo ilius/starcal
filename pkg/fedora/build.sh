@@ -40,6 +40,7 @@ version=`"$sourceDir/scripts/version" | sed 's/\-/_/g'`
 
 requires=("$pyCmd")
 requires+=('python3-gobject >= 3.24') ## The new gobject introspection
+requires+=('gtksourceview4')
 requires+=('python3-cairo')
 requires+=('libappindicator-gtk3')
 requires+=('python3-httplib2')
