@@ -8,7 +8,9 @@ fi
 
 SLACKPKG=slackpkg-2.83.0-noarch-4.txz
 
-if ! which slackpkg ; then
+if which slackpkg ; then
+	slackpkg install pygobject3 pycairo python-dateutil
+else
 	curl -o $SLACKPKG "https://slackpkg.org/stable/$SLACKPKG"
 	installpkg $SLACKPKG
 	# need to edit /etc/slackpkg/mirrors and then run:
