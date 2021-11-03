@@ -105,7 +105,7 @@ and Indian National calendars, as well as common English(Gregorian) calendar
 %{_prefix}/bin/$pkgName*
 %{_prefix}/share/applications/$pkgName.desktop
 %{_prefix}/share/doc/$pkgName/*
-%{_prefix}/share/pixmaps/$pkgName.png
+%{_prefix}/share/pixmaps/$iconName
 %{_prefix}/share/icons/hicolor/*/apps/$iconName
 %{_prefix}/share/locale/*/LC_MESSAGES/$pkgName.mo
 " > $pkgName.spec
