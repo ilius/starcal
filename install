@@ -229,6 +229,8 @@ StartupNotify=true" > "${shareDir}/applications/$pkgName.desktop"
 
 "$sourceDir/locale.d/install" "${targetPrefix}" ## FIXME
 
+rm "$targetCodeDir/libs/bson/setup.py" || true
+
 
 if [ "$installType" = "for-pkg" ] || [ "$installType" = "system" ] ; then
 	set -x
