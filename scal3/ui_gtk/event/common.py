@@ -54,7 +54,7 @@ from scal3.ui_gtk.toolbox import (
 
 try:
 	from scal3.ui_gtk.mywidgets.source_editor import SourceEditorWithFrame
-except ImportError:
+except (ImportError, ValueError):
 	log.exception("")
 	from scal3.ui_gtk.mywidgets import TextFrame as SourceEditorWithFrame
 
