@@ -10,6 +10,6 @@ nix-shell -p \
 	python3Packages.cachetools \
 	python3Packages.requests \
 	python3Packages.python-igraph \
+	gtksourceview4 \
 	lxqt.lxqt-openssh-askpass
 
-# TODO: gtksource-4 / gtksourceview4
