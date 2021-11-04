@@ -110,6 +110,16 @@ class PreferencesPluginsToolbar(StaticToolBox):
 
 
 class PreferencesWindow(gtk.Window):
+	mainGridStyleClass = "preferences-main-grid"
+
+	@staticmethod
+	@ud.cssFunc
+	def getCSS() -> str:
+		from scal3.ui_gtk.utils import cssTextStyle
+		return f".preferences-main-grid " + cssTextStyle(
+			font=ui.getFont(scale=1.8),
+		)
+
 	def __init__(self, **kwargs):
 		from math import ceil
 		##
@@ -1125,6 +1135,7 @@ class PreferencesWindow(gtk.Window):
 			if page.pageParent:
 				continue
 			page.pageParent = rootPageName
+			page.iconSize = 32
 			mainPages.append(page)
 		####
 		colN = 2
@@ -1135,6 +1146,8 @@ class PreferencesWindow(gtk.Window):
 		grid.set_row_spacing(15)
 		grid.set_column_spacing(15)
 		grid.set_border_width(20)
+		####
+		grid.get_style_context().add_class(self.mainGridStyleClass)
 		####
 		page = mainPages.pop(0)
 		button = self.newWideButton(page)
@@ -1153,6 +1166,8 @@ class PreferencesWindow(gtk.Window):
 				button = self.newWideButton(page)
 				grid.attach(button, col_i, row_i + 1, 1, 1)
 		grid.show_all()
+		####
+		grid.connect("realize", self.onMainGridRealize)
 		###############
 		page = StackPage()
 		page.pageName = rootPageName
@@ -1170,6 +1185,9 @@ class PreferencesWindow(gtk.Window):
 		####
 		self.vbox.show_all()
 
+	def onMainGridRealize(self, *args):
+		ud.windowList.onConfigChange()
+
 	def onClearImageCacheClick(self, button):
 		pixcache.clearFiles()
 		pixcache.clear()
@@ -1185,8 +1203,12 @@ class PreferencesWindow(gtk.Window):
 		label = gtk.Label(label=page.pageLabel)
 		label.set_use_underline(True)
 		pack(hbox, gtk.Label(), 1, 1)
+		if hasattr(page, "iconSize"):
+			iconSize = page.iconSize
+		else:
+			iconSize = self.stack.iconSize()
 		if page.pageIcon and ui.buttonIconEnable:
-			pack(hbox, imageFromFile(page.pageIcon, self.stack.iconSize()))
+			pack(hbox, imageFromFile(page.pageIcon, iconSize))
 		pack(hbox, label, 0, 0)
 		pack(hbox, gtk.Label(), 1, 1)
 		button = gtk.Button()
