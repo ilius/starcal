@@ -219,10 +219,8 @@ class FontFamilyPrefItem(PrefItem):
 		###
 		self.fontButton = gtk.FontButton()
 		self.fontButton.set_show_size(False)
-		try:
+		if gtk.MINOR_VERSION >= 24:
 			self.fontButton.set_level(gtk.FontChooserLevel.FAMILY)
-		except Exception:
-			log.exception("")
 		# set_level: FAMILY, STYLE, SIZE
 		self.fontButton.connect("font-set", self.onChange)
 		###
