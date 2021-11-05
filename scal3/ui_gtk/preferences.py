@@ -551,7 +551,6 @@ class PreferencesWindow(gtk.Window):
 		self.prefPages.append(page)
 		######
 		sgroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		buttonPadding = 3
 		######
 		hbox = HBox(spacing=10)
 		label = gtk.Label(label=_("Date Format"))
@@ -1155,19 +1154,17 @@ class PreferencesWindow(gtk.Window):
 		self.defaultWidget = button
 		###
 		N = len(mainPages)
-		colBN = int(ceil(N / colN))
+		rowN = int(ceil(N / colN))
 		for col_i in range(colN):
 			colVBox = VBox(spacing=10)
-			for row_i in range(colBN):
-				page_i = col_i * colBN + row_i
+			for row_i in range(rowN):
+				page_i = col_i * rowN + row_i
 				if page_i >= N:
 					break
 				page = mainPages[page_i]
 				button = self.newWideButton(page)
 				grid.attach(button, col_i, row_i + 1, 1, 1)
 		grid.show_all()
-		####
-		grid.connect("realize", self.onMainGridRealize)
 		###############
 		page = StackPage()
 		page.pageName = rootPageName
@@ -1184,9 +1181,10 @@ class PreferencesWindow(gtk.Window):
 		pack(self.vbox, self.buttonbox)
 		####
 		self.vbox.show_all()
+		self.vbox.connect("realize", self.onMainVBoxRealize)
 
-	def onMainGridRealize(self, *args):
-		ud.windowList.onConfigChange()
+	def onMainVBoxRealize(self, *args):
+		ud.windowList.updateCSS()
 
 	def onClearImageCacheClick(self, button):
 		pixcache.clearFiles()
