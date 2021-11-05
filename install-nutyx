@@ -5,13 +5,19 @@ if [ "$UID" != "0" ] ; then
 	exit 1
 fi
 
+if ! which python3 ; then
+	cards install python
+fi
+
+
 PIP=pip3
 if [ -n "$1" ] ; then
 	PIP="python$1 -m pip"
 	shift
 fi
 
-cards install python
+cards sync
+
 cards install python-gobject
 cards install python-cairo
 cards install dejavu-ttf

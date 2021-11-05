@@ -1,14 +1,13 @@
-#!/bin/bash
+#!/usr/bin/env sh
 
 nix-shell -p \
-	pythonPackages.pygobject3 \
-	pythonPackages.pycairo \
-	pythonPackages.pexpect \
-	pythonPackages.httplib2 \
-	pythonPackages.dateutil \
-	pythonPackages.psutil \
-	pythonPackages.requests \
-	pythonPackages.python-igraph \
-	lxqt.lxqt-openssh-askpass \
-
+	python3Packages.pygobject3 \
+	python3Packages.pycairo \
+	python3Packages.pexpect \
+	python3Packages.httplib2 \
+	python3Packages.dateutil \
+	python3Packages.psutil \
+	python3Packages.requests \
+	python3Packages.python-igraph \
+	lxqt.lxqt-openssh-askpass
 
