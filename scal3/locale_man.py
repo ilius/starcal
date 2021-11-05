@@ -306,6 +306,9 @@ def loadTranslator() -> Callable:
 			if isinstance(s, (int, float)):
 				s = numEncode(s, *a, **ka)
 			else:
+				# pgettext is added in Python 3.8
+				# even the word "context" does not exist in docs of 3.7
+				# https://docs.python.org/3.7/library/gettext.html
 				if ctx:
 					s = toStr(transObj.pgettext(ctx, s))
 				else:
