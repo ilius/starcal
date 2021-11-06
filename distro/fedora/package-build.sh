@@ -5,7 +5,7 @@ myDir="`dirname \"$0\"`"
 myDir=`realpath "$myDir"`
 cd "$myDir/../.."
 
-distro=archlinux
+distro=fedora
 distroDir="$HOME/.cache/starcal3-pkgs/$distro"
 pkgCacheDir="$distroDir/cache"
 
@@ -34,24 +34,24 @@ function shouldBuild() {
 
 if shouldBuild starcal3-$distro ; then
 	docker build . \
-		-f pkg/$distro/Dockerfile \
+		-f distro/$distro/Dockerfile \
 		-t starcal3-$distro:latest
 else
 	echo "Using existing starcal3-$distro image"
 fi
 
 DATE=`/bin/date +%F-%H%M%S`
-dockerOutDir=/home/build/pkgs/$DATE/
+dockerOutDir=/root/pkgs/$DATE/
 
 docker run -it \
-	--volume $distroDir:/home/build/pkgs \
-	--volume $pkgCacheDir:/var/cache/pacman \
+	--volume $distroDir:/root/pkgs \
+	--volume $pkgCacheDir:/var/cache/dnf \
 	starcal3-$distro:latest \
-	/home/build/starcal/pkg/$distro/docker-build-internal.sh $dockerOutDir
+	/root/starcal/distro/$distro/docker-build-internal.sh $dockerOutDir
 
 #	--mount type=bind,source="$pkgCacheDir",target=/var/cache/zypp
 
 cd -
 
 outDir="$distroDir/$DATE"
-ls -l "$outDir"/*.pkg.tar* || rmdir "$outDir"
+ls -l "$outDir"/*.rpm

@@ -47,7 +47,7 @@ sourceDir="`dirname \"$myPath\"`"
 outDir="$HOME/.${pkgName}/pkgs/debian/`/bin/date +%F-%H%M%S`"
 mkdir -p "$outDir"
 
-if "$sourceDir/pkg/debian/build.sh" "$outDir" ; then
+if "$sourceDir/distro/debian/build.sh" "$outDir" ; then
 	pkgPath=`ls -1 "$outDir"/*.deb | tail -n1`
 	echo "Package file $pkgPath created, installing..."
 	set +e
