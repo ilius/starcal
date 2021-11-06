@@ -53,7 +53,7 @@ version=`"$sourceDir/scripts/version" | sed 's/\-/_/g'`
 outDir="$HOME/.${pkgName}/pkgs/fedora/`/bin/date +%F-%H%M%S`"
 mkdir -p "$outDir"
 
-"$sourceDir/pkg/fedora/build.sh" "$outDir" "$pyCmd"
+"$sourceDir/distro/fedora/build.sh" "$outDir" "$pyCmd"
 pkgPath=`ls -1 "$outDir"/*.rpm | tail -n1`
 
 if [ ! -f $pkgPath ] ; then

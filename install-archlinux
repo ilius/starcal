@@ -43,7 +43,7 @@ if [ -z "$pyCmd" ] ; then
 fi
 echo "Using python: \"$pyCmd\""
 
-"$sourceDir/pkg/archlinux/build.sh" "$outDir" "$pyCmd"
+"$sourceDir/distro/archlinux/build.sh" "$outDir" "$pyCmd"
 pkgPath=`ls -1 "$outDir"/*.pkg.tar* | tail -n1`
 
 sudo pacman -U "$pkgPath"

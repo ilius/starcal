@@ -53,7 +53,7 @@ sourceDir="`dirname \"$myPath\"`"
 outDir="$HOME/.${pkgName}/pkgs/suse/`/bin/date +%F-%H%M%S`"
 mkdir -p "$outDir"
 
-"$sourceDir/pkg/suse/build.sh" "$outDir" "$pyCmd"
+"$sourceDir/distro/suse/build.sh" "$outDir" "$pyCmd"
 pkgPath=`ls -1 "$outDir"/*.rpm | tail -n1`
 
 if [ -z "$pkgPath" ] ; then
