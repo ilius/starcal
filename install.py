@@ -6,6 +6,7 @@ from os.path import (
 	join,
 	dirname,
 	abspath,
+	realpath,
 	isfile,
 	isdir,
 	islink,
@@ -14,8 +15,10 @@ import getopt
 import shutil
 from shutil import rmtree
 
-myPath = abspath(__file__)
+# realpath gives the target of sym link (unlike abspath)
+myPath = realpath(__file__)
 sourceDir = dirname(myPath)
+print(sourceDir)
 
 pkgName = "starcal3"
 iconName = "starcal32.png"
