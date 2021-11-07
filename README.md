@@ -7,46 +7,31 @@ written in Python, supporting Jalali/Persian, Garigorian and Islamic calendar.
 
 To get the latest codes via git, run this:
 
-    $ git clone git://github.com/ilius/starcal.git
+	git clone git://github.com/ilius/starcal.git
 
 To get the latest stable snapshot (without git) open this URL in your browser:
 
-    http://github.com/ilius/starcal/tarball/main
+	http://github.com/ilius/starcal/tarball/main
 
 To get the latest development snapshot:
 
-    http://github.com/ilius/starcal/tarball/next
+	http://github.com/ilius/starcal/tarball/next
 
-## Installation and Uninstallation
+## Installation on GNU/Linux or *BSD
+	sudo ./install-auto.sh
 
-### Ubuntu:
-    $ sudo bash ./install-ubuntu
-    $ sudo apt-get remove starcal3
+## Uninstallation
 
-### Debian or other Debian-based distributions:
-    $ sudo bash ./install-debian
-    $ sudo apt-get remove starcal3
-
-### ArchLinux:
-    $ bash ./install-archlinux
-    $ sudo pacman -R starcal3
-
-or:
-
-    $ yaourt -S starcal
-    $ sudo pacman -R starcal
-
-### openSUSE:
-    $ sudo bash ./install-suse
-    $ sudo zypper remove starcal3
-
-### Fedora:
-    $ sudo bash ./install-fedora
-    $ sudo yum remove starcal3
-
-### Other distributions:
-    $ sudo bash ./install
-    $ sudo /usr/share/starcal3/uninstall
+- Debian, Ubuntu or other Debian-based distributions
+	+ `sudo apt-get remove starcal3`
+- ArchLinux
+	+ `sudo pacman -R starcal3`
+- openSUSE
+	+ `sudo zypper remove starcal3`
+- Fedora
+	+ `sudo yum remove starcal3`
+- Other Linux/BSD distributions
+	+ `sudo /usr/share/starcal3/uninstall`
 
 ### Running on Windows:
 1. Install Python 3.x
@@ -56,7 +41,7 @@ or:
 5. Click on the shortcut to starcal.pyw (or the file itself) to run
 
 ## Home Page:
-    https://ilius.github.io/starcal
+	https://ilius.github.io/starcal
 
 ## License:
 StartCalendar is licensed under GNU Genaral Public License version 3+
