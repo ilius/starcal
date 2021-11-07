@@ -276,7 +276,7 @@ def main():
 			f"Icon={iconName}\n"
 			"Type=Application\n"
 			"Terminal=false\n"
-			"Categories=GTK;Utility;Accessibility;Office;Calendar;\n"
+			"Categories=GTK;Office;Calendar;Utility;\n"
 			"StartupNotify=true\n"
 		)
 
