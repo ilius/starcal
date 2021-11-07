@@ -91,7 +91,7 @@ and Indian National calendars, as well as common English(Gregorian) calendar
 %global _python_bytecompile_extra 0
 
 %install
-\"$sourceDir/install\" \"%{buildroot}\" --for-pkg --prefix=%{_prefix} --python='$pyCmd'
+\"$sourceDir/distro/base/install.sh\" \"%{buildroot}\" --for-pkg --prefix=%{_prefix} --python='$pyCmd'
 
 %files
 %defattr(-,root,root,-)

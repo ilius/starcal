@@ -8,8 +8,10 @@ function printUsage {
 	echo -e "Usage: $0 [${U}TERGET_DIR${E}] [--for-pkg|--portable] [--prefix=${U}/usr/local${E}] [--python=${U}python3.x${E}]"
 }
 
-myPath="`realpath \"$0\"`"
-sourceDir="`dirname \"$myPath\"`"
+myPath=$(realpath "$0")
+myDir1=$(dirname "$myPath")
+myDir2=$(dirname "$myDir1")
+sourceDir=$(dirname "$myDir2")
 
 function getVersion {
 	if version=$("$sourceDir/scripts/version") ; then
@@ -61,7 +63,7 @@ if [ "$installType" != "for-pkg" ] ; then
 		else
 			echo "Your distribution is based on Debian, use: sudo ./distro/debian/install.sh"
 		fi
-		exit 1
+		#exit 1
 	elif [ -f /etc/SUSE-brand ] || [ -f /etc/products.d/openSUSE.prod ] ; then
 		echo "Your distribution is based on SUSE, use: sudo ./distro/suse/install.sh"
 		exit 1
@@ -209,8 +211,10 @@ chmod 755 "${targetPrefix}/bin/$pkgName"
 
 echo "$version" > "$targetCodeDir/VERSION"
 
-if [ "$installType" = "for-pkg" ] ; then
-	rm "$targetCodeDir/uninstall"
+if [ "$installType" = "system" ] ; then
+	mv "$targetCodeDir/distro/base/uninstall" "$targetCodeDir/uninstall"
+else
+	rm "$targetCodeDir/distro/base/uninstall"
 fi
 
 

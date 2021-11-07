@@ -38,5 +38,5 @@ myDir1=$(dirname "$myPath")
 myDir2=$(dirname "$myDir1")
 sourceDir=$(dirname "$myDir2")
 
-"$sourceDir/install" --system
+"$sourceDir/distro/base/install.sh" --system
 
