@@ -7,7 +7,7 @@ if [ -f /etc/debian_version ] ; then
 		./distro/debian/install.sh
 	fi
 
-elif [ -f /etc/SUSE-brand ] ; then
+elif [ -f /etc/SUSE-brand ] || [ -f /etc/products.d/openSUSE.prod ] ; then
 	./distro/suse/install.sh
 
 elif [ -f /etc/redhat-release ] ; then
