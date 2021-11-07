@@ -228,7 +228,7 @@ Exec=$pkgName
 Icon=$iconName
 Type=Application
 Terminal=false
-Categories=GTK;Utility;Accessibility;Office;Calendar;
+Categories=GTK;Office;Calendar;Utility;
 StartupNotify=true" > "${shareDir}/applications/$pkgName.desktop"
 
 
