@@ -2,7 +2,7 @@
 
 if [ -f /etc/debian_version ] ; then
 	if [ "$(lsb_release -is)" = "Ubuntu" ] ; then
-		./install-ubuntu
+		./distro/ubuntu/install.sh
 	else
 		./distro/debian/install.sh
 	fi
