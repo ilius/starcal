@@ -471,6 +471,13 @@ class MainWin(gtk.Window, ud.BaseCalObj):
 			return True
 		return False
 
+	def begin_resize_drag(self, *args):
+		if self.isMaximized:
+			self.isMaximized = False
+
+		ui.updateFocusTime()
+		return gtk.Window.begin_resize_drag(self, *args)
+
 	def startResize(self, widget, gevent):
 		if self.menuMain:
 			self.menuMain.hide()
