@@ -90,7 +90,7 @@ def checkOperatingSystem(installType):
 
 	if isfile("/etc/debian_version"):
 		if lsb_release() == "Ubuntu":
-			printAsError("Your distribution is based on Ubuntu, use: sudo ./install-ubuntu")
+			printAsError("Your distribution is based on Ubuntu, use: sudo ./distro/ubuntu/install.sh")
 		else:
 			printAsError("Your distribution is based on Debian, use: sudo ./distro/debian/install.sh")
 		return False

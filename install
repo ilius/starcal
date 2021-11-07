@@ -57,7 +57,7 @@ done
 if [ "$installType" != "for-pkg" ] ; then
 	if [ -f /etc/debian_version ] ; then
 		if [ "$(lsb_release -is)" = "Ubuntu" ] ; then
-			echo "Your distribution is based on Ubuntu, use: sudo ./install-ubuntu"
+			echo "Your distribution is based on Ubuntu, use: sudo ./distro/ubuntu/install.sh"
 		else
 			echo "Your distribution is based on Debian, use: sudo ./distro/debian/install.sh"
 		fi
