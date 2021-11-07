@@ -33,4 +33,10 @@ $PIP install python-igraph
 $PIP install pygit2
 
 
-./install --system
+myPath=$(realpath "$0")
+myDir1=$(dirname "$myPath")
+myDir2=$(dirname "$myDir1")
+sourceDir=$(dirname "$myDir2")
+
+"$sourceDir/install" --system
+
