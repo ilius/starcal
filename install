@@ -53,22 +53,23 @@ while true ; do
 	esac
 done
 
+
 if [ "$installType" != "for-pkg" ] ; then
 	if [ -f /etc/debian_version ] ; then
 		if [ "$(lsb_release -is)" = "Ubuntu" ] ; then
 			echo "Your distribution is based on Ubuntu, use: sudo ./install-ubuntu"
 		else
-			echo "Your distribution is based on Debian, use: sudo ./install-debian"
+			echo "Your distribution is based on Debian, use: sudo ./distro/debian/install.sh"
 		fi
 		exit 1
 	elif [ -f /etc/SUSE-brand ] || [ -f /etc/products.d/openSUSE.prod ] ; then
-		echo "Your distribution is based on SUSE, use: sudo ./install-suse"
+		echo "Your distribution is based on SUSE, use: sudo ./distro/suse/install.sh"
 		exit 1
 	elif [ -f /etc/redhat-release ] ; then
-		echo "Your distribution is based on Red Hat, use: sudo ./install-fedora"
+		echo "Your distribution is based on Red Hat, use: sudo ./distro/fedora/install.sh"
 		exit 1
 	elif [ -f /etc/arch-release ] ; then
-		echo "Your distribution is based on ArchLinux, use ./install-archlinux"
+		echo "Your distribution is based on ArchLinux, use ./distro/archlinux/install.sh"
 		exit 1
 	fi
 fi

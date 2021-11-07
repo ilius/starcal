@@ -92,19 +92,19 @@ def checkOperatingSystem(installType):
 		if lsb_release() == "Ubuntu":
 			printAsError("Your distribution is based on Ubuntu, use: sudo ./install-ubuntu")
 		else:
-			printAsError("Your distribution is based on Debian, use: sudo ./install-debian")
+			printAsError("Your distribution is based on Debian, use: sudo ./distro/debian/install.sh")
 		return False
 
 	elif isfile("/etc/SUSE-brand"):
-		printAsError("Your distribution is based on SUSE, use: sudo ./install-suse")
+		printAsError("Your distribution is based on SUSE, use: sudo ./distro/suse/install.sh")
 		return False
 
 	elif isfile("/etc/redhat-release"):
-		printAsError("Your distribution is based on Red Hat, use: sudo ./install-fedora")
+		printAsError("Your distribution is based on Red Hat, use: sudo ./distro/fedora/install.sh")
 		return False
 
 	elif isfile("/etc/arch-release"):
-		printAsError("Your distribution is based on ArchLinux, use ./install-archlinux")
+		printAsError("Your distribution is based on ArchLinux, use ./distro/archlinux/install.sh")
 		return False
 
 	return True
