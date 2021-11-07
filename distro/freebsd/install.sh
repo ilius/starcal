@@ -52,7 +52,7 @@ myDir1=$(dirname "$myPath")
 myDir2=$(dirname "$myDir1")
 sourceDir=$(dirname "$myDir2")
 
-"$sourceDir/install.py" --system
+"$sourceDir/distro/base/install.py" --system
 
 # "install" script does not work in FreeBSD 13.0
 # the "case" bash command acts very strangely!

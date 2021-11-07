@@ -33,7 +33,7 @@ $PIP install python-igraph
 $PIP install pygit2
 
 if [ -f /bin/freebsd-version ] ; then
-	./install.py --system
+	./distro/base/install.py --system
 else
 	./install --system
 fi

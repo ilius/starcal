@@ -17,7 +17,7 @@ from shutil import rmtree
 
 # realpath gives the target of sym link (unlike abspath)
 myPath = realpath(__file__)
-sourceDir = dirname(myPath)
+sourceDir = dirname(dirname(dirname(myPath)))
 print(sourceDir)
 
 pkgName = "starcal3"
