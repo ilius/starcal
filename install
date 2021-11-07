@@ -69,7 +69,7 @@ if [ "$installType" != "for-pkg" ] ; then
 			echo "Your distribution is based on Debian, use: sudo ./install-debian"
 		fi
 		exit 1
-	elif [ -f /etc/SUSE-brand ] ; then
+	elif [ -f /etc/SUSE-brand ] || [ -f /etc/products.d/openSUSE.prod ] ; then
 		echo "Your distribution is based on SUSE, use: sudo ./install-suse"
 		exit 1
 	elif [ -f /etc/redhat-release ] ; then
