@@ -201,8 +201,8 @@ def main():
 	makeDir(join(shareDir, "pixmaps"))
 	makeDir(join(shareDir, "doc", pkgName))
 	makeDir(join(targetPrefix, "bin"))
-	makeDir(join(targetDir, "var/log/$pkgName"))
-	makeDir(join(targetDir, "etc"))
+	makeDir(join(targetDir, "/var/log", pkgName))
+	makeDir(join(targetDir, "/etc"))
 
 	if islink(targetCodeDir):
 		os.remove(targetCodeDir)
