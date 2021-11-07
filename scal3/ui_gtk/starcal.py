@@ -665,6 +665,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		return result
 
 	def begin_resize_drag(self, *args):
+		ui.winMaximized = False
 		ui.updateFocusTime()
 		return gtk.Window.begin_resize_drag(self, *args)
 
