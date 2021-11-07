@@ -36,7 +36,7 @@ tmpDir="$outDir/tmp"
 mkdir -p $tmpDir
 mkdir -p "$tmpDir/DEBIAN"
 
-"$sourceDir/install" "$tmpDir" "--for-pkg" "--python=$pyCmd"
+"$sourceDir/distro/base/install.sh" "$tmpDir" "--for-pkg" "--python=$pyCmd"
 chown -R root "$tmpDir"
 installedSize=`getDirTotalSize "$tmpDir"` ## only /usr ? FIXME
 

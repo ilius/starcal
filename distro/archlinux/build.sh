@@ -80,7 +80,7 @@ conflicts=('starcal-git')
 source=()
 md5sums=()
 package() {
-	\"\$sourceDir/install\" \"\$pkgdir\" --for-pkg --python=\"$pyCmd\"
+	\"\$sourceDir/distro/base/install.sh\" \"\$pkgdir\" --for-pkg --python=\"$pyCmd\"
 }" > PKGBUILD
 
 makepkg --nodeps --force

@@ -256,8 +256,13 @@ def main():
 	with open(join(targetCodeDir, "VERSION"), mode="w") as _file:
 		_file.write(f"{version}\n")
 
-	if installType == "for-pkg":
-		os.remove(join(shareDir, pkgName, "uninstall"))
+	if installType == "system":
+		shutil.move(
+			join(targetCodeDir, "distro/base/uninstall"),
+			join(targetCodeDir, "uninstall"),
+		)
+	else:
+		os.remove(join(targetCodeDir, "distro/base/uninstall"))
 
 	with open(join(shareDir, "applications", f"{pkgName}.desktop"), mode="w") as _file:
 		_file.write(

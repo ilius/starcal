@@ -15,7 +15,8 @@ chmod 755 'starcal'
 
 chmod 755 'scal3/ui_gtk/starcal.py'
 
-chmod 755 'install'
+chmod 755 'distro/base/install.sh'
+chmod 755 'distro/base/uninstall'
 
 chmod 755 distro/*/install.sh
 
@@ -28,7 +29,6 @@ chmod 755 distro/*/build.sh
 chmod 755 distro/*/docker-build-internal.sh
 chmod 755 distro/*/package-build.sh
 
-chmod 755 'uninstall'
 chmod 755 'update-perm'
 chmod 755 'check-style'
 

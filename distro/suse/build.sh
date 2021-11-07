@@ -97,7 +97,7 @@ using Gtk3-based interface, that supports Jalai(Iranian), Hijri(Islamic),
 and Indian National calendars, as well as common English(Gregorian) calendar
 
 %install
-\"$sourceDir/install\" \"%{buildroot}\" --for-pkg --prefix=%{_prefix} --python='$pyCmd'
+\"$sourceDir/distro/base/install.sh\" \"%{buildroot}\" --for-pkg --prefix=%{_prefix} --python='$pyCmd'
 
 %files
 %defattr(-,root,root,-)
