@@ -46,7 +46,6 @@ installedSize=`getDirTotalSize "$tmpDir"` ## only /usr ? FIXME
 
 depends=('python3(>=3.6)')
 depends+=('gir1.2-gtk-3.0')
-depends+=('gir1.2-gtksource-4')
 depends+=('python3-gi(>=3.24)') ## The new gobject introspection
 depends+=('python3-gi-cairo')
 ## it's "python-gobject-cairo" in ubuntu FIXME
@@ -59,6 +58,7 @@ depends+=('python3-requests')
 #depends+=('python3-gflags') # for google api client
 
 recommends=()
+recommends+=('gir1.2-gtksource-4')
 recommends+=('python3-igraph')
 recommends+=('python3-gnomevfs')
 recommends+=('ssh-askpass-gnome')
