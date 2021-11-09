@@ -24,7 +24,7 @@ DTIME=$(/bin/date +%F-%H%M%S)
 outDir="$HOME/.${pkgName}/pkgs/archlinux/$DTIME"
 mkdir -p "$outDir"
 
-pyCmd=$(find /usr/bin -name 'python3.*' -maxdepth 1 | sort | tail -n1)
+pyCmd=$(find /usr/bin -maxdepth 1 -name 'python3.*' | sort | tail -n1)
 if [ -z "$pyCmd" ] ; then
 	echo "Could not find python3.x binary" >&2
 	exit 1
@@ -32,7 +32,7 @@ fi
 echo "Using python: \"$pyCmd\""
 
 "$sourceDir/distro/archlinux/build.sh" "$outDir" "$pyCmd"
-pkgPath=$(find "$outDir" -name '*.pkg.tar*' -maxdepth 1 | sort | tail -n1)
+pkgPath=$(find "$outDir" -maxdepth 1 -name '*.pkg.tar*' | sort | tail -n1)
 
 sudo pacman -U "$pkgPath"
 

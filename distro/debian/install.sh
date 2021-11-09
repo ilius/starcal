@@ -50,7 +50,7 @@ outDir="$HOME/.${pkgName}/pkgs/debian/$DTIME"
 mkdir -p "$outDir"
 
 if "$sourceDir/distro/debian/build.sh" "$outDir" ; then
-	pkgPath=$(find "$outDir" -name '*.deb' -maxdepth 1 | sort | tail -n1)
+	pkgPath=$(find "$outDir" -maxdepth 1 -name '*.deb' | sort | tail -n1)
 	echo "Package file $pkgPath created, installing..."
 	set +e
 	installPackage "$pkgPath"

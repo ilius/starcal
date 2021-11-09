@@ -49,7 +49,7 @@ if ! which rpmbuild ; then
 fi
 
 "$sourceDir/distro/fedora/build.sh" "$outDir" "$pyCmd"
-pkgPath=$(find "$outDir" -name '*.rpm' -maxdepth 1 | sort | tail -n1)
+pkgPath=$(find "$outDir" -maxdepth 1 -name '*.rpm' | sort | tail -n1)
 
 if [ ! -f "$pkgPath" ] ; then
 	echo "rpmbuild exited with success status, but no package file was found" >&2

@@ -54,7 +54,7 @@ outDir="$HOME/.${pkgName}/pkgs/suse/$DTIME"
 mkdir -p "$outDir"
 
 "$sourceDir/distro/suse/build.sh" "$outDir" "$pyCmd"
-pkgPath=$(find "$outDir" -name '*.rpm' -maxdepth 1 | sort | tail -n1)
+pkgPath=$(find "$outDir" -maxdepth 1 -name '*.rpm' | sort | tail -n1)
 
 if [ -z "$pkgPath" ] ; then
 	echo "Package build failed" >&2
