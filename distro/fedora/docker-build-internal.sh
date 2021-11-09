@@ -16,4 +16,4 @@ sed -i "$SHEBANG_FIX" /root/starcal/libs/bson/bson/network.py
 dnf install -y rpm-build git-core desktop-file-utils gettext
 
 mkdir -p "$outDir"
-/root/starcal/distro/fedora/build.sh $outDir /usr/bin/python3.7
+/root/starcal/distro/fedora/build.sh "$outDir" /usr/bin/python3

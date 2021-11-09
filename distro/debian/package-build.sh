@@ -1,8 +1,8 @@
 #!/bin/bash
 set -e
 
-myDir="`dirname \"$0\"`"
-myDir=`realpath "$myDir"`
+myDir=$(dirname "$0")
+myDir=$(realpath "$myDir")
 cd "$myDir/../.."
 
 distro=debian
@@ -20,12 +20,12 @@ function shouldBuild() {
 	if [ -z "$imageCreated" ] ; then
 		return 0
 	fi
-	imageAge=$[$(/usr/bin/date +%s) - $(/usr/bin/date +%s -d "$imageCreated")]
+	imageAge=$(($(/bin/date +%s) - $(/bin/date +%s -d "$imageCreated")))
 	if [ -z "$imageAge" ] ; then
 		return 0
 	fi
 	echo "Existing $imageName image is $imageAge seconds old"
-	if [[ "$imageAge" > 604800 ]] ; then
+	if [[ "$imageAge" -gt 604800 ]] ; then
 		# more than a week old
 		return 0
 	fi
@@ -40,14 +40,14 @@ else
 	echo "Using existing starcal3-$distro image"
 fi
 
-DATE=`/bin/date +%F-%H%M%S`
-dockerOutDir=/root/pkgs/$DATE/
+DATE=$(/bin/date +%F-%H%M%S)
+dockerOutDir="/root/pkgs/$DATE/"
 
 docker run -it \
-	--volume $distroDir:/root/pkgs \
-	--volume $pkgCacheDir:/var/cache/apt \
-	starcal3-$distro:latest \
-	/root/starcal/distro/$distro/docker-build-internal.sh $dockerOutDir
+	--volume "$distroDir:/root/pkgs" \
+	--volume "$pkgCacheDir:/var/cache/apt" \
+	"starcal3-$distro:latest" \
+	"/root/starcal/distro/$distro/docker-build-internal.sh" "$dockerOutDir"
 
 #	--mount type=bind,source="$pkgCacheDir",target=/var/cache/zypp
 

@@ -6,8 +6,8 @@ function printUsage {
 
 pkgName=starcal3
 
-options=`getopt -o 'v' --long 'prefix:,verbose' -n "$0" -- "$@"`
-if [ $? != 0 ] ; then
+
+if options=$(getopt -o 'v' --long 'prefix:,verbose' -n "$0" -- "$@") ; then
 	printUsage
 	exit 1
 fi

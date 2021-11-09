@@ -15,7 +15,7 @@ sourceDir=$(dirname "$myDir2")
 
 function getVersion {
 	if version=$("$sourceDir/scripts/version") ; then
-		echo $version
+		echo "$version"
 		return
 	fi
 	"$sourceDir/scripts/version.py"
@@ -28,9 +28,10 @@ iconName=starcal32.png
 
 "$sourceDir/update-perm" ## FIXME
 
-
-options=`getopt -o 'h' --long 'help,for-pkg,portable,system,prefix:,python:' -n "$0" -- "$@"`
-if [ $? != 0 ] ; then
+if ! options=$(
+	getopt -o 'h' --long \
+	'help,for-pkg,portable,system,prefix:,python:' -n "$0" -- "$@"
+) ; then
 	printUsage
 	exit 1
 fi
@@ -77,21 +78,21 @@ if [ "$installType" != "for-pkg" ] ; then
 fi
 
 if [ -z "$pyCmd" ] ; then
-	if ! pyCmd=`which "python3"` ; then
+	if ! pyCmd=$(which "python3") ; then
 		echo "Python executable file not found." >&2
 		echo "Make sure 'python3' is in one of \$PATH directories." >&2
 		exit 1
 	fi
 fi
-if ! "$pyCmd" -c 'import sys
+if which "$pyCmd" && ! "$pyCmd" -c 'import sys
 version = (sys.version_info.major, sys.version_info.minor)
 if (3, 8) <= version <= (3, 10):
 	exit(0)
 else:
 	exit(1)
 ' ; then
-	pyVer=`"$pyCmd" --version`
-	printf "\e[31mWarning: $pyVer is not officially supported.\e[m\n" >&2
+	pyVer=$("$pyCmd" --version)
+	printf "\e[31mWarning: %s is not officially supported.\e[m\n" "$pyVer" >&2
 fi
 
 echo "Using $pyCmd"
@@ -109,7 +110,7 @@ fi
 
 if [ -n "$targetDir" ] ; then ## non-Root directory
 	n=${#targetDir}
-	if [ ${targetDir:n-1:1} = / ] ; then
+	if [ "${targetDir:n-1:1}" = / ] ; then
 		targetDir=${targetDir::-1}
 	fi
 	mkdir -p "${targetDir}"
@@ -254,11 +255,9 @@ if [ "$installType" = "for-pkg" ] || [ "$installType" = "system" ] ; then
 	set +x
 else
 	DIR="$targetCodeDir"
-	for P in "$DIR/.git" ; do
-		if [ -e "$P" ] ; then
-			echo "You may want to remove '$P'"
-		fi
-	done
+	if [ -e "$DIR/.git" ] ; then
+		echo "You may want to remove '$DIR/.git'"
+	fi
 fi
 
 

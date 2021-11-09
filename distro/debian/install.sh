@@ -6,7 +6,8 @@ set -e
 function installPackage(){
 	# must run `set +e` before running this function
 	pkgPath="$1"
-	if apt-get install --reinstall $(realpath "$pkgPath") ; then
+	pkgPathAbs=$(realpath "$pkgPath")
+	if apt-get install --reinstall "$pkgPathAbs" ; then
 		return 0
 	fi
 	if [ -f /usr/bin/apt ] ; then
@@ -44,11 +45,12 @@ myDir1=$(dirname "$myPath")
 myDir2=$(dirname "$myDir1")
 sourceDir=$(dirname "$myDir2")
 
-outDir="$HOME/.${pkgName}/pkgs/debian/`/bin/date +%F-%H%M%S`"
+DTIME=$(/bin/date +%F-%H%M%S)
+outDir="$HOME/.${pkgName}/pkgs/debian/$DTIME"
 mkdir -p "$outDir"
 
 if "$sourceDir/distro/debian/build.sh" "$outDir" ; then
-	pkgPath=`ls -1 "$outDir"/*.deb | tail -n1`
+	pkgPath=$(find "$outDir" -name '*.deb' -maxdepth 1 | sort | tail -n1)
 	echo "Package file $pkgPath created, installing..."
 	set +e
 	installPackage "$pkgPath"

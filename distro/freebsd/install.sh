@@ -2,7 +2,7 @@
 
 set -x
 
-if [ $(id -u) != "0" ] ; then
+if [ "$(id -u)" != "0" ] ; then
 	echo "Run this script as root" >&2
 	exit 1
 fi
@@ -24,16 +24,16 @@ PYV=$(python3 -c 'import sys;v=sys.version_info;print(f"py{v.major}{v.minor}")')
 
 pkg install \
 	gtksourceview4 \
-	$PYV-gobject3 \
-	$PYV-cairo \
-	$PYV-httplib2 \
-	$PYV-dateutil \
-	$PYV-psutil \
-	$PYV-cachetools \
-	$PYV-requests \
-	$PYV-ujson \
-	$PYV-python-igraph \
-	$PYV-pygit2
+	"$PYV-gobject3" \
+	"$PYV-cairo" \
+	"$PYV-httplib2" \
+	"$PYV-dateutil" \
+	"$PYV-psutil" \
+	"$PYV-cachetools" \
+	"$PYV-requests" \
+	"$PYV-ujson" \
+	"$PYV-python-igraph" \
+	"$PYV-pygit2"
 
 # pygobject			https://www.freshports.org/devel/py-gobject/
 # pycairo			https://www.freshports.org/graphics/py-cairo/

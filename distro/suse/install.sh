@@ -6,7 +6,7 @@
 set -e
 
 function check_pkg(){
-	OUT=`zypper info "$1" | grep 'Installed:'`
+	OUT=$(zypper info "$1" | grep 'Installed:')
 	if [ "$OUT" = 'Installed: Yes' ] ; then
 		echo 'installed'
 	elif [ "$OUT" = 'Installed: No' ] ; then
@@ -49,11 +49,12 @@ myDir1=$(dirname "$myPath")
 myDir2=$(dirname "$myDir1")
 sourceDir=$(dirname "$myDir2")
 
-outDir="$HOME/.${pkgName}/pkgs/suse/`/bin/date +%F-%H%M%S`"
+DTIME=$(/bin/date +%F-%H%M%S)
+outDir="$HOME/.${pkgName}/pkgs/suse/$DTIME"
 mkdir -p "$outDir"
 
 "$sourceDir/distro/suse/build.sh" "$outDir" "$pyCmd"
-pkgPath=`ls -1 "$outDir"/*.rpm | tail -n1`
+pkgPath=$(find "$outDir" -name '*.rpm' -maxdepth 1 | sort | tail -n1)
 
 if [ -z "$pkgPath" ] ; then
 	echo "Package build failed" >&2
@@ -70,8 +71,8 @@ zypper install -f --allow-unsigned-rpm "$pkgPath"
 
 #rpm -U --force "$pkgPath" ## its OK when required packages are installed!
 
-if [ "`check_pkg gnome-shell`" = installed ] ; then
-	case `check_pkg gnome-shell-extension-topicons` in
+if [ "$(check_pkg gnome-shell)" = installed ] ; then
+	case "$(check_pkg gnome-shell-extension-topicons)" in
 		not_installed)
 			zypper install gnome-shell-extension-topicons
 			;;
