@@ -23,22 +23,21 @@ function getDirTotalSize(){
 myPath=$(realpath "$0")
 
 pkgName=starcal3
-iconName=starcal32.png
 
-myDir="`dirname \"$myPath\"`"
-pkgDir="`dirname \"$myDir\"`"
-sourceDir="`dirname \"$pkgDir\"`"
+myDir=$(dirname "$myPath")
+pkgDir=$(dirname "$myDir")
+sourceDir=$(dirname "$pkgDir")
 
-version=`"$sourceDir/scripts/version"`
+version=$("$sourceDir/scripts/version")
 
 tmpDir="$outDir/tmp"
 
-mkdir -p $tmpDir
+mkdir -p "$tmpDir"
 mkdir -p "$tmpDir/DEBIAN"
 
 "$sourceDir/distro/base/install.sh" "$tmpDir" "--for-pkg" "--python=$pyCmd"
 chown -R root "$tmpDir"
-installedSize=`getDirTotalSize "$tmpDir"` ## only /usr ? FIXME
+installedSize=$(getDirTotalSize "$tmpDir") ## only /usr ? FIXME
 
 #getDirTotalSize "$tmpDir"
 #getDirTotalSize "$tmpDir/usr"
@@ -68,7 +67,7 @@ recommends+=('python3-pygit2')
 depends_str=$(printf ", %s" "${depends[@]}") ; depends_str=${depends_str:2}
 recommends_str=$(printf ", %s" "${recommends[@]}") ; recommends_str=${recommends_str:2}
 
-mkdir -p $tmpDir/DEBIAN
+mkdir -p "$tmpDir/DEBIAN"
 echo "Package: $pkgName
 Version: $version
 Architecture: all

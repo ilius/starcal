@@ -26,12 +26,12 @@ myPath=$(realpath "$0")
 pkgName=starcal3
 iconName=starcal32.png
 
-myDir="`dirname \"$myPath\"`"
-pkgDir="`dirname \"$myDir\"`"
-sourceDir="`dirname \"$pkgDir\"`"
+myDir=$(dirname "$myPath")
+pkgDir=$(dirname "$myDir")
+sourceDir=$(dirname "$pkgDir")
 #"$sourceDir/scripts/assert_python3"
 
-version=`"$sourceDir/scripts/version" | sed 's/\-/_/g'`
+version=$("$sourceDir/scripts/version" | sed 's/\-/_/g')
 
 #echo "myPath=$myPath"
 #echo "sourceDir=$sourceDir"
@@ -70,8 +70,8 @@ recommends+=('python3-pygit2')
 ## The package for AppIndicator is: typelib-1_0-AppIndicator3-0_1
 ## Which provides: typelib(AppIndicator3) = 0.1
 
-requires_str="Requires: ${requires[@]}"
-recommends_str="Recommends: ${recommends[@]}"
+requires_str="Requires: ${requires[*]}"
+recommends_str="Recommends: ${recommends[*]}"
 
 #echo "$requires_str"; exit
 

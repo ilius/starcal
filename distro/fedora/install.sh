@@ -33,7 +33,8 @@ myDir1=$(dirname "$myPath")
 myDir2=$(dirname "$myDir1")
 sourceDir=$(dirname "$myDir2")
 
-outDir="$HOME/.${pkgName}/pkgs/fedora/`/bin/date +%F-%H%M%S`"
+DTIME=$(/bin/date +%F-%H%M%S)
+outDir="$HOME/.${pkgName}/pkgs/fedora/$DTIME"
 mkdir -p "$outDir"
 
 if ! which rpmbuild ; then
@@ -48,10 +49,10 @@ if ! which rpmbuild ; then
 fi
 
 "$sourceDir/distro/fedora/build.sh" "$outDir" "$pyCmd"
-pkgPath=`ls -1 "$outDir"/*.rpm | tail -n1`
+pkgPath=$(find "$outDir" -name '*.rpm' -maxdepth 1 | sort | tail -n1)
 
-if [ ! -f $pkgPath ] ; then
-	echo "rpmbuild exited with success status $status, but no package file was found" >&2
+if [ ! -f "$pkgPath" ] ; then
+	echo "rpmbuild exited with success status, but no package file was found" >&2
 	exit 1
 fi
 

@@ -26,12 +26,12 @@ myPath=$(realpath "$0")
 pkgName=starcal3
 iconName=starcal32.png
 
-myDir="`dirname \"$myPath\"`"
-pkgDir="`dirname \"$myDir\"`"
-sourceDir="`dirname \"$pkgDir\"`"
+myDir=$(dirname "$myPath")
+pkgDir=$(dirname "$myDir")
+sourceDir=$(dirname "$pkgDir")
 #"$sourceDir/scripts/assert_python3"
 
-version=`"$sourceDir/scripts/version" | sed 's/\-/_/g'`
+version=$("$sourceDir/scripts/version" | sed 's/\-/_/g')
 
 #echo "myPath=$myPath"
 #echo "sourceDir=$sourceDir"
@@ -60,8 +60,8 @@ recommends+=('lxqt-openssh-askpass')
 
 recommends+=('python3-pygit2')
 
-requires_str="Requires: ${requires[@]}"
-recommends_str="Recommends: ${recommends[@]}"
+requires_str="Requires: ${requires[*]}"
+recommends_str="Recommends: ${recommends[*]}"
 
 ## about "Recommends":
 ## https://docs.fedoraproject.org/en-US/packaging-guidelines/WeakDependencies/

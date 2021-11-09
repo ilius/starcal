@@ -24,14 +24,13 @@ fi
 myPath=$(realpath "$0")
 
 pkgName=starcal3
-iconName=starcal32.png
 
-myDir="`dirname \"$myPath\"`"
-pkgDir="`dirname \"$myDir\"`"
-sourceDir="`dirname \"$pkgDir\"`"
+myDir=$(dirname "$myPath")
+pkgDir=$(dirname "$myDir")
+sourceDir=$(dirname "$pkgDir")
 #"$sourceDir/scripts/assert_python3"
 
-version=`"$sourceDir/scripts/version" | sed 's/\-/_/g'`
+version=$("$sourceDir/scripts/version" | sed 's/\-/_/g')
 
 #echo "myPath=$myPath"
 #echo "sourceDir=$sourceDir"

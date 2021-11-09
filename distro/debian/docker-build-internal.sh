@@ -11,4 +11,4 @@ apt update
 apt-get install --yes git
 
 mkdir -p "$outDir"
-/root/starcal/distro/debian/build.sh $outDir
+/root/starcal/distro/debian/build.sh "$outDir"
