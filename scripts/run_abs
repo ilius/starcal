@@ -6,6 +6,6 @@ if [ "${myPath:0:2}" == "./" ] ; then
 elif [ "${myPath:0:1}" != "/" ] ; then
 	myPath=$PWD/$myPath
 fi
-myDir=`dirname "$myPath"`
-sourceDir=`dirname "$myDir"`
+myDir=$(dirname "$myPath")
+sourceDir=$(dirname "$myDir")
 PYTHONPATH=$PYTHONPATH:$sourceDir python3 "$@"
