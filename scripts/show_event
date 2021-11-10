@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-myDir=`dirname "$0"`
+myDir=$(dirname "$0")
 "$myDir/run" scal3/show_event.py "$@"
 

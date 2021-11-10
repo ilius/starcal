@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-myDir=`dirname "$0"`
+myDir=$(dirname "$0")
 
 du -k --max-depth 0 ~/.starcal3/objects/
 
