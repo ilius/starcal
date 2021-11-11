@@ -99,7 +99,7 @@ def checkOperatingSystem(installType):
 		printAsError("Your distribution is based on SUSE, use: sudo ./distro/suse/install.sh")
 		return False
 
-	elif isfile("/etc/redhat-release"):
+	elif isfile("/etc/fedora-release"):
 		printAsError("Your distribution is based on Red Hat, use: sudo ./distro/fedora/install.sh")
 		return False
 
