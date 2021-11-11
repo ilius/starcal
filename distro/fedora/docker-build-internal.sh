@@ -7,13 +7,9 @@ if [ -z "$outDir" ] ; then
 	exit 1
 fi
 
+# echo 'nameserver 1.1.1.1' >> /etc/resolv.conf
 
-SHEBANG_FIX='s|#!/usr/bin/env python$|#!/usr/bin/env python3|'
-sed -i "$SHEBANG_FIX" /root/starcal/libs/bson/setup.py
-sed -i "$SHEBANG_FIX" /root/starcal/libs/bson/bson/network.py
-
-
-dnf install -y rpm-build git-core desktop-file-utils gettext
+dnf install --assumeyes rpm-build git-core desktop-file-utils gettext
 
 mkdir -p "$outDir"
 /root/starcal/distro/fedora/build.sh "$outDir" /usr/bin/python3
