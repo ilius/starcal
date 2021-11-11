@@ -68,7 +68,7 @@ if [ "$installType" != "for-pkg" ] ; then
 	elif [ -f /etc/SUSE-brand ] || [ -f /etc/products.d/openSUSE.prod ] ; then
 		echo "Your distribution is based on SUSE, use: sudo ./distro/suse/install.sh"
 		exit 1
-	elif [ -f /etc/redhat-release ] ; then
+	elif [ -f /etc/fedora-release ] ; then
 		echo "Your distribution is based on Red Hat, use: sudo ./distro/fedora/install.sh"
 		exit 1
 	elif [ -f /etc/arch-release ] ; then

@@ -10,7 +10,7 @@ if [ -f /etc/debian_version ] ; then
 elif [ -f /etc/SUSE-brand ] || [ -f /etc/products.d/openSUSE.prod ] ; then
 	./distro/suse/install.sh
 
-elif [ -f /etc/redhat-release ] ; then
+elif [ -f /etc/fedora-release ] ; then
 	./distro/fedora/install.sh
 
 elif [ -f /etc/arch-release ] ; then
