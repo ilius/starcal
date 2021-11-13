@@ -3072,6 +3072,12 @@ msgid "Grid"
 msgstr ""
 "جدول‌بندی"
 
+msgid "Shadow"
+msgstr "سایه"
+
+msgid "Row's Upper Gradient"
+msgstr "طیف بالای سطر"
+
 msgid "Font"
 msgstr ""
 "فونت"
