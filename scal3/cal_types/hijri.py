@@ -227,32 +227,34 @@ class MonthDbHolder:
 	def getDateFromJd(self, jd):
 		if not self.endJd >= jd >= self.startJd:
 			return
-		#yi, mi, di = self.startDate
-		#ymi = yi*12 + mi
 		y, m, d = self.startDate
 		ym = y * 12 + m - 1
-		while jd > self.startJd:
+		startJd = self.startJd
+		while jd > startJd:
 			monthLen = self.monthLenByYm[ym]
-			if jd - monthLen > self.startJd:
+
+			if jd - monthLen <= startJd - d:
+				d = d + jd - startJd
+				break
+
+			if startJd - d < jd - monthLen <= startJd :
 				ym += 1
-				jd -= monthLen
-			elif d + jd - self.startJd > monthLen:
-				ym += 1
-				d = d + jd - self.startJd - monthLen
-				jd = self.startJd
-			else:
-				d = d + jd - self.startJd
-				jd = self.startJd
-		y, m = divmod(ym, 12)
-		m += 1
-		return (y, m, d)
+				d = d + jd - startJd - monthLen
+				break
+
+			# assert(jd - monthLen > startJd)
+			ym += 1
+			jd -= monthLen
+
+		year, mm = divmod(ym, 12)
+		return (year, mm + 1, d)
 
 	def getJdFromDate(self, year, month, day):
 		ym = year * 12 + month - 1
 		y0, m0, d0 = monthDb.startDate
-		ym0 = y0 * 12 + m0 - 1
 		if ym - 1 not in monthDb.monthLenByYm:
 			return
+		ym0 = y0 * 12 + m0 - 1
 		jd = monthDb.startJd
 		for ymi in range(ym0, ym):
 			jd += monthDb.monthLenByYm[ymi]
