@@ -153,11 +153,13 @@ class MonthDbHolder:
 		self.monthLenByYm = {}
 		for y in monthLenByYear:
 			lst = monthLenByYear[y]
-			for m in range(len(lst)):
-				ml = lst[m]
-				if ml:  # positive integer
-					self.monthLenByYm[y * 12 + m] = ml
-					self.endJd += ml
+			for m, ml in enumerate(lst):
+				if ml == 0:
+					continue
+				if ml < 0:
+					raise ValueError(f"invalid ml = {ml}")
+				self.monthLenByYm[y * 12 + m] = ml
+				self.endJd += ml
 		if self.expJd is None:
 			self.expJd = self.endJd
 
@@ -232,17 +234,18 @@ class MonthDbHolder:
 		startJd = self.startJd
 		while jd > startJd:
 			monthLen = self.monthLenByYm[ym]
+			jdm0 = jd - monthLen
 
-			if jd - monthLen <= startJd - d:
+			if jdm0 <= startJd - d:
 				d = d + jd - startJd
 				break
 
-			if startJd - d < jd - monthLen <= startJd :
+			if startJd - d < jdm0 <= startJd :
 				ym += 1
 				d = d + jd - startJd - monthLen
 				break
 
-			# assert(jd - monthLen > startJd)
+			# assert(jdm0 > startJd)
 			ym += 1
 			jd -= monthLen
 

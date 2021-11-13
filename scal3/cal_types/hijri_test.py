@@ -480,20 +480,29 @@ def print_to_jd_diff():
 		m += 1
 		print(hijri.to_jd(y, m, 1) - hijri.to_jd_c(y, m, 1))
 
-def gen_test_date_to_jd():
+def gen_test_date_to_jd(golang=False):
 	for year in range(1426, 1444):
 		for month in range(1, 13):
 			day = 1
 			jd = hijri.to_jd(year, month, day)
+			if golang:
+				print(f"\t\tlib.NewDate({year}, {month}, {day}): {jd},")
+				continue
 			print(f"\t\t({year}, {month}, {day}): {jd},")
 
-def gen_test_jd_to_date():
+def gen_test_jd_to_date(golang=False):
 	for jd in range(2453442, 2459660 + 30, 27):
 		year, month, day = hijri.jd_to(jd)
+		if golang:
+			print(f"\t\t{jd}: lib.NewDate({year}, {month}, {day}),")
+			continue
 		print(f"\t\t{jd}: ({year}, {month}, {day}),")
 
 if __name__ == "__main__":
+	# print(f"startDate = {hijri.monthDb.startDate}")
+	print(f"endJd = {hijri.monthDb.endJd}")
+	# print("map[int]int" + repr(hijri.monthDb.monthLenByYm).replace(": ", ":"))
 	# print_to_jd_diff()
-	# gen_test_date_to_jd()
-	# gen_test_jd_to_date()
+	# gen_test_date_to_jd(golang=True)
+	# gen_test_jd_to_date(golang=True)
 	unittest.main()
