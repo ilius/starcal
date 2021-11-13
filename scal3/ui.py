@@ -160,6 +160,8 @@ confParamsCustomize = (
 	"wcalItems",
 	"wcalGrid",
 	"wcalGridColor",
+	"wcalUpperGradientEnable",
+	"wcalUpperGradientColor",
 	"wcal_eventsText_pastColorEnable",
 	"wcal_eventsText_pastColor",
 	"wcal_eventsText_ongoingColorEnable",
@@ -1178,6 +1180,10 @@ wcalTextSizeScale = 0.6  # between 0 and 1
 wcalPadding = 10
 wcalGrid = False
 wcalGridColor = (255, 252, 0, 82)
+
+wcalUpperGradientEnable = False
+wcalUpperGradientColor = (255, 255, 255, 60)
+# wcalShadowBottomColor = (255, 255, 255, 0)
 
 wcal_eventsText_pastColorEnable = False
 wcal_eventsText_pastColor = (100, 100, 100, 50)

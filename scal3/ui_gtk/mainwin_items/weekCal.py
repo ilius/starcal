@@ -40,6 +40,7 @@ from scal3 import core
 from scal3 import ui
 
 from gi.repository import GdkPixbuf
+import cairo
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
@@ -64,10 +65,9 @@ from scal3.ui_gtk.toolbox import (
 )
 
 
-
 def show_event(widget, gevent):
 	log.info(f"{type(widget)}, {gevent.type.value_name}")
-	#, gevent.get_value()#, gevent.send_event
+	# gevent.get_value()#, gevent.send_event
 
 
 class ColumnBase(CustomizableCalObj):
@@ -103,7 +103,7 @@ class ColumnBase(CustomizableCalObj):
 
 	def onWidthChange(self):
 		# if self._name:
-		#	self.updatePacking()
+		# 	self.updatePacking()
 		self.queue_resize()
 
 	def getOptionsWidget(self) -> gtk.Widget:
@@ -192,8 +192,8 @@ class Column(gtk.DrawingArea, ColumnBase):
 		ColumnBase.__init__(self)
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initVars()
-		#self.connect("button-press-event", self.onButtonPress)
-		#self.connect("event", show_event)
+		# self.connect("button-press-event", self.onButtonPress)
+		# self.connect("event", show_event)
 		self.wcal = wcal
 		self._parent = wcal
 		if self.customizeExpand:
@@ -246,12 +246,36 @@ class Column(gtk.DrawingArea, ColumnBase):
 			if self.showCursor and c.jd == ui.cell.jd:
 				self.drawCursorBg(
 					cr,
-					0, # x0
-					i * rowH, # y0
-					w, # width
-					rowH, # height
+					0,  # x0
+					i * rowH,  # y0
+					w,  # width
+					rowH,  # height
 				)
 				fillColor(cr, ui.cursorBgColor)
+
+		if ui.wcalUpperGradientEnable:
+			for rowI in range(7):
+				y0 = rowI * rowH
+				y1 = y0 + rowH / 2
+				gradient = cairo.LinearGradient(0, y0, 0, y1)
+				red1, green1, blue1, alpha1 = ui.wcalUpperGradientColor
+				gradient.add_color_stop_rgba(
+					0,  # offset
+					red1 / 255,
+					green1 / 255,
+					blue1 / 255,
+					alpha1 / 255,
+				)
+				gradient.add_color_stop_rgba(
+					rowH,  # offset
+					0, 0, 0, 0,
+				)
+				cr.rectangle(0, y0, w, rowH)
+				cr.set_source(gradient)
+				cr.fill()
+
+				del gradient
+
 		if ui.wcalGrid:
 			setColor(cr, ui.wcalGridColor)
 			###
@@ -304,10 +328,10 @@ class Column(gtk.DrawingArea, ColumnBase):
 		rowH = h / 7
 		self.drawCursorOutline(
 			cr,
-			0, # x0
-			self.wcal.cellIndex * rowH, # y0
-			w, # width
-			rowH, # height
+			0,  # x0
+			self.wcal.cellIndex * rowH,  # y0
+			w,  # width
+			rowH,  # height
 		)
 		fillColor(cr, ui.cursorOutColor)
 		return
@@ -433,7 +457,6 @@ class MainMenuToolbarItem(ToolbarItem):
 			x,
 			y,
 		)
-
 
 
 class WeekNumToolbarItem(LabelToolBoxItem):
@@ -830,7 +853,8 @@ class EventsBoxColumn(Column):
 		self.timeStart = getEpochFromJd(self.wcal.status[0].jd)
 		self.pixelPerSec = self.get_allocation().height / self.timeWidth
 		# ^^^ unit: pixel / second
-		self.borderTm = 0 ## tbox.boxEditBorderWidth / self.pixelPerSec ## second
+		self.borderTm = 0
+		# tbox.boxEditBorderWidth / self.pixelPerSec ## second
 		self.boxes = calcEventBoxes(
 			self.timeStart,
 			self.timeStart + self.timeWidth,
@@ -1034,7 +1058,7 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 		frame.add(self.typeParamsVbox)
 		frame.show_all()
 		pack(optionsWidget, frame)
-		self.updateTypeParamsWidget()## FIXME
+		self.updateTypeParamsWidget()  # FIXME
 
 	# overwrites method from ColumnBase
 	def updatePacking(self):
@@ -1052,9 +1076,9 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 		return width, width
 
 	def updateCols(self):
-		#self.foreach(gtk.DrawingArea.destroy)
+		# self.foreach(gtk.DrawingArea.destroy)
 		# ^^^ Couses tray icon crash in gnome3
-		#self.foreach(lambda child: self.remove(child))
+		# self.foreach(lambda child: self.remove(child))
 		# ^^^ Couses tray icon crash in gnome3
 		########
 		columns = self.get_children()
@@ -1099,9 +1123,9 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 		sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		sgroupFont = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		for i, calType in enumerate(calTypes.active):
-			#try:
+			# try:
 			params = ui.wcalTypeParams[i]
-			#except IndexError:
+			# except IndexError:
 			##
 			hbox = DaysOfMonthCalTypeParamBox(
 				self.wcal,
@@ -1170,7 +1194,7 @@ class MoonStatusColumn(Column):
 			upwards: bool,
 			clockWise: bool,
 		):
-			if arcScale is None: # None means infinity
+			if arcScale is None:  # None means infinity
 				if upwards:
 					cr.move_to(imgCenterX, imgCenterY + imgRadius)
 					cr.line_to(imgCenterX, imgCenterY - imgRadius)
@@ -1189,11 +1213,11 @@ class MoonStatusColumn(Column):
 				raise ValueError(f"{e}: invalid scale factor {arcScale}")
 			arc = cr.arc_negative if clockWise else cr.arc
 			arc(
-				0, # center X
-				0, # center Y
-				1, # radius
-				startAngle, # start angle
-				endAngle, # end angle
+				0,  # center X
+				0,  # center Y
+				1,  # radius
+				startAngle,  # start angle
+				endAngle,  # end angle
 			)
 			cr.restore()
 
@@ -1217,15 +1241,15 @@ class MoonStatusColumn(Column):
 
 			draw_arc(
 				imgCenterY,
-				1, # arc scale factor
-				False, # upwards
-				bigPhase < 1, # clockWise
+				1,  # arc scale factor
+				False,  # upwards
+				bigPhase < 1,  # clockWise
 			)
 			draw_arc(
 				imgCenterY,
-				None if phase == 0.5 else abs(cos(phase * pi)), # arc scale factor
-				True, # upwards
-				phase > 0.5, # clockWise
+				None if phase == 0.5 else abs(cos(phase * pi)),
+				True,
+				phase > 0.5,
 			)
 			cr.fill()
 
@@ -1353,6 +1377,14 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 			onChangeFunc=self.queue_draw,
 		)
 		pack(optionsWidget, prefItem.getWidget())
+		###
+		prefItem = CheckColorPrefItem(
+			CheckPrefItem(ui, "wcalUpperGradientEnable", _("Row's Upper Gradient")),
+			ColorPrefItem(ui, "wcalUpperGradientColor", useAlpha=True),
+			live=True,
+			onChangeFunc=self.queue_draw,
+		)
+		pack(optionsWidget, prefItem.getWidget())
 		############
 		pageVBox = VBox(spacing=20)
 		pageVBox.set_border_width(10)
@@ -1426,8 +1458,8 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		self.updateStatus()
 		CustomizableCalBox.onDateChange(self, *a, **kw)
 		self.queue_draw()
-		#for item in self.items:
-		#	item.queue_draw()
+		# for item in self.items:
+		# 	item.queue_draw()
 
 	def goBackward4(self, obj=None):
 		self.jdPlus(-28)
