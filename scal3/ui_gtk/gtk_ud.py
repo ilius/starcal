@@ -264,6 +264,8 @@ class IntegatedWindowList(BaseCalObj):
 			fgColor=fgColor,
 		) + "\n"
 
+		css += "progress, trough {min-height: 0.5em;}\n"
+
 		smallerFont = ui.getFont(0.8)
 		css += f".smaller {cssTextStyle(font=smallerFont)}\n"
 
