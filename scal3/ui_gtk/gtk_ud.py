@@ -56,7 +56,7 @@ confPath = join(confDir, "ui-gtk.json")
 confParams = (
 	"dateFormat",
 	"clockFormat",
-	#"adjustTimeCmd",
+	# "adjustTimeCmd",
 )
 
 
@@ -69,6 +69,7 @@ def saveConf():
 	saveModuleJsonConf(__name__)
 
 ############################################################
+
 
 class CalObjType(Object):
 	pass
@@ -126,7 +127,6 @@ class BaseCalObj(CalObjType):
 		self.onConfigChange()
 		self.showHide()
 
-
 	def __getitem__(self, key):
 		for item in self.items:
 			if item._name == key:
@@ -136,9 +136,9 @@ class BaseCalObj(CalObjType):
 		item.connect("config-change", self.onConfigChange)
 		item.connect("date-change", self.onDateChange)
 
-	#def insertItem(self, index, item):
-	#	self.items.insert(index, item)
-	#	self.connectItem(item)
+	# def insertItem(self, index, item):
+	# 	self.items.insert(index, item)
+	# 	self.connectItem(item)
 
 	def appendItem(self, item):
 		self.items.append(item)
@@ -243,9 +243,9 @@ class IntegatedWindowList(BaseCalObj):
 
 	# override_color and override_font are deprecated since version 3.16
 	# override_color:
-	#	doc says: Use a custom style provider and style classes instead
+	#   doc says: Use a custom style provider and style classes instead
 	# override_font:
-	#	This function is not useful in the context of CSS-based rendering
+	#   This function is not useful in the context of CSS-based rendering
 	# If you wish to change the font a widget uses to render its text you
 	# should use a custom CSS style, through an application-specific
 	# Gtk.StyleProvider and a CSS style class.
@@ -297,6 +297,7 @@ def getGtkDefaultFont():
 def _getLightness(c: "gdk.Color"):
 	return (max(c.red, c.green, c.blue) + min(c.red, c.green, c.blue)) / 2.0
 
+
 def hasLightTheme(widget):
 	styleCtx = widget.get_style_context()
 	fg = styleCtx.get_color(gtk.StateFlags.NORMAL)
@@ -307,7 +308,10 @@ def hasLightTheme(widget):
 	# print("bg_rgb:", gdkColorToRgb(bg))
 	# print("fg_hsl:", rgbToHsl(*gdkColorToRgb(fg)))
 	# print("bg_hsl:", rgbToHsl(*gdkColorToRgb(bg)))
-	# print(f"fg lightness: {_getLightness(fg):.2f}, bg lightness: {_getLightness(bg):.2f}")
+	# print(
+	# 	f"fg lightness: {_getLightness(fg):.2f}, "
+	# 	f"bg lightness: {_getLightness(bg):.2f}"
+	# )
 	return _getLightness(fg) < _getLightness(bg)
 
 
@@ -315,13 +319,17 @@ def hasLightTheme(widget):
 
 windowList = IntegatedWindowList()
 
-# decorator for global functions or static methods
+
 def cssFunc(func: Callable) -> Callable:
+	"""
+	decorator for global functions or static methods
+	"""
 	global windowList
 	windowList.addCSSFunc(func)
 	return func
 
 ###########
+
 
 if rtl:
 	gtk.Widget.set_default_direction(gtk.TextDirection.RTL)
@@ -334,7 +342,7 @@ settings = gtk.Settings.get_default()
 
 if settings is None:
 	# if gdk.Screen.get_default() is None:
-	#	raise RuntimeError("There is not default screen")
+	# 	raise RuntimeError("There is not default screen")
 	# raise RuntimeError("settings == None")
 	settings = gtk.Settings.get_for_screen(gdk.Screen())
 
@@ -355,13 +363,14 @@ textDirDict = {
 }
 
 iconSizeList = [
+	# in size order
 	("Menu", gtk.IconSize.MENU),                    # 16x16
 	("Small Toolbar", gtk.IconSize.SMALL_TOOLBAR),  # 16x16
 	("Button", gtk.IconSize.BUTTON),                # 16x16
 	("Large Toolbar", gtk.IconSize.LARGE_TOOLBAR),  # 24x24
 	("DND", gtk.IconSize.DND),                      # 32x32
 	("Dialog", gtk.IconSize.DIALOG),                # 48x48
-] ## in size order
+]
 iconSizeDict = dict(iconSizeList)
 iconSizeNames = [x[0] for x in iconSizeList]
 
@@ -388,12 +397,12 @@ justificationByName = {
 
 ##############################
 
-#if ui.fontCustomEnable:## FIXME
-#	settings.set_property("gtk-font-name", fontCustom)
-
+# if ui.fontCustomEnable:## FIXME
+# 	settings.set_property("gtk-font-name", fontCustom)
 
 dateFormat = "%Y/%m/%d"
-clockFormat = "%X" ## "%T", "%X" (local), "<b>%T</b>", "%m:%d"
+clockFormat = "%X"
+# "%T", "%X" (local), "<b>%T</b>", "%m:%d"
 
 dateFormatBin = None
 clockFormatBin = None
@@ -446,7 +455,7 @@ def setDefault_adjustTimeCmd():
 		if askpass:
 			adjustTimeCmd = [
 				sudo,
-				"-A", # --askpass
+				"-A",  # --askpass
 				join(sourceDir, "scripts", "run"),
 				"scal3/ui_gtk/adjust_dtime.py"
 			]
@@ -511,9 +520,10 @@ del tmpValue
 
 loadConf()
 
-setDefault_adjustTimeCmd()## FIXME
+setDefault_adjustTimeCmd()  # FIXME
 
 ############################################################
+
 
 def getScreenSize():
 	# incluses panels/docks
@@ -530,6 +540,7 @@ def getWorkAreaSize():
 
 ##############################
 
+
 screenW, screenH = getScreenSize()
 workAreaW, workAreaH = getWorkAreaSize()
 # print(f"screen: {screenW}x{screenH}, work area: {workAreaW}x{workAreaH}")
@@ -541,18 +552,22 @@ rootWindow = gdk.get_default_root_window()  # Good Place?????
 
 ##############################
 
-#import atexit
-#atexit.register(
-#	rootWindow.set_cursor,
-#	gdk.Cursor.new(gdk.CursorType.LEFT_PTR),
-#)  # FIXME
-#rootWindow.set_cursor(cursor=gdk.Cursor.new(gdk.CursorType.WATCH))  # FIXME
+# FIXME
+# import atexit
+# atexit.register(
+# 	rootWindow.set_cursor,
+# 	gdk.Cursor.new(gdk.CursorType.LEFT_PTR),
+# )
+# rootWindow.set_cursor(cursor=gdk.Cursor.new(gdk.CursorType.WATCH))  # FIXME
+
 
 def screenSizeChanged(screen):
 	global screenW, screenH, workAreaW, workAreaH
 	if ui.mainWin is None:
 		return
-	monitor = gdk.Display.get_default().get_monitor_at_window(ui.mainWin.get_window())
+	monitor = gdk.Display.get_default().get_monitor_at_window(
+		ui.mainWin.get_window(),
+	)
 	screenSize = monitor.get_geometry()
 	workAreaSize = monitor.get_workarea()
 	screenW, screenH = screenSize.width, screenSize.height
