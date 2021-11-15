@@ -67,6 +67,9 @@ recommends+=('typelib(AppIndicator3)')
 recommends+=('openssh-askpass-gnome')
 recommends+=('python3-pygit2')
 
+recommends+=('ntp')
+# package ntp contains file /sbin/ntpdate
+
 ## The package for AppIndicator is: typelib-1_0-AppIndicator3-0_1
 ## Which provides: typelib(AppIndicator3) = 0.1
 

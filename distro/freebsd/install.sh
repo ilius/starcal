@@ -35,6 +35,9 @@ pkg install \
 	"$PYV-python-igraph" \
 	"$PYV-pygit2"
 
+# /usr/sbin/ntpdate exists by default, but couldn't figure out which package
+# does it belong to
+
 # pygobject			https://www.freshports.org/devel/py-gobject/
 # pycairo			https://www.freshports.org/graphics/py-cairo/
 # httplib2			https://www.freshports.org/www/py-httplib2/

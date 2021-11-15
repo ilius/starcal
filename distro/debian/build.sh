@@ -62,6 +62,7 @@ recommends+=('python3-igraph')
 recommends+=('python3-gnomevfs')
 recommends+=('ssh-askpass-gnome')
 recommends+=('python3-pygit2')
+recommends+=('ntpdate')
 
 
 depends_str=$(printf ", %s" "${depends[@]}") ; depends_str=${depends_str:2}

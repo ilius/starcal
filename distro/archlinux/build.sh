@@ -55,6 +55,9 @@ optdepends+=('python-igraph' 'igraph' 'icu')
 optdepends+=('lxqt-openssh-askpass')
 optdepends+=('python-pygit2')
 
+optdepends+=('ntp')
+# package extra/ntp contains /usr/bin/ntpdate
+
 ## Note: optdepends are not installed by default
 
 depends_str=$(printf " '%s'" "${depends[@]}") ; depends_str=${depends_str:1}
