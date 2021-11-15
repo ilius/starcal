@@ -60,6 +60,9 @@ recommends+=('lxqt-openssh-askpass')
 
 recommends+=('python3-pygit2')
 
+recommends+=('ntpdate')
+# package ntpdate -> /sbin/ntpdate
+
 requires_str="Requires: ${requires[*]}"
 recommends_str="Recommends: ${recommends[*]}"
 
