@@ -216,6 +216,7 @@ confParamsCustomize = (
 	"statusBarDatesReverseOrder",
 	"statusBarDatesColorEnable",
 	"statusBarDatesColor",
+	"labelBoxBorderWidth",
 	"labelBoxMenuActiveColor",
 	"labelBoxYearColorEnable",
 	"labelBoxYearColor",
@@ -1292,6 +1293,7 @@ statusBarDatesReverseOrder = False
 statusBarDatesColorEnable = False
 statusBarDatesColor = (255, 132, 255, 255)
 
+labelBoxBorderWidth = 0
 labelBoxMenuActiveColor = (0, 255, 0, 255)
 labelBoxYearColorEnable = False
 labelBoxYearColor = (255, 132, 255, 255)
