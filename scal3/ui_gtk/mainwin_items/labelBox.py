@@ -554,6 +554,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		self.ybox = None
 		self.mbox = None
 		self.monthLabels = []
+		self.onBorderWidthChange()
 
 	def newSeparator(self):
 		# return gtk.VSeparator()
@@ -663,8 +664,12 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			self.mbox.onFontConfigChange()
 		self.updateTextWidth()
 
+	def onBorderWidthChange(self):
+		self.set_border_width(ui.labelBoxBorderWidth)
+
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.pref_utils import (
+			SpinPrefItem,
 			CheckPrefItem,
 			ColorPrefItem,
 			CheckColorPrefItem,
@@ -675,6 +680,18 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			return self.optionsWidget
 		####
 		optionsWidget = VBox(spacing=5)
+		####
+		prefItem = SpinPrefItem(
+			ui,
+			"labelBoxBorderWidth",
+			0, 99,
+			digits=1, step=1,
+			unitLabel=_("pixels"),
+			label=_("Border Width"),
+			live=True,
+			onChangeFunc=self.onBorderWidthChange,
+		)
+		pack(optionsWidget, prefItem.getWidget())
 		####
 		hbox = HBox(spacing=5)
 		pack(hbox, gtk.Label(label=_("Active menu item color")))
