@@ -68,7 +68,6 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 
 	def __init__(self):
 		gtk.Paned.__init__(self, orientation=gtk.Orientation.VERTICAL)
-		self.set_border_width(ui.mainWinRightPanelBorder)
 		###
 		self.initVars()
 		self.optionsWidget = None
@@ -106,6 +105,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		self.addItems()
 		###
 		self.show_all()
+		self.onBorderWidthChange()
 
 	def appendItem(self, item):
 		CustomizableCalObj.appendItem(self, item)
@@ -153,7 +153,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		self.eventItem.onDateChange(toParent=False)
 
 	def onBorderWidthChange(self):
-		self.set_border_width(ui.mainWinRightPanelBorder)
+		self.set_border_width(ui.mainWinRightPanelBorderWidth)
 
 	def updatePosition(self, height: int):
 		log.debug(
@@ -255,7 +255,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		###
 		prefItem = SpinPrefItem(
 			ui,
-			"mainWinRightPanelBorder",
+			"mainWinRightPanelBorderWidth",
 			1, 999,
 			digits=1, step=1,
 			unitLabel=_("pixels"),

@@ -144,7 +144,7 @@ confParamsCustomize = (
 	"mainWinRightPanelPluginsJustification",
 	"mainWinRightPanelEventSep",
 	"eventDayViewEventSep",
-	"mainWinRightPanelBorder",
+	"mainWinRightPanelBorderWidth",
 	"winControllerButtons",
 	"winControllerIconSize",
 	"winControllerBorder",
@@ -1431,7 +1431,7 @@ mainWinRightPanelEventTimeFont = None
 mainWinRightPanelPluginsFontEnable = False
 mainWinRightPanelPluginsFont = None
 
-mainWinRightPanelBorder = 7
+mainWinRightPanelBorderWidth = 7
 mainWinRightPanelRatio = 0.5  # 0 <= value <= 1
 mainWinRightPanelResizeOnToggle = True
 
