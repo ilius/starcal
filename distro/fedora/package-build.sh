@@ -1,11 +1,11 @@
 #!/bin/bash
 set -e
+distro=fedora
 
 myDir=$(dirname "$0")
 myDir=$(realpath "$myDir")
 cd "$myDir/../.."
 
-distro=fedora
 distroDir="$HOME/.cache/starcal3-pkgs/$distro"
 pkgCacheDir="$distroDir/cache"
 
