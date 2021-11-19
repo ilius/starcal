@@ -37,6 +37,9 @@ if ! git --version ; then
 		exit 1
 	fi
 fi
+if ! which msgfmt ; then
+	apt-get install gettext
+fi
 
 pkgName=starcal3
 

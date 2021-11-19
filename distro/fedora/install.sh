@@ -17,6 +17,9 @@ if ! git --version ; then
 		exit 1
 	fi
 fi
+if ! which msgfmt ; then
+	dnf install gettext
+fi
 
 
 if [ ! -f /usr/bin/python3 ] ; then

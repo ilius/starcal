@@ -27,6 +27,9 @@ if ! git --version ; then
 		exit 1
 	fi
 fi
+if ! which msgfmt ; then
+	zypper install gettext
+fi
 
 
 if [ ! -f /usr/bin/python3 ] ; then
