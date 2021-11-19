@@ -1,5 +1,6 @@
 #!/bin/bash
 set -e
+distro=fedora
 
 outDir=$1
 if [ -z "$outDir" ] ; then
@@ -12,4 +13,4 @@ fi
 dnf install --assumeyes rpm-build git-core desktop-file-utils gettext
 
 mkdir -p "$outDir"
-/root/starcal/distro/fedora/build.sh "$outDir" /usr/bin/python3
+/root/starcal/distro/$distro/build.sh "$outDir" /usr/bin/python3

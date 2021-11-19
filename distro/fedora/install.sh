@@ -1,6 +1,7 @@
 #!/bin/bash
 ## makes rpm package and installs it using yum
 set -e
+distro=fedora
 
 ## yum install @development-tools
 ## yum install rpm-build rpmdevtools rpmlint mock
@@ -37,7 +38,7 @@ myDir2=$(dirname "$myDir1")
 sourceDir=$(dirname "$myDir2")
 
 DTIME=$(/bin/date +%F-%H%M%S)
-outDir="$HOME/.${pkgName}/pkgs/fedora/$DTIME"
+outDir="$HOME/.${pkgName}/pkgs/$distro/$DTIME"
 mkdir -p "$outDir"
 
 if ! which rpmbuild ; then
@@ -51,7 +52,7 @@ if ! which rpmbuild ; then
 	fi
 fi
 
-"$sourceDir/distro/fedora/build.sh" "$outDir" "$pyCmd"
+"$sourceDir/distro/$distro/build.sh" "$outDir" "$pyCmd"
 pkgPath=$(find "$outDir" -maxdepth 1 -name '*.rpm' | sort | tail -n1)
 
 if [ ! -f "$pkgPath" ] ; then
