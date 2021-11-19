@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -x
 
 if [ -f /etc/debian_version ] ; then
 	if [ "$(lsb_release -is)" = "Ubuntu" ] ; then
@@ -19,8 +20,15 @@ elif [ -f /etc/arch-release ] ; then
 elif [ -f /etc/slackware-version ] ; then
 	./distro/slackware/install.sh
 
+elif [ "$(lsb_release -is)" = "NuTyX" ] ; then
+	# or [ -f /bin/cards ]
+	./distro/nutyx/install.sh
+
 elif [ -f /bin/freebsd-version ] ; then
 	./distro/freebsd/install.sh
+
+elif [ -f /bin/midnightbsd-version ] ; then
+	./distro/midnightbsd/install.sh
 
 else
 	./install-pip
