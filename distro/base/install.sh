@@ -93,6 +93,8 @@ else:
 ' ; then
 	pyVer=$("$pyCmd" --version)
 	printf "\e[31mWarning: %s is not officially supported.\e[m\n" "$pyVer" >&2
+	printf "\e[31mPress Enter to continue anyway.\e[m\n" >&2
+	read
 fi
 
 echo "Using $pyCmd"
