@@ -24,6 +24,9 @@ elif [ "$(lsb_release -is)" = "NuTyX" ] ; then
 	# or [ -f /bin/cards ]
 	./distro/nutyx/install.sh
 
+elif [ -f /etc/almalinux-release ] ; then
+	./distro/almalinux/install.sh
+
 elif [ -f /bin/freebsd-version ] ; then
 	./distro/freebsd/install.sh
 
