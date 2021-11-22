@@ -86,6 +86,20 @@ class Method:
 		self.maghrib = maghrib
 		self.midnight = midnight
 
+	def __repr__(self):
+		return (
+			"Method(name={name!r}, desc={desc!r}, "
+			"fajr={fajr!r}, isha={isha!r}, "
+			"maghrib={maghrib!r}, midnight={midnight!r})"
+		).format(
+			name=self.name,
+			desc=self.desc,
+			fajr=self.fajr,
+			isha=self.isha,
+			maghrib=self.maghrib,
+			midnight=self.midnight,
+		)
+
 
 methodsList = [
 	Method(
