@@ -28,6 +28,7 @@ cards install python-psutil
 
 $PIP install httplib2
 $PIP install python-dateutil
+$PIP install cachetools
 
 $PIP install python-igraph
 $PIP install pygit2
