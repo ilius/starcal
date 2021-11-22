@@ -155,11 +155,7 @@ log = logger.get()
 # __________________ class and function defenitions __________________ #
 
 
-def popen_output(cmd):
-	return Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
-
-
-def getVersion():
+def getVersion() -> str:
 	if isfile(join(sourceDir, "VERSION")):
 		with open(join(sourceDir, "VERSION")) as _file:
 			return _file.read().strip()
