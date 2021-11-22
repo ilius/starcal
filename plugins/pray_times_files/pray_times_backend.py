@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-#--------------------- Copyright Block ----------------------
+# --------------------- Copyright Block ----------------------
 # Prayer Times Calculator
 # Copyright (C) 2007-2010 Hamid Zarrabi-Zadeh
 # Copyright (C) Saeed Rasooli
@@ -12,12 +12,12 @@
 # modification, in any website or application provided that
 # the following conditions are met:
 #
-#	1. Credit is given to the original work with a
-#	   link back to PrayTimes.org.
+#   1. Credit is given to the original work with a
+#      link back to PrayTimes.org.
 #
-#	2. Redistributions of the source code and its
-#	   translations into other programming languages
-#	   must retain the above copyright notice.
+#   2. Redistributions of the source code and its
+#      translations into other programming languages
+#      must retain the above copyright notice.
 #
 # This program is distributed in the hope that it will
 # be useful, but WITHOUT ANY WARRANTY.
@@ -34,7 +34,7 @@ import time
 import math
 from math import floor
 
-tr = str ## FIXME
+tr = str  # FIXME
 
 timeNames = (
 	("imsak", "Imsak"),
@@ -62,10 +62,10 @@ MIDNIGHT_STANDARD, MIDNIGHT_JAFARI = list(range(2))
 
 # Adjust Methods for Higher Latitudes
 highLatMethods = (
-	"NightMiddle", # middle of night
-	"AngleBased",  # angle/60th of night
-	"OneSeventh",  # 1/7th of night
-	"None"         # No adjustment
+	"NightMiddle",  # middle of night
+	"AngleBased",   # angle/60th of night
+	"OneSeventh",   # 1/7th of night
+	"None"          # No adjustment
 )
 
 
@@ -85,6 +85,13 @@ class Method:
 		self.isha = isha
 		self.maghrib = maghrib
 		self.midnight = midnight
+
+	def __repr__(self):
+		return (
+			f"Method(name={self.name!r}, desc={self.desc!r}, "
+			f"fajr={self.fajr!r}, isha={self.isha!r}, "
+			f"maghrib={self.maghrib!r}, midnight={self.midnight!r})"
+		)
 
 
 methodsList = [
@@ -251,7 +258,7 @@ class PrayTimes:
 		"""
 		return prayer times for a given julian day
 		"""
-		#if time.daylight and time.gmtime(core.getEpochFromJd(jd)):
+		# if time.daylight and time.gmtime(core.getEpochFromJd(jd)):
 		# log.debug(time.gmtime((jd-2440588)*(24*3600)).tm_isdst)
 		self.utcOffset = utcOffset
 		self.jDate = jd - 0.5 - self.lng / (15 * 24)
@@ -296,14 +303,14 @@ class PrayTimes:
 			-sin(angle) - sin(decl) * sin(self.lat)
 		) / (cos(decl) * cos(self.lat))
 		ratio = min(max(ratio, -1.0), 1.0)
-		#try:
+		# try:
 		t = arccos(ratio) / 15
-		#except:
-		#	log.info(
-		#		f"sunAngleTime: angle={angle}, tm={tm}" +
-		#		f", direction={direction} ==> ratio={ratio}" +
-		#	)
-		#	return 0
+		# except:
+		# 	log.info(
+		# 		f"sunAngleTime: angle={angle}, tm={tm}" +
+		# 		f", direction={direction} ==> ratio={ratio}" +
+		# 	)
+		# 	return 0
 		return noon + dirSign(direction) * t
 
 	def asrTime(self, factor, tm):
@@ -355,7 +362,7 @@ class PrayTimes:
 		RA = arctan2(cos(e) * sin(L), cos(L)) / 15
 		return q / 15 - fixHour(RA)
 
-	#---------------------- Compute Prayer Times -----------------------
+	# ---------------------- Compute Prayer Times -----------------------
 
 	# compute prayer times
 	def computeTimes(self, format=None):
@@ -466,9 +473,9 @@ class PrayTimes:
 		for key in times:
 			times[key] = times[key] % 24
 
-		#times = self.tuneTimes(times)  # FIXME
-		#for key in times:
-		#	times[key] = self.getFormattedTime(times[key], format)
+		# times = self.tuneTimes(times)  # FIXME
+		# for key in times:
+		# 	times[key] = self.getFormattedTime(times[key], format)
 
 		times["timezone"] = f"GMT{self.utcOffset:+.1f}"
 		# ^^^ utcOffset is not timeZone FIXME
@@ -477,12 +484,12 @@ class PrayTimes:
 
 	# return sun angle for sunset/sunrise
 	def riseSetAngle(self):
-		#earthRad = 6371009 ## in meters
-		#angle = arccos(earthRad/(earthRad+self.elv))
-		angle = 0.0347 * math.sqrt(self.elv) ## an approximation
+		# earthRad = 6371009 ## in meters
+		# angle = arccos(earthRad/(earthRad+self.elv))
+		angle = 0.0347 * math.sqrt(self.elv)  # an approximation
 		return 0.833 + angle
 
-	#def tuneTimes: ## FIXME
+	# def tuneTimes:  # FIXME
 
 	def adjustHLTime(self, tm, base, angle, night, direction="cw"):
 		"""
