@@ -250,9 +250,9 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 			# TODO: guess method from location
 		#######
 		self.backend = PrayTimes(
-			self.lat,
-			self.lng,
 			methodName=self.method,
+			lat=self.lat,
+			lng=self.lng,
 			imsak=f"{self.imsak:d} min",
 		)
 		####
