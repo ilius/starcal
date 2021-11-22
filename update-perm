@@ -23,7 +23,6 @@ chmod 755 distro/*/install.sh
 
 chmod 755 'install-ubuntu'
 chmod 755 'install-pip'
-chmod 755 'install-slackware'
 chmod 755 'install-nix-deps'
 
 chmod 755 distro/*/build.sh
