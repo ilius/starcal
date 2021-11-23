@@ -88,19 +88,27 @@ def getCurrentJd() -> int:
 
 def readLocationData():
 	locationsDir = join(sourceDir, "data", "locations")
-	cityTransDict = {}
+	placeTransDict = {}
+
+	def readTransFile(transPath):
+		if not isfile(transPath):
+			return
+		log.info(f"------------- reading {transPath}")
+		with open(transPath, encoding="utf8") as fp:
+			placeTransDict.update(json.load(fp))
+		log.info(f"------------- len(placeTransDict) = {len(placeTransDict)}")
+
+
+	readTransFile(join(locationsDir, f"{langSh}.json"))
+
 	for dirName in os.listdir(locationsDir):
 		dirPath = join(locationsDir, dirName)
 		if not isdir(dirPath):
 			continue
-		transPath = join(dirPath, f"{langSh}.json")
-		if isfile(transPath):
-			log.info(f"------------- reading {transPath}")
-			with open(transPath, encoding="utf8") as fp:
-				cityTransDict.update(json.load(fp))
+		readTransFile(join(dirPath, f"{langSh}.json"))
 
-	def translateCityName(name: str) -> str:
-		nameTrans = cityTransDict.get(name)
+	def translatePlaceName(name: str) -> str:
+		nameTrans = placeTransDict.get(name)
 		if nameTrans:
 			return nameTrans
 		return _(name)
@@ -124,7 +132,7 @@ def readLocationData():
 				if len(p) > 4:
 					cityData.append((
 						country + "/" + city,
-						_(country) + "/" + translateCityName(city),
+						translatePlaceName(country) + "/" + translatePlaceName(city),
 						float(lat),
 						float(lng)
 					))
