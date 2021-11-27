@@ -76,7 +76,7 @@ def exportToHtml(fpath, monthsStatus, title=""):
 	)  # a list of (calTypeIndex, htmlTag) tuples
 	sizeMap = lambda size: size * 0.25 - 0.5  # FIXME
 	sep = " "
-	pluginsTextSep = " <B>ـ</B> "
+	pluginsTextSep = " <B>–</B> "
 	pluginsTextPerLine = True ## description of each day in one line
 	#####################
 	bgColor = rgbToHtml(*ui.bgColor)
