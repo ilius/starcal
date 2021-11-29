@@ -28,7 +28,7 @@ DTIME=$(/bin/date +%F-%H%M%S)
 outDir="$HOME/.${pkgName}/pkgs/archlinux/$DTIME"
 mkdir -p "$outDir"
 
-pyCmd=$(find /usr/bin -maxdepth 1 -name 'python3.*' | sort | tail -n1)
+pyCmd=$(realpath /usr/bin/python3)
 if [ -z "$pyCmd" ] ; then
 	echo "Could not find python3.x binary" >&2
 	exit 1
