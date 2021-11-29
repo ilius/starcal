@@ -547,6 +547,7 @@ try:
 	screenW, screenH = getScreenSize()
 	workAreaW, workAreaH = getWorkAreaSize()
 except AttributeError:
+	log.exception("")
 	screenW, screenH = rootWindow.get_width(), rootWindow.get_height()
 	workAreaW, workAreaH = screenW, screenH
 
