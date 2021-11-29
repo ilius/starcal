@@ -526,7 +526,7 @@ setDefault_adjustTimeCmd()  # FIXME
 
 
 def getScreenSize():
-	# incluses panels/docks
+	# includes panels/docks
 	monitor = gdk.Display.get_default().get_primary_monitor()
 	rect = monitor.get_geometry()
 	return rect.width, rect.height
