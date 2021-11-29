@@ -3074,7 +3074,7 @@ msgid "Australasia and Oceania"
 msgstr "استرالیا و اقیانوسیه"
 
 msgid "Central and South America"
-msgstr "امریکای مرکزی و شمالی"
+msgstr "امریکای مرکزی و جنوبی"
 
 msgid "Europe"
 msgstr "اروپا"
