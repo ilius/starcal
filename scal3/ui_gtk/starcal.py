@@ -1464,7 +1464,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		if self.statusIconMode == 0 or not self.sicon:
 			self.quit()
 		elif self.statusIconMode > 1:
-			if self.sicon.is_embedded() or ui.dayCalWin.is_visible():
+			if self.sicon.is_embedded() or (ui.dayCalWin and ui.dayCalWin.is_visible()):
 				self.hide()
 			else:
 				self.quit()
