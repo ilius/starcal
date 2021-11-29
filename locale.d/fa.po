@@ -3980,14 +3980,6 @@ msgid "Saeed Rasooli <saeed.gnu@gmail.com>"
 msgstr ""
 "سعید رسولی <saeed.gnu@gmail.com>"
 
-msgid "Mola Pahnadayan <mola.mp@gmail.com>"
-msgstr ""
-"مولا پهنادایان <mola.mp@gmail.com>"
-
-msgid "Mehdi Bayazee <bayazee@gmail.com>"
-msgstr ""
-"مهدی بیاضی <bayazee@gmail.com>"
-
 msgid "Hamid Zarrabi-Zadeh <zarrabi@scs.carleton.ca>"
 msgstr ""
 "حمید ضرابی‌زاده <zarrabi@scs.carleton.ca>"
