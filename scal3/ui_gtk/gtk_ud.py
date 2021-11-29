@@ -540,15 +540,19 @@ def getWorkAreaSize():
 
 ##############################
 
+rootWindow = gdk.get_default_root_window()
 
-screenW, screenH = getScreenSize()
-workAreaW, workAreaH = getWorkAreaSize()
+
+try:
+	screenW, screenH = getScreenSize()
+	workAreaW, workAreaH = getWorkAreaSize()
+except AttributeError:
+	screenW, screenH = rootWindow.get_width(), rootWindow.get_height()
+	workAreaW, workAreaH = screenW, screenH
+
 # print(f"screen: {screenW}x{screenH}, work area: {workAreaW}x{workAreaH}")
 # for normal windows, we should use workAreaW and workAreaH
 # for menus, we should use screenW and screenH, because they can go over panels
-
-
-rootWindow = gdk.get_default_root_window()  # Good Place?????
 
 ##############################
 
