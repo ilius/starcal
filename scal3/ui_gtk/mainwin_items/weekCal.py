@@ -931,7 +931,7 @@ class DaysOfMonthCalTypeParamBox(gtk.Box):
 		module, ok = calTypes[calType]
 		if not ok:
 			raise RuntimeError(f"cal type '{calType}' not found")
-		label = gtk.Label(label=_(module.desc) + "  ")
+		label = gtk.Label(label=_(module.desc, ctx="calendar") + "  ")
 		label.set_xalign(0)
 		pack(self, label)
 		sgroupLabel.add_widget(label)

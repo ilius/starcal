@@ -110,8 +110,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			page = StackPage()
 			page.pageWidget = pageWidget
 			page.pageName = module.name
-			page.pageTitle = _(module.desc)
-			page.pageLabel = _(module.desc)
+			page.pageTitle = page.pageLabel = _(module.desc, ctx="calendar")
 			page.pageExpand = False
 			subPages.append(page)
 			button = newSubPageButton(self, page, borderWidth=7)
