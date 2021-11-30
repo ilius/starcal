@@ -103,7 +103,7 @@ confParams = (
 	"eventDayViewTimeFormat",
 	"pluginsTextStatusIcon",
 	"showYmArrows",
-	"preferencesPageName",
+	"preferencesPagePath",
 	"localTzHist",  # move to a new file like local-tz.json?
 )
 
@@ -229,7 +229,7 @@ confParamsCustomize = (
 	"boldYmLabel",
 	"ud__wcalToolbarData",
 	"ud__mainToolbarData",
-	"customizePageName",
+	"customizePagePath",
 )
 
 
@@ -1315,8 +1315,8 @@ labelMenuDelay = 0.1
 
 ####################
 
-preferencesPageName = ""
-customizePageName = ""
+preferencesPagePath = ""
+customizePagePath = ""
 
 ####################
 

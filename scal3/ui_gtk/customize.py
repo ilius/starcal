@@ -191,7 +191,13 @@ def newSubPageButton(
 	pack(hbox, gtk.Label(), 1, 1)
 	button = gtk.Button()
 	button.add(hbox)
-	button.connect("clicked", lambda b: item.emit("goto-page", page.pageName))
+
+	def onClick(b, page):
+		if not page.pagePath:
+			raise ValueError(f"pagePath empty, page = {page}")
+		item.emit("goto-page", page.pagePath)
+
+	button.connect("clicked", onClick, page)
 	button.show_all()
 	button.label = label
 	return button

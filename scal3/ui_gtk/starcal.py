@@ -133,7 +133,11 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 		self.win = win
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.initVars()
+
+	def createItems(self):
+		win = self.win
 		itemsPkg = "scal3.ui_gtk.mainwin_items"
+
 		for (name, enable) in ui.mainWinItems:
 			if name in ("winContronller", "statusBar"):
 				log.warning(f"Skipping main win item {name!r}")
@@ -459,10 +463,10 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		if self.mainVBox is not None:
 			return self.mainVBox
 		ui.checkMainWinItems()
-		mainVBox = MainWinVbox(self)
-		mainVBox.connect("button-press-event", self.onMainButtonPress)
-		self.mainVBox = mainVBox
-		return mainVBox
+		self.mainVBox = MainWinVbox(self)
+		self.mainVBox.createItems()
+		self.mainVBox.connect("button-press-event", self.onMainButtonPress)
+		return self.mainVBox
 
 	def createRightPanel(self):
 		from scal3.ui_gtk.right_panel import MainWinRightPanel

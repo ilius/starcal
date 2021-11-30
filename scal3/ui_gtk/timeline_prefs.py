@@ -839,13 +839,13 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem.updateWidget()
 		pack(vbox, prefItem.getWidget(), 1, 1)
 		####################################################################
-		rootPageName = "root"
+		rootPagePath = "root"
 		###
 		mainPages = []
 		for page in self.prefPages:
 			if page.pageParent:
 				continue
-			page.pageParent = rootPageName
+			page.pageParent = rootPagePath
 			mainPages.append(page)
 		####
 		colN = 2
@@ -881,7 +881,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		grid.show_all()
 		###############
 		page = StackPage()
-		page.pageName = rootPageName
+		page.pagePath = rootPagePath
 		page.pageWidget = grid
 		page.pageExpand = True
 		page.pageExpand = True
@@ -895,9 +895,9 @@ class TimeLinePreferencesWindow(gtk.Window):
 		self.vbox.show_all()
 
 
-	def gotoPageCallback(self, pageName):
+	def gotoPageCallback(self, pagePath):
 		def callback(*args):
-			self.stack.gotoPage(pageName)
+			self.stack.gotoPage(pagePath)
 		return callback
 
 	def newWideButton(self, page: StackPage):
@@ -912,7 +912,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, gtk.Label(), 1, 1)
 		button = gtk.Button()
 		button.add(hbox)
-		button.connect("clicked", self.gotoPageCallback(page.pageName))
+		button.connect("clicked", self.gotoPageCallback(page.pagePath))
 		return button
 
 	def onDelete(self, obj=None, data=None):

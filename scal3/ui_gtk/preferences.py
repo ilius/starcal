@@ -1167,15 +1167,16 @@ class PreferencesWindow(gtk.Window):
 		grid.show_all()
 		###############
 		page = StackPage()
-		page.pageName = rootPageName
+		page.pagePath = page.pageName = rootPageName
 		page.pageWidget = grid
 		page.pageExpand = True
 		page.pageExpand = True
 		stack.addPage(page)
 		for page in self.prefPages:
+			page.pagePath = page.pageName
 			stack.addPage(page)
-		if ui.preferencesPageName:
-			self.stack.gotoPage(ui.preferencesPageName)
+		if ui.preferencesPagePath:
+			self.stack.gotoPage(ui.preferencesPagePath)
 		#######################
 		pack(self.vbox, stack, 1, 1)
 		pack(self.vbox, self.buttonbox)
@@ -1190,10 +1191,8 @@ class PreferencesWindow(gtk.Window):
 		pixcache.clearFiles()
 		pixcache.clear()
 
-	def gotoPageCallback(self, pageName):
-		def callback(*args):
-			self.stack.gotoPage(pageName)
-		return callback
+	def onPageButtonClicked(self, button, page):
+		self.stack.gotoPage(page.pagePath)
 
 	def newWideButton(self, page: StackPage):
 		hbox = HBox(spacing=10)
@@ -1211,7 +1210,8 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, gtk.Label(), 1, 1)
 		button = gtk.Button()
 		button.add(hbox)
-		button.connect("clicked", self.gotoPageCallback(page.pageName))
+
+		button.connect("clicked", self.onPageButtonClicked, page)
 		return button
 
 	def comboFirstWDChanged(self, combo):
@@ -1270,7 +1270,7 @@ class PreferencesWindow(gtk.Window):
 		)
 		# log.debug(f"fontDefault = {ui.fontDefault!r}")
 		#####
-		ui.preferencesPageName = self.stack.currentPageName()
+		ui.preferencesPagePath = self.stack.currentPagePath()
 		#####
 		# #################### Updating pref variables #####################
 		for prefItem in self.iterAllPrefItems():

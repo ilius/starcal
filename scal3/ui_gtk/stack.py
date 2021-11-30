@@ -35,11 +35,18 @@ class StackPage:
 		self.pageWidget = None
 		self.pageParent = ""
 		self.pageName = ""
+		self.pagePath = ""
 		self.pageTitle = ""
 		self.pageLabel = ""
 		self.pageIcon = ""
 		self.pageExpand = True
 		self.pageItem = None
+
+	def __str__(self):
+		return (
+			f"StackPage(name={self.pageName!r}, path={self.pagePath!r}, "
+			f"parent={self.pageParent!r})"
+		)
 
 
 class MyStack(gtk.Stack):
@@ -59,8 +66,8 @@ class MyStack(gtk.Stack):
 		self._headerSpacing = headerSpacing # type: int
 		self._verticalSlide = verticalSlide # type: bool
 		###
-		self._parentNames = {} # Dict[str, str]
-		self._currentName = ""
+		self._parentPaths = {} # Dict[str, str]
+		self._currentPagePath = ""
 		self._titles = {} # Dict[str, str]
 		###
 		self.connect("key-press-event", self.onKeyPress)
@@ -76,8 +83,8 @@ class MyStack(gtk.Stack):
 	def iconSize(self) -> int:
 		return self._iconSize
 
-	def currentPageName(self) -> str:
-		return self._currentName
+	def currentPagePath(self) -> str:
+		return self._currentPagePath
 
 	def setTitleFontSize(self, fontSize: str):
 		'''
@@ -107,10 +114,10 @@ class MyStack(gtk.Stack):
 
 	def onKeyPress(self, arg, gevent):
 		if gdk.keyval_name(gevent.keyval) == "BackSpace":
-			if self._currentName:
-				parentName = self._parentNames[self._currentName]
-				if parentName:
-					self.gotoPage(parentName, backward=True)
+			if self._currentPagePath:
+				parentPath = self._parentPaths[self._currentPagePath]
+				if parentPath:
+					self.gotoPage(parentPath, backward=True)
 					return True
 		return False
 
@@ -166,13 +173,16 @@ class MyStack(gtk.Stack):
 		return hbox
 
 	def addPage(self, page: StackPage):
-		log.debug(f"MyStack: addPage: pageName={page.pageName}")
-		name = page.pageName
+		log.debug(f"MyStack: addPage: pagePath={page.pagePath}")
+		pagePath = page.pagePath
 		parentName = page.pageParent
 		widget = page.pageWidget
 
+		if pagePath in self._titles:
+			raise ValueError(f"addPage: duplicate pagePath={pagePath}")
+
 		if not isinstance(widget, gtk.Widget):
-			raise ValueError(f"invalid pageWidget={widget}, pageName={name}")
+			raise ValueError(f"invalid pageWidget={widget}, pagePath={pagePath}")
 
 		widget.show()
 		if self._header and parentName:
@@ -185,21 +195,21 @@ class MyStack(gtk.Stack):
 			pack(vbox, widget, expand=page.pageExpand, fill=page.pageExpand)
 			vbox.show()
 			widget = vbox
-		self.add_named(widget, name=name)
+		self.add_named(widget, name=pagePath)
 		##
-		self._parentNames[name] = parentName
-		self._titles[name] = page.pageTitle
+		self._parentPaths[pagePath] = parentName
+		self._titles[pagePath] = page.pageTitle
 		##
-		if not self._currentName:
-			self.gotoPage(name, False)
+		if not self._currentPagePath:
+			self.gotoPage(pagePath, False)
 
-	def hasPage(self, name: str):
-		return self.get_child_by_name(name=name) is not None
+	def hasPage(self, pagePath: str):
+		return self.get_child_by_name(name=pagePath) is not None
 
-	def _setPageWindowTitle(self, name: str):
+	def _setPageWindowTitle(self, pagePath: str):
 		if not self._windowTitleEnable:
 			return
-		title = self._titles[name]
+		title = self._titles[pagePath]
 		if not title:
 			self._window.set_title(self._windowTitleMain)
 			return
@@ -210,24 +220,26 @@ class MyStack(gtk.Stack):
 				title = title + " - " + self._windowTitleMain
 		self._window.set_title(title)
 
-	def tryToGotoPage(self, name: str):
-		while name and not self.gotoPage(name):
-			dot = name.rfind(".")
+	def tryToGotoPage(self, pagePath: str):
+		while pagePath and not self.gotoPage(pagePath):
+			dot = pagePath.rfind(".")
 			if dot < 1:
 				return
-			name = name[:dot]
+			pagePath = pagePath[:dot]
 
-	def gotoPage(self, name: str, backward: bool = False) -> bool:
-		log.debug(f"MyStack: gotoPage: name={name}, backward={backward}")
-		if name not in self._titles:
-			log.error(f"gotoPage: invalid page name {name!r}")
+	def gotoPage(self, path: str, backward: bool = False) -> bool:
+		log.debug(f"MyStack: gotoPage: path={path}, backward={backward}")
+		if not path:
+			raise ValueError(f"gotoPage: empty page path")
+		if path not in self._titles:
+			log.error(f"gotoPage: invalid page path {path!r}")
 			return False
 		if backward:
 			self._setSlideBackward()
 		else:
 			self._setSlideForward()
-		self.set_visible_child_name(name)
+		self.set_visible_child_name(path)
 		self.show()
-		self._currentName = name
-		self._setPageWindowTitle(name)
+		self._currentPagePath = path
+		self._setPageWindowTitle(path)
 		return True

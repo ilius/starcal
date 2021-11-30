@@ -114,12 +114,12 @@ class CustomizeWindow(gtk.Dialog):
 		)
 		# should we save on Escape? or when clicking the X (close) button?
 		###
-		self.itemByPageName = {}
+		self.itemByPagePath = {}
 		self.rootItem = item
 		###
-		rootPageName = "mainWin"
+		rootPagePath = "mainWin"
 		rootPage = StackPage()
-		rootPage.pageName = rootPageName
+		rootPage.pagePath = rootPagePath
 		rootPage.pageWidget = item.getOptionsButtonBox()
 		rootPage.pageExpand = True
 		rootPage.pageExpand = True
@@ -128,13 +128,15 @@ class CustomizeWindow(gtk.Dialog):
 
 		for page in item.getSubPages():
 			if page.pageItem is None:
-				raise ValueError(f"pageItem=None, pageName={page.pageName}")
-			page.pageParent = rootPageName
-			page.pageName = rootPageName + "." + page.pageName
+				raise ValueError(f"pageItem=None, pagePath={page.pagePath}")
+			if not page.pageName:
+				raise ValueError(f"pageName empty, page={page}")
+			page.pageParent = rootPagePath
+			page.pagePath = rootPagePath + "." + page.pageName
 			self.addPageObj(page)
 		###
-		if ui.customizePageName:
-			self.stack.tryToGotoPage(ui.customizePageName)
+		if ui.customizePagePath:
+			self.stack.tryToGotoPage(ui.customizePagePath)
 		###
 		self.vbox.connect("size-allocate", self.vboxSizeRequest)
 		self.vbox.show_all()
@@ -152,21 +154,21 @@ class CustomizeWindow(gtk.Dialog):
 
 	def newItemList(
 		self,
-		parentPageName: str,
+		parentPagePath: str,
 		parentItem: "CustomizableCalObj",
 		scrolled=False,
 	) -> Tuple[gtk.TreeView, gtk.Box]:
 		# column 0: bool: enable
-		# column 1: str: unique pageName (dot separated)
+		# column 1: str: unique pagePath (dot separated)
 		# column 2: str: desc
 		# column 3: Pixbuf: settings icon
 		model = gtk.ListStore(bool, str, str, GdkPixbuf.Pixbuf)
 		treev = gtk.TreeView(model=model)
 		if parentItem.itemsPageEnable:
-			treev.pageName = parentPageName + ".items"
+			treev.pagePath = parentPagePath + ".items"
 		else:
-			treev.pageName = parentPageName
-		self.itemByPageName[treev.pageName] = parentItem
+			treev.pagePath = parentPagePath
+		self.itemByPagePath[treev.pagePath] = parentItem
 		##
 		treev.set_headers_visible(False)
 		treev.connect("button-press-event", self.onTreeviewButtonPress)
@@ -204,7 +206,7 @@ class CustomizeWindow(gtk.Dialog):
 				raise ValueError(f"item._name = {item._name}")
 			model.append([
 				item.enable,
-				parentPageName + "." + item._name,
+				parentPagePath + "." + item._name,
 				item.desc,
 				self.itemPixbuf(item),
 			])
@@ -246,7 +248,7 @@ class CustomizeWindow(gtk.Dialog):
 		self.resize(self.get_size()[0], 1)
 
 	def onTopClick(self, button, treev):
-		item = self.itemByPageName[treev.pageName]
+		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
 		if not cur:
@@ -266,7 +268,7 @@ class CustomizeWindow(gtk.Dialog):
 		treev.set_cursor(0)
 
 	def onUpClick(self, button, treev):
-		item = self.itemByPageName[treev.pageName]
+		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
 		if not cur:
@@ -285,7 +287,7 @@ class CustomizeWindow(gtk.Dialog):
 		treev.set_cursor(i - 1)
 
 	def onDownClick(self, button, treev):
-		item = self.itemByPageName[treev.pageName]
+		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
 		if not cur:
@@ -304,7 +306,7 @@ class CustomizeWindow(gtk.Dialog):
 		treev.set_cursor(i + 1)
 
 	def onBottomClick(self, button, treev):
-		item = self.itemByPageName[treev.pageName]
+		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
 		if not cur:
@@ -324,11 +326,11 @@ class CustomizeWindow(gtk.Dialog):
 		treev.set_cursor(len(model) - 1)
 
 	def _addPageItemsTree(self, page):
-		pageName = page.pageName
+		pagePath = page.pagePath
 		item = page.pageItem
 
 		childrenTreev, childrenBox = self.newItemList(
-			pageName,
+			pagePath,
 			item,
 			scrolled=True,
 		)
@@ -338,11 +340,11 @@ class CustomizeWindow(gtk.Dialog):
 			pack(page.pageWidget, childrenBox, 1, 1)
 			return
 
-		itemsPageName = pageName + ".items"
+		itemsPagePath = pagePath + ".items"
 		itemsPage = StackPage()
 		itemsPage.pageWidget = childrenBox
-		itemsPage.pageParent = pageName
-		itemsPage.pageName = itemsPageName
+		itemsPage.pageParent = pagePath
+		itemsPage.pagePath = itemsPagePath
 		itemsPage.pageTitle = item.itemsPageTitle + " - " + page.pageTitle
 		itemsPage.pageLabel = item.itemsPageTitle
 		itemsPage.pageExpand = True
@@ -354,13 +356,13 @@ class CustomizeWindow(gtk.Dialog):
 		))
 
 	def addPageObj(self, page):
-		pageName = page.pageName
-		parentPageName = page.pageParent
+		pagePath = page.pagePath
+		parentPagePath = page.pageParent
 		title = page.pageTitle
 		item = page.pageItem
-		log.debug(f"addPageObj: pageName={page.pageName}, parent={page.pageParent}, item._name={item._name}")
+		log.debug(f"addPageObj: pagePath={page.pagePath}, parent={page.pageParent}, item._name={item._name}")
 
-		if self.stack.hasPage(pageName):
+		if self.stack.hasPage(pagePath):
 			return
 
 		if item.enableParam:
@@ -384,22 +386,26 @@ class CustomizeWindow(gtk.Dialog):
 				raise ValueError(f"hasOptions={item.hasOptions} but getOptionsWidget returned {optionsWidget}")
 			pack(page.pageWidget, optionsWidget, 0, 0)
 
-		log.debug(f"adding page {page.pageName} to stack, pageWidget={page.pageWidget} (parent={page.pageWidget.get_parent()})")
+		log.debug(f"adding page {page.pagePath} to stack, pageWidget={page.pageWidget} (parent={page.pageWidget.get_parent()})")
 		self.stack.addPage(page) # FIXME: crashes here
 
 		for page in item.getSubPages():
-			page.pageParent = ".".join(
-				[pageName] + page.pageName.split(".")[:-1]
-			)
-			page.pageName = pageName + "." + page.pageName
+			if not (page.pagePath and page.pageParent):
+				if not page.pageName:
+					raise ValueError(f"pageName empty, page={page}")
+				page.pagePath = pagePath + "." + page.pageName
+				page.pageParent = ".".join(
+					[pagePath] + page.pageName.split(".")[:-1]
+				)
+
 			page.pageTitle = page.pageTitle + " - " + title
 			self.stack.addPage(page)
 		item.connect("goto-page", self.gotoPageCallback)
 
-	def addPage(
+	def _addPage(
 		self,
-		pageName: str,
-		parentPageName: str,
+		pagePath: str,
+		parentPagePath: str,
 		parentItem: "CustomizableCalObj",
 		itemIndex: int,
 	):
@@ -410,8 +416,9 @@ class CustomizeWindow(gtk.Dialog):
 			title = title + " - " + parentItem.desc
 
 		page = StackPage()
-		page.pageName = pageName
-		page.pageParent = parentPageName
+		page.pageName = pagePath.split(".")[-1]
+		page.pagePath = pagePath
+		page.pageParent = parentPagePath
 		page.pageWidget = VBox(spacing=item.optionsPageSpacing)
 		page.pageTitle = title
 		page.pageExpand = True
@@ -420,8 +427,10 @@ class CustomizeWindow(gtk.Dialog):
 
 		self.addPageObj(page)
 
-	def gotoPageCallback(self, item, pageName):
-		self.stack.gotoPage(pageName)
+		return page
+
+	def gotoPageCallback(self, item, pagePath):
+		self.stack.gotoPage(pagePath)
 
 	def onTreeviewButtonPress(self, treev, gevent):
 		if gevent.button != 1:
@@ -443,11 +452,11 @@ class CustomizeWindow(gtk.Dialog):
 		path: gtk.TreePath,
 		col: gtk.TreeViewColumn,
 	):
-		parentPageName = treev.pageName
-		parentItem = self.itemByPageName[treev.pageName]
+		parentPagePath = treev.pagePath
+		parentItem = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		itemIter = model.get_iter(path)
-		pageName = model.get_value(itemIter, 1)
+		pagePath = model.get_value(itemIter, 1)
 		itemIndex = tree_path_split(path)[0]
 		item = parentItem.items[itemIndex]
 		if not item.enable:
@@ -457,11 +466,12 @@ class CustomizeWindow(gtk.Dialog):
 			).format(item=item.desc)
 			showInfo(msg, transient_for=self)
 			return
-		log.debug(f"rowActivated: pageName={pageName}, itemIndex={itemIndex}, parentPageName={parentPageName}")
+		log.debug(f"rowActivated: pagePath={pagePath}, itemIndex={itemIndex}, parentPagePath={parentPagePath}")
 		if parentItem.isWrapper:
 			parentItem = parentItem.getWidget()
-		self.addPage(pageName, parentPageName, parentItem, itemIndex)
-		self.stack.gotoPage(pageName)
+		# print(f"rowActivated: pagePath={pagePath}, parentPagePath={parentPagePath}")
+		page = self._addPage(pagePath, parentPagePath, parentItem, itemIndex)
+		self.stack.gotoPage(page.pagePath)
 
 	def loadItem(self, parentItem, itemIndex):
 		item = parentItem.items[itemIndex]
@@ -480,7 +490,7 @@ class CustomizeWindow(gtk.Dialog):
 		active = not cell.get_active()
 		itr = model.get_iter(path)
 		model.set_value(itr, 0, active)
-		parentItem = self.itemByPageName[treev.pageName]
+		parentItem = self.itemByPagePath[treev.pagePath]
 		itemIndex = tree_path_split(path)[0]
 		item = parentItem.items[itemIndex]
 		assert parentItem.items[itemIndex] == item
@@ -511,7 +521,7 @@ class CustomizeWindow(gtk.Dialog):
 		item.updateVars()
 		ui.ud__wcalToolbarData = ud.wcalToolbarData
 		ui.ud__mainToolbarData = ud.mainToolbarData
-		ui.customizePageName = self.stack.currentPageName()
+		ui.customizePagePath = self.stack.currentPagePath()
 		ui.saveConfCustomize()
 		#data = item.getData()## remove? FIXME
 

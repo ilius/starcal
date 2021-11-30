@@ -110,6 +110,9 @@ class CalObj(gtk.DrawingArea, CalBase):
 			page = StackPage()
 			page.pageWidget = pageWidget
 			page.pageName = module.name
+			# setting pageParent and pagePath here is ugly, but it's needed
+			page.pageParent = self.pagePath
+			page.pagePath = page.pageParent + "." + page.pageName
 			page.pageTitle = page.pageLabel = _(module.desc, ctx="calendar")
 			page.pageExpand = False
 			subPages.append(page)
@@ -133,6 +136,11 @@ class CalObj(gtk.DrawingArea, CalBase):
 		gtk.DrawingArea.__init__(self)
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initCal()
+		self.pagePath = ".".join([
+			win._name,
+			win.mainVBox._name,
+			self._name,
+		])
 		######################
 		# self.kTime = 0
 		######################

@@ -112,15 +112,15 @@ class DayCalWindowCustomizeWindow(gtk.Dialog):
 		page.pageExpand = True
 		self.stack.addPage(page)
 		for page in dayCal.getSubPages():
-			page.pageParent = pageName
+			page.pageParent = pageName  # FIXME: or pagePath?
 			self.stack.addPage(page)
 		dayCal.connect("goto-page", self.gotoPageCallback)
 		##
 		# self.vbox.connect("size-allocate", self.vboxSizeRequest)
 		self.vbox.show_all()
 
-	def gotoPageCallback(self, item, pageName):
-		self.stack.gotoPage(pageName)
+	def gotoPageCallback(self, item, pagePath):
+		self.stack.gotoPage(pagePath)
 
 	# def vboxSizeRequest(self, widget, req):
 	# 	self.resize(self.get_size()[0], 1)

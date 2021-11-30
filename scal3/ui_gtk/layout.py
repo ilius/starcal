@@ -325,8 +325,10 @@ class WinLayoutBox(WinLayoutBase):
 		subPages = []
 		for item in self.items:
 			for page in item.getSubPages():
+				if not page.pageName:
+					raise ValueError(f"pageName empty, pagePath={page.pagePath}")
 				page.pageParent = self._name
-				page.pageName = self._name + "." + page.pageName
+				page.pagePath = self._name + "." + page.pageName
 				subPages.append(page)
 		self.subPages = subPages
 		return subPages
