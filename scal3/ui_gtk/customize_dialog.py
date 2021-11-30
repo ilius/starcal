@@ -323,6 +323,36 @@ class CustomizeWindow(gtk.Dialog):
 		model.remove(model.get_iter(i))
 		treev.set_cursor(len(model) - 1)
 
+	def _addPageItemsTree(self, page):
+		pageName = page.pageName
+		item = page.pageItem
+
+		childrenTreev, childrenBox = self.newItemList(
+			pageName,
+			item,
+			scrolled=True,
+		)
+		childrenBox.show_all()
+
+		if not item.itemsPageEnable:
+			pack(page.pageWidget, childrenBox, 1, 1)
+			return
+
+		itemsPageName = pageName + ".items"
+		itemsPage = StackPage()
+		itemsPage.pageWidget = childrenBox
+		itemsPage.pageParent = pageName
+		itemsPage.pageName = itemsPageName
+		itemsPage.pageTitle = item.itemsPageTitle + " - " + page.pageTitle
+		itemsPage.pageLabel = item.itemsPageTitle
+		itemsPage.pageExpand = True
+		self.stack.addPage(itemsPage)
+		pack(page.pageWidget, newSubPageButton(
+			item,
+			itemsPage,
+			borderWidth=item.itemsPageButtonBorder,
+		))
+
 	def addPageObj(self, page):
 		pageName = page.pageName
 		parentPageName = page.pageParent
@@ -345,27 +375,9 @@ class CustomizeWindow(gtk.Dialog):
 			pack(hbox, prefItem.getWidget())
 			pack(page.pageWidget, hbox, 0, 0)
 
-		###
 		if item.itemListCustomizable and item.items:
-			childrenBox = self.newItemList(pageName, item, scrolled=True)[1]
-			childrenBox.show_all()
-			if item.itemsPageEnable:
-				itemsPageName = pageName + ".items"
-				itemsPage = StackPage()
-				itemsPage.pageWidget = childrenBox
-				itemsPage.pageParent = pageName
-				itemsPage.pageName = itemsPageName
-				itemsPage.pageTitle = item.itemsPageTitle + " - " + title
-				itemsPage.pageLabel = item.itemsPageTitle
-				itemsPage.pageExpand = True
-				self.stack.addPage(itemsPage)
-				pack(page.pageWidget, newSubPageButton(
-					item,
-					itemsPage,
-					borderWidth=item.itemsPageButtonBorder,
-				))
-			else:
-				pack(page.pageWidget, childrenBox, 1, 1)
+			self._addPageItemsTree(page)
+
 		if item.hasOptions:
 			optionsWidget = item.getOptionsWidget()
 			if optionsWidget is None:
@@ -482,7 +494,7 @@ class CustomizeWindow(gtk.Dialog):
 		item.showHide()
 		item.onConfigChange()
 
-	def updateTreeEnableChecks(self):
+	def updateMainPanelTreeEnableChecks(self):
 		pass
 		# FIXME: called from MainWin
 		#treev = self.treev_root

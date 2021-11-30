@@ -1630,7 +1630,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def switchWcalMcal(self, widget=None):
 		self.customizeWindowCreate()
 		self.mainVBox.switchWcalMcal(self.customizeWindow)
-		self.customizeWindow.updateTreeEnableChecks()
+		self.customizeWindow.updateMainPanelTreeEnableChecks()
 		self.customizeWindow.save()
 
 	def customizeShow(self, obj=None, data=None):
