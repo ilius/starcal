@@ -107,12 +107,14 @@ class DayCalWindowCustomizeWindow(gtk.Dialog):
 		pageName = "dayCalWin"
 		page = StackPage()
 		page.pageName = pageName
+		page.pagePath = pageName
 		page.pageWidget = dayCal.getOptionsWidget()
 		page.pageExpand = True
 		page.pageExpand = True
 		self.stack.addPage(page)
 		for page in dayCal.getSubPages():
 			page.pageParent = pageName  # FIXME: or pagePath?
+			page.pagePath = page.pageName
 			self.stack.addPage(page)
 		dayCal.connect("goto-page", self.gotoPageCallback)
 		##
