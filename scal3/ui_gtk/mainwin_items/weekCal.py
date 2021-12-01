@@ -1302,6 +1302,9 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 	)
 	signals = CalBase.signals
 
+	def do_get_preferred_height(self):
+		return 0, ui.winHeight / 3
+
 	def getCellPagePlus(self, cell, plus):
 		return ui.cellCache.getCell(cell.jd + 7 * plus)
 

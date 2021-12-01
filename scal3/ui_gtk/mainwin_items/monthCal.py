@@ -70,6 +70,9 @@ class CalObj(gtk.DrawingArea, CalBase):
 		"f10", "m",
 	)
 
+	def do_get_preferred_height(self):
+		return 0, ui.winHeight / 3
+
 	def updateTypeParamsWidget(self):
 		from scal3.ui_gtk.cal_type_params import CalTypeParamWidget
 		try:
