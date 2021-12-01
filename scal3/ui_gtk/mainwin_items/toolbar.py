@@ -9,13 +9,13 @@ from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk import gtk_ud as ud
 
 from scal3.ui_gtk.toolbox import (
-	ToolBoxItem as ToolbarItem,
-	CustomizableToolBox as CustomizableToolbar,
+	ToolBoxItem,
+	CustomizableToolBox,
 )
 
-class MainMenuToolbarItem(ToolbarItem):
+class MainMenuToolBoxItem(ToolBoxItem):
 	def __init__(self):
-		ToolbarItem.__init__(
+		ToolBoxItem.__init__(
 			self,
 			name="mainMenu",
 			iconName="start-here",
@@ -55,14 +55,14 @@ class MainMenuToolbarItem(ToolbarItem):
 
 
 @registerSignals
-class CalObj(CustomizableToolbar):
-	signals = CustomizableToolbar.signals + [
+class CalObj(CustomizableToolBox):
+	signals = CustomizableToolBox.signals + [
 		("popup-main-menu", [int, int, int]),
 	]
 
 	defaultItems = [
-		MainMenuToolbarItem(),
-		ToolbarItem(
+		MainMenuToolBoxItem(),
+		ToolBoxItem(
 			name="today",
 			iconName="gtk-home",
 			imageName="go-home.svg",
@@ -71,7 +71,7 @@ class CalObj(CustomizableToolbar):
 			shortDesc="Today",
 			continuousClick=False,
 		),
-		ToolbarItem(
+		ToolBoxItem(
 			name="date",
 			iconName="gtk-index",
 			imageName="select-date.svg",
@@ -80,21 +80,21 @@ class CalObj(CustomizableToolbar):
 			shortDesc="Date",
 			continuousClick=False,
 		),
-		ToolbarItem(
+		ToolBoxItem(
 			name="customize",
 			iconName="gtk-edit",
 			imageName="document-edit.svg",
 			onClick="customizeShow",
 			continuousClick=False,
 		),
-		ToolbarItem(
+		ToolBoxItem(
 			name="preferences",
 			iconName="gtk-preferences",
 			imageName="preferences-system.svg",
 			onClick="prefShow",
 			continuousClick=False,
 		),
-		ToolbarItem(
+		ToolBoxItem(
 			name="add",
 			iconName="gtk-add",
 			imageName="list-add.svg",
@@ -103,7 +103,7 @@ class CalObj(CustomizableToolbar):
 			shortDesc="Event",
 			continuousClick=False,
 		),
-		ToolbarItem(
+		ToolBoxItem(
 			name="search",
 			iconName="gtk-find",
 			imageName="system-search.svg",
@@ -112,7 +112,7 @@ class CalObj(CustomizableToolbar):
 			shortDesc="Search",
 			continuousClick=False,
 		),
-		ToolbarItem(
+		ToolBoxItem(
 			name="export",
 			iconName="gtk-convert",
 			imageName="export-to-html.svg",
@@ -121,7 +121,7 @@ class CalObj(CustomizableToolbar):
 			shortDesc="Export",
 			continuousClick=False,
 		),
-		ToolbarItem(
+		ToolBoxItem(
 			name="about",
 			iconName="gtk-about",
 			imageName="dialog-information.svg",
@@ -130,7 +130,7 @@ class CalObj(CustomizableToolbar):
 			shortDesc="About",
 			continuousClick=False,
 		),
-		ToolbarItem(
+		ToolBoxItem(
 			name="quit",
 			iconName="gtk-quit",
 			imageName="application-exit.svg",
@@ -145,7 +145,7 @@ class CalObj(CustomizableToolbar):
 
 	def __init__(self, win):
 		self.win = win
-		CustomizableToolbar.__init__(
+		CustomizableToolBox.__init__(
 			self,
 			win,
 			vertical=False,
@@ -167,5 +167,5 @@ class CalObj(CustomizableToolbar):
 			self.connect("popup-main-menu", win.menuMainPopup)
 
 	def updateVars(self):
-		CustomizableToolbar.updateVars(self)
+		CustomizableToolBox.updateVars(self)
 		ud.mainToolbarData = self.getData()

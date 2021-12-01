@@ -59,8 +59,8 @@ from scal3.ui_gtk.customize import (
 )
 
 from scal3.ui_gtk.toolbox import (
-	ToolBoxItem as ToolbarItem,
-	CustomizableToolBox as CustomizableToolbar,
+	ToolBoxItem,
+	CustomizableToolBox,
 	LabelToolBoxItem,
 )
 
@@ -394,11 +394,11 @@ class Column(gtk.DrawingArea, ColumnBase):
 		pass
 
 
-class MainMenuToolbarItem(ToolbarItem):
+class MainMenuToolBoxItem(ToolBoxItem):
 	hasOptions = True
 
 	def __init__(self, wcal):
-		ToolbarItem.__init__(
+		ToolBoxItem.__init__(
 			self,
 			name="mainMenu",
 			imageNameDynamic=True,
@@ -411,7 +411,7 @@ class MainMenuToolbarItem(ToolbarItem):
 		self._wcal = wcal
 
 	def onConfigChange(self, *a, **kw):
-		ToolbarItem.onConfigChange(self, *a, **kw)
+		ToolBoxItem.onConfigChange(self, *a, **kw)
 		self.updateImage()
 
 	def getOptionsWidget(self) -> gtk.Widget:
@@ -459,7 +459,7 @@ class MainMenuToolbarItem(ToolbarItem):
 		)
 
 
-class WeekNumToolbarItem(LabelToolBoxItem):
+class WeekNumToolBoxItem(LabelToolBoxItem):
 	def __init__(self):
 		LabelToolBoxItem.__init__(
 			self,
@@ -488,42 +488,42 @@ class WeekNumToolbarItem(LabelToolBoxItem):
 
 
 @registerSignals
-class ToolbarColumn(CustomizableToolbar, ColumnBase):
+class ToolbarColumn(CustomizableToolBox, ColumnBase):
 	autoButtonPressHandler = False
 	optionsPageSpacing = 5
 
 	def __init__(self, wcal):
-		CustomizableToolbar.__init__(self, wcal, vertical=True)
+		CustomizableToolBox.__init__(self, wcal, vertical=True)
 		ColumnBase.__init__(self)
 		self.defaultItems = [
-			MainMenuToolbarItem(wcal),
-			WeekNumToolbarItem(),
-			ToolbarItem(
+			MainMenuToolBoxItem(wcal),
+			WeekNumToolBoxItem(),
+			ToolBoxItem(
 				name="backward4",
 				imageName="go-top.svg",
 				onClick="goBackward4",
 				desc="Backward 4 Weeks",
 			),
-			ToolbarItem(
+			ToolBoxItem(
 				name="backward",
 				imageName="go-up.svg",
 				onClick="goBackward",
 				desc="Previous Week",
 			),
-			ToolbarItem(
+			ToolBoxItem(
 				name="today",
 				imageName="go-home.svg",
 				onClick="goToday",
 				desc="Today",
 				continuousClick=False,
 			),
-			ToolbarItem(
+			ToolBoxItem(
 				name="forward",
 				imageName="go-down.svg",
 				onClick="goForward",
 				desc="Next Week",
 			),
-			ToolbarItem(
+			ToolBoxItem(
 				name="forward4",
 				imageName="go-bottom.svg",
 				onClick="goForward4",
@@ -541,7 +541,7 @@ class ToolbarColumn(CustomizableToolbar, ColumnBase):
 		self.setData(ud.wcalToolbarData)
 
 	def updateVars(self):
-		CustomizableToolbar.updateVars(self)
+		CustomizableToolBox.updateVars(self)
 		ud.wcalToolbarData = self.getData()
 
 
