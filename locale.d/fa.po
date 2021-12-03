@@ -2048,6 +2048,10 @@ msgid "In Time Line"
 msgstr ""
 "در خط زمان"
 
+msgid "Time Line Preferences"
+msgstr ""
+"ترجیحات خط زمان"
+
 msgid "Background Color"
 msgstr ""
 "رنگ زمینه"

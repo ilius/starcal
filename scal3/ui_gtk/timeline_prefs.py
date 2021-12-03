@@ -47,7 +47,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 	def __init__(self, timeLine, **kwargs):
 		self._timeLine = timeLine
 		gtk.Window.__init__(self, **kwargs)
-		self.set_title(_("TimeLine Preferences"))
+		self.set_title(_("Time Line Preferences"))
 		self.set_position(gtk.WindowPosition.CENTER)
 		self.connect("delete-event", self.onDelete)
 		self.connect("key-press-event", self.onKeyPress)
@@ -82,7 +82,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		)
 		stack.setTitleFontSize("large")
 		stack.setTitleCentered(True)
-		stack.setupWindowTitle(self, _("Timeline Preferences"), False)
+		stack.setupWindowTitle(self, _("Time Line Preferences"), False)
 		self.stack = stack
 		####################################################
 		vbox = VBox(spacing=5)
@@ -844,8 +844,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		mainPages = []
 		for page in self.prefPages:
 			if page.pageParent:
+				page.pagePath = page.pageParent + "." + page.pageName
 				continue
 			page.pageParent = rootPagePath
+			page.pagePath = page.pageName
 			mainPages.append(page)
 		####
 		colN = 2
@@ -895,10 +897,8 @@ class TimeLinePreferencesWindow(gtk.Window):
 		self.vbox.show_all()
 
 
-	def gotoPageCallback(self, pagePath):
-		def callback(*args):
-			self.stack.gotoPage(pagePath)
-		return callback
+	def gotoPageClicked(self, button, page):
+		self.stack.gotoPage(page.pagePath)
 
 	def newWideButton(self, page: StackPage):
 		hbox = HBox(spacing=10)
@@ -912,7 +912,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		pack(hbox, gtk.Label(), 1, 1)
 		button = gtk.Button()
 		button.add(hbox)
-		button.connect("clicked", self.gotoPageCallback(page.pagePath))
+		button.connect("clicked", self.gotoPageClicked, page)
 		return button
 
 	def onDelete(self, obj=None, data=None):
