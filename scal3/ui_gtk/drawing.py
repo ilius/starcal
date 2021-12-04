@@ -457,26 +457,14 @@ def drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ro, d):
 
 
 def drawCircle(cr, cx, cy, r):
-	drawRoundedRect(
-		cr,
-		cx - r,
-		cy - r,
-		r * 2,
-		r * 2,
-		r,
-	)
+	cr.arc(cx, cy, r, 0, 2 * pi)
 
 
 def drawCircleOutline(cr, cx, cy, r, d):
-	drawOutlineRoundedRect(
-		cr,
-		cx - r,
-		cy - r,
-		r * 2,
-		r * 2,
-		r,
-		d,
-	)
+	cr.arc(cx, cy, r, 0, 2 * pi)
+	cr.close_path()
+	cr.arc_negative(cx, cy, r - d, 2 * pi, 0)
+	cr.close_path()
 
 
 def goAngle(x0, y0, angle, length):
