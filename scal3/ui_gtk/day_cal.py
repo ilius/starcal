@@ -198,6 +198,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 		x_start = xc - totalWidth / 2
 		x_delta = iconSize + spacing
 
+		rectangleColor = ui.textColor[:3] + [opacity * 0.7]
+
 		return [
 			SVGButton(
 				imageName=d.get("imageName", ""),
@@ -208,7 +210,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 				iconSize=iconSize,
 				xalign=xalign,
 				yalign=yalign,
-				opacity=opacity
+				opacity=opacity,
+				rectangleColor=rectangleColor,
 			)
 			for index, d in enumerate(buttonsRaw)
 		]

@@ -18,10 +18,9 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import pixbufFromFile
-
+from scal3.ui_gtk.drawing import drawOutlineRoundedRect
 
 class BaseButton(object):
 	def __init__(
@@ -110,6 +109,7 @@ class SVGButton(BaseButton):
 		self,
 		imageName="",
 		iconSize=16,
+		rectangleColor=None,
 		**kwargs
 	):
 		BaseButton.__init__(self, **kwargs)
@@ -127,6 +127,8 @@ class SVGButton(BaseButton):
 		self.iconSize = iconSize
 		self.pixbuf = pixbuf
 
+		self.rectangleColor = rectangleColor
+
 	def getImagePath(self) -> None:
 		from os.path import isabs
 		path = self.imageName
@@ -141,6 +143,34 @@ class SVGButton(BaseButton):
 		h: float,
 		bgColor=None,
 	):
+		x, y = self.getAbsPos(w, h)
+
+		if self.rectangleColor:
+			color = self.rectangleColor
+			size = self.iconSize
+			red, green, blue = color[:3]
+			if len(color) > 3:
+				opacity = color[3]
+			else:
+				opacity = self.opacity
+			lineWidth = 1
+			cr.set_source_rgba(
+				red / 255.0,
+				green / 255.0,
+				blue / 255.0,
+				opacity,
+			)
+			drawOutlineRoundedRect(
+				cr,
+				x - lineWidth,
+				y - lineWidth,
+				size + 2 * lineWidth,
+				size + 2 * lineWidth,
+				size * 0.2,
+				lineWidth,
+			)
+			cr.fill()
+
 		# from gi.repository import Rsvg as rsvg
 		# handle = rsvg.Handle.new_from_file(self.getImagePath())
 		# dim = handle.get_dimensions()
@@ -152,7 +182,6 @@ class SVGButton(BaseButton):
 		# finally:
 		# 	cr.restore()
 		# 	handle.close()
-		x, y = self.getAbsPos(w, h)
 		gdk.cairo_set_source_pixbuf(
 			cr,
 			self.pixbuf,
