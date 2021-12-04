@@ -26,11 +26,18 @@ from scal3.ui_gtk.day_cal import DayCal
 @registerSignals
 class CalObj(DayCal):
 	expand = True
+
 	dayParamsParam = "dcalDayParams"
 	monthParamsParam = "dcalMonthParams"
 	weekdayParamsParam = "dcalWeekdayParams"
+
 	buttonsEnableParam = "dcalButtonsEnable"
 	buttonsParam = "dcalButtons"
+
+	navButtonsEnableParam = "dcalNavButtonsEnable"
+	navButtonsGeoParam = "dcalNavButtonsGeo"
+	navButtonsOpacityParam = "dcalNavButtonsOpacity"
+
 	eventIconSizeParam = "dcalEventIconSize"
 	eventTotalSizeRatioParam = "dcalEventTotalSizeRatio"
 	weekdayLocalizeParam = "dcalWeekdayLocalize"

@@ -195,6 +195,10 @@ confParamsCustomize = (
 	"dcalWinButtonsEnable",
 	# "dcalWinButtons",
 
+	"dcalNavButtonsEnable",
+	"dcalNavButtonsGeo",
+	"dcalNavButtonsOpacity",
+
 	"dcalWeekdayLocalize",
 	"dcalWeekdayAbbreviate",
 	"dcalWeekdayUppercase",
@@ -910,6 +914,17 @@ dcalWeekdayParams = {
 	"font": None,
 	"color": (0, 200, 205),
 }
+
+dcalNavButtonsEnable = True
+dcalNavButtonsGeo = {
+	"auto_rtl": True,
+	"size": 64,
+	"spacing": 10,
+	"pos": (0, 20),
+	"xalign": "center",
+	"yalign": "buttom",
+}
+dcalNavButtonsOpacity = 0.7
 
 dcalWinDayParams = [
 	{

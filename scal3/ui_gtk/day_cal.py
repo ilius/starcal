@@ -48,7 +48,7 @@ from scal3.ui_gtk import *
 from scal3.ui_gtk.drawing import *
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.utils import pixbufFromFile
-from scal3.ui_gtk.button_drawing import Button
+from scal3.ui_gtk.button_drawing import Button, SVGButton
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
 from scal3.ui_gtk.cal_base import CalBase
@@ -66,8 +66,14 @@ class DayCal(gtk.DrawingArea, CalBase):
 	weekdayLocalizeParam = ""
 	weekdayAbbreviateParam = ""
 	weekdayUppercaseParam = ""
+
 	buttonsEnableParam = ""
 	buttonsParam = ""
+
+	navButtonsEnableParam = ""
+	navButtonsGeoParam = ""
+	navButtonsOpacityParam = ""
+
 	eventIconSizeParam = ""
 	eventTotalSizeRatioParam = ""
 
@@ -116,10 +122,13 @@ class DayCal(gtk.DrawingArea, CalBase):
 	def getWeekDayParams(self):
 		return getattr(ui, self.weekdayParamsParam)
 
-	def getButtonsEnable(self):
-		return getattr(ui, self.buttonsEnableParam)
+	def getCommonButtonsEnable(self):
+		return self.buttonsEnableParam and getattr(ui, self.buttonsEnableParam)
 
-	def getButtons(self):
+	def getNavButtonsEnable(self):
+		return self.navButtonsEnableParam and getattr(ui, self.navButtonsEnableParam)
+
+	def getCommonButtons(self):
 		return [
 			Button(
 				imageName=d.get("imageName", ""),
@@ -134,6 +143,83 @@ class DayCal(gtk.DrawingArea, CalBase):
 			)
 			for d in getattr(ui, self.buttonsParam)
 		]
+
+	navButtonsRaw = [
+		{
+			# "imageName": "go-previous.svg",
+			"imageName": "list-remove.svg",
+			"onClick": "prevDayClicked",
+		},
+		{
+			"imageName": "go-home.svg",
+			"onClick": "goToday",
+		},
+		{
+			# "imageName": "go-next.svg",
+			"imageName": "list-add.svg",
+			"onClick": "nextDayClicked",
+		},
+	]
+	navButtonsRTLRaw = [
+		{
+			# "imageName": "go-previous.svg",
+			"imageName": "list-add.svg",
+			"onClick": "nextDayClicked",
+		},
+		{
+			"imageName": "go-home.svg",
+			"onClick": "goToday",
+		},
+		{
+			# "imageName": "go-next.svg",
+			"imageName": "list-remove.svg",
+			"onClick": "prevDayClicked",
+		},
+	]
+
+	def getNavButtons(self):
+		if not self.navButtonsGeoParam:
+			return []
+
+		buttonsRaw = self.navButtonsRaw
+		geo = getattr(ui, self.navButtonsGeoParam)
+		if rtl and geo["auto_rtl"]:
+			buttonsRaw = self.navButtonsRTLRaw
+
+		opacity = getattr(ui, self.navButtonsOpacityParam)
+		iconSize = geo["size"]
+		spacing = geo["spacing"]
+		xc, y = geo["pos"]
+		xalign = geo["xalign"]
+		yalign = geo["yalign"]
+
+		count = len(buttonsRaw)
+		totalWidth = iconSize * count + spacing * (count - 1)
+		x_start = xc - totalWidth / 2
+		x_delta = iconSize + spacing
+
+		return [
+			SVGButton(
+				imageName=d.get("imageName", ""),
+				onPress=getattr(self, d["onClick"]),
+				x=x_start + index * x_delta,
+				y=y,
+				autoDir=False,
+				iconSize=iconSize,
+				xalign=xalign,
+				yalign=yalign,
+				opacity=opacity
+			)
+			for index, d in enumerate(buttonsRaw)
+		]
+
+	def getAllButtons(self):
+		buttons = []
+		if self.getCommonButtonsEnable():
+			buttons += self.getCommonButtons()
+		if self.getNavButtonsEnable():
+			buttons += self.getNavButtons()
+		return buttons
 
 	def startMove(self, gevent, button=1):
 		win = self.getWindow()
@@ -161,6 +247,12 @@ class DayCal(gtk.DrawingArea, CalBase):
 	def openCustomize(self, gevent):
 		if self.win:
 			self.win.customizeShow()
+
+	def prevDayClicked(self, gevent):
+		self.jdPlus(-1)
+
+	def nextDayClicked(self, gevent):
+		self.jdPlus(1)
 
 	def updateTypeParamsWidget(self):
 		from scal3.ui_gtk.cal_type_params import CalTypeParamWidget
@@ -251,6 +343,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initCal()
 		self.subPages = None
+		self._allButtons = []
 		######################
 		#self.kTime = 0
 		######################
@@ -595,26 +688,30 @@ class DayCal(gtk.DrawingArea, CalBase):
 				cr.move_to(font_x, font_y)
 				show_layout(cr, daynum)
 
-		if self.getButtonsEnable():
-			for button in self.getButtons():
-				button.draw(cr, w, h)
+		self._allButtons = self.getAllButtons()
+		for button in self._allButtons:
+			button.draw(cr, w, h)
 
 	def onButtonPress(self, obj, gevent):
 		b = gevent.button
 		x, y = gevent.x, gevent.y
-		print("onButtonPress", x, y)
-		###
-		if gevent.type == TWO_BUTTON_PRESS:
-			self.emit("double-button-press")
-		if b == 1 and self.getButtonsEnable():
-			w = self.get_allocation().width
-			h = self.get_allocation().height
-			for button in self.getButtons():
-				if button.contains(x, y, w, h):
-					button.onPress(gevent)
-					return True
+
+		if b == 1:
+			buttons = self._allButtons
+			if buttons:
+				w = self.get_allocation().width
+				h = self.get_allocation().height
+				for button in buttons:
+					if button.contains(x, y, w, h):
+						button.onPress(gevent)
+						return True
+
 		if b == 3:
 			self.emit("popup-cell-menu", gevent.time, x, y)
+
+		if gevent.type == TWO_BUTTON_PRESS:
+			self.emit("double-button-press")
+
 		return True
 
 	def jdPlus(self, p):

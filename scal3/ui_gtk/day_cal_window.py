@@ -186,14 +186,16 @@ class DayCalWindowWidget(DayCal):
 
 	def onButtonPress(self, obj, gevent):
 		b = gevent.button
-		if b == 1 and self.getButtonsEnable():
-			x, y = gevent.x, gevent.y
-			w = self.get_allocation().width
-			h = self.get_allocation().height
-			for button in self.getButtons():
-				if button.contains(x, y, w, h):
-					button.onPress(gevent)
-					return True
+		if b == 1:
+			buttons = self._allButtons
+			if buttons:
+				x, y = gevent.x, gevent.y
+				w = self.get_allocation().width
+				h = self.get_allocation().height
+				for button in buttons:
+					if button.contains(x, y, w, h):
+						button.onPress(gevent)
+						return True
 			if ui.mainWin:
 				ui.mainWin.onStatusIconClick()
 				return True
