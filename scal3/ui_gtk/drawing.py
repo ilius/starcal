@@ -201,7 +201,7 @@ def calcTextPixelSize(
 def calcTextPixelWidth(
 	widget: gtk.Widget,
 	text: str,
-	font = None,
+	font: "Optional[List]" = None,
 ) -> float:
 	width, height = calcTextPixelSize(widget, text, font=font)
 	return width
@@ -322,7 +322,7 @@ def drawRoundedRect(cr, cx0, cy0, cw, ch, ro):
 
 def drawOutlineRoundedRect(cr, cx0, cy0, cw, ch, ro, d):
 	ro = min(ro, cw / 2.0, ch / 2.0)
-	#a = min(cw, ch); ri = ro*(a-2*d)/a
+	# a = min(cw, ch); ri = ro*(a-2*d)/a
 	ri = max(0, ro - d)
 	# log.debug(ro, ri)
 	# ####### Outline:
@@ -502,10 +502,10 @@ def drawArcOutline(cr, xc, yc, r, d, a0, a1):
 	####
 	cr.move_to(x1, y1)
 	cr.arc(xc, yc, r - d, a0, a1)
-	#cr.move_to(x2, y2)
+	# cr.move_to(x2, y2)
 	cr.line_to(x3, y3)
 	cr.arc_negative(xc, yc, r, a1, a0)
-	#cr.move_to(x4, y4)
-	#cr.line_to(x1, y1)
+	# cr.move_to(x4, y4)
+	# cr.line_to(x1, y1)
 
 	cr.close_path()
