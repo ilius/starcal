@@ -67,8 +67,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 	weekdayAbbreviateParam = ""
 	weekdayUppercaseParam = ""
 
-	buttonsEnableParam = ""
-	buttonsParam = ""
+	widgetButtonsEnableParam = ""
+	widgetButtonsParam = ""
 
 	navButtonsEnableParam = ""
 	navButtonsGeoParam = ""
@@ -122,13 +122,11 @@ class DayCal(gtk.DrawingArea, CalBase):
 	def getWeekDayParams(self):
 		return getattr(ui, self.weekdayParamsParam)
 
-	def getCommonButtonsEnable(self):
-		return self.buttonsEnableParam and getattr(ui, self.buttonsEnableParam)
-
-	def getNavButtonsEnable(self):
-		return self.navButtonsEnableParam and getattr(ui, self.navButtonsEnableParam)
-
-	def getCommonButtons(self):
+	def getWidgetButtons(self):
+		if not self.widgetButtonsEnableParam:
+			return []
+		if not getattr(ui, self.widgetButtonsEnableParam):
+			return []
 		return [
 			Button(
 				imageName=d.get("imageName", ""),
@@ -141,7 +139,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 				xalign=d.get("xalign", "left"),
 				yalign=d.get("yalign", "top"),
 			)
-			for d in getattr(ui, self.buttonsParam)
+			for d in getattr(ui, self.widgetButtonsParam)
 		]
 
 	navButtonsRaw = [
@@ -178,6 +176,12 @@ class DayCal(gtk.DrawingArea, CalBase):
 	]
 
 	def getNavButtons(self):
+		if not self.navButtonsEnableParam:
+			return []
+
+		if not getattr(ui, self.navButtonsEnableParam):
+			return []
+
 		if not self.navButtonsGeoParam:
 			return []
 
@@ -217,12 +221,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		]
 
 	def getAllButtons(self):
-		buttons = []
-		if self.getCommonButtonsEnable():
-			buttons += self.getCommonButtons()
-		if self.getNavButtonsEnable():
-			buttons += self.getNavButtons()
-		return buttons
+		return self.getWidgetButtons() + self.getNavButtons()
 
 	def startMove(self, gevent, button=1):
 		win = self.getWindow()
@@ -383,20 +382,41 @@ class DayCal(gtk.DrawingArea, CalBase):
 			pack(hbox, prefItem.getWidget())
 			pack(hbox, gtk.Label(), 1, 1)
 			pack(optionsWidget, hbox)
-		####
-		prefItem = CheckPrefItem(
-			ui,
-			self.buttonsEnableParam,
-			label=_("Show buttons"),
-			live=True,
-			onChangeFunc=self.queue_draw,
-		)
-		pack(optionsWidget, prefItem.getWidget())
 		########
 		self.dayMonthParamsVbox = VBox()
 		pack(optionsWidget, self.dayMonthParamsVbox)
 		subPages += self.updateTypeParamsWidget()
 		####
+		pageWidget = VBox(spacing=5)
+		page = StackPage()
+		page.pageWidget = pageWidget
+		page.pageName = "buttons"
+		page.pageTitle = _("Buttons")
+		page.pageLabel = _("Buttons")
+		page.pageExpand = False
+		subPages.append(page)
+		pack(optionsWidget, newSubPageButton(self, page), padding=4)
+		###
+		if self.widgetButtonsEnableParam:
+			prefItem = CheckPrefItem(
+				ui,
+				self.widgetButtonsEnableParam,
+				label=_("Widget buttons"),
+				live=True,
+				onChangeFunc=self.queue_draw,
+			)
+			pack(pageWidget, prefItem.getWidget())
+		if self.navButtonsEnableParam:
+			prefItem = CheckPrefItem(
+				ui,
+				self.navButtonsEnableParam,
+				label=_("Navigation buttons"),
+				live=True,
+				onChangeFunc=self.queue_draw,
+			)
+			pack(pageWidget, prefItem.getWidget())
+		pageWidget.show_all()
+		#####
 		if self.weekdayParamsParam:
 			params = self.getWeekDayParams()
 			pageWidget = VBox(spacing=5)

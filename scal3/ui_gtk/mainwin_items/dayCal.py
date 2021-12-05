@@ -31,8 +31,8 @@ class CalObj(DayCal):
 	monthParamsParam = "dcalMonthParams"
 	weekdayParamsParam = "dcalWeekdayParams"
 
-	buttonsEnableParam = "dcalButtonsEnable"
-	buttonsParam = "dcalButtons"
+	widgetButtonsEnableParam = "dcalWidgetButtonsEnable"
+	widgetButtonsParam = "dcalWidgetButtons"
 
 	navButtonsEnableParam = "dcalNavButtonsEnable"
 	navButtonsGeoParam = "dcalNavButtonsGeo"

@@ -3579,9 +3579,11 @@ msgstr ""
 "فاصلهٔ بین دکمه‌ها"
 
 
-msgid "Show buttons"
-msgstr ""
-"نمایش دکمه‌ها"
+msgid "Widget buttons"
+msgstr "دکمه‌های ویجت"
+
+msgid "Navigation buttons"
+msgstr "دکمه‌های ناوبری"
 
 msgid "Total Size Ratio"
 msgstr ""

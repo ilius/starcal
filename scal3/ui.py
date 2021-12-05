@@ -186,14 +186,14 @@ confParamsCustomize = (
 	"wcal_moonStatus_width",
 	"wcalCursorLineWidthFactor",
 	"wcalCursorRoundingFactor",
-	"dcalButtonsEnable",
-	# "dcalButtons",
+	"dcalWidgetButtonsEnable",
+	# "dcalWidgetButtons",
 	"dcalDayParams",
 	"dcalMonthParams",
 	"dcalWeekdayParams",
 	"dcalWinBackgroundColor",
-	"dcalWinButtonsEnable",
-	# "dcalWinButtons",
+	"dcalWinWidgetButtonsEnable",
+	# "dcalWinWidgetButtons",
 
 	"dcalNavButtonsEnable",
 	"dcalNavButtonsGeo",
@@ -1228,8 +1228,8 @@ wcalFont_eventsBox = None
 wcal_moonStatus_width = 48
 
 ####################
-dcalButtonsEnable = False
-dcalButtons = [
+dcalWidgetButtonsEnable = False
+dcalWidgetButtons = [
 	{
 		"imageName": "transform-move.svg",
 		"onClick": "startMove",
@@ -1253,8 +1253,8 @@ dcalWinY = 0
 dcalWinWidth = 180
 dcalWinHeight = 180
 dcalWinBackgroundColor = (0, 10, 0)
-dcalWinButtonsEnable = True
-dcalWinButtons = [
+dcalWinWidgetButtonsEnable = True
+dcalWinWidgetButtons = [
 	{
 		"imageName": "transform-move.svg",
 		"onClick": "startMove",
