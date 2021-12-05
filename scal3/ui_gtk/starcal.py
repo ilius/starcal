@@ -1522,6 +1522,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def aboutShow(self, obj=None, data=None):
 		if not self.aboutDialog:
 			from scal3.ui_gtk.about import AboutDialog
+			logoSize = ud.screenH * 0.15
 			with open(
 				join(sourceDir, "authors-dialog"),
 				encoding="utf-8",
@@ -1537,7 +1538,10 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				comments=core.aboutText,
 				license=core.licenseText,
 				website=core.homePage,
-				logo=GdkPixbuf.Pixbuf.new_from_file(ui.appLogo),
+				logo=GdkPixbuf.Pixbuf.new_from_file_at_size(
+					ui.appLogo,
+					logoSize, logoSize,
+				),
 				transient_for=self,
 			)
 			# add Donate button, FIXME
