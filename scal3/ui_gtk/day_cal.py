@@ -735,6 +735,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 		b = gevent.button
 		x, y = gevent.x, gevent.y
 
+		double = gevent.type == TWO_BUTTON_PRESS
+
 		if b == 1:
 			buttons = self._allButtons
 			if buttons:
@@ -742,13 +744,14 @@ class DayCal(gtk.DrawingArea, CalBase):
 				h = self.get_allocation().height
 				for button in buttons:
 					if button.contains(x, y, w, h):
-						button.onPress(gevent)
+						if not double:
+							button.onPress(gevent)
 						return True
 
 		if b == 3:
 			self.emit("popup-cell-menu", gevent.time, x, y)
 
-		if gevent.type == TWO_BUTTON_PRESS:
+		if double:
 			self.emit("double-button-press")
 
 		return True
