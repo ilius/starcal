@@ -202,7 +202,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		x_start = xc - totalWidth / 2
 		x_delta = iconSize + spacing
 
-		rectangleColor = ui.textColor[:3] + [opacity * 0.7]
+		rectangleColor = list(ui.textColor[:3]) + [opacity * 0.7]
 
 		return [
 			SVGButton(
