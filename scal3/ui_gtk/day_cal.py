@@ -325,7 +325,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			page.pageLabel = calTypeDesc
 			page.pageExpand = False
 			subPages.append(page)
-			pack(vbox, newSubPageButton(self, page), padding=4)
+			self.buttons1.append(newSubPageButton(self, page))
 			###
 			c = self.getCell()
 			dayWidget.setFontPreviewText(
@@ -368,6 +368,9 @@ class DayCal(gtk.DrawingArea, CalBase):
 			return self.optionsWidget
 		optionsWidget = VBox()
 		subPages = []
+		###
+		buttons1 = self.buttons1 = []
+		buttons2 = []
 		####
 		if self.backgroundColorParam:
 			prefItem = ColorPrefItem(
@@ -395,7 +398,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		page.pageLabel = _("Buttons")
 		page.pageExpand = False
 		subPages.append(page)
-		pack(optionsWidget, newSubPageButton(self, page), padding=4)
+		buttons2.append(newSubPageButton(self, page))
 		###
 		if self.widgetButtonsEnableParam:
 			prefItem = CheckPrefItem(
@@ -468,8 +471,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			page.pageLabel = _("Week Day")
 			page.pageExpand = False
 			subPages.append(page)
-			button = newSubPageButton(self, page)
-			pack(optionsWidget, button, padding=4)
+			buttons2.append(newSubPageButton(self, page))
 			###
 			c = self.getCell()
 			text = core.getWeekDayAuto(
@@ -479,7 +481,6 @@ class DayCal(gtk.DrawingArea, CalBase):
 				relative=False,
 			)
 			weekdayWidget.setFontPreviewText(text)
-
 		########
 		vbox = VBox(spacing=10)
 		page = StackPage()
@@ -489,8 +490,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		page.pageLabel = _("Events")
 		page.pageExpand = False
 		subPages.append(page)
-		button = newSubPageButton(self, page)
-		pack(optionsWidget, button, padding=4)
+		buttons2.append(newSubPageButton(self, page))
 		###
 		prefItem = SpinPrefItem(
 			ui,
@@ -513,6 +513,22 @@ class DayCal(gtk.DrawingArea, CalBase):
 			onChangeFunc=self.queue_draw,
 		)
 		pack(vbox, prefItem.getWidget())
+		####
+		for buttons in (buttons1, buttons2):
+			grid = gtk.Grid()
+			grid.set_row_homogeneous(True)
+			grid.set_column_homogeneous(True)
+			grid.set_row_spacing(5)
+			grid.set_column_spacing(5)
+			for index, button in enumerate(buttons):
+				grid.attach(
+					button,
+					index % 2,
+					index // 2,
+					1, 1,
+				)
+			grid.show_all()
+			pack(optionsWidget, grid, padding=5)
 		###
 		vbox.show_all()
 		########
