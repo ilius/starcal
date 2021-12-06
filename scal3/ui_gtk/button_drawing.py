@@ -18,6 +18,8 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3.drawing import getAbsPos
+
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import pixbufFromFile
 from scal3.ui_gtk.drawing import drawOutlineRoundedRect
@@ -64,33 +66,14 @@ class BaseButton(object):
 		self.width = width
 		self.height = height
 
-	def opposite(self, align):
-		if align == "left":
-			return "right"
-		if align == "right":
-			return "left"
-		if align == "top":
-			return "buttom"
-		if align == "buttom":
-			return "top"
-		return align
-
 	def getAbsPos(self, w, h):
-		x = self.x
-		y = self.y
-		xalign = self.xalign
-		yalign = self.yalign
-		if self.autoDir and rtl:
-			xalign = self.opposite(xalign)
-		if xalign == "right":
-			x = w - self.width - x
-		elif xalign == "center":
-			x = (w - self.width) / 2.0 + x
-		if yalign == "buttom":
-			y = h - self.height - y
-		elif yalign == "center":
-			y = (h - self.height) / 2.0 + y
-		return (x, y)
+		return getAbsPos(
+			self.width, self.height,
+			w, h,
+			self.x, self.y,
+			self.xalign, self.yalign,
+			autoDir=self.autoDir,
+		)
 
 	def contains(self, px, py, w, h):
 		x, y = self.getAbsPos(w, h)
