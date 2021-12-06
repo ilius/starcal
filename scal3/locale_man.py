@@ -448,11 +448,14 @@ def textNumEncode(
 			i = int(c)
 		except ValueError:
 			if enableNumLocale:
-				if c in (",", "_", "%"):
+				if c == ".":
+					if changeDot:
+						c = tr(c, ctx="number formatting")
+				elif c in (",", "_"):
 					if changeSpecialChars:
 						c = tr(c)
-				elif c == ".":
-					if changeDot:
+				elif c == "%":
+					if changeSpecialChars:
 						c = tr(c, ctx="number formatting")
 			res += c
 		else:
