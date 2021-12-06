@@ -213,6 +213,13 @@ confParamsCustomize = (
 	"dcalWinWeekdayParams",
 	"dcalWinEventIconSize",
 	"dcalWinEventTotalSizeRatio",
+	"dcalWinSeasonPieEnable",
+	"dcalWinSeasonPieGeo",
+	"dcalWinSeasonPieSpringColor",
+	"dcalWinSeasonPieSummerColor",
+	"dcalWinSeasonPieAutumnColor",
+	"dcalWinSeasonPieWinterColor",
+	"dcalWinSeasonPieTextColor",
 	"pluginsTextInsideExpander",
 	"monthPBarCalType",
 	"seasonPBar_southernHemisphere",
@@ -991,6 +998,21 @@ dcalWinWeekdayParams = {
 	"font": None,
 	"color": (0, 200, 205),
 }
+
+dcalWinSeasonPieEnable = False
+dcalWinSeasonPieGeo = {
+	"size": 64,
+	"thickness": 0.3,  # factor of radius, < 1
+	"pos": (0, 0),
+	"xalign": "right",
+	"yalign": "top",
+	"startAngle": 270,  # 0 <= startAngle <= 360
+}
+dcalWinSeasonPieSpringColor = (167, 252, 1, 180)
+dcalWinSeasonPieSummerColor = (255, 254, 0, 180)
+dcalWinSeasonPieAutumnColor = (255, 127, 0, 180)
+dcalWinSeasonPieWinterColor = (1, 191, 255, 180)
+dcalWinSeasonPieTextColor = (255, 255, 255, 180)
 
 
 def getActiveMonthCalParams():

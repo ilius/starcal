@@ -153,6 +153,16 @@ class DayCalWindowWidget(DayCal):
 	weekdayAbbreviateParam = "dcalWinWeekdayAbbreviate"
 	weekdayUppercaseParam = "dcalWinWeekdayUppercase"
 
+	seasonPieEnableParam = "dcalWinSeasonPieEnable"
+	seasonPieGeoParam = "dcalWinSeasonPieGeo"
+	seasonPieColorsParam = {
+		"Spring": "dcalWinSeasonPieSpringColor",
+		"Summer": "dcalWinSeasonPieSummerColor",
+		"Autumn": "dcalWinSeasonPieAutumnColor",
+		"Winter": "dcalWinSeasonPieWinterColor",
+	}
+	seasonPieTextColorParam = "dcalWinSeasonPieTextColor"
+
 	def getCell(self):
 		return ui.todayCell
 

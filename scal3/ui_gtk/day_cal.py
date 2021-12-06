@@ -37,10 +37,13 @@ from scal3.locale_man import (
 	langHasUppercase,
 	getMonthName,
 	langSh,
+	textNumEncode,
 )
 from scal3.locale_man import tr as _
 from scal3 import ui
+from scal3.drawing import getAbsPos
 from scal3.monthcal import getCurrentMonthStatus
+from scal3.season import getSeasonNamePercentFromJd
 
 from gi.repository import GdkPixbuf
 
@@ -76,6 +79,11 @@ class DayCal(gtk.DrawingArea, CalBase):
 
 	eventIconSizeParam = ""
 	eventTotalSizeRatioParam = ""
+
+	seasonPieEnableParam = ""
+	seasonPieGeoParam = ""
+	seasonPieColorsParam = None  # Optional[Dict]
+	seasonPieTextColorParam = ""
 
 	myKeys = CalBase.myKeys + (
 		"up", "down",
@@ -514,6 +522,71 @@ class DayCal(gtk.DrawingArea, CalBase):
 		)
 		pack(vbox, prefItem.getWidget())
 		####
+		if self.seasonPieEnableParam:
+			pageWidget = VBox(spacing=5)
+			page = StackPage()
+			page.pageWidget = pageWidget
+			page.pageName = "seasonPie"
+			page.pageTitle = _("Season Pie")
+			page.pageLabel = _("Season Pie")
+			page.pageExpand = False
+			subPages.append(page)
+			buttons2.append(newSubPageButton(self, page))
+			###
+			prefItem = CheckPrefItem(
+				ui,
+				self.seasonPieEnableParam,
+				label=_("Season Pie"),
+				live=True,
+				onChangeFunc=self.queue_draw,
+			)
+			pack(pageWidget, prefItem.getWidget())
+			###
+			frame = gtk.Frame()
+			frame.set_border_width(5)
+			frame.set_label(_("Colors"))
+			grid = gtk.Grid()
+			grid.set_row_spacing(5)
+			grid.set_column_spacing(5)
+			grid.set_row_spacing(3)
+			grid.set_border_width(5)
+			frame.add(grid)
+			pack(pageWidget, frame)
+			for index, season in enumerate(("Spring", "Summer", "Autumn", "Winter")):
+				hbox = HBox(spacing=10)
+				label = gtk.Label(label=_(season))
+				label.set_xalign(0)
+				prefItem = ColorPrefItem(
+					ui,
+					self.seasonPieColorsParam[season],
+					useAlpha=True,
+					live=True,
+					onChangeFunc=self.queue_draw,
+				)
+				row_index = index / 2
+				column_index = index % 2 * 3
+				grid.attach(
+					label,
+					column_index,
+					row_index,
+					1, 1,
+				)
+				grid.attach(
+					prefItem.getWidget(),
+					column_index + 1,
+					row_index,
+					1, 1,
+				)
+				dummyLabel = gtk.Label()
+				dummyLabel.set_hexpand(True)
+				grid.attach(
+					dummyLabel,
+					column_index + 2,
+					row_index,
+					1, 1,
+				)
+			pageWidget.show_all()
+		####
 		for buttons in (buttons1, buttons2):
 			grid = gtk.Grid()
 			grid.set_row_homogeneous(True)
@@ -651,6 +724,66 @@ class DayCal(gtk.DrawingArea, CalBase):
 			return getattr(ui, self.weekdayAbbreviateParam)
 		return False
 
+	def drawSeasonPie(self, cr, w, h):
+		if not self.seasonPieEnableParam:
+			return
+
+		if not getattr(ui, self.seasonPieEnableParam):
+			return
+
+		assert self.seasonPieGeoParam
+		assert self.seasonPieColorsParam
+
+		seasonName, seasonFrac = getSeasonNamePercentFromJd(
+			self.getCell().jd,
+			ui.seasonPBar_southernHemisphere,
+		)
+
+		geo = getattr(ui, self.seasonPieGeoParam)
+		color = getattr(ui, self.seasonPieColorsParam[seasonName])
+		textColor = getattr(ui, self.seasonPieTextColorParam)
+		if not textColor:
+			textColor = ui.textColor
+
+		size = geo["size"]
+		radius = size / 2
+		x, y = geo["pos"]
+		x, y = getAbsPos(
+			size, size,
+			w, h,
+			x, y,
+			geo["xalign"], geo["yalign"],
+			autoDir=False,
+		)
+
+		xc = x + radius
+		yc = y + radius
+
+		startOffset = geo["startAngle"] / 360
+
+		drawPieOutline(
+			cr, xc, yc,
+			radius,
+			geo["thickness"] * radius,
+			startOffset,
+			startOffset + seasonFrac,
+		)
+		fillColor(cr, color)
+
+		textSize = size * (1 - geo["thickness"])
+		layout = newTextLayout(
+			self,
+			textNumEncode(
+				f"%{int(seasonFrac * 100)}",
+				changeSpecialChars=True,
+			),
+			maxSize=(textSize, textSize),
+		)
+		font_w, font_h = layout.get_pixel_size()
+		setColor(cr, textColor)
+		cr.move_to(xc - font_w / 2, yc - font_h / 2)
+		show_layout(cr, layout)
+
 	def drawWithContext(self, cr: "cairo.Context", cursor: bool):
 		#gevent = gtk.get_current_event()
 		w = self.get_allocation().width
@@ -726,6 +859,9 @@ class DayCal(gtk.DrawingArea, CalBase):
 				font_x, font_y = self.getRenderPos(params, x0, y0, w, h, fontw, fonth)
 				cr.move_to(font_x, font_y)
 				show_layout(cr, daynum)
+
+		self.drawSeasonPie(cr, w, h)
+
 
 		self._allButtons = self.getAllButtons()
 		for button in self._allButtons:
