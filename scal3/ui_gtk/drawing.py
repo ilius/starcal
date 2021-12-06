@@ -466,6 +466,27 @@ def drawCircleOutline(cr, cx, cy, r, d):
 	cr.arc_negative(cx, cy, r - d, 2 * pi, 0)
 	cr.close_path()
 
+def drawPieOutline(cr, cx, cy, r, d, start, end):
+	# start and end are angles
+	# 0 <= start <= 1
+	# 0 <= end <= 1
+	start_radian = 2 * pi * start
+	end_radian = 2 * pi * end
+	cr.move_to(cx, cy)
+	cr.arc(
+		cx, cy,
+		r,
+		start_radian,
+		end_radian,
+	)
+	cr.arc_negative(
+		cx, cy,
+		r - d,
+		end_radian,
+		start_radian,
+	)
+	cr.close_path()
+
 
 def goAngle(x0, y0, angle, length):
 	return x0 + cos(angle) * length, y0 + sin(angle) * length
