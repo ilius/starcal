@@ -330,6 +330,8 @@ def cssFunc(func: Callable) -> Callable:
 
 ###########
 
+if sys.getdefaultencoding() != "utf-8":
+	log.warn(f"System encoding is not utf-8, it's {sys.getdefaultencoding()!r}")
 
 if rtl:
 	gtk.Widget.set_default_direction(gtk.TextDirection.RTL)
