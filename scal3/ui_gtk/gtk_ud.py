@@ -345,7 +345,7 @@ settings = gtk.Settings.get_default()
 if settings is None:
 	# if gdk.Screen.get_default() is None:
 	# 	raise RuntimeError("There is not default screen")
-	# raise RuntimeError("settings == None")
+	# raise RuntimeError("settings is None")
 	settings = gtk.Settings.get_for_screen(gdk.Screen())
 
 

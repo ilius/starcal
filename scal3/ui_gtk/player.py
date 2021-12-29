@@ -425,7 +425,7 @@ class PlayerBox(gtk.Box):
 		#	"media-playback-pause.svg",
 		#	size=ui.toolbarIconSize,
 		#))
-		#self.fcb.set_sensitive(self.mplayer.mplayerIn==None)
+		#self.fcb.set_sensitive(self.mplayer.mplayerIn is None)
 		#self.seekBar.set_sensitive(self.mplayer.mplayerIn!=None)
 
 	def getFile(self):

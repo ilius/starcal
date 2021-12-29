@@ -148,7 +148,7 @@ class CalBase(CustomizableCalObj):
 		if dateM:
 			self.changeDate(*dateM)
 		elif dtype == "application/x-color":
-			# selection.get_text() == None
+			# selection.get_text() is None
 			text = selection.data
 			ui.bgColor = (
 				ord(text[1]),
