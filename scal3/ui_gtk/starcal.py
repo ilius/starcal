@@ -955,100 +955,117 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		)
 		ui.updateFocusTime()
 
-	menuMainItemDefs = [
-		(ImageMenuItem, dict(
+	menuMainItemDefs = OrderedDict([
+		("resize", dict(
+			cls=ImageMenuItem,
 			label=_("Resize"),
 			imageName="resize.svg",
 			func="onResizeFromMenu",
 			signalName="button-press-event"
 		)),
-		(CheckMenuItem, dict(
+		("onTop", dict(
+			cls=CheckMenuItem,
 			label=_("_On Top"),
 			func="onKeepAboveClick",
 			active=ui.winKeepAbove,
 		)),
-		(CheckMenuItem, dict(
+		("onAllDesktops", dict(
+			cls=CheckMenuItem,
 			label=_("On All De_sktops"),
 			func="onStickyClick",
 			active=ui.winSticky,
 		)),
-		#######
-		(ImageMenuItem, dict(
+		("today", dict(
+			cls=ImageMenuItem,
 			label=_("Select _Today"),
 			imageName="go-home.svg",
 			func="goToday",
 		)),
-		(ImageMenuItem, dict(
+		("selectDate", dict(
+			cls=ImageMenuItem,
 			label=_("Select _Date..."),
 			imageName="select-date.svg",
 			func="selectDateShow",
 		)),
-		(ImageMenuItem, dict(
+		("dayInfo", dict(
+			cls=ImageMenuItem,
 			label=_("Day Info"),
 			imageName="info.svg",
 			func="dayInfoShow",
 		)),
-		(ImageMenuItem, dict(
+		("customize", dict(
+			cls=ImageMenuItem,
 			label=_("_Customize"),
 			imageName="document-edit.svg",
 			func="customizeShow",
 		)),
-		(ImageMenuItem, dict(
+		("preferences", dict(
+			cls=ImageMenuItem,
 			label=_("_Preferences"),
 			imageName="preferences-system.svg",
 			func="prefShow",
 		)),
-		# (ImageMenuItem, dict(
+		# ("addCustomEvent", dict(
+		# 	cls=ImageMenuItem,
 		# 	label=_("_Add Event"),
 		# 	imageName="list-add.svg",
 		# 	func="addCustomEvent",  # to call ui.addCustomEvent
 		# )),
-		(ImageMenuItem, dict(
+		("dayCalWin", dict(
+			cls=ImageMenuItem,
 			label=_("Day Calendar (Desktop Widget)"),
 			imageName="starcal.svg",
 			func="dayCalWinShow",
 		)),
-		(ImageMenuItem, dict(
+		("eventManager", dict(
+			cls=ImageMenuItem,
 			label=_("_Event Manager"),
 			imageName="list-add.svg",
 			func="eventManShow",
 		)),
-		(ImageMenuItem, dict(
+		("timeLine", dict(
+			cls=ImageMenuItem,
 			label=_("Time Line"),
 			imageName="timeline.svg",
 			func="timeLineShow",
 		)),
-		(ImageMenuItem, dict(
+		("yearWheel", dict(
+			cls=ImageMenuItem,
 			label=_("Year Wheel"),
 			imageName="year-wheel.svg",
 			func="yearWheelShow",
 		)),  # icon? FIXME
-		# (ImageMenuItem, dict(
+		# ("weekCal", dict(
+		# 	cls=ImageMenuItem,
 		# 	label=_("Week Calendar"),
 		# 	imageName="week-calendar.svg",
 		# 	func="weekCalShow",
 		# )),
-		(ImageMenuItem, dict(
+		("exportToHtml", dict(
+			cls=ImageMenuItem,
 			label=_("Export to {format}").format(format="HTML"),
 			imageName="export-to-html.svg",
 			func="onExportClick",
 		)),
-		(ImageMenuItem, dict(
+		("adjustTime", dict(
+			cls=ImageMenuItem,
 			label=_("Ad_just System Time"),
 			imageName="preferences-system.svg",
 			func="adjustTime",
 		)),
-		(ImageMenuItem, dict(
+		("about", dict(
+			cls=ImageMenuItem,
 			label=_("_About"),
 			imageName="dialog-information.svg",
 			func="aboutShow",
 		)),
-		(ImageMenuItem, dict(
+		("quit", dict(
+			cls=ImageMenuItem,
 			label=_("_Quit"),
 			imageName="application-exit.svg",
 			func="quit",
 		)),
-	]
+	])
 
 	# TODO: customize list of main menu items (disable/enable/re-order)
 	def menuMainCreate(self):
@@ -1056,10 +1073,11 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			return
 		menu = gtk.Menu(reserve_toggle_size=0)
 		####
-		for cls, kwargs in self.menuMainItemDefs:
-			kwargs = dict(kwargs)  # make a copy before modify
-			kwargs["func"] = getattr(self, kwargs["func"])
-			menu.add(cls(**kwargs))
+		for props in self.menuMainItemDefs.values():
+			props = dict(props)  # make a copy before modify
+			cls = props.pop("cls")
+			props["func"] = getattr(self, props["func"])
+			menu.add(cls(**props))
 		#######
 		menu.show_all()
 		self.menuMain = menu
