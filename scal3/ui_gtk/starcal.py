@@ -955,6 +955,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		)
 		ui.updateFocusTime()
 
+	# TODO: customize list of main menu items (disable/enable/re-order)
 	def menuMainCreate(self):
 		if self.menuMain:
 			return
@@ -1014,6 +1015,11 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			_("Day Calendar (Desktop Widget)"),
 			imageName="starcal.svg",
 			func=self.dayCalWinShow,
+		))
+		menu.add(ImageMenuItem(
+			_("_Event Manager"),
+			imageName="list-add.svg",
+			func=self.eventManShow,
 		))
 		menu.add(ImageMenuItem(
 			_("Time Line"),
