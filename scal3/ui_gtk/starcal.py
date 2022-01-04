@@ -759,7 +759,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			return None
 		menu2.show_all()
 		addToItem = ImageMenuItem(
-			_("_Add Event to"),
+			label=_("_Add Event to"),
 			imageName="list-add.svg",
 		)
 		addToItem.set_submenu(menu2)
@@ -795,7 +795,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			for eData in eventsData:
 				groupId, eventId = eData["ids"]
 				menu.add(ImageMenuItem(
-					_("Edit") + ": " + self.trimMenuItemLabel(eData["text"][0], 25),
+					label=_("Edit") + ": " + self.trimMenuItemLabel(eData["text"][0], 25),
 					imageName=eData["icon"],
 					func=self.editEventFromMenu,
 					args=(groupId, eventId,),
@@ -803,7 +803,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		else:
 			subMenu = Menu()
 			subMenuItem = ImageMenuItem(
-				_("_Edit Event"),
+				label=_("_Edit Event"),
 				imageName="list-add.svg",
 			)
 			for eData in eventsData:
@@ -825,7 +825,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		####
 		for calType in calTypes.active:
 			menu.add(ImageMenuItem(
-				_("Copy {calType} Date").format(
+				label=_("Copy {calType} Date").format(
 					calType=_(calTypes.getDesc(calType), ctx="calendar"),
 				),
 				imageName="edit-copy.svg",
@@ -833,7 +833,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				args=(calType,)
 			))
 		menu.add(ImageMenuItem(
-			_("Day Info"),
+			label=_("Day Info"),
 			imageName="info.svg",
 			func=self.dayInfoShow,
 		))
@@ -843,59 +843,59 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		self.addEditEventCellMenuItems(menu)
 		menu.add(gtk.SeparatorMenuItem())
 		menu.add(ImageMenuItem(
-			_("Select _Today"),
+			label=_("Select _Today"),
 			imageName="go-home.svg",
 			func=self.goToday,
 		))
 		menu.add(ImageMenuItem(
-			_("Select _Date..."),
+			label=_("Select _Date..."),
 			imageName="select-date.svg",
 			func=self.selectDateShow,
 		))
 		if calObjName in ("weekCal", "monthCal"):
 			isWeek = calObjName == "weekCal"
 			menu.add(ImageMenuItem(
-				_("Switch to " + (
+				label=_("Switch to " + (
 					"Month Calendar" if isWeek else "Week Calendar"
 				)),
 				imageName="" if isWeek else "week-calendar.svg",
 				func=self.switchWcalMcal,
 			))
 		menu.add(ImageMenuItem(
-			_("In Time Line"),
+			label=_("In Time Line"),
 			imageName="timeline.svg",
 			func=self.timeLineShowSelectedDay,
 		))
 		if os.path.isfile("/usr/bin/evolution"):  # FIXME
 			menu.add(ImageMenuItem(
-				_("In E_volution"),
+				label=_("In E_volution"),
 				imageName="evolution.png",
 				func=ui.dayOpenEvolution,
 			))
 		####
 		moreMenu = Menu()
 		moreMenu.add(ImageMenuItem(
-			_("_Customize"),
+			label=_("_Customize"),
 			imageName="document-edit.svg",
 			func=self.customizeShow,
 		))
 		moreMenu.add(ImageMenuItem(
-			_("_Preferences"),
+			label=_("_Preferences"),
 			imageName="preferences-system.svg",
 			func=self.prefShow,
 		))
 		moreMenu.add(ImageMenuItem(
-			_("_Event Manager"),
+			label=_("_Event Manager"),
 			imageName="list-add.svg",
 			func=self.eventManShow,
 		))
 		moreMenu.add(ImageMenuItem(
-			_("Year Wheel"),
+			label=_("Year Wheel"),
 			imageName="year-wheel.svg",
 			func=self.yearWheelShow,
 		))  # icon? FIXME
 		moreMenu.add(ImageMenuItem(
-			_("Day Calendar (Desktop Widget)"),
+			label=_("Day Calendar (Desktop Widget)"),
 			imageName="starcal.svg",
 			func=self.dayCalWinShow,
 		))
@@ -905,17 +905,17 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		# 	func=self.weekCalShow,
 		# ))
 		moreMenu.add(ImageMenuItem(
-			_("Export to {format}").format(format="HTML"),
+			label=_("Export to {format}").format(format="HTML"),
 			imageName="export-to-html.svg",
 			func=self.onExportClick,
 		))
 		moreMenu.add(ImageMenuItem(
-			_("_About"),
+			label=_("_About"),
 			imageName="dialog-information.svg",
 			func=self.aboutShow,
 		))
 		moreMenu.add(ImageMenuItem(
-			_("_Quit"),
+			label=_("_Quit"),
 			imageName="application-exit.svg",
 			func=self.quit,
 		))
@@ -977,82 +977,77 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		))
 		#######
 		menu.add(ImageMenuItem(
-			_("Select _Today"),
+			label=_("Select _Today"),
 			imageName="go-home.svg",
 			func=self.goToday,
 		))
 		menu.add(ImageMenuItem(
-			_("Select _Date..."),
+			label=_("Select _Date..."),
 			imageName="select-date.svg",
 			func=self.selectDateShow,
 		))
 		menu.add(ImageMenuItem(
-			_("Day Info"),
+			label=_("Day Info"),
 			imageName="info.svg",
 			func=self.dayInfoShow,
 		))
 		menu.add(ImageMenuItem(
-			_("_Customize"),
+			label=_("_Customize"),
 			imageName="document-edit.svg",
 			func=self.customizeShow,
 		))
 		menu.add(ImageMenuItem(
-			_("_Preferences"),
+			label=_("_Preferences"),
 			imageName="preferences-system.svg",
 			func=self.prefShow,
 		))
 		# menu.add(ImageMenuItem(
-		# 	_("_Add Event"),
+		# 	label=_("_Add Event"),
 		# 	imageName="list-add.svg",
 		# 	func=ui.addCustomEvent,
 		# ))
-		# menu.add(ImageMenuItem(
-		# 	_("_Event Manager"),
-		# 	imageName="list-add.svg",
-		# 	func=self.eventManShow,
-		# ))
 		menu.add(ImageMenuItem(
-			_("Day Calendar (Desktop Widget)"),
+			label=_("Day Calendar (Desktop Widget)"),
 			imageName="starcal.svg",
 			func=self.dayCalWinShow,
 		))
 		menu.add(ImageMenuItem(
-			_("_Event Manager"),
+			label=_("_Event Manager"),
 			imageName="list-add.svg",
 			func=self.eventManShow,
 		))
 		menu.add(ImageMenuItem(
-			_("Time Line"),
+			label=_("Time Line"),
 			imageName="timeline.svg",
 			func=self.timeLineShow,
 		))
 		menu.add(ImageMenuItem(
-			_("Year Wheel"),
+			label=_("Year Wheel"),
 			imageName="year-wheel.svg",
 			func=self.yearWheelShow,
 		))  # icon? FIXME
 		# menu.add(ImageMenuItem(
-		# 	_("Week Calendar"),
+		# 	label=_("Week Calendar"),
 		# 	imageName="week-calendar.svg",
 		# 	func=self.weekCalShow,
 		# ))
 		menu.add(ImageMenuItem(
-			_("Export to {format}").format(format="HTML"),
+			label=_("Export to {format}").format(format="HTML"),
 			imageName="export-to-html.svg",
 			func=self.onExportClick,
 		))
 		menu.add(ImageMenuItem(
-			_("Ad_just System Time"),
+			label=_("Ad_just System Time"),
 			imageName="preferences-system.svg",
 			func=self.adjustTime,
 		))
 		menu.add(ImageMenuItem(
-			_("_About"),
+			label=_("_About"),
 			imageName="dialog-information.svg",
 			func=self.aboutShow,
 		))
 		menu.add(ImageMenuItem(
-			_("_Quit"),
+			label=_("_Quit"),
 			imageName="application-exit.svg",
 			func=self.quit,
 		))
@@ -1098,7 +1093,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		from scal3.ui_gtk.event.editor import addNewEvent
 		# log.debug("addToGroupFromMenu", group.title, eventType)
 		eventTypeDesc = event_lib.classes.event.byName[eventType].desc
-		title = _("Add {eventType}").format(eventType=eventTypeDesc) 
+		title = _("Add {eventType}").format(eventType=eventTypeDesc)
 		event = addNewEvent(
 			group,
 			eventType,
@@ -1229,63 +1224,63 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def getStatusIconPopupItems(self):
 		return [
 			ImageMenuItem(
-				_("Copy Date and _Time"),
+				label=_("Copy Date and _Time"),
 				imageName="edit-copy.svg",
 				func=self.copyCurrentDateTime,
 			),
 			ImageMenuItem(
-				_("Copy _Date"),
+				label=_("Copy _Date"),
 				imageName="edit-copy.svg",
 				func=self.copyCurrentDate,
 			),
 			ImageMenuItem(
-				_("Ad_just System Time"),
+				label=_("Ad_just System Time"),
 				imageName="preferences-system.svg",
 				func=self.adjustTime,
 			),
 			# ImageMenuItem(
-			# 	_("_Add Event"),
+			# 	label=_("_Add Event"),
 			# 	imageName="list-add.svg",
 			# 	func=ui.addCustomEvent,
 			# ),  # FIXME
 			ImageMenuItem(
-				_("Export to {format}").format(format="HTML"),
+				label=_("Export to {format}").format(format="HTML"),
 				imageName="export-to-html.svg",
 				func=self.onExportClickStatusIcon,
 			),
 			ImageMenuItem(
-				_("_Preferences"),
+				label=_("_Preferences"),
 				imageName="preferences-system.svg",
 				func=self.prefShow,
 			),
 			ImageMenuItem(
-				_("_Customize"),
+				label=_("_Customize"),
 				imageName="document-edit.svg",
 				func=self.customizeShow,
 			),
 			ImageMenuItem(
-				_("_Event Manager"),
+				label=_("_Event Manager"),
 				imageName="list-add.svg",
 				func=self.eventManShow,
 			),
 			ImageMenuItem(
-				_("Time Line"),
+				label=_("Time Line"),
 				imageName="timeline.svg",
 				func=self.timeLineShow,
 			),
 			ImageMenuItem(
-				_("Year Wheel"),
+				label=_("Year Wheel"),
 				imageName="year-wheel.svg",
 				func=self.yearWheelShow,
 			),
 			ImageMenuItem(
-				_("_About"),
+				label=_("_About"),
 				imageName="dialog-information.svg",
 				func=self.aboutShow,
 			),
 			gtk.SeparatorMenuItem(),
 			ImageMenuItem(
-				_("_Quit"),
+				label=_("_Quit"),
 				imageName="application-exit.svg",
 				func=self.quit,
 			),
