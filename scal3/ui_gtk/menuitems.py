@@ -57,6 +57,7 @@ class ImageMenuItem(gtk.MenuItem):
 		imageName: str = "",
 		pixbuf: Optional[GdkPixbuf.Pixbuf] = None,
 		func: Optional[Callable] = None,
+		signalName="activate",
 		args: Optional[Tuple] = None,
 	):
 		gtk.MenuItem.__init__(self)
@@ -102,7 +103,7 @@ class ImageMenuItem(gtk.MenuItem):
 		if func:
 			if args is None:
 				args = ()
-			self.connect("activate", func, *args)
+			self.connect(signalName, func, *args)
 
 	def get_image(self):
 		return self._image

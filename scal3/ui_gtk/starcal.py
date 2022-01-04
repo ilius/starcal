@@ -956,6 +956,12 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		ui.updateFocusTime()
 
 	menuMainItemDefs = [
+		(ImageMenuItem, dict(
+			label=_("Resize"),
+			imageName="resize.svg",
+			func="onResizeFromMenu",
+			signalName="button-press-event"
+		)),
 		(CheckMenuItem, dict(
 			label=_("_On Top"),
 			func="onKeepAboveClick",
@@ -1049,10 +1055,6 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		if self.menuMain:
 			return
 		menu = gtk.Menu(reserve_toggle_size=0)
-		####
-		item = ImageMenuItem(_("Resize"), "resize.svg")
-		item.connect("button-press-event", self.onResizeFromMenu)
-		menu.add(item)
 		####
 		for cls, kwargs in self.menuMainItemDefs:
 			kwargs = dict(kwargs)  # make a copy before modify
