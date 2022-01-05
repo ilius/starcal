@@ -28,6 +28,7 @@ import os
 from os import listdir
 import os.path
 from os.path import dirname, join, isfile, splitext, isabs
+from collections import OrderedDict
 from cachetools import LRUCache
 
 from typing import (
@@ -407,7 +408,10 @@ class Cell(CellType):
 		self._pluginsText.append(text.split("\n"))
 		self._pluginsData.append((plug, text))
 
-	def getPluginsData(self, firstLineOnly=False) -> "List[Tuple[BasePlugin, str]]":
+	def getPluginsData(
+		self,
+		firstLineOnly=False,
+	) -> "List[Tuple[BasePlugin, str]]":
 		return [
 			(plug, text.split("\n")[0]) if firstLineOnly
 			else (plug, text)
@@ -1014,6 +1018,122 @@ dcalWinSeasonPieAutumnColor = (255, 127, 0, 180)
 dcalWinSeasonPieWinterColor = (1, 191, 255, 180)
 dcalWinSeasonPieTextColor = (255, 255, 255, 180)
 
+##############################
+
+menuMainItemDefs = OrderedDict([
+	("resize", dict(
+		cls="ImageMenuItem",
+		label=_("Resize"),
+		imageName="resize.svg",
+		func="onResizeFromMenu",
+		signalName="button-press-event"
+	)),
+	("onTop", dict(
+		cls="CheckMenuItem",
+		label=_("_On Top"),
+		func="onKeepAboveClick",
+		active="winKeepAbove",
+	)),
+	("onAllDesktops", dict(
+		cls="CheckMenuItem",
+		label=_("On All De_sktops"),
+		func="onStickyClick",
+		active="winSticky",
+	)),
+	("today", dict(
+		cls="ImageMenuItem",
+		label=_("Select _Today"),
+		imageName="go-home.svg",
+		func="goToday",
+	)),
+	("selectDate", dict(
+		cls="ImageMenuItem",
+		label=_("Select _Date..."),
+		imageName="select-date.svg",
+		func="selectDateShow",
+	)),
+	("dayInfo", dict(
+		cls="ImageMenuItem",
+		label=_("Day Info"),
+		imageName="info.svg",
+		func="dayInfoShow",
+	)),
+	("customize", dict(
+		cls="ImageMenuItem",
+		label=_("_Customize"),
+		imageName="document-edit.svg",
+		func="customizeShow",
+	)),
+	("preferences", dict(
+		cls="ImageMenuItem",
+		label=_("_Preferences"),
+		imageName="preferences-system.svg",
+		func="prefShow",
+	)),
+	# ("addCustomEvent", dict(
+	# 	cls="ImageMenuItem",
+	# 	label=_("_Add Event"),
+	# 	imageName="list-add.svg",
+	# 	func="addCustomEvent",  # to call ui.addCustomEvent
+	# )),
+	("dayCalWin", dict(
+		cls="ImageMenuItem",
+		label=_("Day Calendar (Desktop Widget)"),
+		imageName="starcal.svg",
+		func="dayCalWinShow",
+	)),
+	("eventManager", dict(
+		cls="ImageMenuItem",
+		label=_("_Event Manager"),
+		imageName="list-add.svg",
+		func="eventManShow",
+	)),
+	("timeLine", dict(
+		cls="ImageMenuItem",
+		label=_("Time Line"),
+		imageName="timeline.svg",
+		func="timeLineShow",
+	)),
+	("yearWheel", dict(
+		cls="ImageMenuItem",
+		label=_("Year Wheel"),
+		imageName="year-wheel.svg",
+		func="yearWheelShow",
+	)),  # icon? FIXME
+	# ("weekCal", dict(
+	# 	cls="ImageMenuItem",
+	# 	label=_("Week Calendar"),
+	# 	imageName="week-calendar.svg",
+	# 	func="weekCalShow",
+	# )),
+	("exportToHtml", dict(
+		cls="ImageMenuItem",
+		label=_("Export to {format}").format(format="HTML"),
+		imageName="export-to-html.svg",
+		func="onExportClick",
+	)),
+	("adjustTime", dict(
+		cls="ImageMenuItem",
+		label=_("Ad_just System Time"),
+		imageName="preferences-system.svg",
+		func="adjustTime",
+	)),
+	("about", dict(
+		cls="ImageMenuItem",
+		label=_("_About"),
+		imageName="dialog-information.svg",
+		func="aboutShow",
+	)),
+	("quit", dict(
+		cls="ImageMenuItem",
+		label=_("_Quit"),
+		imageName="application-exit.svg",
+		func="quit",
+	)),
+])
+
+##############################
+
 
 def getActiveMonthCalParams():
 	return list(zip(
@@ -1022,7 +1142,7 @@ def getActiveMonthCalParams():
 	))
 
 
-# 	##############################
+################################
 
 eventIconDir = join(svgDir, "event")
 
@@ -1549,7 +1669,6 @@ if localTzHist:
 else:
 	localTzHist.insert(0, _localTzName)
 	saveConf()
-
 
 
 needRestartPref = {}  # Right place? FIXME
