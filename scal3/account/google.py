@@ -401,7 +401,7 @@ class GoogleAccount(Account):
 			return "no service"  # fix msg FIXME
 		groups = []
 		for group in service.calendarList().list().execute()["items"]:
-			# log.debug("group =", group)
+			# log.debug(f"group = {group}")
 			groups.append({
 				"id": group["id"],
 				"title": group["summary"],
@@ -522,12 +522,12 @@ class GoogleAccount(Account):
 		for event in group:
 			if event.modified > funcStartTime:
 				continue
-			# log.debug("---------- event {event}")
+			# log.debug(f"---------- event {event}")
 			remoteEventId = None
 			if event.remoteIds:
 				if event.remoteIds[:2] == (self.id, remoteGroupId):
 					remoteEventId = event.remoteIds[2]
-			# log.debug("---------- remoteEventId = {remoteEventId}")
+			# log.debug(f"---------- remoteEventId = {remoteEventId}")
 			if remoteEventId and lastSync and event.modified < lastSync:
 				log.info(
 					f"---------- skipping event {event.summary}" +
@@ -579,7 +579,7 @@ class GoogleAccount(Account):
 				except HttpError as e:
 					self.showHttpException(e)
 					return str(e)  # FIXME
-				# log.debug("response = {pformat(response)}")
+				# log.debug(f"response = {pformat(response)}")
 				remoteEventId = response["id"]
 				log.info(f"----------- event {event} added on server")
 			event.remoteIds = [self.id, remoteGroupId, remoteEventId]
@@ -604,7 +604,7 @@ if __name__ == "__main__":
 	# groupId = 102
 	# ui.eventGroups = event_lib.EventGroupsHolder.load()
 	# group = ui.eventGroups[groupId]
-	# log.debug("group.remoteIds", group.remoteIds)
+	# log.debug(f"group.remoteIds = {group.remoteIds}")
 	# group.remoteIds = (account.id, remoteGroupId)
 	# account.sync(group, remoteGroupId)  # 400 Bad Request
 	# group.save()

@@ -172,4 +172,4 @@ def convertAllPluginsToIcs(startYear: int, endYear: int) -> None:
 		elif isinstance(plug, BuiltinTextPlugin):
 			convertBuiltinTextPlugToIcs(plug, startJd, endJd, namePostfix)
 		else:
-			log.info("Ignoring unsupported plugin {plug.file}")
+			log.info(f"Ignoring unsupported plugin {plug.file}")

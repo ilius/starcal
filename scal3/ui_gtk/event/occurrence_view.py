@@ -222,7 +222,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		return s
 
 	def onButtonPress(self, widget, gevent):
-		log.debug("DayOccurrenceView: onButtonPress: button={gevent.button}")
+		# log.debug(f"DayOccurrenceView: onButtonPress: button={gevent.button}")
 		if gevent.button != 3:
 			return False
 		menu = Menu()

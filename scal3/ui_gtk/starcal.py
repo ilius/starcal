@@ -627,7 +627,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def onMainButtonPress(self, obj, gevent):
 		# only for mainVBox for now, not rightPanel
 		# does not work for statusBar, don't know why
-		# log.debug("MainWin: onMainButtonPress, button={gevent.button}")
+		# log.debug(f"MainWin: onMainButtonPress, button={gevent.button}")
 		b = gevent.button
 		if b == 3:
 			self.menuMainCreate()

@@ -682,11 +682,11 @@ class IcsTextPlugin(BasePlugin):
 					DESCRIPTION = line[12:].replace("\\,", ",").replace("\\n", "\n")
 				elif line.startswith("DTSTART"):
 					# if not line.startswith("DTSTART;VALUE=DATE"):
-					# 	log.error("unsupported ics line: {line}")
+					# 	log.error(f"unsupported ics line: {line}")
 					# 	continue
 					icsTime = line.split(":")[-1]
 					# if len(icsTime)!=8:
-					# 	log.error("unsupported ics line: {line}")
+					# 	log.error(f"unsupported ics line: {line}")
 					# 	continue
 					try:
 						DTSTART = getEpochByIcsTime(icsTime)

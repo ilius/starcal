@@ -92,7 +92,7 @@ class ModuleOptionItem:
 			self.get = w.get_value
 			self.set = w.set_value
 		else:
-			raise RuntimeError("bad option type {t!r}")
+			raise RuntimeError(f"bad option type {t!r}")
 		pack(hbox, w)
 		self._widget = hbox
 		####
@@ -466,7 +466,7 @@ class ColorPrefItem(PrefItem):
 			return f"rgb{value}"
 		if len(value) == 4:
 			return f"rgba{value}"
-		raise ValueError("unexpected value {value!r}")
+		raise ValueError(f"unexpected value {value!r}")
 
 	def __init__(
 		self,

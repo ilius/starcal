@@ -80,7 +80,7 @@ class WidgetClass(gtk.Box):
 	def createDialog(self):
 		if self.dialog:
 			return
-		log.debug("----- toplevel: {self.get_toplevel()}")
+		# log.debug(f"----- toplevel: {self.get_toplevel()}")
 		self.dialog = gtk.Dialog(
 			title=self.rule.desc,
 			transient_for=self.get_toplevel(),

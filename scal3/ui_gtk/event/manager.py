@@ -214,7 +214,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			self.appendGroupTree(record.obj)
 
 		elif action == "-g":
-			log.error("Event Manager: onEventUpdate: unexpected action={action!r}")
+			log.error(f"Event Manager: onEventUpdate: unexpected action={action!r}")
 
 		elif action == "eg":  # edit group
 			group = record.obj
@@ -1838,7 +1838,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			return False
 
 		if len(objs) != 2:
-			log.error("onTreeviewLeftButtonPress: unexpected objs={objs}, path={path}")
+			log.error(f"onTreeviewLeftButtonPress: unexpected objs={objs}, path={path}")
 			return False
 
 		if self.multiSelect and gevent.state & gdk.ModifierType.SHIFT_MASK > 0:
