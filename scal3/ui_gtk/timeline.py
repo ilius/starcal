@@ -803,17 +803,13 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		# elif k=="page_down":
 		# 	pass
 		# elif k=="menu":# Simulate right click (key beside Right-Ctrl)
-		# 	#self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
+		# 	#self.emit("popup-cell-menu", *self.getCellPos())
 		# elif k in ("f10","m"): # F10 or m or M
 		# 	if gevent.get_state() & gdk.ModifierType.SHIFT_MASK:
 		# 		# Simulate right click (key beside Right-Ctrl)
-		# 		self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
+		# 		self.emit("popup-cell-menu", *self.getCellPos())
 		# 	else:
-		# 		self.emit(
-		# 		"popup-main-menu",
-		# 		gevent.time,
-		# 		*self.getMainMenuPos()
-		# 	)
+		# 		self.emit("popup-main-menu", *self.getMainMenuPos())
 		return False
 
 	def movingUserEvent(self, direction=1, smallForce=False, source="keyboard"):

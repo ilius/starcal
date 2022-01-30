@@ -270,7 +270,7 @@ class LabelToolBoxItem(BaseToolBoxItem):
 # @registerSignals
 class BaseToolBox(gtk.EventBox, CustomizableCalObj):
 	# signals = CustomizableCalObj.signals + [
-	# 	("popup-main-menu", [int, int, int]),
+	# 	("popup-main-menu", [int, int]),
 	# ]
 	def __init__(
 		self,

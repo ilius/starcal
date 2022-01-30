@@ -820,7 +820,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			subMenuItem.set_submenu(subMenu)
 			menu.add(subMenuItem)
 
-	def menuCellPopup(self, widget, etime, x, y):
+	def menuCellPopup(self, widget, x, y):
 		calObjName = widget._name  # why private? FIXME
 		# calObjName is in ("weekCal", "monthCal", ...)
 		menu = Menu()
@@ -978,13 +978,10 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def menuMainPopup(
 		self,
 		widget: gtk.Widget,
-		etime: int,
 		x: int,
 		y: int,
 	):
 		self.menuMainCreate()
-		if etime == 0:
-			etime = gtk.get_current_event_time()
 		menu = self.menuMain
 		dx, dy = widget.translate_coordinates(self, x, y)
 		foo, wx, wy = self.get_window().get_origin()
@@ -998,6 +995,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				y -= menuH
 			else:
 				y -= menuH // 2
+		etime = gtk.get_current_event_time()
 		# log.debug("menuMainPopup", x, y, etime)
 		menu.popup(
 			None,

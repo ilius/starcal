@@ -48,7 +48,6 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		)
 		toolbar.get_parent().emit(
 			"popup-main-menu",
-			0,
 			x,
 			y,
 		)
@@ -57,7 +56,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 @registerSignals
 class CalObj(CustomizableToolBox):
 	signals = CustomizableToolBox.signals + [
-		("popup-main-menu", [int, int, int]),
+		("popup-main-menu", [int, int]),
 	]
 
 	defaultItems = [

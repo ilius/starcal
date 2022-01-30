@@ -42,8 +42,8 @@ class CalBase(CustomizableCalObj):
 	dragAndDropEnable = True
 	doubleClickEnable = True
 	signals = CustomizableCalObj.signals + [
-		("popup-cell-menu", [int, int, int]),
-		("popup-main-menu", [int, int, int]),
+		("popup-cell-menu", [int, int]),
+		("popup-main-menu", [int, int]),
 		("double-button-press", []),
 		("pref-update-bg-color", []),
 		("day-info", []),
@@ -190,7 +190,7 @@ class CalBase(CustomizableCalObj):
 		if kname in ("space", "home", "t"):
 			self.goToday()
 		elif kname == "menu":
-			self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
+			self.emit("popup-cell-menu", *self.getCellPos())
 		elif kname == "i":
 			self.emit("day-info")
 		else:

@@ -885,7 +885,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 						return True
 
 		if b == 3:
-			self.emit("popup-cell-menu", gevent.time, x, y)
+			self.emit("popup-cell-menu", x, y)
 
 		if double:
 			self.emit("double-button-press")
@@ -923,9 +923,9 @@ class DayCal(gtk.DrawingArea, CalBase):
 		#elif kname in ("f10", "m"):  # FIXME
 		#	if gevent.get_state() & gdk.ModifierType.SHIFT_MASK:
 		#		# Simulate right click (key beside Right-Ctrl)
-		#		self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
+		#		self.emit("popup-cell-menu", *self.getCellPos())
 		#	else:
-		#		self.emit("popup-main-menu", gevent.time, *self.getMainMenuPos())
+		#		self.emit("popup-main-menu", *self.getMainMenuPos())
 		else:
 			return False
 		return True

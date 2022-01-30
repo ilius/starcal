@@ -453,7 +453,6 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		x, y = self.getMenuPos()
 		self._wcal.emit(
 			"popup-main-menu",
-			0,
 			x,
 			y,
 		)
@@ -1516,7 +1515,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 			self.emit("double-button-press")
 		if gevent.button == 3:
 			x, y = col.translate_coordinates(self, x_col, y_col)
-			self.emit("popup-cell-menu", gevent.time, x, y)
+			self.emit("popup-cell-menu", x, y)
 		return True
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
@@ -1540,9 +1539,9 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		elif kname in ("f10", "m"):
 			if gevent.state & gdk.ModifierType.SHIFT_MASK:
 				# Simulate right click (key beside Right-Ctrl)
-				self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
+				self.emit("popup-cell-menu", *self.getCellPos())
 			else:
-				self.emit("popup-main-menu", gevent.time, *self.getMainMenuPos())
+				self.emit("popup-main-menu", *self.getMainMenuPos())
 		else:
 			return False
 		return True

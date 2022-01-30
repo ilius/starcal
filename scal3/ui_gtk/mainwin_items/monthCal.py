@@ -515,15 +515,15 @@ class CalObj(gtk.DrawingArea, CalBase):
 				break
 		status = getCurrentMonthStatus()
 		if yPos == -1 or xPos == -1:
-			self.emit("popup-main-menu", gevent.time, gevent.x, gevent.y)
+			self.emit("popup-main-menu", gevent.x, gevent.y)
 		elif yPos >= 0 and xPos >= 0:
 			cell = status[yPos][xPos]
 			self.changeDate(*cell.dates[calTypes.primary])
 			if gevent.type == TWO_BUTTON_PRESS:
 				self.emit("double-button-press")
 			if b == 3 and cell.month == ui.cell.month:  # right click on a normal cell
-				# self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
-				self.emit("popup-cell-menu", gevent.time, gevent.x, gevent.y)
+				# self.emit("popup-cell-menu", *self.getCellPos())
+				self.emit("popup-cell-menu", gevent.x, gevent.y)
 		return True
 
 	def calcCoord(self):  # calculates coordidates (x and y of cells centers)
@@ -588,9 +588,9 @@ class CalObj(gtk.DrawingArea, CalBase):
 		elif kname in ("f10", "m"):
 			if gevent.get_state() & gdk.ModifierType.SHIFT_MASK:
 				# Simulate right click (key beside Right-Ctrl)
-				self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
+				self.emit("popup-cell-menu", *self.getCellPos())
 			else:
-				self.emit("popup-main-menu", gevent.time, *self.getMainMenuPos())
+				self.emit("popup-main-menu", *self.getMainMenuPos())
 		else:
 			return False
 		return True
