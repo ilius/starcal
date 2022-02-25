@@ -117,7 +117,7 @@ class PreferencesWindow(gtk.Window):
 	def getCSS() -> str:
 		from scal3.ui_gtk.utils import cssTextStyle
 		return f".preferences-main-grid " + cssTextStyle(
-			font=ui.getFont(scale=1.8),
+			font=ui.getFont(scale=1.6),
 		)
 
 	def __init__(self, **kwargs):
