@@ -35,6 +35,7 @@ class WizardWindow(gtk.Window, MyDialog):
 			page.pageWidget = step
 			page.pageParent = str(index - 1) if index > 0 else ""
 			page.pageName = str(index)
+			page.pagePath = str(index)
 			page.pageTitle = step.desc
 			page.pageLabel = step.desc
 			page.pageIcon = ""
