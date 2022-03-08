@@ -53,11 +53,11 @@ class Box:
 	):
 		self.t0 = t0
 		self.t1 = t1
-		self.odt = odt ## original delta t
-		#self.mt = (t0+t1)/2.0 ## - timeMiddle ## FIXME
-		#self.dt = (t1-t0)/2.0
-		#if t1-t0 != odt:
-		#	log.info(f"Box, dt={}t1-t0, odt={odt}")
+		self.odt = odt  # original delta t
+		# self.mt = (t0+t1)/2.0  # - timeMiddle ## FIXME
+		# self.dt = (t1-t0)/2.0
+		# if t1-t0 != odt:
+		# 	log.info(f"Box, dt={}t1-t0, odt={odt}")
 		self.u0 = u0
 		self.du = du
 		####
@@ -68,9 +68,9 @@ class Box:
 		####
 		self.text = text
 		if color is None:
-			color = ui.textColor ## FIXME
+			color = ui.textColor  # FIXME
 		self.color = color
-		self.ids = ids ## (groupId, eventId)
+		self.ids = ids  # (groupId, eventId)
 		self.lineW = lineW
 		####
 		self.hasBorder = False
@@ -101,10 +101,10 @@ def makeIntervalGraph(boxes):
 		return
 	g = Graph()
 	n = len(boxes)
-	g.add_vertices(n - g.vcount())
+	g.add_vertices(n)
 	g.vs["name"] = list(range(n))
 	####
-	points = [] ## (time, isStart, boxIndex)
+	points = []  # List[(time: int, isStart: bool, boxIndex: int)]
 	for boxI, box in enumerate(boxes):
 		points += [
 			(box.t0, True, boxI),
@@ -128,17 +128,17 @@ def renderBoxesByGraph(boxes, graph, minColor, minU):
 	if colorCount < 1:
 		return
 	du = (1.0 - minU) / colorCount
-	min_vertices = graph.vs.select(color_eq=minColor) ## a VertexSeq
+	min_vertices = graph.vs.select(color_eq=minColor)  # a VertexSeq
 	for v in min_vertices:
 		box = boxes[v["name"]]
 		box_du = du * v["box_height"]
 		box.u0 = minU if tl.boxReverseGravity else 1 - minU - box_du
 		box.du = box_du
 	graph.delete_vertices(min_vertices)
-	for sgraph in graph.decompose():
+	for subGraph in graph.decompose():
 		renderBoxesByGraph(
 			boxes,
-			sgraph,
+			subGraph,
 			minColor + 1,
 			minU + du,
 		)
@@ -157,7 +157,7 @@ def calcEventBoxes(
 			addBoxHeightToColoredGraph,
 		)
 	except ImportError:
-		errorBoxH = 0.8 ## FIXME
+		errorBoxH = 0.8  # FIXME
 		return [
 			Box(
 				timeStart,
@@ -166,12 +166,12 @@ def calcEventBoxes(
 				1 - errorBoxH,  # u0
 				errorBoxH,  # du
 				text="Install \"python3-igraph\" to see events",
-				color=(128, 0, 0),## FIXME
+				color=(128, 0, 0),  # FIXME
 				lineW=2 * tl.boxLineWidth,
 			)
 		]
 	boxesDict = {}
-	#timeMiddle = (timeStart + timeEnd) / 2.0
+	# timeMiddle = (timeStart + timeEnd) / 2.0
 	for groupIndex in range(len(ui.eventGroups)):
 		group = ui.eventGroups.byIndex(groupIndex)
 		if not group.enable:
@@ -185,12 +185,13 @@ def calcEventBoxes(
 			pixBoxW = (t1 - t0) * pixelPerSec
 			if pixBoxW < tl.boxSkipPixelLimit:
 				continue
-			#if not isinstance(eid, int):
-			#	log.error(f"----- bad eid from search: {eid!r}")
-			#	continue
+			# if not isinstance(eid, int):
+			# 	log.error(f"----- bad eid from search: {eid!r}")
+			# 	continue
 			event = group[eid]
 			eventIndex = group.index(eid)
-			if t0 <= timeStart and timeEnd <= t1:## Fills Range ## FIXME
+			if t0 <= timeStart and timeEnd <= t1:
+				# Fills Range, FIXME
 				continue
 			lineW = tl.boxLineWidth
 			if lineW >= 0.5 * pixBoxW:
