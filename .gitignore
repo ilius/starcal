@@ -17,6 +17,7 @@ screenshots
 *.spec
 *.pkg.tar*
 *.txz
+*.tar.gz
 PKGBUILD
 scal2
 ui_qt
