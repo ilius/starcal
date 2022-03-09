@@ -288,6 +288,7 @@ def main():
 
 	if "$installType" in ("for-pkg", "system"):
 		cleanup(join(targetCodeDir, ".git"))
+		cleanup(join(targetCodeDir, ".github"))
 		cleanup(join(targetCodeDir, ".gitignore"))
 		# TODO: targetCodeDir/.Trash*
 		cleanup(join(targetCodeDir, "google-api-python-client/.git"))
