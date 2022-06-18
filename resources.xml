@@ -84,18 +84,15 @@
 		<license>GNU Free Documentation License, Version 1.2 or any later version</license>
 		<comment></comment>
 	</resource>
-	<resource path="pixmaps/zoom-question-22.png">
-		<author>Faenza Icon Theme</author>
-		<license>GPLv3</license>
-		<comment>Modified by Saeed Rasooli</comment>
-	</resource>
 	<resource path="pixmaps/screenruler.png">
 		<author>Faenza Icon Theme</author>
+		<source></source>
 		<license>GPLv3</license>
-		<comment></comment>
+		<comment>See file "svg/screenruler.svg"</comment>
 	</resource>
 	<resource path="pixmaps/screenruler-redline.png">
 		<author>Faenza Icon Theme</author>
+		<source></source>
 		<license>GPLv3</license>
 		<comment>by modifying screenruler.png by Saeed Rasooli</comment>
 	</resource>
@@ -117,8 +114,8 @@
 	<resource path="pixmaps/zoom-in.png">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/small/48x48/zoom-in.svg</source>
-		<comment></comment>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/small/48x48/zoom-in.svgz</source>
+		<comment>See file "svg/zoom-in.svg"</comment>
 	</resource>
 	<resource path="plugins/iran-ancient-data.txt">
 		<author>Reza Moradi Ghiasabadi http://ghiasabadi.com</author>
@@ -261,19 +258,19 @@
 	<resource path="svg/application-exit.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable//actions/small/22x22/application-exit.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/small/16x16/application-exit.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="pixmaps/applications-development-web.png">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/categories/applications-development-web.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/categories/applications-development-web.svgz</source>
 		<comment></comment>
 	</resource>
 	<resource path="svg/applications-system.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/categories/applications-system.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/categories/applications-system.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/special/color-check.svg">
@@ -301,7 +298,7 @@
 	<resource path="pixmaps/configure-toolbars.png">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/configure-toolbars.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/configure-toolbars.svgz</source>
 		<comment></comment>
 	</resource>
 	<resource path="svg/special/dnd-date.svg">
@@ -317,43 +314,43 @@
 	<resource path="svg/dialog-ok.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/dialog-ok.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/dialog-ok.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/dialog-ok-apply.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/dialog-ok-apply.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/dialog-ok-apply.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/dialog-cancel.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/dialog-cancel.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/dialog-cancel.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/dialog-warning.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/status/dialog-warning.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/status/dialog-warning.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/dialog-information.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/status/dialog-information.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/status/dialog-information.svgz</source>
 		<comment>Minified by www.svgminify.com and https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/dialog-error.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/status/dialog-error.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/status/dialog-error.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/document-edit.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/document-edit.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/document-edit.svgz</source>
 		<comment>Minified by https://www.svgminify.com and https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/document-save.svg">
@@ -368,37 +365,37 @@
 	<resource path="svg/edit-copy.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/edit-copy.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/edit-copy.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/edit-cut.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/edit-cut.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/edit-cut.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/edit-delete.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/edit-delete.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/edit-delete.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="pixmaps/edit-find.png">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/edit-find.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/edit-find.svgz</source>
 		<comment></comment>
 	</resource>
 	<resource path="svg/edit-paste.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/edit-paste.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/edit-paste.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/edit-undo.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/edit-undo.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/edit-undo.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/event/alarm.svg">
@@ -441,7 +438,7 @@
 	<resource path="svg/event/education.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/categories/small/22x22/applications-education.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/categories/small/22x22/applications-education.svgz</source>
 		<comment>
 			Modified by Saeed Rasooli
 			Minified by www.svgminify.com
@@ -450,7 +447,7 @@
 	<resource path="svg/event/favorite.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/places/favorites.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/places/favorites.svgz</source>
 		<comment>
 			Modified by Saeed Rasooli
 			Minified by https://vecta.io/nano and https://jakearchibald.github.io/svgomg/
@@ -478,7 +475,7 @@
 	<resource path="svg/event/important.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/emblems/emblem-important.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/emblems/emblem-important.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/event/marriage.svg">
@@ -499,7 +496,7 @@
 	<resource path="svg/event/phone_call.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/devices/small/32x32/phone.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/devices/small/32x32/phone.svgz</source>
 		<comment>
 			Modified by Saeed Rasooli
 			Minified by https://vecta.io/nano
@@ -517,7 +514,7 @@
 	<resource path="svg/event/task.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/small/16x16/view-calendar-tasks.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/small/16x16/view-calendar-tasks.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/event/university.svg">
@@ -549,43 +546,43 @@
 	<resource path="svg/go-bottom.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/go-bottom.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/go-bottom.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/go-down.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/go-down.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/go-down.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/go-home.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/go-home.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/go-home.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/go-next.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/go-next.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/go-next.svgz</source>
 		<comment>Minified with https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/go-previous.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/go-previous.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/go-previous.svgz</source>
 		<comment>Minified with https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/go-top.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/go-top.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/go-top.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/go-up.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/go-up.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/go-up.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/info.svg">
@@ -602,37 +599,37 @@
 	<resource path="svg/list-add.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/list-add.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/list-add.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/list-remove.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/list-remove.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/list-remove.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/media-playback-start.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/media-playback-start.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/media-playback-start.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/media-playback-pause.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/media-playback-pause.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/media-playback-pause.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/media-playback-stop.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/media-playback-stop.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/media-playback-stop.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/movement.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/small/48x48/debug-execute-from-cursor.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/small/48x48/debug-execute-from-cursor.svgz</source>
 		<comment>
 			Extracted from debug-execute-from-cursor.svg
 			Minified by https://vecta.io/nano
@@ -641,31 +638,31 @@
 	<resource path="svg/preferences-desktop-color.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/apps/preferences-desktop-color.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/apps/preferences-desktop-color.svgz</source>
 		<comment>Minified by https://vecta.io/nano and https://jakearchibald.github.io/svgomg/</comment>
 	</resource>
 	<resource path="pixmaps/preferences-desktop-locale.png">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/apps/preferences-desktop-locale.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/apps/preferences-desktop-locale.svgz</source>
 		<comment></comment>
 	</resource>
 	<resource path="pixmaps/preferences-desktop-theme.png">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/apps/preferences-desktop-theme.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/apps/preferences-desktop-theme.svgz</source>
 		<comment></comment>
 	</resource>
 	<resource path="pixmaps/preferences-system-time.png">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/apps/preferences-system-time.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/apps/preferences-system-time.svgz</source>
 		<comment></comment>
 	</resource>
 	<resource path="svg/preferences-plugin.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/apps/preferences-plugin.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/apps/preferences-plugin.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/preferences-system.svg">
@@ -727,7 +724,7 @@
 	<resource path="svg/switch-vertical.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/system-switch-user.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/system-switch-user.svgz</source>
 		<comment>
 			Created by modifying system-switch-user.svg by Saeed Rasooli
 			Minified by https://vecta.io/nano
@@ -742,7 +739,7 @@
 	<resource path="pixmaps/text-calendar-ics.png">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/mimetypes/text-calendar.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/mimetypes/text-calendar.svgz</source>
 		<comment>
 			Modified by Saeed Rasooli
 		</comment>
@@ -758,31 +755,31 @@
 	<resource path="svg/transform-move.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/transform-move.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/transform-move.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/user-trash.svg">
 		<author>Tango Icon Library</author>
 		<license>Public Domain</license>
-		<source>scalable/places/user-trash.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/places/user-trash.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/view-calendar-timeline.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/view-calendar-timeline.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/view-calendar-timeline.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/view-refresh.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/view-refresh.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/view-refresh.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/view-sort-ascending.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/view-sort-ascending.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/view-sort-ascending.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/week-calendar.svg">
@@ -793,7 +790,7 @@
 	<resource path="svg/window-close.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/window-close.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/window-close.svgz</source>
 		<comment>Minified by www.svgminify.com</comment>
 	</resource>
 	<resource path="svg/wm-close-focus.svg">
@@ -879,7 +876,7 @@
 	<resource path="svg/zoom-in.svg">
 		<author>Oxygen Icon Theme</author>
 		<license>LGPLv3+</license>
-		<source>scalable/actions/small/48x48/zoom-in.svg</source>
+		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/small/48x48/zoom-in.svgz</source>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
 	<resource path="svg/zoom-question.svg">
