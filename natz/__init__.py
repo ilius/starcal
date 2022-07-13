@@ -50,6 +50,8 @@ def readEtcLocaltime():
 	return dateutil.tz.gettz(tzname)
 
 def gettz(*args, **kwargs):
+	if args and args[0].lstrip("/") == "etc/localtime":
+		return readEtcLocaltime()
 	tz = dateutil.tz.gettz(*args, **kwargs)
 	if tz is None:
 		return None
