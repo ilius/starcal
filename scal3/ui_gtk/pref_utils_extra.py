@@ -511,6 +511,18 @@ class AICalsPrefItemToolbar(StaticToolBox):
 		tb.show_all()
 
 
+def treeviewSelect(treev, index):
+	path = gtk.TreePath.new_from_indices((index,))
+	selection = treev.get_selection()
+	# selection.unselect_all()
+	selection.select_path(path)
+	# col = treev.get_column(0)
+	# treev.set_cursor_on_cell(path, col, col.get_cells()[0], False)
+	# treev.set_cursor(path, col, False)
+	# FIXME: keyboard-selection does not change!!
+	# and calling set_cursor unselects it
+
+
 class AICalsPrefItem(PrefItem):
 	def __init__(self) -> None:
 		self._widget = HBox()
@@ -518,6 +530,7 @@ class AICalsPrefItem(PrefItem):
 		treev = ActiveCalsTreeView()
 		treev.connect("row-activated", self.activeTreevRActivate)
 		treev.connect("focus-in-event", self.activeTreevFocus)
+		treev.connect("cursor-changed", self.activeTreevFocus)
 		treev.get_selection().connect(
 			"changed",
 			self.activeTreevSelectionChanged,
@@ -536,6 +549,7 @@ class AICalsPrefItem(PrefItem):
 		treev = InactiveCalsTreeView()
 		treev.connect("row-activated", self.inactiveTreevRActivate)
 		treev.connect("focus-in-event", self.inactiveTreevFocus)
+		treev.connect("cursor-changed", self.inactiveTreevFocus)
 		treev.get_selection().connect(
 			"changed",
 			self.inactiveTreevSelectionChanged,
@@ -553,6 +567,7 @@ class AICalsPrefItem(PrefItem):
 		gevent: Optional[gdk.EventFocus] = None,
 	) -> None:
 		self.toolbar.setLeftRight(True)
+		self.inactiveTreev.get_selection().unselect_all()
 
 	def inactiveTreevFocus(
 		self,
@@ -560,18 +575,19 @@ class AICalsPrefItem(PrefItem):
 		gevent: Optional[gdk.EventFocus] = None,
 	) -> None:
 		self.toolbar.setLeftRight(False)
+		self.activeTreev.get_selection().unselect_all()
 
 	def onLeftRightClick(self, obj: Optional[gtk.Button] = None) -> None:
 		action = self.toolbar.getLeftRightAction()
 		if action == "activate":
-			path, col = self.inactiveTreev.get_cursor()
-			if path:
-				self.activateIndex(path[0])
+			model, _iter = self.inactiveTreev.get_selection()
+			if _iter:
+				self.activateIndex(model.get_path(_iter).get_indices()[0])
 		elif action == "inactivate":
 			if len(self.activeTrees) > 1:
-				path, col = self.activeTreev.get_cursor()
-				if path:
-					self.inactivateIndex(path[0])
+				model, _iter = self.activeTrees.get_selection()
+				if _iter:
+					self.inactivateIndex(model.get_path(_iter).get_indices()[0])
 
 	def getCurrentTreeview(self) -> gtk.TreeView:
 		action = self.toolbar.getLeftRightAction()
@@ -586,31 +602,35 @@ class AICalsPrefItem(PrefItem):
 		treev = self.getCurrentTreeview()
 		if not treev:
 			return
-		path, col = treev.get_cursor()
-		if path:
-			i = path[0]
-			s = treev.get_model()
-			if i > 0:
-				s.swap(
-					s.get_iter(i - 1),
-					s.get_iter(i),
-				)
-				treev.set_cursor(i - 1)
+		selection = treev.get_selection()
+		model, _iter = selection.get_selected()
+		if not _iter:
+			return
+		i = model.get_path(_iter).get_indices()[0]
+		if i <= 0:
+			return
+		model.swap(
+			model.get_iter(i - 1),
+			model.get_iter(i),
+		)
+		selection.select_path(gtk.TreePath.new_from_indices((i - 1,)))
 
 	def onDownClick(self, obj: Optional[gtk.Button] = None) -> None:
 		treev = self.getCurrentTreeview()
 		if not treev:
 			return
-		path, col = treev.get_cursor()
-		if path:
-			i = path[0]
-			s = treev.get_model()
-			if i < len(s) - 1:
-				s.swap(
-					s.get_iter(i),
-					s.get_iter(i + 1),
-				)
-				treev.set_cursor(i + 1)
+		selection = treev.get_selection()
+		model, _iter = selection.get_selected()
+		if not _iter:
+			return
+		i = model.get_path(_iter).get_indices()[0]
+		if i >= len(model) - 1:
+			return
+		model.swap(
+			model.get_iter(i),
+			model.get_iter(i + 1),
+		)
+		selection.select_path(gtk.TreePath.new_from_indices((i + 1,)))
 
 	def inactivateIndex(self, index: int) -> None:
 		if len(self.activeTrees) < 2:
@@ -618,24 +638,31 @@ class AICalsPrefItem(PrefItem):
 			return
 		self.inactiveTrees.prepend(list(self.activeTrees[index]))
 		del self.activeTrees[index]
-		self.inactiveTreev.set_cursor(0)
-		self.activeTreev.set_cursor(min(
-			index,
-			len(self.activeTrees) - 1
-		))
-		# set_cursor does not seem to raise exception anymore on invalid index
+		treeviewSelect(self.inactiveTreev, 0)
+		treeviewSelect(
+			self.activeTreev,
+			min(
+				index,
+				len(self.activeTrees) - 1
+			),
+		)
 		self.inactiveTreev.grab_focus()
+		self.inactiveTreevFocus(self.inactiveTreev)
 
 	def activateIndex(self, index: int) -> None:
 		self.activeTrees.append(list(self.inactiveTrees[index]))
 		del self.inactiveTrees[index]
-		self.activeTreev.set_cursor(len(self.activeTrees) - 1)
+		treeviewSelect(self.activeTreev, len(self.activeTrees) - 1)
 		if len(self.inactiveTrees) > 0:
-			self.inactiveTreev.set_cursor(min(
-				index,
-				len(self.inactiveTrees) - 1,
-			))
+			treeviewSelect(
+				self.inactiveTreev,
+					min(
+					index,
+					len(self.inactiveTrees) - 1,
+				),
+			)
 		self.activeTreev.grab_focus()
+		self.activeTreevFocus(self.activeTreev)
 
 	def activeTreevSelectionChanged(self, selection: gtk.TreeSelection) -> None:
 		if selection.count_selected_rows() > 0:
