@@ -156,6 +156,11 @@ log = logger.get()
 
 
 def getVersion() -> str:
+	try:
+		from packaging.version import parse as parse_version
+	except ImportError:
+		from pkg_resources import parse_version
+
 	if isfile(join(sourceDir, "VERSION")):
 		with open(join(sourceDir, "VERSION")) as _file:
 			return _file.read().strip()
@@ -176,8 +181,8 @@ def getVersion() -> str:
 	except Exception:
 		return VERSION
 
-	gitRawVersion = outputB.decode("utf-8").strip()
-	if not gitRawVersion:
+	gitVersionRaw = outputB.decode("utf-8").strip()
+	if not gitVersionRaw:
 		return VERSION
 
 	# Python believes:
@@ -190,11 +195,15 @@ def getVersion() -> str:
 	# if error != None:
 	# 	sys.stderr.write(error)
 
-	return re.sub(
+	gitVersion = re.sub(
 		'-([0-9]+)-g([0-9a-f]{6,8})',
 		r'post\1+\2',
-		gitRawVersion,
+		gitVersionRaw,
 	)
+	if parse_version(gitVersion) > parse_version(VERSION):
+		return gitVersion
+
+	return VERSION
 
 
 def primary_to_jd(y: int, m: int, d: int) -> int:
