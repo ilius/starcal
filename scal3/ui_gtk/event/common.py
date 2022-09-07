@@ -141,6 +141,9 @@ class WidgetClass(gtk.Box):
 			"changed",
 			self.calTypeComboChanged,
 		)  # right place? before updateWidget? FIXME
+		##########
+		# TODO: Check List
+
 
 	def focusSummary(self):
 		self.summaryEntry.select_region(0, -1)
@@ -282,7 +285,35 @@ class FilesBox(gtk.Box):
 		pass
 
 
-class NotificationBox(ExpanderFrame):## or NotificationBox FIXME
+class CheckListBox(ExpanderFrame):
+	def __init__(self, event):
+		ExpanderFrame.__init__(self, label=_("Check List"))
+		self.event = event
+		self.checkListVbox = VBox()
+		totalVbox = VBox()
+		###
+		hbox = HBox()
+		pack(hbox, gtk.Label(label=_("Title") + ": "))
+		self.titleInput = gtk.Entry()
+		pack(hbox, self.titleInput, 0, 0)
+		pack(hbox, gtk.Label(), 1, 1)
+		pack(totalVbox, hbox)
+		###
+		hbox = HBox()
+		pack(hbox, gtk.Label(), 1, 1)
+		addButton = labelImageButton(
+			label=_("_Add"),
+			imageName="list-add.svg",
+		)
+		addButton.connect("clicked", self.onAddClick)
+		pack(hbox, addButton)
+		pack(self, hbox)
+		###
+		self.show_all()
+		self.add(totalVbox)
+
+
+class NotificationBox(ExpanderFrame):
 	def __init__(self, event):
 		ExpanderFrame.__init__(self, label=_("Notification"))
 		self.event = event

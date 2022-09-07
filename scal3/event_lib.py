@@ -2099,6 +2099,8 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		"icon",
 		"summary",
 		"description",
+		"checkListTitle",
+		"checkList",
 	)
 	paramsOrder = RuleContainer.paramsOrder + (
 		"uuid",
@@ -2106,6 +2108,8 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		"calType",
 		"summary",
 		"description",
+		"checkListTitle",
+		"checkList",
 		"rules",
 		"notifiers",
 		"notifyBefore",
@@ -2173,6 +2177,8 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		self.icon = self.__class__.getDefaultIcon()
 		self.summary = self.desc  # + " (" + _(self.id) + ")"  # FIXME
 		self.description = ""
+		self.checkListTitle = False
+		self.checkList = []
 		self.files = []
 		######
 		RuleContainer.__init__(self)
@@ -2252,6 +2258,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		lines.append(_("Calendar Type") + ": " + calType.desc)
 		lines.append(_("Summary") + ": " + self.getSummary())
 		lines.append(_("Description") + ": " + self.description)
+		# "checkList",
 		# "notifiers",
 		# "notifyBefore",
 		# "remoteIds",
@@ -2544,6 +2551,8 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		data = {
 			"summary": self.getSummary(),
 			"description": self.getDescription(),
+			"checkListTitle": self.checkListTitle,
+			"checkList": self.checkList,
 			"calType": calTypes.names[self.calType],
 			"icon": self.getIcon(),
 			"timeZone": self.timeZone,
