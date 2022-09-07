@@ -25,7 +25,6 @@ from time import time as now
 
 import sys
 import os
-from os import listdir
 import os.path
 from os.path import dirname, join, isfile, splitext, isabs
 from collections import OrderedDict

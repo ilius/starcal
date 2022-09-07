@@ -24,7 +24,6 @@ log = logger.get()
 import os
 import os.path
 from os.path import join, split, dirname, splitext, isabs
-from os import listdir
 import math
 from time import time as now
 from cachetools import LRUCache
@@ -2274,7 +2273,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 	def loadFiles(self):
 		self.files = []
 		# if os.path.isdir(self.filesDir):
-		# 	for fname in listdir(self.filesDir):
+		# 	for fname in self.fs.listdir(self.filesDir):
 		# 		# FIXME
 		# 		if isfile(join(self.filesDir, fname)) and not fname.endswith("~"):
 		# 			self.files.append(fname)
