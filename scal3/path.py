@@ -42,10 +42,12 @@ elif os.sep == "\\":
 	if scalDir.startswith(".\\"):
 		scalDir = cwd + scalDir[1:]
 
+plugDirName = "plugins"
+
 sourceDir = abspath(dirname(scalDir))
 pixDir = join(sourceDir, "pixmaps")
 svgDir = join(sourceDir, "svg")
-plugDir = join(sourceDir, "plugins")
+plugDir = join(sourceDir, plugDirName)
 
 if osName in ("linux", "unix"):
 	homeDir = os.getenv("HOME")
@@ -78,7 +80,7 @@ deskDir = join(homeDir, "Desktop")  # in all operating systems? FIXME
 
 userPlugConf = join(confDir, "plugin.conf")
 modDir = f"{scalDir}/cal_types"
-plugDirUser = join(confDir, "plugins")
+plugDirUser = join(confDir, plugDirName)
 objectDir = join(confDir, "objects")
 
 purpleDir = join(homeDir, ".purple")  # FIXME

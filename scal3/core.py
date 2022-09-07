@@ -150,6 +150,7 @@ def saveConf() -> None:
 
 log = logger.get()
 
+fs = None  # type: "s_object.FileSystem"
 
 # ____________________________________________________________________ #
 # __________________ class and function defenitions __________________ #
@@ -366,7 +367,7 @@ def validatePlugList() -> None:
 			m -= 1
 
 
-def initPlugins() -> None:
+def initPlugins(fs: "s_object.FileSystem") -> None:
 	# log.debug("----------------------- initPlugins")
 	global allPlugList, plugIndex
 	# Assert that user configuarion for plugins is OK
@@ -374,10 +375,10 @@ def initPlugins() -> None:
 	########################
 	names = [os.path.split(plug.file)[1] for plug in allPlugList]
 	# newPlugs = []#????????
-	for direc in (plugDir, plugDirUser):
-		if not isdir(direc):
+	for direc in (plugDir, plugDirName):
+		if not fs.isdir(direc):
 			continue
-		for fname in os.listdir(direc):
+		for fname in fs.listdir(direc):
 			if fname in names + [
 				"__init__.py",
 				"README.md",
@@ -526,10 +527,14 @@ def dataToJson(data: Any) -> str:
 
 
 def init() -> None:
-	global VERSION
+	global VERSION, fs
+	from scal3.s_object import DefaultFileSystem
+
 	VERSION = getVersion()  # right place?
+
+	fs = DefaultFileSystem(confDir)
 	loadConf()
-	initPlugins()
+	initPlugins(fs)
 
 
 def prefIsOlderThan(v: str) -> bool:

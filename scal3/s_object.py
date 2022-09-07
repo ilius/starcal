@@ -6,7 +6,7 @@ log = logger.get()
 import sys
 import os
 import os.path
-from os.path import join
+from os.path import join, isabs
 from time import time as now
 from collections import OrderedDict
 from hashlib import sha1
@@ -28,6 +28,12 @@ class FileSystem:
 	def open(self, fpath, mode="r", encoding=None):
 		raise NotImplementedError
 
+	def abspath(self, path):
+		raise NotImplementedError
+
+	def isdir(self, path):
+		raise NotImplementedError
+
 	def listdir(self, dpath: str):
 		raise NotImplementedError
 
@@ -42,28 +48,36 @@ class DefaultFileSystem(FileSystem):
 	def __init__(self, rootPath):
 		self._rootPath = rootPath
 
+	def abspath(self, path):
+		if isabs(path):
+			return path
+		return join(self._rootPath, path)
+
+	def isdir(self, path):
+		return os.path.isdir(self.abspath(path))
+
 	def open(self, fpath, mode="r", encoding=None):
-		fpath = join(self._rootPath, fpath)
+		fpath = self.abspath(fpath)
 		if mode == "r" and encoding is None:
 			encoding = "utf-8"
 		return open(fpath, mode=mode, encoding=encoding)
 
 	def listdir(self, dpath):
-		return os.listdir(join(self._rootPath, dpath))
+		return os.listdir(self.abspath(dpath))
 
 	def isfile(self, fpath):
-		return os.path.isfile(join(self._rootPath, fpath))
+		return os.path.isfile(self.abspath(fpath))
 
 	def isdir(self, dpath):
-		return os.path.isdir(join(self._rootPath, dpath))
+		return os.path.isdir(self.abspath(dpath))
 
 	def makeDir(self, dpath: str) -> None:
-		dpathAbs = join(self._rootPath, dpath)
+		dpathAbs = self.abspath(dpath)
 		if not os.path.isdir(dpathAbs):
 			os.makedirs(dpathAbs)
 
 	def removeFile(self, fpath: str) -> None:
-		os.remove(join(self._rootPath, fpath))
+		os.remove(self.abspath(fpath))
 
 
 class SObj:

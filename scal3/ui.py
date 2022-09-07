@@ -817,7 +817,7 @@ def init() -> None:
 	global todayCell, cell, fs, eventAccounts, eventGroups, eventTrash
 	core.init()
 
-	fs = event_lib.DefaultFileSystem(confDir)
+	fs = core.fs
 	event_lib.init(fs)
 	# Load accounts, groups and trash? FIXME
 	eventAccounts = event_lib.EventAccountsHolder.load(fs)
