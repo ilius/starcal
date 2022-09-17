@@ -84,7 +84,7 @@ class MyFontButton(gtk.FontButton):
 		#dtype = selection.get_data_type()
 		# log.debug(dtype ## UTF8_STRING)
 		text = selection.get_text()
-		log.debug(f"fontButtonDragDataRec    text={text}")
+		log.debug(f"fontButtonDragDataRec    {text=}")
 		if text:
 			pfont = pango.FontDescription(text)
 			if pfont.get_family() and pfont.get_size() > 0:

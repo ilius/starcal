@@ -301,7 +301,7 @@ class NotificationBox(ExpanderFrame):## or NotificationBox FIXME
 			notifier = cls(self.event)
 			inputWidget = makeWidget(notifier)
 			if not inputWidget:
-				log.error(f"notifier {cls.name}, inputWidget = {inputWidget!r}")
+				log.error(f"notifier {cls.name}, {inputWidget = }")
 				continue
 			hbox = HBox()
 			cb = gtk.CheckButton(label=notifier.desc)

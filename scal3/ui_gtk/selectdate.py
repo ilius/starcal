@@ -231,7 +231,7 @@ class SelectDateDialog(gtk.Dialog):
 		else:
 			y, m, d = convert(y0, m0, d0, calType, calTypes.primary)
 		#if not core.validDate(calType, y, m, d):
-		#	log.error(f"bad date: calType={calType}, date={y}/{m}/{d}")
+		#	log.error(f"bad date: {calType=}, date={y}/{m}/{d}")
 		#	return
 		self.emit("response-date", y, m, d)
 		self.onResponse()

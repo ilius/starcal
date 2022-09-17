@@ -87,13 +87,13 @@ def imageFromFile(path, size=0):
 	if path.endswith(".svg"):
 		return gtk.Image.new_from_pixbuf(pixbufFromSvgFile(path, size))
 	if size <= 0:
-		raise ValueError(f"invalid size={size}")
+		raise ValueError(f"invalid {size=}")
 	return gtk.Image.new_from_pixbuf(GdkPixbuf.Pixbuf.new_from_file(path))
 
 
 def pixbufFromSvgFile(path: str, size: int):
 	if size <= 0:
-		raise ValueError(f"invalid size={size} for svg file {path}")
+		raise ValueError(f"invalid {size=} for svg file {path}")
 	if not isabs(path):
 		path = join(svgDir, path)
 	with open(path, "rb") as fp:

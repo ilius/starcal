@@ -187,7 +187,7 @@ class LangData(JsonSObj):
 		transPath = ""
 		if self.fileName:
 			path = join(sourceDir, "locale.d", self.fileName + ".mo")
-			# log.debug(f"path={path}")
+			# log.debug(f"{path=}")
 			if isfile(path):
 				transPath = path
 			else:

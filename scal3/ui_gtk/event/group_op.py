@@ -130,7 +130,7 @@ class GroupConvertCalTypeDialog(gtk.Dialog):
 				else:
 					failedSummaryList.append(event.summary)
 			if failedSummaryList:## FIXME
-				log.error(f"failedSummaryList={failedSummaryList}")
+				log.error(f"{failedSummaryList=}")
 			return True
 		self.destroy()
 		return False

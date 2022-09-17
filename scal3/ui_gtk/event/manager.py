@@ -214,7 +214,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			self.appendGroupTree(record.obj)
 
 		elif action == "-g":
-			log.error(f"Event Manager: onEventUpdate: unexpected action={action!r}")
+			log.error(f"Event Manager: onEventUpdate: unexpected {action=}")
 
 		elif action == "eg":  # edit group
 			group = record.obj
@@ -228,14 +228,14 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				if record.obj.parent.id in self.loadedGroupIds:
 					log.error(
 						"trying to delete non-existing event row, " +
-						f"eid={record.obj.id}, path={path}"
+						f"eid={record.obj.id}, {path=}"
 					)
 				self.addEventRowToTrash(record.obj)
 				return
 			path = self.treeModel.get_path(eventIter)
 			parentPathObj = gtk.TreePath(path[:1])
 			expanded = self.treev.row_expanded(parentPathObj)
-			# log.debug(f"path={path}, parentPathObj={parentPathObj}, expanded={expanded}")
+			# log.debug(f"{path=}, {parentPathObj=}, {expanded=}")
 			self.treeModel.remove(eventIter)
 			self.addEventRowToTrash(record.obj)
 			if expanded:
@@ -679,7 +679,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			return  # TODO
 
 		if len(path) != 2:
-			raise RuntimeError(f"unexpected path={path}")
+			raise RuntimeError(f"unexpected {path=}")
 
 		model = self.treeModel
 		groupIndex, eventIndex = path
@@ -790,7 +790,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	def multiSelectTreeviewTogglePath(self, path: "List[int]"):
 		model = self.treeModel
 		if len(path) not in (1, 2):
-			raise RuntimeError(f"invalid path depth={len(path)}, pathStr={pathStr}")
+			raise RuntimeError(f"invalid path depth={len(path)}, {pathStr=}")
 		itr = model.get_iter(path)
 		pathTuple = tuple(path)
 
@@ -1058,8 +1058,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		pixbuf = eventTreeIconPixbuf(event.getIconRel())
 		if event.icon and pixbuf is None:
 			log.error(
-				f"getEventRow: invalid icon={event.icon!r} " +
-				f"for event id={event.id} in group={event.parent}"
+				f"getEventRow: invalid {event.icon=} " +
+				f"for {event.id=} in {event.parent=}"
 			)
 		return (
 			False,
@@ -1838,7 +1838,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			return False
 
 		if len(objs) != 2:
-			log.error(f"onTreeviewLeftButtonPress: unexpected objs={objs}, path={path}")
+			log.error(f"onTreeviewLeftButtonPress: unexpected {objs=}, {path=}")
 			return False
 
 		if self.multiSelect and gevent.state & gdk.ModifierType.SHIFT_MASK > 0:
@@ -1899,13 +1899,13 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			groupIndex = len(self.treeModel) - 1
 		else:
 			if not isinstance(path, list):
-				raise RuntimeError(f"invalid path = {path!r}")
+				raise RuntimeError(f"invalid {path = }")
 			groupIndex = path[0]
 		self.insertNewGroup(groupIndex)
 
 	def duplicateGroup(self, path: List[int]) -> None:
 		if not (isinstance(path, list) and len(path) == 1):
-			raise RuntimeError(f"invalid path = {path!r}")
+			raise RuntimeError(f"invalid {path = }")
 		index = path[0]
 		group = self.getObjsByPath(path)[0]
 		newGroup = group.copy()
@@ -1922,7 +1922,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def duplicateGroupWithEvents(self, path: List[int]) -> None:
 		if not (isinstance(path, list) and len(path) == 1):
-			raise RuntimeError(f"invalid path = {path!r}")
+			raise RuntimeError(f"invalid {path = }")
 		index = path[0]
 		group = self.getObjsByPath(path)[0]
 		newGroup = group.deepCopy()
@@ -1946,7 +1946,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		account: lib.Account,
 	) -> None:
 		if not (isinstance(path, list) and len(path) == 1):
-			raise RuntimeError(f"invalid path = {path!r}")
+			raise RuntimeError(f"invalid {path = }")
 		index = path[0]
 		group = self.getObjsByPath(path)[0]
 		if not group.remoteIds:
@@ -2040,7 +2040,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def deleteGroup(self, path: List[int]) -> None:
 		if not (isinstance(path, list) and len(path) == 1):
-			raise RuntimeError(f"invalid path = {path!r}")
+			raise RuntimeError(f"invalid {path = }")
 		index = path[0]
 		group = self.getObjsByPath(path)[0]
 		eventCount = len(group)
@@ -2220,7 +2220,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	def moveUp(self, path: List[int]) -> None:
 		srcIter = self.treeModel.get_iter(path)
 		if not isinstance(path, list):
-			raise RuntimeError(f"invalid path = {path!r}")
+			raise RuntimeError(f"invalid {path = }")
 		if len(path) == 1:
 			if path[0] == 0:
 				return
@@ -2275,7 +2275,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def moveDown(self, path: List[int]) -> None:
 		if not isinstance(path, list):
-			raise RuntimeError(f"invalid path = {path!r}")
+			raise RuntimeError(f"invalid {path = }")
 		srcIter = self.treeModel.get_iter(path)
 		if len(path) == 1:
 			if self.getRowId(srcIter) == -1:
@@ -2358,7 +2358,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		path: List[int],
 	) -> None:
 		if not (isinstance(path, list) and len(path) == 1):
-			raise RuntimeError(f"invalid path = {path!r}")
+			raise RuntimeError(f"invalid {path = }")
 		index = path[0]
 		group = self.getObjsByPath(path)[0]
 		if GroupSortDialog(group, transient_for=self).run():

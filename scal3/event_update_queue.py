@@ -55,20 +55,20 @@ class EventUpdateQueue(Queue):
 			"+g",  # new group with events inside it (imported)
 			"-g",  # delete/remove group with all its events
 		):
-			raise ValueError(f"invalid action={action}")
+			raise ValueError(f"invalid {action=}")
 		if action not in ("r", "eg", "+g", "-g") and obj.parent is None:
 			raise ValueError("obj.parent is None")
 		if action == "r":
 			if not isinstance(obj, (event_lib.EventGroup, event_lib.EventTrash)):
 				raise TypeError(
-					f"invalid obj type {obj.__class__.__name__} for action={action!r}"
+					f"invalid obj type {obj.__class__.__name__} for {action=}"
 				)
 		elif action == "eg":
 			if not isinstance(obj, event_lib.EventGroup):
 				raise TypeError(
-					f"invalid obj type {obj.__class__.__name__} for action={action!r}"
+					f"invalid obj type {obj.__class__.__name__} for {action=}"
 				)
-		log.info(f"EventUpdateQueue: add: action={action!r}, obj={obj}")
+		log.info(f"EventUpdateQueue: add: {action=}, {obj=}")
 		record = EventUpdateRecord(action, obj, sender)
 		Queue.put(self, record)
 

@@ -141,7 +141,7 @@ def getMonthDesc(status=None):
 			elif dy == 1:
 				dm = m2 + 12 - m1
 			else:
-				raise RuntimeError(f"y1={y1}, m1={m1}, y2={y2}, m2={m2}")
+				raise RuntimeError(f"{y1=}, {m1=}, {y2=}, {m2=}")
 			if dm == 0:
 				text += getMonthName(calType, m1) + " " + _(y1)
 			elif dm == 1:

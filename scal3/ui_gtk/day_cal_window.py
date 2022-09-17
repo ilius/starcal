@@ -229,8 +229,8 @@ class DayCalWindowWidget(DayCal):
 
 		if mx == 0 and my == 0:
 			log.info(
-				f"mx={mx}, my={my}, mw={mw}, mh={mh}, " +
-				f"x_root={gevent.x_root}, y_root={gevent.y_root}"
+				f"{mx=}, {my=}, {mw=}, {mh=}, " +
+				f"{gevent.x_root=}, {gevent.y_root=}"
 			)
 			return None
 

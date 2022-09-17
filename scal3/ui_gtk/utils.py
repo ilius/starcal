@@ -80,8 +80,7 @@ def show_event(widget, gevent):
 		value = "NONE"
 	log.debug(
 		# f"{type(widget).__class__.__name__}, " +
-		f"{widget.__class__.__name__}, " +
-		f"value_name={gevent.type.value_name}, value={value}"
+		f"{widget.__class__.__name__}, {gevent.type.value_name=}, {value=}"
 	)
 	# gevent.send_event
 
@@ -184,7 +183,7 @@ def pixbufFromFile(
 	if pixbuf is None:
 		return
 	if size < 0:
-		raise ValueError(f"pixbufFromFile: invalid size={size}")
+		raise ValueError(f"pixbufFromFile: invalid {size=}")
 	if pixbuf.get_width() != size:
 		pixbuf = pixbuf.scale_simple(
 			size, size,

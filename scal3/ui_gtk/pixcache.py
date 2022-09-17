@@ -45,7 +45,7 @@ def cacheSaveLoop():
 	while (qitem := saveQueue.get()) is not None:
 		fpath, pixbuf = qitem
 		if pixbuf is None:
-			log.error(f"cacheSaveLoop: pixbuf={pixbuf}, fpath={fpath}")
+			log.error(f"cacheSaveLoop: {pixbuf=}, {fpath=}")
 			continue
 		pixbuf.savev(
 			fpath,  # filename

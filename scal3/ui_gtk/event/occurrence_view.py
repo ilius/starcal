@@ -85,7 +85,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		###
 		if fontParams:
 			if not styleClass:
-				raise ValueError(f"fontParams={fontParams}, styleClass={styleClass}")
+				raise ValueError(f"{fontParams=}, {styleClass=}")
 			ud.windowList.addCSSFunc(self.getCSS)
 		###
 		self.occurOffsets = []
@@ -222,7 +222,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		return s
 
 	def onButtonPress(self, widget, gevent):
-		# log.debug(f"DayOccurrenceView: onButtonPress: button={gevent.button}")
+		# log.debug(f"DayOccurrenceView: onButtonPress: {gevent.button=}")
 		if gevent.button != 3:
 			return False
 		menu = Menu()
@@ -614,7 +614,7 @@ class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
 		self.ls.clear()
 		for item in wEventData:
 			if not "show" in item:
-				raise RuntimeError(f"bad item={item}")
+				raise RuntimeError(f"bad {item=}")
 			if not item["show"][1]:
 				continue
 			self.ls.append([

@@ -111,7 +111,7 @@ def rgbToCSS(color: ColorType) -> str:
 	elif len(color) == 4:
 		return f"rgba{color}"
 	else:
-		raise ValueError(f"invalid color={color}")
+		raise ValueError(f"invalid {color=}")
 
 
 def colorizeSpan(text, color):

@@ -307,8 +307,8 @@ class PrayTimes:
 		t = arccos(ratio) / 15
 		# except:
 		# 	log.info(
-		# 		f"sunAngleTime: angle={angle}, tm={tm}" +
-		# 		f", direction={direction} ==> ratio={ratio}" +
+		# 		f"sunAngleTime: {angle=}, {tm=}" +
+		# 		f", {direction=} ==> {ratio=}" +
 		# 	)
 		# 	return 0
 		return noon + dirSign(direction) * t

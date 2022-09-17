@@ -136,7 +136,7 @@ def getShortStatByTrees(repo, old_tree, tree):
 							if op == "equal":
 								continue
 							#if not op in ("insert", "delete", "replace"):
-							#	log.info(f"op = {op}")
+							#	log.info(f"{op = }")
 							insertions += (j2 - j1)
 							deletions += (i2 - i1)
 			elif new_kind is None:

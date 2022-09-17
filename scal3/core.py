@@ -218,7 +218,7 @@ def jd_to_primary(jd: int) -> Tuple[int, int, int]:
 def getCurrentJd() -> int:
 	# time.time() and mktime(localtime()) both return GMT, not local
 	if GREGORIAN not in calTypes:
-		raise RuntimeError(f"cal type GREGORIAN={GREGORIAN} not found")
+		raise RuntimeError(f"cal type {GREGORIAN=} not found")
 	y, m, d = localtime()[:3]
 	return to_jd(y, m, d, GREGORIAN)
 

@@ -199,7 +199,7 @@ class AdjusterDialog(gtk.Dialog):
 		output = proc.stdout.read().strip()
 		if output:
 			log.info(output)
-		# log.debug(f"resCode={resCode!r}, error={error!r}, output={output!r}")
+		# log.debug(f"{resCode=}, {error=}, {output=}")
 		if error:
 			log.error(error)
 		if resCode != 0:

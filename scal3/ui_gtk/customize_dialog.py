@@ -128,9 +128,9 @@ class CustomizeWindow(gtk.Dialog):
 
 		for page in item.getSubPages():
 			if page.pageItem is None:
-				raise ValueError(f"pageItem=None, pagePath={page.pagePath}")
+				raise ValueError(f"pageItem=None, {page.pagePath=}")
 			if not page.pageName:
-				raise ValueError(f"pageName empty, page={page}")
+				raise ValueError(f"pageName empty, {page=}")
 			page.pageParent = rootPagePath
 			page.pagePath = rootPagePath + "." + page.pageName
 			self.addPageObj(page)
@@ -203,7 +203,7 @@ class CustomizeWindow(gtk.Dialog):
 			if item.hasOptions:
 				anyItemHasOptions = True
 			if not item._name:
-				raise ValueError(f"item._name = {item._name}")
+				raise ValueError(f"{item._name = }")
 			model.append([
 				item.enable,
 				parentPagePath + "." + item._name,
@@ -256,7 +256,7 @@ class CustomizeWindow(gtk.Dialog):
 		i = cur[-1]
 
 		if len(cur) != 1:
-			raise RuntimeError(f"unexpected cur = {cur!r}")
+			raise RuntimeError(f"unexpected {cur = }")
 
 		if i <= 0 or i >= len(model):
 			gdk.beep()
@@ -276,7 +276,7 @@ class CustomizeWindow(gtk.Dialog):
 		i = cur[-1]
 
 		if len(cur) != 1:
-			raise RuntimeError(f"unexpected cur = {cur!r}")
+			raise RuntimeError(f"unexpected {cur = }")
 
 		if i <= 0 or i >= len(model):
 			gdk.beep()
@@ -295,7 +295,7 @@ class CustomizeWindow(gtk.Dialog):
 		i = cur[-1]
 
 		if len(cur) != 1:
-			raise RuntimeError(f"unexpected cur = {cur!r}")
+			raise RuntimeError(f"unexpected {cur = }")
 
 		if i < 0 or i >= len(model) - 1:
 			gdk.beep()
@@ -314,7 +314,7 @@ class CustomizeWindow(gtk.Dialog):
 		i = cur[-1]
 
 		if len(cur) != 1:
-			raise RuntimeError(f"unexpected cur = {cur!r}")
+			raise RuntimeError(f"unexpected {cur = }")
 
 		if i < 0 or i >= len(model) - 1:
 			gdk.beep()
@@ -360,7 +360,7 @@ class CustomizeWindow(gtk.Dialog):
 		parentPagePath = page.pageParent
 		title = page.pageTitle
 		item = page.pageItem
-		log.debug(f"addPageObj: pagePath={page.pagePath}, parent={page.pageParent}, item._name={item._name}")
+		log.debug(f"addPageObj: {page.pagePath=}, {page.pageParent=}, {item._name=}")
 
 		if self.stack.hasPage(pagePath):
 			return
@@ -383,16 +383,19 @@ class CustomizeWindow(gtk.Dialog):
 		if item.hasOptions:
 			optionsWidget = item.getOptionsWidget()
 			if optionsWidget is None:
-				raise ValueError(f"hasOptions={item.hasOptions} but getOptionsWidget returned {optionsWidget}")
+				raise ValueError(f"{item.hasOptions=} but {optionsWidget=}")
 			pack(page.pageWidget, optionsWidget, 0, 0)
 
-		log.debug(f"adding page {page.pagePath} to stack, pageWidget={page.pageWidget} (parent={page.pageWidget.get_parent()})")
+		log.debug(
+			f"adding page {page.pagePath} to stack, {page.pageWidget=}"
+			f" (parent={page.pageWidget.get_parent()})"
+		)
 		self.stack.addPage(page) # FIXME: crashes here
 
 		for page in item.getSubPages():
 			if not (page.pagePath and page.pageParent):
 				if not page.pageName:
-					raise ValueError(f"pageName empty, page={page}")
+					raise ValueError(f"pageName empty, {page=}")
 				page.pagePath = pagePath + "." + page.pageName
 				page.pageParent = ".".join(
 					[pagePath] + page.pageName.split(".")[:-1]
@@ -466,10 +469,10 @@ class CustomizeWindow(gtk.Dialog):
 			).format(item=item.desc)
 			showInfo(msg, transient_for=self)
 			return
-		log.debug(f"rowActivated: pagePath={pagePath}, itemIndex={itemIndex}, parentPagePath={parentPagePath}")
+		log.debug(f"rowActivated: {pagePath=}, {itemIndex=}, {parentPagePath=}")
 		if parentItem.isWrapper:
 			parentItem = parentItem.getWidget()
-		# print(f"rowActivated: pagePath={pagePath}, parentPagePath={parentPagePath}")
+		# print(f"rowActivated: {pagePath=}, {parentPagePath=}")
 		page = self._addPage(pagePath, parentPagePath, parentItem, itemIndex)
 		self.stack.gotoPage(page.pagePath)
 

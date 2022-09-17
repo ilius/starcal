@@ -174,7 +174,7 @@ def testDeleteStep(N, maxKey):
 	rmKey = -h[rmIndex][0]
 	rmKey2 = h.pop(rmIndex)
 	if not h.verify():
-		log.info(f"not verified, N={N}, I={rmIndex}")
+		log.info(f"not verified, {N=}, I={rmIndex}")
 		log.info(h0)
 		log.info(h)
 		log.info("------------------------")

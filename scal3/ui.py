@@ -259,7 +259,7 @@ def saveConfCustomize() -> None:
 
 
 def saveLiveConf() -> None:  # rename to saveConfLive FIXME
-	log.debug(f"saveLiveConf: winX={winX}, winY={winY}, winWidth={winWidth}")
+	log.debug(f"saveLiveConf: {winX=}, {winY=}, {winWidth=}")
 	saveJsonConf(__name__, confPathLive, confParamsLive)
 
 
@@ -508,10 +508,7 @@ class CellCache:
 		self.plugins = {}  # disabled type: CellPluginsType
 
 	def resetCache(self):
-		log.debug(
-			f"resetCache: maxDayCacheSize={maxDayCacheSize},"
-			f" maxWeekCacheSize={maxWeekCacheSize}"
-		)
+		log.debug(f"resetCache: {maxDayCacheSize=}, {maxWeekCacheSize=}")
 
 		# key: jd(int), value: CellType
 		self.jdCells = LRUCache(maxsize=maxDayCacheSize)
@@ -768,7 +765,7 @@ def checkEnabledNamesItems(
 	#####
 	# adding items newly added in this version, this is for user"s convenience
 	newNames = defaultNames.difference(names)
-	log.debug(f"items: newNames = {newNames}")
+	log.debug(f"items: {newNames = }")
 	##
 	for name in newNames:
 		items.append((name, False))  # FIXME

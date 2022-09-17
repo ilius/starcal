@@ -181,7 +181,7 @@ def isLeap(year):
 			- (jym + 3) // 4
 		)
 	else:
-		raise RuntimeError(f"bad option alg={alg!r}")
+		raise RuntimeError(f"bad option {alg=}")
 
 
 def getMonthDayFromYdays(yday):
@@ -223,7 +223,7 @@ def to_jd(year, month, day):
 			+ GREGORIAN_EPOCH
 		)
 	else:
-		raise RuntimeError(f"bad option alg={alg!r}")
+		raise RuntimeError(f"bad option {alg=}")
 
 
 def jd_to(jd):
@@ -260,7 +260,7 @@ def jd_to(jd):
 		yday = jdays + 1
 		month, day = getMonthDayFromYdays(yday)
 	else:
-		raise RuntimeError(f"bad option alg={alg!r}")
+		raise RuntimeError(f"bad option {alg=}")
 	return year, month, day
 
 

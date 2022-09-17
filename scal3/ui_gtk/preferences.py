@@ -1264,11 +1264,11 @@ class PreferencesWindow(gtk.Window):
 
 	def apply(self, widget=None):
 		from scal3.ui_gtk.font_utils import gfontDecode
-		# log.debug(f"fontDefault = {ui.fontDefault!r}")
+		# log.debug(f"{ui.fontDefault=}")
 		ui.fontDefault = gfontDecode(
 			ud.settings.get_property("gtk-font-name")
 		)
-		# log.debug(f"fontDefault = {ui.fontDefault!r}")
+		# log.debug(f"{ui.fontDefault=}")
 		#####
 		ui.preferencesPagePath = self.stack.currentPagePath()
 		#####

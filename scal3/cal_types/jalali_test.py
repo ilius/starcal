@@ -246,12 +246,12 @@ class TestJalali(unittest.TestCase):
 				self.assertEqual(
 					isLeapActual,
 					isLeap,
-					f"year={year}, isLeap={isLeap}, isLeapActual={isLeapActual}, alg={alg}",
+					f"{year=}, {isLeap=}, {isLeapActual=}, {alg=}",
 				)
 				self.assertEqual(
 					lastMonthLen,
 					lastMonthLenExpected,
-					f"year={year}, isLeap={isLeap}, alg={alg}",
+					f"{year=}, {isLeap=}, {alg=}",
 				)
 
 	def test_to_jd(self):
@@ -263,7 +263,7 @@ class TestJalali(unittest.TestCase):
 				self.assertEqual(
 					jdActual,
 					jd,
-					f"date={date}, jd={jd}, jdActual={jdActual}, alg={alg}",
+					f"{date=}, {jd=}, {jdActual=}, {alg=}",
 				)
 
 	def test_convert(self):
@@ -281,7 +281,7 @@ class TestJalali(unittest.TestCase):
 						self.assertEqual(
 							ndate,
 							date,
-							f"jd={jd}, date={date}, ndate={ndate}",
+							f"{jd=}, {date}, {ndate=}",
 						)
 
 

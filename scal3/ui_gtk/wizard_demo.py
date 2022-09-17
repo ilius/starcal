@@ -108,7 +108,7 @@ class DemoWizardWindow(WizardWindow):
 				raise ValueError(f"invalid format {format!r}")
 
 		def _runJson(self, fpath):
-			print(f"_runAndCleanup: fpath={fpath}")
+			print(f"_runAndCleanup: {fpath=}")
 
 		def onBackClick(self, obj):
 			self.win.showStep(0)

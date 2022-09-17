@@ -103,7 +103,7 @@ class IntField(NumField):
 		try:
 			num = int(float(textNumDecode(text)))
 		except ValueError:
-			log.error(f"IntField: invalid text = {text!r}")
+			log.error(f"IntField: invalid {text = }")
 			log.exception("")
 			self.setDefault()
 		else:

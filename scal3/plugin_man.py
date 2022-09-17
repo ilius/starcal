@@ -619,8 +619,8 @@ class IcsTextPlugin(BasePlugin):
 							md[(m, d)] = text
 					else:
 						log.error(
-							f"unsupported ics event, SUMMARY={SUMMARY}, " +
-							f"DTSTART={DTSTART}, DTEND={DTEND}"
+							f"unsupported ics event, {SUMMARY=}, "
+							f"{DTSTART=}, {DTEND}="
 						)
 					SUMMARY = ""
 					DESCRIPTION = ""

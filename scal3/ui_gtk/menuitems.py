@@ -124,7 +124,7 @@ class CheckMenuItem(gtk.MenuItem):
 		self._box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=0)
 		edgePadding = 0
 		# edgePadding = ui.menuIconEdgePadding - ui.menuCheckSize + ui.menuIconSize
-		# print(f"CheckMenuItem: edgePadding={edgePadding}")
+		# print(f"CheckMenuItem: {edgePadding=}")
 		# edgePadding += 2  # FIXME: why is this needed?
 		# edgePadding = max(0, edgePadding)
 		pack(self._box, self._check, padding=edgePadding)
@@ -164,7 +164,7 @@ class CustomCheckMenuItem(gtk.MenuItem):
 		self._image = gtk.Image()
 		self._box = gtk.Box(orientation=gtk.Orientation.HORIZONTAL, spacing=0)
 		edgePadding = ui.menuIconEdgePadding - ui.menuCheckSize + ui.menuIconSize
-		# print(f"CheckMenuItem: edgePadding={edgePadding}")
+		# print(f"CheckMenuItem: {edgePadding=}")
 		edgePadding += 2  # FIXME: why is this needed?
 		edgePadding = max(0, edgePadding)
 		pack(self._box, self._image, padding=edgePadding)

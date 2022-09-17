@@ -194,7 +194,7 @@ def newSubPageButton(
 
 	def onClick(b, page):
 		if not page.pagePath:
-			raise ValueError(f"pagePath empty, page = {page}")
+			raise ValueError(f"pagePath empty, {page = }")
 		item.emit("goto-page", page.pagePath)
 
 	button.connect("clicked", onClick, page)

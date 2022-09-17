@@ -173,16 +173,16 @@ class MyStack(gtk.Stack):
 		return hbox
 
 	def addPage(self, page: StackPage):
-		log.debug(f"MyStack: addPage: pagePath={page.pagePath}")
 		pagePath = page.pagePath
+		log.debug(f"MyStack: {pagePath=}")
 		parentName = page.pageParent
 		widget = page.pageWidget
 
 		if pagePath in self._titles:
-			raise ValueError(f"addPage: duplicate pagePath={pagePath}")
+			raise ValueError(f"addPage: duplicate {pagePath=}")
 
 		if not isinstance(widget, gtk.Widget):
-			raise ValueError(f"invalid pageWidget={widget}, pagePath={pagePath}")
+			raise ValueError(f"invalid {widget=}, {pagePath=}")
 
 		widget.show()
 		if self._header and parentName:
@@ -228,11 +228,11 @@ class MyStack(gtk.Stack):
 			pagePath = pagePath[:dot]
 
 	def gotoPage(self, path: str, backward: bool = False) -> bool:
-		log.debug(f"MyStack: gotoPage: path={path}, backward={backward}")
+		log.debug(f"MyStack: gotoPage: {path=}, {backward=}")
 		if not path:
 			raise ValueError(f"gotoPage: empty page path")
 		if path not in self._titles:
-			log.error(f"gotoPage: invalid page path {path!r}")
+			log.error(f"gotoPage: invalid page {path=}")
 			return False
 		if backward:
 			self._setSlideBackward()

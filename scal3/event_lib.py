@@ -824,7 +824,7 @@ class WeekNumberModeEventRule(EventRule):
 	def setData(self, wnModeName: str) -> None:
 		if wnModeName not in self.weekNumModeNames:
 			raise BadEventFile(
-				f"bad rule value weekNumMode={wnModeName!r}, " +
+				f"bad rule value {wnModeName=}, " +
 				"the value for weekNumMode must be " +
 				f"one of {self.weekNumModeNames!r}"
 			)
@@ -2142,7 +2142,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 			raise RuntimeError("getPath: parent is None")
 		path = SObj.getPath(self)
 		if len(path) != 2:
-			raise RuntimeError(f"getPath: unexpected path={path}")
+			raise RuntimeError(f"getPath: unexpected {path=}")
 		return path
 
 	def getRevision(self, revHash):
@@ -2690,7 +2690,7 @@ class TaskEvent(SingleStartEndEvent):
 			rule = DurationEventRule(self)
 			rule.value, rule.unit = values
 		else:
-			raise ValueError(f"invalid endType={endType!r}")
+			raise ValueError(f"invalid {endType=}")
 		self.addRule(rule)
 
 	def getStart(self):
@@ -2860,7 +2860,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 			rule.value = value
 			rule.unit = dayLen
 		else:
-			raise ValueError(f"invalid endType={endType!r}")
+			raise ValueError(f"invalid {endType=}")
 		self.addRule(rule)
 
 	def getEnd(self):
@@ -3761,7 +3761,7 @@ class EventContainer(BsonHistEventObj):
 			# self.save()  # FIXME
 			raise FileNotFoundError(
 				f"error while loading event file {eventFile!r}: " +
-				f"file not found. eid={eid}, container={self!r}"
+				f"file not found. {eid=}, container={self!r}"
 			)
 		with self.fs.open(eventFile) as fp:
 			data = jsonToData(fp.read())
@@ -4978,7 +4978,7 @@ class UniversityTerm(EventGroup):
 		"""
 		self.courses = courses
 		# self.lastCourseId = max([1]+[course[0] for course in self.courses])
-		# log.debug(f"setCourses: lastCourseId={self.lastCourseId}")
+		# log.debug(f"setCourses: {self.lastCourseId=}")
 
 	# def getCourseNamesDictById(self):
 	# 	return dict([c[:2] for c in self.courses])
@@ -5015,7 +5015,7 @@ class UniversityTerm(EventGroup):
 
 	# def getNewCourseID(self) -> int:
 	# 	self.lastCourseId += 1
-	# 	log.info(f"getNewCourseID: lastCourseId={self.lastCourseId}")
+	# 	log.info(f"getNewCourseID: {self.lastCourseId=}")
 	# 	return self.lastCourseId
 
 	def copyFrom(self, other: "EventGroup") -> None:
@@ -5435,7 +5435,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 			return
 		data = mod.getCommitInfo(self, commit_id)
 		if not data:
-			raise ValueError(f"No commit with id={commit_id!r}")
+			raise ValueError(f"No commit with {commit_id=}")
 		data["summary"] = self.title + ": " + data["summary"]
 		data["icon"] = self.icon
 		event = VcsCommitEvent(self, commit_id)
@@ -5612,7 +5612,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 			newCommitId = commitIds[-1]
 			oldCommitId = mod.getLatestParentBefore(self, newCommitId, epoch)
 			if not oldCommitId:
-				log.info(f"oldCommitId is empty, jd={jd}, newCommitId={newCommitId}")
+				log.info(f"oldCommitId is empty, {jd=}, {newCommitId=}")
 				continue
 			stat = mod.getShortStat(self, oldCommitId, newCommitId)
 			self.statByJd[jd] = (len(commitIds), stat)
@@ -5692,19 +5692,19 @@ class JsonObjectsHolder(JsonEventObj):
 
 	def insert(self, index: int, obj: Any) -> None:
 		if obj.id in self.idList:
-			raise ValueError(f"{self} already contains id={obj.id}, obj={obj}")
+			raise ValueError(f"{self} already contains id={obj.id}, {obj=}")
 		self.byId[obj.id] = obj
 		self.idList.insert(index, obj.id)
 
 	def append(self, obj: Any) -> None:
 		if obj.id in self.idList:
-			raise ValueError(f"{self} already contains id={obj.id}, obj={obj}")
+			raise ValueError(f"{self} already contains id={obj.id}, {obj=}")
 		self.byId[obj.id] = obj
 		self.idList.append(obj.id)
 
 	def delete(self, obj: Any) -> None:
 		if obj.id not in self.idList:
-			raise ValueError(f"{self} does not contains id={obj.id}, obj={obj}")
+			raise ValueError(f"{self} does not contains id={obj.id}, {obj=}")
 		try:
 			self.fs.removeFile(obj.file)
 		except Exception:
@@ -5734,7 +5734,7 @@ class JsonObjectsHolder(JsonEventObj):
 		self.clear()
 		for sid in data:
 			if not isinstance(sid, int) or sid == 0:
-				raise RuntimeError(f"unexpected sid={sid}, self={self}")
+				raise RuntimeError(f"unexpected {sid=}, {self=}")
 			_id = sid
 			_id = abs(sid)
 			try:

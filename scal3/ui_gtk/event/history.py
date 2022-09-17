@@ -283,7 +283,7 @@ class EventHistoryDialog(gtk.Dialog):
 			for row in self.extractFullTable(hashBefore, hashAfter):
 				treeModel.append(row)
 		else:
-			raise ValueError(f"unexpected viewType={viewType!r}")
+			raise ValueError(f"unexpected {viewType=}")
 
 		self.setScrolledWinChild(self.cmpTreev)
 
@@ -313,7 +313,7 @@ class EventHistoryDialog(gtk.Dialog):
 				diff = self.extractChangeDiff(hashBefore, hashAfter)
 				text = dataToPrettyJson(diff)
 		else:
-			raise ValueError(f"unexpected viewType={viewType!r}")
+			raise ValueError(f"unexpected {viewType=}")
 
 		self.textbuff.set_text(text)
 		self.setScrolledWinChild(self.textview)

@@ -320,7 +320,7 @@ class MultiSpinButton(gtk.Box):
 
 	#def _move_cursor(self, obj, step, count, extend_selection):
 	#	# force_select
-	#	log.debug(f"_move_cursor: count={count}, extend_selection={extend_selection}")
+	#	log.debug(f"_move_cursor: {count=}, {extend_selection=}")
 
 	def _arrow_press(self, plus):
 		self.pressTm = now()

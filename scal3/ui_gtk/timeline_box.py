@@ -117,7 +117,7 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 	textW = 0.95 * w
 	textH = 0.95 * h
 	textLen = len(text)
-	# log.debug(f"textLen={textLen}")
+	# log.debug(f"{textLen=}")
 	avgCharW = (
 		textW if tl.rotateBoxLabel == 0
 		else max(textW, textH)
@@ -167,5 +167,5 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 	except Exception:
 		log.warning(
 			"counld not rotate by " +
-			f"{rotateBoxLabel}*pi/2 = {rotateBoxLabel*pi/2}"
+			f"{rotateBoxLabel*pi/2 = }"
 		)

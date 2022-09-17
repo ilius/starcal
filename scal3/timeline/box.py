@@ -57,7 +57,7 @@ class Box:
 		# self.mt = (t0+t1)/2.0  # - timeMiddle ## FIXME
 		# self.dt = (t1-t0)/2.0
 		# if t1-t0 != odt:
-		# 	log.info(f"Box, dt={}t1-t0, odt={odt}")
+		# 	log.info(f"Box, {t1-t0 = }, {odt = }")
 		self.u0 = u0
 		self.du = du
 		####
@@ -228,7 +228,7 @@ def calcEventBoxes(
 				eventCount=_(len(boxGroup)),
 			)
 			box.ids = None
-			# log.debug(f"len(boxGroup) = {len(boxGroup)}")
+			# log.debug(f"{len(boxGroup) = }")
 			# log.debug(f"{box.t1 - box.t0} secs")
 			boxes.append(box)
 	del boxesDict

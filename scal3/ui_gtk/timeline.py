@@ -400,7 +400,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		)  # FIXME
 		if layout:
 			# layout.set_auto_dir(0)  # FIXME
-			# log.debug(f"layout.get_auto_dir() = {layout.get_auto_dir()}")
+			# log.debug(f"{layout.get_auto_dir() = }")
 			layoutW, layoutH = layout.get_pixel_size()
 			layoutX = tick.pos - layoutW / 2.0
 			layoutY = tickH * tl.labelYRatio
@@ -485,7 +485,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				if dstChangeJd is not None:
 					deltaHour = deltaSec / 3600.0
 					dstChangeEpoch = getEpochFromJd(dstChangeJd)
-					# log.debug(f"dstChangeEpoch = {dstChangeEpoch}")
+					# log.debug(f"{dstChangeEpoch = }")
 				else:
 					log.info("dstChangeEpoch not found")
 
@@ -843,7 +843,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				elif source == "button":
 					force = tl.movingHandForceButton
 				else:
-					raise ValueError(f"invalid source={source}")
+					raise ValueError(f"invalid {source=}")
 				self.movingF = direction * force
 				self.movingV += tl.movingInitialVelocity * direction
 				self.stopAnimTimers()
@@ -891,7 +891,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		)
 
 	def updateMovingAnim(self, f1, t0, t1, v0, a1, holdForce=False):
-		# log.debug(f"updateMovingAnim: f1={f1:.1f}, v0={v0:.1f}, a1={a1:.1f}")
+		# log.debug(f"updateMovingAnim: {f1=:.1f}, {v0=:.1f}, {a1=:.1f}")
 		t2 = now()
 		f = self.movingF
 		if not holdForce and f != f1:

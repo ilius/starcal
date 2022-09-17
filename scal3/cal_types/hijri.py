@@ -157,7 +157,7 @@ class MonthDbHolder:
 				if ml == 0:
 					continue
 				if ml < 0:
-					raise ValueError(f"invalid ml = {ml}")
+					raise ValueError(f"invalid {ml = }")
 				self.monthLenByYm[y * 12 + m] = ml
 				self.endJd += ml
 		if self.expJd is None:

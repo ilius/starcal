@@ -200,7 +200,7 @@ class IntegatedWindowList(BaseCalObj):
 			alphabet,
 			font=ui.getFont(),
 		)[1]
-		log.debug(f"height={height}, alphabet={alphabet}")
+		log.debug(f"{height=}, {alphabet=}")
 
 		if height == self.lastAlphabetHeight:
 			return
@@ -258,7 +258,7 @@ class IntegatedWindowList(BaseCalObj):
 			ui.mainWin.get_style_context().
 			get_color(gtk.StateFlags.NORMAL)
 		)
-		log.debug(f"fgColor={fgColor}")
+		log.debug(f"{fgColor=}")
 		css = "progressbar text " + cssTextStyle(
 			font=font,
 			fgColor=fgColor,

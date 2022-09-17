@@ -144,7 +144,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	jd1 = getJdFromEpoch(timeEnd)
 	widthDays = timeWidth / dayLen
 	dayPixel = dayLen * pixelPerSec ## px
-	# log.debug(f"dayPixel = {dayPixel} px")
+	# log.debug(f"{dayPixel = } px")
 
 	def getEPos(epoch):
 		return (epoch - timeStart) * pixelPerSec

@@ -629,7 +629,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			x = x0 + w - fontw - params["pos"][0]
 		else:
 			x = x0 + w / 2 - fontw / 2 + params["pos"][0]
-			log.error(f"invalid xalign = {xalign}")
+			log.error(f"invalid {xalign=}")
 
 		if not yalign or yalign == "center":
 			y = y0 + h / 2 - fonth / 2 + params["pos"][1]
@@ -639,7 +639,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			y = y0 + h - fonth - params["pos"][1]
 		else:
 			y = y0 + h / 2 - fonth / 2 + params["pos"][1]
-			log.error(f"invalid yalign = {yalign}")
+			log.error(f"invalid {yalign=}")
 
 		return (x, y)
 

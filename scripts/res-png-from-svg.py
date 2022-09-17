@@ -35,9 +35,9 @@ for res in root.getchildren():
 		print(f"--- no source for: {path}")
 		continue
 	if not source.startswith(("http://", "https://")):
-		print(f"--- path={path}, source={source}  (bad url)")
+		print(f"--- {path=}, {source=}  (bad url)")
 	if not source.endswith((".svg", ".svgz")):
-		print(f"--- path={path}, source={source}  (bad ext)")
+		print(f"--- {path=}, {source=}  (bad ext)")
 	print(f"{path}\t	{source}")
 
 

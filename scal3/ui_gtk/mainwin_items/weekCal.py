@@ -1447,7 +1447,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		self.status = getCurrentWeekStatus()
 		index = ui.cell.jd - self.status[0].jd
 		if index > 6:
-			log.info(f"warning: drawCursorFg: index = {index}")
+			log.info(f"warning: drawCursorFg: {index = }")
 			return
 		self.cellIndex = index
 

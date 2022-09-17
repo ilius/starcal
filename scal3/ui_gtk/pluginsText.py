@@ -274,7 +274,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		###
 		if fontParams:
 			if not styleClass:
-				raise ValueError(f"fontParams={fontParams}, styleClass={styleClass}")
+				raise ValueError(f"{fontParams=}, {styleClass=}")
 			ud.windowList.addCSSFunc(self.getCSS)
 		###
 		if justificationParam:

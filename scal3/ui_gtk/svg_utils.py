@@ -29,7 +29,7 @@ from scal3.ui_gtk import *
 
 def pixbufFromSvgFile(path: str, size: int):
 	if size <= 0:
-		raise ValueError(f"invalid size={size} for svg file {path}")
+		raise ValueError(f"invalid {size=} for svg file {path}")
 	if not isabs(path):
 		path = join(svgDir, path)
 	with open(path, "rb") as fp:

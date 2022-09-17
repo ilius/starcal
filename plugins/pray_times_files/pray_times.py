@@ -96,7 +96,7 @@ def readLocationData():
 		log.info(f"------------- reading {transPath}")
 		with open(transPath, encoding="utf8") as fp:
 			placeTransDict.update(json.load(fp))
-		log.info(f"------------- len(placeTransDict) = {len(placeTransDict)}")
+		log.info(f"------------- {len(placeTransDict)=}")
 
 
 	readTransFile(join(locationsDir, f"{langSh}.json"))
@@ -128,7 +128,7 @@ def readLocationData():
 		if p[0] == "":
 			if p[1] == "":
 				city, lat, lng = p[2:5]
-				log.debug(f"city={city}")
+				log.debug(f"{city=}")
 				if len(p) > 4:
 					cityData.append((
 						country + "/" + city,
@@ -137,7 +137,7 @@ def readLocationData():
 						float(lng)
 					))
 				else:
-					log.debug(f"country={country}, p={p}")
+					log.debug(f"{country=}, {p=}")
 			else:
 				country = p[1]
 	return cityData
@@ -366,7 +366,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		if not self.azanEnable:
 			return
 		# dt = tm - now()
-		# log.debug(f"---------------------------- doPlayAzan, dt={dt:.1f}")
+		# log.debug(f"---------------------------- doPlayAzan, {dt=:.1f}")
 		# if dt > 1:
 		# 	Timer(
 		# 		int(dt),
@@ -382,7 +382,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		if not self.preAzanEnable:
 			return
 		# dt = tm - now()
-		# log.debug(f"---------------------------- doPlayPreAzan, dt={dt:.1f}")
+		# log.debug(f"---------------------------- doPlayPreAzan, {dt=:.1f}")
 		# if dt > 1:
 		# 	Timer(
 		# 		int(dt),
@@ -426,14 +426,14 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 					0,
 					int(preAzanSec - secondsFromMidnight)
 				)
-				log.debug(f"toPreAzanSec={toPreAzanSec:.1f}")
+				log.debug(f"{toPreAzanSec=:.1f}")
 				Timer(
 					toPreAzanSec,
 					self.doPlayPreAzan,
 					# midnightUtc + preAzanSec,
 				).start()
 				###
-				log.debug(f"toAzanSecs={toAzanSecs:.1f}")
+				log.debug(f"{toAzanSecs=:.1f}")
 				Timer(
 					toAzanSecs,
 					self.doPlayAzan,

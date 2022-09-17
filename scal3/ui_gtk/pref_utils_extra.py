@@ -768,12 +768,12 @@ class KeyBindingPrefItem(PrefItem):
 	def onMenuModifyKeyClick(self, menu: gtk.Menu, rowI: int):
 		trees = self.treev.get_model()
 		row = trees[rowI]
-		print(f"Modify Key: row={row}")
+		print(f"Modify Key: {row=}")
 
 	#def onMenuDefaultKeyClick(self, menu: gtk.Menu, rowI: int):
 	#	trees = self.treev.get_model()
 	#	row = trees[rowI]
-	#	print(f"Default Key: row={row}")
+	#	print(f"Default Key: {row=}")
 
 	def onMenuDeleteClick(self, menu: gtk.Menu, rowI: int):
 		trees = self.treev.get_model()

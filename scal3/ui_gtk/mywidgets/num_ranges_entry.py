@@ -89,7 +89,7 @@ class NumRangesEntry(gtk.Entry):
 			endI = nextCommaI
 		dashI = text.find("-", startI, endI)
 		if dashI != -1:
-			# log.debug(f"dashI={dashI!r}")
+			# log.debug(f"{dashI=}")
 			if pos < dashI:
 				endI = dashI
 			else:
@@ -167,10 +167,10 @@ class NumRangesEntry(gtk.Entry):
 			self.insertText(self.digs[kval - ord("0")])
 		else:
 			uniVal = gdk.keyval_to_unicode(kval)
-			# log.debug(f"uniVal={uniVal!r}")
+			# log.debug(f"{uniVal=}")
 			if uniVal != 0:
 				ch = chr(uniVal)
-				# log.debug(f"ch={ch!r}")
+				# log.debug(f"{ch=}")
 				if ch in self.digs:
 					self.insertText(ch)
 				if gevent.get_state() & gdk.ModifierType.CONTROL_MASK:

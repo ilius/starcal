@@ -480,7 +480,7 @@ class TestHijri(unittest.TestCase):
 			self.assertEqual(
 				jdActual,
 				jd,
-				f"date={date}, jd={jd}, jdActual={jdActual}",
+				f"{date=}, {jd=}, {jdActual=}",
 			)
 
 	def test_jd_to(self):
@@ -489,7 +489,7 @@ class TestHijri(unittest.TestCase):
 			self.assertEqual(
 				dateActual,
 				date,
-				f"jd={jd}, date={date}, dateActual={dateActual}",
+				f"{jd=}, {date=}, {dateActual=}",
 			)
 
 def print_to_jd_diff():
@@ -517,8 +517,8 @@ def gen_test_jd_to_date(golang=False):
 		print(f"\t\t{jd}: ({year}, {month}, {day}),")
 
 if __name__ == "__main__":
-	# print(f"startDate = {hijri.monthDb.startDate}")
-	print(f"endJd = {hijri.monthDb.endJd}")
+	# print(f"{hijri.monthDb.startDate = }")
+	print(f"{hijri.monthDb.endJd = }")
 	# print("map[int]int" + repr(hijri.monthDb.monthLenByYm).replace(": ", ":"))
 	# print_to_jd_diff()
 	# gen_test_date_to_jd(golang=True)

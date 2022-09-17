@@ -166,7 +166,7 @@ def main():
 		prefix = "/usr/local"
 	else:
 		prefix = "/usr/local"
-	print(f"prefix = {prefix}")
+	print(f"{prefix = }")
 
 	pyCmd = options.get("python", "")
 	if pyCmd:
@@ -306,6 +306,6 @@ def main():
 
 
 if __name__ == "__main__":
-	# print(f"sourceDir = {sourceDir!r}")
-	# print(f"version = {version!r}")
+	# print(f"{sourceDir=}")
+	# print(f"{version=}")
 	sys.exit(main())

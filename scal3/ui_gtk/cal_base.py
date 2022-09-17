@@ -58,7 +58,7 @@ class CalBase(CustomizableCalObj):
 		try:
 			CustomizableCalObj.connect(self, sigName, *a, **ka)
 		except Exception:
-			log.exception(f"sigName={sigName}")
+			log.exception(f"{sigName=}")
 
 	def initCal(self):
 		self.initVars()
@@ -160,7 +160,7 @@ class CalBase(CustomizableCalObj):
 			self.queue_draw()
 		else:
 			log.info(
-				f"Unknown dropped data type {dtype!r}, text={text!r}, " +
+				f"Unknown dropped data type {dtype!r}, {text=}, " +
 				f"data={selection.data!r}"
 			)
 			return True

@@ -401,7 +401,7 @@ class GoogleAccount(Account):
 			return "no service"  # fix msg FIXME
 		groups = []
 		for group in service.calendarList().list().execute()["items"]:
-			# log.debug(f"group = {group}")
+			# log.debug(f"{group = }")
 			groups.append({
 				"id": group["id"],
 				"title": group["summary"],
@@ -527,7 +527,7 @@ class GoogleAccount(Account):
 			if event.remoteIds:
 				if event.remoteIds[:2] == (self.id, remoteGroupId):
 					remoteEventId = event.remoteIds[2]
-			# log.debug(f"---------- remoteEventId = {remoteEventId}")
+			# log.debug(f"---------- {remoteEventId = }")
 			if remoteEventId and lastSync and event.modified < lastSync:
 				log.info(
 					f"---------- skipping event {event.summary}" +
@@ -604,7 +604,7 @@ if __name__ == "__main__":
 	# groupId = 102
 	# ui.eventGroups = event_lib.EventGroupsHolder.load()
 	# group = ui.eventGroups[groupId]
-	# log.debug(f"group.remoteIds = {group.remoteIds}")
+	# log.debug(f"{group.remoteIds = }")
 	# group.remoteIds = (account.id, remoteGroupId)
 	# account.sync(group, remoteGroupId)  # 400 Bad Request
 	# group.save()

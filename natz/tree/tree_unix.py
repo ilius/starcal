@@ -50,7 +50,7 @@ def _addZoneNode(parentDict, zone, zoneNamesLevel):
 				zoneNamesLevel,
 			)
 	else:
-		log.error(f"invalid path = {path}")
+		log.error(f"invalid {path=}")
 
 
 def getZoneInfoTree():

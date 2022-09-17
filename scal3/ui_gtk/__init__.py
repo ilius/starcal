@@ -115,8 +115,8 @@ def getScrollValue(gevent, last=""):
 	# is_scroll_stop_event is new in version 3.20.
 	if value == "smooth":  # happens *sometimes* in PyGI (Gtk3)
 		# log.debug(
-		#	f"Scroll: value={value}, delta_y={gevent.delta_y}, " +
-		#	f"is_stop={gevent.is_stop}={gevent.is_scroll_stop_event()}"
+		#	f"Scroll: {value=}, {gevent.delta_y=}, " +
+		#	f"{gevent.is_stop=}={gevent.is_scroll_stop_event()}"
 		#)
 		if gevent.delta_y < 0:  # -1.0 (up)
 			value = "up"

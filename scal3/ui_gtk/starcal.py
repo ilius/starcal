@@ -165,7 +165,7 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 				try:
 					item = CalObj(win)
 				except Exception as e:
-					log.error(f"name={name}, module={module}")
+					log.error(f"{name=}, {module=}")
 					raise e
 				item.enable = enable
 				# modify_bg_all(
@@ -547,7 +547,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		# called 0.0004 sec (max) after focusIn
 		# (if switched between two windows)
 		dt = now() - ui.focusTime
-		log.debug(f"MainWin: focusOut: focusTime={ui.focusTime}, dt={dt}")
+		log.debug(f"MainWin: focusOut: {ui.focusTime=}, {dt=}")
 		if dt > 0.05:  # FIXME
 			self.focus = False
 			timeout_add(2, self.focusOutDo)
@@ -627,7 +627,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def onMainButtonPress(self, obj, gevent):
 		# only for mainVBox for now, not rightPanel
 		# does not work for statusBar, don't know why
-		# log.debug(f"MainWin: onMainButtonPress, button={gevent.button}")
+		# log.debug(f"MainWin: onMainButtonPress, {gevent.button=}")
 		b = gevent.button
 		if b == 3:
 			self.menuMainCreate()

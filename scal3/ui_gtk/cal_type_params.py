@@ -48,7 +48,7 @@ class XAlignComboBox(gtk.ComboBoxText):
 		elif index == 2:
 			return "right"
 		else:
-			log.info(f"XAlignComboBox: unexpected index = {index}")
+			log.info(f"XAlignComboBox: unexpected {index = }")
 
 	def set(self, value):
 		if value == "left":
@@ -79,7 +79,7 @@ class YAlignComboBox(gtk.ComboBoxText):
 		elif index == 2:
 			return "buttom"
 		else:
-			log.info(f"YAlignComboBox: unexpected index = {index}")
+			log.info(f"YAlignComboBox: unexpected {index = }")
 
 	def set(self, value):
 		if value == "top":

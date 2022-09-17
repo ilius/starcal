@@ -42,13 +42,13 @@ class BaseButton(object):
 			raise ValueError("y is not given")
 
 		if x < 0 and xalign != "center":
-			raise ValueError(f"invalid x={x}, xalign={xalign}")
+			raise ValueError(f"invalid {x=}, {xalign=}")
 		if y < 0 and yalign != "center":
-			raise ValueError(f"invalid y={y}, yalign={yalign}")
+			raise ValueError(f"invalid {y=}, {yalign=}")
 		if xalign not in ("left", "right", "center"):
-			raise ValueError(f"invalid xalign={xalign}")
+			raise ValueError(f"invalid {xalign=}")
 		if yalign not in ("top", "buttom", "center"):
-			raise ValueError(f"invalid yalign={yalign}")
+			raise ValueError(f"invalid {yalign=}")
 
 		self.onPress = onPress
 		self.onRelease = onRelease
@@ -102,7 +102,7 @@ class SVGButton(BaseButton):
 		self.imageName = imageName
 		pixbuf = pixbufFromFile(imageName, iconSize)
 		if pixbuf is None:
-			raise RuntimeError(f"could not get pixbuf for imageName={imageName!r}")
+			raise RuntimeError(f"could not get pixbuf for {imageName=}")
 
 		# we assume that svg image is square
 		self.setSize(iconSize, iconSize)

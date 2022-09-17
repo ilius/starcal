@@ -120,7 +120,7 @@ def getIntervalListByPoints(
 	for pos, ptype, _ in points:
 		if ptype in (OPEN_END, CLOSED_END):
 			if not startedStack:
-				raise RuntimeError(f"pos={pos}, start=None")
+				raise RuntimeError(f"{pos=}, start=None")
 			start = startedStack.pop()
 			# log.debug(f"pop {start}")
 			if not startedStack:
@@ -179,7 +179,7 @@ def intersectionOfTwoIntervalList(*lists):
 			if None not in openStartList:
 				start = max(openStartList)
 				if start > pos:
-					raise RuntimeError(f"start - pos = {start-pos}")
+					raise RuntimeError(f"{start - pos = }")
 				if pos > start or ptype == CLOSED_END:
 					result.append((
 						start,
@@ -187,7 +187,7 @@ def intersectionOfTwoIntervalList(*lists):
 						ptype == CLOSED_END,
 					))
 				# if start == pos:  # FIXME
-				# 	log.info(f"start = pos={start%(24*3600)/3600.0}, ptype={ptype}")
+				# 	log.info(f"start: pos={start%(24*3600)/3600.0}, {ptype=}")
 			openStartList[lst_index] = None
 		else:  # start
 			# start == pos
@@ -195,8 +195,7 @@ def intersectionOfTwoIntervalList(*lists):
 				openStartList[lst_index] = pos
 			else:
 				raise RuntimeError(
-					f"pos={pos}, openStartList[{lst_index}]=" +
-					f"{openStartList[lst_index]}"
+					f"{pos=}, {openStartList[lst_index]=}"
 				)
 	result = humanizeIntervalList(result)  # right place? FIXME
 	return result
