@@ -45,7 +45,11 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 		if self.controller.light:
 			imName += "-light"
 		self.im.set_from_pixbuf(pixbufFromFile(
-			imName + ".svg",
+			join(
+				"wm",
+				self.controller.theme,
+				imName + ".svg"
+			),
 			ui.winControllerIconSize,
 		))
 
@@ -100,9 +104,9 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 class WinConButtonMin(WinConButton):
 	_name = "min"
 	desc = _("Minimize Window")
-	imageName = "wm-minimize"
-	imageNameFocus = "wm-minimize-focus"
-	imageNameInactive = "wm-minimize-inactive"
+	imageName = "minimize"
+	imageNameFocus = "minimize-focus"
+	imageNameInactive = "minimize-inactive"
 
 	def onClick(self, gWin, gevent):
 		gWin.toggleMinimized(gevent)
@@ -111,9 +115,9 @@ class WinConButtonMin(WinConButton):
 class WinConButtonMax(WinConButton):
 	_name = "max"
 	desc = _("Maximize Window")
-	imageName = "wm-maximize"
-	imageNameFocus = "wm-maximize-focus"
-	imageNameInactive = "wm-maximize-inactive"
+	imageName = "maximize"
+	imageNameFocus = "maximize-focus"
+	imageNameInactive = "maximize-inactive"
 
 	def onClick(self, gWin, gevent):
 		gWin.toggleMaximized(gevent)
@@ -126,9 +130,9 @@ class WinConButtonMax(WinConButton):
 class WinConButtonClose(WinConButton):
 	_name = "close"
 	desc = _("Close Window")
-	imageName = "wm-close"
-	imageNameFocus = "wm-close-focus"
-	imageNameInactive = "wm-close-inactive"
+	imageName = "close"
+	imageNameFocus = "close-focus"
+	imageNameInactive = "close-inactive"
 
 	def onClick(self, gWin, gevent):
 		gWin.emit("delete-event", gdk.Event())
@@ -140,9 +144,9 @@ class WinConButtonRightPanel(WinConButton):
 	
 	def __init__(self, controller):
 		direc = "left" if rtl else "right"
-		self.imageName = f"wm-{direc}"
-		self.imageNameFocus = f"wm-{direc}-focus"
-		self.imageNameInactive = f"wm-{direc}-inactive"		
+		self.imageName = f"{direc}"
+		self.imageNameFocus = f"{direc}-focus"
+		self.imageNameInactive = f"{direc}-inactive"
 		WinConButton.__init__(self, controller)
 
 	def onClick(self, gWin, gevent):
@@ -184,6 +188,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		cls._name: cls
 		for cls in buttonClassList
 	}
+	theme = "default"
 
 	def __init__(self, win):
 		self.win = win
