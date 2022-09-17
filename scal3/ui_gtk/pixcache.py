@@ -40,13 +40,9 @@ makeDir(cacheDir)
 
 
 def cacheSaveLoop():
-	# while (qitem := saveQueue.get()) is not None:
-	while True:  # to improve with Python 3.8 PEP 572
-		# Queue.get: Remove and return an item from the queue.
-		# If queue is empty, wait until an item is available.
-		qitem = saveQueue.get()
-		if qitem is None:
-			return
+	# Queue.get: Remove and return an item from the queue.
+	# If queue is empty, wait until an item is available.
+	while (qitem := saveQueue.get()) is not None:
 		fpath, pixbuf = qitem
 		if pixbuf is None:
 			log.error(f"cacheSaveLoop: pixbuf={pixbuf}, fpath={fpath}")
