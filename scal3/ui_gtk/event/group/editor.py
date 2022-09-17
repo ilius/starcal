@@ -65,16 +65,17 @@ class GroupEditorDialog(gtk.Dialog):
 		pass
 
 	def getNewGroupTitle(self, baseTitle):
-		usedTitles = [group.title for group in ui.eventGroups]
+		usedTitles = set(group.title for group in ui.eventGroups)
 		if baseTitle not in usedTitles:
 			return baseTitle
-		i = 1
-		while True:
-			newTitle = baseTitle + " " + _(i)
-			if newTitle in usedTitles:
-				i += 1
-			else:
-				return newTitle
+
+		def makeTitle(n: int) -> str:
+			return baseTitle + " " + _(n)
+
+		num = 1
+		while makeTitle(num) in usedTitles:
+			num += 1
+		return makeTitle(num)
 
 	def typeChanged(self, combo=None):
 		if self.activeWidget:

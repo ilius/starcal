@@ -580,19 +580,23 @@ class IcsTextPlugin(BasePlugin):
 		self.ymd = None
 		self.md = None
 
+	def _findVeventBegin(self, lines) -> int:
+		for i, line in enumerate(lines):
+			if line == "BEGIN:VEVENT":
+				return i
+		return -1
+
 	def load(self):
 		with open(self.file, encoding="utf-8") as fp:
 			lines = fp.read().replace("\r", "").split("\n")
 		n = len(lines)
-		i = 0
-		while True:
-			try:
-				if lines[i] == "BEGIN:VEVENT":
-					break
-			except IndexError:
-				log.error(f"bad ics file \"{self.fpath}\"")
-				return
-			i += 1
+		i = self._findVeventBegin(lines)
+		if i < 0:
+			log.error(f"bad ics file \"{self.fpath}\"")
+			return
+
+		# FIXME: refactor this shit
+
 		SUMMARY = ""
 		DESCRIPTION = ""
 		DTSTART = None

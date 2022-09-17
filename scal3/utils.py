@@ -362,7 +362,7 @@ def numRangesDecode(text: str) -> List[Union[int, Tuple[int, int]]]:
 
 
 def inputDate(msg: str) -> Optional[Tuple[int, int, int]]:
-	while True:
+	while True:  # OK
 		try:
 			date = input(msg)
 		except KeyboardInterrupt:

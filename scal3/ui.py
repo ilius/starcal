@@ -796,7 +796,7 @@ def getEvent(groupId: int, eventId: int) -> event_lib.Event:
 
 def duplicateGroupTitle(group: event_lib.EventGroup) -> None:
 	title = group.title
-	titleList = [g.title for g in eventGroups]
+	usedTitles = set(g.title for g in eventGroups)
 	parts = title.split("#")
 	try:
 		index = int(parts[-1])
@@ -804,13 +804,15 @@ def duplicateGroupTitle(group: event_lib.EventGroup) -> None:
 	except (IndexError, ValueError):
 		# log.exception("")
 		index = 1
-	index += 1
-	while True:
-		newTitle = title + "#" + str(index)
-		if newTitle not in titleList:
-			group.title = newTitle
-			return
-		index += 1
+
+	def makeTitle(n: int) -> str:
+		return title + "#" + _(n)
+
+	newTitle, index = makeTitle(index), index + 1
+	while newTitle in usedTitles:
+		newTitle, index = makeTitle(index), index + 1
+
+	group.title = newTitle
 
 
 def init() -> None:

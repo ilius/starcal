@@ -327,7 +327,8 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 				"".join(occurData["text"]) if self.showDesc
 				else occurData["text"][0]
 			)
-			self.addText(text)
+			for line in text.split("\n"):
+				self.addText(line + "\n")
 		self.occurOffsets = occurOffsets
 
 	def moveEventToGroupFromMenu(self, item, event, prev_group, newGroup):

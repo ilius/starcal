@@ -142,18 +142,14 @@ def goodkill(pid, interval=1, hung=20):
 			return
 		sleep(interval)
 
-	i = 0
-	while True:
-		# infinite-loop protection
-		if i < hung:
-			i += 1
-		else:
-			raise OSError(f"Process {pid} is hung. Giving up kill.")
+	for i in range(hung):
 		if kill(pid, SIGKILL):
 			return
 		if dead(pid):
 			return
 		sleep(interval)
+
+	raise OSError(f"Process {pid} is hung. Giving up kill.")
 
 
 def fixStrForFileNameForWindows(fname: str) -> str:

@@ -163,21 +163,18 @@ class TimeLineTree:
 		else:
 			raise RuntimeError
 		########
-		while True:
-			if node.s0 <= t0 < node.s1 and node.s0 < t1 <= node.s1:
-				break
+		while not (node.s0 <= t0 < node.s1 and node.s0 < t1 <= node.s1):
 			node = node.newParent()
 		# now `node` is the new side (left/right) node
 		if isRight:
 			self.right = node
 		else:
 			self.left = node
-		while True:
+		while True:  # OK
 			child = node.getChild(t0)
-			if child.s0 <= t1 <= child.s1:
-				node = child
-			else:
+			if not child.s0 <= t1 <= child.s1:
 				break
+			node = child
 		# now `node` is the node that event should be placed in
 		ev_tuple = (
 			t0 - node.offset,

@@ -2193,7 +2193,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		# outside Event Manager
 
 	def removeIterChildren(self, _iter: gtk.TreeIter) -> None:
-		while True:
+		# while (childIter := self.treeModel.iter_children(_iter)) is not None:
+		while True:  # to improve with Python 3.8 PEP 572
 			childIter = self.treeModel.iter_children(_iter)
 			if childIter is None:
 				break

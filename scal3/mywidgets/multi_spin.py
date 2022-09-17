@@ -286,9 +286,10 @@ class ContainerField(Field):
 		i = 0
 		n = len(text)
 		fn = len(self)
-		while True:
+		# while 0 <= (i2 := text.find(self.sep, i + 1)) < pos:
+		while True:  # to improve with Python 3.8 PEP 572
 			i2 = text.find(self.sep, i + 1)
-			if i2 == -1 or i2 >= pos:
+			if i2 < 0 or i2 >= pos:
 				break
 			i = i2
 			fieldIndex += 1

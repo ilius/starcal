@@ -29,10 +29,8 @@ class MaxHeap(list):
 
 	def sink(self, k):
 		N = len(self)
-		while True:
+		while 2 * k < N - 1:
 			j = 2 * k + 1
-			if j > N - 1:
-				break
 			if j < N - 1 and self.less(j, j + 1):
 				j += 1
 			if self.less(j, k):

@@ -10,7 +10,7 @@ from scal3 import event_lib
 if __name__ == "__main__":
 	fs = event_lib.DefaultFileSystem(confDir)
 	jsonStr = ""
-	while True:
+	while True:  # OK
 		try:
 			line = input()
 		except EOFError:

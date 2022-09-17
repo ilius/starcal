@@ -95,7 +95,7 @@ class EventUpdateQueue(Queue):
 		self._paused = False
 
 	def runLoop(self):
-		while True:
+		while True:  # OK
 			if self._paused:
 				sleep(0.2)
 				continue
