@@ -26,7 +26,7 @@ from time import time as now
 import sys
 import os
 import os.path
-from os.path import dirname, join, isfile, splitext, isabs
+from os.path import dirname, join, isfile, isdir, splitext, isabs
 from collections import OrderedDict
 from cachetools import LRUCache
 
@@ -1501,10 +1501,12 @@ dragRecMode = core.GREGORIAN   # apply in Pref FIXME
 monthRMenuNum = True
 # monthRMenu
 
+_wmDir = join(svgDir, "wm")
 winControllerThemeList = [
-	"default",
-	"grayscale",
+	name for name in os.listdir(_wmDir)
+	if isdir(join(_wmDir, name))
 ]
+
 winControllerTheme = "default"
 winControllerButtons = (
 	("sep", True),
