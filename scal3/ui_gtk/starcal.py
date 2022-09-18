@@ -367,6 +367,10 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			],
 		)
 		layoutFooter.setItemsOrder(ui.mainWinFooterItems)
+
+		def x_large(text):
+			return "<span size='x-large'>" + text + "</span>"
+
 		self.layout = WinLayoutBox(
 			name="layout",
 			desc=_("Main Window"),
@@ -391,7 +395,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 					items=[
 						WinLayoutObj(
 							name="mainPanel",
-							desc=_("Main Panel"),
+							desc=x_large(_("Main Panel")),
 							enableParam="",
 							vertical=True,
 							expand=True,

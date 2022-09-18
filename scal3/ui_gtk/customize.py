@@ -182,6 +182,7 @@ def newSubPageButton(
 	)
 	hbox.set_border_width(borderWidth)
 	label = gtk.Label(label=page.pageLabel)
+	label.set_use_markup(True)
 	label.set_use_underline(True)
 	label.set_angle(labelAngle)
 	pack(hbox, gtk.Label(), 1, 1)
