@@ -121,8 +121,6 @@ class PreferencesWindow(gtk.Window):
 		)
 
 	def __init__(self, **kwargs):
-		from math import ceil
-		##
 		gtk.Window.__init__(self, **kwargs)
 		self.set_title(_("Preferences"))
 		self.set_position(gtk.WindowPosition.CENTER)
@@ -1154,7 +1152,7 @@ class PreferencesWindow(gtk.Window):
 		self.defaultWidget = button
 		###
 		N = len(mainPages)
-		rowN = int(ceil(N / colN))
+		rowN = (N - 1) // colN + 1
 		for col_i in range(colN):
 			colVBox = VBox(spacing=10)
 			for row_i in range(rowN):

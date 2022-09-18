@@ -31,7 +31,6 @@ import shutil
 from time import localtime
 from time import time as now
 import sys
-from math import ceil
 
 from scal3.path import pixDir
 from scal3 import ui
@@ -45,10 +44,6 @@ from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 from gi.repository.Gtk import IconTheme
 
 _ = str  # FIXME
-
-
-def iceil(f):
-	return int(ceil(f))
 
 
 def error_exit(resCode, text, **kwargs):

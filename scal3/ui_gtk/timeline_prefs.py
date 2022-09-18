@@ -18,8 +18,6 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-from math import ceil
-
 from scal3.locale_man import tr as _
 
 from scal3 import ui
@@ -868,7 +866,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			self.defaultWidget = button
 		###
 		N = len(mainPages)
-		colBN = int(ceil(N / colN))
+		colBN = (N - 1) // colN + 1
 		for col_i in range(colN):
 			colVBox = VBox(spacing=10)
 			for row_i in range(colBN):
