@@ -41,6 +41,8 @@ from scal3.ui_gtk.drawing import calcTextPixelWidth
 
 
 class AutoSizeEntry(gtk.Entry):
+	extra_width = 10  # optimal value depends on theme
+
 	def __init__(self, *args, maxChars=0, **kwargs):
 		gtk.Entry.__init__(self, *args, **kwargs)
 		self.set_width_chars(maxChars)
@@ -55,7 +57,7 @@ class AutoSizeEntry(gtk.Entry):
 		text = self.get_text()
 		text = " " + text + " "
 		pixelWidth = calcTextPixelWidth(self, text)
-		pixelWidth += 6
+		pixelWidth += self.extra_width
 		# log.debug(f"{self.__class__.__name__}: text={text}, pixelWidth={pixelWidth}, max={self.maxChars}")
 		if pixelWidth < self.maxPixelWidth:
 			pixelWidth = self.maxPixelWidth
