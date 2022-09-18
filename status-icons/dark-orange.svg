@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg version="1.1" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<filter id="b" x="-.036509" y="-.17599" width="1.073" height="1.3391" color-interpolation-filters="sRGB">
+<feGaussianBlur stdDeviation="6.36"/>
+</filter>
+<filter id="a" x="-.031958" y="-.037651" width="1.0639" height="1.0753" color-interpolation-filters="sRGB">
+<feGaussianBlur stdDeviation="2.189"/>
+</filter>
+</defs>
+<path d="M2.706 32.705h123.112v93.054H2.706z" fill="#333" stroke="#000" stroke-width=".704"/>
+<path transform="matrix(.25795 0 0 .25795 2.3534 2.2099)" d="m480 341.66s-15.54 43.348-37.398 59.326c-19.695 14.397-44.192 17.074-44.192 17.074s-10.886 23.213-24.618 36.49c-17.413 16.838-57.766 26.603-57.766 26.603s68.33 2.697 111.28-35.453c47.907-42.553 55.153-102.84 52.693-104.04z" fill="#adadad" fill-rule="evenodd" filter="url(#a)" opacity=".695"/>
+<path d="m2.61 2.25h123.3v30.657h-123.3z" fill="#e55c00" stroke="#000" stroke-width=".511"/>
+<path transform="matrix(.25985 0 0 .25793 2.3542 2.2109)" d="m12.188 103.96v-94.164l452.52 2.63 1.18 90.07s-0.844-30.444-7.778-52.828c-4.007-12.935-14.48-25.684-38.17-26.267-83.06 0.193-325.64-1.503-365.6-1.905-27.521 2.062-29.457 15.084-34.969 27.114-5.628 12.284-5.716 35.965-7.18 55.35z" fill-rule="evenodd" filter="url(#b)" opacity=".473" stroke="#000" stroke-width="2.6"/>
+<text transform="scale(.99394 1.0061)" x="118.711" y="107.611" fill="#fff" font-size="225.02" letter-spacing="0" word-spacing="0" xml:space="preserve"><tspan x="65.692" y="107.611" font-family="Sans" font-size="84.23" text-anchor="middle">TX</tspan></text>
+</svg>
+

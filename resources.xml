@@ -205,6 +205,11 @@
 		<license>Public Domain</license>
 		<comment>Minified by https://vecta.io/nano</comment>
 	</resource>
+	<resource path="status-icons/dark-orange.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment>Minified by https://www.svgminify.com/</comment>
+	</resource>
 	<resource path="status-icons/dark-red.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
