@@ -26,7 +26,7 @@ from time import time as now
 
 import sys
 import os
-from math import sqrt
+from math import isqrt
 
 from scal3.cal_types import calTypes
 from scal3 import core
@@ -666,14 +666,13 @@ class DayCal(gtk.DrawingArea, CalBase):
 		w: int, h: int,
 		x0: int, y0: int,
 	):
-		from math import ceil
 		iconList = c.getDayEventIcons()
 		if not iconList:
 			return
 		iconsN = len(iconList)
 
 		maxTotalSize = getattr(ui, self.eventTotalSizeRatioParam) * min(w, h)
-		sideCount = int(ceil(sqrt(iconsN)))
+		sideCount = isqrt(iconsN - 1) + 1
 		iconSize = min(
 			getattr(ui, self.eventIconSizeParam),
 			maxTotalSize / sideCount,
