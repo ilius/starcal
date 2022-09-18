@@ -47,7 +47,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 		self.im.set_from_pixbuf(pixbufFromFile(
 			join(
 				"wm",
-				self.controller.theme,
+				ui.winControllerTheme,
 				imName + ".svg"
 			),
 			ui.winControllerIconSize,
@@ -188,7 +188,6 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		cls._name: cls
 		for cls in buttonClassList
 	}
-	theme = "default"
 
 	def __init__(self, win):
 		self.win = win
@@ -233,10 +232,20 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		ui.winControllerButtons = self.getItemsData()
 
 	def getOptionsWidget(self) -> gtk.Widget:
-		from scal3.ui_gtk.pref_utils import SpinPrefItem
+		from scal3.ui_gtk.pref_utils import SpinPrefItem, ComboTextPrefItem
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = VBox()
+		####
+		prefItem = ComboTextPrefItem(
+			ui,
+			"winControllerTheme",
+			items=ui.winControllerThemeList,
+			label=_("Theme"),
+			live=True,
+			onChangeFunc=self.updateTheme,
+		)
+		pack(optionsWidget, prefItem.getWidget())
 		####
 		prefItem = SpinPrefItem(
 			ui,
@@ -274,6 +283,9 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		optionsWidget.show_all()
 		self.optionsWidget = optionsWidget
 		return optionsWidget
+
+	def updateTheme(self):
+		pass
 
 	def updateButtons(self):
 		for item in self.items:

@@ -145,6 +145,7 @@ confParamsCustomize = (
 	"mainWinRightPanelEventSep",
 	"eventDayViewEventSep",
 	"mainWinRightPanelBorderWidth",
+	"winControllerTheme",
 	"winControllerButtons",
 	"winControllerIconSize",
 	"winControllerBorder",
@@ -1499,6 +1500,12 @@ dragRecMode = core.GREGORIAN   # apply in Pref FIXME
 ####################
 monthRMenuNum = True
 # monthRMenu
+
+winControllerThemeList = [
+	"default",
+	"grayscale",
+]
+winControllerTheme = "default"
 winControllerButtons = (
 	("sep", True),
 	("rightPanel", True),

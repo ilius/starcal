@@ -2949,6 +2949,11 @@ msgid "If you want to have a transparent calendar (and see your desktop), change
 msgstr ""
 "اگر می‌خواهید یک تقویم شفاف داشته باشید (و تصویر میزکار دیده‌شود)، مقدار شفافیت رنگ زمینهٔ تقویم را تغییر دهید!"
 
+
+msgid "Theme"
+msgstr ""
+"تم"
+
 msgid "Colors"
 msgstr ""
 "رنگ‌ها"

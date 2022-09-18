@@ -793,80 +793,155 @@
 		<source>https://invent.kde.org/frameworks/oxygen-icons5/-/blob/master/scalable/actions/window-close.svgz</source>
 		<comment>Minified by www.svgminify.com</comment>
 	</resource>
-	<resource path="svg/wm-close-focus.svg">
+	<resource path="svg/wm/default/close-focus.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment>Minified by www.svgminify.com</comment>
 	</resource>
-	<resource path="svg/wm-close-inactive.svg">
+	<resource path="svg/wm/default/close-inactive.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment>Minified by www.svgminify.com</comment>
 	</resource>
-	<resource path="svg/wm-close.svg">
+	<resource path="svg/wm/default/close.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment>Minified by www.svgminify.com</comment>
 	</resource>
-	<resource path="svg/wm-left-focus.svg">
+	<resource path="svg/wm/default/left-focus.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment>Minified by www.svgminify.com</comment>
 	</resource>
-	<resource path="svg/wm-left-inactive.svg">
+	<resource path="svg/wm/default/left-inactive.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment>Minified by www.svgminify.com</comment>
 	</resource>
-	<resource path="svg/wm-left.svg">
+	<resource path="svg/wm/default/left.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment>Minified by www.svgminify.com</comment>
 	</resource>
-	<resource path="svg/wm-maximize-focus.svg">
+	<resource path="svg/wm/default/maximize-focus.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment>Minified by www.svgminify.com</comment>
 	</resource>
-	<resource path="svg/wm-maximize-inactive.svg">
+	<resource path="svg/wm/default/maximize-inactive.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment>Minified by www.svgminify.com</comment>
 	</resource>
-	<resource path="svg/wm-maximize.svg">
+	<resource path="svg/wm/default/maximize.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment>Minified by www.svgminify.com</comment>
 	</resource>
-	<resource path="svg/wm-minimize-focus.svg">
+	<resource path="svg/wm/default/minimize-focus.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment>Minified by www.svgminify.com</comment>
 	</resource>
-	<resource path="svg/wm-minimize-inactive.svg">
+	<resource path="svg/wm/default/minimize-inactive.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment>Minified by www.svgminify.com</comment>
 	</resource>
-	<resource path="svg/wm-minimize.svg">
+	<resource path="svg/wm/default/minimize.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment>Minified by www.svgminify.com</comment>
 	</resource>
-	<resource path="svg/wm-right-focus.svg">
+	<resource path="svg/wm/default/right-focus.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment>Minified by www.svgminify.com</comment>
 	</resource>
-	<resource path="svg/wm-right-inactive.svg">
+	<resource path="svg/wm/default/right-inactive.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment>Minified by www.svgminify.com</comment>
 	</resource>
-	<resource path="svg/wm-right.svg">
+	<resource path="svg/wm/default/right.svg">
 		<author>Saeed Rasooli</author>
 		<license>Public Domain</license>
 		<comment>Minified by www.svgminify.com</comment>
+	</resource>
+	<resource path="svg/wm/grayscale/close-focus.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment></comment>
+	</resource>
+	<resource path="svg/wm/grayscale/close-inactive.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment></comment>
+	</resource>
+	<resource path="svg/wm/grayscale/close.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment></comment>
+	</resource>
+	<resource path="svg/wm/grayscale/left-focus.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment></comment>
+	</resource>
+	<resource path="svg/wm/grayscale/left-inactive.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment></comment>
+	</resource>
+	<resource path="svg/wm/grayscale/left.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment></comment>
+	</resource>
+	<resource path="svg/wm/grayscale/maximize-focus.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment></comment>
+	</resource>
+	<resource path="svg/wm/grayscale/maximize-inactive.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment></comment>
+	</resource>
+	<resource path="svg/wm/grayscale/maximize.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment></comment>
+	</resource>
+	<resource path="svg/wm/grayscale/minimize-focus.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment></comment>
+	</resource>
+	<resource path="svg/wm/grayscale/minimize-inactive.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment></comment>
+	</resource>
+	<resource path="svg/wm/grayscale/minimize.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment></comment>
+	</resource>
+	<resource path="svg/wm/grayscale/right-focus.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment></comment>
+	</resource>
+	<resource path="svg/wm/grayscale/right-inactive.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment></comment>
+	</resource>
+	<resource path="svg/wm/grayscale/right.svg">
+		<author>Saeed Rasooli</author>
+		<license>Public Domain</license>
+		<comment></comment>
 	</resource>
 	<resource path="svg/year-wheel.svg">
 		<author>Saeed Rasooli</author>

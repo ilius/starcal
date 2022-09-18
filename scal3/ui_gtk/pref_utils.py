@@ -186,21 +186,46 @@ class ComboTextPrefItem(PrefItem):
 		obj: Any,
 		attrName: str,
 		items: Optional[List[str]] = None,
+		label: str = "",
+		labelSizeGroup: Optional[gtk.SizeGroup] = None,
+		live: bool = False,
+		onChangeFunc: Optional[Callable] = None,
 	) -> None:
 		self.obj = obj
 		self.attrName = attrName
 		combo = gtk.ComboBoxText()
 		self._combo = combo
-		self._widget = combo
+		self._items = items
 		if items:
 			for s in items:
 				combo.append_text(s)
 
+		if label or unitLabel:
+			hbox = HBox(spacing=3)
+			pack(hbox, newAlignLabel(sgroup=labelSizeGroup, label=label))
+			pack(hbox, combo)
+			self._widget = hbox
+		else:
+			self._widget = combo
+
+		if live:
+			self._onChangeFunc = onChangeFunc
+			# updateWidget needs to be called before following connect() calls
+			self.updateWidget()
+			combo.connect("changed", self.onChange)
+		elif onChangeFunc is not None:
+			raise ValueError("onChangeFunc is given without live=True")
+
+	def onChange(self, w: gtk.Widget) -> None:
+		self.updateVar()
+		if self._onChangeFunc:
+			self._onChangeFunc()
+
 	def get(self) -> int:
-		return self._widget.get_active()
+		return self._combo.get_active_text()
 
 	def set(self, value: int) -> None:
-		self._widget.set_active(value)
+		self._combo.set_active(self._items.index(value))
 
 
 class FontFamilyPrefItem(PrefItem):
