@@ -799,10 +799,10 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			return
 		if len(eventsData) < 4:  # TODO: make it customizable
 			for eData in eventsData:
-				groupId, eventId = eData["ids"]
+				groupId, eventId = eData.ids
 				menu.add(ImageMenuItem(
-					label=_("Edit") + ": " + self.trimMenuItemLabel(eData["text"][0], 25),
-					imageName=eData["icon"],
+					label=_("Edit") + ": " + self.trimMenuItemLabel(eData.text[0], 25),
+					imageName=eData.icon,
 					func=self.editEventFromMenu,
 					args=(groupId, eventId,),
 				))
@@ -813,10 +813,10 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				imageName="list-add.svg",
 			)
 			for eData in eventsData:
-				groupId, eventId = eData["ids"]
+				groupId, eventId = eData.ids
 				subMenu.add(ImageMenuItem(
-					eData["text"][0],
-					imageName=eData["icon"],
+					eData.text[0],
+					imageName=eData.icon,
 					func=self.editEventFromMenu,
 					args=(groupId, eventId,),
 				))
@@ -1269,12 +1269,12 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			if text != "":
 				tt += "\n\n" + text  # .replace("\t", "\n") ## FIXME
 		for item in ui.todayCell.getEventsData():
-			if not item["showInStatusIcon"]:
+			if not item.showInStatusIcon:
 				continue
 			itemS = ""
-			if item["time"]:
-				itemS += item["time"] + " - "
-			itemS += item["text"][0]
+			if item.time:
+				itemS += item.time + " - "
+			itemS += item.text[0]
 			tt += "\n\n" + itemS
 		return tt
 

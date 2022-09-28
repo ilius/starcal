@@ -478,9 +478,9 @@ class Cell(CellType):
 	def getEventIcons(self, showIndex: int) -> List[str]:
 		iconList = []
 		for item in self.getEventsData():
-			if not item["show"][showIndex]:
+			if not item.show[showIndex]:
 				continue
-			icon = item["icon"]
+			icon = item.icon
 			if icon and icon not in iconList:
 				iconList.append(icon)
 		return iconList

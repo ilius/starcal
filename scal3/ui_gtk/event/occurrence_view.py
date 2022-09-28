@@ -312,20 +312,20 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		for index, occurData in enumerate(cell.getEventsData()):
 			lastEndOffset = self.textbuff.get_end_iter().get_offset()
 			occurOffsets.append((lastEndOffset, occurData))
-			if not occurData["show"][0]:
+			if not occurData.show[0]:
 				continue
 			if index > 0:
 				self.addText(eventSep)
-			# occurData["time"], occurData["text"], occurData["icon"]
-			if occurData["icon"]:
-				self.addIcon(occurData["icon"])
+			# occurData.time, occurData.text, occurData.icon
+			if occurData.icon:
+				self.addIcon(occurData.icon)
 				self.addText(" ")
-			if occurData["time"]:
-				self.addTime(occurData["time"])
+			if occurData.time:
+				self.addTime(occurData.time)
 				self.addText(" ")
 			text = (
-				"".join(occurData["text"]) if self.showDesc
-				else occurData["text"][0]
+				"".join(occurData.text) if self.showDesc
+				else occurData.text[0]
 			)
 			for line in text.split("\n"):
 				self.addText(line + "\n")
@@ -353,7 +353,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 	):
 		newEvent = newGroup.create(newEventType)
 		newEvent.copyFrom(event)
-		startEpoch, endEpoch = occurData["time_epoch"]
+		startEpoch, endEpoch = occurData.time_epoch
 		newEvent.setStartEpoch(startEpoch)
 		newEvent.setEnd("epoch", endEpoch)
 		newEvent.afterModify()
@@ -420,7 +420,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		menu.add(moveToItem)
 		###
 		if not event.isSingleOccur:
-			newEventType = "allDayTask" if occurData["is_allday"] else "task"
+			newEventType = "allDayTask" if occurData.is_allday else "task"
 			newEventTypeDesc = event_lib.classes.event.byName[newEventType].desc
 			copyOccurItem = ImageMenuItem(
 				label=_("Copy as {eventType} to...").format(
@@ -461,7 +461,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		if event_lib.allReadOnly:
 			return
 		####
-		groupId, eventId = occurData["ids"]
+		groupId, eventId = occurData.ids
 		event = ui.getEvent(groupId, eventId)
 		group = ui.eventGroups[groupId]
 		####
@@ -613,15 +613,13 @@ class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
 		cells, wEventData = ui.cellCache.getWeekData(self.absWeekNumber)
 		self.ls.clear()
 		for item in wEventData:
-			if not "show" in item:
-				raise RuntimeError(f"bad {item=}")
-			if not item["show"][1]:
+			if not item.show[1]:
 				continue
 			self.ls.append([
-				pixbufFromFile(item["icon"]),
-				core.getWeekDayAuto(item["weekDay"], abbreviate=self.abbreviateWeekDays),
-				item["time"],
-				item["text"],
+				pixbufFromFile(item.icon),
+				core.getWeekDayAuto(item.weekDay, abbreviate=self.abbreviateWeekDays),
+				item.time,
+				item.text,
 			])
 
 
@@ -667,12 +665,12 @@ class MonthOccurrenceView(gtk.TreeView, event_lib.MonthOccurrenceView):
 		self.updateData()
 		self.ls.clear()## FIXME
 		for item in self.data:
-			if not item["show"][2]:
+			if not item.show[2]:
 				continue
 			self.ls.append(
-				pixbufFromFile(item["icon"]),
-				_(item["day"]),
-				item["time"],
-				item["text"],
+				pixbufFromFile(item.icon]),
+				_(item.day),
+				item.time,
+				item.text,
 			)
 """

@@ -692,7 +692,7 @@ class EventsCountColumn(Column):
 
 	def getDayTextData(self, i):
 		n = len(self.wcal.status[i].getEventsData())
-		# FIXME: item["show"][1]
+		# FIXME: item.show[1]
 		if n > 0:
 			line = _("{eventCount} events").format(eventCount=_(n))
 		else:
@@ -734,22 +734,22 @@ class EventsTextColumn(Column):
 		data = []
 		currentTime = now()
 		for item in self.wcal.status[i].getEventsData():
-			if not item["show"][1]:
+			if not item.show[1]:
 				continue
 			line = (
-				"".join(item["text"]) if ui.wcal_eventsText_showDesc
-				else item["text"][0]
+				"".join(item.text) if ui.wcal_eventsText_showDesc
+				else item.text[0]
 			)
 			line = escape(line)
-			if item["time"]:
-				line = item["time"] + " " + line
+			if item.time:
+				line = item.time + " " + line
 			color = ""
 			if ui.wcal_eventsText_colorize:
-				color = item["color"]
-			if item["time_epoch"][1] < currentTime:
+				color = item.color
+			if item.time_epoch[1] < currentTime:
 				if ui.wcal_eventsText_pastColorEnable:
 					color = ui.wcal_eventsText_pastColor
-			elif item["time_epoch"][0] <= currentTime:
+			elif item.time_epoch[0] <= currentTime:
 				if ui.wcal_eventsText_ongoingColorEnable:
 					color = ui.wcal_eventsText_ongoingColor
 			data.append((line, color))
