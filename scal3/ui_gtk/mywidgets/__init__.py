@@ -106,10 +106,10 @@ class MyFontButton(gtk.FontButton):
 		)
 		return True
 
-	def get_font(self) -> Tuple[str, bool, bool, float]:
+	def get_font(self) -> ui.Font:
 		return gfontDecode(gtk.FontButton.get_font(self))
 
-	def set_font(self, font: Tuple[str, bool, bool, float]):
+	def set_font(self, font: ui.Font):
 		gtk.FontButton.set_font(self, gfontEncode(font))
 
 
