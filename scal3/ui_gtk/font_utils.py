@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 from gi.repository import Pango as pango
+from scal3 import ui
+
 W_NORMAL = pango.Weight.NORMAL
 S_NORMAL = pango.Style.NORMAL
 BOLD = pango.Weight.BOLD
@@ -13,20 +15,20 @@ ITALIC = pango.Style.ITALIC
 
 
 def pfontDecode(pfont):
-	return [
-		pfont.get_family(),
-		pfont.get_weight() == BOLD,
-		pfont.get_style() == ITALIC,
-		pfont.get_size() / 1024,
-	]
+	return ui.Font(
+		family=pfont.get_family(),
+		bold=pfont.get_weight() == BOLD,
+		italic=pfont.get_style() == ITALIC,
+		size=pfont.get_size() / 1024,
+	)
 
 
 def pfontEncode(font):
 	pfont = pango.FontDescription()
-	pfont.set_family(font[0])
-	pfont.set_weight(BOLD if font[1] else W_NORMAL)
-	pfont.set_style(ITALIC if font[2] else S_NORMAL)
-	pfont.set_size(int(font[3] * 1024))
+	pfont.set_family(font.family)
+	pfont.set_weight(BOLD if font.bold else W_NORMAL)
+	pfont.set_style(ITALIC if font.italic else S_NORMAL)
+	pfont.set_size(int(font.size * 1024))
 	return pfont
 
 
