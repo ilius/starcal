@@ -377,12 +377,12 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		fillColor(cr, tick.color)
 		# fillColor never seems to raise exception anymore (in Gtk3)
 		###
-		font = [
+		font = ui.Font(
 			fontFamily,
 			False,
 			False,
 			tick.fontSize,
-		]
+		)
 		# layout = newLimitedWidthTextLayout(
 		# 	self,
 		# 	tick.label,

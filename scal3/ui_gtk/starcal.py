@@ -1293,7 +1293,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				if ui.statusIconFontFamily:
 					family = ui.statusIconFontFamily
 				else:
-					family = ui.getFont()[0]
+					family = ui.getFont().family
 				style.append(("font-family", family))
 			if ui.statusIconHolidayFontColorEnable and ui.statusIconHolidayFontColor:
 				if ui.todayCell.holiday:

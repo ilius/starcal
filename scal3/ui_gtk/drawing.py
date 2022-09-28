@@ -41,7 +41,7 @@ from scal3.ui_gtk.color_utils import *
 from gi.repository.PangoCairo import show_layout
 
 if not ui.fontCustom:
-	ui.fontCustom = ui.fontDefault[:]
+	ui.fontCustom = ui.fontDefault.copy()
 
 with open(join(sourceDir, "svg", "special", "color-check.svg")) as fp:  # noqa: FURB101
 	colorCheckSvgTextChecked = fp.read()
@@ -90,7 +90,8 @@ def newTextLayout(
 	"""
 	layout = widget.create_pango_layout("")  # a Pango.Layout object
 	if font:
-		font = list(font)
+		assert isinstance(font, ui.Font)
+		# should we copy the font? font = font.copy()
 	else:
 		font = ui.getFont()
 	layout.set_font_description(pfontEncode(font))
@@ -110,7 +111,7 @@ def newTextLayout(
 				minRat = 1.01 * layoutH / maxH  # FIXME
 			if truncate:
 				if minRat > 1:
-					font[3] = int(font[3] / minRat)
+					font.size /= minRat
 				layout.set_font_description(pfontEncode(font))
 				layoutW, layoutH = layout.get_pixel_size()
 				if layoutW > 0:
@@ -136,7 +137,7 @@ def newTextLayout(
 				if minRat < layoutW / maxW:
 					minRat = layoutW / maxW
 				if minRat > 1:
-					font[3] = int(font[3] / minRat)
+					font.size /= minRat
 				layout.set_font_description(pfontEncode(font))
 	return layout
 
@@ -189,11 +190,11 @@ def newLimitedWidthTextLayout(
 def calcTextPixelSize(
 	widget: gtk.Widget,
 	text: str,
-	font: Optional[Tuple[str, bool, bool, float]] = None,
+	font: "Optional[Font]" = None,
 ) -> Tuple[float, float]:
 	layout = widget.create_pango_layout(text)  # a Pango.Layout object
 	if font is not None:
-		layout.set_font_description(pfontEncode(list(font)))
+		layout.set_font_description(pfontEncode(font))
 	width, height = layout.get_pixel_size()
 	return width, height
 
@@ -201,7 +202,7 @@ def calcTextPixelSize(
 def calcTextPixelWidth(
 	widget: gtk.Widget,
 	text: str,
-	font: "Optional[List]" = None,
+	font: "Optional[Font]" = None,
 ) -> float:
 	width, height = calcTextPixelSize(widget, text, font=font)
 	return width

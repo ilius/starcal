@@ -858,7 +858,7 @@ class PreferencesWindow(gtk.Window):
 		#   x-large		= default * 1.44
 		#   xx-large	= default * 1.7279
 		######
-		size = ui.getFont()[3]
+		size = ui.getFont().size
 		######
 		cell = gtk.CellRendererToggle()
 		# cell.set_property("activatable", True)

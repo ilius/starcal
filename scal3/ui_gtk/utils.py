@@ -581,7 +581,7 @@ class CopyLabelMenuItem(MenuItem):
 
 
 def cssTextStyle(
-	font: "Optional[Tuple[str, bool, bool, float]]" = None,
+	font: "Optional[Font]" = None,
 	fgColor: "Optional[ColorType]" = None,
 	bgColor: "Optional[ColorType]" = None,
 	extra: "Optional[Dict[str, str]]" = None,
@@ -589,10 +589,10 @@ def cssTextStyle(
 	lines = []
 	if font:
 		lines += [
-			f"\tfont-family: {font[0]};",
-			f"\tfont-size: {font[3]}pt;",
-			f"\tfont-weight: {'bold' if font[1] else 'normal'};",
-			f"\tfont-style: {'italic' if font[2] else 'normal'};",
+			f"\tfont-family: {font.family};",
+			f"\tfont-size: {font.size}pt;",
+			f"\tfont-weight: {'bold' if font.bold else 'normal'};",
+			f"\tfont-style: {'italic' if font.italic else 'normal'};",
 		]
 	if fgColor:
 		lines.append(f"\tcolor: {rgbToCSS(fgColor)};")

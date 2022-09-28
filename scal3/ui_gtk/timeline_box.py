@@ -126,11 +126,11 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 	if avgCharW < 3:  # FIXME
 		return
 
-	font = list(ui.getFont())
+	font = ui.getFont()
 	layout = widget.create_pango_layout(text) ## a Pango.Layout object
 	layout.set_font_description(pfontEncode(font))
 	layoutW, layoutH = layout.get_pixel_size()
-	# log.debug(f"orig font size: {font[3]}")
+	# log.debug(f"orig font size: {font.size}")
 	normRatio = min(
 		textW / layoutW,
 		textH / layoutH,
@@ -143,7 +143,7 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 	fillColor(cr, tl.fgColor)  # before cr.move_to
 
 	if tl.rotateBoxLabel == 0 or rotateRatio <= normRatio:
-		font[3] *= normRatio
+		font.size *= normRatio
 		layout.set_font_description(pfontEncode(font))
 		layoutW, layoutH = layout.get_pixel_size()
 		cr.move_to(
@@ -153,7 +153,7 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 		show_layout(cr, layout)
 		return
 
-	font[3] *= rotateRatio
+	font.size *= rotateRatio
 	layout.set_font_description(pfontEncode(font))
 	layoutW, layoutH = layout.get_pixel_size()
 	cr.move_to(
