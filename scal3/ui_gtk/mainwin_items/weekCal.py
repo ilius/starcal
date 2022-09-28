@@ -337,7 +337,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 		self,
 		cr: "cairo.Context",
 		textData: List[List[str]],
-		font: Optional[Tuple[str, bool, bool, float]] = None,
+		font: "Optional[Font]" = None,
 	):
 		alloc = self.get_allocation()
 		w = alloc.width
@@ -347,8 +347,8 @@ class Column(gtk.DrawingArea, ColumnBase):
 		itemW = w - ui.wcalPadding
 		if font is None:
 			fontName = self.getFontValue()
-			fontSize = ui.getFont()[-1]  # FIXME
-			font = [fontName, False, False, fontSize] if fontName else None
+			fontSize = ui.getFont().size  # FIXME
+			font = ui.Font(fontName, False, False, fontSize) if fontName else None
 		for i in range(7):
 			data = textData[i]
 			if data:
