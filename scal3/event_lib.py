@@ -1128,7 +1128,7 @@ class DateAndTimeEventRule(DateEventRule):
 
 	def setDate(self, date: Tuple[int, int, int]) -> None:
 		if len(date) != 3:
-			raise ValueError(f"DateAndTimeEventRule.setDate: bad date = {date!r}")
+			raise ValueError(f"DateAndTimeEventRule.setDate: bad {date = }")
 		self.date = date
 		self.time = (0, 0, 0)
 
@@ -4691,7 +4691,7 @@ class EventGroup(EventContainer):
 			# if not event.remoteIds:  # FIXME
 			eventHist = event.loadHistory()
 			if not eventHist:
-				log.info(f"eventHist = {eventHist!r}")
+				log.info(f"{eventHist = }")
 				continue
 			# assert event.modified == eventHist[0][0]
 			if eventHist[0][0] > sinceEpoch:
@@ -4929,7 +4929,7 @@ class UniversityTerm(EventGroup):
 				currentWeekNumMode = "odd"
 			else:
 				currentWeekNumMode = "even"
-			# log.debug(f"currentWeekNumMode = {currentWeekNumMode}")
+			# log.debug(f"{currentWeekNumMode = }")
 		else:
 			currentWeekNumMode = ""
 		###
