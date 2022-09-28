@@ -539,10 +539,8 @@ class CalObj(gtk.Box, CustomizableCalObj):
 	@staticmethod
 	def getFont():
 		font = ui.getFont()
-		if ui.labelBoxFontEnable and ui.labelBoxFont:
-			font = list(ui.labelBoxFont)  # make a copy to be safe to modify
 		if ui.boldYmLabel:
-			font[1] = True
+			font = font._replace(bold=True)
 		return font
 
 	def __init__(self, win):
@@ -647,9 +645,8 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			font=font,
 		)
 		if ui.labelBoxPrimaryFontEnable and ui.labelBoxPrimaryFont:
-			pFont = list(ui.labelBoxPrimaryFont)
 			if ui.boldYmLabel:
-				pFont[1] = True
+				pFont = pFont._replace(bold=True)
 			css += "\n." + CalObj.styleClass + " ." + primaryCalStyleClass + " " + cssTextStyle(
 				font=pFont,
 			)

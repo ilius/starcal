@@ -278,7 +278,7 @@ class FontFamilyPrefItem(PrefItem):
 		if self.hasAuto and self.autoRadio.get_active():
 			return None
 		font = gfontDecode(self.fontButton.get_font_name())
-		return font[0]
+		return font.family
 
 	def set(self, value: Optional[str]) -> None:
 		if value is None:
@@ -288,7 +288,7 @@ class FontFamilyPrefItem(PrefItem):
 		# now value is not None
 		if self.hasAuto:
 			self.fontRadio.set_active(True)
-		self.fontButton.set_font(gfontEncode((value, False, False, 15)))
+		self.fontButton.set_font(gfontEncode(ui.Font(family=value, size=15)))
 
 	def onChange(self, w: gtk.Widget) -> None:
 		self.updateVar()

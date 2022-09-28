@@ -97,8 +97,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		self.updateTimeFont()
 
 	def updateTimeFont(self):
-		font = list(ui.getFont())
-		font[1] = True  # bold by default
+		font = ui.getFont(bold=True)  # bold by default
 		if self.timeFontParams:
 			enableParam, fontParam = self.timeFontParams
 			if getattr(ui, enableParam):

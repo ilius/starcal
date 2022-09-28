@@ -90,7 +90,8 @@ def newTextLayout(
 	"""
 	layout = widget.create_pango_layout("")  # a Pango.Layout object
 	if font:
-		font = list(font)
+		assert isinstance(font, ui.Font)
+		pass # font = ui.Font(*font)
 	else:
 		font = ui.getFont()
 	layout.set_font_description(pfontEncode(font))
@@ -110,7 +111,7 @@ def newTextLayout(
 				minRat = 1.01 * layoutH / maxH  # FIXME
 			if truncate:
 				if minRat > 1:
-					font[3] = int(font[3] / minRat)
+					font = font._replace(size=font.size / minRat)
 				layout.set_font_description(pfontEncode(font))
 				layoutW, layoutH = layout.get_pixel_size()
 				if layoutW > 0:
@@ -136,7 +137,7 @@ def newTextLayout(
 				if minRat < layoutW / maxW:
 					minRat = layoutW / maxW
 				if minRat > 1:
-					font[3] = int(font[3] / minRat)
+					font = font._replace(size=font.size / minRat)
 				layout.set_font_description(pfontEncode(font))
 	return layout
 
@@ -193,7 +194,7 @@ def calcTextPixelSize(
 ) -> Tuple[float, float]:
 	layout = widget.create_pango_layout(text)  # a Pango.Layout object
 	if font is not None:
-		layout.set_font_description(pfontEncode(list(font)))
+		layout.set_font_description(pfontEncode(font))
 	width, height = layout.get_pixel_size()
 	return width, height
 
@@ -201,7 +202,7 @@ def calcTextPixelSize(
 def calcTextPixelWidth(
 	widget: gtk.Widget,
 	text: str,
-	font: "Optional[List]" = None,
+	font: "Optional[Tuple[str, bool, bool, float]]" = None,
 ) -> float:
 	width, height = calcTextPixelSize(widget, text, font=font)
 	return width

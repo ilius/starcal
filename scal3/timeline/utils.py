@@ -20,7 +20,7 @@
 
 from scal3 import ui
 
-fontFamily = ui.getFont()[0]
+fontFamily = ui.getFont().family
 
 dayLen = 24 * 3600
 minYearLenSec = 365 * dayLen

@@ -28,6 +28,7 @@ import os
 import os.path
 from os.path import dirname, join, isfile, isdir, splitext, isabs
 from collections import OrderedDict
+from collections import namedtuple
 from cachetools import LRUCache
 
 from typing import (
@@ -639,31 +640,49 @@ def yearPlus(plus: int = 1) -> None:
 	cell = cellCache.getCellByDate(year, month, day)
 
 
+Font = namedtuple(
+	"Font", [
+		"family",  # Optional[str]
+		"bold",  # bool
+		"italic",  # bool
+		"size",  # float
+	],
+	defaults=[
+		None,
+		False,
+		False,
+		None,
+	],
+)
+
+
 def getFont(
 	scale=1.0,
-	familiy=True,
+	family=True,
+	bold=False,
 ) -> Tuple[Optional[str], bool, bool, float]:
 	(
-		name,
-		bold,
-		underline,
-		size,
+		_family,
+		_bold,
+		_italic,
+		_size,
 	) = fontCustom if fontCustomEnable else fontDefaultInit
-	return [
-		name if familiy else None,
-		bold,
-		underline,
-		size * scale,
-	]
+	return Font(
+		family=_family if family else None,
+		bold=_bold or bold,
+		italic=_italic,
+		size=_size * scale,
+	)
 
 
 def getParamsFont(params: Dict) -> Optional[Tuple[str, bool, bool, float]]:
 	font = params.get("font")
 	if not font:
 		return None
-	if font[0] is None:
-		font = list(font)  # copy
-		font[0] = getFont()[0]
+	if not isinstance(font, Font):
+		font = Font(*font)
+	if font.family is None:
+		font = font._replace(family=getFont().family)
 	return font
 
 
@@ -675,44 +694,44 @@ def initFonts(fontDefaultNew: Tuple[str, bool, bool, float]) -> None:
 	########
 	###
 	if mcalTypeParams[0]["font"] is None:
-		mcalTypeParams[0]["font"] = getFont(1.0, familiy=False)
+		mcalTypeParams[0]["font"] = getFont(1.0, family=False)
 	###
 	for item in mcalTypeParams[1:]:
 		if item["font"] is None:
-			item["font"] = getFont(0.6, familiy=False)
+			item["font"] = getFont(0.6, family=False)
 	######
 	if dcalDayParams[0]["font"] is None:
-		dcalDayParams[0]["font"] = getFont(10.0, familiy=False)
+		dcalDayParams[0]["font"] = getFont(10.0, family=False)
 	###
 	for item in dcalDayParams[1:]:
 		if item["font"] is None:
-			item["font"] = getFont(3.0, familiy=False)
+			item["font"] = getFont(3.0, family=False)
 	######
 	if dcalMonthParams[0]["font"] is None:
-		dcalMonthParams[0]["font"] = getFont(5.0, familiy=False)
+		dcalMonthParams[0]["font"] = getFont(5.0, family=False)
 	###
 	for item in dcalMonthParams[1:]:
 		if item["font"] is None:
-			item["font"] = getFont(2.0, familiy=False)
+			item["font"] = getFont(2.0, family=False)
 	######
 	if dcalWinDayParams[0]["font"] is None:
-		dcalWinDayParams[0]["font"] = getFont(5.0, familiy=False)
+		dcalWinDayParams[0]["font"] = getFont(5.0, family=False)
 	###
 	for item in dcalWinDayParams[1:]:
 		if item["font"] is None:
-			item["font"] = getFont(2.0, familiy=False)
+			item["font"] = getFont(2.0, family=False)
 	######
 	if dcalWinMonthParams[0]["font"] is None:
-		dcalWinMonthParams[0]["font"] = getFont(2.5, familiy=False)
+		dcalWinMonthParams[0]["font"] = getFont(2.5, family=False)
 	###
 	for item in dcalWinMonthParams[1:]:
 		if item["font"] is None:
-			item["font"] = getFont(1.5, familiy=False)
+			item["font"] = getFont(1.5, family=False)
 	######
 	if dcalWeekdayParams["font"] is None:
-		dcalWeekdayParams["font"] = getFont(1.0, familiy=False)
+		dcalWeekdayParams["font"] = getFont(1.0, family=False)
 	if dcalWinWeekdayParams["font"] is None:
-		dcalWinWeekdayParams["font"] = getFont(1.0, familiy=False)
+		dcalWinWeekdayParams["font"] = getFont(1.0, family=False)
 
 
 def getHolidaysJdList(startJd: int, endJd: int) -> List[int]:
@@ -1655,6 +1674,11 @@ def updateFocusTime(*args):
 loadConf()
 
 ########################################################
+
+if not isinstance(fontDefault, Font):
+	fontDefault = Font(*fontDefault)
+if fontCustom and not isinstance(fontCustom, Font):
+	fontCustom = Font(*fontCustom)
 
 if not isfile(statusIconImage):
 	statusIconImage = statusIconImageDefault
