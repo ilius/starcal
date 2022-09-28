@@ -8,6 +8,15 @@ import json
 from collections import OrderedDict
 
 
+from json import JSONEncoder
+
+def _default(self, obj):
+    return getattr(obj.__class__, "to_json", _default.default)(obj)
+
+_default.default = JSONEncoder().default
+JSONEncoder.default = _default
+
+
 def dataToPrettyJson(data, ensure_ascii=False, sort_keys=False):
 	try:
 		return json.dumps(
