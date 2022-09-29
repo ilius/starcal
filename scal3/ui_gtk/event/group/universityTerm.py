@@ -463,11 +463,11 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 			for i, dayData in enumerate(self.data[wd]):
 				textList = []
 				for classData in dayData:
-					text = classData["name"]
-					if classData["weekNumMode"]:
+					text = classData.name
+					if classData.weekNumMode:
 						text += (
 							"(<span color=\"#f00\">" +
-							_(classData["weekNumMode"].capitalize()) +
+							_(classData.weekNumMode.capitalize()) +
 							"</span>)"
 						)
 					textList.append(text)

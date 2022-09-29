@@ -32,7 +32,7 @@ from typing import Tuple, List, Dict, Set, Any, ClassVar, Callable, Iterator
 
 import natz
 
-from collections import OrderedDict
+from collections import OrderedDict, namedtuple
 
 from .path import *
 
@@ -4802,6 +4802,14 @@ class YearlyGroup(EventGroup):
 		self.showDate = True
 
 
+WeeklyScheduleItem = namedtuple(
+	"WeeklyScheduleItem", [
+		"name",  # type: str, Course Name
+		"weekNumMode",  # type: str, values: "odd", "even", "any"
+	],
+)
+
+
 @classes.group.register
 class UniversityTerm(EventGroup):
 	name = "universityTerm"
@@ -4898,10 +4906,7 @@ class UniversityTerm(EventGroup):
 	) -> "List[List[List[Dict[str, Any]]]]":
 		"""
 		returns `data` as a nested list that:
-			data[weekDay][classIndex] = {
-				"name": "Course Name",
-				"weekNumMode": "odd",
-			}
+			data[weekDay][classIndex] = WeeklyScheduleItem(name, weekNumMode)
 		where
 			weekDay: int, in range(7)
 			classIndex: int
@@ -4959,10 +4964,10 @@ class UniversityTerm(EventGroup):
 			startIndex = findNearestIndex(boundsHour, h0)
 			endIndex = findNearestIndex(boundsHour, h1)
 			###
-			classData = {
-				"name": self.getCourseNameById(event.courseId),
-				"weekNumMode": weekNumMode,
-			}
+			classData = WeeklyScheduleItem(
+				name=self.getCourseNameById(event.courseId),
+				weekNumMode=weekNumMode,
+			)
 			for i in range(startIndex, endIndex):
 				data[weekDay][i].append(classData)
 
@@ -6230,8 +6235,6 @@ class Account(BsonHistEventObj):
 
 
 ########################################################################
-
-from collections import namedtuple
 
 DayOccurData = namedtuple(
 	"DayOccurData", [
