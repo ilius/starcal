@@ -43,7 +43,7 @@ def init():
 	try:
 		import logging.config
 
-		with open(join(sourceDir, "conf", "logging-user.conf")) as fp:
+		with open(join(sourceDir, "conf", "logging-user.conf")) as fp:  # noqa: FURB101
 			logConfText = fp.read()
 		for varName in ("confDir", "APP_NAME"):
 			logConfText = logConfText.replace(varName, eval(varName))

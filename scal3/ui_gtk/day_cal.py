@@ -382,7 +382,6 @@ class DayCal(gtk.DrawingArea, CalBase):
 			prefItem = ColorPrefItem(
 				ui,
 				self.backgroundColorParam,
-				useAlpha=False,
 				live=True,
 				onChangeFunc=self.queue_draw,
 			)
@@ -434,7 +433,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 				self.weekdayParamsParam,
 				self,
 				params,
-				sgroupLabel=None,
+				# sgroupLabel=None,
 				desc=_("Week Day"),
 				hasEnable=True,
 				hasAlign=True,
@@ -502,7 +501,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			ui,
 			self.eventIconSizeParam,
 			5, 999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Icon Size"),
 			live=True,
 			onChangeFunc=self.queue_draw,
@@ -752,7 +751,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			w, h,
 			x, y,
 			geo["xalign"], geo["yalign"],
-			autoDir=False,
+			autoDir=False,  # noqa: FURB120
 		)
 
 		xc = x + radius
@@ -774,7 +773,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			self,
 			textNumEncode(
 				f"%{int(seasonFrac * 100)}",
-				changeSpecialChars=True,
+				# changeSpecialChars=True,
 			),
 			maxSize=(textSize, textSize),
 		)
