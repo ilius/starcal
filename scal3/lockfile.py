@@ -19,8 +19,8 @@ def get_cmdline(proc):
 	# log.debug(psutil.version_info, proc.cmdline)
 	if isinstance(proc.cmdline, list):  # psutil < 2.0
 		return proc.cmdline
-	else:  # psutil >= 2.0
-		return proc.cmdline()
+	# psutil >= 2.0
+	return proc.cmdline()
 
 
 def checkAndSaveJsonLockFile(fpath):
@@ -28,7 +28,7 @@ def checkAndSaveJsonLockFile(fpath):
 	my_pid = os.getpid()
 	if isfile(fpath):
 		try:
-			with open(fpath) as fp:
+			with open(fpath) as fp:  # noqa: FURB101
 				text = fp.read()
 		except Exception:
 			log.exception("")
@@ -70,7 +70,7 @@ def checkAndSaveJsonLockFile(fpath):
 			("time", now()),
 		]))
 		try:
-			with open(fpath, "w") as fp:
+			with open(fpath, "w") as fp:  # noqa: FURB103
 				fp.write(my_text)
 		except Exception as e:
 			log.error(f"failed to write lock file {fpath}: {e}")
