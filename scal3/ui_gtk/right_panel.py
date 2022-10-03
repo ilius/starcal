@@ -234,7 +234,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		page.pageIcon = ""
 		subPages.append(page)
 		###
-		button = newSubPageButton(self, page, borderWidth=10)
+		button = newSubPageButton(self, page, borderWidth=10)  # noqa: FURB120
 		pack(optionsWidget, button)
 		#####
 		prefItem = FixedSizeOrRatioPrefItem(
@@ -246,7 +246,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			ratioItem=SpinPrefItem(ui, "mainWinRightPanelWidthRatio", 0, 1, digits=3),
 			onChangeFunc=self.queue_resize,
 			vspacing=3,
-			hspacing=0,
+			# hspacing=0,
 		)
 		frame = gtk.Frame(label=_("Width"))
 		frame.add(prefItem.getWidget())
@@ -257,7 +257,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			ui,
 			"mainWinRightPanelBorderWidth",
 			1, 999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			unitLabel=_("pixels"),
 			label=_("Border Width"),
 			live=True,
@@ -274,14 +274,14 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		page.pageIcon = ""
 		subPages.append(page)
 		###
-		button = newSubPageButton(self, page, borderWidth=10)
+		button = newSubPageButton(self, page, borderWidth=10)  # noqa: FURB120
 		pack(optionsWidget, button)
 		###
 		prefItem = SpinPrefItem(
 			ui,
 			"rightPanelEventIconSize",
 			5, 128,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Event Icon Size"),
 			live=True,
 			onChangeFunc=self.onEventIconSizeChange,
@@ -299,7 +299,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		page.pageIcon = ""
 		subPages.append(page)
 		###
-		button = newSubPageButton(self, page, borderWidth=10)
+		button = newSubPageButton(self, page, borderWidth=10)  # noqa: FURB120
 		pack(optionsWidget, button)
 		###
 		pack(pluginsVBox, self.plugItem.getOptionsWidget())
@@ -308,9 +308,9 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			ui,
 			"mainWinRightPanelResizeOnToggle",
 			label=_("Resize on show/hide\nfrom window controller"),
-			tooltip="",
+			# tooltip="",
 			live=True,
-			onChangeFunc=None,
+			# onChangeFunc=None,
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		######
