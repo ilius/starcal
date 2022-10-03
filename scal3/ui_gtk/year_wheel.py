@@ -264,8 +264,8 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 					self,
 					text=getMonthName(calType, month, year),
 					maxSize=(layoutMaxW, layoutMaxH),
-					maximizeScale=0.6,
-					truncate=False,
+					maximizeScale=0.6,  # noqa: FURB120
+					# truncate=False,
 				)
 				layoutW, layoutH = layout.get_pixel_size()
 				lx, ly = goAngle(
@@ -322,7 +322,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				deltaR * 0.25,
 			),
 			maximizeScale=1.0,
-			truncate=False,
+			# truncate=False,
 		)
 		layoutW, layoutH = layout.get_pixel_size()
 		tickX, tickY = goAngle(

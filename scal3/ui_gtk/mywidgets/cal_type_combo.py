@@ -19,7 +19,7 @@ class CalTypeCombo(IdComboBox):
 		###
 		# None is converted to 0 for `int` column, so we use -1 and -2
 		if hasDefault:
-			ls.append([-1, _("Default Calendar Type")])
+			ls.append([-1, _("Default Calendar Type")])  # noqa: FURB113
 			ls.append([-2, None])  # separator
 
 		for i, mod in calTypes.iterIndexModuleActive():
