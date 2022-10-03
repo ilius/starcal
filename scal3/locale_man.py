@@ -32,6 +32,7 @@ from os.path import (
 from os.path import splitext
 import locale
 import gettext
+from contextlib import suppress
 
 from typing import Optional, Union, Set, Tuple, List, Dict, Callable
 
@@ -477,10 +478,8 @@ def floatEncode(
 
 def numDecode(numSt: str) -> int:
 	numSt = numSt.strip()
-	try:
+	with suppress(ValueError):
 		return int(numSt)
-	except ValueError:
-		pass
 	numSt = toStr(numSt)
 	tryLangs = list(digits.keys())
 	if langSh in digits:
@@ -540,10 +539,8 @@ def cutText(text: str, n: int) -> str:
 	newText = text[:n]
 	if len(text) > n:
 		if text[n] not in list(string.printable) + [ZWNJ]:
-			try:
+			with suppress(UnicodeDecodeError):
 				newText += ZWJ
-			except UnicodeDecodeError:
-				pass
 	return newText
 
 

@@ -22,6 +22,7 @@ from scal3 import logger
 log = logger.get()
 
 from datetime import datetime
+from contextlib import suppress
 from pprint import pprint
 
 from scal3.time_utils import (
@@ -211,10 +212,8 @@ class StarCalendarAccount(Account):
 			# simplejson.errors.JSONDecodeError
 			error = "non-json data: " + res.text
 		else:
-			try:
+			with suppress(KeyError):
 				error = data.pop("error")
-			except KeyError:
-				pass
 		return data, error
 
 	def __init__(self, aid=None):

@@ -43,7 +43,7 @@ from gi.repository.PangoCairo import show_layout
 if not ui.fontCustom:
 	ui.fontCustom = ui.fontDefault[:]
 
-with open(join(sourceDir, "svg", "special", "color-check.svg")) as fp:
+with open(join(sourceDir, "svg", "special", "color-check.svg")) as fp:  # noqa: FURB101
 	colorCheckSvgTextChecked = fp.read()
 colorCheckSvgTextUnchecked = re.sub(
 	"<path[^<>]*?id=\"check\"[^<>]*?/>",
@@ -229,7 +229,7 @@ def newColorCheckPixbuf(color, size, checked):
 
 def newDndDatePixbuf(ymd):
 	imagePath = join(sourceDir, "svg", "special", "dnd-date.svg")
-	with open(imagePath) as fp:
+	with open(imagePath) as fp:  # noqa: FURB101
 		data = fp.read()
 	data = data.replace("YYYY", f"{ymd[0]:04d}")
 	data = data.replace("MM", f"{ymd[1]:02d}")
@@ -246,7 +246,7 @@ def newDndDatePixbuf(ymd):
 
 def newDndFontNamePixbuf(name):
 	imagePath = join(sourceDir, "svg", "special", "dnd-font.svg")
-	with open(imagePath) as fp:
+	with open(imagePath) as fp:  # noqa: FURB101
 		data = fp.read()
 	data = data.replace("FONTNAME", name)
 	data = toBytes(data)

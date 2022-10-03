@@ -132,7 +132,7 @@ def getTagShortStat(obj, prevTag, tag):
 	repo = obj.repo
 	return getShortStat(
 		obj,
-		repo[prevTag if prevTag else 0],
+		repo[prevTag or 0],
 		repo[tag],
 	)
 

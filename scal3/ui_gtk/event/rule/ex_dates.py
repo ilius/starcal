@@ -99,37 +99,36 @@ class WidgetClass(gtk.Box):
 		##
 		toolbar = StaticToolBox(self, vertical=True)
 		##
-		toolbar.append(ToolBoxItem(
-			name="add",
-			imageName="list-add.svg",
-			onClick="onAddClick",
-			desc=_("Add"),
-			continuousClick=False,
-		))
-		##
-		toolbar.append(ToolBoxItem(
-			name="delete",
-			imageName="edit-delete.svg",
-			onClick="onDeleteClick",
-			desc=_("Delete", ctx="button"),
-			continuousClick=False,
-		))
-		##
-		toolbar.append(ToolBoxItem(
-			name="moveUp",
-			imageName="go-up.svg",
-			onClick="onMoveUpClick",
-			desc=_("Move up"),
-			continuousClick=False,
-		))
-		##
-		toolbar.append(ToolBoxItem(
-			name="moveDown",
-			imageName="go-down.svg",
-			onClick="onMoveDownClick",
-			desc=_("Move down"),
-			continuousClick=False,
-		))
+		toolbar.extend([
+			ToolBoxItem(
+				name="add",
+				imageName="list-add.svg",
+				onClick="onAddClick",
+				desc=_("Add"),
+				continuousClick=False,
+			),
+			ToolBoxItem(
+				name="delete",
+				imageName="edit-delete.svg",
+				onClick="onDeleteClick",
+				desc=_("Delete", ctx="button"),
+				continuousClick=False,
+			),
+			ToolBoxItem(
+				name="moveUp",
+				imageName="go-up.svg",
+				onClick="onMoveUpClick",
+				desc=_("Move up"),
+				continuousClick=False,
+			),
+			ToolBoxItem(
+				name="moveDown",
+				imageName="go-down.svg",
+				onClick="onMoveDownClick",
+				desc=_("Move down"),
+				continuousClick=False,
+			),
+		])
 		##
 		dialogHbox = HBox()
 		pack(dialogHbox, self.treev, 1, 1)

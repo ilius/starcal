@@ -28,6 +28,7 @@ from io import StringIO
 import os.path
 from os.path import join, isfile, isdir
 from collections import namedtuple
+from contextlib import suppress
 import re
 
 import typing
@@ -128,13 +129,12 @@ def loadConf() -> None:
 		prefVersion = version
 		del version
 	###########
-	try:
+	with suppress(NameError):
 		# activeCalTypes and inactiveCalType might be
 		# loaded from json config file
 		calTypes.activeNames = activeCalTypes
 		calTypes.inactiveNames = inactiveCalType
-	except NameError:
-		pass
+
 	activeCalTypes = inactiveCalTypes = None
 	calTypes.update()
 
@@ -350,10 +350,8 @@ def validatePlugList() -> None:
 		if allPlugList[i] is None:
 			allPlugList.pop(i)
 			n -= 1
-			try:
+			with suppress(NameError):
 				plugIndex.remove(i)
-			except ValueError:
-				pass
 		else:
 			i += 1
 	#####
@@ -619,12 +617,12 @@ eventTextSep = ": "  # use to separate summary from description for display
 
 licenseText = _("__license__")
 if licenseText in ("__license__", ""):
-	with open(f"{sourceDir}/license-dialog", encoding="utf-8") as fp:
+	with open(f"{sourceDir}/license-dialog", encoding="utf-8") as fp:  # noqa: FURB101
 		licenseText = fp.read()
 
 aboutText = _("aboutText")
 if aboutText in ("aboutText", ""):
-	with open(f"{sourceDir}/about", encoding="utf-8") as fp:
+	with open(f"{sourceDir}/about", encoding="utf-8") as fp:  # noqa: FURB101
 		aboutText = fp.read()
 
 

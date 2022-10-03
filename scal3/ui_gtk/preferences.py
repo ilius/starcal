@@ -26,6 +26,7 @@ from time import localtime
 import sys
 import os
 from os.path import join
+from contextlib import suppress
 
 from scal3.path import *
 from scal3.cal_types import calTypes
@@ -56,39 +57,41 @@ class PreferencesPluginsToolbar(StaticToolBox):
 			self,
 			parent,
 			vertical=True,
-			buttonBorder=0,
-			buttonPadding=0,
+			# buttonBorder=0,
+			# buttonPadding=0,
 		)
 		# with iconSize < 20, the button would not become smaller
 		# so 20 is the best size
-		self.append(ToolBoxItem(
-			name="goto-top",
-			imageName="go-top.svg",
-			onClick="plugTreeviewTop",
-			desc=_("Move to top"),
-			continuousClick=False,
-		))
-		self.append(ToolBoxItem(
-			name="go-up",
-			imageName="go-up.svg",
-			onClick="plugTreeviewUp",
-			desc=_("Move up"),
-			continuousClick=False,
-		))
-		self.append(ToolBoxItem(
-			name="go-down",
-			imageName="go-down.svg",
-			onClick="plugTreeviewDown",
-			desc=_("Move down"),
-			continuousClick=False,
-		))
-		self.append(ToolBoxItem(
-			name="goto-bottom",
-			imageName="go-bottom.svg",
-			onClick="plugTreeviewBottom",
-			desc=_("Move to bottom"),
-			continuousClick=False,
-		))
+		self.extend([
+			ToolBoxItem(
+				name="goto-top",
+				imageName="go-top.svg",
+				onClick="plugTreeviewTop",
+				desc=_("Move to top"),
+				continuousClick=False,
+			),
+			ToolBoxItem(
+				name="go-up",
+				imageName="go-up.svg",
+				onClick="plugTreeviewUp",
+				desc=_("Move up"),
+				continuousClick=False,
+			),
+			ToolBoxItem(
+				name="go-down",
+				imageName="go-down.svg",
+				onClick="plugTreeviewDown",
+				desc=_("Move down"),
+				continuousClick=False,
+			),
+			ToolBoxItem(
+				name="goto-bottom",
+				imageName="go-bottom.svg",
+				onClick="plugTreeviewBottom",
+				desc=_("Move to bottom"),
+				continuousClick=False,
+			),
+		])
 		self.buttonAdd = self.append(ToolBoxItem(
 			name="add",
 			imageName="list-add.svg",
@@ -305,10 +308,10 @@ class PreferencesWindow(gtk.Window):
 			"fontCustomEnable",
 			_("Application Font"),
 		)
-		self.uiPrefItems.append(customCheckItem)
+		self.uiPrefItems.append(customCheckItem)  # noqa: FURB113
 		pack(hbox, customCheckItem.getWidget())
 		###
-		customItem = FontPrefItem(ui, "fontCustom", dragAndDrop=True)
+		customItem = FontPrefItem(ui, "fontCustom")
 		self.uiPrefItems.append(customItem)
 		pack(hbox, customItem.getWidget())
 		pack(hbox, gtk.Label(), 1, 1)
@@ -1074,53 +1077,50 @@ class PreferencesWindow(gtk.Window):
 		#####
 		toolbar = StaticToolBox(self, vertical=True)
 		#####
-		toolbar.append(ToolBoxItem(
-			name="register",
-			imageName="starcal.svg",
-			onClick="onAccountsRegisterClick",
-			desc=_("Register at StarCalendar.net"),
-			continuousClick=False,
-		))
-		######
-		toolbar.append(ToolBoxItem(
-			name="add",
-			imageName="list-add.svg",
-			onClick="onAccountsAddClick",
-			desc=_("Add"),
-			continuousClick=False,
-		))
-		######
-		toolbar.append(ToolBoxItem(
-			name="edit",
-			imageName="document-edit.svg",
-			onClick="onAccountsEditClick",
-			desc=_("Edit"),
-			continuousClick=False,
-		))
-		######
-		toolbar.append(ToolBoxItem(
-			name="delete",
-			imageName="edit-delete.svg",
-			onClick="onAccountsDeleteClick",
-			desc=_("Delete", ctx="button"),
-			continuousClick=False,
-		))
-		######
-		toolbar.append(ToolBoxItem(
-			name="moveUp",
-			imageName="go-up.svg",
-			onClick="onAccountsUpClick",
-			desc=_("Move up"),
-			continuousClick=False,
-		))
-		######
-		toolbar.append(ToolBoxItem(
-			name="moveDown",
-			imageName="go-down.svg",
-			onClick="onAccountsDownClick",
-			desc=_("Move down"),
-			continuousClick=False,
-		))
+		toolbar.extend([
+			ToolBoxItem(
+				name="register",
+				imageName="starcal.svg",
+				onClick="onAccountsRegisterClick",
+				desc=_("Register at StarCalendar.net"),
+				continuousClick=False,
+			),
+			ToolBoxItem(
+				name="add",
+				imageName="list-add.svg",
+				onClick="onAccountsAddClick",
+				desc=_("Add"),
+				continuousClick=False,
+			),
+			ToolBoxItem(
+				name="edit",
+				imageName="document-edit.svg",
+				onClick="onAccountsEditClick",
+				desc=_("Edit"),
+				continuousClick=False,
+			),
+			ToolBoxItem(
+				name="delete",
+				imageName="edit-delete.svg",
+				onClick="onAccountsDeleteClick",
+				desc=_("Delete", ctx="button"),
+				continuousClick=False,
+			),
+			ToolBoxItem(
+				name="moveUp",
+				imageName="go-up.svg",
+				onClick="onAccountsUpClick",
+				desc=_("Move up"),
+				continuousClick=False,
+			),
+			ToolBoxItem(
+				name="moveDown",
+				imageName="go-down.svg",
+				onClick="onAccountsDownClick",
+				desc=_("Move down"),
+				continuousClick=False,
+			),
+		])
 		###########
 		pack(hbox, toolbar)
 		pack(vbox, hbox, 1, 1)
@@ -1215,10 +1215,8 @@ class PreferencesWindow(gtk.Window):
 	def comboFirstWDChanged(self, combo):
 		f = self.comboFirstWD.get_active()  # 0 means Sunday
 		if f == 7:  # auto
-			try:
+			with suppress(Exception):
 				f = core.getLocaleFirstWeekDay()
-			except Exception:
-				pass
 		# core.firstWeekDay will be later = f
 		self.holiWDItem.setStart(f)
 
@@ -1296,10 +1294,8 @@ class PreferencesWindow(gtk.Window):
 		first = self.comboFirstWD.get_active()
 		if first == 7:
 			core.firstWeekDayAuto = True
-			try:
+			with suppress(Exception):
 				core.firstWeekDay = core.getLocaleFirstWeekDay()
-			except Exception:
-				pass
 		else:
 			core.firstWeekDayAuto = False
 			core.firstWeekDay = first
@@ -1452,7 +1448,7 @@ class PreferencesWindow(gtk.Window):
 		if plug.about is None:
 			return
 		about = AboutDialog(
-			name="",  # FIXME
+			# name="",  # FIXME
 			title=_("About Plugin"),  # _("About ") + plug.title
 			authors=plug.authors,
 			comments=plug.about,
@@ -1482,7 +1478,7 @@ class PreferencesWindow(gtk.Window):
 
 	def plugTreevRActivate(self, treev, path, col):
 		if col.get_title() == _("Title"):  # FIXME
-			self.onPlugAboutClick(None)
+			self.onPlugAboutClick()
 
 	def plugTreevButtonPress(self, widget, gevent):
 		b = gevent.button

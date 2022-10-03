@@ -29,6 +29,7 @@ import os.path
 from os.path import dirname, join, isfile, isdir, splitext, isabs
 from collections import OrderedDict
 from cachetools import LRUCache
+from contextlib import suppress
 
 from typing import (
 	Any,
@@ -371,7 +372,7 @@ class Cell(CellType):
 	def __init__(self, jd: int):
 		self._eventsData = None  # type: Optional[List[Dict]]
 		self._pluginsText = []  # type: List[List[str]]
-		self._pluginsData = []  # type: List[Tuple[?,?]]
+		self._pluginsData = []  # List[Tuple[?,?]]
 		###
 		self.jd = jd
 		date = core.jd_to_primary(jd)
@@ -678,7 +679,7 @@ def initFonts(fontDefaultNew: Tuple[str, bool, bool, float]) -> None:
 	########
 	###
 	if mcalTypeParams[0]["font"] is None:
-		mcalTypeParams[0]["font"] = getFont(1.0, family=False)
+		mcalTypeParams[0]["font"] = getFont(1.0, family=False)  # noqa: FURB120
 	###
 	for item in mcalTypeParams[1:]:
 		if item["font"] is None:
@@ -713,9 +714,9 @@ def initFonts(fontDefaultNew: Tuple[str, bool, bool, float]) -> None:
 			item["font"] = getFont(1.5, family=False)
 	######
 	if dcalWeekdayParams["font"] is None:
-		dcalWeekdayParams["font"] = getFont(1.0, family=False)
+		dcalWeekdayParams["font"] = getFont(1.0, family=False)  # noqa: FURB120
 	if dcalWinWeekdayParams["font"] is None:
-		dcalWinWeekdayParams["font"] = getFont(1.0, family=False)
+		dcalWinWeekdayParams["font"] = getFont(1.0, family=False)  # noqa: FURB120
 
 
 def getHolidaysJdList(startJd: int, endJd: int) -> List[int]:
@@ -1668,10 +1669,8 @@ if not isfile(statusIconImageHoli):
 _localTzName = str(core.localTz)
 if localTzHist:
 	if localTzHist[0] != _localTzName:
-		try:
+		with suppress(ValueError):
 			localTzHist.remove(_localTzName)
-		except ValueError:
-			pass
 		localTzHist.insert(0, _localTzName)
 		if len(localTzHist) > 10:
 			localTzHist = localTzHist[:10]

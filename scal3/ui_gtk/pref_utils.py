@@ -372,11 +372,11 @@ class ComboImageTextPrefItem(PrefItem):
 		combo.set_model(ls)
 		###
 		cell = gtk.CellRendererPixbuf()
-		pack(combo, cell, False)
+		pack(combo, cell)
 		combo.add_attribute(cell, "pixbuf", 0)
 		###
 		cell = gtk.CellRendererText()
-		pack(combo, cell, True)
+		pack(combo, cell, expand=True)
 		combo.add_attribute(cell, "text", 1)
 		###
 		self._widget = combo

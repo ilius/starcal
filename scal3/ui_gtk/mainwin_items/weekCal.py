@@ -124,7 +124,7 @@ class ColumnBase(CustomizableCalObj):
 				ui,
 				self.getWidthAttr(),
 				1, 999,
-				digits=1, step=1,
+				digits=1, step=1,  # noqa: FURB120
 				label=_("Width"),
 				live=True,
 				onChangeFunc=self.onWidthChange,
@@ -334,7 +334,6 @@ class Column(gtk.DrawingArea, ColumnBase):
 			rowH,  # height
 		)
 		fillColor(cr, ui.cursorOutColor)
-		return
 
 	def drawTextList(
 		self,
@@ -402,10 +401,9 @@ class MainMenuToolBoxItem(ToolBoxItem):
 			self,
 			name="mainMenu",
 			imageNameDynamic=True,
-			onClick=None,
 			desc=_("Main Menu"),
-			enableTooltip=True,
-			continuousClick=False,
+			enableTooltip=True, # noqa: FURB120
+			continuousClick=False,  # noqa: FURB120
 			onPress=self.onButtonPress,
 		)
 		self._wcal = wcal
@@ -1426,7 +1424,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		page.pageIcon = ""
 		self.subPages = [page]
 		###
-		button = newSubPageButton(self, page, borderWidth=10)
+		button = newSubPageButton(self, page, borderWidth=10)  # noqa: FURB120
 		pack(optionsWidget, button, padding=10)
 		#########
 		optionsWidget.show_all()
@@ -1575,8 +1573,8 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 					return item.getMenuPos()
 		if rtl:
 			return self.get_allocation().width, 0
-		else:
-			return 0, 0
+
+		return 0, 0
 
 
 if __name__ == "__main__":

@@ -23,6 +23,7 @@ log = logger.get()
 
 from typing import Optional, Callable, Any, List, Dict
 from os.path import join, isabs
+from contextlib import suppress
 
 from scal3.path import *
 from scal3.cal_types import calTypes
@@ -283,8 +284,7 @@ class LangPrefItem(PrefItem):
 		i = self._widget.get_active()
 		if i == 0:
 			return ""
-		else:
-			return langDict.keyList[i - 1]
+		return langDict.keyList[i - 1]
 
 	def set(self, value: str) -> None:
 		if value == "":
@@ -321,11 +321,10 @@ class CheckStartupPrefItem(PrefItem):  # FIXME
 		if self.get():
 			if not startup.addStartup():
 				self.set(False)
-		else:
-			try:
-				startup.removeStartup()
-			except Exception:
-				pass
+			return
+
+		with suppress(Exception):
+			startup.removeStartup()
 
 	def updateWidget(self) -> None:
 		self.set(
@@ -478,21 +477,23 @@ class AICalsPrefItemToolbar(StaticToolBox):
 			desc=_("Activate/Inactivate"),
 			continuousClick=False,
 		)
-		self.append(self.leftRightItem)
-		self.append(ToolBoxItem(
-			name="go-up",
-			imageName="go-up.svg",
-			onClick="onUpClick",
-			desc=_("Move up"),
-			continuousClick=False,
-		))
-		self.append(ToolBoxItem(
-			name="go-down",
-			imageName="go-down.svg",
-			onClick="onDownClick",
-			desc=_("Move down"),
-			continuousClick=False,
-		))
+		self.extend([
+			self.leftRightItem,
+			ToolBoxItem(
+				name="go-up",
+				imageName="go-up.svg",
+				onClick="onUpClick",
+				desc=_("Move up"),
+				continuousClick=False,
+			),
+			ToolBoxItem(
+				name="go-down",
+				imageName="go-down.svg",
+				onClick="onDownClick",
+				desc=_("Move down"),
+				continuousClick=False,
+			),
+		])
 
 	def getLeftRightAction(self):
 		return self._leftRightAction
@@ -589,14 +590,12 @@ class AICalsPrefItem(PrefItem):
 				if _iter:
 					self.inactivateIndex(model.get_path(_iter).get_indices()[0])
 
-	def getCurrentTreeview(self) -> gtk.TreeView:
+	def getCurrentTreeview(self) -> "Optional[gtk.TreeView]":
 		action = self.toolbar.getLeftRightAction()
 		if action == "inactivate":
 			return self.activeTreev
-		elif action == "activate":
+		if action == "activate":
 			return self.inactiveTreev
-		else:
-			return
 
 	def onUpClick(self, obj: Optional[gtk.Button] = None) -> None:
 		treev = self.getCurrentTreeview()

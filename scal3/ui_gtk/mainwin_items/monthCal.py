@@ -172,7 +172,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			ui,
 			"mcalLeftMargin",
 			0, 999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Left Margin"),
 			labelSizeGroup=labelSizeGroup,
 			live=True,
@@ -184,7 +184,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			ui,
 			"mcalTopMargin",
 			0, 999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Top Margin"),
 			labelSizeGroup=labelSizeGroup,
 			live=True,
@@ -616,11 +616,10 @@ class CalObj(gtk.DrawingArea, CalBase):
 				int(self.get_allocation().width - ui.mcalLeftMargin / 2),
 				int(ui.mcalTopMargin / 2),
 			)
-		else:
-			return (
-				int(ui.mcalLeftMargin / 2),
-				int(ui.mcalTopMargin / 2),
-			)
+		return (
+			int(ui.mcalLeftMargin / 2),
+			int(ui.mcalTopMargin / 2),
+		)
 
 	def onDateChange(self, *a, **kw):
 		CustomizableCalObj.onDateChange(self, *a, **kw)

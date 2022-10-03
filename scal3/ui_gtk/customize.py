@@ -109,10 +109,10 @@ class CustomizableCalObj(ud.BaseCalObj):
 		self.itemWidgets = {} ## for lazy construction of widgets
 		self.optionsWidget = None
 		try:
-			self.connect("key-press-event", self.onKeyPress)## FIXME
-		except TypeError:
-			# TypeError: <...>: unknown signal name
-			pass
+			self.connect("key-press-event", self.onKeyPress)
+		except TypeError as e:
+			if "unknown signal name" not in str(e):
+				log.exception("")
 
 	def getItemsData(self) -> List[Tuple[str, bool]]:
 		return [

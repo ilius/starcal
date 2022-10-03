@@ -67,8 +67,7 @@ def getIcsTimeByEpoch(epoch: int, pretty: bool = False) -> str:
 def getIcsDate(y: int, m: int, d: int, pretty: bool = False) -> str:
 	if pretty:
 		return f"{y:04d}-{m:02d}-{d:02d}"
-	else:
-		return f"{y:04d}{m:02d}{d:02d}"
+	return f"{y:04d}{m:02d}{d:02d}"
 
 
 def getIcsDateByJd(jd: int, pretty: bool = False) -> str:

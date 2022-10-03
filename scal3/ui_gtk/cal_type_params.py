@@ -182,7 +182,7 @@ class TextParamWidget(gtk.Box):
 		pack(hbox, label)
 		sgroupLabel.add_widget(label)
 		##
-		fontb = MyFontButton(dragAndDrop=True)
+		fontb = MyFontButton()
 		self.fontb = fontb
 		##
 		colorb = MyColorButton()
