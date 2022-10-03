@@ -20,7 +20,6 @@ class MainMenuToolBoxItem(ToolBoxItem):
 			name="mainMenu",
 			iconName="start-here",
 			imageName="starcal.svg",
-			onClick=None,
 			desc=_("Main Menu"),
 			continuousClick=False,
 			onPress=self.onButtonPress,
@@ -147,7 +146,7 @@ class CalObj(CustomizableToolBox):
 		CustomizableToolBox.__init__(
 			self,
 			win,
-			vertical=False,
+			# vertical=False,
 			continuousClick=False,
 		)
 		if not ud.mainToolbarData["items"]:
