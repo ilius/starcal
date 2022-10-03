@@ -21,6 +21,7 @@ log = logger.get()
 
 import os
 from os.path import join, split
+from contextlib import suppress
 
 from scal3.utils import toBytes
 from scal3.time_utils import durationUnitsAbs, durationUnitValues
@@ -161,10 +162,9 @@ class WidgetClass(gtk.Box):
 		self.iconSelect.set_filename(self.event.icon)
 		#####
 		for attr in ("notificationBox", "filesBox"):
-			try:
-				getattr(self, attr).updateWidget()
-			except AttributeError:
-				pass
+			box = getattr(self, attr, None)
+			if box is not None:
+				box.updateWidget()
 		#####
 		self.calTypeComboChanged()
 
@@ -180,10 +180,9 @@ class WidgetClass(gtk.Box):
 		self.event.icon = self.iconSelect.get_filename()
 		#####
 		for attr in ("notificationBox", "filesBox"):
-			try:
-				getattr(self, attr).updateVars()
-			except AttributeError:
-				pass
+			box = getattr(self, attr, None)
+			if box is not None:
+				box.updateVars()
 		#####
 
 	def calTypeComboChanged(self, obj=None):## FIXME
@@ -259,10 +258,8 @@ class FilesBox(gtk.Box):
 
 	def onDelClick(self, button):
 		os.remove(join(self.event.filesDir, button.fname))
-		try:
+		with suppress(ValueError):
 			self.event.files.remove(button.fname)
-		except Exception:
-			pass
 		button.hbox.destroy()
 
 	def removeNewFiles(self):
@@ -389,29 +386,29 @@ class StrListEditor(gtk.Box):
 		pack(self, self.treev, 1, 1)
 		##########
 		toolbar = StaticToolBox(self, vertical=True)
-		toolbar.append(ToolBoxItem(
-			name="add",
-			imageName="list-add.svg",
-			onClick="onAddClick",
-			desc=_("Add"),
-			continuousClick=False,
-		))
-		####
-		toolbar.append(ToolBoxItem(
-			name="moveUp",
-			imageName="go-up.svg",
-			onClick="onMoveUpClick",
-			desc=_("Move up"),
-			continuousClick=False,
-		))
-		####
-		toolbar.append(ToolBoxItem(
-			name="moveDown",
-			imageName="go-down.svg",
-			onClick="onMoveDownClick",
-			desc=_("Move down"),
-			continuousClick=False,
-		))
+		toolbar.extend([
+			ToolBoxItem(
+				name="add",
+				imageName="list-add.svg",
+				onClick="onAddClick",
+				desc=_("Add"),
+				continuousClick=False,
+			),
+			ToolBoxItem(
+				name="moveUp",
+				imageName="go-up.svg",
+				onClick="onMoveUpClick",
+				desc=_("Move up"),
+				continuousClick=False,
+			),
+			ToolBoxItem(
+				name="moveDown",
+				imageName="go-down.svg",
+				onClick="onMoveDownClick",
+				desc=_("Move down"),
+				continuousClick=False,
+			),
+		])
 		#######
 		pack(self, toolbar)
 
@@ -471,7 +468,7 @@ class Scale10PowerComboBox(gtk.ComboBox):
 		pack(self, cell, True)
 		self.add_attribute(cell, "text", 1)
 		###
-		ls.append((1, _("Years")))
+		ls.append((1, _("Years")))  # noqa: FURB113
 		ls.append((100, _("Centuries")))
 		ls.append((1000, _("Thousand Years")))
 		ls.append((1000 ** 2, _("Million Years")))
@@ -577,10 +574,8 @@ class SingleGroupComboBox(gtk.ComboBox):
 		#except:
 		#	pass
 		if activeGid not in (None, -1):
-			try:
+			with suppress(ValueError):
 				self.set_active(activeGid)
-			except ValueError:
-				pass
 
 	def get_active(self):
 		index = gtk.ComboBox.get_active(self)
