@@ -32,8 +32,7 @@ class MonthComboBox(gtk.ComboBox):
 		a = self.get_active()
 		if self.includeEvery:
 			return a
-		else:
-			return a + 1
+		return a + 1
 
 	def setValue(self, value):
 		if self.includeEvery:

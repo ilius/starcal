@@ -141,7 +141,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		if plug.about is None:
 			return
 		about = AboutDialog(
-			name="",  # FIXME
+			# name="",  # FIXME
 			title=_("About Plugin"),  # _("About ") + plug.title
 			authors=plug.authors,
 			comments=plug.about,

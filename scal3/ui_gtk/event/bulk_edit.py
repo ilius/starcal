@@ -93,10 +93,8 @@ class EventsBulkEditDialog(gtk.Dialog):
 		pack(hbox, self.iconChangeCombo)
 		pack(hbox, gtk.Label(label="  "))
 		self.iconSelect = IconSelectButton()
-		try:
+		if hasattr(container, "icon"):
 			self.iconSelect.set_filename(container.icon)
-		except AttributeError:
-			pass
 		pack(hbox, self.iconSelect)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
