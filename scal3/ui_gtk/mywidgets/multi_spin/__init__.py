@@ -283,24 +283,29 @@ class MultiSpinButton(gtk.Box):
 			##self.grab_focus()
 			#self.select_region(i1, i2)
 			return True
-		#elif kname=="return":## Enter
+
+		#if kname=="return":## Enter
 		#	self.update()
 		#	##self.emit("activate")
 		#	return True
-		elif ord("0") <= kval <= ord("9"):
+
+		if ord("0") <= kval <= ord("9"):
 			self.insertText(self.digs[kval - ord("0")])
 			return True
-		elif "kp_0" <= kname <= "kp_9":
+
+		if "kp_0" <= kname <= "kp_9":
 			self.insertText(self.digs[int(kname[-1])])
 			return True
-		elif kname in (
-			"period", "kp_decimal",
+
+		if kname in (
+			"period",
+			"kp_decimal",
 		):
 			self.insertText(locale_man.getNumSep())
 			return True
-		else:
-			# log.debug(kname, kval)
-			return False
+
+		# log.debug(kname, kval)
+		return False
 
 	def onDownButtonPress(self, button, gevent):
 		self._arrow_press(-self.step_inc)

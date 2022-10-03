@@ -48,7 +48,7 @@ def loadJsonConf(module, confPath, decoders={}):
 		return
 	###
 	try:
-		with open(confPath) as fp:
+		with open(confPath) as fp:  # noqa: FURB101
 			text = fp.read()
 	except Exception as e:
 		log.error(f"failed to read file {confPath!r}: {e}")
@@ -81,7 +81,7 @@ def saveJsonConf(module, confPath, params, encoders={}):
 	###
 	text = dataToPrettyJson(data, sort_keys=True)
 	try:
-		with open(confPath, "w") as fp:
+		with open(confPath, "w") as fp:  # noqa: FURB103
 			fp.write(text)
 	except Exception as e:
 		log.error(f"failed to save file {confPath!r}: {e}")
