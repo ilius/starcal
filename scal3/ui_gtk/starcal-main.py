@@ -96,7 +96,7 @@ def pixbufFromSvgFile(path: str, size: int):
 		raise ValueError(f"invalid {size=} for svg file {path}")
 	if not isabs(path):
 		path = join(svgDir, path)
-	with open(path, "rb") as fp:
+	with open(path, "rb") as fp:  # noqa: FURB101
 		data = fp.read()
 	loader = GdkPixbuf.PixbufLoader.new_with_type("svg")
 	loader.set_size(size, size)

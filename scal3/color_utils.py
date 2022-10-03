@@ -99,8 +99,10 @@ def htmlColorToRgb(hc):
 
 
 def rgbToHtmlColor(color: ColorType):
+	for x in color:
+		assert isinstance(x, int)
 	return "#" + "".join([
-		f"{int(x):02x}" for x in color
+		f"{x:02x}" for x in color
 	])
 
 
