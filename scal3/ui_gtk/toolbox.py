@@ -356,6 +356,10 @@ class StaticToolBox(BaseToolBox):
 		item.show()
 		return item
 
+	def extend(self, items: "Iterable") -> None:
+		for item in items:
+			self.append(item)
+
 
 
 class CustomizableToolBox(StaticToolBox):
@@ -412,7 +416,7 @@ class CustomizableToolBox(StaticToolBox):
 			self,
 			"iconSize",
 			5, 128,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Icon Size"),
 			live=True,
 			onChangeFunc=self.onIconSizeChange,
@@ -423,7 +427,7 @@ class CustomizableToolBox(StaticToolBox):
 			self,
 			"buttonBorder",
 			0, 99,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Buttons Border"),
 			live=True,
 			onChangeFunc=self.updateItems,
@@ -434,7 +438,7 @@ class CustomizableToolBox(StaticToolBox):
 			self,
 			"buttonPadding",
 			0, 99,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Space between buttons"),
 			live=True,
 			onChangeFunc=self.updateItems,
