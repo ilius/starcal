@@ -251,7 +251,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 			ui,
 			"winControllerIconSize",
 			5, 128,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Icon Size"),
 			live=True,
 			onChangeFunc=self.updateButtons,
@@ -262,7 +262,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 			ui,
 			"winControllerBorder",
 			0, 99,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Buttons Border"),
 			live=True,
 			onChangeFunc=self.onButtonBorderChange,
@@ -273,7 +273,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 			ui,
 			"winControllerSpacing",
 			0, 99,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Space between buttons"),
 			live=True,
 			onChangeFunc=self.onButtonPaddingChange,

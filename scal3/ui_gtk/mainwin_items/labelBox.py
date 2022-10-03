@@ -196,8 +196,8 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 			)
 			ui.updateFocusTime()
 			return True
-		else:
-			return False
+
+		return False
 
 	def onDateChange(self, *a, **ka):
 		ud.BaseCalObj.onDateChange(self, *a, **ka)
@@ -314,8 +314,8 @@ class IntLabel(BaseLabel):
 			)
 			ui.updateFocusTime()
 			return True
-		else:
-			return False
+
+		return False
 
 	def arrowSelect(self, item, plus):
 		self.remain = plus
@@ -441,24 +441,12 @@ class YearLabelButtonBox(gtk.Box, ud.BaseCalObj):
 			self.onNextClick,
 			_("Next Year"),
 		)
-		pack(
-			self,
-			self.removeButton,
-			0,
-			0,
-			0,
-		)
+		pack(self, self.removeButton)
 		###
 		self.label = YearLabel(calType, **kwargs)
 		pack(self, self.label)
 		###
-		pack(
-			self,
-			self.addButton,
-			0,
-			0,
-			0,
-		)
+		pack(self, self.addButton)
 
 	def onPrevClick(self, button):
 		ui.yearPlus(-1)
@@ -491,24 +479,12 @@ class MonthLabelButtonBox(gtk.Box, ud.BaseCalObj):
 			_("Next Month"),
 		)
 		###
-		pack(
-			self,
-			self.removeButton,
-			0,
-			0,
-			0,
-		)
+		pack(self, self.removeButton)
 		###
 		self.label = MonthLabel(calType, **kwargs)
 		pack(self, self.label)
 		###
-		pack(
-			self,
-			self.addButton,
-			0,
-			0,
-			0,
-		)
+		pack(self, self.addButton)
 
 	def onPrevClick(self, button):
 		ui.monthPlus(-1)
@@ -683,7 +659,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			ui,
 			"labelBoxBorderWidth",
 			0, 99,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			unitLabel=_("pixels"),
 			label=_("Border Width"),
 			live=True,
