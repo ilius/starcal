@@ -36,8 +36,8 @@ def testnormalizeIntervalList():
 	}
 
 	for inpStr, ansStr in testDict.items():
-		inpList = parseIntervalList(inpStr, True)
-		ansList = parseIntervalList(ansStr, False)
+		inpList = parseIntervalList(inpStr, True)  # noqa: FURB120
+		ansList = parseIntervalList(ansStr, False)  # noqa: FURB120
 		resList = normalizeIntervalList(inpList)
 		resList = humanizeIntervalList(resList)
 		if resList == ansList:
@@ -89,9 +89,10 @@ def testIntersection():
 	}
 
 	for (list1Str, list2Str), answerStr in testDict.items():
-		list1 = parseIntervalList(list1Str, True)
-		list2 = parseIntervalList(list2Str, True)
-		answer = parseIntervalList(answerStr, False)  # no shuffle
+		list1 = parseIntervalList(list1Str, True)  # noqa: FURB120
+		list2 = parseIntervalList(list2Str, True)  # noqa: FURB120
+		answer = parseIntervalList(answerStr, False)  # noqa: FURB120
+		# ^ no shuffle
 		result = intersectionOfTwoIntervalList(list1, list2)
 		if result == answer:
 			log.info("OK")

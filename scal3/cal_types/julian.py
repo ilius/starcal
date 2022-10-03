@@ -148,5 +148,5 @@ def jd_to(jd):
 def getMonthLen(year, month):
 	if month == 12:
 		return to_jd(year + 1, 1, 1) - to_jd(year, 12, 1)
-	else:
-		return to_jd(year, month + 1, 1) - to_jd(year, month, 1)
+
+	return to_jd(year, month + 1, 1) - to_jd(year, month, 1)

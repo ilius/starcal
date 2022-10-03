@@ -120,7 +120,7 @@ def to_jd(year: int, month: int, day: int) -> int:
 	)
 
 
-def jd_to(jd: int) -> Tuple[int, int, int]:
+def jd_to(jd: "Union[int, float]") -> Tuple[int, int, int]:
 	ordinal = int(jd) - 1721425
 	if 0 < ordinal < 3652060:  # > 4x faster
 		# datetime(9999, 12, 31).toordinal() == 3652059
@@ -150,14 +150,14 @@ def jd_to(jd: int) -> Tuple[int, int, int]:
 
 	month = ((yearday + leapadj) * 12 + 373) // 367
 	day = jd - to_jd(year, month, 1) + 1
-	return int(year), int(month), int(day)
+	return int(year), int(month), int(day)  # noqa: FURB123
 
 
 def getMonthLen(y: int, m: int) -> int:
 	if m == 12:
 		return to_jd(y + 1, 1, 1) - to_jd(y, 12, 1)
-	else:
-		return to_jd(y, m + 1, 1) - to_jd(y, m, 1)
+
+	return to_jd(y, m + 1, 1) - to_jd(y, m, 1)
 
 
 J0001 = 1721426  # to_jd(1, 1, 1)

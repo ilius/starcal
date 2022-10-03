@@ -245,7 +245,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		###
 		hideShowFiltersButton = labelImageButton(
 			label=_("Hide Filters"),
-			imageName="",
+			# imageName="",
 		)
 		self.hideShowFiltersButton = hideShowFiltersButton
 		hideShowFiltersButton.connect("clicked", self.onHideShowFiltersClick)
@@ -487,10 +487,8 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 					eventData = event.getDataOrdered()
 					eventData["modified"] = event.modified
 					# eventData["sha1"] = event.lastHash
-					try:
-						del eventData["remoteIds"]  # FIXME
-					except KeyError:
-						pass
+					if "remoteIds" in eventData:
+						del eventData["remoteIds"]
 					if not eventData["notifiers"]:
 						del eventData["notifiers"]
 						del eventData["notifyBefore"]

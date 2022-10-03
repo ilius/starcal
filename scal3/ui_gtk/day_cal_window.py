@@ -227,7 +227,7 @@ class DayCalWindowWidget(DayCal):
 		mx = max(0, gevent.x_root - mw) if rtl else gevent.x_root
 		my = max(0, gevent.y_root - mh) if above else gevent.y_root
 
-		if mx == 0 and my == 0:
+		if mx == my == 0:
 			log.info(
 				f"{mx=}, {my=}, {mw=}, {mh=}, " +
 				f"{gevent.x_root=}, {gevent.y_root=}"

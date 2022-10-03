@@ -211,7 +211,7 @@ if __name__ == "__main__":
 		def __init__(self, vcsDir):
 			self.vcsDir = vcsDir
 
-	vcsDir = os.getcwd()
+	vcsDir = os.getcwd()  # noqa: FURB104
 	commitId = sys.argv[1]
 	beforeStr = sys.argv[2]
 	beforeEpoch = parse(beforeStr).timestamp()

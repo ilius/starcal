@@ -184,7 +184,8 @@ def getJdListFromEpochRange(startEpoch: int, endEpoch: int) -> List[int]:
 
 
 def getHmsFromSeconds(second: int) -> HMS:
-	minute, second = divmod(int(second), 60)
+	assert isinstance(second, int)
+	minute, second = divmod(second, 60)
 	hour, minute = divmod(minute, 60)
 	return HMS(hour, minute, second)
 
@@ -304,7 +305,7 @@ def encodeJd(jd: int) -> str:
 	return epochGregDateTimeEncode(getEpochFromJd(jd))
 
 
-def durationEncode(value: int, unit: int) -> str:
+def durationEncode(value: "Union[int, float]", unit: int) -> str:
 	iValue = int(value)
 	if iValue == value:
 		value = iValue
@@ -370,5 +371,5 @@ if __name__ == "__main__":
 	print(f"hMS: {HMS(5, 9, 7):hMS}")
 	print(f"hM:  {HMS(5, 9, 7):hM}")
 	print(f"HM$: {HMS(5, 9, 7):HM$}")
-	print(f"HM$: {HMS(5, 9, 0):HM$}")
-	print(f"hm$: {HMS(5, 9, 0):hm$}")
+	print(f"HM$: {HMS(5, 9):HM$}")
+	print(f"hm$: {HMS(5, 9):hm$}")

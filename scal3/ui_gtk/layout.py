@@ -130,6 +130,11 @@ class WinLayoutObj(WinLayoutBase):
 			button.label.set_text(label)
 			button.enable = item.enable
 
+	def set_visible(self, visible: bool) -> None:
+		# does not need to do anything, because self._item is already
+		# a child, aka a memeber of self.items
+		pass
+
 	def getOptionsButtonBox(self):
 		# log.debug(f"WinLayoutObj: getOptionsButtonBox: name={self._name}")
 		if self.optionsButtonBox is not None:

@@ -62,13 +62,7 @@ class AllDateLabelsVBox(gtk.Box, ud.BaseCalObj):
 			dateLabel = SLabel(label=ui.cell.format(ud.dateFormatBin, i))
 			dateLabel.set_selectable(True)
 			dateLabel.set_xalign(1.0 if rtl else 0.0)
-			pack(
-				hbox,
-				dateLabel,
-				0,
-				0,
-				0,
-			)
+			pack(hbox, dateLabel)
 			sgroupDate.add_widget(dateLabel)
 			###
 			pack(self, hbox)
@@ -173,7 +167,7 @@ class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 		if expander:
 			exp = ExpanderFrame(
 				label=item.desc,
-				expanded=True,
+				# expanded=True,
 			)
 			exp.add(item)
 			widget = exp

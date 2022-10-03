@@ -56,38 +56,41 @@ class CustomizeWindowItemsToolbar(StaticToolBox):
 		)
 		# with iconSize < 20, the button would not become smaller
 		# so 20 is the best size
-		self.append(ToolBoxItem(
-			name="goto-top",
-			imageName="go-top.svg",
-			onClick="onTopClick",
-			desc=_("Move to top"),
-			continuousClick=False,
-			args=onClickArgs,
-		))
-		self.append(ToolBoxItem(
-			name="go-up",
-			imageName="go-up.svg",
-			onClick="onUpClick",
-			desc=_("Move up"),
-			continuousClick=False,
-			args=onClickArgs,
-		))
-		self.append(ToolBoxItem(
-			name="go-down",
-			imageName="go-down.svg",
-			onClick="onDownClick",
-			desc=_("Move down"),
-			continuousClick=False,
-			args=onClickArgs,
-		))
-		self.append(ToolBoxItem(
-			name="goto-bottom",
-			imageName="go-bottom.svg",
-			onClick="onBottomClick",
-			desc=_("Move to bottom"),
-			continuousClick=False,
-			args=onClickArgs,
-		))
+		self.extend([
+			ToolBoxItem(
+				name="goto-top",
+				imageName="go-top.svg",
+				onClick="onTopClick",
+				desc=_("Move to top"),
+				continuousClick=False,
+				args=onClickArgs,
+			),
+			ToolBoxItem(
+				name="go-up",
+				imageName="go-up.svg",
+				onClick="onUpClick",
+				desc=_("Move up"),
+				continuousClick=False,
+				args=onClickArgs,
+			),
+			ToolBoxItem(
+				name="go-down",
+				imageName="go-down.svg",
+				onClick="onDownClick",
+				desc=_("Move down"),
+				continuousClick=False,
+				args=onClickArgs,
+			),
+			ToolBoxItem(
+				name="goto-bottom",
+				imageName="go-bottom.svg",
+				onClick="onBottomClick",
+				desc=_("Move to bottom"),
+				continuousClick=False,
+				args=onClickArgs,
+			),
+		])
+
 
 
 

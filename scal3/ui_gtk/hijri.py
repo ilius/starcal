@@ -102,7 +102,7 @@ class EditDbDialog(gtk.Dialog):
 		######
 		cell = gtk.CellRendererCombo(editable=True)
 		mLenModel = gtk.ListStore(int)
-		mLenModel.append([29])
+		mLenModel.append([29])  # noqa: FURB113
 		mLenModel.append([30])
 		cell.set_property("model", mLenModel)
 		#cell.set_property("has-entry", False)
@@ -117,21 +117,22 @@ class EditDbDialog(gtk.Dialog):
 		######
 		toolbar = StaticToolBox(self, vertical=True)
 		###
-		toolbar.append(ToolBoxItem(
-			name="add",
-			imageName="list-add.svg",
-			onClick="onAddClick",
-			desc=_("Add"),
-			continuousClick=False,
-		))
-		###
-		toolbar.append(ToolBoxItem(
-			name="delete",
-			imageName="edit-delete.svg",
-			onClick="onDeleteClick",
-			desc=_("Delete", ctx="button"),
-			continuousClick=False,
-		))
+		toolbar.extend([
+			ToolBoxItem(
+				name="add",
+				imageName="list-add.svg",
+				onClick="onAddClick",
+				desc=_("Add"),
+				continuousClick=False,
+			),
+			ToolBoxItem(
+				name="delete",
+				imageName="edit-delete.svg",
+				onClick="onDeleteClick",
+				desc=_("Delete", ctx="button"),
+				continuousClick=False,
+			),
+		])
 		######
 		self.treev = treev
 		self.treeModel = treeModel

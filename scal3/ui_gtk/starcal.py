@@ -319,7 +319,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		layoutFooter = WinLayoutBox(
 			name="footer",
 			desc="Footer",  # should not be seen in GUI
-			enableParam="",
+			# enableParam="",
 			vertical=True,
 			expand=False,
 			itemsMovable=True,
@@ -374,7 +374,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		self.layout = WinLayoutBox(
 			name="layout",
 			desc=_("Main Window"),
-			enableParam="",
+			# enableParam="",
 			vertical=True,
 			expand=True,
 			items=[
@@ -389,14 +389,14 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				WinLayoutBox(
 					name="middleBox",
 					desc="Middle Box",  # should not be seen in GUI
-					enableParam="",
+					# enableParam="",
 					vertical=False,
 					expand=True,
 					items=[
 						WinLayoutObj(
 							name="mainPanel",
 							desc=x_large(_("Main Panel")),
-							enableParam="",
+							# enableParam="",
 							vertical=True,
 							expand=True,
 							initializer=self.createMainVBox,
@@ -443,11 +443,8 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		self.connect("delete-event", self.onDeleteEvent)
 		#########################################
 		for plug in core.allPlugList:
-			if plug.external:
-				try:
-					plug.set_dialog(self)
-				except AttributeError:
-					pass
+			if plug.external and hasattr(plug, "set_dialog"):
+				plug.set_dialog(self)
 		###########################
 		self.onConfigChange()
 		# ud.rootWindow.set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
@@ -707,10 +704,9 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		# 	except AttributeError:
 		# 		pass
 		for j in range(len(core.plugIndex)):
-			try:
-				core.allPlugList[core.plugIndex[j]].date_change_after(*date)
-			except AttributeError:
-				pass
+			plug = core.allPlugList[core.plugIndex[j]]
+			if hasattr(plug, "date_change_after"):
+				plug.date_change_after(*date)
 		# log.debug(
 		# 	f"Occurrence Time: max={ui.Cell.ocTimeMax:e}, " +
 		# 	f"avg={ui.Cell.ocTimeSum/ui.Cell.ocTimeCount:e}"
@@ -1285,7 +1281,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			else ui.statusIconImage
 		)
 		ext = os.path.splitext(imagePath)[1].lstrip(".").lower()
-		with open(imagePath, "rb") as fp:
+		with open(imagePath, "rb") as fp:  # noqa: FURB101
 			data = fp.read()
 		if ext == "svg":
 			dayNum = locale_man.numEncode(

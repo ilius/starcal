@@ -29,6 +29,7 @@ import sys
 import os
 import subprocess
 import re
+from contextlib import suppress
 
 from scal3 import ui
 from scal3.ui_gtk import *
@@ -88,12 +89,11 @@ class MPlayer:
 		sleep(0.1)
 
 		status = None
-		try: # get the last line of output
+		# get the last line of output
+		with suppress(Exception):
 			for status in self.mplayerOut:
 				if not status:
 					break
-		except Exception:
-			pass
 		if not status or not status.startswith("ANS_LENGTH="):
 			return True
 
@@ -164,11 +164,9 @@ class MPlayer:
 		self.stopStatusQuery()
 		self.stopEofHandler()
 		self.cmd("quit") # It doesn"t matter if false is returned
-		try:
+		with suppress(Exception):
 			self.mplayerIn.close()
 			self.mplayerOut.close()
-		except Exception:
-			pass
 		self.mplayerIn, self.mplayerOut = None, None
 		self.playTime = None
 		self.pbox.seekAdj.value = 0
@@ -193,12 +191,11 @@ class MPlayer:
 		sleep(0.05) # allow time for output
 
 		status = None
-		try: # get the last line of output
+		# get the last line of output
+		with suppress(Exception):
 			for status in self.mplayerOut:
 				if not status:
 					break
-		except Exception:
-			pass
 
 		if not status or not status.startswith("ANS_PERCENT_POSITION="):
 			return True
@@ -314,7 +311,7 @@ class PlayerBox(gtk.Box):
 			scale.set_value_pos(gtk.PositionType.TOP)
 			scale.connect("format-value", self.displayVolString)
 			scale.connect("key-press-event", self.divert)
-			pack(self, scale, False, False, 5)
+			pack(self, scale, False, False, 5)  # noqa: FURB120
 
 	def divert(self, widget, gevent):
 		key = gevent.hardware_keycode
@@ -336,11 +333,10 @@ class PlayerBox(gtk.Box):
 	def displaySongString(self, seekBar, value):
 		if self.mplayer.playTime:
 			return str(int(value)) + "% of " + self.mplayer.playTime
-		elif self.mplayer.mplayerIn:
+		if self.mplayer.mplayerIn:
 			return str(int(value)) + "% of "
 			#+ self.playlist.getCurrentSongTime()  # FIXME
-		else:
-			return str(int(value)) + "%"
+		return str(int(value)) + "%"
 
 	def seek(self, widget, gevent):# Seek on changing the seekBar
 		# log.debug("seek", self.seekAdj.value, self.mplayer.mplayerIn)
@@ -408,7 +404,7 @@ class PlayerBox(gtk.Box):
 	def toolbarKey(self, widget, gevent):
 		# Prevent the down and up keys from taking control out of the toolbar
 		keycode = gevent.hardware_keycode
-		if keycode in [98, 104]:
+		if keycode in (98, 104):
 			return True
 		return False
 

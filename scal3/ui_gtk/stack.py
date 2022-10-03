@@ -201,7 +201,7 @@ class MyStack(gtk.Stack):
 		self._titles[pagePath] = page.pageTitle
 		##
 		if not self._currentPagePath:
-			self.gotoPage(pagePath, False)
+			self.gotoPage(pagePath)
 
 	def hasPage(self, pagePath: str):
 		return self.get_child_by_name(name=pagePath) is not None

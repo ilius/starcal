@@ -270,5 +270,5 @@ def jd_to(jd):
 def getMonthLen(year, month):
 	if month == 12:
 		return 29 + isLeap(year)
-	else:
-		return monthLen[month - 1]
+
+	return monthLen[month - 1]

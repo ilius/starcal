@@ -87,7 +87,7 @@ class LogLevelPrefItem(PrefItem):
 	def save(self):
 		logData = {"logLevel": logger.logLevel}
 		logJson = dataToCompactJson(logData)
-		with open(logger.confPath, "w") as file:
+		with open(logger.confPath, "w") as file:  # noqa: FURB103
 			file.write(logJson)
 
 

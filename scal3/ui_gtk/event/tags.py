@@ -52,7 +52,7 @@ class EventTagsAndIconSelect(gtk.Box):
 		combo.set_model(ls)
 		###
 		cell = gtk.CellRendererPixbuf()
-		pack(combo, cell, False)
+		pack(combo, cell)
 		combo.add_attribute(cell, "pixbuf", 0)
 		###
 		cell = gtk.CellRendererText()

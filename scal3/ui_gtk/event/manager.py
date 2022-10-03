@@ -27,6 +27,7 @@ import os
 import sys
 from os.path import join, dirname, split, splitext
 from collections import OrderedDict as odict
+from contextlib import suppress
 
 from typing import Optional, List, Tuple, Union, Any
 
@@ -134,34 +135,36 @@ class EventManagerToolbar(StaticToolBox):
 		# 	desc=_("Move to top"),
 		# 	continuousClick=False,
 		# ))
-		self.append(ToolBoxItem(
-			name="go-up",
-			imageName="go-up.svg",
-			onClick="moveUpByButton",
-			desc=_("Move up"),
-			continuousClick=False,
-		))
-		self.append(ToolBoxItem(
-			name="go-down",
-			imageName="go-down.svg",
-			onClick="moveDownByButton",
-			desc=_("Move down"),
-			continuousClick=False,
-		))
-		# self.append(ToolBoxItem(
-		# 	name="goto-bottom",
-		# 	imageName="go-bottom.svg",
-		# 	onClick="",
-		# 	desc=_("Move to bottom"),
-		# 	continuousClick=False,
-		# ))
-		self.append(ToolBoxItem(
-			name="duplicate",
-			imageName="edit-copy.svg",
-			onClick="duplicateSelectedObj",
-			desc=_("Duplicate"),
-			continuousClick=False,
-		))
+		self.extend([
+			ToolBoxItem(
+				name="go-up",
+				imageName="go-up.svg",
+				onClick="moveUpByButton",
+				desc=_("Move up"),
+				continuousClick=False,
+			),
+			ToolBoxItem(
+				name="go-down",
+				imageName="go-down.svg",
+				onClick="moveDownByButton",
+				desc=_("Move down"),
+				continuousClick=False,
+			),
+			# ToolBoxItem(
+			# 	name="goto-bottom",
+			# 	imageName="go-bottom.svg",
+			# 	onClick="",
+			# 	desc=_("Move to bottom"),
+			# 	continuousClick=False,
+			# ),
+			ToolBoxItem(
+				name="duplicate",
+				imageName="edit-copy.svg",
+				onClick="duplicateSelectedObj",
+				desc=_("Duplicate"),
+				continuousClick=False,
+			),
+		])
 
 
 @registerSignals
@@ -390,7 +393,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		##
 		expandItem = MenuItem(_("Expand All"))
 		expandItem.connect("activate", self.onExpandAllAllClick)
-		viewMenu.append(expandItem)
+		viewMenu.append(expandItem)  # noqa: FURB113
 		##
 		viewMenu.append(gtk.SeparatorMenuItem())
 		##
@@ -897,10 +900,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	def multiSelectOperationFinished(self):
 		model = self.treeModel
 		for groupIndex in self.multiSelectPathDict:
-			try:
+			with suppress(ValueError):
 				model.set_value(model.get_iter([groupIndex]), 0, False)
-			except ValueError:
-				pass
 
 		self.multiSelectPathDict = odict()
 		self.multiSelectLabelUpdate()
@@ -1342,8 +1343,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		##
 		menu.add(ImageMenuItem(
 			_("Export", ctx="menu"),
-			imageName="",
-			# FIXME: export-events.svg
+			# imageName="export-events.svg",  # FIXME
 			func=self.groupExportFromMenu,
 			args=(group,),
 		))

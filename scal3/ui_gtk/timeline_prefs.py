@@ -120,7 +120,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"baseFontSize",
 			0.1, 999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Base Font Size"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -140,7 +140,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			ColorPrefItem(
 				tl,
 				"holidayBgBolor",
-				useAlpha=False,
+				# useAlpha=False,
 			),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -171,7 +171,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"basicButtonsSize",
 			1, 999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Buttons Size"),
 			live=True,
 			onChangeFunc=updateBasicButtons,
@@ -185,7 +185,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"basicButtonsSpacing",
 			0, 999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Space between buttons"),
 			live=True,
 			onChangeFunc=updateBasicButtons,
@@ -216,7 +216,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"movementButtonsSize",
 			1, 999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Movement Buttons Size"),
 			live=True,
 			onChangeFunc=updateMovementButtons,
@@ -267,7 +267,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"majorStepMin",
 			1, 999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Major Indicator Step (Minimum)"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -282,7 +282,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"minorStepMin",
 			1, 999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Minor Indicator Step (Minimum)"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -308,7 +308,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"baseTickHeight",
 			0.1, 999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Base Height"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -336,7 +336,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"maxTickWidth",
 			0.1, 99,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Maximum Width"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -364,7 +364,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"maxLabelWidth",
 			1, 999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Maximum Label Width"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -425,7 +425,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = ColorPrefItem(
 			tl,
 			"currentTimeMarkerColor",
-			useAlpha=False,
+			# useAlpha=False,
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
 		)
@@ -460,7 +460,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = ColorPrefItem(
 			tl,
 			"weekStartTickColor",
-			useAlpha=False,
+			# useAlpha=False,
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
 		)
@@ -486,7 +486,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"showWeekStartMaxDays",
 			1, 999,
-			digits=0, step=1,
+			digits=0, step=1,  # noqa: FURB120
 			label=_("Maximum Interval"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -510,7 +510,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"boxLineWidth",
 			0.0, 99,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Border Line Width"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -537,7 +537,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"boxEditBorderWidth",
 			0.0, 999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Editing Border Width"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -551,7 +551,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"boxEditInnerLineWidth",
 			0.0, 99,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Editing Inner Line Width"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -565,7 +565,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"boxEditHelperLineWidth",
 			0.0, 99,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Editing Helper Line Width"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -631,7 +631,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"movingStaticStepMouse",
 			0.1, 9999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Step with mouse scroll"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -645,7 +645,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"movingStaticStepKeyboard",
 			0.1, 9999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Step with keyboard"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -673,7 +673,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"movingInitialVelocity",
 			0.0, 9999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Initial Velocity"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -687,7 +687,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"movingMaxVelocity",
 			0.1, 9999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Maximum Velocity"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -701,7 +701,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"movingHandForceMouse",
 			0.1, 9999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Acceleration with mouse"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -717,7 +717,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl, "movingHandForceKeyboard",
 			0.1, 9999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Acceleration with keyboard"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -734,7 +734,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"movingHandForceKeyboardSmall",
 			0.1, 9999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Acceleration with keyboard (with Shift)"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -751,7 +751,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"movingHandForceButton",
 			0.1, 9999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Acceleration with buttons"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -768,7 +768,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 			tl,
 			"movingFrictionForce",
 			0.0, 9999,
-			digits=1, step=1,
+			digits=1, step=1,  # noqa: FURB120
 			label=_("Friction Acceleration"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,

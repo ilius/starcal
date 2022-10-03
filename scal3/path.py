@@ -30,7 +30,7 @@ APP_NAME = "starcal3"
 osName = getOsName()
 
 scalDir = dirname(__file__)
-cwd = os.getcwd()
+cwd = os.getcwd()  # noqa: FURB104
 if scalDir in (".", ""):
 	scalDir = cwd
 elif os.sep == "/":

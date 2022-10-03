@@ -762,15 +762,15 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 
 	def onKeyMoveRight(self, gevent: gdk.EventKey):
 		self.movingUserEvent(
-			direction=1,
-			source="keyboard",
+			direction=1,  # noqa: FURB120
+			source="keyboard",  # noqa: FURB120
 			smallForce=(gevent.get_state() & gdk.ModifierType.SHIFT_MASK),
 		)
 
 	def onKeyMoveLeft(self, gevent: gdk.EventKey):
 		self.movingUserEvent(
-			direction=-1,
-			source="keyboard",
+			direction=-1,  # noqa: FURB120
+			source="keyboard",  # noqa: FURB120
 			smallForce=(gevent.get_state() & gdk.ModifierType.SHIFT_MASK),
 		)
 
@@ -898,7 +898,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			# log.debug("Stopping movement: f != f1")
 			return
 		v1 = self.movingV
-		if f == 0 and v1 == 0:
+		if f == v1 == 0:
 			return
 		timeout = (
 			tl.movingKeyTimeoutFirst

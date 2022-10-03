@@ -152,8 +152,7 @@ class SObj:
 			path.append(_id)
 		if parent is None:
 			return path
-		else:
-			return parent.getIdPath() + path
+		return parent.getIdPath() + path
 
 	def getPath(self):
 		parent = self.parent
@@ -253,7 +252,7 @@ class JsonSObj(SObj):
 			try:
 				self.modified = int(os.stat(self.file).st_mtime)
 			except OSError:
-				pass
+				log.exception("")
 		# else:
 		# 	log.info(f"no modified param for object {self!r}")
 
