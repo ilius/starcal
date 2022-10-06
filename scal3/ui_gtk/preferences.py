@@ -1401,8 +1401,13 @@ class PreferencesWindow(gtk.Window):
 		# #### Plugin Manager
 		model = self.plugTreeview.get_model()
 		model.clear()
-		for row in core.getPluginsTable():
-			model.append(row)
+		for p in core.getPluginsTable():
+			model.append([
+				p.index,
+				p.enable,
+				p.show_date,
+				p.title,
+			])
 		self.plugAddItems = []
 		self.plugAddTreeModel.clear()
 		for (i, title) in core.getDeletedPluginsTable():

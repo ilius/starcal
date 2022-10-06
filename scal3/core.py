@@ -28,6 +28,7 @@ from io import StringIO
 import os.path
 from os.path import join, isfile, isdir
 from contextlib import suppress
+from collections import namedtuple
 import re
 
 import typing
@@ -425,12 +426,25 @@ def updatePlugins() -> None:
 			plug.clear()
 
 
+PluginTuple = namedtuple("PluginTuple", [
+	"index",
+	"enable",
+	"show_date",
+	"title",
+],)
+
+
 def getPluginsTable() -> List[List]:
 	# returns a list of [i, enable, show_date, description]
 	table = []
-	for i in plugIndex:
-		plug = allPlugList[i]
-		table.append([i, plug.enable, plug.show_date, plug.title])
+	for index in plugIndex:
+		plug = allPlugList[index]
+		table.append(PluginTuple(
+			index=index,
+			enable=plug.enable,
+			show_date=plug.show_date,
+			title=plug.title,
+		))
 	return table
 
 
