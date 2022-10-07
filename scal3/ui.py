@@ -29,6 +29,7 @@ import os.path
 from os.path import dirname, join, isfile, isdir, splitext, isabs
 from collections import OrderedDict
 from collections import namedtuple
+from dataclasses import dataclass
 from cachetools import LRUCache
 from contextlib import suppress
 
@@ -247,10 +248,45 @@ confParamsCustomize = (
 )
 
 
+@dataclass
+class Font:
+	family: Optional[str]
+	bold: bool = False
+	italic: bool = False
+	size: float = 0
+
+	def fromList(lst: "Optional[List]"):
+		if lst is None:
+			return
+		return Font(*lst)
+
+	def toList(font: "Optional[Font]") -> "Optional[List]":
+		if font is None:
+			return
+		return [font.family, font.bold, font.italic, font.size]
+
+
+fontParams = [
+	"fontDefault",
+	"fontCustom",
+	"labelBoxFont",
+	"labelBoxPrimaryFont",
+	"mainWinRightPanelEventFont",
+	"mainWinRightPanelEventTimeFont",
+	"mainWinRightPanelPluginsFont",
+]
+
+confDecoders = {
+	param: Font.fromList for param in fontParams
+}
+confEncoders = {
+	param: Font.toList for param in fontParams
+}
+
 def loadConf() -> None:
 	loadModuleJsonConf(__name__)
-	loadJsonConf(__name__, confPathCustomize)
-	loadJsonConf(__name__, confPathLive)
+	loadJsonConf(__name__, confPathCustomize, decoders=confDecoders)
+	loadJsonConf(__name__, confPathLive, decoders=confDecoders)
 
 
 def saveConf() -> None:
@@ -258,12 +294,22 @@ def saveConf() -> None:
 
 
 def saveConfCustomize() -> None:
-	saveJsonConf(__name__, confPathCustomize, confParamsCustomize)
+	saveJsonConf(
+		__name__,
+		confPathCustomize,
+		confParamsCustomize,
+		encoders=confEncoders,
+	)
 
 
 def saveLiveConf() -> None:  # rename to saveConfLive FIXME
 	log.debug(f"saveLiveConf: {winX=}, {winY=}, {winWidth=}")
-	saveJsonConf(__name__, confPathLive, confParamsLive)
+	saveJsonConf(
+		__name__,
+		confPathLive,
+		confParamsLive,
+		encoders=confEncoders,
+	)
 
 
 def saveLiveConfLoop() -> None:  # rename to saveConfLiveLoop FIXME
@@ -644,53 +690,32 @@ def yearPlus(plus: int = 1) -> None:
 	cell = cellCache.getCellByDate(year, month, day)
 
 
-Font = namedtuple(
-	"Font", [
-		"family",  # Optional[str]
-		"bold",  # bool
-		"italic",  # bool
-		"size",  # float
-	],
-	defaults=[
-		None,
-		False,
-		False,
-		None,
-	],
-)
-
-
 def getFont(
 	scale=1.0,
 	family=True,
 	bold=False,
 ) -> Tuple[Optional[str], bool, bool, float]:
-	(
-		_family,
-		_bold,
-		_italic,
-		_size,
-	) = fontCustom if fontCustomEnable else fontDefaultInit
+	f = fontCustom if fontCustomEnable else fontDefaultInit
 	return Font(
-		family=_family if family else None,
-		bold=_bold or bold,
-		italic=_italic,
-		size=_size * scale,
+		family=f.family if family else None,
+		bold=f.bold or bold,
+		italic=f.italic,
+		size=f.size * scale,
 	)
 
 
-def getParamsFont(params: Dict) -> Optional[Tuple[str, bool, bool, float]]:
+def getParamsFont(params: Dict) -> Optional[Font]:
 	font = params.get("font")
 	if not font:
 		return None
 	if not isinstance(font, Font):
 		font = Font(*font)
 	if font.family is None:
-		font = font._replace(family=getFont().family)
+		font.family = getFont().family
 	return font
 
 
-def initFonts(fontDefaultNew: Tuple[str, bool, bool, float]) -> None:
+def initFonts(fontDefaultNew: "Font") -> None:
 	global fontDefault, fontCustom, mcalTypeParams
 	fontDefault = fontDefaultNew
 	if not fontCustom:
@@ -1678,11 +1703,6 @@ def updateFocusTime(*args):
 loadConf()
 
 ########################################################
-
-if not isinstance(fontDefault, Font):
-	fontDefault = Font(*fontDefault)
-if fontCustom and not isinstance(fontCustom, Font):
-	fontCustom = Font(*fontCustom)
 
 if not isfile(statusIconImage):
 	statusIconImage = statusIconImageDefault

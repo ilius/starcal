@@ -421,10 +421,10 @@ class FontPrefItem(PrefItem):
 		if previewText:
 			self.setPreviewText(previewText)
 
-	def get(self) -> Tuple[str, bool, bool, float]:
+	def get(self) -> ui.Font:
 		return self._widget.get_font()
 
-	def set(self, value: Optional[Tuple[str, bool, bool, float]]) -> None:
+	def set(self, value: Optional[ui.Font]) -> None:
 		if value is None:
 			return
 		self._widget.set_font(value)

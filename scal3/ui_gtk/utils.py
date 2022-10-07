@@ -581,7 +581,7 @@ class CopyLabelMenuItem(MenuItem):
 
 
 def cssTextStyle(
-	font: "Optional[Tuple[str, bool, bool, float]]" = None,
+	font: "Optional[Font]" = None,
 	fgColor: "Optional[ColorType]" = None,
 	bgColor: "Optional[ColorType]" = None,
 	extra: "Optional[Dict[str, str]]" = None,

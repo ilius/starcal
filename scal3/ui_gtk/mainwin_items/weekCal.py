@@ -339,7 +339,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 		self,
 		cr: "cairo.Context",
 		textData: List[List[str]],
-		font: Optional[Tuple[str, bool, bool, float]] = None,
+		font: "Optional[Font]" = None,
 	):
 		alloc = self.get_allocation()
 		w = alloc.width

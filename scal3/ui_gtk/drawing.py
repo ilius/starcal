@@ -111,7 +111,7 @@ def newTextLayout(
 				minRat = 1.01 * layoutH / maxH  # FIXME
 			if truncate:
 				if minRat > 1:
-					font = font._replace(size=font.size / minRat)
+					font.size /= minRat
 				layout.set_font_description(pfontEncode(font))
 				layoutW, layoutH = layout.get_pixel_size()
 				if layoutW > 0:
@@ -137,7 +137,7 @@ def newTextLayout(
 				if minRat < layoutW / maxW:
 					minRat = layoutW / maxW
 				if minRat > 1:
-					font = font._replace(size=font.size / minRat)
+					font.size /= minRat
 				layout.set_font_description(pfontEncode(font))
 	return layout
 
@@ -190,7 +190,7 @@ def newLimitedWidthTextLayout(
 def calcTextPixelSize(
 	widget: gtk.Widget,
 	text: str,
-	font: Optional[Tuple[str, bool, bool, float]] = None,
+	font: "Optional[Font]" = None,
 ) -> Tuple[float, float]:
 	layout = widget.create_pango_layout(text)  # a Pango.Layout object
 	if font is not None:
@@ -202,7 +202,7 @@ def calcTextPixelSize(
 def calcTextPixelWidth(
 	widget: gtk.Widget,
 	text: str,
-	font: "Optional[Tuple[str, bool, bool, float]]" = None,
+	font: "Optional[Font]" = None,
 ) -> float:
 	width, height = calcTextPixelSize(widget, text, font=font)
 	return width

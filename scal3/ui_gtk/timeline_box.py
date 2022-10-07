@@ -143,7 +143,7 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 	fillColor(cr, tl.fgColor)  # before cr.move_to
 
 	if tl.rotateBoxLabel == 0 or rotateRatio <= normRatio:
-		font = font._replace(size=font.size * normRatio)
+		font.size *= normRatio
 		layout.set_font_description(pfontEncode(font))
 		layoutW, layoutH = layout.get_pixel_size()
 		cr.move_to(
@@ -153,7 +153,7 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 		show_layout(cr, layout)
 		return
 
-	font = font._replace(size=font.size * rotateRatio)
+	font.size *= rotateRatio
 	layout.set_font_description(pfontEncode(font))
 	layoutW, layoutH = layout.get_pixel_size()
 	cr.move_to(
