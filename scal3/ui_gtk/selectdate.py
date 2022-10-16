@@ -70,7 +70,7 @@ class SelectDateDialog(gtk.Dialog):
 		pack(self.vbox, hb0)
 		#######################
 		hbox = HBox(spacing=5)
-		rb1 = gtk.RadioButton.new_with_label(None, "")
+		rb1 = gtk.RadioButton(label="")
 		rb1.num = 1
 		pack(hbox, rb1)
 		self.ymdBox = YearMonthDayBox()
@@ -81,7 +81,7 @@ class SelectDateDialog(gtk.Dialog):
 		pack(hb2, gtk.Label(label="yyyy/mm/dd"))
 		dateInput = DateButtonOption(hist_size=16)
 		pack(hb2, dateInput)
-		rb2 = gtk.RadioButton.new_with_label_from_widget(rb1, "")
+		rb2 = gtk.RadioButton(label="", group=rb1)
 		rb2.num = 2
 		hb2i = HBox(spacing=5)
 		pack(hb2i, rb2)
@@ -92,7 +92,7 @@ class SelectDateDialog(gtk.Dialog):
 		pack(hb3, gtk.Label(label=_("Julian Day Number")))
 		jdInput = IntSpinButton(0, 9999999)
 		pack(hb3, jdInput)
-		rb3 = gtk.RadioButton.new_with_label_from_widget(rb1, "")
+		rb3 = gtk.RadioButton(label="", group=rb1)
 		rb3.num = 3
 		hb3i = HBox(spacing=5)
 		pack(hb3i, rb3)
