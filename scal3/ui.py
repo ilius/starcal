@@ -248,7 +248,7 @@ confParamsCustomize = (
 )
 
 
-@dataclass
+@dataclass(slots=True)
 class Font:
 	family: Optional[str]
 	bold: bool = False
