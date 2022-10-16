@@ -929,7 +929,7 @@ class RadioListPrefItem(PrefItem):
 		for r in self.radios[1:]:
 			pack(box, gtk.Label(), 1, 1)
 			pack(box, r)
-			r.set_group(first)
+			r.join_group(first)
 		pack(box, gtk.Label(), 1, 1) ## FIXME
 
 	def get(self) -> Optional[int]:

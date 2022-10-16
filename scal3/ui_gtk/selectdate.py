@@ -83,7 +83,6 @@ class SelectDateDialog(gtk.Dialog):
 		pack(hb2, dateInput)
 		rb2 = gtk.RadioButton.new_with_label_from_widget(rb1, "")
 		rb2.num = 2
-		#rb2.set_group([rb1])
 		hb2i = HBox(spacing=5)
 		pack(hb2i, rb2)
 		pack(hb2i, hb2)
@@ -95,7 +94,6 @@ class SelectDateDialog(gtk.Dialog):
 		pack(hb3, jdInput)
 		rb3 = gtk.RadioButton.new_with_label_from_widget(rb1, "")
 		rb3.num = 3
-		#rb3.set_group([rb1])
 		hb3i = HBox(spacing=5)
 		pack(hb3i, rb3)
 		pack(hb3i, hb3)
