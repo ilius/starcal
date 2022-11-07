@@ -1173,8 +1173,8 @@ class PreferencesWindow(gtk.Window):
 		for page in self.prefPages:
 			page.pagePath = page.pageName
 			stack.addPage(page)
-		if ui.preferencesPagePath:
-			self.stack.gotoPage(ui.preferencesPagePath)
+		# if ui.preferencesPagePath:
+		# 	self.stack.gotoPage(ui.preferencesPagePath)
 		#######################
 		pack(self.vbox, stack, 1, 1)
 		pack(self.vbox, self.buttonbox)
