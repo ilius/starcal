@@ -260,10 +260,8 @@ class Font:
 			return
 		return Font(*lst)
 
-	def toList(font: "Optional[Font]") -> "Optional[List]":
-		if font is None:
-			return
-		return [font.family, font.bold, font.italic, font.size]
+	def to_json(self):
+		return [self.family, self.bold, self.italic, self.size]
 
 
 fontParams = [
@@ -280,7 +278,7 @@ confDecoders = {
 	param: Font.fromList for param in fontParams
 }
 confEncoders = {
-	param: Font.toList for param in fontParams
+# 	param: Font.to_json for param in fontParams
 }
 
 def loadConf() -> None:
