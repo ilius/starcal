@@ -1,4 +1,8 @@
 #!/usr/bin/env python3
+
+from scal3 import logger
+log = logger.get()
+
 from scal3 import core
 from scal3.locale_man import tr as _
 from scal3 import event_lib
@@ -21,31 +25,32 @@ class GroupEditorDialog(gtk.Dialog):
 		###
 		dialog_add_button(
 			self,
-			gtk.STOCK_CANCEL,
-			_("_Cancel"),
-			gtk.ResponseType.CANCEL,
+			imageName="dialog-cancel.svg",
+			label=_("Cancel"),
+			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
-			gtk.STOCK_OK,
-			_("_OK"),
-			gtk.ResponseType.OK,
+			imageName="dialog-ok.svg",
+			label=_("_Save"),
+			res=gtk.ResponseType.OK,
 		)
 		self.connect("response", lambda w, e: self.hide())
 		#######
 		self.activeWidget = None
 		#######
-		hbox = gtk.HBox()
+		hbox = HBox()
 		combo = gtk.ComboBoxText()
 		for cls in event_lib.classes.group:
 			combo.append_text(cls.desc)
-		pack(hbox, gtk.Label(_("Group Type")))
+		pack(hbox, gtk.Label(label=_("Group Type")))
 		pack(hbox, combo)
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
 		####
 		if self.isNew:
-			self._group = event_lib.classes.group[event_lib.defaultGroupTypeIndex]()
+			name = event_lib.classes.group[event_lib.defaultGroupTypeIndex].name
+			self._group = ui.eventGroups.create(name)
 			combo.set_active(event_lib.defaultGroupTypeIndex)
 		else:
 			self._group = group
@@ -60,23 +65,24 @@ class GroupEditorDialog(gtk.Dialog):
 		pass
 
 	def getNewGroupTitle(self, baseTitle):
-		usedTitles = [group.title for group in ui.eventGroups]
+		usedTitles = set(group.title for group in ui.eventGroups)
 		if baseTitle not in usedTitles:
 			return baseTitle
-		i = 1
-		while True:
-			newTitle = baseTitle + " " + _(i)
-			if newTitle in usedTitles:
-				i += 1
-			else:
-				return newTitle
+
+		def makeTitle(n: int) -> str:
+			return baseTitle + " " + _(n)
+
+		num = 1
+		while makeTitle(num) in usedTitles:
+			num += 1
+		return makeTitle(num)
 
 	def typeChanged(self, combo=None):
 		if self.activeWidget:
 			self.activeWidget.updateVars()
 			self.activeWidget.destroy()
-		cls = event_lib.classes.group[self.comboType.get_active()]
-		group = cls()
+		group = ui.withFS(event_lib.classes.group[self.comboType.get_active()]())
+		log.info(f"GroupEditorDialog: typeChanged: self.activeWidget={self.activeWidget}, new class: {group.name}")
 		if self.isNew:
 			group.setRandomColor()
 			if group.icon:
@@ -85,10 +91,11 @@ class GroupEditorDialog(gtk.Dialog):
 			group.copyFrom(self._group)
 		group.setId(self._group.id)
 		if self.isNew:
-			group.title = self.getNewGroupTitle(cls.desc)
+			group.title = self.getNewGroupTitle(group.desc)
 		self._group = group
 		self.activeWidget = makeWidget(group)
 		pack(self.vbox, self.activeWidget)
+		self.activeWidget.show()
 
 	def run(self):
 		if self.activeWidget is None:

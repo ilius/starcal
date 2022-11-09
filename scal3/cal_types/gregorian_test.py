@@ -1,6 +1,7 @@
 import unittest
 
-import sys;sys.path.append(".")
+import sys
+sys.path.append(".")
 
 from scal3.cal_types import gregorian
 
@@ -13,7 +14,6 @@ class Testgregorian(unittest.TestCase):
 			isLeap = isLeapFunc(year)
 			# print(f"{str(year).center(10)}   {'L' if isLeap1 else ' '}")
 			print(f"{year}: \"{'L' if isLeap else ' '}\",")
-
 
 	# year -> f"{'L' if isLeap33 else ' '}{'L' if isLeap2820 else ' '}"
 	isLeapDict = {
@@ -308,7 +308,7 @@ class Testgregorian(unittest.TestCase):
 			self.assertEqual(
 				isLeapActual,
 				isLeap,
-				f"year={year}, isLeap={isLeap}, isLeapActual={isLeapActual}",
+				f"{year=}, {isLeap=}, {isLeapActual=}",
 			)
 
 	def test_to_jd(self):
@@ -317,7 +317,7 @@ class Testgregorian(unittest.TestCase):
 			self.assertEqual(
 				jdActual,
 				jd,
-				f"date={date}, jd={jd}, jdActual={jdActual}",
+				f"{date=}, {jd=}, {jdActual=}",
 			)
 
 	def test_convert(self):
@@ -333,7 +333,7 @@ class Testgregorian(unittest.TestCase):
 					self.assertEqual(
 						ndate,
 						date,
-						f"jd={jd}, date={date}, ndate={ndate}",
+						f"{jd=}, {date=}, {ndate=}",
 					)
 
 

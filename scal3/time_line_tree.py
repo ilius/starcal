@@ -18,31 +18,33 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 import sys
-from math import log
 
 from scal3.interval_utils import ab_overlaps
 from scal3.time_utils import *
 
-#maxLevel = 1
-#minLevel = 1
+# maxLevel = 1
+# minLevel = 1
 
 
 class Node:
 	def __init__(self, base, level, offset, rightOri):
-		#global maxLevel, minLevel
-		self.base = base ## 8 or 16 is better
+		# global maxLevel, minLevel
+		self.base = base  # 8 or 16 is better
 		self.level = level
 		# base ** level is the mathematical scope of the node
 		# (with its children)
-		#if level > maxLevel:
-		#	maxLevel = level
-		#	print("maxLevel =", level)
-		#if level < minLevel:
-		#	minLevel = level
-		#	print("minLevel =", level)
-		self.offset = offset ## in days
-		self.rightOri = rightOri ## FIXME
+		# if level > maxLevel:
+		# 	maxLevel = level
+		# 	log.debug(f"maxLevel = {level}")
+		# if level < minLevel:
+		# 	minLevel = level
+		# 	log.debug(f"minLevel = {level}")
+		self.offset = offset  # in days
+		self.rightOri = rightOri  # FIXME
 		###
 		width = base ** level
 		if rightOri:
@@ -56,7 +58,7 @@ class Node:
 		self.children = {}
 		# possible keys of `self.children` are 0 to `base-1` for right node,
 		# and `-(base-1)` to 0 for left node
-		self.events = [] ## list of tuples (rel_start, rel_end, event_id)
+		self.events = []  # list of tuples (rel_start, rel_end, event_id)
 
 	def sOverlaps(self, t0, t1):
 		return ab_overlaps(t0, t1, self.s0, self.s1)
@@ -85,12 +87,8 @@ class Node:
 	def getChild(self, tm):
 		if not self.s0 <= tm <= self.s1:
 			raise RuntimeError(
-				"Node.getChild: Out of scope" +
-				"level=%s, offset=%s, rightOri=%s" % (
-					self.level,
-					self.offset,
-					self.rightOri,
-				)
+				f"Node.getChild: Out of scope: level={self.level}, " +
+				f"offset={self.offset}, rightOri={self.rightOri}"
 			)
 		dt = self.base ** (self.level - 1)
 		index = int((tm - self.offset) // dt)
@@ -148,11 +146,10 @@ class TimeLineTree:
 		if debug:
 			from time import strftime, localtime
 			f = "%F, %T"
-			print("%s.add: %s\t%s" % (
-				self.__class__.__name__,
-				strftime(f, localtime(t0)),
-				strftime(f, localtime(t1)),
-			))
+			log.info(
+				f"{self.__class__.__name__}.add: " +
+				f"{strftime(f, localtime(t0))}\t{strftime(f, localtime(t1))}"
+			)
 		if self.offset <= t0:
 			isRight = True
 			node = self.right
@@ -166,21 +163,18 @@ class TimeLineTree:
 		else:
 			raise RuntimeError
 		########
-		while True:
-			if node.s0 <= t0 < node.s1 and node.s0 < t1 <= node.s1:
-				break
+		while not (node.s0 <= t0 < node.s1 and node.s0 < t1 <= node.s1):
 			node = node.newParent()
 		# now `node` is the new side (left/right) node
 		if isRight:
 			self.right = node
 		else:
 			self.left = node
-		while True:
+		while True:  # OK
 			child = node.getChild(t0)
-			if child.s0 <= t1 <= child.s1:
-				node = child
-			else:
+			if not child.s0 <= t1 <= child.s1:
 				break
+			node = child
 		# now `node` is the node that event should be placed in
 		ev_tuple = (
 			t0 - node.offset,
@@ -205,13 +199,13 @@ class TimeLineTree:
 				node.events.remove(ev_tuple)
 			except ValueError:
 				continue
-			#if not node.events:
-			#	node.parent.removeChild(node)
+			# if not node.events:
+			# 	node.parent.removeChild(node)
 		return n
 
 	def getLastOfEvent(self, eid):
 		refList = self.byEvent.get(eid)
-		if not refList: # None or []
+		if not refList:  # None or []
 			return None
 		node, ev_tuple = refList[-1]
 		# self.byEvent is sorted by time? FIXME
@@ -219,7 +213,7 @@ class TimeLineTree:
 
 	def getFirstOfEvent(self, eid):
 		refList = self.byEvent.get(eid)
-		if not refList: # None or []
+		if not refList:  # None or []
 			return None
 		node, ev_tuple = refList[0]
 		return ev_tuple[0], ev_tuple[1]
@@ -229,12 +223,3 @@ class TimeLineTree:
 			self.left.getDepth(),
 			self.right.getDepth(),
 		)
-
-#if __name__=="__main__":
-#	from scal3 import ui
-#	from time import time as now
-#	ui.eventGroups = event_lib.EventGroupsHolder.load()
-#	for group in ui.eventGroups:
-#		t0 = now()
-#		group.updateOccurrenceNode()
-#		print(now()-t0, group.title)

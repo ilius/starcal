@@ -2,16 +2,16 @@
 set -e
 
 function version_lte() {
-	[ "$1" = "`echo -e "$1\n$2" | sort -V | head -n1`" ]
+	[ "$1" = "$(echo -e "$1\n$2" | sort -V | head -n1)" ]
 }
 
 function core_version() {
-	cat "$sourceDir/scal3/core.py" | while read line ; do
+	while read -r line ; do
 		if [[ "$line" == 'VERSION = '* ]] ; then
-			echo $line | sed 's/VERSION\s*=\s*//' | sed s/[\"\']//g
+			echo "$line" | sed 's/VERSION\s*=\s*//' | sed s/[\"\']//g
 			return
 		fi
-	done
+	done < "$sourceDir/scal3/core.py"
 }
 
 myPath=$(realpath "$0")
@@ -19,17 +19,22 @@ myDir=$(dirname "$myPath")
 sourceDir=$(dirname "$myDir")
 gitDir="$sourceDir/.git"
 
+if [ -f "$sourceDir/VERSION" ] ; then
+	cat "$sourceDir/VERSION"
+	exit 0
+fi
+
 VER=$(core_version)
 if [ -z "$VER" ] ; then
 	exit 1
 fi
 
 if [ -d "$gitDir" ] ; then
-	if VER2=$(git --git-dir "$gitDir" describe --always); then
-		if [[ $VER2 == *.* ]] && version_lte $VER $VER2; then
-			VER=$VER2
+	if VER2=$(git --git-dir "$gitDir" describe --tags --always); then
+		if [[ $VER2 == *.* ]] && version_lte "$VER" "$VER2"; then
+			VER=$(echo "$VER2" | sed -E 's/-([0-9]+)-g([0-9a-f]{6,8})/post\1+\2/')
 		fi
 	fi
 fi
 
-echo $VER
+echo "$VER"

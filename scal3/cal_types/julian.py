@@ -32,6 +32,7 @@ from math import floor
 def ifloor(x):
 	return int(floor(x))
 
+
 monthName = (
 	"January", "February", "March",
 	"April", "May", "June",
@@ -51,12 +52,17 @@ def getMonthName(m, y=None):
 	return monthName[m - 1]
 
 
-def getMonthNameAb(m, y=None):
-	return monthNameAb.__getitem__(m - 1)
+def getMonthNameAb(tr, m, y=None):
+	fullEn = monthName[m - 1]
+	abbr = tr(fullEn, ctx="abbreviation")
+	if abbr != fullEn:
+		return abbr
+	return monthNameAb[m - 1]
 
 
 def getMonthsInYear(y):
 	return 12
+
 
 epoch = 1721058
 minMonthLen = 28
@@ -142,5 +148,5 @@ def jd_to(jd):
 def getMonthLen(year, month):
 	if month == 12:
 		return to_jd(year + 1, 1, 1) - to_jd(year, 12, 1)
-	else:
-		return to_jd(year, month + 1, 1) - to_jd(year, month, 1)
+
+	return to_jd(year, month + 1, 1) - to_jd(year, month, 1)

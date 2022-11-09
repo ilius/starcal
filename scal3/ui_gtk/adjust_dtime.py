@@ -18,37 +18,41 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 import os
 
 os.environ["LANG"] = "en_US.UTF-8"  # FIXME
 
+from os.path import join
 import subprocess
+import shutil
 from time import localtime
 from time import time as now
 import sys
-from math import ceil
 
+from scal3.path import pixDir
 from scal3 import ui
 from scal3.time_utils import clockWaitMilliseconds
 
-
 from scal3.ui_gtk import *
+from scal3.ui_gtk.utils import dialog_add_button
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 
 from gi.repository.Gtk import IconTheme
 
-_ = str ## FIXME
-iceil = lambda f: int(ceil(f))
+_ = str  # FIXME
 
 
-def error_exit(resCode, text, parent=None):
+def error_exit(resCode, text, **kwargs):
 	d = gtk.MessageDialog(
-		parent,
-		gtk.DialogFlags.DESTROY_WITH_PARENT,
-		gtk.MessageType.ERROR,
-		gtk.ButtonsType.OK,
-		text.strip(),
+		destroy_with_parent=True,
+		message_type=gtk.MessageType.ERROR,
+		buttons=gtk.ButtonsType.OK,
+		text=text.strip(),
+		**kwargs
 	)
 	d.set_title("Error")
 	d.run()
@@ -62,88 +66,77 @@ class AdjusterDialog(gtk.Dialog):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Adjust System Date & Time"))  # FIXME
 		self.set_keep_above(True)
-		try:
-			self.set_icon(IconTheme.get_default().load_icon(
-				icon_name = "preferences-system-time",
-				size = 32,
-				flags = 0,
-			))
-		except Exception:
-			pass
-		# render_icon: Deprecated since version 3.0: Use Gtk.Widget.render_icon_pixbuf() instead.
-		# render_icon_pixbuf: Deprecated since version 3.10: Use Gtk.IconTheme.load_icon() instead.
+		self.set_icon_from_file(join(pixDir, "preferences-system-time.png"))
 		#########
-		self.buttonCancel = self.add_button(gtk.STOCK_CANCEL, 0)
-		#self.buttonCancel.connect("clicked", lambda w: sys.exit(0))
-		self.buttonSet = self.add_button(_("Set System Time"), 1)
-		#self.buttonSet.connect("clicked", self.setSysTimeClicked)
+		self.buttonCancel = dialog_add_button(
+			self,
+			imageName="dialog-cancel.svg",
+			label=_("Cancel"),
+			res=gtk.ResponseType.CANCEL,
+		)
+		# self.buttonCancel.connect("clicked", lambda w: sys.exit(0))
+		self.buttonSet = dialog_add_button(
+			self,
+			imageName="preferences-system.svg",
+			label=_("Set System Time"),
+			res=gtk.ResponseType.OK,
+		)
+		# self.buttonSet.connect("clicked", self.onSetSysTimeClick)
 		#########
-		hbox = gtk.HBox()
+		hbox = HBox()
 		self.label_cur = gtk.Label(label=_("Current:"))
 		pack(hbox, self.label_cur)
 		pack(self.vbox, hbox)
 		#########
-		hbox = gtk.HBox()
+		hbox = HBox()
 		self.radioMan = gtk.RadioButton.new_with_mnemonic(
 			group=None,
 			label=_("Set _Manully:"),
 		)
-		self.radioMan.connect("clicked", self.radioManClicked)
+		self.radioMan.connect("clicked", self.onRadioManClick)
 		pack(hbox, self.radioMan)
 		pack(self.vbox, hbox)
 		######
-		vb = gtk.VBox()
+		vb = VBox()
 		sg = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		###
-		hbox = gtk.HBox()
-		##
-		l = gtk.Label()
-		l.set_property("width-request", self.xpad)
-		pack(hbox, l)
+		hbox = HBox()
 		##
 		self.ckeckbEditTime = gtk.CheckButton.new_with_mnemonic(_("Edit _Time"))
 		self.editTime = False
-		self.ckeckbEditTime.connect("clicked", self.ckeckbEditTimeClicked)
-		pack(hbox, self.ckeckbEditTime)
+		self.ckeckbEditTime.connect("clicked", self.onCkeckbEditTimeClick)
+		pack(hbox, self.ckeckbEditTime, padding=self.xpad)
 		sg.add_widget(self.ckeckbEditTime)
-		self.timeInput = TimeButton() ## ??????? options
+		self.timeInput = TimeButton()
 		pack(hbox, self.timeInput)
 		pack(vb, hbox)
 		###
-		hbox = gtk.HBox()
-		##
-		l = gtk.Label()
-		l.set_property("width-request", self.xpad)
-		pack(hbox, l)
+		hbox = HBox()
 		##
 		self.ckeckbEditDate = gtk.CheckButton.new_with_mnemonic(_("Edit _Date"))
 		self.editDate = False
-		self.ckeckbEditDate.connect("clicked", self.ckeckbEditDateClicked)
-		pack(hbox, self.ckeckbEditDate)
+		self.ckeckbEditDate.connect("clicked", self.onCkeckbEditDateClick)
+		pack(hbox, self.ckeckbEditDate, padding=self.xpad)
 		sg.add_widget(self.ckeckbEditDate)
-		self.dateInput = DateButton() ## ??????? options
+		self.dateInput = DateButton()
 		pack(hbox, self.dateInput)
 		pack(vb, hbox)
 		###
-		pack(self.vbox, vb, 0, 0, 10)#?????
+		pack(self.vbox, vb, 0, 0, padding=10)
 		self.vboxMan = vb
 		######
-		hbox = gtk.HBox()
+		hbox = HBox()
 		self.radioNtp = gtk.RadioButton.new_with_mnemonic_from_widget(
 			radio_group_member=self.radioMan,
 			label=_("Set from _NTP:"),
 		)
-		self.radioNtp.connect("clicked", self.radioNtpClicked)
+		self.radioNtp.connect("clicked", self.onRadioNtpClick)
 		pack(hbox, self.radioNtp)
 		pack(self.vbox, hbox)
 		###
-		hbox = gtk.HBox()
+		hbox = HBox()
 		##
-		l = gtk.Label()
-		l.set_property("width-request", self.xpad)
-		pack(hbox, l)
-		##
-		pack(hbox, gtk.Label(label=_("Server:") + " "))
+		pack(hbox, gtk.Label(label=_("Server:") + " "), padding=self.xpad)
 		combo = gtk.ComboBoxText.new_with_entry()
 		combo.get_child().connect("changed", self.updateSetButtonSensitive)
 		pack(hbox, combo, 1, 1)
@@ -154,15 +147,15 @@ class AdjusterDialog(gtk.Dialog):
 		self.hboxNtp = hbox
 		pack(self.vbox, hbox)
 		######
-		self.radioManClicked()
-		#self.radioNtpClicked()
-		self.ckeckbEditTimeClicked()
-		self.ckeckbEditDateClicked()
+		self.onRadioManClick()
+		# self.onRadioNtpClick()
+		self.onCkeckbEditTimeClick()
+		self.onCkeckbEditDateClick()
 		######
 		self.updateTimes()
 		self.vbox.show_all()
 
-	def radioManClicked(self, radio=None):
+	def onRadioManClick(self, radio=None):
 		if self.radioMan.get_active():
 			self.vboxMan.set_sensitive(True)
 			self.hboxNtp.set_sensitive(False)
@@ -171,7 +164,7 @@ class AdjusterDialog(gtk.Dialog):
 			self.hboxNtp.set_sensitive(True)
 		self.updateSetButtonSensitive()
 
-	def radioNtpClicked(self, radio=None):
+	def onRadioNtpClick(self, radio=None):
 		if self.radioNtp.get_active():
 			self.vboxMan.set_sensitive(False)
 			self.hboxNtp.set_sensitive(True)
@@ -180,38 +173,70 @@ class AdjusterDialog(gtk.Dialog):
 			self.hboxNtp.set_sensitive(False)
 		self.updateSetButtonSensitive()
 
-	def ckeckbEditTimeClicked(self, checkb=None):
+	def onCkeckbEditTimeClick(self, checkb=None):
 		self.editTime = self.ckeckbEditTime.get_active()
 		self.timeInput.set_sensitive(self.editTime)
 		self.updateSetButtonSensitive()
 
-	def ckeckbEditDateClicked(self, checkb=None):
+	def onCkeckbEditDateClick(self, checkb=None):
 		self.editDate = self.ckeckbEditDate.get_active()
 		self.dateInput.set_sensitive(self.editDate)
 		self.updateSetButtonSensitive()
 
-	#def set_sys_time(self):
-	#	if os.path.isfile("/bin/date"):
-	#		pass  # FIXME
-	#	elif sys.platform == "win32":
-	#		import win32api
-	#		win32api.SetSystemTime()##????????
-	#	else:
-	#		pass
+	def runCommand(self, cmd):
+		proc = subprocess.Popen(
+			cmd,
+			stderr=subprocess.PIPE,
+			stdout=subprocess.PIPE,
+		)
+		resCode = proc.wait()
+		error = proc.stderr.read().strip()
+		output = proc.stdout.read().strip()
+		if output:
+			log.info(output)
+		# log.debug(f"{resCode=}, {error=}, {output=}")
+		if error:
+			log.error(error)
+		if resCode != 0:
+			error_exit(
+				resCode,
+				error,
+				transient_for=self,
+			)
+		# else:
+		# 	sys.exit(0)
+
+	def setSystemTimeUnix(self, timeStr: str):
+		dateCmd = shutil.which("date")  # "/bin/date"
+		if not dateCmd:
+			error_exit(1, "Could not find command 'date'", transient_for=self)
+		self.runCommand([dateCmd, "-s", timeStr])
+
+	def setSystemTime(self, timeStr: str):
+		if os.sep == "/":
+			return self.setSystemTimeUnix(timeStr)
+
+		if sys.platform == "win32":
+			# TODO: test
+			import win32api
+			win32api.SetSystemTime(timeStr)
+			return
+
+		raise OSError("unknown or unsupported operating system")
 
 	def updateTimes(self):
 		dt = now() % 1
 		timeout_add(clockWaitMilliseconds(), self.updateTimes)
-		#print("updateTimes", dt)
-		lt = localtime()
+		# log.debug("updateTimes", dt)
+		y, m, d, H, M, S = localtime()[:6]
 		self.label_cur.set_label(
 			_("Current:") +
-			" %.4d/%.2d/%.2d - %.2d:%.2d:%.2d" % lt[:6]
+			f" {y:04d}/{m:02d}/{d:02d} - {H:02d}:{M:02d}:{S:02d}"
 		)
 		if not self.editTime:
-			self.timeInput.set_value(lt[3:6])
+			self.timeInput.set_value((H, M, S))
 		if not self.editDate:
-			self.dateInput.set_value(lt[:3])
+			self.dateInput.set_value((y, m, d))
 		return False
 
 	def updateSetButtonSensitive(self, widget=None):
@@ -222,81 +247,38 @@ class AdjusterDialog(gtk.Dialog):
 				self.ntpServerEntry.get_text() != ""
 			)
 
-	def setSysTimeClicked(self, widget=None):
+	def onSetSysTimeClick(self, widget=None):
 		if self.radioMan.get_active():
 			if self.editTime:
 				h, m, s = self.timeInput.get_value()
 				if self.editDate:
 					Y, M, D = self.dateInput.get_value()
-					cmd = [
-						"/bin/date",
-						"-s",
-						"%.4d/%.2d/%.2d %.2d:%.2d:%.2d" % (
-							Y, M, D,
-							h, m, s,
-						),
-					]
+					self.setSystemTime(f"{Y:04d}/{M:02d}/{D:02d} {h:02d}:{m:02d}:{s:02d}")
 				else:
-					cmd = [
-						"/bin/date",
-						"-s",
-						"%.2d:%.2d:%.2d" % (h, m, s),
-					]
+					self.setSystemTime(f"{h:02d}:{m:02d}:{s:02d}")
 			else:
-				if self.editDate:
-					Y, M, D = self.dateInput.get_value()
-					##h, m, s = self.timeInput.get_value()
-					h, m, s = localtime()[3:6]
-					cmd = [
-						"/bin/date",
-						"-s",
-						"%.4d/%.2d/%.2d %.2d:%.2d:%.2d" % (
-							Y, M, D,
-							h, m, s,
-						),
-					]
-				else:
-					error_exit("No change!", self)  # FIXME
+				if not self.editDate:
+					error_exit(1, "No change!", transient_for=self)  # FIXME
+				Y, M, D = self.dateInput.get_value()
+				# h, m, s = self.timeInput.get_value()
+				h, m, s = localtime()[3:6]
+				self.setSystemTime(f"{Y:04d}/{M:02d}/{D:02d} {h:02d}:{m:02d}:{s:02d}")
+
 		elif self.radioNtp.get_active():
-			cmd = ["ntpdate", self.ntpServerEntry.get_text()]
-			#if os.path.isfile("/usr/sbin/ntpdate"):
-			#	cmd = ["/usr/sbin/ntpdate", self.ntpServerEntry.get_text()]
-			#else:
-			#	error_exit(
-			#	"Could not find command /usr/sbin/ntpdate: no such file!",
-			#	self,
-			#)  # FIXME
+			ntpdate = shutil.which("ntpdate")
+			if not ntpdate:
+				error_exit(1, "Could not find command 'ntpdate'", transient_for=self)
+			self.runCommand([ntpdate, self.ntpServerEntry.get_text()])
 		else:
-			error_exit("Not valid option!", self)
-		proc = subprocess.Popen(
-			cmd,
-			stderr=subprocess.PIPE,
-			stdout=subprocess.PIPE,
-		)
-		resCode = proc.wait()
-		error = proc.stderr.read().strip()
-		output = proc.stdout.read().strip()
-		if output:
-			print(output)
-		#print("resCode=%r, error=%r, output=%r" % (resCode, error, output))
-		if error:
-			print(error)
-		if resCode != 0:
-			error_exit(
-				resCode,
-				error,
-				parent=self,
-			)
-		#else:
-		#	sys.exit(0)
+			error_exit(1, "Not valid option!", transient_for=self)
 
 
 if __name__ == "__main__":
 	if os.getuid() != 0:
 		error_exit(1, "This program must be run as root")
-		#raise OSError("This program must be run as root")
-		###os.setuid(0)  # FIXME
-	d = AdjusterDialog(parent=None)
-	#d.set_keap_above(True)
-	if d.run() == 1:
-		d.setSysTimeClicked()
+		# raise OSError("This program must be run as root")
+		# os.setuid(0)  # FIXME
+	d = AdjusterDialog()
+	# d.set_keap_above(True)
+	if d.run() == gtk.ResponseType.OK:
+		d.onSetSysTimeClick()

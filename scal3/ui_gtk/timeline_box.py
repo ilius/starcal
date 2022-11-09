@@ -1,12 +1,40 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
+#
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program. If not, see <http://www.gnu.org/licenses/gpl.txt>.
+# Also avalable in /usr/share/common-licenses/GPL on Debian systems
+# or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
+
+from scal3 import logger
+log = logger.get()
+
+from math import pi
+
 from scal3.utils import toStr
 from scal3 import ui
-from scal3.timeline import *
+from scal3.timeline import tl
 
-from scal3.ui_gtk.drawing import *
+from gi.repository.PangoCairo import show_layout
+
+from scal3.ui_gtk.font_utils import pfontEncode
+from scal3.ui_gtk.drawing import fillColor
 
 
 def drawBoxBG(cr, box, x, y, w, h):
+	import cairo
 	d = box.lineW
 	cr.rectangle(x, y, w, h)
 	if d == 0:
@@ -16,15 +44,12 @@ def drawBoxBG(cr, box, x, y, w, h):
 		alpha = box.color[3]
 	except IndexError:
 		alpha = 255
-	try:
-		fillColor(cr, (
-			box.color[0],
-			box.color[1],
-			box.color[2],
-			int(alpha * boxInnerAlpha),
-		))
-	except cairo.Error:
-		return
+	fillColor(cr, (
+		box.color[0],
+		box.color[1],
+		box.color[2],
+		int(alpha * tl.boxInnerAlpha),
+	))
 	###
 	cr.set_line_width(0)
 	cr.move_to(x, y)
@@ -43,9 +68,9 @@ def drawBoxBG(cr, box, x, y, w, h):
 
 def drawBoxBorder(cr, box, x, y, w, h):
 	if box.hasBorder:
-		if w > 2 * boxMoveBorder and h > boxMoveBorder:
-			b = boxMoveBorder
-			bd = boxMoveLineW
+		if w > 2 * tl.boxEditBorderWidth and h > tl.boxEditBorderWidth:
+			b = tl.boxEditBorderWidth
+			bd = tl.boxEditInnerLineWidth
 			#cr.set_line_width(bd)
 			cr.move_to(x + b - bd, y + h)
 			cr.line_to(x + b - bd, y + b - bd)
@@ -79,61 +104,68 @@ def drawBoxBorder(cr, box, x, y, w, h):
 
 
 def drawBoxText(cr, box, x, y, w, h, widget):
-	## now draw the text
-	## how to find the best font size based in the box"s width and height,
-	## and font family? FIXME
-	## possibly write in many lines? or just in one line and wrap if needed?
-	if box.text:
-		#print(box.text)
-		textW = 0.9 * w
-		textH = 0.9 * h
-		textLen = len(toStr(box.text))
-		#print("textLen=%s"%textLen)
-		avgCharW = float(
-			textW if rotateBoxLabel == 0
-			else max(textW, textH)
-		) / textLen
-		if avgCharW > 3:## FIXME
-			font = list(ui.getFont())
-			layout = widget.create_pango_layout(box.text) ## a Pango.Layout object
-			layout.set_font_description(pfontEncode(font))
-			layoutW, layoutH = layout.get_pixel_size()
-			#print("orig font size: %s"%font[3])
-			normRatio = min(
-				float(textW) / layoutW,
-				float(textH) / layoutH,
-			)
-			rotateRatio = min(
-				float(textW) / layoutH,
-				float(textH) / layoutW,
-			)
-			if rotateBoxLabel != 0 and rotateRatio > normRatio:
-				font[3] *= max(normRatio, rotateRatio)
-				layout.set_font_description(pfontEncode(font))
-				layoutW, layoutH = layout.get_pixel_size()
-				fillColor(cr, fgColor)## before cr.move_to
-				#print("x=%s, y=%s, w=%s, h=%s, layoutW=%s, layoutH=%s"\)
-				#	%(x,y,w,h,layoutW,layoutH)
-				cr.move_to(
-					x + (w - rotateBoxLabel * layoutH) / 2.0,
-					y + (h + rotateBoxLabel * layoutW) / 2.0,
-				)
-				cr.rotate(-rotateBoxLabel * pi / 2)
-				show_layout(cr, layout)
-				try:
-					cr.rotate(rotateBoxLabel * pi / 2)
-				except:
-					print("counld not rotate by %s*pi/2 = %s" % (
-						rotateBoxLabel,
-						rotateBoxLabel * pi / 2,
-					))
-			else:
-				font[3] *= normRatio
-				layout.set_font_description(pfontEncode(font))
-				layoutW, layoutH = layout.get_pixel_size()
-				fillColor(cr, fgColor)## before cr.move_to
-				cr.move_to(
-					x + (w - layoutW) / 2.0,
-					y + (h - layoutH) / 2.0,
-				)
-				show_layout(cr, layout)
+	# FIXME how to find the best font size based on the box's width,
+	# height, and font family?
+	# possibly write in many lines? or just in one line and wrap if needed?
+	if not box.text:
+		return
+	# log.debug(box.text)
+	text = box.text
+	if len(text) < 4:
+		text = f" {text} "
+
+	textW = 0.95 * w
+	textH = 0.95 * h
+	textLen = len(text)
+	# log.debug(f"{textLen=}")
+	avgCharW = (
+		textW if tl.rotateBoxLabel == 0
+		else max(textW, textH)
+	) / textLen
+
+	if avgCharW < 3:  # FIXME
+		return
+
+	font = ui.getFont()
+	layout = widget.create_pango_layout(text) ## a Pango.Layout object
+	layout.set_font_description(pfontEncode(font))
+	layoutW, layoutH = layout.get_pixel_size()
+	# log.debug(f"orig font size: {font.size}")
+	normRatio = min(
+		textW / layoutW,
+		textH / layoutH,
+	)
+	rotateRatio = min(
+		textW / layoutH,
+		textH / layoutW,
+	)
+
+	fillColor(cr, tl.fgColor)  # before cr.move_to
+
+	if tl.rotateBoxLabel == 0 or rotateRatio <= normRatio:
+		font.size *= normRatio
+		layout.set_font_description(pfontEncode(font))
+		layoutW, layoutH = layout.get_pixel_size()
+		cr.move_to(
+			x + (w - layoutW) / 2.0,
+			y + (h - layoutH) / 2.0,
+		)
+		show_layout(cr, layout)
+		return
+
+	font.size *= rotateRatio
+	layout.set_font_description(pfontEncode(font))
+	layoutW, layoutH = layout.get_pixel_size()
+	cr.move_to(
+		x + (w - tl.rotateBoxLabel * layoutH) / 2.0,
+		y + (h + tl.rotateBoxLabel * layoutW) / 2.0,
+	)
+	cr.rotate(-tl.rotateBoxLabel * pi / 2)
+	show_layout(cr, layout)
+	try:
+		cr.rotate(tl.rotateBoxLabel * pi / 2)
+	except Exception:
+		log.warning(
+			"counld not rotate by " +
+			f"{rotateBoxLabel*pi/2 = }"
+		)

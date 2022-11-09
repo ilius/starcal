@@ -21,12 +21,15 @@
 import sys
 import os
 from os.path import isdir, isfile
-#import platform
+# import platform
 
 
-def getOsName():## "linux", "win", "mac", "unix"
-	#psys = platform.system().lower()## "linux", "windows", "darwin", ...
-	plat = sys.platform ## "linux2", "win32", "darwin"
+def getOsName():
+	"""
+		returns: "linux", "win", "mac", "unix"
+	"""
+	# psys = platform.system().lower()## "linux", "windows", "darwin", ...
+	plat = sys.platform  # "linux2", "win32", "darwin"
 	if plat.startswith("linux"):
 		return "linux"
 	elif plat.startswith("win"):
@@ -45,6 +48,9 @@ def getOsName():## "linux", "win", "mac", "unix"
 		raise OSError("Unkown operating system!")
 
 
+osName = getOsName()
+
+
 def makeDir(direc):
 	if not isdir(direc):
 		os.makedirs(direc)
@@ -52,18 +58,19 @@ def makeDir(direc):
 
 def getUsersData():
 	data = []
-	for line in open("/etc/passwd").readlines():
-		parts = line.strip().split(":")
-		if len(parts) < 7:
-			continue
-		data.append({
-			"login": parts[0],
-			"uid": parts[2],
-			"gid": parts[3],
-			"real_name": parts[4],
-			"home_dir": parts[5],
-			"shell": parts[6],
-		})
+	with open("/etc/passwd") as fp:
+		for line in fp.readlines():
+			parts = line.strip().split(":")
+			if len(parts) < 7:
+				continue
+			data.append({
+				"login": parts[0],
+				"uid": parts[2],
+				"gid": parts[3],
+				"real_name": parts[4],
+				"home_dir": parts[5],
+				"shell": parts[6],
+			})
 	return data
 
 
@@ -89,14 +96,14 @@ def kill(pid, signal=0):
 		returns True if the pid is dead
 		with no signal argument, sends no signal
 	"""
-	#if "ps --no-headers" returns no lines, the pid is dead
+	# if "ps --no-headers" returns no lines, the pid is dead
 	try:
 		return os.kill(pid, signal)
 	except OSError as e:
-		#process is dead
+		# process is dead
 		if e.errno == 3:
 			return True
-		#no permissions
+		# no permissions
 		elif e.errno == 1:
 			return False
 		else:
@@ -120,7 +127,7 @@ def dead(pid):
 	return dead
 
 
-#def kill(pid, sig=0): pass #DEBUG: test hang condition
+# def kill(pid, sig=0): pass #DEBUG: test hang condition
 
 
 def goodkill(pid, interval=1, hung=20):
@@ -135,15 +142,70 @@ def goodkill(pid, interval=1, hung=20):
 			return
 		sleep(interval)
 
-	i = 0
-	while True:
-		#infinite-loop protection
-		if i < hung:
-			i += 1
-		else:
-			raise OSError("Process %s is hung. Giving up kill." % pid)
+	for i in range(hung):
 		if kill(pid, SIGKILL):
 			return
 		if dead(pid):
 			return
 		sleep(interval)
+
+	raise OSError(f"Process {pid} is hung. Giving up kill.")
+
+
+def fixStrForFileNameForWindows(fname: str) -> str:
+	import re
+	fname = re.sub(r'[\x00-\x1f\\/:"*?<>|]+', "_", fname)
+	fname = re.sub(r"[ _]+", "_", fname)
+	if fname.upper() in (
+		"COM1", "COM2", "COM3", "COM4", "COM5", "COM6", "COM7", "COM8", "COM9",
+		"LPT1", "LPT2", "LPT3", "LPT4", "LPT5", "LPT6", "LPT7", "LPT8", "LPT9",
+		"CON", "PRN", "AUX", "NUL",
+	):
+		fname += "-1"
+	return fname
+
+
+def fixStrForFileName(fname: str) -> str:
+	if osName == "win":
+		return fixStrForFileNameForWindows(fname)
+	return fname.replace("/", "_").replace("\\", "_")
+
+
+# returns False if could not find any browser or command to open the URL
+def openUrl(url: str) -> bool:
+	if osName == "win":
+		Popen([url])
+		return True
+	if osName == "mac":
+		Popen(["open", url])
+		return True
+	try:
+		Popen(["xdg-open", url])
+	except Exception:
+		log.exception("")
+	else:
+		return True
+	# if not url.startswith("http"):  # FIXME
+	# 	return
+	try:
+		import webbrowser
+	except ImportError:
+		pass
+	else:
+		webbrowser.open(url)
+		return True
+	try:
+		import gnomevfs
+	except ImportError:
+		pass
+	else:
+		gnomevfs.url_show(url)
+		return True
+	for command in ("gnome-www-browser", "firefox", "iceweasel", "konqueror"):
+		try:
+			Popen([command, url])
+		except Exception:
+			pass
+		else:
+			return True
+	return False

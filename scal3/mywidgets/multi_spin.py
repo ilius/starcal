@@ -18,8 +18,10 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 from scal3.utils import toBytes, toStr
-from scal3.utils import myRaise
 
 from scal3 import locale_man
 from scal3.locale_man import (
@@ -100,9 +102,9 @@ class IntField(NumField):
 			return
 		try:
 			num = int(float(textNumDecode(text)))
-		except:
-			print("IntField: invalid text = %r" % text)
-			myRaise()
+		except ValueError:
+			log.error(f"IntField: invalid {text = }")
+			log.exception("")
 			self.setDefault()
 		else:
 			self.setValue(num)
@@ -128,31 +130,30 @@ class FloatField(NumField):
 		self._min = _min
 		self._max = _max
 		self.digits = digits
-		self.digDec = 10 ** digits
 		self.myKeys = locale_man.getAvailableDigitKeys()
 		self.setDefault()
 
 	def setText(self, text):
 		try:
 			num = float(textNumDecode(text))
-		except:
-			myRaise()
+		except ValueError:
+			log.exception("")
 			self.setDefault()
 		else:
 			self.setValue(num)
 
 	def getText(self):
-		return floatEncode("%.*f" % (self.digits, self.value))
+		return floatEncode(f"{self.value:.{self.digits}f}")
 
 	def getMaxWidth(self):
 		return max(
-			len("%.*f" % (self.digits, self._min)),
-			len("%.*f" % (self.digits, self._max)),
+			len(f"{self._min:.{self.digits}f}"),
+			len(f"{self._max:.{self.digits}f}"),
 		)
 
-	def plus(self, p):
+	def plus(self, p: float):
 		return self.setValue(
-			self.value + float(p) / self.digDec
+			self.value + p,
 		)
 
 
@@ -198,7 +199,7 @@ class SingleCharField(Field):
 	def setValue(self, v):
 		if v not in self.values:
 			raise ValueError(
-				"SingleCharField.setValue: %r is not a valid value" % v
+				f"SingleCharField.setValue: {v!r} is not a valid value"
 			)
 		self.value = v
 
@@ -223,7 +224,7 @@ class StrConField(Field):
 		return self._text
 
 	def getText(self):
-		return self_text
+		return self._text
 
 	def getMaxWidth(self):
 		return len(self._text)
@@ -260,7 +261,7 @@ class ContainerField(Field):
 		parts = text.split(self.sep)
 		n = len(self)
 		pn = min(n, len(parts))
-		## pn <= n
+		# pn <= n
 		for i in range(pn):
 			self.children[i].setText(parts[i])
 		for i in range(pn, n):
@@ -285,10 +286,7 @@ class ContainerField(Field):
 		i = 0
 		n = len(text)
 		fn = len(self)
-		while True:
-			i2 = text.find(self.sep, i + 1)
-			if i2 == -1 or i2 >= pos:
-				break
+		while 0 <= (i2 := text.find(self.sep, i + 1)) < pos:
 			i = i2
 			fieldIndex += 1
 		return self.children[fieldIndex].getFieldAt(

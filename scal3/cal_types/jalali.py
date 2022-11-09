@@ -24,6 +24,9 @@
 # Iranian (Jalali) calendar:
 # http://en.wikipedia.org/wiki/Iranian_calendar
 
+from scal3 import logger
+log = logger.get()
+
 name = "jalali"
 desc = "Jalali"
 origLang = "fa"
@@ -38,7 +41,7 @@ options = (
 		"monthNameMode",
 		list,
 		"Jalali Month Names",
-		("Iranian", "Kurdish", "Dari", "Pashto"),
+		("Iranian", "Kurdish/Maadi", "Afghan/Dari", "Pashto"),
 	),
 	(
 		"jalaliAlg",
@@ -52,12 +55,14 @@ options = (
 monthNameVars = (
 	(
 		(
+			# Iranian
 			"Farvardin", "Ordibehesht", "Khordad",
 			"Teer", "Mordad", "Shahrivar",
 			"Mehr", "Aban", "Azar",
 			"Dey", "Bahman", "Esfand",
 		),
 		(
+			# Iranian - abbreviated
 			"Far", "Ord", "Khr",
 			"Tir", "Mor", "Shr",
 			"Meh", "Abn", "Azr",
@@ -66,6 +71,7 @@ monthNameVars = (
 	),
 	(
 		(
+			# Kurdish/Maadi
 			"Xakelêwe", "Gullan", "Cozerdan",
 			"Pûşper", "Gelawêj", "Xermanan",
 			"Rezber", "Gelarêzan", "Sermawez",
@@ -74,6 +80,7 @@ monthNameVars = (
 	),
 	(
 		(
+			# Afghan/Dari
 			"Hamal", "Sawr", "Jawzā",
 			"Saratān", "Asad", "Sonbola",
 			"Mizān", "Aqrab", "Qaws",
@@ -82,6 +89,7 @@ monthNameVars = (
 	),
 	(
 		(
+			# Pashto
 			"Wray", "Ǧwayay", "Ǧbargolay",
 			"Čungāx̌", "Zmaray", "Waǵay",
 			"Təla", "Laṛam", "Līndəi",
@@ -95,13 +103,15 @@ def getMonthName(m, y=None):
 	return monthNameVars[monthNameMode][0][m - 1]
 
 
-def getMonthNameAb(m, y=None):
-	v = monthNameVars[monthNameMode]
-	try:
-		ls = v[1]
-	except IndexError:
-		ls = v[0]
-	return ls[m - 1]
+def getMonthNameAb(tr, m, y=None):
+	names = monthNameVars[monthNameMode]
+	fullEn = names[0][m - 1]
+	abbr = tr(fullEn, ctx="abbreviation")
+	if abbr != fullEn:
+		return abbr
+	if len(names) == 2:
+		return tr(names[1][m - 1])
+	return tr(fullEn)
 
 
 def getMonthsInYear(y):
@@ -120,7 +130,7 @@ monthLenSum = [0]
 for i in range(12):
 	monthLenSum.append(monthLenSum[-1] + monthLen[i])
 
-# print(monthLenSum)
+# log.debug(monthLenSum)
 # monthLenSum[i] == sum(monthLen[:i])
 
 import os
@@ -131,11 +141,11 @@ from scal3.utils import iceil
 from scal3.json_utils import *
 
 # Here load user options(jalaliAlg) from file
-sysConfPath = "%s/%s.json" % (sysConfDir, name)
+sysConfPath = f"{sysConfDir}/{name}.json"
 loadJsonConf(__name__, sysConfPath)
 
 
-confPath = "%s/%s.json" % (confDir, name)
+confPath = f"{confDir}/{name}.json"
 loadJsonConf(__name__, confPath)
 
 
@@ -171,7 +181,7 @@ def isLeap(year):
 			- (jym + 3) // 4
 		)
 	else:
-		raise RuntimeError("bad option alg=%s" % alg)
+		raise RuntimeError(f"bad option {alg=}")
 
 
 def getMonthDayFromYdays(yday):
@@ -213,7 +223,7 @@ def to_jd(year, month, day):
 			+ GREGORIAN_EPOCH
 		)
 	else:
-		raise RuntimeError("bad option alg=%s" % alg)
+		raise RuntimeError(f"bad option {alg=}")
 
 
 def jd_to(jd):
@@ -250,7 +260,7 @@ def jd_to(jd):
 		yday = jdays + 1
 		month, day = getMonthDayFromYdays(yday)
 	else:
-		raise RuntimeError("bad option alg=%s" % alg)
+		raise RuntimeError(f"bad option {alg=}")
 	return year, month, day
 
 
@@ -260,5 +270,5 @@ def jd_to(jd):
 def getMonthLen(year, month):
 	if month == 12:
 		return 29 + isLeap(year)
-	else:
-		return monthLen[month - 1]
+
+	return monthLen[month - 1]

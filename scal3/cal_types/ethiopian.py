@@ -46,11 +46,15 @@ monthLen = [30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 30, 35]
 
 
 def getMonthName(m, y=None):
-	return monthName.__getitem__(m - 1)
+	return monthName[m - 1]
 
 
-def getMonthNameAb(m, y=None):
-	return monthNameAb.__getitem__(m - 1)
+def getMonthNameAb(tr, m, y=None):
+	fullEn = monthName[m - 1]
+	abbr = tr(fullEn, ctx="abbreviation")
+	if abbr != fullEn:
+		return abbr
+	return monthNameAb[m - 1]
 
 
 def getMonthsInYear(y):
@@ -109,16 +113,4 @@ def jd_to(jd):
 def getMonthLen(year, month):
 	if month == 12:
 		return 35 + isLeap(year)
-	else:
-		return monthLen[month - 1]
-
-
-if __name__ == "__main__":
-	import sys
-	from . import gregorian
-	for gy in range(2012, 1990, -1):
-		jd = gregorian.to_jd(gy, 1, 1)
-		ey, em, ed = jd_to(jd)
-		#if ed==22:
-		#	print(gy)
-		print("%.4d/%.2d/%.2d\t%.4d/%.2d/%.2d" % (gy, 1, 1, ey, em, ed))
+	return monthLen[month - 1]

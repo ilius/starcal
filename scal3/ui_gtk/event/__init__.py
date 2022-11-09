@@ -7,34 +7,43 @@ __all__ = [
 
 ############################################
 
-from scal3.utils import myRaise
+from scal3 import logger
+log = logger.get()
+
 from scal3 import event_lib
 
 
 modPrefix = "scal3.ui_gtk.event"
 
 
+def getWidgetClass(obj):
+	cls = obj.__class__
+
+	if hasattr(cls, "WidgetClass"):
+		return cls.WidgetClass
+
+	modulePath = ".".join([
+		modPrefix,
+		cls.tname,
+		cls.name,
+	])
+	try:
+		module = __import__(modulePath, fromlist=["WidgetClass"])
+	except Exception:
+		log.exception("")
+		return
+	WidgetClass = cls.WidgetClass = module.WidgetClass
+	log.info(f"getWidgetClass: {cls.__name__} -> {modulePath} -> {WidgetClass}")
+	return WidgetClass
+
+
 def makeWidget(obj):
 	"""
 	obj is an instance of Event, EventRule, EventNotifier or EventGroup
 	"""
-	cls = obj.__class__
-	try:
-		WidgetClass = cls.WidgetClass
-	except AttributeError:
-		try:
-			module = __import__(
-				".".join([
-					modPrefix,
-					cls.tname,
-					cls.name,
-				]),
-				fromlist=["WidgetClass"],
-			)
-			WidgetClass = cls.WidgetClass = module.WidgetClass
-		except:
-			myRaise()
-			return
+	WidgetClass = getWidgetClass(obj)
+	if WidgetClass is None:
+		return
 	widget = WidgetClass(obj)
 	try:
 		widget.show_all()
@@ -42,6 +51,7 @@ def makeWidget(obj):
 		widget.show()
 	widget.updateWidget()## FIXME
 	return widget
+
 
 def setActionFuncs(obj):
 	"""
@@ -57,18 +67,16 @@ def setActionFuncs(obj):
 			]),
 			fromlist=["WidgetClass"],
 		)
-	except:
-		myRaise()
+	except Exception:
+		log.exception("")
 		return
 	else:
 		for actionName, actionFuncName in cls.actions:
 			actionFunc = getattr(module, actionFuncName, None)
 			if actionFunc is not None:
-				print("setting %s.%s" % (cls.__name__, actionFuncName))
 				setattr(cls, actionFuncName, actionFunc)
 
 
-
-# Load accounts, groups and trash? FIXME
+# FIXME: Load accounts, groups and trash?
 from os.path import join, isfile
 from scal3.path import confDir

@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+set -x
 
 cd "`dirname \"$0\"`"
 
@@ -14,17 +15,20 @@ chmod 755 'starcal'
 
 chmod 755 'scal3/ui_gtk/starcal.py'
 
-chmod 755 'install'
-chmod 755 'install-archlinux'
-chmod 755 'install-debian'
-chmod 755 'install-fedora'
-chmod 755 'install-suse'
+chmod 755 'distro/base/install.sh'
+chmod 755 'distro/base/install.py'
+chmod 755 'distro/base/uninstall'
+
+chmod 755 distro/*/install.sh
+
 chmod 755 'install-ubuntu'
 chmod 755 'install-pip'
 chmod 755 'install-nix-deps'
-chmod 755 'install-nutyx'
 
-chmod 755 'uninstall'
+chmod 755 distro/*/build.sh
+chmod 755 distro/*/docker-build-internal.sh
+chmod 755 distro/*/package-build.sh
+
 chmod 755 'update-perm'
 chmod 755 'check-style'
 

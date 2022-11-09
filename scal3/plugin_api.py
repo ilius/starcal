@@ -18,11 +18,14 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 import sys
 
-#modulesDict = {}
-## we dont have the module object inside the module itself!!
-## how can we register module (with its getList and setList) ?
+# modulesDict = {}
+# we dont have the module object inside the module itself!!
+# how can we register module (with its getList and setList) ?
 
 
 class PluginError(Exception):
@@ -32,14 +35,14 @@ class PluginError(Exception):
 def get(moduleName, attr, default=None, absolute=False):
 	if not absolute:
 		moduleName = "scal3." + moduleName
-	#module = __import__(moduleName, fromlist=["__plugin_api_get__", attr])
-	#print(sorted(sys.modules.keys()))
+	# module = __import__(moduleName, fromlist=["__plugin_api_get__", attr])
+	# log.debug(sorted(sys.modules.keys()))
 	module = sys.modules[moduleName]
 	allowed = getattr(module, "__plugin_api_get__", [])
 	if attr not in allowed:
 		raise PluginError(
-			"plugin is not allowed to get attribute %s" % attr +
-			" from module %s" % moduleName,
+			f"plugin is not allowed to get attribute {attr!r}" +
+			f" from module {moduleName!r}"
 		)
 	return getattr(module, attr, default)
 
@@ -47,17 +50,17 @@ def get(moduleName, attr, default=None, absolute=False):
 def set(moduleName, attr, value, absolute=False):
 	if not absolute:
 		moduleName = "scal3." + moduleName
-	#module = __import__(moduleName, fromlist=["__plugin_api_set__", attr])
+	# module = __import__(moduleName, fromlist=["__plugin_api_set__", attr])
 	module = sys.modules[moduleName]
 	allowed = getattr(module, "__plugin_api_set__", [])
 	if attr not in allowed:
 		raise PluginError(
-			"plugin is not allowed to set attribute %s" % attr +
-			" to module %s" % moduleName,
+			f"plugin is not allowed to set attribute {attr!r}" +
+			f" to module {moduleName!r}"
 		)
 	setattr(module, attr, value)
 
 
-#def add(moduleName, attr, value):  # FIXME
-#	module = __import__(moduleName)
-#	if not module.get("__plugin_api_add__", False)
+# def add(moduleName, attr, value):  # FIXME
+# 	module = __import__(moduleName)
+# 	if not module.get("__plugin_api_add__", False)

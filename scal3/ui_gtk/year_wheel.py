@@ -18,6 +18,9 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 import sys
 
 import math
@@ -35,6 +38,7 @@ from scal3 import ui
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.drawing import *
+from scal3.ui_gtk.button_drawing import Button
 from scal3.ui_gtk import gtk_ud as ud
 
 
@@ -74,22 +78,50 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		self.closeFunc = closeFunc
 		self.angleOffset = 0.0
 		###
-		#self.closeFunc = closeFunc
+		# self.closeFunc = closeFunc
 		self.connect("draw", self.onDraw)
 		self.connect("scroll-event", self.onScroll)
 		self.connect("button-press-event", self.onButtonPress)
-		#self.connect("motion-notify-event", self.onMotionNotify)
-		#self.connect("button-release-event", self.onButtonRelease)
-		self.connect("key-press-event", self.keyPress)
-		#self.connect("event", show_event)
+		# self.connect("motion-notify-event", self.onMotionNotify)
+		# self.connect("button-release-event", self.onButtonRelease)
+		self.connect("key-press-event", self.onKeyPress)
+		# self.connect("event", show_event)
 
+		iconSize = 20
 		self.buttons = [
-			Button("home.png", self.homeClicked, 1, -1, False),
-			Button("resize-small.png", self.startResize, -1, -1, False),
-			Button("exit.png", closeFunc, -1, 1, False)
+			Button(
+				imageName="go-home.svg",
+				onPress=self.onHomeClick,
+				x=1,
+				y=1,
+				autoDir=False,
+				iconSize=iconSize,
+				xalign="left",
+				yalign="buttom",
+			),
+			Button(
+				imageName="resize-small.svg",
+				onPress=self.startResize,
+				x=1,
+				y=1,
+				autoDir=False,
+				iconSize=iconSize,
+				xalign="right",
+				yalign="buttom",
+			),
+			Button(
+				imageName="application-exit.svg",
+				onPress=closeFunc,
+				x=1,
+				y=1,
+				autoDir=False,
+				iconSize=iconSize,
+				xalign="right",
+				yalign="top",
+			)
 		]
 
-	def homeClicked(self, arg=None):
+	def onHomeClick(self, arg=None):
 		self.angleOffset = 0.0
 		self.queue_draw()
 
@@ -103,31 +135,44 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		)
 
 	def onDraw(self, widget=None, event=None):
-		cr = self.get_window().cairo_create()
+		win = self.get_window()
+		region = win.get_visible_region()
+		# FIXME: This must be freed with cairo_region_destroy() when you are done.
+		# where is cairo_region_destroy? No region.destroy() method
+		dctx = win.begin_draw_frame(region)
+		if dctx is None:
+			raise RuntimeError("begin_draw_frame returned None")
+		cr = dctx.get_cairo_context()
+		try:
+			self.drawWithContext(cr)
+		finally:
+			win.end_draw_frame(dctx)
+
+	def drawWithContext(self, cr: "cairo.Context"):
 		width = float(self.get_allocation().width)
 		height = float(self.get_allocation().height)
 		dia = min(width, height)
-		maxR = float(dia) / 2
+		maxR = dia / 2
 		minR = self.innerCircleRatio * maxR
 		x0 = (width - dia) / 2
 		y0 = (height - dia) / 2
 		cx = x0 + maxR
 		cy = y0 + maxR
 		####
-		#self.angleOffset
-		#self.bgColor
-		#self.wheelBgColor
-		#self.lineColor
-		#self.lineWidth
-		#self.textColor
+		# self.angleOffset
+		# self.bgColor
+		# self.wheelBgColor
+		# self.lineColor
+		# self.lineWidth
+		# self.textColor
 		####
 		cr.rectangle(0, 0, width, height)
 		fillColor(cr, self.bgColor)
 		####
 		calsN = len(calTypes.active)
-		deltaR = (maxR - minR) / float(calsN)
-		mode0 = calTypes.active[0]
-		jd0 = to_jd(ui.todayCell.year, 1, 1, mode0)
+		deltaR = (maxR - minR) / calsN
+		calType0 = calTypes.active[0]
+		jd0 = to_jd(ui.todayCell.year, 1, 1, calType0)
 		yearLen = calTypes.primaryModule().avgYearLen
 		angle0 = self.angleOffset * pi / 180 - pi / 2
 		avgDeltaAngle = 2 * pi / 12
@@ -148,8 +193,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		####
 		drawCircleOutline(
 			cr,
-			cx,
-			cy,
+			cx, cy,
 			maxR,
 			maxR - minR,
 		)
@@ -165,16 +209,22 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		)):
 			drawArcOutline(
 				cr,
-				cx,
-				cy,
+				cx, cy,
 				maxR,
 				maxR - minR,
 				springAngle + index * pi / 2,
 				springAngle + (index + 1) * pi / 2,
 			)
 			fillColor(cr, color)
+
+		def calcAngles(jd: int) -> Tuple[float, float]:
+			angle = angle0 + 2 * pi * (jd - jd0) / yearLen  # radians
+			# angleD = angle * 180 / pi
+			centerAngle = angle + avgDeltaAngle / 2
+			return angle, centerAngle
+
 		####
-		for index, mode in enumerate(calTypes.active):
+		for index, calType in enumerate(calTypes.active):
 			dr = index * deltaR
 			r = maxR - dr
 			cx0 = x0 + dr
@@ -183,18 +233,17 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 			drawCircleOutline(cr, cx, cy, r, self.lineWidth)
 			fillColor(cr, self.lineColor)
 			####
-			year0, month0, day0 = jd_to(jd0, mode)
+			year0, month0, day0 = jd_to(jd0, calType)
 			ym0 = year0 * 12 + (month0 - 1)
 			cr.set_line_width(self.lineWidth)
 			for ym in range(ym0, ym0 + 12):
-				year, month = divmod(ym, 12); month += 1
-				jd = to_jd(year, month, 1, mode)
-				angle = angle0 + 2 * pi * (jd - jd0) / yearLen  # radians
-				#angleD = angle * 180 / pi
+				year, mm1 = divmod(ym, 12)
+				month = mm1 + 1
+				jd = to_jd(year, month, 1, calType)
+				angle, centerAngle = calcAngles(jd)
 				d = self.lineWidth
 				sepX, sepY = goAngle(
-					cx,
-					cy,
+					cx, cy,
 					angle,
 					r - d * 0.2,  # FIXME
 				)
@@ -215,101 +264,112 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				layoutMaxH = deltaR
 				layout = newTextLayout(
 					self,
-					text=getMonthName(mode, month, year),
+					text=getMonthName(calType, month, year),
 					maxSize=(layoutMaxW, layoutMaxH),
-					maximizeScale=0.6,
-					truncate=False,
+					maximizeScale=0.6,  # noqa: FURB120
+					# truncate=False,
 				)
 				layoutW, layoutH = layout.get_pixel_size()
-				centerAngle = angle + avgDeltaAngle / 2
 				lx, ly = goAngle(
-					cx,
-					cy,
+					cx, cy,
 					centerAngle,
 					(r - deltaR / 3),
 				)
 				lx, ly = goAngle(
-					lx,
-					ly,
+					lx, ly,
 					angle - pi / 2,
 					layoutW / 2,
 				)
 				lx, ly = goAngle(
-					lx,
-					ly,
+					lx, ly,
 					angle,
 					layoutH / 2,
 				)
-				cr.move_to(
-					lx,
-					ly,
-				)
-				#cr.save()
+				cr.move_to(lx, ly)
+				# cr.save()
 				rotateAngle = centerAngle + pi / 2
 				cr.rotate(rotateAngle)
-				setColor(cr, self.textColor); show_layout(cr, layout)
+				setColor(cr, self.textColor)
+				show_layout(cr, layout)
 				cr.rotate(-rotateAngle)
-				#cr.restore()
+				# cr.restore()
 
 				if month == 1:
-					layout = newTextLayout(
-						self,
-						text=_(year),
-						maxSize=(
-							deltaR * 0.50,
-							deltaR * 0.25,
-						),
-						maximizeScale=1.0,
-						truncate=False,
+					t_year = ui.cell.dates[calType][0]
+					self.drawYearStartLine(
+						t_year, 1,
+						cr, cx, cy,
+						angle, centerAngle, r, deltaR,
 					)
-					yearX, yearY = goAngle(
-						cx,
-						cy,
-						angle + 0.02 * pi / 12,
-						r - deltaR * 0.75,  # FIXME
+					self.drawYearStartLine(
+						t_year + 1, -1,
+						cr, cx, cy,
+						angle, centerAngle, r, deltaR,
 					)
-					cr.move_to(
-						yearX,
-						yearY,
-					)
-					rotateAngle = centerAngle - pi / 12
-					cr.rotate(rotateAngle)
-					setColor(cr, self.yearStartLineColor); show_layout(cr, layout)
-					cr.rotate(-rotateAngle)
 			#####
 			drawCircleOutline(cr, cx, cy, minR, self.lineWidth)
 			fillColor(cr, self.lineColor)
 			###
+
 		######
 		for button in self.buttons:
 			button.draw(cr, width, height)
 
+	def drawYearStartLine(self, year, direction, cr, cx, cy, angle, centerAngle, r, deltaR):
+		layout = newTextLayout(
+			self,
+			text=_(year),
+			maxSize=(
+				deltaR * 0.50,
+				deltaR * 0.25,
+			),
+			maximizeScale=1.0,
+			# truncate=False,
+		)
+		layoutW, layoutH = layout.get_pixel_size()
+		tickX, tickY = goAngle(
+			cx, cy,
+			angle,
+			r - deltaR * 0.75,  # FIXME
+		)
+		layoutX, layoutY = goAngle(
+			tickX, tickY,
+			angle + direction * pi / 2,
+			(1 - direction) * layoutH / 2.5,  # factor should be between 2 and 3
+		)
+		cr.move_to(layoutX, layoutY)
+		rotateAngle = centerAngle - pi / 12
+		cr.rotate(rotateAngle)
+		setColor(cr, self.yearStartLineColor)
+		show_layout(cr, layout)
+		cr.rotate(-rotateAngle)
+
 	def onScroll(self, widget, gevent):
 		d = getScrollValue(gevent)
-		#print("onScroll", d)
+		# log.debug("onScroll", d)
 		self.angleOffset += (-1 if d == "up" else 1) * self.scrollRotateDegree
 		self.queue_draw()
 		return True
 
-	def keyPress(self, arg, gevent):
+	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
 		k = gdk.keyval_name(gevent.keyval).lower()
-		#print("%.3f"%now())
+		# log.debug("%.3f"%now())
 		if k in ("space", "home"):
-			self.homeClicked()
-		#elif k=="right":
-		#	pass
-		#elif k=="left":
-		#	pass
-		#elif k=="down":
-		#	self.stopMovingAnim()
+			self.onHomeClick()
+		# elif k=="right":
+		# 	pass
+		# elif k=="left":
+		# 	pass
+		# elif k=="down":
+		# 	self.stopMovingAnim()
 		elif k in ("q", "escape"):
 			self.closeFunc()
-		#elif k in ("plus", "equal", "kp_add"):
-		#	self.keyboardZoom(True)
-		#elif k in ("minus", "kp_subtract"):
-		#	self.keyboardZoom(False)
+		# elif k in ("plus", "equal", "kp_add"):
+		# 	self.keyboardZoom(True)
+		# elif k in ("minus", "kp_subtract"):
+		# 	self.keyboardZoom(False)
 		else:
-			#print(k)
+			# log.debug(k)
 			return False
 		self.queue_draw()
 		return True
@@ -322,17 +382,17 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		if gevent.button == 1:
 			for button in self.buttons:
 				if button.contains(x, y, w, h):
-					button.func(gevent)
+					button.onPress(gevent)
 					return True
-			#self.begin_move_drag(
-			#	gevent.button,
-			#	int(gevent.x_root),
-			#	int(gevent.y_root),
-			#	gevent.time,
-			#)
-			#return True
-		#elif gevent.button==3:
-		#	pass
+			# self.begin_move_drag(
+			# 	gevent.button,
+			# 	int(gevent.x_root),
+			# 	int(gevent.y_root),
+			# 	gevent.time,
+			# )
+			# return True
+		# elif gevent.button==3:
+		# 	pass
 		return False
 
 
@@ -346,24 +406,24 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 		self.initVars()
 		ud.windowList.appendItem(self)
 		###
-		size = min(ud.screenW, ud.screenH) * 0.9
+		size = min(ud.workAreaW, ud.workAreaH) * 0.9
 		self.resize(size, size)
 		self.move(
-			(ud.screenW - size) / 2,
-			(ud.screenH - size) / 2,
+			(ud.workAreaW - size) / 2,
+			(ud.workAreaH - size) / 2,
 		)
 		self.set_title(self.desc)
 		self.set_decorated(False)
-		self.connect("delete-event", self.closeClicked)
+		self.connect("delete-event", self.onCloseClick)
 		self.connect("button-press-event", self.onButtonPress)
 		###
-		self._widget = YearWheel(self.closeClicked)
-		self.connect("key-press-event", self._widget.keyPress)
+		self._widget = YearWheel(self.onCloseClick)
+		self.connect("key-press-event", self._widget.onKeyPress)
 		self.add(self._widget)
 		self._widget.show()
 		self.appendItem(self._widget)
 
-	def closeClicked(self, arg=None, event=None):
+	def onCloseClick(self, arg=None, event=None):
 		if ui.mainWin:
 			self.hide()
 		else:
@@ -385,8 +445,8 @@ class YearWheelWindow(gtk.Window, ud.BaseCalObj):
 
 
 if __name__ == "__main__":
-	#locale_man.langActive = ""
-	#_ = locale_man.loadTranslator()
+	# locale_man.langActive = ""
+	# _ = locale_man.loadTranslator()
 	ui.init()
 	win = YearWheelWindow()
 	win.show()

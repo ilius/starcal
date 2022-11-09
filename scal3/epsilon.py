@@ -11,13 +11,13 @@ class NumPlusEpsilon(object):
 		return self._num
 
 	def __str__(self):
-		return "%s + eps" % self._num
+		return str(self._num) + " + eps"
 
 	def __repr__(self):
-		return "NumPlusEpsilon(%r)" % self._num
+		return f"NumPlusEpsilon({self._num!r})"
 
 	def __hash__(self):
-		return hash("%s+eps" % self._num)
+		return hash(str(self._num) + "+eps")
 
 	def is_integer(self):
 		return False
@@ -84,10 +84,9 @@ class NumPlusEpsilon(object):
 		return NumMinusEpsilon(-self._num)
 
 	def __abs__(self):
-		if self._num >= 0:
-			return self
-		else:
+		if self._num < 0:
 			return -self
+		return self
 
 
 class NumMinusEpsilon(object):
@@ -98,13 +97,13 @@ class NumMinusEpsilon(object):
 		return self._num
 
 	def __str__(self):
-		return "%s - eps" % self._num
+		return str(self._num) + "- eps"
 
 	def __repr__(self):
-		return "NumMinusEpsilon(%r)" % self._num
+		return f"NumMinusEpsilon({self._num!r})"
 
 	def __hash__(self):
-		return hash("%s-eps" % self._num)
+		return hash(str(self._num) + "-eps")
 
 	def is_integer(self):
 		return False
@@ -136,8 +135,7 @@ class NumMinusEpsilon(object):
 		inum = int(self._num)
 		if inum == self._num and inum > 0:
 			return inum - 1
-		else:
-			return inum
+		return inum
 
 	def __float__(self):
 		return float(self._num) - sys.float_info.epsilon
@@ -175,7 +173,6 @@ class NumMinusEpsilon(object):
 		return NumPlusEpsilon(-self._num)
 
 	def __abs__(self):
-		if self._num >= 0:
-			return self
-		else:
+		if self._num < 0:
 			return -self
+		return self

@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+
+from scal3 import logger
+log = logger.get()
+
+from typing import Optional
 from time import time as now
 import sys
 
@@ -10,9 +15,10 @@ from scal3.ui_gtk import gtk_ud as ud
 
 
 class ConButtonBase:
-	def __init__(self):
+	def __init__(self, button: Optional[int] = None):
 		self.pressTm = 0
 		self.counter = 0
+		self._button = button
 		###
 		self.connect("button-press-event", self.onPress)
 		self.connect("button-release-event", self.onRelease)
@@ -20,7 +26,10 @@ class ConButtonBase:
 	def doTrigger(self):
 		return self.emit("con-clicked")
 
-	def onPress(self, widget, event=None):
+	def onPress(self, widget, event):
+		if self._button is not None:
+			if event.button != self._button:
+				return
 		self.pressTm = now()
 		self.doTrigger()
 		self.counter += 1
@@ -32,12 +41,15 @@ class ConButtonBase:
 		)
 		return True
 
-	def onRelease(self, widget, event=None):
+	def onRelease(self, widget, event):
 		self.counter += 1
 		return True
 
 	def onPressRemain(self, func, counter):
-		if counter == self.counter and now() - self.pressTm >= ui.timeout_repeat / 1000:
+		if (
+			counter == self.counter and
+			now() - self.pressTm >= ui.timeout_repeat / 1000
+		):
 			func()
 			timeout_add(
 				ui.timeout_repeat,
@@ -59,11 +71,11 @@ class ConButton(gtk.Button, ConButtonBase):
 
 
 if __name__ == "__main__":
-	win = gtk.Dialog(parent=None)
+	win = gtk.Dialog()
 	button = ConButton("Press")
 
 	def con_clicked(arg):
-		print("%.4f\tcon-clicked" % now())
+		log.info(f"{now():.4f}\tcon-clicked")
 
 	button.connect("con-clicked", con_clicked)
 	pack(win.vbox, button, 1, 1)

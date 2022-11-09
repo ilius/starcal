@@ -18,6 +18,8 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
 
 from scal3 import core
 from scal3.locale_man import tr as _
@@ -25,14 +27,15 @@ from scal3 import event_lib
 from scal3 import ui
 
 from scal3.ui_gtk import *
+from scal3.ui_gtk.utils import labelImageButton
 from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.event import common
 
 
 class WidgetClass(common.WidgetClass):
 	groups = [
-		gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL),
-		gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL),
+		gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL),
+		gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL),
 	]
 	expandDescription = False
 
@@ -41,17 +44,17 @@ class WidgetClass(common.WidgetClass):
 		################
 		self.autoCheck = autoCheck
 		######
-		self.ruleAddBox = gtk.HBox()
+		self.ruleAddBox = HBox()
 		self.warnLabel = gtk.Label()
 		self.warnLabel.modify_fg(gtk.StateType.NORMAL, gdk.Color(65535, 0, 0))
-		self.warnLabel.set_alignment(0, 0.5)
+		self.warnLabel.set_xalign(0)
 		#self.warnLabel.set_visible(False)## FIXME
 		###########
 		self.rulesFrame = gtk.Frame()
 		self.rulesFrame.set_label(_("Rules"))
 		self.rulesFrame.set_border_width(1)
 		self.rulesSwin = gtk.ScrolledWindow()
-		self.rulesBox = gtk.VBox()
+		self.rulesBox = VBox()
 		self.rulesBox.set_border_width(5)
 		self.rulesSwin.add(self.rulesBox)
 		self.rulesFrame.add(self.rulesSwin)
@@ -64,56 +67,51 @@ class WidgetClass(common.WidgetClass):
 		pack(self, self.notificationBox)
 		###########
 		self.addRuleModel = gtk.ListStore(str, str)
-		self.addRuleCombo = gtk.ComboBox()
-		self.addRuleCombo.set_model(self.addRuleModel)
+		self.ruleAddCombo = gtk.ComboBox()
+		self.ruleAddCombo.set_model(self.addRuleModel)
 		###
 		cell = gtk.CellRendererText()
-		pack(self.addRuleCombo, cell, True)
-		self.addRuleCombo.add_attribute(cell, "text", 1)
+		pack(self.ruleAddCombo, cell, True)
+		self.ruleAddCombo.add_attribute(cell, "text", 1)
 		###
-		pack(self.ruleAddBox, gtk.Label(_("Add Rule") + ":"))
-		pack(self.ruleAddBox, self.addRuleCombo)
-		pack(self.ruleAddBox, gtk.Label(""), 1, 1)
-		self.ruleAddButton = gtk.Button(stock=gtk.STOCK_ADD)
-		if ui.autoLocale:
-			self.ruleAddButton.set_label(_("_Add"))
-			self.ruleAddButton.set_image(gtk.Image.new_from_stock(
-				gtk.STOCK_ADD,
-				gtk.IconSize.BUTTON,
-			))
+		pack(self.ruleAddBox, gtk.Label(label=_("Add Rule") + ":"))
+		pack(self.ruleAddBox, self.ruleAddCombo)
+		pack(self.ruleAddBox, gtk.Label(), 1, 1)
+		self.ruleAddButton = labelImageButton(
+			_("_Add"),
+			"list-add.svg",
+		)
 		pack(self.ruleAddBox, self.ruleAddButton)
 		#############
 		#self.filesBox = common.FilesBox(self.event)
 		#pack(self, self.filesBox)
 		#############
-		self.addRuleCombo.connect("changed", self.addRuleComboChanged)
-		self.ruleAddButton.connect("clicked", self.addClicked)
+		self.ruleAddCombo.connect("changed", self.onRuleAddComboChanged)
+		self.ruleAddButton.connect("clicked", self.onRuleAddButtonClick)
 
 	def makeRuleHbox(self, rule):
-		hbox = gtk.HBox(spacing=5)
-		lab = gtk.Label(rule.desc)
-		lab.set_alignment(0, 0.5)
+		hbox = HBox(spacing=5)
+		lab = gtk.Label(label=rule.desc)
+		lab.set_xalign(0)
 		pack(hbox, lab)
 		self.groups[rule.sgroup].add_widget(lab)
-		#pack(hbox, gtk.Label(""), 1, 1)
+		#pack(hbox, gtk.Label(), 1, 1)
 		inputWidget = makeWidget(rule)
 		if not inputWidget:
-			print("failed to create inpout widget for rule %s" % rule.name)
+			log.error(f"failed to create inpout widget for rule {rule.name}")
 			return
 		if rule.expand:
 			pack(hbox, inputWidget, 1, 1)
 		else:
 			pack(hbox, inputWidget)
-			pack(hbox, gtk.Label(""), 1, 1)
+			pack(hbox, gtk.Label(), 1, 1)
 		####
-		removeButton = gtk.Button(stock=gtk.STOCK_REMOVE)
-		if ui.autoLocale:
-			removeButton.set_label(_("_Remove"))
-			removeButton.set_image(gtk.Image.new_from_stock(
-				gtk.STOCK_REMOVE,
-				gtk.IconSize.BUTTON,
-			))
-		removeButton.connect("clicked", self.removeButtonClicked, hbox)## FIXME
+		removeButton = labelImageButton(
+			label=_("_Remove"),
+			imageName="list-remove.svg",
+		)
+		removeButton.connect("clicked", self.onRemoveButtonClick, hbox)
+		# ^ FIXME
 		pack(hbox, removeButton)
 		####
 		hbox.inputWidget = inputWidget
@@ -137,7 +135,7 @@ class WidgetClass(common.WidgetClass):
 				ruleName,
 				event_lib.classes.rule.byName[ruleName].desc,
 			))
-		self.addRuleComboChanged()
+		self.onRuleAddComboChanged()
 
 	def updateRules(self):
 		self.event.clearRules()
@@ -156,16 +154,16 @@ class WidgetClass(common.WidgetClass):
 		self.updateRules()
 		self.notificationBox.updateVars()
 
-	def modeComboChanged(self, obj=None):
+	def calTypeComboChanged(self, obj=None):
 		# overwrite method from common.WidgetClass
-		newMode = self.modeCombo.get_active()
+		newCalType = self.calTypeCombo.get_active()
 		for hbox in self.rulesBox.get_children():
 			widget = hbox.inputWidget
-			if hasattr(widget, "changeMode"):
-				widget.changeMode(newMode)
-		self.event.mode = newMode
+			if hasattr(widget, "changeCalType"):
+				widget.changeCalType(newCalType)
+		self.event.calType = newCalType
 
-	def removeButtonClicked(self, button, hbox):
+	def onRemoveButtonClick(self, button, hbox):
 		rule = hbox.inputWidget.rule
 		ok, msg = self.event.checkRulesDependencies(disabledRule=rule)
 		self.warnLabel.set_label(msg)
@@ -177,23 +175,23 @@ class WidgetClass(common.WidgetClass):
 		####
 		hbox.destroy()
 		#self.rulesBox.remove(hbox)
-		self.addRuleComboChanged()
+		self.onRuleAddComboChanged()
 
-	def addRuleComboChanged(self, combo=None):
-		ci = self.addRuleCombo.get_active()
+	def onRuleAddComboChanged(self, combo=None):
+		ci = self.ruleAddCombo.get_active()
 		if ci is None or ci < 0:
 			return
 		newRuleName = self.addRuleModel[ci][0]
-		newRule = event_lib.classes.rule.byName[newRuleName](self.event)
+		newRule = self.event.create(newRuleName)
 		ok, msg = self.event.checkRulesDependencies(newRule=newRule)
 		self.warnLabel.set_label(msg)
 
-	def addClicked(self, button):
-		ci = self.addRuleCombo.get_active()
+	def onRuleAddButtonClick(self, button):
+		ci = self.ruleAddCombo.get_active()
 		if ci is None or ci < 0:
 			return
 		ruleName = self.addRuleModel[ci][0]
-		rule = event_lib.classes.rule.byName[ruleName](self.event)
+		rule = self.event.create(ruleName)
 		ok, msg = self.event.checkAndAddRule(rule)
 		if not ok:
 			return
@@ -204,7 +202,7 @@ class WidgetClass(common.WidgetClass):
 		del self.addRuleModel[ci]
 		n = len(self.addRuleModel)
 		if ci == n:
-			self.addRuleCombo.set_active(ci - 1)
+			self.ruleAddCombo.set_active(ci - 1)
 		else:
-			self.addRuleCombo.set_active(ci)
+			self.ruleAddCombo.set_active(ci)
 		hbox.show_all()

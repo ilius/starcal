@@ -19,15 +19,21 @@ elif ! which $PIP ; then
 	python3 -m ensurepip
 fi
 
+
 $PIP install pygobject
 $PIP install pycairo
 $PIP install httplib2
 $PIP install python-dateutil
 $PIP install psutil
+$PIP install cachetools
 $PIP install requests
 
 $PIP install ujson
 $PIP install python-igraph
 $PIP install pygit2
 
-./install --system
+if [ -f /bin/freebsd-version ] ; then
+	./distro/base/install.py --system
+else
+	./install --system
+fi

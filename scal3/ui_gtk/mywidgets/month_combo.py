@@ -17,14 +17,14 @@ class MonthComboBox(gtk.ComboBox):
 		pack(self, cell, True)
 		self.add_attribute(cell, "text", 0)
 
-	def build(self, mode):
+	def build(self, calType):
 		active = self.get_active()
 		ls = self.get_model()
 		ls.clear()
 		if self.includeEvery:
 			ls.append([_("Every Month")])
 		for m in range(1, 13):
-			ls.append([locale_man.getMonthName(mode, m)])
+			ls.append([locale_man.getMonthName(calType, m)])
 		if active is not None:
 			self.set_active(active)
 
@@ -32,8 +32,7 @@ class MonthComboBox(gtk.ComboBox):
 		a = self.get_active()
 		if self.includeEvery:
 			return a
-		else:
-			return a + 1
+		return a + 1
 
 	def setValue(self, value):
 		if self.includeEvery:

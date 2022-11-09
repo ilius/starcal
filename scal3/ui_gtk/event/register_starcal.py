@@ -18,9 +18,11 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+from scal3 import logger
+log = logger.get()
+
 import time
 import sys
-import requests
 
 sys.path.append("/starcal")  # REMOVE FIXME
 
@@ -30,35 +32,30 @@ from scal3.locale_man import tr as _
 from scal3 import ui
 
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import (
-	dialog_add_button,
-)
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
 
 
-class StarCalendarRegisterDialog(gtk.Window, MyDialog):
+class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 	def __init__(self, **kwargs):
-		gtk.Window.__init__(self, **kwargs)
+		gtk.Dialog.__init__(self, **kwargs)
 		###
 		self.set_title(_("Register at StarCalendar.net"))
 		self.resize(600, 300)
 		self.connect("delete-event", self.onDeleteEvent)
 		self.set_transient_for(None)
 		self.set_type_hint(gdk.WindowTypeHint.NORMAL)
-		self.vbox = gtk.VBox()
-		self.add(self.vbox)
 		###
 		self.buttonBox = MyHButtonBox()
-		self.okButton = self.buttonBox.add_ok(self.okClicked)
-		self.cancelButton = self.buttonBox.add_cancel(self.cancelClicked)
+		self.okButton = self.buttonBox.add_ok(self.onOkClick)
+		self.cancelButton = self.buttonBox.add_cancel(self.onCancelClick)
 		self.vbox.pack_end(self.buttonBox, 0, 0, 0)
 		###
-		sgroupLabel = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
+		sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		###
-		hbox = gtk.HBox(spacing=5)
-		label = gtk.Label(_("Email"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox(spacing=5)
+		label = gtk.Label(label=_("Email"))
+		label.set_xalign(0)
 		pack(hbox, label, 0, 0)
 		sgroupLabel.add_widget(label)
 		self.emailEntry = gtk.Entry()
@@ -66,9 +63,9 @@ class StarCalendarRegisterDialog(gtk.Window, MyDialog):
 		pack(hbox, self.emailEntry, 1, 1, 10)
 		pack(self.vbox, hbox, 0, 0, 10)
 		###
-		hbox = gtk.HBox(spacing=5)
-		label = gtk.Label(_("Password"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox(spacing=5)
+		label = gtk.Label(label=_("Password"))
+		label.set_xalign(0)
 		pack(hbox, label, 0, 0)
 		sgroupLabel.add_widget(label)
 		self.passwordEntry = gtk.Entry()
@@ -77,9 +74,9 @@ class StarCalendarRegisterDialog(gtk.Window, MyDialog):
 		pack(hbox, self.passwordEntry, 1, 1, 10)
 		pack(self.vbox, hbox, 0, 0, 10)
 		###
-		hbox = gtk.HBox(spacing=5)
-		label = gtk.Label(_("Repeat Password"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox(spacing=5)
+		label = gtk.Label(label=_("Repeat Password"))
+		label.set_xalign(0)
 		pack(hbox, label, 0, 0)
 		sgroupLabel.add_widget(label)
 		self.passwordEntry2 = gtk.Entry()
@@ -88,9 +85,9 @@ class StarCalendarRegisterDialog(gtk.Window, MyDialog):
 		pack(hbox, self.passwordEntry2, 1, 1, 10)
 		pack(self.vbox, hbox, 0, 0, 10)
 		###
-		hbox = gtk.HBox(spacing=5)
-		label = gtk.Label(_("Name (Optional)"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox(spacing=5)
+		label = gtk.Label(label=_("Name (Optional)"))
+		label.set_xalign(0)
 		pack(hbox, label, 0, 0)
 		sgroupLabel.add_widget(label)
 		self.nameEntry = gtk.Entry()
@@ -98,9 +95,9 @@ class StarCalendarRegisterDialog(gtk.Window, MyDialog):
 		pack(hbox, self.nameEntry, 1, 1, 10)
 		pack(self.vbox, hbox, 0, 0, 10)
 		###
-		hbox = gtk.HBox(spacing=5)
+		hbox = HBox(spacing=5)
 		label = gtk.Label()
-		label.set_alignment(0, 0.5)
+		label.set_xalign(0)
 		# make text color red
 		label.modify_fg(gtk.StateType.NORMAL, gdk.Color(65535, 0, 0))
 		pack(hbox, label, 0, 0)
@@ -141,6 +138,7 @@ class StarCalendarRegisterDialog(gtk.Window, MyDialog):
 		"""
 		return None if successful, or error string if failed
 		"""
+		import requests
 		email = self.emailEntry.get_text()
 		password = self.passwordEntry.get_text()
 		fullName = self.nameEntry.get_text()
@@ -159,8 +157,8 @@ class StarCalendarRegisterDialog(gtk.Window, MyDialog):
 		token = ""
 		try:
 			data = res.json()
-		except:
-			error = "non-json data: %s" % res.text
+		except Exception:
+			error = f"non-json data: {res.text}"
 		else:
 			error = data.get("error", "")
 			token = data.get("token", "")
@@ -179,24 +177,24 @@ class StarCalendarRegisterDialog(gtk.Window, MyDialog):
 		account.save()
 		ui.eventAccounts.append(account)
 		ui.eventAccounts.save()
-		if ui.prefDialog:
-			ui.prefDialog.refreshAccounts()  # messy, I know, FIXME
+		if ui.prefWindow:
+			ui.prefWindow.refreshAccounts()  # messy, I know, FIXME
 		###
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
 		error = account.fetchGroups()
 		if error:
-			print(error)
+			log.error(error)
 			return # error? FIXME
 		account.save()
 
-	def okClicked(self, widget):
+	def onOkClick(self, widget):
 		error = self.waitingDo(self.doRegister)
 		if not error:
 			self.destroy()
 		return True
 
-	def cancelClicked(self, widget):
+	def onCancelClick(self, widget):
 		self.destroy()
 		return True
 

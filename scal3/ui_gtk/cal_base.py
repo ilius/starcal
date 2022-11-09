@@ -20,6 +20,9 @@
 from scal3 import logger
 log = logger.get()
 
+from scal3 import logger
+log = logger.get()
+
 from time import time
 
 from scal3 import core
@@ -36,9 +39,11 @@ from scal3.ui_gtk.customize import CustomizableCalObj
 
 
 class CalBase(CustomizableCalObj):
+	dragAndDropEnable = True
+	doubleClickEnable = True
 	signals = CustomizableCalObj.signals + [
-		("popup-cell-menu", [int, int, int]),
-		("popup-main-menu", [int, int, int]),
+		("popup-cell-menu", [int, int]),
+		("popup-main-menu", [int, int]),
 		("double-button-press", []),
 		("pref-update-bg-color", []),
 		("day-info", []),
@@ -53,19 +58,23 @@ class CalBase(CustomizableCalObj):
 		try:
 			CustomizableCalObj.connect(self, sigName, *a, **ka)
 		except Exception:
-			log.exception("sigName=%s" % sigName)
+			log.exception(f"{sigName=}")
 
 	def initCal(self):
 		self.initVars()
 		listener.dateChange.add(self)
 		####
-		self.defineDragAndDrop()
-		self.connect("double-button-press", ui.dayOpenEvolution)
-		if ui.mainWin:
-			self.connect("popup-cell-menu", ui.mainWin.menuCellPopup)
-			self.connect("popup-main-menu", ui.mainWin.menuMainPopup)
-			self.connect("pref-update-bg-color", ui.mainWin.prefUpdateBgColor)
-			self.connect("day-info", ui.mainWin.dayInfoShow)
+		if self.dragAndDropEnable:
+			self.defineDragAndDrop()
+		if self.doubleClickEnable:
+			self.connect("double-button-press", ui.dayOpenEvolution)
+		if self.win:
+			self.connect("popup-cell-menu", self.win.menuCellPopup)
+			self.connect("popup-main-menu", self.win.menuMainPopup)
+			self.connect("pref-update-bg-color", self.win.prefUpdateBgColor)
+			self.connect("day-info", self.win.dayInfoShow)
+		###
+		self.subPages = None
 
 	def gotoJd(self, jd):
 		ui.gotoJd(jd)
@@ -78,8 +87,8 @@ class CalBase(CustomizableCalObj):
 		ui.jdPlus(p)
 		self.onDateChange()
 
-	def changeDate(self, year, month, day, mode=None):
-		ui.changeDate(year, month, day, mode)
+	def changeDate(self, year, month, day, calType=None):
+		ui.changeDate(year, month, day, calType)
 		self.onDateChange()
 
 	def onCurrentDateChange(self, gdate):
@@ -107,9 +116,10 @@ class CalBase(CustomizableCalObj):
 		)
 		self.drag_dest_add_text_targets()
 		self.drag_dest_add_uri_targets()
-		## ACTION_MOVE, FIXME
-		## if source ACTION was ACTION_COPY, calendar recieves its own dragged day
-		## just like gnome-calendar-applet (but it seems not a logical behaviar)
+		# ACTION_MOVE, FIXME
+		# if source ACTION was ACTION_COPY, calendar recieves its own
+		# dragged day just like gnome-calendar-applet
+		# (but it seems not a logical behaviar)
 		#self.drag_source_add_uri_targets()#???????
 		##self.connect("drag-end", self.dragCalEnd)
 		##self.connect("drag-drop", self.dragCalDrop)
@@ -117,10 +127,11 @@ class CalBase(CustomizableCalObj):
 		#self.connect("drag-leave", self.dragLeave)
 
 	def dragDataGet(self, obj, context, selection, target_id, etime):
-		## context is instance of gi.repository.Gdk.DragContext
-		text = "%.2d/%.2d/%.2d" % ui.cell.dates[ui.dragGetMode]
+		# context is instance of gi.repository.Gdk.DragContext
+		y, m, d = ui.cell.dates[ui.dragGetCalType]
+		text = f"{y:04d}/{m:02d}/{d:02d}"
 		selection.set_text(text, len(text))
-		#pbuf = newDndDatePixbuf(ui.cell.dates[ui.dragGetMode])
+		#pbuf = newDndDatePixbuf(ui.cell.dates[ui.dragGetCalType])
 		#selection.set_pixbuf(pbuf)
 		return True
 
@@ -137,7 +148,7 @@ class CalBase(CustomizableCalObj):
 		if dateM:
 			self.changeDate(*dateM)
 		elif dtype == "application/x-color":
-			## selection.get_text() == None
+			# selection.get_text() is None
 			text = selection.data
 			ui.bgColor = (
 				ord(text[1]),
@@ -148,23 +159,20 @@ class CalBase(CustomizableCalObj):
 			self.emit("pref-update-bg-color")
 			self.queue_draw()
 		else:
-			print(
-				"Unknown dropped data type \"%s\", text=\"%s\", data=\"%s\"" % (
-					dtype,
-					text,
-					selection.data,
-				),
+			log.info(
+				f"Unknown dropped data type {dtype!r}, {text=}, " +
+				f"data={selection.data!r}"
 			)
 			return True
 		return False
 
 	def dragBegin(self, obj, context):
-		## context is instance of gi.repository.Gdk.DragContext
+		# context is instance of gi.repository.Gdk.DragContext
 		#win = context.get_source_window()
-		#print("dragBegin", id(win), win.get_geometry())
-		pbuf = newDndDatePixbuf(ui.cell.dates[ui.dragGetMode])
+		# log.debug("dragBegin", id(win), win.get_geometry())
+		pbuf = newDndDatePixbuf(ui.cell.dates[ui.dragGetCalType])
 		w = pbuf.get_width()
-		#print(dir(context))
+		# log.debug(dir(context))
 		gtk.drag_set_icon_pixbuf(
 			context,
 			pbuf,
@@ -176,13 +184,13 @@ class CalBase(CustomizableCalObj):
 	def getCellPos(self):
 		raise NotImplementedError
 
-	def keyPress(self, arg, gevent):
-		CustomizableCalObj.keyPress(self, arg, gevent)
+	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
+		CustomizableCalObj.onKeyPress(self, arg, gevent)
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		if kname in ("space", "home", "t"):
 			self.goToday()
 		elif kname == "menu":
-			self.emit("popup-cell-menu", gevent.time, *self.getCellPos())
+			self.emit("popup-cell-menu", *self.getCellPos())
 		elif kname == "i":
 			self.emit("day-info")
 		else:

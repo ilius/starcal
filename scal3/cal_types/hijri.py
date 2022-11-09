@@ -19,7 +19,10 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
-## Islamic (Hijri) calendar: http://en.wikipedia.org/wiki/Islamic_calendar
+# Islamic (Hijri) calendar: http://en.wikipedia.org/wiki/Islamic_calendar
+
+from scal3 import logger
+log = logger.get()
 
 name = "hijri"
 desc = "Hijri(Islamic)"
@@ -28,16 +31,16 @@ origLang = "ar"
 monthName = (
 	"Muharram",
 	"Safar",
-	"Rabia\' 1",
-	"Rabia\' 2",
-	"Jumada 1",
-	"Jumada 2",
+	"Rabīʽ 1",
+	"Rabīʽ 2",
+	"Jumadā 1",
+	"Jumadā 2",
 	"Rajab",
-	"Sha\'aban",
-	"Ramadan",
-	"Shawwal",
-	"Dhu\'l Qidah",
-	"Dhu\'l Hijjah",
+	"Shaʿbān",
+	"Ramaḍān",
+	"Shawwāl",
+	"Ḏū'l-Qaʿdah",
+	"Ḏū'l-Ḥijjah",
 )
 
 monthNameAb = (
@@ -60,8 +63,12 @@ def getMonthName(m, y=None):
 	return monthName.__getitem__(m - 1)
 
 
-def getMonthNameAb(m, y=None):
-	return monthNameAb.__getitem__(m - 1)
+def getMonthNameAb(tr, m, y=None):
+	fullEn = monthName[m - 1]
+	abbr = tr(fullEn, ctx="abbreviation")
+	if abbr != fullEn:
+		return abbr
+	return monthNameAb[m - 1]
 
 
 def getMonthsInYear(y):
@@ -102,23 +109,22 @@ from collections import OrderedDict
 from scal3.path import sysConfDir, confDir, modDir
 from scal3.json_utils import *
 from scal3.utils import iceil, ifloor
-from scal3.utils import myRaise
 
 
 monthDbExpiredIgnoreFile = join(confDir, "hijri-expired-ignore")
 
 
-oldDbPath = "%s/hijri.db" % confDir
+oldDbPath = f"{confDir}/hijri.db"
 if isfile(oldDbPath):
 	os.remove(oldDbPath)
 
 
-## Here load user options (hijriUseDB) from file
-sysConfPath = "%s/%s.json" % (sysConfDir, name)
+# Here load user options (hijriUseDB) from file
+sysConfPath = f"{sysConfDir}/{name}.json"
 loadJsonConf(__name__, sysConfPath)
 
 
-confPath = "%s/%s.json" % (confDir, name)
+confPath = f"{confDir}/{name}.json"
 loadJsonConf(__name__, confPath)
 
 
@@ -140,18 +146,20 @@ class MonthDbHolder:
 		self.expJd = None
 		self.monthLenByYm = {}  # hijriMonthLen
 		self.userDbPath = join(confDir, "hijri-monthes.json")
-		self.sysDbPath = "%s/hijri-monthes.json" % modDir
+		self.sysDbPath = f"{modDir}/hijri-monthes.json"
 
 	def setMonthLenByYear(self, monthLenByYear):
 		self.endJd = self.startJd
 		self.monthLenByYm = {}
 		for y in monthLenByYear:
 			lst = monthLenByYear[y]
-			for m in range(len(lst)):
-				ml = lst[m]
-				if ml:  # positive integer
-					self.monthLenByYm[y * 12 + m] = ml
-					self.endJd += ml
+			for m, ml in enumerate(lst):
+				if ml == 0:
+					continue
+				if ml < 0:
+					raise ValueError(f"invalid {ml = }")
+				self.monthLenByYm[y * 12 + m] = ml
+				self.endJd += ml
 		if self.expJd is None:
 			self.expJd = self.endJd
 
@@ -166,15 +174,17 @@ class MonthDbHolder:
 		self.setMonthLenByYear(monthLenByYear)
 
 	def load(self):
-		data = jsonToData(open(self.sysDbPath).read())
+		with open(self.sysDbPath) as fp:
+			data = jsonToData(fp.read())
 		self.origVersion = data["version"]
 		##
 		if isfile(self.userDbPath):
-			userData = jsonToData(open(self.userDbPath).read())
+			with open(self.userDbPath) as fp:
+				userData = jsonToData(fp.read())
 			if userData["origVersion"] >= self.origVersion:
 				data = userData
 			else:
-				print("---- ignoring user\'s old db", self.userDbPath)
+				log.info(f"---- ignoring user\'s old db {self.userDbPath}")
 		self.setData(data)
 
 	def getMonthLenByYear(self):
@@ -219,32 +229,35 @@ class MonthDbHolder:
 	def getDateFromJd(self, jd):
 		if not self.endJd >= jd >= self.startJd:
 			return
-		#yi, mi, di = self.startDate
-		#ymi = yi*12 + mi
 		y, m, d = self.startDate
 		ym = y * 12 + m - 1
-		while jd > self.startJd:
+		startJd = self.startJd
+		while jd > startJd:
 			monthLen = self.monthLenByYm[ym]
-			if jd - monthLen > self.startJd:
+			jdm0 = jd - monthLen
+
+			if jdm0 <= startJd - d:
+				d = d + jd - startJd
+				break
+
+			if startJd - d < jdm0 <= startJd :
 				ym += 1
-				jd -= monthLen
-			elif d + jd - self.startJd > monthLen:
-				ym += 1
-				d = d + jd - self.startJd - monthLen
-				jd = self.startJd
-			else:
-				d = d + jd - self.startJd
-				jd = self.startJd
-		y, m = divmod(ym, 12)
-		m += 1
-		return (y, m, d)
+				d = d + jd - startJd - monthLen
+				break
+
+			# assert(jdm0 > startJd)
+			ym += 1
+			jd -= monthLen
+
+		year, mm = divmod(ym, 12)
+		return (year, mm + 1, d)
 
 	def getJdFromDate(self, year, month, day):
 		ym = year * 12 + month - 1
 		y0, m0, d0 = monthDb.startDate
-		ym0 = y0 * 12 + m0 - 1
 		if ym - 1 not in monthDb.monthLenByYm:
 			return
+		ym0 = y0 * 12 + m0 - 1
 		jd = monthDb.startJd
 		for ymi in range(ym0, ym):
 			jd += monthDb.monthLenByYm[ymi]
@@ -253,7 +266,7 @@ class MonthDbHolder:
 
 monthDb = MonthDbHolder()
 monthDb.load()
-## monthDb.save()
+# monthDb.save()
 
 #####################################################################
 
@@ -281,9 +294,9 @@ def to_jd(year, month, day):
 
 
 def jd_to(jd):
-	## hijriAlg == 0
+	# hijriAlg == 0
 	if hijriUseDB:
-		#jd = ifloor(jd)
+		# jd = ifloor(jd)
 		date = monthDb.getDateFromJd(jd)
 		if date:
 			return date
@@ -308,12 +321,5 @@ def getMonthLen(y, m):
 	#		pass
 	if m == 12:
 		return to_jd(y + 1, 1, 1) - to_jd(y, 12, 1)
-	else:
-		return to_jd(y, m + 1, 1) - to_jd(y, m, 1)
 
-
-if __name__ == "__main__":
-	for ym in monthDb.monthLenByYm:
-		y, m = divmod(ym, 12)
-		m += 1
-		print(to_jd(y, m, 1) - to_jd_c(y, m, 1))
+	return to_jd(y, m + 1, 1) - to_jd(y, m, 1)

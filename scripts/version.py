@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import os
-from os.path import join
+from os.path import join, isfile
 import sys
 import subprocess
 import re
@@ -13,6 +13,11 @@ except ImportError:
 scriptsDir = os.path.dirname(__file__)
 rootDir = os.path.dirname(scriptsDir)
 scalDir = join(rootDir, "scal3")
+
+if isfile(join(rootDir, "VERSION")):
+	with open(join(rootDir, "VERSION")) as _file:
+		print(_file.read().strip())
+		sys.exit(0)
 
 VERSION = ""
 fp = open("%s/core.py" % scalDir)
@@ -35,7 +40,7 @@ if os.path.isdir(gitDir):
 			stdout=subprocess.PIPE,
 		).communicate()
 		# if error == None:
-		VERSION_GIT_RAW = outputB.decode("utf-8").strip()
+		gitVersionRaw = outputB.decode("utf-8").strip()
 	except Exception as e:
 		sys.stderr.write(str(e) + "\n")
 	else:
@@ -44,13 +49,13 @@ if os.path.isdir(gitDir):
 		# 3.1.12dev15+d50399ea	< 3.1.12
 		# 3.1.12post15+d50399ea	> 3.1.12
 		# so the only way to make it work is to use "post"
-		if VERSION_GIT_RAW:
-			VERSION_GIT = re.sub(
-				'-([0-9]+)-g([0-9a-f]{8})',
+		if gitVersionRaw:
+			gitVersion = re.sub(
+				'-([0-9]+)-g([0-9a-f]{6,8})',
 				r'post\1+\2',
-				VERSION_GIT_RAW,
+				gitVersionRaw,
 			)
-			if parse_version(VERSION_GIT) > parse_version(VERSION):
-				VERSION = VERSION_GIT_RAW
+			if parse_version(gitVersion) > parse_version(VERSION):
+				VERSION = gitVersion
 
 print(VERSION)

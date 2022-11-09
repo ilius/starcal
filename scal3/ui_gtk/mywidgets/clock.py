@@ -22,11 +22,14 @@ import time
 from time import localtime, strftime
 from time import time as now
 
+from scal3.time_utils import clockWaitMilliseconds
+from scal3 import ui
+
 from gi.repository import GdkPixbuf
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.font_utils import *
-from scal3.time_utils import clockWaitMilliseconds
+from scal3.ui_gtk.drawing import setColor, fillColor, show_layout
 
 
 class ClockLabel(gtk.Label):
@@ -37,7 +40,7 @@ class ClockLabel(gtk.Label):
 		self.bold = bold
 		self.seconds = seconds
 		self.running = False
-		#self.connect("button-press-event", self.button_press)
+		#self.connect("button-press-event", self.onButtonPress)
 		self.start()#???
 
 	def start(self):
@@ -47,18 +50,19 @@ class ClockLabel(gtk.Label):
 	def update(self):
 		if self.running:
 			timeout_add(clockWaitMilliseconds(), self.update)
+			H, M, S = localtime()[3:6]
 			if self.seconds:
-				l = "%.2d:%.2d:%.2d" % tuple(localtime()[3:6])
+				label = f"{H:02}:{M:02}:{S:02}"
 			else:
-				l = "%.2d:%.2d" % tuple(localtime()[3:5])
+				label = f"{H:02}:{M:02}"
 			if self.bold:
-				l = "<b>%s</b>" % l
-			self.set_label(l)
+				label = f"<b>{label}</b>"
+			self.set_label(label)
 
 	def stop(self):
 		self.running = False
 
-	#def button_press(self, obj, gevent):
+	#def onButtonPress(self, obj, gevent):
 	#	if gevent.button == 3:
 
 
@@ -77,7 +81,7 @@ class FClockLabel(gtk.Label):
 		self.format = format
 		self.local = local
 		self.running = False
-		#self.connect("button-press-event", self.button_press)
+		#self.connect("button-press-event", self.onButtonPress)
 		self.start()#???
 
 	def start(self):
@@ -107,8 +111,10 @@ class FClockWidget(gtk.DrawingArea): ## Time is in Local
 		gtk.DrawingArea.__init__(self)
 		self.set_direction(gtk.TextDirection.LTR)
 		self.format = format
+		self.text = ""
 		self.running = False
-		#self.connect("button-press-event", self.button_press)
+		self.connect("draw", self.onDraw)
+		#self.connect("button-press-event", self.onButtonPress)
 		self.start()#???
 
 	def start(self):
@@ -124,19 +130,34 @@ class FClockWidget(gtk.DrawingArea): ## Time is in Local
 		self.running = False
 
 	def set_label(self, text):
-		if self.get_window() is None:
-			return
-		self.get_window().clear()
-		cr = self.get_window().cairo_create()
-		cr.set_source_color(gdk.Color(0, 0, 0))
+		self.text = text
+		self.queue_draw()
+
+	def onDraw(self, widget=None, event=None):
+		win = self.get_window()
+		region = win.get_visible_region()
+		# FIXME: This must be freed with cairo_region_destroy() when you are done.
+		# where is cairo_region_destroy? No region.destroy() method
+		dctx = win.begin_draw_frame(region)
+		if dctx is None:
+			raise RuntimeError("begin_draw_frame returned None")
+		cr = dctx.get_cairo_context()
+		try:
+			self.drawWithContext(cr)
+		finally:
+			win.end_draw_frame(dctx)
+
+	def drawWithContext(self, cr: "cairo.Context"):
+		text = self.text
+		fillColor(cr, ui.bgColor)
+		setColor(cr, ui.textColor)
 		lay = self.create_pango_layout(text)
 		show_layout(cr, lay)
 		w, h = lay.get_pixel_size()
-		cr.clip()
 		self.set_size_request(w, h)
 		"""
 		textLay = self.create_pango_layout("") ## markup
-		textLay.set_markup(text, -1)
+		textLay.set_markup(text=text, length=-1)
 		textLay.set_font_description(Pango.FontDescription(ui.getFont()))
 		w, h = textLay.get_pixel_size()
 		pixbuf = GdkPixbuf.Pixbuf(GdkPixbuf.Colorspace.RGB, True, 8, w, h)
@@ -155,9 +176,11 @@ class FClockWidget(gtk.DrawingArea): ## Time is in Local
 		self.set_from_pixmap(pmap, mask)
 		"""
 
+
 if __name__ == "__main__":
-	d = gtk.Dialog(parent=None)
-	widget = ClockLabel()
+	d = gtk.Dialog()
+	widget = FClockWidget()
+	# widget = ClockLabel()
 	pack(d.vbox, widget, 1, 1)
 	d.vbox.show_all()
 	d.run()

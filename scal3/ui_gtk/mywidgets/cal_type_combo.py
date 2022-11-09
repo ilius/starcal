@@ -7,7 +7,7 @@ from scal3.ui_gtk.utils import IdComboBox
 
 
 class CalTypeCombo(IdComboBox):
-	def __init__(self):## , showInactive=True FIXME
+	def __init__(self, hasDefault=False):## , showInactive=True FIXME
 		ls = gtk.ListStore(int, str)
 		gtk.ComboBox.__init__(self)
 		self.set_model(ls)
@@ -17,12 +17,17 @@ class CalTypeCombo(IdComboBox):
 		pack(self, cell, True)
 		self.add_attribute(cell, "text", 1)
 		###
+		# None is converted to 0 for `int` column, so we use -1 and -2
+		if hasDefault:
+			ls.append([-1, _("Default Calendar Type")])  # noqa: FURB113
+			ls.append([-2, None])  # separator
+
 		for i, mod in calTypes.iterIndexModuleActive():
-			ls.append([i, _(mod.desc)])
-		ls.append([-1, None])  # separator
-		# None is converted to 0 for `int` column, so we use -1
+			ls.append([i, _(mod.desc, ctx="calendar")])
+		ls.append([-2, None])  # separator
+
 		for i, mod in calTypes.iterIndexModuleInactive():
-			ls.append([i, _(mod.desc)])
+			ls.append([i, _(mod.desc, ctx="calendar")])
 
 	def _is_separator(self, model, rowIter, data):
 		return model.get_value(rowIter, 1) is None

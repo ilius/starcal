@@ -34,28 +34,25 @@ def decodeAtomElement(atom):
 
 def createDiscoveryEvent(group, atom):
 	if "discoveryDate" not in atom:
-		print("no discoveryDate for %s" % atom["id"])
+		log.info(f"no discoveryDate for {atom['id']}")
 		return
 	discoveryDate = int(atom["discoveryDate"])
 	if discoveryDate < 1:
-		print("empty discoveryDate (%r) for %s" % (
-			atom["discoveryDate"],
-			atom["id"],
-		))
+		log.info(f"empty discoveryDate ({atom['discoveryDate']!r}) for {atom['id']}")
 		return
 	description = atom["name"]
 	if "discoverers" in atom:
-		description += ", by %s" % atom["discoverers"].replace(";", ",")
+		description += ", by " + atom["discoverers"].replace(";", ",")
 	event = group.createEvent("largeScale")
 	event.setData({
 		"calType": "gregorian",
-		"summary": "Element Discovery: %s" % atom["id"],
+		"summary": "Element Discovery: " + atom["id"],
 		"description": description,
 		"scale": 1,
 		"start": discoveryDate,
 		"duration": 1,
 	})
-	#print(event.id)
+	# log.debug(event.id)
 	return event
 
 

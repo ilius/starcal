@@ -9,25 +9,26 @@ from collections import OrderedDict
 
 
 def findZoneInfoDir():
-	for tmpDir in [
+	for _dir in [
 		"/usr/share/zoneinfo",
 		"/usr/lib/zoneinfo",
 		"/usr/share/lib/zoneinfo",
 		"/etc/zoneinfo",
 	]:
-		if os.path.isdir(tmpDir):
-			return tmpDir
+		if os.path.isdir(_dir):
+			return _dir
 
 	try:
 		import pytz
 	except ImportError:
 		pass
 	else:
-		tmpDir = os.path.join(os.path.dirname(pytz.__file__), "zoneinfo")
-		if os.path.isdir(tmpDir):
-			return tmpDir
+		_dir = os.path.join(os.path.dirname(pytz.__file__), "zoneinfo")
+		if os.path.isdir(_dir):
+			return _dir
 
 	raise IOError("zoneinfo directory not found")
+
 
 infoDir = findZoneInfoDir()
 
@@ -49,7 +50,7 @@ def _addZoneNode(parentDict, zone, zoneNamesLevel):
 				zoneNamesLevel,
 			)
 	else:
-		print("invalid path =", path)
+		log.error(f"invalid {path=}")
 
 
 def getZoneInfoTree():
@@ -78,8 +79,8 @@ def getZoneInfoTree():
 			[group],
 			zoneNamesLevel,
 		)
-	#zoneNamesList = []
-	#for levelNames in zoneNamesLevel:
-	#	zoneNamesList += sorted(levelNames)
-	#from pprint import pprint ; pprint(zoneTree)
+	# zoneNamesList = []
+	# for levelNames in zoneNamesLevel:
+	# 	zoneNamesList += sorted(levelNames)
+	# from pprint import pprint ; log.info(pprint(zoneTree))
 	return zoneTree

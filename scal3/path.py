@@ -18,6 +18,8 @@
 # Also avalable in /usr/share/common-licenses/GPL on Debian systems
 # or /usr/share/licenses/common/GPL3/license.txt on ArchLinux
 
+# no logging in this file
+
 import os
 from os.path import dirname, join, abspath
 
@@ -27,52 +29,58 @@ APP_NAME = "starcal3"
 
 osName = getOsName()
 
-srcDir = dirname(__file__)
-cwd = os.getcwd()
-if srcDir in (".", ""):
-	srcDir = cwd
+scalDir = dirname(__file__)
+cwd = os.getcwd()  # noqa: FURB104
+if scalDir in (".", ""):
+	scalDir = cwd
 elif os.sep == "/":
-	if srcDir.startswith("./"):
-		srcDir = cwd + srcDir[1:]
-	elif srcDir[0] != "/":
-		srcDir = join(cwd, srcDir)
+	if scalDir.startswith("./"):
+		scalDir = cwd + scalDir[1:]
+	elif scalDir[0] != "/":
+		scalDir = join(cwd, scalDir)
 elif os.sep == "\\":
-	if srcDir.startswith(".\\"):
-		srcDir = cwd + srcDir[1:]
-#print("srcDir=%r"%srcDir)
+	if scalDir.startswith(".\\"):
+		scalDir = cwd + scalDir[1:]
 
-rootDir = abspath(dirname(srcDir))
-pixDir = join(rootDir, "pixmaps")
-plugDir = join(rootDir, "plugins")
+plugDirName = "plugins"
+
+sourceDir = abspath(dirname(scalDir))
+pixDir = join(sourceDir, "pixmaps")
+svgDir = join(sourceDir, "svg")
+plugDir = join(sourceDir, plugDirName)
 
 if osName in ("linux", "unix"):
 	homeDir = os.getenv("HOME")
 	confDir = homeDir + "/." + APP_NAME
 	sysConfDir = "/etc/" + APP_NAME
 	tmpDir = "/tmp"
-	#user = os.getenv("USER")
+	cacheDir = join(homeDir, ".cache", APP_NAME)
+	# user = os.getenv("USER")
 elif osName == "mac":
 	homeDir = os.getenv("HOME")
-	confDir = homeDir + "/Library/Preferences/" + APP_NAME
+	_libDir = join(homeDir, "Library")
+	confDir = join(_libDir, "Preferences", APP_NAME)
 	# OR "/Library/" + APP_NAME
-	sysConfDir = join(rootDir, "config")  # FIXME
+	sysConfDir = join(sourceDir, "config")  # FIXME
 	tmpDir = "/tmp"
-	#user = os.getenv("USER")
+	cacheDir = join(_libDir, "Caches", APP_NAME)
+	# user = os.getenv("USER")
 elif osName == "win":
-	#homeDrive = os.environ["HOMEDRIVE"]
+	# homeDrive = os.environ["HOMEDRIVE"]
 	homeDir = os.getenv("HOMEPATH")
 	confDir = os.getenv("APPDATA") + "\\" + APP_NAME
-	sysConfDir = join(rootDir, "config")
+	sysConfDir = join(sourceDir, "config")
 	tmpDir = os.getenv("TEMP")
-	#user = os.getenv("USERNAME")
+	cacheDir = join(confDir, "Cache")  # FIXME: right directory?
+	# user = os.getenv("USERNAME")
 else:
 	raise OSError("Unkown operating system!")
 
 deskDir = join(homeDir, "Desktop")  # in all operating systems? FIXME
 
 userPlugConf = join(confDir, "plugin.conf")
-modDir = "%s/cal_types" % srcDir
-plugDirUser = join(confDir, "plugins")
+modDir = f"{scalDir}/cal_types"
+plugDirUser = join(confDir, plugDirName)
 objectDir = join(confDir, "objects")
 
 purpleDir = join(homeDir, ".purple")  # FIXME

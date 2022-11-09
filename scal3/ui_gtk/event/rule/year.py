@@ -20,10 +20,9 @@ class WidgetClass(NumRangesEntry):
 	def updateVars(self):
 		self.rule.values = self.getValues()
 
-	def changeMode(self, mode):
-		if mode == self.rule.getMode():
+	def changeCalType(self, calType):
+		if calType == self.rule.getCalType():
 			return
 		self.updateVars()
-		self.rule.changeMode(mode)
+		self.rule.changeCalType(calType)
 		self.updateWidget()
-

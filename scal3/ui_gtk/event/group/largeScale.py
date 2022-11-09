@@ -12,36 +12,39 @@ maxStartEnd = 999999
 
 
 class WidgetClass(BaseWidgetClass):
-	def __init__(self, group):
-		BaseWidgetClass.__init__(self, group)
+	def addStartEndWidgets(self):
+		group = self.group
 		######
-		sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
+		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		######
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Scale"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Scale"))
+		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
+		self.sizeGroup.add_widget(label)
 		self.scaleCombo = common.Scale10PowerComboBox()
 		pack(hbox, self.scaleCombo)
 		pack(self, hbox)
 		hbox.show_all()
 		####
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Start"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Start"))
+		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
+		self.sizeGroup.add_widget(label)
 		self.startSpin = IntSpinButton(-maxStartEnd, maxStartEnd)
 		pack(hbox, self.startSpin)
 		pack(self, hbox)
 		hbox.show_all()
 		####
-		hbox = gtk.HBox()
-		label = gtk.Label(_("End"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("End"))
+		label.set_xalign(0)
 		sizeGroup.add_widget(label)
 		pack(hbox, label)
+		self.sizeGroup.add_widget(label)
 		self.endSpin = IntSpinButton(-maxStartEnd, maxStartEnd)
 		pack(hbox, self.endSpin)
 		pack(self, hbox)

@@ -1,26 +1,12 @@
 Saeed Rasooli <saeed.gnu@gmail.com>
     Developer, Maintainer, Packager and Supporter
 
-Mola Pahnadayan <mola.mp@gmail.com>
-    Program "Jalali Calendar Applet"
-
-Mehdi Bayazee <bayazee@gmail.com>
-    Program "Calverter.py"
-
-Stuart Bishop <stuart@stuartbishop.net>
-    Program pytz
-
 Calendar Center Council, Institute of Geophysics, University of Tehran
     Iranian Event Plugins, Hijri Calculations
 
-Reza Moradi Ghiasabadi (www.ghiasabadi.com)
+Reza Moradi Ghiasabadi http://ghiasabadi.com
     Iranian Ancient Festivals
 
 
-Some icons copied from Oxygen Icon Theme (under LGPL v3+)
-Some icons copied from T-ish-Ubuntulooks Metacity Theme
-Some icons copied from Gnome Evolution.
-Some icons copied from crystalproject.
-
-Firefox and Sunbird logos are trademarks of the Mozilla Fondation.
+Please refer to "resources.xml" file to see author and license of images/icons.
 

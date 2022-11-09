@@ -4,7 +4,10 @@ from scal3.locale_man import tr as _
 from scal3 import ui
 
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import dialog_add_button
+from scal3.ui_gtk.utils import (
+	dialog_add_button,
+	set_tooltip,
+)
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 
@@ -19,40 +22,49 @@ class TrashEditorDialog(gtk.Dialog):
 		###
 		dialog_add_button(
 			self,
-			gtk.STOCK_CANCEL,
-			_("_Cancel"),
-			gtk.ResponseType.CANCEL,
+			imageName="dialog-cancel.svg",
+			label=_("Cancel"),
+			res=gtk.ResponseType.CANCEL,
 		)
 		dialog_add_button(
 			self,
-			gtk.STOCK_OK,
-			_("_OK"),
-			gtk.ResponseType.OK,
+			imageName="dialog-ok.svg",
+			label=_("_Save"),
+			res=gtk.ResponseType.OK,
 		)
 		##
 		self.connect("response", lambda w, e: self.hide())
 		#######
 		self.trash = ui.eventTrash
 		##
-		sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
+		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		#######
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Title"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Title"))
+		label.set_xalign(0)
 		pack(hbox, label)
 		sizeGroup.add_widget(label)
 		self.titleEntry = gtk.Entry()
 		pack(hbox, self.titleEntry, 1, 1)
 		pack(self.vbox, hbox)
 		####
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Icon"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Icon"))
+		label.set_xalign(0)
 		pack(hbox, label)
 		sizeGroup.add_widget(label)
 		self.iconSelect = IconSelectButton()
 		pack(hbox, self.iconSelect)
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
+		pack(self.vbox, hbox)
+		####
+		hbox = HBox()
+		self.addEventsToBeginningCheck = gtk.CheckButton(label=_("Add New Events to Beginning"))
+		set_tooltip(
+			hbox, # label or hbox?
+			_("Add new events to beginning of event list, not to the end"),
+		)
+		pack(hbox, self.addEventsToBeginningCheck)
 		pack(self.vbox, hbox)
 		####
 		self.vbox.show_all()
@@ -66,8 +78,10 @@ class TrashEditorDialog(gtk.Dialog):
 	def updateWidget(self):
 		self.titleEntry.set_text(self.trash.title)
 		self.iconSelect.set_filename(self.trash.icon)
+		self.addEventsToBeginningCheck.set_active(self.trash.addEventsToBeginning)
 
 	def updateVars(self):
 		self.trash.title = self.titleEntry.get_text()
 		self.trash.icon = self.iconSelect.filename
+		self.trash.addEventsToBeginning = self.addEventsToBeginningCheck.get_active()
 		self.trash.save()

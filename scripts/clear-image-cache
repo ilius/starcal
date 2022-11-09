@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+rm -v ~/.cache/starcal3/*.png

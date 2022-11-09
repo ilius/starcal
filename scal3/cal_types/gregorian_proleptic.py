@@ -60,7 +60,11 @@ def getMonthName(m, y=None):
 	return monthName[m - 1]
 
 
-def getMonthNameAb(m, y=None):
+def getMonthNameAb(tr, m, y=None):
+	fullEn = monthName[m - 1]
+	abbr = tr(fullEn, ctx="abbreviation")
+	if abbr != fullEn:
+		return abbr
 	return monthNameAb[m - 1]
 
 
@@ -73,6 +77,7 @@ from math import floor
 
 def ifloor(x):
 	return int(floor(x))
+
 
 epoch = 1721426
 minMonthLen = 29

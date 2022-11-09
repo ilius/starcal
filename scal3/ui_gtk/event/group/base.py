@@ -29,27 +29,29 @@ from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.event import common
 
 
-class BaseWidgetClass(gtk.VBox):
+class BaseWidgetClass(gtk.Box):
+	userCanAddEvents = True
+
 	def __init__(self, group):
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
-		gtk.VBox.__init__(self)
+		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.group = group
 		########
-		self.sizeGroup = gtk.SizeGroup(gtk.SizeGroupMode.HORIZONTAL)
+		self.sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		#####
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Title"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Title"))
+		label.set_xalign(0)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
 		self.titleEntry = gtk.Entry()
 		pack(hbox, self.titleEntry, 1, 1)
 		pack(self, hbox)
 		#####
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Color"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Color"))
+		label.set_xalign(0)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
 		self.colorButton = MyColorButton()
@@ -57,33 +59,35 @@ class BaseWidgetClass(gtk.VBox):
 		pack(hbox, self.colorButton)
 		pack(self, hbox)
 		#####
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Default Icon"))## FIXME
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Default Icon"))## FIXME
+		label.set_xalign(0)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
 		self.iconSelect = IconSelectButton()
 		pack(hbox, self.iconSelect)
 		pack(self, hbox)
 		#####
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Default Calendar Type"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Default Calendar Type"))
+		label.set_xalign(0)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
 		combo = CalTypeCombo()
 		pack(hbox, combo)
-		pack(hbox, gtk.Label(""), 1, 1)
-		self.modeCombo = combo
+		pack(hbox, gtk.Label(), 1, 1)
+		self.calTypeCombo = combo
 		pack(self, hbox)
 		#####
-		hbox = gtk.HBox()
-		self.tzCheck = gtk.CheckButton(_("Default Time Zone"))
+		self.addStartEndWidgets()
+		#####
+		hbox = HBox()
+		self.tzCheck = gtk.CheckButton(label=_("Default Time Zone"))
 		pack(hbox, self.tzCheck)
 		self.sizeGroup.add_widget(self.tzCheck)
 		combo = TimeZoneComboBoxEntry()
 		pack(hbox, combo)
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		self.tzCombo = combo
 		pack(self, hbox)
 		self.tzCheck.connect(
@@ -91,75 +95,88 @@ class BaseWidgetClass(gtk.VBox):
 			lambda check: self.tzCombo.set_sensitive(check.get_active()),
 		)
 		#####
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Show in Calendar"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Show in Calendar"))
+		label.set_xalign(0)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
-		self.showInDCalCheck = gtk.CheckButton(_("Day"))
-		self.showInWCalCheck = gtk.CheckButton(_("Week"))
-		self.showInMCalCheck = gtk.CheckButton(_("Month"))
+		self.showInDCalCheck = gtk.CheckButton(label=_("Day"))
+		self.showInWCalCheck = gtk.CheckButton(label=_("Week"))
+		self.showInMCalCheck = gtk.CheckButton(label=_("Month"))
 		pack(hbox, self.showInDCalCheck)
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		pack(hbox, self.showInWCalCheck)
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		pack(hbox, self.showInMCalCheck)
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
 		#####
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Show in"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Show in"))
+		label.set_xalign(0)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
-		self.showInTimeLineCheck = gtk.CheckButton(_("Time Line"))
-		self.showInStatusIconCheck = gtk.CheckButton(_("Status Icon"))
+		self.showInTimeLineCheck = gtk.CheckButton(label=_("Time Line"))
+		self.showInStatusIconCheck = gtk.CheckButton(label=_("Status Icon"))
 		pack(hbox, self.showInTimeLineCheck)
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		pack(hbox, self.showInStatusIconCheck)
-		pack(hbox, gtk.Label(""), 1, 1)
+		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
 		#####
-		hbox = gtk.HBox()
-		label = gtk.Label(_("Event Cache Size"))
-		label.set_alignment(0, 0.5)
+		hbox = HBox()
+		label = gtk.Label(label=_("Event Cache Size"))
+		label.set_xalign(0)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
 		self.cacheSizeSpin = IntSpinButton(0, 9999)
 		pack(hbox, self.cacheSizeSpin)
 		pack(self, hbox)
 		#####
-		hbox = gtk.HBox()
+		hbox = HBox()
 		label = gtk.Label(label=_("Event Text Separator"))
-		label.set_alignment(0, 0.5)
+		label.set_xalign(0)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
 		self.sepInput = TextFrame()
 		pack(hbox, self.sepInput, 1, 1)
 		pack(self, hbox)
 		set_tooltip(hbox, _(
-			"Using to seperate Summary and Description when displaying event"
+			"Using to separate Summary and Description when displaying event"
 		))
 		#####
-		#hbox = gtk.HBox()
-		#label = gtk.Label(_("Show Full Event Description"))
-		#label.set_alignment(0, 0.5)
+		#hbox = HBox()
+		#label = gtk.Label(label=_("Show Full Event Description"))
+		#label.set_xalign(0)
 		#pack(hbox, label)
 		#self.sizeGroup.add_widget(label)
-		#self.showFullEventDescCheck = gtk.CheckButton("")
+		#self.showFullEventDescCheck = gtk.CheckButton(label="")
 		#pack(hbox, self.showFullEventDescCheck, 1, 1)
 		#pack(self, hbox)
 		###
-		self.modeCombo.connect(
+		self.calTypeCombo.connect(
 			"changed",
-			self.modeComboChanged,
+			self.calTypeComboChanged,
 		)  # right place? before updateWidget? FIXME
+		#####
+		if self.userCanAddEvents:
+			hbox = HBox()
+			self.addEventsToBeginningCheck = gtk.CheckButton(label=_("Add New Events to Beginning"))
+			set_tooltip(
+				hbox, # label or hbox?
+				_("Add new events to beginning of event list, not to the end"),
+			)
+			pack(hbox, self.addEventsToBeginningCheck)
+			pack(self, hbox)
+
+	def addStartEndWidgets(self):
+		pass
 
 	def updateWidget(self):
 		self.titleEntry.set_text(self.group.title)
-		self.colorButton.set_color(self.group.color)
+		self.colorButton.set_rgba(self.group.color)
 		self.iconSelect.set_filename(self.group.icon)
-		self.modeCombo.set_active(self.group.mode)
+		self.calTypeCombo.set_active(self.group.calType)
 		##
 		self.tzCheck.set_active(self.group.timeZoneEnable)
 		self.tzCombo.set_sensitive(self.group.timeZoneEnable)
@@ -174,12 +191,14 @@ class BaseWidgetClass(gtk.VBox):
 		self.cacheSizeSpin.set_value(self.group.eventCacheSize)
 		self.sepInput.set_text(self.group.eventTextSep)
 		#self.showFullEventDescCheck.set_active(self.group.showFullEventDesc)
+		if self.userCanAddEvents:
+			self.addEventsToBeginningCheck.set_active(self.group.addEventsToBeginning)
 
 	def updateVars(self):
 		self.group.title = self.titleEntry.get_text()
-		self.group.color = self.colorButton.get_color()
+		self.group.color = self.colorButton.get_rgba()
 		self.group.icon = self.iconSelect.get_filename()
-		self.group.mode = self.modeCombo.get_active()
+		self.group.calType = self.calTypeCombo.get_active()
 		##
 		self.group.timeZoneEnable = self.tzCheck.get_active()
 		self.group.timeZone = self.tzCombo.get_text()
@@ -192,6 +211,8 @@ class BaseWidgetClass(gtk.VBox):
 		self.group.eventCacheSize = int(self.cacheSizeSpin.get_value())
 		self.group.eventTextSep = self.sepInput.get_text()
 		#self.group.showFullEventDesc = self.showFullEventDescCheck.get_active()
+		if self.userCanAddEvents:
+			self.group.addEventsToBeginning = self.addEventsToBeginningCheck.get_active()
 
-	def modeComboChanged(self, obj=None):
+	def calTypeComboChanged(self, obj=None):
 		pass

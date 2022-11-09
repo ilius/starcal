@@ -20,6 +20,9 @@
 
 APP_DESC = "StarCalendar"
 
+from scal3 import logger
+log = logger.get()
+
 import os
 import shutil
 from os.path import dirname
@@ -30,8 +33,11 @@ from scal3.import_config_2to3 import *
 from scal3.locale_man import langDict, langDefault
 
 from scal3.ui_gtk import *
+from scal3.ui_gtk.utils import dialog_add_button
 
-langConfDir = join(rootDir, "conf", "defaults")
+_ = str
+
+langConfDir = join(sourceDir, "conf", "defaults")
 
 gtk.Window.set_default_icon_from_file(join(pixDir, "starcal.png"))
 
@@ -41,22 +47,28 @@ langCodeList = []
 
 win = gtk.Dialog(
 	title=APP_DESC + " 3.x - First Run",
-	buttons=(
-		gtk.STOCK_OK,
-		gtk.ResponseType.OK,
-		gtk.STOCK_CANCEL,
-		gtk.ResponseType.CANCEL,
-	)
 )
-langHbox = gtk.HBox()
-pack(langHbox, gtk.Label("Select Language:"))
+dialog_add_button(
+	win,
+	imageName="dialog-ok.svg",
+	label=_("OK"),
+	res=gtk.ResponseType.OK,
+)
+dialog_add_button(
+	win,
+	imageName="dialog-cancel.svg",
+	label=_("Cancel"),
+	res=gtk.ResponseType.CANCEL,
+)
+langHbox = HBox()
+pack(langHbox, gtk.Label(label="Select Language:"))
 
 
 importCheckb = None
 oldVersion = getOldVersion()
 if oldVersion:## and "2.2.0" <= oldVersion < "2.5.0":## FIXME
 	importCheckb = gtk.CheckButton(
-		"Import configurations from %s %s" % (APP_DESC, oldVersion)
+		f"Import configurations from {APP_DESC} {oldVersion}"
 	)
 	importCheckb.connect(
 		"clicked",
@@ -82,7 +94,7 @@ else:
 pack(langHbox, langCombo, 1, 1)
 pack(win.vbox, langHbox)
 
-pbarHbox = gtk.HBox()
+pbarHbox = HBox()
 pbar = gtk.ProgressBar()
 pack(pbarHbox, pbar, 1, 1)
 pack(win.vbox, pbarHbox)
@@ -91,7 +103,7 @@ pack(win.vbox, pbarHbox)
 win.vbox.show_all()
 
 if win.run() == gtk.ResponseType.OK:
-	#print("RESPONSE OK")
+	# log.debug("RESPONSE OK")
 	if importCheckb and importCheckb.get_active():
 		importCheckb.set_sensitive(False)
 		langHbox.set_sensitive(False)
@@ -99,7 +111,7 @@ if win.run() == gtk.ResponseType.OK:
 		for frac in importConfigIter():
 			pbar.set_fraction(frac)
 			percent = frac * 100
-			text = "%.1f%%" % percent ## FIXME
+			text = f"{percent:.1f}%"
 			pbar.set_text(text)
 			while gtk.events_pending():
 				gtk.main_iteration_do(False)
@@ -107,7 +119,7 @@ if win.run() == gtk.ResponseType.OK:
 		i = langCombo.get_active()
 		langCode = langCodeList[i]
 		thisLangConfDir = join(langConfDir, langCode)
-		#print("Setting language", langCode)
+		# log.debug("Setting language", langCode)
 		if not os.path.isdir(confDir):
 			os.mkdir(confDir, 0o755)
 		if os.path.isdir(thisLangConfDir):
@@ -116,7 +128,7 @@ if win.run() == gtk.ResponseType.OK:
 				if not isfile(src_path):
 					continue
 				dst_path = join(confDir, fname)
-				#print(src_path)
+				# log.debug(src_path)
 				shutil.copy(src_path, dst_path)
 		else:
 			open(join(confDir, "locale.json"), "w").write(
