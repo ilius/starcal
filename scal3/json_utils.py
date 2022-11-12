@@ -9,12 +9,15 @@ from collections import OrderedDict
 
 
 def dataToPrettyJson(data, ensure_ascii=False, sort_keys=False):
-	return json.dumps(
-		data,
-		indent="\t",
-		ensure_ascii=ensure_ascii,
-		sort_keys=sort_keys,
-	)
+	try:
+		return json.dumps(
+			data,
+			indent="\t",
+			ensure_ascii=ensure_ascii,
+			sort_keys=sort_keys,
+		)
+	except Exception:
+		log.exception(f"{data =}")
 
 
 def dataToCompactJson(data, ensure_ascii=False, sort_keys=False):
