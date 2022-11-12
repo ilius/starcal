@@ -45,6 +45,7 @@ depends+=('python-dateutil')
 depends+=('python-psutil')
 depends+=('python-cachetools')
 depends+=('python-requests')
+depends+=('python-setuptools')
 #depends+=('python-gflags') # for google api client
 
 
