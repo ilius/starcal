@@ -644,7 +644,7 @@ def yearPlus(plus: int = 1) -> None:
 
 def getFont(
 	scale=1.0,
-	familiy=True,
+	family=True,
 ) -> Tuple[Optional[str], bool, bool, float]:
 	(
 		name,
@@ -653,7 +653,7 @@ def getFont(
 		size,
 	) = fontCustom if fontCustomEnable else fontDefaultInit
 	return [
-		name if familiy else None,
+		name if family else None,
 		bold,
 		underline,
 		size * scale,
@@ -678,44 +678,44 @@ def initFonts(fontDefaultNew: Tuple[str, bool, bool, float]) -> None:
 	########
 	###
 	if mcalTypeParams[0]["font"] is None:
-		mcalTypeParams[0]["font"] = getFont(1.0, familiy=False)
+		mcalTypeParams[0]["font"] = getFont(1.0, family=False)
 	###
 	for item in mcalTypeParams[1:]:
 		if item["font"] is None:
-			item["font"] = getFont(0.6, familiy=False)
+			item["font"] = getFont(0.6, family=False)
 	######
 	if dcalDayParams[0]["font"] is None:
-		dcalDayParams[0]["font"] = getFont(10.0, familiy=False)
+		dcalDayParams[0]["font"] = getFont(10.0, family=False)
 	###
 	for item in dcalDayParams[1:]:
 		if item["font"] is None:
-			item["font"] = getFont(3.0, familiy=False)
+			item["font"] = getFont(3.0, family=False)
 	######
 	if dcalMonthParams[0]["font"] is None:
-		dcalMonthParams[0]["font"] = getFont(5.0, familiy=False)
+		dcalMonthParams[0]["font"] = getFont(5.0, family=False)
 	###
 	for item in dcalMonthParams[1:]:
 		if item["font"] is None:
-			item["font"] = getFont(2.0, familiy=False)
+			item["font"] = getFont(2.0, family=False)
 	######
 	if dcalWinDayParams[0]["font"] is None:
-		dcalWinDayParams[0]["font"] = getFont(5.0, familiy=False)
+		dcalWinDayParams[0]["font"] = getFont(5.0, family=False)
 	###
 	for item in dcalWinDayParams[1:]:
 		if item["font"] is None:
-			item["font"] = getFont(2.0, familiy=False)
+			item["font"] = getFont(2.0, family=False)
 	######
 	if dcalWinMonthParams[0]["font"] is None:
-		dcalWinMonthParams[0]["font"] = getFont(2.5, familiy=False)
+		dcalWinMonthParams[0]["font"] = getFont(2.5, family=False)
 	###
 	for item in dcalWinMonthParams[1:]:
 		if item["font"] is None:
-			item["font"] = getFont(1.5, familiy=False)
+			item["font"] = getFont(1.5, family=False)
 	######
 	if dcalWeekdayParams["font"] is None:
-		dcalWeekdayParams["font"] = getFont(1.0, familiy=False)
+		dcalWeekdayParams["font"] = getFont(1.0, family=False)
 	if dcalWinWeekdayParams["font"] is None:
-		dcalWinWeekdayParams["font"] = getFont(1.0, familiy=False)
+		dcalWinWeekdayParams["font"] = getFont(1.0, family=False)
 
 
 def getHolidaysJdList(startJd: int, endJd: int) -> List[int]:
