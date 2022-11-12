@@ -27,6 +27,7 @@ $PIP install python-dateutil
 $PIP install psutil
 $PIP install cachetools
 $PIP install requests
+$PIP install setuptools
 
 $PIP install ujson
 $PIP install python-igraph
