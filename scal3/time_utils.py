@@ -224,8 +224,7 @@ def getJdAndSecondsFromEpoch(epoch: int) -> Tuple[int, int]:
 	return (days + J1970, second)
 
 
-# type: List[Tuple[int, str]]
-durationUnitsRel = (
+durationUnitsRel: "List[Tuple[int, str]]" = (
 	(1, "second"),
 	(60, "minute"),
 	(60, "hour"),

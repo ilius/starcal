@@ -24,6 +24,7 @@ log = logger.get()
 import os
 import os.path
 from os.path import join, split, dirname, splitext, isabs
+from contextlib import suppress
 import math
 from time import time as now
 from cachetools import LRUCache
@@ -90,8 +91,8 @@ eventsDir = join("event", "events")
 groupsDir = join("event", "groups")
 accountsDir = join("event", "accounts")
 
-hms_zero = HMS(0, 0, 0)
-hms_24 = HMS(24, 0, 0)
+hms_zero = HMS()
+hms_24 = HMS(24)
 
 
 ##########################
@@ -511,8 +512,7 @@ class IntervalOccurSet(OccurSet):
 	def newFromStartEnd(startEpoch: int, endEpoch: int) -> OccurSet:
 		if startEpoch > endEpoch:
 			return IntervalOccurSet([])
-		else:
-			return IntervalOccurSet([(startEpoch, endEpoch)])
+		return IntervalOccurSet([(startEpoch, endEpoch)])
 
 
 class TimeListOccurSet(OccurSet):
@@ -520,12 +520,12 @@ class TimeListOccurSet(OccurSet):
 
 	def __init__(self, *args) -> None:
 		OccurSet.__init__(self)
-		if len(args) == 0:
+		if not args:
 			self.startEpoch = 0
 			self.endEpoch = 0
 			self.stepSeconds = -1
 			self.epochList = set()
-		if len(args) == 1:
+		elif len(args) == 1:
 			self.epochList = set(args[0])
 		elif len(args) == 3:
 			self.setRange(*args)
@@ -1085,8 +1085,7 @@ class DateEventRule(EventRule):
 		myJd = self.getJd()
 		if startJd <= myJd < endJd:
 			return JdOccurSet({myJd})
-		else:
-			return JdOccurSet()
+		return JdOccurSet()
 
 	def changeCalType(self, calType: int) -> bool:
 		self.date = jd_to(self.getJd(), calType)
@@ -1248,8 +1247,8 @@ class DayTimeRangeEventRule(EventRule):
 		start: Tuple[int, int, int],
 		end: Tuple[int, int, int],
 	) -> None:
-		self.dayTimeStart = tuple(start)
-		self.dayTimeEnd = tuple(end)
+		self.dayTimeStart = start
+		self.dayTimeEnd = end
 
 	def getHourRange(self) -> Tuple[float, float]:
 		return (
@@ -1388,11 +1387,12 @@ class DurationEventRule(EventRule):
 		return self.value * self.unit
 
 	def setSeconds(self, s: int) -> None:
+		assert isinstance(s, int)
 		for unit in reversed(self.units):
 			if s % unit == 0:
 				self.value, self.unit = int(s // unit), unit
 				return
-		self.unit, self.value = int(s), 1
+		self.unit, self.value = s, 1
 
 	def setData(self, data: str) -> None:
 		try:
@@ -2206,8 +2206,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 			showFull = False
 		if showFull:
 			return self.description
-		else:
-			return self.description.split("\n")[0]
+		return self.description.split("\n")[0]
 
 	def afterModify(self):
 		if self.id is None:
@@ -2246,11 +2245,12 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		calType, ok = calTypes[calType]
 		if not ok:
 			raise RuntimeError(f"cal type '{calType}' not found")
-		lines = []
-		lines.append(_("Type") + ": " + self.desc)
-		lines.append(_("Calendar Type") + ": " + calType.desc)
-		lines.append(_("Summary") + ": " + self.getSummary())
-		lines.append(_("Description") + ": " + self.description)
+		lines = [
+			_("Type") + ": " + self.desc,
+			_("Calendar Type") + ": " + calType.desc,
+			_("Summary") + ": " + self.getSummary(),
+			_("Description") + ": " + self.description,
+		]
 		# "notifiers",
 		# "notifyBefore",
 		# "remoteIds",
@@ -2314,8 +2314,8 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 			else:
 				sep = core.eventTextSep
 			return (summary, sep, description)
-		else:
-			return (summary,)
+
+		return (summary,)
 
 	def getText(self, showDesc=True):
 		return "".join(self.getTextParts(showDesc))
@@ -2450,7 +2450,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 				try:
 					finishFunc()
 				except Exception:
-					pass
+					log.exception("")
 
 		for notifier in self.notifiers:
 			notifier.notify(notifierFinishFunc)
@@ -3145,11 +3145,8 @@ class YearlyEvent(Event):
 		startRule, ok = self["start"]
 		if ok:
 			startYear = startRule.getDate(GREGORIAN)[0]
-		else:
-			try:
-				startYear = jd_to(self.parent.startJd, GREGORIAN)[0]
-			except AttributeError:
-				pass
+		elif getattr(self.parent, "startJd", None):
+			startYear = jd_to(self.parent.startJd, GREGORIAN)[0]
 		jd = to_jd(
 			startYear,
 			month,
@@ -3450,22 +3447,22 @@ class UniversityExamEvent(DailyNoteEvent):
 
 	def calcOccurrence(self, startJd: int, endJd: int) -> OccurSet:
 		jd = self.getJd()
-		if startJd <= jd < endJd:
-			epoch = self.getEpochFromJd(jd)
-			dayTimeRange, ok = self["dayTimeRange"]
-			if not ok:
-				raise RuntimeError("no dayTimeRange rule")
-			startSec, endSec = dayTimeRange.getSecondsRange()
-			return IntervalOccurSet(
-				[
-					(
-						epoch + startSec,
-						epoch + endSec,
-					)
-				]
-			)
-		else:
+		if not startJd <= jd < endJd:
 			return IntervalOccurSet()
+
+		epoch = self.getEpochFromJd(jd)
+		dayTimeRange, ok = self["dayTimeRange"]
+		if not ok:
+			raise RuntimeError("no dayTimeRange rule")
+		startSec, endSec = dayTimeRange.getSecondsRange()
+		return IntervalOccurSet(
+			[
+				(
+					epoch + startSec,
+					epoch + endSec,
+				)
+			]
+		)
 
 	def getIcsData(self, prettyDateTime=False):
 		date, ok = self["date"]
@@ -3872,13 +3869,13 @@ class EventContainer(BsonHistEventObj):
 		return event
 
 	def getSortBys(self) -> "Tuple[str, List[str]]":
-		sortBys = list(self.sortBys)
-		if self.enable:
-			sortBys.append(("time_last", _("Last Occurrence Time"), False))
-			sortBys.append(("time_first", _("First Occurrence Time"), False))
-			return "time_last", sortBys
-		else:
-			return self.sortByDefault, sortBys
+		if not self.enable:
+			return self.sortByDefault, self.sortBys
+
+		return "time_last", self.sortBys + [
+			("time_last", _("Last Occurrence Time"), False),
+			("time_first", _("First Occurrence Time"), False),
+		]
 
 	def getSortByValue(self, event: "Event", attr: str) -> Any:
 		if attr in ("time_last", "time_first"):
@@ -4211,10 +4208,8 @@ class EventGroup(EventContainer):
 		return a tuple (startEpoch, endEpoch) or None
 		"""
 		if self.remoteIds:
-			try:
+			with suppress(KeyError):
 				return self.remoteSyncData[self.remoteIds]
-			except KeyError:
-				pass
 
 	def setDefaults(self) -> None:
 		"""
@@ -4531,7 +4526,8 @@ class EventGroup(EventContainer):
 					"DTSTART:" + ics.getIcsTimeByEpoch(startEpoch),
 				]
 				if endEpoch is not None and endEpoch - startEpoch > 1:
-					endEpoch = int(endEpoch)  # why float? FIXME
+					# FIXME why is endEpoch sometimes float?
+					endEpoch = int(endEpoch)  # noqa: FURB123
 					parts.append("DTEND:" + ics.getIcsTimeByEpoch(endEpoch))
 				parts += [
 					"TRANSP:OPAQUE",  # FIXME
@@ -4563,10 +4559,8 @@ class EventGroup(EventContainer):
 			eventData["modified"] = modified
 			# eventData["sha1"] = event.lastHash
 			data["events"].append(eventData)
-			try:
+			with suppress(KeyError):
 				del eventData["remoteIds"]  # FIXME
-			except KeyError:
-				pass
 			if not eventData["notifiers"]:
 				del eventData["notifiers"]
 				del eventData["notifyBefore"]
@@ -4803,9 +4797,11 @@ class YearlyGroup(EventGroup):
 
 
 WeeklyScheduleItem = namedtuple(
+	# name: str, Course Name
+	# weekNumMode: str, values: "odd", "even", "any"
 	"WeeklyScheduleItem", [
-		"name",  # type: str, Course Name
-		"weekNumMode",  # type: str, values: "odd", "even", "any"
+		"name",
+		"weekNumMode",
 	],
 )
 
@@ -5148,10 +5144,8 @@ class LargeScaleGroup(EventGroup):
 
 	def setData(self, data: Dict[str, Any]) -> None:
 		EventGroup.setData(self, data)
-		try:
+		with suppress(KeyError):
 			self.scale = data["scale"]
-		except KeyError:
-			pass
 
 	def getStartValue(self) -> float:
 		return jd_to(self.startJd, self.calType)[0] // self.scale
@@ -5283,8 +5277,8 @@ class VcsBaseEventGroup(EventGroup):
 	def __getitem__(self, key: str) -> "Event":
 		if key in classes.rule.names:
 			return EventGroup.__getitem__(self, key)
-		else:  # len(commit_id)==40 for git
-			return self.getEvent(key)
+		# len(commit_id)==40 for git
+		return self.getEvent(key)
 
 	def getVcsModule(self) -> Any:
 		name = toStr(self.vcsType)
@@ -5869,10 +5863,8 @@ class EventGroupsHolder(JsonObjectsHolder):
 			eventData = event.getDataOrdered()
 			eventData["modified"] = event.modified
 			# eventData["sha1"] = event.lastHash
-			try:
+			with suppress(KeyError):
 				del eventData["remoteIds"]  # FIXME
-			except KeyError:
-				pass
 			if not eventData["notifiers"]:
 				del eventData["notifiers"]
 				del eventData["notifyBefore"]
@@ -5993,8 +5985,6 @@ class EventGroupsHolder(JsonObjectsHolder):
 			self.append(newGroup)
 			self.save()
 			return newGroup
-		else:
-			return
 
 
 class EventAccountsHolder(JsonObjectsHolder):
