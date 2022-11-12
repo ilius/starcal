@@ -649,13 +649,13 @@ def getFont(
 	(
 		name,
 		bold,
-		underline,
+		italic,
 		size,
 	) = fontCustom if fontCustomEnable else fontDefaultInit
 	return [
 		name if family else None,
 		bold,
-		underline,
+		italic,
 		size * scale,
 	]
 
