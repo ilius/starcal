@@ -274,57 +274,60 @@ def saveLiveConfLoop() -> None:  # rename to saveConfLiveLoop FIXME
 
 #######################################################
 
-def parseDroppedDate(text) -> Tuple[int, int, int]:
+def parseDroppedDate(text) -> Optional[Tuple[int, int, int]]:
 	part = text.split("/")
-	if len(part) == 3:
-		try:
-			part[0] = numDecode(part[0])
-			part[1] = numDecode(part[1])
-			part[2] = numDecode(part[2])
-		except ValueError:
-			log.exception("")
-			return None
-		maxPart = max(part)
-		if maxPart > 999:
-			minMax = (
-				(1000, 2100),
-				(1, 12),
-				(1, 31),
-			)
-			formats = (
-				[0, 1, 2],
-				[1, 2, 0],
-				[2, 1, 0],
-			)
-			for format in formats:
-				for i in range(3):
-					valid = True
-					f = format[i]
-					if not (minMax[f][0] <= part[i] <= minMax[f][1]):
-						valid = False
-						break
-				if valid:
-					# "format" must be list because we use method "index"
-					year = part[format.index(0)]
-					month = part[format.index(1)]
-					day = part[format.index(2)]
-					break
-		else:
-			valid = 0 <= part[0] <= 99 and \
-				1 <= part[1] <= 12 and \
-				1 <= part[2] <= 31
-			###
-			year = 2000 + part[0]  # FIXME
-			month = part[1]
-			day = part[2]
-		if not valid:
-			return None
-	else:
+	if len(part) != 3:
 		return None
+	try:
+		part[0] = numDecode(part[0])
+		part[1] = numDecode(part[1])
+		part[2] = numDecode(part[2])
+	except ValueError:
+		log.exception("")
+		return
+	maxPart = max(part)
+	if maxPart <= 999:
+		valid = 0 <= part[0] <= 99 and \
+			1 <= part[1] <= 12 and \
+			1 <= part[2] <= 31
+		if not valid:
+			return
+		return (
+			2000 + part[0],
+			part[1],
+			part[2],
+		)
+
+	minMax = (
+		(1000, 2100),
+		(1, 12),
+		(1, 31),
+	)
+	formats = (
+		[0, 1, 2],
+		[1, 2, 0],
+		[2, 1, 0],
+	)
+	# "format" must be list because we use method "index"
+
+	def formatIsValid(fmt: "List[int]"):
+		for i in range(3):
+			f = fmt[i]
+			if not (minMax[f][0] <= part[i] <= minMax[f][1]):
+				return False
+		return True
+
+	for fmt in formats:
+		if formatIsValid(fmt):
+			return (
+				part[fmt.index(0)],
+				part[fmt.index(1)],
+				part[fmt.index(2)],
+			)
+
 	# FIXME: when drag from a persian GtkCalendar with format %y/%m/%d
 	# if year < 100:
 	# 	year += 2000
-	return (year, month, day)
 
 
 def checkNeedRestart() -> bool:
