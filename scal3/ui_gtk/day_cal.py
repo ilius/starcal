@@ -687,6 +687,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 			except GLibError:
 				log.exception("")
 				continue
+			if pix is None:
+				continue
 			sqX, sqY = divmod(index, sideCount)
 			pix_w, pix_h = pix.get_width(), pix.get_height()
 			x2 = x1 - sqX * iconSize - pix_w / 2
