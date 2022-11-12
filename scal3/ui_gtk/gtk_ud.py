@@ -262,6 +262,7 @@ class IntegatedWindowList(BaseCalObj):
 		css = "progressbar text " + cssTextStyle(
 			font=font,
 			fgColor=fgColor,
+			# extra={"text-align": "justify"},  # not supported
 		) + "\n"
 
 		css += "progress, trough {min-height: 0.5em;}\n"
