@@ -248,7 +248,8 @@ confParamsCustomize = (
 )
 
 
-@dataclass(slots=True)
+# TODO for Python >= 3.10: slots=True
+@dataclass()
 class Font:
 	family: Optional[str]
 	bold: bool = False
