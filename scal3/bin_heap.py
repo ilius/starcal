@@ -145,7 +145,7 @@ class MaxHeap(list):
 	"""
 
 
-def getMinTest(N):
+def testMaxHeap_getMin(N):
 	from random import randint
 	from time import time as now
 	h = MaxHeap()
@@ -158,11 +158,30 @@ def getMinTest(N):
 	k2 = h.getMin()[0]
 	t2 = now()
 	assert k1 == k2
+	print(f"{h!r} --> min key: {k1}")
 	# log.debug(f"time getMin(h)/min(h) = {(t2-t1)/(t1-t0):.5f}")
 	# log.debug(f"min key = {k1}")
 
 
-def testDeleteStep(N, maxKey):
+def testMaxHeap_pop(N):
+	from random import randint
+	from time import time as now
+	h = MaxHeap()
+	for i in range(N):
+		x = randint(1, 10 * N)
+		h.push(x, 0)
+	t0 = now()
+	k1 = -min(h)[0]
+	t1 = now()
+	k2 = h.pop()[0]
+	t2 = now()
+	assert k1 == k2
+	print(f"{h!r} --> max key: {k1}")
+	# log.debug(f"time getMin(h)/min(h) = {(t2-t1)/(t1-t0):.5f}")
+	# log.debug(f"min key = {k1}")
+
+
+def _testMaxHeap_deleteStep(N, maxKey):
 	from random import randint
 	from heapq import heapify
 	###
@@ -182,11 +201,13 @@ def testDeleteStep(N, maxKey):
 	return True
 
 
-def testDelete():
+def testMaxHeap_delete():
 	for N in range(10, 30):
 		for p in range(10000):
-			if not testDeleteStep(N, 10000):
+			if not _testMaxHeap_deleteStep(N, 10000):
 				break
 
-# if __name__=="__main__":
-# 	testDelete()
+if __name__=="__main__":
+	testMaxHeap_getMin(100)
+	testMaxHeap_pop(100)
+	#testMaxHeap_delete()
