@@ -147,7 +147,7 @@ class EventEditorDialog(gtk.Dialog):
 		self.destroy()
 		# -----
 		if self.event.isSingleOccur:
-			occur = self.event.calcOccurrence(
+			occur = self.event.calcEventOccurrenceIn(
 				self.event.parent.startJd,
 				self.event.parent.endJd,
 			)
