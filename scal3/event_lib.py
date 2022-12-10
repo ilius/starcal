@@ -2435,7 +2435,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		occur.event = self
 		return occur  # FIXME
 
-	def calcOccurrenceAll(self):
+	def calcEventOccurrence(self):
 		return self.calcOccurrence(self.parent.startJd, self.parent.endJd)
 
 	# FIXME: too tricky!
@@ -4432,7 +4432,7 @@ class EventGroup(EventContainer):
 		)
 		eid = event.id
 		self.occurCount -= self.occur.delete(eid)
-		for t0, t1 in event.calcOccurrenceAll().getTimeRangeList():
+		for t0, t1 in event.calcEventOccurrence().getTimeRangeList():
 			self.addOccur(t0, t1, eid)
 
 	def initOccurrence(self) -> None:
@@ -4503,7 +4503,7 @@ class EventGroup(EventContainer):
 			fp.write(vevent)
 			return
 
-		occur = event.calcOccurrenceAll()
+		occur = event.calcEventOccurrence()
 		if not occur:
 			return
 		if isinstance(occur, JdOccurSet):
