@@ -4408,7 +4408,7 @@ class EventGroup(EventContainer):
 		# events with the same id"s, can not be contained by two groups
 		return newGroup
 
-	def calcOccurrenceAll(self) -> "Iterator[Tuple[Event, OccurSet]]":
+	def calcGroupOccurrences(self) -> "Iterator[Tuple[Event, OccurSet]]":
 		startJd = self.startJd
 		endJd = self.endJd
 		for event in self:
@@ -4460,7 +4460,7 @@ class EventGroup(EventContainer):
 	def updateOccurrence(self) -> None:
 		stm0 = now()
 		self.clear()
-		for event, occur in self.calcOccurrenceAll():
+		for event, occur in self.calcGroupOccurrences():
 			for t0, t1 in occur.getTimeRangeList():
 				self.addOccur(t0, t1, event.id)
 		# self.occurLoaded = True
