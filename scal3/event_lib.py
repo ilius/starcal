@@ -2631,7 +2631,7 @@ class SingleStartEndEvent(Event):
 			("CATEGORIES", self.name),  # FIXME
 		]
 
-	def calcOccurrence(self, startJd: int, endJd: int) -> OccurSet:
+	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
 		return IntervalOccurSet.newFromStartEnd(
 			max(self.getEpochFromJd(startJd), self.getStartEpoch()),
 			min(self.getEpochFromJd(endJd), self.getEndEpoch()),
@@ -2991,7 +2991,7 @@ class DailyNoteEvent(Event):
 		self.setDate(*getSysDate(self.calType))
 
 	# startJd and endJd can be float jd
-	def calcOccurrence(self, startJd: int, endJd: int) -> OccurSet:
+	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
 		jd = self.getJd()
 		return JdOccurSet(
 			[jd] if startJd <= jd < endJd else [],
@@ -3080,7 +3080,7 @@ class YearlyEvent(Event):
 		self.setDay(d)
 		self.getAddRule("start").date = (y, 1, 1)
 
-	def calcOccurrence(self, startJd: int, endJd: int) -> OccurSet:
+	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
 		# startJd and endJd can be float? or they are just int? FIXME
 		calType = self.calType
 		month = self.getMonth()
@@ -3484,7 +3484,7 @@ class UniversityExamEvent(DailyNoteEvent):
 			courseName=self.getCourseName(),
 		)
 
-	def calcOccurrence(self, startJd: int, endJd: int) -> OccurSet:
+	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
 		jd = self.getJd()
 		if not startJd <= jd < endJd:
 			return IntervalOccurSet()
@@ -3669,7 +3669,7 @@ class LargeScaleEvent(Event):  # or MegaEvent? FIXME
 	def setJd(self, jd: int) -> None:
 		self.start = jd_to(jd, self.calType)[0] // self.scale
 
-	def calcOccurrence(self, startJd: int, endJd: int) -> OccurSet:
+	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
 		myStartJd = iceil(
 			to_jd(
 				int(self.scale * self.start),
@@ -4463,7 +4463,7 @@ class EventGroup(EventContainer):
 		startJd = self.startJd
 		endJd = self.endJd
 		for event in self:
-			occur = event.calcOccurrence(startJd, endJd)
+			occur = event.calcEventOccurrenceIn(startJd, endJd)
 			if occur:
 				yield event, occur
 
@@ -5223,7 +5223,7 @@ class VcsEpochBaseEvent(Event):
 	def getInfo(self) -> str:
 		return self.getText()  # FIXME
 
-	def calcOccurrence(self, startJd: int, endJd: int) -> OccurSet:
+	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
 		epoch = self.epoch
 		if epoch is not None and self.getEpochFromJd(
 			startJd,
@@ -5572,7 +5572,7 @@ class VcsDailyStatEvent(Event):
 	def getInfo(self) -> str:
 		return self.getText()  # FIXME
 
-	def calcOccurrence(self, startJd: int, endJd: int) -> OccurSet:
+	def calcEventOccurrenceIn(self, startJd: int, endJd: int) -> OccurSet:
 		jd = self.jd
 		if jd is not None and startJd <= jd < endJd:
 			return JdOccurSet({jd})
@@ -6362,7 +6362,7 @@ def getWeekOccurrenceData(curAbsWeekNumber, groups, tfmt="HM$"):
 		data.append(eData)
 
 	def handleEvent(event, group):
-		occur = event.calcOccurrence(startJd, endJd)
+		occur = event.calcEventOccurrenceIn(startJd, endJd)
 		if not occur:
 			return
 		text = event.getText()
@@ -6475,7 +6475,7 @@ def getMonthOccurrenceData(curYear, curMonth, groups, tfmt="HM$"):
 	data = []
 
 	def handleEvent(event, group):
-		occur = event.calcOccurrence(startJd, endJd)
+		occur = event.calcEventOccurrenceIn(startJd, endJd)
 		if not occur:
 			return
 		text = event.getText()
