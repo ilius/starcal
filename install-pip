@@ -30,7 +30,7 @@ $PIP install requests
 $PIP install setuptools
 
 $PIP install ujson
-$PIP install python-igraph
+$PIP install igraph
 $PIP install pygit2
 
 if [ -f /bin/freebsd-version ] ; then
