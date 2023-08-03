@@ -505,7 +505,7 @@ class CustomizeWindow(gtk.Dialog):
 		item.enable = active
 		model.set_value(itr, 3, self.itemPixbuf(item))
 		item.showHide()
-		item.onConfigChange()
+		# calling item.onConfigChange() causes labelBox not to hide when unchecked
 
 	def updateMainPanelTreeEnableChecks(self):
 		pass
