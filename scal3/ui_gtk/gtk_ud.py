@@ -296,7 +296,11 @@ def getGtkDefaultFont():
 
 
 def _getLightness(c: "gdk.Color"):
-	return (max(c.red, c.green, c.blue) + min(c.red, c.green, c.blue)) / 2.0
+	maxValue = max(c.red, c.green, c.blue)
+	if maxValue > 255:
+		log.warning(f"_getLightness: bad color {c}")
+		maxValue = 0
+	return (maxValue + min(c.red, c.green, c.blue)) / 2.0
 
 
 def hasLightTheme(widget):
