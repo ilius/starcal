@@ -17,8 +17,8 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import ui
-from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.day_cal import DayCal
+from scal3.ui_gtk.decorators import *
 
 
 @registerSignals

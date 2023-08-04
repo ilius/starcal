@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from scal3.locale_man import tr as _
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk import gtk_ud as ud

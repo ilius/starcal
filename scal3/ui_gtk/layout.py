@@ -17,20 +17,16 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from typing import Optional, Any, Union, List, Callable
+from typing import Callable, Optional, Union
 
-from scal3 import core
-
-from scal3 import locale_man
-from scal3.locale_man import tr as _
 from scal3 import ui
-
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import imageClassButton, setImageClassButton
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
 from scal3.ui_gtk.stack import StackPage
+from scal3.ui_gtk.utils import imageClassButton, setImageClassButton
 
 
 class WinLayoutBase(CustomizableCalObj):
@@ -180,7 +176,7 @@ class WinLayoutBox(WinLayoutBase):
 		itemsParam: str = "",
 		buttonSpacing: int = 5,
 		arrowSize: gtk.IconSize = gtk.IconSize.LARGE_TOOLBAR,
-		items: Optional[List[Union["WinLayoutBox", "WinLayoutObj"]]] = None,
+		items: Optional[list[Union["WinLayoutBox", "WinLayoutObj"]]] = None,
 	):
 		if items is None:
 			raise ValueError("items= argument is missing")

@@ -19,7 +19,7 @@
 from scal3 import ui
 
 
-class DummyEventContainer(object):
+class DummyEventContainer:
 	def __init__(self, idsDict: "Dict[int, List[int]]"):
 		self.idsDict = idsDict
 

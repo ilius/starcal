@@ -17,13 +17,14 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from os.path import join, isabs
+from os.path import isabs, join
 
-from scal3.path import pixDir, svgDir, sourceDir
-
+from scal3.path import svgDir
 from scal3.ui_gtk import *
+
 
 def pixbufFromSvgFile(path: str, size: int):
 	if size <= 0:
@@ -41,8 +42,7 @@ def pixbufFromSvgFile(path: str, size: int):
 			loader.close()
 		except GLibError:
 			log.exception("")
-	pixbuf = loader.get_pixbuf()
-	return pixbuf
+	return loader.get_pixbuf()
 
 
 def imageFromSvgFile(path: str, size: int):
