@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -17,6 +16,14 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import ui
+
+__all__ = [
+	"fontFamily",
+	"dayLen",
+	"minYearLenSec",
+	"minYearLenSec",
+	"unitSteps",
+]
 
 fontFamily = ui.getFont().family
 

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -23,7 +22,7 @@ log = logger.get()
 from scal3 import ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, gtk, pack
 
 
 class XAlignComboBox(gtk.ComboBoxText):
@@ -39,13 +38,12 @@ class XAlignComboBox(gtk.ComboBoxText):
 		index = self.get_active()
 		if index == 0:
 			return "left"
-		elif index == 1:
+		if index == 1:
 			return "center"
-		elif index == 2:
+		if index == 2:
 			return "right"
-		else:
-			log.info(f"XAlignComboBox: unexpected {index = }")
-			return None
+		log.info(f"XAlignComboBox: unexpected {index = }")
+		return None
 
 	def set(self, value):
 		if value == "left":
@@ -71,13 +69,12 @@ class YAlignComboBox(gtk.ComboBoxText):
 		index = self.get_active()
 		if index == 0:
 			return "top"
-		elif index == 1:
+		if index == 1:
 			return "center"
-		elif index == 2:
+		if index == 2:
 			return "buttom"
-		else:
-			log.info(f"YAlignComboBox: unexpected {index = }")
-			return None
+		log.info(f"YAlignComboBox: unexpected {index = }")
+		return None
 
 	def set(self, value):
 		if value == "top":

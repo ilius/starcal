@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import sys
 
 # sys.float_info.epsilon == 2.220446049250313e-16

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -127,7 +126,6 @@ def getIntervalListByPoints(
 
 
 def normalizeIntervalList(lst):
-	num = len(lst)
 	points = getIntervalPoints(lst)
 	points.sort()
 	return getIntervalListByPoints(points)

@@ -1,14 +1,13 @@
-#!/usr/bin/env python3
 
+from os.path import join
 
 from scal3 import ui
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
-from scal3.path import *
-from scal3.ui_gtk import *
+from scal3.ui_gtk import VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj
-from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 
 
@@ -34,9 +33,6 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 			self.connect("button-press-event", controller.win.childButtonPress)
 		###
 		self.show_all()
-
-	def onClick(self, gWin, gevent):
-		raise NotImplementedError
 
 	def setImage(self, imName):
 		if self.controller.light:
@@ -92,7 +88,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 		if gevent.button == 1:
 			self.onClick(self.controller.win, gevent)
 			return True
-		elif gevent.button == 3:
+		if gevent.button == 3:
 			self.onRightClick(self.controller.win, gevent)
 			return True
 		return False

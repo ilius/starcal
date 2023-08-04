@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
 from scal3 import cal_types
 from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk.mywidgets.multi_spin.day import DaySpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.year import YearSpinButton
 

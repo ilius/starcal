@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -29,16 +28,33 @@ from time import time as now
 from typing import Any
 
 import scal3
-from scal3 import locale_man, logger
+from scal3 import locale_man, logger, s_object
 from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
-from scal3.date_utils import *
-from scal3.json_utils import *
+from scal3.date_utils import (
+	dateEncode,
+	jwday,
+)
+from scal3.json_utils import (
+	dataToCompactJson,
+	dataToPrettyJson,
+	loadModuleJsonConf,
+	saveModuleJsonConf,
+)
 from scal3.locale_man import tr as _
-from scal3.os_utils import *
-from scal3.path import *
-from scal3.plugin_man import *
-from scal3.time_utils import *
-from scal3.utils import *
+from scal3.os_utils import (
+	getUserDisplayName,
+)
+from scal3.path import (
+	APP_NAME,
+	confDir,
+	plugDir,
+	plugDirName,
+	sourceDir,
+	sysConfDir,
+)
+from scal3.plugin_man import BasePlugin, loadPlugin
+from scal3.time_utils import getEpochFromJd, getJhmsFromEpoch
+from scal3.utils import versionLessThan
 
 try:
 	__file__
@@ -123,7 +139,7 @@ def loadConf() -> None:
 		# activeCalTypes and inactiveCalType might be
 		# loaded from json config file
 		calTypes.activeNames = activeCalTypes
-		calTypes.inactiveNames = inactiveCalType
+		calTypes.inactiveNames = inactiveCalTypes
 
 	activeCalTypes = inactiveCalTypes = None
 	calTypes.update()
@@ -251,8 +267,7 @@ def getWeekDayAuto(
 	if not localize:
 		if abbreviate:
 			return weekDayNameAbEnglish[number]
-		else:
-			return weekDayNameEnglish[number]
+		return weekDayNameEnglish[number]
 
 	if abbreviate:
 		return weekDayNameAb[number]
@@ -452,6 +467,7 @@ def getDeletedPluginsTable() -> list[list]:
 
 def restart() -> typing.NoReturn:
 	"""Will not return from function."""
+	from scal3.utils import restartLow
 	os.environ["LANG"] = locale_man.sysLangDefault
 	restartLow()
 

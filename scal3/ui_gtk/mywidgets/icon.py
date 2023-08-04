@@ -1,11 +1,12 @@
-#!/usr/bin/env python3
 from os.path import join
 
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.path import *
-from scal3.ui_gtk import *
-from scal3.ui_gtk.decorators import *
+from scal3.path import (
+	pixDir,
+)
+from scal3.ui_gtk import Menu, gtk
+from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
 )
@@ -68,7 +69,7 @@ class IconSelectButton(gtk.Button):
 			action=gtk.FileChooserAction.OPEN,
 			transient_for=getGtkWindow(self),
 		)
-		okB = dialog_add_button(
+		dialog_add_button(
 			dialog,
 			imageName="dialog-ok.svg",
 			label=_("_Choose"),

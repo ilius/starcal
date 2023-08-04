@@ -1,6 +1,7 @@
-#!/usr/bin/env python3
+import os
+from time import localtime
 
-from scal3 import logger
+from scal3 import core, logger, ui
 
 log = logger.get()
 
@@ -22,20 +23,20 @@ def processDroppedDate(text, dtype):
 			date = ui.parseDroppedDate(text)
 			if date:
 				return date + (ui.dragRecMode,)
-			else:
-				# How to deny dragged object (to return to it's first location)
-				# FIXME
-				log.info(f"Dropped unknown text {text!r}")
-				return None
-				# log.debug(etime)
-				#context.drag_status(gdk.DragAction.DEFAULT, etime)
-				#context.drop_reply(False, etime)
-				#context.drag_abort(etime)##Segmentation fault
-				#context.drop_finish(False, etime)
-				#context.finish(False, True, etime)
-				#return True
+			# How to deny dragged object (to return to it's first location)
+			# FIXME
+			log.info(f"Dropped unknown text {text!r}")
+			return None
+			# log.debug(etime)
+			#context.drag_status(gdk.DragAction.DEFAULT, etime)
+			#context.drop_reply(False, etime)
+			#context.drag_abort(etime)##Segmentation fault
+			#context.drop_finish(False, etime)
+			#context.finish(False, True, etime)
+			#return True
 	elif dtype == "text/uri-list":
-		path = core.urlToPath(selection.data)
+		path = core.urlToPath(text)
+		# print(f"{text = }, {path = }")
 		try:
 			t = os.stat(path).st_mtime ## modification time
 		except OSError:

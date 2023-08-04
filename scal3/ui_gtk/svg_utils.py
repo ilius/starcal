@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -23,7 +22,7 @@ log = logger.get()
 from os.path import isabs, join
 
 from scal3.path import svgDir
-from scal3.ui_gtk import *
+from scal3.ui_gtk import GdkPixbuf, GLibError, gtk
 
 
 def pixbufFromSvgFile(path: str, size: int):
