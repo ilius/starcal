@@ -36,7 +36,7 @@ version=$("$sourceDir/scripts/version" | sed 's/\-/_/g')
 #echo "sourceDir=$sourceDir"
 #echo version=$version
 
-depends=('python>=3.8')
+depends=('python>=3.9')
 depends+=('python-gobject>=3.24') ## The new gobject introspection
 depends+=('gtksourceview4')
 depends+=('python-cairo')
