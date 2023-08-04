@@ -29,16 +29,22 @@ from typing import Optional
 
 import gi
 
-gi.require_version("Gtk", "3.0")
-gi.require_version("GdkPixbuf", "2.0")
-gi.require_version("PangoCairo", "1.0")
-# gi.require_version('Rsvg', '2.0')
+# Gtk must be imported before Gdk and other
+# in other to prevent ruff from re-ordering the following imports
+# we call require_version right before importing each one
 
-from gi.repository import Gdk as gdk
-from gi.repository import GdkPixbuf
+gi.require_version("Gtk", "3.0")
+gi.require_version("Gdk", "3.0")
 from gi.repository import Gtk as gtk
+from gi.repository import Gdk as gdk
+
+gi.require_version('GdkPixbuf', "2.0")
+from gi.repository import GdkPixbuf
+
+gi.require_version("PangoCairo", "1.0")
 from gi.repository import Pango as pango
 
+# gi.require_version('Rsvg', '2.0')
 # from gi.repository import Rsvg as rsvg
 
 try:

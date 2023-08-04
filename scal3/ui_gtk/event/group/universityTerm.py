@@ -438,7 +438,7 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 			y = (topMargin - layoutH) / 2 - 1
 			##
 			cr.move_to(x, y)
-			show_layout(cr, layout)
+			(cr, layout)
 		###
 		for j in range(7):
 			layout = weekDayLayouts[j]
@@ -451,7 +451,7 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 			y = topMargin + (h - topMargin) * (j + 0.5) / 7 - layoutH / 2
 			##
 			cr.move_to(x, y)
-			show_layout(cr, layout)
+			(cr, layout)
 		for j in range(7):
 			wd = (j + core.firstWeekDay) % 7
 			for i, dayData in enumerate(self.data[wd]):
@@ -482,7 +482,7 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 				y = topMargin + (h - topMargin) * (j + 0.5) / 7 - layoutH / 2
 				##
 				cr.move_to(x, y)
-				show_layout(cr, layout)
+				(cr, layout)
 
 
 class WeeklyScheduleWindow(gtk.Dialog):

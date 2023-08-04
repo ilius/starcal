@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from scal3 import core, event_lib, ui
+from scal3 import event_lib, ui, locale_man
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
 from scal3.ui_gtk.event import makeWidget
@@ -49,7 +49,7 @@ class EventEditorDialog(gtk.Dialog):
 		self.event = event
 		#######
 		if isNew and not event.timeZone:
-			event.timeZone = str(core.localTz)## why? FIXME
+			event.timeZone = str(locale_man.localTz)## why? FIXME
 		#######
 		hbox = HBox()
 		pack(hbox, gtk.Label(
