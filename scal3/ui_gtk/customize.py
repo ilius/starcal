@@ -21,7 +21,6 @@ from scal3 import logger
 log = logger.get()
 
 
-from typing import Optional
 
 from scal3 import ui
 from scal3.json_utils import *
@@ -74,7 +73,7 @@ class DummyCalObj(ud.CalObjType):
 	def updateVars(self) -> None:
 		pass
 
-	def getOptionsWidget(self) -> Optional[gtk.Widget]:
+	def getOptionsWidget(self) -> "gtk.Widget | None":
 		return None
 
 	def getSubPages(self) -> "list[StackPage]":
