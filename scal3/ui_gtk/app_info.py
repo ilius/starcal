@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 
 from scal3 import logger
+
 log = logger.get()
 
 import sys
 
 from scal3.locale_man import popenDefaultLang
-
-
 from scal3.ui_gtk import *
 
 

@@ -1,7 +1,7 @@
-import sys
 import logging
-
+import sys
 from os.path import join
+
 from scal3.path import confDir
 
 confPath = join(confDir, "log.json")
@@ -12,13 +12,14 @@ logLevel = logging.INFO
 
 def init():
 	global log, logLevel
+	import json
 	import os
 	import warnings
-	import json
 	from io import StringIO
 	from os.path import isdir, isfile
-	from scal3.path import sourceDir, APP_NAME
+
 	from scal3.os_utils import makeDir
+	from scal3.path import APP_NAME, sourceDir
 
 	if os.path.exists(confDir):
 		if not isdir(confDir):

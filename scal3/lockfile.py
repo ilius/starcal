@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
 
 from scal3 import logger
+
 log = logger.get()
 
-import os
-from os.path import isfile, exists
-from time import time as now
-from collections import OrderedDict
 import atexit
-
+import os
+from collections import OrderedDict
+from os.path import exists, isfile
+from time import time as now
 
 import psutil
 
-from scal3.json_utils import jsonToData, dataToPrettyJson
+from scal3.json_utils import dataToPrettyJson, jsonToData
 
 
 def get_cmdline(proc):
