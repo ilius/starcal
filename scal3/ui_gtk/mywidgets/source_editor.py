@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import gi
 
-from scal3.ui_gtk import *
+from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk.utils import buffer_get_text
 
 gi.require_version('GtkSource', '4')

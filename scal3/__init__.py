@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 __all__ = [
 	"path",
 	"cal_types",
