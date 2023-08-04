@@ -21,10 +21,12 @@
 import time
 from time import localtime, strftime
 
+from gi.repository.PangoCairo import show_layout
+
 from scal3 import ui
 from scal3.time_utils import clockWaitMilliseconds
 from scal3.ui_gtk import *
-from scal3.ui_gtk.drawing import fillColor, setColor, show_layout
+from scal3.ui_gtk.drawing import fillColor, setColor
 from scal3.ui_gtk.font_utils import *
 
 
