@@ -17,20 +17,17 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-import time
-from time import localtime, mktime
-from time import time as now
 from datetime import datetime
-
-from typing import Optional, Tuple, List, Dict, Union
+from time import time as now
+from typing import Optional, Tuple, Union
 
 import natz
-
-from scal3.cal_types.gregorian import J0001, J1970, J0001_epoch
+from scal3.cal_types.gregorian import J1970, J0001_epoch
 from scal3.cal_types.gregorian import jd_to as jd_to_g
-from scal3.utils import ifloor, iceil
+from scal3.utils import ifloor
 
 # getEpochFromJd(gregorian.to_jd(10000, 1, 1))
 G10000_epoch = 253402300800
@@ -175,7 +172,7 @@ def roundEpochToDay(epoch: int) -> int:
 	return getEpochFromJd(round(getFloatJdFromEpoch(epoch)))
 
 
-def getJdListFromEpochRange(startEpoch: int, endEpoch: int) -> List[int]:
+def getJdListFromEpochRange(startEpoch: int, endEpoch: int) -> list[int]:
 	startJd = getJdFromEpoch(startEpoch)
 	endJd = getJdFromEpoch(endEpoch - 0.01) + 1
 	return list(range(startJd, endJd))
@@ -192,7 +189,7 @@ def getJhmsFromEpoch(
 	epoch: int,
 	currentOffset: bool = False,
 	tz: TZ = None,
-) -> Tuple[int, HMS]:
+) -> tuple[int, HMS]:
 	# return a tuple (julain_day, hour, minute, second) from epoch
 	offset = (
 		getUtcOffsetCurrent(tz) if currentOffset
@@ -217,13 +214,13 @@ def getEpochFromJhms(
 	return getEpochFromJd(jd, tz) + hour * 3600 + minute * 60 + second
 
 
-def getJdAndSecondsFromEpoch(epoch: int) -> Tuple[int, int]:
-	"""return a tuple (julain_day, extra_seconds) from epoch"""
+def getJdAndSecondsFromEpoch(epoch: int) -> tuple[int, int]:
+	"""Return a tuple (julain_day, extra_seconds) from epoch."""
 	days, second = divmod(epoch, 24 * 3600)
 	return (days + J1970, second)
 
 
-durationUnitsRel: "List[Tuple[int, str]]" = (
+durationUnitsRel: "list[tuple[int, str]]" = (
 	(1, "second"),
 	(60, "minute"),
 	(60, "hour"),
@@ -243,13 +240,13 @@ durationUnitNames = [item[1] for item in durationUnitsAbs]  # type: List[str]
 
 
 def timeEncode(
-	tm: Union[Tuple[int, int, int], Tuple[int, int]],
+	tm: Union[tuple[int, int, int], tuple[int, int]],
 ) -> str:
 	return f"{HMS(*tm)}"
 
 
 def simpleTimeEncode(
-	tm: Union[Tuple[int, int, int], Tuple[int, int], Tuple[int]],
+	tm: Union[tuple[int, int, int], tuple[int, int], tuple[int]],
 ) -> str:
 	# FIXME: how to extend HMS formatting to include this conditioning?
 	# need a new symbol for "minute, omit if zero", like "$" for second
@@ -262,9 +259,10 @@ def simpleTimeEncode(
 			return f"{HMS(*tm)}"
 	elif len(tm) == 3:
 		return f"{HMS(*tm)}"
+	return None
 
 
-def timeDecode(st: str) -> Tuple[int, int, int]:
+def timeDecode(st: str) -> tuple[int, int, int]:
 	parts = st.split(":")
 	try:
 		tm = tuple([int(p) for p in parts])
@@ -279,11 +277,11 @@ def timeDecode(st: str) -> Tuple[int, int, int]:
 	return tm
 
 
-def hmEncode(hm: Tuple[int, int]) -> str:
+def hmEncode(hm: tuple[int, int]) -> str:
 	return f"{hm[0]:02d}:{hm[1]:02d}"
 
 
-def hmDecode(st: str) -> Tuple[int, int]:
+def hmDecode(st: str) -> tuple[int, int]:
 	parts = st.split(":")
 	if len(parts) == 1:
 		return (int(parts[0]), 0)
@@ -310,7 +308,7 @@ def durationEncode(value: "Union[int, float]", unit: int) -> str:
 	return str(value) + " " + durationUnitValueToName[unit]
 
 
-def durationDecode(durStr: str) -> Tuple[int, int]:
+def durationDecode(durStr: str) -> tuple[int, int]:
 	durStr = durStr.strip()
 	if " " in durStr:
 		value, unit = durStr.split(" ")
@@ -328,7 +326,7 @@ def timeToFloatHour(h: int, m: int, s: int = 0) -> float:
 	return h + m / 60.0 + s / 3600.0
 
 
-def floatHourToTime(fh: float) -> Tuple[int, int, int]:
+def floatHourToTime(fh: float) -> tuple[int, int, int]:
 	h, r = divmod(fh, 1)
 	m, r = divmod(r * 60, 1)
 	return (

@@ -17,30 +17,28 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from typing import Dict, Any, Tuple, Optional
+from typing import Any, Optional
 
-from scal3.utils import toStr
-from scal3 import core
+from scal3 import core, event_lib, ui
 from scal3.locale_man import tr as _
-from scal3 import event_lib
-from scal3 import ui
-
 from scal3.ui_gtk import *
+from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.font_utils import gfontEncode
-from scal3.ui_gtk.utils import (
-	imageFromFile,
-	pixbufFromFile,
-	setClipboard,
-	buffer_get_text,
-)
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
 )
-from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.customize import CustomizableCalObj
+from scal3.ui_gtk.utils import (
+	buffer_get_text,
+	pixbufFromFile,
+	setClipboard,
+)
+from scal3.utils import toStr
+
 
 @registerSignals
 class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
@@ -52,8 +50,8 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		self,
 		eventSepParam: str = "",
 		justificationParam: str = "",
-		fontParams: Optional[Tuple[str, str]] = None,
-		timeFontParams: Optional[Tuple[str, str]] = None,
+		fontParams: Optional[tuple[str, str]] = None,
+		timeFontParams: Optional[tuple[str, str]] = None,
 		styleClass: str = "",
 		wrapMode: pango.WrapMode = pango.WrapMode.WORD_CHAR,
 	):
@@ -115,11 +113,11 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.pref_utils import (
-			TextPrefItem,
-			JustificationPrefItem,
 			CheckFontPrefItem,
 			CheckPrefItem,
 			FontPrefItem,
+			JustificationPrefItem,
+			TextPrefItem,
 		)
 		if self.optionsWidget:
 			return self.optionsWidget
@@ -277,7 +275,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 
 	def addIcon(self, icon):
 		"""
-		insert_pixbuf is replaced with insert_texture in gtk 3.93.0
+		insert_pixbuf is replaced with insert_texture in gtk 3.93.0.
 
 		commit 0b39631464bf2300d25bb9e112089c556dc08f42
 		Author: Matthias Clasen <mclasen@redhat.com>
@@ -291,7 +289,6 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 
 			Update all callers.
 		"""
-
 		endIter = self.textbuff.get_bounds()[1]
 		pixbuf = pixbufFromFile(
 			icon,
@@ -370,7 +367,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 
 	def addWriteEventMenuItems(
 		self,
-		menu, occurData: Dict[str, Any],
+		menu, occurData: dict[str, Any],
 		event: "Event",
 		group: "EventGroup",
 	):
@@ -457,7 +454,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 			),
 		))
 
-	def addEventMenuItems(self, menu, occurData: Dict[str, Any]):
+	def addEventMenuItems(self, menu, occurData: dict[str, Any]):
 		if event_lib.allReadOnly:
 			return
 		####

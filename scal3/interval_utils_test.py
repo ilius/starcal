@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import random
 
-from scal3.interval_utils import *
-from scal3.event_lib import JdOccurSet
 from scal3 import core
+from scal3.event_lib import JdOccurSet
+from scal3.interval_utils import *
 
 
 def parseIntervalList(st, doShuffle=False):
@@ -142,7 +142,6 @@ def testOverlapsSpeed():
 
 
 if __name__ == "__main__":
-	import pprint
 	testnormalizeIntervalList()
 	testIntersection()
 	testJdRanges()

@@ -11,7 +11,6 @@ def escape(data, entities={}):
 	the optional entities parameter.  The keys and values must all be
 	strings; each key will be replaced with its corresponding value.
 	"""
-
 	# must do ampersand first
 	data = data.replace("&", "&amp;")
 	data = data.replace(">", "&gt;")

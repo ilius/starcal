@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 from time import localtime
 
-from scal3.mywidgets.multi_spin import YearField, MonthField
+from scal3.mywidgets.multi_spin import MonthField, YearField
 from scal3.ui_gtk.mywidgets.multi_spin import MultiSpinButton
 
 
@@ -14,7 +14,7 @@ class YearMonthButton(MultiSpinButton):
 				YearField(),
 				MonthField(),
 			),
-			**kwargs
+			**kwargs,
 		)
 		if date is None:
 			date = localtime()[:2]

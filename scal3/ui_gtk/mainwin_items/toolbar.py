@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 from scal3 import core
 from scal3.locale_man import tr as _
-from scal3.locale_man import rtl
-from scal3 import ui
-
 from scal3.ui_gtk import *
-from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk import gtk_ud as ud
-
+from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.toolbox import (
-	ToolBoxItem,
 	CustomizableToolBox,
+	ToolBoxItem,
 )
+
 
 class MainMenuToolBoxItem(ToolBoxItem):
 	def __init__(self):

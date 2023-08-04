@@ -1,45 +1,42 @@
 #!/usr/bin/env python3
+from scal3 import event_lib, ui
 from scal3.locale_man import tr as _
-from scal3 import core
-from scal3 import event_lib
-from scal3 import ui
-
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import (
-	confirm,
-	showError,
-	pixbufFromFile,
-)
+from scal3.ui_gtk.drawing import newColorCheckPixbuf
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
 )
-from scal3.ui_gtk.drawing import newColorCheckPixbuf
+from scal3.ui_gtk.utils import (
+	confirm,
+	pixbufFromFile,
+	showError,
+)
 
 
 def confirmEventTrash(event, **kwargs):
 	return confirm(
 		_(
 			"Press Confirm if you want to move event \"{eventSummary}\""
-			" to {trashTitle}"
+			" to {trashTitle}",
 		).format(
 			eventSummary=event.summary,
 			trashTitle=ui.eventTrash.title,
 		),
-		**kwargs
+		**kwargs,
 	)
 
 def confirmEventsTrash(toTrashCount: int, deleteCount: int, **kwargs):
 	return confirm(
 		_(
 			"Press Confirm if you want to move {toTrashCount} events to {trashTitle}"
-			", and delete {deleteCount} events from {trashTitle}"
+			", and delete {deleteCount} events from {trashTitle}",
 		).format(
 			toTrashCount=_(toTrashCount),
 			deleteCount=_(deleteCount),
 			trashTitle=ui.eventTrash.title,
 		),
 		use_markup=True,
-		**kwargs
+		**kwargs,
 	)
 
 def checkEventsReadOnly(doException=True):
@@ -75,7 +72,7 @@ def menuItemFromEventGroup(group, **kwargs):
 			ui.menuEventCheckIconSize,
 			group.enable,
 		),
-		**kwargs
+		**kwargs,
 	)
 
 

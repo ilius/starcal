@@ -1,26 +1,24 @@
 #!/usr/bin/env python3
 
 from scal3 import logger
+
 log = logger.get()
 
-from typing import Tuple
 
-from scal3 import core
-from scal3.locale_man import tr as _
-from scal3.utils import toStr, findWordByPos
 from scal3 import ui
-
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
-from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.menuitems import ImageMenuItem
+from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk.utils import (
-	setClipboard,
 	buffer_get_text,
 	openWindow,
+	setClipboard,
 )
-from scal3.ui_gtk.menuitems import ImageMenuItem
-from scal3.ui_gtk.customize import CustomizableCalObj
+from scal3.utils import findWordByPos, toStr
 
 
 @registerSignals
@@ -155,6 +153,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		# about.set_resizable(True)
 		# about.vbox.show_all()  # OR about.vbox.show_all() ; about.run()
 		openWindow(about)  # FIXME
+		return None
 
 	def copyTextFromMenu(self, item, text):
 		setClipboard(text)
@@ -219,7 +218,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 				_("Copy _URL"),
 				imageName="edit-copy.svg",
 				func=self.copyText,
-				args=(word,)
+				args=(word,),
 			))
 		####
 		self.addExtraMenuItems(menu)
@@ -252,7 +251,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		tabToNewline=False,
 		insideExpanderParam="",
 		justificationParam="",
-		fontParams: Tuple[str, str] = None,
+		fontParams: tuple[str, str] = None,
 		styleClass: str = "",
 	):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
@@ -324,10 +323,10 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.pref_utils import (
-			CheckPrefItem,
-			JustificationPrefItem,
-			FontPrefItem,
 			CheckFontPrefItem,
+			CheckPrefItem,
+			FontPrefItem,
+			JustificationPrefItem,
 		)
 		if self.optionsWidget:
 			return self.optionsWidget

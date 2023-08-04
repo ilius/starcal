@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from subprocess import Popen, PIPE
+from subprocess import PIPE, Popen
 
-from scal3 import core
 from scal3.locale_man import tr as _
-from scal3 import event_lib
-
 from scal3.ui_gtk import *
+
 #from scal3.ui_gtk import player
 
 

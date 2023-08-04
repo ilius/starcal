@@ -20,14 +20,14 @@
 # use subprocess instead of os.popen* FIXME
 
 from scal3 import logger
+
 log = logger.get()
 
-from time import sleep
-import sys
 import os
 import subprocess
-import re
+import sys
 from contextlib import suppress
+from time import sleep
 
 from scal3 import ui
 from scal3.ui_gtk import *
@@ -104,6 +104,7 @@ class MPlayer:
 		else:
 			self.playTime = f"{m:02d}:{s:02d}"
 		log.debug(f"playTime={self.playTime}")
+		return None
 
 	# Toggle between play and pause
 	def pause(self):
@@ -125,6 +126,7 @@ class MPlayer:
 			return False
 		self.cmd(f"seek {amount} {mode}")
 		self.queryStatus()
+		return None
 
 	# Set volume    using aumix
 	def setVolume(self, value):
@@ -315,16 +317,23 @@ class PlayerBox(gtk.Box):
 		key = gevent.hardware_keycode
 		if key == self.key_seekback: # left arrow, seek
 			self.mplayer.seek(-SEEK_TIME_SMALL)
+			return None
 		elif key == self.key_seekforward: # right arrow, seek forward
 			self.mplayer.seek(SEEK_TIME_SMALL)
+			return None
 		elif key == self.key_volinc: # *, increase volume
 			if self.hasVol:
 				self.mplayer.stepVolume(True)
+				return None
+			return None
 		elif key == self.key_voldec: # /, decrease volume
 			if self.hasVol:
 				self.mplayer.stepVolume(False)
+				return None
+			return None
 		elif key == self.key_pause: # space bar, pause
 			self.mplayer.pause()
+			return None
 		else:
 			return False
 

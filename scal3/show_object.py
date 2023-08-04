@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 
-import sys
 import json
-from pprint import pprint
-from scal3.s_object import loadBsonObject
-from scal3.path import confDir
+import sys
+
 from scal3 import event_lib
+from scal3.path import confDir
+from scal3.s_object import loadBsonObject
 
 
 def dataToPrettyJson(data):

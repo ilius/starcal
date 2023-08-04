@@ -16,16 +16,15 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-import sys
 import os
+import sys
 from os.path import isdir, isfile
+
 # import platform
 
 
 def getOsName():
-	"""
-		returns: "linux", "win", "mac", "unix"
-	"""
+	"""returns: "linux", "win", "mac", "unix"."""
 	# psys = platform.system().lower()## "linux", "windows", "darwin", ...
 	plat = sys.platform  # "linux2", "win32", "darwin"
 	if plat.startswith("linux"):
@@ -84,15 +83,14 @@ def getUserDisplayName():
 						return username
 		return username
 	else:  # FIXME
-		username = os.getenv("USERNAME")
-		return username
+		return os.getenv("USERNAME")
 
 
 def kill(pid, signal=0):
 	"""
-		sends a signal to a process
-		returns True if the pid is dead
-		with no signal argument, sends no signal
+	sends a signal to a process
+	returns True if the pid is dead
+	with no signal argument, sends no signal.
 	"""
 	# if "ps --no-headers" returns no lines, the pid is dead
 	try:
@@ -113,7 +111,7 @@ def dead(pid):
 		return True
 
 	# maybe the pid is a zombie that needs us to wait for it
-	from os import waitpid, WNOHANG
+	from os import WNOHANG, waitpid
 	try:
 		dead = waitpid(pid, WNOHANG)[0]
 	except OSError as e:
@@ -129,8 +127,8 @@ def dead(pid):
 
 
 def goodkill(pid, interval=1, hung=20):
-	"let process die gracefully, gradually send harsher signals if necessary"
-	from signal import SIGTERM, SIGINT, SIGHUP, SIGKILL
+	"Let process die gracefully, gradually send harsher signals if necessary."
+	from signal import SIGHUP, SIGINT, SIGKILL, SIGTERM
 	from time import sleep
 
 	for signal in (SIGTERM, SIGINT, SIGHUP):

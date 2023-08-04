@@ -1,16 +1,14 @@
 #!/usr/bin/env python3
 
-from scal3.date_utils import monthPlus
-from scal3 import core
-from scal3.locale_man import tr as _
-from scal3.locale_man import rtl, textNumEncode, getMonthName
-from scal3.cal_types import calTypes, to_jd
 from scal3 import ui
-
+from scal3.cal_types import calTypes, to_jd
+from scal3.date_utils import monthPlus
+from scal3.locale_man import getMonthName, rtl, textNumEncode
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
-from scal3.ui_gtk.pbar import MyProgressBar
-from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.customize import CustomizableCalObj
+from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.pbar import MyProgressBar
 
 
 @registerSignals
@@ -61,7 +59,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 			"   =   " +
 			_("{dayCount} days").format(dayCount=_(past)) +
 			" / " +
-			_("{dayCount} days").format(dayCount=_(length))
+			_("{dayCount} days").format(dayCount=_(length)),
 		)
 		self.pbar.set_fraction(fraction)
 

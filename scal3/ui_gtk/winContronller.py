@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 
-from typing import Optional
 
-from scal3.path import *
-from scal3 import core
-from scal3.locale_man import tr as _
-from scal3.locale_man import rtl
 from scal3 import ui
-
+from scal3.locale_man import rtl
+from scal3.locale_man import tr as _
+from scal3.path import *
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import set_tooltip, pixbufFromFile
-from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.customize import CustomizableCalObj, CustomizableCalBox
 from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk.customize import CustomizableCalBox, CustomizableCalObj
+from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.utils import pixbufFromFile, set_tooltip
 
 
 @registerSignals
@@ -48,7 +45,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 			join(
 				"wm",
 				ui.winControllerTheme,
-				imName + ".svg"
+				imName + ".svg",
 			),
 			ui.winControllerIconSize,
 		))
@@ -141,7 +138,7 @@ class WinConButtonClose(WinConButton):
 class WinConButtonRightPanel(WinConButton):
 	_name = "rightPanel"
 	desc = _("Show Right Panel")
-	
+
 	def __init__(self, controller):
 		direc = "left" if rtl else "right"
 		self.imageName = f"{direc}"
@@ -232,7 +229,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		ui.winControllerButtons = self.getItemsData()
 
 	def getOptionsWidget(self) -> gtk.Widget:
-		from scal3.ui_gtk.pref_utils import SpinPrefItem, ComboTextPrefItem
+		from scal3.ui_gtk.pref_utils import ComboTextPrefItem, SpinPrefItem
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = VBox()
