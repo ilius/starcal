@@ -20,9 +20,7 @@ from scal3 import logger
 
 log = logger.get()
 
-from typing import Callable, Optional
-
-from gi.repository import GdkPixbuf
+from typing import TYPE_CHECKING, Callable
 
 from scal3 import ui
 from scal3.ui_gtk import *
@@ -32,6 +30,9 @@ from scal3.ui_gtk.utils import (
 	imageFromIconName,
 	pixbufFromFile,
 )
+
+if TYPE_CHECKING:
+	from gi.repository import GdkPixbuf
 
 """
 Documentation says:
@@ -52,10 +53,10 @@ class ImageMenuItem(gtk.MenuItem):
 		self,
 		label: str = "",
 		imageName: str = "",
-		pixbuf: Optional[GdkPixbuf.Pixbuf] = None,
-		func: Optional[Callable] = None,
+		pixbuf: "GdkPixbuf.Pixbuf | None" = None,
+		func: "Callable | None" = None,
 		signalName="activate",
-		args: Optional[tuple] = None,
+		args: "tuple | None" = None,
 	):
 		gtk.MenuItem.__init__(self)
 		if args is not None and not isinstance(args, tuple):

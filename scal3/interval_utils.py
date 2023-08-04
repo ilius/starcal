@@ -20,7 +20,6 @@ from scal3 import logger
 
 log = logger.get()
 
-from typing import Union
 
 CLOSED_START, OPEN_START, OPEN_END, CLOSED_END = range(4)
 
@@ -36,7 +35,7 @@ def md_overlaps(m0: float, d0: float, m1: float, d1: float) -> None:
 def simplifyNumList(
 	nums: list[int],
 	minCount: int = 3,
-) -> list[Union[int, tuple[int, int]]]:
+) -> "list[int | tuple[int, int]]":
 	"""
 	nums must be sorted
 	minCount >= 2.
@@ -60,12 +59,7 @@ def simplifyNumList(
 
 
 def getIntervalPoints(
-	lst: list[
-		Union[
-			tuple[int, int],
-			tuple[int, int, bool],
-		],
-	],
+	lst: "list[tuple[int, int] | tuple[int, int, bool]]",
 	lst_index: int = 0,
 ) -> list[tuple[int, int, int]]:
 	"""

@@ -12,8 +12,6 @@ from os.path import split, join, islink, isfile
 import datetime
 import dateutil.tz
 
-from typing import Optional
-
 defaultTZ = None
 tzErrCount = 0
 
@@ -62,7 +60,7 @@ def readEtcLocaltime():
 	return dateutil.tz.gettz(tzname)
 
 
-def gettz(*args, **kwargs) -> Optional[TimeZone]:
+def gettz(*args, **kwargs) -> "TimeZone | None":
 	global tzErrCount
 	if args and args[0].lstrip("/") == "etc/localtime":
 		return readEtcLocaltime()

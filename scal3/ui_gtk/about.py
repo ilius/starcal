@@ -10,7 +10,7 @@ class AboutDialog(gtk.AboutDialog):
 		name: str = "",
 		version: str = "",
 		title: str = "",
-		authors: "List[str]" = [],
+		authors: "list[str]" = [],
 		comments: str = "",
 		license: str = "",
 		website: str = "",
