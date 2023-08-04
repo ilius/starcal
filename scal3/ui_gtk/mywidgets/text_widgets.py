@@ -1,18 +1,15 @@
 #!/usr/bin/env python3
 
-from typing import Tuple
 
-from scal3.utils import toStr, findWordByPos
-from scal3 import core
-from scal3.locale_man import tr as _
 from scal3 import ui
-
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import (
-	setClipboard,
-	buffer_get_text,
-)
 from scal3.ui_gtk.menuitems import ImageMenuItem
+from scal3.ui_gtk.utils import (
+	buffer_get_text,
+	setClipboard,
+)
+from scal3.utils import findWordByPos, toStr
 
 
 class ReadOnlyTextWidget:
@@ -150,7 +147,7 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 				_("Copy _URL"),
 				imageName="edit-copy.svg",
 				func=self.copyText,
-				args=(word,)
+				args=(word,),
 			))
 		####
 		menu.show_all()

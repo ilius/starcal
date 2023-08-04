@@ -17,50 +17,36 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-import time
 from time import time as now
+from typing import Optional
 
-import sys
-import os
-
-from typing import Tuple, List, Callable, Optional
-
-from scal3.path import pixDir, svgDir
-from scal3 import core
-from scal3.locale_man import tr as _
-from scal3.locale_man import rtl, rtlSgn
-
-from scal3.cal_types import calTypes
-
-from scal3 import core
-from scal3 import ui
-
-from gi.repository import GdkPixbuf
 import cairo
 
+from scal3 import core, ui
+from scal3.cal_types import calTypes
+from scal3.locale_man import rtl, rtlSgn
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
-from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.drawing import *
-from scal3.ui_gtk.stack import StackPage
-from scal3.ui_gtk.mywidgets import MyFontButton
-
 from scal3.ui_gtk import gtk_ud as ud
-
-from scal3.ui_gtk.utils import pixbufFromFile
 from scal3.ui_gtk.cal_base import CalBase
 from scal3.ui_gtk.customize import (
-	CustomizableCalObj,
 	CustomizableCalBox,
+	CustomizableCalObj,
 	newSubPageButton,
 )
-
+from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.drawing import *
+from scal3.ui_gtk.mywidgets import MyFontButton
+from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.toolbox import (
-	ToolBoxItem,
 	CustomizableToolBox,
 	LabelToolBoxItem,
+	ToolBoxItem,
 )
+from scal3.ui_gtk.utils import pixbufFromFile
 
 
 def show_event(widget, gevent):
@@ -106,11 +92,9 @@ class ColumnBase(CustomizableCalObj):
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.pref_utils import (
-			SpinPrefItem,
 			CheckPrefItem,
-			ColorPrefItem,
-			CheckColorPrefItem,
 			FontFamilyPrefItem,
+			SpinPrefItem,
 		)
 		if self.optionsWidget:
 			return self.optionsWidget
@@ -336,7 +320,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 	def drawTextList(
 		self,
 		cr: "cairo.Context",
-		textData: List[List[str]],
+		textData: list[list[str]],
 		font: "Optional[Font]" = None,
 	):
 		alloc = self.get_allocation()
@@ -411,7 +395,6 @@ class MainMenuToolBoxItem(ToolBoxItem):
 		self.updateImage()
 
 	def getOptionsWidget(self) -> gtk.Widget:
-		from os.path import isabs
 		from scal3.ui_gtk.pref_utils import IconChooserPrefItem
 		if self.optionsWidget:
 			return self.optionsWidget
@@ -422,7 +405,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 			"wcal_toolbar_mainMenu_icon",
 			label=_("Icon"),
 			live=True,
-			onChangeFunc=self.updateImage
+			onChangeFunc=self.updateImage,
 		)
 		pack(optionsWidget, prefItem.getWidget())
 		###
@@ -587,7 +570,7 @@ class PluginsTextColumn(Column):
 		Column.__init__(self, wcal)
 		self.connect("draw", self.onExposeEvent)
 
-	def getTextListByIndex(self, i: int) -> List[str]:
+	def getTextListByIndex(self, i: int) -> list[str]:
 		return [
 			(line, "")
 			for line in self.wcal.status[i].getPluginsText(
@@ -602,7 +585,7 @@ class PluginsTextColumn(Column):
 			[
 				self.getTextListByIndex(i)
 				for i in range(7)
-			]
+			],
 		)
 
 	def addExtraOptionsWidget(self, optionsWidget):
@@ -766,9 +749,9 @@ class EventsTextColumn(Column):
 
 	def addExtraOptionsWidget(self, optionsWidget):
 		from scal3.ui_gtk.pref_utils import (
+			CheckColorPrefItem,
 			CheckPrefItem,
 			ColorPrefItem,
-			CheckColorPrefItem,
 		)
 
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -843,7 +826,6 @@ class EventsBoxColumn(Column):
 
 	def updateData(self):
 		from scal3.time_utils import getEpochFromJd
-		from scal3.ui_gtk import timeline_box as tbox
 		from scal3.timeline.box import calcEventBoxes
 		self.timeStart = getEpochFromJd(self.wcal.status[0].jd)
 		self.pixelPerSec = self.get_allocation().height / self.timeWidth
@@ -994,7 +976,7 @@ class DaysOfMonthColumn(Column):
 					(
 						_(self.wcal.status[i].dates[self.calType][2], self.calType),
 						"",
-					)
+					),
 				]
 				for i in range(7)
 			],
@@ -1149,13 +1131,13 @@ class MoonStatusColumn(Column):
 	optionsPageSpacing = 40
 
 	def __init__(self, wcal):
-		from scal3.ui_gtk.utils import pixbufFromFile
 		Column.__init__(self, wcal)
 		self.connect("draw", self.onExposeEvent)
 		self.showPhaseNumber = False
 
 	def drawColumn(self, cr):
 		from math import cos
+
 		from scal3.moon import getMoonPhase
 
 		alloc = self.get_allocation()
@@ -1346,10 +1328,10 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.pref_utils import (
-			SpinPrefItem,
+			CheckColorPrefItem,
 			CheckPrefItem,
 			ColorPrefItem,
-			CheckColorPrefItem,
+			SpinPrefItem,
 		)
 
 		if self.optionsWidget:
@@ -1433,6 +1415,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		if self.subPages is not None:
 			return self.subPages
 		self.getOptionsWidget()
+		return None
 
 	def updateVars(self):
 		CustomizableCalBox.updateVars(self)
@@ -1490,6 +1473,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 			else:
 				if self.itemContainsGdkWindow(item, col_win):
 					return item
+		return None
 
 	def onButtonPress(self, widget, gevent):
 		# gevent is Gdk.EventButton
@@ -1546,8 +1530,10 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.jdPlus(-1)
+			return None
 		elif d == "down":
 			self.jdPlus(1)
+			return None
 		else:
 			return False
 
@@ -1562,6 +1548,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		for item in self.items:
 			if item.enable and item._name == "toolbar":
 				return item
+		return None
 
 	def getMainMenuPos(self, *args):
 		toolbar = self.getToolbar()

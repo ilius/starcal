@@ -14,7 +14,7 @@ class FloatSpinButton(SingleSpinButton):
 			field=FloatField(_min, _max, digits),
 			step_inc=step,
 			page_inc=step * 10,
-			**kwargs
+			**kwargs,
 		)
 
 	def set_range(self, _min: float, _max: float):

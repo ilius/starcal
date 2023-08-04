@@ -21,29 +21,24 @@
 # upper the "ui" module
 
 from scal3 import logger
+
 log = logger.get()
 
-import time
 from os.path import join
-
 from typing import Callable
-
-from scal3.path import *
-from scal3.json_utils import *
-from scal3.locale_man import rtl
-from scal3 import core
-from scal3 import ui
-from scal3.format_time import compileTmFormat
-from scal3.locale_man import tr as _
-from scal3 import locale_man
 
 from gi.overrides.GObject import Object
 
+from scal3 import locale_man, ui
+from scal3.format_time import compileTmFormat
+from scal3.json_utils import *
+from scal3.locale_man import rtl
+from scal3.locale_man import tr as _
+from scal3.path import *
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.font_utils import gfontDecode, pfontEncode
 from scal3.ui_gtk.drawing import calcTextPixelSize
-
+from scal3.ui_gtk.font_utils import gfontDecode, pfontEncode
 
 ############################################################
 
@@ -96,7 +91,7 @@ class BaseCalObj(CalObjType):
 			sender = self
 		log.debug(
 			f"onConfigChange: name={self._name}, toParent={toParent}, " +
-			f"sender={sender._name if sender else sender}"
+			f"sender={sender._name if sender else sender}",
 		)
 		if toParent:
 			self.emit("config-change")
@@ -111,7 +106,7 @@ class BaseCalObj(CalObjType):
 			sender = self
 		log.debug(
 			f"onDateChange: name={self._name}, toParent={toParent}, " +
-			f"sender={sender._name if sender else sender}"
+			f"sender={sender._name if sender else sender}",
 		)
 		if toParent:
 			self.emit("date-change")
@@ -129,6 +124,7 @@ class BaseCalObj(CalObjType):
 		for item in self.items:
 			if item._name == key:
 				return item
+		return None
 
 	def connectItem(self, item):
 		item.connect("config-change", self.onConfigChange)
@@ -249,12 +245,12 @@ class IntegatedWindowList(BaseCalObj):
 	# Gtk.StyleProvider and a CSS style class.
 
 	def updateCSS(self):
-		from scal3.ui_gtk.utils import cssTextStyle
 		from scal3.ui_gtk.color_utils import gdkColorToRgb
+		from scal3.ui_gtk.utils import cssTextStyle
 		font = ui.getFont()
 		fgColor = gdkColorToRgb(
 			ui.mainWin.get_style_context().
-			get_color(gtk.StateFlags.NORMAL)
+			get_color(gtk.StateFlags.NORMAL),
 		)
 		log.debug(f"{fgColor=}")
 		css = "progressbar text " + cssTextStyle(
@@ -325,9 +321,7 @@ windowList = IntegatedWindowList()
 
 
 def cssFunc(func: Callable) -> Callable:
-	"""
-	decorator for global functions or static methods
-	"""
+	"""Decorator for global functions or static methods."""
 	global windowList
 	windowList.addCSSFunc(func)
 	return func
@@ -448,6 +442,7 @@ def findAskpass():
 	):
 		if isfile(askpass):
 			return askpass
+	return None
 
 
 def setDefault_adjustTimeCmd():
@@ -463,7 +458,7 @@ def setDefault_adjustTimeCmd():
 				sudo,
 				"-A",  # --askpass
 				join(sourceDir, "scripts", "run"),
-				"scal3/ui_gtk/adjust_dtime.py"
+				"scal3/ui_gtk/adjust_dtime.py",
 			]
 			adjustTimeEnv["SUDO_ASKPASS"] = askpass
 			return
@@ -473,7 +468,7 @@ def setDefault_adjustTimeCmd():
 			adjustTimeCmd = [
 				cmd,
 				join(sourceDir, "scripts", "run"),
-				"scal3/ui_gtk/adjust_dtime.py"
+				"scal3/ui_gtk/adjust_dtime.py",
 			]
 			return
 
