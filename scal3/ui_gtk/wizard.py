@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
 
 from scal3 import logger
 
 log = logger.get()
 
-from scal3.ui_gtk import *
+from scal3.ui_gtk import VBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.stack import MyStack, StackPage

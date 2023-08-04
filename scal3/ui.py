@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -22,6 +21,7 @@ log = logger.get()
 
 import os
 import os.path
+import typing
 from collections import OrderedDict
 from contextlib import suppress
 from dataclasses import dataclass
@@ -37,11 +37,21 @@ from cachetools import LRUCache
 from scal3 import cal_types, core, event_lib, locale_man
 from scal3.cal_types import calTypes, jd_to
 from scal3.event_update_queue import EventUpdateQueue
-from scal3.json_utils import *
+from scal3.json_utils import (
+	loadJsonConf,
+	loadModuleJsonConf,
+	saveJsonConf,
+	saveModuleJsonConf,
+)
 from scal3.locale_man import numDecode
 from scal3.locale_man import tr as _
-from scal3.path import *
+from scal3.path import confDir, pixDir, sourceDir, svgDir, sysConfDir
 from scal3.types_starcal import CellType, CompiledTimeFormat
+
+if typing.TYPE_CHECKING:
+	from scal3.plugin_type import PluginType
+	from scal3.s_object import SObj
+
 
 uiName = ""
 
@@ -366,10 +376,10 @@ def parseDroppedDate(text) -> "tuple[int, int, int] | None":
 
 def checkNeedRestart() -> bool:
 	for key in needRestartPref.keys():
-		if needRestartPref[key] != eval(key):
+		if needRestartPref[key] != evalParam(key):
 			log.info(
 				f"checkNeedRestart: {key!r}, "
-				f"{needRestartPref[key]!r}, {eval(key)!r}",
+				f"{needRestartPref[key]!r}, {evalParam(key)!r}",
 			)
 			return True
 	return False
@@ -441,6 +451,10 @@ class Cell(CellType):
 		###################
 		self.getEventsData()
 
+	@property
+	def date(self) -> "tuple[int, int, int]":
+		return (self.year, self.month, self.day)
+
 	def addPluginText(self, plug, text):
 		self._pluginsText.append(text.split("\n"))
 		self._pluginsData.append((plug, text))
@@ -448,7 +462,7 @@ class Cell(CellType):
 	def getPluginsData(
 		self,
 		firstLineOnly=False,
-	) -> "list[tuple[BasePlugin, str]]":
+	) -> "list[tuple[PluginType, str]]":
 		return [
 			(plug, text.split("\n")[0]) if firstLineOnly
 			else (plug, text)
@@ -811,7 +825,7 @@ def checkEnabledNamesItems(
 def moveEventToTrash(
 	group: event_lib.EventGroup,
 	event: event_lib.Event,
-	sender: "BaseCalObj",
+	sender, # write BaseCalType based on BaseCalObj
 	save: bool = True,
 ) -> int:
 	eventIndex = group.remove(event)
@@ -829,7 +843,7 @@ def getEvent(groupId: int, eventId: int) -> event_lib.Event:
 
 def duplicateGroupTitle(group: event_lib.EventGroup) -> None:
 	title = group.title
-	usedTitles = set(g.title for g in eventGroups)
+	usedTitles = {g.title for g in eventGroups}
 	parts = title.split("#")
 	try:
 		index = int(parts[-1])
@@ -1208,7 +1222,7 @@ class TagIconItem:
 
 	def __repr__(self):
 		return (
-			f"TagIconItem({self.name!r}, desc={self.desc!r}, " +
+			f"TagIconItem({self.name!r}, desc={self.desc!r}, "
 			f"icon={self.icon!r}, eventTypes={self.eventTypes!r})"
 		)
 
@@ -1711,6 +1725,24 @@ else:
 	saveConf()
 
 
+def evalParam(param: str) -> "Any":
+	parts = param.split(".")
+	if not parts:
+		raise ValueError(f"invalid {param = }")
+
+	if len(parts) == 1:
+		return globals()[param]
+
+	value = globals()
+	for part in parts:
+		if isinstance(value, dict):
+			value = value[part]
+		else:
+			value = getattr(value, part)
+
+	return value
+
+
 needRestartPref = {}  # Right place? FIXME
 for key in (
 	"locale_man.lang",
@@ -1721,7 +1753,7 @@ for key in (
 	"buttonIconEnable",
 	"useSystemIcons",
 ):
-	needRestartPref[key] = eval(key)
+	needRestartPref[key] = evalParam(key)
 
 if menuTextColor is None:
 	menuTextColor = borderTextColor

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -40,7 +39,7 @@ def get(moduleName, attr, default=None, absolute=False):
 	allowed = getattr(module, "__plugin_api_get__", [])
 	if attr not in allowed:
 		raise PluginError(
-			f"plugin is not allowed to get attribute {attr!r}" +
+			f"plugin is not allowed to get attribute {attr!r}"
 			f" from module {moduleName!r}",
 		)
 	return getattr(module, attr, default)
@@ -54,7 +53,7 @@ def set(moduleName, attr, value, absolute=False):
 	allowed = getattr(module, "__plugin_api_set__", [])
 	if attr not in allowed:
 		raise PluginError(
-			f"plugin is not allowed to set attribute {attr!r}" +
+			f"plugin is not allowed to set attribute {attr!r}"
 			f" to module {moduleName!r}",
 		)
 	setattr(module, attr, value)
