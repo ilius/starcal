@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -25,7 +24,6 @@ log = logger.get()
 from math import log
 
 from scal3.bin_heap import MaxHeap
-from scal3.time_utils import *
 
 # epsTm: seconds
 # TODO: configure somewhere?
@@ -176,7 +174,7 @@ class EventSearchTree:
 			from time import localtime, strftime
 			f = "%F, %T"
 			log.info(
-				f"EventSearchTree.add: {eid}\t{strftime(f, localtime(t0))}" +
+				f"EventSearchTree.add: {eid}\t{strftime(f, localtime(t0))}"
 				f"\t{strftime(f, localtime(t1))}",
 			)
 		###
@@ -300,17 +298,17 @@ class EventSearchTree:
 		hp = self.byId.get(eid)
 		if hp is None:
 			return 0
-		else:
-			n = 0
-			for mt, dt in hp.getAll():
-				try:
-					self.root = self.deleteStep(self.root, mt, dt, eid)
-				except Exception:
-					log.exception("")
-				else:
-					n += 1
-			del self.byId[eid]
-			return n
+
+		n = 0
+		for mt, dt in hp.getAll():
+			try:
+				self.root = self.deleteStep(self.root, mt, dt, eid)
+			except Exception:
+				log.exception("")
+			else:
+				n += 1
+		del self.byId[eid]
+		return n
 
 	def getLastOfEvent(self, eid):
 		hp = self.byId.get(eid)

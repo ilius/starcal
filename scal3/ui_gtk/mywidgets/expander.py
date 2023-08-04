@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -18,8 +17,8 @@
 
 
 
-from scal3.ui_gtk import *
-from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk import HBox, VBox, gtk, pack
+from scal3.ui_gtk.decorators import registerSignals
 
 
 class ExpanderFrameTitle(gtk.Button):

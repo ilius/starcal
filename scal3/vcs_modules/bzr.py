@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -46,9 +45,9 @@ def prepareObj(obj):
 	obj.lastRev = None
 	for (
 		rev_id,
-		depth,
-		revno,
-		end_of_merge,
+		_depth,
+		_revno,
+		_end_of_merge,
 	) in branch.iter_merge_sorted_revisions(direction="forward"):
 		rev = obj.repo.get_revision(rev_id)
 		epoch = rev.timestamp
@@ -102,13 +101,13 @@ def getShortStatByTrees(repo, old_tree, tree):
 	tree.lock_read()
 	for (
 		file_id,
-		(old_path, new_path),
+		(_old_path, _new_path),
 		changed_content,
-		versioned,
-		parent,
-		name,
+		_versioned,
+		_parent,
+		_name,
 		(old_kind, new_kind),
-		executable,
+		_executable,
 	) in tree.iter_changes(old_tree):
 		if changed_content:
 			#for kind in (old_kind, new_kind):
