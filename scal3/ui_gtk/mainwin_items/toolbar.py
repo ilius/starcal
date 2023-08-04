@@ -1,9 +1,7 @@
-#!/usr/bin/env python3
 from scal3 import core
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.toolbox import (
 	CustomizableToolBox,
 	ToolBoxItem,
@@ -152,7 +150,7 @@ class CalObj(CustomizableToolBox):
 			]
 		else:
 			currentNames = {item[0] for item in ud.mainToolbarData["items"]}
-			for name, item in self.defaultItemsDict.items():
+			for name, _item in self.defaultItemsDict.items():
 				if name not in currentNames:
 					ud.mainToolbarData["items"].append((name, False))
 

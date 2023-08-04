@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -23,7 +22,7 @@ log = logger.get()
 
 from scal3.json_utils import dataToCompactJson
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.pref_utils import PrefItem
 
 
@@ -56,7 +55,7 @@ class LogLevelComboBox(gtk.ComboBox):
 		return self.levels[index][0]
 
 	def set_value(self, levelNum: int) -> None:
-		for index, (num, name) in enumerate(self.levels):
+		for index, (num, _name) in enumerate(self.levels):
 			if num == levelNum:
 				self.set_active(index)
 				return

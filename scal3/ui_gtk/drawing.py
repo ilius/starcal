@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -27,12 +26,33 @@ from os.path import join
 from scal3 import ui
 from scal3.color_utils import rgbToHtmlColor
 from scal3.locale_man import cutText
-from scal3.path import *
-from scal3.ui_gtk import *
-
-#from scal3.ui_gtk.color_utils import *
-from scal3.ui_gtk.font_utils import *
+from scal3.path import (
+	sourceDir,
+)
+from scal3.ui_gtk import GdkPixbuf, gtk
+from scal3.ui_gtk.font_utils import (
+	pfontEncode,
+)
 from scal3.utils import toBytes
+
+__all__ = [
+	"setColor",
+	"fillColor",
+	"newTextLayout",
+	"calcTextPixelSize",
+	"calcTextPixelWidth",
+	"newColorCheckPixbuf",
+	"newDndDatePixbuf",
+	"newDndFontNamePixbuf",
+	"drawRoundedRect",
+	"drawOutlineRoundedRect",
+	"drawCircle",
+	"drawCircleOutline",
+	"drawPieOutline",
+	"goAngle",
+	"drawLineLengthAngle",
+	"drawArcOutline",
+]
 
 if not ui.fontCustom:
 	ui.fontCustom = ui.fontDefault.copy()
@@ -182,7 +202,7 @@ def newLimitedWidthTextLayout(
 def calcTextPixelSize(
 	widget: gtk.Widget,
 	text: str,
-	font: "Font | None" = None,
+	font: "ui.Font | None" = None,
 ) -> tuple[float, float]:
 	layout = widget.create_pango_layout(text)  # a Pango.Layout object
 	if font is not None:
@@ -194,7 +214,7 @@ def calcTextPixelSize(
 def calcTextPixelWidth(
 	widget: gtk.Widget,
 	text: str,
-	font: "Font | None" = None,
+	font: "ui.Font | None" = None,
 ) -> float:
 	width, height = calcTextPixelSize(widget, text, font=font)
 	return width
@@ -206,7 +226,7 @@ def newColorCheckPixbuf(color, size, checked):
 	else:
 		data = colorCheckSvgTextUnchecked
 	data = data.replace(
-		f"fill:#000000;",
+		"fill:#000000;",
 		f"fill:{rgbToHtmlColor(color[:3])};",
 	)
 	data = toBytes(data)

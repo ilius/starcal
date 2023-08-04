@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -71,7 +70,7 @@ class HMS:
 		self.m = m
 		self.s = s
 
-	def tuple(self) -> "Tuple[int, int, int]":
+	def tuple(self) -> "tuple[int, int, int]":
 		return (self.h, self.m, self.s)
 
 	def __format__(self, fmt=""):
@@ -252,12 +251,11 @@ def simpleTimeEncode(
 	# need a new symbol for "minute, omit if zero", like "$" for second
 	if len(tm) == 1:
 		return str(int(tm[0]))
-	elif len(tm) == 2:
+	if len(tm) == 2:
 		if tm[1] == 0:
 			return str(int(tm[0]))
-		else:
-			return f"{HMS(*tm)}"
-	elif len(tm) == 3:
+		return f"{HMS(*tm)}"
+	if len(tm) == 3:
 		return f"{HMS(*tm)}"
 	return None
 
@@ -267,7 +265,7 @@ def timeDecode(st: str) -> tuple[int, int, int]:
 	try:
 		tm = tuple([int(p) for p in parts])
 	except ValueError:
-		raise ValueError(f"bad time '{st}'")
+		raise ValueError(f"bad time '{st}'") from None
 	if len(tm) == 1:
 		tm += (0, 0)
 	elif len(tm) == 2:
@@ -285,10 +283,9 @@ def hmDecode(st: str) -> tuple[int, int]:
 	parts = st.split(":")
 	if len(parts) == 1:
 		return (int(parts[0]), 0)
-	elif len(parts) == 2:
+	if len(parts) == 2:
 		return (int(parts[0]), int(parts[1]))
-	else:
-		raise ValueError(f"bad hour:minute time '{st}'")
+	raise ValueError(f"bad hour:minute time '{st}'")
 
 
 def epochGregDateTimeEncode(epoch: int, tz: TZ = None) -> str:

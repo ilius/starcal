@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -27,9 +26,8 @@ from scal3 import core, locale_man, startup
 from scal3.cal_types import calTypes
 from scal3.locale_man import langDict, rtl
 from scal3.locale_man import tr as _
-from scal3.path import *
-from scal3.ui_gtk import *
-from scal3.ui_gtk.pref_utils import PrefItem
+from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
+from scal3.ui_gtk.pref_utils import PrefItem, SpinPrefItem
 from scal3.ui_gtk.toolbox import (
 	StaticToolBox,
 	ToolBoxItem,
@@ -38,6 +36,22 @@ from scal3.ui_gtk.utils import (
 	set_tooltip,
 )
 
+__all__= [
+	"newBox",
+	"FixedSizeOrRatioPrefItem",
+	"WeekDayCheckListPrefItem",
+	# "ToolbarIconSizePrefItem",
+	"CalTypePrefItem",
+	"LangPrefItem",
+	"CheckStartupPrefItem",
+	"AICalsTreeview",
+	"ActiveCalsTreeView",
+	"InactiveCalsTreeView",
+	"AICalsPrefItemToolbar",
+	"treeviewSelect",
+	"AICalsPrefItem",
+	"KeyBindingPrefItem",
+]
 
 def newBox(vertical: bool, homogeneous: bool) -> gtk.Box:
 	if vertical:
@@ -266,7 +280,7 @@ class LangPrefItem(PrefItem):
 		self._widget = combo
 		self.ls = ls
 		self.ls.append([_("System Setting")])
-		for (key, langObj) in langDict.items():
+		for langObj in langDict.values():
 			# isinstance(langObj, locale_man.LangData)
 			self.ls.append([langObj.name])
 

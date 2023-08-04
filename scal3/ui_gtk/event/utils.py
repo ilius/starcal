@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
 from scal3 import event_lib, ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import GdkPixbuf
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
@@ -11,6 +10,16 @@ from scal3.ui_gtk.utils import (
 	pixbufFromFile,
 	showError,
 )
+
+__all__ = [
+	"confirmEventTrash",
+	"confirmEventsTrash",
+	"checkEventsReadOnly",
+	"eventWriteMenuItem",
+	"eventWriteImageMenuItem",
+	"menuItemFromEventGroup",
+	"eventTreeIconPixbuf",
+]
 
 
 def confirmEventTrash(event, **kwargs):

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 import typing
 
@@ -105,10 +104,9 @@ def rgbToCSS(color: ColorType) -> str:
 	color = tuple(color)
 	if len(color) == 3:
 		return f"rgb{color}"
-	elif len(color) == 4:
+	if len(color) == 4:
 		return f"rgba{color}"
-	else:
-		raise ValueError(f"invalid {color=}")
+	raise ValueError(f"invalid {color=}")
 
 
 def colorizeSpan(text, color):

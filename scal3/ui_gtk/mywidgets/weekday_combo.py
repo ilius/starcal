@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
 from scal3 import core
-from scal3.ui_gtk import *
+from scal3.ui_gtk import gtk, pack
 
 
 class WeekDayComboBox(gtk.ComboBox):

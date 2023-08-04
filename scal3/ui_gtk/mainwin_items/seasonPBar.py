@@ -1,10 +1,9 @@
-#!/usr/bin/env python3
 from scal3 import ui
 from scal3.locale_man import rtl, textNumEncode
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.customize import CustomizableCalObj
-from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.pbar import MyProgressBar
 
 

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -23,10 +22,9 @@ log = logger.get()
 
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.path import *
-from scal3.ui_gtk import *
+from scal3.ui_gtk import GdkPixbuf, HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.customize import newSubPageButton
+from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
 from scal3.ui_gtk.pref_utils import CheckPrefItem
 from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.toolbox import (
@@ -354,7 +352,6 @@ class CustomizeWindow(gtk.Dialog):
 
 	def addPageObj(self, page):
 		pagePath = page.pagePath
-		parentPagePath = page.pageParent
 		title = page.pageTitle
 		item = page.pageItem
 		log.debug(f"addPageObj: {page.pagePath=}, {page.pageParent=}, {item._name=}")

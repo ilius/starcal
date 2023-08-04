@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -19,8 +18,11 @@
 from os.path import join
 
 from scal3 import ui
-from scal3.json_utils import *
-from scal3.path import *
+from scal3.json_utils import (
+	loadModuleJsonConf,
+	saveModuleJsonConf,
+)
+from scal3.path import confDir, sysConfDir
 
 sysConfPath = join(sysConfDir, "timeline.json")
 
@@ -223,7 +225,7 @@ keys = {
 	"kp_subtract": "zoomOut",
 }
 
-keyActions = list(sorted(keys.values()))
+keyActions = sorted(keys.values())
 
 
 #############################################

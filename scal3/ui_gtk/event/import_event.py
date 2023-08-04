@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 from scal3 import logger
 
@@ -7,10 +6,12 @@ log = logger.get()
 import sys
 
 from scal3 import ui
-from scal3.json_utils import *
+from scal3.json_utils import (
+	jsonToData,
+)
 from scal3.locale_man import tr as _
 from scal3.path import deskDir
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.wizard import WizardWindow
 
 
@@ -156,7 +157,11 @@ class EventsImportWindow(WizardWindow):
 						ui.eventUpdateQueue.put("+g", group, None)
 					# TODO: res.newEventIds
 					# TODO: res.modifiedEventIds
-					msg = _("Imported successfuly: {newGroupCount} new groups, {newEventCount} new events, {modifiedEventCount} modified events")
+					msg = _(
+						"Imported successfuly: {newGroupCount} new groups"
+						", {newEventCount} new events"
+						", {modifiedEventCount} modified events",
+					)
 					print(msg.format(
 						newGroupCount=_(len(res.newGroupIds)),
 						newEventCount=_(len(res.newEventIds)),

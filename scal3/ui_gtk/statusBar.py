@@ -1,14 +1,13 @@
-#!/usr/bin/env python3
 
 from scal3 import ui
 from scal3.cal_types import calTypes
 from scal3.color_utils import colorizeSpan
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, VBox, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
-from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.mywidgets.label import SLabel
 
 
@@ -55,7 +54,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 	def onDateChange(self, *a, **kw):
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		labels = self.labelBox.get_children()
-		for i, label in enumerate(labels):
+		for _i, label in enumerate(labels):
 			text = ui.cell.format(ud.dateFormatBin, label.calType)
 			if label.calType == calTypes.primary:
 				text = f"<b>{text}</b>"

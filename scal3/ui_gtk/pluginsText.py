@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 from scal3 import logger
 
@@ -7,10 +6,10 @@ log = logger.get()
 
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import Menu, VBox, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
-from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk.utils import (
@@ -59,7 +58,6 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 
 	def copyWordByIter(self, item, _iter):
 		text = self.get_text()
-		buf = self.get_buffer()
 		pos = _iter.get_offset()
 		word = findWordByPos(text, pos)[0]
 		setClipboard(word)
@@ -185,7 +183,6 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 			_iter = self.get_iter_at_position(buf_x, buf_y)[1]
 		####
 		text = self.get_text()
-		buf = self.get_buffer()
 		pos = _iter.get_offset()
 		word = findWordByPos(text, pos)[0]
 		####

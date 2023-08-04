@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -22,12 +21,16 @@ log = logger.get()
 
 
 
+from typing import TYPE_CHECKING
+
 from scal3 import ui
-from scal3.json_utils import *
-from scal3.ui_gtk import *
+from scal3.ui_gtk import gdk, getOrientation, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.utils import imageFromFile
+
+if TYPE_CHECKING:
+	from scal3.ui_gtk.stack import StackPage
 
 
 @registerSignals

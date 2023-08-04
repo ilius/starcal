@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 from queue import Queue
 from threading import Thread
@@ -21,7 +20,7 @@ class EventUpdateRecord:
 		self,
 		action: str,
 		obj: "event_lib.Event | event_lib.EventGroup",
-		sender: "BaseCalObj",
+		sender,  # CalObjType based on gtk_ud.BaseCalObj
 	):
 		self.action = action
 		self.obj = obj
