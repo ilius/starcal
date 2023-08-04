@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 import math
-from typing import Generator, Optional
+from typing import Generator
 
 from scal3 import cal_types
 from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
@@ -27,7 +27,7 @@ def checkDate(date: tuple[int, int, int]) -> None:
 		raise ValueError(f"bad date '{date}': invalid day")
 
 
-# FIXME: should return Tuple[int, int, int] ?
+# FIXME: should return tuple[int, int, int] ?
 def dateDecode(st: str) -> list[int]:
 	neg = False
 	if st.startswith("-"):
@@ -130,7 +130,7 @@ def getEpochFromDate(y: int, m: int, d: int, calType: int) -> int:
 def ymdRange(
 	date1: tuple[int, int, int],
 	date2: tuple[int, int, int],
-	calType: Optional[int] = None,
+	calType: "int | None" = None,
 ) -> Generator[tuple[int, int, int], None, None]:
 	y1, m1, d1 = date1
 	y2, m2, d2 = date2
