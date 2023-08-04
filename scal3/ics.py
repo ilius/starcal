@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -20,11 +19,16 @@ from scal3 import logger
 
 log = logger.get()
 
+import typing
 from os.path import split, splitext
 from time import gmtime, mktime, strftime, strptime
 
-from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
-from scal3.path import *
+from scal3.cal_types import GREGORIAN, jd_to, to_jd
+
+if typing.TYPE_CHECKING:
+	from scal3.plugin_type import PluginType
+
+#from scal3.path import
 
 icsTmFormat = "%Y%m%dT%H%M%S"
 icsTmFormatPretty = "%Y-%m-%dT%H:%M:%SZ"
@@ -112,7 +116,7 @@ def splitIcsValue(value: str) -> list[str]:
 
 
 def convertHolidayPlugToIcs(
-	plug: "BasePlugin",
+	plug: "PluginType",
 	startJd: int,
 	endJd: int,
 	namePostfix: str = "",
@@ -123,7 +127,7 @@ def convertHolidayPlugToIcs(
 
 
 def convertBuiltinTextPlugToIcs(
-	plug: "BasePlugin",
+	plug: "PluginType",
 	startJd: int,
 	endJd: int,
 	namePostfix: str = "",
@@ -149,19 +153,3 @@ def convertBuiltinTextPlugToIcs(
 	fname = split(plug.fpath)[-1]
 	fname = splitext(fname)[0] + f"{namePostfix}.ics"
 	open(fname, "w").write(icsText)
-
-
-# FIXME: what is the purpose of this?
-def convertAllPluginsToIcs(startYear: int, endYear: int) -> None:
-	if GREGORIAN not in calTypes:
-		raise RuntimeError(f"cal type {GREGORIAN=} not found")
-	startJd = to_jd(startYear, 1, 1, GREGORIAN)
-	endJd = to_jd(endYear + 1, 1, 1, GREGORIAN)
-	namePostfix = f"-{startYear}-{endYear}"
-	for plug in core.allPlugList:
-		if isinstance(plug, HolidayPlugin):
-			convertHolidayPlugToIcs(plug, startJd, endJd, namePostfix)
-		elif isinstance(plug, BuiltinTextPlugin):
-			convertBuiltinTextPlugToIcs(plug, startJd, endJd, namePostfix)
-		else:
-			log.info(f"Ignoring unsupported plugin {plug.file}")

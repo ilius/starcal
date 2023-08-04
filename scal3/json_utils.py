@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 from scal3 import logger
 
@@ -8,6 +7,17 @@ import json
 import sys
 from collections import OrderedDict
 from json import JSONEncoder
+
+__all__ = [
+	"dataToPrettyJson",
+	"dataToCompactJson",
+	"jsonToData",
+	"jsonToOrderedData",
+	"loadJsonConf",
+	"saveJsonConf",
+	"loadModuleJsonConf",
+	"saveModuleJsonConf",
+]
 
 
 def _default(self, obj):
@@ -50,7 +60,7 @@ def jsonToOrderedData(text):
 ###############################
 
 
-def loadJsonConf(module, confPath, decoders={}):
+def loadJsonConf(module, confPath, decoders: "dict | None" = None):
 	from os.path import isfile
 	###
 	if not isfile(confPath):
@@ -72,19 +82,19 @@ def loadJsonConf(module, confPath, decoders={}):
 	if isinstance(module, str):
 		module = sys.modules[module]
 	for param, value in data.items():
-		if param in decoders:
+		if decoders and param in decoders:
 			value = decoders[param](value)
 		setattr(module, param, value)
 
 
-def saveJsonConf(module, confPath, params, encoders={}):
+def saveJsonConf(module, confPath, params, encoders: "dict | None" = None):
 	if isinstance(module, str):
 		module = sys.modules[module]
 	###
 	data = {}
 	for param in params:
 		value = getattr(module, param)
-		if param in encoders:
+		if encoders and param in encoders:
 			value = encoders[param](value)
 		data[param] = value
 	###
@@ -120,7 +130,6 @@ def loadModuleJsonConf(module):
 		decoders,
 	)
 	# FIXME: should use module.confParams to restrict json keys?
-
 
 def saveModuleJsonConf(module):
 	if isinstance(module, str):

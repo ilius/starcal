@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -27,7 +26,7 @@ log = logger.get()
 
 from scal3.os_utils import makeDir
 from scal3.path import cacheDir
-from scal3.ui_gtk import *
+from scal3.ui_gtk import GdkPixbuf
 
 pixbufCache = {}
 saveQueue = Queue()
@@ -86,7 +85,7 @@ def clearFiles():
 			continue
 		try:
 			os.remove(fpath)
-		except Exception as e:
+		except Exception:
 			log.exception("")
 
 

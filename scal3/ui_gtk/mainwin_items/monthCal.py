@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -22,6 +21,7 @@ log = logger.get()
 
 
 from math import sqrt
+from typing import TYPE_CHECKING
 
 from gi.repository.PangoCairo import show_layout
 
@@ -31,13 +31,29 @@ from scal3.core import log
 from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
 from scal3.monthcal import getCurrentMonthStatus
-from scal3.ui_gtk import *
+from scal3.ui_gtk import (
+	TWO_BUTTON_PRESS,
+	VBox,
+	gdk,
+	getScrollValue,
+	gtk,
+	pack,
+)
 from scal3.ui_gtk.cal_base import CalBase
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
-from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.drawing import *
+from scal3.ui_gtk.decorators import registerSignals
+from scal3.ui_gtk.drawing import (
+	drawOutlineRoundedRect,
+	drawRoundedRect,
+	fillColor,
+	newTextLayout,
+	setColor,
+)
 from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.utils import pixbufFromFile
+
+if TYPE_CHECKING:
+	import cairo
 
 
 @registerSignals
@@ -264,8 +280,6 @@ class CalObj(gtk.DrawingArea, CalBase):
 		self.calcCoord()
 		w = self.get_allocation().width
 		h = self.get_allocation().height
-		wx = ui.winX
-		wy = ui.winY
 		cr.rectangle(0, 0, w, h)
 		fillColor(cr, ui.bgColor)
 		status = getCurrentMonthStatus()
@@ -277,7 +291,6 @@ class CalObj(gtk.DrawingArea, CalBase):
 			fillColor(cr, ui.borderColor)
 			# ###### Drawing weekDays names
 			setColor(cr, ui.borderTextColor)
-			dx = 0
 			wdayAb = (self.wdaysWidth > w)
 			for i in range(7):
 				wday = newTextLayout(self, core.getWeekDayAuto(i, abbreviate=wdayAb))
@@ -370,7 +383,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 						iconsN = len(iconList)
 						scaleFact = 1 / sqrt(iconsN)
 						fromRight = 0
-						for index, icon in enumerate(iconList):
+						for _index, icon in enumerate(iconList):
 							# if len(iconList) > 1  # FIXME
 							try:
 								pix = pixbufFromFile(icon, size=iconSizeMax)
@@ -588,11 +601,10 @@ class CalObj(gtk.DrawingArea, CalBase):
 		if d == "up":
 			self.jdPlus(-7)
 			return None
-		elif d == "down":
+		if d == "down":
 			self.jdPlus(7)
 			return None
-		else:
-			return False
+		return False
 
 	def getCellPos(self, *args):
 		return (

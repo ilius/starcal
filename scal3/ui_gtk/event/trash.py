@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.utils import (
@@ -57,7 +56,9 @@ class TrashEditorDialog(gtk.Dialog):
 		pack(self.vbox, hbox)
 		####
 		hbox = HBox()
-		self.addEventsToBeginningCheck = gtk.CheckButton(label=_("Add New Events to Beginning"))
+		self.addEventsToBeginningCheck = gtk.CheckButton(
+			label=_("Add New Events to Beginning"),
+		)
 		set_tooltip(
 			hbox, # label or hbox?
 			_("Add new events to beginning of event list, not to the end"),

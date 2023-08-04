@@ -1,14 +1,12 @@
-#!/usr/bin/env python3
 
 from scal3 import logger
 
 log = logger.get()
 
 
-from scal3.json_utils import *
 from scal3.locale_man import tr as _
 from scal3.path import deskDir
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.wizard import WizardWindow
 
 
