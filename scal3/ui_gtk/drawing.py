@@ -26,10 +26,12 @@ from os.path import join
 from typing import Optional
 
 from scal3 import ui
+from scal3.color_utils import rgbToHtmlColor
 from scal3.locale_man import cutText
 from scal3.path import *
 from scal3.ui_gtk import *
-from scal3.ui_gtk.color_utils import *
+
+#from scal3.ui_gtk.color_utils import *
 from scal3.ui_gtk.font_utils import *
 from scal3.utils import toBytes
 
