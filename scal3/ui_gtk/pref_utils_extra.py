@@ -17,34 +17,26 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from typing import Optional, Callable, Any, List, Dict
-from os.path import join, isabs
 from contextlib import suppress
+from typing import Any, Callable, Optional
 
-from scal3.path import *
+from scal3 import core, locale_man, startup
 from scal3.cal_types import calTypes
-from scal3 import core
-from scal3 import locale_man
 from scal3.locale_man import langDict, rtl
 from scal3.locale_man import tr as _
-from scal3 import startup
-from scal3 import ui
-
-from gi.repository import GdkPixbuf
-
+from scal3.path import *
 from scal3.ui_gtk import *
+from scal3.ui_gtk.pref_utils import PrefItem
+from scal3.ui_gtk.toolbox import (
+	StaticToolBox,
+	ToolBoxItem,
+)
 from scal3.ui_gtk.utils import (
 	set_tooltip,
-	pixbufFromFile,
 )
-from scal3.ui_gtk.toolbox import (
-	ToolBoxItem,
-	StaticToolBox,
-)
-
-from scal3.ui_gtk.pref_utils import PrefItem
 
 
 def newBox(vertical: bool, homogeneous: bool) -> gtk.Box:
@@ -137,7 +129,7 @@ class WeekDayCheckListPrefItem(PrefItem):
 		vertical: bool = False,
 		homogeneous: bool = True,
 		abbreviateNames: bool = True,
-		twoRows: bool = False
+		twoRows: bool = False,
 	) -> None:
 		self.obj = obj
 		self.attrName = attrName
@@ -182,14 +174,14 @@ class WeekDayCheckListPrefItem(PrefItem):
 		self.start = start
 		self.updateBoxChildren()
 
-	def get(self) -> List[int]:
+	def get(self) -> list[int]:
 		return [
 			index
 			for index, button in enumerate(self.buttons)
 			if button.get_active()
 		]
 
-	def set(self, value: List[int]):
+	def set(self, value: list[int]):
 		buttons = self.buttons
 		for button in buttons:
 			button.set_active(False)
@@ -305,7 +297,7 @@ class CheckStartupPrefItem(PrefItem):  # FIXME
 		w = gtk.CheckButton(label=_("Run on session startup"))
 		set_tooltip(
 			w,
-			f"Run on startup of Gnome, KDE, Xfce, LXDE, ...\nFile: {startup.comDesk}"
+			f"Run on startup of Gnome, KDE, Xfce, LXDE, ...\nFile: {startup.comDesk}",
 		)
 		self._widget = w
 
@@ -326,7 +318,7 @@ class CheckStartupPrefItem(PrefItem):  # FIXME
 
 	def updateWidget(self) -> None:
 		self.set(
-			startup.checkStartup()
+			startup.checkStartup(),
 		)
 
 
@@ -503,7 +495,7 @@ class AICalsPrefItemToolbar(StaticToolBox):
 			self._leftRightAction = ""
 		else:
 			tb.setIconFile(
-				"go-next.svg" if isRight ^ rtl else "go-previous.svg"
+				"go-next.svg" if isRight ^ rtl else "go-previous.svg",
 			)
 			self._leftRightAction = "inactivate" if isRight else "activate"
 		tb.build()
@@ -594,6 +586,7 @@ class AICalsPrefItem(PrefItem):
 			return self.activeTreev
 		if action == "activate":
 			return self.inactiveTreev
+		return None
 
 	def onUpClick(self, obj: Optional[gtk.Button] = None) -> None:
 		treev = self.getCurrentTreeview()
@@ -640,7 +633,7 @@ class AICalsPrefItem(PrefItem):
 			self.activeTreev,
 			min(
 				index,
-				len(self.activeTrees) - 1
+				len(self.activeTrees) - 1,
 			),
 		)
 		self.inactiveTreev.grab_focus()
@@ -676,7 +669,7 @@ class AICalsPrefItem(PrefItem):
 	def activeTreevRActivate(
 		self,
 		treev: gtk.TreeView,
-		path: List[int],
+		path: list[int],
 		col: gtk.TreeViewColumn,
 	) -> None:
 		self.inactivateIndex(path[0])
@@ -684,7 +677,7 @@ class AICalsPrefItem(PrefItem):
 	def inactiveTreevRActivate(
 		self,
 		treev: gtk.TreeView,
-		path: List[int],
+		path: list[int],
 		col: gtk.TreeViewColumn,
 	):
 		self.activateIndex(path[0])
@@ -720,7 +713,7 @@ class KeyBindingPrefItem(PrefItem):
 		self,
 		obj: Any,
 		attrName: str,
-		actions: List[str],
+		actions: list[str],
 		# live: bool = False,
 		# onChangeFunc: Optional[Callable] = None,
 	) -> None:
@@ -820,13 +813,13 @@ class KeyBindingPrefItem(PrefItem):
 
 		return False
 
-	def set(self, keys: Dict[str, str]):
+	def set(self, keys: dict[str, str]):
 		trees = self.treev.get_model()
 		trees.clear()
 		for key, action in keys.items():
 			trees.append([key, action])
 
-	def get(self) -> Dict[str, str]:
+	def get(self) -> dict[str, str]:
 		trees = self.treev.get_model()
 		keys = {}
 		for row in trees:

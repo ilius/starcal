@@ -19,29 +19,24 @@
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 from scal3 import logger
+
 log = logger.get()
 
-import sys
-import os
-import time
 
-from scal3.utils import (
-	toBytes,
-	toStr,
-	numRangesEncode,
-	numRangesDecode,
-)
-from scal3 import core
 from scal3 import locale_man
-from scal3.locale_man import tr as _
 from scal3.locale_man import (
 	numDecode,
-	textNumEncode,
 	textNumDecode,
+	textNumEncode,
 )
-
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
+from scal3.utils import (
+	numRangesDecode,
+	numRangesEncode,
+	toStr,
+)
 
 
 @registerType
@@ -182,7 +177,7 @@ class NumRangesEntry(gtk.Entry):
 
 	def getValues(self):
 		return numRangesDecode(
-			textNumDecode(self.get_text())
+			textNumDecode(self.get_text()),
 		)
 
 	def setValues(self, values):
@@ -190,7 +185,7 @@ class NumRangesEntry(gtk.Entry):
 			textNumEncode(
 				numRangesEncode(values, ", "),
 				changeSpecialChars=False,
-			)
+			),
 		)
 
 	def validate(self):
@@ -198,7 +193,6 @@ class NumRangesEntry(gtk.Entry):
 
 
 if __name__ == "__main__":
-	from scal3 import core
 	###
 	entry = NumRangesEntry(0, 9999)
 	win = gtk.Dialog()

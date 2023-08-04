@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from typing import Optional, Tuple, List, Callable
+from typing import Callable, Optional
 
 
 class CellType:
@@ -12,34 +12,34 @@ class CellType:
 		self,
 		compiledFmt: "CompiledTimeFormat",
 		calType: Optional[int] = None,
-		tm: Optional[Tuple[int, int, int]] = None,
+		tm: Optional[tuple[int, int, int]] = None,
 	):
 		raise NotImplementedError
 
-	def getDate(self, calType: int) -> Tuple[int, int, int]:
+	def getDate(self, calType: int) -> tuple[int, int, int]:
 		raise NotImplementedError
 
 	def inSameMonth(self, other: "CellType") -> bool:
 		raise NotImplementedError
 
-	def getEventIcons(self, showIndex: int) -> List[str]:
+	def getEventIcons(self, showIndex: int) -> list[str]:
 		raise NotImplementedError
 
-	def getDayEventIcons(self) -> List[str]:
+	def getDayEventIcons(self) -> list[str]:
 		raise NotImplementedError
 
-	def getWeekEventIcons(self) -> List[str]:
+	def getWeekEventIcons(self) -> list[str]:
 		raise NotImplementedError
 
-	def getMonthEventIcons(self) -> List[str]:
+	def getMonthEventIcons(self) -> list[str]:
 		raise NotImplementedError
 
 
-CompiledTimeFormat = Tuple[
+CompiledTimeFormat = tuple[
 	str,
-	List[
+	list[
 		Callable[
-			[CellType, int, Tuple[int, int, int]],
+			[CellType, int, tuple[int, int, int]],
 			str,
 		],
 	],

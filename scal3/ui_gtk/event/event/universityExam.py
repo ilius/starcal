@@ -17,20 +17,18 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from scal3 import core
-from scal3.locale_man import tr as _
-from scal3 import event_lib
 from scal3 import ui
-
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import showError
+from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets import TextFrame
+from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.hour_minute import HourMinuteButton
-from scal3.ui_gtk.mywidgets.icon import IconSelectButton
-from scal3.ui_gtk.event import common
+from scal3.ui_gtk.utils import showError
 
 
 class WidgetClass(gtk.Box):

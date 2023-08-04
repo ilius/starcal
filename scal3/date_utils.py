@@ -1,27 +1,26 @@
 #!/usr/bin/env python3
 import math
-
-from typing import Tuple, List, Optional, Generator
+from typing import Generator, Optional
 
 from scal3 import cal_types
-from scal3.cal_types import calTypes, to_jd, jd_to, GREGORIAN
+from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
 from scal3.time_utils import getEpochFromJd
 
 
-def monthPlus(y: int, m: int, p: int) -> Tuple[int, int]:
+def monthPlus(y: int, m: int, p: int) -> tuple[int, int]:
 	y, m = divmod(y * 12 + m - 1 + p, 12)
 	return y, m + 1
 
 
-def dateEncode(date: Tuple[int, int, int]) -> str:
+def dateEncode(date: tuple[int, int, int]) -> str:
 	return f"{date[0]:04d}/{date[1]:02d}/{date[2]:02d}"
 
 
-def dateEncodeDash(date: Tuple[int, int, int]) -> str:
+def dateEncodeDash(date: tuple[int, int, int]) -> str:
 	return f"{date[0]:04d}-{date[1]:02d}-{date[2]:02d}"
 
 
-def checkDate(date: Tuple[int, int, int]) -> None:
+def checkDate(date: tuple[int, int, int]) -> None:
 	if not 1 <= date[1] <= 12:
 		raise ValueError(f"bad date '{date}': invalid month")
 	if not 1 <= date[2] <= 31:
@@ -29,7 +28,7 @@ def checkDate(date: Tuple[int, int, int]) -> None:
 
 
 # FIXME: should return Tuple[int, int, int] ?
-def dateDecode(st: str) -> List[int]:
+def dateDecode(st: str) -> list[int]:
 	neg = False
 	if st.startswith("-"):
 		neg = True
@@ -42,7 +41,7 @@ def dateDecode(st: str) -> List[int]:
 		raise ValueError(f"bad date '{st}': invalid separator")
 	if len(parts) != 3:
 		raise ValueError(
-			f"bad date '{st}': invalid numbers count {len(parts)}"
+			f"bad date '{st}': invalid numbers count {len(parts)}",
 		)
 	try:
 		date = [int(p) for p in parts]
@@ -91,7 +90,7 @@ def jwday(jd: int) -> int:
 	return (jd + 1) % 7
 
 
-def getJdRangeForMonth(year: int, month: int, calType: int) -> Tuple[int, int]:
+def getJdRangeForMonth(year: int, month: int, calType: int) -> tuple[int, int]:
 	day = cal_types.getMonthLen(year, month, calType)
 	return (
 		to_jd(year, month, 1, calType),
@@ -129,10 +128,10 @@ def getEpochFromDate(y: int, m: int, d: int, calType: int) -> int:
 
 
 def ymdRange(
-	date1: Tuple[int, int, int],
-	date2: Tuple[int, int, int],
+	date1: tuple[int, int, int],
+	date2: tuple[int, int, int],
 	calType: Optional[int] = None,
-) -> Generator[Tuple[int, int, int], None, None]:
+) -> Generator[tuple[int, int, int], None, None]:
 	y1, m1, d1 = date1
 	y2, m2, d2 = date2
 	if y1 == y2 and m1 == m2:

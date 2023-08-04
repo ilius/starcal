@@ -1,7 +1,6 @@
 import sys
-from os.path import join, dirname, abspath
 import unittest
-import logging
+from os.path import abspath, dirname
 
 rootDir = dirname(dirname(abspath(__file__)))
 sys.path.insert(0, rootDir)
@@ -68,8 +67,9 @@ class TestColorUtils(unittest.TestCase):
 
 
 def genRandomTests_rgbToHsl():
-	from scal3.color_utils import rgbToHsl
 	from random import randint
+
+	from scal3.color_utils import rgbToHsl
 	for i in range(10):
 		r = randint(0, 255)
 		g = randint(0, 255)
@@ -77,13 +77,14 @@ def genRandomTests_rgbToHsl():
 		h, s, ln = rgbToHsl(r, g, b)
 		log.info(
 			f"self.assertEqualHSL(rgbToHsl({r}, {g}, {b}), " +
-			f"({h:.1f}, {s:.3f}, {ln:.3f}))"
+			f"({h:.1f}, {s:.3f}, {ln:.3f}))",
 		)
 
 
 def genRandomTests_hslToRgb():
-	from scal3.color_utils import hslToRgb
 	from random import randint, random
+
+	from scal3.color_utils import hslToRgb
 	for i in range(10):
 		h = randint(0, 360)
 		s = random()
@@ -91,7 +92,7 @@ def genRandomTests_hslToRgb():
 		r, g, b = hslToRgb(h, s, ln)
 		log.info(
 			f"self.assertEqual(hslToRgb({h:.1f}, {s:.3f}, {ln:.3f}), " +
-			f"({r}, {g}, {b}))"
+			f"({r}, {g}, {b}))",
 		)
 
 

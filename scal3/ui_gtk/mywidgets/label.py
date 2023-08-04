@@ -1,24 +1,21 @@
 #!/usr/bin/env python3
-from scal3.utils import toStr
-from scal3 import core
+from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3 import ui
-
-from scal3 import ui
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import (
-	setClipboard,
-)
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
 )
-
+from scal3.ui_gtk.utils import (
+	setClipboard,
+)
+from scal3.utils import toStr
 
 
 class SLabel(gtk.Label):
+
 	"""
-		Selectable Label with custom, localized and minimal menu
-		for right-click, with only 2 menu items: Copy All, Copy
+	Selectable Label with custom, localized and minimal menu
+	for right-click, with only 2 menu items: Copy All, Copy.
 	"""
 
 	def __init__(self, label=None):
@@ -33,7 +30,7 @@ class SLabel(gtk.Label):
 		itemCopyAll = ImageMenuItem(
 			_("Copy _All"),
 			imageName="edit-copy.svg",
-			func=self.copyAll
+			func=self.copyAll,
 		)
 		##
 		itemCopy = ImageMenuItem(
@@ -43,7 +40,7 @@ class SLabel(gtk.Label):
 		)
 		itemCopy.set_sensitive(
 			self.get_property("cursor-position") >
-			self.get_property("selection-bound")
+			self.get_property("selection-bound"),
 		)  # FIXME
 		##
 		for item in menu.get_children():
