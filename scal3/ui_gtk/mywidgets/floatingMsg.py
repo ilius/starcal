@@ -18,6 +18,8 @@
 
 from time import time as now
 
+from gi.repository.PangoCairo import show_layout
+
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.drawing import *
