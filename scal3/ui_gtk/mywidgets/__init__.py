@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -24,11 +23,17 @@ log = logger.get()
 
 
 
+from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
-from scal3.ui_gtk.color_utils import *
+from scal3.ui_gtk import gdk, gtk, pango
+from scal3.ui_gtk.color_utils import (
+	rgbaToGdkRGBA,
+)
 from scal3.ui_gtk.drawing import newDndFontNamePixbuf
-from scal3.ui_gtk.font_utils import *
+from scal3.ui_gtk.font_utils import (
+	gfontDecode,
+	gfontEncode,
+)
 from scal3.ui_gtk.utils import buffer_get_text
 
 
@@ -91,7 +96,7 @@ class MyFontButton(gtk.FontButton):
 		fontName = gtk.FontButton.get_font(self)
 		pbuf = newDndFontNamePixbuf(fontName)
 		w = pbuf.get_width()
-		h = pbuf.get_height()
+		# h = pbuf.get_height()
 		gtk.drag_set_icon_pixbuf(
 			context,
 			pbuf,
@@ -117,7 +122,10 @@ class MyColorButton(gtk.ColorButton):
 	def update_tooltip(self, colorb=None):
 		r, g, b, a = self.get_rgba()
 		if gtk.ColorChooser.get_use_alpha(self):
-			text = f"{_('Red')}: {_(r)}\n{_('Green')}: {_(g)}\n{_('Blue')}: {_(b)}\n{_('Opacity')}: {_(a)}"
+			text = (
+				f"{_('Red')}: {_(r)}\n{_('Green')}: "
+				f"{_(g)}\n{_('Blue')}: {_(b)}\n{_('Opacity')}: {_(a)}"
+			)
 		else:
 			text = f"{_('Red')}: {_(r)}\n{_('Green')}: {_(g)}\n{_('Blue')}: {_(b)}"
 		##self.get_tooltip_window().set_direction(gtk.TextDirection.LTR)
@@ -159,13 +167,3 @@ class TextFrame(gtk.Frame):
 
 	def get_text(self):
 		return buffer_get_text(self.buff)
-
-
-if __name__ == "__main__":
-	d = gtk.Dialog()
-	clock = FClockLabel()
-	clock.start()
-	pack(d.vbox, clock, 1, 1)
-	d.connect("delete-event", lambda widget, event: gtk.main_quit())
-	d.show_all()
-	gtk.main()

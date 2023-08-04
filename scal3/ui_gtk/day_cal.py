@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -22,6 +21,7 @@ log = logger.get()
 
 
 from math import isqrt
+from typing import TYPE_CHECKING, Any
 
 from gi.repository.PangoCairo import show_layout
 
@@ -38,14 +38,30 @@ from scal3.locale_man import (
 )
 from scal3.locale_man import tr as _
 from scal3.season import getSeasonNamePercentFromJd
-from scal3.ui_gtk import *
+from scal3.ui_gtk import (
+	TWO_BUTTON_PRESS,
+	GLibError,
+	HBox,
+	VBox,
+	gdk,
+	getScrollValue,
+	gtk,
+	pack,
+)
 from scal3.ui_gtk.button_drawing import Button, SVGButton
 from scal3.ui_gtk.cal_base import CalBase
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
-from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.drawing import *
+from scal3.ui_gtk.drawing import (
+	drawPieOutline,
+	fillColor,
+	newTextLayout,
+	setColor,
+)
 from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.utils import pixbufFromFile
+
+if TYPE_CHECKING:
+	import cairo
 
 
 class DayCal(gtk.DrawingArea, CalBase):
@@ -268,7 +284,6 @@ class DayCal(gtk.DrawingArea, CalBase):
 		subPages = []
 		###
 		sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
-		sgroupFont = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		for index, calType in enumerate(calTypes.active):
 			module, ok = calTypes[calType]
 			if not ok:
@@ -604,7 +619,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		if self.subPages is not None:
 			return self.subPages
 		self.getOptionsWidget()
-		return subPages
+		return self.subPages
 
 	def getRenderPos(self, params, x0, y0, w, h, fontw, fonth):
 		xalign = params.get("xalign")
@@ -925,11 +940,10 @@ class DayCal(gtk.DrawingArea, CalBase):
 		if d == "up":
 			self.jdPlus(-1)
 			return None
-		elif d == "down":
+		if d == "down":
 			self.jdPlus(1)
 			return None
-		else:
-			return False
+		return False
 
 	def getCellPos(self, *args):
 		alloc = self.get_allocation()

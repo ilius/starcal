@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -112,7 +111,7 @@ def makeIntervalGraph(boxes):
 		]
 	points.sort()
 	openBoxes = set()
-	for t, isStart, boxI in points:
+	for _t, isStart, boxI in points:
 		if isStart:
 			g.add_edges([
 				(boxI, oboxI) for oboxI in openBoxes
@@ -152,7 +151,6 @@ def calcEventBoxes(
 ):
 	try:
 		from scal3.graph_utils import (
-			Graph,
 			addBoxHeightToColoredGraph,
 			colorGraph,
 		)
@@ -189,7 +187,6 @@ def calcEventBoxes(
 			# 	log.error(f"----- bad eid from search: {eid!r}")
 			# 	continue
 			event = group[eid]
-			eventIndex = group.index(eid)
 			if t0 <= timeStart and timeEnd <= t1:
 				# Fills Range, FIXME
 				continue
@@ -219,7 +216,7 @@ def calcEventBoxes(
 	if debugMode:
 		t0 = now()
 	boxes = []
-	for boxValue, boxGroup in sorted(boxesDict.items()):
+	for _boxValue, boxGroup in sorted(boxesDict.items()):
 		if len(boxGroup) < 4:
 			boxes += boxGroup
 		else:
@@ -244,7 +241,7 @@ def calcEventBoxes(
 		log.debug(f"makeIntervalGraph: {now() - t1:e}")
 	#####
 
-	def boxSortKeyFunc(i: int) -> "Tuple":
+	def boxSortKeyFunc(i: int) -> "tuple[int, int]":
 		# the last item should be i
 		# the first item should be -g.degree(i) to have less number of colors/levels,
 		# and give higher colors to more isolated vertices/boxes

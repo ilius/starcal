@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -99,8 +98,7 @@ def getMonthLen(y, m):
 	if m == 2:
 		if isLeap(y):
 			return 29
-		else:
-			return 28
+		return 28
 	if m in (4, 6, 9, 11):
 		return 30
 	return 31

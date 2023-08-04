@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -24,10 +23,10 @@ from typing import Any
 
 from scal3 import core, event_lib, ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import GdkPixbuf, Menu, VBox, gtk, pack, pango
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
-from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.font_utils import gfontEncode
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
@@ -365,8 +364,8 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 	def addWriteEventMenuItems(
 		self,
 		menu, occurData: dict[str, Any],
-		event: "Event",
-		group: "EventGroup",
+		event: "event_lib.Event",
+		group: "event_lib.EventGroup",
 	):
 		from scal3.ui_gtk.event.utils import menuItemFromEventGroup
 		label = _("Edit") + ": " + self.trimEventMenuItemLabel(event.summary)

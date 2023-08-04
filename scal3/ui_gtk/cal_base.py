@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -26,8 +25,7 @@ log = logger.get()
 
 
 from scal3 import core, ui
-from scal3.ui_gtk import *
-from scal3.ui_gtk import listener
+from scal3.ui_gtk import gdk, gtk, listener
 from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.drawing import newDndDatePixbuf
 
@@ -154,7 +152,7 @@ class CalBase(CustomizableCalObj):
 			self.queue_draw()
 		else:
 			log.info(
-				f"Unknown dropped data type {dtype!r}, {text=}, " +
+				f"Unknown dropped data type {dtype!r}, {text=}, "
 				f"data={selection.data!r}",
 			)
 			return True
