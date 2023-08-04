@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -20,7 +19,7 @@ from scal3 import logger
 
 log = logger.get()
 
-from os.path import dirname, isabs, isfile, join, split, splitext
+from os.path import isabs, isfile, join, split, splitext
 from time import localtime, strftime
 
 from scal3.cal_types import (
@@ -30,11 +29,11 @@ from scal3.cal_types import (
 	jd_to,
 )
 from scal3.ics import getEpochByIcsTime, getIcsDateByJd, icsHeader, icsTmFormat
-from scal3.json_utils import *
+from scal3.json_utils import jsonToData
 from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
-from scal3.path import *
-from scal3.s_object import *
+from scal3.path import APP_NAME, plugDir
+from scal3.s_object import JsonSObj, SObj
 from scal3.time_utils import getJdListFromEpochRange
 
 try:
@@ -145,7 +144,7 @@ class BasePlugin(SObj):
 			except ValueError:
 				# raise ValueError(f"Invalid calType: '{calType}'")
 				log.error(
-					f"Plugin \"{_file}\" needs calendar module " +
+					f"Plugin \"{self.file}\" needs calendar module "
 					f"\"{calType}\" that is not loaded!\n",
 				)
 				self.calType = None
@@ -252,7 +251,6 @@ def loadExternalPlugin(_file, **data):
 		# plug.external = True
 		# return plug
 	###
-	direc = dirname(_file)
 	name = splitext(fname)[0]
 	###
 	if not data.get("enable"):
@@ -469,16 +467,16 @@ class YearlyTextPlugin(BaseJsonPlugin):
 		module, ok = calTypes[self.calType]
 		if not ok:
 			raise RuntimeError(f"cal type '{self.calType}' not found")
-		for j in range(12):
+		for _j in range(12):
 			monthDb = []
-			for k in range(module.maxMonthLen):
+			for _k in range(module.maxMonthLen):
 				monthDb.append("")
 			yearlyData.append(monthDb)
 		# last item is a dict of dates (y, m, d) and the description of day:
 		yearlyData.append({})
 		ext = splitext(self.dataFile)[1].lower()
 		if ext == ".txt":
-			sep = "\t"
+			# sep = "\t"
 			with open(self.dataFile, encoding="utf-8") as fp:
 				lines = fp.read().split("\n")
 			for line in lines[1:]:
@@ -508,8 +506,9 @@ class YearlyTextPlugin(BaseJsonPlugin):
 			raise ValueError(f"invalid plugin dataFile extention \"{ext}\"")
 		self.yearlyData = yearlyData
 
-	def getBasicYearlyText(month, day):
-		item = yearlyData[month - 1]
+	# def getBasicYearlyText(month, day):
+	# 	item = self.yearlyData[month - 1]
+	# 	return item
 
 	def getText(self, year, month, day):
 		yearlyData = self.yearlyData
@@ -581,7 +580,6 @@ class IcsTextPlugin(BasePlugin):
 	def load(self):
 		with open(self.file, encoding="utf-8") as fp:
 			lines = fp.read().replace("\r", "").split("\n")
-		n = len(lines)
 		i = self._findVeventBegin(lines)
 		if i < 0:
 			log.error(f"bad ics file \"{self.fpath}\"")
@@ -720,8 +718,7 @@ class IcsTextPlugin(BasePlugin):
 						": " +
 						self.ymd[(y, m, d)]
 					)
-				else:
-					return self.ymd[(y, m, d)]
+				return self.ymd[(y, m, d)]
 		if self.md:
 			if (m, d) in self.md:
 				if self.show_date:
@@ -734,8 +731,7 @@ class IcsTextPlugin(BasePlugin):
 						": " +
 						self.ymd[(y, m, d)]
 					)
-				else:
-					return self.md[(m, d)]
+				return self.md[(m, d)]
 		return ""
 
 	def open_configure(self):
@@ -766,7 +762,7 @@ def loadPlugin(_file=None, **kwargs):
 		return
 	if ext != ".json":
 		log.error(
-			f"unsupported plugin extention {ext}" +
+			f"unsupported plugin extention {ext}"
 			", new style plugins have a json file",
 		)
 		return
@@ -775,13 +771,13 @@ def loadPlugin(_file=None, **kwargs):
 			text = fp.read()
 	except Exception as e:
 		log.error(
-			f"error while reading plugin file \"{_file}\"" +
+			f"error while reading plugin file \"{_file}\""
 			f": {e}",
 		)
 		return
 	try:
 		data = jsonToData(text)
-	except Exception as e:
+	except Exception:
 		log.error(f"invalid json file \"{_file}\"")
 		log.exception("")
 		return
@@ -805,7 +801,7 @@ def loadPlugin(_file=None, **kwargs):
 	for param in cls.essentialParams:
 		if not data.get(param):
 			log.error(
-				f"invalid plugin \"{_file}\"" +
+				f"invalid plugin \"{_file}\""
 				f": parameter \"{param}\" is missing",
 			)
 			return

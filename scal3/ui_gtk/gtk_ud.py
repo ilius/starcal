@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -24,19 +23,33 @@ from scal3 import logger
 
 log = logger.get()
 
+import os
+import sys
+import typing
 from os.path import join
+
+if typing.TYPE_CHECKING:
+	from scal3.event_update_queue import EventUpdateRecord
+
 from typing import Callable
 
 from gi.overrides.GObject import Object
 
 from scal3 import locale_man, ui
 from scal3.format_time import compileTmFormat
-from scal3.json_utils import *
+from scal3.json_utils import (
+	loadModuleJsonConf,
+	saveModuleJsonConf,
+)
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
-from scal3.path import *
-from scal3.ui_gtk import *
-from scal3.ui_gtk.decorators import *
+from scal3.path import (
+	confDir,
+	sourceDir,
+	sysConfDir,
+)
+from scal3.ui_gtk import gdk, gtk
+from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import calcTextPixelSize
 from scal3.ui_gtk.font_utils import gfontDecode, pfontEncode
 
@@ -90,7 +103,7 @@ class BaseCalObj(CalObjType):
 		if sender is None:
 			sender = self
 		log.debug(
-			f"onConfigChange: name={self._name}, toParent={toParent}, " +
+			f"onConfigChange: name={self._name}, toParent={toParent}, "
 			f"sender={sender._name if sender else sender}",
 		)
 		if toParent:
@@ -105,7 +118,7 @@ class BaseCalObj(CalObjType):
 		if sender is None:
 			sender = self
 		log.debug(
-			f"onDateChange: name={self._name}, toParent={toParent}, " +
+			f"onDateChange: name={self._name}, toParent={toParent}, "
 			f"sender={sender._name if sender else sender}",
 		)
 		if toParent:
