@@ -19,25 +19,18 @@
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 from scal3 import logger
+
 log = logger.get()
 
-import sys
-import os
-from time import localtime
 from time import time as now
 
-from scal3.utils import toStr
-from scal3.cal_types import to_jd, jd_to
-from scal3 import locale_man
-from scal3.locale_man import tr as _
-from scal3.locale_man import rtl
-from scal3.mywidgets.multi_spin import * ## FIXME
-from scal3 import ui
-
+from scal3 import locale_man, ui
+from scal3.mywidgets.multi_spin import *  ## FIXME
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.utils import imageClassButton
 from scal3.ui_gtk.drawing import calcTextPixelWidth
+from scal3.ui_gtk.utils import imageClassButton
+from scal3.utils import toStr
 
 
 class AutoSizeEntry(gtk.Entry):
@@ -235,7 +228,7 @@ class MultiSpinButton(gtk.Box):
 		pos = self.entry.get_position()
 		self.field.getFieldAt(
 			toStr(self.entry.get_text()),
-			self.entry.get_position()
+			self.entry.get_position(),
 		).plus(p)
 		self.entry.set_text(self.field.getText())
 		self.entry.set_position(pos)
@@ -374,7 +367,7 @@ class SingleSpinButton(MultiSpinButton):
 			self,
 			sep=" ",
 			fields=(field,),
-			**kwargs
+			**kwargs,
 		)
 		# if isinstance(field, NumField):
 		# 	gtk.SpinButton.set_range(self, field._min, field._max)

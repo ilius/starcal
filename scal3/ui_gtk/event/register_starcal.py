@@ -17,21 +17,18 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-import time
 import sys
 
 sys.path.append("/starcal")  # REMOVE FIXME
 
-from scal3 import core
-from scal3 import locale_man
+from scal3 import core, locale_man, ui
 from scal3.locale_man import tr as _
-from scal3 import ui
-
 from scal3.ui_gtk import *
-from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
+from scal3.ui_gtk.mywidgets.dialog import MyDialog
 
 
 class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
@@ -133,9 +130,7 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 			self.errorLabel.set_text("")
 
 	def doRegister(self):
-		"""
-		return None if successful, or error string if failed
-		"""
+		"""Return None if successful, or error string if failed."""
 		import requests
 		email = self.emailEntry.get_text()
 		password = self.passwordEntry.get_text()
@@ -185,6 +180,7 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 			log.error(error)
 			return # error? FIXME
 		account.save()
+		return None
 
 	def onOkClick(self, widget):
 		error = self.waitingDo(self.doRegister)

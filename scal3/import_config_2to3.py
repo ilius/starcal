@@ -18,22 +18,18 @@
 
 # no logging in this file
 
-import sys
-import os
-from os.path import join, split, splitext, dirname, isfile, isdir
-from time import time as now
 import json
-
-from collections import OrderedDict
-
-import shutil
+import os
 import re
-
+import shutil
+from collections import OrderedDict
+from os.path import isdir, isfile, join, splitext
+from time import time as now
 from typing import Any, Generator
 
-from scal3.path import confDir as newConfDir
+from scal3.json_utils import dataToPrettyJson
 from scal3.os_utils import makeDir
-from scal3.json_utils import dataToPrettyJson, dataToCompactJson
+from scal3.path import confDir as newConfDir
 from scal3.s_object import DefaultFileSystem, saveBsonObject
 
 oldConfDir = newConfDir.replace("starcal3", "starcal2")
@@ -83,14 +79,14 @@ def loadCoreConf() -> None:
 		with open(confPath) as fp:
 			text = fp.read()
 	except Exception as e:
-		raise IOError(f"failed to read file {confPath!r}: {e}")
+		raise OSError(f"failed to read file {confPath!r}: {e}")
 	######
 	text = text.replace("calTypes.activeNames", "activeCalTypes")
 	text = text.replace("calTypes.inactiveNames", "inactiveCalTypes")
 	######
 	data = OrderedDict()
 	exec(text, {
-		"loadPlugin": loadPlugin
+		"loadPlugin": loadPlugin,
 	}, data)
 	return data
 
@@ -177,7 +173,7 @@ def importEventsIter() -> Generator[int, None, None]:
 		_hash = saveBsonObject(data, fsNew)
 		basicData["history"] = [(tm, _hash)]
 		open(newDpath + ".json", "w").write(
-			dataToPrettyJson(basicData, sort_keys=True)
+			dataToPrettyJson(basicData, sort_keys=True),
 		)
 
 
@@ -265,7 +261,7 @@ def importGroupsIter() -> Generator[int, None, None]:
 		else:
 			log.info(
 				f"file {oldGroupListFile!r} contains invalid data" +
-				", must contain a list"
+				", must contain a list",
 			)
 
 
@@ -319,7 +315,7 @@ def importAccountsIter() -> Generator[int, None, None]:
 		_hash = saveBsonObject(data, fsNew)
 		basicData["history"] = [(tm, _hash)]
 		open(newJsonPath, "w").write(
-			dataToPrettyJson(basicData, sort_keys=True)
+			dataToPrettyJson(basicData, sort_keys=True),
 		)
 
 
@@ -418,7 +414,7 @@ def importPluginsIter() -> Generator[int, None, None]:
 		writeJsonConf(
 			plugName,## move it out of plugins.conf FIXME
 			loadConf(
-				join(oldPlugConfDir, plugName)
+				join(oldPlugConfDir, plugName),
 			),
 		)
 		yield index; index += 1
@@ -459,7 +455,7 @@ def importConfigIter() -> Generator[int, None, None]:
 def getOldVersion() -> str:
 	"""
 	return version of installed starcal 2.3.x or 2.4.x
-	from user"s configuration directory (file ~/.starcal2/core.conf)
+	from user"s configuration directory (file ~/.starcal2/core.conf).
 
 	before 2.3.0, version was not stored in configuration directory
 	"""

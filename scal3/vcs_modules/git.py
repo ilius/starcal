@@ -17,22 +17,19 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from os.path import join
-from subprocess import Popen, PIPE
 
-from typing import List, Tuple
 
 from pygit2 import (
-	Repository,
+	GIT_SORT_REVERSE,
 	GIT_SORT_TIME,
 	GIT_SORT_TOPOLOGICAL,
-	GIT_SORT_REVERSE,
+	Repository,
 )
 
-from scal3.utils import toStr, toBytes
-from scal3.time_utils import getEpochFromJd, encodeJd
+from scal3.time_utils import getEpochFromJd
 from scal3.vcs_modules import encodeShortStat
 
 
@@ -45,9 +42,9 @@ def clearObj(obj):
 
 
 
-def getCommitList(obj, startJd=None, endJd=None, branch="") -> List[Tuple[int, str]]:
+def getCommitList(obj, startJd=None, endJd=None, branch="") -> list[tuple[int, str]]:
 	"""
-	returns a list of (epoch, commit_id) tuples
+	returns a list of (epoch, commit_id) tuples.
 
 	this function is optimized for recent commits
 		i.e. endJd is either None or recent
@@ -92,16 +89,12 @@ def getCommitInfo(obj, commid_id):
 
 
 def getShortStatLine(obj, prevId, thisId):
-	"""
-	returns str
-	"""
+	"""Returns str."""
 	return encodeShortStat(*getShortStat(obj, prevId, thisId))
 
 
 def getShortStat(obj, prevId, thisId):
-	"""
-	returns (files_changed, insertions, deletions)
-	"""
+	"""Returns (files_changed, insertions, deletions)."""
 	repo = Repository(obj.vcsDir)
 	diff = repo.diff(
 		a=repo.revparse_single(prevId).id.hex,
@@ -112,16 +105,12 @@ def getShortStat(obj, prevId, thisId):
 
 
 def getCommitShortStatLine(obj, commit_id):
-	"""
-	returns str
-	"""
+	"""Returns str."""
 	return encodeShortStat(*getCommitShortStat(obj, commit_id))
 
 
 def getCommitShortStat(obj, commit_id):
-	"""
-	returns (files_changed, insertions, deletions)
-	"""
+	"""Returns (files_changed, insertions, deletions)."""
 	repo = Repository(obj.vcsDir)
 	commit = repo.revparse_single(commit_id)
 	diff = repo.diff(
@@ -133,9 +122,7 @@ def getCommitShortStat(obj, commit_id):
 
 
 def getTagList(obj, startJd, endJd):
-	"""
-	returns a list of (epoch, tag_name) tuples
-	"""
+	"""Returns a list of (epoch, tag_name) tuples."""
 	repo = Repository(obj.vcsDir)
 	startEpoch = getEpochFromJd(startJd)
 	endEpoch = getEpochFromJd(endJd)
@@ -201,10 +188,11 @@ def getLatestParentBefore(obj, commitId: str, beforeEpoch: float) -> str:
 
 
 if __name__ == "__main__":
-	import sys
 	import os
+	import sys
+
 	from dateutil.parser import parse
-	
+
 	class DummyObj:
 		def __init__(self, vcsDir):
 			self.vcsDir = vcsDir

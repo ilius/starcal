@@ -22,14 +22,13 @@ developerKey = (
 )
 
 from scal3 import logger
+
 log = logger.get()
 
+import http.server
 import sys
 from os.path import splitext
 from time import time as now
-import http.server
-
-from pprint import pprint, pformat
 
 try:
 	from urllib.parse import parse_qsl
@@ -44,17 +43,13 @@ from scal3.path import *
 sys.path.append(join(sourceDir, "google-api-python-client"))  # FIXME
 sys.path.append(join(sourceDir, "oauth2client"))  # FIXME
 
-from scal3.utils import toBytes, toStr
-
-from scal3.ics import *
-from scal3.os_utils import openUrl
-from scal3.cal_types import to_jd, jd_to, GREGORIAN
-from scal3.locale_man import tr as _
-from scal3 import core
-
-from scal3 import event_lib
+from scal3 import core, event_lib
+from scal3.cal_types import GREGORIAN
 from scal3.event_lib import Account
-
+from scal3.ics import *
+from scal3.locale_man import tr as _
+from scal3.os_utils import openUrl
+from scal3.utils import toBytes, toStr
 
 auth_local_webserver = True
 auth_host_name = "localhost"
@@ -112,7 +107,7 @@ def exportEvent(event):
 				"starcal_id": event.id,
 				"starcal_type": event.name,
 			},
-		}
+		},
 	}
 	for key, value in icsData:
 		key = key.upper()
@@ -170,16 +165,19 @@ def importEvent(gevent, group):
 
 
 class ClientRedirectServer(http.server.HTTPServer):
+
 	"""
 	A server to handle OAuth 2.0 redirects back to localhost.
 
 	Waits for a single request and parses the query parameters
 	into query_params and then stops serving.
 	"""
+
 	query_params = {}
 
 
 class ClientRedirectHandler(http.server.BaseHTTPRequestHandler):
+
 	"""
 	A handler for OAuth 2.0 redirects back to localhost.
 
@@ -202,19 +200,17 @@ class ClientRedirectHandler(http.server.BaseHTTPRequestHandler):
 		query = dict(parse_qsl(query))
 		s.server.query_params = query
 		s.wfile.write(
-			b"<html><head><title>Authentication Status</title></head>"
+			b"<html><head><title>Authentication Status</title></head>",
 		)
 		s.wfile.write(
-			b"<body><p>The authentication flow has completed.</p>"
+			b"<body><p>The authentication flow has completed.</p>",
 		)
 		s.wfile.write(
-			b"</body></html>"
+			b"</body></html>",
 		)
 
 	def log_message(self, format, *args):
-		"""
-		Do not log messages to stdout while running as command line program.
-		"""
+		"""Do not log messages to stdout while running as command line program."""
 		pass
 
 
@@ -223,7 +219,7 @@ def dumpRequest(request):
 		f"uri={request.uri!r}\n" +
 		f"method={request.method!r}\n" +
 		f"headers={request.headers!r}\n" +
-		f"body={request.body!r}\n\n\n"
+		f"body={request.body!r}\n\n\n",
 	)
 
 
@@ -273,12 +269,12 @@ class GoogleAccount(Account):
 		self.showError(
 			_("HTTP Error") + "\n" +
 			_("Error Code") + ": " + _(e.resp.status) + "\n" +
-			_("Error Message") + ": " + _(e._get_reason().strip())
+			_("Error Message") + ": " + _(e._get_reason().strip()),
 		)
 
 	def authenticate(self):
 		global auth_local_webserver
-		import socket
+
 		from oauth2client.file import Storage
 		storage = Storage(self.authFile)
 		credentials = storage.get()
@@ -295,10 +291,10 @@ class GoogleAccount(Account):
 						(auth_host_name, port),
 						ClientRedirectHandler,
 					)
-				except socket.error as e:
+				except OSError as e:
 					log.info(
 						f"-------- counld not use port {port} " +
-						f"for local web server: {e}"
+						f"for local web server: {e}",
 					)
 					pass
 				else:
@@ -323,7 +319,7 @@ class GoogleAccount(Account):
 			else:
 				self.showError(_(
 					"Failed to find \"code\" in the query parameters " +
-					"of the redirect."
+					"of the redirect.",
 				))
 				return
 		else:
@@ -333,7 +329,7 @@ class GoogleAccount(Account):
 		except Exception as e:
 			self.showError(
 				_("Authentication has failed") +
-				f":\n{e}"
+				f":\n{e}",
 			)
 			return
 		storage.put(credential)
@@ -351,7 +347,7 @@ class GoogleAccount(Account):
 		return http
 
 	def getCalendarService(self):
-		from apiclient.discovery import build, HttpError
+		from apiclient.discovery import HttpError, build
 		try:
 			return build(
 				serviceName="calendar",
@@ -364,7 +360,7 @@ class GoogleAccount(Account):
 			self.showHttpException(e)
 
 	def getTasksService(self):
-		from apiclient.discovery import build, HttpError
+		from apiclient.discovery import HttpError, build
 		try:
 			return build(
 				serviceName="tasks",
@@ -383,7 +379,7 @@ class GoogleAccount(Account):
 			body={
 				"kind": "calendar#calendar",
 				"summary": title,
-			}
+			},
 		).execute()["id"]
 
 	def deleteGroup(self, remoteGroupId):
@@ -393,9 +389,7 @@ class GoogleAccount(Account):
 		service.calendars().delete(calendarId=remoteGroupId).execute()
 
 	def fetchGroups(self):
-		"""
-		return None if successful, or error string if failed
-		"""
+		"""Return None if successful, or error string if failed."""
 		service = self.getCalendarService()
 		if not service:
 			return "no service"  # fix msg FIXME
@@ -407,6 +401,7 @@ class GoogleAccount(Account):
 				"title": group["summary"],
 			})
 		self.remoteGroups = groups
+		return None
 
 	def fetchAllEventsInGroup(self, remoteGroupId):
 		service = self.getCalendarService()
@@ -419,9 +414,7 @@ class GoogleAccount(Account):
 		return eventsRes.get("items", [])
 
 	def sync(self, group, remoteGroupId):
-		"""
-		return None if successful, or error string if failed
-		"""
+		"""Return None if successful, or error string if failed."""
 		from apiclient.discovery import HttpError
 		#if remoteGroupId=="tasks":  # FIXME
 		#	service = self.getTasksService()
@@ -531,7 +524,7 @@ class GoogleAccount(Account):
 			if remoteEventId and lastSync and event.modified < lastSync:
 				log.info(
 					f"---------- skipping event {event.summary}" +
-					f"(modified = {event.modified} < {lastPush} = lastPush)"
+					f"(modified = {event.modified} < {lastPush} = lastPush)",
 				)
 				continue
 			bothId = (event.id, remoteEventId)
@@ -589,6 +582,7 @@ class GoogleAccount(Account):
 		"""
 		group.afterSync()  # FIXME
 		group.save()  # FIXME
+		return None
 
 
 def printAllEvent(account, remoteGroupId):
@@ -597,7 +591,6 @@ def printAllEvent(account, remoteGroupId):
 
 
 if __name__ == "__main__":
-	from scal3 import ui
 	account = GoogleAccount.load(1)
 	log.info(account.fetchGroups())
 	# remoteGroupId = "gi646vjovfrh2u2u2l9hnatvq0@group.calendar.google.com"

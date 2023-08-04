@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-from scal3.ui_gtk import *
 from scal3.mywidgets.multi_spin import IntField
+from scal3.ui_gtk import *
 from scal3.ui_gtk.mywidgets.multi_spin import SingleSpinButton
 
 
@@ -13,7 +13,7 @@ class IntSpinButton(SingleSpinButton):
 			field=IntField(_min, _max),
 			step_inc=step,
 			page_inc=step * 10,
-			**kwargs
+			**kwargs,
 		)
 
 	def set_range(self, _min: int, _max: int):

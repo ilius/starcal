@@ -17,46 +17,36 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
+from bisect import bisect_left, bisect_right
 from math import log10
-from bisect import bisect_right, bisect_left
 
+from scal3 import core
+from scal3.cal_types import calTypes
+from scal3.core import jd_to_primary, primary_to_jd
+from scal3.date_utils import getEpochFromDate, jwday
+from scal3.locale_man import (
+	addLRM,
+	getMonthName,
+	textNumEncode,
+)
+from scal3.locale_man import tr as _
 from scal3.time_utils import (
 	getEpochFromJd,
 	getJdFromEpoch,
-	getFloatJdFromEpoch,
 	getJhmsFromEpoch,
 	getUtcOffsetByJd,
 )
-from scal3.date_utils import jwday, getEpochFromDate
-from scal3.cal_types import calTypes, jd_to, to_jd
-
 from scal3.timeline import tl
 from scal3.timeline.box import (
 	calcEventBoxes,
 )
-
-from scal3.locale_man import tr as _
-from scal3.locale_man import (
-	rtl,
-	numEncode,
-	textNumEncode,
-	addLRM,
-	getMonthName,
-)
-
-from scal3 import core
-from scal3.core import jd_to_primary, primary_to_jd
-
-from scal3.color_utils import hslToRgb
-from scal3.utils import ifloor, iceil, toBytes
-from scal3 import ui
-from scal3.ui import getHolidaysJdList
-
-from scal3.timeline import tl
 from scal3.timeline.tick import Tick
 from scal3.timeline.utils import *
+from scal3.ui import getHolidaysJdList
+from scal3.utils import iceil, ifloor
 
 ####################################################
 
@@ -308,7 +298,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 		for jd in range(jd0, jd1 + 1):
 			utcOffset = int(getUtcOffsetByJd(jd))
 			firstEpoch = iceil(
-				(timeStart + utcOffset) / stepSec
+				(timeStart + utcOffset) / stepSec,
 			) * stepSec - utcOffset
 			for tmEpoch in range(
 				firstEpoch,

@@ -19,23 +19,15 @@
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 from scal3 import logger
+
 log = logger.get()
 
-from scal3.utils import toBytes, toStr
 
 from scal3 import locale_man
 from scal3.locale_man import (
-	numEncode,
 	floatEncode,
-	numDecode,
-	textNumEncode,
+	numEncode,
 	textNumDecode,
-)
-
-from scal3.cal_types import (
-	to_jd,
-	jd_to,
-	convert,
 )
 
 
@@ -52,7 +44,7 @@ class Field:
 		return None
 
 	def plus(self, p):
-		"""p is usually 1, -1, 10, -10"""
+		"""P is usually 1, -1, 10, -10."""
 		pass
 
 	def setText(self):
@@ -199,7 +191,7 @@ class SingleCharField(Field):
 	def setValue(self, v):
 		if v not in self.values:
 			raise ValueError(
-				f"SingleCharField.setValue: {v!r} is not a valid value"
+				f"SingleCharField.setValue: {v!r} is not a valid value",
 			)
 		self.value = v
 

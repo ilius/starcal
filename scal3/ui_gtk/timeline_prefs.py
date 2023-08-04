@@ -16,27 +16,22 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from scal3.locale_man import tr as _
-
 from scal3 import ui
-
+from scal3.locale_man import tr as _
 from scal3.timeline import tl
-
-from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk import *
+from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
+from scal3.ui_gtk.pref_utils import (
+	CheckColorPrefItem,
+	CheckPrefItem,
+	ColorPrefItem,
+	SpinPrefItem,
+)
+from scal3.ui_gtk.pref_utils_extra import KeyBindingPrefItem
+from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.utils import (
 	imageFromFile,
 )
-from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
-from scal3.ui_gtk.stack import MyStack, StackPage
-
-from scal3.ui_gtk.pref_utils import (
-	SpinPrefItem,
-	CheckPrefItem,
-	ColorPrefItem,
-	CheckColorPrefItem,
-)
-from scal3.ui_gtk.pref_utils_extra import KeyBindingPrefItem
 
 
 class TimeLinePreferencesWindow(gtk.Window):

@@ -1,6 +1,6 @@
+import sys
 import unittest
 
-import sys
 sys.path.append(".")
 
 from scal3.cal_types import gregorian
