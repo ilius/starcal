@@ -32,6 +32,7 @@ from time import time as now
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
 from scal3 import logger
+from scal3.cal_types import convert
 from scal3.path import *
 
 log = logger.get()
@@ -1320,7 +1321,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		if calTypes.primary == core.GREGORIAN:
 			ddate = gdate
 		else:
-			ddate = core.convert(
+			ddate = convert(
 				gdate[0],
 				gdate[1],
 				gdate[2],
