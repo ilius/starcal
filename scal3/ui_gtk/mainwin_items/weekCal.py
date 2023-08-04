@@ -21,7 +21,6 @@ from scal3 import logger
 log = logger.get()
 
 from time import time as now
-from typing import Optional
 
 import cairo
 from gi.repository.PangoCairo import show_layout
@@ -322,7 +321,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 		self,
 		cr: "cairo.Context",
 		textData: list[list[str]],
-		font: "Optional[Font]" = None,
+		font: "Font | None" = None,
 	):
 		alloc = self.get_allocation()
 		w = alloc.width

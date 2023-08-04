@@ -512,7 +512,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		# t2 = now()
 		# log.debug(f"drawing time / data calc time: {(t2-t1)/(t1-t0):.2f}")
 
-	def getLastScrollDir(self) -> "":
+	def getLastScrollDir(self) -> "str | None":
 		"""Returns "up", "down" or ""."""
 		if not self._lastScrollDir:
 			return ""

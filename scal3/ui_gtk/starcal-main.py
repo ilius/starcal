@@ -3,7 +3,7 @@
 
 import sys
 from os.path import abspath, dirname, isabs, join
-from typing import Callable, Optional
+from typing import Callable
 
 import gi
 
@@ -60,8 +60,8 @@ def dialog_add_button(
 	dialog,
 	imageName: str = "",
 	label: str = "",
-	res: Optional[gtk.ResponseType] = None,
-	onClick: Optional[Callable] = None,
+	res: "gtk.ResponseType | None" = None,
+	onClick: "Callable | None" = None,
 	tooltip: str = "",
 ):
 	b = dialog.add_button(label, res)

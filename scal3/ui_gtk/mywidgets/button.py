@@ -5,7 +5,6 @@ from scal3 import logger
 log = logger.get()
 
 from time import time as now
-from typing import Optional
 
 from scal3 import ui
 from scal3.ui_gtk import *
@@ -13,7 +12,7 @@ from scal3.ui_gtk.decorators import *
 
 
 class ConButtonBase:
-	def __init__(self, button: Optional[int] = None):
+	def __init__(self, button: int = None):
 		self.pressTm = 0
 		self.counter = 0
 		self._button = button

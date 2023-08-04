@@ -30,7 +30,7 @@ from os.path import (
 	join,
 	splitext,
 )
-from typing import Callable, Optional, Union
+from typing import Callable
 
 import natz
 from scal3.cal_types import calTypes
@@ -130,7 +130,7 @@ loadConf()
 ##########################################################
 
 
-def tr(s: Union[str, int], *a, **ka) -> str:
+def tr(s: "str | int", *a, **ka) -> str:
 	"""String translator function."""
 	return numEncode(s, *a, **ka) if isinstance(s, int) else str(s)
 
@@ -159,7 +159,7 @@ class LangData(JsonSObj):
 		self.hasUppercase = True
 		self.transPath = ""
 		##
-		self.timeZoneList = []  # type: List[str]
+		self.timeZoneList: "list[str]" = []
 
 	def setData(self, data: dict):
 		JsonSObj.setData(self, data)
@@ -245,7 +245,7 @@ for fname in langFileList:
 langDict.sort("name")
 
 
-def popen_output(cmd: Union[list[str], str]) -> str:
+def popen_output(cmd: "list[str] | str") -> str:
 	return Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
 
 
@@ -329,7 +329,7 @@ def rtlSgn() -> int:
 def getMonthName(
 	calType: int,
 	month: int,
-	year: Optional[int] = None,
+	year: "int | None" = None,
 	abbreviate: bool = False,
 ) -> str:
 	module, ok = calTypes[calType]
@@ -376,7 +376,7 @@ def getAvailableDigitKeys() -> set[str]:
 
 def numEncode(
 	num: int,
-	localeMode: Union[None, str, int] = None,
+	localeMode: "str | int | None" = None,
 	fillZero: int = 0,
 	negEnd: bool = False,
 ) -> str:
@@ -418,7 +418,7 @@ def numEncode(
 
 def textNumEncode(
 	st: str,
-	localeMode: Union[None, str, int] = None,
+	localeMode: "str | int | None" = None,
 	changeSpecialChars: bool = True,
 	changeDot: bool = False,
 ) -> str:
@@ -459,7 +459,7 @@ def textNumEncode(
 
 def floatEncode(
 	st: str,
-	localeMode: Union[None, str, int] = None,
+	localeMode: "str | int | None" = None,
 ):
 	return textNumEncode(
 		st,

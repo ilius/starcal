@@ -20,8 +20,9 @@ from scal3 import logger
 
 log = logger.get()
 
+import typing
 from os.path import isabs, join
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable
 
 from gi.repository import GdkPixbuf
 
@@ -38,7 +39,7 @@ from scal3.ui_gtk.utils import (
 	set_tooltip,
 )
 
-ColorType = Union[tuple[int, int, int], tuple[int, int, int, int]]
+ColorType: "typing.TypeAlias" = "tuple[int, int, int] | tuple[int, int, int, int]"
 
 
 # (VAR_NAME, bool,     CHECKBUTTON_TEXT)                 ## CheckButton
@@ -176,11 +177,11 @@ class ComboTextPrefItem(PrefItem):
 		self,
 		obj: Any,
 		attrName: str,
-		items: Optional[list[str]] = None,
+		items: "list[str] | None" = None,
 		label: str = "",
-		labelSizeGroup: Optional[gtk.SizeGroup] = None,
+		labelSizeGroup: "gtk.SizeGroup | None" = None,
 		live: bool = False,
-		onChangeFunc: Optional[Callable] = None,
+		onChangeFunc: "Callable | None" = None,
 	) -> None:
 		self.obj = obj
 		self.attrName = attrName
@@ -226,7 +227,7 @@ class FontFamilyPrefItem(PrefItem):
 		attrName: str,
 		hasAuto: bool = False,
 		label: str = "",
-		onChangeFunc: Optional[Callable] = None,
+		onChangeFunc: "Callable | None" = None,
 	):
 		self.obj = obj
 		self.attrName = attrName
@@ -265,13 +266,13 @@ class FontFamilyPrefItem(PrefItem):
 			return
 		self.fontRadio.set_active(True)
 
-	def get(self) -> Optional[str]:
+	def get(self) -> "str | None":
 		if self.hasAuto and self.autoRadio.get_active():
 			return None
 		font = gfontDecode(self.fontButton.get_font_name())
 		return font.family
 
-	def set(self, value: Optional[str]) -> None:
+	def set(self, value: "str | None") -> None:
 		if value is None:
 			if self.hasAuto:
 				self.autoRadio.set_active(True)
@@ -302,7 +303,7 @@ class FontFamilyPrefItem(PrefItem):
 #		semi-condensed | normal | semi-expanded | expanded |
 #		extra-expanded | ultra-expanded
 
-# Constructor can accept argument `attrNameDict: Dict[str, str]`
+# Constructor can accept argument `attrNameDict: dict[str, str]`
 # with keys being a subset these 6 style keys, and values
 # being the attribute/variable names for reading (in updateWidget)
 # and storing (in updateVar) the style values
@@ -318,7 +319,7 @@ class ComboEntryTextPrefItem(PrefItem):
 		self,
 		obj: Any,
 		attrName: str,
-		items: Optional[list[str]] = None,
+		items: "list[str] | None" = None,
 	):
 		"""Items is a list of strings."""
 		self.obj = obj
@@ -350,7 +351,7 @@ class ComboImageTextPrefItem(PrefItem):
 		self,
 		obj: Any,
 		attrName: str,
-		items: Optional[list[tuple[str, str]]] = None,
+		items: "list[tuple[str, str]] | None" = None,
 	):
 		"""Items is a list of (imagePath, text) tuples."""
 		self.obj = obj
@@ -413,7 +414,7 @@ class FontPrefItem(PrefItem):
 	def get(self) -> ui.Font:
 		return self._widget.get_font()
 
-	def set(self, value: Optional[ui.Font]) -> None:
+	def set(self, value: "ui.Font | None") -> None:
 		if value is None:
 			return
 		self._widget.set_font(value)
@@ -430,7 +431,7 @@ class CheckPrefItem(PrefItem):
 		label: str = "",
 		tooltip: str = "",
 		live: bool = False,
-		onChangeFunc: Optional[Callable] = None,
+		onChangeFunc: "Callable | None" = None,
 	) -> None:
 		self.obj = obj
 		self.attrName = attrName
@@ -488,7 +489,7 @@ class ColorPrefItem(PrefItem):
 		attrName: str,
 		useAlpha: bool = False,
 		live: bool = False,
-		onChangeFunc: Optional[Callable] = None,
+		onChangeFunc: "Callable | None" = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets import MyColorButton
 		self.obj = obj
@@ -512,7 +513,7 @@ class ColorPrefItem(PrefItem):
 	def get(self) -> ColorType:
 		return self._widget.get_rgba()
 
-	def set(self, color: Optional[ColorType]) -> None:
+	def set(self, color: "ColorType | None") -> None:
 		if color is None:
 			return
 		self._widget.set_rgba(color)
@@ -530,9 +531,9 @@ class CheckColorPrefItem(PrefItem):
 		self,
 		checkItem: CheckPrefItem,
 		colorItem: ColorPrefItem,
-		checkSizeGroup: Optional[gtk.SizeGroup] = None,
+		checkSizeGroup: "gtk.SizeGroup | None" = None,
 		live: bool = False,
-		onChangeFunc: Optional[Callable] = None,
+		onChangeFunc: "Callable | None" = None,
 	) -> None:
 		self._checkItem = checkItem
 		self._colorItem = colorItem
@@ -582,11 +583,11 @@ class CheckFontPrefItem(PrefItem):
 		self,
 		checkItem: CheckPrefItem,
 		fontItem: FontPrefItem,
-		checkSizeGroup: Optional[gtk.SizeGroup] = None,
+		checkSizeGroup: "gtk.SizeGroup | None" = None,
 		vertical: bool = False,
 		spacing: int = 3,
 		live: bool = False,
-		onChangeFunc: Optional[Callable] = None,
+		onChangeFunc: "Callable | None" = None,
 	) -> None:
 		self._checkItem = checkItem
 		self._fontItem = fontItem
@@ -635,15 +636,15 @@ class SpinPrefItem(PrefItem):
 		self,
 		obj: Any,
 		attrName: str,
-		_min: Union[int, float],
-		_max: Union[int, float],
+		_min: "int | float",
+		_max: "int | float",
 		digits: int = 1,
-		step: Union[int, float] = 0,
+		step: "int | float" = 0,
 		label: str = "",
-		labelSizeGroup: Optional[gtk.SizeGroup] = None,
+		labelSizeGroup: "gtk.SizeGroup | None" = None,
 		unitLabel: str = "",
 		live: bool = False,
-		onChangeFunc: Optional[Callable] = None,
+		onChangeFunc: "Callable | None" = None,
 	):
 		self.obj = obj
 		self.attrName = attrName
@@ -675,10 +676,10 @@ class SpinPrefItem(PrefItem):
 		elif onChangeFunc is not None:
 			raise ValueError("onChangeFunc is given without live=True")
 
-	def get(self) -> Union[int, float]:
+	def get(self) -> "int | float":
 		return self._spinb.get_value()
 
-	def set(self, value: Union[int, float]) -> None:
+	def set(self, value: "int | float") -> None:
 		self._spinb.set_value(value)
 
 	# FIXME: updateWidget is triggering onChange func, can we avoid that?
@@ -695,7 +696,7 @@ class TextPrefItem(PrefItem):
 		attrName: str,
 		label: str = "",
 		live: bool = False,
-		onChangeFunc: Optional[Callable] = None,
+		onChangeFunc: "Callable | None" = None,
 	):
 		from scal3.ui_gtk.mywidgets import TextFrame
 		self.obj = obj
@@ -736,7 +737,7 @@ class WidthHeightPrefItem(PrefItem):
 		self,
 		obj: Any,
 		attrName: str,
-		_max: Union[int, float],
+		_max: "int | float",
 	):
 		_min = 0
 		self.obj = obj
@@ -845,7 +846,7 @@ class IconChooserPrefItem(PrefItem):
 		attrName: str,
 		label: str = "",
 		live: bool = False,
-		onChangeFunc: Optional[Callable] = None,
+		onChangeFunc: "Callable | None" = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 		self.obj = obj
@@ -895,7 +896,7 @@ class RadioListPrefItem(PrefItem):
 		obj: Any,
 		attrName: str,
 		texts: list[str],
-		label: Optional[str] = None,
+		label: "str | None" = None,
 	) -> None:
 		self.num = len(texts)
 		self.obj = obj
@@ -920,7 +921,7 @@ class RadioListPrefItem(PrefItem):
 			r.join_group(first)
 		pack(box, gtk.Label(), 1, 1) ## FIXME
 
-	def get(self) -> Optional[int]:
+	def get(self) -> "int | None":
 		for i in range(self.num):
 			if self.radios[i].get_active():
 				return i
@@ -946,7 +947,7 @@ class ListPrefItem(PrefItem):
 		vertical: bool,
 		obj: Any,
 		attrName: str,
-		items: Optional[list[PrefItem]] = None,
+		items: "list[PrefItem] | None" = None,
 	) -> None:
 		self.obj = obj
 		self.attrName = attrName
@@ -992,7 +993,7 @@ class DirectionPrefItem(PrefItem):
 		self,
 		obj: Any,
 		attrName: str,
-		onChangeFunc: Optional[Callable] = None,
+		onChangeFunc: "Callable | None" = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.direction_combo import DirectionComboBox
 		###
@@ -1030,7 +1031,7 @@ class JustificationPrefItem(PrefItem):
 		obj: Any,
 		attrName: str,
 		label: str = "",
-		onChangeFunc: Optional[Callable] = None,
+		onChangeFunc: "Callable | None" = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.justification_combo import JustificationComboBox
 		###

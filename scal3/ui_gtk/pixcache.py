@@ -100,7 +100,7 @@ def getFilePath(key: str) -> str:
 	return join(cacheDir, key + ".png")
 
 
-def getPixbuf(name: str, size: float) -> "Optional[GdkPixbuf.Pixbuf]":
+def getPixbuf(name: str, size: float) -> "GdkPixbuf.Pixbuf | None":
 	key = getKey(name, size)
 	pixbuf = pixbufCache.get(key)
 	if pixbuf is not None:

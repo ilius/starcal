@@ -21,7 +21,7 @@ from scal3 import logger
 log = logger.get()
 
 from os.path import isabs, join
-from typing import Callable, Optional, Union
+from typing import Callable
 
 from gi.repository import GdkPixbuf
 from gi.repository import Pango as pango
@@ -151,7 +151,7 @@ def resolveImagePath(path: str):
 
 def pixbufFromFile(
 	path: str,
-	size: Union[int, float] = 0,
+	size: "int | float" = 0,
 ) -> GdkPixbuf.Pixbuf:
 	# the file may not exist
 	if not path:
@@ -234,7 +234,7 @@ def labelImageButton(
 	label: str = "",
 	imageName: str = "",
 	size: int = 0,
-	func: "Optional[Callable]" = None,
+	func: "Callable | None" = None,
 	tooltip: str = "",
 	spacing: int = 10,
 ):
@@ -319,8 +319,8 @@ def dialog_add_button(
 	dialog,
 	iconName: str = "",
 	label: str = "",
-	res: Optional[gtk.ResponseType] = None,
-	onClick: Optional[Callable] = None,
+	res: "gtk.ResponseType | None" = None,
+	onClick: "Callable | None" = None,
 	tooltip: str = "",
 	imageName: str = "",
 ):
@@ -572,10 +572,10 @@ class CopyLabelMenuItem(MenuItem):
 
 
 def cssTextStyle(
-	font: "Optional[Font]" = None,
-	fgColor: "Optional[ColorType]" = None,
-	bgColor: "Optional[ColorType]" = None,
-	extra: "Optional[Dict[str, str]]" = None,
+	font: "Font | None" = None,
+	fgColor: "ColorType | None" = None,
+	bgColor: "ColorType | None" = None,
+	extra: "dict[str, str] | None" = None,
 ) -> str:
 	lines = []
 	if font:
@@ -609,7 +609,7 @@ def getBackgroundColorCSS(widget: gtk.Widget):
 	return rgbToCSS(getBackgroundColor(widget))
 
 
-def getGtkWindow(widget: "gtk.Widget") -> "Optional[gtk.Window]":
+def getGtkWindow(widget: "gtk.Widget") -> "gtk.Window | None":
 	top = widget.get_toplevel()
 	if isinstance(top, gtk.Window):
 		return top

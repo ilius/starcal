@@ -23,7 +23,6 @@ log = logger.get()
 import re
 from math import cos, pi, sin
 from os.path import join
-from typing import Optional
 
 from scal3 import ui
 from scal3.color_utils import rgbToHtmlColor
@@ -183,7 +182,7 @@ def newLimitedWidthTextLayout(
 def calcTextPixelSize(
 	widget: gtk.Widget,
 	text: str,
-	font: "Optional[Font]" = None,
+	font: "Font | None" = None,
 ) -> tuple[float, float]:
 	layout = widget.create_pango_layout(text)  # a Pango.Layout object
 	if font is not None:
@@ -195,7 +194,7 @@ def calcTextPixelSize(
 def calcTextPixelWidth(
 	widget: gtk.Widget,
 	text: str,
-	font: "Optional[Font]" = None,
+	font: "Font | None" = None,
 ) -> float:
 	width, height = calcTextPixelSize(widget, text, font=font)
 	return width

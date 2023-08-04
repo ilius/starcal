@@ -178,7 +178,7 @@ class IntegatedWindowList(BaseCalObj):
 			gtk.STYLE_PROVIDER_PRIORITY_APPLICATION,
 		)
 		###
-		self.cssFuncList = []  # type: List[Callable[[], str]]
+		self.cssFuncList: "list[Callable[[], str]]" = []
 		###
 		self.lastAlphabetHeight = 0
 

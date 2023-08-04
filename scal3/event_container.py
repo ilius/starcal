@@ -20,7 +20,7 @@ from scal3 import ui
 
 
 class DummyEventContainer:
-	def __init__(self, idsDict: "Dict[int, List[int]]"):
+	def __init__(self, idsDict: "dict[int, list[int]]"):
 		self.idsDict = idsDict
 
 	def __len__(self):

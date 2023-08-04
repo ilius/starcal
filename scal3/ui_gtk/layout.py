@@ -20,7 +20,7 @@ from scal3 import logger
 
 log = logger.get()
 
-from typing import Callable, Optional, Union
+from typing import Callable
 
 from scal3 import ui
 from scal3.ui_gtk import *
@@ -38,8 +38,8 @@ class WinLayoutBase(CustomizableCalObj):
 		name: str = "",
 		desc: str = "",
 		enableParam: str = "",
-		vertical: Optional[bool] = None,
-		expand: Optional[bool] = None,
+		vertical: "bool | None" = None,
+		expand: "bool | None" = None,
 	):
 		if not name:
 			raise ValueError("name= argument is missing")
@@ -68,12 +68,12 @@ class WinLayoutObj(WinLayoutBase):
 		name: str = "",
 		desc: str = "",
 		enableParam: str = "",
-		vertical: Optional[bool] = None,
-		expand: Optional[bool] = None,
+		vertical: "bool | None" = None,
+		expand: "bool | None" = None,
 		movable: bool = False,
 		buttonBorder: int = 5,
 		labelAngle: int = 0,
-		initializer: Optional[Callable[[], CustomizableCalObj]] = None,
+		initializer: "Callable[[], CustomizableCalObj] | None" = None,
 	):
 		if initializer is None:
 			raise ValueError("initializer= argument is missing")
@@ -91,7 +91,7 @@ class WinLayoutObj(WinLayoutBase):
 		self.buttonBorder = buttonBorder
 		self.labelAngle = labelAngle
 		self.initializer = initializer
-		self._item = None  # type: Optional[CustomizableCalObj]
+		self._item: "CustomizableCalObj | None" = None
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
 		if self._item is None:
@@ -170,13 +170,13 @@ class WinLayoutBox(WinLayoutBase):
 		name: str = "",
 		desc: str = "",
 		enableParam: str = "",
-		vertical: Optional[bool] = None,
-		expand: Optional[bool] = None,
+		vertical: "bool | None" = None,
+		expand: "bool | None" = None,
 		itemsMovable: bool = False,
 		itemsParam: str = "",
 		buttonSpacing: int = 5,
 		arrowSize: gtk.IconSize = gtk.IconSize.LARGE_TOOLBAR,
-		items: Optional[list[Union["WinLayoutBox", "WinLayoutObj"]]] = None,
+		items: "list[WinLayoutBox | WinLayoutObj] | None" = None,
 	):
 		if items is None:
 			raise ValueError("items= argument is missing")
@@ -293,7 +293,7 @@ class WinLayoutBox(WinLayoutBase):
 	def onItemMoveClick(
 		self,
 		button: gtk.Button,
-		item: Union["WinLayoutBox", "WinLayoutObj"],
+		item: "WinLayoutBox | WinLayoutObj",
 	):
 		index = self.items.index(item)
 		if index == 0:

@@ -21,7 +21,7 @@ from scal3 import logger
 log = logger.get()
 
 from contextlib import suppress
-from typing import Any, Callable, Optional
+from typing import Any, Callable
 
 from scal3 import core, locale_man, startup
 from scal3.cal_types import calTypes
@@ -54,13 +54,13 @@ class FixedSizeOrRatioPrefItem(PrefItem):
 		obj: Any,
 		ratioEnableVarName: str = "",
 		fixedLabel: str = "",
-		fixedItem: Optional["SpinPrefItem"] = None,
+		fixedItem: "SpinPrefItem | None" = None,
 		ratioLabel: str = "",
-		ratioItem: Optional["SpinPrefItem"] = None,
+		ratioItem: "SpinPrefItem | None" = None,
 		vspacing: int = 0,
 		hspacing: int = 0,
 		borderWidth: int = 2,
-		onChangeFunc: Optional[Callable] = None,
+		onChangeFunc: "Callable | None" = None,
 	) -> None:
 		if not ratioEnableVarName:
 			raise ValueError("ratioEnableVarName is not given")
@@ -218,7 +218,7 @@ class CalTypePrefItem(PrefItem):
 		obj: Any,
 		attrName: str,
 		live: bool = False,
-		onChangeFunc: Optional[Callable] = None,
+		onChangeFunc: "Callable | None" = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 		self.obj = obj
@@ -488,7 +488,7 @@ class AICalsPrefItemToolbar(StaticToolBox):
 	def getLeftRightAction(self):
 		return self._leftRightAction
 
-	def setLeftRight(self, isRight: Optional[bool]) -> None:
+	def setLeftRight(self, isRight: "bool | None") -> None:
 		tb = self.leftRightItem
 		if isRight is None:
 			tb.setIconFile("")
@@ -555,7 +555,7 @@ class AICalsPrefItem(PrefItem):
 	def activeTreevFocus(
 		self,
 		treev: gtk.TreeView,
-		gevent: Optional[gdk.EventFocus] = None,
+		gevent: "gdk.EventFocus | None" = None,
 	) -> None:
 		self.toolbar.setLeftRight(True)
 		self.inactiveTreev.get_selection().unselect_all()
@@ -563,12 +563,12 @@ class AICalsPrefItem(PrefItem):
 	def inactiveTreevFocus(
 		self,
 		treev: gtk.TreeView,
-		gevent: Optional[gdk.EventFocus] = None,
+		gevent: "gdk.EventFocus | None" = None,
 	) -> None:
 		self.toolbar.setLeftRight(False)
 		self.activeTreev.get_selection().unselect_all()
 
-	def onLeftRightClick(self, obj: Optional[gtk.Button] = None) -> None:
+	def onLeftRightClick(self, obj: "gtk.Button | None" = None) -> None:
 		action = self.toolbar.getLeftRightAction()
 		if action == "activate":
 			model, _iter = self.inactiveTreev.get_selection()
@@ -580,7 +580,7 @@ class AICalsPrefItem(PrefItem):
 				if _iter:
 					self.inactivateIndex(model.get_path(_iter).get_indices()[0])
 
-	def getCurrentTreeview(self) -> "Optional[gtk.TreeView]":
+	def getCurrentTreeview(self) -> "gtk.TreeView | None":
 		action = self.toolbar.getLeftRightAction()
 		if action == "inactivate":
 			return self.activeTreev
@@ -588,7 +588,7 @@ class AICalsPrefItem(PrefItem):
 			return self.inactiveTreev
 		return None
 
-	def onUpClick(self, obj: Optional[gtk.Button] = None) -> None:
+	def onUpClick(self, obj: "gtk.Button | None" = None) -> None:
 		treev = self.getCurrentTreeview()
 		if not treev:
 			return
@@ -605,7 +605,7 @@ class AICalsPrefItem(PrefItem):
 		)
 		selection.select_path(gtk.TreePath.new_from_indices((i - 1,)))
 
-	def onDownClick(self, obj: Optional[gtk.Button] = None) -> None:
+	def onDownClick(self, obj: "gtk.Button | None" = None) -> None:
 		treev = self.getCurrentTreeview()
 		if not treev:
 			return
@@ -715,7 +715,7 @@ class KeyBindingPrefItem(PrefItem):
 		attrName: str,
 		actions: list[str],
 		# live: bool = False,
-		# onChangeFunc: Optional[Callable] = None,
+		# onChangeFunc: "Callable] | None" = None,
 	) -> None:
 		self.obj = obj
 		self.attrName = attrName

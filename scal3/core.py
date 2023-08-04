@@ -459,8 +459,8 @@ def restart() -> typing.NoReturn:
 
 
 def mylocaltime(
-	sec: Optional[int] = None,
-	calType: Optional[int] = None,
+	sec: "int | None" = None,
+	calType: "int | None" = None,
 ) -> list[int]:
 	from scal3.cal_types import convert
 	if calType is None:  # GREGORIAN
