@@ -5,7 +5,7 @@ from scal3 import logger
 log = logger.get()
 
 
-from typing import Any, Callable, Optional, Union
+from typing import Any, Callable
 
 from scal3 import ui
 from scal3.locale_man import tr as _
@@ -63,13 +63,13 @@ class ToolBoxItem(BaseToolBoxItem):
 		iconName: str = "",
 		imageName: str = "",
 		imageNameDynamic: bool = False,
-		onClick: Union[None, str, Callable] = None,
+		onClick: "str | Callable | None" = None,
 		desc: str = "",
 		shortDesc: str = "",
 		enableTooltip: bool = True,
 		continuousClick: bool = True,
-		onPress: Optional[Union[str, Callable]] = None,
-		args: Optional[tuple[Any]] = None,  # for onClick and onPress
+		onPress: "str | Callable | None" = None,
+		args: "tuple[Any] | None" = None,  # for onClick and onPress
 		enable: bool = True,
 	) -> None:
 		gtk.Button.__init__(self)
@@ -195,13 +195,13 @@ class LabelToolBoxItem(BaseToolBoxItem):
 	def __init__(
 		self,
 		name: str = "",
-		onClick: Union[None, str, Callable] = None,
+		onClick: "str | Callable | None" = None,
 		desc: str = "",
 		shortDesc: str = "",
 		enableTooltip: bool = True,
 		continuousClick: bool = True,
-		onPress: Optional[Union[str, Callable]] = None,
-		args: Optional[tuple[Any]] = None,  # for onClick and onPress
+		onPress: "str | Callable | None" = None,
+		args: "tuple[Any] | None" = None,  # for onClick and onPress
 	) -> None:
 		gtk.Button.__init__(self)
 		if continuousClick:
