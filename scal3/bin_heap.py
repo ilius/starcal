@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 from scal3 import logger
 
 log = logger.get()
@@ -146,16 +144,15 @@ class MaxHeap(list):
 
 def getMinTest(N):
 	from random import randint
-	from time import time as now
 	h = MaxHeap()
-	for i in range(N):
+	for _ in range(N):
 		x = randint(1, 10 * N)
 		h.push(x, 0)
-	t0 = now()
+	# t0 = now()
 	k1 = -max(h)[0]
-	t1 = now()
+	# t1 = now()
 	k2 = h.getMin()[0]
-	t2 = now()
+	# t2 = now()
 	assert k1 == k2
 	# log.debug(f"time getMin(h)/min(h) = {(t2-t1)/(t1-t0):.5f}")
 	# log.debug(f"min key = {k1}")
@@ -165,7 +162,7 @@ def testDeleteStep(N, maxKey):
 	from random import randint
 	###
 	h = MaxHeap()
-	for i in range(N):
+	for _ in range(N):
 		h.push(randint(0, maxKey), 0)
 	h0 = h.copy()
 	rmIndex = randint(0, N - 1)
@@ -177,12 +174,13 @@ def testDeleteStep(N, maxKey):
 		log.info(h)
 		log.info("------------------------")
 		return False
+	print(rmKey, rmKey2)
 	return True
 
 
 def testDelete():
 	for N in range(10, 30):
-		for p in range(10000):
+		for _ in range(10000):
 			if not testDeleteStep(N, 10000):
 				break
 

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -29,7 +28,7 @@ from scal3 import ui
 from scal3.cal_types import calTypes, hijri, jd_to, to_jd
 from scal3.locale_man import dateLocale
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.toolbox import (
 	StaticToolBox,

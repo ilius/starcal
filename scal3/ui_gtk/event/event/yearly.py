@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -18,7 +17,7 @@
 
 from scal3.cal_types import calTypes, convert
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets.month_combo import MonthComboBox
 from scal3.ui_gtk.mywidgets.multi_spin.day import DaySpinButton
@@ -93,7 +92,7 @@ class WidgetClass(common.WidgetClass):
 		newCalType = self.calTypeCombo.get_active()
 		module, ok = calTypes[newCalType]
 		if not ok:
-			raise RuntimeError(f"cal type '{calType}' not found")
+			raise RuntimeError(f"cal type '{newCalType}' not found")
 		monthCombo = self.monthCombo
 		month = monthCombo.getValue()
 		monthCombo.build(newCalType)

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -16,10 +15,17 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from os.path import join
+from typing import TYPE_CHECKING
+
 from scal3.drawing import getAbsPos
-from scal3.ui_gtk import *
+from scal3.path import pixDir, svgDir
+from scal3.ui_gtk import GdkPixbuf, gdk, gtk
 from scal3.ui_gtk.drawing import drawOutlineRoundedRect
 from scal3.ui_gtk.utils import pixbufFromFile
+
+if TYPE_CHECKING:
+	import cairo
 
 
 class BaseButton:
@@ -173,7 +179,7 @@ class SVGButton(BaseButton):
 
 	def __repr__(self):
 		return (
-			f"SVGButton({self.imageName!r}, {self.onPress.__name__!r}, " +
+			f"SVGButton({self.imageName!r}, {self.onPress.__name__!r}, "
 			f"{self.x!r}, {self.y!r}, {self.autoDir!r})"
 		)
 
@@ -241,6 +247,6 @@ class Button(BaseButton):
 
 	def __repr__(self):
 		return (
-			f"Button({self.imageName!r}, {self.onPress.__name__!r}, " +
+			f"Button({self.imageName!r}, {self.onPress.__name__!r}, "
 			f"{self.x!r}, {self.y!r}, {self.autoDir!r})"
 		)

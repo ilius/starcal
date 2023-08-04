@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -20,16 +19,19 @@ from scal3 import logger
 
 log = logger.get()
 
-from time import time as now
 
-from scal3 import core
-from scal3.locale_man import numDecode
+from scal3 import core, ui
+from scal3.locale_man import numDecode, rtl
 from scal3.locale_man import tr as _
 from scal3.path import deskDir
 from scal3.time_utils import hmDecode, hmEncode
-from scal3.ui_gtk import *
-from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.drawing import *
+from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
+from scal3.ui_gtk.decorators import registerType
+from scal3.ui_gtk.drawing import (
+	fillColor,
+	newTextLayout,
+	setColor,
+)
 from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 from scal3.ui_gtk.toolbox import (
 	StaticToolBox,
@@ -44,12 +46,12 @@ class CourseListEditor(gtk.Box):
 	def __init__(
 		self,
 		term,
-		defaultCourseName=_("New Course"),
+		defaultCourseName="New Course",
 		defaultCourseUnits=3,
 		enableScrollbars=False,
 	):
 		self.term = term ## UniversityTerm obj
-		self.defaultCourseName = defaultCourseName
+		self.defaultCourseName = _(defaultCourseName)
 		self.defaultCourseUnits = defaultCourseUnits
 		#####
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
@@ -373,7 +375,7 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 	def drawCairo(self, cr):
 		if not self.data:
 			return
-		t0 = now()
+		# t0 = now()
 		w = self.get_allocation().width
 		h = self.get_allocation().height
 		cr.rectangle(0, 0, w, h)

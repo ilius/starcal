@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import sys
@@ -21,6 +20,8 @@ sys.path.insert(0, dirname(dirname(dirname(__file__))))
 from scal3 import logger
 
 log = logger.get()
+
+from scal3.ui_gtk.utils import set_tooltip
 
 _ = str
 
@@ -156,7 +157,20 @@ def showError(msg, **kwargs):
 	showMsg(msg, imageName="dialog-error.svg", **kwargs)
 
 
-if sys.version_info[0] != 3:
+def error_exit(resCode, text, **kwargs):
+	d = gtk.MessageDialog(
+		destroy_with_parent=True,
+		message_type=gtk.MessageType.ERROR,
+		buttons=gtk.ButtonsType.OK,
+		text=text.strip(),
+		**kwargs,
+	)
+	d.set_title("Error")
+	d.run()
+	sys.exit(resCode)
+
+
+if sys.version_info[0] < 3:
 	error_exit(1, "Run this script with Python 3.x")
 
 try:

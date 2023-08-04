@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
 #from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import GdkPixbuf, gtk
 from scal3.ui_gtk.utils import pixbufFromFile
 
 
@@ -10,7 +9,7 @@ class AboutDialog(gtk.AboutDialog):
 		name: str = "",
 		version: str = "",
 		title: str = "",
-		authors: "list[str]" = [],
+		authors: "list[str] | None" = None,
 		comments: str = "",
 		license: str = "",
 		website: str = "",
@@ -20,9 +19,9 @@ class AboutDialog(gtk.AboutDialog):
 		gtk.AboutDialog.__init__(self, **kwargs)
 		self.set_name(name)
 		self.set_program_name(name)
-		self.set_version("Version:" + " <b>" + version + "</b>")
+		self.set_version("Version: <b>" + version + "</b>")
 		self.set_title(title)  # must call after set_name and set_version !
-		self.set_authors(authors)
+		self.set_authors(authors or [])
 		self.set_comments(comments)
 		if license:
 			self.set_license(license)

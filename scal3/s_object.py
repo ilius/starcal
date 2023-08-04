@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 from scal3 import logger
 
@@ -17,7 +16,10 @@ from scal3.path import objectDir, sourceDir
 sys.path.insert(0, join(sourceDir, "libs", "bson"))
 import bson
 
-from scal3.json_utils import *
+from scal3.json_utils import (
+	dataToPrettyJson,
+	jsonToData,
+)
 from scal3.os_utils import makeDir
 
 dataToJson = dataToPrettyJson
@@ -67,9 +69,6 @@ class DefaultFileSystem(FileSystem):
 
 	def isfile(self, fpath):
 		return os.path.isfile(self.abspath(fpath))
-
-	def isdir(self, dpath):
-		return os.path.isdir(self.abspath(dpath))
 
 	def makeDir(self, dpath: str) -> None:
 		dpathAbs = self.abspath(dpath)
@@ -123,7 +122,7 @@ class SObj:
 		if not force and not self.__class__.canSetDataMultipleTimes:
 			if getattr(self, "dataIsSet", False):
 				raise RuntimeError(
-					"can not run setData multiple times " +
+					"can not run setData multiple times "
 					f"for {self.__class__.__name__} instance",
 				)
 			self.dataIsSet = True
@@ -139,13 +138,13 @@ class SObj:
 		except AttributeError:
 			raise NotImplementedError(
 				f"{self.__class__.__name__}.getIdPath: no parent attribute",
-			)
+			) from None
 		try:
 			_id = self.id
 		except AttributeError:
 			raise NotImplementedError(
 				f"{self.__class__.__name__}.getIdPath: no id attribute",
-			)
+			) from None
 		######
 		path = []
 		if _id is not None:
@@ -239,7 +238,7 @@ class JsonSObj(SObj):
 				fp.write(jstr)
 		else:
 			log.info(
-				f"save method called for object {self!r}" +
+				f"save method called for object {self!r}"
 				" while file is not set",
 			)
 
@@ -330,7 +329,7 @@ def updateBasicDataFromBson(
 	except (KeyError, IndexError):
 		raise ValueError(
 			f"invalid {fileType} file \"{filePath}\", no \"history\"",
-		)
+		) from None
 	data.update(loadBsonObject(lastHash, fs))
 	data["modified"] = lastEpoch  # FIXME
 	return (lastEpoch, lastHash)
@@ -361,13 +360,16 @@ class BsonHistObj(SObj):
 			data = jsonToData(jsonStr)
 		except FileNotFoundError:
 			if not cls.skipLoadNoFile:
-				raise FileNotFoundError(f"{_file} : file not found")
+				raise FileNotFoundError(f"{_file} : file not found") from None
 		except Exception as e:
 			if not cls.skipLoadExceptions:
 				log.error(f"error while opening json file \"{_file}\"")
 				raise e
 		else:
 			lastEpoch, lastHash = updateBasicDataFromBson(data, _file, cls.name, fs)
+
+		if lastEpoch is None:
+			lastEpoch = now()  # FIXME
 
 		# data is the result of json.loads,
 		# so probably can be only dict or list (or str)
@@ -412,7 +414,7 @@ class BsonHistObj(SObj):
 		"""Returns last history record: (lastEpoch, lastHash, **args)."""
 		if not self.file:
 			raise RuntimeError(
-				f"save method called for object {self!r}" +
+				f"save method called for object {self!r}"
 				" while file is not set",
 			)
 		if self.fs is None:

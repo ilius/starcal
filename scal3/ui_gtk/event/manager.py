@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -25,9 +24,12 @@ import typing
 from collections import OrderedDict as odict
 from contextlib import suppress
 from os.path import join
-from typing import Any
 
-from gi.repository import GdkPixbuf
+if typing.TYPE_CHECKING:
+	from scal3.event_container import DummyEventContainer
+	from scal3.event_update_queue import EventUpdateRecord
+
+from typing import Any
 
 from scal3 import cal_types, core, locale_man, ui
 from scal3 import event_lib as lib
@@ -37,10 +39,12 @@ from scal3.json_utils import (
 )
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
-from scal3.path import *
-from scal3.ui_gtk import *
+from scal3.path import (
+	confDir,
+)
+from scal3.ui_gtk import GdkPixbuf, HBox, Menu, MenuItem, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.event import common, setActionFuncs
 from scal3.ui_gtk.event.editor import addNewEvent
 from scal3.ui_gtk.event.export import (
@@ -217,8 +221,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			if eventIter is None:
 				if record.obj.parent.id in self.loadedGroupIds:
 					log.error(
-						"trying to delete non-existing event row, " +
-						f"eid={record.obj.id}, {path=}",
+						"trying to delete non-existing event row, "
+						f"eid={record.obj.id}",
 					)
 				self.addEventRowToTrash(record.obj)
 				return
@@ -246,7 +250,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			if eventIter is None:
 				if record.obj.parent.id in self.loadedGroupIds:
 					log.error(
-						"trying to edit non-existing event row, " +
+						"trying to edit non-existing event row, "
 						f"eid={record.obj.id}",
 					)
 			else:
@@ -782,7 +786,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	def multiSelectTreeviewTogglePath(self, path: "list[int]"):
 		model = self.treeModel
 		if len(path) not in (1, 2):
-			raise RuntimeError(f"invalid path depth={len(path)}, {pathStr=}")
+			raise RuntimeError(f"invalid path depth={len(path)}, {path=}")
 		itr = model.get_iter(path)
 		pathTuple = tuple(path)
 
@@ -806,13 +810,11 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.multiSelectCBSetEvent(pathTuple[0], pathTuple[1], active)
 
 	def multiSelectCopy(self, obj=None):
-		model = self.treeModel
 		iterList = list(self.multiSelectIters())
 		self.multiSelectToPaste = (False, iterList)
 		self.multiSelectPasteButton.set_sensitive(True)
 
 	def multiSelectCut(self, obj=None):
-		model = self.treeModel
 		iterList = list(self.multiSelectIters())
 		self.multiSelectToPaste = (True, iterList)
 		self.multiSelectPasteButton.set_sensitive(True)
@@ -823,7 +825,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			log.error("nothing to paste")
 			return
 
-		treev = self.treev
 		model = self.treeModel
 		move, iterList = toPaste
 		if not iterList:
@@ -1048,7 +1049,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		pixbuf = eventTreeIconPixbuf(event.getIconRel())
 		if event.icon and pixbuf is None:
 			log.error(
-				f"getEventRow: invalid {event.icon=} " +
+				f"getEventRow: invalid {event.icon=} "
 				f"for {event.id=} in {event.parent=}",
 			)
 		return (
@@ -1719,6 +1720,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			for rule in event.rulesOd.values():
 				log.debug(f"Rule {rule.name}: '{rule}', info='{rule.getInfo()}'")
 
+		if modified is None:
+			raise RuntimeError("modified is None")
+
 		comma = _(",")
 		modifiedLabel = _("Last Modified")
 		modifiedTime = locale_man.textNumEncode(
@@ -1726,7 +1730,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		)
 		text += f"{comma} {modifiedLabel}: {modifiedTime}"
 		if hasattr(self, "sbar"):
-			message_id = self.sbar.push(0, text)
+			self.sbar.push(0, text)
 
 	def treeviewCursorChanged(self, selection: Any = None) -> None:
 		path = self.getSelectedPath()
@@ -1853,7 +1857,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				return False
 			self.openRightClickMenu(path, gevent.time)
 			return None
-		elif gevent.button == 1:
+		if gevent.button == 1:
 			if not col:
 				return
 			if not rectangleContainsPoint(
@@ -1939,15 +1943,14 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	) -> None:
 		if not (isinstance(path, list) and len(path) == 1):
 			raise RuntimeError(f"invalid {path = }")
-		index = path[0]
 		group = self.getObjsByPath(path)[0]
 		if not group.remoteIds:
 			return
 		aid, remoteGid = group.remoteIds
-		info = {
-			"group": group.title,
-			"account": account.title,
-		}
+		# info = {
+		# 	"group": group.title,
+		# 	"account": account.title,
+		# }
 		account.showError = showError
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
@@ -2033,7 +2036,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	def deleteGroup(self, path: list[int]) -> None:
 		if not (isinstance(path, list) and len(path) == 1):
 			raise RuntimeError(f"invalid {path = }")
-		index = path[0]
 		group = self.getObjsByPath(path)[0]
 		eventCount = len(group)
 		if eventCount > 0:
@@ -2169,7 +2171,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		path = self.getSelectedPath()
 		if not path:
 			return
-		objs = self.getObjsByPath(path)
 		if len(path) == 1:
 			self.deleteGroup(path)
 		elif len(path) == 2:
@@ -2225,7 +2226,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			# do we need to put on ui.eventUpdateQueue?
 		elif len(path) == 2:
 			parentObj, event = self.getObjsByPath(path)
-			parentLen = len(parentObj)
 			parentIndex, eventIndex = path
 			# log.debug(eventIndex, parentLen)
 			if eventIndex > 0:
@@ -2351,7 +2351,6 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	) -> None:
 		if not (isinstance(path, list) and len(path) == 1):
 			raise RuntimeError(f"invalid {path = }")
-		index = path[0]
 		group = self.getObjsByPath(path)[0]
 		if GroupSortDialog(group, transient_for=self).run():
 			if group.id in self.loadedGroupIds or group.name == "trash":

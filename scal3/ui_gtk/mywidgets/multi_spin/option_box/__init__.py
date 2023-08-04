@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-from scal3.ui_gtk import *
-from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk import Menu, MenuItem, gtk, pack
+from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.mywidgets.multi_spin import MultiSpinButton
 from scal3.ui_gtk.utils import imageClassButton
 
