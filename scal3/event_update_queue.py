@@ -3,7 +3,6 @@
 from queue import Queue
 from threading import Thread
 from time import sleep
-from typing import Union
 
 from scal3 import logger
 
@@ -21,7 +20,7 @@ class EventUpdateRecord:
 	def __init__(
 		self,
 		action: str,
-		obj: Union["event_lib.Event", "event_lib.EventGroup"],
+		obj: "event_lib.Event | event_lib.EventGroup",
 		sender: "BaseCalObj",
 	):
 		self.action = action

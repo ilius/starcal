@@ -20,7 +20,7 @@ from scal3 import logger
 
 log = logger.get()
 
-from typing import Any, Optional
+from typing import Any
 
 from scal3 import core, event_lib, ui
 from scal3.locale_man import tr as _
@@ -50,8 +50,8 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		self,
 		eventSepParam: str = "",
 		justificationParam: str = "",
-		fontParams: Optional[tuple[str, str]] = None,
-		timeFontParams: Optional[tuple[str, str]] = None,
+		fontParams: "tuple[str, str] | None" = None,
+		timeFontParams: "tuple[str, str] | None" = None,
 		styleClass: str = "",
 		wrapMode: pango.WrapMode = pango.WrapMode.WORD_CHAR,
 	):
