@@ -16,15 +16,12 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from scal3 import core
 from scal3.locale_man import tr as _
-
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import set_tooltip
 from scal3.ui_gtk.mywidgets import MyColorButton, TextFrame
-from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
-from scal3.ui_gtk.event import common
+from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
+from scal3.ui_gtk.utils import set_tooltip
 
 
 class BaseWidgetClass(gtk.Box):
@@ -140,7 +137,7 @@ class BaseWidgetClass(gtk.Box):
 		pack(hbox, self.sepInput, 1, 1)
 		pack(self, hbox)
 		set_tooltip(hbox, _(
-			"Using to separate Summary and Description when displaying event"
+			"Using to separate Summary and Description when displaying event",
 		))
 		#####
 		#hbox = HBox()

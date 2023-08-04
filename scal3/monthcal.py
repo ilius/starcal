@@ -16,16 +16,14 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from scal3 import core, ui
 from scal3.cal_types import calTypes, getMonthLen
-from scal3 import core
 from scal3.core import (
 	getMonthName,
 	getWeekDay,
 	getWeekNumberByJd,
 )
-from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
-from scal3 import ui
 
 pluginName = "MonthCal"
 
@@ -50,7 +48,7 @@ class MonthStatus(list):  # FIXME
 		list.__init__(self, [
 			[
 				cellCache.getCell(
-					tableStartJd + yPos * 7 + xPos
+					tableStartJd + yPos * 7 + xPos,
 				)
 				for xPos in range(7)
 			] for yPos in range(6)

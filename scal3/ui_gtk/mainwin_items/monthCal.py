@@ -17,36 +17,25 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from time import localtime
-from time import time as now
 
-import sys
-import os
 from math import sqrt
 
-from typing import Tuple, Callable
-
-from scal3 import cal_types
+from scal3 import cal_types, core, ui
 from scal3.cal_types import calTypes
-from scal3 import core
 from scal3.core import log
 from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
-from scal3 import ui
 from scal3.monthcal import getCurrentMonthStatus
-
-from gi.repository import GdkPixbuf
-
 from scal3.ui_gtk import *
-from scal3.ui_gtk.drawing import *
-from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.utils import pixbufFromFile
-from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
 from scal3.ui_gtk.cal_base import CalBase
+from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
+from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.drawing import *
 from scal3.ui_gtk.stack import StackPage
+from scal3.ui_gtk.utils import pixbufFromFile
 
 
 @registerSignals
@@ -153,12 +142,11 @@ class CalObj(gtk.DrawingArea, CalBase):
 		# self.updateTextWidth()
 
 	def getOptionsWidget(self) -> gtk.Widget:
-		from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 		from scal3.ui_gtk.pref_utils import (
-			SpinPrefItem,
+			CheckColorPrefItem,
 			CheckPrefItem,
 			ColorPrefItem,
-			CheckColorPrefItem,
+			SpinPrefItem,
 		)
 		if self.optionsWidget:
 			return self.optionsWidget
@@ -597,8 +585,10 @@ class CalObj(gtk.DrawingArea, CalBase):
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.jdPlus(-7)
+			return None
 		elif d == "down":
 			self.jdPlus(7)
+			return None
 		else:
 			return False
 

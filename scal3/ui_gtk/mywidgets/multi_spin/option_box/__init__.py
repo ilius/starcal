@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.utils import imageClassButton
 from scal3.ui_gtk.mywidgets.multi_spin import MultiSpinButton
+from scal3.ui_gtk.utils import imageClassButton
 
 
 @registerSignals
 class MultiSpinOptionBox(gtk.Box):
 	signals = [
-		("activate", [])
+		("activate", []),
 	]
 
 	def _entry_activate(self, widget):
@@ -24,7 +24,7 @@ class MultiSpinOptionBox(gtk.Box):
 		spacing=0,
 		is_hbox=False,
 		hist_size=10,
-		**kwargs
+		**kwargs,
 	):
 		if not is_hbox:
 			gtk.Box.__init__(

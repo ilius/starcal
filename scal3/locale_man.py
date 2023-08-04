@@ -17,31 +17,28 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
+import gettext
 import os
 import string
-from os.path import (
-	join,
-	isfile,
-	isdir,
-	isabs,
-)
-from os.path import splitext
-import locale
-import gettext
 from contextlib import suppress
-
-from typing import Optional, Union, Set, Tuple, List, Dict, Callable
+from os.path import (
+	isabs,
+	isfile,
+	join,
+	splitext,
+)
+from typing import Callable, Optional, Union
 
 import natz
-
-from .path import *
-from scal3.utils import StrOrderedDict
-from scal3.utils import toBytes, toStr
+from scal3.cal_types import calTypes
 from scal3.json_utils import *
 from scal3.s_object import JsonSObj
-from scal3.cal_types import calTypes
+from scal3.utils import StrOrderedDict, toStr
+
+from .path import *
 
 ##########################################################
 
@@ -87,7 +84,7 @@ ascii_alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 alphabet = ""
 
 
-def getLangDigits(langShortArg: str) -> Tuple[
+def getLangDigits(langShortArg: str) -> tuple[
 	str, str, str, str, str,
 	str, str, str, str, str,
 ]:
@@ -134,9 +131,7 @@ loadConf()
 
 
 def tr(s: Union[str, int], *a, **ka) -> str:
-	"""
-	string translator function
-	"""
+	"""String translator function."""
 	return numEncode(s, *a, **ka) if isinstance(s, int) else str(s)
 
 
@@ -166,7 +161,7 @@ class LangData(JsonSObj):
 		##
 		self.timeZoneList = []  # type: List[str]
 
-	def setData(self, data: Dict):
+	def setData(self, data: dict):
 		JsonSObj.setData(self, data)
 		#####
 		for param in (
@@ -177,7 +172,7 @@ class LangData(JsonSObj):
 			if not getattr(self, param):
 				raise ValueError(
 					f"missing or empty parameter \"{param}\"" +
-					f" in language file \"{self.file}\""
+					f" in language file \"{self.file}\"",
 				)
 		#####
 		if not isabs(self.flag):
@@ -250,7 +245,7 @@ for fname in langFileList:
 langDict.sort("name")
 
 
-def popen_output(cmd: Union[List[str], str]) -> str:
+def popen_output(cmd: Union[list[str], str]) -> str:
 	return Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
 
 
@@ -349,7 +344,7 @@ def getNumSep() -> str:
 	return tr(".", ctx="number formatting") if enableNumLocale else "."
 
 
-def getDigits() -> Tuple[str, str, str, str, str, str, str, str, str, str]:
+def getDigits() -> tuple[str, str, str, str, str, str, str, str, str, str]:
 	if enableNumLocale:
 		d = digits.get(langSh)
 		if d is not None:
@@ -370,7 +365,7 @@ def getAlphabet() -> str:
 	return alphabet
 
 
-def getAvailableDigitKeys() -> Set[str]:
+def getAvailableDigitKeys() -> set[str]:
 	keys = set(digits["en"])
 	if langSh != "en":
 		locDigits = digits.get(langSh)
