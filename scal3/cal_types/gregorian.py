@@ -22,9 +22,6 @@
 # http://en.wikipedia.org/wiki/Gregorian_calendar
 
 from datetime import datetime
-from typing import (
-	Optional,
-)
 
 name = "gregorian"
 desc = "Gregorian"
@@ -61,11 +58,11 @@ monthNameAb = (
 )
 
 
-def getMonthName(m: int, y: Optional[int] = None) -> str:
+def getMonthName(m: int, y: "int | None" = None) -> str:
 	return monthName[m - 1]
 
 
-def getMonthNameAb(tr, m, y: Optional[int] = None) -> str:
+def getMonthNameAb(tr, m, y: "int | None" = None) -> str:
 	fullEn = monthName[m - 1]
 	abbr = tr(fullEn, ctx="abbreviation")
 	if abbr != fullEn:
@@ -116,7 +113,7 @@ def to_jd(year: int, month: int, day: int) -> int:
 	)
 
 
-def jd_to(jd: "Union[int, float]") -> tuple[int, int, int]:
+def jd_to(jd: "int | float") -> tuple[int, int, int]:
 	ordinal = int(jd) - 1721425
 	if 0 < ordinal < 3652060:  # > 4x faster
 		# datetime(9999, 12, 31).toordinal() == 3652059

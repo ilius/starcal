@@ -72,7 +72,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 
 	seasonPieEnableParam = ""
 	seasonPieGeoParam = ""
-	seasonPieColorsParam = None  # Optional[Dict]
+	seasonPieColorsParam: "dict | None" = None
 	seasonPieTextColorParam = ""
 
 	myKeys = CalBase.myKeys + (
@@ -686,7 +686,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			cr.rectangle(x2, y2, iconSize, iconSize)
 			cr.fill()
 
-	def getMonthName(self, c: "ui.Cell", calType: int, params: "Dict[str, Any]"):
+	def getMonthName(self, c: "ui.Cell", calType: int, params: "dict[str, Any]"):
 		month = c.dates[calType][1]  # type: int
 		abbreviate = params.get("abbreviate", False)
 		uppercase = params.get("uppercase", False)

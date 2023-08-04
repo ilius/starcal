@@ -20,9 +20,9 @@ from scal3 import logger
 
 log = logger.get()
 
+import typing
 from datetime import datetime
 from time import time as now
-from typing import Optional, Tuple, Union
 
 import natz
 from scal3.cal_types.gregorian import J1970, J0001_epoch
@@ -32,7 +32,7 @@ from scal3.utils import ifloor
 # getEpochFromJd(gregorian.to_jd(10000, 1, 1))
 G10000_epoch = 253402300800
 
-TZ = Optional[natz.TimeZone]
+TZ: "typing.TypeAlias" = "natz.TimeZone | None"
 
 # jd is the integer value of Chreonological Julian Day,
 # which is specific to time zone
@@ -228,25 +228,25 @@ durationUnitsRel: "list[tuple[int, str]]" = (
 	(7, "week"),
 )
 
-durationUnitsAbs = []  # type: List[Tuple[int, str]]
+durationUnitsAbs: "list[tuple[int, str]]" = []
 num = 1
 for item in durationUnitsRel:
 	num *= item[0]
 	durationUnitsAbs.append((num, item[1]))
 
-durationUnitValueToName = dict(durationUnitsAbs)  # type: Dict[int, str]
-durationUnitValues = [item[0] for item in durationUnitsAbs]  # type: List[int]
-durationUnitNames = [item[1] for item in durationUnitsAbs]  # type: List[str]
+durationUnitValueToName: "dict[int, str]" = dict(durationUnitsAbs)
+durationUnitValues: "list[int]" = [item[0] for item in durationUnitsAbs]
+durationUnitNames: "list[str]" = [item[1] for item in durationUnitsAbs]
 
 
 def timeEncode(
-	tm: Union[tuple[int, int, int], tuple[int, int]],
+	tm: "tuple[int, int, int] | tuple[int, int]",
 ) -> str:
 	return f"{HMS(*tm)}"
 
 
 def simpleTimeEncode(
-	tm: Union[tuple[int, int, int], tuple[int, int], tuple[int]],
+	tm: "tuple[int, int, int] | tuple[int, int] | tuple[int]",
 ) -> str:
 	# FIXME: how to extend HMS formatting to include this conditioning?
 	# need a new symbol for "minute, omit if zero", like "$" for second
@@ -301,7 +301,7 @@ def encodeJd(jd: int) -> str:
 	return epochGregDateTimeEncode(getEpochFromJd(jd))
 
 
-def durationEncode(value: "Union[int, float]", unit: int) -> str:
+def durationEncode(value: "int | float", unit: int) -> str:
 	iValue = int(value)
 	if iValue == value:
 		value = iValue
