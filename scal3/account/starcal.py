@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -191,12 +190,11 @@ class StarCalendarAccount(Account):
 				if error:
 					return data, error
 			res = self.callBase(method, path, **kwargs)
-			if res.status_code == 401:
-				if tokenIsOld:
-					error = self.login()
-					if error:
-						return data, error
-					res = self.callBase(method, path, **kwargs)
+			if res.status_code == 401 and tokenIsOld:
+				error = self.login()
+				if error:
+					return data, error
+				res = self.callBase(method, path, **kwargs)
 		except Exception as e:
 			error = str(e)
 			return data, error
@@ -307,7 +305,10 @@ class StarCalendarAccount(Account):
 
 		syncStart = datetime.now()
 
-		path = f"event/groups/{groupId}/modified-events/{jsonTimeFromEpoch(lastSyncStartEpoch)}/"
+		path = (
+			f"event/groups/{groupId}/modified-events/"
+			f"{jsonTimeFromEpoch(lastSyncStartEpoch)}/"
+		)
 		data, error = self.call("get", path)
 		if error:
 			return error
@@ -321,7 +322,7 @@ class StarCalendarAccount(Account):
 			# ## Pull
 			for remoteEvent in remoteModifiedEvents:
 				# remoteEvent is a dict
-				plog.info(remoteEvent)
+				log.info(remoteEvent)
 				event, error = decodeRemoteEvent(
 					remoteEvent,
 					self.id,

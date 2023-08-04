@@ -1,9 +1,14 @@
+import logging
 import sys
 import unittest
 from os.path import abspath, dirname
 
 rootDir = dirname(dirname(abspath(__file__)))
 sys.path.insert(0, rootDir)
+
+from scal3.core import APP_NAME
+
+log = logging.getLogger(APP_NAME)
 
 # results are confirmed with
 # https://www.w3schools.com/colors/colors_converter.asp
@@ -70,13 +75,13 @@ def genRandomTests_rgbToHsl():
 	from random import randint
 
 	from scal3.color_utils import rgbToHsl
-	for i in range(10):
+	for _ in range(10):
 		r = randint(0, 255)
 		g = randint(0, 255)
 		b = randint(0, 255)
 		h, s, ln = rgbToHsl(r, g, b)
 		log.info(
-			f"self.assertEqualHSL(rgbToHsl({r}, {g}, {b}), " +
+			f"self.assertEqualHSL(rgbToHsl({r}, {g}, {b}), "
 			f"({h:.1f}, {s:.3f}, {ln:.3f}))",
 		)
 
@@ -85,13 +90,13 @@ def genRandomTests_hslToRgb():
 	from random import randint, random
 
 	from scal3.color_utils import hslToRgb
-	for i in range(10):
+	for _ in range(10):
 		h = randint(0, 360)
 		s = random()
 		ln = random()
 		r, g, b = hslToRgb(h, s, ln)
 		log.info(
-			f"self.assertEqual(hslToRgb({h:.1f}, {s:.3f}, {ln:.3f}), " +
+			f"self.assertEqual(hslToRgb({h:.1f}, {s:.3f}, {ln:.3f}), "
 			f"({r}, {g}, {b}))",
 		)
 

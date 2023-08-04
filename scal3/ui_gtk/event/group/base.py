@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -17,7 +16,7 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.mywidgets import MyColorButton, TextFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
@@ -156,7 +155,9 @@ class BaseWidgetClass(gtk.Box):
 		#####
 		if self.userCanAddEvents:
 			hbox = HBox()
-			self.addEventsToBeginningCheck = gtk.CheckButton(label=_("Add New Events to Beginning"))
+			self.addEventsToBeginningCheck = gtk.CheckButton(
+				label=_("Add New Events to Beginning"),
+			)
 			set_tooltip(
 				hbox, # label or hbox?
 				_("Add new events to beginning of event list, not to the end"),

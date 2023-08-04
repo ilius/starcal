@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -22,6 +21,7 @@ log = logger.get()
 
 
 from math import pi
+from typing import TYPE_CHECKING
 
 from gi.repository.PangoCairo import show_layout
 
@@ -30,11 +30,23 @@ from scal3.cal_types import calTypes, jd_to, to_jd
 from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
 from scal3.season import getSpringJdAfter
-from scal3.ui_gtk import *
+from scal3.ui_gtk import gdk, getScrollValue, gtk
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.button_drawing import Button
-from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.drawing import *
+from scal3.ui_gtk.decorators import registerSignals
+from scal3.ui_gtk.drawing import (
+	drawArcOutline,
+	drawCircle,
+	drawCircleOutline,
+	drawLineLengthAngle,
+	fillColor,
+	goAngle,
+	newTextLayout,
+	setColor,
+)
+
+if TYPE_CHECKING:
+	import cairo
 
 
 @registerSignals
@@ -222,8 +234,6 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		for index, calType in enumerate(calTypes.active):
 			dr = index * deltaR
 			r = maxR - dr
-			cx0 = x0 + dr
-			cy0 = y0 + dr
 			###
 			drawCircleOutline(cr, cx, cy, r, self.lineWidth)
 			fillColor(cr, self.lineColor)
@@ -310,7 +320,18 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		for button in self.buttons:
 			button.draw(cr, width, height)
 
-	def drawYearStartLine(self, year, direction, cr, cx, cy, angle, centerAngle, r, deltaR):
+	def drawYearStartLine(
+		self,
+		year,
+		direction,
+		cr,
+		cx,
+		cy,
+		angle,
+		centerAngle,
+		r,
+		deltaR,
+	):
 		layout = newTextLayout(
 			self,
 			text=_(year),
