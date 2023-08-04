@@ -25,7 +25,6 @@ from scal3 import logger
 
 log = logger.get()
 
-from typing import Optional
 
 import gi
 
@@ -35,8 +34,8 @@ import gi
 
 gi.require_version("Gtk", "3.0")
 gi.require_version("Gdk", "3.0")
-from gi.repository import Gtk as gtk
 from gi.repository import Gdk as gdk
+from gi.repository import Gtk as gtk
 
 gi.require_version('GdkPixbuf', "2.0")
 from gi.repository import GdkPixbuf
@@ -80,7 +79,7 @@ def pack(box, child, expand=False, fill=False, padding=0):
 		raise TypeError(f"pack: unkown type {type(box)}")
 
 
-def Box(vertical: Optional[bool] = None, **kwargs):
+def Box(vertical: "bool | None" = None, **kwargs):
 	if vertical is None:
 		raise ValueError("vertical argument is missing")
 	if vertical:

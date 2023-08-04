@@ -212,7 +212,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 			)
 			fillColor(cr, color)
 
-		def calcAngles(jd: int) -> Tuple[float, float]:
+		def calcAngles(jd: int) -> "tuple[float, float]":
 			angle = angle0 + 2 * pi * (jd - jd0) / yearLen  # radians
 			# angleD = angle * 180 / pi
 			centerAngle = angle + avgDeltaAngle / 2
