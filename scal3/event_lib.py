@@ -2010,7 +2010,7 @@ class RuleContainer:
 			tz = natz.gettz(self.timeZone)
 			if tz:
 				return tz
-		return core.localTz
+		return locale_man.localTz
 
 	def getTimeZoneStr(self):
 		return str(self.getTimeZoneObj())
@@ -4039,7 +4039,7 @@ class EventGroup(EventContainer):
 			tz = natz.gettz(self.timeZone)
 			if tz:
 				return tz
-		return core.localTz
+		return locale_man.localTz
 
 	def getEpochFromJd(self, jd: int) -> int:
 		return getEpochFromJd(jd, tz=self.getTimeZoneObj())

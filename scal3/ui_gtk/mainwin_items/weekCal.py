@@ -24,6 +24,7 @@ from time import time as now
 from typing import Optional
 
 import cairo
+from gi.repository.PangoCairo import show_layout
 
 from scal3 import core, ui
 from scal3.cal_types import calTypes

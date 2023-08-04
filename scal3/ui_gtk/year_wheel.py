@@ -23,6 +23,8 @@ log = logger.get()
 
 from math import pi
 
+from gi.repository.PangoCairo import show_layout
+
 from scal3 import core, ui
 from scal3.cal_types import calTypes, jd_to, to_jd
 from scal3.locale_man import getMonthName
