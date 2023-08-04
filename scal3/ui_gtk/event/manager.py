@@ -21,10 +21,11 @@ from scal3 import logger
 log = logger.get()
 
 
+import typing
 from collections import OrderedDict as odict
 from contextlib import suppress
 from os.path import join
-from typing import Any, Optional, Union
+from typing import Any
 
 from gi.repository import GdkPixbuf
 
@@ -81,7 +82,7 @@ from scal3.ui_gtk.utils import (
 # log.debug("Testing translator", __file__, _("About"))
 
 
-EventOrGroup = Union[lib.Event, lib.EventGroup]
+EventOrGroup: "typing.TypeAlias" = "lib.Event | lib.EventGroup"
 
 confPath = join(confDir, "event", "manager.json")
 
@@ -177,7 +178,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		###
 		self.hide()
 
-	# def findEventByPath(self, eid: int, path: List[int]):
+	# def findEventByPath(self, eid: int, path: "list[int]""):
 	# 	groupIndex, eventIndex = path
 
 	def onConfigChange(self, *a, **kw) -> None:
@@ -268,7 +269,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		####
 		self.multiSelect = False
 		self.multiSelectPathDict = odict()
-		self.multiSelectToPaste = None  # Optional[Tuple[bool, List[gtk.TreeIter]]]
+		self.multiSelectToPaste: "tuple[bool, list[gtk.TreeIter]] | None" = None
 		####
 		self.set_title(_("Event Manager"))
 		self.resize(800, 600)
@@ -943,7 +944,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			model.set_value(_iter, 0, False)
 		self.multiSelectOperationFinished()
 
-	def multiSelectEventIdsDict(self) -> "Dict[int, list[int]]":
+	def multiSelectEventIdsDict(self) -> "dict[int, list[int]]":
 		model = self.treeModel
 		idsDict = odict()
 		for groupIndex, eventIndexes in self.multiSelectPathDict.items():
@@ -1492,7 +1493,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	def openRightClickMenu(
 		self,
 		path: list[int],
-		etime: Optional[int] = None,
+		etime: "int | None" = None,
 	) -> None:
 		menu = self.genRightClickMenu(path)
 		if not menu:
@@ -1622,7 +1623,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	def onMenuBarOrphanClick(self, menuItem: gtk.MenuItem) -> None:
 		self.waitingDo(self._do_checkForOrphans)
 
-	def getSelectedPath(self) -> Optional[list[int]]:
+	def getSelectedPath(self) -> "list[int] | None":
 		_iter = self.treev.get_selection().get_selected()[1]
 		if _iter is None:
 			return
@@ -1765,7 +1766,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self,
 		enable: bool,
 		group: lib.EventGroup,
-		path: "Optional[tuple[int]]",
+		path: "tuple[int] | None",
 	) -> bool:
 		if path is None:
 			groupIter = self.groupIterById[group.id]
@@ -1884,7 +1885,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	def addGroupBeforeGroup(self, menu: gtk.Menu, path: list[int]) -> None:
 		self.insertNewGroup(path[0])
 
-	def addGroupBeforeSelection(self, w: Optional[gtk.Widget] = None) -> None:
+	def addGroupBeforeSelection(self, w: "gtk.Widget | None" = None) -> None:
 		path = self.getSelectedPath()
 		if path is None:
 			groupIndex = len(self.treeModel) - 1
@@ -1978,7 +1979,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	) -> None:
 		self.duplicateGroupWithEvents(path)
 
-	def duplicateSelectedObj(self, w: Optional[gtk.Widget] = None) -> None:
+	def duplicateSelectedObj(self, w: "gtk.Widget | None" = None) -> None:
 		path = self.getSelectedPath()
 		if not path:
 			return
@@ -2192,7 +2193,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.removeIterChildren(self.trashIter)
 		self.treeviewCursorChanged()
 
-	def editTrash(self, menuItem: Optional[gtk.MenuItem] = None) -> None:
+	def editTrash(self, menuItem: "gtk.MenuItem | None" = None) -> None:
 		TrashEditorDialog(transient_for=self).run()
 		self.treeModel.set_value(
 			self.trashIter,
