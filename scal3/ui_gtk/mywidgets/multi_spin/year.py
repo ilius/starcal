@@ -8,5 +8,5 @@ class YearSpinButton(SingleSpinButton):
 		SingleSpinButton.__init__(
 			self,
 			YearField(),
-			**kwargs
+			**kwargs,
 		)

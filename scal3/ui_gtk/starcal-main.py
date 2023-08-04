@@ -2,24 +2,21 @@
 # -*- coding: utf-8 -*-
 
 import sys
-from os.path import dirname, abspath, join, isabs
-from typing import Optional, Callable
-
+from os.path import abspath, dirname, isabs, join
+from typing import Callable, Optional
 
 import gi
 
 gi.require_version("Gtk", "3.0")
 gi.require_version("PangoCairo", "1.0")
 
+from gi.repository import GdkPixbuf
 from gi.repository import Gtk as gtk
 from gi.repository import Pango as pango
-from gi.repository import GdkPixbuf
-
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
 from scal3 import logger
-
 
 log = logger.get()
 
@@ -104,8 +101,7 @@ def pixbufFromSvgFile(path: str, size: int):
 		loader.write(data)
 	finally:
 		loader.close()
-	pixbuf = loader.get_pixbuf()
-	return pixbuf
+	return loader.get_pixbuf()
 
 
 def showMsg(

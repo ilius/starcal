@@ -1,5 +1,7 @@
 import unittest
+
 from scal3.cal_types import hijri
+
 
 class TestHijri(unittest.TestCase):
 	dateToJdDict = {

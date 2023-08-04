@@ -17,17 +17,14 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from scal3 import core
-from scal3.locale_man import tr as _
 from scal3 import event_lib
-from scal3 import ui
-
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
+from scal3.ui_gtk.event import common, makeWidget
 from scal3.ui_gtk.utils import labelImageButton
-from scal3.ui_gtk.event import makeWidget
-from scal3.ui_gtk.event import common
 
 
 class WidgetClass(common.WidgetClass):

@@ -22,18 +22,17 @@ if sys.version_info[0] != 3:
 	sys.stderr.write("Run this script with Python 3.x\n")
 	sys.exit(1)
 
-import signal
-from time import time as now
-from time import localtime
 import os
 import os.path
-from os.path import join, dirname, isfile, isdir
-from typing import Tuple
+import signal
+from os.path import dirname, isdir, isfile, join
+from time import localtime
+from time import time as now
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
-from scal3.path import *
 from scal3 import logger
+from scal3.path import *
 
 log = logger.get()
 
@@ -50,45 +49,29 @@ if not (isfile(join(confDir, "core.json")) or isdir(join(confDir, "event"))):
 		if isfile(join(confDir, "core.json")):
 			restartLow()
 
-from scal3.utils import versionLessThan
-from scal3 import cal_types
-from scal3.cal_types import calTypes
-from scal3 import core
-
-from scal3 import locale_man
-from scal3.locale_man import rtl, lang  # import scal3.locale_man after core
-# _ = locale_man.loadTranslator()  # FIXME
-from scal3.locale_man import tr as _
-from scal3 import event_lib
-from scal3 import ui
-from scal3.color_utils import rgbToHtmlColor
-
-from scal3.ui_gtk import *
-from scal3.ui_gtk.decorators import registerSignals
-from scal3.ui_gtk.utils import *
-
-from scal3.ui_gtk import menuitems
-from scal3.ui_gtk.menuitems import (
-	ImageMenuItem,
-	CheckMenuItem,
-)
-
-from scal3.ui_gtk import listener
-from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.customize import (
-	DummyCalObj,
-	CustomizableCalBox,
-	CustomizableCalObj,
-	newSubPageButton
-)
-from scal3.ui_gtk.layout import WinLayoutBox, WinLayoutObj
-from scal3.ui_gtk.layout_utils import moduleObjectInitializer
-from scal3.ui_gtk.event.utils import checkEventsReadOnly
-from scal3.ui_gtk import hijri as hijri_gtk
-from scal3.ui_gtk.mainwin_items import mainWinItemsDesc
-
 from gi.repository import Gio as gio
 
+from scal3 import cal_types, core, event_lib, locale_man, ui
+from scal3.cal_types import calTypes
+from scal3.color_utils import rgbToHtmlColor
+from scal3.locale_man import rtl  # import scal3.locale_man after core
+
+# _ = locale_man.loadTranslator()  # FIXME
+from scal3.locale_man import tr as _
+from scal3.ui_gtk import *
+from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk import hijri as hijri_gtk
+from scal3.ui_gtk import listener, menuitems
+from scal3.ui_gtk.customize import CustomizableCalBox, DummyCalObj
+from scal3.ui_gtk.decorators import registerSignals
+from scal3.ui_gtk.event.utils import checkEventsReadOnly
+from scal3.ui_gtk.layout import WinLayoutBox, WinLayoutObj
+from scal3.ui_gtk.layout_utils import moduleObjectInitializer
+from scal3.ui_gtk.mainwin_items import mainWinItemsDesc
+from scal3.ui_gtk.menuitems import (
+	ImageMenuItem,
+)
+from scal3.ui_gtk.utils import *
 
 ui.uiName = "gtk"
 
@@ -735,7 +718,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 					group.title,
 					func=self.addToGroupFromMenu,
 					args=(group, eventTypes[0]),
-					**item2_kwargs
+					**item2_kwargs,
 				))
 			else:
 				menu3 = Menu()
@@ -750,7 +733,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				menu3.show_all()
 				item2 = ImageMenuItem(
 					group.title,
-					**item2_kwargs
+					**item2_kwargs,
 				)
 				item2.set_submenu(menu3)
 				menu2.add(item2)
@@ -798,7 +781,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 					label=_("Edit") + ": " + self.trimMenuItemLabel(eData.text[0], 25),
 					imageName=eData.icon,
 					func=self.editEventFromMenu,
-					args=(groupId, eventId,),
+					args=(groupId, eventId),
 				))
 		else:
 			subMenu = Menu()
@@ -812,7 +795,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 					eData.text[0],
 					imageName=eData.icon,
 					func=self.editEventFromMenu,
-					args=(groupId, eventId,),
+					args=(groupId, eventId),
 				))
 			subMenu.show_all()
 			subMenuItem.set_submenu(subMenu)
@@ -830,7 +813,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				),
 				imageName="edit-copy.svg",
 				func=self.copyDateGetCallback(calType),
-				args=(calType,)
+				args=(calType,),
 			))
 		menu.add(ImageMenuItem(
 			label=_("Day Info"),
@@ -931,7 +914,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		if coord is None:
 			raise RuntimeError(
 				f"failed to translate coordinates ({x}, {y})" +
-				f" from widget {widget}"
+				f" from widget {widget}",
 			)
 		dx, dy = coord
 		foo, wx, wy = self.get_window().get_origin()
@@ -1356,6 +1339,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			# middle button press
 			self.copyDate(calTypes.primary)
 			return True
+		return None
 
 	def onStatusIconClick(self, obj=None):
 		if self.get_property("visible"):
