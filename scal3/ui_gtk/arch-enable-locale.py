@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 
 from scal3 import logger
+
 log = logger.get()
 
-import sys
 import os
 import subprocess
+import sys
 from time import time as now
 
 from gi.repository import Gtk as gtk
-
 
 localeGen = "/etc/locale.gen"
 

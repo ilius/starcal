@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
 
 from scal3 import logger
+
 log = logger.get()
 
-import sys
 import os
 import os.path
-from os.path import join, isabs
-from time import time as now
+import sys
 from collections import OrderedDict
 from hashlib import sha1
-from typing import Tuple
+from os.path import isabs, join
+from time import time as now
 
 from scal3.path import objectDir, sourceDir
 
@@ -18,6 +18,7 @@ sys.path.insert(0, join(sourceDir, "libs", "bson"))
 import bson
 
 from scal3.json_utils import *
+from scal3.os_utils import makeDir
 
 dataToJson = dataToPrettyJson
 # from scal3.core import dataToJson  # FIXME
@@ -123,7 +124,7 @@ class SObj:
 			if getattr(self, "dataIsSet", False):
 				raise RuntimeError(
 					"can not run setData multiple times " +
-					f"for {self.__class__.__name__} instance"
+					f"for {self.__class__.__name__} instance",
 				)
 			self.dataIsSet = True
 		###########
@@ -137,13 +138,13 @@ class SObj:
 			parent = self.parent
 		except AttributeError:
 			raise NotImplementedError(
-				f"{self.__class__.__name__}.getIdPath: no parent attribute"
+				f"{self.__class__.__name__}.getIdPath: no parent attribute",
 			)
 		try:
 			_id = self.id
 		except AttributeError:
 			raise NotImplementedError(
-				f"{self.__class__.__name__}.getIdPath: no id attribute"
+				f"{self.__class__.__name__}.getIdPath: no id attribute",
 			)
 		######
 		path = []
@@ -239,7 +240,7 @@ class JsonSObj(SObj):
 		else:
 			log.info(
 				f"save method called for object {self!r}" +
-				" while file is not set"
+				" while file is not set",
 			)
 
 	def setData(self, data):
@@ -256,7 +257,7 @@ class JsonSObj(SObj):
 		# 	log.info(f"no modified param for object {self!r}")
 
 
-def getObjectPath(_hash: str) -> Tuple[str, str]:
+def getObjectPath(_hash: str) -> tuple[str, str]:
 	dpath = join("objects", _hash[:2])
 	fpath = join(dpath, _hash[2:])
 	return dpath, fpath
@@ -305,8 +306,8 @@ def loadBsonObject(_hash, fs: FileSystem):
 	with fs.open(fpath, "rb") as fp:
 		bsonBytes = fp.read()
 	if _hash != sha1(bsonBytes).hexdigest():
-		raise IOError(
-			f"sha1 diggest does not match for object file '{fpath}'"
+		raise OSError(
+			f"sha1 diggest does not match for object file '{fpath}'",
 		)
 	return bson.loads(bsonBytes)
 
@@ -318,9 +319,9 @@ def updateBasicDataFromBson(
 	fs: FileSystem,
 ):
 	"""
-		fileType: "event" | "group" | "account"...,
-			display only, does not matter much
-		return lastHistRecord = (lastEpoch, lastHash)
+	fileType: "event" | "group" | "account"...,
+	display only, does not matter much
+	return lastHistRecord = (lastEpoch, lastHash).
 	"""
 	try:
 		lastHistRecord = data["history"][0]
@@ -328,7 +329,7 @@ def updateBasicDataFromBson(
 		lastHash = lastHistRecord[1]
 	except (KeyError, IndexError):
 		raise ValueError(
-			f"invalid {fileType} file \"{filePath}\", no \"history\""
+			f"invalid {fileType} file \"{filePath}\", no \"history\"",
 		)
 	data.update(loadBsonObject(lastHash, fs))
 	data["modified"] = lastEpoch  # FIXME
@@ -408,13 +409,11 @@ class BsonHistObj(SObj):
 			fp.write(jsonStr)
 
 	def save(self, *histArgs):
-		"""
-			returns last history record: (lastEpoch, lastHash, **args)
-		"""
+		"""Returns last history record: (lastEpoch, lastHash, **args)."""
 		if not self.file:
 			raise RuntimeError(
 				f"save method called for object {self!r}" +
-				" while file is not set"
+				" while file is not set",
 			)
 		if self.fs is None:
 			raise RuntimeError(f"{self} has no fs object")

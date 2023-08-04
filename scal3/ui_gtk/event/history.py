@@ -2,30 +2,25 @@
 # -*- coding: utf-8 -*-
 
 from scal3 import logger
+
 log = logger.get()
 
 from collections import OrderedDict
 
-from scal3 import core
+from scal3 import ui
+from scal3.format_time import compileTmFormat
+from scal3.json_utils import dataToPrettyJson
 from scal3.locale_man import tr as _
 from scal3.s_object import loadBsonObject
-from scal3 import event_lib
 from scal3.time_utils import getJhmsFromEpoch
-from scal3.json_utils import dataToPrettyJson
-from scal3.format_time import compileTmFormat
-
-from scal3 import ui
-
 from scal3.ui_gtk import *
 from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk.event.utils import checkEventsReadOnly
+from scal3.ui_gtk.mywidgets.text_widgets import ReadOnlyTextView
 from scal3.ui_gtk.utils import (
 	dialog_add_button,
 	labelImageButton,
 )
-from scal3.ui_gtk.mywidgets.text_widgets import ReadOnlyTextView
-
-from scal3.ui_gtk.event import makeWidget
-from scal3.ui_gtk.event.utils import checkEventsReadOnly
 
 historyTimeBinFmt = compileTmFormat("%Y/%m/%d    %H:%M:%S")
 
@@ -72,7 +67,7 @@ class EventHistoryDialog(gtk.Dialog):
 	def __init__(
 		self,
 		event,
-		**kwargs
+		**kwargs,
 	):
 		checkEventsReadOnly()
 		gtk.Dialog.__init__(self, **kwargs)
@@ -396,9 +391,7 @@ class EventHistoryDialog(gtk.Dialog):
 		return data
 
 	def extractChangeDiff(self, hashBefore, hashAfter):
-		"""
-		returns: dict: param -> (valueBefore, valueAfter)
-		"""
+		"""returns: dict: param -> (valueBefore, valueAfter)."""
 		dataBefore = self.getObjectData(hashBefore)
 		dataAfter = self.getObjectData(hashAfter)
 		diff = {}
@@ -443,10 +436,7 @@ class EventHistoryDialog(gtk.Dialog):
 		return dataFull
 
 	def extractChangeSummary(self, diff):
-		"""
-		diff: dict: param -> (valueBefore, valueAfter)
-		"""
-
+		"""diff: dict: param -> (valueBefore, valueAfter)."""
 		if len(diff) < 3:
 			return ", ".join(diff.keys())
 

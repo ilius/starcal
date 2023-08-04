@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 
-from scal3.color_utils import colorizeSpan
-from scal3.cal_types import calTypes
-from scal3 import core
-from scal3.locale_man import tr as _
-from scal3.locale_man import rtl
 from scal3 import ui
-
+from scal3.cal_types import calTypes
+from scal3.color_utils import colorizeSpan
+from scal3.locale_man import rtl
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
-from scal3.ui_gtk.mywidgets.label import SLabel
-from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
+from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.mywidgets.label import SLabel
 
 
 @registerSignals
@@ -67,9 +65,9 @@ class CalObj(gtk.Box, CustomizableCalObj):
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.pref_utils import (
+			CheckColorPrefItem,
 			CheckPrefItem,
 			ColorPrefItem,
-			CheckColorPrefItem,
 		)
 		if self.optionsWidget:
 			return self.optionsWidget

@@ -1,23 +1,19 @@
 from scal3 import logger
+
 log = logger.get()
 
-from typing import Tuple
 
-from scal3.locale_man import tr as _
 from scal3 import ui
-
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
+
+# WeekOccurrenceView,
+from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
 from scal3.ui_gtk.decorators import registerSignals
-from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.event.occurrence_view import (
 	DayOccurrenceView,
-	# WeekOccurrenceView,
 )
-
-from scal3.ui_gtk.customize import (
-	CustomizableCalObj,
-	newSubPageButton
-)
+from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.pluginsText import PluginsTextBox
 
 
@@ -158,7 +154,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 	def updatePosition(self, height: int):
 		log.debug(
 			f"updatePosition: height={height}, setPosAtHeight={self.setPosAtHeight}, " +
-			f"pos={self.get_position()}"
+			f"pos={self.get_position()}",
 		)
 		if height <= 1:
 			return
@@ -210,13 +206,13 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 			width = ui.mainWinRightPanelWidth
 		return width, width
 
-	def do_get_preferred_width_for_height(self, size: int) -> Tuple[int, int]:
+	def do_get_preferred_width_for_height(self, size: int) -> tuple[int, int]:
 		return self.do_get_preferred_width()
 
 	def getOptionsWidget(self):
 		from scal3.ui_gtk.pref_utils import (
-			SpinPrefItem,
 			CheckPrefItem,
+			SpinPrefItem,
 		)
 		from scal3.ui_gtk.pref_utils_extra import FixedSizeOrRatioPrefItem
 		from scal3.ui_gtk.stack import StackPage

@@ -17,36 +17,31 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from time import localtime
 
-import sys
-import os
-from os.path import join
 from contextlib import suppress
+from os.path import join
 
-from scal3.path import *
+from scal3 import core, locale_man, plugin_man, ui
 from scal3.cal_types import calTypes
-from scal3 import core
-from scal3 import locale_man
 from scal3.locale_man import langSh
 from scal3.locale_man import tr as _
-from scal3 import plugin_man
-from scal3 import ui
+from scal3.path import *
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import *
-from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk.log_pref import LogLevelPrefItem
+from scal3.ui_gtk.menuitems import ImageMenuItem
+from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
 from scal3.ui_gtk.pref_utils import *
 from scal3.ui_gtk.pref_utils_extra import *
-from scal3.ui_gtk.log_pref import LogLevelPrefItem
 from scal3.ui_gtk.stack import MyStack, StackPage
-from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
 from scal3.ui_gtk.toolbox import (
-	ToolBoxItem,
 	StaticToolBox,
+	ToolBoxItem,
 )
+from scal3.ui_gtk.utils import *
 
 
 class PreferencesPluginsToolbar(StaticToolBox):
@@ -1260,7 +1255,7 @@ class PreferencesWindow(gtk.Window):
 		from scal3.ui_gtk.font_utils import gfontDecode
 		# log.debug(f"{ui.fontDefault=}")
 		ui.fontDefault = gfontDecode(
-			ud.settings.get_property("gtk-font-name")
+			ud.settings.get_property("gtk-font-name"),
 		)
 		# log.debug(f"{ui.fontDefault=}")
 		#####
@@ -1457,6 +1452,7 @@ class PreferencesWindow(gtk.Window):
 		# about.set_resizable(True)
 		# about.vbox.show_all()  # OR about.vbox.show_all() ; about.run()
 		openWindow(about)  # FIXME
+		return None
 
 	def onPlugConfClick(self, obj=None):
 		cur = self.plugTreeview.get_cursor()[0]

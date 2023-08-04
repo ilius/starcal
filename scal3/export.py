@@ -16,13 +16,9 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+from scal3 import core, locale_man, ui
 from scal3.cal_types import calTypes
-from scal3 import locale_man
 from scal3.locale_man import tr as _
-
-from scal3 import core
-
-from scal3 import ui
 from scal3.monthcal import getMonthDesc
 
 
@@ -73,7 +69,7 @@ def exportToHtml(fpath, monthsStatus, title=""):
 	calTypesFormat = (
 		(2, "SUB"),
 		(0, None),
-		(1, "SUB")
+		(1, "SUB"),
 	)  # a list of (calTypeIndex, htmlTag) tuples
 	sep = " "
 	pluginsTextSep = " <B>–</B> "

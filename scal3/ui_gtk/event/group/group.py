@@ -3,14 +3,12 @@
 
 from scal3.core import jd_to
 from scal3.locale_man import tr as _
-
 from scal3.ui_gtk import *
-from scal3.ui_gtk.mywidgets import MyColorButton
-from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
-from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk.event import common
-from scal3.ui_gtk.event.group.base import BaseWidgetClass
 from scal3.ui_gtk.event.account import AccountCombo, AccountGroupBox
+from scal3.ui_gtk.event.group.base import BaseWidgetClass
+from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
+from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 
 
 class WidgetClass(BaseWidgetClass):

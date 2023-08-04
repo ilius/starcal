@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 
 from scal3 import logger
+
 log = logger.get()
 
-import time
 from time import localtime
 from time import time as now
 
-from scal3.time_utils import getUtcOffsetCurrent
-from scal3 import core
 from scal3 import ui
-
-from scal3.ui_gtk import gtk, timeout_add_seconds
+from scal3.ui_gtk import timeout_add_seconds
 
 dayLen = 24 * 3600
 

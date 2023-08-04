@@ -1,10 +1,11 @@
 #!/usr/bin/env python3
 
 import logging
+
 from scal3 import logger
+
 log = logger.get()
 
-from scal3 import core
 from scal3.ui_gtk import *
 from scal3.ui_gtk import gtk_ud as ud
 

@@ -16,14 +16,14 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from scal3.time_utils import getEpochFromJd
-from scal3.vcs_modules import encodeShortStat, getCommitListFromEst
-from scal3.event_search_tree import EventSearchTree
-
 import mercurial.ui
 from mercurial.localrepo import localrepository
 from mercurial.patch import diff, diffstatdata, diffstatsum
 from mercurial.util import iterlines
+
+from scal3.event_search_tree import EventSearchTree
+from scal3.time_utils import getEpochFromJd
+from scal3.vcs_modules import encodeShortStat, getCommitListFromEst
 
 
 def prepareObj(obj):
@@ -41,14 +41,12 @@ def clearObj(obj):
 
 
 def getCommitList(obj, startJd, endJd):
-	"""
-	return a list of (epoch, commit_id) tuples
-	"""
+	"""Return a list of (epoch, commit_id) tuples."""
 	return getCommitListFromEst(
 		obj,
 		startJd,
 		endJd,
-		lambda repo, rev_id: str(repo[rev_id])
+		lambda repo, rev_id: str(repo[rev_id]),
 	)
 
 
@@ -73,8 +71,8 @@ def getShortStat(obj, node1, node2):## SLOW FIXME
 				repo,
 				str(node1),
 				str(node2),
-			)
-		)
+			),
+		),
 	)
 	(
 		maxname,
@@ -87,9 +85,7 @@ def getShortStat(obj, node1, node2):## SLOW FIXME
 
 
 def getCommitShortStat(obj, commit_id):
-	"""
-	returns (files_changed, insertions, deletions)
-	"""
+	"""Returns (files_changed, insertions, deletions)."""
 	ctx = obj.repo[commit_id]
 	return getShortStat(
 		obj,
@@ -99,14 +95,12 @@ def getCommitShortStat(obj, commit_id):
 
 
 def getCommitShortStatLine(obj, commit_id):
-	"""returns str"""
+	"""Returns str."""
 	return encodeShortStat(*getCommitShortStat(obj, commit_id))
 
 
 def getTagList(obj, startJd, endJd):
-	"""
-	returns a list of (epoch, tag_name) tuples
-	"""
+	"""Returns a list of (epoch, tag_name) tuples."""
 	if not obj.repo:
 		return []
 	startEpoch = getEpochFromJd(startJd)
@@ -136,7 +130,7 @@ def getTagShortStat(obj, prevTag, tag):
 
 
 def getTagShortStatLine(obj, prevTag, tag):
-	"""returns str"""
+	"""Returns str."""
 	return encodeShortStat(*getTagShortStat(obj, prevTag, tag))
 
 

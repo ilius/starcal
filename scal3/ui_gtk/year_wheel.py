@@ -17,27 +17,22 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-import sys
 
-import math
-from math import pi, sin, cos
+from math import pi
 
-from scal3.cal_types import calTypes, to_jd, jd_to
-from scal3 import core
-from scal3 import locale_man
-from scal3.locale_man import tr as _
+from scal3 import core, ui
+from scal3.cal_types import calTypes, jd_to, to_jd
 from scal3.locale_man import getMonthName
+from scal3.locale_man import tr as _
 from scal3.season import getSpringJdAfter
-
-from scal3 import ui
-
 from scal3.ui_gtk import *
+from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk.button_drawing import Button
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.drawing import *
-from scal3.ui_gtk.button_drawing import Button
-from scal3.ui_gtk import gtk_ud as ud
 
 
 @registerSignals
@@ -116,7 +111,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				iconSize=iconSize,
 				xalign="right",
 				yalign="top",
-			)
+			),
 		]
 
 	def onHomeClick(self, arg=None):

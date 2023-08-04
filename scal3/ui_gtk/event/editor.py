@@ -1,15 +1,10 @@
 #!/usr/bin/env python3
-from scal3 import core
+from scal3 import core, event_lib, ui
 from scal3.locale_man import tr as _
-from scal3 import event_lib
-
-from scal3 import ui
-
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import dialog_add_button
-from scal3.ui_gtk.utils import showInfo
 from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
+from scal3.ui_gtk.utils import dialog_add_button, showInfo
 
 
 class EventEditorDialog(gtk.Dialog):
@@ -19,7 +14,7 @@ class EventEditorDialog(gtk.Dialog):
 		typeChangable=True,
 		isNew=False,
 		useSelectedDate=False,
-		**kwargs
+		**kwargs,
 	):
 		checkEventsReadOnly()
 		gtk.Dialog.__init__(self, **kwargs)
@@ -58,7 +53,7 @@ class EventEditorDialog(gtk.Dialog):
 		#######
 		hbox = HBox()
 		pack(hbox, gtk.Label(
-			label=_("Group") + ": " + self._group.title
+			label=_("Group") + ": " + self._group.title,
 		))
 		hbox.show_all()
 		pack(self.vbox, hbox)
@@ -158,7 +153,7 @@ class EventEditorDialog(gtk.Dialog):
 				msg = _(
 					"This event is outside of date range specified in "
 					"it\'s group. You probably need to edit group "
-					"\"{groupTitle}\" and change \"Start\" or \"End\" values"
+					"\"{groupTitle}\" and change \"Start\" or \"End\" values",
 				).format(groupTitle=self.event.parent.title)
 				showInfo(msg)
 		#####
@@ -176,7 +171,7 @@ def addNewEvent(group, eventType, typeChangable=False, **kwargs):
 		event,
 		typeChangable=typeChangable,
 		isNew=True,
-		**kwargs
+		**kwargs,
 	).run()
 	if event is None:
 		return

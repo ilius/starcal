@@ -3,10 +3,10 @@
 from queue import Queue
 from threading import Thread
 from time import sleep
-
 from typing import Union
 
 from scal3 import logger
+
 log = logger.get()
 
 from scal3 import event_lib
@@ -40,7 +40,7 @@ class EventUpdateQueue(Queue):
 		log.info(f"registerConsumer: {consumer.__class__.__name__}")
 		if not hasattr(consumer, "onEventUpdate"):
 			raise TypeError(
-				f"type {consumer.__class__.__name__} has no method onEventUpdate"
+				f"type {consumer.__class__.__name__} has no method onEventUpdate",
 			)
 		self._consumers.append(consumer)
 
@@ -61,12 +61,12 @@ class EventUpdateQueue(Queue):
 		if action == "r":
 			if not isinstance(obj, (event_lib.EventGroup, event_lib.EventTrash)):
 				raise TypeError(
-					f"invalid obj type {obj.__class__.__name__} for {action=}"
+					f"invalid obj type {obj.__class__.__name__} for {action=}",
 				)
 		elif action == "eg":
 			if not isinstance(obj, event_lib.EventGroup):
 				raise TypeError(
-					f"invalid obj type {obj.__class__.__name__} for {action=}"
+					f"invalid obj type {obj.__class__.__name__} for {action=}",
 				)
 		log.info(f"EventUpdateQueue: add: {action=}, {obj=}")
 		record = EventUpdateRecord(action, obj, sender)

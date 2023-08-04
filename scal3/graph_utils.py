@@ -3,9 +3,7 @@ from igraph import Graph
 
 
 def colorGraph(g: Graph, vertexSortKey: "Callable[[int], [Any]]"):
-	"""
-		vertexSortKey is the key function for sorting vertices
-	"""
+	"""VertexSortKey is the key function for sorting vertices."""
 	# Using "SL" (Smalest Last) algorithm
 	n = g.vcount()
 	adjlist = g.get_adjlist()

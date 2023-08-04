@@ -1,23 +1,20 @@
 #!/usr/bin/env python3
 from os.path import join
 
-from scal3.path import *
-from scal3 import core
-from scal3.locale_man import tr as _
 from scal3 import ui
-
+from scal3.locale_man import tr as _
+from scal3.path import *
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.utils import (
-	pixbufFromFile,
-	dialog_add_button,
-	resolveImagePath,
-	getGtkWindow,
-)
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
 )
-
+from scal3.ui_gtk.utils import (
+	dialog_add_button,
+	getGtkWindow,
+	pixbufFromFile,
+	resolveImagePath,
+)
 
 # FIXME
 # for uknown reason, the file chooser dialog comes logically behind it's parent
@@ -75,7 +72,7 @@ class IconSelectButton(gtk.Button):
 			dialog,
 			imageName="dialog-ok.svg",
 			label=_("_Choose"),
-			res=gtk.ResponseType.OK
+			res=gtk.ResponseType.OK,
 		)
 		dialog_add_button(
 			dialog,

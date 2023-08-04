@@ -17,15 +17,12 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3.cal_types import calTypes, convert
-from scal3 import core
 from scal3.locale_man import tr as _
-from scal3 import event_lib
-
 from scal3.ui_gtk import *
-from scal3.ui_gtk.mywidgets.month_combo import MonthComboBox
-from scal3.ui_gtk.mywidgets.multi_spin.year import YearSpinButton
-from scal3.ui_gtk.mywidgets.multi_spin.day import DaySpinButton
 from scal3.ui_gtk.event import common
+from scal3.ui_gtk.mywidgets.month_combo import MonthComboBox
+from scal3.ui_gtk.mywidgets.multi_spin.day import DaySpinButton
+from scal3.ui_gtk.mywidgets.multi_spin.year import YearSpinButton
 
 
 class WidgetClass(common.WidgetClass):
@@ -64,7 +61,7 @@ class WidgetClass(common.WidgetClass):
 
 	def onStartYearCheckClick(self, obj=None):
 		return self.startYearSpin.set_sensitive(
-			self.startYearCheck.get_active()
+			self.startYearCheck.get_active(),
 		)
 
 	def updateWidget(self):## FIXME

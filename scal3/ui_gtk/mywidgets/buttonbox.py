@@ -17,7 +17,6 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3.locale_man import tr as _
-from scal3 import ui
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import (
 	labelIconButton,

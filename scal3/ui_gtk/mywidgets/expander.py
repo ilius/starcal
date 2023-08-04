@@ -17,7 +17,6 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 
-from typing import Optional, Union
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *

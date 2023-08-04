@@ -1,13 +1,11 @@
 #!/usr/bin/env python3
-from scal3 import core
-from scal3.locale_man import tr as _
-from scal3.locale_man import rtl, textNumEncode
 from scal3 import ui
-
+from scal3.locale_man import rtl, textNumEncode
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
-from scal3.ui_gtk.pbar import MyProgressBar
-from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.customize import CustomizableCalObj
+from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.pbar import MyProgressBar
 
 
 @registerSignals
@@ -43,7 +41,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 			textNumEncode(
 				percent,
 				changeDot=True,
-			)
+			),
 		)
 		self.pbar.set_fraction(frac)
 

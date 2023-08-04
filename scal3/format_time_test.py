@@ -1,15 +1,15 @@
 
 from scal3 import logger
+
 log = logger.get()
 
 import time
 from time import time as now
 
-from scal3.types_starcal import CompiledTimeFormat
-from scal3.cal_types import calTypes, gregorian, to_jd
-from scal3 import core
+from scal3 import core, ui
+from scal3.cal_types import to_jd
 from scal3.format_time import compileTmFormat
-from scal3 import ui
+from scal3.types_starcal import CompiledTimeFormat
 
 
 def formatTime(
@@ -62,6 +62,5 @@ def testOutput():
 
 
 if __name__ == "__main__":
-	import sys
 	testSpeed()
 	# testOutput()

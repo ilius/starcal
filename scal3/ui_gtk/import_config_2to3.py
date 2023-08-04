@@ -20,17 +20,16 @@
 APP_DESC = "StarCalendar"
 
 from scal3 import logger
+
 log = logger.get()
 
 import os
 import shutil
-from os.path import dirname
-from os.path import join, isfile, isdir
+from os.path import isfile, join
 
-from scal3.path import *
 from scal3.import_config_2to3 import *
-from scal3.locale_man import langDict, langDefault
-
+from scal3.locale_man import langDefault, langDict
+from scal3.path import *
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import dialog_add_button
 
@@ -67,7 +66,7 @@ importCheckb = None
 oldVersion = getOldVersion()
 if oldVersion:## and "2.2.0" <= oldVersion < "2.5.0":## FIXME
 	importCheckb = gtk.CheckButton(
-		f"Import configurations from {APP_DESC} {oldVersion}"
+		f"Import configurations from {APP_DESC} {oldVersion}",
 	)
 	importCheckb.connect(
 		"clicked",
@@ -133,7 +132,7 @@ if win.run() == gtk.ResponseType.OK:
 			open(join(confDir, "locale.json"), "w").write(
 				dataToPrettyJson({
 					"lang": langCode,
-				})
+				}),
 			)
 
 win.destroy()

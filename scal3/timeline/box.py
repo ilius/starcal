@@ -17,16 +17,17 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 import logging
+
 from scal3 import logger
+
 log = logger.get()
 debugMode = log.level <= logging.DEBUG
 
 from time import time as now
 
-from scal3.locale_man import tr as _
 from scal3 import ui
+from scal3.locale_man import tr as _
 from scal3.timeline import tl
-
 
 movableEventTypes = (
 	"task",
@@ -151,8 +152,8 @@ def calcEventBoxes(
 	try:
 		from scal3.graph_utils import (
 			Graph,
-			colorGraph,
 			addBoxHeightToColoredGraph,
+			colorGraph,
 		)
 	except ImportError:
 		errorBoxH = 0.8  # FIXME
@@ -166,7 +167,7 @@ def calcEventBoxes(
 				text="Install \"python3-igraph\" to see events",
 				color=(128, 0, 0),  # FIXME
 				lineW=2 * tl.boxLineWidth,
-			)
+			),
 		]
 	boxesDict = {}
 	# timeMiddle = (timeStart + timeEnd) / 2.0

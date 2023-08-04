@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
-from typing import Tuple, Union
+from typing import Union
 
 ColorType = Union[
-	Tuple[int, int, int],
-	Tuple[int, int, int, int],
+	tuple[int, int, int],
+	tuple[int, int, int, int],
 ]
 
 
@@ -17,9 +17,7 @@ def invertColor(r, g, b):
 
 
 def rgbToInt(r, g, b):
-	"""
-		for example (170, 85, 52) or "#aa5534" becomes 0xaa5534
-	"""
+	"""For example (170, 85, 52) or "#aa5534" becomes 0xaa5534."""
 	return b + g * 256 + r * 256 ** 2
 
 
@@ -79,9 +77,8 @@ def hslToRgb(h, s, ln):
 		else:
 			c = p
 		rgb.append(round(c * 255))
-	rgb = tuple(rgb)
+	return tuple(rgb)
 	# rgb = rgb + (255,)
-	return rgb
 
 
 # def getRandomHueColor(s, l):

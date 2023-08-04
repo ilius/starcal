@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 from scal3 import logger
+
 log = logger.get()
 
-from os.path import isfile, isdir
-
-from scal3.path import *
-from scal3.os_utils import makeDir
+from os.path import isdir, isfile
 
 from scal3 import core
 from scal3.core import osName
+from scal3.os_utils import makeDir
+from scal3.path import *
 
 comDeskDir = f"{homeDir}/.config/autostart"
 comDesk = f"{comDeskDir}/{APP_NAME}.desktop"

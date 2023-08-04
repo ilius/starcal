@@ -22,35 +22,38 @@ __all__ = [
 ]
 
 from scal3 import logger
+
 log = logger.get()
 
 from typing import Optional
 
 import gi
+
 gi.require_version("Gtk", "3.0")
 gi.require_version("GdkPixbuf", "2.0")
 gi.require_version("PangoCairo", "1.0")
 # gi.require_version('Rsvg', '2.0')
 
-from gi.repository import Gtk as gtk
 from gi.repository import Gdk as gdk
 from gi.repository import GdkPixbuf
+from gi.repository import Gtk as gtk
 from gi.repository import Pango as pango
+
 # from gi.repository import Rsvg as rsvg
 
 try:
 	from gi.repository.GLib import (
+		main_context_default,
+		source_remove,
 		timeout_add,
 		timeout_add_seconds,
-		source_remove,
-		main_context_default,
 	)
 except ImportError:
 	from gi.repository.GObject import (
+		main_context_default,
+		source_remove,
 		timeout_add,
 		timeout_add_seconds,
-		source_remove,
-		main_context_default,
 	)
 
 try:
@@ -104,9 +107,7 @@ class Menu(gtk.Menu):
 dir(gevent) == ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__gtype__', '__hash__', '__info__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_get_angle', '_get_center', '_get_distance', 'copy', 'delta_x', 'delta_y', 'device', 'direction', 'free', 'get', 'get_axis', 'get_button', 'get_click_count', 'get_coords', 'get_device', 'get_device_tool', 'get_event_sequence', 'get_event_type', 'get_keycode', 'get_keyval', 'get_pointer_emulated', 'get_root_coords', 'get_scancode', 'get_screen', 'get_scroll_deltas', 'get_scroll_direction', 'get_seat', 'get_source_device', 'get_state', 'get_time', 'get_window', 'handler_set', 'is_scroll_stop_event', 'is_stop', 'new', 'peek', 'put', 'request_motions', 'send_event', 'set_device', 'set_device_tool', 'set_screen', 'set_source_device', 'state', 'time', 'triggers_context_menu', 'type', 'window', 'x', 'x_root', 'y', 'y_root']
 """
 def getScrollValue(gevent, last=""):
-	"""
-	return value is either "up" or "down"
-	"""
+	"""Return value is either "up" or "down"."""
 	value = gevent.direction.value_nick
 	# gevent.delta_x is always 0
 	# gevent.get_keycode() is always (False, keycode=0)

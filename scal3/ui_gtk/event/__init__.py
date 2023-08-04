@@ -8,9 +8,9 @@ __all__ = [
 ############################################
 
 from scal3 import logger
+
 log = logger.get()
 
-from scal3 import event_lib
 
 
 modPrefix = "scal3.ui_gtk.event"
@@ -38,9 +38,7 @@ def getWidgetClass(obj):
 
 
 def makeWidget(obj):
-	"""
-	obj is an instance of Event, EventRule, EventNotifier or EventGroup
-	"""
+	"""Obj is an instance of Event, EventRule, EventNotifier or EventGroup."""
 	WidgetClass = getWidgetClass(obj)
 	if WidgetClass is None:
 		return
@@ -54,9 +52,7 @@ def makeWidget(obj):
 
 
 def setActionFuncs(obj):
-	"""
-	obj is an instance of EventGroup
-	"""
+	"""Obj is an instance of EventGroup."""
 	cls = obj.__class__
 	try:
 		module = __import__(
@@ -78,5 +74,3 @@ def setActionFuncs(obj):
 
 
 # FIXME: Load accounts, groups and trash?
-from os.path import join, isfile
-from scal3.path import confDir

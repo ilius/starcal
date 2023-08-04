@@ -17,36 +17,30 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from time import time as now
-import os
-from os.path import join, isabs
-from subprocess import Popen
-
-from typing import Optional, Tuple, Union, Callable
-
-from scal3.utils import toBytes, toStr
-from scal3.json_utils import *
-from scal3.color_utils import ColorType, rgbToCSS
-from scal3.path import pixDir, sourceDir, svgDir
-from scal3.cal_types import calTypes
-from scal3 import core
-from scal3.locale_man import tr as _
-from scal3.locale_man import rtl
-from scal3 import ui
+from os.path import isabs, join
+from typing import Callable, Optional, Union
 
 from gi.repository import GdkPixbuf
 from gi.repository import Pango as pango
 
+from scal3 import ui
+from scal3.color_utils import ColorType, rgbToCSS
+from scal3.json_utils import *
+from scal3.locale_man import rtl
+from scal3.locale_man import tr as _
+from scal3.path import pixDir, svgDir
 from scal3.ui_gtk import *
+from scal3.ui_gtk import pixcache
+from scal3.ui_gtk.color_utils import gdkColorToRgb
 from scal3.ui_gtk.icon_mapping import (
 	iconNameByImageName,
 	rtlImageNameMapping,
 )
-from scal3.ui_gtk import pixcache
-from scal3.ui_gtk.svg_utils import pixbufFromSvgFile, imageFromSvgFile
-from scal3.ui_gtk.color_utils import gdkColorToRgb
+from scal3.ui_gtk.svg_utils import pixbufFromSvgFile
+from scal3.utils import toBytes, toStr
 
 
 def hideList(widgets):
@@ -78,7 +72,7 @@ def show_event(widget, gevent):
 		value = "NONE"
 	log.debug(
 		# f"{type(widget).__class__.__name__}, " +
-		f"{widget.__class__.__name__}, {gevent.type.value_name=}, {value=}"
+		f"{widget.__class__.__name__}, {gevent.type.value_name=}, {value=}",
 	)
 	# gevent.send_event
 
@@ -361,14 +355,14 @@ def confirm(
 	msg,
 	title=_("Confirmation"),
 	border_width=15,
-	**kwargs
+	**kwargs,
 ):
 	win = gtk.MessageDialog(
 		message_type=gtk.MessageType.INFO,
 		buttons=gtk.ButtonsType.NONE,
 		text=msg,
 		title=title,
-		**kwargs
+		**kwargs,
 	)
 	button = dialog_add_button(
 		win,
@@ -469,7 +463,7 @@ def get_menu_width(menu):
 		#menu.do_get_preferred_width(),
 		menu.get_preferred_size()[0].width,
 		menu.get_preferred_size()[1].width,
-		)
+		).
 	"""
 	w = menu.get_allocation().width
 	# get_preferred_size() returns (minimum_size: Gtk.Requisition,
@@ -496,11 +490,10 @@ def get_menu_height(menu):
 		return 0
 	# get_preferred_size() returns (minimum_size: Gtk.Requisition,
 	#		natural_size: Gtk.Requisition)
-	h = sum(item.get_preferred_size()[1].height for item in items)
+	return sum(item.get_preferred_size()[1].height for item in items)
 	# FIXME: does not work, all items are zero
 	# log.debug("menu height from sum:", h)
 	# log.debug([item.get_preferred_size()[1].height for item in items])
-	return h
 
 
 def get_pixbuf_hash(pbuf):
@@ -607,7 +600,7 @@ def cssTextStyle(
 def getBackgroundColor(widget: gtk.Widget):
 	return gdkColorToRgb(
 		widget.get_style_context().
-		get_background_color(gtk.StateFlags.NORMAL)
+		get_background_color(gtk.StateFlags.NORMAL),
 	)
 
 

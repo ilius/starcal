@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
+from scal3 import event_lib, ui
 from scal3.locale_man import tr as _
-from scal3 import event_lib
-from scal3 import ui
-
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import dialog_add_button
 from scal3.ui_gtk.event import makeWidget
+from scal3.ui_gtk.utils import dialog_add_button
 
 
 class AccountEditorDialog(gtk.Dialog):
@@ -43,7 +41,7 @@ class AccountEditorDialog(gtk.Dialog):
 		if self.account:
 			self.isNew = False
 			combo.set_active(
-				event_lib.classes.account.names.index(self.account.name)
+				event_lib.classes.account.names.index(self.account.name),
 			)
 		else:
 			self.isNew = True

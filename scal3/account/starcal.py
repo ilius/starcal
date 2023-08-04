@@ -17,23 +17,20 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from datetime import datetime
 from contextlib import suppress
-from pprint import pprint
+from datetime import datetime
 
-from scal3.time_utils import (
-	jsonTimeFromEpoch,
-)
-from scal3.locale_man import tr as _
 from scal3 import event_lib
-from scal3.event_lib import Account
-
 from scal3.cal_types import (
 	calTypes,
-	jd_to,
-	to_jd,
+)
+from scal3.event_lib import Account
+from scal3.locale_man import tr as _
+from scal3.time_utils import (
+	jsonTimeFromEpoch,
 )
 
 #def encodeDateTimeRuleValue(
@@ -55,8 +52,8 @@ def allDayTaskDecoder(remoteEvent):
 			"start",
 			{
 				"date": formatJd(remoteEvent, "startJd"),
-				"time": "00:00:00"
-			}
+				"time": "00:00:00",
+			},
 		],
 	]
 	if remoteEvent["durationEnable"]:
@@ -64,7 +61,7 @@ def allDayTaskDecoder(remoteEvent):
 			[
 				"duration",
 				str(remoteEvent["endJd"] - remoteEvent["startJd"]) + " day",
-			]
+			],
 		)
 	else:
 		rules.append(
@@ -72,8 +69,8 @@ def allDayTaskDecoder(remoteEvent):
 				"end",
 				{
 					"date": formatJd(remoteEvent, "endJd"),
-					"time": "00:00:00"
-				}
+					"time": "00:00:00",
+				},
 			],
 		)
 	return {"rules": rules}
@@ -106,7 +103,7 @@ remoteEventTypeDecoders = {
 
 def decodeRemoteEvent(remoteEventFull, accountId, group):
 	"""
-	remoteEventFull is dict
+	remoteEventFull is dict.
 
 	return (event, error)
 	where event is instance of event_lib.Event, or None
@@ -182,7 +179,7 @@ class StarCalendarAccount(Account):
 		"""
 		return (data, None) if successful
 		return (data, error) if failed
-		where error is string and data is a dict
+		where error is string and data is a dict.
 		"""
 		error = None
 		data = {}
@@ -224,7 +221,7 @@ class StarCalendarAccount(Account):
 		"""
 		self.email and self.password must be set
 		this methods logs in by the server, gets the token
-		and sets self.lastToken
+		and sets self.lastToken.
 
 		return None if successful, or error string if failed
 		"""
@@ -258,11 +255,10 @@ class StarCalendarAccount(Account):
 
 		self.lastToken = token
 		log.info("login successful")
+		return None
 
 	def fetchGroups(self):
-		"""
-		return None if successful, or error string if failed
-		"""
+		"""Return None if successful, or error string if failed."""
 		log.info("fetchGroups started")
 		data, error = self.call("get", "event/groups/")
 		if error:
@@ -286,6 +282,7 @@ class StarCalendarAccount(Account):
 			return f"bad data: {e}"
 
 		log.info(f"fetchGroups successful, {len(self.remoteGroups)} groups")
+		return None
 
 	def addNewGroup(self, title):
 		pass
@@ -294,9 +291,7 @@ class StarCalendarAccount(Account):
 		pass
 
 	def sync(self, group, remoteGroupId):  # in progress TODO
-		"""
-		return None if successful, or error string if failed
-		"""
+		"""Return None if successful, or error string if failed."""
 		log.info("sync started")
 		if not group.remoteIds:
 			return "sync not enabled"

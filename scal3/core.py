@@ -15,38 +15,30 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
-from time import localtime
-from time import time as now
-
-import sys
 import os
-import subprocess
-from subprocess import Popen
-from io import StringIO
 import os.path
-from os.path import join, isfile, isdir
+import re
+import subprocess
+import sys
+import typing
 from collections import namedtuple
 from contextlib import suppress
-import re
-
-import typing
-from typing import Union, Tuple, List, Any
+from os.path import isdir, isfile, join
+from time import localtime
+from time import time as now
+from typing import Any
 
 import scal3
-from scal3.path import *
-from scal3.time_utils import *
+from scal3 import locale_man, logger
+from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
 from scal3.date_utils import *
-from scal3.os_utils import *
 from scal3.json_utils import *
-from scal3.utils import *
-
-from scal3 import logger
-from scal3.cal_types import calTypes, jd_to, to_jd, GREGORIAN
-from scal3 import locale_man
 from scal3.locale_man import tr as _
-from scal3.locale_man import localTz
+from scal3.os_utils import *
+from scal3.path import *
 from scal3.plugin_man import *
-
+from scal3.time_utils import *
+from scal3.utils import *
 
 try:
 	__file__
@@ -210,7 +202,7 @@ def primary_to_jd(y: int, m: int, d: int) -> int:
 	return to_jd(y, m, d, calTypes.primary)
 
 
-def jd_to_primary(jd: int) -> Tuple[int, int, int]:
+def jd_to_primary(jd: int) -> tuple[int, int, int]:
 	return jd_to(jd, calTypes.primary)
 
 
@@ -222,13 +214,13 @@ def getCurrentJd() -> int:
 	return to_jd(y, m, d, GREGORIAN)
 
 
-def getWeekDateHmsFromEpoch(epoch: int) -> Tuple[int, int, int, int, int]:
+def getWeekDateHmsFromEpoch(epoch: int) -> tuple[int, int, int, int, int]:
 	jd, hms = getJhmsFromEpoch(epoch)
 	absWeekNumber, weekDay = getWeekDateFromJd(jd)
 	return (absWeekNumber, weekDay, hms.h, hms.m, hms.s)
 
 
-def getMonthWeekNth(jd: int, calType: int) -> Tuple[int, int, int]:
+def getMonthWeekNth(jd: int, calType: int) -> tuple[int, int, int]:
 	if calType not in calTypes:
 		raise RuntimeError(f"cal type '{calType}' not found")
 	year, month, day = jd_to(jd, calType)
@@ -312,10 +304,8 @@ def getJdFromWeek(year: int, weekNumber: int) -> int:  # FIXME
 	return jd0 - wd0 + (weekNumber - wn0) * 7
 
 
-def getWeekDateFromJd(jd: int) -> Tuple[int, int]:
-	"""
-	return (absWeekNumber, weekDay)
-	"""
+def getWeekDateFromJd(jd: int) -> tuple[int, int]:
+	"""Return (absWeekNumber, weekDay)."""
 	return divmod(jd - firstWeekDay + 1, 7)
 
 
@@ -404,7 +394,7 @@ def initPlugins(fs: "s_object.FileSystem") -> None:
 	updatePlugins()
 
 
-def getHolidayPlugins() -> List[BasePlugin]:
+def getHolidayPlugins() -> list[BasePlugin]:
 	hPlugs = []
 	for i in plugIndex:
 		plug = allPlugList[i]
@@ -429,10 +419,10 @@ PluginTuple = namedtuple("PluginTuple", [
 	"enable",
 	"show_date",
 	"title",
-],)
+])
 
 
-def getPluginsTable() -> List[List]:
+def getPluginsTable() -> list[list]:
 	# returns a list of [i, enable, show_date, description]
 	table = []
 	for index in plugIndex:
@@ -446,10 +436,8 @@ def getPluginsTable() -> List[List]:
 	return table
 
 
-def getDeletedPluginsTable() -> List[List]:
-	"""
-	returns a list of (index description)
-	"""
+def getDeletedPluginsTable() -> list[list]:
+	"""Returns a list of (index description)."""
 	table = []
 	for i, plug in enumerate(allPlugList):
 		try:
@@ -463,9 +451,7 @@ def getDeletedPluginsTable() -> List[List]:
 
 
 def restart() -> typing.NoReturn:
-	"""
-	will not return from function
-	"""
+	"""Will not return from function."""
 	os.environ["LANG"] = locale_man.sysLangDefault
 	restartLow()
 
@@ -475,7 +461,7 @@ def restart() -> typing.NoReturn:
 def mylocaltime(
 	sec: Optional[int] = None,
 	calType: Optional[int] = None,
-) -> List[int]:
+) -> list[int]:
 	from scal3.cal_types import convert
 	if calType is None:  # GREGORIAN
 		return list(localtime(sec))
@@ -485,21 +471,19 @@ def mylocaltime(
 
 
 def compressLongInt(num: int) -> str:
-	"""
-	num must be less than 2**64
-	"""
-	from struct import pack
+	"""Num must be less than 2**64."""
 	from base64 import b64encode
+	from struct import pack
 	return b64encode(
-		pack("L", num % 2 ** 64).rstrip(b"\x00")
+		pack("L", num % 2 ** 64).rstrip(b"\x00"),
 	)[:-3].decode("ascii").replace("/", "_")
 
 
 def getCompactTime(maxDays: int = 1000, minSec: float = 0.1) -> str:
 	return compressLongInt(
 		int(
-			now() % (maxDays * 24 * 3600) / minSec
-		)
+			now() % (maxDays * 24 * 3600) / minSec,
+		),
 	)
 
 
@@ -516,9 +500,7 @@ def epochDateTimeEncode(epoch: int) -> str:
 
 
 def stopRunningThreads() -> None:
-	"""
-	Stopping running timer threads
-	"""
+	"""Stopping running timer threads."""
 	import threading
 	for thread in threading.enumerate():
 		# if thread.__class__.__name__ == "_Timer":

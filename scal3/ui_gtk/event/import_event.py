@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
 
 from scal3 import logger
+
 log = logger.get()
 
 import sys
 
-from scal3.path import deskDir
-from scal3.json_utils import *
-from scal3 import core
-from scal3.locale_man import tr as _
 from scal3 import ui
-
+from scal3.json_utils import *
+from scal3.locale_man import tr as _
+from scal3.path import deskDir
 from scal3.ui_gtk import *
 from scal3.ui_gtk.wizard import WizardWindow
-from scal3.ui_gtk.mywidgets.dialog import MyDialog
 
 
 class EventsImportWindow(WizardWindow):
@@ -136,7 +134,7 @@ class EventsImportWindow(WizardWindow):
 
 		def _runJson(self, fpath):
 			try:
-				with open(fpath, "r", encoding="utf-8") as fp:  # noqa: FURB101
+				with open(fpath, encoding="utf-8") as fp:  # noqa: FURB101
 					text = fp.read()
 			except Exception as e:
 				sys.stderr.write(f"{_('Error in reading file')}\n{e}\n")

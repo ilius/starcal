@@ -18,6 +18,7 @@
 
 from scal3.locale_man import rtl
 
+
 def oppositeAlign(align):
 	if align == "left":
 		return "right"

@@ -1,9 +1,7 @@
 import unittest
 
-import os
-
 from scal3 import locale_man
-from scal3.cal_types import calTypes, GREGORIAN
+from scal3.cal_types import calTypes
 
 
 class Test_getMonthDesc(unittest.TestCase):

@@ -17,15 +17,16 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
 from typing import Optional
 
-from scal3.locale_man import tr as _
 from scal3.json_utils import dataToCompactJson
-
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
 from scal3.ui_gtk.pref_utils import PrefItem
+
 
 class LogLevelComboBox(gtk.ComboBox):
 	levels = [

@@ -17,26 +17,27 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-import sys
 import atexit
 import os
+import sys
 from os.path import dirname
+
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
-from scal3.path import *
-from scal3 import core
+import gi
+
 from scal3 import locale_man
 from scal3.locale_man import tr as _
-
+from scal3.path import *
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import (
 	CopyLabelMenuItem,
 	get_pixbuf_hash,
 )
 
-import gi
 gi.require_version('AppIndicator3', '0.1')
 from gi.repository import AppIndicator3 as appindicator
 

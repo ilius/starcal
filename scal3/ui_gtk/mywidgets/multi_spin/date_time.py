@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 from time import localtime
 
-from scal3.cal_types import to_jd, convert
+from scal3.cal_types import convert, to_jd
 from scal3.mywidgets.multi_spin import (
 	ContainerField,
-	YearField,
-	MonthField,
 	DayField,
 	HourField,
+	MonthField,
+	YearField,
 	Z60Field,
 )
 from scal3.ui_gtk.mywidgets.multi_spin import MultiSpinButton
@@ -33,7 +33,7 @@ class DateTimeButton(MultiSpinButton):
 				),
 				#StrConField("seconds"),
 			),
-			**kwargs
+			**kwargs,
 		)
 		if date_time is None:
 			date_time = localtime()[:6]
@@ -44,11 +44,10 @@ class DateTimeButton(MultiSpinButton):
 		date, hms = self.get_value()
 		return getEpochFromJhms(
 			to_jd(date[0], date[1], date[2], calType),
-			*hms
+			*hms,
 		)
 
 	def changeCalType(self, fromType, toType):
-		from scal3.time_utils import getEpochFromJhms
 		date, hms = self.get_value()
 		newDate = convert(date[0], date[1], date[2], fromType, toType)
 		self.set_value((newDate, hms))

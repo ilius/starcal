@@ -1,11 +1,10 @@
 #!/usr/bin/env python3
 
-import sys
 import json
-from pprint import pprint
-from scal3.s_object import saveBsonObject
-from scal3.path import confDir
+
 from scal3 import event_lib
+from scal3.path import confDir
+from scal3.s_object import saveBsonObject
 
 if __name__ == "__main__":
 	fs = event_lib.DefaultFileSystem(confDir)

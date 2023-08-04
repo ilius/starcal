@@ -17,31 +17,25 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-import sys
-from time import strftime
-from time import localtime
-from os.path import isfile, dirname, join, split, splitext, isabs
+from os.path import dirname, isabs, isfile, join, split, splitext
+from time import localtime, strftime
 
-
-from scal3.path import *
-from scal3.json_utils import *
-from scal3.time_utils import getJdListFromEpochRange
-from scal3.ics import getEpochByIcsTime, getIcsDateByJd
 from scal3.cal_types import (
-	calTypes,
-	jd_to,
-	to_jd,
-	convert,
 	GREGORIAN,
+	calTypes,
 	gregorian,
+	jd_to,
 )
-from scal3.date_utils import ymdRange
-from scal3.locale_man import tr as _
+from scal3.ics import getEpochByIcsTime, getIcsDateByJd, icsHeader, icsTmFormat
+from scal3.json_utils import *
 from scal3.locale_man import getMonthName
-from scal3.ics import icsTmFormat, icsHeader
+from scal3.locale_man import tr as _
+from scal3.path import *
 from scal3.s_object import *
+from scal3.time_utils import getJdListFromEpochRange
 
 try:
 	import logging
@@ -152,7 +146,7 @@ class BasePlugin(SObj):
 				# raise ValueError(f"Invalid calType: '{calType}'")
 				log.error(
 					f"Plugin \"{_file}\" needs calendar module " +
-					f"\"{calType}\" that is not loaded!\n"
+					f"\"{calType}\" that is not loaded!\n",
 				)
 				self.calType = None
 			del data["calType"]
@@ -459,7 +453,7 @@ class YearlyTextPlugin(BaseJsonPlugin):
 			del data["dataFile"]
 		else:
 			log.error(
-				f"no \"dataFile\" key in yearly text plugin \"{self.file}\""
+				f"no \"dataFile\" key in yearly text plugin \"{self.file}\"",
 			)
 		####
 		BaseJsonPlugin.setData(self, data)
@@ -509,7 +503,7 @@ class YearlyTextPlugin(BaseJsonPlugin):
 					d = int(date[1])
 					yearlyData[m - 1][d - 1] = text
 				else:
-					raise IOError(f"Bad line in data file {self.dataFile}:\n{line}")
+					raise OSError(f"Bad line in data file {self.dataFile}:\n{line}")
 		else:
 			raise ValueError(f"invalid plugin dataFile extention \"{ext}\"")
 		self.yearlyData = yearlyData
@@ -618,7 +612,7 @@ class IcsTextPlugin(BasePlugin):
 					else:
 						log.error(
 							f"unsupported ics event, {SUMMARY=}, "
-							f"{DTSTART=}, {DTEND}="
+							f"{DTSTART=}, {DTEND}=",
 						)
 					SUMMARY = ""
 					DESCRIPTION = ""
@@ -773,7 +767,7 @@ def loadPlugin(_file=None, **kwargs):
 	if ext != ".json":
 		log.error(
 			f"unsupported plugin extention {ext}" +
-			", new style plugins have a json file"
+			", new style plugins have a json file",
 		)
 		return
 	try:
@@ -782,7 +776,7 @@ def loadPlugin(_file=None, **kwargs):
 	except Exception as e:
 		log.error(
 			f"error while reading plugin file \"{_file}\"" +
-			f": {e}"
+			f": {e}",
 		)
 		return
 	try:
@@ -812,7 +806,7 @@ def loadPlugin(_file=None, **kwargs):
 		if not data.get(param):
 			log.error(
 				f"invalid plugin \"{_file}\"" +
-				f": parameter \"{param}\" is missing"
+				f": parameter \"{param}\" is missing",
 			)
 			return
 	####

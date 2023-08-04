@@ -17,6 +17,7 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
 import sys
@@ -40,7 +41,7 @@ def get(moduleName, attr, default=None, absolute=False):
 	if attr not in allowed:
 		raise PluginError(
 			f"plugin is not allowed to get attribute {attr!r}" +
-			f" from module {moduleName!r}"
+			f" from module {moduleName!r}",
 		)
 	return getattr(module, attr, default)
 
@@ -54,7 +55,7 @@ def set(moduleName, attr, value, absolute=False):
 	if attr not in allowed:
 		raise PluginError(
 			f"plugin is not allowed to set attribute {attr!r}" +
-			f" to module {moduleName!r}"
+			f" to module {moduleName!r}",
 		)
 	setattr(module, attr, value)
 

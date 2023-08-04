@@ -1,12 +1,7 @@
 #!/usr/bin/env python3
-from os.path import join
 
-from scal3.path import sourceDir
-from scal3.json_utils import jsonToOrderedData
-from scal3 import core
+from scal3 import core, ui
 from scal3.locale_man import tr as _
-from scal3 import ui
-
 from scal3.ui_gtk import *
 
 
@@ -75,7 +70,7 @@ class TimeZoneComboBoxEntry(gtk.Box):
 					model.get(
 						model.get_iter(path[:i + 1]),
 						0,
-					)[0]
+					)[0],
 				)
 			text = "/".join(parts)
 		self.set_text(text)

@@ -17,13 +17,12 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
 # from scal3.locale_man import tr as _
 
-from scal3 import core
-
-from scal3 import ui
+from scal3 import core, ui
 
 pluginName = "WeekCal"
 

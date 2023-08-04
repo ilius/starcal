@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 
 from scal3 import logger
+
 log = logger.get()
 
-from typing import Optional
 from time import time as now
-import sys
+from typing import Optional
 
 from scal3 import ui
-
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk import gtk_ud as ud
 
 
 class ConButtonBase:

@@ -17,24 +17,20 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-import os
-import sys
 
-from scal3.cal_types import calTypes, convert, jd_to
-from scal3 import core
-from scal3.core import getMonthName
-from scal3.locale_man import tr as _
 from scal3 import ui
-
+from scal3.cal_types import calTypes, convert, jd_to
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.utils import openWindow, dialog_add_button
 from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
-from scal3.ui_gtk.mywidgets.multi_spin.option_box.date import DateButtonOption
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
+from scal3.ui_gtk.mywidgets.multi_spin.option_box.date import DateButtonOption
 from scal3.ui_gtk.mywidgets.ymd import YearMonthDayBox
+from scal3.ui_gtk.utils import dialog_add_button, openWindow
 
 
 @registerSignals

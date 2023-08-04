@@ -1,18 +1,17 @@
 #!/usr/bin/env python3
 from scal3 import logger
+
 log = logger.get()
 
 import natz
-
 from scal3.locale_man import tr as _
-
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import (
-	window_set_size_aspect,
-	dialog_add_button,
-)
 from scal3.ui_gtk.mywidgets import TextFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
+from scal3.ui_gtk.utils import (
+	dialog_add_button,
+	window_set_size_aspect,
+)
 
 
 class EventsBulkEditDialog(gtk.Dialog):
@@ -42,18 +41,18 @@ class EventsBulkEditDialog(gtk.Dialog):
 		except AttributeError:
 			event_count = len(container)
 			msg = _(
-				"Here you are going to modify these {eventCount} events at once."
+				"Here you are going to modify these {eventCount} events at once.",
 			).format(eventCount=event_count)
 		else:
 			msg = _(
 				"Here you are going to modify all events "
-				"inside group \"{groupTitle}\" at once."
+				"inside group \"{groupTitle}\" at once.",
 			).format(groupTitle=title)
 		msg += " "
 		msg += _(
 			"You better make a backup from your events before doing this." +
 			" Just right click on group and select \"Export\"" +
-			" (or a full backup: menu File -> Export)"
+			" (or a full backup: menu File -> Export)",
 		)
 		msg += "\n\n"
 		label = gtk.Label(label=msg)

@@ -19,33 +19,25 @@
 # Islamic (Hijri) calendar: http://en.wikipedia.org/wiki/Islamic_calendar
 
 from scal3 import logger
+
 log = logger.get()
 
 import os
 from os.path import isfile
 
-from scal3.cal_types import calTypes, jd_to, to_jd
-from scal3.cal_types import hijri
-
-from scal3.date_utils import monthPlus
-from scal3 import core
-from scal3.locale_man import rtl, dateLocale
-from scal3.locale_man import tr as _
 from scal3 import ui
-
+from scal3.cal_types import calTypes, hijri, jd_to, to_jd
+from scal3.locale_man import dateLocale
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
+from scal3.ui_gtk.toolbox import (
+	StaticToolBox,
+	ToolBoxItem,
+)
 from scal3.ui_gtk.utils import (
 	dialog_add_button,
-	set_tooltip,
 )
-from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk import listener
-from scal3.ui_gtk.toolbox import (
-	ToolBoxItem,
-	StaticToolBox,
-)
-
 
 hijriMode = calTypes.names.index("hijri")
 
@@ -223,7 +215,7 @@ class EditDbDialog(gtk.Dialog):
 			" " +
 			_("Equals to") +
 			" " +
-			_(self.altModeDesc)
+			_(self.altModeDesc),
 		)
 		self.startDateInput.set_value(jd_to(hijri.monthDb.startJd, self.altMode))
 		###########
@@ -373,7 +365,7 @@ def checkHijriMonthsExpiration():
 	dialog.run()
 
 
-class HijriMonthsExpirationListener():
+class HijriMonthsExpirationListener:
 	def onCurrentDateChange(self, gdate):
 		checkHijriMonthsExpiration()
 

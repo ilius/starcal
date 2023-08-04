@@ -17,21 +17,17 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from os.path import join, isfile
 
-from typing import Optional, List, Tuple
+from typing import Optional
 
-from scal3.path import confDir
-from scal3.json_utils import *
-from scal3 import core
-from scal3.locale_man import tr as _
 from scal3 import ui
-
+from scal3.json_utils import *
 from scal3.ui_gtk import *
-from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.utils import imageFromFile
 
 
@@ -81,7 +77,7 @@ class DummyCalObj(ud.CalObjType):
 	def getOptionsWidget(self) -> Optional[gtk.Widget]:
 		return None
 
-	def getSubPages(self) -> "List[StackPage]":
+	def getSubPages(self) -> "list[StackPage]":
 		return []
 
 	def showHide(self) -> None:
@@ -112,7 +108,7 @@ class CustomizableCalObj(ud.BaseCalObj):
 			if "unknown signal name" not in str(e):
 				log.exception("")
 
-	def getItemsData(self) -> List[Tuple[str, bool]]:
+	def getItemsData(self) -> list[tuple[str, bool]]:
 		return [
 			(item._name, item.enable)
 			for item in self.items
@@ -133,12 +129,13 @@ class CustomizableCalObj(ud.BaseCalObj):
 	def getOptionsWidget(self) -> gtk.Widget:
 		return None
 
-	def getSubPages(self) -> "List[StackPage]":
+	def getSubPages(self) -> "list[StackPage]":
 		return []
 
 
 class CustomizableCalBox(CustomizableCalObj):
-	"""for GtkBox (HBox and VBox)"""
+
+	"""for GtkBox (HBox and VBox)."""
 
 	def appendItem(self, item):
 		CustomizableCalObj.appendItem(self, item)

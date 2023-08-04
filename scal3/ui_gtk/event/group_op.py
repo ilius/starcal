@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 
 from scal3 import logger
+
 log = logger.get()
 
 from scal3.locale_man import tr as _
-
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import (
 	dialog_add_button,
@@ -70,6 +70,7 @@ class GroupSortDialog(gtk.Dialog):
 			self._group.save()
 			return True
 		self.destroy()
+		return None
 
 
 class GroupConvertCalTypeDialog(gtk.Dialog):
@@ -98,7 +99,7 @@ class GroupConvertCalTypeDialog(gtk.Dialog):
 			"This is going to convert calendar types of all events inside "
 			"group \"{groupTitle}\" to a specific type. This operation does not work "
 			"for Yearly events and also some of Custom events. You have to "
-			"edit those events manually to change calendar type."
+			"edit those events manually to change calendar type.",
 		).format(groupTitle=group.title))
 		label.set_line_wrap(True)
 		label.set_yalign(0.5)

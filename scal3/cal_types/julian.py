@@ -89,7 +89,7 @@ def isLeap(year):
 def getYearDays(month, leap):
 	"""
 	month: int, 1..13
-	leap: bool
+	leap: bool.
 	"""
 	ydays = monthLenSum[month - 1]
 	if leap and month < 3:
@@ -100,7 +100,7 @@ def getYearDays(month, leap):
 def getMonthDayFromYdays(yDays, leap):
 	"""
 	yDays: int, number of days in year
-	leap: bool
+	leap: bool.
 	"""
 	month = 1
 	while month < 12 and yDays > getYearDays(month + 1, leap):
@@ -126,9 +126,8 @@ def jd_to(jd):
 	quadCount (p1): quad count
 	quadDays (q1): quad remaining days count
 	yMode (p2): year % 4
-	yDays (q2+1): year remaining days count
+	yDays (q2+1): year remaining days count.
 	"""
-
 	# wjd = ifloor(jd - 0.5) + 1
 	quadCount, quadDays = divmod(jd - epoch, 1461)
 

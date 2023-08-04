@@ -2,11 +2,8 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from scal3 import core
 from scal3.locale_man import tr as _
-
 from scal3.ui_gtk import *
-from scal3.ui_gtk.event import common
 from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 
 

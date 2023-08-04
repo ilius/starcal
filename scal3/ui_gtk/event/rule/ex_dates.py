@@ -17,24 +17,20 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
 from scal3 import cal_types
-from scal3 import core
-from scal3.date_utils import dateEncode, dateDecode
+from scal3.date_utils import dateDecode, dateEncode
+from scal3.locale_man import textNumDecode, textNumEncode
 from scal3.locale_man import tr as _
-from scal3.locale_man import textNumEncode, textNumDecode
-from scal3 import event_lib
-from scal3 import ui
-
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import (
-	set_tooltip,
-	labelImageButton,
-)
 from scal3.ui_gtk.toolbox import (
-	ToolBoxItem,
 	StaticToolBox,
+	ToolBoxItem,
+)
+from scal3.ui_gtk.utils import (
+	labelImageButton,
 )
 
 
@@ -72,7 +68,7 @@ class WidgetClass(gtk.Box):
 		self.countLabel.set_label(
 			" " * 2 +
 			_("{count} items").format(count=_(len(self.treeModel))) +
-			" " * 2
+			" " * 2,
 		)
 
 	def createDialog(self):

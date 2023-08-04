@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 from os.path import join, split, splitext
 
-from scal3.path import deskDir
+from scal3 import cal_types, core, ui
 from scal3.json_utils import *
-from scal3 import cal_types
-from scal3 import core
 from scal3.locale_man import tr as _
-from scal3 import ui
-
+from scal3.path import deskDir
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import dialog_add_button
-from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.event.common import GroupsTreeCheckList
+from scal3.ui_gtk.mywidgets.dialog import MyDialog
+from scal3.ui_gtk.utils import dialog_add_button
 
 
 class SingleGroupExportDialog(gtk.Dialog, MyDialog):
@@ -301,7 +298,6 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 		self.formatRadioChanged()
 
 	def formatRadioChanged(self, widget=None):
-		from scal3.os_utils import fixStrForFileName
 		fpath = self.fcw.get_filename()
 		if fpath:
 			fname_nox, ext = splitext(split(fpath)[1])

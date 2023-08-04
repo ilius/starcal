@@ -20,16 +20,12 @@
 
 import time
 from time import localtime, strftime
-from time import time as now
 
-from scal3.time_utils import clockWaitMilliseconds
 from scal3 import ui
-
-from gi.repository import GdkPixbuf
-
+from scal3.time_utils import clockWaitMilliseconds
 from scal3.ui_gtk import *
+from scal3.ui_gtk.drawing import fillColor, setColor, show_layout
 from scal3.ui_gtk.font_utils import *
-from scal3.ui_gtk.drawing import setColor, fillColor, show_layout
 
 
 class ClockLabel(gtk.Label):
@@ -72,7 +68,7 @@ class FClockLabel(gtk.Label):
 		format is a string that used in strftime(), it can contains markup
 		that apears in GtkLabel for example format can be "<b>%T</b>"
 		local is bool. if True, use Local time. and if False, use GMT time.
-		selectable is bool that passes to GtkLabel
+		selectable is bool that passes to GtkLabel.
 		"""
 		gtk.Label.__init__(self)
 		self.set_use_markup(True)
@@ -106,7 +102,7 @@ class FClockWidget(gtk.DrawingArea): ## Time is in Local
 		format is a string that used in strftime(), it can contains markup
 		that apears in GtkLabel for example format can be "<b>%T</b>"
 		local is bool. if True, use Local time. and if False, use GMT time.
-		selectable is bool that passes to GtkLabel
+		selectable is bool that passes to GtkLabel.
 		"""
 		gtk.DrawingArea.__init__(self)
 		self.set_direction(gtk.TextDirection.LTR)

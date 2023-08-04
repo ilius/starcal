@@ -16,16 +16,14 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from scal3.cal_types import jd_to
-from scal3 import core
-from scal3.locale_man import tr as _
 from scal3 import ui
-
+from scal3.cal_types import jd_to
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
-from scal3.ui_gtk.mywidgets.multi_spin.day import DaySpinButton
-from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
-from scal3.ui_gtk.mywidgets.multi_spin.hour_minute import HourMinuteButton
 from scal3.ui_gtk.event import common
+from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
+from scal3.ui_gtk.mywidgets.multi_spin.day import DaySpinButton
+from scal3.ui_gtk.mywidgets.multi_spin.hour_minute import HourMinuteButton
 
 
 class WidgetClass(common.WidgetClass):

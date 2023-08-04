@@ -15,7 +15,7 @@ class AboutDialog(gtk.AboutDialog):
 		license: str = "",
 		website: str = "",
 		logo: "GdkPixbuf.Pixbuf" = None,
-		**kwargs
+		**kwargs,
 	):
 		gtk.AboutDialog.__init__(self, **kwargs)
 		self.set_name(name)

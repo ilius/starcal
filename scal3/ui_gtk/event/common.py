@@ -17,38 +17,33 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
 import os
-from os.path import join, split
 from contextlib import suppress
-
-from scal3.utils import toBytes
-from scal3.time_utils import durationUnitsAbs, durationUnitValues
-from scal3.cal_types import calTypes
-from scal3 import core
-from scal3.locale_man import tr as _
-from scal3 import event_lib
-from scal3 import ui
+from os.path import join, split
 
 from gi.repository import GdkPixbuf
 
+from scal3 import event_lib, ui
+from scal3.cal_types import calTypes
+from scal3.locale_man import tr as _
+from scal3.time_utils import durationUnitsAbs, durationUnitValues
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import (
-	set_tooltip,
-	getStyleColor,
-	labelImageButton,
-)
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
-from scal3.ui_gtk.mywidgets.icon import IconSelectButton
-from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
-from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
-from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.event.utils import *
+from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
+from scal3.ui_gtk.mywidgets.icon import IconSelectButton
+from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
 from scal3.ui_gtk.toolbox import (
-	ToolBoxItem,
 	StaticToolBox,
+	ToolBoxItem,
+)
+from scal3.ui_gtk.utils import (
+	labelImageButton,
+	set_tooltip,
 )
 
 try:
@@ -70,7 +65,7 @@ def getGroupRow(group):
 	return (
 		group.id,
 		getTreeGroupPixbuf(group),
-		group.title
+		group.title,
 	)
 
 
@@ -351,7 +346,7 @@ class DurationInputBox(gtk.Box):
 		combo = gtk.ComboBoxText()
 		for unitValue, unitName in durationUnitsAbs:
 			combo.append_text(_(
-				" " + unitName.capitalize() + "s"
+				" " + unitName.capitalize() + "s",
 			))
 		combo.set_active(2) ## hour FIXME
 		pack(self, combo)
@@ -581,8 +576,7 @@ class SingleGroupComboBox(gtk.ComboBox):
 		index = gtk.ComboBox.get_active(self)
 		if index in (None, -1):
 			return
-		gid = self.get_model()[index][0]
-		return gid
+		return self.get_model()[index][0]
 
 	def set_active(self, gid):
 		ls = self.get_model()
@@ -593,7 +587,7 @@ class SingleGroupComboBox(gtk.ComboBox):
 		else:
 			raise ValueError(
 				"SingleGroupComboBox.set_active: " +
-				f"Group ID {gid} is not in items"
+				f"Group ID {gid} is not in items",
 			)
 
 

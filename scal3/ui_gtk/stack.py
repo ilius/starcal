@@ -17,13 +17,12 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-import time
 
-from scal3.locale_man import tr as _
 from scal3 import ui
-
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import imageFromFile
 
@@ -92,7 +91,7 @@ class MyStack(gtk.Stack):
 		If you want to specify a absolute size, it's usually easier to take
 		advantage of the ability to specify a partial font description using 'font';
 		you can use font='12.5' rather than size='12800'.
-		https://developer.gnome.org/pango/stable/PangoMarkupFormat.html#PangoMarkupFormat
+		https://developer.gnome.org/pango/stable/PangoMarkupFormat.html#PangoMarkupFormat.
 		'''
 		self._titleFontSize = fontSize
 
@@ -122,13 +121,13 @@ class MyStack(gtk.Stack):
 	def _setSlideForward(self):
 		self.set_transition_type(
 			gtk.RevealerTransitionType.SLIDE_DOWN if self._verticalSlide else
-			gtk.RevealerTransitionType.SLIDE_LEFT
+			gtk.RevealerTransitionType.SLIDE_LEFT,
 		)
 
 	def _setSlideBackward(self):
 		self.set_transition_type(
 			gtk.RevealerTransitionType.SLIDE_UP if self._verticalSlide else
-			gtk.RevealerTransitionType.SLIDE_RIGHT
+			gtk.RevealerTransitionType.SLIDE_RIGHT,
 		)
 
 	def _newHeaderBox(self, parentName: str, title: str = "", icon: str = ""):

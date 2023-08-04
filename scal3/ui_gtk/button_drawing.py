@@ -17,12 +17,12 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3.drawing import getAbsPos
-
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import pixbufFromFile
 from scal3.ui_gtk.drawing import drawOutlineRoundedRect
+from scal3.ui_gtk.utils import pixbufFromFile
 
-class BaseButton(object):
+
+class BaseButton:
 	def __init__(
 		self,
 		onPress=None,
@@ -91,7 +91,7 @@ class SVGButton(BaseButton):
 		imageName="",
 		iconSize=16,
 		rectangleColor=None,
-		**kwargs
+		**kwargs,
 	):
 		BaseButton.__init__(self, **kwargs)
 
@@ -184,7 +184,7 @@ class Button(BaseButton):
 		imageName="",
 		iconName="",
 		iconSize=0,
-		**kwargs
+		**kwargs,
 	):
 		BaseButton.__init__(self, **kwargs)
 

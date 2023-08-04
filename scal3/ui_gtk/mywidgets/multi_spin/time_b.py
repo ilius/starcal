@@ -15,7 +15,7 @@ class TimeButton(MultiSpinButton):
 				Z60Field(),
 				Z60Field(),
 			),
-			**kwargs
+			**kwargs,
 		)
 		if hms is None:
 			hms = localtime()[3:6]

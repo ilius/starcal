@@ -1,14 +1,14 @@
 #!/usr/bin/env python3
 
 from scal3 import logger
+
 log = logger.get()
 
-import sys
 import json
+import sys
 from collections import OrderedDict
-
-
 from json import JSONEncoder
+
 
 def _default(self, obj):
     return getattr(obj.__class__, "to_json", _default.default)(obj)

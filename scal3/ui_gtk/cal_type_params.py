@@ -17,14 +17,12 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from scal3.cal_types import calTypes
-
-from scal3.locale_man import tr as _
-
 from scal3 import ui
-
+from scal3.cal_types import calTypes
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
 
 
@@ -47,6 +45,7 @@ class XAlignComboBox(gtk.ComboBoxText):
 			return "right"
 		else:
 			log.info(f"XAlignComboBox: unexpected {index = }")
+			return None
 
 	def set(self, value):
 		if value == "left":
@@ -78,6 +77,7 @@ class YAlignComboBox(gtk.ComboBoxText):
 			return "buttom"
 		else:
 			log.info(f"YAlignComboBox: unexpected {index = }")
+			return None
 
 	def set(self, value):
 		if value == "top":
@@ -105,8 +105,8 @@ class TextParamWidget(gtk.Box):
 		enableTitleLabel="",
 		useFrame=False,
 	):
+		from scal3.ui_gtk.mywidgets import MyColorButton, MyFontButton
 		from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
-		from scal3.ui_gtk.mywidgets import MyFontButton, MyColorButton
 		if desc is None:
 			raise ValueError("desc is None")
 		###

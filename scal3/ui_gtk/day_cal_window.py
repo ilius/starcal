@@ -17,31 +17,28 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from time import time as now
 import os
+from time import time as now
 
-from scal3.path import *
-
-from scal3.locale_man import tr as _
-from scal3.locale_man import rtl
-from scal3.json_utils import saveJsonConf, loadJsonConf
 from scal3 import ui
-
+from scal3.json_utils import loadJsonConf, saveJsonConf
+from scal3.locale_man import rtl
+from scal3.locale_man import tr as _
+from scal3.path import *
 from scal3.ui_gtk import *
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.utils import (
-	get_menu_width,
-	get_menu_height,
-	dialog_add_button,
-	openWindow,
-)
-from scal3.ui_gtk.menuitems import ImageMenuItem
-
 from scal3.ui_gtk.day_cal import DayCal
+from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.stack import MyStack, StackPage
+from scal3.ui_gtk.utils import (
+	dialog_add_button,
+	get_menu_height,
+	get_menu_width,
+)
 
 confPathLive = join(confDir, "ui-daycal-live.json")
 
@@ -229,7 +226,7 @@ class DayCalWindowWidget(DayCal):
 		if mx == my == 0:
 			log.info(
 				f"{mx=}, {my=}, {mw=}, {mh=}, " +
-				f"{gevent.x_root=}, {gevent.y_root=}"
+				f"{gevent.x_root=}, {gevent.y_root=}",
 			)
 			return None
 
@@ -305,7 +302,7 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 		if coord is None:
 			raise RuntimeError(
 				f"failed to translate coordinates ({x}, {y})" +
-				f" from widget {widget}"
+				f" from widget {widget}",
 			)
 		dx, dy = coord
 		foo, wx, wy = self.get_window().get_origin()

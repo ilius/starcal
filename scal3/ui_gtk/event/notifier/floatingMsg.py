@@ -16,9 +16,7 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from scal3 import core
 from scal3.locale_man import tr as _
-
 from scal3.ui_gtk import *
 from scal3.ui_gtk.mywidgets.floatingMsg import *
 

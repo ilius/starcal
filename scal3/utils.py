@@ -17,14 +17,14 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-import sys
 import os
-from math import floor, ceil
-
+import sys
 import typing
-from typing import Union, Optional, Any, List, Tuple, Dict
+from math import ceil, floor
+from typing import Any, Optional, Union
 
 Number = Union[int, float]
 
@@ -42,7 +42,7 @@ def arange(
 	start: Number,
 	stop: Number,
 	step: Number,
-) -> List[Number]:
+) -> list[Number]:
 	ls = []
 	x = start
 	stop -= 0.000001
@@ -84,13 +84,11 @@ class FallbackLogger:
 
 
 def restartLow() -> typing.NoReturn:
-	"""
-	will not return from the function
-	"""
+	"""Will not return from the function."""
 	os.execl(
 		sys.executable,
 		sys.executable,
-		*sys.argv
+		*sys.argv,
 	)
 
 
@@ -99,7 +97,7 @@ class StrOrderedDict(dict):
 	# and some looks like a list
 	def __init__(
 		self,
-		arg: Union[None, List, Tuple, Dict] = None,
+		arg: Union[None, list, tuple, dict] = None,
 		reorderOnModify: bool = True,
 	) -> None:
 		if arg is None:
@@ -111,20 +109,20 @@ class StrOrderedDict(dict):
 			self.keyList = sorted(arg.keys())
 		else:
 			raise TypeError(
-				f"StrOrderedDict: bad type for first argument: {type(arg)}"
+				f"StrOrderedDict: bad type for first argument: {type(arg)}",
 			)
 		dict.__init__(self, arg)
 
-	def keys(self) -> List[str]:
+	def keys(self) -> list[str]:
 		return self.keyList
 
-	def values(self) -> List[Any]:
+	def values(self) -> list[Any]:
 		return [
 			dict.__getitem__(self, key)
 			for key in self.keyList
 		]
 
-	def items(self) -> List[Tuple[str, Any]]:
+	def items(self) -> list[tuple[str, Any]]:
 		return [
 			(key, dict.__getitem__(self, key))
 			for key in self.keyList
@@ -143,7 +141,7 @@ class StrOrderedDict(dict):
 		else:
 			raise ValueError(
 				"Bad type argument given to StrOrderedDict.__getitem__" +
-				f": {type(arg)}"
+				f": {type(arg)}",
 			)
 
 	def __setitem__(self, arg: Union[int, str], value) -> None:
@@ -164,7 +162,7 @@ class StrOrderedDict(dict):
 		else:
 			raise ValueError(
 				"Bad type argument given to StrOrderedDict.__setitem__" +
-				f": {type(item)}"
+				f": {type(item)}",
 			)
 
 	def __delitem__(self, arg: Union[int, str, slice]) -> None:
@@ -181,7 +179,7 @@ class StrOrderedDict(dict):
 		else:
 			raise ValueError(
 				"Bad type argument given to StrOrderedDict.__delitem__" +
-				f": {type(arg)}"
+				f": {type(arg)}",
 			)
 
 	# def pop(self, key: str) -> Any:  # FIXME
@@ -208,7 +206,7 @@ class StrOrderedDict(dict):
 			self.keyList.sort()
 		else:
 			self.keyList.sort(
-				key=lambda k: getattr(dict.__getitem__(self, k), attr)
+				key=lambda k: getattr(dict.__getitem__(self, k), attr),
 			)
 
 	def __iter__(self):
@@ -251,11 +249,11 @@ class NullObj:
 		return 0
 
 
-def int_split(s: str) -> List[int]:
+def int_split(s: str) -> list[int]:
 	return [int(x) for x in s.split()]
 
 
-def s_join(ls: List[Any]) -> str:
+def s_join(ls: list[Any]) -> str:
 	return " ".join([str(x) for x in ls])
 
 
@@ -284,7 +282,7 @@ def urlToPath(url: str) -> str:
 	return path2
 
 
-def findNearestNum(lst: List[int], num: int) -> int:
+def findNearestNum(lst: list[int], num: int) -> int:
 	if not lst:
 		return
 	best = lst[0]
@@ -294,7 +292,7 @@ def findNearestNum(lst: List[int], num: int) -> int:
 	return best
 
 
-def findNearestIndex(lst: List[int], num: int) -> int:
+def findNearestIndex(lst: list[int], num: int) -> int:
 	if not lst:
 		return
 	index = 0
@@ -314,8 +312,8 @@ def strFindNth(st: str, sub: str, n: int) -> int:
 	return pos
 
 
-def findWordByPos(text: str, pos: int) -> Tuple[str, int]:
-	"returns (word, startPos)"
+def findWordByPos(text: str, pos: int) -> tuple[str, int]:
+	"Returns (word, startPos)."
 	if pos < 0:
 		return "", -1
 	if pos > len(text):
@@ -328,7 +326,7 @@ def findWordByPos(text: str, pos: int) -> Tuple[str, int]:
 
 
 def numRangesEncode(
-	values: List[Union[int, Tuple[int, int], List[int]]],
+	values: list[Union[int, tuple[int, int], list[int]]],
 	sep: str,
 ):
 	parts = []
@@ -340,7 +338,7 @@ def numRangesEncode(
 	return sep.join(parts)
 
 
-def numRangesDecode(text: str) -> List[Union[int, Tuple[int, int]]]:
+def numRangesDecode(text: str) -> list[Union[int, tuple[int, int]]]:
 	values = []
 	for part in text.split(","):
 		pparts = part.strip().split("-")
@@ -359,7 +357,7 @@ def numRangesDecode(text: str) -> List[Union[int, Tuple[int, int]]]:
 	return values
 
 
-def inputDate(msg: str) -> Optional[Tuple[int, int, int]]:
+def inputDate(msg: str) -> Optional[tuple[int, int, int]]:
 	while True:  # OK
 		try:
 			date = input(msg)
@@ -378,3 +376,4 @@ def inputDateJd(msg: str) -> Optional[int]:
 	if date:
 		y, m, d = date
 		return to_jd(y, m, d, GREGORIAN)
+	return None

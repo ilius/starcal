@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
-from scal3 import core
-from scal3.locale_man import tr as _
 from scal3 import ui
-
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
+from scal3.ui_gtk.event.utils import checkEventsReadOnly
+from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.utils import (
 	dialog_add_button,
 	set_tooltip,
 )
-from scal3.ui_gtk.mywidgets.icon import IconSelectButton
-from scal3.ui_gtk.event.utils import checkEventsReadOnly
 
 
 class TrashEditorDialog(gtk.Dialog):
