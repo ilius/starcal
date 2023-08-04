@@ -17,29 +17,27 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
 import os
 
 os.environ["LANG"] = "en_US.UTF-8"  # FIXME
 
-from os.path import join
-import subprocess
 import shutil
+import subprocess
+import sys
+from os.path import join
 from time import localtime
 from time import time as now
-import sys
 
-from scal3.path import pixDir
 from scal3 import ui
+from scal3.path import pixDir
 from scal3.time_utils import clockWaitMilliseconds
-
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import dialog_add_button
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
-
-from gi.repository.Gtk import IconTheme
+from scal3.ui_gtk.utils import dialog_add_button
 
 _ = str  # FIXME
 
@@ -50,7 +48,7 @@ def error_exit(resCode, text, **kwargs):
 		message_type=gtk.MessageType.ERROR,
 		buttons=gtk.ButtonsType.OK,
 		text=text.strip(),
-		**kwargs
+		**kwargs,
 	)
 	d.set_title("Error")
 	d.run()
@@ -229,7 +227,7 @@ class AdjusterDialog(gtk.Dialog):
 		y, m, d, H, M, S = localtime()[:6]
 		self.label_cur.set_label(
 			_("Current:") +
-			f" {y:04d}/{m:02d}/{d:02d} - {H:02d}:{M:02d}:{S:02d}"
+			f" {y:04d}/{m:02d}/{d:02d} - {H:02d}:{M:02d}:{S:02d}",
 		)
 		if not self.editTime:
 			self.timeInput.set_value((H, M, S))
@@ -242,7 +240,7 @@ class AdjusterDialog(gtk.Dialog):
 			self.buttonSet.set_sensitive(self.editTime or self.editDate)
 		elif self.radioNtp.get_active():
 			self.buttonSet.set_sensitive(
-				self.ntpServerEntry.get_text() != ""
+				self.ntpServerEntry.get_text() != "",
 			)
 
 	def onSetSysTimeClick(self, widget=None):

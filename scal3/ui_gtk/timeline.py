@@ -17,64 +17,50 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-import time
-from time import time as now
-
 from datetime import datetime, timedelta
-
-import math
-from math import pi
-
-from scal3.utils import iceil
-from scal3.time_utils import (
-	getUtcOffsetByJd,
-	getUtcOffsetByEpoch,
-	getJdFromEpoch,
-	getEpochFromJd,
-)
-from scal3.cal_types import calTypes
-from scal3 import core
-from scal3.locale_man import tr as _
-from scal3.locale_man import rtl
-from scal3.locale_man import localTz
-from scal3 import ui
-
-from scal3.timeline import tl
-from scal3.timeline.utils import *
-from scal3.timeline.funcs import (
-	calcTimeLineData,
-)
-
-from scal3.ui_gtk import *
+from time import time as now
 
 from gi.repository.PangoCairo import show_layout
 
+from scal3 import ui
+from scal3.cal_types import calTypes
+from scal3.locale_man import localTz
+from scal3.locale_man import tr as _
+from scal3.time_utils import (
+	getEpochFromJd,
+	getJdFromEpoch,
+	getUtcOffsetByEpoch,
+	getUtcOffsetByJd,
+)
+from scal3.timeline import tl
+from scal3.timeline.funcs import (
+	calcTimeLineData,
+)
+from scal3.timeline.utils import *
+from scal3.ui_gtk import *
+from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk.button_drawing import SVGButton
 from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.font_utils import pfontEncode
+from scal3.ui_gtk.drawing import (
+	fillColor,
+	newTextLayout,
+	setColor,
+)
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
 )
-from scal3.ui_gtk.drawing import (
-	setColor,
-	fillColor,
-	newTextLayout,
-)
-from scal3.ui_gtk.button_drawing import SVGButton
-from scal3.ui_gtk.utils import openWindow
-from scal3.ui_gtk import gtk_ud as ud
-
 from scal3.ui_gtk.timeline_box import (
 	drawBoxBG,
 	drawBoxBorder,
 	drawBoxText,
 )
-
-import scal3.ui_gtk.event.manager
+from scal3.ui_gtk.utils import openWindow
+from scal3.utils import iceil
 
 # FIXME: rewove this
-from scal3.ui_gtk.timeline_prefs import TimeLinePreferencesWindow
 
 
 def show_event(widget, gevent):
@@ -495,7 +481,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				dt * pixelPerSec - tl.currentTimeMarkerWidth / 2.0,
 				0,
 				tl.currentTimeMarkerWidth,
-				tl.currentTimeMarkerHeightRatio * self.get_allocation().height
+				tl.currentTimeMarkerHeightRatio * self.get_allocation().height,
 			)
 			cr.fill()
 		######
@@ -527,9 +513,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		# log.debug(f"drawing time / data calc time: {(t2-t1)/(t1-t0):.2f}")
 
 	def getLastScrollDir(self) -> "":
-		"""
-			returns "up", "down" or ""
-		"""
+		"""Returns "up", "down" or ""."""
 		if not self._lastScrollDir:
 			return ""
 
@@ -538,6 +522,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 
 		if datetime.now() - self._lastScrollTime > timedelta(seconds=2):
 			return ""
+		return None
 
 	def onScroll(self, widget, gevent):
 		smallForce = False
@@ -811,9 +796,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		return False
 
 	def movingUserEvent(self, direction=1, smallForce=False, source="keyboard"):
-		"""
-			source in ("keyboard", "scroll", "button")
-		"""
+		"""Source in ("keyboard", "scroll", "button")."""
 		if tl.enableAnimation:
 			tm = now()
 			# dtEvent = tm - self.movingLastPress
@@ -946,6 +929,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			/ self.get_allocation().width
 		)
 		self.queue_draw()
+		return None
 
 	def stopMovingAnim(self):
 		# stop moving immudiatly

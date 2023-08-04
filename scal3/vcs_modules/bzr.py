@@ -17,19 +17,18 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
 from difflib import SequenceMatcher
 
-from scal3.utils import NullObj
+from bzrlib import revision as _mod_revision
+from bzrlib.bzrdir import BzrDir
+from bzrlib.osutils import split_lines
+
+from scal3.event_search_tree import EventSearchTree
 from scal3.time_utils import getEpochFromJd
 from scal3.vcs_modules import encodeShortStat, getCommitListFromEst
-from scal3.event_search_tree import EventSearchTree
-
-from bzrlib.bzrdir import BzrDir
-from bzrlib.diff import DiffText
-from bzrlib import revision as _mod_revision
-from bzrlib.osutils import split_lines
 
 
 def prepareObj(obj):
@@ -66,9 +65,7 @@ def clearObj(obj):
 
 
 def getCommitList(obj, startJd, endJd):
-	"""
-		returns a list of (epoch, rev_id) tuples
-	"""
+	"""Returns a list of (epoch, rev_id) tuples."""
 	return getCommitListFromEst(
 		obj,
 		startJd,
@@ -147,9 +144,7 @@ def getShortStatByTrees(repo, old_tree, tree):
 
 
 def getCommitShortStat(obj, rev_id):
-	"""
-		returns (files_changed, insertions, deletions)
-	"""
+	"""Returns (files_changed, insertions, deletions)."""
 	repo = obj.repo
 	rev = repo.get_revision(rev_id)
 	tree = repo.revision_tree(rev_id)
@@ -165,14 +160,12 @@ def getCommitShortStat(obj, rev_id):
 
 
 def getCommitShortStatLine(obj, rev_id):
-	"""returns str"""
+	"""Returns str."""
 	return encodeShortStat(*getCommitShortStat(obj, rev_id))
 
 
 def getTagList(obj, startJd, endJd):
-	"""
-		returns a list of (epoch, tag_name) tuples
-	"""
+	"""Returns a list of (epoch, tag_name) tuples."""
 	if not obj.repo:
 		return []
 	startEpoch = getEpochFromJd(startJd)
@@ -192,9 +185,7 @@ def getTagList(obj, startJd, endJd):
 
 
 def getTagShortStat(obj, prevTag, tag):
-	"""
-		returns (files_changed, insertions, deletions)
-	"""
+	"""Returns (files_changed, insertions, deletions)."""
 	repo = obj.repo
 	td = obj.branch.tags.get_tag_dict()
 	return getShortStatByTrees(
@@ -205,7 +196,7 @@ def getTagShortStat(obj, prevTag, tag):
 
 
 def getTagShortStatLine(obj, prevTag, tag):
-	"""returns str"""
+	"""Returns str."""
 	return encodeShortStat(*getTagShortStat(obj, prevTag, tag))
 
 

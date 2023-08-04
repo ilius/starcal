@@ -17,28 +17,26 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-import sys
 from time import time as now
 
-from scal3.path import deskDir
-from scal3.time_utils import hmEncode, hmDecode
 from scal3 import core
-from scal3.locale_man import tr as _
 from scal3.locale_man import numDecode
-
+from scal3.locale_man import tr as _
+from scal3.path import deskDir
+from scal3.time_utils import hmDecode, hmEncode
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.utils import (
-	set_tooltip,
-	dialog_add_button,
-)
 from scal3.ui_gtk.drawing import *
 from scal3.ui_gtk.event.group.group import WidgetClass as NormalWidgetClass
 from scal3.ui_gtk.toolbox import (
-	ToolBoxItem,
 	StaticToolBox,
+	ToolBoxItem,
+)
+from scal3.ui_gtk.utils import (
+	dialog_add_button,
 )
 
 
@@ -119,15 +117,14 @@ class CourseListEditor(gtk.Box):
 		cur = self.treev.get_cursor()
 		try:
 			path, col = cur
-			index = path[0]
-			return index
+			return path[0]
 		except (ValueError, IndexError):
 			return None
 
 	def onAddClick(self, button):
 		index = self.getSelectedIndex()
 		lastCourseId = max(
-			[1] + [row[0] for row in self.treeModel]
+			[1] + [row[0] for row in self.treeModel],
 		)
 		row = [
 			lastCourseId + 1,
@@ -238,8 +235,7 @@ class ClassTimeBoundsEditor(gtk.Box):
 		cur = self.treev.get_cursor()
 		try:
 			path, col = cur
-			index = path[0]
-			return index
+			return path[0]
 		except (ValueError, IndexError):
 			return None
 
@@ -522,7 +518,7 @@ class WeeklyScheduleWindow(gtk.Dialog):
 
 	def updateWidget(self):
 		self._widget.data = self.term.getWeeklyScheduleData(
-			self.currentWOnlyCheck.get_active()
+			self.currentWOnlyCheck.get_active(),
 		)
 		self._widget.queue_draw()
 

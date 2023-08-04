@@ -1,11 +1,9 @@
+import atexit
+import os
+import sys
+import tempfile
 import unittest
 
-import os
-from os.path import join
-import tempfile
-import atexit
-
-import sys
 sys.path.append(".")
 
 from scal3.event_lib import *

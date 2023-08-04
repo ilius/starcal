@@ -16,15 +16,11 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-import time
 from time import time as now
 
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.drawing import *
-from scal3.ui_gtk.mywidgets import MyColorButton
-from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
-
 
 rootWin = gdk.get_default_root_window()
 screenWidth = rootWin.get_width()
@@ -281,7 +277,7 @@ class NoFillFloatingMsgWindow(gtk.Window):
 				(now() - self.startTime)
 				* self.speed
 				* self.label.rtlSign
-			)
+			),
 		)
 		self.move(xpos, 0)
 		self.resize(1, 1)

@@ -17,19 +17,14 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from time import strftime, gmtime, strptime, mktime
+from os.path import split, splitext
+from time import gmtime, mktime, strftime, strptime
 
-import sys
-
-from typing import List
-
-from os.path import join, split, splitext
-
+from scal3.cal_types import GREGORIAN, calTypes, jd_to, to_jd
 from scal3.path import *
-from scal3.cal_types import calTypes, jd_to, to_jd, GREGORIAN
-
 
 icsTmFormat = "%Y%m%dT%H%M%S"
 icsTmFormatPretty = "%Y-%m-%dT%H:%M:%SZ"
@@ -43,7 +38,7 @@ PRODID:-//Mozilla.org/NONSGML Mozilla Calendar V1.1//EN
 icsWeekDays = ("SU", "MO", "TU", "WE", "TH", "FR", "SA")
 
 
-def encodeIcsWeekDayList(weekDayList: List[int]) -> str:
+def encodeIcsWeekDayList(weekDayList: list[int]) -> str:
 	return ",".join([
 		icsWeekDays[wd]
 		for wd in weekDayList
@@ -54,7 +49,7 @@ def getIcsTimeByEpoch(epoch: int, pretty: bool = False) -> str:
 	# from scal3.time_utils import getJhmsFromEpoch
 	return strftime(
 		icsTmFormatPretty if pretty else icsTmFormat,
-		gmtime(epoch)
+		gmtime(epoch),
 	)
 	# format = icsTmFormatPretty if pretty else icsTmFormat
 	# jd, hms = getJhmsFromEpoch(epoch)
@@ -82,8 +77,8 @@ def getEpochByIcsTime(tmStr: str) -> int:
 	from dateutil.parser import parse
 	return int(
 		mktime(
-			parse(tmStr).timetuple()
-		)
+			parse(tmStr).timetuple(),
+		),
 	)
 
 
@@ -103,7 +98,7 @@ def getEpochByIcsTime(tmStr: str) -> int:
 # 	return int(mktime(tm))
 
 
-def splitIcsValue(value: str) -> List[str]:
+def splitIcsValue(value: str) -> list[str]:
 	data = []
 	for p in value.split(";"):
 		pp = p.split("=")

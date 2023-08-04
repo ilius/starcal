@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
-from scal3 import core
 from scal3.locale_man import tr as _
-
 from scal3.ui_gtk import *
-
-from scal3.ui_gtk.event.group.vcsEpochBase \
-	import VcsEpochBaseWidgetClass as BaseWidgetClass
+from scal3.ui_gtk.event.group.vcsEpochBase import (
+	VcsEpochBaseWidgetClass as BaseWidgetClass,
+)
 
 
 class WidgetClass(BaseWidgetClass):

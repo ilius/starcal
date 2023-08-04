@@ -19,7 +19,7 @@
 # no logging in this file
 
 import os
-from os.path import dirname, join, abspath
+from os.path import abspath, dirname, join
 
 from scal3.os_utils import getOsName
 
