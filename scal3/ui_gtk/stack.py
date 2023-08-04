@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -23,7 +22,7 @@ log = logger.get()
 
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.utils import imageFromFile
 
 
@@ -84,7 +83,7 @@ class MyStack(gtk.Stack):
 		return self._currentPagePath
 
 	def setTitleFontSize(self, fontSize: str):
-		'''
+		"""
 		Font size in 1024ths of a point, or one of the absolute sizes
 		'xx-small', 'x-small', 'small', 'medium', 'large', 'x-large', 'xx-large',
 		or one of the relative sizes 'smaller' or 'larger'.
@@ -92,7 +91,7 @@ class MyStack(gtk.Stack):
 		advantage of the ability to specify a partial font description using 'font';
 		you can use font='12.5' rather than size='12800'.
 		https://developer.gnome.org/pango/stable/PangoMarkupFormat.html#PangoMarkupFormat.
-		'''
+		"""
 		self._titleFontSize = fontSize
 
 	def setTitleCentered(self, centered: bool):
@@ -227,7 +226,7 @@ class MyStack(gtk.Stack):
 	def gotoPage(self, path: str, backward: bool = False) -> bool:
 		log.debug(f"MyStack: gotoPage: {path=}, {backward=}")
 		if not path:
-			raise ValueError(f"gotoPage: empty page path")
+			raise ValueError("gotoPage: empty page path")
 		if path not in self._titles:
 			log.error(f"gotoPage: invalid page {path=}")
 			return False

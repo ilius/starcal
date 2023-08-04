@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 from scal3 import logger
 
@@ -8,7 +7,7 @@ from os.path import join
 from time import localtime
 
 from scal3.cal_types import gregorian
-from scal3.path import *
+from scal3.path import modDir
 
 GREGORIAN = 0  # Gregorian (common calendar)
 modules = [gregorian]
@@ -44,7 +43,7 @@ with open(join(modDir, "modules.list")) as fp:
 		):
 			if not hasattr(mod, attr):
 				log.error(
-					"Invalid calendar module: " +
+					"Invalid calendar module: "
 					f"module {name!r} has no attribute {attr!r}\n",
 				)
 		# TODO: check argument names and count for funcs
@@ -138,11 +137,10 @@ class CalTypesHolder:
 			return key in self.byName
 		if isinstance(key, int):
 			return 0 <= key < len(modules)
-		else:
-			raise TypeError(
-				f"invalid key {key!r} given to " +
-				f"{self.__class__.__name__!r}.__getitem__",
-			)
+		raise TypeError(
+			f"invalid key {key!r} given to "
+			f"{self.__class__.__name__!r}.__getitem__",
+		)
 
 	# returns (module, found) where found is bool
 	def __getitem__(self, key):
@@ -155,11 +153,10 @@ class CalTypesHolder:
 			if key >= len(modules):
 				return None, False
 			return modules[key], True
-		else:
-			raise TypeError(
-				f"invalid key {key!r} given to " +
-				f"{self.__class__.__name__!r}.__getitem__",
-			)
+		raise TypeError(
+			f"invalid key {key!r} given to "
+			f"{self.__class__.__name__!r}.__getitem__",
+		)
 	def get(self, key, default=None):
 		if isinstance(key, str):
 			return self.byName.get(key, default)
@@ -167,11 +164,10 @@ class CalTypesHolder:
 			if key >= len(modules):
 				return default
 			return modules[key]
-		else:
-			raise TypeError(
-				f"invalid key {key!r} given to " +
-				f"{self.__class__.__name__!r}.__getitem__",
-			)
+		raise TypeError(
+			f"invalid key {key!r} given to "
+			f"{self.__class__.__name__!r}.__getitem__",
+		)
 
 	def getDesc(self, key):
 		return self.get(key).desc
@@ -212,6 +208,12 @@ def getMonthLen(year: int, month: int, calType: int) -> int:
 def getSysDate(calType):
 	if calType == GREGORIAN:
 		return localtime()[:3]
-	else:
-		gy, gm, gd = localtime()[:3]
-		return convert(gy, gm, gd, GREGORIAN, calType)
+	gy, gm, gd = localtime()[:3]
+	return convert(gy, gm, gd, GREGORIAN, calType)
+
+# def inputDateJd(msg: str) -> "int | None":
+# 	date = inputDate(msg)
+# 	if date:
+# 		y, m, d = date
+# 		return to_jd(y, m, d, GREGORIAN)
+# 	return None

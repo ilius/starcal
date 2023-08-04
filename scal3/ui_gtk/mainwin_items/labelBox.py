@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -27,10 +26,20 @@ from scal3.cal_types import calTypes
 from scal3.color_utils import colorizeSpan
 from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import (
+	HBox,
+	Menu,
+	MenuItem,
+	VBox,
+	gdk,
+	getScrollValue,
+	gtk,
+	pack,
+	timeout_add,
+)
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
-from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import (
 	calcTextPixelSize,
 )
@@ -332,27 +341,27 @@ class IntLabel(BaseLabel):
 				if self.step > 1:
 					self.step = 0
 					return False
-				else:
-					self.step += 1
-					self.etime = t # FIXME
-					return True
-			else:
-				self.updateMenu(self.start + plus)
-				self.etime = t
+				self.step += 1
+				self.etime = t # FIXME
 				return True
-		else:
-			return False
+
+			self.updateMenu(self.start + plus)
+			self.etime = t
+			return True
+
+		return False
 
 	def menuScroll(self, widget, gevent):
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.updateMenu(self.start - 1)
 			return None
-		elif d == "down":
+
+		if d == "down":
 			self.updateMenu(self.start + 1)
 			return None
-		else:
-			return False
+
+		return False
 
 
 @registerSignals
@@ -364,7 +373,6 @@ class YearLabel(IntLabel, ud.BaseCalObj):
 	@ud.cssFunc
 	def getCSS() -> str:
 		from scal3.ui_gtk.utils import cssTextStyle
-		fgColor = None
 		if ui.labelBoxYearColorEnable:
 			return "." + YearLabel.styleClass + " " + cssTextStyle(
 				fgColor=ui.labelBoxYearColor,
@@ -593,7 +601,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		monthLabels.append(box.label)
 		self.mbox = box
 		####
-		for i, calType in list(enumerate(calTypes.active))[1:]:
+		for _i, calType in list(enumerate(calTypes.active))[1:]:
 			pack(self, self.newSeparator(), 1, 1)
 			label = YearLabel(calType)
 			pack(self, label)

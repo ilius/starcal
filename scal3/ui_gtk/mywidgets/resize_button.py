@@ -1,5 +1,4 @@
-#!/usr/bin/env python3
-from scal3.ui_gtk import *
+from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk.utils import imageFromFile
 
 

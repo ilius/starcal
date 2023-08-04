@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -19,7 +18,7 @@
 import natz
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.utils import dialog_add_button
 
 
