@@ -17,48 +17,32 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from time import time as now
-
-import sys
 import os
 import os.path
-from os.path import dirname, join, isfile, isdir, splitext, isabs
 from collections import OrderedDict
-from collections import namedtuple
-from dataclasses import dataclass
-from cachetools import LRUCache
 from contextlib import suppress
-
+from dataclasses import dataclass
+from os.path import isabs, isdir, isfile, join
+from time import time as now
 from typing import (
 	Any,
-	Optional,
-	Tuple,
-	List,
-	Sequence,
-	Dict,
 	Callable,
-	TypeVar,
+	Optional,
 )
 
-from scal3.utils import toBytes
+from cachetools import LRUCache
+
+from scal3 import cal_types, core, event_lib
+from scal3.cal_types import calTypes, jd_to
+from scal3.event_update_queue import EventUpdateQueue
 from scal3.json_utils import *
+from scal3.locale_man import numDecode
+from scal3.locale_man import tr as _
 from scal3.path import *
 from scal3.types_starcal import CellType, CompiledTimeFormat
-
-from scal3 import cal_types
-from scal3.cal_types import calTypes, jd_to
-
-from scal3 import locale_man
-from scal3.locale_man import tr as _
-from scal3.locale_man import numDecode
-
-
-from scal3 import core
-
-from scal3 import event_lib
-from scal3.event_update_queue import EventUpdateQueue
 
 uiName = ""
 
@@ -255,7 +239,7 @@ class Font:
 	italic: bool = False
 	size: float = 0
 
-	def fromList(lst: "Optional[List]"):
+	def fromList(lst: "Optional[list]"):
 		if lst is None:
 			return
 		return Font(*lst)
@@ -324,7 +308,7 @@ def saveLiveConfLoop() -> None:  # rename to saveConfLiveLoop FIXME
 
 #######################################################
 
-def parseDroppedDate(text) -> Optional[Tuple[int, int, int]]:
+def parseDroppedDate(text) -> Optional[tuple[int, int, int]]:
 	part = text.split("/")
 	if len(part) != 3:
 		return None
@@ -360,7 +344,7 @@ def parseDroppedDate(text) -> Optional[Tuple[int, int, int]]:
 	)
 	# "format" must be list because we use method "index"
 
-	def formatIsValid(fmt: "List[int]"):
+	def formatIsValid(fmt: "list[int]"):
 		for i in range(3):
 			f = fmt[i]
 			if not (minMax[f][0] <= part[i] <= minMax[f][1]):
@@ -374,6 +358,7 @@ def parseDroppedDate(text) -> Optional[Tuple[int, int, int]]:
 				part[fmt.index(1)],
 				part[fmt.index(2)],
 			)
+	return None
 
 	# FIXME: when drag from a persian GtkCalendar with format %y/%m/%d
 	# if year < 100:
@@ -385,7 +370,7 @@ def checkNeedRestart() -> bool:
 		if needRestartPref[key] != eval(key):
 			log.info(
 				f"checkNeedRestart: {key!r}, "
-				f"{needRestartPref[key]!r}, {eval(key)!r}"
+				f"{needRestartPref[key]!r}, {eval(key)!r}",
 			)
 			return True
 	return False
@@ -412,9 +397,9 @@ def dayOpenEvolution(arg: Any = None) -> None:
 
 
 class Cell(CellType):
-	"""
-	status and information of a cell
-	"""
+
+	"""status and information of a cell."""
+
 	# ocTimeMax = 0
 	# ocTimeCount = 0
 	# ocTimeSum = 0
@@ -430,7 +415,7 @@ class Cell(CellType):
 		self.weekNum = core.getWeekNumber(self.year, self.month, self.day)
 		# self.weekNumNeg = self.weekNum+1 - core.getYearWeeksCount(self.year)
 		self.weekNumNeg = self.weekNum - int(
-			calTypes.primaryModule().avgYearLen / 7
+			calTypes.primaryModule().avgYearLen / 7,
 		)
 		self.holiday = (self.weekDay in core.holidayWeekDays)
 		###################
@@ -464,7 +449,7 @@ class Cell(CellType):
 	def getPluginsData(
 		self,
 		firstLineOnly=False,
-	) -> "List[Tuple[BasePlugin, str]]":
+	) -> "list[tuple[BasePlugin, str]]":
 		return [
 			(plug, text.split("\n")[0]) if firstLineOnly
 			else (plug, text)
@@ -503,6 +488,7 @@ class Cell(CellType):
 			show: tuple of 3 bools (showInDCal, showInWCal, showInMCal)
 			showInStatusIcon: bool
 		"""
+		return None
 		# dt = now() - t0
 		# Cell.ocTimeSum += dt
 		# Cell.ocTimeCount += 1
@@ -512,7 +498,7 @@ class Cell(CellType):
 		self,
 		compiledFmt: CompiledTimeFormat,
 		calType: Optional[int] = None,
-		tm: Optional[Tuple[int, int, int]] = None,
+		tm: Optional[tuple[int, int, int]] = None,
 	):
 		if calType is None:
 			calType = calTypes.primary
@@ -521,14 +507,14 @@ class Cell(CellType):
 		pyFmt, funcs = compiledFmt
 		return pyFmt % tuple(f(self, calType, tm) for f in funcs)
 
-	def getDate(self, calType: int) -> Tuple[int, int, int]:
+	def getDate(self, calType: int) -> tuple[int, int, int]:
 		return self.dates[calType]
 
 	def inSameMonth(self, other: CellType) -> bool:
 		return self.getDate(calTypes.primary)[:2] == \
 			other.getDate(calTypes.primary)[:2]
 
-	def getEventIcons(self, showIndex: int) -> List[str]:
+	def getEventIcons(self, showIndex: int) -> list[str]:
 		iconList = []
 		for item in self.getEventsData():
 			if not item.show[showIndex]:
@@ -538,13 +524,13 @@ class Cell(CellType):
 				iconList.append(icon)
 		return iconList
 
-	def getDayEventIcons(self) -> List[str]:
+	def getDayEventIcons(self) -> list[str]:
 		return self.getEventIcons(0)
 
-	def getWeekEventIcons(self) -> List[str]:
+	def getWeekEventIcons(self) -> list[str]:
 		return self.getEventIcons(1)
 
-	def getMonthEventIcons(self) -> List[str]:
+	def getMonthEventIcons(self) -> list[str]:
 		return self.getEventIcons(2)
 
 
@@ -587,14 +573,14 @@ class CellCache:
 		self,
 		name: str,
 		setParamsCallable: Callable[[CellType], None],
-		getCellGroupCallable: "Callable[[CellCache, ...], List[CellType]]",
+		getCellGroupCallable: "Callable[[CellCache, ...], list[CellType]]",
 		# ^ FIXME: ...
 		# `...` is `absWeekNumber` for weekCal, and `year, month` for monthCal
 	):
 		"""
-			setParamsCallable(cell): cell.attr1 = value1 ....
-			getCellGroupCallable(cellCache, *args): return cell_group
-				call cellCache.getCell(jd) inside getCellGroupFunc
+		setParamsCallable(cell): cell.attr1 = value1 ....
+		getCellGroupCallable(cellCache, *args): return cell_group
+		call cellCache.getCell(jd) inside getCellGroupFunc.
 		"""
 		self.plugins[name] = (
 			setParamsCallable,
@@ -629,13 +615,13 @@ class CellCache:
 		self.jdCells[jd] = localCell
 		return localCell
 
-	def getCellGroup(self, pluginName: int, *args) -> List[CellType]:
+	def getCellGroup(self, pluginName: int, *args) -> list[CellType]:
 		return self.plugins[pluginName][1](self, *args)
 
 	def getWeekData(
 		self,
 		absWeekNumber: int,
-	) -> Tuple[List[CellType], List[Dict]]:
+	) -> tuple[list[CellType], list[dict]]:
 		cells = self.getCellGroup("WeekCal", absWeekNumber)
 		wEventData = self.weekEvents.get(absWeekNumber)
 		if wEventData is None:
@@ -696,7 +682,7 @@ def getFont(
 	scale=1.0,
 	family=True,
 	bold=False,
-) -> Tuple[Optional[str], bool, bool, float]:
+) -> tuple[Optional[str], bool, bool, float]:
 	f = fontCustom if fontCustomEnable else fontDefaultInit
 	return Font(
 		family=f.family if family else None,
@@ -706,7 +692,7 @@ def getFont(
 	)
 
 
-def getParamsFont(params: Dict) -> Optional[Font]:
+def getParamsFont(params: dict) -> Optional[Font]:
 	font = params.get("font")
 	if not font:
 		return None
@@ -765,7 +751,7 @@ def initFonts(fontDefaultNew: "Font") -> None:
 		dcalWinWeekdayParams["font"] = getFont(1.0, family=False)  # noqa: FURB120
 
 
-def getHolidaysJdList(startJd: int, endJd: int) -> List[int]:
+def getHolidaysJdList(startJd: int, endJd: int) -> list[int]:
 	jdList = []
 	for jd in range(startJd, endJd):
 		tmpCell = cellCache.getTmpCell(jd)
@@ -795,9 +781,9 @@ def checkWinControllerButtons() -> None:
 
 
 def checkEnabledNamesItems(
-	items: List[Tuple[bool, str]],
-	itemsDefault: List[Tuple[bool, str]],
-) -> List[Tuple[bool, str]]:
+	items: list[tuple[bool, str]],
+	itemsDefault: list[tuple[bool, str]],
+) -> list[tuple[bool, str]]:
 	# cleaning and updating items
 	names = {
 		name
@@ -1075,7 +1061,7 @@ menuMainItemDefs = OrderedDict([
 		label=_("Resize"),
 		imageName="resize.svg",
 		func="onResizeFromMenu",
-		signalName="button-press-event"
+		signalName="button-press-event",
 	)),
 	("onTop", dict(
 		cls="CheckMenuItem",

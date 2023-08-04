@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 
 from scal3 import logger
+
 log = logger.get()
 
-import sys
 from os.path import join
 from time import localtime
 
@@ -45,7 +45,7 @@ with open(join(modDir, "modules.list")) as fp:
 			if not hasattr(mod, attr):
 				log.error(
 					"Invalid calendar module: " +
-					f"module {name!r} has no attribute {attr!r}\n"
+					f"module {name!r} has no attribute {attr!r}\n",
 				)
 		# TODO: check argument names and count for funcs
 		modules.append(mod)
@@ -141,7 +141,7 @@ class CalTypesHolder:
 		else:
 			raise TypeError(
 				f"invalid key {key!r} given to " +
-				f"{self.__class__.__name__!r}.__getitem__"
+				f"{self.__class__.__name__!r}.__getitem__",
 			)
 
 	# returns (module, found) where found is bool
@@ -158,7 +158,7 @@ class CalTypesHolder:
 		else:
 			raise TypeError(
 				f"invalid key {key!r} given to " +
-				f"{self.__class__.__name__!r}.__getitem__"
+				f"{self.__class__.__name__!r}.__getitem__",
 			)
 	def get(self, key, default=None):
 		if isinstance(key, str):
@@ -170,7 +170,7 @@ class CalTypesHolder:
 		else:
 			raise TypeError(
 				f"invalid key {key!r} given to " +
-				f"{self.__class__.__name__!r}.__getitem__"
+				f"{self.__class__.__name__!r}.__getitem__",
 			)
 
 	def getDesc(self, key):
@@ -197,7 +197,7 @@ def convert(y, m, d, source, target):
 	return (
 		(y, m, d) if source == target
 		else modules[target].jd_to(
-			modules[source].to_jd(y, m, d)
+			modules[source].to_jd(y, m, d),
 		)
 	)
 

@@ -17,51 +17,47 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from time import localtime
-from scal3 import logger
-log = logger.get()
 
-from scal3.path import *
-from scal3.utils import cmp
-from scal3 import cal_types
-from scal3.cal_types import calTypes
-from scal3 import core
-from scal3.core import jd_to_primary
-from scal3.locale_man import tr as _
-from scal3.locale_man import rtl
-from scal3 import event_lib
-from scal3 import ui
+from scal3 import logger
+
+log = logger.get()
 
 from gi.repository import GdkPixbuf
 
+from scal3 import cal_types, core, event_lib, ui
+from scal3.cal_types import calTypes
+from scal3.core import jd_to_primary
+from scal3.locale_man import rtl
+from scal3.locale_man import tr as _
+from scal3.path import *
 from scal3.ui_gtk import *
+from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.utils import (
-	labelImageButton,
-	newHSep,
+from scal3.ui_gtk.event.common import SingleGroupComboBox
+from scal3.ui_gtk.event.export import EventListExportDialog
+from scal3.ui_gtk.event.utils import (
+	confirmEventTrash,
+	eventTreeIconPixbuf,
+	eventWriteImageMenuItem,
+	eventWriteMenuItem,
+	menuItemFromEventGroup,
 )
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
 )
 from scal3.ui_gtk.mywidgets import TextFrame
-from scal3.ui_gtk.mywidgets.multi_spin.date_time import DateTimeButton
-from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
+from scal3.ui_gtk.mywidgets.dialog import MyDialog
+from scal3.ui_gtk.mywidgets.multi_spin.date_time import DateTimeButton
 from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
-from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.utils import (
+	labelImageButton,
+	newHSep,
+	set_tooltip,
 	showError,
 	showInfo,
-	set_tooltip,
 )
-from scal3.ui_gtk.event.utils import (
-	confirmEventTrash,
-	eventWriteMenuItem,
-	eventWriteImageMenuItem,
-	eventTreeIconPixbuf,
-	menuItemFromEventGroup,
-)
-from scal3.ui_gtk.event.common import SingleGroupComboBox
-from scal3.ui_gtk.event.export import EventListExportDialog
+from scal3.utils import cmp
 
 
 @registerSignals
@@ -413,7 +409,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 	def _collectConds(self):
 		if self.groupCheck.get_active():
 			groupIds = [
-				self.groupCombo.get_active()
+				self.groupCombo.get_active(),
 			]
 		else:
 			groupIds = ui.eventGroups.getEnableIds()
@@ -457,7 +453,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 					event.getShownDescription(),
 				))
 		self.resultLabel.set_label(
-			_("Found {eventCount} events").format(eventCount=_(len(self.treeModel)))
+			_("Found {eventCount} events").format(eventCount=_(len(self.treeModel))),
 		)
 
 	def searchAndExportToJSON(
@@ -475,7 +471,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 			_file.write(
 				f'{{"info":{{"appName":{dumps(core.APP_NAME)},'
 				f'"version":{dumps(core.VERSION)}}},'
-				f'"groups":[{{"type":"group","title":{dumps(groupTitle)},"events":['
+				f'"groups":[{{"type":"group","title":{dumps(groupTitle)},"events":[',
 			)
 			_file.flush()
 			eventCount = 0
@@ -544,7 +540,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		visible = not self.vboxFilters.get_visible()
 		self.vboxFilters.set_visible(visible)
 		self.hideShowFiltersButton.set_label(
-			_("Hide Filters") if visible else _("Show Filters")
+			_("Hide Filters") if visible else _("Show Filters"),
 		)
 
 	def editEventByPath(self, path):
@@ -678,7 +674,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 					args=(
 						path,
 						event,
-						new_group,					
+						new_group,
 					),
 				))
 		##

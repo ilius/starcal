@@ -17,35 +17,28 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-import sys
-import os
-from os.path import join, isabs
-
-from typing import Optional, Callable, Any, Union, Tuple, List
-
-from scal3.path import *
-from scal3 import core
-from scal3.locale_man import tr as _
-from scal3 import ui
+from os.path import isabs, join
+from typing import Any, Callable, Optional, Union
 
 from gi.repository import GdkPixbuf
 
+from scal3 import ui
+from scal3.locale_man import tr as _
+from scal3.path import *
 from scal3.ui_gtk import *
+from scal3.ui_gtk.font_utils import gfontDecode, gfontEncode
+from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
+from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 from scal3.ui_gtk.utils import (
-	set_tooltip,
 	dialog_add_button,
 	newAlignLabel,
+	set_tooltip,
 )
-from scal3.ui_gtk.font_utils import gfontEncode, gfontDecode
 
-
-from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
-from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
-
-
-ColorType = Union[Tuple[int, int, int], Tuple[int, int, int, int]]
+ColorType = Union[tuple[int, int, int], tuple[int, int, int, int]]
 
 
 # (VAR_NAME, bool,     CHECKBUTTON_TEXT)                 ## CheckButton
@@ -60,7 +53,7 @@ class ModuleOptionItem:
 	def __init__(
 		self,
 		obj: Any,
-		opt: Tuple,
+		opt: tuple,
 	) -> None:
 		t = opt[1]
 		self.opt = opt ## needed??
@@ -104,7 +97,7 @@ class ModuleOptionItem:
 
 	def updateWidget(self) -> None:
 		self.set(
-			getattr(self.obj, self.attrName)
+			getattr(self.obj, self.attrName),
 		)
 
 	def getWidget(self) -> gtk.Widget:
@@ -117,7 +110,7 @@ class ModuleOptionButton:
 	def valueString(cls, value: Any) -> str:
 		return str(value)
 
-	def __init__(self, opt: Tuple) -> None:
+	def __init__(self, opt: tuple) -> None:
 		funcName = opt[2]
 		clickedFunc = getattr(
 			__import__(
@@ -145,7 +138,7 @@ class ModuleOptionButton:
 		return self._widget
 
 
-class PrefItem():
+class PrefItem:
 	@classmethod
 	def valueString(cls, value: Any) -> str:
 		return str(value)
@@ -167,7 +160,7 @@ class PrefItem():
 
 	def updateWidget(self) -> None:
 		self.set(
-			getattr(self.obj, self.attrName)
+			getattr(self.obj, self.attrName),
 		)
 
 	def getWidget(self) -> gtk.Widget:
@@ -183,7 +176,7 @@ class ComboTextPrefItem(PrefItem):
 		self,
 		obj: Any,
 		attrName: str,
-		items: Optional[List[str]] = None,
+		items: Optional[list[str]] = None,
 		label: str = "",
 		labelSizeGroup: Optional[gtk.SizeGroup] = None,
 		live: bool = False,
@@ -325,9 +318,9 @@ class ComboEntryTextPrefItem(PrefItem):
 		self,
 		obj: Any,
 		attrName: str,
-		items: Optional[List[str]] = None,
+		items: Optional[list[str]] = None,
 	):
-		"""items is a list of strings"""
+		"""Items is a list of strings."""
 		self.obj = obj
 		self.attrName = attrName
 		w = gtk.ComboBoxText.new_with_entry()
@@ -357,11 +350,9 @@ class ComboImageTextPrefItem(PrefItem):
 		self,
 		obj: Any,
 		attrName: str,
-		items: Optional[List[Tuple[str, str]]] = None,
+		items: Optional[list[tuple[str, str]]] = None,
 	):
-		"""
-		items is a list of (imagePath, text) tuples
-		"""
+		"""Items is a list of (imagePath, text) tuples."""
 		self.obj = obj
 		self.attrName = attrName
 		###
@@ -761,13 +752,13 @@ class WidthHeightPrefItem(PrefItem):
 		pack(hbox, gtk.Label(label=_("Height") + ":"))
 		pack(hbox, self.heightItem)
 
-	def get(self) -> Tuple[int, int]:
+	def get(self) -> tuple[int, int]:
 		return (
 			int(self.widthItem.get_value()),
 			int(self.heightItem.get_value()),
 		)
 
-	def set(self, value: Tuple[int, int]):
+	def set(self, value: tuple[int, int]):
 		w, h = value
 		self.widthItem.set_value(w)
 		self.heightItem.set_value(h)
@@ -843,7 +834,6 @@ class ImageFileChooserPrefItem(FileChooserPrefItem):
 		self._widget.connect("update-preview", self._updatePreview)
 
 	def _updatePreview(self, w: gtk.Widget) -> None:
-		from os.path import splitext
 		fpath = self._widget.get_preview_filename()
 		self._preview.set_from_file(fpath)
 
@@ -904,7 +894,7 @@ class RadioListPrefItem(PrefItem):
 		vertical: bool,
 		obj: Any,
 		attrName: str,
-		texts: List[str],
+		texts: list[str],
 		label: Optional[str] = None,
 	) -> None:
 		self.num = len(texts)
@@ -934,6 +924,7 @@ class RadioListPrefItem(PrefItem):
 		for i in range(self.num):
 			if self.radios[i].get_active():
 				return i
+		return None
 
 	def set(self, index: int) -> None:
 		self.radios[index].set_active(True)
@@ -955,7 +946,7 @@ class ListPrefItem(PrefItem):
 		vertical: bool,
 		obj: Any,
 		attrName: str,
-		items: Optional[List[PrefItem]] = None,
+		items: Optional[list[PrefItem]] = None,
 	) -> None:
 		self.obj = obj
 		self.attrName = attrName
@@ -971,13 +962,13 @@ class ListPrefItem(PrefItem):
 		self.items = items
 		self._widget = box
 
-	def get(self) -> List[Any]:
+	def get(self) -> list[Any]:
 		return [
 			item.get()
 			for item in self.items
 		]
 
-	def set(self, valueL: List[Any]):
+	def set(self, valueL: list[Any]):
 		for i in range(self.num):
 			self.items[i].set(valueL[i])
 
@@ -1020,15 +1011,11 @@ class DirectionPrefItem(PrefItem):
 		self.updateWidget()
 
 	def get(self) -> str:
-		"""
-			returns one of "ltr", "rtl", "auto"
-		"""
+		"""Returns one of "ltr", "rtl", "auto"."""
 		return self._combo.getValue()
 
 	def set(self, value: str) -> None:
-		"""
-			value must be one of "ltr", "rtl", "auto"
-		"""
+		"""Value must be one of "ltr", "rtl", "auto"."""
 		self._combo.setValue(value)
 
 	def onComboChange(self, w: gtk.Widget) -> None:
@@ -1063,15 +1050,11 @@ class JustificationPrefItem(PrefItem):
 		self.updateWidget()
 
 	def get(self) -> str:
-		"""
-			returns one of "left", "right", "center", "fill"
-		"""
+		"""Returns one of "left", "right", "center", "fill"."""
 		return self._combo.getValue()
 
 	def set(self, value: str) -> None:
-		"""
-			value must be one of "left", "right", "center", "fill"
-		"""
+		"""Value must be one of "left", "right", "center", "fill"."""
 		self._combo.setValue(value)
 
 	def onComboChange(self, w: gtk.Widget) -> None:
