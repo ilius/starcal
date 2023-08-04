@@ -35,7 +35,7 @@ from typing import (
 
 from cachetools import LRUCache
 
-from scal3 import cal_types, core, event_lib
+from scal3 import cal_types, core, event_lib, locale_man
 from scal3.cal_types import calTypes, jd_to
 from scal3.event_update_queue import EventUpdateQueue
 from scal3.json_utils import *
@@ -1697,7 +1697,7 @@ if not isfile(statusIconImageHoli):
 	statusIconImageHoli = statusIconImageHoliDefault
 
 
-_localTzName = str(core.localTz)
+_localTzName = str(locale_man.localTz)
 if localTzHist:
 	if localTzHist[0] != _localTzName:
 		with suppress(ValueError):

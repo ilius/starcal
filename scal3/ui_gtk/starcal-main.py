@@ -8,10 +8,12 @@ from typing import Callable, Optional
 import gi
 
 gi.require_version("Gtk", "3.0")
-gi.require_version("PangoCairo", "1.0")
-
-from gi.repository import GdkPixbuf
 from gi.repository import Gtk as gtk
+
+gi.require_version('GdkPixbuf', "2.0")
+from gi.repository import GdkPixbuf
+
+gi.require_version("PangoCairo", "1.0")
 from gi.repository import Pango as pango
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
