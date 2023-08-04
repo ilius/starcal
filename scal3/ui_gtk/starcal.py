@@ -18,22 +18,30 @@
 
 import sys
 
-if sys.version_info[0] != 3:
+if sys.version_info[0] < 3:
 	sys.stderr.write("Run this script with Python 3.x\n")
 	sys.exit(1)
 
 import os
 import os.path
 import signal
+import typing
 from os.path import dirname, isdir, isfile, join
 from time import localtime
 from time import time as now
+
+if typing.TYPE_CHECKING:
+	from typing import Any
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
 from scal3 import logger
 from scal3.cal_types import convert
-from scal3.path import *
+from scal3.path import (
+	confDir,
+	pixDir,
+	sourceDir,
+)
 
 log = logger.get()
 
@@ -59,10 +67,19 @@ from scal3.locale_man import rtl  # import scal3.locale_man after core
 
 # _ = locale_man.loadTranslator()  # FIXME
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import (
+	GdkPixbuf,
+	Menu,
+	VBox,
+	gdk,
+	gtk,
+	listener,
+	menuitems,
+	pixcache,
+	timeout_add,
+)
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk import hijri as hijri_gtk
-from scal3.ui_gtk import listener, menuitems
 from scal3.ui_gtk.customize import CustomizableCalBox, DummyCalObj
 from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
@@ -72,7 +89,14 @@ from scal3.ui_gtk.mainwin_items import mainWinItemsDesc
 from scal3.ui_gtk.menuitems import (
 	ImageMenuItem,
 )
-from scal3.ui_gtk.utils import *
+from scal3.ui_gtk.utils import (
+	get_menu_height,
+	get_menu_width,
+	openWindow,
+	set_tooltip,
+	setClipboard,
+	showError,
+)
 
 ui.uiName = "gtk"
 
@@ -139,7 +163,7 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 					CalObj = module.CalObj
 				except RuntimeError as e:
 					raise e
-				except Exception as e:
+				except Exception:
 					log.error(f"error importing mainWinItem {name}")
 					log.exception("")
 					# raise e
@@ -514,7 +538,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			self.quit()
 		elif kname == "r":
 			if gevent.state & gdk.ModifierType.CONTROL_MASK:
-				log.info(f"Ctrl + R -> onConfigChange")
+				log.info("Ctrl + R -> onConfigChange")
 				self.onConfigChange()
 		else:
 			self.layout.onKeyPress(arg, gevent)
@@ -688,7 +712,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		for j in range(len(core.plugIndex)):
 			plug = core.allPlugList[core.plugIndex[j]]
 			if hasattr(plug, "date_change_after"):
-				plug.date_change_after(*date)
+				plug.date_change_after(*ui.cell.date)
 		# log.debug(
 		# 	f"Occurrence Time: max={ui.Cell.ocTimeMax:e}, " +
 		# 	f"avg={ui.Cell.ocTimeSum/ui.Cell.ocTimeCount:e}"
@@ -752,12 +776,10 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def editEventFromMenu(self, item, groupId, eventId):
 		from scal3.ui_gtk.event.editor import EventEditorDialog
 		event = ui.getEvent(groupId, eventId)
-		group = ui.eventGroups[groupId]
-		parent = self
 		event = EventEditorDialog(
 			event,
 			title=_("Edit ") + event.desc,
-			transient_for=parent,
+			transient_for=self,
 		).run()
 		if event is None:
 			return
@@ -914,7 +936,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		coord = widget.translate_coordinates(self, x, y)
 		if coord is None:
 			raise RuntimeError(
-				f"failed to translate coordinates ({x}, {y})" +
+				f"failed to translate coordinates ({x}, {y})"
 				f" from widget {widget}",
 			)
 		dx, dy = coord
@@ -1097,7 +1119,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		useAppIndicator = ui.useAppIndicator
 		if useAppIndicator:
 			try:
-				import scal3.ui_gtk.starcal_appindicator
+				import scal3.ui_gtk.starcal_appindicator  # noqa: F401
 			except (ImportError, ValueError):
 				useAppIndicator = False
 		if useAppIndicator:
@@ -1414,7 +1436,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		from subprocess import Popen
 		if not ud.adjustTimeCmd:
 			showError(
-				"Failed to find gksudo, kdesudo, gksu, gnomesu, kdesu" +
+				"Failed to find gksudo, kdesudo, gksu, gnomesu, kdesu"
 				" or any askpass program to use with sudo",
 				transient_for=self,
 			)

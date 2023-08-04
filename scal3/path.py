@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -24,6 +23,25 @@ from os.path import abspath, dirname, join
 from scal3.os_utils import getOsName
 
 APP_NAME = "starcal3"
+
+__all__ = [
+	"cacheDir",
+	"confDir",
+	"deskDir",
+	"homeDir",
+	"objectDir",
+	"pixDir",
+	"plugDir",
+	"plugDirName",
+	"plugDirUser",
+	"purpleDir",
+	"scalDir",
+	"sourceDir",
+	"svgDir",
+	"sysConfDir",
+	"tmpDir",
+	"userPlugConf",
+]
 
 osName = getOsName()
 

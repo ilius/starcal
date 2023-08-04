@@ -8,7 +8,7 @@ from scal3.utils import urlToPath
 __all__ = ["processDroppedDate"]
 
 
-from scal3 import logger
+from scal3 import core, logger, ui
 
 log = logger.get()
 

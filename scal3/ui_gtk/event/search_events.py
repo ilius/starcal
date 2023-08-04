@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -22,17 +21,20 @@ from scal3 import logger
 
 log = logger.get()
 
-from gi.repository import GdkPixbuf
+import typing
+from os.path import join
 
 from scal3 import cal_types, core, event_lib, ui
 from scal3.cal_types import calTypes
 from scal3.core import jd_to_primary
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
-from scal3.path import *
-from scal3.ui_gtk import *
+from scal3.path import (
+	deskDir,
+)
+from scal3.ui_gtk import GdkPixbuf, HBox, Menu, VBox, gdk, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.event.common import SingleGroupComboBox
 from scal3.ui_gtk.event.export import EventListExportDialog
 from scal3.ui_gtk.event.utils import (
@@ -58,6 +60,9 @@ from scal3.ui_gtk.utils import (
 	showInfo,
 )
 from scal3.utils import cmp
+
+if typing.TYPE_CHECKING:
+	from typing import Any
 
 
 @registerSignals
@@ -235,7 +240,10 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		)
 		directExportButton.connect("clicked", self.onDirectExportClick)
 		bbox.add(directExportButton)
-		set_tooltip(directExportButton, _("Search and save the results in JSON file without listing them here"))
+		set_tooltip(
+			directExportButton,
+			_("Search and save the results in JSON file without listing them here"),
+		)
 		###
 		hideShowFiltersButton = labelImageButton(
 			label=_("Hide Filters"),
@@ -604,7 +612,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		ui.eventUpdateQueue.put("+", new_event, self)
 		# FIXME
 		###
-		eventIter = self.treeModel.get_iter(eventPath)
+		# eventIter = self.treeModel.get_iter(eventPath)
 
 	def moveEventToTrash(self, path):
 		try:

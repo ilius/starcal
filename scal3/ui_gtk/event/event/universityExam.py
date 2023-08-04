@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -22,7 +21,7 @@ log = logger.get()
 
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets import TextFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
@@ -162,8 +161,7 @@ class WidgetClass(gtk.Box):
 		if courseIndex is None:
 			showError(_("No course is selected"), transient_for=ui.eventManDialog)
 			raise RuntimeError("No courses is selected")
-		else:
-			self.event.courseId = self.courseIds[courseIndex]
+		self.event.courseId = self.courseIds[courseIndex]
 		##
 		self.event.setDate(*tuple(self.dateInput.get_value()))
 		##

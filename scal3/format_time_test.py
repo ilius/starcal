@@ -27,7 +27,7 @@ def testSpeed():
 	from time import strftime
 	# fmt1 = "Date: %Y/%m/%d - Time: %H:%M:%S - %a %A %C %B %b %g %G %V"
 	fmt1 = "%Y/%m/%d - %H:%M:%S"
-	fmt2 = "%OY/%Om/%Od - %OH:%OM:%OS"
+	# fmt2 = "%OY/%Om/%Od - %OH:%OM:%OS"
 	n = 1000
 	########
 	compiledFmt = compileTmFormat(fmt1)
@@ -36,14 +36,14 @@ def testSpeed():
 	jd = to_jd(tm[0], tm[1], tm[2], calType)
 	########
 	t0 = now()
-	for i in range(n):
+	for _i in range(n):
 		strftime(fmt1)
 	t1 = now()
 	log.info(f"Python strftime: {int(n / (t1 - t0)):7d} op/sec")
 	########
 	jd = to_jd(tm[0], tm[1], tm[2], calType)
 	t0 = now()
-	for i in range(n):
+	for _i in range(n):
 		formatTime(compiledFmt, calType, jd, tm)
 	t1 = now()
 	log.info(f"My strftime:     {int(n / (t1 - t0)):7d} op/sec")

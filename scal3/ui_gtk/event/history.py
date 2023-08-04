@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from scal3 import logger
@@ -13,7 +12,7 @@ from scal3.json_utils import dataToPrettyJson
 from scal3.locale_man import tr as _
 from scal3.s_object import loadBsonObject
 from scal3.time_utils import getJhmsFromEpoch
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, VBox, gtk, pack, pango
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.mywidgets.text_widgets import ReadOnlyTextView
@@ -264,7 +263,6 @@ class EventHistoryDialog(gtk.Dialog):
 			self.updateTextViewType(viewType, hashBefore, hashAfter)
 
 	def updateTableViewType(self, viewType, hashBefore, hashAfter):
-		event = self.event
 		treeModel = self.cmpTrees
 		treeModel.clear()
 

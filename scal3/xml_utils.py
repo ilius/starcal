@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
 
 # from xml.sax.saxutils import escape, unescape
 
 
-def escape(data, entities={}):
+def escape(data, entities: "dict | None" = None):
 	"""
 	Escape &, <, and > in a string of data.
 
@@ -14,13 +13,12 @@ def escape(data, entities={}):
 	# must do ampersand first
 	data = data.replace("&", "&amp;")
 	data = data.replace(">", "&gt;")
-	data = data.replace("<", "&lt;")
-	if entities:
-		data = __dict_replace(data, entities)
-	return data
+	return data.replace("<", "&lt;")
+	# if entities:
+	# 	data = __dict_replace(data, entities) # FIXME
 
 
-def unescape(data, entities={}):
+def unescape(data, entities: "dict | None" = None):
 	"""
 	Unescape &amp;, &lt;, and &gt; in a string of data.
 
@@ -30,7 +28,7 @@ def unescape(data, entities={}):
 	"""
 	data = data.replace("&lt;", "<")
 	data = data.replace("&gt;", ">")
-	if entities:
-		data = __dict_replace(data, entities)
+	# if entities:
+	# 	data = __dict_replace(data, entities) # FIXME
 	# must do ampersand last
 	return data.replace("&amp;", "&")

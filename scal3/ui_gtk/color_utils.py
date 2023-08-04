@@ -1,8 +1,12 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from gi.repository import Gdk as gdk
 
+__all__ = [
+	"rgbToGdkColor",
+	"rgbaToGdkRGBA",
+	"gdkColorToRgb",
+]
 
 def rgbToGdkColor(r, g, b, a=None):
 	"""r, g, b are in range(256)."""

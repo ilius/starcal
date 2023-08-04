@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -20,18 +19,26 @@ from scal3 import logger
 
 log = logger.get()
 
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+	import io
+	from datetime import datetime
+	from typing import Any, Callable, Iterator
+
+import json
 import os
 import os.path
 from collections import OrderedDict, namedtuple
 from contextlib import suppress
 from os.path import isabs, join, split, splitext
+from time import localtime
 from time import time as now
-from typing import Any, Callable, ClassVar, Iterator
 
 from cachetools import LRUCache
 
 import natz
-from scal3 import core, ics
+from scal3 import core, ics, locale_man
 from scal3.cal_types import (
 	GREGORIAN,
 	calTypes,
@@ -45,13 +52,47 @@ from scal3.core import (
 	jd_to_primary,
 	log,
 )
-from scal3.date_utils import *
-from scal3.interval_utils import *
+from scal3.date_utils import checkDate, dateDecode, dateEncode, jwday
+from scal3.interval_utils import (
+	intersectionOfTwoIntervalList,
+	simplifyNumList,
+)
 from scal3.json_utils import jsonToData
 from scal3.locale_man import getMonthName, textNumEncode
 from scal3.locale_man import tr as _
-from scal3.s_object import *
-from scal3.time_utils import *
+from scal3.path import confDir, objectDir, pixDir, svgDir
+
+# from scal3.interval_utils import
+from scal3.s_object import (
+	BsonHistObj,
+	FileSystem,
+	JsonSObj,
+	SObj,
+	iterObjectFiles,
+	loadBsonObject,
+	makeOrderedData,
+	updateBasicDataFromBson,
+)
+from scal3.time_utils import (
+	HMS,
+	durationDecode,
+	durationEncode,
+	getEpochFromJd,
+	getEpochFromJhms,
+	getFloatJdFromEpoch,
+	getJdFromEpoch,
+	getJdListFromEpochRange,
+	getJhmsFromEpoch,
+	getSecondsFromHms,
+	hmDecode,
+	hmEncode,
+	jsonTimeFromEpoch,
+	roundEpochToDay,
+	simpleTimeEncode,
+	timeDecode,
+	timeEncode,
+	timeToFloatHour,
+)
 from scal3.utils import (
 	findNearestIndex,
 	iceil,
@@ -60,8 +101,6 @@ from scal3.utils import (
 	s_join,
 	toStr,
 )
-
-from .path import *
 
 ##########################
 
@@ -123,15 +162,15 @@ class JsonEventObj(JsonSObj):
 
 
 class Smallest:
-	def __eq__(self, other: Any) -> bool:
+	def __eq__(self, other: "Any") -> bool:
 		if isinstance(other, Smallest):
 			return True
 		return False
 
-	def __lt__(self, other: Any) -> bool:
+	def __lt__(self, other: "Any") -> bool:
 		return True
 
-	def __gt__(self, other: Any) -> bool:
+	def __gt__(self, other: "Any") -> bool:
 		return False
 
 
@@ -204,10 +243,10 @@ class LastIdsWrapper(JsonEventObj):
 
 	def __str__(self) -> str:
 		return (
-			"LastIds(" +
-			f"event={self.event}, " +
-			f"group={self.group}, " +
-			f"account={self.account}" +
+			"LastIds("
+			f"event={self.event}, "
+			f"group={self.group}, "
+			f"account={self.account}"
 			")"
 		)
 
@@ -256,7 +295,7 @@ def removeUnusedObjects(fs: FileSystem):
 				if not history:
 					log.error(f"No history in file: {fpath}")
 					continue
-				for revTime, revHash in history:
+				for _revTime, revHash in history:
 					hashSet.add(revHash)
 
 		log.info(f"Found {len(hashSet)} used objects")
@@ -288,7 +327,7 @@ class ClassGroup(list):
 		self.byDesc = {}
 		self.main = None
 
-	def register(self, cls: ClassVar) -> ClassVar:
+	def register(self, cls: "type[ClassGroup]") -> "type[ClassGroup]":
 		assert cls.name != ""
 		cls.tname = self.tname
 		self.append(cls)
@@ -299,7 +338,7 @@ class ClassGroup(list):
 			self.byName[cls.nameAlias] = cls
 		return cls
 
-	def setMain(self, cls: ClassVar) -> ClassVar:
+	def setMain(self, cls: "type[ClassGroup]") -> "type[ClassGroup]":
 		self.main = cls
 		return cls
 
@@ -398,17 +437,17 @@ class JdOccurSet(OccurSet):
 			return JdOccurSet(
 				self.jdSet.intersection(occur.jdSet),
 			)
-		elif isinstance(occur, IntervalOccurSet):
+		if isinstance(occur, IntervalOccurSet):
 			return IntervalOccurSet(
 				intersectionOfTwoIntervalList(
 					self.getTimeRangeList(),
 					occur.getTimeRangeList(),
 				),
 			)
-		elif isinstance(occur, TimeListOccurSet):
+		if isinstance(occur, TimeListOccurSet):
 			return occur.intersection(self)
-		else:
-			raise TypeError
+
+		raise TypeError
 
 	def getDaysJdList(self) -> list[int]:
 		return sorted(self.jdSet)
@@ -482,18 +521,18 @@ class IntervalOccurSet(OccurSet):
 					occur.getTimeRangeList(),
 				),
 			)
-		elif isinstance(occur, TimeListOccurSet):
+		if isinstance(occur, TimeListOccurSet):
 			return occur.intersection(self)
-		else:
-			raise TypeError(
-				f"bad type {occur.__class__.__name__} ({occur!r})",
-			)
+
+		raise TypeError(
+			f"bad type {occur.__class__.__name__} ({occur!r})",
+		)
 
 	def getDaysJdList(self) -> list[int]:
 		return sorted({
 			jd
-			for jd in getJdListFromEpochRange(startEpoch, endEpoch)
 			for startEpoch, endEpoch in self.rangeList
+			for jd in getJdListFromEpochRange(startEpoch, endEpoch)
 		})
 
 	def getTimeRangeList(self) -> list[tuple[int, int]]:
@@ -562,12 +601,13 @@ class TimeListOccurSet(OccurSet):
 						epochBetween.append(epoch)
 						break
 			return TimeListOccurSet(epochBetween)
-		elif isinstance(occur, TimeListOccurSet):
+
+		if isinstance(occur, TimeListOccurSet):
 			return TimeListOccurSet(
 				self.epochList.intersection(occur.epochList),
 			)
-		else:
-			raise TypeError
+
+		raise TypeError
 
 	# FIXME: improve performance
 	def getDaysJdList(self) -> list[int]:
@@ -665,21 +705,21 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 		EventRule.__init__(self, parent)
 		self.values = []
 
-	def getData(self) -> list[Any]:
+	def getData(self) -> "list[Any]":
 		return self.values
 
-	def setData(self, data: Any):
+	def setData(self, data: "Any"):
 		if not isinstance(data, (tuple, list)):
 			data = [data]
 		self.values = data
 
-	def formatValue(self, v: Any) -> str:
+	def formatValue(self, v: "Any") -> str:
 		return _(v)
 
 	def __str__(self) -> str:
 		return textNumEncode(numRangesEncode(self.values, ", "))
 
-	def hasValue(self, value: Any) -> bool:
+	def hasValue(self, value: "Any") -> bool:
 		for item in self.values:
 			if isinstance(item, (tuple, list)):
 				if item[0] <= value <= item[1]:
@@ -813,8 +853,8 @@ class WeekNumberModeEventRule(EventRule):
 	def setData(self, wnModeName: str) -> None:
 		if wnModeName not in self.weekNumModeNames:
 			raise BadEventFile(
-				f"bad rule value {wnModeName=}, " +
-				"the value for weekNumMode must be " +
+				f"bad rule value {wnModeName=}, "
+				"the value for weekNumMode must be "
 				f"one of {self.weekNumModeNames!r}",
 			)
 		self.weekNumMode = self.weekNumModeNames.index(wnModeName)
@@ -832,13 +872,13 @@ class WeekNumberModeEventRule(EventRule):
 			return JdOccurSet(
 				range(startJd, endJd),
 			)
-		elif self.weekNumMode == self.ODD_WEEKS:
+		if self.weekNumMode == self.ODD_WEEKS:
 			return JdOccurSet({
 				jd
 				for jd in range(startJd, endJd)
 				if (getAbsWeekNumberFromJd(jd) - startAbsWeekNum) % 2 == 1
 			})
-		elif self.weekNumMode == self.EVEN_WEEKS:
+		if self.weekNumMode == self.EVEN_WEEKS:
 			return JdOccurSet({
 				jd
 				for jd in range(startJd, endJd)
@@ -852,9 +892,9 @@ class WeekNumberModeEventRule(EventRule):
 	def getInfo(self) -> None:
 		if self.weekNumMode == self.EVERY_WEEK:
 			return ""
-		elif self.weekNumMode == self.ODD_WEEKS:
+		if self.weekNumMode == self.ODD_WEEKS:
 			return _("Odd Weeks")
-		elif self.weekNumMode == self.EVEN_WEEKS:
+		if self.weekNumMode == self.EVEN_WEEKS:
 			return _("Even Weeks")
 		return None
 
@@ -888,8 +928,8 @@ class WeekDayEventRule(AllDayEventRule):
 			self.weekDayList = data
 		else:
 			raise BadEventFile(
-				f"bad rule weekDayList={data}, " +
-				"value for weekDayList must be a list of integers" +
+				f"bad rule weekDayList={data}, "
+				"value for weekDayList must be a list of integers"
 				" (0 for sunday)",
 			)
 
@@ -1347,7 +1387,9 @@ class DurationEventRule(EventRule):
 		return f"{self.value} {self.getUnitDesc()}"
 
 	def getInfo(self) -> str:
-		return self.desc + ": " + _("{count} " + self.getUnitDesc()).format(count=_(self.value))
+		return self.desc + ": " + _(
+			"{count} " + self.getUnitDesc(),
+		).format(count=_(self.value))
 
 	def getUnitDesc(self) -> str:
 		return {
@@ -1391,7 +1433,7 @@ class DurationEventRule(EventRule):
 			self.value, self.unit = durationDecode(data)
 		except Exception as e:
 			log.error(
-				"Error while loading event rule \"{self.name}\": {e}",
+				f"Error while loading event rule \"{self.name}\": {e}",
 			)
 
 	def getData(self) -> str:
@@ -1562,6 +1604,7 @@ class CycleLenEventRule(EventRule):
 		return f"{self.days} {H:02d}:{M:02d}:{S:02d}"
 
 	def __str__(self) -> str:
+		H, M, S = self.extraTime
 		return f"{self.days} days, {H:02d}:{M:02d}:{S:02d}"
 
 	def __init__(self, parent: "RuleContainer") -> None:
@@ -1569,13 +1612,13 @@ class CycleLenEventRule(EventRule):
 		self.days = 7
 		self.extraTime = (0, 0, 0)
 
-	def getData(self) -> dict[str, Any]:
+	def getData(self) -> "dict[str, Any]":
 		return {
 			"days": self.days,
 			"extraTime": timeEncode(self.extraTime),
 		}
 
-	def setData(self, arg: dict[str, Any]) -> None:
+	def setData(self, arg: "dict[str, Any]") -> None:
 		self.days = arg["days"]
 		self.extraTime = timeDecode(arg["extraTime"])
 
@@ -1752,7 +1795,7 @@ class EventNotifier(SObj):
 	def getCalType(self) -> str:
 		return self.event.calType
 
-	def notify(self, finishFunc: Callable) -> None:
+	def notify(self, finishFunc: "Callable") -> None:
 		pass
 
 
@@ -1862,11 +1905,11 @@ class RuleContainer:
 	def setRule(self, key: str, value: "EventRule"):
 		return self.rulesOd.__setitem__(key, value)
 
-	def iterRulesData(self) -> Iterator[tuple[str, Any]]:
+	def iterRulesData(self) -> "Iterator[tuple[str, Any]]":
 		for rule in self.rulesOd.values():
 			yield rule.name, rule.getData()
 
-	def getRulesData(self) -> list[tuple[str, Any]]:
+	def getRulesData(self) -> "list[tuple[str, Any]]":
 		return list(self.iterRulesData())
 
 	def getRulesHash(self) -> int:
@@ -1910,10 +1953,10 @@ class RuleContainer:
 	def __setitem__(self, key: str, value: "EventRule") -> None:
 		self.setRule(key, value)
 
-	def __iter__(self) -> Iterator["EventRule"]:
+	def __iter__(self) -> "Iterator[EventRule]":
 		return iter(self.rulesOd.values())
 
-	def setRulesData(self, rulesData: list[tuple[str, Any]]) -> None:
+	def setRulesData(self, rulesData: "list[tuple[str, Any]]") -> None:
 		self.clearRules()
 		for ruleName, ruleData in rulesData:
 			rule = classes.rule.byName[ruleName](self)
@@ -1995,7 +2038,7 @@ class RuleContainer:
 		for ruleType in ruleTypes:
 			if ruleType not in self.supportedRules:
 				log.info(
-					f"copySomeRuleTypesFrom: unsupported rule {ruleType}" +
+					f"copySomeRuleTypesFrom: unsupported rule {ruleType}"
 					f" for container {self!r}",
 				)
 				continue
@@ -2280,7 +2323,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		for fname in self.files:
 			data.append((
 				baseUrl + fname,
-				_("File") + ": " + fname,
+				_("io.TextIOBase") + ": " + fname,
 			))
 		return data
 
@@ -2376,7 +2419,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 			try:
 				self.calType = calTypes.names.index(calType)
 			except ValueError:
-				raise ValueError(f"Invalid calType: '{calType}'")
+				raise ValueError(f"Invalid calType: '{calType}'") from None
 		self.clearRules()
 		if "rules" in data:
 			self.setRulesData(data["rules"])
@@ -2432,7 +2475,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 	# FIXME: too tricky!
 	# def calcFirstOccurrenceAfterJd(self, startJd):
 
-	def notify(self, finishFunc: Callable) -> None:
+	def notify(self, finishFunc: "Callable") -> None:
 		self.n = len(self.notifiers)
 
 		def notifierFinishFunc():
@@ -2543,7 +2586,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		return data
 
 	def createPatchByHash(self, oldHash):
-		oldEvent = self.getRevision(sinceHash)
+		oldEvent = self.getRevision(oldHash)
 		patch = {
 			"eventId": self.id,
 			"eventType": oldEvent.name,
@@ -2708,8 +2751,7 @@ class TaskEvent(SingleStartEndEvent):
 			start, ok = self["start"]
 			if ok:
 				return start.getEpoch() + duration.getSeconds()
-			else:
-				raise RuntimeError("found duration rule without start rule")
+			raise RuntimeError("found duration rule without start rule")
 		raise ValueError("no end date neither duration specified for task")
 
 	def setEndEpoch(self, epoch):
@@ -2845,7 +2887,7 @@ class AllDayTaskEvent(SingleStartEndEvent):
 			rule.setJd(value)
 		elif endType == "epoch":
 			rule = EndEventRule(self)
-			rule.setJd(self.getJdFromEpoch(values[0]))
+			rule.setJd(self.getJdFromEpoch(value))
 		elif endType == "duration":
 			rule = DurationEventRule(self)
 			rule.value = value
@@ -3653,7 +3695,7 @@ class CustomEvent(Event):
 					"type": ruleName,
 					"value": rule.getServerString(),
 				}
-				for ruleName, rule in rulesOd.items()
+				for ruleName, rule in self.rulesOd.items()
 			],
 		})
 		return data
@@ -3706,11 +3748,10 @@ class EventContainer(BsonHistEventObj):
 	def __getitem__(self, key):
 		if isinstance(key, int):  # eventId
 			return self.getEvent(key)
-		else:
-			raise TypeError(
-				f"invalid key type for {key!r} " +
-				"given to EventContainer.__getitem__",
-			)
+		raise TypeError(
+			f"invalid key type for {key!r} "
+			"given to EventContainer.__getitem__",
+		)
 
 	def getTimeZoneStr(self):
 		if self.timeZoneEnable and self.timeZone:
@@ -3753,7 +3794,7 @@ class EventContainer(BsonHistEventObj):
 			# self.idList.remove(eid)
 			# self.save()  # FIXME
 			raise FileNotFoundError(
-				f"error while loading event file {eventFile!r}: " +
+				f"error while loading event file {eventFile!r}: "
 				f"file not found. {eid=}, container={self!r}",
 			)
 		with self.fs.open(eventFile) as fp:
@@ -3777,7 +3818,7 @@ class EventContainer(BsonHistEventObj):
 		for eid in self.idList:
 			try:
 				event = self.getEvent(eid)
-			except Exception as e:
+			except Exception:
 				log.exception("")
 			else:
 				yield event
@@ -3790,7 +3831,7 @@ class EventContainer(BsonHistEventObj):
 			raise ValueError(f"{self} already contains {event}")
 		if event.parent not in (None, self):
 			raise ValueError(
-				f"{event} already has a parent={event.parent}" +
+				f"{event} already has a parent={event.parent}"
 				f", trying to add to {self}",
 			)
 
@@ -3850,7 +3891,7 @@ class EventContainer(BsonHistEventObj):
 			try:
 				self.calType = calTypes.names.index(calType)
 			except ValueError:
-				raise ValueError(f"Invalid calType: '{calType}'")
+				raise ValueError(f"Invalid calType: '{calType}'") from None
 		###
 		iconRelativeToAbsInObj(self)
 
@@ -3873,7 +3914,7 @@ class EventContainer(BsonHistEventObj):
 			("time_first", _("First Occurrence Time"), False),
 		]
 
-	def getSortByValue(self, event: "Event", attr: str) -> Any:
+	def getSortByValue(self, event: "Event", attr: str) -> "Any":
 		if attr in ("time_last", "time_first"):
 			if event.isSingleOccur:
 				epoch = event.getStartEpoch()
@@ -3886,9 +3927,8 @@ class EventContainer(BsonHistEventObj):
 					last = self.occur.getFirstOfEvent(event.id)
 				if last:
 					return last[0]
-				else:
-					log.info(f"no time_last returned for event {event.id}")
-					return smallest
+				log.info(f"no time_last returned for event {event.id}")
+				return smallest
 		return getattr(event, attr, smallest)
 
 	def sort(
@@ -3897,7 +3937,7 @@ class EventContainer(BsonHistEventObj):
 		reverse: bool = False,
 	) -> None:
 		isTypeDep = True
-		for name, desc, dep in self.getSortBys()[1]:
+		for name, _desc, dep in self.getSortBys()[1]:
 			if name == attr:
 				isTypeDep = dep
 				break
@@ -4031,7 +4071,7 @@ class EventGroup(EventContainer):
 			yield fpath
 
 	@classmethod
-	def getSubclass(cls, _type: str) -> "Class":
+	def getSubclass(cls, _type: str) -> "type[EventGroup]":
 		return classes.group.byName[_type]
 
 	def getTimeZoneObj(self) -> "datetime.tzinfo":
@@ -4058,29 +4098,27 @@ class EventGroup(EventContainer):
 		# 	return self.getRule(key)
 		if isinstance(key, int):  # eventId
 			return self.getEvent(key)
-		else:
-			raise TypeError(
-				f"invalid key {key!r} given " +
-				"to EventGroup.__getitem__",
-			)
+		raise TypeError(
+			f"invalid key {key!r} given "
+			"to EventGroup.__getitem__",
+		)
 
 	def __setitem__(self, key: int, value: "Event") -> None:
 		# if isinstance(key, basestring):  # ruleName
 		# 	return self.setRule(key, value)
 		if isinstance(key, int):  # eventId
 			raise TypeError("can not assign event to group")  # FIXME
-		else:
-			raise TypeError(
-				f"invalid key {key!r} given " +
-				"to EventGroup.__setitem__",
-			)
+		raise TypeError(
+			f"invalid key {key!r} given "
+			"to EventGroup.__setitem__",
+		)
 
 	def __delitem__(self, key: int) -> None:
 		if isinstance(key, int):  # eventId
 			self.remove(self.getEvent(key))
 		else:
 			raise TypeError(
-				f"invalid key {key!r} given " +
+				f"invalid key {key!r} given "
 				"to EventGroup.__delitem__",
 			)
 
@@ -4210,7 +4248,6 @@ class EventGroup(EventContainer):
 		sets default values that depends on group type
 		not common parameters, like those are set in __init__.
 		"""
-		pass
 
 	def __bool__(self) -> bool:
 		return self.enable  # FIXME
@@ -4230,7 +4267,7 @@ class EventGroup(EventContainer):
 	def setColor(self, color: "tuple[int, int, int]") -> None:
 		self.color = color
 
-	def getData(self) -> dict[str, Any]:
+	def getData(self) -> "dict[str, Any]":
 		data = EventContainer.getData(self)
 		data["type"] = self.name
 		for attr in (
@@ -4242,7 +4279,7 @@ class EventGroup(EventContainer):
 				data[attr] = sorted(data[attr].items())
 		return data
 
-	def setData(self, data: dict[str, Any]) -> None:
+	def setData(self, data: "dict[str, Any]") -> None:
 		eventCacheSize = self.eventCacheSize
 		if "showInCal" in data:  # for compatibility
 			data["showInDCal"] = data["showInWCal"] = \
@@ -4421,7 +4458,7 @@ class EventGroup(EventContainer):
 
 	def updateOccurrenceEvent(self, event: "Event") -> None:
 		log.debug(
-			f"updateOccurrenceEvent: id={self.id}" +
+			f"updateOccurrenceEvent: id={self.id}"
 			f" title={self.title} eid={event.id}",
 		)
 		eid = event.id
@@ -4447,7 +4484,7 @@ class EventGroup(EventContainer):
 
 	def updateOccurrenceLog(self, stm0: int) -> None:
 		log.debug(
-			f"updateOccurrence, id={self.id}, title='{self.title}', " +
+			f"updateOccurrence, id={self.id}, title='{self.title}', "
 			f"count={self.occurCount}, time={now() - stm0}",
 		)
 
@@ -4467,7 +4504,7 @@ class EventGroup(EventContainer):
 
 	def _exportToIcsFpEvent(
 		self,
-		fp: "file",
+		fp: "io.TextIOBase",
 		event: "Event",
 		currentTimeStamp: str,
 	) -> None:
@@ -4533,12 +4570,12 @@ class EventGroup(EventContainer):
 		else:
 			raise RuntimeError
 
-	def exportToIcsFp(self, fp: "file") -> None:
+	def exportToIcsFp(self, fp: "io.TextIOBase") -> None:
 		currentTimeStamp = ics.getIcsTimeByEpoch(now())
 		for event in self:
 			self._exportToIcsFpEvent(fp, event, currentTimeStamp)
 
-	def exportData(self) -> dict[str, Any]:
+	def exportData(self) -> "dict[str, Any]":
 		data = self.getData()
 		for attr in self.importExportExclude:
 			del data[attr]
@@ -4581,7 +4618,7 @@ class EventGroup(EventContainer):
 
 	def importData(
 		self,
-		data: dict[str, Any],
+		data: "dict[str, Any]",
 		importMode=IMPORT_MODE_APPEND,
 	) -> EventGroupsImportResult:
 		"""The caller must call group.save() after this."""
@@ -4649,7 +4686,7 @@ class EventGroup(EventContainer):
 		else:
 			del conds["time_to"]
 
-		for _, _, eid, _ in self.occur.search(time_from, time_to):
+		for _epoch0, _epoch1, eid, _odt in self.occur.search(time_from, time_to):
 			yield eid
 
 	def search(self, conds):
@@ -4717,11 +4754,11 @@ class TaskList(EventGroup):
 	)
 	sortByDefault = "start"
 
-	def getSortByValue(self, event: "Event", attr: str) -> Any:
+	def getSortByValue(self, event: "Event", attr: str) -> "Any":
 		if event.name in self.acceptsEventTypes:
 			if attr == "start":
 				return event.getStartEpoch()
-			elif attr == "end":
+			if attr == "end":
 				return event.getEndEpoch()
 		return EventGroup.getSortByValue(self, event, attr)
 
@@ -4734,12 +4771,12 @@ class TaskList(EventGroup):
 		if other.name == self.name:
 			self.defaultDuration = other.defaultDuration[:]
 
-	def getData(self) -> dict[str, Any]:
+	def getData(self) -> "dict[str, Any]":
 		data = EventGroup.getData(self)
 		data["defaultDuration"] = durationEncode(*self.defaultDuration)
 		return data
 
-	def setData(self, data: dict[str, Any]) -> None:
+	def setData(self, data: "dict[str, Any]") -> None:
 		EventGroup.setData(self, data)
 		if "defaultDuration" in data:
 			self.defaultDuration = durationDecode(data["defaultDuration"])
@@ -4762,7 +4799,7 @@ class NoteBook(EventGroup):
 	)
 	sortByDefault = "date"
 
-	def getSortByValue(self, event: "Event", attr: str) -> Any:
+	def getSortByValue(self, event: "Event", attr: str) -> "Any":
 		if event.name in self.acceptsEventTypes:
 			if attr == "date":
 				return event.getJd()
@@ -4823,15 +4860,15 @@ class UniversityTerm(EventGroup):
 		"courses",
 	)
 	noCourseError = _(
-		"Edit University Term and define some Courses " +
+		"Edit University Term and define some Courses "
 		"before you add a Class/Exam",
 	)
 
-	def getSortByValue(self, event: "Event", attr: str) -> Any:
+	def getSortByValue(self, event: "Event", attr: str) -> "Any":
 		if event.name in self.acceptsEventTypes:
 			if attr == "course":
 				return event.courseId
-			elif attr == "time":
+			if attr == "time":
 				if event.name == "universityClass":
 					weekDay, ok = event["weekDay"]
 					if not ok:
@@ -4844,7 +4881,7 @@ class UniversityTerm(EventGroup):
 						(wd - core.firstWeekDay) % 7,
 						dayTimeRange.getHourRange(),
 					)
-				elif event.name == "universityExam":
+				if event.name == "universityExam":
 					date, ok = event["date"]
 					if not ok:
 						raise RuntimeError("no date rule")
@@ -5017,7 +5054,7 @@ class UniversityTerm(EventGroup):
 			self.classesEndDate = other.classesEndDate[:]
 			self.classTimeBounds = other.classTimeBounds[:]
 
-	def getData(self) -> dict[str, Any]:
+	def getData(self) -> "dict[str, Any]":
 		data = EventGroup.getData(self)
 		data.update({
 			"classTimeBounds": [hmEncode(hm) for hm in self.classTimeBounds],
@@ -5025,7 +5062,7 @@ class UniversityTerm(EventGroup):
 		})
 		return data
 
-	def setData(self, data: dict[str, Any]) -> None:
+	def setData(self, data: "dict[str, Any]") -> None:
 		EventGroup.setData(self, data)
 		# self.setCourses(data["courses"])
 		if "classesEndDate" in data:
@@ -5062,11 +5099,11 @@ class LifetimeGroup(EventGroup):
 		"showSeparateYmdInputs",
 	)
 
-	def getSortByValue(self, event: "Event", attr: str) -> Any:
+	def getSortByValue(self, event: "Event", attr: str) -> "Any":
 		if event.name in self.acceptsEventTypes:
 			if attr == "start":
 				return event.getStartJd()
-			elif attr == "end":
+			if attr == "end":
 				return event.getEndJd()
 		return EventGroup.getSortByValue(self, event, attr)
 
@@ -5074,7 +5111,7 @@ class LifetimeGroup(EventGroup):
 		self.showSeparateYmdInputs = False
 		EventGroup.__init__(self, _id)
 
-	def setData(self, data: dict[str, Any]) -> None:
+	def setData(self, data: "dict[str, Any]") -> None:
 		if "showSeperatedYmdInputs" in data:
 			# misspell in < 3.1.x
 			data["showSeparateYmdInputs"] = data["showSeperatedYmdInputs"]
@@ -5103,11 +5140,11 @@ class LargeScaleGroup(EventGroup):
 	)
 	sortByDefault = "start"
 
-	def getSortByValue(self, event: "Event", attr: str) -> Any:
+	def getSortByValue(self, event: "Event", attr: str) -> "Any":
 		if event.name in self.acceptsEventTypes:
 			if attr == "start":
 				return event.start * event.scale
-			elif attr == "end":
+			if attr == "end":
 				return event.getEnd() * event.scale
 		return EventGroup.getSortByValue(self, event, attr)
 
@@ -5129,12 +5166,12 @@ class LargeScaleGroup(EventGroup):
 		if other.name == self.name:
 			self.scale = other.scale
 
-	def getData(self) -> dict[str, Any]:
+	def getData(self) -> "dict[str, Any]":
 		data = EventGroup.getData(self)
 		data["scale"] = self.scale
 		return data
 
-	def setData(self, data: dict[str, Any]) -> None:
+	def setData(self, data: "dict[str, Any]") -> None:
 		EventGroup.setData(self, data)
 		with suppress(KeyError):
 			self.scale = data["scale"]
@@ -5173,7 +5210,7 @@ class VcsEpochBaseEvent(Event):
 
 	# FIXME
 	@classmethod
-	def load(cls, fs: FileSystem, *args) -> "Class":
+	def load(cls, fs: FileSystem, *args) -> "type":
 		pass
 
 	def __bool__(self) -> bool:
@@ -5249,8 +5286,8 @@ class VcsBaseEventGroup(EventGroup):
 
 	def __str__(self) -> str:
 		return (
-			f"{self.__class__.__name__}(_id={self.id!r}, " +
-			f"title='{self.title}', vcsType={self.vcsType!r}, " +
+			f"{self.__class__.__name__}(_id={self.id!r}, "
+			f"title='{self.title}', vcsType={self.vcsType!r}, "
 			f"vcsDir={self.vcsDir!r}, vcsBranch={self.vcsBranch!r})"
 		)
 
@@ -5272,7 +5309,7 @@ class VcsBaseEventGroup(EventGroup):
 		# len(commit_id)==40 for git
 		return self.getEvent(key)
 
-	def getVcsModule(self) -> Any:
+	def getVcsModule(self) -> "Any":
 		name = toStr(self.vcsType)
 		# if not isinstance(name, str):
 		# 	raise TypeError(f"getVcsModule({name!r}): bad type {type(name)}")
@@ -5299,7 +5336,7 @@ class VcsBaseEventGroup(EventGroup):
 		self.updateVcsModuleObj()
 		EventGroup.afterModify(self)
 
-	def setData(self, data: dict[str, Any]) -> None:
+	def setData(self, data: "dict[str, Any]") -> None:
 		EventGroup.setData(self, data)
 		self.updateVcsModuleObj()
 
@@ -5388,7 +5425,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 			)
 		except Exception:
 			log.error(
-				f"Error while fetching commit list of {self.vcsType} " +
+				f"Error while fetching commit list of {self.vcsType} "
 				f"repository in {self.vcsDir}",
 			)
 			log.exception("")
@@ -5463,7 +5500,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 			# TOO SLOW, FIXME
 		except Exception:
 			log.error(
-				f"Error while fetching tag list of {self.vcsType} " +
+				f"Error while fetching tag list of {self.vcsType} "
 				f"repository in {self.vcsDir}",
 			)
 			log.exception("")
@@ -5621,7 +5658,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 		try:
 			commitsCount, stat = self.statByJd[jd]
 		except KeyError:
-			raise ValueError(f"No commit for jd {jd}")
+			raise ValueError(f"No commit for jd {jd}") from None
 		mod = self.getVcsModule()
 		if mod is None:
 			log.info(f"VCS module {self.vcsType!r} not found")
@@ -5658,7 +5695,7 @@ class JsonObjectsHolder(JsonEventObj):
 		self.byId = {}
 		self.idList = []
 
-	def __iter__(self) -> Iterator[Any]:
+	def __iter__(self) -> "Iterator[Any]":
 		for _id in self.idList:
 			yield self.byId[_id]
 
@@ -5668,32 +5705,32 @@ class JsonObjectsHolder(JsonEventObj):
 	def __bool__(self) -> bool:
 		return bool(self.idList)
 
-	def index(self, _id: int) -> Any:
+	def index(self, _id: int) -> "Any":
 		return self.idList.index(_id)
 		# or get object instead of obj_id? FIXME
 
-	def __getitem__(self, _id: int) -> Any:
+	def __getitem__(self, _id: int) -> "Any":
 		return self.byId.__getitem__(_id)
 
-	def byIndex(self, index: int) -> Any:
+	def byIndex(self, index: int) -> "Any":
 		return self.byId[self.idList[index]]
 
-	def __setitem__(self, _id: int, obj: Any) -> None:
+	def __setitem__(self, _id: int, obj: "Any") -> None:
 		return self.byId.__setitem__(_id, obj)
 
-	def insert(self, index: int, obj: Any) -> None:
+	def insert(self, index: int, obj: "Any") -> None:
 		if obj.id in self.idList:
 			raise ValueError(f"{self} already contains id={obj.id}, {obj=}")
 		self.byId[obj.id] = obj
 		self.idList.insert(index, obj.id)
 
-	def append(self, obj: Any) -> None:
+	def append(self, obj: "Any") -> None:
 		if obj.id in self.idList:
 			raise ValueError(f"{self} already contains id={obj.id}, {obj=}")
 		self.byId[obj.id] = obj
 		self.idList.append(obj.id)
 
-	def delete(self, obj: Any) -> None:
+	def delete(self, obj: "Any") -> None:
 		if obj.id not in self.idList:
 			raise ValueError(f"{self} does not contains id={obj.id}, {obj=}")
 		try:
@@ -5712,13 +5749,13 @@ class JsonObjectsHolder(JsonEventObj):
 		if obj.id in self.idByUuid:
 			del self.idByUuid[obj.id]
 
-	def pop(self, index: int) -> Any:
+	def pop(self, index: int) -> "Any":
 		return self.byId.pop(self.idList.pop(index))
 
-	def moveUp(self, index: int) -> Any:
+	def moveUp(self, index: int) -> "Any":
 		return self.idList.insert(index - 1, self.idList.pop(index))
 
-	def moveDown(self, index: int) -> Any:
+	def moveDown(self, index: int) -> "Any":
 		return self.idList.insert(index + 1, self.idList.pop(index))
 
 	def setData(self, data: list[int]) -> None:
@@ -5767,7 +5804,7 @@ class EventGroupsHolder(JsonObjectsHolder):
 		obj.parent = None
 		JsonObjectsHolder.delete(self, obj)
 
-	def setData(self, data: list[Any]) -> None:
+	def setData(self, data: "list[Any]") -> None:
 		self.clear()
 		if data:
 			JsonObjectsHolder.setData(self, data)
@@ -5821,7 +5858,6 @@ class EventGroupsHolder(JsonObjectsHolder):
 		group: EventGroup,
 		newGroupType: str,
 	) -> EventGroup:
-		groupIndex = self.index(group.id)
 		newGroup = group.deepConvertTo(newGroupType)
 		newGroup.setId(group.id)
 		newGroup.afterModify()
@@ -5830,7 +5866,7 @@ class EventGroupsHolder(JsonObjectsHolder):
 		return newGroup
 		# and then never use old `group` object
 
-	def exportData(self, gidList: list[int]) -> dict[str, Any]:
+	def exportData(self, gidList: list[int]) -> "dict[str, Any]":
 		data = OrderedDict([
 			("info", OrderedDict([
 				("appName", core.APP_NAME),
@@ -5846,7 +5882,7 @@ class EventGroupsHolder(JsonObjectsHolder):
 		self,
 		idsList: list[tuple[int, int]],
 		groupTitle: str = "",
-	) -> dict[str, Any]:
+	) -> "dict[str, Any]":
 		eventsData = []
 		for groupId, eventId in idsList:
 			event = self.byId[groupId][eventId]
@@ -5876,8 +5912,7 @@ class EventGroupsHolder(JsonObjectsHolder):
 			]),
 		])
 
-	def importData(self, data: dict[str, Any]) -> EventGroupsImportResult:
-		newGroups: "list[EventGroup]" = []
+	def importData(self, data: "dict[str, Any]") -> "EventGroupsImportResult":
 		res = EventGroupsImportResult()
 		for gdata in data["groups"]:
 			guuid = gdata.get("uuid")
@@ -5958,7 +5993,7 @@ class EventGroupsHolder(JsonObjectsHolder):
 
 		# newEventHashList = []
 		eventTypeSet = set(classes.event.names)
-		for _hash, fpath in iterObjectFiles(fs):
+		for _hash, _fpath in iterObjectFiles(fs):
 			if _hash in eventHashSet:
 				continue
 			data = loadBsonObject(_hash, fs)
@@ -5990,7 +6025,7 @@ class EventAccountsHolder(JsonObjectsHolder):
 		self.parent = None
 		self.idByUuid = {}
 
-	def loadClass(self, name: str) -> "Class":
+	def loadClass(self, name: str) -> "type":
 		cls = classes.account.byName.get(name)
 		if cls is not None:
 			return cls
@@ -6007,11 +6042,11 @@ class EventAccountsHolder(JsonObjectsHolder):
 		)
 		return None
 
-	def loadData(self, _id: int) -> dict[str, Any]:
+	def loadData(self, _id: int) -> "dict[str, Any]":
 		objFile = join(accountsDir, f"{_id}.json")
 		if not self.fs.isfile(objFile):
 			log.error(
-				f"error while loading account file {objFile!r}" +
+				f"error while loading account file {objFile!r}"
 				": file not found",
 			)
 			return
@@ -6043,7 +6078,6 @@ class EventAccountsHolder(JsonObjectsHolder):
 
 	def replaceDummyObj(self, obj: "DummyAccount") -> "Account":
 		_id = obj.id
-		index = self.idList.index(_id)
 		obj = self.getLoadedObj(obj)
 		self.byId[_id] = obj
 		return obj
@@ -6261,7 +6295,7 @@ def getDayOccurrenceData(curJd, groups, tfmt="HM$"):
 		# log.debug("\nupdateData: checking event", event.summary)
 		gid = group.id
 		color = group.color
-		for epoch0, epoch1, eid, odt in group.occur.search(
+		for epoch0, epoch1, eid, _odt in group.occur.search(
 			getEpochFromJd(curJd),
 			getEpochFromJd(curJd + 1),
 		):

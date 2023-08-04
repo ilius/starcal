@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -30,6 +29,20 @@ from scal3.locale_man import (
 	textNumDecode,
 )
 
+__all__ = [
+	"Field",
+	"NumField",
+	"IntField",
+	"FloatField",
+	"YearField",
+	"MonthField",
+	"DayField",
+	"HourField",
+	"Z60Field",
+	"SingleCharField",
+	"StrConField",
+	"ContainerField",
+]
 
 class Field:
 	myKeys = set()
@@ -45,7 +58,6 @@ class Field:
 
 	def plus(self, p):
 		"""P is usually 1, -1, 10, -10."""
-		pass
 
 	def setText(self):
 		pass
@@ -201,8 +213,8 @@ class SingleCharField(Field):
 	def getValue(self):
 		return self.value
 
-	def setText(text):
-		return self.setValue(text)
+	def setText(self, text: str) -> None:
+		self.setValue(text)
 
 	def getText(self):
 		return self.value
@@ -279,8 +291,6 @@ class ContainerField(Field):
 			return self
 		fieldIndex = 0
 		i = 0
-		n = len(text)
-		fn = len(self)
 		while 0 <= (i2 := text.find(self.sep, i + 1)) < pos:
 			i = i2
 			fieldIndex += 1
