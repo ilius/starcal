@@ -36,5 +36,5 @@ class DummyEventContainer:
 				yield group[eventId]
 
 	def iterGroups(self):
-		for groupId, eventIdList in self.idsDict.items():
+		for groupId in self.idsDict:
 			yield ui.eventGroups[groupId]

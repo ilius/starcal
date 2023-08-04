@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -24,7 +23,8 @@ log = logger.get()
 
 
 from scal3.interval_utils import ab_overlaps
-from scal3.time_utils import *
+
+#from scal3.time_utils import
 
 # maxLevel = 1
 # minLevel = 1
@@ -85,7 +85,7 @@ class Node:
 	def getChild(self, tm):
 		if not self.s0 <= tm <= self.s1:
 			raise RuntimeError(
-				f"Node.getChild: Out of scope: level={self.level}, " +
+				f"Node.getChild: Out of scope: level={self.level}, "
 				f"offset={self.offset}, rightOri={self.rightOri}",
 			)
 		dt = self.base ** (self.level - 1)
@@ -145,7 +145,7 @@ class TimeLineTree:
 			from time import localtime, strftime
 			f = "%F, %T"
 			log.info(
-				f"{self.__class__.__name__}.add: " +
+				f"{self.__class__.__name__}.add: "
 				f"{strftime(f, localtime(t0))}\t{strftime(f, localtime(t1))}",
 			)
 		if self.offset <= t0:

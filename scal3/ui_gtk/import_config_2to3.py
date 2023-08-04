@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 ##
 ##	Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -27,10 +26,15 @@ import os
 import shutil
 from os.path import isfile, join
 
-from scal3.import_config_2to3 import *
+from scal3.import_config_2to3 import getOldVersion, importConfigIter
+from scal3.json_utils import dataToPrettyJson
 from scal3.locale_man import langDefault, langDict
-from scal3.path import *
-from scal3.ui_gtk import *
+from scal3.path import (
+	confDir,
+	pixDir,
+	sourceDir,
+)
+from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.utils import dialog_add_button
 
 _ = str

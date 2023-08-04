@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 __all__ = [
 	"rules",
 	"notifiers",
@@ -67,7 +66,7 @@ def setActionFuncs(obj):
 		log.exception("")
 		return
 	else:
-		for actionName, actionFuncName in cls.actions:
+		for _actionName, actionFuncName in cls.actions:
 			actionFunc = getattr(module, actionFuncName, None)
 			if actionFunc is not None:
 				setattr(cls, actionFuncName, actionFunc)
