@@ -20,7 +20,6 @@ from scal3 import logger
 
 log = logger.get()
 
-from typing import Optional
 
 from scal3.json_utils import dataToCompactJson
 from scal3.locale_man import tr as _
@@ -50,7 +49,7 @@ class LogLevelComboBox(gtk.ComboBox):
 		for num, name in self.levels:
 			model.append([num, name])
 
-	def get_value(self) -> Optional[int]:
+	def get_value(self) -> "int | None":
 		index = self.get_active()
 		if index is None:
 			return None

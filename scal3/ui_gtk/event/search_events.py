@@ -458,8 +458,8 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 
 	def searchAndExportToJSON(
 		self,
-		groupIds: "List[int]",
-		conds: "Dict[str, Any]",
+		groupIds: "list[int]",
+		conds: "dict[str, Any]",
 		fpath: str,
 		# TODO: compact: bool,
 	):

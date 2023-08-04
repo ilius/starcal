@@ -368,7 +368,7 @@ class OccurSet(SObj):
 class JdOccurSet(OccurSet):
 	name = "jdSet"
 
-	def __init__(self, jdSet: Optional[set[int]] = None) -> None:
+	def __init__(self, jdSet: "set[int] | None" = None) -> None:
 		OccurSet.__init__(self)
 		if not jdSet:
 			jdSet = []
@@ -442,7 +442,7 @@ class JdOccurSet(OccurSet):
 class IntervalOccurSet(OccurSet):
 	name = "timeRange"
 
-	def __init__(self, rangeList: Optional[list[tuple[int, int]]] = None) -> str:
+	def __init__(self, rangeList: "list[tuple[int, int]] | None" = None) -> str:
 		OccurSet.__init__(self)
 		if not rangeList:
 			rangeList = []
@@ -688,7 +688,7 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 				return True
 		return False
 
-	def getValuesPlain(self) -> list[Union[int, tuple[int, int]]]:
+	def getValuesPlain(self) -> "list[int | tuple[int, int]]":
 		ls = []
 		for item in self.values:
 			if isinstance(item, (tuple, list)):
@@ -697,7 +697,7 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 				ls.append(item)
 		return ls
 
-	def setValuesPlain(self, values: list[Union[int, tuple[int, int]]]) -> None:
+	def setValuesPlain(self, values: "list[int | tuple[int, int]]") -> None:
 		self.values = simplifyNumList(values)
 
 	def changeCalType(self, calType: int) -> bool:
@@ -723,7 +723,7 @@ class YearEventRule(MultiValueAllDayEventRule):
 	def newCalTypeValues(
 		self,
 		newCalType: int,
-	) -> list[Union[int, tuple[int, int]]]:
+	) -> "list[int | tuple[int, int]]":
 		def yearConv(year):
 			return convert(year, 7, 1, curCalType, newCalType)[0]
 
@@ -881,7 +881,7 @@ class WeekDayEventRule(AllDayEventRule):
 	def getData(self) -> list[int]:
 		return self.weekDayList
 
-	def setData(self, data: Union[int, list[int]]) -> None:
+	def setData(self, data: "int | list[int]") -> None:
 		if isinstance(data, int):
 			self.weekDayList = [data]
 		elif isinstance(data, (tuple, list)):
@@ -1137,7 +1137,7 @@ class DateAndTimeEventRule(DateEventRule):
 			"time": timeEncode(self.time),
 		}
 
-	def setData(self, arg: Union[dict[str, str], str]) -> None:
+	def setData(self, arg: "dict[str, str] | str") -> None:
 		if isinstance(arg, dict):
 			self.date = dateDecode(arg["date"])
 			if "time" in arg:
@@ -1689,7 +1689,7 @@ class ExDatesEventRule(EventRule):
 
 	def setData(
 		self,
-		datesConf: Union[str, list[Union[str, tuple, list]]],
+		datesConf: "str | list[str | tuple | list]",
 	) -> None:
 		dates = []
 		if isinstance(datesConf, str):
@@ -1854,7 +1854,7 @@ class RuleContainer:
 	def getRule(self, key: str) -> "EventRule":
 		return self.rulesOd.__getitem__(key)
 
-	def getRuleIfExists(self, key: str) -> "Optional[EventRule]":
+	def getRuleIfExists(self, key: str) -> "EventRule | None":
 		return self.rulesOd.get(key)
 
 	def setRule(self, key: str, value: "EventRule"):
@@ -1899,7 +1899,7 @@ class RuleContainer:
 		self.rulesOd.__delitem__(key)
 
 	# returns (rule, found) where found is boolean
-	def __getitem__(self, key: str) -> tuple[Optional["EventRule"], bool]:
+	def __getitem__(self, key: str) -> "tuple[EventRule | None, bool]":
 		rule = self.getRuleIfExists(key)
 		if rule is None:
 			return None, False
@@ -1942,8 +1942,8 @@ class RuleContainer:
 
 	def checkRulesDependencies(
 		self,
-		newRule: "Optional[EventRule]" = None,
-		disabledRule: "Optional[EventRule]" = None,
+		newRule: "EventRule | None" = None,
+		disabledRule: "EventRule | None" = None,
 		autoCheck: bool = True,
 	) -> tuple[bool, str]:
 		rulesOd = self.rulesOd.copy()
@@ -4091,7 +4091,7 @@ class EventGroup(EventContainer):
 	def __str__(self) -> str:
 		return f"{self.__class__.__name__}(_id={self.id!r}, title='{self.title}')"
 
-	def __init__(self, _id: "Optional[int]" = None) -> None:
+	def __init__(self, _id: "int | None" = None) -> None:
 		EventContainer.__init__(self, title=self.desc)
 		if _id is None:
 			self.id = None
@@ -4190,13 +4190,13 @@ class EventGroup(EventContainer):
 		value, unit = self.remoteSyncDuration
 		return value * unit
 
-	def afterSync(self, startEpoch: "Optional[int]" = None) -> None:
+	def afterSync(self, startEpoch: "int | None" = None) -> None:
 		endEpoch = now()
 		if startEpoch is None:
 			startEpoch = endEpoch
 		self.remoteSyncData[self.remoteIds] = (startEpoch, endEpoch)
 
-	def getLastSync(self) -> "Optional[int]":
+	def getLastSync(self) -> "int | None":
 		"""Return a tuple (startEpoch, endEpoch) or None."""
 		if self.remoteIds:
 			with suppress(KeyError):
@@ -4213,7 +4213,7 @@ class EventGroup(EventContainer):
 	def __bool__(self) -> bool:
 		return self.enable  # FIXME
 
-	def setId(self, _id: "Optional[int]" = None) -> None:
+	def setId(self, _id: "int | None" = None) -> None:
 		if _id is None or _id < 0:
 			_id = lastIds.group + 1  # FIXME
 			lastIds.group = _id
@@ -4723,7 +4723,7 @@ class TaskList(EventGroup):
 				return event.getEndEpoch()
 		return EventGroup.getSortByValue(self, event, attr)
 
-	def __init__(self, _id: "Optional[int]" = None) -> None:
+	def __init__(self, _id: "int | None" = None) -> None:
 		EventGroup.__init__(self, _id)
 		self.defaultDuration = (0, 1)  # (value, unit)
 
@@ -4781,7 +4781,7 @@ class YearlyGroup(EventGroup):
 		"showDate",
 	)
 
-	def __init__(self, _id: "Optional[int]" = None) -> None:
+	def __init__(self, _id: "int | None" = None) -> None:
 		EventGroup.__init__(self, _id)
 		self.showDate = True
 
@@ -4852,7 +4852,7 @@ class UniversityTerm(EventGroup):
 					return date.getJd(), dayTimeRange.getHourRange()
 		return EventGroup.getSortByValue(self, event, attr)
 
-	def __init__(self, _id: "Optional[int]" = None) -> None:
+	def __init__(self, _id: "int | None" = None) -> None:
 		EventGroup.__init__(self, _id)
 		self.classesEndDate = getSysDate(self.calType)  # FIXME
 		self.setCourses([])  # list of (courseId, courseName, courseUnits)
@@ -5068,7 +5068,7 @@ class LifetimeGroup(EventGroup):
 				return event.getEndJd()
 		return EventGroup.getSortByValue(self, event, attr)
 
-	def __init__(self, _id: Optional[int] = None) -> None:
+	def __init__(self, _id: "int | None" = None) -> None:
 		self.showSeparateYmdInputs = False
 		EventGroup.__init__(self, _id)
 
@@ -5109,7 +5109,7 @@ class LargeScaleGroup(EventGroup):
 				return event.getEnd() * event.scale
 		return EventGroup.getSortByValue(self, event, attr)
 
-	def __init__(self, _id: Optional[int] = None) -> None:
+	def __init__(self, _id: "int | None" = None) -> None:
 		self.scale = 1  # 1, 1000, 1000**2, 1000**3
 		EventGroup.__init__(self, _id)
 
@@ -5239,7 +5239,7 @@ class VcsBaseEventGroup(EventGroup):
 		"vcsBranch",
 	)
 
-	def __init__(self, _id: Optional[str] = None) -> None:
+	def __init__(self, _id: "str | None" = None) -> None:
 		self.vcsType = "git"
 		self.vcsDir = ""
 		self.vcsBranch = "main"
@@ -5310,7 +5310,7 @@ class VcsEpochBaseEventGroup(VcsBaseEventGroup):
 		"taskList",
 	)
 
-	def __init__(self, _id: Optional[str] = None) -> None:
+	def __init__(self, _id: "str | None" = None) -> None:
 		self.showSeconds = True
 		self.vcsIds = []
 		VcsBaseEventGroup.__init__(self, _id)
@@ -5362,7 +5362,7 @@ class VcsCommitEventGroup(VcsEpochBaseEventGroup):
 	params = EventGroup.params + myParams
 	paramsOrder = EventGroup.paramsOrder + myParams
 
-	def __init__(self, _id: Optional[str] = None) -> None:
+	def __init__(self, _id: "str | None" = None) -> None:
 		VcsEpochBaseEventGroup.__init__(self, _id)
 		self.showAuthor = True
 		self.showShortHash = True
@@ -5443,7 +5443,7 @@ class VcsTagEventGroup(VcsEpochBaseEventGroup):
 	params = EventGroup.params + myParams
 	paramsOrder = EventGroup.paramsOrder + myParams
 
-	def __init__(self, _id: Optional[str] = None) -> None:
+	def __init__(self, _id: "str | None" = None) -> None:
 		VcsEpochBaseEventGroup.__init__(self, _id)
 		self.showStat = True
 
@@ -5552,7 +5552,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 	params = EventGroup.params + myParams
 	paramsOrder = EventGroup.paramsOrder + myParams
 
-	def __init__(self, _id: Optional[str] = None) -> None:
+	def __init__(self, _id: "str | None" = None) -> None:
 		VcsBaseEventGroup.__init__(self, _id)
 		self.statByJd = {}
 
@@ -5581,7 +5581,7 @@ class VcsDailyStatEventGroup(VcsBaseEventGroup):
 		startJd = max(self.startJd, self.vcsMinJd)
 		endJd = min(self.endJd, self.vcsMaxJd)
 		###
-		commitsByJd = {}  # type: Dict[int, List[str]]
+		commitsByJd: "dict[int, list[str]]" = {}
 		for epoch, commitId in mod.getCommitList(
 			self,
 			startJd=startJd,
@@ -5648,7 +5648,7 @@ class JsonObjectsHolder(JsonEventObj):
 	# Only use to keep groups and accounts, but not events
 	skipLoadNoFile = True
 
-	def __init__(self, _id: Optional[int] = None) -> None:
+	def __init__(self, _id: "int | None" = None) -> None:
 		self.fs = None
 		self.clear()
 
@@ -5749,7 +5749,7 @@ class EventGroupsHolder(JsonObjectsHolder):
 	file = join("event", "group_list.json")
 	childName = "group"
 
-	def __init__(self, _id: Optional[int] = None) -> None:
+	def __init__(self, _id: "int | None" = None) -> None:
 		JsonObjectsHolder.__init__(self)
 		self.id = _id
 		self.parent = None
@@ -5875,7 +5875,7 @@ class EventGroupsHolder(JsonObjectsHolder):
 		])
 
 	def importData(self, data: dict[str, Any]) -> EventGroupsImportResult:
-		newGroups = []  # type: List[EventGroup]
+		newGroups: "list[EventGroup]" = []
 		res = EventGroupsImportResult()
 		for gdata in data["groups"]:
 			guuid = gdata.get("uuid")
@@ -5912,7 +5912,7 @@ class EventGroupsHolder(JsonObjectsHolder):
 		fp.write("END:VCALENDAR\n")
 		fp.close()
 
-	def checkForOrphans(self) -> Optional[EventGroup]:
+	def checkForOrphans(self) -> "EventGroup | None":
 		fs = self.fs
 		newGroup = EventGroup()
 		newGroup.fs = fs
@@ -5982,7 +5982,7 @@ class EventAccountsHolder(JsonObjectsHolder):
 	file = join("event", "account_list.json")
 	childName = "account"
 
-	def __init__(self, _id: Optional[int] = None) -> None:
+	def __init__(self, _id: "int | None" = None) -> None:
 		JsonObjectsHolder.__init__(self)
 		self.id = _id
 		self.parent = None
