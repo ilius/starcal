@@ -1,8 +1,6 @@
 
 from typing import Any, Callable
 
-from scal3.ui_gtk import *
-
 
 def keeperCallable(obj: Any) -> Callable[[], Any]:
 	def res():
