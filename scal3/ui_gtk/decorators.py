@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from scal3 import logger
+
 log = logger.get()
 
 from gi.repository import GObject

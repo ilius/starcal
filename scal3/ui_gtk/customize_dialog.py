@@ -17,31 +17,27 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from typing import Tuple
 
-from scal3.path import *
-from scal3 import core
-from scal3.locale_man import tr as _
-from scal3.locale_man import rtl
 from scal3 import ui
-
-from scal3.ui_gtk import gtk_ud as ud
+from scal3.locale_man import tr as _
+from scal3.path import *
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import (
-	set_tooltip,
-	dialog_add_button,
-	showInfo,
-	pixbufFromFile,
-)
-from scal3.ui_gtk.tree_utils import tree_path_split
-from scal3.ui_gtk.stack import MyStack, StackPage
+from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import newSubPageButton
 from scal3.ui_gtk.pref_utils import CheckPrefItem
+from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.toolbox import (
-	ToolBoxItem,
 	StaticToolBox,
+	ToolBoxItem,
+)
+from scal3.ui_gtk.tree_utils import tree_path_split
+from scal3.ui_gtk.utils import (
+	dialog_add_button,
+	pixbufFromFile,
+	showInfo,
 )
 
 
@@ -158,7 +154,7 @@ class CustomizeWindow(gtk.Dialog):
 		parentPagePath: str,
 		parentItem: "CustomizableCalObj",
 		scrolled=False,
-	) -> Tuple[gtk.TreeView, gtk.Box]:
+	) -> tuple[gtk.TreeView, gtk.Box]:
 		# column 0: bool: enable
 		# column 1: str: unique pagePath (dot separated)
 		# column 2: str: desc
@@ -225,7 +221,7 @@ class CustomizeWindow(gtk.Dialog):
 		###
 		toolbar = CustomizeWindowItemsToolbar(
 			self,
-			(treev,)
+			(treev,),
 		)
 		###
 		pack(hbox, toolbar)
@@ -389,7 +385,7 @@ class CustomizeWindow(gtk.Dialog):
 
 		log.debug(
 			f"adding page {page.pagePath} to stack, {page.pageWidget=}"
-			f" (parent={page.pageWidget.get_parent()})"
+			f" (parent={page.pageWidget.get_parent()})",
 		)
 		self.stack.addPage(page) # FIXME: crashes here
 
@@ -399,7 +395,7 @@ class CustomizeWindow(gtk.Dialog):
 					raise ValueError(f"pageName empty, {page=}")
 				page.pagePath = pagePath + "." + page.pageName
 				page.pageParent = ".".join(
-					[pagePath] + page.pageName.split(".")[:-1]
+					[pagePath] + page.pageName.split(".")[:-1],
 				)
 
 			page.pageTitle = page.pageTitle + " - " + title
@@ -466,7 +462,7 @@ class CustomizeWindow(gtk.Dialog):
 		if not item.enable:
 			msg = _(
 				"{item} is disabled.\n"
-				"Check the checkbox if you want to enable it."
+				"Check the checkbox if you want to enable it.",
 			).format(item=item.desc)
 			showInfo(msg, transient_for=self)
 			return

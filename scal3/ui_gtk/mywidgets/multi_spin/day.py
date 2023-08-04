@@ -8,7 +8,7 @@ class DaySpinButton(SingleSpinButton):
 		SingleSpinButton.__init__(
 			self,
 			field=DayField(pad=0),
-			**kwargs
+			**kwargs,
 		)
 
 	def set_range(self, _min: int, _max: int):

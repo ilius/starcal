@@ -1,26 +1,24 @@
 #!/usr/bin/env python3
 
 from scal3 import logger
+
 log = logger.get()
 
-from time import time as now
 
-from typing import Optional, Tuple, Dict, Union, Callable, Any
+from typing import Any, Callable, Optional, Union
 
-from scal3 import core
-from scal3.locale_man import tr as _
 from scal3 import ui
-
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
-from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.utils import (
-	set_tooltip,
-	pixbufFromFile,
-)
-from scal3.ui_gtk.icon_mapping import iconNameByImageName
-from scal3.ui_gtk.mywidgets.button import ConButtonBase
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
+from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.icon_mapping import iconNameByImageName
+from scal3.ui_gtk.mywidgets.button import ConButtonBase
+from scal3.ui_gtk.utils import (
+	pixbufFromFile,
+	set_tooltip,
+)
 
 
 class BaseToolBoxItem(gtk.Button, ConButtonBase, CustomizableCalObj):
@@ -42,14 +40,14 @@ class BaseToolBoxItem(gtk.Button, ConButtonBase, CustomizableCalObj):
 			return gtk.SizeRequestMode.HEIGHT_FOR_WIDTH
 		return gtk.SizeRequestMode.WIDTH_FOR_HEIGHT
 
-	def do_get_preferred_height_for_width(self, size: int) -> Tuple[int, int]:
+	def do_get_preferred_height_for_width(self, size: int) -> tuple[int, int]:
 		# must return minimum_size, natural_size
 		if not self.vertical:
 			# self.get_preferred_height() does not work well here, not sure why
 			return self.do_get_preferred_width_for_height(size)
 		return size, size
 
-	def do_get_preferred_width_for_height(self, size: int) -> Tuple[int, int]:
+	def do_get_preferred_width_for_height(self, size: int) -> tuple[int, int]:
 		# must return minimum_size, natural_size
 		if self.vertical:
 			return self.get_preferred_width()
@@ -71,7 +69,7 @@ class ToolBoxItem(BaseToolBoxItem):
 		enableTooltip: bool = True,
 		continuousClick: bool = True,
 		onPress: Optional[Union[str, Callable]] = None,
-		args: Optional[Tuple[Any]] = None,  # for onClick and onPress
+		args: Optional[tuple[Any]] = None,  # for onClick and onPress
 		enable: bool = True,
 	) -> None:
 		gtk.Button.__init__(self)
@@ -128,12 +126,12 @@ class ToolBoxItem(BaseToolBoxItem):
 
 	def build(self):
 		"""
-			This method must be called after creating instance and calling
-			one/many of these methods:
-				- setIconName
-				- setIconFile
-				- setIconSize
-				- setPreferIconName
+		This method must be called after creating instance and calling
+		one/many of these methods:
+		- setIconName
+		- setIconFile
+		- setIconSize
+		- setPreferIconName.
 		"""
 		imageName = self.imageName
 		iconName = self.iconName
@@ -203,7 +201,7 @@ class LabelToolBoxItem(BaseToolBoxItem):
 		enableTooltip: bool = True,
 		continuousClick: bool = True,
 		onPress: Optional[Union[str, Callable]] = None,
-		args: Optional[Tuple[Any]] = None,  # for onClick and onPress
+		args: Optional[tuple[Any]] = None,  # for onClick and onPress
 	) -> None:
 		gtk.Button.__init__(self)
 		if continuousClick:
@@ -258,11 +256,11 @@ class LabelToolBoxItem(BaseToolBoxItem):
 	def do_get_request_mode(self) -> gtk.SizeRequestMode:
 		return gtk.SizeRequestMode.WIDTH_FOR_HEIGHT
 
-	def do_get_preferred_height_for_width(self, size: int) -> Tuple[int, int]:
+	def do_get_preferred_height_for_width(self, size: int) -> tuple[int, int]:
 		# must return minimum_size, natural_size
 		return self.do_get_preferred_width_for_height(size)
 
-	def do_get_preferred_width_for_height(self, size: int) -> Tuple[int, int]:
+	def do_get_preferred_width_for_height(self, size: int) -> tuple[int, int]:
 		# must return minimum_size, natural_size
 		return size, size
 
@@ -338,7 +336,7 @@ class StaticToolBox(BaseToolBox):
 			iconSize=iconSize,
 			continuousClick=continuousClick,
 			buttonBorder=buttonBorder,
-			buttonPadding=buttonPadding
+			buttonPadding=buttonPadding,
 		)
 
 	def getIconSize(self) -> int:
@@ -489,10 +487,10 @@ class CustomizableToolBox(StaticToolBox):
 
 	def updateItems(self):
 		"""
-			Must be called after creating the instance and calling setData()
-			Also after one of the properties (preferIconName, iconSize,
-			buttonBorder, buttonPadding) are changed.
-			Must be called before onConfigChange()
+		Must be called after creating the instance and calling setData()
+		Also after one of the properties (preferIconName, iconSize,
+		buttonBorder, buttonPadding) are changed.
+		Must be called before onConfigChange().
 		"""
 		preferIconName = self.preferIconName
 		iconSize = self.iconSize
@@ -512,7 +510,7 @@ class CustomizableToolBox(StaticToolBox):
 			item.build()
 			item.onConfigChange(toParent=False)
 
-	def getData(self) -> Dict[str, Any]:
+	def getData(self) -> dict[str, Any]:
 		self.data.update({
 			"items": self.getItemsData(),
 			"iconSizePixel": self.getIconSize(),
@@ -522,7 +520,7 @@ class CustomizableToolBox(StaticToolBox):
 		})
 		return self.data
 
-	def setData(self, data: Dict[str, Any]) -> None:
+	def setData(self, data: dict[str, Any]) -> None:
 		self.data = data
 		for (name, enable) in data["items"]:
 			item = self.defaultItemsDict.get(name)
