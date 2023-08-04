@@ -17,35 +17,31 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
 from time import time as now
 
-from scal3.color_utils import colorizeSpan
+from scal3 import locale_man, ui
 from scal3.cal_types import calTypes
-from scal3 import core
-from scal3 import locale_man
-from scal3.locale_man import getMonthName, rtl
+from scal3.color_utils import colorizeSpan
+from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
-from scal3 import ui
-
 from scal3.ui_gtk import *
+from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk.customize import CustomizableCalObj
 from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.drawing import (
+	calcTextPixelSize,
+)
 from scal3.ui_gtk.font_utils import pfontEncode
+from scal3.ui_gtk.mywidgets.button import ConButton
 from scal3.ui_gtk.utils import (
-	set_tooltip,
-	setClipboard,
 	get_menu_width,
 	imageFromIconName,
 	pixbufFromFile,
+	set_tooltip,
 )
-from scal3.ui_gtk.drawing import (
-	setColor,
-	calcTextPixelSize,
-)
-from scal3.ui_gtk.mywidgets.button import ConButton
-from scal3.ui_gtk import gtk_ud as ud
-from scal3.ui_gtk.customize import CustomizableCalObj
 
 primaryCalStyleClass = "primarycal"
 
@@ -68,7 +64,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 				fgColor=ui.labelBoxMonthColor,
 			)
 		return ""
-		
+
 	def getItemStr(self, i):
 		return _(i + 1, fillZero=2)
 
@@ -136,13 +132,13 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 				self.menuLabels[self.active].set_label(
 					self.getItemStr(self.active) +
 					": " +
-					oldStr
+					oldStr,
 				)
 				self.menuLabels[active].set_label(
 					self.getActiveStr(
 						self.getItemStr(active) +
 						": " +
-						newStr
+						newStr,
 					),
 				)
 			else:
@@ -184,7 +180,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 				(
 					get_menu_width(self.menu) -
 					self.get_allocation().width
-				) // 2
+				) // 2,
 			)
 			self.menu.popup(
 				None,
@@ -289,7 +285,7 @@ class IntLabel(BaseLabel):
 		for i in range(self.height):
 			if start + i == self.active:
 				self.menuLabels[i].set_label(
-					self.getActiveStr(_(start + i))
+					self.getActiveStr(_(start + i)),
 				)
 			else:
 				self.menuLabels[i].set_label(_(start + i))
@@ -351,8 +347,10 @@ class IntLabel(BaseLabel):
 		d = getScrollValue(gevent)
 		if d == "up":
 			self.updateMenu(self.start - 1)
+			return None
 		elif d == "down":
 			self.updateMenu(self.start + 1)
+			return None
 		else:
 			return False
 
@@ -372,7 +370,7 @@ class YearLabel(IntLabel, ud.BaseCalObj):
 				fgColor=ui.labelBoxYearColor,
 			)
 		return ""
-		
+
 
 	def __init__(self, calType, **kwargs):
 		IntLabel.__init__(self, **kwargs)
@@ -645,12 +643,12 @@ class CalObj(gtk.Box, CustomizableCalObj):
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.pref_utils import (
-			SpinPrefItem,
-			CheckPrefItem,
-			ColorPrefItem,
 			CheckColorPrefItem,
 			CheckFontPrefItem,
+			CheckPrefItem,
+			ColorPrefItem,
 			FontPrefItem,
+			SpinPrefItem,
 		)
 		if self.optionsWidget:
 			return self.optionsWidget
@@ -750,7 +748,7 @@ if __name__ == "__main__":
 		gdk.EventMask.SCROLL_MASK |
 		gdk.EventMask.KEY_PRESS_MASK |
 		gdk.EventMask.VISIBILITY_NOTIFY_MASK |
-		gdk.EventMask.EXPOSURE_MASK
+		gdk.EventMask.EXPOSURE_MASK,
 	)
 	pack(win.vbox, box, 1, 1)
 	win.vbox.show_all()

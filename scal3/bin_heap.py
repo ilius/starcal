@@ -1,12 +1,11 @@
 #!/usr/bin/env python3
 
 from scal3 import logger
+
 log = logger.get()
 
+from heapq import heappop, heappush
 from math import log as math_log
-from scal3.utils import s_join
-
-from heapq import heappush, heappop
 
 
 class MaxHeap(list):
@@ -127,8 +126,8 @@ class MaxHeap(list):
 			raise ValueError("heap empty")
 		k, v = max(
 			self[- 2 ** int(
-				math_log(len(self), 2)
-			):]
+				math_log(len(self), 2),
+			):],
 		)
 		return -k, v
 
@@ -164,7 +163,6 @@ def getMinTest(N):
 
 def testDeleteStep(N, maxKey):
 	from random import randint
-	from heapq import heapify
 	###
 	h = MaxHeap()
 	for i in range(N):

@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 
 from scal3 import logger
+
 log = logger.get()
 
-from scal3 import core
+from scal3 import event_lib, ui
 from scal3.locale_man import tr as _
-from scal3 import event_lib
-from scal3 import ui
-
 from scal3.ui_gtk import *
-from scal3.ui_gtk.utils import dialog_add_button
 from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
+from scal3.ui_gtk.utils import dialog_add_button
 
 
 class GroupEditorDialog(gtk.Dialog):

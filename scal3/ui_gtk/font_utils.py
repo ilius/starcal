@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 from gi.repository import Pango as pango
+
 from scal3 import ui
 
 W_NORMAL = pango.Weight.NORMAL

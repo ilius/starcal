@@ -18,10 +18,9 @@
 
 from os.path import join
 
-from scal3.path import *
 from scal3 import ui
 from scal3.json_utils import *
-
+from scal3.path import *
 
 sysConfPath = join(sysConfDir, "timeline.json")
 

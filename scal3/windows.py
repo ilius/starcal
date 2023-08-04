@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 from os.path import join
+
 from scal3.core import APP_NAME
 
 winStartupRelPath = r"\Microsoft\Windows\Start Menu\Programs\Startup"

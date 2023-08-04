@@ -17,22 +17,21 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from typing import Optional, Tuple, Union, Callable
+from typing import Callable, Optional
 
 from gi.repository import GdkPixbuf
 
 from scal3 import ui
 from scal3.ui_gtk import *
-from scal3.ui_gtk import pixcache
 from scal3.ui_gtk.icon_mapping import iconNameByImageName
 from scal3.ui_gtk.utils import (
-	pixbufFromFile,
 	imageFromFile,
 	imageFromIconName,
+	pixbufFromFile,
 )
-
 
 """
 Documentation says:
@@ -56,7 +55,7 @@ class ImageMenuItem(gtk.MenuItem):
 		pixbuf: Optional[GdkPixbuf.Pixbuf] = None,
 		func: Optional[Callable] = None,
 		signalName="activate",
-		args: Optional[Tuple] = None,
+		args: Optional[tuple] = None,
 	):
 		gtk.MenuItem.__init__(self)
 		if args is not None and not isinstance(args, tuple):

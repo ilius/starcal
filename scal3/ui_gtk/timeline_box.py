@@ -17,22 +17,20 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
 from math import pi
 
-from scal3.utils import toStr
-from scal3 import ui
-from scal3.timeline import tl
-
 from gi.repository.PangoCairo import show_layout
 
-from scal3.ui_gtk.font_utils import pfontEncode
+from scal3 import ui
+from scal3.timeline import tl
 from scal3.ui_gtk.drawing import fillColor
+from scal3.ui_gtk.font_utils import pfontEncode
 
 
 def drawBoxBG(cr, box, x, y, w, h):
-	import cairo
 	d = box.lineW
 	cr.rectangle(x, y, w, h)
 	if d == 0:
@@ -165,5 +163,5 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 	except Exception:
 		log.warning(
 			"counld not rotate by " +
-			f"{rotateBoxLabel*pi/2 = }"
+			f"{rotateBoxLabel*pi/2 = }",
 		)

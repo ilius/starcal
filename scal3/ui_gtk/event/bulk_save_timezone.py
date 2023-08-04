@@ -17,11 +17,8 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 import natz
-
-from scal3 import core
-from scal3.locale_man import tr as _
 from scal3 import ui
-
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
 from scal3.ui_gtk.utils import dialog_add_button
 
@@ -56,7 +53,7 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
 			_(
 				"If you have been in a different time zone while adding some"
 				" of your event, you need to edit those events manually and"
-				" change the time zone"
+				" change the time zone",
 			) + "\n",
 			_("Time zone for All-Day events will be disabled by default"),
 			"</small>",
@@ -86,7 +83,7 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
 				natz.gettz(timeZone)
 			except Exception as e:
 				self.errorLabel.set_text(
-					_("Time zone is invalid") + "\n" + str(e)
+					_("Time zone is invalid") + "\n" + str(e),
 				)
 			else:
 				try:
@@ -96,7 +93,7 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
 						event.save()
 				except Exception as e:
 					self.errorLabel.set_text(
-						str(e)
+						str(e),
 					)
 				else:
 					self.hide()

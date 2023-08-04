@@ -17,23 +17,19 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from scal3 import core
-from scal3.core import pixDir
-from scal3.locale_man import tr as _
-from scal3 import event_lib
 from scal3 import ui
-
+from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
+from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.utils import (
-	openWindow,
 	dialog_add_button,
 	hideList,
 	labelImageButton,
+	openWindow,
 )
-from scal3.ui_gtk.mywidgets.icon import IconSelectButton
-
 
 #class EventCategorySelect(gtk.Box):
 
@@ -64,7 +60,7 @@ class EventTagsAndIconSelect(gtk.Box):
 					GdkPixbuf.Pixbuf.new_from_file(item.icon)
 					if item.icon else None
 				),
-				item.desc
+				item.desc,
 			])
 		###
 		self.customItemIndex = 0  # len(ls) - 1
@@ -141,17 +137,19 @@ class EventTagsAndIconSelect(gtk.Box):
 
 
 class TagsListBox(gtk.Box):
+
 	"""
-		[x] Only related tags     tt: Show only tags related to this event type
-		Sort by:
-			Name
-			Usage
+	[x] Only related tags     tt: Show only tags related to this event type
+	Sort by:
+	Name
+	Usage.
 
 
-		Related to this event type (first)
-		Most used (first)
-		Most used for this event type (first)
+	Related to this event type (first)
+	Most used (first)
+	Most used for this event type (first)
 	"""
+
 	def __init__(self, eventType=""):## "" == "custom"
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		####
@@ -233,7 +231,7 @@ class TagsListBox(gtk.Box):
 				t.name in tags, ## True or False
 				t.desc,
 				t.usage,
-				_(t.usage)
+				_(t.usage),
 			))
 
 	def enableCellToggled(self, cell, path):
