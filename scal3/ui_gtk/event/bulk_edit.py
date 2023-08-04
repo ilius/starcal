@@ -1,11 +1,10 @@
-#!/usr/bin/env python3
 from scal3 import logger
 
 log = logger.get()
 
 import natz
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, VBox, gtk, pack
 from scal3.ui_gtk.mywidgets import TextFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.utils import (
@@ -50,8 +49,8 @@ class EventsBulkEditDialog(gtk.Dialog):
 			).format(groupTitle=title)
 		msg += " "
 		msg += _(
-			"You better make a backup from your events before doing this." +
-			" Just right click on group and select \"Export\"" +
+			"You better make a backup from your events before doing this."
+			" Just right click on group and select \"Export\""
 			" (or a full backup: menu File -> Export)",
 		)
 		msg += "\n\n"

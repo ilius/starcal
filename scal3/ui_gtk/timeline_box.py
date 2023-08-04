@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -162,6 +161,6 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 		cr.rotate(tl.rotateBoxLabel * pi / 2)
 	except Exception:
 		log.warning(
-			"counld not rotate by " +
-			f"{rotateBoxLabel*pi/2 = }",
+			"counld not rotate by "
+			f"{tl.rotateBoxLabel*pi/2 = }",
 		)

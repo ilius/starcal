@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -23,7 +22,7 @@ log = logger.get()
 from typing import Callable
 
 from scal3 import ui
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, VBox, gdk, getOrientation, gtk, pack
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
 from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.utils import imageClassButton, setImageClassButton
@@ -204,7 +203,6 @@ class WinLayoutBox(WinLayoutBase):
 		self._box = None  # type: gtk.Box
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
-		kname = gdk.keyval_name(gevent.keyval).lower()
 		for item in self.items:
 			if item.enable:
 				if item.onKeyPress(arg, gevent):

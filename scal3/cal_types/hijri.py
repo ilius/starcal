@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -103,11 +102,16 @@ options = (
 
 import os
 from collections import OrderedDict
+from math import ceil, floor
 from os.path import isfile, join
 
-from scal3.json_utils import *
+from scal3.json_utils import (
+	dataToPrettyJson,
+	jsonToData,
+	loadJsonConf,
+	saveJsonConf,
+)
 from scal3.path import confDir, modDir, sysConfDir
-from scal3.utils import iceil, ifloor
 
 monthDbExpiredIgnoreFile = join(confDir, "hijri-expired-ignore")
 
@@ -125,6 +129,13 @@ loadJsonConf(__name__, sysConfPath)
 confPath = f"{confDir}/{name}.json"
 loadJsonConf(__name__, confPath)
 
+
+def ifloor(x: float) -> int:
+	return int(floor(x))
+
+
+def iceil(x: float) -> int:
+	return int(ceil(x))
 
 def save():
 	"""Save user options to file."""
@@ -203,7 +214,8 @@ class MonthDbHolder:
 			("monthLen", mLenData),
 			("expJd", self.expJd),
 		]))
-		open(self.userDbPath, "w").write(text)
+		with open(self.userDbPath, "w") as f:
+			f.write(text)
 
 	def getMonthLenList(self):
 		"""Returns a list of (index, ym, mLen)."""

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -23,17 +22,22 @@ log = logger.get()
 from os.path import isabs, join
 from typing import Callable
 
-from gi.repository import GdkPixbuf
-from gi.repository import Pango as pango
-
 from scal3 import ui
 from scal3.color_utils import ColorType, rgbToCSS
-from scal3.json_utils import *
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
 from scal3.path import pixDir, svgDir
-from scal3.ui_gtk import *
-from scal3.ui_gtk import pixcache
+from scal3.ui_gtk import (
+	GdkPixbuf,
+	GLibError,
+	HBox,
+	MenuItem,
+	gdk,
+	gtk,
+	pack,
+	pango,
+	pixcache,
+)
 from scal3.ui_gtk.color_utils import gdkColorToRgb
 from scal3.ui_gtk.icon_mapping import (
 	iconNameByImageName,
@@ -42,6 +46,44 @@ from scal3.ui_gtk.icon_mapping import (
 from scal3.ui_gtk.svg_utils import pixbufFromSvgFile
 from scal3.utils import toBytes, toStr
 
+__all__ = [
+	"hideList",
+	"showList",
+	"set_tooltip",
+	"buffer_get_text",
+	"show_event",
+	"setClipboard",
+	"imageFromIconName",
+	"imageFromIconNameWithPixelSize",
+	"imageFromFile",
+	"resolveImagePath",
+	"pixbufFromFile",
+	"newButtonImageBox",
+	"labelIconButton",
+	"labelImageButton",
+	"imageClassButton",
+	"setImageClassButton",
+	"getStyleColor",
+	"modify_bg_all",
+	"rectangleContainsPoint",
+	"dialog_add_button",
+	"confirm",
+	"showMsg",
+	"showError",
+	"showWarning",
+	"showInfo",
+	"openWindow",
+	"get_menu_width",
+	"get_menu_height",
+	"get_pixbuf_hash",
+	"window_set_size_aspect",
+	"newHSep",
+	"newAlignLabel",
+	"cssTextStyle",
+	"getBackgroundColor",
+	"getBackgroundColorCSS",
+	"getGtkWindow",
+]
 
 def hideList(widgets):
 	for w in widgets:
@@ -272,7 +314,12 @@ def imageClassButton(iconName: str, styleClass: str, size: int):
 		button.get_style_context().add_class(styleClass)
 	return button
 
-def setImageClassButton(button: "gtk.Button", iconName: str, styleClass: str, size: int):
+def setImageClassButton(
+	button: "gtk.Button",
+	iconName: str,
+	styleClass: str,
+	size: int,
+):
 	button.remove(button.get_child())
 	image = imageFromIconName(
 		iconName,
@@ -311,8 +358,19 @@ def rectangleContainsPoint(r, x, y):
 
 
 """
->>> sorted(gtk.ResponseType.__enum_values__.items())
-[(-11, <enum GTK_RESPONSE_HELP of type Gtk.ResponseType>), (-10, <enum GTK_RESPONSE_APPLY of type Gtk.ResponseType>), (-9, <enum GTK_RESPONSE_NO of type Gtk.ResponseType>), (-8, <enum GTK_RESPONSE_YES of type Gtk.ResponseType>), (-7, <enum GTK_RESPONSE_CLOSE of type Gtk.ResponseType>), (-6, <enum GTK_RESPONSE_CANCEL of type Gtk.ResponseType>), (-5, <enum GTK_RESPONSE_OK of type Gtk.ResponseType>), (-4, <enum GTK_RESPONSE_DELETE_EVENT of type Gtk.ResponseType>), (-3, <enum GTK_RESPONSE_ACCEPT of type Gtk.ResponseType>), (-2, <enum GTK_RESPONSE_REJECT of type Gtk.ResponseType>), (-1, <enum GTK_RESPONSE_NONE of type Gtk.ResponseType>)]
+>>> sorted(gtk.ResponseType.__enum_values__.items()) == [
+	(-11, <enum GTK_RESPONSE_HELP of type Gtk.ResponseType>),
+	(-10, <enum GTK_RESPONSE_APPLY of type Gtk.ResponseType>),
+	(-9, <enum GTK_RESPONSE_NO of type Gtk.ResponseType>),
+	(-8, <enum GTK_RESPONSE_YES of type Gtk.ResponseType>),
+	(-7, <enum GTK_RESPONSE_CLOSE of type Gtk.ResponseType>),
+	(-6, <enum GTK_RESPONSE_CANCEL of type Gtk.ResponseType>),
+	(-5, <enum GTK_RESPONSE_OK of type Gtk.ResponseType>),
+	(-4, <enum GTK_RESPONSE_DELETE_EVENT of type Gtk.ResponseType>),
+	(-3, <enum GTK_RESPONSE_ACCEPT of type Gtk.ResponseType>),
+	(-2, <enum GTK_RESPONSE_REJECT of type Gtk.ResponseType>),
+	(-1, <enum GTK_RESPONSE_NONE of type Gtk.ResponseType>)
+]
 """
 
 def dialog_add_button(
@@ -353,7 +411,7 @@ def dialog_add_button(
 
 def confirm(
 	msg,
-	title=_("Confirmation"),
+	title="Confirmation",
 	border_width=15,
 	**kwargs,
 ):
@@ -361,7 +419,7 @@ def confirm(
 		message_type=gtk.MessageType.INFO,
 		buttons=gtk.ButtonsType.NONE,
 		text=msg,
-		title=title,
+		title=_(title),
 		**kwargs,
 	)
 	button = dialog_add_button(
@@ -444,7 +502,8 @@ def showInfo(msg, **kwargs):
 
 
 def openWindow(win):
-	win.set_keep_above(ui.winKeepAbove)
+	# win.set_keep_above(ui.winKeepAbove)
+	win.set_keep_above(True)
 	win.present()
 
 
@@ -572,7 +631,7 @@ class CopyLabelMenuItem(MenuItem):
 
 
 def cssTextStyle(
-	font: "Font | None" = None,
+	font: "ui.Font | None" = None,
 	fgColor: "ColorType | None" = None,
 	bgColor: "ColorType | None" = None,
 	extra: "dict[str, str] | None" = None,
@@ -615,9 +674,3 @@ def getGtkWindow(widget: "gtk.Widget") -> "gtk.Window | None":
 		return top
 	return None
 
-if __name__ == "__main__":
-	diolog = gtk.Dialog()
-	w = TimeZoneComboBoxEntry()
-	pack(diolog.vbox, w)
-	diolog.vbox.show_all()
-	diolog.run()
