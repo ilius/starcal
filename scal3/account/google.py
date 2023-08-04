@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -17,7 +16,7 @@
 
 # FIXME
 developerKey = (
-	"AI39si4QJ0bmdZJd7nVz0j3zuo1JYS3WUJX8y0f2" +
+	"AI39si4QJ0bmdZJd7nVz0j3zuo1JYS3WUJX8y0f2"
 	"mvGteDtiKY8TUSzTsY4oAcGlYAM0LmOxHmWWyFLU"
 )
 
@@ -27,7 +26,7 @@ log = logger.get()
 
 import http.server
 import sys
-from os.path import splitext
+from os.path import join, splitext
 from time import time as now
 
 try:
@@ -36,9 +35,9 @@ except ImportError:
 	from cgi import parse_qsl
 
 import httplib2
-from httplib2 import *
 
-from scal3.path import *
+#from httplib2 import
+from scal3.path import sourceDir
 
 sys.path.append(join(sourceDir, "google-api-python-client"))  # FIXME
 sys.path.append(join(sourceDir, "oauth2client"))  # FIXME
@@ -46,7 +45,9 @@ sys.path.append(join(sourceDir, "oauth2client"))  # FIXME
 from scal3 import core, event_lib
 from scal3.cal_types import GREGORIAN
 from scal3.event_lib import Account
-from scal3.ics import *
+from scal3.ics import getIcsTimeByEpoch
+
+#from scal3.ics import
 from scal3.locale_man import tr as _
 from scal3.os_utils import openUrl
 from scal3.utils import toBytes, toStr
@@ -72,7 +73,7 @@ def decodeIcsStartEnd(value):
 
 
 def encodeIcsStartEnd(value):
-	timeZone = value.get("timeZone", "GMT")  # FIXME
+	# timeZone = value.get("timeZone", "GMT")  # FIXME
 	if "date" in value:
 		icsValue = value["date"].replace("-", "")
 	elif "dateTime" in value:
@@ -160,7 +161,7 @@ def importEvent(gevent, group):
 		except KeyError:
 			log.exception("")  # FIXME
 		else:
-			self.notifyBefore = (minutes, 60)
+			event.notifyBefore = (minutes, 60)
 	return event
 
 
@@ -211,16 +212,16 @@ class ClientRedirectHandler(http.server.BaseHTTPRequestHandler):
 
 	def log_message(self, format, *args):
 		"""Do not log messages to stdout while running as command line program."""
-		pass
 
 
 def dumpRequest(request):
-	open("/tmp/starcal-request", "a").write(
-		f"uri={request.uri!r}\n" +
-		f"method={request.method!r}\n" +
-		f"headers={request.headers!r}\n" +
-		f"body={request.body!r}\n\n\n",
-	)
+	with open("/tmp/starcal-request", "a") as _file:
+		_file.write(
+			f"uri={request.uri!r}\n"
+			f"method={request.method!r}\n"
+			f"headers={request.headers!r}\n"
+			f"body={request.body!r}\n\n\n",
+		)
 
 
 @event_lib.classes.account.register
@@ -293,7 +294,7 @@ class GoogleAccount(Account):
 					)
 				except OSError as e:
 					log.info(
-						f"-------- counld not use port {port} " +
+						f"-------- counld not use port {port} "
 						f"for local web server: {e}",
 					)
 					pass
@@ -318,7 +319,7 @@ class GoogleAccount(Account):
 				code = httpd.query_params["code"]
 			else:
 				self.showError(_(
-					"Failed to find \"code\" in the query parameters " +
+					"Failed to find \"code\" in the query parameters "
 					"of the redirect.",
 				))
 				return
@@ -468,11 +469,10 @@ class GoogleAccount(Account):
 				eventId = None
 
 			bothId = (eventId, gevent["id"])
-			if gevent["status"] == "cancelled":
-				if eventId is not None:
-					addToDiff(bothId, False, STATUS_DELETED)
-					#group.remove(group[eventId])
-					#group.save()  # FIXME
+			if gevent["status"] == "cancelled" and eventId is not None:
+				addToDiff(bothId, False, STATUS_DELETED)
+				#group.remove(group[eventId])
+				#group.save()  # FIXME
 			if gevent["status"] != "confirmed":  # FIXME
 				log.info(gevent["status"], gevent["summary"])
 				continue
@@ -517,14 +517,13 @@ class GoogleAccount(Account):
 				continue
 			# log.debug(f"---------- event {event}")
 			remoteEventId = None
-			if event.remoteIds:
-				if event.remoteIds[:2] == (self.id, remoteGroupId):
-					remoteEventId = event.remoteIds[2]
+			if event.remoteIds and event.remoteIds[:2] == (self.id, remoteGroupId):
+				remoteEventId = event.remoteIds[2]
 			# log.debug(f"---------- {remoteEventId = }")
 			if remoteEventId and lastSync and event.modified < lastSync:
 				log.info(
-					f"---------- skipping event {event.summary}" +
-					f"(modified = {event.modified} < {lastPush} = lastPush)",
+					f"---------- skipping event {event.summary}"
+					f"(modified = {event.modified} < {lastSync =})",
 				)
 				continue
 			bothId = (event.id, remoteEventId)

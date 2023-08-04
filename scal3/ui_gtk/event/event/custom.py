@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -22,7 +21,7 @@ log = logger.get()
 
 from scal3 import event_lib
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.event import common, makeWidget
 from scal3.ui_gtk.utils import labelImageButton
 
