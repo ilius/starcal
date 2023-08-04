@@ -17,26 +17,21 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from os.path import join
-from math import pi
-from math import sin, cos
 import re
+from math import cos, pi, sin
+from os.path import join
+from typing import Optional
 
-from typing import Optional, Tuple
-
-from scal3.path import *
-from scal3.utils import toBytes
-from scal3 import core
-from scal3.locale_man import cutText, rtl
 from scal3 import ui
-
+from scal3.locale_man import cutText
+from scal3.path import *
 from scal3.ui_gtk import *
-from scal3.ui_gtk.font_utils import *
 from scal3.ui_gtk.color_utils import *
-
-from gi.repository.PangoCairo import show_layout
+from scal3.ui_gtk.font_utils import *
+from scal3.utils import toBytes
 
 if not ui.fontCustom:
 	ui.fontCustom = ui.fontDefault.copy()
@@ -83,9 +78,7 @@ def newTextLayout(
 	maximizeScale=0.6,
 	truncate=False,
 ):
-	"""
-	None return value should be expected and handled, only if maxSize is given
-	"""
+	"""None return value should be expected and handled, only if maxSize is given."""
 	layout = widget.create_pango_layout("")  # a Pango.Layout object
 	if font:
 		assert isinstance(font, ui.Font)
@@ -189,7 +182,7 @@ def calcTextPixelSize(
 	widget: gtk.Widget,
 	text: str,
 	font: "Optional[Font]" = None,
-) -> Tuple[float, float]:
+) -> tuple[float, float]:
 	layout = widget.create_pango_layout(text)  # a Pango.Layout object
 	if font is not None:
 		layout.set_font_description(pfontEncode(font))
@@ -222,8 +215,7 @@ def newColorCheckPixbuf(color, size, checked):
 		loader.write(data)
 	finally:
 		loader.close()
-	pixbuf = loader.get_pixbuf()
-	return pixbuf
+	return loader.get_pixbuf()
 
 
 def newDndDatePixbuf(ymd):
@@ -239,8 +231,7 @@ def newDndDatePixbuf(ymd):
 		loader.write(data)
 	finally:
 		loader.close()
-	pixbuf = loader.get_pixbuf()
-	return pixbuf
+	return loader.get_pixbuf()
 
 
 def newDndFontNamePixbuf(name):
@@ -254,8 +245,7 @@ def newDndFontNamePixbuf(name):
 		loader.write(data)
 	finally:
 		loader.close()
-	pixbuf = loader.get_pixbuf()
-	return pixbuf
+	return loader.get_pixbuf()
 
 
 def drawRoundedRect(cr, cx0, cy0, cw, ch, ro):
@@ -508,12 +498,12 @@ def drawLineLengthAngle(cr, xs, ys, length, angle, d):
 
 def drawArcOutline(cr, xc, yc, r, d, a0, a1):
 	"""
-		cr: cairo context
-		xc, yc: coordinates of center
-		r: outer radius
-		d: outline width (r - ri)
-		a0: start angle (radians)
-		a1: end angle (radians)
+	cr: cairo context
+	xc, yc: coordinates of center
+	r: outer radius
+	d: outline width (r - ri)
+	a0: start angle (radians)
+	a1: end angle (radians).
 	"""
 	x1, y1 = goAngle(xc, yc, a0, r - d)
 	x2, y2 = goAngle(xc, yc, a1, r - d)

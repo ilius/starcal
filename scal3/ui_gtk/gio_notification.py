@@ -16,9 +16,9 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
-from scal3 import core
-
 from gi.repository import Gio as gio
+
+from scal3 import core
 
 
 class GioNotificationWrapper(gio.Notification):

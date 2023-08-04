@@ -17,16 +17,16 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 import os
-from os.path import join, split, isfile
-
+from os.path import isfile, join
 from queue import Queue
 from threading import Thread
 
 from scal3 import logger
+
 log = logger.get()
 
-from scal3.path import cacheDir
 from scal3.os_utils import makeDir
+from scal3.path import cacheDir
 from scal3.ui_gtk import *
 
 pixbufCache = {}
@@ -110,6 +110,7 @@ def getPixbuf(name: str, size: float) -> "Optional[GdkPixbuf.Pixbuf]":
 		pixbuf = GdkPixbuf.Pixbuf.new_from_file(fpath)
 		pixbufCache[key] = pixbuf
 		return pixbuf
+	return None
 
 
 def setPixbuf(name: str, size: float, pixbuf: "GdkPixbuf.Pixbuf") -> None:
