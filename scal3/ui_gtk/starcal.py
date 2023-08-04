@@ -694,7 +694,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		# 	f"avg={ui.Cell.ocTimeSum/ui.Cell.ocTimeCount:e}"
 		# )
 
-	def getEventAddToMenuItem(self) -> Optional[gtk.MenuItem]:
+	def getEventAddToMenuItem(self) -> "gtk.MenuItem | None":
 		from scal3.ui_gtk.drawing import newColorCheckPixbuf
 		if event_lib.allReadOnly:
 			return None
@@ -814,7 +814,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				),
 				imageName="edit-copy.svg",
 				func=self.copyDateGetCallback(calType),
-				args=(calType,),
+				#args=(calType,),
 			))
 		menu.add(ImageMenuItem(
 			label=_("Day Info"),
@@ -1270,7 +1270,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				ddate[2],
 				localeMode=calTypes.primary,  # FIXME
 			)
-			style = []  # type: List[Tuple[str, Any]]
+			style: "list[tuple[str, Any]]" = []
 			if ui.statusIconFontFamilyEnable:
 				if ui.statusIconFontFamily:
 					family = ui.statusIconFontFamily

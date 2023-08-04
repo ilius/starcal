@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from typing import Callable, Optional
+from typing import Callable
 
 
 class CellType:
@@ -11,8 +11,8 @@ class CellType:
 	def format(
 		self,
 		compiledFmt: "CompiledTimeFormat",
-		calType: Optional[int] = None,
-		tm: Optional[tuple[int, int, int]] = None,
+		calType: "int | None" = None,
+		tm: "tuple[int, int, int] | None" = None,
 	):
 		raise NotImplementedError
 
