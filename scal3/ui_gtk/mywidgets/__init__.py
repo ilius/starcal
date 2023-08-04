@@ -19,23 +19,17 @@
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 from scal3 import logger
+
 log = logger.get()
 
-import sys
-import os
-from time import time as now
-from time import localtime
-from typing import Tuple
 
-from gi.repository import GdkPixbuf
-
-from scal3.ui_gtk import *
-from scal3.ui_gtk.font_utils import *
-from scal3.ui_gtk.color_utils import *
-from scal3.ui_gtk.utils import buffer_get_text
-from scal3.ui_gtk.drawing import newDndFontNamePixbuf
 
 from scal3.locale_man import tr as _
+from scal3.ui_gtk import *
+from scal3.ui_gtk.color_utils import *
+from scal3.ui_gtk.drawing import newDndFontNamePixbuf
+from scal3.ui_gtk.font_utils import *
+from scal3.ui_gtk.utils import buffer_get_text
 
 
 def show_event(widget, gevent):

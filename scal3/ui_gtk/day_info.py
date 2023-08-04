@@ -15,23 +15,19 @@
 #
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
-from time import localtime
 
-import sys
 
+from scal3 import core, ui
 from scal3.cal_types import calTypes
-from scal3 import core
+from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
-from scal3.locale_man import rtl, rtlSgn
-from scal3 import ui
-
 from scal3.ui_gtk import *
-from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.utils import dialog_add_button
-from scal3.ui_gtk.mywidgets.label import SLabel
-from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk import gtk_ud as ud
+from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.event.occurrence_view import DayOccurrenceView
+from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
+from scal3.ui_gtk.mywidgets.label import SLabel
+from scal3.ui_gtk.utils import dialog_add_button
 
 
 @registerSignals
