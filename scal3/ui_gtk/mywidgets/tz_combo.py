@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from scal3 import core, ui
+from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
 
@@ -27,8 +27,8 @@ class TimeZoneComboBoxEntry(gtk.Box):
 
 		self.c.connect("changed", self.onChanged)
 		child = self.c.get_child()
-		child.set_text(str(core.localTz))
-		#self.set_text(str(core.localTz)) ## FIXME
+		child.set_text(str(locale_man.localTz))
+		#self.set_text(str(locale_man.localTz)) ## FIXME
 		###
 		self.get_text = child.get_text
 		#self.get_text = self.c.get_active_text ## FIXME
