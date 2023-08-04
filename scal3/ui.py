@@ -30,7 +30,6 @@ from time import time as now
 from typing import (
 	Any,
 	Callable,
-	Optional,
 )
 
 from cachetools import LRUCache
@@ -233,12 +232,12 @@ confParamsCustomize = (
 
 @dataclass(slots=True)
 class Font:
-	family: Optional[str]
+	family: "str | None"
 	bold: bool = False
 	italic: bool = False
 	size: float = 0
 
-	def fromList(lst: "Optional[list]"):
+	def fromList(lst: "list | None"):
 		if lst is None:
 			return
 		return Font(*lst)
@@ -307,7 +306,7 @@ def saveLiveConfLoop() -> None:  # rename to saveConfLiveLoop FIXME
 
 #######################################################
 
-def parseDroppedDate(text) -> Optional[tuple[int, int, int]]:
+def parseDroppedDate(text) -> "tuple[int, int, int] | None":
 	part = text.split("/")
 	if len(part) != 3:
 		return None
@@ -403,9 +402,9 @@ class Cell(CellType):
 	# ocTimeCount = 0
 	# ocTimeSum = 0
 	def __init__(self, jd: int):
-		self._eventsData = None  # type: Optional[List[Dict]]
-		self._pluginsText = []  # type: List[List[str]]
-		self._pluginsData = []  # List[Tuple[?,?]]
+		self._eventsData: "list[dict] | None" = None
+		self._pluginsText: "list[list[str]]" = []
+		self._pluginsData: "list[tuple[Any, str]]" = []
 		###
 		self.jd = jd
 		date = core.jd_to_primary(jd)
@@ -496,8 +495,8 @@ class Cell(CellType):
 	def format(
 		self,
 		compiledFmt: CompiledTimeFormat,
-		calType: Optional[int] = None,
-		tm: Optional[tuple[int, int, int]] = None,
+		calType: "int | None" = None,
+		tm: "tuple[int, int, int] | None" = None,
 	):
 		if calType is None:
 			calType = calTypes.primary
@@ -534,9 +533,9 @@ class Cell(CellType):
 
 
 # I can't find the correct syntax for this `...`
-# CellPluginsType = Dict[str, Tuple[
+# CellPluginsType = dict[str, tuple[
 # 	Callable[[CellType], None],
-# 	Callable[[CellCache, ...], List[CellType]]
+# 	Callable[[CellCache, ...], list[CellType]]
 # ]]
 
 
@@ -552,7 +551,7 @@ class CellCache:
 		# key: jd(int), value: CellType
 		self.jdCells = LRUCache(maxsize=maxDayCacheSize)
 
-		# key: absWeekNumber(int), value: List[Dict]
+		# key: absWeekNumber(int), value: list[dict]
 		self.weekEvents = LRUCache(maxsize=maxWeekCacheSize)
 
 	def clear(self) -> None:
@@ -640,7 +639,7 @@ def changeDate(
 	year: int,
 	month: int,
 	day: int,
-	calType: Optional[int] = None,
+	calType: "int | None" = None,
 ) -> None:
 	global cell
 	if calType is None:
@@ -681,7 +680,7 @@ def getFont(
 	scale=1.0,
 	family=True,
 	bold=False,
-) -> tuple[Optional[str], bool, bool, float]:
+) -> "tuple[str | None, bool, bool, float]":
 	f = fontCustom if fontCustomEnable else fontDefaultInit
 	return Font(
 		family=f.family if family else None,
@@ -691,7 +690,7 @@ def getFont(
 	)
 
 
-def getParamsFont(params: dict) -> Optional[Font]:
+def getParamsFont(params: dict) -> "Font | None":
 	font = params.get("font")
 	if not font:
 		return None
@@ -1248,10 +1247,10 @@ eventTagsDesc = {
 }
 
 ###################
-fs = None  # type: event_lib.FileSystem
-eventAccounts = []  # type: List[event_lib.EventAccount]
-eventGroups = []  # type: List[event_lib.EventGroup]
-eventTrash = None  # type: event_lib.EventTrash
+fs: "event_lib.FileSystem | None" = None
+eventAccounts: "list[event_lib.EventAccount]" = []
+eventGroups: "list[event_lib.EventGroup]" = []
+eventTrash: "event_lib.EventTrash | None" = None
 
 
 def iterAllEvents():  # dosen"t include orphan events
