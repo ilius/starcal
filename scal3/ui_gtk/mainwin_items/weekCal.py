@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -20,6 +19,7 @@ from scal3 import logger
 
 log = logger.get()
 
+from math import pi
 from time import time as now
 
 import cairo
@@ -29,7 +29,14 @@ from scal3 import core, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import rtl, rtlSgn
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import (
+	TWO_BUTTON_PRESS,
+	VBox,
+	gdk,
+	getScrollValue,
+	gtk,
+	pack,
+)
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.cal_base import CalBase
 from scal3.ui_gtk.customize import (
@@ -37,8 +44,14 @@ from scal3.ui_gtk.customize import (
 	CustomizableCalObj,
 	newSubPageButton,
 )
-from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.drawing import *
+from scal3.ui_gtk.decorators import registerSignals
+from scal3.ui_gtk.drawing import (
+	drawOutlineRoundedRect,
+	drawRoundedRect,
+	fillColor,
+	newTextLayout,
+	setColor,
+)
 from scal3.ui_gtk.mywidgets import MyFontButton
 from scal3.ui_gtk.stack import StackPage
 from scal3.ui_gtk.toolbox import (
@@ -46,7 +59,7 @@ from scal3.ui_gtk.toolbox import (
 	LabelToolBoxItem,
 	ToolBoxItem,
 )
-from scal3.ui_gtk.utils import pixbufFromFile
+from scal3.ui_gtk.utils import GLibError, pixbufFromFile
 
 
 def show_event(widget, gevent):
@@ -321,7 +334,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 		self,
 		cr: "cairo.Context",
 		textData: list[list[str]],
-		font: "Font | None" = None,
+		font: "ui.Font | None" = None,
 	):
 		alloc = self.get_allocation()
 		w = alloc.width
@@ -621,8 +634,8 @@ class EventsIconColumn(Column):
 		w = self.get_allocation().width
 		h = self.get_allocation().height
 		###
-		rowH = h / 7
-		itemW = w - ui.wcalPadding
+		# rowH = h / 7
+		# itemW = w - ui.wcalPadding
 		iconSizeMax = ui.wcalEventIconSizeMax
 		for i in range(7):
 			c = self.wcal.status[i]
@@ -683,8 +696,8 @@ class EventsCountColumn(Column):
 	def drawColumn(self, cr):
 		self.drawBg(cr)
 		###
-		w = self.get_allocation().width
-		h = self.get_allocation().height
+		# w = self.get_allocation().width
+		# h = self.get_allocation().height
 		###
 		self.drawTextList(
 			cr,
@@ -759,12 +772,12 @@ class EventsTextColumn(Column):
 		pack(optionsWidget, CheckColorPrefItem(
 			CheckPrefItem(
 				ui,
-				f"wcal_eventsText_pastColorEnable",
+				"wcal_eventsText_pastColorEnable",
 				_("Past Event Color"),
 			),
 			ColorPrefItem(
 				ui,
-				f"wcal_eventsText_pastColor",
+				"wcal_eventsText_pastColor",
 				useAlpha=True,
 			),
 			live=True,
@@ -775,12 +788,12 @@ class EventsTextColumn(Column):
 		pack(optionsWidget, CheckColorPrefItem(
 			CheckPrefItem(
 				ui,
-				f"wcal_eventsText_ongoingColorEnable",
+				"wcal_eventsText_ongoingColorEnable",
 				_("Ongoing Event Color"),
 			),
 			ColorPrefItem(
 				ui,
-				f"wcal_eventsText_ongoingColor",
+				"wcal_eventsText_ongoingColor",
 				useAlpha=True,
 			),
 			live=True,
@@ -867,7 +880,7 @@ class EventsBoxColumn(Column):
 		###
 		alloc = self.get_allocation()
 		w = alloc.width
-		h = alloc.height
+		# h = alloc.height
 		###
 		for box in self.boxes:
 			box.setPixelValues(
@@ -1069,7 +1082,6 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 					"font": None,
 				})
 
-		width = self.getWidthValue()
 		if n > n2:
 			for i in range(n2, n):
 				columns[i].destroy()
@@ -1187,7 +1199,7 @@ class MoonStatusColumn(Column):
 			try:
 				cr.scale(imgRadius * arcScale, imgRadius)
 			except Exception as e:
-				raise ValueError(f"{e}: invalid scale factor {arcScale}")
+				raise ValueError(f"{e}: invalid scale factor {arcScale}") from None
 			arc = cr.arc_negative if clockWise else cr.arc
 			arc(
 				0,  # center X
@@ -1311,7 +1323,10 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 			DaysOfMonthColumnGroup(self),
 			MoonStatusColumn(self),
 		]
-		defaultItemsDict = dict([(item._name, item) for item in defaultItems])
+		defaultItemsDict = {
+			item._name: item
+			for item in defaultItems
+		}
 		itemNames = list(defaultItemsDict.keys())
 		for name, enable in ui.wcalItems:
 			item = defaultItemsDict.get(name)
@@ -1531,11 +1546,10 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		if d == "up":
 			self.jdPlus(-1)
 			return None
-		elif d == "down":
+		if d == "down":
 			self.jdPlus(1)
 			return None
-		else:
-			return False
+		return False
 
 	def getCellPos(self, *args):
 		alloc = self.get_allocation()

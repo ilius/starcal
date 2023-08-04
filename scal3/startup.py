@@ -1,14 +1,14 @@
-#!/usr/bin/env python3
 from scal3 import logger
 
 log = logger.get()
 
-from os.path import isdir, isfile
+import os
+from os.path import isdir, isfile, join
 
 from scal3 import core
-from scal3.core import osName
-from scal3.os_utils import makeDir
-from scal3.path import *
+from scal3.core import APP_NAME
+from scal3.os_utils import makeDir, osName
+from scal3.path import homeDir, sourceDir
 
 comDeskDir = f"{homeDir}/.config/autostart"
 comDesk = f"{comDeskDir}/{APP_NAME}.desktop"
@@ -17,7 +17,7 @@ comDesk = f"{comDeskDir}/{APP_NAME}.desktop"
 
 def addStartup():
 	if osName == "win":
-		from scal3.windows import winMakeShortcut, winStartupFile
+		from scal3.windows import winMakeShortcut, winStartupDir, winStartupFile
 		makeDir(winStartupDir)
 		# fname = APP_NAME + ("-qt" if uiName=="qt" else "") + ".pyw"
 		fname = core.COMMAND + ".pyw"
@@ -66,6 +66,6 @@ def checkStartup():
 	if osName == "win":
 		from scal3.windows import winStartupFile
 		return isfile(winStartupFile)
-	elif isfile(comDesk):
+	if isfile(comDesk):
 		return True
 	return False

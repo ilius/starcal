@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 
 from scal3 import logger
 
@@ -6,7 +5,7 @@ log = logger.get()
 
 from scal3 import event_lib, ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import makeWidget
 from scal3.ui_gtk.event.utils import checkEventsReadOnly
 from scal3.ui_gtk.utils import dialog_add_button
@@ -63,7 +62,7 @@ class GroupEditorDialog(gtk.Dialog):
 		pass
 
 	def getNewGroupTitle(self, baseTitle):
-		usedTitles = set(group.title for group in ui.eventGroups)
+		usedTitles = {group.title for group in ui.eventGroups}
 		if baseTitle not in usedTitles:
 			return baseTitle
 
@@ -80,7 +79,10 @@ class GroupEditorDialog(gtk.Dialog):
 			self.activeWidget.updateVars()
 			self.activeWidget.destroy()
 		group = ui.withFS(event_lib.classes.group[self.comboType.get_active()]())
-		log.info(f"GroupEditorDialog: typeChanged: self.activeWidget={self.activeWidget}, new class: {group.name}")
+		log.info(
+			f"GroupEditorDialog: typeChanged: {self.activeWidget=}"
+			f", new class: {group.name}",
+		)
 		if self.isNew:
 			group.setRandomColor()
 			if group.icon:

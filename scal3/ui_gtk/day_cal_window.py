@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -21,17 +20,20 @@ from scal3 import logger
 log = logger.get()
 
 import os
+from os.path import join
 from time import time as now
 
 from scal3 import ui
 from scal3.json_utils import loadJsonConf, saveJsonConf
 from scal3.locale_man import rtl
 from scal3.locale_man import tr as _
-from scal3.path import *
-from scal3.ui_gtk import *
+from scal3.path import (
+	confDir,
+)
+from scal3.ui_gtk import Menu, gtk, pack, timeout_add
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.day_cal import DayCal
-from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.utils import (
@@ -224,7 +226,7 @@ class DayCalWindowWidget(DayCal):
 
 		if mx == my == 0:
 			log.info(
-				f"{mx=}, {my=}, {mw=}, {mh=}, " +
+				f"{mx=}, {my=}, {mw=}, {mh=}, "
 				f"{gevent.x_root=}, {gevent.y_root=}",
 			)
 			return None
@@ -300,7 +302,7 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 		coord = widget.translate_coordinates(self, x, y)
 		if coord is None:
 			raise RuntimeError(
-				f"failed to translate coordinates ({x}, {y})" +
+				f"failed to translate coordinates ({x}, {y})"
 				f" from widget {widget}",
 			)
 		dx, dy = coord

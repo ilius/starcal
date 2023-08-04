@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -82,6 +81,13 @@ class FallbackLogger:
 	def debug(self, text):
 		log.info(text)
 
+	def exception(self, prefix):
+		typ, value, tback = sys.exc_info()
+		text = f"line {tback.tb_lineno}: {typ.__name__}: {value}\n"
+		log.error(prefix + "\n" + text)
+
+
+
 
 def restartLow() -> typing.NoReturn:
 	"""Will not return from the function."""
@@ -131,25 +137,24 @@ class StrOrderedDict(dict):
 	def __getitem__(self, arg: "int | str | slice") -> Any:
 		if isinstance(arg, int):
 			return dict.__getitem__(self, self.keyList[arg])
-		elif isinstance(arg, str):
+		if isinstance(arg, str):
 			return dict.__getitem__(self, arg)
-		elif isinstance(arg, slice):  # not tested FIXME
+		if isinstance(arg, slice):  # not tested FIXME
 			return StrOrderedDict([
 				(key, dict.__getitem__(self, key))
 				for key in self.keyList.__getitem__(arg)
 			])
-		else:
-			raise ValueError(
-				"Bad type argument given to StrOrderedDict.__getitem__" +
-				f": {type(arg)}",
-			)
+		raise ValueError(
+			"Bad type argument given to StrOrderedDict.__getitem__"
+			f": {type(arg)}",
+		)
 
 	def __setitem__(self, arg: "int | str", value) -> None:
 		if isinstance(arg, int):
 			dict.__setitem__(self, self.keyList[arg], value)
 		elif isinstance(arg, str):
 			if arg in self.keyList:  # Modifying value for an existing key
-				if reorderOnModify:
+				if self.reorderOnModify:
 					self.keyList.remove(arg)
 					self.keyList.append(arg)
 			# elif isinstance(arg, slice):## ???????????? is not tested
@@ -161,8 +166,8 @@ class StrOrderedDict(dict):
 			dict.__setitem__(self, arg, value)
 		else:
 			raise ValueError(
-				"Bad type argument given to StrOrderedDict.__setitem__" +
-				f": {type(item)}",
+				"Bad type argument given to StrOrderedDict.__setitem__"
+				f": {type(arg)}",
 			)
 
 	def __delitem__(self, arg: "int | str | slice") -> None:
@@ -178,7 +183,7 @@ class StrOrderedDict(dict):
 			self.keyList.__delitem__(arg)
 		else:
 			raise ValueError(
-				"Bad type argument given to StrOrderedDict.__delitem__" +
+				"Bad type argument given to StrOrderedDict.__delitem__"
 				f": {type(arg)}",
 			)
 
@@ -305,7 +310,7 @@ def findNearestIndex(lst: list[int], num: int) -> int:
 
 def strFindNth(st: str, sub: str, n: int) -> int:
 	pos = 0
-	for i in range(n):
+	for _i in range(n):
 		pos = st.find(sub, pos + 1)
 		if pos == -1:
 			break
@@ -313,7 +318,7 @@ def strFindNth(st: str, sub: str, n: int) -> int:
 
 
 def findWordByPos(text: str, pos: int) -> tuple[str, int]:
-	"Returns (word, startPos)."
+	"""Returns (word, startPos)."""
 	if pos < 0:
 		return "", -1
 	if pos > len(text):
@@ -355,25 +360,3 @@ def numRangesDecode(text: str) -> "list[int | tuple[int, int]]":
 		except ValueError:
 			log.exception("")
 	return values
-
-
-def inputDate(msg: str) -> "tuple[int, int, int] | None":
-	while True:  # OK
-		try:
-			date = input(msg)
-		except KeyboardInterrupt:
-			return
-		if date.lower() == "q":
-			return
-		try:
-			return dateDecode(date)
-		except Exception as e:
-			log.info(str(e))
-
-
-def inputDateJd(msg: str) -> "int | None":
-	date = inputDate(msg)
-	if date:
-		y, m, d = date
-		return to_jd(y, m, d, GREGORIAN)
-	return None

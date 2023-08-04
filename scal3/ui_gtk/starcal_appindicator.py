@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -23,7 +22,7 @@ log = logger.get()
 import atexit
 import os
 import sys
-from os.path import dirname
+from os.path import dirname, join
 
 sys.path.insert(0, dirname(dirname(dirname(__file__))))
 
@@ -31,8 +30,11 @@ import gi
 
 from scal3 import locale_man
 from scal3.locale_man import tr as _
-from scal3.path import *
-from scal3.ui_gtk import *
+from scal3.path import (
+	APP_NAME,
+	tmpDir,
+)
+from scal3.ui_gtk import Menu, MenuItem, gtk
 from scal3.ui_gtk.utils import (
 	CopyLabelMenuItem,
 	get_pixbuf_hash,

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -88,7 +87,7 @@ def test():
 	for year in range(1390, 1400):
 		# for month in (1, 4, 7, 10):
 		for month in (1,):
-			s = getSeasonFromJd(jalali_to_jd(year, month, 1))
+			s = getSeasonValueFromJd(jalali_to_jd(year, month, 1))
 			log.info(f"{year:04d}/{month:02d}/01\t{s:.5f}")
 		# print
 

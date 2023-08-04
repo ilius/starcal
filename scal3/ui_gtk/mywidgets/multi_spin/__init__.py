@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -25,9 +24,9 @@ log = logger.get()
 from time import time as now
 
 from scal3 import locale_man, ui
-from scal3.mywidgets.multi_spin import *  ## FIXME
-from scal3.ui_gtk import *
-from scal3.ui_gtk.decorators import *
+from scal3.mywidgets.multi_spin import ContainerField
+from scal3.ui_gtk import gdk, getScrollValue, gtk, pack, timeout_add
+from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import calcTextPixelWidth
 from scal3.ui_gtk.utils import imageClassButton
 from scal3.utils import toStr
@@ -51,7 +50,6 @@ class AutoSizeEntry(gtk.Entry):
 		text = " " + text + " "
 		pixelWidth = calcTextPixelWidth(self, text)
 		pixelWidth += self.extra_width
-		# log.debug(f"{self.__class__.__name__}: text={text}, pixelWidth={pixelWidth}, max={self.maxChars}")
 		if pixelWidth < self.maxPixelWidth:
 			pixelWidth = self.maxPixelWidth
 		else:
@@ -88,7 +86,7 @@ class MultiSpinButton(gtk.Box):
 	def get_selection_bounds(self):
 		return self.entry.get_selection_bounds()
 
-	def get_increments(self) -> "Tuple[int, int]":
+	def get_increments(self) -> "tuple[int, int]":
 		return (self.step_inc, self.page_inc)
 
 	# def set_range(self, _min: int, _max: int):
@@ -236,8 +234,6 @@ class MultiSpinButton(gtk.Box):
 	def onKeyPress(self, widget, gevent):
 		kval = gevent.keyval
 		kname = gdk.keyval_name(kval).lower()
-		size = len(self.field)
-		sep = self.field.sep
 		step_inc = self.step_inc
 		page_inc = self.page_inc
 		if kname in (
@@ -259,14 +255,15 @@ class MultiSpinButton(gtk.Box):
 				#	"right": 1
 				#}[kname]
 				#FIXME
-			else:
-				p = {
-					"up": step_inc,
-					"down": -step_inc,
-					"page_up": page_inc,
-					"page_down": -page_inc,
-				}[kname]
-				self.entry_plus(p)
+
+			p = {
+				"up": step_inc,
+				"down": -step_inc,
+				"page_up": page_inc,
+				"page_down": -page_inc,
+			}[kname]
+			self.entry_plus(p)
+
 			#from scal3.utils import strFindNth
 			#if fieldIndex==0:
 			#	i1 = 0

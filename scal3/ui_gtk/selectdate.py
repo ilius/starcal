@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -24,8 +23,8 @@ log = logger.get()
 from scal3 import ui
 from scal3.cal_types import calTypes, convert, jd_to
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
-from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk import HBox, gdk, gtk, pack
+from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.option_box.date import DateButtonOption

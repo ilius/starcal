@@ -1,7 +1,5 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from scal3.ui_gtk import *
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
 

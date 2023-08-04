@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -16,11 +15,12 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
+import logging
 import os
 import sys
 from os.path import isdir, isfile
 
-# import platform
+log = logging.getLogger("starcal3")
 
 
 def getOsName():
@@ -29,20 +29,19 @@ def getOsName():
 	plat = sys.platform  # "linux2", "win32", "darwin"
 	if plat.startswith("linux"):
 		return "linux"
-	elif plat.startswith("win"):
+	if plat.startswith("win"):
 		return "win"
-	elif plat == "darwin":
+	if plat == "darwin":
 		# os.environ["OSTYPE"] == "darwin10.0"
 		# os.environ["MACHTYPE"] == "x86_64-apple-darwin10.0"
 		# platform.dist() == ("", "", "")
 		# platform.release() == "10.3.0"
 		return "mac"
-	elif os.sep == "\\":
+	if os.sep == "\\":
 		return "win"
-	elif os.sep == "/":
+	if os.sep == "/":
 		return "unix"
-	else:
-		raise OSError("Unkown operating system!")
+	raise OSError("Unkown operating system!")
 
 
 osName = getOsName()
@@ -79,11 +78,10 @@ def getUserDisplayName():
 				if user["login"] == username:
 					if user["real_name"]:
 						return user["real_name"]
-					else:
-						return username
+					return username
 		return username
-	else:  # FIXME
-		return os.getenv("USERNAME")
+	# FIXME
+	return os.getenv("USERNAME")
 
 
 def kill(pid, signal=0):
@@ -100,10 +98,9 @@ def kill(pid, signal=0):
 		if e.errno == 3:
 			return True
 		# no permissions
-		elif e.errno == 1:
+		if e.errno == 1:
 			return False
-		else:
-			raise e
+		raise e
 
 
 def dead(pid):
@@ -118,8 +115,7 @@ def dead(pid):
 		# pid is not a child
 		if e.errno == 10:
 			return False
-		else:
-			raise e
+		raise e
 	return dead
 
 
@@ -127,7 +123,7 @@ def dead(pid):
 
 
 def goodkill(pid, interval=1, hung=20):
-	"Let process die gracefully, gradually send harsher signals if necessary."
+	"""Let process die gracefully, gradually send harsher signals if necessary."""
 	from signal import SIGHUP, SIGINT, SIGKILL, SIGTERM
 	from time import sleep
 
@@ -138,7 +134,7 @@ def goodkill(pid, interval=1, hung=20):
 			return
 		sleep(interval)
 
-	for i in range(hung):
+	for _i in range(hung):
 		if kill(pid, SIGKILL):
 			return
 		if dead(pid):
@@ -169,6 +165,7 @@ def fixStrForFileName(fname: str) -> str:
 
 # returns False if could not find any browser or command to open the URL
 def openUrl(url: str) -> bool:
+	from subprocess import Popen
 	if osName == "win":
 		Popen([url])
 		return True

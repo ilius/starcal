@@ -5,7 +5,7 @@ log = logger.get()
 
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import VBox, gtk, pack, timeout_add
 
 # WeekOccurrenceView,
 from scal3.ui_gtk.customize import CustomizableCalObj, newSubPageButton
@@ -153,7 +153,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 
 	def updatePosition(self, height: int):
 		log.debug(
-			f"updatePosition: height={height}, setPosAtHeight={self.setPosAtHeight}, " +
+			f"updatePosition: {height=}, {self.setPosAtHeight=}, "
 			f"pos={self.get_position()}",
 		)
 		if height <= 1:
