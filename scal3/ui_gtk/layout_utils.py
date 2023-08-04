@@ -1,7 +1,8 @@
 
-from typing import Optional, Any, Union, List, Callable
+from typing import Any, Callable
 
 from scal3.ui_gtk import *
+
 
 def keeperCallable(obj: Any) -> Callable[[], Any]:
 	def res():
@@ -13,7 +14,7 @@ def moduleObjectInitializer(
 	modulePath: str,
 	className: str,
 	*args,
-	**kwargs
+	**kwargs,
 ) -> Callable[[], Any]:
 	def res():
 		module = __import__(

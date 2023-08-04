@@ -19,29 +19,26 @@
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 from scal3 import logger
+
 log = logger.get()
 
-import time
-from time import time as now
 
-from scal3.time_utils import getUtcOffsetByGDate
-from scal3.cal_types import calTypes, gregorian, to_jd
 from scal3 import core
+from scal3.cal_types import calTypes, gregorian, to_jd
 from scal3.locale_man import tr as _
+from scal3.time_utils import getUtcOffsetByGDate
 from scal3.types_starcal import CompiledTimeFormat
 
 
 def iso_to_jd(year, week, day):
-	"""
-	Return Julian day of given ISO year, week, and day
-	"""
+	"""Return Julian day of given ISO year, week, and day."""
 	# assert week > 0 and day > 0 and day <= 7
 	jd0 = gregorian.to_jd(year - 1, 12, 28)
 	return day + 7 * week + jd0 - jd0 % 7 - 1
 
 
 def isow_year(jd):
-	""" iso week year """
+	"""Iso week year."""
 	year = gregorian.jd_to(jd - 3)[0]
 	if jd >= iso_to_jd(year + 1, 1, 1):
 		year += 1
@@ -49,7 +46,7 @@ def isow_year(jd):
 
 
 def isow(jd):
-	""" iso week number """
+	"""Iso week number."""
 	year = gregorian.jd_to(jd - 3)[0]
 	if jd >= iso_to_jd(year + 1, 1, 1):
 		year += 1
@@ -120,7 +117,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 		elif c1 == "a":
 			funcs.append(
 				lambda cell, calType, tm:
-					core.weekDayNameAb[cell.weekDay]
+					core.weekDayNameAb[cell.weekDay],
 			)
 			pyFmt += "%s"
 			i += 2
@@ -128,7 +125,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 		elif c1 == "A":
 			funcs.append(
 				lambda cell, calType, tm:
-					core.weekDayName[cell.weekDay]
+					core.weekDayName[cell.weekDay],
 			)
 			pyFmt += "%s"
 			i += 2
@@ -242,7 +239,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 			continue
 		elif c1 == "w":
 			funcs.append(lambda cell, calType, tm: _(
-				(cell.jd + 1) % 7
+				(cell.jd + 1) % 7,
 			))  # jwday
 			pyFmt += "%s"
 			i += 2
@@ -282,7 +279,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 		elif c1 == "z":
 			def tz(cell, calType, tm):
 				m = int(
-					getUtcOffsetByGDate(*cell.dates[core.GREGORIAN]) / 60
+					getUtcOffsetByGDate(*cell.dates[core.GREGORIAN]) / 60,
 				)
 				return _(m // 60, fillZero=2) + _(m % 60, fillZero=2)
 			funcs.append(tz)
@@ -295,7 +292,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 			if c2 == "z":  # %:z
 				def tz(cell, calType, tm):
 					m = int(
-						getUtcOffsetByGDate(*cell.dates[core.GREGORIAN]) / 60
+						getUtcOffsetByGDate(*cell.dates[core.GREGORIAN]) / 60,
 					)
 					return _(m // 60, fillZero=2) + ":" + _(m % 60, fillZero=2)
 				funcs.append(tz)
@@ -330,7 +327,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 				continue
 			elif c1 == "l":
 				funcs.append(lambda cell, calType, tm: _(
-					(tm[0] - 1) % 12 + 1
+					(tm[0] - 1) % 12 + 1,
 				))  # FIXME
 				pyFmt += "%s"
 				i += 2
@@ -341,7 +338,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 						_((tm[0] - 1) % 12 + 1, fillZero=2) + ":" +
 						_(tm[1], fillZero=2) + ":" +
 						_(tm[2], fillZero=2) + " " +
-						_("AM" if tm[0] < 12 else "PM")
+						_("AM" if tm[0] < 12 else "PM"),
 				)
 				pyFmt += "%s"
 				i += 2
@@ -350,7 +347,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 				funcs.append(
 					lambda cell, calType, tm:
 						_(tm[0], fillZero=2) + ":" +
-						_(tm[1], fillZero=2)
+						_(tm[1], fillZero=2),
 				)
 				pyFmt += "%s"
 				i += 2
@@ -404,7 +401,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 				continue
 			elif c1 == "P":
 				funcs.append(lambda cell, calType, tm: _(
-					"AM" if tm[0] < 12 else "PM"
+					"AM" if tm[0] < 12 else "PM",
 				).lower())
 				pyFmt += "%s"
 				i += 2
@@ -414,7 +411,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 					lambda cell, calType, tm:
 						_(tm[0], fillZero=2) + ":" +
 						_(tm[1], fillZero=2) + ":" +
-						_(tm[2], fillZero=2)
+						_(tm[2], fillZero=2),
 				)
 				pyFmt += "%s"
 				i += 2
@@ -424,7 +421,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 					lambda cell, calType, tm:
 						_(tm[0], fillZero=2) + ":" +
 						_(tm[1], fillZero=2) + ":" +
-						_(tm[2], fillZero=2)
+						_(tm[2], fillZero=2),
 				)
 				pyFmt += "%s"
 				i += 2

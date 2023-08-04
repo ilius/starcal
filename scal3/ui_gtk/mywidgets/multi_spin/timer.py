@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 from time import localtime
 
+from scal3.time_utils import clockWaitMilliseconds
 from scal3.ui_gtk import *
 from scal3.ui_gtk.decorators import *
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
-from scal3.time_utils import clockWaitMilliseconds
 
 
 @registerSignals

@@ -14,7 +14,7 @@ class HourMinuteButtonOption(MultiSpinOptionBox):
 				HourField(),
 				Z60Field(),
 			),
-			**kwargs
+			**kwargs,
 		)
 		if hm is None:
 			hm = localtime()[3:5]
