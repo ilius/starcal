@@ -16,24 +16,20 @@
 # You should have received a copy of the GNU Affero General Public License along
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 from scal3 import logger
+
 log = logger.get()
 
 from scal3 import logger
+
 log = logger.get()
 
-from time import time
 
-from scal3 import core
-from scal3 import ui
 
-from gi.repository import cairo
-from gi.repository import GdkPixbuf
-
+from scal3 import core, ui
 from scal3.ui_gtk import *
 from scal3.ui_gtk import listener
-from scal3.ui_gtk.drawing import newDndDatePixbuf
-from scal3.ui_gtk.color_utils import rgbToGdkColor
 from scal3.ui_gtk.customize import CustomizableCalObj
+from scal3.ui_gtk.drawing import newDndDatePixbuf
 
 
 class CalBase(CustomizableCalObj):
@@ -159,7 +155,7 @@ class CalBase(CustomizableCalObj):
 		else:
 			log.info(
 				f"Unknown dropped data type {dtype!r}, {text=}, " +
-				f"data={selection.data!r}"
+				f"data={selection.data!r}",
 			)
 			return True
 		return False

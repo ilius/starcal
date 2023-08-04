@@ -23,6 +23,7 @@
 # http://en.wikipedia.org/wiki/Iranian_calendar
 
 from scal3 import logger
+
 log = logger.get()
 
 name = "jalali"
@@ -131,12 +132,10 @@ for i in range(12):
 # log.debug(monthLenSum)
 # monthLenSum[i] == sum(monthLen[:i])
 
-import os
 from bisect import bisect_left
 
-from scal3.path import sysConfDir, confDir
-from scal3.utils import iceil
 from scal3.json_utils import *
+from scal3.path import confDir, sysConfDir
 
 # Here load user options(jalaliAlg) from file
 sysConfPath = f"{sysConfDir}/{name}.json"
@@ -148,9 +147,7 @@ loadJsonConf(__name__, confPath)
 
 
 def save():
-	"""
-	save user options to file
-	"""
+	"""Save user options to file."""
 	saveJsonConf(__name__, confPath, (
 		"monthNameMode",
 		"jalaliAlg",
@@ -161,9 +158,7 @@ def save():
 
 
 def isLeap(year):
-	"""
-	isLeap: Is a given year a leap year in the Jalali calendar ?
-	"""
+	"""isLeap: Is a given year a leap year in the Jalali calendar ?."""
 	alg = jalaliAlg
 	if alg == ALG2820:
 		# originally: year - 473 - (year > -2)
@@ -189,9 +184,7 @@ def getMonthDayFromYdays(yday):
 
 
 def to_jd(year, month, day):
-	"""
-	calculate Julian day from Jalali date
-	"""
+	"""Calculate Julian day from Jalali date."""
 	alg = jalaliAlg
 	if alg == ALG2820:
 		# originally: year - (474 if year >= 0 else 473)
@@ -225,9 +218,7 @@ def to_jd(year, month, day):
 
 
 def jd_to(jd):
-	"""
-	calculate Jalali date from Julian day
-	"""
+	"""Calculate Jalali date from Julian day."""
 	alg = jalaliAlg
 	if alg == ALG2820:
 		cycle, cyear = divmod(jd - to_jd(475, 1, 1), 1029983)
