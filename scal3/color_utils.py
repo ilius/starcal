@@ -1,11 +1,9 @@
 #!/usr/bin/env python3
 
-from typing import Union
+import typing
 
-ColorType = Union[
-	tuple[int, int, int],
-	tuple[int, int, int, int],
-]
+ColorType: "typing.TypeAlias" = "tuple[int,int,int] | tuple[int,int,int,int]"
+
 
 
 def invertColor(r, g, b):
