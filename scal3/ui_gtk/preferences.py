@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -21,6 +20,7 @@ from scal3 import logger
 log = logger.get()
 
 
+import typing
 from contextlib import suppress
 from os.path import join
 
@@ -28,21 +28,51 @@ from scal3 import core, locale_man, plugin_man, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import langSh
 from scal3.locale_man import tr as _
-from scal3.path import *
-from scal3.ui_gtk import *
+from scal3.path import (
+	sourceDir,
+)
+from scal3.ui_gtk import HBox, Menu, VBox, gdk, gtk, pack, pixcache
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.log_pref import LogLevelPrefItem
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
-from scal3.ui_gtk.pref_utils import *
-from scal3.ui_gtk.pref_utils_extra import *
+from scal3.ui_gtk.pref_utils import (
+	CheckColorPrefItem,
+	CheckPrefItem,
+	ColorPrefItem,
+	ComboEntryTextPrefItem,
+	FontFamilyPrefItem,
+	FontPrefItem,
+	ImageFileChooserPrefItem,
+	ModuleOptionButton,
+	ModuleOptionItem,
+	SpinPrefItem,
+	WidthHeightPrefItem,
+)
+from scal3.ui_gtk.pref_utils_extra import (
+	AICalsPrefItem,
+	CheckStartupPrefItem,
+	LangPrefItem,
+	WeekDayCheckListPrefItem,
+)
 from scal3.ui_gtk.stack import MyStack, StackPage
 from scal3.ui_gtk.toolbox import (
 	StaticToolBox,
 	ToolBoxItem,
 )
-from scal3.ui_gtk.utils import *
+from scal3.ui_gtk.utils import (
+	confirm,
+	dialog_add_button,
+	imageFromFile,
+	labelImageButton,
+	newAlignLabel,
+	newHSep,
+	openWindow,
+	showError,
+)
 
+if typing.TYPE_CHECKING:
+	from scal3.plugin_type import PluginType
 
 class PreferencesPluginsToolbar(StaticToolBox):
 	def __init__(self, parent):
@@ -112,7 +142,7 @@ class PreferencesWindow(gtk.Window):
 	@ud.cssFunc
 	def getCSS() -> str:
 		from scal3.ui_gtk.utils import cssTextStyle
-		return f".preferences-main-grid " + cssTextStyle(
+		return ".preferences-main-grid " + cssTextStyle(
 			font=ui.getFont(scale=1.6),
 		)
 
@@ -139,7 +169,7 @@ class PreferencesWindow(gtk.Window):
 			label=_("_Apply", ctx="window action"),
 			onClick=self.apply,
 		)
-		okB = self.buttonbox.add_button(
+		self.buttonbox.add_button(
 			imageName="dialog-ok.svg",
 			label=_("_Confirm"),
 			onClick=self.ok,
@@ -242,7 +272,7 @@ class PreferencesWindow(gtk.Window):
 		pack(vbox, hbox)
 		##########################
 		try:
-			import scal3.ui_gtk.starcal_appindicator
+			import scal3.ui_gtk.starcal_appindicator  # noqa: F401
 		except (ImportError, ValueError):
 			pass
 		else:
@@ -717,9 +747,9 @@ class PreferencesWindow(gtk.Window):
 			"hMS": f"05:07:09 {_('or')} 5:07:00",
 			"hm$": f"5:7:9 {_('or')} 5:7",
 			"hms": f"5:7:9 {_('or')} 5:7:0",
-			"HM": f"05:07",
-			"hm": f"5:7",
-			"hM": f"5:07",
+			"HM": "05:07",
+			"hm": "5:7",
+			"hM": "5:07",
 		})
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
@@ -1147,7 +1177,6 @@ class PreferencesWindow(gtk.Window):
 		N = len(mainPages)
 		rowN = (N - 1) // colN + 1
 		for col_i in range(colN):
-			colVBox = VBox(spacing=10)
 			for row_i in range(rowN):
 				page_i = col_i * rowN + row_i
 				if page_i >= N:
@@ -1244,7 +1273,7 @@ class PreferencesWindow(gtk.Window):
 			self.gtkPrefItems,
 		)
 
-	def loadPlugin(self, plug: "BasePlugin", plugI: int) -> "BasePlugin":
+	def loadPlugin(self, plug: "PluginType", plugI: int) -> "PluginType":
 		plug = plugin_man.loadPlugin(plug.file, enable=True)
 		if plug:
 			assert plug.loaded
@@ -1278,7 +1307,7 @@ class PreferencesWindow(gtk.Window):
 					plug.show_date = show_date
 				except NameError:
 					core.log.exception("")
-					log.info(i, core.plugIndex)
+					log.info(f"plugIndex = {core.plugIndex}")
 			elif enable:
 				plug = self.loadPlugin(plug, plugI)
 		core.plugIndex = index
@@ -1776,18 +1805,17 @@ class PreferencesWindow(gtk.Window):
 	def accountsTreevButtonPress(self, widget, gevent):
 		b = gevent.button
 		if b == 3:
-			cur = self.accountsTreeview.get_cursor()[0]
-			if cur:
-				index = cur[0]
-				accountId = self.accountsTreeModel[index][0]
-				account = ui.eventAccounts[accountId]
-				menu = Menu()
-				##
-				# FIXME
-				##
-				# menu.show_all()
-				# self.tmpMenu = menu
-				# menu.popup(None, None, None, None, 3, gevent.time)
+			pass # FIXME
+			# cur = self.accountsTreeview.get_cursor()[0]
+			# if cur:
+			# 	index = cur[0]
+			# 	accountId = self.accountsTreeModel[index][0]
+			# 	account = ui.eventAccounts[accountId]
+			# 	menu = Menu()
+			# 	#
+			# 	menu.show_all()
+			# 	self.tmpMenu = menu
+			# 	menu.popup(None, None, None, None, 3, gevent.time)
 			return True
 		return False
 

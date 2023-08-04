@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
 
 
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import Menu, gtk
 from scal3.ui_gtk.menuitems import ImageMenuItem
 from scal3.ui_gtk.utils import (
 	buffer_get_text,
@@ -98,7 +97,6 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 
 	def copyWordByIter(self, item, _iter):
 		text = self.get_text()
-		buf = self.get_buffer()
 		pos = _iter.get_offset()
 		word = findWordByPos(text, pos)[0]
 		setClipboard(word)
@@ -121,7 +119,6 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 			_iter = self.get_iter_at_position(buf_x, buf_y)[1]
 		####
 		text = self.get_text()
-		buf = self.get_buffer()
 		pos = _iter.get_offset()
 		word = findWordByPos(text, pos)[0]
 		####

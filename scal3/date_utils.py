@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import math
 from typing import Generator
 
@@ -46,7 +45,7 @@ def dateDecode(st: str) -> list[int]:
 	try:
 		date = [int(p) for p in parts]
 	except ValueError:
-		raise ValueError(f"bad date '{st}': omitting non-numeric")
+		raise ValueError(f"bad date '{st}': omitting non-numeric") from None
 	if neg:
 		date[0] *= -1
 	checkDate(date)
@@ -66,12 +65,12 @@ def validDate(calType: int, y: int, m: int, d: int) -> bool:
 
 def datesDiff(y1: int, m1: int, d1: int, y2: int, m2: int, d2: int) -> int:
 	return to_jd(
-		calType.primary,
+		calTypes.primary,
 		y2,
 		m2,
 		d2,
 	) - to_jd(
-		calType.primary,
+		calTypes.primary,
 		y1,
 		m1,
 		d1,
@@ -145,3 +144,16 @@ def ymdRange(
 	j2 = int(to_jd(y2, m2, d2, calType))
 	for j in range(j1, j2):
 		yield jd_to(j, calType)
+
+# def inputDate(msg: str) -> "tuple[int, int, int] | None":
+# 	while True:  # OK
+# 		try:
+# 			date = input(msg)
+# 		except KeyboardInterrupt:
+# 			return
+# 		if date.lower() == "q":
+# 			return
+# 		try:
+# 			return dateDecode(date)
+# 		except Exception as e:
+# 			log.info(str(e))

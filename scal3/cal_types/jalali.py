@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -134,7 +133,10 @@ for i in range(12):
 
 from bisect import bisect_left
 
-from scal3.json_utils import *
+from scal3.json_utils import (
+	loadJsonConf,
+	saveJsonConf,
+)
 from scal3.path import confDir, sysConfDir
 
 # Here load user options(jalaliAlg) from file
@@ -164,17 +166,18 @@ def isLeap(year):
 		# originally: year - 473 - (year > -2)
 		# since we don't exclude Zero Year, this seems like the correct formula:
 		return (((year - 474) % 2820) * 682) % 2816 < 682
-	elif alg == ALG33:
+
+	if alg == ALG33:
 		jy = year - 979
 		jyd, jym = divmod(jy, 33)
 		jyd2, jym2 = divmod(jy + 1, 33)
-		return 1 == (
+		return (
 			(jyd2 - jyd) * 8
 			+ (jym2 + 3) // 4
 			- (jym + 3) // 4
-		)
-	else:
-		raise RuntimeError(f"bad option {alg=}")
+		) == 1
+
+	raise RuntimeError(f"bad option {alg=}")
 
 
 def getMonthDayFromYdays(yday):
@@ -200,7 +203,8 @@ def to_jd(year, month, day):
 			+ epbase_d * 1029983
 			+ epoch - 1
 		)
-	elif alg == ALG33:
+
+	if alg == ALG33:
 		jy = year - 979
 		jyd, jym = divmod(jy, 33)
 		return (
@@ -213,8 +217,8 @@ def to_jd(year, month, day):
 			+ 584101
 			+ GREGORIAN_EPOCH
 		)
-	else:
-		raise RuntimeError(f"bad option {alg=}")
+
+	raise RuntimeError(f"bad option {alg=}")
 
 
 def jd_to(jd):

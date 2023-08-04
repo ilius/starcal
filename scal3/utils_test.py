@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import sys
 import unittest
 from os.path import abspath, dirname
@@ -6,7 +5,11 @@ from os.path import abspath, dirname
 rootDir = dirname(dirname(abspath(__file__)))
 sys.path.insert(0, rootDir)
 
-from scal3.utils import *
+from scal3.utils import (
+	findNearestNum,
+	findWordByPos,
+	versionLessThan,
+)
 
 
 class TestVersionCompare(unittest.TestCase):

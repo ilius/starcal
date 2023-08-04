@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -20,6 +19,11 @@ from scal3 import logger
 
 log = logger.get()
 
+import typing
+
+if typing.TYPE_CHECKING:
+	import subprocess
+
 import gettext
 import os
 import string
@@ -34,11 +38,19 @@ from typing import Callable
 
 import natz
 from scal3.cal_types import calTypes
-from scal3.json_utils import *
+from scal3.json_utils import (
+	jsonToData,
+	loadModuleJsonConf,
+	saveModuleJsonConf,
+)
+from scal3.path import (
+	APP_NAME,
+	confDir,
+	pixDir,
+	sourceDir,
+)
 from scal3.s_object import JsonSObj
 from scal3.utils import StrOrderedDict, toStr
-
-from .path import *
 
 ##########################################################
 
@@ -171,7 +183,7 @@ class LangData(JsonSObj):
 		):
 			if not getattr(self, param):
 				raise ValueError(
-					f"missing or empty parameter \"{param}\"" +
+					f"missing or empty parameter \"{param}\""
 					f" in language file \"{self.file}\"",
 				)
 		#####
@@ -246,7 +258,8 @@ langDict.sort("name")
 
 
 def popen_output(cmd: "list[str] | str") -> str:
-	return Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
+	import subprocess
+	return subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
 
 
 def getLocaleFirstWeekDay() -> int:
@@ -396,8 +409,7 @@ def numEncode(
 	if localeMode == "en" or localeMode not in digits:
 		if fillZero:
 			return str(num).zfill(fillZero)
-		else:
-			return str(num)
+		return str(num)
 	neg = (num < 0)
 	dig = getLangDigits(localeMode)
 	res = ""
@@ -487,7 +499,7 @@ def numDecode(numSt: str) -> int:
 			else:
 				try:
 					numEn += str(tryLangDigits.index(dig))
-				except ValueError as e:
+				except ValueError:
 					log.error(f"error in decoding num char {dig}")
 					# raise e
 					break

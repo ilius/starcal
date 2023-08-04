@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -22,13 +21,15 @@ log = logger.get()
 
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import GdkPixbuf, HBox, VBox, gtk, pack
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.utils import (
 	dialog_add_button,
 	hideList,
 	labelImageButton,
 	openWindow,
+	set_tooltip,
+	showList,
 )
 
 #class EventCategorySelect(gtk.Box):
@@ -190,7 +191,8 @@ class TagsListBox(gtk.Box):
 		treev.append_column(col)
 		###
 		cell = gtk.CellRendererText()
-		col = gtk.TreeViewColumn(title=_("Name"), cell_renderer=cell, text=2)## really desc, not name
+		col = gtk.TreeViewColumn(title=_("Name"), cell_renderer=cell, text=2)
+		# really desc, not name
 		col.set_resizable(True)
 		col.set_sort_column_id(2)
 		col.set_sort_indicator(True)

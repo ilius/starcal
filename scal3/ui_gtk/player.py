@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -30,7 +29,7 @@ from contextlib import suppress
 from time import sleep
 
 from scal3 import ui
-from scal3.ui_gtk import *
+from scal3.ui_gtk import VBox, gtk, pack, source_remove, timeout_add
 from scal3.ui_gtk.utils import (
 	imageFromFile,
 	pixbufFromFile,
@@ -65,7 +64,10 @@ class MPlayer:
 
 		cmd = ["mplayer"] + mplayerOptions + ["-quiet", "-slave", path]
 		# 2>/dev/null"
-		self.mplayerIn, self.mplayerOut = subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()
+		self.mplayerIn, self.mplayerOut = subprocess.Popen(
+			cmd,
+			stdout=subprocess.PIPE,
+		).communicate()
 
 		try:
 			import fcntl
@@ -212,11 +214,13 @@ class MPlayer:
 
 	# Handle EOF (basically, a connection Hung Up in mplayerOut)
 	def startHandleEof(self):
-		self.eofHandle = gobject.io_add_watch(
-			self.mplayerOut,
-			gobject.IO_HUP,
-			self.handleEof,
-		)
+		pass
+		# FIXME
+		# self.eofHandle = gobject.io_add_watch(
+		# 	self.mplayerOut,
+		# 	gobject.IO_HUP,
+		# 	self.handleEof,
+		# )
 
 	# Stop looking for IO_HUP in mplayerOut
 	def stopEofHandler(self):
@@ -318,24 +322,24 @@ class PlayerBox(gtk.Box):
 		if key == self.key_seekback: # left arrow, seek
 			self.mplayer.seek(-SEEK_TIME_SMALL)
 			return None
-		elif key == self.key_seekforward: # right arrow, seek forward
+		if key == self.key_seekforward: # right arrow, seek forward
 			self.mplayer.seek(SEEK_TIME_SMALL)
 			return None
-		elif key == self.key_volinc: # *, increase volume
+		if key == self.key_volinc: # *, increase volume
 			if self.hasVol:
 				self.mplayer.stepVolume(True)
 				return None
 			return None
-		elif key == self.key_voldec: # /, decrease volume
+		if key == self.key_voldec: # /, decrease volume
 			if self.hasVol:
 				self.mplayer.stepVolume(False)
 				return None
 			return None
-		elif key == self.key_pause: # space bar, pause
+		if key == self.key_pause: # space bar, pause
 			self.mplayer.pause()
 			return None
-		else:
-			return False
+
+		return False
 
 	def displaySongString(self, seekBar, value):
 		if self.mplayer.playTime:

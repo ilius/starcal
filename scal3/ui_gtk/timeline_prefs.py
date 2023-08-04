@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -19,7 +18,7 @@
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.timeline import tl
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.mywidgets.buttonbox import MyHButtonBox
 from scal3.ui_gtk.pref_utils import (
 	CheckColorPrefItem,
@@ -581,7 +580,7 @@ class TimeLinePreferencesWindow(gtk.Window):
 		# TODO: boxSkipPixelLimit = 0.1  # pixel
 		# TODO: rotateBoxLabel = -1
 		####################################################
-		vboxMovement = vbox = VBox(spacing=5)
+		vbox = VBox(spacing=5)
 		vbox.set_border_width(5)
 		page = StackPage()
 		page.pageWidget = vbox
@@ -861,7 +860,6 @@ class TimeLinePreferencesWindow(gtk.Window):
 		N = len(mainPages)
 		colBN = (N - 1) // colN + 1
 		for col_i in range(colN):
-			colVBox = VBox(spacing=10)
 			for row_i in range(colBN):
 				page_i = col_i * colBN + row_i
 				if page_i >= N:

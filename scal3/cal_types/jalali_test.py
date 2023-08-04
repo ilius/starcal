@@ -1,6 +1,7 @@
+import sys
 import unittest
 
-import sys;sys.path.append(".")
+sys.path.append(".")
 
 from scal3.cal_types import jalali
 
@@ -20,7 +21,9 @@ class TestJalali(unittest.TestCase):
 			isLeap1 = isLeapFunc(year)
 			jalali.jalaliAlg = 1
 			isLeap2 = isLeapFunc(year)
-			# print(f"{str(year).center(10)}   {'L' if isLeap1 else ' '}   {'L' if isLeap2 else ' '}")
+			# print(
+			# 	f"{str(year).center(10)}   {'L' if isLeap1 else ' '}   "
+			# 	f"{'L' if isLeap2 else ' '}")
 			print(f"{year}: \"{'L' if isLeap1 else ' '}{'L' if isLeap2 else ' '}\",")
 
 

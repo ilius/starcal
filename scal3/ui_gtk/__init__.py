@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 __all__ = [
 	"gtk",
 	"gdk",
@@ -108,9 +107,7 @@ class Menu(gtk.Menu):
 	# 	self.imageSizeGroup.add_widget(item.get_image())
 
 
-"""
-dir(gevent) == ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__gtype__', '__hash__', '__info__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', '_get_angle', '_get_center', '_get_distance', 'copy', 'delta_x', 'delta_y', 'device', 'direction', 'free', 'get', 'get_axis', 'get_button', 'get_click_count', 'get_coords', 'get_device', 'get_device_tool', 'get_event_sequence', 'get_event_type', 'get_keycode', 'get_keyval', 'get_pointer_emulated', 'get_root_coords', 'get_scancode', 'get_screen', 'get_scroll_deltas', 'get_scroll_direction', 'get_seat', 'get_source_device', 'get_state', 'get_time', 'get_window', 'handler_set', 'is_scroll_stop_event', 'is_stop', 'new', 'peek', 'put', 'request_motions', 'send_event', 'set_device', 'set_device_tool', 'set_screen', 'set_source_device', 'state', 'time', 'triggers_context_menu', 'type', 'window', 'x', 'x_root', 'y', 'y_root']
-"""
+
 def getScrollValue(gevent, last=""):
 	"""Return value is either "up" or "down"."""
 	value = gevent.direction.value_nick

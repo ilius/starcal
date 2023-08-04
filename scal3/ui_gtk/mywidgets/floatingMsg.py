@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -17,12 +16,25 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from time import time as now
+from typing import TYPE_CHECKING
 
 from gi.repository.PangoCairo import show_layout
 
-from scal3.ui_gtk import *
-from scal3.ui_gtk.decorators import *
-from scal3.ui_gtk.drawing import *
+from scal3.ui_gtk import gdk, gtk, timeout_add
+from scal3.ui_gtk.decorators import registerType
+from scal3.ui_gtk.drawing import (
+	newTextLayout,
+	setColor,
+)
+
+if TYPE_CHECKING:
+	import cairo
+
+__all__ = [
+	"FloatingMsg",
+	"MyLabel",
+	"NoFillFloatingMsgWindow",
+]
 
 rootWin = gdk.get_default_root_window()
 screenWidth = rootWin.get_width()
@@ -153,9 +165,8 @@ class FloatingMsg(gtk.DrawingArea):
 			if self.index >= self.linesNum - 1:
 				self.finish()
 				return
-			else:
-				self.index += 1
-				self.updateLine()
+			self.index += 1
+			self.updateLine()
 		self.queue_draw()
 
 	def show(self):
@@ -287,9 +298,8 @@ class NoFillFloatingMsgWindow(gtk.Window):
 			if self.index >= self.linesNum - 1:
 				self.finish()
 				return
-			else:
-				self.index += 1
-				self.updateLine()
+			self.index += 1
+			self.updateLine()
 
 
 if __name__ == "__main__":

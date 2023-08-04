@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -19,10 +18,11 @@
 from scal3 import core, ui
 from scal3.cal_types import calTypes, getMonthLen
 from scal3.core import (
-	getMonthName,
 	getWeekDay,
 	getWeekNumberByJd,
 )
+from scal3.date_utils import getJdRangeForMonth
+from scal3.locale_man import getMonthName
 from scal3.locale_man import tr as _
 
 pluginName = "MonthCal"
@@ -42,7 +42,7 @@ class MonthStatus(list):  # FIXME
 			for i in range(6)
 		]
 		#########
-		startJd, endJd = core.getJdRangeForMonth(year, month, calTypes.primary)
+		startJd, endJd = getJdRangeForMonth(year, month, calTypes.primary)
 		tableStartJd = startJd - self.offset
 		#####
 		list.__init__(self, [

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from scal3 import logger
@@ -6,7 +5,7 @@ from scal3 import logger
 log = logger.get()
 
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
@@ -86,7 +85,7 @@ class WidgetClass(common.WidgetClass):
 
 
 if __name__ == "__main__":
-	combo = Scale10PowerComboBox()
+	combo = common.Scale10PowerComboBox()
 	combo.set_value(200)
 	win = gtk.Dialog()
 	pack(win.vbox, combo)

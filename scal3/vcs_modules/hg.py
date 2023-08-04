@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -107,7 +106,7 @@ def getTagList(obj, startJd, endJd):
 	endEpoch = getEpochFromJd(endJd)
 	###
 	data = []
-	for tag, unkown in obj.repo.tagslist():
+	for tag, _unknown in obj.repo.tagslist():
 		if tag == "tip":
 			continue
 		epoch = obj.repo[tag].date()[0]

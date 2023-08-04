@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -24,12 +23,13 @@ import typing
 from os.path import isabs, join
 from typing import Any, Callable
 
-from gi.repository import GdkPixbuf
-
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.path import *
-from scal3.ui_gtk import *
+from scal3.path import (
+	pixDir,
+	svgDir,
+)
+from scal3.ui_gtk import Box, GdkPixbuf, HBox, VBox, gtk, pack
 from scal3.ui_gtk.font_utils import gfontDecode, gfontEncode
 from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
@@ -40,6 +40,35 @@ from scal3.ui_gtk.utils import (
 )
 
 ColorType: "typing.TypeAlias" = "tuple[int, int, int] | tuple[int, int, int, int]"
+
+__all__ = [
+	"ModuleOptionItem",
+	"ModuleOptionButton",
+	"PrefItem",
+	"ComboTextPrefItem",
+	"FontFamilyPrefItem",
+	"ComboEntryTextPrefItem",
+	"ComboImageTextPrefItem",
+	"FontPrefItem",
+	"CheckPrefItem",
+	"ColorPrefItem",
+	"CheckColorPrefItem",
+	"CheckFontPrefItem",
+	"SpinPrefItem",
+	"TextPrefItem",
+	"WidthHeightPrefItem",
+	"FileChooserPrefItem",
+	"ImageFileChooserPrefItem",
+	"IconChooserPrefItem",
+	"RadioListPrefItem",
+	"RadioHListPrefItem",
+	"RadioVListPrefItem",
+	"ListPrefItem",
+	"HListPrefItem",
+	"VListPrefItem",
+	"DirectionPrefItem",
+	"JustificationPrefItem",
+]
 
 
 # (VAR_NAME, bool,     CHECKBUTTON_TEXT)                 ## CheckButton
@@ -169,9 +198,11 @@ class PrefItem:
 
 
 class ComboTextPrefItem(PrefItem):
-	@classmethod
-	def valueString(cls, value: Any) -> str:
-		return self._combo.get_model()[value]
+	# valueString is not used anywhere!
+	# and I was using self here!
+	# @classmethod
+	# def valueString(cls, value: Any) -> str:
+	# 	return self._combo.get_model()[value]
 
 	def __init__(
 		self,
@@ -192,7 +223,7 @@ class ComboTextPrefItem(PrefItem):
 			for s in items:
 				combo.append_text(s)
 
-		if label or unitLabel:
+		if label:
 			hbox = HBox(spacing=3)
 			pack(hbox, newAlignLabel(sgroup=labelSizeGroup, label=label))
 			pack(hbox, combo)
@@ -974,7 +1005,7 @@ class ListPrefItem(PrefItem):
 			self.items[i].set(valueL[i])
 
 	def append(self, item: PrefItem) -> None:
-		pack(self._widget, Item.getWidget())
+		pack(self._widget, item.getWidget())
 		self.items.append(item)
 
 

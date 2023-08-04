@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.event.group.base import BaseWidgetClass
 from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
@@ -10,8 +9,6 @@ maxStartEnd = 999999
 
 class WidgetClass(BaseWidgetClass):
 	def addStartEndWidgets(self):
-		group = self.group
-		######
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		######
 		hbox = HBox()

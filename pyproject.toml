@@ -12,7 +12,7 @@ select = [
     "PGH", # pygrep-hooks
     "PIE", # flake8-pie
     "RET", # flake8-return
-    "SIM", # flake8-simplify
+    # "SIM", # flake8-simplify
     "T10", # flake8-debugger
     "TCH", # flake8-type-checking, not done for plugins
     "TID", # flake8-tidy-imports
@@ -40,6 +40,7 @@ ignore = [
     "D103", # Missing docstring in public function
     "D104", # Missing docstring in public package
     "D105", # Missing docstring in magic method
+    "D106", # Missing docstring in public nested class
     "D107", # Missing docstring in `__init__`
     "D205", # 1 blank line required between summary line and description
     "D206", # Docstring should be indented with spaces, not tabs
@@ -60,6 +61,8 @@ ignore = [
     "UP037", # Remove quotes from type annotation
 
     "RET502", # Do not implicitly `return None` in function able to return non-`None` value
+
+    "SIM102", # Use a single `if` statement instead of nested `if` statements
 ]
 
 # UP033: (Since Python 3.9) Use `@functools.cache`
@@ -91,6 +94,7 @@ fixable = [
     "UP033",
     "UP034",
     "UP039",
+    "PIE790",
 ]
 unfixable = []
 

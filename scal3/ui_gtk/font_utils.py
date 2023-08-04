@@ -1,7 +1,14 @@
-#!/usr/bin/env python3
 from gi.repository import Pango as pango
 
 from scal3 import ui
+
+__all__ = [
+	"pfontDecode",
+	"pfontEncode",
+	"gfontDecode",
+	"gfontEncode",
+	"getFontFamilyList",
+]
 
 W_NORMAL = pango.Weight.NORMAL
 S_NORMAL = pango.Style.NORMAL
@@ -13,7 +20,6 @@ ITALIC = pango.Style.ITALIC
 #S_NORMAL = pango.STYLE_NORMAL
 #BOLD = pango.WEIGHT_BOLD
 #ITALIC = pango.STYLE_ITALIC
-
 
 def pfontDecode(pfont):
 	return ui.Font(

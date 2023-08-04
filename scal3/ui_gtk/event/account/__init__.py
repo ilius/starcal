@@ -1,15 +1,20 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, gtk, pack
 from scal3.ui_gtk.utils import (
 	IdComboBox,
 	labelImageButton,
 	showError,
 )
 
+__all__ = [
+	"BaseWidgetClass",
+	"AccountCombo",
+	"AccountGroupCombo",
+	"AccountGroupBox",
+]
 
 class BaseWidgetClass(gtk.Box):
 	def __init__(self, account):

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """Thanks to "Pier Carteri" <m3tr0@dei.unipd.it> for program Py_Shell.py."""
 
 
@@ -19,8 +18,8 @@ class GtkBufferFile:
 			self.tag,
 		)
 
-	def writelines(self, l):
-		return list(map(self.write, l))
+	def writelines(self, lines):
+		return list(map(self.write, lines))
 
 	def flush(self):
 		return None

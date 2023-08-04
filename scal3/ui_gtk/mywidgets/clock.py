@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -20,14 +19,17 @@
 
 import time
 from time import localtime, strftime
+from typing import TYPE_CHECKING
 
 from gi.repository.PangoCairo import show_layout
 
 from scal3 import ui
 from scal3.time_utils import clockWaitMilliseconds
-from scal3.ui_gtk import *
+from scal3.ui_gtk import gtk, pack, timeout_add
 from scal3.ui_gtk.drawing import fillColor, setColor
-from scal3.ui_gtk.font_utils import *
+
+if TYPE_CHECKING:
+	import cairo
 
 
 class ClockLabel(gtk.Label):

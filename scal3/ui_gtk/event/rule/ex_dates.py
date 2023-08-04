@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -24,12 +23,13 @@ from scal3 import cal_types
 from scal3.date_utils import dateDecode, dateEncode
 from scal3.locale_man import textNumDecode, textNumEncode
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, gdk, gtk, pack
 from scal3.ui_gtk.toolbox import (
 	StaticToolBox,
 	ToolBoxItem,
 )
 from scal3.ui_gtk.utils import (
+	dialog_add_button,
 	labelImageButton,
 )
 
@@ -132,7 +132,7 @@ class WidgetClass(gtk.Box):
 		self.dialog.resize(200, 300)
 		self.dialog.connect("response", lambda w, e: self.dialog.hide())
 		##
-		okButton = dialog_add_button(
+		_okButton = dialog_add_button(
 			self.dialog,
 			imageName="dialog-ok.svg",
 			label=_("_Save"),

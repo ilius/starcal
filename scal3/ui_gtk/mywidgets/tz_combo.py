@@ -1,8 +1,7 @@
-#!/usr/bin/env python3
 
-from scal3 import ui
+from scal3 import locale_man, ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import gtk, pack
 
 
 class TimeZoneComboBoxEntry(gtk.Box):
@@ -74,3 +73,10 @@ class TimeZoneComboBoxEntry(gtk.Box):
 				)
 			text = "/".join(parts)
 		self.set_text(text)
+
+if __name__ == "__main__":
+	diolog = gtk.Dialog()
+	w = TimeZoneComboBoxEntry()
+	pack(diolog.vbox, w)
+	diolog.vbox.show_all()
+	diolog.run()

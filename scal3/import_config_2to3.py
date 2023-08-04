@@ -19,6 +19,7 @@
 # no logging in this file
 
 import json
+import logging
 import os
 import re
 import shutil
@@ -31,6 +32,35 @@ from scal3.json_utils import dataToPrettyJson
 from scal3.os_utils import makeDir
 from scal3.path import confDir as newConfDir
 from scal3.s_object import DefaultFileSystem, saveBsonObject
+
+log = logging.getLogger("starcal3")
+
+[
+	'getOldVersion',
+	# 'importAccountsIter',
+	# 'importBasicConfigIter',
+	'importConfigIter',
+	# 'importEventBasicJsonIter',
+	# 'importEventsIter',
+	# 'importGroupsIter',
+	# 'importPluginsIter',
+	# 'importTrashIter',
+	# 'loadConf',
+	# 'loadCoreConf',
+	# 'loadUiCustomizeConf',
+	# 'newAccountsDir',
+	# 'newConfDir',
+	# 'newEventDir',
+	# 'newEventEventsDir',
+	# 'newGroupsDir',
+	# 'oldAccountsDir',
+	# 'oldConfDir',
+	# 'oldEventDir',
+	# 'oldEventEventsDir',
+	# 'oldGroupsDir',
+	# 'writeJsonConf'
+]
+
 
 oldConfDir = newConfDir.replace("starcal3", "starcal2")
 
@@ -79,7 +109,7 @@ def loadCoreConf() -> None:
 		with open(confPath) as fp:
 			text = fp.read()
 	except Exception as e:
-		raise OSError(f"failed to read file {confPath!r}: {e}")
+		raise OSError(f"failed to read file {confPath!r}: {e}") from None
 	######
 	text = text.replace("calTypes.activeNames", "activeCalTypes")
 	text = text.replace("calTypes.inactiveNames", "inactiveCalTypes")
@@ -131,7 +161,8 @@ def importEventsIter() -> Generator[int, None, None]:
 	yield len(oldFiles)
 	index = 0
 	for dname in oldFiles:
-		yield index; index += 1
+		yield index
+		index += 1
 		####
 		try:
 			_id = int(dname)
@@ -149,7 +180,7 @@ def importEventsIter() -> Generator[int, None, None]:
 		try:
 			with open(jsonPath) as fp:
 				data = json.loads(fp.read())
-		except Exception as e:
+		except Exception:
 			print(f"error while loading json file {jsonPath!r}")
 			continue
 		try:
@@ -187,7 +218,8 @@ def importGroupsIter() -> Generator[int, None, None]:
 	index = 0
 	###
 	for fname in oldFiles:
-		yield index; index += 1
+		yield index
+		index += 1
 		jsonPath = join(oldGroupsDir, fname)
 		newJsonPath = join(newGroupsDir, fname)
 		if not isfile(jsonPath):
@@ -203,7 +235,7 @@ def importGroupsIter() -> Generator[int, None, None]:
 		try:
 			with open(jsonPath) as fp:
 				data = json.loads(fp.read())
-		except Exception as e:
+		except Exception:
 			print(f"error while loading json file {jsonPath!r}")
 			continue
 		####
@@ -240,7 +272,8 @@ def importGroupsIter() -> Generator[int, None, None]:
 		basicData["history"] = [(tm, _hash)]
 		open(newJsonPath, "w").write(dataToPrettyJson(basicData, sort_keys=True))
 	####
-	yield index; index += 1
+	yield index
+	index += 1
 	oldGroupListFile = join(oldEventDir, "group_list.json")
 	newGroupListFile = join(newEventDir, "group_list.json")
 	try:
@@ -260,7 +293,7 @@ def importGroupsIter() -> Generator[int, None, None]:
 				print(f"error while writing {newGroupListFile!r}: {e}")
 		else:
 			log.info(
-				f"file {oldGroupListFile!r} contains invalid data" +
+				f"file {oldGroupListFile!r} contains invalid data"
 				", must contain a list",
 			)
 
@@ -273,7 +306,8 @@ def importAccountsIter() -> Generator[int, None, None]:
 	index = 0
 	###
 	for fname in oldFiles:
-		yield index; index += 1
+		yield index
+		index += 1
 		jsonPath = join(oldAccountsDir, fname)
 		newJsonPath = join(newAccountsDir, fname)
 		if not isfile(jsonPath):
@@ -289,7 +323,7 @@ def importAccountsIter() -> Generator[int, None, None]:
 		try:
 			with open(jsonPath) as fp:
 				data = json.loads(fp.read())
-		except Exception as e:
+		except Exception:
 			print(f"error while loading json file {jsonPath!r}")
 			continue
 		if "history" in data:
@@ -362,10 +396,12 @@ def importBasicConfigIter() -> Generator[int, None, None]:
 	coreData = loadCoreConf()
 	coreData["version"] = "3.0.0" ## FIXME
 	writeJsonConf("core", coreData)
-	yield index; index += 1
+	yield index
+	index += 1
 	####
 	writeJsonConf("ui-customize", loadUiCustomizeConf())
-	yield index; index += 1
+	yield index
+	index += 1
 	# remove adjustTimeCmd from ui-gtk.conf
 	for name in (
 		"hijri",
@@ -375,7 +411,8 @@ def importBasicConfigIter() -> Generator[int, None, None]:
 		"ui-gtk",
 		"ui-live",
 	):
-		yield index; index += 1
+		yield index
+		index += 1
 		confPath = join(oldConfDir, name + ".conf")
 		writeJsonConf(name, loadConf(confPath))
 
@@ -389,7 +426,8 @@ def importEventBasicJsonIter() -> Generator[int, None, None]:
 		"info",
 		"last_ids",
 	):
-		yield index; index += 1
+		yield index
+		index += 1
 		fname = name + ".json"
 		try:
 			shutil.copy(
@@ -417,7 +455,8 @@ def importPluginsIter() -> Generator[int, None, None]:
 				join(oldPlugConfDir, plugName),
 			),
 		)
-		yield index; index += 1
+		yield index
+		index += 1
 
 
 def importConfigIter() -> Generator[int, None, None]:
@@ -463,7 +502,6 @@ def getOldVersion() -> str:
 	return data.get("version", "")
 
 ##################################
-
 
 if __name__ == "__main__":
 	list(importConfigIter())

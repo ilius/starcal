@@ -1,10 +1,13 @@
-#!/usr/bin/env python3
 from scal3 import logger
 
 log = logger.get()
 
 from gi.repository import GObject
 
+__all__ = [
+	"registerType",
+	"registerSignals",
+]
 
 def registerType(cls):
 	GObject.type_register(cls)
@@ -22,9 +25,9 @@ def registerSignals(cls):
 				None,
 				args,
 			)
-		except Exception as e:
+		except Exception:
 			log.error(
-				f"Failed to create signal {name} " +
+				f"Failed to create signal {name} "
 				f"for class {cls.__name__} in {cls.__module__}",
 			)
 	return cls

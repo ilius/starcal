@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -30,8 +29,8 @@ from scal3.locale_man import (
 	textNumEncode,
 )
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
-from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk import gdk, gtk
+from scal3.ui_gtk.decorators import registerType
 from scal3.utils import (
 	numRangesDecode,
 	numRangesEncode,
@@ -128,10 +127,10 @@ class NumRangesEntry(gtk.Entry):
 			"iso_next_group",
 		):
 			return False
-		elif kname == "return":
+		if kname == "return":
 			self.validate()
 			return False
-		elif kname == "up":
+		if kname == "up":
 			self.numPlus(1)
 		elif kname == "down":
 			self.numPlus(-1)

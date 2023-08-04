@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -24,16 +23,13 @@ import os
 from contextlib import suppress
 from os.path import join, split
 
-from gi.repository import GdkPixbuf
-
 from scal3 import event_lib, ui
 from scal3.cal_types import calTypes
 from scal3.locale_man import tr as _
 from scal3.time_utils import durationUnitsAbs, durationUnitValues
-from scal3.ui_gtk import *
+from scal3.ui_gtk import GdkPixbuf, HBox, VBox, gdk, gtk, pack
 from scal3.ui_gtk.drawing import newColorCheckPixbuf
 from scal3.ui_gtk.event import makeWidget
-from scal3.ui_gtk.event.utils import *
 from scal3.ui_gtk.mywidgets.expander import ExpanderFrame
 from scal3.ui_gtk.mywidgets.icon import IconSelectButton
 from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
@@ -42,6 +38,7 @@ from scal3.ui_gtk.toolbox import (
 	ToolBoxItem,
 )
 from scal3.ui_gtk.utils import (
+	dialog_add_button,
 	labelImageButton,
 	set_tooltip,
 )
@@ -344,7 +341,7 @@ class DurationInputBox(gtk.Box):
 		pack(self, self.valueSpin)
 		##
 		combo = gtk.ComboBoxText()
-		for unitValue, unitName in durationUnitsAbs:
+		for _unitValue, unitName in durationUnitsAbs:
 			combo.append_text(_(
 				" " + unitName.capitalize() + "s",
 			))
@@ -586,7 +583,7 @@ class SingleGroupComboBox(gtk.ComboBox):
 				break
 		else:
 			raise ValueError(
-				"SingleGroupComboBox.set_active: " +
+				"SingleGroupComboBox.set_active: "
 				f"Group ID {gid} is not in items",
 			)
 

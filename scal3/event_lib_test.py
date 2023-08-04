@@ -6,9 +6,9 @@ import unittest
 
 sys.path.append(".")
 
-from scal3.event_lib import *
+from scal3 import event_lib
 
-myTmpDir = tempfile.mkdtemp(prefix=f"starcal-event_lib_test-")
+myTmpDir = tempfile.mkdtemp(prefix="starcal-event_lib_test-")
 atexit.register(os.removedirs, myTmpDir)
 fs = event_lib.DefaultFileSystem(myTmpDir)
 

@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import unittest
 
 from scal3.ui import parseDroppedDate

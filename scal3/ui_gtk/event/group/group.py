@@ -1,9 +1,8 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from scal3.core import jd_to
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, VBox, gtk, pack
 from scal3.ui_gtk.event import common
 from scal3.ui_gtk.event.account import AccountCombo, AccountGroupBox
 from scal3.ui_gtk.event.group.base import BaseWidgetClass

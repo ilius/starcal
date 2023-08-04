@@ -46,8 +46,10 @@ def init():
 
 		with open(join(sourceDir, "conf", "logging-user.conf")) as fp:  # noqa: FURB101
 			logConfText = fp.read()
-		for varName in ("confDir", "APP_NAME"):
-			logConfText = logConfText.replace(varName, eval(varName))
+
+		# TODO: use str.format()
+		logConfText = logConfText.replace("confDir", confDir)
+		logConfText = logConfText.replace("APP_NAME", APP_NAME)
 
 		logging.config.fileConfig(StringIO(logConfText))
 		log = logging.getLogger(APP_NAME)

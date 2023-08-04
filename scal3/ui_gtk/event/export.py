@@ -1,11 +1,13 @@
-#!/usr/bin/env python3
 from os.path import join, split, splitext
 
 from scal3 import cal_types, core, ui
-from scal3.json_utils import *
+from scal3.json_utils import (
+	dataToCompactJson,
+	dataToPrettyJson,
+)
 from scal3.locale_man import tr as _
 from scal3.path import deskDir
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, VBox, gtk, pack
 from scal3.ui_gtk.event.common import GroupsTreeCheckList
 from scal3.ui_gtk.mywidgets.dialog import MyDialog
 from scal3.ui_gtk.utils import dialog_add_button

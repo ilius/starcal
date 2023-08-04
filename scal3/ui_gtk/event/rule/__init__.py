@@ -1,8 +1,5 @@
-#!/usr/bin/env python3
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from scal3.ui_gtk import *
 
 """
 class MultiValueRule(gtk.Box):
@@ -21,7 +18,7 @@ class MultiValueRule(gtk.Box):
 		)
 		self.removeButton.connect("clicked", self.removeLastWidget)
 		##
-		self.removeButton.hide()## FIXME
+		self.removeButton.hide()## FIXME.
 
 	def removeLastWidget(self, obj=None):
 

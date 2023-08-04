@@ -1,4 +1,7 @@
-#!/usr/bin/env python3
+
+from scal3.ui_gtk import timeout_add
+
+
 def setupMenuHideOnLeave(menu):
 	from time import time as now
 
