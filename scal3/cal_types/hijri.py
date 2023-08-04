@@ -20,6 +20,7 @@
 # Islamic (Hijri) calendar: http://en.wikipedia.org/wiki/Islamic_calendar
 
 from scal3 import logger
+
 log = logger.get()
 
 name = "hijri"
@@ -101,13 +102,12 @@ options = (
 
 
 import os
-from os.path import join, isfile
 from collections import OrderedDict
+from os.path import isfile, join
 
-from scal3.path import sysConfDir, confDir, modDir
 from scal3.json_utils import *
+from scal3.path import confDir, modDir, sysConfDir
 from scal3.utils import iceil, ifloor
-
 
 monthDbExpiredIgnoreFile = join(confDir, "hijri-expired-ignore")
 
@@ -127,9 +127,7 @@ loadJsonConf(__name__, confPath)
 
 
 def save():
-	"""
-	save user options to file
-	"""
+	"""Save user options to file."""
 	saveJsonConf(__name__, confPath, (
 		"hijriAlg",
 		"hijriUseDB",
@@ -208,9 +206,7 @@ class MonthDbHolder:
 		open(self.userDbPath, "w").write(text)
 
 	def getMonthLenList(self):
-		"""
-		returns a list of (index, ym, mLen)
-		"""
+		"""Returns a list of (index, ym, mLen)."""
 		return [
 			(
 				index,
@@ -304,8 +300,8 @@ def jd_to(jd):
 		iceil(
 			(
 				jd + 0.5 - to_jd_c(year, 1, 1)
-			) / 29.5
-		)
+			) / 29.5,
+		),
 	)
 	day = jd - to_jd_c(year, month, 1) + 1
 	return year, month, day

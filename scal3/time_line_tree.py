@@ -19,9 +19,9 @@
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 from scal3 import logger
+
 log = logger.get()
 
-import sys
 
 from scal3.interval_utils import ab_overlaps
 from scal3.time_utils import *
@@ -64,9 +64,7 @@ class Node:
 		return ab_overlaps(t0, t1, self.s0, self.s1)
 
 	def search(self, t0, t1):  # t0 < t1
-		"""
-		returns a generator to iterate over (ev_t0, ev_t1, eid, ev_dt) s
-		"""
+		"""Returns a generator to iterate over (ev_t0, ev_t1, eid, ev_dt) s."""
 		# t0 and t1 are absolute. not relative to the self.offset
 		if not self.sOverlaps(t0, t1):
 			return
@@ -88,7 +86,7 @@ class Node:
 		if not self.s0 <= tm <= self.s1:
 			raise RuntimeError(
 				f"Node.getChild: Out of scope: level={self.level}, " +
-				f"offset={self.offset}, rightOri={self.rightOri}"
+				f"offset={self.offset}, rightOri={self.rightOri}",
 			)
 		dt = self.base ** (self.level - 1)
 		index = int((tm - self.offset) // dt)
@@ -144,11 +142,11 @@ class TimeLineTree:
 
 	def add(self, t0, t1, eid, debug=False):
 		if debug:
-			from time import strftime, localtime
+			from time import localtime, strftime
 			f = "%F, %T"
 			log.info(
 				f"{self.__class__.__name__}.add: " +
-				f"{strftime(f, localtime(t0))}\t{strftime(f, localtime(t1))}"
+				f"{strftime(f, localtime(t0))}\t{strftime(f, localtime(t1))}",
 			)
 		if self.offset <= t0:
 			isRight = True

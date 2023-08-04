@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from scal3.utils import toStr
 from scal3.time_utils import getEpochFromJd
 
 
@@ -19,9 +18,7 @@ def encodeShortStat(files_changed, insertions, deletions):
 
 
 def getCommitListFromEst(obj, startJd, endJd, format_rev_id=None):
-	"""
-		returns a list of (epoch, rev_id) tuples
-	"""
+	"""Returns a list of (epoch, rev_id) tuples."""
 	startEpoch = getEpochFromJd(startJd)
 	endEpoch = getEpochFromJd(endJd)
 	###
