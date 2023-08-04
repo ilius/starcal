@@ -19,13 +19,13 @@
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 from scal3 import logger
+
 log = logger.get()
 
-import sys
+from math import log
 
-from scal3.time_utils import *
 from scal3.bin_heap import MaxHeap
-
+from scal3.time_utils import *
 
 # epsTm: seconds
 # TODO: configure somewhere?
@@ -173,11 +173,11 @@ class EventSearchTree:
 
 	def add(self, t0, t1, eid, debug=False):
 		if debug:
-			from time import strftime, localtime
+			from time import localtime, strftime
 			f = "%F, %T"
 			log.info(
 				f"EventSearchTree.add: {eid}\t{strftime(f, localtime(t0))}" +
-				f"\t{strftime(f, localtime(t1))}"
+				f"\t{strftime(f, localtime(t1))}",
 			)
 		###
 		if t0 == t1:
@@ -239,6 +239,7 @@ class EventSearchTree:
 				mt + dt,
 				eid,
 			)
+		return None
 
 	def getLastBeforeStep(self, node, t1):
 		if not node:
@@ -381,6 +382,7 @@ class EventSearchTree:
 		s, n = self.calcAvgDepthStep(self.root, 0)
 		if n > 0:
 			return s / n
+		return None
 
 
 if __name__ == "__main__":

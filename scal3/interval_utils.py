@@ -17,11 +17,10 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 from scal3 import logger
+
 log = logger.get()
 
-from typing import Tuple, List, Union
-
-from scal3.utils import s_join
+from typing import Union
 
 CLOSED_START, OPEN_START, OPEN_END, CLOSED_END = range(4)
 
@@ -35,12 +34,12 @@ def md_overlaps(m0: float, d0: float, m1: float, d1: float) -> None:
 
 
 def simplifyNumList(
-	nums: List[int],
+	nums: list[int],
 	minCount: int = 3,
-) -> List[Union[int, Tuple[int, int]]]:
+) -> list[Union[int, tuple[int, int]]]:
 	"""
 	nums must be sorted
-	minCount >= 2
+	minCount >= 2.
 	"""
 	ranges = []
 	tmp = []
@@ -61,19 +60,19 @@ def simplifyNumList(
 
 
 def getIntervalPoints(
-	lst: List[
+	lst: list[
 		Union[
-			Tuple[int, int],
-			Tuple[int, int, bool],
+			tuple[int, int],
+			tuple[int, int, bool],
 		],
 	],
 	lst_index: int = 0,
-) -> List[Tuple[int, int, int]]:
+) -> list[tuple[int, int, int]]:
 	"""
 	lst is a list of (start, end, closedEnd) or (start, end) tuples
 		start (int)
 		end (int)
-		closedEnd (bool)
+		closedEnd (bool).
 
 	returns a list of (pos, ptype, lst_index) tuples
 		ptype in (CLOSED_START, OPEN_START, OPEN_END, CLOSED_END)
@@ -102,11 +101,11 @@ def getIntervalPoints(
 
 
 def getIntervalListByPoints(
-	points: List[Tuple[int, int, int]],
-) -> List[Tuple[int, int, bool]]:
+	points: list[tuple[int, int, int]],
+) -> list[tuple[int, int, bool]]:
 	"""
 	points: a list of (pos, ptype, lst_index) tuples
-		ptype in (CLOSED_START, OPEN_START, OPEN_END, CLOSED_END)
+		ptype in (CLOSED_START, OPEN_START, OPEN_END, CLOSED_END).
 
 	return a list of (start, end, closedEnd) tuples
 		start (int)
@@ -143,7 +142,7 @@ def normalizeIntervalList(lst):
 def humanizeIntervalList(lst):
 	"""
 	replace Closed End intervals with 2 new intervals
-	in math terms: [a, b] ==> [a, b) + [b, b]
+	in math terms: [a, b] ==> [a, b) + [b, b].
 
 	lst is a list of (start, end, closedEnd) tuples
 		start (int)
@@ -193,7 +192,6 @@ def intersectionOfTwoIntervalList(*lists):
 				openStartList[lst_index] = pos
 			else:
 				raise RuntimeError(
-					f"{pos=}, {openStartList[lst_index]=}"
+					f"{pos=}, {openStartList[lst_index]=}",
 				)
-	result = humanizeIntervalList(result)  # right place? FIXME
-	return result
+	return humanizeIntervalList(result)  # right place? FIXME

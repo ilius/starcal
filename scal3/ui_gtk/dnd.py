@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 from scal3 import logger
+
 log = logger.get()
 
 
@@ -25,6 +26,7 @@ def processDroppedDate(text, dtype):
 				# How to deny dragged object (to return to it's first location)
 				# FIXME
 				log.info(f"Dropped unknown text {text!r}")
+				return None
 				# log.debug(etime)
 				#context.drag_status(gdk.DragAction.DEFAULT, etime)
 				#context.drop_reply(False, etime)
@@ -41,3 +43,4 @@ def processDroppedDate(text, dtype):
 			return True
 		else:
 			return localtime(t)[:3] + (core.GREGORIAN,)
+	return None

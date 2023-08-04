@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 import sys
+
 # sys.float_info.epsilon == 2.220446049250313e-16
 
 
-class NumPlusEpsilon(object):
+class NumPlusEpsilon:
 	def __init__(self, num):
 		self._num = num
 
@@ -89,7 +90,7 @@ class NumPlusEpsilon(object):
 		return self
 
 
-class NumMinusEpsilon(object):
+class NumMinusEpsilon:
 	def __init__(self, num):
 		self._num = num
 
