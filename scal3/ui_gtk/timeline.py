@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -22,6 +21,7 @@ log = logger.get()
 
 from datetime import datetime, timedelta
 from time import time as now
+from typing import TYPE_CHECKING
 
 from gi.repository.PangoCairo import show_layout
 
@@ -39,11 +39,19 @@ from scal3.timeline import tl
 from scal3.timeline.funcs import (
 	calcTimeLineData,
 )
-from scal3.timeline.utils import *
-from scal3.ui_gtk import *
+from scal3.timeline.utils import dayLen, fontFamily
+from scal3.ui_gtk import (
+	Menu,
+	gdk,
+	getScrollValue,
+	gtk,
+	main_context_default,
+	source_remove,
+	timeout_add,
+)
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.button_drawing import SVGButton
-from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.drawing import (
 	fillColor,
 	newTextLayout,
@@ -59,6 +67,9 @@ from scal3.ui_gtk.timeline_box import (
 )
 from scal3.ui_gtk.utils import openWindow
 from scal3.utils import iceil
+
+if TYPE_CHECKING:
+	import cairo
 
 # FIXME: rewove this
 
@@ -393,7 +404,6 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			show_layout(cr, layout)  # with the same tick.color
 
 	def drawBox(self, cr, box):
-		d = box.lineW
 		x = box.x
 		w = box.w
 		y = box.y
@@ -467,8 +477,9 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 						dstChangeJd = jd
 						break
 				if dstChangeJd is not None:
-					deltaHour = deltaSec / 3600.0
-					dstChangeEpoch = getEpochFromJd(dstChangeJd)
+					pass
+					# deltaHour = deltaSec / 3600.0
+					# dstChangeEpoch = getEpochFromJd(dstChangeJd)
 					# log.debug(f"{dstChangeEpoch = }")
 				else:
 					log.info("dstChangeEpoch not found")
@@ -719,7 +730,6 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		from scal3.ui_gtk.event.utils import confirmEventTrash
 		if not confirmEventTrash(event):
 			return
-		eventIndex = group.index(event.id)
 		ui.moveEventToTrash(group, event, self)
 		self.onConfigChange()
 

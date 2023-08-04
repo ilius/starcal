@@ -1,18 +1,21 @@
-#!/usr/bin/env python3
 
 from scal3 import logger
 
 log = logger.get()
 
+import typing
 
-from typing import Any, Callable
+if typing.TYPE_CHECKING:
+	from typing import Callable, Iterable
+
+from typing import Any
 
 from scal3 import ui
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import GdkPixbuf, VBox, gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 from scal3.ui_gtk.customize import CustomizableCalObj
-from scal3.ui_gtk.decorators import *
+from scal3.ui_gtk.decorators import registerSignals
 from scal3.ui_gtk.icon_mapping import iconNameByImageName
 from scal3.ui_gtk.mywidgets.button import ConButtonBase
 from scal3.ui_gtk.utils import (
@@ -126,8 +129,7 @@ class ToolBoxItem(BaseToolBoxItem):
 
 	def build(self):
 		"""
-		This method must be called after creating instance and calling
-		one/many of these methods:
+		Call this after creating instance and calling one/many of these methods:
 		- setIconName
 		- setIconFile
 		- setIconSize
@@ -181,7 +183,10 @@ class ToolBoxItem(BaseToolBoxItem):
 				return
 			if self.imageNameDynamic:
 				return
-			raise RuntimeError(f"bigPixbuf=None, self.imageName={self.imageName}, name={self._name}")
+			raise RuntimeError(
+				f"bigPixbuf=None, self.imageName={self.imageName}"
+				f", name={self._name}",
+			)
 		pixbuf = self.bigPixbuf.scale_simple(
 			iconSize,
 			iconSize,

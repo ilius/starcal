@@ -1,9 +1,15 @@
-#!/usr/bin/env python3
 import random
 
 from scal3 import core
 from scal3.event_lib import JdOccurSet
-from scal3.interval_utils import *
+from scal3.interval_utils import (
+	ab_overlaps,
+	humanizeIntervalList,
+	intersectionOfTwoIntervalList,
+	log,
+	normalizeIntervalList,
+	simplifyNumList,
+)
 
 
 def parseIntervalList(st, doShuffle=False):
@@ -132,7 +138,7 @@ def testOverlapsSpeed():
 		)
 	###
 	data = []
-	for i in range(N):
+	for _i in range(N):
 		a, b = getRandomPair()
 		data.append((a, b))
 	t0 = time()

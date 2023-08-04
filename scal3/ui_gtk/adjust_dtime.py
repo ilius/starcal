@@ -29,12 +29,11 @@ import subprocess
 import sys
 from os.path import join
 from time import localtime
-from time import time as now
 
 from scal3 import ui
 from scal3.path import pixDir
 from scal3.time_utils import clockWaitMilliseconds
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, VBox, gtk, pack, timeout_add
 from scal3.ui_gtk.mywidgets.multi_spin.date import DateButton
 from scal3.ui_gtk.mywidgets.multi_spin.time_b import TimeButton
 from scal3.ui_gtk.utils import dialog_add_button
@@ -221,7 +220,7 @@ class AdjusterDialog(gtk.Dialog):
 		raise OSError("unknown or unsupported operating system")
 
 	def updateTimes(self):
-		dt = now() % 1
+		# dt = now() % 1
 		timeout_add(clockWaitMilliseconds(), self.updateTimes)
 		# log.debug("updateTimes", dt)
 		y, m, d, H, M, S = localtime()[:6]
