@@ -23,6 +23,8 @@ log = logger.get()
 
 from math import sqrt
 
+from gi.repository.PangoCairo import show_layout
+
 from scal3 import cal_types, core, ui
 from scal3.cal_types import calTypes
 from scal3.core import log
