@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-from scal3 import event_lib, ui, locale_man
+from scal3 import event_lib, locale_man, ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import *
 from scal3.ui_gtk.event import makeWidget

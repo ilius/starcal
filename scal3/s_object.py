@@ -119,7 +119,7 @@ class SObj:
 			for param in self.params
 		}
 
-	def setData(self, data: "Union[Dict, List]", force=False):
+	def setData(self, data: "dict | list", force=False):
 		if not force and not self.__class__.canSetDataMultipleTimes:
 			if getattr(self, "dataIsSet", False):
 				raise RuntimeError(
@@ -162,7 +162,7 @@ class SObj:
 		return parent.getPath() + [index]
 
 
-def makeOrderedData(data: "Union[Dict, List]", params):
+def makeOrderedData(data: "dict | list", params):
 	if isinstance(data, dict):
 		if params:
 			data = list(data.items())
@@ -289,7 +289,7 @@ def iterObjectFiles(fs: FileSystem):
 			yield _hash, fpath
 
 
-def saveBsonObject(data: "Union[Dict, List]", fs: FileSystem):
+def saveBsonObject(data: "dict | list", fs: FileSystem):
 	data = getSortedDict(data)
 	bsonBytes = bytes(bson.dumps(data))
 	_hash = sha1(bsonBytes).hexdigest()
@@ -313,7 +313,7 @@ def loadBsonObject(_hash, fs: FileSystem):
 
 
 def updateBasicDataFromBson(
-	data: "Union[Dict, List]",
+	data: "dict | list",
 	filePath: str,
 	fileType: str,
 	fs: FileSystem,
