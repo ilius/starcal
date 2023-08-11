@@ -28,7 +28,7 @@ from scal3.cal_types import GREGORIAN, jd_to, to_jd
 if typing.TYPE_CHECKING:
 	from scal3.plugin_type import PluginType
 
-#from scal3.path import
+# from scal3.path import
 
 icsTmFormat = "%Y%m%dT%H%M%S"
 icsTmFormatPretty = "%Y-%m-%dT%H:%M:%SZ"

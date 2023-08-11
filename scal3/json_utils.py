@@ -21,7 +21,8 @@ __all__ = [
 
 
 def _default(self, obj):
-    return getattr(obj.__class__, "to_json", _default.default)(obj)
+	return getattr(obj.__class__, "to_json", _default.default)(obj)
+
 
 _default.default = JSONEncoder().default
 JSONEncoder.default = _default
@@ -130,6 +131,7 @@ def loadModuleJsonConf(module):
 		decoders,
 	)
 	# FIXME: should use module.confParams to restrict json keys?
+
 
 def saveModuleJsonConf(module):
 	if isinstance(module, str):
