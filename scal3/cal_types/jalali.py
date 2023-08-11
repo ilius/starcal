@@ -156,9 +156,6 @@ def save():
 	))
 
 
-
-
-
 def isLeap(year):
 	"""isLeap: Is a given year a leap year in the Jalali calendar ?."""
 	alg = jalaliAlg

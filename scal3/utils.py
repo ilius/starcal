@@ -87,8 +87,6 @@ class FallbackLogger:
 		log.error(prefix + "\n" + text)
 
 
-
-
 def restartLow() -> typing.NoReturn:
 	"""Will not return from the function."""
 	os.execl(
