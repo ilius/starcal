@@ -30,5 +30,3 @@ class Tick:
 		if color is None:
 			color = tl.fgColor
 		self.color = color
-
-

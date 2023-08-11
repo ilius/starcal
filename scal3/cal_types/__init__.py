@@ -157,6 +157,7 @@ class CalTypesHolder:
 			f"invalid key {key!r} given to "
 			f"{self.__class__.__name__!r}.__getitem__",
 		)
+
 	def get(self, key, default=None):
 		if isinstance(key, str):
 			return self.byName.get(key, default)
