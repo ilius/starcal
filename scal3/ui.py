@@ -258,7 +258,6 @@ class Font:
 		return Font(*self.to_json())
 
 
-
 fontParams = [
 	"fontDefault",
 	"fontCustom",
@@ -273,8 +272,9 @@ confDecoders = {
 	param: Font.fromList for param in fontParams
 }
 confEncoders = {
-# 	param: Font.to_json for param in fontParams
+	# param: Font.to_json for param in fontParams
 }
+
 
 def loadConf() -> None:
 	loadModuleJsonConf(__name__)
@@ -823,7 +823,7 @@ def checkEnabledNamesItems(
 def moveEventToTrash(
 	group: event_lib.EventGroup,
 	event: event_lib.Event,
-	sender, # write BaseCalType based on BaseCalObj
+	sender,  # write BaseCalType based on BaseCalObj
 	save: bool = True,
 ) -> int:
 	eventIndex = group.remove(event)

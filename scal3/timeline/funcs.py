@@ -55,7 +55,6 @@ from scal3.utils import iceil, ifloor
 ####################################################
 
 
-
 #class Range:
 #	def __init__(self, start, end):
 #		self.start = start
@@ -92,12 +91,12 @@ def getYearRangeTickValues(u0, y1, minStepYear):
 
 
 def formatYear(y, prettyPower=False):
-	if abs(y) < 10 ** 4:## FIXME
+	if abs(y) < 10 ** 4:  # FIXME
 		y_st = _(y)
 	else:
 		#y_st = textNumEncode("%.0E"%y, changeDot=True)## FIXME
 		fac, pw = getNum10FactPow(y)
-		if not prettyPower or abs(fac) >= 100:## FIXME
+		if not prettyPower or abs(fac) >= 100:  # FIXME
 			y_e = f"{y:E}"
 			for _i in range(10):
 				y_e = y_e.replace("0E", "E")
@@ -135,7 +134,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	jd0 = getJdFromEpoch(timeStart)
 	jd1 = getJdFromEpoch(timeEnd)
 	widthDays = timeWidth / dayLen
-	dayPixel = dayLen * pixelPerSec ## px
+	dayPixel = dayLen * pixelPerSec  # px
 	# log.debug(f"{dayPixel = } px")
 
 	def getEPos(epoch):
@@ -155,13 +154,13 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	# ###################### Ticks
 	ticks = []
 	tickEpochSet = set()
-	minStep = tl.minorStepMin / pixelPerSec ## second
+	minStep = tl.minorStepMin / pixelPerSec  # second
 	#################
 	year0, month0, day0 = jd_to_primary(jd0)
 	year1, month1, day1 = jd_to_primary(jd1)
 	# ########## Year
-	minStepYear = minStep // minYearLenSec ## years ## int or iceil?
-	yearPixel = minYearLenSec * pixelPerSec ## pixels
+	minStepYear = minStep // minYearLenSec  # years ## int or iceil?
+	yearPixel = minYearLenSec * pixelPerSec  # pixels
 	for (year, size) in getYearRangeTickValues(
 		year0,
 		year1 + 1,
@@ -183,7 +182,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 		))
 		tickEpochSet.add(tmEpoch)
 	# ########## Month
-	monthPixel = avgMonthLen * pixelPerSec ## px
+	monthPixel = avgMonthLen * pixelPerSec  # px
 	minMonthUnit = minStep / avgMonthLen  # month
 	if minMonthUnit <= 3:
 		for ym in range(
@@ -202,15 +201,20 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			if tmEpoch in tickEpochSet:
 				continue
 			unitSize = monthPixel * monthUnit
+			monthName = getMonthName(calTypes.primary, month) \
+				if unitSize >= tl.majorStepMin else ""
 			ticks.append(Tick(
 				tmEpoch,
 				getEPos(tmEpoch),
 				unitSize,
-				getMonthName(calTypes.primary, month) if unitSize >= tl.majorStepMin else "",
+				monthName,
 			))
 			tickEpochSet.add(tmEpoch)
-	################ Week days
-	if tl.showWeekStart and tl.showWeekStartMinDays < widthDays < tl.showWeekStartMaxDays:
+	# ############## Week days
+	if (
+		tl.showWeekStart and
+		tl.showWeekStartMinDays < widthDays < tl.showWeekStartMaxDays
+	):
 		wd0 = jwday(jd0)
 		jdw0 = jd0 + (core.firstWeekDay - wd0) % 7
 		unitSize = dayPixel * 7
@@ -315,7 +319,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 					m2 = _(hms.m, fillZero=2)
 					if hms.s == 0:
 						label = f"{_(hms.h)}:{m2}"
-					else:# elif timeWidth < 60 or stepSec < 30:
+					else:  # elif timeWidth < 60 or stepSec < 30:
 						label = addLRM(_(hms.s, fillZero=2) + '"')
 					#else:
 					#	label = f"{_(hms.h)}:{m2}:_(hms.s, fillZero=2)"

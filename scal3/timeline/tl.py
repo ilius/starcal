@@ -93,6 +93,7 @@ confParams = (
 
 #############################################
 
+
 def loadConf() -> None:
 	loadModuleJsonConf(__name__)
 
@@ -101,6 +102,7 @@ def saveConf() -> None:
 	saveModuleJsonConf(__name__)
 
 #############################################
+
 
 bgColor = ui.bgColor
 fgColor = ui.textColor
