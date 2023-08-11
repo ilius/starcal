@@ -130,7 +130,7 @@ if [ -z "$prefix" ] ; then ## prefix is empty (not been set)
 	fi
 else
 	n=${#prefix}
-	if [ ${prefix:n-1:1} = / ] ; then
+	if [ "${prefix:n-1:1}" = / ] ; then
 		prefix=${prefix::-1}
 	fi
 fi
