@@ -22,7 +22,7 @@
 
 name = "ethiopian"
 desc = "Ethiopian"
-origLang = "en" # FIXME
+origLang = "en"
 
 monthName = (
 	"Meskerem",

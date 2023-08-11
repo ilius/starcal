@@ -24,6 +24,7 @@ def colorGraph(g: Graph, vertexSortKey: "Callable[[int], [Any]]"):
 		colors[i] = c
 	g.vs["color"] = colors
 
+
 def addBoxHeightToColoredGraph(g):
 	n = g.vcount()
 	adjlist = g.get_adjlist()
