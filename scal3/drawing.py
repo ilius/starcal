@@ -29,6 +29,7 @@ def oppositeAlign(align):
 		return "top"
 	return align
 
+
 def getAbsPos(
 	width, height,
 	areaWidth, areaHeight,
@@ -39,7 +40,7 @@ def getAbsPos(
 	if autoDir and rtl:
 		xalign = oppositeAlign(xalign)
 	if xalign == "right":
-		x = areaWidth- width - x
+		x = areaWidth - width - x
 	elif xalign == "center":
 		x = (areaWidth - width) / 2.0 + x
 	if yalign == "buttom":
@@ -47,5 +48,3 @@ def getAbsPos(
 	elif yalign == "center":
 		y = (areaHeight - height) / 2.0 + y
 	return (x, y)
-
-

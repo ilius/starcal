@@ -61,7 +61,8 @@ def getCommitInfo(obj, commid_id):
 	}
 
 
-def getShortStat(obj, node1, node2):## SLOW FIXME
+# FIXME: SLOW
+def getShortStat(obj, node1, node2):
 	repo = obj.repo
 	# if not node1 ## FIXME
 	stats = diffstatdata(
