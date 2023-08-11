@@ -4,7 +4,6 @@ import typing
 ColorType: "typing.TypeAlias" = "tuple[int,int,int] | tuple[int,int,int,int]"
 
 
-
 def invertColor(r, g, b):
 	return (
 		255 - r,
