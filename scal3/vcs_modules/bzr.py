@@ -116,7 +116,7 @@ def getShortStatByTrees(repo, old_tree, tree):
 			if new_kind in ("file", "symlink"):
 				files_changed += 1
 				text = tree.get_file_text(file_id)
-				if "\x00" not in text[:1024]:## FIXME
+				if "\x00" not in text[:1024]:  # FIXME
 					if old_kind is None:
 						insertions += len(split_lines(text))
 					elif old_kind in ("file", "symlink"):
@@ -137,7 +137,7 @@ def getShortStatByTrees(repo, old_tree, tree):
 				if old_kind in ("file", "symlink"):
 					files_changed += 1
 					old_text = old_tree.get_file_text(file_id)
-					if "\x00" not in old_text[:1024]:## FIXME
+					if "\x00" not in old_text[:1024]:  # FIXME
 						deletions += len(split_lines(old_text))
 	return files_changed, insertions, deletions
 

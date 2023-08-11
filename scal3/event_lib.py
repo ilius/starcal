@@ -6283,6 +6283,7 @@ MonthOccurData = namedtuple(
 	],
 )
 
+
 def getDayOccurrenceData(curJd, groups, tfmt="HM$"):
 	data = []
 	for groupIndex, group in enumerate(groups):
@@ -6328,7 +6329,7 @@ def getDayOccurrenceData(curJd, groups, tfmt="HM$"):
 					icon=event.getIconRel(),
 					color=color,
 					ids=(gid, eid),
-					show= (
+					show=(
 						group.showInDCal,
 						group.showInWCal,
 						group.showInMCal,
