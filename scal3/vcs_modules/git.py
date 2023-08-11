@@ -20,7 +20,6 @@ from scal3 import logger
 log = logger.get()
 
 
-
 from pygit2 import (
 	GIT_SORT_REVERSE,
 	GIT_SORT_TIME,
@@ -40,8 +39,12 @@ def clearObj(obj):
 	pass
 
 
-
-def getCommitList(obj, startJd=None, endJd=None, branch="") -> list[tuple[int, str]]:
+def getCommitList(
+	obj,
+	startJd=None,
+	endJd=None,
+	branch="",
+) -> "list[tuple[int, str]]":
 	"""
 	returns a list of (epoch, commit_id) tuples.
 
@@ -168,6 +171,7 @@ def getLastCommitEpoch(obj):
 	commitIter = repo.walk(target, GIT_SORT_TIME)
 	commit = next(commitIter)
 	return commit.author.time
+
 
 def getLatestParentBefore(obj, commitId: str, beforeEpoch: float) -> str:
 	repo = Repository(obj.vcsDir)
