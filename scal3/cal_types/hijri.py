@@ -137,6 +137,7 @@ def ifloor(x: float) -> int:
 def iceil(x: float) -> int:
 	return int(ceil(x))
 
+
 def save():
 	"""Save user options to file."""
 	saveJsonConf(__name__, confPath, (
@@ -246,7 +247,7 @@ class MonthDbHolder:
 				d = d + jd - startJd
 				break
 
-			if startJd - d < jdm0 <= startJd :
+			if startJd - d < jdm0 <= startJd:
 				ym += 1
 				d = d + jd - startJd - monthLen
 				break
@@ -283,16 +284,16 @@ def isLeap(year):
 
 def to_jd_c(year, month, day):
 	return (
-		day
-		+ iceil(29.5 * (month - 1))
-		+ (year - 1) * 354
-		+ (11 * year + 3) // 30
-		+ epoch
+		day +
+		iceil(29.5 * (month - 1)) +
+		(year - 1) * 354 +
+		(11 * year + 3) // 30 +
+		epoch
 	)
 
 
 def to_jd(year, month, day):
-	if hijriUseDB:## and hijriAlg==0
+	if hijriUseDB:  # and hijriAlg == 0
 		jd = monthDb.getJdFromDate(year, month, day)
 		if jd is not None:
 			return jd
