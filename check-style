@@ -16,7 +16,7 @@ ignore E402 "module level import not at top of file"
 #ignore E702 "multiple statements on one line (semicolon)"
 
 #if [ -z $2 ] ; then
-pycodestyle "--ignore=$IGNORE" "$@" | grep --color=always -P ':\d*:' 2>&1 | less -RU
+pycodestyle "--ignore=$IGNORE" "$@" | grep --color=always -P ':\d*:' 2>&1 | less -RUN
 #else
 #	pycodestyle --select "$@" | grep --color=always -P ':\d*:' 2>&1
 #fi
