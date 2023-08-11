@@ -189,12 +189,12 @@ def importEventsIter() -> Generator[int, None, None]:
 			tm = now()
 		###
 		basicData = {}
-		#basicData["modified"] = tm
+		# basicData["modified"] = tm
 		###
 		# remove extra params from data and add to basicData
 		for param in (
 			"remoteIds",
-			"notifiers", # FIXME
+			"notifiers",  # FIXME
 		):
 			try:
 				basicData[param] = data.pop(param)
@@ -209,7 +209,7 @@ def importEventsIter() -> Generator[int, None, None]:
 
 
 def importGroupsIter() -> Generator[int, None, None]:
-	groupsEnableDict = {} ## {groupId -> enable}
+	groupsEnableDict = {}  # {groupId -> enable}
 	###
 	makeDir(newGroupsDir)
 	###
@@ -250,7 +250,7 @@ def importGroupsIter() -> Generator[int, None, None]:
 			tm = now()
 		###
 		basicData = {}
-		#basicData["modified"] = tm
+		# basicData["modified"] = tm
 		###
 		# remove extra params from data and add to basicData
 		for param in (
@@ -335,7 +335,7 @@ def importAccountsIter() -> Generator[int, None, None]:
 			tm = now()
 		###
 		basicData = {}
-		#basicData["modified"] = tm
+		# basicData["modified"] = tm
 		###
 		# remove extra params from data and add to basicData
 		for param in (
@@ -373,7 +373,7 @@ def importTrashIter() -> Generator[int, None, None]:
 		tm = now()
 	###
 	basicData = {}
-	#basicData["modified"] = tm
+	# basicData["modified"] = tm
 	###
 	# remove extra params from data and add to basicData
 	for param in (
@@ -394,7 +394,7 @@ def importBasicConfigIter() -> Generator[int, None, None]:
 	index = 0
 	####
 	coreData = loadCoreConf()
-	coreData["version"] = "3.0.0" ## FIXME
+	coreData["version"] = "3.0.0"  # FIXME
 	writeJsonConf("core", coreData)
 	yield index
 	index += 1
@@ -418,7 +418,7 @@ def importBasicConfigIter() -> Generator[int, None, None]:
 
 
 def importEventBasicJsonIter() -> Generator[int, None, None]:
-	yield 4 ## number of steps
+	yield 4  # number of steps
 	index = 0
 	####
 	for name in (
@@ -450,7 +450,7 @@ def importPluginsIter() -> Generator[int, None, None]:
 	####
 	for plugName in files:
 		writeJsonConf(
-			plugName,## move it out of plugins.conf FIXME
+			plugName,  # move it out of plugins.conf FIXME
 			loadConf(
 				join(oldPlugConfDir, plugName),
 			),
@@ -502,6 +502,7 @@ def getOldVersion() -> str:
 	return data.get("version", "")
 
 ##################################
+
 
 if __name__ == "__main__":
 	list(importConfigIter())
