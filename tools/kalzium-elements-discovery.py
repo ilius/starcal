@@ -1,10 +1,11 @@
-#!/usr/bin/env python3
 import sys
 from xml.etree.ElementTree import XML
 
 sys.path.append("/starcal2")
 
-from scal3 import event_lib, ui
+from scal3 import event_lib, logger, ui
+
+log = logger.get()
 
 tree = XML(open("/usr/share/apps/libkdeedu/data/elements.xml").read())
 

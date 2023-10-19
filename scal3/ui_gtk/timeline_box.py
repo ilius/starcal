@@ -161,5 +161,5 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 		cr.rotate(tl.rotateBoxLabel * pi / 2)
 	except Exception:
 		log.warning(
-			"counld not rotate by " f"{tl.rotateBoxLabel*pi/2 = }",
+			f"could not rotate by {tl.rotateBoxLabel*pi/2 = }",
 		)

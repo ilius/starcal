@@ -168,9 +168,8 @@ class MyStack(gtk.Stack):
 			pack(hbox, label, 0, 0)
 			if self._titleCentered:
 				if icon:
-					pack(
-						hbox, imageFromFile("empty.png", self._iconSize + spacing), 0, 0,
-					)
+					iconImg = imageFromFile("empty.png", self._iconSize + spacing)
+					pack(hbox, iconImg, 0, 0)
 				pack(hbox, gtk.Label(), 1, 1)
 		hbox.show_all()
 		return hbox

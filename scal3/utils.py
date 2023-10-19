@@ -140,7 +140,7 @@ class StrOrderedDict(dict):
 				],
 			)
 		raise ValueError(
-			"Bad type argument given to StrOrderedDict.__getitem__" f": {type(arg)}",
+			f"Bad type argument given to StrOrderedDict.__getitem__: {type(arg)}",
 		)
 
 	def __setitem__(self, arg: "int | str", value) -> None:
