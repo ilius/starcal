@@ -71,6 +71,7 @@ class SingleGroupExportDialog(gtk.Dialog, MyDialog):
 
 	def formatRadioChanged(self, widget=None):
 		from scal3.os_utils import fixStrForFileName
+
 		fpath = self.fcw.get_filename()
 		if fpath:
 			fname_nox, ext = splitext(split(fpath)[1])
@@ -181,10 +182,12 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 		pack(hbox, gtk.Label(label=_("File") + ":"))
 		self.fpathEntry = gtk.Entry()
 		y, m, d = cal_types.getSysDate(core.GREGORIAN)
-		self.fpathEntry.set_text(join(
-			deskDir,
-			f"events-{y:04d}-{m:02d}-{d:02d}",
-		))
+		self.fpathEntry.set_text(
+			join(
+				deskDir,
+				f"events-{y:04d}-{m:02d}-{d:02d}",
+			),
+		)
 		pack(hbox, self.fpathEntry, 1, 1)
 		pack(self.vbox, hbox)
 		####
@@ -205,7 +208,7 @@ class MultiGroupExportDialog(gtk.Dialog, MyDialog):
 		self.groupSelect.enableAll()
 
 	def formatRadioChanged(self, widget=None):
-		#self.dateRangeBox.set_visible(self.radioIcs.get_active())
+		# self.dateRangeBox.set_visible(self.radioIcs.get_active())
 		###
 		fpath = self.fpathEntry.get_text()
 		if fpath:
@@ -248,7 +251,7 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 		self._defaultFileName = defaultFileName
 		self._groupTitle = groupTitle
 		gtk.Dialog.__init__(self, **kwargs)
-		self.set_title(_("Export Group"))# , ctx="window title"
+		self.set_title(_("Export Group"))  # , ctx="window title"
 		####
 		dialog_add_button(
 			self,
@@ -276,14 +279,14 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 			label=_("Pretty JSON (StarCalendar)"),
 			group=self.radioJsonCompact,
 		)
-		#self.radioIcs = gtk.RadioButton(label="iCalendar")
+		# self.radioIcs = gtk.RadioButton(label="iCalendar")
 		##
 		pack(radioBox, self.radioJsonCompact)
 		pack(radioBox, self.radioJsonPretty)
-		#pack(radioBox, self.radioIcs)
+		# pack(radioBox, self.radioIcs)
 		##
 		self.radioJsonCompact.set_active(True)
-		#self.radioIcs.connect("clicked", self.formatRadioChanged)
+		# self.radioIcs.connect("clicked", self.formatRadioChanged)
 		self.radioJsonCompact.connect("clicked", self.formatRadioChanged)
 		self.radioJsonPretty.connect("clicked", self.formatRadioChanged)
 		##
@@ -307,18 +310,18 @@ class EventListExportDialog(gtk.Dialog, MyDialog):
 			fname_nox, ext = "", ""
 		if not fname_nox:
 			fname_nox = self._defaultFileName
-		#if self.radioIcs.get_active():
-		#	if ext != ".ics":
-		#		ext = ".ics"
-		#else:
+		# if self.radioIcs.get_active():
+		# 	if ext != ".ics":
+		# 		ext = ".ics"
+		# else:
 		if ext != ".json":
 			ext = ".json"
 		self.fcw.set_current_name(fname_nox + ext)
 
 	def save(self):
 		fpath = self.fcw.get_filename()
-		#if self.radioIcs.get_active():
-		#	pass
+		# if self.radioIcs.get_active():
+		# 	pass
 
 		groupTitle = self._groupTitle
 		if not groupTitle:

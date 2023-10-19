@@ -1,5 +1,3 @@
-
-
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import Menu, gtk
@@ -45,11 +43,13 @@ class ReadOnlyLabel(gtk.Label, ReadOnlyTextWidget):
 		for item in menu.get_children():
 			menu.remove(item)
 		####
-		menu.add(ImageMenuItem(
-			_("Copy _All"),
-			imageName="edit-copy.svg",
-			func=self.copyAll,
-		))
+		menu.add(
+			ImageMenuItem(
+				_("Copy _All"),
+				imageName="edit-copy.svg",
+				func=self.copyAll,
+			),
+		)
 		####
 		itemCopy = ImageMenuItem(
 			_("_Copy"),
@@ -66,9 +66,8 @@ class ReadOnlyLabel(gtk.Label, ReadOnlyTextWidget):
 
 	def __init__(self, **kwargs):
 		gtk.Label.__init__(self, **kwargs)
-		self.set_selectable(True)## to be selectable, with visible cursor
+		self.set_selectable(True)  ## to be selectable, with visible cursor
 		self.connect("populate-popup", self.onPopup)
-
 
 
 class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
@@ -124,11 +123,13 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 		####
 		menu = Menu()
 		####
-		menu.add(ImageMenuItem(
-			_("Copy _All"),
-			imageName="edit-copy.svg",
-			func=self.copyAll,
-		))
+		menu.add(
+			ImageMenuItem(
+				_("Copy _All"),
+				imageName="edit-copy.svg",
+				func=self.copyAll,
+			),
+		)
 		####
 		itemCopy = ImageMenuItem(
 			_("_Copy"),
@@ -140,12 +141,14 @@ class ReadOnlyTextView(gtk.TextView, ReadOnlyTextWidget):
 		menu.add(itemCopy)
 		####
 		if "://" in word:
-			menu.add(ImageMenuItem(
-				_("Copy _URL"),
-				imageName="edit-copy.svg",
-				func=self.copyText,
-				args=(word,),
-			))
+			menu.add(
+				ImageMenuItem(
+					_("Copy _URL"),
+					imageName="edit-copy.svg",
+					func=self.copyText,
+					args=(word,),
+				),
+			)
 		####
 		menu.show_all()
 		self.tmpMenu = menu

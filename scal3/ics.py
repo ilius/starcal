@@ -43,10 +43,7 @@ icsWeekDays = ("SU", "MO", "TU", "WE", "TH", "FR", "SA")
 
 
 def encodeIcsWeekDayList(weekDayList: list[int]) -> str:
-	return ",".join([
-		icsWeekDays[wd]
-		for wd in weekDayList
-	])
+	return ",".join([icsWeekDays[wd] for wd in weekDayList])
 
 
 def getIcsTimeByEpoch(epoch: int, pretty: bool = False) -> str:
@@ -79,6 +76,7 @@ def getJdByIcsDate(dateStr: str) -> int:
 
 def getEpochByIcsTime(tmStr: str) -> int:
 	from dateutil.parser import parse
+
 	return int(
 		mktime(
 			parse(tmStr).timetuple(),
@@ -140,15 +138,20 @@ def convertBuiltinTextPlugToIcs(
 		myear, mmonth, mday = jd_to(jd, calType)
 		dayText = plug.getText(myear, mmonth, mday)
 		if dayText:
-			icsText += "\n".join([
-				"BEGIN:VEVEN",
-				"CREATED:" + currentTimeStamp,
-				"LAST-MODIFIED:" + currentTimeStamp,
-				"DTSTART;VALUE=DATE:" + getIcsDateByJd(jd),
-				"DTEND;VALUE=DATE:" + getIcsDateByJd(jd + 1),
-				"SUMMARY:" + dayText,
-				"END:VEVENT",
-			]) + "\n"
+			icsText += (
+				"\n".join(
+					[
+						"BEGIN:VEVEN",
+						"CREATED:" + currentTimeStamp,
+						"LAST-MODIFIED:" + currentTimeStamp,
+						"DTSTART;VALUE=DATE:" + getIcsDateByJd(jd),
+						"DTEND;VALUE=DATE:" + getIcsDateByJd(jd + 1),
+						"SUMMARY:" + dayText,
+						"END:VEVENT",
+					],
+				)
+				+ "\n"
+			)
 	icsText += "END:VCALENDAR\n"
 	fname = split(plug.fpath)[-1]
 	fname = splitext(fname)[0] + f"{namePostfix}.ics"

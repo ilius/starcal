@@ -36,7 +36,7 @@ gi.require_version("Gdk", "3.0")
 from gi.repository import Gdk as gdk
 from gi.repository import Gtk as gtk
 
-gi.require_version('GdkPixbuf', "2.0")
+gi.require_version("GdkPixbuf", "2.0")
 from gi.repository import GdkPixbuf
 
 gi.require_version("PangoCairo", "1.0")
@@ -107,7 +107,6 @@ class Menu(gtk.Menu):
 	# 	self.imageSizeGroup.add_widget(item.get_image())
 
 
-
 def getScrollValue(gevent, last=""):
 	"""Return value is either "up" or "down"."""
 	value = gevent.direction.value_nick
@@ -118,9 +117,9 @@ def getScrollValue(gevent, last=""):
 	# is_scroll_stop_event is new in version 3.20.
 	if value == "smooth":  # happens *sometimes* in PyGI (Gtk3)
 		# log.debug(
-		#	f"Scroll: {value=}, {gevent.delta_y=}, " +
-		#	f"{gevent.is_stop=}={gevent.is_scroll_stop_event()}"
-		#)
+		# 	f"Scroll: {value=}, {gevent.delta_y=}, " +
+		# 	f"{gevent.is_stop=}={gevent.is_scroll_stop_event()}"
+		# )
 		if gevent.delta_y < 0:  # -1.0 (up)
 			value = "up"
 		elif gevent.delta_y == 0 and last:
@@ -131,10 +130,12 @@ def getScrollValue(gevent, last=""):
 			value = "down"
 	return value
 
+
 def getOrientation(vertical: bool):
 	if vertical:
 		return gtk.Orientation.VERTICAL
 	return gtk.Orientation.HORIZONTAL
+
 
 class MenuItem(gtk.MenuItem):
 	def __init__(self, label=""):

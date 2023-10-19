@@ -1,4 +1,3 @@
-
 from scal3 import logger
 
 log = logger.get()
@@ -97,12 +96,14 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		plug, text = occurData
 		# print(f"addPluginMenuItems, title={plug.title}, file={plug.file}")
 		####
-		menu.add(ImageMenuItem(
-			_("Copy Event Text"),  # FIXME: "Event" is a bit misleading
-			imageName="edit-copy.svg",
-			func=self.copyTextFromMenu,
-			args=(text,),
-		))
+		menu.add(
+			ImageMenuItem(
+				_("Copy Event Text"),  # FIXME: "Event" is a bit misleading
+				imageName="edit-copy.svg",
+				func=self.copyTextFromMenu,
+				args=(text,),
+			),
+		)
 		####
 		item = ImageMenuItem(
 			_("C_onfigure Plugin"),
@@ -135,6 +136,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 
 	def onPlugAboutClick(self, item, plug):
 		from scal3.ui_gtk.about import AboutDialog
+
 		if hasattr(plug, "open_about"):
 			return plug.open_about()
 		if plug.about is None:
@@ -195,11 +197,13 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		if occurData is not None:
 			self.addPluginMenuItems(menu, occurData)
 		####
-		menu.add(ImageMenuItem(
-			_("Copy _All"),
-			imageName="edit-copy.svg",
-			func=self.copyAll,
-		))
+		menu.add(
+			ImageMenuItem(
+				_("Copy _All"),
+				imageName="edit-copy.svg",
+				func=self.copyAll,
+			),
+		)
 		####
 		itemCopy = ImageMenuItem(
 			_("_Copy"),
@@ -211,12 +215,14 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		menu.add(itemCopy)
 		####
 		if "://" in word:
-			menu.add(ImageMenuItem(
-				_("Copy _URL"),
-				imageName="edit-copy.svg",
-				func=self.copyText,
-				args=(word,),
-			))
+			menu.add(
+				ImageMenuItem(
+					_("Copy _URL"),
+					imageName="edit-copy.svg",
+					func=self.copyText,
+					args=(word,),
+				),
+			)
 		####
 		self.addExtraMenuItems(menu)
 		###
@@ -232,7 +238,6 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		)
 		ui.updateFocusTime()
 		return True
-
 
 
 @registerSignals
@@ -299,6 +304,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 
 	def getCSS(self) -> str:
 		from scal3.ui_gtk.utils import cssTextStyle
+
 		enableParam, fontParam = self.fontParams
 		if not getattr(ui, enableParam):
 			return ""
@@ -325,6 +331,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 			FontPrefItem,
 			JustificationPrefItem,
 		)
+
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = VBox(spacing=20)
@@ -385,10 +392,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		ui.saveLiveConf()
 
 	def getWidget(self):
-		return (
-			self.expander if self.expanderEnable
-			else self.textview
-		)
+		return self.expander if self.expanderEnable else self.textview
 
 	def setText(self, text):
 		if self.tabToNewline:
@@ -399,7 +403,6 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 				self.getWidget().show()
 			else:
 				self.getWidget().hide()
-
 
 	def onDateChange(self, *a, **kw):
 		pluginsText = ui.cell.getPluginsText()

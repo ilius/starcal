@@ -59,7 +59,6 @@ class HMS:
 		"HMS": "{h:02d}:{m:02d}:{s:02d}",
 		"hMS": "{h}:{m:02d}:{s:02d}",
 		"hms": "{h}:{m}:{s}",
-
 		"HM": "{h:02d}:{m:02d}",
 		"hm": "{h}:{m}",
 		"hM": "{h}:{m:02d}",
@@ -77,8 +76,7 @@ class HMS:
 		if fmt in ("", "HM$"):
 			# optimization for default format
 			return (
-				"{h:02d}:{m:02d}" if self.s == 0
-				else "{h:02d}:{m:02d}:{s:02d}"
+				"{h:02d}:{m:02d}" if self.s == 0 else "{h:02d}:{m:02d}:{s:02d}"
 			).format(h=self.h, m=self.m, s=self.s)
 		if fmt.endswith("$"):
 			if len(fmt) < 2:
@@ -191,8 +189,7 @@ def getJhmsFromEpoch(
 ) -> tuple[int, HMS]:
 	# return a tuple (julain_day, hour, minute, second) from epoch
 	offset = (
-		getUtcOffsetCurrent(tz) if currentOffset
-		else getUtcOffsetByEpoch(epoch, tz)
+		getUtcOffsetCurrent(tz) if currentOffset else getUtcOffsetByEpoch(epoch, tz)
 	)
 	# ^ FIXME
 	days, second = divmod(ifloor(epoch + offset), 24 * 3600)
