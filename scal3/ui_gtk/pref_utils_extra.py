@@ -36,7 +36,7 @@ from scal3.ui_gtk.utils import (
 	set_tooltip,
 )
 
-__all__= [
+__all__ = [
 	"newBox",
 	"FixedSizeOrRatioPrefItem",
 	"WeekDayCheckListPrefItem",
@@ -52,6 +52,7 @@ __all__= [
 	"AICalsPrefItem",
 	"KeyBindingPrefItem",
 ]
+
 
 def newBox(vertical: bool, homogeneous: bool) -> gtk.Box:
 	if vertical:
@@ -153,8 +154,7 @@ class WeekDayCheckListPrefItem(PrefItem):
 		self.start = core.firstWeekDay
 		self.buttons = [
 			gtk.ToggleButton(label=name)
-			for name in
-			(core.weekDayNameAb if abbreviateNames else core.weekDayName)
+			for name in (core.weekDayNameAb if abbreviateNames else core.weekDayName)
 		]
 		if self.twoRows:
 			self._widget = newBox(not self.vertical, self.homogeneous)
@@ -190,9 +190,7 @@ class WeekDayCheckListPrefItem(PrefItem):
 
 	def get(self) -> list[int]:
 		return [
-			index
-			for index, button in enumerate(self.buttons)
-			if button.get_active()
+			index for index, button in enumerate(self.buttons) if button.get_active()
 		]
 
 	def set(self, value: list[int]):
@@ -235,6 +233,7 @@ class CalTypePrefItem(PrefItem):
 		onChangeFunc: "Callable | None" = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
+
 		self.obj = obj
 		self.attrName = attrName
 		self._onChangeFunc = onChangeFunc
@@ -302,8 +301,8 @@ class LangPrefItem(PrefItem):
 			else:
 				self._widget.set_active(i + 1)
 
-	#def updateVar(self):
-	#	lang =
+	# def updateVar(self):
+	# 	lang =
 
 
 class CheckStartupPrefItem(PrefItem):  # FIXME
@@ -420,10 +419,7 @@ class AICalsTreeview(gtk.TreeView):
 		else:
 			smodel = srcTreev.get_model()
 			sIter = smodel.get_iter(srcTreev.dragPath)
-			row = [
-				smodel.get(sIter, j)[0]
-				for j in range(2)
-			]
+			row = [smodel.get(sIter, j)[0] for j in range(2)]
 			smodel.remove(sIter)
 			if dest is None:
 				model.append(row)
@@ -481,23 +477,25 @@ class AICalsPrefItemToolbar(StaticToolBox):
 			desc=_("Activate/Inactivate"),
 			continuousClick=False,
 		)
-		self.extend([
-			self.leftRightItem,
-			ToolBoxItem(
-				name="go-up",
-				imageName="go-up.svg",
-				onClick="onUpClick",
-				desc=_("Move up"),
-				continuousClick=False,
-			),
-			ToolBoxItem(
-				name="go-down",
-				imageName="go-down.svg",
-				onClick="onDownClick",
-				desc=_("Move down"),
-				continuousClick=False,
-			),
-		])
+		self.extend(
+			[
+				self.leftRightItem,
+				ToolBoxItem(
+					name="go-up",
+					imageName="go-up.svg",
+					onClick="onUpClick",
+					desc=_("Move up"),
+					continuousClick=False,
+				),
+				ToolBoxItem(
+					name="go-down",
+					imageName="go-down.svg",
+					onClick="onDownClick",
+					desc=_("Move down"),
+					continuousClick=False,
+				),
+			],
+		)
 
 	def getLeftRightAction(self):
 		return self._leftRightAction
@@ -660,7 +658,7 @@ class AICalsPrefItem(PrefItem):
 		if len(self.inactiveTrees) > 0:
 			treeviewSelect(
 				self.inactiveTreev,
-					min(
+				min(
 					index,
 					len(self.inactiveTrees) - 1,
 				),
@@ -738,8 +736,8 @@ class KeyBindingPrefItem(PrefItem):
 		treev = gtk.TreeView()
 		treev.set_headers_clickable(True)
 		trees = gtk.ListStore(
-			str, # key
-			str, # action
+			str,  # key
+			str,  # action
 		)
 		treev.set_model(trees)
 		###
@@ -774,10 +772,10 @@ class KeyBindingPrefItem(PrefItem):
 		row = trees[rowI]
 		print(f"Modify Key: {row=}")
 
-	#def onMenuDefaultKeyClick(self, menu: gtk.Menu, rowI: int):
-	#	trees = self.treev.get_model()
-	#	row = trees[rowI]
-	#	print(f"Default Key: {row=}")
+	# def onMenuDefaultKeyClick(self, menu: gtk.Menu, rowI: int):
+	# 	trees = self.treev.get_model()
+	# 	row = trees[rowI]
+	# 	print(f"Default Key: {row=}")
 
 	def onMenuDeleteClick(self, menu: gtk.Menu, rowI: int):
 		trees = self.treev.get_model()
@@ -785,6 +783,7 @@ class KeyBindingPrefItem(PrefItem):
 
 	def onTreeviewButtonPress(self, widget, gevent):
 		from scal3.ui_gtk.menuitems import ImageMenuItem
+
 		b = gevent.button
 		cur = self.treeview.get_cursor()[0]
 		if not cur:
@@ -795,25 +794,29 @@ class KeyBindingPrefItem(PrefItem):
 			pass
 		elif b == 3:
 			menu = gtk.Menu()
+			# menu.add(
+			# 	ImageMenuItem(
+			# 		label=_("Modify Key"),
+			# 		imageName="document-edit.svg",
+			# 		func=self.onMenuModifyKeyClick,
+			# 		args=(rowI,),
+			# 	),
+			# )
 			# menu.add(ImageMenuItem(
-			# 	label=_("Modify Key"),
-			# 	imageName="document-edit.svg",
-			# 	func=self.onMenuModifyKeyClick,
+			# 	label=_("Default Key"),
+			# 	imageName="edit-undo.svg",
+			# 	func=self.onMenuDefaultKeyClick,
 			# 	args=(rowI,),
 			# ))
-			#menu.add(ImageMenuItem(
-			#	label=_("Default Key"),
-			#	imageName="edit-undo.svg",
-			#	func=self.onMenuDefaultKeyClick,
-			#	args=(rowI,),
-			#))
 			menu.add(gtk.SeparatorMenuItem())
-			menu.add(ImageMenuItem(
-				label=_("Delete", ctx="menu"),
-				imageName="edit-delete.svg",
-				func=self.onMenuDeleteClick,
-				args=(rowI,),
-			))
+			menu.add(
+				ImageMenuItem(
+					label=_("Delete", ctx="menu"),
+					imageName="edit-delete.svg",
+					func=self.onMenuDeleteClick,
+					args=(rowI,),
+				),
+			)
 			menu.show_all()
 			menu.popup(
 				None,
@@ -842,4 +845,3 @@ class KeyBindingPrefItem(PrefItem):
 			key, action = row
 			keys[key] = action
 		return keys
-

@@ -46,7 +46,6 @@ Documentation says:
 """
 
 
-
 class ImageMenuItem(gtk.MenuItem):
 	def __init__(
 		self,
@@ -148,7 +147,6 @@ class CheckMenuItem(gtk.MenuItem):
 		return self._active
 
 
-
 class CustomCheckMenuItem(gtk.MenuItem):
 	def __init__(
 		self,
@@ -193,10 +191,12 @@ class CustomCheckMenuItem(gtk.MenuItem):
 	def set_active(self, active: bool) -> None:
 		self._active = active
 		imageName = "check-true.svg" if active else "check-false.svg"
-		self._image.set_from_pixbuf(pixbufFromFile(
-			imageName,
-			ui.menuCheckSize,
-		))
+		self._image.set_from_pixbuf(
+			pixbufFromFile(
+				imageName,
+				ui.menuCheckSize,
+			),
+		)
 
 	def get_active(self) -> bool:
 		return self._active

@@ -30,7 +30,7 @@ class DateTimeButton(MultiSpinButton):
 					Z60Field(),
 					Z60Field(),
 				),
-				#StrConField("seconds"),
+				# StrConField("seconds"),
 			),
 			**kwargs,
 		)
@@ -40,6 +40,7 @@ class DateTimeButton(MultiSpinButton):
 
 	def get_epoch(self, calType):
 		from scal3.time_utils import getEpochFromJhms
+
 		date, hms = self.get_value()
 		return getEpochFromJhms(
 			to_jd(date[0], date[1], date[2], calType),

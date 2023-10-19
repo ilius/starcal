@@ -461,7 +461,6 @@ class TestHijri(unittest.TestCase):
 		2459571: (1443, 5, 17),
 		2459598: (1443, 6, 15),
 		2459625: (1443, 7, 12),
-
 		2459660: (1443, 8, 18),
 		2459691: (1443, 9, 19),
 		2459722: (1443, 10, 21),
@@ -494,11 +493,13 @@ class TestHijri(unittest.TestCase):
 				f"{jd=}, {date=}, {dateActual=}",
 			)
 
+
 def print_to_jd_diff():
 	for ym in hijri.monthDb.monthLenByYm:
 		y, m = divmod(ym, 12)
 		m += 1
 		print(hijri.to_jd(y, m, 1) - hijri.to_jd_c(y, m, 1))
+
 
 def gen_test_date_to_jd(golang=False):
 	for year in range(1426, 1444):
@@ -510,6 +511,7 @@ def gen_test_date_to_jd(golang=False):
 				continue
 			print(f"\t\t({year}, {month}, {day}): {jd},")
 
+
 def gen_test_jd_to_date(golang=False):
 	for jd in range(2453442, 2459660 + 30, 27):
 		year, month, day = hijri.jd_to(jd)
@@ -517,6 +519,7 @@ def gen_test_jd_to_date(golang=False):
 			print(f"\t\t{jd}: lib.NewDate({year}, {month}, {day}),")
 			continue
 		print(f"\t\t{jd}: ({year}, {month}, {day}),")
+
 
 if __name__ == "__main__":
 	# print(f"{hijri.monthDb.startDate = }")

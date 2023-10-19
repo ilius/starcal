@@ -1,4 +1,3 @@
-
 from scal3 import logger
 
 log = logger.get()
@@ -15,10 +14,10 @@ class GroupEditorDialog(gtk.Dialog):
 	def __init__(self, group=None, **kwargs):
 		checkEventsReadOnly()
 		gtk.Dialog.__init__(self, **kwargs)
-		self.isNew = (group is None)
+		self.isNew = group is None
 		self.set_title(_("Add New Group") if self.isNew else _("Edit Group"))
-		#self.connect("delete-event", lambda obj, e: self.destroy())
-		#self.resize(800, 600)
+		# self.connect("delete-event", lambda obj, e: self.destroy())
+		# self.resize(800, 600)
 		###
 		dialog_add_button(
 			self,
@@ -103,10 +102,10 @@ class GroupEditorDialog(gtk.Dialog):
 		if gtk.Dialog.run(self) != gtk.ResponseType.OK:
 			return None
 		self.activeWidget.updateVars()
-		self._group.save()## FIXME
+		self._group.save()  ## FIXME
 		if self.isNew:
 			event_lib.lastIds.save()
 		else:
-			ui.eventGroups[self._group.id] = self._group ## FIXME
+			ui.eventGroups[self._group.id] = self._group  ## FIXME
 		self.destroy()
 		return self._group

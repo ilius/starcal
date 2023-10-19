@@ -24,10 +24,7 @@ class DummyEventContainer:
 		self.idsDict = idsDict
 
 	def __len__(self):
-		return sum(
-			len(eventIds)
-			for eventIds in self.idsDict.values()
-		)
+		return sum(len(eventIds) for eventIds in self.idsDict.values())
 
 	def __iter__(self):
 		for groupId, eventIdList in self.idsDict.items():

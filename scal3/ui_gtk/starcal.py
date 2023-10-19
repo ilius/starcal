@@ -47,6 +47,7 @@ log = logger.get()
 
 if not (isfile(join(confDir, "core.json")) or isdir(join(confDir, "event"))):
 	from scal3.utils import restartLow
+
 	try:
 		__import__("scal3.ui_gtk.import_config_2to3")
 	except Exception as e:
@@ -117,24 +118,24 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 	desc = _("Main Panel")
 	itemListCustomizable = True
 	myKeys = (
-		'down',
-		'end',
-		'f10',
-		'home',
-		'i',
-		'j',
-		'k',
-		'left',
-		'm',
-		'menu',
-		'n',
-		'p',
-		'page_down',
-		'page_up',
-		'right',
-		'space',
-		't',
-		'up',
+		"down",
+		"end",
+		"f10",
+		"home",
+		"i",
+		"j",
+		"k",
+		"left",
+		"m",
+		"menu",
+		"n",
+		"p",
+		"page_down",
+		"page_up",
+		"right",
+		"space",
+		"t",
+		"up",
 	)
 
 	def __init__(self, win):
@@ -146,7 +147,7 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 		win = self.win
 		itemsPkg = "scal3.ui_gtk.mainwin_items"
 
-		for (name, enable) in ui.mainWinItems:
+		for name, enable in ui.mainWinItems:
 			if name in ("winContronller", "statusBar"):
 				log.warning(f"Skipping main win item {name!r}")
 				continue
@@ -154,10 +155,12 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 			if enable:
 				try:
 					module = __import__(
-						".".join([
-							itemsPkg,
-							name,
-						]),
+						".".join(
+							[
+								itemsPkg,
+								name,
+							],
+						),
 						fromlist=["CalObj"],
 					)
 					CalObj = module.CalObj
@@ -456,12 +459,13 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		# ud.rootWindow.set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_PTR))
 
 	# def mainWinStateEvent(self, obj, gevent):
-		# log.debug(dir(event))
-		# log.debug(gevent.new_window_state)
-		# self.event = event
+	# log.debug(dir(event))
+	# log.debug(gevent.new_window_state)
+	# self.event = event
 
 	def createWindowControllers(self):
 		from scal3.ui_gtk.winContronller import CalObj as WinContronllersObj
+
 		if self.winCon is not None:
 			return self.winCon
 		ui.checkWinControllerButtons()
@@ -479,6 +483,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 
 	def createRightPanel(self):
 		from scal3.ui_gtk.right_panel import MainWinRightPanel
+
 		if self.rightPanel is not None:
 			return self.rightPanel
 		self.rightPanel = MainWinRightPanel()
@@ -516,6 +521,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 
 	def createStatusBar(self):
 		from scal3.ui_gtk.statusBar import CalObj as StatusBar
+
 		if self.statusBar is not None:
 			return self.statusBar
 		self.statusBar = StatusBar(self)
@@ -720,6 +726,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 
 	def getEventAddToMenuItem(self) -> "gtk.MenuItem | None":
 		from scal3.ui_gtk.drawing import newColorCheckPixbuf
+
 		if event_lib.allReadOnly:
 			return None
 		menu2 = Menu()
@@ -739,22 +746,26 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				item2_kwargs["pixbuf"] = newColorCheckPixbuf(group.color, 20, True)
 			##
 			if len(eventTypes) == 1:
-				menu2.add(ImageMenuItem(
-					group.title,
-					func=self.addToGroupFromMenu,
-					args=(group, eventTypes[0]),
-					**item2_kwargs,
-				))
+				menu2.add(
+					ImageMenuItem(
+						group.title,
+						func=self.addToGroupFromMenu,
+						args=(group, eventTypes[0]),
+						**item2_kwargs,
+					),
+				)
 			else:
 				menu3 = Menu()
 				for eventType in eventTypes:
 					eventClass = event_lib.classes.event.byName[eventType]
-					menu3.add(ImageMenuItem(
-						eventClass.desc,
-						imageName=eventClass.getDefaultIcon(),
-						func=self.addToGroupFromMenu,
-						args=(group, eventType),
-					))
+					menu3.add(
+						ImageMenuItem(
+							eventClass.desc,
+							imageName=eventClass.getDefaultIcon(),
+							func=self.addToGroupFromMenu,
+							args=(group, eventType),
+						),
+					)
 				menu3.show_all()
 				item2 = ImageMenuItem(
 					group.title,
@@ -775,6 +786,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 
 	def editEventFromMenu(self, item, groupId, eventId):
 		from scal3.ui_gtk.event.editor import EventEditorDialog
+
 		event = ui.getEvent(groupId, eventId)
 		event = EventEditorDialog(
 			event,
@@ -788,7 +800,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 
 	def trimMenuItemLabel(self, s: str, maxLen: int):
 		if len(s) > maxLen - 3:
-			s = s[:maxLen - 3].rstrip(" ") + "..."
+			s = s[: maxLen - 3].rstrip(" ") + "..."
 		return s
 
 	def addEditEventCellMenuItems(self, menu):
@@ -800,12 +812,16 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		if len(eventsData) < 4:  # TODO: make it customizable
 			for eData in eventsData:
 				groupId, eventId = eData.ids
-				menu.add(ImageMenuItem(
-					label=_("Edit") + ": " + self.trimMenuItemLabel(eData.text[0], 25),
-					imageName=eData.icon,
-					func=self.editEventFromMenu,
-					args=(groupId, eventId),
-				))
+				menu.add(
+					ImageMenuItem(
+						label=_("Edit")
+						+ ": "
+						+ self.trimMenuItemLabel(eData.text[0], 25),
+						imageName=eData.icon,
+						func=self.editEventFromMenu,
+						args=(groupId, eventId),
+					),
+				)
 		else:
 			subMenu = Menu()
 			subMenuItem = ImageMenuItem(
@@ -814,12 +830,14 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			)
 			for eData in eventsData:
 				groupId, eventId = eData.ids
-				subMenu.add(ImageMenuItem(
-					eData.text[0],
-					imageName=eData.icon,
-					func=self.editEventFromMenu,
-					args=(groupId, eventId),
-				))
+				subMenu.add(
+					ImageMenuItem(
+						eData.text[0],
+						imageName=eData.icon,
+						func=self.editEventFromMenu,
+						args=(groupId, eventId),
+					),
+				)
 			subMenu.show_all()
 			subMenuItem.set_submenu(subMenu)
 			menu.add(subMenuItem)
@@ -830,101 +848,131 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		menu = Menu()
 		####
 		for calType in calTypes.active:
-			menu.add(ImageMenuItem(
-				label=_("Copy {calType} Date").format(
-					calType=_(calTypes.getDesc(calType), ctx="calendar"),
+			menu.add(
+				ImageMenuItem(
+					label=_("Copy {calType} Date").format(
+						calType=_(calTypes.getDesc(calType), ctx="calendar"),
+					),
+					imageName="edit-copy.svg",
+					func=self.copyDateGetCallback(calType),
+					# args=(calType,),
 				),
-				imageName="edit-copy.svg",
-				func=self.copyDateGetCallback(calType),
-				#args=(calType,),
-			))
-		menu.add(ImageMenuItem(
-			label=_("Day Info"),
-			imageName="info.svg",
-			func=self.dayInfoShow,
-		))
+			)
+		menu.add(
+			ImageMenuItem(
+				label=_("Day Info"),
+				imageName="info.svg",
+				func=self.dayInfoShow,
+			),
+		)
 		addToItem = self.getEventAddToMenuItem()
 		if addToItem is not None:
 			menu.add(addToItem)
 		self.addEditEventCellMenuItems(menu)
 		menu.add(gtk.SeparatorMenuItem())
-		menu.add(ImageMenuItem(
-			label=_("Select _Today"),
-			imageName="go-home.svg",
-			func=self.goToday,
-		))
-		menu.add(ImageMenuItem(
-			label=_("Select _Date..."),
-			imageName="select-date.svg",
-			func=self.selectDateShow,
-		))
+		menu.add(
+			ImageMenuItem(
+				label=_("Select _Today"),
+				imageName="go-home.svg",
+				func=self.goToday,
+			),
+		)
+		menu.add(
+			ImageMenuItem(
+				label=_("Select _Date..."),
+				imageName="select-date.svg",
+				func=self.selectDateShow,
+			),
+		)
 		if calObjName in ("weekCal", "monthCal"):
 			isWeek = calObjName == "weekCal"
-			menu.add(ImageMenuItem(
-				label=_("Switch to " + (
-					"Month Calendar" if isWeek else "Week Calendar"
-				)),
-				imageName="" if isWeek else "week-calendar.svg",
-				func=self.switchWcalMcal,
-			))
-		menu.add(ImageMenuItem(
-			label=_("In Time Line"),
-			imageName="timeline.svg",
-			func=self.timeLineShowSelectedDay,
-		))
+			menu.add(
+				ImageMenuItem(
+					label=_(
+						"Switch to " + ("Month Calendar" if isWeek else "Week Calendar"),
+					),
+					imageName="" if isWeek else "week-calendar.svg",
+					func=self.switchWcalMcal,
+				),
+			)
+		menu.add(
+			ImageMenuItem(
+				label=_("In Time Line"),
+				imageName="timeline.svg",
+				func=self.timeLineShowSelectedDay,
+			),
+		)
 		if os.path.isfile("/usr/bin/evolution"):  # FIXME
-			menu.add(ImageMenuItem(
-				label=_("In E_volution"),
-				imageName="evolution.png",
-				func=ui.dayOpenEvolution,
-			))
+			menu.add(
+				ImageMenuItem(
+					label=_("In E_volution"),
+					imageName="evolution.png",
+					func=ui.dayOpenEvolution,
+				),
+			)
 		####
 		moreMenu = Menu()
-		moreMenu.add(ImageMenuItem(
-			label=_("_Customize"),
-			imageName="document-edit.svg",
-			func=self.customizeShow,
-		))
-		moreMenu.add(ImageMenuItem(
-			label=_("_Preferences"),
-			imageName="preferences-system.svg",
-			func=self.prefShow,
-		))
-		moreMenu.add(ImageMenuItem(
-			label=_("_Event Manager"),
-			imageName="list-add.svg",
-			func=self.eventManShow,
-		))
-		moreMenu.add(ImageMenuItem(
-			label=_("Year Wheel"),
-			imageName="year-wheel.svg",
-			func=self.yearWheelShow,
-		))  # icon? FIXME
-		moreMenu.add(ImageMenuItem(
-			label=_("Day Calendar (Desktop Widget)"),
-			imageName="starcal.svg",
-			func=self.dayCalWinShow,
-		))
+		moreMenu.add(
+			ImageMenuItem(
+				label=_("_Customize"),
+				imageName="document-edit.svg",
+				func=self.customizeShow,
+			),
+		)
+		moreMenu.add(
+			ImageMenuItem(
+				label=_("_Preferences"),
+				imageName="preferences-system.svg",
+				func=self.prefShow,
+			),
+		)
+		moreMenu.add(
+			ImageMenuItem(
+				label=_("_Event Manager"),
+				imageName="list-add.svg",
+				func=self.eventManShow,
+			),
+		)
+		moreMenu.add(
+			ImageMenuItem(
+				label=_("Year Wheel"),
+				imageName="year-wheel.svg",
+				func=self.yearWheelShow,
+			),
+		)  # icon? FIXME
+		moreMenu.add(
+			ImageMenuItem(
+				label=_("Day Calendar (Desktop Widget)"),
+				imageName="starcal.svg",
+				func=self.dayCalWinShow,
+			),
+		)
 		# moreMenu.add(ImageMenuItem(
 		# 	"Week Calendar",
 		# 	imageName="week-calendar.svg",
 		# 	func=self.weekCalShow,
 		# ))
-		moreMenu.add(ImageMenuItem(
-			label=_("Export to {format}").format(format="HTML"),
-			imageName="export-to-html.svg",
-			func=self.onExportClick,
-		))
-		moreMenu.add(ImageMenuItem(
-			label=_("_About"),
-			imageName="dialog-information.svg",
-			func=self.aboutShow,
-		))
-		moreMenu.add(ImageMenuItem(
-			label=_("_Quit"),
-			imageName="application-exit.svg",
-			func=self.quit,
-		))
+		moreMenu.add(
+			ImageMenuItem(
+				label=_("Export to {format}").format(format="HTML"),
+				imageName="export-to-html.svg",
+				func=self.onExportClick,
+			),
+		)
+		moreMenu.add(
+			ImageMenuItem(
+				label=_("_About"),
+				imageName="dialog-information.svg",
+				func=self.aboutShow,
+			),
+		)
+		moreMenu.add(
+			ImageMenuItem(
+				label=_("_Quit"),
+				imageName="application-exit.svg",
+				func=self.quit,
+			),
+		)
 		##
 		moreMenu.show_all()
 		moreItem = ImageMenuItem(label=_("More"))
@@ -936,8 +984,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		coord = widget.translate_coordinates(self, x, y)
 		if coord is None:
 			raise RuntimeError(
-				f"failed to translate coordinates ({x}, {y})"
-				f" from widget {widget}",
+				f"failed to translate coordinates ({x}, {y}) from widget {widget}",
 			)
 		dx, dy = coord
 		foo, wx, wy = self.get_window().get_origin()
@@ -1013,6 +1060,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 
 	def addToGroupFromMenu(self, menu, group, eventType):
 		from scal3.ui_gtk.event.editor import addNewEvent
+
 		# log.debug("addToGroupFromMenu", group.title, eventType)
 		eventTypeDesc = event_lib.classes.event.byName[eventType].desc
 		title = _("Add {eventType}").format(eventType=eventTypeDesc)
@@ -1055,10 +1103,12 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		setClipboard(ui.cell.format(ud.dateFormatBin, calType=calType))
 
 	def copyDateGetCallback(self, calType: int):
-		return lambda obj=None, event=None: setClipboard(ui.cell.format(
-			ud.dateFormatBin,
-			calType=calType,
-		))
+		return lambda obj=None, event=None: setClipboard(
+			ui.cell.format(
+				ud.dateFormatBin,
+				calType=calType,
+			),
+		)
 
 	def copyCurrentDate(self, obj=None, event=None):
 		setClipboard(ui.todayCell.format(ud.dateFormatBin))
@@ -1126,6 +1176,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			from scal3.ui_gtk.starcal_appindicator import (
 				IndicatorStatusIconWrapper,
 			)
+
 			self.sicon = IndicatorStatusIconWrapper(self)
 		else:
 			self.sicon = gtk.StatusIcon()
@@ -1212,6 +1263,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		menu = Menu()
 		if os.sep == "\\":
 			from scal3.ui_gtk.windows import setupMenuHideOnLeave
+
 			setupMenuHideOnLeave(menu)
 		items = self.getStatusIconPopupItems()
 		# items.insert(0, self.getMainWinMenuItem())## FIXME
@@ -1256,14 +1308,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		sep = "\n"
 		for calType in calTypes.active:
 			y, m, d = ui.todayCell.dates[calType]
-			tt += (
-				sep +
-				_(d) +
-				" " +
-				locale_man.getMonthName(calType, m, y) +
-				" " +
-				_(y)
-			)
+			tt += sep + _(d) + " " + locale_man.getMonthName(calType, m, y) + " " + _(y)
 		if ui.pluginsTextStatusIcon:
 			text = ui.todayCell.getPluginsText()
 			if text != "":
@@ -1280,9 +1325,9 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 
 	def statusIconUpdateIcon(self, ddate):  # FIXME
 		from scal3.utils import toBytes
+
 		imagePath = (
-			ui.statusIconImageHoli if ui.todayCell.holiday
-			else ui.statusIconImage
+			ui.statusIconImageHoli if ui.todayCell.holiday else ui.statusIconImage
 		)
 		ext = os.path.splitext(imagePath)[1].lstrip(".").lower()
 		with open(imagePath, "rb") as fp:  # noqa: FURB101
@@ -1301,10 +1346,12 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				style.append(("font-family", family))
 			if ui.statusIconHolidayFontColorEnable and ui.statusIconHolidayFontColor:
 				if ui.todayCell.holiday:
-					style.append(("fill", rgbToHtmlColor(ui.statusIconHolidayFontColor)))
+					style.append(
+						("fill", rgbToHtmlColor(ui.statusIconHolidayFontColor)),
+					)
 			if style:
 				styleStr = "".join([f"{key}:{value};" for key, value in style])
-				dayNum = f"<tspan style=\"{styleStr}\">{dayNum}</tspan>"
+				dayNum = f'<tspan style="{styleStr}">{dayNum}</tspan>'
 			data = data.replace(
 				b"TX",
 				toBytes(dayNum),
@@ -1434,6 +1481,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 
 	def adjustTime(self, widget=None, event=None):
 		from subprocess import Popen
+
 		if not ud.adjustTimeCmd:
 			showError(
 				"Failed to find gksudo, kdesudo, gksu, gnomesu, kdesu"
@@ -1446,6 +1494,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def aboutShow(self, obj=None, data=None):
 		if not self.aboutDialog:
 			from scal3.ui_gtk.about import AboutDialog
+
 			logoSize = ud.screenH * 0.15
 			with open(
 				join(sourceDir, "authors-dialog"),
@@ -1456,15 +1505,14 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				name=core.APP_DESC,
 				version=core.VERSION,
 				title=_("About ") + core.APP_DESC,
-				authors=[
-					_(author) for author in authors
-				],
+				authors=[_(author) for author in authors],
 				comments=core.aboutText,
 				license=core.licenseText,
 				website=core.homePage,
 				logo=GdkPixbuf.Pixbuf.new_from_file_at_size(
 					ui.appLogo,
-					logoSize, logoSize,
+					logoSize,
+					logoSize,
 				),
 				transient_for=self,
 			)
@@ -1483,6 +1531,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def prefShow(self, obj=None, data=None):
 		if not ui.prefWindow:
 			from scal3.ui_gtk.preferences import PreferencesWindow
+
 			ui.prefWindow = PreferencesWindow(transient_for=self)
 			ui.prefWindow.updatePrefGui()
 		if self.customizeWindow and self.customizeWindow.is_visible():
@@ -1493,6 +1542,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		checkEventsReadOnly()  # FIXME
 		if ui.eventManDialog is None:
 			from scal3.ui_gtk.event.manager import EventManagerDialog
+
 			ui.eventManDialog = EventManagerDialog(transient_for=self)
 
 	def eventManShow(self, obj=None, data=None):
@@ -1502,6 +1552,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def eventSearchCreate(self):
 		if ui.eventSearchWin is None:
 			from scal3.ui_gtk.event.search_events import EventSearchWindow
+
 			ui.eventSearchWin = EventSearchWindow()
 
 	def eventSearchShow(self, obj=None, data=None):
@@ -1515,18 +1566,21 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def dayCalWinShow(self, obj=None, data=None):
 		if not ui.dayCalWin:
 			from scal3.ui_gtk.day_cal_window import DayCalWindow
+
 			ui.dayCalWin = DayCalWindow()
 		ui.dayCalWin.present()
 
 	def timeLineShow(self, obj=None, data=None):
 		if not ui.timeLineWin:
 			from scal3.ui_gtk.timeline import TimeLineWindow
+
 			ui.timeLineWin = TimeLineWindow()
 		openWindow(ui.timeLineWin)
 
 	def timeLineShowSelectedDay(self, obj=None, data=None):
 		if not ui.timeLineWin:
 			from scal3.ui_gtk.timeline import TimeLineWindow
+
 			ui.timeLineWin = TimeLineWindow()
 		ui.timeLineWin.showDayInWeek(ui.cell.jd)
 		openWindow(ui.timeLineWin)
@@ -1534,12 +1588,14 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def yearWheelShow(self, obj=None, data=None):
 		if not ui.yearWheelWin:
 			from scal3.ui_gtk.year_wheel import YearWheelWindow
+
 			ui.yearWheelWin = YearWheelWindow()
 		openWindow(ui.yearWheelWin)
 
 	def selectDateShow(self, widget=None):
 		if not self.selectDateDialog:
 			from scal3.ui_gtk.selectdate import SelectDateDialog
+
 			self.selectDateDialog = SelectDateDialog(transient_for=self)
 			self.selectDateDialog.connect(
 				"response-date",
@@ -1550,6 +1606,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def dayInfoShow(self, widget=None):
 		if not self.dayInfoDialog:
 			from scal3.ui_gtk.day_info import DayInfoDialog
+
 			self.dayInfoDialog = DayInfoDialog(transient_for=self)
 			self.emit("date-change")
 		openWindow(self.dayInfoDialog)
@@ -1557,6 +1614,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def customizeWindowCreate(self):
 		if not self.customizeWindow:
 			from scal3.ui_gtk.customize_dialog import CustomizeWindow
+
 			self.customizeWindow = CustomizeWindow(self.layout, transient_for=self)
 
 	def switchWcalMcal(self, widget=None):
@@ -1572,6 +1630,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	def exportShow(self, year, month):
 		if not self.exportDialog:
 			from scal3.ui_gtk.export import ExportDialog
+
 			self.exportDialog = ExportDialog(transient_for=self)
 		self.exportDialog.showDialog(year, month)
 
