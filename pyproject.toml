@@ -117,6 +117,19 @@ target-version = "py39"
 # Unlike Flake8, default to a complexity level of 10.
 max-complexity = 15
 
+[tool.cercis]
+line-length = 88
+single-quote = false
+use-tabs = true
+base-indentation-spaces = 4
+function-definition-extra-indent = false
+other-line-continuation-extra-indent = false
+closing-bracket-extra-indent = false
+wrap-line-with-long-string = true
+collapse-nested-brackets = false
+wrap-comments = true
+wrap-pragma-comments = true
+
 [tool.mypy]
 exclude = [
 ]
