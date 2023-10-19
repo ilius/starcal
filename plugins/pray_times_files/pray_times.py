@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -19,6 +18,7 @@
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 
+import json
 import os
 import sys
 import time
@@ -38,25 +38,31 @@ sys.path.insert(0, sourceDir)  # FIXME
 # from scal3 import event_lib  # needs core!! FIXME
 from threading import Timer
 
-from pray_times_backend import PrayTimes
+from pray_times_backend import PrayTimes, timeNames
 
 # if "gtk" in sys.modules:
-from pray_times_gtk import *
+from pray_times_gtk import TextPluginUI, showDisclaimer
 
 import natz
+from scal3 import logger
 from scal3.cal_types import hijri
 from scal3.cal_types.gregorian import to_jd as gregorian_to_jd
 
 # DO NOT IMPORT core IN PLUGINS
-from scal3.json_utils import *
+from scal3.json_utils import loadModuleJsonConf, saveModuleJsonConf
 from scal3.locale_man import langSh
 from scal3.locale_man import tr as _
 from scal3.os_utils import goodkill
-from scal3.path import *
+from scal3.path import confDir
+from scal3.plugin_man import BaseJsonPlugin
 from scal3.time_utils import (
 	floatHourToTime,
 	getUtcOffsetByJd,
 )
+from scal3.ui_gtk import gtk
+from scal3.ui_gtk.app_info import popenFile
+
+log = logger.get()
 
 # else:
 # 	from pray_times_qt import *
@@ -65,7 +71,7 @@ from scal3.time_utils import (
 
 localTz = natz.gettz()
 
-timeDescByName = {name: desc for name, desc in timeNames}
+timeDescByName = dict(timeNames)
 
 # ##################### Functions and Classes ##################
 
@@ -109,8 +115,8 @@ def readLocationData():
 		lines = fp.read().split("\n")
 	cityData = []
 	country = ""
-	for l in lines:
-		p = l.split("\t")
+	for line in lines:
+		p = line.split("\t")
 		if len(p) < 2:
 			# log.debug(p)
 			continue
@@ -137,7 +143,7 @@ def readLocationData():
 
 
 def guessLocation(cityData):
-	tzname = str(localTz)
+	# tzname = str(localTz)
 	# TODO
 	# for countryCity, countryCityLocale, lat, lng in cityData:
 	return "Tehran", 35.705, 51.4216
@@ -205,7 +211,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		confNeedsSave = False
 		######
 		self.locName, self.lat, self.lng = "", 0, 0
-		method = ""
+		# method = ""
 		#######
 		self.imsak = 10  # minutes before Fajr (Morning Azan)
 		# self.asrMode = ASR_STANDARD
@@ -397,7 +403,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 		tmUtc = now()
 		epochLocal = tmUtc + utcOffset
 		secondsFromMidnight = epochLocal % (24 * 3600)
-		midnightUtc = tmUtc - secondsFromMidnight
+		# midnightUtc = tmUtc - secondsFromMidnight
 		# log.debug("------- hours from midnight", secondsFromMidnight/3600.0)
 		for timeName, azanHour in self.backend.getTimesByJd(
 			jd,
@@ -433,6 +439,7 @@ if __name__ == "__main__":
 	# from scal3.locale_man import rtl
 	# if rtl:
 	# 	gtk.widget_set_default_direction(gtk.TextDirection.RTL)
+	from pray_times_gtk import LocationDialog
 	dialog = LocationDialog(readLocationData())
 	dialog.connect("delete-event", gtk.main_quit)
 	# dialog.connect("response", gtk.main_quit)

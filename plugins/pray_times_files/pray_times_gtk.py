@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
@@ -22,11 +21,11 @@ import math
 from os.path import dirname
 
 from pray_times_backend import methodsList, timeNames
-from pray_times_utils import *
+from pray_times_utils import earthDistance
 
 from scal3 import locale_man
 from scal3.locale_man import tr as _
-from scal3.ui_gtk import *
+from scal3.ui_gtk import HBox, VBox, gtk, pack
 from scal3.ui_gtk.about import AboutDialog
 from scal3.ui_gtk.utils import (
 	dialog_add_button,
@@ -90,7 +89,7 @@ class LocationDialog(gtk.Dialog):
 		self.resize(width, height)
 		# width is used for CellRendererText as well
 		###############
-		cancelB = dialog_add_button(
+		dialog_add_button(
 			self,
 			imageName="dialog-cancel.svg",
 			label=_("Cancel"),
@@ -198,7 +197,7 @@ class LocationDialog(gtk.Dialog):
 		lng = self.spin_lng.get_value()
 		md = earthR * 2 * math.pi
 		city = ""
-		for name, lname, lat2, lng2 in self.cityData:
+		for _name, lname, lat2, lng2 in self.cityData:
 			d = earthDistance(lat, lng, lat2, lng2)
 			assert d >= 0
 			if d < md:
