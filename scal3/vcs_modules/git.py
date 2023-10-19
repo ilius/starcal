@@ -49,7 +49,7 @@ def getCommitList(
 	returns a list of (epoch, commit_id) tuples.
 
 	this function is optimized for recent commits
-		i.e. endJd is either None or recent
+			i.e. endJd is either None or recent
 	"""
 	if not branch:
 		branch = "main"
@@ -69,10 +69,12 @@ def getCommitList(
 			continue
 		if startEpoch is not None and tm < startEpoch:
 			break
-		data.append((
-			tm,
-			commit.id.hex,
-		))
+		data.append(
+			(
+				tm,
+				commit.id.hex,
+			),
+		)
 	data.reverse()
 	return data
 
@@ -132,7 +134,7 @@ def getTagList(obj, startJd, endJd):
 	for refName in repo.references:
 		if not refName.startswith("refs/tags/"):
 			continue
-		tagName = refName[len("refs/tags/"):]
+		tagName = refName[len("refs/tags/") :]
 		ref = repo.references[refName]
 		tag = repo.get(ref.target)
 		# in some cases, tag is instance of _pygit2.Tag, with tag.author
@@ -146,10 +148,12 @@ def getTagList(obj, startJd, endJd):
 			continue
 		if epoch >= endEpoch:
 			break
-		data.append((
-			epoch,
-			tagName,
-		))
+		data.append(
+			(
+				epoch,
+				tagName,
+			),
+		)
 	return data
 
 

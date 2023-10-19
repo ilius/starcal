@@ -56,16 +56,16 @@ lastLiveConfChangeTime = 0
 loadJsonConf(ui, confPathLive)
 
 
-def saveLiveConf(): # FIXME: rename to saveConfLive
+def saveLiveConf():  # FIXME: rename to saveConfLive
 	saveJsonConf(ui, confPathLive, confParamsLive)
 
 
-def saveLiveConfLoop(): # FIXME: rename to saveConfLiveLoop
+def saveLiveConfLoop():  # FIXME: rename to saveConfLiveLoop
 	global lastLiveConfChangeTime
 	tm = now()
 	if tm - lastLiveConfChangeTime > ui.saveLiveConfDelay:
 		saveLiveConf()
-		return False # Finish loop
+		return False  # Finish loop
 	return True  # Continue loop
 
 
@@ -226,8 +226,7 @@ class DayCalWindowWidget(DayCal):
 
 		if mx == my == 0:
 			log.info(
-				f"{mx=}, {my=}, {mw=}, {mh=}, "
-				f"{gevent.x_root=}, {gevent.y_root=}",
+				f"{mx=}, {my=}, {mw=}, {mh=}, {gevent.x_root=}, {gevent.y_root=}",
 			)
 			return None
 
@@ -239,13 +238,17 @@ class DayCalWindowWidget(DayCal):
 			menu = Menu()
 			if os.sep == "\\":
 				from scal3.ui_gtk.windows import setupMenuHideOnLeave
+
 				setupMenuHideOnLeave(menu)
 			items = ui.mainWin.getStatusIconPopupItems()
-			items.insert(5, ImageMenuItem(
-				_("Customize This Window"),
-				imageName="document-edit.svg",
-				func=self.openCustomize,
-			))
+			items.insert(
+				5,
+				ImageMenuItem(
+					_("Customize This Window"),
+					imageName="document-edit.svg",
+					func=self.openCustomize,
+				),
+			)
 			if reverse:
 				items.reverse()
 			for item in items:
@@ -302,8 +305,7 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 		coord = widget.translate_coordinates(self, x, y)
 		if coord is None:
 			raise RuntimeError(
-				f"failed to translate coordinates ({x}, {y})"
-				f" from widget {widget}",
+				f"failed to translate coordinates ({x}, {y}) from widget {widget}",
 			)
 		dx, dy = coord
 		foo, wx, wy = self.get_window().get_origin()
@@ -325,7 +327,6 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 			etime,
 		)
 		ui.updateFocusTime()
-
 
 	def menuMainPopup(
 		self,

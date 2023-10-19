@@ -1,4 +1,3 @@
-
 from scal3 import logger
 
 log = logger.get()
@@ -20,13 +19,13 @@ with open(join(modDir, "modules.list")) as fp:
 			continue
 		if name.startswith("#"):
 			continue
-		#try:
+		# try:
 		mod = __import__(f"scal3.cal_types.{name}", fromlist=[name])
-		#mod = __import__(name) # Need to "sys.path.insert(0, modDir)" before
-		#except:
-		#	log.exception("")
-		#	log.info(f"Could not load calendar modules {name!r}")
-		#	continue
+		# mod = __import__(name) # Need to "sys.path.insert(0, modDir)" before
+		# except:
+		# 	log.exception("")
+		# 	log.info(f"Could not load calendar modules {name!r}")
+		# 	continue
 		for attr in (
 			"name",
 			"desc",
@@ -51,12 +50,8 @@ with open(join(modDir, "modules.list")) as fp:
 
 
 class CalTypesHolder:
-	byName = {
-		mod.name: mod for mod in modules
-	}
-	names = [
-		mod.name for mod in modules
-	]
+	byName = {mod.name: mod for mod in modules}
+	names = [mod.name for mod in modules]
 	# calOrigLang = [m.origLang for m in modules]
 
 	def __len__(self):
@@ -67,9 +62,9 @@ class CalTypesHolder:
 		self.inactiveNames = []
 		self.update()
 
-	#@attributemethod
-	#def primary(self):
-	#	return self.active[0]
+	# @attributemethod
+	# def primary(self):
+	# 	return self.active[0]
 
 	def primaryModule(self):
 		return modules[self.primary]
@@ -138,8 +133,7 @@ class CalTypesHolder:
 		if isinstance(key, int):
 			return 0 <= key < len(modules)
 		raise TypeError(
-			f"invalid key {key!r} given to "
-			f"{self.__class__.__name__!r}.__getitem__",
+			f"invalid key {key!r} given to {self.__class__.__name__!r}.__getitem__",
 		)
 
 	# returns (module, found) where found is bool
@@ -154,8 +148,7 @@ class CalTypesHolder:
 				return None, False
 			return modules[key], True
 		raise TypeError(
-			f"invalid key {key!r} given to "
-			f"{self.__class__.__name__!r}.__getitem__",
+			f"invalid key {key!r} given to {self.__class__.__name__!r}.__getitem__",
 		)
 
 	def get(self, key, default=None):
@@ -166,8 +159,7 @@ class CalTypesHolder:
 				return default
 			return modules[key]
 		raise TypeError(
-			f"invalid key {key!r} given to "
-			f"{self.__class__.__name__!r}.__getitem__",
+			f"invalid key {key!r} given to {self.__class__.__name__!r}.__getitem__",
 		)
 
 	def getDesc(self, key):
@@ -192,7 +184,8 @@ def to_jd(y, m, d, source):
 
 def convert(y, m, d, source, target):
 	return (
-		(y, m, d) if source == target
+		(y, m, d)
+		if source == target
 		else modules[target].jd_to(
 			modules[source].to_jd(y, m, d),
 		)
@@ -211,6 +204,7 @@ def getSysDate(calType):
 		return localtime()[:3]
 	gy, gm, gd = localtime()[:3]
 	return convert(gy, gm, gd, GREGORIAN, calType)
+
 
 # def inputDateJd(msg: str) -> "int | None":
 # 	date = inputDate(msg)

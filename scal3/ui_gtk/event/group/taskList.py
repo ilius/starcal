@@ -20,7 +20,7 @@ class WidgetClass(NormalWidgetClass):
 		pack(self, hbox)
 		hbox.show_all()
 
-	def updateWidget(self):## FIXME
+	def updateWidget(self):  ## FIXME
 		NormalWidgetClass.updateWidget(self)
 		self.defaultDurationBox.setDuration(*self.group.defaultDuration)
 

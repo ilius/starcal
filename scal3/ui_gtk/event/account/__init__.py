@@ -16,6 +16,7 @@ __all__ = [
 	"AccountGroupBox",
 ]
 
+
 class BaseWidgetClass(gtk.Box):
 	def __init__(self, account):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
@@ -89,10 +90,12 @@ class AccountGroupCombo(IdComboBox):
 		ls.clear()
 		if self.account:
 			for groupData in self.account.remoteGroups:
-				ls.append([
-					str(groupData["id"]),
-					groupData["title"],
-				])
+				ls.append(
+					[
+						str(groupData["id"]),
+						groupData["title"],
+					],
+				)
 
 
 class AccountGroupBox(gtk.Box):

@@ -35,20 +35,20 @@ if __name__ == "__main__":
 	if os.getuid() != 0:
 		errorExit("This program must be run as root")
 	if not os.path.isfile(localeGen):
-		errorExit(f"File \"{localeGen}\" does not exist!")
+		errorExit(f'File "{localeGen}" does not exist!')
 	localeName = sys.argv[1].lower().replace(".", " ")
 	with open(localeGen) as fp:
 		lines = fp.read().split("\n")
-	for (i, line) in enumerate(lines):
+	for i, line in enumerate(lines):
 		if line.lower().startswith(localeName):
-			log.info(f"locale \"{localeName}\" is already enabled")
+			log.info(f'locale "{localeName}" is already enabled')
 			break
 		if line.lower().startswith("#" + localeName):
 			lines[i] = line[1:]
 			os.rename(localeGen, f"{localeGen}.{now()}")
 			open(localeGen, "w").write("\n".join(lines))
 			exit_code = subprocess.call("/usr/sbin/locale-gen")
-			log.info(f"enabling locale \"{localeName}\" done")
+			log.info(f'enabling locale "{localeName}" done')
 			break
 	else:
-		errorExit(f"locale \"{localeName}\" not found!")
+		errorExit(f'locale "{localeName}" not found!')

@@ -12,7 +12,7 @@ def processDroppedDate(text, dtype):
 		if text.startswith("file://"):
 			path = core.urlToPath(text)
 			try:
-				t = os.stat(path).st_mtime ## modification time
+				t = os.stat(path).st_mtime  ## modification time
 			except OSError:
 				log.error(f"Dropped invalid file {path!r}")
 			else:
@@ -28,17 +28,17 @@ def processDroppedDate(text, dtype):
 			log.info(f"Dropped unknown text {text!r}")
 			return None
 			# log.debug(etime)
-			#context.drag_status(gdk.DragAction.DEFAULT, etime)
-			#context.drop_reply(False, etime)
-			#context.drag_abort(etime)##Segmentation fault
-			#context.drop_finish(False, etime)
-			#context.finish(False, True, etime)
-			#return True
+			# context.drag_status(gdk.DragAction.DEFAULT, etime)
+			# context.drop_reply(False, etime)
+			# context.drag_abort(etime)##Segmentation fault
+			# context.drop_finish(False, etime)
+			# context.finish(False, True, etime)
+			# return True
 	elif dtype == "text/uri-list":
 		path = core.urlToPath(text)
 		# print(f"{text = }, {path = }")
 		try:
-			t = os.stat(path).st_mtime ## modification time
+			t = os.stat(path).st_mtime  ## modification time
 		except OSError:
 			log.error(f"Dropped invalid uri {path!r}")
 			return True

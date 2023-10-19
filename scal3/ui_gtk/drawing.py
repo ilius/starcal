@@ -60,7 +60,7 @@ if not ui.fontCustom:
 with open(join(sourceDir, "svg", "special", "color-check.svg")) as fp:  # noqa: FURB101
 	colorCheckSvgTextChecked = fp.read()
 colorCheckSvgTextUnchecked = re.sub(
-	"<path[^<>]*?id=\"check\"[^<>]*?/>",
+	'<path[^<>]*?id="check"[^<>]*?/>',
 	"",
 	colorCheckSvgTextChecked,
 	flags=re.M | re.S,
@@ -283,7 +283,8 @@ def drawRoundedRect(cr, cx0, cy0, cw, ch, ro):
 	# up right corner:
 	cr.arc(
 		cx0 + cw - ro,
-		cy0 + ro, ro,
+		cy0 + ro,
+		ro,
 		3 * pi / 2,
 		2 * pi,
 	)
@@ -476,6 +477,7 @@ def drawCircleOutline(cr, cx, cy, r, d):
 	cr.arc_negative(cx, cy, r - d, 2 * pi, 0)
 	cr.close_path()
 
+
 def drawPieOutline(cr, cx, cy, r, d, start, end):
 	# start and end are angles
 	# 0 <= start <= 1
@@ -484,13 +486,15 @@ def drawPieOutline(cr, cx, cy, r, d, start, end):
 	end_radian = 2 * pi * end
 	cr.move_to(cx, cy)
 	cr.arc(
-		cx, cy,
+		cx,
+		cy,
 		r,
 		start_radian,
 		end_radian,
 	)
 	cr.arc_negative(
-		cx, cy,
+		cx,
+		cy,
 		r - d,
 		end_radian,
 		start_radian,
