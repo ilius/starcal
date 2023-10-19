@@ -69,7 +69,7 @@ class MultiSpinButton(gtk.Box):
 		("first-max", []),
 	]
 
-	buttonSize = gtk.IconSize.MENU # FIXME
+	buttonSize = gtk.IconSize.MENU  # FIXME
 
 	def set_width_chars(self, w: int):
 		self.entry.set_width_chars(w)
@@ -129,7 +129,9 @@ class MultiSpinButton(gtk.Box):
 		# patch, work perfectly
 		# https://gitlab.gnome.org/GNOME/gtk/commit/5fd936beef7a999828e5e3625506ea6708188762
 		###
-		self.down_button = imageClassButton("list-remove-symbolic", "down", self.buttonSize)
+		self.down_button = imageClassButton(
+			"list-remove-symbolic", "down", self.buttonSize,
+		)
 		self.down_button.connect("button-press-event", self.onDownButtonPress)
 		self.down_button.connect("button-release-event", self.onButtonRelease)
 		###
@@ -145,7 +147,7 @@ class MultiSpinButton(gtk.Box):
 		# gtk_container_add (GTK_CONTAINER (priv->down_button),
 		# 		gtk_image_new_from_icon_name ("value-decrease-symbolic"));
 		# gtk_style_context_add_class (gtk_widget_get_style_context
-		#		(priv->down_button), "image-button");
+		# 		(priv->down_button), "image-button");
 		# gtk_widget_set_can_focus (priv->down_button, FALSE);
 		# gtk_style_context_add_class (gtk_widget_get_style_context
 		# 		(priv->down_button), "down");
@@ -157,7 +159,7 @@ class MultiSpinButton(gtk.Box):
 		# gtk_event_controller_set_propagation_phase (GTK_EVENT_CONTROLLER (gesture),
 		# 											GTK_PHASE_CAPTURE);
 		# g_signal_connect (gesture, "pressed",
-		#		G_CALLBACK (button_pressed_cb), spin_button);
+		# 		G_CALLBACK (button_pressed_cb), spin_button);
 		# g_signal_connect (gesture, "released",
 		# 		G_CALLBACK (button_released_cb), spin_button);
 		# gtk_widget_add_controller (GTK_WIDGET (priv->down_button),
@@ -172,7 +174,7 @@ class MultiSpinButton(gtk.Box):
 		self.entry.set_direction(gtk.TextDirection.LTR)
 		# log.debug(self.__class__.__name__, "value=", value)
 		self.entry.connect("changed", self._entry_changed)
-		#self.connect("activate", lambda obj: self.update())
+		# self.connect("activate", lambda obj: self.update())
 		self.entry.connect("activate", self._entry_activate)
 		for widget in (self, self.entry, self.down_button, self.up_button):
 			widget.connect("key-press-event", self.onKeyPress)
@@ -180,7 +182,7 @@ class MultiSpinButton(gtk.Box):
 		# self.connect("button-press-event", self.onButtonPress) # FIXME
 		# self.connect("button-release-event", self.onButtonRelease) # FIXME
 		####
-		#self.select_region(0, 0)
+		# self.select_region(0, 0)
 
 	def _entry_changed(self, widget):
 		self.emit("changed")
@@ -248,13 +250,13 @@ class MultiSpinButton(gtk.Box):
 				return True
 			if kname in ("left", "right"):
 				return False
-				#if not self.arrow_select:
-				#	return False
-				#shift = {
-				#	"left": -1,
-				#	"right": 1
-				#}[kname]
-				#FIXME
+				# if not self.arrow_select:
+				# 	return False
+				# shift = {
+				# 	"left": -1,
+				# 	"right": 1
+				# }[kname]
+				# FIXME
 
 			p = {
 				"up": step_inc,
@@ -264,20 +266,20 @@ class MultiSpinButton(gtk.Box):
 			}[kname]
 			self.entry_plus(p)
 
-			#from scal3.utils import strFindNth
-			#if fieldIndex==0:
-			#	i1 = 0
-			#else:
-			#	i1 = strFindNth(text, sep, fieldIndex) + len(sep)
-			#i2 = strFindNth(text, sep, fieldIndex+1)
+			# from scal3.utils import strFindNth
+			# if fieldIndex==0:
+			# 	i1 = 0
+			# else:
+			# 	i1 = strFindNth(text, sep, fieldIndex) + len(sep)
+			# i2 = strFindNth(text, sep, fieldIndex+1)
 			##self.grab_focus()
-			#self.select_region(i1, i2)
+			# self.select_region(i1, i2)
 			return True
 
-		#if kname=="return":## Enter
-		#	self.update()
-		#	##self.emit("activate")
-		#	return True
+		# if kname=="return":## Enter
+		# 	self.update()
+		# 	##self.emit("activate")
+		# 	return True
 
 		if ord("0") <= kval <= ord("9"):
 			self.insertText(self.digs[kval - ord("0")])
@@ -315,9 +317,9 @@ class MultiSpinButton(gtk.Box):
 			return False
 		return True
 
-	#def _move_cursor(self, obj, step, count, extend_selection):
-	#	# force_select
-	#	log.debug(f"_move_cursor: {count=}, {extend_selection=}")
+	# def _move_cursor(self, obj, step, count, extend_selection):
+	# 	# force_select
+	# 	log.debug(f"_move_cursor: {count=}, {extend_selection=}")
 
 	def _arrow_press(self, plus):
 		self.pressTm = now()
@@ -328,10 +330,8 @@ class MultiSpinButton(gtk.Box):
 	def _arrow_remain(self, plus):
 		if (
 			self.entry.get_editable()
-			and
-			self._remain
-			and
-			now() - self.pressTm >= ui.timeout_repeat / 1000
+			and self._remain
+			and now() - self.pressTm >= ui.timeout_repeat / 1000
 		):
 			self.entry_plus(plus)
 			timeout_add(
