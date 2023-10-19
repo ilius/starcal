@@ -886,11 +886,10 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		)
 		if calObjName in ("weekCal", "monthCal"):
 			isWeek = calObjName == "weekCal"
+			calDesc = "Month Calendar" if isWeek else "Week Calendar"
 			menu.add(
 				ImageMenuItem(
-					label=_(
-						"Switch to " + ("Month Calendar" if isWeek else "Week Calendar"),
-					),
+					label=_("Switch to " + calDesc),
 					imageName="" if isWeek else "week-calendar.svg",
 					func=self.switchWcalMcal,
 				),
