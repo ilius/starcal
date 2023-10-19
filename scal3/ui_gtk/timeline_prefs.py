@@ -41,23 +41,23 @@ class TimeLinePreferencesWindow(gtk.Window):
 		self.set_position(gtk.WindowPosition.CENTER)
 		self.connect("delete-event", self.onDelete)
 		self.connect("key-press-event", self.onKeyPress)
-		#self.set_has_separator(False)
-		#self.set_skip_taskbar_hint(True)
+		# self.set_has_separator(False)
+		# self.set_skip_taskbar_hint(True)
 		###
 		self.vbox = VBox()
 		self.add(self.vbox)
 		###
 		self.buttonbox = MyHButtonBox()
-		#self.buttonbox.add_button(
-		#	imageName="dialog-cancel.svg",
-		#	label=_("Cancel"),
-		#	onClick=self.onCancelClick,
-		#)
-		#self.buttonbox.add_button(
-		#	imageName="dialog-ok-apply.svg",
-		#	label=_("_Apply", ctx="window action"),
-		#	onClick=self.onApplyClick,
-		#)
+		# self.buttonbox.add_button(
+		# 	imageName="dialog-cancel.svg",
+		# 	label=_("Cancel"),
+		# 	onClick=self.onCancelClick,
+		# )
+		# self.buttonbox.add_button(
+		# 	imageName="dialog-ok-apply.svg",
+		# 	label=_("_Apply", ctx="window action"),
+		# 	onClick=self.onApplyClick,
+		# )
 		self.buttonbox.add_button(
 			imageName="document-save.svg",
 			label=_("_Save"),
@@ -111,8 +111,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"baseFontSize",
-			0.1, 999,
-			digits=1, step=1,  # noqa: FURB120
+			0.1,
+			999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Base Font Size"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -162,8 +164,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"basicButtonsSize",
-			1, 999,
-			digits=1, step=1,  # noqa: FURB120
+			1,
+			999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Buttons Size"),
 			live=True,
 			onChangeFunc=updateBasicButtons,
@@ -176,8 +180,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"basicButtonsSpacing",
-			0, 999,
-			digits=1, step=1,  # noqa: FURB120
+			0,
+			999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Space between buttons"),
 			live=True,
 			onChangeFunc=updateBasicButtons,
@@ -207,8 +213,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"movementButtonsSize",
-			1, 999,
-			digits=1, step=1,  # noqa: FURB120
+			1,
+			999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Movement Buttons Size"),
 			live=True,
 			onChangeFunc=updateMovementButtons,
@@ -222,8 +230,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"basicButtonsOpacity",
-			0.0, 1.0,
-			digits=2, step=0.1,
+			0.0,
+			1.0,
+			digits=2,
+			step=0.1,
 			label=_("Opacity of main buttons"),
 			live=True,
 			onChangeFunc=updateBasicButtons,
@@ -235,8 +245,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"movementButtonsOpacity",
-			0.0, 1.0,
-			digits=2, step=0.1,
+			0.0,
+			1.0,
+			digits=2,
+			step=0.1,
 			label=_("Opacity of movement buttons"),
 			live=True,
 			onChangeFunc=updateMovementButtons,
@@ -258,8 +270,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"majorStepMin",
-			1, 999,
-			digits=1, step=1,  # noqa: FURB120
+			1,
+			999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Major Indicator Step (Minimum)"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -273,8 +287,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"minorStepMin",
-			1, 999,
-			digits=1, step=1,  # noqa: FURB120
+			1,
+			999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Minor Indicator Step (Minimum)"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -299,8 +315,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"baseTickHeight",
-			0.1, 999,
-			digits=1, step=1,  # noqa: FURB120
+			0.1,
+			999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Base Height"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -313,8 +331,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"baseTickWidth",
-			0.1, 99,
-			digits=2, step=1,
+			0.1,
+			99,
+			digits=2,
+			step=1,
 			label=_("Base Width"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -327,8 +347,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"maxTickWidth",
-			0.1, 99,
-			digits=1, step=1,  # noqa: FURB120
+			0.1,
+			99,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Maximum Width"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -341,8 +363,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"maxTickHeightRatio",
-			0.01, 1,
-			digits=2, step=0.1,
+			0.01,
+			1,
+			digits=2,
+			step=0.1,
 			label=_("Maximum Height"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -355,8 +379,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"maxLabelWidth",
-			1, 999,
-			digits=1, step=1,  # noqa: FURB120
+			1,
+			999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Maximum Label Width"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -388,8 +414,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"currentTimeMarkerHeightRatio",
-			0.01, 1,
-			digits=2, step=0.1,
+			0.01,
+			1,
+			digits=2,
+			step=0.1,
 			label=_("Maximum Height"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -402,8 +430,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"currentTimeMarkerWidth",
-			0.1, 99,
-			digits=2, step=1,
+			0.1,
+			99,
+			digits=2,
+			step=1,
 			label=_("Width"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -463,8 +493,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"showWeekStartMinDays",
-			1, 999,
-			digits=0, step=1,
+			1,
+			999,
+			digits=0,
+			step=1,
 			label=_("Minimum Interval"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -477,8 +509,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"showWeekStartMaxDays",
-			1, 999,
-			digits=0, step=1,  # noqa: FURB120
+			1,
+			999,
+			digits=0,
+			step=1,  # noqa: FURB120
 			label=_("Maximum Interval"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -501,8 +535,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"boxLineWidth",
-			0.0, 99,
-			digits=1, step=1,  # noqa: FURB120
+			0.0,
+			99,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Border Line Width"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -515,8 +551,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"boxInnerAlpha",
-			0.0, 1.0,
-			digits=2, step=0.1,
+			0.0,
+			1.0,
+			digits=2,
+			step=0.1,
 			label=_("Inner Opacity"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -528,8 +566,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"boxEditBorderWidth",
-			0.0, 999,
-			digits=1, step=1,  # noqa: FURB120
+			0.0,
+			999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Editing Border Width"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -542,8 +582,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"boxEditInnerLineWidth",
-			0.0, 99,
-			digits=1, step=1,  # noqa: FURB120
+			0.0,
+			99,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Editing Inner Line Width"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -556,8 +598,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"boxEditHelperLineWidth",
-			0.0, 99,
-			digits=1, step=1,  # noqa: FURB120
+			0.0,
+			99,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Editing Helper Line Width"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -622,8 +666,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"movingStaticStepMouse",
-			0.1, 9999,
-			digits=1, step=1,  # noqa: FURB120
+			0.1,
+			9999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Step with mouse scroll"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -636,8 +682,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"movingStaticStepKeyboard",
-			0.1, 9999,
-			digits=1, step=1,  # noqa: FURB120
+			0.1,
+			9999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Step with keyboard"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -664,8 +712,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"movingInitialVelocity",
-			0.0, 9999,
-			digits=1, step=1,  # noqa: FURB120
+			0.0,
+			9999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Initial Velocity"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -678,8 +728,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"movingMaxVelocity",
-			0.1, 9999,
-			digits=1, step=1,  # noqa: FURB120
+			0.1,
+			9999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Maximum Velocity"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -692,84 +744,110 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"movingHandForceMouse",
-			0.1, 9999,
-			digits=1, step=1,  # noqa: FURB120
+			0.1,
+			9999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Acceleration with mouse"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
-		pack(hbox, gtk.Label(
-			label=_("pixel/second<sup>2</sup>"),
-			use_markup=True,
-		))
+		pack(
+			hbox,
+			gtk.Label(
+				label=_("pixel/second<sup>2</sup>"),
+				use_markup=True,
+			),
+		)
 		pack(vbox, hbox)
 		###
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
-			tl, "movingHandForceKeyboard",
-			0.1, 9999,
-			digits=1, step=1,  # noqa: FURB120
+			tl,
+			"movingHandForceKeyboard",
+			0.1,
+			9999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Acceleration with keyboard"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
-		pack(hbox, gtk.Label(
-			label=_("pixel/second<sup>2</sup>"),
-			use_markup=True,
-		))
+		pack(
+			hbox,
+			gtk.Label(
+				label=_("pixel/second<sup>2</sup>"),
+				use_markup=True,
+			),
+		)
 		pack(vbox, hbox)
 		###
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
 			"movingHandForceKeyboardSmall",
-			0.1, 9999,
-			digits=1, step=1,  # noqa: FURB120
+			0.1,
+			9999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Acceleration with keyboard (with Shift)"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
-		pack(hbox, gtk.Label(
-			label=_("pixel/second<sup>2</sup>"),
-			use_markup=True,
-		))
+		pack(
+			hbox,
+			gtk.Label(
+				label=_("pixel/second<sup>2</sup>"),
+				use_markup=True,
+			),
+		)
 		pack(vbox, hbox)
 		###
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
 			"movingHandForceButton",
-			0.1, 9999,
-			digits=1, step=1,  # noqa: FURB120
+			0.1,
+			9999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Acceleration with buttons"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
-		pack(hbox, gtk.Label(
-			label=_("pixel/second<sup>2</sup>"),
-			use_markup=True,
-		))
+		pack(
+			hbox,
+			gtk.Label(
+				label=_("pixel/second<sup>2</sup>"),
+				use_markup=True,
+			),
+		)
 		pack(vbox, hbox)
 		#####
 		hbox = HBox(spacing=5)
 		prefItem = SpinPrefItem(
 			tl,
 			"movingFrictionForce",
-			0.0, 9999,
-			digits=1, step=1,  # noqa: FURB120
+			0.0,
+			9999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Friction Acceleration"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
 		)
 		pack(hbox, prefItem.getWidget())
-		pack(hbox, gtk.Label(
-			label=_("pixel/second<sup>2</sup>"),
-			use_markup=True,
-		))
+		pack(
+			hbox,
+			gtk.Label(
+				label=_("pixel/second<sup>2</sup>"),
+				use_markup=True,
+			),
+		)
 		pack(vbox, hbox)
 		#####
 		# TODO: movingKeyTimeoutFirst
@@ -789,8 +867,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"scrollZoomStep",
-			1.0, 9,
-			digits=2, step=0.1,
+			1.0,
+			9,
+			digits=2,
+			step=0.1,
 			label=_("Zoom Factor by Mouse Scroll"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -802,8 +882,10 @@ class TimeLinePreferencesWindow(gtk.Window):
 		prefItem = SpinPrefItem(
 			tl,
 			"keyboardZoomStep",
-			1.0, 9,
-			digits=2, step=0.1,
+			1.0,
+			9,
+			digits=2,
+			step=0.1,
 			label=_("Zoom Factor by Keyboard"),
 			live=True,
 			onChangeFunc=timeLine.queue_draw,
@@ -885,7 +967,6 @@ class TimeLinePreferencesWindow(gtk.Window):
 		####
 		self.vbox.show_all()
 
-
 	def gotoPageClicked(self, button, page):
 		self.stack.gotoPage(page.pagePath)
 
@@ -920,4 +1001,3 @@ class TimeLinePreferencesWindow(gtk.Window):
 		return False
 
 	# self._timeLine.queue_draw()
-

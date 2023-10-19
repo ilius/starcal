@@ -72,6 +72,7 @@ class WidgetClass(gtk.Box):
 	def __init__(self, event):
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
+
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.event = event
 		###########
@@ -79,7 +80,7 @@ class WidgetClass(gtk.Box):
 		###
 		pack(hbox, gtk.Label(label=_("Calendar Type")))
 		combo = CalTypeCombo()
-		combo.set_active(calTypes.primary)## overwritten in updateWidget()
+		combo.set_active(calTypes.primary)  ## overwritten in updateWidget()
 		pack(hbox, combo)
 		pack(hbox, gtk.Label(), 1, 1)
 		self.calTypeCombo = combo
@@ -166,7 +167,7 @@ class WidgetClass(gtk.Box):
 			self.event.timeZoneEnable = self.tzCheck.get_active()
 			self.event.timeZone = self.tzCombo.get_text()
 		else:
-			self.event.timeZoneEnable = False ## FIXME
+			self.event.timeZoneEnable = False  ## FIXME
 		self.event.summary = self.summaryEntry.get_text()
 		self.event.description = self.descriptionInput.get_text()
 		self.event.icon = self.iconSelect.get_filename()
@@ -177,7 +178,7 @@ class WidgetClass(gtk.Box):
 				box.updateVars()
 		#####
 
-	def calTypeComboChanged(self, obj=None):## FIXME
+	def calTypeComboChanged(self, obj=None):  ## FIXME
 		pass
 
 
@@ -238,6 +239,7 @@ class FilesBox(gtk.Box):
 		fcd.connect("response", lambda w, e: fcd.hide())
 		if fcd.run() == gtk.ResponseType.OK:
 			from shutil import copy
+
 			fpath = fcd.get_filename()
 			fname = split(fpath)[-1]
 			dstDir = self.event.filesDir
@@ -265,11 +267,11 @@ class FilesBox(gtk.Box):
 		for fname in self.event.files:
 			self.showFile(fname)
 
-	def updateVars(self):## FIXME
+	def updateVars(self):  ## FIXME
 		pass
 
 
-class NotificationBox(ExpanderFrame):## or NotificationBox FIXME
+class NotificationBox(ExpanderFrame):  ## or NotificationBox FIXME
 	def __init__(self, event):
 		ExpanderFrame.__init__(self, label=_("Notification"))
 		self.event = event
@@ -302,7 +304,7 @@ class NotificationBox(ExpanderFrame):## or NotificationBox FIXME
 			cb.set_active(False)
 			pack(hbox, cb)
 			hbox.cb = cb
-			#pack(hbox, gtk.Label(), 1, 1)
+			# pack(hbox, gtk.Label(), 1, 1)
 			pack(hbox, inputWidget, 1, 1)
 			hbox.inputWidget = inputWidget
 			self.hboxDict[notifier.name] = hbox
@@ -342,10 +344,12 @@ class DurationInputBox(gtk.Box):
 		##
 		combo = gtk.ComboBoxText()
 		for _unitValue, unitName in durationUnitsAbs:
-			combo.append_text(_(
-				" " + unitName.capitalize() + "s",
-			))
-		combo.set_active(2) ## hour FIXME
+			combo.append_text(
+				_(
+					" " + unitName.capitalize() + "s",
+				),
+			)
+		combo.set_active(2)  ## hour FIXME
 		pack(self, combo)
 		self.unitCombo = combo
 
@@ -378,29 +382,31 @@ class StrListEditor(gtk.Box):
 		pack(self, self.treev, 1, 1)
 		##########
 		toolbar = StaticToolBox(self, vertical=True)
-		toolbar.extend([
-			ToolBoxItem(
-				name="add",
-				imageName="list-add.svg",
-				onClick="onAddClick",
-				desc=_("Add"),
-				continuousClick=False,
-			),
-			ToolBoxItem(
-				name="moveUp",
-				imageName="go-up.svg",
-				onClick="onMoveUpClick",
-				desc=_("Move up"),
-				continuousClick=False,
-			),
-			ToolBoxItem(
-				name="moveDown",
-				imageName="go-down.svg",
-				onClick="onMoveDownClick",
-				desc=_("Move down"),
-				continuousClick=False,
-			),
-		])
+		toolbar.extend(
+			[
+				ToolBoxItem(
+					name="add",
+					imageName="list-add.svg",
+					onClick="onAddClick",
+					desc=_("Add"),
+					continuousClick=False,
+				),
+				ToolBoxItem(
+					name="moveUp",
+					imageName="go-up.svg",
+					onClick="onMoveUpClick",
+					desc=_("Move up"),
+					continuousClick=False,
+				),
+				ToolBoxItem(
+					name="moveDown",
+					imageName="go-down.svg",
+					onClick="onMoveDownClick",
+					desc=_("Move down"),
+					continuousClick=False,
+				),
+			],
+		)
 		#######
 		pack(self, toolbar)
 
@@ -463,8 +469,8 @@ class Scale10PowerComboBox(gtk.ComboBox):
 		ls.append((1, _("Years")))  # noqa: FURB113
 		ls.append((100, _("Centuries")))
 		ls.append((1000, _("Thousand Years")))
-		ls.append((1000 ** 2, _("Million Years")))
-		ls.append((1000 ** 3, _("Billion (10^9) Years")))
+		ls.append((1000**2, _("Million Years")))
+		ls.append((1000**3, _("Billion (10^9) Years")))
 		###
 		self.set_active(0)
 
@@ -477,26 +483,30 @@ class Scale10PowerComboBox(gtk.ComboBox):
 			if row[0] == value:
 				self.set_active(i)
 				return
-		ls.append((
-			value,
-			_("{yearCount} Years").format(yearCount=_(value)),
-		))
+		ls.append(
+			(
+				value,
+				_("{yearCount} Years").format(yearCount=_(value)),
+			),
+		)
 		self.set_active(len(ls) - 1)
 
 
 class GroupsTreeCheckList(gtk.TreeView):
 	def __init__(self):
 		gtk.TreeView.__init__(self)
-		self.treeModel = gtk.ListStore(int, bool, str)## groupId(hidden), enable, summary
+		self.treeModel = gtk.ListStore(
+			int, bool, str,
+		)  ## groupId(hidden), enable, summary
 		self.set_model(self.treeModel)
 		self.set_headers_visible(False)
 		###
 		cell = gtk.CellRendererToggle()
-		#cell.set_property("activatable", True)
+		# cell.set_property("activatable", True)
 		cell.connect("toggled", self.enableCellToggled)
 		col = gtk.TreeViewColumn(title=_("Enable"), cell_renderer=cell)
 		col.add_attribute(cell, "active", 1)
-		#cell.set_active(True)
+		# cell.set_active(True)
 		col.set_resizable(True)
 		self.append_column(col)
 		###
@@ -515,13 +525,11 @@ class GroupsTreeCheckList(gtk.TreeView):
 		cell.set_active(active)
 
 	def getValue(self):
-		return [
-			row[0] for row in self.treeModel if row[1]
-		]
+		return [row[0] for row in self.treeModel if row[1]]
 
 	def setValue(self, gids):
 		for row in self.treeModel:
-			row[1] = (row[0] in gids)
+			row[1] = row[0] in gids
 
 	def disableAll(self):
 		model = self.get_model()
@@ -532,7 +540,6 @@ class GroupsTreeCheckList(gtk.TreeView):
 		model = self.get_model()
 		for i in range(len(model)):
 			model.set_value(model.get_iter((i,)), 1, True)
-
 
 
 class SingleGroupComboBox(gtk.ComboBox):
@@ -557,14 +564,14 @@ class SingleGroupComboBox(gtk.ComboBox):
 		ls.clear()
 		###
 		for group in ui.eventGroups:
-			if not group.enable:## FIXME
+			if not group.enable:  ## FIXME
 				continue
 			ls.append(getGroupRow(group))
 		###
-		#try:
+		# try:
 		gtk.ComboBox.set_active(self, 0)
-		#except:
-		#	pass
+		# except:
+		# 	pass
 		if activeGid not in (None, -1):
 			with suppress(ValueError):
 				self.set_active(activeGid)
@@ -583,24 +590,24 @@ class SingleGroupComboBox(gtk.ComboBox):
 				break
 		else:
 			raise ValueError(
-				"SingleGroupComboBox.set_active: "
-				f"Group ID {gid} is not in items",
+				"SingleGroupComboBox.set_active: " f"Group ID {gid} is not in items",
 			)
 
 
 if __name__ == "__main__":
 	from pprint import pformat
+
 	dialog = gtk.Window()
 	dialog.vbox = VBox()
 	dialog.add(dialog.vbox)
-	#widget = ViewEditTagsHbox()
-	#widget = EventTagsAndIconSelect()
-	#widget = TagsListBox("task")
+	# widget = ViewEditTagsHbox()
+	# widget = EventTagsAndIconSelect()
+	# widget = TagsListBox("task")
 	widget = SingleGroupComboBox()
 	pack(dialog.vbox, widget, 1, 1)
-	#dialog.vbox.show_all()
-	#dialog.resize(300, 500)
-	#dialog.run()
+	# dialog.vbox.show_all()
+	# dialog.resize(300, 500)
+	# dialog.run()
 	dialog.show_all()
 	gtk.main()
 	log.info(pformat(widget.getData()))

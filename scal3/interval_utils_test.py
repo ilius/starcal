@@ -58,32 +58,26 @@ def testIntersection():
 			"0-20",
 			"10-30",
 		): "10-20",
-
 		(
 			"10-30 40-50 60-80",
 			"25-45",
 		): "25-30 40-45",
-
 		(
 			"10-30 40-50 60-80",
 			"25-45 50-60",
 		): "25-30 40-45",
-
 		(
 			"10-30 40-50 60-80",
 			"25-45 50-60 60",
 		): "25-30 40-45 60",
-
 		(
 			"10-30 40-50 60-80",
 			"25-45 48-70 60",
 		): "25-30 40-45 48-50 60-70",
-
 		(
 			"10-30 40-50 60-80",
 			"25-45 48-70",
 		): "25-30 40-45 48-50 60-70",
-
 		(
 			"0-10 20-30 40-50 60-70",
 			"1-2 6-7 11-12 16-17 21-22 26-27 27",
@@ -111,31 +105,67 @@ def testIntersection():
 
 def testJdRanges():
 	from pprint import pprint
-	pprint(JdOccurSet([
-		1, 3, 4, 5, 7, 9, 10, 11, 12, 13, 14, 18,
-	]).calcJdRanges())
+
+	pprint(
+		JdOccurSet(
+			[
+				1,
+				3,
+				4,
+				5,
+				7,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14,
+				18,
+			],
+		).calcJdRanges(),
+	)
 
 
 def testSimplifyNumList():
 	from pprint import pprint
-	pprint(simplifyNumList([
-		1, 2, 3, 4, 5, 7, 9, 10, 14, 16, 17, 18, 19, 21, 22, 23, 24,
-	]))
+
+	pprint(
+		simplifyNumList(
+			[
+				1,
+				2,
+				3,
+				4,
+				5,
+				7,
+				9,
+				10,
+				14,
+				16,
+				17,
+				18,
+				19,
+				21,
+				22,
+				23,
+				24,
+			],
+		),
+	)
 
 
 def testOverlapsSpeed():
 	from random import normalvariate
 	from time import time
+
 	N = 2000000
 	a0, b0 = -1, 1
 	b_mean = 0
 	b_sigma = 2
 
 	def getRandomPair():
-		return sorted(
-			normalvariate(b_mean, b_sigma)
-			for i in (0, 1)
-		)
+		return sorted(normalvariate(b_mean, b_sigma) for i in (0, 1))
+
 	###
 	data = []
 	for _i in range(N):

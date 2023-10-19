@@ -1,9 +1,8 @@
 #!/usr/bin/env python3
 
-import sys
-from os.path import join, dirname, abspath, splitext
-
 import json
+import sys
+from os.path import abspath, dirname, join, splitext
 
 sourceDir = dirname(dirname(abspath(__file__)))
 

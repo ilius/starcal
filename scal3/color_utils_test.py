@@ -18,10 +18,11 @@ log = logging.getLogger(APP_NAME)
 class TestColorUtils(unittest.TestCase):
 	def test_rgbToInt(self):
 		from scal3.color_utils import rgbToInt
-		self.assertEqual(rgbToInt(170, 85, 52), 0xaa5534)
-		self.assertEqual(rgbToInt(255, 0, 0), 0xff0000)
-		self.assertEqual(rgbToInt(0, 255, 0), 0x00ff00)
-		self.assertEqual(rgbToInt(0, 0, 255), 0x0000ff)
+
+		self.assertEqual(rgbToInt(170, 85, 52), 0xAA5534)
+		self.assertEqual(rgbToInt(255, 0, 0), 0xFF0000)
+		self.assertEqual(rgbToInt(0, 255, 0), 0x00FF00)
+		self.assertEqual(rgbToInt(0, 0, 255), 0x0000FF)
 
 	def assertEqualHSL(self, first, second):
 		self.assertEqual(len(first), 3)
@@ -32,6 +33,7 @@ class TestColorUtils(unittest.TestCase):
 
 	def test_rgbToHsl(self):
 		from scal3.color_utils import rgbToHsl
+
 		self.assertEqualHSL(rgbToHsl(0, 0, 0), (None, 0, 0))  # OK
 		self.assertEqualHSL(rgbToHsl(255, 0, 0), (0, 1, 0.5))  # OK
 		self.assertEqualHSL(rgbToHsl(0, 255, 0), (120, 1, 0.5))  # OK
@@ -52,6 +54,7 @@ class TestColorUtils(unittest.TestCase):
 
 	def test_hslToRgb(self):
 		from scal3.color_utils import hslToRgb
+
 		self.assertEqual(hslToRgb(0, 0, 0), (0, 0, 0))  # OK
 		self.assertEqual(hslToRgb(0, 1, 0.5), (255, 0, 0))  # OK
 		self.assertEqual(hslToRgb(120, 1, 0.5), (0, 255, 0))  # OK
@@ -75,6 +78,7 @@ def genRandomTests_rgbToHsl():
 	from random import randint
 
 	from scal3.color_utils import rgbToHsl
+
 	for _ in range(10):
 		r = randint(0, 255)
 		g = randint(0, 255)
@@ -90,6 +94,7 @@ def genRandomTests_hslToRgb():
 	from random import randint, random
 
 	from scal3.color_utils import hslToRgb
+
 	for _ in range(10):
 		h = randint(0, 360)
 		s = random()

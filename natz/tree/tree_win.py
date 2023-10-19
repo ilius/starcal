@@ -1,10 +1,8 @@
 #!/usr/bin/env python3
-import os
-import os.path
 from collections import OrderedDict
+from datetime import datetime
 
 from dateutil.tz.win import tzwin
-from datetime import datetime
 
 
 def getZoneInfoTree():

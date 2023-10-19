@@ -9,6 +9,7 @@ __all__ = [
 	"registerSignals",
 ]
 
+
 def registerType(cls):
 	GObject.type_register(cls)
 	return cls

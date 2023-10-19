@@ -3,7 +3,7 @@
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 #
 # Using kdelibs-4.4.0/kdecore/date/kcalendarsystemindiannational.cpp
-#		Copyright (C) 2009 John Layt <john@layt.net>
+# 		Copyright (C) 2009 John Layt <john@layt.net>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -182,13 +182,7 @@ def jd_to(jd):
 	if gregorianDayOfYear > 80:
 		indianDayOfYear = gregorianDayOfYear - 80
 	else:
-		indianDayOfYear = (
-			gregorianDayOfYear
-			+ daysInMonth1
-			+ 5 * 31
-			+ 6 * 30
-			- 80
-		)
+		indianDayOfYear = gregorianDayOfYear + daysInMonth1 + 5 * 31 + 6 * 30 - 80
 
 	# Then simply remove the whole months from the day of the year and you
 	# are left with the day of month
@@ -234,18 +228,7 @@ def to_jd(year, month, day):
 	if month == 1:
 		jd = jdFirstDayOfYear + day - 1
 	elif month <= 6:
-		jd = (
-			jdFirstDayOfYear
-			+ daysInMonth1
-			+ (month - 2) * 31
-			+ day - 1
-		)
+		jd = jdFirstDayOfYear + daysInMonth1 + (month - 2) * 31 + day - 1
 	else:  # month > 6
-		jd = (
-			jdFirstDayOfYear
-			+ daysInMonth1
-			+ 5 * 31
-			+ (month - 7) * 30
-			+ day - 1
-		)
+		jd = jdFirstDayOfYear + daysInMonth1 + 5 * 31 + (month - 7) * 30 + day - 1
 	return jd

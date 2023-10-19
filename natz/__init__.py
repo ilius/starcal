@@ -5,11 +5,13 @@
 # https://www.python.org/dev/peps/pep-0615/
 
 import logging
+
 log = logging.getLogger("root")
 
-import os
-from os.path import split, join, islink, isfile
 import datetime
+import os
+from os.path import isfile, islink
+
 import dateutil.tz
 
 defaultTZ = None
@@ -56,7 +58,7 @@ def readEtcLocaltime():
 	except ValueError:
 		log.error(f"Unexpected timezone file: {fpath}")
 		return
-	tzname = "/".join(parts[index + 1:])
+	tzname = "/".join(parts[index + 1 :])
 	return dateutil.tz.gettz(tzname)
 
 

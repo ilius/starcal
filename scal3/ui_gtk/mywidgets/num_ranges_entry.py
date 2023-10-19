@@ -142,10 +142,10 @@ class NumRangesEntry(gtk.Entry):
 			return False  # FIXME
 		elif kname == "right":
 			return False  # FIXME
-		#elif kname in ("braceleft", "bracketleft"):
-		#	self.insertText(u"[")
-		#elif kname in ("braceright", "bracketright"):
-		#	self.insertText(u"]")
+		# elif kname in ("braceleft", "bracketleft"):
+		# 	self.insertText(u"[")
+		# elif kname in ("braceright", "bracketright"):
+		# 	self.insertText(u"]")
 		elif kname in ("comma", "arabic_comma"):
 			self.insertText(", ", False)
 		elif kname == "minus":
