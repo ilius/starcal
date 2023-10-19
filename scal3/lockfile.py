@@ -52,7 +52,8 @@ def checkAndSaveJsonLockFile(fpath):
 							log.info(f"lock file {fpath}: pid == my_pid == {pid}")
 						elif get_cmdline(proc) != cmd:
 							log.info(
-								f"lock file {fpath}: cmd does match: get_cmdline(proc) != cmd",
+								f"lock file {fpath}: cmd does match: "
+								"get_cmdline(proc) != cmd",
 							)
 						else:
 							locked = True
