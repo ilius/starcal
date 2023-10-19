@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import json
@@ -10,7 +9,8 @@ faDigs = ("۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", "٫")
 
 ignoreCategories = ("تعطیلات", "جستارهای وابسته", "منابع")
 
-getPrettyJson = lambda data: json.dumps(data, sort_keys=True, indent=4)
+def getPrettyJson(data):
+	return json.dumps(data, sort_keys=True, indent=4)
 
 
 def numFaDecode(numFa):
@@ -24,7 +24,7 @@ def numFaDecode(numFa):
 
 def cleanRawText(text):
 	text = text.strip()  ## .replace("]]", "").replace("[[", "")
-	for part in re.findall("\[\[.*?\]\]", text):
+	for part in re.findall(r"\[\[.*?\]\]", text):
 		part2 = part.split("|")[-1]
 		text = text.replace(part, part2)
 	return (
@@ -51,7 +51,7 @@ def parseFile(fpath, month, day):
 			try:
 				yearFa = line.split("[[")[1].split("]]")[0]
 				year = numFaDecode(yearFa)
-			except:
+			except Exception:
 				continue
 			textStart = line.find("-")
 			# log.debug(textStart)
