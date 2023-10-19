@@ -590,7 +590,7 @@ class SingleGroupComboBox(gtk.ComboBox):
 				break
 		else:
 			raise ValueError(
-				"SingleGroupComboBox.set_active: " f"Group ID {gid} is not in items",
+				f"SingleGroupComboBox.set_active: Group ID {gid} is not in items",
 			)
 
 
