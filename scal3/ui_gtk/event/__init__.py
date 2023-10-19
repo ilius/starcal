@@ -11,7 +11,6 @@ from scal3 import logger
 log = logger.get()
 
 
-
 modPrefix = "scal3.ui_gtk.event"
 
 
@@ -21,11 +20,13 @@ def getWidgetClass(obj):
 	if hasattr(cls, "WidgetClass"):
 		return cls.WidgetClass
 
-	modulePath = ".".join([
-		modPrefix,
-		cls.tname,
-		cls.name,
-	])
+	modulePath = ".".join(
+		[
+			modPrefix,
+			cls.tname,
+			cls.name,
+		],
+	)
 	try:
 		module = __import__(modulePath, fromlist=["WidgetClass"])
 	except Exception:
@@ -46,7 +47,7 @@ def makeWidget(obj):
 		widget.show_all()
 	except AttributeError:
 		widget.show()
-	widget.updateWidget()## FIXME
+	widget.updateWidget()  ## FIXME
 	return widget
 
 
@@ -55,11 +56,13 @@ def setActionFuncs(obj):
 	cls = obj.__class__
 	try:
 		module = __import__(
-			".".join([
-				modPrefix,
-				cls.tname,
-				cls.name,
-			]),
+			".".join(
+				[
+					modPrefix,
+					cls.tname,
+					cls.name,
+				],
+			),
 			fromlist=["WidgetClass"],
 		)
 	except Exception:

@@ -114,15 +114,21 @@ class EventSearchTree:
 		self.byId = {}
 
 	def doCountBalancing(self, node):
-		if node.left and not node.left.right and \
-			node.left.count - getCount(node.right) > len(node.events):
+		if (
+			node.left
+			and not node.left.right
+			and node.left.count - getCount(node.right) > len(node.events)
+		):
 			# log.debug("moving up from left")
 			# `mup` is the node that is moving up and taking place of `node`
 			mup, node.left = node.left, None
 			# node.red, mup.red = mup.red, node.red
 			mup.right, node = node, mup
-		if node.right and not node.right.left and \
-			node.right.count - getCount(node.left) > len(node.events):
+		if (
+			node.right
+			and not node.right.left
+			and node.right.count - getCount(node.left) > len(node.events)
+		):
 			# log.debug("moving up from right")
 			# `mup` is the node that is moving up and taking place of `node`
 			mup, node.right = node.right, None
@@ -131,9 +137,12 @@ class EventSearchTree:
 		return node
 
 	def addStep(
-		self, node,
-		t0, t1,
-		mt, dt,
+		self,
+		node,
+		t0,
+		t1,
+		mt,
+		dt,
 		eid,
 	):
 		if t0 > t1:
@@ -145,15 +154,19 @@ class EventSearchTree:
 		if mt < node.mt:
 			node.left = self.addStep(
 				node.left,
-				t0, t1,
-				mt, dt,
+				t0,
+				t1,
+				mt,
+				dt,
 				eid,
 			)
 		elif mt > node.mt:
 			node.right = self.addStep(
 				node.right,
-				t0, t1,
-				mt, dt,
+				t0,
+				t1,
+				mt,
+				dt,
 				eid,
 			)
 		else:  # mt == node.mt
@@ -172,6 +185,7 @@ class EventSearchTree:
 	def add(self, t0, t1, eid, debug=False):
 		if debug:
 			from time import localtime, strftime
+
 			f = "%F, %T"
 			log.info(
 				f"EventSearchTree.add: {eid}\t{strftime(f, localtime(t0))}"
@@ -186,8 +200,10 @@ class EventSearchTree:
 		try:
 			self.root = self.addStep(
 				self.root,
-				t0, t1,
-				mt, dt,
+				t0,
+				t1,
+				mt,
+				dt,
 				eid,
 			)
 		except Exception:
@@ -352,10 +368,15 @@ class EventSearchTree:
 	# 	self.root = self.deleteMoreThanStep(self.root, t0)
 
 	def getDepthNode(self, node):
-		return 1 + max(
-			self.getDepthNode(node.left),
-			self.getDepthNode(node.right),
-		) if node else 0
+		return (
+			1
+			+ max(
+				self.getDepthNode(node.left),
+				self.getDepthNode(node.right),
+			)
+			if node
+			else 0
+		)
 
 	def getDepth(self):
 		return self.getDepthNode(self.root)
@@ -385,6 +406,7 @@ class EventSearchTree:
 
 if __name__ == "__main__":
 	from random import shuffle
+
 	n = 100
 	ls = list(range(n))
 	shuffle(ls)
