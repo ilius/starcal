@@ -3795,7 +3795,7 @@ class EventContainer(BsonHistEventObj):
 		if isinstance(key, int):  # eventId
 			return self.getEvent(key)
 		raise TypeError(
-			f"invalid key type for {key!r} " "given to EventContainer.__getitem__",
+			f"invalid key type for {key!r} given to EventContainer.__getitem__",
 		)
 
 	def getTimeZoneStr(self):
@@ -4143,7 +4143,7 @@ class EventGroup(EventContainer):
 		if isinstance(key, int):  # eventId
 			return self.getEvent(key)
 		raise TypeError(
-			f"invalid key {key!r} given " "to EventGroup.__getitem__",
+			f"invalid key {key!r} given to EventGroup.__getitem__",
 		)
 
 	def __setitem__(self, key: int, value: "Event") -> None:
@@ -4152,7 +4152,7 @@ class EventGroup(EventContainer):
 		if isinstance(key, int):  # eventId
 			raise TypeError("can not assign event to group")  # FIXME
 		raise TypeError(
-			f"invalid key {key!r} given " "to EventGroup.__setitem__",
+			f"invalid key {key!r} given to EventGroup.__setitem__",
 		)
 
 	def __delitem__(self, key: int) -> None:
@@ -4160,7 +4160,7 @@ class EventGroup(EventContainer):
 			self.remove(self.getEvent(key))
 		else:
 			raise TypeError(
-				f"invalid key {key!r} given " "to EventGroup.__delitem__",
+				f"invalid key {key!r} given to EventGroup.__delitem__",
 			)
 
 	def checkEventToAdd(self, event: "Event") -> bool:
@@ -6091,7 +6091,7 @@ class EventAccountsHolder(JsonObjectsHolder):
 		objFile = join(accountsDir, f"{_id}.json")
 		if not self.fs.isfile(objFile):
 			log.error(
-				f"error while loading account file {objFile!r}" ": file not found",
+				f"error while loading account file {objFile!r}: file not found",
 			)
 			return
 			# FIXME: or raise FileNotFoundError?

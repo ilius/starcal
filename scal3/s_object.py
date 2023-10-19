@@ -236,7 +236,7 @@ class JsonSObj(SObj):
 				fp.write(jstr)
 		else:
 			log.info(
-				f"save method called for object {self!r}" " while file is not set",
+				f"save method called for object {self!r} while file is not set",
 			)
 
 	def setData(self, data):
@@ -411,7 +411,7 @@ class BsonHistObj(SObj):
 		"""Returns last history record: (lastEpoch, lastHash, **args)."""
 		if not self.file:
 			raise RuntimeError(
-				f"save method called for object {self!r}" " while file is not set",
+				f"save method called for object {self!r} while file is not set",
 			)
 		if self.fs is None:
 			raise RuntimeError(f"{self} has no fs object")

@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 # Python 3.9 added support for the IANA Time Zone Database
 # in the Standard Library
 # https://www.python.org/dev/peps/pep-0615/
@@ -85,7 +83,7 @@ def gettz(*args, **kwargs) -> "TimeZone | None":
 		tz = readEtcLocaltime()
 		if tz is None:
 			if tzErrCount < 5:
-				log.error(f"failed to detect timezone")
+				log.error("failed to detect timezone")
 			tzErrCount += 1
 			return defaultTZ
 	return TimeZone(tz)
