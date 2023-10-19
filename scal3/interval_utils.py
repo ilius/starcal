@@ -63,12 +63,12 @@ def getIntervalPoints(
 ) -> list[tuple[int, int, int]]:
 	"""
 	lst is a list of (start, end, closedEnd) or (start, end) tuples
-			start (int)
-			end (int)
-			closedEnd (bool).
+		start (int)
+		end (int)
+		closedEnd (bool).
 
 	returns a list of (pos, ptype, lst_index) tuples
-			ptype in (CLOSED_START, OPEN_START, OPEN_END, CLOSED_END)
+	ptype is one of (CLOSED_START, OPEN_START, OPEN_END, CLOSED_END)
 	"""
 	points = []
 	for row in lst:
@@ -98,12 +98,12 @@ def getIntervalListByPoints(
 ) -> list[tuple[int, int, bool]]:
 	"""
 	points: a list of (pos, ptype, lst_index) tuples
-			ptype in (CLOSED_START, OPEN_START, OPEN_END, CLOSED_END).
+	ptype in (CLOSED_START, OPEN_START, OPEN_END, CLOSED_END).
 
 	return a list of (start, end, closedEnd) tuples
-			start (int)
-			end (int)
-			closedEnd (bool)
+		start (int)
+		end (int)
+		closedEnd (bool)
 	"""
 	lst = []
 	startedStack = []
@@ -139,9 +139,9 @@ def humanizeIntervalList(lst):
 	in math terms: [a, b] ==> [a, b) + [b, b].
 
 	lst is a list of (start, end, closedEnd) tuples
-			start (int)
-			end (int)
-			closedEnd (bool)
+		start (int)
+		end (int)
+		closedEnd (bool)
 
 	returns a list of (start, end) tuples
 	"""
