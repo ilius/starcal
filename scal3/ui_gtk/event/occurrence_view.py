@@ -284,13 +284,13 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		Author: Matthias Clasen <mclasen@redhat.com>
 		Date:   Thu Nov 30 07:52:13 2017
 
-				textview: Replace pixbufs by textures
+			textview: Replace pixbufs by textures
 
-				This affects a few apis, such as gtk_text_iter_get_pixbuf,
-				gtk_text_buffer_insert_pixbuf and GtkTextBuffer::insert-pixbuf,
-				which have all been replaced by texture equivalents.
+			This affects a few apis, such as gtk_text_iter_get_pixbuf,
+			gtk_text_buffer_insert_pixbuf and GtkTextBuffer::insert-pixbuf,
+			which have all been replaced by texture equivalents.
 
-				Update all callers.
+			Update all callers.
 		"""
 		endIter = self.textbuff.get_bounds()[1]
 		pixbuf = pixbufFromFile(
@@ -629,7 +629,8 @@ class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
 				[
 					pixbufFromFile(item.icon),
 					core.getWeekDayAuto(
-						item.weekDay, abbreviate=self.abbreviateWeekDays,
+						item.weekDay,
+						abbreviate=self.abbreviateWeekDays,
 					),
 					item.time,
 					item.text,
