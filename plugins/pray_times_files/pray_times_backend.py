@@ -12,11 +12,11 @@
 # the following conditions are met:
 #
 #   1. Credit is given to the original work with a
-#	  link back to PrayTimes.org.
+# 	  link back to PrayTimes.org.
 #
 #   2. Redistributions of the source code and its
-#	  translations into other programming languages
-#	  must retain the above copyright notice.
+# 	  translations into other programming languages
+# 	  must retain the above copyright notice.
 #
 # This program is distributed in the hope that it will
 # be useful, but WITHOUT ANY WARRANTY.
@@ -238,10 +238,10 @@ class PrayTimes:
 	):
 		"""
 		timeFormat possible values:
-				"24h"
-				"12h"
-				"12hNS": 12-hour format with no suffix
-				"Float".
+			"24h"
+			"12h"
+			"12hNS": 12-hour format with no suffix
+			"Float".
 		"""
 		self.lat = lat
 		self.lng = lng

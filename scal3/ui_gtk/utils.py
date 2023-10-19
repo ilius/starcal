@@ -526,16 +526,16 @@ def get_menu_width(menu):
 	#menu.show_all()
 	#menu.realize()
 	log.info(
-			menu.get_border_width(),
-			max_item_width,
-			menu.get_allocation().width,
-			menu.get_preferred_size()[1].width,
-			menu.get_preferred_size()[0],
-			menu.get_preferred_width(),
-			#menu.do_get_preferred_width(),
-			menu.get_preferred_size()[0].width,
-			menu.get_preferred_size()[1].width,
-			).
+		menu.get_border_width(),
+		max_item_width,
+		menu.get_allocation().width,
+		menu.get_preferred_size()[1].width,
+		menu.get_preferred_size()[0],
+		menu.get_preferred_width(),
+		#menu.do_get_preferred_width(),
+		menu.get_preferred_size()[0].width,
+		menu.get_preferred_size()[1].width,
+	).
 	"""
 	w = menu.get_allocation().width
 	# get_preferred_size() returns (minimum_size: Gtk.Requisition,
