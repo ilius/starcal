@@ -774,7 +774,7 @@ def loadPlugin(_file=None, **kwargs):
 			text = fp.read()
 	except Exception as e:
 		log.error(
-			f'error while reading plugin file "{_file}"' f": {e}",
+			f'error while reading plugin file "{_file}": {e}',
 		)
 		return
 	try:
