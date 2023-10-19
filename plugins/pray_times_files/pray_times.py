@@ -19,16 +19,11 @@
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
 
-import sys
 import os
-import gettext
-
+import sys
 import time
-from time import localtime
+from os.path import dirname, isdir, isfile, join
 from time import time as now
-
-from os.path import join, isfile, isdir, dirname
-
 
 # _mypath = __file__
 # if _mypath.endswith(".pyc"):
@@ -40,32 +35,29 @@ sourceDir = "/usr/share/starcal3"
 sys.path.insert(0, dataDir)  # FIXME
 sys.path.insert(0, sourceDir)  # FIXME
 
-import natz
-
-from scal3 import plugin_api as api
-
-from scal3.path import *
-from pray_times_backend import PrayTimes
-
-# DO NOT IMPORT core IN PLUGINS
-from scal3.json_utils import *
-from scal3.time_utils import floatHourToTime
-from scal3.locale_man import tr as _
-from scal3.locale_man import langSh
-from scal3.cal_types.gregorian import to_jd as gregorian_to_jd
-from scal3.cal_types import hijri
-from scal3.time_utils import (
-	getUtcOffsetByJd,
-	getUtcOffsetCurrent,
-	getEpochFromJd,
-)
-from scal3.os_utils import kill, goodkill
 # from scal3 import event_lib  # needs core!! FIXME
-
 from threading import Timer
+
+from pray_times_backend import PrayTimes
 
 # if "gtk" in sys.modules:
 from pray_times_gtk import *
+
+import natz
+from scal3.cal_types import hijri
+from scal3.cal_types.gregorian import to_jd as gregorian_to_jd
+
+# DO NOT IMPORT core IN PLUGINS
+from scal3.json_utils import *
+from scal3.locale_man import langSh
+from scal3.locale_man import tr as _
+from scal3.os_utils import goodkill
+from scal3.path import *
+from scal3.time_utils import (
+	floatHourToTime,
+	getUtcOffsetByJd,
+)
+
 # else:
 # 	from pray_times_qt import *
 
@@ -73,10 +65,7 @@ from pray_times_gtk import *
 
 localTz = natz.gettz()
 
-timeDescByName = {
-	name: desc
-	for name, desc in timeNames
-}
+timeDescByName = {name: desc for name, desc in timeNames}
 
 # ##################### Functions and Classes ##################
 
@@ -98,7 +87,6 @@ def readLocationData():
 			placeTransDict.update(json.load(fp))
 		log.info(f"------------- {len(placeTransDict)=}")
 
-
 	readTransFile(join(locationsDir, f"{langSh}.json"))
 
 	for dirName in os.listdir(locationsDir):
@@ -116,6 +104,7 @@ def readLocationData():
 	fpath = join(locationsDir, "world.txt.bz2")
 	log.info(f"------------- reading {fpath}")
 	import bz2
+
 	with bz2.open(fpath, mode="rt", encoding="utf8") as fp:
 		lines = fp.read().split("\n")
 	cityData = []
@@ -130,12 +119,16 @@ def readLocationData():
 				city, lat, lng = p[2:5]
 				log.debug(f"{city=}")
 				if len(p) > 4:
-					cityData.append((
-						country + "/" + city,
-						translatePlaceName(country) + "/" + translatePlaceName(city),
-						float(lat),
-						float(lng)
-					))
+					cityData.append(
+						(
+							country + "/" + city,
+							translatePlaceName(country)
+							+ "/"
+							+ translatePlaceName(city),
+							float(lat),
+							float(lng),
+						),
+					)
 				else:
 					log.debug(f"{country=}, {p=}")
 			else:
@@ -322,10 +315,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 			jd,
 			getUtcOffsetByJd(jd, localTz) / 3600,
 		)
-		return [
-			(name, times[name])
-			for name in self.shownTimeNames
-		]
+		return [(name, times[name]) for name in self.shownTimeNames]
 
 	def getFormattedTime(self, tm):  # tm is float hour
 		try:
@@ -336,12 +326,12 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 			return f"{h:d}:{m:02d}"
 
 	def getTextByJd(self, jd):
-		return self.sep.join([
-			_(timeDescByName[name]) +
-			": " +
-			self.getFormattedTime(tm)
-			for name, tm in self.get_times_jd(jd)
-		])
+		return self.sep.join(
+			[
+				_(timeDescByName[name]) + ": " + self.getFormattedTime(tm)
+				for name, tm in self.get_times_jd(jd)
+			],
+		)
 
 	def updateCell(self, c):
 		text = self.getTextByJd(c.jd)
@@ -422,10 +412,7 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 			toAzanSecs = int(azanSec - secondsFromMidnight)
 			if toAzanSecs >= 0:
 				preAzanSec = azanSec - self.preAzanMinutes * 60
-				toPreAzanSec = max(
-					0,
-					int(preAzanSec - secondsFromMidnight)
-				)
+				toPreAzanSec = max(0, int(preAzanSec - secondsFromMidnight))
 				log.debug(f"{toPreAzanSec=:.1f}")
 				Timer(
 					toPreAzanSec,

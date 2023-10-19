@@ -25,7 +25,7 @@ __all__ = [
 def confirmEventTrash(event, **kwargs):
 	return confirm(
 		_(
-			"Press Confirm if you want to move event \"{eventSummary}\""
+			'Press Confirm if you want to move event "{eventSummary}"'
 			" to {trashTitle}",
 		).format(
 			eventSummary=event.summary,
@@ -33,6 +33,7 @@ def confirmEventTrash(event, **kwargs):
 		),
 		**kwargs,
 	)
+
 
 def confirmEventsTrash(toTrashCount: int, deleteCount: int, **kwargs):
 	return confirm(
@@ -47,6 +48,7 @@ def confirmEventsTrash(toTrashCount: int, deleteCount: int, **kwargs):
 		use_markup=True,
 		**kwargs,
 	)
+
 
 def checkEventsReadOnly(doException=True):
 	if event_lib.allReadOnly:

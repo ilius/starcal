@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import logging
+
 log = logging.getLogger("root")
 
 import os
@@ -27,7 +28,7 @@ def findZoneInfoDir():
 		if os.path.isdir(_dir):
 			return _dir
 
-	raise IOError("zoneinfo directory not found")
+	raise OSError("zoneinfo directory not found")
 
 
 infoDir = findZoneInfoDir()

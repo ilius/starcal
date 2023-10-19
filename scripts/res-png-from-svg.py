@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
-from os.path import dirname, join, abspath
+from os.path import abspath, dirname, join
+
 from lxml import etree as ET
 
 myDir = dirname(abspath(__file__))
@@ -20,7 +21,7 @@ for res in root.getchildren():
 	if author is not None:
 		if author.text == "Saeed Rasooli":
 			continue
-		#print(author.text)
+		# print(author.text)
 	comment = res.find("comment")
 	if comment is not None and comment.text:
 		if comment.text.startswith("See file "):
@@ -42,4 +43,3 @@ for res in root.getchildren():
 
 
 # --- no source for: pixmaps/screenruler-redline.png
-

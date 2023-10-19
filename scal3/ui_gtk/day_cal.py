@@ -92,14 +92,19 @@ class DayCal(gtk.DrawingArea, CalBase):
 	seasonPieTextColorParam = ""
 
 	myKeys = CalBase.myKeys + (
-		"up", "down",
-		"right", "left",
+		"up",
+		"down",
+		"right",
+		"left",
 		"page_up",
-		"k", "p",
+		"k",
+		"p",
 		"page_down",
-		"j", "n",
-		#"end",
-		"f10", "m",
+		"j",
+		"n",
+		# "end",
+		"f10",
+		"m",
 	)
 
 	def getBackgroundColor(self):
@@ -112,12 +117,14 @@ class DayCal(gtk.DrawingArea, CalBase):
 		if allCalTypes:
 			n = len(calTypes.active)
 			while len(params) < n:
-				params.append({
-					"enable": False,
-					"pos": (0, 0),
-					"font": ui.getFont(3.0),
-					"color": ui.textColor,
-				})
+				params.append(
+					{
+						"enable": False,
+						"pos": (0, 0),
+						"font": ui.getFont(3.0),
+						"color": ui.textColor,
+					},
+				)
 		return params
 
 	def getMonthParams(self, allCalTypes=False):
@@ -125,12 +132,14 @@ class DayCal(gtk.DrawingArea, CalBase):
 		if allCalTypes:
 			n = len(calTypes.active)
 			while len(params) < n:
-				params.append({
-					"enable": False,
-					"pos": (0, 0),
-					"font": ui.getFont(2.0),
-					"color": ui.textColor,
-				})
+				params.append(
+					{
+						"enable": False,
+						"pos": (0, 0),
+						"font": ui.getFont(2.0),
+						"color": ui.textColor,
+					},
+				)
 		return params
 
 	def getWeekDayParams(self):
@@ -272,6 +281,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 
 	def updateTypeParamsWidget(self):
 		from scal3.ui_gtk.cal_type_params import CalTypeParamWidget
+
 		dayParams = self.getDayParams(allCalTypes=True)
 		monthParams = self.getMonthParams(allCalTypes=True)
 		try:
@@ -360,11 +370,11 @@ class DayCal(gtk.DrawingArea, CalBase):
 		self.subPages = None
 		self._allButtons = []
 		######################
-		#self.kTime = 0
+		# self.kTime = 0
 		######################
 		self.connect("draw", self.drawAll)
 		self.connect("button-press-event", self.onButtonPress)
-		#self.connect("screen-changed", self.screenChanged)
+		# self.connect("screen-changed", self.screenChanged)
 		self.connect("scroll-event", self.scroll)
 
 	def getWindow(self):
@@ -377,6 +387,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 			ColorPrefItem,
 			SpinPrefItem,
 		)
+
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = VBox()
@@ -507,8 +518,10 @@ class DayCal(gtk.DrawingArea, CalBase):
 		prefItem = SpinPrefItem(
 			ui,
 			self.eventIconSizeParam,
-			5, 999,
-			digits=1, step=1,  # noqa: FURB120
+			5,
+			999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Icon Size"),
 			live=True,
 			onChangeFunc=self.queue_draw,
@@ -518,8 +531,10 @@ class DayCal(gtk.DrawingArea, CalBase):
 		prefItem = SpinPrefItem(
 			ui,
 			self.eventTotalSizeRatioParam,
-			0, 1,
-			digits=3, step=0.01,
+			0,
+			1,
+			digits=3,
+			step=0.01,
 			label=_("Total Size Ratio"),
 			live=True,
 			onChangeFunc=self.queue_draw,
@@ -573,13 +588,15 @@ class DayCal(gtk.DrawingArea, CalBase):
 					label,
 					column_index,
 					row_index,
-					1, 1,
+					1,
+					1,
 				)
 				grid.attach(
 					prefItem.getWidget(),
 					column_index + 1,
 					row_index,
-					1, 1,
+					1,
+					1,
 				)
 				dummyLabel = gtk.Label()
 				dummyLabel.set_hexpand(True)
@@ -587,7 +604,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 					dummyLabel,
 					column_index + 2,
 					row_index,
-					1, 1,
+					1,
+					1,
 				)
 			pageWidget.show_all()
 		####
@@ -602,7 +620,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 					button,
 					index % 2,
 					index // 2,
-					1, 1,
+					1,
+					1,
 				)
 			grid.show_all()
 			pack(optionsWidget, grid, padding=5)
@@ -665,10 +684,13 @@ class DayCal(gtk.DrawingArea, CalBase):
 			win.end_draw_frame(dctx)
 
 	def drawEventIcons(
-		self, cr: "cairo.Context",
+		self,
+		cr: "cairo.Context",
 		c: ui.Cell,
-		w: int, h: int,
-		x0: int, y0: int,
+		w: int,
+		h: int,
+		x0: int,
+		y0: int,
 	):
 		iconList = c.getDayEventIcons()
 		if not iconList:
@@ -754,10 +776,14 @@ class DayCal(gtk.DrawingArea, CalBase):
 		radius = size / 2
 		x, y = geo["pos"]
 		x, y = getAbsPos(
-			size, size,
-			w, h,
-			x, y,
-			geo["xalign"], geo["yalign"],
+			size,
+			size,
+			w,
+			h,
+			x,
+			y,
+			geo["xalign"],
+			geo["yalign"],
 			autoDir=False,  # noqa: FURB120
 		)
 
@@ -767,7 +793,9 @@ class DayCal(gtk.DrawingArea, CalBase):
 		startOffset = geo["startAngle"] / 360
 
 		drawPieOutline(
-			cr, xc, yc,
+			cr,
+			xc,
+			yc,
 			radius,
 			geo["thickness"] * radius,
 			startOffset,
@@ -790,7 +818,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		show_layout(cr, layout)
 
 	def drawWithContext(self, cr: "cairo.Context", cursor: bool):
-		#gevent = gtk.get_current_event()
+		# gevent = gtk.get_current_event()
 		w = self.get_allocation().width
 		h = self.get_allocation().height
 		cr.rectangle(0, 0, w, h)
@@ -802,12 +830,12 @@ class DayCal(gtk.DrawingArea, CalBase):
 		########
 		self.drawEventIcons(cr, c, w, h, x0, y0)
 		# ### Drawing numbers inside every cell
-		#cr.rectangle(
-		#	x0-w/2.0+1,
-		#	y0-h/2.0+1,
-		#	w-1,
-		#	h-1,
-		#)
+		# cr.rectangle(
+		# 	x0-w/2.0+1,
+		# 	y0-h/2.0+1,
+		# 	w-1,
+		# 	h-1,
+		# )
 		####
 		for calType, params in zip(
 			calTypes.active,
@@ -867,7 +895,6 @@ class DayCal(gtk.DrawingArea, CalBase):
 
 		self.drawSeasonPie(cr, w, h)
 
-
 		self._allButtons = self.getAllButtons()
 		for button in self._allButtons:
 			button.draw(cr, w, h)
@@ -905,8 +932,8 @@ class DayCal(gtk.DrawingArea, CalBase):
 		if CalBase.onKeyPress(self, arg, gevent):
 			return True
 		kname = gdk.keyval_name(gevent.keyval).lower()
-		#if kname.startswith("alt"):
-		#	return True
+		# if kname.startswith("alt"):
+		# 	return True
 		if kname == "up":
 			self.jdPlus(-1)
 		elif kname == "down":
@@ -925,12 +952,12 @@ class DayCal(gtk.DrawingArea, CalBase):
 			self.jdPlus(-1)  # FIXME
 		elif kname in ("page_down", "j", "n"):
 			self.jdPlus(1)  # FIXME
-		#elif kname in ("f10", "m"):  # FIXME
-		#	if gevent.get_state() & gdk.ModifierType.SHIFT_MASK:
-		#		# Simulate right click (key beside Right-Ctrl)
-		#		self.emit("popup-cell-menu", *self.getCellPos())
-		#	else:
-		#		self.emit("popup-main-menu", *self.getMainMenuPos())
+		# elif kname in ("f10", "m"):  # FIXME
+		# 	if gevent.get_state() & gdk.ModifierType.SHIFT_MASK:
+		# 		# Simulate right click (key beside Right-Ctrl)
+		# 		self.emit("popup-cell-menu", *self.getCellPos())
+		# 	else:
+		# 		self.emit("popup-main-menu", *self.getMainMenuPos())
 		else:
 			return False
 		return True

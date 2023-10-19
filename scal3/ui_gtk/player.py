@@ -36,7 +36,7 @@ from scal3.ui_gtk.utils import (
 )
 
 # Control
-SEEK_TIME_SMALL = 10 # in seconds
+SEEK_TIME_SMALL = 10  # in seconds
 
 # Mplayer
 STATUS_UPDATE_TIMEOUT = 1000
@@ -74,14 +74,14 @@ class MPlayer:
 		except ImportError:
 			pass
 		else:
-			#set mplayerOut to non-blocking mode
+			# set mplayerOut to non-blocking mode
 			fcntl.fcntl(self.mplayerOut, fcntl.F_SETFL, os.O_NONBLOCK)
 
 		self.startHandleEof()
 		self.startStatusQuery()
-		#if self.mplayerIn!=None:
-		#	self.pbox.seekBar.set_sensitive(True)
-		#	self.pbox.fcb.set_sensitive(False)
+		# if self.mplayerIn!=None:
+		# 	self.pbox.seekBar.set_sensitive(True)
+		# 	self.pbox.fcb.set_sensitive(False)
 
 	# Get the length of file, format it and place it in playtime
 	def getLength(self):
@@ -100,7 +100,7 @@ class MPlayer:
 		length = int(float(status.replace("ANS_LENGTH=", "").strip()))
 		h = length / 3600
 		m = (length % 3600) / 60
-		s = (length % 60)
+		s = length % 60
 		if h:
 			self.playTime = f"{h:d}:{m:02d}:{s:02d}"
 		else:
@@ -165,15 +165,15 @@ class MPlayer:
 			return
 		self.stopStatusQuery()
 		self.stopEofHandler()
-		self.cmd("quit") # It doesn"t matter if false is returned
+		self.cmd("quit")  # It doesn"t matter if false is returned
 		with suppress(Exception):
 			self.mplayerIn.close()
 			self.mplayerOut.close()
 		self.mplayerIn, self.mplayerOut = None, None
 		self.playTime = None
 		self.pbox.seekAdj.value = 0
-		#self.pbox.seekBar.set_sensitive(False)
-		#self.pbox.fcb.set_sensitive(True)
+		# self.pbox.seekBar.set_sensitive(False)
+		# self.pbox.fcb.set_sensitive(True)
 
 	def cmd(self, command):
 		if not self.mplayerIn:
@@ -190,7 +190,7 @@ class MPlayer:
 		if not self.playTime:
 			self.getLength()
 		self.cmd("get_percent_pos")
-		sleep(0.05) # allow time for output
+		sleep(0.05)  # allow time for output
 
 		status = None
 		# get the last line of output
@@ -251,10 +251,10 @@ class PlayerBox(gtk.Box):
 	key_volinc = 63
 	key_voldec = 112
 	isvidontop = False
-	#continuous = True
-	#cycle = False
-	#ontop = 28
-	#isvidontop = False
+	# continuous = True
+	# cycle = False
+	# ontop = 28
+	# isvidontop = False
 	###############
 	forbid = [102, 100]
 
@@ -273,31 +273,35 @@ class PlayerBox(gtk.Box):
 		##self.toolbar.connect("key-press-event", self.toolbarKey)#??????????
 		##############
 		self.playPauseBut = gtk.Button()
-		self.playPauseBut.add(imageFromFile(
-			"media-playback-start.svg",
-			size=ui.toolbarIconSize,
-		))
+		self.playPauseBut.add(
+			imageFromFile(
+				"media-playback-start.svg",
+				size=ui.toolbarIconSize,
+			),
+		)
 		self.playPauseBut.connect("clicked", self.playPause)
 		pack(self, self.playPauseBut)
 		#######
 		stopBut = gtk.Button()
-		stopBut.add(imageFromFile(
-			"media-playback-stop.svg",
-			size=ui.toolbarIconSize,
-		))
+		stopBut.add(
+			imageFromFile(
+				"media-playback-stop.svg",
+				size=ui.toolbarIconSize,
+			),
+		)
 		stopBut.connect("clicked", self.stop)
 		pack(self, stopBut)
 		##############
 		self.seekAdj = gtk.Adjustment(0, 0, 100, 1, 10, 0)
 		# FIXME: use keyword args for gtk.Adjustment()
-		#self.seekAdj.connect("value_changed", self.seekAdjChanged)  # FIXME
+		# self.seekAdj.connect("value_changed", self.seekAdjChanged)  # FIXME
 		self.seekBar = gtk.HScale()
 		self.seekBar.set_adjustment(self.seekAdj)
 		self.seekBar.set_value_pos(gtk.PositionType.TOP)
 		self.seekBar.set_sensitive(False)
 		self.seekBar.connect("key-press-event", self.divert)
 		self.seekBar.set_draw_value(False)
-		#self.seekBar.connect("format-value", self.displaySongString)
+		# self.seekBar.connect("format-value", self.displaySongString)
 		self.seekBar.connect("button-release-event", self.seek)
 		pack(self, self.seekBar, 1, 1, 5)
 		################
@@ -319,23 +323,23 @@ class PlayerBox(gtk.Box):
 
 	def divert(self, widget, gevent):
 		key = gevent.hardware_keycode
-		if key == self.key_seekback: # left arrow, seek
+		if key == self.key_seekback:  # left arrow, seek
 			self.mplayer.seek(-SEEK_TIME_SMALL)
 			return None
-		if key == self.key_seekforward: # right arrow, seek forward
+		if key == self.key_seekforward:  # right arrow, seek forward
 			self.mplayer.seek(SEEK_TIME_SMALL)
 			return None
-		if key == self.key_volinc: # *, increase volume
+		if key == self.key_volinc:  # *, increase volume
 			if self.hasVol:
 				self.mplayer.stepVolume(True)
 				return None
 			return None
-		if key == self.key_voldec: # /, decrease volume
+		if key == self.key_voldec:  # /, decrease volume
 			if self.hasVol:
 				self.mplayer.stepVolume(False)
 				return None
 			return None
-		if key == self.key_pause: # space bar, pause
+		if key == self.key_pause:  # space bar, pause
 			self.mplayer.pause()
 			return None
 
@@ -346,19 +350,19 @@ class PlayerBox(gtk.Box):
 			return str(int(value)) + "% of " + self.mplayer.playTime
 		if self.mplayer.mplayerIn:
 			return str(int(value)) + "% of "
-			#+ self.playlist.getCurrentSongTime()  # FIXME
+			# + self.playlist.getCurrentSongTime()  # FIXME
 		return str(int(value)) + "%"
 
-	def seek(self, widget, gevent):# Seek on changing the seekBar
+	def seek(self, widget, gevent):  # Seek on changing the seekBar
 		# log.debug("seek", self.seekAdj.value, self.mplayer.mplayerIn)
 		if not self.mplayer.mplayerIn:
 			log.info("abc")
 			sleep(0.05)
 			self.seekAdj.value = 100
-			#self.playPauseBut.get_child().set_from_pixbuf(pixbufFromFile(
-			#	"media-playback-start.svg",
-			#	size=ui.toolbarIconSize,
-			#))
+			# self.playPauseBut.get_child().set_from_pixbuf(pixbufFromFile(
+			# 	"media-playback-start.svg",
+			# 	size=ui.toolbarIconSize,
+			# ))
 		else:
 			self.mplayer.seek(int(self.seekAdj.value), 1)
 
@@ -366,7 +370,7 @@ class PlayerBox(gtk.Box):
 	def displayVolString(self, scale, value):
 		return "Volume: " + str(int(value)) + "%"
 
-	def setVolume(self, adj):# Set volume when the volume range widget is changed
+	def setVolume(self, adj):  # Set volume when the volume range widget is changed
 		self.mplayer.setVolume(int(adj.value))
 		if self.adjustvol:
 			self.vollevel1 = int(adj.value)
@@ -388,21 +392,25 @@ class PlayerBox(gtk.Box):
 			if path is None:
 				return
 			self.mplayer.play(path)
-		self.playPauseBut.get_child().set_from_pixbuf(pixbufFromFile(
-			imageName,
-			size=ui.toolbarIconSize,
-		))
+		self.playPauseBut.get_child().set_from_pixbuf(
+			pixbufFromFile(
+				imageName,
+				size=ui.toolbarIconSize,
+			),
+		)
 		playing = bool(self.mplayer.mplayerIn)
 		self.fcb.set_sensitive(not playing)
 		self.seekBar.set_sensitive(playing)
 
-	def stop(self, button):# Stop mplayer if it's running
+	def stop(self, button):  # Stop mplayer if it's running
 		self.mplayer.close()
 		button = self.playPauseBut
-		button.get_child().set_from_pixbuf(pixbufFromFile(
-			"media-playback-start.svg",
-			size=ui.toolbarIconSize,
-		))
+		button.get_child().set_from_pixbuf(
+			pixbufFromFile(
+				"media-playback-start.svg",
+				size=ui.toolbarIconSize,
+			),
+		)
 		self.fcb.set_sensitive(self.mplayer.mplayerIn is None)
 		self.seekBar.set_sensitive(self.mplayer.mplayerIn is not None)
 
@@ -427,13 +435,13 @@ class PlayerBox(gtk.Box):
 		self.fcb.set_filename(path)
 		if startPlaying:
 			self.playPause()
-		#self.mplayer.play(path)
-		#self.playPauseBut.get_child().set_from_pixbuf(pixbufFromFile(
-		#	"media-playback-pause.svg",
-		#	size=ui.toolbarIconSize,
-		#))
-		#self.fcb.set_sensitive(self.mplayer.mplayerIn is None)
-		#self.seekBar.set_sensitive(self.mplayer.mplayerIn!=None)
+		# self.mplayer.play(path)
+		# self.playPauseBut.get_child().set_from_pixbuf(pixbufFromFile(
+		# 	"media-playback-pause.svg",
+		# 	size=ui.toolbarIconSize,
+		# ))
+		# self.fcb.set_sensitive(self.mplayer.mplayerIn is None)
+		# self.seekBar.set_sensitive(self.mplayer.mplayerIn!=None)
 
 	def getFile(self):
 		return self.fcb.get_filename()

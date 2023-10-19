@@ -9,7 +9,7 @@ import gi
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk as gtk
 
-gi.require_version('GdkPixbuf', "2.0")
+gi.require_version("GdkPixbuf", "2.0")
 from gi.repository import GdkPixbuf
 
 gi.require_version("PangoCairo", "1.0")
@@ -127,10 +127,13 @@ def showMsg(
 	hbox.set_border_width(borderWidth)
 	# win.set_icon(...)
 	if imageName:
-		pack(hbox, imageFromFile(
-			imageName,
-			size=48,
-		))
+		pack(
+			hbox,
+			imageFromFile(
+				imageName,
+				size=48,
+			),
+		)
 	label = gtk.Label(label=msg)
 	# set_line_wrap(True) makes the window go crazy tall (taller than screen)
 	# and that's the reason for label.set_size_request and win.resize
@@ -175,6 +178,7 @@ if sys.version_info[0] < 3:
 
 try:
 	from scal3.ui_gtk.starcal import main
+
 	sys.exit(main())
 except Exception as e:
 	msg = str(e).strip()

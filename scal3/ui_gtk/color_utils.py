@@ -8,6 +8,7 @@ __all__ = [
 	"gdkColorToRgb",
 ]
 
+
 def rgbToGdkColor(r, g, b, a=None):
 	"""r, g, b are in range(256)."""
 	return gdk.Color(
@@ -35,9 +36,9 @@ def gdkColorToRgb(gc):
 	)
 
 
-#def htmlColorToGdk(hc):
-#	return gdk.color_parse(hc)
+# def htmlColorToGdk(hc):
+# 	return gdk.color_parse(hc)
 
 
-#def gdkColorToHtml(gc):
-#	return f"#{gc.red/256:02x}{gc.green/256:02x}{gc.blue/256:02x}"
+# def gdkColorToHtml(gc):
+# 	return f"#{gc.red/256:02x}{gc.green/256:02x}{gc.blue/256:02x}"

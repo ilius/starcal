@@ -1,0 +1,12 @@
+#!/bin/bash
+
+for F in "$@" ; do
+	black "$F"
+	unexpand --first-only -t 4 "$F" > /tmp/e && cp /tmp/e "$F" ; rm /tmp/e
+	for I in {20..1} ; do
+		TABS="`printf '\t%.0s' \$(seq 1 $I)`"
+		SPACES="`printf '    %.0s' \$(seq 1 $I)`"
+		sed -i "s/#$SPACES/#$TABS/g" "$F"
+	done
+	ruff --fix "$F"
+done

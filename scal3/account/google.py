@@ -36,7 +36,7 @@ except ImportError:
 
 import httplib2
 
-#from httplib2 import
+# from httplib2 import
 from scal3.path import sourceDir
 
 sys.path.append(join(sourceDir, "google-api-python-client"))  # FIXME
@@ -47,7 +47,7 @@ from scal3.cal_types import GREGORIAN
 from scal3.event_lib import Account
 from scal3.ics import getIcsTimeByEpoch
 
-#from scal3.ics import
+# from scal3.ics import
 from scal3.locale_man import tr as _
 from scal3.os_utils import openUrl
 from scal3.utils import toBytes, toStr
@@ -125,7 +125,8 @@ def exportEvent(event):
 		# elif key=="CATEGORIES":
 	return gevent
 
-#def exportToEvent(event, group, gevent):  # FIXME
+
+# def exportToEvent(event, group, gevent):  # FIXME
 
 
 def importEvent(gevent, group):
@@ -233,6 +234,7 @@ class GoogleAccount(Account):
 
 	def __init__(self, aid=None, email=""):
 		from oauth2client.client import OAuth2WebServerFlow
+
 		Account.__init__(self, aid)
 		self.authFile = splitext(self.file)[0] + ".oauth2"
 		self.email = email
@@ -248,9 +250,11 @@ class GoogleAccount(Account):
 
 	def getData(self):
 		data = Account.getData(self)
-		data.update({
-			"email": self.email,
-		})
+		data.update(
+			{
+				"email": self.email,
+			},
+		)
 		return data
 
 	def setData(self, data):
@@ -268,15 +272,22 @@ class GoogleAccount(Account):
 
 	def showHttpException(self, e):
 		self.showError(
-			_("HTTP Error") + "\n" +
-			_("Error Code") + ": " + _(e.resp.status) + "\n" +
-			_("Error Message") + ": " + _(e._get_reason().strip()),
+			_("HTTP Error")
+			+ "\n"
+			+ _("Error Code")
+			+ ": "
+			+ _(e.resp.status)
+			+ "\n"
+			+ _("Error Message")
+			+ ": "
+			+ _(e._get_reason().strip()),
 		)
 
 	def authenticate(self):
 		global auth_local_webserver
 
 		from oauth2client.file import Storage
+
 		storage = Storage(self.authFile)
 		credentials = storage.get()
 		if credentials and not credentials.invalid:
@@ -318,10 +329,12 @@ class GoogleAccount(Account):
 			if "code" in httpd.query_params:
 				code = httpd.query_params["code"]
 			else:
-				self.showError(_(
-					"Failed to find \"code\" in the query parameters "
-					"of the redirect.",
-				))
+				self.showError(
+					_(
+						'Failed to find "code" in the query parameters '
+						"of the redirect.",
+					),
+				)
 				return
 		else:
 			code = self.askVerificationCode()
@@ -329,8 +342,7 @@ class GoogleAccount(Account):
 			credential = self.flow.step2_exchange(code)
 		except Exception as e:
 			self.showError(
-				_("Authentication has failed") +
-				f":\n{e}",
+				_("Authentication has failed") + f":\n{e}",
 			)
 			return
 		storage.put(credential)
@@ -342,13 +354,15 @@ class GoogleAccount(Account):
 		if not credentials:
 			return False
 		http = credentials.authorize(httplib2.Http())
-		http.request = lambda uri, *args, **kwargs: \
-			httplib2.Http.request(http, toStr(uri), *args, **kwargs)
+		http.request = lambda uri, *args, **kwargs: httplib2.Http.request(
+			http, toStr(uri), *args, **kwargs,
+		)
 		# http.request("google.com")
 		return http
 
 	def getCalendarService(self):
 		from apiclient.discovery import HttpError, build
+
 		try:
 			return build(
 				serviceName="calendar",
@@ -362,6 +376,7 @@ class GoogleAccount(Account):
 
 	def getTasksService(self):
 		from apiclient.discovery import HttpError, build
+
 		try:
 			return build(
 				serviceName="tasks",
@@ -397,10 +412,12 @@ class GoogleAccount(Account):
 		groups = []
 		for group in service.calendarList().list().execute()["items"]:
 			# log.debug(f"{group = }")
-			groups.append({
-				"id": group["id"],
-				"title": group["summary"],
-			})
+			groups.append(
+				{
+					"id": group["id"],
+					"title": group["summary"],
+				},
+			)
 		self.remoteGroups = groups
 		return None
 
@@ -408,17 +425,22 @@ class GoogleAccount(Account):
 		service = self.getCalendarService()
 		if not service:
 			return
-		eventsRes = service.events().list(
-			calendarId=remoteGroupId,
-			orderBy="updated",
-		).execute()
+		eventsRes = (
+			service.events()
+			.list(
+				calendarId=remoteGroupId,
+				orderBy="updated",
+			)
+			.execute()
+		)
 		return eventsRes.get("items", [])
 
 	def sync(self, group, remoteGroupId):
 		"""Return None if successful, or error string if failed."""
 		from apiclient.discovery import HttpError
-		#if remoteGroupId=="tasks":  # FIXME
-		#	service = self.getTasksService()
+
+		# if remoteGroupId=="tasks":  # FIXME
+		# 	service = self.getTasksService()
 		service = self.getCalendarService()
 		if not service:
 			return "no service"  # fix msg FIXME
@@ -440,15 +462,15 @@ class GoogleAccount(Account):
 		# log.debug(kwargs)
 		request = service.events().list(**kwargs)
 		# request is a HttpRequest instance
-		#dumpRequest(request)
+		# dumpRequest(request)
 		try:
 			geventsRes = request.execute()
 		except HttpError as e:
 			self.showHttpException(e)
 			return str(e)
-		#plog.info(geventsRes)
+		# plog.info(geventsRes)
 		gevents = geventsRes.get("items", [])
-		#plog.info(gevents)
+		# plog.info(gevents)
 		diff = {}
 
 		def addToDiff(key, here, status, *args):
@@ -463,7 +485,7 @@ class GoogleAccount(Account):
 			remoteIds = (self.id, remoteGroupId, gevent["id"])
 
 			try:
-				#eventId = group.eventIdByRemoteIds[remoteIds]
+				# eventId = group.eventIdByRemoteIds[remoteIds]
 				eventId = gevent["extendedProperties"]["shared"]["starcal_id"]
 			except KeyError:
 				eventId = None
@@ -471,8 +493,8 @@ class GoogleAccount(Account):
 			bothId = (eventId, gevent["id"])
 			if gevent["status"] == "cancelled" and eventId is not None:
 				addToDiff(bothId, False, STATUS_DELETED)
-				#group.remove(group[eventId])
-				#group.save()  # FIXME
+				# group.remove(group[eventId])
+				# group.save()  # FIXME
 			if gevent["status"] != "confirmed":  # FIXME
 				log.info(gevent["status"], gevent["summary"])
 				continue
@@ -483,21 +505,21 @@ class GoogleAccount(Account):
 			event.remoteIds = remoteIds
 			if eventId is None:
 				addToDiff(bothId, False, STATUS_ADDED, event)
-				#event.afterModify()
-				#group.append(event)
-				#event.save()
-				#group.save()
+				# event.afterModify()
+				# group.append(event)
+				# event.save()
+				# group.save()
 				# log.debug(f"---------- event {event} added in starcal")
 			else:
 				addToDiff(bothId, False, STATUS_MODIFIED, event)
-				#local_event = group[eventId]
-				#local_event.copyFrom(event)
-				#local_event.save()
-		#group.afterSync()  # FIXME
-		#group.save()  # FIXME
+				# local_event = group[eventId]
+				# local_event.copyFrom(event)
+				# local_event.save()
+		# group.afterSync()  # FIXME
+		# group.save()  # FIXME
 		# _______________________ Push _______________________
 		# log.debug("------------------- pushing...")
-		#if remoteGroupId=="tasks":  # FIXME
+		# if remoteGroupId=="tasks":  # FIXME
 		for eventId, eventRemoteAttrs in group.deletedRemoteEvents.items():
 			(
 				deletedEpoch,

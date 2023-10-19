@@ -40,8 +40,8 @@ class ClockLabel(gtk.Label):
 		self.bold = bold
 		self.seconds = seconds
 		self.running = False
-		#self.connect("button-press-event", self.onButtonPress)
-		self.start()#???
+		# self.connect("button-press-event", self.onButtonPress)
+		self.start()  # ???
 
 	def start(self):
 		self.running = True
@@ -62,8 +62,8 @@ class ClockLabel(gtk.Label):
 	def stop(self):
 		self.running = False
 
-	#def onButtonPress(self, obj, gevent):
-	#	if gevent.button == 3:
+	# def onButtonPress(self, obj, gevent):
+	# 	if gevent.button == 3:
 
 
 class FClockLabel(gtk.Label):
@@ -81,8 +81,8 @@ class FClockLabel(gtk.Label):
 		self.format = format
 		self.local = local
 		self.running = False
-		#self.connect("button-press-event", self.onButtonPress)
-		self.start()#???
+		# self.connect("button-press-event", self.onButtonPress)
+		self.start()  # ???
 
 	def start(self):
 		self.running = True
@@ -100,7 +100,7 @@ class FClockLabel(gtk.Label):
 		self.running = False
 
 
-class FClockWidget(gtk.DrawingArea): ## Time is in Local
+class FClockWidget(gtk.DrawingArea):  ## Time is in Local
 	def __init__(self, format="%T", selectable=False):
 		"""
 		format is a string that used in strftime(), it can contains markup
@@ -114,8 +114,8 @@ class FClockWidget(gtk.DrawingArea): ## Time is in Local
 		self.text = ""
 		self.running = False
 		self.connect("draw", self.onDraw)
-		#self.connect("button-press-event", self.onButtonPress)
-		self.start()#???
+		# self.connect("button-press-event", self.onButtonPress)
+		self.start()  # ???
 
 	def start(self):
 		self.running = True

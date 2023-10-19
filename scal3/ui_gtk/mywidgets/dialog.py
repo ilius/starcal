@@ -1,4 +1,3 @@
-
 import logging
 
 from scal3 import logger

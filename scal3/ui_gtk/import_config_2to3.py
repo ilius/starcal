@@ -68,7 +68,7 @@ pack(langHbox, gtk.Label(label="Select Language:"))
 
 importCheckb = None
 oldVersion = getOldVersion()
-if oldVersion:## and "2.2.0" <= oldVersion < "2.5.0":## FIXME
+if oldVersion:  ## and "2.2.0" <= oldVersion < "2.5.0":## FIXME
 	importCheckb = gtk.CheckButton(
 		f"Import configurations from {APP_DESC} {oldVersion}",
 	)
@@ -134,9 +134,11 @@ if win.run() == gtk.ResponseType.OK:
 				shutil.copy(src_path, dst_path)
 		else:
 			open(join(confDir, "locale.json"), "w").write(
-				dataToPrettyJson({
-					"lang": langCode,
-				}),
+				dataToPrettyJson(
+					{
+						"lang": langCode,
+					},
+				),
 			)
 
 win.destroy()

@@ -26,10 +26,12 @@ class DateButton(MultiSpinButton):
 		return to_jd(y, m, d, calType)
 
 	def changeCalType(self, fromMode, toMode):
-		self.set_value(jd_to(
-			self.get_jd(fromMode),
-			toMode,
-		))
+		self.set_value(
+			jd_to(
+				self.get_jd(fromMode),
+				toMode,
+			),
+		)
 
 	def setMaxDay(self, _max):
 		self.field.children[2].setMax(_max)

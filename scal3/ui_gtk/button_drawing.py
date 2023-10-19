@@ -72,20 +72,20 @@ class BaseButton:
 
 	def getAbsPos(self, w, h):
 		return getAbsPos(
-			self.width, self.height,
-			w, h,
-			self.x, self.y,
-			self.xalign, self.yalign,
+			self.width,
+			self.height,
+			w,
+			h,
+			self.x,
+			self.y,
+			self.xalign,
+			self.yalign,
 			autoDir=self.autoDir,
 		)
 
 	def contains(self, px, py, w, h):
 		x, y = self.getAbsPos(w, h)
-		return (
-			x <= px < x + self.width
-			and
-			y <= py < y + self.height
-		)
+		return x <= px < x + self.width and y <= py < y + self.height
 
 	def draw(self, cr, w, h, bgColor=None):
 		raise NotImplementedError
@@ -118,6 +118,7 @@ class SVGButton(BaseButton):
 
 	def getImagePath(self) -> None:
 		from os.path import isabs
+
 		path = self.imageName
 		if not isabs(path):
 			path = join(svgDir, path)

@@ -189,18 +189,15 @@ confParamsCustomize = (
 	"dcalWinBackgroundColor",
 	"dcalWinWidgetButtonsEnable",
 	# "dcalWinWidgetButtons",
-
 	"dcalNavButtonsEnable",
 	"dcalNavButtonsGeo",
 	"dcalNavButtonsOpacity",
-
 	"dcalWeekdayLocalize",
 	"dcalWeekdayAbbreviate",
 	"dcalWeekdayUppercase",
 	"dcalWinWeekdayLocalize",
 	"dcalWinWeekdayAbbreviate",
 	"dcalWinWeekdayUppercase",
-
 	"dcalEventIconSize",
 	"dcalEventTotalSizeRatio",
 	"dcalWinDayParams",
@@ -268,9 +265,7 @@ fontParams = [
 	"mainWinRightPanelPluginsFont",
 ]
 
-confDecoders = {
-	param: Font.fromList for param in fontParams
-}
+confDecoders = {param: Font.fromList for param in fontParams}
 confEncoders = {
 	# param: Font.to_json for param in fontParams
 }
@@ -315,6 +310,7 @@ def saveLiveConfLoop() -> None:  # rename to saveConfLiveLoop FIXME
 
 #######################################################
 
+
 def parseDroppedDate(text) -> "tuple[int, int, int] | None":
 	part = text.split("/")
 	if len(part) != 3:
@@ -328,9 +324,7 @@ def parseDroppedDate(text) -> "tuple[int, int, int] | None":
 		return
 	maxPart = max(part)
 	if maxPart <= 999:
-		valid = 0 <= part[0] <= 99 and \
-			1 <= part[1] <= 12 and \
-			1 <= part[2] <= 31
+		valid = 0 <= part[0] <= 99 and 1 <= part[1] <= 12 and 1 <= part[2] <= 31
 		if not valid:
 			return
 		return (
@@ -385,6 +379,7 @@ def checkNeedRestart() -> bool:
 
 def dayOpenEvolution(arg: Any = None) -> None:
 	from subprocess import Popen
+
 	# y, m, d = jd_to(cell.jd-1, core.GREGORIAN)
 	# in gnome-cal opens prev day! why??
 	y, m, d = cell.dates[core.GREGORIAN]
@@ -424,7 +419,7 @@ class Cell(CellType):
 		self.weekNumNeg = self.weekNum - int(
 			calTypes.primaryModule().avgYearLen / 7,
 		)
-		self.holiday = (self.weekDay in core.holidayWeekDays)
+		self.holiday = self.weekDay in core.holidayWeekDays
 		###################
 		self.dates = [
 			date if calType == calTypes.primary else jd_to(jd, calType)
@@ -462,16 +457,12 @@ class Cell(CellType):
 		firstLineOnly=False,
 	) -> "list[tuple[PluginType, str]]":
 		return [
-			(plug, text.split("\n")[0]) if firstLineOnly
-			else (plug, text)
+			(plug, text.split("\n")[0]) if firstLineOnly else (plug, text)
 			for (plug, text) in self._pluginsData
 		]
 
 	def getPluginsText(self, firstLineOnly=False) -> str:
-		return "\n".join(
-			text
-			for (plug, text) in self.getPluginsData(firstLineOnly)
-		)
+		return "\n".join(text for (plug, text) in self.getPluginsData(firstLineOnly))
 
 	def clearEventsData(self):
 		self._eventsData = None
@@ -522,8 +513,7 @@ class Cell(CellType):
 		return self.dates[calType]
 
 	def inSameMonth(self, other: CellType) -> bool:
-		return self.getDate(calTypes.primary)[:2] == \
-			other.getDate(calTypes.primary)[:2]
+		return self.getDate(calTypes.primary)[:2] == other.getDate(calTypes.primary)[:2]
 
 	def getEventIcons(self, showIndex: int) -> list[str]:
 		iconList = []
@@ -773,6 +763,7 @@ def getHolidaysJdList(startJd: int, endJd: int) -> list[int]:
 
 ######################################################################
 
+
 def checkMainWinItems() -> None:
 	global mainWinItems
 	mainWinItems = checkEnabledNamesItems(
@@ -796,14 +787,8 @@ def checkEnabledNamesItems(
 	itemsDefault: list[tuple[bool, str]],
 ) -> list[tuple[bool, str]]:
 	# cleaning and updating items
-	names = {
-		name
-		for (name, i) in items
-	}
-	defaultNames = {
-		name
-		for (name, i) in itemsDefault
-	}
+	names = {name for (name, i) in items}
+	defaultNames = {name for (name, i) in itemsDefault}
 	#####
 	# removing items that are no longer supported
 	items, itemsTmp = [], items
@@ -1066,126 +1051,178 @@ dcalWinSeasonPieTextColor = (255, 255, 255, 180)
 
 ##############################
 
-menuMainItemDefs = OrderedDict([
-	("resize", dict(
-		cls="ImageMenuItem",
-		label=_("Resize"),
-		imageName="resize.svg",
-		func="onResizeFromMenu",
-		signalName="button-press-event",
-	)),
-	("onTop", dict(
-		cls="CheckMenuItem",
-		label=_("_On Top"),
-		func="onKeepAboveClick",
-		active="winKeepAbove",
-	)),
-	("onAllDesktops", dict(
-		cls="CheckMenuItem",
-		label=_("On All De_sktops"),
-		func="onStickyClick",
-		active="winSticky",
-	)),
-	("today", dict(
-		cls="ImageMenuItem",
-		label=_("Select _Today"),
-		imageName="go-home.svg",
-		func="goToday",
-	)),
-	("selectDate", dict(
-		cls="ImageMenuItem",
-		label=_("Select _Date..."),
-		imageName="select-date.svg",
-		func="selectDateShow",
-	)),
-	("dayInfo", dict(
-		cls="ImageMenuItem",
-		label=_("Day Info"),
-		imageName="info.svg",
-		func="dayInfoShow",
-	)),
-	("customize", dict(
-		cls="ImageMenuItem",
-		label=_("_Customize"),
-		imageName="document-edit.svg",
-		func="customizeShow",
-	)),
-	("preferences", dict(
-		cls="ImageMenuItem",
-		label=_("_Preferences"),
-		imageName="preferences-system.svg",
-		func="prefShow",
-	)),
-	# ("addCustomEvent", dict(
-	# 	cls="ImageMenuItem",
-	# 	label=_("_Add Event"),
-	# 	imageName="list-add.svg",
-	# 	func="addCustomEvent",  # to call ui.addCustomEvent
-	# )),
-	("dayCalWin", dict(
-		cls="ImageMenuItem",
-		label=_("Day Calendar (Desktop Widget)"),
-		imageName="starcal.svg",
-		func="dayCalWinShow",
-	)),
-	("eventManager", dict(
-		cls="ImageMenuItem",
-		label=_("_Event Manager"),
-		imageName="list-add.svg",
-		func="eventManShow",
-	)),
-	("timeLine", dict(
-		cls="ImageMenuItem",
-		label=_("Time Line"),
-		imageName="timeline.svg",
-		func="timeLineShow",
-	)),
-	("yearWheel", dict(
-		cls="ImageMenuItem",
-		label=_("Year Wheel"),
-		imageName="year-wheel.svg",
-		func="yearWheelShow",
-	)),  # icon? FIXME
-	# ("weekCal", dict(
-	# 	cls="ImageMenuItem",
-	# 	label=_("Week Calendar"),
-	# 	imageName="week-calendar.svg",
-	# 	func="weekCalShow",
-	# )),
-	("exportToHtml", dict(
-		cls="ImageMenuItem",
-		label=_("Export to {format}").format(format="HTML"),
-		imageName="export-to-html.svg",
-		func="onExportClick",
-	)),
-	("adjustTime", dict(
-		cls="ImageMenuItem",
-		label=_("Ad_just System Time"),
-		imageName="preferences-system.svg",
-		func="adjustTime",
-	)),
-	("about", dict(
-		cls="ImageMenuItem",
-		label=_("_About"),
-		imageName="dialog-information.svg",
-		func="aboutShow",
-	)),
-	("quit", dict(
-		cls="ImageMenuItem",
-		label=_("_Quit"),
-		imageName="application-exit.svg",
-		func="quit",
-	)),
-])
+menuMainItemDefs = OrderedDict(
+	[
+		(
+			"resize",
+			dict(
+				cls="ImageMenuItem",
+				label=_("Resize"),
+				imageName="resize.svg",
+				func="onResizeFromMenu",
+				signalName="button-press-event",
+			),
+		),
+		(
+			"onTop",
+			dict(
+				cls="CheckMenuItem",
+				label=_("_On Top"),
+				func="onKeepAboveClick",
+				active="winKeepAbove",
+			),
+		),
+		(
+			"onAllDesktops",
+			dict(
+				cls="CheckMenuItem",
+				label=_("On All De_sktops"),
+				func="onStickyClick",
+				active="winSticky",
+			),
+		),
+		(
+			"today",
+			dict(
+				cls="ImageMenuItem",
+				label=_("Select _Today"),
+				imageName="go-home.svg",
+				func="goToday",
+			),
+		),
+		(
+			"selectDate",
+			dict(
+				cls="ImageMenuItem",
+				label=_("Select _Date..."),
+				imageName="select-date.svg",
+				func="selectDateShow",
+			),
+		),
+		(
+			"dayInfo",
+			dict(
+				cls="ImageMenuItem",
+				label=_("Day Info"),
+				imageName="info.svg",
+				func="dayInfoShow",
+			),
+		),
+		(
+			"customize",
+			dict(
+				cls="ImageMenuItem",
+				label=_("_Customize"),
+				imageName="document-edit.svg",
+				func="customizeShow",
+			),
+		),
+		(
+			"preferences",
+			dict(
+				cls="ImageMenuItem",
+				label=_("_Preferences"),
+				imageName="preferences-system.svg",
+				func="prefShow",
+			),
+		),
+		# ("addCustomEvent", dict(
+		# 	cls="ImageMenuItem",
+		# 	label=_("_Add Event"),
+		# 	imageName="list-add.svg",
+		# 	func="addCustomEvent",  # to call ui.addCustomEvent
+		# )),
+		(
+			"dayCalWin",
+			dict(
+				cls="ImageMenuItem",
+				label=_("Day Calendar (Desktop Widget)"),
+				imageName="starcal.svg",
+				func="dayCalWinShow",
+			),
+		),
+		(
+			"eventManager",
+			dict(
+				cls="ImageMenuItem",
+				label=_("_Event Manager"),
+				imageName="list-add.svg",
+				func="eventManShow",
+			),
+		),
+		(
+			"timeLine",
+			dict(
+				cls="ImageMenuItem",
+				label=_("Time Line"),
+				imageName="timeline.svg",
+				func="timeLineShow",
+			),
+		),
+		(
+			"yearWheel",
+			dict(
+				cls="ImageMenuItem",
+				label=_("Year Wheel"),
+				imageName="year-wheel.svg",
+				func="yearWheelShow",
+			),
+		),  # icon? FIXME
+		# ("weekCal", dict(
+		# 	cls="ImageMenuItem",
+		# 	label=_("Week Calendar"),
+		# 	imageName="week-calendar.svg",
+		# 	func="weekCalShow",
+		# )),
+		(
+			"exportToHtml",
+			dict(
+				cls="ImageMenuItem",
+				label=_("Export to {format}").format(format="HTML"),
+				imageName="export-to-html.svg",
+				func="onExportClick",
+			),
+		),
+		(
+			"adjustTime",
+			dict(
+				cls="ImageMenuItem",
+				label=_("Ad_just System Time"),
+				imageName="preferences-system.svg",
+				func="adjustTime",
+			),
+		),
+		(
+			"about",
+			dict(
+				cls="ImageMenuItem",
+				label=_("_About"),
+				imageName="dialog-information.svg",
+				func="aboutShow",
+			),
+		),
+		(
+			"quit",
+			dict(
+				cls="ImageMenuItem",
+				label=_("_Quit"),
+				imageName="application-exit.svg",
+				func="quit",
+			),
+		),
+	],
+)
 
 ##############################
 
 
 def getActiveMonthCalParams():
-	return list(zip(
-		calTypes.active,
-		mcalTypeParams,
-	))
+	return list(
+		zip(
+			calTypes.active,
+			mcalTypeParams,
+		),
+	)
 
 
 ################################
@@ -1215,7 +1252,7 @@ class TagIconItem:
 	def getIconRel(self):
 		icon = self.icon
 		if icon.startswith(svgDir + os.sep):
-			return icon[len(svgDir) + 1:]
+			return icon[len(svgDir) + 1 :]
 		return icon
 
 	def __repr__(self):
@@ -1241,7 +1278,6 @@ eventTags = (
 	TagIconItem("task", eventTypes=("task",)),
 	TagIconItem("university", eventTypes=("task",)),  # FIXME: eventTypes
 	TagIconItem("shopping_cart", desc="Shopping Cart"),
-
 	TagIconItem("personal"),  # TODO: icon
 	TagIconItem("appointment", eventTypes=("task",)),  # TODO: icon
 	TagIconItem("meeting", eventTypes=("task",)),  # TODO: icon
@@ -1250,14 +1286,10 @@ eventTags = (
 
 
 def getEventTagsDict():
-	return {
-		tagObj.name: tagObj for tagObj in eventTags
-	}
+	return {tagObj.name: tagObj for tagObj in eventTags}
 
 
-eventTagsDesc = {
-	t.name: t.desc for t in eventTags
-}
+eventTagsDesc = {t.name: t.desc for t in eventTags}
 
 ###################
 fs: "event_lib.FileSystem | None" = None
@@ -1528,7 +1560,10 @@ statusIconImageHoli = join(sourceDir, "status-icons", "dark-red.svg")
 (
 	statusIconImageDefault,
 	statusIconImageHoliDefault,
-) = statusIconImage, statusIconImageHoli
+) = (
+	statusIconImage,
+	statusIconImageHoli,
+)
 statusIconFontFamilyEnable = False
 statusIconFontFamily = None
 statusIconHolidayFontColorEnable = False
@@ -1541,17 +1576,16 @@ pluginsTextInsideExpander = True
 pluginsTextIsExpanded = True  # effects only if pluginsTextInsideExpander
 eventViewMaxHeight = 200
 ####################
-dragGetCalType = core.GREGORIAN   # apply in Pref FIXME
+dragGetCalType = core.GREGORIAN  # apply in Pref FIXME
 # dragGetDateFormat = "%Y/%m/%d"
-dragRecMode = core.GREGORIAN   # apply in Pref FIXME
+dragRecMode = core.GREGORIAN  # apply in Pref FIXME
 ####################
 monthRMenuNum = True
 # monthRMenu
 
 _wmDir = join(svgDir, "wm")
 winControllerThemeList = [
-	name for name in os.listdir(_wmDir)
-	if isdir(join(_wmDir, name))
+	name for name in os.listdir(_wmDir) if isdir(join(_wmDir, name))
 ]
 
 winControllerTheme = "default"

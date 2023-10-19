@@ -101,7 +101,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		###
 		hbox = HBox()
 		self.textCSensCheck = gtk.CheckButton(label=_("Case Sensitive"))
-		self.textCSensCheck.set_active(False) ## FIXME
+		self.textCSensCheck.set_active(False)  ## FIXME
 		pack(hbox, self.textCSensCheck)
 		pack(vboxHalf, hbox)
 		#####
@@ -137,10 +137,12 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		pack(hboxIn, gtk.Label(label="  "))
 		##
 		self.timeToInput = DateTimeButton()
-		self.timeToInput.set_value((
-			(year + 1, 1, 1),
-			(0, 0, 0),
-		))
+		self.timeToInput.set_value(
+			(
+				(year + 1, 1, 1),
+				(0, 0, 0),
+			),
+		)
 		pack(hboxIn, self.timeToInput)
 		self.dateTimeInputs.append(self.timeToInput)
 		##
@@ -287,7 +289,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 			cell_renderer=cell,
 			pixbuf=3,
 		)
-		#self.colIcon.set_sort_column_id(3)  # FIXME
+		# self.colIcon.set_sort_column_id(3)  # FIXME
 		self.colIcon.set_property("expand", False)
 		treev.append_column(self.colIcon)
 		###
@@ -381,7 +383,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		self.treev = treev
 		self.treeModel = treeModel
 		self.vbox.show_all()
-		#self.maximize()## FIXME
+		# self.maximize()## FIXME
 
 	def onConfigChange(self, *a, **kw) -> None:
 		ud.BaseCalObj.onConfigChange(self, *a, **kw)
@@ -452,14 +454,17 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		for gid in groupIds:
 			group = ui.eventGroups[gid]
 			for event in group.search(conds):
-				self.treeModel.append(None, (
-					group.id,
-					event.id,
-					group.title,
-					eventTreeIconPixbuf(event.getIcon()),
-					event.summary,
-					event.getShownDescription(),
-				))
+				self.treeModel.append(
+					None,
+					(
+						group.id,
+						event.id,
+						group.title,
+						eventTreeIconPixbuf(event.getIcon()),
+						event.summary,
+						event.getShownDescription(),
+					),
+				)
 		self.resultLabel.set_label(
 			_("Found {eventCount} events").format(eventCount=_(len(self.treeModel))),
 		)
@@ -473,6 +478,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 	):
 		# open json file and write header
 		from json import dumps
+
 		y, m, d = cal_types.getSysDate(core.GREGORIAN)
 		groupTitle = f"Search Results ({y:04d}-{m:02d}-{d:02d})"
 		with open(fpath, mode="w", encoding="utf-8") as _file:
@@ -553,6 +559,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 
 	def editEventByPath(self, path):
 		from scal3.ui_gtk.event.editor import EventEditorDialog
+
 		try:
 			gid = self.treeModel[path][0]
 			eid = self.treeModel[path][1]
@@ -647,19 +654,21 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		for new_group in ui.eventGroups:
 			if new_group.id == group.id:
 				continue
-			#if not new_group.enable:## FIXME
-			#	continue
+			# if not new_group.enable:## FIXME
+			# 	continue
 			if event.name in new_group.acceptsEventTypes:
-				subMenu.add(menuItemFromEventGroup(
-					new_group,
-					func=self.moveEventToGroupFromMenu,
-					args=(
-						path,
-						event,
-						group,
+				subMenu.add(
+					menuItemFromEventGroup(
 						new_group,
+						func=self.moveEventToGroupFromMenu,
+						args=(
+							path,
+							event,
+							group,
+							new_group,
+						),
 					),
-				))
+				)
 		##
 		item.set_submenu(subMenu)
 		return item
@@ -673,24 +682,27 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		subMenu = Menu()
 		###
 		for new_group in ui.eventGroups:
-			#if not new_group.enable:## FIXME
-			#	continue
+			# if not new_group.enable:## FIXME
+			# 	continue
 			if event.name in new_group.acceptsEventTypes:
-				subMenu.add(menuItemFromEventGroup(
-					new_group,
-					func=self.copyEventToGroupFromMenu,
-					args=(
-						path,
-						event,
+				subMenu.add(
+					menuItemFromEventGroup(
 						new_group,
+						func=self.copyEventToGroupFromMenu,
+						args=(
+							path,
+							event,
+							new_group,
+						),
 					),
-				))
+				)
 		##
 		item.set_submenu(subMenu)
 		return item
 
 	def historyOfEventFromMenu(self, menu, path):
 		from scal3.ui_gtk.event.history import EventHistoryDialog
+
 		gid = self.treeModel[path][0]
 		eid = self.treeModel[path][1]
 		group = ui.eventGroups[gid]
@@ -705,31 +717,37 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		##
 		menu = Menu()
 		##
-		menu.add(eventWriteMenuItem(
-			_("Edit"),
-			imageName="document-edit.svg",
-			func=self.editEventFromMenu,
-			args=(path,),
-		))
+		menu.add(
+			eventWriteMenuItem(
+				_("Edit"),
+				imageName="document-edit.svg",
+				func=self.editEventFromMenu,
+				args=(path,),
+			),
+		)
 		##
-		menu.add(eventWriteImageMenuItem(
-			_("History"),
-			"history.svg",
-			func=self.historyOfEventFromMenu,
-			args=(path,),
-		))
+		menu.add(
+			eventWriteImageMenuItem(
+				_("History"),
+				"history.svg",
+				func=self.historyOfEventFromMenu,
+				args=(path,),
+			),
+		)
 		##
 		menu.add(self.getMoveToGroupSubMenu(path, group, event))
 		menu.add(gtk.SeparatorMenuItem())
 		menu.add(self.getCopyToGroupSubMenu(path, event))
 		##
 		menu.add(gtk.SeparatorMenuItem())
-		menu.add(ImageMenuItem(
-			_("Move to {title}").format(title=ui.eventTrash.title),
-			imageName=ui.eventTrash.getIconRel(),
-			func=self.moveEventToTrashFromMenu,
-			args=(path,),
-		))
+		menu.add(
+			ImageMenuItem(
+				_("Move to {title}").format(title=ui.eventTrash.title),
+				imageName=ui.eventTrash.getIconRel(),
+				func=self.moveEventToTrashFromMenu,
+				args=(path,),
+			),
+		)
 		##
 		menu.show_all()
 		return menu
@@ -748,7 +766,7 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		if not pos_t:
 			return
 		path, col, xRel, yRel = pos_t
-		#path, col = self.treev.get_cursor() ## FIXME
+		# path, col = self.treev.get_cursor() ## FIXME
 		if not path:
 			return
 		if gevent.button == 3:
@@ -756,14 +774,14 @@ class EventSearchWindow(gtk.Window, MyDialog, ud.BaseCalObj):
 		return False
 
 	def onTreeviewKeyPress(self, treev, gevent):
-		#from scal3.time_utils import getGtkTimeFromEpoch
+		# from scal3.time_utils import getGtkTimeFromEpoch
 		# log.debug(gevent.time-getGtkTimeFromEpoch(now())## FIXME)
 		# log.debug(now()-gdk.CURRENT_TIME/1000.0)
 		# gdk.CURRENT_TIME == 0
 		# gevent.time == gtk.get_current_event_time() ## OK
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		# log.debug("onTreeviewKeyPress", kname)
-		if kname == "menu":## Simulate right click (key beside Right-Ctrl)
+		if kname == "menu":  ## Simulate right click (key beside Right-Ctrl)
 			path = treev.get_cursor()[0]
 			if path:
 				menu = self.genRightClickMenu(path)
