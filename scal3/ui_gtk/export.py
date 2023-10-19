@@ -38,7 +38,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Export to {format}").format(format="HTML"))
 		# parent=None FIXME
-		#self.set_has_separator(False)
+		# self.set_has_separator(False)
 		########
 		hbox = HBox(spacing=2)
 		pack(hbox, gtk.Label(label=_("Month Range")))
@@ -64,7 +64,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		########
 		self.fcw = gtk.FileChooserWidget(action=gtk.FileChooserAction.SAVE)
 		pack(self.vbox, self.fcw, 1, 1)
-		self.vbox.set_focus_child(self.fcw)## FIXME
+		self.vbox.set_focus_child(self.fcw)  ## FIXME
 		self.vbox.show_all()
 		combo.connect("changed", self.comboChanged)
 		##
@@ -117,9 +117,9 @@ class ExportDialog(gtk.Dialog, MyDialog):
 					calTypes.primary,
 					s.month,
 					s.year,
-				) +
-				" " +
-				_(s.year)
+				)
+				+ " "
+				+ _(s.year)
 			)
 		elif comboItem == 1:
 			for i in range(1, 13):
@@ -142,7 +142,7 @@ class ExportDialog(gtk.Dialog, MyDialog):
 		path = self.fcw.get_filename()
 		if path in (None, ""):
 			return
-		log.info(f"Exporting to html file \"{path}\"")
+		log.info(f'Exporting to html file "{path}"')
 		self.waitingDo(
 			self._save,
 			path,
@@ -205,7 +205,7 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
 		########
 		self.fcw = gtk.FileChooserWidget(action=gtk.FileChooserAction.SAVE)
 		pack(self.vbox, self.fcw, 1, 1)
-		self.vbox.set_focus_child(self.fcw)## FIXME
+		self.vbox.set_focus_child(self.fcw)  ## FIXME
 		self.vbox.show_all()
 		##
 		dialog_add_button(
@@ -231,7 +231,7 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
 			defaultFileName += ".ics"
 		self.fcw.set_current_name(defaultFileName)
 
-	def onDelete(self, widget=None, event=None):## hide(close) File Chooser Dialog
+	def onDelete(self, widget=None, event=None):  ## hide(close) File Chooser Dialog
 		self.destroy()
 		return True
 
@@ -245,7 +245,7 @@ class ExportToIcsDialog(gtk.Dialog, MyDialog):
 		path = self.fcw.get_filename()
 		if path in (None, ""):
 			return
-		log.info(f"Exporting to ics file \"{path}\"")
+		log.info(f'Exporting to ics file "{path}"')
 		self.waitingDo(
 			self._save,
 			path,

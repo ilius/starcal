@@ -42,7 +42,7 @@ class WidgetClass(common.WidgetClass):
 		self.warnLabel = gtk.Label()
 		self.warnLabel.modify_fg(gtk.StateType.NORMAL, gdk.Color(65535, 0, 0))
 		self.warnLabel.set_xalign(0)
-		#self.warnLabel.set_visible(False)## FIXME
+		# self.warnLabel.set_visible(False)## FIXME
 		###########
 		self.rulesFrame = gtk.Frame()
 		self.rulesFrame.set_label(_("Rules"))
@@ -77,8 +77,8 @@ class WidgetClass(common.WidgetClass):
 		)
 		pack(self.ruleAddBox, self.ruleAddButton)
 		#############
-		#self.filesBox = common.FilesBox(self.event)
-		#pack(self, self.filesBox)
+		# self.filesBox = common.FilesBox(self.event)
+		# pack(self, self.filesBox)
 		#############
 		self.ruleAddCombo.connect("changed", self.onRuleAddComboChanged)
 		self.ruleAddButton.connect("clicked", self.onRuleAddButtonClick)
@@ -89,7 +89,7 @@ class WidgetClass(common.WidgetClass):
 		lab.set_xalign(0)
 		pack(hbox, lab)
 		self.groups[rule.sgroup].add_widget(lab)
-		#pack(hbox, gtk.Label(), 1, 1)
+		# pack(hbox, gtk.Label(), 1, 1)
 		inputWidget = makeWidget(rule)
 		if not inputWidget:
 			log.error(f"failed to create inpout widget for rule {rule.name}")
@@ -121,14 +121,16 @@ class WidgetClass(common.WidgetClass):
 			if not hbox:
 				continue
 			pack(self.rulesBox, hbox)
-			#hbox.show_all()
+			# hbox.show_all()
 			comboItems.remove(rule.name)
 		self.rulesBox.show_all()
 		for ruleName in comboItems:
-			self.addRuleModel.append((
-				ruleName,
-				event_lib.classes.rule.byName[ruleName].desc,
-			))
+			self.addRuleModel.append(
+				(
+					ruleName,
+					event_lib.classes.rule.byName[ruleName].desc,
+				),
+			)
 		self.onRuleAddComboChanged()
 
 	def updateRules(self):
@@ -168,7 +170,7 @@ class WidgetClass(common.WidgetClass):
 		self.addRuleModel.append((rule.name, rule.desc))
 		####
 		hbox.destroy()
-		#self.rulesBox.remove(hbox)
+		# self.rulesBox.remove(hbox)
 		self.onRuleAddComboChanged()
 
 	def onRuleAddComboChanged(self, combo=None):

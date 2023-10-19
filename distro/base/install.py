@@ -1,18 +1,18 @@
 #!/usr/bin/env python3
-import os
-import sys
-import subprocess
-from os.path import (
-	join,
-	dirname,
-	abspath,
-	realpath,
-	isfile,
-	isdir,
-	islink,
-)
 import getopt
+import os
 import shutil
+import subprocess
+import sys
+from os.path import (
+	abspath,
+	dirname,
+	isdir,
+	isfile,
+	islink,
+	join,
+	realpath,
+)
 from shutil import rmtree
 
 # realpath gives the target of sym link (unlike abspath)
@@ -37,15 +37,13 @@ def printUsage():
 		f"Usage: python3 {sys.argv[0]} [{U}TERGET_DIR{E}] "
 		f"[--for-pkg|--portable] "
 		f"[--prefix={U}/usr/local{E}] "
-		f"[--python={U}python3.x{E}]"
+		f"[--python={U}python3.x{E}]",
 	)
+
 
 def getVersion():
 	outputB, error = subprocess.Popen(
-		[
-			"python3",
-			f"{sourceDir}/scripts/version.py"
-		],
+		["python3", f"{sourceDir}/scripts/version.py"],
 		stdout=subprocess.PIPE,
 	).communicate()
 	# if error == None:
@@ -64,6 +62,7 @@ installTypeValues = [
 def makeDir(direc):
 	if not isdir(direc):
 		os.makedirs(direc)
+
 
 def cleanup(cpath):
 	try:
@@ -84,27 +83,38 @@ def lsb_release() -> str:
 		printAsError(error)
 	return outputB.decode("utf-8").strip()
 
+
 def checkOperatingSystem(installType):
 	if installType == "for-pkg":
 		return True
 
 	if isfile("/etc/debian_version"):
 		if lsb_release() == "Ubuntu":
-			printAsError("Your distribution is based on Ubuntu, use: sudo ./distro/ubuntu/install.sh")
+			printAsError(
+				"Your distribution is based on Ubuntu, use: sudo ./distro/ubuntu/install.sh",
+			)
 		else:
-			printAsError("Your distribution is based on Debian, use: sudo ./distro/debian/install.sh")
+			printAsError(
+				"Your distribution is based on Debian, use: sudo ./distro/debian/install.sh",
+			)
 		return False
 
 	elif isfile("/etc/SUSE-brand") or isfile("/etc/products.d/openSUSE.prod"):
-		printAsError("Your distribution is based on SUSE, use: sudo ./distro/suse/install.sh")
+		printAsError(
+			"Your distribution is based on SUSE, use: sudo ./distro/suse/install.sh",
+		)
 		return False
 
 	elif isfile("/etc/fedora-release"):
-		printAsError("Your distribution is based on Red Hat, use: sudo ./distro/fedora/install.sh")
+		printAsError(
+			"Your distribution is based on Red Hat, use: sudo ./distro/fedora/install.sh",
+		)
 		return False
 
 	elif isfile("/etc/arch-release"):
-		printAsError("Your distribution is based on ArchLinux, use ./distro/archlinux/install.sh")
+		printAsError(
+			"Your distribution is based on ArchLinux, use ./distro/archlinux/install.sh",
+		)
 		return False
 
 	return True
@@ -115,7 +125,8 @@ def main():
 		(rawOptions, args) = getopt.gnu_getopt(
 			sys.argv[1:],
 			"",
-			installTypeValues + [
+			installTypeValues
+			+ [
 				"help",
 				"prefix=",
 				"python=",
@@ -126,10 +137,7 @@ def main():
 		printUsage()
 		return 1
 
-	options = {
-		opt.lstrip("-"): value
-		for opt, value in rawOptions
-	}
+	options = {opt.lstrip("-"): value for opt, value in rawOptions}
 	# print(options)
 	# print(args)
 
@@ -171,19 +179,15 @@ def main():
 	pyCmd = options.get("python", "")
 	if pyCmd:
 		if not isfile(pyCmd):
-			printAsError(
-				f"The given Python executable {pyCmd!r} does not exist"
-			)
+			printAsError(f"The given Python executable {pyCmd!r} does not exist")
 	else:
 		pyCmd = sys.executable
 		userPyCmd = shutil.which("python3")
 		if not userPyCmd:
-			printAsError(
-				f"WARNING: Python executable {pyCmd!r} is not in your $PATH"
-			)
+			printAsError(f"WARNING: Python executable {pyCmd!r} is not in your $PATH")
 		elif pyCmd != userPyCmd:
 			printAsError(
-				f"WARNING: Python executable {pyCmd!r} is different from {userPyCmd!r}"
+				f"WARNING: Python executable {pyCmd!r} is different from {userPyCmd!r}",
 			)
 	print(f"Using {pyCmd}")
 
@@ -215,10 +219,7 @@ def main():
 		return 1
 
 	for docFile in ("LICENSE", "authors", "donate"):
-		os.rename(
-			join(targetCodeDir, docFile),
-			join(shareDir, "doc", pkgName, docFile)
-		)
+		os.rename(join(targetCodeDir, docFile), join(shareDir, "doc", pkgName, docFile))
 
 	makeDir(join(shareDir, "icons", "hicolor"))
 	for size in (16, 22, 24, 32, 48):
@@ -231,8 +232,7 @@ def main():
 	rmtree(join(targetCodeDir, "icons"))
 
 	shutil.copy(
-		join(sourceDir, "pixmaps", "starcal.png"),
-		join(shareDir, "pixmaps", iconName)
+		join(sourceDir, "pixmaps", "starcal.png"), join(shareDir, "pixmaps", iconName),
 	)
 
 	if installType == "for-pkg":
@@ -245,10 +245,10 @@ def main():
 	# print(f"runDirStr: {runDirStr}")
 
 	executablePath = join(targetPrefix, "bin", pkgName)
-	with open(executablePath, mode="wt") as _file:
+	with open(executablePath, mode="w") as _file:
 		_file.write(
 			"#!/usr/bin/env sh\n"
-			f'{pyCmd} {runDirStr}/scal3/ui_gtk/starcal-main.py "$@"\n'
+			f'{pyCmd} {runDirStr}/scal3/ui_gtk/starcal-main.py "$@"\n',
 		)
 	os.chmod(executablePath, 0o755)
 	print(f"Executable: {executablePath}")
@@ -277,13 +277,15 @@ def main():
 			"Type=Application\n"
 			"Terminal=false\n"
 			"Categories=GTK;Office;Calendar;Utility;\n"
-			"StartupNotify=true\n"
+			"StartupNotify=true\n",
 		)
 
-	if not subprocess.call([
-		join(sourceDir, "locale.d/install"),
-		targetPrefix,
-	]):
+	if not subprocess.call(
+		[
+			join(sourceDir, "locale.d/install"),
+			targetPrefix,
+		],
+	):
 		return 1
 
 	if "$installType" in ("for-pkg", "system"):
@@ -294,6 +296,7 @@ def main():
 		cleanup(join(targetCodeDir, "google-api-python-client/.git"))
 		cleanup(join(targetCodeDir, "google-api-python-client/.hg"))
 		cleanup(join(targetCodeDir, "screenshots"))
+		return None
 		# for EXP in '.hidden' '*~' '*.pyc' '*.pyo' '*.tar.xz' '*.tar.gz' '*.deb' '*.rpm' '*.spec':
 		# 		find "$DIR" -name "$EXP" -exec rm '{}' \; || true
 		# find "$targetCodeDir" -name '__pycache__' -exec rm -R '{}' \; 2>/dev/null || true
@@ -303,6 +306,8 @@ def main():
 		targetDotGit = join(targetCodeDir, ".git")
 		if isdir(targetDotGit):
 			print(f"You may want to remove '{targetDotGit}'")
+			return None
+		return None
 
 
 if __name__ == "__main__":
