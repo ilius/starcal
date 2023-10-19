@@ -23,7 +23,6 @@ from scal3 import logger
 log = logger.get()
 
 
-
 from scal3 import core, ui
 from scal3.ui_gtk import gdk, gtk, listener
 from scal3.ui_gtk.customize import CustomizableCalObj
@@ -41,7 +40,9 @@ class CalBase(CustomizableCalObj):
 		("day-info", []),
 	]
 	myKeys = (
-		"space", "home", "t",
+		"space",
+		"home",
+		"t",
 		"menu",
 		"i",
 	)
@@ -86,7 +87,7 @@ class CalBase(CustomizableCalObj):
 	def onCurrentDateChange(self, gdate):
 		self.queue_draw()
 
-	def getCellPagePlus(self, jd, plus):## use for sliding
+	def getCellPagePlus(self, jd, plus):  ## use for sliding
 		raise NotImplementedError
 
 	def defineDragAndDrop(self):
@@ -112,19 +113,19 @@ class CalBase(CustomizableCalObj):
 		# if source ACTION was ACTION_COPY, calendar recieves its own
 		# dragged day just like gnome-calendar-applet
 		# (but it seems not a logical behaviar)
-		#self.drag_source_add_uri_targets()#???????
+		# self.drag_source_add_uri_targets()#???????
 		##self.connect("drag-end", self.dragCalEnd)
 		##self.connect("drag-drop", self.dragCalDrop)
 		##self.connect("drag-failed", self.dragCalFailed)
-		#self.connect("drag-leave", self.dragLeave)
+		# self.connect("drag-leave", self.dragLeave)
 
 	def dragDataGet(self, obj, context, selection, target_id, etime):
 		# context is instance of gi.repository.Gdk.DragContext
 		y, m, d = ui.cell.dates[ui.dragGetCalType]
 		text = f"{y:04d}/{m:02d}/{d:02d}"
 		selection.set_text(text, len(text))
-		#pbuf = newDndDatePixbuf(ui.cell.dates[ui.dragGetCalType])
-		#selection.set_pixbuf(pbuf)
+		# pbuf = newDndDatePixbuf(ui.cell.dates[ui.dragGetCalType])
+		# selection.set_pixbuf(pbuf)
 		return True
 
 	def dragLeave(self, obj, context, etime):
@@ -154,25 +155,15 @@ class CalBase(CustomizableCalObj):
 			)
 			self.emit("pref-update-bg-color")
 			self.queue_draw()
-<<<<<<< HEAD
 			return False
 
 		log.warning(f"Unknown dropped data type {dtype!r}, {text=}, {selection=}")
 		return True
 
-=======
-		else:
-			log.info(
-				f"Unknown dropped data type {dtype!r}, {text=}, "
-				f"data={selection.data!r}",
-			)
-			return True
-		return False
->>>>>>> 86ee41f (fix all ruff errors in ./scal3)
 
 	def dragBegin(self, obj, context):
 		# context is instance of gi.repository.Gdk.DragContext
-		#win = context.get_source_window()
+		# win = context.get_source_window()
 		# log.debug("dragBegin", id(win), win.get_geometry())
 		pbuf = newDndDatePixbuf(ui.cell.dates[ui.dragGetCalType])
 		w = pbuf.get_width()

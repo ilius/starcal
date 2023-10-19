@@ -1,4 +1,3 @@
-
 from scal3 import ui
 from scal3.cal_types import calTypes
 from scal3.color_utils import colorizeSpan
@@ -22,6 +21,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 	def __init__(self, win):
 		self.win = win
 		from scal3.ui_gtk.mywidgets.resize_button import ResizeButton
+
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
 		####
@@ -68,6 +68,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			CheckPrefItem,
 			ColorPrefItem,
 		)
+
 		if self.optionsWidget:
 			return self.optionsWidget
 		####

@@ -65,14 +65,19 @@ class CalObj(gtk.DrawingArea, CalBase):
 	optionsPageSpacing = 5
 	cx = [0, 0, 0, 0, 0, 0, 0]
 	myKeys = CalBase.myKeys + (
-		"up", "down",
-		"right", "left",
+		"up",
+		"down",
+		"right",
+		"left",
 		"page_up",
-		"k", "p",
+		"k",
+		"p",
 		"page_down",
-		"j", "n",
+		"j",
+		"n",
 		"end",
-		"f10", "m",
+		"f10",
+		"m",
 	)
 
 	def do_get_preferred_height(self):
@@ -80,6 +85,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 
 	def updateTypeParamsWidget(self):
 		from scal3.ui_gtk.cal_type_params import CalTypeParamWidget
+
 		try:
 			vbox = self.typeParamsVbox
 		except AttributeError:
@@ -90,11 +96,13 @@ class CalObj(gtk.DrawingArea, CalBase):
 		subPages = [self.cursorPage]
 		n = len(calTypes.active)
 		while len(ui.mcalTypeParams) < n:
-			ui.mcalTypeParams.append({
-				"pos": (0, 0),
-				"font": ui.getFont(0.6),
-				"color": ui.textColor,
-			})
+			ui.mcalTypeParams.append(
+				{
+					"pos": (0, 0),
+					"font": ui.getFont(0.6),
+					"color": ui.textColor,
+				},
+			)
 		sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		for index, calType in enumerate(calTypes.active):
 			module, ok = calTypes[calType]
@@ -144,11 +152,13 @@ class CalObj(gtk.DrawingArea, CalBase):
 		gtk.DrawingArea.__init__(self)
 		self.add_events(gdk.EventMask.ALL_EVENTS_MASK)
 		self.initCal()
-		self.pagePath = ".".join([
-			win._name,
-			win.mainVBox._name,
-			self._name,
-		])
+		self.pagePath = ".".join(
+			[
+				win._name,
+				win.mainVBox._name,
+				self._name,
+			],
+		)
 		######################
 		# self.kTime = 0
 		######################
@@ -166,6 +176,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			ColorPrefItem,
 			SpinPrefItem,
 		)
+
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = VBox(spacing=self.optionsPageSpacing)
@@ -175,8 +186,10 @@ class CalObj(gtk.DrawingArea, CalBase):
 		prefItem = SpinPrefItem(
 			ui,
 			"mcalLeftMargin",
-			0, 999,
-			digits=1, step=1,  # noqa: FURB120
+			0,
+			999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Left Margin"),
 			labelSizeGroup=labelSizeGroup,
 			live=True,
@@ -187,8 +200,10 @@ class CalObj(gtk.DrawingArea, CalBase):
 		prefItem = SpinPrefItem(
 			ui,
 			"mcalTopMargin",
-			0, 999,
-			digits=1, step=1,  # noqa: FURB120
+			0,
+			999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Top Margin"),
 			labelSizeGroup=labelSizeGroup,
 			live=True,
@@ -212,8 +227,10 @@ class CalObj(gtk.DrawingArea, CalBase):
 		prefItem = SpinPrefItem(
 			ui,
 			"mcalCursorLineWidthFactor",
-			0, 1,
-			digits=2, step=0.1,
+			0,
+			1,
+			digits=2,
+			step=0.1,
 			label=_("Line Width Factor"),
 			labelSizeGroup=sgroup,
 			live=True,
@@ -224,8 +241,10 @@ class CalObj(gtk.DrawingArea, CalBase):
 		prefItem = SpinPrefItem(
 			ui,
 			"mcalCursorRoundingFactor",
-			0, 1,
-			digits=2, step=0.1,
+			0,
+			1,
+			digits=2,
+			step=0.1,
 			label=_("Rounding Factor"),
 			labelSizeGroup=sgroup,
 			live=True,
@@ -291,7 +310,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 			fillColor(cr, ui.borderColor)
 			# ###### Drawing weekDays names
 			setColor(cr, ui.borderTextColor)
-			wdayAb = (self.wdaysWidth > w)
+			wdayAb = self.wdaysWidth > w
 			for i in range(7):
 				wday = newTextLayout(self, core.getWeekDayAuto(i, abbreviate=wdayAb))
 				try:
@@ -365,8 +384,8 @@ class CalObj(gtk.DrawingArea, CalBase):
 				c = status[yPos][xPos]
 				x0 = self.cx[xPos]
 				y0 = self.cy[yPos]
-				cellInactive = (c.month != ui.cell.month)
-				cellHasCursor = (cursor and (xPos, yPos) == selectedCellPos)
+				cellInactive = c.month != ui.cell.month
+				cellHasCursor = cursor and (xPos, yPos) == selectedCellPos
 				if cellHasCursor:
 					# ### Drawing Cursor
 					cx0 = x0 - self.dx / 2 + 1
@@ -394,9 +413,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 							pix_h = pix.get_height()
 							# right buttom corner ???
 							# right side:
-							x1 = (
-								x0 + self.dx / 2
-							) / scaleFact - fromRight - pix_w
+							x1 = (x0 + self.dx / 2) / scaleFact - fromRight - pix_w
 							# buttom side:
 							y1 = (y0 + self.dy / 2) / scaleFact - pix_h
 							cr.scale(scaleFact, scaleFact)
@@ -499,7 +516,10 @@ class CalObj(gtk.DrawingArea, CalBase):
 	def onButtonPress(self, obj, gevent):
 		# self.winActivate() #?????????
 		b = gevent.button
-		x, y, = self.get_pointer()
+		(
+			x,
+			y,
+		) = self.get_pointer()
 		# foo, x, y, flags = self.get_window().get_pointer()
 		self.pointer = (x, y)
 		if b == 2:
@@ -532,17 +552,10 @@ class CalObj(gtk.DrawingArea, CalBase):
 		h = self.get_allocation().height
 		# self.cx is centers x, self.cy is centers y
 		if rtl:
-			self.cx = [
-				(w - ui.mcalLeftMargin) * (13 - 2 * i) / 14
-				for i in range(7)
-			]
+			self.cx = [(w - ui.mcalLeftMargin) * (13 - 2 * i) / 14 for i in range(7)]
 		else:
 			self.cx = [
-				ui.mcalLeftMargin + (
-					(w - ui.mcalLeftMargin)
-					* (1 + 2 * i)
-					/ 14
-				)
+				ui.mcalLeftMargin + ((w - ui.mcalLeftMargin) * (1 + 2 * i) / 14)
 				for i in range(7)
 			]
 		self.cy = [

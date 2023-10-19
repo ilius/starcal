@@ -109,6 +109,7 @@ class ColumnBase(CustomizableCalObj):
 			FontFamilyPrefItem,
 			SpinPrefItem,
 		)
+
 		if self.optionsWidget:
 			return self.optionsWidget
 
@@ -118,8 +119,10 @@ class ColumnBase(CustomizableCalObj):
 			prefItem = SpinPrefItem(
 				ui,
 				self.getWidthAttr(),
-				1, 999,
-				digits=1, step=1,  # noqa: FURB120
+				1,
+				999,
+				digits=1,
+				step=1,  # noqa: FURB120
 				label=_("Width"),
 				live=True,
 				onChangeFunc=self.onWidthChange,
@@ -263,7 +266,10 @@ class Column(gtk.DrawingArea, ColumnBase):
 				)
 				gradient.add_color_stop_rgba(
 					rowH,  # offset
-					0, 0, 0, 0,
+					0,
+					0,
+					0,
+					0,
 				)
 				cr.rectangle(0, y0, w, rowH)
 				cr.set_source(gradient)
@@ -397,7 +403,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 			name="mainMenu",
 			imageNameDynamic=True,
 			desc=_("Main Menu"),
-			enableTooltip=True, # noqa: FURB120
+			enableTooltip=True,  # noqa: FURB120
 			continuousClick=False,  # noqa: FURB120
 			onPress=self.onButtonPress,
 		)
@@ -409,6 +415,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.pref_utils import IconChooserPrefItem
+
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = VBox(spacing=self.optionsPageSpacing)
@@ -521,13 +528,10 @@ class ToolbarColumn(CustomizableToolBox, ColumnBase):
 				desc="Forward 4 Weeks",
 			),
 		]
-		self.defaultItemsDict = {
-			item._name: item for item in self.defaultItems
-		}
+		self.defaultItemsDict = {item._name: item for item in self.defaultItems}
 		if not ud.wcalToolbarData["items"]:
 			ud.wcalToolbarData["items"] = [
-				(item._name, True)
-				for item in self.defaultItems
+				(item._name, True) for item in self.defaultItems
 			]
 		self.setData(ud.wcalToolbarData)
 
@@ -565,9 +569,7 @@ class WeekDaysColumn(Column):
 		self.drawCursorFg(cr)
 
 	def getFontPreviewText(self):
-		return _(", ").join([
-			_(core.getWeekDayN(i)) for i in range(7)
-		])
+		return _(", ").join([_(core.getWeekDayN(i)) for i in range(7)])
 
 
 @registerSignals
@@ -586,23 +588,23 @@ class PluginsTextColumn(Column):
 	def getTextListByIndex(self, i: int) -> list[str]:
 		return [
 			(line, "")
-			for line in self.wcal.status[i].getPluginsText(
+			for line in self.wcal.status[i]
+			.getPluginsText(
 				firstLineOnly=ui.wcal_pluginsText_firstLineOnly,
-			).split("\n")
+			)
+			.split("\n")
 		]
 
 	def drawColumn(self, cr):
 		self.drawBg(cr)
 		self.drawTextList(
 			cr,
-			[
-				self.getTextListByIndex(i)
-				for i in range(7)
-			],
+			[self.getTextListByIndex(i) for i in range(7)],
 		)
 
 	def addExtraOptionsWidget(self, optionsWidget):
 		from scal3.ui_gtk.pref_utils import CheckPrefItem
+
 		#####
 		prefItem = CheckPrefItem(
 			ui,
@@ -701,10 +703,7 @@ class EventsCountColumn(Column):
 		###
 		self.drawTextList(
 			cr,
-			[
-				self.getDayTextData(i)
-				for i in range(7)
-			],
+			[self.getDayTextData(i) for i in range(7)],
 		)
 
 
@@ -723,15 +722,13 @@ class EventsTextColumn(Column):
 
 	def getDayTextData(self, i):
 		from scal3.xml_utils import escape
+
 		data = []
 		currentTime = now()
 		for item in self.wcal.status[i].getEventsData():
 			if not item.show[1]:
 				continue
-			line = (
-				"".join(item.text) if ui.wcal_eventsText_showDesc
-				else item.text[0]
-			)
+			line = "".join(item.text) if ui.wcal_eventsText_showDesc else item.text[0]
 			line = escape(line)
 			if item.time:
 				line = item.time + " " + line
@@ -751,10 +748,7 @@ class EventsTextColumn(Column):
 		self.drawBg(cr)
 		self.drawTextList(
 			cr,
-			[
-				self.getDayTextData(i)
-				for i in range(7)
-			],
+			[self.getDayTextData(i) for i in range(7)],
 		)
 
 	def getFontPreviewText(self):
@@ -769,53 +763,65 @@ class EventsTextColumn(Column):
 
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 
-		pack(optionsWidget, CheckColorPrefItem(
+		pack(
+			optionsWidget,
+			CheckColorPrefItem(
+				CheckPrefItem(
+					ui,
+					"wcal_eventsText_pastColorEnable",
+					_("Past Event Color"),
+				),
+				ColorPrefItem(
+					ui,
+					"wcal_eventsText_pastColor",
+					useAlpha=True,
+				),
+				live=True,
+				onChangeFunc=self.onDateChange,
+				checkSizeGroup=sizeGroup,
+			).getWidget(),
+		)
+
+		pack(
+			optionsWidget,
+			CheckColorPrefItem(
+				CheckPrefItem(
+					ui,
+					"wcal_eventsText_ongoingColorEnable",
+					_("Ongoing Event Color"),
+				),
+				ColorPrefItem(
+					ui,
+					"wcal_eventsText_ongoingColor",
+					useAlpha=True,
+				),
+				live=True,
+				onChangeFunc=self.onDateChange,
+				checkSizeGroup=sizeGroup,
+			).getWidget(),
+		)
+
+		pack(
+			optionsWidget,
 			CheckPrefItem(
 				ui,
-				"wcal_eventsText_pastColorEnable",
-				_("Past Event Color"),
-			),
-			ColorPrefItem(
-				ui,
-				"wcal_eventsText_pastColor",
-				useAlpha=True,
-			),
-			live=True,
-			onChangeFunc=self.onDateChange,
-			checkSizeGroup=sizeGroup,
-		).getWidget())
+				"wcal_eventsText_colorize",
+				label=_("Use color of event group\nfor event text"),
+				live=True,
+				onChangeFunc=self.queue_draw,
+			).getWidget(),
+		)
 
-		pack(optionsWidget, CheckColorPrefItem(
+		pack(
+			optionsWidget,
 			CheckPrefItem(
 				ui,
-				"wcal_eventsText_ongoingColorEnable",
-				_("Ongoing Event Color"),
-			),
-			ColorPrefItem(
-				ui,
-				"wcal_eventsText_ongoingColor",
-				useAlpha=True,
-			),
-			live=True,
-			onChangeFunc=self.onDateChange,
-			checkSizeGroup=sizeGroup,
-		).getWidget())
-
-		pack(optionsWidget, CheckPrefItem(
-			ui,
-			"wcal_eventsText_colorize",
-			label=_("Use color of event group\nfor event text"),
-			live=True,
-			onChangeFunc=self.queue_draw,
-		).getWidget())
-
-		pack(optionsWidget, CheckPrefItem(
-			ui,
-			"wcal_eventsText_showDesc",
-			label=_("Show Description"),
-			live=True,
-			onChangeFunc=self.queue_draw,
-		).getWidget())
+				"wcal_eventsText_showDesc",
+				label=_("Show Description"),
+				live=True,
+				onChangeFunc=self.queue_draw,
+			).getWidget(),
+		)
 
 
 @registerSignals
@@ -840,6 +846,7 @@ class EventsBoxColumn(Column):
 	def updateData(self):
 		from scal3.time_utils import getEpochFromJd
 		from scal3.timeline.box import calcEventBoxes
+
 		self.timeStart = getEpochFromJd(self.wcal.status[0].jd)
 		self.pixelPerSec = self.get_allocation().height / self.timeWidth
 		# ^^^ unit: pixel / second
@@ -864,6 +871,7 @@ class EventsBoxColumn(Column):
 
 	def drawBox(self, cr, box):
 		from scal3.ui_gtk import timeline_box as tbox
+
 		###
 		x = box.y
 		y = box.x
@@ -903,10 +911,16 @@ class DaysOfMonthFontButton(MyFontButton):
 	@ud.cssFunc
 	def getCSS() -> str:
 		from scal3.ui_gtk.utils import cssTextStyle
+
 		# make the font of Button smaller by a factor of 0.5
 		font = ui.getFont(scale=0.5)
-		return "." + DaysOfMonthFontButton.styleClass + " " + cssTextStyle(
-			font=font,
+		return (
+			"."
+			+ DaysOfMonthFontButton.styleClass
+			+ " "
+			+ cssTextStyle(
+				font=font,
+			)
 		)
 
 
@@ -944,11 +958,7 @@ class DaysOfMonthCalTypeParamBox(gtk.Box):
 
 	def get(self):
 		return {
-			"font": (
-				self.fontb.get_font()
-				if self.fontCheck.get_active()
-				else None
-			),
+			"font": (self.fontb.get_font() if self.fontCheck.get_active() else None),
 		}
 
 	def set(self, data):
@@ -1033,6 +1043,7 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 
 	def addExtraOptionsWidget(self, optionsWidget):
 		from scal3.ui_gtk.pref_utils import DirectionPrefItem
+
 		###
 		prefItem = DirectionPrefItem(
 			ui,
@@ -1078,9 +1089,11 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 		if len(ui.wcalTypeParams) < n2:
 			while len(ui.wcalTypeParams) < n2:
 				log.info("appending to wcalTypeParams")
-				ui.wcalTypeParams.append({
-					"font": None,
-				})
+				ui.wcalTypeParams.append(
+					{
+						"font": None,
+					},
+				)
 
 		if n > n2:
 			for i in range(n2, n):
@@ -1106,9 +1119,11 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 		###
 		n = len(calTypes.active)
 		while len(ui.wcalTypeParams) < n:
-			ui.wcalTypeParams.append({
-				"font": None,
-			})
+			ui.wcalTypeParams.append(
+				{
+					"font": None,
+				},
+			)
 		sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		sgroupFont = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		for i, calType in enumerate(calTypes.active):
@@ -1259,6 +1274,7 @@ class MoonStatusColumn(Column):
 
 	def addExtraOptionsWidget(self, optionsWidget):
 		from scal3.ui_gtk.pref_utils import CheckPrefItem
+
 		####
 		prefItem = CheckPrefItem(
 			ui,
@@ -1280,14 +1296,19 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 	itemsPageTitle = _("Columns")
 	itemsPageButtonBorder = 15
 	myKeys = CalBase.myKeys + (
-		"up", "down",
-		"left", "right",
+		"up",
+		"down",
+		"left",
+		"right",
 		"page_up",
-		"k", "p",
+		"k",
+		"p",
 		"page_down",
-		"j", "n",
+		"j",
+		"n",
 		"end",
-		"f10", "m",
+		"f10",
+		"m",
 	)
 	signals = CalBase.signals
 
@@ -1323,10 +1344,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 			DaysOfMonthColumnGroup(self),
 			MoonStatusColumn(self),
 		]
-		defaultItemsDict = {
-			item._name: item
-			for item in defaultItems
-		}
+		defaultItemsDict = {item._name: item for item in defaultItems}
 		itemNames = list(defaultItemsDict.keys())
 		for name, enable in ui.wcalItems:
 			item = defaultItemsDict.get(name)
@@ -1357,8 +1375,10 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		prefItem = SpinPrefItem(
 			ui,
 			"wcalTextSizeScale",
-			0.01, 1,
-			digits=3, step=0.1,
+			0.01,
+			1,
+			digits=3,
+			step=0.1,
 			label=_("Text Size Scale"),
 			live=True,
 			onChangeFunc=self.queue_draw,
@@ -1388,8 +1408,10 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		prefItem = SpinPrefItem(
 			ui,
 			"wcalCursorLineWidthFactor",
-			0, 1,
-			digits=2, step=0.1,
+			0,
+			1,
+			digits=2,
+			step=0.1,
 			label=_("Line Width Factor"),
 			labelSizeGroup=sgroup,
 			live=True,
@@ -1400,8 +1422,10 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		prefItem = SpinPrefItem(
 			ui,
 			"wcalCursorRoundingFactor",
-			0, 1,
-			digits=2, step=0.1,
+			0,
+			1,
+			digits=2,
+			step=0.1,
 			label=_("Rounding Factor"),
 			labelSizeGroup=sgroup,
 			live=True,
@@ -1438,6 +1462,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 
 	def updateStatus(self):
 		from scal3.weekcal import getCurrentWeekStatus
+
 		self.status = getCurrentWeekStatus()
 		index = ui.cell.jd - self.status[0].jd
 		if index > 6:

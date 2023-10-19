@@ -36,10 +36,10 @@ from scal3.s_object import DefaultFileSystem, saveBsonObject
 log = logging.getLogger("starcal3")
 
 [
-	'getOldVersion',
+	"getOldVersion",
 	# 'importAccountsIter',
 	# 'importBasicConfigIter',
-	'importConfigIter',
+	"importConfigIter",
 	# 'importEventBasicJsonIter',
 	# 'importEventsIter',
 	# 'importGroupsIter',
@@ -115,9 +115,13 @@ def loadCoreConf() -> None:
 	text = text.replace("calTypes.inactiveNames", "inactiveCalTypes")
 	######
 	data = OrderedDict()
-	exec(text, {
-		"loadPlugin": loadPlugin,
-	}, data)
+	exec(
+		text,
+		{
+			"loadPlugin": loadPlugin,
+		},
+		data,
+	)
 	return data
 
 
@@ -253,9 +257,7 @@ def importGroupsIter() -> Generator[int, None, None]:
 		# basicData["modified"] = tm
 		###
 		# remove extra params from data and add to basicData
-		for param in (
-			"remoteIds",
-		):
+		for param in ("remoteIds",):
 			basicData[param] = data.pop(param, None)
 		for param in (
 			"enable",
@@ -284,8 +286,7 @@ def importGroupsIter() -> Generator[int, None, None]:
 	else:
 		if isinstance(groupIds, list):
 			signedGroupIds = [
-				(1 if groupsEnableDict.get(gid, True) else -1) * gid
-				for gid in groupIds
+				(1 if groupsEnableDict.get(gid, True) else -1) * gid for gid in groupIds
 			]
 			try:
 				open(newGroupListFile, "w").write(dataToPrettyJson(signedGroupIds))
@@ -338,9 +339,7 @@ def importAccountsIter() -> Generator[int, None, None]:
 		# basicData["modified"] = tm
 		###
 		# remove extra params from data and add to basicData
-		for param in (
-			"enable",
-		):
+		for param in ("enable",):
 			try:
 				basicData[param] = data.pop(param)
 			except KeyError:
@@ -376,9 +375,7 @@ def importTrashIter() -> Generator[int, None, None]:
 	# basicData["modified"] = tm
 	###
 	# remove extra params from data and add to basicData
-	for param in (
-		"idList",
-	):
+	for param in ("idList",):
 		try:
 			basicData[param] = data.pop(param)
 		except KeyError:
@@ -500,6 +497,7 @@ def getOldVersion() -> str:
 	"""
 	data = loadCoreConf()
 	return data.get("version", "")
+
 
 ##################################
 

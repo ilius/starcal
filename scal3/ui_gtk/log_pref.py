@@ -35,6 +35,7 @@ class LogLevelComboBox(gtk.ComboBox):
 		(40, _("Error")),
 		(50, _("Critical")),
 	]
+
 	def __init__(self):
 		gtk.ComboBox.__init__(self)
 		###
@@ -86,6 +87,3 @@ class LogLevelPrefItem(PrefItem):
 		logJson = dataToCompactJson(logData)
 		with open(logger.confPath, "w") as file:  # noqa: FURB103
 			file.write(logJson)
-
-
-

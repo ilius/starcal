@@ -83,8 +83,8 @@ hijriAlg = 0
 hijriUseDB = True
 
 
-#("hijriAlg", list, "Hijri Calculation Algorithm",
-#	("Internal", "ITL (idate command)", "ITL (idate command) Umm Alqura")),
+# ("hijriAlg", list, "Hijri Calculation Algorithm",
+# 	("Internal", "ITL (idate command)", "ITL (idate command) Umm Alqura")),
 options = (
 	(
 		"hijriUseDB",
@@ -140,10 +140,14 @@ def iceil(x: float) -> int:
 
 def save():
 	"""Save user options to file."""
-	saveJsonConf(__name__, confPath, (
-		"hijriAlg",
-		"hijriUseDB",
-	))
+	saveJsonConf(
+		__name__,
+		confPath,
+		(
+			"hijriAlg",
+			"hijriUseDB",
+		),
+	)
 
 
 class MonthDbHolder:
@@ -192,7 +196,7 @@ class MonthDbHolder:
 			if userData["origVersion"] >= self.origVersion:
 				data = userData
 			else:
-				log.info(f"---- ignoring user\'s old db {self.userDbPath}")
+				log.info(f"---- ignoring user's old db {self.userDbPath}")
 		self.setData(data)
 
 	def getMonthLenByYear(self):
@@ -208,13 +212,17 @@ class MonthDbHolder:
 		mLenData = []
 		for year, mLenList in self.getMonthLenByYear().items():
 			mLenData.append([year] + mLenList)
-		text = dataToPrettyJson(OrderedDict([
-			("origVersion", self.origVersion),
-			("startDate", self.startDate),
-			("startJd", self.startJd),
-			("monthLen", mLenData),
-			("expJd", self.expJd),
-		]))
+		text = dataToPrettyJson(
+			OrderedDict(
+				[
+					("origVersion", self.origVersion),
+					("startDate", self.startDate),
+					("startJd", self.startJd),
+					("monthLen", mLenData),
+					("expJd", self.expJd),
+				],
+			),
+		)
 		with open(self.userDbPath, "w") as f:
 			f.write(text)
 
@@ -284,11 +292,11 @@ def isLeap(year):
 
 def to_jd_c(year, month, day):
 	return (
-		day +
-		iceil(29.5 * (month - 1)) +
-		(year - 1) * 354 +
-		(11 * year + 3) // 30 +
-		epoch
+		day
+		+ iceil(29.5 * (month - 1))
+		+ (year - 1) * 354
+		+ (11 * year + 3) // 30
+		+ epoch
 	)
 
 
@@ -311,9 +319,7 @@ def jd_to(jd):
 	month = min(
 		12,
 		iceil(
-			(
-				jd + 0.5 - to_jd_c(year, 1, 1)
-			) / 29.5,
+			(jd + 0.5 - to_jd_c(year, 1, 1)) / 29.5,
 		),
 	)
 	day = jd - to_jd_c(year, month, 1) + 1
@@ -322,10 +328,10 @@ def jd_to(jd):
 
 def getMonthLen(y, m):
 	# if hijriUseDB:## and hijriAlg==0
-	#	try:
-	#		return monthDb.monthLenByYm[y*12+m]
-	#	except KeyError:
-	#		pass
+	# 	try:
+	# 		return monthDb.monthLenByYm[y*12+m]
+	# 	except KeyError:
+	# 		pass
 	if m == 12:
 		return to_jd(y + 1, 1, 1) - to_jd(y, 12, 1)
 

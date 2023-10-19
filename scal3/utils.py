@@ -65,6 +65,7 @@ def cmp(a: Any, b: Any) -> bool:
 
 def versionLessThan(v0: str, v1: str) -> bool:
 	from packaging import version
+
 	return version.parse(v0) < version.parse(v1)
 
 
@@ -121,16 +122,10 @@ class StrOrderedDict(dict):
 		return self.keyList
 
 	def values(self) -> list[Any]:
-		return [
-			dict.__getitem__(self, key)
-			for key in self.keyList
-		]
+		return [dict.__getitem__(self, key) for key in self.keyList]
 
 	def items(self) -> list[tuple[str, Any]]:
-		return [
-			(key, dict.__getitem__(self, key))
-			for key in self.keyList
-		]
+		return [(key, dict.__getitem__(self, key)) for key in self.keyList]
 
 	def __getitem__(self, arg: "int | str | slice") -> Any:
 		if isinstance(arg, int):
@@ -138,13 +133,14 @@ class StrOrderedDict(dict):
 		if isinstance(arg, str):
 			return dict.__getitem__(self, arg)
 		if isinstance(arg, slice):  # not tested FIXME
-			return StrOrderedDict([
-				(key, dict.__getitem__(self, key))
-				for key in self.keyList.__getitem__(arg)
-			])
+			return StrOrderedDict(
+				[
+					(key, dict.__getitem__(self, key))
+					for key in self.keyList.__getitem__(arg)
+				],
+			)
 		raise ValueError(
-			"Bad type argument given to StrOrderedDict.__getitem__"
-			f": {type(arg)}",
+			"Bad type argument given to StrOrderedDict.__getitem__" f": {type(arg)}",
 		)
 
 	def __setitem__(self, arg: "int | str", value) -> None:
@@ -276,7 +272,7 @@ def urlToPath(url: str) -> str:
 	i = 0
 	while i < n:
 		if path[i] == "%" and i < n - 2:
-			path2 += chr(int(path[i + 1:i + 3], 16))
+			path2 += chr(int(path[i + 1 : i + 3], 16))
 			# OR: chr(eval("0x" + path[i + 1:i + 3]))
 			i += 3
 		else:
@@ -349,10 +345,12 @@ def numRangesDecode(text: str) -> "list[int | tuple[int, int]]":
 			if len(pparts) == 1:
 				values.append(int(pparts[0]))
 			elif len(pparts) > 1:
-				values.append((
-					int(pparts[0]),
-					int(pparts[1]),
-				))
+				values.append(
+					(
+						int(pparts[0]),
+						int(pparts[1]),
+					),
+				)
 			else:
 				log.error(f"numRangesDecode: invalid range string '{part}'")
 		except ValueError:

@@ -1,4 +1,3 @@
-
 from scal3 import logger
 
 log = logger.get()
@@ -55,7 +54,6 @@ class BaseToolBoxItem(gtk.Button, ConButtonBase, CustomizableCalObj):
 		if self.vertical:
 			return self.get_preferred_width()
 		return size, size
-
 
 
 @registerSignals
@@ -176,10 +174,12 @@ class ToolBoxItem(BaseToolBoxItem):
 	def _setIconSizeImage(self, iconSize: int) -> None:
 		if self.bigPixbuf is None:
 			if self.imageName:
-				self.image.set_from_pixbuf(pixbufFromFile(
-					self.imageName,
-					size=iconSize,
-				))
+				self.image.set_from_pixbuf(
+					pixbufFromFile(
+						self.imageName,
+						size=iconSize,
+					),
+				)
 				return
 			if self.imageNameDynamic:
 				return
@@ -364,17 +364,16 @@ class StaticToolBox(BaseToolBox):
 			self.append(item)
 
 
-
 class CustomizableToolBox(StaticToolBox):
 	_name = "toolbar"
 	desc = _("Toolbar")
 	styleList = (
 		# Gnome"s naming is not exactly the best here
 		# And Gnome"s order of options is also different from Gtk"s enum
-		"Icon", # "icons", "Icons only"
-		"Text", # "text", "Text only"
-		"Text below Icon", # "both", "Text below items"
-		"Text beside Icon", # "both-horiz", "Text beside items"
+		"Icon",  # "icons", "Icons only"
+		"Text",  # "text", "Text only"
+		"Text below Icon",  # "both", "Text below items"
+		"Text beside Icon",  # "both-horiz", "Text beside items"
 	)
 	defaultItems = []
 	defaultItemsDict = {}
@@ -394,13 +393,14 @@ class CustomizableToolBox(StaticToolBox):
 			continuousClick=continuousClick,
 		)
 
-		#self.add_events(gdk.EventMask.POINTER_MOTION_MASK)
+		# self.add_events(gdk.EventMask.POINTER_MOTION_MASK)
 
 		# set on setData(), used in getData() to keep compatibility
 		self.data = {}
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.pref_utils import CheckPrefItem, SpinPrefItem
+
 		if self.optionsWidget:
 			return self.optionsWidget
 		###
@@ -418,8 +418,10 @@ class CustomizableToolBox(StaticToolBox):
 		prefItem = SpinPrefItem(
 			self,
 			"iconSize",
-			5, 128,
-			digits=1, step=1,  # noqa: FURB120
+			5,
+			128,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Icon Size"),
 			live=True,
 			onChangeFunc=self.onIconSizeChange,
@@ -429,8 +431,10 @@ class CustomizableToolBox(StaticToolBox):
 		prefItem = SpinPrefItem(
 			self,
 			"buttonBorder",
-			0, 99,
-			digits=1, step=1,  # noqa: FURB120
+			0,
+			99,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Buttons Border"),
 			live=True,
 			onChangeFunc=self.updateItems,
@@ -440,8 +444,10 @@ class CustomizableToolBox(StaticToolBox):
 		prefItem = SpinPrefItem(
 			self,
 			"buttonPadding",
-			0, 99,
-			digits=1, step=1,  # noqa: FURB120
+			0,
+			99,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Space between buttons"),
 			live=True,
 			onChangeFunc=self.updateItems,
@@ -516,18 +522,20 @@ class CustomizableToolBox(StaticToolBox):
 			item.onConfigChange(toParent=False)
 
 	def getData(self) -> dict[str, Any]:
-		self.data.update({
-			"items": self.getItemsData(),
-			"iconSizePixel": self.getIconSize(),
-			"buttonBorder": self.buttonBorder,
-			"buttonPadding": self.buttonPadding,
-			"preferIconName": self.preferIconName,
-		})
+		self.data.update(
+			{
+				"items": self.getItemsData(),
+				"iconSizePixel": self.getIconSize(),
+				"buttonBorder": self.buttonBorder,
+				"buttonPadding": self.buttonPadding,
+				"preferIconName": self.preferIconName,
+			},
+		)
 		return self.data
 
 	def setData(self, data: dict[str, Any]) -> None:
 		self.data = data
-		for (name, enable) in data["items"]:
+		for name, enable in data["items"]:
 			item = self.defaultItemsDict.get(name)
 			if item is None:
 				log.info(f"toolbar item {name!r} does not exist")

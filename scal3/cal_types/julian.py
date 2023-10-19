@@ -3,8 +3,8 @@
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 #
 # Using libkal code
-#		The "libkal" library for date conversion:
-#		Copyright (C) 1996-1998 Petr Tomasek <tomasek@etf.cuni.cz>
+# 		The "libkal" library for date conversion:
+# 		Copyright (C) 1996-1998 Petr Tomasek <tomasek@etf.cuni.cz>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -31,17 +31,33 @@ def ifloor(x):
 
 
 monthName = (
-	"January", "February", "March",
-	"April", "May", "June",
-	"July", "August", "September",
-	"October", "November", "December",
+	"January",
+	"February",
+	"March",
+	"April",
+	"May",
+	"June",
+	"July",
+	"August",
+	"September",
+	"October",
+	"November",
+	"December",
 )
 
 monthNameAb = (
-	"Jan", "Feb", "Mar",
-	"Apr", "May", "Jun",
-	"Jul", "Aug", "Sep",
-	"Oct", "Nov", "Dec",
+	"Jan",
+	"Feb",
+	"Mar",
+	"Apr",
+	"May",
+	"Jun",
+	"Jul",
+	"Aug",
+	"Sep",
+	"Oct",
+	"Nov",
+	"Dec",
 )
 
 
@@ -69,10 +85,18 @@ avgYearLen = 365.25
 options = ()
 
 monthLenSum = (
-	0, 31, 59,
-	90, 120, 151,
-	181, 212, 243,
-	273, 304, 334,
+	0,
+	31,
+	59,
+	90,
+	120,
+	151,
+	181,
+	212,
+	243,
+	273,
+	304,
+	334,
 	365,
 )
 
@@ -110,13 +134,7 @@ def getMonthDayFromYdays(yDays, leap):
 
 def to_jd(year, month, day):
 	quadCount, yMode = divmod(year, 4)
-	return (
-		epoch +
-		1461 * quadCount +
-		365 * yMode +
-		getYearDays(month, yMode == 0) +
-		day
-	)
+	return epoch + 1461 * quadCount + 365 * yMode + getYearDays(month, yMode == 0) + day
 
 
 def jd_to(jd):

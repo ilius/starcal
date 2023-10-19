@@ -1,10 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import sys
+import json
 import os
 import re
-import json
 from os.path import join
 
 faDigs = ("۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", "٫")
@@ -24,14 +23,18 @@ def numFaDecode(numFa):
 
 
 def cleanRawText(text):
-	text = text.strip()## .replace("]]", "").replace("[[", "")
+	text = text.strip()  ## .replace("]]", "").replace("[[", "")
 	for part in re.findall("\[\[.*?\]\]", text):
 		part2 = part.split("|")[-1]
 		text = text.replace(part, part2)
-	return text.replace("[[", "").replace("]]", "").replace("'''", "")\
-		.replace("٬ ", "، ")\
-		.replace("ي", "ی")\
+	return (
+		text.replace("[[", "")
+		.replace("]]", "")
+		.replace("'''", "")
+		.replace("٬ ", "، ")
+		.replace("ي", "ی")
 		.replace("ك", "ک")
+	)
 
 
 def parseFile(fpath, month, day):
@@ -54,13 +57,15 @@ def parseFile(fpath, month, day):
 			# log.debug(textStart)
 			if textStart < 0:
 				continue
-			text = cleanRawText(line[textStart + 1:])
+			text = cleanRawText(line[textStart + 1 :])
 			# log.debug("text=%s"%text)
-			data.append({
-				"date": (year, month, day),
-				"category": category,
-				"text": text,
-			})
+			data.append(
+				{
+					"date": (year, month, day),
+					"category": category,
+					"text": text,
+				},
+			)
 	return data
 
 
@@ -69,18 +74,18 @@ def parseAllFiles(direc):
 	for monthFname in os.listdir(direc):
 		if monthFname.endswith("~"):
 			continue
-		#try:
+		# try:
 		month = int(monthFname)
-		#except ValueError, e:
-		#	continue
+		# except ValueError, e:
+		# 	continue
 		mDirec = join(direc, monthFname)
 		for dayFname in os.listdir(mDirec):
 			if dayFname.endswith("~"):
 				continue
-			#try:
+			# try:
 			day = int(dayFname)
-			#except ValueError:
-			#	continue
+			# except ValueError:
+			# 	continue
 			data += parseFile(join(mDirec, dayFname), month, day)
 	data.sort()
 	return data
@@ -90,17 +95,21 @@ def writeToTabfile(data, fpath):
 	lines = []
 	for event in data:
 		y, m, d = event["date"]
-		lines.append("\t".join([
-			f"{y:04d}/{m:02d}/{d:02d}",
-			event["category"],
-			event["text"],
-		]))
+		lines.append(
+			"\t".join(
+				[
+					f"{y:04d}/{m:02d}/{d:02d}",
+					event["category"],
+					event["text"],
+				],
+			),
+		)
 	open(fpath, "w").write("\n".join(lines))
 
 
 if __name__ == "__main__":
-	from pprint import pprint
+
 	data = parseAllFiles("wikipedia-fa-events")
 	writeToTabfile(data, "wikipedia-fa.tab")
 	# log.debug(getPrettyJson(data))
-	#plog.info(data)
+	# plog.info(data)

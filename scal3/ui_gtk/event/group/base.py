@@ -29,6 +29,7 @@ class BaseWidgetClass(gtk.Box):
 	def __init__(self, group):
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
 		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
+
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.group = group
 		########
@@ -49,12 +50,12 @@ class BaseWidgetClass(gtk.Box):
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
 		self.colorButton = MyColorButton()
-		self.colorButton.set_use_alpha(True) ## FIXME
+		self.colorButton.set_use_alpha(True)  ## FIXME
 		pack(hbox, self.colorButton)
 		pack(self, hbox)
 		#####
 		hbox = HBox()
-		label = gtk.Label(label=_("Default Icon"))## FIXME
+		label = gtk.Label(label=_("Default Icon"))  ## FIXME
 		label.set_xalign(0)
 		pack(hbox, label)
 		self.sizeGroup.add_widget(label)
@@ -135,18 +136,21 @@ class BaseWidgetClass(gtk.Box):
 		self.sepInput = TextFrame()
 		pack(hbox, self.sepInput, 1, 1)
 		pack(self, hbox)
-		set_tooltip(hbox, _(
-			"Using to separate Summary and Description when displaying event",
-		))
+		set_tooltip(
+			hbox,
+			_(
+				"Using to separate Summary and Description when displaying event",
+			),
+		)
 		#####
-		#hbox = HBox()
-		#label = gtk.Label(label=_("Show Full Event Description"))
-		#label.set_xalign(0)
-		#pack(hbox, label)
-		#self.sizeGroup.add_widget(label)
-		#self.showFullEventDescCheck = gtk.CheckButton(label="")
-		#pack(hbox, self.showFullEventDescCheck, 1, 1)
-		#pack(self, hbox)
+		# hbox = HBox()
+		# label = gtk.Label(label=_("Show Full Event Description"))
+		# label.set_xalign(0)
+		# pack(hbox, label)
+		# self.sizeGroup.add_widget(label)
+		# self.showFullEventDescCheck = gtk.CheckButton(label="")
+		# pack(hbox, self.showFullEventDescCheck, 1, 1)
+		# pack(self, hbox)
 		###
 		self.calTypeCombo.connect(
 			"changed",
@@ -159,7 +163,7 @@ class BaseWidgetClass(gtk.Box):
 				label=_("Add New Events to Beginning"),
 			)
 			set_tooltip(
-				hbox, # label or hbox?
+				hbox,  # label or hbox?
 				_("Add new events to beginning of event list, not to the end"),
 			)
 			pack(hbox, self.addEventsToBeginningCheck)
@@ -186,7 +190,7 @@ class BaseWidgetClass(gtk.Box):
 		self.showInStatusIconCheck.set_active(self.group.showInStatusIcon)
 		self.cacheSizeSpin.set_value(self.group.eventCacheSize)
 		self.sepInput.set_text(self.group.eventTextSep)
-		#self.showFullEventDescCheck.set_active(self.group.showFullEventDesc)
+		# self.showFullEventDescCheck.set_active(self.group.showFullEventDesc)
 		if self.userCanAddEvents:
 			self.addEventsToBeginningCheck.set_active(self.group.addEventsToBeginning)
 
@@ -206,9 +210,11 @@ class BaseWidgetClass(gtk.Box):
 		self.group.showInStatusIcon = self.showInStatusIconCheck.get_active()
 		self.group.eventCacheSize = int(self.cacheSizeSpin.get_value())
 		self.group.eventTextSep = self.sepInput.get_text()
-		#self.group.showFullEventDesc = self.showFullEventDescCheck.get_active()
+		# self.group.showFullEventDesc = self.showFullEventDescCheck.get_active()
 		if self.userCanAddEvents:
-			self.group.addEventsToBeginning = self.addEventsToBeginningCheck.get_active()
+			self.group.addEventsToBeginning = (
+				self.addEventsToBeginningCheck.get_active()
+			)
 
 	def calTypeComboChanged(self, obj=None):
 		pass

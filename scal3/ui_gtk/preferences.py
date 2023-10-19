@@ -74,6 +74,7 @@ from scal3.ui_gtk.utils import (
 if typing.TYPE_CHECKING:
 	from scal3.plugin_type import PluginType
 
+
 class PreferencesPluginsToolbar(StaticToolBox):
 	def __init__(self, parent):
 		StaticToolBox.__init__(
@@ -85,51 +86,57 @@ class PreferencesPluginsToolbar(StaticToolBox):
 		)
 		# with iconSize < 20, the button would not become smaller
 		# so 20 is the best size
-		self.extend([
+		self.extend(
+			[
+				ToolBoxItem(
+					name="goto-top",
+					imageName="go-top.svg",
+					onClick="plugTreeviewTop",
+					desc=_("Move to top"),
+					continuousClick=False,
+				),
+				ToolBoxItem(
+					name="go-up",
+					imageName="go-up.svg",
+					onClick="plugTreeviewUp",
+					desc=_("Move up"),
+					continuousClick=False,
+				),
+				ToolBoxItem(
+					name="go-down",
+					imageName="go-down.svg",
+					onClick="plugTreeviewDown",
+					desc=_("Move down"),
+					continuousClick=False,
+				),
+				ToolBoxItem(
+					name="goto-bottom",
+					imageName="go-bottom.svg",
+					onClick="plugTreeviewBottom",
+					desc=_("Move to bottom"),
+					continuousClick=False,
+				),
+			],
+		)
+		self.buttonAdd = self.append(
 			ToolBoxItem(
-				name="goto-top",
-				imageName="go-top.svg",
-				onClick="plugTreeviewTop",
-				desc=_("Move to top"),
+				name="add",
+				imageName="list-add.svg",
+				onClick="onPlugAddClick",
+				desc=_("Add"),
 				continuousClick=False,
 			),
-			ToolBoxItem(
-				name="go-up",
-				imageName="go-up.svg",
-				onClick="plugTreeviewUp",
-				desc=_("Move up"),
-				continuousClick=False,
-			),
-			ToolBoxItem(
-				name="go-down",
-				imageName="go-down.svg",
-				onClick="plugTreeviewDown",
-				desc=_("Move down"),
-				continuousClick=False,
-			),
-			ToolBoxItem(
-				name="goto-bottom",
-				imageName="go-bottom.svg",
-				onClick="plugTreeviewBottom",
-				desc=_("Move to bottom"),
-				continuousClick=False,
-			),
-		])
-		self.buttonAdd = self.append(ToolBoxItem(
-			name="add",
-			imageName="list-add.svg",
-			onClick="onPlugAddClick",
-			desc=_("Add"),
-			continuousClick=False,
-		))
+		)
 		self.buttonAdd.set_sensitive(False)
-		self.append(ToolBoxItem(
-			name="delete",
-			imageName="edit-delete.svg",
-			onClick="onPlugDeleteClick",
-			desc=_("Delete"),
-			continuousClick=False,
-		))
+		self.append(
+			ToolBoxItem(
+				name="delete",
+				imageName="edit-delete.svg",
+				onClick="onPlugDeleteClick",
+				desc=_("Delete"),
+				continuousClick=False,
+			),
+		)
 
 	def setCanAdd(self, canAdd: bool):
 		self.buttonAdd.set_sensitive(canAdd)
@@ -142,6 +149,7 @@ class PreferencesWindow(gtk.Window):
 	@ud.cssFunc
 	def getCSS() -> str:
 		from scal3.ui_gtk.utils import cssTextStyle
+
 		return ".preferences-main-grid " + cssTextStyle(
 			font=ui.getFont(scale=1.6),
 		)
@@ -581,16 +589,20 @@ class PreferencesWindow(gtk.Window):
 		pack(hbox, label)
 		sgroup.add_widget(label)
 		# pack(hbox, gtk.Label(), 1, 1)
-		item = ComboEntryTextPrefItem(ud, "dateFormat", (
-			"%Y/%m/%d",
-			"%Y-%m-%d",
-			"%y/%m/%d",
-			"%y-%m-%d",
-			"%OY/%Om/%Od",
-			"%OY-%Om-%Od",
-			"%m/%d",
-			"%m/%d/%Y",
-		))
+		item = ComboEntryTextPrefItem(
+			ud,
+			"dateFormat",
+			(
+				"%Y/%m/%d",
+				"%Y-%m-%d",
+				"%y/%m/%d",
+				"%y-%m-%d",
+				"%OY/%Om/%Od",
+				"%OY-%Om-%Od",
+				"%m/%d",
+				"%m/%d/%Y",
+			),
+		)
 		self.gtkPrefItems.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(vbox, hbox)
@@ -675,9 +687,9 @@ class PreferencesWindow(gtk.Window):
 			page.pageWidget = pageVBox
 			page.pageName = "regional_" + mod.name
 			page.pageTitle = (
-				_("{calType} Calendar").format(calType=_(mod.desc, ctx="calendar")) +
-				" - " +
-				_("Regional")
+				_("{calType} Calendar").format(calType=_(mod.desc, ctx="calendar"))
+				+ " - "
+				+ _("Regional")
 			)
 			page.pageLabel = _("{calType} Calendar").format(
 				calType=_(mod.desc, ctx="calendar"),
@@ -731,26 +743,32 @@ class PreferencesWindow(gtk.Window):
 		label = gtk.Label(label=_("Event Time Format"))
 		pack(hbox, label)
 		# sgroup.add_widget(label)
-		item = ComboEntryTextPrefItem(ui, "eventDayViewTimeFormat", (
-			"HM$",
-			"HMS",
-			"hMS",
-			"hm$",
-			"hms",
-			"HM",
-			"hm",
-			"hM",
-		))
-		item.addDescriptionColumn({
-			"HM$": f"05:07:09 {_('or')} 05:07",
-			"HMS": f"05:07:09 {_('or')} 05:07:00",
-			"hMS": f"05:07:09 {_('or')} 5:07:00",
-			"hm$": f"5:7:9 {_('or')} 5:7",
-			"hms": f"5:7:9 {_('or')} 5:7:0",
-			"HM": "05:07",
-			"hm": "5:7",
-			"hM": "5:07",
-		})
+		item = ComboEntryTextPrefItem(
+			ui,
+			"eventDayViewTimeFormat",
+			(
+				"HM$",
+				"HMS",
+				"hMS",
+				"hm$",
+				"hms",
+				"HM",
+				"hm",
+				"hM",
+			),
+		)
+		item.addDescriptionColumn(
+			{
+				"HM$": f"05:07:09 {_('or')} 05:07",
+				"HMS": f"05:07:09 {_('or')} 05:07:00",
+				"hMS": f"05:07:09 {_('or')} 5:07:00",
+				"hm$": f"5:7:9 {_('or')} 5:7",
+				"hms": f"5:7:9 {_('or')} 5:7:0",
+				"HM": "05:07",
+				"hm": "5:7",
+				"hM": "5:07",
+			},
+		)
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(vbox, hbox)
@@ -760,22 +778,26 @@ class PreferencesWindow(gtk.Window):
 		label = gtk.Label(label=_("Digital Clock Format"))
 		pack(hbox, label)
 		# sgroup.add_widget(label)
-		item = ComboEntryTextPrefItem(ud, "clockFormat", (
-			"%T",
-			"%X",
-			"%Y/%m/%d - %T",
-			"%OY/%Om/%Od - %X",
-			"<i>%Y/%m/%d</i> - %T",
-			"<b>%T</b>",
-			"<b>%X</b>",
-			"%H:%M",
-			"<b>%H:%M</b>",
-			"<span size=\"smaller\">%OY/%Om/%Od</span>,%X"
-			"%OY/%Om/%Od,<span color=\"#ff0000\">%X</span>",
-			"<span font=\"bold\">%X</span>",
-			"%OH:%OM",
-			"<b>%OH:%OM</b>",
-		))
+		item = ComboEntryTextPrefItem(
+			ud,
+			"clockFormat",
+			(
+				"%T",
+				"%X",
+				"%Y/%m/%d - %T",
+				"%OY/%Om/%Od - %X",
+				"<i>%Y/%m/%d</i> - %T",
+				"<b>%T</b>",
+				"<b>%X</b>",
+				"%H:%M",
+				"<b>%H:%M</b>",
+				'<span size="smaller">%OY/%Om/%Od</span>,%X'
+				'%OY/%Om/%Od,<span color="#ff0000">%X</span>',
+				'<span font="bold">%X</span>',
+				"%OH:%OM",
+				"<b>%OH:%OM</b>",
+			),
+		)
 		self.gtkPrefItems.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(vbox, hbox)
@@ -1100,50 +1122,52 @@ class PreferencesWindow(gtk.Window):
 		#####
 		toolbar = StaticToolBox(self, vertical=True)
 		#####
-		toolbar.extend([
-			ToolBoxItem(
-				name="register",
-				imageName="starcal.svg",
-				onClick="onAccountsRegisterClick",
-				desc=_("Register at StarCalendar.net"),
-				continuousClick=False,
-			),
-			ToolBoxItem(
-				name="add",
-				imageName="list-add.svg",
-				onClick="onAccountsAddClick",
-				desc=_("Add"),
-				continuousClick=False,
-			),
-			ToolBoxItem(
-				name="edit",
-				imageName="document-edit.svg",
-				onClick="onAccountsEditClick",
-				desc=_("Edit"),
-				continuousClick=False,
-			),
-			ToolBoxItem(
-				name="delete",
-				imageName="edit-delete.svg",
-				onClick="onAccountsDeleteClick",
-				desc=_("Delete", ctx="button"),
-				continuousClick=False,
-			),
-			ToolBoxItem(
-				name="moveUp",
-				imageName="go-up.svg",
-				onClick="onAccountsUpClick",
-				desc=_("Move up"),
-				continuousClick=False,
-			),
-			ToolBoxItem(
-				name="moveDown",
-				imageName="go-down.svg",
-				onClick="onAccountsDownClick",
-				desc=_("Move down"),
-				continuousClick=False,
-			),
-		])
+		toolbar.extend(
+			[
+				ToolBoxItem(
+					name="register",
+					imageName="starcal.svg",
+					onClick="onAccountsRegisterClick",
+					desc=_("Register at StarCalendar.net"),
+					continuousClick=False,
+				),
+				ToolBoxItem(
+					name="add",
+					imageName="list-add.svg",
+					onClick="onAccountsAddClick",
+					desc=_("Add"),
+					continuousClick=False,
+				),
+				ToolBoxItem(
+					name="edit",
+					imageName="document-edit.svg",
+					onClick="onAccountsEditClick",
+					desc=_("Edit"),
+					continuousClick=False,
+				),
+				ToolBoxItem(
+					name="delete",
+					imageName="edit-delete.svg",
+					onClick="onAccountsDeleteClick",
+					desc=_("Delete", ctx="button"),
+					continuousClick=False,
+				),
+				ToolBoxItem(
+					name="moveUp",
+					imageName="go-up.svg",
+					onClick="onAccountsUpClick",
+					desc=_("Move up"),
+					continuousClick=False,
+				),
+				ToolBoxItem(
+					name="moveDown",
+					imageName="go-down.svg",
+					onClick="onAccountsDownClick",
+					desc=_("Move down"),
+					continuousClick=False,
+				),
+			],
+		)
 		###########
 		pack(hbox, toolbar)
 		pack(vbox, hbox, 1, 1)
@@ -1264,6 +1288,7 @@ class PreferencesWindow(gtk.Window):
 
 	def iterAllPrefItems(self):
 		import itertools
+
 		return itertools.chain(
 			[self.loggerPrefItem],
 			self.moduleOptions,
@@ -1282,6 +1307,7 @@ class PreferencesWindow(gtk.Window):
 
 	def apply(self, widget=None):
 		from scal3.ui_gtk.font_utils import gfontDecode
+
 		# log.debug(f"{ui.fontDefault=}")
 		ui.fontDefault = gfontDecode(
 			ud.settings.get_property("gtk-font-name"),
@@ -1367,11 +1393,13 @@ class PreferencesWindow(gtk.Window):
 					res=gtk.ResponseType.CANCEL,
 				)
 				d.set_keep_above(True)
-				label = gtk.Label(label=(
-					_(f"Some preferences need restarting {core.APP_DESC} to apply.") +
-					" " +
-					_("Restart Now?")
-				))
+				label = gtk.Label(
+					label=(
+						_(f"Some preferences need restarting {core.APP_DESC} to apply.")
+						+ " "
+						+ _("Restart Now?")
+					),
+				)
 				label.set_line_wrap(True)
 				vbox = VBox()
 				vbox.set_border_width(15)
@@ -1402,11 +1430,13 @@ class PreferencesWindow(gtk.Window):
 	def refreshAccounts(self):
 		self.accountsTreeModel.clear()
 		for account in ui.eventAccounts:
-			self.accountsTreeModel.append([
-				account.id,
-				account.enable,
-				account.title,
-			])
+			self.accountsTreeModel.append(
+				[
+					account.id,
+					account.enable,
+					account.title,
+				],
+			)
 
 	def updatePrefGui(self):  # Updating Pref Gui (NOT MAIN GUI)
 		for opt in self.iterAllPrefItems():
@@ -1424,15 +1454,17 @@ class PreferencesWindow(gtk.Window):
 		model = self.plugTreeview.get_model()
 		model.clear()
 		for p in core.getPluginsTable():
-			model.append([
-				p.index,
-				p.enable,
-				p.show_date,
-				p.title,
-			])
+			model.append(
+				[
+					p.index,
+					p.enable,
+					p.show_date,
+					p.title,
+				],
+			)
 		self.plugAddItems = []
 		self.plugAddTreeModel.clear()
-		for (i, title) in core.getDeletedPluginsTable():
+		for i, title in core.getDeletedPluginsTable():
 			self.plugAddItems.append(i)
 			self.plugAddTreeModel.append([title])
 			self.pluginsToolbar.setCanAdd(True)
@@ -1458,6 +1490,7 @@ class PreferencesWindow(gtk.Window):
 
 	def onPlugAboutClick(self, obj=None):
 		from scal3.ui_gtk.about import AboutDialog
+
 		cur = self.plugTreeview.get_cursor()[0]
 		if cur is None:
 			return
@@ -1497,6 +1530,7 @@ class PreferencesWindow(gtk.Window):
 
 	def onPlugExportToIcsClick(self, menu, plug):
 		from scal3.ui_gtk.export import ExportToIcsDialog
+
 		ExportToIcsDialog(plug.exportToIcs, plug.title).run()
 
 	def plugTreevRActivate(self, treev, path, col):
@@ -1529,12 +1563,14 @@ class PreferencesWindow(gtk.Window):
 				item.set_sensitive(plug.hasConfig)
 				menu.add(item)
 				##
-				menu.add(ImageMenuItem(
-					_("Export to {format}").format(format="iCalendar"),
-					imageName="text-calendar-ics.png",
-					func=self.onPlugExportToIcsClick,
-					args=(plug,),
-				))
+				menu.add(
+					ImageMenuItem(
+						_("Export to {format}").format(format="iCalendar"),
+						imageName="text-calendar-ics.png",
+						func=self.onPlugExportToIcsClick,
+						args=(plug,),
+					),
+				)
 				##
 				menu.show_all()
 				self.tmpMenu = menu
@@ -1687,12 +1723,15 @@ class PreferencesWindow(gtk.Window):
 			pos = len(self.plugTreeview.get_model())
 		else:
 			pos = cur2[0] + 1
-		self.plugTreeview.get_model().insert(pos, [
-			j,
-			True,
-			False,
-			core.allPlugList[j].title,
-		])
+		self.plugTreeview.get_model().insert(
+			pos,
+			[
+				j,
+				True,
+				False,
+				core.allPlugList[j].title,
+			],
+		)
 		self.plugAddTreeModel.remove(self.plugAddTreeModel.get_iter(i))
 		self.plugAddItems.pop(i)
 		self.plugAddDialog.hide()
@@ -1703,6 +1742,7 @@ class PreferencesWindow(gtk.Window):
 
 	def editAccount(self, index):
 		from scal3.ui_gtk.event.account_op import AccountEditorDialog
+
 		accountId = self.accountsTreeModel[index][0]
 		account = ui.eventAccounts[accountId]
 		if not account.loaded:
@@ -1724,22 +1764,26 @@ class PreferencesWindow(gtk.Window):
 
 	def onAccountsRegisterClick(self, button):
 		from scal3.ui_gtk.event.register_starcal import StarCalendarRegisterDialog
+
 		win = StarCalendarRegisterDialog(transient_for=self)
 		win.run()
 
 	def onAccountsAddClick(self, button):
 		from scal3.ui_gtk.event.account_op import AccountEditorDialog
+
 		account = AccountEditorDialog(transient_for=self).run()
 		if account is None:
 			return
 		account.save()
 		ui.eventAccounts.append(account)
 		ui.eventAccounts.save()
-		self.accountsTreeModel.append([
-			account.id,
-			account.enable,
-			account.title,
-		])
+		self.accountsTreeModel.append(
+			[
+				account.id,
+				account.enable,
+				account.title,
+			],
+		)
 		###
 		while gtk.events_pending():
 			gtk.main_iteration_do(False)
@@ -1757,7 +1801,7 @@ class PreferencesWindow(gtk.Window):
 		accountId = self.accountsTreeModel[index][0]
 		account = ui.eventAccounts[accountId]
 		if not confirm(
-			_("Do you want to delete account \"{accountTitle}\"").format(
+			_('Do you want to delete account "{accountTitle}"').format(
 				accountTitle=account.title,
 			),
 			transient_for=self,
@@ -1805,7 +1849,7 @@ class PreferencesWindow(gtk.Window):
 	def accountsTreevButtonPress(self, widget, gevent):
 		b = gevent.button
 		if b == 3:
-			pass # FIXME
+			pass  # FIXME
 			# cur = self.accountsTreeview.get_cursor()[0]
 			# if cur:
 			# 	index = cur[0]

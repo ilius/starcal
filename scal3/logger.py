@@ -56,6 +56,7 @@ def init():
 	except Exception as e:
 		print(f"failed to setup logger: {e}")
 		from scal3.utils import FallbackLogger
+
 		log = FallbackLogger()
 
 	log.setLevel(logLevel)
@@ -76,5 +77,5 @@ def myRaise(File=None):
 	typ, value, tback = sys.exc_info()
 	text = f"line {tback.tb_lineno}: {typ.__name__}: {value}\n"
 	if File:
-		text = f"File \"{File}\", {text}"
+		text = f'File "{File}", {text}'
 	log.error(text)

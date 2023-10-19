@@ -1,4 +1,3 @@
-
 import typing
 
 ColorType: "typing.TypeAlias" = "tuple[int,int,int] | tuple[int,int,int,int]"
@@ -14,7 +13,7 @@ def invertColor(r, g, b):
 
 def rgbToInt(r, g, b):
 	"""For example (170, 85, 52) or "#aa5534" becomes 0xaa5534."""
-	return b + g * 256 + r * 256 ** 2
+	return b + g * 256 + r * 256**2
 
 
 def rgbToHsl(r, g, b):
@@ -94,9 +93,7 @@ def htmlColorToRgb(hc):
 def rgbToHtmlColor(color: ColorType):
 	for x in color:
 		assert isinstance(x, int)
-	return "#" + "".join([
-		f"{x:02x}" for x in color
-	])
+	return "#" + "".join([f"{x:02x}" for x in color])
 
 
 def rgbToCSS(color: ColorType) -> str:
@@ -109,4 +106,4 @@ def rgbToCSS(color: ColorType) -> str:
 
 
 def colorizeSpan(text, color):
-	return f"<span color=\"{rgbToHtmlColor(color)}\">{text}</span>"
+	return f'<span color="{rgbToHtmlColor(color)}">{text}</span>'

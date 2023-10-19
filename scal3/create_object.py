@@ -1,4 +1,3 @@
-
 import json
 
 from scal3 import event_lib

@@ -24,7 +24,7 @@ from scal3.ui_gtk.mywidgets.multi_spin.integer import IntSpinButton
 
 
 class WidgetClass(common.WidgetClass):
-	def __init__(self, event):## FIXME
+	def __init__(self, event):  ## FIXME
 		common.WidgetClass.__init__(self, event)
 		######
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -62,8 +62,8 @@ class WidgetClass(common.WidgetClass):
 		self.notificationBox = common.NotificationBox(event)
 		pack(self, self.notificationBox)
 		#############
-		#self.filesBox = common.FilesBox(self.event)
-		#pack(self, self.filesBox)
+		# self.filesBox = common.FilesBox(self.event)
+		# pack(self, self.filesBox)
 
 	def endTypeComboChanged(self, combo=None):
 		active = self.endTypeCombo.get_active()
@@ -76,7 +76,7 @@ class WidgetClass(common.WidgetClass):
 		else:
 			raise RuntimeError
 
-	def updateWidget(self):## FIXME
+	def updateWidget(self):  ## FIXME
 		common.WidgetClass.updateWidget(self)
 		calType = self.event.calType
 		###
@@ -96,7 +96,7 @@ class WidgetClass(common.WidgetClass):
 			raise RuntimeError
 		self.endTypeComboChanged()
 
-	def updateVars(self):## FIXME
+	def updateVars(self):  ## FIXME
 		common.WidgetClass.updateVars(self)
 		self.event.setStartDate(self.startDateInput.get_value())
 		###

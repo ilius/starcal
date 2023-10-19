@@ -200,7 +200,8 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		####
 		drawCircleOutline(
 			cr,
-			cx, cy,
+			cx,
+			cy,
 			maxR,
 			maxR - minR,
 		)
@@ -208,15 +209,18 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		####
 		spinngJd = getSpringJdAfter(jd0)
 		springAngle = angle0 + 2 * pi * (spinngJd - jd0) / yearLen  # radians
-		for index, color in enumerate((
-			self.springColor,
-			self.summerColor,
-			self.autumnColor,
-			self.winterColor,
-		)):
+		for index, color in enumerate(
+			(
+				self.springColor,
+				self.summerColor,
+				self.autumnColor,
+				self.winterColor,
+			),
+		):
 			drawArcOutline(
 				cr,
-				cx, cy,
+				cx,
+				cy,
 				maxR,
 				maxR - minR,
 				springAngle + index * pi / 2,
@@ -248,7 +252,8 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				angle, centerAngle = calcAngles(jd)
 				d = self.lineWidth
 				sepX, sepY = goAngle(
-					cx, cy,
+					cx,
+					cy,
 					angle,
 					r - d * 0.2,  # FIXME
 				)
@@ -276,17 +281,20 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				)
 				layoutW, layoutH = layout.get_pixel_size()
 				lx, ly = goAngle(
-					cx, cy,
+					cx,
+					cy,
 					centerAngle,
 					(r - deltaR / 3),
 				)
 				lx, ly = goAngle(
-					lx, ly,
+					lx,
+					ly,
 					angle - pi / 2,
 					layoutW / 2,
 				)
 				lx, ly = goAngle(
-					lx, ly,
+					lx,
+					ly,
 					angle,
 					layoutH / 2,
 				)
@@ -302,14 +310,26 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 				if month == 1:
 					t_year = ui.cell.dates[calType][0]
 					self.drawYearStartLine(
-						t_year, 1,
-						cr, cx, cy,
-						angle, centerAngle, r, deltaR,
+						t_year,
+						1,
+						cr,
+						cx,
+						cy,
+						angle,
+						centerAngle,
+						r,
+						deltaR,
 					)
 					self.drawYearStartLine(
-						t_year + 1, -1,
-						cr, cx, cy,
-						angle, centerAngle, r, deltaR,
+						t_year + 1,
+						-1,
+						cr,
+						cx,
+						cy,
+						angle,
+						centerAngle,
+						r,
+						deltaR,
 					)
 			#####
 			drawCircleOutline(cr, cx, cy, minR, self.lineWidth)
@@ -344,12 +364,14 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 		)
 		layoutW, layoutH = layout.get_pixel_size()
 		tickX, tickY = goAngle(
-			cx, cy,
+			cx,
+			cy,
 			angle,
 			r - deltaR * 0.75,  # FIXME
 		)
 		layoutX, layoutY = goAngle(
-			tickX, tickY,
+			tickX,
+			tickY,
 			angle + direction * pi / 2,
 			(1 - direction) * layoutH / 2.5,  # factor should be between 2 and 3
 		)

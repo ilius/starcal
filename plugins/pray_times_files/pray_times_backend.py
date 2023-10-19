@@ -13,11 +13,11 @@
 # the following conditions are met:
 #
 #   1. Credit is given to the original work with a
-#      link back to PrayTimes.org.
+#	  link back to PrayTimes.org.
 #
 #   2. Redistributions of the source code and its
-#      translations into other programming languages
-#      must retain the above copyright notice.
+#	  translations into other programming languages
+#	  must retain the above copyright notice.
 #
 # This program is distributed in the hope that it will
 # be useful, but WITHOUT ANY WARRANTY.
@@ -30,7 +30,6 @@
 # Calculation Formulas:
 # http://praytimes.org/calculation
 
-import time
 import math
 from math import floor
 
@@ -63,9 +62,9 @@ MIDNIGHT_STANDARD, MIDNIGHT_JAFARI = list(range(2))
 # Adjust Methods for Higher Latitudes
 highLatMethods = (
 	"NightMiddle",  # middle of night
-	"AngleBased",   # angle/60th of night
-	"OneSeventh",   # 1/7th of night
-	"None"          # No adjustment
+	"AngleBased",  # angle/60th of night
+	"OneSeventh",  # 1/7th of night
+	"None",  # No adjustment
 )
 
 
@@ -142,12 +141,11 @@ methodsList = [
 	),
 ]
 
-methodsDict = {
-	m.name: m for m in methodsList
-}
+methodsDict = {m.name: m for m in methodsList}
 
 
 # ######################### Functions ####################################
+
 
 def isMin(tm):
 	return isinstance(tm, str) and tm.endswith("min")
@@ -224,6 +222,7 @@ def timesMiddle(time1, time2):
 
 # ############################## Classes ################################
 
+
 class PrayTimes:
 	numIterations = 1
 
@@ -240,10 +239,10 @@ class PrayTimes:
 	):
 		"""
 		timeFormat possible values:
-			"24h"
-			"12h"
-			"12hNS": 12-hour format with no suffix
-			"Float"
+				"24h"
+				"12h"
+				"12hNS": 12-hour format with no suffix
+				"Float".
 		"""
 		self.lat = lat
 		self.lng = lng
@@ -255,9 +254,7 @@ class PrayTimes:
 		self.timeFormat = timeFormat
 
 	def getTimesByJd(self, jd, utcOffset):
-		"""
-		return prayer times for a given julian day
-		"""
+		"""Return prayer times for a given julian day."""
 		# if time.daylight and time.gmtime(core.getEpochFromJd(jd)):
 		# log.debug(time.gmtime((jd-2440588)*(24*3600)).tm_isdst)
 		self.utcOffset = utcOffset
@@ -265,9 +262,7 @@ class PrayTimes:
 		return self.computeTimes()
 
 	def getFormattedTime(self, tm, format=None):
-		"""
-		convert float time to the given format (see timeFormats)
-		"""
+		"""Convert float time to the given format (see timeFormats)."""
 		assert isinstance(tm, float)
 		if not format:
 			format = self.timeFormat
@@ -288,20 +283,14 @@ class PrayTimes:
 			raise ValueError(f"bad time format '{format}'")
 
 	def midDay(self, tm):
-		"""
-		compute mid-day time
-		"""
+		"""Compute mid-day time."""
 		return fixHour(12 - self.sunEquation(self.jDate + tm))
 
 	def sunAngleTime(self, angle, tm, direction="cw"):
-		"""
-		compute the time at which sun reaches a specific angle below horizon
-		"""
+		"""Compute the time at which sun reaches a specific angle below horizon."""
 		decl = self.sunDeclination(self.jDate + tm)
 		noon = self.midDay(tm)
-		ratio = (
-			-sin(angle) - sin(decl) * sin(self.lat)
-		) / (cos(decl) * cos(self.lat))
+		ratio = (-sin(angle) - sin(decl) * sin(self.lat)) / (cos(decl) * cos(self.lat))
 		ratio = min(max(ratio, -1.0), 1.0)
 		# try:
 		t = arccos(ratio) / 15
@@ -314,14 +303,10 @@ class PrayTimes:
 		return noon + dirSign(direction) * t
 
 	def asrTime(self, factor, tm):
-		"""
-		compute asr time
-		"""
+		"""Compute asr time."""
 		return self.sunAngleTime(
 			-arccot(
-				factor + tan(abs(
-					self.lat - self.sunDeclination(self.jDate + tm)
-				)),
+				factor + tan(abs(self.lat - self.sunDeclination(self.jDate + tm))),
 			),
 			tm,
 		)
@@ -454,9 +439,7 @@ class PrayTimes:
 			times["imsak"] = times["fajr"] - minEval(self.imsak) / 60
 
 		if isMin(self.method.maghrib):
-			times["maghrib"] = times["sunset"] + minEval(
-				self.method.maghrib
-			) / 60
+			times["maghrib"] = times["sunset"] + minEval(self.method.maghrib) / 60
 
 		if isMin(self.method.isha):
 			times["isha"] = times["maghrib"] + minEval(self.method.isha) / 60
@@ -464,10 +447,7 @@ class PrayTimes:
 		# add midnight time
 		times["midnight"] = timesMiddle(
 			times["sunset"],
-			times[
-				"fajr" if self.method.midnight == MIDNIGHT_JAFARI
-				else "sunrise"
-			],
+			times["fajr" if self.method.midnight == MIDNIGHT_JAFARI else "sunrise"],
 		)
 
 		for key in times:
@@ -492,9 +472,7 @@ class PrayTimes:
 	# def tuneTimes:  # FIXME
 
 	def adjustHLTime(self, tm, base, angle, night, direction="cw"):
-		"""
-		adjust a time for higher latitudes
-		"""
+		"""Adjust a time for higher latitudes."""
 		# nightPortion: the night portion used for adjusting times in
 		# higher latitudes
 		if self.highLats == "AngleBased":
@@ -505,10 +483,7 @@ class PrayTimes:
 			portion = 0.5  # MidNight
 		portion *= night
 
-		diff = (
-			timeDiff(tm, base) if direction == "ccw"
-			else timeDiff(base, tm)
-		)
+		diff = timeDiff(tm, base) if direction == "ccw" else timeDiff(base, tm)
 
 		if diff > portion:
 			tm = base + dirSign(direction) * portion

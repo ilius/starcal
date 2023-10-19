@@ -104,6 +104,7 @@ class TextParamWidget(gtk.Box):
 	):
 		from scal3.ui_gtk.mywidgets import MyColorButton, MyFontButton
 		from scal3.ui_gtk.mywidgets.multi_spin.float_num import FloatSpinButton
+
 		if desc is None:
 			raise ValueError("desc is None")
 		###

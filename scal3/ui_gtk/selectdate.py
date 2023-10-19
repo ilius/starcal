@@ -41,8 +41,8 @@ class SelectDateDialog(gtk.Dialog):
 	def __init__(self, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Select Date..."))
-		#self.set_has_separator(False)
-		#self.set_skip_taskbar_hint(True)
+		# self.set_has_separator(False)
+		# self.set_skip_taskbar_hint(True)
 		self.connect("delete-event", self.onCancel)
 		self.calType = calTypes.primary
 		# #### Receiving dropped day!
@@ -221,9 +221,9 @@ class SelectDateDialog(gtk.Dialog):
 			y, m, d = (y0, m0, d0)
 		else:
 			y, m, d = convert(y0, m0, d0, calType, calTypes.primary)
-		#if not core.validDate(calType, y, m, d):
-		#	log.error(f"bad date: {calType=}, date={y}/{m}/{d}")
-		#	return
+		# if not core.validDate(calType, y, m, d):
+		# 	log.error(f"bad date: {calType=}, date={y}/{m}/{d}")
+		# 	return
 		self.emit("response-date", y, m, d)
 		self.onResponse()
 		self.dateInput.set_value((y0, m0, d0))

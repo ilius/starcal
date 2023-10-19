@@ -39,14 +39,15 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 		else:
 			percent = f"%{int(fraction*100)}"
 		self.pbar.set_text(
-			_("Year") + ":  " +
-			textNumEncode(
+			_("Year")
+			+ ":  "
+			+ textNumEncode(
 				percent,
 				changeDot=True,
-			) +
-			"   =   " +
-			_("{dayCount} days").format(dayCount=_(past)) +
-			" / " +
-			_("{dayCount} days").format(dayCount=_(length)),
+			)
+			+ "   =   "
+			+ _("{dayCount} days").format(dayCount=_(past))
+			+ " / "
+			+ _("{dayCount} days").format(dayCount=_(length)),
 		)
 		self.pbar.set_fraction(fraction)

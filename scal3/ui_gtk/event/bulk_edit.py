@@ -16,6 +16,7 @@ from scal3.ui_gtk.utils import (
 class EventsBulkEditDialog(gtk.Dialog):
 	def __init__(self, container, **kwargs):
 		from scal3.ui_gtk.mywidgets.tz_combo import TimeZoneComboBoxEntry
+
 		self._container = container
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Bulk Edit Events"))
@@ -45,12 +46,12 @@ class EventsBulkEditDialog(gtk.Dialog):
 		else:
 			msg = _(
 				"Here you are going to modify all events "
-				"inside group \"{groupTitle}\" at once.",
+				'inside group "{groupTitle}" at once.',
 			).format(groupTitle=title)
 		msg += " "
 		msg += _(
 			"You better make a backup from your events before doing this."
-			" Just right click on group and select \"Export\""
+			' Just right click on group and select "Export"'
 			" (or a full backup: menu File -> Export)",
 		)
 		msg += "\n\n"
@@ -156,10 +157,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 			self.iconHbox.hide()
 			self.textVbox.hide()
 			self.timeZoneHbox.show()
-		elif (
-			self.summaryRadio.get_active() or
-			self.descriptionRadio.get_active()
-		):
+		elif self.summaryRadio.get_active() or self.descriptionRadio.get_active():
 			self.iconHbox.hide()
 			self.textChangeComboChanged()
 			self.timeZoneHbox.hide()

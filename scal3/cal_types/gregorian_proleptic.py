@@ -3,7 +3,7 @@
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 #
 # Using kdelibs-4.4.0/kdecore/date/kcalendarsystemgregorianproleptic.cpp
-#		Copyright (C) 2009 John Layt <john@layt.net>
+# 		Copyright (C) 2009 John Layt <john@layt.net>
 #
 # This program is free software; you can redistribute it and/or modify
 # it under the terms of the GNU Affero General Public License as published by
@@ -121,15 +121,7 @@ def to_jd(year, month, day):
 
 	m = month + 12 * a - 3
 
-	return (
-		365 * y
-		+ y // 4
-		- y // 100
-		+ y // 400
-		- 32045
-		+ (153 * m + 2) // 5
-		+ day
-	)
+	return 365 * y + y // 4 - y // 100 + y // 400 - 32045 + (153 * m + 2) // 5 + day
 
 
 def jd_to(jd):

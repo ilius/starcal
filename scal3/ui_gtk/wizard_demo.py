@@ -1,4 +1,3 @@
-
 from scal3 import logger
 
 log = logger.get()
@@ -14,14 +13,15 @@ class DemoWizardWindow(WizardWindow):
 	def __init__(self):
 		WizardWindow.__init__(self, _("Demo for WizardWindow"))
 		self.set_type_hint(gdk.WindowTypeHint.DIALOG)
-		#self.set_property("skip-taskbar-hint", True)
-		#self.set_modal(True)
-		#self.set_transient_for(manager)
-		#self.set_destroy_with_parent(True)
+		# self.set_property("skip-taskbar-hint", True)
+		# self.set_modal(True)
+		# self.set_transient_for(manager)
+		# self.set_destroy_with_parent(True)
 		self.resize(400, 400)
 
 	class FirstStep(gtk.Box):
 		desc = ""
+
 		def __init__(self, win):
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
@@ -34,18 +34,18 @@ class DemoWizardWindow(WizardWindow):
 			hbox = HBox(spacing=10)
 			frame = gtk.Frame()
 			frame.set_label(_("Format"))
-			#frame.set_border_width(10)
+			# frame.set_border_width(10)
 			radioBox = VBox(spacing=10)
 			radioBox.set_border_width(10)
 			##
 			self.radioJson = gtk.RadioButton(label=_("JSON (StarCalendar)"))
-			#self.radioIcs = gtk.RadioButton(label="iCalendar", group=self.radioJson)
+			# self.radioIcs = gtk.RadioButton(label="iCalendar", group=self.radioJson)
 			##
 			pack(radioBox, self.radioJson)
-			#pack(radioBox, self.radioIcs)
+			# pack(radioBox, self.radioIcs)
 			##
 			self.radioJson.set_active(True)
-			#self.radioJson.connect("clicked", self.formatRadioChanged)
+			# self.radioJson.connect("clicked", self.formatRadioChanged)
 			##self.radioIcs.connect("clicked", self.formatRadioChanged)
 			##
 			frame.add(radioBox)
@@ -78,6 +78,7 @@ class DemoWizardWindow(WizardWindow):
 
 	class SecondStep(gtk.Box):
 		desc = ""
+
 		def __init__(self, win):
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)

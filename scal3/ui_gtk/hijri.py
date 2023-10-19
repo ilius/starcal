@@ -59,7 +59,7 @@ class EditDbDialog(gtk.Dialog):
 		self.topLabel = gtk.Label()
 		pack(hbox, self.topLabel)
 		self.startDateInput = DateButton()
-		self.startDateInput.set_editable(False)## FIXME
+		self.startDateInput.set_editable(False)  ## FIXME
 		self.startDateInput.connect("changed", lambda widget: self.updateEndDates())
 		pack(hbox, self.startDateInput)
 		pack(self.vbox, hbox)
@@ -73,9 +73,9 @@ class EditDbDialog(gtk.Dialog):
 			str,  # localized endDate
 		)
 		treev.set_model(treeModel)
-		#treev.get_selection().connect("changed", self.plugTreevCursorChanged)
-		#treev.connect("row-activated", self.plugTreevRActivate)
-		#treev.connect("button-press-event", self.plugTreevButtonPress)
+		# treev.get_selection().connect("changed", self.plugTreevCursorChanged)
+		# treev.connect("row-activated", self.plugTreevRActivate)
+		# treev.connect("button-press-event", self.plugTreevButtonPress)
 		###
 		swin = gtk.ScrolledWindow()
 		swin.add(treev)
@@ -94,7 +94,7 @@ class EditDbDialog(gtk.Dialog):
 		mLenModel.append([29])  # noqa: FURB113
 		mLenModel.append([30])
 		cell.set_property("model", mLenModel)
-		#cell.set_property("has-entry", False)
+		# cell.set_property("has-entry", False)
 		cell.set_property("text-column", 0)
 		cell.connect("edited", self.monthLenCellEdited)
 		col = gtk.TreeViewColumn(title=_("Month Length"), cell_renderer=cell, text=3)
@@ -106,22 +106,24 @@ class EditDbDialog(gtk.Dialog):
 		######
 		toolbar = StaticToolBox(self, vertical=True)
 		###
-		toolbar.extend([
-			ToolBoxItem(
-				name="add",
-				imageName="list-add.svg",
-				onClick="onAddClick",
-				desc=_("Add"),
-				continuousClick=False,
-			),
-			ToolBoxItem(
-				name="delete",
-				imageName="edit-delete.svg",
-				onClick="onDeleteClick",
-				desc=_("Delete", ctx="button"),
-				continuousClick=False,
-			),
-		])
+		toolbar.extend(
+			[
+				ToolBoxItem(
+					name="add",
+					imageName="list-add.svg",
+					onClick="onAddClick",
+					desc=_("Add"),
+					continuousClick=False,
+				),
+				ToolBoxItem(
+					name="delete",
+					imageName="edit-delete.svg",
+					onClick="onDeleteClick",
+					desc=_("Delete", ctx="button"),
+					continuousClick=False,
+				),
+			],
+		)
 		######
 		self.treev = treev
 		self.treeModel = treeModel
@@ -154,7 +156,7 @@ class EditDbDialog(gtk.Dialog):
 		##
 		self.connect("response", self.onResponse)
 		# log.debug(dir(self.get_action_area()))
-		#self.get_action_area().set_homogeneous(False)
+		# self.get_action_area().set_homogeneous(False)
 		######
 		self.vbox.show_all()
 
@@ -175,13 +177,15 @@ class EditDbDialog(gtk.Dialog):
 		ym = last[0] + 1
 		mLen = 59 - last[3]
 		year, month0 = divmod(ym, 12)
-		self.treeModel.append((
-			ym,
-			_(year),
-			_(hijri.monthName[month0]),
-			mLen,
-			"",
-		))
+		self.treeModel.append(
+			(
+				ym,
+				_(year),
+				_(hijri.monthName[month0]),
+				mLen,
+				"",
+			),
+		)
 		self.updateEndDates()
 		self.selectLastRow()
 
@@ -196,8 +200,8 @@ class EditDbDialog(gtk.Dialog):
 		self.selectLastRow()
 
 	def updateWidget(self):
-		#for index, module in calTypes.iterIndexModule():
-		#	if module.name != "hijri":
+		# for index, module in calTypes.iterIndexModule():
+		# 	if module.name != "hijri":
 		for calType in calTypes.active:
 			module, ok = calTypes[calType]
 			if not ok:
@@ -208,30 +212,32 @@ class EditDbDialog(gtk.Dialog):
 				self.altModeDesc = calTypeDesc
 				break
 		self.topLabel.set_label(
-			_("Start") +
-			": " +
-			dateLocale(*hijri.monthDb.startDate) +
-			" " +
-			_("Equals to") +
-			" " +
-			_(self.altModeDesc),
+			_("Start")
+			+ ": "
+			+ dateLocale(*hijri.monthDb.startDate)
+			+ " "
+			+ _("Equals to")
+			+ " "
+			+ _(self.altModeDesc),
 		)
 		self.startDateInput.set_value(jd_to(hijri.monthDb.startJd, self.altMode))
 		###########
-		selectYm = getCurrentYm() - 1 ## previous month
+		selectYm = getCurrentYm() - 1  ## previous month
 		selectIndex = None
 		self.treeModel.clear()
 		for index, ym, mLen in hijri.monthDb.getMonthLenList():
 			if ym == selectYm:
 				selectIndex = index
 			year, month0 = divmod(ym, 12)
-			self.treeModel.append([
-				ym,
-				_(year),
-				_(hijri.monthName[month0]),
-				mLen,
-				"",
-			])
+			self.treeModel.append(
+				[
+					ym,
+					_(year),
+					_(hijri.monthName[month0]),
+					mLen,
+					"",
+				],
+			)
 		self.updateEndDates()
 		########
 		if selectIndex is not None:
@@ -320,9 +326,11 @@ def dbIsExpired() -> bool:
 
 
 class HijriMonthsExpirationDialog(gtk.Dialog):
-	message = _("""Hijri months are expired.
+	message = _(
+		"""Hijri months are expired.
 Please update StarCalendar.
-Otherwise, Hijri dates and Iranian official holidays would be incorrect.""")
+Otherwise, Hijri dates and Iranian official holidays would be incorrect.""",
+	)
 
 	def __init__(self, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)

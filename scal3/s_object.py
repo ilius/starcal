@@ -1,4 +1,3 @@
-
 from scal3 import logger
 
 log = logger.get()
@@ -95,6 +94,7 @@ class SObj:
 
 	def copyFrom(self, other):
 		from copy import deepcopy
+
 		for attr in self.params:
 			try:
 				value = getattr(other, attr)
@@ -113,10 +113,7 @@ class SObj:
 		return newObj
 
 	def getData(self):
-		return {
-			param: getattr(self, param)
-			for param in self.params
-		}
+		return {param: getattr(self, param) for param in self.params}
 
 	def setData(self, data: "dict | list", force=False):
 		if not force and not self.__class__.canSetDataMultipleTimes:
@@ -220,6 +217,7 @@ class JsonSObj(SObj):
 		obj.fs = fs
 		obj.setData(data)
 		return obj
+
 	#####
 
 	def getDataOrdered(self):
@@ -238,8 +236,7 @@ class JsonSObj(SObj):
 				fp.write(jstr)
 		else:
 			log.info(
-				f"save method called for object {self!r}"
-				" while file is not set",
+				f"save method called for object {self!r}" " while file is not set",
 			)
 
 	def setData(self, data):
@@ -328,7 +325,7 @@ def updateBasicDataFromBson(
 		lastHash = lastHistRecord[1]
 	except (KeyError, IndexError):
 		raise ValueError(
-			f"invalid {fileType} file \"{filePath}\", no \"history\"",
+			f'invalid {fileType} file "{filePath}", no "history"',
 		) from None
 	data.update(loadBsonObject(lastHash, fs))
 	data["modified"] = lastEpoch  # FIXME
@@ -342,8 +339,7 @@ class BsonHistObj(SObj):
 	file = ""
 	lastHash = None
 	# FIXME: basicParams or noHistParams
-	basicParams = (
-	)
+	basicParams = ()
 
 	@classmethod
 	def getFile(cls, _id=None):
@@ -363,7 +359,7 @@ class BsonHistObj(SObj):
 				raise FileNotFoundError(f"{_file} : file not found") from None
 		except Exception as e:
 			if not cls.skipLoadExceptions:
-				log.error(f"error while opening json file \"{_file}\"")
+				log.error(f'error while opening json file "{_file}"')
 				raise e
 		else:
 			lastEpoch, lastHash = updateBasicDataFromBson(data, _file, cls.name, fs)
@@ -384,6 +380,7 @@ class BsonHistObj(SObj):
 		obj.lastHash = lastHash
 		obj.modified = lastEpoch
 		return obj
+
 	#######
 
 	def getDataOrdered(self):
@@ -401,7 +398,7 @@ class BsonHistObj(SObj):
 		history = lastBasicData.get("history")
 		if history is None:
 			if lastBasicData:
-				log.info(f"no \"history\" in json file \"{self.file}\"")
+				log.info(f'no "history" in json file "{self.file}"')
 			history = []
 		return history
 
@@ -414,8 +411,7 @@ class BsonHistObj(SObj):
 		"""Returns last history record: (lastEpoch, lastHash, **args)."""
 		if not self.file:
 			raise RuntimeError(
-				f"save method called for object {self!r}"
-				" while file is not set",
+				f"save method called for object {self!r}" " while file is not set",
 			)
 		if self.fs is None:
 			raise RuntimeError(f"{self} has no fs object")

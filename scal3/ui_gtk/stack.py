@@ -54,13 +54,13 @@ class MyStack(gtk.Stack):
 		verticalSlide: bool = False,
 	):
 		gtk.Stack.__init__(self)
-		self.set_transition_duration(300) # milliseconds
+		self.set_transition_duration(300)  # milliseconds
 		###
 		self._header = header
-		self._rtl = self.get_direction() == gtk.TextDirection.RTL # type: bool
+		self._rtl = self.get_direction() == gtk.TextDirection.RTL  # type: bool
 		self._iconSize = iconSize  # type: int
-		self._headerSpacing = headerSpacing # type: int
-		self._verticalSlide = verticalSlide # type: bool
+		self._headerSpacing = headerSpacing  # type: int
+		self._verticalSlide = verticalSlide  # type: bool
 		###
 		self._parentPaths: "dict[str, str]" = {}
 		self._currentPagePath = ""
@@ -119,14 +119,16 @@ class MyStack(gtk.Stack):
 
 	def _setSlideForward(self):
 		self.set_transition_type(
-			gtk.RevealerTransitionType.SLIDE_DOWN if self._verticalSlide else
-			gtk.RevealerTransitionType.SLIDE_LEFT,
+			gtk.RevealerTransitionType.SLIDE_DOWN
+			if self._verticalSlide
+			else gtk.RevealerTransitionType.SLIDE_LEFT,
 		)
 
 	def _setSlideBackward(self):
 		self.set_transition_type(
-			gtk.RevealerTransitionType.SLIDE_UP if self._verticalSlide else
-			gtk.RevealerTransitionType.SLIDE_RIGHT,
+			gtk.RevealerTransitionType.SLIDE_UP
+			if self._verticalSlide
+			else gtk.RevealerTransitionType.SLIDE_RIGHT,
 		)
 
 	def _newHeaderBox(self, parentName: str, title: str = "", icon: str = ""):
@@ -138,10 +140,13 @@ class MyStack(gtk.Stack):
 		backHbox.set_border_width(5)
 		backLabel = _("Back")
 		if ui.buttonIconEnable:
-			pack(backHbox, imageFromFile(
-				"go-next.svg" if self._rtl else "go-previous.svg",
-				size=self._iconSize,
-			))
+			pack(
+				backHbox,
+				imageFromFile(
+					"go-next.svg" if self._rtl else "go-previous.svg",
+					size=self._iconSize,
+				),
+			)
 		else:
 			backLabel = "  " + backLabel + "  "  # to make it bigger
 		pack(backHbox, gtk.Label(label=backLabel))
@@ -156,14 +161,16 @@ class MyStack(gtk.Stack):
 			pack(hbox, imageFromFile(icon, self._iconSize), 0, 0)
 		if title:
 			if self._titleFontSize:
-				title = f"<span font_size=\"{self._titleFontSize}\">{title}</span>"
+				title = f'<span font_size="{self._titleFontSize}">{title}</span>'
 			label = gtk.Label(label=title)
 			if self._titleFontSize:
 				label.set_use_markup(True)
 			pack(hbox, label, 0, 0)
 			if self._titleCentered:
 				if icon:
-					pack(hbox, imageFromFile("empty.png", self._iconSize + spacing), 0, 0)
+					pack(
+						hbox, imageFromFile("empty.png", self._iconSize + spacing), 0, 0,
+					)
 				pack(hbox, gtk.Label(), 1, 1)
 		hbox.show_all()
 		return hbox
@@ -183,11 +190,14 @@ class MyStack(gtk.Stack):
 		widget.show()
 		if self._header and parentName:
 			vbox = VBox(spacing=self._headerSpacing)
-			pack(vbox, self._newHeaderBox(
-				parentName,
-				title=page.pageTitle,
-				icon=page.pageIcon,
-			))
+			pack(
+				vbox,
+				self._newHeaderBox(
+					parentName,
+					title=page.pageTitle,
+					icon=page.pageIcon,
+				),
+			)
 			pack(vbox, widget, expand=page.pageExpand, fill=page.pageExpand)
 			vbox.show()
 			widget = vbox

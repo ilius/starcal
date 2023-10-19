@@ -8,6 +8,7 @@ def getMoonPhase(jd, southernHemisphere=False):
 	1.0 = full moon.
 	"""
 	from scal3.cal_types import hijri
+
 	_, _, d = hijri.jd_to(jd)
 	if d >= 28:
 		phase = 0.0

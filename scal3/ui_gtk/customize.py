@@ -20,7 +20,6 @@ from scal3 import logger
 log = logger.get()
 
 
-
 from typing import TYPE_CHECKING
 
 from scal3 import ui
@@ -102,7 +101,7 @@ class CustomizableCalObj(ud.BaseCalObj):
 
 	def initVars(self) -> None:
 		ud.BaseCalObj.initVars(self)
-		self.itemWidgets = {} ## for lazy construction of widgets
+		self.itemWidgets = {}  ## for lazy construction of widgets
 		self.optionsWidget = None
 		try:
 			self.connect("key-press-event", self.onKeyPress)
@@ -111,10 +110,7 @@ class CustomizableCalObj(ud.BaseCalObj):
 				log.exception("")
 
 	def getItemsData(self) -> list[tuple[str, bool]]:
-		return [
-			(item._name, item.enable)
-			for item in self.items
-		]
+		return [(item._name, item.enable) for item in self.items]
 
 	def updateVars(self) -> None:
 		for item in self.items:

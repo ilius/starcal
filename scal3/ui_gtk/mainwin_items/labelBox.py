@@ -68,9 +68,15 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 	@ud.cssFunc
 	def getCSS() -> str:
 		from scal3.ui_gtk.utils import cssTextStyle
+
 		if ui.labelBoxMonthColorEnable:
-			return "." + MonthLabel.styleClass + " " + cssTextStyle(
-				fgColor=ui.labelBoxMonthColor,
+			return (
+				"."
+				+ MonthLabel.styleClass
+				+ " "
+				+ cssTextStyle(
+					fgColor=ui.labelBoxMonthColor,
+				)
 			)
 		return ""
 
@@ -80,15 +86,15 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 	def getActiveStr(self, s):
 		return colorizeSpan(s, ui.labelBoxMenuActiveColor)
 
-	#def getActiveStr(self, s):
-	#	return f"<b>{s}</b>"
+	# def getActiveStr(self, s):
+	# 	return f"<b>{s}</b>"
 
 	def __init__(self, calType, active=0):
 		BaseLabel.__init__(self)
 		self.get_style_context().add_class(self.styleClass)
 		###
 		self._name = f"monthLabel({calType})"
-		#self.set_border_width(1)#???????????
+		# self.set_border_width(1)#???????????
 		self.initVars()
 		self.calType = calType
 		###
@@ -110,11 +116,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 			return
 		for i in range(12):
 			if ui.monthRMenuNum:
-				text = (
-					self.getItemStr(i) +
-					": " +
-					_(getMonthName(self.calType, i + 1))
-				)
+				text = self.getItemStr(i) + ": " + _(getMonthName(self.calType, i + 1))
 			else:
 				text = _(getMonthName(self.calType, i + 1))
 			if i == self.active:
@@ -122,10 +124,10 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 			item = MenuItem()
 			label = item.get_child()
 			label.set_label(text)
-			#label.set_justify(gtk.Justification.LEFT)
+			# label.set_justify(gtk.Justification.LEFT)
 			label.set_xalign(0)
 			label.set_use_markup(True)
-			item.set_right_justified(True) ##?????????
+			item.set_right_justified(True)  ##?????????
 			item.connect("activate", self.itemActivate, i)
 			self.menu.append(item)
 			self.menuLabels.append(label)
@@ -139,15 +141,11 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 		if self.menuLabels:
 			if ui.monthRMenuNum:
 				self.menuLabels[self.active].set_label(
-					self.getItemStr(self.active) +
-					": " +
-					oldStr,
+					self.getItemStr(self.active) + ": " + oldStr,
 				)
 				self.menuLabels[active].set_label(
 					self.getActiveStr(
-						self.getItemStr(active) +
-						": " +
-						newStr,
+						self.getItemStr(active) + ": " + newStr,
 					),
 				)
 			else:
@@ -161,11 +159,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 		self.label.set_label(getMonthName(self.calType, self.active + 1))
 		for i in range(12):
 			if ui.monthRMenuNum:
-				s = (
-					self.getItemStr(i) +
-					": " +
-					getMonthName(self.calType, i + 1)
-				)
+				s = self.getItemStr(i) + ": " + getMonthName(self.calType, i + 1)
 			else:
 				s = getMonthName(self.calType, i + 1)
 			if i == self.active:
@@ -186,10 +180,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 			y += self.get_allocation().height
 			# align menu to center:
 			x -= int(
-				(
-					get_menu_width(self.menu) -
-					self.get_allocation().width
-				) // 2,
+				(get_menu_width(self.menu) - self.get_allocation().width) // 2,
 			)
 			self.menu.popup(
 				None,
@@ -220,9 +211,9 @@ class IntLabel(BaseLabel):
 
 	def __init__(self, height=9, active=0):
 		BaseLabel.__init__(self)
-		#self.set_border_width(1)#???????????
+		# self.set_border_width(1)#???????????
 		self.height = height
-		#self.delay = delay
+		# self.delay = delay
 		self.label = gtk.Label()
 		self.label.set_use_markup(True)
 		self.add(self.label)
@@ -250,17 +241,19 @@ class IntLabel(BaseLabel):
 		self.menu.connect("scroll-event", self.menuScroll)
 		##########
 		item = gtk.MenuItem()
-		item.add(imageFromIconName(
-			"pan-up-symbolic",
-			gtk.IconSize.MENU,
-		))
-		#item.set_border_width(0)
+		item.add(
+			imageFromIconName(
+				"pan-up-symbolic",
+				gtk.IconSize.MENU,
+			),
+		)
+		# item.set_border_width(0)
 		# log.debug(item.style_get_property("horizontal-padding") ## OK)
 		###???????????????????????????????????
-		#item.config("horizontal-padding"=0)
-		#style = item.get_style()
-		#style.set_property("horizontal-padding", 0)
-		#item.set_style(style)
+		# item.config("horizontal-padding"=0)
+		# style = item.get_style()
+		# style.set_property("horizontal-padding", 0)
+		# item.set_style(style)
 		self.menu.append(item)
 		item.connect("select", self.arrowSelect, -1)
 		item.connect("deselect", self.arrowDeselect)
@@ -276,10 +269,12 @@ class IntLabel(BaseLabel):
 			self.menuLabels.append(label)
 		##########
 		item = gtk.MenuItem()
-		item.add(imageFromIconName(
-			"pan-down-symbolic",
-			gtk.IconSize.MENU,
-		))
+		item.add(
+			imageFromIconName(
+				"pan-down-symbolic",
+				gtk.IconSize.MENU,
+			),
+		)
 		self.menu.append(item)
 		item.connect("select", self.arrowSelect, 1)
 		item.connect("deselect", self.arrowDeselect)
@@ -308,7 +303,7 @@ class IntLabel(BaseLabel):
 			self.updateMenu()
 			foo, x, y = self.get_window().get_origin()
 			y += self.get_allocation().height
-			x -= 6 # FIXME: because of menu padding
+			x -= 6  # FIXME: because of menu padding
 			self.menu.popup(
 				None,
 				None,
@@ -342,7 +337,7 @@ class IntLabel(BaseLabel):
 					self.step = 0
 					return False
 				self.step += 1
-				self.etime = t # FIXME
+				self.etime = t  # FIXME
 				return True
 
 			self.updateMenu(self.start + plus)
@@ -373,12 +368,17 @@ class YearLabel(IntLabel, ud.BaseCalObj):
 	@ud.cssFunc
 	def getCSS() -> str:
 		from scal3.ui_gtk.utils import cssTextStyle
+
 		if ui.labelBoxYearColorEnable:
-			return "." + YearLabel.styleClass + " " + cssTextStyle(
-				fgColor=ui.labelBoxYearColor,
+			return (
+				"."
+				+ YearLabel.styleClass
+				+ " "
+				+ cssTextStyle(
+					fgColor=ui.labelBoxYearColor,
+				)
 			)
 		return ""
-
 
 	def __init__(self, calType, **kwargs):
 		IntLabel.__init__(self, **kwargs)
@@ -400,7 +400,7 @@ class YearLabel(IntLabel, ud.BaseCalObj):
 
 	def changeCalType(self, calType):
 		self.calType = calType
-		#self.onDateChange()
+		# self.onDateChange()
 
 	def onDateChange(self, *a, **ka):
 		ud.BaseCalObj.onDateChange(self, *a, **ka)
@@ -426,10 +426,12 @@ class SmallNoFocusButton(ConButton):
 			set_tooltip(self, tooltip)
 
 	def updateIcon(self):
-		self._image.set_from_pixbuf(pixbufFromFile(
-			self._imageName,
-			size=ui.labelBoxIconSize,
-		))
+		self._image.set_from_pixbuf(
+			pixbufFromFile(
+				self._imageName,
+				size=ui.labelBoxIconSize,
+			),
+		)
 
 
 class YearLabelButtonBox(gtk.Box, ud.BaseCalObj):
@@ -531,7 +533,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.initVars()
 		self.get_style_context().add_class(self.styleClass)
-		#self.set_border_width(2)
+		# self.set_border_width(2)
 		self.ybox = None
 		self.mbox = None
 		self.monthLabels = []
@@ -623,17 +625,30 @@ class CalObj(gtk.Box, CustomizableCalObj):
 	@ud.cssFunc
 	def getCSS() -> str:
 		from scal3.ui_gtk.utils import cssTextStyle
+
 		font = CalObj.getFont()
-		css = "." + CalObj.styleClass + " " + cssTextStyle(
-			font=font,
+		css = (
+			"."
+			+ CalObj.styleClass
+			+ " "
+			+ cssTextStyle(
+				font=font,
+			)
 		)
 		if ui.labelBoxPrimaryFontEnable and ui.labelBoxPrimaryFont:
 			font = ui.labelBoxPrimaryFont
 			if ui.boldYmLabel:
 				font = font.copy()
 				font.bold = True
-			css += "\n." + CalObj.styleClass + " ." + primaryCalStyleClass + " " + cssTextStyle(
-				font=font,
+			css += (
+				"\n."
+				+ CalObj.styleClass
+				+ " ."
+				+ primaryCalStyleClass
+				+ " "
+				+ cssTextStyle(
+					font=font,
+				)
 			)
 		return css
 
@@ -658,6 +673,7 @@ class CalObj(gtk.Box, CustomizableCalObj):
 			FontPrefItem,
 			SpinPrefItem,
 		)
+
 		if self.optionsWidget:
 			return self.optionsWidget
 		####
@@ -666,8 +682,10 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		prefItem = SpinPrefItem(
 			ui,
 			"labelBoxBorderWidth",
-			0, 99,
-			digits=1, step=1,  # noqa: FURB120
+			0,
+			99,
+			digits=1,
+			step=1,  # noqa: FURB120
 			unitLabel=_("pixels"),
 			label=_("Border Width"),
 			live=True,
@@ -748,15 +766,15 @@ if __name__ == "__main__":
 	win = gtk.Dialog()
 	box = CalObj()
 	win.add_events(
-		gdk.EventMask.POINTER_MOTION_MASK |
-		gdk.EventMask.FOCUS_CHANGE_MASK |
-		gdk.EventMask.BUTTON_MOTION_MASK |
-		gdk.EventMask.BUTTON_PRESS_MASK |
-		gdk.EventMask.BUTTON_RELEASE_MASK |
-		gdk.EventMask.SCROLL_MASK |
-		gdk.EventMask.KEY_PRESS_MASK |
-		gdk.EventMask.VISIBILITY_NOTIFY_MASK |
-		gdk.EventMask.EXPOSURE_MASK,
+		gdk.EventMask.POINTER_MOTION_MASK
+		| gdk.EventMask.FOCUS_CHANGE_MASK
+		| gdk.EventMask.BUTTON_MOTION_MASK
+		| gdk.EventMask.BUTTON_PRESS_MASK
+		| gdk.EventMask.BUTTON_RELEASE_MASK
+		| gdk.EventMask.SCROLL_MASK
+		| gdk.EventMask.KEY_PRESS_MASK
+		| gdk.EventMask.VISIBILITY_NOTIFY_MASK
+		| gdk.EventMask.EXPOSURE_MASK,
 	)
 	pack(win.vbox, box, 1, 1)
 	win.vbox.show_all()

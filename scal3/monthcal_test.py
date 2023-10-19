@@ -13,6 +13,7 @@ class Test_getMonthDesc(unittest.TestCase):
 
 	def assertCase(self, year: int, month: int, desc: str):
 		from scal3.monthcal import getMonthDesc, getMonthStatus
+
 		self.assertEqual(desc, getMonthDesc(getMonthStatus(year, month)))
 
 	def test_gregorian(self):

@@ -50,7 +50,7 @@ class CourseListEditor(gtk.Box):
 		defaultCourseUnits=3,
 		enableScrollbars=False,
 	):
-		self.term = term ## UniversityTerm obj
+		self.term = term  ## UniversityTerm obj
 		self.defaultCourseName = _(defaultCourseName)
 		self.defaultCourseUnits = defaultCourseUnits
 		#####
@@ -72,7 +72,7 @@ class CourseListEditor(gtk.Box):
 		col = gtk.TreeViewColumn(title=_("Units"), cell_renderer=cell, text=2)
 		self.treev.append_column(col)
 		####
-		if enableScrollbars:## FIXME
+		if enableScrollbars:  ## FIXME
 			swin = gtk.ScrolledWindow()
 			swin.add(self.treev)
 			swin.set_policy(gtk.PolicyType.NEVER, gtk.PolicyType.AUTOMATIC)
@@ -82,36 +82,38 @@ class CourseListEditor(gtk.Box):
 		##########
 		toolbar = StaticToolBox(self, vertical=True)
 		####
-		toolbar.extend([
-			ToolBoxItem(
-				name="add",
-				imageName="list-add.svg",
-				onClick="onAddClick",
-				desc=_("Add"),
-				continuousClick=False,
-			),
-			ToolBoxItem(
-				name="delete",
-				imageName="edit-delete.svg",
-				onClick="onDeleteClick",
-				desc=_("Delete", ctx="button"),
-				continuousClick=False,
-			),
-			ToolBoxItem(
-				name="moveUp",
-				imageName="go-up.svg",
-				onClick="onMoveUpClick",
-				desc=_("Move up"),
-				continuousClick=False,
-			),
-			ToolBoxItem(
-				name="moveDown",
-				imageName="go-down.svg",
-				onClick="onMoveDownClick",
-				desc=_("Move down"),
-				continuousClick=False,
-			),
-		])
+		toolbar.extend(
+			[
+				ToolBoxItem(
+					name="add",
+					imageName="list-add.svg",
+					onClick="onAddClick",
+					desc=_("Add"),
+					continuousClick=False,
+				),
+				ToolBoxItem(
+					name="delete",
+					imageName="edit-delete.svg",
+					onClick="onDeleteClick",
+					desc=_("Delete", ctx="button"),
+					continuousClick=False,
+				),
+				ToolBoxItem(
+					name="moveUp",
+					imageName="go-up.svg",
+					onClick="onMoveUpClick",
+					desc=_("Move up"),
+					continuousClick=False,
+				),
+				ToolBoxItem(
+					name="moveDown",
+					imageName="go-down.svg",
+					onClick="onMoveDownClick",
+					desc=_("Move down"),
+					continuousClick=False,
+				),
+			],
+		)
 		#######
 		pack(self, toolbar)
 
@@ -138,9 +140,9 @@ class CourseListEditor(gtk.Box):
 		else:
 			newIter = self.treeModel.insert(index + 1, row)
 		self.treev.set_cursor(self.treeModel.get_path(newIter))
-		#col = self.treev.get_column(0)
-		#cell = col.get_cell_renderers()[0]
-		#cell.start_editing(...) ## FIXME
+		# col = self.treev.get_column(0)
+		# cell = col.get_cell_renderers()[0]
+		# cell.start_editing(...) ## FIXME
 
 	def onDeleteClick(self, button):
 		index = self.getSelectedIndex()
@@ -214,22 +216,24 @@ class ClassTimeBoundsEditor(gtk.Box):
 		##########
 		toolbar = StaticToolBox(self, vertical=True)
 		####
-		toolbar.extend([
-			ToolBoxItem(
-				name="add",
-				imageName="list-add.svg",
-				onClick="onAddClick",
-				desc=_("Add"),
-				continuousClick=False,
-			),
-			ToolBoxItem(
-				name="delete",
-				imageName="edit-delete.svg",
-				onClick="onDeleteClick",
-				desc=_("Delete"),
-				continuousClick=False,
-			),
-		])
+		toolbar.extend(
+			[
+				ToolBoxItem(
+					name="add",
+					imageName="list-add.svg",
+					onClick="onAddClick",
+					desc=_("Add"),
+					continuousClick=False,
+				),
+				ToolBoxItem(
+					name="delete",
+					imageName="edit-delete.svg",
+					onClick="onDeleteClick",
+					desc=_("Delete"),
+					continuousClick=False,
+				),
+			],
+		)
 		#######
 		pack(self, toolbar)
 
@@ -291,7 +295,7 @@ class ClassTimeBoundsEditor(gtk.Box):
 		m = numDecode(parts[1])
 		hm = hmEncode((h, m))
 		self.treeModel[index][0] = hm
-		#self.treeModel.sort()## FIXME
+		# self.treeModel.sort()## FIXME
 
 	def setData(self, hmList):
 		self.treeModel.clear()
@@ -299,10 +303,7 @@ class ClassTimeBoundsEditor(gtk.Box):
 			self.treeModel.append([hmEncode(hm)])
 
 	def getData(self):
-		return sorted(
-			hmDecode(row[0])
-			for row in self.treeModel
-		)
+		return sorted(hmDecode(row[0]) for row in self.treeModel)
 
 
 class WidgetClass(NormalWidgetClass):
@@ -313,7 +314,7 @@ class WidgetClass(NormalWidgetClass):
 		totalFrame.set_label(group.desc)
 		totalVbox = VBox()
 		###
-		expandHbox = HBox()## for courseList and classTimeBounds
+		expandHbox = HBox()  ## for courseList and classTimeBounds
 		##
 		frame = gtk.Frame()
 		frame.set_label(_("Course List"))
@@ -322,7 +323,7 @@ class WidgetClass(NormalWidgetClass):
 		frame.add(self.courseListEditor)
 		pack(expandHbox, frame, 1, 1)
 		##
-		frame = gtk.Frame()## FIXME
+		frame = gtk.Frame()  ## FIXME
 		frame.set_label(_("Class Time Bounds"))
 		self.classTimeBoundsEditor = ClassTimeBoundsEditor(self.group)
 		self.classTimeBoundsEditor.set_size_request(50, 150)
@@ -333,7 +334,7 @@ class WidgetClass(NormalWidgetClass):
 		pack(totalVbox, expandHbox, 1, 1)
 		#####
 		totalFrame.add(totalVbox)
-		pack(self, totalFrame, 1, 1)## expand? FIXME
+		pack(self, totalFrame, 1, 1)  ## expand? FIXME
 
 	def updateWidget(self):  # FIXME
 		NormalWidgetClass.updateWidget(self)
@@ -354,9 +355,9 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 		self.data = []
 		####
 		gtk.DrawingArea.__init__(self)
-		#self.connect("button-press-event", self.onButtonPress)
+		# self.connect("button-press-event", self.onButtonPress)
 		self.connect("draw", self.onExposeEvent)
-		#self.connect("event", show_event)
+		# self.connect("event", show_event)
 
 	def onExposeEvent(self, widget=None, event=None):
 		win = self.get_window()
@@ -381,9 +382,9 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 		cr.rectangle(0, 0, w, h)
 		fillColor(cr, ui.bgColor)
 		textColor = ui.textColor
-		gridColor = ui.mcalGridColor ## FIXME
+		gridColor = ui.mcalGridColor  ## FIXME
 		###
-		#classBounds = self.term.classTimeBounds
+		# classBounds = self.term.classTimeBounds
 		titles, tmfactors = self.term.getClassBoundsFormatted()
 		###
 		weekDayLayouts = []
@@ -395,12 +396,11 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 			weekDayLayoutsWidth.append(layoutW)
 		leftMargin = max(weekDayLayoutsWidth) + 6
 		###
-		topMargin = 20 ## FIXME
+		topMargin = 20  ## FIXME
 		# calculate coordinates: ycenters(list), dy(float)
 		ycenters = [
-			topMargin + (h - topMargin) * (1 + 2 * i) / 14
-			for i in range(7)
-		] ## centers y
+			topMargin + (h - topMargin) * (1 + 2 * i) / 14 for i in range(7)
+		]  ## centers y
 		dy = (h - topMargin) / 7  # delta y
 		# drawing the grid
 		# tmfactors includes 0 at the first, and 1 at the end
@@ -462,9 +462,9 @@ class WeeklyScheduleWidget(gtk.DrawingArea):
 					text = classData.name
 					if classData.weekNumMode:
 						text += (
-							"(<span color=\"#f00\">" +
-							_(classData.weekNumMode.capitalize()) +
-							"</span>)"
+							'(<span color="#f00">'
+							+ _(classData.weekNumMode.capitalize())
+							+ "</span>)"
 						)
 					textList.append(text)
 				dx = (w - leftMargin) * (tmfactors[i + 1] - tmfactors[i])
@@ -526,6 +526,7 @@ class WeeklyScheduleWindow(gtk.Dialog):
 
 	def exportToSvg(self, fpath):
 		import cairo
+
 		aloc = self._widget.get_allocation()
 		surface = cairo.SVGSurface(fpath, aloc.width, aloc.height)
 		cr = cairo.Context(surface)

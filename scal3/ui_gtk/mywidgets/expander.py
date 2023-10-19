@@ -16,7 +16,6 @@
 # with this program. If not, see <http://www.gnu.org/licenses/agpl.txt>.
 
 
-
 from scal3.ui_gtk import HBox, VBox, gtk, pack
 from scal3.ui_gtk.decorators import registerSignals
 
@@ -67,9 +66,7 @@ class ExpanderFrameTitle(gtk.Button):
 
 @registerSignals
 class ExpanderFrame(gtk.Frame):
-	signals = (
-		("activate", []),
-	)
+	signals = (("activate", []),)
 
 	def __init__(
 		self,
@@ -111,7 +108,3 @@ class ExpanderFrame(gtk.Frame):
 
 	def get_expanded(self) -> bool:
 		return self._title.get_expanded()
-
-
-
-

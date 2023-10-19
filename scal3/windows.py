@@ -11,6 +11,7 @@ winStartupFile = join(winStartupDir, APP_NAME + ".lnk")
 
 def winMakeShortcut(srcPath, dstPath, iconPath=None):
 	from win32com.client import Dispatch
+
 	shell = Dispatch("WScript.Shell")
 	shortcut = shell.CreateShortCut(dstPath)
 	shortcut.Targetpath = srcPath

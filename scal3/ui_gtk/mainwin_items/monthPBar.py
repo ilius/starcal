@@ -1,4 +1,3 @@
-
 from scal3 import ui
 from scal3.cal_types import calTypes, to_jd
 from scal3.date_utils import monthPlus
@@ -49,21 +48,22 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 		else:
 			percent = f"%{int(fraction * 100)}"
 		self.pbar.set_text(
-			getMonthName(calType, month, year) +
-			":   " +
-			textNumEncode(
+			getMonthName(calType, month, year)
+			+ ":   "
+			+ textNumEncode(
 				percent,
 				changeDot=True,
-			) +
-			"   =   " +
-			_("{dayCount} days").format(dayCount=_(past)) +
-			" / " +
-			_("{dayCount} days").format(dayCount=_(length)),
+			)
+			+ "   =   "
+			+ _("{dayCount} days").format(dayCount=_(past))
+			+ " / "
+			+ _("{dayCount} days").format(dayCount=_(length)),
 		)
 		self.pbar.set_fraction(fraction)
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.pref_utils_extra import CalTypePrefItem
+
 		if self.optionsWidget:
 			return self.optionsWidget
 		####

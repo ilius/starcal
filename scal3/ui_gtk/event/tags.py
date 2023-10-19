@@ -32,7 +32,7 @@ from scal3.ui_gtk.utils import (
 	showList,
 )
 
-#class EventCategorySelect(gtk.Box):
+# class EventCategorySelect(gtk.Box):
 
 
 class EventTagsAndIconSelect(gtk.Box):
@@ -56,13 +56,12 @@ class EventTagsAndIconSelect(gtk.Box):
 		###
 		ls.append([None, _("Custom")])  # first or last FIXME
 		for item in ui.eventTags:
-			ls.append([
-				(
-					GdkPixbuf.Pixbuf.new_from_file(item.icon)
-					if item.icon else None
-				),
-				item.desc,
-			])
+			ls.append(
+				[
+					(GdkPixbuf.Pixbuf.new_from_file(item.icon) if item.icon else None),
+					item.desc,
+				],
+			)
 		###
 		self.customItemIndex = 0  # len(ls) - 1
 		pack(hbox, combo)
@@ -123,9 +122,7 @@ class EventTagsAndIconSelect(gtk.Box):
 			if active == self.customItemIndex:
 				icon = self.iconSelect.get_filename()
 				tags = [
-					button.tagName
-					for button in self.tagButtons
-					if button.get_active()
+					button.tagName for button in self.tagButtons if button.get_active()
 				]
 			else:
 				item = ui.eventTags[active]
@@ -151,7 +148,7 @@ class TagsListBox(gtk.Box):
 	Most used for this event type (first)
 	"""
 
-	def __init__(self, eventType=""):## "" == "custom"
+	def __init__(self, eventType=""):  ## "" == "custom"
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		####
 		self.eventType = eventType
@@ -180,11 +177,11 @@ class TagsListBox(gtk.Box):
 		treev.set_model(treeModel)
 		###
 		cell = gtk.CellRendererToggle()
-		#cell.set_property("activatable", True)
+		# cell.set_property("activatable", True)
 		cell.connect("toggled", self.enableCellToggled)
 		col = gtk.TreeViewColumn(title=_("Enable"), cell_renderer=cell)
 		col.add_attribute(cell, "active", 1)
-		#cell.set_active(False)
+		# cell.set_active(False)
 		col.set_resizable(True)
 		col.set_sort_column_id(1)
 		col.set_sort_indicator(True)
@@ -200,8 +197,8 @@ class TagsListBox(gtk.Box):
 		###
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(title=_("Usage"), cell_renderer=cell, text=4)
-		#col.set_resizable(True)
-		col.set_sort_column_id(3) ## previous column (hidden and int)
+		# col.set_resizable(True)
+		col.set_sort_column_id(3)  ## previous column (hidden and int)
 		col.set_sort_indicator(True)
 		treev.append_column(col)
 		###
@@ -213,9 +210,9 @@ class TagsListBox(gtk.Box):
 		self.treeview = treev
 		self.treeModel = treeModel
 		####
-		#ui.updateEventTagsUsage()## FIXME
-		#for (i, tagObj) in enumerate(ui.eventTags):  # for testing
-		#	tagObj.usage = i*10
+		# ui.updateEventTagsUsage()## FIXME
+		# for (i, tagObj) in enumerate(ui.eventTags):  # for testing
+		# 	tagObj.usage = i*10
 		self.optionsChanged()
 		self.show_all()
 
@@ -228,13 +225,15 @@ class TagsListBox(gtk.Box):
 				tagObjList = [t for t in tagObjList if self.eventType in t.eventTypes]
 		self.treeModel.clear()
 		for t in tagObjList:
-			self.treeModel.append((
-				t.name,
-				t.name in tags, ## True or False
-				t.desc,
-				t.usage,
-				_(t.usage),
-			))
+			self.treeModel.append(
+				(
+					t.name,
+					t.name in tags,  ## True or False
+					t.desc,
+					t.usage,
+					_(t.usage),
+				),
+			)
 
 	def enableCellToggled(self, cell, path):
 		i = int(path)

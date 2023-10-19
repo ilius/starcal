@@ -26,7 +26,7 @@ from scal3.ui_gtk.mywidgets.multi_spin.hour_minute import HourMinuteButton
 
 
 class WidgetClass(common.WidgetClass):
-	def __init__(self, event):## FIXME
+	def __init__(self, event):  ## FIXME
 		event.setJd(ui.cell.jd)
 		common.WidgetClass.__init__(self, event)
 		######
@@ -79,13 +79,13 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, self.dayTimeEndInput)
 		pack(self, hbox)
 		#############
-		#self.notificationBox = common.NotificationBox(event)
-		#pack(self, self.notificationBox)
+		# self.notificationBox = common.NotificationBox(event)
+		# pack(self, self.notificationBox)
 		#############
-		#self.filesBox = common.FilesBox(self.event)
-		#pack(self, self.filesBox)
+		# self.filesBox = common.FilesBox(self.event)
+		# pack(self, self.filesBox)
 
-	def updateWidget(self):## FIXME
+	def updateWidget(self):  ## FIXME
 		common.WidgetClass.updateWidget(self)
 		calType = self.event.calType
 		###
@@ -100,7 +100,7 @@ class WidgetClass(common.WidgetClass):
 		self.dayTimeStartInput.set_value(dayTimeRange.dayTimeStart)
 		self.dayTimeEndInput.set_value(dayTimeRange.dayTimeEnd)
 
-	def updateVars(self):## FIXME
+	def updateVars(self):  ## FIXME
 		common.WidgetClass.updateVars(self)
 		##
 		start, ok = self.event["start"]

@@ -5,4 +5,3 @@ class MyProgressBar(gtk.ProgressBar):
 	def __init__(self):
 		gtk.ProgressBar.__init__(self)
 		self.set_show_text(True)
-

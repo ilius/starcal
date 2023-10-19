@@ -14,8 +14,8 @@ class TrashEditorDialog(gtk.Dialog):
 		checkEventsReadOnly()
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Edit Trash"))
-		#self.connect("delete-event", lambda obj, e: self.destroy())
-		#self.resize(800, 600)
+		# self.connect("delete-event", lambda obj, e: self.destroy())
+		# self.resize(800, 600)
 		###
 		dialog_add_button(
 			self,
@@ -60,7 +60,7 @@ class TrashEditorDialog(gtk.Dialog):
 			label=_("Add New Events to Beginning"),
 		)
 		set_tooltip(
-			hbox, # label or hbox?
+			hbox,  # label or hbox?
 			_("Add new events to beginning of event list, not to the end"),
 		)
 		pack(hbox, self.addEventsToBeginningCheck)

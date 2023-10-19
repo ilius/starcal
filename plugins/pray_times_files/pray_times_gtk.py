@@ -18,23 +18,22 @@
 # Also avalable in /usr/share/common-licenses/LGPL on Debian systems
 # or /usr/share/licenses/common/LGPL/license.txt on ArchLinux
 
-import os
-from os.path import dirname
 import math
+from os.path import dirname
+
+from pray_times_backend import methodsList, timeNames
+from pray_times_utils import *
 
 from scal3 import locale_man
 from scal3.locale_man import tr as _
-from pray_times_backend import timeNames, methodsList
-from pray_times_utils import *
-
 from scal3.ui_gtk import *
+from scal3.ui_gtk.about import AboutDialog
 from scal3.ui_gtk.utils import (
 	dialog_add_button,
-	showMsg,
 	newAlignLabel,
+	showMsg,
 )
-from scal3.ui_gtk.app_info import popenFile
-from scal3.ui_gtk.about import AboutDialog
+
 # do I have to duplicate AboutDialog class code?
 
 
@@ -59,22 +58,24 @@ def buffer_select_all(b):
 
 def showDisclaimer(plug):
 	showMsg(
-		"\n".join([
-			_(
-				"Please note that a few minutes error in Pray Times is unavoidable,"
-				" specially for large cities."
-			),
-			_(
-				"For example in Tehran, there is a 2 minutes difference"
-				" between far-east and far-west points of city."
-			),
-			_("(Usually the center of cities are taken into account)"),
-			_("But also calculations are never accurate."),
-			_(
-				"Please allow at least 2 minutes as a precaution"
-				" (for Fajr, at least 3 minutes)"
-			),
-		]),
+		"\n".join(
+			[
+				_(
+					"Please note that a few minutes error in Pray Times is unavoidable,"
+					" specially for large cities.",
+				),
+				_(
+					"For example in Tehran, there is a 2 minutes difference"
+					" between far-east and far-west points of city.",
+				),
+				_("(Usually the center of cities are taken into account)"),
+				_("But also calculations are never accurate."),
+				_(
+					"Please allow at least 2 minutes as a precaution"
+					" (for Fajr, at least 3 minutes)",
+				),
+			],
+		),
 		# imageName="",
 		parent=None,
 		title=_("Pray Times"),
@@ -82,14 +83,7 @@ def showDisclaimer(plug):
 
 
 class LocationDialog(gtk.Dialog):
-	def __init__(
-		self,
-		cityData,
-		maxResults=200,
-		width=600,
-		height=600,
-		**kwargs
-	):
+	def __init__(self, cityData, maxResults=200, width=600, height=600, **kwargs):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Location"))
 		self.maxResults = maxResults
@@ -130,15 +124,15 @@ class LocationDialog(gtk.Dialog):
 		self.trees = trees
 		treev.connect("cursor-changed", self.treev_cursor_changed)
 		#########
-		#cell = gtk.CellRendererText()
-		#col = gtk.TreeViewColumn("Index", cell, text=0)
-		#col.set_resizable(True)## No need!
-		#treev.append_column(col)
+		# cell = gtk.CellRendererText()
+		# col = gtk.TreeViewColumn("Index", cell, text=0)
+		# col.set_resizable(True)## No need!
+		# treev.append_column(col)
 		########
 		cell = gtk.CellRendererText()
 		cell.set_fixed_size(width - 30, -1)
 		col = gtk.TreeViewColumn("City", cell, text=1)
-		#col.set_resizable(True)## No need!
+		# col.set_resizable(True)## No need!
 		treev.append_column(col)
 		#########
 		treev.set_search_column(1)
@@ -204,7 +198,7 @@ class LocationDialog(gtk.Dialog):
 		lng = self.spin_lng.get_value()
 		md = earthR * 2 * math.pi
 		city = ""
-		for (name, lname, lat2, lng2) in self.cityData:
+		for name, lname, lat2, lng2 in self.cityData:
 			d = earthDistance(lat, lng, lat2, lng2)
 			assert d >= 0
 			if d < md:
@@ -214,7 +208,7 @@ class LocationDialog(gtk.Dialog):
 			_("{distanceKM} kilometers from {place}").format(
 				distanceKM=md,
 				place=city,
-			)
+			),
 		)
 
 	def treev_cursor_changed(self, treev):
@@ -229,7 +223,7 @@ class LocationDialog(gtk.Dialog):
 				_("{distanceKM} kilometers from {place}").format(
 					distanceKM=0.0,
 					place=s,
-				)
+				),
 			)
 		self.okB.set_sensitive(True)
 
@@ -253,7 +247,7 @@ class LocationDialog(gtk.Dialog):
 
 	def updateOkButton(self):
 		return self.okB.set_sensitive(
-			bool(self.treev.get_cursor()[0] or self.checkbEdit.get_active())
+			bool(self.treev.get_cursor()[0] or self.checkbEdit.get_active()),
 		)
 
 	def update_list(self, s=""):
@@ -285,8 +279,7 @@ class LocationDialog(gtk.Dialog):
 		self.hide()
 		if ex == gtk.ResponseType.OK:
 			if (
-				self.checkbEdit.get_active() or
-				self.treev.get_cursor()[0] is not None
+				self.checkbEdit.get_active() or self.treev.get_cursor()[0] is not None
 			):  # FIXME
 				return (
 					self.entry_edit_name.get_text(),
@@ -327,9 +320,7 @@ class LocationButton(gtk.Button):
 class TextPluginUI:
 	def makeWidget(self):
 		self.confDialog = gtk.Dialog()
-		self.confDialog.set_title(
-			_("Pray Times") + " - " + _("Configuration")
-		)
+		self.confDialog.set_title(_("Pray Times") + " - " + _("Configuration"))
 		self.confDialog.connect("delete-event", self.confDialogCancel)
 		group = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		###
@@ -497,9 +488,7 @@ class TextPluginUI:
 			self.backend.lat,
 			self.backend.lng,
 		)
-		self.methodCombo.set_active(
-			methodsList.index(self.backend.method)
-		)
+		self.methodCombo.set_active(methodsList.index(self.backend.method))
 		###
 		for cb in self.timeNamesButtons:
 			cb.set_active(cb.name in self.shownTimeNames)
@@ -525,9 +514,7 @@ class TextPluginUI:
 		self.backend.lng = self.locButton.lng
 		self.backend.method = methodsList[self.methodCombo.get_active()]
 		self.shownTimeNames = [
-			cb.name
-			for cb in self.timeNamesButtons
-			if cb.get_active()
+			cb.name for cb in self.timeNamesButtons if cb.get_active()
 		]
 		self.imsak = int(self.imsakSpin.get_value())
 		self.sep = buffer_get_text(self.sepBuff)
@@ -563,7 +550,7 @@ class TextPluginUI:
 			comments=self.about,
 		)
 		about.connect("delete-event", lambda w, e: about.destroy())
-		#about.connect("response", lambda w: about.hide())
-		#about.set_skip_taskbar_hint(True)
+		# about.connect("response", lambda w: about.hide())
+		# about.set_skip_taskbar_hint(True)
 		about.run()
 		about.destroy()

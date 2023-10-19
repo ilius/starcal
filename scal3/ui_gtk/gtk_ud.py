@@ -74,6 +74,7 @@ def loadConf():
 def saveConf():
 	saveModuleJsonConf(__name__)
 
+
 ############################################################
 
 
@@ -260,17 +261,21 @@ class IntegatedWindowList(BaseCalObj):
 	def updateCSS(self):
 		from scal3.ui_gtk.color_utils import gdkColorToRgb
 		from scal3.ui_gtk.utils import cssTextStyle
+
 		font = ui.getFont()
 		fgColor = gdkColorToRgb(
-			ui.mainWin.get_style_context().
-			get_color(gtk.StateFlags.NORMAL),
+			ui.mainWin.get_style_context().get_color(gtk.StateFlags.NORMAL),
 		)
 		log.debug(f"{fgColor=}")
-		css = "progressbar text " + cssTextStyle(
-			font=font,
-			fgColor=fgColor,
-			# extra={"text-align": "justify"},  # not supported
-		) + "\n"
+		css = (
+			"progressbar text "
+			+ cssTextStyle(
+				font=font,
+				fgColor=fgColor,
+				# extra={"text-align": "justify"},  # not supported
+			)
+			+ "\n"
+		)
 
 		css += "progress, trough {min-height: 0.5em;}\n"
 
@@ -314,7 +319,7 @@ def _getLightness(c: "gdk.Color"):
 def hasLightTheme(widget):
 	styleCtx = widget.get_style_context()
 	fg = styleCtx.get_color(gtk.StateFlags.NORMAL)
-	bg = styleCtx.get_property('background-color', gtk.StateFlags.NORMAL)
+	bg = styleCtx.get_property("background-color", gtk.StateFlags.NORMAL)
 	# from scal3.ui_gtk.color_utils import gdkColorToRgb
 	# from scal3.color_utils import rgbToHsl
 	# print("fg_rgb:", gdkColorToRgb(fg))
@@ -338,6 +343,7 @@ def cssFunc(func: Callable) -> Callable:
 	global windowList
 	windowList.addCSSFunc(func)
 	return func
+
 
 ###########
 
@@ -377,12 +383,12 @@ textDirDict = {
 
 iconSizeList = [
 	# in size order
-	("Menu", gtk.IconSize.MENU),                    # 16x16
+	("Menu", gtk.IconSize.MENU),  # 16x16
 	("Small Toolbar", gtk.IconSize.SMALL_TOOLBAR),  # 16x16
-	("Button", gtk.IconSize.BUTTON),                # 16x16
+	("Button", gtk.IconSize.BUTTON),  # 16x16
 	("Large Toolbar", gtk.IconSize.LARGE_TOOLBAR),  # 24x24
-	("DND", gtk.IconSize.DND),                      # 32x32
-	("Dialog", gtk.IconSize.DIALOG),                # 48x48
+	("DND", gtk.IconSize.DND),  # 32x32
+	("Dialog", gtk.IconSize.DIALOG),  # 48x48
 ]
 iconSizeDict = dict(iconSizeList)
 iconSizeNames = [x[0] for x in iconSizeList]
@@ -403,10 +409,7 @@ justificationList = [
 	("center", _("Center"), gtk.Justification.CENTER),
 	("fill", _("Fill"), gtk.Justification.FILL),
 ]
-justificationByName = {
-	name: value
-	for name, desc, value in justificationList
-}
+justificationByName = {name: value for name, desc, value in justificationList}
 
 ##############################
 
@@ -426,30 +429,26 @@ def updateFormatsBin():
 	dateFormatBin = compileTmFormat(dateFormat)
 	clockFormatBin = compileTmFormat(clockFormat)
 
+
 ##############################
 
 
 def findAskpass():
 	from os.path import isfile
+
 	for askpass in (
 		# Debian (not in PATH)
 		"/usr/lib/openssh/gnome-ssh-askpass",
-
 		# Debian (in PATH)
 		"/usr/bin/ksshaskpass",
-
 		# Debian (in PATH)
 		"/usr/bin/lxqt-openssh-askpass",
-
 		# Red Hat
 		"/usr/libexec/openssh/lxqt-openssh-askpass",
-
 		# Debian (in PATH)
 		"/usr/bin/ssh-askpass-fullscreen",
-
 		# Debian (not in PATH), ArchLinux
 		"/usr/lib/ssh/x11-ssh-askpass",
-
 		# FreeBSD (package openssh-askpass)
 		"/bin/x11-ssh-askpass",
 	):
@@ -572,6 +571,7 @@ def getWorkAreaSize() -> "tuple[int, int] | None":
 		return None
 	rect = monitor.get_workarea()
 	return rect.width, rect.height
+
 
 ##############################
 

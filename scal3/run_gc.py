@@ -1,4 +1,3 @@
-
 # no logging in this file
 
 import os
