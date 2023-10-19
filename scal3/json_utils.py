@@ -1,4 +1,3 @@
-
 from scal3 import logger
 
 log = logger.get()
@@ -63,6 +62,7 @@ def jsonToOrderedData(text):
 
 def loadJsonConf(module, confPath, decoders: "dict | None" = None):
 	from os.path import isfile
+
 	###
 	if not isfile(confPath):
 		return

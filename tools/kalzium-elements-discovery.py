@@ -1,12 +1,10 @@
 #!/usr/bin/env python3
 import sys
-from xml.etree.ElementTree import XML, tostring
+from xml.etree.ElementTree import XML
 
 sys.path.append("/starcal2")
 
-from scal3 import event_lib
-from scal3 import ui
-
+from scal3 import event_lib, ui
 
 tree = XML(open("/usr/share/apps/libkdeedu/data/elements.xml").read())
 
@@ -28,7 +26,7 @@ def decodeAtomElement(atom):
 				data[ref] = el.attrib["value"]
 			except KeyError:
 				data[ref] = el.text.strip()
-	#assert data["id"] == data["symbol"]
+	# assert data["id"] == data["symbol"]
 	return data
 
 
@@ -44,14 +42,16 @@ def createDiscoveryEvent(group, atom):
 	if "discoverers" in atom:
 		description += ", by " + atom["discoverers"].replace(";", ",")
 	event = group.createEvent("largeScale")
-	event.setData({
-		"calType": "gregorian",
-		"summary": "Element Discovery: " + atom["id"],
-		"description": description,
-		"scale": 1,
-		"start": discoveryDate,
-		"duration": 1,
-	})
+	event.setData(
+		{
+			"calType": "gregorian",
+			"summary": "Element Discovery: " + atom["id"],
+			"description": description,
+			"scale": 1,
+			"start": discoveryDate,
+			"duration": 1,
+		},
+	)
 	# log.debug(event.id)
 	return event
 
@@ -59,12 +59,13 @@ def createDiscoveryEvent(group, atom):
 if __name__ == "__main__":
 	ui.eventGroups.load()
 	group = event_lib.LargeScaleGroup()
-	group.setData({
-		"calType": "gregorian",
-		"color": [255, 0, 0],
-		"title": "Elements Discovery",
-
-	})
+	group.setData(
+		{
+			"calType": "gregorian",
+			"color": [255, 0, 0],
+			"title": "Elements Discovery",
+		},
+	)
 	for atom in tree:
 		if not atom.tag.endswith("atom"):
 			continue

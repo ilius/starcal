@@ -4,18 +4,19 @@ from subprocess import PIPE, Popen
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk
 
-#from scal3.ui_gtk import player
+# from scal3.ui_gtk import player
 
 
-#class WidgetClass(player.PlayerBox):
-#	def __init__(self, notifier):
-#		self.notifier = notifier
-#		player.PlayerBox.__init__(self)
-#	def updateWidget(self):
-#		if self.notifier.alarmSound:
-#			self.openFile(self.notifier.alarmSound)
-#	def updateVars(self):
-#		self.notifier.alarmSound = self.getFile()
+# class WidgetClass(player.PlayerBox):
+# 	def __init__(self, notifier):
+# 		self.notifier = notifier
+# 		player.PlayerBox.__init__(self)
+# 	def updateWidget(self):
+# 		if self.notifier.alarmSound:
+# 			self.openFile(self.notifier.alarmSound)
+# 	def updateVars(self):
+# 		self.notifier.alarmSound = self.getFile()
+
 
 class WidgetClass(gtk.FileChooserButton):
 	def __init__(self, notifier):
@@ -42,14 +43,15 @@ def notifyWait(notifier, finishFunc):
 			stdout=PIPE,
 			stderr=PIPE,
 		).communicate()
-	#finishFunc()
+	# finishFunc()
 
 
 def notify(notifier, finishFunc):
-	#import thread
-	#thread.start_new_thread(notifyWait, (notifier, finishFunc))
+	# import thread
+	# thread.start_new_thread(notifyWait, (notifier, finishFunc))
 	finishFunc()
 	Popen([notifier.playerCmd, notifier.alarmSound], stdout=PIPE, stderr=PIPE)
+
 
 # event_lib.AlarmNotifier.WidgetClass = AlarmWidgetClass
 # event_lib.AlarmNotifier.notify = notify

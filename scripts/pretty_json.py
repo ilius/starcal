@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-import sys
 import json
+import sys
 
 for fname in sys.argv[1:]:
 	data = json.loads(open(fname).read())
