@@ -355,7 +355,10 @@ class GoogleAccount(Account):
 			return False
 		http = credentials.authorize(httplib2.Http())
 		http.request = lambda uri, *args, **kwargs: httplib2.Http.request(
-			http, toStr(uri), *args, **kwargs,
+			http,
+			toStr(uri),
+			*args,
+			**kwargs,
 		)
 		# http.request("google.com")
 		return http
