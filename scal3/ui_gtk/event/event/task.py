@@ -69,8 +69,8 @@ class WidgetClass(common.WidgetClass):
 		self.notificationBox = common.NotificationBox(event)
 		pack(self, self.notificationBox)
 		#############
-		#self.filesBox = common.FilesBox(self.event)
-		#pack(self, self.filesBox)
+		# self.filesBox = common.FilesBox(self.event)
+		# pack(self, self.filesBox)
 
 	def endTypeComboChanged(self, combo=None):
 		active = self.endTypeCombo.get_active()
@@ -83,7 +83,7 @@ class WidgetClass(common.WidgetClass):
 		else:
 			raise RuntimeError
 
-	def updateWidget(self):## FIXME
+	def updateWidget(self):  ## FIXME
 		common.WidgetClass.updateWidget(self)
 		###
 		startDate, startTime = self.event.getStart()
@@ -94,8 +94,8 @@ class WidgetClass(common.WidgetClass):
 		if endType == "duration":
 			self.endTypeCombo.set_active(0)
 			self.durationBox.setDuration(*values)
-			self.endDateInput.set_value(startDate)## FIXME
-			self.endTimeInput.set_value(startTime)## FIXME
+			self.endDateInput.set_value(startDate)  ## FIXME
+			self.endTimeInput.set_value(startTime)  ## FIXME
 		elif endType == "date":
 			self.endTypeCombo.set_active(1)
 			self.endDateInput.set_value(values[0])

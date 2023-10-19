@@ -1,13 +1,14 @@
 #!/usr/bin/env python3
 
 import sys
+
 try:
 	import json
 except ImportError:
 	import simplejson as json
 
-from os.path import splitext
 from collections import OrderedDict
+from os.path import splitext
 
 
 def dataToPrettyJson(data, ensure_ascii=False):

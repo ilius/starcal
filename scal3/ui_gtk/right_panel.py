@@ -25,11 +25,13 @@ class RightPanelDayOccurrenceView(DayOccurrenceView):
 
 	def addExtraMenuItems(self, menu):
 		menu.add(gtk.SeparatorMenuItem())
-		menu.add(ImageMenuItem(
-			_("Swap with Plugins Text"),
-			imageName="switch-vertical.svg",
-			func=self.onSwapClick,
-		))
+		menu.add(
+			ImageMenuItem(
+				_("Swap with Plugins Text"),
+				imageName="switch-vertical.svg",
+				func=self.onSwapClick,
+			),
+		)
 
 	def onSwapClick(self, widget):
 		self.rightPanel.swapItems()
@@ -45,11 +47,13 @@ class RightPanelPluginsTextBox(PluginsTextBox):
 	def addExtraMenuItems(self, menu):
 		if self.rightPanel:
 			menu.add(gtk.SeparatorMenuItem())
-			menu.add(ImageMenuItem(
-				_("Swap with Events Text"),
-				imageName="switch-vertical.svg",
-				func=self.onSwapClick,
-			))
+			menu.add(
+				ImageMenuItem(
+					_("Swap with Events Text"),
+					imageName="switch-vertical.svg",
+					func=self.onSwapClick,
+				),
+			)
 
 	def onSwapClick(self, widget):
 		self.rightPanel.swapItems()
@@ -216,6 +220,7 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		)
 		from scal3.ui_gtk.pref_utils_extra import FixedSizeOrRatioPrefItem
 		from scal3.ui_gtk.stack import StackPage
+
 		if self.optionsWidget is not None:
 			return self.optionsWidget
 		optionsWidget = VBox(spacing=10)
@@ -252,8 +257,10 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		prefItem = SpinPrefItem(
 			ui,
 			"mainWinRightPanelBorderWidth",
-			1, 999,
-			digits=1, step=1,  # noqa: FURB120
+			1,
+			999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			unitLabel=_("pixels"),
 			label=_("Border Width"),
 			live=True,
@@ -276,8 +283,10 @@ class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
 		prefItem = SpinPrefItem(
 			ui,
 			"rightPanelEventIconSize",
-			5, 128,
-			digits=1, step=1,  # noqa: FURB120
+			5,
+			128,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Event Icon Size"),
 			live=True,
 			onChangeFunc=self.onEventIconSizeChange,

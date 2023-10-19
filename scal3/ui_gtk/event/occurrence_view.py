@@ -118,6 +118,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 			JustificationPrefItem,
 			TextPrefItem,
 		)
+
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = VBox(spacing=10)
@@ -166,6 +167,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 
 	def getCSS(self) -> str:
 		from scal3.ui_gtk.utils import cssTextStyle
+
 		enableParam, fontParam = self.fontParams
 		if not getattr(ui, enableParam):
 			return ""
@@ -212,7 +214,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 	def trimEventMenuItemLabel(self, s: str):
 		maxLen = self.eventMenuItemLabelMaxLen
 		if len(s) > maxLen - 3:
-			s = s[:maxLen - 3].rstrip(" ") + "..."
+			s = s[: maxLen - 3].rstrip(" ") + "..."
 		return s
 
 	def onButtonPress(self, widget, gevent):
@@ -225,11 +227,13 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		if occurData is not None:
 			self.addEventMenuItems(menu, occurData)
 		####
-		menu.add(ImageMenuItem(
-			_("Copy _All"),
-			imageName="edit-copy.svg",
-			func=self.copyAll,
-		))
+		menu.add(
+			ImageMenuItem(
+				_("Copy _All"),
+				imageName="edit-copy.svg",
+				func=self.copyAll,
+			),
+		)
 		####
 		itemCopy = ImageMenuItem(
 			_("_Copy"),
@@ -277,13 +281,13 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		Author: Matthias Clasen <mclasen@redhat.com>
 		Date:   Thu Nov 30 07:52:13 2017
 
-			textview: Replace pixbufs by textures
+				textview: Replace pixbufs by textures
 
-			This affects a few apis, such as gtk_text_iter_get_pixbuf,
-			gtk_text_buffer_insert_pixbuf and GtkTextBuffer::insert-pixbuf,
-			which have all been replaced by texture equivalents.
+				This affects a few apis, such as gtk_text_iter_get_pixbuf,
+				gtk_text_buffer_insert_pixbuf and GtkTextBuffer::insert-pixbuf,
+				which have all been replaced by texture equivalents.
 
-			Update all callers.
+				Update all callers.
 		"""
 		endIter = self.textbuff.get_bounds()[1]
 		pixbuf = pixbufFromFile(
@@ -316,10 +320,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 			if occurData.time:
 				self.addTime(occurData.time)
 				self.addText(" ")
-			text = (
-				"".join(occurData.text) if self.showDesc
-				else occurData.text[0]
-			)
+			text = "".join(occurData.text) if self.showDesc else occurData.text[0]
 			for line in text.split("\n"):
 				self.addText(line + "\n")
 		self.occurOffsets = occurOffsets
@@ -363,23 +364,27 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 
 	def addWriteEventMenuItems(
 		self,
-		menu, occurData: dict[str, Any],
+		menu,
+		occurData: dict[str, Any],
 		event: "event_lib.Event",
 		group: "event_lib.EventGroup",
 	):
 		from scal3.ui_gtk.event.utils import menuItemFromEventGroup
+
 		label = _("Edit") + ": " + self.trimEventMenuItemLabel(event.summary)
 		winTitle = _("Edit") + ": " + event.summary
-		menu.add(ImageMenuItem(
-			label,
-			imageName="document-edit.svg",
-			func=self.onEditEventClick,
-			args=(
-				winTitle,
-				event,
-				group.id,
+		menu.add(
+			ImageMenuItem(
+				label,
+				imageName="document-edit.svg",
+				func=self.onEditEventClick,
+				args=(
+					winTitle,
+					event,
+					group.id,
+				),
 			),
-		))
+		)
 		###
 		moveToItem = ImageMenuItem(
 			_("Move to {title}").format(title="..."),
@@ -440,15 +445,17 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 			###
 			menu.add(gtk.SeparatorMenuItem())
 		###
-		menu.add(ImageMenuItem(
-			_("Move to {title}").format(title=ui.eventTrash.title),
-			imageName=ui.eventTrash.getIconRel(),
-			func=self.moveEventToTrash,
-			args=(
-				event,
-				group.id,
+		menu.add(
+			ImageMenuItem(
+				_("Move to {title}").format(title=ui.eventTrash.title),
+				imageName=ui.eventTrash.getIconRel(),
+				func=self.moveEventToTrash,
+				args=(
+					event,
+					group.id,
+				),
 			),
-		))
+		)
 
 	def addEventMenuItems(self, menu, occurData: dict[str, Any]):
 		if event_lib.allReadOnly:
@@ -458,12 +465,14 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 		event = ui.getEvent(groupId, eventId)
 		group = ui.eventGroups[groupId]
 		####
-		menu.add(ImageMenuItem(
-			_("Copy Event Text"),
-			imageName="edit-copy.svg",
-			func=self.copyEventText,
-			args=(event,),
-		))
+		menu.add(
+			ImageMenuItem(
+				_("Copy Event Text"),
+				imageName="edit-copy.svg",
+				func=self.copyEventText,
+				args=(event,),
+			),
+		)
 		####
 		if not event.readOnly:
 			menu.add(gtk.SeparatorMenuItem())
@@ -472,6 +481,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 
 	def onEditEventClick(self, item, winTitle, event, groupId):
 		from scal3.ui_gtk.event.editor import EventEditorDialog
+
 		event = EventEditorDialog(
 			event,
 			title=winTitle,
@@ -484,6 +494,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 
 	def moveEventToTrash(self, item, event, groupId):
 		from scal3.ui_gtk.event.utils import confirmEventTrash
+
 		if not confirmEventTrash(event, transient_for=ui.mainWin):
 			return
 		ui.moveEventToTrash(ui.eventGroups[groupId], event, self)
@@ -525,6 +536,7 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.pref_utils import SpinPrefItem
+
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = self._item.getOptionsWidget()
@@ -532,8 +544,10 @@ class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 		prefItem = SpinPrefItem(
 			ui,
 			"eventViewMaxHeight",
-			1, 9999,
-			digits=1, step=1,  # noqa: FURB120
+			1,
+			9999,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Maximum Height"),
 			live=True,
 			onChangeFunc=self.onMaximumHeightChange,
@@ -557,7 +571,7 @@ class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
 	def __init__(self, abbreviateWeekDays=False):
 		self.initVars()
 		self.abbreviateWeekDays = abbreviateWeekDays
-		self.absWeekNumber = core.getAbsWeekNumberFromJd(ui.cell.jd)## FIXME
+		self.absWeekNumber = core.getAbsWeekNumberFromJd(ui.cell.jd)  ## FIXME
 		gtk.TreeView.__init__(self)
 		self.set_headers_visible(False)
 		self.ls = gtk.ListStore(
@@ -588,7 +602,7 @@ class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
 			cell_renderer=cell,
 			text=2,
 		)
-		col.set_resizable(True)## FIXME
+		col.set_resizable(True)  ## FIXME
 		self.append_column(col)
 		###
 		cell = gtk.CellRendererText()
@@ -608,14 +622,16 @@ class WeekOccurrenceView(gtk.TreeView, CustomizableCalObj):
 		for item in wEventData:
 			if not item.show[1]:
 				continue
-			self.ls.append([
-				pixbufFromFile(item.icon),
-				core.getWeekDayAuto(item.weekDay, abbreviate=self.abbreviateWeekDays),
-				item.time,
-				item.text,
-			])
-
-
+			self.ls.append(
+				[
+					pixbufFromFile(item.icon),
+					core.getWeekDayAuto(
+						item.weekDay, abbreviate=self.abbreviateWeekDays,
+					),
+					item.time,
+					item.text,
+				],
+			)
 
 
 """

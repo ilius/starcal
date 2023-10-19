@@ -5,7 +5,7 @@ import gi
 from scal3.ui_gtk import gdk, gtk
 from scal3.ui_gtk.utils import buffer_get_text
 
-gi.require_version('GtkSource', '4')
+gi.require_version("GtkSource", "4")
 from gi.repository import GtkSource
 
 
@@ -24,10 +24,11 @@ class SourceEditor(GtkSource.View):
 
 	def _key_press_event(self, widget, event):
 		keyval_name = gdk.keyval_name(event.keyval)
-		ctrl = (event.state & gdk.ModifierType.CONTROL_MASK)
-		if ctrl and keyval_name == 'y':
+		ctrl = event.state & gdk.ModifierType.CONTROL_MASK
+		if ctrl and keyval_name == "y":
 			if self.textbuffer.can_redo():
 				self.textbuffer.do_redo(self.textbuffer)
+
 
 class SourceEditorWithFrame(gtk.Frame):
 	def __init__(self, onTextChange=None):

@@ -54,44 +54,84 @@ monthNameVars = (
 	(
 		(
 			# Iranian
-			"Farvardin", "Ordibehesht", "Khordad",
-			"Teer", "Mordad", "Shahrivar",
-			"Mehr", "Aban", "Azar",
-			"Dey", "Bahman", "Esfand",
+			"Farvardin",
+			"Ordibehesht",
+			"Khordad",
+			"Teer",
+			"Mordad",
+			"Shahrivar",
+			"Mehr",
+			"Aban",
+			"Azar",
+			"Dey",
+			"Bahman",
+			"Esfand",
 		),
 		(
 			# Iranian - abbreviated
-			"Far", "Ord", "Khr",
-			"Tir", "Mor", "Shr",
-			"Meh", "Abn", "Azr",
-			"Dey", "Bah", "Esf",
+			"Far",
+			"Ord",
+			"Khr",
+			"Tir",
+			"Mor",
+			"Shr",
+			"Meh",
+			"Abn",
+			"Azr",
+			"Dey",
+			"Bah",
+			"Esf",
 		),
 	),
 	(
 		(
 			# Kurdish/Maadi
-			"Xakelêwe", "Gullan", "Cozerdan",
-			"Pûşper", "Gelawêj", "Xermanan",
-			"Rezber", "Gelarêzan", "Sermawez",
-			"Befranbar", "Rêbendan", "Reşeme",
+			"Xakelêwe",
+			"Gullan",
+			"Cozerdan",
+			"Pûşper",
+			"Gelawêj",
+			"Xermanan",
+			"Rezber",
+			"Gelarêzan",
+			"Sermawez",
+			"Befranbar",
+			"Rêbendan",
+			"Reşeme",
 		),
 	),
 	(
 		(
 			# Afghan/Dari
-			"Hamal", "Sawr", "Jawzā",
-			"Saratān", "Asad", "Sonbola",
-			"Mizān", "Aqrab", "Qaws",
-			"Jadi", "Dalvæ", "Hūt",
+			"Hamal",
+			"Sawr",
+			"Jawzā",
+			"Saratān",
+			"Asad",
+			"Sonbola",
+			"Mizān",
+			"Aqrab",
+			"Qaws",
+			"Jadi",
+			"Dalvæ",
+			"Hūt",
 		),
 	),
 	(
 		(
 			# Pashto
-			"Wray", "Ǧwayay", "Ǧbargolay",
-			"Čungāx̌", "Zmaray", "Waǵay",
-			"Təla", "Laṛam", "Līndəi",
-			"Marǧūmay", "Salwāǧa", "Kab",
+			"Wray",
+			"Ǧwayay",
+			"Ǧbargolay",
+			"Čungāx̌",
+			"Zmaray",
+			"Waǵay",
+			"Təla",
+			"Laṛam",
+			"Līndəi",
+			"Marǧūmay",
+			"Salwāǧa",
+			"Kab",
 		),
 	),
 )
@@ -150,10 +190,14 @@ loadJsonConf(__name__, confPath)
 
 def save():
 	"""Save user options to file."""
-	saveJsonConf(__name__, confPath, (
-		"monthNameMode",
-		"jalaliAlg",
-	))
+	saveJsonConf(
+		__name__,
+		confPath,
+		(
+			"monthNameMode",
+			"jalaliAlg",
+		),
+	)
 
 
 def isLeap(year):
@@ -168,11 +212,7 @@ def isLeap(year):
 		jy = year - 979
 		jyd, jym = divmod(jy, 33)
 		jyd2, jym2 = divmod(jy + 1, 33)
-		return (
-			(jyd2 - jyd) * 8
-			+ (jym2 + 3) // 4
-			- (jym + 3) // 4
-		) == 1
+		return ((jyd2 - jyd) * 8 + (jym2 + 3) // 4 - (jym + 3) // 4) == 1
 
 	raise RuntimeError(f"bad option {alg=}")
 
@@ -194,11 +234,13 @@ def to_jd(year, month, day):
 		epyear = 474 + epbase_m
 		return (
 			day
-			+ (month - 1) * 30 + min(6, month - 1)
+			+ (month - 1) * 30
+			+ min(6, month - 1)
 			+ (epyear * 682 - 110) // 2816
 			+ (epyear - 1) * 365
 			+ epbase_d * 1029983
-			+ epoch - 1
+			+ epoch
+			- 1
 		)
 
 	if alg == ALG33:
@@ -227,11 +269,7 @@ def jd_to(jd):
 			ycycle = 2820
 		else:
 			aux1, aux2 = divmod(cyear, 366)
-			ycycle = (
-				2134 * aux1
-				+ 2816 * aux2
-				+ 2815
-			) // 1028522 + aux1 + 1
+			ycycle = (2134 * aux1 + 2816 * aux2 + 2815) // 1028522 + aux1 + 1
 		year = 2820 * cycle + ycycle + 474
 		yday = jd - to_jd(year, 1, 1) + 1
 		month, day = getMonthDayFromYdays(yday)
@@ -256,6 +294,7 @@ def jd_to(jd):
 
 # Normal: esfand = 29 days
 # Leap: esfand = 30 days
+
 
 def getMonthLen(year, month):
 	if month == 12:
