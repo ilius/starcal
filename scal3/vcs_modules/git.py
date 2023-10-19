@@ -49,7 +49,7 @@ def getCommitList(
 	returns a list of (epoch, commit_id) tuples.
 
 	this function is optimized for recent commits
-			i.e. endJd is either None or recent
+	i.e. endJd is either None or recent
 	"""
 	if not branch:
 		branch = "main"

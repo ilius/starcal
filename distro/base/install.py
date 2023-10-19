@@ -236,7 +236,8 @@ def main():
 	rmtree(join(targetCodeDir, "icons"))
 
 	shutil.copy(
-		join(sourceDir, "pixmaps", "starcal.png"), join(shareDir, "pixmaps", iconName),
+		join(sourceDir, "pixmaps", "starcal.png"),
+		join(shareDir, "pixmaps", iconName),
 	)
 
 	if installType == "for-pkg":

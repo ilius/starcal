@@ -2215,7 +2215,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		self.modified = now()  # FIXME
 		self.remoteIds = None
 		# remoteIds is (accountId, groupId, eventId)
-		#		   OR (accountId, groupId, eventId, sha1)
+		# 		   OR (accountId, groupId, eventId, sha1)
 		# remote groupId and eventId both can be integer or string
 		# (depending on remote account type)
 
@@ -4970,11 +4970,11 @@ class UniversityTerm(EventGroup):
 	) -> "list[list[list[dict[str, Any]]]]":
 		"""
 		returns `data` as a nested list that:
-				data[weekDay][classIndex] = WeeklyScheduleItem(name, weekNumMode)
+			data[weekDay][classIndex] = WeeklyScheduleItem(name, weekNumMode)
 		where
-				weekDay: int, in range(7)
-				classIndex: int
-				intervalIndex: int.
+			weekDay: int, in range(7)
+			classIndex: int
+			intervalIndex: int.
 		"""
 		boundsCount = len(self.classTimeBounds)
 		boundsHour = [h + m / 60.0 for h, m in self.classTimeBounds]

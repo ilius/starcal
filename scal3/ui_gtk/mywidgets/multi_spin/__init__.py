@@ -130,7 +130,9 @@ class MultiSpinButton(gtk.Box):
 		# https://gitlab.gnome.org/GNOME/gtk/commit/5fd936beef7a999828e5e3625506ea6708188762
 		###
 		self.down_button = imageClassButton(
-			"list-remove-symbolic", "down", self.buttonSize,
+			"list-remove-symbolic",
+			"down",
+			self.buttonSize,
 		)
 		self.down_button.connect("button-press-event", self.onDownButtonPress)
 		self.down_button.connect("button-release-event", self.onButtonRelease)

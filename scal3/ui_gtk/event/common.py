@@ -496,7 +496,9 @@ class GroupsTreeCheckList(gtk.TreeView):
 	def __init__(self):
 		gtk.TreeView.__init__(self)
 		self.treeModel = gtk.ListStore(
-			int, bool, str,
+			int,
+			bool,
+			str,
 		)  ## groupId(hidden), enable, summary
 		self.set_model(self.treeModel)
 		self.set_headers_visible(False)
