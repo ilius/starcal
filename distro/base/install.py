@@ -91,29 +91,33 @@ def checkOperatingSystem(installType):
 	if isfile("/etc/debian_version"):
 		if lsb_release() == "Ubuntu":
 			printAsError(
-				"Your distribution is based on Ubuntu, use: sudo ./distro/ubuntu/install.sh",
+				"Your distribution is based on Ubuntu, "
+				"use: sudo ./distro/ubuntu/install.sh",
 			)
 		else:
 			printAsError(
-				"Your distribution is based on Debian, use: sudo ./distro/debian/install.sh",
+				"Your distribution is based on Debian, "
+				"use: sudo ./distro/debian/install.sh",
 			)
 		return False
 
-	elif isfile("/etc/SUSE-brand") or isfile("/etc/products.d/openSUSE.prod"):
+	if isfile("/etc/SUSE-brand") or isfile("/etc/products.d/openSUSE.prod"):
 		printAsError(
 			"Your distribution is based on SUSE, use: sudo ./distro/suse/install.sh",
 		)
 		return False
 
-	elif isfile("/etc/fedora-release"):
+	if isfile("/etc/fedora-release"):
 		printAsError(
-			"Your distribution is based on Red Hat, use: sudo ./distro/fedora/install.sh",
+			"Your distribution is based on Red Hat, "
+			"use: sudo ./distro/fedora/install.sh",
 		)
 		return False
 
-	elif isfile("/etc/arch-release"):
+	if isfile("/etc/arch-release"):
 		printAsError(
-			"Your distribution is based on ArchLinux, use ./distro/archlinux/install.sh",
+			"Your distribution is based on ArchLinux, "
+			"use ./distro/archlinux/install.sh",
 		)
 		return False
 
@@ -238,7 +242,8 @@ def main():
 	if installType == "for-pkg":
 		runDirStr = join(prefix, "share", pkgName)
 	elif installType == "portable":
-		runDirStr = f'"`dirname \\"\$0\\"`"/../share/{pkgName}'
+		# FIXME: why?
+		runDirStr = join(dirname(dirname(myPath)), "share", pkgName)
 	else:
 		runDirStr = targetCodeDir
 
@@ -297,17 +302,18 @@ def main():
 		cleanup(join(targetCodeDir, "google-api-python-client/.hg"))
 		cleanup(join(targetCodeDir, "screenshots"))
 		return None
-		# for EXP in '.hidden' '*~' '*.pyc' '*.pyo' '*.tar.xz' '*.tar.gz' '*.deb' '*.rpm' '*.spec':
+		# for EXP in '.hidden' '*~' '*.pyc' '*.pyo' '*.tar.xz' '*.tar.gz' '*.deb' \
+		# 	'*.rpm' '*.spec':
 		# 		find "$DIR" -name "$EXP" -exec rm '{}' \; || true
-		# find "$targetCodeDir" -name '__pycache__' -exec rm -R '{}' \; 2>/dev/null || true
+		# find "$targetCodeDir" -name '__pycache__' -exec rm -R '{}' \
+		#  \; 2>/dev/null || true
 		# find "$targetCodeDir" -type d -empty -delete || true
 
-	else:
-		targetDotGit = join(targetCodeDir, ".git")
-		if isdir(targetDotGit):
-			print(f"You may want to remove '{targetDotGit}'")
-			return None
+	targetDotGit = join(targetCodeDir, ".git")
+	if isdir(targetDotGit):
+		print(f"You may want to remove '{targetDotGit}'")
 		return None
+	return None
 
 
 if __name__ == "__main__":

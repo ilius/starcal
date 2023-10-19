@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 # --------------------- Copyright Block ----------------------
 # Prayer Times Calculator
@@ -274,13 +273,12 @@ class PrayTimes:
 		minutes = floor((tm - hours) * 60)
 		if format == "24h":
 			return f"{hours:d}:{minutes:02d}"
-		elif format == "12h":
+		if format == "12h":
 			ampm = tr("AM") if hours < 12 else tr("PM")
 			return f"{(hours-1)%12+1:d}:{minutes:02d} {ampm}"
-		elif format == "12hNS":
+		if format == "12hNS":
 			return f"{(hours-1)%12+1:d}:{minutes:02d}"
-		else:
-			raise ValueError(f"bad time format '{format}'")
+		raise ValueError(f"bad time format '{format}'")
 
 	def midDay(self, tm):
 		"""Compute mid-day time."""
@@ -364,7 +362,7 @@ class PrayTimes:
 		}
 
 		# main iterations
-		for i in range(self.numIterations):
+		for _i in range(self.numIterations):
 			# computePrayerTimes
 			# dayPortion
 			for key in times:
