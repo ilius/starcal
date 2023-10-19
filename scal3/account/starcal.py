@@ -32,11 +32,11 @@ from scal3.time_utils import (
 	jsonTimeFromEpoch,
 )
 
-#def encodeDateTimeRuleValue(
-#	return {
-#		"date": dateEncode(self.date),
-#		"time": timeEncode(self.time),
-#	}
+# def encodeDateTimeRuleValue(
+# 	return {
+# 		"date": dateEncode(self.date),
+# 		"time": timeEncode(self.time),
+# 	}
 
 
 def formatJd(remoteEvent, attrName):
@@ -77,26 +77,16 @@ def allDayTaskDecoder(remoteEvent):
 
 remoteEventTypeDecoders = {
 	"allDayTask": allDayTaskDecoder,
-	"custom": lambda ev: {
-	},
-	"dailyNote": lambda ev: {
-	},
-	"largeScale": lambda ev: {
-	},
-	"lifetime": lambda ev: {
-	},
-	"monthly": lambda ev: {
-	},
-	"task": lambda ev: {
-	},
-	"universityClass": lambda ev: {
-	},
-	"universityExam": lambda ev: {
-	},
-	"weekly": lambda ev: {
-	},
-	"yearly": lambda ev: {
-	},
+	"custom": lambda ev: {},
+	"dailyNote": lambda ev: {},
+	"largeScale": lambda ev: {},
+	"lifetime": lambda ev: {},
+	"monthly": lambda ev: {},
+	"task": lambda ev: {},
+	"universityClass": lambda ev: {},
+	"universityExam": lambda ev: {},
+	"weekly": lambda ev: {},
+	"yearly": lambda ev: {},
 }
 
 
@@ -111,15 +101,15 @@ def decodeRemoteEvent(remoteEventFull, accountId, group):
 	try:
 		eventType = remoteEventFull["eventType"]
 	except KeyError:
-		return None, "bad remoteEventFull: missing \"eventType\""
+		return None, 'bad remoteEventFull: missing "eventType"'
 	try:
 		remoteEvent = remoteEventFull["data"]
 	except KeyError:
-		return None, "bad remoteEventFull: missing \"data\""
+		return None, 'bad remoteEventFull: missing "data"'
 	try:
 		decoder = remoteEventTypeDecoders[eventType]
 	except KeyError:
-		return None, f"bad remoteEventFull: unkown type \"{eventType}\""
+		return None, f'bad remoteEventFull: unkown type "{eventType}"'
 	eventData = {
 		"summary": remoteEvent["summary"],
 		"description": remoteEvent["description"],
@@ -168,6 +158,7 @@ class StarCalendarAccount(Account):
 
 	def callBase(self, method, path, **kwargs):
 		import requests
+
 		return getattr(requests, method)(
 			self.serverUrl + path,
 			headers={"Authorization": "bearer " + self.lastToken},
@@ -224,6 +215,7 @@ class StarCalendarAccount(Account):
 		return None if successful, or error string if failed
 		"""
 		import requests
+
 		log.info("login started")
 
 		email = self.email
@@ -265,7 +257,7 @@ class StarCalendarAccount(Account):
 		try:
 			groups = data["groups"]
 		except KeyError:
-			return "bad data: missing \"groups\""
+			return 'bad data: missing "groups"'
 
 		try:
 			self.remoteGroups = [
@@ -315,7 +307,7 @@ class StarCalendarAccount(Account):
 		try:
 			remoteModifiedEvents = data["modifiedEvents"]
 		except KeyError:
-			return "bad data: missing \"modifiedEvents\""
+			return 'bad data: missing "modifiedEvents"'
 		try:
 			group.setReadOnly(True)
 

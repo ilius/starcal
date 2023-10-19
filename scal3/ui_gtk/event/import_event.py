@@ -1,4 +1,3 @@
-
 from scal3 import logger
 
 log = logger.get()
@@ -20,14 +19,15 @@ class EventsImportWindow(WizardWindow):
 		self.manager = manager
 		WizardWindow.__init__(self, _("Import Events", ctx="window title"))
 		self.set_type_hint(gdk.WindowTypeHint.DIALOG)
-		#self.set_property("skip-taskbar-hint", True)
-		#self.set_modal(True)
-		#self.set_transient_for(manager)
-		#self.set_destroy_with_parent(True)
+		# self.set_property("skip-taskbar-hint", True)
+		# self.set_modal(True)
+		# self.set_transient_for(manager)
+		# self.set_destroy_with_parent(True)
 		self.resize(400, 200)
 
 	class FirstStep(gtk.Box):
 		desc = ""
+
 		def __init__(self, win):
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
@@ -40,18 +40,18 @@ class EventsImportWindow(WizardWindow):
 			hbox = HBox(spacing=10)
 			frame = gtk.Frame()
 			frame.set_label(_("Format"))
-			#frame.set_border_width(10)
+			# frame.set_border_width(10)
 			radioBox = VBox(spacing=10)
 			radioBox.set_border_width(10)
 			##
 			self.radioJson = gtk.RadioButton(label=_("JSON (StarCalendar)"))
-			#self.radioIcs = gtk.RadioButton(label="iCalendar", group=self.radioJson)
+			# self.radioIcs = gtk.RadioButton(label="iCalendar", group=self.radioJson)
 			##
 			pack(radioBox, self.radioJson)
-			#pack(radioBox, self.radioIcs)
+			# pack(radioBox, self.radioIcs)
 			##
 			self.radioJson.set_active(True)
-			#self.radioJson.connect("clicked", self.formatRadioChanged)
+			# self.radioJson.connect("clicked", self.formatRadioChanged)
 			##self.radioIcs.connect("clicked", self.formatRadioChanged)
 			##
 			frame.add(radioBox)
@@ -81,14 +81,15 @@ class EventsImportWindow(WizardWindow):
 				return
 			if self.radioJson.get_active():
 				format = "json"
-			#elif self.radioIcs.get_active():
-			#	format = "ics"
+			# elif self.radioIcs.get_active():
+			# 	format = "ics"
 			else:
 				return
 			self.win.showStep(1, format, fpath)
 
 	class SecondStep(gtk.Box):
 		desc = ""
+
 		def __init__(self, win):
 			gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 			self.set_spacing(20)
@@ -105,6 +106,7 @@ class EventsImportWindow(WizardWindow):
 
 		def redirectStdOutErr(self):
 			from scal3.ui_gtk.buffer import GtkBufferFile
+
 			t_table = gtk.TextTagTable()
 			tag_out = gtk.TextTag(name="output")
 			t_table.add(tag_out)
@@ -162,11 +164,13 @@ class EventsImportWindow(WizardWindow):
 						", {newEventCount} new events"
 						", {modifiedEventCount} modified events",
 					)
-					print(msg.format(
-						newGroupCount=_(len(res.newGroupIds)),
-						newEventCount=_(len(res.newEventIds)),
-						modifiedEventCount=_(len(res.modifiedEventIds)),
-					))
+					print(
+						msg.format(
+							newGroupCount=_(len(res.newGroupIds)),
+							newEventCount=_(len(res.newEventIds)),
+							modifiedEventCount=_(len(res.modifiedEventIds)),
+						),
+					)
 
 		def onBackClick(self, obj):
 			self.win.showStep(0)
