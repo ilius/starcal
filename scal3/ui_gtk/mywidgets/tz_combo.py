@@ -1,4 +1,3 @@
-
 from scal3 import locale_man, ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gtk, pack
@@ -7,11 +6,12 @@ from scal3.ui_gtk import gtk, pack
 class TimeZoneComboBoxEntry(gtk.Box):
 	def __init__(self):
 		from natz.tree import getZoneInfoTree
+
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		model = gtk.TreeStore(str, bool)
 		self.c = gtk.ComboBoxText.new_with_entry()
 		pack(self, self.c, 1, 1)
-		#gtk.ComboBoxText.__init__(self)
+		# gtk.ComboBoxText.__init__(self)
 		self.c.set_model(model)
 		self.c.set_entry_text_column(0)
 
@@ -27,16 +27,19 @@ class TimeZoneComboBoxEntry(gtk.Box):
 		self.c.connect("changed", self.onChanged)
 		child = self.c.get_child()
 		child.set_text(str(locale_man.localTz))
-		#self.set_text(str(locale_man.localTz)) ## FIXME
+		# self.set_text(str(locale_man.localTz)) ## FIXME
 		###
 		self.get_text = child.get_text
-		#self.get_text = self.c.get_active_text ## FIXME
+		# self.get_text = self.c.get_active_text ## FIXME
 		self.set_text = child.set_text
 		#####
-		recentIter = model.append(None, [
-			_("Recent..."),
-			False,
-		])
+		recentIter = model.append(
+			None,
+			[
+				_("Recent..."),
+				False,
+			],
+		)
 		for tz_name in ui.localTzHist:
 			model.append(recentIter, [tz_name, True])
 		###
@@ -67,12 +70,13 @@ class TimeZoneComboBoxEntry(gtk.Box):
 			for i in range(len(path)):
 				parts.append(
 					model.get(
-						model.get_iter(path[:i + 1]),
+						model.get_iter(path[: i + 1]),
 						0,
 					)[0],
 				)
 			text = "/".join(parts)
 		self.set_text(text)
+
 
 if __name__ == "__main__":
 	diolog = gtk.Dialog()

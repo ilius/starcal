@@ -22,9 +22,9 @@ class Tick:
 	def __init__(self, epoch, pos, unitSize, label, color=None):
 		self.epoch = epoch
 		self.pos = pos  # pixel position
-		self.height = unitSize ** 0.5 * tl.baseTickHeight
-		self.width = min(unitSize ** 0.2 * tl.baseTickWidth, tl.maxTickWidth)
-		self.fontSize = unitSize ** 0.1 * tl.baseFontSize
+		self.height = unitSize**0.5 * tl.baseTickHeight
+		self.width = min(unitSize**0.2 * tl.baseTickWidth, tl.maxTickWidth)
+		self.fontSize = unitSize**0.1 * tl.baseFontSize
 		self.maxLabelWidth = min(unitSize * 0.5, tl.maxLabelWidth)  # FIXME
 		self.label = label
 		if color is None:

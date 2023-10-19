@@ -38,24 +38,28 @@ class IconSelectButton(gtk.Button):
 		###
 		menu = Menu()
 		self.menu = menu
-		menu.add(ImageMenuItem(
-			_("None"),
-			func=self.menuItemActivate,
-			args=("",),
-		))
+		menu.add(
+			ImageMenuItem(
+				_("None"),
+				func=self.menuItemActivate,
+				args=("",),
+			),
+		)
 		for item in ui.eventTags:
 			icon = item.getIconRel()
 			if not icon:
 				continue
-			menu.add(ImageMenuItem(
-				_(item.desc),
-				imageName=icon,
-				func=self.menuItemActivate,
-				args=(icon,),
-			))
+			menu.add(
+				ImageMenuItem(
+					_(item.desc),
+					imageName=icon,
+					func=self.menuItemActivate,
+					args=(icon,),
+				),
+			)
 		menu.show_all()
 		###
-		#self.connect("clicked", lambda button: button.dialog.run())
+		# self.connect("clicked", lambda button: button.dialog.run())
 		self.connect("button-press-event", self.onButtonPressEvent)
 		###
 		self.set_filename(filename)
@@ -119,10 +123,12 @@ class IconSelectButton(gtk.Button):
 		self.emit("changed", fname)
 
 	def _setImage(self, filename):
-		self.image.set_from_pixbuf(pixbufFromFile(
-			filename,
-			ui.imageInputIconSize,
-		))
+		self.image.set_from_pixbuf(
+			pixbufFromFile(
+				filename,
+				ui.imageInputIconSize,
+			),
+		)
 
 	def fileActivated(self, dialog):
 		fname = dialog.get_filename()

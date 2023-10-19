@@ -1,4 +1,3 @@
-
 from scal3 import logger
 
 log = logger.get()
@@ -42,10 +41,7 @@ class ConButtonBase:
 		return True
 
 	def onPressRemain(self, func, counter):
-		if (
-			counter == self.counter and
-			now() - self.pressTm >= ui.timeout_repeat / 1000
-		):
+		if counter == self.counter and now() - self.pressTm >= ui.timeout_repeat / 1000:
 			func()
 			timeout_add(
 				ui.timeout_repeat,

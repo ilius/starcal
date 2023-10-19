@@ -1,4 +1,3 @@
-
 from os.path import join
 
 from scal3 import ui
@@ -37,14 +36,16 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 	def setImage(self, imName):
 		if self.controller.light:
 			imName += "-light"
-		self.im.set_from_pixbuf(pixbufFromFile(
-			join(
-				"wm",
-				ui.winControllerTheme,
-				imName + ".svg",
+		self.im.set_from_pixbuf(
+			pixbufFromFile(
+				join(
+					"wm",
+					ui.winControllerTheme,
+					imName + ".svg",
+				),
+				ui.winControllerIconSize,
 			),
-			ui.winControllerIconSize,
-		))
+		)
 
 	def setFocus(self, focus):
 		self.setImage(self.imageNameFocus if focus else self.imageName)
@@ -62,7 +63,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 		self.connect("leave-notify-event", self.leaveNotify)
 		self.connect("button-press-event", self.onButtonPress)
 		self.connect("button-release-event", self.onButtonRelease)
-		set_tooltip(self, self.desc)## FIXME
+		set_tooltip(self, self.desc)  ## FIXME
 
 	def enterNotify(self, widget, gevent):
 		self.setFocus(True)
@@ -119,7 +120,6 @@ class WinConButtonMax(WinConButton):
 		gWin.toggleWidthMaximized(gevent)
 
 
-
 class WinConButtonClose(WinConButton):
 	_name = "close"
 	desc = _("Close Window")
@@ -160,6 +160,7 @@ class WinConButtonSep(WinConButton):
 	def setInactive(self):
 		pass
 
+
 # Stick
 # Above
 # Below
@@ -177,10 +178,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		WinConButtonSep,
 		WinConButtonRightPanel,
 	)
-	buttonClassDict = {
-		cls._name: cls
-		for cls in buttonClassList
-	}
+	buttonClassDict = {cls._name: cls for cls in buttonClassList}
 
 	def __init__(self, win):
 		self.win = win
@@ -190,7 +188,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 			spacing=ui.winControllerSpacing,
 		)
 		self.set_spacing(ui.winControllerSpacing)
-		self.set_direction(gtk.TextDirection.LTR)## FIXME
+		self.set_direction(gtk.TextDirection.LTR)  ## FIXME
 		self.initVars()
 		###########
 		# passing `self` to ud.hasLightTheme does not work!
@@ -226,6 +224,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.pref_utils import ComboTextPrefItem, SpinPrefItem
+
 		if self.optionsWidget:
 			return self.optionsWidget
 		optionsWidget = VBox()
@@ -243,8 +242,10 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		prefItem = SpinPrefItem(
 			ui,
 			"winControllerIconSize",
-			5, 128,
-			digits=1, step=1,  # noqa: FURB120
+			5,
+			128,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Icon Size"),
 			live=True,
 			onChangeFunc=self.updateButtons,
@@ -254,8 +255,10 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		prefItem = SpinPrefItem(
 			ui,
 			"winControllerBorder",
-			0, 99,
-			digits=1, step=1,  # noqa: FURB120
+			0,
+			99,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Buttons Border"),
 			live=True,
 			onChangeFunc=self.onButtonBorderChange,
@@ -265,8 +268,10 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		prefItem = SpinPrefItem(
 			ui,
 			"winControllerSpacing",
-			0, 99,
-			digits=1, step=1,  # noqa: FURB120
+			0,
+			99,
+			digits=1,
+			step=1,  # noqa: FURB120
 			label=_("Space between buttons"),
 			live=True,
 			onChangeFunc=self.onButtonPaddingChange,
