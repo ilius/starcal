@@ -1,4 +1,3 @@
-
 from scal3 import logger
 
 log = logger.get()
@@ -14,7 +13,7 @@ dayLen = 24 * 3600
 
 class DateChangeListener:
 	def __init__(self, timeout=1):
-		self.timeout = timeout ## seconds
+		self.timeout = timeout  ## seconds
 		self.receivers = []
 		self.gdate = localtime()[:3]
 		self.check()
@@ -30,19 +29,20 @@ class DateChangeListener:
 			ui.todayCell = ui.cellCache.getTodayCell()
 			for obj in self.receivers:
 				obj.onCurrentDateChange(gdate)
-		#timeout_add_seconds(
-		#	int(dayLen - (tm + getUtcOffsetCurrent()) % dayLen) + 1,
-		#	self.check,
-		#)
+		# timeout_add_seconds(
+		# 	int(dayLen - (tm + getUtcOffsetCurrent()) % dayLen) + 1,
+		# 	self.check,
+		# )
 		timeout_add_seconds(self.timeout, self.check)
 		if ui.mainWin:
 			ui.mainWin.statusIconUpdateTooltip()
 
-#class TimeChangeListener:
+
+# class TimeChangeListener:
 
 
 dateChange = DateChangeListener()
-#timeChange = TimeChangeListener()
+# timeChange = TimeChangeListener()
 
 if __name__ == "__main__":
 	from gi.repository import GLib as glib

@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import os
 import sys
 
 sys.path.append("/starcal2")
 
+from scal3 import event_lib, ui
+from scal3.core import moduleNames
 from scal3.date_utils import dateDecode
-from scal3.core import to_jd, jd_to, convert, moduleNames
-from scal3 import event_lib
-from scal3 import ui
 
 dataToPrettyJson = lambda data: json.dumps(data, sort_keys=True, indent=2)
 
@@ -28,12 +26,13 @@ def getGroupByTitle(title):
 		return newGroupsDict[title]
 	except KeyError:
 		group = event_lib.NoteBook()
-		group.setData({
-			"calType": "jalali",
-			"color": [255, 255, 0],
-			"title": title,
-
-		})
+		group.setData(
+			{
+				"calType": "jalali",
+				"color": [255, 255, 0],
+				"title": title,
+			},
+		)
 		newGroupsDict[title] = group
 		ui.eventGroups.append(group)
 		return group

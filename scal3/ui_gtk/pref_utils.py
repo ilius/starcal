@@ -86,7 +86,7 @@ class ModuleOptionItem:
 		opt: tuple,
 	) -> None:
 		t = opt[1]
-		self.opt = opt ## needed??
+		self.opt = opt  ## needed??
 		self.obj = obj
 		self.type = t
 		self.attrName = opt[0]
@@ -331,8 +331,8 @@ class FontFamilyPrefItem(PrefItem):
 # 	"font-style": normal | oblique | italic
 # 	"font-variant": normal | small-caps
 # 	"font-stretch": ultra-condensed | extra-condensed | condensed |
-#		semi-condensed | normal | semi-expanded | expanded |
-#		extra-expanded | ultra-expanded
+# 		semi-condensed | normal | semi-expanded | expanded |
+# 		extra-expanded | ultra-expanded
 
 # Constructor can accept argument `attrNameDict: dict[str, str]`
 # with keys being a subset these 6 style keys, and values
@@ -340,9 +340,6 @@ class FontFamilyPrefItem(PrefItem):
 # and storing (in updateVar) the style values
 # or maybe we should leave that to the user of class, and just accept
 # a `attrName: str` argument like other classes
-
-
-
 
 
 class ComboEntryTextPrefItem(PrefItem):
@@ -403,7 +400,7 @@ class ComboImageTextPrefItem(PrefItem):
 		self._widget = combo
 		self.ls = ls
 		if items:
-			for (imPath, label) in items:
+			for imPath, label in items:
 				self.append(imPath, label)
 
 	def get(self) -> int:
@@ -435,6 +432,7 @@ class FontPrefItem(PrefItem):
 		previewText: str = "",
 	) -> None:
 		from scal3.ui_gtk.mywidgets import MyFontButton
+
 		self.obj = obj
 		self.attrName = attrName
 		w = MyFontButton(dragAndDrop=dragAndDrop)
@@ -523,6 +521,7 @@ class ColorPrefItem(PrefItem):
 		onChangeFunc: "Callable | None" = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets import MyColorButton
+
 		self.obj = obj
 		self.attrName = attrName
 		colorb = MyColorButton()
@@ -730,6 +729,7 @@ class TextPrefItem(PrefItem):
 		onChangeFunc: "Callable | None" = None,
 	):
 		from scal3.ui_gtk.mywidgets import TextFrame
+
 		self.obj = obj
 		self.attrName = attrName
 		self._onChangeFunc = onChangeFunc
@@ -880,6 +880,7 @@ class IconChooserPrefItem(PrefItem):
 		onChangeFunc: "Callable | None" = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.icon import IconSelectButton
+
 		self.obj = obj
 		self.attrName = attrName
 		self._onChangeFunc = onChangeFunc
@@ -901,7 +902,7 @@ class IconChooserPrefItem(PrefItem):
 		iconPath = self.iconSelect.get_filename()
 		direc = join(pixDir, "")
 		if iconPath.startswith(direc):
-			iconPath = iconPath[len(direc):]
+			iconPath = iconPath[len(direc) :]
 		return iconPath
 
 	def set(self, iconPath: str) -> None:
@@ -937,10 +938,7 @@ class RadioListPrefItem(PrefItem):
 		else:
 			box = HBox()
 		self._widget = box
-		self.radios = [
-			gtk.RadioButton(label=_(s))
-			for s in texts
-		]
+		self.radios = [gtk.RadioButton(label=_(s)) for s in texts]
 		first = self.radios[0]
 		if label is not None:
 			pack(box, gtk.Label(label=label))
@@ -950,7 +948,7 @@ class RadioListPrefItem(PrefItem):
 			pack(box, gtk.Label(), 1, 1)
 			pack(box, r)
 			r.join_group(first)
-		pack(box, gtk.Label(), 1, 1) ## FIXME
+		pack(box, gtk.Label(), 1, 1)  ## FIXME
 
 	def get(self) -> "int | None":
 		for i in range(self.num):
@@ -995,10 +993,7 @@ class ListPrefItem(PrefItem):
 		self._widget = box
 
 	def get(self) -> list[Any]:
-		return [
-			item.get()
-			for item in self.items
-		]
+		return [item.get() for item in self.items]
 
 	def set(self, valueL: list[Any]):
 		for i in range(self.num):
@@ -1027,6 +1022,7 @@ class DirectionPrefItem(PrefItem):
 		onChangeFunc: "Callable | None" = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.direction_combo import DirectionComboBox
+
 		###
 		self.obj = obj
 		self.attrName = attrName
@@ -1065,6 +1061,7 @@ class JustificationPrefItem(PrefItem):
 		onChangeFunc: "Callable | None" = None,
 	) -> None:
 		from scal3.ui_gtk.mywidgets.justification_combo import JustificationComboBox
+
 		###
 		self.obj = obj
 		self.attrName = attrName

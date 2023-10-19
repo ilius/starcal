@@ -72,10 +72,7 @@ class MaxHeap(list):
 			yield k, v
 
 	def __str__(self):
-		return " ".join([
-			str(-k)
-			for k, v in self
-		])
+		return " ".join([str(-k) for k, v in self])
 
 	def delete(self, key, value):
 		try:
@@ -123,9 +120,14 @@ class MaxHeap(list):
 		if not self:
 			raise ValueError("heap empty")
 		k, v = max(
-			self[- 2 ** int(
-				math_log(len(self), 2),
-			):],
+			self[
+				-(
+					2
+					** int(
+						math_log(len(self), 2),
+					)
+				) :
+			],
 		)
 		return -k, v
 
@@ -144,6 +146,7 @@ class MaxHeap(list):
 
 def getMinTest(N):
 	from random import randint
+
 	h = MaxHeap()
 	for _ in range(N):
 		x = randint(1, 10 * N)
@@ -160,6 +163,7 @@ def getMinTest(N):
 
 def testDeleteStep(N, maxKey):
 	from random import randint
+
 	###
 	h = MaxHeap()
 	for _ in range(N):
@@ -183,6 +187,7 @@ def testDelete():
 		for _ in range(10000):
 			if not testDeleteStep(N, 10000):
 				break
+
 
 # if __name__=="__main__":
 # 	testDelete()

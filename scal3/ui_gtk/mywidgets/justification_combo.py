@@ -1,17 +1,10 @@
-
 from scal3.ui_gtk import gtk, pack
 from scal3.ui_gtk import gtk_ud as ud
 
 
 class JustificationComboBox(gtk.ComboBox):
-	keys = [
-		name
-		for name, desc, value in ud.justificationList
-	]
-	descs = [
-		desc
-		for name, desc, value in ud.justificationList
-	]
+	keys = [name for name, desc, value in ud.justificationList]
+	descs = [desc for name, desc, value in ud.justificationList]
 
 	def __init__(self):
 		ls = gtk.ListStore(str)

@@ -10,4 +10,3 @@ mainWinItemsDesc = {
 	"toolbar": _("Toolbar"),
 	"weekCal": _("Week Calendar"),
 }
-

@@ -25,6 +25,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 
 	def onDateChange(self, *a, **kw):
 		from scal3.season import getSeasonNamePercentFromJd
+
 		CustomizableCalObj.onDateChange(self, *a, **kw)
 		name, frac = getSeasonNamePercentFromJd(
 			ui.cell.jd,
@@ -35,9 +36,9 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 		else:
 			percent = f"%{int(frac * 100)}"
 		self.pbar.set_text(
-			_(name) +
-			" - " +
-			textNumEncode(
+			_(name)
+			+ " - "
+			+ textNumEncode(
 				percent,
 				changeDot=True,
 			),
@@ -46,6 +47,7 @@ class CalObj(gtk.Frame, CustomizableCalObj):
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		from scal3.ui_gtk.pref_utils import CheckPrefItem
+
 		if self.optionsWidget:
 			return self.optionsWidget
 		####
