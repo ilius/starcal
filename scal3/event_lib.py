@@ -2495,28 +2495,26 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		return None
 
 	def setIcsData(self, data):
-		"""
-		if "T" in data["DTSTART"]:
-				return False
-		if "T" in data["DTEND"]:
-				return False
-		startJd = ics.getJdByIcsDate(data["DTSTART"])
-		endJd = ics.getJdByIcsDate(data["DTEND"])
-		if "RRULE" in data:
-				rrule = dict(ics.splitIcsValue(data["RRULE"]))
-				if rrule["FREQ"] == "YEARLY":
-						y0, m0, d0 = jd_to(startJd, self.calType)
-						y1, m1, d1 = jd_to(endJd, self.calType)
-						if y0 != y1:  # FIXME
-								return False
-						yr = self.getAddRule("year")
-						interval = int(rrule.get("INTERVAL", 1)).
+		# if "T" in data["DTSTART"]:
+		# 	return False
+		# if "T" in data["DTEND"]:
+		# 	return False
+		# startJd = ics.getJdByIcsDate(data["DTSTART"])
+		# endJd = ics.getJdByIcsDate(data["DTEND"])
+		# if "RRULE" in data:
+		# 	rrule = dict(ics.splitIcsValue(data["RRULE"]))
+		# 	if rrule["FREQ"] == "YEARLY":
+		# 		y0, m0, d0 = jd_to(startJd, self.calType)
+		# 		y1, m1, d1 = jd_to(endJd, self.calType)
+		# 		if y0 != y1:  # FIXME
+		# 			return False
+		# 		yr = self.getAddRule("year")
+		# 		interval = int(rrule.get("INTERVAL", 1)).
 
-				elif rrule["FREQ"] == "MONTHLY":
-						pass
-				elif rrule["FREQ"] == "WEEKLY":
-						pass
-		"""
+		# 	elif rrule["FREQ"] == "MONTHLY":
+		# 		pass
+		# 	elif rrule["FREQ"] == "WEEKLY":
+		# 		pass
 		return False
 
 	def changeCalType(self, calType) -> bool:
