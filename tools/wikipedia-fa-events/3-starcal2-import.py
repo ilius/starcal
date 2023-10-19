@@ -1,15 +1,19 @@
-#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
+import json
 import sys
 
 sys.path.append("/starcal2")
 
-from scal3 import event_lib, ui
+from scal3 import event_lib, logger, ui
 from scal3.core import moduleNames
 from scal3.date_utils import dateDecode
 
-dataToPrettyJson = lambda data: json.dumps(data, sort_keys=True, indent=2)
+
+def dataToPrettyJson(data):
+	return json.dumps(data, sort_keys=True, indent=2)
+
+log = logger.get()
 
 GREGORIAN = moduleNames.index("gregorian")
 DATE_JALALI = moduleNames.index("jalali")
