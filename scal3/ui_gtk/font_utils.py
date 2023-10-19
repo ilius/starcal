@@ -15,11 +15,12 @@ S_NORMAL = pango.Style.NORMAL
 BOLD = pango.Weight.BOLD
 ITALIC = pango.Style.ITALIC
 
-#import pango
-#W_NORMAL = pango.WEIGHT_NORMAL
-#S_NORMAL = pango.STYLE_NORMAL
-#BOLD = pango.WEIGHT_BOLD
-#ITALIC = pango.STYLE_ITALIC
+# import pango
+# W_NORMAL = pango.WEIGHT_NORMAL
+# S_NORMAL = pango.STYLE_NORMAL
+# BOLD = pango.WEIGHT_BOLD
+# ITALIC = pango.STYLE_ITALIC
+
 
 def pfontDecode(pfont):
 	return ui.Font(
@@ -50,9 +51,6 @@ def gfontEncode(font):
 
 def getFontFamilyList(widget):
 	return sorted(
-		(
-			f.get_name()
-			for f in widget.get_pango_context().list_families()
-		),
+		(f.get_name() for f in widget.get_pango_context().list_families()),
 		key=str.upper,
 	)

@@ -110,9 +110,9 @@ def getShortStatByTrees(repo, old_tree, tree):
 		_executable,
 	) in tree.iter_changes(old_tree):
 		if changed_content:
-			#for kind in (old_kind, new_kind):
-			#	if not kind in (None, "file", "symlink", "directory"):
-			#		log.info(f"kind: {old_kind}, {new_kind}")
+			# for kind in (old_kind, new_kind):
+			# 	if not kind in (None, "file", "symlink", "directory"):
+			# 		log.info(f"kind: {old_kind}, {new_kind}")
 			if new_kind in ("file", "symlink"):
 				files_changed += 1
 				text = tree.get_file_text(file_id)
@@ -129,10 +129,10 @@ def getShortStatByTrees(repo, old_tree, tree):
 						for op, i1, i2, j1, j2 in seq.get_opcodes():
 							if op == "equal":
 								continue
-							#if not op in ("insert", "delete", "replace"):
-							#	log.info(f"{op = }")
-							insertions += (j2 - j1)
-							deletions += (i2 - i1)
+							# if not op in ("insert", "delete", "replace"):
+							# 	log.info(f"{op = }")
+							insertions += j2 - j1
+							deletions += i2 - i1
 			elif new_kind is None:
 				if old_kind in ("file", "symlink"):
 					files_changed += 1
@@ -175,10 +175,12 @@ def getTagList(obj, startJd, endJd):
 		rev = obj.repo.get_revision(rev_id)
 		epoch = rev.timestamp
 		if startEpoch <= epoch < endEpoch:
-			data.append((
-				epoch,
-				tag,
-			))
+			data.append(
+				(
+					epoch,
+					tag,
+				),
+			)
 	data.sort()
 	return data
 

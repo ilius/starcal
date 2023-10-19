@@ -15,18 +15,18 @@ class TimerButton(TimeButton):
 
 	def __init__(self, **kwargs):
 		TimeButton.__init__(self, **kwargs)
-		#self.timer = False
-		#self.clock = False
-		self.delay = 1.0 # timer delay
-		self.tPlus = -1 # timer plus (step)
+		# self.timer = False
+		# self.clock = False
+		self.delay = 1.0  # timer delay
+		self.tPlus = -1  # timer plus (step)
 		self.elapse = 0
 
 	def timer_start(self):
 		self.clock = False
 		self.timer = True
-		#self.delay = 1.0 # timer delay
-		#self.tPlus = -1 # timer plus (step)
-		#self.elapse = 0
+		# self.delay = 1.0 # timer delay
+		# self.tPlus = -1 # timer plus (step)
+		# self.elapse = 0
 		#########
 		self.tOff = now() * self.tPlus - self.get_seconds()
 		self.set_editable(False)

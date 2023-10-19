@@ -85,6 +85,7 @@ __all__ = [
 	"getGtkWindow",
 ]
 
+
 def hideList(widgets):
 	for w in widgets:
 		w.hide()
@@ -126,7 +127,7 @@ def setClipboard(text, clipboard=None):
 		toStr(text),
 		len(toBytes(text)),
 	)
-	#clipboard.store() ## ?????? No need!
+	# clipboard.store() ## ?????? No need!
 
 
 def imageFromIconName(
@@ -136,7 +137,7 @@ def imageFromIconName(
 	# TODO: pixcache does not contain iconNames right now, maybe later
 	# pixbuf = pixcache.getPixbuf(iconName, int(size))
 	# if pixbuf is not None:
-	#	return gtk.Image.new_from_pixbuf(pixbuf)
+	# 	return gtk.Image.new_from_pixbuf(pixbuf)
 
 	# So gtk.Image.new_from_stock is deprecated
 	# And the doc says we should use gtk.Image.new_from_icon_name
@@ -168,7 +169,8 @@ def imageFromIconNameWithPixelSize(
 	if pixbuf is None:
 		raise RuntimeError("pixbuf is None")
 	pixbuf = pixbuf.scale_simple(
-		size, size,
+		size,
+		size,
 		GdkPixbuf.InterpType.BILINEAR,
 	)
 	image.set_from_pixbuf(pixbuf)
@@ -220,7 +222,8 @@ def pixbufFromFile(
 		raise ValueError(f"pixbufFromFile: invalid {size=}")
 	if pixbuf.get_width() != size:
 		pixbuf = pixbuf.scale_simple(
-			size, size,
+			size,
+			size,
 			GdkPixbuf.InterpType.BILINEAR,
 		)
 		if pixbuf is not None:
@@ -235,10 +238,10 @@ commit be2f19663bf9c1ead35fa69aee0292842ceada97
 Author: Timm Bäder <mail@baedert.org>
 Date:   Fri Oct 14 17:31:56 2016
 
-    button: Add icon-name property
+	button: Add icon-name property
 
-    Remove the old-style button construction that allowed to show both an
-    icon and a label and change visibility based on a GtkSetting.
+	Remove the old-style button construction that allowed to show both an
+	icon and a label and change visibility based on a GtkSetting.
 """
 
 
@@ -261,11 +264,13 @@ def labelIconButton(
 ):
 	button = gtk.Button()
 	if ui.buttonIconEnable:
-		button.add(newButtonImageBox(
-			label,
-			imageFromIconName(iconName, size),
-			spacing=size/2,
-		))
+		button.add(
+			newButtonImageBox(
+				label,
+				imageFromIconName(iconName, size),
+				spacing=size / 2,
+			),
+		)
 		return button
 	button.set_label(label)
 	button.set_use_underline(True)
@@ -284,11 +289,13 @@ def labelImageButton(
 	if ui.buttonIconEnable or not label:
 		if size == 0:
 			size = ui.buttonIconSize
-		button.add(newButtonImageBox(
-			label,
-			imageFromFile(imageName, size=size),
-			spacing=spacing,
-		))
+		button.add(
+			newButtonImageBox(
+				label,
+				imageFromFile(imageName, size=size),
+				spacing=spacing,
+			),
+		)
 		# TODO: the child(HBox) is not centered in the Button
 		# problem can be seen in Preferences window: Apply and OK buttons
 		# button.set_alignment(0.5, 0.5)
@@ -304,15 +311,18 @@ def labelImageButton(
 
 def imageClassButton(iconName: str, styleClass: str, size: int):
 	button = gtk.Button()
-	button.add(imageFromIconName(
-		iconName,
-		size,
-	))
+	button.add(
+		imageFromIconName(
+			iconName,
+			size,
+		),
+	)
 	button.get_style_context().add_class("image-button")
 	button.set_can_focus(False)
 	if styleClass:
 		button.get_style_context().add_class(styleClass)
 	return button
+
 
 def setImageClassButton(
 	button: "gtk.Button",
@@ -351,10 +361,7 @@ def modify_bg_all(widget, state, gcolor):
 
 
 def rectangleContainsPoint(r, x, y):
-	return (
-		r.x <= x < r.x + r.width and
-		r.y <= y < r.y + r.height
-	)
+	return r.x <= x < r.x + r.width and r.y <= y < r.y + r.height
 
 
 """
@@ -372,6 +379,7 @@ def rectangleContainsPoint(r, x, y):
 	(-1, <enum GTK_RESPONSE_NONE of type Gtk.ResponseType>)
 ]
 """
+
 
 def dialog_add_button(
 	dialog,
@@ -398,10 +406,12 @@ def dialog_add_button(
 		elif imageName:
 			if rtl:
 				imageName = rtlImageNameMapping.get(imageName, imageName)
-			b.set_image(imageFromFile(
-				imageName,
-				size=ui.buttonIconSize,
-			))
+			b.set_image(
+				imageFromFile(
+					imageName,
+					size=ui.buttonIconSize,
+				),
+			)
 	if onClick:
 		b.connect("clicked", onClick)
 	if tooltip:
@@ -463,10 +473,13 @@ def showMsg(
 	hbox.set_border_width(borderWidth)
 	# win.set_icon(...)
 	if imageName:
-		pack(hbox, imageFromFile(
-			imageName,
-			size=ui.messageDialogIconSize,
-		))
+		pack(
+			hbox,
+			imageFromFile(
+				imageName,
+				size=ui.messageDialogIconSize,
+			),
+		)
 	label = gtk.Label(label=msg)
 	# set_line_wrap(True) makes the window go crazy tall (taller than screen)
 	# and that's the reason for label.set_size_request and win.resize
@@ -513,16 +526,16 @@ def get_menu_width(menu):
 	#menu.show_all()
 	#menu.realize()
 	log.info(
-		menu.get_border_width(),
-		max_item_width,
-		menu.get_allocation().width,
-		menu.get_preferred_size()[1].width,
-		menu.get_preferred_size()[0],
-		menu.get_preferred_width(),
-		#menu.do_get_preferred_width(),
-		menu.get_preferred_size()[0].width,
-		menu.get_preferred_size()[1].width,
-		).
+			menu.get_border_width(),
+			max_item_width,
+			menu.get_allocation().width,
+			menu.get_preferred_size()[1].width,
+			menu.get_preferred_size()[0],
+			menu.get_preferred_width(),
+			#menu.do_get_preferred_width(),
+			menu.get_preferred_size()[0].width,
+			menu.get_preferred_size()[1].width,
+			).
 	"""
 	w = menu.get_allocation().width
 	# get_preferred_size() returns (minimum_size: Gtk.Requisition,
@@ -548,7 +561,7 @@ def get_menu_height(menu):
 	if not items:
 		return 0
 	# get_preferred_size() returns (minimum_size: Gtk.Requisition,
-	#		natural_size: Gtk.Requisition)
+	# 		natural_size: Gtk.Requisition)
 	return sum(item.get_preferred_size()[1].height for item in items)
 	# FIXME: does not work, all items are zero
 	# log.debug("menu height from sum:", h)
@@ -557,6 +570,7 @@ def get_menu_height(menu):
 
 def get_pixbuf_hash(pbuf):
 	import hashlib
+
 	md5 = hashlib.md5()
 
 	def save_func(chunkBytes, size, unknown):
@@ -658,13 +672,13 @@ def cssTextStyle(
 
 def getBackgroundColor(widget: gtk.Widget):
 	return gdkColorToRgb(
-		widget.get_style_context().
-		get_background_color(gtk.StateFlags.NORMAL),
+		widget.get_style_context().get_background_color(gtk.StateFlags.NORMAL),
 	)
 
 
 def getBackgroundColorCSS(widget: gtk.Widget):
 	from scal3.color_utils import rgbToCSS
+
 	return rgbToCSS(getBackgroundColor(widget))
 
 
@@ -673,4 +687,3 @@ def getGtkWindow(widget: "gtk.Widget") -> "gtk.Window | None":
 	if isinstance(top, gtk.Window):
 		return top
 	return None
-

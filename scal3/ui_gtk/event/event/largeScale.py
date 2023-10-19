@@ -76,11 +76,11 @@ class WidgetClass(common.WidgetClass):
 		self.endRelCombo.set_active(0 if self.event.endRel else 1)
 		self.endSpin.set_value(self.event.end)
 
-	def updateVars(self):## FIXME
+	def updateVars(self):  ## FIXME
 		common.WidgetClass.updateVars(self)
 		self.event.scale = self.scaleCombo.get_value()
 		self.event.start = self.startSpin.get_value()
-		self.event.endRel = (self.endRelCombo.get_active() == 0)
+		self.event.endRel = self.endRelCombo.get_active() == 0
 		self.event.end = self.endSpin.get_value()
 
 

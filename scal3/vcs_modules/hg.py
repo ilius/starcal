@@ -112,10 +112,12 @@ def getTagList(obj, startJd, endJd):
 			continue
 		epoch = obj.repo[tag].date()[0]
 		if startEpoch <= epoch < endEpoch:
-			data.append((
-				epoch,
-				tag,
-			))
+			data.append(
+				(
+					epoch,
+					tag,
+				),
+			)
 	data.sort()
 	return data
 

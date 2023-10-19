@@ -118,12 +118,14 @@ def getJdFromFloatYear(fyear: float, calType: int) -> int:
 
 
 def getEpochFromDate(y: int, m: int, d: int, calType: int) -> int:
-	return getEpochFromJd(to_jd(
-		y,
-		m,
-		d,
-		calType,
-	))
+	return getEpochFromJd(
+		to_jd(
+			y,
+			m,
+			d,
+			calType,
+		),
+	)
 
 
 def ymdRange(
@@ -144,6 +146,7 @@ def ymdRange(
 	j2 = int(to_jd(y2, m2, d2, calType))
 	for j in range(j1, j2):
 		yield jd_to(j, calType)
+
 
 # def inputDate(msg: str) -> "tuple[int, int, int] | None":
 # 	while True:  # OK
