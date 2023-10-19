@@ -31,8 +31,8 @@ class TestVersionCompare(unittest.TestCase):
 
 class TestFindWordByPos(unittest.TestCase):
 	def test_findWordByPos(self):
-		#	 012345678901234567890123456789012345678901234567890123456789
-		#	|      |   |       |           |  |   |      | |  |   |     |
+		# 	 012345678901234567890123456789012345678901234567890123456789
+		# 	|      |   |       |           |  |   |      | |  |   |     |
 		s1 = "Return the integer represented by the string s in the given"
 		self.assertEqual(59, len(s1))
 		self.assertEqual(findWordByPos(s1, -1), ("", -1))

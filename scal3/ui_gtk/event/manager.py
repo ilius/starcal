@@ -1070,7 +1070,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		return (False,) + common.getGroupRow(group) + ("",)
 
 	def getEventRow(
-		self, event: lib.Event,
+		self,
+		event: lib.Event,
 	) -> tuple[bool, int, GdkPixbuf.Pixbuf, str, str]:
 		pixbuf = eventTreeIconPixbuf(event.getIconRel())
 		if event.icon and pixbuf is None:
