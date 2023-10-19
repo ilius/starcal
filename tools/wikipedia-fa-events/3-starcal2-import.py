@@ -13,6 +13,7 @@ from scal3.date_utils import dateDecode
 def dataToPrettyJson(data):
 	return json.dumps(data, sort_keys=True, indent=2)
 
+
 log = logger.get()
 
 GREGORIAN = moduleNames.index("gregorian")
