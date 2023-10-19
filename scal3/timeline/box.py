@@ -113,9 +113,7 @@ def makeIntervalGraph(boxes):
 	openBoxes = set()
 	for _t, isStart, boxI in points:
 		if isStart:
-			g.add_edges([
-				(boxI, oboxI) for oboxI in openBoxes
-			])
+			g.add_edges([(boxI, oboxI) for oboxI in openBoxes])
 			openBoxes.add(boxI)
 		else:
 			openBoxes.remove(boxI)
@@ -163,7 +161,7 @@ def calcEventBoxes(
 				timeEnd - timeStart,
 				1 - errorBoxH,  # u0
 				errorBoxH,  # du
-				text="Install \"python3-igraph\" to see events",
+				text='Install "python3-igraph" to see events',
 				color=(128, 0, 0),  # FIXME
 				lineW=2 * tl.boxLineWidth,
 			),
@@ -204,7 +202,7 @@ def calcEventBoxes(
 				ids=(group.id, event.id) if pixBoxW > 0.5 else None,
 				lineW=lineW,
 			)
-			box.hasBorder = (borderTm > 0 and event.name in movableEventTypes)
+			box.hasBorder = borderTm > 0 and event.name in movableEventTypes
 			boxValue = (groupIndex, t0, t1)
 			toAppend = boxesDict.get(boxValue)
 			if toAppend is None:

@@ -1,7 +1,8 @@
 __all__ = [
 	"path",
 	"cal_types",
-	"core", "ui",
+	"core",
+	"ui",
 	"ui_gtk",
 	"ui_qt",
 	"plugins",

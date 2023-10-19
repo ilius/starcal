@@ -63,12 +63,12 @@ def getIntervalPoints(
 ) -> list[tuple[int, int, int]]:
 	"""
 	lst is a list of (start, end, closedEnd) or (start, end) tuples
-		start (int)
-		end (int)
-		closedEnd (bool).
+			start (int)
+			end (int)
+			closedEnd (bool).
 
 	returns a list of (pos, ptype, lst_index) tuples
-		ptype in (CLOSED_START, OPEN_START, OPEN_END, CLOSED_END)
+			ptype in (CLOSED_START, OPEN_START, OPEN_END, CLOSED_END)
 	"""
 	points = []
 	for row in lst:
@@ -77,7 +77,7 @@ def getIntervalPoints(
 		try:
 			closedEnd = row[2]
 		except IndexError:
-			closedEnd = (start == end)
+			closedEnd = start == end
 		points += [
 			(
 				start,
@@ -98,12 +98,12 @@ def getIntervalListByPoints(
 ) -> list[tuple[int, int, bool]]:
 	"""
 	points: a list of (pos, ptype, lst_index) tuples
-		ptype in (CLOSED_START, OPEN_START, OPEN_END, CLOSED_END).
+			ptype in (CLOSED_START, OPEN_START, OPEN_END, CLOSED_END).
 
 	return a list of (start, end, closedEnd) tuples
-		start (int)
-		end (int)
-		closedEnd (bool)
+			start (int)
+			end (int)
+			closedEnd (bool)
 	"""
 	lst = []
 	startedStack = []
@@ -114,11 +114,13 @@ def getIntervalListByPoints(
 			start = startedStack.pop()
 			# log.debug(f"pop {start}")
 			if not startedStack:
-				lst.append((
-					start,
-					pos,
-					ptype == CLOSED_END,
-				))
+				lst.append(
+					(
+						start,
+						pos,
+						ptype == CLOSED_END,
+					),
+				)
 		else:
 			# log.debug(f"push {pos}")
 			startedStack.append(pos)
@@ -137,9 +139,9 @@ def humanizeIntervalList(lst):
 	in math terms: [a, b] ==> [a, b) + [b, b].
 
 	lst is a list of (start, end, closedEnd) tuples
-		start (int)
-		end (int)
-		closedEnd (bool)
+			start (int)
+			end (int)
+			closedEnd (bool)
 
 	returns a list of (start, end) tuples
 	"""
@@ -170,11 +172,13 @@ def intersectionOfTwoIntervalList(*lists):
 				if start > pos:
 					raise RuntimeError(f"{start - pos = }")
 				if pos > start or ptype == CLOSED_END:
-					result.append((
-						start,
-						pos,
-						ptype == CLOSED_END,
-					))
+					result.append(
+						(
+							start,
+							pos,
+							ptype == CLOSED_END,
+						),
+					)
 				# if start == pos:  # FIXME
 				# 	log.info(f"start: pos={start%(24*3600)/3600.0}, {ptype=}")
 			openStartList[lst_index] = None

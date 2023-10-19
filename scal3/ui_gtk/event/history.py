@@ -72,7 +72,7 @@ class EventHistoryDialog(gtk.Dialog):
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("History") + ": " + event.summary)
 		self.event = event
-		self.objectCache = {} # hash(str) -> data(dict)
+		self.objectCache = {}  # hash(str) -> data(dict)
 
 		dialog_add_button(
 			self,
@@ -86,10 +86,10 @@ class EventHistoryDialog(gtk.Dialog):
 		treev = gtk.TreeView()
 		treev.set_headers_clickable(True)
 		treeModel = gtk.ListStore(
-			str, # hashBefore (hidden)
-			str, # hashAfter (hidden)
-			str, # formatted date & time
-			str, # change msg (names or the number of changed params)
+			str,  # hashBefore (hidden)
+			str,  # hashAfter (hidden)
+			str,  # formatted date & time
+			str,  # change msg (names or the number of changed params)
 		)
 		treev.set_model(treeModel)
 		treev.connect("cursor-changed", self.treeviewCursorChanged)
@@ -161,10 +161,10 @@ class EventHistoryDialog(gtk.Dialog):
 		cmpTreev = gtk.TreeView()
 		cmpTreev.set_headers_clickable(True)
 		cmpTrees = gtk.ListStore(
-			str, # change symbol (modifySymbol, addSymbol, removeSymbol, "")
-			str, # key
-			str, # old value
-			str, # new value
+			str,  # change symbol (modifySymbol, addSymbol, removeSymbol, "")
+			str,  # key
+			str,  # old value
+			str,  # new value
 		)
 		cmpTreev.set_model(cmpTrees)
 		# cmpTreev.connect("cursor-changed", self.cmpTreeviewCursorChanged)
@@ -223,7 +223,7 @@ class EventHistoryDialog(gtk.Dialog):
 
 		self.load()
 		self.vbox.show_all()
-		self.resize(ud.workAreaW, ud.workAreaH * 0.9) # FIXME
+		self.resize(ud.workAreaW, ud.workAreaH * 0.9)  # FIXME
 
 	def setColumnWidth(self, col, widthParam, cell):
 		width = col.get_width()
@@ -271,7 +271,9 @@ class EventHistoryDialog(gtk.Dialog):
 				diff = self.extractChangeDiff(hashBefore, hashAfter)
 				for key in sorted(diff.keys()):
 					(valueBefore, valueAfter) = diff[key]
-					treeModel.append([modifySymbol, key, str(valueBefore), str(valueAfter)])
+					treeModel.append(
+						[modifySymbol, key, str(valueBefore), str(valueAfter)],
+					)
 		elif viewType == "Full Table":
 			for row in self.extractFullTable(hashBefore, hashAfter):
 				treeModel.append(row)
@@ -411,7 +413,7 @@ class EventHistoryDialog(gtk.Dialog):
 	def extractFullTable(self, hashBefore, hashAfter):
 		dataBefore = self.getObjectData(hashBefore)
 		dataAfter = self.getObjectData(hashAfter)
-		dataFull = [] # (symbol, key, valueBefore, valueAfter)
+		dataFull = []  # (symbol, key, valueBefore, valueAfter)
 		keys = sorted(set(dataBefore.keys()).union(dataAfter.keys()))
 		for key in keys:
 			valueBefore = dataBefore.get(key, "")
@@ -425,12 +427,14 @@ class EventHistoryDialog(gtk.Dialog):
 				symbol = removeSymbol
 			else:
 				symbol = modifySymbol
-			dataFull.append([
-				symbol,
-				key,
-				str(valueBefore),
-				str(valueAfter),
-			])
+			dataFull.append(
+				[
+					symbol,
+					key,
+					str(valueBefore),
+					str(valueAfter),
+				],
+			)
 		return dataFull
 
 	def extractChangeSummary(self, diff):
@@ -447,21 +451,25 @@ class EventHistoryDialog(gtk.Dialog):
 		count = len(hist)
 		for index, (epoch, hashAfter) in enumerate(hist):
 			if index == count - 1:
-				treeModel.append([
-					"",
-					hashAfter,
-					self.formatEpoch(epoch),
-					_("(Added Event)"),
-				])
+				treeModel.append(
+					[
+						"",
+						hashAfter,
+						self.formatEpoch(epoch),
+						_("(Added Event)"),
+					],
+				)
 				continue
 
 			hashBefore = hist[index + 1][1]
 			diff = self.extractChangeDiff(hashBefore, hashAfter)
 			changeSummary = self.extractChangeSummary(diff)
 
-			treeModel.append([
-				hashBefore,
-				hashAfter,
-				self.formatEpoch(epoch),
-				changeSummary,
-			])
+			treeModel.append(
+				[
+					hashBefore,
+					hashAfter,
+					self.formatEpoch(epoch),
+					changeSummary,
+				],
+			)

@@ -48,12 +48,15 @@ class EventEditorDialog(gtk.Dialog):
 		self.event = event
 		#######
 		if isNew and not event.timeZone:
-			event.timeZone = str(locale_man.localTz)## why? FIXME
+			event.timeZone = str(locale_man.localTz)  ## why? FIXME
 		#######
 		hbox = HBox()
-		pack(hbox, gtk.Label(
-			label=_("Group") + ": " + self._group.title,
-		))
+		pack(
+			hbox,
+			gtk.Label(
+				label=_("Group") + ": " + self._group.title,
+			),
+		)
 		hbox.show_all()
 		pack(self.vbox, hbox)
 		#######
@@ -116,7 +119,7 @@ class EventEditorDialog(gtk.Dialog):
 			self.activeWidget.destroy()
 		eventType = self.eventTypeOptions[combo.get_active()]
 		self.replaceEventWithType(eventType)
-		self._group.updateCache(self.event)## needed? FIXME
+		self._group.updateCache(self.event)  ## needed? FIXME
 		self.activeWidget = makeWidget(self.event)
 		if self.isNew:
 			self.activeWidget.focusSummary()
@@ -151,8 +154,8 @@ class EventEditorDialog(gtk.Dialog):
 			if not occur:
 				msg = _(
 					"This event is outside of date range specified in "
-					"it\'s group. You probably need to edit group "
-					"\"{groupTitle}\" and change \"Start\" or \"End\" values",
+					"it's group. You probably need to edit group "
+					'"{groupTitle}" and change "Start" or "End" values',
 				).format(groupTitle=self.event.parent.title)
 				showInfo(msg)
 		#####

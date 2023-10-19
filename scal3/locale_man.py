@@ -96,10 +96,9 @@ ascii_alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 alphabet = ""
 
 
-def getLangDigits(langShortArg: str) -> tuple[
-	str, str, str, str, str,
-	str, str, str, str, str,
-]:
+def getLangDigits(
+	langShortArg: str,
+) -> tuple[str, str, str, str, str, str, str, str, str, str]:
 	d = digits.get(langShortArg)
 	if d is not None:
 		return d
@@ -183,8 +182,8 @@ class LangData(JsonSObj):
 		):
 			if not getattr(self, param):
 				raise ValueError(
-					f"missing or empty parameter \"{param}\""
-					f" in language file \"{self.file}\"",
+					f'missing or empty parameter "{param}"'
+					f' in language file "{self.file}"',
 				)
 		#####
 		if not isabs(self.flag):
@@ -212,6 +211,7 @@ class LangData(JsonSObj):
 						break
 		# log.debug(code, transPath)
 		self.transPath = transPath
+
 
 ##########################################################
 
@@ -259,6 +259,7 @@ langDict.sort("name")
 
 def popen_output(cmd: "list[str] | str") -> str:
 	import subprocess
+
 	return subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
 
 
@@ -308,6 +309,7 @@ def loadTranslator() -> Callable:
 		except Exception:
 			log.exception("")
 	if transObj:
+
 		def tr(s, *a, nums=False, ctx=None, default=None, **ka):
 			orig = s
 			if isinstance(s, (int, float)):
@@ -329,9 +331,12 @@ def loadTranslator() -> Callable:
 				if nums:
 					s = textNumEncode(s)
 			return s
+
 	else:
+
 		def tr(s, *a, **ka):
 			return str(s)
+
 	return tr
 
 
@@ -410,7 +415,7 @@ def numEncode(
 		if fillZero:
 			return str(num).zfill(fillZero)
 		return str(num)
-	neg = (num < 0)
+	neg = num < 0
 	dig = getLangDigits(localeMode)
 	res = ""
 	for c in str(abs(num)):
@@ -531,11 +536,11 @@ def textNumDecode(text: str) -> str:
 
 def dateLocale(year: int, month: int, day: int) -> str:
 	return (
-		numEncode(year, fillZero=4) +
-		"/" +
-		numEncode(month, fillZero=2) +
-		"/" +
-		numEncode(day, fillZero=2)
+		numEncode(year, fillZero=4)
+		+ "/"
+		+ numEncode(month, fillZero=2)
+		+ "/"
+		+ numEncode(day, fillZero=2)
 	)
 
 
@@ -556,6 +561,7 @@ def addLRM(text: str) -> str:
 def popenDefaultLang(*args, **kwargs) -> "subprocess.Popen":
 	global sysLangDefault, lang
 	from subprocess import Popen
+
 	os.environ["LANG"] = sysLangDefault
 	p = Popen(*args, **kwargs)
 	os.environ["LANG"] = lang

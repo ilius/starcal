@@ -214,6 +214,7 @@ class AdjusterDialog(gtk.Dialog):
 		if sys.platform == "win32":
 			# TODO: test
 			import win32api
+
 			win32api.SetSystemTime(timeStr)
 			return
 
@@ -225,8 +226,7 @@ class AdjusterDialog(gtk.Dialog):
 		# log.debug("updateTimes", dt)
 		y, m, d, H, M, S = localtime()[:6]
 		self.label_cur.set_label(
-			_("Current:") +
-			f" {y:04d}/{m:02d}/{d:02d} - {H:02d}:{M:02d}:{S:02d}",
+			_("Current:") + f" {y:04d}/{m:02d}/{d:02d} - {H:02d}:{M:02d}:{S:02d}",
 		)
 		if not self.editTime:
 			self.timeInput.set_value((H, M, S))
@@ -248,7 +248,9 @@ class AdjusterDialog(gtk.Dialog):
 				h, m, s = self.timeInput.get_value()
 				if self.editDate:
 					Y, M, D = self.dateInput.get_value()
-					self.setSystemTime(f"{Y:04d}/{M:02d}/{D:02d} {h:02d}:{m:02d}:{s:02d}")
+					self.setSystemTime(
+						f"{Y:04d}/{M:02d}/{D:02d} {h:02d}:{m:02d}:{s:02d}",
+					)
 				else:
 					self.setSystemTime(f"{h:02d}:{m:02d}:{s:02d}")
 			else:

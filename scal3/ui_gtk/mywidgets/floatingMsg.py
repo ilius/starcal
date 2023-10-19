@@ -78,8 +78,7 @@ class FloatingMsg(gtk.DrawingArea):
 		self.linesNum = len(lines)
 		self.layoutList = [newTextLayout(self, line) for line in lines]
 		self.rtlList = [
-			self.isRtl(lines[i], self.layoutList[i])
-			for i in range(self.linesNum)
+			self.isRtl(lines[i], self.layoutList[i]) for i in range(self.linesNum)
 		]
 		self.index = 0
 		self.height = 30
@@ -157,9 +156,7 @@ class FloatingMsg(gtk.DrawingArea):
 			return
 		timeout_add(self.refreshTime, self.animateUpdate)
 		self.xpos = self.startXpos + (
-			(now() - self.startTime)
-			* self.speed
-			* self.rtlSign
+			(now() - self.startTime) * self.speed * self.rtlSign
 		)
 		if self.xpos > screenWidth or self.xpos < -self.textWidth:
 			if self.index >= self.linesNum - 1:
@@ -286,11 +283,8 @@ class NoFillFloatingMsgWindow(gtk.Window):
 			return
 		timeout_add(self.refreshTime, self.animateUpdate)
 		xpos = int(
-			self.startXpos + (
-				(now() - self.startTime)
-				* self.speed
-				* self.label.rtlSign
-			),
+			self.startXpos
+			+ ((now() - self.startTime) * self.speed * self.label.rtlSign),
 		)
 		self.move(xpos, 0)
 		self.resize(1, 1)
@@ -304,10 +298,11 @@ class NoFillFloatingMsgWindow(gtk.Window):
 
 if __name__ == "__main__":
 	import sys
+
 	if len(sys.argv) < 2:
 		sys.exit(1)
 	text = " ".join(sys.argv[1:])
-	#msg = FloatingMsg(
+	# msg = FloatingMsg(
 	msg = NoFillFloatingMsgWindow(
 		text,
 		speed=200,

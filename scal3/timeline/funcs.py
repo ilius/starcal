@@ -55,14 +55,14 @@ from scal3.utils import iceil, ifloor
 ####################################################
 
 
-#class Range:
-#	def __init__(self, start, end):
-#		self.start = start
-#		self.end = end
-#	def dt(self):
-#		return self.end - self.start
-#	def __cmp__(self, other):
-#		return cmp(self.dt(), other.dt())
+# class Range:
+# 	def __init__(self, start, end):
+# 		self.start = start
+# 		self.end = end
+# 	def dt(self):
+# 		return self.end - self.start
+# 	def __cmp__(self, other):
+# 		return cmp(self.dt(), other.dt())
 
 
 def getNum10FactPow(n):
@@ -91,10 +91,10 @@ def getYearRangeTickValues(u0, y1, minStepYear):
 
 
 def formatYear(y, prettyPower=False):
-	if abs(y) < 10 ** 4:  # FIXME
+	if abs(y) < 10**4:  # FIXME
 		y_st = _(y)
 	else:
-		#y_st = textNumEncode("%.0E"%y, changeDot=True)## FIXME
+		# y_st = textNumEncode("%.0E"%y, changeDot=True)## FIXME
 		fac, pw = getNum10FactPow(y)
 		if not prettyPower or abs(fac) >= 100:  # FIXME
 			y_e = f"{y:E}"
@@ -103,28 +103,28 @@ def formatYear(y, prettyPower=False):
 			y_e = y_e.replace(".E", "E")
 			y_st = textNumEncode(y_e, changeDot=True)
 		else:
-			sign = ("-" if fac < 0 else "")
+			sign = "-" if fac < 0 else ""
 			fac = abs(fac)
 			if fac == 1:
 				fac_s = ""
 			else:
 				fac_s = _(fac) + "×"
 			pw_s = _(10) + "ˆ" + _(pw)
-			#pw_s = _(10) + "<span rise="5" size="small">" + \
-			#	_(pw) + "</span>"  # Pango Markup Language
+			# pw_s = _(10) + "<span rise="5" size="small">" + \
+			# 	_(pw) + "</span>"  # Pango Markup Language
 			y_st = sign + fac_s + pw_s
 	return addLRM(y_st)
 
 
-#def setRandomColorsToEvents():
-#	import random
-#	events = ui.events[:]
-#	random.shuffle(events)
-#	dh = 360.0/len(events)
-#	hue = 0
-#	for event in events:
-#		event.color = hslToRgb(hue, boxColorSaturation, boxColorLightness)
-#		hue += dh
+# def setRandomColorsToEvents():
+# 	import random
+# 	events = ui.events[:]
+# 	random.shuffle(events)
+# 	dh = 360.0/len(events)
+# 	hue = 0
+# 	for event in events:
+# 		event.color = hslToRgb(hue, boxColorSaturation, boxColorLightness)
+# 		hue += dh
 
 
 def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
@@ -146,8 +146,8 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	# ###################### Holidays
 	holidays = []
 	if (
-		tl.changeHolidayBg and
-		tl.changeHolidayBgMinDays < widthDays < tl.changeHolidayBgMaxDays
+		tl.changeHolidayBg
+		and tl.changeHolidayBgMinDays < widthDays < tl.changeHolidayBgMaxDays
 	):
 		for jd in getHolidaysJdList(jd0, jd1 + 1):
 			holidays.append(getJPos(jd))
@@ -161,7 +161,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 	# ########## Year
 	minStepYear = minStep // minYearLenSec  # years ## int or iceil?
 	yearPixel = minYearLenSec * pixelPerSec  # pixels
-	for (year, size) in getYearRangeTickValues(
+	for year, size in getYearRangeTickValues(
 		year0,
 		year1 + 1,
 		minStepYear,
@@ -174,12 +174,14 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			label = formatYear(year, prettyPower=tl.yearPrettyPower)
 		else:
 			label = ""
-		ticks.append(Tick(
-			tmEpoch,
-			getEPos(tmEpoch),
-			unitSize,
-			label,
-		))
+		ticks.append(
+			Tick(
+				tmEpoch,
+				getEPos(tmEpoch),
+				unitSize,
+				label,
+			),
+		)
 		tickEpochSet.add(tmEpoch)
 	# ########## Month
 	monthPixel = avgMonthLen * pixelPerSec  # px
@@ -201,19 +203,24 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			if tmEpoch in tickEpochSet:
 				continue
 			unitSize = monthPixel * monthUnit
-			monthName = getMonthName(calTypes.primary, month) \
-				if unitSize >= tl.majorStepMin else ""
-			ticks.append(Tick(
-				tmEpoch,
-				getEPos(tmEpoch),
-				unitSize,
-				monthName,
-			))
+			monthName = (
+				getMonthName(calTypes.primary, month)
+				if unitSize >= tl.majorStepMin
+				else ""
+			)
+			ticks.append(
+				Tick(
+					tmEpoch,
+					getEPos(tmEpoch),
+					unitSize,
+					monthName,
+				),
+			)
 			tickEpochSet.add(tmEpoch)
 	# ############## Week days
 	if (
-		tl.showWeekStart and
-		tl.showWeekStartMinDays < widthDays < tl.showWeekStartMaxDays
+		tl.showWeekStart
+		and tl.showWeekStartMinDays < widthDays < tl.showWeekStartMaxDays
 	):
 		wd0 = jwday(jd0)
 		jdw0 = jd0 + (core.firstWeekDay - wd0) % 7
@@ -224,13 +231,15 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			label = core.weekDayNameAb[core.firstWeekDay]
 		for jd in range(jdw0, jd1 + 1, 7):
 			tmEpoch = getEpochFromJd(jd)
-			ticks.append(Tick(
-				tmEpoch,
-				getEPos(tmEpoch),
-				unitSize,
-				label,
-				color=tl.weekStartTickColor,
-			))
+			ticks.append(
+				Tick(
+					tmEpoch,
+					getEPos(tmEpoch),
+					unitSize,
+					label,
+					color=tl.weekStartTickColor,
+				),
+			)
 			# tickEpochSet.add(tmEpoch)
 	# ########## Day of Month
 	hasMonthName = timeWidth < 5 * dayLen
@@ -245,12 +254,14 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			label = _(day) + " " + getMonthName(calTypes.primary, month)
 		else:
 			label = _(day)
-		ticks.append(Tick(
-			tmEpoch,
-			getEPos(tmEpoch),
-			unitSize,
-			label,
-		))
+		ticks.append(
+			Tick(
+				tmEpoch,
+				getEPos(tmEpoch),
+				unitSize,
+				label,
+			),
+		)
 		tickEpochSet.add(tmEpoch)
 
 	if minDayUnit <= 1 and jd1 - jd0 < 70:
@@ -266,7 +277,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 		year0, month0, day0 = jd_to_primary(jd0)
 		year1, month1, day1 = jd_to_primary(jd1)
 
-		for day in tmpDays[bisect_right(tmpDays, day0 - 1):]:
+		for day in tmpDays[bisect_right(tmpDays, day0 - 1) :]:
 			addDayOfMonthTick(jd0 - day0 + day, month0, day, 5)
 
 		for ym in range(year0 * 12 + month0, year1 * 12 + month1 - 1):
@@ -276,7 +287,7 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 			for day in tmpDays:
 				addDayOfMonthTick(startJd + day, month, day, 5)
 
-		for day in tmpDays[:bisect_left(tmpDays, day1 + 1)]:
+		for day in tmpDays[: bisect_left(tmpDays, day1 + 1)]:
 			addDayOfMonthTick(jd1 - day1 + day, month1, day, 5)
 
 	if minDayUnit <= 15:
@@ -302,9 +313,13 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 		unitSize = stepSec * pixelPerSec
 		for jd in range(jd0, jd1 + 1):
 			utcOffset = int(getUtcOffsetByJd(jd))
-			firstEpoch = iceil(
-				(timeStart + utcOffset) / stepSec,
-			) * stepSec - utcOffset
+			firstEpoch = (
+				iceil(
+					(timeStart + utcOffset) / stepSec,
+				)
+				* stepSec
+				- utcOffset
+			)
 			for tmEpoch in range(
 				firstEpoch,
 				min(int(getEpochFromJd(jd + 1)), iceil(timeEnd)),
@@ -321,14 +336,16 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 						label = f"{_(hms.h)}:{m2}"
 					else:  # elif timeWidth < 60 or stepSec < 30:
 						label = addLRM(_(hms.s, fillZero=2) + '"')
-					#else:
-					#	label = f"{_(hms.h)}:{m2}:_(hms.s, fillZero=2)"
-				ticks.append(Tick(
-					tmEpoch,
-					getEPos(tmEpoch),
-					unitSize,
-					label,
-				))
+					# else:
+					# 	label = f"{_(hms.h)}:{m2}:_(hms.s, fillZero=2)"
+				ticks.append(
+					Tick(
+						tmEpoch,
+						getEPos(tmEpoch),
+						unitSize,
+						label,
+					),
+				)
 				tickEpochSet.add(tmEpoch)
 	# ###################### Event Boxes
 	data = {

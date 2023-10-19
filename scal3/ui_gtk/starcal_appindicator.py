@@ -40,7 +40,7 @@ from scal3.ui_gtk.utils import (
 	get_pixbuf_hash,
 )
 
-gi.require_version('AppIndicator3', '0.1')
+gi.require_version("AppIndicator3", "0.1")
 from gi.repository import AppIndicator3 as appindicator
 
 
@@ -50,12 +50,12 @@ class IndicatorStatusIconWrapper:
 	def __init__(self, mainWin):
 		self.mainWin = mainWin
 		self.c = appindicator.Indicator.new(
-			APP_NAME,## app id
-			"",## icon
+			APP_NAME,  ## app id
+			"",  ## icon
 			appindicator.IndicatorCategory.APPLICATION_STATUS,
 		)
 		self.c.set_status(appindicator.IndicatorStatus.ACTIVE)
-		#self.c.set_attention_icon("new-messages-red")
+		# self.c.set_attention_icon("new-messages-red")
 		######
 		atexit.register(self.cleanup)
 		######
@@ -118,7 +118,7 @@ class IndicatorStatusIconWrapper:
 
 	def set_from_pixbuf(self, pbuf):
 		# https://bugs.launchpad.net/ubuntu/+source/indicator-application/+bug/533439
-		#pbuf.scale_simple(22, 22, GdkPixbuf.InterpType.HYPER)
+		# pbuf.scale_simple(22, 22, GdkPixbuf.InterpType.HYPER)
 		fname = self.imNamePrefix + get_pixbuf_hash(pbuf)
 		# to make the filename unique, otherwise it won't change in KDE Plasma
 		fpath = join(tmpDir, fname + ".png")
@@ -142,5 +142,5 @@ class IndicatorStatusIconWrapper:
 		pass
 
 	def set_tooltip_text(self, text):
-		#self.c.set_label_guide(text)
+		# self.c.set_label_guide(text)
 		pass

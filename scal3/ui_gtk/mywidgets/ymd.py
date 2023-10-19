@@ -21,10 +21,14 @@ class YearMonthDayBox(gtk.Box):
 		if not ok:
 			raise RuntimeError(f"cal type {self.calType!r} not found")
 		for i in range(12):
-			comboMonth.append_text(_(module.getMonthName(
-				i + 1,
-				None,  # year=None means all months
-			)))
+			comboMonth.append_text(
+				_(
+					module.getMonthName(
+						i + 1,
+						None,  # year=None means all months
+					),
+				),
+			)
 		comboMonth.set_active(0)
 		pack(self, comboMonth)
 		self.comboMonth = comboMonth
@@ -54,7 +58,7 @@ class YearMonthDayBox(gtk.Box):
 			self.comboMonthChanged,
 		)
 
-	def changeCalType(self, calType, newCalType):## FIXME naming standard?
+	def changeCalType(self, calType, newCalType):  ## FIXME naming standard?
 		self.setCalType(newCalType)
 
 	def set_value(self, date):
@@ -74,8 +78,11 @@ class YearMonthDayBox(gtk.Box):
 		monthIndex = self.comboMonth.get_active()
 		if monthIndex == -1:
 			return
-		self.spinD.set_range(1, cal_types.getMonthLen(
-			self.spinY.get_value(),
-			monthIndex + 1,
-			self.calType,
-		))
+		self.spinD.set_range(
+			1,
+			cal_types.getMonthLen(
+				self.spinY.get_value(),
+				monthIndex + 1,
+				self.calType,
+			),
+		)

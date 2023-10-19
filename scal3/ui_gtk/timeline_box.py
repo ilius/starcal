@@ -39,12 +39,15 @@ def drawBoxBG(cr, box, x, y, w, h):
 		alpha = box.color[3]
 	except IndexError:
 		alpha = 255
-	fillColor(cr, (
-		box.color[0],
-		box.color[1],
-		box.color[2],
-		int(alpha * tl.boxInnerAlpha),
-	))
+	fillColor(
+		cr,
+		(
+			box.color[0],
+			box.color[1],
+			box.color[2],
+			int(alpha * tl.boxInnerAlpha),
+		),
+	)
 	###
 	cr.set_line_width(0)
 	cr.move_to(x, y)
@@ -66,7 +69,7 @@ def drawBoxBorder(cr, box, x, y, w, h):
 		if w > 2 * tl.boxEditBorderWidth and h > tl.boxEditBorderWidth:
 			b = tl.boxEditBorderWidth
 			bd = tl.boxEditInnerLineWidth
-			#cr.set_line_width(bd)
+			# cr.set_line_width(bd)
 			cr.move_to(x + b - bd, y + h)
 			cr.line_to(x + b - bd, y + b - bd)
 			cr.line_to(x + w - b + bd, y + b - bd)
@@ -113,16 +116,13 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 	textH = 0.95 * h
 	textLen = len(text)
 	# log.debug(f"{textLen=}")
-	avgCharW = (
-		textW if tl.rotateBoxLabel == 0
-		else max(textW, textH)
-	) / textLen
+	avgCharW = (textW if tl.rotateBoxLabel == 0 else max(textW, textH)) / textLen
 
 	if avgCharW < 3:  # FIXME
 		return
 
 	font = ui.getFont()
-	layout = widget.create_pango_layout(text) ## a Pango.Layout object
+	layout = widget.create_pango_layout(text)  ## a Pango.Layout object
 	layout.set_font_description(pfontEncode(font))
 	layoutW, layoutH = layout.get_pixel_size()
 	# log.debug(f"orig font size: {font.size}")
@@ -161,6 +161,5 @@ def drawBoxText(cr, box, x, y, w, h, widget):
 		cr.rotate(tl.rotateBoxLabel * pi / 2)
 	except Exception:
 		log.warning(
-			"counld not rotate by "
-			f"{tl.rotateBoxLabel*pi/2 = }",
+			"counld not rotate by " f"{tl.rotateBoxLabel*pi/2 = }",
 		)

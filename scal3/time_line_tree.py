@@ -24,7 +24,7 @@ log = logger.get()
 
 from scal3.interval_utils import ab_overlaps
 
-#from scal3.time_utils import
+# from scal3.time_utils import
 
 # maxLevel = 1
 # minLevel = 1
@@ -46,7 +46,7 @@ class Node:
 		self.offset = offset  # in days
 		self.rightOri = rightOri  # FIXME
 		###
-		width = base ** level
+		width = base**level
 		if rightOri:
 			self.s0, self.s1 = offset, offset + width
 		else:
@@ -79,8 +79,7 @@ class Node:
 					ev_rt1 - ev_rt0,
 				)
 		for child in self.children.values():
-			for item in child.search(t0, t1):
-				yield item
+			yield from child.search(t0, t1)
 
 	def getChild(self, tm):
 		if not self.s0 <= tm <= self.s1:
@@ -114,10 +113,7 @@ class Node:
 	def getDepth(self):
 		if not self.children:
 			return 0
-		return 1 + max(
-			c.getDepth()
-			for c in self.children.values()
-		)
+		return 1 + max(c.getDepth() for c in self.children.values())
 
 
 class TimeLineTree:
@@ -143,6 +139,7 @@ class TimeLineTree:
 	def add(self, t0, t1, eid, debug=False):
 		if debug:
 			from time import localtime, strftime
+
 			f = "%F, %T"
 			log.info(
 				f"{self.__class__.__name__}.add: "

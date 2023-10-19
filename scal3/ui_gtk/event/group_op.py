@@ -1,4 +1,3 @@
-
 from scal3 import logger
 
 log = logger.get()
@@ -33,11 +32,14 @@ class GroupSortDialog(gtk.Dialog):
 		self.connect("response", lambda w, e: self.hide())
 		####
 		hbox = HBox()
-		pack(hbox, gtk.Label(
-			label=_("Sort events of group \"{groupTitle}\"").format(
-				groupTitle=group.title,
+		pack(
+			hbox,
+			gtk.Label(
+				label=_('Sort events of group "{groupTitle}"').format(
+					groupTitle=group.title,
+				),
 			),
-		))
+		)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self.vbox, hbox)
 		###
@@ -75,6 +77,7 @@ class GroupSortDialog(gtk.Dialog):
 class GroupConvertCalTypeDialog(gtk.Dialog):
 	def __init__(self, group, **kwargs):
 		from scal3.ui_gtk.mywidgets.cal_type_combo import CalTypeCombo
+
 		self._group = group
 		gtk.Dialog.__init__(self, **kwargs)
 		self.set_title(_("Convert Calendar Type"))
@@ -94,12 +97,14 @@ class GroupConvertCalTypeDialog(gtk.Dialog):
 		##
 		self.connect("response", lambda w, e: self.hide())
 		####
-		label = gtk.Label(label=_(
-			"This is going to convert calendar types of all events inside "
-			"group \"{groupTitle}\" to a specific type. This operation does not work "
-			"for Yearly events and also some of Custom events. You have to "
-			"edit those events manually to change calendar type.",
-		).format(groupTitle=group.title))
+		label = gtk.Label(
+			label=_(
+				"This is going to convert calendar types of all events inside "
+				'group "{groupTitle}" to a specific type. This operation does not work '
+				"for Yearly events and also some of Custom events. You have to "
+				"edit those events manually to change calendar type.",
+			).format(groupTitle=group.title),
+		)
 		label.set_line_wrap(True)
 		label.set_yalign(0.5)
 		pack(self.vbox, label, 1, 1)
@@ -129,7 +134,7 @@ class GroupConvertCalTypeDialog(gtk.Dialog):
 					event.save()
 				else:
 					failedSummaryList.append(event.summary)
-			if failedSummaryList:## FIXME
+			if failedSummaryList:  ## FIXME
 				log.error(f"{failedSummaryList=}")
 			return True
 		self.destroy()
