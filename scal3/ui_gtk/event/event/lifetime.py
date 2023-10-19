@@ -23,7 +23,7 @@ from scal3.ui_gtk.mywidgets.ymd import YearMonthDayBox
 
 
 class WidgetClass(common.WidgetClass):
-	def __init__(self, event):## FIXME
+	def __init__(self, event):  ## FIXME
 		common.WidgetClass.__init__(self, event)
 		######
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
@@ -55,28 +55,28 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, self.endDateInput)
 		pack(self, hbox)
 		#############
-		#self.filesBox = common.FilesBox(self.event)
-		#pack(self, self.filesBox)
+		# self.filesBox = common.FilesBox(self.event)
+		# pack(self, self.filesBox)
 
 	def updateWidget(self):
 		common.WidgetClass.updateWidget(self)
 		start, ok = self.event["start"]
 		if not ok:
-			raise KeyError("rule \"start\" not found")
+			raise KeyError('rule "start" not found')
 		end, ok = self.event["end"]
 		if not ok:
-			raise KeyError("rule \"end\" not found")
+			raise KeyError('rule "end" not found')
 		self.startDateInput.set_value(start.date)
 		self.endDateInput.set_value(end.date)
 
-	def updateVars(self):## FIXME
+	def updateVars(self):  ## FIXME
 		common.WidgetClass.updateVars(self)
 		start, ok = self.event["start"]
 		if not ok:
-			raise KeyError("rule \"start\" not found")
+			raise KeyError('rule "start" not found')
 		end, ok = self.event["end"]
 		if not ok:
-			raise KeyError("rule \"end\" not found")
+			raise KeyError('rule "end" not found')
 		start.setDate(self.startDateInput.get_value())
 		end.setDate(self.endDateInput.get_value())
 

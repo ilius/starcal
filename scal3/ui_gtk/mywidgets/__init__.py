@@ -22,7 +22,6 @@ from scal3 import logger
 log = logger.get()
 
 
-
 from scal3 import ui
 from scal3.locale_man import tr as _
 from scal3.ui_gtk import gdk, gtk, pango
@@ -39,7 +38,7 @@ from scal3.ui_gtk.utils import buffer_get_text
 
 def show_event(widget, gevent):
 	log.info(f"{type(widget)}, {gevent.type.value_name}")
-	#, gevent.send_event
+	# , gevent.send_event
 
 
 class MyFontButton(gtk.FontButton):
@@ -80,7 +79,7 @@ class MyFontButton(gtk.FontButton):
 		return True
 
 	def dragDataRec(self, fontb, context, x, y, selection, target_id, etime):
-		#dtype = selection.get_data_type()
+		# dtype = selection.get_data_type()
 		# log.debug(dtype ## UTF8_STRING)
 		text = selection.get_text()
 		log.debug(f"fontButtonDragDataRec    {text=}")
@@ -130,8 +129,8 @@ class MyColorButton(gtk.ColorButton):
 			text = f"{_('Red')}: {_(r)}\n{_('Green')}: {_(g)}\n{_('Blue')}: {_(b)}"
 		##self.get_tooltip_window().set_direction(gtk.TextDirection.LTR)
 		## log.debug(self.get_tooltip_window())
-		self.set_tooltip_text(text) ##???????????????? Right to left
-		#self.tt_label.set_label(text)##???????????? Dosent work
+		self.set_tooltip_text(text)  ##???????????????? Right to left
+		# self.tt_label.set_label(text)##???????????? Dosent work
 		##self.set_tooltip_window(self.tt_win)
 
 	# color is a tuple of (r, g, b) or (r, g, b, a)

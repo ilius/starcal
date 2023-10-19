@@ -31,10 +31,14 @@ def oppositeAlign(align):
 
 
 def getAbsPos(
-	width, height,
-	areaWidth, areaHeight,
-	x, y,
-	xalign, yalign,
+	width,
+	height,
+	areaWidth,
+	areaHeight,
+	x,
+	y,
+	xalign,
+	yalign,
 	autoDir=False,
 ):
 	if autoDir and rtl:

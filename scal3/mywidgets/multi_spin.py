@@ -178,8 +178,8 @@ class DayField(IntField):
 
 	def setMax(self, _max):
 		self._max = _max
-		#if self.value > _max:
-		#	self.value = _max
+		# if self.value > _max:
+		# 	self.value = _max
 
 
 class HourField(IntField):
@@ -257,10 +257,7 @@ class ContainerField(Field):
 			self.children[i].setValue(value[i])
 
 	def getValue(self):
-		return [
-			child.getValue()
-			for child in self.children
-		]
+		return [child.getValue() for child in self.children]
 
 	def setText(self, text):
 		parts = text.split(self.sep)
@@ -273,15 +270,11 @@ class ContainerField(Field):
 			self.children[i].setDefault()
 
 	def getText(self):
-		return self.sep.join([
-			child.getText()
-			for child in self.children
-		])
+		return self.sep.join([child.getText() for child in self.children])
 
 	def getMaxWidth(self):
 		return len(self.sep) * (len(self) - 1) + sum(
-			child.getMaxWidth()
-			for child in self.children
+			child.getMaxWidth() for child in self.children
 		)
 
 	def getFieldAt(self, text, pos):
@@ -297,4 +290,4 @@ class ContainerField(Field):
 			pos - i,
 		)
 
-	#def getRegion(self, text, pos, fieldIndexPlus):
+	# def getRegion(self, text, pos, fieldIndexPlus):

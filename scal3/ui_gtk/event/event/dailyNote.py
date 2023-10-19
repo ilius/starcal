@@ -16,8 +16,8 @@ class WidgetClass(common.WidgetClass):
 		pack(hbox, self.dateInput)
 		pack(self, hbox)
 		#############
-		#self.filesBox = common.FilesBox(self.event)
-		#pack(self, self.filesBox)
+		# self.filesBox = common.FilesBox(self.event)
+		# pack(self, self.filesBox)
 
 	def updateWidget(self):
 		common.WidgetClass.updateWidget(self)

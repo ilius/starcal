@@ -8,9 +8,11 @@ class WidgetClass(NormalWidgetClass):
 		NormalWidgetClass.__init__(self, group)
 		####
 		hbox = HBox()
-		self.showSeparateYmdInputsCheck = gtk.CheckButton(label=_(
-			"Show Separate Inputs for Year, Month and Day",
-		))
+		self.showSeparateYmdInputsCheck = gtk.CheckButton(
+			label=_(
+				"Show Separate Inputs for Year, Month and Day",
+			),
+		)
 		pack(hbox, self.showSeparateYmdInputsCheck)
 		pack(hbox, gtk.Label(), 1, 1)
 		pack(self, hbox)
@@ -24,5 +26,4 @@ class WidgetClass(NormalWidgetClass):
 
 	def updateVars(self):
 		NormalWidgetClass.updateVars(self)
-		self.group.showSeparateYmdInputs = \
-			self.showSeparateYmdInputsCheck.get_active()
+		self.group.showSeparateYmdInputs = self.showSeparateYmdInputsCheck.get_active()
