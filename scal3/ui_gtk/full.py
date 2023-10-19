@@ -26,47 +26,48 @@ mainWin.present()
 
 
 def tick():
-    while gtk.events_pending():
-        gtk.main_iteration_do(False)
+	while gtk.events_pending():
+		gtk.main_iteration_do(False)
+
 
 def openAllWindows():
-    mainWin.dayInfoShow()
-    while mainWin.dayInfoDialog.is_visible():
-        tick()
+	mainWin.dayInfoShow()
+	while mainWin.dayInfoDialog.is_visible():
+		tick()
 
-    mainWin.goToday()
+	mainWin.goToday()
 
-    mainWin.selectDateShow()
-    while mainWin.selectDateDialog.is_visible():
-        tick()
+	mainWin.selectDateShow()
+	while mainWin.selectDateDialog.is_visible():
+		tick()
 
-    mainWin.timeLineShowSelectedDay()
-    while ui.timeLineWin.is_visible():
-        tick()
+	mainWin.timeLineShowSelectedDay()
+	while ui.timeLineWin.is_visible():
+		tick()
 
-    mainWin.customizeShow()
-    while mainWin.customizeWindow.is_visible():
-        tick()
+	mainWin.customizeShow()
+	while mainWin.customizeWindow.is_visible():
+		tick()
 
-    mainWin.prefShow()
-    while ui.prefWindow.is_visible():
-        tick()
+	mainWin.prefShow()
+	while ui.prefWindow.is_visible():
+		tick()
 
-    mainWin.eventManShow()
-    while ui.eventManDialog.is_visible():
-        tick()
+	mainWin.eventManShow()
+	while ui.eventManDialog.is_visible():
+		tick()
 
-    mainWin.yearWheelShow()
-    while ui.yearWheelWin.is_visible():
-        tick()
+	mainWin.yearWheelShow()
+	while ui.yearWheelWin.is_visible():
+		tick()
 
-    mainWin.onExportClick()
-    while mainWin.exportDialog.is_visible():
-        tick()
+	mainWin.onExportClick()
+	while mainWin.exportDialog.is_visible():
+		tick()
 
-    mainWin.aboutShow()
-    while mainWin.aboutDialog.is_visible():
-        tick()
+	mainWin.aboutShow()
+	while mainWin.aboutDialog.is_visible():
+		tick()
 
 
 signal.signal(signal.SIGINT, sys.exit)

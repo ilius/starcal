@@ -37,22 +37,23 @@ class MonthStatus(list):  # FIXME
 		self.monthLen = getMonthLen(year, month, calTypes.primary)
 		self.offset = getWeekDay(year, month, 1)  # month start offset
 		initJd = core.primary_to_jd(year, month, 1)
-		self.weekNum = [
-			getWeekNumberByJd(initJd + i * 7)
-			for i in range(6)
-		]
+		self.weekNum = [getWeekNumberByJd(initJd + i * 7) for i in range(6)]
 		#########
 		startJd, endJd = getJdRangeForMonth(year, month, calTypes.primary)
 		tableStartJd = startJd - self.offset
 		#####
-		list.__init__(self, [
+		list.__init__(
+			self,
 			[
-				cellCache.getCell(
-					tableStartJd + yPos * 7 + xPos,
-				)
-				for xPos in range(7)
-			] for yPos in range(6)
-		])
+				[
+					cellCache.getCell(
+						tableStartJd + yPos * 7 + xPos,
+					)
+					for xPos in range(7)
+				]
+				for yPos in range(6)
+			],
+		)
 
 	# needed? FIXME
 	# def getDayCell(self, day):
@@ -99,6 +100,7 @@ def getCurrentMonthStatus():
 		ui.cell.month,
 	)
 
+
 ########################
 
 
@@ -143,57 +145,72 @@ def getMonthDesc(status=None):
 			elif dm == 1:
 				if dy == 0:
 					text += (
-						getMonthName(calType, m1) +
-						" " + _("and") + " " +
-						getMonthName(calType, m2) +
-						" " +
-						_(y1)
+						getMonthName(calType, m1)
+						+ " "
+						+ _("and")
+						+ " "
+						+ getMonthName(calType, m2)
+						+ " "
+						+ _(y1)
 					)
 				else:
 					text += (
-						getMonthName(calType, m1) + " " + _(y1) +
-						" " + _("and") + " " +
-						getMonthName(calType, m2) + " " + _(y2)
+						getMonthName(calType, m1)
+						+ " "
+						+ _(y1)
+						+ " "
+						+ _("and")
+						+ " "
+						+ getMonthName(calType, m2)
+						+ " "
+						+ _(y2)
 					)
 			elif dm == 2:
 				if dy == 0:
 					text += (
-						getMonthName(calType, m1) +
-						_(",") + " " +
-						getMonthName(calType, m1 + 1) +
-						" " + _("and") + " " +
-						getMonthName(calType, m2) +
-						" " +
-						_(y1)
+						getMonthName(calType, m1)
+						+ _(",")
+						+ " "
+						+ getMonthName(calType, m1 + 1)
+						+ " "
+						+ _("and")
+						+ " "
+						+ getMonthName(calType, m2)
+						+ " "
+						+ _(y1)
 					)
 				else:
 					if m1 == 11:
 						text += (
-							getMonthName(calType, m1) +
-							" " + _("and") + " " +
-							getMonthName(calType, m1 + 1) +
-							" " +
-							_(y1) +
-							" " + _("and") + " " +
-							getMonthName(calType, 1) +
-							" " +
-							_(y2)
+							getMonthName(calType, m1)
+							+ " "
+							+ _("and")
+							+ " "
+							+ getMonthName(calType, m1 + 1)
+							+ " "
+							+ _(y1)
+							+ " "
+							+ _("and")
+							+ " "
+							+ getMonthName(calType, 1)
+							+ " "
+							+ _(y2)
 						)
 					elif m1 == 12:
 						text += (
-							getMonthName(calType, m1) +
-							" " +
-							_(y1) +
-							" " +
-							_("and") +
-							" " +
-							getMonthName(calType, 1) +
-							" " +
-							_("and") +
-							" " +
-							getMonthName(calType, 2) +
-							" " +
-							_(y2)
+							getMonthName(calType, m1)
+							+ " "
+							+ _(y1)
+							+ " "
+							+ _("and")
+							+ " "
+							+ getMonthName(calType, 1)
+							+ " "
+							+ _("and")
+							+ " "
+							+ getMonthName(calType, 2)
+							+ " "
+							+ _(y2)
 						)
 	return text
 

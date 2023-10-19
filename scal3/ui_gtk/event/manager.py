@@ -126,36 +126,38 @@ class EventManagerToolbar(StaticToolBox):
 		# 	desc=_("Move to top"),
 		# 	continuousClick=False,
 		# ))
-		self.extend([
-			ToolBoxItem(
-				name="go-up",
-				imageName="go-up.svg",
-				onClick="moveUpByButton",
-				desc=_("Move up"),
-				continuousClick=False,
-			),
-			ToolBoxItem(
-				name="go-down",
-				imageName="go-down.svg",
-				onClick="moveDownByButton",
-				desc=_("Move down"),
-				continuousClick=False,
-			),
-			# ToolBoxItem(
-			# 	name="goto-bottom",
-			# 	imageName="go-bottom.svg",
-			# 	onClick="",
-			# 	desc=_("Move to bottom"),
-			# 	continuousClick=False,
-			# ),
-			ToolBoxItem(
-				name="duplicate",
-				imageName="edit-copy.svg",
-				onClick="duplicateSelectedObj",
-				desc=_("Duplicate"),
-				continuousClick=False,
-			),
-		])
+		self.extend(
+			[
+				ToolBoxItem(
+					name="go-up",
+					imageName="go-up.svg",
+					onClick="moveUpByButton",
+					desc=_("Move up"),
+					continuousClick=False,
+				),
+				ToolBoxItem(
+					name="go-down",
+					imageName="go-down.svg",
+					onClick="moveDownByButton",
+					desc=_("Move down"),
+					continuousClick=False,
+				),
+				# ToolBoxItem(
+				# 	name="goto-bottom",
+				# 	imageName="go-bottom.svg",
+				# 	onClick="",
+				# 	desc=_("Move to bottom"),
+				# 	continuousClick=False,
+				# ),
+				ToolBoxItem(
+					name="duplicate",
+					imageName="edit-copy.svg",
+					onClick="duplicateSelectedObj",
+					desc=_("Duplicate"),
+					continuousClick=False,
+				),
+			],
+		)
 
 
 @registerSignals
@@ -461,18 +463,24 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		self.multiSelectLabel.get_style_context().add_class("smaller")
 		pack(hbox, self.multiSelectLabel, 1, 1)
 
-		pack(hbox, self.smallerButton(
-			label=_("Copy"),
-			# imageName="edit-copy.svg",
-			func=self.multiSelectCopy,
-			tooltip=_("Copy"),
-		))
-		pack(hbox, self.smallerButton(
-			label=_("Cut"),
-			# imageName="edit-cut.svg",
-			func=self.multiSelectCut,
-			tooltip=_("Cut"),
-		))
+		pack(
+			hbox,
+			self.smallerButton(
+				label=_("Copy"),
+				# imageName="edit-copy.svg",
+				func=self.multiSelectCopy,
+				tooltip=_("Copy"),
+			),
+		)
+		pack(
+			hbox,
+			self.smallerButton(
+				label=_("Cut"),
+				# imageName="edit-cut.svg",
+				func=self.multiSelectCut,
+				tooltip=_("Cut"),
+			),
+		)
 		self.multiSelectPasteButton = self.smallerButton(
 			label=_("Paste"),
 			# imageName="edit-paste.svg",
@@ -482,19 +490,25 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		pack(hbox, self.multiSelectPasteButton)
 		self.multiSelectPasteButton.set_sensitive(False)
 		pack(hbox, gtk.Label(), 1, 1)
-		pack(hbox, self.smallerButton(
-			label=_("Delete", ctx="event manager"),
-			imageName="edit-delete.svg",
-			func=self.multiSelectDelete,
-			tooltip=_("Move to {title}").format(title=ui.eventTrash.title),
-		))
+		pack(
+			hbox,
+			self.smallerButton(
+				label=_("Delete", ctx="event manager"),
+				imageName="edit-delete.svg",
+				func=self.multiSelectDelete,
+				tooltip=_("Move to {title}").format(title=ui.eventTrash.title),
+			),
+		)
 		pack(hbox, gtk.Label(), 1, 1)
-		pack(hbox, self.smallerButton(
-			label=_("Cancel"),
-			imageName="dialog-cancel.svg",
-			func=self.multiSelectCancel,
-			tooltip=_("Cancel"),
-		))
+		pack(
+			hbox,
+			self.smallerButton(
+				label=_("Cancel"),
+				imageName="dialog-cancel.svg",
+				func=self.multiSelectCancel,
+				tooltip=_("Cancel"),
+			),
+		)
 		###
 		pack(self.vbox, hbox)
 		#######
@@ -723,12 +737,18 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		return True
 
 	def multiSelectLabelUpdate(self):
-		self.multiSelectLabel.set_label(_("{count} events selected").format(
-			count=_(sum([
-				len(eventIndexes)
-				for eventIndexes in self.multiSelectPathDict.values()
-			])),
-		))
+		self.multiSelectLabel.set_label(
+			_("{count} events selected").format(
+				count=_(
+					sum(
+						[
+							len(eventIndexes)
+							for eventIndexes in self.multiSelectPathDict.values()
+						],
+					),
+				),
+			),
+		)
 
 	def multiSelectTreeviewToggleSelected(self):
 		path = self.getSelectedPath()
@@ -850,9 +870,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			msg = _("{count} events successfully moved")
 		else:
 			msg = _("{count} events successfully copied")
-		self.sbar.push(0, msg.format(
-			count=_(len(iterList)),
-		))
+		self.sbar.push(
+			0,
+			msg.format(
+				count=_(len(iterList)),
+			),
+		)
 
 		self.multiSelectOperationFinished()
 		self.multiSelectToPaste = None
@@ -918,15 +941,19 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 		msgs = []
 		if toTrashCount:
-			msgs.append(_("Moved {count} events to {title}").format(
-				count=_(toTrashCount),
-				title=ui.eventTrash.title,
-			))
+			msgs.append(
+				_("Moved {count} events to {title}").format(
+					count=_(toTrashCount),
+					title=ui.eventTrash.title,
+				),
+			)
 		if deleteCount:
-			msgs.append(_("Deleted {count} events from {title}").format(
-				count=_(deleteCount),
-				title=ui.eventTrash.title,
-			))
+			msgs.append(
+				_("Deleted {count} events from {title}").format(
+					count=_(deleteCount),
+					title=ui.eventTrash.title,
+				),
+			)
 		self.sbar.push(0, _(", ").join(msgs))
 
 		self.multiSelectOperationFinished()
@@ -996,6 +1023,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def multiSelectExport(self, widget=None):
 		from scal3.ui_gtk.event.export import EventListExportDialog
+
 		idsList = self.multiSelectEventIdsList()
 		y, m, d = cal_types.getSysDate(core.GREGORIAN)
 		dialog = EventListExportDialog(
@@ -1004,9 +1032,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			# groupTitle="",
 		)
 		dialog.run()
-		self.sbar.push(0, _("Exporting {count} events finished").format(
-			count=_(len(idsList)),
-		))
+		self.sbar.push(
+			0,
+			_("Exporting {count} events finished").format(
+				count=_(len(idsList)),
+			),
+		)
 		self.multiSelectOperationFinished()
 
 	def getRowId(self, _iter) -> int:
@@ -1027,8 +1058,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	) -> None:
 		if not group.checkEventToAdd(event):
 			msg = _(
-				"Group type \"{groupType}\" can not contain "
-				"event type \"{eventType}\"",
+				'Group type "{groupType}" can not contain event type "{eventType}"',
 			).format(
 				groupType=group.desc,
 				eventType=event.desc,
@@ -1039,13 +1069,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	def getGroupRow(self, group: lib.EventGroup) -> None:
 		return (False,) + common.getGroupRow(group) + ("",)
 
-	def getEventRow(self, event: lib.Event) -> tuple[
-		bool,
-		int,
-		GdkPixbuf.Pixbuf,
-		str,
-		str,
-	]:
+	def getEventRow(
+		self, event: lib.Event,
+	) -> tuple[bool, int, GdkPixbuf.Pixbuf, str, str]:
 		pixbuf = eventTreeIconPixbuf(event.getIconRel())
 		if event.icon and pixbuf is None:
 			log.error(
@@ -1137,13 +1163,16 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			self.appendGroupEvents(group, groupIter)
 
 	def appendTrash(self) -> None:
-		self.trashIter = self.treeModel.append(None, (
-			False,
-			-1,
-			eventTreeIconPixbuf(ui.eventTrash.getIconRel()),
-			ui.eventTrash.title,
-			"",
-		))
+		self.trashIter = self.treeModel.append(
+			None,
+			(
+				False,
+				-1,
+				eventTreeIconPixbuf(ui.eventTrash.getIconRel()),
+				ui.eventTrash.title,
+				"",
+			),
+		)
 		for event in ui.eventTrash:
 			self.appendEventRow(self.trashIter, event)
 
@@ -1171,7 +1200,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 	def getObjsByPath(self, path: list[int]) -> list[EventOrGroup]:
 		obj_list = []
 		for i in range(len(path)):
-			it = self.treeModel.get_iter(path[:i + 1])
+			it = self.treeModel.get_iter(path[: i + 1])
 			obj_id = self.getRowId(it)
 			if i == 0:
 				if obj_id == -1:
@@ -1188,27 +1217,33 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def trashAddRightClickMenuItems(self, menu, path, group):
 		# log.debug("right click on trash", group.title)
-		menu.add(eventWriteMenuItem(
-			_("Edit"),
-			imageName="document-edit.svg",
-			func=self.editTrash,
-		))
+		menu.add(
+			eventWriteMenuItem(
+				_("Edit"),
+				imageName="document-edit.svg",
+				func=self.editTrash,
+			),
+		)
 
-		menu.add(eventWriteMenuItem(
-			_("Sort Events"),
-			imageName="view-sort-ascending.svg",
-			func=self.groupSortFromMenu,
-			args=(path,),
-			sensitive=bool(group.idList),
-		))
+		menu.add(
+			eventWriteMenuItem(
+				_("Sort Events"),
+				imageName="view-sort-ascending.svg",
+				func=self.groupSortFromMenu,
+				args=(path,),
+				sensitive=bool(group.idList),
+			),
+		)
 
 		# FIXME: _("Empty {title}").format(title=group.title),
-		menu.add(eventWriteMenuItem(
-			_("Empty Trash"),
-			imageName="sweep.svg",
-			func=self.emptyTrash,
-			sensitive=bool(group.idList),
-		))
+		menu.add(
+			eventWriteMenuItem(
+				_("Empty Trash"),
+				imageName="sweep.svg",
+				func=self.emptyTrash,
+				sensitive=bool(group.idList),
+			),
+		)
 		# menu.add(gtk.SeparatorMenuItem())
 		# menu.add(eventWriteMenuItem(
 		# 	"Add New Group",
@@ -1218,22 +1253,26 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def groupAddRightClickMenuItems(self, menu, path, group):
 		# log.debug("right click on group", group.title)
-		menu.add(eventWriteMenuItem(
-			_("Edit"),
-			imageName="document-edit.svg",
-			func=self.editGroupFromMenu,
-			args=(path,),
-		))
+		menu.add(
+			eventWriteMenuItem(
+				_("Edit"),
+				imageName="document-edit.svg",
+				func=self.editGroupFromMenu,
+				args=(path,),
+			),
+		)
 		eventTypes = group.acceptsEventTypes
 		if eventTypes is None:
 			eventTypes = lib.classes.event.names
 		if len(eventTypes) > 3:
-			menu.add(eventWriteMenuItem(
-				_("Add Event"),
-				imageName="list-add.svg",
-				func=self.addGenericEventToGroupFromMenu,
-				args=(path, group),
-			))
+			menu.add(
+				eventWriteMenuItem(
+					_("Add Event"),
+					imageName="list-add.svg",
+					func=self.addGenericEventToGroupFromMenu,
+					args=(path, group),
+				),
+			)
 		else:
 			for eventType in eventTypes:
 				# if eventType == "custom":  # FIXME
@@ -1243,17 +1282,19 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 				label = _("Add {eventType}").format(
 					eventType=eventTypeDesc,
 				)
-				menu.add(eventWriteMenuItem(
-					label,
-					imageName="list-add.svg",
-					func=self.addEventToGroupFromMenu,
-					args=(
-						path,
-						group,
-						eventType,
+				menu.add(
+					eventWriteMenuItem(
 						label,
+						imageName="list-add.svg",
+						func=self.addEventToGroupFromMenu,
+						args=(
+							path,
+							group,
+							eventType,
+							label,
+						),
 					),
-				))
+				)
 		pasteItem = eventWriteMenuItem(
 			_("Paste Event"),
 			imageName="edit-paste.svg",
@@ -1272,16 +1313,18 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			else:
 				if account.enable:
 					menu.add(gtk.SeparatorMenuItem())
-					menu.add(eventWriteMenuItem(
-						_("Synchronize"),
-						imageName="",
-						# FIXME: sync-events.svg
-						func=self.syncGroupFromMenu,
-						args=(
-							path,
-							account,
+					menu.add(
+						eventWriteMenuItem(
+							_("Synchronize"),
+							imageName="",
+							# FIXME: sync-events.svg
+							func=self.syncGroupFromMenu,
+							args=(
+								path,
+								account,
+							),
 						),
-					))
+					)
 				# else:  # FIXME
 		##
 		menu.add(gtk.SeparatorMenuItem())
@@ -1291,12 +1334,14 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		# 	func=self.addGroupBeforeGroup,
 		# 	args=(path,),
 		# ))  # FIXME
-		menu.add(eventWriteMenuItem(
-			_("Duplicate"),
-			imageName="edit-copy.svg",
-			func=self.duplicateGroupFromMenu,
-			args=(path,),
-		))
+		menu.add(
+			eventWriteMenuItem(
+				_("Duplicate"),
+				imageName="edit-copy.svg",
+				func=self.duplicateGroupFromMenu,
+				args=(path,),
+			),
+		)
 		###
 		dupAllItem = eventWriteMenuItem(
 			_("Duplicate with All Events"),
@@ -1310,12 +1355,14 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		)
 		###
 		menu.add(gtk.SeparatorMenuItem())
-		menu.add(eventWriteMenuItem(
-			_("Delete Group"),
-			imageName="edit-delete.svg",
-			func=self.deleteGroupFromMenu,
-			args=(path,),
-		))
+		menu.add(
+			eventWriteMenuItem(
+				_("Delete Group"),
+				imageName="edit-delete.svg",
+				func=self.deleteGroupFromMenu,
+				args=(path,),
+			),
+		)
 		menu.add(gtk.SeparatorMenuItem())
 		##
 		# menu.add(eventWriteMenuItem(
@@ -1331,20 +1378,24 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		# 	args=(path,)
 		# ))
 		##
-		menu.add(ImageMenuItem(
-			_("Export", ctx="menu"),
-			# imageName="export-events.svg",  # FIXME
-			func=self.groupExportFromMenu,
-			args=(group,),
-		))
+		menu.add(
+			ImageMenuItem(
+				_("Export", ctx="menu"),
+				# imageName="export-events.svg",  # FIXME
+				func=self.groupExportFromMenu,
+				args=(group,),
+			),
+		)
 		###
-		menu.add(eventWriteMenuItem(
-			_("Sort Events"),
-			imageName="view-sort-ascending.svg",
-			func=self.groupSortFromMenu,
-			args=(path,),
-			sensitive=not group.isReadOnly() and bool(group.idList),
-		))
+		menu.add(
+			eventWriteMenuItem(
+				_("Sort Events"),
+				imageName="view-sort-ascending.svg",
+				func=self.groupSortFromMenu,
+				args=(path,),
+				sensitive=not group.isReadOnly() and bool(group.idList),
+			),
+		)
 		###
 		convertItem = eventWriteMenuItem(
 			_("Convert Calendar Type"),
@@ -1359,16 +1410,18 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		###
 		for newGroupType in group.canConvertTo:
 			newGroupTypeDesc = lib.classes.group.byName[newGroupType].desc
-			menu.add(eventWriteMenuItem(
-				_("Convert to {groupType}").format(
-					groupType=newGroupTypeDesc,
+			menu.add(
+				eventWriteMenuItem(
+					_("Convert to {groupType}").format(
+						groupType=newGroupTypeDesc,
+					),
+					func=self.groupConvertToFromMenu,
+					args=(
+						group,
+						newGroupType,
+					),
 				),
-				func=self.groupConvertToFromMenu,
-				args=(
-					group,
-					newGroupType,
-				),
-			))
+			)
 		###
 		bulkItem = eventWriteMenuItem(
 			_("Bulk Edit Events"),
@@ -1382,30 +1435,36 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		)
 		###
 		for actionName, actionFuncName in group.actions:
-			menu.add(eventWriteMenuItem(
-				_(actionName),
-				func=self.onGroupActionClick,
-				args=(
-					group,
-					actionFuncName,
+			menu.add(
+				eventWriteMenuItem(
+					_(actionName),
+					func=self.onGroupActionClick,
+					args=(
+						group,
+						actionFuncName,
+					),
 				),
-			))
+			)
 
 	def eventAddRightClickMenuItems(self, menu, path, group, event):
 		# log.debug("right click on event", event.summary)
-		menu.add(eventWriteMenuItem(
-			_("Edit"),
-			imageName="document-edit.svg",
-			func=self.editEventFromMenu,
-			args=(path,),
-		))
+		menu.add(
+			eventWriteMenuItem(
+				_("Edit"),
+				imageName="document-edit.svg",
+				func=self.editEventFromMenu,
+				args=(path,),
+			),
+		)
 		####
-		menu.add(eventWriteImageMenuItem(
-			_("History"),
-			"history.svg",
-			func=self.historyOfEventFromMenu,
-			args=(path,),
-		))
+		menu.add(
+			eventWriteImageMenuItem(
+				_("History"),
+				"history.svg",
+				func=self.historyOfEventFromMenu,
+				args=(path,),
+			),
+		)
 		####
 		moveToItem = eventWriteMenuItem(
 			_("Move to {title}").format(title="..."),
@@ -1418,40 +1477,48 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			# 	continue
 			new_groupPath = self.treeModel.get_path(self.groupIterById[new_group.id])
 			if event.name in new_group.acceptsEventTypes:
-				moveToMenu.add(menuItemFromEventGroup(
-					new_group,
-					func=self.moveEventToPathFromMenu,
-					args=(
-						path,
-						new_groupPath,
+				moveToMenu.add(
+					menuItemFromEventGroup(
+						new_group,
+						func=self.moveEventToPathFromMenu,
+						args=(
+							path,
+							new_groupPath,
+						),
 					),
-				))
+				)
 		moveToItem.set_submenu(moveToMenu)
 		menu.add(moveToItem)
 		####
 		menu.add(gtk.SeparatorMenuItem())
 		####
-		menu.add(eventWriteMenuItem(
-			_("Cut"),
-			imageName="edit-cut.svg",
-			func=self.cutEvent,
-			args=(path,),
-		))
-		menu.add(eventWriteMenuItem(
-			_("Copy"),
-			imageName="edit-copy.svg",
-			func=self.copyEvent,
-			args=(path,),
-		))
+		menu.add(
+			eventWriteMenuItem(
+				_("Cut"),
+				imageName="edit-cut.svg",
+				func=self.cutEvent,
+				args=(path,),
+			),
+		)
+		menu.add(
+			eventWriteMenuItem(
+				_("Copy"),
+				imageName="edit-copy.svg",
+				func=self.copyEvent,
+				args=(path,),
+			),
+		)
 		##
 		if group.name == "trash":
 			menu.add(gtk.SeparatorMenuItem())
-			menu.add(eventWriteMenuItem(
-				_("Delete", ctx="event manager"),
-				imageName="edit-delete.svg",
-				func=self.deleteEventFromTrash,
-				args=(path,),
-			))
+			menu.add(
+				eventWriteMenuItem(
+					_("Delete", ctx="event manager"),
+					imageName="edit-delete.svg",
+					func=self.deleteEventFromTrash,
+					args=(path,),
+				),
+			)
 		else:
 			pasteItem = eventWriteMenuItem(
 				_("Paste"),
@@ -1463,12 +1530,14 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			pasteItem.set_sensitive(self.canPasteToGroup(group))
 			##
 			menu.add(gtk.SeparatorMenuItem())
-			menu.add(eventWriteMenuItem(
-				_("Move to {title}").format(title=ui.eventTrash.title),
-				imageName=ui.eventTrash.getIconRel(),
-				func=self.moveEventToTrashFromMenu,
-				args=(path,),
-			))
+			menu.add(
+				eventWriteMenuItem(
+					_("Move to {title}").format(title=ui.eventTrash.title),
+					imageName=ui.eventTrash.getIconRel(),
+					func=self.moveEventToTrashFromMenu,
+					args=(path,),
+				),
+			)
 
 	def genRightClickMenu(self, path: list[int]) -> gtk.Menu:
 		# and Select _All menu item
@@ -1551,13 +1620,16 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		foo, wx, wy = self.get_window().get_origin()
 		self.tmpMenu = menu
 		menu.popup(
-			None, None,
+			None,
+			None,
 			lambda *args: (
 				wx + dx,
 				wy + dy,
 				True,
 			),
-			None, 3, gevent.time,
+			None,
+			3,
+			gevent.time,
 		)
 
 	def onTreeviewKeyPress(
@@ -1701,14 +1773,18 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 					eventCount=_(len(group)),
 				)
 			else:
-				text = _(
-					"contains {eventCount} events"
-					" and {occurCount} occurrences",
-				).format(
-					eventCount=_(len(group)),
-					occurCount=_(group.occurCount),
-				) + _(",") + " " + _("Group ID: {groupId}").format(
-					groupId=_(group.id),
+				text = (
+					_(
+						"contains {eventCount} events and {occurCount} occurrences",
+					).format(
+						eventCount=_(len(group)),
+						occurCount=_(group.occurCount),
+					)
+					+ _(",")
+					+ " "
+					+ _("Group ID: {groupId}").format(
+						groupId=_(group.id),
+					)
 				)
 			modified = group.modified
 			# log.info(f"group, id = {group.id}, uuid = {group.uuid}")
@@ -1784,9 +1860,9 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		)
 		ui.eventGroups.save()
 		if (
-			group.enable and
-			self.treeModel.iter_n_children(groupIter) == 0 and
-			len(group) > 0
+			group.enable
+			and self.treeModel.iter_n_children(groupIter) == 0
+			and len(group) > 0
 		):
 			for event in group:
 				self.appendEventRow(groupIter, event)
@@ -1872,6 +1948,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def insertNewGroup(self, groupIndex: int) -> None:
 		from scal3.ui_gtk.event.group.editor import GroupEditorDialog
+
 		group = GroupEditorDialog(transient_for=self).run()
 		if group is None:
 			return
@@ -1994,6 +2071,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def editGroupByPath(self, path: list[int]) -> None:
 		from scal3.ui_gtk.event.group.editor import GroupEditorDialog
+
 		checkEventsReadOnly()  # FIXME
 		group = self.getObjsByPath(path)[0]
 		if group.name == "trash":
@@ -2002,7 +2080,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 		if group.isReadOnly():
 			msg = _(
-				"Event group \"{groupTitle}\" is synchronizing and read-only",
+				'Event group "{groupTitle}" is synchronizing and read-only',
 			).format(groupTitle=group.title)
 			showError(msg, transient_for=self)
 			return
@@ -2041,7 +2119,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		if eventCount > 0:
 			if not confirm(
 				_(
-					"Press Confirm if you want to delete group \"{groupTitle}\" "
+					'Press Confirm if you want to delete group "{groupTitle}" '
 					"and move its {eventCount} events to {trashTitle}",
 				).format(
 					groupTitle=group.title,
@@ -2127,6 +2205,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 	def editEventByPath(self, path: list[int]) -> None:
 		from scal3.ui_gtk.event.editor import EventEditorDialog
+
 		group, event = self.getObjsByPath(path)
 		event = EventEditorDialog(
 			event,
@@ -2229,9 +2308,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			parentIndex, eventIndex = path
 			# log.debug(eventIndex, parentLen)
 			if eventIndex > 0:
-				tarIter = self.treeModel.get_iter((
-					parentIndex,
-					eventIndex - 1),
+				tarIter = self.treeModel.get_iter(
+					(parentIndex, eventIndex - 1),
 				)
 				self.treeModel.move_before(srcIter, tarIter)
 				# ^ or use self.treeModel.swap FIXME
@@ -2286,10 +2364,12 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			parentIndex, eventIndex = path
 			# log.debug(eventIndex, parentLen)
 			if eventIndex < parentLen - 1:
-				tarIter = self.treeModel.get_iter((
-					parentIndex,
-					eventIndex + 1,
-				))
+				tarIter = self.treeModel.get_iter(
+					(
+						parentIndex,
+						eventIndex + 1,
+					),
+				)
 				self.treeModel.move_after(srcIter, tarIter)
 				parentObj.moveDown(eventIndex)
 				parentObj.save()
@@ -2418,6 +2498,7 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		path: list[int],
 	) -> None:
 		from scal3.ui_gtk.event.bulk_edit import EventsBulkEditDialog
+
 		dialog = EventsBulkEditDialog(group, transient_for=self)
 		if dialog.run() == gtk.ResponseType.OK:
 			self.waitingDo(self._do_groupBulkEdit, dialog, group, path)

@@ -86,7 +86,7 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 		pack(hbox, label, 0, 0)
 		sgroupLabel.add_widget(label)
 		self.nameEntry = gtk.Entry()
-		#self.nameEntry.set_direction(gtk.TextDirection.LTR)
+		# self.nameEntry.set_direction(gtk.TextDirection.LTR)
 		pack(hbox, self.nameEntry, 1, 1, 10)
 		pack(self.vbox, hbox, 0, 0, 10)
 		###
@@ -132,6 +132,7 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 	def doRegister(self):
 		"""Return None if successful, or error string if failed."""
 		import requests
+
 		email = self.emailEntry.get_text()
 		password = self.passwordEntry.get_text()
 		fullName = self.nameEntry.get_text()
@@ -161,12 +162,14 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 			return error
 
 		account = accountCls()
-		account.setData({
-			"title": "StarCalendar: " + email,
-			"email": email,
-			"password": password,
-			"lastToken": token,
-		})
+		account.setData(
+			{
+				"title": "StarCalendar: " + email,
+				"email": email,
+				"password": password,
+				"lastToken": token,
+			},
+		)
 		account.save()
 		ui.eventAccounts.append(account)
 		ui.eventAccounts.save()
@@ -178,7 +181,7 @@ class StarCalendarRegisterDialog(gtk.Dialog, MyDialog):
 		error = account.fetchGroups()
 		if error:
 			log.error(error)
-			return # error? FIXME
+			return  # error? FIXME
 		account.save()
 		return None
 

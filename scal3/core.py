@@ -60,6 +60,7 @@ try:
 	__file__
 except NameError:
 	import inspect
+
 	__file__ = join(os.path.dirname(inspect.getfile(scal3)), "core.py")
 
 
@@ -110,9 +111,7 @@ confParams = (
 )
 
 confDecoders = {
-	"allPlugList": lambda pdataList: [
-		loadPlugin(**pdata) for pdata in pdataList
-	],
+	"allPlugList": lambda pdataList: [loadPlugin(**pdata) for pdata in pdataList],
 }
 
 confEncoders = {
@@ -180,7 +179,8 @@ def getVersion() -> str:
 		outputB, error = subprocess.Popen(
 			[
 				"git",
-				"--git-dir", gitDir,
+				"--git-dir",
+				gitDir,
 				"describe",
 				"--always",
 			],
@@ -204,8 +204,8 @@ def getVersion() -> str:
 	# 	sys.stderr.write(error)
 
 	gitVersion = re.sub(
-		'-([0-9]+)-g([0-9a-f]{6,8})',
-		r'post\1+\2',
+		"-([0-9]+)-g([0-9a-f]{6,8})",
+		r"post\1+\2",
 		gitVersionRaw,
 	)
 	if parse_version(gitVersion) > parse_version(VERSION):
@@ -306,6 +306,7 @@ def getWeekNumberByJd(jd: int) -> int:
 	year, month, day = jd_to_primary(jd)
 	return getWeekNumberByJdAndDate(jd, year, month, day)
 
+
 # FIXME
 # def getYearWeeksCount(year: int) -> int:
 # 	return getWeekNumberByJd(primary_to_jd(year+1, 1, 1) - 7)
@@ -344,6 +345,7 @@ def getStartJdOfAbsWeekNumber(absWeekNumber: int) -> int:
 
 
 ######################################################
+
 
 def validatePlugList() -> None:
 	global allPlugList, plugIndex
@@ -429,12 +431,15 @@ def updatePlugins() -> None:
 			plug.clear()
 
 
-PluginTuple = namedtuple("PluginTuple", [
-	"index",
-	"enable",
-	"show_date",
-	"title",
-])
+PluginTuple = namedtuple(
+	"PluginTuple",
+	[
+		"index",
+		"enable",
+		"show_date",
+		"title",
+	],
+)
 
 
 def getPluginsTable() -> list[list]:
@@ -442,12 +447,14 @@ def getPluginsTable() -> list[list]:
 	table = []
 	for index in plugIndex:
 		plug = allPlugList[index]
-		table.append(PluginTuple(
-			index=index,
-			enable=plug.enable,
-			show_date=plug.show_date,
-			title=plug.title,
-		))
+		table.append(
+			PluginTuple(
+				index=index,
+				enable=plug.enable,
+				show_date=plug.show_date,
+				title=plug.title,
+			),
+		)
 	return table
 
 
@@ -468,8 +475,10 @@ def getDeletedPluginsTable() -> list[list]:
 def restart() -> typing.NoReturn:
 	"""Will not return from function."""
 	from scal3.utils import restartLow
+
 	os.environ["LANG"] = locale_man.sysLangDefault
 	restartLow()
+
 
 # _____________________________________________________ #
 
@@ -479,6 +488,7 @@ def mylocaltime(
 	calType: "int | None" = None,
 ) -> list[int]:
 	from scal3.cal_types import convert
+
 	if calType is None:  # GREGORIAN
 		return list(localtime(sec))
 	t = list(localtime(sec))
@@ -490,9 +500,14 @@ def compressLongInt(num: int) -> str:
 	"""Num must be less than 2**64."""
 	from base64 import b64encode
 	from struct import pack
-	return b64encode(
-		pack("L", num % 2 ** 64).rstrip(b"\x00"),
-	)[:-3].decode("ascii").replace("/", "_")
+
+	return (
+		b64encode(
+			pack("L", num % 2**64).rstrip(b"\x00"),
+		)[:-3]
+		.decode("ascii")
+		.replace("/", "_")
+	)
 
 
 def getCompactTime(maxDays: int = 1000, minSec: float = 0.1) -> str:
@@ -518,6 +533,7 @@ def epochDateTimeEncode(epoch: int) -> str:
 def stopRunningThreads() -> None:
 	"""Stopping running timer threads."""
 	import threading
+
 	for thread in threading.enumerate():
 		# if thread.__class__.__name__ == "_Timer":
 		try:
@@ -530,8 +546,11 @@ def stopRunningThreads() -> None:
 
 
 def dataToJson(data: Any) -> str:
-	return dataToCompactJson(data, useAsciiJson) if useCompactJson \
+	return (
+		dataToCompactJson(data, useAsciiJson)
+		if useCompactJson
 		else dataToPrettyJson(data, useAsciiJson)
+	)
 
 
 def init() -> None:

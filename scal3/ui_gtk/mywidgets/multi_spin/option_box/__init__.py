@@ -41,7 +41,7 @@ class MultiSpinOptionBox(gtk.Box):
 		)
 		pack(self, self.option, 1, 1)
 		self.menu = Menu()
-		#self.menu.show()
+		# self.menu.show()
 		self.option.connect("button-press-event", self.option_pressed)
 		self.menuItems = []
 		# self.option.set_sensitive(False) #???????
@@ -51,7 +51,7 @@ class MultiSpinOptionBox(gtk.Box):
 		self.set_value = self.spin.set_value
 
 	def option_pressed(self, widget, gevent):
-		#x, y, w, h = self.option.
+		# x, y, w, h = self.option.
 		self.menu.popup(None, None, None, None, gevent.button, gevent.time)
 
 	def find_text(self, text):
