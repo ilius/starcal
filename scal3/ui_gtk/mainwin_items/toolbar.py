@@ -18,10 +18,10 @@ class MainMenuToolBoxItem(ToolBoxItem):
 			desc=_("Main Menu"),
 			continuousClick=False,
 			onPress=self.onButtonPress,
-			#iconSize=30,  # for svg
+			# iconSize=30,  # for svg
 			enable=False,
 		)
-		#self.setIconFile("starcal.svg")
+		# self.setIconFile("starcal.svg")
 
 	def getMenuPos(self):
 		wcal = self.get_parent().get_parent()
@@ -131,10 +131,7 @@ class CalObj(CustomizableToolBox):
 			continuousClick=False,
 		),
 	]
-	defaultItemsDict = {
-		item._name: item
-		for item in defaultItems
-	}
+	defaultItemsDict = {item._name: item for item in defaultItems}
 
 	def __init__(self, win):
 		self.win = win

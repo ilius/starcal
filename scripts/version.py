@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 import os
-from os.path import join, isfile
-import sys
-import subprocess
 import re
+import subprocess
+import sys
+from os.path import isfile, join
 
 try:
 	from packaging.version import parse as parse_version
@@ -33,7 +33,8 @@ if os.path.isdir(gitDir):
 		outputB, error = subprocess.Popen(
 			[
 				"git",
-				"--git-dir", gitDir,
+				"--git-dir",
+				gitDir,
 				"describe",
 				"--always",
 			],
@@ -51,8 +52,8 @@ if os.path.isdir(gitDir):
 		# so the only way to make it work is to use "post"
 		if gitVersionRaw:
 			gitVersion = re.sub(
-				'-([0-9]+)-g([0-9a-f]{6,8})',
-				r'post\1+\2',
+				"-([0-9]+)-g([0-9a-f]{6,8})",
+				r"post\1+\2",
 				gitVersionRaw,
 			)
 			if parse_version(gitVersion) > parse_version(VERSION):

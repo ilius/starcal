@@ -1,4 +1,3 @@
-
 from scal3 import logger
 
 log = logger.get()
@@ -25,6 +24,7 @@ def formatTime(
 
 def testSpeed():
 	from time import strftime
+
 	# fmt1 = "Date: %Y/%m/%d - Time: %H:%M:%S - %a %A %C %B %b %g %G %V"
 	fmt1 = "%Y/%m/%d - %H:%M:%S"
 	# fmt2 = "%OY/%Om/%Od - %OH:%OM:%OS"
@@ -51,6 +51,7 @@ def testSpeed():
 
 def testOutput():
 	from time import strftime
+
 	compiledFmt = compileTmFormat("%Y/%m/%d")
 	year = 2010
 	month = 1

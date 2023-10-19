@@ -2,7 +2,7 @@
 #
 # Copyright (C) Saeed Rasooli <saeed.gnu@gmail.com>
 # Used code from http://code.google.com/p/ethiocalendar/
-#				Copyright (C) 2008-2009 Yuji DOI <yuji5296@gmail.com>
+# 				Copyright (C) 2008-2009 Yuji DOI <yuji5296@gmail.com>
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -77,14 +77,7 @@ def isLeap(y):
 
 
 def to_jd(year, month, day):
-	return (
-		epoch
-		+ 365 * (year - 1)
-		+ year // 4
-		+ (month - 1) * 30
-		+ day
-		- 15
-	)
+	return epoch + 365 * (year - 1) + year // 4 + (month - 1) * 30 + day - 15
 
 
 def jd_to(jd):

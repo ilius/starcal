@@ -1,4 +1,3 @@
-
 from scal3 import logger
 
 log = logger.get()
@@ -52,7 +51,9 @@ def checkAndSaveJsonLockFile(fpath):
 						if pid == my_pid:
 							log.info(f"lock file {fpath}: pid == my_pid == {pid}")
 						elif get_cmdline(proc) != cmd:
-							log.info(f"lock file {fpath}: cmd does match: get_cmdline(proc) != cmd")
+							log.info(
+								f"lock file {fpath}: cmd does match: get_cmdline(proc) != cmd",
+							)
 						else:
 							locked = True
 
@@ -63,11 +64,15 @@ def checkAndSaveJsonLockFile(fpath):
 	if not locked:
 		my_proc = psutil.Process(my_pid)
 		my_cmd = get_cmdline(my_proc)
-		my_text = dataToPrettyJson(OrderedDict([
-			("pid", my_pid),
-			("cmd", my_cmd),
-			("time", now()),
-		]))
+		my_text = dataToPrettyJson(
+			OrderedDict(
+				[
+					("pid", my_pid),
+					("cmd", my_cmd),
+					("time", now()),
+				],
+			),
+		)
 		try:
 			with open(fpath, "w") as fp:  # noqa: FURB103
 				fp.write(my_text)

@@ -229,7 +229,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			SVGButton(
 				imageName="go-previous.svg",
 				onPress=self.onMoveLeftClick,
-				x=- size * 1.5,
+				x=-size * 1.5,
 				y=0,
 				autoDir=False,
 				iconSize=size,
@@ -302,11 +302,13 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			(_("{count} years").format(count=_(num)), avgYearLen * num)
 			for num in (2, 4, 8, 16, 32, 64, 100)
 		]:
-			menu.add(ImageMenuItem(
-				title,
-				func=self.onZoomMenuItemClick,
-				args=(timeWidth,),
-			))
+			menu.add(
+				ImageMenuItem(
+					title,
+					func=self.onZoomMenuItemClick,
+					args=(timeWidth,),
+				),
+			)
 		menu.show_all()
 		menu.popup(
 			None,
@@ -319,6 +321,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 
 	def openPreferences(self, arg=None):
 		from scal3.ui_gtk.timeline_prefs import TimeLinePreferencesWindow
+
 		if self.prefWindow is None:
 			self.prefWindow = TimeLinePreferencesWindow(self)
 		openWindow(self.prefWindow)
@@ -344,8 +347,8 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.currentTime = int(tm)
 		if draw and self.get_parent():
 			if (
-				self.get_parent().get_visible() and
-				self.timeStart <= tm <= self.timeStart + self.timeWidth + 1
+				self.get_parent().get_visible()
+				and self.timeStart <= tm <= self.timeStart + self.timeWidth + 1
 			):
 				# log.debug(f"{tm%100:.2f} currentTimeUpdate: DRAW")
 				self.queue_draw()
@@ -601,11 +604,15 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				elif right == minA:
 					editType = 1
 					t0 = event.getEndEpoch()
-					self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.RIGHT_SIDE))
+					self.get_window().set_cursor(
+						gdk.Cursor.new(gdk.CursorType.RIGHT_SIDE),
+					)
 				elif left == minA:
 					editType = -1
 					t0 = event.getStartEpoch()
-					self.get_window().set_cursor(gdk.Cursor.new(gdk.CursorType.LEFT_SIDE))
+					self.get_window().set_cursor(
+						gdk.Cursor.new(gdk.CursorType.LEFT_SIDE),
+					)
 				if editType is not None:
 					self.boxEditing = (editType, event, box, x, t0)
 					self.queue_draw()
@@ -624,39 +631,45 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				##
 				if not event.readOnly:
 					winTitle = _("Edit") + " " + event.desc
-					menu.add(ImageMenuItem(
-						winTitle,
-						imageName="document-edit.svg",
-						func=self.onEditEventClick,
-						args=(
+					menu.add(
+						ImageMenuItem(
 							winTitle,
-							event,
-							gid,
+							imageName="document-edit.svg",
+							func=self.onEditEventClick,
+							args=(
+								winTitle,
+								event,
+								gid,
+							),
 						),
-					))
+					)
 				##
 				winTitle = _("Edit") + " " + group.desc
-				menu.add(ImageMenuItem(
-					winTitle,
-					imageName="document-edit.svg",
-					func=self.onEditGroupClick,
-					args=(
+				menu.add(
+					ImageMenuItem(
 						winTitle,
-						group,
+						imageName="document-edit.svg",
+						func=self.onEditGroupClick,
+						args=(
+							winTitle,
+							group,
+						),
 					),
-				))
+				)
 				##
 				menu.add(gtk.SeparatorMenuItem())
 				##
-				menu.add(ImageMenuItem(
-					_("Move to {title}").format(title=ui.eventTrash.title),
-					imageName=ui.eventTrash.getIconRel(),
-					func=self.moveEventToTrash,
-					args=(
-						group,
-						event,
+				menu.add(
+					ImageMenuItem(
+						_("Move to {title}").format(title=ui.eventTrash.title),
+						imageName=ui.eventTrash.getIconRel(),
+						func=self.moveEventToTrash,
+						args=(
+							group,
+							event,
+						),
 					),
-				))
+				)
 				##
 				menu.show_all()
 				self.tmpMenu = menu
@@ -703,6 +716,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 
 	def onEditEventClick(self, menu, winTitle, event, gid):
 		from scal3.ui_gtk.event.editor import EventEditorDialog
+
 		event = EventEditorDialog(
 			event,
 			title=winTitle,
@@ -715,6 +729,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 
 	def onEditGroupClick(self, menu, winTitle, group):
 		from scal3.ui_gtk.event.group.editor import GroupEditorDialog
+
 		group = GroupEditorDialog(
 			group,
 			transient_for=self.get_toplevel(),
@@ -728,6 +743,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 
 	def moveEventToTrash(self, menu, group, event):
 		from scal3.ui_gtk.event.utils import confirmEventTrash
+
 		if not confirmEventTrash(event):
 			return
 		ui.moveEventToTrash(group, event, self)
@@ -849,7 +865,8 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			self.timeStart += (
 				direction
 				* (
-					tl.movingStaticStepMouse if source == "mouse"
+					tl.movingStaticStepMouse
+					if source == "mouse"
 					else tl.movingStaticStepKeyboard
 				)
 				* self.timeWidth
@@ -908,7 +925,11 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			a2 = f
 		if a2 != a1:
 			return self.updateMovingAnim(
-				f, t2, t2, v1, a2,
+				f,
+				t2,
+				t2,
+				v1,
+				a2,
 				holdForce=holdForce,
 			)
 		v2 = v0 + a2 * (t2 - t0)
@@ -932,12 +953,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		)
 		self.animTimerSource = main_context_default().find_source_by_id(source_id)
 		self.movingV = v2
-		self.timeStart += (
-			v2
-			* (t2 - t1)
-			* self.timeWidth
-			/ self.get_allocation().width
-		)
+		self.timeStart += v2 * (t2 - t1) * self.timeWidth / self.get_allocation().width
 		self.queue_draw()
 		return None
 

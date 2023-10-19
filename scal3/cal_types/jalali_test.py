@@ -9,6 +9,7 @@ from scal3.cal_types import jalali
 def lastMonthLenByConvert(year: int) -> int:
 	return jalali.to_jd(year + 1, 1, 1) - jalali.to_jd(year, 12, 1)
 
+
 class TestJalali(unittest.TestCase):
 	def notest_isLeap_negativeYear(self):
 		print()
@@ -26,20 +27,19 @@ class TestJalali(unittest.TestCase):
 			# 	f"{'L' if isLeap2 else ' '}")
 			print(f"{year}: \"{'L' if isLeap1 else ' '}{'L' if isLeap2 else ' '}\",")
 
-
 	# year -> f"{'L' if isLeap33 else ' '}{'L' if isLeap2820 else ' '}"
 	isLeapDict = {
 		10: "  ",
-		9:  "L ",
-		8:  " L",
-		7:  "  ",
-		6:  "  ",
-		5:  "L ",
-		4:  " L",
-		3:  "  ",
-		2:  "  ",
-		1:  "L ",
-		0:  " L",
+		9: "L ",
+		8: " L",
+		7: "  ",
+		6: "  ",
+		5: "L ",
+		4: " L",
+		3: "  ",
+		2: "  ",
+		1: "L ",
+		0: " L",
 		-1: "  ",
 		-2: "  ",
 		-3: "L ",
@@ -140,8 +140,6 @@ class TestJalali(unittest.TestCase):
 		-98: "L ",
 		-99: " L",
 		-100: "  ",
-
-
 		1360: "  ",
 		1361: "  ",
 		1362: "LL",
@@ -185,7 +183,7 @@ class TestJalali(unittest.TestCase):
 		1400: "  ",
 		1401: "  ",
 		1402: "  ",
-		1404: " L", # FIXME: why mismatch
+		1404: " L",  # FIXME: why mismatch
 		1405: "  ",
 		1406: "  ",
 		1407: "  ",

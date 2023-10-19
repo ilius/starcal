@@ -48,42 +48,42 @@ class CustomizeWindowItemsToolbar(StaticToolBox):
 		)
 		# with iconSize < 20, the button would not become smaller
 		# so 20 is the best size
-		self.extend([
-			ToolBoxItem(
-				name="goto-top",
-				imageName="go-top.svg",
-				onClick="onTopClick",
-				desc=_("Move to top"),
-				continuousClick=False,
-				args=onClickArgs,
-			),
-			ToolBoxItem(
-				name="go-up",
-				imageName="go-up.svg",
-				onClick="onUpClick",
-				desc=_("Move up"),
-				continuousClick=False,
-				args=onClickArgs,
-			),
-			ToolBoxItem(
-				name="go-down",
-				imageName="go-down.svg",
-				onClick="onDownClick",
-				desc=_("Move down"),
-				continuousClick=False,
-				args=onClickArgs,
-			),
-			ToolBoxItem(
-				name="goto-bottom",
-				imageName="go-bottom.svg",
-				onClick="onBottomClick",
-				desc=_("Move to bottom"),
-				continuousClick=False,
-				args=onClickArgs,
-			),
-		])
-
-
+		self.extend(
+			[
+				ToolBoxItem(
+					name="goto-top",
+					imageName="go-top.svg",
+					onClick="onTopClick",
+					desc=_("Move to top"),
+					continuousClick=False,
+					args=onClickArgs,
+				),
+				ToolBoxItem(
+					name="go-up",
+					imageName="go-up.svg",
+					onClick="onUpClick",
+					desc=_("Move up"),
+					continuousClick=False,
+					args=onClickArgs,
+				),
+				ToolBoxItem(
+					name="go-down",
+					imageName="go-down.svg",
+					onClick="onDownClick",
+					desc=_("Move down"),
+					continuousClick=False,
+					args=onClickArgs,
+				),
+				ToolBoxItem(
+					name="goto-bottom",
+					imageName="go-bottom.svg",
+					onClick="onBottomClick",
+					desc=_("Move to bottom"),
+					continuousClick=False,
+					args=onClickArgs,
+				),
+			],
+		)
 
 
 class CustomizeWindow(gtk.Dialog):
@@ -98,7 +98,7 @@ class CustomizeWindow(gtk.Dialog):
 		pack(self.vbox, self.stack, 1, 1)
 		##
 		self.set_title(_("Customize"))
-		#self.set_has_separator(False)## not in gtk3
+		# self.set_has_separator(False)## not in gtk3
 		self.connect("delete-event", self.onSaveClick)
 		dialog_add_button(
 			self,
@@ -199,12 +199,14 @@ class CustomizeWindow(gtk.Dialog):
 				anyItemHasOptions = True
 			if not item._name:
 				raise ValueError(f"{item._name = }")
-			model.append([
-				item.enable,
-				parentPagePath + "." + item._name,
-				item.desc,
-				self.itemPixbuf(item),
-			])
+			model.append(
+				[
+					item.enable,
+					parentPagePath + "." + item._name,
+					item.desc,
+					self.itemPixbuf(item),
+				],
+			)
 		###
 		hbox = HBox()
 		vbox_l = VBox()
@@ -228,9 +230,9 @@ class CustomizeWindow(gtk.Dialog):
 		if anyItemHasOptions:
 			label = gtk.Label(
 				label=(
-					"<span font_size=\"xx-small\">" +
-					_("Double-click on each row to see its settings") +
-					"</span>"
+					'<span font_size="xx-small">'
+					+ _("Double-click on each row to see its settings")
+					+ "</span>"
 				),
 			)
 			label.set_use_markup(True)
@@ -344,11 +346,14 @@ class CustomizeWindow(gtk.Dialog):
 		itemsPage.pageLabel = item.itemsPageTitle
 		itemsPage.pageExpand = True
 		self.stack.addPage(itemsPage)
-		pack(page.pageWidget, newSubPageButton(
-			item,
-			itemsPage,
-			borderWidth=item.itemsPageButtonBorder,
-		))
+		pack(
+			page.pageWidget,
+			newSubPageButton(
+				item,
+				itemsPage,
+				borderWidth=item.itemsPageButtonBorder,
+			),
+		)
 
 	def addPageObj(self, page):
 		pagePath = page.pagePath
@@ -384,7 +389,7 @@ class CustomizeWindow(gtk.Dialog):
 			f"adding page {page.pagePath} to stack, {page.pageWidget=}"
 			f" (parent={page.pageWidget.get_parent()})",
 		)
-		self.stack.addPage(page) # FIXME: crashes here
+		self.stack.addPage(page)  # FIXME: crashes here
 
 		for page in item.getSubPages():
 			if not (page.pagePath and page.pageParent):
@@ -458,8 +463,7 @@ class CustomizeWindow(gtk.Dialog):
 		item = parentItem.items[itemIndex]
 		if not item.enable:
 			msg = _(
-				"{item} is disabled.\n"
-				"Check the checkbox if you want to enable it.",
+				"{item} is disabled.\nCheck the checkbox if you want to enable it.",
 			).format(item=item.desc)
 			showInfo(msg, transient_for=self)
 			return
@@ -504,14 +508,14 @@ class CustomizeWindow(gtk.Dialog):
 	def updateMainPanelTreeEnableChecks(self):
 		pass
 		# FIXME: called from MainWin
-		#treev = self.treev_root
-		#model = treev.get_model()
-		#for i, item in enumerate(self.mainPanelItem.items):
-		#	model.set_value(
-		#		model.get_iter((i,)),
-		#		0,
-		#		item.enable,
-		#	)
+		# treev = self.treev_root
+		# model = treev.get_model()
+		# for i, item in enumerate(self.mainPanelItem.items):
+		# 	model.set_value(
+		# 		model.get_iter((i,)),
+		# 		0,
+		# 		item.enable,
+		# 	)
 
 	def save(self):
 		item = self.rootItem
@@ -520,7 +524,7 @@ class CustomizeWindow(gtk.Dialog):
 		ui.ud__mainToolbarData = ud.mainToolbarData
 		ui.customizePagePath = self.stack.currentPagePath()
 		ui.saveConfCustomize()
-		#data = item.getData()## remove? FIXME
+		# data = item.getData()## remove? FIXME
 
 	def onSaveClick(self, button=None, event=None):
 		self.save()
