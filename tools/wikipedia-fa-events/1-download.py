@@ -1,5 +1,3 @@
-#!/usr/bin/env python3
-
 import os
 import subprocess
 import sys
@@ -39,7 +37,7 @@ for month in range(1, 13):
 		# 	continue
 		try:
 			os.makedirs(direc)
-		except:
+		except Exception:
 			pass
 		url = rawUrlBase % (
 			_(day),
