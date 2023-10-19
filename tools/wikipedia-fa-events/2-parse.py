@@ -9,6 +9,7 @@ faDigs = ("۰", "۱", "۲", "۳", "۴", "۵", "۶", "۷", "۸", "۹", "٫")
 
 ignoreCategories = ("تعطیلات", "جستارهای وابسته", "منابع")
 
+
 def getPrettyJson(data):
 	return json.dumps(data, sort_keys=True, indent=4)
 
@@ -108,7 +109,6 @@ def writeToTabfile(data, fpath):
 
 
 if __name__ == "__main__":
-
 	data = parseAllFiles("wikipedia-fa-events")
 	writeToTabfile(data, "wikipedia-fa.tab")
 	# log.debug(getPrettyJson(data))

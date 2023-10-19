@@ -440,6 +440,7 @@ if __name__ == "__main__":
 	# if rtl:
 	# 	gtk.widget_set_default_direction(gtk.TextDirection.RTL)
 	from pray_times_gtk import LocationDialog
+
 	dialog = LocationDialog(readLocationData())
 	dialog.connect("delete-event", gtk.main_quit)
 	# dialog.connect("response", gtk.main_quit)

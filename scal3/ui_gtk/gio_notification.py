@@ -46,7 +46,7 @@ class GioNotificationWrapper(gio.Notification):
 		pass
 
 	# def get_geometry(self, fpath):
-	#	 raise NotImplementedError
+	# 	 raise NotImplementedError
 
 	# def connect(
 
