@@ -238,6 +238,7 @@ class DummyExternalPlugin(BasePlugin):
 		self.title = title
 
 
+# TODO: switch to fs
 def loadExternalPlugin(_file, **data):
 	_file = getPlugPath(_file)
 	fname = split(_file)[-1]
