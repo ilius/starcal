@@ -29,7 +29,6 @@ __all__ = [
 	"confDir",
 	"deskDir",
 	"homeDir",
-	"objectDir",
 	"pixDir",
 	"plugDir",
 	"plugDirName",
@@ -97,6 +96,5 @@ deskDir = join(homeDir, "Desktop")  # in all operating systems? FIXME
 userPlugConf = join(confDir, "plugin.conf")
 modDir = f"{scalDir}/cal_types"
 plugDirUser = join(confDir, plugDirName)
-objectDir = join(confDir, "objects")
 
 purpleDir = join(homeDir, ".purple")  # FIXME

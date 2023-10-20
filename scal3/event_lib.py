@@ -60,7 +60,7 @@ from scal3.interval_utils import (
 from scal3.json_utils import jsonToData
 from scal3.locale_man import getMonthName, textNumEncode
 from scal3.locale_man import tr as _
-from scal3.path import confDir, objectDir, pixDir, svgDir
+from scal3.path import confDir, pixDir, svgDir
 
 # from scal3.interval_utils import
 from scal3.s_object import (
@@ -71,6 +71,7 @@ from scal3.s_object import (
 	iterObjectFiles,
 	loadBsonObject,
 	makeOrderedData,
+	objectDirName,
 	updateBasicDataFromBson,
 )
 from scal3.time_utils import (
@@ -138,7 +139,7 @@ allReadOnly = False
 def init(fs: FileSystem) -> None:
 	global allReadOnly, info, lastIds
 
-	fs.makeDir(objectDir)
+	fs.makeDir(objectDirName)
 	fs.makeDir(eventsDir)
 	fs.makeDir(groupsDir)
 	fs.makeDir(accountsDir)
