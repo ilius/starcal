@@ -19,7 +19,6 @@ from scal3.json_utils import (
 	dataToPrettyJson,
 	jsonToData,
 )
-from scal3.os_utils import makeDir
 
 dataToJson = dataToPrettyJson
 # from scal3.core import dataToJson  # FIXME
