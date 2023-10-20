@@ -17,7 +17,6 @@ from scal3.path import objectDir, sourceDir
 sys.path.insert(0, join(sourceDir, "libs", "bson"))
 import bson
 
-from scal3.os_utils import makeDir
 from scal3.json_utils import *
 
 dataToJson = dataToPrettyJson
@@ -259,7 +258,7 @@ class JsonSObj(SObj):
 
 
 def getObjectPath(_hash: str) -> Tuple[str, str]:
-	dpath = join(objectDir, _hash[:2])
+	dpath = join("objects", _hash[:2])
 	fpath = join(dpath, _hash[2:])
 	return dpath, fpath
 
@@ -296,7 +295,7 @@ def saveBsonObject(data: "Union[Dict, List]", fs: FileSystem):
 	_hash = sha1(bsonBytes).hexdigest()
 	dpath, fpath = getObjectPath(_hash)
 	if not fs.isfile(fpath):
-		makeDir(dpath)
+		fs.makeDir(dpath)
 		with fs.open(fpath, "wb") as fp:
 			fp.write(bsonBytes)
 	return _hash
