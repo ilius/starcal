@@ -7,7 +7,7 @@ from os.path import dirname, join, realpath
 
 myPath = realpath(__file__)
 sourceDir = dirname(dirname(myPath))
-pluginsDir = join(sourceDir, "plugins")
+plugDir = join(sourceDir, "plugins")
 
 holidaysAbout = "\n".join(
 	[
@@ -50,7 +50,7 @@ holidays = {}
 
 for calType, calTypeKey in calTypes.items():
 	calTypeHolidays = []
-	with open(join(pluginsDir, f"afghanistan-{calType}-data.txt"), mode="w") as outFile:
+	with open(join(plugDir, f"afghanistan-{calType}-data.txt"), mode="w") as outFile:
 		for event in data[calTypeKey]:
 			if event["type"] != "Afghanistan":
 				continue
@@ -62,7 +62,7 @@ for calType, calTypeKey in calTypes.items():
 		holidays[calType] = calTypeHolidays
 
 
-with open(join(pluginsDir, "holidays-afghanistan.json"), mode="w") as outFile:
+with open(join(plugDir, "holidays-afghanistan.json"), mode="w") as outFile:
 	json.dump(
 		OrderedDict(
 			[
