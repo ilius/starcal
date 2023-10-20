@@ -163,7 +163,7 @@ class BsonHistEventObj(BsonHistObj):
 
 
 class InfoWrapper(JsonEventObj):
-	file = join(confDir, "event", "info.json")
+	file = join("event", "info.json")
 	skipLoadNoFile = True
 	params = (
 		"version",
@@ -194,7 +194,7 @@ info = None  # type: InfoWrapper
 
 class LastIdsWrapper(JsonEventObj):
 	skipLoadNoFile = True
-	file = join(confDir, "event", "last_ids.json")
+	file = join("event", "last_ids.json")
 	params = (
 		"event",
 		"group",
@@ -5756,7 +5756,7 @@ class JsonObjectsHolder(JsonEventObj):
 
 
 class EventGroupsHolder(JsonObjectsHolder):
-	file = join(confDir, "event", "group_list.json")
+	file = join("event", "group_list.json")
 	childName = "group"
 
 	def __init__(self, _id: Optional[int] = None) -> None:
@@ -5988,7 +5988,7 @@ class EventGroupsHolder(JsonObjectsHolder):
 
 
 class EventAccountsHolder(JsonObjectsHolder):
-	file = join(confDir, "event", "account_list.json")
+	file = join("event", "account_list.json")
 	childName = "account"
 
 	def __init__(self, _id: Optional[int] = None) -> None:
@@ -6059,7 +6059,7 @@ class EventAccountsHolder(JsonObjectsHolder):
 class EventTrash(EventContainer, WithIcon):
 	name = "trash"
 	desc = _("Trash")
-	file = join(confDir, "event", "trash.json")  # FIXME
+	file = join("event", "trash.json")
 	skipLoadNoFile = True
 	id = -1  # FIXME
 	defaultIcon = "./user-trash.svg"
