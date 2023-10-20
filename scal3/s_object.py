@@ -10,7 +10,7 @@ from hashlib import sha1
 from os.path import isabs, join
 from time import time as now
 
-from scal3.path import objectDir, sourceDir
+from scal3.path import sourceDir
 
 sys.path.insert(0, join(sourceDir, "libs", "bson"))
 import bson
@@ -22,6 +22,8 @@ from scal3.json_utils import (
 
 dataToJson = dataToPrettyJson
 # from scal3.core import dataToJson  # FIXME
+
+objectDirName = "objects"
 
 
 class FileSystem:
@@ -54,26 +56,38 @@ class DefaultFileSystem(FileSystem):
 		return join(self._rootPath, path)
 
 	def isdir(self, path):
+		if isabs(path):
+			log.warning(f"DefaultFileSystem: isdir: reading abs path {path}")
 		return os.path.isdir(self.abspath(path))
 
 	def open(self, fpath, mode="r", encoding=None):
+		if isabs(fpath):
+			log.warning(f"DefaultFileSystem: open: reading abs path {fpath}")
 		fpath = self.abspath(fpath)
 		if mode == "r" and encoding is None:
 			encoding = "utf-8"
 		return open(fpath, mode=mode, encoding=encoding)
 
 	def listdir(self, dpath):
+		if isabs(dpath):
+			log.warning(f"DefaultFileSystem: listdir: reading abs path {dpath}")
 		return os.listdir(self.abspath(dpath))
 
 	def isfile(self, fpath):
+		if isabs(fpath):
+			log.warning(f"DefaultFileSystem: isfile: reading abs path {fpath}")
 		return os.path.isfile(self.abspath(fpath))
 
 	def makeDir(self, dpath: str) -> None:
+		if isabs(dpath):
+			log.warning(f"DefaultFileSystem: makeDir: reading abs path {dpath}")
 		dpathAbs = self.abspath(dpath)
 		if not os.path.isdir(dpathAbs):
 			os.makedirs(dpathAbs)
 
 	def removeFile(self, fpath: str) -> None:
+		if isabs(fpath):
+			log.warning(f"DefaultFileSystem: removeFile: reading abs path {fpath}")
 		os.remove(self.abspath(fpath))
 
 
@@ -253,14 +267,14 @@ class JsonSObj(SObj):
 
 
 def getObjectPath(_hash: str) -> tuple[str, str]:
-	dpath = join("objects", _hash[:2])
+	dpath = join(objectDirName, _hash[:2])
 	fpath = join(dpath, _hash[2:])
 	return dpath, fpath
 
 
 def iterObjectFiles(fs: FileSystem):
-	for dname in fs.listdir(objectDir):
-		dpath = join(objectDir, dname)
+	for dname in fs.listdir(objectDirName):
+		dpath = join(objectDirName, dname)
 		if not fs.isdir(dpath):
 			continue
 		if len(dname) != 2:
