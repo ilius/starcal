@@ -86,7 +86,7 @@ def save() -> None:
 
 
 def isLeap(y: int) -> bool:
-	return y % 4 == 0 and not (y % 100 == 0 and y % 400 != 0)
+	return y % 4 == 0 and (y % 100 != 0 or y % 400 == 0)
 
 
 def to_jd(year: int, month: int, day: int) -> int:
