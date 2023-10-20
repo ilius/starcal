@@ -300,8 +300,10 @@ class Testgregorian(unittest.TestCase):
 	}
 
 	def test_isLeap(self):
+		import calendar
 		for year, isLeapStr in self.isLeapDict.items():
 			isLeap = isLeapStr == "L"
+			assert isLeap == calendar.isleap(year)
 			isLeapActual = gregorian.isLeap(year)
 			self.assertEqual(
 				isLeapActual,
