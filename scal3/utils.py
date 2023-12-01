@@ -273,7 +273,6 @@ def urlToPath(url: str) -> str:
 	while i < n:
 		if path[i] == "%" and i < n - 2:
 			path2 += chr(int(path[i + 1 : i + 3], 16))
-			# OR: chr(eval("0x" + path[i + 1:i + 3]))
 			i += 3
 		else:
 			path2 += path[i]
