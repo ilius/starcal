@@ -36,6 +36,7 @@ from cachetools import LRUCache
 
 from scal3 import cal_types, core, event_lib, locale_man
 from scal3.cal_types import calTypes, jd_to
+from scal3.date_utils import monthPlus as lowMonthPlus
 from scal3.event_update_queue import EventUpdateQueue
 from scal3.json_utils import (
 	loadJsonConf,
@@ -662,7 +663,7 @@ def jdPlus(plus: int = 1) -> None:
 
 
 def getMonthPlus(tmpCell: CellType, plus: int) -> CellType:
-	year, month = core.monthPlus(tmpCell.year, tmpCell.month, plus)
+	year, month = lowMonthPlus(tmpCell.year, tmpCell.month, plus)
 	day = min(tmpCell.day, cal_types.getMonthLen(year, month, calTypes.primary))
 	return cellCache.getCellByDate(year, month, day)
 
