@@ -26,10 +26,11 @@ class WidgetClass(gtk.Box):
 			self.buttons[i].set_active((i + 1) in monthList)
 
 	def updateVars(self):
-		monthList = []
-		for i in range(12):
-			if self.buttons[i].get_active():
-				monthList.append(i + 1)
+		monthList = [
+			i + 1
+			for i in range(12)
+			if self.buttons[i].get_active()
+		]
 		self.rule.setValuesPlain(monthList)
 
 	def changeCalType(self, calType):

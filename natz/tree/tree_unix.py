@@ -8,12 +8,12 @@ from collections import OrderedDict
 
 
 def findZoneInfoDir():
-	for _dir in [
+	for _dir in (
 		"/usr/share/zoneinfo",
 		"/usr/lib/zoneinfo",
 		"/usr/share/lib/zoneinfo",
 		"/etc/zoneinfo",
-	]:
+	):
 		if os.path.isdir(_dir):
 			return _dir
 
@@ -55,7 +55,7 @@ def _addZoneNode(parentDict, zone, zoneNamesLevel):
 def getZoneInfoTree():
 	zoneTree = OrderedDict()
 	zoneNamesLevel = [[] for i in range(4)]
-	for group in [
+	for group in (
 		"Etc",
 		"Africa",
 		"America",
@@ -72,7 +72,7 @@ def getZoneInfoTree():
 		"Mexico",
 		"Pacific",
 		"US",
-	]:
+	):
 		_addZoneNode(
 			zoneTree,
 			[group],

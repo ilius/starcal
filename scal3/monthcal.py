@@ -116,13 +116,10 @@ def getMonthDesc(status=None):
 			if first:
 				if c.month == status.month:
 					last = c
-				else:
-					break
-			else:
-				if c.month == status.month:
-					first = c
-				else:
 					continue
+				break
+			if c.month == status.month:
+				first = c
 	text = ""
 	for calType in calTypes.active:
 		if text != "":

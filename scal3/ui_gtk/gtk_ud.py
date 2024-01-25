@@ -348,7 +348,7 @@ def cssFunc(func: Callable) -> Callable:
 ###########
 
 if sys.getdefaultencoding() != "utf-8":
-	log.warn(f"System encoding is not utf-8, it's {sys.getdefaultencoding()!r}")
+	log.warning(f"System encoding is not utf-8, it's {sys.getdefaultencoding()!r}")
 
 if rtl:
 	gtk.Widget.set_default_direction(gtk.TextDirection.RTL)
@@ -458,8 +458,7 @@ def findAskpass():
 
 
 def setDefault_adjustTimeCmd():
-	global adjustTimeCmd
-	global adjustTimeEnv
+	global adjustTimeCmd, adjustTimeEnv
 	from os.path import isfile
 
 	sudo = "/usr/bin/sudo"
