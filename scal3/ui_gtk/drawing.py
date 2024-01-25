@@ -63,7 +63,7 @@ colorCheckSvgTextUnchecked = re.sub(
 	'<path[^<>]*?id="check"[^<>]*?/>',
 	"",
 	colorCheckSvgTextChecked,
-	flags=re.M | re.S,
+	flags=re.MULTILINE | re.DOTALL,
 )
 
 
