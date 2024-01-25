@@ -308,7 +308,6 @@ class GoogleAccount(Account):
 						f"-------- counld not use port {port} "
 						f"for local web server: {e}",
 					)
-					pass
 				else:
 					success = True
 					break
@@ -412,15 +411,14 @@ class GoogleAccount(Account):
 		service = self.getCalendarService()
 		if not service:
 			return "no service"  # fix msg FIXME
-		groups = []
-		for group in service.calendarList().list().execute()["items"]:
-			# log.debug(f"{group = }")
-			groups.append(
-				{
-					"id": group["id"],
-					"title": group["summary"],
-				},
-			)
+		groups = [
+			{
+				"id": group["id"],
+				"title": group["summary"],
+			}
+			for group in service.calendarList().list().execute()["items"]
+		]
+		# log.debug(f"{groups = }")
 		self.remoteGroups = groups
 		return None
 

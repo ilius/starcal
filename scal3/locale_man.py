@@ -92,7 +92,7 @@ digits = {
 	"th": ("๐", "๑", "๒", "๓", "๔", "๕", "๖", "๗", "๘", "๙"),
 }
 
-ascii_alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+ascii_alphabet = string.ascii_letters
 alphabet = ""
 
 

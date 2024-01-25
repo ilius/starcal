@@ -1849,7 +1849,7 @@ class PreferencesWindow(gtk.Window):
 	def accountsTreevButtonPress(self, widget, gevent):
 		b = gevent.button
 		if b == 3:
-			pass  # FIXME
+			# FIXME
 			# cur = self.accountsTreeview.get_cursor()[0]
 			# if cur:
 			# 	index = cur[0]

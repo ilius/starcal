@@ -574,10 +574,10 @@ class CalObj(gtk.Box, CustomizableCalObj):
 		return f"{year} {month}"
 
 	def getFontPreviewTextFull(self):
-		parts = []
-		for calType in calTypes.active:
-			parts.append(self.getFontPreviewText(calType))
-		return " ".join(parts)
+		return " ".join([
+			self.getFontPreviewText(calType)
+			for calType in calTypes.active
+		])
 
 	def onConfigChange(self, *a, **kw):
 		CustomizableCalObj.onConfigChange(self, *a, **kw)

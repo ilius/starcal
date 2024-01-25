@@ -401,10 +401,10 @@ class OccurSet(SObj):
 		return []  # make generator FIXME
 
 	def getFloatJdRangeList(self) -> list[tuple[float, float]]:
-		ls = []
-		for ep0, ep1 in self.getTimeRangeList():
-			ls.append((getFloatJdFromEpoch(ep0), getFloatJdFromEpoch(ep1)))
-		return ls
+		return [
+			(getFloatJdFromEpoch(ep0), getFloatJdFromEpoch(ep1))
+			for ep0, ep1 in self.getTimeRangeList()
+		]
 
 	def getStartJd(self) -> int:
 		raise NotImplementedError
@@ -1718,10 +1718,10 @@ class ExDatesEventRule(EventRule):
 		)
 
 	def getData(self) -> list[str]:
-		datesConf = []
-		for date in self.dates:
-			datesConf.append(dateEncode(date))
-		return datesConf
+		return [
+			dateEncode(date)
+			for date in self.dates
+		]
 
 	def setData(
 		self,
@@ -1741,10 +1741,10 @@ class ExDatesEventRule(EventRule):
 		self.setDates(dates)
 
 	def changeCalType(self, calType: int) -> bool:
-		dates = []
-		for jd in self.jdList:
-			dates.append(jd_to(jd, calType))
-		self.dates = dates
+		self.dates = [
+			jd_to(jd, calType)
+			for jd in self.jdList
+		]
 		return True
 
 
@@ -3124,8 +3124,10 @@ class YearlyEvent(Event):
 			jd = to_jd(year, month, day, calType)
 			if startJd <= jd < endJd:
 				jds.add(jd)
-		for year in range(startYear + 1, endYear):
-			jds.add(to_jd(year, month, day, calType))
+		jds.update(
+			to_jd(year, month, day, calType)
+			for year in range(startYear + 1, endYear)
+		)
 		return JdOccurSet(jds)
 
 	def getData(self):
@@ -5857,11 +5859,11 @@ class EventGroupsHolder(JsonObjectsHolder):
 			self.save()
 
 	def getEnableIds(self) -> list[int]:
-		ids = []
-		for group in self:
-			if group.enable:
-				ids.append(group.id)
-		return ids
+		return [
+			group.id
+			for group in self
+			if group.enable
+		]
 
 	def moveToTrash(
 		self,
@@ -6032,8 +6034,9 @@ class EventGroupsHolder(JsonObjectsHolder):
 				data = jsonToData(fp.read())
 			history = data.get("history")
 			if history:
-				for record in history:
-					eventHashSet.add(record[1])
+				eventHashSet.update(
+					record[1] for record in history
+				)
 
 		# newEventHashList = []
 		eventTypeSet = set(classes.event.names)
