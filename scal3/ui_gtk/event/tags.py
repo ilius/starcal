@@ -242,11 +242,11 @@ class TagsListBox(gtk.Box):
 		cell.set_active(active)
 
 	def getData(self):
-		tags = []
-		for row in self.treeModel:
-			if row[1]:
-				tags.append(row[0])
-		return tags
+		return [
+			row[0]
+			for row in self.treeModel
+			if row[1]
+		]
 
 	def setData(self, tags):
 		self.optionsChanged(tags=tags)
