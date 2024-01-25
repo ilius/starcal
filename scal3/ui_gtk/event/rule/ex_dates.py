@@ -209,7 +209,7 @@ class WidgetClass(gtk.Box):
 		self.updateCountLabel()
 
 	def updateVars(self):
-		dates = []
-		for row in self.treeModel:
-			dates.append(decode(row[0]))
-		self.rule.setDates(dates)
+		self.rule.setDates([
+			decode(row[0])
+			for row in self.treeModel
+		])

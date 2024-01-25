@@ -535,7 +535,7 @@ class CalObj(gtk.DrawingArea, CalBase):
 				yPos = i
 				break
 		status = getCurrentMonthStatus()
-		if yPos == -1 or xPos == -1:
+		if -1 in (yPos, xPos):
 			self.emit("popup-main-menu", gevent.x, gevent.y)
 		elif yPos >= 0 and xPos >= 0:
 			cell = status[yPos][xPos]
