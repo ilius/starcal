@@ -28,7 +28,12 @@ select = [
     # "A", # flake8-builtins
     # "S", # flake8-bandit
 ]
+# warning: The following rules may cause conflicts when used with the formatter:
+# `COM812`, `ISC001`.
+# To avoid unexpected behavior, we recommend disabling these rules, either by removing them from the `select` or `extend-select` configuration, or adding them to the `ignore` configuration.
+
 ignore = [
+    "COM812",
 	"PGH003", # Use specific rule codes when ignoring type issues
     "B018", # Found useless expression. Either assign it to a variable or remove it.
     "B019", # Use of `functools.lru_cache` or `functools.cache` on methods can lead to memory leaks
@@ -112,6 +117,16 @@ line-length = 88
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
 target-version = "py39"
+
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "tab"
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
 
 [tool.ruff.mccabe]
 # Unlike Flake8, default to a complexity level of 10.
