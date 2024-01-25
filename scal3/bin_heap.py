@@ -3,7 +3,7 @@ from scal3 import logger
 log = logger.get()
 
 from heapq import heappop, heappush
-from math import log as math_log
+from math import log2 as math_log2
 
 
 class MaxHeap(list):
@@ -124,7 +124,7 @@ class MaxHeap(list):
 				-(
 					2
 					** int(
-						math_log(len(self), 2),
+						math_log2(len(self)),
 					)
 				) :
 			],

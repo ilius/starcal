@@ -209,9 +209,10 @@ class MonthDbHolder:
 		return monthLenByYear
 
 	def save(self):
-		mLenData = []
-		for year, mLenList in self.getMonthLenByYear().items():
-			mLenData.append([year] + mLenList)
+		mLenData = [
+			[year] + mLenList
+			for year, mLenList in self.getMonthLenByYear().items()
+		]
 		text = dataToPrettyJson(
 			OrderedDict(
 				[
