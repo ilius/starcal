@@ -70,7 +70,7 @@ def cleanup(cpath):
 		if isfile(cpath):
 			os.remove(cpath)
 		elif isdir(cpath):
-			rmtree(direc, ignore_errors=True)
+			rmtree(cpath, ignore_errors=True)
 	except OSError:
 		pass
 
