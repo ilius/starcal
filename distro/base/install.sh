@@ -170,7 +170,7 @@ cp -Rf "$sourceDir/" "$targetCodeDir" ### PUT SLASH after $sourceDir to copy who
 
 "$targetCodeDir/update-perm"
 
-for docFile in license.txt authors donate ; do
+for docFile in LICENSE authors donate ; do
 	mv -f "$targetCodeDir/$docFile" "${shareDir}/doc/$pkgName/"
 done
 

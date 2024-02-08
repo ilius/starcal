@@ -214,7 +214,7 @@ def main():
 	if subprocess.call(join(targetCodeDir, "update-perm")) != 0:
 		return 1
 
-	for docFile in ("license.txt", "authors", "donate"):
+	for docFile in ("LICENSE", "authors", "donate"):
 		os.rename(
 			join(targetCodeDir, docFile),
 			join(shareDir, "doc", pkgName, docFile)
