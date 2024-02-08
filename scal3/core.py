@@ -54,7 +54,7 @@ except NameError:
 	__file__ = join(os.path.dirname(inspect.getfile(scal3)), "core.py")
 
 
-VERSION = "3.2.1"
+VERSION = "3.2.2"
 
 # BRANCH = join(sourceDir, "branch")
 # FIXME: figure out a policy for updating it
