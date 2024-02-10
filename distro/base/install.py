@@ -172,7 +172,7 @@ def main():
 		prefix = options["prefix"].rstrip("/")
 	elif installType == "for-pkg":
 		prefix = "/usr"
-	elif installType == "portable":
+	elif installType == "portable":  # noqa: SIM114
 		prefix = "/usr/local"
 	elif installType == "system":
 		prefix = "/usr/local"

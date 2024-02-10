@@ -211,7 +211,7 @@ class ClientRedirectHandler(http.server.BaseHTTPRequestHandler):
 			b"</body></html>",
 		)
 
-	def log_message(self, format, *args):
+	def log_message(self, msgFormat, *args):
 		"""Do not log messages to stdout while running as command line program."""
 
 
