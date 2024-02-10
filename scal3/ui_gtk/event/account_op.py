@@ -23,7 +23,7 @@ class AccountEditorDialog(gtk.Dialog):
 			res=gtk.ResponseType.OK,
 		)
 		##
-		self.connect("response", lambda w, e: self.hide())
+		self.connect("response", lambda _w, _e: self.hide())
 		#######
 		self.account = account
 		self.activeWidget = None
@@ -58,7 +58,7 @@ class AccountEditorDialog(gtk.Dialog):
 	def dateModeChanged(self, combo):
 		pass
 
-	def typeChanged(self, combo=None):
+	def typeChanged(self, _combo=None):
 		if self.activeWidget:
 			self.activeWidget.updateVars()
 			self.activeWidget.destroy()

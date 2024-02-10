@@ -87,7 +87,7 @@ class BaseButton:
 		x, y = self.getAbsPos(w, h)
 		return x <= px < x + self.width and y <= py < y + self.height
 
-	def draw(self, cr, w, h, bgColor=None):
+	def draw(self, cr, w, h):
 		raise NotImplementedError
 
 
@@ -129,7 +129,6 @@ class SVGButton(BaseButton):
 		cr: "cairo.Context",
 		w: float,
 		h: float,
-		bgColor=None,
 	):
 		x, y = self.getAbsPos(w, h)
 
@@ -236,7 +235,7 @@ class Button(BaseButton):
 		self.iconSize = iconSize
 		self.pixbuf = pixbuf
 
-	def draw(self, cr, w, h, bgColor=None):
+	def draw(self, cr, w, h):
 		x, y = self.getAbsPos(w, h)
 		gdk.cairo_set_source_pixbuf(
 			cr,
