@@ -380,7 +380,7 @@ def checkNeedRestart() -> bool:
 	return False
 
 
-def dayOpenEvolution(arg: Any = None) -> None:
+def dayOpenEvolution(arg: Any = None) -> None:  # noqa: ARG001
 	from subprocess import Popen
 
 	# y, m, d = jd_to(cell.jd-1, core.GREGORIAN)
@@ -1729,7 +1729,7 @@ timeout_initial = 200
 timeout_repeat = 50
 
 
-def updateFocusTime(*args):
+def updateFocusTime(*_args):
 	global focusTime
 	focusTime = now()
 

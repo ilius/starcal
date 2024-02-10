@@ -500,7 +500,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			cr.fill()
 		######
 		for button in self.getButtons():
-			button.draw(cr, width, height, bgColor=tl.bgColor)
+			button.draw(cr, width, height)
 
 	def onExposeEvent(self, widget=None, event=None):
 		win = self.get_window()
