@@ -42,12 +42,12 @@ Exec={core.COMMAND}"""
 		# does it work with single quotes too??
 		makeDir(comDeskDir)
 		try:
-			fp = open(comDesk, "w")
+			with open(comDesk, "w") as _file:
+				_file.write(text)
 		except Exception:
 			log.exception("")
 			return False
 		else:
-			fp.write(text)
 			return True
 	elif osName == "mac":  # FIXME
 		pass
