@@ -34,7 +34,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 			res=gtk.ResponseType.OK,
 		)
 		##
-		self.connect("response", lambda w, e: self.hide())
+		self.connect("response", lambda _w, _e: self.hide())
 		####
 		try:
 			title = container.title
@@ -148,7 +148,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 		####
 		window_set_size_aspect(self, 1.6)
 
-	def firstRadioChanged(self, w=None):
+	def firstRadioChanged(self, _widget=None):
 		if self.iconRadio.get_active():
 			self.iconHbox.show()
 			self.textVbox.hide()
@@ -162,7 +162,7 @@ class EventsBulkEditDialog(gtk.Dialog):
 			self.textChangeComboChanged()
 			self.timeZoneHbox.hide()
 
-	def textChangeComboChanged(self, w=None):
+	def textChangeComboChanged(self, _widget=None):
 		self.textVbox.show_all()
 		chType = self.textChangeCombo.get_active()
 		if chType == 0:

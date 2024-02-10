@@ -1,7 +1,7 @@
 # from xml.sax.saxutils import escape, unescape
 
 
-def escape(data, entities: "dict | None" = None):
+def escape(data, entities: "dict | None" = None):  # noqa: ARG001
 	"""
 	Escape &, <, and > in a string of data.
 
@@ -17,7 +17,7 @@ def escape(data, entities: "dict | None" = None):
 	# 	data = __dict_replace(data, entities) # FIXME
 
 
-def unescape(data, entities: "dict | None" = None):
+def unescape(data, entities: "dict | None" = None):  # noqa: ARG001
 	"""
 	Unescape &amp;, &lt;, and &gt; in a string of data.
 

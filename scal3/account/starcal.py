@@ -74,23 +74,25 @@ def allDayTaskDecoder(remoteEvent):
 		)
 	return {"rules": rules}
 
+def _emptyDecoder(_ev):
+	return {}
 
 remoteEventTypeDecoders = {
 	"allDayTask": allDayTaskDecoder,
-	"custom": lambda ev: {},
-	"dailyNote": lambda ev: {},
-	"largeScale": lambda ev: {},
-	"lifetime": lambda ev: {},
-	"monthly": lambda ev: {},
-	"task": lambda ev: {},
-	"universityClass": lambda ev: {},
-	"universityExam": lambda ev: {},
-	"weekly": lambda ev: {},
-	"yearly": lambda ev: {},
+	"custom": _emptyDecoder,
+	"dailyNote": _emptyDecoder,
+	"largeScale": _emptyDecoder,
+	"lifetime": _emptyDecoder,
+	"monthly": _emptyDecoder,
+	"task": _emptyDecoder,
+	"universityClass": _emptyDecoder,
+	"universityExam": _emptyDecoder,
+	"weekly": _emptyDecoder,
+	"yearly": _emptyDecoder,
 }
 
 
-def decodeRemoteEvent(remoteEventFull, accountId, group):
+def decodeRemoteEvent(remoteEventFull, accountId, _group):
 	"""
 	remoteEventFull is dict.
 
@@ -280,7 +282,8 @@ class StarCalendarAccount(Account):
 	def deleteGroup(self, remoteGroupId):
 		pass
 
-	def sync(self, group, remoteGroupId):  # in progress TODO
+	def sync(self, group, remoteGroupId):  # noqa: ARG002
+		# in progress TODO
 		"""Return None if successful, or error string if failed."""
 		log.info("sync started")
 		if not group.remoteIds:

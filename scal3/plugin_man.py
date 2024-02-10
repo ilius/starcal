@@ -158,7 +158,7 @@ class BasePlugin(SObj):
 	def load(self):
 		pass
 
-	def getText(self, year, month, day):
+	def getText(self, year, month, day):  # noqa: ARG002
 		return ""
 
 	def updateCell(self, c):

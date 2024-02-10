@@ -21,9 +21,9 @@ from scal3.locale_man import tr as _
 from scal3.monthcal import getMonthDesc
 
 
-def rgbToHtml(r, g, b, a=None):
+def rgbToHtml(r, g, b, a=None):  # noqa: ARG001
 	return f"#{r:02x}{g:02x}{b:02x}"
-	# What to do with alpha? FIXME
+	# What to do with alpha?
 
 
 def colorComposite(front, back):

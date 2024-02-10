@@ -81,7 +81,7 @@ class BulkSaveTimeZoneDialog(gtk.Dialog):
 		####
 		self.vbox.show_all()
 
-	def onResponse(self, dialog, responseId):
+	def onResponse(self, _dialog, responseId):
 		if responseId == gtk.ResponseType.OK:
 			timeZone = self.timeZoneInput.get_text()
 			try:

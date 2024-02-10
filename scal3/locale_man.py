@@ -334,7 +334,7 @@ def loadTranslator() -> Callable:
 
 	else:
 
-		def tr(s, *a, **ka):
+		def tr(s, *_a, **_ka):
 			return str(s)
 
 	return tr

@@ -166,18 +166,18 @@ class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
 			widget = exp
 		pack(self.vbox, widget)
 
-	def onClose(self, obj=None, event=None):
+	def onClose(self, _obj=None, _gevent=None):
 		self.hide()
 		return True
 
-	def goBack(self, obj=None):
+	def goBack(self, _obj=None):
 		ui.jdPlus(-1)
 		self.onDateChange()
 
-	def goToday(self, obj=None):
+	def goToday(self, _obj=None):
 		ui.gotoJd(core.getCurrentJd())
 		self.onDateChange()
 
-	def goNext(self, obj=None):
+	def goNext(self, _obj=None):
 		ui.jdPlus(1)
 		self.onDateChange()

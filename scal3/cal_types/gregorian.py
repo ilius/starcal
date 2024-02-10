@@ -57,11 +57,11 @@ monthNameAb = (
 )
 
 
-def getMonthName(m: int, y: "int | None" = None) -> str:
+def getMonthName(m: int, y: "int | None" = None) -> str:  # noqa: ARG001
 	return monthName[m - 1]
 
 
-def getMonthNameAb(tr, m, y: "int | None" = None) -> str:
+def getMonthNameAb(tr, m, y: "int | None" = None) -> str:  # noqa: ARG001
 	fullEn = monthName[m - 1]
 	abbr = tr(fullEn, ctx="abbreviation")
 	if abbr != fullEn:
@@ -69,7 +69,7 @@ def getMonthNameAb(tr, m, y: "int | None" = None) -> str:
 	return monthNameAb[m - 1]
 
 
-def getMonthsInYear(y: int) -> int:
+def getMonthsInYear(_y: int) -> int:
 	return 12
 
 

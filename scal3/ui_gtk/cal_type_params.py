@@ -247,7 +247,7 @@ class TextParamWidget(gtk.Box):
 		if self.hasUppercase:
 			self.uppercaseCheck.set_active(params.get("uppercase", False))
 
-	def onChange(self, obj=None, event=None):
+	def onChange(self, _obj=None, _event=None):
 		setattr(ui, self.paramName, self.get())
 		self.cal.queue_draw()
 
@@ -274,7 +274,7 @@ class CalTypeParamWidget(TextParamWidget):
 		####
 		TextParamWidget.__init__(self, *args, **kwargs)
 
-	def onChange(self, obj=None, event=None):
+	def onChange(self, _obj=None, _event=None):
 		typeParams = getattr(ui, self.paramName)
 		typeParams[self.index] = self.get()
 		self.cal.queue_draw()
