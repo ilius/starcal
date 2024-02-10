@@ -157,7 +157,7 @@ class CustomizableCalBox(CustomizableCalObj):
 		CustomizableCalObj.moveItem(self, i, j)
 		self.repackAll()
 
-	def insertItemWidget(self, i):
+	def insertItemWidget(self, _i):
 		self.repackAll()
 
 
@@ -186,7 +186,7 @@ def newSubPageButton(
 	button = gtk.Button()
 	button.add(hbox)
 
-	def onClick(b, page):
+	def onClick(_button, page):
 		if not page.pagePath:
 			raise ValueError(f"pagePath empty, {page = }")
 		item.emit("goto-page", page.pagePath)
