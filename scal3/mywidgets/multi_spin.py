@@ -69,7 +69,7 @@ class Field:
 	def getMaxWidth(self):
 		raise NotImplementedError
 
-	def getFieldAt(self, text, pos):
+	def getFieldAt(self, text, pos):  # noqa: ARG002
 		return self
 
 
