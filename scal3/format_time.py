@@ -52,16 +52,16 @@ def isow(jd):
 	return (jd - iso_to_jd(year, 1, 1)) // 7 + 1
 
 
-def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
-	# format:     "Today: %Y/%m/%d"
-	# pyFmt:      "Today: %s/%s/%s"
-	# funcs:      (get_y, get_m, get_d)
+def compileTmFormat(fmt, hasTime=True) -> CompiledTimeFormat:
+	# fmt:		"Today: %Y/%m/%d"
+	# pyFmt:	"Today: %s/%s/%s"
+	# funcs:	(get_y, get_m, get_d)
 	pyFmt = ""
 	funcs = []
-	n = len(format)
+	n = len(fmt)
 	i = 0
 	while i < n:
-		c0 = format[i]
+		c0 = fmt[i]
 		if c0 != "%":
 			pyFmt += c0
 			i += 1
@@ -69,7 +69,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 		if i == n - 1:
 			pyFmt += c0
 			break
-		c1 = format[i + 1]
+		c1 = fmt[i + 1]
 		if c1 == "%":
 			pyFmt += "%"
 			i += 2
@@ -319,7 +319,7 @@ def compileTmFormat(format, hasTime=True) -> CompiledTimeFormat:
 			continue
 		# if c1 == "Z":  # alphabetic time zone abbreviation (e.g., EDT)
 		if c1 == ":":
-			c2 = format[i + 2]
+			c2 = fmt[i + 2]
 			if c2 == "z":  # %:z
 
 				def tz(cell, _calType, _tm):
