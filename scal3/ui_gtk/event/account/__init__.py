@@ -126,7 +126,7 @@ class AccountGroupBox(gtk.Box):
 			account = ui.eventAccounts[aid]
 			self.combo.setAccount(account)
 
-	def onFetchClick(self, obj=None):
+	def onFetchClick(self, _obj=None):
 		combo = self.combo
 		account = combo.account
 		if not account:
