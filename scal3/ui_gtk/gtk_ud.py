@@ -536,17 +536,38 @@ setDefault_adjustTimeCmd()  # FIXME
 
 ############################################################
 
+def getMonitor():
+	display = gdk.Display.get_default()
+
+	monitor = display.get_monitor_at_point(1, 1)
+	if monitor is not None:
+		log.debug("getMonitor: using get_monitor_at_point")
+		return monitor
+
+	monitor = display.get_primary_monitor()
+	if monitor is not None:
+		log.debug("getMonitor: using get_primary_monitor")
+		return monitor
+
+	monitor = display.get_monitor_at_window(gdk.get_default_root_window())
+	if monitor is not None:
+		log.debug("getMonitor: using get_monitor_at_window")
+		return monitor
+
+	return None
 
 def getScreenSize():
 	# includes panels/docks
-	monitor = gdk.Display.get_default().get_primary_monitor()
+	monitor = getMonitor()
+	if monitor is None:
+		return None
 	rect = monitor.get_geometry()
 	return rect.width, rect.height
 
-
-def getWorkAreaSize():
-	# excludes panels/docks
-	monitor = gdk.Display.get_default().get_primary_monitor()
+def getWorkAreaSize() -> "tuple[int, int] | None":
+	monitor = getMonitor()
+	if monitor is None:
+		return None
 	rect = monitor.get_workarea()
 	return rect.width, rect.height
 
@@ -555,14 +576,17 @@ def getWorkAreaSize():
 
 rootWindow = gdk.get_default_root_window()
 
-
-try:
-	screenW, screenH = getScreenSize()
-	workAreaW, workAreaH = getWorkAreaSize()
-except AttributeError:
-	log.exception("")
+_screenSize = getScreenSize()
+_workAreaSize = getWorkAreaSize()
+if _screenSize is None:
 	screenW, screenH = rootWindow.get_width(), rootWindow.get_height()
+else:
+	screenW, screenH = _screenSize
+if _workAreaSize is None:
 	workAreaW, workAreaH = screenW, screenH
+else:
+	workAreaW, workAreaH = _workAreaSize
+
 
 # print(f"screen: {screenW}x{screenH}, work area: {workAreaW}x{workAreaH}")
 # for normal windows, we should use workAreaW and workAreaH

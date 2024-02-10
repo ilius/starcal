@@ -85,7 +85,7 @@ if [ -z "$pyCmd" ] ; then
 	fi
 fi
 if which "$pyCmd" && \
-"$pyCmd" -c 'import sys;exit((3, 9) <= sys.version_info < (3, 12))' ; then
+"$pyCmd" -c 'import sys;exit((3, 9) <= sys.version_info < (3, 13))' ; then
 	pyVer=$("$pyCmd" --version)
 	printf "\e[31mWarning: %s is not officially supported.\e[m\n" "$pyVer" >&2
 	printf "\e[31mPress Enter to continue anyway.\e[m\n" >&2
