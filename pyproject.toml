@@ -15,7 +15,6 @@ select = [
     "PGH", # pygrep-hooks
     "PIE", # flake8-pie
     "RET", # flake8-return
-    # "SIM", # flake8-simplify
     "T10", # flake8-debugger
     "TCH", # flake8-type-checking, not done for plugins
     "TID", # flake8-tidy-imports
@@ -23,12 +22,12 @@ select = [
     "UP", # pyupgrade
     "W", # pycodestyle Warning
     "YTT", # flake8-2020
-
+    "A", # flake8-builtins
+    "SIM", # flake8-simplify
+    # "ARG", # flake8-unused-arguments: Unused function argument: 571 remaining
     # "C90", # mccabe: C901: {name} is too complex ({complexity})
     # "ANN", # flake8-annotationsq
     # "N", # pep8-naming
-    "ARG", # flake8-unused-arguments: ARG001 Unused function argument
-    # "A", # flake8-builtins
     # "S", # flake8-bandit
 ]
 # warning: The following rules may cause conflicts when used with the formatter:
@@ -80,6 +79,7 @@ ignore = [
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 fixable = [
+    # "SIM",
     "F401",
     # "E", "F", "W",
     "RET",
@@ -108,6 +108,8 @@ unfixable = []
 
 # Exclude a variety of commonly ignored directories.
 exclude = [
+    "scal3/import_config_2to3.py",
+    "scal3/ui_gtk/import_config_2to3.py",
     "libs",
     # "setup.py",
 ]

@@ -66,7 +66,7 @@ class DefaultFileSystem(FileSystem):
 		fpath = self.abspath(fpath)
 		if mode == "r" and encoding is None:
 			encoding = "utf-8"
-		return open(fpath, mode=mode, encoding=encoding)
+		return open(fpath, mode=mode, encoding=encoding)  # noqa: SIM115
 
 	def listdir(self, dpath):
 		if isabs(dpath):

@@ -7,7 +7,8 @@ from scal3 import event_lib, logger, ui
 
 log = logger.get()
 
-tree = XML(open("/usr/share/apps/libkdeedu/data/elements.xml").read())
+with open("/usr/share/apps/libkdeedu/data/elements.xml") as _file:
+	tree = XML(_file.read())
 
 
 def decodeAtomElement(atom):

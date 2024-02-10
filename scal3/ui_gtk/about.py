@@ -11,7 +11,7 @@ class AboutDialog(gtk.AboutDialog):
 		title: str = "",
 		authors: "list[str] | None" = None,
 		comments: str = "",
-		license: str = "",
+		license: str = "",  # noqa: A002
 		website: str = "",
 		logo: "GdkPixbuf.Pixbuf" = None,
 		**kwargs,
