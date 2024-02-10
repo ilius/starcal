@@ -9,4 +9,4 @@ fi
 myDir=$(dirname "$myPath")
 sourceDir=$(dirname "$myDir")
 
-PYTHONPATH=$sourceDir python3 $sourceDir/scal3/ui_gtk/full.py
+PYTHONPATH=$sourceDir /usr/bin/python3 $sourceDir/scal3/ui_gtk/full.py
