@@ -137,11 +137,11 @@ monthNameVars = (
 )
 
 
-def getMonthName(m, y=None):
+def getMonthName(m, y=None):  # noqa: ARG001
 	return monthNameVars[monthNameMode][0][m - 1]
 
 
-def getMonthNameAb(tr, m, y=None):
+def getMonthNameAb(tr, m, y=None):  # noqa: ARG001
 	names = monthNameVars[monthNameMode]
 	fullEn = names[0][m - 1]
 	abbr = tr(fullEn, ctx="abbreviation")
@@ -152,7 +152,7 @@ def getMonthNameAb(tr, m, y=None):
 	return tr(fullEn)
 
 
-def getMonthsInYear(y):
+def getMonthsInYear(_y):
 	return 12
 
 

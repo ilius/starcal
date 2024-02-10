@@ -9,7 +9,7 @@ winStartupDir = os.getenv("APPDATA") + winStartupRelPath
 winStartupFile = join(winStartupDir, APP_NAME + ".lnk")
 
 
-def winMakeShortcut(srcPath, dstPath, iconPath=None):
+def winMakeShortcut(srcPath, dstPath):
 	from win32com.client import Dispatch
 
 	shell = Dispatch("WScript.Shell")

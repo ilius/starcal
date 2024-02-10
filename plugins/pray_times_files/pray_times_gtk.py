@@ -55,7 +55,7 @@ def buffer_select_all(b):
 	)
 
 
-def showDisclaimer(plug):
+def showDisclaimer(plug):  # noqa: ARG001
 	showMsg(
 		"\n".join(
 			[
@@ -192,7 +192,7 @@ class LocationDialog(gtk.Dialog):
 		self.cityData = cityData
 		self.update_list()
 
-	def calc_clicked(self, button):
+	def calc_clicked(self, _button=None):
 		lat = self.spin_lat.get_value()
 		lng = self.spin_lng.get_value()
 		md = earthR * 2 * math.pi
@@ -304,7 +304,7 @@ class LocationButton(gtk.Button):
 		self.lng = lng
 		self.set_label(self.locName)
 
-	def onClick(self, widget):
+	def onClick(self, _widget=None):
 		if self.dialog is None:
 			self.dialog = LocationDialog(
 				self.plugin.getCityData(),
@@ -475,7 +475,7 @@ class TextPluginUI:
 		"""
 		self.dialog = None
 
-	def updateAzanSensitiveWidgets(self, w=None):
+	def updateAzanSensitiveWidgets(self, _widget=None):
 		for cb in (self.preAzanEnableCheck, self.azanEnableCheck):
 			active = cb.get_active()
 			for widget in cb.sensitiveWidgets:
@@ -526,11 +526,11 @@ class TextPluginUI:
 		self.azanEnable = self.azanEnableCheck.get_active()
 		self.azanFile = self.azanFileButton.get_filename()
 
-	def confDialogCancel(self, widget=None, gevent=None):
+	def confDialogCancel(self, _widget=None, _gevent=None):
 		self.confDialog.hide()
 		self.updateConfWidget()
 
-	def confDialogOk(self, widget):
+	def confDialogOk(self, _widget=None):
 		self.confDialog.hide()
 		self.updateConfVars()
 		self.saveConfig()
@@ -548,7 +548,7 @@ class TextPluginUI:
 			authors=self.authors,
 			comments=self.about,
 		)
-		about.connect("delete-event", lambda w, e: about.destroy())
+		about.connect("delete-event", lambda _w, _e: about.destroy())
 		# about.connect("response", lambda w: about.hide())
 		# about.set_skip_taskbar_hint(True)
 		about.run()
