@@ -19,7 +19,7 @@ __all__ = [
 ]
 
 
-def _default(self, obj):
+def _default(_self, obj):
 	return getattr(obj.__class__, "to_json", _default.default)(obj)
 
 

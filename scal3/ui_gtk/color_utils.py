@@ -9,7 +9,7 @@ __all__ = [
 ]
 
 
-def rgbToGdkColor(r, g, b, a=None):
+def rgbToGdkColor(r, g, b, a=None):  # noqa: ARG001
 	"""r, g, b are in range(256)."""
 	return gdk.Color(
 		int(r * 257),
