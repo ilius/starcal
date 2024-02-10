@@ -356,7 +356,8 @@ Otherwise, Hijri dates and Iranian official holidays would be incorrect.""",
 
 	def onResponse(self, dialog, response_id):
 		if self.noShowCheckb.get_active():
-			open(hijri.monthDbExpiredIgnoreFile, "w").write("")
+			with open(hijri.monthDbExpiredIgnoreFile, "w") as _file:
+				_file.write("")
 		self.destroy()
 		return True
 
