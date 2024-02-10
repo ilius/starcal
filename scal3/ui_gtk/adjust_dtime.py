@@ -150,7 +150,7 @@ class AdjusterDialog(gtk.Dialog):
 		self.updateTimes()
 		self.vbox.show_all()
 
-	def onRadioManClick(self, radio=None):
+	def onRadioManClick(self, _radio=None):
 		if self.radioMan.get_active():
 			self.vboxMan.set_sensitive(True)
 			self.hboxNtp.set_sensitive(False)
@@ -159,7 +159,7 @@ class AdjusterDialog(gtk.Dialog):
 			self.hboxNtp.set_sensitive(True)
 		self.updateSetButtonSensitive()
 
-	def onRadioNtpClick(self, radio=None):
+	def onRadioNtpClick(self, _radio=None):
 		if self.radioNtp.get_active():
 			self.vboxMan.set_sensitive(False)
 			self.hboxNtp.set_sensitive(True)
@@ -168,12 +168,12 @@ class AdjusterDialog(gtk.Dialog):
 			self.hboxNtp.set_sensitive(False)
 		self.updateSetButtonSensitive()
 
-	def onCkeckbEditTimeClick(self, checkb=None):
+	def onCkeckbEditTimeClick(self, _checkb=None):
 		self.editTime = self.ckeckbEditTime.get_active()
 		self.timeInput.set_sensitive(self.editTime)
 		self.updateSetButtonSensitive()
 
-	def onCkeckbEditDateClick(self, checkb=None):
+	def onCkeckbEditDateClick(self, _checkb=None):
 		self.editDate = self.ckeckbEditDate.get_active()
 		self.dateInput.set_sensitive(self.editDate)
 		self.updateSetButtonSensitive()
@@ -234,7 +234,7 @@ class AdjusterDialog(gtk.Dialog):
 			self.dateInput.set_value((y, m, d))
 		return False
 
-	def updateSetButtonSensitive(self, widget=None):
+	def updateSetButtonSensitive(self, _widget=None):
 		if self.radioMan.get_active():
 			self.buttonSet.set_sensitive(self.editTime or self.editDate)
 		elif self.radioNtp.get_active():
@@ -242,7 +242,7 @@ class AdjusterDialog(gtk.Dialog):
 				self.ntpServerEntry.get_text() != "",
 			)
 
-	def onSetSysTimeClick(self, widget=None):
+	def onSetSysTimeClick(self, _widget=None):
 		if self.radioMan.get_active():
 			if self.editTime:
 				h, m, s = self.timeInput.get_value()
