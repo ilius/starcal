@@ -241,10 +241,10 @@ class CustomizeWindow(gtk.Dialog):
 		###
 		return treev, vbox
 
-	def vboxSizeRequest(self, widget, req):
+	def vboxSizeRequest(self, _widget=None, _req=None):
 		self.resize(self.get_size()[0], 1)
 
-	def onTopClick(self, button, treev):
+	def onTopClick(self, _button, treev):
 		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
@@ -264,7 +264,7 @@ class CustomizeWindow(gtk.Dialog):
 		model.remove(model.get_iter(i + 1))
 		treev.set_cursor(0)
 
-	def onUpClick(self, button, treev):
+	def onUpClick(self, _button, treev):
 		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
@@ -283,7 +283,7 @@ class CustomizeWindow(gtk.Dialog):
 		model.swap(model.get_iter(i - 1), model.get_iter(i))
 		treev.set_cursor(i - 1)
 
-	def onDownClick(self, button, treev):
+	def onDownClick(self, _button, treev):
 		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
@@ -302,7 +302,7 @@ class CustomizeWindow(gtk.Dialog):
 		model.swap(model.get_iter(i), model.get_iter(i + 1))
 		treev.set_cursor(i + 1)
 
-	def onBottomClick(self, button, treev):
+	def onBottomClick(self, _button, treev):
 		item = self.itemByPagePath[treev.pagePath]
 		model = treev.get_model()
 		cur = treev.get_cursor()[0]
@@ -431,7 +431,7 @@ class CustomizeWindow(gtk.Dialog):
 
 		return page
 
-	def gotoPageCallback(self, item, pagePath):
+	def gotoPageCallback(self, _item, pagePath):
 		self.stack.gotoPage(pagePath)
 
 	def onTreeviewButtonPress(self, treev, gevent):
@@ -452,7 +452,7 @@ class CustomizeWindow(gtk.Dialog):
 		self,
 		treev: gtk.TreeView,
 		path: gtk.TreePath,
-		col: gtk.TreeViewColumn,
+		_col: gtk.TreeViewColumn,
 	):
 		parentPagePath = treev.pagePath
 		parentItem = self.itemByPagePath[treev.pagePath]
@@ -526,7 +526,7 @@ class CustomizeWindow(gtk.Dialog):
 		ui.saveConfCustomize()
 		# data = item.getData()## remove? FIXME
 
-	def onSaveClick(self, button=None, event=None):
+	def onSaveClick(self, _button=None, _event=None):
 		self.save()
 		self.hide()
 		return True

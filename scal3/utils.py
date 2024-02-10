@@ -235,7 +235,7 @@ class NullObj:
 	def __getattr__(self, attr: str) -> "NullObj":
 		return self
 
-	def __call__(self, *args, **kwargs) -> "NullObj":
+	def __call__(self, *_a, **_kw) -> "NullObj":
 		return self
 
 	def __str__(self) -> str:
