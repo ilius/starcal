@@ -211,7 +211,8 @@ class BasePlugin(SObj):
 					+ "\n"
 				)
 		icsText += "END:VCALENDAR\n"
-		open(fileName, "w", encoding="utf-8").write(icsText)
+		with open(fileName, "w", encoding="utf-8") as _file:
+			_file.write(icsText)
 
 
 class BaseJsonPlugin(BasePlugin, JsonSObj):
@@ -405,7 +406,7 @@ class HolidayPlugin(BaseJsonPlugin):
 
 		for jd in range(startJd, endJd):
 			isHoliday = False
-			for calType in self.holidays.keys():
+			for calType in self.holidays:
 				myear, mmonth, mday = jd_to(jd, calType)
 				if (mmonth, mday) in self.holidays[calType]:
 					isHoliday = True
@@ -437,7 +438,8 @@ class HolidayPlugin(BaseJsonPlugin):
 					+ "\n"
 				)
 		icsText += "END:VCALENDAR\n"
-		open(fileName, "w", encoding="utf-8").write(icsText)
+		with open(fileName, "w", encoding="utf-8") as _file:
+			_file.write(icsText)
 
 	# def getJdList(self, startJd, endJd):
 
