@@ -73,7 +73,7 @@ class CalBase(CustomizableCalObj):
 		ui.gotoJd(jd)
 		self.onDateChange()
 
-	def goToday(self, obj=None):
+	def goToday(self, _obj=None):
 		return self.gotoJd(core.getCurrentJd())
 
 	def jdPlus(self, p):
@@ -84,7 +84,7 @@ class CalBase(CustomizableCalObj):
 		ui.changeDate(year, month, day, calType)
 		self.onDateChange()
 
-	def onCurrentDateChange(self, gdate):
+	def onCurrentDateChange(self, gdate):  # noqa: ARG002
 		self.queue_draw()
 
 	def getCellPagePlus(self, jd, plus):  ## use for sliding
@@ -119,7 +119,7 @@ class CalBase(CustomizableCalObj):
 		##self.connect("drag-failed", self.dragCalFailed)
 		# self.connect("drag-leave", self.dragLeave)
 
-	def dragDataGet(self, obj, context, selection, target_id, etime):
+	def dragDataGet(self, _obj, _context, selection, _target_id, _etime):
 		# context is instance of gi.repository.Gdk.DragContext
 		y, m, d = ui.cell.dates[ui.dragGetCalType]
 		text = f"{y:04d}/{m:02d}/{d:02d}"
@@ -128,11 +128,11 @@ class CalBase(CustomizableCalObj):
 		# selection.set_pixbuf(pbuf)
 		return True
 
-	def dragLeave(self, obj, context, etime):
+	def dragLeave(self, _obj, context, etime):
 		context.drop_reply(False, etime)
 		return True
 
-	def dragDataRec(self, obj, context, x, y, selection, target_id, etime):
+	def dragDataRec(self, _obj, _context, _x, _y, selection, _target_id, _etime):
 		from scal3.ui_gtk.dnd import processDroppedDate
 
 		dtype = selection.get_data_type()
@@ -160,7 +160,7 @@ class CalBase(CustomizableCalObj):
 			return True
 		return False
 
-	def dragBegin(self, obj, context):
+	def dragBegin(self, _obj, context):
 		# context is instance of gi.repository.Gdk.DragContext
 		# win = context.get_source_window()
 		# log.debug("dragBegin", id(win), win.get_geometry())
