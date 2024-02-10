@@ -118,7 +118,7 @@ class DayCalWindowCustomizeWindow(gtk.Dialog):
 		# self.vbox.connect("size-allocate", self.vboxSizeRequest)
 		self.vbox.show_all()
 
-	def gotoPageCallback(self, item, pagePath):
+	def gotoPageCallback(self, _item, pagePath):
 		self.stack.gotoPage(pagePath)
 
 	# def vboxSizeRequest(self, widget, req):
@@ -128,7 +128,7 @@ class DayCalWindowCustomizeWindow(gtk.Dialog):
 		self._widget.updateVars()
 		ui.saveConfCustomize()
 
-	def onSaveClick(self, button=None, event=None):
+	def onSaveClick(self, _button=None, _gevent=None):
 		self.save()
 		self.hide()
 		return True
@@ -176,7 +176,7 @@ class DayCalWindowWidget(DayCal):
 				transient_for=self._window,
 			)
 
-	def openCustomize(self, gevent):
+	def openCustomize(self, _gevent):
 		self.customizeWindowCreate()
 		x, y = self._window.get_position()
 		w, h = self._window.get_size()
@@ -230,7 +230,7 @@ class DayCalWindowWidget(DayCal):
 			)
 			return None
 
-		return lambda *args: (mx, my, False)
+		return lambda *_args: (mx, my, False)
 
 	def getMenu(self, reverse: bool):
 		menu = self.menu
@@ -257,7 +257,7 @@ class DayCalWindowWidget(DayCal):
 		menu.show_all()
 		return menu
 
-	def popupMenuOnButtonPress(self, obj, gevent):
+	def popupMenuOnButtonPress(self, _obj, gevent):
 		reverse = gevent.y_root > ud.screenH / 2.0
 		menu = self.getMenu(reverse)
 		menu.popup(
@@ -321,7 +321,7 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 		menu.popup(
 			None,
 			None,
-			lambda *args: (x, y, True),
+			lambda *_args: (x, y, True),
 			None,
 			3,
 			etime,
@@ -343,14 +343,14 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 	def dayInfoShow(self, widget=None):
 		ui.mainWin.dayInfoShow(widget)
 
-	def onDeleteEvent(self, arg=None, event=None):
+	def onDeleteEvent(self, _arg=None, _event=None):
 		if ui.mainWin:
 			self.hide()
 		else:
 			gtk.main_quit()
 		return True
 
-	def configureEvent(self, widget, gevent):
+	def configureEvent(self, _widget, _gevent):
 		if not self.get_property("visible"):
 			return
 		wx, wy = self.get_position()

@@ -142,7 +142,7 @@ def readLocationData():
 	return cityData
 
 
-def guessLocation(cityData):
+def guessLocation(cityData):  # noqa: ARG001
 	# tzname = str(localTz)
 	# TODO
 	# for countryCity, countryCityLocale, lat, lng in cityData:

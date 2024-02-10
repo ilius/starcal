@@ -659,7 +659,7 @@ class EventRule(SObj):
 	def getCalType(self) -> int:
 		return self.parent.calType
 
-	def changeCalType(self, calType: int) -> bool:
+	def changeCalType(self, calType: int) -> bool:  # noqa: ARG002
 		return True
 
 	def calcOccurrence(
@@ -681,14 +681,14 @@ class EventRule(SObj):
 
 
 class AllDayEventRule(EventRule):
-	def jdMatches(self, jd: int) -> bool:
+	def jdMatches(self, jd: int) -> bool:  # noqa: ARG002
 		return True
 
 	def calcOccurrence(
 		self,
 		startJd: int,
 		endJd: int,
-		event: "Event",
+		event: "Event",  # noqa: ARG002
 	) -> OccurSet:
 		# improve performance FIXME
 		jds = set()
@@ -743,7 +743,7 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 	def setValuesPlain(self, values: "list[int | tuple[int, int]]") -> None:
 		self.values = simplifyNumList(values)
 
-	def changeCalType(self, calType: int) -> bool:
+	def changeCalType(self, calType: int) -> bool:  # noqa: ARG002
 		return False
 
 
@@ -1042,7 +1042,7 @@ class WeekMonthEventRule(EventRule):
 		self,
 		startJd: int,
 		endJd: int,
-		event: "Event",
+		event: "Event",  # noqa: ARG002
 	) -> OccurSet:
 		calType = self.getCalType()
 		startYear, startMonth, startDay = jd_to(startJd, calType)
@@ -1118,7 +1118,7 @@ class DateEventRule(EventRule):
 		self,
 		startJd: int,
 		endJd: int,
-		event: "Event",
+		event: "Event",  # noqa: ARG002
 	) -> OccurSet:
 		myJd = self.getJd()
 		if startJd <= myJd < endJd:
@@ -1240,7 +1240,7 @@ class DayTimeEventRule(EventRule):  # Moment Event
 		self,
 		startJd: int,
 		endJd: int,
-		event: "Event",
+		event: "Event",  # noqa: ARG002
 	) -> OccurSet:
 		mySec = getSecondsFromHms(*self.dayTime)
 		return TimeListOccurSet(  # FIXME
@@ -1311,7 +1311,7 @@ class DayTimeRangeEventRule(EventRule):
 		self,
 		startJd: int,
 		endJd: int,
-		event: "Event",
+		event: "Event",  # noqa: ARG002
 	) -> OccurSet:
 		daySecStart = getSecondsFromHms(*self.dayTimeStart)
 		daySecEnd = getSecondsFromHms(*self.dayTimeEnd)
@@ -1341,7 +1341,7 @@ class StartEventRule(DateAndTimeEventRule):
 		self,
 		startJd: int,
 		endJd: int,
-		event: "Event",
+		event: "Event",  # noqa: ARG002
 	) -> OccurSet:
 		return IntervalOccurSet.newFromStartEnd(
 			max(self.getEpochFromJd(startJd), self.getEpoch()),
@@ -1364,7 +1364,7 @@ class EndEventRule(DateAndTimeEventRule):
 		self,
 		startJd: int,
 		endJd: int,
-		event: "Event",
+		event: "Event",  # noqa: ARG002
 	) -> OccurSet:
 		return IntervalOccurSet.newFromStartEnd(
 			self.getEpochFromJd(startJd),
@@ -1452,7 +1452,7 @@ class DurationEventRule(EventRule):
 		self,
 		startJd: int,
 		endJd: int,
-		event: "Event",
+		event: "Event",  # noqa: ARG002
 	) -> OccurSet:
 		parentStart, ok = self.parent["start"]
 		if not ok:
@@ -1709,7 +1709,7 @@ class ExDatesEventRule(EventRule):
 		self,
 		startJd: int,
 		endJd: int,
-		event: "Event",
+		event: "Event",  # noqa: ARG002
 	) -> OccurSet:
 		# improve performance # FIXME
 		return JdOccurSet(
@@ -2489,10 +2489,11 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		for notifier in self.notifiers:
 			notifier.notify(notifierFinishFunc)
 
-	def getIcsData(self, prettyDateTime=False):  # FIXME
+	def getIcsData(self, prettyDateTime=False):  # noqa: ARG002
+		# FIXME
 		return None
 
-	def setIcsData(self, data):
+	def setIcsData(self, data):  # noqa: ARG002
 		# if "T" in data["DTSTART"]:
 		# 	return False
 		# if "T" in data["DTEND"]:
@@ -2567,7 +2568,7 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 	def getJd(self) -> int:
 		return self.getStartJd()
 
-	def setJd(self, jd: int) -> None:
+	def setJd(self, jd: int) -> None:  # noqa: ARG002
 		return None
 
 	def setJdExact(self, jd: int) -> None:
