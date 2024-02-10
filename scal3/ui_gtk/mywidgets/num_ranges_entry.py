@@ -138,7 +138,7 @@ class NumRangesEntry(gtk.Entry):
 			self.numPlus(self.page_inc)
 		elif kname == "page_down":
 			self.numPlus(-self.page_inc)
-		elif kname == "left":
+		elif kname == "left":  # noqa: SIM114
 			return False  # FIXME
 		elif kname == "right":
 			return False  # FIXME
