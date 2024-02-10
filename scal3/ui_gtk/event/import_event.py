@@ -80,12 +80,12 @@ class EventsImportWindow(WizardWindow):
 			if not fpath:
 				return
 			if self.radioJson.get_active():
-				format = "json"
+				format_ = "json"
 			# elif self.radioIcs.get_active():
-			# 	format = "ics"
+			# 	format_ = "ics"
 			else:
 				return
-			self.win.showStep(1, format, fpath)
+			self.win.showStep(1, format_, fpath)
 
 	class SecondStep(gtk.Box):
 		desc = ""
@@ -122,16 +122,16 @@ class EventsImportWindow(WizardWindow):
 			sys.stdout = sys.__stdout__
 			sys.stderr = sys.__stderr__
 
-		def run(self, format, fpath):
+		def run(self, format_, fpath):
 			self.redirectStdOutErr()
-			self.win.waitingDo(self._runAndCleanup, format, fpath)
+			self.win.waitingDo(self._runAndCleanup, format_, fpath)
 
-		def _runAndCleanup(self, format, fpath):
+		def _runAndCleanup(self, format_, fpath):
 			try:
-				if format == "json":
+				if format_ == "json":
 					self._runJson(fpath)
 				else:
-					raise ValueError(f"invalid format {format!r}")
+					raise ValueError(f"invalid format {format_!r}")
 			finally:
 				self.restoreStdOutErr()
 

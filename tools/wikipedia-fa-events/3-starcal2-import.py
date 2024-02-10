@@ -43,7 +43,7 @@ def getGroupByTitle(title):
 		return group
 
 
-for line in open("wikipedia-fa.tab"):
+for line in open("wikipedia-fa.tab"):  # noqa: SIM115
 	line = line.strip()
 	if not line:
 		continue

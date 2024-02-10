@@ -369,7 +369,7 @@ def parseDroppedDate(text) -> "tuple[int, int, int] | None":
 
 
 def checkNeedRestart() -> bool:
-	for key in needRestartPref.keys():
+	for key in needRestartPref:
 		if needRestartPref[key] != evalParam(key):
 			log.info(
 				f"checkNeedRestart: {key!r}, "
