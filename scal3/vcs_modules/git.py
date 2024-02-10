@@ -31,11 +31,11 @@ from scal3.time_utils import getEpochFromJd
 from scal3.vcs_modules import encodeShortStat
 
 
-def prepareObj(obj):
+def prepareObj(obj):  # noqa: ARG001
 	pass
 
 
-def clearObj(obj):
+def clearObj(obj):  # noqa: ARG001
 	pass
 
 
