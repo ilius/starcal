@@ -1981,7 +1981,6 @@ class RuleContainer:
 		self,
 		newRule: "EventRule | None" = None,
 		disabledRule: "EventRule | None" = None,
-		autoCheck: bool = True,
 	) -> tuple[bool, str]:
 		rulesOd = self.rulesOd.copy()
 		if newRule:
@@ -5869,7 +5868,6 @@ class EventGroupsHolder(JsonObjectsHolder):
 		self,
 		group: EventGroup,
 		trash: "EventTrash",
-		addToFirst: bool = True,
 	) -> None:
 		if trash.addEventsToBeginning:
 			trash.idList = group.idList + trash.idList
