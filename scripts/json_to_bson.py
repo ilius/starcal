@@ -11,6 +11,8 @@ import bson
 
 for fname_json in sys.argv[1:]:
 	fname, ext = splitext(fname_json)
-	json_s = open(fname_json).read()
+	with open(fname_json) as _file:
+		json_s = _file.read()
 	data = json.loads(json_s)
-	open(fname + ".bson", "wb").write(bytes(bson.dumps(data)))
+	with open(fname + ".bson", "wb") as _file:
+		_file.write(bytes(bson.dumps(data)))

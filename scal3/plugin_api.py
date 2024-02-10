@@ -30,7 +30,7 @@ class PluginError(Exception):
 	pass
 
 
-def get(moduleName, attr, default=None, absolute=False):
+def getAttr(moduleName, attr, default=None, absolute=False):
 	if not absolute:
 		moduleName = "scal3." + moduleName
 	# module = __import__(moduleName, fromlist=["__plugin_api_get__", attr])
@@ -45,7 +45,7 @@ def get(moduleName, attr, default=None, absolute=False):
 	return getattr(module, attr, default)
 
 
-def set(moduleName, attr, value, absolute=False):
+def setAttr(moduleName, attr, value, absolute=False):
 	if not absolute:
 		moduleName = "scal3." + moduleName
 	# module = __import__(moduleName, fromlist=["__plugin_api_set__", attr])

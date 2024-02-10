@@ -42,7 +42,7 @@ def parseFile(fpath, month, day):
 	# log.debug(fpath, month, day)
 	category = ""
 	data = []
-	for line in open(fpath).read().split("\n"):
+	for line in open(fpath).read().split("\n"):  # noqa: SIM115
 		if line.startswith("== "):
 			category = line[2:-2].strip()
 			if category in ignoreCategories:
@@ -105,7 +105,8 @@ def writeToTabfile(data, fpath):
 				],
 			),
 		)
-	open(fpath, "w").write("\n".join(lines))
+	with open(fpath, "w") as _file:
+		_file.write("\n".join(lines))
 
 
 if __name__ == "__main__":

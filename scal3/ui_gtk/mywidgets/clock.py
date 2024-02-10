@@ -67,9 +67,9 @@ class ClockLabel(gtk.Label):
 
 
 class FClockLabel(gtk.Label):
-	def __init__(self, format="%T", local=True, selectable=False):
+	def __init__(self, clockFormat="%T", local=True, selectable=False):
 		"""
-		format is a string that used in strftime(), it can contains markup
+		clockFormat is a string that used in strftime(), it can contains markup
 		that apears in GtkLabel for example format can be "<b>%T</b>"
 		local is bool. if True, use Local time. and if False, use GMT time.
 		selectable is bool that passes to GtkLabel.
@@ -78,7 +78,7 @@ class FClockLabel(gtk.Label):
 		self.set_use_markup(True)
 		self.set_selectable(selectable)
 		self.set_direction(gtk.TextDirection.LTR)
-		self.format = format
+		self.format = clockFormat
 		self.local = local
 		self.running = False
 		# self.connect("button-press-event", self.onButtonPress)
@@ -101,16 +101,16 @@ class FClockLabel(gtk.Label):
 
 
 class FClockWidget(gtk.DrawingArea):  ## Time is in Local
-	def __init__(self, format="%T", selectable=False):
+	def __init__(self, clockFormat="%T", selectable=False):
 		"""
-		format is a string that used in strftime(), it can contains markup
+		clockFormat is a string that used in strftime(), it can contains markup
 		that apears in GtkLabel for example format can be "<b>%T</b>"
 		local is bool. if True, use Local time. and if False, use GMT time.
 		selectable is bool that passes to GtkLabel.
 		"""
 		gtk.DrawingArea.__init__(self)
 		self.set_direction(gtk.TextDirection.LTR)
-		self.format = format
+		self.format = clockFormat
 		self.text = ""
 		self.running = False
 		self.connect("draw", self.onDraw)

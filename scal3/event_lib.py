@@ -2067,11 +2067,11 @@ def iconAbsToRelativelnData(data):
 	iconDir, iconName = split(icon)
 	if iconName == "obituary.png":
 		iconName = "green_clover.svg"
-	if iconDir == "event":
-		icon = iconName
-	elif iconDir == join(svgDir, "event"):
-		icon = iconName
-	elif iconDir == join(pixDir, "event"):
+	elif iconDir in (
+		"event",
+		join(svgDir, "event"),
+		join(pixDir, "event"),
+	):
 		icon = iconName
 	data["icon"] = icon
 

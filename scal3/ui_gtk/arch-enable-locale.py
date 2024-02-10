@@ -46,7 +46,8 @@ if __name__ == "__main__":
 		if line.lower().startswith("#" + localeName):
 			lines[i] = line[1:]
 			os.rename(localeGen, f"{localeGen}.{now()}")
-			open(localeGen, "w").write("\n".join(lines))
+			with open(localeGen, "w") as _file:
+				_file.write("\n".join(lines))
 			exit_code = subprocess.call("/usr/sbin/locale-gen")
 			log.info(f'enabling locale "{localeName}" done')
 			break

@@ -71,10 +71,10 @@ class DemoWizardWindow(WizardWindow):
 
 		def onNextClick(self, obj):
 			fpath = self.fcb.get_filename()
-			format = None
+			format_ = None
 			if self.radioJson.get_active():
-				format = "json"
-			self.win.showStep(1, format, fpath)
+				format_ = "json"
+			self.win.showStep(1, format_, fpath)
 
 	class SecondStep(gtk.Box):
 		desc = ""
@@ -93,14 +93,14 @@ class DemoWizardWindow(WizardWindow):
 			####
 			self.show_all()
 
-		def run(self, format, fpath):
-			self.win.waitingDo(self._runAndCleanup, format, fpath)
+		def run(self, format_, fpath):
+			self.win.waitingDo(self._runAndCleanup, format_, fpath)
 
-		def _runAndCleanup(self, format, fpath):
-			if format == "json":
+		def _runAndCleanup(self, format_, fpath):
+			if format_ == "json":
 				self._runJson(fpath)
 			else:
-				raise ValueError(f"invalid format {format!r}")
+				raise ValueError(f"invalid format {format_!r}")
 
 		def _runJson(self, fpath):
 			print(f"_runAndCleanup: {fpath=}")

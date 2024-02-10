@@ -20,12 +20,12 @@ if isfile(join(rootDir, "VERSION")):
 		sys.exit(0)
 
 VERSION = ""
-fp = open("%s/core.py" % scalDir)
-while True:
-	line = fp.readline()
-	if line.startswith("VERSION"):
-		exec(line)
-		break
+with open("%s/core.py" % scalDir) as _file:
+	while True:
+		line = _file.readline()
+		if line.startswith("VERSION"):
+			exec(line)
+			break
 
 gitDir = os.path.join(rootDir, ".git")
 if os.path.isdir(gitDir):
