@@ -93,7 +93,7 @@ def getShortStat(obj, old_rev_id, rev_id):
 	)
 
 
-def getShortStatByTrees(repo, old_tree, tree):
+def getShortStatByTrees(repo, old_tree, tree):  # noqa: ARG001
 	files_changed = 0
 	insertions = 0
 	deletions = 0

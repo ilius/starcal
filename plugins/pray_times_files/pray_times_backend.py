@@ -348,7 +348,7 @@ class PrayTimes:
 	# ---------------------- Compute Prayer Times -----------------------
 
 	# compute prayer times
-	def computeTimes(self, format=None):
+	def computeTimes(self):
 		# default times
 		times = {
 			"imsak": 5,
