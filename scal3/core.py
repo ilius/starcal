@@ -276,7 +276,7 @@ def getWeekDayAuto(
 
 
 # week number in year
-def getWeekNumberByJdAndDate(jd: int, year: int, month: int, day: int) -> int:
+def getWeekNumberByJdAndYear(jd: int, year: int) -> int:
 	if primary_to_jd(year + 1, 1, 1) - jd < 7:  # FIXME
 		if getWeekNumber(*jd_to_primary(jd + 14)) == 3:
 			return 1
@@ -299,12 +299,12 @@ def getWeekNumberByJdAndDate(jd: int, year: int, month: int, day: int) -> int:
 
 def getWeekNumber(year: int, month: int, day: int) -> int:
 	jd = primary_to_jd(year, month, day)
-	return getWeekNumberByJdAndDate(jd, year, month, day)
+	return getWeekNumberByJdAndYear(jd, year)
 
 
 def getWeekNumberByJd(jd: int) -> int:
 	year, month, day = jd_to_primary(jd)
-	return getWeekNumberByJdAndDate(jd, year, month, day)
+	return getWeekNumberByJdAndYear(jd, year)
 
 
 # FIXME
