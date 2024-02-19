@@ -228,6 +228,7 @@ class StarCalendarAccount(Account):
 				"email": email,
 				"password": password,
 			},
+			timeout=10,  # FIXME: config
 		)
 		error = None
 		token = ""
