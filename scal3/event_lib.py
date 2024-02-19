@@ -523,7 +523,7 @@ class IntervalOccurSet(OccurSet):
 		return getJdFromEpoch(max(r[1] for r in self.rangeList))
 
 	def intersection(self, occur: OccurSet) -> OccurSet:
-		if isinstance(occur, (JdOccurSet, IntervalOccurSet)):
+		if isinstance(occur, JdOccurSet | IntervalOccurSet):
 			return IntervalOccurSet(
 				intersectionOfTwoIntervalList(
 					self.getTimeRangeList(),
@@ -604,7 +604,7 @@ class TimeListOccurSet(OccurSet):
 		self.epochList = set(arange(startEpoch, endEpoch, stepSeconds))
 
 	def intersection(self, occur: OccurSet) -> OccurSet:
-		if isinstance(occur, (JdOccurSet, IntervalOccurSet)):
+		if isinstance(occur, JdOccurSet | IntervalOccurSet):
 			epochBetween = []
 			for epoch in self.epochList:
 				for startEpoch, endEpoch in occur.getTimeRangeList():
@@ -712,7 +712,7 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 		return self.values
 
 	def setData(self, data: "Any"):
-		if not isinstance(data, (tuple, list)):
+		if not isinstance(data, tuple | list):
 			data = [data]
 		self.values = data
 
@@ -724,7 +724,7 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 
 	def hasValue(self, value: "Any") -> bool:
 		for item in self.values:
-			if isinstance(item, (tuple, list)):
+			if isinstance(item, tuple | list):
 				if item[0] <= value <= item[1]:
 					return True
 			elif item == value:
@@ -734,7 +734,7 @@ class MultiValueAllDayEventRule(AllDayEventRule):
 	def getValuesPlain(self) -> "list[int | tuple[int, int]]":
 		ls = []
 		for item in self.values:
-			if isinstance(item, (tuple, list)):
+			if isinstance(item, tuple | list):
 				ls += list(range(item[0], item[1] + 1))
 			else:
 				ls.append(item)
@@ -773,7 +773,7 @@ class YearEventRule(MultiValueAllDayEventRule):
 		curCalType = self.getCalType()
 		values2 = []
 		for item in self.values:
-			if isinstance(item, (tuple, list)):
+			if isinstance(item, tuple | list):
 				values2.append(
 					(
 						yearConv(item[0]),
@@ -927,7 +927,7 @@ class WeekDayEventRule(AllDayEventRule):
 	def setData(self, data: "int | list[int]") -> None:
 		if isinstance(data, int):
 			self.weekDayList = [data]
-		elif isinstance(data, (tuple, list)):
+		elif isinstance(data, tuple | list):
 			self.weekDayList = data
 		else:
 			raise BadEventFile(
@@ -1734,7 +1734,7 @@ class ExDatesEventRule(EventRule):
 			for date in datesConf:
 				if isinstance(date, str):
 					date = dateDecode(date)
-				elif isinstance(date, (tuple, list)):
+				elif isinstance(date, tuple | list):
 					checkDate(date)
 				dates.append(date)
 		self.setDates(dates)
@@ -4341,7 +4341,7 @@ class EventGroup(EventContainer):
 				for item in value:
 					if len(item) != 2:
 						continue
-					if not isinstance(item[0], (tuple, list)):
+					if not isinstance(item[0], tuple | list):
 						continue
 					valueDict[tuple(item[0])] = item[1]
 				setattr(self, attr, valueDict)
@@ -4600,7 +4600,7 @@ class EventGroup(EventContainer):
 					],
 				)
 				fp.write(vevent)
-		elif isinstance(occur, (IntervalOccurSet, TimeListOccurSet)):
+		elif isinstance(occur, IntervalOccurSet | TimeListOccurSet):
 			for startEpoch, endEpoch in occur.getTimeRangeList():
 				vevent = commonText
 				parts = [
