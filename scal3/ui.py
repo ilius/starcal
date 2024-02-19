@@ -1224,6 +1224,7 @@ def getActiveMonthCalParams():
 		zip(
 			calTypes.active,
 			mcalTypeParams,
+			strict=False,
 		),
 	)
 

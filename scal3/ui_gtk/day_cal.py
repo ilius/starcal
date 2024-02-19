@@ -737,6 +737,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		for calType, params in zip(
 			calTypes.active,
 			self.getMonthParams(),
+			strict=False,
 		):
 			if not params.get("enable", True):
 				continue
@@ -841,6 +842,7 @@ class DayCal(gtk.DrawingArea, CalBase):
 		for calType, params in zip(
 			calTypes.active,
 			self.getDayParams(),
+			strict=False,
 		):
 			if not params.get("enable", True):
 				continue
