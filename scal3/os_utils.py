@@ -17,6 +17,7 @@
 
 import logging
 import os
+import shutil
 import sys
 from os.path import isdir, isfile
 
@@ -191,13 +192,13 @@ def openUrl(url: str) -> bool:
 	from subprocess import Popen
 
 	if osName == "win":
-		Popen([url])
+		Popen([url])  # noqa: S603
 		return True
 	if osName == "mac":
-		Popen(["open", url])
+		Popen(["open", url])  # noqa: S603, S607
 		return True
 	try:
-		Popen(["xdg-open", url])
+		Popen(["xdg-open", url])  # noqa: S603, S607
 	except Exception:
 		log.exception("")
 	else:
@@ -219,10 +220,13 @@ def openUrl(url: str) -> bool:
 		gnomevfs.url_show(url)
 		return True
 	for command in ("gnome-www-browser", "firefox", "iceweasel", "konqueror"):
+		command = shutil.which(command)
+		if not command:
+			continue
 		try:
-			Popen([command, url])
-		except Exception:
-			pass
+			Popen([command, url])  # noqa: S603
+		except Exception as e:
+			log.error(f"{e}")
 		else:
 			return True
 	return False
