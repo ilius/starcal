@@ -70,6 +70,9 @@ ignore = [
     "RET502", # Do not implicitly `return None` in function able to return non-`None` value
 
     "SIM102", # Use a single `if` statement instead of nested `if` statements
+
+    # S: global
+    "S101", # Use of `assert` detected
 ]
 
 # UP033: (Since Python 3.9) Use `@functools.cache`
@@ -113,11 +116,26 @@ exclude = [
     "libs",
     # "setup.py",
 ]
-per-file-ignores = {}
 
 
 # Allow unused variables when underscore-prefixed.
 dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.per-file-ignores]
+"distro/base/install.py" = [
+    "S603", # `subprocess` call: check for execution of untrusted input
+    "S607", # Starting a process with a partial executable path
+    "S103", # `os.chmod` setting a permissive mask `0o755` on file or directory
+]
+"scal3/account/google.py" = [
+    "S108", # Probable insecure usage of temporary file or directory: "/tmp/starcal-request"
+    "S106", # Possible hardcoded password assigned to argument: "client_secret"
+
+]
+"scal3/bin_heap.py" = [
+    "S311", # Standard pseudo-random generators are not suitable for cryptographic purposes
+]
+"*_test.py" = ["S311"]
 
 [tool.ruff.format]
 quote-style = "double"
