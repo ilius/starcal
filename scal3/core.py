@@ -177,7 +177,7 @@ def getVersion() -> str:
 		return VERSION
 	try:
 		outputB, error = subprocess.Popen(
-			[
+			[  # noqa: S603, S607
 				"git",
 				"--git-dir",
 				gitDir,

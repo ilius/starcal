@@ -4240,7 +4240,8 @@ class EventGroup(EventContainer):
 
 		from scal3.color_utils import hslToRgb
 
-		self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)  # FIXME
+		# TODO: improve this?
+		self.color = hslToRgb(random.uniform(0, 360), 1, 0.5)  # noqa: S311
 
 	def clearRemoteAttrs(self) -> None:
 		# self.remoteIds is (accountId, groupId) or None

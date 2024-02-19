@@ -260,7 +260,7 @@ langDict.sort("name")
 def popen_output(cmd: "list[str] | str") -> str:
 	import subprocess
 
-	return subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]
+	return subprocess.Popen(cmd, stdout=subprocess.PIPE).communicate()[0]  # noqa: S603
 
 
 def getLocaleFirstWeekDay() -> int:
@@ -563,7 +563,7 @@ def popenDefaultLang(*args, **kwargs) -> "subprocess.Popen":
 	from subprocess import Popen
 
 	os.environ["LANG"] = sysLangDefault
-	p = Popen(*args, **kwargs)
+	p = Popen(*args, **kwargs)  # noqa: S603
 	os.environ["LANG"] = lang
 	return p
 
