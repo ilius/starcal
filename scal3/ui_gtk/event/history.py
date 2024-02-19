@@ -29,7 +29,7 @@ removeSymbol = "⊖"
 
 
 def _unnestStep(dst, src, path):
-	if not isinstance(src, (dict, OrderedDict)):
+	if not isinstance(src, dict | OrderedDict):
 		dst[path] = src
 		return
 	if path:
@@ -39,7 +39,7 @@ def _unnestStep(dst, src, path):
 
 
 def unnest(src):
-	if not isinstance(src, (dict, OrderedDict)):
+	if not isinstance(src, dict | OrderedDict):
 		return src
 	dst = OrderedDict()
 	_unnestStep(dst, src, "")
