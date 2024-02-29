@@ -76,7 +76,7 @@ class CalTypesHolder:
 		for name in self.activeNames:
 			try:
 				i = self.names.index(name)
-			except ValueError:
+			except ValueError:  # noqa: PERF203
 				pass
 			else:
 				self.active.append(i)
@@ -86,7 +86,7 @@ class CalTypesHolder:
 		for name in self.inactiveNames:
 			try:
 				i = self.names.index(name)
-			except ValueError:
+			except ValueError:  # noqa: PERF203
 				pass
 			else:
 				if i in self.active:
@@ -100,7 +100,7 @@ class CalTypesHolder:
 		for name in remainingNames:
 			try:
 				i = self.names.index(name)
-			except ValueError:
+			except ValueError:  # noqa: PERF203
 				pass
 			else:
 				self.inactive.append(i)

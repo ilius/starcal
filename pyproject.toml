@@ -3,76 +3,135 @@ target-version = "py310"
 line-length = 88
 
 lint.select = [
-    "B", # flake8-bugbear
-    "C4", # flake8-comprehensions
-    "COM", # flake8-commas
-    "D", # pydocstyle
-    "E", # pycodestyle Error
-    "EXE", # flake8-executable
-    "F", # Pyflakes
-    "I", # isort: unsorted-imports, missing-required-import
-    "ISC", # flake8-implicit-str-concat
-    "PGH", # pygrep-hooks
-    "PIE", # flake8-pie
-    "RET", # flake8-return
-    "T10", # flake8-debugger
-    "TCH", # flake8-type-checking, not done for plugins
-    "TID", # flake8-tidy-imports
-    "TID", # flake8-tidy-imports
-    "UP", # pyupgrade
-    "W", # pycodestyle Warning
-    "YTT", # flake8-2020
-    "A", # flake8-builtins
-    "SIM", # flake8-simplify
-    # "ARG", # flake8-unused-arguments: Unused function argument: 571 remaining
-    # "C90", # mccabe: C901: {name} is too complex ({complexity})
-    # "ANN", # flake8-annotationsq
-    # "N", # pep8-naming
-    # "S", # flake8-bandit
+	"F", # Pyflakes
+	"E", # pycodestyle Error
+	"W", # pycodestyle Warning
+	# "C90", # mccabe: C901: {name} is too complex ({complexity})
+	"I", # isort: unsorted-imports, missing-required-import
+	# "N", # pep8-naming
+	"D", # pydocstyle
+	"B", # flake8-bugbear
+	"UP", # pyupgrade
+	"YTT", # flake8-2020
+	# "ANN", # flake8-annotationsq, still gives errors for `self`
+	# ASYNC, # flake8-async
+	"TRIO", # flake8-trio
+	# "S", # flake8-bandit
+	"BLE", # flake8-blind-except
+	# "FBT", # flake8-boolean-trap
+	# "B", flake8-bugbear
+	# "A", # flake8-builtins
+	"COM", # flake8-commas
+	# "CPY", # flake8-copyright   --preview
+	"C4", # flake8-comprehensions
+	"DTZ", # flake8-datetimez
+	"T10", # flake8-debugger
+	"DJ",    # flake8-django
+	# "EM",    # flake8-errmsg, WTF?
+	"EXE",   # flake8-executable
+	"FA",    # flake8-future-annotations
+	"ISC",   # flake8-implicit-str-concat
+	"ICN",   # flake8-import-conventions
+	# "G",     # flake8-logging-format
+	"INP",   # flake8-no-pep420
+	"PIE",   # flake8-pie
+	"T20",   # flake8-print
+	"PYI",   # flake8-pyi
+	"PT",    # flake8-pytest-style
+	"Q",     # flake8-quotes
+	"RSE",   # flake8-raise
+	"RET",   # flake8-return
+	"SLF",   # flake8-self
+	"SLOT",  # flake8-slots
+	"SIM",   # flake8-simplify
+	"TID",   # flake8-tidy-imports
+	"TCH",   # flake8-type-checking
+	"INT",   # flake8-gettext
+	# "ARG",   # flake8-unused-arguments
+	# "PTH",   # flake8-use-pathlib
+	# "TD",    # flake8-todos
+	# "FIX",   # flake8-fixme: just shows me FIXMEs and TODOs
+	# "ERA",   # eradicate
+	"PD",    # pandas-vet
+	"PGH",   # pygrep-hooks
+	# "PL",    # Pylint
+	# "TRY",   # tryceratops, they all sound BS
+	# "FLY",   # flynt
+	"NPY",   # NumPy-specific rules
+	"AIR",   # Airflow
+	"PERF",  # Perflint
+	# "FURB",  # refurb   --preview
+	"LOG",   # flake8-logging
+	"RUF",   # Ruff-specific rules
 ]
 # warning: The following rules may cause conflicts when used with the formatter:
 # `COM812`, `ISC001`.
 # To avoid unexpected behavior, we recommend disabling these rules, either by removing them from the `select` or `extend-select` configuration, or adding them to the `ignore` configuration.
 
 lint.ignore = [
-    "COM812",
+	"PYI024", # Use `typing.NamedTuple` instead of `collections.namedtuple` TODO
+	"INT001", # f-string is resolved before function call; consider `_("string %s") % arg`
+	"PERF203", # `try`-`except` within a loop incurs performance overhead
+	"RUF001", # String contains ambiguous `٠` (ARABIC-INDIC DIGIT ZERO). Did you mean `.` (FULL STOP)
+	"RUF003", # Comment contains ambiguous `۰` (EXTENDED ARABIC-INDIC DIGIT ZERO). Did you mean `.` (FULL STOP)?
+	"SLF", # Private member accessed
+	"PYI034", # py3.11: `__iadd__` methods in classes like `SqEntryList` usually return `self` at runtime
+	"DTZ001", # The use of `datetime.datetime()` without `tzinfo` argument is not allowed
+	"DTZ005", # The use of `datetime.datetime.now()` without `tz` argument is not allowed
 	"PGH003", # Use specific rule codes when ignoring type issues
-    "B018", # Found useless expression. Either assign it to a variable or remove it.
-    "B019", # Use of `functools.lru_cache` or `functools.cache` on methods can lead to memory leaks
-    "B028", # No explicit `stacklevel` keyword argument found. Huh???
-    "C408", # Unnecessary `dict` call (rewrite as a literal)
-    "D100", # Missing docstring in public module
-    "D101", # Missing docstring in public class
-    "D102", # Missing docstring in public method
-    "D103", # Missing docstring in public function
-    "D104", # Missing docstring in public package
-    "D105", # Missing docstring in magic method
-    "D106", # Missing docstring in public nested class
-    "D107", # Missing docstring in `__init__`
-    "D205", # 1 blank line required between summary line and description
-    "D206", # Docstring should be indented with spaces, not tabs
-    "D211", # (Do not enable) no-blank-line-before-class
-    "D212", # multi-line-summary-first-line, conflicts with D213:multi-line-summary-second-line
-    "D401", # First line of docstring should be in imperative mood
-    "D417", # Missing argument descriptions in the docstring
-    "E402", # Module level import not at top of file
-    "SIM105", # Use contextlib.suppress({exception}) instead of try-except-pass
-    "SIM108", # Use ternary operator {contents} instead of if-else-block
-    "SIM117", # Use a single with statement with multiple contexts...
-    "W191",
-    # ERA, PD,
 
-    "UP009", # UTF-8 encoding declaration is unnecessary
-    "UP010", # Unnecessary `__future__`"
-    "UP035", # Import from `collections.abc` instead: `Generator`
-    "UP037", # Remove quotes from type annotation
+	"PT027", # Use `pytest.raises` instead of unittest-style `assertRaises`, why?
+	"PD011", # Use `.to_numpy()` instead of `.values`, WTF?
+	"ICN001", # `tkinter` should be imported as `tk`, WTF?
+	"RUF005", # Consider `[*_list, x]` instead of concatenation
+	"PT009", # Use a regular `assert` instead of unittest-style `assertEqual`, why?
+	"PLR0911", # Too many return statements (x > 6)
+	"RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
+	"BLE001", # Do not catch blind exception: `Exception`
+	"G004", # Logging statement uses f-string, WTF?
+	"TRY400", # Use `logging.exception` instead of `logging.error`
+	"TRY003", # Avoid specifying long messages outside the exception class, ???
+	"RUF100", # Unused `noqa` directive (non-enabled: ...)
+	"FURB101", # `open` and `read` should be replaced by `Path(rootConfJsonFile).read_text()`
+	"B019", # Use of `functools.lru_cache` or `functools.cache` on methods can lead to memory leaks
+	"COM812",
+	"PGH003", # Use specific rule codes when ignoring type issues
+	"B018", # Found useless expression. Either assign it to a variable or remove it.
+	"B019", # Use of `functools.lru_cache` or `functools.cache` on methods can lead to memory leaks
+	"B028", # No explicit `stacklevel` keyword argument found. Huh???
+	"C408", # Unnecessary `dict` call (rewrite as a literal)
+	"D100", # Missing docstring in public module
+	"D101", # Missing docstring in public class
+	"D102", # Missing docstring in public method
+	"D103", # Missing docstring in public function
+	"D104", # Missing docstring in public package
+	"D105", # Missing docstring in magic method
+	"D106", # Missing docstring in public nested class
+	"D107", # Missing docstring in `__init__`
+	"D205", # 1 blank line required between summary line and description
+	"D206", # Docstring should be indented with spaces, not tabs
+	"D211", # (Do not enable) no-blank-line-before-class
+	"D212", # multi-line-summary-first-line, conflicts with D213:multi-line-summary-second-line
+	"D401", # First line of docstring should be in imperative mood
+	"D417", # Missing argument descriptions in the docstring
+	"E402", # Module level import not at top of file
+	"SIM105", # Use contextlib.suppress({exception}) instead of try-except-pass
+	"SIM108", # Use ternary operator {contents} instead of if-else-block
+	"SIM117", # Use a single with statement with multiple contexts...
+	"W191",
+	# ERA, PD,
 
-    "RET502", # Do not implicitly `return None` in function able to return non-`None` value
+	"UP009", # UTF-8 encoding declaration is unnecessary
+	"UP010", # Unnecessary `__future__`"
+	"UP035", # Import from `collections.abc` instead: `Generator`
+	"UP037", # Remove quotes from type annotation
 
-    "SIM102", # Use a single `if` statement instead of nested `if` statements
+	"RET502", # Do not implicitly `return None` in function able to return non-`None` value
 
-    # S: global
-    "S101", # Use of `assert` detected
+	"SIM102", # Use a single `if` statement instead of nested `if` statements
+
+	# S: global
+	"S101", # Use of `assert` detected
 ]
 
 # UP033: (Since Python 3.9) Use `@functools.cache`
@@ -82,60 +141,72 @@ lint.ignore = [
 
 # Allow autofix for all enabled rules (when `--fix`) is provided.
 lint.fixable = [
-    # "SIM",
-    "F401",
-    # "E", "F", "W",
-    "RET",
-    "I",
-    "COM",
-    "TCH",
-    "ANN",
-    "W291",
-    "W293",
-    "D",
-    "UP004",
-    "UP006",
-    "UP008",
-    "UP015",
-    "UP024",
-    "UP028",
-    "UP030",
-    "UP031",
-    "UP032",
-    "UP033",
-    "UP034",
-    "UP039",
-    "PIE790",
+	# "SIM",
+	"F401",
+	# "E", "F", "W",
+	"RET",
+	"I",
+	"COM",
+	"TCH",
+	"ANN",
+	"W291",
+	"W293",
+	"D",
+	"UP004",
+	"UP006",
+	"UP008",
+	"UP015",
+	"UP024",
+	"UP028",
+	"UP030",
+	"UP031",
+	"UP032",
+	"UP033",
+	"UP034",
+	"UP039",
+	"PIE790",
 ]
 lint.unfixable = []
 
 # Exclude a variety of commonly ignored directories.
 exclude = [
-    "scal3/import_config_2to3.py",
-    "scal3/ui_gtk/import_config_2to3.py",
-    "libs",
-    # "setup.py",
+	"scal3/import_config_2to3.py",
+	"scal3/ui_gtk/import_config_2to3.py",
+	"libs",
+	# "setup.py",
 ]
 
 
 # Allow unused variables when underscore-prefixed.
 lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 
-[tool.lint.ruff.per-file-ignores]
+[tool.ruff.lint.per-file-ignores]
+"scripts/*.py" = [
+	"T201", # `print` found
+]
+"tools/*.py" = [
+	"T201", # `print` found
+	"INP001", # File `...` is part of an implicit namespace package. Add an `__init__.py`.
+]
 "distro/base/install.py" = [
-    "S603", # `subprocess` call: check for execution of untrusted input
-    "S607", # Starting a process with a partial executable path
-    "S103", # `os.chmod` setting a permissive mask `0o755` on file or directory
+	"T201", # `print` found
+	"S603", # `subprocess` call: check for execution of untrusted input
+	"S607", # Starting a process with a partial executable path
+	"S103", # `os.chmod` setting a permissive mask `0o755` on file or directory
 ]
 "scal3/account/google.py" = [
-    "S108", # Probable insecure usage of temporary file or directory: "/tmp/starcal-request"
-    "S106", # Possible hardcoded password assigned to argument: "client_secret"
+	"S108", # Probable insecure usage of temporary file or directory: "/tmp/starcal-request"
+	"S106", # Possible hardcoded password assigned to argument: "client_secret"
 
 ]
 "scal3/bin_heap.py" = [
-    "S311", # Standard pseudo-random generators are not suitable for cryptographic purposes
+	"S311", # Standard pseudo-random generators are not suitable for cryptographic purposes
 ]
-"*_test.py" = ["S311"]
+"*_test.py" = [
+	"T201", # `print` found
+	"T203", # `pprint` found
+	"S311", # Standard pseudo-random generators are not suitable for cryptographic purposes
+]
 
 [tool.ruff.format]
 quote-style = "double"
@@ -169,16 +240,16 @@ exclude = [
 
 [tool.refurb]
 ignore = [
-    101, # Replace `with open(x, ...) as f: y = f.read()` with `y = Path(x).read_bytes()`
-    103, # Replace `with open(x, ...) as f: f.write(y)` with `Path(x).write_bytes(y)`
-    104, # Replace `os.getcwd()` with `Path.cwd()`
-    107, # Replace `try: ... except OSError: pass` with `with suppress(OSError): ...`
-    # 112, # Replace `dict()` with `{}`
-    141, # Replace `os.path.exists(x)` with `Path(x).exists()`
-    144, # Replace `os.remove(x)` with `Path(x).unlink()`
-    146, # Replace `os.path.isfile(x)` with `Path(x).is_file()`
-    150, # Replace `os.makedirs(x)` with `Path(x).mkdir(parents=True)`
-    155, # Replace `os.path.getsize(x)` with `Path(x).stat().st_size`
+	101, # Replace `with open(x, ...) as f: y = f.read()` with `y = Path(x).read_bytes()`
+	103, # Replace `with open(x, ...) as f: f.write(y)` with `Path(x).write_bytes(y)`
+	104, # Replace `os.getcwd()` with `Path.cwd()`
+	107, # Replace `try: ... except OSError: pass` with `with suppress(OSError): ...`
+	# 112, # Replace `dict()` with `{}`
+	141, # Replace `os.path.exists(x)` with `Path(x).exists()`
+	144, # Replace `os.remove(x)` with `Path(x).unlink()`
+	146, # Replace `os.path.isfile(x)` with `Path(x).is_file()`
+	150, # Replace `os.makedirs(x)` with `Path(x).mkdir(parents=True)`
+	155, # Replace `os.path.getsize(x)` with `Path(x).stat().st_size`
 ]
 # refurb has no exclude param!
 #load = ["some_module"]

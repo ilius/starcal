@@ -250,7 +250,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		tabToNewline=False,
 		insideExpanderParam="",
 		justificationParam="",
-		fontParams: tuple[str, str] = None,
+		fontParams: tuple[str, str] | None = None,
 		styleClass: str = "",
 	):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
