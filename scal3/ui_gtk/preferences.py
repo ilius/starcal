@@ -513,6 +513,16 @@ class PreferencesWindow(gtk.Window):
 		self.uiPrefItems.append(item)
 		pack(hbox, item.getWidget(), 1, 1)
 		pack(pageVBox, hbox)
+		###
+		hbox = HBox(spacing=1)
+		item = CheckPrefItem(
+			ui,
+			"statusIconLocalizeNumber",
+			label=_("Localize the number"),
+		)
+		self.uiPrefItems.append(item)
+		pack(hbox, item.getWidget(), 1, 1)
+		pack(pageVBox, hbox)
 		####
 		hbox = HBox(spacing=1)
 		item = CheckColorPrefItem(
