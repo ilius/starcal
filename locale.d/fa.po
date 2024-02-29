@@ -1673,6 +1673,11 @@ msgid "Localize"
 msgstr ""
 "بومی‌سازی"
 
+msgid "Localize the number"
+msgstr ""
+"بومی‌سازی عدد"
+
+
 msgid "Abbreviate"
 msgstr ""
 "خلاصه کردن"
