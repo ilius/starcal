@@ -16,4 +16,4 @@ if __name__ == "__main__":
 
 	lastHash = eventJsonData["history"][0][1]
 	data = loadBsonObject(lastHash, fs)
-	print(dataToPrettyJson(data))
+	print(dataToPrettyJson(data))  # noqa: T201

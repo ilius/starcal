@@ -770,7 +770,7 @@ class KeyBindingPrefItem(PrefItem):
 	def onMenuModifyKeyClick(self, menu: gtk.Menu, rowI: int):
 		trees = self.treev.get_model()
 		row = trees[rowI]
-		print(f"Modify Key: {row=}")
+		print(f"Modify Key: {row=}")  # noqa: T201
 
 	# def onMenuDefaultKeyClick(self, menu: gtk.Menu, rowI: int):
 	# 	trees = self.treev.get_model()

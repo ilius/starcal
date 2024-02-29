@@ -29,8 +29,8 @@ origLang = "ar"
 monthName = (
 	"Muharram",
 	"Safar",
-	"Rabīʽ 1",
-	"Rabīʽ 2",
+	"Rabīʽ 1",  # noqa: RUF001
+	"Rabīʽ 2",  # noqa: RUF001
 	"Jumadā 1",
 	"Jumadā 2",
 	"Rajab",

@@ -192,7 +192,7 @@ class TimeLineTree:
 		for node, ev_tuple in refList:
 			try:
 				node.events.remove(ev_tuple)
-			except ValueError:
+			except ValueError:  # noqa: PERF203
 				continue
 			# if not node.events:
 			# 	node.parent.removeChild(node)

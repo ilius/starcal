@@ -178,7 +178,7 @@ def testDeleteStep(N, maxKey):
 		log.info(h)
 		log.info("------------------------")
 		return False
-	print(rmKey, rmKey2)
+	print(rmKey, rmKey2)  # noqa: T201
 	return True
 
 

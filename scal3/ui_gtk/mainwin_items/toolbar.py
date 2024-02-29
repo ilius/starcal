@@ -147,7 +147,7 @@ class CalObj(CustomizableToolBox):
 			]
 		else:
 			currentNames = {item[0] for item in ud.mainToolbarData["items"]}
-			for name, _item in self.defaultItemsDict.items():
+			for name in self.defaultItemsDict:
 				if name not in currentNames:
 					ud.mainToolbarData["items"].append((name, False))
 

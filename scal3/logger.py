@@ -54,7 +54,7 @@ def init():
 		logging.config.fileConfig(StringIO(logConfText))
 		log = logging.getLogger(APP_NAME)
 	except Exception as e:
-		print(f"failed to setup logger: {e}")
+		print(f"failed to setup logger: {e}")  # noqa: T201
 		from scal3.utils import FallbackLogger
 
 		log = FallbackLogger()

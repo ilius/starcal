@@ -101,7 +101,7 @@ def getUtcOffsetByEpoch(epoch: int, tz: TZ = None) -> int:
 	if not tz:
 		tz = natz.gettz()
 	try:
-		dt = datetime.fromtimestamp(epoch)
+		dt = datetime.fromtimestamp(epoch)  # noqa: DTZ006
 	except ValueError as e:
 		log.error(f"{epoch=}, error: {e}")
 		return 0
@@ -353,13 +353,13 @@ if __name__ == "__main__":
 	):
 		log.info(f"{tm!r}, {simpleTimeEncode(tm)!r}")
 
-	print(f"default: {HMS(5, 9, 7)}")
-	print(f"HMS: {HMS(5, 9, 7):HMS}")
-	print(f"HM:  {HMS(5, 9, 7):HM}")
-	print(f"hms: {HMS(5, 9, 7):hms}")
-	print(f"hm:  {HMS(5, 9, 7):hm}")
-	print(f"hMS: {HMS(5, 9, 7):hMS}")
-	print(f"hM:  {HMS(5, 9, 7):hM}")
-	print(f"HM$: {HMS(5, 9, 7):HM$}")
-	print(f"HM$: {HMS(5, 9):HM$}")
-	print(f"hm$: {HMS(5, 9):hm$}")
+	print(f"default: {HMS(5, 9, 7)}")  # noqa: T201
+	print(f"HMS: {HMS(5, 9, 7):HMS}")  # noqa: T201
+	print(f"HM:  {HMS(5, 9, 7):HM}")  # noqa: T201
+	print(f"hms: {HMS(5, 9, 7):hms}")  # noqa: T201
+	print(f"hm:  {HMS(5, 9, 7):hm}")  # noqa: T201
+	print(f"hMS: {HMS(5, 9, 7):hMS}")  # noqa: T201
+	print(f"hM:  {HMS(5, 9, 7):hM}")  # noqa: T201
+	print(f"HM$: {HMS(5, 9, 7):HM$}")  # noqa: T201
+	print(f"HM$: {HMS(5, 9):HM$}")  # noqa: T201
+	print(f"hm$: {HMS(5, 9):hm$}")  # noqa: T201
