@@ -164,7 +164,7 @@ class EventsImportWindow(WizardWindow):
 						", {newEventCount} new events"
 						", {modifiedEventCount} modified events",
 					)
-					print(
+					print(  # noqa: T201
 						msg.format(
 							newGroupCount=_(len(res.newGroupIds)),
 							newEventCount=_(len(res.newEventIds)),
