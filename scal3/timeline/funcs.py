@@ -149,8 +149,10 @@ def calcTimeLineData(timeStart, timeWidth, pixelPerSec, borderTm):
 		tl.changeHolidayBg
 		and tl.changeHolidayBgMinDays < widthDays < tl.changeHolidayBgMaxDays
 	):
-		for jd in getHolidaysJdList(jd0, jd1 + 1):
-			holidays.append(getJPos(jd))
+		holidays = [
+			getJPos(jd)
+			for jd in getHolidaysJdList(jd0, jd1 + 1)
+		]
 	# ###################### Ticks
 	ticks = []
 	tickEpochSet = set()
