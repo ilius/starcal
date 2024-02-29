@@ -1336,10 +1336,13 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		with open(imagePath, "rb") as fp:  # noqa: FURB101
 			data = fp.read()
 		if ext == "svg":
-			dayNum = locale_man.numEncode(
-				ddate[2],
-				localeMode=calTypes.primary,  # FIXME
-			)
+			if ui.statusIconLocalizeNumber:
+				dayNum = locale_man.numEncode(
+					ddate[2],
+					localeMode=calTypes.primary,  # FIXME
+				)
+			else:
+				dayNum = str(ddate[2])
 			style: "list[tuple[str, Any]]" = []
 			if ui.statusIconFontFamilyEnable:
 				if ui.statusIconFontFamily:
