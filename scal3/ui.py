@@ -92,6 +92,7 @@ confParams = (
 	"statusIconFontFamily",
 	"statusIconHolidayFontColorEnable",
 	"statusIconHolidayFontColor",
+	"statusIconLocalizeNumber",
 	"statusIconFixedSizeEnable",
 	"statusIconFixedSizeWH",
 	"maxDayCacheSize",
@@ -1571,6 +1572,7 @@ statusIconFontFamilyEnable = False
 statusIconFontFamily = None
 statusIconHolidayFontColorEnable = False
 statusIconHolidayFontColor = None
+statusIconLocalizeNumber = True
 statusIconFixedSizeEnable = False
 statusIconFixedSizeWH = (24, 24)
 ####################
