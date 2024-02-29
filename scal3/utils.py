@@ -191,12 +191,14 @@ class StrOrderedDict(dict):
 		dict.clear(self)
 
 	def append(self, key: str, value: Any):
-		assert isinstance(key, str) and key not in self.keyList
+		assert isinstance(key, str)
+		assert key not in self.keyList
 		self.keyList.append(key)
 		dict.__setitem__(self, key, value)
 
 	def insert(self, index: int, key: str, value: Any):
-		assert isinstance(key, str) and key not in self.keyList
+		assert isinstance(key, str)
+		assert key not in self.keyList
 		self.keyList.insert(index, key)
 		dict.__setitem__(self, key, value)
 
