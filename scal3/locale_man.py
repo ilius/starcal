@@ -457,7 +457,7 @@ def textNumEncode(
 	for c in toStr(st):
 		try:
 			i = int(c)
-		except ValueError:
+		except ValueError:  # noqa: PERF203
 			if enableNumLocale:
 				if c == ".":
 					if changeDot:
@@ -521,7 +521,7 @@ def textNumDecode(text: str) -> str:
 	for ch in text:
 		try:
 			textEn += str(langDigits.index(ch))
-		except ValueError:
+		except ValueError:  # noqa: PERF203
 			if ch == tr(".", ctx="number formatting"):
 				textEn += "."
 			elif ch == tr(","):

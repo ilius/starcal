@@ -63,19 +63,17 @@ class TimeZoneComboBoxEntry(gtk.Box):
 		if itr is None:
 			return
 		path = model.get_path(itr)
-		parts = []
 		if path[0] == 0:
-			text = model.get(itr, 0)[0]
-		else:
-			for i in range(len(path)):
-				parts.append(
-					model.get(
-						model.get_iter(path[: i + 1]),
-						0,
-					)[0],
-				)
-			text = "/".join(parts)
-		self.set_text(text)
+			self.set_text(model.get(itr, 0)[0])
+			return
+
+		self.set_text("/".join([
+			model.get(
+				model.get_iter(path[: i + 1]),
+				0,
+			)[0]
+			for i in range(len(path))
+		]))
 
 
 if __name__ == "__main__":
