@@ -319,7 +319,7 @@ class EventSearchTree:
 		for mt, dt in hp.getAll():
 			try:
 				self.root = self.deleteStep(self.root, mt, dt, eid)
-			except Exception:
+			except Exception:  # noqa: PERF203
 				log.exception("")
 			else:
 				n += 1
