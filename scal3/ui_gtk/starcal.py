@@ -1160,33 +1160,37 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 	# def weekCalShow(self, obj=None, data=None):
 	# 	openWindow(ui.weekCalWin)
 
+	def useAppIndicator(self) -> bool:
+		if not ui.useAppIndicator:
+			return False
+		try:
+			import scal3.ui_gtk.starcal_appindicator  # noqa: F401
+		except (ImportError, ValueError):
+			return False
+		return True
+
 	def statusIconInit(self):
 		if self.statusIconMode != 2:
 			self.sicon = None
 			return
 
-		useAppIndicator = ui.useAppIndicator
-		if useAppIndicator:
-			try:
-				import scal3.ui_gtk.starcal_appindicator  # noqa: F401
-			except (ImportError, ValueError):
-				useAppIndicator = False
-		if useAppIndicator:
+		if self.useAppIndicator():
 			from scal3.ui_gtk.starcal_appindicator import (
 				IndicatorStatusIconWrapper,
 			)
 
 			self.sicon = IndicatorStatusIconWrapper(self)
-		else:
-			self.sicon = gtk.StatusIcon()
-			self.sicon.set_title(core.APP_DESC)
-			self.sicon.set_visible(True)  # is needed?
-			self.sicon.connect(
-				"button-press-event",
-				self.onStatusIconPress,
-			)
-			self.sicon.connect("activate", self.onStatusIconClick)
-			self.sicon.connect("popup-menu", self.statusIconPopup)
+			return
+
+		self.sicon = gtk.StatusIcon()
+		self.sicon.set_title(core.APP_DESC)
+		self.sicon.set_visible(True)  # is needed?
+		self.sicon.connect(
+			"button-press-event",
+			self.onStatusIconPress,
+		)
+		self.sicon.connect("activate", self.onStatusIconClick)
+		self.sicon.connect("popup-menu", self.statusIconPopup)
 
 	def getMainWinMenuItem(self):
 		item = gtk.MenuItem(label=_("Main Window"))
