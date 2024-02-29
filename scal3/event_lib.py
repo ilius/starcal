@@ -1728,8 +1728,10 @@ class ExDatesEventRule(EventRule):
 	) -> None:
 		dates = []
 		if isinstance(datesConf, str):
-			for date in datesConf.split(","):
-				dates.append(dateDecode(date.strip()))
+			dates = [
+				dateDecode(date.strip())
+				for date in datesConf.split(",")
+			]
 		else:
 			for date in datesConf:
 				if isinstance(date, str):
@@ -2275,22 +2277,21 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 		calType, ok = calTypes[calType]
 		if not ok:
 			raise RuntimeError(f"cal type '{calType}' not found")
+		rulesDict = self.rulesOd.copy()
 		lines = [
 			_("Type") + ": " + self.desc,
 			_("Calendar Type") + ": " + calType.desc,
 			_("Summary") + ": " + self.getSummary(),
 			_("Description") + ": " + self.description,
+		] + [
+			rule.getInfo()
+			for rule in rulesDict.values()
 		]
 		# "notifiers",
 		# "notifyBefore",
 		# "remoteIds",
 		# "lastMergeSha1",
 		# "modified",
-
-		rulesDict = self.rulesOd.copy()
-		for rule in rulesDict.values():
-			lines.append(rule.getInfo())
-
 		return "\n".join(lines)
 
 	# def addRequirements(self):
@@ -2312,16 +2313,14 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 	# 	return "file:" + os.sep*2 + self.filesDir + os.sep + fname
 
 	def getFilesUrls(self):
-		data = []
 		baseUrl = self.getUrlForFile("")
-		for fname in self.files:
-			data.append(
-				(
-					baseUrl + fname,
-					_("io.TextIOBase") + ": " + fname,
-				),
+		return [
+			(
+				baseUrl + fname,
+				_("io.TextIOBase") + ": " + fname,
 			)
-		return data
+			for fname in self.files
+		]
 
 	def getSummary(self):
 		return self.summary
@@ -3862,7 +3861,7 @@ class EventContainer(BsonHistEventObj):
 		for eid in self.idList:
 			try:
 				event = self.getEvent(eid)
-			except Exception:
+			except Exception:  # noqa: PERF203
 				log.exception("")
 			else:
 				yield event
@@ -4700,21 +4699,21 @@ class EventGroup(EventContainer):
 
 			eid = idByUuid.get(uuid)
 			if eid is None:
-				print("appending event uuid =", uuid)
+				log.debug("appending event uuid =", uuid)
 				event = self.appendByData(eventData)
 				res.newEventIds.add((gid, event.id))
 				continue
 
 			if importMode != IMPORT_MODE_OVERRIDE_MODIFIED:
 				# assumed IMPORT_MODE_SKIP_MODIFIED
-				print(f"skipping to override existing uuid={uuid!r}, eid={eid!r}")
+				log.debug(f"skipping to override existing uuid={uuid!r}, eid={eid!r}")
 				continue
 
 			event = self.getEvent(eid)
 			event.setData(eventData, force=True)
 			event.save()
 			res.modifiedEventIds.add((gid, event.id))
-			print(f"overriden existing uuid={uuid!r}, eid={eid!r}")
+			log.debug(f"overriden existing uuid={uuid!r}, eid={eid!r}")
 
 		return res
 
@@ -4950,7 +4949,6 @@ class UniversityTerm(EventGroup):
 		if count < 2:
 			return
 		titles = []
-		tmfactors = []
 		firstTm = timeToFloatHour(*self.classTimeBounds[0])
 		lastTm = timeToFloatHour(*self.classTimeBounds[-1])
 		deltaTm = lastTm - firstTm
@@ -4962,11 +4960,11 @@ class UniversityTerm(EventGroup):
 					end=textNumEncode(simpleTimeEncode(tm1)),
 				),
 			)
-		for tm1 in self.classTimeBounds:
-			tmfactors.append(
-				(timeToFloatHour(*tm1) - firstTm) / deltaTm,
-			)
-		return (titles, tmfactors)
+		tmfactors = [
+			(timeToFloatHour(*tm1) - firstTm) / deltaTm
+			for tm1 in self.classTimeBounds
+		]
+		return titles, tmfactors
 
 	def getWeeklyScheduleData(
 		self,
@@ -5112,7 +5110,7 @@ class UniversityTerm(EventGroup):
 		for event in self:
 			try:
 				event.updateSummary()
-			except AttributeError:
+			except AttributeError:  # noqa: PERF203
 				pass
 			else:
 				event.save()

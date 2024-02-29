@@ -464,7 +464,7 @@ def getDeletedPluginsTable() -> list[list]:
 	for i, plug in enumerate(allPlugList):
 		try:
 			plugIndex.index(i)
-		except ValueError:
+		except ValueError:  # noqa: PERF203
 			table.append((i, plug.title))
 	return table
 
@@ -538,7 +538,7 @@ def stopRunningThreads() -> None:
 		# if thread.__class__.__name__ == "_Timer":
 		try:
 			cancel = thread.cancel
-		except AttributeError:
+		except AttributeError:  # noqa: PERF203
 			pass
 		else:
 			log.info(f"stopping thread {thread.name}")
