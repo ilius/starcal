@@ -10,7 +10,7 @@ from scal3.ui_gtk.decorators import registerSignals
 
 
 class ConButtonBase:
-	def __init__(self, button: int = None):
+	def __init__(self, button: int | None = None):
 		self.pressTm = 0
 		self.counter = 0
 		self._button = button
