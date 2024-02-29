@@ -474,12 +474,13 @@ class YearlyTextPlugin(BaseJsonPlugin):
 
 	def load(self):
 		# log.debug(f"YearlyTextPlugin({self._file}).load()")
-		yearlyData = []
 		module, ok = calTypes[self.calType]
 		if not ok:
 			raise RuntimeError(f"cal type '{self.calType}' not found")
-		for _j in range(12):
-			yearlyData.append([""] * module.maxMonthLen)
+		yearlyData = [
+			[""] * module.maxMonthLen
+			for _j in range(12)
+		]
 		# last item is a dict of dates (y, m, d) and the description of day:
 		yearlyData.append({})
 		ext = splitext(self.dataFile)[1].lower()
