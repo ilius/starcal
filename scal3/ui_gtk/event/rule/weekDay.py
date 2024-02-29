@@ -25,12 +25,12 @@ class WidgetClass(gtk.Box):
 		self.start = s
 
 	def updateVars(self):
-		weekDayList = []
 		cbl = self.cbList
-		for j in range(7):
-			if cbl[j].get_active():
-				weekDayList.append(j)
-		self.rule.weekDayList = tuple(weekDayList)
+		self.rule.weekDayList = tuple([
+			j
+			for j in range(7)
+			if cbl[j].get_active()
+		])
 
 	def updateWidget(self):
 		cbl = self.cbList

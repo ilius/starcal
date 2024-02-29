@@ -14,6 +14,6 @@ if __name__ == "__main__":
 			break
 		jsonStr += line
 	data = json.loads(jsonStr)
-	print("-------------------------------")
+	print("-------------------------------")  # noqa: T201
 	_hash = saveBsonObject(data, fs)
-	print("Created object with hash:", _hash)
+	print("Created object with hash:", _hash)  # noqa: T201
