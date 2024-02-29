@@ -26,7 +26,7 @@ def registerSignals(cls):
 				None,
 				args,
 			)
-		except Exception:
+		except Exception:  # noqa: PERF203
 			log.error(
 				f"Failed to create signal {name} "
 				f"for class {cls.__name__} in {cls.__module__}",
