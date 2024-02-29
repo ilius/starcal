@@ -20,5 +20,5 @@ if __name__ == "__main__":
 	for arg in sys.argv[1:]:
 		data = loadBsonObject(arg, fs)
 		# plog.info(data, indent=4, width=80)
-		print(dataToPrettyJson(data))
-		print("-------------------")
+		print(dataToPrettyJson(data))  # noqa: T201
+		print("-------------------")  # noqa: T201
