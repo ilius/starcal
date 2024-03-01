@@ -20,12 +20,11 @@ import re
 import subprocess
 import sys
 import typing
-from collections import namedtuple
 from contextlib import suppress
 from os.path import isdir, isfile, join
 from time import localtime
 from time import time as now
-from typing import Any
+from typing import Any, NamedTuple
 
 import scal3
 from scal3 import locale_man, logger, s_object
@@ -431,15 +430,11 @@ def updatePlugins() -> None:
 			plug.clear()
 
 
-PluginTuple = namedtuple(
-	"PluginTuple",
-	[
-		"index",
-		"enable",
-		"show_date",
-		"title",
-	],
-)
+class PluginTuple(NamedTuple):
+	index: int
+	enable: bool
+	show_date: bool
+	title: str
 
 
 def getPluginsTable() -> list[list]:

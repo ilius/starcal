@@ -29,11 +29,12 @@ if TYPE_CHECKING:
 import json
 import os
 import os.path
-from collections import OrderedDict, namedtuple
+from collections import OrderedDict
 from contextlib import suppress
 from os.path import isabs, join, split, splitext
 from time import localtime
 from time import time as now
+from typing import NamedTuple
 
 from cachetools import LRUCache
 
@@ -4868,16 +4869,9 @@ class YearlyGroup(EventGroup):
 		EventGroup.__init__(self, _id)
 		self.showDate = True
 
-
-WeeklyScheduleItem = namedtuple(
-	# name: str, Course Name
-	# weekNumMode: str, values: "odd", "even", "any"
-	"WeeklyScheduleItem",
-	[
-		"name",
-		"weekNumMode",
-	],
-)
+class WeeklyScheduleItem(NamedTuple):
+	name: str  # Course Name
+	weekNumMode: str  # values: "odd", "even", "any"
 
 
 @classes.group.register
@@ -6296,41 +6290,29 @@ class Account(BsonHistEventObj):
 
 ########################################################################
 
-DayOccurData = namedtuple(
-	"DayOccurData",
-	[
-		"time",
-		"time_epoch",
-		"is_allday",
-		"text",
-		"icon",
-		"color",
-		"ids",
-		"show",
-		"showInStatusIcon",
-	],
-)
+class DayOccurData(NamedTuple):
+	time: str
+	time_epoch: tuple[int, int]
+	is_allday: bool
+	text: str
+	icon: str
+	color: tuple[int, int, int]
+	ids: tuple[int, int]
+	show: tuple[bool, bool, bool]  # (showInDCal, showInWCal, showInMCal)
+	showInStatusIcon: bool
 
-WeekOccurData = namedtuple(
-	"WeekOccurData",
-	[
-		"weekDay",
-		"time",
-		"text",
-		"icon",
-	],
-)
+class WeekOccurData(NamedTuple):
+	weekDay: int
+	time: str
+	text: str
+	icon: str
 
-MonthOccurData = namedtuple(
-	"MonthOccurData",
-	[
-		"day",
-		"time",
-		"text",
-		"icon",
-		"ids",
-	],
-)
+class MonthOccurData(NamedTuple):
+	day: int
+	time: str
+	text: str
+	icon: str
+	ids: tuple[int, int]
 
 
 def getDayOccurrenceData(curJd, groups, tfmt="HM$"):
