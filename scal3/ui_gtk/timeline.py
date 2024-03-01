@@ -84,7 +84,7 @@ def show_event(widget, gevent):
 
 @registerSignals
 class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
-	_name = "timeLine"
+	objName = "timeLine"
 	desc = _("Time Line")
 
 	def centerToNow(self):
@@ -965,7 +965,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 
 @registerSignals
 class TimeLineWindow(gtk.Window, ud.BaseCalObj):
-	_name = "timeLineWin"
+	objName = "timeLineWin"
 	desc = _("Time Line")
 
 	def __init__(self):
