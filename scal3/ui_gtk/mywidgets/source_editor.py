@@ -25,7 +25,7 @@ class SourceEditor(GtkSource.View):
 	def _key_press_event(self, widget, event):
 		keyvalobjName = gdk.keyval_name(event.keyval)
 		ctrl = event.state & gdk.ModifierType.CONTROL_MASK
-		if ctrl and keyvalobjName == "y":
+		if ctrl and keyvalobjName == "y":  # noqa: SIM102
 			if self.textbuffer.can_redo():
 				self.textbuffer.do_redo(self.textbuffer)
 

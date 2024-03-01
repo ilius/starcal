@@ -121,9 +121,8 @@ class TextParamWidget(gtk.Box):
 		if sgroupLabel is None:
 			sgroupLabel = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		####
-		if not enableTitleLabel:
-			if hasEnable:
-				enableTitleLabel = _("Enable")
+		if not enableTitleLabel and hasEnable:
+			enableTitleLabel = _("Enable")
 		if hasEnable:
 			self.enableCheck = gtk.CheckButton(label=enableTitleLabel)
 		###
