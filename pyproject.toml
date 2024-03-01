@@ -69,7 +69,6 @@ lint.select = [
 # To avoid unexpected behavior, we recommend disabling these rules, either by removing them from the `select` or `extend-select` configuration, or adding them to the `ignore` configuration.
 
 lint.ignore = [
-	"PYI024", # Use `typing.NamedTuple` instead of `collections.namedtuple` TODO
 	"INT001", # f-string is resolved before function call; consider `_("string %s") % arg`
 	"PERF203", # `try`-`except` within a loop incurs performance overhead
 	"RUF001", # String contains ambiguous `٠` (ARABIC-INDIC DIGIT ZERO). Did you mean `.` (FULL STOP)
