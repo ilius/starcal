@@ -1388,49 +1388,50 @@ class PreferencesWindow(gtk.Window):
 		ud.saveConf()
 		# ####################### Updating GUI ###########################
 		ud.windowList.onConfigChange()
-		if ui.mainWin:
-			if self.checkNeedRestart():
-				d = gtk.Dialog(
-					title=_("Restart " + core.APP_DESC),
-					transient_for=self,
-					modal=True,
-					destroy_with_parent=True,
-				)
-				dialog_add_button(
-					d,
-					imageName="dialog-cancel.svg",
-					label=_("_No"),
-					res=gtk.ResponseType.CANCEL,
-				)
-				d.set_keep_above(True)
-				label = gtk.Label(
-					label=(
-						_(f"Some preferences need restarting {core.APP_DESC} to apply.")
-						+ " "
-						+ _("Restart Now?")
-					),
-				)
-				label.set_line_wrap(True)
-				vbox = VBox()
-				vbox.set_border_width(15)
-				pack(vbox, label)
-				pack(d.vbox, vbox)
-				resBut = dialog_add_button(
-					d,
-					imageName="view-refresh.svg",
-					label=_("_Restart"),
-					res=gtk.ResponseType.OK,
-				)
-				resBut.grab_default()
-				d.vbox.set_border_width(5)
-				d.resize(400, 150)
-				d.vbox.show_all()
-				if d.run() == gtk.ResponseType.OK:
-					core.restart()
-				else:
-					d.destroy()
+		if self.checkNeedRestart():
+			d = gtk.Dialog(
+				title=_("Restart " + core.APP_DESC),
+				transient_for=self,
+				modal=True,
+				destroy_with_parent=True,
+			)
+			dialog_add_button(
+				d,
+				imageName="dialog-cancel.svg",
+				label=_("_No"),
+				res=gtk.ResponseType.CANCEL,
+			)
+			d.set_keep_above(True)
+			label = gtk.Label(
+				label=(
+					_(f"Some preferences need restarting {core.APP_DESC} to apply.")
+					+ " "
+					+ _("Restart Now?")
+				),
+			)
+			label.set_line_wrap(True)
+			vbox = VBox()
+			vbox.set_border_width(15)
+			pack(vbox, label)
+			pack(d.vbox, vbox)
+			resBut = dialog_add_button(
+				d,
+				imageName="view-refresh.svg",
+				label=_("_Restart"),
+				res=gtk.ResponseType.OK,
+			)
+			resBut.grab_default()
+			d.vbox.set_border_width(5)
+			d.resize(400, 150)
+			d.vbox.show_all()
+			if d.run() == gtk.ResponseType.OK:
+				core.restart()
+			else:
+				d.destroy()
 
 	def checkNeedRestart(self):
+		if ui.mainWin is None:
+			return False
 		if ui.checkNeedRestart():
 			return True
 		if logger.logLevel != self.initialLogLevel:
@@ -1879,11 +1880,11 @@ class PreferencesWindow(gtk.Window):
 		###
 		accountId = self.accountsTreeModel[index][0]
 		account = ui.eventAccounts[accountId]
-		if not account.loaded:  # it's a dummy account
-			if active:
-				account = ui.eventAccounts.replaceDummyObj(account)
-				if account is None:
-					return
+		# not account.loaded -> it's a dummy account
+		if active and not account.loaded:
+			account = ui.eventAccounts.replaceDummyObj(account)
+			if account is None:
+				return
 		account.enable = active
 		account.save()
 		###
