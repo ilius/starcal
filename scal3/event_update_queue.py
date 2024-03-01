@@ -60,7 +60,7 @@ class EventUpdateQueue(Queue):
 				raise TypeError(
 					f"invalid obj type {obj.__class__.__name__} for {action=}",
 				)
-		elif action == "eg":
+		elif action == "eg":  # noqa: SIM102
 			if not isinstance(obj, event_lib.EventGroup):
 				raise TypeError(
 					f"invalid obj type {obj.__class__.__name__} for {action=}",
