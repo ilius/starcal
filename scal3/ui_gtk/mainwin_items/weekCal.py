@@ -163,7 +163,7 @@ class ColumnBase(CustomizableCalObj):
 		pass
 
 	def updatePacking(self):
-		self._parent.set_child_packing(
+		self.colParent.set_child_packing(
 			self,
 			self.expand,
 			self.expand,
@@ -193,7 +193,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 		# self.connect("button-press-event", self.onButtonPress)
 		# self.connect("event", show_event)
 		self.wcal = wcal
-		self._parent = wcal
+		self.colParent = wcal
 		if self.customizeExpand:
 			self.expand = self.getExpandValue()
 
@@ -928,7 +928,7 @@ class DaysOfMonthCalTypeParamBox(gtk.Box):
 	def __init__(self, wcal, index, calType, params, sgroupLabel, sgroupFont):
 		gtk.Box.__init__(self, orientation=gtk.Orientation.HORIZONTAL)
 		self.wcal = wcal
-		self._parent = wcal
+		self.colParent = wcal
 		self.index = index
 		self.calType = calType
 		######
@@ -1031,7 +1031,7 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 		ColumnBase.__init__(self)
 		self.initVars()
 		self.wcal = wcal
-		self._parent = wcal
+		self.colParent = wcal
 		self.updateCols()
 		self.updateDirection()
 		self.show()
@@ -1101,7 +1101,7 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 		elif n < n2:
 			for i in range(n, n2):
 				col = DaysOfMonthColumn(self.wcal, self, 0, i)
-				col._parent = self
+				col.colParent = self
 				pack(self, col, 1, 1)
 				columns.append(col)
 		for i, calType in enumerate(calTypes.active):
