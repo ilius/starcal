@@ -327,10 +327,9 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		openWindow(self.prefWindow)
 
 	def currentTimeUpdate(self, restart=False, draw=True):
-		if restart:
-			if self.timeUpdateSourceId is not None:
-				source_remove(self.timeUpdateSourceId)
-				self.timeUpdateSourceId = None
+		if restart and self.timeUpdateSourceId is not None:
+			source_remove(self.timeUpdateSourceId)
+			self.timeUpdateSourceId = None
 		try:
 			pixelPerSec = self.pixelPerSec
 		except AttributeError:
@@ -345,13 +344,14 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			self.currentTimeUpdate,
 		)
 		self.currentTime = int(tm)
-		if draw and self.get_parent():
-			if (
-				self.get_parent().get_visible()
-				and self.timeStart <= tm <= self.timeStart + self.timeWidth + 1
-			):
-				# log.debug(f"{tm%100:.2f} currentTimeUpdate: DRAW")
-				self.queue_draw()
+		if (
+			draw and
+			self.get_parent() and
+			self.get_parent().get_visible() and
+			self.timeStart <= tm <= self.timeStart + self.timeWidth + 1
+		):
+			# log.debug(f"{tm%100:.2f} currentTimeUpdate: DRAW")
+			self.queue_draw()
 
 	def updateData(self):
 		width = self.get_allocation().width
@@ -466,26 +466,29 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			self.drawBox(cr, box)
 		self.drawBoxEditingHelperLines(cr)
 		# #### Show (possible) Daylight Saving change
-		if timeStart > 0 and 2 * 3600 < timeWidth < 30 * dayLen:
-			if getUtcOffsetByEpoch(timeStart) != getUtcOffsetByEpoch(timeEnd):
-				startJd = getJdFromEpoch(timeStart)
-				endJd = getJdFromEpoch(timeEnd)
-				lastOffset = getUtcOffsetByJd(startJd, localTz)
-				dstChangeJd = None
-				deltaSec = 0
-				for jd in range(startJd + 1, endJd + 1):
-					offset = getUtcOffsetByJd(jd, localTz)
-					deltaSec = offset - lastOffset
-					if deltaSec != 0:
-						dstChangeJd = jd
-						break
-				if dstChangeJd is not None:
-					pass
-					# deltaHour = deltaSec / 3600.0
-					# dstChangeEpoch = getEpochFromJd(dstChangeJd)
-					# log.debug(f"{dstChangeEpoch = }")
-				else:
-					log.info("dstChangeEpoch not found")
+		if (
+			timeStart > 0 and
+			2 * 3600 < timeWidth < 30 * dayLen and
+			getUtcOffsetByEpoch(timeStart) != getUtcOffsetByEpoch(timeEnd)
+		):
+			startJd = getJdFromEpoch(timeStart)
+			endJd = getJdFromEpoch(timeEnd)
+			lastOffset = getUtcOffsetByJd(startJd, localTz)
+			dstChangeJd = None
+			deltaSec = 0
+			for jd in range(startJd + 1, endJd + 1):
+				offset = getUtcOffsetByJd(jd, localTz)
+				deltaSec = offset - lastOffset
+				if deltaSec != 0:
+					dstChangeJd = jd
+					break
+			if dstChangeJd is not None:
+				pass
+				# deltaHour = deltaSec / 3600.0
+				# dstChangeEpoch = getEpochFromJd(dstChangeJd)
+				# log.debug(f"{dstChangeEpoch = }")
+			else:
+				log.info("dstChangeEpoch not found")
 
 		# #### Draw Current Time Marker
 		dt = self.currentTime - timeStart
@@ -685,7 +688,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			elif editType == 1:
 				if t1 - box.t0 > 2 * tl.boxEditBorderWidth / self.pixelPerSec:
 					event.modifyEnd(t1)
-			elif editType == -1:
+			elif editType == -1:  # noqa: SIM102
 				if box.t1 - t1 > 2 * tl.boxEditBorderWidth / self.pixelPerSec:
 					event.modifyStart(t1)
 			box.t0 = max(

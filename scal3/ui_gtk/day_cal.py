@@ -882,9 +882,11 @@ class DayCal(gtk.DrawingArea, CalBase):
 					abbreviate=self.getWeekdayAbbreviate(),
 					relative=False,
 				)
-				if langHasUppercase and self.weekdayUppercaseParam:
-					if getattr(ui, self.weekdayUppercaseParam):
-						text = text.upper()
+				if langHasUppercase and self.weekdayUppercaseParam and getattr(
+					ui,
+					self.weekdayUppercaseParam,
+				):
+					text = text.upper()
 				daynum = newTextLayout(
 					self,
 					text,

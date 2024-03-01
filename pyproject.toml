@@ -31,7 +31,6 @@ lint.select = [
 	"EXE", # flake8-executable
 	"FA",  # flake8-future-annotations
 	"ISC", # flake8-implicit-str-concat
-	"ICN", # flake8-import-conventions
 	# "G",     # flake8-logging-format
 	"INP",  # flake8-no-pep420
 	"PIE",  # flake8-pie
@@ -79,7 +78,6 @@ lint.ignore = [
 	"PGH003",  # Use specific rule codes when ignoring type issues
 	"PT027",   # Use `pytest.raises` instead of unittest-style `assertRaises`, why?
 	"PD011",   # Use `.to_numpy()` instead of `.values`, WTF?
-	"ICN001",  # `tkinter` should be imported as `tk`, WTF?
 	"RUF005",  # Consider `[*_list, x]` instead of concatenation
 	"PT009",   # Use a regular `assert` instead of unittest-style `assertEqual`, why?
 	"PLR0911", # Too many return statements (x > 6)
@@ -124,8 +122,6 @@ lint.ignore = [
 	"UP037", # Remove quotes from type annotation
 
 	"RET502", # Do not implicitly `return None` in function able to return non-`None` value
-
-	"SIM102", # Use a single `if` statement instead of nested `if` statements
 
 	# S: global
 	"S101", # Use of `assert` detected
@@ -181,6 +177,7 @@ lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 [tool.ruff.lint.per-file-ignores]
 "scripts/*.py" = [
 	"T201", # `print` found
+	"SIM",
 ]
 "tools/*.py" = [
 	"T201",   # `print` found
