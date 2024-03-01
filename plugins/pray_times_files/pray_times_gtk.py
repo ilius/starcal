@@ -276,7 +276,7 @@ class LocationDialog(gtk.Dialog):
 	def run(self):
 		ex = gtk.Dialog.run(self)
 		self.hide()
-		if ex == gtk.ResponseType.OK:
+		if ex == gtk.ResponseType.OK:  # noqa: SIM102
 			if (
 				self.checkbEdit.get_active() or self.treev.get_cursor()[0] is not None
 			):  # FIXME

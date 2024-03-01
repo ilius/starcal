@@ -120,9 +120,8 @@ class CustomizableCalObj(ud.BaseCalObj):
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		for item in self.items:
-			if item.enable and kname in item.myKeys:
-				if item.onKeyPress(arg, gevent):
-					break
+			if item.enable and kname in item.myKeys and item.onKeyPress(arg, gevent):
+				break
 
 	def getOptionsWidget(self) -> gtk.Widget:
 		return None

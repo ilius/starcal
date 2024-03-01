@@ -220,9 +220,8 @@ class TagsListBox(gtk.Box):
 		if not tags:
 			tags = self.getData()
 		tagObjList = ui.eventTags
-		if self.eventType:
-			if self.relatedCheck.get_active():
-				tagObjList = [t for t in tagObjList if self.eventType in t.eventTypes]
+		if self.eventType and self.relatedCheck.get_active():
+			tagObjList = [t for t in tagObjList if self.eventType in t.eventTypes]
 		self.treeModel.clear()
 		for t in tagObjList:
 			self.treeModel.append(
