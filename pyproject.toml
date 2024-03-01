@@ -9,9 +9,9 @@ lint.select = [
 	# "C90", # mccabe: C901: {name} is too complex ({complexity})
 	"I", # isort: unsorted-imports, missing-required-import
 	# "N", # pep8-naming
-	"D", # pydocstyle
-	"B", # flake8-bugbear
-	"UP", # pyupgrade
+	"D",   # pydocstyle
+	"B",   # flake8-bugbear
+	"UP",  # pyupgrade
 	"YTT", # flake8-2020
 	# "ANN", # flake8-annotationsq, still gives errors for `self`
 	# ASYNC, # flake8-async
@@ -23,98 +23,98 @@ lint.select = [
 	# "A", # flake8-builtins
 	"COM", # flake8-commas
 	# "CPY", # flake8-copyright   --preview
-	"C4", # flake8-comprehensions
+	"C4",  # flake8-comprehensions
 	"DTZ", # flake8-datetimez
 	"T10", # flake8-debugger
-	"DJ",    # flake8-django
+	"DJ",  # flake8-django
 	# "EM",    # flake8-errmsg, WTF?
-	"EXE",   # flake8-executable
-	"FA",    # flake8-future-annotations
-	"ISC",   # flake8-implicit-str-concat
-	"ICN",   # flake8-import-conventions
+	"EXE", # flake8-executable
+	"FA",  # flake8-future-annotations
+	"ISC", # flake8-implicit-str-concat
+	"ICN", # flake8-import-conventions
 	# "G",     # flake8-logging-format
-	"INP",   # flake8-no-pep420
-	"PIE",   # flake8-pie
-	"T20",   # flake8-print
-	"PYI",   # flake8-pyi
-	"PT",    # flake8-pytest-style
-	"Q",     # flake8-quotes
-	"RSE",   # flake8-raise
-	"RET",   # flake8-return
-	"SLF",   # flake8-self
-	"SLOT",  # flake8-slots
-	"SIM",   # flake8-simplify
-	"TID",   # flake8-tidy-imports
-	"TCH",   # flake8-type-checking
-	"INT",   # flake8-gettext
+	"INP",  # flake8-no-pep420
+	"PIE",  # flake8-pie
+	"T20",  # flake8-print
+	"PYI",  # flake8-pyi
+	"PT",   # flake8-pytest-style
+	"Q",    # flake8-quotes
+	"RSE",  # flake8-raise
+	"RET",  # flake8-return
+	"SLF",  # flake8-self
+	"SLOT", # flake8-slots
+	"SIM",  # flake8-simplify
+	"TID",  # flake8-tidy-imports
+	"TCH",  # flake8-type-checking
+	"INT",  # flake8-gettext
 	# "ARG",   # flake8-unused-arguments
 	# "PTH",   # flake8-use-pathlib
 	# "TD",    # flake8-todos
 	# "FIX",   # flake8-fixme: just shows me FIXMEs and TODOs
 	# "ERA",   # eradicate
-	"PD",    # pandas-vet
-	"PGH",   # pygrep-hooks
+	"PD",  # pandas-vet
+	"PGH", # pygrep-hooks
 	# "PL",    # Pylint
 	# "TRY",   # tryceratops, they all sound BS
 	# "FLY",   # flynt
-	"NPY",   # NumPy-specific rules
-	"AIR",   # Airflow
-	"PERF",  # Perflint
+	"NPY",  # NumPy-specific rules
+	"AIR",  # Airflow
+	"PERF", # Perflint
 	# "FURB",  # refurb   --preview
-	"LOG",   # flake8-logging
-	"RUF",   # Ruff-specific rules
+	"LOG", # flake8-logging
+	"RUF", # Ruff-specific rules
 ]
 # warning: The following rules may cause conflicts when used with the formatter:
 # `COM812`, `ISC001`.
 # To avoid unexpected behavior, we recommend disabling these rules, either by removing them from the `select` or `extend-select` configuration, or adding them to the `ignore` configuration.
 
 lint.ignore = [
-	"PYI034", # py3.11: `__iadd__` methods in classes like `SqEntryList` usually return `self` at runtime
-	"INT001", # f-string is resolved before function call; consider `_("string %s") % arg`
+	"PYI034",  # py3.11: `__iadd__` methods in classes like `SqEntryList` usually return `self` at runtime
+	"INT001",  # f-string is resolved before function call; consider `_("string %s") % arg`
 	"PERF203", # `try`-`except` within a loop incurs performance overhead
-	"RUF001", # String contains ambiguous `٠` (ARABIC-INDIC DIGIT ZERO). Did you mean `.` (FULL STOP)
-	"RUF003", # Comment contains ambiguous `۰` (EXTENDED ARABIC-INDIC DIGIT ZERO). Did you mean `.` (FULL STOP)?
-	"DTZ001", # The use of `datetime.datetime()` without `tzinfo` argument is not allowed
-	"DTZ005", # The use of `datetime.datetime.now()` without `tz` argument is not allowed
-	"PGH003", # Use specific rule codes when ignoring type issues
-	"PT027", # Use `pytest.raises` instead of unittest-style `assertRaises`, why?
-	"PD011", # Use `.to_numpy()` instead of `.values`, WTF?
-	"ICN001", # `tkinter` should be imported as `tk`, WTF?
-	"RUF005", # Consider `[*_list, x]` instead of concatenation
-	"PT009", # Use a regular `assert` instead of unittest-style `assertEqual`, why?
+	"RUF001",  # String contains ambiguous `٠` (ARABIC-INDIC DIGIT ZERO). Did you mean `.` (FULL STOP)
+	"RUF003",  # Comment contains ambiguous `۰` (EXTENDED ARABIC-INDIC DIGIT ZERO). Did you mean `.` (FULL STOP)?
+	"DTZ001",  # The use of `datetime.datetime()` without `tzinfo` argument is not allowed
+	"DTZ005",  # The use of `datetime.datetime.now()` without `tz` argument is not allowed
+	"PGH003",  # Use specific rule codes when ignoring type issues
+	"PT027",   # Use `pytest.raises` instead of unittest-style `assertRaises`, why?
+	"PD011",   # Use `.to_numpy()` instead of `.values`, WTF?
+	"ICN001",  # `tkinter` should be imported as `tk`, WTF?
+	"RUF005",  # Consider `[*_list, x]` instead of concatenation
+	"PT009",   # Use a regular `assert` instead of unittest-style `assertEqual`, why?
 	"PLR0911", # Too many return statements (x > 6)
-	"RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
-	"BLE001", # Do not catch blind exception: `Exception`
-	"G004", # Logging statement uses f-string, WTF?
-	"TRY400", # Use `logging.exception` instead of `logging.error`
-	"TRY003", # Avoid specifying long messages outside the exception class, ???
-	"RUF100", # Unused `noqa` directive (non-enabled: ...)
+	"RUF012",  # Mutable class attributes should be annotated with `typing.ClassVar`
+	"BLE001",  # Do not catch blind exception: `Exception`
+	"G004",    # Logging statement uses f-string, WTF?
+	"TRY400",  # Use `logging.exception` instead of `logging.error`
+	"TRY003",  # Avoid specifying long messages outside the exception class, ???
+	"RUF100",  # Unused `noqa` directive (non-enabled: ...)
 	"FURB101", # `open` and `read` should be replaced by `Path(rootConfJsonFile).read_text()`
-	"B019", # Use of `functools.lru_cache` or `functools.cache` on methods can lead to memory leaks
+	"B019",    # Use of `functools.lru_cache` or `functools.cache` on methods can lead to memory leaks
 	"COM812",
-	"PGH003", # Use specific rule codes when ignoring type issues
-	"B018", # Found useless expression. Either assign it to a variable or remove it.
-	"B019", # Use of `functools.lru_cache` or `functools.cache` on methods can lead to memory leaks
-	"B028", # No explicit `stacklevel` keyword argument found. Huh???
-	"C408", # Unnecessary `dict` call (rewrite as a literal)
-	"D100", # Missing docstring in public module
-	"D101", # Missing docstring in public class
-	"D102", # Missing docstring in public method
-	"D103", # Missing docstring in public function
-	"D104", # Missing docstring in public package
-	"D105", # Missing docstring in magic method
-	"D106", # Missing docstring in public nested class
-	"D107", # Missing docstring in `__init__`
-	"D205", # 1 blank line required between summary line and description
-	"D206", # Docstring should be indented with spaces, not tabs
-	"D211", # (Do not enable) no-blank-line-before-class
-	"D212", # multi-line-summary-first-line, conflicts with D213:multi-line-summary-second-line
-	"D401", # First line of docstring should be in imperative mood
-	"D417", # Missing argument descriptions in the docstring
-	"E402", # Module level import not at top of file
-	"SIM105", # Use contextlib.suppress({exception}) instead of try-except-pass
-	"SIM108", # Use ternary operator {contents} instead of if-else-block
-	"SIM117", # Use a single with statement with multiple contexts...
+	"PGH003",  # Use specific rule codes when ignoring type issues
+	"B018",    # Found useless expression. Either assign it to a variable or remove it.
+	"B019",    # Use of `functools.lru_cache` or `functools.cache` on methods can lead to memory leaks
+	"B028",    # No explicit `stacklevel` keyword argument found. Huh???
+	"C408",    # Unnecessary `dict` call (rewrite as a literal)
+	"D100",    # Missing docstring in public module
+	"D101",    # Missing docstring in public class
+	"D102",    # Missing docstring in public method
+	"D103",    # Missing docstring in public function
+	"D104",    # Missing docstring in public package
+	"D105",    # Missing docstring in magic method
+	"D106",    # Missing docstring in public nested class
+	"D107",    # Missing docstring in `__init__`
+	"D205",    # 1 blank line required between summary line and description
+	"D206",    # Docstring should be indented with spaces, not tabs
+	"D211",    # (Do not enable) no-blank-line-before-class
+	"D212",    # multi-line-summary-first-line, conflicts with D213:multi-line-summary-second-line
+	"D401",    # First line of docstring should be in imperative mood
+	"D417",    # Missing argument descriptions in the docstring
+	"E402",    # Module level import not at top of file
+	"SIM105",  # Use contextlib.suppress({exception}) instead of try-except-pass
+	"SIM108",  # Use ternary operator {contents} instead of if-else-block
+	"SIM117",  # Use a single with statement with multiple contexts...
 	"W191",
 	# ERA, PD,
 
@@ -183,7 +183,7 @@ lint.dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
 	"T201", # `print` found
 ]
 "tools/*.py" = [
-	"T201", # `print` found
+	"T201",   # `print` found
 	"INP001", # File `...` is part of an implicit namespace package. Add an `__init__.py`.
 ]
 "distro/base/install.py" = [
@@ -233,8 +233,7 @@ wrap-comments = true
 wrap-pragma-comments = true
 
 [tool.mypy]
-exclude = [
-]
+exclude = []
 
 [tool.refurb]
 ignore = [
