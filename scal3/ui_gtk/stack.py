@@ -109,7 +109,7 @@ class MyStack(gtk.Stack):
 		self._windowTitleMainFirst = mainTitleFirst
 
 	def onKeyPress(self, arg, gevent):
-		if gdk.keyval_name(gevent.keyval) == "BackSpace":
+		if gdk.keyval_name(gevent.keyval) == "BackSpace":  # noqa: SIM102
 			if self._currentPagePath:
 				parentPath = self._parentPaths[self._currentPagePath]
 				if parentPath:
