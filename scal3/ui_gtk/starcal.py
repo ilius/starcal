@@ -1350,11 +1350,14 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 				else:
 					family = ui.getFont().family
 				style.append(("font-family", family))
-			if ui.statusIconHolidayFontColorEnable and ui.statusIconHolidayFontColor:
-				if ui.todayCell.holiday:
-					style.append(
-						("fill", rgbToHtmlColor(ui.statusIconHolidayFontColor)),
-					)
+			if (
+				ui.statusIconHolidayFontColorEnable and
+				ui.statusIconHolidayFontColor and
+				ui.todayCell.holiday
+			):
+				style.append(
+					("fill", rgbToHtmlColor(ui.statusIconHolidayFontColor)),
+				)
 			if style:
 				styleStr = "".join([f"{key}:{value};" for key, value in style])
 				dayNum = f'<tspan style="{styleStr}">{dayNum}</tspan>'
@@ -1458,7 +1461,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		# log.debug(ui.winX, ui.winY)
 		if self.statusIconMode == 0:
 			self.quit()
-		elif self.statusIconMode > 1:
+		elif self.statusIconMode > 1:  # noqa: SIM102
 			if self.sicon.is_embedded():
 				self.hide()
 
