@@ -131,7 +131,7 @@ class CalObj(CustomizableToolBox):
 			continuousClick=False,
 		),
 	]
-	defaultItemsDict = {item._name: item for item in defaultItems}
+	defaultItemsDict = {item.objName: item for item in defaultItems}
 
 	def __init__(self, win):
 		self.win = win
@@ -143,7 +143,7 @@ class CalObj(CustomizableToolBox):
 		)
 		if not ud.mainToolbarData["items"]:
 			ud.mainToolbarData["items"] = [
-				(item._name, True) for item in self.defaultItems
+				(item.objName, True) for item in self.defaultItems
 			]
 		else:
 			currentNames = {item[0] for item in ud.mainToolbarData["items"]}

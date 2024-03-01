@@ -58,7 +58,7 @@ if TYPE_CHECKING:
 
 @registerSignals
 class CalObj(gtk.DrawingArea, CalBase):
-	_name = "monthCal"
+	objName = "monthCal"
 	desc = _("Month Calendar")
 	expand = True
 	itemListCustomizable = False
@@ -154,9 +154,9 @@ class CalObj(gtk.DrawingArea, CalBase):
 		self.initCal()
 		self.pagePath = ".".join(
 			[
-				win._name,
-				win.mainVBox._name,
-				self._name,
+				win.objName,
+				win.mainVBox.objName,
+				self.objName,
 			],
 		)
 		######################
