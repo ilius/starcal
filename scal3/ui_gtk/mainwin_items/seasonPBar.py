@@ -9,7 +9,7 @@ from scal3.ui_gtk.pbar import MyProgressBar
 
 @registerSignals
 class CalObj(gtk.Frame, CustomizableCalObj):
-	_name = "seasonPBar"
+	objName = "seasonPBar"
 	desc = _("Season Progress Bar")
 	itemListCustomizable = False
 
