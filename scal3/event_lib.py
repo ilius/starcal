@@ -5598,7 +5598,7 @@ class VcsDailyStatEvent(Event):
 		jd = self.jd
 		if jd is not None:
 			if startJd <= jd < endJd:
-				JdOccurSet({jd})
+				return JdOccurSet({jd})
 		return JdOccurSet()
 
 
