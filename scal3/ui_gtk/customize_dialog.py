@@ -197,12 +197,12 @@ class CustomizeWindow(gtk.Dialog):
 				continue
 			if item.hasOptions:
 				anyItemHasOptions = True
-			if not item._name:
-				raise ValueError(f"{item._name = }")
+			if not item.objName:
+				raise ValueError(f"{item.objName = }")
 			model.append(
 				[
 					item.enable,
-					parentPagePath + "." + item._name,
+					parentPagePath + "." + item.objName,
 					item.desc,
 					self.itemPixbuf(item),
 				],
@@ -359,7 +359,7 @@ class CustomizeWindow(gtk.Dialog):
 		pagePath = page.pagePath
 		title = page.pageTitle
 		item = page.pageItem
-		log.debug(f"addPageObj: {page.pagePath=}, {page.pageParent=}, {item._name=}")
+		log.debug(f"addPageObj: {page.pagePath=}, {page.pageParent=}, {item.objName=}")
 
 		if self.stack.hasPage(pagePath):
 			return
@@ -414,7 +414,7 @@ class CustomizeWindow(gtk.Dialog):
 		item = parentItem.items[itemIndex]
 
 		title = item.desc
-		if parentItem._name != "mainWin":
+		if parentItem.objName != "mainWin":
 			title = title + " - " + parentItem.desc
 
 		page = StackPage()
