@@ -296,9 +296,8 @@ class TextPlugin(BaseJsonPlugin, TextPluginUI):
 			return True
 
 		hyear, hmonth, hday = hijri.jd_to(getCurrentJd())
-		if hmonth == 9:  # Ramadan
-			if dt > hday * 24 * 3600:
-				return True
+		if hmonth == 9 and dt > hday * 24 * 3600:  # Ramadan
+			return True
 
 		return False
 

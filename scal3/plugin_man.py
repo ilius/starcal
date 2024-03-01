@@ -709,32 +709,30 @@ class IcsTextPlugin(BasePlugin):
 			self.md = None
 
 	def getText(self, y, m, d):
-		if self.ymd:
-			if (y, m, d) in self.ymd:
-				if self.show_date:
-					return (
-						_(d)
-						+ " "
-						+ getMonthName(self.calType, m)
-						+ " "
-						+ _(y)
-						+ ": "
-						+ self.ymd[(y, m, d)]
-					)
-				return self.ymd[(y, m, d)]
-		if self.md:
-			if (m, d) in self.md:
-				if self.show_date:
-					return (
-						_(d)
-						+ " "
-						+ getMonthName(self.calType, m)
-						+ " "
-						+ _(y)
-						+ ": "
-						+ self.ymd[(y, m, d)]
-					)
-				return self.md[(m, d)]
+		if self.ymd and (y, m, d) in self.ymd:
+			if self.show_date:
+				return (
+					_(d)
+					+ " "
+					+ getMonthName(self.calType, m)
+					+ " "
+					+ _(y)
+					+ ": "
+					+ self.ymd[(y, m, d)]
+				)
+			return self.ymd[(y, m, d)]
+		if self.md and (m, d) in self.md:
+			if self.show_date:
+				return (
+					_(d)
+					+ " "
+					+ getMonthName(self.calType, m)
+					+ " "
+					+ _(y)
+					+ ": "
+					+ self.ymd[(y, m, d)]
+				)
+			return self.md[(m, d)]
 		return ""
 
 	def open_configure(self):
