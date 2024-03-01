@@ -22,9 +22,8 @@ class ConButtonBase:
 		return self.emit("con-clicked")
 
 	def onPress(self, widget, event):
-		if self._button is not None:
-			if event.button != self._button:
-				return
+		if self._button is not None and event.button != self._button:
+			return
 		self.pressTm = now()
 		self.doTrigger()
 		self.counter += 1
