@@ -31,7 +31,7 @@ from scal3.ui_gtk.utils import dialog_add_button
 
 @registerSignals
 class AllDateLabelsVBox(gtk.Box, ud.BaseCalObj):
-	_name = "allDateLabels"
+	objName = "allDateLabels"
 	desc = _("Dates")
 
 	def __init__(self):
@@ -64,7 +64,7 @@ class AllDateLabelsVBox(gtk.Box, ud.BaseCalObj):
 
 @registerSignals
 class PluginsTextView(gtk.TextView, ud.BaseCalObj):
-	_name = "pluginsText"
+	objName = "pluginsText"
 	desc = _("Plugins Text")
 
 	def __init__(self):
@@ -83,7 +83,7 @@ class PluginsTextView(gtk.TextView, ud.BaseCalObj):
 
 @registerSignals
 class DayInfoJulianDayHBox(gtk.Box, ud.BaseCalObj):
-	_name = "jd"
+	objName = "jd"
 	desc = _("Julian Day Number")
 
 	def __init__(self):
@@ -105,7 +105,7 @@ class DayInfoJulianDayHBox(gtk.Box, ud.BaseCalObj):
 
 @registerSignals
 class DayInfoDialog(gtk.Dialog, ud.BaseCalObj):
-	_name = "dayInfo"
+	objName = "dayInfo"
 	desc = _("Day Info")
 
 	def __init__(self, **kwargs):

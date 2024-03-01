@@ -11,7 +11,7 @@ from scal3.ui_gtk.pbar import MyProgressBar
 
 @registerSignals
 class CalObj(gtk.Frame, CustomizableCalObj):
-	_name = "monthPBar"
+	objName = "monthPBar"
 	desc = _("Month Progress Bar")
 	itemListCustomizable = False
 	hasOptions = True
