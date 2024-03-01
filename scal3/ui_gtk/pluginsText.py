@@ -239,7 +239,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 
 @registerSignals
 class PluginsTextBox(gtk.Box, CustomizableCalObj):
-	_name = "pluginsText"
+	objName = "pluginsText"
 	desc = _("Plugins Text")
 	itemListCustomizable = False
 	optionsPageSpacing = 20

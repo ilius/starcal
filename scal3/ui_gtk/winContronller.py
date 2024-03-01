@@ -96,7 +96,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 
 
 class WinConButtonMin(WinConButton):
-	_name = "min"
+	objName = "min"
 	desc = _("Minimize Window")
 	imageName = "minimize"
 	imageNameFocus = "minimize-focus"
@@ -107,7 +107,7 @@ class WinConButtonMin(WinConButton):
 
 
 class WinConButtonMax(WinConButton):
-	_name = "max"
+	objName = "max"
 	desc = _("Maximize Window")
 	imageName = "maximize"
 	imageNameFocus = "maximize-focus"
@@ -121,7 +121,7 @@ class WinConButtonMax(WinConButton):
 
 
 class WinConButtonClose(WinConButton):
-	_name = "close"
+	objName = "close"
 	desc = _("Close Window")
 	imageName = "close"
 	imageNameFocus = "close-focus"
@@ -132,7 +132,7 @@ class WinConButtonClose(WinConButton):
 
 
 class WinConButtonRightPanel(WinConButton):
-	_name = "rightPanel"
+	objName = "rightPanel"
 	desc = _("Show Right Panel")
 
 	def __init__(self, controller):
@@ -147,7 +147,7 @@ class WinConButtonRightPanel(WinConButton):
 
 
 class WinConButtonSep(WinConButton):
-	_name = "sep"
+	objName = "sep"
 	desc = _("Separator")
 	expand = True
 
@@ -169,7 +169,7 @@ class WinConButtonSep(WinConButton):
 @registerSignals
 class CalObj(gtk.Box, CustomizableCalBox):
 	hasOptions = True
-	_name = "winContronller"
+	objName = "winContronller"
 	desc = _("Window Controller")
 	buttonClassList = (
 		WinConButtonMin,
@@ -178,7 +178,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		WinConButtonSep,
 		WinConButtonRightPanel,
 	)
-	buttonClassDict = {cls._name: cls for cls in buttonClassList}
+	buttonClassDict = {cls.objName: cls for cls in buttonClassList}
 
 	def __init__(self, win):
 		self.win = win

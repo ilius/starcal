@@ -61,7 +61,7 @@ class RightPanelPluginsTextBox(PluginsTextBox):
 
 @registerSignals
 class MainWinRightPanel(gtk.Paned, CustomizableCalObj):
-	_name = "rightPanel"
+	objName = "rightPanel"
 	desc = _("Right Panel")
 	itemListCustomizable = False
 	optionsPageSpacing = 5
