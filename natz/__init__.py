@@ -22,7 +22,7 @@ class TimeZone(datetime.tzinfo):
 		if os.sep == "\\":
 			self._name = tz.tzname(datetime.datetime.now())
 		else:
-			parts = tz._filename.split("/")
+			parts = tz._filename.split("/")  # noqa: SLF001
 			self._name = "/".join(parts[-2:])
 
 	def __str__(self):
@@ -79,7 +79,7 @@ def gettz(*args, **kwargs) -> "TimeZone | None":
 			log.error(f"failed to detect timezone: {args} {kwargs}")
 		tzErrCount += 1
 		return defaultTZ
-	if tz._filename.lstrip("/") == "etc/localtime":
+	if tz._filename.lstrip("/") == "etc/localtime":  # noqa: SLF001
 		tz = readEtcLocaltime()
 		if tz is None:
 			if tzErrCount < 5:
