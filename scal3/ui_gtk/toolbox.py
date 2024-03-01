@@ -142,9 +142,8 @@ class ToolBoxItem(BaseToolBoxItem):
 			return
 
 		useIconName = bool(iconName)
-		if useIconName:
-			if self.imageName and not self.preferIconName:
-				useIconName = False
+		if useIconName and self.imageName and not self.preferIconName:
+			useIconName = False
 
 		if useIconName:
 			self.bigPixbuf = self.render_icon_pixbuf(
