@@ -162,7 +162,7 @@ class EventManagerToolbar(StaticToolBox):
 
 @registerSignals
 class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
-	_name = "eventMan"
+	objName = "eventMan"
 	desc = _("Event Manager")
 
 	def onShow(self, widget: gtk.Widget) -> None:

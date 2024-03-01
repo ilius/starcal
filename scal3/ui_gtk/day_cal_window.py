@@ -273,7 +273,7 @@ class DayCalWindowWidget(DayCal):
 
 @registerSignals
 class DayCalWindow(gtk.Window, ud.BaseCalObj):
-	_name = "dayCalWin"
+	objName = "dayCalWin"
 	desc = _("Day Calendar Window")
 
 	def __init__(self):
@@ -289,7 +289,7 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 		self.stick()
 		###
 		self._widget = DayCalWindowWidget(self)
-		self._widget._window = self
+		self._widget._window = self  # noqa: SLF001
 
 		self.connect("key-press-event", self._widget.onKeyPress)
 		self.connect("delete-event", self.onDeleteEvent)
