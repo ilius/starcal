@@ -93,7 +93,7 @@ class MonthLabel(BaseLabel, ud.BaseCalObj):
 		BaseLabel.__init__(self)
 		self.get_style_context().add_class(self.styleClass)
 		###
-		self._name = f"monthLabel({calType})"
+		self.objName = f"monthLabel({calType})"
 		# self.set_border_width(1)#???????????
 		self.initVars()
 		self.calType = calType
@@ -382,7 +382,7 @@ class YearLabel(IntLabel, ud.BaseCalObj):
 
 	def __init__(self, calType, **kwargs):
 		IntLabel.__init__(self, **kwargs)
-		self._name = f"yearLabel({calType})"
+		self.objName = f"yearLabel({calType})"
 		self.initVars()
 		self.calType = calType
 		###
@@ -512,7 +512,7 @@ class MonthLabelButtonBox(gtk.Box, ud.BaseCalObj):
 
 @registerSignals
 class CalObj(gtk.Box, CustomizableCalObj):
-	_name = "labelBox"
+	objName = "labelBox"
 	desc = _("Year & Month Labels")
 	itemListCustomizable = False
 	hasOptions = True
