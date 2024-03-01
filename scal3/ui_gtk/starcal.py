@@ -114,7 +114,7 @@ def liveConfChanged():
 
 @registerSignals
 class MainWinVbox(gtk.Box, CustomizableCalBox):
-	_name = "mainPanel"
+	objName = "mainPanel"
 	desc = _("Main Panel")
 	itemListCustomizable = True
 	myKeys = (
@@ -199,9 +199,9 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 		wi = None
 		mi = None
 		for i, item in enumerate(self.items):
-			if item._name == "weekCal":
+			if item.objName == "weekCal":
 				wi = i
-			elif item._name == "monthCal":
+			elif item.objName == "monthCal":
 				mi = i
 		for itemIndex in (wi, mi):
 			customizeWindow.loadItem(self, itemIndex)
@@ -223,7 +223,7 @@ class MainWinVbox(gtk.Box, CustomizableCalBox):
 
 @registerSignals
 class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
-	_name = "mainWin"
+	objName = "mainWin"
 	desc = _("Main Window")
 	timeout = 1  # second
 	signals = ud.BaseCalObj.signals + [
@@ -273,7 +273,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 		# ud.windowList.appendItem(ui.weekCalWin)
 		###
 		self.dayInfoDialog = None
-		# log.debug("windowList.items", [item._name for item in ud.windowList.items])
+		# log.debug("windowList.items", [item.objName for item in ud.windowList.items])
 		###########
 		# self.connect("window-state-event", selfStateEvent)
 		self.set_title(f"{core.APP_DESC} {core.VERSION}")
@@ -843,7 +843,7 @@ class MainWin(gtk.ApplicationWindow, ud.BaseCalObj):
 			menu.add(subMenuItem)
 
 	def menuCellPopup(self, widget, x, y):
-		calObjName = widget._name  # why private? FIXME
+		calObjName = widget.objName  # why private? FIXME
 		# calObjName is in ("weekCal", "monthCal", ...)
 		menu = Menu()
 		####

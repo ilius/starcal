@@ -12,7 +12,7 @@ from scal3.ui_gtk.mywidgets.label import SLabel
 
 @registerSignals
 class CalObj(gtk.Box, CustomizableCalObj):
-	_name = "statusBar"
+	objName = "statusBar"
 	desc = _("Status Bar")
 	itemListCustomizable = False
 	hasOptions = True

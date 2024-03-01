@@ -85,7 +85,7 @@ class ToolBoxItem(BaseToolBoxItem):
 		# self.set_can_default(False)
 		# self.set_can_focus(False)
 		######
-		self._name = name
+		self.objName = name
 		self.onClick = onClick
 		self.onPress = onPress
 		if args is None:
@@ -185,7 +185,7 @@ class ToolBoxItem(BaseToolBoxItem):
 				return
 			raise RuntimeError(
 				f"bigPixbuf=None, self.imageName={self.imageName}"
-				f", name={self._name}",
+				f", name={self.objName}",
 			)
 		pixbuf = self.bigPixbuf.scale_simple(
 			iconSize,
@@ -220,7 +220,7 @@ class LabelToolBoxItem(BaseToolBoxItem):
 		# self.set_can_default(False)
 		# self.set_can_focus(False)
 		######
-		self._name = name
+		self.objName = name
 		self.onClick = onClick
 		self.onPress = onPress
 		if args is None:
@@ -365,7 +365,7 @@ class StaticToolBox(BaseToolBox):
 
 
 class CustomizableToolBox(StaticToolBox):
-	_name = "toolbar"
+	objName = "toolbar"
 	desc = _("Toolbar")
 	styleList = (
 		# Gnome"s naming is not exactly the best here

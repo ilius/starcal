@@ -51,7 +51,7 @@ class DummyCalObj(ud.CalObjType):
 	) -> None:
 		ud.CalObjType.__init__(self)
 		self.enable = False
-		self._name = name
+		self.objName = name
 		self.desc = desc
 		self.moduleName = ".".join([pkg, name])
 		self.customizable = customizable
@@ -110,7 +110,7 @@ class CustomizableCalObj(ud.BaseCalObj):
 				log.exception("")
 
 	def getItemsData(self) -> list[tuple[str, bool]]:
-		return [(item._name, item.enable) for item in self.items]
+		return [(item.objName, item.enable) for item in self.items]
 
 	def updateVars(self) -> None:
 		for item in self.items:

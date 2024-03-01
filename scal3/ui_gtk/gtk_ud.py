@@ -84,7 +84,7 @@ class CalObjType(Object):
 
 @registerSignals
 class BaseCalObj(CalObjType):
-	_name = ""
+	objName = ""
 	desc = ""
 	loaded = True
 	customizable = False
@@ -104,8 +104,8 @@ class BaseCalObj(CalObjType):
 		if sender is None:
 			sender = self
 		log.debug(
-			f"onConfigChange: name={self._name}, toParent={toParent}, "
-			f"sender={sender._name if sender else sender}",
+			f"onConfigChange: name={self.objName}, toParent={toParent}, "
+			f"sender={sender.objName if sender else sender}",
 		)
 		if toParent:
 			self.emit("config-change")
@@ -119,8 +119,8 @@ class BaseCalObj(CalObjType):
 		if sender is None:
 			sender = self
 		log.debug(
-			f"onDateChange: name={self._name}, toParent={toParent}, "
-			f"sender={sender._name if sender else sender}",
+			f"onDateChange: name={self.objName}, toParent={toParent}, "
+			f"sender={sender.objName if sender else sender}",
 		)
 		if toParent:
 			self.emit("date-change")
@@ -136,7 +136,7 @@ class BaseCalObj(CalObjType):
 
 	def __getitem__(self, key):
 		for item in self.items:
-			if item._name == key:
+			if item.objName == key:
 				return item
 		return None
 
@@ -177,7 +177,7 @@ class BaseCalObj(CalObjType):
 
 
 class IntegatedWindowList(BaseCalObj):
-	_name = "windowList"
+	objName = "windowList"
 	desc = "Window List"
 
 	def __init__(self):

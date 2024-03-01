@@ -51,7 +51,7 @@ if TYPE_CHECKING:
 
 @registerSignals
 class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
-	_name = "yearWheel"
+	objName = "yearWheel"
 	desc = _("Year Wheel")
 	###
 	scrollRotateDegree = 1
@@ -436,7 +436,7 @@ class YearWheel(gtk.DrawingArea, ud.BaseCalObj):
 
 @registerSignals
 class YearWheelWindow(gtk.Window, ud.BaseCalObj):
-	_name = "yearWheelWin"
+	objName = "yearWheelWin"
 	desc = _("Year Wheel")
 
 	def __init__(self):

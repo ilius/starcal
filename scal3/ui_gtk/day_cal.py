@@ -65,7 +65,7 @@ if TYPE_CHECKING:
 
 
 class DayCal(gtk.DrawingArea, CalBase):
-	_name = "dayCal"
+	objName = "dayCal"
 	desc = _("Day Calendar")
 	itemListCustomizable = False
 	backgroundColorParam = ""

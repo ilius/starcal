@@ -78,19 +78,19 @@ class ColumnBase(CustomizableCalObj):
 		pass
 
 	def getWidthAttr(self):
-		return f"wcal_{self._name}_width"
+		return f"wcal_{self.objName}_width"
 
 	def getWidthValue(self):
 		return getattr(ui, self.getWidthAttr(), None)
 
 	def getExpandAttr(self):
-		return f"wcal_{self._name}_expand"
+		return f"wcal_{self.objName}_expand"
 
 	def getExpandValue(self):
 		return getattr(ui, self.getExpandAttr(), None)
 
 	def getFontAttr(self):
-		return f"wcalFont_{self._name}"
+		return f"wcalFont_{self.objName}"
 
 	def getFontValue(self):
 		return getattr(ui, self.getFontAttr(), None)
@@ -99,7 +99,7 @@ class ColumnBase(CustomizableCalObj):
 		CustomizableCalObj.onConfigChange(self, *a, **kw)
 
 	def onWidthChange(self):
-		# if self._name:
+		# if self.objName:
 		# 	self.updatePacking()
 		self.queue_resize()
 
@@ -359,7 +359,7 @@ class Column(gtk.DrawingArea, ColumnBase):
 				lineH = rowH / linesN
 				lineI = 0
 				if len(data[0]) < 2:
-					log.info(self._name)
+					log.info(self.objName)
 				for line, color in data:
 					layout = newTextLayout(
 						self,
@@ -528,10 +528,10 @@ class ToolbarColumn(CustomizableToolBox, ColumnBase):
 				desc="Forward 4 Weeks",
 			),
 		]
-		self.defaultItemsDict = {item._name: item for item in self.defaultItems}
+		self.defaultItemsDict = {item.objName: item for item in self.defaultItems}
 		if not ud.wcalToolbarData["items"]:
 			ud.wcalToolbarData["items"] = [
-				(item._name, True) for item in self.defaultItems
+				(item.objName, True) for item in self.defaultItems
 			]
 		self.setData(ud.wcalToolbarData)
 
@@ -542,7 +542,7 @@ class ToolbarColumn(CustomizableToolBox, ColumnBase):
 
 @registerSignals
 class WeekDaysColumn(Column):
-	_name = "weekDays"
+	objName = "weekDays"
 	desc = _("Week Days")
 	colorizeHolidayText = True
 	showCursor = True
@@ -574,7 +574,7 @@ class WeekDaysColumn(Column):
 
 @registerSignals
 class PluginsTextColumn(Column):
-	_name = "pluginsText"
+	objName = "pluginsText"
 	desc = _("Plugins Text")
 	expand = True
 	customizeFont = True
@@ -621,7 +621,7 @@ class PluginsTextColumn(Column):
 
 @registerSignals
 class EventsIconColumn(Column):
-	_name = "eventsIcon"
+	objName = "eventsIcon"
 	desc = _("Events Icon")
 	customizeWidth = True
 	optionsPageSpacing = 20
@@ -673,7 +673,7 @@ class EventsIconColumn(Column):
 
 @registerSignals
 class EventsCountColumn(Column):
-	_name = "eventsCount"
+	objName = "eventsCount"
 	desc = _("Events Count")
 	customizeWidth = True
 	customizeExpand = True
@@ -709,7 +709,7 @@ class EventsCountColumn(Column):
 
 @registerSignals
 class EventsTextColumn(Column):
-	_name = "eventsText"
+	objName = "eventsText"
 	desc = _("Events Text")
 	expand = True
 	customizeFont = True
@@ -826,7 +826,7 @@ class EventsTextColumn(Column):
 
 @registerSignals
 class EventsBoxColumn(Column):
-	_name = "eventsBox"
+	objName = "eventsBox"
 	desc = _("Events Box")
 	expand = True  # FIXME
 	customizeFont = True
@@ -1010,7 +1010,7 @@ class DaysOfMonthColumn(Column):
 
 @registerSignals
 class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
-	_name = "daysOfMonth"
+	objName = "daysOfMonth"
 	desc = _("Days of Month")
 	customizeWidth = True
 	customizeExpand = True
@@ -1151,7 +1151,7 @@ class DaysOfMonthColumnGroup(gtk.Box, CustomizableCalBox, ColumnBase):
 
 @registerSignals
 class MoonStatusColumn(Column):
-	_name = "moonStatus"
+	objName = "moonStatus"
 	desc = _("Moon Status")
 	showCursor = False
 	customizeWidth = True
@@ -1288,7 +1288,7 @@ class MoonStatusColumn(Column):
 
 @registerSignals
 class CalObj(gtk.Box, CustomizableCalBox, CalBase):
-	_name = "weekCal"
+	objName = "weekCal"
 	desc = _("Week Calendar")
 	expand = True
 	optionsPageSpacing = 10
@@ -1344,7 +1344,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 			DaysOfMonthColumnGroup(self),
 			MoonStatusColumn(self),
 		]
-		defaultItemsDict = {item._name: item for item in defaultItems}
+		defaultItemsDict = {item.objName: item for item in defaultItems}
 		itemNames = list(defaultItemsDict.keys())
 		for name, enable in ui.wcalItems:
 			item = defaultItemsDict.get(name)
@@ -1585,7 +1585,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 
 	def getToolbar(self):
 		for item in self.items:
-			if item.enable and item._name == "toolbar":
+			if item.enable and item.objName == "toolbar":
 				return item
 		return None
 
@@ -1593,7 +1593,7 @@ class CalObj(gtk.Box, CustomizableCalBox, CalBase):
 		toolbar = self.getToolbar()
 		if toolbar:
 			for item in toolbar.items:
-				if item.enable and item._name == "mainMenu":
+				if item.enable and item.objName == "mainMenu":
 					return item.getMenuPos()
 		if rtl:
 			return self.get_allocation().width, 0
