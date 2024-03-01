@@ -41,7 +41,7 @@ from scal3.utils import toStr
 
 @registerSignals
 class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
-	_name = "eventDayView"
+	objName = "eventDayView"
 	desc = _("Events of Day")
 	itemListCustomizable = False
 
@@ -508,7 +508,7 @@ class DayOccurrenceView(gtk.TextView, CustomizableCalObj):
 class LimitedHeightDayOccurrenceView(gtk.ScrolledWindow, CustomizableCalObj):
 	itemListCustomizable = False
 	optionsPageSpacing = 20
-	_name = DayOccurrenceView._name
+	objName = DayOccurrenceView.objName
 	desc = DayOccurrenceView.desc
 
 	def __init__(self, **kwargs):
