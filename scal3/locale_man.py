@@ -402,7 +402,7 @@ def numEncode(
 		localeMode = "en"
 	if localeMode is None:
 		localeMode = langSh
-	elif isinstance(localeMode, int):
+	elif isinstance(localeMode, int):  # noqa: SIM102
 		if langSh != "en":
 			module, ok = calTypes[localeMode]
 			if not ok:
@@ -443,7 +443,7 @@ def textNumEncode(
 		localeMode = "en"
 	if localeMode is None:
 		localeMode = langSh
-	elif isinstance(localeMode, int):
+	elif isinstance(localeMode, int):  # noqa: SIM102
 		if langSh != "en":
 			module, ok = calTypes[localeMode]
 			if not ok:
@@ -465,7 +465,7 @@ def textNumEncode(
 				elif c in (",", "_"):
 					if changeSpecialChars:
 						c = tr(c)
-				elif c == "%":
+				elif c == "%":  # noqa: SIM102
 					if changeSpecialChars:
 						c = tr(c, ctx="number formatting")
 			res += c
@@ -547,10 +547,9 @@ def dateLocale(year: int, month: int, day: int) -> str:
 def cutText(text: str, n: int) -> str:
 	text = toStr(text)
 	newText = text[:n]
-	if len(text) > n:
-		if text[n] not in list(string.printable) + [ZWNJ]:
-			with suppress(UnicodeDecodeError):
-				newText += ZWJ
+	if len(text) > n and text[n] not in list(string.printable) + [ZWNJ]:
+		with suppress(UnicodeDecodeError):
+			newText += ZWJ
 	return newText
 
 

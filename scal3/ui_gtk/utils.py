@@ -397,10 +397,9 @@ def dialog_add_button(
 		b.set_always_show_image(True)
 		# FIXME: how to get rid of set_image calls?
 		useIconName = bool(iconName)
-		if ui.useSystemIcons:
-			if imageName and not iconName:
-				iconName = iconNameByImageName.get(imageName, "")
-				useIconName = bool(iconName)
+		if ui.useSystemIcons and imageName and not iconName:
+			iconName = iconNameByImageName.get(imageName, "")
+			useIconName = bool(iconName)
 		if useIconName:
 			b.set_image(imageFromIconName(iconName, gtk.IconSize.BUTTON))
 		elif imageName:

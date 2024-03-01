@@ -204,9 +204,8 @@ class WinLayoutBox(WinLayoutBase):
 
 	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
 		for item in self.items:
-			if item.enable:
-				if item.onKeyPress(arg, gevent):
-					break
+			if item.enable and item.onKeyPress(arg, gevent):
+				break
 
 	def showHide(self):
 		if self.enable:

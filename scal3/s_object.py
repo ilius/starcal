@@ -172,18 +172,17 @@ class SObj:
 
 
 def makeOrderedData(data: "dict | list", params):
-	if isinstance(data, dict):
-		if params:
-			data = list(data.items())
+	if isinstance(data, dict) and params:
+		data = list(data.items())
 
-			def paramIndex(key):
-				try:
-					return params.index(key)
-				except ValueError:
-					return len(params)
+		def paramIndex(key):
+			try:
+				return params.index(key)
+			except ValueError:
+				return len(params)
 
-			data.sort(key=lambda x: paramIndex(x[0]))
-			data = OrderedDict(data)
+		data.sort(key=lambda x: paramIndex(x[0]))
+		data = OrderedDict(data)
 
 	return data
 

@@ -1599,7 +1599,8 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		kname = gdk.keyval_name(gevent.keyval).lower()
 		if kname == "escape":
 			return self.onEscape()
-		if kname == "menu":  # simulate right click (key beside Right-Ctrl)
+		if kname == "menu":  # noqa: SIM102
+			# simulate right click (key beside Right-Ctrl)
 			if self.multiSelect:
 				self.menubar.select_item(self.multiSelectItemMain)
 				return True
@@ -1901,10 +1902,13 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 
 		if len(objs) == 1:  # group, not event
 			group = objs[0]
-			if group.name != "trash" and col == self.pixbufCol:
-				if self.toggleEnableGroup(group, path):
-					treev.set_cursor(path)
-					return True
+			if (
+				group.name != "trash" and
+				col == self.pixbufCol and
+				self.toggleEnableGroup(group, path)
+			):
+				treev.set_cursor(path)
+				return True
 			return False
 
 		if len(objs) != 2:
@@ -2117,19 +2121,18 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 			raise RuntimeError(f"invalid {path = }")
 		group = self.getObjsByPath(path)[0]
 		eventCount = len(group)
-		if eventCount > 0:
-			if not confirm(
-				_(
-					'Press Confirm if you want to delete group "{groupTitle}" '
-					"and move its {eventCount} events to {trashTitle}",
-				).format(
-					groupTitle=group.title,
-					eventCount=_(eventCount),
-					trashTitle=ui.eventTrash.title,
-				),
-				transient_for=self,
-			):
-				return
+		if eventCount > 0 and not confirm(
+			_(
+				'Press Confirm if you want to delete group "{groupTitle}" '
+				"and move its {eventCount} events to {trashTitle}",
+			).format(
+				groupTitle=group.title,
+				eventCount=_(eventCount),
+				trashTitle=ui.eventTrash.title,
+			),
+			transient_for=self,
+		):
+			return
 		self.waitingDo(self._do_deleteGroup, path, group)
 
 	def deleteGroupFromMenu(self, menu: gtk.Menu, path: list[int]) -> None:
@@ -2433,16 +2436,18 @@ class EventManagerDialog(gtk.Dialog, MyDialog, ud.BaseCalObj):  # FIXME
 		if not (isinstance(path, list) and len(path) == 1):
 			raise RuntimeError(f"invalid {path = }")
 		group = self.getObjsByPath(path)[0]
-		if GroupSortDialog(group, transient_for=self).run():
-			if group.id in self.loadedGroupIds or group.name == "trash":
-				groupIter = self.treeModel.get_iter(path)
-				pathObj = gtk.TreePath(path)
-				expanded = self.treev.row_expanded(pathObj)
-				self.removeIterChildren(groupIter)
-				for event in group:
-					self.appendEventRow(groupIter, event)
-				if expanded:
-					self.treev.expand_row(pathObj, False)
+		if not GroupSortDialog(group, transient_for=self).run():
+			return
+		if group.id not in self.loadedGroupIds and group.name != "trash":
+			return
+		groupIter = self.treeModel.get_iter(path)
+		pathObj = gtk.TreePath(path)
+		expanded = self.treev.row_expanded(pathObj)
+		self.removeIterChildren(groupIter)
+		for event in group:
+			self.appendEventRow(groupIter, event)
+		if expanded:
+			self.treev.expand_row(pathObj, False)
 
 	def groupConvertCalTypeFromMenu(
 		self,

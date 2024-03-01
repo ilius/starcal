@@ -190,9 +190,8 @@ class BsonHistEventObj(BsonHistObj):
 		if allReadOnly:
 			log.info(f"events are read-only, ignored file {self.file}")
 			return
-		if hasattr(self, "uuid"):
-			if self.uuid is None:
-				self.set_uuid()
+		if hasattr(self, "uuid") and self.uuid is None:
+			self.set_uuid()
 		return BsonHistObj.save(self, *args)
 
 
@@ -1059,9 +1058,9 @@ class WeekMonthEventRule(EventRule):
 					calType,
 				)
 				jd += (self.weekDay - jwday(jd)) % 7
-				if self.wmIndex == 4:  # Last (Fouth or Fifth)
-					if jd_to(jd, calType)[1] != month:
-						jd -= 7
+				# Last (Fouth or Fifth)
+				if self.wmIndex == 4 and jd_to(jd, calType)[1] != month:
+					jd -= 7
 				if startJd <= jd < endJd:
 					jds.add(jd)
 		return JdOccurSet(jds)
@@ -1988,9 +1987,8 @@ class RuleContainer:
 		rulesOd = self.rulesOd.copy()
 		if newRule:
 			rulesOd[newRule.name] = newRule
-		if disabledRule:
-			if disabledRule.name in rulesOd:
-				del rulesOd[disabledRule.name]
+		if disabledRule and disabledRule.name in rulesOd:
+			del rulesOd[disabledRule.name]
 		provideList = []
 		for ruleName, rule in rulesOd.items():
 			provideList.append(ruleName)
@@ -2334,12 +2332,11 @@ class Event(BsonHistEventObj, RuleContainer, WithIcon):
 	def getTextParts(self, showDesc=True):
 		summary = self.getSummary()
 		##
-		if self.timeZoneEnable and self.timeZone:
-			if natz.gettz(self.timeZone) is None:
-				invalidTZ = _("Invalid Time Zone: {timeZoneName}").format(
-					timeZoneName=self.timeZone,
-				)
-				summary = "(" + invalidTZ + ")" + summary
+		if self.timeZoneEnable and self.timeZone and natz.gettz(self.timeZone) is None:
+			invalidTZ = _("Invalid Time Zone: {timeZoneName}").format(
+				timeZoneName=self.timeZone,
+			)
+			summary = "(" + invalidTZ + ")" + summary
 		####
 		description = self.getDescription()
 		if showDesc and description:
@@ -4851,9 +4848,8 @@ class NoteBook(EventGroup):
 	sortByDefault = "date"
 
 	def getSortByValue(self, event: "Event", attr: str) -> "Any":
-		if event.name in self.acceptsEventTypes:
-			if attr == "date":
-				return event.getJd()
+		if event.name in self.acceptsEventTypes and attr == "date":
+			return event.getJd()
 		return EventGroup.getSortByValue(self, event, attr)
 
 
@@ -5250,12 +5246,14 @@ class VcsEpochBaseEvent(Event):
 
 	def calcOccurrence(self, startJd: int, endJd: int) -> OccurSet:
 		epoch = self.epoch
-		if epoch is not None:
-			if self.getEpochFromJd(startJd) <= epoch < self.getEpochFromJd(endJd):
-				if not self.parent.showSeconds:
-					log.info("-------- showSeconds = False")
-					epoch -= epoch % 60
-				return TimeListOccurSet(epoch)
+		if (
+			epoch is not None and
+			self.getEpochFromJd(startJd) <= epoch < self.getEpochFromJd(endJd)
+		):
+			if not self.parent.showSeconds:
+				log.info("-------- showSeconds = False")
+				epoch -= epoch % 60
+			return TimeListOccurSet(epoch)
 		return TimeListOccurSet()
 
 
@@ -5598,9 +5596,8 @@ class VcsDailyStatEvent(Event):
 
 	def calcOccurrence(self, startJd: int, endJd: int) -> OccurSet:
 		jd = self.jd
-		if jd is not None:
-			if startJd <= jd < endJd:
-				return JdOccurSet({jd})
+		if jd is not None and startJd <= jd < endJd:
+			return JdOccurSet({jd})
 		return JdOccurSet()
 
 

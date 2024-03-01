@@ -738,7 +738,7 @@ class EventsTextColumn(Column):
 			if item.time_epoch[1] < currentTime:
 				if ui.wcal_eventsText_pastColorEnable:
 					color = ui.wcal_eventsText_pastColor
-			elif item.time_epoch[0] <= currentTime:
+			elif item.time_epoch[0] <= currentTime:  # noqa: SIM102
 				if ui.wcal_eventsText_ongoingColorEnable:
 					color = ui.wcal_eventsText_ongoingColor
 			data.append((line, color))

@@ -53,7 +53,7 @@ elif os.sep == "/":
 		scalDir = cwd + scalDir[1:]
 	elif scalDir[0] != "/":
 		scalDir = join(cwd, scalDir)
-elif os.sep == "\\":
+elif os.sep == "\\":  # noqa: SIM102
 	if scalDir.startswith(".\\"):
 		scalDir = cwd + scalDir[1:]
 
