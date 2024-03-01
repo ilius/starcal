@@ -46,7 +46,7 @@ class WinLayoutBase(CustomizableCalObj):
 			raise ValueError("vertical= argument is missing")
 		if expand is None:
 			raise ValueError("expand= argument is missing")
-		self._name = name
+		self.objName = name
 		self.desc = desc
 		self.enableParam = enableParam
 		self.vertical = vertical
@@ -129,13 +129,13 @@ class WinLayoutObj(WinLayoutBase):
 		pass
 
 	def getOptionsButtonBox(self):
-		# log.debug(f"WinLayoutObj: getOptionsButtonBox: name={self._name}")
+		# log.debug(f"WinLayoutObj: getOptionsButtonBox: name={self.objName}")
 		if self.optionsButtonBox is not None:
 			return self.optionsButtonBox
 		item = self.getWidget()
 		page = StackPage()
 		page.pageWidget = VBox(spacing=item.optionsPageSpacing)
-		page.pageName = item._name
+		page.pageName = item.objName
 		page.pageTitle = item.desc
 		pageLabel = self.desc
 		if not item.enable:
@@ -236,18 +236,18 @@ class WinLayoutBox(WinLayoutBase):
 			box.remove(child)
 		itemNames = []
 		for item in self.items:
-			itemNames.append(item._name)
+			itemNames.append(item.objName)
 			if item.loaded:
 				pack(box, item.getWidget(), item.expand, item.expand)
 				item.showHide()
 		setattr(ui, self.itemsParam, itemNames)
 
 	def setItemsOrder(self, itemNames):
-		itemByName = {item._name: item for item in self.items}
+		itemByName = {item.objName: item for item in self.items}
 		self.items = [itemByName[name] for name in itemNames]
 
 	def getOptionsButtonBox(self):
-		# log.debug(f"WinLayoutBox: getOptionsButtonBox: name={self._name}")
+		# log.debug(f"WinLayoutBox: getOptionsButtonBox: name={self.objName}")
 		if self.optionsButtonBox is not None:
 			return self.optionsButtonBox
 
@@ -324,8 +324,8 @@ class WinLayoutBox(WinLayoutBase):
 			for page in item.getSubPages():
 				if not page.pageName:
 					raise ValueError(f"pageName empty, pagePath={page.pagePath}")
-				page.pageParent = self._name
-				page.pagePath = self._name + "." + page.pageName
+				page.pageParent = self.objName
+				page.pagePath = self.objName + "." + page.pageName
 				subPages.append(page)
 		self.subPages = subPages
 		return subPages
