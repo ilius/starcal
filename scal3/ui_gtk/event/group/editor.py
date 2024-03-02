@@ -31,7 +31,7 @@ class GroupEditorDialog(gtk.Dialog):
 			label=_("_Save"),
 			res=gtk.ResponseType.OK,
 		)
-		self.connect("response", lambda w, e: self.hide())
+		self.connect("response", lambda _w, _e: self.hide())
 		#######
 		self.activeWidget = None
 		#######
@@ -73,7 +73,7 @@ class GroupEditorDialog(gtk.Dialog):
 			num += 1
 		return makeTitle(num)
 
-	def typeChanged(self, combo=None):
+	def typeChanged(self, _combo=None):
 		if self.activeWidget:
 			self.activeWidget.updateVars()
 			self.activeWidget.destroy()
@@ -102,10 +102,10 @@ class GroupEditorDialog(gtk.Dialog):
 		if gtk.Dialog.run(self) != gtk.ResponseType.OK:
 			return None
 		self.activeWidget.updateVars()
-		self._group.save()  ## FIXME
+		self._group.save()  # FIXME
 		if self.isNew:
 			event_lib.lastIds.save()
 		else:
-			ui.eventGroups[self._group.id] = self._group  ## FIXME
+			ui.eventGroups[self._group.id] = self._group  # FIXME
 		self.destroy()
 		return self._group

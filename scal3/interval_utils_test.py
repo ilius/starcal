@@ -174,7 +174,7 @@ def testOverlapsSpeed():
 	t0 = time()
 	for a, b in data:
 		ab_overlaps(a0, b0, a, b)
-	log.info(f"{time()-t0:.2f}")
+	log.info(f"{time() - t0:.2f}")
 
 
 if __name__ == "__main__":

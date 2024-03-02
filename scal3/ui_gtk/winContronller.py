@@ -63,19 +63,19 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 		self.connect("leave-notify-event", self.leaveNotify)
 		self.connect("button-press-event", self.onButtonPress)
 		self.connect("button-release-event", self.onButtonRelease)
-		set_tooltip(self, self.desc)  ## FIXME
+		set_tooltip(self, self.desc)  # FIXME
 
-	def enterNotify(self, widget, gevent):
+	def enterNotify(self, _widget, _gevent):
 		self.setFocus(True)
 
-	def leaveNotify(self, widget, gevent):
+	def leaveNotify(self, _widget, _gevent):
 		if self.controller.winFocused:
 			self.setFocus(False)
 		else:
 			self.setInactive()
 		return False
 
-	def onButtonPress(self, widget, gevent):
+	def onButtonPress(self, _widget, _gevent):
 		self.setFocus(False)
 		return True
 
@@ -85,7 +85,7 @@ class WinConButton(gtk.EventBox, CustomizableCalObj):
 	def onRightClick(self, gWin, gevent):
 		pass
 
-	def onButtonRelease(self, button, gevent):
+	def onButtonRelease(self, _button, gevent):
 		if gevent.button == 1:
 			self.onClick(self.controller.win, gevent)
 			return True
@@ -127,7 +127,7 @@ class WinConButtonClose(WinConButton):
 	imageNameFocus = "close-focus"
 	imageNameInactive = "close-inactive"
 
-	def onClick(self, gWin, gevent):
+	def onClick(self, gWin, _gevent):
 		gWin.emit("delete-event", gdk.Event())
 
 
@@ -142,7 +142,7 @@ class WinConButtonRightPanel(WinConButton):
 		self.imageNameInactive = f"{direc}-inactive"
 		WinConButton.__init__(self, controller)
 
-	def onClick(self, gWin, gevent):
+	def onClick(self, gWin, _gevent):
 		gWin.emit("toggle-right-panel")
 
 
@@ -188,7 +188,7 @@ class CalObj(gtk.Box, CustomizableCalBox):
 			spacing=ui.winControllerSpacing,
 		)
 		self.set_spacing(ui.winControllerSpacing)
-		self.set_direction(gtk.TextDirection.LTR)  ## FIXME
+		self.set_direction(gtk.TextDirection.LTR)  # FIXME
 		self.initVars()
 		###########
 		# passing `self` to ud.hasLightTheme does not work!
@@ -202,17 +202,17 @@ class CalObj(gtk.Box, CustomizableCalBox):
 		##################
 		if win:
 			win.winCon = self  # dirty FIXME
-		##gWin.connect("focus-in-event", self.windowFocusIn)
-		##gWin.connect("focus-out-event", self.windowFocusOut)
+		# gWin.connect("focus-in-event", self.windowFocusIn)
+		# gWin.connect("focus-out-event", self.windowFocusOut)
 		self.winFocused = True
 
-	def windowFocusIn(self, widget=None, event=None):
+	def windowFocusIn(self, _widget=None, _event=None):
 		for b in self.items:
 			b.setFocus(False)
 		self.winFocused = True
 		return False
 
-	def windowFocusOut(self, widget=None, event=None):
+	def windowFocusOut(self, _widget=None, _event=None):
 		for b in self.items:
 			b.setInactive()
 		self.winFocused = False

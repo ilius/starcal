@@ -3,9 +3,9 @@
 from gi.repository import Gdk as gdk
 
 __all__ = [
+	"gdkColorToRgb",
 	"rgbToGdkColor",
 	"rgbaToGdkRGBA",
-	"gdkColorToRgb",
 ]
 
 

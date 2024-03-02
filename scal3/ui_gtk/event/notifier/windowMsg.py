@@ -19,7 +19,7 @@ class WidgetClass(gtk.Entry):
 		self.notifier.extraMessage = self.get_text()
 
 
-def hideWindow(widget, dialog):
+def hideWindow(_widget, dialog):
 	dialog.hide()
 	return True
 
@@ -55,5 +55,5 @@ def notify(notifier, finishFunc):  # FIXME
 	okB.connect("clicked", hideWindow, dialog)
 	####
 	dialog.vbox.show_all()
-	dialog.connect("response", lambda w, e: finishFunc())
+	dialog.connect("response", lambda _w, _e: finishFunc())
 	dialog.present()

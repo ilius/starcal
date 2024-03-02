@@ -101,7 +101,7 @@ class EventTagsAndIconSelect(gtk.Box):
 		self.show_all()
 		hideList(self.customTypeWidgets)
 
-	def scrollEvent(self, widget, gevent):
+	def scrollEvent(self, _widget, gevent):
 		self.swin.get_hscrollbar().emit("scroll-event", gevent)
 
 	def typeComboChanged(self, combo):
@@ -148,7 +148,7 @@ class TagsListBox(gtk.Box):
 	Most used for this event type (first)
 	"""
 
-	def __init__(self, eventType=""):  ## "" == "custom"
+	def __init__(self, eventType=""):  # "" == "custom"
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		####
 		self.eventType = eventType
@@ -198,7 +198,7 @@ class TagsListBox(gtk.Box):
 		cell = gtk.CellRendererText()
 		col = gtk.TreeViewColumn(title=_("Usage"), cell_renderer=cell, text=4)
 		# col.set_resizable(True)
-		col.set_sort_column_id(3)  ## previous column (hidden and int)
+		col.set_sort_column_id(3)  # previous column (hidden and int)
 		col.set_sort_indicator(True)
 		treev.append_column(col)
 		###
@@ -216,7 +216,7 @@ class TagsListBox(gtk.Box):
 		self.optionsChanged()
 		self.show_all()
 
-	def optionsChanged(self, widget=None, tags=None):
+	def optionsChanged(self, _widget=None, tags=None):
 		if not tags:
 			tags = self.getData()
 		tagObjList = ui.eventTags
@@ -227,7 +227,7 @@ class TagsListBox(gtk.Box):
 			self.treeModel.append(
 				(
 					t.name,
-					t.name in tags,  ## True or False
+					t.name in tags,  # True or False
 					t.desc,
 					t.usage,
 					_(t.usage),
@@ -295,7 +295,7 @@ class ViewEditTagsHbox(gtk.Box):
 		pack(self, self.editButton)
 		self.show_all()
 
-	def onEditButtonClick(self, widget):
+	def onEditButtonClick(self, _widget):
 		openWindow(self.dialog)
 
 	def dialogResponse(self, dialog, resp):

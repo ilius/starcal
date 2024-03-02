@@ -46,7 +46,7 @@ lint.select = [
 	"TID",  # flake8-tidy-imports
 	"TCH",  # flake8-type-checking
 	"INT",  # flake8-gettext
-	# "ARG",   # flake8-unused-arguments
+	"ARG",   # flake8-unused-arguments
 	# "PTH",   # flake8-use-pathlib
 	# "TD",    # flake8-todos
 	# "FIX",   # flake8-fixme: just shows me FIXMEs and TODOs
@@ -136,7 +136,7 @@ lint.ignore = [
 lint.fixable = [
 	# "SIM",
 	"F401",
-	# "E", "F", "W",
+	"E", "F", "W",
 	"RET",
 	"I",
 	"COM",
@@ -248,3 +248,21 @@ ignore = [
 # refurb has no exclude param!
 #load = ["some_module"]
 #quiet = true
+
+[tool.vulture]
+exclude = [
+	"scal3/account/",
+	"*_test.py",
+	"scal3/ui_gtk/arch-enable-locale.py",
+]
+ignore_names = [
+	"OPEN_START",
+	"validDate",
+	"prefVersion",
+	"getMonthWeekNth",
+	"rgbToInt",
+	"rgbToHsl",
+	"htmlColorToRgb",
+    "_*",
+	"test*",
+]

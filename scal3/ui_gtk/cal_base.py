@@ -87,7 +87,7 @@ class CalBase(CustomizableCalObj):
 	def onCurrentDateChange(self, gdate):  # noqa: ARG002
 		self.queue_draw()
 
-	def getCellPagePlus(self, jd, plus):  ## use for sliding
+	def getCellPagePlus(self, jd, plus):  # use for sliding
 		raise NotImplementedError
 
 	def defineDragAndDrop(self):
@@ -114,9 +114,9 @@ class CalBase(CustomizableCalObj):
 		# dragged day just like gnome-calendar-applet
 		# (but it seems not a logical behaviar)
 		# self.drag_source_add_uri_targets()#???????
-		##self.connect("drag-end", self.dragCalEnd)
-		##self.connect("drag-drop", self.dragCalDrop)
-		##self.connect("drag-failed", self.dragCalFailed)
+		# self.connect("drag-end", self.dragCalEnd)
+		# self.connect("drag-drop", self.dragCalDrop)
+		# self.connect("drag-failed", self.dragCalFailed)
 		# self.connect("drag-leave", self.dragLeave)
 
 	def dragDataGet(self, _obj, _context, selection, _target_id, _etime):

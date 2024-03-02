@@ -30,7 +30,7 @@ class IconSelectButton(gtk.Button):
 		("changed", [str]),
 	]
 
-	def __init__(self, filename="", transient_for=None):
+	def __init__(self, filename=""):
 		gtk.Button.__init__(self)
 		self.image = gtk.Image()
 		self.add(self.image)
@@ -98,7 +98,7 @@ class IconSelectButton(gtk.Button):
 
 		return dialog
 
-	def onButtonPressEvent(self, widget, gevent):
+	def onButtonPressEvent(self, _widget, gevent):
 		b = gevent.button
 		if b == 1:
 			dialog = self.createDialog()
@@ -107,7 +107,7 @@ class IconSelectButton(gtk.Button):
 		elif b == 3:
 			self.menu.popup(None, None, None, None, b, gevent.time)
 
-	def menuItemActivate(self, widget, icon):
+	def menuItemActivate(self, _widget, icon):
 		self.set_filename(icon)
 		self.emit("changed", icon)
 
