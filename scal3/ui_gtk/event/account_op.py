@@ -69,7 +69,7 @@ class AccountEditorDialog(gtk.Dialog):
 			account.setId(self.account.id)
 			del self.account
 		if self.isNew:
-			account.title = cls.desc  ## FIXME
+			account.title = cls.desc  # FIXME
 		self.account = account
 		self.activeWidget = makeWidget(account)
 		pack(self.vbox, self.activeWidget)

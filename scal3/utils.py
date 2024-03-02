@@ -68,6 +68,9 @@ def versionLessThan(v0: str, v1: str) -> bool:
 
 	return version.parse(v0) < version.parse(v1)
 
+# Note: to check if saved preferences are older than a version:
+# versionLessThan(core.prefVersion, v)
+
 
 class FallbackLogger:
 	def __init__(self):
