@@ -33,7 +33,7 @@ class MainMenuToolBoxItem(ToolBoxItem):
 			y0 + h // 2,
 		)
 
-	def onButtonPress(self, widget=None, gevent=None):
+	def onButtonPress(self, _widget=None, gevent=None):
 		toolbar = self.get_parent()
 		x, y = self.translate_coordinates(
 			toolbar.get_parent(),

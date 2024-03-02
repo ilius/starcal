@@ -80,7 +80,7 @@ class WidgetClass(gtk.Box):
 		###
 		pack(hbox, gtk.Label(label=_("Calendar Type")))
 		combo = CalTypeCombo()
-		combo.set_active(calTypes.primary)  ## overwritten in updateWidget()
+		combo.set_active(calTypes.primary)  # overwritten in updateWidget()
 		pack(hbox, combo)
 		pack(hbox, gtk.Label(), 1, 1)
 		self.calTypeCombo = combo
@@ -167,7 +167,7 @@ class WidgetClass(gtk.Box):
 			self.event.timeZoneEnable = self.tzCheck.get_active()
 			self.event.timeZone = self.tzCombo.get_text()
 		else:
-			self.event.timeZoneEnable = False  ## FIXME
+			self.event.timeZoneEnable = False  # FIXME
 		self.event.summary = self.summaryEntry.get_text()
 		self.event.description = self.descriptionInput.get_text()
 		self.event.icon = self.iconSelect.get_filename()
@@ -178,7 +178,7 @@ class WidgetClass(gtk.Box):
 				box.updateVars()
 		#####
 
-	def calTypeComboChanged(self, obj=None):  ## FIXME
+	def calTypeComboChanged(self, obj=None):  # FIXME
 		pass
 
 
@@ -219,7 +219,7 @@ class FilesBox(gtk.Box):
 		pack(self.vbox, hbox)
 		hbox.show_all()
 
-	def onAddClick(self, button):
+	def onAddClick(self, _button):
 		fcd = gtk.FileChooserDialog(
 			title=_("Add File"),
 		)
@@ -236,7 +236,7 @@ class FilesBox(gtk.Box):
 			res=gtk.ResponseType.CANCEL,
 		)
 		fcd.set_local_only(True)
-		fcd.connect("response", lambda w, e: fcd.hide())
+		fcd.connect("response", lambda _w, _e: fcd.hide())
 		if fcd.run() == gtk.ResponseType.OK:
 			from shutil import copy
 
@@ -267,11 +267,11 @@ class FilesBox(gtk.Box):
 		for fname in self.event.files:
 			self.showFile(fname)
 
-	def updateVars(self):  ## FIXME
+	def updateVars(self):  # FIXME
 		pass
 
 
-class NotificationBox(ExpanderFrame):  ## or NotificationBox FIXME
+class NotificationBox(ExpanderFrame):  # or NotificationBox FIXME
 	def __init__(self, event):
 		ExpanderFrame.__init__(self, label=_("Notification"))
 		self.event = event
@@ -349,7 +349,7 @@ class DurationInputBox(gtk.Box):
 					" " + unitName.capitalize() + "s",
 				),
 			)
-		combo.set_active(2)  ## hour FIXME
+		combo.set_active(2)  # hour FIXME
 		pack(self, combo)
 		self.unitCombo = combo
 
@@ -410,14 +410,14 @@ class StrListEditor(gtk.Box):
 		#######
 		pack(self, toolbar)
 
-	def onAddClick(self, button):
+	def onAddClick(self, _button):
 		cur = self.treev.get_cursor()
 		if cur:
 			self.treeModel.insert(cur[0], [self.defaultValue])
 		else:
 			self.treeModel.append([self.defaultValue])
 
-	def onMoveUpClick(self, button):
+	def onMoveUpClick(self, _button):
 		cur = self.treev.get_cursor()
 		if not cur:
 			return
@@ -432,7 +432,7 @@ class StrListEditor(gtk.Box):
 		)
 		self.treev.set_cursor(i - 1)
 
-	def onMoveDownClick(self, button):
+	def onMoveDownClick(self, _button):
 		cur = self.treev.get_cursor()
 		if not cur:
 			return
@@ -499,7 +499,7 @@ class GroupsTreeCheckList(gtk.TreeView):
 			int,
 			bool,
 			str,
-		)  ## groupId(hidden), enable, summary
+		)  # groupId(hidden), enable, summary
 		self.set_model(self.treeModel)
 		self.set_headers_visible(False)
 		###
@@ -566,7 +566,7 @@ class SingleGroupComboBox(gtk.ComboBox):
 		ls.clear()
 		###
 		for group in ui.eventGroups:
-			if not group.enable:  ## FIXME
+			if not group.enable:  # FIXME
 				continue
 			ls.append(getGroupRow(group))
 		###

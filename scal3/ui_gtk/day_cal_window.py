@@ -309,7 +309,7 @@ class DayCalWindow(gtk.Window, ud.BaseCalObj):
 				f"failed to translate coordinates ({x}, {y}) from widget {widget}",
 			)
 		dx, dy = coord
-		foo, wx, wy = self.get_window().get_origin()
+		_foo, wx, wy = self.get_window().get_origin()
 		x = wx + dx
 		y = wy + dy
 		if rtl:

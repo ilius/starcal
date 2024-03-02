@@ -24,7 +24,7 @@ def numFaDecode(numFa):
 
 
 def cleanRawText(text):
-	text = text.strip()  ## .replace("]]", "").replace("[[", "")
+	text = text.strip()  # .replace("]]", "").replace("[[", "")
 	for part in re.findall(r"\[\[.*?\]\]", text):
 		part2 = part.split("|")[-1]
 		text = text.replace(part, part2)
