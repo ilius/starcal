@@ -32,10 +32,10 @@ from scal3.vcs_modules import encodeShortStat, getCommitListFromEst
 
 def prepareObj(obj):
 	(
-		tree,
+		_tree,
 		branch,
 		repo,
-		relpath,
+		_relpath,
 	) = BzrDir.open_containing_tree_branch_or_repository(obj.vcsDir)
 	obj.branch = branch
 	obj.repo = repo
