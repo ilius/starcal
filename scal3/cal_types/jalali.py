@@ -152,10 +152,6 @@ def getMonthNameAb(tr, m, y=None):  # noqa: ARG001
 	return tr(fullEn)
 
 
-def getMonthsInYear(_y):
-	return 12
-
-
 epoch = 1948321
 minMonthLen = 29
 maxMonthLen = 31

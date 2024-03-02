@@ -238,7 +238,7 @@ class LocationDialog(gtk.Dialog):
 			else:
 				i = cur[0]
 				j = self.trees[i][0]
-				name, lname, lat, lng = self.cityData[j]
+				_name, lname, lat, lng = self.cityData[j]
 			self.entry_edit_name.set_text(lname)
 			self.spin_lat.set_value(lat)
 			self.spin_lng.set_value(lng)

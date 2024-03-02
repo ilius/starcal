@@ -34,10 +34,10 @@ from scal3.ui_gtk.utils import showError
 
 
 class WidgetClass(gtk.Box):
-	def __init__(self, event):  ## FIXME
+	def __init__(self, event):  # FIXME
 		gtk.Box.__init__(self, orientation=gtk.Orientation.VERTICAL)
 		self.event = event
-		assert event.parent.name == "universityTerm"  ## FIXME
+		assert event.parent.name == "universityTerm"  # FIXME
 		sizeGroup = gtk.SizeGroup(mode=gtk.SizeGroupMode.HORIZONTAL)
 		#####
 		if not event.parent.courses:
@@ -155,7 +155,7 @@ class WidgetClass(gtk.Box):
 	# 	self.summaryEntry.set_text(summary)
 	# 	self.event.summary = summary
 
-	def updateWidget(self):  ## FIXME
+	def updateWidget(self):  # FIXME
 		if self.event.courseId is None:
 			pass
 		else:
@@ -191,7 +191,7 @@ class WidgetClass(gtk.Box):
 		####
 		# self.filesBox.updateWidget()
 
-	def updateVars(self):  ## FIXME
+	def updateVars(self):  # FIXME
 		courseIndex = self.courseCombo.get_active()
 		if courseIndex is None:
 			showError(_("No course is selected"), transient_for=ui.eventManDialog)
@@ -203,7 +203,7 @@ class WidgetClass(gtk.Box):
 		weekDay, ok = self.event["weekDay"]
 		if not ok:
 			raise RuntimeError("no weekDay rule")
-		weekDay.weekDayList = [self.weekDayCombo.getValue()]  ## FIXME
+		weekDay.weekDayList = [self.weekDayCombo.getValue()]  # FIXME
 		##
 		dayTimeRange, ok = self.event["dayTimeRange"]
 		if not ok:

@@ -69,10 +69,6 @@ def getMonthNameAb(tr, m, y: "int | None" = None) -> str:  # noqa: ARG001
 	return monthNameAb[m - 1]
 
 
-def getMonthsInYear(_y: int) -> int:
-	return 12
-
-
 epoch = 1721426
 minMonthLen = 29
 maxMonthLen = 31
@@ -147,7 +143,7 @@ def getMonthLen(y: int, m: int) -> int:
 	return to_jd(y, m + 1, 1) - to_jd(y, m, 1)
 
 
-J0001 = 1721426  # to_jd(1, 1, 1)
+# J0001 = 1721426  # to_jd(1, 1, 1)
 J1970 = 2440588  # to_jd(1970, 1, 1)
 
 J0001_epoch = -62135621220
