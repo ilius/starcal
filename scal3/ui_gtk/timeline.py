@@ -98,7 +98,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.timeWidth = timeWidth
 		self.queue_draw()
 
-	def onCenterToNowClick(self, arg=None):
+	def onCenterToNowClick(self, _arg=None):
 		self.centerToNow()
 		self.queue_draw()
 
@@ -266,15 +266,15 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 	def getButtons(self):
 		return self.basicButtons + self.movementButtons
 
-	def onMoveLeftClick(self, button: gdk.EventButton):
+	def onMoveLeftClick(self, _button: gdk.EventButton):
 		self.startAnimConstantAccel(-1, tl.movingHandForceButton)
 		# FIXME: what if animation is disabled?
 
-	def onMoveRightClick(self, button: gdk.EventButton):
+	def onMoveRightClick(self, _button: gdk.EventButton):
 		self.startAnimConstantAccel(1, tl.movingHandForceButton)
 		# FIXME: what if animation is disabled?
 
-	def onMoveStopClick(self, button: gdk.EventButton):
+	def onMoveStopClick(self, _button: gdk.EventButton):
 		self.stopMovingAnim()
 
 	def arrowButtonReleased(self):
@@ -283,13 +283,13 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		# if you want it to stop movement, set: self.movingV = 0
 		# just like self.stopMovingAnim
 
-	def onZoomMenuItemClick(self, item, timeWidth):
+	def onZoomMenuItemClick(self, _item, timeWidth):
 		timeCenter = self.timeStart + self.timeWidth / 2
 		self.timeStart = timeCenter - timeWidth / 2
 		self.timeWidth = timeWidth
 		self.queue_draw()
 
-	def zoomMenuOpen(self, button: gdk.EventButton):
+	def zoomMenuOpen(self, _button: gdk.EventButton):
 		avgYearLen = dayLen * calTypes.primaryModule().avgYearLen
 		etime = gtk.get_current_event_time()
 		menu = Menu()
@@ -319,7 +319,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			etime,
 		)
 
-	def openPreferences(self, arg=None):
+	def openPreferences(self, _arg=None):
 		from scal3.ui_gtk.timeline_prefs import TimeLinePreferencesWindow
 
 		if self.prefWindow is None:
@@ -399,7 +399,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		if layout:
 			# layout.set_auto_dir(0)  # FIXME
 			# log.debug(f"{layout.get_auto_dir() = }")
-			layoutW, layoutH = layout.get_pixel_size()
+			layoutW, _layoutH = layout.get_pixel_size()
 			layoutX = tick.pos - layoutW / 2.0
 			layoutY = tickH * tl.labelYRatio
 			cr.move_to(layoutX, layoutY)
@@ -419,7 +419,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 	def drawBoxEditingHelperLines(self, cr):
 		if not self.boxEditing:
 			return
-		editType, event, box, x0, t0 = self.boxEditing
+		_editType, _event, box, _x0, _t0 = self.boxEditing
 		setColor(cr, tl.fgColor)
 		d = tl.boxEditHelperLineWidth
 		cr.rectangle(
@@ -505,7 +505,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		for button in self.getButtons():
 			button.draw(cr, width, height)
 
-	def onExposeEvent(self, widget=None, event=None):
+	def onExposeEvent(self, _widget=None, _event=None):
 		win = self.get_window()
 		region = win.get_visible_region()
 		# FIXME: This must be freed with cairo_region_destroy() when you are done.
@@ -541,7 +541,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			return ""
 		return None
 
-	def onScroll(self, widget, gevent):
+	def onScroll(self, _widget, gevent):
 		smallForce = False
 		if gevent.is_scroll_stop_event():  # or gevent.is_stop == 1
 			smallForce = True
@@ -568,7 +568,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		self.queue_draw()
 		return True
 
-	def onButtonPress(self, obj, gevent):
+	def onButtonPress(self, _obj, gevent):
 		if self.pressingButton is not None:
 			self.pressingButton.onRelease()
 			self.pressingButton = None
@@ -679,7 +679,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 				menu.popup(None, None, None, None, 3, gevent.time)
 		return False
 
-	def motionNotify(self, obj, gevent):
+	def motionNotify(self, _obj, gevent):
 		if self.boxEditing:
 			editType, event, box, x0, t0 = self.boxEditing
 			t1 = t0 + (gevent.x - x0) / self.pixelPerSec
@@ -701,9 +701,9 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			)
 			self.queue_draw()
 
-	def buttonRelease(self, obj, gevent):
+	def buttonRelease(self, _obj, _gevent):
 		if self.boxEditing:
-			editType, event, box, x0, t0 = self.boxEditing
+			_editType, event, _box, _x0, _t0 = self.boxEditing
 			event.afterModify()
 			event.save()
 			self.boxEditing = None
@@ -717,7 +717,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		ud.BaseCalObj.onConfigChange(self, *a, **kw)
 		self.queue_draw()
 
-	def onEditEventClick(self, menu, winTitle, event, gid):
+	def onEditEventClick(self, _menu, winTitle, event, _gid):
 		from scal3.ui_gtk.event.editor import EventEditorDialog
 
 		event = EventEditorDialog(
@@ -730,7 +730,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 		ui.eventUpdateQueue.put("e", event, self)
 		self.onConfigChange()
 
-	def onEditGroupClick(self, menu, winTitle, group):
+	def onEditGroupClick(self, _menu, _winTitle, group):
 		from scal3.ui_gtk.event.group.editor import GroupEditorDialog
 
 		group = GroupEditorDialog(
@@ -744,7 +744,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			self.onConfigChange()
 			self.queue_draw()
 
-	def moveEventToTrash(self, menu, group, event):
+	def moveEventToTrash(self, _menu, group, event):
 		from scal3.ui_gtk.event.utils import confirmEventTrash
 
 		if not confirmEventTrash(event):
@@ -769,7 +769,7 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 	def keyboardZoom(self, zoomIn):
 		self.zoom(zoomIn, tl.keyboardZoomStep, 0.5)
 
-	def onKeyMoveToNow(self, gevent: gdk.EventKey):
+	def onKeyMoveToNow(self, _gevent: gdk.EventKey):
 		self.centerToNow()
 
 	def onKeyMoveRight(self, gevent: gdk.EventKey):
@@ -786,19 +786,19 @@ class TimeLine(gtk.DrawingArea, ud.BaseCalObj):
 			smallForce=(gevent.get_state() & gdk.ModifierType.SHIFT_MASK),
 		)
 
-	def onKeyMoveStop(self, gevent: gdk.EventKey):
+	def onKeyMoveStop(self, _gevent: gdk.EventKey):
 		self.stopMovingAnim()
 
-	def onKeyClose(self, gevent: gdk.EventKey):
+	def onKeyClose(self, _gevent: gdk.EventKey):
 		self.closeFunc()
 
-	def onKeyZoomIn(self, gevent: gdk.EventKey):
+	def onKeyZoomIn(self, _gevent: gdk.EventKey):
 		self.keyboardZoom(True)
 
-	def onKeyZoomOut(self, gevent: gdk.EventKey):
+	def onKeyZoomOut(self, _gevent: gdk.EventKey):
 		self.keyboardZoom(False)
 
-	def onKeyPress(self, arg: gtk.Widget, gevent: gdk.EventKey):
+	def onKeyPress(self, _arg: gtk.Widget, gevent: gdk.EventKey):
 		k = gdk.keyval_name(gevent.keyval).lower()
 		# log.debug(f"{now():.3f}")
 		action = tl.keys.get(k)
@@ -991,14 +991,14 @@ class TimeLineWindow(gtk.Window, ud.BaseCalObj):
 	def showDayInWeek(self, jd):
 		self.tline.showDayInWeek(jd)
 
-	def onCloseClick(self, arg=None, event=None):
+	def onCloseClick(self, _arg=None, _event=None):
 		if ui.mainWin:
 			self.hide()
 		else:
 			gtk.main_quit()  # FIXME
 		return True
 
-	def onButtonPress(self, obj, gevent):
+	def onButtonPress(self, _obj, gevent):
 		if gevent.button == 1:
 			self.begin_move_drag(
 				gevent.button,

@@ -54,9 +54,6 @@ if typing.TYPE_CHECKING:
 	from scal3.s_object import SObj
 
 
-uiName = ""
-
-
 #######################################################
 
 sysConfPath = join(sysConfDir, "ui.json")  # also includes LIVE config
@@ -268,7 +265,7 @@ fontParams = [
 	"mainWinRightPanelPluginsFont",
 ]
 
-confDecoders = {param: Font.fromList for param in fontParams}
+confDecoders = dict.fromkeys(fontParams, Font.fromList)
 confEncoders = {
 	# param: Font.to_json for param in fontParams
 }
@@ -870,8 +867,6 @@ def withFS(obj: "SObj") -> "SObj":
 ######################################################################
 
 localTzHist = []
-
-shownCals = []  # FIXME
 
 mcalTypeParams = [
 	{

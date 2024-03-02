@@ -173,7 +173,7 @@ class BasePlugin(SObj):
 			text += t
 		if self.lastDayMerge and d >= module.minMonthLen:
 			# and d <= module.maxMonthLen:
-			ny, nm, nd = jd_to(c.jd + 1, self.calType)
+			ny, nm, _nd = jd_to(c.jd + 1, self.calType)
 			if nm > m or ny > y:
 				nt = self.getText(y, m, d + 1)
 				if nt:
@@ -193,9 +193,6 @@ class BasePlugin(SObj):
 			myear, mmonth, mday = jd_to(jd, calType)
 			dayText = self.getText(myear, mmonth, mday)
 			if dayText:
-				gyear, gmonth, gday = jd_to(jd, GREGORIAN)
-				gyear2, gmonth2, gday2 = jd_to(jd + 1, GREGORIAN)
-				#######
 				icsText += (
 					"\n".join(
 						[
@@ -228,8 +225,6 @@ class DummyExternalPlugin(BasePlugin):
 	show_date = False
 	about = ""
 	authors = []
-	hasConfig = False
-	hasImage = False
 
 	def __repr__(self):
 		return f"loadPlugin({self.file!r}, enable=False, show_date=False)"
@@ -237,6 +232,8 @@ class DummyExternalPlugin(BasePlugin):
 	def __init__(self, _file, title):
 		self.file = _file
 		self.title = title
+		self.hasConfig = False
+		self.hasImage = False
 
 
 # TODO: switch to fs
@@ -386,7 +383,7 @@ class HolidayPlugin(BaseJsonPlugin):
 				and d == hd - 1
 				and hd >= module.minMonthLen
 			):
-				ny, nm, nd = jd_to(jd + 1, calType)
+				ny, nm, _nd = jd_to(jd + 1, calType)
 				if (ny, nm) > (y, m):
 					return True
 
@@ -415,9 +412,6 @@ class HolidayPlugin(BaseJsonPlugin):
 					isHoliday = True
 					break
 			if isHoliday:
-				gyear, gmonth, gday = jd_to(jd, GREGORIAN)
-				gyear2, gmonth2, gday2 = jd_to(jd + 1, GREGORIAN)
-				#######
 				icsText += (
 					"\n".join(
 						[
