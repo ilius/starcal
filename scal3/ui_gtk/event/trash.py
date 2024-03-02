@@ -30,7 +30,7 @@ class TrashEditorDialog(gtk.Dialog):
 			res=gtk.ResponseType.OK,
 		)
 		##
-		self.connect("response", lambda w, e: self.hide())
+		self.connect("response", lambda _w, _e: self.hide())
 		#######
 		self.trash = ui.eventTrash
 		##

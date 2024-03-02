@@ -29,7 +29,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		self.occurOffsets = []
 		self.initVars()
 
-	def copyAll(self, item):
+	def copyAll(self, _item):
 		return setClipboard(toStr(self.get_text()))
 
 	def cursorIsOnURL(self):
@@ -44,24 +44,18 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 	def has_selection(self):
 		buf = self.get_buffer()
 		try:
-			start_iter, end_iter = buf.get_selection_bounds()
+			buf.get_selection_bounds()
 		except ValueError:
 			return False
 		else:
 			return True
 
-	def copy(self, item):
+	def copy(self, _item):
 		buf = self.get_buffer()
 		start_iter, end_iter = buf.get_selection_bounds()
 		setClipboard(toStr(buf.get_text(start_iter, end_iter, True)))
 
-	def copyWordByIter(self, item, _iter):
-		text = self.get_text()
-		pos = _iter.get_offset()
-		word = findWordByPos(text, pos)[0]
-		setClipboard(word)
-
-	def copyText(self, item, text):
+	def copyText(self, _item, text):
 		setClipboard(text)
 
 	def onDateChange(self, *a, **kw):
@@ -72,7 +66,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		occurOffsets = []
 		eventSep = "\n"
 		for index, occurData in enumerate(cell.getPluginsData()):
-			plug, text = occurData
+			_plug, text = occurData
 			lastEndOffset = textbuff.get_end_iter().get_offset()
 			occurOffsets.append((lastEndOffset, occurData))
 			if index > 0:
@@ -81,7 +75,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		self.occurOffsets = occurOffsets
 
 	def findPluginByY(self, y: int):
-		lineIter, lineTop = self.get_line_at_y(y)
+		lineIter, _lineTop = self.get_line_at_y(y)
 		lineOffset = lineIter.get_offset()
 		# lineIter = self.get_buffer().get_iter_at_line(lineNum)
 		for lastEndOffset, occurData in reversed(self.occurOffsets):
@@ -125,13 +119,13 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 	def addExtraMenuItems(self, menu):
 		pass
 
-	def onPlugConfClick(self, item, plug):
+	def onPlugConfClick(self, _item, plug):
 		if not plug.hasConfig:
 			return
 		plug.open_configure()
 		ud.windowList.onConfigChange()
 
-	def onPlugAboutClick(self, item, plug):
+	def onPlugAboutClick(self, _item, plug):
 		from scal3.ui_gtk.about import AboutDialog
 
 		if hasattr(plug, "open_about"):
@@ -145,14 +139,14 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 			comments=plug.about,
 		)
 		about.set_transient_for(self.get_toplevel())
-		about.connect("delete-event", lambda w, e: w.destroy())
-		about.connect("response", lambda w, e: w.destroy())
+		about.connect("delete-event", lambda w, _e: w.destroy())
+		about.connect("response", lambda w, _e: w.destroy())
 		# about.set_resizable(True)
 		# about.vbox.show_all()  # OR about.vbox.show_all() ; about.run()
 		openWindow(about)  # FIXME
 		return None
 
-	def copyTextFromMenu(self, item, text):
+	def copyTextFromMenu(self, _item, text):
 		setClipboard(text)
 
 	def addText(self, text):
@@ -170,7 +164,7 @@ class PluginsTextView(gtk.TextView, CustomizableCalObj):
 		b_text = text.encode("utf-8")
 		textbuff.insert_markup(endIter, text, len(b_text))
 
-	def onButtonPress(self, widget, gevent):
+	def onButtonPress(self, _widget, gevent):
 		if gevent.button != 3:
 			return False
 		####
@@ -316,7 +310,7 @@ class PluginsTextBox(gtk.Box, CustomizableCalObj):
 		value = getattr(ui, self.justificationParam)
 		self.textview.set_justification(ud.justificationByName[value])
 
-	def onButtonPress(self, widget, gevent):
+	def onButtonPress(self, _widget, _gevent):
 		# log.debug("PluginsText: onButtonPress")
 		# without this, it will switch to begin_move_drag on button-press
 		return True

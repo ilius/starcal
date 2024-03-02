@@ -33,17 +33,17 @@ class WidgetClass(gtk.FileChooserButton):
 		self.notifier.alarmSound = self.get_filename()
 
 
-def notifyWait(notifier, finishFunc):
-	if notifier.alarmSound and notifier.playerCmd:
-		Popen(
-			[
-				notifier.playerCmd,
-				notifier.alarmSound,
-			],
-			stdout=PIPE,
-			stderr=PIPE,
-		).communicate()
-	# finishFunc()
+# def notifyWait(notifier, finishFunc):
+# 	if notifier.alarmSound and notifier.playerCmd:
+# 		Popen(
+# 			[
+# 				notifier.playerCmd,
+# 				notifier.alarmSound,
+# 			],
+# 			stdout=PIPE,
+# 			stderr=PIPE,
+# 		).communicate()
+# 	# finishFunc()
 
 
 def notify(notifier, finishFunc):

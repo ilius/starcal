@@ -67,10 +67,10 @@ class MyFontButton(gtk.FontButton):
 	def dragDataGet(
 		self,
 		fontb: gtk.FontButton,
-		context: gdk.DragContext,
+		_context: gdk.DragContext,
 		selection: gtk.SelectionData,
-		info: int,
-		etime: int,
+		_info: int,
+		_etime: int,
 	):
 		# log.debug("fontButtonDragDataGet")
 		valueStr = gfontEncode(fontb.get_font())
@@ -78,7 +78,16 @@ class MyFontButton(gtk.FontButton):
 		selection.set_text(valueStr, len(valueBytes))
 		return True
 
-	def dragDataRec(self, fontb, context, x, y, selection, target_id, etime):
+	def dragDataRec(
+		self,
+		fontb,
+		_context,
+		_x,
+		_y,
+		selection,
+		_target_id,
+		_etime,
+	):
 		# dtype = selection.get_data_type()
 		# log.debug(dtype ## UTF8_STRING)
 		text = selection.get_text()
@@ -90,7 +99,7 @@ class MyFontButton(gtk.FontButton):
 				self.emit("font-set")
 		return True
 
-	def dragBegin(self, fontb, context):
+	def dragBegin(self, _fontb, context):
 		# log.debug("fontBottonDragBegin"## caled before dragCalDataGet)
 		fontName = gtk.FontButton.get_font(self)
 		pbuf = newDndFontNamePixbuf(fontName)
@@ -118,7 +127,7 @@ class MyColorButton(gtk.ColorButton):
 		gtk.ColorChooser.set_use_alpha(self, True)
 		self.connect("color-set", self.update_tooltip)
 
-	def update_tooltip(self, colorb=None):
+	def update_tooltip(self, _colorb=None):
 		r, g, b, a = self.get_rgba()
 		if gtk.ColorChooser.get_use_alpha(self):
 			text = (
@@ -127,11 +136,11 @@ class MyColorButton(gtk.ColorButton):
 			)
 		else:
 			text = f"{_('Red')}: {_(r)}\n{_('Green')}: {_(g)}\n{_('Blue')}: {_(b)}"
-		##self.get_tooltip_window().set_direction(gtk.TextDirection.LTR)
-		## log.debug(self.get_tooltip_window())
-		self.set_tooltip_text(text)  ##???????????????? Right to left
+		# self.get_tooltip_window().set_direction(gtk.TextDirection.LTR)
+		# log.debug(self.get_tooltip_window())
+		self.set_tooltip_text(text)  # ???????????????? Right to left
 		# self.tt_label.set_label(text)##???????????? Dosent work
-		##self.set_tooltip_window(self.tt_win)
+		# self.set_tooltip_window(self.tt_win)
 
 	# color is a tuple of (r, g, b) or (r, g, b, a)
 	def set_rgba(self, color):

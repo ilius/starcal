@@ -40,9 +40,6 @@ from scal3.json_utils import (
 	saveModuleJsonConf,
 )
 from scal3.locale_man import tr as _
-from scal3.os_utils import (
-	getUserDisplayName,
-)
 from scal3.path import (
 	APP_NAME,
 	confDir,
@@ -51,9 +48,8 @@ from scal3.path import (
 	sourceDir,
 	sysConfDir,
 )
-from scal3.plugin_man import BasePlugin, loadPlugin
-from scal3.time_utils import getEpochFromJd, getJhmsFromEpoch
-from scal3.utils import versionLessThan
+from scal3.plugin_man import loadPlugin
+from scal3.time_utils import getJhmsFromEpoch
 
 try:
 	__file__
@@ -71,12 +67,11 @@ VERSION = "3.2.2"
 APP_DESC = "StarCalendar"
 COMMAND = APP_NAME
 homePage = "http://ilius.github.io/starcal/"
-userDisplayName = getUserDisplayName()
 
 
 # __plugin_api_get__ = [
 # 	"VERSION", "APP_NAME", "APP_DESC", "COMMAND",
-# 	"homePage", "osName", "userDisplayName"
+# 	"homePage", "osName",
 # 	"jd_to_primary", "primary_to_jd",
 # ]
 # __plugin_api_set__ = []
@@ -155,7 +150,7 @@ def saveConf() -> None:
 
 log = logger.get()
 
-fs = None  # type: "s_object.FileSystem"
+fs: s_object.FileSystem | None = None
 
 # ____________________________________________________________________ #
 # __________________ class and function defenitions __________________ #
@@ -175,7 +170,7 @@ def getVersion() -> str:
 	if not os.path.isdir(gitDir):
 		return VERSION
 	try:
-		outputB, error = subprocess.Popen(
+		outputB, _error = subprocess.Popen(
 			[  # noqa: S603, S607
 				"git",
 				"--git-dir",
@@ -229,19 +224,19 @@ def getCurrentJd() -> int:
 	return to_jd(y, m, d, GREGORIAN)
 
 
-def getWeekDateHmsFromEpoch(epoch: int) -> tuple[int, int, int, int, int]:
-	jd, hms = getJhmsFromEpoch(epoch)
-	absWeekNumber, weekDay = getWeekDateFromJd(jd)
-	return (absWeekNumber, weekDay, hms.h, hms.m, hms.s)
+# def getWeekDateHmsFromEpoch(epoch: int) -> tuple[int, int, int, int, int]:
+# 	jd, hms = getJhmsFromEpoch(epoch)
+# 	absWeekNumber, weekDay = getWeekDateFromJd(jd)
+# 	return (absWeekNumber, weekDay, hms.h, hms.m, hms.s)
 
 
 def getMonthWeekNth(jd: int, calType: int) -> tuple[int, int, int]:
 	if calType not in calTypes:
 		raise RuntimeError(f"cal type '{calType}' not found")
-	year, month, day = jd_to(jd, calType)
-	absWeekNumber, weekDay = getWeekDateFromJd(jd)
+	_year, month, day = jd_to(jd, calType)
+	_absWeekNumber, weekDay = getWeekDateFromJd(jd)
 	##
-	dayDiv, dayMode = divmod(day - 1, 7)
+	dayDiv = (day - 1) // 7
 	return month, dayDiv, weekDay
 
 
@@ -282,7 +277,7 @@ def getWeekNumberByJdAndYear(jd: int, year: int) -> int:
 	):
 		return 1
 	###
-	absWeekNum, weekDay = getWeekDateFromJd(jd)
+	absWeekNum, _weekDay = getWeekDateFromJd(jd)
 	(
 		ystartAbsWeekNum,
 		ystartWeekDay,
@@ -303,7 +298,7 @@ def getWeekNumber(year: int, month: int, day: int) -> int:
 
 
 def getWeekNumberByJd(jd: int) -> int:
-	year, month, day = jd_to_primary(jd)
+	year, _month, _day = jd_to_primary(jd)
 	return getWeekNumberByJdAndYear(jd, year)
 
 
@@ -312,12 +307,12 @@ def getWeekNumberByJd(jd: int) -> int:
 # 	return getWeekNumberByJd(primary_to_jd(year+1, 1, 1) - 7)
 
 
-def getJdFromWeek(year: int, weekNumber: int) -> int:  # FIXME
-	# weekDay == 0
-	wd0 = getWeekDay(year, 1, 1) - 1
-	wn0 = getWeekNumber(year, 1, 1, False)
-	jd0 = primary_to_jd(year, 1, 1)
-	return jd0 - wd0 + (weekNumber - wn0) * 7
+# def getJdFromWeek(year: int, weekNumber: int) -> int:  # FIXME
+# 	# weekDay == 0
+# 	wd0 = getWeekDay(year, 1, 1) - 1
+# 	wn0 = getWeekNumber(year, 1, 1, False)
+# 	jd0 = primary_to_jd(year, 1, 1)
+# 	return jd0 - wd0 + (weekNumber - wn0) * 7
 
 
 def getWeekDateFromJd(jd: int) -> tuple[int, int]:
@@ -390,7 +385,7 @@ def initPlugins(fs: "s_object.FileSystem") -> None:
 				continue
 			if fname.startswith("."):
 				continue
-			name, ext = os.path.splitext(fname)
+			_name, ext = os.path.splitext(fname)
 			if ext in (".txt", ".pyc"):
 				continue
 			path = f"{direc}/{fname}"
@@ -409,15 +404,6 @@ def initPlugins(fs: "s_object.FileSystem") -> None:
 	# Assert again that final plugins are OK
 	validatePlugList()
 	updatePlugins()
-
-
-def getHolidayPlugins() -> list[BasePlugin]:
-	hPlugs = []
-	for i in plugIndex:
-		plug = allPlugList[i]
-		if hasattr(plug, "holidays"):
-			hPlugs.append(plug)
-	return hPlugs
 
 
 def updatePlugins() -> None:
@@ -479,19 +465,6 @@ def restart() -> typing.NoReturn:
 # _____________________________________________________ #
 
 
-def mylocaltime(
-	sec: "int | None" = None,
-	calType: "int | None" = None,
-) -> list[int]:
-	from scal3.cal_types import convert
-
-	if calType is None:  # GREGORIAN
-		return list(localtime(sec))
-	t = list(localtime(sec))
-	t[:3] = convert(t[0], t[1], t[2], GREGORIAN, calType)
-	return t
-
-
 def compressLongInt(num: int) -> str:
 	"""Num must be less than 2**64."""
 	from base64 import b64encode
@@ -512,13 +485,6 @@ def getCompactTime(maxDays: int = 1000, minSec: float = 0.1) -> str:
 			now() % (maxDays * 24 * 3600) / minSec,
 		),
 	)
-
-
-def floatJdEncode(jd: int, calType: int) -> str:
-	jd, hms = getJhmsFromEpoch(getEpochFromJd(jd))
-	if calType not in calTypes:
-		raise RuntimeError(f"cal type '{calType}' not found")
-	return dateEncode(jd_to(jd, calType)) + f" {hms:HMS}"
 
 
 def epochDateTimeEncode(epoch: int) -> str:
@@ -558,10 +524,6 @@ def init() -> None:
 	fs = DefaultFileSystem(confDir)
 	loadConf()
 	initPlugins(fs)
-
-
-def prefIsOlderThan(v: str) -> bool:
-	return versionLessThan(prefVersion, v)
 
 
 # ___________________________________________________________________________ #

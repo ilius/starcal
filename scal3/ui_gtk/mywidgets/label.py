@@ -25,7 +25,7 @@ class SLabel(gtk.Label):
 		self.set_use_markup(True)
 		self.connect("populate-popup", self.popupPopulate)
 
-	def popupPopulate(self, label, menu):
+	def popupPopulate(self, _label, menu):
 		itemCopyAll = ImageMenuItem(
 			_("Copy _All"),
 			imageName="edit-copy.svg",
@@ -50,10 +50,10 @@ class SLabel(gtk.Label):
 		##
 		ui.updateFocusTime()
 
-	def copy(self, item):
+	def copy(self, _item):
 		start = self.get_property("selection-bound")
 		end = self.get_property("cursor-position")
 		setClipboard(toStr(self.get_text())[start:end])
 
-	def copyAll(self, label):
+	def copyAll(self, _label):
 		setClipboard(self.get_text())
